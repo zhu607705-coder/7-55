@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Phaser from "phaser";
 import type { EventBus } from "../../core/EventBus";
 import type { SceneRouter } from "../../core/SceneRouter";
@@ -51,6 +51,26 @@ const SCENE_CLASSES = {
 } as const;
 
 const DOUBLE_TAP_WINDOW_MS = 380;
+const RPG_TOUCH_CONTROLS_QUERY = "(pointer: coarse)";
+
+function useTouchControls(): boolean {
+  const [enabled, setEnabled] = useState(() => (
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia(RPG_TOUCH_CONTROLS_QUERY).matches
+      : false
+  ));
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return undefined;
+    const query = window.matchMedia(RPG_TOUCH_CONTROLS_QUERY);
+    const update = () => setEnabled(query.matches);
+    update();
+    query.addEventListener?.("change", update);
+    return () => query.removeEventListener?.("change", update);
+  }, []);
+
+  return enabled;
+}
 
 function setRpgInputEnabled(game: Phaser.Game, enabled: boolean): void {
   game.input.enabled = enabled;
@@ -87,6 +107,7 @@ export function RpgGameHost({
   onTaskNavigate
 }: RpgGameHostProps) {
   const [inspectedMapItem, setInspectedMapItem] = useState<ItemId | null>(null);
+  const [shellRoot, setShellRoot] = useState<HTMLElement | null>(null);
   const shellRef = useRef<HTMLElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
@@ -100,6 +121,11 @@ export function RpgGameHost({
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const runtimeScene = resolveRuntimeScene(state);
+  const touchControls = useTouchControls();
+  const bindShellRef = useCallback((node: HTMLElement | null) => {
+    shellRef.current = node;
+    setShellRoot((current) => current === node ? current : node);
+  }, []);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -351,7 +377,7 @@ export function RpgGameHost({
       data-input-blocked={inputBlocked ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
     >
-      <section ref={shellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
+      <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
         <div ref={hostRef} className="rpg-canvas-host" aria-hidden="true" />
 
         {showTaskBar ? (
@@ -360,13 +386,13 @@ export function RpgGameHost({
             events={events}
             router={router}
             variant="rpg"
-            portalRoot={shellRef.current}
+            portalRoot={shellRoot}
             onNavigate={onTaskNavigate}
           />
         ) : null}
 
         <div className="rpg-system-actions">
-          <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "打开手机"}</button>
+          <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
           <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
         </div>
 
@@ -433,7 +459,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {state.actOne.controlsInstalled ? (
+        {state.actOne.controlsInstalled && touchControls ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"
@@ -460,7 +486,7 @@ export function RpgGameHost({
         open={inspectedMapItem !== null}
         itemId={inspectedMapItem}
         variant="rpg"
-        portalRoot={shellRef.current}
+        portalRoot={shellRoot}
         onClose={() => setInspectedMapItem(null)}
       />
     </main>

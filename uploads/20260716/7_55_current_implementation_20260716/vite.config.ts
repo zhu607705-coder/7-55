@@ -1,7 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { viteSingleFile } from "vite-plugin-singlefile";
-import { defineConfig } from "vitest/config";
-import type { Plugin } from "vite";
+import { defineConfig, type Plugin } from "vite";
 
 function moveSingleFileRuntimeAfterShell(): Plugin {
   return {
@@ -40,7 +39,7 @@ function moveSingleFileRuntimeAfterShell(): Plugin {
 
 // 仅当 mode === "demo"（npm run build:demo）时启用单文件打包：
 // JS/CSS 内联进 index.html、相对路径、输出到 demo/，双击即可运行。
-// 正常 dev / build / test 行为与原配置完全一致。
+// 正常 dev / build 行为与原配置完全一致。
 export default defineConfig(({ mode }) => {
   const isDemo = mode === "demo";
 
@@ -56,11 +55,6 @@ export default defineConfig(({ mode }) => {
         }
       : {
           plugins: [react()]
-        }),
-    test: {
-      environment: "jsdom",
-      globals: true,
-      setupFiles: "./vitest.setup.ts"
-    }
+        })
   };
 });

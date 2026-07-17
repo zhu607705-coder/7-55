@@ -131,6 +131,19 @@ const LIBRARY_APPS: LibraryApp[] = [
   { label: "图书馆缴费", icon: "¥" }
 ];
 
+const HUB_BOTTOM_ITEMS = [
+  { label: "首页", icon: "⌂" },
+  { label: "通讯录", icon: "◉" },
+  { label: "工作台", icon: "▦" },
+  { label: "消息", icon: "✦" },
+  { label: "我的", icon: "◎" }
+] as const;
+
+const LIBRARY_BOTTOM_ITEMS = [
+  { label: "首页", icon: "⌂" },
+  { label: "我的", icon: "◎" }
+] as const;
+
 const CATALOG_COVER_URLS: Record<string, string> = {
   correct: threeMinuteLeaveMethodUrl,
   "distractor-1": threeMinuteLeaveArtUrl,
@@ -1023,6 +1036,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 aria-hidden="true"
               >
                 <span className="zju-library-service-icon">{app.icon}</span>
+                <span className="zju-locked-label">{app.label}</span>
               </span>
             ))}
             {recoveryUnlocked ? (
@@ -1032,6 +1046,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             ) : (
               <span className="zju-static-app zju-locked-icon-slot" data-locked-app="022恢复申请" aria-hidden="true">
                 <span className="zju-library-service-icon">PASS</span>
+                <span className="zju-locked-label">022恢复申请</span>
               </span>
             )}
             <button type="button" data-app-id="返回现场" onClick={openCampusMap}>
@@ -1073,8 +1088,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           ))}
         </main>
         <nav className="zju-native-bottom-nav zju-bottom-static" aria-label="页面导航">
-          <span data-locked-icon="library-home" aria-hidden="true">⌂</span>
-          <span data-locked-icon="library-profile" aria-hidden="true">◎</span>
+          {LIBRARY_BOTTOM_ITEMS.map((item) => (
+            <span key={item.label} data-locked-icon={`library-${item.label}`} aria-hidden="true">
+              <i>{item.icon}</i><small>{item.label}</small>
+            </span>
+          ))}
         </nav>
       </section>
     );
@@ -1451,16 +1469,22 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <span className="zju-id-summary-icon zju-locked-control-icon" data-locked-icon="identity-qr" aria-hidden="true">▦</span>
             </div>
             <div className="zju-id-actions">
-              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-code" aria-hidden="true"><span>◎</span></span>
+              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-code" data-locked-app="身份码" aria-hidden="true">
+                <span>◎</span><small className="zju-locked-label">身份码</small>
+              </span>
               <button type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</button>
-              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-wallet" aria-hidden="true"><span>◇</span></span>
+              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-wallet" data-locked-app="校园钱包" aria-hidden="true">
+                <span>◇</span><small className="zju-locked-label">校园钱包</small>
+              </span>
               {access.departmentDirectory ? (
                 <button type="button" onClick={() => goPage("directory")}>
                   <span aria-hidden="true">☎</span>部门黄页
                   {movementQuestActive && !state.actOne.characterNamed ? <b>任务</b> : null}
                 </button>
               ) : (
-                <span className="zju-static-action zju-locked-icon-slot" data-locked-app="部门黄页" aria-hidden="true"><span>☎</span></span>
+                <span className="zju-static-action zju-locked-icon-slot" data-locked-app="部门黄页" aria-hidden="true">
+                  <span>☎</span><small className="zju-locked-label">部门黄页</small>
+                </span>
               )}
             </div>
           </section>
@@ -1485,14 +1509,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                   aria-hidden="true"
                 >
                   <PixelAppIcon symbol={app.icon} tone={app.tone} />
+                  <span className="zju-locked-label">{app.label}</span>
                 </span>
               );
             })}
           </section>
         </main>
         <nav className="zju-native-bottom-nav zju-bottom-static" aria-label="页面导航">
-          {["⌂", "◉", "▦", "✦", "◎"].map((icon, index) => (
-            <span key={icon} data-locked-icon={`hub-nav-${index + 1}`} aria-hidden="true">{icon}</span>
+          {HUB_BOTTOM_ITEMS.map((item, index) => (
+            <span key={item.label} data-locked-icon={`hub-nav-${index + 1}`} aria-hidden="true">
+              <i>{item.icon}</i><small>{item.label}</small>
+            </span>
           ))}
         </nav>
       </section>

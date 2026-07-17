@@ -20,3 +20,9 @@
 - 文案：`plain_case`、`dry_campus`、`procedural_minimal`
 
 具体文件大小、SHA-256 和本次上传说明见 [ASSETS.md](ASSETS.md)。
+
+## 当前源码快照
+
+- 路径：[`uploads/20260716/7_55_current_implementation_20260716/`](uploads/20260716/7_55_current_implementation_20260716/)
+- 离线试玩：打开该目录下的 `demo/index.html`
+- 当前快照已合并浙大钉头像菜单与退出、图标和拖动对齐、第一章签到码显示、朋友语音跳过、手柄重入、手机文字选择和双屏全屏比例修复。

@@ -375,7 +375,9 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
 
       <nav className="cc98-bottom-nav cc98-bottom-static" aria-label="CC98主导航">
         {BOTTOM_TABS.map((tab) => (
-          <span key={tab.label} data-locked-icon={tab.label} aria-hidden="true"><i>{tab.icon}</i></span>
+          <span key={tab.label} data-locked-icon={tab.label} aria-hidden="true">
+            <i>{tab.icon}</i><b>{tab.label}</b>
+          </span>
         ))}
       </nav>
 

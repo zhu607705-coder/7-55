@@ -761,6 +761,7 @@
 }
 
 .phone .app-locked {
+  min-height: 84px;
   pointer-events: none;
   position: relative;
   user-select: none;
@@ -5363,10 +5364,11 @@
 }
 
 .cc98-bottom-static > span {
-  align-items: center;
+  align-content: center;
   color: #85898c;
-  display: flex;
-  justify-content: center;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
   opacity: 0.62;
   text-align: center;
 }
@@ -5375,6 +5377,12 @@
   font-size: 28px;
   font-style: normal;
   line-height: 0.9;
+}
+
+.cc98-bottom-static > span b {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .cc98-top-tabs button.is-active {

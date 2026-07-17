@@ -10,8 +10,8 @@ export type RpgPlayerFacing = "down" | "up" | "side";
 
 export const RPG_PLAYER_FRAME_WIDTH = 48;
 export const RPG_PLAYER_FRAME_HEIGHT = 64;
-export const RPG_PLAYER_DISPLAY_SCALE = 1;
-export const RPG_PLAYER_NAME_OFFSET_Y = 44;
+export const RPG_PLAYER_DISPLAY_SCALE = 1.3;
+export const RPG_PLAYER_NAME_OFFSET_Y = 54;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 15,
   height: 11.25,

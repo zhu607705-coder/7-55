@@ -359,6 +359,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         ) : (
           <div className="app app-locked" data-locked-app="照片" aria-hidden="true">
             <div className="app-icon b-light"><i className="photo-flower" /></div>
+            <span className="label">照片</span>
           </div>
         )}
         {access.cc98 ? (
@@ -369,6 +370,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         ) : (
           <div className="app app-locked" data-locked-app="CC98" aria-hidden="true">
             <div className="app-icon b-blue"><b className="cc98-text">CC98</b></div>
+            <span className="label">CC98</span>
           </div>
         )}
         {bikeArcadeUnlocked && access.bikeArcade ? (
@@ -393,6 +395,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               <span aria-hidden="true">7:55</span>
               <i aria-hidden="true" />
             </div>
+            <span className="label">游戏</span>
           </div>
         )}
         <button

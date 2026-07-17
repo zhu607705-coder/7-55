@@ -1,5 +1,4 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
-import { createPortal } from "react-dom";
 import { ITEM_META, PixelIcon } from "../../components/PixelIcon";
 import type { EventBus } from "../../core/EventBus";
 import type { GameState, ItemId } from "../../core/types";
@@ -49,7 +48,15 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
     return null;
   }
 
+  function relativePointer(clientX: number, clientY: number) {
+    const shellRect = shellRef.current?.getBoundingClientRect();
+    return shellRect
+      ? { x: clientX - shellRect.left, y: clientY - shellRect.top }
+      : { x: clientX, y: clientY };
+  }
+
   function beginDrag(event: ReactPointerEvent<HTMLButtonElement>, itemId: ItemId) {
+    const point = relativePointer(event.clientX, event.clientY);
     try {
       event.currentTarget.setPointerCapture(event.pointerId);
     } catch {
@@ -61,8 +68,7 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
       startClientX: event.clientX,
       startClientY: event.clientY,
       moved: false,
-      x: event.clientX,
-      y: event.clientY
+      ...point
     });
     event.preventDefault();
   }
@@ -71,11 +77,12 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
     if (!drag || drag.pointerId !== event.pointerId) {
       return;
     }
+    const point = relativePointer(event.clientX, event.clientY);
     const moved = drag.moved || Math.hypot(
       event.clientX - drag.startClientX,
       event.clientY - drag.startClientY
     ) > DRAG_START_DISTANCE;
-    setDrag({ ...drag, moved, x: event.clientX, y: event.clientY });
+    setDrag({ ...drag, moved, ...point });
     if (moved) {
       event.preventDefault();
     }
@@ -159,11 +166,11 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
           </button>
         ))}
       </div>
-      {drag ? createPortal((
+      {drag ? (
         <div className="rpg-inventory-drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">
           <PixelIcon name={drag.itemId} size={42} />
         </div>
-      ), document.body) : null}
+      ) : null}
     </aside>
   );
 }

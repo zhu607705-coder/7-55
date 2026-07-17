@@ -8,14 +8,12 @@ Chapter one demo and technical framework for `7:55`.
 - React for the fake phone-system UI
 - Phaser 3 reserved for later 2D RPG movement and trigger scenes
 - Zustand vanilla store for shared `GameState`
-- Vitest for core logic and shell tests
 
 ## Commands
 
 ```bash
 npm install
 npm run dev
-npm test -- --run
 npm run typecheck
 npm run build
 npm run build:single
@@ -40,7 +38,7 @@ story progress.
 
 - Add or replace phone scene UI in `src/scenes/phone`.
 - Add shared gameplay logic in `src/modules`.
-- Add dialogue, scene, item, and QA rows in `src/data`.
+- Add dialogue, scene, and item rows in `src/data`.
 - Add future 2D RPG scenes in `src/scenes/rpg`.
 - Keep implementation notes in each scene README.
 - Edit the default CC98 feed in `src/data/cc98.posts.json`; the in-page editor stores local overrides in the browser.

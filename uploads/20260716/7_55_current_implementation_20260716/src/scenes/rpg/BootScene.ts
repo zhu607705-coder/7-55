@@ -195,10 +195,10 @@ export class BootScene extends Phaser.Scene {
       .setDeadzone(300, 180);
     camera.centerOn(this.player.x, this.player.y);
 
-    const minimap = this.cameras.add(16, 392, 184, 126, false, "campus-minimap");
+    const minimap = this.cameras.add(16, 392, 160, 128, false, "campus-minimap");
     minimap
       .setBounds(0, 0, ZIJINGANG_WORLD.width, ZIJINGANG_WORLD.height)
-      .setZoom(Math.min(184 / ZIJINGANG_WORLD.width, 126 / ZIJINGANG_WORLD.height))
+      .setZoom(160 / ZIJINGANG_WORLD.width)
       .setBackgroundColor(0x10171c)
       .centerOn(ZIJINGANG_WORLD.width / 2, ZIJINGANG_WORLD.height / 2);
     minimap.ignore(this.contextualLandmarkLabels);
