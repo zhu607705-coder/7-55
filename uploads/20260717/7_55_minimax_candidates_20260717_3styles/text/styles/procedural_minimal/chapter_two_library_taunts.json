@@ -1,0 +1,38 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/chapter_two_library_taunts.json",
+    "sourceSha256": "301aa806c7c6a73d1bc99916d8a70d91718323551c797ddfddecf20c889331ca",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taunts": [
+    {
+      "text": "这纸条写得跟密码似的，谁看得懂啊！",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "图书馆的旧规则比古代经书还复杂，简直是要命。",
+      "voice": "none",
+      "durationMs": 4200
+    },
+    {
+      "text": "上传个证明比登天还难，系统总是报错。",
+      "voice": "none",
+      "durationMs": 5000
+    },
+    {
+      "text": "恢复申请提交了八百遍，还是杳无音讯。",
+      "voice": "none",
+      "durationMs": 4600
+    },
+    {
+      "text": "纸条、旧规则、证明上传、恢复申请，简直是四大天王逼我崩溃。",
+      "voice": "none",
+      "durationMs": 6100
+    }
+  ]
+}

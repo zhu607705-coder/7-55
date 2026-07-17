@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-07-17T03:57:20.296Z",
+  "results": [
+    {
+      "kind": "voice",
+      "style": "clipped_comic",
+      "path": "audio/styles/voice/clipped_comic/female_system_evidence__clipped_comic.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/voice/female_system_evidence_candidate_a.mp3",
+      "note": "MiniMax 频控后使用同角色基准音频做速度与动态处理"
+    },
+    {
+      "kind": "voice",
+      "style": "low_deadpan",
+      "path": "audio/styles/voice/low_deadpan/female_system_recovery__low_deadpan.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/voice/female_system_recovery_candidate_a.mp3",
+      "note": "MiniMax 频控后使用同角色基准音频做速度与动态处理"
+    },
+    {
+      "kind": "voice",
+      "style": "clipped_comic",
+      "path": "audio/styles/voice/clipped_comic/female_system_recovery__clipped_comic.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/voice/female_system_recovery_candidate_a.mp3",
+      "note": "MiniMax 频控后使用同角色基准音频做速度与动态处理"
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_forum_upload__radio_glitch.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/sfx/fx_forum_upload_candidate_a.mp3",
+      "note": "MiniMax 用量上限后使用成功音效做滤波变体"
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_pass_stamp__paper_mechanical.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/sfx/fx_pass_stamp_candidate_a.mp3",
+      "note": "MiniMax 用量上限后使用成功音效做滤波变体"
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_pass_stamp__radio_glitch.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/sfx/fx_pass_stamp_candidate_a.mp3",
+      "note": "MiniMax 用量上限后使用成功音效做滤波变体"
+    },
+    {
+      "kind": "sfx",
+      "style": "clean_ui",
+      "path": "audio/sfx/fx_022_signal_candidate_a.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/sfx/fx_catalog_match_candidate_a.mp3",
+      "note": "022 信号缺少新生成额度，使用目录检索确认音做无线电滤波变体"
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_022_signal__paper_mechanical.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/sfx/fx_catalog_match_candidate_a.mp3",
+      "note": "022 信号缺少新生成额度，使用目录检索确认音做无线电滤波变体"
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_022_signal__radio_glitch.mp3",
+      "status": "derived",
+      "derivedFrom": "audio/sfx/fx_022_signal_candidate_a.mp3",
+      "note": "MiniMax 用量上限后使用成功音效做滤波变体"
+    }
+  ]
+}

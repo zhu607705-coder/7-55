@@ -1,0 +1,27 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/cc98_post_clean_a.json",
+    "sourceSha256": "1388f6b1d727c64aaa85e3b01adaf87a991c27dc90600692c4f422611c0acf1a",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "posts": [
+    {
+      "id": "1",
+      "title": "图书馆座位争议",
+      "author": "小明",
+      "time": "2025-12-01 10:30",
+      "body": "最近图书馆的座位总是不够，大家都在抢座位，导致很多学生只能站着学习。",
+      "tags": [
+        "图书馆",
+        "座位",
+        "争议",
+        "校园"
+      ],
+      "visibilityStage": "public"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "comment": "台词 → src/assets/audio/vo/all_shadow_vo_XXX.mp3 的文件编号映射（002-010 按剧情顺序）。",
+  "files": {
+    "wake_narration": "002",
+    "wake_flash": "003",
+    "xy_attack": "004",
+    "xy_laugh": "005",
+    "sys_balance": "006",
+    "sys_net_try": "007",
+    "sys_no_money": "008",
+    "tiyi_47": "009",
+    "gear_pickup": "010"
+  },
+  "lines": {
+    "wake_narration": "你没有5分钟了，但你很有勇气",
+    "wake_flash": "起床蠢货！！！",
+    "xy_attack": "等等等等，你想翘课？没门！我不会让你签上的！",
+    "xy_laugh": "找你的数字去吧哈哈哈",
+    "sys_balance": "余额暂时不足以购买尊严",
+    "sys_net_try": "校园网已经尽力了，你也是",
+    "sys_no_money": "我知道你没钱买流量",
+    "tiyi_47": "就差一次，真绝望",
+    "gear_pickup": "哈，一个废齿轮"
+  }
+}

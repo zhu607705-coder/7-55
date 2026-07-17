@@ -1,0 +1,37 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/cc98_attachments.json",
+    "sourceSha256": "51f9c08d78229311607bf1eaeacde7f3a92128686a5fbc532ad0304cefeedba4",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "attachments": [
+    {
+      "id": "att_001",
+      "caption": "占座纸条：一张手写的便签，上面标记了座位编号和时间。",
+      "evidenceType": "note",
+      "safeForEarlyStage": true
+    },
+    {
+      "id": "att_002",
+      "caption": "旧规则：一份过去的场地使用规定，列出了座位分配原则。",
+      "evidenceType": "document",
+      "safeForEarlyStage": true
+    },
+    {
+      "id": "att_003",
+      "caption": "识别报告：系统生成的识别结果，显示了座位对应的身份信息。",
+      "evidenceType": "report",
+      "safeForEarlyStage": false
+    },
+    {
+      "id": "att_004",
+      "caption": "座位凭据：电子票或二维码，验证后可确认座位归属。",
+      "evidenceType": "ticket",
+      "safeForEarlyStage": true
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+只输出 JSON。为《7:55》第二章图书馆调查段生成候选文案：入馆记录、022、占座纸条、馆藏检索、旧规则、识别报告、三份证明、CC98 上传和恢复申请。输出 {"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]}。各写 8 条。对白含 voiceTextEn 和 subtitleZh；男旁白低沉诙谐自嘲，女系统冷幽默。提示只指向图书馆、纸质证据、CC98 或界面区域，不写答案、数字顺序、正确回复字母；任务只写当前下一步；吐槽含 durationMs 2400–6500 和 voice="none"。不要 Markdown、乱码或真实个人信息。

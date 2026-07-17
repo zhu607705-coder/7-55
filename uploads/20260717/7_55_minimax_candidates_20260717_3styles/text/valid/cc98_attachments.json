@@ -1,0 +1,28 @@
+{
+  "attachments": [
+    {
+      "id": "att_001",
+      "caption": "占座纸条：一张手写的便签，上面标记了座位编号和时间。",
+      "evidenceType": "note",
+      "safeForEarlyStage": true
+    },
+    {
+      "id": "att_002",
+      "caption": "旧规则：一份过去的场地使用规定，列出了座位分配原则。",
+      "evidenceType": "document",
+      "safeForEarlyStage": true
+    },
+    {
+      "id": "att_003",
+      "caption": "识别报告：系统生成的识别结果，显示了座位对应的身份信息。",
+      "evidenceType": "report",
+      "safeForEarlyStage": false
+    },
+    {
+      "id": "att_004",
+      "caption": "座位凭据：电子票或二维码，验证后可确认座位归属。",
+      "evidenceType": "ticket",
+      "safeForEarlyStage": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "maleNarrator": [
+    {"voiceTextEn": "Welcome to Chapter Two. The path ahead is shrouded in mist.", "subtitleZh": "欢迎来到第二章。前方的道路笼罩在迷雾之中。"},
+    {"voiceTextEn": "Your identity has been verified. Proceed to the gym for training.", "subtitleZh": "您的身份已验证。请前往体育馆进行训练。"},
+    {"voiceTextEn": "The weather outside is shifting. Check your messages for updates.", "subtitleZh": "外面的天气正在变化。请查看您的微信获取最新信息。"}
+  ],
+  "femaleSystem": [
+    {"voiceTextEn": "System: Please connect your controller to continue.", "subtitleZh": "系统：请连接您的手柄以继续。"},
+    {"voiceTextEn": "System: Your WeChat notification has arrived.", "subtitleZh": "系统：您有新的微信通知。"},
+    {"voiceTextEn": "System: Physical education session starts in five minutes.", "subtitleZh": "系统：体艺课程将在五分钟后开始。"}
+  ],
+  "taskTitles": [
+    "身份验证",
+    "体艺训练",
+    "天气查询",
+    "微信

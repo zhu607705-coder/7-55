@@ -1,0 +1,24 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/document_presence_clean.json",
+    "sourceSha256": "30a8ad422438df4f4c319213d232b53c8c0154ad5a8da0576657e781ebf00596",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "documents": [
+    {
+      "title": "本人来过证明",
+      "source": "北京XX公司前台",
+      "body": "姓名: 张三, 身份证号: 110101199001011234, 到访时间: 2026-01-25 14:30:00, 到访地点: 北京市朝阳区XX大厦前台",
+      "fields": {
+        "issuer": "北京XX公司",
+        "timestamp": "2026-01-25T14:30:00+08:00",
+        "location": "北京市朝阳区XX大厦",
+        "uniqueId": "20260125143000ABC123"
+      }
+    }
+  ]
+}

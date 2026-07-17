@@ -1,0 +1,25 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/chapter_one_system.json",
+    "sourceSha256": "7483e01b7486e87d76f377770c53158941477a8a3c206f443b41ed342fb1a50d",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "femaleSystem": [
+    {
+      "voiceTextEn": "The device is ready to confirm your presence, no applause required.",
+      "subtitleZh": "设备已准备好确认您的出席，无需掌声。"
+    },
+    {
+      "voiceTextEn": "Your check‑in request is being processed, even though the screen remains unimpressed.",
+      "subtitleZh": "您的签到请求正在处理中，屏幕依旧保持冷漠。"
+    },
+    {
+      "voiceTextEn": "Operation complete. The system notes your arrival with the enthusiasm of a stone.",
+      "subtitleZh": "操作完成。系统以石头的热情记录您的到来。"
+    }
+  ]
+}

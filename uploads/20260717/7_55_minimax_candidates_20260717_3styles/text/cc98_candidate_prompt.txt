@@ -1,0 +1,20 @@
+你是一个熟悉校园论坛口吻的 CC98 内容编辑。请为《7:55》生成一套可供筛选的论坛候选内容，只输出严格 JSON，不要 Markdown 代码围栏，不要解释。
+
+背景：论坛用于调查基础图书馆 022 座位的占座书包和缺失签到记录。前期只有普通帖子和搜索；取得占座纸条、旧版离座规定、识别报告和三份证明后，才出现楼主上传槽；四项公示材料上传后才出现 bd 回复和排名。帖子要真实、克制、带一点浙大校园论坛的灌水感，不能提前说出谜底。
+
+输出结构：
+{
+  "frontPagePosts": [],
+  "investigationThreads": [],
+  "bdReplies": [],
+  "attachmentCaptions": [],
+  "moderationNotices": []
+}
+
+字段要求：
+- 每个帖子包含 `id`, `title`, `author`, `time`, `body`, `floorCount`, `tags`, `visibilityStage`。
+- 每条回复包含 `author`, `text`, `tone`, `visibilityStage`；至少包含普通回复、冷幽默回复、证据型回复和一次有效 bd。
+- 每个附件包含 `id`, `caption`, `evidenceType`, `safeForEarlyStage`，caption 不写答案。
+- `visibilityStage` 只能使用 `chapter_two_start`, `evidence_gathering`, `proofs_ready`, `upload_complete`, `ranking`。
+- 生成 10 个普通帖子、6 个调查帖、12 条回复、12 个附件说明、8 条版务提示。
+- 不使用真实姓名、真实联系方式或真实个人信息；不要生成违法、侮辱或恶意内容。

@@ -1,0 +1,44 @@
+{
+  "feedback": [
+    {
+      "id": 1,
+      "text": "7:55 该道具不可使用",
+      "tone": "error"
+    },
+    {
+      "id": 2,
+      "text": "7:55 文件已存在，请勿重复上传",
+      "tone": "warning"
+    },
+    {
+      "id": 3,
+      "text": "7:55 该功能尚未开放",
+      "tone": "info"
+    },
+    {
+      "id": 4,
+      "text": "7:55 使用成功",
+      "tone": "success"
+    },
+    {
+      "id": 5,
+      "text": "7:55 抽屉已关闭",
+      "tone": "neutral"
+    },
+    {
+      "id": 6,
+      "text": "7:55 操作已取消",
+      "tone": "neutral"
+    },
+    {
+      "id": 7,
+      "text": "7:55 网络连接失败，请重试",
+      "tone": "error"
+    },
+    {
+      "id": 8,
+      "text": "7:55 请求超时，请稍后重试",
+      "tone": "warning"
+    }
+  ]
+}

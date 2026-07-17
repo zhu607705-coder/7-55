@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-07-17T00:59:33.959Z",
+  "model": "MiniMax-M2.5",
+  "assets": [
+    {
+      "path": "text/chapter_one_narrator.json",
+      "status": "generated",
+      "bytes": 698,
+      "sha256": "4519d082bda579e1a784f0940f1ca1c58d6fd00bfde6f39a76808ac5e6a0b644",
+      "prompt": "只输出JSON。为7:55第一章写3条男旁白，每项含voiceTextEn与subtitleZh，低沉、诙谐、自嘲，关于07:55起床和签到，不能泄露答案。格式{\"maleNarrator\":[]}"
+    },
+    {
+      "path": "text/chapter_one_system.json",
+      "status": "generated",
+      "bytes": 536,
+      "sha256": "c40bb7b0e58caf03a970e4e8c4b80b1f037ff510e21b55efe4a5e79e02b569cb",
+      "prompt": "只输出JSON。为7:55第一章写3条女系统对白，每项含voiceTextEn与subtitleZh，冷幽默、克制，指向手机签到和当前操作，不给数字答案。格式{\"femaleSystem\":[]}"
+    },
+    {
+      "path": "text/chapter_one_quest.json",
+      "status": "generated",
+      "bytes": 614,
+      "sha256": "c666a542a7b6d127e32ed7db8c3f08e9c97ea913b2d5fd3e53e213ea66ef3a71",
+      "prompt": "只输出JSON。为7:55第一章写4个当前下一步任务标题和6条三档提示，提示只指向应用、物品或界面区域，不泄露数字。格式{\"taskTitles\":[],\"hints\":[]}"
+    },
+    {
+      "path": "text/chapter_one_taunts.json",
+      "status": "generated",
+      "bytes": 574,
+      "sha256": "b52bdbc908a4b0a2f42e3dba4b3f1414dbfc7a4a726a7aaed0488883d2b79fcc",
+      "prompt": "只输出JSON。为7:55第一章写4条无配音中文操作吐槽，轻微自嘲，每项含text、voice=none、durationMs且在2400到6500。格式{\"taunts\":[]}"
+    },
+    {
+      "path": "text/chapter_two_movement.json",
+      "status": "generated",
+      "bytes": 1059,
+      "sha256": "5df1d52ed435735985a81ec649f9bc60668278bf3629ca9df6d5bb5fdad08da2",
+      "prompt": "只输出JSON。为7:55第二章移动段写3条男旁白、3条女系统对白、4个当前任务标题和6条渐进提示，覆盖身份、体艺、天气、微信和手柄；对白含voiceTextEn与subtitleZh，提示不写精确顺序。格式{\"maleNarrator\":[],\"femaleSystem\":[],\"taskTitles\":[],\"hints\":[]}"
+    },
+    {
+      "path": "text/chapter_two_movement_taunts.json",
+      "status": "generated",
+      "bytes": 800,
+      "sha256": "9b48c2ae79886e1aa31d16b8c19c0ac680665286213f71ca57f6403339534e2e",
+      "prompt": "只输出JSON。为7:55第二章移动段写5条无配音中文吐槽，覆盖锻炼、余额、购买手柄和首次移动，每项含text、voice=none、durationMs在2400到6500。格式{\"taunts\":[]}"
+    },
+    {
+      "path": "text/chapter_two_library.json",
+      "status": "failed",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "prompt": "只输出JSON。为7:55第二章图书馆调查写4条男旁白、4条女系统对白、5个当前任务标题和8条渐进提示，覆盖入馆记录、022、纸质证据、馆藏和CC98；对白含voiceTextEn与subtitleZh，提示不写谜底、数字顺序或正确字母。格式{\"maleNarrator\":[],\"femaleSystem\":[],\"taskTitles\":[],\"hints\":[]}"
+    },
+    {
+      "path": "text/chapter_two_library_taunts.json",
+      "status": "generated",
+      "bytes": 728,
+      "sha256": "316557c56aaaeb5bf4a7c5179374c9180cbab94fd8815d6c11d9a5ae5aa4918f",
+      "prompt": "只输出JSON。为7:55第二章图书馆调查写5条无配音中文吐槽，覆盖纸条、旧规则、证明上传和恢复申请，每项含text、voice=none、durationMs在2400到6500。格式{\"taunts\":[]}"
+    },
+    {
+      "path": "text/chapter_three.json",
+      "status": "generated",
+      "bytes": 1590,
+      "sha256": "3759b6d55a8af64cb504cdee9785ce6c5aa5ae1a601cb2596e5493ccae032118",
+      "prompt": "只输出JSON。为7:55第三章写3条男旁白、3条女系统对白、4个当前任务标题和6条提示，主题是寻找借走签到记录的书，保留留白，不写书名或答案。对白含voiceTextEn与subtitleZh。格式{\"maleNarrator\":[],\"femaleSystem\":[],\"taskTitles\":[],\"hints\":[]}"
+    },
+    {
+      "path": "text/cc98_posts.json",
+      "status": "failed",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "prompt": "只输出JSON。为7:55生成8条校园论坛候选帖子，主题是图书馆座位、占座书包和缺失记录，前期不泄露谜底。每项含id、title、author、time、body、tags、visibilityStage，阶段只能chapter_two_start、evidence_gathering、proofs_ready、upload_complete、ranking。不要真实个人信息。格式{\"posts\":[]}"
+    },
+    {
+      "path": "text/cc98_replies.json",
+      "status": "failed",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "prompt": "只输出JSON。为7:55生成10条CC98回复和8条附件说明、6条版务提示。回复含author、text、tone、visibilityStage；附件含id、caption、evidenceType、safeForEarlyStage；轻微灌水和冷幽默，不提前说谜底。格式{\"replies\":[],\"attachments\":[],\"moderation\":[]}"
+    },
+    {
+      "path": "text/ui_items_documents.json",
+      "status": "failed",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "prompt": "只输出JSON。为7:55生成12条物品短描述和8类纸质道具正文，覆盖校园卡、手柄、天气水滴、占座纸条、索书号755、旧规则、识别报告、非本人证明、022小票、本人来过证明、清退PASS。物品含id、title、source、intro；文档含title、source、body、fields；不能给未解答案。格式{\"items\":[],\"documents\":[]}"
+    },
+    {
+      "path": "text/ui_microcopy.json",
+      "status": "generated",
+      "bytes": 151,
+      "sha256": "2513fe21569437c4c52a3d5ce9a86cb01e7a4763d3ee19b95b22238f7365197a",
+      "prompt": "只输出JSON。为7:55生成20条手机标签、24条任务栏标签、20条无配音吐槽、12条无障碍描述和12条按钮反馈。任务只暴露当前下一步；吐槽含voice=none和durationMs在2400到6500；中文自然不乱码。格式{\"phone\":[],\"quest\":[],\"toasts\":[],\"accessibility\":[],\"feedback\":[]}"
+    }
+  ]
+}

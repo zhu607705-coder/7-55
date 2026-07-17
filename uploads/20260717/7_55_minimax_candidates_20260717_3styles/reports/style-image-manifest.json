@@ -1,0 +1,322 @@
+{
+  "generatedAt": "2026-07-17T03:06:21.230Z",
+  "styles": [
+    "paper_archive",
+    "rainy_scanline"
+  ],
+  "concurrency": 4,
+  "results": [
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_library_interior__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 539032
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_library_interior__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 540104
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_dorm_hub__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 405592
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_dorm_hub__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 463707
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_zijingang_map__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 1014938
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_library_exterior__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 401117
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_library_exterior__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 586745
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_zijingang_map__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 727550
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_sports_courts__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 500517
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_sports_courts__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 501510
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_south_gate__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 461214
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_south_gate__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 421074
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_lake_bank__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 846708
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_lake_bank__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 668304
+    },
+    {
+      "path": "images/styles/paper_archive/rpg/rpg_library_evidence_overlay__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 550116
+    },
+    {
+      "path": "images/styles/rainy_scanline/rpg/rpg_library_evidence_overlay__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 327173
+    },
+    {
+      "path": "images/styles/paper_archive/phone/phone_home__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 538931
+    },
+    {
+      "path": "images/styles/paper_archive/phone/phone_zjuding__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 388242
+    },
+    {
+      "path": "images/styles/rainy_scanline/phone/phone_zjuding__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 427682
+    },
+    {
+      "path": "images/styles/rainy_scanline/phone/phone_home__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 357318
+    },
+    {
+      "path": "images/styles/paper_archive/phone/phone_cc98__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 415388
+    },
+    {
+      "path": "images/styles/paper_archive/phone/phone_library__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 160668
+    },
+    {
+      "path": "images/styles/rainy_scanline/phone/phone_library__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 373707
+    },
+    {
+      "path": "images/styles/rainy_scanline/phone/phone_cc98__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 358771
+    },
+    {
+      "path": "images/styles/paper_archive/phone/phone_weather__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 410466
+    },
+    {
+      "path": "images/styles/rainy_scanline/phone/phone_weather__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 161459
+    },
+    {
+      "path": "images/styles/paper_archive/phone/phone_task_drawer__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 272204
+    },
+    {
+      "path": "images/styles/rainy_scanline/phone/phone_task_drawer__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 419294
+    },
+    {
+      "path": "images/styles/paper_archive/props/paper_evidence_sheet__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 355387
+    },
+    {
+      "path": "images/styles/rainy_scanline/props/paper_evidence_sheet__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 445398
+    },
+    {
+      "path": "images/styles/paper_archive/props/campus_card__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 310293
+    },
+    {
+      "path": "images/styles/rainy_scanline/props/campus_card__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 295111
+    },
+    {
+      "path": "images/styles/paper_archive/props/gamepad__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 263273
+    },
+    {
+      "path": "images/styles/rainy_scanline/props/gamepad__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 164828
+    },
+    {
+      "path": "images/styles/paper_archive/props/seat_receipt__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 415919
+    },
+    {
+      "path": "images/styles/rainy_scanline/props/seat_receipt__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 341725
+    },
+    {
+      "path": "images/styles/paper_archive/props/old_rule_document__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 250366
+    },
+    {
+      "path": "images/styles/rainy_scanline/props/old_rule_document__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 391995
+    },
+    {
+      "path": "images/styles/rainy_scanline/props/cc98_attachment_slots__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 248355
+    },
+    {
+      "path": "images/styles/paper_archive/props/cc98_attachment_slots__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 213000
+    },
+    {
+      "path": "images/styles/paper_archive/characters/student_turnaround__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 342293
+    },
+    {
+      "path": "images/styles/rainy_scanline/characters/student_turnaround__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 355107
+    },
+    {
+      "path": "images/styles/paper_archive/characters/narrator_orb__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 438247
+    },
+    {
+      "path": "images/styles/rainy_scanline/characters/narrator_orb__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 633122
+    },
+    {
+      "path": "images/styles/paper_archive/characters/system_avatar__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 297405
+    },
+    {
+      "path": "images/styles/rainy_scanline/characters/system_avatar__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 275717
+    },
+    {
+      "path": "images/styles/paper_archive/ui/app_icon_set__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 226042
+    },
+    {
+      "path": "images/styles/paper_archive/ui/pixel_ui_texture_set__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 492443
+    },
+    {
+      "path": "images/styles/rainy_scanline/ui/app_icon_set__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 477043
+    },
+    {
+      "path": "images/styles/rainy_scanline/ui/pixel_ui_texture_set__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 329924
+    },
+    {
+      "path": "images/styles/paper_archive/posts/cc98_attachment_sheet__paper_archive.png",
+      "style": "paper_archive",
+      "status": "generated",
+      "bytes": 439414
+    },
+    {
+      "path": "images/styles/rainy_scanline/posts/cc98_attachment_sheet__rainy_scanline.png",
+      "style": "rainy_scanline",
+      "status": "generated",
+      "bytes": 380034
+    }
+  ]
+}

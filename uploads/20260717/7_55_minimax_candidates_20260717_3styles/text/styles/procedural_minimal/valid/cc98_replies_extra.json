@@ -1,0 +1,25 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/cc98_replies_extra.json",
+    "sourceSha256": "fd60bd2ee299fe6290b08ffa89c307f64c3d3e71e2a0ac24bb5dc6ed9ad048d7",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "replies": [
+    {
+      "author": "版务",
+      "text": "您好，您当前的上传槽尚未开放，暂时无法进行材料上传，请耐心等待系统开放后再尝试。",
+      "tone": "informative",
+      "visibilityStage": "public"
+    },
+    {
+      "author": "版务",
+      "text": "您好，您提交的材料与已有的材料重复，请检查并删除重复项，或修改后重新提交。",
+      "tone": "warning",
+      "visibilityStage": "public"
+    }
+  ]
+}

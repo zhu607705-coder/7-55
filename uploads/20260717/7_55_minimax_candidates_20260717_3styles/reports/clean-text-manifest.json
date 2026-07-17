@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-07-17T01:19:40.197Z",
+  "model": "MiniMax-M2.5",
+  "assets": [
+    {
+      "path": "text/valid/cc98_post_clean_a.json",
+      "status": "generated",
+      "bytes": 403,
+      "sha256": "8d4524f2e27188e0838c5378fff618e18034907c420e1dd1b63c34d1a8031f68"
+    },
+    {
+      "path": "text/valid/cc98_post_clean_b.json",
+      "status": "generated",
+      "bytes": 339,
+      "sha256": "c79cced5419d567ad469877852f1cc2446755dd87cd117eaec176f13d18a92f6"
+    },
+    {
+      "path": "text/valid/cc98_post_clean_c.json",
+      "status": "failed",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "error": "no json"
+    },
+    {
+      "path": "text/valid/cc98_reply_clean.json",
+      "status": "generated",
+      "bytes": 225,
+      "sha256": "6130c0aab093dd9be6bb4a7c86d6c32aa7ea1c37a14ed9110dcbeaf26a662a5a"
+    },
+    {
+      "path": "text/valid/document_022_clean.json",
+      "status": "failed",
+      "bytes": 71,
+      "sha256": "ba94298619670fda0352859e5b90c2ff3cb0374b7ab759552946cd1de3c20ec3",
+      "error": "no json"
+    },
+    {
+      "path": "text/valid/document_presence_clean.json",
+      "status": "generated",
+      "bytes": 468,
+      "sha256": "62999f5a62ee63069c0c4c7e44a3ded7ed3b135e9bc62d029935ac2aa3c0a19d"
+    },
+    {
+      "path": "text/valid/cc98_post_clean_d.json",
+      "status": "generated",
+      "bytes": 575,
+      "sha256": "9bb58242dcd8e00e63550e5ee20279388770eeb2468f22003b892fb7a016e97c"
+    }
+  ]
+}

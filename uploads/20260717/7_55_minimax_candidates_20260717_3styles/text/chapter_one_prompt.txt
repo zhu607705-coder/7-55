@@ -1,0 +1,1 @@
+只输出 JSON。为《7:55》第一章生成候选文案：07:55 起床、签到、发现 0798、进入第二章。输出 {"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]}。各写 6 条。对白含 voiceTextEn 和 subtitleZh；男旁白低沉诙谐自嘲，女系统冷幽默。提示只指向手机应用、物品或界面区域，不写数字答案；任务只写当前下一步；吐槽含 durationMs 2400–6500 和 voice="none"。不要 Markdown、乱码或真实个人信息。

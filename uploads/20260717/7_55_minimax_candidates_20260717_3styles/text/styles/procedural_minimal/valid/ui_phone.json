@@ -1,0 +1,21 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/ui_phone.json",
+    "sourceSha256": "314f12bb01ac12e1c445845323b7b3f06daf253d5008ce218d8c53fd9ec3db74",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "phone": [
+    "主页",
+    "钉钉",
+    "CC98",
+    "图书",
+    "天气",
+    "课表",
+    "成绩",
+    "校园"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/document_022_clean_retry.json",
+    "sourceSha256": "72230ec62bdbac1360264c9b5ac47a2983117c8f266c0cd0c4410f612ab234c8",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "documents": [
+    {
+      "title": "022小票",
+      "source": "图书馆服务台",
+      "body": "座位记录和时间戳的可核验摘要。",
+      "fields": [
+        "seat",
+        "time",
+        "status"
+      ]
+    }
+  ]
+}

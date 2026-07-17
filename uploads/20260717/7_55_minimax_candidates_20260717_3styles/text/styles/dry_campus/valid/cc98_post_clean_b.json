@@ -1,0 +1,22 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/valid/cc98_post_clean_b.json",
+    "sourceSha256": "ad0d196fe0be9aff98beedf8be172401090ea9f41317fc076ad13fcb21133332",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "posts": [
+    {
+      "id": "1",
+      "title": "关于缺失签到记录的疑问",
+      "author": "校园新人",
+      "time": "2025-12-02 14:30:00",
+      "body": "这学期的签到记录好像少了几次，大家有遇到类似情况吗？",
+      "tags": "签到,疑问,记录",
+      "visibilityStage": "public"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/valid/cc98_post_clean_d.json",
+    "sourceSha256": "2a2e98eeb456946ec3a3e9ea6c459871ac854f63f523bf04e8c94cc1a69cb1e2",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "posts": [
+    {
+      "id": 1,
+      "title": "雨天图书馆的静谧时光",
+      "author": "小明",
+      "time": "2025-12-20 09:30:00",
+      "body": "今天外面下着大雨，我撑着伞来到图书馆，发现自习室里几乎没人，窗外的雨声让人格外专注，读了一上午的专业书，感觉效率比平时高出许多。建议大家雨天也可以去图书馆，享受一份别样的宁静。",
+      "tags": [
+        "雨天",
+        "图书馆",
+        "学习",
+        "宁静"
+      ],
+      "visibilityStage": "public"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/valid/ui_quest.json",
+    "sourceSha256": "36b9caffb53bb430e9e7798611b5fd6904ed2069c7e3a25f0f6ddb52d8b3f73c",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "quest": [
+    "章节：第一幕",
+    "当前任务：寻找入口",
+    "当前进度：0/1",
+    "下一步目标：继续前进",
+    "提示(易)：观察四周",
+    "提示(中)：搜索可疑之处",
+    "提示(难)：使用特定道具",
+    "返回"
+  ]
+}

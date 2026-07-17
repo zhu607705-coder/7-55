@@ -1,0 +1,473 @@
+/* Chapter 2 V2 phone pages. Keep the shared 430 x 860 shell unchanged. */
+
+.cc98-investigation-v2 .cc98-investigation-tools {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 9px 10px;
+}
+
+.cc98-investigation-v2 .cc98-investigation-tools p {
+  margin-top: 3px;
+  text-align: left;
+}
+
+.cc98-investigation-v2 .cc98-investigation-floor {
+  max-height: none;
+  min-width: 0;
+}
+
+.cc98-investigation-v2 .cc98-ac01-read {
+  background: #edf5fd;
+  border: 2px solid #174d9d;
+  color: #174d9d;
+  font-size: 11px;
+  font-weight: 800;
+  margin: 9px 0 0 37px;
+  min-height: 36px;
+  padding: 6px 10px;
+}
+
+.cc98-investigation-v2 .cc98-ac01-read:disabled {
+  background: #e2e5e8;
+  border-color: #8a949f;
+  color: #68717a;
+}
+
+.cc98-investigation-treasure {
+  margin: 10px 0 5px 37px;
+  max-width: 238px;
+}
+
+.cc98-investigation-treasure img {
+  max-height: 180px;
+  width: 100%;
+}
+
+.cc98-evidence-puzzle {
+  min-width: 0;
+  padding-bottom: 12px;
+}
+
+.cc98-evidence-uploader {
+  background: #fff;
+  border: 3px solid #174d9d;
+  padding: 10px;
+}
+
+.cc98-evidence-uploader > header {
+  align-items: center;
+  border-bottom: 2px solid #d6e5f3;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding-bottom: 8px;
+}
+
+.cc98-evidence-uploader > header div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cc98-evidence-uploader > header strong {
+  font-size: 14px;
+}
+
+.cc98-evidence-uploader > header small,
+.cc98-evidence-uploader > header span {
+  color: #566575;
+  font-size: 10px;
+}
+
+.cc98-evidence-uploader > div {
+  display: grid;
+  gap: 7px;
+  padding-top: 9px;
+}
+
+.cc98-evidence-uploader article {
+  align-items: center;
+  background: #f7fafc;
+  border: 2px solid #c7d2dd;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px minmax(0, 1fr) 66px;
+  min-height: 52px;
+  padding: 7px 8px;
+}
+
+.cc98-evidence-uploader article.is-uploaded {
+  background: #e7f5e9;
+  border-color: #5a9464;
+}
+
+.cc98-evidence-uploader article > span {
+  color: #174d9d;
+  font-size: 18px;
+  text-align: center;
+}
+
+.cc98-evidence-uploader article > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cc98-evidence-uploader article strong {
+  font-size: 11px;
+}
+
+.cc98-evidence-uploader article small {
+  color: #687582;
+  font-size: 9px;
+}
+
+.cc98-evidence-uploader article button,
+.cc98-bd-replies > article > button {
+  min-height: 36px;
+}
+
+.cc98-top-ten-complete,
+.cc98-bd-feedback {
+  background: #fff4c8;
+  border: 2px solid #b88b20;
+  font-size: 11px;
+  margin: 0;
+  padding: 9px 10px;
+}
+
+.tiyi-audit-panel.tiyi-audit-v2 {
+  bottom: 14px;
+  gap: 9px;
+  left: 14px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px;
+  top: 102px;
+  width: calc(100% - 28px);
+}
+
+.tiyi-audit-v2 > header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 62px;
+  padding: 8px 10px;
+}
+
+.tiyi-audit-v2 > header strong {
+  font-size: 18px;
+}
+
+.tiyi-audit-v2 > header b {
+  align-self: start;
+  font-size: 12px;
+}
+
+.tiyi-recorded-route {
+  background: #f8f2d7;
+  border: 2px solid #9f8741;
+  display: grid;
+  gap: 7px;
+  padding: 8px;
+}
+
+.tiyi-recorded-route > strong {
+  font-size: 12px;
+}
+
+.tiyi-recorded-route > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tiyi-recorded-route span {
+  background: #fff;
+  border: 1px solid #a89a70;
+  font-size: 9px;
+  padding: 3px 5px;
+}
+
+.tiyi-audit-sources {
+  display: grid;
+  gap: 6px;
+}
+
+.tiyi-audit-sources article {
+  align-items: center;
+  background: #f3f3f0;
+  border: 2px solid #aaa28c;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  min-height: 46px;
+  padding: 6px 8px;
+}
+
+.tiyi-audit-sources article.is-ready {
+  background: #e8f4e8;
+  border-color: #5e8d65;
+}
+
+.tiyi-audit-sources article > span {
+  color: #36536f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.tiyi-audit-sources article > div {
+  display: grid;
+  gap: 2px;
+}
+
+.tiyi-audit-sources strong {
+  font-size: 12px;
+}
+
+.tiyi-audit-sources small {
+  color: #667169;
+  font-size: 9px;
+}
+
+.tiyi-audit-v2 .tiyi-audit-steppers {
+  gap: 6px;
+}
+
+.tiyi-audit-v2 .tiyi-audit-steppers > section {
+  grid-template-columns: minmax(0, 1fr) 154px;
+  min-height: 54px;
+  padding: 6px 8px;
+}
+
+.tiyi-audit-v2 .tiyi-audit-steppers > section > div {
+  grid-template-columns: 40px 1fr 40px;
+  height: 40px;
+}
+
+.tiyi-audit-v2 .tiyi-audit-submit,
+.tiyi-audit-v2 .tiyi-audit-return {
+  min-height: 44px;
+  width: 100%;
+}
+
+.tiyi-presence-proof-result {
+  background: #f2fbf2;
+  border: 2px solid #4f8058;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.tiyi-presence-proof-result > p {
+  font-size: 11px;
+  margin: 0;
+}
+
+.tiyi-presence-proof-result dl {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+
+.tiyi-presence-proof-result dl div {
+  display: flex;
+  font-size: 11px;
+  justify-content: space-between;
+}
+
+.tiyi-presence-proof-result dd {
+  font-weight: 900;
+  margin: 0;
+}
+
+.photo-library-layer > main {
+  overscroll-behavior: contain;
+  padding: 12px 14px 24px;
+}
+
+.photo-library-viewer {
+  background: #fff;
+  border: 2px solid #bac2cb;
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+}
+
+.photo-library-viewer > header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.photo-library-viewer > header strong {
+  font-size: 15px;
+}
+
+.photo-library-viewer > header span {
+  color: #697480;
+  font-size: 10px;
+}
+
+.photo-backpack-frame {
+  background: #d9d1bd;
+  border: 3px solid #263746;
+  height: 286px;
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-library-desk {
+  background: #866544;
+  border-top: 8px solid #4f3928;
+  bottom: 0;
+  height: 92px;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.photo-library-backpack {
+  background: #2e4863;
+  border: 5px solid #182635;
+  bottom: 47px;
+  height: 150px;
+  left: 34px;
+  position: absolute;
+  width: 132px;
+}
+
+.photo-library-backpack i {
+  border: 6px solid #182635;
+  border-bottom: 0;
+  height: 36px;
+  left: 32px;
+  position: absolute;
+  top: -35px;
+  width: 58px;
+}
+
+.photo-library-backpack b {
+  background: #f6d88a;
+  border: 2px solid #6c4a18;
+  bottom: 13px;
+  color: #4a3312;
+  left: 38px;
+  padding: 3px 7px;
+  position: absolute;
+}
+
+.photo-bag-label {
+  background: #fffdf2;
+  border: 3px solid #544b35;
+  display: grid;
+  gap: 4px;
+  min-height: 132px;
+  padding: 10px;
+  position: absolute;
+  right: 17px;
+  top: 42px;
+  width: 184px;
+  z-index: 2;
+}
+
+.photo-bag-label strong {
+  font-size: 14px;
+}
+
+.photo-bag-label span,
+.photo-bag-label b,
+.photo-bag-label em {
+  font-size: 9px;
+  font-style: normal;
+}
+
+.photo-glare {
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 0 22px #fff;
+  height: 220px;
+  position: absolute;
+  right: 62px;
+  top: 8px;
+  transform: rotate(20deg);
+  width: 82px;
+  z-index: 4;
+}
+
+.photo-brightness-control {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 72px minmax(0, 1fr) 42px;
+  min-height: 44px;
+}
+
+.photo-brightness-control span,
+.photo-brightness-control strong {
+  font-size: 11px;
+}
+
+.photo-brightness-control input {
+  min-height: 32px;
+  width: 100%;
+}
+
+.photo-threshold-copy {
+  color: #596571;
+  font-size: 10px;
+  margin: 0;
+  min-height: 28px;
+}
+
+.photo-recognition-result {
+  background: #edf6ff;
+  border: 3px solid #285d8e;
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.photo-recognition-result > p {
+  font-size: 10px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.photo-recognition-result > button {
+  background: #2675c9;
+  border: 3px solid #123f70;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  min-height: 42px;
+}
+
+.photo-recognition-result > button:disabled {
+  background: #8c98a5;
+  border-color: #59636e;
+}
+
+@media (max-width: 400px) {
+  .cc98-thread-header {
+    grid-template-columns: 42px minmax(0, 1fr) 104px;
+  }
+
+  .tiyi-audit-panel.tiyi-audit-v2 {
+    left: 10px;
+    width: calc(100% - 20px);
+  }
+
+  .photo-library-layer > main {
+    padding-inline: 10px;
+  }
+}
+
+.cc98-evidence-uploader article.is-compatible-drop,
+.zju-recovery-slots article.is-compatible-drop {
+  border-color: #42b86d;
+  box-shadow: 0 0 0 3px rgba(66, 184, 109, 0.28);
+}
+
+.cc98-evidence-uploader article.is-incompatible-drop,
+.zju-recovery-slots article.is-incompatible-drop {
+  opacity: 0.58;
+}

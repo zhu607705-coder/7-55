@@ -1,0 +1,31 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/chapter_three_dialogue.json",
+    "sourceSha256": "4b2c500c9ea5b559ff4d15077a8effdfcc5f9a370257c1c152552030856aadb2",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "maleNarrator": [
+    {
+      "voiceTextEn": "I'm tracking the borrowed sign‑in record at 7:55... the trail stops at ____.",
+      "subtitleZh": "我正在追踪7:55被借走的签到记录……线索在____处中断。"
+    },
+    {
+      "voiceTextEn": "The log shows the user accessed from a remote terminal, but the ID is ____.",
+      "subtitleZh": "日志显示该用户从远程终端访问，但ID为____。"
+    }
+  ],
+  "femaleSystem": [
+    {
+      "voiceTextEn": "Sign‑in record retrieval initiated. Searching for missing entry...",
+      "subtitleZh": "签到记录检索已启动。正在搜索缺失条目……"
+    },
+    {
+      "voiceTextEn": "Alert: Borrowed record transferred to ____ at 7:55. Confirm?",
+      "subtitleZh": "警报：被借出的记录已在7:55转移至____。确认？"
+    }
+  ]
+}

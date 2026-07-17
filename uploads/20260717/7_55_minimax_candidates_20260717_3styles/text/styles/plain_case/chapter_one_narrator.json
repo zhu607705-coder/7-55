@@ -1,0 +1,25 @@
+{
+  "_candidateMeta": {
+    "style": "plain_case",
+    "styleLabelZh": "平实调查",
+    "delivery": "保持原文事实和句式，适合纸质证据、帖子正文和调查记录。",
+    "selection": "信息密度优先，避免额外情绪。",
+    "source": "text/chapter_one_narrator.json",
+    "sourceSha256": "ed4b51b64b8a8d091e446d4473f8031bb7e1a1d9fb2bef91983a706bfbd18491",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "maleNarrator": [
+    {
+      "voiceTextEn": "It's 7:55, the bed's a magnet and my签到 is already screaming for attention.",
+      "subtitleZh": "七点五十五，床像磁铁一样把我吸住，签到却在旁边大喊。"
+    },
+    {
+      "voiceTextEn": "At 7:55 I'm still battling the alarm while my签到 sheet gives me the evil eye.",
+      "subtitleZh": "七点五十五，我仍在和闹钟搏斗，签到表却对我翻白眼。"
+    },
+    {
+      "voiceTextEn": "Seven fifty‑five, coffee's cold, the clock's mocking, and I'm already late for签到.",
+      "subtitleZh": "七点五十五，咖啡凉了，时钟在嘲讽，而我已经在签到的路上迟到。"
+    }
+  ]
+}

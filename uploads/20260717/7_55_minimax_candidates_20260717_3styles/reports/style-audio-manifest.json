@@ -1,0 +1,101 @@
+{
+  "generatedAt": "2026-07-17T03:33:36.364Z",
+  "model": "music-2.5+",
+  "concurrency": 3,
+  "kinds": [
+    "sfx"
+  ],
+  "results": [
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_phone_unlock__paper_mechanical.mp3",
+      "status": "generated",
+      "bytes": 45651
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_paper_unfold__paper_mechanical.mp3",
+      "status": "generated",
+      "bytes": 45651
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_phone_unlock__radio_glitch.mp3",
+      "status": "generated",
+      "bytes": 45651
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_catalog_match__radio_glitch.mp3",
+      "status": "generated",
+      "bytes": 45651
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_paper_unfold__radio_glitch.mp3",
+      "status": "generated",
+      "bytes": 45651
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_forum_upload__radio_glitch.mp3",
+      "status": "failed",
+      "error": "sfx audio/styles/sfx/radio_glitch/fx_forum_upload__radio_glitch.mp3: exit 1; {\n  \"error\": {\n    \"code\": 1,\n    \"message\": \"API error: 已达到 Token Plan 用量上限：请升级 Token Plan 套餐或购买积分补充用量。 (HTTP 200)\"\n  }\n}"
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_pass_stamp__paper_mechanical.mp3",
+      "status": "failed",
+      "error": "sfx audio/styles/sfx/paper_mechanical/fx_pass_stamp__paper_mechanical.mp3: exit 1; {\n  \"error\": {\n    \"code\": 1,\n    \"message\": \"API error: 已达到 Token Plan 用量上限：请升级 Token Plan 套餐或购买积分补充用量。 (HTTP 200)\"\n  }\n}"
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_pass_stamp__radio_glitch.mp3",
+      "status": "failed",
+      "error": "sfx audio/styles/sfx/radio_glitch/fx_pass_stamp__radio_glitch.mp3: exit 1; {\n  \"error\": {\n    \"code\": 1,\n    \"message\": \"API error: 已达到 Token Plan 用量上限：请升级 Token Plan 套餐或购买积分补充用量。 (HTTP 200)\"\n  }\n}"
+    },
+    {
+      "kind": "sfx",
+      "style": "clean_ui",
+      "path": "audio/sfx/fx_022_signal_candidate_a.mp3",
+      "status": "failed",
+      "error": "sfx audio/sfx/fx_022_signal_candidate_a.mp3: exit 1; {\n  \"error\": {\n    \"code\": 1,\n    \"message\": \"API error: 已达到 Token Plan 用量上限：请升级 Token Plan 套餐或购买积分补充用量。 (HTTP 200)\"\n  }\n}"
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_022_signal__paper_mechanical.mp3",
+      "status": "failed",
+      "error": "sfx audio/styles/sfx/paper_mechanical/fx_022_signal__paper_mechanical.mp3: exit 1; {\n  \"error\": {\n    \"code\": 1,\n    \"message\": \"API error: 已达到 Token Plan 用量上限：请升级 Token Plan 套餐或购买积分补充用量。 (HTTP 200)\"\n  }\n}"
+    },
+    {
+      "kind": "sfx",
+      "style": "radio_glitch",
+      "path": "audio/styles/sfx/radio_glitch/fx_022_signal__radio_glitch.mp3",
+      "status": "failed",
+      "error": "sfx audio/styles/sfx/radio_glitch/fx_022_signal__radio_glitch.mp3: exit 1; {\n  \"error\": {\n    \"code\": 1,\n    \"message\": \"API error: 已达到 Token Plan 用量上限：请升级 Token Plan 套餐或购买积分补充用量。 (HTTP 200)\"\n  }\n}"
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_catalog_match__paper_mechanical.mp3",
+      "status": "generated",
+      "bytes": 45651
+    },
+    {
+      "kind": "sfx",
+      "style": "paper_mechanical",
+      "path": "audio/styles/sfx/paper_mechanical/fx_forum_upload__paper_mechanical.mp3",
+      "status": "generated",
+      "bytes": 45651
+    }
+  ]
+}

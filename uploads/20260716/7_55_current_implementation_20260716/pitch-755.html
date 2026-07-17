@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7:55</title>
+<style>
+/* ============================================
+   7:55 Pitch Deck — AST (Audience-State-Transfer)
+   humanize-ppt methodology: every slide advances
+   the audience's understanding, not just stacks info.
+   ============================================ */
+
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #14141c;
+  --bg-phone: #1a1a2e;
+  --accent: #e8332d;
+  --accent-dim: #8a1f1a;
+  --gold: #f0c040;
+  --green: #4ade80;
+  --blue: #38bdf8;
+  --purple: #a78bfa;
+  --text: #e8e8f0;
+  --text-dim: #8888a0;
+  --text-muted: #555568;
+  --pixel-font: 'Courier New', 'Fusion Pixel', monospace;
+  --body-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --transition: 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body-font);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ---- Slide System ---- */
+.deck {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition), transform var(--transition);
+  transform: translateX(60px);
+  padding: 60px 80px;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  z-index: 10;
+}
+
+.slide.prev {
+  transform: translateX(-60px);
+}
+
+/* ---- Progress Bar ---- */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  z-index: 100;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ---- Slide Counter ---- */
+.counter {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  font-family: var(--pixel-font);
+  font-size: 14px;
+  color: var(--text-muted);
+  z-index: 100;
+}
+
+.counter .current { color: var(--accent); }
+
+/* ---- Nav Hint ---- */
+.nav-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 32px;
+  font-size: 12px;
+  color: var(--text-muted);
+  z-index: 100;
+  font-family: var(--pixel-font);
+}
+
+/* ---- Shared Typography ---- */
+.slide-label {
+  font-family: var(--pixel-font);
+  font-size: 13px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.slide h1 {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+
+.slide h2 {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 20px;
+}
+
+.slide p {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  max-width: 700px;
+}
+
+.slide .highlight {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.slide .gold { color: var(--gold); }
+.slide .green { color: var(--green); }
+.slide .blue { color: var(--blue); }
+.slide .purple { color: var(--purple); }
+
+/* ---- Content Wrapper ---- */
+.content {
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* ---- Speaker Notes (hidden) ---- */
+.notes { display: none; }
+
+/* ============================================
+   SLIDE 1: Opening Hook — 07:55
+   AST: Neutral → Curious
+   ============================================ */
+#s1 {
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 70%);
+  flex-direction: column;
+}
+
+#s1 .alarm-screen {
+  background: var(--bg-phone);
+  border-radius: 24px;
+  padding: 60px 80px;
+  text-align: center;
+  border: 2px solid #2a2a3e;
+  box-shadow: 0 0 80px rgba(232, 51, 45, 0.15);
+  position: relative;
+}
+
+#s1 .alarm-time {
+  font-family: var(--pixel-font);
+  font-size: 120px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+#s1 .alarm-time .blink {
+  animation: blink 1s infinite;
+  color: var(--accent);
+}
+
+#s1 .alarm-label {
+  font-family: var(--pixel-font);
+  font-size: 16px;
+  color: var(--text-dim);
+  margin-top: 16px;
+  letter-spacing: 3px;
+}
+
+#s1 .alarm-quote {
+  margin-top: 40px;
+  font-size: 22px;
+  color: var(--text-dim);
+  font-style: italic;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* ============================================
+   SLIDE 2: The Opening
+   AST: Curious → Empathetic
+   ============================================ */
+#s2 {
+  background: var(--bg);
+}
+
+#s2 .content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+#s2 .left h1 { font-size: 48px; }
+
+#s2 .right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#s2 .pain-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 20px 24px;
+  border-left: 3px solid var(--accent-dim);
+  font-size: 18px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+#s2 .pain-card .emoji-row {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+#s2 .chat-window {
+  background: var(--bg-phone);
+  border-radius: 16px;
+  border: 2px solid #2a2a3e;
+  overflow: hidden;
+  max-width: 380px;
+}
+
+#s2 .chat-header {
+  font-family: var(--pixel-font);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #2a2a3e;
+  letter-spacing: 1px;
+}
+
+#s2 .chat-msg {
+  padding: 10px 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+#s2 .chat-msg.me {
+  text-align: right;
+  color: var(--text-dim);
+}
+
+#s2 .chat-msg.friend {
+  color: var(--text);
+}
+
+#s2 .chat-interrupt {
+  border-top: 1px dashed var(--accent-dim);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+#s2 .chat-msg.xiaoying {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+/* ============================================
+   SLIDE 3: The Twist — 小影
+   AST: Empathetic → Intrigued
+   ============================================ */
+#s3 {
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0a0f 100%);
+}
+
+#s3 .content {
+  text-align: center;
+}
+
+#s3 .shadow-orb {
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2a1a1e, #0a0a0f);
+  border: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  position: relative;
+  animation: pulse-shadow 3s ease-in-out infinite;
+}
+
+#s3 .shadow-orb::after {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  border: 1px solid rgba(232, 51, 45, 0.2);
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+
+@keyframes pulse-shadow {
+  0%, 100% { box-shadow: 0 0 40px rgba(232, 51, 45, 0.2); }
+  50% { box-shadow: 0 0 80px rgba(232, 51, 45, 0.4); }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.15); opacity: 0.1; }
+}
+
+#s3 h1 { font-size: 48px; }
+
+#s3 .quote {
+  font-family: var(--pixel-font);
+  font-size: 24px;
+  color: var(--accent);
+  margin: 30px 0;
+  line-height: 1.5;
+}
+
+#s3 .code-display {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+#s3 .digit-box {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--pixel-font);
+  font-size: 40px;
+  font-weight: 800;
+}
+
+#s3 .digit-box.filled { color: var(--accent); border-color: var(--accent); }
+#s3 .digit-box.empty { color: var(--text-muted); }
+
+#s3 .scatter-arrow {
+  font-size: 24px;
+  color: var(--text-muted);
+  margin: 0 8px;
+  align-self: center;
+}
+
+/* ============================================
+   SLIDE 4: The Medium — Phone as Game
+   AST: Intrigued → Understanding
+   ============================================ */
+#s4 {
+  background: var(--bg);
+}
+
+#s4 .content {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+#s4 .phone-mockup {
+  width: 260px;
+  height: 520px;
+  background: var(--bg-phone);
+  border-radius: 32px;
+  border: 3px solid #2a2a3e;
+  margin: 0 auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+#s4 .phone-mockup::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 6px;
+  background: #2a2a3e;
+  border-radius: 4px;
+}
+
+#s4 .phone-status-bar {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--pixel-font);
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 8px 4px 0;
+}
+
+#s4 .phone-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+#s4 .app-icon {
+  aspect-ratio: 1;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  gap: 4px;
+}
+
+#s4 .app-icon span {
+  font-size: 9px;
+  font-family: var(--pixel-font);
+  color: var(--text-dim);
+}
+
+#s4 .app-wechat { background: #1e3c1e; }
+#s4 .app-card { background: #3c2a1e; }
+#s4 .app-tiyi { background: #1e2a3c; }
+#s4 .app-zjuding { background: #3c1e2a; }
+#s4 .app-bonsai { background: #1e3c2a; }
+#s4 .app-gear { background: #2a2a3c; }
+#s4 .app-checkin { background: #3c3c1e; }
+#s4 .app-other { background: #1a1a2e; }
+
+#s4 .right h1 { font-size: 44px; }
+#s4 .right p { margin-top: 16px; }
+
+#s4 .app-list {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#s4 .app-tag {
+  font-family: var(--pixel-font);
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-dim);
+  border: 1px solid #2a2a3e;
+}
+
+/* ============================================
+   SLIDE 5: The Puzzles — 4 Digits
+   AST: Understanding → Engaged
+   ============================================ */
+#s5 {
+  background: var(--bg);
+}
+
+#s5 .content { text-align: center; }
+
+#s5 h1 { font-size: 44px; margin-bottom: 40px; }
+
+#s5 .puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 20px;
+}
+
+#s5 .puzzle-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: left;
+  border-top: 3px solid;
+  transition: transform 0.3s;
+}
+
+#s5 .puzzle-card:hover { transform: translateY(-4px); }
+
+#s5 .puzzle-card:nth-child(1) { border-color: var(--gold); }
+#s5 .puzzle-card:nth-child(2) { border-color: var(--blue); }
+#s5 .puzzle-card:nth-child(3) { border-color: var(--purple); }
+#s5 .puzzle-card:nth-child(4) { border-color: var(--green); }
+
+#s5 .puzzle-digit {
+  font-family: var(--pixel-font);
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+#s5 .puzzle-card:nth-child(1) .puzzle-digit { color: var(--gold); }
+#s5 .puzzle-card:nth-child(2) .puzzle-digit { color: var(--blue); }
+#s5 .puzzle-card:nth-child(3) .puzzle-digit { color: var(--purple); }
+#s5 .puzzle-card:nth-child(4) .puzzle-digit { color: var(--green); }
+
+#s5 .puzzle-source {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+#s5 .puzzle-desc {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+#s5 .puzzle-vo {
+  margin-top: 30px;
+  font-family: var(--pixel-font);
+  font-size: 16px;
+  color: var(--accent);
+  font-style: italic;
+}
+
+/* ============================================
+   SLIDE 6: The Items — Inventory System
+   AST: Engaged → Impressed
+   ============================================ */
+#s6 {
+  background: var(--bg);
+}
+
+#s6 .content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+#s6 h1 { font-size: 42px; }
+
+#s6 .item-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+#s6 .chain-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+#s6 .chain-item {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: var(--pixel-font);
+  font-size: 14px;
+  color: var(--text);
+  border: 1px solid #2a2a3e;
+}
+
+#s6 .chain-plus { color: var(--text-muted); font-size: 18px; }
+#s6 .chain-arrow { color: var(--accent); font-size: 18px; }
+#s6 .chain-result { color: var(--gold); }
+
+#s6 .right .phone-inventory {
+  width: 200px;
+  margin: 0 auto;
+  background: var(--bg-phone);
+  border-radius: 20px;
+  border: 2px solid #2a2a3e;
+  padding: 16px;
+}
+
+#s6 .inv-title {
+  font-family: var(--pixel-font);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+#s6 .inv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+#s6 .inv-slot {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: #0a0a12;
+  border: 1px solid #2a2a3e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+#s6 .inv-slot.has { border-color: var(--accent-dim); background: #1a0a0f; }
+
+#s6 .bonsai-steps {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+#s6 .bonsai-step {
+  font-family: var(--pixel-font);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-dim);
+}
+
+#s6 .bonsai-step.active { color: var(--green); border: 1px solid var(--green); }
+
+/* ============================================
+   SLIDE 7: The Voice — Narrative
+   AST: Impressed → Emotional
+   ============================================ */
+#s7 {
+  background: linear-gradient(180deg, #0a0a0f 0%, #0f0a12 100%);
+}
+
+#s7 .content { text-align: center; }
+
+#s7 h1 { font-size: 44px; }
+
+#s7 .vo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 36px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#s7 .vo-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 24px 28px;
+  text-align: left;
+  border-left: 3px solid;
+}
+
+#s7 .vo-card.xiaoying { border-color: var(--accent); }
+#s7 .vo-card.system { border-color: var(--blue); }
+#s7 .vo-card.narrator { border-color: var(--gold); }
+#s7 .vo-card.friend { border-color: var(--green); }
+
+#s7 .vo-speaker {
+  font-family: var(--pixel-font);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+#s7 .vo-card.xiaoying .vo-speaker { color: var(--accent); }
+#s7 .vo-card.system .vo-speaker { color: var(--blue); }
+#s7 .vo-card.narrator .vo-speaker { color: var(--gold); }
+#s7 .vo-card.friend .vo-speaker { color: var(--green); }
+
+#s7 .vo-line {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+/* ============================================
+   SLIDE 8: The Tech — Architecture
+   AST: Emotional → Convinced
+   ============================================ */
+#s8 {
+  background: var(--bg);
+}
+
+#s8 .content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+#s8 h1 { font-size: 42px; }
+
+#s8 .tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+#s8 .tech-badge {
+  font-family: var(--pixel-font);
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid #2a2a3e;
+  color: var(--text);
+}
+
+#s8 .arch-diagram {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 28px;
+  font-family: var(--pixel-font);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+#s8 .arch-layer {
+  padding: 8px 0;
+  border-bottom: 1px solid #1a1a2e;
+}
+
+#s8 .arch-layer:last-child { border-bottom: none; }
+
+#s8 .arch-label {
+  color: var(--accent);
+  display: inline-block;
+  width: 100px;
+}
+
+#s8 .arch-mode {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+#s8 .mode-box {
+  flex: 1;
+  background: #0a0a12;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+#s8 .mode-title {
+  font-family: var(--pixel-font);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+#s8 .mode-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+#s8 .mode-phone .mode-title { color: var(--blue); }
+#s8 .mode-rpg .mode-title { color: var(--green); }
+
+/* ============================================
+   SLIDE 9: The Ending — Reality
+   AST: Convinced → Moved
+   ============================================ */
+#s9 {
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0a0a 50%, #0a0a0f 100%);
+  flex-direction: column;
+}
+
+#s9 .red-flash {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#s9.active .red-flash {
+  animation: red-flash 0.4s ease-out 0.5s;
+}
+
+@keyframes red-flash {
+  0% { opacity: 0; }
+  30% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+#s9 .content {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+#s9 .ending-title {
+  font-family: var(--pixel-font);
+  font-size: 64px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  background: linear-gradient(180deg, var(--text) 0%, var(--text-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#s9 .ending-subtitle {
+  font-size: 22px;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+}
+
+#s9 .ending-quote {
+  font-size: 24px;
+  color: var(--accent);
+  font-style: italic;
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+#s9 .ending-arc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+  font-family: var(--pixel-font);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+#s9 .arc-arrow { color: var(--accent-dim); }
+
+/* ============================================
+   SLIDE 10: Call to Action
+   AST: Moved → Action
+   ============================================ */
+#s10 {
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 70%);
+  flex-direction: row;
+  gap: 50px;
+  padding: 40px 60px;
+}
+
+#s10 .demo-left {
+  flex: 0 0 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+#s10 .demo-left .slide-label {
+  margin-bottom: 24px;
+}
+
+#s10 .demo-left h1 {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+#s10 .cta-subtitle {
+  font-size: 20px;
+  color: var(--text-dim);
+  margin: 20px 0 30px;
+}
+
+#s10 .cta-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+#s10 .cta-btn {
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--body-font);
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+#s10 .cta-btn:hover { transform: translateY(-2px); }
+
+#s10 .cta-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+#s10 .cta-secondary {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid #2a2a3e;
+}
+
+#s10 .cta-footer {
+  margin-top: 40px;
+  font-family: var(--pixel-font);
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+#s10 .cta-credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+#s10 .cta-credits span {
+  color: var(--text-muted);
+}
+
+#s10 .demo-right {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#s10 .demo-phone {
+  width: 340px;
+  height: 680px;
+  max-height: 82vh;
+  background: var(--bg-phone);
+  border-radius: 36px;
+  border: 4px solid #2a2a3e;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 60px rgba(232, 51, 45, 0.15);
+}
+
+#s10 .demo-phone::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 6px;
+  background: #2a2a3e;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+#s10 .demo-phone iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+#s10 .demo-hint {
+  margin-top: 12px;
+  font-family: var(--pixel-font);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  letter-spacing: 1px;
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="counter"><span class="current" id="cur">1</span> / 10</div>
+<div class="nav-hint">← → / Space</div>
+
+<div class="deck" id="deck">
+
+<!-- ============================================
+     SLIDE 1: Opening Hook
+     AST: Neutral → Curious
+     "你没有5分钟了，但你很有勇气"
+     ============================================ -->
+<section class="slide active" id="s1" data-ast="Neutral → Curious">
+  <div class="content">
+    <div class="alarm-screen">
+      <div class="alarm-time">07:<span class="blink">55</span></div>
+      <div class="alarm-label">闹 钟 · ALARM</div>
+      <div class="alarm-quote">"你没有 5 分钟了，但你很有勇气。"</div>
+    </div>
+  </div>
+  <div class="notes">开场：闹钟响起，07:55。你迟到了。旁白说出这句话。制造即时紧张感，让观众进入"早八"的焦虑情境。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 2: The Opening
+     AST: Curious → Empathetic
+     闹钟→CC98→朋友→小影抹码
+     ============================================ -->
+<section class="slide" id="s2" data-ast="Curious → Empathetic">
+  <div class="content">
+    <div class="left">
+      <div class="slide-label">02 / 开场</div>
+      <h1>闹钟响了。<br>屏幕写着：<br><span class="highlight">"今日第 17 次</span><br><span class="highlight">尝试醒来"</span></h1>
+      <p>旁边有个按钮——"再睡五分钟"。你点，点不动。小影把按钮锁了。</p>
+      <p style="margin-top: 16px; font-style: italic; color: var(--gold);">旁白："You do not have five minutes."<br>字幕："你没有五分钟了，但你很有勇气。"</p>
+    </div>
+    <div class="right">
+      <div class="chat-window">
+        <div class="chat-header">CC98 / 早八互助区 / 私信</div>
+        <div class="chat-msg me">你：救命，签到码发我。</div>
+        <div class="chat-msg friend">朋友：你才醒？</div>
+        <div class="chat-msg friend">朋友：妈是 <span class="highlight">0798</span>，快点，老师开始看后排了。</div>
+        <div class="chat-interrupt">
+          <div class="chat-msg xiaoying">小影：检测到异常求生行为。</div>
+          <div class="chat-msg xiaoying" style="font-size: 14px; color: var(--text-muted);">四位数字已为你安全隐藏。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notes">游戏开场：闹钟响，屏幕显示"今日第17次尝试醒来"。"再睡五分钟"按钮被小影锁住。旁白英文配音配中文字幕。玩家打开CC98找朋友要签到码0798，小影插入抹掉四位数字，任务开始。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 3: The Twist
+     AST: Empathetic → Intrigued
+     小影散码——谁在你的手机里？
+     ============================================ -->
+<section class="slide" id="s3" data-ast="Empathetic → Intrigued">
+  <div class="content">
+    <div class="shadow-orb">👤</div>
+    <div class="slide-label">03 / 反转</div>
+    <h1>但这次，<br>有人<span class="highlight">不让你签到</span>。</h1>
+    <p>一个叫"小影"的存在占据了你的手机。她是一个太认真执行校园规则的系统，把你的四位签到码 <span class="highlight">0798</span> 撕碎，散落到各个 App 里。</p>
+    <div class="quote">"签到码已为你安全隐藏。"</div>
+    <div class="code-display">
+      <div class="digit-box filled">0</div>
+      <div class="scatter-arrow">→</div>
+      <div class="digit-box filled">7</div>
+      <div class="scatter-arrow">→</div>
+      <div class="digit-box filled">9</div>
+      <div class="scatter-arrow">→</div>
+      <div class="digit-box filled">8</div>
+    </div>
+    <p style="margin-top: 24px; font-size: 16px;">这不是恐怖游戏。她只是一个太认真执行校园规则的系统。</p>
+  </div>
+  <div class="notes">引入反派：小影。她不是传统Boss，是一个太认真执行校园规则的系统。把签到码0798撕碎散到各个App。冷静、阴阳怪气，像系统助手。这把一个平凡的"赶时间"变成了一场生存解谜。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 4: The Medium
+     AST: Intrigued → Understanding
+     手机即游戏——不是关于手机，而是在手机里
+     ============================================ -->
+<section class="slide" id="s4" data-ast="Intrigued → Understanding">
+  <div class="content">
+    <div class="left">
+      <div class="phone-mockup">
+        <div class="phone-status-bar">
+          <span>07:55</span>
+          <span>📶 🔋</span>
+        </div>
+        <div class="phone-grid">
+          <div class="app-icon app-wechat">💬<span>CC98</span></div>
+          <div class="app-icon app-card">💳<span>校园卡</span></div>
+          <div class="app-icon app-tiyi">🏃<span>体艺</span></div>
+          <div class="app-icon app-zjuding">✅<span>校务签到</span></div>
+          <div class="app-icon app-bonsai">🌱<span>盆栽</span></div>
+          <div class="app-icon app-gear">⚙️<span>设置</span></div>
+          <div class="app-icon app-checkin">🌙<span>暗色模式</span></div>
+          <div class="app-icon app-other">🎛️<span>控制中心</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="slide-label">04 / 媒介</div>
+      <h1>手机即<br><span class="highlight">游戏场域</span>。</h1>
+      <p>不是"关于手机"的游戏，而是"在手机里"的游戏。玩家操作的不是虚拟手柄，而是一个真实的手机界面——CC98、校园卡、浙大体艺、设置。每个 App 都是一个关卡。</p>
+      <div class="app-list">
+        <span class="app-tag">CC98 / 小影抹码</span>
+        <span class="app-tag">校园卡 / ¥0.06</span>
+        <span class="app-tag">体艺 / 闪退</span>
+        <span class="app-tag">校务签到 / 0798</span>
+        <span class="app-tag">盆栽 / 开花</span>
+        <span class="app-tag">设置 / 齿轮</span>
+        <span class="app-tag">暗色模式 / 系统背面</span>
+        <span class="app-tag">控制中心 / 网络+亮度</span>
+      </div>
+    </div>
+  </div>
+  <div class="notes">核心设计理念：手机本身就是游戏。玩家不是在看一段关于手机的故事，而是在操作一个真实的手机界面。每个App都是一个关卡，每个交互都是一道谜题。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 5: The Puzzles
+     AST: Understanding → Engaged
+     四个数字，四道谜题
+     ============================================ -->
+<section class="slide" id="s5" data-ast="Understanding → Engaged">
+  <div class="content">
+    <div class="slide-label">05 / 谜题设计</div>
+    <h1>四个数字，<br>四道<span class="highlight">藏在日常 App 里</span>的谜题。</h1>
+    <div class="puzzle-grid">
+      <div class="puzzle-card">
+        <div class="puzzle-digit">0</div>
+        <div class="puzzle-source">校园卡余额</div>
+        <div class="puzzle-desc">余额 ¥0.06。那个黄色的 "0" 可以被点击收集——但系统会告诉你："余额不足以购买尊严。"</div>
+      </div>
+      <div class="puzzle-card">
+        <div class="puzzle-digit">7</div>
+        <div class="puzzle-source">浙大体艺</div>
+        <div class="puzzle-desc">校园网下疯狂闪退。切流量后看到剩余次数 47。那个 "7" 就是你的。"校园网已经尽力了，你也是。"</div>
+      </div>
+      <div class="puzzle-card">
+        <div class="puzzle-digit">9</div>
+        <div class="puzzle-source">设置齿轮</div>
+        <div class="puzzle-desc">用陀螺仪把设置齿轮拧下来。翻过来，背面刻着一个 "9"。小影说："你把系统拧下来了，说明书里没有这一步。"</div>
+      </div>
+      <div class="puzzle-card">
+        <div class="puzzle-digit">8</div>
+        <div class="puzzle-source">盆栽开花</div>
+        <div class="puzzle-desc">暗色模式打开系统背面，进入树洞。浇水、拉控制中心亮度照光、施肥——三步走完，花开了，吐出一个 "8"。</div>
+      </div>
+    </div>
+    <div class="puzzle-vo">每一道谜题都有自己的声音和叙事——不是解谜，是在生活里找数字。</div>
+  </div>
+  <div class="notes">逐个展示四道谜题的设计：0来自校园卡余额，7来自体艺闪退，9来自设置齿轮背面，8来自盆栽开花。每道谜题都嵌入了真实的校园生活细节和讽刺性台词。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 6: The Items
+     AST: Engaged → Impressed
+     物品栏与合成系统
+     ============================================ -->
+<section class="slide" id="s6" data-ast="Engaged → Impressed">
+  <div class="content">
+    <div class="left">
+      <div class="slide-label">06 / 道具系统</div>
+      <h1>不止解谜，<br>还有一套<span class="highlight">合成链</span>。</h1>
+      <p>游戏内置完整的物品栏系统。道具之间可以组合，形成层层递进的谜题链——从"接一滴水"到"让一盆花绽放"。</p>
+      <div class="item-chain">
+        <div class="chain-step">
+          <span class="chain-item">💧 水滴</span>
+          <span class="chain-plus">+</span>
+          <span class="chain-item">🎧 耳机</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item chain-result">🫗 浇水器</span>
+        </div>
+        <div class="chain-step">
+          <span class="chain-item">🧩 朋友头像谜题</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item chain-result">／ 斜线</span>
+          <span class="chain-plus">+</span>
+          <span class="chain-item">⚙️ 反转齿轮</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item chain-result">🔑 钥匙</span>
+        </div>
+        <div class="chain-step">
+          <span class="chain-item">⚙️ 反转齿轮</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item">打开系统背面</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item chain-result">🕳️ 树洞</span>
+        </div>
+        <div class="chain-step">
+          <span class="chain-item">🔑 钥匙</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item">插钟楼</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item chain-result">🧪 肥料</span>
+        </div>
+        <div class="chain-step">
+          <span class="chain-item chain-result">🌱 树洞盆栽</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item">💧浇水 + 💡照光 + 🧪施肥</span>
+          <span class="chain-arrow">→</span>
+          <span class="chain-item chain-result">🌸 开花 → 8</span>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="phone-inventory">
+        <div class="inv-title">物品栏 · INVENTORY</div>
+        <div class="inv-grid">
+          <div class="inv-slot has">💧</div>
+          <div class="inv-slot has">🎧</div>
+          <div class="inv-slot has">⚙️</div>
+          <div class="inv-slot has">／</div>
+          <div class="inv-slot has">🔑</div>
+          <div class="inv-slot has">🧪</div>
+        </div>
+        <div class="bonsai-steps">
+          <span class="bonsai-step active">✓ 浇水</span>
+          <span class="bonsai-step active">✓ 照光</span>
+          <span class="bonsai-step">○ 施肥</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notes">道具合成链：水滴+耳机→浇水器；朋友头像拼出斜线+反转齿轮→钥匙；反转齿轮打开系统背面→树洞；钥匙插钟楼→肥料；树洞盆栽浇水+照光+施肥→花开→数字8。每一步都有道理，你得想，得试。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 7: The Voice
+     AST: Impressed → Emotional
+     全语音叙事——每一步都有声音
+     ============================================ -->
+<section class="slide" id="s7" data-ast="Impressed → Emotional">
+  <div class="content">
+    <div class="slide-label">07 / 叙事声音</div>
+    <h1>英文配音 + 中文字幕，<br>三种<span class="highlight">声音</span>，三种<span class="highlight">态度</span>。</h1>
+    <div class="vo-grid">
+      <div class="vo-card narrator">
+        <div class="vo-speaker">旁白 · Narrator (EN)</div>
+        <div class="vo-line" style="font-size: 16px; color: var(--text-dim); font-style: italic;">"You have five minutes before check-in closes."</div>
+        <div class="vo-line">距离签到截止还有五分钟。</div>
+      </div>
+      <div class="vo-card xiaoying">
+        <div class="vo-speaker">小影 · Xiaoying (EN)</div>
+        <div class="vo-line" style="font-size: 16px; color: var(--text-dim); font-style: italic;">"Suspicious survival behavior detected."</div>
+        <div class="vo-line">检测到异常求生行为。</div>
+      </div>
+      <div class="vo-card xiaoying">
+        <div class="vo-speaker">小影 · Xiaoying (EN)</div>
+        <div class="vo-line" style="font-size: 16px; color: var(--text-dim); font-style: italic;">"You're not unable to get up — you've just formed a deep bond with your bed."</div>
+        <div class="vo-line">你不是起不来，你只是和床建立了深度绑定关系。</div>
+      </div>
+      <div class="vo-card xiaoying">
+        <div class="vo-speaker">小影 · Xiaoying (EN)</div>
+        <div class="vo-line" style="font-size: 16px; color: var(--text-dim); font-style: italic;">"You've unscrewed the system. This step isn't in the manual."</div>
+        <div class="vo-line">你把系统拧下来了。说明书里没有这一步。</div>
+      </div>
+      <div class="vo-card friend">
+        <div class="vo-speaker">朋友 · Friend (EN)</div>
+        <div class="vo-line" style="font-size: 16px; color: var(--text-dim); font-style: italic;">"Hey, what happened? This is as far as I can help you, buddy."</div>
+        <div class="vo-line">怎么了？我就帮你到这儿了，朋友。</div>
+      </div>
+      <div class="vo-card narrator">
+        <div class="vo-speaker">旁白 · Narrator (EN)</div>
+        <div class="vo-line" style="font-size: 16px; color: var(--text-dim); font-style: italic;">"You do not have five minutes. But you are brave."</div>
+        <div class="vo-line">你没有五分钟了，但你很有勇气。</div>
+      </div>
+    </div>
+    <p style="margin-top: 24px; font-size: 15px; color: var(--text-muted);">小影不是反派——是一个太认真执行校园规则的系统。朋友是游戏里唯一的"人味"。</p>
+  </div>
+  <div class="notes">英文配音配中文字幕。旁白定调，小影冷静阴阳怪气像系统助手，朋友是真人发语音。小影不是反派，是太认真执行校园规则的系统。朋友和小影的系统冷感形成对比。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 8: The Tech
+     AST: Emotional → Convinced
+     技术架构——不是玩具，是框架
+     ============================================ -->
+<section class="slide" id="s8" data-ast="Emotional → Convinced">
+  <div class="content">
+    <div class="left">
+      <div class="slide-label">08 / 技术架构</div>
+      <h1>不是 Demo，<br>是可扩展的<span class="highlight">游戏框架</span>。</h1>
+      <p>从第一章的 React 手机界面，到后续章节的 Phaser RPG 移动场景，架构从第一天就预留了扩展空间。</p>
+      <div class="tech-stack">
+        <span class="tech-badge">Vite</span>
+        <span class="tech-badge">TypeScript</span>
+        <span class="tech-badge">React 18</span>
+        <span class="tech-badge">Phaser 3</span>
+        <span class="tech-badge">Zustand</span>
+        <span class="tech-badge">Vitest</span>
+      </div>
+      <p style="font-size: 16px; margin-top: 16px;">4 条主分支 · 8 个开发模块 · 12 个关卡节点 · 完整测试覆盖 · 单文件构建部署</p>
+    </div>
+    <div class="right">
+      <div class="arch-diagram">
+        <div class="arch-layer"><span class="arch-label">scenes/</span>phone (P00-P12) · rpg</div>
+        <div class="arch-layer"><span class="arch-label">modules/</span>Inventory · Dialogue · Checkin · Plant · Sfx · Voice</div>
+        <div class="arch-layer"><span class="arch-label">core/</span>GameState · EventBus · SceneRouter</div>
+        <div class="arch-layer"><span class="arch-label">data/</span>dialogue · items · scenes · vo · qa</div>
+        <div class="arch-layer"><span class="arch-label">components</span>PhoneShell · ControlCenter · InventoryBar</div>
+      </div>
+      <div class="arch-mode">
+        <div class="mode-box mode-phone">
+          <div class="mode-title">phone 模式</div>
+          <div class="mode-desc">React 渲染手机 UI<br>第一章 · P00-P12</div>
+        </div>
+        <div class="mode-box mode-rpg">
+          <div class="mode-title">rpg 模式</div>
+          <div class="mode-desc">Phaser 2D 移动<br>后续章节 · 预留</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notes">展示技术架构：清晰的分层设计，scenes/modules/core/data/components各司其职。双运行时模式：phone(React) + rpg(Phaser)。不是一次性Demo，是为多章节预留的框架。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 9: The Ending
+     AST: Convinced → Moved
+     签到之后——红闪，黑屏，现实
+     ============================================ -->
+<section class="slide" id="s9" data-ast="Convinced → Moved">
+  <div class="red-flash"></div>
+  <div class="content">
+    <div class="slide-label">09 / 结局反转</div>
+    <div class="ending-title">7:55 —— 第一章 · 完</div>
+    <div class="ending-subtitle">你集齐 0798，切回校园网，按下签到——</div>
+    <div class="ending-quote" style="font-size: 22px; line-height: 1.8;">
+      签到成功。<br>
+      <span style="color: var(--accent); font-weight: 700;">定位异常 / 人脸缺失</span><br>
+      手机黑屏。屏幕反光里，你看到自己还躺在寝室床上。
+    </div>
+    <div class="ending-arc">
+      <span>07:55 闹钟</span>
+      <span class="arc-arrow">→</span>
+      <span>小影散码</span>
+      <span class="arc-arrow">→</span>
+      <span>0798 签到</span>
+      <span class="arc-arrow">→</span>
+      <span style="color: var(--accent);">定位异常</span>
+      <span class="arc-arrow">→</span>
+      <span>仍在床上</span>
+      <span class="arc-arrow">→</span>
+      <span style="color: var(--green);">第二章·现实逃离</span>
+    </div>
+  </div>
+  <div class="notes">结局反转：签到成功后系统提示"定位异常/人脸缺失"，手机黑屏，屏幕反光中玩家发现自己仍躺在寝室床上。真正的早八才刚刚开始。第一章在手机里自救，第二章从寝室里跑出去。</div>
+</section>
+
+<!-- ============================================
+     SLIDE 10: Call to Action
+     AST: Moved → Action
+     "你没有5分钟了，但你很有勇气。"
+     ============================================ -->
+<section class="slide" id="s10" data-ast="Moved → Action">
+  <div class="demo-left">
+    <div class="slide-label">10 / 结束</div>
+    <h1>体验这<br><span class="highlight">5 分钟</span>。</h1>
+    <div class="cta-subtitle">一个关于早八、关于手机、关于勇气的叙事解谜游戏。</div>
+    <div class="cta-buttons">
+      <a class="cta-btn cta-primary" href="demo/index.html" target="_blank">▶ 全屏试玩</a>
+      <a class="cta-btn cta-secondary" href="https://github.com/LearnPrompt/humanize-ppt" target="_blank">📖 项目文档</a>
+    </div>
+    <div class="cta-footer">7:55 — A NARRATIVE PUZZLE GAME</div>
+    <div class="cta-credits">
+      <div><span>Tech:</span> Vite + React + Phaser + Zustand</div>
+      <div><span>Scenes:</span> 12 关卡节点 (P00-P12)</div>
+      <div><span>Voice:</span> EN voiceover + 中文字幕 · 旁白 / 小影 / 朋友</div>
+    </div>
+  </div>
+  <div class="demo-right">
+    <div class="demo-phone">
+      <iframe src="demo/index.html" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+    </div>
+    <div class="demo-hint">↑ LIVE DEMO · 直接操作</div>
+  </div>
+  <div class="notes">收束：右侧是实时 Demo，可以直接操作。邀请观众体验这5分钟。呼应开头旁白："你没有5分钟了，但你很有勇气。"</div>
+</section>
+
+</div>
+
+<script>
+// ============================================
+// Slide Navigation Controller
+// ============================================
+
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+
+const progress = document.getElementById('progress');
+const counter = document.getElementById('cur');
+
+function updateProgress() {
+  const pct = ((current + 1) / total) * 100;
+  progress.style.width = pct + '%';
+  counter.textContent = current + 1;
+}
+
+function goTo(index) {
+  if (index < 0 || index >= total) return;
+  slides[current].classList.remove('active');
+  if (index < current) {
+    slides[current].classList.add('prev');
+  } else {
+    slides[current].classList.remove('prev');
+  }
+  current = index;
+  // Clear all states
+  slides.forEach(s => {
+    s.classList.remove('active', 'prev');
+  });
+  slides[current].classList.add('active');
+  updateProgress();
+}
+
+function next() {
+  goTo(current + 1);
+}
+
+function prev() {
+  goTo(current - 1);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case 'ArrowRight':
+    case ' ':
+    case 'PageDown':
+      e.preventDefault();
+      next();
+      break;
+    case 'ArrowLeft':
+    case 'PageUp':
+      e.preventDefault();
+      prev();
+      break;
+    case 'Home':
+      e.preventDefault();
+      goTo(0);
+      break;
+    case 'End':
+      e.preventDefault();
+      goTo(total - 1);
+      break;
+    case 'f':
+    case 'F':
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+      break;
+  }
+});
+
+// Click navigation
+document.addEventListener('click', (e) => {
+  // Don't interfere with button/link/iframe clicks
+  if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+  // Don't navigate when clicking inside the demo phone iframe area
+  const demoPhone = document.querySelector('#s10 .demo-phone');
+  if (demoPhone && demoPhone.contains(e.target)) return;
+  const w = window.innerWidth;
+  if (e.clientX > w / 2) {
+    next();
+  } else {
+    prev();
+  }
+});
+
+// Touch navigation
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) {
+    if (dx < 0) next();
+    else prev();
+  }
+});
+
+// Init
+updateProgress();
+</script>
+
+</body>
+</html>

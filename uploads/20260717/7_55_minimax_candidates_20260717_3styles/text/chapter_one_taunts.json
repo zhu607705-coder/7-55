@@ -1,0 +1,24 @@
+{
+  "taunts": [
+    {
+      "text": "这波操作直接把自己笑醒，真是服了自己的智商。",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "我这一手简直自掘坟墓，连自己都忍不住吐槽。",
+      "voice": "none",
+      "durationMs": 4200
+    },
+    {
+      "text": "每次点错都像在给自己加戏，真是够了。",
+      "voice": "none",
+      "durationMs": 5400
+    },
+    {
+      "text": "本来想装高手，结果手残到连自己都嫌。",
+      "voice": "none",
+      "durationMs": 6100
+    }
+  ]
+}

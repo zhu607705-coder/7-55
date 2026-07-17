@@ -1,0 +1,19 @@
+{
+  "_candidateMeta": {
+    "style": "plain_case",
+    "styleLabelZh": "平实调查",
+    "delivery": "保持原文事实和句式，适合纸质证据、帖子正文和调查记录。",
+    "selection": "信息密度优先，避免额外情绪。",
+    "source": "text/valid/chapter_three_tasks_retry.json",
+    "sourceSha256": "d8740bb07f74227de2e49428992f0470b8b55baf8c07b8e5b325f30d997fd6e1",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taskTitles": [
+    "查看借阅记录",
+    "检查借阅历史"
+  ],
+  "hints": [
+    "请确认借阅日期的格式是否正确",
+    "利用搜索功能筛选特定时间段"
+  ]
+}

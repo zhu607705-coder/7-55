@@ -1,0 +1,29 @@
+{
+  "taunts": [
+    {
+      "text": "这纸条写得跟密码似的，谁看得懂啊！",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "图书馆的旧规则比古代经书还复杂，简直是要命。",
+      "voice": "none",
+      "durationMs": 4200
+    },
+    {
+      "text": "上传个证明比登天还难，系统总是报错。",
+      "voice": "none",
+      "durationMs": 5000
+    },
+    {
+      "text": "恢复申请提交了八百遍，还是杳无音讯。",
+      "voice": "none",
+      "durationMs": 4600
+    },
+    {
+      "text": "纸条、旧规则、证明上传、恢复申请，简直是四大天王逼我崩溃。",
+      "voice": "none",
+      "durationMs": 6100
+    }
+  ]
+}

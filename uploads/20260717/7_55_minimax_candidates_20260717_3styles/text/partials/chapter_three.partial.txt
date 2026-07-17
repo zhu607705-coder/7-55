@@ -1,0 +1,41 @@
+{
+  "maleNarrator": [
+    {
+      "voiceTextEn": "The library is quiet, but a missing sign‑in record hints that someone has taken the book.",
+      "subtitleZh": "图书馆很安静，但丢失的签到记录暗示有人借走了那本书。"
+    },
+    {
+      "voiceTextEn": "You scan the shelves, looking for any trace of the borrowed volume.",
+      "subtitleZh": "你扫描书架，寻找被借走的那本书的任何痕迹。"
+    },
+    {
+      "voiceTextEn": "A faint imprint on the desk might lead you to the culprit.",
+      "subtitleZh": "桌上淡淡的印记可能指向那个借书的人。"
+    }
+  ],
+  "femaleSystem": [
+    {
+      "voiceTextEn": "System: The sign‑in log shows a book was borrowed at 7:55.",
+      "subtitleZh": "系统：签到记录显示有一本书在7:55被借出。"
+    },
+    {
+      "voiceTextEn": "System: Please locate the borrower and retrieve the missing record.",
+      "subtitleZh": "系统：请找到借书人，取回丢失的记录。"
+    },
+    {
+      "voiceTextEn": "System: Use the library's digital archive to trace the transaction.",
+      "subtitleZh": "系统：使用图书馆的数字档案追踪这笔借阅记录。"
+    }
+  ],
+  "taskTitles": [
+    "追踪签到记录的借阅",
+    "查找被借走的书籍",
+    "确认借书人身份",
+    "恢复丢失的签到信息"
+  ],
+  "hints": [
+    "检查图书馆的借阅日志。",
+    "询问当天的值班图书馆员。",
+    "搜索7:55前后的借阅记录。",
+    "注意查看是否有异常的书架变动。",
+    "利用学生证号查询借书记录。

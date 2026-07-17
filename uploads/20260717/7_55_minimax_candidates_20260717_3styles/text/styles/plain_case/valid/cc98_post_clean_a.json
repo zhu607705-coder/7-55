@@ -1,0 +1,27 @@
+{
+  "_candidateMeta": {
+    "style": "plain_case",
+    "styleLabelZh": "平实调查",
+    "delivery": "保持原文事实和句式，适合纸质证据、帖子正文和调查记录。",
+    "selection": "信息密度优先，避免额外情绪。",
+    "source": "text/valid/cc98_post_clean_a.json",
+    "sourceSha256": "1388f6b1d727c64aaa85e3b01adaf87a991c27dc90600692c4f422611c0acf1a",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "posts": [
+    {
+      "id": "1",
+      "title": "图书馆座位争议",
+      "author": "小明",
+      "time": "2025-12-01 10:30",
+      "body": "最近图书馆的座位总是不够，大家都在抢座位，导致很多学生只能站着学习。",
+      "tags": [
+        "图书馆",
+        "座位",
+        "争议",
+        "校园"
+      ],
+      "visibilityStage": "public"
+    }
+  ]
+}

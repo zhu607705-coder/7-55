@@ -1,0 +1,1 @@
+为《7:55》生成校园论坛 CC98 候选内容，只输出 JSON，不要 Markdown。主题是基础图书馆 022 座位、占座书包、旧版离座规定和缺失签到记录。论坛前期只显示普通帖子，证据齐全后才出现楼主上传和 bd。输出 {"posts":[],"replies":[],"attachments":[],"moderation":[]}。生成 8 个帖子、10 条回复、8 个附件说明、6 条版务提示。每项含 id、title/text、visibilityStage；阶段只能是 chapter_two_start、evidence_gathering、proofs_ready、upload_complete、ranking。语气真实、轻微灌水和冷幽默，不提前说谜底，不使用真实个人信息，不写乱码。

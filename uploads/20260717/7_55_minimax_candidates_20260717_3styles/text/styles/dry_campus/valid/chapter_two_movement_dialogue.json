@@ -1,0 +1,31 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/valid/chapter_two_movement_dialogue.json",
+    "sourceSha256": "4b970f7d684f9a238d411b3e6e18ea9e65ea690d9607caca4935652df9228d24",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "maleNarrator": [
+    {
+      "voiceTextEn": "I am the leader of the team, the one they call 'Captain'.",
+      "subtitleZh": "我是队长，大家都叫我‘队长’"
+    },
+    {
+      "voiceTextEn": "He darts across the court, executing a perfect layup.",
+      "subtitleZh": "他在球场上飞奔，完成了一个完美的上篮"
+    }
+  ],
+  "femaleSystem": [
+    {
+      "voiceTextEn": "Current weather: clear sky, temperature 22°C.",
+      "subtitleZh": "当前天气：晴，气温22度"
+    },
+    {
+      "voiceTextEn": "Handheld controller connected, vibration enabled.",
+      "subtitleZh": "手柄已连接，震动已开启"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/chapter_one_tasks.json",
+    "sourceSha256": "0994474c1cb1cb918a41c10aef695d3ea147b1bee46473a3b1ff08c07fce31ee",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taskTitles": [
+    "打开手机地图应用",
+    "检查书桌上的笔记本",
+    "前往客厅的阳台"
+  ],
+  "hints": [
+    "先查看手机的通知栏",
+    "接着注意笔记本的封面",
+    "最后检查阳台的植物"
+  ]
+}

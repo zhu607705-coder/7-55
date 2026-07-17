@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-16T07:09:14.348Z",
+  "assets": {
+    "fx_act1_login_stamp": {
+      "path": "act-one/sfx/fx_act1_login_stamp.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_act1_phone_link": {
+      "path": "act-one/sfx/fx_act1_phone_link.mp3",
+      "durationMs": 1050,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_act1_controls_install": {
+      "path": "act-one/sfx/fx_act1_controls_install.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_act1_movement_unlock": {
+      "path": "act-one/sfx/fx_act1_movement_unlock.mp3",
+      "durationMs": 1100,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_act1_cartridge_pickup": {
+      "path": "act-one/sfx/fx_act1_cartridge_pickup.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_act1_map_complete": {
+      "path": "act-one/sfx/fx_act1_map_complete.mp3",
+      "durationMs": 1350,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "vo_prologue_narrator_intro": {
+      "path": "act-one/vo/vo_prologue_narrator_intro.mp3",
+      "durationMs": 23496,
+      "sourceTextHash": "a2a09eac38fb",
+      "sourceProfileHash": "aabe8ad5823c",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_prologue_narrator_caught": {
+      "path": "act-one/vo/vo_prologue_narrator_caught.mp3",
+      "durationMs": 2926,
+      "sourceTextHash": "2a60f0e27d2b",
+      "sourceProfileHash": "39e267b5c7ae",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_prologue_narrator_bargain": {
+      "path": "act-one/vo/vo_prologue_narrator_bargain.mp3",
+      "durationMs": 3396,
+      "sourceTextHash": "3cbe4dc44bea",
+      "sourceProfileHash": "52f0c80d687d",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_act2_system_found_intro": {
+      "path": "act-one/vo/vo_act2_system_found_intro.mp3",
+      "durationMs": 2682,
+      "sourceTextHash": "619fcce17a66",
+      "sourceProfileHash": "1e193eb0b716",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_inventory_demand": {
+      "path": "act-one/vo/vo_act2_system_inventory_demand.mp3",
+      "durationMs": 2361,
+      "sourceTextHash": "55c8d6ca39b2",
+      "sourceProfileHash": "1cc22488aead",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_inventory_missing": {
+      "path": "act-one/vo/vo_act2_system_inventory_missing.mp3",
+      "durationMs": 5862,
+      "sourceTextHash": "8f4efa2f2ac5",
+      "sourceProfileHash": "d8efb45d6e45",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_just_find_it": {
+      "path": "act-one/vo/vo_act2_system_just_find_it.mp3",
+      "durationMs": 2265,
+      "sourceTextHash": "f010c91b4032",
+      "sourceProfileHash": "7691e6e4cf6e",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_departure": {
+      "path": "act-one/vo/vo_act2_system_departure.mp3",
+      "durationMs": 4117,
+      "sourceTextHash": "a56c2e3efe3e",
+      "sourceProfileHash": "99e73f82384a",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_confession": {
+      "path": "act-one/vo/vo_act2_system_confession.mp3",
+      "durationMs": 5279,
+      "sourceTextHash": "c4e36d94b1e0",
+      "sourceProfileHash": "333de1c79fd0",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_friend": {
+      "path": "act-one/vo/vo_act2_system_friend.mp3",
+      "durationMs": 1884,
+      "sourceTextHash": "011a6d8d52e1",
+      "sourceProfileHash": "0b7b773a7eff",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_library": {
+      "path": "act-one/vo/vo_act2_system_library.mp3",
+      "durationMs": 4986,
+      "sourceTextHash": "4f4ea6ecad10",
+      "sourceProfileHash": "f24b7439a959",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_act2_system_move_now": {
+      "path": "act-one/vo/vo_act2_system_move_now.mp3",
+      "durationMs": 2257,
+      "sourceTextHash": "a53c55776806",
+      "sourceProfileHash": "6fca4a7e508b",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "fx_narrator_circle_appear": {
+      "path": "act-one/sfx/fx_narrator_circle_appear.mp3",
+      "durationMs": 1150,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_narrator_grab": {
+      "path": "act-one/sfx/fx_narrator_grab.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_narrator_white_burst": {
+      "path": "act-one/sfx/fx_narrator_white_burst.mp3",
+      "durationMs": 1100,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_friend_reply_send": {
+      "path": "act-one/sfx/fx_friend_reply_send.mp3",
+      "durationMs": 650,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_system_emerge": {
+      "path": "act-one/sfx/fx_system_emerge.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_inventory_chest_open": {
+      "path": "act-one/sfx/fx_inventory_chest_open.mp3",
+      "durationMs": 1250,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_act2_quest_update": {
+      "path": "act-one/sfx/fx_act2_quest_update.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_character_name_lock": {
+      "path": "act-one/sfx/fx_character_name_lock.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_exercise_pacing_start": {
+      "path": "act-one/sfx/fx_exercise_pacing_start.mp3",
+      "durationMs": 1200,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_triangle_pickup": {
+      "path": "act-one/sfx/fx_triangle_pickup.mp3",
+      "durationMs": 800,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_weather_drop_pickup": {
+      "path": "act-one/sfx/fx_weather_drop_pickup.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_adhesive_release": {
+      "path": "act-one/sfx/fx_adhesive_release.mp3",
+      "durationMs": 1100,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_right_arrow_assemble": {
+      "path": "act-one/sfx/fx_right_arrow_assemble.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_balance_decimal_shift": {
+      "path": "act-one/sfx/fx_balance_decimal_shift.mp3",
+      "durationMs": 1250,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_gamepad_purchase": {
+      "path": "act-one/sfx/fx_gamepad_purchase.mp3",
+      "durationMs": 1100,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_manual_control_ready": {
+      "path": "act-one/sfx/fx_manual_control_ready.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "music_prologue_blackout": {
+      "path": "act-one/music/music_prologue_blackout.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_narrator_chase": {
+      "path": "act-one/music/music_narrator_chase.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_act2_search": {
+      "path": "act-one/music/music_act2_search.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_act2_movement_puzzle": {
+      "path": "act-one/music/music_act2_movement_puzzle.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_act2_manual_control": {
+      "path": "act-one/music/music_act2_manual_control.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "vo_legacy_wake_narration": {
+      "path": "vo/all_shadow_vo_002.mp3",
+      "durationMs": 4441,
+      "sourceTextHash": "8d368651a790",
+      "sourceProfileHash": "b5a965d37ec7",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_legacy_wake_flash": {
+      "path": "vo/all_shadow_vo_003.mp3",
+      "durationMs": 1115,
+      "sourceTextHash": "970210936339",
+      "sourceProfileHash": "dece71bafd6a",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_legacy_xy_attack": {
+      "path": "vo/all_shadow_vo_004.mp3",
+      "durationMs": 11942,
+      "sourceTextHash": "029d0d464aed",
+      "sourceProfileHash": "36f6e2e45651",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_legacy_xy_laugh": {
+      "path": "vo/all_shadow_vo_005.mp3",
+      "durationMs": 5380,
+      "sourceTextHash": "2c6e75429930",
+      "sourceProfileHash": "66d5a268a95c",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    }
+  }
+}

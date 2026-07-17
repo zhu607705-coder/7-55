@@ -1,0 +1,21 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/valid/chapter_one_tasks.json",
+    "sourceSha256": "0994474c1cb1cb918a41c10aef695d3ea147b1bee46473a3b1ff08c07fce31ee",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taskTitles": [
+    "打开手机地图应用",
+    "检查书桌上的笔记本",
+    "前往客厅的阳台"
+  ],
+  "hints": [
+    "先查看手机的通知栏",
+    "接着注意笔记本的封面",
+    "最后检查阳台的植物"
+  ]
+}
