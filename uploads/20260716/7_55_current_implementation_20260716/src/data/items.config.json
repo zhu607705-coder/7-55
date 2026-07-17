@@ -1,0 +1,142 @@
+[
+  {
+    "id": "waterDrop",
+    "name": "水滴",
+    "desc": "从主屏的早八雨里接住的一滴水。",
+    "sourceScene": "phone_home",
+    "target": "bonsai_water"
+  },
+  {
+    "id": "headphone",
+    "name": "耳机",
+    "desc": "从控制中心掉下来的，背面朝下，像个小水瓢。",
+    "sourceScene": "phone_home",
+    "target": "bonsai_water"
+  },
+  {
+    "id": "reverseGear",
+    "name": "反转齿轮",
+    "desc": "设置图标上掉落的齿轮，背面刻着 9。",
+    "sourceScene": "phone_home",
+    "target": "combine_slash"
+  },
+  {
+    "id": "slashLine",
+    "name": "斜线",
+    "desc": "朋友头像上掉下来的一撇。检测到未经授权的友情支援。",
+    "sourceScene": "wechat",
+    "target": "combine_gear"
+  },
+  {
+    "id": "towerKey",
+    "name": "钥匙",
+    "desc": "斜线与齿轮的组合体，齿轮是柄，斜线是杆。",
+    "sourceScene": "phone_home",
+    "target": "tower_slot"
+  },
+  {
+    "id": "fertilizer",
+    "name": "一袋肥料",
+    "desc": "钟楼特产。不要问为什么钟楼里有肥料。",
+    "sourceScene": "phone_home",
+    "target": "bonsai_fertilize"
+  },
+  {
+    "id": "campusCard",
+    "name": "电子校园卡",
+    "desc": "林星宇，学号 3250100755。",
+    "sourceScene": "zjuding",
+    "target": "system_circle"
+  },
+  {
+    "id": "pushTriangle",
+    "name": "三角形",
+    "desc": "从主页第一条推送头像上取下来的三角形。",
+    "sourceScene": "phone_home",
+    "target": "combine_mentor_line"
+  },
+  {
+    "id": "weatherWater",
+    "name": "天气水滴",
+    "desc": "从天气页接住的一滴水，可以松开黏着物。",
+    "sourceScene": "weather",
+    "target": "mentor_avatar"
+  },
+  {
+    "id": "mentorLine",
+    "name": "竖线",
+    "desc": "从导师头像上滑落的竖线。",
+    "sourceScene": "wechat",
+    "target": "combine_push_triangle"
+  },
+  {
+    "id": "rightArrow",
+    "name": "右移箭头",
+    "desc": "能把目标向右移动两格。移动校园卡小数点后仍会保留。",
+    "sourceScene": "wechat",
+    "target": "campus_card_balance|seat_022_gap"
+  },
+  {
+    "id": "gamepad",
+    "name": "游戏手柄",
+    "desc": "从 CC98 二手市场买来的手柄，方向键还能用。",
+    "sourceScene": "cc98",
+    "target": "dorm_character"
+  },
+  {
+    "id": "occupancyNote",
+    "name": "占座纸条",
+    "desc": "从 022 书包旁取得，纸条上的措辞适合拿去检索。",
+    "sourceScene": "phone_home",
+    "target": "cc98_search"
+  },
+  {
+    "id": "callNumber755",
+    "name": "索书号 755",
+    "desc": "正确馆藏《三分钟离座法及其例外》的索书号：I247.55 / 755。",
+    "sourceScene": "zjuding",
+    "target": "library_shelf_755"
+  },
+  {
+    "id": "archivedLeaveRule",
+    "name": "旧离座规定",
+    "desc": "书架深处保存的三分钟离座规定，可作为 CC98 公开证据。",
+    "sourceScene": "phone_home",
+    "target": "cc98_evidence_upload"
+  },
+  {
+    "id": "itemRecognitionReport",
+    "name": "物品识别报告",
+    "desc": "照片识别得到的书包报告，还缺失物招领处的认证章。",
+    "sourceScene": "photos",
+    "target": "lost_found_machine"
+  },
+  {
+    "id": "bagNonPersonProof",
+    "name": "书包非本人证明",
+    "desc": "失物招领机器盖章确认：书包不等于本人。",
+    "sourceScene": "phone_home",
+    "target": "library_recovery_upload"
+  },
+  {
+    "id": "seat022Receipt",
+    "name": "022 座位小票",
+    "desc": "用右移箭头从桌缝里推出的座位凭据。",
+    "sourceScene": "phone_home",
+    "target": "library_recovery_upload"
+  },
+  {
+    "id": "libraryPresenceProof",
+    "name": "本人来过证明",
+    "desc": "浙大体艺根据图书馆访问记录生成的证明。",
+    "sourceScene": "tiyi",
+    "target": "library_recovery_upload"
+  },
+  {
+    "id": "seatReleasePass",
+    "name": "离座清退 PASS",
+    "desc": "恢复申请签发，只能对 022 座位上的书包使用。",
+    "sourceScene": "zjuding",
+    "target": "seat_022_backpack"
+  }
+]

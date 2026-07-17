@@ -1,0 +1,3 @@
+export const PHONE_VIEWPORT_WIDTH = 430;
+export const PHONE_VIEWPORT_HEIGHT = 860;
+

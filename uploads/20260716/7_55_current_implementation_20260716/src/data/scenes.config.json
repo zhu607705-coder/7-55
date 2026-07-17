@@ -1,0 +1,13 @@
+[
+  { "id": "alarm", "code": "P00", "title": "闹钟", "runtime": "phone" },
+  { "id": "desktop", "code": "P01", "title": "07:55 起床", "runtime": "phone" },
+  { "id": "phone_home", "code": "P13", "title": "手机主界面", "runtime": "phone" },
+  { "id": "wechat", "code": "P14", "title": "微信 / 朋友头像谜题", "runtime": "phone" },
+  { "id": "zjuding", "code": "P15", "title": "浙大钉（加载/内页）", "runtime": "phone" },
+  { "id": "tiyi", "code": "P06", "title": "浙大体艺", "runtime": "phone" },
+  { "id": "weather", "code": "P07", "title": "天气 / 水滴谜题", "runtime": "phone" },
+  { "id": "campus_card", "code": "P04", "title": "校园卡余额", "runtime": "phone" },
+  { "id": "checkin", "code": "P11", "title": "校务签到（学在浙大）", "runtime": "phone" },
+  { "id": "bonsai", "code": "P10", "title": "盆栽", "runtime": "phone" },
+  { "id": "ending", "code": "P12", "title": "序章结算 / 下一章入口", "runtime": "phone" }
+]

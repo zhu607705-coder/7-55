@@ -1,0 +1,160 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-16T07:09:16.238Z",
+  "assets": {
+    "music_bike_755_intro": {
+      "path": "bike-arcade/music/music_bike_755_intro.mp3",
+      "kind": "music",
+      "durationMs": 20000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "7d99aa7ab570f6aec17b956af83aa34334e7abaa4a6f9eaedfdde6d4bc03b626",
+      "source": "MiniMax music-2.6",
+      "sourceConfigHash": "ce253743aeda1215f7ca9e7442a993e917736da8c4837b7d183a5f6a5fab5dc0"
+    },
+    "music_bike_755_run_a": {
+      "path": "bike-arcade/music/music_bike_755_run_a.mp3",
+      "kind": "music",
+      "durationMs": 24000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "fb2e779e9ebc57db162f5979cca98bc9f26aaafc1916891bd0e54e417dd9bcd0",
+      "source": "MiniMax music-2.6",
+      "sourceConfigHash": "d2998aa25339ba69b14a3119cb8437e16a5d6afb96b06f6db36db96ba405b94c"
+    },
+    "music_bike_755_run_b": {
+      "path": "bike-arcade/music/music_bike_755_run_b.mp3",
+      "kind": "music",
+      "durationMs": 22000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "57d18fee0fec0df94f6147117559d3f65ceb2c634bcdf1623739d847b36de208",
+      "source": "MiniMax music-2.6",
+      "sourceConfigHash": "7927cf71e7c58f318e6e9d3d0d52dbb9aa542654fb4af92c13f930a79219b3c3"
+    },
+    "music_bike_755_result": {
+      "path": "bike-arcade/music/music_bike_755_result.mp3",
+      "kind": "music",
+      "durationMs": 14000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "4bb6497531d2615bbf72b161d2d1e2cb65219ddd041793611180f9c0aba6a089",
+      "source": "MiniMax music-2.6",
+      "sourceConfigHash": "ab4efa46e3ffdab9582e0bae84c3ffc645b99fbc99b962fe8ec132b9bda08dea"
+    },
+    "fx_bike_755_lane_change": {
+      "path": "bike-arcade/sfx/fx_bike_755_lane_change.mp3",
+      "kind": "sfx",
+      "durationMs": 700,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "fb962e693200e118c380930a980728ddc812ee0cb7f8820d1abf0f6d3ae406fe",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "2752941eea577500b61a03d87e4af00b9941e19d230906951daa8fd165c6bf22"
+    },
+    "fx_bike_755_near_miss": {
+      "path": "bike-arcade/sfx/fx_bike_755_near_miss.mp3",
+      "kind": "sfx",
+      "durationMs": 1100,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "d4ee20b76e7e34df9dbfd3d8583dc510808ba35d690b2122b33570aae9ab4861",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "ac270d59311e29b9e19ac424036f33e00755807eb59c5f527ecc443ca7ba217f"
+    },
+    "fx_bike_755_collision": {
+      "path": "bike-arcade/sfx/fx_bike_755_collision.mp3",
+      "kind": "sfx",
+      "durationMs": 1150,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "cdd3df6881da781620c8d8b839f5a086448ff5ec6541f1c728ab887db8fae2f7",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "91561a07cf412979ef45cfc6d4fff1e2b9727184145d917a1d36857b76c78890"
+    },
+    "fx_bike_755_damage": {
+      "path": "bike-arcade/sfx/fx_bike_755_damage.mp3",
+      "kind": "sfx",
+      "durationMs": 900,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "8fad0465fbe835021156975b8c3690b9ea5b6c08a31d187678444dd5d92e77fc",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "4a14a6b81d005ba3f977d1062676845d1cf2c14bb9ee7187102ccaa5480ad280"
+    },
+    "fx_bike_755_milestone": {
+      "path": "bike-arcade/sfx/fx_bike_755_milestone.mp3",
+      "kind": "sfx",
+      "durationMs": 850,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "d627cff7998c858c0ff6ee218114651388bb1c8b0b5155e14f0aa2c6922808ef",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "d878d91027a37cb2469e2b91b16fd66507a28c065ec248cfddd70668be457e01"
+    },
+    "fx_bike_755_pause": {
+      "path": "bike-arcade/sfx/fx_bike_755_pause.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "d0c08ce62ad7ab0b5bd649db64cba5f34787f012d7eb40a61b7d578fb371e710",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "5f09bf81642b445de9a6a2f0e59448844f1169081a76a1ec53a3b1a4565f4097"
+    },
+    "fx_bike_755_resume": {
+      "path": "bike-arcade/sfx/fx_bike_755_resume.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "aa790c32fc546a1748c2ced8c01d61ca41eb7edd5c04cb4024c85bf9ca346e5c",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "4fc46b2c7dff26c63892c69b89b5928225ad9de69f1ef122493f19daa919c54c"
+    },
+    "fx_bike_755_success": {
+      "path": "bike-arcade/sfx/fx_bike_755_success.mp3",
+      "kind": "sfx",
+      "durationMs": 1250,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "338306db8d81619e3eb77fa9042788cb680fbb45a6f145a42389de48849d5307",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "0f6b069381169d2ad0f5ade6aa83851b28aa2a1d3d3a80512534e1da8188b30b"
+    },
+    "fx_bike_755_failure": {
+      "path": "bike-arcade/sfx/fx_bike_755_failure.mp3",
+      "kind": "sfx",
+      "durationMs": 1150,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "ec6a286a40a79d06991556d5c18fc0ce1a8145bbf2f6147951ba37e32e495555",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "b3f8f928ab687d3fc1b66f4b50a67851114c4be260fe1dc79eac4510ca3b65c2"
+    },
+    "fx_bike_755_button": {
+      "path": "bike-arcade/sfx/fx_bike_755_button.mp3",
+      "kind": "sfx",
+      "durationMs": 650,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "8115a7ca06ed4b6bd0998259baa82991116b5220a1560107295efce4ebbb7207",
+      "source": "MiniMax music-2.6 sound-design cut",
+      "sourceConfigHash": "d6d5878efbf21335381e37cf925987a206f22d3759f2cd9c923ac798a33ea084"
+    }
+  }
+}

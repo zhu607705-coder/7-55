@@ -1,0 +1,270 @@
+{
+  "chapterId": "library-022-backpack",
+  "title": "第二章：022 的占座书包",
+  "voice": {
+    "id": "English_Graceful_Lady",
+    "language": "English"
+  },
+  "narration": {
+    "library_route_unlocked": {
+      "text": "System: Movement problem solved. Head to the Basic Library and find seat zero-two-two in the south section, second floor. Try not to break the controller on the way.",
+      "subtitleZh": "系统：移动问题解决了。去基础图书馆二楼南区找 022。路上尽量别再把手柄弄坏。",
+      "tone": "xiaoying",
+      "delivery": "brisk mission briefing with a dry warning at the end"
+    },
+    "library_entered": {
+      "text": "System: Seven minutes. You took seven minutes from the dorm to the library. Ordinary speed, impeccable paperwork.",
+      "subtitleZh": "系统：七分钟。你从寝室走到图书馆用了七分钟。速度普通，手续无可挑剔。",
+      "tone": "xiaoying",
+      "delivery": "bureaucratic timing report, deadpan final contrast"
+    },
+    "library_occupied_seat_found": {
+      "text": "System: This is zero-two-two. There is a backpack on the seat. It has been here longer than you, so the system currently trusts it more.",
+      "subtitleZh": "系统：这里是 022。座位上有个书包。它待得比你久，所以系统目前更信任它。",
+      "tone": "xiaoying",
+      "delivery": "low, suspicious observation followed by calm institutional irony"
+    },
+    "cc98_occupation_post_opened": {
+      "text": "System: Twenty-three floors are enough for an investigation. You may read the five A-C-zero-one replies, but they carry no course credit.",
+      "subtitleZh": "系统：二十三楼已经够调查了。那五条 ac01 可以看，但不计课程学分。",
+      "tone": "xiaoying",
+      "delivery": "quick forum scan, amused dismissal of the filler replies"
+    },
+    "library_catalog_match_found": {
+      "text": "System: Out of five books, you found the only useful one. Call number seven-five-five. Take it to the actual shelf.",
+      "subtitleZh": "系统：五本书里，你找到了唯一有用的一本。索书号 755。去真正的书架。",
+      "tone": "xiaoying",
+      "delivery": "focused confirmation, deliberate call number, firm instruction"
+    },
+    "library_archived_rule_recovered": {
+      "text": "System: The old rule requires three proofs. The rule is old. The inconvenience is freshly issued.",
+      "subtitleZh": "系统：旧规则要求三份证明。规则很旧，麻烦刚刚签发。",
+      "tone": "xiaoying",
+      "delivery": "slow document reading, dry emphasis on freshly issued"
+    },
+    "photo_bag_report_generated": {
+      "text": "System: Once you lowered the brightness, the photo finally admitted it was a backpack. Recognition report generated.",
+      "subtitleZh": "系统：亮度降下来以后，照片终于承认那是个书包。识别报告已生成。",
+      "tone": "xiaoying",
+      "delivery": "understated amusement followed by a clean machine confirmation"
+    },
+    "library_bag_nonperson_proof_issued": {
+      "text": "System: Stamp complete. Officially, this backpack is currently not a person.",
+      "subtitleZh": "系统：盖章完成。按当前认定，这个书包暂时不是人。",
+      "tone": "xiaoying",
+      "delivery": "mock-official certification, precise and completely serious"
+    },
+    "library_seat_receipt_recovered": {
+      "text": "System: The shift-right arrow is back on duty. The zero-two-two receipt is out, and the arrow survived.",
+      "subtitleZh": "系统：右移箭头重新上岗。022 小票出来了，而且箭头没有损坏。",
+      "tone": "xiaoying",
+      "delivery": "crisp action report with a small relieved finish"
+    },
+    "tiyi_presence_proof_issued": {
+      "text": "System: Seven. Forty-seven. Three. ZJU Sports acknowledges that you visited the library through an adequately complicated process.",
+      "subtitleZh": "系统：七，四十七，三。浙大体艺确认你通过一套足够复杂的流程到过图书馆。",
+      "tone": "xiaoying",
+      "delivery": "deliberate numeric recitation, formal administrative conclusion"
+    },
+    "cc98_top_ten_reached": {
+      "text": "System: Three valid B-D replies. The post is now number one. The truth has finally acquired sufficient traffic.",
+      "subtitleZh": "系统：三条有效 bd。帖子现在是十大第一。真相终于获得了足够流量。",
+      "tone": "xiaoying",
+      "delivery": "restrained celebration, faster tempo, proud final sentence"
+    },
+    "library_seat_release_pass_issued": {
+      "text": "System: Seat-release PASS generated. It only works on the backpack at zero-two-two. Do not use it on your roommate.",
+      "subtitleZh": "系统：清退 PASS 已生成。它只对 022 的书包有效，别拿去试你的室友。",
+      "tone": "xiaoying",
+      "delivery": "authoritative permit issuance, low dry warning"
+    },
+    "library_backpack_evicted": {
+      "text": "System: Backpack transferred to Lost and Found. Zero-two-two is open. Sit down before the system recalculates.",
+      "subtitleZh": "系统：书包已转交失物招领。022 空出来了。趁系统重新计算前坐下。",
+      "tone": "xiaoying",
+      "delivery": "decisive enforcement report, urgent final command"
+    },
+    "library_friend_contacted": {
+      "text": "System: You found her. An attendance record was checked out by a book. Next step: find that book.",
+      "subtitleZh": "系统：找到她了。一条签到记录被一本书借走了。下一步，找到那本书。",
+      "tone": "xiaoying",
+      "delivery": "quiet reveal, slower pace, unresolved final instruction"
+    }
+  },
+  "cc98": {
+    "post": {
+      "id": "seat-022-backpack",
+      "author": "二南临时读者",
+      "avatar": "anonymous",
+      "rank": "求助",
+      "board": "校园生活",
+      "title": "【求助】022 的书包已经三天没眨眼了",
+      "replies": "23",
+      "views": "7550",
+      "time": "26-07-12 08:02",
+      "body": "二楼南区 022 有个书包，离开三分钟回来还在。它是不是比我更像读者？",
+      "publicNoticeFloor": 47
+    },
+    "storyReplies": [
+      {
+        "floor": 1,
+        "author": "二南临时读者",
+        "role": "楼主",
+        "text": "022 有个书包，离开三分钟回来还在。纸条写着离开三分钟，回来时系统已经换人。"
+      },
+      {
+        "floor": 4,
+        "author": "入口记录员",
+        "role": "补充",
+        "text": "入馆记录能证明你什么时候到，但不能证明座位上的东西属于谁。"
+      },
+      {
+        "floor": 12,
+        "author": "索书号爱好者",
+        "role": "线索",
+        "quote": "回复 4 楼：入口记录只能证明到场",
+        "text": "旧版规则不在网上，在图书馆书架背面。搜‘三分钟离座法’。"
+      },
+      {
+        "floor": 16,
+        "author": "纸面支援专员",
+        "role": "路过",
+        "text": "先 bd 留言，再把配图放在这里。它只负责维持评论区队形，不负责证明任何事。",
+        "media": "cc98_forum_treasure",
+        "caption": "bd",
+        "optional": true
+      },
+      {
+        "floor": 18,
+        "author": "热度维护员",
+        "role": "线索",
+        "text": "证据齐了记得 bd。座位系统不看草稿，只读取已经公示的材料。"
+      },
+      {
+        "floor": 23,
+        "author": "二南临时读者",
+        "role": "楼主编辑",
+        "text": "帖子进十大第一后，图书馆 App 会开放 022 恢复申请。旧申请统一挂在公示编号 47。"
+      }
+    ],
+    "optionalAc01Replies": [
+      { "floor": 3, "author": "前排先占楼", "text": "ac01，座位没占到，楼层总得先占一个。" },
+      { "floor": 6, "author": "三分钟后再来", "text": "ac01。三分钟后回来看看这条回复有没有被别人预约。" },
+      { "floor": 9, "author": "空气座位经销商", "text": "前排出售空气座位，坐下即视为离开。ac01" },
+      { "floor": 15, "author": "022考勤员", "text": "022 的书包今天也全勤，我今天也……算了。ac01" },
+      { "floor": 21, "author": "体艺凑数办", "text": "公示编号 47，运动次数 47，建议书包报名体艺。ac01" }
+    ],
+    "fillerReplies": {
+      "authors": ["二南窗边位", "续杯失败者", "期末周返场员", "自习室回声"],
+      "texts": [
+        "蹲个后续，杯子已经替我接上电源了。",
+        "三分钟过去了，楼主和座位目前只回来一个。",
+        "证明材料先放这，万一下一楼正好带章。",
+        "书包连续三天到场，建议先给它发本学期全勤。"
+      ]
+    },
+    "evidenceSlots": [
+      { "id": "archived_leave_rule", "label": "旧版离座规则", "source": "755 号书架背面" },
+      { "id": "bag_non_person_proof", "label": "书包非本人证明", "source": "物品身份登记机" },
+      { "id": "seat_022_receipt", "label": "022 座位小票", "source": "022 桌下夹缝" },
+      { "id": "library_presence_proof", "label": "本人来过证明", "source": "浙大体艺补录" }
+    ],
+    "bdOptions": [
+      { "id": "reply-seat-ticket", "key": "A", "author": "022票据核对员", "text": "规则有了，但 022 是不是你的？小票和公示可以互相核对。", "requirement": "需要 022 座位小票", "evidence": "seat_022_receipt", "valid": true, "rejection": null },
+      { "id": "reply-b", "key": "B", "author": "书包辩护律师", "text": "书包连续三天到场，楼主只出现五分钟。我宣布书包胜诉。", "requirement": "结论缺少证明", "evidence": null, "valid": false, "rejection": "到场时长不能替代身份和座位凭证。" },
+      { "id": "reply-visit-proof", "key": "C", "author": "路径表格复核员", "text": "本人来过证明与座位小票时间一致，这条形成了访问链。", "requirement": "需要本人来过证明", "evidence": "library_presence_proof", "valid": true, "rejection": null },
+      { "id": "reply-d", "key": "D", "author": "二南空调观察员", "text": "bd。顺便问一下二南空调今天开了吗？", "requirement": "纯灌水回复", "evidence": null, "valid": false, "rejection": "这条成功参与了聊天，没有提供任何证据。" },
+      { "id": "reply-bag-nonperson", "key": "E", "author": "物品人格审核台", "text": "盖章报告已确认姓名、学号均为无，书包不具备占座主体资格。", "requirement": "需要书包非本人证明", "evidence": "bag_non_person_proof", "valid": true, "rejection": null }
+    ]
+  },
+  "library": {
+    "catalogQuery": "三分钟离座法",
+    "catalogResults": [
+      {
+        "id": "three-minute-leave-method",
+        "title": "三分钟离座法及其例外",
+        "author": "馆内秩序编写组",
+        "callNumber": "I247.55 / 755",
+        "year": "2026",
+        "publisher": "馆藏内部资料",
+        "location": "基础馆二楼南区 755 号书架背面",
+        "note": "本书不可借阅，因为借走过一次后规则失效了三天。",
+        "cover": "correct"
+      },
+      {
+        "id": "three-minute-seat-thinking",
+        "title": "三分钟离席法与若干例外",
+        "author": "间歇研究室",
+        "callNumber": "B821.0 / 003",
+        "year": "2024",
+        "publisher": "自习室出版社",
+        "location": "基础馆四楼 B 区",
+        "note": "研究心理边界，不包含座位恢复条款。",
+        "cover": "distractor-1"
+      },
+      {
+        "id": "three-minute-pause",
+        "title": "三分钟暂离法及其应用",
+        "author": "短时休息组",
+        "callNumber": "R161.1 / 300",
+        "year": "2025",
+        "publisher": "效率实验社",
+        "location": "基础馆三楼 G 区",
+        "note": "暂离计时器实践手册，没有 022 相关附件。",
+        "cover": "distractor-2"
+      },
+      {
+        "id": "three-minute-stand-up",
+        "title": "三分钟起身法与边界情况",
+        "author": "边界观察组",
+        "callNumber": "C913 / 003",
+        "year": "2023",
+        "publisher": "清醒文库",
+        "location": "基础馆一楼 C 区",
+        "note": "讨论起身后的边界，不提供占座处理权限。",
+        "cover": "distractor-3"
+      },
+      {
+        "id": "three-minute-empty-seat",
+        "title": "三分钟空座法及其解释",
+        "author": "空位说明组",
+        "callNumber": "G252.1 / 003",
+        "year": "2022",
+        "publisher": "静坐资料室",
+        "location": "基础馆五楼 G 区",
+        "note": "解释空座现象，不处理有书包的座位。",
+        "cover": "distractor-4"
+      }
+    ],
+    "photo": {
+      "file": "IMG_0755.JPG",
+      "maxBrightness": 20,
+      "result": "对象类型：书包；状态：长期占座；本人属性：不成立"
+    },
+    "audit": {
+      "title": "本人来过证明补录单",
+      "route": ["寝室", "图书馆入口", "022", "前台", "书架背面", "022"],
+      "answers": { "arrivalMinutes": 7, "publicNoticeFloor": 47, "proofCount": 3 }
+    },
+    "dialogue022": [
+      { "speaker": "022", "text": "你终于坐下了。" },
+      { "speaker": "玩家", "text": "你就是系统的朋友？" },
+      { "speaker": "系统", "text": "她以前不是座位。" },
+      { "speaker": "022", "text": "你以前也不是红圈。" },
+      { "speaker": "玩家", "text": "你们这行变化挺大。" },
+      { "speaker": "系统", "text": "先别叙旧。能改签到记录吗？" },
+      { "speaker": "022", "text": "可以查。" },
+      { "speaker": "玩家", "text": "可以改吗？" },
+      { "speaker": "022", "text": "查完再决定你要不要哭。" },
+      { "speaker": "022", "text": "签到记录不在系统里。" },
+      { "speaker": "玩家", "text": "那在哪里？" },
+      { "speaker": "022", "text": "被借走了。" },
+      { "speaker": "玩家", "text": "记录还能被借？" },
+      { "speaker": "022", "text": "在图书馆，不能借的东西才比较少。" },
+      { "speaker": "系统", "text": "谁借的？" },
+      { "speaker": "022", "text": "一本书。" },
+      { "speaker": "玩家", "text": "书借走了记录，还是记录借走了书？" },
+      { "speaker": "022", "text": "这就是第三章的问题。" }
+    ]
+  }
+}

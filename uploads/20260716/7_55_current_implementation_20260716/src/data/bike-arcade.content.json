@@ -1,0 +1,171 @@
+{
+  "chapterId": "bike-arcade-755",
+  "voice": {
+    "id": "English_Graceful_Lady",
+    "language": "English"
+  },
+  "subtitles": {
+    "bike_arcade_voice_start": "三条车道。稳住位置，别乱换线。",
+    "bike_arcade_voice_last_life": "只剩一次机会。路况已经把意思表达得很清楚了。",
+    "bike_arcade_voice_result": "骑行结束。本次路况结论已经生成。"
+  },
+  "music": [
+    {
+      "cue": "music.start",
+      "stage": "start",
+      "prompt": "Immediate-start campus bicycle arcade cue for the first meters. Sparse pulse, wide gaps, restrained momentum, and a clean loop point.",
+      "genre": "minimal pixel chiptune",
+      "mood": "steady, alert, open",
+      "instruments": "soft square-wave pulse, muted marimba, sparse bicycle bell",
+      "bpm": 82,
+      "durationSeconds": 20
+    },
+    {
+      "cue": "music.congestion",
+      "stage": "congestion",
+      "prompt": "Immediate-start campus bicycle traffic escalation. Layered rhythmic motion, tighter spacing, comic congestion, and enough room for action cues.",
+      "genre": "percussive arcade chiptune",
+      "mood": "crowded, active, controlled",
+      "instruments": "layered bicycle bells, dry toms, clipped pulse bass",
+      "bpm": 126,
+      "durationSeconds": 24
+    },
+    {
+      "cue": "music.sprint",
+      "stage": "sprint",
+      "prompt": "Immediate-start final bicycle sprint. Rapid forward motion, short repeating figures, firm downbeat, and no long build or vocal layer.",
+      "genre": "high-tempo pixel breakbeat",
+      "mood": "urgent, precise, committed",
+      "instruments": "rapid hi-hats, bright arpeggiator, tight electronic kick",
+      "bpm": 154,
+      "durationSeconds": 22
+    },
+    {
+      "cue": "music.result",
+      "stage": "result",
+      "prompt": "Immediate compact arcade result bed. Resolved four-note motif, clear landing, low activity after the first phrase, suitable under either outcome cue.",
+      "genre": "compact result chiptune",
+      "mood": "resolved, concise, neutral-positive",
+      "instruments": "warm FM chords, glass bell, soft electronic snare",
+      "bpm": 94,
+      "durationSeconds": 14
+    }
+  ],
+  "sfx": [
+    {
+      "cue": "sfx.lane_change",
+      "action": "lane_change",
+      "group": "movement",
+      "cutStartSeconds": 0,
+      "durationSeconds": 0.7,
+      "description": "short lateral servo swipe ending in one clean mechanical click"
+    },
+    {
+      "cue": "sfx.near_miss",
+      "action": "near_miss",
+      "group": "movement",
+      "cutStartSeconds": 3,
+      "durationSeconds": 1.1,
+      "description": "fast bicycle bell pass-by with a narrow airy sweep"
+    },
+    {
+      "cue": "sfx.collision",
+      "action": "collision",
+      "group": "movement",
+      "cutStartSeconds": 6,
+      "durationSeconds": 1.15,
+      "description": "dry bicycle metal impact with a brief tire scrape"
+    },
+    {
+      "cue": "sfx.damage",
+      "action": "damage",
+      "group": "movement",
+      "cutStartSeconds": 9,
+      "durationSeconds": 0.9,
+      "description": "low two-note health loss drop with a clipped digital crack"
+    },
+    {
+      "cue": "sfx.milestone",
+      "action": "milestone",
+      "group": "movement",
+      "cutStartSeconds": 12,
+      "durationSeconds": 0.85,
+      "description": "bright ascending checkpoint ping with three compact steps"
+    },
+    {
+      "cue": "sfx.pause",
+      "action": "pause",
+      "group": "control",
+      "cutStartSeconds": 0,
+      "durationSeconds": 0.8,
+      "description": "compact tape-stop dip followed by a dry lock click"
+    },
+    {
+      "cue": "sfx.resume",
+      "action": "resume",
+      "group": "control",
+      "cutStartSeconds": 3,
+      "durationSeconds": 0.8,
+      "description": "quick upward restart sweep followed by a clean tick"
+    },
+    {
+      "cue": "sfx.success",
+      "action": "success",
+      "group": "control",
+      "cutStartSeconds": 6,
+      "durationSeconds": 1.25,
+      "description": "short clean arcade victory fanfare with a firm final note"
+    },
+    {
+      "cue": "sfx.failure",
+      "action": "failure",
+      "group": "control",
+      "cutStartSeconds": 9,
+      "durationSeconds": 1.15,
+      "description": "descending three-note failure signal with a muted stop"
+    },
+    {
+      "cue": "sfx.button",
+      "action": "button",
+      "group": "control",
+      "cutStartSeconds": 12,
+      "durationSeconds": 0.65,
+      "description": "soft mechanical arcade button press with a small confirm tick"
+    }
+  ],
+  "narration": [
+    {
+      "cue": "voice.start",
+      "stage": "start",
+      "text": "Three lanes. Settle in and hold your line.",
+      "subtitle": "bike_arcade_voice_start",
+      "delivery": "calm, measured, low-pressure",
+      "profile": {
+        "speed": 0.94,
+        "pitch": -1
+      }
+    },
+    {
+      "cue": "voice.mid",
+      "stage": "last-life",
+      "text": "One chance left. The traffic has made its point.",
+      "subtitle": "bike_arcade_voice_last_life",
+      "delivery": "focused, dry, compact warning",
+      "profile": {
+        "speed": 1.04,
+        "pitch": 0
+      }
+    },
+    {
+      "cue": "voice.sprint",
+      "stage": "result",
+      "text": "Run complete. The road has filed its final opinion.",
+      "subtitle": "bike_arcade_voice_result",
+      "delivery": "conclusive, dry, short final pause",
+      "profile": {
+        "speed": 1.13,
+        "pitch": 2
+      }
+    }
+  ]
+}
