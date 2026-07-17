@@ -1,0 +1,33 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/cc98_moderation.json",
+    "sourceSha256": "271f936dd102472e2868c3a180cebb81627d030a8752966ee28c91de3e71b721",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "moderation": [
+    {
+      "text": "请确保搜索请求符合社区规范，不得包含违规、侵权或敏感信息。",
+      "visibilityStage": "search",
+      "tone": "neutral"
+    },
+    {
+      "text": "上传材料时，请遵守版权规定，仅提交原创或已获授权的内容，避免上传违法或低质量信息。",
+      "visibilityStage": "upload",
+      "tone": "strict"
+    },
+    {
+      "text": "系统检测到疑似重复材料，请检查并合并或删除相同内容，以保持信息唯一性。",
+      "visibilityStage": "duplicate",
+      "tone": "warning"
+    },
+    {
+      "text": "排名反馈请提供客观依据，确保排序结果公正、透明，避免个人偏见影响排名。",
+      "visibilityStage": "ranking",
+      "tone": "informative"
+    }
+  ]
+}

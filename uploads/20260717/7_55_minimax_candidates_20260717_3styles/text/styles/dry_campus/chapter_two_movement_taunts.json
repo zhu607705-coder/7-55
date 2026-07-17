@@ -1,0 +1,38 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/chapter_two_movement_taunts.json",
+    "sourceSha256": "cf75902869adafe401bc68f0d86e7cc3a8d814b828690403eb206aafd1604893",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taunts": [
+    {
+      "text": "这跑步机的速度比我的前途还慢，我得快马加鞭！",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "余额不足，连买瓶水都要先算算天数，真是穷得只剩下信用卡账单。",
+      "voice": "none",
+      "durationMs": 4500
+    },
+    {
+      "text": "刚买的手柄比我的零花钱还贵，简直是把钱砸在游戏里。",
+      "voice": "none",
+      "durationMs": 5200
+    },
+    {
+      "text": "第一次移动竟然卡在墙角，我的角色是不是得了关节炎？",
+      "voice": "none",
+      "durationMs": 3800
+    },
+    {
+      "text": "这游戏的加载时间比煮一壶咖啡还久，我已经喝完三杯了。",
+      "voice": "none",
+      "durationMs": 6000
+    }
+  ]
+}

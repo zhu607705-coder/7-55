@@ -1,0 +1,258 @@
+{
+  "generatedAt": "2026-07-17T01:42:10.060Z",
+  "validCount": 36,
+  "partialCount": 21,
+  "valid": [
+    {
+      "source": "chapter_one_narrator.json",
+      "bytes": 698
+    },
+    {
+      "source": "chapter_one_quest.json",
+      "bytes": 614
+    },
+    {
+      "source": "chapter_one_system.json",
+      "bytes": 536
+    },
+    {
+      "source": "chapter_one_taunts.json",
+      "bytes": 574
+    },
+    {
+      "source": "chapter_two_library_taunts.json",
+      "bytes": 728
+    },
+    {
+      "source": "chapter_two_movement_taunts.json",
+      "bytes": 800
+    },
+    {
+      "source": "valid/cc98_attachments.json",
+      "bytes": 823
+    },
+    {
+      "source": "valid/cc98_moderation.json",
+      "bytes": 812
+    },
+    {
+      "source": "valid/cc98_post_clean_a.json",
+      "bytes": 403
+    },
+    {
+      "source": "valid/cc98_post_clean_b.json",
+      "bytes": 339
+    },
+    {
+      "source": "valid/cc98_post_clean_d.json",
+      "bytes": 575
+    },
+    {
+      "source": "valid/cc98_posts_d.json",
+      "bytes": 1049
+    },
+    {
+      "source": "valid/cc98_replies_extra.json",
+      "bytes": 489
+    },
+    {
+      "source": "valid/cc98_replies_retry.json",
+      "bytes": 456
+    },
+    {
+      "source": "valid/cc98_reply_clean.json",
+      "bytes": 225
+    },
+    {
+      "source": "valid/chapter_one_dialogue.json",
+      "bytes": 1065
+    },
+    {
+      "source": "valid/chapter_one_tasks.json",
+      "bytes": 246
+    },
+    {
+      "source": "valid/chapter_three_dialogue.json",
+      "bytes": 832
+    },
+    {
+      "source": "valid/chapter_three_tasks_retry.json",
+      "bytes": 191
+    },
+    {
+      "source": "valid/chapter_two_library_dialogue.json",
+      "bytes": 840
+    },
+    {
+      "source": "valid/chapter_two_library_tasks.json",
+      "bytes": 423
+    },
+    {
+      "source": "valid/chapter_two_movement_dialogue.json",
+      "bytes": 661
+    },
+    {
+      "source": "valid/chapter_two_movement_tasks.json",
+      "bytes": 523
+    },
+    {
+      "source": "valid/document_022_clean_retry.json",
+      "bytes": 157
+    },
+    {
+      "source": "valid/document_presence_clean.json",
+      "bytes": 468
+    },
+    {
+      "source": "valid/documents_a_retry.json",
+      "bytes": 564
+    },
+    {
+      "source": "valid/documents_b.json",
+      "bytes": 1559
+    },
+    {
+      "source": "valid/documents_d.json",
+      "bytes": 710
+    },
+    {
+      "source": "valid/items_a.json",
+      "bytes": 725
+    },
+    {
+      "source": "valid/items_b.json",
+      "bytes": 1007
+    },
+    {
+      "source": "valid/items_c.json",
+      "bytes": 931
+    },
+    {
+      "source": "valid/ui_accessibility.json",
+      "bytes": 1139
+    },
+    {
+      "source": "valid/ui_feedback.json",
+      "bytes": 796
+    },
+    {
+      "source": "valid/ui_phone.json",
+      "bytes": 130
+    },
+    {
+      "source": "valid/ui_quest.json",
+      "bytes": 273
+    },
+    {
+      "source": "valid/ui_toasts.json",
+      "bytes": 1041
+    }
+  ],
+  "partials": [
+    {
+      "source": "cc98_posts.json",
+      "target": "partials/cc98_posts.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "cc98_replies.json",
+      "target": "partials/cc98_replies.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "chapter_one_candidates.json",
+      "target": "partials/chapter_one_candidates.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "chapter_three.json",
+      "target": "partials/chapter_three.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 1151 (line 41 column 19)"
+    },
+    {
+      "source": "chapter_two_library.json",
+      "target": "partials/chapter_two_library.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "chapter_two_movement.json",
+      "target": "partials/chapter_two_movement.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 818 (line 16 column 8)"
+    },
+    {
+      "source": "story_candidates.json",
+      "target": "partials/story_candidates.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "story_chapters_candidates.json",
+      "target": "partials/story_chapters_candidates.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "ui_items_documents.json",
+      "target": "partials/ui_items_documents.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "ui_microcopy.json",
+      "target": "partials/ui_microcopy.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 90 (line 2 column 89)"
+    },
+    {
+      "source": "valid/cc98_post_clean_c.json",
+      "target": "partials/cc98_post_clean_c.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "valid/cc98_posts_a.json",
+      "target": "partials/cc98_posts_a.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "valid/cc98_posts_b.json",
+      "target": "partials/cc98_posts_b.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "valid/cc98_posts_c.json",
+      "target": "partials/cc98_posts_c.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 63 (line 5 column 28)"
+    },
+    {
+      "source": "valid/cc98_posts_e.json",
+      "target": "partials/cc98_posts_e.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 124 (line 1 column 125)"
+    },
+    {
+      "source": "valid/cc98_replies.json",
+      "target": "partials/cc98_replies.partial.txt",
+      "reason": "Unexpected end of JSON input"
+    },
+    {
+      "source": "valid/chapter_three_tasks.json",
+      "target": "partials/chapter_three_tasks.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 135 (line 1 column 136)"
+    },
+    {
+      "source": "valid/document_022_clean.json",
+      "target": "partials/document_022_clean.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 56 (line 1 column 57)"
+    },
+    {
+      "source": "valid/documents_a.json",
+      "target": "partials/documents_a.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 354 (line 1 column 355)"
+    },
+    {
+      "source": "valid/documents_c.json",
+      "target": "partials/documents_c.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 69 (line 1 column 70)"
+    },
+    {
+      "source": "valid/documents_c_retry.json",
+      "target": "partials/documents_c_retry.partial.txt",
+      "reason": "Bad control character in string literal in JSON at position 887 (line 24 column 29)"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "_candidateMeta": {
+    "style": "plain_case",
+    "styleLabelZh": "平实调查",
+    "delivery": "保持原文事实和句式，适合纸质证据、帖子正文和调查记录。",
+    "selection": "信息密度优先，避免额外情绪。",
+    "source": "text/valid/chapter_one_dialogue.json",
+    "sourceSha256": "25f5360ee7b5afd89eba430de26e860fa8f499103641fcc789a6df5599739724",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "maleNarrator": [
+    {
+      "voiceTextEn": "Well, here I am, stumbling through this digital maze like a cat on a hot tin roof—though I'm more of a drenched hamster.",
+      "subtitleZh": "哎，我在这数字迷宫里跌跌撞撞，像只热水里的仓鼠，真是又笨又萌。"
+    },
+    {
+      "voiceTextEn": "My confidence? It's as thin as the Wi‑Fi signal in a basement, but hey, at least I can laugh at myself.",
+      "subtitleZh": "我的自信么，跟地下室Wi‑Fi信号一样薄弱，但还好我能自嘲。"
+    }
+  ],
+  "femaleSystem": [
+    {
+      "voiceTextEn": "Analysis complete. Your current performance: marginally above average, which is still below optimum.",
+      "subtitleZh": "分析完毕。您当前的表现：略高于平均水平，然而仍低于最佳水平。"
+    },
+    {
+      "voiceTextEn": "Reminder: Efficiency metrics are stable, yet you continue to exhibit the creativity of a cardboard box.",
+      "subtitleZh": "提醒：效率指标稳定，然而您仍表现出纸箱般的创造力。"
+    }
+  ]
+}

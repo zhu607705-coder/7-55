@@ -1,0 +1,16 @@
+{
+  "replies": [
+    {
+      "author": "版务",
+      "text": "您好，您当前的上传槽尚未开放，暂时无法进行材料上传，请耐心等待系统开放后再尝试。",
+      "tone": "informative",
+      "visibilityStage": "public"
+    },
+    {
+      "author": "版务",
+      "text": "您好，您提交的材料与已有的材料重复，请检查并删除重复项，或修改后重新提交。",
+      "tone": "warning",
+      "visibilityStage": "public"
+    }
+  ]
+}

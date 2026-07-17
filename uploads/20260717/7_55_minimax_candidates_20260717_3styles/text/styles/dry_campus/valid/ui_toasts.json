@@ -1,0 +1,53 @@
+{
+  "_candidateMeta": {
+    "style": "dry_campus",
+    "styleLabelZh": "校园冷幽默",
+    "delivery": "保持事实不变，允许短句停顿、克制吐槽和校园论坛口吻；不提前公布答案。",
+    "selection": "适合男旁白、普通回复、操作反馈和剧情过场。",
+    "source": "text/valid/ui_toasts.json",
+    "sourceSha256": "95e3679a2108fac14dbee58788c00293ee4a62f34a4d1997ed88350cfb5ea849",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "toasts": [
+    {
+      "text": "签到点了好几次都卡住，能不能别再玩我",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "签到奖励一直不到账，真的要疯了",
+      "voice": "none",
+      "durationMs": 3500
+    },
+    {
+      "text": "道具列表加载慢，用个道具要等半天",
+      "voice": "none",
+      "durationMs": 4000
+    },
+    {
+      "text": "使用道具时一直报错，能不能给点稳定的",
+      "voice": "none",
+      "durationMs": 4500
+    },
+    {
+      "text": "搜索结果总是不准，找个东西这么难",
+      "voice": "none",
+      "durationMs": 5000
+    },
+    {
+      "text": "上传图片一直失败，网络烂到爆",
+      "voice": "none",
+      "durationMs": 5500
+    },
+    {
+      "text": "移动物品拖拽不灵敏，老是跳到别处",
+      "voice": "none",
+      "durationMs": 6000
+    },
+    {
+      "text": "移动分类功能太难用，完全不 intuitive",
+      "voice": "none",
+      "durationMs": 6200
+    }
+  ]
+}

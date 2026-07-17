@@ -1,0 +1,53 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/ui_feedback.json",
+    "sourceSha256": "7151070d89c3ac0da5752a7041b154618bd6f2d2788852d3b0b3a9477695824e",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "feedback": [
+    {
+      "id": 1,
+      "text": "7:55 该道具不可使用",
+      "tone": "error"
+    },
+    {
+      "id": 2,
+      "text": "7:55 文件已存在，请勿重复上传",
+      "tone": "warning"
+    },
+    {
+      "id": 3,
+      "text": "7:55 该功能尚未开放",
+      "tone": "info"
+    },
+    {
+      "id": 4,
+      "text": "7:55 使用成功",
+      "tone": "success"
+    },
+    {
+      "id": 5,
+      "text": "7:55 抽屉已关闭",
+      "tone": "neutral"
+    },
+    {
+      "id": 6,
+      "text": "7:55 操作已取消",
+      "tone": "neutral"
+    },
+    {
+      "id": 7,
+      "text": "7:55 网络连接失败，请重试",
+      "tone": "error"
+    },
+    {
+      "id": 8,
+      "text": "7:55 请求超时，请稍后重试",
+      "tone": "warning"
+    }
+  ]
+}

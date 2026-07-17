@@ -1,0 +1,36 @@
+{
+  "_candidateMeta": {
+    "style": "plain_case",
+    "styleLabelZh": "平实调查",
+    "delivery": "保持原文事实和句式，适合纸质证据、帖子正文和调查记录。",
+    "selection": "信息密度优先，避免额外情绪。",
+    "source": "text/valid/documents_a_retry.json",
+    "sourceSha256": "98666f4f0e62ea299bab6e3ff2c294cb28d6abbe03f72bf1bcfada4cd3789d2d",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "documents": [
+    {
+      "title": "占座纸条",
+      "source": "网络",
+      "body": "座位编号：12A；预订时间：2023-08-01 10:00；预订人：张三；联系电话：13800138000",
+      "fields": [
+        {
+          "name": "座位编号",
+          "type": "string"
+        },
+        {
+          "name": "预订时间",
+          "type": "string"
+        },
+        {
+          "name": "预订人",
+          "type": "string"
+        },
+        {
+          "name": "联系电话",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "accessibility": [
+    {
+      "target": "taskButton",
+      "label": "任务键",
+      "description": "打开任务列表或创建新任务的按钮"
+    },
+    {
+      "target": "weatherNotification",
+      "label": "天气通知",
+      "description": "显示当前天气状况和温度的提醒通知"
+    },
+    {
+      "target": "paperItem",
+      "label": "纸质道具",
+      "description": "用于记录或签到的纸质凭证"
+    },
+    {
+      "target": "uploadSlot",
+      "label": "上传槽",
+      "description": "上传图片或文件的入口区域"
+    },
+    {
+      "target": "mapView",
+      "label": "地图",
+      "description": "交互式地图，显示位置和路径"
+    },
+    {
+      "target": "backButton",
+      "label": "返回按钮",
+      "description": "返回上一级页面或取消当前操作"
+    },
+    {
+      "target": "helpButton",
+      "label": "帮助键",
+      "description": "提供使用指南和常见问题的帮助入口"
+    },
+    {
+      "target": "settingsButton",
+      "label": "设置键",
+      "description": "打开系统设置或偏好配置的入口"
+    }
+  ]
+}

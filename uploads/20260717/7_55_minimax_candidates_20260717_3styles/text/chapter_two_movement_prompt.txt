@@ -1,0 +1,1 @@
+只输出 JSON。为《7:55》第二章移动段生成候选文案：身份登记、体艺锻炼、天气水滴、导师线、右移箭头、余额、手柄、首次移动、离开寝室。输出 {"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]}。各写 6 条。对白含 voiceTextEn 和 subtitleZh；男旁白低沉诙谐自嘲，女系统冷幽默。提示只指向浙大钉、天气、微信、道具或界面区域，不写正确顺序；任务只写当前下一步；吐槽含 durationMs 2400–6500 和 voice="none"。不要 Markdown、乱码或真实个人信息。

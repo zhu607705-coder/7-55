@@ -1,0 +1,19 @@
+你是《7:55》的叙事编辑。请为一个浙江大学校园解谜游戏生成一套“候选文案”，只输出严格 JSON，不要 Markdown 代码围栏，不要解释。
+
+背景：玩家在 07:55 醒来，第一章完成 0798 签到并进入第二章；第二章先修复移动能力，再去基础图书馆调查 022 座位、占座书包、旧版离座规定和缺失签到记录；第三章寻找借走签到记录的书。当前游戏强调单一下一步目标、渐进提示、证据关系和少剧透。CC98、浙大钉、天气、图书馆、校园地图会按剧情阶段开放。
+
+请生成以下 JSON 结构：
+{
+  "chapterOne": {"narratorLines": [], "systemLines": [], "taskTitles": [], "taunts": [], "hintTiers": []},
+  "chapterTwoMovement": {"narratorLines": [], "systemLines": [], "taskTitles": [], "hintTiers": []},
+  "chapterTwoLibrary": {"narratorLines": [], "systemLines": [], "taskTitles": [], "hintTiers": [], "evidenceReactions": []},
+  "chapterThree": {"narratorLines": [], "systemLines": [], "taskTitles": [], "hintTiers": []},
+  "voiceDirection": {"maleNarrator": [], "femaleSystem": [], "textOnlyTauntRules": []}
+}
+
+要求：
+1. 每个 spoken line 同时给出 `voiceTextEn` 和 `subtitleZh`，男旁白使用低沉、诙谐、自嘲的英文，女系统使用克制、冷幽默的英文；字幕自然中文。
+2. 每个章节至少 8 条旁白、8 条系统、6 个任务标题、9 条三档提示；提示只指向应用、证据类型或界面区域，不给数字、代码、正确回复字母或精确顺序。
+3. `taunts` 只能是无配音的中文文字，并给出 `durationMs`，范围 2400–6500。
+4. 任务文本只表达当前下一步，不列出后续谜题。
+5. 不制造真实个人信息；可以使用游戏已有的虚构学号和座位号。

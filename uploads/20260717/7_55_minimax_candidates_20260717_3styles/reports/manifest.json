@@ -1,0 +1,636 @@
+{
+  "project": "7:55",
+  "generatedAt": "2026-07-17T00:01:23.968Z",
+  "integration": "none",
+  "assets": {
+    "images/rpg/rpg_dorm_hub_candidate_a.png": {
+      "path": "images/rpg/rpg_dorm_hub_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 wide pixel-art orthographic Chinese university dorm room at 07:55 on a rainy morning; two-tier bunk beds on the left, continuous study desks and storage cabinets on the right, central clear floor, back door, restrained industrial palette, crisp readable silhouettes, no text, no characters",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.054Z",
+      "bytes": 374535,
+      "sha256": "07b58249a9ea301beae7ab082a651805fe0bc22278e2b8b94779190eadaa9da9"
+    },
+    "images/rpg/rpg_library_interior_candidate_a.png": {
+      "path": "images/rpg/rpg_library_interior_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 wide top-down pixel-art modern Chinese university library interior; glass entrance at south, reception desk, catalog terminal, shelves, reading tables, quiet open aisles, seat 022 area visually distinct, coherent source-pixel geometry, no text, no characters",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.056Z",
+      "bytes": 626135,
+      "sha256": "86e4fb650645b416d6a364f8edbb9f1904c90ffc15d0e508e6779f2926298b39"
+    },
+    "images/rpg/rpg_zijingang_map_candidate_a.png": {
+      "path": "images/rpg/rpg_zijingang_map_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 top-down pixel-art campus map for a Chinese university; Qizhen Lake as the longitudinal anchor, Basic Library and management tower on east bank, roads and bridges with clear circulation, Great Lawn, sports courts, trees and courtyards, readable landmark silhouettes, no labels, no characters",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.057Z",
+      "bytes": 991671,
+      "sha256": "c1a7731cde8b78d9b089c362e01375725d49d685229f3182579dad2060663aac"
+    },
+    "images/rpg/rpg_library_exterior_candidate_a.png": {
+      "path": "images/rpg/rpg_library_exterior_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 cardinal orthographic pixel-art elevation of a modern university basic library entrance; glass atrium, ring crown tower, connected wings, south-facing doors, clean ground baseline, restrained campus colors, no isometric projection, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.058Z",
+      "bytes": 381501,
+      "sha256": "be3e6c4c28ed9fd6aed7d1c259171f802de3195c3e87f9cbfd5b6060dff0de2d"
+    },
+    "images/rpg/rpg_sports_courts_candidate_a.png": {
+      "path": "images/rpg/rpg_sports_courts_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 strict top-down pixel-art sports complex with running track, soccer pitch, basketball and tennis courts, drainage edges and small trees; clean orthogonal composition, no perspective, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.059Z",
+      "bytes": 415540,
+      "sha256": "40b876bc2814be6f82982cbc87b19038770c34316936a1c7da14bfe8d1968144"
+    },
+    "images/rpg/rpg_south_gate_candidate_a.png": {
+      "path": "images/rpg/rpg_south_gate_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 cardinal pixel-art elevation of a university south gate; horizontal nine-arch facade parallel to a road, separate eagle sculpture on the right, trees and sidewalk, crisp silhouette, no isometric projection, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.060Z",
+      "bytes": 325607,
+      "sha256": "ac32df179b81ef7d7ad5e7792036c3b34c88ad75d135d160f390dd0910d27461"
+    },
+    "images/rpg/rpg_lake_bank_candidate_a.png": {
+      "path": "images/rpg/rpg_lake_bank_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 strict top-down pixel-art Qizhen Lake bank scene with willow rows, bridges, stone paths, benches, grass clearings and calm water; useful as a game background, no text, no characters",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.060Z",
+      "bytes": 816954,
+      "sha256": "7edc445a2ba105b865dfcca5cc5f1b82170647b1d7a0cf648eaf1454ca628759"
+    },
+    "images/rpg/rpg_library_evidence_overlay_candidate_a.png": {
+      "path": "images/rpg/rpg_library_evidence_overlay_candidate_a.png",
+      "kind": "image",
+      "prompt": "16:9 pixel-art investigation overlay for a library seat 022 scene; empty desk, folded occupancy note, backpack outline, receipt and faint signal ring arranged as inspectable evidence, dark navy and warm paper palette, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.061Z",
+      "bytes": 220890,
+      "sha256": "02a2e2084b0874481ea5a7d4362cd565f47aab08a2966cbd2ba108d6ebcbbd5c"
+    },
+    "images/phone/phone_home_candidate_a.png": {
+      "path": "images/phone/phone_home_candidate_a.png",
+      "kind": "image",
+      "prompt": "9:16 high-fidelity pixel-art smartphone home screen for a Chinese university student at 07:55; weather card, notification list, app grid for WeChat, ZJU Ding, CC98, photos and library, compact task bar at top, clear hierarchy, no readable words",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.062Z",
+      "bytes": 320723,
+      "sha256": "e59f2d413affe6d3bf969ebe22cf499ab83959c9166686e52822719edbc1fb97"
+    },
+    "images/phone/phone_zjuding_candidate_a.png": {
+      "path": "images/phone/phone_zjuding_candidate_a.png",
+      "kind": "image",
+      "prompt": "9:16 pixel-art ZJU Ding campus service page; blue identity card, campus card, campus map, department directory and library tiles, locked slots retain icon frames, restrained blue-gray interface, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.062Z",
+      "bytes": 273729,
+      "sha256": "c82d00ddd6b8b8c4c334d186fda17e9db32ae1f7006dbe1f67c78e1ca6193b4d"
+    },
+    "images/phone/phone_cc98_candidate_a.png": {
+      "path": "images/phone/phone_cc98_candidate_a.png",
+      "kind": "image",
+      "prompt": "9:16 pixel-art campus forum page inspired by an old university BBS; dark navy header, post list, one evidence thread, compact reply controls, attachment slot, clear hierarchy and no distracting icons, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.063Z",
+      "bytes": 429598,
+      "sha256": "11fdad0ec0456b65193ea996e642a68c4fc870c9313c6c95a01c190cd9db98c4"
+    },
+    "images/phone/phone_library_candidate_a.png": {
+      "path": "images/phone/phone_library_candidate_a.png",
+      "kind": "image",
+      "prompt": "9:16 pixel-art mobile library search page; catalog search field, result cards, current investigation badge and a subtle return-to-scene control, paper and navy palette, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.063Z",
+      "bytes": 252600,
+      "sha256": "d7a6a0f340860da7b70561eaa28b77ac77de060126b053427621510a7538b93e"
+    },
+    "images/phone/phone_weather_candidate_a.png": {
+      "path": "images/phone/phone_weather_candidate_a.png",
+      "kind": "image",
+      "prompt": "9:16 pixel-art university weather page on a rainy morning; small rain icon, temperature panel, hourly strip, campus note and a restrained navigation header, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.064Z",
+      "bytes": 202763,
+      "sha256": "00bbe5c482d994bf0b7a64b26e00b56d6c963d92b46f8a10381cb2b345ccc61d"
+    },
+    "images/phone/phone_task_drawer_candidate_a.png": {
+      "path": "images/phone/phone_task_drawer_candidate_a.png",
+      "kind": "image",
+      "prompt": "9:16 pixel-art task drawer overlay for a puzzle game; one current task, one next objective, compact progress digits, three hint levels collapsed, acquired-material folder collapsed, no future spoiler rows, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.064Z",
+      "bytes": 325492,
+      "sha256": "01774c2fed2ba6774af178f47b01535a72b603368495eb291d79cf3ee8e76252"
+    },
+    "images/props/paper_evidence_sheet_candidate_a.png": {
+      "path": "images/props/paper_evidence_sheet_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art flat lay of eight investigation papers from a university library: occupancy note, call number slip, old leave rule, identification report, non-person proof, seat receipt, presence proof and release pass; clean separated cards, legible blank lines, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.064Z",
+      "bytes": 297805,
+      "sha256": "5821c9c1ab976c86f8be2b31bb613e108358c40afe49b28ec073b5c9263271a3"
+    },
+    "images/props/campus_card_candidate_a.png": {
+      "path": "images/props/campus_card_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art electronic university campus card on a dark desk, cyan chip, small portrait placeholder, yellow balance strip, crisp front-facing item icon, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.065Z",
+      "bytes": 96300,
+      "sha256": "68c84993a578fdff33753bab376344d73941d24cd77fc5ca8ff2017f605cd78a"
+    },
+    "images/props/gamepad_candidate_a.png": {
+      "path": "images/props/gamepad_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art second-hand blue gamepad item icon, front-facing, worn plastic, two yellow buttons, small highlight, transparent-looking solid background, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.065Z",
+      "bytes": 149619,
+      "sha256": "265fff797738d527791643696c9907ef3766009fa222c178bf0acc7bb405ea48"
+    },
+    "images/props/seat_receipt_candidate_a.png": {
+      "path": "images/props/seat_receipt_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art close-up of a small library seat 022 receipt, timestamp marks and stamp shapes without readable text, warm paper, blue shadow, no characters",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.066Z",
+      "bytes": 340989,
+      "sha256": "d725d3b703663c40374734734fca00933a0806ad4a640c6be2599974c83b88fa"
+    },
+    "images/props/old_rule_document_candidate_a.png": {
+      "path": "images/props/old_rule_document_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art old library leave-seat regulation document with three stamped evidence sections and folded corner, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.066Z",
+      "bytes": 461745,
+      "sha256": "c08bc3a1fd5b8551038d23cb83a9c330cf53c4e0b385b7380c95cc393c0574d4"
+    },
+    "images/props/cc98_attachment_slots_candidate_a.png": {
+      "path": "images/props/cc98_attachment_slots_candidate_a.png",
+      "kind": "image",
+      "prompt": "4:3 pixel-art forum upload panel with four empty evidence slots, paper thumbnails, drag-and-drop affordance, dark navy UI, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.067Z",
+      "bytes": 118419,
+      "sha256": "26ba14d68ef1f26bcf56d9cb9e024b8115619cdbfb5b5c7b9a4c158925375862"
+    },
+    "images/characters/student_turnaround_candidate_a.png": {
+      "path": "images/characters/student_turnaround_candidate_a.png",
+      "kind": "image",
+      "prompt": "4:3 pixel-art student character turnaround sheet, front back left right views and two walking frames, modest university clothes, clean transparent-style background, consistent proportions, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.067Z",
+      "bytes": 158635,
+      "sha256": "84b849ac24b51216be250d7246366d4cad45bbd7711954c66a566381d1d8670f"
+    },
+    "images/characters/narrator_orb_candidate_a.png": {
+      "path": "images/characters/narrator_orb_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art red interface orb with an expressive dry face, tiny scanline fragments and a detachable cursor ring, transparent-style background, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.068Z",
+      "bytes": 386667,
+      "sha256": "7ed6a4f83ffa1bc2128d7e3f3b34473b46ac9743b6148fc298e5415fc8661aa5"
+    },
+    "images/characters/system_avatar_candidate_a.png": {
+      "path": "images/characters/system_avatar_candidate_a.png",
+      "kind": "image",
+      "prompt": "1:1 pixel-art restrained female system avatar for a university phone assistant, cool blue-gray portrait, deadpan expression, clean icon silhouette, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.069Z",
+      "bytes": 101051,
+      "sha256": "9b19c47cf976c30e5138bbd625982e2204fd329c57f4d81cc33bf93c0b58d7b1"
+    },
+    "images/ui/app_icon_set_candidate_a.png": {
+      "path": "images/ui/app_icon_set_candidate_a.png",
+      "kind": "image",
+      "prompt": "4:3 pixel-art icon sheet for WeChat, ZJU Ding, CC98, campus map, library, weather, photos, control center and task key; unified 7:55 visual language, separated square icons, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.070Z",
+      "bytes": 171479,
+      "sha256": "a07b7568ff8997303b4320d47fd61ace935816d046378de0066a5a5bf0dd4780"
+    },
+    "images/ui/pixel_ui_texture_set_candidate_a.png": {
+      "path": "images/ui/pixel_ui_texture_set_candidate_a.png",
+      "kind": "image",
+      "prompt": "4:3 seamless pixel-art UI texture sheet: dark navy panels, pale paper cards, thin gray borders, yellow progress accents, blue locked icon frames, no text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.071Z",
+      "bytes": 203629,
+      "sha256": "7d30d67e4f5845952b3fc84e83ea522d9fbccef38a4c6e14c73d781bb60d5f69"
+    },
+    "images/posts/cc98_attachment_sheet_candidate_a.png": {
+      "path": "images/posts/cc98_attachment_sheet_candidate_a.png",
+      "kind": "image",
+      "prompt": "4:3 pixel-art collage of campus forum attachments: library desk photo, old rule scan, stamped proof, seat receipt and tiny weather note, each separated with blank caption space, no readable text",
+      "status": "existing",
+      "generatedAt": "2026-07-17T00:12:15.071Z",
+      "bytes": 478686,
+      "sha256": "b49838098d377856fbcc9f5fe3095d0d0ce8f513103948dd5e1367edfa98f0a9"
+    },
+    "images/rpg/rpg_dorm_hub_candidate_b.png": {
+      "path": "images/rpg/rpg_dorm_hub_candidate_b.png",
+      "kind": "image",
+      "prompt": "16:9 16-bit pixel art game background, strict top-down orthographic view of a Chinese university dorm room, two bunk beds on the left, continuous desks and wardrobes on the right, door at the north wall, empty central walkable floor, crisp tile grid, limited palette, no perspective, no photorealism, no text, no characters",
+      "status": "generated",
+      "width": 1536,
+      "height": 864,
+      "generatedAt": "2026-07-17T00:12:36.398Z",
+      "bytes": 345830,
+      "sha256": "0ede959e5ef4dad96e41a15a8514840fd4460948f7fca2085298cecf0372f84e"
+    },
+    "images/rpg/rpg_library_interior_candidate_b.png": {
+      "path": "images/rpg/rpg_library_interior_candidate_b.png",
+      "kind": "image",
+      "prompt": "16:9 16-bit pixel art game background, strict top-down orthographic view of a modern university library, south entrance at bottom, reception desk in center, catalog terminal, parallel shelf rows, reading tables and wide clear aisles, source-pixel style, no perspective, no photorealism, no text, no characters",
+      "status": "generated",
+      "width": 1536,
+      "height": 864,
+      "generatedAt": "2026-07-17T00:12:57.607Z",
+      "bytes": 522110,
+      "sha256": "cc188996544cd35375ff6ae2ef877144f577cd08ad8b9569a4741aa69768e704"
+    },
+    "images/rpg/rpg_zijingang_map_candidate_b.png": {
+      "path": "images/rpg/rpg_zijingang_map_candidate_b.png",
+      "kind": "image",
+      "prompt": "16:9 16-bit pixel art campus map, strict top-down orthographic tilemap, long Qizhen Lake from north to south, Basic Library with glass atrium on east bank, bridges, roads, Great Lawn, sports courts and tree groups, readable game-level circulation, no isometric buildings, no perspective, no text",
+      "status": "generated",
+      "width": 1536,
+      "height": 864,
+      "generatedAt": "2026-07-17T00:13:18.741Z",
+      "bytes": 965018,
+      "sha256": "7b813c8b2edf4190617514ffdf7db6ecf43a91572200979024aee783144e1da3"
+    },
+    "images/rpg/rpg_library_exterior_candidate_b.png": {
+      "path": "images/rpg/rpg_library_exterior_candidate_b.png",
+      "kind": "image",
+      "prompt": "16:9 16-bit pixel art cardinal front elevation of a university library, ring crown tower, glass atrium, connected wings, doors parallel to the ground, flat baseline, game sprite sheet aesthetic, no isometric projection, no perspective, no text",
+      "status": "generated",
+      "width": 1536,
+      "height": 864,
+      "generatedAt": "2026-07-17T00:13:38.579Z",
+      "bytes": 430516,
+      "sha256": "3d57d1fff252f181abfe70e2fe964c35f1cda3309eafb2a74a561a0c71bf043f"
+    },
+    "images/rpg/rpg_sports_courts_candidate_b.png": {
+      "path": "images/rpg/rpg_sports_courts_candidate_b.png",
+      "kind": "image",
+      "prompt": "1:1 16-bit pixel art strict top-down sports courts tilemap, red running track around green football pitch, four basketball courts, two tennis courts, fences, trees, clean grid and no perspective, no text",
+      "status": "generated",
+      "width": 1024,
+      "height": 1024,
+      "generatedAt": "2026-07-17T00:13:55.824Z",
+      "bytes": 446303,
+      "sha256": "cae775938fa0f3c2a1d040e79c8430e0fe7f83439f56a8d9c1e8bb9b094a00f3"
+    },
+    "images/phone/phone_home_candidate_b.png": {
+      "path": "images/phone/phone_home_candidate_b.png",
+      "kind": "image",
+      "prompt": "9:16 retro pixel-art smartphone home screen for a university mystery game, 430 by 860 composition, dark paper-gray background, blue and yellow app cards, weather notification at bottom, one compact task strip at top, coherent Chinese campus UI, no readable text, no photorealism",
+      "status": "generated",
+      "width": 768,
+      "height": 1536,
+      "generatedAt": "2026-07-17T00:14:14.117Z",
+      "bytes": 327434,
+      "sha256": "f2cbb7136acce094611e01576a08d91f532d4d218a59c7632551d516c16b1d7c"
+    },
+    "images/props/paper_evidence_sheet_candidate_b.png": {
+      "path": "images/props/paper_evidence_sheet_candidate_b.png",
+      "kind": "image",
+      "prompt": "1:1 clean 16-bit pixel-art item sheet with eight separate paper evidence cards, occupancy note, call-number slip, old rule, ID report, non-person proof, seat receipt, presence proof and release pass, flat front view, blank ruled lines, no fake writing, no text",
+      "status": "generated",
+      "width": 1024,
+      "height": 1024,
+      "generatedAt": "2026-07-17T00:14:35.629Z",
+      "bytes": 263944,
+      "sha256": "d95a4610dfd39cfc67519a3b9b984c0dc1a6b7ecdfb92c419de78c7fd6b134cc"
+    },
+    "images/characters/student_turnaround_candidate_b.png": {
+      "path": "images/characters/student_turnaround_candidate_b.png",
+      "kind": "image",
+      "prompt": "4:3 16-bit pixel-art RPG sprite sheet, one Chinese university student in four cardinal directions and two walk frames, consistent 48x64 proportions, transparent checkerboard-style background, no captions, no text, no realistic rendering",
+      "status": "generated",
+      "width": 1536,
+      "height": 864,
+      "generatedAt": "2026-07-17T00:14:55.660Z",
+      "bytes": 201316,
+      "sha256": "17c7786c381373dd671eb7df4278c36388691b8b3641b40f77cdffc440f27cfb"
+    },
+    "images/ui/app_icon_set_candidate_b.png": {
+      "path": "images/ui/app_icon_set_candidate_b.png",
+      "kind": "image",
+      "prompt": "4:3 16-bit pixel-art app icon sheet, exactly nine separated square icons for WeChat, ZJU Ding, CC98, campus map, library, weather, photos, control center and quest key, unified blue-gray yellow palette, no labels, no text",
+      "status": "generated",
+      "width": 1280,
+      "height": 960,
+      "generatedAt": "2026-07-17T00:15:36.816Z",
+      "bytes": 129574,
+      "sha256": "ca4c17e4c7b1b62794de578a85ad130897ff366e606f6fabe5a983b2a8d7316c"
+    },
+    "images/props/cc98_attachment_slots_candidate_b.png": {
+      "path": "images/props/cc98_attachment_slots_candidate_b.png",
+      "kind": "image",
+      "prompt": "4:3 16-bit pixel-art forum upload panel, four empty rectangular evidence slots with paper silhouettes, blue focus border and yellow submit accent, flat UI screenshot, no labels, no text, no fake glyphs",
+      "status": "generated",
+      "width": 1280,
+      "height": 960,
+      "generatedAt": "2026-07-17T00:15:55.887Z",
+      "bytes": 138945,
+      "sha256": "872f1fc3ddccf763efb73bacc8b37d217da9405a03e91351b9757a26b9ca5fd0"
+    },
+    "audio/music/music_dorm_rain_candidate_a.mp3": {
+      "path": "audio/music/music_dorm_rain_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Minimal pixel ambient for a rainy 07:55 university dorm; soft fan pulse, window rain ticks, muted FM keys, low square-wave room tone; sleepy, practical, lightly tense; instrumental, stable loop, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:21:16.493Z",
+      "bytes": 3290477,
+      "sha256": "2796d9cdb07af00bcd8f5a8c7f5120f218bf382bb56b2d8f1b6c1fc35ce6b785"
+    },
+    "audio/music/music_prologue_blackout_candidate_a.mp3": {
+      "path": "audio/music/music_prologue_blackout_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Minimal glitch chiptune for a seven-second blackout after a failed campus check-in; low square pulse, muted clock tick, sparse silence, dry tension; instrumental, no vocals",
+      "status": "failed",
+      "error": "music audio/music/music_prologue_blackout_candidate_a.mp3 failed: {\n  \"error\": {\n    \"code\": 5,\n    \"message\": \"Request timed out.\",\n    \"hint\": \"Try increasing --timeout (e.g. --timeout 60).\\nIf this happens on every request with a valid API key, you may be hitting the wrong region.\\nRun: mmx auth status   — to check your credentials and region.\\nRun: mmx config set region global   (or cn) — to override the region.\"\n  }\n}"
+    },
+    "audio/music/music_phone_search_candidate_a.mp3": {
+      "path": "audio/music/music_phone_search_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Pixel puzzle electronica for searching a university phone interface; notification ticks, clipped synth notes, curious procedural rhythm, light comic restraint; instrumental, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:31:36.124Z",
+      "bytes": 1976414,
+      "sha256": "945ad9b466a310e60c7f1d37ea4578e7c0f544219f6ae257fc91546dfefe38fb"
+    },
+    "audio/music/music_movement_chain_candidate_a.mp3": {
+      "path": "audio/music/music_movement_chain_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Campus puzzle chiptune for assembling movement permissions across apps; pixel footsteps, menu clicks, unresolved arpeggio, playful but focused; instrumental, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:37:02.368Z",
+      "bytes": 4021906,
+      "sha256": "fdccf613ab51c3ac53245006e236d7a0314a89523cb6bf52f30350fe1f33cf29"
+    },
+    "audio/music/music_library_evidence_candidate_a.mp3": {
+      "path": "audio/music/music_library_evidence_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Quiet investigation electronica inside a modern university library; catalog scanner pulses, paper clicks, low clock rhythm, restrained mystery; instrumental, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:39:38.006Z",
+      "bytes": 5497302,
+      "sha256": "fd48596611ae1aab71321465b5698bc31114818281726c7b06791f9cc0e63208"
+    },
+    "audio/music/music_cc98_rank_candidate_a.mp3": {
+      "path": "audio/music/music_cc98_rank_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Fast campus forum arcade music for a post gaining attention; keyboard taps, notification hits, three ascending rank motifs, comic competition; instrumental, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:41:24.829Z",
+      "bytes": 3074810,
+      "sha256": "5bc7abb94f8bb446d94d6936378f9dbdc30478b5b79e3acbc1584c41aa75f037"
+    },
+    "audio/music/music_022_reveal_candidate_a.mp3": {
+      "path": "audio/music/music_022_reveal_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Sparse mysterious pixel ambient for discovering a hidden contact at library seat 022; detuned bells, low pulse, unresolved motif, intimate and quiet; instrumental, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:43:19.202Z",
+      "bytes": 3237815,
+      "sha256": "0a6dab457bcd405264f1e15545461b91932a2d5b7a0b242161fcb074def98d8d"
+    },
+    "audio/music/music_bike_755_candidate_a.mp3": {
+      "path": "audio/music/music_bike_755_candidate_a.mp3",
+      "kind": "music",
+      "prompt": "Compact light arcade chiptune for a rainy bicycle run across campus; directional rhythm, dry percussion, controlled bass, no heroic climax; instrumental, no vocals",
+      "status": "generated",
+      "model": "music-2.6",
+      "generatedAt": "2026-07-17T00:48:21.189Z",
+      "bytes": 3686703,
+      "sha256": "1dfd89fd0300159cdc00801b5956f9af83199df6c78e5c029dcb2d71f1d5a6f4"
+    },
+    "audio/voice/male_narrator_intro_candidate_a.mp3": {
+      "path": "audio/voice/male_narrator_intro_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "At seven fifty-five, the campus has already started without you. The alarm is not angry. It is simply keeping records.",
+      "status": "generated",
+      "voiceRole": "male_narrator",
+      "voice": "English_expressive_narrator",
+      "pitch": -4,
+      "generatedAt": "2026-07-17T01:21:22.909Z",
+      "bytes": 166452,
+      "sha256": "b08c160963e6d7be5024c542ce81a6239ad8eac0f858dcfab9be843db7d42f70"
+    },
+    "audio/voice/male_narrator_caught_candidate_a.mp3": {
+      "path": "audio/voice/male_narrator_caught_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "You caught the little red circle. That is either progress or a very small administrative error.",
+      "status": "generated",
+      "voiceRole": "male_narrator",
+      "voice": "English_expressive_narrator",
+      "pitch": -4,
+      "generatedAt": "2026-07-17T01:21:23.887Z",
+      "bytes": 101364,
+      "sha256": "771e966584b9096c1aa3c00a0cf7a8929386abcef9d76def3067d83bc12833b1"
+    },
+    "audio/voice/male_narrator_bargain_candidate_a.mp3": {
+      "path": "audio/voice/male_narrator_bargain_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "I can explain the missing record. I can also leave. Those are both excellent plans.",
+      "status": "generated",
+      "voiceRole": "male_narrator",
+      "voice": "English_expressive_narrator",
+      "pitch": -4,
+      "generatedAt": "2026-07-17T01:21:25.031Z",
+      "bytes": 88116,
+      "sha256": "7aa064885dd288e354cde970dad0ab4a980e4b2a0e2741bf8b1af47a6f277ca9"
+    },
+    "audio/voice/male_narrator_library_candidate_a.mp3": {
+      "path": "audio/voice/male_narrator_library_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "The library keeps every receipt. It does not promise that the receipts will be helpful.",
+      "status": "generated",
+      "voiceRole": "male_narrator",
+      "voice": "English_expressive_narrator",
+      "pitch": -4,
+      "generatedAt": "2026-07-17T01:21:25.874Z",
+      "bytes": 81204,
+      "sha256": "c5ee95fa30ae7590ac7f57747a9e1e3b01648197be40ece892280482885757fd"
+    },
+    "audio/voice/male_narrator_022_candidate_a.mp3": {
+      "path": "audio/voice/male_narrator_022_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "Seat zero two two is occupied by a bag, a note, and an argument with the rules.",
+      "status": "generated",
+      "voiceRole": "male_narrator",
+      "voice": "English_expressive_narrator",
+      "pitch": -4,
+      "generatedAt": "2026-07-17T01:21:26.876Z",
+      "bytes": 99060,
+      "sha256": "8e356607a396c565077b7c50de85b513b9399a330fcb78afe7546e473a14d49f"
+    },
+    "audio/voice/male_narrator_bike_candidate_a.mp3": {
+      "path": "audio/voice/male_narrator_bike_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "The shortcut is wet, crowded, and technically a bad idea. You have already selected it.",
+      "status": "generated",
+      "voiceRole": "male_narrator",
+      "voice": "English_expressive_narrator",
+      "pitch": -4,
+      "generatedAt": "2026-07-17T01:21:28.104Z",
+      "bytes": 124404,
+      "sha256": "2e26eb5cca45c99c9a045ec4bed28589c9d693a9c48b351ddbff082b7ddf9064"
+    },
+    "audio/voice/female_system_found_candidate_a.mp3": {
+      "path": "audio/voice/female_system_found_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "A new signal has been found. Please do not call it a miracle before checking the timestamp.",
+      "status": "generated",
+      "voiceRole": "female_system",
+      "voice": "English_Graceful_Lady",
+      "pitch": -1,
+      "generatedAt": "2026-07-17T01:21:29.157Z",
+      "bytes": 114036,
+      "sha256": "9934bedeb95ae4bb8361f76c7b558eb09107d037407215d43bca3f5a41187ee1"
+    },
+    "audio/voice/female_system_inventory_candidate_a.mp3": {
+      "path": "audio/voice/female_system_inventory_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "The route is available. Your evidence is not. Please locate the evidence before selecting the route.",
+      "status": "generated",
+      "voiceRole": "female_system",
+      "voice": "English_Graceful_Lady",
+      "pitch": -1,
+      "generatedAt": "2026-07-17T01:21:30.350Z",
+      "bytes": 119220,
+      "sha256": "10d9ed5404cc2e772917af23c93b726f0ae823f016d796e19ffec0e89d829dfc"
+    },
+    "audio/voice/female_system_move_candidate_a.mp3": {
+      "path": "audio/voice/female_system_move_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "Manual movement is almost ready. One more ordinary action remains.",
+      "status": "generated",
+      "voiceRole": "female_system",
+      "voice": "English_Graceful_Lady",
+      "pitch": -1,
+      "generatedAt": "2026-07-17T01:21:31.480Z",
+      "bytes": 99636,
+      "sha256": "349342eabd858382de2c9c7e4c4cff945af73c38a152f034723f449536397dfe"
+    },
+    "audio/voice/female_system_library_candidate_a.mp3": {
+      "path": "audio/voice/female_system_library_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "The library has accepted the entry record. Seat zero two two has not accepted anything.",
+      "status": "generated",
+      "voiceRole": "female_system",
+      "voice": "English_Graceful_Lady",
+      "pitch": -1,
+      "generatedAt": "2026-07-17T01:21:32.610Z",
+      "bytes": 119796,
+      "sha256": "b3e7ede76c0dc49fba12ced60956b8af679dea75b86a8327721b943c58610507"
+    },
+    "audio/voice/female_system_evidence_candidate_a.mp3": {
+      "path": "audio/voice/female_system_evidence_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "The proof is readable now. Upload only what the page can identify.",
+      "status": "generated",
+      "voiceRole": "female_system",
+      "voice": "English_Graceful_Lady",
+      "pitch": -1,
+      "generatedAt": "2026-07-17T01:21:33.586Z",
+      "bytes": 93876,
+      "sha256": "39c0777747e57b473855e44cdd963f667caca082f4932f6c977cc205c742dee8"
+    },
+    "audio/voice/female_system_recovery_candidate_a.mp3": {
+      "path": "audio/voice/female_system_recovery_candidate_a.mp3",
+      "kind": "voice",
+      "prompt": "The request is complete. The account can return when the evidence is complete.",
+      "status": "generated",
+      "voiceRole": "female_system",
+      "voice": "English_Graceful_Lady",
+      "pitch": -1,
+      "generatedAt": "2026-07-17T01:21:34.623Z",
+      "bytes": 103092,
+      "sha256": "e0bb1fcf1617b39be2273e951837dfc48744fc801d53ff940d67cb7702b58f29"
+    },
+    "audio/sfx/fx_phone_unlock_candidate_a.mp3": {
+      "path": "audio/sfx/fx_phone_unlock_candidate_a.mp3",
+      "kind": "sfx",
+      "prompt": "Short pixel UI sound: phone service unlock, glassy ascending two-note confirmation, 1 second, no melody",
+      "status": "generated",
+      "model": "music-2.6",
+      "durationSeconds": 1.8,
+      "generatedAt": "2026-07-17T01:23:56.988Z",
+      "bytes": 45651,
+      "sha256": "df48d27ec40fd48b45995fb00f6d66df444ec6acbfa419a0967194e0426e067d"
+    },
+    "audio/sfx/fx_paper_unfold_candidate_a.mp3": {
+      "path": "audio/sfx/fx_paper_unfold_candidate_a.mp3",
+      "kind": "sfx",
+      "prompt": "Short close paper unfold and document reveal sound, dry paper plus quiet chime, 1 second",
+      "status": "generated",
+      "model": "music-2.6",
+      "durationSeconds": 1.8,
+      "generatedAt": "2026-07-17T01:25:46.338Z",
+      "bytes": 45651,
+      "sha256": "fd3391c018ae01c52b982afb8200f205bc6d47c98a51a8ba805a70653bfa5b4b"
+    },
+    "audio/sfx/fx_catalog_match_candidate_a.mp3": {
+      "path": "audio/sfx/fx_catalog_match_candidate_a.mp3",
+      "kind": "sfx",
+      "prompt": "Short library catalog correct-match sound, scanner blip followed by soft confirmation, 1 second",
+      "status": "generated",
+      "model": "music-2.6",
+      "durationSeconds": 1.8,
+      "generatedAt": "2026-07-17T01:28:07.708Z",
+      "bytes": 45651,
+      "sha256": "22b6690dda1202b982a4ebd2d164030756ac96af248792a9a90922b8f514a6f7"
+    },
+    "audio/sfx/fx_forum_upload_candidate_a.mp3": {
+      "path": "audio/sfx/fx_forum_upload_candidate_a.mp3",
+      "kind": "sfx",
+      "prompt": "Short campus forum evidence upload sound, keyboard tap, data sweep and restrained ping, 1 second",
+      "status": "generated",
+      "model": "music-2.6",
+      "durationSeconds": 1.8,
+      "generatedAt": "2026-07-17T01:29:22.245Z",
+      "bytes": 45651,
+      "sha256": "e3d042c067344093a7d21e61d75049f6371588d0e701514935649f1d4894593f"
+    },
+    "audio/sfx/fx_pass_stamp_candidate_a.mp3": {
+      "path": "audio/sfx/fx_pass_stamp_candidate_a.mp3",
+      "kind": "sfx",
+      "prompt": "Short official stamp sound on paper, firm impact with tiny mechanical release, 1 second",
+      "status": "generated",
+      "model": "music-2.6",
+      "durationSeconds": 1.8,
+      "generatedAt": "2026-07-17T01:30:59.748Z",
+      "bytes": 45651,
+      "sha256": "70125b19b7d0075b4c949231edd793daa48406f8adac68cf25b800a9c39b7c2b"
+    },
+    "audio/sfx/fx_022_signal_candidate_a.mp3": {
+      "path": "audio/sfx/fx_022_signal_candidate_a.mp3",
+      "kind": "sfx",
+      "prompt": "Short strange seat 022 signal ping, distant low pulse with narrow radio shimmer, 1.2 seconds",
+      "status": "failed",
+      "error": "sfx audio/sfx/fx_022_signal_candidate_a.mp3 failed: {\n  \"error\": {\n    \"code\": 5,\n    \"message\": \"Request timed out.\",\n    \"hint\": \"Try increasing --timeout (e.g. --timeout 60).\\nIf this happens on every request with a valid API key, you may be hitting the wrong region.\\nRun: mmx auth status   — to check your credentials and region.\\nRun: mmx config set region global   (or cn) — to override the region.\"\n  }\n}"
+    }
+  },
+  "finishedAt": "2026-07-17T01:40:00.008Z",
+  "failureCount": 1
+}

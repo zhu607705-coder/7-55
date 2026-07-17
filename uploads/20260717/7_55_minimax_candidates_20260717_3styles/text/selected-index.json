@@ -1,0 +1,789 @@
+{
+  "chapter_one_narrator.json": {
+    "maleNarrator": [
+      {
+        "voiceTextEn": "It's 7:55, the bed's a magnet and my签到 is already screaming for attention.",
+        "subtitleZh": "七点五十五，床像磁铁一样把我吸住，签到却在旁边大喊。"
+      },
+      {
+        "voiceTextEn": "At 7:55 I'm still battling the alarm while my签到 sheet gives me the evil eye.",
+        "subtitleZh": "七点五十五，我仍在和闹钟搏斗，签到表却对我翻白眼。"
+      },
+      {
+        "voiceTextEn": "Seven fifty‑five, coffee's cold, the clock's mocking, and I'm already late for签到.",
+        "subtitleZh": "七点五十五，咖啡凉了，时钟在嘲讽，而我已经在签到的路上迟到。"
+      }
+    ]
+  },
+  "chapter_one_quest.json": {
+    "taskTitles": [
+      "打开手机时钟应用检查闹钟设置",
+      "在短信应用中查看未读提醒",
+      "打开地图应用定位至火车站",
+      "使用相机应用扫描隐藏二维码"
+    ],
+    "hints": [
+      "在主屏幕滑动到底部文件夹，打开时钟应用",
+      "点击通知栏向左的箭头展开快捷设置面板",
+      "进入设置应用，点击隐私并查看定位服务",
+      "打开相册应用，选择最新的一张照片查看",
+      "在主屏幕的快捷方式中找到地图应用并打开",
+      "打开短信应用，点击带有星标的联系人查看信息"
+    ]
+  },
+  "chapter_one_system.json": {
+    "femaleSystem": [
+      {
+        "voiceTextEn": "The device is ready to confirm your presence, no applause required.",
+        "subtitleZh": "设备已准备好确认您的出席，无需掌声。"
+      },
+      {
+        "voiceTextEn": "Your check‑in request is being processed, even though the screen remains unimpressed.",
+        "subtitleZh": "您的签到请求正在处理中，屏幕依旧保持冷漠。"
+      },
+      {
+        "voiceTextEn": "Operation complete. The system notes your arrival with the enthusiasm of a stone.",
+        "subtitleZh": "操作完成。系统以石头的热情记录您的到来。"
+      }
+    ]
+  },
+  "chapter_one_taunts.json": {
+    "taunts": [
+      {
+        "text": "这波操作直接把自己笑醒，真是服了自己的智商。",
+        "voice": "none",
+        "durationMs": 3000
+      },
+      {
+        "text": "我这一手简直自掘坟墓，连自己都忍不住吐槽。",
+        "voice": "none",
+        "durationMs": 4200
+      },
+      {
+        "text": "每次点错都像在给自己加戏，真是够了。",
+        "voice": "none",
+        "durationMs": 5400
+      },
+      {
+        "text": "本来想装高手，结果手残到连自己都嫌。",
+        "voice": "none",
+        "durationMs": 6100
+      }
+    ]
+  },
+  "chapter_two_library_taunts.json": {
+    "taunts": [
+      {
+        "text": "这纸条写得跟密码似的，谁看得懂啊！",
+        "voice": "none",
+        "durationMs": 3000
+      },
+      {
+        "text": "图书馆的旧规则比古代经书还复杂，简直是要命。",
+        "voice": "none",
+        "durationMs": 4200
+      },
+      {
+        "text": "上传个证明比登天还难，系统总是报错。",
+        "voice": "none",
+        "durationMs": 5000
+      },
+      {
+        "text": "恢复申请提交了八百遍，还是杳无音讯。",
+        "voice": "none",
+        "durationMs": 4600
+      },
+      {
+        "text": "纸条、旧规则、证明上传、恢复申请，简直是四大天王逼我崩溃。",
+        "voice": "none",
+        "durationMs": 6100
+      }
+    ]
+  },
+  "chapter_two_movement_taunts.json": {
+    "taunts": [
+      {
+        "text": "这跑步机的速度比我的前途还慢，我得快马加鞭！",
+        "voice": "none",
+        "durationMs": 3000
+      },
+      {
+        "text": "余额不足，连买瓶水都要先算算天数，真是穷得只剩下信用卡账单。",
+        "voice": "none",
+        "durationMs": 4500
+      },
+      {
+        "text": "刚买的手柄比我的零花钱还贵，简直是把钱砸在游戏里。",
+        "voice": "none",
+        "durationMs": 5200
+      },
+      {
+        "text": "第一次移动竟然卡在墙角，我的角色是不是得了关节炎？",
+        "voice": "none",
+        "durationMs": 3800
+      },
+      {
+        "text": "这游戏的加载时间比煮一壶咖啡还久，我已经喝完三杯了。",
+        "voice": "none",
+        "durationMs": 6000
+      }
+    ]
+  },
+  "valid/cc98_attachments.json": {
+    "attachments": [
+      {
+        "id": "att_001",
+        "caption": "占座纸条：一张手写的便签，上面标记了座位编号和时间。",
+        "evidenceType": "note",
+        "safeForEarlyStage": true
+      },
+      {
+        "id": "att_002",
+        "caption": "旧规则：一份过去的场地使用规定，列出了座位分配原则。",
+        "evidenceType": "document",
+        "safeForEarlyStage": true
+      },
+      {
+        "id": "att_003",
+        "caption": "识别报告：系统生成的识别结果，显示了座位对应的身份信息。",
+        "evidenceType": "report",
+        "safeForEarlyStage": false
+      },
+      {
+        "id": "att_004",
+        "caption": "座位凭据：电子票或二维码，验证后可确认座位归属。",
+        "evidenceType": "ticket",
+        "safeForEarlyStage": true
+      }
+    ]
+  },
+  "valid/cc98_moderation.json": {
+    "moderation": [
+      {
+        "text": "请确保搜索请求符合社区规范，不得包含违规、侵权或敏感信息。",
+        "visibilityStage": "search",
+        "tone": "neutral"
+      },
+      {
+        "text": "上传材料时，请遵守版权规定，仅提交原创或已获授权的内容，避免上传违法或低质量信息。",
+        "visibilityStage": "upload",
+        "tone": "strict"
+      },
+      {
+        "text": "系统检测到疑似重复材料，请检查并合并或删除相同内容，以保持信息唯一性。",
+        "visibilityStage": "duplicate",
+        "tone": "warning"
+      },
+      {
+        "text": "排名反馈请提供客观依据，确保排序结果公正、透明，避免个人偏见影响排名。",
+        "visibilityStage": "ranking",
+        "tone": "informative"
+      }
+    ]
+  },
+  "valid/cc98_post_clean_a.json": {
+    "posts": [
+      {
+        "id": "1",
+        "title": "图书馆座位争议",
+        "author": "小明",
+        "time": "2025-12-01 10:30",
+        "body": "最近图书馆的座位总是不够，大家都在抢座位，导致很多学生只能站着学习。",
+        "tags": [
+          "图书馆",
+          "座位",
+          "争议",
+          "校园"
+        ],
+        "visibilityStage": "public"
+      }
+    ]
+  },
+  "valid/cc98_post_clean_b.json": {
+    "posts": [
+      {
+        "id": "1",
+        "title": "关于缺失签到记录的疑问",
+        "author": "校园新人",
+        "time": "2025-12-02 14:30:00",
+        "body": "这学期的签到记录好像少了几次，大家有遇到类似情况吗？",
+        "tags": "签到,疑问,记录",
+        "visibilityStage": "public"
+      }
+    ]
+  },
+  "valid/cc98_post_clean_d.json": {
+    "posts": [
+      {
+        "id": 1,
+        "title": "雨天图书馆的静谧时光",
+        "author": "小明",
+        "time": "2025-12-20 09:30:00",
+        "body": "今天外面下着大雨，我撑着伞来到图书馆，发现自习室里几乎没人，窗外的雨声让人格外专注，读了一上午的专业书，感觉效率比平时高出许多。建议大家雨天也可以去图书馆，享受一份别样的宁静。",
+        "tags": [
+          "雨天",
+          "图书馆",
+          "学习",
+          "宁静"
+        ],
+        "visibilityStage": "public"
+      }
+    ]
+  },
+  "valid/cc98_posts_d.json": {
+    "posts": [
+      {
+        "id": 1,
+        "title": "关于本周签到记录缺失的疑问",
+        "author": "小明",
+        "time": "2025-12-01 09:30:00",
+        "body": "这周在校园卡系统中发现自己的签到记录不见了，已经确认每次都有正常刷卡，但是系统中没有显示。请问这是什么原因？有没有同学遇到相同情况？希望尽快解决。",
+        "tags": [
+          "签到",
+          "问题",
+          "校园卡"
+        ],
+        "visibilityStage": "public"
+      },
+      {
+        "id": 2,
+        "title": "签到记录缺失导致的影响及建议",
+        "author": "student01",
+        "time": "2025-12-02 14:20:00",
+        "body": "最近很多同学反映签到记录缺失，可能是因为系统维护或数据同步错误。缺少签到记录会影响奖学金评定和考勤统计，建议学校尽快检查服务器日志，补全缺失数据，并提供查询功能。",
+        "tags": [
+          "签到",
+          "建议",
+          "系统"
+        ],
+        "visibilityStage": "public"
+      }
+    ]
+  },
+  "valid/cc98_replies_extra.json": {
+    "replies": [
+      {
+        "author": "版务",
+        "text": "您好，您当前的上传槽尚未开放，暂时无法进行材料上传，请耐心等待系统开放后再尝试。",
+        "tone": "informative",
+        "visibilityStage": "public"
+      },
+      {
+        "author": "版务",
+        "text": "您好，您提交的材料与已有的材料重复，请检查并删除重复项，或修改后重新提交。",
+        "tone": "warning",
+        "visibilityStage": "public"
+      }
+    ]
+  },
+  "valid/cc98_replies_retry.json": {
+    "replies": [
+      {
+        "author": "匿名用户",
+        "text": "今天的天气冷得连冰箱都在发抖，连我的笑话都被冻住了。",
+        "tone": "冷幽默",
+        "visibilityStage": "公开"
+      },
+      {
+        "author": "数据控",
+        "text": "根据2023年项目报告，X产品的市场份额从15%提升至45%，同比增长30%，详见报告第5章。",
+        "tone": "证据型",
+        "visibilityStage": "公开"
+      }
+    ]
+  },
+  "valid/cc98_reply_clean.json": {
+    "replies": [
+      {
+        "author": "匿名用户",
+        "text": "CC98的回帖冷得可以当冰箱用了，别忘了把热度调到零度以下",
+        "tone": "冷幽默",
+        "visibilityStage": "公开"
+      }
+    ]
+  },
+  "valid/chapter_one_dialogue.json": {
+    "maleNarrator": [
+      {
+        "voiceTextEn": "Well, here I am, stumbling through this digital maze like a cat on a hot tin roof—though I'm more of a drenched hamster.",
+        "subtitleZh": "哎，我在这数字迷宫里跌跌撞撞，像只热水里的仓鼠，真是又笨又萌。"
+      },
+      {
+        "voiceTextEn": "My confidence? It's as thin as the Wi‑Fi signal in a basement, but hey, at least I can laugh at myself.",
+        "subtitleZh": "我的自信么，跟地下室Wi‑Fi信号一样薄弱，但还好我能自嘲。"
+      }
+    ],
+    "femaleSystem": [
+      {
+        "voiceTextEn": "Analysis complete. Your current performance: marginally above average, which is still below optimum.",
+        "subtitleZh": "分析完毕。您当前的表现：略高于平均水平，然而仍低于最佳水平。"
+      },
+      {
+        "voiceTextEn": "Reminder: Efficiency metrics are stable, yet you continue to exhibit the creativity of a cardboard box.",
+        "subtitleZh": "提醒：效率指标稳定，然而您仍表现出纸箱般的创造力。"
+      }
+    ]
+  },
+  "valid/chapter_one_tasks.json": {
+    "taskTitles": [
+      "打开手机地图应用",
+      "检查书桌上的笔记本",
+      "前往客厅的阳台"
+    ],
+    "hints": [
+      "先查看手机的通知栏",
+      "接着注意笔记本的封面",
+      "最后检查阳台的植物"
+    ]
+  },
+  "valid/chapter_three_dialogue.json": {
+    "maleNarrator": [
+      {
+        "voiceTextEn": "I'm tracking the borrowed sign‑in record at 7:55... the trail stops at ____.",
+        "subtitleZh": "我正在追踪7:55被借走的签到记录……线索在____处中断。"
+      },
+      {
+        "voiceTextEn": "The log shows the user accessed from a remote terminal, but the ID is ____.",
+        "subtitleZh": "日志显示该用户从远程终端访问，但ID为____。"
+      }
+    ],
+    "femaleSystem": [
+      {
+        "voiceTextEn": "Sign‑in record retrieval initiated. Searching for missing entry...",
+        "subtitleZh": "签到记录检索已启动。正在搜索缺失条目……"
+      },
+      {
+        "voiceTextEn": "Alert: Borrowed record transferred to ____ at 7:55. Confirm?",
+        "subtitleZh": "警报：被借出的记录已在7:55转移至____。确认？"
+      }
+    ]
+  },
+  "valid/chapter_three_tasks_retry.json": {
+    "taskTitles": [
+      "查看借阅记录",
+      "检查借阅历史"
+    ],
+    "hints": [
+      "请确认借阅日期的格式是否正确",
+      "利用搜索功能筛选特定时间段"
+    ]
+  },
+  "valid/chapter_two_library_dialogue.json": {
+    "maleNarrator": [
+      {
+        "voiceTextEn": "The entrance log at 7:55 shows a name that does not match any staff member.",
+        "subtitleZh": "7:55的入馆记录显示一个与任何工作人员都不匹配的名字。"
+      },
+      {
+        "voiceTextEn": "A note with the code 022 was discovered among the old journals in the archive.",
+        "subtitleZh": "在档案室的一些旧期刊中发现了一张带有022代码的纸条。"
+      }
+    ],
+    "femaleSystem": [
+      {
+        "voiceTextEn": "System alert: Please verify the authenticity of the paper evidence.",
+        "subtitleZh": "系统提示：请验证纸质证据的真实性。"
+      },
+      {
+        "voiceTextEn": "Alert: The identifier CC98 has been detected in the library catalog.",
+        "subtitleZh": "警报：在图书馆目录中检测到CC98标识符。"
+      }
+    ]
+  },
+  "valid/chapter_two_library_tasks.json": {
+    "taskTitles": [
+      "检查图书馆入口的纸质索引卡",
+      "搜索馆藏中的特定分类编号",
+      "利用CC98系统定位相关书籍"
+    ],
+    "hints": [
+      "先在图书馆的前台或阅览区寻找旧式的纸质索引卡。",
+      "注意书架上的编号，可能对应CC98分类系统的特定类别。",
+      "使用CC98系统的查询功能，输入关键词或分类号码来缩小范围。"
+    ]
+  },
+  "valid/chapter_two_movement_dialogue.json": {
+    "maleNarrator": [
+      {
+        "voiceTextEn": "I am the leader of the team, the one they call 'Captain'.",
+        "subtitleZh": "我是队长，大家都叫我‘队长’"
+      },
+      {
+        "voiceTextEn": "He darts across the court, executing a perfect layup.",
+        "subtitleZh": "他在球场上飞奔，完成了一个完美的上篮"
+      }
+    ],
+    "femaleSystem": [
+      {
+        "voiceTextEn": "Current weather: clear sky, temperature 22°C.",
+        "subtitleZh": "当前天气：晴，气温22度"
+      },
+      {
+        "voiceTextEn": "Handheld controller connected, vibration enabled.",
+        "subtitleZh": "手柄已连接，震动已开启"
+      }
+    ]
+  },
+  "valid/chapter_two_movement_tasks.json": {
+    "taskTitles": [
+      "打开浙大钉查看当天课程安排",
+      "查看天气并准备相应的雨具或衣物",
+      "通过微信联系体艺老师确认道具准备"
+    ],
+    "hints": [
+      "在浙大钉首页点击‘课程表’，确认上午的课堂地点和时间",
+      "打开天气应用，查看7:55的天气情况，若有降雨预报，请提前准备雨伞或防水外套",
+      "打开微信，找到体艺老师的聊天窗口，发送信息询问今天体艺课所需的道具是否已准备好"
+    ]
+  },
+  "valid/document_022_clean_retry.json": {
+    "documents": [
+      {
+        "title": "022小票",
+        "source": "图书馆服务台",
+        "body": "座位记录和时间戳的可核验摘要。",
+        "fields": [
+          "seat",
+          "time",
+          "status"
+        ]
+      }
+    ]
+  },
+  "valid/document_presence_clean.json": {
+    "documents": [
+      {
+        "title": "本人来过证明",
+        "source": "北京XX公司前台",
+        "body": "姓名: 张三, 身份证号: 110101199001011234, 到访时间: 2026-01-25 14:30:00, 到访地点: 北京市朝阳区XX大厦前台",
+        "fields": {
+          "issuer": "北京XX公司",
+          "timestamp": "2026-01-25T14:30:00+08:00",
+          "location": "北京市朝阳区XX大厦",
+          "uniqueId": "20260125143000ABC123"
+        }
+      }
+    ]
+  },
+  "valid/documents_a_retry.json": {
+    "documents": [
+      {
+        "title": "占座纸条",
+        "source": "网络",
+        "body": "座位编号：12A；预订时间：2023-08-01 10:00；预订人：张三；联系电话：13800138000",
+        "fields": [
+          {
+            "name": "座位编号",
+            "type": "string"
+          },
+          {
+            "name": "预订时间",
+            "type": "string"
+          },
+          {
+            "name": "预订人",
+            "type": "string"
+          },
+          {
+            "name": "联系电话",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "valid/documents_b.json": {
+    "documents": [
+      {
+        "title": "旧版离座规定",
+        "source": "公司行政部（内部文件）",
+        "body": "第一条 为保障会议室使用秩序，特制定本离座规定。\n第二条 会议期间，与会人员如需暂时离场，须在离座登记本上登记姓名、离场时间、预计返回时间。\n第三条 离开座位超过十五分钟者，视为自动放弃本次会议席位。\n第四条 如因紧急情况需提前离场，须提前向会议主持人说明原因，并在登记本上注明。\n第五条 本规定自2019年1月1日起施行，至2020年12月31日废止。",
+        "fields": {
+          "编号": "LD-2019-01",
+          "发布日期": "2019-01-01",
+          "有效期": "2019-01-01至2020-12-31",
+          "适用范围": "公司会议室",
+          "文件状态": "已废止"
+        }
+      },
+      {
+        "title": "物品识别报告",
+        "source": "鉴定中心（技术鉴定所）",
+        "body": "物品名称：纤维扫描仪\n型号：X-200\n序列号：SN12345678\n外观检查：外壳完整，无明显划痕，标识清晰。\n功能检测：开机正常，扫描分辨率达到规格要求，图像传输无异常。\n鉴定结论：该物品为符合技术规范的合格产品。\n鉴定时间：2023年11月15日\n鉴定人：王测试（签名）",
+        "fields": {
+          "报告编号": "IR-2023-1115",
+          "鉴定日期": "2023-11-15",
+          "鉴定机构": "技术鉴定所",
+          "物品类别": "电子仪器",
+          "鉴定结果": "合格"
+        }
+      }
+    ]
+  },
+  "valid/documents_d.json": {
+    "documents": [
+      {
+        "title": "本人来过证明",
+        "source": "系统自动生成",
+        "body": "签到时间：07:55，签到地点：公司前台，签退时间：08:30",
+        "fields": {
+          "签到时间": "07:55",
+          "签到地点": "公司前台",
+          "签退时间": "08:30",
+          "核验码": "ABC123"
+        }
+      },
+      {
+        "title": "离座清退PASS",
+        "source": "系统自动生成",
+        "body": "离座时间：08:30，离座地点：会议室B，PASS编号：PASS20260101",
+        "fields": {
+          "离座时间": "08:30",
+          "离座地点": "会议室B",
+          "PASS编号": "PASS20260101",
+          "状态": "已通过"
+        }
+      }
+    ]
+  },
+  "valid/items_a.json": {
+    "items": [
+      {
+        "id": 1,
+        "title": "校园卡",
+        "source": "校园",
+        "intro": "用于校园身份识别、门禁、图书借阅、消费支付等场景。"
+      },
+      {
+        "id": 2,
+        "title": "手柄",
+        "source": "游戏",
+        "intro": "用于电子游戏的操作控制，操控角色移动或进行游戏交互。"
+      },
+      {
+        "id": 3,
+        "title": "天气水滴",
+        "source": "天气应用",
+        "intro": "用于表示天气状态，指示降雨或湿度信息的图标。"
+      },
+      {
+        "id": 4,
+        "title": "右移箭头",
+        "source": "UI图标",
+        "intro": "用于界面导航，表示向右移动或进入下一页的指示符号。"
+      }
+    ]
+  },
+  "valid/items_b.json": {
+    "items": [
+      {
+        "id": "1",
+        "title": "占座纸条",
+        "source": "校园生活",
+        "intro": "学生在图书馆占座时留下的纸条，通常写有占座者的姓名或座位号，以便标明该座位已被占用。"
+      },
+      {
+        "id": "2",
+        "title": "索书号755",
+        "source": "图书馆系统",
+        "intro": "用于检索和定位特定图书的索书号，编号755对应某本特定藏书，便于快速找到该书所在位置。"
+      },
+      {
+        "id": "3",
+        "title": "旧版离座规定",
+        "source": "学校规章制度",
+        "intro": "以往实施的离座管理制度，规定学生离开座位时需登记、关闭电器等，现已被新版规定取代。"
+      },
+      {
+        "id": "4",
+        "title": "物品识别报告",
+        "source": "校园安全",
+        "intro": "对遗失或可疑物品进行辨认、登记的书面报告，包含物品特征、发现时间和处理措施，用于失物招领或安全检查。"
+      }
+    ]
+  },
+  "valid/items_c.json": {
+    "items": [
+      {
+        "id": 1,
+        "title": "书包非本人证明",
+        "source": "《校园谜案》卷二",
+        "intro": "一张标注为非本人使用的书包标签，背面附有指纹检测报告，证明该书包不属于持有者。"
+      },
+      {
+        "id": 2,
+        "title": "022小票",
+        "source": "《都市阴影》章节四",
+        "intro": "一张编号为022的购物小票，显示在7:55时于便利店购买过物品，时间与案件关键点相吻合。"
+      },
+      {
+        "id": 3,
+        "title": "本我来过证明",
+        "source": "《记忆档案》",
+        "intro": "一段监控视频截图，显示本人在7:55出现在现场，并留有现场签字确认。"
+      },
+      {
+        "id": 4,
+        "title": "离座清退PASS",
+        "source": "《剧场安全手册》",
+        "intro": "离座清退通行的凭证，盖有安全章，标明在7:55后允许离开座位。"
+      }
+    ]
+  },
+  "valid/ui_accessibility.json": {
+    "accessibility": [
+      {
+        "target": "taskButton",
+        "label": "任务键",
+        "description": "打开任务列表或创建新任务的按钮"
+      },
+      {
+        "target": "weatherNotification",
+        "label": "天气通知",
+        "description": "显示当前天气状况和温度的提醒通知"
+      },
+      {
+        "target": "paperItem",
+        "label": "纸质道具",
+        "description": "用于记录或签到的纸质凭证"
+      },
+      {
+        "target": "uploadSlot",
+        "label": "上传槽",
+        "description": "上传图片或文件的入口区域"
+      },
+      {
+        "target": "mapView",
+        "label": "地图",
+        "description": "交互式地图，显示位置和路径"
+      },
+      {
+        "target": "backButton",
+        "label": "返回按钮",
+        "description": "返回上一级页面或取消当前操作"
+      },
+      {
+        "target": "helpButton",
+        "label": "帮助键",
+        "description": "提供使用指南和常见问题的帮助入口"
+      },
+      {
+        "target": "settingsButton",
+        "label": "设置键",
+        "description": "打开系统设置或偏好配置的入口"
+      }
+    ]
+  },
+  "valid/ui_feedback.json": {
+    "feedback": [
+      {
+        "id": 1,
+        "text": "7:55 该道具不可使用",
+        "tone": "error"
+      },
+      {
+        "id": 2,
+        "text": "7:55 文件已存在，请勿重复上传",
+        "tone": "warning"
+      },
+      {
+        "id": 3,
+        "text": "7:55 该功能尚未开放",
+        "tone": "info"
+      },
+      {
+        "id": 4,
+        "text": "7:55 使用成功",
+        "tone": "success"
+      },
+      {
+        "id": 5,
+        "text": "7:55 抽屉已关闭",
+        "tone": "neutral"
+      },
+      {
+        "id": 6,
+        "text": "7:55 操作已取消",
+        "tone": "neutral"
+      },
+      {
+        "id": 7,
+        "text": "7:55 网络连接失败，请重试",
+        "tone": "error"
+      },
+      {
+        "id": 8,
+        "text": "7:55 请求超时，请稍后重试",
+        "tone": "warning"
+      }
+    ]
+  },
+  "valid/ui_phone.json": {
+    "phone": [
+      "主页",
+      "钉钉",
+      "CC98",
+      "图书",
+      "天气",
+      "课表",
+      "成绩",
+      "校园"
+    ]
+  },
+  "valid/ui_quest.json": {
+    "quest": [
+      "章节：第一幕",
+      "当前任务：寻找入口",
+      "当前进度：0/1",
+      "下一步目标：继续前进",
+      "提示(易)：观察四周",
+      "提示(中)：搜索可疑之处",
+      "提示(难)：使用特定道具",
+      "返回"
+    ]
+  },
+  "valid/ui_toasts.json": {
+    "toasts": [
+      {
+        "text": "签到点了好几次都卡住，能不能别再玩我",
+        "voice": "none",
+        "durationMs": 3000
+      },
+      {
+        "text": "签到奖励一直不到账，真的要疯了",
+        "voice": "none",
+        "durationMs": 3500
+      },
+      {
+        "text": "道具列表加载慢，用个道具要等半天",
+        "voice": "none",
+        "durationMs": 4000
+      },
+      {
+        "text": "使用道具时一直报错，能不能给点稳定的",
+        "voice": "none",
+        "durationMs": 4500
+      },
+      {
+        "text": "搜索结果总是不准，找个东西这么难",
+        "voice": "none",
+        "durationMs": 5000
+      },
+      {
+        "text": "上传图片一直失败，网络烂到爆",
+        "voice": "none",
+        "durationMs": 5500
+      },
+      {
+        "text": "移动物品拖拽不灵敏，老是跳到别处",
+        "voice": "none",
+        "durationMs": 6000
+      },
+      {
+        "text": "移动分类功能太难用，完全不 intuitive",
+        "voice": "none",
+        "durationMs": 6200
+      }
+    ]
+  }
+}

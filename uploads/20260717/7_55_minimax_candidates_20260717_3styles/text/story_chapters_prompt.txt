@@ -1,0 +1,5 @@
+为《7:55》写候选剧情文案，只输出 JSON，不要 Markdown。背景：浙江大学校园解谜游戏，第一章是 07:55 醒来、签到、进入第二章；第二章先修复移动，再调查基础图书馆 022 座位和缺失签到；第三章寻找借走签到记录的书。少剧透，任务只指向下一步。
+
+输出：{"chapterOne":{"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]},"chapterTwoMovement":{"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]},"chapterTwoLibrary":{"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]},"chapterThree":{"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]}}
+
+每个章节各写 6 条旁白、6 条系统、4 个短任务标题、6 条三档提示和 4 条文字吐槽。对白每项含 voiceTextEn 与 subtitleZh；男旁白低沉诙谐自嘲，女系统冷幽默克制。提示只说应用、证据类型或界面区域，不给答案、代码、数字或精确顺序。吐槽含 durationMs（2400–6500）和 voice="none"。中文短句自然，不生成乱码、伪汉字或真实个人信息。

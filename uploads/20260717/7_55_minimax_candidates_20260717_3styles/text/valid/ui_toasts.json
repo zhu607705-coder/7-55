@@ -1,0 +1,44 @@
+{
+  "toasts": [
+    {
+      "text": "签到点了好几次都卡住，能不能别再玩我",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "签到奖励一直不到账，真的要疯了",
+      "voice": "none",
+      "durationMs": 3500
+    },
+    {
+      "text": "道具列表加载慢，用个道具要等半天",
+      "voice": "none",
+      "durationMs": 4000
+    },
+    {
+      "text": "使用道具时一直报错，能不能给点稳定的",
+      "voice": "none",
+      "durationMs": 4500
+    },
+    {
+      "text": "搜索结果总是不准，找个东西这么难",
+      "voice": "none",
+      "durationMs": 5000
+    },
+    {
+      "text": "上传图片一直失败，网络烂到爆",
+      "voice": "none",
+      "durationMs": 5500
+    },
+    {
+      "text": "移动物品拖拽不灵敏，老是跳到别处",
+      "voice": "none",
+      "durationMs": 6000
+    },
+    {
+      "text": "移动分类功能太难用，完全不 intuitive",
+      "voice": "none",
+      "durationMs": 6200
+    }
+  ]
+}

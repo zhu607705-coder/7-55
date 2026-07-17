@@ -1,0 +1,1 @@
+只输出 JSON。为《7:55》第三章生成候选文案：寻找借走签到记录的书，保持短小、留白和轻微自嘲。输出 {"maleNarrator":[],"femaleSystem":[],"taskTitles":[],"hints":[],"taunts":[]}。各写 5 条。对白含 voiceTextEn 和 subtitleZh；男旁白低沉诙谐自嘲，女系统冷幽默。提示只指向馆藏检索、借阅痕迹或当前界面，不写书名、答案或精确路线；任务只写当前下一步；吐槽含 durationMs 2400–6500 和 voice="none"。不要 Markdown、乱码或真实个人信息。

@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-07-17T01:16:27.654Z",
+  "model": "MiniMax-M2.5",
+  "assets": [
+    {
+      "path": "text/valid/chapter_three_tasks_retry.json",
+      "status": "generated",
+      "bytes": 191,
+      "sha256": "5ed4ef40ba9df1f7428c084715ad3b65d32019b94087f43a0cf5d012a9470737"
+    },
+    {
+      "path": "text/valid/cc98_posts_c.json",
+      "status": "failed",
+      "bytes": 86,
+      "sha256": "462f550a41b0db8aeec406e3bb9b83cd27fc619fcc8f28cd9031ee61042c7f7a",
+      "error": "missing JSON"
+    },
+    {
+      "path": "text/valid/cc98_posts_d.json",
+      "status": "generated",
+      "bytes": 1049,
+      "sha256": "6a3fea985a71e4d82f615ff8efd6bdadcc1d9b1289d74e1bb1881c25c637c8f3"
+    },
+    {
+      "path": "text/valid/cc98_replies_retry.json",
+      "status": "generated",
+      "bytes": 456,
+      "sha256": "0a3d9f645a4d9fa0af78fbf8313a8e32183cb47c7d5e2435e91e53d4b895e69e"
+    },
+    {
+      "path": "text/valid/documents_a_retry.json",
+      "status": "generated",
+      "bytes": 564,
+      "sha256": "ee009672a3987baa1e0a7b942dcd8a39a56294c36a9729816f176e9e54dc5666"
+    },
+    {
+      "path": "text/valid/documents_c_retry.json",
+      "status": "failed",
+      "bytes": 1116,
+      "sha256": "ea2fc2774379284e41f4d5377b46cfa6ae4769d221a2f2f4bb26ba46b71a98c5",
+      "error": "Expected ',' or ']' after array element in JSON at position 857 (line 23 column 40)"
+    },
+    {
+      "path": "text/valid/cc98_posts_e.json",
+      "status": "failed",
+      "bytes": 217,
+      "sha256": "ce8afa819d931885123d8d5dcbbe3a5ed7f083f4108503391c171d3198f60087",
+      "error": "missing JSON"
+    },
+    {
+      "path": "text/valid/cc98_replies_extra.json",
+      "status": "generated",
+      "bytes": 489,
+      "sha256": "fe5972e91fcc21ebd1bed72b95d49fa130d4dba46fd6c8f7680e299fd5e6fabf"
+    }
+  ]
+}

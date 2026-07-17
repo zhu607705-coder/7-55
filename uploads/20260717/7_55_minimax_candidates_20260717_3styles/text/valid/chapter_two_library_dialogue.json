@@ -1,0 +1,22 @@
+{
+  "maleNarrator": [
+    {
+      "voiceTextEn": "The entrance log at 7:55 shows a name that does not match any staff member.",
+      "subtitleZh": "7:55的入馆记录显示一个与任何工作人员都不匹配的名字。"
+    },
+    {
+      "voiceTextEn": "A note with the code 022 was discovered among the old journals in the archive.",
+      "subtitleZh": "在档案室的一些旧期刊中发现了一张带有022代码的纸条。"
+    }
+  ],
+  "femaleSystem": [
+    {
+      "voiceTextEn": "System alert: Please verify the authenticity of the paper evidence.",
+      "subtitleZh": "系统提示：请验证纸质证据的真实性。"
+    },
+    {
+      "voiceTextEn": "Alert: The identifier CC98 has been detected in the library catalog.",
+      "subtitleZh": "警报：在图书馆目录中检测到CC98标识符。"
+    }
+  ]
+}

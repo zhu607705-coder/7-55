@@ -1,0 +1,39 @@
+{
+  "_candidateMeta": {
+    "style": "plain_case",
+    "styleLabelZh": "平实调查",
+    "delivery": "保持原文事实和句式，适合纸质证据、帖子正文和调查记录。",
+    "selection": "信息密度优先，避免额外情绪。",
+    "source": "text/valid/cc98_posts_d.json",
+    "sourceSha256": "cebff3ff6368cd0b32a6a00dea4c5bbf9c898adccc9afdca9cefebdacecc327c",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "posts": [
+    {
+      "id": 1,
+      "title": "关于本周签到记录缺失的疑问",
+      "author": "小明",
+      "time": "2025-12-01 09:30:00",
+      "body": "这周在校园卡系统中发现自己的签到记录不见了，已经确认每次都有正常刷卡，但是系统中没有显示。请问这是什么原因？有没有同学遇到相同情况？希望尽快解决。",
+      "tags": [
+        "签到",
+        "问题",
+        "校园卡"
+      ],
+      "visibilityStage": "public"
+    },
+    {
+      "id": 2,
+      "title": "签到记录缺失导致的影响及建议",
+      "author": "student01",
+      "time": "2025-12-02 14:20:00",
+      "body": "最近很多同学反映签到记录缺失，可能是因为系统维护或数据同步错误。缺少签到记录会影响奖学金评定和考勤统计，建议学校尽快检查服务器日志，补全缺失数据，并提供查询功能。",
+      "tags": [
+        "签到",
+        "建议",
+        "系统"
+      ],
+      "visibilityStage": "public"
+    }
+  ]
+}

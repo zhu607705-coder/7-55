@@ -1,0 +1,19 @@
+你是一个像素风校园解谜游戏的 UX 文案编辑。请为《7:55》生成大量候选微文案，只输出严格 JSON，不要 Markdown 代码围栏，不要解释。
+
+输出结构：
+{
+  "phone": {"home": [], "zjuding": [], "cc98": [], "library": [], "weather": [], "settings": []},
+  "quest": {"chapterLabels": [], "currentTaskLabels": [], "progressLabels": [], "nextObjectiveLabels": [], "hintLabels": [], "navigationLabels": []},
+  "items": [],
+  "documents": [],
+  "toasts": [],
+  "accessibility": []
+}
+
+要求：
+1. 生成至少 20 个手机页面短标签、20 个任务栏短标签、20 个文字吐槽、16 条无障碍描述、12 个按钮/错误反馈。
+2. `items` 至少覆盖校园卡、手柄、右移箭头、天气水滴、占座纸条、索书号 755、旧版离座规定、物品识别报告、书包非本人证明、022 小票、本人来过证明、离座清退 PASS。
+3. `documents` 为 8 类纸质道具的可展开正文，每项包含 `title`, `source`, `body`, `fields`；正文只写可核验信息，不直接给出未解答案。
+4. 任务和提示只暴露当前下一步；不能列出未来步骤，不能显示精确代码、数字答案或正确回复字母。
+5. 所有吐槽均标记 `voice: "none"`，并给出 2400–6500 的 `durationMs`。
+6. 中文自然、短句优先、像真实手机界面；不要使用乱码、伪汉字或英文字母填充。

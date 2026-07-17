@@ -1,0 +1,33 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/chapter_one_taunts.json",
+    "sourceSha256": "e166f10e269e50e6fb2090978194b3dd8e12c4acbbecf4a078df6b44ba76b60f",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taunts": [
+    {
+      "text": "这波操作直接把自己笑醒，真是服了自己的智商。",
+      "voice": "none",
+      "durationMs": 3000
+    },
+    {
+      "text": "我这一手简直自掘坟墓，连自己都忍不住吐槽。",
+      "voice": "none",
+      "durationMs": 4200
+    },
+    {
+      "text": "每次点错都像在给自己加戏，真是够了。",
+      "voice": "none",
+      "durationMs": 5400
+    },
+    {
+      "text": "本来想装高手，结果手残到连自己都嫌。",
+      "voice": "none",
+      "durationMs": 6100
+    }
+  ]
+}

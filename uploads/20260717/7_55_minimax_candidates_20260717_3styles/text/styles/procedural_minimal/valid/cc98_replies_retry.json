@@ -1,0 +1,25 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/cc98_replies_retry.json",
+    "sourceSha256": "3d5a2407a6efac0fb6a64f17e89269399c0859bf8208005f7791ab3497d3ff4e",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "replies": [
+    {
+      "author": "匿名用户",
+      "text": "今天的天气冷得连冰箱都在发抖，连我的笑话都被冻住了。",
+      "tone": "冷幽默",
+      "visibilityStage": "公开"
+    },
+    {
+      "author": "数据控",
+      "text": "根据2023年项目报告，X产品的市场份额从15%提升至45%，同比增长30%，详见报告第5章。",
+      "tone": "证据型",
+      "visibilityStage": "公开"
+    }
+  ]
+}

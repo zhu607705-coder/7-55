@@ -1,0 +1,27 @@
+{
+  "documents": [
+    {
+      "title": "占座纸条",
+      "source": "网络",
+      "body": "座位编号：12A；预订时间：2023-08-01 10:00；预订人：张三；联系电话：13800138000",
+      "fields": [
+        {
+          "name": "座位编号",
+          "type": "string"
+        },
+        {
+          "name": "预订时间",
+          "type": "string"
+        },
+        {
+          "name": "预订人",
+          "type": "string"
+        },
+        {
+          "name": "联系电话",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "_candidateMeta": {
+    "style": "procedural_minimal",
+    "styleLabelZh": "系统短句",
+    "delivery": "将同一信息压缩为可放进任务栏或系统提示的短句，优先动作、对象和状态。",
+    "selection": "适合任务键、进度栏、错误反馈和无障碍描述。",
+    "source": "text/valid/chapter_two_library_tasks.json",
+    "sourceSha256": "dd38395e5f9d0e9d9be147be5a8e6237a0ea7cf9c8b2f552e1bf07449f22259d",
+    "contentPolicy": "事实字段保持一致；差异通过语气、节奏、排版和展示组件实现"
+  },
+  "taskTitles": [
+    "检查图书馆入口的纸质索引卡",
+    "搜索馆藏中的特定分类编号",
+    "利用CC98系统定位相关书籍"
+  ],
+  "hints": [
+    "先在图书馆的前台或阅览区寻找旧式的纸质索引卡。",
+    "注意书架上的编号，可能对应CC98分类系统的特定类别。",
+    "使用CC98系统的查询功能，输入关键词或分类号码来缩小范围。"
+  ]
+}
