@@ -69,6 +69,7 @@
 ## Delivery
 
 - Preserve direct browser opening through the generated `demo/index.html`.
+- Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
 - Run `npm run typecheck` and `npm run build:single` after behavior changes.
 - Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
