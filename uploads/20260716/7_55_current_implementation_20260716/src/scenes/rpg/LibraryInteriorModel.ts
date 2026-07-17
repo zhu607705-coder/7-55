@@ -1,4 +1,5 @@
 import type { ItemId, LibraryLocationId, RpgCheckpointId } from "../../core/types";
+import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
 
 export const LIBRARY_INTERIOR_WORLD = {
   width: 1500,
@@ -85,9 +86,9 @@ export function isPointInsideLibraryCollision(
 }
 
 export const CAMPUS_LIBRARY_GATE = {
-  x: 1650,
-  y: 975,
-  radius: 92
+  x: campusRuntimeData.libraryGate.x,
+  y: campusRuntimeData.libraryGate.y,
+  radius: campusRuntimeData.libraryGate.radius
 } as const;
 
 export const LIBRARY_ENTRANCE_DOOR = {

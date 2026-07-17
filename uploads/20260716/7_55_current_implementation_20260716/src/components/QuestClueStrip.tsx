@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { EventBus } from "../core/EventBus";
 import type { SceneRouter } from "../core/SceneRouter";
 import { selectQuestViewModel } from "../core/QuestModel";
@@ -22,6 +23,21 @@ const CHAPTER_LABEL: Record<QuestViewModel["chapter"], string> = {
   chapter_two: "第 2 章",
   chapter_three: "第 3 章"
 };
+
+function QuestDrawerLayer({
+  children,
+  portalRoot,
+  variant
+}: {
+  children: ReactNode;
+  portalRoot?: Element | null;
+  variant: QuestTaskBarVariant;
+}) {
+  if (variant === "rpg" && portalRoot) {
+    return createPortal(children, portalRoot);
+  }
+  return children;
+}
 
 export function isQuestCluePhase(): boolean {
   return true;
@@ -47,6 +63,13 @@ export function QuestTaskBar({
   const digitHintAria = `已找到的签到数字：${digitSlots
     .map((digit, index) => `第${index + 1}位${digit ?? "未找到"}`)
     .join("，")}`;
+  const acquiredDocuments = quest.steps.flatMap((step) => {
+    if (step.status !== "completed" || !step.itemId) {
+      return [];
+    }
+    const document = ITEM_CATALOG[step.itemId].document;
+    return document ? [{ itemId: step.itemId, label: step.label }] : [];
+  });
 
   useEffect(() => {
     setHintCount(0);
@@ -100,7 +123,12 @@ export function QuestTaskBar({
       </button>
 
       {open ? (
-        <section id={`quest-drawer-${variant}`} className="quest-task-drawer" aria-label="任务详情">
+        <QuestDrawerLayer variant={variant} portalRoot={portalRoot}>
+        <section
+          id={`quest-drawer-${variant}`}
+          className={`quest-task-drawer quest-task-drawer--${variant}`}
+          aria-label="任务详情"
+        >
           <header>
             <div>
               <small>{CHAPTER_LABEL[quest.chapter]}</small>
@@ -143,20 +171,24 @@ export function QuestTaskBar({
             <b>{quest.completed} / {quest.total}</b>
           </div>
 
-          <ol className="quest-task-steps" aria-label="任务步骤">
-            {quest.steps.map((step) => {
-              const document = step.itemId ? ITEM_CATALOG[step.itemId].document : undefined;
-              return (
-                <li key={step.id} className={`is-${step.status}`}>
-                  <i aria-hidden="true">{step.status === "completed" ? "✓" : step.status === "active" ? "→" : "·"}</i>
-                  <span>{step.label}</span>
-                  {step.status === "completed" && step.itemId && document ? (
-                    <button type="button" onClick={() => setDocumentItem(step.itemId ?? null)}>查看材料</button>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
+          {acquiredDocuments.length > 0 ? (
+            <details className="quest-task-materials">
+              <summary>
+                <span>已取得材料</span>
+                <b>{acquiredDocuments.length}</b>
+              </summary>
+              <ul aria-label="已取得材料">
+                {acquiredDocuments.map((material) => (
+                  <li key={material.itemId}>
+                    <span>{material.label}</span>
+                    <button type="button" onClick={() => setDocumentItem(material.itemId)}>
+                      查看
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : null}
 
           <section className="quest-task-hints" aria-label="渐进提示">
             <header>
@@ -180,6 +212,7 @@ export function QuestTaskBar({
             {quest.targetSurface === "rpg" ? "前往地图" : "前往相关界面"}
           </button>
         </section>
+        </QuestDrawerLayer>
       ) : null}
 
       <ItemInspectDialog

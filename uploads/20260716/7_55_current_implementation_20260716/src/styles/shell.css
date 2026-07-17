@@ -83,6 +83,7 @@
 }
 
 .quest-task-drawer {
+  align-content: start;
   background: #20272f;
   border: 4px solid #f0d54e;
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.48);
@@ -114,12 +115,13 @@
   height: 44px;
 }
 
-.quest-task-bar--rpg .quest-task-drawer {
-  left: 0;
-  max-height: calc(100% - 62px);
+.quest-task-drawer--rpg {
+  left: 14px;
+  max-height: calc(100% - 78px);
   position: absolute;
-  top: 50px;
-  width: min(470px, 100%);
+  top: 64px;
+  width: min(470px, calc(100% - 28px));
+  z-index: 77;
 }
 
 .quest-task-bar--desktop {
@@ -307,38 +309,64 @@
   font: 900 12px/1.4 monospace;
 }
 
-.quest-task-steps {
+.quest-task-materials {
+  background: #222b33;
+  border: 2px solid #596771;
+  color: #c9d2d8;
+}
+
+.quest-task-materials summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-size: 11px;
+  font-weight: 900;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 7px 10px;
+}
+
+.quest-task-materials summary b {
+  color: #9fd3ff;
+  font: 900 10px/1 monospace;
+}
+
+.quest-task-materials ul {
+  border-top: 1px solid #596771;
   display: grid;
   gap: 6px;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 8px;
 }
 
-.quest-task-steps li {
+.quest-task-materials:not([open]) > ul {
+  display: none;
+}
+
+.quest-task-materials li {
   align-items: center;
   background: #29323b;
-  border-left: 4px solid #59636c;
+  border-left: 4px solid #77c48d;
   display: grid;
   gap: 8px;
-  grid-template-columns: 18px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   min-height: 34px;
   padding: 6px 8px;
 }
 
-.quest-task-steps li.is-completed { border-left-color: #77c48d; color: #c7d8ca; }
-.quest-task-steps li.is-active { background: #344656; border-left-color: #f0d54e; color: #fff; }
-.quest-task-steps li.is-locked { color: #7f8a93; }
-.quest-task-steps li i { font-style: normal; font-weight: 900; text-align: center; }
-.quest-task-steps li span { font-size: 11px; line-height: 1.35; }
+.quest-task-materials li span {
+  font-size: 11px;
+  line-height: 1.35;
+}
 
-.quest-task-steps li button {
+.quest-task-materials li button {
   background: #e9e2cb;
   border: 2px solid #111820;
   color: #1b242c;
   font-size: 9px;
   min-height: 28px;
-  padding: 3px 6px;
+  padding: 3px 8px;
 }
 
 .quest-task-hints {
