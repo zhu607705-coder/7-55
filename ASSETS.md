@@ -1,12 +1,12 @@
 # 7:55 上传资产清单
 
-上传时间：2026-07-17
+上传日期：2026-07-18（Asia/Shanghai）
 
 ## Release 资产
 
 | 文件 | 用途 | 大小 | SHA-256 |
 |---|---|---:|---|
-| `7_55_current_implementation_20260717.zip` | 当前实现包 | 204,978,778 bytes | `016bca8781230c357ceeb31b5c503d5ca254dc13969c789ea1ec986679c23c98` |
+| `7_55_current_implementation_20260717.zip` | 2026-07-17 实现包 | 204,978,778 bytes | `016bca8781230c357ceeb31b5c503d5ca254dc13969c789ea1ec986679c23c98` |
 | `7_55_minimax_candidates_20260717_3styles.zip` | 三风格候选素材包 | 131,689,785 bytes | `91ea3e1f7bc06d59144b9dd4d24f6dde5a92498ff90c9e9a5f10257f4696adeb` |
 
 ## 候选包说明
@@ -23,7 +23,7 @@
 
 | 路径 | 用途 | 离线单文件大小 | 离线单文件 SHA-256 |
 |---|---|---:|---|
-| `uploads/20260716/7_55_current_implementation_20260716/` | 当前可开发源码与离线试玩 | 36,792,437 bytes | `ece77b31af9c521db376d49a09dbd6bb58d4bc7d2d7bbccfd39bf90f72e7f376` |
+| `uploads/20260718/7_55_current_implementation_20260718/` | 当前可开发源码与离线试玩 | 36,792,437 bytes | `ece77b31af9c521db376d49a09dbd6bb58d4bc7d2d7bbccfd39bf90f72e7f376` |
 
 该快照已通过 TypeScript 类型检查、单文件构建、`file://` 直开与真实浏览器场景验收；运行期间 HTTP 外部资源请求为 0。
 
