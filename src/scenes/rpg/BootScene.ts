@@ -17,7 +17,7 @@ import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 
 const CAMERA_MIN_ZOOM = 0.25;
 const CAMERA_MAX_ZOOM = 0.75;
-const CAMERA_DEFAULT_ZOOM = 0.5;
+const CAMERA_DEFAULT_ZOOM = 0.375;
 const CAMERA_ZOOM_STEP = 0.0625;
 
 export class BootScene extends Phaser.Scene {
@@ -122,6 +122,9 @@ export class BootScene extends Phaser.Scene {
     if (vector.lengthSq() > 0) {
       const speed = this.keys.SHIFT.isDown ? 320 : 220;
       vector.normalize().scale(speed);
+      if (this.cameraDragging && !this.input.activePointer.isDown) {
+        this.finishCameraDrag();
+      }
       if (this.manualCamera && !this.cameraDragging) {
         this.resumeCameraFollow(false);
       }
@@ -258,12 +261,23 @@ export class BootScene extends Phaser.Scene {
       );
     });
 
-    const finishDrag = () => {
-      this.cameraDragging = false;
-      this.game.canvas.style.cursor = "grab";
-    };
+    const finishDrag = () => this.finishCameraDrag();
     this.input.on("pointerup", finishDrag);
     this.input.on("pointerupoutside", finishDrag);
+    window.addEventListener("pointerup", finishDrag, true);
+    window.addEventListener("pointercancel", finishDrag, true);
+    window.addEventListener("blur", finishDrag);
+
+    let cleanedUp = false;
+    const cleanupWindowDragListeners = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      window.removeEventListener("pointerup", finishDrag, true);
+      window.removeEventListener("pointercancel", finishDrag, true);
+      window.removeEventListener("blur", finishDrag);
+    };
+    this.events.once("shutdown", cleanupWindowDragListeners);
+    this.events.once("destroy", cleanupWindowDragListeners);
 
     this.input.on(
       "wheel",
@@ -287,6 +301,11 @@ export class BootScene extends Phaser.Scene {
       }
     );
 
+    this.game.canvas.style.cursor = "grab";
+  }
+
+  private finishCameraDrag(): void {
+    this.cameraDragging = false;
     this.game.canvas.style.cursor = "grab";
   }
 
@@ -330,7 +349,11 @@ export class BootScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const direction = Math.sign(delta);
     const nextZoom = Phaser.Math.Clamp(camera.zoom + direction * CAMERA_ZOOM_STEP, CAMERA_MIN_ZOOM, CAMERA_MAX_ZOOM);
+    if (nextZoom === camera.zoom) {
+      return;
+    }
     camera.setZoom(nextZoom);
+    this.resumeCameraFollow(true);
   }
 
   private updatePlayerAnimation(vector: Phaser.Math.Vector2): void {

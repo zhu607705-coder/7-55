@@ -4,12 +4,14 @@ import { readFile } from "node:fs/promises";
 const EXPECTED = {
   width: 5016,
   height: 5016,
-  sha256: "63ff841fce9e29fd73775b6f42cf3ef65ae303993a55f3a555c90ec0a5ff98c2"
+  sha256: "600e3010c7b1ccb4e4c697850e9ee37b6670d84aaec3ba5ce8fc0c1274a718bd"
 };
 
 const plateUrl = new URL("../src/assets/rpg/campus/zijingang_campus_plate.png", import.meta.url);
+const maskUrl = new URL("../src/assets/rpg/campus/zijingang_road_walkability_mask.png", import.meta.url);
 const runtimeUrl = new URL("../src/data/maps/zijingang-campus-runtime.json", import.meta.url);
 const plate = await readFile(plateUrl);
+const mask = await readFile(maskUrl);
 const runtime = JSON.parse(await readFile(runtimeUrl, "utf8"));
 
 const pngSignature = "89504e470d0a1a0a";
@@ -37,8 +39,36 @@ for (const [name, point] of [["spawn", runtime.spawn], ["libraryGate", runtime.l
     throw new Error(`Campus runtime ${name} is outside the panorama`);
   }
 }
-if (!Array.isArray(runtime.collisions?.buildings) || !Array.isArray(runtime.collisions?.water)) {
-  throw new Error("Campus runtime collision arrays are missing");
+const walkability = runtime.walkability;
+if (!walkability || walkability.cellSize <= 0) {
+  throw new Error("Campus runtime walkability data is missing");
+}
+if (
+  walkability.gridWidth * walkability.cellSize !== width ||
+  walkability.gridHeight * walkability.cellSize !== height
+) {
+  throw new Error("Campus walkability grid does not match the panorama coordinate system");
+}
+const walkabilityBytes = Buffer.from(walkability.bitsBase64, "base64");
+const expectedBytes = Math.ceil((walkability.gridWidth * walkability.gridHeight) / 8);
+if (walkabilityBytes.length !== expectedBytes) {
+  throw new Error(`Campus walkability bitset must contain ${expectedBytes} bytes; received ${walkabilityBytes.length}`);
+}
+if (walkability.sourcePlateSha256 !== sha256) {
+  throw new Error("Campus walkability was not derived from the selected panorama");
+}
+const maskSha256 = createHash("sha256").update(mask).digest("hex");
+if (maskSha256 !== walkability.maskSha256) {
+  throw new Error(`Campus walkability mask SHA-256 mismatch: ${maskSha256}`);
+}
+if (
+  mask.subarray(0, 8).toString("hex") !== pngSignature ||
+  mask.readUInt32BE(16) !== width ||
+  mask.readUInt32BE(20) !== height
+) {
+  throw new Error("Campus walkability mask dimensions do not match the panorama");
 }
 
-console.log(`verified repository panorama ${width}x${height} sha256=${sha256}`);
+console.log(
+  `verified repository panorama ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells}`
+);

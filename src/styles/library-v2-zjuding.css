@@ -254,6 +254,56 @@
   width: 100%;
 }
 
+.zju-catalog-results.is-search-reveal {
+  overflow: hidden;
+  position: relative;
+}
+
+.zju-catalog-results.is-search-reveal::after {
+  animation: zju-catalog-scan 860ms steps(9, end) both;
+  background: #1769b7;
+  box-shadow: 0 0 0 2px rgba(23, 105, 183, 0.18);
+  content: "";
+  height: 4px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  z-index: 4;
+}
+
+.zju-catalog-results.is-search-reveal > h2 {
+  animation: zju-catalog-heading-in 480ms steps(6, end) both;
+}
+
+.zju-catalog-results.is-search-reveal article {
+  animation: zju-catalog-result-in 620ms steps(8, end) both;
+}
+
+.zju-catalog-results.is-search-reveal article:nth-of-type(2) { animation-delay: 90ms; }
+.zju-catalog-results.is-search-reveal article:nth-of-type(3) { animation-delay: 180ms; }
+.zju-catalog-results.is-search-reveal article:nth-of-type(4) { animation-delay: 270ms; }
+.zju-catalog-results.is-search-reveal article:nth-of-type(5) { animation-delay: 360ms; }
+
+@keyframes zju-catalog-heading-in {
+  0% { opacity: 0; transform: translateX(-22px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes zju-catalog-result-in {
+  0% { opacity: 0; transform: translateX(28px) scaleY(0.72); }
+  68% { opacity: 1; transform: translateX(-3px) scaleY(1.03); }
+  100% { transform: translateX(0) scaleY(1); }
+}
+
+@keyframes zju-catalog-scan {
+  0% { opacity: 0; transform: translateY(0) scaleX(0.1); }
+  16% { opacity: 0.7; }
+  76% { opacity: 0.42; transform: translateY(420px) scaleX(1); }
+  100% { opacity: 0; transform: translateY(420px) scaleX(1); }
+}
+
 .zju-catalog-results > h2,
 .zju-catalog-recommendations > h2 {
   align-items: center;
@@ -923,6 +973,9 @@
   .zju-pass-result,
   .zju-pass-result *,
   .zju-pass-printer b,
+  .zju-catalog-results.is-search-reveal::after,
+  .zju-catalog-results.is-search-reveal > h2,
+  .zju-catalog-results.is-search-reveal article,
   .zju-seat-investigation.is-updating,
   .zju-seat-investigation.is-updating::after,
   .zju-seat-investigation.is-updating > span::after {

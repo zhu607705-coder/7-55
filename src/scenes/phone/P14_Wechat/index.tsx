@@ -476,18 +476,30 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
             ) : null}
 
             {followupStep >= 1 ? (
-              <div className="wx-msg wx-followup-message">
+              <div className="wx-msg wx-followup-message wx-followup-message--incoming">
                 <span className="wx-msg-avatar" aria-hidden="true"><i /></span>
                 <p>成功了吗</p>
               </div>
             ) : null}
+            {followupStep === 1 ? (
+              <div className="wx-reply-composer" aria-hidden="true">
+                <span /><span /><span />
+              </div>
+            ) : null}
             {followupStep >= 2 ? (
-              <div className="wx-msg is-self wx-followup-message">
+              <div className={`wx-msg is-self wx-followup-message wx-followup-message--self ${followupStep === 2 ? "is-sending" : "is-sent"}`}>
                 <p>没有，但我正试着威胁系统</p>
+                <i className="wx-send-trace" aria-hidden="true" />
+              </div>
+            ) : null}
+            {followupStep === 2 ? (
+              <div className="wx-friend-typing" aria-hidden="true">
+                <span className="wx-msg-avatar"><i /></span>
+                <b><i /><i /><i /></b>
               </div>
             ) : null}
             {followupStep >= 3 ? (
-              <div className="wx-msg wx-followup-message">
+              <div className="wx-msg wx-followup-message wx-followup-message--question">
                 <span className="wx-msg-avatar" aria-hidden="true"><i /></span>
                 <p>？</p>
               </div>

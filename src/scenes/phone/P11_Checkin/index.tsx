@@ -13,8 +13,18 @@ type FinalePhase = "none" | "stamp1" | "stamp2" | "redflash" | "blackout";
 export function CheckinScene({ router, events }: SceneComponentProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
+  const [entryPulse, setEntryPulse] = useState<{ id: number; digit: string; slot: number } | null>(null);
   const [finale, setFinale] = useState<FinalePhase>("none");
   const heartbeat = useRef<SfxHandle | null>(null);
+  const entryPulseId = useRef(0);
+
+  useEffect(() => {
+    if (!entryPulse) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => setEntryPulse(null), 540);
+    return () => window.clearTimeout(timer);
+  }, [entryPulse]);
 
   useEffect(() => {
     if (finale === "none") {
@@ -50,11 +60,13 @@ export function CheckinScene({ router, events }: SceneComponentProps) {
   }, []);
 
   function pressDigit(d: string) {
-    if (finale !== "none") {
+    if (finale !== "none" || code.length >= 4) {
       return;
     }
     playSfx("25_");
     setError(false);
+    entryPulseId.current += 1;
+    setEntryPulse({ id: entryPulseId.current, digit: d, slot: Math.min(code.length, 3) });
     setCode((prev) => (prev.length >= 4 ? prev : prev + d));
   }
 
@@ -110,12 +122,23 @@ export function CheckinScene({ router, events }: SceneComponentProps) {
         <p className="calling">正在点名中……</p>
       </article>
 
-      <div className={`checkin-slots ${error ? "is-error" : ""}`} aria-label="签到码输入">
+      <div className={`checkin-slots ${error ? "is-error" : ""} ${code.length === 4 ? "is-ready" : ""}`.trim()} aria-label="签到码输入">
         {slots.map((ch, i) => (
           <span key={i} className={`code-slot ${ch ? "is-filled" : ""}`}>
             {ch}
           </span>
         ))}
+        {entryPulse ? (
+          <span
+            key={entryPulse.id}
+            className="checkin-entry-pulse"
+            data-slot={entryPulse.slot}
+            aria-hidden="true"
+          >
+            <b>{entryPulse.digit}</b>
+            <i /><i /><i />
+          </span>
+        ) : null}
       </div>
       {error ? <p className="checkin-error">签到码错误，请重新输入</p> : null}
 

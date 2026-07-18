@@ -105,6 +105,59 @@
   white-space: nowrap;
 }
 
+.quest-task-digit-hint.is-locking-digit {
+  animation: quest-digit-hint-lock 1040ms steps(8, end) both;
+}
+
+.quest-digit-acquisition {
+  animation: quest-digit-acquisition 1120ms steps(14, end) both;
+  background: #fff2bd;
+  border: 2px solid #101116;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.38);
+  color: #171a20;
+  display: grid;
+  height: 38px;
+  left: 50%;
+  place-items: center;
+  pointer-events: none;
+  position: absolute;
+  top: 1px;
+  width: 34px;
+  z-index: 9;
+}
+
+.quest-digit-acquisition b {
+  font: 900 20px/1 monospace;
+}
+
+.quest-digit-acquisition i {
+  animation: quest-digit-pixel 760ms steps(7, end) both;
+  background: #f0d54e;
+  height: 5px;
+  left: -16px;
+  position: absolute;
+  top: 3px;
+  width: 5px;
+}
+
+.quest-digit-acquisition i:nth-of-type(2) {
+  animation-delay: 70ms;
+  left: 37px;
+  top: 7px;
+}
+
+.quest-digit-acquisition i:nth-of-type(3) {
+  animation-delay: 130ms;
+  left: -9px;
+  top: 29px;
+}
+
+.quest-digit-acquisition i:nth-of-type(4) {
+  animation-delay: 180ms;
+  left: 40px;
+  top: 27px;
+}
+
 .quest-task-trigger b {
   color: #9fd3ff;
   font: 800 8px/1 monospace;
@@ -133,6 +186,27 @@
 @keyframes quest-task-objective-reveal {
   0%, 20% { opacity: 0; transform: translateX(12px); }
   42%, 100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes quest-digit-acquisition {
+  0% { opacity: 0; transform: translate(74px, 126px) scale(1.75); }
+  12%, 48% { opacity: 1; }
+  52% { transform: translate(44px, 72px) scale(1.25); }
+  76% { opacity: 1; transform: translate(0, 0) scale(0.82); }
+  88%, 100% { opacity: 0; transform: translate(0, 0) scale(0.2); }
+}
+
+@keyframes quest-digit-pixel {
+  0%, 100% { opacity: 0; transform: translate(0, 18px) scale(0.4); }
+  18% { opacity: 1; }
+  68% { opacity: 0.9; transform: translate(0, 0) scale(1); }
+}
+
+@keyframes quest-digit-hint-lock {
+  0%, 56% { color: #f0d54e; transform: translateX(0); }
+  62% { background: #f0d54e; color: #171a20; transform: translateX(-2px) scale(1.08); }
+  72% { transform: translateX(2px) scale(1.08); }
+  84%, 100% { background: transparent; color: #f0d54e; transform: translateX(0) scale(1); }
 }
 
 .quest-task-drawer {
@@ -916,6 +990,9 @@
   .quest-task-bar.has-progress-update .quest-task-trigger::after,
   .quest-task-bar.has-progress-update .quest-task-trigger b,
   .quest-task-bar.has-objective-update .quest-task-trigger-copy > span,
+  .quest-task-digit-hint.is-locking-digit,
+  .quest-digit-acquisition,
+  .quest-digit-acquisition i,
   .inventory-bar.is-receiving-item .inv-handle,
   .inv-slot.is-new-item {
     animation-duration: 1ms !important;

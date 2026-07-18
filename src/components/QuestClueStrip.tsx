@@ -56,12 +56,16 @@ export function QuestTaskBar({
   const [hintCount, setHintCount] = useState(0);
   const [documentItem, setDocumentItem] = useState<ItemId | null>(null);
   const [updateCue, setUpdateCue] = useState<"objective" | "progress" | null>(null);
+  const [recentDigit, setRecentDigit] = useState<{ id: number; index: number; value: string } | null>(null);
   const previousQuestRef = useRef({
     id: quest.id,
     objective: quest.objective,
     completed: quest.completed
   });
   const digitSlots = [state.digits.d1, state.digits.d2, state.digits.d3, state.digits.d4];
+  const digitSnapshot = digitSlots.map((digit) => digit ?? "").join("|");
+  const previousDigitsRef = useRef([...digitSlots]);
+  const digitCueIdRef = useRef(0);
   const acquiredDigitCount = digitSlots.filter(Boolean).length;
   const showDigitHint = quest.chapter === "chapter_one"
     && (state.flags.codeScattered || acquiredDigitCount > 0);
@@ -103,6 +107,21 @@ export function QuestTaskBar({
     return () => window.clearTimeout(timer);
   }, [quest.completed, quest.id, quest.objective]);
 
+  useEffect(() => {
+    const previous = previousDigitsRef.current;
+    previousDigitsRef.current = [...digitSlots];
+    const acquiredIndex = digitSlots.findIndex((digit, index) => Boolean(digit) && digit !== previous[index]);
+    const acquiredValue = acquiredIndex >= 0 ? digitSlots[acquiredIndex] : null;
+    if (!acquiredValue) {
+      return undefined;
+    }
+
+    digitCueIdRef.current += 1;
+    setRecentDigit({ id: digitCueIdRef.current, index: acquiredIndex, value: acquiredValue });
+    const timer = window.setTimeout(() => setRecentDigit(null), 1180);
+    return () => window.clearTimeout(timer);
+  }, [digitSnapshot]);
+
   function navigate() {
     events.emit("quest_navigation_requested", {
       questId: quest.id,
@@ -142,13 +161,28 @@ export function QuestTaskBar({
         <strong className="quest-task-trigger-copy">
           <span>{quest.objective}</span>
           {showDigitHint ? (
-            <em className="quest-task-digit-hint" aria-label={digitHintAria}>
+            <em className={`quest-task-digit-hint ${recentDigit ? "is-locking-digit" : ""}`.trim()} aria-label={digitHintAria}>
               签到码 {digitHintText}
             </em>
           ) : null}
         </strong>
         <b>{quest.completed}/{quest.total}</b>
       </button>
+
+      {recentDigit ? (
+        <span
+          key={recentDigit.id}
+          className={`quest-digit-acquisition quest-digit-acquisition--${variant}`}
+          data-digit-index={recentDigit.index + 1}
+          aria-hidden="true"
+        >
+          <b>{recentDigit.value}</b>
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+      ) : null}
 
       {open ? (
         <QuestDrawerLayer variant={variant} portalRoot={portalRoot}>

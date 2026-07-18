@@ -122,7 +122,7 @@ export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: Zijinga
       `Campus plate must match the top-down world: expected ${ZIJINGANG_WORLD.width}x${ZIJINGANG_WORLD.height}, received ${source.naturalWidth}x${source.naturalHeight}`
     );
   }
-  texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+  texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
   scene.add.image(0, 0, ZIJINGANG_CAMPUS_PLATE_KEY)
     .setOrigin(0)
     .setDepth(0)

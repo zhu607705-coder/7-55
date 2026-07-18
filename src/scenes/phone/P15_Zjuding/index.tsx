@@ -1051,7 +1051,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             <button type="button" data-app-id="馆藏检索" onClick={() => goPage("library_catalog")}>
               <span aria-hidden="true">⌕</span>馆藏检索
             </button>
-            {LIBRARY_APPS.slice(1).map((app) => (
+            {LIBRARY_APPS.slice(1).map((app) => app.opensSpaces ? (
+              <button key={app.label} type="button" data-app-id={app.label} onClick={() => goPage("library_spaces")}>
+                <span aria-hidden="true">{app.icon}</span>{app.label}
+              </button>
+            ) : (
               <span
                 key={app.label}
                 className="zju-static-app zju-locked-icon-slot"
@@ -1170,7 +1174,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           {catalogFeedback ? <p className="zju-catalog-feedback" aria-live="polite">{catalogFeedback}</p> : null}
 
           {resultsVisible ? (
-            <section className="zju-catalog-results" aria-label="馆藏检索结果">
+            <section
+              key={catalogSubmitted ? `search-${catalogSubmittedQuery}` : "catalog-clue-results"}
+              className={`zju-catalog-results ${catalogSubmitted ? "is-search-reveal" : ""}`.trim()}
+              aria-label="馆藏检索结果"
+            >
               <h2><i aria-hidden="true" /><span>检索结果</span><small>{visibleCatalogResults.length} 条</small></h2>
               {visibleCatalogResults.map((result) => {
                 const correctSelected = result.id === "three-minute-leave-method" && (finalsPuzzle.callNumberCollected || catalogSelectedId === result.id);
@@ -1569,7 +1577,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       {systemDialogue ? (
         <div className="zju-system-dialogue-layer" role="dialog" aria-modal="true" aria-label="系统对话">
           <div className="zju-system-orb" aria-hidden="true"><span>求</span><i /></div>
-          <section className={`zju-system-dialogue is-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker}`}>
+          <section
+            key={`${systemDialogue}-${systemDialogueIndex}`}
+            className={`zju-system-dialogue is-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker} is-line-entering`}
+          >
             <small>{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker === "system" ? "系统" : "我"}</small>
             <p>{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].text}</p>
             <button type="button" aria-label="继续对话" onClick={advanceSystemDialogue}>›</button>

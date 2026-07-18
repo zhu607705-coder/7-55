@@ -72,7 +72,7 @@ export function sanitizeZjudingPage(state: GameState, requested = state.ui.zjudi
   if (requested === "directory" && !access.departmentDirectory) return "hub";
   if (requested === "library_recovery" && !access.libraryRecovery) return access.library ? "library" : "hub";
   if (requested === "library_catalog" && !access.library) return "hub";
-  if (requested === "library_spaces" || requested === "library_seat") return access.library ? "library" : "hub";
+  if ((requested === "library_spaces" || requested === "library_seat") && !access.library) return "hub";
   if (requested === "library" && !access.library) return "hub";
   return requested;
 }
