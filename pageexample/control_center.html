@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>OPPO 下拉菜单 · 超细像素图标版</title>
+<style>
+  :root{
+    --screen-w:430px;
+    --blue:#0676f9;
+    --green:#08ad36;
+    --red:#db3c31;
+    --yellow:#f5b400;
+    --glass:rgba(178,178,178,.58);
+    --glass-2:rgba(181,181,181,.50);
+    --glass-3:rgba(196,196,196,.45);
+    --white:#f7f7f7;
+    --txt:#fff;
+    --muted:rgba(255,255,255,.70);
+    --inactive-icon:#fff;
+    --shadow:0 16px 42px rgba(0,0,0,.09), inset 0 1px rgba(255,255,255,.13);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;background:#8e908c;color:#fff;}
+  body{display:flex;justify-content:center;align-items:flex-start;overflow:auto;}
+  .phone{
+    width:min(100vw,var(--screen-w));
+    min-height:min(100svh,946px);
+    height:max(100svh,946px);
+    position:relative;
+    overflow:hidden;
+    background:
+      radial-gradient(170px 260px at -18% 28%, rgba(68,63,126,.42), transparent 70%),
+      radial-gradient(190px 360px at -5% 46%, rgba(58,150,206,.50), transparent 72%),
+      radial-gradient(220px 360px at 8% 73%, rgba(62,160,113,.48), transparent 74%),
+      radial-gradient(280px 390px at 52% 92%, rgba(119,116,126,.52), transparent 78%),
+      linear-gradient(180deg,#8f918e 0%,#929491 56%,#888a86 100%);
+    isolation:isolate;
+  }
+  .phone::before{
+    content:"";
+    position:absolute;inset:-40px;
+    backdrop-filter:blur(22px) saturate(1.12);
+    -webkit-backdrop-filter:blur(22px) saturate(1.12);
+    background:rgba(150,150,150,.16);
+    z-index:-1;
+  }
+  svg{display:block;overflow:visible}
+  button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;user-select:none}
+  .status{display:flex;align-items:center;justify-content:space-between;padding:48px 41px 0 42px;font-weight:800;letter-spacing:.2px;}
+  .time{font-size:17px;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .status-icons{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.88);font-size:10px;font-weight:900}
+  .battery{height:14px;width:28px;border-radius:5px;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;color:#707070;font-size:10px;line-height:1;position:relative;overflow:hidden;}
+  .battery::before{content:"";position:absolute;left:0;top:0;bottom:0;width:39%;background:#20c954;z-index:-0}
+  .battery span{position:relative;z-index:1;color:#767676}
+  .bolt{font-size:16px;margin-left:1px;color:rgba(255,255,255,.85);line-height:1}
+  .header{display:flex;align-items:center;justify-content:space-between;padding:42px 41px 0 42px;}
+  .date{font-size:20px;font-weight:900;letter-spacing:.4px;text-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .head-actions{display:flex;gap:14px;align-items:center;}
+  .round-mini{width:40px;height:40px;border-radius:50%;background:rgba(188,188,188,.55);display:grid;place-items:center;color:#fff;box-shadow:inset 0 1px rgba(255,255,255,.11);transition:.18s ease;}
+  .round-mini:active{transform:scale(.94);background:rgba(230,230,230,.48)}
+  .round-mini svg{width:21px;height:21px;stroke-width:2.8}
+  .content{padding:0 41px 22px 42px;margin-top:38px;}
+  .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .quick-card{height:72px;border-radius:25px;background:var(--glass);box-shadow:var(--shadow);display:flex;align-items:center;padding:11px 17px 11px 12px;text-align:left;transition:.18s ease;overflow:hidden;}
+  .quick-card:active{transform:scale(.982)}
+  .quick-card.active .bubble{background:rgba(250,250,250,.96);color:var(--blue)}
+  .bubble{width:50px;height:50px;min-width:50px;border-radius:50%;background:rgba(240,240,240,.94);display:grid;place-items:center;color:var(--blue);margin-right:8px;transition:.18s ease;}
+  .quick-card:not(.active) .bubble{background:rgba(186,186,186,.6);color:#fff;}
+  .quick-text{min-width:0;line-height:1.06;}
+  .quick-title{font-size:18px;font-weight:900;letter-spacing:.1px;white-space:normal;word-break:break-word;}
+  .quick-sub{font-size:15px;margin-top:6px;color:rgba(255,255,255,.66);font-weight:800;}
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:76px;gap:16px;margin-top:16px;}
+  .big-card,.small-card,.vslider,.circle{background:var(--glass-2);box-shadow:var(--shadow);}
+  .big-card{grid-column:span 2;grid-row:span 2;border-radius:25px;padding:17px;position:relative;text-align:left;overflow:hidden;}
+  .music-icon{width:50px;height:50px;border-radius:12px;background:rgba(213,213,213,.32);display:grid;place-items:center;color:rgba(255,255,255,.34);}
+  .cast{position:absolute;top:24px;right:24px;color:#fff;opacity:.95}
+  .media-title{position:absolute;left:18px;top:82px;font-size:19px;color:rgba(255,255,255,.53);font-weight:600;letter-spacing:.2px}
+  .media-row{position:absolute;left:26px;right:26px;bottom:26px;display:flex;align-items:center;justify-content:space-between;color:rgba(255,255,255,.88)}
+  .media-row button{width:32px;height:32px;display:grid;place-items:center;opacity:.95;transition:.16s ease}.media-row button:active{transform:scale(.88)}
+  .media-row button.dim{opacity:.18}
+  .play svg{width:34px;height:34px;fill:currentColor;stroke:none}
+  .vslider{grid-row:span 2;border-radius:28px;position:relative;overflow:hidden;background:rgba(184,184,184,.52);touch-action:none;cursor:ns-resize;}
+  .vslider .fill{position:absolute;left:0;right:0;bottom:0;height:38%;background:rgba(245,245,245,.93);border-radius:0 0 28px 28px;transition:height .08s linear;}
+  .vslider .slider-icon{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:2;transition:bottom .08s linear;color:var(--blue);}
+  .vslider.bright .slider-icon{color:var(--yellow)}
+  .vslider .slider-icon svg{width:28px;height:28px;stroke-width:2.7}.vslider.bright .slider-icon svg{fill:currentColor;stroke:currentColor}
+  .small-card{border-radius:25px;display:grid;place-items:center;color:#fff;background:rgba(182,182,182,.48);transition:.18s ease;}
+  .small-card svg{width:36px;height:36px;stroke-width:2.5;opacity:.9}.small-card:active{transform:scale(.94)}.small-card.active{background:rgba(245,245,245,.92);color:var(--blue)}
+  .tile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 16px;margin-top:24px;}
+  .toggle{height:100px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;transition:.18s ease;}
+  .toggle:active .circle{transform:scale(.94)}
+  .circle{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:rgba(181,181,181,.52);color:#fff;transition:.2s ease;}
+  .circle svg{width:34px;height:34px;stroke-width:2.6}.circle .text-icon{font-size:31px;font-weight:900;line-height:1;letter-spacing:-3px}
+  .toggle.active .circle{background:rgba(248,248,248,.96);color:var(--on-color,var(--blue));}
+  .toggle .label{font-size:13.5px;line-height:1.15;margin-top:9px;font-weight:900;text-shadow:0 1px 1px rgba(0,0,0,.05);white-space:nowrap;color:rgba(255,255,255,.94);}
+  .arrow{font-size:10px;vertical-align:1px;margin-left:2px;opacity:.9}
+  .pager{display:flex;justify-content:center;gap:10px;margin-top:11px}.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.46);transition:.2s}.dot.active{background:#fff}
+  .home{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:143px;height:5px;border-radius:99px;background:rgba(255,255,255,.88)}
+  .toast{position:absolute;left:50%;bottom:58px;transform:translate(-50%,20px);opacity:0;background:rgba(55,55,55,.76);color:#fff;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;pointer-events:none;transition:.23s ease;white-space:nowrap;z-index:20;backdrop-filter:blur(8px)}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .sheet{position:absolute;left:22px;right:22px;bottom:38px;background:rgba(196,196,196,.62);border-radius:26px;padding:18px 18px 20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.18), inset 0 1px rgba(255,255,255,.15);opacity:0;transform:translateY(24px);pointer-events:none;transition:.22s ease;z-index:15;}
+  .sheet.show{opacity:1;transform:translateY(0);pointer-events:auto}.sheet h3{margin:0 0 10px;font-size:17px}.sheet p{margin:0;color:rgba(255,255,255,.84);font-size:13.5px;line-height:1.6}.sheet-close{position:absolute;right:12px;top:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:20px;}
+  @media (max-width:380px){.status{padding-left:34px;padding-right:34px}.header{padding-left:34px;padding-right:34px}.content{padding-left:34px;padding-right:34px}.quick-title{font-size:16px}.quick-sub{font-size:13px}.tile-grid{gap:18px 12px}.controls{gap:12px}.quick-grid{gap:12px}.circle{width:70px;height:70px}.toggle{height:94px}.round-mini{width:38px;height:38px}}
+
+
+/* ===== 细像素锯齿化处理：保留原玻璃视觉，仅把圆角做成接近弧线的像素阶梯 ===== */
+:root{
+  --px-step:2px;
+  --j-r:26px;
+  --j-r-lg:28px;
+  --j-r-sm:14px;
+  --pixel-line:rgba(255,255,255,.055);
+  --pixel-dark:rgba(0,0,0,.032);
+}
+html,body{image-rendering:auto;}
+.phone{
+  image-rendering:pixelated;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.014) 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.012) 0 1px, transparent 1px 2px),
+    radial-gradient(170px 260px at -18% 28%, rgba(68,63,126,.42), transparent 70%),
+    radial-gradient(190px 360px at -5% 46%, rgba(58,150,206,.50), transparent 72%),
+    radial-gradient(220px 360px at 8% 73%, rgba(62,160,113,.48), transparent 74%),
+    radial-gradient(280px 390px at 52% 92%, rgba(119,116,126,.52), transparent 78%),
+    linear-gradient(180deg,#8f918e 0%,#929491 56%,#888a86 100%);
+  background-size:2px 2px,2px 2px,auto,auto,auto,auto,auto;
+}
+.phone::after{
+  content:"";
+  position:absolute;inset:0;z-index:10;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 1px, rgba(255,255,255,.052) 1px 2px),
+    repeating-linear-gradient(90deg, transparent 0 1px, rgba(0,0,0,.028) 1px 2px);
+  opacity:.15;
+  mix-blend-mode:soft-light;
+}
+svg,svg *{
+  shape-rendering:crispEdges!important;
+  stroke-linecap:square!important;
+  stroke-linejoin:miter!important;
+}
+button,.quick-card,.big-card,.small-card,.vslider,.circle,.round-mini,.bubble,.music-icon,.sheet,.toast{transition-timing-function:steps(5,end)!important;}
+.quick-card,.big-card,.small-card,.vslider,.round-mini,.bubble,.music-icon,.circle,.sheet,.toast,.home,.dot{
+  position:relative;
+  overflow:hidden;
+}
+.quick-card,.big-card,.small-card,.vslider,.sheet,.toast{
+  border-radius:0!important;
+  clip-path:polygon(
+    var(--j-r) 0,
+    calc(100% - var(--j-r)) 0,
+    calc(100% - var(--j-r) + 6px) 0,
+    calc(100% - var(--j-r) + 6px) 1px,
+    calc(100% - var(--j-r) + 11px) 1px,
+    calc(100% - var(--j-r) + 11px) 2px,
+    calc(100% - var(--j-r) + 15px) 2px,
+    calc(100% - var(--j-r) + 15px) 4px,
+    calc(100% - var(--j-r) + 18px) 4px,
+    calc(100% - var(--j-r) + 18px) 6px,
+    calc(100% - var(--j-r) + 21px) 6px,
+    calc(100% - var(--j-r) + 21px) 9px,
+    calc(100% - var(--j-r) + 23px) 9px,
+    calc(100% - var(--j-r) + 23px) 12px,
+    calc(100% - var(--j-r) + 25px) 12px,
+    calc(100% - var(--j-r) + 25px) 16px,
+    calc(100% - var(--j-r) + 26px) 16px,
+    calc(100% - var(--j-r) + 26px) 21px,
+    100% 21px,
+    100% calc(100% - 21px),
+    calc(100% - var(--j-r) + 26px) calc(100% - 21px),
+    calc(100% - var(--j-r) + 26px) calc(100% - 16px),
+    calc(100% - var(--j-r) + 25px) calc(100% - 16px),
+    calc(100% - var(--j-r) + 25px) calc(100% - 12px),
+    calc(100% - var(--j-r) + 23px) calc(100% - 12px),
+    calc(100% - var(--j-r) + 23px) calc(100% - 9px),
+    calc(100% - var(--j-r) + 21px) calc(100% - 9px),
+    calc(100% - var(--j-r) + 21px) calc(100% - 6px),
+    calc(100% - var(--j-r) + 18px) calc(100% - 6px),
+    calc(100% - var(--j-r) + 18px) calc(100% - 4px),
+    calc(100% - var(--j-r) + 15px) calc(100% - 4px),
+    calc(100% - var(--j-r) + 15px) calc(100% - 2px),
+    calc(100% - var(--j-r) + 11px) calc(100% - 2px),
+    calc(100% - var(--j-r) + 11px) calc(100% - 1px),
+    calc(100% - var(--j-r) + 6px) calc(100% - 1px),
+    calc(100% - var(--j-r) + 6px) 100%,
+    calc(100% - var(--j-r)) 100%,
+    var(--j-r) 100%,
+    calc(var(--j-r) - 6px) 100%,
+    calc(var(--j-r) - 6px) calc(100% - 1px),
+    calc(var(--j-r) - 11px) calc(100% - 1px),
+    calc(var(--j-r) - 11px) calc(100% - 2px),
+    calc(var(--j-r) - 15px) calc(100% - 2px),
+    calc(var(--j-r) - 15px) calc(100% - 4px),
+    calc(var(--j-r) - 18px) calc(100% - 4px),
+    calc(var(--j-r) - 18px) calc(100% - 6px),
+    calc(var(--j-r) - 21px) calc(100% - 6px),
+    calc(var(--j-r) - 21px) calc(100% - 9px),
+    calc(var(--j-r) - 23px) calc(100% - 9px),
+    calc(var(--j-r) - 23px) calc(100% - 12px),
+    calc(var(--j-r) - 25px) calc(100% - 12px),
+    calc(var(--j-r) - 25px) calc(100% - 16px),
+    calc(var(--j-r) - 26px) calc(100% - 16px),
+    calc(var(--j-r) - 26px) calc(100% - 21px),
+    0 calc(100% - 21px),
+    0 21px,
+    calc(var(--j-r) - 26px) 21px,
+    calc(var(--j-r) - 26px) 16px,
+    calc(var(--j-r) - 25px) 16px,
+    calc(var(--j-r) - 25px) 12px,
+    calc(var(--j-r) - 23px) 12px,
+    calc(var(--j-r) - 23px) 9px,
+    calc(var(--j-r) - 21px) 9px,
+    calc(var(--j-r) - 21px) 6px,
+    calc(var(--j-r) - 18px) 6px,
+    calc(var(--j-r) - 18px) 4px,
+    calc(var(--j-r) - 15px) 4px,
+    calc(var(--j-r) - 15px) 2px,
+    calc(var(--j-r) - 11px) 2px,
+    calc(var(--j-r) - 11px) 1px,
+    calc(var(--j-r) - 6px) 1px,
+    calc(var(--j-r) - 6px) 0
+  );
+}
+.big-card,.vslider,.sheet{--j-r:28px;}
+.small-card,.quick-card{--j-r:26px;}
+.toast{--j-r:24px;}
+.round-mini,.bubble,.music-icon,.circle,.dot,.home{
+  border-radius:0!important;
+}
+.round-mini,.bubble,.circle{
+  clip-path:polygon(
+    40% 0,60% 0,
+    60% 2%,70% 2%,70% 4%,76% 4%,76% 7%,82% 7%,82% 10%,87% 10%,87% 14%,91% 14%,91% 19%,95% 19%,95% 25%,98% 25%,98% 34%,100% 34%,
+    100% 66%,98% 66%,98% 75%,95% 75%,95% 81%,91% 81%,91% 86%,87% 86%,87% 90%,82% 90%,82% 93%,76% 93%,76% 96%,70% 96%,70% 98%,60% 98%,60% 100%,
+    40% 100%,40% 98%,30% 98%,30% 96%,24% 96%,24% 93%,18% 93%,18% 90%,13% 90%,13% 86%,9% 86%,9% 81%,5% 81%,5% 75%,2% 75%,2% 66%,0 66%,
+    0 34%,2% 34%,2% 25%,5% 25%,5% 19%,9% 19%,9% 14%,13% 14%,13% 10%,18% 10%,18% 7%,24% 7%,24% 4%,30% 4%,30% 2%,40% 2%
+  );
+}
+.music-icon{
+  clip-path:polygon(24% 0,76% 0,76% 2%,84% 2%,84% 5%,90% 5%,90% 9%,95% 9%,95% 16%,100% 16%,100% 84%,95% 84%,95% 91%,90% 91%,90% 95%,84% 95%,84% 98%,76% 98%,76% 100%,24% 100%,24% 98%,16% 98%,16% 95%,10% 95%,10% 91%,5% 91%,5% 84%,0 84%,0 16%,5% 16%,5% 9%,10% 9%,10% 5%,16% 5%,16% 2%,24% 2%);
+}
+.home{
+  clip-path:polygon(5px 0,calc(100% - 5px) 0,calc(100% - 5px) 1px,calc(100% - 2px) 1px,calc(100% - 2px) 2px,100% 2px,100% 3px,calc(100% - 2px) 3px,calc(100% - 2px) 4px,calc(100% - 5px) 4px,calc(100% - 5px) 5px,5px 5px,5px 4px,2px 4px,2px 3px,0 3px,0 2px,2px 2px,2px 1px,5px 1px);
+}
+.dot{
+  clip-path:polygon(3px 0,5px 0,5px 1px,7px 1px,7px 3px,8px 3px,8px 5px,7px 5px,7px 7px,5px 7px,5px 8px,3px 8px,3px 7px,1px 7px,1px 5px,0 5px,0 3px,1px 3px,1px 1px,3px 1px);
+}
+.battery{border-radius:0!important;clip-path:polygon(0 2px,23px 2px,23px 1px,25px 1px,25px 0,29px 0,29px 3px,31px 3px,31px 11px,29px 11px,29px 14px,25px 14px,25px 13px,23px 13px,23px 12px,0 12px);}
+:is(.quick-card,.big-card,.small-card,.vslider,.circle,.round-mini,.bubble,.music-icon,.sheet,.toast)::after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.060) 0 1px, transparent 1px 2px),
+    linear-gradient(0deg, rgba(0,0,0,.030) 0 1px, transparent 1px 2px);
+  opacity:.18;
+  mix-blend-mode:soft-light;
+}
+:is(.quick-card,.big-card,.small-card,.vslider,.circle,.round-mini,.bubble,.music-icon,.sheet,.toast)>*{position:relative;z-index:4;}
+.quick-card:active,.small-card:active,.circle:active,.round-mini:active{transform:translate(1px,1px) scale(.985)!important;}
+.vslider .fill{border-radius:0!important;clip-path:polygon(0 2px,2px 2px,2px 1px,5px 1px,5px 0,calc(100% - 5px) 0,calc(100% - 5px) 1px,calc(100% - 2px) 1px,calc(100% - 2px) 2px,100% 2px,100% 100%,0 100%);}
+.vslider .slider-icon{z-index:5;}
+.status-icons svg,.round-mini svg,.bubble svg,.cast svg,.media-row svg,.slider-icon svg,.small-card svg,.circle svg,.music-icon svg{
+  image-rendering:pixelated;
+  transform-origin:50% 50%;
+  filter:contrast(1.08) saturate(.96);
+}
+.round-mini svg{width:20px;height:20px;stroke-width:2.2!important;}
+.bubble svg{width:34px;height:34px;stroke-width:2.4!important;}
+.small-card svg{width:34px;height:34px;stroke-width:2.25!important;}
+.circle svg{width:33px;height:33px;stroke-width:2.25!important;}
+.slider-icon svg{width:27px;height:27px;stroke-width:2.25!important;}
+.cast svg{width:30px;height:30px;stroke-width:2.05!important;}
+.media-row svg{transform:translate(.5px,.5px);}
+.text-icon{
+  font-family:"Courier New",ui-monospace,monospace!important;
+  font-size:29px!important;
+  letter-spacing:-7px!important;
+  line-height:1!important;
+  text-shadow:1px 0 currentColor,0 1px currentColor;
+}
+.status-icons span[style*="border"]{border-radius:0!important;clip-path:polygon(1px 0,calc(100% - 1px) 0,calc(100% - 1px) 1px,100% 1px,100% calc(100% - 1px),calc(100% - 1px) calc(100% - 1px),calc(100% - 1px) 100%,1px 100%,1px calc(100% - 1px),0 calc(100% - 1px),0 1px,1px 1px);}
+
+</style>
+</head>
+<body>
+<svg aria-hidden="true" width="0" height="0" style="position:absolute">
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.2 8.4C8.2 4 15.8 4 20.8 8.4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"/><path d="M6.3 11.7c3.2-2.7 8.2-2.7 11.4 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"/><path d="M9.4 15c1.5-1.2 3.7-1.2 5.2 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"/><circle cx="12" cy="18.4" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-bluetooth" viewBox="0 0 24 24"><path d="M9 3v18l7-6-7-6 7-6-7 6-4-4m4 10-4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="m5 16.8-.8 3.1 3.1-.8L18.7 7.7l-2.3-2.3L5 16.8Z" fill="currentColor"/><path d="m15.3 4.4 1.1-1.1c.7-.7 1.7-.7 2.4 0l1 1c.7.7.7 1.7 0 2.4l-1.1 1.1" fill="currentColor"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.7" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.8-1L14.3 3h-4.6L9.3 6a7 7 0 0 0-1.8 1l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 1.8 1l.4 3h4.6l.4-3a7 7 0 0 0 1.8-1l2.4 1 2-3.5-2-1.5c.1-.3.1-.7.1-1Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.9" fill="currentColor"/><circle cx="12" cy="12" r="1.9" fill="currentColor"/><circle cx="12" cy="19" r="1.9" fill="currentColor"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18.3a3 3 0 1 1-1.8-2.8V6l11-2.5v11.2a3 3 0 1 1-1.8-2.8V7.2L9 8.9v9.4Z" fill="currentColor"/></symbol>
+  <symbol id="i-cast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M4.8 19.2A10.2 10.2 0 1 1 19.2 4.8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.1"/><path d="M2.5 21.5A13.5 13.5 0 1 1 21.5 2.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" opacity=".75"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M5 5v14" stroke="currentColor" stroke-linecap="round" stroke-width="2.4"/><path d="m19 5-10 7 10 7V5Z" fill="currentColor"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M19 5v14" stroke="currentColor" stroke-linecap="round" stroke-width="2.4"/><path d="m5 5 10 7-10 7V5Z" fill="currentColor"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.7v2.2M12 19.1v2.2M4.3 4.3l1.6 1.6M18.1 18.1l1.6 1.6M2.7 12h2.2M19.1 12h2.2M4.3 19.7l1.6-1.6M18.1 5.9l1.6-1.6" stroke-linecap="round" stroke-width="2.2"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4V9Z" fill="currentColor"/><path d="M16 8a6 6 0 0 1 0 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"/><path d="M18.8 5a10 10 0 0 1 0 14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/></symbol>
+  <symbol id="i-speakerbox" viewBox="0 0 24 24"><rect x="8" y="2.8" width="8" height="18.4" rx="1.5" fill="currentColor" opacity=".95"/><circle cx="12" cy="15.2" r="3" fill="none" stroke="#9b9b9b" stroke-width="1.8"/><circle cx="12" cy="6.5" r="1.3" fill="#9b9b9b"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M6.2 5h11.6c.7 0 1.2.5 1.2 1.2V15H5V6.2C5 5.5 5.5 5 6.2 5Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 18h18l-1.5 2H4.5L3 18Z" fill="currentColor"/></symbol>
+  <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4.5 13.5V12a7.5 7.5 0 0 1 15 0v1.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M4.3 13h3v6h-3zM16.7 13h3v6h-3z" fill="currentColor"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></symbol>
+  <symbol id="i-phone-vibrate" viewBox="0 0 24 24"><rect x="8" y="3.5" width="8" height="17" rx="1.6" fill="currentColor"/><circle cx="12" cy="17.7" r=".7" fill="#fff" opacity=".85"/><path d="M5.4 7.2 3.5 9.1l1.9 1.9M5.4 13l-1.9 1.9 1.9 1.9M18.6 7.2l1.9 1.9-1.9 1.9M18.6 13l1.9 1.9-1.9 1.9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/></symbol>
+  <symbol id="i-flashlight" viewBox="0 0 24 24"><path d="M8 3h8v4l-2 3v9a2 2 0 0 1-4 0v-9L8 7V3Z" fill="currentColor"/><path d="M9 7h6" stroke="#aaa" stroke-width="1.5"/><circle cx="12" cy="16" r="1" fill="#aaa"/></symbol>
+  <symbol id="i-location" viewBox="0 0 24 24"><path d="M12 22s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12Z" fill="currentColor"/><circle cx="12" cy="10" r="2.4" fill="#f7f7f7" opacity=".95"/></symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24"><path d="M3 13.5 21 4l-7.2 16-3.2-6.5L3 13.5Z" fill="currentColor"/><path d="m10.6 13.5 4.3-4.5" stroke="rgba(0,0,0,.15)" stroke-linecap="round" stroke-width="1.5"/></symbol>
+  <symbol id="i-rotate" viewBox="0 0 24 24"><rect x="8" y="4" width="8" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2" transform="rotate(-35 12 12)"/><path d="M18.7 5.3c2.3 2.5 2.7 6.2 1 9.1M5.3 18.7c-2.3-2.5-2.7-6.2-1-9.1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/><path d="m17.5 2.4 1.3 3.3-3.5-.5M6.5 21.6l-1.3-3.3 3.5.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M17.7 16.7A8.1 8.1 0 0 1 7.3 6.3 8.4 8.4 0 1 0 17.7 16.7Z" fill="currentColor"/></symbol>
+  <symbol id="i-oppo" viewBox="0 0 24 24"><path d="M5 18.5a8.8 8.8 0 1 1 14 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"/><path d="M7.8 16a5.5 5.5 0 1 1 8.4 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/><circle cx="12" cy="12" r="2.3" fill="currentColor"/><path d="M4 8.2h.01M20 8.2h.01M12 3.4h.01" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"/></symbol>
+  <symbol id="i-battery-save" viewBox="0 0 24 24"><rect x="3" y="8" width="16" height="9" rx="1.7" fill="currentColor"/><rect x="19" y="10.5" width="2" height="4" rx=".8" fill="currentColor"/><path d="M8 14c2.2-3.5 4.9-.7 7.8-3.5-.3 4.5-3.3 5.5-7.8 4.5Z" fill="#9d9d9d"/></symbol>
+  <symbol id="i-dark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 4v16" stroke="currentColor" stroke-width="3"/></symbol>
+  <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="6" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 7.5 20 18M8 16.5 20 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"/><path d="M14.5 4H20v5.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2" fill="currentColor"/><path d="m16 10 5-2.8v9.6L16 14v-4Z" fill="currentColor"/><circle cx="9.5" cy="12" r="1.8" fill="#9d9d9d"/></symbol>
+</svg>
+
+<main class="phone" aria-label="仿 OPPO 控制中心">
+  <section class="status" aria-label="状态栏">
+    <div class="time">00:19</div>
+    <div class="status-icons">
+      <span style="font-size:13px">▣</span><svg width="12" height="18"><use href="#i-bluetooth"/></svg><span style="border:2px solid currentColor;border-radius:3px;padding:1px 2px;font-size:8px">HD</span><span>1</span><svg width="19" height="16"><use href="#i-wifi"/></svg><strong>5G</strong><span style="font-size:17px;letter-spacing:-2px">▂▅▇</span><span style="opacity:.38;font-size:17px;letter-spacing:-2px">▂▆</span><div class="battery"><span>27</span></div><span class="bolt">⚡</span>
+    </div>
+  </section>
+  <section class="header">
+    <div class="date">7月9日 周四</div>
+    <div class="head-actions">
+      <button class="round-mini" data-sheet="编辑"><svg><use href="#i-pen"/></svg></button>
+      <button class="round-mini" data-sheet="设置"><svg><use href="#i-gear"/></svg></button>
+      <button class="round-mini" data-sheet="更多"><svg><use href="#i-more"/></svg></button>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="quick-grid">
+      <button class="quick-card active" id="wifiBtn" aria-pressed="true">
+        <span class="bubble"><svg width="35" height="35"><use href="#i-wifi"/></svg></span>
+        <span class="quick-text"><span class="quick-title">ZJUWLAN<br>-Secure</span><span class="quick-sub" id="wifiSub">已连接</span></span>
+      </button>
+      <button class="quick-card active" id="btBtn" aria-pressed="true">
+        <span class="bubble"><svg width="35" height="35"><use href="#i-bluetooth"/></svg></span>
+        <span class="quick-text"><span class="quick-title">蓝牙</span><span class="quick-sub" id="btSub">开</span></span>
+      </button>
+    </div>
+
+    <div class="controls">
+      <div class="big-card" id="mediaCard">
+        <div class="music-icon"><svg width="34" height="34"><use href="#i-music"/></svg></div>
+        <button class="cast" aria-label="投放" data-toast="投放设备"><svg width="31" height="31"><use href="#i-cast"/></svg></button>
+        <div class="media-title" id="mediaText">未在播放</div>
+        <div class="media-row">
+          <button class="dim" data-toast="上一首"><svg width="28" height="28"><use href="#i-prev"/></svg></button>
+          <button class="play" id="playBtn" aria-label="播放"><svg><use id="playIcon" href="#i-play"/></svg></button>
+          <button class="dim" data-toast="下一首"><svg width="28" height="28"><use href="#i-next"/></svg></button>
+        </div>
+      </div>
+
+      <div class="vslider bright" data-value="33" aria-label="亮度滑块">
+        <div class="fill"></div><div class="slider-icon"><svg><use href="#i-sun"/></svg></div>
+      </div>
+      <div class="vslider volume" data-value="26" aria-label="音量滑块">
+        <div class="fill"></div><div class="slider-icon"><svg><use href="#i-speaker"/></svg></div>
+      </div>
+
+      <button class="small-card" data-toast="智能音箱"><svg><use href="#i-speakerbox"/></svg></button>
+      <button class="small-card" data-toast="电脑连接"><svg><use href="#i-laptop"/></svg></button>
+      <button class="small-card" data-toast="耳机"><svg><use href="#i-headphones"/></svg></button>
+      <button class="small-card" data-toast="扫码 / 识别"><svg><use href="#i-target"/></svg></button>
+    </div>
+
+    <div class="tile-grid">
+      <button class="toggle active" style="--on-color:var(--green)" data-name="移动数据"><span class="circle"><span class="text-icon">1↓</span></span><span class="label">0 B<span class="arrow">▼</span></span></button>
+      <button class="toggle active" style="--on-color:var(--red)" data-name="振动"><span class="circle"><svg><use href="#i-phone-vibrate"/></svg></span><span class="label">振动</span></button>
+      <button class="toggle" data-name="手电筒"><span class="circle"><svg><use href="#i-flashlight"/></svg></span><span class="label">手电筒<span class="arrow">▼</span></span></button>
+      <button class="toggle active" style="--on-color:var(--blue)" data-name="定位服务"><span class="circle"><svg><use href="#i-location"/></svg></span><span class="label">定位服务</span></button>
+
+      <button class="toggle" data-name="飞行模式"><span class="circle"><svg><use href="#i-plane"/></svg></span><span class="label">飞行模式</span></button>
+      <button class="toggle" data-name="自动旋转"><span class="circle"><svg><use href="#i-rotate"/></svg></span><span class="label">自动旋转</span></button>
+      <button class="toggle" data-name="免打扰"><span class="circle"><svg><use href="#i-moon"/></svg></span><span class="label">免打扰<span class="arrow">▼</span></span></button>
+      <button class="toggle" data-name="OPPO 互传"><span class="circle"><svg><use href="#i-oppo"/></svg></span><span class="label">OPPO 互传<span class="arrow">▼</span></span></button>
+
+      <button class="toggle" data-name="省电模式"><span class="circle"><svg><use href="#i-battery-save"/></svg></span><span class="label">省电模式</span></button>
+      <button class="toggle" data-name="暗色模式"><span class="circle"><svg><use href="#i-dark"/></svg></span><span class="label">暗色模式</span></button>
+      <button class="toggle" data-name="截屏"><span class="circle"><svg><use href="#i-scissors"/></svg></span><span class="label">截屏<span class="arrow">▼</span></span></button>
+      <button class="toggle" data-name="屏幕录制"><span class="circle"><svg><use href="#i-video"/></svg></span><span class="label">屏幕录制<span class="arrow">▼</span></span></button>
+    </div>
+    <div class="pager"><button class="dot active" aria-label="第 1 页"></button><button class="dot" aria-label="第 2 页"></button></div>
+  </section>
+
+  <div class="sheet" id="sheet" aria-hidden="true"><button class="sheet-close" id="sheetClose">×</button><h3 id="sheetTitle">设置</h3><p id="sheetText">这是仿系统下拉菜单的交互弹层。所有圆形功能键、Wi‑Fi/蓝牙卡片、播放键和亮度/音量滑块均可点击或拖动。</p></div>
+  <div class="toast" id="toast">已切换</div>
+  <div class="home" aria-hidden="true"></div>
+</main>
+
+<script>
+(() => {
+  const $ = (s, root=document) => root.querySelector(s);
+  const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+  const toast = $('#toast');
+  let toastTimer;
+  function showToast(text){
+    toast.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove('show'), 1200);
+  }
+
+  function toggleCard(btn, subEl, onText, offText, name){
+    btn.classList.toggle('active');
+    const on = btn.classList.contains('active');
+    btn.setAttribute('aria-pressed', on);
+    subEl.textContent = on ? onText : offText;
+    showToast(`${name}${on ? '已开启' : '已关闭'}`);
+  }
+  $('#wifiBtn').addEventListener('click', e => toggleCard(e.currentTarget, $('#wifiSub'), '已连接', '已关闭', 'Wi‑Fi '));
+  $('#btBtn').addEventListener('click', e => toggleCard(e.currentTarget, $('#btSub'), '开', '关', '蓝牙'));
+
+  $$('.toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      const on = btn.classList.contains('active');
+      btn.setAttribute('aria-pressed', on);
+      showToast(`${btn.dataset.name}${on ? '已开启' : '已关闭'}`);
+    });
+  });
+  $$('.small-card').forEach(btn => btn.addEventListener('click', () => {
+    btn.classList.toggle('active');
+    showToast(btn.dataset.toast || '已点击');
+  }));
+  $$('[data-toast]').forEach(btn => btn.addEventListener('click', (e) => {
+    if(btn.classList.contains('small-card')) return;
+    showToast(btn.dataset.toast);
+  }));
+
+  let playing = false;
+  $('#playBtn').addEventListener('click', () => {
+    playing = !playing;
+    $('#playIcon').setAttribute('href', playing ? '#i-pause' : '#i-play');
+    $('#mediaText').textContent = playing ? '正在播放' : '未在播放';
+    showToast(playing ? '开始播放' : '已暂停');
+  });
+
+  function setSlider(el, value){
+    value = Math.max(0, Math.min(100, value));
+    el.dataset.value = Math.round(value);
+    $('.fill', el).style.height = value + '%';
+    $('.slider-icon', el).style.bottom = Math.max(18, Math.min(132, value * 1.28 + 4)) + 'px';
+  }
+  $$('.vslider').forEach(el => {
+    setSlider(el, Number(el.dataset.value || 35));
+    function update(clientY){
+      const r = el.getBoundingClientRect();
+      const value = 100 - ((clientY - r.top) / r.height * 100);
+      setSlider(el, value);
+      showToast(`${el.classList.contains('bright') ? '亮度' : '音量'} ${Math.round(Math.max(0, Math.min(100, value)))}%`);
+    }
+    el.addEventListener('pointerdown', e => {
+      el.setPointerCapture(e.pointerId);
+      update(e.clientY);
+      const move = ev => update(ev.clientY);
+      const up = () => {
+        el.removeEventListener('pointermove', move);
+        el.removeEventListener('pointerup', up);
+        el.removeEventListener('pointercancel', up);
+      };
+      el.addEventListener('pointermove', move);
+      el.addEventListener('pointerup', up);
+      el.addEventListener('pointercancel', up);
+    });
+  });
+
+  const sheet = $('#sheet');
+  const titles = {
+    '编辑':['编辑开关','可拖动、排序和增删快捷开关。这里为网页仿制版，点击按钮会展示交互反馈。'],
+    '设置':['系统设置','模拟进入设置入口：Wi‑Fi、蓝牙、亮度、音量等控件均已做网页交互。'],
+    '更多':['更多选项','模拟更多菜单，可继续扩展重启、关机、隐私保护等入口。']
+  };
+  $$('[data-sheet]').forEach(btn => btn.addEventListener('click', () => {
+    const [h,p] = titles[btn.dataset.sheet];
+    $('#sheetTitle').textContent = h;
+    $('#sheetText').textContent = p;
+    sheet.classList.add('show');
+    sheet.setAttribute('aria-hidden','false');
+  }));
+  $('#sheetClose').addEventListener('click', () => {sheet.classList.remove('show');sheet.setAttribute('aria-hidden','true');});
+  sheet.addEventListener('click', e => { if(e.target === sheet) sheet.classList.remove('show'); });
+  $$('.dot').forEach((dot, i) => dot.addEventListener('click', () => {
+    $$('.dot').forEach(d=>d.classList.remove('active'));
+    dot.classList.add('active');
+    showToast(i === 0 ? '第 1 页' : '第 2 页');
+  }));
+})();
+</script>
+</body>
+</html>

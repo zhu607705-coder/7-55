@@ -1,0 +1,110 @@
+{
+  "generatedAt": "2026-07-16T07:09:14.412Z",
+  "assets": {
+    "music_library_arrival_v2": {
+      "path": "library-finals/music/music_library_arrival_v2.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_library_evidence_v2": {
+      "path": "library-finals/music/music_library_evidence_v2.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_cc98_publicity_v2": {
+      "path": "library-finals/music/music_cc98_publicity_v2.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_library_enforcement_v2": {
+      "path": "library-finals/music/music_library_enforcement_v2.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "music_library_022_reveal_v2": {
+      "path": "library-finals/music/music_library_022_reveal_v2.mp3",
+      "durationMs": 24000,
+      "source": "MiniMax music-2.5"
+    },
+    "fx_library_gate_scan_v2": {
+      "path": "library-finals/sfx/fx_library_gate_scan_v2.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_arrival_record_v2": {
+      "path": "library-finals/sfx/fx_arrival_record_v2.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_backpack_alert_v2": {
+      "path": "library-finals/sfx/fx_backpack_alert_v2.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_note_pickup_v2": {
+      "path": "library-finals/sfx/fx_note_pickup_v2.mp3",
+      "durationMs": 800,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_catalog_search_v2": {
+      "path": "library-finals/sfx/fx_catalog_search_v2.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_catalog_wrong_v2": {
+      "path": "library-finals/sfx/fx_catalog_wrong_v2.mp3",
+      "durationMs": 800,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_catalog_correct_v2": {
+      "path": "library-finals/sfx/fx_catalog_correct_v2.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_shelf_slide_v2": {
+      "path": "library-finals/sfx/fx_shelf_slide_v2.mp3",
+      "durationMs": 1500,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_photo_glare_clear_v2": {
+      "path": "library-finals/sfx/fx_photo_glare_clear_v2.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_report_print_v2": {
+      "path": "library-finals/sfx/fx_report_print_v2.mp3",
+      "durationMs": 1300,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_nonperson_stamp_v2": {
+      "path": "library-finals/sfx/fx_nonperson_stamp_v2.mp3",
+      "durationMs": 1000,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_receipt_slide_v2": {
+      "path": "library-finals/sfx/fx_receipt_slide_v2.mp3",
+      "durationMs": 1100,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_evidence_upload_v2": {
+      "path": "library-finals/sfx/fx_evidence_upload_v2.mp3",
+      "durationMs": 900,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_pass_stamp_v2": {
+      "path": "library-finals/sfx/fx_pass_stamp_v2.mp3",
+      "durationMs": 1100,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_backpack_transfer_v2": {
+      "path": "library-finals/sfx/fx_backpack_transfer_v2.mp3",
+      "durationMs": 1400,
+      "source": "MiniMax music-2.5 sound-design cut"
+    },
+    "fx_022_signal_v2": {
+      "path": "library-finals/sfx/fx_022_signal_v2.mp3",
+      "durationMs": 1300,
+      "source": "MiniMax music-2.5 sound-design cut"
+    }
+  }
+}

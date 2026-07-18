@@ -1,0 +1,217 @@
+{
+  "version": 1,
+  "events": {
+    "bike_arcade_opened": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_intro",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.18,
+          "loop": true
+        },
+        {
+          "channel": "text",
+          "offsetMs": 220,
+          "subtitleKey": "bike_arcade_voice_start"
+        }
+      ]
+    },
+    "bike_arcade_run_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_run_a",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.22,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_button",
+          "offsetMs": 0,
+          "volume": 0.55
+        }
+      ]
+    },
+    "bike_arcade_lane_changed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_lane_change",
+          "offsetMs": 0,
+          "volume": 0.54
+        }
+      ]
+    },
+    "bike_arcade_near_miss": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_near_miss",
+          "offsetMs": 0,
+          "volume": 0.62
+        }
+      ]
+    },
+    "bike_arcade_collision": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_collision",
+          "offsetMs": 0,
+          "volume": 0.72
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_damage",
+          "offsetMs": 110,
+          "volume": 0.64
+        }
+      ]
+    },
+    "bike_arcade_last_life": {
+      "cues": [
+        {
+          "channel": "text",
+          "offsetMs": 180,
+          "subtitleKey": "bike_arcade_voice_last_life"
+        }
+      ]
+    },
+    "bike_arcade_milestone": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_milestone",
+          "offsetMs": 0,
+          "volume": 0.62
+        }
+      ]
+    },
+    "bike_arcade_paused": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_pause",
+          "offsetMs": 0,
+          "volume": 0.58
+        }
+      ]
+    },
+    "bike_arcade_resumed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_resume",
+          "offsetMs": 0,
+          "volume": 0.58
+        }
+      ]
+    },
+    "bike_arcade_congestion_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_run_b",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.22,
+          "loop": true
+        }
+      ]
+    },
+    "bike_arcade_sprint_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_run_b",
+          "action": "update",
+          "offsetMs": 0,
+          "volume": 0.27,
+          "loop": true,
+          "playbackRate": 1.08
+        }
+      ]
+    },
+    "bike_arcade_won": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_result",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.2,
+          "loop": false
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_success",
+          "offsetMs": 80,
+          "volume": 0.75
+        },
+        {
+          "channel": "text",
+          "offsetMs": 240,
+          "subtitleKey": "bike_arcade_voice_result"
+        }
+      ]
+    },
+    "bike_arcade_lost": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_result",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.18,
+          "loop": false
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_failure",
+          "offsetMs": 80,
+          "volume": 0.72
+        },
+        {
+          "channel": "text",
+          "offsetMs": 240,
+          "subtitleKey": "bike_arcade_voice_result"
+        }
+      ]
+    },
+    "bike_arcade_closed": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_result",
+          "action": "stop",
+          "offsetMs": 0
+        }
+      ]
+    },
+    "bike_arcade_button_pressed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_button",
+          "offsetMs": 0,
+          "volume": 0.5
+        }
+      ]
+    },
+    "chapter_transition_opened": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_success",
+          "offsetMs": 0,
+          "volume": 0.5
+        }
+      ]
+    }
+  }
+}
+

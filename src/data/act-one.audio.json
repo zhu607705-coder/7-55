@@ -1,0 +1,566 @@
+{
+  "version": 1,
+  "events": {
+    "rpg_dorm_room_opened": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_act2_search",
+          "action": "play",
+          "volume": 0.15,
+          "loop": true
+        }
+      ]
+    },
+    "act1_locked_entry": {
+      "cues": [
+        {
+          "channel": "text",
+          "subtitleKey": "act1_locked_entry",
+          "offsetMs": 260,
+          "once": true
+        }
+      ]
+    },
+    "act1_identity_verified": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_login_stamp",
+          "volume": 0.58
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act1_identity_verified",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "act1_phone_linked": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_phone_link",
+          "volume": 0.6
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act1_phone_linked",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "act1_controls_installed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_controls_install",
+          "volume": 0.64
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act1_controls_installed",
+          "offsetMs": 220
+        }
+      ]
+    },
+    "act1_movement_enabled": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_movement_unlock",
+          "volume": 0.66
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act1_movement_enabled",
+          "offsetMs": 220
+        }
+      ]
+    },
+    "act1_required_item_collected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_cartridge_pickup",
+          "volume": 0.68
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act1_required_item_collected",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "act1_area_visited": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_route_checkpoint",
+          "volume": 0.42,
+          "playbackRate": 1.08
+        }
+      ]
+    },
+    "act1_map_completed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_map_complete",
+          "volume": 0.72
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act1_map_completed",
+          "offsetMs": 280
+        }
+      ]
+    },
+    "prologue_blackout_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_prologue_blackout",
+          "action": "play",
+          "volume": 0.2,
+          "loop": true
+        }
+      ]
+    },
+    "prologue_narrator_intro": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_narrator_chase",
+          "action": "update",
+          "volume": 0.19,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_narrator_circle_appear",
+          "volume": 0.62
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_prologue_narrator_intro",
+          "subtitleKey": "prologue_narrator_intro",
+          "subtitleSurface": "scene",
+          "volume": 1,
+          "offsetMs": 120
+        }
+      ]
+    },
+    "prologue_narrator_caught": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_prologue_blackout",
+          "action": "update",
+          "volume": 0.13,
+          "loop": true,
+          "playbackRate": 0.82
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_narrator_grab",
+          "volume": 0.72
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_prologue_narrator_caught",
+          "subtitleKey": "prologue_narrator_caught",
+          "subtitleSurface": "scene",
+          "volume": 1,
+          "offsetMs": 100
+        }
+      ]
+    },
+    "prologue_narrator_bargain": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_prologue_narrator_bargain",
+          "subtitleKey": "prologue_narrator_bargain",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "prologue_white_burst": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_narrator_white_burst",
+          "volume": 0.72
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_narrator_white_burst",
+          "volume": 0.78,
+          "offsetMs": 300
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_narrator_white_burst",
+          "volume": 0.84,
+          "offsetMs": 620
+        },
+        {
+          "channel": "music",
+          "asset": "music_prologue_blackout",
+          "action": "stop",
+          "offsetMs": 760
+        }
+      ]
+    },
+    "act2_entry_unlocked": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act2_quest_update",
+          "volume": 0.58
+        },
+        {
+          "channel": "music",
+          "asset": "music_act2_search",
+          "action": "play",
+          "volume": 0.16,
+          "loop": true
+        }
+      ]
+    },
+    "act2_friend_reply_filled": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_friend_reply_send",
+          "volume": 0.48
+        }
+      ]
+    },
+    "act2_friend_exchange_completed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act2_quest_update",
+          "volume": 0.58
+        }
+      ]
+    },
+    "act2_system_found_intro": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_system_emerge",
+          "volume": 0.65
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_found_intro",
+          "subtitleKey": "act2_system_found_intro",
+          "subtitleSurface": "scene",
+          "volume": 1,
+          "offsetMs": 100
+        }
+      ]
+    },
+    "act2_system_inventory_demand": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_inventory_demand",
+          "subtitleKey": "act2_system_inventory_demand",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_inventory_missing": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_inventory_missing",
+          "subtitleKey": "act2_system_inventory_missing",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_just_find_it": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_just_find_it",
+          "subtitleKey": "act2_system_just_find_it",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_inventory_requested": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act2_quest_update",
+          "volume": 0.58
+        }
+      ]
+    },
+    "act2_inventory_recovered": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_inventory_chest_open",
+          "volume": 0.72
+        }
+      ]
+    },
+    "act2_system_departure": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_departure",
+          "subtitleKey": "act2_system_departure",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_confession": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_confession",
+          "subtitleKey": "act2_system_confession",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_friend": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_friend",
+          "subtitleKey": "act2_system_friend",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_library": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_library",
+          "subtitleKey": "act2_system_library",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_system_move_now": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_act2_system_move_now",
+          "subtitleKey": "act2_system_move_now",
+          "subtitleSurface": "scene",
+          "volume": 1
+        }
+      ]
+    },
+    "act2_movement_quest_started": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act2_quest_update",
+          "volume": 0.64
+        },
+        {
+          "channel": "music",
+          "asset": "music_act2_movement_puzzle",
+          "action": "update",
+          "volume": 0.17,
+          "loop": true
+        }
+      ]
+    },
+    "act2_character_cannot_hear": {
+      "cues": [
+        {
+          "channel": "text",
+          "subtitleKey": "act2_character_cannot_hear"
+        }
+      ]
+    },
+    "act2_character_named": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_character_name_lock",
+          "volume": 0.62
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_character_named",
+          "offsetMs": 160
+        }
+      ]
+    },
+    "act2_exercise_started": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_exercise_pacing_start",
+          "volume": 0.64
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_exercise_started",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "act2_push_triangle_collected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_triangle_pickup",
+          "volume": 0.62
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_push_triangle_collected",
+          "offsetMs": 140
+        }
+      ]
+    },
+    "act2_weather_water_collected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_weather_drop_pickup",
+          "volume": 0.6
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_weather_water_collected",
+          "offsetMs": 140
+        }
+      ]
+    },
+    "act2_mentor_line_stuck": {
+      "cues": [
+        {
+          "channel": "text",
+          "subtitleKey": "act2_mentor_line_stuck",
+          "once": true
+        }
+      ]
+    },
+    "act2_mentor_line_released": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_adhesive_release",
+          "volume": 0.66
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_mentor_line_released",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "act2_right_arrow_assembled": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_right_arrow_assemble",
+          "volume": 0.68
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_right_arrow_assembled",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "act2_balance_shifted": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_balance_decimal_shift",
+          "volume": 0.7
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_balance_shifted",
+          "offsetMs": 220
+        }
+      ]
+    },
+    "act2_gamepad_purchase_rejected": {
+      "cues": [
+        {
+          "channel": "text",
+          "subtitleKey": "act2_gamepad_purchase_rejected"
+        }
+      ]
+    },
+    "act2_gamepad_purchased": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_gamepad_purchase",
+          "volume": 0.72
+        },
+        {
+          "channel": "music",
+          "asset": "music_act2_manual_control",
+          "action": "update",
+          "volume": 0.18,
+          "loop": true,
+          "offsetMs": 120
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_gamepad_purchased",
+          "offsetMs": 220
+        }
+      ]
+    },
+    "act2_exit_ready": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_manual_control_ready",
+          "volume": 0.72
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "act2_exit_ready",
+          "offsetMs": 160
+        }
+      ]
+    },
+    "act2_movement_quest_completed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act2_quest_update",
+          "volume": 0.7
+        },
+        {
+          "channel": "music",
+          "asset": "music_act2_manual_control",
+          "action": "stop",
+          "offsetMs": 600
+        }
+      ]
+    }
+  }
+}
+

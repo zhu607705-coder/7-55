@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+echo "Running pre-push type-check..."
+npm run typecheck
+
+echo "Running pre-push production build..."
+npm run build

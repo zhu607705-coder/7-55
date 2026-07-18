@@ -1,0 +1,24 @@
+{
+  "source": {
+    "map": "https://map.zju.edu.cn/mobile/index.html",
+    "officialFeatureCount": 254,
+    "worldScale": "selected repository panorama stitched from 4x4 full-map tiles, 1254px each",
+    "plateSha256": "63ff841fce9e29fd73775b6f42cf3ef65ae303993a55f3a555c90ec0a5ff98c2"
+  },
+  "world": { "width": 5016, "height": 5016 },
+  "spawn": { "x": 2508, "y": 4800 },
+  "libraryGate": { "x": 2617, "y": 2360, "radius": 200 },
+  "collisions": { "buildings": [], "water": [] },
+  "bridges": [],
+  "landmarks": [
+    { "id": "main_library", "x": 966, "y": 1906 },
+    { "id": "qiushi_auditorium", "x": 769, "y": 2068 },
+    { "id": "crescent_building", "x": 2385, "y": 2086 },
+    { "id": "foundation_library", "x": 2617, "y": 2572 },
+    { "id": "information_tower", "x": 2502, "y": 2517 },
+    { "id": "asia_games_hall", "x": 3035, "y": 2204 },
+    { "id": "indoor_stadium", "x": 3377, "y": 2336 },
+    { "id": "nanhuayuan", "x": 1388, "y": 3429 },
+    { "id": "south_gate", "x": 2368, "y": 4630 }
+  ]
+}
