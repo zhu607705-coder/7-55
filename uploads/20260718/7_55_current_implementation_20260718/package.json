@@ -1,0 +1,42 @@
+{
+  "name": "seven-fifty-five",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "build:demo": "tsc --noEmit && vite build --mode demo",
+    "typecheck": "tsc --noEmit",
+    "build:single": "npm run build:demo",
+    "map:zijingang": "node scripts/generate-zijingang-tilemap.mjs",
+    "map:zijingang:plate": "python3 scripts/generate-zijingang-campus-plate.py",
+    "map:zijingang:split": "python3 scripts/split-zijingang-campus-sectors.py",
+    "map:zijingang:stitch": "python3 scripts/stitch-zijingang-campus-sectors.py",
+    "art:zijingang": "npm run art:zijingang:landmarks && npm run art:zijingang:environment && npm run art:zijingang:bridge && npm run art:zijingang:terrain",
+    "art:zijingang:landmarks": "node scripts/process-zijingang-landmarks.mjs",
+    "art:zijingang:environment": "node scripts/process-zijingang-environment-atlas.mjs",
+    "art:zijingang:bridge": "node scripts/process-zijingang-bridge.mjs",
+    "art:zijingang:terrain": "node scripts/process-zijingang-terrain.mjs",
+    "audio:library-finals": "node scripts/generate-library-finals-audio.mjs",
+    "audio:act-one": "node scripts/generate-act-one-audio.mjs",
+    "audio:bike-arcade": "node scripts/generate-bike-arcade-audio.mjs",
+    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only"
+  },
+  "dependencies": {
+    "@fontsource/fusion-pixel-12px-proportional-sc": "^5.2.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "phaser": "^3.87.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.11",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "targetSeat": "022",
+  "threadFloorCount": 23,
+  "optionalAc01Count": 5,
+  "catalogQuery": "三分钟离座法",
+  "callNumber": "I247.55 / 755",
+  "photoMaxBrightness": 20,
+  "bdRequired": 3,
+  "audit": {
+    "arrivalMinutes": 7,
+    "publicNoticeFloor": 47,
+    "proofCount": 3
+  },
+  "requiredEvidence": [
+    "archived_leave_rule",
+    "bag_non_person_proof",
+    "seat_022_receipt",
+    "library_presence_proof"
+  ],
+  "recoveryEvidence": [
+    "bag_non_person_proof",
+    "seat_022_receipt",
+    "library_presence_proof"
+  ],
+  "timing": {
+    "rankMoveMs": 560,
+    "stampMs": 720,
+    "passApplyMs": 1200
+  }
+}

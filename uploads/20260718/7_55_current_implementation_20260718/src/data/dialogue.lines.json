@@ -1,0 +1,101 @@
+[
+  {
+    "line_id": "VO_01_WAKE_NARRATION",
+    "voice_key": "wake_narration",
+    "speaker": "narrator",
+    "subtitle_zh": "你没有5分钟了，但你很有勇气",
+    "voice_text_en": "You do not have five minutes. Still, the confidence is impressive.",
+    "delivery": "British male narrator, dry and faintly amused; state the bad news plainly, then let the final compliment land as restrained sarcasm",
+    "audio_file": "all_shadow_vo.mp3#1",
+    "trigger_scene": "desktop",
+    "trigger_event": "enter_scene"
+  },
+  {
+    "line_id": "VO_02_WAKE_FLASH",
+    "voice_key": "wake_flash",
+    "speaker": "xiaoying",
+    "subtitle_zh": "起床蠢货！！！",
+    "voice_text_en": "Wake up, idiot!",
+    "delivery": "sharp female system bark, abrupt and irritated, with no warmth",
+    "audio_file": "all_shadow_vo.mp3#2",
+    "trigger_scene": "desktop",
+    "trigger_event": "sleep_five_minutes"
+  },
+  {
+    "line_id": "VO_03_XY_ATTACK",
+    "voice_key": "xy_attack",
+    "speaker": "xiaoying",
+    "subtitle_zh": "等等等等，你想翘课？没门！我不会让你签上的！",
+    "voice_text_en": "Wait, wait, wait. You are trying to skip class? Absolutely not. I am not letting you check in.",
+    "delivery": "female system voice, incredulous interruption followed by officious refusal; quick opening, clipped final sentence",
+    "audio_file": "all_shadow_vo.mp3#3",
+    "trigger_scene": "wechat",
+    "trigger_event": "xiaoying_attack"
+  },
+  {
+    "line_id": "VO_04_XY_LAUGH",
+    "voice_key": "xy_laugh",
+    "speaker": "xiaoying",
+    "subtitle_zh": "找你的数字去吧哈哈哈",
+    "voice_text_en": "Go find your digits. All four of them. Ha.",
+    "delivery": "smug female system voice, controlled mockery; pause before the short dismissive laugh",
+    "audio_file": "all_shadow_vo.mp3#4",
+    "trigger_scene": "wechat",
+    "trigger_event": "code_scattered"
+  },
+  {
+    "line_id": "VO_05_BALANCE",
+    "voice_key": "sys_balance",
+    "speaker": "system",
+    "subtitle_zh": "余额暂时不足以购买尊严",
+    "voice_text_en": "Current balance: insufficient to purchase dignity.",
+    "delivery": "deadpan female system notice, neutral administrative cadence with a dry final stress on dignity",
+    "audio_file": "all_shadow_vo.mp3#5",
+    "trigger_scene": "campus_card",
+    "trigger_event": "card_zero_taken"
+  },
+  {
+    "line_id": "VO_06_NET_TRY",
+    "voice_key": "sys_net_try",
+    "speaker": "system",
+    "subtitle_zh": "校园网已经尽力了，你也是",
+    "voice_text_en": "The campus network has done its best. Regrettably, so have you.",
+    "delivery": "weary female system report; factual first sentence, resigned and cutting second sentence",
+    "audio_file": "all_shadow_vo.mp3#6",
+    "trigger_scene": "tiyi",
+    "trigger_event": "tiyi_crashed"
+  },
+  {
+    "line_id": "VO_07_NO_MONEY",
+    "voice_key": "sys_no_money",
+    "speaker": "xiaoying",
+    "subtitle_zh": "我知道你没钱买流量",
+    "voice_text_en": "Yes, I know. Mobile data is beyond the budget.",
+    "delivery": "impatient female aside, tired familiarity rather than sympathy",
+    "audio_file": "all_shadow_vo.mp3#7",
+    "trigger_scene": "tiyi",
+    "trigger_event": "tiyi_crashed"
+  },
+  {
+    "line_id": "VO_08_TIYI_47",
+    "voice_key": "tiyi_47",
+    "speaker": "system",
+    "subtitle_zh": "就差一次，真绝望",
+    "voice_text_en": "One short. How exquisitely hopeless.",
+    "delivery": "dry female observation, brief pause after the count, restrained delight in the player's frustration",
+    "audio_file": "all_shadow_vo.mp3#8",
+    "trigger_scene": "tiyi",
+    "trigger_event": "collect_digit"
+  },
+  {
+    "line_id": "VO_09_GEAR_PICKUP",
+    "voice_key": "gear_pickup",
+    "speaker": "xiaoying",
+    "subtitle_zh": "哈，一个废齿轮",
+    "voice_text_en": "Oh, splendid. A useless gear.",
+    "delivery": "female system voice with false enthusiasm collapsing into weary disappointment",
+    "audio_file": "all_shadow_vo.mp3#9",
+    "trigger_scene": "phone_home",
+    "trigger_event": "collect_digit"
+  }
+]

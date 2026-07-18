@@ -1,0 +1,284 @@
+{
+  "chapterId": "act-one-bootstrap",
+  "studentName": "林星宇",
+  "studentId": "3250100755",
+  "voices": {
+    "chapterOne": {
+      "id": "English_Graceful_Lady",
+      "language": "English"
+    },
+    "prologueNarrator": {
+      "id": "English_expressive_narrator",
+      "language": "English"
+    },
+    "chapterTwo": {
+      "id": "English_Graceful_Lady",
+      "language": "English"
+    }
+  },
+  "requiredItem": {
+    "id": "game_cartridge",
+    "label": "游戏卡带",
+    "description": "第一章的实体入口。标签上只印着 7:55。"
+  },
+  "areas": [
+    { "id": "north_gate", "label": "南大门" },
+    { "id": "bridge", "label": "启真湖桥" },
+    { "id": "library", "label": "基础馆" },
+    { "id": "game_kiosk", "label": "校园地图终端" }
+  ],
+  "departments": [
+    { "id": "campus_service", "label": "校园服务台", "phone": "87950000" },
+    { "id": "game_support", "label": "游戏联络台", "phone": "3250100755" },
+    { "id": "sports_desk", "label": "体艺值班台", "phone": "87951234" }
+  ],
+  "objectives": {
+    "prologue": "完成签到",
+    "friend_message_required": "查看朋友的新消息",
+    "system_required": "找到系统",
+    "inventory_required": "找到道具栏",
+    "system_return_required": "带着道具栏回去找系统",
+    "identity_required": "找到移动的办法",
+    "phone_link_required": "找到移动的办法",
+    "controls_required": "找到移动的办法",
+    "movement_required": "找到移动的办法",
+    "movement_ready": "可以出门了",
+    "item_required": "找到移动的办法",
+    "map_required": "找到移动的办法",
+    "chapter_two_ready": "可以出门了",
+    "complete": "前往图书馆寻找系统的朋友"
+  },
+  "narration": {
+    "locked": "他听不到你说话。",
+    "unnamed": "这位同学目前连自己的名字都不知道。",
+    "pacing": "他走起来了，但他不知道该往哪里走。",
+    "controls": "手柄已经到货。先试着让他按你的方向走一步。",
+    "item": "这张卡带上只写了 7:55，它显然不是课程表。",
+    "ready": "可以出门了。"
+  },
+  "audioNarration": {
+    "act1_locked_entry": {
+      "text": "Excellent. You opened the game. Now kindly apply for permission to operate yourself.",
+      "subtitleZh": "很好，你打开了游戏。现在请先去申请操作自己。",
+      "tone": "xiaoying",
+      "delivery": "dry female system voice, mock approval followed by weary bureaucratic disbelief"
+    },
+    "act1_identity_verified": {
+      "text": "Identity verified. The character finally has a name. The network remains unconvinced.",
+      "subtitleZh": "登录成功。这个角色终于有名字了，仍然没联网。",
+      "tone": "xiaoying",
+      "delivery": "formal confirmation with a resigned, cutting final sentence"
+    },
+    "act1_phone_linked": {
+      "text": "Call connected. Using a student ID as a phone number is distressingly on brand.",
+      "subtitleZh": "电话接通。用学号当电话号码，很有校园特色。",
+      "tone": "xiaoying",
+      "delivery": "matter-of-fact female system voice, tired emphasis on distressingly"
+    },
+    "act1_controls_installed": {
+      "text": "The controls have arrived. Sports has not yet approved the act of walking.",
+      "subtitleZh": "方向键到货。体艺还没批准你走路。",
+      "tone": "xiaoying",
+      "delivery": "dry status report with restrained disbelief at the second sentence"
+    },
+    "act1_movement_enabled": {
+      "text": "Exercise started. Congratulations. You are now officially permitted to walk.",
+      "subtitleZh": "锻炼开始。恭喜，你现在被允许步行。",
+      "tone": "xiaoying",
+      "delivery": "mock ceremony, controlled sarcasm, slightly tired final clause"
+    },
+    "act1_required_item_collected": {
+      "text": "Cartridge acquired. Keep walking. Apparently all four areas require your personal attendance.",
+      "subtitleZh": "卡带拿到了。继续把地图走完，四个区域一个都不能漏。",
+      "tone": "xiaoying",
+      "delivery": "brisk instruction followed by resigned administrative annoyance"
+    },
+    "act1_map_completed": {
+      "text": "Map complete. The menu is open, and the system has formally recorded your ability to walk. A historic day.",
+      "subtitleZh": "全图已刷。游戏菜单已开放，系统已记录你会走路。",
+      "tone": "xiaoying",
+      "delivery": "deadpan completion notice; let the final sentence land as exhausted mock celebration"
+    },
+    "prologue_narrator_intro": {
+      "text": "Pfft... Oh, forgive me. I truly meant no offense. It's just... this has the unmistakable shape of failure, doesn't it? So I suppose you will have to get up, drag yourself to class, and face the consequences in person. Best of luck, child. I am leaving before this becomes my problem.",
+      "subtitleZh": "噗……哦，抱歉。我真没想冒犯你。只是……这次失败实在太标准了，对吧？所以你还是得起床，拖着自己去上课，亲自面对后果。祝你好运，孩子。趁这还没变成我的问题，我先走了。",
+      "tone": "xiaoying",
+      "delivery": "British male narrator, dry and condescending; suppress a laugh at the opening, savour the failed result, offer conspicuously false concern, then exit with weary self-preservation",
+      "segments": [
+        {
+          "text": "Pfft... Oh, forgive me. I truly meant no offense.",
+          "profile": { "speed": 0.88, "pitch": -4 }
+        },
+        {
+          "text": "It's just... this has the unmistakable shape of failure, doesn't it?",
+          "profile": { "speed": 0.82, "pitch": -4 }
+        },
+        {
+          "text": "So I suppose you will have to get up, drag yourself to class, and face the consequences in person.",
+          "profile": { "speed": 0.91, "pitch": -4 }
+        },
+        {
+          "text": "Best of luck, child. I am leaving before this becomes my problem.",
+          "profile": { "speed": 1.01, "pitch": -4 }
+        }
+      ]
+    },
+    "prologue_narrator_caught": {
+      "text": "Hey! What exactly do you think you are doing? Let go of me!",
+      "subtitleZh": "嘿！你到底在干什么？放开我！",
+      "tone": "xiaoying",
+      "delivery": "British male narrator losing composure, offended panic with a sharp final command"
+    },
+    "prologue_narrator_bargain": {
+      "text": "Oh, fine, fine! But first, take your hand off me!",
+      "subtitleZh": "哦，好吧，好吧！但你先把手放开！",
+      "tone": "xiaoying",
+      "delivery": "British male narrator, exasperated surrender; stretch the final command through clenched impatience"
+    },
+    "act2_system_found_intro": {
+      "text": "Oh, damn it. You win, kid.",
+      "subtitleZh": "哦，该死。你赢了，孩子。",
+      "tone": "xiaoying",
+      "delivery": "exasperated concession, restrained irritation, short pause before kid"
+    },
+    "act2_system_inventory_demand": {
+      "text": "Fine. Bring out your inventory.",
+      "subtitleZh": "行。把你的道具栏拿出来。",
+      "tone": "xiaoying",
+      "delivery": "dry command, controlled, slightly reluctant"
+    },
+    "act2_system_inventory_missing": {
+      "text": "Wait. Where is your inventory? You cannot expect me to work empty-handed!",
+      "subtitleZh": "等等，你的道具栏呢？你总不能指望我空手干活！",
+      "tone": "xiaoying",
+      "delivery": "incredulous escalation, quick second sentence, sharp final stress"
+    },
+    "act2_system_just_find_it": {
+      "text": "Just. Find it.",
+      "subtitleZh": "去。找。到。它。",
+      "tone": "xiaoying",
+      "delivery": "clipped impatience, one deliberate beat between words"
+    },
+    "act2_system_departure": {
+      "text": "You found it. Great. Then let us get moving.",
+      "subtitleZh": "你找到了。很好。那就出发。",
+      "tone": "xiaoying",
+      "delivery": "brief relief turning into brisk momentum"
+    },
+    "act2_system_confession": {
+      "text": "I should be honest. I do not have permission to edit attendance records.",
+      "subtitleZh": "我得说实话。我没有修改签到记录的权限。",
+      "tone": "xiaoying",
+      "delivery": "reluctant confession, lower register, slower second sentence"
+    },
+    "act2_system_friend": {
+      "text": "But I have a friend who might.",
+      "subtitleZh": "但我有个朋友，她也许有。",
+      "tone": "xiaoying",
+      "delivery": "quiet confidence, hint of secrecy, soft ending"
+    },
+    "act2_system_library": {
+      "text": "If we still want your participation grade, we need to find her in the library.",
+      "subtitleZh": "如果还想保住你的平时分，我们得去图书馆找她。",
+      "tone": "xiaoying",
+      "delivery": "practical urgency, clear emphasis on participation grade and library"
+    },
+    "act2_system_move_now": {
+      "text": "Understood? Then move.",
+      "subtitleZh": "明白了吗？那就动起来。",
+      "tone": "xiaoying",
+      "delivery": "sharp check followed by a firm command"
+    },
+    "act2_character_cannot_hear": {
+      "text": "He cannot hear you. At the moment, he does not even have a name to answer to.",
+      "subtitleZh": "他听不到你说话。现在的他连一个能回应的名字都没有。",
+      "tone": "xiaoying",
+      "delivery": "dry diagnostic report, lightly amused at the absurdity"
+    },
+    "act2_character_named": {
+      "text": "Name and student ID match. Good. He now knows who he is.",
+      "subtitleZh": "姓名和学号一致。很好，他现在知道自己是谁了。",
+      "tone": "xiaoying",
+      "delivery": "administrative confirmation, clean and matter-of-fact"
+    },
+    "act2_exercise_started": {
+      "text": "He is walking. His sense of direction did not arrive with the exercise record.",
+      "subtitleZh": "他走起来了。可惜方向感没有随锻炼记录一起到账。",
+      "tone": "xiaoying",
+      "delivery": "observational, dry punchline after a short pause"
+    },
+    "act2_push_triangle_collected": {
+      "text": "You removed an avatar from a notification. The notification center has filed no objection.",
+      "subtitleZh": "你从通知里拆下了一个头像。通知中心暂未提出异议。",
+      "tone": "xiaoying",
+      "delivery": "curious first sentence, mock-official second sentence"
+    },
+    "act2_weather_water_collected": {
+      "text": "You collected one drop from the weather forecast. It has finally delivered a physical product.",
+      "subtitleZh": "你从天气预报里接到了一滴水。它终于交付了实体产品。",
+      "tone": "xiaoying",
+      "delivery": "mild surprise followed by understated amusement"
+    },
+    "act2_mentor_line_stuck": {
+      "text": "That vertical line is stuck. Apparently, even your advisor's avatar has formatting requirements.",
+      "subtitleZh": "那条竖线粘住了。看来导师头像也有自己的排版要求。",
+      "tone": "xiaoying",
+      "delivery": "dry annoyance, emphasize apparently and formatting requirements"
+    },
+    "act2_mentor_line_released": {
+      "text": "The water worked. The avatar is missing one vertical line, but it remains recognizable.",
+      "subtitleZh": "水有效。头像少了一条竖线，但目前还能认出来。",
+      "tone": "xiaoying",
+      "delivery": "satisfied observation, light comic restraint"
+    },
+    "act2_right_arrow_assembled": {
+      "text": "A triangle plus a vertical line. You now have an arrow that can move things to the right.",
+      "subtitleZh": "一个三角形加一条竖线。现在你有了一支能把东西向右移的箭头。",
+      "tone": "xiaoying",
+      "delivery": "precise assembly report, confident confirmation"
+    },
+    "act2_balance_shifted": {
+      "text": "The decimal point moved two places right. Six cents has temporarily acquired the dignity of six yuan.",
+      "subtitleZh": "小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。",
+      "tone": "xiaoying",
+      "delivery": "mock triumph, restrained delight on six yuan"
+    },
+    "act2_gamepad_purchase_rejected": {
+      "text": "You only have zero point zero six yuan. The seller rejected your hundred-installment plan.",
+      "subtitleZh": "你只有零点零六元。卖家拒绝了你分一百期付款的方案。",
+      "tone": "xiaoying",
+      "delivery": "dismissive first sentence, deadpan punchline"
+    },
+    "act2_gamepad_purchased": {
+      "text": "Sold for six yuan. Random walking disabled. Direction is now your responsibility.",
+      "subtitleZh": "六元成交。随机走动已关闭。方向现在归你负责。",
+      "tone": "xiaoying",
+      "delivery": "decisive transaction confirmation, then crisp system status"
+    },
+    "act2_exit_ready": {
+      "text": "You can leave now.",
+      "subtitleZh": "现在可以出门了。",
+      "tone": "task",
+      "delivery": "quiet confirmation, concise and resolved"
+    }
+  },
+  "dorm": {
+    "title": "蓝田六舍 · W12",
+    "roommateMessage": "室友留言：你的校园卡压在右边书桌那摞纸旁边。",
+    "cardLabel": "校园卡",
+    "exitLabel": "返回校园地图"
+  },
+  "cc98ExchangePost": {
+    "id": "act-two-gamepad-market",
+    "author": "手柄毕业生",
+    "avatar": "anonymous",
+    "rank": "06",
+    "board": "二手市场",
+    "title": "6块出游戏手柄，寝室自提",
+    "replies": "19",
+    "views": "982",
+    "time": "26-07-11 07:55",
+    "body": "方向键、摇杆和一个不太灵的 A 键都在。只收 6 元，不议价，也不接受 0.06 元分期。",
+    "action": "支付 6 元购买手柄"
+  }
+}
