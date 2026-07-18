@@ -1,28 +1,53 @@
 # 7:55
 
-本仓库用于保存《7:55》当前实现包与 MiniMax 三风格候选素材包。
+Chapter one demo and technical framework for `7:55`.
 
-## 下载
+## Stack
 
-大文件放在 GitHub Release 资产中，避免进入 Git 历史：
+- Vite + TypeScript
+- React for the fake phone-system UI
+- Phaser 3 reserved for later 2D RPG movement and trigger scenes
+- Zustand vanilla store for shared `GameState`
 
-- `7_55_current_implementation_20260717.zip`：2026-07-17 完成的实现包；最新源码快照见下方 `20260718` 目录。
-- `7_55_minimax_candidates_20260717_3styles.zip`：每个素材概念至少三种风格的候选包。
+## Commands
 
-候选包包含 `style-matrix.json` 和 `reports/style-coverage.json`，可按概念查看三种可选路径。候选素材没有接入运行时。
+```bash
+npm install
+npm run dev
+npm run typecheck
+npm run build
+npm run build:single
+npm run audio:library-finals -- --force
+```
 
-## 当前候选风格
+`npm run build:single` builds the React game directly into `demo/index.html` as a standalone
+single-file playable demo. The old roadshow slide deck remains in `pitch-755.html`, but it is no
+longer embedded into the playable demo.
 
-- 视觉：`classic_pixel`、`paper_archive`、`rainy_scanline`
-- 配乐：`classic_pixel`、`paper_ambient`、`rainy_glitch`
-- 语音：`baseline`、`low_deadpan`、`clipped_comic`
-- 音效：`clean_ui`、`paper_mechanical`、`radio_glitch`
-- 文案：`plain_case`、`dry_campus`、`procedural_minimal`
+## Runtime Model
 
-具体文件大小、SHA-256 和本次上传说明见 [ASSETS.md](ASSETS.md)。
+The app has two runtime modes:
 
-## 当前源码快照
+- `phone`: React renders the chapter-one phone scenes inside a fixed `430 × 930` logical viewport.
+- `rpg`: Phaser renders future 2D movement scenes.
 
-- 路径：[`uploads/20260718/7_55_current_implementation_20260718/`](uploads/20260718/7_55_current_implementation_20260718/)
-- 离线试玩：打开该目录下的 `demo/index.html`
-- 当前快照已合并浙大钉头像菜单与退出、图标和拖动对齐、第一章签到码显示、朋友语音跳过、手柄重入、手机文字选择和双屏全屏比例修复。
+Both modes must use `src/core` and `src/modules` instead of keeping separate
+story progress.
+
+## Where To Add Chapter Content
+
+- Add or replace phone scene UI in `src/scenes/phone`.
+- Add shared gameplay logic in `src/modules`.
+- Add dialogue, scene, and item rows in `src/data`.
+- Add future 2D RPG scenes in `src/scenes/rpg`.
+- Keep implementation notes in each scene README.
+- Edit the default CC98 feed in `src/data/cc98.posts.json`; the in-page editor stores local overrides in the browser.
+- Edit CC98 reply-floor placeholders and the `bd` forum-treasure reply in `src/data/library-finals.content.json`.
+- Review candidate campus puzzle concepts in `docs/level-design-ideas.md`.
+- Edit the library-finals plot, narrator lines, Top Ten post, and search materials in `src/data/library-finals.content.json`.
+- Edit event-to-audio timing in `src/data/library-finals.audio.json`; generated durations live in `src/data/library-finals.audio.generated.json`.
+- Review the cross-app level flow and scene reuse matrix in `docs/library-finals-level-design.md`.
+
+The library-finals level reuses the existing library, campus-card, ZJU Sports, and CC98 visuals. Its story phases use separate MiniMax music tracks and sound cues. Audio listens to domain events and does not control gameplay progression.
+
+Read `CLAUDE.md` and `docs/framework-spec.md` before adding story levels.

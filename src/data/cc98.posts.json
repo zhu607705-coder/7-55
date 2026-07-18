@@ -1,0 +1,112 @@
+[
+  {
+    "id": "p01",
+    "author": "求是路况员",
+    "avatar": "warrior",
+    "rank": "02",
+    "board": "交通出行",
+    "title": "考试结束十分钟，求是潮哪边还能走",
+    "replies": "86",
+    "views": "4721",
+    "time": "26-07-10 17:42",
+    "body": "东侧自行车流量很高，步行可以从教学区北侧绕行。实测比留在原地等更快。",
+    "threadOperation": { "user": "路况互助机器人", "action": "标记为实时路况", "reason": "回复区已经形成三条不同绕行路线" },
+    "threadMetrics": { "favorites": "31", "likes": "126", "dislikes": "4" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:44", "floor": "2楼", "role": "前排", "text": "刚交卷，选择题往哪猜，人就往哪堵。北侧多走两分钟，至少还能保持缓慢前进。", "likes": "47", "dislikes": "1" },
+      { "personaId": "yuquan-wind", "time": "今天 17:45", "floor": "3楼", "role": "建议", "text": "建议原地加入车流，等大家一起被风吹到食堂。目的地不保证，晚饭大概率有着落。", "likes": "62", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:47", "floor": "4楼", "role": "路况", "text": "二南门口有辆车横着停，已经成为本题不可绕过的已知条件。", "likes": "35", "dislikes": "2" },
+      { "personaId": "qiushi-rider", "time": "今天 17:49", "floor": "5楼", "role": "实况", "text": "骑到求是潮中段已经连续绕行四次，游戏判定疑似进入大型贪吃蛇环节。", "likes": "88", "dislikes": "3" },
+      { "personaId": "six-cent-rich", "time": "今天 17:51", "floor": "6楼", "role": "预算", "text": "共享单车提示余额不足。我和路况达成一致：今天都不允许我前进。", "likes": "76", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:54", "floor": "7楼", "role": "报数", "text": "楼上别分析了，我已经原地掉头三次，体艺应该给我算六次。", "likes": "103", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p02",
+    "author": "二南守座人",
+    "avatar": "blonde",
+    "rank": "03",
+    "board": "图书馆",
+    "title": "二层南临时离座规则更新了吗",
+    "replies": "64",
+    "views": "3380",
+    "time": "26-07-10 17:39",
+    "body": "离开三分钟后原座位被重新预约。校园卡完成身份校验后，可以回选座页申请一次恢复。",
+    "threadOperation": { "user": "馆内秩序值班台", "action": "补充规则入口", "reason": "原帖只有结果，没有说明恢复材料" },
+    "threadMetrics": { "favorites": "47", "likes": "98", "dislikes": "6" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:41", "floor": "2楼", "role": "前排", "text": "先 bd。能不能回来不知道，队形必须先完整。", "likes": "47", "dislikes": "1" },
+      { "personaId": "yuquan-wind", "time": "今天 17:43", "floor": "3楼", "role": "带图", "text": "bd 先放这儿。座位没守住，评论区先守住。", "image": "cc98_forum_treasure", "caption": "bd", "likes": "98", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:45", "floor": "4楼", "role": "提案", "text": "建议给书包办张校园卡，连续三天不动也算全勤，出勤率已经超过我。", "likes": "81", "dislikes": "2" },
+      { "personaId": "qiushi-rider", "time": "今天 17:48", "floor": "5楼", "role": "经历", "text": "我去接水两分五十九秒，回来正好三分钟，页面已经把我归入上一位用户。", "likes": "69", "dislikes": "4" },
+      { "personaId": "six-cent-rich", "time": "今天 17:50", "floor": "6楼", "role": "资产", "text": "0.06 元实测能验身份，不能让 022 对我网开一面。", "likes": "112", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:53", "floor": "7楼", "role": "理论", "text": "问就是量子座位：刷新前归属未定，刷新后直接归下一位。", "likes": "131", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p03",
+    "author": "资料索引机",
+    "avatar": "anonymous",
+    "rank": "04",
+    "board": "学习天地",
+    "title": "期末资料按课程和年份整理好了",
+    "replies": "55",
+    "views": "2908",
+    "time": "26-07-10 17:35",
+    "body": "资料按课程、教师和年份建立索引。搜索时只记得两个字也能定位到对应目录。",
+    "threadOperation": { "user": "资料版值班员", "action": "加入版面索引", "reason": "目录结构和版本信息均可核对" },
+    "threadMetrics": { "favorites": "86", "likes": "121", "dislikes": "2" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:37", "floor": "2楼", "role": "求助", "text": "求一份《如何在期末周看懂文件名“最终版5真的最终版”》。", "likes": "58", "dislikes": "1" },
+      { "personaId": "yuquan-wind", "time": "今天 17:39", "floor": "3楼", "role": "分类", "text": "建议按“老师说不考”建文件夹，通常容量最大，命中率也最高。", "likes": "91", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:41", "floor": "4楼", "role": "保留", "text": "高数目录混进图书馆规则先别删，前者救分，后者救座。", "likes": "43", "dislikes": "2" },
+      { "personaId": "qiushi-rider", "time": "今天 17:44", "floor": "5楼", "role": "反向实测", "text": "搜两个字就能找到？我输完整课程名都只找到选课通知。", "likes": "37", "dislikes": "1" },
+      { "personaId": "six-cent-rich", "time": "今天 17:46", "floor": "6楼", "role": "下载", "text": "资料免费，下载到 99% 后断线，额外消耗本人情绪。", "likes": "75", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:49", "floor": "7楼", "role": "蹲蹲", "text": "蹲一个只有十二页、没有水印、打开后不跳网盘失效链接的版本。", "likes": "109", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p04",
+    "author": "六分钱余额",
+    "avatar": "anonymous",
+    "rank": "05",
+    "board": "校园卡",
+    "title": "余额 0.06 元能通过临时离座校验吗",
+    "replies": "47",
+    "views": "2106",
+    "time": "26-07-10 17:31",
+    "body": "实测可以。余额不会影响身份校验，系统仍然要求完整走完验证流程。",
+    "threadOperation": { "user": "校园卡民间客服", "action": "标记为已实测", "reason": "楼主提供了低余额条件下的完整结果" },
+    "threadMetrics": { "favorites": "19", "likes": "106", "dislikes": "3" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:33", "floor": "2楼", "role": "实测", "text": "0.06 元能刷身份，买不起打印一面。至少系统承认我这个人。", "likes": "84", "dislikes": "1" },
+      { "personaId": "yuquan-wind", "time": "今天 17:35", "floor": "3楼", "role": "现场", "text": "卡一贴就响了，我也响了：穷得很完整。", "likes": "46", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:37", "floor": "4楼", "role": "建议", "text": "建议不要充值，保持这个余额已经具备行为艺术完整性。", "likes": "73", "dislikes": "2" },
+      { "personaId": "qiushi-rider", "time": "今天 17:40", "floor": "5楼", "role": "成本", "text": "骑去充值点消耗的体力，估值已经超过 0.06。", "likes": "39", "dislikes": "1" },
+      { "personaId": "six-cent-rich", "time": "今天 17:42", "floor": "6楼", "role": "本人", "text": "本人出现。请停止围观我的全部流动资产。", "likes": "128", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:45", "floor": "7楼", "role": "众筹", "text": "众筹给楼主加 0.01，看看页面会不会播放财富自由动画。", "likes": "95", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p05",
+    "author": "体艺第47次",
+    "avatar": "blonde",
+    "rank": "06",
+    "board": "校园生活",
+    "title": "今天的运动记录全是绕自行车",
+    "replies": "39",
+    "views": "1887",
+    "time": "26-07-10 17:28",
+    "body": "体艺记录显示四十七次通行，实际过程是在求是潮两侧反复寻找可以步行的位置。",
+    "threadOperation": { "user": "课外锻炼观察组", "action": "计入特殊路线样本", "reason": "路线确有移动，运动目的暂无法判断" },
+    "threadMetrics": { "favorites": "23", "likes": "87", "dislikes": "5" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:30", "floor": "2楼", "role": "分账", "text": "四十七次都在绕同一辆车，这份运动记录至少有一半应记在停车位置名下。", "likes": "52", "dislikes": "1" },
+      { "personaId": "yuquan-wind", "time": "今天 17:32", "floor": "3楼", "role": "逆风", "text": "今天风大，我走三步退两步，体艺判定我在做间歇训练。", "likes": "34", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:34", "floor": "4楼", "role": "命名", "text": "建议给二南门口那辆车命名，它已经是固定 NPC。", "likes": "79", "dislikes": "2" },
+      { "personaId": "qiushi-rider", "time": "今天 17:36", "floor": "5楼", "role": "路况", "text": "求是潮现在进入大型贪吃蛇时段，碰到同学不会出局，只会迟到。", "likes": "93", "dislikes": "3" },
+      { "personaId": "six-cent-rich", "time": "今天 17:39", "floor": "6楼", "role": "收益", "text": "没到目的地但步数到账，体艺只登记过程，家长只询问结果。", "likes": "61", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:42", "floor": "7楼", "role": "凑整", "text": "楼主再绕一次就四十八了，凑整以后截图发十大。", "likes": "101", "dislikes": "1" }
+    ]
+  }
+]

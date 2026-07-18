@@ -1,0 +1,435 @@
+{
+  "version": 2,
+  "events": {
+    "rpg_library_room_opened": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_arrival_v2",
+          "volume": 0.16,
+          "loop": true
+        }
+      ]
+    },
+    "library_route_unlocked": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_arrival_v2",
+          "volume": 0.18,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "01_global_ui_button_tap_confirm",
+          "volume": 0.42
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_route_unlocked",
+          "offsetMs": 180
+        }
+      ]
+    },
+    "library_entered": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "asset": "music_library_arrival_v2",
+          "volume": 0.2,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_library_gate_scan_v2",
+          "volume": 0.62
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_entered",
+          "offsetMs": 260
+        }
+      ]
+    },
+    "library_entrance_record_read": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_arrival_record_v2",
+          "volume": 0.58
+        }
+      ]
+    },
+    "library_occupied_seat_found": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_evidence_v2",
+          "volume": 0.21,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_backpack_alert_v2",
+          "volume": 0.66
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_occupied_seat_found",
+          "offsetMs": 300
+        }
+      ]
+    },
+    "library_occupancy_note_collected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_note_pickup_v2",
+          "volume": 0.62
+        }
+      ]
+    },
+    "cc98_occupation_post_opened": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_cc98_publicity_v2",
+          "volume": 0.2,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_catalog_search_v2",
+          "volume": 0.44,
+          "playbackRate": 1.12
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "cc98_occupation_post_opened",
+          "offsetMs": 220
+        }
+      ]
+    },
+    "cc98_optional_ac01_read": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "01_global_ui_button_tap_confirm",
+          "volume": 0.34,
+          "playbackRate": 1.18
+        }
+      ]
+    },
+    "library_catalog_results_shown": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_evidence_v2",
+          "volume": 0.2,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_catalog_search_v2",
+          "volume": 0.6
+        }
+      ]
+    },
+    "library_catalog_distractor_selected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_catalog_wrong_v2",
+          "volume": 0.68
+        },
+        {
+          "channel": "sfx",
+          "asset": "04_global_ui_invalid_drag_reject",
+          "offsetMs": 100,
+          "volume": 0.35
+        }
+      ]
+    },
+    "library_catalog_match_found": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_catalog_correct_v2",
+          "volume": 0.72
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_catalog_match_found",
+          "offsetMs": 260
+        }
+      ]
+    },
+    "library_archived_rule_recovered": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_shelf_slide_v2",
+          "volume": 0.7
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_archived_rule_recovered",
+          "offsetMs": 360
+        }
+      ]
+    },
+    "photo_bag_label_revealed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_evidence_v2",
+          "volume": 0.18,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_photo_glare_clear_v2",
+          "volume": 0.6
+        }
+      ]
+    },
+    "photo_bag_report_generated": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_report_print_v2",
+          "volume": 0.68
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "photo_bag_report_generated",
+          "offsetMs": 360
+        }
+      ]
+    },
+    "library_bag_nonperson_proof_issued": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_nonperson_stamp_v2",
+          "volume": 0.75
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_bag_nonperson_proof_issued",
+          "offsetMs": 280
+        }
+      ]
+    },
+    "library_seat_receipt_recovered": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_receipt_slide_v2",
+          "volume": 0.7
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_seat_receipt_recovered",
+          "offsetMs": 300
+        }
+      ]
+    },
+    "tiyi_audit_value_changed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "01_global_ui_button_tap_confirm",
+          "volume": 0.28,
+          "playbackRate": 1.22
+        }
+      ]
+    },
+    "tiyi_presence_audit_rejected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_catalog_wrong_v2",
+          "volume": 0.62
+        }
+      ]
+    },
+    "tiyi_presence_proof_issued": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_nonperson_stamp_v2",
+          "volume": 0.68,
+          "playbackRate": 1.08
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "tiyi_presence_proof_issued",
+          "offsetMs": 280
+        }
+      ]
+    },
+    "cc98_evidence_uploaded": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_evidence_upload_v2",
+          "volume": 0.62
+        }
+      ]
+    },
+    "cc98_evidence_set_completed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_cc98_publicity_v2",
+          "volume": 0.24,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_evidence_upload_v2",
+          "volume": 0.7,
+          "playbackRate": 1.12
+        }
+      ]
+    },
+    "cc98_bd_applied": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_evidence_upload_v2",
+          "volume": 0.66,
+          "playbackRate": 1.16
+        }
+      ]
+    },
+    "cc98_top_ten_reached": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_pass_stamp_v2",
+          "volume": 0.78
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "cc98_top_ten_reached",
+          "offsetMs": 300
+        }
+      ]
+    },
+    "library_recovery_application_opened": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_enforcement_v2",
+          "volume": 0.22,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_report_print_v2",
+          "volume": 0.5
+        }
+      ]
+    },
+    "library_recovery_evidence_uploaded": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_evidence_upload_v2",
+          "volume": 0.62
+        }
+      ]
+    },
+    "library_seat_release_pass_issued": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_pass_stamp_v2",
+          "volume": 0.82
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_seat_release_pass_issued",
+          "offsetMs": 300
+        }
+      ]
+    },
+    "library_seat_release_pass_applied": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_pass_stamp_v2",
+          "volume": 0.58,
+          "playbackRate": 1.1
+        }
+      ]
+    },
+    "library_backpack_evicted": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_backpack_transfer_v2",
+          "volume": 0.76
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_backpack_evicted",
+          "offsetMs": 360
+        }
+      ]
+    },
+    "library_seat_recovered": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_022_reveal_v2",
+          "volume": 0.22,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.66
+        }
+      ]
+    },
+    "library_friend_contacted": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.6,
+          "playbackRate": 0.9
+        },
+        {
+          "channel": "text",
+          "subtitleKey": "library_friend_contacted",
+          "offsetMs": 320
+        }
+      ]
+    },
+    "chapter_three_book_hunt_unlocked": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.5,
+          "playbackRate": 1.2
+        }
+      ]
+    }
+  }
+}
+
