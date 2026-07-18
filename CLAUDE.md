@@ -33,17 +33,22 @@
 - Every current and future controllable RPG player sprite must use `configureRpgPlayerSprite` from `src/scenes/rpg/RpgPlayerTextures.ts`. That shared module alone owns the canonical `48px × 64px` display size, foot collision box, and name-label offset; individual scenes must not apply their own player scale, display size, or body geometry.
 - Phone app scenes remain portrait-only. Entering the RPG changes to the horizontal runtime; it must not rotate or resize the shared `430px × 860px` phone shell.
 - The campus RPG entry lives only in `浙大钉 → 校园地图`. A phone-home `游戏` icon may open a separate portrait mini-game, but it must never route into, unlock, or visually impersonate the campus RPG.
-- Campus maps use native Phaser geometry, sprites, text, collisions, and animation layers. Official map screenshots are references only and must never become a runtime full-page background.
-- A Zijin'gang map must preserve recognizable spatial anchors: the longitudinal Qizhen Lake water system, Basic Library with the adjacent management tower on the east bank, and at least two of Crescent Building, Qiushi Auditorium, South Gate with Qiushi Eagle, Nanhuayuan, Lake Heart Island, or Zijingang Gymnasium.
-- Every named landmark must have a dedicated drawing function and an explicit silhouette signature derived from the official map. The official 45-degree map determines footprint and placement; runtime building sprites use cardinal orthographic elevations with a horizontal ground baseline.
-- Front and left/right side elevations are both valid. Choose the elevation from the official footprint, adjacent road, entrance direction, and the silhouette that best identifies the building. A district must not render every structure from one identical facade direction. Sports fields and landscape surfaces stay top-down, while bridges follow their authored crossing direction. Do not use 45-degree isometric building sprites.
-- Landmark acceptance checks the outer footprint before facade detail: Crescent Building keeps its continuous arc and twin cylinders; Basic Library keeps its ring-crown tower, connected wings, and glass atrium; the stadium keeps its wide elliptical shell and central roof fold; South Gate keeps its horizontal nine-arch facade parallel to the south perimeter road and a separate Qiushi Eagle on the right. No named landmark may retain a 45-degree diagonal projection.
-- Detailed landmark sprites use GPT Image image-to-image with an official-map crop as reference. MiniMax remains audio-only and must not generate campus artwork.
-- Campus structures use `visualWidth` as the canonical render scale value. It measures the visible non-transparent elevation width in world pixels, never the full atlas frame. Runtime `displayWidth` for atlas sprites must be derived from the frame's measured alpha bounds. `placementWidth` and `placementHeight` separately describe the official top-down footprint; side variants may swap footprint axes and must not force placement width to equal render width.
-- Each reusable environment asset owns one scale model containing `visualWidth`, collision dimensions, and `scaleClass`; repeated instances may change position only. Current world-scale bands are `landmark: 320-490`, `campus_block: 230-270`, `service_building: 155-190`, `athletics_site: 390-430`, and `utility_structure: 90-150` world pixels.
-- The map generator must reject structures outside their scale band, repeated assets with inconsistent dimensions, structures intersecting water or vehicle roads, and structural overlaps. Add density through coherent district groups and landscape objects while preserving the Great Lawn and lake-bank open space.
-- Campus roads follow the official map's hierarchy and circulation: perimeter roads, district spines, lake-bank paths, and bridge links live as editable Tiled polylines. A full-width orthogonal grid or repeated roads drawn only to fill empty terrain is not acceptable.
+- Campus exploration uses one strict `90-degree` top-down pixel-art world with north facing up. The player moves in four directions on the generated road network; Phaser owns the player, collisions, depth, labels, hotspots, quest markers, camera, and state transitions.
+- The user-selected `4 × 4` source-tile mosaic is the campus spatial and visual source of truth. `scripts/build-campus-mosaic.py` owns tile normalization, arrangement, seam roads, the final plate, and the pixel-derived walkability mask. Runtime code must not hand-maintain a second building, water, or road collision map.
+- The generated runtime manifest owns world width, world height, spawn, library entrance, tile bounds, and walkability-grid dimensions. The plate, player, camera, minimap, story triggers, and road checks all read this one coordinate system; do not hardcode the retired `2400px × 1920px` dimensions in scene code or CSS.
+- The campus camera follows the player in both axes, supports bounded pointer panning and discrete zoom, and never stretches the map. A minimap may show the complete north-up plate, but it cannot replace the playable world.
+- The mosaic layout manifest records every source tile, crop, scale, row, column, and final world rectangle. Rebuilding the plate must reproduce the same coordinates from that manifest.
+- Use one global tile size and one seam-road width for the complete plate. A single tile cannot be independently stretched after placement; the one non-square source is center-cropped before the shared resize.
+- Every campus asset uses the same top-down projection, pixel density, lighting direction, and global scale. Side-on facades, isometric `45-degree` sprites, and mixed viewpoints are prohibited in the campus world.
+- Road walkability is derived from the final plate at build time, then reduced by the canonical player-foot clearance. Only pixels in the resulting connected road mask are walkable; lawns, trees, roofs, courts, water, and interior courtyards remain blocked even when they share a dark color locally.
+- Every seam road must connect to the adjacent tiles on both sides. Spawn and story entrances must be validated against the final walkability mask before the manifest is written.
+- Future GPT Image replacements must preserve the tile's strict top-down viewpoint, outer road exits, crop, final scale, and layout slot. MiniMax remains audio-only and must not generate campus artwork.
 - Persistent map captions are limited to the campus title and the current objective. At most one nearby landmark name may appear; shape explanations, control hints, and repeated route reminders do not stay on the playfield.
+- The RPG task drawer is owned by the `rpg-shell` overlay layer, not by the narrow task-trigger bar. It must be portaled directly into the shell and stay fully scrollable inside the `960px × 540px` logical map bounds at every rendered scale.
+- The top of the Phaser canvas is reserved for the shared task bar. RPG dialogue, feedback subtitles, and interaction hints use the bottom safe zone defined by `src/scenes/rpg/RpgHudLayout.ts`: dialogue/feedback grows upward from the lower subtitle row and the interaction hint occupies the final row. Scene files must not restore local top-positioned feedback coordinates or render two subtitle surfaces at once.
+- Virtual direction and interaction buttons are touch-only controls. Render them only when the primary input is a coarse pointer; fine-pointer desktop maps use keyboard input and must not expose, focus, or reserve space for the virtual D-pad.
+- The single-screen map action is labelled `返回手机主页` and always restores `runtimeMode: "phone"` with `currentScene: "phone_home"`. It preserves the RPG scene, checkpoint, quest facts, and inventory so the player can return to the same map later.
+- The Basic Library gate supports first entry and re-entry throughout every unfinished library phase. Re-entry must preserve `libraryFinalsPhase` and puzzle facts, select a safe interior checkpoint, and must never regress progress to `library_entered`.
 - A pre-rendered RPG interior whose source image matches the world dimensions owns one source-pixel collision table in its model module. Static walls, furniture, and clear aisles must be calibrated from visible pixel bounds; repeated approximate obstacle grids are not allowed.
 - Interior collision changes require three checks: solid-pixel samples are blocked, clear-floor samples and checkpoint spawns remain open, and a real player body stops at the expected source edge. Development-only collision overlays may be enabled by a URL flag but never appear in the single-file release.
 - Validate campus identity at `1280×720` and one non-16:9 desktop viewport. Passing requires stable nonblank canvas rendering, readable landmark labels, preserved spatial relationships, and no overlap with the player, objectives, inventory, or controls.
@@ -63,9 +68,10 @@
 ## Delivery
 
 - Preserve direct browser opening through the generated `demo/index.html`.
+- Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
-- Run `npm run typecheck`, `npm run test:run`, and `npm run build:single` after behavior changes.
-- Every non-trivial delivery runs the complete test suite. Keep at least `200` distinct project-wide test cases, add meaningful coverage around the changed behavior when the count drops below that floor, and report the final file/case counts. Do not add duplicate assertions only to increase the number.
+- Run `npm run typecheck` and `npm run build:single` after behavior changes.
+- Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.
 - Record meaningful implementation and verification updates in `progress.md`.
@@ -76,9 +82,9 @@
 
 ## Locked Feature Visual Contract
 
-- A future app, service, or navigation entry that is gated by story progress keeps its original card or control frame and its original icon while locked.
-- A locked icon entry renders no feature name, helper copy, badge, or `xxx`; it is a static non-interactive element with no button semantics, focus target, click handler, or toast.
-- When the formal feature gate opens, the same slot becomes interactive and reveals its name. Story state remains the only authority for that transition.
+- A future app, service, or navigation entry that is gated by story progress keeps its original card or control frame, original icon, original name, and grid position while locked. The visible name reserves the same line height as the unlocked entry so mixed grids remain aligned.
+- A locked icon entry renders no helper copy, badge, or `xxx`; its icon and name are static non-interactive content with no button semantics, focus target, click handler, or toast.
+- When the formal feature gate opens, the same slot becomes interactive without changing its label or grid geometry. Story state remains the only authority for that transition.
 - Text-only redactions and unreleased content may continue to use `xxx`; never use `xxx` in place of a known app or control icon.
 - Decorative placeholder banners with no current action or information must be removed instead of occupying a disabled feature slot.
 
@@ -93,6 +99,7 @@
 ## Quest And Inventory Feedback
 
 - The shared task trigger must accept pointer, Enter, and Space input on phone, RPG, and split-screen layouts. Its drawer always labels `当前任务`, `当前进度`, and the next objective explicitly.
+- The task drawer reveals only the current next objective. Locked future step labels must not be rendered, because even disabled checklist rows disclose the remaining puzzle chain. Completed paper documents may remain available only inside a collapsed acquired-material archive derived from completed facts.
 - Chapter-one digit discoveries remain visible in both the task trigger/drawer and the inventory bar as four ordered slots. Unknown slots stay masked; acquired digits keep their original positions. Every surface reads `state.digits` directly and must not maintain a duplicate clue state.
 - Phaser checkpoints that represent difficulty stages must set the real simulation value. Labels such as `377m` or `566m` cannot point to a zero-distance run.
 
@@ -107,7 +114,7 @@
 - Missing or blocked audio must never stop a state transition or prevent interaction.
 - Every spoken voice asset ships in English. Every on-screen voice subtitle uses Chinese and has exactly one owner: a scene dialogue surface when that scene already renders the line, or the shared `ToastLayer` for voice-only cues. Set `subtitleSurface: "scene"` for scene-owned lines and never emit the same text through both surfaces. Shared toasts keep their global position, type size, and audio-derived duration contract unchanged. TTS source text, voice language, generated manifests, and runtime audio must use English.
 - Preserve role continuity: every narrator line uses the established English male narrator voice at the shared base pitch; context may change wording, pauses, emphasis, and speed without changing narrator timbre or pitch. The system uses the established English female voice. Narrator sarcasm stays dry and condescending, while system frustration reads as restrained irritation and reluctant assistance.
-- The legacy `playVo` scene lines and data-driven `AudioDirector` cues belong to the same English voice contract and must be regenerated and tested together.
+- The legacy `playVo` scene lines and data-driven `AudioDirector` cues belong to the same English voice contract and must be regenerated and validated together.
 
 ## Puzzle Information Architecture
 
@@ -126,8 +133,10 @@
 
 - A successful `0798` check-in does not enter a static ending page. It must run the authored sequence: red check-in flash, seven-second blackout, moving narrator orb, pointer hold capture, player/system exchange, repeated white burst, then return to the existing phone home screen with the next services unlocked.
 - The narrator orb is captured through Pointer Events so mouse, touch, and pen share one interaction. Releasing before the hold threshold cancels capture; holding past the threshold freezes the orb and advances through controller-validated state only after the full exchange finishes.
-- The old bootstrap route based on a login receipt, free CC98 controls, a game cartridge, and visiting four map areas is retired. Do not restore those gates in UI, controllers, saves, tests, or reports.
+- The old bootstrap route based on a login receipt, free CC98 controls, a game cartridge, and visiting four map areas is retired. Do not restore those gates in UI, controllers, saves, or reports.
 - The dorm campus card belongs to chapter one. After the check-in digits scatter, the phone-home ZJU Ding notice must expose the route `浙大钉 → 校园地图 → 寝室`; picking up the card from the right-side personal desk grants it, and the yellow middle `0` in `¥0.06` provides the first digit. The room background stays item-free; Phaser owns the card sprite, hotspot, pickup animation, and removal.
+- The canonical dorm plate is `src/assets/rpg/interiors/dorm_hub.png`, a user-selected `941×1672` strict top-down pixel map. Its fixed structure is two bunk-bed groups with their long edges on the left wall and exactly four desks with their long edges on the right wall. Replacing, independently resizing, perspective-warping, or adding central furniture to this plate requires explicit user approval.
+- `DormHubModel.ts` owns the dorm source-pixel collision and interaction coordinates. The `960×540` Phaser camera may follow and zoom over the tall world, but furniture collision must continue to match visible source pixels and the central aisle and bottom doorway must remain walkable. Large furniture interactions measure proximity from the visible target rectangle edge, not only from its center.
 - Chapter two inherits the campus card and recovered backpack from chapter one. The system dialogue must acknowledge the owned card and continue to the movement quest. `inventory_required` remains a migration fallback for old saves only.
 - Chapter two movement readiness is assembled from reusable scenes: campus-card identity, department directory, ZJU Sports, phone-home notification, Weather, WeChat mentor avatar, campus-card balance, CC98 marketplace, and the dorm mini-game.
 - The movement puzzle keeps independent validated facts for character naming, automatic exercise movement, triangle collection, weather water, mentor-line release, right-arrow assembly, balance shift, gamepad purchase, first manual movement, and dorm exit. Scene-local animation state must never replace these facts.

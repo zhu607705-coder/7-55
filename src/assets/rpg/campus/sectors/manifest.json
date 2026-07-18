@@ -1,0 +1,11 @@
+{
+  "world": { "width": 2400, "height": 1920 },
+  "sectorSize": { "width": 1320, "height": 1080 },
+  "overlap": { "x": 240, "y": 240 },
+  "sectors": [
+    { "id": "nw", "file": "sector_nw.png", "x": 0, "y": 0 },
+    { "id": "ne", "file": "sector_ne.png", "x": 1080, "y": 0 },
+    { "id": "sw", "file": "sector_sw.png", "x": 0, "y": 840 },
+    { "id": "se", "file": "sector_se.png", "x": 1080, "y": 840 }
+  ]
+}

@@ -88,7 +88,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
       });
     }, 2000);
 
-    // 首段语音至少完整播放两秒，之后才允许玩家点击跳过。
+    // 第一段语音开始两秒后才开放跳过，正常情况下仍播放到文件结束。
     later(() => {
       if (!attackAdvanced) {
         setAttackSkippable(true);

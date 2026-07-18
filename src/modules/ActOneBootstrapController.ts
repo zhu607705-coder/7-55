@@ -347,10 +347,10 @@ export class ActOneBootstrapController {
     this.store.setState((state) => ({
       ...state,
       runtimeMode: "phone",
-      currentScene: "zjuding",
+      currentScene: "phone_home",
       ui: { ...state.ui, zjudingPage: "hub" }
     }));
-    this.events.emit("act2_phone_opened", { sceneId: "zjuding" });
+    this.events.emit("act2_phone_opened", { sceneId: "phone_home" });
   }
 
   private getState(): ActOneBootstrapState {

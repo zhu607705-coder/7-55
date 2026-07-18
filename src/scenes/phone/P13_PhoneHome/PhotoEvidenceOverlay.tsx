@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import "../../../styles/library-v2-phone.css";
 
@@ -23,7 +23,26 @@ export function PhotoEvidenceOverlay({
   onClose
 }: PhotoEvidenceOverlayProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const previousReadableRef = useRef(false);
+  const revealTimerRef = useRef<number | null>(null);
+  const [revealAnimating, setRevealAnimating] = useState(false);
   const readable = available && brightness <= 20 && dimmed;
+  const revealProgress = available ? Math.max(0, Math.min(1, (72 - brightness) / 52)) : 0;
+  const exposurePhase = !available
+    ? "is-unavailable"
+    : readable
+      ? "is-readable"
+      : brightness <= 56
+        ? "is-scanning"
+        : "is-overexposed";
+  const frameStyle = {
+    "--photo-contrast": (0.9 + revealProgress * 0.18).toFixed(2),
+    "--photo-saturation": (0.72 + revealProgress * 0.3).toFixed(2),
+    "--photo-glare-opacity": readable ? "0" : Math.max(0.08, 0.94 - revealProgress * 0.78).toFixed(2),
+    "--photo-noise-opacity": readable ? "0.08" : (0.42 - revealProgress * 0.2).toFixed(2),
+    "--photo-scan-y": `${Math.round(14 + revealProgress * 72)}%`
+  } as CSSProperties;
+  const controlStyle = { "--photo-level": `${brightness}%` } as CSSProperties;
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -37,6 +56,30 @@ export function PhotoEvidenceOverlay({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    const wasReadable = previousReadableRef.current;
+    previousReadableRef.current = readable;
+
+    if (!readable) {
+      setRevealAnimating(false);
+      return;
+    }
+    if (wasReadable) return;
+
+    setRevealAnimating(true);
+    revealTimerRef.current = window.setTimeout(() => {
+      revealTimerRef.current = null;
+      setRevealAnimating(false);
+    }, 1450);
+
+    return () => {
+      if (revealTimerRef.current !== null) {
+        window.clearTimeout(revealTimerRef.current);
+        revealTimerRef.current = null;
+      }
+    };
+  }, [readable]);
+
   return (
     <section className="photo-evidence-layer photo-library-layer" aria-label="照片 IMG_0755.JPG">
       <header>
@@ -47,12 +90,22 @@ export function PhotoEvidenceOverlay({
       <main>
         <section className="photo-library-viewer">
           <header><strong>IMG_0755.JPG</strong><span>022 · 二楼南区</span></header>
-          <div className={`photo-backpack-frame ${readable ? "is-readable" : ""}`} aria-label={readable ? "可读的书包标签" : "反光的书包标签"}>
+          <div
+            className={`photo-backpack-frame ${exposurePhase} ${revealAnimating ? "is-revealing" : ""}`}
+            style={frameStyle}
+            aria-label={readable ? "可读的书包标签" : "反光的书包标签"}
+          >
             <div className="photo-library-desk" aria-hidden="true" />
             <div className="photo-library-backpack" aria-hidden="true"><i /><b>022</b></div>
-            <section className="photo-bag-label">
+            <span className="photo-frame-exposure" aria-hidden="true" />
+            <span className="photo-pixel-noise" aria-hidden="true" />
+            <section className={`photo-bag-label ${readable ? "is-readable" : ""}`}>
+              <header className="photo-label-status" aria-hidden="true">
+                <span>OCR</span>
+                <b>{readable ? "LOCK" : "SCAN"}</b>
+              </header>
               {readable ? (
-                <>
+                <div className="photo-label-content">
                   <strong>书包标签</strong>
                   <span>高数教材 x1</span>
                   <span>水杯 x1　充电器 x1</span>
@@ -60,13 +113,25 @@ export function PhotoEvidenceOverlay({
                   <b>姓名：未检测到</b>
                   <b>学号：未检测到</b>
                   <em>人格：加载失败</em>
-                </>
-              ) : <strong>标签反光，无法识别</strong>}
+                </div>
+              ) : (
+                <div className="photo-label-obscured" aria-hidden="true">
+                  <strong>标签反光，无法识别</strong>
+                  <span /><span /><span /><span />
+                </div>
+              )}
             </section>
-            {!readable ? <span className="photo-glare" aria-hidden="true" /> : null}
+            <span className="photo-focus-corners" aria-hidden="true"><i /><i /><i /><i /></span>
+            <span className="photo-glare" aria-hidden="true" />
+            <span className="photo-scan-line" aria-hidden="true" />
+            {revealAnimating ? (
+              <span className="photo-decode-burst" aria-hidden="true">
+                {Array.from({ length: 8 }, (_, index) => <i key={index} />)}
+              </span>
+            ) : null}
           </div>
 
-          <label className="photo-brightness-control">
+          <label className="photo-brightness-control" style={controlStyle}>
             <span>识别亮度</span>
             <input
               type="range"
@@ -82,8 +147,10 @@ export function PhotoEvidenceOverlay({
             {!available
               ? "还没有拍到 022 上的书包。"
               : readable
-                ? "反光已消失，标签内容可读。"
-                : "标签仍在反光。继续降低识别亮度，直到反光完全消失。"}
+                ? "识别稳定，标签内容已锁定。"
+                : brightness <= 56
+                  ? "标签边缘已出现，识别信号仍不稳定。"
+                  : "高光覆盖标签，识别器无法对焦。"}
           </p>
         </section>
 

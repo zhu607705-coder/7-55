@@ -131,6 +131,19 @@ const LIBRARY_APPS: LibraryApp[] = [
   { label: "图书馆缴费", icon: "¥" }
 ];
 
+const HUB_BOTTOM_ITEMS = [
+  { label: "首页", icon: "⌂" },
+  { label: "通讯录", icon: "◉" },
+  { label: "工作台", icon: "▦" },
+  { label: "消息", icon: "✦" },
+  { label: "我的", icon: "◎" }
+] as const;
+
+const LIBRARY_BOTTOM_ITEMS = [
+  { label: "首页", icon: "⌂" },
+  { label: "我的", icon: "◎" }
+] as const;
+
 const CATALOG_COVER_URLS: Record<string, string> = {
   correct: threeMinuteLeaveMethodUrl,
   "distractor-1": threeMinuteLeaveArtUrl,
@@ -452,8 +465,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const [recoveryFeedback, setRecoveryFeedback] = useState("");
   const [submittedDocument, setSubmittedDocument] = useState<ItemId | null>(null);
   const [draggedRecoveryItem, setDraggedRecoveryItem] = useState("");
+  const [recoveryAnimatingId, setRecoveryAnimatingId] = useState<LibraryRecoveryEvidenceId | null>(null);
+  const [passPrinting, setPassPrinting] = useState(false);
   const seatDropTargetRef = useRef<HTMLButtonElement>(null);
   const directoryScanTimerRef = useRef<number | null>(null);
+  const recoveryAnimationTimerRef = useRef<number | null>(null);
+  const passPrintTimerRef = useRef<number | null>(null);
   const onCampusWifi = state.networkMode === "campus_wifi";
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
@@ -530,6 +547,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       }
     };
   }, [events, state.items.campusCard]);
+
+  useEffect(() => () => {
+    if (recoveryAnimationTimerRef.current !== null) window.clearTimeout(recoveryAnimationTimerRef.current);
+    if (passPrintTimerRef.current !== null) window.clearTimeout(passPrintTimerRef.current);
+  }, []);
 
   useEffect(() => events.subscribe((event) => {
     if (event.name === "inventory_drag_started") {
@@ -822,14 +844,28 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     setRecoveryFeedback("");
     if (!kit.libraryFinals.uploadRecoveryEvidence(evidenceId)) {
       setRecoveryFeedback("该证明还未获得、已提交，或当前申请尚未开放。");
+      return;
     }
+    setRecoveryAnimatingId(evidenceId);
+    if (recoveryAnimationTimerRef.current !== null) window.clearTimeout(recoveryAnimationTimerRef.current);
+    recoveryAnimationTimerRef.current = window.setTimeout(() => {
+      recoveryAnimationTimerRef.current = null;
+      setRecoveryAnimatingId(null);
+    }, 880);
   }
 
   function generateEvictionPass() {
     setRecoveryFeedback("");
     if (!kit.libraryFinals.generateEvictionPass()) {
       setRecoveryFeedback("三项恢复材料尚未齐全。");
+      return;
     }
+    setPassPrinting(true);
+    if (passPrintTimerRef.current !== null) window.clearTimeout(passPrintTimerRef.current);
+    passPrintTimerRef.current = window.setTimeout(() => {
+      passPrintTimerRef.current = null;
+      setPassPrinting(false);
+    }, 1560);
   }
 
   if (phase === "loading") {
@@ -1023,6 +1059,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 aria-hidden="true"
               >
                 <span className="zju-library-service-icon">{app.icon}</span>
+                <span className="zju-locked-label">{app.label}</span>
               </span>
             ))}
             {recoveryUnlocked ? (
@@ -1032,6 +1069,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             ) : (
               <span className="zju-static-app zju-locked-icon-slot" data-locked-app="022恢复申请" aria-hidden="true">
                 <span className="zju-library-service-icon">PASS</span>
+                <span className="zju-locked-label">022恢复申请</span>
               </span>
             )}
             <button type="button" data-app-id="返回现场" onClick={openCampusMap}>
@@ -1073,8 +1111,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           ))}
         </main>
         <nav className="zju-native-bottom-nav zju-bottom-static" aria-label="页面导航">
-          <span data-locked-icon="library-home" aria-hidden="true">⌂</span>
-          <span data-locked-icon="library-profile" aria-hidden="true">◎</span>
+          {LIBRARY_BOTTOM_ITEMS.map((item) => (
+            <span key={item.label} data-locked-icon={`library-${item.label}`} aria-hidden="true">
+              <i>{item.icon}</i><small>{item.label}</small>
+            </span>
+          ))}
         </nav>
       </section>
     );
@@ -1183,7 +1224,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             </div>
             <b>{passReady ? "PASS" : `${submitted.length}/3`}</b>
           </header>
-          <div className="zju-recovery-progress" aria-label={`恢复材料进度 ${submitted.length}/3`}>
+          <div className={`zju-recovery-progress ${recoveryAnimatingId ? "is-updating" : ""}`} aria-label={`恢复材料进度 ${submitted.length}/3`}>
             <span style={{ width: `${passReady ? 100 : submitted.length / 3 * 100}%` }} />
           </div>
           <section className="zju-recovery-rule">
@@ -1198,7 +1239,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               return (
                 <article
                   key={evidence.id}
-                  className={`${uploaded ? "is-uploaded" : owned ? "is-ready" : "is-missing"} ${
+                  className={`${uploaded ? "is-uploaded" : owned ? "is-ready" : "is-missing"} ${recoveryAnimatingId === evidence.id ? "is-verifying" : ""} ${
                     draggedRecoveryItem
                       ? draggedRecoveryItem === evidence.item ? "is-compatible-drop" : "is-incompatible-drop"
                       : ""
@@ -1207,6 +1248,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                   data-compatible-item={evidence.item}
                 >
                   <span>{String(index + 1).padStart(2, "0")}</span>
+                  {recoveryAnimatingId === evidence.id ? <i className="zju-recovery-scan" aria-hidden="true" /> : null}
                   <div>
                     <header><strong>{evidence.label}</strong><b>{status}</b></header>
                     <small>来源：{evidence.source}</small>
@@ -1225,7 +1267,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </section>
           {recoveryFeedback ? <p className="zju-recovery-feedback" aria-live="polite">{recoveryFeedback}</p> : null}
           {passReady ? (
-            <section className="zju-pass-result" aria-label="座位释放PASS已签发">
+            <section className={`zju-pass-result ${passPrinting ? "is-printing" : ""}`} aria-label="座位释放PASS已签发">
+              <i className="zju-pass-printer" aria-hidden="true"><b /><b /><b /></i>
               <strong>PASS 已签发</strong>
               <p>凭证只对 RPG 图书馆内的 022 书包生效。</p>
               <button type="button" onClick={openCampusMap}>回图书馆处理书包</button>
@@ -1451,16 +1494,22 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <span className="zju-id-summary-icon zju-locked-control-icon" data-locked-icon="identity-qr" aria-hidden="true">▦</span>
             </div>
             <div className="zju-id-actions">
-              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-code" aria-hidden="true"><span>◎</span></span>
+              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-code" data-locked-app="身份码" aria-hidden="true">
+                <span>◎</span><small className="zju-locked-label">身份码</small>
+              </span>
               <button type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</button>
-              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-wallet" aria-hidden="true"><span>◇</span></span>
+              <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-wallet" data-locked-app="校园钱包" aria-hidden="true">
+                <span>◇</span><small className="zju-locked-label">校园钱包</small>
+              </span>
               {access.departmentDirectory ? (
                 <button type="button" onClick={() => goPage("directory")}>
                   <span aria-hidden="true">☎</span>部门黄页
                   {movementQuestActive && !state.actOne.characterNamed ? <b>任务</b> : null}
                 </button>
               ) : (
-                <span className="zju-static-action zju-locked-icon-slot" data-locked-app="部门黄页" aria-hidden="true"><span>☎</span></span>
+                <span className="zju-static-action zju-locked-icon-slot" data-locked-app="部门黄页" aria-hidden="true">
+                  <span>☎</span><small className="zju-locked-label">部门黄页</small>
+                </span>
               )}
             </div>
           </section>
@@ -1485,14 +1534,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                   aria-hidden="true"
                 >
                   <PixelAppIcon symbol={app.icon} tone={app.tone} />
+                  <span className="zju-locked-label">{app.label}</span>
                 </span>
               );
             })}
           </section>
         </main>
         <nav className="zju-native-bottom-nav zju-bottom-static" aria-label="页面导航">
-          {["⌂", "◉", "▦", "✦", "◎"].map((icon, index) => (
-            <span key={icon} data-locked-icon={`hub-nav-${index + 1}`} aria-hidden="true">{icon}</span>
+          {HUB_BOTTOM_ITEMS.map((item, index) => (
+            <span key={item.label} data-locked-icon={`hub-nav-${index + 1}`} aria-hidden="true">
+              <i>{item.icon}</i><small>{item.label}</small>
+            </span>
           ))}
         </nav>
       </section>

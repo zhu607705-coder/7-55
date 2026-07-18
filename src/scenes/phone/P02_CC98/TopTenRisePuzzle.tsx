@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   LibraryEvidenceId,
   LibraryFinalsBdReplyId,
@@ -58,8 +58,60 @@ export function TopTenRisePuzzle({
 }: TopTenRisePuzzleProps) {
   const [feedback, setFeedback] = useState("");
   const [draggedItem, setDraggedItem] = useState("");
+  const [uploadAnimatingId, setUploadAnimatingId] = useState<LibraryEvidenceId | null>(null);
+  const [rankAnimating, setRankAnimating] = useState(false);
+  const [topTenBurst, setTopTenBurst] = useState(false);
+  const [invalidReplyKey, setInvalidReplyKey] = useState<ReplyOption["key"] | null>(null);
+  const previousUploadedRef = useRef(uploadedEvidenceIds);
+  const previousBdCountRef = useRef(bdCount);
+  const uploadTimerRef = useRef<number | null>(null);
+  const rankTimerRef = useRef<number | null>(null);
+  const topTenTimerRef = useRef<number | null>(null);
+  const invalidTimerRef = useRef<number | null>(null);
   const allUploaded = uploadedEvidenceIds.length === EVIDENCE.length;
   const rank = String(4 - bdCount).padStart(2, "0");
+
+  useEffect(() => {
+    const previous = previousUploadedRef.current;
+    previousUploadedRef.current = uploadedEvidenceIds;
+    const uploaded = uploadedEvidenceIds.find((id) => !previous.includes(id));
+    if (!uploaded) return;
+
+    setUploadAnimatingId(uploaded);
+    if (uploadTimerRef.current !== null) window.clearTimeout(uploadTimerRef.current);
+    uploadTimerRef.current = window.setTimeout(() => {
+      uploadTimerRef.current = null;
+      setUploadAnimatingId(null);
+    }, 760);
+  }, [uploadedEvidenceIds]);
+
+  useEffect(() => {
+    const previous = previousBdCountRef.current;
+    previousBdCountRef.current = bdCount;
+    if (bdCount <= previous) return;
+
+    setRankAnimating(true);
+    if (rankTimerRef.current !== null) window.clearTimeout(rankTimerRef.current);
+    rankTimerRef.current = window.setTimeout(() => {
+      rankTimerRef.current = null;
+      setRankAnimating(false);
+    }, 620);
+
+    if (phase === "top_ten_reached" || bdCount === 3) {
+      setTopTenBurst(true);
+      if (topTenTimerRef.current !== null) window.clearTimeout(topTenTimerRef.current);
+      topTenTimerRef.current = window.setTimeout(() => {
+        topTenTimerRef.current = null;
+        setTopTenBurst(false);
+      }, 1180);
+    }
+  }, [bdCount, phase]);
+
+  useEffect(() => () => {
+    [uploadTimerRef, rankTimerRef, topTenTimerRef, invalidTimerRef].forEach((timerRef) => {
+      if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    });
+  }, []);
 
   useEffect(() => {
     if (!events) return undefined;
@@ -100,18 +152,29 @@ export function TopTenRisePuzzle({
 
   function apply(reply: ReplyOption) {
     if (!reply.replyId) {
+      showInvalidReply(reply.key);
       setFeedback(reply.rejection ?? "该回复没有形成证据闭环。");
       return;
     }
     setFeedback("");
     if (!kit.libraryFinals.applyBd(reply.replyId)) {
+      showInvalidReply(reply.key);
       setFeedback(allUploaded ? "这条回复已处理，或当前排名阶段不接受它。" : "四项证据传齐后才能 bd。");
     }
   }
 
+  function showInvalidReply(key: ReplyOption["key"]) {
+    setInvalidReplyKey(key);
+    if (invalidTimerRef.current !== null) window.clearTimeout(invalidTimerRef.current);
+    invalidTimerRef.current = window.setTimeout(() => {
+      invalidTimerRef.current = null;
+      setInvalidReplyKey(null);
+    }, 460);
+  }
+
   return (
     <section
-      className={`cc98-top-ten-puzzle cc98-evidence-puzzle ${phase === "top_ten_reached" ? "is-top-ten" : ""}`.trim()}
+      className={`cc98-top-ten-puzzle cc98-evidence-puzzle ${phase === "top_ten_reached" ? "is-top-ten" : ""} ${rankAnimating ? "is-rank-rising" : ""} ${topTenBurst ? "is-top-ten-burst" : ""}`.trim()}
       aria-label="CC98证据与十大排名"
     >
       {showUploader ? <section className="cc98-evidence-uploader" aria-label="楼主证据上传区">
@@ -129,7 +192,7 @@ export function TopTenRisePuzzle({
             return (
               <article
                 key={evidence.id}
-                className={`${uploaded ? "is-uploaded" : ""} ${draggedItem && (
+                className={`${uploaded ? "is-uploaded" : ""} ${uploadAnimatingId === evidence.id ? "is-uploading" : ""} ${draggedItem && (
                   (evidence.id === "archived_leave_rule" && draggedItem === "archivedLeaveRule")
                   || (evidence.id === "bag_non_person_proof" && draggedItem === "bagNonPersonProof")
                   || (evidence.id === "seat_022_receipt" && draggedItem === "seat022Receipt")
@@ -138,6 +201,7 @@ export function TopTenRisePuzzle({
                 data-drop-target={`cc98-upload:${evidence.id}`}
               >
                 <span aria-hidden="true">{uploaded ? "✓" : "▣"}</span>
+                {uploadAnimatingId === evidence.id ? <i className="cc98-upload-scan" aria-hidden="true" /> : null}
                 <div><strong>{evidence.label}</strong><small>{evidence.source}</small></div>
                 <button type="button" disabled={!owned || uploaded || phase !== "evidence_gathering"} onClick={() => upload(evidence.id)}>
                   {uploaded ? "已上传" : owned ? "上传" : "未获得"}
@@ -152,13 +216,14 @@ export function TopTenRisePuzzle({
         <span>当前排名</span>
         <strong key={rank}>{rank}</strong>
         <p>{phase === "top_ten_reached" ? "十大第一" : allUploaded ? "选择有效回复 bd" : "请先上传四项证据"}</p>
+        {topTenBurst ? <i className="cc98-rank-burst" aria-hidden="true"><b /><b /><b /><b /><b /><b /></i> : null}
       </section> : null}
 
       {showBd ? <div className="cc98-bd-replies" aria-label="bd回复列表">
         {REPLIES.map((reply) => {
           const applied = reply.replyId ? appliedReplyIds.includes(reply.replyId) : false;
           return (
-            <article key={reply.key} className={applied ? "is-applied" : ""}>
+            <article key={reply.key} className={`${applied ? "is-applied" : ""} ${invalidReplyKey === reply.key ? "is-invalid" : ""}`.trim()}>
               <header><strong>{reply.key} · {reply.author}</strong><span>{reply.requirement}</span></header>
               <p>{reply.text}</p>
               <button

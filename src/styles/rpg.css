@@ -173,12 +173,12 @@
 
 .rpg-minimap-frame {
   border: 3px solid #e9d66c;
-  bottom: 4.05%;
-  height: 23.35%;
+  bottom: 3.7%;
+  height: 23.7%;
   left: 1.65%;
   pointer-events: none;
   position: absolute;
-  width: 19.2%;
+  width: 16.67%;
   z-index: 19;
 }
 
@@ -350,7 +350,7 @@
   height: 54px;
   justify-content: center;
   pointer-events: none;
-  position: fixed;
+  position: absolute;
   transform: translate(-50%, -50%);
   width: 54px;
   z-index: 70;

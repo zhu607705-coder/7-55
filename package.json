@@ -8,10 +8,13 @@
     "build": "tsc --noEmit && vite build",
     "build:demo": "tsc --noEmit && vite build --mode demo",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run",
     "build:single": "npm run build:demo",
-    "map:zijingang": "node scripts/generate-zijingang-tilemap.mjs",
+    "map:zijingang": "python3 scripts/build-campus-mosaic.py",
+    "map:zijingang:legacy-tilemap": "node scripts/generate-zijingang-tilemap.mjs",
+    "map:zijingang:mosaic": "python3 scripts/build-campus-mosaic.py",
+    "map:zijingang:plate": "python3 scripts/generate-zijingang-campus-plate.py",
+    "map:zijingang:split": "python3 scripts/split-zijingang-campus-sectors.py",
+    "map:zijingang:stitch": "python3 scripts/stitch-zijingang-campus-sectors.py",
     "art:zijingang": "npm run art:zijingang:landmarks && npm run art:zijingang:environment && npm run art:zijingang:bridge && npm run art:zijingang:terrain",
     "art:zijingang:landmarks": "node scripts/process-zijingang-landmarks.mjs",
     "art:zijingang:environment": "node scripts/process-zijingang-environment-atlas.mjs",
@@ -31,16 +34,11 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.10.7",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "jsdom": "^26.0.0",
     "typescript": "^5.7.3",
     "vite": "^5.4.11",
-    "vite-plugin-singlefile": "^2.3.3",
-    "vitest": "^2.1.8"
+    "vite-plugin-singlefile": "^2.3.3"
   }
 }

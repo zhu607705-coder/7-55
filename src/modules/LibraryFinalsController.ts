@@ -30,6 +30,19 @@ const AUDIT_RANGES: Record<keyof LibraryFinalsAuditValues, readonly [number, num
   proofCount: [1, 5]
 };
 
+const LIBRARY_ACCESS_PHASES: readonly LibraryFinalsPhase[] = [
+  "library_route_unlocked",
+  "library_entered",
+  "occupied_seat_found",
+  "evidence_gathering",
+  "top_ten_rising",
+  "top_ten_reached",
+  "recovery_application",
+  "pass_ready",
+  "backpack_removed",
+  "seat_recovered"
+];
+
 /**
  * 第二章只维护剧情事实与领域事件。动画、旁白、音效和延迟由演出层独立消费事件。
  */
@@ -58,17 +71,25 @@ export class LibraryFinalsController {
   }
 
   enterLibrary(): boolean {
-    const phase = this.getPhase();
-    if (phase !== "library_route_unlocked" && phase !== "library_entered") {
+    const state = this.store.getState();
+    const phase = state.ui.libraryFinalsPhase;
+    if (!LIBRARY_ACCESS_PHASES.includes(phase)) {
       return false;
     }
-    this.patchGame("library_entered", { libraryVisitedPoints: addUnique(this.getPuzzle().libraryVisitedPoints, "entrance") }, {
+    const firstEntry = phase === "library_route_unlocked";
+    const nextPhase = firstEntry ? "library_entered" : phase;
+    const checkpoint = resolveLibraryEntryCheckpoint(state);
+    this.patchGame(nextPhase, {
+      libraryVisitedPoints: addUnique(state.ui.libraryFinalsPuzzle.libraryVisitedPoints, "entrance")
+    }, {
       runtimeMode: "rpg",
       rpgScene: "library_interior",
-      rpgCheckpoint: "library_entrance"
+      rpgCheckpoint: checkpoint
     });
-    if (phase !== "library_entered") {
+    if (firstEntry) {
       this.events.emit("library_entered", { seat: LIBRARY_FINALS_PUZZLE_CONFIG.targetSeat });
+    } else {
+      this.events.emit("library_reentered", { phase, checkpoint });
     }
     return true;
   }
@@ -507,6 +528,20 @@ export class LibraryFinalsController {
 
 function addUnique<T>(values: readonly T[], value: T): T[] {
   return values.includes(value) ? [...values] : [...values, value];
+}
+
+function resolveLibraryEntryCheckpoint(state: ReturnType<GameStore["getState"]>): RpgCheckpointId {
+  const phase = state.ui.libraryFinalsPhase;
+  const puzzle = state.ui.libraryFinalsPuzzle;
+  if (phase === "library_route_unlocked") return "library_entrance";
+  if (phase === "library_entered") {
+    return puzzle.entranceRecordRead ? "library_seat_022" : "library_entrance";
+  }
+  if (phase === "evidence_gathering") {
+    if (puzzle.callNumberCollected && !puzzle.archivedRuleCollected) return "library_shelf_755";
+    if (puzzle.itemReportGenerated && !puzzle.nonPersonProofStamped) return "library_front_desk";
+  }
+  return "library_seat_022";
 }
 
 function isAuditValueInRange(field: keyof LibraryFinalsAuditValues, value: number): boolean {

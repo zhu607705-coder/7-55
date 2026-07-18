@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SceneRouter } from "../../../core/SceneRouter";
 import type {
   LibraryFinalsAuditValues,
@@ -66,6 +66,10 @@ function rejectionHint(attempt: number): string {
 /** 后期体艺只认证已收集的路线证据，不再控制 RPG 移动。 */
 export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps) {
   const [visibleAttempt, setVisibleAttempt] = useState<number | null>(null);
+  const [motion, setMotion] = useState<"idle" | "rejected" | "approved">("idle");
+  const [steppingField, setSteppingField] = useState<AuditField | null>(null);
+  const motionTimerRef = useRef<number | null>(null);
+  const stepTimerRef = useRef<number | null>(null);
   const values = currentValues(puzzle);
   const recordedRoute = puzzle.libraryVisitedPoints.map((point) => LOCATION_LABELS[point]);
   const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened && puzzle.archivedRuleCollected;
@@ -74,6 +78,13 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
 
   function step(field: AuditField, value: number) {
     setVisibleAttempt(null);
+    setMotion("idle");
+    setSteppingField(field);
+    if (stepTimerRef.current !== null) window.clearTimeout(stepTimerRef.current);
+    stepTimerRef.current = window.setTimeout(() => {
+      stepTimerRef.current = null;
+      setSteppingField(null);
+    }, 260);
     kit.libraryFinals.setAuditValue(field, value);
   }
 
@@ -81,15 +92,31 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
     if (!sourceReady || phase !== "evidence_gathering") {
       return;
     }
-    if (kit.libraryFinals.submitAudit(values)) {
+    const accepted = kit.libraryFinals.submitAudit(values);
+    setMotion(accepted ? "approved" : "rejected");
+    if (motionTimerRef.current !== null) window.clearTimeout(motionTimerRef.current);
+    motionTimerRef.current = window.setTimeout(() => {
+      motionTimerRef.current = null;
+      setMotion("idle");
+    }, accepted ? 1320 : 820);
+    if (accepted) {
       setVisibleAttempt(null);
       return;
     }
     setVisibleAttempt(puzzle.auditAttemptCount + 1);
   }
 
+  useEffect(() => () => {
+    if (motionTimerRef.current !== null) window.clearTimeout(motionTimerRef.current);
+    if (stepTimerRef.current !== null) window.clearTimeout(stepTimerRef.current);
+  }, []);
+
   return (
-    <section className={`tiyi-audit-panel tiyi-audit-v2 ${passed ? "is-passed" : ""}`.trim()} aria-label="本人来过证明补录单">
+    <section
+      className={`tiyi-audit-panel tiyi-audit-v2 ${passed ? "is-passed" : ""} ${motion === "rejected" ? "is-audit-rollback" : ""} ${motion === "approved" ? "is-audit-approved" : ""}`.trim()}
+      aria-label="本人来过证明补录单"
+    >
+      {motion !== "idle" ? <i className="tiyi-audit-sweep" aria-hidden="true" /> : null}
       <header>
         <div>
           <strong>{passed ? "补录成功" : "本人来过证明补录单"}</strong>
@@ -129,11 +156,11 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             {CONTROLS.map((control) => {
               const value = values[control.field];
               return (
-                <section key={control.field} aria-label={control.label}>
+                <section className={steppingField === control.field ? "is-stepping" : ""} key={control.field} aria-label={control.label}>
                   <span>{control.label}</span>
                   <div>
                     <button type="button" aria-label={`${control.label}减一`} disabled={value <= control.min} onClick={() => step(control.field, value - 1)}>−</button>
-                    <strong>{value}<small>{control.unit}</small></strong>
+                    <strong key={`${control.field}-${value}`}>{value}<small>{control.unit}</small></strong>
                     <button type="button" aria-label={`${control.label}加一`} disabled={value >= control.max} onClick={() => step(control.field, value + 1)}>+</button>
                   </div>
                 </section>
@@ -151,6 +178,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
         </>
       ) : (
         <section className="tiyi-presence-proof-result">
+          <i className="tiyi-proof-stamp" aria-hidden="true">已认证</i>
           <strong>本人来过证明</strong>
           <p>一张证明你来过的证明。它没有证明你为什么要来。</p>
           <dl aria-label="已验证补录值">

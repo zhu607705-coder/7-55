@@ -19,6 +19,7 @@ import {
   type LibraryInteractionTargetId
 } from "./LibraryInteriorModel";
 import { formatRpgInteractionHint, RPG_CONTROL_HINTS } from "./RpgControlHints";
+import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -509,6 +510,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     this.dialogueIndex = index;
+    this.feedbackTween?.stop();
+    this.feedbackText.setVisible(false).setAlpha(0).setScale(1);
     this.dialogueSpeaker.setText(speaker);
     this.dialogueSpeaker.setColor(speaker === "022" ? "#f0d56a" : speaker === "系统" ? "#e46666" : "#8ed8ff");
     this.dialogueText.setText(text);
@@ -956,15 +959,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private createHud(): void {
-    this.promptText = this.add.text(480, 505, "", {
+    this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
       backgroundColor: "#10201deb",
       fontFamily: "monospace",
       fontSize: "12px",
       padding: { x: 13, y: 6 }
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(10000).setVisible(false);
+    }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10000).setVisible(false);
 
-    this.feedbackText = this.add.text(480, 76, "", {
+    this.feedbackText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.feedbackBottomY, "", {
       color: "#f4efe2",
       backgroundColor: "#101b19f2",
       fontFamily: "monospace",
@@ -972,7 +975,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       align: "center",
       wordWrap: { width: 580 },
       padding: { x: 14, y: 8 }
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(10020).setVisible(false);
+    }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10020).setVisible(false);
 
     const shadow = this.add.rectangle(5, 6, 700, 88, 0x000000, 0.45);
     const panel = this.add.rectangle(0, 0, 700, 88, 0x101b19, 0.97).setStrokeStyle(3, 0xbca55f, 0.95);
@@ -997,7 +1000,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontFamily: "monospace",
       fontSize: "10px"
     }).setOrigin(1, 0.5);
-    this.dialoguePanel = this.add.container(480, 414, [shadow, panel, accent, this.dialogueSpeaker, this.dialogueText, continueText])
+    this.dialoguePanel = this.add.container(
+      RPG_HUD_LAYOUT.centerX,
+      RPG_HUD_LAYOUT.dialogueCenterY,
+      [shadow, panel, accent, this.dialogueSpeaker, this.dialogueText, continueText]
+    )
       .setScrollFactor(0)
       .setDepth(10010)
       .setVisible(false);
