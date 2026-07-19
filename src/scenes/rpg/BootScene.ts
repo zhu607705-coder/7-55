@@ -2,11 +2,16 @@ import Phaser from "phaser";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type { GameState } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
+import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
 import type { RpgBridge } from "./RpgBridge";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
-import { preloadZijingangWorldAssets } from "./ZijingangLandmarkAssets";
+import { preloadZijingangWorldAssets, ZIJINGANG_CAMPUS_PLATE_KEY } from "./ZijingangLandmarkAssets";
 import { drawZijingangWorld, ZIJINGANG_WORLD } from "./ZijingangWorld";
 import { CAMPUS_LIBRARY_GATE, LIBRARY_CHECKPOINT_SPAWNS } from "./LibraryInteriorModel";
+import { CampusBuildingLayer } from "./CampusBuildings";
+import { CampusPathGrid, type CampusPathPoint } from "./CampusPathfinder";
+import { RpgMovementController } from "./RpgMovementController";
+import { RpgCameraController } from "./RpgCameraController";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -22,6 +27,17 @@ const CAMERA_MIN_ZOOM = 0.25;
 const CAMERA_MAX_ZOOM = 0.75;
 const CAMERA_DEFAULT_ZOOM = 0.375;
 const CAMERA_ZOOM_STEP = 0.0625;
+const CAMERA_DEADZONE_WIDTH = 300;
+const CAMERA_DEADZONE_HEIGHT = 180;
+const CAMERA_FOLLOW_OFFSET_Y = 34;
+const MINIMAP_X = 16;
+const MINIMAP_Y = 392;
+const MINIMAP_SIZE = 128;
+const MINIMAP_NAME = "campus-minimap";
+
+const CLICK_TO_MOVE_ENABLED = true;
+const PATH_DOT_RADIUS = 7;
+const PATH_ENDPOINT_RADIUS = 15;
 
 export class BootScene extends Phaser.Scene {
   private bridge!: RpgBridge;
@@ -38,9 +54,13 @@ export class BootScene extends Phaser.Scene {
   private libraryGateMarker!: Phaser.GameObjects.Arc;
   private libraryGatePrompt!: Phaser.GameObjects.Text;
   private interactRequested = false;
-  private cameraDragging = false;
-  private manualCamera = false;
-  private dragOrigin = { pointerX: 0, pointerY: 0, scrollX: 0, scrollY: 0 };
+  private buildingLayer!: CampusBuildingLayer;
+  private buildingCollisionRects = new Map<string, Phaser.GameObjects.Rectangle>();
+  private pathGrid!: CampusPathGrid;
+  private movement!: RpgMovementController;
+  private cameraController!: RpgCameraController;
+  private pathIndicatorObjects: Phaser.GameObjects.Arc[] = [];
+  private currentPathLength = 0;
 
   constructor() {
     super("campus-bootstrap");
@@ -61,6 +81,24 @@ export class BootScene extends Phaser.Scene {
       (object): object is Phaser.GameObjects.Text =>
         object instanceof Phaser.GameObjects.Text && object.getData("contextualLandmark") === true
     );
+
+    this.buildingLayer = new CampusBuildingLayer(this, ZIJINGANG_CAMPUS_PLATE_KEY);
+    const buildingOverlays = this.buildingLayer.build();
+    this.buildingCollisionRects = new Map();
+    this.buildingLayer.listBuildings().forEach((building) => {
+      const collision = this.buildingLayer.getCollisionRect(building.id);
+      if (!collision) {
+        return;
+      }
+      const rect = this.add.rectangle(collision.x, collision.y, collision.width, collision.height, 0x000000, 0)
+        .setDepth(collision.y - 10);
+      this.obstacles.add(rect);
+      this.buildingCollisionRects.set(building.id, rect);
+    });
+    this.buildingLayer.onBuildingChanged = (id) => this.syncBuildingCollisionRect(id);
+    if (import.meta.env.DEV) {
+      this.registry.set("campusBuildingLayer", this.buildingLayer);
+    }
 
     ensureRpgPlayerTextures(this);
     const state = this.bridge.getState();
@@ -85,8 +123,38 @@ export class BootScene extends Phaser.Scene {
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT") as Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
 
-    this.setupCamera();
-    this.setupCameraInput();
+    // 24px 采样格：玩家足盒宽 ~20px，16px 格会把窄于足盒的缝隙（如路缘石之间的缺口）
+    // 标为可走，寻路会把玩家卡进物理无法穿行的死角；24px 保守合并保证 nav 通道可容纳足盒。
+    this.pathGrid = new CampusPathGrid(campusRuntimeData.walkability, 24);
+    this.movement = new RpgMovementController(this.player, { walkSpeed: 220, runSpeed: 320 });
+    this.movement.onPathFinished = () => this.clearPathIndicator();
+
+    this.cameraController = new RpgCameraController(this, {
+      player: this.player,
+      world: { width: ZIJINGANG_WORLD.width, height: ZIJINGANG_WORLD.height },
+      minZoom: CAMERA_MIN_ZOOM,
+      maxZoom: CAMERA_MAX_ZOOM,
+      defaultZoom: CAMERA_DEFAULT_ZOOM,
+      zoomStep: CAMERA_ZOOM_STEP,
+      deadzone: { width: CAMERA_DEADZONE_WIDTH, height: CAMERA_DEADZONE_HEIGHT },
+      followOffsetY: CAMERA_FOLLOW_OFFSET_Y,
+      minimap: { x: MINIMAP_X, y: MINIMAP_Y, size: MINIMAP_SIZE, name: MINIMAP_NAME }
+    });
+    this.cameraController.attach();
+    this.cameraController.minimapCamera?.ignore(this.contextualLandmarkLabels);
+    this.cameraController.minimapCamera?.ignore(buildingOverlays);
+    if (CLICK_TO_MOVE_ENABLED) {
+      this.cameraController.onWorldTap = (worldX, worldY) => this.handleWorldTap(worldX, worldY);
+    }
+
+    this.playerMarker = this.add.circle(this.player.x, this.player.y, 22, 0xf0d54e, 0.94)
+      .setStrokeStyle(8, 0xffffff, 0.95)
+      .setDepth(20000);
+    this.cameras.main.ignore(this.playerMarker);
+
+    this.pathIndicatorObjects = [];
+    this.currentPathLength = 0;
+
     this.createLibraryGate();
 
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
@@ -96,9 +164,9 @@ export class BootScene extends Phaser.Scene {
           y: Number(event.payload?.y) || 0
         };
       } else if (event.name === "rpg_camera_recenter") {
-        this.resumeCameraFollow(true);
+        this.cameraController.recenter(true);
       } else if (event.name === "rpg_camera_zoom") {
-        this.changeCameraZoom(Number(event.payload?.delta) || 0);
+        this.cameraController.zoomBy(Number(event.payload?.delta) || 0);
       } else if (event.name === "rpg_interact") {
         this.interactRequested = true;
       }
@@ -106,7 +174,7 @@ export class BootScene extends Phaser.Scene {
     this.bridge.emit("rpg_booted", { scene: "campus_bootstrap" });
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
     const state = this.bridge.getState();
     this.syncCharacterNameplate(state);
     const keyboardX = Number(this.cursors.right.isDown || this.keys.D.isDown) - Number(this.cursors.left.isDown || this.keys.A.isDown);
@@ -120,29 +188,23 @@ export class BootScene extends Phaser.Scene {
     this.publishDebugState();
 
     if (!state.actOne.movementEnabled) {
+      this.movement.setManualInput(0, 0, false);
+      this.movement.clearPath();
       this.player.setVelocity(0);
       this.playerAnimator.update(new Phaser.Math.Vector2(0, 0), this.time.now);
       if ((x !== 0 || y !== 0) && !this.lockedHintShown) {
         this.lockedHintShown = true;
         this.bridge.emit("toast", { text: actOneContent.narration.locked, tone: "xiaoying" });
       }
+      this.cameraController.update(delta);
       return;
     }
 
-    const vector = new Phaser.Math.Vector2(x, y);
-    if (vector.lengthSq() > 0) {
-      const speed = this.keys.SHIFT.isDown ? 320 : 220;
-      vector.normalize().scale(speed);
-      if (this.cameraDragging && !this.input.activePointer.isDown) {
-        this.finishCameraDrag();
-      }
-      if (this.manualCamera && !this.cameraDragging) {
-        this.resumeCameraFollow(false);
-      }
-    }
-    this.player.setVelocity(vector.x, vector.y);
-    this.playerAnimator.update(vector, this.time.now);
+    this.movement.setManualInput(x, y, this.keys.SHIFT.isDown);
+    const velocity = this.movement.update(delta);
+    this.playerAnimator.update(velocity, this.time.now);
     this.player.setDepth(this.player.y + 30);
+    this.cameraController.update(delta);
   }
 
   private syncCharacterNameplate(state: GameState): void {
@@ -174,7 +236,7 @@ export class BootScene extends Phaser.Scene {
         padding: { x: 8, y: 5 }
       }
     ).setOrigin(0.5).setDepth(CAMPUS_LIBRARY_GATE.y + 90).setVisible(false);
-    this.cameras.getCamera("campus-minimap")?.ignore([this.libraryGateMarker, this.libraryGatePrompt]);
+    this.cameraController.minimapCamera?.ignore([this.libraryGateMarker, this.libraryGatePrompt]);
 
     this.tweens.add({
       targets: this.libraryGateMarker,
@@ -208,28 +270,91 @@ export class BootScene extends Phaser.Scene {
     this.interactRequested = false;
   }
 
-  private setupCamera(): void {
-    const camera = this.cameras.main;
-    camera
-      .setBounds(0, 0, ZIJINGANG_WORLD.width, ZIJINGANG_WORLD.height)
-      .setZoom(CAMERA_DEFAULT_ZOOM)
-      .startFollow(this.player, true, 0.1, 0.1, 0, 34)
-      .setDeadzone(300, 180);
-    camera.centerOn(this.player.x, this.player.y);
+  private syncBuildingCollisionRect(id: string): void {
+    const rect = this.buildingCollisionRects.get(id);
+    const collision = this.buildingLayer.getCollisionRect(id);
+    if (!rect || !collision) {
+      return;
+    }
+    rect.setPosition(collision.x, collision.y);
+    rect.setSize(collision.width, collision.height);
+    rect.setDepth(collision.y - 10);
+    (rect.body as Phaser.Physics.Arcade.StaticBody | null)?.updateFromGameObject();
+  }
 
-    const minimapSize = 128;
-    const minimap = this.cameras.add(16, 392, minimapSize, minimapSize, false, "campus-minimap");
-    minimap
-      .setBounds(0, 0, ZIJINGANG_WORLD.width, ZIJINGANG_WORLD.height)
-      .setZoom(minimapSize / ZIJINGANG_WORLD.width)
-      .setBackgroundColor(0x10171c)
-      .centerOn(ZIJINGANG_WORLD.width / 2, ZIJINGANG_WORLD.height / 2);
-    minimap.ignore(this.contextualLandmarkLabels);
+  private handleWorldTap(worldX: number, worldY: number): void {
+    if (!this.bridge.getState().actOne.movementEnabled) {
+      return;
+    }
+    // walkability 掩码描述的是足盒可站立区域，而路点需要驱动精灵锚点；
+    // 在足盒空间寻路，再换算回锚点空间喂给移动控制器，避免路点落在足盒无法到达的位置。
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    const footOffsetY = body ? body.center.y - this.player.y : 0;
+    const path = this.pathGrid.findPath(
+      { x: this.player.x, y: this.player.y + footOffsetY },
+      { x: worldX, y: worldY }
+    );
+    if (!path || path.length === 0) {
+      this.showUnreachableMarker(worldX, worldY);
+      return;
+    }
+    this.movement.setPath(path.map((point) => ({ x: point.x, y: point.y - footOffsetY })));
+    this.currentPathLength = path.length;
+    this.showPathIndicator(path);
+  }
 
-    this.playerMarker = this.add.circle(this.player.x, this.player.y, 22, 0xf0d54e, 0.94)
-      .setStrokeStyle(8, 0xffffff, 0.95)
-      .setDepth(20000);
-    camera.ignore(this.playerMarker);
+  private showPathIndicator(path: CampusPathPoint[]): void {
+    this.clearPathIndicator();
+    const points = path.length > 1 ? path.slice(1) : path;
+    points.forEach((point, index) => {
+      const isEndpoint = index === points.length - 1;
+      const dot = this.add.circle(
+        point.x,
+        point.y,
+        isEndpoint ? PATH_ENDPOINT_RADIUS : PATH_DOT_RADIUS,
+        0x1d9b75,
+        isEndpoint ? 0.16 : 0.2
+      )
+        .setStrokeStyle(isEndpoint ? 4 : 2, 0xe6d268, isEndpoint ? 0.95 : 0.8)
+        .setDepth(point.y);
+      if (isEndpoint) {
+        this.tweens.add({
+          targets: dot,
+          scale: { from: 0.86, to: 1.18 },
+          alpha: { from: 0.56, to: 1 },
+          duration: 720,
+          yoyo: true,
+          repeat: -1,
+          ease: "Stepped"
+        });
+      }
+      this.pathIndicatorObjects.push(dot);
+    });
+    this.cameraController.minimapCamera?.ignore(this.pathIndicatorObjects);
+  }
+
+  private showUnreachableMarker(x: number, y: number): void {
+    const marker = this.add.circle(x, y, 13, 0x1d9b75, 0)
+      .setStrokeStyle(3, 0xe97b70, 0.85)
+      .setDepth(y);
+    this.cameraController.minimapCamera?.ignore(marker);
+    this.tweens.add({
+      targets: marker,
+      scale: { from: 0.7, to: 1.35 },
+      alpha: { from: 0.85, to: 0 },
+      duration: 480,
+      ease: "Cubic.easeOut",
+      onComplete: () => marker.destroy()
+    });
+  }
+
+  private clearPathIndicator(): void {
+    this.pathIndicatorObjects.forEach((object) => {
+      this.tweens.killTweensOf(object);
+      object.destroy();
+    });
+    this.pathIndicatorObjects = [];
+    this.currentPathLength = 0;
   }
 
   private updateContextualLandmarkLabel(): void {
@@ -248,93 +373,6 @@ export class BootScene extends Phaser.Scene {
     }
 
     this.contextualLandmarkLabels.forEach((label) => label.setVisible(label === nearest));
-  }
-
-  private setupCameraInput(): void {
-    const camera = this.cameras.main;
-    this.input.mouse?.disableContextMenu();
-
-    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      if (!pointer.leftButtonDown()) {
-        return;
-      }
-      this.cameraDragging = true;
-      this.manualCamera = true;
-      camera.stopFollow();
-      this.dragOrigin = {
-        pointerX: pointer.x,
-        pointerY: pointer.y,
-        scrollX: camera.scrollX,
-        scrollY: camera.scrollY
-      };
-      this.game.canvas.style.cursor = "grabbing";
-    });
-
-    this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
-      if (!this.cameraDragging || !pointer.isDown) {
-        return;
-      }
-      camera.setScroll(
-        this.dragOrigin.scrollX - (pointer.x - this.dragOrigin.pointerX) / camera.zoom,
-        this.dragOrigin.scrollY - (pointer.y - this.dragOrigin.pointerY) / camera.zoom
-      );
-    });
-
-    const finishDrag = () => this.finishCameraDrag();
-    this.input.on("pointerup", finishDrag);
-    this.input.on("pointerupoutside", finishDrag);
-    window.addEventListener("pointerup", finishDrag, true);
-    window.addEventListener("pointercancel", finishDrag, true);
-    window.addEventListener("blur", finishDrag);
-
-    let cleanedUp = false;
-    const cleanupWindowDragListeners = () => {
-      if (cleanedUp) return;
-      cleanedUp = true;
-      window.removeEventListener("pointerup", finishDrag, true);
-      window.removeEventListener("pointercancel", finishDrag, true);
-      window.removeEventListener("blur", finishDrag);
-    };
-    this.events.once("shutdown", cleanupWindowDragListeners);
-    this.events.once("destroy", cleanupWindowDragListeners);
-
-    this.input.on(
-      "wheel",
-      (pointer: Phaser.Input.Pointer, _objects: Phaser.GameObjects.GameObject[], _deltaX: number, deltaY: number) => {
-        const before = camera.getWorldPoint(pointer.x, pointer.y);
-        const rawZoom = camera.zoom - deltaY * 0.00075;
-        const nextZoom = Phaser.Math.Clamp(
-          Math.round(rawZoom / CAMERA_ZOOM_STEP) * CAMERA_ZOOM_STEP,
-          CAMERA_MIN_ZOOM,
-          CAMERA_MAX_ZOOM
-        );
-        if (nextZoom === camera.zoom) {
-          return;
-        }
-        this.manualCamera = true;
-        camera.stopFollow();
-        camera.setZoom(nextZoom);
-        const after = camera.getWorldPoint(pointer.x, pointer.y);
-        camera.scrollX += before.x - after.x;
-        camera.scrollY += before.y - after.y;
-      }
-    );
-
-    this.game.canvas.style.cursor = "grab";
-  }
-
-  private finishCameraDrag(): void {
-    this.cameraDragging = false;
-    this.game.canvas.style.cursor = "grab";
-  }
-
-  private resumeCameraFollow(immediate: boolean): void {
-    this.manualCamera = false;
-    const camera = this.cameras.main;
-    camera.startFollow(this.player, true, 0.1, 0.1, 0, 34).setDeadzone(300, 180);
-    if (immediate) {
-      camera.centerOn(this.player.x, this.player.y + 34);
-    }
   }
 
   private publishDebugState(): void {
@@ -367,20 +405,13 @@ export class BootScene extends Phaser.Scene {
         scrollX: Math.round(camera.scrollX),
         scrollY: Math.round(camera.scrollY),
         zoom: Number(camera.zoom.toFixed(2)),
-        mode: this.manualCamera ? "manual" : "follow"
+        mode: this.cameraController.manualMode ? "manual" : "follow"
+      },
+      path: {
+        followingPath: this.movement.followingPath,
+        pathLength: this.currentPathLength
       }
     });
-  }
-
-  private changeCameraZoom(delta: number): void {
-    const camera = this.cameras.main;
-    const direction = Math.sign(delta);
-    const nextZoom = Phaser.Math.Clamp(camera.zoom + direction * CAMERA_ZOOM_STEP, CAMERA_MIN_ZOOM, CAMERA_MAX_ZOOM);
-    if (nextZoom === camera.zoom) {
-      return;
-    }
-    camera.setZoom(nextZoom);
-    this.resumeCameraFollow(true);
   }
 
   private addObstacle(x: number, y: number, width: number, height: number): void {

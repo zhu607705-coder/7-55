@@ -1,4 +1,5 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
+import { InventoryAcquisitionFlight, useRecentInventoryItem } from "../../components/InventoryAcquisitionFeedback";
 import { ITEM_META, PixelIcon } from "../../components/PixelIcon";
 import type { EventBus } from "../../core/EventBus";
 import type { GameState, ItemId } from "../../core/types";
@@ -44,6 +45,7 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
   const [drag, setDrag] = useState<DragState | null>(null);
   const lastItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
   const visibleItems = RPG_DOCK_ORDER.filter((itemId) => state.items[itemId]);
+  const recentItem = useRecentInventoryItem(visibleItems);
 
   if (!state.actOne.inventoryRecovered || visibleItems.length === 0) {
     return null;
@@ -137,7 +139,8 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
   }
 
   return (
-    <aside className="rpg-inventory-dock" aria-label="RPG 道具栏">
+    <aside className={`rpg-inventory-dock ${recentItem ? "is-receiving-item" : ""}`} aria-label="RPG 道具栏">
+      <InventoryAcquisitionFlight item={recentItem} className="rpg-inventory-acquisition-flight" />
       <header>
         <strong>道具</strong>
         <span>拖到场景目标</span>
@@ -147,7 +150,7 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
           <button
             key={itemId}
             type="button"
-            className={drag?.itemId === itemId ? "is-dragging" : ""}
+            className={`${drag?.itemId === itemId ? "is-dragging" : ""} ${recentItem === itemId ? "is-new-item" : ""}`.trim()}
             aria-label={`拖动${ITEM_META[itemId].name}，${isPaperItem(itemId) ? "单击" : "双击"}查看详情`}
             aria-grabbed={drag?.itemId === itemId}
             title={`${ITEM_META[itemId].name}：${ITEM_META[itemId].desc}`}

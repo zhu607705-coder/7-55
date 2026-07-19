@@ -74,7 +74,7 @@ RPG 逻辑尺寸：960 × 540
 
 1. 入口门禁与入馆记录。
 2. 信息台。
-3. 失物招领与物品身份登记机。
+3. 失物招领与物品身份盖章机。
 4. 馆藏检索终端。
 5. 打印机。
 6. 文学书架与 `I247.55` 区域。
@@ -369,7 +369,7 @@ items.itemRecognitionReport = true
 
 ## 九、P26 失物身份登记
 
-玩家返回 RPG，将“物品识别报告”拖到失物身份登记机：
+玩家返回 RPG，将“物品识别报告”拖到物品身份盖章机：
 
 ```text
 目标：lost_found_machine
@@ -389,8 +389,11 @@ rpgCheckpoint = library_front_desk
 
 动画：
 
-- 登记机指示灯连续闪烁。
-- 红色“非本人”印章落下。
+- 报告沿进纸托盘送入机器，扫描线往返核验。
+- 姓名、学号、人格三个核验灯依次更新。
+- 压章头与侧面手柄同步下压，纸面出现红色“非本人”章。
+- 报告从出纸口退出，再飞入 RPG 道具栏。
+- 剧情对白延后到出纸完成后显示，不能遮挡压章和出纸过程。
 - 播放 `fx_nonperson_stamp_v2`。
 
 ## 十、P27 022 座位小票
@@ -430,7 +433,7 @@ items.rightArrow = true
 | 字段 | 正确值 | 来源 |
 | --- | ---: | --- |
 | 到座耗时 | `7` | 入馆记录 |
-| 公示楼层 | `47` | CC98 调查帖 |
+| 公示编号 | `47` | CC98 调查帖第 23 楼楼主编辑 |
 | 证明数量 | `3` | 旧版离座规则 |
 
 错误提交：
@@ -453,7 +456,7 @@ items.libraryPresenceProof = true
 音效：`fx_nonperson_stamp_v2` 以不同播放速度复用。  
 旁白：`vo_tiyi_presence_proof_issued`。
 
-## 十二、P29 CC98 证据公示与 bd
+## 十二、P29 CC98 证据公示与 BD 四位口令
 
 ### 四项上传材料
 
@@ -467,41 +470,51 @@ items.libraryPresenceProof = true
 第四项上传完成：
 
 ```text
-phase: evidence_gathering → top_ten_rising
+phase: evidence_gathering → bd_briefing
 事件：cc98_evidence_set_completed
 ```
 
-### 五条回复
+剧情先明确：`bd` 表示“帮顶”；对数字回复点击 `bd` 会把该数字写入四位热度口令。
 
-CC98 显示 `A / B / C / D / E` 五条可选回复。有效回复为：
-
-```text
-A：核对 022 座位小票
-C：核对本人来过证明
-E：核对书包非本人证明
-```
-
-`B` 与 `D` 只显示论坛反馈，不推进排名。
-
-排名变化：
+玩家确认说明后：
 
 ```text
-初始：04
-第一次有效 bd：03
-第二次有效 bd：02
-第三次有效 bd：01
+phase: bd_briefing → top_ten_rising
+事件：cc98_pre_bd_briefing_completed
 ```
 
-三条有效回复必须互不重复。达到 `01`：
+### 八条数字回复
+
+四项上传材料从上到下给出口令顺序：
+
+```text
+旧版规则要求数量 → 3
+身份通过项数量 → 0
+022 座位号末位 → 2
+到座耗时 → 7
+```
+
+候选回复位于 `24–31` 楼，显示 `4 / 3 / 1 / 0 / 5 / 2 / 6 / 7` 八个数字及各自来源。玩家通过回复上的 `bd 选入` 按钮依次填充四个口令槽。
+
+共享状态新增：
+
+```text
+bdSelectedPostIds
+bdPasswordAttemptCount
+```
+
+控制器校验完整选择序列。错误提交清空选择并按尝试次数返回渐进提示；正确序列 `3027`：
 
 ```text
 phase: top_ten_rising → top_ten_reached
+rank: 04 → 01
 事件：cc98_top_ten_reached
 ```
 
 演出：
 
-- 每次有效 bd 显示排名面板。
+- 每次选入数字执行回复锁定与口令槽落位动画。
+- 错误提交执行口令框抖动，低动态偏好直接显示稳定状态。
 - 排名 `01` 触发高优先级演出。
 - 播放 `fx_evidence_upload_v2` 与 `fx_pass_stamp_v2`。
 - 配乐使用 `music_cc98_publicity_v2`。
@@ -623,8 +636,9 @@ clueIds += borrowed_attendance_record
 | `library_route_unlocked` | `actOne.canLeaveDorm` | 进入图书馆 | `library_entered` |
 | `library_entered` | 图书馆场景启动 | 读入馆记录、检查书包 | `occupied_seat_found` |
 | `occupied_seat_found` | 已检查书包 | 拿占座纸条 | `evidence_gathering` |
-| `evidence_gathering` | 已取得纸条 | 收集四项证据 | `top_ten_rising` |
-| `top_ten_rising` | 四项证据已上传 | 有效 bd 三次 | `top_ten_reached` |
+| `evidence_gathering` | 已取得纸条 | 收集并上传四项证据 | `bd_briefing` |
+| `bd_briefing` | 四项证据已上传 | 确认 BD 与口令说明 | `top_ten_rising` |
+| `top_ten_rising` | 四项证据已上传 | 完成 BD 四位口令 | `top_ten_reached` |
 | `top_ten_reached` | 排名 01 | 打开恢复申请 | `recovery_application` |
 | `recovery_application` | 申请已开放 | 提交三项材料、生成 PASS | `pass_ready` |
 | `pass_ready` | PASS 已签发 | 在 RPG 对书包使用 PASS | `backpack_removed` |
@@ -729,7 +743,7 @@ src/data/library-finals.content.json
 
 - CC98 帖子标题、作者、正文、主线楼层和可选 `ac01`。
 - 五本馆藏的题名、作者、索书号、年份、出版社、位置和说明。
-- 五条 bd 选项。
+- 八条 BD 数字候选回复、四项顺序提示和四位口令内容。
 - 14 条旁白字幕。
 - 022 完整对话。
 
@@ -781,8 +795,8 @@ npm run test:run
 - 五本书同时显示，四个混淆项无进度。
 - 5 条可选 `ac01` 不构成门槛。
 - 四项证据必须齐全。
-- 仅 A / C / E 有效。
-- 排名 `04 → 03 → 02 → 01`。
+- 仅按四项证据顺序选择的 `3 / 0 / 2 / 7` 有效。
+- 排名 `04 → 01`。
 - 补录仅接受 `7 / 47 / 3`。
 - PASS 只在 RPG 对书包生效。
 - 右移箭头使用后保留。

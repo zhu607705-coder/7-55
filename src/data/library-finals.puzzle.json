@@ -5,7 +5,12 @@
   "catalogQuery": "三分钟离座法",
   "callNumber": "I247.55 / 755",
   "photoMaxBrightness": 20,
-  "bdRequired": 3,
+  "bdPasswordPostIds": [
+    "bd-rule-count",
+    "bd-identity-zero",
+    "bd-seat-tail",
+    "bd-arrival-minutes"
+  ],
   "audit": {
     "arrivalMinutes": 7,
     "publicNoticeFloor": 47,

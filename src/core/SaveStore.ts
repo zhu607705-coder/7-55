@@ -4,6 +4,7 @@ import type {
   BikeArcadeChapterState,
   GameState,
   LibraryEvidenceId,
+  LibraryFinalsBdPostId,
   LibraryFinalsBdReplyId,
   LibraryFinalsPhase,
   LibraryFinalsPuzzleState,
@@ -73,6 +74,13 @@ const VALID_LIBRARY_RECOVERY_EVIDENCE_IDS = new Set<LibraryRecoveryEvidenceId>([
 const VALID_BD_REPLY_IDS = new Set<LibraryFinalsBdReplyId>([
   "reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"
 ]);
+const VALID_BD_POST_IDS = new Set<LibraryFinalsBdPostId>([
+  "bd-notice-tens", "bd-rule-count", "bd-rank-first", "bd-identity-zero",
+  "bd-call-number-tail", "bd-seat-tail", "bd-reply-count", "bd-arrival-minutes"
+]);
+const COMPLETED_BD_POST_IDS: LibraryFinalsBdPostId[] = [
+  "bd-rule-count", "bd-identity-zero", "bd-seat-tail", "bd-arrival-minutes"
+];
 const VALID_LOST_FOUND_STAGES = new Set<LostFoundStage>(["missing_report", "ready", "scanning", "stamped"]);
 const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>([
   "chapter_one", "chapter_two", "chapter_three"
@@ -432,6 +440,8 @@ function normalizeConsumedItems(items: GameState["items"], ui: GameState["ui"]):
 
 function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzzleState): LibraryFinalsPuzzleState {
   const saved = asRecord(value);
+  const bdCount = bdCountOr(saved.bdCount, initial.bdCount);
+  const bdSelectedPostIds = stringArrayFromSet(saved.bdSelectedPostIds, VALID_BD_POST_IDS, initial.bdSelectedPostIds).slice(0, 4);
   return {
     libraryVisitedPoints: stringArrayFromSet(saved.libraryVisitedPoints, VALID_LIBRARY_LOCATION_IDS, initial.libraryVisitedPoints),
     entranceRecordRead: booleanOr(saved.entranceRecordRead, initial.entranceRecordRead),
@@ -462,8 +472,10 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
     presenceProofCollected: booleanOr(saved.presenceProofCollected, initial.presenceProofCollected),
     cc98UploadedEvidenceIds: stringArrayFromSet(saved.cc98UploadedEvidenceIds, VALID_LIBRARY_EVIDENCE_IDS, initial.cc98UploadedEvidenceIds),
     preBdBriefingSeen: booleanOr(saved.preBdBriefingSeen, initial.preBdBriefingSeen),
-    bdCount: bdCountOr(saved.bdCount, initial.bdCount),
+    bdCount,
     appliedBdReplyIds: stringArrayFromSet(saved.appliedBdReplyIds, VALID_BD_REPLY_IDS, initial.appliedBdReplyIds),
+    bdSelectedPostIds: bdCount >= 3 && bdSelectedPostIds.length === 0 ? [...COMPLETED_BD_POST_IDS] : bdSelectedPostIds,
+    bdPasswordAttemptCount: nonNegativeIntegerOr(saved.bdPasswordAttemptCount, initial.bdPasswordAttemptCount),
     recoverySubmittedEvidenceIds: stringArrayFromSet(saved.recoverySubmittedEvidenceIds, VALID_LIBRARY_RECOVERY_EVIDENCE_IDS, initial.recoverySubmittedEvidenceIds),
     evictionPassGenerated: booleanOr(saved.evictionPassGenerated, initial.evictionPassGenerated),
     backpackEvicted: booleanOr(saved.backpackEvicted, initial.backpackEvicted),
@@ -500,6 +512,8 @@ function completedLegacyPuzzle(initial: LibraryFinalsPuzzleState): LibraryFinals
     preBdBriefingSeen: true,
     bdCount: 3,
     appliedBdReplyIds: ["reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"],
+    bdSelectedPostIds: [...COMPLETED_BD_POST_IDS],
+    bdPasswordAttemptCount: 1,
     recoverySubmittedEvidenceIds: ["bag_non_person_proof", "seat_022_receipt", "library_presence_proof"],
     evictionPassGenerated: true,
     backpackEvicted: true,

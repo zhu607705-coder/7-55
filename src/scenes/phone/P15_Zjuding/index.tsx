@@ -443,6 +443,7 @@ function SeatMap({
 /** 浙大钉与图书馆：统一使用 430×860 手机画布，新增页面均由原生 React/CSS 组成。 */
 export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const [phase, setPhase] = useState<"loading" | "ready">("loading");
+  const [entryOnCampusWifi] = useState(() => kit.network.canOpenZjuding());
   const [stuckHint, setStuckHint] = useState(false);
   const [overlay, setOverlay] = useState<OverlayState>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -477,7 +478,6 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const directoryScanTimerRef = useRef<number | null>(null);
   const recoveryAnimationTimerRef = useRef<number | null>(null);
   const passPrintTimerRef = useRef<number | null>(null);
-  const onCampusWifi = state.networkMode === "campus_wifi";
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
   const access = selectFeatureAccess(state);
@@ -502,17 +502,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       return undefined;
     }
 
-    if (onCampusWifi) {
+    if (entryOnCampusWifi) {
       const timer = window.setTimeout(() => setPhase("ready"), LOAD_DELAY_MS);
       return () => window.clearTimeout(timer);
     }
 
     const timer = window.setTimeout(() => {
       setStuckHint(true);
-      kit.flags.toast("请连接校园网。", "system");
+      kit.flags.toast("请连接校园网后重新进入浙大钉。", "system");
     }, STUCK_HINT_MS);
     return () => window.clearTimeout(timer);
-  }, [phase, onCampusWifi]);
+  }, [phase, entryOnCampusWifi]);
 
   useEffect(() => {
     if (phase !== "ready" || actOnePhase !== "reservation_briefing_required" || systemDialogue) {
@@ -939,14 +939,14 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <div className="app-bg-crop zjuding-loading-crop">
           <img className="app-bg" src={zjudingLoadingUrl} alt="" aria-hidden="true" />
         </div>
-        {!onCampusWifi ? (
+        {!entryOnCampusWifi ? (
           <div className="zjuding-stuck">
             <span className="loading-dots" aria-hidden="true">
               <i />
               <i />
               <i />
             </span>
-            {stuckHint ? <p className="px-chip stuck-chip">转啊转啊转……（请连接校园网）</p> : null}
+            {stuckHint ? <p className="px-chip stuck-chip">请连接校园网后重新进入</p> : null}
           </div>
         ) : null}
         <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>
@@ -1674,9 +1674,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           <div className="zju-system-orb" aria-hidden="true"><span>求</span><i /></div>
           <section
             key={`${systemDialogue}-${systemDialogueIndex}`}
-            className={`zju-system-dialogue is-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker} is-line-entering`}
+            className={`zju-system-dialogue game-subtitle-frame subtitle-tone-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker} is-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker} is-line-entering`}
           >
-            <small>{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker === "system" ? "系统" : "我"}</small>
+            <small className="game-subtitle-speaker">{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker === "system" ? "系统" : "我"}</small>
             <p>{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].text}</p>
             <button type="button" aria-label="继续对话" onClick={advanceSystemDialogue}>›</button>
           </section>

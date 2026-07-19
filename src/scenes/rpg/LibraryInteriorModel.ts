@@ -158,7 +158,7 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     width: 108,
     height: 126,
     proximity: 112,
-    label: "失物身份登记机",
+    label: "物品身份盖章机",
     location: "lost_found",
     checkpoint: "library_front_desk",
     acceptedItem: "itemRecognitionReport"

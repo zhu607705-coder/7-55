@@ -1,13 +1,11 @@
 import type {
   LibraryEvidenceId,
   LibraryFinalsAuditValues,
+  LibraryFinalsBdPostId,
   LibraryFinalsBdReplyId,
-  LibraryFinalsPuzzleState,
   LibraryRecoveryEvidenceId
 } from "../../core/types";
 import puzzleConfig from "../../data/library-finals.puzzle.json";
-
-type BdRequired = Exclude<LibraryFinalsPuzzleState["bdCount"], 0>;
 
 export interface LibraryFinalsPuzzleConfigView {
   readonly targetSeat: string;
@@ -16,7 +14,7 @@ export interface LibraryFinalsPuzzleConfigView {
   readonly catalogQuery: string;
   readonly callNumber: string;
   readonly photoMaxBrightness: number;
-  readonly bdRequired: BdRequired;
+  readonly bdPasswordPostIds: readonly LibraryFinalsBdPostId[];
   readonly audit: Readonly<LibraryFinalsAuditValues>;
   readonly requiredEvidence: readonly LibraryEvidenceId[];
   readonly recoveryEvidence: readonly LibraryRecoveryEvidenceId[];
@@ -33,17 +31,20 @@ const RECOVERY_EVIDENCE_IDS = new Set<LibraryRecoveryEvidenceId>([
   "seat_022_receipt",
   "library_presence_proof"
 ]);
+const BD_POST_IDS = new Set<LibraryFinalsBdPostId>([
+  "bd-notice-tens",
+  "bd-rule-count",
+  "bd-rank-first",
+  "bd-identity-zero",
+  "bd-call-number-tail",
+  "bd-seat-tail",
+  "bd-reply-count",
+  "bd-arrival-minutes"
+]);
 
 function positiveInteger(value: number, field: string): number {
   if (!Number.isInteger(value) || value <= 0) {
     throw new Error(`library-finals.puzzle.json contains an invalid ${field}`);
-  }
-  return value;
-}
-
-function bdRequired(value: number): BdRequired {
-  if (value !== 1 && value !== 2 && value !== 3) {
-    throw new Error("library-finals.puzzle.json contains an invalid bdRequired");
   }
   return value;
 }
@@ -62,6 +63,13 @@ function recoveryEvidenceList(values: readonly string[]): readonly LibraryRecove
   return Object.freeze(values as LibraryRecoveryEvidenceId[]);
 }
 
+function bdPasswordPostList(values: readonly string[]): readonly LibraryFinalsBdPostId[] {
+  if (values.length !== 4 || !values.every((value) => BD_POST_IDS.has(value as LibraryFinalsBdPostId))) {
+    throw new Error("library-finals.puzzle.json contains an invalid bdPasswordPostIds");
+  }
+  return Object.freeze(values as LibraryFinalsBdPostId[]);
+}
+
 export const LIBRARY_FINALS_PUZZLE_CONFIG: LibraryFinalsPuzzleConfigView = Object.freeze({
   targetSeat: puzzleConfig.targetSeat,
   threadFloorCount: positiveInteger(puzzleConfig.threadFloorCount, "threadFloorCount"),
@@ -69,7 +77,7 @@ export const LIBRARY_FINALS_PUZZLE_CONFIG: LibraryFinalsPuzzleConfigView = Objec
   catalogQuery: puzzleConfig.catalogQuery,
   callNumber: puzzleConfig.callNumber,
   photoMaxBrightness: puzzleConfig.photoMaxBrightness,
-  bdRequired: bdRequired(puzzleConfig.bdRequired),
+  bdPasswordPostIds: bdPasswordPostList(puzzleConfig.bdPasswordPostIds),
   audit: Object.freeze({ ...puzzleConfig.audit }),
   requiredEvidence: evidenceList(puzzleConfig.requiredEvidence),
   recoveryEvidence: recoveryEvidenceList(puzzleConfig.recoveryEvidence)
@@ -83,6 +91,15 @@ export const LIBRARY_FINALS_VALID_BD_REPLY_IDS = Object.freeze([
 
 export function isLibraryFinalsBdReplyId(value: string): value is LibraryFinalsBdReplyId {
   return LIBRARY_FINALS_VALID_BD_REPLY_IDS.includes(value as LibraryFinalsBdReplyId);
+}
+
+export function isLibraryFinalsBdPostId(value: string): value is LibraryFinalsBdPostId {
+  return BD_POST_IDS.has(value as LibraryFinalsBdPostId);
+}
+
+export function validateBdPassword(values: readonly LibraryFinalsBdPostId[]): boolean {
+  const expected = LIBRARY_FINALS_PUZZLE_CONFIG.bdPasswordPostIds;
+  return values.length === expected.length && expected.every((value, index) => values[index] === value);
 }
 
 export function isLibraryEvidenceId(value: string): value is LibraryEvidenceId {

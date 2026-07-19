@@ -94,7 +94,6 @@ export function PhoneShell({
   const inventorySuppressed = ["friend_message_required", "system_required", "inventory_required"].includes(
     state.actOne.phase
   );
-  const hasInventoryItem = Object.values(state.items).some(Boolean) && !inventorySuppressed;
   // 音乐全局播放（不局限于控制中心打开时）
   useChiptune(state.ui.musicPlaying);
 
@@ -151,11 +150,11 @@ export function PhoneShell({
                 onNavigate={onTaskNavigate}
               />
             ) : null}
-            {!bare && hasInventoryItem ? <InventoryBar state={state} /> : null}
+            {!bare && !inventorySuppressed ? <InventoryBar state={state} /> : null}
             <div className="brightness-veil" style={{ opacity: veilOpacity }} aria-hidden="true" />
             <ControlCenter state={state} />
             {showGlobalLayers ? <PresentationLayer events={events} /> : null}
-            {showGlobalLayers ? <ToastLayer events={events} state={state} /> : null}
+            {showGlobalLayers ? <ToastLayer events={events} state={state} surface="phone" /> : null}
           </section>
         </div>
       </section>

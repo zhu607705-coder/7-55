@@ -6,6 +6,7 @@ import type { GameState, ItemId } from "../core/types";
 import { kit } from "../modules/GameKit";
 import { ItemInspectDialog } from "./ItemInspectDialog";
 import { ITEM_META, PixelIcon } from "./PixelIcon";
+import { InventoryAcquisitionFlight, useRecentInventoryItem } from "./InventoryAcquisitionFeedback";
 import { isPaperItem } from "../data/itemCatalog";
 import { PHONE_VIEWPORT_HEIGHT } from "./PhoneViewport";
 
@@ -148,7 +149,6 @@ function closestDropTarget(selector: string, x: number, y: number) {
 export function InventoryBar({ state }: InventoryBarProps) {
   const [ghost, setGhost] = useState<DragGhost | null>(null);
   const [inspectedItem, setInspectedItem] = useState<ItemId | null>(null);
-  const [recentItem, setRecentItem] = useState<ItemId | null>(null);
   const [barTop, setBarTop] = useState(INVENTORY_TOP_DEFAULT);
   const [barDragging, setBarDragging] = useState(false);
   const [scrollDragging, setScrollDragging] = useState(false);
@@ -162,7 +162,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
   const ghostRef = useRef<HTMLDivElement>(null);
   const open = state.ui.inventoryOpen;
   const owned = ITEM_ORDER.filter((id) => state.items[id]);
-  const previousOwnedRef = useRef<Set<ItemId>>(new Set(owned));
+  const recentItem = useRecentInventoryItem(owned);
   const showCheckinDigits = selectFeatureAccess(state).chapter === "chapter_one";
   const digitSlots = [state.digits.d1, state.digits.d2, state.digits.d3, state.digits.d4];
   const acquiredDigitCount = digitSlots.filter(Boolean).length;
@@ -179,19 +179,6 @@ export function InventoryBar({ state }: InventoryBarProps) {
   useEffect(() => {
     setBarTop((top) => clampBarTop(top));
   }, [open, owned.length]);
-
-  useEffect(() => {
-    const previousOwned = previousOwnedRef.current;
-    const addedItem = owned.find((item) => !previousOwned.has(item)) ?? null;
-    previousOwnedRef.current = new Set(owned);
-    if (!addedItem) {
-      return undefined;
-    }
-
-    setRecentItem(addedItem);
-    const timer = window.setTimeout(() => setRecentItem(null), 1150);
-    return () => window.clearTimeout(timer);
-  }, [owned.join("|")]);
 
   function toggleOpen() {
     kit.flags.setUi("inventoryOpen", !open);
@@ -420,6 +407,10 @@ export function InventoryBar({ state }: InventoryBarProps) {
     };
   });
 
+  if (owned.length === 0) {
+    return null;
+  }
+
   const ghostElement = ghost?.moved ? (
     <div
       ref={ghostRef}
@@ -443,12 +434,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
       >
-        {recentItem ? (
-          <span className="inv-acquisition-flight" aria-hidden="true">
-            <PixelIcon name={recentItem} size={28} />
-            <i /><i /><i />
-          </span>
-        ) : null}
+        <InventoryAcquisitionFlight item={recentItem} className="inv-acquisition-flight" />
         <button
           type="button"
           className="inv-handle"

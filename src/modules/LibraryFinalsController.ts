@@ -4,7 +4,7 @@ import type {
   ItemId,
   LibraryEvidenceId,
   LibraryFinalsAuditValues,
-  LibraryFinalsBdReplyId,
+  LibraryFinalsBdPostId,
   LibraryFinalsPhase,
   LibraryFinalsPuzzleState,
   LibraryLocationId,
@@ -16,11 +16,12 @@ import {
   hasAllEvidence,
   hasRecoveryEvidence,
   isLibraryEvidenceId,
-  isLibraryFinalsBdReplyId,
+  isLibraryFinalsBdPostId,
   isLibraryRecoveryEvidenceId,
   isCatalogClueQuery,
   isPhotoReadable,
   LIBRARY_FINALS_PUZZLE_CONFIG,
+  validateBdPassword,
   validateAudit
 } from "./library-finals/puzzleRules";
 
@@ -352,17 +353,17 @@ export class LibraryFinalsController {
 
   useRightArrowOnReceipt(): boolean {
     const state = this.store.getState();
+    const phase = this.getPhase();
     const puzzle = this.getPuzzle();
     if (
-      this.getPhase() !== "evidence_gathering"
-      || !puzzle.investigationOpened
-      || !puzzle.backpackInspected
+      state.runtimeMode !== "rpg"
+      || state.rpgScene !== "library_interior"
       || !state.items.rightArrow
       || puzzle.seatReceiptCollected
     ) {
       return false;
     }
-    this.patchGame("evidence_gathering", {
+    this.patchGame(phase, {
       seatReceiptCollected: true,
       libraryVisitedPoints: addUnique(puzzle.libraryVisitedPoints, "seat_022")
     }, { rpgCheckpoint: "library_seat_022" }, { seat022Receipt: true });
@@ -457,28 +458,82 @@ export class LibraryFinalsController {
     return this.acknowledgeBdBriefing();
   }
 
-  applyBd(replyId: LibraryFinalsBdReplyId): boolean {
+  selectBdPost(postId: LibraryFinalsBdPostId): boolean {
     const puzzle = this.getPuzzle();
     if (
       this.getPhase() !== "top_ten_rising"
       || !hasAllEvidence(puzzle.cc98UploadedEvidenceIds)
       || !puzzle.preBdBriefingSeen
-      || !isLibraryFinalsBdReplyId(replyId)
-      || puzzle.appliedBdReplyIds.includes(replyId)
-      || puzzle.bdCount >= LIBRARY_FINALS_PUZZLE_CONFIG.bdRequired
+      || !isLibraryFinalsBdPostId(postId)
+      || puzzle.bdSelectedPostIds.includes(postId)
+      || puzzle.bdSelectedPostIds.length >= LIBRARY_FINALS_PUZZLE_CONFIG.bdPasswordPostIds.length
+      || puzzle.bdCount >= 3
     ) {
       return false;
     }
-    const bdCount = (puzzle.bdCount + 1) as LibraryFinalsPuzzleState["bdCount"];
-    const complete = bdCount === LIBRARY_FINALS_PUZZLE_CONFIG.bdRequired;
-    this.patchFinals(complete ? "top_ten_reached" : "top_ten_rising", {
-      bdCount,
-      appliedBdReplyIds: [...puzzle.appliedBdReplyIds, replyId]
+    const selected = [...puzzle.bdSelectedPostIds, postId];
+    this.patchFinals("top_ten_rising", {
+      bdSelectedPostIds: selected
     });
-    this.events.emit(complete ? "cc98_top_ten_reached" : "cc98_bd_applied", {
-      replyId,
-      bdCount,
-      rank: String(4 - bdCount).padStart(2, "0")
+    this.events.emit("cc98_bd_post_selected", {
+      postId,
+      selectedCount: selected.length
+    });
+    return true;
+  }
+
+  undoBdPost(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "top_ten_rising" || puzzle.bdSelectedPostIds.length === 0 || puzzle.bdCount >= 3) {
+      return false;
+    }
+    this.patchFinals("top_ten_rising", {
+      bdSelectedPostIds: puzzle.bdSelectedPostIds.slice(0, -1)
+    });
+    this.events.emit("cc98_bd_post_undone");
+    return true;
+  }
+
+  clearBdPassword(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "top_ten_rising" || puzzle.bdSelectedPostIds.length === 0 || puzzle.bdCount >= 3) {
+      return false;
+    }
+    this.patchFinals("top_ten_rising", { bdSelectedPostIds: [] });
+    this.events.emit("cc98_bd_password_cleared");
+    return true;
+  }
+
+  submitBdPassword(): boolean {
+    const puzzle = this.getPuzzle();
+    if (
+      this.getPhase() !== "top_ten_rising"
+      || !hasAllEvidence(puzzle.cc98UploadedEvidenceIds)
+      || !puzzle.preBdBriefingSeen
+      || puzzle.bdSelectedPostIds.length !== LIBRARY_FINALS_PUZZLE_CONFIG.bdPasswordPostIds.length
+      || puzzle.bdCount >= 3
+    ) {
+      return false;
+    }
+    const attempt = puzzle.bdPasswordAttemptCount + 1;
+    if (!validateBdPassword(puzzle.bdSelectedPostIds)) {
+      this.patchFinals("top_ten_rising", {
+        bdSelectedPostIds: [],
+        bdPasswordAttemptCount: attempt
+      });
+      this.events.emit("cc98_bd_password_rejected", { attempt });
+      return false;
+    }
+    this.patchFinals("top_ten_reached", {
+      bdCount: 3,
+      appliedBdReplyIds: ["reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"],
+      bdSelectedPostIds: [...puzzle.bdSelectedPostIds],
+      bdPasswordAttemptCount: attempt
+    });
+    this.events.emit("cc98_top_ten_reached", {
+      bdCount: 3,
+      selectedPostIds: puzzle.bdSelectedPostIds,
+      rank: "01"
     });
     return true;
   }

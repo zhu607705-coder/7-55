@@ -65,8 +65,6 @@ export class DormHubScene extends Phaser.Scene {
   private playerAnimator!: RpgPlayerAnimator;
   private characterName!: Phaser.GameObjects.Text;
   private interactionPrompt!: Phaser.GameObjects.Text;
-  private feedbackText!: Phaser.GameObjects.Text;
-  private feedbackTween?: Phaser.Tweens.Tween;
   private campusCardPickup?: Phaser.GameObjects.Container;
   private curtainLeft!: Phaser.GameObjects.Rectangle;
   private curtainRight!: Phaser.GameObjects.Rectangle;
@@ -265,17 +263,6 @@ export class DormHubScene extends Phaser.Scene {
       strokeThickness: 2
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10000).setVisible(false);
 
-    this.feedbackText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.feedbackBottomY, "", {
-      color: "#eef7f3",
-      backgroundColor: "#10212be8",
-      fontFamily: "monospace",
-      fontSize: "14px",
-      align: "center",
-      wordWrap: { width: 620 },
-      padding: { x: 12, y: 8 },
-      stroke: "#091014",
-      strokeThickness: 2
-    }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10000).setAlpha(0);
   }
 
   private createCampusCardPickup(): void {
@@ -510,17 +497,7 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private showFeedback(text: string): void {
-    this.feedbackTween?.stop();
-    this.feedbackText.setText(text).setAlpha(0).setVisible(true);
-    this.feedbackTween = this.tweens.add({
-      targets: this.feedbackText,
-      alpha: { from: 0, to: 1 },
-      duration: 120,
-      hold: 2300,
-      yoyo: true,
-      ease: "Stepped",
-      onComplete: () => this.feedbackText.setVisible(false)
-    });
+    this.bridge.emit("rpg_subtitle", { text, tone: "system", durationMs: 3000 });
   }
 
   private tryExitDorm(): void {

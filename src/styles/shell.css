@@ -1073,12 +1073,15 @@
   .quest-digit-acquisition,
   .quest-digit-acquisition i,
   .inventory-bar.is-receiving-item .inv-handle,
+  .rpg-inventory-dock.is-receiving-item,
+  .rpg-inventory-items button.is-new-item,
   .inv-slot.is-new-item {
     animation-duration: 1ms !important;
     transform: none !important;
   }
 
-  .inv-acquisition-flight {
+  .inv-acquisition-flight,
+  .rpg-inventory-acquisition-flight {
     display: none;
   }
 }

@@ -1,32 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import type { EventBus } from "../core/EventBus";
-import { selectIdentityReadable } from "../core/IdentityAccess";
 import type { GameState } from "../core/types";
-import actOneContent from "../data/act-one-bootstrap.content.json";
+import { GameSubtitleFrame, type GameSubtitleTone } from "./GameSubtitleFrame";
 
 interface Toast {
   id: number;
   text: string;
   tone: "system" | "xiaoying" | "task";
+  durationMs: number;
 }
 
 interface ToastLayerProps {
   events: EventBus;
   state: GameState;
+  surface?: "phone" | "rpg";
 }
 
-function visibleToastText(text: string, identityReadable: boolean): string {
-  if (identityReadable) return text;
-  return text
-    .replaceAll(actOneContent.studentName, "身份信息")
-    .replaceAll(actOneContent.studentId, "身份编号");
-}
+const SUBTITLE_TONE_BY_TOAST: Readonly<Record<Toast["tone"], GameSubtitleTone>> = {
+  system: "system",
+  xiaoying: "narrator",
+  task: "task"
+};
 
 /** 全局像素气泡：系统吐槽 / 小影台词 / 任务更新共用。订阅 eventBus 的 toast 事件。 */
-export function ToastLayer({ events, state }: ToastLayerProps) {
+export function ToastLayer({ events, state, surface = "phone" }: ToastLayerProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(1);
-  const identityReadable = selectIdentityReadable(state);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -41,7 +40,7 @@ export function ToastLayer({ events, state }: ToastLayerProps) {
 
       const id = nextId.current++;
       const durationMs = Number(event.payload?.durationMs) || (tone === "task" ? 4200 : 3000);
-      setToasts((prev) => [...prev.slice(-2), { id, text, tone }]);
+      setToasts((prev) => [...prev.slice(-2), { id, text, tone, durationMs }]);
       window.setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, durationMs);
@@ -53,12 +52,16 @@ export function ToastLayer({ events, state }: ToastLayerProps) {
   }
 
   return (
-    <div className="toast-layer" role="status" aria-live="polite">
+    <div className={`toast-layer subtitle-layer--${surface}`} role="status" aria-live="polite" aria-atomic="true">
       {toasts.map((toast) => (
-        <p key={toast.id} className={`px-toast tone-${toast.tone}`}>
-          {toast.tone === "task" ? "📌 " : null}
-          {visibleToastText(toast.text, identityReadable)}
-        </p>
+        <GameSubtitleFrame
+          key={toast.id}
+          text={toast.text}
+          tone={SUBTITLE_TONE_BY_TOAST[toast.tone]}
+          state={state}
+          durationMs={toast.durationMs}
+          className={`px-toast tone-${toast.tone}`}
+        />
       ))}
     </div>
   );

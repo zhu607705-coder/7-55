@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import type {
   LibraryEvidenceId,
-  LibraryFinalsBdReplyId,
+  LibraryFinalsBdPostId,
   LibraryFinalsPhase
 } from "../../../core/types";
 import type { EventBus } from "../../../core/EventBus";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
 import { kit } from "../../../modules/GameKit";
-import { isLibraryEvidenceId, isLibraryFinalsBdReplyId } from "../../../modules/library-finals/puzzleRules";
+import { isLibraryEvidenceId, isLibraryFinalsBdPostId } from "../../../modules/library-finals/puzzleRules";
 
 interface TopTenRisePuzzleProps {
-  appliedReplyIds: LibraryFinalsBdReplyId[];
+  selectedPostIds: LibraryFinalsBdPostId[];
+  passwordAttemptCount: number;
   bdCount: 0 | 1 | 2 | 3;
   phase: LibraryFinalsPhase;
   ownedEvidenceIds: LibraryEvidenceId[];
@@ -28,27 +29,36 @@ const EVIDENCE: Array<{ id: LibraryEvidenceId; label: string; source: string }> 
       : []
   ));
 
-type ReplyOption = {
-  key: "A" | "B" | "C" | "D" | "E";
+type BdPasswordPost = {
+  id: LibraryFinalsBdPostId;
+  floor: number;
+  digit: string;
   author: string;
   text: string;
-  requirement: string;
-  replyId?: LibraryFinalsBdReplyId;
-  rejection?: string;
 };
 
-const REPLIES: ReplyOption[] = libraryFinalsContent.cc98.bdOptions.map((option) => ({
-  key: option.key as ReplyOption["key"],
-  author: option.author,
-  text: option.text,
-  requirement: option.requirement,
-  replyId: option.valid && isLibraryFinalsBdReplyId(option.id) ? option.id : undefined,
-  rejection: option.rejection ?? undefined
-}));
+const BD_PASSWORD = libraryFinalsContent.cc98.bdPassword;
+const BD_POSTS: BdPasswordPost[] = BD_PASSWORD.posts.flatMap((post) => (
+  isLibraryFinalsBdPostId(post.id)
+    ? [{ id: post.id, floor: post.floor, digit: post.digit, author: post.author, text: post.text }]
+    : []
+));
+const BD_DIGIT_BY_POST = new Map(BD_POSTS.map((post) => [post.id, post.digit]));
 
-/** 证据上传和 bd 只调用领域命令；排名、道具与解锁由控制器完成。 */
+function passwordHint(attempt: number): string {
+  if (attempt <= 1) {
+    return "口令顺序跟随上方证据上传栏，从旧版规则开始逐项核对。";
+  }
+  if (attempt === 2) {
+    return "四项操作依次是：数规则条目、数身份通过项、取座位末位、取到座耗时。";
+  }
+  return "检查回复引用的材料。公示编号、目标排名、索书号和回复总数都不属于这四项。";
+}
+
+/** 证据上传和 BD 口令只调用领域命令；选择、排名与解锁由控制器完成。 */
 export function TopTenRisePuzzle({
-  appliedReplyIds,
+  selectedPostIds,
+  passwordAttemptCount,
   bdCount,
   phase,
   ownedEvidenceIds,
@@ -63,15 +73,19 @@ export function TopTenRisePuzzle({
   const [uploadAnimatingId, setUploadAnimatingId] = useState<LibraryEvidenceId | null>(null);
   const [rankAnimating, setRankAnimating] = useState(false);
   const [topTenBurst, setTopTenBurst] = useState(false);
-  const [invalidReplyKey, setInvalidReplyKey] = useState<ReplyOption["key"] | null>(null);
+  const [passwordInvalid, setPasswordInvalid] = useState(false);
   const previousUploadedRef = useRef(uploadedEvidenceIds);
   const previousBdCountRef = useRef(bdCount);
+  const previousSelectedCountRef = useRef(selectedPostIds.length);
+  const passwordPanelRef = useRef<HTMLElement>(null);
   const uploadTimerRef = useRef<number | null>(null);
   const rankTimerRef = useRef<number | null>(null);
   const topTenTimerRef = useRef<number | null>(null);
   const invalidTimerRef = useRef<number | null>(null);
   const allUploaded = uploadedEvidenceIds.length === EVIDENCE.length;
-  const rank = String(4 - bdCount).padStart(2, "0");
+  const solved = phase === "top_ten_reached" || bdCount >= 3;
+  const rank = solved ? "01" : "04";
+  const passwordFull = selectedPostIds.length === 4;
 
   useEffect(() => {
     const previous = previousUploadedRef.current;
@@ -108,6 +122,17 @@ export function TopTenRisePuzzle({
       }, 1180);
     }
   }, [bdCount, phase]);
+
+  useEffect(() => {
+    const previous = previousSelectedCountRef.current;
+    previousSelectedCountRef.current = selectedPostIds.length;
+    if (previous !== 3 || selectedPostIds.length !== 4 || solved) return;
+    setFeedback("四位数字已选满，请核对顺序后提交口令。");
+    passwordPanelRef.current?.scrollIntoView({
+      block: "center",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+    });
+  }, [selectedPostIds.length, solved]);
 
   useEffect(() => () => {
     [uploadTimerRef, rankTimerRef, topTenTimerRef, invalidTimerRef].forEach((timerRef) => {
@@ -152,26 +177,35 @@ export function TopTenRisePuzzle({
     }
   }
 
-  function apply(reply: ReplyOption) {
-    if (!reply.replyId) {
-      showInvalidReply(reply.key);
-      setFeedback(reply.rejection ?? "该回复没有形成证据闭环。");
-      return;
-    }
+  function selectPost(post: BdPasswordPost) {
     setFeedback("");
-    if (!kit.libraryFinals.applyBd(reply.replyId)) {
-      showInvalidReply(reply.key);
-      setFeedback(allUploaded ? "这条回复已处理，或当前排名阶段不接受它。" : "四项证据传齐后才能 bd。");
+    if (!kit.libraryFinals.selectBdPost(post.id)) {
+      setFeedback(passwordFull ? "四位口令已填满，请提交、撤回或清空。" : "当前阶段不能选入这条回复。");
     }
   }
 
-  function showInvalidReply(key: ReplyOption["key"]) {
-    setInvalidReplyKey(key);
+  function submitPassword() {
+    setFeedback("");
+    if (kit.libraryFinals.submitBdPassword()) {
+      return;
+    }
+    setPasswordInvalid(true);
+    setFeedback(passwordHint(passwordAttemptCount + 1));
     if (invalidTimerRef.current !== null) window.clearTimeout(invalidTimerRef.current);
     invalidTimerRef.current = window.setTimeout(() => {
       invalidTimerRef.current = null;
-      setInvalidReplyKey(null);
-    }, 460);
+      setPasswordInvalid(false);
+    }, 620);
+  }
+
+  function undoPost() {
+    setFeedback("");
+    kit.libraryFinals.undoBdPost();
+  }
+
+  function clearPassword() {
+    setFeedback("");
+    kit.libraryFinals.clearBdPassword();
   }
 
   return (
@@ -185,7 +219,7 @@ export function TopTenRisePuzzle({
             <strong>楼主编辑：上传证据</strong>
             <small>证据完整度：{uploadedEvidenceIds.length}/4</small>
           </div>
-          <span>{phase === "bd_briefing" ? "等待说明" : allUploaded ? "可进入 bd" : "待补齐"}</span>
+          <span>{phase === "bd_briefing" ? "等待说明" : allUploaded ? "可生成口令" : "待补齐"}</span>
         </header>
         <div>
           {EVIDENCE.map((evidence) => {
@@ -217,32 +251,55 @@ export function TopTenRisePuzzle({
       {showBd && preBdBriefingSeen ? <section className="cc98-rank-status" aria-live="polite">
         <span>当前排名</span>
         <strong key={rank}>{rank}</strong>
-        <p>{phase === "top_ten_reached" ? "十大第一" : allUploaded ? "选择有效回复 bd" : "请先上传四项证据"}</p>
+        <p>{solved ? "十大第一" : allUploaded ? "完成 BD 四位口令" : "请先上传四项证据"}</p>
         {topTenBurst ? <i className="cc98-rank-burst" aria-hidden="true"><b /><b /><b /><b /><b /><b /></i> : null}
       </section> : null}
 
-      {showBd && preBdBriefingSeen ? <div className="cc98-bd-replies" aria-label="bd回复列表">
-        {REPLIES.map((reply) => {
-          const applied = reply.replyId ? appliedReplyIds.includes(reply.replyId) : false;
+      {showBd && preBdBriefingSeen ? <section ref={passwordPanelRef} className={`cc98-bd-password ${passwordInvalid ? "is-invalid" : ""}`.trim()} aria-label="BD四位热度口令">
+        <header>
+          <div><strong>{BD_PASSWORD.title}</strong><small>{BD_PASSWORD.meaning}</small></div>
+          <b>{selectedPostIds.length}/4</b>
+        </header>
+        <p className="cc98-bd-password-prompt">{BD_PASSWORD.prompt}</p>
+        <ol className="cc98-bd-clues" aria-label="口令顺序提示">
+          {BD_PASSWORD.clues.map((clue) => (
+            <li key={clue.index}><b>{clue.index}</b><span>{clue.label}<small>{clue.instruction}</small></span></li>
+          ))}
+        </ol>
+        <div className="cc98-bd-code" aria-label={`当前口令 ${selectedPostIds.map((id) => BD_DIGIT_BY_POST.get(id)).join("") || "空"}`} aria-live="polite">
+          {[0, 1, 2, 3].map((index) => <span key={`${index}-${selectedPostIds[index] ?? "empty"}`}>{selectedPostIds[index] ? BD_DIGIT_BY_POST.get(selectedPostIds[index]) : "·"}</span>)}
+        </div>
+        <div className="cc98-bd-password-actions">
+          <button type="button" disabled={selectedPostIds.length === 0 || solved} onClick={undoPost}>撤回一位</button>
+          <button type="button" disabled={selectedPostIds.length === 0 || solved} onClick={clearPassword}>清空</button>
+          <button type="button" disabled={!passwordFull || solved} onClick={submitPassword}>{solved ? "已通过" : "提交口令"}</button>
+        </div>
+      </section> : null}
+
+      {showBd && preBdBriefingSeen ? <div className="cc98-bd-replies cc98-bd-number-posts" aria-label="数字候选回复">
+        {BD_POSTS.map((post) => {
+          const selectedIndex = selectedPostIds.indexOf(post.id);
+          const selected = selectedIndex >= 0;
           return (
-            <article key={reply.key} className={`${applied ? "is-applied" : ""} ${invalidReplyKey === reply.key ? "is-invalid" : ""}`.trim()}>
-              <header><strong>{reply.key} · {reply.author}</strong><span>{reply.requirement}</span></header>
-              <p>{reply.text}</p>
+            <article key={post.id} className={selected ? "is-applied" : ""}>
+              <header><strong>{post.floor} 楼 · {post.author}</strong><span>{selected ? `口令第 ${selectedIndex + 1} 位` : "数字回复"}</span></header>
+              <p>{post.text}</p>
+              <b className="cc98-bd-post-digit" aria-label={`数字 ${post.digit}`}>{post.digit}</b>
               <button
                 type="button"
-                disabled={applied || phase === "top_ten_reached"}
-                aria-label={`对 ${reply.key} 回复 bd`}
-                onClick={() => apply(reply)}
+                disabled={selected || passwordFull || solved}
+                aria-label={`对 ${post.floor} 楼回复 bd，选入数字 ${post.digit}`}
+                onClick={() => selectPost(post)}
               >
-                {applied ? "已 bd" : "bd"}
+                {selected ? `第 ${selectedIndex + 1} 位` : "bd 选入"}
               </button>
             </article>
           );
         })}
       </div> : null}
 
-      {showBd && preBdBriefingSeen && phase === "top_ten_reached" ? (
-        <p className="cc98-top-ten-complete">排名 01。图书馆 App 已放出 022 恢复申请入口。</p>
+      {showBd && preBdBriefingSeen && solved ? (
+        <p className="cc98-top-ten-complete">四位热度口令已确认，排名更新为 01。图书馆 App 已开放 022 恢复申请。</p>
       ) : null}
       {feedback ? <p className="cc98-bd-feedback" aria-live="polite">{feedback}</p> : null}
     </section>

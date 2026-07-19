@@ -306,13 +306,13 @@
         }
       ]
     },
-    "cc98_bd_applied": {
+    "cc98_bd_post_selected": {
       "cues": [
         {
           "channel": "sfx",
           "asset": "fx_evidence_upload_v2",
-          "volume": 0.66,
-          "playbackRate": 1.16
+          "volume": 0.52,
+          "playbackRate": 1.24
         }
       ]
     },

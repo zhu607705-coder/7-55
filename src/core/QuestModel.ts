@@ -98,21 +98,30 @@ function movementQuest(state: GameState): QuestViewModel {
     { id: "seat_reservation", label: "预约基础馆二层南区 022", done: state.ui.librarySeatReserved },
     { id: "leave_dorm", label: "离开寝室", done: state.actOne.phase === "complete" }
   ];
-  const arrowNextAction: NextAction = !state.actOne.pushTriangleTaken
+  const triangleCollected = state.actOne.pushTriangleTaken;
+  const weatherCollected = state.actOne.weatherWaterTaken;
+  const arrowNextAction: NextAction = !triangleCollected && !weatherCollected
     ? {
-        objective: "查看主页的「方向校准」推送",
-        hints: ["锻炼记录已经同步到手机。", "主页通知列表出现了新的「方向校准」。", "回到手机主页，多观察几次推送头像边缘的变化。"],
+        objective: "收集三角形与天气水滴",
+        hints: ["锻炼记录已经同步到手机。", "主页的「方向校准」与天气页面各有一项变化，两边可以分别检查。", "先检查任意一边，再去另一边补齐素材。"],
         targetSurface: "phone",
         recommendedScene: "phone_home"
       }
-    : !state.actOne.weatherWaterTaken
+    : !triangleCollected
       ? {
-          objective: "从天气页面取得一滴水",
-          hints: ["三角形已经进入道具栏。", "主页的天气通知现在可以打开。", "进入天气页面，接住界面下方的水滴。"],
+          objective: "从主页取得三角形",
+          hints: ["天气水滴已经进入道具栏。", "主页通知列表出现了新的「方向校准」。", "回到手机主页，多观察几次推送头像边缘的变化。"],
           targetSurface: "phone",
-          recommendedScene: "weather"
+          recommendedScene: "phone_home"
         }
-      : !state.actOne.mentorLineReleased
+      : !weatherCollected
+        ? {
+            objective: "从天气页面取得一滴水",
+            hints: ["三角形已经进入道具栏。", "天气页面也出现了一项可收集变化。", "进入天气页面，接住界面下方的水滴。"],
+            targetSurface: "phone",
+            recommendedScene: "weather"
+          }
+        : !state.actOne.mentorLineReleased
         ? {
             objective: "用天气水滴处理导师头像",
             hints: ["水滴可以用于处理黏着物。", "微信导师头像边缘有一条被黏住的竖线。", "打开微信，将天气水滴拖到导师头像。"],
@@ -169,9 +178,7 @@ function libraryQuest(state: GameState): QuestViewModel {
     { id: "proof_receipt", label: "目标座位与凭据一致", done: puzzle.seatReceiptCollected, itemId: "seat022Receipt" },
     { id: "proof_nonperson", label: "当前占用物不具备本人身份", done: puzzle.nonPersonProofStamped, itemId: "bagNonPersonProof" },
     { id: "cc98_upload", label: "提交四项公示材料", done: puzzle.cc98UploadedEvidenceIds.length === 4 },
-    { id: "bd_one", label: "完成第 1 次有效 bd", done: puzzle.bdCount >= 1 },
-    { id: "bd_two", label: "完成第 2 次有效 bd", done: puzzle.bdCount >= 2 },
-    { id: "bd_three", label: "排名推进至 01", done: puzzle.bdCount >= 3 },
+    { id: "bd_password", label: "完成 BD 四位热度口令", done: puzzle.bdCount >= 3 },
     { id: "recovery", label: "提交恢复申请", done: puzzle.evictionPassGenerated },
     { id: "apply_pass", label: "使用清退 PASS", done: puzzle.backpackEvicted, itemId: "seatReleasePass" },
     { id: "sit", label: "坐到 022", done: puzzle.playerSeated },
@@ -195,15 +202,21 @@ function libraryQuest(state: GameState): QuestViewModel {
       : phone("用纸条查找公开记录", "cc98", ["占座纸条可以作为论坛搜索材料。", "公开记录会提到一条旧版离座规则。", "进入 CC98，将占座纸条拖到搜索框。"]),
     rule: rpg("按索书号找到旧版规则"),
     proof_nonperson: puzzle.itemReportGenerated
-      ? rpg("把识别报告交给失物身份登记机")
+      ? rpg("把识别报告交给物品身份盖章机")
       : phone("生成物品识别报告", "photos"),
     proof_receipt: rpg("检查 022 桌面夹缝"),
-    proof_presence: phone("核对本人到馆记录", "tiyi"),
+    proof_presence: phone("核对本人到馆记录", "tiyi", [
+      "体艺补录单会列出三份已收集的来源记录。",
+      "到座耗时、公示编号、证明数量分别对应入馆记录、CC98 楼主编辑和旧版规则。",
+      "依次计算时间差、读取编号、数规则条目。"
+    ]),
     cc98_upload: phone(`上传四项公示材料（${puzzle.cc98UploadedEvidenceIds.length}/4）`, "cc98", ["旧规则和三份证明都属于公示材料。", "每个上传槽只接受对应类型的纸质道具。", "进入 CC98 调查帖，将兼容道具拖到四个上传槽。"]),
-    bd_briefing: phone("确认系统说明，开始筛选有效回复", "cc98", ["四项材料已经公开。", "下一阶段只接受现有证据能够支持的回复。", "继续当前剧情说明。"]),
-    bd_one: phone("选择与证据一致的回复推进排名", "cc98"),
-    bd_two: phone("继续筛选有效回复推进排名", "cc98"),
-    bd_three: phone("完成最后一次有效回复", "cc98"),
+    bd_briefing: phone("确认 BD 帮顶与四位口令说明", "cc98", ["四项材料已经公开。", "系统会解释 bd 的含义和数字选择方法。", "继续当前剧情说明。"]),
+    bd_password: phone(`按证据顺序完成 BD 四位口令（${puzzle.bdSelectedPostIds.length}/4）`, "cc98", [
+      "bd 表示帮顶；每次对数字回复点击 bd，会选入口令一位。",
+      "按上方四项证据从上到下，依次处理规则、身份、座位和到馆记录。",
+      "对应操作是数规则条目、数身份通过项、取座位末位、取到座耗时。"
+    ]),
     recovery: phone(`提交恢复材料（${puzzle.recoverySubmittedEvidenceIds.length}/3）`, "zjuding", ["进入十大后，图书馆会开放恢复申请。", "恢复申请只需要三份个人与座位证明。", "在浙大钉图书馆打开 022 恢复申请并提交材料。"]),
     apply_pass: rpg("把离座清退 PASS 用于 022 书包"),
     sit: rpg("坐到已经空出的 022"),
@@ -216,7 +229,7 @@ function libraryQuest(state: GameState): QuestViewModel {
     ? phone(`并行收集公示材料（${evidenceReadyCount}/4）`, "phone_home", [
         "四条材料支线可以交叉完成，取得一份后即可先上传 CC98。",
         "馆藏规则、照片识别、022 夹缝和体艺补录都可以独立推进。",
-        "某条支线暂时缺少字段时，可以先处理其他支线，无需等待固定顺序。"
+        "体艺补录会显示三份来源摘要：计算时间差、读取公示编号、数旧规则条目。"
       ])
     : next[nextId];
   return {

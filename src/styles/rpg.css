@@ -275,6 +275,48 @@
   z-index: 26;
 }
 
+.rpg-inventory-dock.is-receiving-item {
+  animation: rpg-inventory-receive-lock 1080ms steps(8, end) both;
+}
+
+.rpg-inventory-acquisition-flight {
+  animation: rpg-inventory-item-flight 980ms steps(12, end) both;
+  background: #f7f1d7;
+  border: 2px solid #101116;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.38);
+  display: grid;
+  height: 42px;
+  left: -124px;
+  place-items: center;
+  pointer-events: none;
+  position: absolute;
+  top: 34px;
+  width: 42px;
+  z-index: 4;
+}
+
+.rpg-inventory-acquisition-flight i {
+  animation: inventory-flight-pixel 700ms steps(6, end) both;
+  background: #f0d54e;
+  height: 6px;
+  left: -12px;
+  position: absolute;
+  top: 4px;
+  width: 6px;
+}
+
+.rpg-inventory-acquisition-flight i:nth-of-type(2) {
+  animation-delay: 80ms;
+  left: -20px;
+  top: 18px;
+}
+
+.rpg-inventory-acquisition-flight i:nth-of-type(3) {
+  animation-delay: 150ms;
+  left: -8px;
+  top: 31px;
+}
+
 .rpg-inventory-dock > header {
   align-items: baseline;
   display: flex;
@@ -333,6 +375,10 @@
   opacity: 0.32;
 }
 
+.rpg-inventory-items button.is-new-item {
+  animation: inventory-new-slot 1100ms steps(9, end) both;
+}
+
 .rpg-inventory-items button span {
   font-size: 8px;
   line-height: 1.05;
@@ -355,6 +401,20 @@
   transform: translate(-50%, -50%);
   width: 54px;
   z-index: 70;
+}
+
+@keyframes rpg-inventory-item-flight {
+  0% { opacity: 0; transform: translate(-28px, -34px) scale(1.45); }
+  12% { opacity: 1; }
+  70% { opacity: 1; transform: translate(142px, 0) scale(0.82); }
+  82% { opacity: 0; transform: translate(142px, 0) scale(0.25); }
+  100% { opacity: 0; transform: translate(142px, 0) scale(0); }
+}
+
+@keyframes rpg-inventory-receive-lock {
+  0%, 58%, 100% { border-color: #64766f; box-shadow: none; transform: translateX(0); }
+  66% { border-color: #f0d54e; box-shadow: 0 0 0 4px rgba(240, 213, 78, 0.42); transform: translateX(3px); }
+  78% { transform: translateX(-2px); }
 }
 
 .rpg-touch-controls {

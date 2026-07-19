@@ -130,6 +130,8 @@ export function createInitialGameState(): GameState {
         preBdBriefingSeen: false,
         bdCount: 0,
         appliedBdReplyIds: [],
+        bdSelectedPostIds: [],
+        bdPasswordAttemptCount: 0,
         recoverySubmittedEvidenceIds: [],
         evictionPassGenerated: false,
         backpackEvicted: false,

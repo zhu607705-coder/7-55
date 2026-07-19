@@ -52,7 +52,12 @@ export function WakeScene({ router, events }: SceneComponentProps) {
           </>
         )}
       </div>
-      {!warned ? <p className="bottom-narration">旁白：你没有5分钟了，但你很有勇气</p> : null}
+      {!warned ? (
+        <p className="bottom-narration game-subtitle-frame subtitle-tone-narrator is-line-entering">
+          <small className="game-subtitle-speaker">旁白</small>
+          <span>你没有5分钟了，但你很有勇气</span>
+        </p>
+      ) : null}
     </section>
   );
 }

@@ -67,6 +67,7 @@ interface MarkerParts {
 
 type EntranceDoorMotion = "closed" | "opening" | "open" | "closing";
 type ShelfRevealPhase = "idle" | "shaking" | "sliding" | "paper" | "complete";
+type LostFoundMachineMotion = "idle" | "feeding" | "scanning" | "stamping" | "ejecting" | "complete";
 
 export class LibraryInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
@@ -78,8 +79,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private interactRequested = false;
   private playerAnimator!: RpgPlayerAnimator;
   private promptText!: Phaser.GameObjects.Text;
-  private feedbackText!: Phaser.GameObjects.Text;
-  private feedbackTween?: Phaser.Tweens.Tween;
   private markers = new Map<LibraryInteractionTargetId, MarkerParts>();
   private backpack!: Phaser.GameObjects.Container;
   private backpackClearPatch!: Phaser.GameObjects.Image;
@@ -102,6 +101,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private lostFoundIndicator!: Phaser.GameObjects.Arc;
   private lostFoundScanLine!: Phaser.GameObjects.Rectangle;
   private lostFoundStatusText!: Phaser.GameObjects.Text;
+  private lostFoundMachine!: Phaser.GameObjects.Container;
+  private lostFoundMachineCasing!: Phaser.GameObjects.Rectangle;
+  private lostFoundReport!: Phaser.GameObjects.Container;
+  private lostFoundStampHead!: Phaser.GameObjects.Container;
+  private lostFoundStampLever!: Phaser.GameObjects.Container;
+  private lostFoundStampMark!: Phaser.GameObjects.Text;
+  private lostFoundValidationLights: Phaser.GameObjects.Arc[] = [];
+  private lostFoundMachineMotion: LostFoundMachineMotion = "idle";
   private catalogIndicator!: Phaser.GameObjects.Arc;
   private catalogScanLine!: Phaser.GameObjects.Rectangle;
   private lastVisitCheck = 0;
@@ -302,7 +309,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (name === "library_lost_found_scan_started") {
       this.animateLostFoundScan();
-      this.showFeedback("失物登记机：扫描中。", "system");
+      this.showFeedback("物品身份盖章机：报告已进入托盘，正在扫描。", "system");
       return;
     }
     if (name === "library_bag_nonperson_proof_issued") {
@@ -420,7 +427,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       if (target.id === "entrance_record") return true;
       if (target.id === "occupancy_note") return puzzle.backpackInspected && !puzzle.occupancyNoteCollected;
       if (target.id === "seat_022_backpack") return puzzle.entranceRecordRead && !puzzle.backpackEvicted;
-      if (target.id === "seat_022_gap") return puzzle.investigationOpened && puzzle.backpackInspected && !puzzle.seatReceiptCollected;
+      if (target.id === "seat_022_gap") return !puzzle.seatReceiptCollected;
       if (target.id === "library_shelf_755") return puzzle.callNumberCollected && !puzzle.archivedRuleCollected;
       if (target.id === "lost_found_machine") return puzzle.lostFoundStage !== "stamped";
       if (target.id === "seat_022_chair") {
@@ -486,10 +493,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (targetId === "lost_found_machine") {
       return {
-        missing_report: "失物登记机：缺少报告。",
-        ready: "失物登记机：可投入报告。",
-        scanning: "失物登记机：扫描中。",
-        stamped: "失物登记机：已盖章。"
+        missing_report: "物品身份盖章机：缺少物品识别报告。",
+        ready: "物品身份盖章机：将报告拖入进纸托盘。",
+        scanning: "物品身份盖章机：报告正在扫描，压章头已就位。",
+        stamped: "物品身份盖章机：本次盖章完成，证明已进入道具栏。"
       }[puzzle.lostFoundStage];
     }
     if (targetId === "catalog_terminal") {
@@ -625,6 +632,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
         phase: this.shelfRevealPhase,
         offsetPx: this.shelfRevealOffsetPx,
         paperVisible: this.shelfPaper.visible
+      },
+      lostFoundStampMachine: {
+        stage: state.ui.libraryFinalsPuzzle.lostFoundStage,
+        motion: this.lostFoundMachineMotion,
+        reportVisible: this.lostFoundReport.visible,
+        stampHeadY: this.lostFoundStampHead.y,
+        leverAngle: this.lostFoundStampLever.angle,
+        stampVisible: this.lostFoundStampMark.visible
       }
     });
   }
@@ -643,26 +658,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private showFeedback(text: string, tone: "system" | "success" | "error" | "broadcast" | "chapter"): void {
-    const colors = {
-      system: "#f4efe2",
-      success: "#8ce1b4",
-      error: "#ff8b83",
-      broadcast: "#f0d56a",
-      chapter: "#ffffff"
-    } as const;
-    this.feedbackTween?.stop();
-    this.feedbackText
-      .setText(text)
-      .setColor(colors[tone])
-      .setVisible(true)
-      .setAlpha(1)
-      .setScale(tone === "chapter" ? 1.08 : 1);
-    this.feedbackTween = this.tweens.add({
-      targets: this.feedbackText,
-      alpha: 0,
-      delay: tone === "chapter" ? 3600 : 2200,
-      duration: 360,
-      onComplete: () => this.feedbackText.setVisible(false).setScale(1)
+    this.bridge.emit("rpg_subtitle", {
+      text,
+      tone: tone === "chapter" ? "task" : tone,
+      durationMs: tone === "chapter" ? 4200 : 3000
     });
   }
 
@@ -835,18 +834,51 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private animateLostFoundScan(): void {
+    this.tweens.killTweensOf([
+      this.lostFoundReport,
+      this.lostFoundScanLine,
+      this.lostFoundStampHead,
+      this.lostFoundStampLever
+    ]);
+    this.lostFoundMachineMotion = "feeding";
     this.lostFoundIndicator.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
-    this.lostFoundScanLine.setVisible(true).setAlpha(0.92).setY(484);
-    this.tweens.add({
-      targets: this.lostFoundScanLine,
-      y: 552,
-      alpha: 0.24,
-      duration: 460,
-      yoyo: true,
-      repeat: 1,
-      ease: "Stepped",
-      onComplete: () => this.lostFoundScanLine.setVisible(false)
-    });
+    this.lostFoundStampHead.setY(5);
+    this.lostFoundStampLever.setAngle(-24);
+    this.lostFoundStampMark.setVisible(false).setAlpha(0).setScale(1.4);
+    this.lostFoundReport.setVisible(true).setAlpha(1).setPosition(-58, 39);
+    this.lostFoundScanLine.setVisible(false).setAlpha(0.95).setY(26);
+
+    const beginScan = () => {
+      this.lostFoundMachineMotion = "scanning";
+      if (this.reducedMotion) {
+        this.lostFoundScanLine.setVisible(false);
+        return;
+      }
+      this.lostFoundScanLine.setVisible(true).setAlpha(0.95).setY(26);
+      this.tweens.add({
+        targets: this.lostFoundScanLine,
+        y: 51,
+        alpha: 0.28,
+        duration: 340,
+        yoyo: true,
+        repeat: 1,
+        ease: "Stepped",
+        onComplete: () => this.lostFoundScanLine.setVisible(false)
+      });
+    };
+
+    if (this.reducedMotion) {
+      this.lostFoundReport.setX(0);
+      beginScan();
+    } else {
+      this.tweens.add({
+        targets: this.lostFoundReport,
+        x: 0,
+        duration: 220,
+        ease: "Stepped",
+        onComplete: beginScan
+      });
+    }
     this.tweens.add({
       targets: this.lostFoundIndicator,
       alpha: 0.35,
@@ -866,8 +898,19 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private animateLostFoundStamp(): void {
     const machine = getLibraryTarget("lost_found_machine");
-    this.lostFoundScanLine.setVisible(false);
+    this.tweens.killTweensOf([
+      this.lostFoundReport,
+      this.lostFoundScanLine,
+      this.lostFoundStampHead,
+      this.lostFoundStampLever,
+      this.lostFoundMachine
+    ]);
+    this.lostFoundMachine.setPosition(machine.x, machine.y);
+    this.lostFoundMachineMotion = "stamping";
+    this.lostFoundScanLine.setVisible(false).setY(26);
     this.lostFoundIndicator.setFillStyle(0x5ed68d).setAlpha(1).setScale(1);
+    this.lostFoundReport.setVisible(true).setAlpha(1).setPosition(0, 39);
+    this.lostFoundStampMark.setVisible(true).setAlpha(0).setScale(1.45);
     this.tweens.add({
       targets: this.lostFoundIndicator,
       scale: 2,
@@ -877,24 +920,70 @@ export class LibraryInteriorScene extends Phaser.Scene {
       repeat: 4,
       onComplete: () => this.lostFoundIndicator.setScale(1).setAlpha(1)
     });
-    const stamp = this.add.text(machine.x, machine.y - 10, "非本人", {
-      color: "#b43f3f",
-      backgroundColor: "#f4ead5ee",
-      fontFamily: "monospace",
-      fontSize: "18px",
-      padding: { x: 8, y: 5 }
-    }).setOrigin(0.5).setDepth(5600).setScale(1.7).setAlpha(0);
-    this.tweens.add({
-      targets: stamp,
-      alpha: 1,
-      scale: 1,
-      duration: 220,
-      ease: "Stepped",
-      onComplete: () => {
-        this.animateEvidenceTransfer(machine.x, machine.y - 10, 0x5ed68d);
-        this.tweens.add({ targets: stamp, alpha: 0, delay: 520, duration: 180, onComplete: () => stamp.destroy() });
+
+    const impact = () => {
+      this.lostFoundStampMark.setAlpha(1);
+      if (this.reducedMotion) {
+        this.lostFoundStampMark.setScale(1);
+      } else {
+        this.tweens.add({
+          targets: this.lostFoundStampMark,
+          scale: 1,
+          duration: 120,
+          ease: "Stepped"
+        });
+        this.tweens.add({
+          targets: this.lostFoundMachine,
+          y: machine.y + 3,
+          duration: 45,
+          yoyo: true,
+          repeat: 1,
+          onComplete: () => this.lostFoundMachine.setY(machine.y)
+        });
       }
-    });
+
+      this.time.delayedCall(this.reducedMotion ? 1 : 140, () => {
+        this.tweens.add({ targets: this.lostFoundStampHead, y: 5, duration: this.reducedMotion ? 1 : 120, ease: "Stepped" });
+        this.tweens.add({ targets: this.lostFoundStampLever, angle: -24, duration: this.reducedMotion ? 1 : 140, ease: "Stepped" });
+      });
+      this.time.delayedCall(this.reducedMotion ? 2 : 280, () => {
+        this.lostFoundMachineMotion = "ejecting";
+        this.tweens.add({
+          targets: this.lostFoundReport,
+          x: 58,
+          y: 50,
+          alpha: 0,
+          duration: this.reducedMotion ? 1 : 420,
+          ease: "Stepped",
+          onComplete: () => {
+            this.lostFoundReport.setVisible(false).setPosition(-58, 39).setAlpha(1);
+            this.lostFoundStampMark.setVisible(false).setAlpha(0);
+            this.lostFoundMachineMotion = "complete";
+            this.animateEvidenceTransfer(machine.x + 52, machine.y + 42, 0x5ed68d);
+          }
+        });
+      });
+    };
+
+    if (this.reducedMotion) {
+      this.lostFoundStampHead.setY(25);
+      this.lostFoundStampLever.setAngle(8);
+      impact();
+    } else {
+      this.tweens.add({
+        targets: this.lostFoundStampHead,
+        y: 25,
+        duration: 110,
+        ease: "Stepped",
+        onComplete: impact
+      });
+      this.tweens.add({
+        targets: this.lostFoundStampLever,
+        angle: 8,
+        duration: 110,
+        ease: "Stepped"
+      });
+    }
     this.showFeedback("盖章完成：书包不等于本人。", "success");
   }
 
@@ -1281,10 +1370,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.seatStatusText.setAlpha(1).setScale(1);
     this.catalogIndicator.setFillStyle(puzzle.catalogUnlocked ? 0x65dca0 : 0xd2aa54).setAlpha(1);
     this.catalogScanLine.setVisible(false);
-    this.lostFoundIndicator
-      .setFillStyle(puzzle.nonPersonProofStamped ? 0x5ed68d : puzzle.lostFoundStage === "scanning" ? 0xe1b953 : 0xc96a5e)
-      .setAlpha(1);
-    this.lostFoundScanLine.setVisible(false);
+    this.syncLostFoundStampMachine(puzzle.lostFoundStage);
   }
 
   private createMarkers(): void {
@@ -1320,16 +1406,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "12px",
       padding: { x: 13, y: 6 }
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10000).setVisible(false);
-
-    this.feedbackText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.feedbackBottomY, "", {
-      color: "#f4efe2",
-      backgroundColor: "#101b19f2",
-      fontFamily: "monospace",
-      fontSize: "13px",
-      align: "center",
-      wordWrap: { width: 580 },
-      padding: { x: 14, y: 8 }
-    }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10020).setVisible(false);
 
     this.createEntranceRecordPanel();
   }
@@ -1566,8 +1642,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     const alreadyRead = this.bridge.getState().ui.libraryFinalsPuzzle.entranceRecordRead;
     this.player.setVelocity(0, 0);
-    this.feedbackTween?.stop();
-    this.feedbackText.setVisible(false);
+    this.bridge.emit("rpg_subtitle_clear");
     this.promptText.setVisible(false);
     this.entranceRecordConfirmText.setText(alreadyRead ? "关闭记录" : "记下记录");
     this.tweens.killTweensOf(this.entranceRecordPanel);
@@ -1730,33 +1805,134 @@ export class LibraryInteriorScene extends Phaser.Scene {
       padding: { x: 8, y: 4 }
     }).setOrigin(0.5).setDepth(810);
 
-    this.add.text(160, 442, "物品身份登记", {
-      color: "#e9ddbd",
+    const target = getLibraryTarget("lost_found_machine");
+    const shadow = this.add.ellipse(2, 57, 88, 18, 0x101715, 0.5);
+    this.lostFoundMachineCasing = this.add.rectangle(0, 0, 82, 94, 0x34433f, 1)
+      .setStrokeStyle(4, 0x18231f, 1);
+    const topCap = this.add.rectangle(0, -51, 90, 12, 0x65736c, 1)
+      .setStrokeStyle(3, 0x18231f, 1);
+    const titlePlate = this.add.text(0, -60, "STAMP 0.22", {
+      color: "#f0d56a",
+      backgroundColor: "#1b2824ee",
       fontFamily: "monospace",
-      fontSize: "11px"
-    }).setOrigin(0.5).setDepth(560);
-    this.lostFoundIndicator = this.add.circle(112, 462, 5, 0xc96a5e, 1)
-      .setStrokeStyle(2, 0x23332f, 1)
-      .setDepth(568);
-    this.lostFoundStatusText = this.add.text(160, 462, "", {
+      fontSize: "9px",
+      fontStyle: "bold",
+      padding: { x: 4, y: 2 }
+    }).setOrigin(0.5);
+    const screen = this.add.rectangle(0, -33, 54, 18, 0x173b35, 1)
+      .setStrokeStyle(2, 0x7fa89b, 0.9);
+    this.lostFoundIndicator = this.add.circle(-33, -33, 5, 0xc96a5e, 1)
+      .setStrokeStyle(2, 0x18231f, 1);
+    this.lostFoundStatusText = this.add.text(0, -33, "", {
       color: "#f2e5c6",
-      backgroundColor: "#23332fee",
       fontFamily: "monospace",
-      fontSize: "10px",
-      padding: { x: 5, y: 3 }
-    }).setOrigin(0.5).setDepth(565);
-    this.lostFoundScanLine = this.add.rectangle(160, 484, 72, 4, 0xe1b953, 0.9)
-      .setDepth(570)
+      fontSize: "9px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+
+    const validationXs = [-22, 0, 22];
+    const validationLabels = ["名", "号", "人"];
+    const validationTexts: Phaser.GameObjects.Text[] = [];
+    this.lostFoundValidationLights = validationXs.map((x, index) => {
+      const light = this.add.circle(x, -13, 4, 0xc96a5e, 1)
+        .setStrokeStyle(1, 0x18231f, 1);
+      validationTexts.push(this.add.text(x, -4, validationLabels[index], {
+        color: "#c6d1ca",
+        fontFamily: "monospace",
+        fontSize: "7px"
+      }).setOrigin(0.5));
+      return light;
+    });
+
+    const leftGuide = this.add.rectangle(-25, 18, 6, 52, 0x718078, 1)
+      .setStrokeStyle(2, 0x18231f, 1);
+    const rightGuide = this.add.rectangle(25, 18, 6, 52, 0x718078, 1)
+      .setStrokeStyle(2, 0x18231f, 1);
+    const stampBridge = this.add.rectangle(0, 4, 54, 8, 0x56645e, 1)
+      .setStrokeStyle(2, 0x18231f, 1);
+    const tray = this.add.rectangle(0, 39, 64, 28, 0x232f2c, 1)
+      .setStrokeStyle(3, 0x18231f, 1);
+    const feedSlot = this.add.rectangle(0, 28, 48, 5, 0x0d1513, 1)
+      .setStrokeStyle(1, 0xa0b1a9, 0.7);
+    const base = this.add.rectangle(0, 52, 90, 12, 0x59665f, 1)
+      .setStrokeStyle(3, 0x18231f, 1);
+
+    const stampStem = this.add.rectangle(0, -9, 8, 23, 0x9ba69f, 1)
+      .setStrokeStyle(2, 0x26332f, 1);
+    const stampHead = this.add.rectangle(0, 6, 36, 12, 0xb94f49, 1)
+      .setStrokeStyle(3, 0x5a2624, 1);
+    this.lostFoundStampHead = this.add.container(0, 5, [stampStem, stampHead]);
+
+    const leverArm = this.add.rectangle(0, 12, 6, 38, 0x9ba69f, 1)
+      .setStrokeStyle(2, 0x26332f, 1);
+    const leverKnob = this.add.rectangle(0, 33, 14, 10, 0xb94f49, 1)
+      .setStrokeStyle(2, 0x5a2624, 1);
+    this.lostFoundStampLever = this.add.container(33, -10, [leverArm, leverKnob]).setAngle(-24);
+
+    const paper = this.add.rectangle(0, 0, 46, 28, 0xf2ead5, 1)
+      .setStrokeStyle(2, 0x5a625d, 1);
+    const reportLineOne = this.add.rectangle(-5, -7, 25, 2, 0x87928c, 0.9);
+    const reportLineTwo = this.add.rectangle(-8, -1, 19, 2, 0x87928c, 0.7);
+    this.lostFoundStampMark = this.add.text(4, 5, "非本人", {
+      color: "#b43f3f",
+      fontFamily: "monospace",
+      fontSize: "9px",
+      fontStyle: "bold"
+    }).setOrigin(0.5).setVisible(false);
+    this.lostFoundReport = this.add.container(-58, 39, [paper, reportLineOne, reportLineTwo, this.lostFoundStampMark])
       .setVisible(false);
+    this.lostFoundScanLine = this.add.rectangle(0, 26, 46, 3, 0xe1b953, 0.95)
+      .setVisible(false);
+
+    const hitTarget = this.add.zone(0, 0, target.width, target.height)
+      .setInteractive({ useHandCursor: true });
+    this.lostFoundMachine = this.add.container(target.x, target.y, [
+      shadow,
+      this.lostFoundMachineCasing,
+      topCap,
+      titlePlate,
+      screen,
+      this.lostFoundIndicator,
+      this.lostFoundStatusText,
+      ...this.lostFoundValidationLights,
+      ...validationTexts,
+      leftGuide,
+      rightGuide,
+      stampBridge,
+      tray,
+      feedSlot,
+      base,
+      this.lostFoundStampHead,
+      this.lostFoundStampLever,
+      this.lostFoundReport,
+      this.lostFoundScanLine,
+      hitTarget
+    ]).setDepth(target.y + 82);
+
+    hitTarget
+      .on("pointerover", () => this.lostFoundMachineCasing.setStrokeStyle(4, 0xe1b953, 1))
+      .on("pointerout", () => this.lostFoundMachineCasing.setStrokeStyle(4, 0x18231f, 1))
+      .on("pointerdown", () => {
+        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
+        if (distance > target.proximity + 24) {
+          this.showFeedback("先走近物品身份盖章机。", "system");
+          return;
+        }
+        this.bridge.setCheckpoint("library_front_desk");
+        this.bridge.emit("library_rpg_context_inspected", {
+          targetId: target.id,
+          text: this.getContextText(target.id, this.bridge.getState())
+        });
+      });
   }
 
   private updateLostFoundStatus(state: GameState): void {
     const stage = state.ui.libraryFinalsPuzzle.lostFoundStage;
     const labels = {
-      missing_report: "缺少报告",
-      ready: "可投入报告",
-      scanning: "扫描中",
-      stamped: "已盖章"
+      missing_report: "缺报告",
+      ready: "投入报告",
+      scanning: "扫描",
+      stamped: "完成"
     } as const;
     const colors = {
       missing_report: 0xc96a5e,
@@ -1766,6 +1942,39 @@ export class LibraryInteriorScene extends Phaser.Scene {
     } as const;
     this.lostFoundStatusText.setText(labels[stage]);
     this.lostFoundIndicator.setFillStyle(colors[stage]);
+    this.lostFoundStatusText.setColor(stage === "stamped" ? "#bdebc9" : stage === "missing_report" ? "#f1b3ad" : "#f7e6a6");
+    this.lostFoundValidationLights.forEach((light, index) => {
+      const color = stage === "stamped"
+        ? 0x5ed68d
+        : stage === "scanning" && index < 2
+          ? 0xe1b953
+          : stage === "ready"
+            ? 0xe1b953
+            : 0xc96a5e;
+      light.setFillStyle(color).setAlpha(stage === "missing_report" ? 0.72 : 1);
+    });
+  }
+
+  private syncLostFoundStampMachine(stage: GameState["ui"]["libraryFinalsPuzzle"]["lostFoundStage"]): void {
+    const machine = getLibraryTarget("lost_found_machine");
+    this.tweens.killTweensOf([
+      this.lostFoundMachine,
+      this.lostFoundReport,
+      this.lostFoundScanLine,
+      this.lostFoundStampHead,
+      this.lostFoundStampLever,
+      this.lostFoundStampMark
+    ]);
+    this.lostFoundMachine.setPosition(machine.x, machine.y);
+    this.lostFoundStampHead.setY(5);
+    this.lostFoundStampLever.setAngle(-24);
+    this.lostFoundScanLine.setVisible(false).setY(26).setAlpha(0.95);
+    this.lostFoundReport.setVisible(false).setPosition(-58, 39).setAlpha(1);
+    this.lostFoundStampMark.setVisible(false).setAlpha(0).setScale(1.4);
+    this.lostFoundMachineMotion = stage === "stamped" ? "complete" : "idle";
+    if (stage === "scanning") {
+      this.animateLostFoundScan();
+    }
   }
 
   private drawCatalogArea(): void {

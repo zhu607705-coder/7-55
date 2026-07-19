@@ -88,16 +88,20 @@ export function LibraryStoryOverlay({ events, sequenceId, onFinished }: LibraryS
   }
 
   const speakerClass = line.speaker === "玩家" ? "is-player" : line.speaker === "旁白" ? "is-narrator" : "is-system";
+  const subtitleTone = line.speaker === "玩家" ? "player" : line.speaker === "旁白" ? "narrator" : "system";
 
   return (
     <section className="library-story-overlay" role="dialog" aria-modal="true" aria-label="第二章剧情对白">
-      <div className="library-story-dialogue">
+      <div
+        key={lineKey}
+        className={`library-story-dialogue game-subtitle-frame subtitle-tone-${subtitleTone} is-line-entering`}
+      >
         <div className="library-story-dialogue-header">
           <small>剧情播放中 · {lineIndex + 1}/{sequence.length}</small>
           <span aria-hidden="true">{finalLine && requiresConfirmation ? "等待确认" : "自动播放 · 可快进"}</span>
         </div>
         <div className={`library-story-dialogue-box ${speakerClass}`}>
-          <strong>{line.speaker}</strong>
+          <strong className="game-subtitle-speaker">{line.speaker}</strong>
           <p>{line.text}</p>
         </div>
         <div className="library-story-dialogue-actions">

@@ -2,8 +2,8 @@
 
 - Scene ID: `weather`
 - Entry: weather widget
-- Reads: `items.waterDrop`
-- Writes: `items.waterDrop`
+- Reads: `actOne.exerciseStarted`, `actOne.weatherWaterTaken`
+- Writes: `items.weatherWater`, `actOne.weatherWaterTaken`
 - Events: `get_item`
-- Assets: rainy widget, draggable drop
-- Tests: dragging a rain drop grants `waterDrop`
+- Contract: 课外锻炼开始后即可独立收集天气水滴，不依赖主页三角形的取得顺序。
+- Assets: rainy widget, collectible drop

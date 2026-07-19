@@ -47,9 +47,13 @@ type EditablePostKey = "author" | "rank" | "board" | "title" | "replies" | "view
 
 const STORAGE_KEY = "seven-fifty-five.cc98-posts.v2";
 const QUEST_STORAGE_KEY = "seven-fifty-five.cc98-quest-post-overrides.v1";
+const NETWORK_LOAD_DELAY_MS = 700;
+const NETWORK_REJECT_DELAY_MS = 1600;
+const NETWORK_CRASH_DELAY_MS = 620;
 const DEFAULT_POSTS = defaultPostData as Cc98Post[];
 const ACT_ONE_EXCHANGE_POST = actOneContent.cc98ExchangePost as Cc98Post;
 const investigationPostContent = libraryFinalsContent.cc98.post;
+const BD_PASSWORD_REPLY_COUNT = libraryFinalsContent.cc98.bdPassword.posts.length;
 const INVESTIGATION_POST: Cc98Post = {
   id: investigationPostContent.id,
   author: investigationPostContent.author,
@@ -154,6 +158,8 @@ function EditableText({
 }
 
 export function Cc98Scene({ state, router, events }: SceneComponentProps) {
+  const [entryOnCampusWifi] = useState(() => kit.network.canOpenCc98());
+  const [networkPhase, setNetworkPhase] = useState<"loading" | "ready" | "crashing">("loading");
   const [posts, setPosts] = useState<Cc98Post[]>(loadPosts);
   const [questPostOverrides, setQuestPostOverrides] = useState<Record<string, Partial<Cc98Post>>>(loadQuestPostOverrides);
   const [editing, setEditing] = useState(false);
@@ -208,11 +214,14 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
     if (investigationVisible) {
       next.push({
         ...withOverride(INVESTIGATION_POST),
-        rank: String(Math.max(1, 4 - finalsPuzzle.bdCount)).padStart(2, "0")
+        rank: finalsPuzzle.bdCount >= 3 ? "01" : "04",
+        replies: finalsPuzzle.preBdBriefingSeen || finalsPuzzle.bdCount >= 3
+          ? String(Number(INVESTIGATION_POST.replies) + BD_PASSWORD_REPLY_COUNT)
+          : INVESTIGATION_POST.replies
       });
     }
     return next;
-  }, [exchangeVisible, finalsPuzzle.bdCount, investigationVisible, questPostOverrides]);
+  }, [exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, questPostOverrides]);
   const openPost = useMemo(
     () => questPosts.find((post) => post.id === openPostId) ?? posts.find((post) => post.id === openPostId) ?? null,
     [openPostId, posts, questPosts]
@@ -222,6 +231,43 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const visiblePosts = useMemo(() => {
     return [...questPosts, ...posts];
   }, [posts, questPosts]);
+
+  useEffect(() => {
+    let exitTimer: number | null = null;
+    const gateTimer = window.setTimeout(() => {
+      if (entryOnCampusWifi) {
+        setNetworkPhase("ready");
+        return;
+      }
+      setNetworkPhase("crashing");
+      playSfx("12_");
+      events.emit("cc98_network_rejected", { requiredNetwork: "campus_wifi" });
+      kit.flags.toast("CC98 仅支持校园网。请切换后重新进入。", "system");
+      exitTimer = window.setTimeout(() => router.goTo("phone_home"), NETWORK_CRASH_DELAY_MS);
+    }, entryOnCampusWifi ? NETWORK_LOAD_DELAY_MS : NETWORK_REJECT_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(gateTimer);
+      if (exitTimer !== null) window.clearTimeout(exitTimer);
+    };
+  }, [entryOnCampusWifi, events, router]);
+
+  if (networkPhase !== "ready") {
+    return (
+      <section
+        className={`app-screen cc98-network-gate ${networkPhase === "crashing" ? "is-crashing" : ""}`.trim()}
+        aria-label="CC98 校园网验证"
+      >
+        <div className="cc98-network-card" role="status" aria-live="polite">
+          <span className="cc98-network-logo" aria-hidden="true">CC98</span>
+          <strong>{networkPhase === "crashing" ? "网络验证失败" : "校内访问验证"}</strong>
+          <p>{entryOnCampusWifi ? "正在连接校园网服务" : "正在检查 ZJUWLAN"}</p>
+          <span className="cc98-network-dots" aria-hidden="true"><i /><i /><i /></span>
+        </div>
+        <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>退出</button>
+      </section>
+    );
+  }
 
   function searchWithOccupancyNote() {
     setInvestigationFeedback("");
@@ -438,7 +484,8 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                   showBdContent={access.cc98Bd}
                 />
                 <TopTenRisePuzzle
-                  appliedReplyIds={finalsPuzzle.appliedBdReplyIds}
+                  selectedPostIds={finalsPuzzle.bdSelectedPostIds}
+                  passwordAttemptCount={finalsPuzzle.bdPasswordAttemptCount}
                   bdCount={finalsPuzzle.bdCount}
                   phase={finalsPhase}
                   ownedEvidenceIds={ownedEvidenceIds}

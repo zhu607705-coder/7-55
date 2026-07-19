@@ -5413,6 +5413,77 @@
 
 /* ---------- P02 CC98 ---------- */
 
+.cc98-network-gate {
+  align-items: center;
+  background:
+    linear-gradient(rgba(66, 168, 238, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(66, 168, 238, 0.12) 1px, transparent 1px),
+    #eef8ff;
+  background-size: 12px 12px;
+  color: #071c42;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cc98-network-gate.is-crashing {
+  animation: crash-glitch 0.6s steps(6, end) both;
+}
+
+.cc98-network-card {
+  align-items: center;
+  background: #fff;
+  border: 4px solid #071c42;
+  box-shadow: 8px 8px 0 #42a8ee;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 244px;
+  padding: 30px 24px 24px;
+  text-align: center;
+  width: min(320px, calc(100% - 48px));
+}
+
+.cc98-network-logo {
+  background: #42a8ee;
+  border: 3px solid #071c42;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  padding: 12px 16px 10px;
+  text-shadow: 3px 3px 0 #0b3c79;
+}
+
+.cc98-network-card > strong {
+  font-size: 21px;
+}
+
+.cc98-network-card > p {
+  color: #3b5c7f;
+  font-size: 14px;
+  margin: 0;
+}
+
+.cc98-network-dots {
+  display: flex;
+  gap: 8px;
+  height: 18px;
+}
+
+.cc98-network-dots i {
+  animation: dot-hop 0.9s steps(3, end) infinite;
+  background: #42a8ee;
+  border: 2px solid #071c42;
+  display: block;
+  height: 12px;
+  width: 12px;
+}
+
+.cc98-network-dots i:nth-child(2) { animation-delay: 0.15s; }
+.cc98-network-dots i:nth-child(3) { animation-delay: 0.3s; }
+
 .cc98-scene {
   background: #f7f8fa;
   color: #111820;

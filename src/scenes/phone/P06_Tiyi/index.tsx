@@ -19,32 +19,31 @@ const LOAD_DELAY_MS = 1400;
  */
 export function TiyiScene({ state, router, events }: SceneComponentProps) {
   const [phase, setPhase] = useState<"loading" | "main" | "crashing">("loading");
+  const [entryAllowed] = useState(() => kit.network.canOpenTiyi());
   const { flags } = state;
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
   const actOnePhase = state.actOne.phase;
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(actOnePhase);
   const finalsAuditActive = finalsPhase === "evidence_gathering" && finalsPuzzle.investigationOpened;
-  const exerciseFollowup = state.actOne.weatherWaterTaken
+  const exerciseFollowup = state.actOne.pushTriangleTaken && state.actOne.weatherWaterTaken
     ? "主页图形与天气水滴均已取得"
     : state.actOne.pushTriangleTaken
-      ? "下一步：回到主页，打开天气接住雨滴"
-      : "下一步：回到主页，查看「方向校准」推送";
+      ? "下一步：打开天气接住雨滴"
+      : state.actOne.weatherWaterTaken
+        ? "下一步：回到主页查看「方向校准」"
+        : "下一步：主页方向校准与天气水滴均可先找";
 
   useEffect(() => {
-    if (phase !== "loading") {
-      return undefined;
-    }
-
-    const onCampusWifi = !kit.network.canOpenTiyi() && !finalsAuditActive && !movementQuestActive;
+    let exitTimer: number | null = null;
     const timer = window.setTimeout(
       () => {
-        if (onCampusWifi) {
+        if (!entryAllowed) {
           setPhase("crashing");
           playSfx("12_");
           const crashes = kit.flags.bumpTiyiCrash();
           events.emit("tiyi_crashed", { crashes });
-          window.setTimeout(() => {
+          exitTimer = window.setTimeout(() => {
             router.goTo("phone_home");
             if (crashes >= 3) {
               playVo("sys_net_try", {
@@ -59,11 +58,14 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
           setPhase("main");
         }
       },
-      onCampusWifi ? CRASH_DELAY_MS : LOAD_DELAY_MS
+      entryAllowed ? LOAD_DELAY_MS : CRASH_DELAY_MS
     );
 
-    return () => window.clearTimeout(timer);
-  }, [phase, router, events, finalsAuditActive, movementQuestActive]);
+    return () => {
+      window.clearTimeout(timer);
+      if (exitTimer !== null) window.clearTimeout(exitTimer);
+    };
+  }, [entryAllowed, router, events]);
 
   function collectSeven() {
     if (flags.tiyiCountTaken) {
