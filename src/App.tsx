@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { eventBus } from "./core/EventBus";
 import { gameStore } from "./core/GameState";
 import { SceneRouter } from "./core/SceneRouter";
@@ -6,6 +6,7 @@ import { selectFeatureAccess } from "./core/FeatureAccess";
 import type { GameState, QuestViewModel } from "./core/types";
 import { PhoneShell } from "./components/PhoneShell";
 import { DeveloperChannel } from "./components/DeveloperChannel";
+import { LibraryStoryOverlay } from "./components/LibraryStoryOverlay";
 import { PresentationLayer } from "./components/PresentationLayer";
 import { ToastLayer } from "./components/ToastLayer";
 import { QuestTaskBar } from "./components/QuestClueStrip";
@@ -17,6 +18,20 @@ const router = new SceneRouter(gameStore, eventBus);
 const RpgGameHost = lazy(() =>
   import("./scenes/rpg/RpgGameHost").then((module) => ({ default: module.RpgGameHost }))
 );
+
+const LIBRARY_STORY_SEQUENCE_BY_EVENT: Record<string, string> = {
+  library_route_unlocked: "library_route_unlocked",
+  library_entered: "library_entered",
+  library_occupied_seat_found: "library_occupied_seat_found",
+  cc98_occupation_post_opened: "cc98_occupation_post_opened",
+  library_catalog_match_found: "library_catalog_match_found",
+  library_bag_nonperson_proof_issued: "library_bag_nonperson_proof_issued",
+  tiyi_presence_proof_issued: "tiyi_presence_proof_issued",
+  cc98_top_ten_reached: "cc98_top_ten_reached",
+  library_seat_release_pass_issued: "library_seat_release_pass_issued",
+  library_backpack_evicted: "library_backpack_evicted",
+  library_seat_recovered: "library_friend_contacted"
+};
 
 function getSnapshot(): GameState {
   return gameStore.getState();
@@ -46,6 +61,9 @@ function useDesktopGameplayLayout(): boolean {
 export function App() {
   const state = useSyncExternalStore(gameStore.subscribe, getSnapshot, getSnapshot);
   const [developerChannelOpen, setDeveloperChannelOpen] = useState(false);
+  const [libraryStorySequence, setLibraryStorySequence] = useState<string | null>(null);
+  const libraryStorySequenceRef = useRef<string | null>(null);
+  const libraryStoryQueueRef = useRef<string[]>([]);
   const [activeSurface, setActiveSurface] = useState<"phone" | "rpg">("rpg");
   const desktopGameplay = useDesktopGameplayLayout();
   const phonePaneRef = useRef<HTMLElement>(null);
@@ -61,6 +79,44 @@ export function App() {
       detachPresentation();
       detachAudio();
     };
+  }, []);
+
+  useEffect(() => {
+    const startStory = (sequenceId: string) => {
+      if (libraryStorySequenceRef.current) {
+        if (!libraryStoryQueueRef.current.includes(sequenceId)) {
+          libraryStoryQueueRef.current.push(sequenceId);
+        }
+        return;
+      }
+      libraryStorySequenceRef.current = sequenceId;
+      setLibraryStorySequence(sequenceId);
+    };
+
+    return eventBus.subscribe((event) => {
+      const sequenceId = event.name === "library_story_request"
+        ? String(event.payload?.sequenceId ?? "")
+        : LIBRARY_STORY_SEQUENCE_BY_EVENT[event.name];
+      if (sequenceId) {
+        startStory(sequenceId);
+      }
+    });
+  }, []);
+
+  const finishLibraryStory = useCallback(() => {
+    const sequenceId = libraryStorySequenceRef.current;
+    if (!sequenceId) {
+      return;
+    }
+    eventBus.emit("library_story_finished", { sequenceId });
+    const nextSequenceId = libraryStoryQueueRef.current.shift() ?? null;
+    if (nextSequenceId) {
+      libraryStorySequenceRef.current = nextSequenceId;
+      setLibraryStorySequence(nextSequenceId);
+      return;
+    }
+    libraryStorySequenceRef.current = null;
+    setLibraryStorySequence(null);
   }, []);
 
   function focusRpg() {
@@ -106,6 +162,14 @@ export function App() {
     </section>
   ) : null;
 
+  const libraryStoryLayer = libraryStorySequence ? (
+    <LibraryStoryOverlay
+      events={eventBus}
+      sequenceId={libraryStorySequence}
+      onFinished={finishLibraryStory}
+    />
+  ) : null;
+
   if (state.runtimeMode === "rpg") {
     if (desktopGameplay) {
       return (
@@ -141,15 +205,13 @@ export function App() {
               className="desktop-rpg-pane"
               aria-label="地图交互区"
               onPointerDownCapture={focusRpg}
-              onWheelCapture={focusRpg}
-              onFocusCapture={focusRpg}
             >
               <Suspense fallback={<main className="rpg-stage is-embedded">Loading RPG runtime</main>}>
                 <RpgGameHost
                   store={gameStore}
                   router={router}
                   events={eventBus}
-                  inputBlocked={developerChannelOpen}
+                  inputBlocked={developerChannelOpen || libraryStorySequence !== null}
                   keyboardBlocked={activeSurface !== "rpg"}
                   embedded
                   showTaskBar={false}
@@ -162,6 +224,7 @@ export function App() {
             <PresentationLayer events={eventBus} />
             <ToastLayer events={eventBus} />
             {chapterIntro}
+            {libraryStoryLayer}
           </main>
           <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
         </>
@@ -174,13 +237,14 @@ export function App() {
             store={gameStore}
             router={router}
             events={eventBus}
-            inputBlocked={developerChannelOpen}
+            inputBlocked={developerChannelOpen || libraryStorySequence !== null}
             onTaskNavigate={navigateFromTask}
           />
         </Suspense>
         <PresentationLayer events={eventBus} />
         <ToastLayer events={eventBus} />
         {chapterIntro}
+        {libraryStoryLayer}
         <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
       </>
     );
@@ -192,6 +256,7 @@ export function App() {
         <Scene state={state} router={router} events={eventBus} />
       </PhoneShell>
       {chapterIntro}
+      {libraryStoryLayer}
       <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
     </>
   );

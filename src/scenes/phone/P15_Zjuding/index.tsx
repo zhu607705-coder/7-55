@@ -1346,6 +1346,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     const investigationActive = [
       "occupied_seat_found",
       "evidence_gathering",
+      "bd_briefing",
       "top_ten_rising",
       "top_ten_reached",
       "recovery_application",
@@ -1362,7 +1363,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           ? "PASS 已签发"
           : finalsPhase === "recovery_application"
             ? "恢复申请待提交"
-            : ["top_ten_rising", "top_ten_reached"].includes(finalsPhase)
+            : ["bd_briefing", "top_ten_rising", "top_ten_reached"].includes(finalsPhase)
               ? "公示审核中"
               : "占用异常";
     page = (

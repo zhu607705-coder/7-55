@@ -240,7 +240,8 @@ function libraryPhaseFor(id: LibraryDeveloperCheckpointId): LibraryFinalsPhase {
   if (id === "c2-library-gate") return "library_route_unlocked";
   if (id === "c2-entrance-record" || id === "c2-seat-arrival") return "library_entered";
   if (id === "c2-occupancy-note") return "occupied_seat_found";
-  if (["c2-catalog", "c2-archived-rule", "c2-photo-report", "c2-nonperson-stamp", "c2-seat-receipt", "c2-tiyi-proof", "c2-cc98-upload"].includes(id)) return "evidence_gathering";
+  if (["c2-catalog", "c2-archived-rule", "c2-photo-report", "c2-nonperson-stamp", "c2-seat-receipt", "c2-tiyi-proof"].includes(id)) return "evidence_gathering";
+  if (id === "c2-cc98-upload") return "bd_briefing";
   if (id === "c2-bd-rise") return "top_ten_rising";
   if (id === "c2-recovery-form") return "top_ten_reached";
   if (id === "c2-pass-generate") return "recovery_application";
@@ -304,9 +305,6 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
     puzzle.auditPublicNoticeFloor = 47;
     puzzle.auditProofCount = 3;
     puzzle.presenceProofCollected = true;
-    items.libraryPresenceProof = true;
-  }
-  if (reached("c2-bd-rise")) {
     puzzle.cc98UploadedEvidenceIds = [
       "archived_leave_rule",
       "bag_non_person_proof",
@@ -314,6 +312,10 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
       "library_presence_proof"
     ];
     items.archivedLeaveRule = false;
+    items.libraryPresenceProof = true;
+  }
+  if (reached("c2-bd-rise")) {
+    puzzle.bdCount = 0;
   }
   if (reached("c2-recovery-form")) {
     puzzle.bdCount = 3;
@@ -508,6 +510,7 @@ function checkpointFromLegacyParams(params: URLSearchParams): DeveloperCheckpoin
     if (page === "library_catalog") return "c2-catalog";
     return "c2-catalog";
   }
+  if (phase === "bd_briefing") return "c2-cc98-upload";
   if (phase === "top_ten_rising") return "c2-bd-rise";
   if (phase === "top_ten_reached") return "c2-recovery-form";
   if (phase === "recovery_application") return "c2-pass-generate";

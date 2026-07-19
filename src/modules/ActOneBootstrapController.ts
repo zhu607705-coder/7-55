@@ -10,6 +10,8 @@ export type GamepadUseResult = "active" | "identity_required" | "exercise_requir
  * Scenes may animate these facts, while only this controller validates progress.
  */
 export class ActOneBootstrapController {
+  private characterHintStep = 0;
+
   constructor(
     private readonly store: GameStore,
     private readonly events: EventBus
@@ -145,10 +147,22 @@ export class ActOneBootstrapController {
     if (!this.isMovementPhase(actOne)) {
       return false;
     }
-    if (!actOne.characterPromptSeen) {
-      this.patch({ characterPromptSeen: true });
-      this.events.emit("act2_character_cannot_hear");
+    if (!actOne.characterNamed) {
+      if (!actOne.characterPromptSeen) {
+        this.patch({ characterPromptSeen: true });
+        this.events.emit("act2_character_cannot_hear");
+      }
+      return true;
     }
+    if (!actOne.exerciseStarted) {
+      this.events.emit("toast", { text: "他好像没什么动力走", tone: "system" });
+      return true;
+    }
+    const hint = this.characterHintStep === 0
+      ? "他可能不太知道往哪边走"
+      : "在寝室刷3公里的想法不错";
+    this.characterHintStep = 1;
+    this.events.emit("toast", { text: hint, tone: "system" });
     return true;
   }
 
@@ -187,6 +201,7 @@ export class ActOneBootstrapController {
     if (actOne.exerciseStarted) {
       return true;
     }
+    this.characterHintStep = 0;
     this.updateMovementFacts({ exerciseStarted: true });
     this.events.emit("act2_exercise_started");
     return true;

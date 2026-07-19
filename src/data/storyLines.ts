@@ -2,7 +2,7 @@ import type { StoryLine } from "../core/types";
 import actOneContent from "./act-one-bootstrap.content.json";
 import bikeContent from "./bike-arcade.content.json";
 import legacyDialogue from "./dialogue.lines.json";
-import libraryContent from "./library-finals.content.json";
+import { LIBRARY_STORY_SEQUENCES, libraryStoryLineKey } from "./libraryFinalsStory";
 
 const MALE_DIALOGUE_KEYS = new Set([
   "wake_narration",
@@ -53,6 +53,22 @@ function textLine(kind: "taunt" | "task", subtitleZh: string): StoryLine {
   return { kind, speaker: "system", subtitleZh };
 }
 
+function libraryDialogueLine(speakerLabel: string, subtitleZh: string): StoryLine {
+  const speaker = speakerLabel === "旁白"
+    ? "narrator"
+    : speakerLabel === "玩家"
+      ? "player"
+      : speakerLabel === "022"
+        ? "seat022"
+        : "system";
+  return {
+    kind: "dialogue",
+    speaker,
+    voiceRole: speaker === "narrator" || speaker === "player" ? "male_narrator" : "female_system",
+    subtitleZh
+  };
+}
+
 const lines: Record<string, StoryLine> = {};
 
 for (const line of legacyDialogue) {
@@ -68,8 +84,10 @@ for (const [key, line] of Object.entries(actOneContent.audioNarration)) {
     : textLine(line.tone === "task" ? "task" : "taunt", subtitleZh);
 }
 
-for (const [key, line] of Object.entries(libraryContent.narration)) {
-  lines[key] = textLine("task", line.subtitleZh ?? line.text);
+for (const [sequenceId, sequence] of Object.entries(LIBRARY_STORY_SEQUENCES)) {
+  sequence.forEach((line, index) => {
+    lines[libraryStoryLineKey(sequenceId, index)] = libraryDialogueLine(line.speaker, line.text);
+  });
 }
 
 for (const [key, subtitleZh] of Object.entries(bikeContent.subtitles)) {

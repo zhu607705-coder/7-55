@@ -113,8 +113,10 @@ export function RpgGameHost({
   const gameRef = useRef<Phaser.Game | null>(null);
   const inputBlockedRef = useRef(inputBlocked);
   const keyboardBlockedRef = useRef(keyboardBlocked);
+  const pendingInspectStoryRef = useRef<string | null>(null);
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
-  inputBlockedRef.current = inputBlocked;
+  const itemInspectOpen = inspectedMapItem !== null;
+  inputBlockedRef.current = inputBlocked || itemInspectOpen;
   keyboardBlockedRef.current = keyboardBlocked;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
@@ -197,7 +199,7 @@ export function RpgGameHost({
     if (!game) {
       return undefined;
     }
-    if (inputBlocked) {
+    if (inputBlocked || itemInspectOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
@@ -215,7 +217,7 @@ export function RpgGameHost({
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [events, inputBlocked, keyboardBlocked]);
+  }, [events, inputBlocked, itemInspectOpen, keyboardBlocked]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -290,6 +292,23 @@ export function RpgGameHost({
         } else if (action !== "visitLibraryPoint") {
           events.emit("library_rpg_interaction_failed", { action, targetId, reason: "unavailable" });
         }
+      } else if (event.name === "library_archived_rule_recovered") {
+        pendingInspectStoryRef.current = "library_archived_rule_recovered";
+        setInspectedMapItem("archivedLeaveRule");
+      } else if (
+        event.name === "library_story_finished"
+        && event.payload?.sequenceId === "library_friend_contacted"
+      ) {
+        libraryController.complete022Dialogue();
+      } else if (
+        event.name === "library_story_finished"
+        && event.payload?.sequenceId === "library_archived_rule_recovered"
+      ) {
+        events.emit("toast", {
+          text: "任务更新：完成三项证明",
+          tone: "task",
+          durationMs: 4200
+        });
       }
     });
   }, [controller, events, libraryController]);
@@ -360,6 +379,15 @@ export function RpgGameHost({
     events.emit("inventory_item_inspected", { itemId, surface: "rpg" });
   }
 
+  function closeMapItemDetails() {
+    const pendingStory = pendingInspectStoryRef.current;
+    pendingInspectStoryRef.current = null;
+    setInspectedMapItem(null);
+    if (pendingStory) {
+      events.emit("library_story_request", { sequenceId: pendingStory });
+    }
+  }
+
   function handleMapItemPointerUp(itemId: ItemId) {
     const now = Date.now();
     const previousTap = lastMapItemTap.current;
@@ -374,7 +402,7 @@ export function RpgGameHost({
     <main
       className={`rpg-stage ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
-      data-input-blocked={inputBlocked ? "true" : "false"}
+      data-input-blocked={inputBlocked || itemInspectOpen ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
@@ -487,7 +515,7 @@ export function RpgGameHost({
         itemId={inspectedMapItem}
         variant="rpg"
         portalRoot={shellRoot}
-        onClose={() => setInspectedMapItem(null)}
+        onClose={closeMapItemDetails}
       />
     </main>
   );
@@ -511,16 +539,21 @@ export function activateRpgScene(game: Phaser.Game, target: string): void {
 function getLibraryObjective(state: GameState): string {
   const phase = state.ui.libraryFinalsPhase;
   const puzzle = state.ui.libraryFinalsPuzzle;
+  if (phase === "library_route_unlocked") return "进入图书馆，找到 022";
   if (phase === "library_entered") return puzzle.entranceRecordRead ? "前往二层南区寻找 022" : "读取入馆记录，确认 022 的位置";
-  if (phase === "occupied_seat_found") return puzzle.occupancyNoteCollected ? "调查纸条提到的公开记录" : "检查书包旁边的占座纸条";
+  if (phase === "occupied_seat_found") return puzzle.occupancyNoteCollected ? "调查 022 的占座规则" : "检查书包旁边的占座纸条";
   if (phase === "evidence_gathering") {
-    if (!puzzle.investigationOpened) return "用占座纸条查找公开记录";
-    if (!puzzle.catalogSearchCompleted || !puzzle.callNumberCollected) return "先确认旧版离座规则";
+    if (!puzzle.investigationOpened) return "调查 022 的占座规则";
+    if (!puzzle.catalogSearchCompleted || !puzzle.callNumberCollected) return "找到旧版离座规则";
     if (!puzzle.archivedRuleCollected) return "按索书号核对馆内旧规则";
-    const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
-    return proofCount < 3 ? "补齐恢复座位所需的三项证明" : "把四项公开证据整理进 CC98";
+    if (!puzzle.nonPersonProofStamped) return "证明书包不是本人";
+    if (!puzzle.seatReceiptCollected) return "取得 022 座位小票";
+    if (!puzzle.presenceProofCollected) return "证明本人来过 022";
+    return "把四项公开证据整理进 CC98";
   }
-  if (phase === "top_ten_rising" || phase === "top_ten_reached") return "让证据公示进入 CC98 十大";
+  if (phase === "top_ten_reached") return "前往图书馆 App 提交恢复申请";
+  if (phase === "bd_briefing") return "听系统说明为什么还需要 bd";
+  if (phase === "top_ten_rising") return "让证据公示进入 CC98 十大";
   if (phase === "recovery_application") return "完成图书馆座位恢复申请";
   if (phase === "pass_ready") return "对 022 书包使用离座清退 PASS";
   if (phase === "backpack_removed") return "坐到已经恢复的 022";
@@ -534,7 +567,7 @@ function getLibraryProgress(state: GameState): string {
   if (state.ui.libraryFinalsPhase === "friend_contacted") {
     return "完成";
   }
-  if (state.ui.libraryFinalsPhase === "top_ten_rising" || state.ui.libraryFinalsPhase === "top_ten_reached") {
+  if (["bd_briefing", "top_ten_rising", "top_ten_reached"].includes(state.ui.libraryFinalsPhase)) {
     return `R${String(4 - puzzle.bdCount).padStart(2, "0")}`;
   }
   if (!puzzle.archivedRuleCollected) {
@@ -550,6 +583,7 @@ function resolveRuntimeScene(state: GameState): RpgSceneId {
     "library_entered",
     "occupied_seat_found",
     "evidence_gathering",
+    "bd_briefing",
     "top_ten_rising",
     "top_ten_reached",
     "recovery_application",

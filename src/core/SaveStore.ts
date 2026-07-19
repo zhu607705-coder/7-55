@@ -51,7 +51,7 @@ const VALID_ZJUDING_PAGES = new Set<GameState["ui"]["zjudingPage"]>([
 ]);
 const VALID_LIBRARY_FINALS_PHASES = new Set<LibraryFinalsPhase>([
   "idle", "library_route_unlocked", "library_entered", "occupied_seat_found", "evidence_gathering",
-  "top_ten_rising", "top_ten_reached", "recovery_application", "pass_ready", "backpack_removed",
+  "bd_briefing", "top_ten_rising", "top_ten_reached", "recovery_application", "pass_ready", "backpack_removed",
   "seat_recovered", "friend_contacted"
 ]);
 const LEGACY_LIBRARY_PHASES = new Set([

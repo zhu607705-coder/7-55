@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.png";
 import type { GameState, ItemId, LibraryLocationId } from "../../core/types";
-import libraryFinalsContent from "../../data/library-finals.content.json";
 import type { RpgBridge } from "./RpgBridge";
 import {
   acceptsLibraryItem,
@@ -18,7 +17,7 @@ import {
   type LibraryInteractionTarget,
   type LibraryInteractionTargetId
 } from "./LibraryInteriorModel";
-import { formatRpgInteractionHint, RPG_CONTROL_HINTS } from "./RpgControlHints";
+import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   configureRpgPlayerSprite,
@@ -38,7 +37,18 @@ const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   seatReleasePass: "离座清退 PASS"
 };
 
-const SEAT_DIALOGUE = libraryFinalsContent.library.dialogue022;
+const FRONT_DESK_PRE_REPORT_LINES = [
+  "前台：请出示物品识别报告。",
+  "玩家：我用肉眼看不行吗？",
+  "前台：肉眼不是本部门认可设备。",
+  "系统：你看，眼睛又输了。"
+] as const;
+
+const FRONT_DESK_AFTER_PROOF_LINES = [
+  "前台：请勿重复证明同一物品不是本人。",
+  "玩家：它会不会突然变成本人？",
+  "系统：别给第三章加需求。"
+] as const;
 
 interface MarkerParts {
   container: Phaser.GameObjects.Container;
@@ -69,10 +79,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private shelfPanel!: Phaser.GameObjects.Container;
   private targetShelfTag!: Phaser.GameObjects.Text;
   private lostFoundLight!: Phaser.GameObjects.Rectangle;
-  private dialoguePanel!: Phaser.GameObjects.Container;
-  private dialogueSpeaker!: Phaser.GameObjects.Text;
-  private dialogueText!: Phaser.GameObjects.Text;
-  private dialogueIndex = -1;
+  private frontDeskDialogueShown = false;
+  private frontDeskPreReportHintStep = 0;
+  private frontDeskAfterProofHintStep = 0;
   private lastVisitCheck = 0;
   private entranceDoorLeft!: Phaser.GameObjects.Container;
   private entranceDoorRight!: Phaser.GameObjects.Container;
@@ -132,10 +141,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.bridge.emit("rpg_library_room_opened");
     this.publishRuntimeDebug(this.getActiveTargets(this.bridge.getState()));
 
-    const puzzle = this.bridge.getState().ui.libraryFinalsPuzzle;
-    if (puzzle.playerSeated && puzzle.nextQuestId === null) {
-      this.time.delayedCall(240, () => this.publishDialogueLine(0));
-    }
   }
 
   update(): void {
@@ -211,7 +216,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.entranceAccessGranted = true;
       this.animateEntranceAccessGranted();
       this.flashTarget("entrance_record", 0x4ed3a8);
-      this.showFeedback("记录已读取：二层南区 022 仍有一个未闭合会话。", "success");
+      this.showFeedback("二层南区 022：存在未闭合会话\n最后活动：未知", "success");
       return;
     }
     if (name === "library_occupied_seat_found") {
@@ -246,18 +251,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.animateSitDown();
       return;
     }
-    if (name === "library_022_dialogue_line") {
-      this.renderDialogueLine(Number(payload?.index), String(payload?.speaker ?? "022"), String(payload?.text ?? ""));
-      return;
-    }
     if (name === "library_friend_contacted") {
-      this.dialoguePanel.setVisible(false);
-      this.animateChapterHandoff();
       this.showFeedback("任务更新：找到那本借走签到记录的书", "chapter");
       return;
-    }
-    if (name === "library_backpack_broadcast_line") {
-      this.showFeedback(String(payload?.text ?? ""), "broadcast");
     }
   }
 
@@ -312,8 +308,19 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.id === "seat_022_chair" && puzzle.playerSeated && puzzle.nextQuestId === null) {
-      this.advanceSeatDialogue();
       return;
+    }
+
+    if (
+      target.id === "front_desk"
+      && !puzzle.itemReportGenerated
+      && !puzzle.nonPersonProofStamped
+    ) {
+      if (!this.frontDeskDialogueShown) {
+        this.frontDeskDialogueShown = true;
+        this.bridge.emit("library_story_request", { sequenceId: "library_front_desk_proof_request" });
+        return;
+      }
     }
 
     this.bridge.emit("library_rpg_context_inspected", {
@@ -388,9 +395,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (targetId === "front_desk") {
-      if (!puzzle.archivedRuleCollected) return "前台目录只写着：先确认适用规则，再受理证明。";
-      const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
-      return proofCount < 3 ? `旧规则要求三项证明，目前已确认 ${proofCount} 项。` : "三项证明已齐，公开记录仍需完成公示。";
+      if (!puzzle.nonPersonProofStamped) {
+        const line = FRONT_DESK_PRE_REPORT_LINES[Math.min(this.frontDeskPreReportHintStep, FRONT_DESK_PRE_REPORT_LINES.length - 1)];
+        this.frontDeskPreReportHintStep += 1;
+        return line;
+      }
+      const line = FRONT_DESK_AFTER_PROOF_LINES[Math.min(this.frontDeskAfterProofHintStep, FRONT_DESK_AFTER_PROOF_LINES.length - 1)];
+      this.frontDeskAfterProofHintStep += 1;
+      return line;
     }
     if (targetId === "lost_found_machine") {
       return puzzle.itemReportGenerated
@@ -399,7 +411,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (targetId === "catalog_terminal") {
       return puzzle.investigationOpened
-        ? "馆藏检索已同步到浙大钉，可按帖子中的题名继续查找。"
+        ? "图书馆馆藏检索功能已解锁"
         : "终端可以检索题名、作者和索书号，当前没有调查关键词。";
     }
     if (targetId === "library_shelf_755") {
@@ -490,36 +502,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     });
   }
 
-  private advanceSeatDialogue(): void {
-    if (this.dialogueIndex < SEAT_DIALOGUE.length - 1) {
-      this.publishDialogueLine(this.dialogueIndex + 1);
-      return;
-    }
-    this.requestAction("complete022Dialogue", "seat_022_chair");
-  }
-
-  private publishDialogueLine(index: number): void {
-    const line = SEAT_DIALOGUE[index];
-    if (!line) {
-      return;
-    }
-    this.bridge.emit("library_022_dialogue_line", { index, speaker: line.speaker, text: line.text });
-  }
-
-  private renderDialogueLine(index: number, speaker: string, text: string): void {
-    if (!Number.isInteger(index) || index < 0 || index >= SEAT_DIALOGUE.length) {
-      return;
-    }
-    this.dialogueIndex = index;
-    this.feedbackTween?.stop();
-    this.feedbackText.setVisible(false).setAlpha(0).setScale(1);
-    this.dialogueSpeaker.setText(speaker);
-    this.dialogueSpeaker.setColor(speaker === "022" ? "#f0d56a" : speaker === "系统" ? "#e46666" : "#8ed8ff");
-    this.dialogueText.setText(text);
-    this.dialoguePanel.setVisible(true).setAlpha(0);
-    this.tweens.add({ targets: this.dialoguePanel, alpha: 1, duration: 120, ease: "Stepped" });
-  }
-
   private showFailure(reason: string, targetId: string): void {
     const text = reason === "wrong_item"
       ? "这个道具和目标的证据类型对不上。"
@@ -607,7 +589,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private animateCollectedObject(object: Phaser.GameObjects.Container, message: string): void {
-    this.animateEvidenceTransfer(object.x, object.y, 0xe7d38f);
     this.tweens.add({
       targets: object,
       y: object.y - 48,
@@ -630,22 +611,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
         const paper = this.add.rectangle(shelf.x - 72, shelf.y + 40, 42, 56, 0xd8c48c)
           .setStrokeStyle(3, 0x4b3929)
           .setDepth(5300);
-        this.tweens.add({
-          targets: paper,
-          y: shelf.y + 85,
-          duration: 260,
-          ease: "Bounce",
-          onComplete: () => {
-            this.animateEvidenceTransfer(paper.x, paper.y, 0xd8c48c);
-            this.tweens.add({
-              targets: paper,
-              alpha: 0,
-              delay: 220,
-              duration: 220,
-              onComplete: () => paper.destroy()
-            });
-          }
-        });
+        this.tweens.add({ targets: paper, y: shelf.y + 85, duration: 260, ease: "Bounce" });
       }
     });
     this.flashTarget("library_shelf_755", 0xe5c862);
@@ -669,17 +635,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "18px",
       padding: { x: 8, y: 5 }
     }).setOrigin(0.5).setDepth(5600).setScale(1.7).setAlpha(0);
-    this.tweens.add({
-      targets: stamp,
-      alpha: 1,
-      scale: 1,
-      duration: 220,
-      ease: "Stepped",
-      onComplete: () => {
-        this.animateEvidenceTransfer(machine.x, machine.y - 10, 0x5ed68d);
-        this.tweens.add({ targets: stamp, alpha: 0, delay: 520, duration: 180, onComplete: () => stamp.destroy() });
-      }
-    });
+    this.tweens.add({ targets: stamp, alpha: 1, scale: 1, duration: 220, ease: "Stepped" });
     this.showFeedback("盖章完成：书包不等于本人。", "success");
   }
 
@@ -692,10 +648,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       angle: 6,
       duration: 520,
       ease: "Stepped",
-      onComplete: () => {
-        this.animateEvidenceTransfer(this.receipt.x, this.receipt.y, 0x78a9df);
-        this.time.delayedCall(500, () => this.receipt.setVisible(false));
-      }
+      onComplete: () => this.time.delayedCall(500, () => this.receipt.setVisible(false))
     });
     this.flashTarget("seat_022_gap", 0x4f8cd8);
     this.showFeedback("右移箭头推出了 022 座位小票，箭头仍保留。", "success");
@@ -722,15 +675,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private animateBackpackEviction(): void {
-    const lines = [
-      "书包：主人马上回来。",
-      "玩家：什么时候？",
-      "书包：三分钟。",
-      "系统：它三天前也是这么说的。"
-    ];
-    lines.forEach((text, index) => {
-      this.time.delayedCall(index * 720, () => this.bridge.emit("library_backpack_broadcast_line", { text, index }));
-    });
     this.tweens.add({
       targets: this.backpack,
       x: this.backpack.x + 7,
@@ -764,100 +708,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       onComplete: () => {
         this.player.setTexture("act1-player-up-0");
         this.showFeedback("022 已恢复。", "success");
-        this.time.delayedCall(420, () => this.publishDialogueLine(0));
       }
-    });
-  }
-
-  private animateEvidenceTransfer(worldX: number, worldY: number, color: number): void {
-    const camera = this.cameras.main;
-    const startX = (worldX - camera.worldView.x) * camera.zoom;
-    const startY = (worldY - camera.worldView.y) * camera.zoom;
-    const targetX = 34;
-    const targetY = 86;
-    const packet = this.add.container(startX, startY).setScrollFactor(0).setDepth(10120);
-    const plate = this.add.rectangle(0, 0, 28, 22, color, 0.96).setStrokeStyle(3, 0x16201e, 1);
-    const fold = this.add.triangle(8, -6, 0, 0, 8, 0, 8, 8, 0xf4ead1, 0.85);
-    const lineA = this.add.rectangle(-5, 2, 11, 2, 0x27322f, 0.85);
-    const lineB = this.add.rectangle(-2, 7, 16, 2, 0x27322f, 0.65);
-    packet.add([plate, fold, lineA, lineB]);
-
-    const receiver = this.add.rectangle(targetX, targetY, 38, 38, 0x14201e, 0.76)
-      .setStrokeStyle(3, color, 0.95)
-      .setScrollFactor(0)
-      .setDepth(10110)
-      .setAlpha(0);
-    this.tweens.add({
-      targets: receiver,
-      alpha: 1,
-      scale: 1.18,
-      duration: 180,
-      yoyo: true,
-      hold: 430,
-      onComplete: () => receiver.destroy()
-    });
-
-    for (let index = 0; index < 5; index += 1) {
-      const pixel = this.add.rectangle(startX, startY, 5, 5, color, 0.9)
-        .setScrollFactor(0)
-        .setDepth(10100);
-      this.tweens.add({
-        targets: pixel,
-        x: targetX + (index % 2 === 0 ? -8 : 8),
-        y: targetY + (index - 2) * 5,
-        alpha: 0,
-        delay: index * 55,
-        duration: 520,
-        ease: "Stepped",
-        onComplete: () => pixel.destroy()
-      });
-    }
-
-    this.tweens.add({
-      targets: packet,
-      x: targetX,
-      y: targetY,
-      angle: 90,
-      scale: 0.28,
-      alpha: 0.2,
-      duration: 650,
-      ease: "Stepped",
-      onComplete: () => packet.destroy()
-    });
-  }
-
-  private animateChapterHandoff(): void {
-    const wash = this.add.rectangle(480, 270, 960, 540, 0xf7f2df, 0)
-      .setScrollFactor(0)
-      .setDepth(10130);
-    const leftPage = this.add.rectangle(-18, 0, 36, 58, 0xede3c3)
-      .setStrokeStyle(3, 0x3c3025);
-    const rightPage = this.add.rectangle(18, 0, 36, 58, 0xede3c3)
-      .setStrokeStyle(3, 0x3c3025);
-    const spine = this.add.rectangle(0, 0, 4, 58, 0xb54b43);
-    const book = this.add.container(480, 270, [leftPage, rightPage, spine])
-      .setScrollFactor(0)
-      .setDepth(10140)
-      .setScale(0.25)
-      .setAlpha(0);
-    this.tweens.add({
-      targets: wash,
-      alpha: { from: 0, to: 0.68 },
-      duration: 220,
-      yoyo: true,
-      hold: 360,
-      onComplete: () => wash.destroy()
-    });
-    this.tweens.add({
-      targets: book,
-      alpha: 1,
-      scale: 1.2,
-      angle: -4,
-      duration: 340,
-      ease: "Stepped",
-      yoyo: true,
-      hold: 280,
-      onComplete: () => book.destroy()
     });
   }
 
@@ -1099,37 +950,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       padding: { x: 14, y: 8 }
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10020).setVisible(false);
 
-    const shadow = this.add.rectangle(5, 6, 700, 88, 0x000000, 0.45);
-    const panel = this.add.rectangle(0, 0, 700, 88, 0x101b19, 0.97).setStrokeStyle(3, 0xbca55f, 0.95);
-    const accent = this.add.rectangle(-342, 0, 7, 84, 0xd6be62, 0.95);
-    this.dialogueSpeaker = this.add.text(-324, -26, "022", {
-      color: "#17201e",
-      backgroundColor: "#f0d56a",
-      fontFamily: "monospace",
-      fontSize: "12px",
-      fontStyle: "bold",
-      padding: { x: 7, y: 3 }
-    }).setOrigin(0, 0.5);
-    this.dialogueText = this.add.text(-324, 12, "", {
-      color: "#fff7df",
-      fontFamily: "monospace",
-      fontSize: "14px",
-      lineSpacing: 3,
-      wordWrap: { width: 625 }
-    }).setOrigin(0, 0.5);
-    const continueText = this.add.text(324, 29, RPG_CONTROL_HINTS.continueDialogue, {
-      color: "#8ed8ff",
-      fontFamily: "monospace",
-      fontSize: "10px"
-    }).setOrigin(1, 0.5);
-    this.dialoguePanel = this.add.container(
-      RPG_HUD_LAYOUT.centerX,
-      RPG_HUD_LAYOUT.dialogueCenterY,
-      [shadow, panel, accent, this.dialogueSpeaker, this.dialogueText, continueText]
-    )
-      .setScrollFactor(0)
-      .setDepth(10010)
-      .setVisible(false);
   }
 
   private drawInterior(): void {

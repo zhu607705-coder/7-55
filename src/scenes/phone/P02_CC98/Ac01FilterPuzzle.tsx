@@ -43,6 +43,7 @@ const FILLER_AUTHORS = cc98Content.fillerReplies.authors;
 const FILLER_TEXT = cc98Content.fillerReplies.texts;
 
 function buildFloors(): FloorReply[] {
+  let fillerIndex = 0;
   return Array.from({ length: 23 }, (_, index) => {
     const floor = index + 1;
     const story = STORY_REPLIES.get(floor);
@@ -51,9 +52,9 @@ function buildFloors(): FloorReply[] {
     if (optionalAc01) return optionalAc01;
     return {
       floor,
-      author: FILLER_AUTHORS[index % FILLER_AUTHORS.length],
+      author: FILLER_AUTHORS[fillerIndex % FILLER_AUTHORS.length],
       role: "路过",
-      text: FILLER_TEXT[index % FILLER_TEXT.length]
+      text: FILLER_TEXT[fillerIndex++ % FILLER_TEXT.length]
     };
   });
 }

@@ -43,8 +43,8 @@
   },
   {
     "id": "campusCard",
-    "name": "电子校园卡",
-    "desc": "林星宇，学号 3250100755。",
+    "name": "校园卡",
+    "desc": "证明你是你的卡。余额方面，它持保留意见。",
     "sourceScene": "zjuding",
     "target": "system_circle"
   },
@@ -71,71 +71,71 @@
   },
   {
     "id": "rightArrow",
-    "name": "右移箭头",
-    "desc": "能把目标向右移动两格。移动校园卡小数点后仍会保留。",
+    "name": "右向箭头",
+    "desc": "能把什么东西往右移。它不解决问题，只负责让问题换个位置。",
     "sourceScene": "wechat",
     "target": "campus_card_balance|seat_022_gap"
   },
   {
     "id": "gamepad",
     "name": "游戏手柄",
-    "desc": "从 CC98 二手市场买来的手柄，方向键还能用。",
+    "desc": "二手市场六块钱购入。它让你终于可以操作自己，听起来很悲伤。",
     "sourceScene": "cc98",
     "target": "dorm_character"
   },
   {
     "id": "occupancyNote",
     "name": "占座纸条",
-    "desc": "从 022 书包旁取得，纸条上的措辞适合拿去检索。",
+    "desc": "022 座位旁留下的一张纸条。它声称主人只离开三分钟，但纸张老化程度不支持这个说法。",
     "sourceScene": "phone_home",
     "target": "cc98_search"
   },
   {
     "id": "callNumber755",
     "name": "索书号 755",
-    "desc": "正确馆藏《三分钟离座法及其例外》的索书号：I247.55 / 755。",
+    "desc": "一串看起来属于书架、实际上更像咒语的编号。图书馆用它证明“你找不到”也是一种服务。",
     "sourceScene": "zjuding",
     "target": "library_shelf_755"
   },
   {
     "id": "archivedLeaveRule",
-    "name": "旧离座规定",
-    "desc": "书架深处保存的三分钟离座规定，可作为 CC98 公开证据。",
+    "name": "旧版离座规则",
+    "desc": "一份已经过期但仍然有效的规则。它最大的优点是没人敢确认它无效。",
     "sourceScene": "phone_home",
     "target": "cc98_evidence_upload"
   },
   {
     "id": "itemRecognitionReport",
     "name": "物品识别报告",
-    "desc": "照片识别得到的书包报告，还缺失物招领处的认证章。",
+    "desc": "它很沉重，但不是法律意义上的同学。",
     "sourceScene": "photos",
     "target": "lost_found_machine"
   },
   {
     "id": "bagNonPersonProof",
     "name": "书包非本人证明",
-    "desc": "失物招领机器盖章确认：书包不等于本人。",
+    "desc": "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。",
     "sourceScene": "phone_home",
     "target": "library_recovery_upload"
   },
   {
     "id": "seat022Receipt",
     "name": "022 座位小票",
-    "desc": "用右移箭头从桌缝里推出的座位凭据。",
+    "desc": "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。",
     "sourceScene": "phone_home",
     "target": "library_recovery_upload"
   },
   {
     "id": "libraryPresenceProof",
     "name": "本人来过证明",
-    "desc": "浙大体艺根据图书馆访问记录生成的证明。",
+    "desc": "一张证明你来过的证明。它没有证明你为什么要来。",
     "sourceScene": "tiyi",
     "target": "library_recovery_upload"
   },
   {
     "id": "seatReleasePass",
-    "name": "离座清退 PASS",
-    "desc": "恢复申请签发，只能对 022 座位上的书包使用。",
+    "name": "解除占座 PASS",
+    "desc": "仅对非本人书包有效。如书包已进化为本人，请联系下一章。",
     "sourceScene": "zjuding",
     "target": "seat_022_backpack"
   }

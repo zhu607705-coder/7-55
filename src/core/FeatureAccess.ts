@@ -5,6 +5,7 @@ const LIBRARY_VISIBLE_PHASES = new Set<GameState["ui"]["libraryFinalsPhase"]>([
   "library_entered",
   "occupied_seat_found",
   "evidence_gathering",
+  "bd_briefing",
   "top_ten_rising",
   "top_ten_reached",
   "recovery_application",

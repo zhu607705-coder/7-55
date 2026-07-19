@@ -19,6 +19,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   const [listTilt, setListTilt] = useState(false);
   const [mentorLineFalling, setMentorLineFalling] = useState(false);
   const [mentorHintStep, setMentorHintStep] = useState(0);
+  const [friendAvatarPreDropTapCount, setFriendAvatarPreDropTapCount] = useState(0);
   const { flags, ui } = state;
   const followupPending = state.actOne.phase === "friend_message_required";
   const followupVisible = flags.checkinDone && state.actOne.phase !== "prologue";
@@ -196,7 +197,16 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     if (!flags.slashHalfDropped) {
-      kit.flags.toast(ui.autoRotate ? "斜线晃了晃，还没掉。" : "头像上的斜线纹丝不动。");
+      const taps = friendAvatarPreDropTapCount + 1;
+      setFriendAvatarPreDropTapCount(taps);
+      const hint = taps === 2
+        ? "或许可以再斜一点"
+        : taps >= 5
+          ? "它也想转转罢"
+          : ui.autoRotate
+            ? "斜线晃了晃，还没掉。"
+            : "头像上的斜线纹丝不动。";
+      kit.flags.toast(hint);
       return;
     }
     const taps = flags.slashTapCount + 1;
@@ -216,7 +226,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   function clickMentorAvatar(e: React.MouseEvent | React.KeyboardEvent) {
     e.stopPropagation();
     if (!movementQuestActive) {
-      kit.flags.toast("导师的消息，还是等签完到再回吧。");
+      if (state.actOne.phase === "prologue") {
+        kit.flags.toast("导师的消息，还是等签完到再回吧。");
+      }
       return;
     }
     if (state.actOne.mentorLineReleased) {

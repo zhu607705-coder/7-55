@@ -25,11 +25,6 @@
           "channel": "sfx",
           "asset": "01_global_ui_button_tap_confirm",
           "volume": 0.42
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_route_unlocked",
-          "offsetMs": 180
         }
       ]
     },
@@ -46,11 +41,6 @@
           "channel": "sfx",
           "asset": "fx_library_gate_scan_v2",
           "volume": 0.62
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_entered",
-          "offsetMs": 260
         }
       ]
     },
@@ -76,11 +66,6 @@
           "channel": "sfx",
           "asset": "fx_backpack_alert_v2",
           "volume": 0.66
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_occupied_seat_found",
-          "offsetMs": 300
         }
       ]
     },
@@ -107,11 +92,6 @@
           "asset": "fx_catalog_search_v2",
           "volume": 0.44,
           "playbackRate": 1.12
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "cc98_occupation_post_opened",
-          "offsetMs": 220
         }
       ]
     },
@@ -162,11 +142,6 @@
           "channel": "sfx",
           "asset": "fx_catalog_correct_v2",
           "volume": 0.72
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_catalog_match_found",
-          "offsetMs": 260
         }
       ]
     },
@@ -176,11 +151,6 @@
           "channel": "sfx",
           "asset": "fx_shelf_slide_v2",
           "volume": 0.7
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_archived_rule_recovered",
-          "offsetMs": 360
         }
       ]
     },
@@ -206,11 +176,6 @@
           "channel": "sfx",
           "asset": "fx_report_print_v2",
           "volume": 0.68
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "photo_bag_report_generated",
-          "offsetMs": 360
         }
       ]
     },
@@ -220,11 +185,6 @@
           "channel": "sfx",
           "asset": "fx_nonperson_stamp_v2",
           "volume": 0.75
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_bag_nonperson_proof_issued",
-          "offsetMs": 280
         }
       ]
     },
@@ -234,11 +194,6 @@
           "channel": "sfx",
           "asset": "fx_receipt_slide_v2",
           "volume": 0.7
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_seat_receipt_recovered",
-          "offsetMs": 300
         }
       ]
     },
@@ -268,11 +223,6 @@
           "asset": "fx_nonperson_stamp_v2",
           "volume": 0.68,
           "playbackRate": 1.08
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "tiyi_presence_proof_issued",
-          "offsetMs": 280
         }
       ]
     },
@@ -318,11 +268,6 @@
           "channel": "sfx",
           "asset": "fx_pass_stamp_v2",
           "volume": 0.78
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "cc98_top_ten_reached",
-          "offsetMs": 300
         }
       ]
     },
@@ -357,11 +302,6 @@
           "channel": "sfx",
           "asset": "fx_pass_stamp_v2",
           "volume": 0.82
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_seat_release_pass_issued",
-          "offsetMs": 300
         }
       ]
     },
@@ -381,11 +321,6 @@
           "channel": "sfx",
           "asset": "fx_backpack_transfer_v2",
           "volume": 0.76
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_backpack_evicted",
-          "offsetMs": 360
         }
       ]
     },
@@ -412,11 +347,6 @@
           "asset": "fx_022_signal_v2",
           "volume": 0.6,
           "playbackRate": 0.9
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "library_friend_contacted",
-          "offsetMs": 320
         }
       ]
     },
@@ -429,7 +359,16 @@
           "playbackRate": 1.2
         }
       ]
+    },
+    "library_story_line": {
+      "cues": [
+        {
+          "channel": "voice",
+          "subtitleSurface": "scene",
+          "subtitleKey": "",
+          "voicePlaceholder": "（语音）"
+        }
+      ]
     }
   }
 }
-

@@ -59,7 +59,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   campusCard: {
     category: "身份凭证",
     source: "寝室右侧书桌 / 电子校园卡",
-    intro: "姓名和学号用于识别人；余额里有一位数字，负责识别另一件事。"
+    intro: "证明你是你的卡。余额方面，它持保留意见。"
   },
   pushTriangle: {
     category: "图形素材",
@@ -79,52 +79,52 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   rightArrow: {
     category: "位移工具",
     source: "三角形 + 竖线",
-    intro: "它只规定向右，不规定对象。写着数的、夹在缝里的，都属于可尝试范围。"
+    intro: "能把什么东西往右移。它不解决问题，只负责让问题换个位置。"
   },
   gamepad: {
     category: "控制设备",
     source: "CC98 二手市场",
-    intro: "自动行走解决了会不会走；四个方向才能决定往哪里走。"
+    intro: "二手市场六块钱购入。它让你终于可以操作自己，听起来很悲伤。"
   },
   occupancyNote: {
     category: "调查证据",
     source: "图书馆 022 座位旁",
-    intro: "纸上写了离开时长和占位理由。原句放进公开讨论区，更容易找到相同说法。"
+    intro: "022 座位旁留下的一张纸条。它声称主人只离开三分钟，但纸张老化程度不支持这个说法。"
   },
   callNumber755: {
     category: "检索线索",
     source: "浙大钉馆藏检索结果",
-    intro: "这串数字不回答问题，只标记位置。书架边缘会出现同样的编号。"
+    intro: "一串看起来属于书架、实际上更像咒语的编号。图书馆用它证明“你找不到”也是一种服务。"
   },
   archivedLeaveRule: {
     category: "公开证据",
     source: "图书馆 755 书架夹层",
-    intro: "发布日期很旧，适用范围仍值得核对。公开讨论需要能查到出处的文字。"
+    intro: "一份已经过期但仍然有效的规则。它最大的优点是没人敢确认它无效。"
   },
   itemRecognitionReport: {
     category: "机器报告",
     source: "照片识别结果",
-    intro: "它确认了画面里的物品，身份一栏仍为空。校园里有个地方专门补这一栏。"
+    intro: "它很沉重，但不是法律意义上的同学。"
   },
   bagNonPersonProof: {
     category: "认证证明",
     source: "失物身份登记机盖章",
-    intro: "一条错误等号已经被排除，座位归属仍未说明。单独提交会缺少另外两类材料。"
+    intro: "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。"
   },
   seat022Receipt: {
     category: "座位凭据",
     source: "022 桌面夹缝",
-    intro: "编号能对应座位，时间要与另一份到场记录互相核对。"
+    intro: "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。"
   },
   libraryPresenceProof: {
     category: "到场证明",
     source: "浙大体艺访问记录",
-    intro: "它只回答人是否到过那里，座位归属还要交给另一张凭据。"
+    intro: "一张证明你来过的证明。它没有证明你为什么要来。"
   },
   seatReleasePass: {
     category: "执行凭证",
     source: "022 恢复申请签发",
-    intro: "材料已经换成临时处置权限。回到那件长期占着位置、现场却找不到主人的物品旁。"
+    intro: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。"
   }
 };
 

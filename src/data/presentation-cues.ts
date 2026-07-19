@@ -160,7 +160,7 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
   cc98_evidence_set_completed: {
     kind: "scan",
     title: "四项证据已公示",
-    detail: "选择 A / C / E 进行有效 bd",
+    detail: "系统要求先说明 bd 机制",
     mark: "4/4",
     durationMs: 1700,
     priority: 2

@@ -64,6 +64,7 @@ export function TopTenRisePuzzle({
   const [invalidReplyKey, setInvalidReplyKey] = useState<ReplyOption["key"] | null>(null);
   const previousUploadedRef = useRef(uploadedEvidenceIds);
   const previousBdCountRef = useRef(bdCount);
+  const bdBriefingRequestedRef = useRef(false);
   const uploadTimerRef = useRef<number | null>(null);
   const rankTimerRef = useRef<number | null>(null);
   const topTenTimerRef = useRef<number | null>(null);
@@ -107,6 +108,20 @@ export function TopTenRisePuzzle({
     }
   }, [bdCount, phase]);
 
+  useEffect(() => {
+    if (!events || phase !== "bd_briefing" || bdBriefingRequestedRef.current) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      if (bdBriefingRequestedRef.current) {
+        return;
+      }
+      bdBriefingRequestedRef.current = true;
+      events.emit("library_story_request", { sequenceId: "cc98_evidence_set_completed" });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [events, phase]);
+
   useEffect(() => () => {
     [uploadTimerRef, rankTimerRef, topTenTimerRef, invalidTimerRef].forEach((timerRef) => {
       if (timerRef.current !== null) window.clearTimeout(timerRef.current);
@@ -116,6 +131,13 @@ export function TopTenRisePuzzle({
   useEffect(() => {
     if (!events) return undefined;
     return events.subscribe((event) => {
+    if (
+      event.name === "library_story_finished"
+      && event.payload?.sequenceId === "cc98_evidence_set_completed"
+    ) {
+      kit.libraryFinals.acknowledgeBdBriefing();
+      return;
+    }
     if (event.name === "inventory_drag_started") {
       setDraggedItem(String(event.payload?.itemId ?? ""));
       return;
@@ -183,7 +205,7 @@ export function TopTenRisePuzzle({
             <strong>楼主编辑：上传证据</strong>
             <small>证据完整度：{uploadedEvidenceIds.length}/4</small>
           </div>
-          <span>{allUploaded ? "可进入 bd" : "待补齐"}</span>
+          <span>{phase === "bd_briefing" ? "等待说明" : allUploaded ? "可进入 bd" : "待补齐"}</span>
         </header>
         <div>
           {EVIDENCE.map((evidence) => {
