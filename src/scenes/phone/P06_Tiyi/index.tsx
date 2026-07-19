@@ -23,7 +23,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
   const actOnePhase = state.actOne.phase;
-  const movementQuestActive = actOnePhase === "movement_required" || actOnePhase === "movement_ready";
+  const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(actOnePhase);
   const finalsAuditActive = finalsPhase === "evidence_gathering" && finalsPuzzle.investigationOpened;
 
   useEffect(() => {
@@ -118,31 +118,19 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
         <RouteAuditPanel phase={finalsPhase} puzzle={finalsPuzzle} router={router} />
       ) : null}
       {movementQuestActive && finalsPhase === "idle" ? (
-        <>
-          <section
-            id="tiyi-act1-exercise-status"
-            className={`tiyi-act1-exercise ${state.actOne.exerciseStarted ? "is-ready" : ""}`}
-            role="status"
-            aria-label="课外锻炼状态"
-            aria-live="polite"
-          >
-            <strong>{state.actOne.exerciseStarted ? "锻炼进行中" : "等待开始锻炼"}</strong>
-            <span>
-              {state.actOne.exerciseStarted
-                ? "小人正在寝室里来回走动"
-                : state.actOne.characterNamed
-                  ? "参加者已确认，可以开始课外锻炼"
-                  : "需要先在部门黄页确认参加者"}
-            </span>
-          </section>
-          <button
-            type="button"
-            className="tiyi-act1-exercise-hotspot"
-            aria-label="开始课外锻炼"
-            aria-describedby="tiyi-act1-exercise-status"
-            onClick={startActOneExercise}
-          />
-        </>
+        <button
+          type="button"
+          className={`tiyi-act1-exercise-button ${state.actOne.exerciseStarted ? "is-active" : ""}`}
+          disabled={state.actOne.exerciseStarted}
+          onClick={startActOneExercise}
+        >
+          <strong>{state.actOne.exerciseStarted ? "课外锻炼进行中" : "开始课外锻炼"}</strong>
+          <span>{state.actOne.exerciseStarted
+            ? "小人正在寝室内自动来回走动"
+            : state.actOne.characterNamed
+              ? "参加者已确认"
+              : "请先在部门黄页确认参加者"}</span>
+        </button>
       ) : null}
       <PhoneNavButton kind="exit" className="app-back px-btn paper" onClick={() => router.goTo("phone_home")} label="退出浙大体艺，返回手机主页" />
     </section>

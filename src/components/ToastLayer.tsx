@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { EventBus } from "../core/EventBus";
+import { selectIdentityReadable } from "../core/IdentityAccess";
+import type { GameState } from "../core/types";
+import actOneContent from "../data/act-one-bootstrap.content.json";
 
 interface Toast {
   id: number;
@@ -9,12 +12,21 @@ interface Toast {
 
 interface ToastLayerProps {
   events: EventBus;
+  state: GameState;
+}
+
+function visibleToastText(text: string, identityReadable: boolean): string {
+  if (identityReadable) return text;
+  return text
+    .replaceAll(actOneContent.studentName, "身份信息")
+    .replaceAll(actOneContent.studentId, "身份编号");
 }
 
 /** 全局像素气泡：系统吐槽 / 小影台词 / 任务更新共用。订阅 eventBus 的 toast 事件。 */
-export function ToastLayer({ events }: ToastLayerProps) {
+export function ToastLayer({ events, state }: ToastLayerProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const nextId = useRef(1);
+  const identityReadable = selectIdentityReadable(state);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -45,7 +57,7 @@ export function ToastLayer({ events }: ToastLayerProps) {
       {toasts.map((toast) => (
         <p key={toast.id} className={`px-toast tone-${toast.tone}`}>
           {toast.tone === "task" ? "📌 " : null}
-          {toast.text}
+          {visibleToastText(toast.text, identityReadable)}
         </p>
       ))}
     </div>

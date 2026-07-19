@@ -23,9 +23,9 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   mentorLine: object([{ target: "pushTriangle", result: "transform" }]),
   rightArrow: object([
     { target: "campus-card-balance", result: "retain" },
-    { target: "seat-022-gap", result: "consume" }
+    { target: "seat-022-gap", result: "retain" }
   ]),
-  gamepad: object([{ target: "rpg-player", result: "retain" }]),
+  gamepad: object([{ target: "rpg-player", result: "consume" }]),
   occupancyNote: paper({
     heading: "022 临时离座留言",
     fields: [

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
+import { selectIdentityReadable } from "../../../core/IdentityAccess";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import { kit } from "../../../modules/GameKit";
 import { playSfx } from "../../../modules/Sfx";
@@ -10,8 +11,9 @@ import { playSfx } from "../../../modules/Sfx";
  */
 export function CampusCardScene({ state, router, events }: SceneComponentProps) {
   const [balanceAnimating, setBalanceAnimating] = useState(false);
-  const movementQuestActive = state.actOne.phase === "movement_required" || state.actOne.phase === "movement_ready";
+  const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const shifted = state.actOne.balanceShifted;
+  const identityReadable = selectIdentityReadable(state);
 
   useEffect(() => {
     let timer: number | null = null;
@@ -81,11 +83,11 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
           <dl className="zju-fields">
             <div>
               <dt>学　号：</dt>
-              <dd>{actOneContent.studentId}</dd>
+              <dd>{identityReadable ? actOneContent.studentId : <span className="zju-identity-blur is-compact" aria-label="学号未读取"><i /><i /></span>}</dd>
             </div>
             <div>
               <dt>姓　名：</dt>
-              <dd>{actOneContent.studentName}</dd>
+              <dd>{identityReadable ? actOneContent.studentName : <span className="zju-identity-blur" aria-label="姓名未读取"><i /><i /></span>}</dd>
             </div>
             <div>
               <dt>卡账户：</dt>

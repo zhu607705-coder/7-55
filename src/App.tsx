@@ -51,6 +51,7 @@ export function App() {
   const phonePaneRef = useRef<HTMLElement>(null);
   const Scene = getPhoneScene(state.currentScene);
   const access = selectFeatureAccess(state);
+  const campusCardInspectionActive = state.actOne.phase === "system_return_required";
   const showChapterTwoIntro = access.chapter !== "chapter_one"
     && !state.ui.seenChapterIntros.includes("chapter_two");
 
@@ -69,6 +70,18 @@ export function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const phonePane = phonePaneRef.current;
+    if (!phonePane) return;
+    if (campusCardInspectionActive) {
+      phonePane.setAttribute("inert", "");
+      const focused = document.activeElement;
+      if (focused instanceof HTMLElement && phonePane.contains(focused)) focused.blur();
+      return;
+    }
+    phonePane.removeAttribute("inert");
+  }, [campusCardInspectionActive, desktopGameplay]);
+
   function focusRpg() {
     const focused = document.activeElement;
     if (focused instanceof HTMLElement && phonePaneRef.current?.contains(focused)) focused.blur();
@@ -76,6 +89,7 @@ export function App() {
   }
 
   function navigateFromTask(quest: QuestViewModel) {
+    if (campusCardInspectionActive) return;
     if (quest.targetSurface === "phone") {
       if (!desktopGameplay) {
         gameStore.setState((current) => ({ ...current, runtimeMode: "phone" }));
@@ -128,6 +142,7 @@ export function App() {
               ref={phonePaneRef}
               className="desktop-phone-pane"
               aria-label="手机交互区"
+              aria-hidden={campusCardInspectionActive ? true : undefined}
               onPointerDownCapture={() => setActiveSurface("phone")}
               onFocusCapture={() => setActiveSurface("phone")}
             >
@@ -166,7 +181,7 @@ export function App() {
               </Suspense>
             </section>
             <PresentationLayer events={eventBus} />
-            <ToastLayer events={eventBus} />
+            <ToastLayer events={eventBus} state={state} />
             {chapterIntro}
           </main>
           <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
@@ -185,7 +200,7 @@ export function App() {
           />
         </Suspense>
         <PresentationLayer events={eventBus} />
-        <ToastLayer events={eventBus} />
+        <ToastLayer events={eventBus} state={state} />
         {chapterIntro}
         <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
       </>

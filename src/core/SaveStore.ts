@@ -8,13 +8,14 @@ import type {
   LibraryFinalsPhase,
   LibraryFinalsPuzzleState,
   LibraryLocationId,
+  LostFoundStage,
   LibraryRecoveryEvidenceId
 } from "./types";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 6;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, SAVE_VERSION]);
+const SAVE_VERSION = 7;
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>(["campus_bootstrap", "dorm_hub", "library_interior"]);
@@ -27,7 +28,8 @@ const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
 ]);
 const VALID_ACT_ONE_PHASES = new Set<ActOneBootstrapPhase>([
   "prologue", "friend_message_required", "system_required", "inventory_required",
-  "system_return_required", "movement_ready", "identity_required", "phone_link_required",
+  "system_return_required", "reservation_briefing_required", "reservation_required",
+  "movement_ready", "identity_required", "phone_link_required",
   "controls_required", "movement_required", "item_required", "map_required",
   "chapter_two_ready", "complete"
 ]);
@@ -71,12 +73,13 @@ const VALID_LIBRARY_RECOVERY_EVIDENCE_IDS = new Set<LibraryRecoveryEvidenceId>([
 const VALID_BD_REPLY_IDS = new Set<LibraryFinalsBdReplyId>([
   "reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"
 ]);
+const VALID_LOST_FOUND_STAGES = new Set<LostFoundStage>(["missing_report", "ready", "scanning", "stamped"]);
 const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>([
   "chapter_one", "chapter_two", "chapter_three"
 ]);
 
 interface SaveEnvelope {
-  version: 6;
+  version: 7;
   state: GameState;
   savedAt: number;
 }
@@ -127,21 +130,27 @@ export class SaveStore {
       const isVersionedEnvelope = SUPPORTED_ENVELOPE_VERSIONS.has(Number(parsed.version)) && isRecord(parsed.state);
       const envelopeVersion = isVersionedEnvelope ? Number(parsed.version) : 0;
       const saved = isVersionedEnvelope ? parsed.state as Record<string, unknown> : parsed;
-      let actOne = normalizeActOne(saved.actOne, initial.actOne);
+      const legacySave = !isVersionedEnvelope || envelopeVersion <= 6;
+      let actOne = normalizeActOne(saved.actOne, initial.actOne, legacySave);
       const items = normalizeItems(saved.items, initial.items);
       const digits = normalizeDigits(saved.digits, initial.digits);
       const flags = normalizeFlags(saved.flags, initial.flags);
+      const legacyIdentityOrMovementCompleted = actOne.characterNamed
+        || actOne.manualControlTested
+        || actOne.movementEnabled
+        || actOne.canLeaveDorm
+        || actOne.phase === "movement_ready"
+        || actOne.phase === "complete";
       const campusCardMustBeAbsent = [
         "prologue",
         "friend_message_required",
         "system_required",
         "inventory_required"
-      ].includes(actOne.phase);
+      ].includes(actOne.phase) && !(legacySave && legacyIdentityOrMovementCompleted);
       const campusCardRecovered = !campusCardMustBeAbsent && (
         items.campusCard
         || actOne.inventoryRecovered
-        || actOne.characterNamed
-        || actOne.gamepadPurchased
+        || (legacySave && legacyIdentityOrMovementCompleted)
       );
       if (campusCardMustBeAbsent) {
         items.campusCard = false;
@@ -159,19 +168,65 @@ export class SaveStore {
         dormHubUnlocked: !["prologue", "friend_message_required", "system_required"].includes(actOne.phase)
       };
       const ui = normalizeUi(saved.ui, initial.ui, !isVersionedEnvelope, actOne);
+      if (legacySave) {
+        const puzzle = ui.libraryFinalsPuzzle;
+        const catalogWasAlreadyPassed = puzzle.catalogSearchCompleted
+          || puzzle.callNumberCollected
+          || puzzle.archivedRuleCollected
+          || puzzle.archivedRuleRead
+          || puzzle.photoDimmed
+          || puzzle.itemReportGenerated
+          || puzzle.nonPersonProofStamped;
+        const archivedRuleWasAlreadyRead = puzzle.photoDimmed
+          || puzzle.itemReportGenerated
+          || puzzle.nonPersonProofStamped;
+        ui.libraryFinalsPuzzle = {
+          ...puzzle,
+          catalogUnlocked: puzzle.catalogUnlocked || catalogWasAlreadyPassed,
+          archivedRuleRead: puzzle.archivedRuleRead || archivedRuleWasAlreadyRead,
+          photoCaptured: puzzle.photoCaptured || puzzle.photoDimmed || puzzle.itemReportGenerated,
+          preBdBriefingSeen: puzzle.preBdBriefingSeen || puzzle.bdCount > 0
+        };
+      }
+      if (actOne.pushTriangleTaken && actOne.pushTriangleTapCount < 3) {
+        actOne = { ...actOne, pushTriangleTapCount: 3 };
+      }
+      if (
+        legacySave
+        && actOne.phase === "movement_ready"
+        && actOne.manualControlTested
+        && !ui.librarySeatReserved
+      ) {
+        actOne = { ...actOne, phase: "reservation_briefing_required", canLeaveDorm: false };
+      }
+      if (actOne.phase === "reservation_required" && ui.librarySeatReserved) {
+        actOne = { ...actOne, phase: "movement_ready", canLeaveDorm: true };
+      }
+      if (actOne.phase === "movement_ready" || actOne.phase === "complete") {
+        ui.librarySelectedSeat = "022";
+        ui.librarySeatReserved = true;
+        actOne = { ...actOne, canLeaveDorm: true };
+      }
       if (envelopeVersion <= 5 && actOne.phase === "system_return_required") {
         ui.inventoryOpen = false;
         ui.selectedItem = null;
       }
-      if (actOne.rightArrowAssembled && actOne.balanceShifted && !ui.libraryFinalsPuzzle.seatReceiptCollected) {
+      if (items.rightArrow && !actOne.rightArrowAssembled) {
+        actOne = { ...actOne, rightArrowAssembled: true };
+      }
+      if (actOne.rightArrowAssembled) {
         items.rightArrow = true;
       }
-      if (items.gamepad || actOne.gamepadPurchased) {
+      if (items.gamepad && !actOne.gamepadPurchased) {
+        actOne = { ...actOne, gamepadPurchased: true };
+      }
+      if (actOne.gamepadPurchased && !actOne.controlsInstalled) {
         items.gamepad = true;
+      }
+      if (actOne.controlsInstalled) {
+        items.gamepad = false;
         actOne = {
           ...actOne,
-          gamepadPurchased: true,
-          controlsInstalled: true,
           movementEnabled: actOne.characterNamed && actOne.exerciseStarted
         };
       }
@@ -280,7 +335,7 @@ function normalizeBikeArcade(
   };
 }
 
-function normalizeActOne(value: unknown, initial: ActOneBootstrapState): ActOneBootstrapState {
+function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyControlsCoupled: boolean): ActOneBootstrapState {
   const saved = asRecord(value);
   const savedPhase = enumOr(saved.phase, VALID_ACT_ONE_PHASES, initial.phase);
   const phase = (["identity_required", "phone_link_required", "controls_required", "item_required", "map_required", "chapter_two_ready"] as ActOneBootstrapPhase[]).includes(savedPhase)
@@ -289,16 +344,18 @@ function normalizeActOne(value: unknown, initial: ActOneBootstrapState): ActOneB
   const characterNamed = booleanOr(saved.characterNamed, booleanOr(saved.identityVerified, initial.characterNamed));
   const gamepadPurchased = booleanOr(saved.gamepadPurchased, false);
   const exerciseStarted = booleanOr(saved.exerciseStarted, false);
+  const controlsInstalled = booleanOr(saved.controlsInstalled, legacyControlsCoupled && gamepadPurchased);
   return {
     phase,
     identityVerified: characterNamed,
     phoneLinked: booleanOr(saved.phoneLinked, initial.phoneLinked),
-    controlsInstalled: gamepadPurchased,
-    movementEnabled: characterNamed && exerciseStarted && gamepadPurchased,
+    controlsInstalled,
+    movementEnabled: characterNamed && exerciseStarted && controlsInstalled,
     inventoryRecovered: booleanOr(saved.inventoryRecovered, initial.inventoryRecovered),
     characterPromptSeen: booleanOr(saved.characterPromptSeen, initial.characterPromptSeen),
     characterNamed,
     exerciseStarted,
+    pushTriangleTapCount: rangedIntegerOr(saved.pushTriangleTapCount, 0, 3, initial.pushTriangleTapCount),
     pushTriangleTaken: booleanOr(saved.pushTriangleTaken, initial.pushTriangleTaken),
     weatherWaterTaken: booleanOr(saved.weatherWaterTaken, initial.weatherWaterTaken),
     mentorLineReleased: booleanOr(saved.mentorLineReleased, initial.mentorLineReleased),
@@ -355,11 +412,18 @@ function normalizeUi(
 
 function normalizeConsumedItems(items: GameState["items"], ui: GameState["ui"]): void {
   const puzzle = ui.libraryFinalsPuzzle;
+  if (puzzle.occupancyNoteCollected && !puzzle.investigationOpened) items.occupancyNote = true;
+  if (puzzle.callNumberCollected && !puzzle.archivedRuleCollected) items.callNumber755 = true;
+  if (puzzle.archivedRuleCollected && !puzzle.cc98UploadedEvidenceIds.includes("archived_leave_rule")) items.archivedLeaveRule = true;
+  if (puzzle.itemReportGenerated && !puzzle.nonPersonProofStamped) items.itemRecognitionReport = true;
+  if (puzzle.nonPersonProofStamped && !puzzle.recoverySubmittedEvidenceIds.includes("bag_non_person_proof")) items.bagNonPersonProof = true;
+  if (puzzle.seatReceiptCollected && !puzzle.recoverySubmittedEvidenceIds.includes("seat_022_receipt")) items.seat022Receipt = true;
+  if (puzzle.presenceProofCollected && !puzzle.recoverySubmittedEvidenceIds.includes("library_presence_proof")) items.libraryPresenceProof = true;
+  if (puzzle.evictionPassGenerated && !puzzle.backpackEvicted) items.seatReleasePass = true;
   if (puzzle.investigationOpened) items.occupancyNote = false;
   if (puzzle.archivedRuleCollected) items.callNumber755 = false;
   if (puzzle.cc98UploadedEvidenceIds.includes("archived_leave_rule")) items.archivedLeaveRule = false;
   if (puzzle.nonPersonProofStamped) items.itemRecognitionReport = false;
-  if (puzzle.seatReceiptCollected) items.rightArrow = false;
   if (puzzle.recoverySubmittedEvidenceIds.includes("bag_non_person_proof")) items.bagNonPersonProof = false;
   if (puzzle.recoverySubmittedEvidenceIds.includes("seat_022_receipt")) items.seat022Receipt = false;
   if (puzzle.recoverySubmittedEvidenceIds.includes("library_presence_proof")) items.libraryPresenceProof = false;
@@ -376,10 +440,19 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
     investigationOpened: booleanOr(saved.investigationOpened, initial.investigationOpened),
     optionalAc01Floors: rangedIntegerArray(saved.optionalAc01Floors, 1, 23, initial.optionalAc01Floors, 5),
     catalogSearchCompleted: booleanOr(saved.catalogSearchCompleted, initial.catalogSearchCompleted),
+    catalogUnlocked: booleanOr(saved.catalogUnlocked, initial.catalogUnlocked),
     callNumberCollected: booleanOr(saved.callNumberCollected, initial.callNumberCollected),
     archivedRuleCollected: booleanOr(saved.archivedRuleCollected, initial.archivedRuleCollected),
+    archivedRuleRead: booleanOr(saved.archivedRuleRead, initial.archivedRuleRead),
+    photoCaptured: booleanOr(saved.photoCaptured, initial.photoCaptured),
     photoDimmed: booleanOr(saved.photoDimmed, initial.photoDimmed),
     itemReportGenerated: booleanOr(saved.itemReportGenerated, initial.itemReportGenerated),
+    lostFoundStage: enumOr(saved.lostFoundStage, VALID_LOST_FOUND_STAGES,
+      booleanOr(saved.nonPersonProofStamped, initial.nonPersonProofStamped)
+        ? "stamped"
+        : booleanOr(saved.itemReportGenerated, initial.itemReportGenerated)
+          ? "ready"
+          : initial.lostFoundStage),
     nonPersonProofStamped: booleanOr(saved.nonPersonProofStamped, initial.nonPersonProofStamped),
     seatReceiptCollected: booleanOr(saved.seatReceiptCollected, initial.seatReceiptCollected),
     auditAttemptCount: nonNegativeIntegerOr(saved.auditAttemptCount, initial.auditAttemptCount),
@@ -388,6 +461,7 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
     auditProofCount: rangedIntegerOr(saved.auditProofCount, 0, 5, initial.auditProofCount),
     presenceProofCollected: booleanOr(saved.presenceProofCollected, initial.presenceProofCollected),
     cc98UploadedEvidenceIds: stringArrayFromSet(saved.cc98UploadedEvidenceIds, VALID_LIBRARY_EVIDENCE_IDS, initial.cc98UploadedEvidenceIds),
+    preBdBriefingSeen: booleanOr(saved.preBdBriefingSeen, initial.preBdBriefingSeen),
     bdCount: bdCountOr(saved.bdCount, initial.bdCount),
     appliedBdReplyIds: stringArrayFromSet(saved.appliedBdReplyIds, VALID_BD_REPLY_IDS, initial.appliedBdReplyIds),
     recoverySubmittedEvidenceIds: stringArrayFromSet(saved.recoverySubmittedEvidenceIds, VALID_LIBRARY_RECOVERY_EVIDENCE_IDS, initial.recoverySubmittedEvidenceIds),
@@ -408,10 +482,14 @@ function completedLegacyPuzzle(initial: LibraryFinalsPuzzleState): LibraryFinals
     occupancyNoteCollected: true,
     investigationOpened: true,
     catalogSearchCompleted: true,
+    catalogUnlocked: true,
     callNumberCollected: true,
     archivedRuleCollected: true,
+    archivedRuleRead: true,
+    photoCaptured: true,
     photoDimmed: true,
     itemReportGenerated: true,
+    lostFoundStage: "stamped",
     nonPersonProofStamped: true,
     seatReceiptCollected: true,
     auditArrivalMinutes: 7,
@@ -419,6 +497,7 @@ function completedLegacyPuzzle(initial: LibraryFinalsPuzzleState): LibraryFinals
     auditProofCount: 3,
     presenceProofCollected: true,
     cc98UploadedEvidenceIds: ["archived_leave_rule", "bag_non_person_proof", "seat_022_receipt", "library_presence_proof"],
+    preBdBriefingSeen: true,
     bdCount: 3,
     appliedBdReplyIds: ["reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"],
     recoverySubmittedEvidenceIds: ["bag_non_person_proof", "seat_022_receipt", "library_presence_proof"],

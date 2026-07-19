@@ -4,6 +4,8 @@ import content from "../data/act-one-bootstrap.content.json";
 
 export type GamepadPurchaseResult = "purchased" | "already_owned" | "insufficient_balance" | "inactive";
 export type GamepadUseResult = "active" | "identity_required" | "exercise_required" | "not_owned" | "inactive";
+export type SeatReservationResult = "reserved" | "wrong_library" | "wrong_room" | "wrong_seat" | "inactive";
+export type PushTriangleTapResult = "hint_one" | "hint_two" | "collected" | "already_owned" | "inactive";
 
 export interface NarratorInterventionResult {
   interceptedCount: number;
@@ -28,9 +30,6 @@ export class ActOneBootstrapController {
     const state = this.store.getState();
     if (scene === "dorm_hub" && !state.actOne.dormHubUnlocked) {
       return false;
-    }
-    if (state.actOne.gamepadPurchased || state.items.gamepad) {
-      this.syncGamepadOwnership();
     }
     this.store.setState((current) => ({
       ...current,
@@ -130,6 +129,7 @@ export class ActOneBootstrapController {
     }
     this.store.setState((current) => ({
       ...current,
+      currentScene: "phone_home",
       items: { ...current.items, campusCard: true },
       actOne: {
         ...current.actOne,
@@ -137,7 +137,7 @@ export class ActOneBootstrapController {
         inventoryRecovered: true,
         dormHubUnlocked: true
       },
-      ui: { ...current.ui, inventoryOpen: true, selectedItem: null }
+      ui: { ...current.ui, inventoryOpen: true, selectedItem: null, zjudingPage: "hub" }
     }));
     this.events.emit("get_item", { itemId: "campusCard", sourceScene: "dorm_hub" });
     this.events.emit("act2_inventory_recovered", { itemId: "campusCard" });
@@ -206,27 +206,33 @@ export class ActOneBootstrapController {
     return true;
   }
 
-  collectPushTriangle(): boolean {
+  collectPushTriangle(): PushTriangleTapResult {
     const state = this.store.getState();
-    if (!this.isMovementPhase(state.actOne)) {
-      return false;
+    if (!this.isMovementPhase(state.actOne) || !state.actOne.exerciseStarted) {
+      return "inactive";
     }
     if (state.actOne.pushTriangleTaken) {
-      return true;
+      return "already_owned";
+    }
+    const nextTapCount = Math.min(3, state.actOne.pushTriangleTapCount + 1);
+    if (nextTapCount < 3) {
+      this.patch({ pushTriangleTapCount: nextTapCount });
+      this.events.emit("act2_push_triangle_hint", { tapCount: nextTapCount });
+      return nextTapCount === 1 ? "hint_one" : "hint_two";
     }
     this.store.setState((current) => ({
       ...current,
       items: { ...current.items, pushTriangle: true },
-      actOne: { ...current.actOne, pushTriangleTaken: true }
+      actOne: { ...current.actOne, pushTriangleTapCount: 3, pushTriangleTaken: true }
     }));
     this.events.emit("get_item", { itemId: "pushTriangle", sourceScene: "phone_home" });
     this.events.emit("act2_push_triangle_collected");
-    return true;
+    return "collected";
   }
 
   collectWeatherWater(): boolean {
     const state = this.store.getState();
-    if (!this.isMovementPhase(state.actOne)) {
+    if (!this.isMovementPhase(state.actOne) || !state.actOne.pushTriangleTaken) {
       return false;
     }
     if (state.actOne.weatherWaterTaken) {
@@ -290,14 +296,17 @@ export class ActOneBootstrapController {
       return "inactive";
     }
     if (state.actOne.gamepadPurchased || state.items.gamepad) {
-      this.syncGamepadOwnership();
       return "already_owned";
     }
     if (!state.actOne.balanceShifted) {
       this.events.emit("act2_gamepad_purchase_rejected", { balance: "0.06", price: "6.00" });
       return "insufficient_balance";
     }
-    this.syncGamepadOwnership();
+    this.store.setState((current) => ({
+      ...current,
+      items: { ...current.items, gamepad: true },
+      actOne: { ...current.actOne, gamepadPurchased: true }
+    }));
     this.events.emit("get_item", { itemId: "gamepad", sourceScene: "cc98" });
     this.events.emit("act2_gamepad_purchased", { price: "6.00" });
     return "purchased";
@@ -305,7 +314,10 @@ export class ActOneBootstrapController {
 
   useGamepad(): GamepadUseResult {
     const state = this.store.getState();
-    if (!state.items.gamepad && !state.actOne.gamepadPurchased) {
+    if (state.actOne.controlsInstalled) {
+      return "active";
+    }
+    if (!state.items.gamepad) {
       this.events.emit("act2_gamepad_use_rejected", { reason: "not_owned" });
       return "not_owned";
     }
@@ -313,37 +325,97 @@ export class ActOneBootstrapController {
       this.events.emit("act2_gamepad_use_rejected", { reason: "inactive" });
       return "inactive";
     }
-
-    this.syncGamepadOwnership();
-    const actOne = this.getState();
-    if (!actOne.characterNamed) {
+    if (!state.actOne.characterNamed) {
       this.events.emit("act2_gamepad_use_rejected", { reason: "identity_required" });
       return "identity_required";
     }
-    if (!actOne.exerciseStarted) {
+    if (!state.actOne.exerciseStarted) {
       this.events.emit("act2_gamepad_use_rejected", { reason: "exercise_required" });
       return "exercise_required";
     }
-
-    this.events.emit("act2_gamepad_connected", { movementEnabled: actOne.movementEnabled });
+    this.store.setState((current) => ({
+      ...current,
+      items: { ...current.items, gamepad: false },
+      actOne: {
+        ...current.actOne,
+        controlsInstalled: true,
+        movementEnabled: true
+      },
+      ui: current.ui.selectedItem === "gamepad"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui
+    }));
+    this.events.emit("use_item", { itemId: "gamepad", targetId: "dorm_character" });
+    this.events.emit("act2_gamepad_connected", { movementEnabled: true });
     return "active";
   }
 
   confirmManualControl(): boolean {
     const actOne = this.getState();
-    if (!this.isMovementPhase(actOne) || !actOne.movementEnabled || !actOne.gamepadPurchased) {
+    if (!this.isMovementPhase(actOne) || !actOne.movementEnabled || !actOne.controlsInstalled) {
       return false;
     }
     if (actOne.manualControlTested) {
       return true;
     }
     this.patch({
-      phase: "movement_ready",
+      phase: "reservation_briefing_required",
       manualControlTested: true,
-      canLeaveDorm: true
+      canLeaveDorm: false
     });
-    this.events.emit("act2_exit_ready");
+    this.events.emit("act2_manual_control_tested");
+    this.events.emit("act2_post_movement_system_requested");
     return true;
+  }
+
+  completeReservationBriefing(): boolean {
+    const actOne = this.getState();
+    if (actOne.phase === "reservation_required" || actOne.phase === "movement_ready" || actOne.phase === "complete") {
+      return true;
+    }
+    if (actOne.phase !== "reservation_briefing_required" || !actOne.manualControlTested) {
+      return false;
+    }
+    this.patch({ phase: "reservation_required", canLeaveDorm: false });
+    this.events.emit("act2_library_reservation_requested", {
+      library: "foundation_library",
+      area: "second_floor_south",
+      seat: "022"
+    });
+    return true;
+  }
+
+  confirmLibraryReservation(library: string, room: string, seat: string): SeatReservationResult {
+    const actOne = this.getState();
+    if (actOne.phase === "movement_ready" || actOne.phase === "complete") {
+      return "reserved";
+    }
+    if (actOne.phase !== "reservation_required" || !actOne.manualControlTested) {
+      return "inactive";
+    }
+    if (library !== "基础馆") {
+      this.events.emit("act2_library_reservation_rejected", { reason: "wrong_library", library, room, seat });
+      return "wrong_library";
+    }
+    if (room !== "二层南") {
+      this.events.emit("act2_library_reservation_rejected", { reason: "wrong_room", library, room, seat });
+      return "wrong_room";
+    }
+    if (seat !== "022") {
+      this.events.emit("act2_library_reservation_rejected", { reason: "wrong_seat", library, room, seat });
+      return "wrong_seat";
+    }
+    this.store.setState((current) => ({
+      ...current,
+      actOne: { ...current.actOne, phase: "movement_ready", canLeaveDorm: true },
+      ui: {
+        ...current.ui,
+        librarySelectedSeat: seat,
+        librarySeatReserved: true
+      }
+    }));
+    this.events.emit("act2_exit_ready", { destination: "foundation_library", seat: "022" });
+    return "reserved";
   }
 
   leaveDorm(): boolean {
@@ -376,36 +448,22 @@ export class ActOneBootstrapController {
   }
 
   private isMovementPhase(state: ActOneBootstrapState): boolean {
-    return state.phase === "movement_required" || state.phase === "movement_ready";
+    return state.phase === "movement_required"
+      || state.phase === "reservation_briefing_required"
+      || state.phase === "reservation_required"
+      || state.phase === "movement_ready";
   }
 
   private updateMovementFacts(patch: Partial<ActOneBootstrapState>): void {
     this.store.setState((state) => {
       const nextActOne = { ...state.actOne, ...patch };
-      const movementEnabled = nextActOne.characterNamed && nextActOne.exerciseStarted && nextActOne.gamepadPurchased;
+      const movementEnabled = nextActOne.characterNamed && nextActOne.exerciseStarted && nextActOne.controlsInstalled;
       return {
         ...state,
         actOne: {
           ...nextActOne,
           identityVerified: nextActOne.characterNamed,
-          controlsInstalled: nextActOne.gamepadPurchased,
           movementEnabled
-        }
-      };
-    });
-  }
-
-  private syncGamepadOwnership(): void {
-    this.store.setState((state) => {
-      const nextActOne = { ...state.actOne, gamepadPurchased: true };
-      return {
-        ...state,
-        items: { ...state.items, gamepad: true },
-        actOne: {
-          ...nextActOne,
-          identityVerified: nextActOne.characterNamed,
-          controlsInstalled: true,
-          movementEnabled: nextActOne.characterNamed && nextActOne.exerciseStarted
         }
       };
     });

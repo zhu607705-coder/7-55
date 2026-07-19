@@ -6,6 +6,7 @@ import { kit } from "../../../modules/GameKit";
 /** Reuses the home weather card as a full page for the chapter-two adhesive-water clue. */
 export function WeatherScene({ state, router }: SceneComponentProps) {
   const collected = state.actOne.weatherWaterTaken;
+  const waterAvailable = state.actOne.pushTriangleTaken;
 
   function collectWater() {
     if (!kit.actOne.collectWeatherWater()) {
@@ -44,12 +45,13 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
         <button
           type="button"
           className={`act2-weather-drop ${collected ? "is-collected" : ""}`}
-          aria-label={collected ? "天气水滴已收集" : "收集天气水滴"}
+          aria-label={collected ? "天气水滴已收集" : waterAvailable ? "收集天气水滴" : "天气水滴尚未开放"}
+          disabled={!waterAvailable && !collected}
           onClick={collectWater}
         >
           <i aria-hidden="true" />
-          <strong>{collected ? "水滴已收集" : "接住一滴水"}</strong>
-          <span>{collected ? "它正在道具栏里等着被使用" : "这滴水看起来比天气预报更有用"}</span>
+          <strong>{collected ? "水滴已收集" : waterAvailable ? "接住一滴水" : "先检查主页推送"}</strong>
+          <span>{collected ? "它正在道具栏里等着被使用" : waterAvailable ? "这滴水看起来比天气预报更有用" : "方向图形还没有露出完整边缘"}</span>
         </button>
       </main>
     </section>

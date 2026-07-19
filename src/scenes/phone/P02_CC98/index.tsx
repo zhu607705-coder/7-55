@@ -62,6 +62,12 @@ const INVESTIGATION_POST: Cc98Post = {
   time: investigationPostContent.time,
   body: investigationPostContent.body
 };
+const INVESTIGATION_SEARCH_RESULTS = [
+  { id: "seat-022-backpack", title: INVESTIGATION_POST.title, floors: "23 楼", body: INVESTIGATION_POST.body, rejection: null },
+  { id: "seat-022-old-source", title: "【求助】022 座位今日临时离开", floors: "12 楼", body: "来源为今日新帖，没有旧版离座规定的引用。", rejection: "来源不匹配：这是今日新帖，纸条引用的是旧版公开记录。" },
+  { id: "seat-022-wrong-time", title: "【记录】二南 022 晚间使用情况", floors: "31 楼", body: "发布时间为当日 22:40，早于纸条中的本次离座事件。", rejection: "时间不匹配：这条记录早于本次 022 占用事件。" },
+  { id: "seat-022-missing-attachment", title: "【闲聊】二楼南区今天还有位置吗", floors: "18 楼", body: "正文提到 022，附件区为空。", rejection: "附件不匹配：这条帖子没有纸条对应的离座凭据。" }
+] as const;
 const QUEST_POST_IDS = new Set([ACT_ONE_EXCHANGE_POST.id, INVESTIGATION_POST.id]);
 const TOP_TABS = ["今日", "发现", "本周", "本月", "往年今日", "活动"];
 const BOTTOM_TABS = [
@@ -159,11 +165,12 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
     return null;
   });
   const [investigationFeedback, setInvestigationFeedback] = useState("");
+  const [investigationSearchReady, setInvestigationSearchReady] = useState(false);
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
   const access = selectFeatureAccess(state);
   const developerEditingEnabled = getActiveDeveloperCheckpoint() !== null;
-  const exchangeVisible = ["movement_required", "movement_ready"].includes(state.actOne.phase);
+  const exchangeVisible = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const investigationVisible = finalsPuzzle.investigationOpened;
   const noteSearchVisible = finalsPhase === "evidence_gathering" && finalsPuzzle.occupancyNoteCollected && !investigationVisible;
   const ownedEvidenceIds = useMemo(() => {
@@ -187,10 +194,8 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
         setInvestigationFeedback("搜索框只识别与 022 占座直接相关的纸条。");
         return;
       }
-      setInvestigationFeedback("");
-      if (!kit.libraryFinals.openInvestigation()) {
-        setInvestigationFeedback("占座纸条还没有形成可搜索的调查记录。");
-      }
+      setInvestigationSearchReady(true);
+      setInvestigationFeedback("纸条已读取。请核对搜索结果的来源、时间和附件。");
     });
   }, [events]);
 
@@ -224,9 +229,21 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
       setInvestigationFeedback("请先把 022 旁边的占座纸条带到搜索框。");
       return;
     }
-    if (!kit.libraryFinals.openInvestigation()) {
-      setInvestigationFeedback("这张纸条目前无法建立调查帖。");
+    setInvestigationSearchReady(true);
+    setInvestigationFeedback("找到 4 条候选记录。只有一条同时匹配来源、时间和附件。");
+  }
+
+  function selectInvestigationResult(result: typeof INVESTIGATION_SEARCH_RESULTS[number]) {
+    if (result.rejection) {
+      playSfx("03_");
+      setInvestigationFeedback(result.rejection);
+      return;
     }
+    if (!kit.libraryFinals.openInvestigation()) {
+      setInvestigationFeedback("这条 23 楼记录尚未满足调查门槛。");
+      return;
+    }
+    setOpenPostId(INVESTIGATION_POST.id);
   }
   function updatePost(id: string, key: EditablePostKey, value: string) {
     if (QUEST_POST_IDS.has(id)) {
@@ -310,13 +327,35 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
 
       {noteSearchVisible ? (
         <section className="cc98-search-panel cc98-occupancy-search" aria-label="CC98占座调查搜索">
-          <header><strong>资料搜索</strong><span>可接收道具</span></header>
-          <label data-drop-target="cc98_search">
+          <header className="cc98-search-heading"><strong>资料搜索</strong><span>可接收道具</span></header>
+          <label className="cc98-search-row" data-drop-target="cc98_search">
             <span className="cc98-search-icon" aria-hidden="true" />
-            <input readOnly value={state.items.occupancyNote ? "022 占座纸条" : ""} placeholder="把占座纸条拖到这里" />
+            <input
+              aria-label="CC98 搜索内容"
+              readOnly
+              value={state.items.occupancyNote ? "022 占座纸条" : ""}
+              placeholder="把占座纸条拖到这里"
+            />
             <button type="button" onClick={searchWithOccupancyNote}>搜索</button>
           </label>
-          <p aria-live="polite">{investigationFeedback || "论坛会根据纸条内容建立 23 楼调查索引。"}</p>
+          <div className="cc98-search-results" aria-label="搜索结果">
+            {investigationSearchReady ? (
+              INVESTIGATION_SEARCH_RESULTS.map((result) => (
+                <button key={result.id} type="button" className="cc98-search-result" onClick={() => selectInvestigationResult(result)}>
+                  <header>
+                    <strong className="cc98-search-result-title">{result.title}</strong>
+                    <span className="cc98-search-result-floor">{result.floors}</span>
+                  </header>
+                  <span className="cc98-search-result-body">{result.body}</span>
+                </button>
+              ))
+            ) : (
+              <p className="cc98-search-empty">拖入纸条或点击搜索后显示候选记录。</p>
+            )}
+          </div>
+          <p className="cc98-search-feedback" aria-live="polite">
+            {investigationFeedback || "论坛会根据纸条内容建立 23 楼调查索引。"}
+          </p>
         </section>
       ) : null}
 
@@ -404,6 +443,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                   phase={finalsPhase}
                   ownedEvidenceIds={ownedEvidenceIds}
                   uploadedEvidenceIds={finalsPuzzle.cc98UploadedEvidenceIds}
+                  preBdBriefingSeen={finalsPuzzle.preBdBriefingSeen}
                   events={events}
                   showUploader={access.cc98OwnerUpload}
                   showBd={access.cc98Bd}

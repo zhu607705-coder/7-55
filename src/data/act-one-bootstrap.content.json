@@ -251,10 +251,10 @@
       "delivery": "dismissive first sentence, deadpan punchline"
     },
     "act2_gamepad_purchased": {
-      "text": "Sold for six yuan. Random walking disabled. Direction is now your responsibility.",
-      "subtitleZh": "六元成交。随机走动已关闭。方向现在归你负责。",
+      "text": "Sold for six yuan. The controller is now in your inventory. Install it on the character.",
+      "subtitleZh": "六元成交。手柄已放入道具栏，请回寝室安装到小人身上。",
       "tone": "xiaoying",
-      "delivery": "decisive transaction confirmation, then crisp system status"
+      "delivery": "decisive transaction confirmation, then a concise installation instruction"
     },
     "act2_exit_ready": {
       "text": "You can leave now.",

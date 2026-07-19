@@ -11,7 +11,7 @@ export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannel
   const params = new URLSearchParams(window.location.search);
   const explicitlyRequested = params.get("dev") === "1" || params.has("devCheckpoint");
   const [available, setAvailable] = useState(() => isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV));
-  const [open, setOpen] = useState(explicitlyRequested);
+  const [open, setOpen] = useState(() => explicitlyRequested && isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV));
   const [active, setActive] = useState(() => getActiveDeveloperCheckpoint());
   const chapters = useMemo(() => ["第一章", "第二章", "第三章"] as const, []);
   useEffect(() => {

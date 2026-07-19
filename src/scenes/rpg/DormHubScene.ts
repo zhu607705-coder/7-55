@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { selectIdentityReadable } from "../../core/IdentityAccess";
 import dormHubMapUrl from "../../assets/rpg/interiors/dorm_hub.png";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import type { RpgBridge } from "./RpgBridge";
@@ -108,7 +109,7 @@ export class DormHubScene extends Phaser.Scene {
     configureRpgPlayerSprite(this.player);
     this.physics.add.collider(this.player, this.obstacles);
     this.player.setInteractive({ useHandCursor: true });
-    this.player.on("pointerdown", () => this.bridge.emit("rpg_character_inspected"));
+    this.player.on("pointerdown", () => this.inspectCharacter());
 
     this.characterName = this.add.text(spawn.x, spawn.y - RPG_PLAYER_NAME_OFFSET_Y, "", {
       color: "#fff7df",
@@ -160,7 +161,7 @@ export class DormHubScene extends Phaser.Scene {
         this.manualMovementReported = true;
         this.bridge.emit("rpg_manual_movement_started");
       }
-    } else if (actOne.exerciseStarted && !actOne.gamepadPurchased) {
+    } else if (actOne.exerciseStarted && !actOne.controlsInstalled) {
       if (this.player.x >= 650) this.pacingDirection = -1;
       if (this.player.x <= 390) this.pacingDirection = 1;
       vector.set(this.pacingDirection * 78, 0);
@@ -170,9 +171,10 @@ export class DormHubScene extends Phaser.Scene {
 
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 2000);
     this.updatePlayerAnimation(vector);
+    const identityReadable = selectIdentityReadable(this.bridge.getState());
     this.characterName
-      .setText(actOne.characterNamed ? actOneContent.studentName : "")
-      .setVisible(actOne.characterNamed)
+      .setText(identityReadable && actOne.characterNamed ? actOneContent.studentName : "")
+      .setVisible(identityReadable && actOne.characterNamed)
       .setPosition(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y)
       .setDepth(this.player.y + 2050);
 
@@ -201,6 +203,22 @@ export class DormHubScene extends Phaser.Scene {
     }
     if (name === "rpg_interact") {
       this.interactRequested = true;
+      return;
+    }
+    if (name === "rpg_inventory_drop_requested") {
+      const itemId = String(payload?.itemId ?? "");
+      const canvasX = Number(payload?.canvasX);
+      const canvasY = Number(payload?.canvasY);
+      if (itemId !== "gamepad" || !Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
+        this.showFeedback("这件道具暂时不需要交给他。");
+        return;
+      }
+      const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
+      if (Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, this.player.x, this.player.y) > 96) {
+        this.showFeedback("把手柄拖到小人身上。");
+        return;
+      }
+      this.bridge.emit("rpg_gamepad_install_requested");
       return;
     }
     if (name === "rpg_camera_recenter") {
@@ -262,19 +280,17 @@ export class DormHubScene extends Phaser.Scene {
   private createCampusCardPickup(): void {
     const actOne = this.bridge.getState().actOne;
     if (actOne.inventoryRecovered || actOne.phase !== "inventory_required") return;
-    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y).setDepth(1500).setSize(76, 58).setAngle(-3);
-    const glow = this.add.rectangle(0, 0, 52, 35, 0xffe56a, 0.08).setStrokeStyle(2, 0xffe56a, 0.55);
-    const shadow = this.add.rectangle(2, 3, 44, 28, 0x251f1a, 0.38);
-    const card = this.add.rectangle(0, 0, 44, 28, 0xe7edf0).setStrokeStyle(2, 0x173e77);
-    const portrait = this.add.rectangle(-14, 0, 10, 15, 0x6f98c2).setStrokeStyle(1, 0x244c77);
-    const head = this.add.circle(-14, -3, 3, 0xe5b98e);
-    const body = this.add.rectangle(-14, 5, 6, 5, 0x315d8d);
-    const lineA = this.add.rectangle(7, -5, 19, 2, 0x6083a4);
-    const lineB = this.add.rectangle(5, 2, 22, 2, 0x8aa0b4);
-    const lineC = this.add.rectangle(3, 8, 18, 2, 0x8aa0b4);
+    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y).setDepth(1500).setSize(76, 58);
+    const glow = this.add.rectangle(0, 0, 64, 46, 0xffe56a, 0.08).setStrokeStyle(2, 0xffe56a, 0.62);
+    const shadow = this.add.rectangle(2, 8, 50, 28, 0x251f1a, 0.42);
+    const chestBody = this.add.rectangle(0, 5, 48, 27, 0x8d552b).setStrokeStyle(3, 0x3a2112);
+    const chestLid = this.add.rectangle(0, -9, 48, 15, 0xb87332).setStrokeStyle(3, 0x3a2112);
+    const metalBandLeft = this.add.rectangle(-16, 2, 5, 37, 0xd3ae54).setStrokeStyle(1, 0x6f4c18);
+    const metalBandRight = this.add.rectangle(16, 2, 5, 37, 0xd3ae54).setStrokeStyle(1, 0x6f4c18);
+    const lock = this.add.rectangle(0, 3, 9, 12, 0xf1d36d).setStrokeStyle(2, 0x6f4c18);
     const hitTarget = this.add.rectangle(0, 0, 76, 58, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
     hitTarget.on("pointerdown", () => this.collectCampusCard());
-    pickup.add([glow, shadow, card, portrait, head, body, lineA, lineB, lineC, hitTarget]);
+    pickup.add([glow, shadow, chestBody, chestLid, metalBandLeft, metalBandRight, lock, hitTarget]);
     this.campusCardPickup = pickup;
     this.tweens.add({ targets: [glow, pickup], alpha: { from: 0.72, to: 1 }, y: "-=3", duration: 760, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
   }
@@ -482,7 +498,7 @@ export class DormHubScene extends Phaser.Scene {
 
   private updatePrompt(target: DormInteractionTarget | null, nearCard: boolean): void {
     if (nearCard) {
-      this.interactionPrompt.setText(formatRpgInteractionHint("拾取校园卡")).setVisible(true);
+      this.interactionPrompt.setText(formatRpgInteractionHint("打开个人书桌上的宝箱")).setVisible(true);
       return;
     }
     if (target) {
@@ -515,7 +531,10 @@ export class DormHubScene extends Phaser.Scene {
       this.time.delayedCall(520, () => this.bridge.emit("rpg_dorm_exit"));
       return;
     }
-    this.showFeedback(INTERACTION_COPY.exit_door);
+    const actOne = this.bridge.getState().actOne;
+    this.showFeedback(actOne.manualControlTested
+      ? "先完成基础馆二层南区 022 的座位预约。"
+      : INTERACTION_COPY.exit_door);
   }
 
   private collectCampusCard(): void {
@@ -532,7 +551,22 @@ export class DormHubScene extends Phaser.Scene {
     if (!this.bridge.getState().actOne.inventoryRecovered) return;
     this.campusCardPickup?.destroy();
     this.campusCardPickup = undefined;
-    this.showFeedback(`获得校园卡：${actOneContent.studentName} · ${actOneContent.studentId}。`);
+    this.showFeedback("获得校园卡。身份信息已可读。");
+  }
+
+  private inspectCharacter(): void {
+    const actOne = this.bridge.getState().actOne;
+    const feedback = !actOne.characterNamed
+      ? "他听不到你说话。"
+      : !actOne.exerciseStarted
+        ? "他知道自己是谁，但还没有开始走。"
+        : !actOne.controlsInstalled
+          ? "他在来回走，但不知道往哪里走。"
+          : !actOne.manualControlTested
+            ? "方向控制已安装，试着让他走一步。"
+            : "他现在会按你的方向移动。";
+    this.showFeedback(feedback);
+    this.bridge.emit("rpg_character_inspected");
   }
 
   private updatePlayerAnimation(vector: Phaser.Math.Vector2): void {

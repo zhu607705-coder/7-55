@@ -56,7 +56,7 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
   act2_gamepad_purchased: {
     kind: "stamp",
     title: "交易完成",
-    detail: "自动走动已停止，方向键可用",
+    detail: "游戏手柄已放入道具栏",
     mark: "¥6",
     durationMs: 1550,
     priority: 2
