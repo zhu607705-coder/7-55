@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import Phaser from "phaser";
 import type { EventBus } from "../../core/EventBus";
 import type { SceneRouter } from "../../core/SceneRouter";
+import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type {
   GameState,
   GameStore,
@@ -52,6 +53,27 @@ const SCENE_CLASSES = {
 
 const DOUBLE_TAP_WINDOW_MS = 380;
 const RPG_TOUCH_CONTROLS_QUERY = "(pointer: coarse)";
+const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; itemId: ItemId | "" }>> = {
+  readEntranceRecord: { targetId: "entrance_record", itemId: "" },
+  inspectBackpack: { targetId: "seat_022_backpack", itemId: "" },
+  collectOccupancyNote: { targetId: "occupancy_note", itemId: "" },
+  unlockCatalogAtTerminal: { targetId: "catalog_terminal", itemId: "" },
+  useCallNumberOnShelf: { targetId: "library_shelf_755", itemId: "callNumber755" },
+  stampNonPersonProof: { targetId: "lost_found_machine", itemId: "itemRecognitionReport" },
+  useRightArrowOnReceipt: { targetId: "seat_022_gap", itemId: "rightArrow" },
+  applyPassToBackpack: { targetId: "seat_022_backpack", itemId: "seatReleasePass" },
+  sitAt022: { targetId: "seat_022_chair", itemId: "" },
+  complete022Dialogue: { targetId: "seat_022_chair", itemId: "" }
+};
+const LIBRARY_VISIT_CHECKPOINTS: Record<LibraryLocationId, RpgCheckpointId | ""> = {
+  entrance: "library_entrance",
+  seat_022: "library_seat_022",
+  front_desk: "library_front_desk",
+  lost_found: "library_front_desk",
+  catalog_terminal: "",
+  printer: "",
+  shelf_755: "library_shelf_755"
+};
 
 function useTouchControls(): boolean {
   const [enabled, setEnabled] = useState(() => (
@@ -232,13 +254,39 @@ export function RpgGameHost({
   }, [bridge, runtimeScene, state.rpgCheckpoint, state.rpgScene]);
 
   useEffect(() => {
+    if (state.actOne.phase === "system_return_required" && state.items.campusCard) {
+      setInspectedMapItem((current) => current ?? "campusCard");
+    }
+  }, [state.actOne.phase, state.items.campusCard]);
+
+  useEffect(() => {
     return events.subscribe((event) => {
-      if (event.name === "rpg_campus_card_collected") {
-        controller.recoverInventory();
+      if (event.name === "library_archived_rule_opened") {
+        setInspectedMapItem("archivedLeaveRule");
+        events.emit("inventory_item_inspected", { itemId: "archivedLeaveRule", surface: "rpg", automatic: true });
+      } else if (event.name === "rpg_campus_card_collected") {
+        if (controller.recoverInventory()) {
+          setInspectedMapItem("campusCard");
+          events.emit("inventory_item_inspected", { itemId: "campusCard", surface: "rpg", automatic: true });
+        }
       } else if (event.name === "rpg_character_inspected") {
         controller.inspectCharacter();
+      } else if (event.name === "rpg_gamepad_install_requested") {
+        const result = controller.useGamepad();
+        const feedback = {
+          active: "手柄已安装，自动走动已停止。请输入一次方向。",
+          identity_required: "他还不知道自己是谁。先用部门黄页完成命名。",
+          exercise_required: "他还没有开始课外锻炼。",
+          not_owned: "道具栏里没有手柄。",
+          inactive: "当前流程还不能安装手柄。"
+        }[result];
+        events.emit("toast", { text: feedback, tone: result === "active" ? "task" : "system", durationMs: 4200 });
       } else if (event.name === "rpg_manual_movement_started") {
-        controller.confirmManualControl();
+        if (!store.getState().actOne.manualControlTested && controller.confirmManualControl()) {
+          events.emit("toast", { text: "可以出门了", tone: "task", durationMs: 2800 });
+          controller.returnToPhone();
+          router.goTo("zjuding");
+        }
       } else if (event.name === "rpg_dorm_exit") {
         if (controller.leaveDorm()) {
           controller.enterRpg("campus_bootstrap");
@@ -258,24 +306,41 @@ export function RpgGameHost({
       } else if (event.name === "rpg_library_action_requested") {
         const action = String(event.payload?.action ?? "");
         const targetId = String(event.payload?.targetId ?? "");
+        const itemId = String(event.payload?.itemId ?? "");
+        const actionContract = LIBRARY_ACTION_CONTRACTS[action];
         let accepted = false;
         if (action === "visitLibraryPoint") {
-          accepted = libraryController.visitLibraryPoint(
-            String(event.payload?.point ?? "") as LibraryLocationId,
-            event.payload?.checkpoint
-              ? String(event.payload.checkpoint) as RpgCheckpointId
-              : undefined
-          );
+          const point = String(event.payload?.point ?? "") as LibraryLocationId;
+          const checkpoint = String(event.payload?.checkpoint ?? "");
+          const expectedCheckpoint = LIBRARY_VISIT_CHECKPOINTS[point];
+          if (targetId || itemId || expectedCheckpoint === undefined || checkpoint !== expectedCheckpoint) {
+            events.emit("library_rpg_interaction_failed", {
+              action,
+              targetId,
+              reason: "wrong_target"
+            });
+            return;
+          }
+          accepted = libraryController.visitLibraryPoint(point, expectedCheckpoint || undefined);
+        } else if (!actionContract || targetId !== actionContract.targetId || itemId !== actionContract.itemId) {
+          events.emit("library_rpg_interaction_failed", {
+            action,
+            targetId,
+            reason: actionContract && targetId === actionContract.targetId ? "wrong_item" : "wrong_target"
+          });
+          return;
         } else if (action === "readEntranceRecord") {
           accepted = libraryController.readEntranceRecord();
         } else if (action === "inspectBackpack") {
           accepted = libraryController.inspectBackpack();
         } else if (action === "collectOccupancyNote") {
           accepted = libraryController.collectOccupancyNote();
+        } else if (action === "unlockCatalogAtTerminal") {
+          accepted = libraryController.unlockCatalogAtTerminal();
         } else if (action === "useCallNumberOnShelf") {
           accepted = libraryController.useCallNumberOnShelf();
         } else if (action === "stampNonPersonProof") {
-          accepted = libraryController.stampNonPersonProof();
+          accepted = libraryController.beginNonPersonScan();
         } else if (action === "useRightArrowOnReceipt") {
           accepted = libraryController.useRightArrowOnReceipt();
         } else if (action === "applyPassToBackpack") {
@@ -293,6 +358,14 @@ export function RpgGameHost({
       }
     });
   }, [controller, events, libraryController]);
+
+  useEffect(() => {
+    if (state.ui.libraryFinalsPuzzle.lostFoundStage !== "scanning") {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => libraryController.completeNonPersonScan(), 920);
+    return () => window.clearTimeout(timer);
+  }, [libraryController, state.ui.libraryFinalsPuzzle.lostFoundStage]);
 
   useEffect(() => {
     const stopDirection = () => {
@@ -321,6 +394,10 @@ export function RpgGameHost({
   }
 
   function returnToPhone() {
+    if (store.getState().actOne.phase === "system_return_required") {
+      setInspectedMapItem("campusCard");
+      return;
+    }
     if (desktopSplit) {
       onFocusPhone?.();
       return;
@@ -331,8 +408,11 @@ export function RpgGameHost({
 
   function inspectMapItem(item: "campusCard" | "gamepad") {
     if (item === "campusCard") {
+      const identityReadable = selectIdentityReadable(store.getState());
       events.emit("toast", {
-        text: `电子校园卡：${actOneContent.studentName} · ${actOneContent.studentId}`,
+        text: identityReadable
+          ? `电子校园卡：${actOneContent.studentName} · ${actOneContent.studentId}`
+          : "电子校园卡：身份信息尚未读取",
         tone: "task",
         durationMs: 3200
       });
@@ -368,6 +448,18 @@ export function RpgGameHost({
       return;
     }
     lastMapItemTap.current = { itemId, at: now };
+  }
+
+  function closeMapItemDetails() {
+    const closingItem = inspectedMapItem;
+    setInspectedMapItem(null);
+    if (closingItem === "campusCard" && store.getState().actOne.phase === "system_return_required") {
+      controller.startMovementQuest();
+      events.emit("toast", { text: "任务更新：找到移动的办法", tone: "task", durationMs: 3200 });
+    }
+    if (closingItem === "archivedLeaveRule") {
+      libraryController.confirmArchivedRuleRead();
+    }
   }
 
   return (
@@ -407,7 +499,7 @@ export function RpgGameHost({
           </>
         ) : null}
 
-        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad || state.actOne.gamepadPurchased) && runtimeScene !== "library_interior" ? (
+        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" ? (
           <aside className="rpg-temp-inventory" aria-label="地图物品栏">
             <strong>物品栏</strong>
             <div className="rpg-temp-items">
@@ -423,7 +515,7 @@ export function RpgGameHost({
                   <span>校园卡</span>
                 </button>
               ) : null}
-              {state.items.gamepad || state.actOne.gamepadPurchased ? (
+              {state.items.gamepad ? (
                 <button
                   type="button"
                   className={state.actOne.movementEnabled ? "is-active" : "is-waiting"}
@@ -437,7 +529,7 @@ export function RpgGameHost({
                 </button>
               ) : null}
             </div>
-            {state.items.gamepad || state.actOne.gamepadPurchased ? (
+            {state.items.gamepad ? (
               <small>
                 {state.actOne.movementEnabled
                   ? "已连接"
@@ -449,7 +541,7 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {runtimeScene === "library_interior" ? (
+        {runtimeScene === "library_interior" || runtimeScene === "dorm_hub" ? (
           <RpgInventoryDock
             state={state}
             events={events}
@@ -487,7 +579,7 @@ export function RpgGameHost({
         itemId={inspectedMapItem}
         variant="rpg"
         portalRoot={shellRoot}
-        onClose={() => setInspectedMapItem(null)}
+        onClose={closeMapItemDetails}
       />
     </main>
   );
@@ -515,8 +607,10 @@ function getLibraryObjective(state: GameState): string {
   if (phase === "occupied_seat_found") return puzzle.occupancyNoteCollected ? "调查纸条提到的公开记录" : "检查书包旁边的占座纸条";
   if (phase === "evidence_gathering") {
     if (!puzzle.investigationOpened) return "用占座纸条查找公开记录";
+    if (!puzzle.catalogUnlocked) return "与馆藏终端互动，解锁馆藏检索";
     if (!puzzle.catalogSearchCompleted || !puzzle.callNumberCollected) return "先确认旧版离座规则";
     if (!puzzle.archivedRuleCollected) return "按索书号核对馆内旧规则";
+    if (!puzzle.archivedRuleRead) return "阅读旧版临时离座恢复规定";
     const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
     return proofCount < 3 ? "补齐恢复座位所需的三项证明" : "把四项公开证据整理进 CC98";
   }

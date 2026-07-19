@@ -17,7 +17,8 @@ export type DeveloperCheckpointId =
   | "c2-friend" | "c2-system" | "c2-inventory" | "c2-system-return"
   | "c2-name" | "c2-exercise" | "c2-triangle" | "c2-weather-water"
   | "c2-mentor-line" | "c2-arrow-assembly" | "c2-balance-shift"
-  | "c2-gamepad-market" | "c2-manual-movement" | "c2-dorm-exit"
+  | "c2-gamepad-market" | "c2-manual-movement" | "c2-reservation-briefing"
+  | "c2-seat-reservation" | "c2-dorm-exit"
   | "c2-library-gate" | "c2-entrance-record" | "c2-seat-arrival"
   | "c2-occupancy-note" | "c2-catalog" | "c2-archived-rule"
   | "c2-photo-report" | "c2-nonperson-stamp" | "c2-seat-receipt"
@@ -50,7 +51,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-friend", chapter: "第二章", label: "朋友追问", detail: "回复签到失败" },
   { id: "c2-system", chapter: "第二章", label: "系统红圈", detail: "浙大钉名字旁" },
   { id: "c2-inventory", chapter: "第二章", label: "取得校园卡", detail: "寝室右侧个人书桌" },
-  { id: "c2-system-return", chapter: "第二章", label: "返回系统", detail: "再次点击红圈" },
+  { id: "c2-system-return", chapter: "第二章", label: "校园卡首显", detail: "取得后自动放大" },
   { id: "c2-name", chapter: "第二章", label: "人物命名", detail: "黄页填写身份" },
   { id: "c2-exercise", chapter: "第二章", label: "启动锻炼", detail: "体艺开始课外锻炼" },
   { id: "c2-triangle", chapter: "第二章", label: "取得三角形", detail: "主页任务推送" },
@@ -60,6 +61,8 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-balance-shift", chapter: "第二章", label: "移动余额小数点", detail: "0.06 变为 6.00" },
   { id: "c2-gamepad-market", chapter: "第二章", label: "购买游戏手柄", detail: "CC98 二手交易" },
   { id: "c2-manual-movement", chapter: "第二章", label: "首次手动移动", detail: "寝室方向控制" },
+  { id: "c2-reservation-briefing", chapter: "第二章", label: "系统预约说明", detail: "首次移动后的三句说明" },
+  { id: "c2-seat-reservation", chapter: "第二章", label: "预约 022", detail: "基础馆二层南区" },
   { id: "c2-dorm-exit", chapter: "第二章", label: "离开寝室", detail: "出口已开放" },
   { id: "c2-library-gate", chapter: "第二章", label: "图书馆门口", detail: "校园地图入口" },
   { id: "c2-entrance-record", chapter: "第二章", label: "入馆记录", detail: "读取 07:55 记录" },
@@ -156,8 +159,7 @@ function withMovementFacts(
 ): GameState {
   const actOne = { ...state.actOne, ...patch };
   actOne.identityVerified = actOne.characterNamed;
-  actOne.controlsInstalled = actOne.gamepadPurchased;
-  actOne.movementEnabled = actOne.characterNamed && actOne.exerciseStarted && actOne.gamepadPurchased;
+  actOne.movementEnabled = actOne.characterNamed && actOne.exerciseStarted && actOne.controlsInstalled;
   return { ...state, actOne, items: { ...state.items, ...items } };
 }
 
@@ -174,7 +176,7 @@ function createMovementCheckpointState(id: DeveloperCheckpointId): GameState {
   if (id === "c2-exercise") return { ...state, currentScene: "tiyi" };
   state = withMovementFacts(state, { exerciseStarted: true });
   if (id === "c2-triangle") return state;
-  state = withMovementFacts(state, { pushTriangleTaken: true }, { pushTriangle: true });
+  state = withMovementFacts(state, { pushTriangleTapCount: 3, pushTriangleTaken: true }, { pushTriangle: true });
   if (id === "c2-weather-water") return { ...state, currentScene: "weather" };
   state = withMovementFacts(state, { weatherWaterTaken: true }, { weatherWater: true });
   if (id === "c2-mentor-line") {
@@ -206,36 +208,64 @@ function createMovementCheckpointState(id: DeveloperCheckpointId): GameState {
   if (id === "c2-manual-movement") {
     return { ...state, runtimeMode: "rpg", rpgScene: "dorm_hub" };
   }
-  return {
-    ...withMovementFacts(state, {
+  state = withMovementFacts(state, {
+    phase: "reservation_briefing_required",
+    controlsInstalled: true,
+    manualControlTested: true,
+    canLeaveDorm: false
+  }, { gamepad: false });
+  if (id === "c2-reservation-briefing") {
+    return { ...state, runtimeMode: "phone", currentScene: "zjuding", ui: { ...state.ui, zjudingPage: "hub" } };
+  }
+  state = withMovementFacts(state, { phase: "reservation_required" });
+  if (id === "c2-seat-reservation") {
+    return { ...state, runtimeMode: "phone", currentScene: "zjuding", ui: { ...state.ui, zjudingPage: "hub" } };
+  }
+  const reservedState = withMovementFacts(state, {
       phase: "movement_ready",
-      manualControlTested: true,
       canLeaveDorm: true
-    }),
+    });
+  return {
+    ...reservedState,
     runtimeMode: "rpg",
-    rpgScene: "dorm_hub"
+    rpgScene: "dorm_hub",
+    ui: {
+      ...reservedState.ui,
+      librarySelectedSeat: "022",
+      librarySeatReserved: true
+    }
   };
 }
 
 function createCompletedMovementState(): GameState {
-  return withMovementFacts(createActTwoBase("complete"), {
+  const state = withMovementFacts(createActTwoBase("complete"), {
     inventoryRecovered: true,
     characterPromptSeen: true,
     characterNamed: true,
     exerciseStarted: true,
+    pushTriangleTapCount: 3,
     pushTriangleTaken: true,
     weatherWaterTaken: true,
     mentorLineReleased: true,
     rightArrowAssembled: true,
     balanceShifted: true,
     gamepadPurchased: true,
+    controlsInstalled: true,
     manualControlTested: true,
     canLeaveDorm: true
   }, {
     campusCard: true,
     rightArrow: true,
-    gamepad: true
+    gamepad: false
   });
+  return {
+    ...state,
+    ui: {
+      ...state.ui,
+      librarySelectedSeat: "022",
+      librarySeatReserved: true
+    }
+  };
 }
 
 function libraryPhaseFor(id: LibraryDeveloperCheckpointId): LibraryFinalsPhase {
@@ -268,6 +298,7 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
   if (reached("c2-catalog")) {
     puzzle.occupancyNoteCollected = true;
     puzzle.investigationOpened = true;
+    puzzle.catalogUnlocked = true;
     puzzle.clueIds = [...puzzle.clueIds, "occupancy_note", "public_notice_floor_47"];
     items.occupancyNote = false;
   }
@@ -279,24 +310,27 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
   }
   if (reached("c2-photo-report")) {
     puzzle.archivedRuleCollected = true;
+    puzzle.archivedRuleRead = true;
     puzzle.libraryVisitedPoints = [...new Set([...puzzle.libraryVisitedPoints, "catalog_terminal", "shelf_755"])] as GameState["ui"]["libraryFinalsPuzzle"]["libraryVisitedPoints"];
     puzzle.clueIds = [...puzzle.clueIds, "archived_leave_rule"];
     items.callNumber755 = false;
     items.archivedLeaveRule = true;
   }
   if (reached("c2-nonperson-stamp")) {
+    puzzle.photoCaptured = true;
     puzzle.photoDimmed = true;
     puzzle.itemReportGenerated = true;
+    puzzle.lostFoundStage = "ready";
     items.itemRecognitionReport = true;
   }
   if (reached("c2-seat-receipt")) {
+    puzzle.lostFoundStage = "stamped";
     puzzle.nonPersonProofStamped = true;
     items.itemRecognitionReport = false;
     items.bagNonPersonProof = true;
   }
   if (reached("c2-tiyi-proof")) {
     puzzle.seatReceiptCollected = true;
-    items.rightArrow = false;
     items.seat022Receipt = true;
   }
   if (reached("c2-cc98-upload")) {
@@ -317,6 +351,7 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
     items.archivedLeaveRule = false;
   }
   if (reached("c2-recovery-form")) {
+    puzzle.preBdBriefingSeen = true;
     puzzle.bdCount = 3;
     puzzle.appliedBdReplyIds = ["reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"];
   }
@@ -384,8 +419,8 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
       inventoryOpen: false,
       selectedItem: null,
       zjudingPage,
-      librarySelectedSeat: reached("c2-seat-dialogue") ? "022" : null,
-      librarySeatReserved: reached("c2-seat-dialogue"),
+      librarySelectedSeat: "022",
+      librarySeatReserved: true,
       libraryFinalsPhase: libraryPhaseFor(id),
       libraryFinalsPuzzle: puzzle
     }
@@ -453,13 +488,15 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     return {
       ...state,
       currentScene: "zjuding",
+      runtimeMode: "rpg",
+      rpgScene: "dorm_hub",
       actOne: { ...state.actOne, inventoryRecovered: true }
     };
   }
   if ([
     "c2-name", "c2-exercise", "c2-triangle", "c2-weather-water", "c2-mentor-line",
     "c2-arrow-assembly", "c2-balance-shift", "c2-gamepad-market", "c2-manual-movement",
-    "c2-dorm-exit"
+    "c2-reservation-briefing", "c2-seat-reservation", "c2-dorm-exit"
   ].includes(id)) return createMovementCheckpointState(id);
   if (LIBRARY_CHECKPOINT_ORDER.includes(id as LibraryDeveloperCheckpointId)) {
     return createLibraryCheckpointState(id as LibraryDeveloperCheckpointId);

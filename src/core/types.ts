@@ -10,6 +10,8 @@ export interface FeatureAccess {
   weather: boolean;
   fullCampusMap: boolean;
   library: boolean;
+  libraryReservation: boolean;
+  libraryCatalog: boolean;
   cc98OwnerUpload: boolean;
   cc98Bd: boolean;
   libraryRecovery: boolean;
@@ -74,6 +76,8 @@ export type ActOneBootstrapPhase =
   | "system_required"
   | "inventory_required"
   | "system_return_required"
+  | "reservation_briefing_required"
+  | "reservation_required"
   | "movement_ready"
   // Legacy save values. SaveStore migrates these to movement_required.
   | "identity_required"
@@ -95,6 +99,7 @@ export interface ActOneBootstrapState {
   characterPromptSeen: boolean;
   characterNamed: boolean;
   exerciseStarted: boolean;
+  pushTriangleTapCount: number;
   pushTriangleTaken: boolean;
   weatherWaterTaken: boolean;
   mentorLineReleased: boolean;
@@ -154,6 +159,8 @@ export type LibraryFinalsBdReplyId =
   | "reply-visit-proof"
   | "reply-bag-nonperson";
 
+export type LostFoundStage = "missing_report" | "ready" | "scanning" | "stamped";
+
 export interface LibraryFinalsAuditValues {
   arrivalMinutes: number;
   publicNoticeFloor: number;
@@ -182,10 +189,14 @@ export interface LibraryFinalsPuzzleState {
   investigationOpened: boolean;
   optionalAc01Floors: number[];
   catalogSearchCompleted: boolean;
+  catalogUnlocked: boolean;
   callNumberCollected: boolean;
   archivedRuleCollected: boolean;
+  archivedRuleRead: boolean;
+  photoCaptured: boolean;
   photoDimmed: boolean;
   itemReportGenerated: boolean;
+  lostFoundStage: LostFoundStage;
   nonPersonProofStamped: boolean;
   seatReceiptCollected: boolean;
   auditAttemptCount: number;
@@ -194,6 +205,7 @@ export interface LibraryFinalsPuzzleState {
   auditProofCount: number;
   presenceProofCollected: boolean;
   cc98UploadedEvidenceIds: LibraryEvidenceId[];
+  preBdBriefingSeen: boolean;
   bdCount: 0 | 1 | 2 | 3;
   appliedBdReplyIds: LibraryFinalsBdReplyId[];
   recoverySubmittedEvidenceIds: LibraryRecoveryEvidenceId[];

@@ -15,6 +15,7 @@ import { ItemInspectDialog } from "../../../components/ItemInspectDialog";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import type { ItemId, LibraryRecoveryEvidenceId, ZjudingPage } from "../../../core/types";
 import { sanitizeZjudingPage, selectFeatureAccess } from "../../../core/FeatureAccess";
+import { selectIdentityReadable } from "../../../core/IdentityAccess";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
 import { kit } from "../../../modules/GameKit";
@@ -34,12 +35,21 @@ type OverlayState =
   | { kind: "confirm" }
   | null;
 
-type SystemDialogueKind = "inventory" | "inventory_ready" | "departure";
+type SystemDialogueKind = "inventory" | "inventory_ready" | "departure" | "reservation";
 
 interface SystemDialogueLine {
   speaker: "system" | "player";
   text: string;
   cue?: string;
+}
+
+function IdentityBlur({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className={`zju-identity-blur ${compact ? "is-compact" : ""}`.trim()} aria-label="身份信息未读取">
+      <i aria-hidden="true" />
+      <i aria-hidden="true" />
+    </span>
+  );
 }
 
 const SYSTEM_DIALOGUES: Record<SystemDialogueKind, SystemDialogueLine[]> = {
@@ -54,20 +64,15 @@ const SYSTEM_DIALOGUES: Record<SystemDialogueKind, SystemDialogueLine[]> = {
     { speaker: "system", text: actOneContent.audioNarration.act2_system_found_intro.subtitleZh, cue: "act2_system_found_intro" },
     { speaker: "player", text: "拜托了，帮我改一下签到记录" },
     { speaker: "system", text: actOneContent.audioNarration.act2_system_inventory_demand.subtitleZh, cue: "act2_system_inventory_demand" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_departure.subtitleZh, cue: "act2_system_departure" },
-    { speaker: "player", text: "？" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_confession.subtitleZh, cue: "act2_system_confession" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_friend.subtitleZh, cue: "act2_system_friend" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_library.subtitleZh, cue: "act2_system_library" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_move_now.subtitleZh, cue: "act2_system_move_now" }
+    { speaker: "system", text: "先把校园卡收好。寝室里的人还需要找到移动方法。", cue: "act2_system_move_now" }
   ],
   departure: [
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_departure.subtitleZh, cue: "act2_system_departure" },
-    { speaker: "player", text: "？" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_confession.subtitleZh, cue: "act2_system_confession" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_friend.subtitleZh, cue: "act2_system_friend" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_library.subtitleZh, cue: "act2_system_library" },
-    { speaker: "system", text: actOneContent.audioNarration.act2_system_move_now.subtitleZh, cue: "act2_system_move_now" }
+    { speaker: "system", text: "校园卡已经拿回。先想办法让寝室里的人动起来。", cue: "act2_system_move_now" }
+  ],
+  reservation: [
+    { speaker: "system", text: "我没有修改签到记录的权限。" },
+    { speaker: "system", text: "基础图书馆里有可协助处理记录的对象。" },
+    { speaker: "system", text: "你需要先完成座位预约。" }
   ]
 };
 
@@ -448,11 +453,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const [seatView, setSeatView] = useState<"map" | "list">("map");
   const [spaceMode, setSpaceMode] = useState<"list" | "quick">("list");
   const [railCollapsed, setRailCollapsed] = useState(false);
-  const [directoryName, setDirectoryName] = useState(() => state.actOne.characterNamed ? actOneContent.studentName : "");
-  const [directoryStudentId, setDirectoryStudentId] = useState(() => state.actOne.characterNamed ? actOneContent.studentId : "");
+  const [directoryName, setDirectoryName] = useState(() => selectIdentityReadable(state) && state.actOne.characterNamed ? actOneContent.studentName : "");
+  const [directoryStudentId, setDirectoryStudentId] = useState(() => selectIdentityReadable(state) && state.actOne.characterNamed ? actOneContent.studentId : "");
   const [directoryCardStatus, setDirectoryCardStatus] = useState<"idle" | "scanning" | "read">(
-    () => state.actOne.characterNamed ? "read" : "idle"
+    () => selectIdentityReadable(state) && state.actOne.characterNamed ? "read" : "idle"
   );
+  const [directoryEntryActive, setDirectoryEntryActive] = useState(false);
   const [directoryHintStep, setDirectoryHintStep] = useState(0);
   const [systemDialogue, setSystemDialogue] = useState<SystemDialogueKind | null>(null);
   const [systemDialogueIndex, setSystemDialogueIndex] = useState(0);
@@ -478,7 +484,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const recoveryUnlocked = access.libraryRecovery;
   const currentPage = sanitizeZjudingPage(state);
   const actOnePhase = state.actOne.phase;
-  const movementQuestActive = actOnePhase === "movement_required" || actOnePhase === "movement_ready";
+  const identityReadable = selectIdentityReadable(state);
+  const directoryDisplayAllowed = identityReadable && (state.actOne.characterNamed || directoryEntryActive);
+  const visibleDirectoryCardStatus = directoryDisplayAllowed ? directoryCardStatus : "idle";
+  const visibleDirectoryName = directoryDisplayAllowed ? directoryName : "";
+  const visibleDirectoryStudentId = directoryDisplayAllowed ? directoryStudentId : "";
+  const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(actOnePhase);
   const visibleCatalogResults = useMemo(() => {
     if (catalogSubmitted) {
       return findCatalogResults(catalogSubmittedQuery);
@@ -503,8 +514,16 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     return () => window.clearTimeout(timer);
   }, [phase, onCampusWifi]);
 
+  useEffect(() => {
+    if (phase !== "ready" || actOnePhase !== "reservation_briefing_required" || systemDialogue) {
+      return;
+    }
+    setSystemDialogue("reservation");
+    setSystemDialogueIndex(0);
+  }, [actOnePhase, phase, systemDialogue]);
+
   function scanDirectoryCampusCard() {
-    if (!state.items.campusCard) {
+    if (!identityReadable) {
       kit.flags.toast("读卡器没有读到有效证件。", "system");
       return;
     }
@@ -517,6 +536,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       setDirectoryName(actOneContent.studentName);
       setDirectoryStudentId(actOneContent.studentId);
       setDirectoryCardStatus("read");
+      setDirectoryEntryActive(true);
       directoryScanTimerRef.current = null;
       events.emit("act2_directory_card_scanned", {
         name: actOneContent.studentName,
@@ -546,7 +566,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         directoryScanTimerRef.current = null;
       }
     };
-  }, [events, state.items.campusCard]);
+  }, [events, identityReadable]);
 
   useEffect(() => () => {
     if (recoveryAnimationTimerRef.current !== null) window.clearTimeout(recoveryAnimationTimerRef.current);
@@ -579,13 +599,25 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   }), [events]);
 
   useEffect(() => {
+    if (!identityReadable) {
+      setDirectoryName("");
+      setDirectoryStudentId("");
+      setDirectoryCardStatus("idle");
+      setDirectoryEntryActive(false);
+      return;
+    }
     if (!state.actOne.characterNamed) {
+      if (!directoryEntryActive) {
+        setDirectoryName("");
+        setDirectoryStudentId("");
+        setDirectoryCardStatus("idle");
+      }
       return;
     }
     setDirectoryName(actOneContent.studentName);
     setDirectoryStudentId(actOneContent.studentId);
     setDirectoryCardStatus("read");
-  }, [state.actOne.characterNamed]);
+  }, [directoryEntryActive, identityReadable, state.actOne.characterNamed]);
 
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
@@ -671,6 +703,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       kind = state.items.campusCard && state.actOne.inventoryRecovered ? "inventory_ready" : "inventory";
     } else if (actOnePhase === "system_return_required") {
       kind = "departure";
+    } else if (actOnePhase === "reservation_briefing_required") {
+      kind = "reservation";
     } else if (actOnePhase === "inventory_required") {
       kit.flags.toast("它看了看你的空手，又缩回了红圈里。", "system");
       return;
@@ -702,9 +736,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       kit.actOne.confrontSystem();
       kit.actOne.startMovementQuest();
       kit.flags.toast("任务更新：找到移动的办法", "task");
-    } else {
+    } else if (systemDialogue === "departure") {
       kit.actOne.startMovementQuest();
       kit.flags.toast("任务更新：找到移动的办法", "task");
+    } else {
+      kit.actOne.completeReservationBriefing();
+      kit.flags.setUi("zjudingPage", "hub");
+      kit.flags.toast("任务更新：在浙大钉预约图书馆座位", "task");
     }
     setSystemDialogue(null);
     setSystemDialogueIndex(0);
@@ -712,7 +750,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
 
   function openCampusCard() {
     playSfx("02_");
-    if (!state.items.campusCard) {
+    if (!identityReadable) {
       kit.flags.toast("电子校园卡将在第二章寝室任务中取得。", "system");
       return;
     }
@@ -722,6 +760,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
 
   function submitDirectoryIdentity() {
     if (kit.actOne.identifyCharacter(directoryName, directoryStudentId)) {
+      setDirectoryEntryActive(false);
       kit.flags.toast("黄页联络成功：寝室人物已显示姓名。", "task");
       goPage("hub");
       return;
@@ -731,11 +770,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   }
 
   function inspectDirectoryCardReader() {
-    if (directoryCardStatus === "scanning") {
+    if (visibleDirectoryCardStatus === "scanning") {
       kit.flags.toast("读卡器正在逐字识别。", "system");
       return;
     }
-    if (directoryCardStatus === "read") {
+    if (visibleDirectoryCardStatus === "read") {
       kit.flags.toast("姓名和学号已经读入。现在只差拨出这通电话。", "system");
       return;
     }
@@ -756,8 +795,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
 
   function enterRoom(room: string) {
     setSelectedRoom(room);
-    kit.flags.setUi("librarySelectedSeat", null);
-    kit.flags.setUi("librarySeatReserved", false);
+    if (!state.ui.librarySeatReserved) {
+      kit.flags.setUi("librarySelectedSeat", null);
+    }
     goPage("library_seat");
   }
 
@@ -767,7 +807,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     if (state.ui.librarySeatReserved) {
-      kit.flags.setUi("librarySeatReserved", false);
+      announce(`座位 ${state.ui.librarySelectedSeat ?? "022"} 已预约，不能在当前任务中改签。`);
+      return;
     }
     kit.flags.setUi("librarySelectedSeat", seat);
     playSfx("01_");
@@ -786,10 +827,22 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   }
 
   function confirmReservation() {
-    kit.flags.setUi("librarySeatReserved", true);
+    const seat = state.ui.librarySelectedSeat ?? "";
+    const result = kit.actOne.confirmLibraryReservation(selectedLibrary, selectedRoom, seat);
+    if (result !== "reserved") {
+      setOverlay(null);
+      const feedback = {
+        wrong_library: "预约来源不匹配：请选择基础馆。",
+        wrong_room: "预约区域不匹配：请选择二层南区。",
+        wrong_seat: "座位凭据不匹配：目标座位为 022。",
+        inactive: "系统还没有开放本次座位预约。"
+      }[result];
+      kit.flags.toast(feedback, "system");
+      return;
+    }
     setOverlay(null);
     playSfx("01_");
-    kit.flags.toast(`预约成功：${selectedRoom} ${state.ui.librarySelectedSeat} 号座位。`, "task");
+    kit.flags.toast("预约成功：基础馆二层南区 022。任务更新：前往基础图书馆 022", "task");
   }
 
   function submitCatalogSearch() {
@@ -920,11 +973,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           <section className="zju-login-form">
             <label>
               <span>姓名</span>
-              <strong>{actOneContent.studentName}</strong>
+              <strong>{identityReadable ? actOneContent.studentName : <IdentityBlur />}</strong>
             </label>
             <label>
               <span>学号</span>
-              <strong>{actOneContent.studentId}</strong>
+              <strong>{identityReadable ? actOneContent.studentId : <IdentityBlur compact />}</strong>
             </label>
             <button type="button" className="primary" onClick={() => goPage("directory")}>
               前往部门黄页
@@ -952,7 +1005,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </section>
           <section className="zju-directory-identity" aria-label="联络寝室人物">
             <div
-              className={`zju-directory-card-reader is-${directoryCardStatus}`}
+              className={`zju-directory-card-reader is-${visibleDirectoryCardStatus}`}
               data-drop-target="directory_identity"
               role="button"
               tabIndex={0}
@@ -967,18 +1020,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             >
               <span className="zju-directory-card-chip" aria-hidden="true"><i /></span>
               <div>
-                <strong>{directoryCardStatus === "read" ? "电子校园卡已读取" : "校园身份读卡区"}</strong>
+                <strong>{visibleDirectoryCardStatus === "read" ? "电子校园卡已读取" : "校园身份读卡区"}</strong>
                 <small>
-                  {directoryCardStatus === "scanning"
+                  {visibleDirectoryCardStatus === "scanning"
                     ? "正在识别持卡人字段……"
-                    : directoryCardStatus === "read"
+                    : visibleDirectoryCardStatus === "read"
                       ? "姓名与 10 位学号已填入"
                       : state.ui.selectedItem === "campusCard"
                         ? "校园卡已对准，点击读取"
                       : "点击查看提示，或将身份凭证放入此处"}
                 </small>
               </div>
-              <b aria-hidden="true">{directoryCardStatus === "read" ? "OK" : directoryCardStatus === "scanning" ? "···" : "?"}</b>
+              <b aria-hidden="true">{visibleDirectoryCardStatus === "read" ? "OK" : visibleDirectoryCardStatus === "scanning" ? "···" : "?"}</b>
             </div>
             <header>
               <span aria-hidden="true">☎</span>
@@ -987,8 +1040,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             <label>
               <span>姓名</span>
               <input
-                value={directoryName}
-                onChange={(event) => setDirectoryName(event.target.value)}
+                value={visibleDirectoryName}
+                onChange={(event) => {
+                  setDirectoryEntryActive(true);
+                  setDirectoryName(event.target.value);
+                }}
                 placeholder="校园卡姓名"
                 autoComplete="off"
               />
@@ -997,14 +1053,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <span>学号</span>
               <input
                 inputMode="numeric"
-                value={directoryStudentId}
-                onChange={(event) => setDirectoryStudentId(event.target.value.replace(/\D/g, "").slice(0, actOneContent.studentId.length))}
+                value={visibleDirectoryStudentId}
+                onChange={(event) => {
+                  setDirectoryEntryActive(true);
+                  setDirectoryStudentId(event.target.value.replace(/\D/g, "").slice(0, actOneContent.studentId.length));
+                }}
                 placeholder="10 位学号"
                 autoComplete="off"
               />
             </label>
             <button type="button" className="zju-call-button" onClick={submitDirectoryIdentity}>
-              {state.actOne.characterNamed ? `已联络：${actOneContent.studentName}` : "☎ 呼叫"}
+              {state.actOne.characterNamed && identityReadable ? `已联络：${actOneContent.studentName}` : "☎ 呼叫"}
             </button>
           </section>
         </main>
@@ -1046,10 +1105,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         />
         <main className="zju-library-scroll">
           <section className="zju-library-hero" data-ui-part="reader-profile">
-            <img src={libraryAvatarUrl} alt={`${actOneContent.studentName}读者头像`} />
+            <img src={libraryAvatarUrl} alt={identityReadable ? "校园卡持卡人读者头像" : "未读取身份的读者头像"} />
             <div>
-              <h2>{actOneContent.studentName}</h2>
-              <p>{actOneContent.studentId} <span aria-hidden="true">▱</span></p>
+              <h2>{identityReadable ? actOneContent.studentName : <IdentityBlur />}</h2>
+              <p>{identityReadable ? actOneContent.studentId : <IdentityBlur compact />} <span aria-hidden="true">▱</span></p>
             </div>
             <span className="zju-reader-activate zju-locked-control-icon" data-locked-icon="reader-activate" aria-hidden="true">✓</span>
             <span className="zju-reader-mail zju-locked-control-icon" data-locked-icon="reader-mail" aria-hidden="true">✉</span>
@@ -1060,10 +1119,16 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </section>
 
           <section className="zju-library-services" aria-label="图书馆服务" data-ui-part="service-grid">
-            <button type="button" data-app-id="馆藏检索" onClick={() => goPage("library_catalog")}>
-              <span aria-hidden="true">⌕</span>馆藏检索
-            </button>
-            {LIBRARY_APPS.slice(1).map((app) => app.opensSpaces ? (
+            {access.libraryCatalog ? (
+              <button type="button" data-app-id="馆藏检索" onClick={() => goPage("library_catalog")}>
+                <span aria-hidden="true">⌕</span>馆藏检索
+              </button>
+            ) : (
+              <span className="zju-static-app zju-locked-icon-slot" data-locked-app="馆藏检索" aria-hidden="true">
+                <span className="zju-library-service-icon">⌕</span><span className="zju-locked-label">馆藏检索</span>
+              </span>
+            )}
+            {LIBRARY_APPS.slice(1).map((app) => app.label === "座位预约" && app.opensSpaces && access.libraryReservation ? (
               <button key={app.label} type="button" data-app-id={app.label} onClick={() => goPage("library_spaces")}>
                 <span aria-hidden="true">{app.icon}</span>{app.label}
               </button>
@@ -1088,9 +1153,15 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 <span className="zju-locked-label">022恢复申请</span>
               </span>
             )}
-            <button type="button" data-app-id="返回现场" onClick={returnToLibrary}>
-              <span aria-hidden="true">↗</span>返回现场
-            </button>
+            {finalsPhase !== "idle" ? (
+              <button type="button" data-app-id="返回现场" onClick={returnToLibrary}>
+                <span aria-hidden="true">↗</span>返回现场
+              </button>
+            ) : (
+              <span className="zju-static-app zju-locked-icon-slot" data-locked-app="返回现场" aria-hidden="true">
+                <span className="zju-library-service-icon">↗</span><span className="zju-locked-label">返回现场</span>
+              </span>
+            )}
           </section>
 
           {finalsPhase === "top_ten_reached" ? (
@@ -1485,10 +1556,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 actions: ["个人资料", "账号与安全", "退出浙大钉"]
               })}
             >
-              <span>{actOneContent.studentName}</span><i aria-hidden="true">▣</i>
+              <span>{identityReadable ? actOneContent.studentName : "用户"}</span><i aria-hidden="true">▣</i>
             </button>
             <div className="zju-hub-name">
-              <strong>{actOneContent.studentName}</strong><small>浙江大学</small>
+              <strong>{identityReadable ? actOneContent.studentName : "身份未读取"}</strong><small>浙江大学</small>
             </div>
             <span className="zju-hub-search-pill zju-locked-control-icon" data-locked-icon="hub-search" aria-hidden="true">⌕</span>
           </section>
@@ -1496,8 +1567,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           <section className="zju-identity-card" data-ui-part="identity-card">
             <div className="zju-id-decoration" aria-hidden="true"><i /><i /><i /></div>
             <div className="zju-id-summary">
-              {(["system_required", "inventory_required", "system_return_required"] as const).includes(
-                actOnePhase as "system_required" | "inventory_required" | "system_return_required"
+              {(["system_required", "inventory_required", "system_return_required", "reservation_briefing_required"] as const).includes(
+                actOnePhase as "system_required" | "inventory_required" | "system_return_required" | "reservation_briefing_required"
               ) ? (
                 <button
                   type="button"
@@ -1510,14 +1581,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               ) : (
                 <span className="zju-id-seal" aria-hidden="true">求</span>
               )}
-              <div><h2>{actOneContent.studentName}</h2><p>{actOneContent.studentId}/求是学院（归口...</p></div>
+              <div>
+                <h2>{identityReadable ? actOneContent.studentName : <IdentityBlur />}</h2>
+                <p>{identityReadable ? <>{actOneContent.studentId}/求是学院（归口...</> : <IdentityBlur compact />}</p>
+              </div>
               <span className="zju-id-summary-icon zju-locked-control-icon" data-locked-icon="identity-qr" aria-hidden="true">▦</span>
             </div>
             <div className="zju-id-actions">
               <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-code" data-locked-app="身份码" aria-hidden="true">
                 <span>◎</span><small className="zju-locked-label">身份码</small>
               </span>
-              {state.items.campusCard ? (
+              {identityReadable ? (
                 <button type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</button>
               ) : (
                 <span className="zju-static-action zju-locked-icon-slot" data-locked-app="电子校园卡" aria-hidden="true">
@@ -1697,7 +1771,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       {overlay?.kind === "confirm" ? (
         <ActionSheet title="确认预约" onClose={() => setOverlay(null)}>
           <p className="reservation-summary">
-            {selectedRoom} · {state.ui.librarySelectedSeat} 号座位
+            {selectedLibrary} · {selectedRoom} · {state.ui.librarySelectedSeat} 号座位
             <br />
             {selectedDate}，{selectedTime}
           </p>

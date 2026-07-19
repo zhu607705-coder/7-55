@@ -143,9 +143,7 @@ export class LibraryFinalsController {
     this.patchFinals("evidence_gathering", {
       occupancyNoteCollected: true,
       clueIds: addUnique(puzzle.clueIds, "occupancy_note")
-    });
-    this.setItem("occupancyNote", false);
-    this.setItem("occupancyNote", true);
+    }, {}, { occupancyNote: true });
     this.events.emit("get_item", { itemId: "occupancyNote", sourceScene: "phone_home" });
     this.events.emit("library_occupancy_note_collected", { seat: "022" });
     return true;
@@ -159,8 +157,7 @@ export class LibraryFinalsController {
     this.patchFinals("evidence_gathering", {
       investigationOpened: true,
       clueIds: addUnique(puzzle.clueIds, "public_notice_floor_47")
-    });
-    this.setItem("occupancyNote", false);
+    }, {}, { occupancyNote: false });
     this.events.emit("use_item", { itemId: "occupancyNote", targetId: "cc98_search" });
     this.events.emit("cc98_occupation_post_opened", { floors: 23, optionalAc01: 5 });
     return true;
@@ -183,11 +180,25 @@ export class LibraryFinalsController {
     return true;
   }
 
+  unlockCatalogAtTerminal(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.investigationOpened) {
+      return false;
+    }
+    if (puzzle.catalogUnlocked) {
+      return true;
+    }
+    this.patchFinals("evidence_gathering", { catalogUnlocked: true });
+    this.events.emit("library_catalog_unlocked", { surface: "zjuding" });
+    return true;
+  }
+
   searchCatalog(query: string): boolean {
     const puzzle = this.getPuzzle();
     if (
       this.getPhase() !== "evidence_gathering"
       || !puzzle.investigationOpened
+      || !puzzle.catalogUnlocked
       || puzzle.catalogSearchCompleted
       || !isCatalogClueQuery(query)
     ) {
@@ -212,34 +223,73 @@ export class LibraryFinalsController {
     this.patchFinals("evidence_gathering", {
       callNumberCollected: true,
       clueIds: addUnique(puzzle.clueIds, "call_number_755")
-    });
-    this.setItem("callNumber755", true);
+    }, {}, { callNumber755: true });
     this.events.emit("library_catalog_match_found", { callNumber: LIBRARY_FINALS_PUZZLE_CONFIG.callNumber });
     this.events.emit("get_item", { itemId: "callNumber755", sourceScene: "zjuding" });
     return true;
   }
 
   useCallNumberOnShelf(): boolean {
+    const state = this.store.getState();
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.callNumberCollected || puzzle.archivedRuleCollected) {
+    if (
+      this.getPhase() !== "evidence_gathering"
+      || !puzzle.callNumberCollected
+      || !state.items.callNumber755
+      || puzzle.archivedRuleCollected
+    ) {
       return false;
     }
     this.patchGame("evidence_gathering", {
       archivedRuleCollected: true,
       libraryVisitedPoints: addUnique(puzzle.libraryVisitedPoints, "shelf_755"),
       clueIds: addUnique(puzzle.clueIds, "archived_leave_rule")
-    }, { rpgCheckpoint: "library_shelf_755" });
-    this.setItem("callNumber755", false);
-    this.setItem("archivedLeaveRule", true);
+    }, { rpgCheckpoint: "library_shelf_755" }, { callNumber755: false, archivedLeaveRule: true });
     this.events.emit("use_item", { itemId: "callNumber755", targetId: "library_shelf_755" });
     this.events.emit("get_item", { itemId: "archivedLeaveRule", sourceScene: "phone_home" });
+    this.events.emit("library_archived_rule_opened", { itemId: "archivedLeaveRule" });
+    return true;
+  }
+
+  confirmArchivedRuleRead(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.archivedRuleCollected) {
+      return false;
+    }
+    if (puzzle.archivedRuleRead) {
+      return true;
+    }
+    this.patchFinals("evidence_gathering", {
+      archivedRuleRead: true,
+      clueIds: addUnique(puzzle.clueIds, "three_proof_requirements")
+    });
     this.events.emit("library_archived_rule_recovered", { proofCount: 3 });
+    this.events.emit("library_proof_requirements_revealed", {
+      requirements: ["presence", "seat_receipt", "non_person"]
+    });
+    return true;
+  }
+
+  capturePhoto(): boolean {
+    const puzzle = this.getPuzzle();
+    if (
+      this.getPhase() !== "evidence_gathering"
+      || !puzzle.backpackInspected
+      || !puzzle.archivedRuleRead
+    ) {
+      return false;
+    }
+    if (puzzle.photoCaptured) {
+      return true;
+    }
+    this.patchFinals("evidence_gathering", { photoCaptured: true });
+    this.events.emit("photo_bag_captured", { file: "IMG_0755.JPG", seat: "022" });
     return true;
   }
 
   dimPhoto(brightness: number): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.backpackInspected || puzzle.photoDimmed || !isPhotoReadable(brightness)) {
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.photoCaptured || puzzle.photoDimmed || !isPhotoReadable(brightness)) {
       return false;
     }
     this.patchFinals("evidence_gathering", { photoDimmed: true });
@@ -249,27 +299,47 @@ export class LibraryFinalsController {
 
   generateItemReport(): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.photoDimmed || puzzle.itemReportGenerated) {
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.photoCaptured || !puzzle.photoDimmed || puzzle.itemReportGenerated) {
       return false;
     }
-    this.patchFinals("evidence_gathering", { itemReportGenerated: true });
-    this.setItem("itemRecognitionReport", true);
+    this.patchFinals("evidence_gathering", { itemReportGenerated: true, lostFoundStage: "ready" }, {}, {
+      itemRecognitionReport: true
+    });
     this.events.emit("photo_bag_report_generated", { file: "IMG_0755.JPG" });
     this.events.emit("get_item", { itemId: "itemRecognitionReport", sourceScene: "photos" });
     return true;
   }
 
-  stampNonPersonProof(): boolean {
+  beginNonPersonScan(): boolean {
+    const state = this.store.getState();
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.itemReportGenerated || puzzle.nonPersonProofStamped) {
+    if (
+      this.getPhase() !== "evidence_gathering"
+      || !puzzle.itemReportGenerated
+      || !state.items.itemRecognitionReport
+      || puzzle.nonPersonProofStamped
+      || puzzle.lostFoundStage !== "ready"
+    ) {
+      return false;
+    }
+    this.patchFinals("evidence_gathering", { lostFoundStage: "scanning" });
+    this.events.emit("library_lost_found_scan_started");
+    return true;
+  }
+
+  completeNonPersonScan(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "evidence_gathering" || puzzle.lostFoundStage !== "scanning" || puzzle.nonPersonProofStamped) {
       return false;
     }
     this.patchGame("evidence_gathering", {
       nonPersonProofStamped: true,
+      lostFoundStage: "stamped",
       libraryVisitedPoints: addUnique(puzzle.libraryVisitedPoints, "lost_found")
-    }, { rpgCheckpoint: "library_front_desk" });
-    this.setItem("itemRecognitionReport", false);
-    this.setItem("bagNonPersonProof", true);
+    }, { rpgCheckpoint: "library_front_desk" }, {
+      itemRecognitionReport: false,
+      bagNonPersonProof: true
+    });
     this.events.emit("use_item", { itemId: "itemRecognitionReport", targetId: "lost_found_machine" });
     this.events.emit("library_bag_nonperson_proof_issued");
     this.events.emit("get_item", { itemId: "bagNonPersonProof", sourceScene: "phone_home" });
@@ -279,15 +349,19 @@ export class LibraryFinalsController {
   useRightArrowOnReceipt(): boolean {
     const state = this.store.getState();
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !state.items.rightArrow || puzzle.seatReceiptCollected) {
+    if (
+      this.getPhase() !== "evidence_gathering"
+      || !puzzle.archivedRuleRead
+      || !puzzle.backpackInspected
+      || !state.items.rightArrow
+      || puzzle.seatReceiptCollected
+    ) {
       return false;
     }
     this.patchGame("evidence_gathering", {
       seatReceiptCollected: true,
       libraryVisitedPoints: addUnique(puzzle.libraryVisitedPoints, "seat_022")
-    }, { rpgCheckpoint: "library_seat_022" });
-    this.setItem("rightArrow", false);
-    this.setItem("seat022Receipt", true);
+    }, { rpgCheckpoint: "library_seat_022" }, { seat022Receipt: true });
     this.events.emit("use_item", { itemId: "rightArrow", targetId: "seat_022_gap" });
     this.events.emit("library_seat_receipt_recovered", { seat: "022" });
     this.events.emit("get_item", { itemId: "seat022Receipt", sourceScene: "phone_home" });
@@ -305,7 +379,7 @@ export class LibraryFinalsController {
 
   submitAudit(values?: Readonly<LibraryFinalsAuditValues>): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || puzzle.presenceProofCollected) {
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.archivedRuleRead || puzzle.presenceProofCollected) {
       return false;
     }
     const submitted = values ?? {
@@ -325,8 +399,7 @@ export class LibraryFinalsController {
       auditPublicNoticeFloor: submitted.publicNoticeFloor,
       auditProofCount: submitted.proofCount,
       presenceProofCollected: true
-    });
-    this.setItem("libraryPresenceProof", true);
+    }, {}, { libraryPresenceProof: true });
     this.events.emit("tiyi_presence_proof_issued", { attempt, ...submitted });
     this.events.emit("get_item", { itemId: "libraryPresenceProof", sourceScene: "tiyi" });
     return true;
@@ -345,12 +418,24 @@ export class LibraryFinalsController {
     const uploaded = [...puzzle.cc98UploadedEvidenceIds, evidenceId];
     this.patchFinals(hasAllEvidence(uploaded) ? "top_ten_rising" : "evidence_gathering", {
       cc98UploadedEvidenceIds: uploaded
-    });
-    if (evidenceId === "archived_leave_rule") this.setItem("archivedLeaveRule", false);
+    }, {}, evidenceId === "archived_leave_rule" ? { archivedLeaveRule: false } : {});
     this.events.emit("cc98_evidence_uploaded", { evidenceId, uploadedCount: uploaded.length });
     if (hasAllEvidence(uploaded)) {
       this.events.emit("cc98_evidence_set_completed");
     }
+    return true;
+  }
+
+  completePreBdBriefing(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "top_ten_rising" || !hasAllEvidence(puzzle.cc98UploadedEvidenceIds)) {
+      return false;
+    }
+    if (puzzle.preBdBriefingSeen) {
+      return true;
+    }
+    this.patchFinals("top_ten_rising", { preBdBriefingSeen: true });
+    this.events.emit("cc98_pre_bd_briefing_completed");
     return true;
   }
 
@@ -359,6 +444,7 @@ export class LibraryFinalsController {
     if (
       this.getPhase() !== "top_ten_rising"
       || !hasAllEvidence(puzzle.cc98UploadedEvidenceIds)
+      || !puzzle.preBdBriefingSeen
       || !isLibraryFinalsBdReplyId(replyId)
       || puzzle.appliedBdReplyIds.includes(replyId)
       || puzzle.bdCount >= LIBRARY_FINALS_PUZZLE_CONFIG.bdRequired
@@ -399,13 +485,14 @@ export class LibraryFinalsController {
       return false;
     }
     const submitted = [...puzzle.recoverySubmittedEvidenceIds, evidenceId];
-    this.patchFinals("recovery_application", { recoverySubmittedEvidenceIds: submitted });
     const itemByEvidence: Record<LibraryRecoveryEvidenceId, ItemId> = {
       bag_non_person_proof: "bagNonPersonProof",
       seat_022_receipt: "seat022Receipt",
       library_presence_proof: "libraryPresenceProof"
     };
-    this.setItem(itemByEvidence[evidenceId], false);
+    this.patchFinals("recovery_application", { recoverySubmittedEvidenceIds: submitted }, {}, {
+      [itemByEvidence[evidenceId]]: false
+    });
     this.events.emit("library_recovery_evidence_uploaded", { evidenceId, submittedCount: submitted.length });
     return true;
   }
@@ -419,8 +506,7 @@ export class LibraryFinalsController {
     ) {
       return false;
     }
-    this.patchFinals("pass_ready", { evictionPassGenerated: true });
-    this.setItem("seatReleasePass", true);
+    this.patchFinals("pass_ready", { evictionPassGenerated: true }, {}, { seatReleasePass: true });
     this.events.emit("library_seat_release_pass_issued", { seat: "022" });
     this.events.emit("get_item", { itemId: "seatReleasePass", sourceScene: "zjuding" });
     return true;
@@ -431,8 +517,9 @@ export class LibraryFinalsController {
     if (this.getPhase() !== "pass_ready" || !puzzle.evictionPassGenerated || !this.store.getState().items.seatReleasePass) {
       return false;
     }
-    this.patchGame("backpack_removed", { backpackEvicted: true }, { rpgCheckpoint: "library_seat_022" });
-    this.setItem("seatReleasePass", false);
+    this.patchGame("backpack_removed", { backpackEvicted: true }, { rpgCheckpoint: "library_seat_022" }, {
+      seatReleasePass: false
+    });
     this.events.emit("use_item", { itemId: "seatReleasePass", targetId: "seat_022_backpack" });
     this.events.emit("library_seat_release_pass_applied", { seat: "022" });
     this.events.emit("library_backpack_evicted", { destination: "lost_found" });
@@ -485,44 +572,48 @@ export class LibraryFinalsController {
     return this.store.getState().items[itemByEvidence[evidenceId]];
   }
 
-  private setItem(itemId: ItemId, owned: boolean): void {
-    this.store.setState((state) => ({
-      ...state,
-      items: { ...state.items, [itemId]: owned },
-      ui: state.ui.selectedItem === itemId && !owned ? { ...state.ui, selectedItem: null } : state.ui
-    }));
-  }
-
   private patchFinals(
     libraryFinalsPhase: LibraryFinalsPhase,
     puzzlePatch: Partial<LibraryFinalsPuzzleState>,
-    uiPatch: Partial<UiState> = {}
+    uiPatch: Partial<UiState> = {},
+    itemPatch: Partial<ReturnType<GameStore["getState"]>["items"]> = {}
   ): void {
-    this.store.setState((state) => ({
-      ...state,
-      ui: {
+    this.store.setState((state) => {
+      const selectedItem = state.ui.selectedItem;
+      return {
+        ...state,
+        items: { ...state.items, ...itemPatch },
+        ui: {
         ...state.ui,
         ...uiPatch,
+        selectedItem: selectedItem && itemPatch[selectedItem] === false ? null : uiPatch.selectedItem ?? selectedItem,
         libraryFinalsPhase,
         libraryFinalsPuzzle: { ...state.ui.libraryFinalsPuzzle, ...puzzlePatch }
-      }
-    }));
+        }
+      };
+    });
   }
 
   private patchGame(
     libraryFinalsPhase: LibraryFinalsPhase,
     puzzlePatch: Partial<LibraryFinalsPuzzleState>,
-    gamePatch: Partial<Pick<ReturnType<GameStore["getState"]>, "runtimeMode" | "rpgScene" | "rpgCheckpoint">>
+    gamePatch: Partial<Pick<ReturnType<GameStore["getState"]>, "runtimeMode" | "rpgScene" | "rpgCheckpoint">>,
+    itemPatch: Partial<ReturnType<GameStore["getState"]>["items"]> = {}
   ): void {
-    this.store.setState((state) => ({
-      ...state,
-      ...gamePatch,
-      ui: {
+    this.store.setState((state) => {
+      const selectedItem = state.ui.selectedItem;
+      return {
+        ...state,
+        ...gamePatch,
+        items: { ...state.items, ...itemPatch },
+        ui: {
         ...state.ui,
+        selectedItem: selectedItem && itemPatch[selectedItem] === false ? null : selectedItem,
         libraryFinalsPhase,
         libraryFinalsPuzzle: { ...state.ui.libraryFinalsPuzzle, ...puzzlePatch }
-      }
-    }));
+        }
+      };
+    });
   }
 }
 

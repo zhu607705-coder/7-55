@@ -10,10 +10,14 @@
 }
 
 .quest-task-bar--phone {
-  left: 96px;
+  align-items: center;
+  display: flex;
+  height: var(--phone-questbar-h, 40px);
+  left: var(--phone-shell-gutter, 8px);
   position: absolute;
-  top: 5px;
-  width: 150px;
+  right: var(--phone-shell-gutter, 8px);
+  top: var(--phone-questbar-top, 40px);
+  width: auto;
 }
 
 .quest-task-trigger {
@@ -228,7 +232,7 @@
   left: 14px;
   position: fixed;
   right: 14px;
-  top: 46px;
+  top: var(--phone-page-control-top, 80px);
 }
 
 .quest-task-bar--rpg {
@@ -436,6 +440,65 @@
   font: 900 12px/1.4 monospace;
 }
 
+.quest-proof-requirements {
+  background: #1d2831;
+  border: 2px solid #8a7850;
+  display: grid;
+  gap: 7px;
+  padding: 9px;
+}
+
+.quest-proof-requirements > header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.quest-proof-requirements > header strong {
+  color: #f0d54e;
+  font-size: 11px;
+}
+
+.quest-proof-requirements > header span {
+  color: #9fd3ff;
+  font: 900 10px/1 monospace;
+}
+
+.quest-proof-requirements ul {
+  display: grid;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.quest-proof-requirements li {
+  align-items: center;
+  background: #29343d;
+  border-left: 4px solid #8a7850;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 18px minmax(0, 1fr);
+  min-height: 31px;
+  padding: 5px 7px;
+}
+
+.quest-proof-requirements li.is-complete {
+  border-left-color: #77c48d;
+}
+
+.quest-proof-requirements li span {
+  color: #f0d54e;
+  font: 900 13px/1 monospace;
+  text-align: center;
+}
+
+.quest-proof-requirements li strong {
+  color: #dbe1e5;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
 .quest-task-materials {
   background: #222b33;
   border: 2px solid #596771;
@@ -534,7 +597,14 @@
 }
 
 .phone-frame {
+  --phone-statusbar-top: 0px;
   --phone-statusbar-h: 40px;
+  --phone-questbar-top: var(--phone-statusbar-h);
+  --phone-questbar-h: 40px;
+  --phone-page-control-top: calc(var(--phone-statusbar-h) + var(--phone-questbar-h));
+  --phone-scene-safe-offset: var(--phone-questbar-h);
+  --phone-scene-page-control-offset: calc(var(--phone-page-control-top) - var(--phone-questbar-top));
+  --phone-shell-gutter: 8px;
   --phone-header-h: 60px;
   --phone-nav-hit: 44px;
   --phone-nav-left: 8px;
@@ -569,6 +639,15 @@
 
 .scene-surface {
   z-index: 0;
+}
+
+.phone-frame > .status-bar-global {
+  height: var(--phone-statusbar-h);
+  top: var(--phone-statusbar-top);
+}
+
+.phone-frame:has(> .quest-task-bar--phone) > .scene-surface {
+  inset: var(--phone-scene-safe-offset) 0 0;
 }
 
 .quest-clue-strip {

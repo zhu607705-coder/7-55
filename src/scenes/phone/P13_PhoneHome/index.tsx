@@ -22,7 +22,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const access = selectFeatureAccess(state);
   const friendFollowupPending = state.actOne.phase === "friend_message_required";
   const chapterServicesOpen = state.actOne.phase !== "prologue";
-  const movementQuestActive = state.actOne.phase === "movement_required" || state.actOne.phase === "movement_ready";
+  const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const bikeArcadeUnlocked = state.bikeArcade.unlocked;
 
   // 微信弹窗：1s 出第一条，2.4s 出第二条（散码前）
@@ -141,14 +141,15 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   }
 
   function collectPushTriangle() {
-    if (!kit.actOne.collectPushTriangle()) {
-      kit.flags.toast("这条推送现在只负责占位置。", "system");
-      return;
-    }
-    kit.flags.toast(
-      state.actOne.pushTriangleTaken ? "三角形已经在道具栏里。" : "获得道具：三角形",
-      state.actOne.pushTriangleTaken ? "system" : "task"
-    );
+    const result = kit.actOne.collectPushTriangle();
+    const feedback = {
+      inactive: state.actOne.exerciseStarted ? "这条推送现在只负责占位置。" : "先在浙大体艺开始课外锻炼。",
+      hint_one: "头像边缘松了一点，再点一次。",
+      hint_two: "三角形已经翘起，再点一次就能取下。",
+      collected: "获得道具：三角形",
+      already_owned: "三角形已经在道具栏里。"
+    }[result];
+    kit.flags.toast(feedback, result === "collected" ? "task" : "system");
   }
 
   function openBikeArcade() {
@@ -452,20 +453,20 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               type="button"
               className={`note act2-triangle-note ${state.actOne.pushTriangleTaken ? "is-collected" : ""}`}
               onClick={collectPushTriangle}
-              disabled={!movementQuestActive || state.actOne.pushTriangleTaken}
+              disabled={!movementQuestActive || !state.actOne.exerciseStarted || state.actOne.pushTriangleTaken}
               aria-label={state.actOne.pushTriangleTaken ? "三角形已收集" : "系统方向推送"}
             >
-              <div className="mini b-blue">{movementQuestActive ? <i className="push-triangle-mini" /> : <i className="schedule-mini" />}</div>
+              <div className="mini b-blue">{movementQuestActive && state.actOne.exerciseStarted ? <i className="push-triangle-mini" /> : <i className="schedule-mini" />}</div>
               <div>
-                <div className="note-title">{movementQuestActive ? "方向校准" : "课程提醒"}</div>
-                <div className="note-msg">{movementQuestActive ? "头像方向正确，正文方向未知。" : "签到记录未更新。你本人仍未抵达。"}</div>
+                <div className="note-title">{movementQuestActive && state.actOne.exerciseStarted ? "方向校准" : "课程提醒"}</div>
+                <div className="note-msg">{movementQuestActive && state.actOne.exerciseStarted ? "头像方向正确，正文方向未知。" : "签到记录未更新。你本人仍未抵达。"}</div>
               </div>
               <time className="note-time">07:50</time>
             </button>
             {access.fullCampusMap ? (
               <article className="note">
                 <div className="mini b-light"><img className="note-zjuding-img" alt="" src={zjudingUrl} aria-hidden="true" /></div>
-                <div><div className="note-title">浙大钉</div><div className="note-msg">校园地图、图书馆和 CC98 已恢复访问。</div></div>
+                <div><div className="note-title">浙大钉</div><div className="note-msg">校园地图已恢复访问，寝室入口可用。</div></div>
                 <time className="note-time">07:45</time>
               </article>
             ) : (

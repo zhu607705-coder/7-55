@@ -80,6 +80,13 @@ export function QuestTaskBar({
     const document = ITEM_CATALOG[step.itemId].document;
     return document ? [{ itemId: step.itemId, label: step.label }] : [];
   });
+  const proofRequirements = state.ui.libraryFinalsPuzzle.archivedRuleRead
+    ? [
+        { id: "presence", label: "本人确实到馆", done: state.ui.libraryFinalsPuzzle.presenceProofCollected },
+        { id: "receipt", label: "目标座位与凭据一致", done: state.ui.libraryFinalsPuzzle.seatReceiptCollected },
+        { id: "nonperson", label: "当前占用物不具备本人身份", done: state.ui.libraryFinalsPuzzle.nonPersonProofStamped }
+      ]
+    : [];
 
   useEffect(() => {
     setHintCount(0);
@@ -142,6 +149,7 @@ export function QuestTaskBar({
       role="region"
       aria-label="当前任务"
       data-quest-id={quest.id}
+      data-layout-zone={variant === "phone" ? "phone-quest" : undefined}
     >
       <button
         type="button"
@@ -232,6 +240,23 @@ export function QuestTaskBar({
             <strong>{quest.objective}</strong>
             <b>{quest.completed} / {quest.total}</b>
           </div>
+
+          {proofRequirements.length > 0 ? (
+            <section className="quest-proof-requirements" aria-label="旧版规则要求的三项证明">
+              <header>
+                <strong>三项证明要求</strong>
+                <span>{proofRequirements.filter((requirement) => requirement.done).length}/3</span>
+              </header>
+              <ul>
+                {proofRequirements.map((requirement) => (
+                  <li key={requirement.id} className={requirement.done ? "is-complete" : ""}>
+                    <span aria-hidden="true">{requirement.done ? "✓" : "·"}</span>
+                    <strong>{requirement.label}</strong>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           {acquiredDocuments.length > 0 ? (
             <details className="quest-task-materials">

@@ -72,7 +72,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
   const stepTimerRef = useRef<number | null>(null);
   const values = currentValues(puzzle);
   const recordedRoute = puzzle.libraryVisitedPoints.map((point) => LOCATION_LABELS[point]);
-  const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened && puzzle.archivedRuleCollected;
+  const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened && puzzle.archivedRuleRead;
   const passed = puzzle.presenceProofCollected;
   const attempt = Math.max(puzzle.auditAttemptCount, visibleAttempt ?? 0);
 
@@ -144,9 +144,9 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
           <span>02</span>
           <div><strong>CC98 公示</strong><small>{puzzle.investigationOpened ? "来源已建立 · 可用于补录" : "来源未建立"}</small></div>
         </article>
-        <article className={puzzle.archivedRuleCollected ? "is-ready" : ""}>
+        <article className={puzzle.archivedRuleRead ? "is-ready" : ""}>
           <span>03</span>
-          <div><strong>旧版规则</strong><small>{puzzle.archivedRuleCollected ? "来源已归档 · 可用于补录" : "来源未归档"}</small></div>
+          <div><strong>旧版规则</strong><small>{puzzle.archivedRuleRead ? "内容已阅读 · 可用于补录" : "规则尚未读完"}</small></div>
         </article>
       </section>
 

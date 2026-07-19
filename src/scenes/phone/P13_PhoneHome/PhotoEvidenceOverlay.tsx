@@ -5,9 +5,10 @@ import "../../../styles/library-v2-phone.css";
 interface PhotoEvidenceOverlayProps {
   available: boolean;
   brightness: number;
+  captured: boolean;
   dimmed: boolean;
   reportGenerated: boolean;
-  onBrightnessChange: (value: number) => void;
+  onCapture: () => boolean;
   onGenerate: () => void;
   onClose: () => void;
 }
@@ -16,9 +17,10 @@ interface PhotoEvidenceOverlayProps {
 export function PhotoEvidenceOverlay({
   available,
   brightness,
+  captured,
   dimmed,
   reportGenerated,
-  onBrightnessChange,
+  onCapture,
   onGenerate,
   onClose
 }: PhotoEvidenceOverlayProps) {
@@ -26,7 +28,9 @@ export function PhotoEvidenceOverlay({
   const previousReadableRef = useRef(false);
   const revealTimerRef = useRef<number | null>(null);
   const [revealAnimating, setRevealAnimating] = useState(false);
-  const readable = available && brightness <= 20 && dimmed;
+  const [shutterAnimating, setShutterAnimating] = useState(false);
+  const shutterTimerRef = useRef<number | null>(null);
+  const readable = available && captured && brightness <= 20 && dimmed;
   const revealProgress = available ? Math.max(0, Math.min(1, (72 - brightness) / 52)) : 0;
   const exposurePhase = !available
     ? "is-unavailable"
@@ -42,7 +46,6 @@ export function PhotoEvidenceOverlay({
     "--photo-noise-opacity": readable ? "0.08" : (0.42 - revealProgress * 0.2).toFixed(2),
     "--photo-scan-y": `${Math.round(14 + revealProgress * 72)}%`
   } as CSSProperties;
-  const controlStyle = { "--photo-level": `${brightness}%` } as CSSProperties;
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -80,6 +83,19 @@ export function PhotoEvidenceOverlay({
     };
   }, [readable]);
 
+  useEffect(() => () => {
+    if (shutterTimerRef.current !== null) window.clearTimeout(shutterTimerRef.current);
+  }, []);
+
+  function capture() {
+    if (shutterAnimating || captured || !available || !onCapture()) return;
+    setShutterAnimating(true);
+    shutterTimerRef.current = window.setTimeout(() => {
+      shutterTimerRef.current = null;
+      setShutterAnimating(false);
+    }, 360);
+  }
+
   return (
     <section className="photo-evidence-layer photo-library-layer" aria-label="照片 IMG_0755.JPG">
       <header>
@@ -88,6 +104,21 @@ export function PhotoEvidenceOverlay({
         <span>08:07</span>
       </header>
       <main>
+        {!captured || shutterAnimating ? (
+          <section className="photo-camera-capture" aria-label="022书包拍摄界面">
+            <header><strong>对准 022 书包</strong><span>保持画面居中</span></header>
+            <div className="photo-camera-frame">
+              <div className="photo-library-desk" aria-hidden="true" />
+              <div className="photo-library-backpack" aria-hidden="true"><i /><b>022</b></div>
+              <span className="photo-camera-reticle" aria-hidden="true"><i /><i /><i /><i /></span>
+            </div>
+            <p>{available ? "目标已对准，点击快门。" : "还没有在 022 现场确认书包。"}</p>
+            <button type="button" className="photo-shutter-button" disabled={!available || shutterAnimating} aria-label="拍摄 022 书包" onClick={capture}>
+              <span aria-hidden="true" />
+            </button>
+            {shutterAnimating ? <span className="photo-shutter-flash" aria-hidden="true" /> : null}
+          </section>
+        ) : (
         <section className="photo-library-viewer">
           <header><strong>IMG_0755.JPG</strong><span>022 · 二楼南区</span></header>
           <div
@@ -131,18 +162,11 @@ export function PhotoEvidenceOverlay({
             ) : null}
           </div>
 
-          <label className="photo-brightness-control" style={controlStyle}>
-            <span>识别亮度</span>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={brightness}
-              aria-label="调整照片识别亮度"
-              onChange={(event) => onBrightnessChange(Number(event.target.value))}
-            />
+          <div className="photo-shared-brightness" role="status">
+            <span>控制中心亮度</span>
             <strong>{brightness}%</strong>
-          </label>
+            <small>照片直接读取系统亮度</small>
+          </div>
           <p className="photo-threshold-copy" aria-live="polite">
             {!available
               ? "还没有拍到 022 上的书包。"
@@ -153,8 +177,9 @@ export function PhotoEvidenceOverlay({
                   : "高光覆盖标签，识别器无法对焦。"}
           </p>
         </section>
+        )}
 
-        {readable ? (
+        {captured && !shutterAnimating && readable ? (
           <section className={`photo-recognition-result ${reportGenerated ? "is-generated" : ""}`}>
             <strong>{reportGenerated ? "物品识别报告已生成" : "未检测到可签到主体"}</strong>
             <p>{reportGenerated ? "报告已放入道具栏，可交给图书馆物品身份登记机。" : "检测到大量期末周怨气。是否生成识别报告？"}</p>
@@ -164,10 +189,10 @@ export function PhotoEvidenceOverlay({
           </section>
         ) : null}
 
-        <section className="photo-joke-grid" aria-label="其他照片">
+        {captured && !shutterAnimating ? <section className="photo-joke-grid" aria-label="其他照片">
           {Array.from({ length: 6 }, (_, index) => <div key={index} className={index === 5 ? "is-plant" : "is-takeout"} aria-hidden="true"><i /></div>)}
-        </section>
-        <p className="photo-joke-caption">37 张外卖截图，以及一张没有开花的盆栽。</p>
+        </section> : null}
+        {captured && !shutterAnimating ? <p className="photo-joke-caption">37 张外卖截图，以及一张没有开花的盆栽。</p> : null}
       </main>
     </section>
   );

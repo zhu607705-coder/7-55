@@ -1,4 +1,6 @@
 import Phaser from "phaser";
+import { selectIdentityReadable } from "../../core/IdentityAccess";
+import type { GameState } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import type { RpgBridge } from "./RpgBridge";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
@@ -65,13 +67,14 @@ export class BootScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true).setDepth(this.player.y + 30);
     configureRpgPlayerSprite(this.player);
     this.physics.add.collider(this.player, this.obstacles);
-    this.characterName = this.add.text(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y, actOneContent.studentName, {
+    this.characterName = this.add.text(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y, "", {
       color: "#fff7df",
       backgroundColor: "#17212add",
       fontFamily: "monospace",
       fontSize: "11px",
       padding: { x: 4, y: 2 }
-    }).setOrigin(0.5).setDepth(this.player.y + 55);
+    }).setOrigin(0.5).setDepth(this.player.y + 55).setVisible(false);
+    this.syncCharacterNameplate(this.bridge.getState());
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT") as Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
@@ -99,6 +102,7 @@ export class BootScene extends Phaser.Scene {
 
   update(): void {
     const state = this.bridge.getState();
+    this.syncCharacterNameplate(state);
     const keyboardX = Number(this.cursors.right.isDown || this.keys.D.isDown) - Number(this.cursors.left.isDown || this.keys.A.isDown);
     const keyboardY = Number(this.cursors.down.isDown || this.keys.S.isDown) - Number(this.cursors.up.isDown || this.keys.W.isDown);
     const x = Math.max(-1, Math.min(1, keyboardX + this.virtualDirection.x));
@@ -132,7 +136,15 @@ export class BootScene extends Phaser.Scene {
     this.player.setVelocity(vector.x, vector.y);
     this.updatePlayerAnimation(vector);
     this.player.setDepth(this.player.y + 30);
-    this.characterName.setPosition(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y).setDepth(this.player.y + 72);
+  }
+
+  private syncCharacterNameplate(state: GameState): void {
+    const identityReadable = selectIdentityReadable(state);
+    this.characterName
+      .setText(identityReadable && state.actOne.characterNamed ? actOneContent.studentName : "")
+      .setVisible(identityReadable && state.actOne.characterNamed)
+      .setPosition(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y)
+      .setDepth(this.player.y + 72);
   }
 
   private createLibraryGate(): void {

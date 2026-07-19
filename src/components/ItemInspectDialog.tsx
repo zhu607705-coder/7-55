@@ -2,6 +2,9 @@ import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import type { ItemId } from "../core/types";
 import { ITEM_CATALOG } from "../data/itemCatalog";
+import { gameStore } from "../core/GameState";
+import { selectIdentityReadable } from "../core/IdentityAccess";
+import actOneContent from "../data/act-one-bootstrap.content.json";
 import { ITEM_META, PixelIcon } from "./PixelIcon";
 
 type ItemInspectVariant = "phone" | "rpg";
@@ -138,18 +141,42 @@ function ItemInspectDialogBody({
   variant: ItemInspectVariant;
 }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const titleId = useId();
   const descId = useId();
   const metaId = useId();
   const entry = ITEM_INSPECT_META[itemId];
   const item = ITEM_META[itemId];
   const itemDocument = ITEM_CATALOG[itemId].document;
+  const identityReadable = selectIdentityReadable(gameStore.getState());
+  const visibleDescription = itemId === "campusCard" && identityReadable
+    ? `${actOneContent.studentName} · ${actOneContent.studentId}`
+    : item.desc;
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     closeButtonRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Tab") {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter((element) => element.getClientRects().length > 0);
+        if (focusable.length === 0) {
+          event.preventDefault();
+          dialog.focus();
+          return;
+        }
+        const currentIndex = focusable.indexOf(document.activeElement as HTMLElement);
+        const nextIndex = event.shiftKey
+          ? currentIndex <= 0 ? focusable.length - 1 : currentIndex - 1
+          : currentIndex === -1 || currentIndex === focusable.length - 1 ? 0 : currentIndex + 1;
+        event.preventDefault();
+        focusable[nextIndex].focus();
+        return;
+      }
       if (event.key !== "Escape") {
         return;
       }
@@ -175,8 +202,10 @@ function ItemInspectDialogBody({
       }}
     >
       <section
+        ref={dialogRef}
         className={`item-inspect-dialog item-inspect-dialog--${variant}`}
         role="dialog"
+        tabIndex={-1}
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={`${descId} ${metaId}`}
@@ -199,7 +228,7 @@ function ItemInspectDialogBody({
         <header className="item-inspect-header">
           <span className="item-inspect-badge">{variant === "phone" ? "PHONE" : "RPG"}</span>
           <h2 id={titleId}>{item.name}</h2>
-          <p id={descId}>{item.desc}</p>
+          <p id={descId}>{visibleDescription}</p>
         </header>
         <div className="item-inspect-body">
           <div className="item-inspect-icon-frame" aria-hidden="true">

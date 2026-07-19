@@ -28,6 +28,7 @@ const DRAG_START_DISTANCE = 4;
 
 const RPG_DOCK_ORDER: readonly ItemId[] = [
   "campusCard",
+  "gamepad",
   "occupancyNote",
   "callNumber755",
   "archivedLeaveRule",

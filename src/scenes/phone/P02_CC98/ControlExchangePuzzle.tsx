@@ -1,3 +1,5 @@
+import { gameStore } from "../../../core/GameState";
+import { selectIdentityReadable } from "../../../core/IdentityAccess";
 import type { SceneRouter } from "../../../core/SceneRouter";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import { kit } from "../../../modules/GameKit";
@@ -9,6 +11,8 @@ interface ControlExchangePuzzleProps {
 }
 
 export function ControlExchangePuzzle({ router, balanceShifted, purchased }: ControlExchangePuzzleProps) {
+  const identityReadable = selectIdentityReadable(gameStore.getState());
+
   function purchase() {
     const result = kit.actOne.purchaseGamepad();
     if (result === "insufficient_balance") {
@@ -23,7 +27,7 @@ export function ControlExchangePuzzle({ router, balanceShifted, purchased }: Con
       kit.flags.toast("手柄已经在道具栏里。", "system");
       return;
     }
-    kit.flags.toast("支付成功：获得游戏手柄。自动行走已停止。", "task");
+    kit.flags.toast("支付成功：游戏手柄已放入道具栏。回寝室拖到小人身上安装。", "task");
   }
 
   function returnToDorm() {
@@ -43,7 +47,10 @@ export function ControlExchangePuzzle({ router, balanceShifted, purchased }: Con
         <div><dt>商品</dt><dd>二手游戏手柄 × 1</dd></div>
         <div><dt>售价</dt><dd>¥6.00，不议价</dd></div>
         <div><dt>你的余额</dt><dd className={balanceShifted ? "is-enough" : "is-short"}>¥{balanceShifted ? "6.00" : "0.06"}</dd></div>
-        <div><dt>收货人</dt><dd>{actOneContent.studentName} · {actOneContent.studentId}</dd></div>
+        <div>
+          <dt>收货人</dt>
+          <dd>{identityReadable ? `${actOneContent.studentName} · ${actOneContent.studentId}` : "身份信息尚未读取"}</dd>
+        </div>
       </dl>
       {purchased ? (
         <button type="button" onClick={returnToDorm}>回寝室试用手柄</button>

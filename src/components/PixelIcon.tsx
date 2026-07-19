@@ -1,5 +1,4 @@
 import type { ItemId } from "../core/types";
-import actOneContent from "../data/act-one-bootstrap.content.json";
 
 /**
  * 字符画 → SVG 像素图标。
@@ -419,7 +418,10 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   slashLine: { name: "斜线", desc: "朋友头像上掉下来的一撇。" },
   towerKey: { name: "钥匙", desc: "斜线与齿轮的组合体。" },
   fertilizer: { name: "一袋肥料", desc: "钟楼特产。" },
-  campusCard: { name: "电子校园卡", desc: `${actOneContent.studentName} · ${actOneContent.studentId}。` },
+  campusCard: {
+    name: "电子校园卡",
+    desc: "随身校园身份凭证。完整信息仅在卡片详情中显示。"
+  },
   pushTriangle: { name: "三角形", desc: "从主页推送头像里抠下来的三角形。" },
   weatherWater: { name: "天气水滴", desc: "从天气页面接到的另一滴水。" },
   mentorLine: { name: "竖线", desc: "从导师头像上滑落的一条竖线。" },

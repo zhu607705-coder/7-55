@@ -69,6 +69,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private shelfPanel!: Phaser.GameObjects.Container;
   private targetShelfTag!: Phaser.GameObjects.Text;
   private lostFoundLight!: Phaser.GameObjects.Rectangle;
+  private lostFoundStatusText!: Phaser.GameObjects.Text;
   private dialoguePanel!: Phaser.GameObjects.Container;
   private dialogueSpeaker!: Phaser.GameObjects.Text;
   private dialogueText!: Phaser.GameObjects.Text;
@@ -168,6 +169,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.publishRuntimeDebug(activeTargets);
     this.updatePrompt(nearest, state);
     this.updateMarkerVisibility(activeTargets, state, nearest);
+    this.updateLostFoundStatus(state);
 
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearest && (keyboardInteract || this.interactRequested)) {
@@ -227,6 +229,16 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (name === "library_archived_rule_recovered") {
       this.animateShelfReveal();
+      return;
+    }
+    if (name === "library_catalog_unlocked") {
+      this.flashTarget("catalog_terminal", 0x4ed3a8);
+      this.showFeedback("图书馆馆藏检索功能已解锁。", "success");
+      return;
+    }
+    if (name === "library_lost_found_scan_started") {
+      this.lostFoundLight.setFillStyle(0xe1b953).setAlpha(0.82);
+      this.showFeedback("失物登记机：扫描中。", "system");
       return;
     }
     if (name === "library_bag_nonperson_proof_issued") {
@@ -310,6 +322,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.requestAction("collectOccupancyNote", target.id);
       return;
     }
+    if (target.id === "catalog_terminal" && puzzle.investigationOpened && !puzzle.catalogUnlocked) {
+      this.requestAction("unlockCatalogAtTerminal", target.id);
+      return;
+    }
     if (target.id === "seat_022_chair" && puzzle.backpackEvicted && !puzzle.playerSeated) {
       this.requestAction("sitAt022", target.id);
       return;
@@ -335,9 +351,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
       if (target.id === "entrance_record") return !puzzle.entranceRecordRead;
       if (target.id === "occupancy_note") return puzzle.backpackInspected && !puzzle.occupancyNoteCollected;
       if (target.id === "seat_022_backpack") return puzzle.entranceRecordRead && !puzzle.backpackEvicted;
-      if (target.id === "seat_022_gap") return puzzle.backpackInspected && !puzzle.seatReceiptCollected;
+      if (target.id === "seat_022_gap") return puzzle.archivedRuleRead && puzzle.backpackInspected && !puzzle.seatReceiptCollected;
       if (target.id === "library_shelf_755") return puzzle.callNumberCollected && !puzzle.archivedRuleCollected;
-      if (target.id === "lost_found_machine") return puzzle.itemReportGenerated && !puzzle.nonPersonProofStamped;
+      if (target.id === "lost_found_machine") return puzzle.lostFoundStage !== "stamped";
       if (target.id === "seat_022_chair") return puzzle.backpackEvicted && puzzle.nextQuestId === null;
       return true;
     });
@@ -391,14 +407,17 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (targetId === "front_desk") {
-      if (!puzzle.archivedRuleCollected) return "前台目录只写着：先确认适用规则，再受理证明。";
+      if (!puzzle.archivedRuleRead) return "前台目录只写着：先读完适用规则，再受理证明。";
       const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
       return proofCount < 3 ? `旧规则要求三项证明，目前已确认 ${proofCount} 项。` : "三项证明已齐，公开记录仍需完成公示。";
     }
     if (targetId === "lost_found_machine") {
-      return puzzle.itemReportGenerated
-        ? "登记机正在等待一份可识别的物品报告。"
-        : "机器只认报告，不接受目测结论。";
+      return {
+        missing_report: "失物登记机：缺少报告。",
+        ready: "失物登记机：可投入报告。",
+        scanning: "失物登记机：扫描中。",
+        stamped: "失物登记机：已盖章。"
+      }[puzzle.lostFoundStage];
     }
     if (targetId === "catalog_terminal") {
       return puzzle.investigationOpened
@@ -1249,6 +1268,23 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontFamily: "monospace",
       fontSize: "11px"
     }).setOrigin(0.5).setDepth(560);
+    this.lostFoundStatusText = this.add.text(160, 462, "", {
+      color: "#f2e5c6",
+      backgroundColor: "#23332fee",
+      fontFamily: "monospace",
+      fontSize: "10px",
+      padding: { x: 5, y: 3 }
+    }).setOrigin(0.5).setDepth(565);
+  }
+
+  private updateLostFoundStatus(state: GameState): void {
+    const labels = {
+      missing_report: "缺少报告",
+      ready: "可投入报告",
+      scanning: "扫描中",
+      stamped: "已盖章"
+    } as const;
+    this.lostFoundStatusText.setText(labels[state.ui.libraryFinalsPuzzle.lostFoundStage]);
   }
 
   private drawCatalogArea(): void {

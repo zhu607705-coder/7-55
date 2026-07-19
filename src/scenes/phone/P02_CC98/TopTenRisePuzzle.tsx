@@ -15,6 +15,7 @@ interface TopTenRisePuzzleProps {
   phase: LibraryFinalsPhase;
   ownedEvidenceIds: LibraryEvidenceId[];
   uploadedEvidenceIds: LibraryEvidenceId[];
+  preBdBriefingSeen: boolean;
   events?: EventBus;
   showUploader?: boolean;
   showBd?: boolean;
@@ -52,6 +53,7 @@ export function TopTenRisePuzzle({
   phase,
   ownedEvidenceIds,
   uploadedEvidenceIds,
+  preBdBriefingSeen,
   events,
   showUploader = true,
   showBd = uploadedEvidenceIds.length === EVIDENCE.length
@@ -62,6 +64,7 @@ export function TopTenRisePuzzle({
   const [rankAnimating, setRankAnimating] = useState(false);
   const [topTenBurst, setTopTenBurst] = useState(false);
   const [invalidReplyKey, setInvalidReplyKey] = useState<ReplyOption["key"] | null>(null);
+  const [briefingLine, setBriefingLine] = useState(0);
   const previousUploadedRef = useRef(uploadedEvidenceIds);
   const previousBdCountRef = useRef(bdCount);
   const uploadTimerRef = useRef<number | null>(null);
@@ -70,6 +73,11 @@ export function TopTenRisePuzzle({
   const invalidTimerRef = useRef<number | null>(null);
   const allUploaded = uploadedEvidenceIds.length === EVIDENCE.length;
   const rank = String(4 - bdCount).padStart(2, "0");
+  const briefingLines = [
+    "四份证据都公开了，但帖子的流量还不够。",
+    "只选能被现有证据支持的回复。三类证明各对应一条有效回复。",
+    "完成三次有效 bd，把排名从 04 推进到 01。"
+  ];
 
   useEffect(() => {
     const previous = previousUploadedRef.current;
@@ -172,6 +180,14 @@ export function TopTenRisePuzzle({
     }, 460);
   }
 
+  function advanceBriefing() {
+    if (briefingLine < briefingLines.length - 1) {
+      setBriefingLine((current) => current + 1);
+      return;
+    }
+    kit.libraryFinals.completePreBdBriefing();
+  }
+
   return (
     <section
       className={`cc98-top-ten-puzzle cc98-evidence-puzzle ${phase === "top_ten_reached" ? "is-top-ten" : ""} ${rankAnimating ? "is-rank-rising" : ""} ${topTenBurst ? "is-top-ten-burst" : ""}`.trim()}
@@ -212,14 +228,25 @@ export function TopTenRisePuzzle({
         </div>
       </section> : null}
 
-      {showBd ? <section className="cc98-rank-status" aria-live="polite">
+      {showBd && allUploaded && !preBdBriefingSeen ? (
+        <section className="cc98-pre-bd-dialogue" role="dialog" aria-label="系统 bd 前说明">
+          <span aria-hidden="true">求</span>
+          <div>
+            <small>系统 · {briefingLine + 1}/{briefingLines.length}</small>
+            <p>{briefingLines[briefingLine]}</p>
+          </div>
+          <button type="button" onClick={advanceBriefing}>{briefingLine === briefingLines.length - 1 ? "开始 bd" : "继续"}</button>
+        </section>
+      ) : null}
+
+      {showBd && preBdBriefingSeen ? <section className="cc98-rank-status" aria-live="polite">
         <span>当前排名</span>
         <strong key={rank}>{rank}</strong>
         <p>{phase === "top_ten_reached" ? "十大第一" : allUploaded ? "选择有效回复 bd" : "请先上传四项证据"}</p>
         {topTenBurst ? <i className="cc98-rank-burst" aria-hidden="true"><b /><b /><b /><b /><b /><b /></i> : null}
       </section> : null}
 
-      {showBd ? <div className="cc98-bd-replies" aria-label="bd回复列表">
+      {showBd && preBdBriefingSeen ? <div className="cc98-bd-replies" aria-label="bd回复列表">
         {REPLIES.map((reply) => {
           const applied = reply.replyId ? appliedReplyIds.includes(reply.replyId) : false;
           return (
@@ -239,7 +266,7 @@ export function TopTenRisePuzzle({
         })}
       </div> : null}
 
-      {showBd && phase === "top_ten_reached" ? (
+      {showBd && preBdBriefingSeen && phase === "top_ten_reached" ? (
         <p className="cc98-top-ten-complete">排名 01。图书馆 App 已放出 022 恢复申请入口。</p>
       ) : null}
       {feedback ? <p className="cc98-bd-feedback" aria-live="polite">{feedback}</p> : null}

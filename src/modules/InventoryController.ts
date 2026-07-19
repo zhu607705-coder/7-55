@@ -80,14 +80,24 @@ export class InventoryController {
       return null;
     }
 
-    this.removeItem(dragged);
-    this.removeItem(target);
-    this.addItem(recipe.result, this.store.getState().currentScene);
+    const sourceScene = this.store.getState().currentScene;
+    this.store.setState((state) => ({
+      ...state,
+      items: {
+        ...state.items,
+        [dragged]: false,
+        [target]: false,
+        [recipe.result]: true
+      },
+      actOne: recipe.result === "rightArrow"
+        ? { ...state.actOne, rightArrowAssembled: true }
+        : state.actOne,
+      ui: state.ui.selectedItem === dragged || state.ui.selectedItem === target
+        ? { ...state.ui, selectedItem: null }
+        : state.ui
+    }));
+    this.events.emit("get_item", { itemId: recipe.result, sourceScene });
     if (recipe.result === "rightArrow") {
-      this.store.setState((state) => ({
-        ...state,
-        actOne: { ...state.actOne, rightArrowAssembled: true }
-      }));
       this.events.emit("act2_right_arrow_assembled", { result: recipe.result });
     }
     this.events.emit("combine_item", { a: dragged, b: target, result: recipe.result });

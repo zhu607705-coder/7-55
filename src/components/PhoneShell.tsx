@@ -155,7 +155,7 @@ export function PhoneShell({
             <div className="brightness-veil" style={{ opacity: veilOpacity }} aria-hidden="true" />
             <ControlCenter state={state} />
             {showGlobalLayers ? <PresentationLayer events={events} /> : null}
-            {showGlobalLayers ? <ToastLayer events={events} /> : null}
+            {showGlobalLayers ? <ToastLayer events={events} state={state} /> : null}
           </section>
         </div>
       </section>

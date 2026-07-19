@@ -80,27 +80,37 @@ function chapterOneQuest(state: GameState): QuestViewModel {
 }
 
 function movementQuest(state: GameState): QuestViewModel {
-  const phaseOrder = ["friend_message_required", "system_required", "inventory_required", "system_return_required"];
+  const phaseOrder = ["friend_message_required", "system_required"];
   const dialogueDone = !phaseOrder.includes(state.actOne.phase);
+  const cardRecovered = state.actOne.inventoryRecovered && state.items.campusCard;
+  const reservationBriefed = ["reservation_required", "movement_ready", "complete"].includes(state.actOne.phase);
   const sources: StepSource[] = [
     { id: "system_dialogue", label: "完成系统对话", done: dialogueDone },
+    { id: "inventory", label: "找到道具栏", done: cardRecovered },
     { id: "identity", label: "登记人物身份", done: state.actOne.characterNamed },
     { id: "exercise", label: "启动课外锻炼", done: state.actOne.exerciseStarted },
     { id: "arrow", label: "取得右移箭头", done: state.actOne.rightArrowAssembled },
     { id: "balance", label: "调整校园卡余额", done: state.actOne.balanceShifted },
     { id: "gamepad", label: "取得游戏手柄", done: state.actOne.gamepadPurchased },
+    { id: "controls", label: "把手柄安装给人物", done: state.actOne.controlsInstalled },
     { id: "manual_move", label: "完成首次手动移动", done: state.actOne.manualControlTested },
+    { id: "reservation_briefing", label: "听取系统的图书馆说明", done: reservationBriefed },
+    { id: "seat_reservation", label: "预约基础馆二层南区 022", done: state.ui.librarySeatReserved },
     { id: "leave_dorm", label: "离开寝室", done: state.actOne.phase === "complete" }
   ];
   const nextById: Record<string, NextAction> = {
-    system_dialogue: { objective: "跟进朋友消息并找到系统", hints: ["新消息仍在微信。", "朋友会把你引向浙大钉里的异常。", "先完成微信对话，再检查浙大钉标题附近的系统标记。"], targetSurface: "phone", recommendedScene: state.actOne.phase === "friend_message_required" ? "wechat" : "zjuding" },
+    system_dialogue: { objective: state.actOne.phase === "friend_message_required" ? "回复朋友的新消息" : "找到系统", hints: ["新消息仍在微信。", "朋友会把你引向浙大钉里的异常。", "完成微信对话后，检查浙大钉身份区域“求”字旁的红圈。"], targetSurface: "phone", recommendedScene: state.actOne.phase === "friend_message_required" ? "wechat" : "zjuding" },
+    inventory: { objective: "找到道具栏", hints: ["系统已经开放寝室地图。", "个人物品留在右侧书桌。", "进入浙大钉校园地图，打开右侧个人书桌上的宝箱。"], targetSurface: "rpg" },
     identity: { objective: "为地图人物补齐身份", hints: ["第二章开放了新的校园服务。", "电子校园卡包含姓名和学号，部门黄页可以读取它。", "进入浙大钉部门黄页，使用校园卡读卡区。"], targetSurface: "phone", recommendedScene: "zjuding" },
     exercise: { objective: "让人物先自动走起来", hints: ["体艺记录与运动能力有关。", "完成身份登记后，体艺页面会识别参与者。", "进入浙大体艺，使用页面中的开始锻炼按钮。"], targetSurface: "phone", recommendedScene: "tiyi" },
     arrow: { objective: "拼出一个能移动对象的方向", hints: ["主页推送与导师头像各缺少一部分图形。", "天气里的水滴能处理头像边缘的连接处。", "取得三角形和竖线后，在物品栏中将两者组合。"], targetSurface: "phone", recommendedScene: "phone_home" },
     balance: { objective: "让校园卡余额发生位移", hints: ["新道具只描述移动方向。", "校园卡上有一串位置值得改变的数字。", "打开校园卡余额，把右移箭头拖到余额区域。"], targetSurface: "phone", recommendedScene: "campus_card" },
     gamepad: { objective: "找到可以控制方向的设备", hints: ["第二章已经开放 CC98。", "余额变化后可以处理一笔低价交易。", "进入 CC98 今日热门，查看二手交易帖。"], targetSurface: "phone", recommendedScene: "cc98" },
-    manual_move: { objective: "在寝室完成一次手动移动", hints: ["手柄需要在地图人物旁使用。", "姓名和锻炼状态共同决定手柄是否生效。", "聚焦寝室地图，使用方向键或 WASD 移动一次。"], targetSurface: "rpg" },
-    leave_dorm: { objective: "从寝室出口离开", hints: ["第一次手动移动已经解除出口限制。", "出口位于寝室下方。", "走到南侧门口并继续向外移动。"], targetSurface: "rpg" }
+    controls: { objective: "把手柄拖到寝室小人身上", hints: ["购买只会把手柄放入道具栏。", "返回寝室后展开 RPG 道具栏。", "将手柄拖到小人身上完成安装。"], targetSurface: "rpg" },
+    manual_move: { objective: "在寝室完成一次手动移动", hints: ["手柄已安装，自动走动已停止。", "桌面端使用 WASD 或方向键。", "真实输入任意一次方向。"], targetSurface: "rpg" },
+    reservation_briefing: { objective: "听系统说明图书馆方案", hints: ["系统已回到浙大钉。", "它会说明权限限制和可协助的对象。", "继续当前系统对话。"], targetSurface: "phone", recommendedScene: "zjuding" },
+    seat_reservation: { objective: ["library_spaces", "library_seat"].includes(state.ui.zjudingPage) ? "预约基础馆二层南区 022" : "在浙大钉预约图书馆座位", hints: ["打开浙大钉的图书馆服务。", "进入座位预约，选择基础馆二层南区。", "选中 022 并确认预约。"], targetSurface: "phone", recommendedScene: "zjuding" },
+    leave_dorm: { objective: "前往基础图书馆 022", hints: ["座位预约已经完成。", "回到寝室，出口现在可以通行。", "离开寝室后沿校园道路前往基础图书馆。"], targetSurface: "rpg" }
   };
   const nextId = sources.find((step) => !step.done)?.id ?? "leave_dorm";
   return {
@@ -121,10 +131,10 @@ function libraryQuest(state: GameState): QuestViewModel {
     { id: "seat_022", label: "找到 022", done: puzzle.backpackInspected },
     { id: "note", label: "取得占座纸条", done: puzzle.occupancyNoteCollected, itemId: "occupancyNote" },
     { id: "catalog", label: "完成馆藏检索", done: puzzle.callNumberCollected, itemId: "callNumber755" },
-    { id: "rule", label: "取得旧版规则", done: puzzle.archivedRuleCollected, itemId: "archivedLeaveRule" },
-    { id: "proof_nonperson", label: "取得非本人证明", done: puzzle.nonPersonProofStamped, itemId: "bagNonPersonProof" },
-    { id: "proof_receipt", label: "取得 022 小票", done: puzzle.seatReceiptCollected, itemId: "seat022Receipt" },
-    { id: "proof_presence", label: "取得本人来过证明", done: puzzle.presenceProofCollected, itemId: "libraryPresenceProof" },
+    { id: "rule", label: "阅读旧版临时离座恢复规定", done: puzzle.archivedRuleRead, itemId: "archivedLeaveRule" },
+    { id: "proof_presence", label: "本人确实到馆", done: puzzle.presenceProofCollected, itemId: "libraryPresenceProof" },
+    { id: "proof_receipt", label: "目标座位与凭据一致", done: puzzle.seatReceiptCollected, itemId: "seat022Receipt" },
+    { id: "proof_nonperson", label: "当前占用物不具备本人身份", done: puzzle.nonPersonProofStamped, itemId: "bagNonPersonProof" },
     { id: "cc98_upload", label: "提交四项公示材料", done: puzzle.cc98UploadedEvidenceIds.length === 4 },
     { id: "bd_one", label: "完成第 1 次有效 bd", done: puzzle.bdCount >= 1 },
     { id: "bd_two", label: "完成第 2 次有效 bd", done: puzzle.bdCount >= 2 },
@@ -142,7 +152,9 @@ function libraryQuest(state: GameState): QuestViewModel {
     seat_022: rpg("前往二层南区寻找 022", ["入馆记录已经给出座位区域。", "目标会话与一个具体座位相连。", "在阅览区找到 022 并检查占座书包。"]),
     note: rpg("检查书包旁留下的信息"),
     catalog: puzzle.investigationOpened
-      ? phone("在浙大钉馆藏检索核对书名", "zjuding", ["调查帖已经给出题名线索。", "下一步需要核对馆藏中的索书号。", "进入浙大钉图书馆，打开馆藏检索。"])
+      ? puzzle.catalogUnlocked
+        ? phone("在浙大钉馆藏检索核对书名", "zjuding", ["调查帖已经给出题名线索。", "图书馆终端已开放手机馆藏检索。", "进入浙大钉图书馆，打开馆藏检索。"])
+        : rpg("在图书馆终端解锁馆藏检索", ["调查帖提到了馆藏题名。", "馆内终端负责开放检索权限。", "回到图书馆的馆藏检索终端并互动。"])
       : phone("用纸条查找公开记录", "cc98", ["占座纸条可以作为论坛搜索材料。", "公开记录会提到一条旧版离座规则。", "进入 CC98，将占座纸条拖到搜索框。"]),
     rule: rpg("按索书号找到旧版规则"),
     proof_nonperson: puzzle.itemReportGenerated

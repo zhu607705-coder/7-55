@@ -556,17 +556,20 @@
           "volume": 0.72
         },
         {
+          "channel": "text",
+          "subtitleKey": "act2_gamepad_purchased",
+          "offsetMs": 220
+        }
+      ]
+    },
+    "act2_gamepad_connected": {
+      "cues": [
+        {
           "channel": "music",
           "asset": "music_act2_manual_control",
           "action": "update",
           "volume": 0.18,
-          "loop": true,
-          "offsetMs": 120
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "act2_gamepad_purchased",
-          "offsetMs": 220
+          "loop": true
         }
       ]
     },
