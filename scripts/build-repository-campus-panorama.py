@@ -26,6 +26,13 @@ SEAMS = tuple(TILE_SIZE * index for index in range(1, GRID_SIZE))
 
 WALKABILITY_CELL_SIZE = 4
 WALKABILITY_GRID_SIZE = WORLD_SIZE // WALKABILITY_CELL_SIZE
+FOUNDATION_LIBRARY_CENTER = (3000, 280)
+LIBRARY_GATE = (3000, 538)
+LIBRARY_GATE_RADIUS = 112
+LIBRARY_APPROACH_ROAD_Y = 610
+LIBRARY_APPROACH_START_X = 2476
+LIBRARY_APPROACH_END_X = 3048
+LIBRARY_APPROACH_HALF_WIDTH = 40
 KNOWN_OVERLAP_CORRECTION = (2, 4)
 KNOWN_OVERLAP_WIDTH = 430
 KNOWN_OVERLAP_VERTICAL_SHIFT = 60
@@ -45,6 +52,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--mask-output", type=Path, default=DEFAULT_MASK_OUTPUT)
     parser.add_argument("--runtime", type=Path, default=DEFAULT_RUNTIME)
+    parser.add_argument(
+        "--walkability-only",
+        action="store_true",
+        help="Rebuild the road mask and runtime data from the existing selected panorama without rewriting it.",
+    )
     return parser.parse_args()
 
 
@@ -269,6 +281,20 @@ def build_walkability(image: Image.Image) -> tuple[np.ndarray, dict[str, object]
         connector[:, center - 7:center + 8] = True
         connector[center - 7:center + 8, :] = True
 
+    # The selected panorama contains a visible eastbound road and stone approach
+    # from the x=2508 connector to the south entrance of the foundation library.
+    # The generic texture classifier misses this shaded road, so preserve that
+    # source-pixel-aligned corridor explicitly.
+    library_approach = np.zeros((WALKABILITY_GRID_SIZE, WALKABILITY_GRID_SIZE), dtype=bool)
+    approach_y = int(round(LIBRARY_APPROACH_ROAD_Y / WALKABILITY_CELL_SIZE))
+    approach_half_height = int(np.ceil(LIBRARY_APPROACH_HALF_WIDTH / WALKABILITY_CELL_SIZE))
+    approach_start_x = int(np.floor(LIBRARY_APPROACH_START_X / WALKABILITY_CELL_SIZE))
+    approach_end_x = int(np.ceil(LIBRARY_APPROACH_END_X / WALKABILITY_CELL_SIZE))
+    library_approach[
+        approach_y - approach_half_height:approach_y + approach_half_height + 1,
+        approach_start_x:approach_end_x + 1,
+    ] = True
+
     walkable = (
         ndimage.binary_dilation(road_seed | connector, structure=np.ones((11, 11), dtype=bool))
         & support
@@ -288,6 +314,13 @@ def build_walkability(image: Image.Image) -> tuple[np.ndarray, dict[str, object]
         raise RuntimeError("Campus spawn lost road access after foot-clearance erosion")
     walkable = labels == spawn_label
 
+    # Restore the measured library road after generic erosion, then keep only
+    # the component that remains connected to the campus spawn.
+    walkable |= library_approach
+    labels, _ = ndimage.label(walkable)
+    spawn_label = labels[spawn_grid[1], spawn_grid[0]]
+    walkable = labels == spawn_label
+
     standable = build_standable_centers(walkable)
     standable_labels, _ = ndimage.label(standable)
     standable_label = standable_labels[spawn_grid[1], spawn_grid[0]]
@@ -295,9 +328,8 @@ def build_walkability(image: Image.Image) -> tuple[np.ndarray, dict[str, object]
         raise RuntimeError("Campus spawn does not fit the six-point player foot box")
     reachable = standable_labels == standable_label
     reachable_y, reachable_x = np.nonzero(reachable)
-    gate_x = 2617
-    gate_y = 2360
-    gate_radius = 200
+    gate_x, gate_y = LIBRARY_GATE
+    gate_radius = LIBRARY_GATE_RADIUS
     distance_squared = (
         reachable_x * WALKABILITY_CELL_SIZE - gate_x
     ) ** 2 + (
@@ -362,6 +394,15 @@ def write_runtime(
         "verticalShift": KNOWN_OVERLAP_VERTICAL_SHIFT,
     }]
     runtime.pop("collisions", None)
+    runtime["libraryGate"] = {
+        "x": LIBRARY_GATE[0],
+        "y": LIBRARY_GATE[1],
+        "radius": LIBRARY_GATE_RADIUS,
+    }
+    for landmark in runtime.get("landmarks", []):
+        if landmark.get("id") == "foundation_library":
+            landmark["x"], landmark["y"] = FOUNDATION_LIBRARY_CENTER
+            break
     runtime["walkability"] = {
         "cellSize": WALKABILITY_CELL_SIZE,
         "gridWidth": int(walkable.shape[1]),
@@ -384,21 +425,28 @@ def write_runtime(
 
 def main() -> None:
     args = parse_args()
-    panorama = Image.new("RGB", (WORLD_SIZE, WORLD_SIZE))
     normalized: list[str] = []
+    if args.walkability_only:
+        panorama = Image.open(args.output).convert("RGB")
+        if panorama.size != (WORLD_SIZE, WORLD_SIZE):
+            raise RuntimeError(
+                f"Selected panorama must be {WORLD_SIZE}x{WORLD_SIZE}; received "
+                f"{panorama.width}x{panorama.height}"
+            )
+    else:
+        panorama = Image.new("RGB", (WORLD_SIZE, WORLD_SIZE))
+        for row in range(1, GRID_SIZE + 1):
+            for column in range(1, GRID_SIZE + 1):
+                path = tile_path(args.source, row, column)
+                tile, source_size = load_normalized_tile(path)
+                tile = correct_known_overlap(tile, row, column)
+                panorama.paste(tile, ((column - 1) * TILE_SIZE, (row - 1) * TILE_SIZE))
+                if source_size != (TILE_SIZE, TILE_SIZE):
+                    normalized.append(f"({row},{column}) {source_size[0]}x{source_size[1]}")
 
-    for row in range(1, GRID_SIZE + 1):
-        for column in range(1, GRID_SIZE + 1):
-            path = tile_path(args.source, row, column)
-            tile, source_size = load_normalized_tile(path)
-            tile = correct_known_overlap(tile, row, column)
-            panorama.paste(tile, ((column - 1) * TILE_SIZE, (row - 1) * TILE_SIZE))
-            if source_size != (TILE_SIZE, TILE_SIZE):
-                normalized.append(f"({row},{column}) {source_size[0]}x{source_size[1]}")
-
-    panorama = draw_connector_roads(panorama)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    panorama.save(args.output, format="PNG", optimize=True)
+        panorama = draw_connector_roads(panorama)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        panorama.save(args.output, format="PNG", optimize=True)
     walkable, metadata = build_walkability(panorama)
     args.mask_output.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray((walkable * 255).astype(np.uint8), mode="L").resize(
@@ -412,12 +460,15 @@ def main() -> None:
         walkable,
         metadata,
     )
-    print(f"rebuilt {args.output} from row-major 4x4 tiles")
-    print(f"normalized tiles: {', '.join(normalized) if normalized else 'none'}")
-    print(
-        f"corrected overlap: (2,3)/(2,4) width={KNOWN_OVERLAP_WIDTH}px "
-        f"verticalShift={KNOWN_OVERLAP_VERTICAL_SHIFT}px"
-    )
+    if args.walkability_only:
+        print(f"rebuilt walkability from existing panorama {args.output}")
+    else:
+        print(f"rebuilt {args.output} from row-major 4x4 tiles")
+        print(f"normalized tiles: {', '.join(normalized) if normalized else 'none'}")
+        print(
+            f"corrected overlap: (2,3)/(2,4) width={KNOWN_OVERLAP_WIDTH}px "
+            f"verticalShift={KNOWN_OVERLAP_VERTICAL_SHIFT}px"
+        )
     print(
         f"walkability={int(walkable.sum())}/{walkable.size} "
         f"gateApproach={metadata['gateApproach']} maskSha256={mask_digest} bitsetSha256={packed_digest}"

@@ -15,6 +15,12 @@ export interface RpgRuntimeDebugState {
     state: "closed" | "opening" | "open" | "closing";
     accessGranted: boolean;
   };
+  entranceRecord?: {
+    open: boolean;
+    read: boolean;
+    entries?: Array<{ time: string; location: string }>;
+    calculation?: string;
+  };
   shelfReveal?: {
     phase: "idle" | "shaking" | "sliding" | "paper" | "complete";
     offsetPx: number;

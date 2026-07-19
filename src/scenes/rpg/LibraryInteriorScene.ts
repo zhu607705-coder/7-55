@@ -108,6 +108,17 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private entranceTurnstileFlaps: Phaser.GameObjects.Rectangle[] = [];
   private entranceDoorMotion: EntranceDoorMotion = "closed";
   private entranceAccessGranted = false;
+  private entranceRecordDevice!: Phaser.GameObjects.Container;
+  private entranceRecordScreen!: Phaser.GameObjects.Rectangle;
+  private entranceRecordIndicator!: Phaser.GameObjects.Arc;
+  private entranceRecordStatusText!: Phaser.GameObjects.Text;
+  private entranceRecordPanel!: Phaser.GameObjects.Container;
+  private entranceRecordConfirmButton!: Phaser.GameObjects.Rectangle;
+  private entranceRecordConfirmText!: Phaser.GameObjects.Text;
+  private entranceRecordConfirmHitArea!: Phaser.GameObjects.Zone;
+  private entranceRecordCloseHitArea!: Phaser.GameObjects.Zone;
+  private enterKey!: Phaser.Input.Keyboard.Key;
+  private escapeKey!: Phaser.Input.Keyboard.Key;
   private reducedMotion = false;
   private frontDeskStoryShown = false;
 
@@ -141,6 +152,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT") as Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
+    this.enterKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.escapeKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.cameras.main
       .setBounds(0, 0, LIBRARY_INTERIOR_WORLD.width, LIBRARY_INTERIOR_WORLD.height)
       .setZoom(1)
@@ -166,6 +179,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   update(): void {
     const state = this.bridge.getState();
+    const entranceRecordOpen = this.entranceRecordPanel.visible;
     const seatedConversation = state.ui.libraryFinalsPuzzle.playerSeated
       && state.ui.libraryFinalsPuzzle.nextQuestId === null;
     const keyboardX = Number(this.cursors.right.isDown || this.keys.D.isDown)
@@ -177,7 +191,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
 
-    if (state.actOne.movementEnabled && !seatedConversation && !this.shelfRevealAnimating && vector.lengthSq() > 0) {
+    if (state.actOne.movementEnabled && !seatedConversation && !this.shelfRevealAnimating && !entranceRecordOpen && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? 225 : 160);
     } else {
       vector.set(0, 0);
@@ -192,11 +206,27 @@ export class LibraryInteriorScene extends Phaser.Scene {
       : null;
     const nearest = seatedTarget ?? findNearestLibraryTarget(this.player.x, this.player.y, activeTargets);
     this.publishRuntimeDebug(activeTargets);
+    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+
+    if (entranceRecordOpen) {
+      this.promptText.setVisible(false);
+      this.markers.forEach((marker) => marker.container.setVisible(false));
+      const confirmRequested = keyboardInteract
+        || Phaser.Input.Keyboard.JustDown(this.enterKey)
+        || this.interactRequested;
+      if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+        this.closeEntranceRecordPanel();
+      } else if (confirmRequested) {
+        this.confirmEntranceRecord();
+      }
+      this.interactRequested = false;
+      return;
+    }
+
     this.updatePrompt(nearest, state);
     this.updateMarkerVisibility(activeTargets, state, nearest);
     this.updateLostFoundStatus(state);
 
-    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearest && (keyboardInteract || this.interactRequested)) {
       this.triggerInteraction(nearest, state);
     }
@@ -239,8 +269,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (name === "library_entrance_record_read") {
       this.entranceAccessGranted = true;
+      this.updateEntranceRecordDevice(true);
       this.animateEntranceAccessGranted();
-      this.showFeedback("记录已读取：二层南区 022 仍有一个未闭合会话。", "success");
+      this.showFeedback("记录已保存：到达时间减去入馆时间，可得出到座耗时。", "success");
       return;
     }
     if (name === "library_occupied_seat_found") {
@@ -334,7 +365,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private triggerInteraction(target: LibraryInteractionTarget, state: GameState): void {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (target.id === "entrance_record") {
-      this.requestAction("readEntranceRecord", target.id);
+      this.openEntranceRecordPanel();
       return;
     }
     if (target.id === "seat_022_backpack" && !puzzle.backpackInspected) {
@@ -381,7 +412,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getActiveTargets(state: GameState): LibraryInteractionTarget[] {
     const puzzle = state.ui.libraryFinalsPuzzle;
     return LIBRARY_INTERACTION_TARGETS.filter((target) => {
-      if (target.id === "entrance_record") return !puzzle.entranceRecordRead;
+      if (target.id === "entrance_record") return true;
       if (target.id === "occupancy_note") return puzzle.backpackInspected && !puzzle.occupancyNoteCollected;
       if (target.id === "seat_022_backpack") return puzzle.entranceRecordRead && !puzzle.backpackEvicted;
       if (target.id === "seat_022_gap") return puzzle.archivedRuleRead && puzzle.backpackInspected && !puzzle.seatReceiptCollected;
@@ -551,6 +582,19 @@ export class LibraryInteriorScene extends Phaser.Scene {
       entranceDoor: {
         state: this.entranceDoorMotion,
         accessGranted: this.entranceAccessGranted
+      },
+      entranceRecord: {
+        open: this.entranceRecordPanel.visible,
+        read: state.ui.libraryFinalsPuzzle.entranceRecordRead,
+        ...(this.entranceRecordPanel.visible
+          ? {
+              entries: [
+                { time: "07:55", location: "主馆入口" },
+                { time: "08:02", location: "二楼南区 022" }
+              ],
+              calculation: "08:02 - 07:55"
+            }
+          : {})
       },
       shelfReveal: {
         phase: this.shelfRevealPhase,
@@ -1210,6 +1254,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.player.setPosition(seat.x, seat.y).setTexture("act1-player-up-0");
     }
     this.entranceAccessGranted = puzzle.entranceRecordRead;
+    this.updateEntranceRecordDevice(puzzle.entranceRecordRead);
     this.setEntranceDoorInstant(shouldOpenLibraryEntranceDoor(
       this.entranceAccessGranted,
       this.player.x,
@@ -1245,7 +1290,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
         fontSize: target.acceptedItem ? "11px" : "18px",
         fontStyle: "bold"
       }).setOrigin(0.5);
-      const container = this.add.container(target.x, target.y - target.height / 2 - 18, [ring, glyph])
+      const markerGap = target.id === "entrance_record" ? 44 : 18;
+      const container = this.add.container(target.x, target.y - target.height / 2 - markerGap, [ring, glyph])
         .setDepth(5000 + index)
         .setVisible(false);
       this.tweens.add({
@@ -1279,6 +1325,303 @@ export class LibraryInteriorScene extends Phaser.Scene {
       padding: { x: 14, y: 8 }
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10020).setVisible(false);
 
+    this.createEntranceRecordPanel();
+  }
+
+  private createEntranceRecordPanel(): void {
+    const backdrop = this.add.rectangle(0, 0, 960, 540, 0x07100f, 0.74);
+
+    const shadow = this.add.rectangle(7, 9, 680, 385, 0x000000, 0.55);
+    const bezel = this.add.rectangle(0, 0, 680, 385, 0x182b28, 0.99)
+      .setStrokeStyle(5, 0xd3c68e, 0.98);
+    const screen = this.add.rectangle(0, 5, 648, 348, 0x0b1e1c, 1)
+      .setStrokeStyle(2, 0x4e766c, 0.9);
+    const header = this.add.rectangle(0, -151, 648, 46, 0x254a43, 1);
+    const headerAccent = this.add.rectangle(-318, -151, 7, 44, 0xe0ca70, 1);
+    const title = this.add.text(-300, -151, "图书馆门禁 · 入馆记录", {
+      color: "#f6f0d7",
+      fontFamily: "monospace",
+      fontSize: "17px",
+      fontStyle: "bold"
+    }).setOrigin(0, 0.5);
+    const recordId = this.add.text(255, -151, "LOG 01", {
+      color: "#9ce4bf",
+      fontFamily: "monospace",
+      fontSize: "12px",
+      fontStyle: "bold"
+    }).setOrigin(1, 0.5);
+
+    const scanLines = [-112, -76, -40, -4, 32, 68, 104].map((y) => (
+      this.add.rectangle(0, y, 622, 2, 0x8ec3b7, 0.045)
+    ));
+
+    const leftCard = this.add.rectangle(-157, -24, 252, 126, 0x15312e, 0.96)
+      .setStrokeStyle(3, 0x5e8c80, 0.82);
+    const leftLabel = this.add.text(-264, -70, "入馆扫描", {
+      color: "#a9c9c0",
+      fontFamily: "monospace",
+      fontSize: "12px"
+    }).setOrigin(0, 0.5);
+    const leftTime = this.add.text(-157, -24, "07:55", {
+      color: "#f3dc83",
+      fontFamily: "monospace",
+      fontSize: "38px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+    const leftLocation = this.add.text(-157, 22, "主馆入口", {
+      color: "#eff7ef",
+      fontFamily: "monospace",
+      fontSize: "13px"
+    }).setOrigin(0.5);
+
+    const rightCard = this.add.rectangle(157, -24, 252, 126, 0x15312e, 0.96)
+      .setStrokeStyle(3, 0x5e8c80, 0.82);
+    const rightLabel = this.add.text(50, -70, "到达记录", {
+      color: "#a9c9c0",
+      fontFamily: "monospace",
+      fontSize: "12px"
+    }).setOrigin(0, 0.5);
+    const rightTime = this.add.text(157, -24, "08:02", {
+      color: "#8ce1b4",
+      fontFamily: "monospace",
+      fontSize: "38px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+    const rightLocation = this.add.text(157, 22, "二楼南区 022", {
+      color: "#eff7ef",
+      fontFamily: "monospace",
+      fontSize: "13px"
+    }).setOrigin(0.5);
+    const direction = this.add.text(0, -23, "→", {
+      color: "#d9cb90",
+      fontFamily: "monospace",
+      fontSize: "24px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+
+    const calculationLabel = this.add.text(0, 69, "到座耗时核对：08:02 − 07:55", {
+      color: "#dcebe5",
+      fontFamily: "monospace",
+      fontSize: "14px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+    const seatStatus = this.add.text(0, 96, "目标记录：二楼南区 022 · 会话未闭合", {
+      color: "#8fb9ae",
+      fontFamily: "monospace",
+      fontSize: "12px"
+    }).setOrigin(0.5);
+
+    this.entranceRecordConfirmButton = this.add.rectangle(0, 137, 172, 38, 0x397b61, 1)
+      .setStrokeStyle(3, 0xbce7c8, 0.95);
+    this.entranceRecordConfirmText = this.add.text(0, 137, "记下记录", {
+      color: "#f5f6df",
+      fontFamily: "monospace",
+      fontSize: "14px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+    const closeButton = this.add.rectangle(307, -151, 38, 34, 0x142421, 0.92)
+      .setStrokeStyle(2, 0x739288, 0.82);
+    const closeGlyph = this.add.text(307, -152, "×", {
+      color: "#d9e8e2",
+      fontFamily: "monospace",
+      fontSize: "20px"
+    }).setOrigin(0.5);
+    const controls = this.add.text(0, 174, "Enter / 空格 确认 · Esc 关闭", {
+      color: "#7fa49b",
+      fontFamily: "monospace",
+      fontSize: "10px"
+    }).setOrigin(0.5);
+
+    this.entranceRecordPanel = this.add.container(480, 270, [
+      backdrop,
+      shadow,
+      bezel,
+      screen,
+      ...scanLines,
+      header,
+      headerAccent,
+      title,
+      recordId,
+      leftCard,
+      rightCard,
+      leftLabel,
+      rightLabel,
+      leftTime,
+      rightTime,
+      leftLocation,
+      rightLocation,
+      direction,
+      calculationLabel,
+      seatStatus,
+      this.entranceRecordConfirmButton,
+      this.entranceRecordConfirmText,
+      closeButton,
+      closeGlyph,
+      controls
+    ])
+      .setScrollFactor(0)
+      .setDepth(10300)
+      .setVisible(false)
+      .setAlpha(0)
+      .setScale(0.96);
+
+    this.entranceRecordConfirmHitArea = this.add.zone(480, 407, 172, 38)
+      .setScrollFactor(0)
+      .setDepth(10320)
+      .setVisible(false)
+      .setInteractive({ useHandCursor: true })
+      .disableInteractive();
+    this.entranceRecordCloseHitArea = this.add.zone(787, 119, 38, 34)
+      .setScrollFactor(0)
+      .setDepth(10320)
+      .setVisible(false)
+      .setInteractive({ useHandCursor: true })
+      .disableInteractive();
+
+    this.entranceRecordConfirmHitArea
+      .on("pointerover", () => this.entranceRecordConfirmButton.setFillStyle(0x4a9473, 1))
+      .on("pointerout", () => this.entranceRecordConfirmButton.setFillStyle(0x397b61, 1))
+      .on("pointerdown", () => this.confirmEntranceRecord());
+    this.entranceRecordCloseHitArea
+      .on("pointerover", () => closeButton.setFillStyle(0x31534b, 1))
+      .on("pointerout", () => closeButton.setFillStyle(0x142421, 0.92))
+      .on("pointerdown", () => this.closeEntranceRecordPanel());
+  }
+
+  private createEntranceRecordDevice(): void {
+    const target = getLibraryTarget("entrance_record");
+    const shadow = this.add.rectangle(3, 5, 146, 60, 0x111a18, 0.58);
+    const casing = this.add.rectangle(0, 0, 146, 60, 0xd8cdb0, 1)
+      .setStrokeStyle(4, 0x2b413c, 1);
+    this.entranceRecordScreen = this.add.rectangle(0, -4, 130, 34, 0x163d35, 1)
+      .setStrokeStyle(2, 0x6f9e91, 0.9);
+    this.entranceRecordIndicator = this.add.circle(-54, -4, 4, 0xe3c65d, 1);
+    const title = this.add.text(-43, -10, "入馆记录", {
+      color: "#f4efdc",
+      fontFamily: "monospace",
+      fontSize: "12px",
+      fontStyle: "bold"
+    }).setOrigin(0, 0.5);
+    this.entranceRecordStatusText = this.add.text(-43, 5, "点击查看", {
+      color: "#a8d8c9",
+      fontFamily: "monospace",
+      fontSize: "9px"
+    }).setOrigin(0, 0.5);
+    const base = this.add.rectangle(0, 25, 82, 8, 0x8a8069, 1)
+      .setStrokeStyle(2, 0x2b413c, 1);
+    const hitTarget = this.add.rectangle(0, 0, 154, 68, 0xffffff, 0.001)
+      .setInteractive({ useHandCursor: true });
+
+    this.entranceRecordDevice = this.add.container(750, 727, [
+      shadow,
+      casing,
+      this.entranceRecordScreen,
+      this.entranceRecordIndicator,
+      title,
+      this.entranceRecordStatusText,
+      base,
+      hitTarget
+    ]).setDepth(848);
+
+    hitTarget
+      .on("pointerover", () => {
+        this.entranceRecordScreen.setStrokeStyle(3, 0xcfe7a6, 1);
+        this.entranceRecordDevice.setScale(1.02);
+      })
+      .on("pointerout", () => {
+        this.entranceRecordScreen.setStrokeStyle(2, 0x6f9e91, 0.9);
+        this.entranceRecordDevice.setScale(1);
+      })
+      .on("pointerdown", () => {
+        if (!this.player || this.entranceRecordPanel.visible) {
+          return;
+        }
+        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
+        if (distance <= target.proximity + 24) {
+          this.bridge.setCheckpoint("library_entrance");
+          this.openEntranceRecordPanel();
+          return;
+        }
+        this.showFeedback("先走近闸机旁的小屏，再查看入馆记录。", "system");
+        this.tweens.add({
+          targets: this.entranceRecordDevice,
+          x: { from: 747, to: 753 },
+          duration: 55,
+          yoyo: true,
+          repeat: 2,
+          onComplete: () => this.entranceRecordDevice.setX(750)
+        });
+      });
+  }
+
+  private openEntranceRecordPanel(): void {
+    if (this.entranceRecordPanel.visible) {
+      return;
+    }
+    const alreadyRead = this.bridge.getState().ui.libraryFinalsPuzzle.entranceRecordRead;
+    this.player.setVelocity(0, 0);
+    this.feedbackTween?.stop();
+    this.feedbackText.setVisible(false);
+    this.promptText.setVisible(false);
+    this.entranceRecordConfirmText.setText(alreadyRead ? "关闭记录" : "记下记录");
+    this.tweens.killTweensOf(this.entranceRecordPanel);
+    this.entranceRecordPanel
+      .setVisible(true)
+      .setAlpha(0)
+      .setScale(this.reducedMotion ? 1 : 0.96);
+    this.entranceRecordConfirmHitArea.setVisible(true).setInteractive({ useHandCursor: true });
+    this.entranceRecordCloseHitArea.setVisible(true).setInteractive({ useHandCursor: true });
+    this.tweens.add({
+      targets: this.entranceRecordPanel,
+      alpha: 1,
+      scale: 1,
+      duration: this.reducedMotion ? 1 : 140,
+      ease: "Stepped"
+    });
+    this.tweens.add({
+      targets: this.entranceRecordIndicator,
+      alpha: 0.28,
+      duration: 95,
+      yoyo: true,
+      repeat: 3,
+      onComplete: () => this.entranceRecordIndicator.setAlpha(1)
+    });
+  }
+
+  private confirmEntranceRecord(): void {
+    if (!this.entranceRecordPanel.visible) {
+      return;
+    }
+    const alreadyRead = this.bridge.getState().ui.libraryFinalsPuzzle.entranceRecordRead;
+    this.closeEntranceRecordPanel();
+    if (!alreadyRead) {
+      this.requestAction("readEntranceRecord", "entrance_record");
+    }
+  }
+
+  private closeEntranceRecordPanel(): void {
+    if (!this.entranceRecordPanel.visible) {
+      return;
+    }
+    this.entranceRecordConfirmHitArea.disableInteractive().setVisible(false);
+    this.entranceRecordCloseHitArea.disableInteractive().setVisible(false);
+    this.tweens.killTweensOf(this.entranceRecordPanel);
+    this.tweens.add({
+      targets: this.entranceRecordPanel,
+      alpha: 0,
+      scale: this.reducedMotion ? 1 : 0.97,
+      duration: this.reducedMotion ? 1 : 100,
+      ease: "Stepped",
+      onComplete: () => this.entranceRecordPanel.setVisible(false)
+    });
+  }
+
+  private updateEntranceRecordDevice(read: boolean): void {
+    this.entranceRecordScreen.setFillStyle(read ? 0x205746 : 0x163d35, 1);
+    this.entranceRecordIndicator.setFillStyle(read ? 0x72d79d : 0xe3c65d, 1);
+    this.entranceRecordStatusText
+      .setText(read ? "已读取 · 点击复查" : "点击查看")
+      .setColor(read ? "#bdebc9" : "#a8d8c9");
   }
 
   private drawInterior(): void {
@@ -1369,13 +1712,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     ).setDepth(825);
     this.obstacles.add(this.entranceDoorBlocker);
 
-    this.add.text(750, 730, "入馆记录", {
-      color: "#25433d",
-      fontFamily: "monospace",
-      fontSize: "13px",
-      backgroundColor: "#eadfca",
-      padding: { x: 7, y: 4 }
-    }).setOrigin(0.5).setDepth(820);
+    this.createEntranceRecordDevice();
   }
 
   private drawFrontDesk(): void {

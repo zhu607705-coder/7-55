@@ -65,7 +65,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-seat-reservation", chapter: "第二章", label: "预约 022", detail: "基础馆二层南区" },
   { id: "c2-dorm-exit", chapter: "第二章", label: "离开寝室", detail: "出口已开放" },
   { id: "c2-library-gate", chapter: "第二章", label: "图书馆门口", detail: "校园地图入口" },
-  { id: "c2-entrance-record", chapter: "第二章", label: "入馆记录", detail: "读取 07:55 记录" },
+  { id: "c2-entrance-record", chapter: "第二章", label: "入馆记录", detail: "点击小屏核对两条时间" },
   { id: "c2-seat-arrival", chapter: "第二章", label: "到达 022", detail: "检查占座书包" },
   { id: "c2-occupancy-note", chapter: "第二章", label: "占座纸条", detail: "从书包取得线索" },
   { id: "c2-catalog", chapter: "第二章", label: "馆藏检索", detail: "搜索正确书籍" },

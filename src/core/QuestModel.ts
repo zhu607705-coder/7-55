@@ -179,7 +179,7 @@ function libraryQuest(state: GameState): QuestViewModel {
   const phone = (objective: string, scene: SceneId, hints = DEFAULT_HINTS): NextAction => ({ objective, recommendedScene: scene, targetSurface: "phone", hints });
   const rpg = (objective: string, hints = DEFAULT_HINTS): NextAction => ({ objective, targetSurface: "rpg", hints });
   const next: Record<string, NextAction> = {
-    entrance_record: rpg("读取基础图书馆入馆记录", ["入口闸机保存了访问记录。", "记录能确认目标座位仍有未闭合会话。", "聚焦图书馆地图，在入口前台附近交互。"]),
+    entrance_record: rpg("读取基础图书馆入馆记录", ["闸机旁的小屏保存了两条时间记录。", "点击小屏查看入馆与到达时间。", "两条时间后续可用于计算到座耗时。"]),
     seat_022: rpg("前往二层南区寻找 022", ["入馆记录已经给出座位区域。", "目标会话与一个具体座位相连。", "在阅览区找到 022 并检查占座书包。"]),
     note: rpg("检查书包旁留下的信息"),
     catalog: puzzle.investigationOpened

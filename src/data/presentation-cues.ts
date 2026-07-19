@@ -79,9 +79,9 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
   },
   library_entered: {
     kind: "scan",
-    title: "入馆记录已建立",
-    detail: "07:55 入馆，08:02 到达 022",
-    mark: "7min",
+    title: "入馆记录待核对",
+    detail: "点击闸机旁的小屏查看两条时间",
+    mark: "LOG",
     durationMs: 1600,
     priority: 2,
     visual: false
