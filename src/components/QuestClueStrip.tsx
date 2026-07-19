@@ -3,9 +3,7 @@ import { createPortal } from "react-dom";
 import type { EventBus } from "../core/EventBus";
 import type { SceneRouter } from "../core/SceneRouter";
 import { selectQuestViewModel } from "../core/QuestModel";
-import type { GameState, ItemId, QuestViewModel } from "../core/types";
-import { ITEM_CATALOG } from "../data/itemCatalog";
-import { ItemInspectDialog } from "./ItemInspectDialog";
+import type { GameState, QuestViewModel } from "../core/types";
 
 export type QuestTaskBarVariant = "phone" | "rpg" | "desktop";
 
@@ -17,12 +15,6 @@ export interface QuestTaskBarProps {
   portalRoot?: Element | null;
   onNavigate?: (quest: QuestViewModel) => void;
 }
-
-const CHAPTER_LABEL: Record<QuestViewModel["chapter"], string> = {
-  chapter_one: "第 1 章",
-  chapter_two: "第 2 章",
-  chapter_three: "第 3 章"
-};
 
 function QuestDrawerLayer({
   children,
@@ -39,87 +31,55 @@ function QuestDrawerLayer({
   return children;
 }
 
-export function isQuestCluePhase(): boolean {
-  return true;
+const HIDDEN_CHAPTER_TWO_PHASES = new Set([
+  "friend_message_required",
+  "system_required",
+  "inventory_required",
+  "system_return_required"
+]);
+
+export function isQuestCluePhase(state: GameState): boolean {
+  return !HIDDEN_CHAPTER_TWO_PHASES.has(state.actOne.phase);
 }
 
 export function QuestTaskBar({
   state,
-  events,
-  router,
   variant = "phone",
-  portalRoot,
-  onNavigate
+  portalRoot
 }: QuestTaskBarProps) {
   const quest = useMemo(() => selectQuestViewModel(state), [state]);
+  const taskBarVisible = isQuestCluePhase(state);
   const [open, setOpen] = useState(false);
-  const [hintCount, setHintCount] = useState(0);
-  const [documentItem, setDocumentItem] = useState<ItemId | null>(null);
-  const [updateCue, setUpdateCue] = useState<"objective" | "progress" | null>(null);
+  const [revealedHintCount, setRevealedHintCount] = useState(0);
+  const [updateCue, setUpdateCue] = useState(false);
   const previousQuestRef = useRef({
     id: quest.id,
-    objective: quest.objective,
-    completed: quest.completed
+    objective: quest.objective
   });
-  const digitSlots = [state.digits.d1, state.digits.d2, state.digits.d3, state.digits.d4];
-  const acquiredDigitCount = digitSlots.filter(Boolean).length;
-  const showDigitHint = quest.chapter === "chapter_one"
-    && (state.flags.codeScattered || acquiredDigitCount > 0);
-  const digitHintText = digitSlots.map((digit) => digit ?? "?").join(" ");
-  const digitHintAria = `已找到的签到数字：${digitSlots
-    .map((digit, index) => `第${index + 1}位${digit ?? "未找到"}`)
-    .join("，")}`;
-  const acquiredDocuments = quest.steps.flatMap((step) => {
-    if (step.status !== "completed" || !step.itemId) {
-      return [];
-    }
-    const document = ITEM_CATALOG[step.itemId].document;
-    return document ? [{ itemId: step.itemId, label: step.label }] : [];
-  });
-
-  useEffect(() => {
-    setHintCount(0);
-  }, [quest.id, quest.objective]);
 
   useEffect(() => {
     const previous = previousQuestRef.current;
     previousQuestRef.current = {
       id: quest.id,
-      objective: quest.objective,
-      completed: quest.completed
+      objective: quest.objective
     };
-
-    const nextCue = quest.completed > previous.completed
-      ? "progress"
-      : quest.id !== previous.id || quest.objective !== previous.objective
-        ? "objective"
-        : null;
-    if (!nextCue) {
+    if (quest.id === previous.id && quest.objective === previous.objective) {
       return undefined;
     }
-
-    setUpdateCue(nextCue);
-    const timer = window.setTimeout(() => setUpdateCue(null), 1050);
-    return () => window.clearTimeout(timer);
-  }, [quest.completed, quest.id, quest.objective]);
-
-  function navigate() {
-    events.emit("quest_navigation_requested", {
-      questId: quest.id,
-      targetSurface: quest.targetSurface,
-      recommendedScene: quest.recommendedScene
-    });
-    if (onNavigate) {
-      onNavigate(quest);
-    } else if (quest.recommendedScene) {
-      router?.goTo(quest.recommendedScene);
-    }
     setOpen(false);
+    setRevealedHintCount(0);
+    setUpdateCue(true);
+    const timer = window.setTimeout(() => setUpdateCue(false), 1050);
+    return () => window.clearTimeout(timer);
+  }, [quest.id, quest.objective]);
+
+  if (!taskBarVisible) {
+    return null;
   }
 
   return (
     <aside
-      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updateCue ? `has-${updateCue}-update` : ""}`.trim()}
+      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updateCue ? "has-objective-update" : ""}`.trim()}
       role="region"
       aria-label="当前任务"
       data-quest-id={quest.id}
@@ -127,10 +87,10 @@ export function QuestTaskBar({
       <button
         type="button"
         className="quest-task-trigger"
-        aria-label={`${CHAPTER_LABEL[quest.chapter]}任务：${quest.title}。当前目标：${quest.objective}。当前进度：${quest.completed}/${quest.total}${showDigitHint ? `。签到数字提示：${digitHintText}` : ""}。点击查看详情`}
+        aria-label={`当前任务：${quest.objective}。点击查看任务提示`}
         aria-expanded={open}
         aria-controls={`quest-drawer-${variant}`}
-        title="点击查看当前任务和进度"
+        title="点击展开任务提示"
         onPointerDown={(event) => event.stopPropagation()}
         onPointerUp={(event) => event.stopPropagation()}
         onClick={(event) => {
@@ -138,16 +98,11 @@ export function QuestTaskBar({
           setOpen((value) => !value);
         }}
       >
-        <span>{CHAPTER_LABEL[quest.chapter]}</span>
+        <span>当前任务</span>
         <strong className="quest-task-trigger-copy">
           <span>{quest.objective}</span>
-          {showDigitHint ? (
-            <em className="quest-task-digit-hint" aria-label={digitHintAria}>
-              签到码 {digitHintText}
-            </em>
-          ) : null}
         </strong>
-        <b>{quest.completed}/{quest.total}</b>
+        <b aria-hidden="true">{open ? "−" : "+"}</b>
       </button>
 
       {open ? (
@@ -159,97 +114,35 @@ export function QuestTaskBar({
         >
           <header>
             <div>
-              <small>{CHAPTER_LABEL[quest.chapter]}</small>
-              <h2>{quest.title}</h2>
+              <small>当前任务</small>
+              <h2>{quest.objective}</h2>
             </div>
             <button type="button" aria-label="关闭任务详情" onClick={() => setOpen(false)}>×</button>
           </header>
 
-          <div className="quest-task-overview">
-            <section>
-              <span>当前任务</span>
-              <strong>{quest.title}</strong>
-            </section>
-            <section>
-              <span>当前进度</span>
-              <strong>{quest.completed} / {quest.total}</strong>
-            </section>
-          </div>
-
-          {showDigitHint ? (
-            <section className="quest-task-digits" aria-label={digitHintAria}>
-              <header>
-                <span>签到数字提示</span>
-                <strong>{acquiredDigitCount} / 4</strong>
-              </header>
-              <div>
-                {digitSlots.map((digit, index) => (
-                  <span key={index} className={digit ? "is-acquired" : ""}>
-                    <small>第 {index + 1} 位</small>
-                    <b>{digit ?? "?"}</b>
-                  </span>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <div className="quest-task-objective">
-            <span>下一步目标</span>
-            <strong>{quest.objective}</strong>
-            <b>{quest.completed} / {quest.total}</b>
-          </div>
-
-          {acquiredDocuments.length > 0 ? (
-            <details className="quest-task-materials">
-              <summary>
-                <span>已取得材料</span>
-                <b>{acquiredDocuments.length}</b>
-              </summary>
-              <ul aria-label="已取得材料">
-                {acquiredDocuments.map((material) => (
-                  <li key={material.itemId}>
-                    <span>{material.label}</span>
-                    <button type="button" onClick={() => setDocumentItem(material.itemId)}>
-                      查看
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          ) : null}
-
-          <section className="quest-task-hints" aria-label="渐进提示">
+          <section className="quest-task-hints" aria-label="任务提示">
             <header>
-              <strong>提示</strong>
-              <span>{hintCount}/3</span>
+              <strong>任务提示</strong>
+              <span>{revealedHintCount}/3</span>
             </header>
-            {hintCount === 0 ? <p>需要时逐条展开，提示不会公布答案。</p> : null}
-            {quest.hints.slice(0, hintCount).map((hint, index) => (
+            {quest.hints.slice(0, revealedHintCount).map((hint, index) => (
               <p key={hint}><b>{index + 1}</b>{hint}</p>
             ))}
-            <button
-              type="button"
-              disabled={hintCount >= 3}
-              onClick={() => setHintCount((count) => Math.min(3, count + 1))}
-            >
-              {hintCount >= 3 ? "提示已全部展开" : "显示下一条提示"}
-            </button>
+            {revealedHintCount < quest.hints.length ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setRevealedHintCount((count) => Math.min(count + 1, quest.hints.length));
+                }}
+              >
+                {revealedHintCount === 0 ? "查看第一条提示" : "继续查看下一条提示"}
+              </button>
+            ) : null}
           </section>
-
-          <button type="button" className="quest-task-navigate" onClick={navigate}>
-            {quest.targetSurface === "rpg" ? "前往地图" : "前往相关界面"}
-          </button>
         </section>
         </QuestDrawerLayer>
       ) : null}
-
-      <ItemInspectDialog
-        open={documentItem !== null}
-        itemId={documentItem}
-        variant={variant === "phone" ? "phone" : "rpg"}
-        portalRoot={portalRoot}
-        onClose={() => setDocumentItem(null)}
-      />
     </aside>
   );
 }

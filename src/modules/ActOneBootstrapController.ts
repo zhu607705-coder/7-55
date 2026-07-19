@@ -150,8 +150,8 @@ export class ActOneBootstrapController {
     if (!actOne.characterNamed) {
       if (!actOne.characterPromptSeen) {
         this.patch({ characterPromptSeen: true });
-        this.events.emit("act2_character_cannot_hear");
       }
+      this.events.emit("act2_character_cannot_hear");
       return true;
     }
     if (!actOne.exerciseStarted) {

@@ -385,8 +385,8 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
       inventoryOpen: false,
       selectedItem: null,
       zjudingPage,
-      librarySelectedSeat: reached("c2-seat-dialogue") ? "022" : null,
-      librarySeatReserved: reached("c2-seat-dialogue"),
+      librarySelectedSeat: reached("c2-library-gate") ? "022" : null,
+      librarySeatReserved: reached("c2-library-gate"),
       libraryFinalsPhase: libraryPhaseFor(id),
       libraryFinalsPuzzle: puzzle
     }

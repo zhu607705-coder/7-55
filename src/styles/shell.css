@@ -150,8 +150,8 @@
 }
 
 .quest-task-bar--phone .quest-task-drawer {
-  bottom: 18px;
   left: 14px;
+  max-height: calc(100dvh - 64px);
   position: fixed;
   right: 14px;
   top: 46px;
