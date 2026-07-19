@@ -10,10 +10,9 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
 
   function collectWater() {
     if (!kit.actOne.collectWeatherWater()) {
-      kit.flags.toast("现在没有需要带走的水。", "system");
+      kit.flags.toast(collected ? "水滴已经在道具栏里。" : "现在没有需要带走的水。", "system");
       return;
     }
-    kit.flags.toast(collected ? "水滴已经在道具栏里。" : "获得道具：天气水滴", collected ? "system" : "task");
   }
 
   return (
