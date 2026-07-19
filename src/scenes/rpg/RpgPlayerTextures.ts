@@ -12,6 +12,8 @@ export const RPG_PLAYER_FRAME_WIDTH = 48;
 export const RPG_PLAYER_FRAME_HEIGHT = 64;
 export const RPG_PLAYER_DISPLAY_SCALE = 1.3;
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
+export const RPG_PLAYER_WALK_FRAME_MS = 80;
+export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 15,
   height: 11.25,
@@ -91,4 +93,155 @@ export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): 
   player.body
     ?.setSize(RPG_PLAYER_FOOT_COLLISION.width, RPG_PLAYER_FOOT_COLLISION.height)
     .setOffset(RPG_PLAYER_FOOT_COLLISION.offsetX, RPG_PLAYER_FOOT_COLLISION.offsetY);
+}
+
+interface TurnState {
+  fromFacing: RpgPlayerFacing;
+  fromFlipX: boolean;
+  toFacing: RpgPlayerFacing;
+  toFlipX: boolean;
+  startedAt: number;
+  durationMs: number;
+}
+
+function directionFromVector(vector: Phaser.Math.Vector2): { facing: RpgPlayerFacing; flipX: boolean } {
+  if (Math.abs(vector.x) > Math.abs(vector.y)) {
+    return { facing: "side", flipX: vector.x < 0 };
+  }
+  return { facing: vector.y < 0 ? "up" : "down", flipX: false };
+}
+
+function turnDuration(
+  fromFacing: RpgPlayerFacing,
+  fromFlipX: boolean,
+  toFacing: RpgPlayerFacing,
+  toFlipX: boolean
+): number {
+  if (fromFacing === "side" && toFacing === "side" && fromFlipX !== toFlipX) {
+    return 150;
+  }
+  if (fromFacing !== "side" && toFacing !== "side" && fromFacing !== toFacing) {
+    return 170;
+  }
+  return 132;
+}
+
+/**
+ * 共享人物动画器：方向改变时依次显示原朝向、侧身过渡和新朝向；
+ * 行走帧率统一由本模块控制，三个 RPG 场景不再各自维护帧计时。
+ */
+export class RpgPlayerAnimator {
+  private targetFacing: RpgPlayerFacing;
+  private targetFlipX: boolean;
+  private walkingFrame = 0;
+  private turn: TurnState | null = null;
+
+  constructor(
+    private readonly player: Phaser.Physics.Arcade.Sprite,
+    initialFacing: RpgPlayerFacing,
+    initialFlipX = false
+  ) {
+    this.targetFacing = initialFacing;
+    this.targetFlipX = initialFlipX;
+    this.applyPose(initialFacing, 0, initialFlipX);
+  }
+
+  get facing(): RpgPlayerFacing {
+    return this.targetFacing;
+  }
+
+  get isTurning(): boolean {
+    return this.turn !== null;
+  }
+
+  get textureKey(): string {
+    return this.player.texture.key;
+  }
+
+  setFacing(facing: RpgPlayerFacing, flipX = false): void {
+    this.targetFacing = facing;
+    this.targetFlipX = flipX;
+    this.walkingFrame = 0;
+    this.turn = null;
+    this.applyPose(facing, 0, flipX);
+  }
+
+  update(vector: Phaser.Math.Vector2, now: number): void {
+    const moving = vector.lengthSq() > 0;
+    if (moving) {
+      const desired = directionFromVector(vector);
+      if (desired.facing !== this.targetFacing || desired.flipX !== this.targetFlipX) {
+        this.turn = {
+          fromFacing: this.targetFacing,
+          fromFlipX: this.targetFlipX,
+          toFacing: desired.facing,
+          toFlipX: desired.flipX,
+          startedAt: now,
+          durationMs: turnDuration(this.targetFacing, this.targetFlipX, desired.facing, desired.flipX)
+        };
+        this.targetFacing = desired.facing;
+        this.targetFlipX = desired.flipX;
+        this.walkingFrame = 0;
+      }
+    }
+
+    if (this.turn) {
+      const progress = Math.min(1, (now - this.turn.startedAt) / this.turn.durationMs);
+      if (progress < 0.3) {
+        this.applyPose(this.turn.fromFacing, 0, this.turn.fromFlipX);
+        return;
+      }
+      if (progress < 0.68) {
+        const reversingSide = this.turn.fromFacing === "side"
+          && this.turn.toFacing === "side"
+          && this.turn.fromFlipX !== this.turn.toFlipX;
+        if (reversingSide) {
+          this.applyPose("down", 0, false);
+        } else {
+        const transitionFlip = this.turn.toFacing === "side"
+            ? this.turn.toFlipX
+            : this.turn.fromFacing === "side"
+              ? this.turn.fromFlipX
+              : false;
+          const turnAngle = transitionFlip ? -6 : 6;
+          this.applyPose("side", 0, transitionFlip, turnAngle);
+        }
+        return;
+      }
+      this.applyPose(this.turn.toFacing, 0, this.turn.toFlipX);
+      if (progress < 1) {
+        return;
+      }
+      this.turn = null;
+    }
+
+    if (!moving) {
+      this.walkingFrame = 0;
+      this.applyPose(this.targetFacing, 0, this.targetFlipX);
+      return;
+    }
+
+    const nextFrame = (Math.floor(now / RPG_PLAYER_WALK_FRAME_MS) % 2) as 0 | 1;
+    if (
+      nextFrame !== this.walkingFrame
+      || this.player.texture.key !== `act1-player-${this.targetFacing}-${nextFrame}`
+      || this.player.flipX !== this.targetFlipX
+    ) {
+      this.walkingFrame = nextFrame;
+      this.applyPose(this.targetFacing, nextFrame, this.targetFlipX);
+    }
+  }
+
+  private applyPose(facing: RpgPlayerFacing, frame: 0 | 1, flipX: boolean, angle = 0): void {
+    const texture = `act1-player-${facing}-${frame}`;
+    if (this.player.texture.key !== texture) {
+      this.player.setTexture(texture);
+    }
+    if (this.player.flipX !== flipX) {
+      this.player.setFlipX(flipX);
+    }
+    if (this.player.angle !== angle) {
+      this.player.setAngle(angle);
+    }
+  }
 }

@@ -8,3 +8,4 @@
 - `source/student_walk_transparent.png` is the cleaned source sheet used to produce runtime frames.
 
 Phaser owns frame switching, direction mirroring, movement speed, collision bodies, and animation timing.
+`RpgPlayerAnimator` in `src/scenes/rpg/RpgPlayerTextures.ts` is the shared runtime owner for all three RPG scenes. It runs walking poses at `12.5 FPS` and inserts a short original-pose / transition-pose / target-pose sequence whenever the facing direction changes.

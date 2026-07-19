@@ -12,7 +12,8 @@ import {
   ensureRpgPlayerTextures,
   preloadRpgPlayerTextures,
   RPG_PLAYER_NAME_OFFSET_Y,
-  type RpgPlayerFacing
+  RpgPlayerAnimator,
+  RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
@@ -32,8 +33,7 @@ export class BootScene extends Phaser.Scene {
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
   private virtualDirection = { x: 0, y: 0 };
   private lockedHintShown = false;
-  private walkingFrame = 0;
-  private facing: RpgPlayerFacing = "down";
+  private playerAnimator!: RpgPlayerAnimator;
   private characterName!: Phaser.GameObjects.Text;
   private libraryGateMarker!: Phaser.GameObjects.Arc;
   private libraryGatePrompt!: Phaser.GameObjects.Text;
@@ -71,6 +71,7 @@ export class BootScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-down-0");
     this.player.setCollideWorldBounds(true).setDepth(this.player.y + 30);
     configureRpgPlayerSprite(this.player);
+    this.playerAnimator = new RpgPlayerAnimator(this.player, "down");
     this.physics.add.collider(this.player, this.obstacles);
     this.characterName = this.add.text(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y, "", {
       color: "#fff7df",
@@ -120,6 +121,7 @@ export class BootScene extends Phaser.Scene {
 
     if (!state.actOne.movementEnabled) {
       this.player.setVelocity(0);
+      this.playerAnimator.update(new Phaser.Math.Vector2(0, 0), this.time.now);
       if ((x !== 0 || y !== 0) && !this.lockedHintShown) {
         this.lockedHintShown = true;
         this.bridge.emit("toast", { text: actOneContent.narration.locked, tone: "xiaoying" });
@@ -139,7 +141,7 @@ export class BootScene extends Phaser.Scene {
       }
     }
     this.player.setVelocity(vector.x, vector.y);
-    this.updatePlayerAnimation(vector);
+    this.playerAnimator.update(vector, this.time.now);
     this.player.setDepth(this.player.y + 30);
   }
 
@@ -340,7 +342,15 @@ export class BootScene extends Phaser.Scene {
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: { width: ZIJINGANG_WORLD.width, height: ZIJINGANG_WORLD.height },
-      player: { x: Math.round(this.player.x), y: Math.round(this.player.y), facing: this.facing },
+      player: {
+        x: Math.round(this.player.x),
+        y: Math.round(this.player.y),
+        facing: this.playerAnimator.facing,
+        texture: this.playerAnimator.textureKey,
+        turning: this.playerAnimator.isTurning,
+        walkFps: RPG_PLAYER_WALK_FPS,
+        angle: this.player.angle
+      },
       input: {
         gameEnabled: this.game.input.enabled,
         sceneEnabled: this.input.enabled,
@@ -371,29 +381,6 @@ export class BootScene extends Phaser.Scene {
     }
     camera.setZoom(nextZoom);
     this.resumeCameraFollow(true);
-  }
-
-  private updatePlayerAnimation(vector: Phaser.Math.Vector2): void {
-    if (vector.lengthSq() > 0) {
-      if (Math.abs(vector.x) > Math.abs(vector.y)) {
-        this.facing = "side";
-        this.player.setFlipX(vector.x < 0);
-      } else {
-        this.facing = vector.y < 0 ? "up" : "down";
-        this.player.setFlipX(false);
-      }
-      const nextFrame = Math.floor(this.time.now / 120) % 2;
-      if (nextFrame !== this.walkingFrame || this.player.texture.key !== `act1-player-${this.facing}-${nextFrame}`) {
-        this.walkingFrame = nextFrame;
-        this.player.setTexture(`act1-player-${this.facing}-${nextFrame}`);
-      }
-      return;
-    }
-
-    if (this.walkingFrame !== 0 || this.player.texture.key !== `act1-player-${this.facing}-0`) {
-      this.walkingFrame = 0;
-      this.player.setTexture(`act1-player-${this.facing}-0`);
-    }
   }
 
   private addObstacle(x: number, y: number, width: number, height: number): void {

@@ -21,7 +21,8 @@ import {
   ensureRpgPlayerTextures,
   preloadRpgPlayerTextures,
   RPG_PLAYER_NAME_OFFSET_Y,
-  type RpgPlayerFacing
+  RpgPlayerAnimator,
+  RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import {
   clearRpgRuntimeDebugState,
@@ -61,8 +62,7 @@ export class DormHubScene extends Phaser.Scene {
   private exitTriggered = false;
   private manualMovementReported = false;
   private pacingDirection = 1;
-  private walkingFrame = 0;
-  private facing: RpgPlayerFacing = "up";
+  private playerAnimator!: RpgPlayerAnimator;
   private characterName!: Phaser.GameObjects.Text;
   private interactionPrompt!: Phaser.GameObjects.Text;
   private feedbackText!: Phaser.GameObjects.Text;
@@ -107,6 +107,7 @@ export class DormHubScene extends Phaser.Scene {
     const spawn = cardPending ? { x: 650, y: 920 } : DORM_SPAWN;
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0").setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
+    this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
     this.physics.add.collider(this.player, this.obstacles);
     this.player.setInteractive({ useHandCursor: true });
     this.player.on("pointerdown", () => this.inspectCharacter());
@@ -170,7 +171,7 @@ export class DormHubScene extends Phaser.Scene {
     }
 
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 2000);
-    this.updatePlayerAnimation(vector);
+    this.playerAnimator.update(vector, this.time.now);
     const identityReadable = selectIdentityReadable(this.bridge.getState());
     this.characterName
       .setText(identityReadable && actOne.characterNamed ? actOneContent.studentName : "")
@@ -569,28 +570,6 @@ export class DormHubScene extends Phaser.Scene {
     this.bridge.emit("rpg_character_inspected");
   }
 
-  private updatePlayerAnimation(vector: Phaser.Math.Vector2): void {
-    if (vector.lengthSq() > 0) {
-      if (Math.abs(vector.x) > Math.abs(vector.y)) {
-        this.facing = "side";
-        this.player.setFlipX(vector.x < 0);
-      } else {
-        this.facing = vector.y < 0 ? "up" : "down";
-        this.player.setFlipX(false);
-      }
-      const nextFrame = Math.floor(this.time.now / 130) % 2;
-      if (nextFrame !== this.walkingFrame || this.player.texture.key !== `act1-player-${this.facing}-${nextFrame}`) {
-        this.walkingFrame = nextFrame;
-        this.player.setTexture(`act1-player-${this.facing}-${nextFrame}`);
-      }
-      return;
-    }
-    if (this.walkingFrame !== 0 || this.player.texture.key !== `act1-player-${this.facing}-0`) {
-      this.walkingFrame = 0;
-      this.player.setTexture(`act1-player-${this.facing}-0`);
-    }
-  }
-
   private publishRuntimeDebug(): void {
     const state = this.bridge.getState();
     const activeTargets: NonNullable<RpgRuntimeDebugState["activeTargets"]> = DORM_INTERACTION_TARGETS.map((target) => ({
@@ -608,7 +587,15 @@ export class DormHubScene extends Phaser.Scene {
       scene: "dorm_hub",
       checkpoint: state.rpgCheckpoint,
       world: { width: DORM_HUB_WORLD.width, height: DORM_HUB_WORLD.height },
-      player: { x: this.player.x, y: this.player.y, facing: this.facing },
+      player: {
+        x: this.player.x,
+        y: this.player.y,
+        facing: this.playerAnimator.facing,
+        texture: this.playerAnimator.textureKey,
+        turning: this.playerAnimator.isTurning,
+        walkFps: RPG_PLAYER_WALK_FPS,
+        angle: this.player.angle
+      },
       input: {
         gameEnabled: this.game.input.enabled,
         sceneEnabled: this.input.enabled,

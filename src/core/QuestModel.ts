@@ -153,6 +153,12 @@ function movementQuest(state: GameState): QuestViewModel {
 
 function libraryQuest(state: GameState): QuestViewModel {
   const puzzle = state.ui.libraryFinalsPuzzle;
+  const evidenceReadyCount = [
+    puzzle.archivedRuleRead,
+    puzzle.presenceProofCollected,
+    puzzle.seatReceiptCollected,
+    puzzle.nonPersonProofStamped
+  ].filter(Boolean).length;
   const sources: StepSource[] = [
     { id: "entrance_record", label: "读取入馆记录", done: puzzle.entranceRecordRead },
     { id: "seat_022", label: "找到 022", done: puzzle.backpackInspected },
@@ -203,6 +209,16 @@ function libraryQuest(state: GameState): QuestViewModel {
     sit: rpg("坐到已经空出的 022"),
     dialogue: rpg("与 022 完成对话")
   };
+  const parallelEvidenceActive = state.ui.libraryFinalsPhase === "evidence_gathering"
+    && puzzle.investigationOpened
+    && evidenceReadyCount < 4;
+  const nextAction = parallelEvidenceActive
+    ? phone(`并行收集公示材料（${evidenceReadyCount}/4）`, "phone_home", [
+        "四条材料支线可以交叉完成，取得一份后即可先上传 CC98。",
+        "馆藏规则、照片识别、022 夹缝和体艺补录都可以独立推进。",
+        "某条支线暂时缺少字段时，可以先处理其他支线，无需等待固定顺序。"
+      ])
+    : next[nextId];
   return {
     id: "chapter_two_library",
     chapter: "chapter_two",
@@ -210,7 +226,7 @@ function libraryQuest(state: GameState): QuestViewModel {
     completed: countDone(sources),
     total: sources.length,
     steps: buildSteps(sources),
-    ...next[nextId]
+    ...nextAction
   };
 }
 

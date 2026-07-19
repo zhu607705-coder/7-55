@@ -72,7 +72,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
   const stepTimerRef = useRef<number | null>(null);
   const values = currentValues(puzzle);
   const recordedRoute = puzzle.libraryVisitedPoints.map((point) => LOCATION_LABELS[point]);
-  const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened && puzzle.archivedRuleRead;
+  const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened;
   const passed = puzzle.presenceProofCollected;
   const attempt = Math.max(puzzle.auditAttemptCount, visibleAttempt ?? 0);
 
@@ -146,7 +146,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
         </article>
         <article className={puzzle.archivedRuleRead ? "is-ready" : ""}>
           <span>03</span>
-          <div><strong>旧版规则</strong><small>{puzzle.archivedRuleRead ? "内容已阅读 · 可用于补录" : "规则尚未读完"}</small></div>
+          <div><strong>旧版规则</strong><small>{puzzle.archivedRuleRead ? "内容已阅读 · 证明数量已确认" : "可后补 · 不阻止先核对其他字段"}</small></div>
         </article>
       </section>
 
@@ -170,10 +170,12 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
           <button type="button" className="tiyi-audit-submit" disabled={!sourceReady || phase !== "evidence_gathering"} onClick={submit}>提交补录</button>
           <p aria-live="polite">
             {!sourceReady
-              ? "三份依据还没有齐全，表格拒绝替你编事实。"
+              ? "先读取入馆记录并找到 CC98 公示，旧版规则可以后补。"
               : attempt > 0
                 ? rejectionHint(attempt)
-                : "三项字段分别对应三份已保存的证据。"}
+                : puzzle.archivedRuleRead
+                  ? "三项字段分别对应三份已保存的证据。"
+                  : "可以先核对已知字段；证明数量仍需从旧版规则确认。"}
           </p>
         </>
       ) : (

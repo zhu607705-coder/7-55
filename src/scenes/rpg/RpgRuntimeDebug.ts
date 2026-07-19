@@ -1,7 +1,15 @@
 export interface RpgRuntimeDebugState {
   coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down";
   world: { width: number; height: number };
-  player: { x: number; y: number; facing: "down" | "up" | "side" };
+  player: {
+    x: number;
+    y: number;
+    facing: "down" | "up" | "side";
+    texture?: string;
+    turning?: boolean;
+    walkFps?: number;
+    angle?: number;
+  };
   input?: {
     gameEnabled: boolean;
     sceneEnabled: boolean;
@@ -20,6 +28,18 @@ export interface RpgRuntimeDebugState {
     read: boolean;
     entries?: Array<{ time: string; location: string }>;
     calculation?: string;
+  };
+  backpack?: {
+    visible: boolean;
+    mapVisible?: boolean;
+    overlayVisible?: boolean;
+    clearPatchVisible?: boolean;
+    x: number;
+    y: number;
+    scaleX: number;
+    scaleY: number;
+    angle: number;
+    evictionAnimating: boolean;
   };
   shelfReveal?: {
     phase: "idle" | "shaking" | "sliding" | "paper" | "complete";

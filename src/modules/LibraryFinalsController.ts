@@ -279,7 +279,7 @@ export class LibraryFinalsController {
     if (
       this.getPhase() !== "evidence_gathering"
       || !puzzle.backpackInspected
-      || !puzzle.archivedRuleRead
+      || !puzzle.investigationOpened
     ) {
       return false;
     }
@@ -355,7 +355,7 @@ export class LibraryFinalsController {
     const puzzle = this.getPuzzle();
     if (
       this.getPhase() !== "evidence_gathering"
-      || !puzzle.archivedRuleRead
+      || !puzzle.investigationOpened
       || !puzzle.backpackInspected
       || !state.items.rightArrow
       || puzzle.seatReceiptCollected
@@ -373,7 +373,8 @@ export class LibraryFinalsController {
   }
 
   setAuditValue(field: keyof LibraryFinalsAuditValues, value: number): boolean {
-    if (this.getPhase() !== "evidence_gathering" || !isAuditValueInRange(field, value)) {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.investigationOpened || !isAuditValueInRange(field, value)) {
       return false;
     }
     this.patchFinals("evidence_gathering", { [auditPuzzleField(field)]: value });
@@ -383,7 +384,12 @@ export class LibraryFinalsController {
 
   submitAudit(values?: Readonly<LibraryFinalsAuditValues>): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.archivedRuleRead || puzzle.presenceProofCollected) {
+    if (
+      this.getPhase() !== "evidence_gathering"
+      || !puzzle.investigationOpened
+      || !puzzle.entranceRecordRead
+      || puzzle.presenceProofCollected
+    ) {
       return false;
     }
     const submitted = values ?? {

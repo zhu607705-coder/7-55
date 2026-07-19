@@ -641,12 +641,15 @@ function getLibraryObjective(state: GameState): string {
   if (phase === "occupied_seat_found") return puzzle.occupancyNoteCollected ? "调查纸条提到的公开记录" : "检查书包旁边的占座纸条";
   if (phase === "evidence_gathering") {
     if (!puzzle.investigationOpened) return "用占座纸条查找公开记录";
-    if (!puzzle.catalogUnlocked) return "与馆藏终端互动，解锁馆藏检索";
-    if (!puzzle.catalogSearchCompleted || !puzzle.callNumberCollected) return "先确认旧版离座规则";
-    if (!puzzle.archivedRuleCollected) return "按索书号核对馆内旧规则";
-    if (!puzzle.archivedRuleRead) return "阅读旧版临时离座恢复规定";
-    const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
-    return proofCount < 3 ? "补齐恢复座位所需的三项证明" : "把四项公开证据整理进 CC98";
+    const evidenceReadyCount = [
+      puzzle.archivedRuleRead,
+      puzzle.nonPersonProofStamped,
+      puzzle.seatReceiptCollected,
+      puzzle.presenceProofCollected
+    ].filter(Boolean).length;
+    return evidenceReadyCount < 4
+      ? `并行收集四项公示材料（${evidenceReadyCount}/4）`
+      : "把已取得材料上传到 CC98";
   }
   if (phase === "bd_briefing") return "确认系统说明，开始筛选有效回复";
   if (phase === "top_ten_rising" || phase === "top_ten_reached") return "让证据公示进入 CC98 十大";
@@ -669,11 +672,16 @@ function getLibraryProgress(state: GameState): string {
   if (state.ui.libraryFinalsPhase === "top_ten_rising" || state.ui.libraryFinalsPhase === "top_ten_reached") {
     return `R${String(4 - puzzle.bdCount).padStart(2, "0")}`;
   }
-  if (!puzzle.archivedRuleCollected) {
-    return puzzle.callNumberCollected ? "755" : "规则";
+  if (puzzle.investigationOpened) {
+    const evidenceReadyCount = [
+      puzzle.archivedRuleRead,
+      puzzle.nonPersonProofStamped,
+      puzzle.seatReceiptCollected,
+      puzzle.presenceProofCollected
+    ].filter(Boolean).length;
+    return `${evidenceReadyCount}/4`;
   }
-  const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
-  return `${proofCount}/3`;
+  return puzzle.callNumberCollected ? "755" : "调查";
 }
 
 function resolveRuntimeScene(state: GameState): RpgSceneId {

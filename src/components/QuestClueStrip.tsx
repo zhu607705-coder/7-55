@@ -80,8 +80,9 @@ export function QuestTaskBar({
     const document = ITEM_CATALOG[step.itemId].document;
     return document ? [{ itemId: step.itemId, label: step.label }] : [];
   });
-  const proofRequirements = state.ui.libraryFinalsPuzzle.archivedRuleRead
+  const proofRequirements = state.ui.libraryFinalsPuzzle.investigationOpened
     ? [
+        { id: "rule", label: "旧版临时离座规则", done: state.ui.libraryFinalsPuzzle.archivedRuleRead },
         { id: "presence", label: "本人确实到馆", done: state.ui.libraryFinalsPuzzle.presenceProofCollected },
         { id: "receipt", label: "目标座位与凭据一致", done: state.ui.libraryFinalsPuzzle.seatReceiptCollected },
         { id: "nonperson", label: "当前占用物不具备本人身份", done: state.ui.libraryFinalsPuzzle.nonPersonProofStamped }
@@ -242,10 +243,10 @@ export function QuestTaskBar({
           </div>
 
           {proofRequirements.length > 0 ? (
-            <section className="quest-proof-requirements" aria-label="旧版规则要求的三项证明">
+            <section className="quest-proof-requirements" aria-label="可并行收集的四项公示材料">
               <header>
-                <strong>三项证明要求</strong>
-                <span>{proofRequirements.filter((requirement) => requirement.done).length}/3</span>
+                <strong>并行材料收集</strong>
+                <span>{proofRequirements.filter((requirement) => requirement.done).length}/4</span>
               </header>
               <ul>
                 {proofRequirements.map((requirement) => (
