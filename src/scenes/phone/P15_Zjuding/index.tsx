@@ -1075,15 +1075,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <div className="app-bg-crop zjuding-home-crop">
           <img className="app-bg" src={zjudingHomeUrl} alt="" aria-hidden="true" />
         </div>
-        <button
-          type="button"
-          className="zjuding-checkin-hotspot"
-          aria-label="校务签到"
-          onClick={() => {
-            playSfx("02_");
-            router.goTo("checkin");
-          }}
-        />
+        {access.checkin ? (
+          <button
+            type="button"
+            className="zjuding-checkin-hotspot"
+            aria-label="校务签到"
+            onClick={() => {
+              playSfx("02_");
+              router.goTo("checkin");
+            }}
+          />
+        ) : null}
         <PhoneNavButton kind="back" className="app-back px-btn paper" onClick={goBack} label="返回浙大钉" />
         <nav className="zjuding-nav" aria-label="学在浙大导航">
           <button type="button" className="zjuding-tab is-active" aria-current="page" onClick={() => announce("当前位于学在浙大。") }>

@@ -39,6 +39,23 @@ const ITEM_LABELS: Partial<Record<ItemId, string>> = {
 };
 
 const SEAT_DIALOGUE = libraryFinalsContent.library.dialogue022;
+const SHELF_REVEAL_SHIFT_PX = 16;
+const SHELF_SPRITE_FRAME = "library-shelf-755-sprite";
+const SHELF_FLOOR_FRAME = "library-shelf-755-floor";
+const SHELF_SPRITE_BOUNDS = {
+  left: 511,
+  top: 105,
+  width: 112,
+  height: 146
+} as const;
+const SHELF_FLOOR_SOURCE_TOP = SHELF_SPRITE_BOUNDS.top + 160;
+const SHELF_BASE_X = SHELF_SPRITE_BOUNDS.left + SHELF_SPRITE_BOUNDS.width / 2;
+const SHELF_BASE_Y = SHELF_SPRITE_BOUNDS.top + SHELF_SPRITE_BOUNDS.height / 2;
+const SHELF_COLLISION_RECT = LIBRARY_STATIC_COLLISION_RECTS.find((rect) => rect.id === "north_display_shelf")!;
+const SHELF_COLLISION_BASE_X = (SHELF_COLLISION_RECT.left + SHELF_COLLISION_RECT.right) / 2;
+const SHELF_PAPER_HIDDEN_X = SHELF_SPRITE_BOUNDS.left + 12;
+const SHELF_PAPER_REVEALED_X = SHELF_SPRITE_BOUNDS.left - 8;
+const SHELF_PAPER_Y = SHELF_SPRITE_BOUNDS.top + 42;
 
 interface MarkerParts {
   container: Phaser.GameObjects.Container;
@@ -47,6 +64,7 @@ interface MarkerParts {
 }
 
 type EntranceDoorMotion = "closed" | "opening" | "open" | "closing";
+type ShelfRevealPhase = "idle" | "shaking" | "sliding" | "paper" | "complete";
 
 export class LibraryInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
@@ -63,13 +81,27 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private feedbackTween?: Phaser.Tweens.Tween;
   private markers = new Map<LibraryInteractionTargetId, MarkerParts>();
   private backpack!: Phaser.GameObjects.Container;
+  private backpackShadow!: Phaser.GameObjects.Ellipse;
+  private backpackTag!: Phaser.GameObjects.Rectangle;
+  private backpackEvictionAnimating = false;
   private occupancyNote!: Phaser.GameObjects.Container;
   private receipt!: Phaser.GameObjects.Container;
-  private seatOutline!: Phaser.GameObjects.Rectangle;
+  private seatStatusDot!: Phaser.GameObjects.Arc;
+  private seatStatusText!: Phaser.GameObjects.Text;
   private shelfPanel!: Phaser.GameObjects.Container;
   private targetShelfTag!: Phaser.GameObjects.Text;
-  private lostFoundLight!: Phaser.GameObjects.Rectangle;
+  private shelfMechanism!: Phaser.GameObjects.Container;
+  private shelfPaper!: Phaser.GameObjects.Container;
+  private shelfPaperGlow!: Phaser.GameObjects.Arc;
+  private shelfCollision!: Phaser.GameObjects.Rectangle;
+  private shelfRevealAnimating = false;
+  private shelfRevealPhase: ShelfRevealPhase = "idle";
+  private shelfRevealOffsetPx = 0;
+  private lostFoundIndicator!: Phaser.GameObjects.Arc;
+  private lostFoundScanLine!: Phaser.GameObjects.Rectangle;
   private lostFoundStatusText!: Phaser.GameObjects.Text;
+  private catalogIndicator!: Phaser.GameObjects.Arc;
+  private catalogScanLine!: Phaser.GameObjects.Rectangle;
   private dialoguePanel!: Phaser.GameObjects.Container;
   private dialogueSpeaker!: Phaser.GameObjects.Text;
   private dialogueText!: Phaser.GameObjects.Text;
@@ -82,6 +114,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private entranceTurnstileFlaps: Phaser.GameObjects.Rectangle[] = [];
   private entranceDoorMotion: EntranceDoorMotion = "closed";
   private entranceAccessGranted = false;
+  private reducedMotion = false;
 
   constructor() {
     super("library-interior");
@@ -96,6 +129,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
+    this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     this.cameras.main.setBackgroundColor(0x0b1110);
     this.physics.world.setBounds(48, 48, LIBRARY_INTERIOR_WORLD.width - 96, LIBRARY_INTERIOR_WORLD.height - 96);
     this.obstacles = this.physics.add.staticGroup();
@@ -152,7 +186,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
 
-    if (state.actOne.movementEnabled && !seatedConversation && vector.lengthSq() > 0) {
+    if (state.actOne.movementEnabled && !seatedConversation && !this.shelfRevealAnimating && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? 225 : 160);
     } else {
       vector.set(0, 0);
@@ -215,7 +249,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     if (name === "library_entrance_record_read") {
       this.entranceAccessGranted = true;
       this.animateEntranceAccessGranted();
-      this.flashTarget("entrance_record", 0x4ed3a8);
       this.showFeedback("记录已读取：二层南区 022 仍有一个未闭合会话。", "success");
       return;
     }
@@ -227,17 +260,21 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.animateCollectedObject(this.occupancyNote, "占座纸条已收入道具栏");
       return;
     }
-    if (name === "library_archived_rule_recovered") {
+    if (name === "library_archived_rule_opened") {
       this.animateShelfReveal();
       return;
     }
+    if (name === "library_archived_rule_recovered") {
+      this.showFeedback("旧规则已确认：开始收集三项证明。", "system");
+      return;
+    }
     if (name === "library_catalog_unlocked") {
-      this.flashTarget("catalog_terminal", 0x4ed3a8);
+      this.animateCatalogUnlock();
       this.showFeedback("图书馆馆藏检索功能已解锁。", "success");
       return;
     }
     if (name === "library_lost_found_scan_started") {
-      this.lostFoundLight.setFillStyle(0xe1b953).setAlpha(0.82);
+      this.animateLostFoundScan();
       this.showFeedback("失物登记机：扫描中。", "system");
       return;
     }
@@ -326,7 +363,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.requestAction("unlockCatalogAtTerminal", target.id);
       return;
     }
-    if (target.id === "seat_022_chair" && puzzle.backpackEvicted && !puzzle.playerSeated) {
+    if (target.id === "seat_022_chair" && puzzle.backpackEvicted && !puzzle.playerSeated && !this.backpackEvictionAnimating) {
       this.requestAction("sitAt022", target.id);
       return;
     }
@@ -354,7 +391,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
       if (target.id === "seat_022_gap") return puzzle.archivedRuleRead && puzzle.backpackInspected && !puzzle.seatReceiptCollected;
       if (target.id === "library_shelf_755") return puzzle.callNumberCollected && !puzzle.archivedRuleCollected;
       if (target.id === "lost_found_machine") return puzzle.lostFoundStage !== "stamped";
-      if (target.id === "seat_022_chair") return puzzle.backpackEvicted && puzzle.nextQuestId === null;
+      if (target.id === "seat_022_chair") {
+        return puzzle.backpackEvicted && puzzle.nextQuestId === null && !this.backpackEvictionAnimating;
+      }
       return true;
     });
   }
@@ -400,8 +439,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
       }
     });
     const puzzle = state.ui.libraryFinalsPuzzle;
-    this.seatOutline.setStrokeStyle(4, puzzle.backpackEvicted ? 0x55b987 : 0xb84a45, 0.92);
-    this.targetShelfTag.setText(puzzle.callNumberCollected ? "I247.55" : "I247.??");
+    if (!this.backpackEvictionAnimating) {
+      this.updateSeatStatus(puzzle.backpackEvicted);
+    }
+    this.targetShelfTag.setText(puzzle.callNumberCollected || puzzle.archivedRuleCollected ? "I247.55" : "I247.??");
   }
 
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
@@ -426,8 +467,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (targetId === "library_shelf_755") {
       return puzzle.callNumberCollected
-        ? "索书号落在这一排，旧规则可能被夹在书架背面。"
-        : "书架编号很密，先确认具体索书号。";
+        ? "书架：I247.55 区域。它看起来不是书架，是一串密码伪装成家具。"
+        : "书架：I247.?? 区域。编号过密，需要先确认具体索书号。";
     }
     if (targetId === "seat_022_backpack") {
       return puzzle.evictionPassGenerated
@@ -504,10 +545,21 @@ export class LibraryInteriorScene extends Phaser.Scene {
         height: target.height,
         ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {})
       })),
-      collisionRects: LIBRARY_STATIC_COLLISION_RECTS,
+      collisionRects: LIBRARY_STATIC_COLLISION_RECTS.map((rect) => rect.id === "north_display_shelf"
+        ? {
+            ...rect,
+            left: rect.left + this.shelfRevealOffsetPx,
+            right: rect.right + this.shelfRevealOffsetPx
+          }
+        : rect),
       entranceDoor: {
         state: this.entranceDoorMotion,
         accessGranted: this.entranceAccessGranted
+      },
+      shelfReveal: {
+        phase: this.shelfRevealPhase,
+        offsetPx: this.shelfRevealOffsetPx,
+        paperVisible: this.shelfPaper.visible
       }
     });
   }
@@ -581,7 +633,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private animateOccupiedSeat(): void {
     this.occupancyNote.setVisible(true).setAlpha(1);
-    this.seatOutline.setFillStyle(0xb8413b, 0.18);
+    this.seatStatusDot.setFillStyle(0xe65c57).setAlpha(1).setScale(1);
+    this.backpackTag.setFillStyle(0xf0d55f);
     const signalRings = [18, 30, 42].map((radius, index) => {
       const ring = this.add.circle(this.backpack.x, this.backpack.y + 8, radius, 0x9fd8cf, 0)
         .setStrokeStyle(3, index === 2 ? 0xe65c57 : 0x7ed0c3, 0.9)
@@ -601,11 +654,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
     });
     const signalLabel = this.add.text(this.backpack.x, this.backpack.y - 58, "022  LINK LOST", {
       color: "#f4df87",
-      backgroundColor: "#142521e8",
       fontFamily: "monospace",
       fontSize: "10px",
-      padding: { x: 7, y: 4 }
-    }).setOrigin(0.5).setDepth(this.backpack.depth + 4).setAlpha(0);
+      fontStyle: "bold"
+    }).setOrigin(0.5).setDepth(this.backpack.depth + 4).setAlpha(0).setStroke("#142521", 3);
     this.tweens.add({
       targets: signalLabel,
       alpha: 1,
@@ -616,13 +668,30 @@ export class LibraryInteriorScene extends Phaser.Scene {
       onComplete: () => signalLabel.destroy()
     });
     this.tweens.add({
-      targets: [this.backpack, this.seatOutline],
+      targets: this.backpack,
       scaleX: 1.08,
       scaleY: 0.92,
       duration: 90,
       yoyo: true,
       repeat: 4,
-      onComplete: () => this.seatOutline.setFillStyle(0x000000, 0)
+      onComplete: () => this.backpack.setScale(1)
+    });
+    this.tweens.add({
+      targets: this.backpackShadow,
+      scaleX: 1.25,
+      alpha: 0.18,
+      duration: 90,
+      yoyo: true,
+      repeat: 4
+    });
+    this.tweens.add({
+      targets: this.seatStatusDot,
+      scale: 1.9,
+      alpha: 0.3,
+      duration: 180,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => this.seatStatusDot.setScale(1).setAlpha(1)
     });
     this.time.delayedCall(180, () => signalRings.forEach((ring) => ring.setVisible(true)));
     this.showFeedback("022 仍有微弱信号，信号源被书包压住了。", "error");
@@ -642,47 +711,154 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private animateShelfReveal(): void {
-    const shelf = getLibraryTarget("library_shelf_755");
+    if (this.shelfRevealAnimating || this.shelfRevealPhase === "complete") {
+      return;
+    }
+    this.shelfRevealAnimating = true;
+    this.shelfRevealPhase = "shaking";
+    this.player.setVelocity(0, 0);
+    this.targetShelfTag.setText("I247.55");
+    this.shelfPanel.setDepth(4300);
+    this.shelfMechanism.setVisible(true).setAlpha(1);
+    this.shelfPaper
+      .setVisible(true)
+      .setAlpha(this.reducedMotion ? 0.45 : 0.18)
+      .setPosition(SHELF_PAPER_HIDDEN_X, SHELF_PAPER_Y);
+    this.shelfPaperGlow
+      .setVisible(true)
+      .setPosition(SHELF_PAPER_HIDDEN_X, SHELF_PAPER_Y)
+      .setAlpha(this.reducedMotion ? 0.12 : 0.04);
+    const shakeOffsets = this.reducedMotion ? [0] : [4, -5, 3, -4, 0];
+    const shakeDuration = this.reducedMotion ? 1 : 45;
+    shakeOffsets.forEach((offset, index) => {
+      this.time.delayedCall(index * shakeDuration, () => {
+        this.setShelfRevealOffset(offset);
+      });
+    });
+    this.time.delayedCall(shakeOffsets.length * shakeDuration, () => {
+      this.shelfRevealPhase = "sliding";
+      const slideOffsets = this.reducedMotion ? [SHELF_REVEAL_SHIFT_PX] : [4, 8, 12, SHELF_REVEAL_SHIFT_PX];
+      const slideStepDuration = this.reducedMotion ? 140 : 115;
+      slideOffsets.forEach((offset, index) => {
+        this.time.delayedCall((index + 1) * slideStepDuration, () => this.setShelfRevealOffset(offset));
+      });
+      this.time.delayedCall(slideOffsets.length * slideStepDuration, () => this.animateShelfPaperReveal());
+    });
+    this.showFeedback("书架横移了一格，后面夹着一份旧版离座规定。", "success");
+  }
+
+  private animateShelfPaperReveal(): void {
+    this.setShelfRevealOffset(SHELF_REVEAL_SHIFT_PX);
+    this.shelfRevealPhase = "paper";
     this.tweens.add({
-      targets: this.shelfPanel,
-      x: this.shelfPanel.x + 72,
-      duration: 520,
+      targets: this.shelfPaperGlow,
+      x: SHELF_PAPER_REVEALED_X,
+      alpha: this.reducedMotion ? 0.2 : 0.42,
+      duration: this.reducedMotion ? 100 : 220,
+      yoyo: !this.reducedMotion,
+      repeat: this.reducedMotion ? 0 : 1
+    });
+    this.tweens.add({
+      targets: this.shelfPaper,
+      x: SHELF_PAPER_REVEALED_X,
+      y: SHELF_PAPER_Y + (this.reducedMotion ? 0 : 6),
+      alpha: 1,
+      duration: this.reducedMotion ? 120 : 240,
       ease: "Stepped",
-      onComplete: () => {
-        const paper = this.add.rectangle(shelf.x - 72, shelf.y + 40, 42, 56, 0xd8c48c)
-          .setStrokeStyle(3, 0x4b3929)
-          .setDepth(5300);
+      onComplete: () => this.time.delayedCall(this.reducedMotion ? 20 : 220, () => {
+        this.animateEvidenceTransfer(this.shelfPaper.x, this.shelfPaper.y, 0xd8c48c);
         this.tweens.add({
-          targets: paper,
-          y: shelf.y + 85,
-          duration: 260,
-          ease: "Bounce",
+          targets: [this.shelfPaper, this.shelfPaperGlow],
+          y: this.shelfPaper.y - 16,
+          alpha: 0,
+          duration: this.reducedMotion ? 100 : 220,
+          ease: "Stepped",
           onComplete: () => {
-            this.animateEvidenceTransfer(paper.x, paper.y, 0xd8c48c);
-            this.tweens.add({
-              targets: paper,
-              alpha: 0,
-              delay: 220,
-              duration: 220,
-              onComplete: () => paper.destroy()
-            });
+            this.shelfPanel.setDepth(430);
+            this.shelfPaper.setVisible(false);
+            this.shelfPaperGlow.setVisible(false);
+            this.shelfRevealAnimating = false;
+            this.shelfRevealPhase = "complete";
+            this.bridge.emit("library_archived_rule_reveal_completed", { itemId: "archivedLeaveRule" });
           }
         });
-      }
+      })
     });
-    this.flashTarget("library_shelf_755", 0xe5c862);
-    this.showFeedback("书架后方夹着一份旧版离座规定。", "success");
+  }
+
+  private setShelfRevealOffset(offsetPx: number): void {
+    const snappedOffset = Math.round(offsetPx);
+    this.shelfRevealOffsetPx = snappedOffset;
+    this.shelfPanel.setX(SHELF_BASE_X + snappedOffset);
+    this.shelfCollision.setX(SHELF_COLLISION_BASE_X + snappedOffset);
+    const body = this.shelfCollision.body as Phaser.Physics.Arcade.StaticBody | null;
+    body?.updateFromGameObject();
+  }
+
+  private animateCatalogUnlock(): void {
+    this.catalogIndicator.setFillStyle(0x65dca0).setAlpha(1).setScale(1);
+    this.catalogScanLine.setVisible(true).setAlpha(0.9).setY(526);
+    this.tweens.add({
+      targets: this.catalogScanLine,
+      y: 580,
+      alpha: 0.25,
+      duration: 420,
+      ease: "Stepped",
+      onComplete: () => this.catalogScanLine.setVisible(false)
+    });
+    this.tweens.add({
+      targets: this.catalogIndicator,
+      scale: 1.8,
+      alpha: 0.35,
+      duration: 130,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => this.catalogIndicator.setScale(1).setAlpha(1)
+    });
+  }
+
+  private animateLostFoundScan(): void {
+    this.lostFoundIndicator.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
+    this.lostFoundScanLine.setVisible(true).setAlpha(0.92).setY(484);
+    this.tweens.add({
+      targets: this.lostFoundScanLine,
+      y: 552,
+      alpha: 0.24,
+      duration: 460,
+      yoyo: true,
+      repeat: 1,
+      ease: "Stepped",
+      onComplete: () => this.lostFoundScanLine.setVisible(false)
+    });
+    this.tweens.add({
+      targets: this.lostFoundIndicator,
+      alpha: 0.35,
+      duration: 120,
+      yoyo: true,
+      repeat: 4,
+      onComplete: () => this.lostFoundIndicator.setAlpha(1)
+    });
+  }
+
+  private updateSeatStatus(isAvailable: boolean): void {
+    this.seatStatusDot.setFillStyle(isAvailable ? 0x55c98c : 0xe65c57);
+    this.seatStatusText
+      .setText(isAvailable ? "022 · 空闲" : "022 · 占用")
+      .setColor(isAvailable ? "#8ce1b4" : "#f0d56a");
   }
 
   private animateLostFoundStamp(): void {
     const machine = getLibraryTarget("lost_found_machine");
-    this.lostFoundLight.setFillStyle(0x5ed68d).setAlpha(1);
+    this.lostFoundScanLine.setVisible(false);
+    this.lostFoundIndicator.setFillStyle(0x5ed68d).setAlpha(1).setScale(1);
     this.tweens.add({
-      targets: this.lostFoundLight,
-      alpha: 0.2,
+      targets: this.lostFoundIndicator,
+      scale: 2,
+      alpha: 0.3,
       duration: 110,
       yoyo: true,
-      repeat: 4
+      repeat: 4,
+      onComplete: () => this.lostFoundIndicator.setScale(1).setAlpha(1)
     });
     const stamp = this.add.text(machine.x, machine.y - 10, "非本人", {
       color: "#b43f3f",
@@ -719,7 +895,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
         this.time.delayedCall(500, () => this.receipt.setVisible(false));
       }
     });
-    this.flashTarget("seat_022_gap", 0x4f8cd8);
     this.showFeedback("右移箭头推出了 022 座位小票，箭头仍保留。", "success");
   }
 
@@ -740,10 +915,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
       ease: "Stepped",
       onComplete: () => pass.destroy()
     });
-    this.flashTarget("seat_022_backpack", 0x62d28d);
   }
 
   private animateBackpackEviction(): void {
+    this.backpackEvictionAnimating = true;
+    this.seatStatusDot.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
+    this.seatStatusText.setText("022 · 转移中").setColor("#f0d56a");
     const lines = [
       "书包：主人马上回来。",
       "玩家：什么时候？",
@@ -768,11 +945,28 @@ export class LibraryInteriorScene extends Phaser.Scene {
           duration: 1200,
           delay: 1900,
           ease: "Stepped",
-          onComplete: () => this.backpack.setVisible(false)
+          onComplete: () => {
+            this.backpack.setVisible(false);
+            this.backpackEvictionAnimating = false;
+            this.updateSeatStatus(true);
+            this.seatStatusDot.setAlpha(1).setScale(1);
+            this.seatStatusText.setAlpha(1).setScale(1);
+          }
         });
       }
     });
-    this.seatOutline.setStrokeStyle(6, 0x59c98c, 1);
+    this.tweens.add({
+      targets: [this.seatStatusDot, this.seatStatusText],
+      scale: 1.25,
+      duration: 140,
+      yoyo: true,
+      repeat: 2,
+      ease: "Stepped",
+      onComplete: () => {
+        this.seatStatusDot.setScale(1);
+        this.seatStatusText.setScale(1);
+      }
+    });
   }
 
   private animateSitDown(): void {
@@ -795,8 +989,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const camera = this.cameras.main;
     const startX = (worldX - camera.worldView.x) * camera.zoom;
     const startY = (worldY - camera.worldView.y) * camera.zoom;
-    const targetX = 34;
-    const targetY = 86;
+    const targetX = 872;
+    const targetY = 470;
     const packet = this.add.container(startX, startY).setScrollFactor(0).setDepth(10120);
     const plate = this.add.rectangle(0, 0, 28, 22, color, 0.96).setStrokeStyle(3, 0x16201e, 1);
     const fold = this.add.triangle(8, -6, 0, 0, 8, 0, 8, 8, 0xf4ead1, 0.85);
@@ -804,15 +998,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const lineB = this.add.rectangle(-2, 7, 16, 2, 0x27322f, 0.65);
     packet.add([plate, fold, lineA, lineB]);
 
-    const receiver = this.add.rectangle(targetX, targetY, 38, 38, 0x14201e, 0.76)
-      .setStrokeStyle(3, color, 0.95)
+    const receiver = this.add.circle(targetX, targetY, 18, color, 0.08)
+      .setStrokeStyle(3, color, 0.92)
       .setScrollFactor(0)
       .setDepth(10110)
       .setAlpha(0);
     this.tweens.add({
       targets: receiver,
       alpha: 1,
-      scale: 1.18,
+      scale: 1.55,
       duration: 180,
       yoyo: true,
       hold: 430,
@@ -880,21 +1074,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       yoyo: true,
       hold: 280,
       onComplete: () => book.destroy()
-    });
-  }
-
-  private flashTarget(targetId: LibraryInteractionTargetId, color: number): void {
-    const target = getLibraryTarget(targetId);
-    const ring = this.add.circle(target.x, target.y, 18, color, 0.12)
-      .setStrokeStyle(5, color, 1)
-      .setDepth(5900);
-    this.tweens.add({
-      targets: ring,
-      alpha: 0,
-      scale: 2.2,
-      duration: 420,
-      ease: "Stepped",
-      onComplete: () => ring.destroy()
     });
   }
 
@@ -1072,14 +1251,24 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.player.y
     ));
     this.backpack.setVisible(!puzzle.backpackEvicted);
+    this.backpackEvictionAnimating = false;
     this.occupancyNote.setVisible(puzzle.backpackInspected && !puzzle.occupancyNoteCollected);
     this.receipt.setVisible(false);
-    if (puzzle.archivedRuleCollected) {
-      this.shelfPanel.x += 72;
-    }
-    if (puzzle.nonPersonProofStamped) {
-      this.lostFoundLight.setFillStyle(0x5ed68d).setAlpha(0.38);
-    }
+    this.setShelfRevealOffset(puzzle.archivedRuleCollected ? SHELF_REVEAL_SHIFT_PX : 0);
+    this.shelfRevealPhase = puzzle.archivedRuleCollected ? "complete" : "idle";
+    this.targetShelfTag.setText(puzzle.callNumberCollected || puzzle.archivedRuleCollected ? "I247.55" : "I247.??");
+    this.shelfMechanism.setVisible(puzzle.archivedRuleCollected);
+    this.shelfPaper.setVisible(false);
+    this.shelfPaperGlow.setVisible(false);
+    this.updateSeatStatus(puzzle.backpackEvicted);
+    this.seatStatusDot.setAlpha(1).setScale(1);
+    this.seatStatusText.setAlpha(1).setScale(1);
+    this.catalogIndicator.setFillStyle(puzzle.catalogUnlocked ? 0x65dca0 : 0xd2aa54).setAlpha(1);
+    this.catalogScanLine.setVisible(false);
+    this.lostFoundIndicator
+      .setFillStyle(puzzle.nonPersonProofStamped ? 0x5ed68d : puzzle.lostFoundStage === "scanning" ? 0xe1b953 : 0xc96a5e)
+      .setAlpha(1);
+    this.lostFoundScanLine.setVisible(false);
   }
 
   private createMarkers(): void {
@@ -1184,15 +1373,19 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const addObstacle = (x: number, y: number, width: number, height: number) => {
       const obstacle = this.add.rectangle(x, y, width, height, 0x000000, 0).setDepth(y + 30);
       this.obstacles.add(obstacle);
+      return obstacle;
     };
 
     LIBRARY_STATIC_COLLISION_RECTS.forEach((rect) => {
-      addObstacle(
+      const obstacle = addObstacle(
         (rect.left + rect.right) / 2,
         (rect.top + rect.bottom) / 2,
         rect.right - rect.left,
         rect.bottom - rect.top
       );
+      if (rect.id === "north_display_shelf") {
+        this.shelfCollision = obstacle;
+      }
     });
 
     if (import.meta.env.DEV && new URLSearchParams(window.location.search).get("debugColliders") === "1") {
@@ -1260,14 +1453,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
       padding: { x: 8, y: 4 }
     }).setOrigin(0.5).setDepth(810);
 
-    this.lostFoundLight = this.add.rectangle(160, 520, 94, 118, 0xd6b75d, 0.06)
-      .setStrokeStyle(3, 0xd6b75d, 0.55)
-      .setDepth(540);
     this.add.text(160, 442, "物品身份登记", {
       color: "#e9ddbd",
       fontFamily: "monospace",
       fontSize: "11px"
     }).setOrigin(0.5).setDepth(560);
+    this.lostFoundIndicator = this.add.circle(112, 462, 5, 0xc96a5e, 1)
+      .setStrokeStyle(2, 0x23332f, 1)
+      .setDepth(568);
     this.lostFoundStatusText = this.add.text(160, 462, "", {
       color: "#f2e5c6",
       backgroundColor: "#23332fee",
@@ -1275,16 +1468,27 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "10px",
       padding: { x: 5, y: 3 }
     }).setOrigin(0.5).setDepth(565);
+    this.lostFoundScanLine = this.add.rectangle(160, 484, 72, 4, 0xe1b953, 0.9)
+      .setDepth(570)
+      .setVisible(false);
   }
 
   private updateLostFoundStatus(state: GameState): void {
+    const stage = state.ui.libraryFinalsPuzzle.lostFoundStage;
     const labels = {
       missing_report: "缺少报告",
       ready: "可投入报告",
       scanning: "扫描中",
       stamped: "已盖章"
     } as const;
-    this.lostFoundStatusText.setText(labels[state.ui.libraryFinalsPuzzle.lostFoundStage]);
+    const colors = {
+      missing_report: 0xc96a5e,
+      ready: 0xe1b953,
+      scanning: 0xe1b953,
+      stamped: 0x5ed68d
+    } as const;
+    this.lostFoundStatusText.setText(labels[stage]);
+    this.lostFoundIndicator.setFillStyle(colors[stage]);
   }
 
   private drawCatalogArea(): void {
@@ -1296,6 +1500,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontStyle: "bold",
       padding: { x: 8, y: 4 }
     }).setOrigin(0.5).setDepth(680);
+    this.catalogIndicator = this.add.circle(687, 512, 5, 0xd2aa54, 1)
+      .setStrokeStyle(2, 0x1b2926, 1)
+      .setDepth(706);
+    this.catalogScanLine = this.add.rectangle(653, 526, 58, 4, 0x65dca0, 0.9)
+      .setDepth(704)
+      .setVisible(false);
   }
 
   private drawShelves(): void {
@@ -1306,45 +1516,70 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "13px",
       padding: { x: 8, y: 4 }
     }).setOrigin(0.5).setDepth(120);
-    this.shelfPanel = this.add.container(548, 230).setDepth(430);
-    const shelfFocus = this.add.rectangle(0, 0, 124, 210, 0x000000, 0)
-      .setStrokeStyle(3, 0xd7c16b, 0.52);
-    this.targetShelfTag = this.add.text(0, 119, "I247.??", {
-      color: "#18231f",
-      backgroundColor: "#e8d9b8",
-      fontFamily: "monospace",
-      fontSize: "11px",
-      padding: { x: 5, y: 3 }
-    }).setOrigin(0.5);
-    this.shelfPanel.add([shelfFocus, this.targetShelfTag]);
-  }
 
-  private drawShelf(x: number, y: number, width: number, height: number, label: string): Phaser.GameObjects.Container {
-    const base = this.add.rectangle(0, 0, width, height, 0x65432f).setStrokeStyle(5, 0x2c1e17);
-    const panel = this.add.rectangle(0, 0, width - 16, height - 18, 0x352c26).setStrokeStyle(3, 0x9a6f43);
-    const parts: Phaser.GameObjects.GameObject[] = [base, panel];
-    const colors = [0x31536a, 0x8f4e35, 0x536b45, 0xb07a3c, 0x584466];
-    for (let row = 0; row < 4; row += 1) {
-      parts.push(this.add.rectangle(0, -64 + row * 42, width - 22, 5, 0x9d7248));
-      for (let column = 0; column < 6; column += 1) {
-        parts.push(this.add.rectangle(-39 + column * 16, -77 + row * 42, 11, 27, colors[(row + column) % colors.length]));
-      }
+    const mapTexture = this.textures.get(LIBRARY_INTERIOR_MAP_KEY);
+    if (!mapTexture.has(SHELF_SPRITE_FRAME)) {
+      mapTexture.add(
+        SHELF_SPRITE_FRAME,
+        0,
+        SHELF_SPRITE_BOUNDS.left,
+        SHELF_SPRITE_BOUNDS.top,
+        SHELF_SPRITE_BOUNDS.width,
+        SHELF_SPRITE_BOUNDS.height
+      );
     }
-    const tag = this.add.text(0, 72, label, {
+    if (!mapTexture.has(SHELF_FLOOR_FRAME)) {
+      mapTexture.add(
+        SHELF_FLOOR_FRAME,
+        0,
+        SHELF_SPRITE_BOUNDS.left,
+        SHELF_FLOOR_SOURCE_TOP,
+        SHELF_SPRITE_BOUNDS.width,
+        SHELF_SPRITE_BOUNDS.height
+      );
+    }
+
+    this.add.image(SHELF_BASE_X, SHELF_BASE_Y, LIBRARY_INTERIOR_MAP_KEY, SHELF_FLOOR_FRAME)
+      .setDepth(410);
+    const upperRail = this.add.rectangle(0, -48, SHELF_SPRITE_BOUNDS.width, 5, 0x4a3525)
+      .setStrokeStyle(2, 0x241a14);
+    const lowerRail = this.add.rectangle(0, 48, SHELF_SPRITE_BOUNDS.width, 5, 0x4a3525)
+      .setStrokeStyle(2, 0x241a14);
+    const recess = this.add.rectangle(-47, -30, 17, 46, 0x171612, 0.94)
+      .setStrokeStyle(2, 0x7d6337, 0.9);
+    const boltTop = this.add.rectangle(-47, -46, 4, 4, 0xd2ae54);
+    const boltBottom = this.add.rectangle(-47, 46, 4, 4, 0xd2ae54);
+    this.shelfMechanism = this.add.container(
+      SHELF_BASE_X,
+      SHELF_BASE_Y,
+      [upperRail, lowerRail, recess, boltTop, boltBottom]
+    ).setDepth(418).setVisible(false);
+    this.shelfPaperGlow = this.add.circle(
+      SHELF_PAPER_HIDDEN_X,
+      SHELF_PAPER_Y,
+      22,
+      0xf0df9b,
+      0.12
+    ).setDepth(422).setVisible(false);
+    this.shelfPaper = this.createPaperObject(
+      SHELF_PAPER_HIDDEN_X,
+      SHELF_PAPER_Y,
+      "旧规",
+      0xe7d8ab
+    ).setDepth(425).setVisible(false);
+    const shelfSprite = this.add.image(0, 0, LIBRARY_INTERIOR_MAP_KEY, SHELF_SPRITE_FRAME);
+    this.targetShelfTag = this.add.text(0, SHELF_SPRITE_BOUNDS.height / 2 + 15, "I247.??", {
       color: "#18231f",
       backgroundColor: "#e8d9b8",
       fontFamily: "monospace",
       fontSize: "11px",
       padding: { x: 5, y: 3 }
     }).setOrigin(0.5);
-    if (label === "I247.??") {
-      this.targetShelfTag = tag;
-    }
-    parts.push(tag);
-    const container = this.add.container(x, y, parts).setDepth(y + 60);
-    const collision = this.add.rectangle(x, y + 16, width, height - 32, 0x000000, 0).setDepth(y + 40);
-    this.obstacles.add(collision);
-    return container;
+    this.shelfPanel = this.add.container(
+      SHELF_BASE_X,
+      SHELF_BASE_Y,
+      [shelfSprite, this.targetShelfTag]
+    ).setDepth(430);
   }
 
   private drawSeatingArea(): void {
@@ -1356,18 +1591,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
       padding: { x: 8, y: 4 }
     }).setOrigin(0.5).setDepth(120);
 
-    this.add.text(1300, 322, "022", {
+    this.seatStatusDot = this.add.circle(1252, 322, 6, 0xe65c57, 1)
+      .setStrokeStyle(2, 0x24342f, 1)
+      .setDepth(548);
+    this.seatStatusText = this.add.text(1300, 322, "022 · 占用", {
       color: "#f0d66c",
-      backgroundColor: "#24342fee",
       fontFamily: "monospace",
-      fontSize: "15px",
-      fontStyle: "bold",
-      padding: { x: 6, y: 3 }
-    }).setOrigin(0.5).setDepth(545);
-
-    this.seatOutline = this.add.rectangle(1300, 430, 195, 190, 0x000000, 0)
-      .setStrokeStyle(4, 0xb84a45, 0.92)
-      .setDepth(545);
+      fontSize: "14px",
+      fontStyle: "bold"
+    }).setOrigin(0.5).setDepth(548).setStroke("#24342f", 3);
     const backpack = getLibraryTarget("seat_022_backpack");
     const note = getLibraryTarget("occupancy_note");
     const gap = getLibraryTarget("seat_022_gap");
@@ -1393,12 +1625,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private createBackpack(x: number, y: number): Phaser.GameObjects.Container {
-    const shadow = this.add.ellipse(0, 22, 64, 18, 0x191714, 0.35);
+    this.backpackShadow = this.add.ellipse(0, 22, 64, 18, 0x191714, 0.35);
     const body = this.add.rectangle(0, 4, 58, 50, 0xb87538).setStrokeStyle(4, 0x2b211a);
     const pocket = this.add.rectangle(0, 14, 42, 20, 0x8d542c).setStrokeStyle(3, 0x35241a);
     const handle = this.add.arc(0, -22, 18, 180, 360, false, 0x000000, 0).setStrokeStyle(5, 0x2b211a);
-    const tag = this.add.rectangle(11, 10, 12, 9, 0xf0d55f).setStrokeStyle(2, 0x6e5620);
-    return this.add.container(x, y, [shadow, body, pocket, handle, tag]).setDepth(y + 150);
+    this.backpackTag = this.add.rectangle(11, 10, 12, 9, 0xf0d55f).setStrokeStyle(2, 0x6e5620);
+    return this.add.container(x, y, [this.backpackShadow, body, pocket, handle, this.backpackTag]).setDepth(y + 150);
   }
 
   private createPaperObject(x: number, y: number, text: string, color: number): Phaser.GameObjects.Container {

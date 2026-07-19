@@ -136,6 +136,7 @@ export function RpgGameHost({
   const inputBlockedRef = useRef(inputBlocked);
   const keyboardBlockedRef = useRef(keyboardBlocked);
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
+  const archivedRuleRevealPendingRef = useRef(false);
   inputBlockedRef.current = inputBlocked;
   keyboardBlockedRef.current = keyboardBlocked;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
@@ -260,8 +261,43 @@ export function RpgGameHost({
   }, [state.actOne.phase, state.items.campusCard]);
 
   useEffect(() => {
+    if (runtimeScene !== "library_interior") {
+      archivedRuleRevealPendingRef.current = false;
+      return undefined;
+    }
+    const puzzle = state.ui.libraryFinalsPuzzle;
+    if (
+      !puzzle.archivedRuleCollected
+      || puzzle.archivedRuleRead
+      || !state.items.archivedLeaveRule
+      || inspectedMapItem !== null
+      || archivedRuleRevealPendingRef.current
+    ) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      const current = store.getState();
+      const currentPuzzle = current.ui.libraryFinalsPuzzle;
+      if (
+        archivedRuleRevealPendingRef.current
+        || !currentPuzzle.archivedRuleCollected
+        || currentPuzzle.archivedRuleRead
+        || !current.items.archivedLeaveRule
+      ) {
+        return;
+      }
+      setInspectedMapItem("archivedLeaveRule");
+      events.emit("inventory_item_inspected", { itemId: "archivedLeaveRule", surface: "rpg", automatic: true });
+    }, 180);
+    return () => window.clearTimeout(timer);
+  }, [events, inspectedMapItem, runtimeScene, state.items.archivedLeaveRule, state.ui.libraryFinalsPuzzle, store]);
+
+  useEffect(() => {
     return events.subscribe((event) => {
       if (event.name === "library_archived_rule_opened") {
+        archivedRuleRevealPendingRef.current = true;
+      } else if (event.name === "library_archived_rule_reveal_completed") {
+        archivedRuleRevealPendingRef.current = false;
         setInspectedMapItem("archivedLeaveRule");
         events.emit("inventory_item_inspected", { itemId: "archivedLeaveRule", surface: "rpg", automatic: true });
       } else if (event.name === "rpg_campus_card_collected") {

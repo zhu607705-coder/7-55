@@ -15,6 +15,11 @@ export interface RpgRuntimeDebugState {
     state: "closed" | "opening" | "open" | "closing";
     accessGranted: boolean;
   };
+  shelfReveal?: {
+    phase: "idle" | "shaking" | "sliding" | "paper" | "complete";
+    offsetPx: number;
+    paperVisible: boolean;
+  };
   activeTargets?: Array<{
     id: string;
     x: number;

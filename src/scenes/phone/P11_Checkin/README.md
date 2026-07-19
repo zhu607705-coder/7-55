@@ -1,6 +1,7 @@
 # P11 校务签到（学在浙大）
 
 - Scene ID: `checkin`
+- Access: 仅序章开放；首次经纬度错误进入第二章后，由 `selectFeatureAccess` 和 `SceneRouter` 拒绝再次进入。
 - Entry: 浙大钉内页右上绿色卡片
 - Reads: `networkMode`, `flags.codeScattered`, `flags.cardZeroTaken`
 - Writes: `digits.d1 = "0"`, `flags.cardZeroTaken`, `flags.checkinDone`

@@ -83,7 +83,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "07:55 入馆，08:02 到达 022",
     mark: "7min",
     durationMs: 1600,
-    priority: 2
+    priority: 2,
+    visual: false
   },
   library_occupied_seat_found: {
     kind: "alert",
@@ -91,7 +92,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "调查纸条与离座规则",
     mark: "!",
     durationMs: 1900,
-    priority: 3
+    priority: 3,
+    visual: false
   },
   library_occupancy_note_collected: {
     kind: "ticket",
@@ -99,7 +101,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "可拖入 CC98 搜索",
     mark: "NOTE",
     durationMs: 1400,
-    priority: 2
+    priority: 2,
+    visual: false
   },
   cc98_occupation_post_opened: {
     kind: "scan",
@@ -123,7 +126,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "恢复 022 需要三项证明",
     mark: "3",
     durationMs: 1800,
-    priority: 2
+    priority: 2,
+    visual: false
   },
   photo_bag_report_generated: {
     kind: "photo",
@@ -139,7 +143,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "失物招领登记已盖章",
     mark: "章",
     durationMs: 1700,
-    priority: 3
+    priority: 3,
+    visual: false
   },
   library_seat_receipt_recovered: {
     kind: "ticket",
@@ -147,7 +152,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "右移箭头仍保留在道具栏",
     mark: "022",
     durationMs: 1600,
-    priority: 2
+    priority: 2,
+    visual: false
   },
   tiyi_presence_proof_issued: {
     kind: "stamp",
@@ -203,7 +209,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "书包已送往失物招领",
     mark: "→",
     durationMs: 1800,
-    priority: 3
+    priority: 3,
+    visual: false
   },
   library_seat_recovered: {
     kind: "success",
@@ -211,7 +218,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     detail: "点击座位并联系异常意识",
     mark: "022",
     durationMs: 2100,
-    priority: 3
+    priority: 3,
+    visual: false
   },
   chapter_three_book_hunt_unlocked: {
     kind: "chapter",

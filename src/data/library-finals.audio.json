@@ -170,17 +170,21 @@
         }
       ]
     },
-    "library_archived_rule_recovered": {
+    "library_archived_rule_opened": {
       "cues": [
         {
           "channel": "sfx",
           "asset": "fx_shelf_slide_v2",
           "volume": 0.7
-        },
+        }
+      ]
+    },
+    "library_archived_rule_recovered": {
+      "cues": [
         {
           "channel": "text",
           "subtitleKey": "library_archived_rule_recovered",
-          "offsetMs": 360
+          "offsetMs": 120
         }
       ]
     },
@@ -432,4 +436,3 @@
     }
   }
 }
-

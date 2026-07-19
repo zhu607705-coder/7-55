@@ -48,6 +48,7 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
 
   return {
     chapter,
+    checkin: chapter === "chapter_one",
     cc98: chapterTwoOpen,
     photos: librarySceneAccess && puzzle.backpackInspected && puzzle.archivedRuleRead,
     departmentDirectory: chapterTwoOpen,
@@ -65,6 +66,7 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
 
 export function canEnterScene(state: GameState, scene: SceneId): boolean {
   const access = selectFeatureAccess(state);
+  if (scene === "checkin") return access.checkin;
   if (scene === "cc98") return access.cc98;
   if (scene === "photos") return access.photos;
   if (scene === "weather") return access.weather;
