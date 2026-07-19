@@ -78,7 +78,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "对象", value: "022 座位占用书包" },
       { label: "认证结论", value: "非本人" },
       { label: "姓名 / 学号", value: "无 / 无" },
-      { label: "盖章来源", value: "基础馆物品身份登记机" }
+      { label: "盖章来源", value: "基础馆物品身份盖章机" }
     ],
     body: ["该物品不具备独立占用座位的身份条件。"],
     footer: "电子章：基础馆失物身份登记。"

@@ -38,6 +38,10 @@ const LIBRARY_STORY_SEQUENCE_BY_EVENT: Readonly<Record<string, string>> = {
   library_seat_recovered: "library_friend_contacted"
 };
 
+const LIBRARY_STORY_DELAY_BY_EVENT: Readonly<Partial<Record<string, number>>> = {
+  library_bag_nonperson_proof_issued: 900
+};
+
 function getSnapshot(): GameState {
   return gameStore.getState();
 }
@@ -139,19 +143,36 @@ export function App() {
     };
   }, []);
 
-  useEffect(() => eventBus.subscribe((event) => {
-    if (event.name === "library_entered" && event.payload?.firstEntry === true) {
-      startLibraryStory("library_route_unlocked");
-      startLibraryStory("library_entered");
-      return;
-    }
-    const sequenceId = event.name === "library_story_request"
-      ? String(event.payload?.sequenceId ?? "")
-      : LIBRARY_STORY_SEQUENCE_BY_EVENT[event.name];
-    if (sequenceId) {
-      startLibraryStory(sequenceId);
-    }
-  }), [startLibraryStory]);
+  useEffect(() => {
+    const pendingTimers = new Set<number>();
+    const detach = eventBus.subscribe((event) => {
+      if (event.name === "library_entered" && event.payload?.firstEntry === true) {
+        startLibraryStory("library_route_unlocked");
+        startLibraryStory("library_entered");
+        return;
+      }
+      const sequenceId = event.name === "library_story_request"
+        ? String(event.payload?.sequenceId ?? "")
+        : LIBRARY_STORY_SEQUENCE_BY_EVENT[event.name];
+      if (!sequenceId) {
+        return;
+      }
+      const delayMs = LIBRARY_STORY_DELAY_BY_EVENT[event.name] ?? 0;
+      if (delayMs <= 0) {
+        startLibraryStory(sequenceId);
+        return;
+      }
+      const timer = window.setTimeout(() => {
+        pendingTimers.delete(timer);
+        startLibraryStory(sequenceId);
+      }, delayMs);
+      pendingTimers.add(timer);
+    });
+    return () => {
+      detach();
+      pendingTimers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [startLibraryStory]);
 
   useEffect(() => {
     const puzzle = state.ui.libraryFinalsPuzzle;
@@ -299,7 +320,7 @@ export function App() {
               </Suspense>
             </section>
             <PresentationLayer events={eventBus} />
-            <ToastLayer events={eventBus} state={state} />
+            <ToastLayer events={eventBus} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} />
             {chapterIntro}
             {libraryStoryLayer}
           </main>
@@ -319,7 +340,7 @@ export function App() {
           />
         </Suspense>
         <PresentationLayer events={eventBus} />
-        <ToastLayer events={eventBus} state={state} />
+        <ToastLayer events={eventBus} state={state} surface="rpg" />
         {chapterIntro}
         {libraryStoryLayer}
         <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />

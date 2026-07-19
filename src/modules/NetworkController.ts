@@ -21,12 +21,17 @@ export class NetworkController {
     return this.store.getState().networkMode;
   }
 
-  /** 浙大体艺只有流量能进：校园网下加载 3 秒后闪退 */
+  /** 浙大体艺只有流量能进：其他网络加载 3 秒后闪退。 */
   canOpenTiyi(): boolean {
     return this.getMode() === "cellular";
   }
 
-  /** 浙大钉只认校园网：流量下永远卡在加载页 */
+  /** CC98 仅允许通过校园网访问。 */
+  canOpenCc98(): boolean {
+    return this.getMode() === "campus_wifi";
+  }
+
+  /** 浙大钉只认校园网：其他网络下停在加载页。 */
   canOpenZjuding(): boolean {
     return this.getMode() === "campus_wifi";
   }

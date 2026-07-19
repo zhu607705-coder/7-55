@@ -182,7 +182,7 @@ export function PhotoEvidenceOverlay({
         {captured && !shutterAnimating && readable ? (
           <section className={`photo-recognition-result ${reportGenerated ? "is-generated" : ""}`}>
             <strong>{reportGenerated ? "物品识别报告已生成" : "未检测到可签到主体"}</strong>
-            <p>{reportGenerated ? "报告已放入道具栏，可交给图书馆物品身份登记机。" : "检测到大量期末周怨气。是否生成识别报告？"}</p>
+            <p>{reportGenerated ? "报告已放入道具栏，可交给图书馆物品身份盖章机。" : "检测到大量期末周怨气。是否生成识别报告？"}</p>
             <button type="button" disabled={reportGenerated} onClick={onGenerate}>
               {reportGenerated ? "已生成" : "生成识别报告"}
             </button>

@@ -99,6 +99,8 @@ function summarizeGameState(state: GameState) {
         preBdBriefingSeen: puzzle.preBdBriefingSeen,
         bdCount: puzzle.bdCount,
         appliedBdReplyIds: puzzle.appliedBdReplyIds,
+        bdSelectedPostIds: puzzle.bdSelectedPostIds,
+        bdPasswordAttemptCount: puzzle.bdPasswordAttemptCount,
         recoverySubmittedEvidenceIds: puzzle.recoverySubmittedEvidenceIds,
         evictionPassGenerated: puzzle.evictionPassGenerated,
         backpackEvicted: puzzle.backpackEvicted,

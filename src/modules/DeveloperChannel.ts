@@ -75,7 +75,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-seat-receipt", chapter: "第二章", label: "022 座位小票", detail: "箭头拖到座位缝隙" },
   { id: "c2-tiyi-proof", chapter: "第二章", label: "本人来过证明", detail: "填写 7 / 47 / 3" },
   { id: "c2-cc98-upload", chapter: "第二章", label: "上传四项证据", detail: "CC98 调查帖" },
-  { id: "c2-bd-rise", chapter: "第二章", label: "有效 bd", detail: "排名 04 升至 01" },
+  { id: "c2-bd-rise", chapter: "第二章", label: "BD 四位口令", detail: "数字回复推到排名 01" },
   { id: "c2-recovery-form", chapter: "第二章", label: "打开恢复申请", detail: "浙大钉材料页" },
   { id: "c2-pass-generate", chapter: "第二章", label: "生成 PASS", detail: "三项材料已提交" },
   { id: "c2-pass-apply", chapter: "第二章", label: "使用 PASS", detail: "拖到 022 书包" },
@@ -173,7 +173,7 @@ function createMovementCheckpointState(id: DeveloperCheckpointId): GameState {
     return { ...state, currentScene: "zjuding", ui: { ...state.ui, zjudingPage: "directory" } };
   }
   state = withMovementFacts(state, { characterNamed: true });
-  if (id === "c2-exercise") return { ...state, currentScene: "tiyi" };
+  if (id === "c2-exercise") return { ...state, currentScene: "tiyi", networkMode: "cellular" };
   state = withMovementFacts(state, { exerciseStarted: true });
   if (id === "c2-triangle") return state;
   state = withMovementFacts(state, { pushTriangleTapCount: 3, pushTriangleTaken: true }, { pushTriangle: true });
@@ -354,6 +354,8 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
     puzzle.preBdBriefingSeen = true;
     puzzle.bdCount = 3;
     puzzle.appliedBdReplyIds = ["reply-seat-ticket", "reply-visit-proof", "reply-bag-nonperson"];
+    puzzle.bdSelectedPostIds = ["bd-rule-count", "bd-identity-zero", "bd-seat-tail", "bd-arrival-minutes"];
+    puzzle.bdPasswordAttemptCount = 1;
   }
   if (reached("c2-pass-generate")) {
     puzzle.recoverySubmittedEvidenceIds = ["bag_non_person_proof", "seat_022_receipt", "library_presence_proof"];
@@ -407,6 +409,7 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
 
   state = {
     ...state,
+    networkMode: id === "c2-tiyi-proof" ? "cellular" : state.networkMode,
     runtimeMode,
     rpgScene: id === "c2-library-gate" ? "campus_bootstrap" : rpgCheckpoint ? "library_interior" : state.rpgScene,
     rpgCheckpoint: rpgCheckpoint ?? state.rpgCheckpoint,

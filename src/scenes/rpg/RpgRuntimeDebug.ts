@@ -17,6 +17,7 @@ export interface RpgRuntimeDebugState {
     keys: { up: boolean; down: boolean; left: boolean; right: boolean; interact: boolean };
   };
   camera: { scrollX: number; scrollY: number; zoom: number; mode: "follow" | "manual" };
+  path?: { followingPath: boolean; pathLength: number };
   scene?: "campus_bootstrap" | "dorm_hub" | "library_interior";
   checkpoint?: string;
   entranceDoor?: {
@@ -45,6 +46,14 @@ export interface RpgRuntimeDebugState {
     phase: "idle" | "shaking" | "sliding" | "paper" | "complete";
     offsetPx: number;
     paperVisible: boolean;
+  };
+  lostFoundStampMachine?: {
+    stage: "missing_report" | "ready" | "scanning" | "stamped";
+    motion: "idle" | "feeding" | "scanning" | "stamping" | "ejecting" | "complete";
+    reportVisible: boolean;
+    stampHeadY: number;
+    leverAngle: number;
+    stampVisible: boolean;
   };
   activeTargets?: Array<{
     id: string;

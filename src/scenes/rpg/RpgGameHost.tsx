@@ -25,6 +25,7 @@ import { createRpgBridge } from "./RpgBridge";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
 import { QuestTaskBar } from "../../components/QuestClueStrip";
+import { RpgSubtitleLayer } from "../../components/RpgSubtitleLayer";
 
 interface RpgGameHostProps {
   store: GameStore;
@@ -584,6 +585,13 @@ export function RpgGameHost({
             onInspect={openMapItemDetails}
           />
         ) : null}
+
+        <RpgSubtitleLayer
+          key={runtimeScene}
+          events={events}
+          state={state}
+          blocked={inputBlocked || itemInspectOpen}
+        />
 
         {state.actOne.controlsInstalled && touchControls ? (
           <nav

@@ -524,9 +524,13 @@ export function EndingScene({ state, events }: SceneComponentProps) {
             <span>失误 {view.misses}/{MAX_MISSES}</span>
           </header>
 
-          <p className="ending-game-subtitle" aria-live="polite">
-            <small>旁白</small>
-            {introSegments[introSegmentIndex]}
+          <p
+            key={`intro-${introSegmentIndex}`}
+            className="ending-game-subtitle game-subtitle-frame subtitle-tone-narrator is-line-entering"
+            aria-live="polite"
+          >
+            <small className="game-subtitle-speaker">旁白</small>
+            <span>{introSegments[introSegmentIndex]}</span>
           </p>
 
           <div ref={fieldRef} className={`ending-intercept-field is-${view.phase}`}>
@@ -608,10 +612,10 @@ export function EndingScene({ state, events }: SceneComponentProps) {
             ) : null}
 
             {view.feedback === "blocked" && view.phase === "impact" ? (
-              <p className="ending-intercept-feedback is-success" role="status">已挡住 {view.blockedCount}/{REQUIRED_BLOCKS}</p>
+              <p className="ending-intercept-feedback game-subtitle-frame subtitle-tone-success is-success is-line-entering" role="status">已挡住 {view.blockedCount}/{REQUIRED_BLOCKS}</p>
             ) : null}
             {view.feedback === "missed" ? (
-              <p className="ending-intercept-feedback is-failure" role="status">未命中出口位置</p>
+              <p className="ending-intercept-feedback game-subtitle-frame subtitle-tone-error is-failure is-line-entering" role="status">未命中出口位置</p>
             ) : null}
 
             {view.phase === "failed" ? (
@@ -638,9 +642,13 @@ export function EndingScene({ state, events }: SceneComponentProps) {
             <strong>已锁定</strong>
           </div>
           {dialogue ? (
-            <p className={`ending-dialogue is-${dialogue.speaker}`} aria-live="polite">
-              <small>{dialogue.speaker === "narrator" ? "旁白" : "我"}</small>
-              {dialogue.text}
+            <p
+              key={`caught-${view.dialogueStep}`}
+              className={`ending-dialogue game-subtitle-frame subtitle-tone-${dialogue.speaker === "narrator" ? "narrator" : "player"} is-${dialogue.speaker} is-line-entering`}
+              aria-live="polite"
+            >
+              <small className="game-subtitle-speaker">{dialogue.speaker === "narrator" ? "旁白" : "我"}</small>
+              <span>{dialogue.text}</span>
             </p>
           ) : null}
         </>

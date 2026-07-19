@@ -166,18 +166,10 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
   cc98_evidence_set_completed: {
     kind: "scan",
     title: "四项证据已公示",
-    detail: "系统要求先说明 bd 机制",
+    detail: "系统将说明帮顶与四位口令规则",
     mark: "4/4",
     durationMs: 1700,
     priority: 2
-  },
-  cc98_bd_applied: {
-    kind: "rank",
-    title: "有效回复",
-    detail: "热度继续上升",
-    mark: "+1",
-    durationMs: 900,
-    priority: 1
   },
   cc98_top_ten_reached: {
     kind: "rank",
@@ -317,15 +309,6 @@ export function resolvePresentationCue(
   const definition = PRESENTATION_CUES[cueId];
   if (!definition || definition.visual === false) {
     return null;
-  }
-
-  if (cueId === "cc98_bd_applied") {
-    const bdCount = Number(payload.bdCount);
-    return {
-      ...definition,
-      id: cueId,
-      detail: Number.isFinite(bdCount) ? `已完成 ${bdCount}/3 次有效回复` : definition.detail
-    };
   }
 
   if (cueId === "bike_arcade_milestone") {

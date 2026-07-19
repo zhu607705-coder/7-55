@@ -160,6 +160,16 @@ export type LibraryFinalsBdReplyId =
   | "reply-visit-proof"
   | "reply-bag-nonperson";
 
+export type LibraryFinalsBdPostId =
+  | "bd-notice-tens"
+  | "bd-rule-count"
+  | "bd-rank-first"
+  | "bd-identity-zero"
+  | "bd-call-number-tail"
+  | "bd-seat-tail"
+  | "bd-reply-count"
+  | "bd-arrival-minutes";
+
 export type LostFoundStage = "missing_report" | "ready" | "scanning" | "stamped";
 
 export interface LibraryFinalsAuditValues {
@@ -210,6 +220,8 @@ export interface LibraryFinalsPuzzleState {
   preBdBriefingSeen: boolean;
   bdCount: 0 | 1 | 2 | 3;
   appliedBdReplyIds: LibraryFinalsBdReplyId[];
+  bdSelectedPostIds: LibraryFinalsBdPostId[];
+  bdPasswordAttemptCount: number;
   recoverySubmittedEvidenceIds: LibraryRecoveryEvidenceId[];
   evictionPassGenerated: boolean;
   backpackEvicted: boolean;

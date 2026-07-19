@@ -6,6 +6,8 @@ import type {
   LibraryFinalsPuzzleState,
   LibraryLocationId
 } from "../../../core/types";
+import { ITEM_CATALOG } from "../../../data/itemCatalog";
+import libraryFinalsContent from "../../../data/library-finals.content.json";
 import { kit } from "../../../modules/GameKit";
 
 interface RouteAuditPanelProps {
@@ -29,11 +31,43 @@ const CONTROLS: Array<{
   min: number;
   max: number;
   stateKey: "auditArrivalMinutes" | "auditPublicNoticeFloor" | "auditProofCount";
+  sourceIndex: "01" | "02" | "03";
+  sourceHint: string;
 }> = [
-  { field: "arrivalMinutes", label: "到座耗时", unit: "分钟", min: 0, max: 12, stateKey: "auditArrivalMinutes" },
-  { field: "publicNoticeFloor", label: "公示编号", unit: "号", min: 1, max: 63, stateKey: "auditPublicNoticeFloor" },
-  { field: "proofCount", label: "证明数量", unit: "项", min: 1, max: 5, stateKey: "auditProofCount" }
+  {
+    field: "arrivalMinutes",
+    label: "到座耗时",
+    unit: "分钟",
+    min: 0,
+    max: 12,
+    stateKey: "auditArrivalMinutes",
+    sourceIndex: "01",
+    sourceHint: "计算时间差"
+  },
+  {
+    field: "publicNoticeFloor",
+    label: "公示编号",
+    unit: "号",
+    min: 1,
+    max: 63,
+    stateKey: "auditPublicNoticeFloor",
+    sourceIndex: "02",
+    sourceHint: "读取楼主编辑"
+  },
+  {
+    field: "proofCount",
+    label: "证明数量",
+    unit: "项",
+    min: 1,
+    max: 5,
+    stateKey: "auditProofCount",
+    sourceIndex: "03",
+    sourceHint: "数规则条目"
+  }
 ];
+
+const PUBLIC_NOTICE_NUMBER = libraryFinalsContent.cc98.post.publicNoticeFloor;
+const RULE_REQUIREMENTS = ITEM_CATALOG.archivedLeaveRule.document?.body.filter((line) => /^[一二三]、/.test(line)) ?? [];
 
 const LOCATION_LABELS: Record<LibraryLocationId, string> = {
   entrance: "图书馆入口",
@@ -55,12 +89,12 @@ function currentValues(puzzle: LibraryFinalsPuzzleState): LibraryFinalsAuditValu
 
 function rejectionHint(attempt: number): string {
   if (attempt <= 1) {
-    return "至少一个字段与已保存的来源不一致。";
+    return "按来源 01/02/03 逐项处理：计算时间差、读取公示编号、数规则条目。";
   }
   if (attempt === 2) {
-    return "三个字段要分别核对三种来源，不能用路线长度互相推算。";
+    return "来源 01 看两次时间，来源 02 看 23 楼楼主编辑，来源 03 看旧规则正文。";
   }
-  return "回到入馆记录、CC98 公示和旧版规则，逐项查看对应字段。";
+  return "仍有字段与来源不一致。注意：23 是回复楼层，表单需要读取原文中的公示编号。";
 }
 
 /** 后期体艺只认证已收集的路线证据，不再控制 RPG 移动。 */
@@ -120,7 +154,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
       <header>
         <div>
           <strong>{passed ? "补录成功" : "本人来过证明补录单"}</strong>
-          <span>{passed ? "系统已承认你确实来过图书馆" : "状态：待补录 · 路线真实，但字段不像真的"}</span>
+          <span>{passed ? "系统已承认你确实来过图书馆" : "状态：待补录 · 把三份来源转换成三个字段"}</span>
         </div>
         <b>{passed ? "已认证" : "V0.22"}</b>
       </header>
@@ -135,18 +169,49 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
         </div>
       </section>
 
+      <section className="tiyi-audit-guide" aria-label="补录方法">
+        <strong>三份来源，对应三个字段</strong>
+        <p><span>01 时间相减</span><span>02 读取编号</span><span>03 计算条目数</span></p>
+      </section>
+
       <section className="tiyi-audit-sources" aria-label="审核依据">
-        <article className={puzzle.entranceRecordRead ? "is-ready" : ""}>
+        <article id="tiyi-audit-source-01" className={puzzle.entranceRecordRead ? "is-ready" : ""}>
           <span>01</span>
-          <div><strong>入馆记录</strong><small>{puzzle.entranceRecordRead ? "来源已读取 · 可用于补录" : "来源未读取"}</small></div>
+          <div>
+            <strong>入馆记录 <em>→ 到座耗时</em></strong>
+            {puzzle.entranceRecordRead ? (
+              <>
+                <small className="tiyi-audit-source-evidence"><b>07:55</b> 主馆入口 <i>→</i> <b>08:02</b> 二楼南区 022</small>
+                <small>填写两次记录的分钟差</small>
+              </>
+            ) : <small>来源未读取 · 查看基础图书馆入口小屏</small>}
+          </div>
         </article>
-        <article className={puzzle.investigationOpened ? "is-ready" : ""}>
+        <article id="tiyi-audit-source-02" className={puzzle.investigationOpened ? "is-ready" : ""}>
           <span>02</span>
-          <div><strong>CC98 公示</strong><small>{puzzle.investigationOpened ? "来源已建立 · 可用于补录" : "来源未建立"}</small></div>
+          <div>
+            <strong>CC98 23 楼楼主编辑 <em>→ 公示编号</em></strong>
+            {puzzle.investigationOpened ? (
+              <>
+                <small className="tiyi-audit-source-evidence">楼主编辑原文：旧申请统一挂在 <b>公示编号 {PUBLIC_NOTICE_NUMBER}</b></small>
+                <small>23 是回复楼层；填写原文中的公示编号</small>
+              </>
+            ) : <small>来源未建立 · 用占座纸条打开 CC98 调查帖</small>}
+          </div>
         </article>
-        <article className={puzzle.archivedRuleRead ? "is-ready" : ""}>
+        <article id="tiyi-audit-source-03" className={puzzle.archivedRuleRead ? "is-ready" : ""}>
           <span>03</span>
-          <div><strong>旧版规则</strong><small>{puzzle.archivedRuleRead ? "内容已阅读 · 证明数量已确认" : "可后补 · 不阻止先核对其他字段"}</small></div>
+          <div>
+            <strong>旧版规则 <em>→ 证明数量</em></strong>
+            {puzzle.archivedRuleRead ? (
+              <>
+                <small className="tiyi-audit-rule-evidence">
+                  {RULE_REQUIREMENTS.map((requirement) => <span key={requirement}>{requirement.replace(/^[一二三]、/, "").replace(/；$/, "")}</span>)}
+                </small>
+                <small>填写规则列出的证明类别数量</small>
+              </>
+            ) : <small>来源未读取 · 从 755 书架取得并阅读旧版规则</small>}
+          </div>
         </article>
       </section>
 
@@ -156,8 +221,13 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             {CONTROLS.map((control) => {
               const value = values[control.field];
               return (
-                <section className={steppingField === control.field ? "is-stepping" : ""} key={control.field} aria-label={control.label}>
-                  <span>{control.label}</span>
+                <section
+                  className={steppingField === control.field ? "is-stepping" : ""}
+                  key={control.field}
+                  aria-label={control.label}
+                  aria-describedby={`tiyi-audit-source-${control.sourceIndex}`}
+                >
+                  <span>{control.label}<small>来源 {control.sourceIndex} · {control.sourceHint}</small></span>
                   <div>
                     <button type="button" aria-label={`${control.label}减一`} disabled={value <= control.min} onClick={() => step(control.field, value - 1)}>−</button>
                     <strong key={`${control.field}-${value}`}>{value}<small>{control.unit}</small></strong>

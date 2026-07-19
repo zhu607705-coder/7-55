@@ -111,7 +111,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   },
   bagNonPersonProof: {
     category: "认证证明",
-    source: "失物身份登记机盖章",
+    source: "物品身份盖章机",
     intro: "一条错误等号已经被排除，座位归属仍未说明。单独提交会缺少另外两类材料。"
   },
   seat022Receipt: {

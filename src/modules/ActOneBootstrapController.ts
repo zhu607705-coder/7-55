@@ -247,7 +247,7 @@ export class ActOneBootstrapController {
 
   collectWeatherWater(): boolean {
     const state = this.store.getState();
-    if (!this.isMovementPhase(state.actOne) || !state.actOne.pushTriangleTaken) {
+    if (!this.isMovementPhase(state.actOne) || !state.actOne.exerciseStarted) {
       return false;
     }
     if (state.actOne.weatherWaterTaken) {

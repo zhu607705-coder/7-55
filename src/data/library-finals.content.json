@@ -75,11 +75,11 @@
     ],
     "cc98_evidence_set_completed": [
       { "speaker": "玩家", "text": "好了，证据齐了。现在图书馆会处理了吧？" },
-      { "speaker": "系统", "text": "不会。" },
-      { "speaker": "玩家", "text": "为什么？" },
-      { "speaker": "系统", "text": "因为它们还没看见。" },
-      { "speaker": "玩家", "text": "我都上传了。" },
-      { "speaker": "系统", "text": "上传只是把真相放进互联网的地下室。" }
+      { "speaker": "系统", "text": "还差一次公开确认。图书馆 App 只读取十大帖的四位热度口令。" },
+      { "speaker": "玩家", "text": "bd 到底是什么？" },
+      { "speaker": "系统", "text": "bd 是“帮顶”。在一条数字回复上点 bd，数字就会按顺序写入口令。" },
+      { "speaker": "玩家", "text": "四位数字从哪里来？" },
+      { "speaker": "系统", "text": "按四项证据从上到下：规则条数、身份通过项数、座位末位、到座耗时。" }
     ],
     "cc98_top_ten_reached": [
       { "speaker": "旁白", "text": "问题终于变得足够公开，于是它暂时变得可以处理。" }
@@ -136,7 +136,7 @@
         "floor": 16,
         "author": "纸面支援专员",
         "role": "路过",
-        "text": "先 bd 留言，再把配图放在这里。它只负责维持评论区队形，不负责证明任何事。",
+        "text": "bd 就是帮顶。点一条数字回复的 bd，右侧数字会写进热度口令。",
         "media": "cc98_forum_treasure",
         "caption": "bd",
         "optional": true
@@ -145,7 +145,7 @@
         "floor": 18,
         "author": "热度维护员",
         "role": "线索",
-        "text": "证据齐了记得 bd。座位系统不看草稿，只读取已经公示的材料。"
+        "text": "证据齐后，按上传栏从上到下选择四条数字回复，组成四位口令。"
       },
       {
         "floor": 23,
@@ -180,17 +180,31 @@
     },
     "evidenceSlots": [
       { "id": "archived_leave_rule", "label": "旧版离座规则", "source": "755 号书架背面" },
-      { "id": "bag_non_person_proof", "label": "书包非本人证明", "source": "物品身份登记机" },
+      { "id": "bag_non_person_proof", "label": "书包非本人证明", "source": "物品身份盖章机" },
       { "id": "seat_022_receipt", "label": "022 座位小票", "source": "022 桌下夹缝" },
       { "id": "library_presence_proof", "label": "本人来过证明", "source": "浙大体艺补录" }
     ],
-    "bdOptions": [
-      { "id": "reply-seat-ticket", "key": "A", "author": "022票据核对员", "text": "规则有了，但 022 是不是你的？小票和公示可以互相核对。", "requirement": "需要 022 座位小票", "evidence": "seat_022_receipt", "valid": true, "rejection": null },
-      { "id": "reply-b", "key": "B", "author": "书包辩护律师", "text": "书包连续三天到场，楼主只出现五分钟。我宣布书包胜诉。", "requirement": "结论缺少证明", "evidence": null, "valid": false, "rejection": "到场时长不能替代身份和座位凭证。" },
-      { "id": "reply-visit-proof", "key": "C", "author": "路径表格复核员", "text": "本人来过证明与座位小票时间一致，这条形成了访问链。", "requirement": "需要本人来过证明", "evidence": "library_presence_proof", "valid": true, "rejection": null },
-      { "id": "reply-d", "key": "D", "author": "二南空调观察员", "text": "bd。顺便问一下二南空调今天开了吗？", "requirement": "纯灌水回复", "evidence": null, "valid": false, "rejection": "这条成功参与了聊天，没有提供任何证据。" },
-      { "id": "reply-bag-nonperson", "key": "E", "author": "物品人格审核台", "text": "盖章报告已确认姓名、学号均为无，书包不具备占座主体资格。", "requirement": "需要书包非本人证明", "evidence": "bag_non_person_proof", "valid": true, "rejection": null }
-    ]
+    "bdPassword": {
+      "title": "BD 四位热度口令",
+      "meaning": "bd = 帮顶。点击数字回复中的 bd，会把该数字按顺序写入口令。",
+      "prompt": "按上方四项已上传证据从上到下，各选择一条对应的数字回复。",
+      "clues": [
+        { "index": 1, "label": "旧版规则", "instruction": "数证明要求" },
+        { "index": 2, "label": "非本人证明", "instruction": "数身份通过项" },
+        { "index": 3, "label": "022 小票", "instruction": "取座位号末位" },
+        { "index": 4, "label": "到馆证明", "instruction": "取到座耗时" }
+      ],
+      "posts": [
+        { "id": "bd-notice-tens", "floor": 24, "digit": "4", "author": "公示号拆分员", "text": "公示编号 47 的十位是 4。这个数字属于公示编号。" },
+        { "id": "bd-rule-count", "floor": 25, "digit": "3", "author": "规则条目统计员", "text": "旧规列出到馆、座位、占用物身份三类证明要求。" },
+        { "id": "bd-rank-first", "floor": 26, "digit": "1", "author": "十大排名观察员", "text": "目标排名是 01，我先记录末位 1。" },
+        { "id": "bd-identity-zero", "floor": 27, "digit": "0", "author": "盖章机值班员", "text": "书包的姓名、学号、人格均未通过，身份有效项为 0。" },
+        { "id": "bd-call-number-tail", "floor": 28, "digit": "5", "author": "索书号末位员", "text": "索书号 755 的末位是 5。这个数字属于馆藏线索。" },
+        { "id": "bd-seat-tail", "floor": 29, "digit": "2", "author": "022 票据核对员", "text": "座位号 022 取末位，票据对应数字为 2。" },
+        { "id": "bd-reply-count", "floor": 30, "digit": "6", "author": "关键回复计数员", "text": "楼主编辑前共有六条固定剧情回复，我记录数字 6。" },
+        { "id": "bd-arrival-minutes", "floor": 31, "digit": "7", "author": "门禁时差计算员", "text": "07:55 入馆，08:02 到达 022，到座耗时为 7 分钟。" }
+      ]
+    }
   },
   "library": {
     "catalogQuery": "三分钟离座法",

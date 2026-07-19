@@ -1,0 +1,331 @@
+/* Canonical subtitle contract: bottom-center safe row, one pixel frame, one stepped transition. */
+
+.game-subtitle-frame {
+  --subtitle-accent: #d8c35e;
+  --subtitle-panel: rgba(9, 14, 17, 0.95);
+  --subtitle-ink: #f7f2df;
+  background: var(--subtitle-panel);
+  border: 3px solid var(--subtitle-accent);
+  border-left-width: 6px;
+  border-radius: 0;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.56);
+  box-sizing: border-box;
+  color: var(--subtitle-ink);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.game-subtitle-frame::before,
+.game-subtitle-frame.is-line-entering::before {
+  animation: none;
+  background: var(--subtitle-accent);
+  content: "";
+  height: 3px;
+  inset: 0 0 auto;
+  opacity: 0.9;
+  pointer-events: none;
+  position: absolute;
+  transform: none;
+  width: auto;
+  z-index: 2;
+}
+
+.game-subtitle-frame.subtitle-tone-system { --subtitle-accent: #e06572; }
+.game-subtitle-frame.subtitle-tone-narrator { --subtitle-accent: #b9afa0; }
+.game-subtitle-frame.subtitle-tone-task { --subtitle-accent: #e0c45e; }
+.game-subtitle-frame.subtitle-tone-player { --subtitle-accent: #65a6cf; }
+.game-subtitle-frame.subtitle-tone-success { --subtitle-accent: #76c58e; }
+.game-subtitle-frame.subtitle-tone-error { --subtitle-accent: #e3726d; }
+.game-subtitle-frame.subtitle-tone-broadcast { --subtitle-accent: #d9ad55; }
+
+.game-subtitle-speaker {
+  color: var(--subtitle-accent);
+  display: block;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.game-subtitle-frame.is-line-entering {
+  animation: game-subtitle-enter 280ms steps(5, end) both;
+}
+
+.game-subtitle-frame.is-timed {
+  animation: game-subtitle-lifecycle var(--subtitle-duration, 3000ms) steps(16, end) both;
+}
+
+.game-subtitle-frame.is-line-entering > p,
+.game-subtitle-frame.is-line-entering > span {
+  animation: none;
+}
+
+@keyframes game-subtitle-enter {
+  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(14px); }
+  60% { clip-path: inset(0); opacity: 1; transform: translateY(-2px); }
+  100% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
+}
+
+@keyframes game-subtitle-lifecycle {
+  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(14px); }
+  8% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
+  88% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
+  100% { clip-path: inset(0); opacity: 0; transform: translateY(8px); }
+}
+
+/* Global voice, narrator, system, and task subtitles. */
+
+.toast-layer {
+  gap: 8px;
+  justify-items: center;
+}
+
+.toast-layer.subtitle-layer--phone {
+  bottom: 86px;
+  left: 18px;
+  right: 18px;
+}
+
+.toast-layer.subtitle-layer--rpg {
+  bottom: max(96px, 13vh);
+  left: 50%;
+  max-width: 680px;
+  right: auto;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+}
+
+.toast-layer .px-toast {
+  align-items: start;
+  background: var(--subtitle-panel);
+  border-color: var(--subtitle-accent);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.56);
+  color: var(--subtitle-ink);
+  display: grid;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 4px;
+  justify-items: start;
+  line-height: 1.5;
+  max-width: 100%;
+  padding: 10px 14px 11px;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+
+.toast-layer .px-toast > span {
+  display: block;
+}
+
+/* RPG feedback now lives in the shell instead of scene-local Phaser text. */
+
+.rpg-subtitle-layer {
+  bottom: var(--rpg-subtitle-bottom, 112px);
+  left: 50%;
+  max-width: 600px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  width: calc(100% - 220px);
+  z-index: 28;
+}
+
+.rpg-subtitle-layer .game-subtitle-frame {
+  align-items: start;
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  margin: 0;
+  padding: 10px 14px 11px;
+  position: relative;
+  width: 100%;
+}
+
+.rpg-subtitle-layer .game-subtitle-frame > span {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+}
+
+/* Full story dialogue uses the same frame and stays in the lower safe row. */
+
+.library-story-overlay {
+  padding: clamp(18px, 4vw, 42px);
+  place-items: end center;
+}
+
+.library-story-dialogue.game-subtitle-frame {
+  background: var(--subtitle-panel);
+  border-color: var(--subtitle-accent);
+  color: var(--subtitle-ink);
+  max-width: 760px;
+  padding: 12px 15px 13px;
+  position: relative;
+  width: min(100%, 760px);
+}
+
+.library-story-dialogue-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--subtitle-accent) 44%, transparent);
+  color: #b7c5ca;
+  margin: 0;
+  padding: 2px 2px 8px;
+}
+
+.library-story-dialogue-header span {
+  color: var(--subtitle-accent);
+}
+
+.library-story-dialogue.game-subtitle-frame .library-story-dialogue-box {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  min-height: 76px;
+  padding: 12px 3px 10px;
+}
+
+.library-story-dialogue.game-subtitle-frame .game-subtitle-speaker {
+  color: var(--subtitle-accent);
+  font-size: 11px;
+  margin-bottom: 7px;
+}
+
+.library-story-dialogue-box p {
+  font-size: clamp(15px, 2vw, 19px);
+  line-height: 1.6;
+}
+
+.library-story-dialogue-actions {
+  border-top: 1px solid color-mix(in srgb, var(--subtitle-accent) 36%, transparent);
+  color: #a9b5ba;
+  margin: 0;
+  padding: 9px 2px 0;
+}
+
+.library-story-dialogue-actions button {
+  background: var(--subtitle-accent);
+  border-color: #080d10;
+  color: #10171b;
+}
+
+/* ZJU Ding scene-owned system dialogue. */
+
+.phone-frame:has(.zju-system-dialogue-layer) > .scene-surface {
+  z-index: 90;
+}
+
+.zju-system-dialogue.game-subtitle-frame {
+  background: var(--subtitle-panel);
+  border-color: var(--subtitle-accent);
+  bottom: 76px;
+  color: var(--subtitle-ink);
+  min-height: 118px;
+  padding: 13px 14px;
+}
+
+.zju-system-dialogue.game-subtitle-frame .game-subtitle-speaker {
+  color: var(--subtitle-accent);
+}
+
+.zju-system-dialogue.game-subtitle-frame p {
+  animation: none;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.zju-system-dialogue.game-subtitle-frame button {
+  background: var(--subtitle-accent);
+  border-color: #111a20;
+  color: #111a20;
+}
+
+/* Prologue narration and caught dialogue reserve one shared lower row. */
+
+.ending-intercept-field {
+  bottom: 172px;
+}
+
+.ending-game-subtitle.game-subtitle-frame,
+.ending-dialogue.game-subtitle-frame {
+  background: var(--subtitle-panel);
+  border-color: var(--subtitle-accent);
+  bottom: 54px;
+  color: var(--subtitle-ink);
+  display: grid;
+  gap: 5px;
+  left: 18px;
+  line-height: 1.55;
+  min-height: 88px;
+  padding: 12px 14px;
+  right: 18px;
+  top: auto;
+}
+
+.ending-game-subtitle.game-subtitle-frame {
+  align-items: start;
+  font-size: 14px;
+}
+
+.ending-dialogue.game-subtitle-frame,
+.ending-dialogue.game-subtitle-frame.is-player {
+  font-size: 15px;
+  left: 18px;
+}
+
+.ending-game-subtitle.game-subtitle-frame .game-subtitle-speaker,
+.ending-dialogue.game-subtitle-frame .game-subtitle-speaker {
+  color: var(--subtitle-accent);
+  margin: 0;
+}
+
+.ending-intercept-feedback.game-subtitle-frame {
+  background: var(--subtitle-panel);
+  border-color: var(--subtitle-accent);
+  color: var(--subtitle-ink);
+  padding: 8px 13px;
+}
+
+/* The first spoken line follows the same frame without reserving a phone nav row. */
+
+.bottom-narration.game-subtitle-frame {
+  background: var(--subtitle-panel);
+  border: 3px solid var(--subtitle-accent);
+  border-left-width: 6px;
+  bottom: 18px;
+  color: var(--subtitle-ink);
+  display: grid;
+  gap: 5px;
+  left: 18px;
+  padding: 11px 14px 12px;
+  right: 18px;
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+  .rpg-subtitle-layer {
+    bottom: 106px;
+    max-width: 500px;
+    width: calc(100% - 180px);
+  }
+
+  .rpg-subtitle-layer .game-subtitle-frame {
+    padding: 8px 11px 9px;
+  }
+
+  .rpg-subtitle-layer .game-subtitle-frame > span {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-subtitle-frame.is-line-entering,
+  .game-subtitle-frame.is-timed {
+    animation: none;
+    clip-path: none;
+    opacity: 1;
+    transform: none;
+  }
+}

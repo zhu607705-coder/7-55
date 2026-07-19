@@ -888,3 +888,62 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 浏览器验收：实际打开照片、CC98 上传、体艺补录与 022 小票路径，确认旧规未读时仍可分支推进；书包清退验证常态、转移中、清退后和重进四个画面。`430×860` 与 `390×844` 任务抽屉横向溢出均为 `0`，`1280×720` 与 `1280×800` 保持 `16:9` RPG 画布，浏览器控制台错误为 `0`。
 - 构建与离线：吸收远端最新第二章剧情整合后，`git diff --check`、`npm run typecheck` 和 `npm run build:single` 均通过；`file://` 单文件直达 022 时只显示一个书包，人物调试状态为 `12.5 FPS`，外部 HTTP 请求为 `0`。`demo/index.html` 为 `99,539,974 bytes`，SHA-256 为 `dcc10dc628f66f42900ffca2f1cd2432ddde90f16661605ced5c95d3e6f754af`。
 - 验证边界：项目自动测试体系保持移除状态，本轮未恢复测试依赖；分支组合使用控制器返回值、`render_game_to_text()` 和真实 Chromium 画面联合验证。
+
+## 2026-07-19 三款校园应用网络入口统一
+
+- 入口规则：浙大体艺在移动任务与图书馆到馆证明支线中不再绕过网络检查；每次进入都记录当时的网络，只有移动数据可完成加载，校园网或离线会按原 3 秒流程闪退。
+- 校网应用：CC98 新增像素校园网验证页，移动数据或离线进入时显示失败动画、发布拒绝事件并返回手机主页；浙大钉继续停在加载页，同时明确提示切换校园网后重新进入。CC98 与浙大钉都只有校园网入口可以显示业务页面。
+- 规则单源：`NetworkController` 统一提供体艺、CC98、浙大钉三项入口判定；`c2-exercise` 与 `c2-tiyi-proof` 开发检查点预置移动数据，其他 CC98、浙大钉检查点继续预置校园网。
+- 浏览器验收：共享网页游戏客户端已检查第二章体艺证明和 CC98 的正确网络入口；定向 Chromium 在 `430×860`、`390×844` 覆盖体艺移动阶段错误/正确网络、图书馆体艺错误网络、CC98 错误/正确网络、浙大钉错误网络停留及重新进入。四组场景页面与控制台错误均为 `0`。
+- 构建与离线：`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过；`file://` 单文件直达第二章 CC98 时校园网校验与帖子页正常，控制台错误为 `0`。`demo/index.html` 为 `99,542,606 bytes`，SHA-256 为 `fea289d828b739ca2d39425eeca04486e9b50455862d142dd58a4fb6446df6dd`。
+
+## 2026-07-20 移动线索并行、提前取票与统一道具反馈
+
+- 移动线索：浙大体艺开始锻炼后，主页三角形与天气水滴同时开放；玩家可按任意顺序取得，任务栏根据“均未取得 / 仅有水滴 / 仅有三角形 / 两者齐全”显示当前下一步。导师竖线和右箭头合成仍由控制器校验。
+- 022 小票：首次到达 022 即开放桌下夹缝；持有右箭头即可推出小票，不依赖书包检查、调查帖或其他证据阶段，取票不会改写当前图书馆阶段，右箭头继续保留。
+- 道具反馈：手机与 RPG 共用最近获得道具检测和飞入反馈；第二章及后续的新道具均执行“来源飞入 → 道具栏脉冲 → 新槽落位”，首个手机道具也能在物品栏从空状态出现时完整播放。
+- 浏览器验收：真实 Pointer 流程分别验证天气优先、三角形优先、首次到达 022 立即取票，以及手机/RPG 道具飞入动画；小票路径保持 `library_entered`，右箭头仍在道具栏，页面与控制台错误均为 `0`。
+
+## 2026-07-20 物品身份盖章机
+
+- 场景实体：失物招领前台增加可直接辨认的像素盖章机，机身包含 `STAMP 0.22` 铭牌、进纸托盘、扫描区、压章头、侧面手柄、出纸口和姓名/学号/人格三枚核验灯；机器本体承担点击与拖拽命中区域。
+- 完整交互：把“物品识别报告”拖入机器后，依次执行进纸、扫描、压章头与手柄同步下压、纸面出现“非本人”红章、机械回弹和出纸；输入报告被消耗，“书包非本人证明”通过 RPG 统一飞入动画进入道具栏。
+- 展示时序：`library_bag_nonperson_proof_issued` 剧情延后 `900ms`，状态和证明立即生效，压章与出纸期间不显示剧情遮罩；机器完成出纸后再打开系统对白。重进场景会根据 `missing_report / ready / scanning / stamped` 恢复正确设备状态。
+- 浏览器验收：开发版和 `file://` 单文件均完成真实报告拖拽，运行时依次观测 `idle → feeding → scanning → stamping → ejecting → complete`；压章时章头位置为 `25`、手柄角度为 `8°`、红章可见，出纸完成后报告隐藏、证明持有、剧情出现，页面与控制台错误为 `0`。
+- 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,550,915 bytes`，SHA-256 为 `54fd362b2aba1112e6956db1694777ecbaa019ca2762cadf6a20b93f435ad60f`。
+
+## 2026-07-20 全局字幕视觉契约统一
+
+- 共享组件：新增 `GameSubtitleFrame`，统一系统、旁白、任务、玩家、成功、错误和广播字幕的身份标签、P0 身份脱敏、显示时长与视觉语义；手机 Toast、起床旁白、浙大钉系统对白、序章拦截对白和图书馆剧情对白均接入同一契约。
+- 方框与动画：字幕统一使用深色像素面板、`3px` 边框、`6px` 左侧强调线、直角、`5px` 像素阴影；逐句对白使用 `280ms / steps(5)` 入场，定时字幕使用 `steps(16)` 完整显示周期，角色与状态差异只改变强调色。`prefers-reduced-motion` 下直接显示稳定终态。
+- 位置安全区：手机字幕统一锚定底部中间安全行并保持同宽；RPG 新增壳层 `RpgSubtitleLayer`，寝室和图书馆 Phaser 场景只发布 `rpg_subtitle`，字幕固定在物品栏上方。图书馆剧情对白使用横屏底部安全行，序章错误框玩法区域上移至字幕上方。
+- 交互修正：浙大钉系统对白打开时，场景交互层高于共享任务栏，继续按钮可直接点击；字幕关闭后恢复原有页面层级。章节演出卡与表单即时反馈继续沿用各自功能样式，不纳入字幕类别。
+- 浏览器验收：开发版与最终 `file://` 单文件分别覆盖起床旁白、浙大钉系统/玩家对白、手机 Toast、序章拦截、RPG 现场反馈和图书馆剧情，共六类字幕。`430×860`、`390×844`、`1280×720` 下均命中统一背景、边框、直角、阴影和阶梯动画；RPG 字幕底边为 `588px`、物品栏顶边为 `597px`，序章玩法底边为 `663.65px`、字幕顶边为 `701px`，未发生遮挡，页面与控制台错误均为 `0`。
+- 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,580,324 bytes`，SHA-256 为 `4c02e94928de83600531b0eeb6b5cd79c0e1bb684d18a5a6d2475c8f548ebf1a`。
+
+## 2026-07-20 体艺 7 / 47 / 3 来源提示修正
+
+- 来源闭环：体艺到馆证明页直接展示三份已取得材料的原始内容及字段关系。`7` 由入馆记录 `08:02 − 07:55` 计算；`47` 来自 CC98 调查帖 `23` 楼楼主编辑中的旧申请公示编号；`3` 来自《旧版临时离座恢复规定》的三项证明要求。
+- 概念消歧：页面明确标注 `23` 是调查帖回复楼层，表单第二项读取的是公示编号 `47`；剧情文档、开发规范、开发报告和调试指引同步改为同一口径。
+- 交互提示：三列输入分别显示“计算时间差 / 读取编号 / 计算条目数”；未取得的来源会指向对应调查位置，已取得的来源会显示可核对内容。前三次失败提示按“运算关系 → 具体来源 → 23 与 47 的区别”逐步展开，任务抽屉第三层提示同步说明三种操作。
+- 浏览器验收：共享 Web 游戏客户端和定向 Chromium 在 `390×844`、`430×860` 验证三张来源卡、任务提示、三次错误反馈及正确提交；正确结果写入 `7 / 47 / 3` 并取得到馆证明。最终 `file://` 单文件复验通过，页面与控制台错误均为 `0`，页面无横向溢出，来源面板保持纵向滚动。
+- 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,583,757 bytes`，SHA-256 为 `ae510f6dcf00d2100e00069cd1d50cdb6c0d9b50f767d555a00ab37fb30038e2`。
+
+## 2026-07-20 CC98 BD 四位热度口令
+
+- 语义说明：四项证据上传完成后，系统先明确说明 `bd = 帮顶`，并解释点击数字回复的 `bd` 会把该数字按顺序写入四位热度口令；任务栏同步显示当前选择进度和三层来源提示。
+- 帖子玩法：调查帖在原 `23` 楼后新增 `24–31` 楼八条数字候选回复，数字为 `4 / 3 / 1 / 0 / 5 / 2 / 6 / 7`。口令顺序沿用上方材料栏：旧规证明条数、身份通过项数、022 座位末位、到座耗时，正确结果为 `3 / 0 / 2 / 7`。
+- 交互与状态：每条候选回复提供 `bd 选入`，四个槽位支持撤回、清空和提交；第四位选入后自动回到口令面板。`bdSelectedPostIds` 与 `bdPasswordAttemptCount` 由控制器持久化，退出 CC98 并重新进入后仍保留选择。错误提交清空本轮输入并按三层提示解释顺序、操作和干扰信息；正确提交使排名一次从 `04` 更新到 `01`，旧 A/C/E 回复筛选不再出现在界面。
+- 浏览器验收：共享网页游戏客户端已运行并检查剧情说明画面；定向 Chromium 在 `430×860`、`390×844` 验证六句说明、八条回复、四项提示、三次错误提交、`30··` 跨场景保留、`3027` 正确提交、第四位后的自动回位及 `top_ten_reached`。开发版与最终 `file://` 单文件页面及控制台错误均为 `0`，横向溢出为 `0`。
+- 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；JSON 解析、`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,592,139 bytes`，SHA-256 为 `fb2c3b598ea3159d94d6fde08470f5173ba9e8d00669b9dc36d7c889949da031`。
+
+## 2026-07-20 大地图遮挡、寻路、移动与相机控制器集成
+
+- 集成接线：`BootScene` 接入四个新模块——`CampusBuildingLayer` 在 `drawZijingangWorld` 之后为 8 个 landmark/major 建筑生成同源裁剪遮挡 overlay（depth=南缘 y，小地图相机忽略，静止时逐像素一致）；每栋建筑按 `getCollisionRect` 建 invisible rect 加入现有 obstacles static group（Map 保留引用），`onBuildingChanged` 时 setPosition/setSize + `updateFromGameObject()` 同步碰撞体；`RpgMovementController` 接管每帧速度（键盘+虚拟方向 clamp 后 `setManualInput`，每帧唯一 velocity 写入者，220/320 双速与加减速）；`RpgCameraController` 接管相机（follow deadzone 300×180、offset y 34、默认 zoom 0.375、0.0625 档位、小地图 128×128 @ (16,392)、拖拽 8px 阈值与惯性、小地图视口金框与点击跳转），旧 `setupCamera/setupCameraInput/finishCameraDrag/resumeCameraFollow/changeCameraZoom/manualCamera/cameraDragging` 整段删除。
+- 点击寻路：`onWorldTap` → `CampusPathGrid.findPath`，成功则 `setPath` 并画路径指示（金色描边小圆点+终点脉冲圆，沿用 libraryGateMarker 视觉语言，depth=世界 y，小地图忽略，arrived/cancelled 清除），不可达则短暂红色反馈标记；`CLICK_TO_MOVE_ENABLED` 常量可一键关闭。这是本次唯一新增视觉元素。
+- 契约保持：`rpg_camera_recenter` → `recenter(true)`、`rpg_camera_zoom` → `zoomBy(delta)`、`rpg_direction_changed`/`rpg_interact` 不变；`subscribeRpgSceneBridge` 双事件清理不变；library gate marker/prompt/进入、名牌、playerMarker（depth 20000 仅小地图可见）、spawn 选择逻辑不变；`publishDebugState` 的 `camera.mode` 改读 `cameraController.manualMode` 并新增 `path` 字段（followingPath/pathLength）；DEV 下 `registry.set("campusBuildingLayer", ...)` 供控制台调试。
+- 模块修复（接口形状不变）：`RpgCameraController` 补上缺失的 wheel 缩放监听（attach 只注册了 pointer 事件；按原契约实现指针锚点、离散档位、manual 模式，走 120ms 缓动，destroy 同步移除）；`CampusBuildingLayer.build()` 末尾恢复 `texture.firstFrame = "__BASE"`——Phaser 的 `texture.add` 会把 firstFrame 改成首个自定义帧，场景重建时无底图帧参数创建的底图 image 会渲染成裁剪帧（世界黑屏只剩碎片）。
+- 寻路可靠性：采样格从默认 16px 调整为 24px（16px 保守格会把窄于玩家足盒 ~19.5px 的路缘缝隙标为可走，A* 会把玩家引进物理无法穿行的死角被卡死取消）；`handleWorldTap` 改为在足盒空间寻路（起点取 `body.center`、终点按点击点），再换算回精灵锚点空间喂移动控制器，消除路点本身不可达。调整后从图书馆门口点击 950px 外目的地，绕行约 2850px 全程自动到达并清除指示。
+- 浏览器验收：定向 Chromium（gstack）经 `?devCheckpoint=c2-library-gate` 进入：大地图渲染与集成前逐字节一致；WASD 行走 220、SHIFT 跑 320、松手减速刹车；点击寻路全程 arrived、中途 7 个路径点指示可见；建筑北侧被 overlay 完全遮挡、南侧贴边压住建筑；拖拽平移+松手惯性漂移、wheel 缩放落档且 manual、小地图点击跳视角、⌖/+/- 按钮（bridge）正常；走近 (3000,538) 出现 gate 提示，空格进入图书馆 interior；DEV 控制台 `applyTransform("crescent_building", { offsetX: 200, scaleY: 1.3 })` 后 overlay 移动变形、碰撞体同步 (2585,2087,481,476)，`resetTransform` 后画面与初始截图逐字节一致；`game.scene.start` 重启与进出图书馆两种生命周期后底图/overlay/小地图完整；`1280×720` 与 `1280×800` 视口均无拉伸遮挡；`file://` 单文件冒烟与 dev 基线逐字节一致；控制台错误为 0。
+- 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,583,860 bytes`，SHA-256 为 `4a71afca594801adf5b8d943bc5f7a349e623efdfdbea00a5d79953d0d86782c`。
+- 验证边界与遗留：movementEnabled 锁定分支保持原有 setVelocity(0)+静止+toast 逻辑（校园检查点均 seed 解锁状态，该路径代码未变、经类型检查）；applyTransform 后原位 walkability 掩码障碍与原位底图像素仍在（模块既定限制）；小地图始终显示原始底图；QA 截图已全部删除。

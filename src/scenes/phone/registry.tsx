@@ -35,15 +35,15 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   cc98: {
     label: "P02 CC98",
-    contract: "热门话题列表；帖子内容可在页面内编辑并保存到本机。"
+    contract: "仅校园网可进入；热门话题列表与剧情帖子内容保存到本机。"
   },
   zjuding: {
     label: "P15 浙大钉",
-    contract: "流量卡加载；校园网进内页，绿色卡片→签到，底部我的不响应。"
+    contract: "流量或离线卡加载；校园网进内页，绿色卡片→签到，底部我的不响应。"
   },
   tiyi: {
     label: "P06 浙大体艺",
-    contract: "校园网加载3秒闪退（≥3次嘲讽）；流量进入，点黄色47得 d2=7。"
+    contract: "非移动数据加载3秒闪退（≥3次嘲讽）；流量进入，点黄色47得 d2=7。"
   },
   weather: {
     label: "P07 天气",
