@@ -638,12 +638,24 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   }
 
   function openCampusMap() {
+    if (!access.fullCampusMap) {
+      kit.flags.toast("校园地图将在第二章开放。", "system");
+      return;
+    }
     playSfx("01_");
     setOverlay(null);
     const libraryActive = finalsPhase !== "idle" && finalsPhase !== "library_route_unlocked";
     const scene = libraryActive ? state.rpgScene : actOnePhase === "complete" ? "campus_bootstrap" : "dorm_hub";
     if (!kit.actOne.enterRpg(scene)) {
       kit.flags.toast("校园地图还没有响应你的进入请求。", "system");
+    }
+  }
+
+  function returnToLibrary() {
+    playSfx("01_");
+    setOverlay(null);
+    if (!kit.libraryFinals.enterLibrary()) {
+      kit.flags.toast("图书馆现场还没有开放。", "system");
     }
   }
 
@@ -701,7 +713,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   function openCampusCard() {
     playSfx("02_");
     if (!state.items.campusCard) {
-      kit.flags.toast("校园卡还在寝室右侧书桌上。先打开校园地图。", "task");
+      kit.flags.toast("电子校园卡将在第二章寝室任务中取得。", "system");
       return;
     }
     kit.flags.setUi("zjudingPage", "hub");
@@ -1076,7 +1088,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                 <span className="zju-locked-label">022恢复申请</span>
               </span>
             )}
-            <button type="button" data-app-id="返回现场" onClick={openCampusMap}>
+            <button type="button" data-app-id="返回现场" onClick={returnToLibrary}>
               <span aria-hidden="true">↗</span>返回现场
             </button>
           </section>
@@ -1279,7 +1291,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <i className="zju-pass-printer" aria-hidden="true"><b /><b /><b /></i>
               <strong>PASS 已签发</strong>
               <p>凭证只对 RPG 图书馆内的 022 书包生效。</p>
-              <button type="button" onClick={openCampusMap}>回图书馆处理书包</button>
+              <button type="button" onClick={returnToLibrary}>回图书馆处理书包</button>
             </section>
           ) : (
             <button type="button" className="zju-recovery-submit" disabled={submitted.length < 3 || finalsPhase !== "recovery_application"} onClick={generateEvictionPass}>
@@ -1505,7 +1517,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-code" data-locked-app="身份码" aria-hidden="true">
                 <span>◎</span><small className="zju-locked-label">身份码</small>
               </span>
-              <button type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</button>
+              {state.items.campusCard ? (
+                <button type="button" onClick={openCampusCard}><span aria-hidden="true">▣</span>电子校园卡</button>
+              ) : (
+                <span className="zju-static-action zju-locked-icon-slot" data-locked-app="电子校园卡" aria-hidden="true">
+                  <span>▣</span><small className="zju-locked-label">电子校园卡</small>
+                </span>
+              )}
               <span className="zju-static-action zju-locked-icon-slot" data-locked-icon="identity-wallet" data-locked-app="校园钱包" aria-hidden="true">
                 <span>◇</span><small className="zju-locked-label">校园钱包</small>
               </span>
@@ -1527,7 +1545,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           <section className="zju-hub-app-panel" aria-label="浙大钉应用" data-ui-part="application-grid">
             {HUB_APPS.map((app) => {
               const enabled = app.label === "学在浙大"
-                || app.label === "校园地图"
+                || (app.label === "校园地图" && access.fullCampusMap)
                 || (app.label === "图书馆" && access.library);
               return enabled ? (
                 <button key={app.label} type="button" data-app-id={app.label} onClick={() => openApp(app.label, app.page)}>

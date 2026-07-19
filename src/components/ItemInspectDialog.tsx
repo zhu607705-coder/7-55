@@ -59,7 +59,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   campusCard: {
     category: "身份凭证",
     source: "寝室右侧书桌 / 电子校园卡",
-    intro: "姓名和学号用于识别人；余额里有一位数字，负责识别另一件事。"
+    intro: "姓名和学号用于身份核验；余额与校园服务会在后续流程中继续使用。"
   },
   pushTriangle: {
     category: "图形素材",

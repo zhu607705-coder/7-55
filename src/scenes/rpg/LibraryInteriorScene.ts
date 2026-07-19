@@ -161,7 +161,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.updateEntranceDoor(state);
 
     const activeTargets = this.getActiveTargets(state);
-    const nearest = findNearestLibraryTarget(this.player.x, this.player.y, activeTargets);
+    const seatedTarget = seatedConversation
+      ? activeTargets.find((target) => target.id === "seat_022_chair") ?? null
+      : null;
+    const nearest = seatedTarget ?? findNearestLibraryTarget(this.player.x, this.player.y, activeTargets);
     this.publishRuntimeDebug(activeTargets);
     this.updatePrompt(nearest, state);
     this.updateMarkerVisibility(activeTargets, state, nearest);
@@ -1039,6 +1042,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private syncWorldFromState(): void {
     const puzzle = this.bridge.getState().ui.libraryFinalsPuzzle;
+    if (puzzle.playerSeated && puzzle.nextQuestId === null) {
+      const seat = getLibraryTarget("seat_022_chair");
+      this.player.setPosition(seat.x, seat.y).setTexture("act1-player-up-0");
+    }
     this.entranceAccessGranted = puzzle.entranceRecordRead;
     this.setEntranceDoorInstant(shouldOpenLibraryEntranceDoor(
       this.entranceAccessGranted,

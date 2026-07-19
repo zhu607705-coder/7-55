@@ -72,7 +72,7 @@ const ITEM_ORDER: ItemId[] = [
   "libraryPresenceProof",
   "seatReleasePass"
 ];
-const INVENTORY_TOP_DEFAULT = 150;
+const INVENTORY_TOP_DEFAULT = 240;
 const INVENTORY_TOP_MIN = 108;
 const INVENTORY_BOTTOM_GAP = 16;
 const DRAG_START_DISTANCE = 3;

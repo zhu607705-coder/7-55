@@ -1,9 +1,10 @@
 # P12 序章结算
 
 - Scene ID: `ending`
-- Entry: P11 签到成功红闪黑屏后
-- 演出：黑屏（“手机屏幕暗了下去。”）→ 淡入现实世界寝室图 →
-  字幕“签到成功。你还在床上。” → “序章·完” + 进入下一章
-- Assets: `src/assets/ui/dorm_room.png`（pageexample/现实画面.png）
-- 继续条件：`checkinDone === true`
-- 继续结果：保留完整 `GameState`，切换到 `campus_bootstrap` 横屏 RPG；玩家从冻结角色开始第一章启动链
+- Entry: P11 签到成功红闪后
+- Required state: `checkinDone === true`
+- Sequence: `7s` 黑屏 → 经纬度错误框部署 → 三次拦截 → `1400ms` 按住锁定 → 对话 → 白色连闪 → 手机主页
+- Controls: pointer drag, `A/D`, left/right arrows; final lock accepts pointer hold, `Space`, and `Enter`
+- Failure: three misses open a retry state; retry restarts the error-window game without replaying the seven-second blackout
+- Runtime inspection: `window.render_game_to_text().endingGame`
+- Controller gate: `completeNarratorIntervention()` validates three interceptions and the full hold before chapter progression

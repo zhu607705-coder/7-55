@@ -113,41 +113,48 @@ img {
 
 .desktop-gameplay-shell {
   background: #080b0e;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: clamp(330px, 32vw, 430px) minmax(0, 1fr);
-  grid-template-rows: 48px minmax(0, 1fr);
+  display: block;
   height: 100dvh;
   overflow: hidden;
-  padding: 10px;
+  padding: 0;
   position: relative;
   width: 100vw;
 }
 
 .desktop-phone-pane,
 .desktop-rpg-pane {
-  border: 3px solid #46515c;
+  border: 0;
+  inset: 0;
   min-height: 0;
   min-width: 0;
+  opacity: 0;
   overflow: hidden;
-  position: relative;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
 }
 
 .desktop-gameplay-shell[data-active-surface="phone"] .desktop-phone-pane,
 .desktop-gameplay-shell[data-active-surface="rpg"] .desktop-rpg-pane {
-  border-color: #f0d54e;
-  box-shadow: 0 0 0 2px #f0d54e;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .desktop-phone-pane {
-  grid-column: 1;
-  grid-row: 2;
+  background: #11161b;
 }
 
 .desktop-rpg-pane {
   background: #050607;
-  grid-column: 2;
-  grid-row: 2;
+}
+
+.desktop-gameplay-shell > .quest-task-bar--desktop {
+  left: 14px;
+  position: absolute;
+  right: 260px;
+  top: 14px;
+  z-index: 80;
 }
 
 .chapter-intro-overlay {

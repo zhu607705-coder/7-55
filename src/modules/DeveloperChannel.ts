@@ -13,8 +13,8 @@ import {
 } from "../core/StorageKeys";
 
 export type DeveloperCheckpointId =
-  | "c1-alarm" | "c1-home" | "c1-code-hunt" | "c1-dorm-card" | "c1-checkin"
-  | "c2-friend" | "c2-system"
+  | "c1-alarm" | "c1-home" | "c1-code-hunt" | "c1-dorm-card" | "c1-checkin" | "c1-narrator-block"
+  | "c2-friend" | "c2-system" | "c2-inventory" | "c2-system-return"
   | "c2-name" | "c2-exercise" | "c2-triangle" | "c2-weather-water"
   | "c2-mentor-line" | "c2-arrow-assembly" | "c2-balance-shift"
   | "c2-gamepad-market" | "c2-manual-movement" | "c2-dorm-exit"
@@ -27,7 +27,7 @@ export type DeveloperCheckpointId =
   | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result";
 
 type LegacyDeveloperCheckpointId =
-  | "c2-inventory" | "c2-system-return" | "c2-movement" | "c2-seat-022" | "c2-evidence"
+  | "c2-movement" | "c2-seat-022" | "c2-evidence"
   | "c2-top-ten" | "c2-recovery" | "c2-pass";
 
 type DeveloperCheckpointRequestId = DeveloperCheckpointId | LegacyDeveloperCheckpointId;
@@ -44,10 +44,13 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c1-alarm", chapter: "第一章", label: "闹钟开始", detail: "07:55 闹钟振动" },
   { id: "c1-home", chapter: "第一章", label: "手机主页", detail: "散码前" },
   { id: "c1-code-hunt", chapter: "第一章", label: "签到码散落", detail: "四条线索可探索" },
-  { id: "c1-dorm-card", chapter: "第一章", label: "寝室校园卡", detail: "拾取右侧书桌校园卡后查看 ¥0.06 黄零" },
+  { id: "c1-dorm-card", chapter: "第一章", label: "签到页数字", detail: "本周缺勤次数中的 0" },
   { id: "c1-checkin", chapter: "第一章", label: "签到输入", detail: "0798 已集齐" },
+  { id: "c1-narrator-block", chapter: "第一章", label: "错误框拦截", detail: "挡住三次后按住旁白" },
   { id: "c2-friend", chapter: "第二章", label: "朋友追问", detail: "回复签到失败" },
   { id: "c2-system", chapter: "第二章", label: "系统红圈", detail: "浙大钉名字旁" },
+  { id: "c2-inventory", chapter: "第二章", label: "取得校园卡", detail: "寝室右侧个人书桌" },
+  { id: "c2-system-return", chapter: "第二章", label: "返回系统", detail: "再次点击红圈" },
   { id: "c2-name", chapter: "第二章", label: "人物命名", detail: "黄页填写身份" },
   { id: "c2-exercise", chapter: "第二章", label: "启动锻炼", detail: "体艺开始课外锻炼" },
   { id: "c2-triangle", chapter: "第二章", label: "取得三角形", detail: "主页任务推送" },
@@ -84,8 +87,6 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
 
 const CHECKPOINT_IDS = new Set(DEVELOPER_CHECKPOINTS.map((checkpoint) => checkpoint.id));
 const LEGACY_CHECKPOINT_ALIASES: Record<LegacyDeveloperCheckpointId, DeveloperCheckpointId> = {
-  "c2-inventory": "c1-dorm-card",
-  "c2-system-return": "c2-system",
   "c2-movement": "c2-name",
   "c2-seat-022": "c2-seat-arrival",
   "c2-evidence": "c2-catalog",
@@ -123,11 +124,12 @@ function resolveCheckpointId(value: string | null): DeveloperCheckpointId | null
 
 function createActTwoBase(phase: GameState["actOne"]["phase"]): GameState {
   const state = createInitialGameState();
+  const cardRecovered = !["friend_message_required", "system_required", "inventory_required"].includes(phase);
   return {
     ...state,
     currentScene: "phone_home",
     digits: { d1: "0", d2: "7", d3: "9", d4: "8" },
-    items: { ...state.items, campusCard: true },
+    items: { ...state.items, campusCard: cardRecovered },
     flags: {
       ...state.flags,
       codeScattered: true,
@@ -140,8 +142,8 @@ function createActTwoBase(phase: GameState["actOne"]["phase"]): GameState {
     actOne: {
       ...state.actOne,
       phase,
-      inventoryRecovered: true,
-      dormHubUnlocked: true
+      inventoryRecovered: cardRecovered,
+      dormHubUnlocked: !["friend_message_required", "system_required"].includes(phase)
     },
     ui: { ...state.ui, zjudingPage: "hub" }
   };
@@ -242,8 +244,7 @@ function libraryPhaseFor(id: LibraryDeveloperCheckpointId): LibraryFinalsPhase {
   if (id === "c2-occupancy-note") return "occupied_seat_found";
   if (["c2-catalog", "c2-archived-rule", "c2-photo-report", "c2-nonperson-stamp", "c2-seat-receipt", "c2-tiyi-proof", "c2-cc98-upload"].includes(id)) return "evidence_gathering";
   if (id === "c2-bd-rise") return "top_ten_rising";
-  if (id === "c2-recovery-form") return "top_ten_reached";
-  if (id === "c2-pass-generate") return "recovery_application";
+  if (id === "c2-recovery-form" || id === "c2-pass-generate") return "recovery_application";
   if (id === "c2-pass-apply") return "pass_ready";
   if (id === "c2-seat-sit") return "backpack_removed";
   if (id === "c2-seat-dialogue") return "seat_recovered";
@@ -401,10 +402,9 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   if (id === "c1-dorm-card") {
     return {
       ...initial,
-      runtimeMode: "rpg",
-      rpgScene: "dorm_hub",
+      currentScene: "checkin",
       flags: { ...initial.flags, codeScattered: true },
-      actOne: { ...initial.actOne, dormHubUnlocked: true }
+      actOne: { ...initial.actOne, dormHubUnlocked: false }
     };
   }
   if (id === "c1-checkin") {
@@ -412,7 +412,6 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
       ...initial,
       currentScene: "checkin",
       digits: { d1: "0", d2: "7", d3: "9", d4: "8" },
-      items: { ...initial.items, campusCard: true },
       flags: {
         ...initial.flags,
         codeScattered: true,
@@ -420,12 +419,43 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
         tiyiCountTaken: true,
         gearNineTaken: true,
         flowerEightTaken: true
+      }
+    };
+  }
+  if (id === "c1-narrator-block") {
+    return {
+      ...initial,
+      currentScene: "ending",
+      digits: { d1: "0", d2: "7", d3: "9", d4: "8" },
+      flags: {
+        ...initial.flags,
+        codeScattered: true,
+        cardZeroTaken: true,
+        tiyiCountTaken: true,
+        gearNineTaken: true,
+        flowerEightTaken: true,
+        checkinDone: true
       },
-      actOne: { ...initial.actOne, inventoryRecovered: true }
+      actOne: { ...initial.actOne, inventoryRecovered: false, dormHubUnlocked: false }
     };
   }
   if (id === "c2-friend") return createActTwoBase("friend_message_required");
   if (id === "c2-system") return { ...createActTwoBase("system_required"), currentScene: "zjuding" };
+  if (id === "c2-inventory") {
+    return {
+      ...createActTwoBase("inventory_required"),
+      runtimeMode: "rpg",
+      rpgScene: "dorm_hub"
+    };
+  }
+  if (id === "c2-system-return") {
+    const state = createActTwoBase("system_return_required");
+    return {
+      ...state,
+      currentScene: "zjuding",
+      actOne: { ...state.actOne, inventoryRecovered: true }
+    };
+  }
   if ([
     "c2-name", "c2-exercise", "c2-triangle", "c2-weather-water", "c2-mentor-line",
     "c2-arrow-assembly", "c2-balance-shift", "c2-gamepad-market", "c2-manual-movement",
@@ -522,6 +552,7 @@ function checkpointFromLegacyParams(params: URLSearchParams): DeveloperCheckpoin
   if (scene === "cc98") return "c2-gamepad-market";
   if (scene === "zjuding") return page === "library_recovery" ? "c2-recovery-form" : page === "library_catalog" ? "c2-catalog" : "c2-system";
   if (scene === "phone_home") return "c1-code-hunt";
+  if (scene === "ending") return "c1-narrator-block";
   return null;
 }
 

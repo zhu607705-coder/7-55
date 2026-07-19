@@ -5,6 +5,15 @@ import content from "../data/act-one-bootstrap.content.json";
 export type GamepadPurchaseResult = "purchased" | "already_owned" | "insufficient_balance" | "inactive";
 export type GamepadUseResult = "active" | "identity_required" | "exercise_required" | "not_owned" | "inactive";
 
+export interface NarratorInterventionResult {
+  interceptedCount: number;
+  lockHeldMs: number;
+  failed: boolean;
+}
+
+const REQUIRED_NARRATOR_INTERCEPTS = 3;
+const REQUIRED_NARRATOR_LOCK_MS = 1400;
+
 /**
  * Owns the prologue exit and chapter-two movement puzzle facts.
  * Scenes may animate these facts, while only this controller validates progress.
@@ -17,8 +26,7 @@ export class ActOneBootstrapController {
 
   enterRpg(scene: RpgSceneId = "campus_bootstrap"): boolean {
     const state = this.store.getState();
-    const chapterOneDormEntry = state.actOne.phase === "prologue" && state.flags.codeScattered;
-    if (scene === "dorm_hub" && !state.actOne.dormHubUnlocked && !chapterOneDormEntry) {
+    if (scene === "dorm_hub" && !state.actOne.dormHubUnlocked) {
       return false;
     }
     if (state.actOne.gamepadPurchased || state.items.gamepad) {
@@ -36,11 +44,11 @@ export class ActOneBootstrapController {
     return true;
   }
 
-  beginAfterCheckin(): boolean {
-    return this.completeNarratorIntervention();
+  beginAfterCheckin(result: NarratorInterventionResult): boolean {
+    return this.completeNarratorIntervention(result);
   }
 
-  completeNarratorIntervention(): boolean {
+  completeNarratorIntervention(result: NarratorInterventionResult): boolean {
     const state = this.store.getState();
     if (!state.flags.checkinDone) {
       this.events.emit("act2_entry_rejected", { reason: "checkin_incomplete" });
@@ -49,6 +57,20 @@ export class ActOneBootstrapController {
     if (state.actOne.phase !== "prologue") {
       return true;
     }
+    const captureValidated = !result.failed
+      && result.interceptedCount >= REQUIRED_NARRATOR_INTERCEPTS
+      && result.lockHeldMs >= REQUIRED_NARRATOR_LOCK_MS;
+    if (!captureValidated) {
+      this.events.emit("prologue_narrator_capture_rejected", {
+        reason: "capture_incomplete",
+        interceptedCount: result.interceptedCount,
+        requiredIntercepts: REQUIRED_NARRATOR_INTERCEPTS,
+        lockHeldMs: result.lockHeldMs,
+        requiredLockMs: REQUIRED_NARRATOR_LOCK_MS,
+        failed: result.failed
+      });
+      return false;
+    }
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "phone",
@@ -56,7 +78,8 @@ export class ActOneBootstrapController {
       actOne: {
         ...current.actOne,
         phase: "friend_message_required",
-        dormHubUnlocked: true
+        inventoryRecovered: false,
+        dormHubUnlocked: false
       },
       ui: {
         ...current.ui,
@@ -92,41 +115,32 @@ export class ActOneBootstrapController {
       this.events.emit("act2_system_inventory_confirmed", { itemId: "campusCard" });
       return true;
     }
-    this.patch({ phase: "inventory_required" });
+    this.patch({ phase: "inventory_required", dormHubUnlocked: true });
     this.events.emit("act2_system_inventory_requested");
     return true;
   }
 
   recoverInventory(): boolean {
     const state = this.store.getState();
-    const actOne = state.actOne;
-    if (actOne.inventoryRecovered) {
+    if (state.actOne.inventoryRecovered && state.items.campusCard) {
       return true;
     }
-    if (actOne.phase !== "prologue" && actOne.phase !== "inventory_required") {
-      return actOne.inventoryRecovered;
-    }
-    if (actOne.phase === "prologue" && !state.flags.codeScattered) {
+    if (state.actOne.phase !== "inventory_required") {
       return false;
     }
-    const recoveredDuringChapterOne = actOne.phase === "prologue";
-    this.store.setState((state) => ({
-      ...state,
-      items: { ...state.items, campusCard: true },
+    this.store.setState((current) => ({
+      ...current,
+      items: { ...current.items, campusCard: true },
       actOne: {
-        ...state.actOne,
-        phase: recoveredDuringChapterOne ? "prologue" : "system_return_required",
+        ...current.actOne,
+        phase: "system_return_required",
         inventoryRecovered: true,
         dormHubUnlocked: true
       },
-      ui: { ...state.ui, inventoryOpen: true, selectedItem: null }
+      ui: { ...current.ui, inventoryOpen: true, selectedItem: null }
     }));
     this.events.emit("get_item", { itemId: "campusCard", sourceScene: "dorm_hub" });
-    if (recoveredDuringChapterOne) {
-      this.events.emit("act1_campus_card_recovered", { itemId: "campusCard" });
-    } else {
-      this.events.emit("act2_inventory_recovered", { itemId: "campusCard" });
-    }
+    this.events.emit("act2_inventory_recovered", { itemId: "campusCard" });
     return true;
   }
 

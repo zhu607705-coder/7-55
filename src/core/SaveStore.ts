@@ -13,8 +13,8 @@ import type {
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 5;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, SAVE_VERSION]);
+const SAVE_VERSION = 6;
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>(["campus_bootstrap", "dorm_hub", "library_interior"]);
@@ -76,7 +76,7 @@ const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>(
 ]);
 
 interface SaveEnvelope {
-  version: 5;
+  version: 6;
   state: GameState;
   savedAt: number;
 }
@@ -125,18 +125,28 @@ export class SaveStore {
       if (!isRecord(parsed)) return null;
 
       const isVersionedEnvelope = SUPPORTED_ENVELOPE_VERSIONS.has(Number(parsed.version)) && isRecord(parsed.state);
+      const envelopeVersion = isVersionedEnvelope ? Number(parsed.version) : 0;
       const saved = isVersionedEnvelope ? parsed.state as Record<string, unknown> : parsed;
       let actOne = normalizeActOne(saved.actOne, initial.actOne);
       const items = normalizeItems(saved.items, initial.items);
       const digits = normalizeDigits(saved.digits, initial.digits);
       const flags = normalizeFlags(saved.flags, initial.flags);
-      const campusCardRecovered = items.campusCard
+      const campusCardMustBeAbsent = [
+        "prologue",
+        "friend_message_required",
+        "system_required",
+        "inventory_required"
+      ].includes(actOne.phase);
+      const campusCardRecovered = !campusCardMustBeAbsent && (
+        items.campusCard
         || actOne.inventoryRecovered
         || actOne.characterNamed
         || actOne.gamepadPurchased
-        || digits.d1 === "0"
-        || flags.cardZeroTaken;
-      if (campusCardRecovered) {
+      );
+      if (campusCardMustBeAbsent) {
+        items.campusCard = false;
+        actOne = { ...actOne, inventoryRecovered: false };
+      } else if (campusCardRecovered) {
         items.campusCard = true;
         actOne = {
           ...actOne,
@@ -146,9 +156,13 @@ export class SaveStore {
       }
       actOne = {
         ...actOne,
-        dormHubUnlocked: actOne.dormHubUnlocked || flags.codeScattered || actOne.phase !== "prologue"
+        dormHubUnlocked: !["prologue", "friend_message_required", "system_required"].includes(actOne.phase)
       };
       const ui = normalizeUi(saved.ui, initial.ui, !isVersionedEnvelope, actOne);
+      if (envelopeVersion <= 5 && actOne.phase === "system_return_required") {
+        ui.inventoryOpen = false;
+        ui.selectedItem = null;
+      }
       if (actOne.rightArrowAssembled && actOne.balanceShifted && !ui.libraryFinalsPuzzle.seatReceiptCollected) {
         items.rightArrow = true;
       }

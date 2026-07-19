@@ -41,7 +41,7 @@ const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
   laundry_bin: "洗衣篮拒绝提供任何关于签到记录的证词。",
   desk_01: "蓝色台灯亮了。桌面终于像有人认真学习过。",
   desk_02: "书翻到夹着便签的一页：先找到名字，再谈方向。",
-  desk_03: "这是你的书桌。最值钱的东西仍然只有那张校园卡。",
+  desk_03: "这是你的书桌。校园卡压在桌面的纸张旁边。",
   desk_04: "抽屉里有三支没墨的笔，以及非常稳定的失望。",
   wash_basin: "水龙头还能出水。至少寝室里有一个系统响应正常。",
   lower_shelf: "书脊按课程排好，最薄的那本写着《平时分自救》。",
@@ -102,8 +102,7 @@ export class DormHubScene extends Phaser.Scene {
     ensureRpgPlayerTextures(this);
 
     const actOne = this.bridge.getState().actOne;
-    const cardPending = !actOne.inventoryRecovered
-      && (actOne.phase === "prologue" || actOne.phase === "inventory_required");
+    const cardPending = !actOne.inventoryRecovered && actOne.phase === "inventory_required";
     const spawn = cardPending ? { x: 650, y: 920 } : DORM_SPAWN;
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0").setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
@@ -178,7 +177,7 @@ export class DormHubScene extends Phaser.Scene {
       .setDepth(this.player.y + 2050);
 
     const nearest = findNearestDormTarget(this.player.x, this.player.y);
-    const cardPending = !actOne.inventoryRecovered;
+    const cardPending = !actOne.inventoryRecovered && actOne.phase === "inventory_required";
     const nearCard = cardPending
       && Phaser.Math.Distance.Between(this.player.x, this.player.y, DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y) <= DORM_CAMPUS_CARD.proximity;
     this.updatePrompt(nearest, nearCard);
@@ -260,6 +259,26 @@ export class DormHubScene extends Phaser.Scene {
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10000).setAlpha(0);
   }
 
+  private createCampusCardPickup(): void {
+    const actOne = this.bridge.getState().actOne;
+    if (actOne.inventoryRecovered || actOne.phase !== "inventory_required") return;
+    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y).setDepth(1500).setSize(76, 58).setAngle(-3);
+    const glow = this.add.rectangle(0, 0, 52, 35, 0xffe56a, 0.08).setStrokeStyle(2, 0xffe56a, 0.55);
+    const shadow = this.add.rectangle(2, 3, 44, 28, 0x251f1a, 0.38);
+    const card = this.add.rectangle(0, 0, 44, 28, 0xe7edf0).setStrokeStyle(2, 0x173e77);
+    const portrait = this.add.rectangle(-14, 0, 10, 15, 0x6f98c2).setStrokeStyle(1, 0x244c77);
+    const head = this.add.circle(-14, -3, 3, 0xe5b98e);
+    const body = this.add.rectangle(-14, 5, 6, 5, 0x315d8d);
+    const lineA = this.add.rectangle(7, -5, 19, 2, 0x6083a4);
+    const lineB = this.add.rectangle(5, 2, 22, 2, 0x8aa0b4);
+    const lineC = this.add.rectangle(3, 8, 18, 2, 0x8aa0b4);
+    const hitTarget = this.add.rectangle(0, 0, 76, 58, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
+    hitTarget.on("pointerdown", () => this.collectCampusCard());
+    pickup.add([glow, shadow, card, portrait, head, body, lineA, lineB, lineC, hitTarget]);
+    this.campusCardPickup = pickup;
+    this.tweens.add({ targets: [glow, pickup], alpha: { from: 0.72, to: 1 }, y: "-=3", duration: 760, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+  }
+
   private createInteractionTargets(): void {
     for (const target of DORM_INTERACTION_TARGETS) {
       this.add.zone(target.x, target.y, target.width, target.height)
@@ -328,25 +347,6 @@ export class DormHubScene extends Phaser.Scene {
       .setDepth(1202);
   }
 
-  private createCampusCardPickup(): void {
-    if (this.bridge.getState().actOne.inventoryRecovered) return;
-    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y).setDepth(1500).setSize(76, 58).setAngle(-3);
-    const glow = this.add.rectangle(0, 0, 52, 35, 0xffe56a, 0.08).setStrokeStyle(2, 0xffe56a, 0.55);
-    const shadow = this.add.rectangle(2, 3, 44, 28, 0x251f1a, 0.38);
-    const card = this.add.rectangle(0, 0, 44, 28, 0xe7edf0).setStrokeStyle(2, 0x173e77);
-    const portrait = this.add.rectangle(-14, 0, 10, 15, 0x6f98c2).setStrokeStyle(1, 0x244c77);
-    const head = this.add.circle(-14, -3, 3, 0xe5b98e);
-    const body = this.add.rectangle(-14, 5, 6, 5, 0x315d8d);
-    const lineA = this.add.rectangle(7, -5, 19, 2, 0x6083a4);
-    const lineB = this.add.rectangle(5, 2, 22, 2, 0x8aa0b4);
-    const lineC = this.add.rectangle(3, 8, 18, 2, 0x8aa0b4);
-    const hitTarget = this.add.rectangle(0, 0, 76, 58, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
-    hitTarget.on("pointerdown", () => this.collectCampusCard());
-    pickup.add([glow, shadow, card, portrait, head, body, lineA, lineB, lineC, hitTarget]);
-    this.campusCardPickup = pickup;
-    this.tweens.add({ targets: [glow, pickup], alpha: { from: 0.72, to: 1 }, y: "-=3", duration: 760, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
-  }
-
   private triggerInteraction(target: DormInteractionTarget): void {
     if (target.id === "exit_door") {
       this.tryExitDorm();
@@ -354,7 +354,7 @@ export class DormHubScene extends Phaser.Scene {
       return;
     }
 
-    if (target.id === "desk_03" && !this.bridge.getState().actOne.inventoryRecovered) {
+    if (target.id === "desk_03" && this.bridge.getState().actOne.phase === "inventory_required") {
       this.collectCampusCard();
       return;
     }
@@ -524,19 +524,15 @@ export class DormHubScene extends Phaser.Scene {
       this.showFeedback("校园卡已经在物品栏里。");
       return;
     }
-    if (actOne.phase !== "prologue" && actOne.phase !== "inventory_required") {
-      this.showFeedback("桌上的校园卡暂时还不能拿走。");
+    if (actOne.phase !== "inventory_required") {
+      this.showFeedback("当前任务还没有开放校园卡拾取。");
       return;
     }
     this.bridge.emit("rpg_campus_card_collected");
     if (!this.bridge.getState().actOne.inventoryRecovered) return;
     this.campusCardPickup?.destroy();
     this.campusCardPickup = undefined;
-    this.showFeedback(
-      actOne.phase === "prologue"
-        ? `获得校园卡：${actOneContent.studentName} · ${actOneContent.studentId}。回手机查看余额。`
-        : "校园卡重新放回了物品栏。"
-    );
+    this.showFeedback(`获得校园卡：${actOneContent.studentName} · ${actOneContent.studentId}。`);
   }
 
   private updatePlayerAnimation(vector: Phaser.Math.Vector2): void {
@@ -570,7 +566,7 @@ export class DormHubScene extends Phaser.Scene {
       width: target.width,
       height: target.height
     }));
-    if (!state.actOne.inventoryRecovered) {
+    if (!state.actOne.inventoryRecovered && state.actOne.phase === "inventory_required") {
       activeTargets.push({ id: "campus_card", x: DORM_CAMPUS_CARD.x, y: DORM_CAMPUS_CARD.y, width: 76, height: 58 });
     }
     setRpgRuntimeDebugState({

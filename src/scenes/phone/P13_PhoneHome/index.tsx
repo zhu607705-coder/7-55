@@ -21,8 +21,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const { flags, ui } = state;
   const access = selectFeatureAccess(state);
   const friendFollowupPending = state.actOne.phase === "friend_message_required";
-  const dormCardQuestActive = flags.codeScattered && !state.actOne.inventoryRecovered;
-  const chapterServicesOpen = state.actOne.phase !== "prologue" || dormCardQuestActive;
+  const chapterServicesOpen = state.actOne.phase !== "prologue";
   const movementQuestActive = state.actOne.phase === "movement_required" || state.actOne.phase === "movement_ready";
   const bikeArcadeUnlocked = state.bikeArcade.unlocked;
 
@@ -463,21 +462,16 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               </div>
               <time className="note-time">07:50</time>
             </button>
-            {dormCardQuestActive ? (
-              <button
-                type="button"
-                className="note chapter-one-dorm-note"
-                aria-label="浙大钉：查看寝室定位"
-                onClick={() => openApp("zjuding")}
-              >
-                <div className="mini b-light"><img className="note-zjuding-img" alt="" src={zjudingUrl} aria-hidden="true" /></div>
-                <div><div className="note-title">浙大钉</div><div className="note-msg">校园地图仍记得你醒来的位置：寝室。</div></div>
-                <time className="note-time">07:45</time>
-              </button>
-            ) : (
+            {access.fullCampusMap ? (
               <article className="note">
                 <div className="mini b-light"><img className="note-zjuding-img" alt="" src={zjudingUrl} aria-hidden="true" /></div>
                 <div><div className="note-title">浙大钉</div><div className="note-msg">校园地图、图书馆和 CC98 已恢复访问。</div></div>
+                <time className="note-time">07:45</time>
+              </article>
+            ) : (
+              <article className="note">
+                <div className="mini b-light"><img className="note-zjuding-img" alt="" src={zjudingUrl} aria-hidden="true" /></div>
+                <div><div className="note-title">学在浙大</div><div className="note-msg">课堂签到仍在等待四位代码。</div></div>
                 <time className="note-time">07:45</time>
               </article>
             )}

@@ -100,26 +100,27 @@
       "delivery": "deadpan completion notice; let the final sentence land as exhausted mock celebration"
     },
     "prologue_narrator_intro": {
-      "text": "Pfft... Oh, forgive me. I truly meant no offense. It's just... this has the unmistakable shape of failure, doesn't it? So I suppose you will have to get up, drag yourself to class, and face the consequences in person. Best of luck, child. I am leaving before this becomes my problem.",
-      "subtitleZh": "噗……哦，抱歉。我真没想冒犯你。只是……这次失败实在太标准了，对吧？所以你还是得起床，拖着自己去上课，亲自面对后果。祝你好运，孩子。趁这还没变成我的问题，我先走了。",
+      "text": "Well, that failed exactly as expected. Get up, go to class, and deal with it yourself. Best of luck. I'm leaving before this becomes my problem.",
+      "subtitleZh": "嗯，失败得完全符合预期。起床，去上课，自己处理后果吧。祝你好运。趁这还没变成我的问题，我先走了。",
+      "subtitleSegmentsZh": [
+        "嗯，失败得完全符合预期。",
+        "起床，去上课，自己处理后果吧。",
+        "祝你好运。趁这还没变成我的问题，我先走了。"
+      ],
       "tone": "xiaoying",
       "delivery": "British male narrator, dry and condescending; suppress a laugh at the opening, savour the failed result, offer conspicuously false concern, then exit with weary self-preservation",
       "segments": [
         {
-          "text": "Pfft... Oh, forgive me. I truly meant no offense.",
-          "profile": { "speed": 0.88, "pitch": -4 }
+          "text": "Well, that failed exactly as expected.",
+          "profile": { "speed": 0.93, "pitch": -4 }
         },
         {
-          "text": "It's just... this has the unmistakable shape of failure, doesn't it?",
-          "profile": { "speed": 0.82, "pitch": -4 }
+          "text": "Get up, go to class, and deal with it yourself.",
+          "profile": { "speed": 0.98, "pitch": -4 }
         },
         {
-          "text": "So I suppose you will have to get up, drag yourself to class, and face the consequences in person.",
-          "profile": { "speed": 0.91, "pitch": -4 }
-        },
-        {
-          "text": "Best of luck, child. I am leaving before this becomes my problem.",
-          "profile": { "speed": 1.01, "pitch": -4 }
+          "text": "Best of luck. I'm leaving before this becomes my problem.",
+          "profile": { "speed": 1.03, "pitch": -4 }
         }
       ]
     },

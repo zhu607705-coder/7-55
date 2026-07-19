@@ -9,6 +9,7 @@ import { selectQuestViewModel } from "./core/QuestModel";
 import type { GameState } from "./core/types";
 import { applyDeveloperCheckpointFromUrl } from "./modules/DeveloperChannel";
 import { getPresentationRuntimeSnapshot } from "./modules/PresentationRuntime";
+import { getEndingRuntimeSnapshot } from "./scenes/phone/P12_Ending/EndingRuntime";
 import { getBikeArcadeSnapshot } from "./scenes/phone/P16_BikeArcade/BikeArcadeRuntime";
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
 import "@fontsource/fusion-pixel-12px-proportional-sc";
@@ -57,6 +58,7 @@ function summarizeGameState(state: GameState) {
     actOne: state.actOne,
     bikeArcadeChapter: state.bikeArcade,
     presentation: getPresentationRuntimeSnapshot(),
+    endingGame: getEndingRuntimeSnapshot(),
     rpgRuntime: getRpgRuntimeDebugState(),
     bikeArcade: getBikeArcadeSnapshot(),
     ui: {

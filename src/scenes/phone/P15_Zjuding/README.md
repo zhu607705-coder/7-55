@@ -11,6 +11,7 @@
   - 工作台 `hub` → 学在浙大 `learn`
   - 工作台 `hub` → 移动图书馆 `library` → 空间列表 `library_spaces` → 选座 `library_seat`
   - 工作台 `hub` → 电子校园卡 `campus_card`
+  - 校园地图在第一章保持原图标与名称但不可交互，进入第二章后才开放
 - 实现约束：
   - `hub`、`library`、`library_spaces`、`library_seat` 使用原生 React/HTML/CSS；文字、按钮、卡片、列表和座位均为独立 DOM。
   - `pageexample/*_reference.png` 下的四张整页图只作为视觉参考，禁止作为整页背景或热点坐标层进入运行时。

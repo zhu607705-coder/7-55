@@ -91,7 +91,9 @@ export function PhoneShell({
   const stageRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLElement>(null);
   const bare = BARE_SCENES.includes(state.currentScene);
-  const inventorySuppressed = state.actOne.phase === "inventory_required";
+  const inventorySuppressed = ["friend_message_required", "system_required", "inventory_required"].includes(
+    state.actOne.phase
+  );
   const hasInventoryItem = Object.values(state.items).some(Boolean) && !inventorySuppressed;
   // 音乐全局播放（不局限于控制中心打开时）
   useChiptune(state.ui.musicPlaying);

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-16T07:09:14.348Z",
+  "generatedAt": "2026-07-19T06:02:50.711Z",
   "assets": {
     "fx_act1_login_stamp": {
       "path": "act-one/sfx/fx_act1_login_stamp.mp3",
@@ -34,9 +34,9 @@
     },
     "vo_prologue_narrator_intro": {
       "path": "act-one/vo/vo_prologue_narrator_intro.mp3",
-      "durationMs": 23496,
-      "sourceTextHash": "a2a09eac38fb",
-      "sourceProfileHash": "aabe8ad5823c",
+      "durationMs": 9562,
+      "sourceTextHash": "25bdd9de2e39",
+      "sourceProfileHash": "a7acfa2816a8",
       "source": "MiniMax speech-2.8-hd English_expressive_narrator"
     },
     "vo_prologue_narrator_caught": {

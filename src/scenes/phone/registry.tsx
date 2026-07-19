@@ -55,7 +55,7 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   campus_card: {
     label: "P04 校园卡余额",
-    contract: "余额 ¥0.06，点黄色的第二个 0 得 d1=0。"
+    contract: "第二章取得校园卡后显示余额，并接受右移箭头。"
   },
   bike_arcade: {
     label: "P16 求是潮 755",

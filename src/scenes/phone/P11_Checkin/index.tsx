@@ -4,13 +4,13 @@ import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { kit } from "../../../modules/GameKit";
 import { playSfx, type SfxHandle } from "../../../modules/Sfx";
 
-type FinalePhase = "none" | "stamp1" | "stamp2" | "redflash" | "blackout";
+type FinalePhase = "none" | "stamp1" | "stamp2" | "geoerror" | "redflash" | "blackout";
 
 /**
  * P11 校务签到（学在浙大）：4 位签到码输入 + 像素数字键盘。
  * 流量 → 提示请连接校园网；错码 → 报错；0798 → “签”“到”逐字跳出 → 红闪 → 黑屏序章演出。
  */
-export function CheckinScene({ router, events }: SceneComponentProps) {
+export function CheckinScene({ state, router, events }: SceneComponentProps) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
   const [entryPulse, setEntryPulse] = useState<{ id: number; digit: string; slot: number } | null>(null);
@@ -36,7 +36,12 @@ export function CheckinScene({ router, events }: SceneComponentProps) {
       timers.push(window.setTimeout(() => setFinale("stamp2"), 750));
     }
     if (finale === "stamp2") {
-      timers.push(window.setTimeout(() => setFinale("redflash"), 900));
+      timers.push(window.setTimeout(() => setFinale("geoerror"), 900));
+    }
+    if (finale === "geoerror") {
+      kit.flags.shake();
+      events.emit("checkin_geo_error_presented", { longitude: null, latitude: null });
+      timers.push(window.setTimeout(() => setFinale("redflash"), 1350));
     }
     if (finale === "redflash") {
       kit.flags.shake(true);
@@ -99,6 +104,15 @@ export function CheckinScene({ router, events }: SceneComponentProps) {
     setFinale("stamp1");
   }
 
+  function collectAbsenceZero() {
+    if (!state.flags.codeScattered || state.flags.cardZeroTaken) return;
+    playSfx("11_");
+    kit.digits.collectDigit(1, "0", "checkin");
+    kit.flags.setFlag("cardZeroTaken", true);
+    events.emit("checkin_absence_zero_taken");
+    kit.flags.toast("获得第 1 位：0", "task");
+  }
+
   const slots = [0, 1, 2, 3].map((i) => code[i] ?? "");
 
   function returnToZjuding() {
@@ -120,6 +134,15 @@ export function CheckinScene({ router, events }: SceneComponentProps) {
         </div>
         <p>快快老师 · 紫金港西1-201 · 08:00</p>
         <p className="calling">正在点名中……</p>
+        <div className={`checkin-absence ${state.flags.cardZeroTaken ? "is-collected" : ""}`}>
+          <span>本周缺勤</span>
+          {state.flags.codeScattered && !state.flags.cardZeroTaken ? (
+            <button type="button" aria-label="收集本周缺勤次数零" onClick={collectAbsenceZero}>0</button>
+          ) : (
+            <strong>0</strong>
+          )}
+          <span>次</span>
+        </div>
       </article>
 
       <div className={`checkin-slots ${error ? "is-error" : ""} ${code.length === 4 ? "is-ready" : ""}`.trim()} aria-label="签到码输入">
@@ -169,6 +192,14 @@ export function CheckinScene({ router, events }: SceneComponentProps) {
               <span className="stamp-char">签</span>
               {finale === "stamp2" ? <span className="stamp-char delay">到</span> : null}
             </div>
+          ) : null}
+          {finale === "geoerror" ? (
+            <section className="checkin-geo-error" role="alertdialog" aria-labelledby="checkin-geo-error-title">
+              <header><span>LOCATION ERROR</span><i aria-hidden="true">×</i></header>
+              <strong id="checkin-geo-error-title">经度与纬度不存在</strong>
+              <p>longitude: null<br />latitude: null</p>
+              <small>ERR_GEO_0798</small>
+            </section>
           ) : null}
           {finale === "redflash" ? <div className="red-flash" aria-hidden="true" /> : null}
           {finale === "blackout" ? (

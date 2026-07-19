@@ -233,7 +233,7 @@ export function RpgGameHost({
 
   useEffect(() => {
     return events.subscribe((event) => {
-      if (event.name === "rpg_campus_card_collected" || event.name === "rpg_inventory_chest_opened") {
+      if (event.name === "rpg_campus_card_collected") {
         controller.recoverInventory();
       } else if (event.name === "rpg_character_inspected") {
         controller.inspectCharacter();
@@ -407,11 +407,11 @@ export function RpgGameHost({
           </>
         ) : null}
 
-        {(state.items.campusCard || state.items.gamepad || state.actOne.gamepadPurchased) && runtimeScene !== "library_interior" ? (
+        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad || state.actOne.gamepadPurchased) && runtimeScene !== "library_interior" ? (
           <aside className="rpg-temp-inventory" aria-label="地图物品栏">
             <strong>物品栏</strong>
             <div className="rpg-temp-items">
-              {state.items.campusCard ? (
+              {state.actOne.inventoryRecovered && state.items.campusCard ? (
                 <button
                   type="button"
                   aria-label="查看电子校园卡"

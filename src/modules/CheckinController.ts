@@ -11,7 +11,7 @@ export class CheckinController {
     private readonly events: EventBus
   ) {}
 
-  /** 校务签到提交规则：必须校园网；码必���为 0798。 */
+  /** 校务签到提交规则：必须校园网；签到码必须为 0798。 */
   submit(code: string): CheckinResult {
     const state = this.store.getState();
 

@@ -57,7 +57,13 @@ export function App() {
   useEffect(() => {
     const detachAudio = audioDirector.attach(eventBus);
     const detachPresentation = presentationDirector.attach(gameStore, eventBus);
+    const detachSurfaceSync = eventBus.subscribe((event) => {
+      if (["act2_rpg_entered", "library_entered", "library_reentered"].includes(event.name)) {
+        setActiveSurface("rpg");
+      }
+    });
     return () => {
+      detachSurfaceSync();
       detachPresentation();
       detachAudio();
     };

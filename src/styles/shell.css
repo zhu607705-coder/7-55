@@ -10,7 +10,7 @@
 }
 
 .quest-task-bar--phone {
-  left: 125px;
+  left: 96px;
   position: absolute;
   top: 5px;
   width: 150px;
@@ -1011,7 +1011,7 @@
   align-items: flex-start;
   left: 0;
   position: absolute;
-  top: 150px;
+  top: 240px;
   z-index: 45;
 }
 

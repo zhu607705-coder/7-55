@@ -39,7 +39,6 @@ function chapterOneQuest(state: GameState): QuestViewModel {
   const digitCount = Object.values(state.digits).filter(Boolean).length;
   const sources: StepSource[] = [
     { id: "friend_message", label: "查看朋友消息", done: state.flags.codeScattered },
-    { id: "campus_card", label: "取得寝室校园卡", done: state.items.campusCard },
     { id: "digit_1", label: "找回第 1 位签到码", done: digitCount >= 1 },
     { id: "digit_2", label: "找回第 2 位签到码", done: digitCount >= 2 },
     { id: "digit_3", label: "找回第 3 位签到码", done: digitCount >= 3 },
@@ -53,13 +52,6 @@ function chapterOneQuest(state: GameState): QuestViewModel {
       hints: ["从手机里的聊天应用开始。", "朋友消息会说明签到遇到的异常。", "查看微信会话列表里带新提示的联系人。"],
       targetSurface: "phone",
       recommendedScene: "wechat"
-    };
-  } else if (!state.items.campusCard) {
-    next = {
-      objective: "在寝室找到校园卡",
-      hints: ["浙大钉里保留了寝室地图入口。", "校园卡属于个人物品，位置靠近个人桌面。", "从浙大钉的校园地图进入寝室，检查右侧书桌。"],
-      targetSurface: "phone",
-      recommendedScene: "zjuding"
     };
   } else if (digitCount < 4) {
     next = {
@@ -149,9 +141,13 @@ function libraryQuest(state: GameState): QuestViewModel {
     entrance_record: rpg("读取基础图书馆入馆记录", ["入口闸机保存了访问记录。", "记录能确认目标座位仍有未闭合会话。", "聚焦图书馆地图，在入口前台附近交互。"]),
     seat_022: rpg("前往二层南区寻找 022", ["入馆记录已经给出座位区域。", "目标会话与一个具体座位相连。", "在阅览区找到 022 并检查占座书包。"]),
     note: rpg("检查书包旁留下的信息"),
-    catalog: phone("用纸条查找公开记录，再核对馆藏", "cc98", ["占座纸条可以作为论坛搜索材料。", "公开记录会提到一条旧版离座规则。", "先将纸条拖到 CC98 搜索，再到浙大钉馆藏检索核对书名。"]),
+    catalog: puzzle.investigationOpened
+      ? phone("在浙大钉馆藏检索核对书名", "zjuding", ["调查帖已经给出题名线索。", "下一步需要核对馆藏中的索书号。", "进入浙大钉图书馆，打开馆藏检索。"])
+      : phone("用纸条查找公开记录", "cc98", ["占座纸条可以作为论坛搜索材料。", "公开记录会提到一条旧版离座规则。", "进入 CC98，将占座纸条拖到搜索框。"]),
     rule: rpg("按索书号找到旧版规则"),
-    proof_nonperson: phone("生成并盖章物品识别报告", "photos"),
+    proof_nonperson: puzzle.itemReportGenerated
+      ? rpg("把识别报告交给失物身份登记机")
+      : phone("生成物品识别报告", "photos"),
     proof_receipt: rpg("检查 022 桌面夹缝"),
     proof_presence: phone("核对本人到馆记录", "tiyi"),
     cc98_upload: phone(`上传四项公示材料（${puzzle.cc98UploadedEvidenceIds.length}/4）`, "cc98", ["旧规则和三份证明都属于公示材料。", "每个上传槽只接受对应类型的纸质道具。", "进入 CC98 调查帖，将兼容道具拖到四个上传槽。"]),

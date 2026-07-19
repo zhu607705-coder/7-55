@@ -151,6 +151,44 @@
         }
       ]
     },
+    "prologue_error_intercepted": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_login_stamp",
+          "volume": 0.52
+        }
+      ]
+    },
+    "prologue_error_intercept_missed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_controls_install",
+          "volume": 0.34,
+          "playbackRate": 0.78
+        }
+      ]
+    },
+    "prologue_error_round_failed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_controls_install",
+          "volume": 0.42,
+          "playbackRate": 0.64
+        }
+      ]
+    },
+    "prologue_error_lock_ready": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_act1_movement_unlock",
+          "volume": 0.48
+        }
+      ]
+    },
     "prologue_narrator_caught": {
       "cues": [
         {
@@ -563,4 +601,3 @@
     }
   }
 }
-

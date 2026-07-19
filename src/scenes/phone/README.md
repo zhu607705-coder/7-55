@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | P00_Alarm | `alarm` | 闹钟：振动+音效，关闭进入 P01 |
 | P01_Desktop | `desktop` | 再睡5分钟 → 旁白 → 起床蠢货！！！ |
-| P04_CampusCard | `campus_card` | 校园卡余额 ¥0.06，黄色 0 → d1 |
+| P04_CampusCard | `campus_card` | 第二章校园卡余额与右移箭头交互 |
 | P06_Tiyi | `tiyi` | 校园网闪退线 / 流量 47 → d2 |
 | P10_Bonsai | `bonsai` | 盆栽三步开花 → d4 |
 | P11_Checkin | `checkin` | 学在浙大签到 0798 → 红闪黑屏 |

@@ -4,14 +4,11 @@ import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import { kit } from "../../../modules/GameKit";
 import { playSfx } from "../../../modules/Sfx";
-import { playVo } from "../../../modules/VoicePlayer";
 
 /**
- * P04 校园卡余额（浙大钉「我的」页）：余额 ¥0.06，第二个 0 是黄色的。
- * 点击黄色 0 → 获得第 1 位：0，系统嘲讽“余额暂时不足以购买尊严”。
+ * P04 校园卡余额（浙大钉「我的」页）：第二章取得校园卡后显示余额并承接右移箭头交互。
  */
 export function CampusCardScene({ state, router, events }: SceneComponentProps) {
-  const taken = state.flags.cardZeroTaken;
   const [balanceAnimating, setBalanceAnimating] = useState(false);
   const movementQuestActive = state.actOne.phase === "movement_required" || state.actOne.phase === "movement_ready";
   const shifted = state.actOne.balanceShifted;
@@ -46,24 +43,6 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
   function returnToZjuding() {
     kit.flags.setUi("zjudingPage", "hub");
     router.goTo("zjuding");
-  }
-
-  function collectZero() {
-    if (!state.items.campusCard || !state.actOne.inventoryRecovered) {
-      kit.flags.toast("先去浙大钉的校园地图，拿到寝室右侧书桌上的校园卡。", "task");
-      return;
-    }
-    if (taken) {
-      kit.flags.toast("那个 0 已经被你抠走了。卡面上留着一个洞。");
-      return;
-    }
-    playSfx("11_");
-    window.setTimeout(() => playSfx("10_"), 250);
-    playVo("sys_balance", { subtitle: true });
-    kit.digits.collectDigit(1, "0", "campus_card");
-    kit.flags.setFlag("cardZeroTaken", true);
-    events.emit("card_zero_taken");
-    kit.flags.toast("获得第 1 位：0", "task");
   }
 
   return (
@@ -124,19 +103,7 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
                     {balanceAnimating ? <i className="balance-shift-arrow" aria-hidden="true">→</i> : null}
                   </>
                 ) : (
-                  <>
-                    ¥<span>0</span>
-                    <span>.</span>
-                    <button
-                      type="button"
-                      className={`yellow-zero ${taken ? "is-taken" : ""}`}
-                      aria-label="黄色的零"
-                      onClick={collectZero}
-                    >
-                      {taken ? "▢" : "0"}
-                    </button>
-                    <span>6</span>
-                  </>
+                  <>¥<span>0.06</span></>
                 )}
               </dd>
             </div>
