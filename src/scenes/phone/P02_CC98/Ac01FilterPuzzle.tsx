@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import forumTreasureUrl from "../../../assets/ui/cc98_forum_treasure.png";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
 import { kit } from "../../../modules/GameKit";
+import { CC98_READABLE_STORY_FLOORS } from "../../../modules/library-finals/puzzleRules";
 
 interface Ac01FilterPuzzleProps {
   optionalAc01Floors: number[];
@@ -14,7 +15,7 @@ interface FloorReply {
   role: string;
   text: string;
   quote?: string;
-  ac01?: boolean;
+  readable?: boolean;
   media?: "cc98_forum_treasure";
   caption?: string;
 }
@@ -23,7 +24,7 @@ const cc98Content = libraryFinalsContent.cc98;
 const OPTIONAL_AC01_REPLIES = new Map<number, FloorReply>(
   cc98Content.optionalAc01Replies.map((reply) => [
     reply.floor,
-    { ...reply, role: "水帖", ac01: true }
+    { ...reply, role: "水帖" }
   ])
 );
 const STORY_REPLIES = new Map<number, FloorReply>(
@@ -31,6 +32,7 @@ const STORY_REPLIES = new Map<number, FloorReply>(
     reply.floor,
     {
       ...reply,
+      readable: CC98_READABLE_STORY_FLOORS.includes(reply.floor as typeof CC98_READABLE_STORY_FLOORS[number]),
       media: "media" in reply && reply.media === "cc98_forum_treasure"
         ? "cc98_forum_treasure"
         : undefined,
@@ -38,7 +40,6 @@ const STORY_REPLIES = new Map<number, FloorReply>(
     }
   ])
 );
-const OPTIONAL_AC01_FLOORS = new Set(OPTIONAL_AC01_REPLIES.keys());
 const FILLER_AUTHORS = cc98Content.fillerReplies.authors;
 const FILLER_TEXT = cc98Content.fillerReplies.texts;
 
@@ -59,7 +60,7 @@ function buildFloors(): FloorReply[] {
   });
 }
 
-/** 23 楼占座调查帖；5 条 ac01 只记录阅读，不参与通关校验。 */
+/** 23 楼占座调查帖；5 个重点楼层可标记已读，不参与通关校验。 */
 export function Ac01FilterPuzzle({ optionalAc01Floors, showBdContent = false }: Ac01FilterPuzzleProps) {
   const floors = useMemo(buildFloors, []);
 
@@ -70,17 +71,20 @@ export function Ac01FilterPuzzle({ optionalAc01Floors, showBdContent = false }: 
           <strong>23 楼调查记录</strong>
           <p>关键线索分布在不同用户的回复和引用中。</p>
         </div>
-        <span aria-live="polite">ac01 已读 {optionalAc01Floors.length}/5</span>
+        <span aria-live="polite">重点楼层已读 {optionalAc01Floors.length}/5</span>
       </header>
 
       <div className="cc98-investigation-floors">
         {floors.map((reply) => {
-          const bdHidden = !showBdContent && (reply.media === "cc98_forum_treasure" || /\bbd\b/i.test(reply.text));
+          const alwaysVisibleStoryFloor = reply.floor === 16 || reply.floor === 18;
+          const bdHidden = !alwaysVisibleStoryFloor
+            && !showBdContent
+            && (reply.media === "cc98_forum_treasure" || /\bbd\b/i.test(reply.text));
           const optionalRead = optionalAc01Floors.includes(reply.floor);
           return (
             <article
               key={reply.floor}
-              className={`cc98-investigation-floor ${STORY_REPLIES.has(reply.floor) ? "is-story-floor is-story-checked" : ""} ${reply.ac01 ? "is-ac01-floor" : ""}`.trim()}
+              className={`cc98-investigation-floor ${STORY_REPLIES.has(reply.floor) ? "is-story-floor is-story-checked" : ""} ${reply.readable ? "is-ac01-floor" : ""}`.trim()}
               data-investigation-floor={reply.floor}
             >
               <header>
@@ -100,14 +104,14 @@ export function Ac01FilterPuzzle({ optionalAc01Floors, showBdContent = false }: 
                   <figcaption>{reply.caption ?? "bd"}</figcaption>
                 </figure>
               ) : null}
-              {reply.ac01 ? (
+              {reply.readable ? (
                 <button
                   type="button"
                   className="cc98-ac01-read"
                   disabled={optionalRead}
                   onClick={() => kit.libraryFinals.inspectOptionalAc01(reply.floor)}
                 >
-                  {optionalRead ? "已记下这条水帖" : "读一下（可选）"}
+                  {optionalRead ? "已读" : "读一下"}
                 </button>
               ) : null}
             </article>
@@ -115,9 +119,6 @@ export function Ac01FilterPuzzle({ optionalAc01Floors, showBdContent = false }: 
         })}
       </div>
 
-      <footer className="cc98-investigation-count">
-        {OPTIONAL_AC01_FLOORS.size} 条 ac01 全部为可选内容；证据进度不会因此变化。
-      </footer>
     </section>
   );
 }

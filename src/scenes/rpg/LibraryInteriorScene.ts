@@ -313,7 +313,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     if (
       target.id === "front_desk"
-      && !puzzle.itemReportGenerated
+      && puzzle.archivedRuleCollected
       && !puzzle.nonPersonProofStamped
     ) {
       if (!this.frontDeskDialogueShown) {
@@ -341,7 +341,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
       if (target.id === "seat_022_backpack") return puzzle.entranceRecordRead && !puzzle.backpackEvicted;
       if (target.id === "seat_022_gap") return puzzle.backpackInspected && !puzzle.seatReceiptCollected;
       if (target.id === "library_shelf_755") return puzzle.callNumberCollected && !puzzle.archivedRuleCollected;
-      if (target.id === "lost_found_machine") return puzzle.itemReportGenerated && !puzzle.nonPersonProofStamped;
+      if (target.id === "lost_found_machine") {
+        return puzzle.archivedRuleCollected && puzzle.itemReportGenerated && !puzzle.nonPersonProofStamped;
+      }
       if (target.id === "seat_022_chair") return puzzle.backpackEvicted && puzzle.nextQuestId === null;
       return true;
     });
@@ -395,6 +397,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (targetId === "front_desk") {
+      if (!puzzle.archivedRuleCollected) {
+        return "前台：请先确认需要办理的事项。";
+      }
       if (!puzzle.nonPersonProofStamped) {
         const line = FRONT_DESK_PRE_REPORT_LINES[Math.min(this.frontDeskPreReportHintStep, FRONT_DESK_PRE_REPORT_LINES.length - 1)];
         this.frontDeskPreReportHintStep += 1;

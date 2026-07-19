@@ -238,8 +238,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
     events.emit("act2_mentor_line_stuck");
     const hints = [
       "这条竖线被透明胶和两枚卡扣封在头像框里。",
-      "硬拽只会让卡扣更紧。先让黏着处变滑一点。",
-      "天气页正在下雨。带一滴水回来试试。"
+      "硬拽只会让卡扣更紧。先让黏着处变滑一点。"
     ];
     const hintIndex = Math.min(mentorHintStep, hints.length - 1);
     kit.flags.toast(hints[hintIndex], "system");

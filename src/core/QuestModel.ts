@@ -53,7 +53,7 @@ function chapterOneQuest(state: GameState): QuestViewModel {
   } else if (digitCount < 4) {
     next = {
       objective: `找回四位签到码（${digitCount}/4）`,
-      hints: ["数字分散在校园卡、体艺、主屏设置和植物相关界面。", "每个数字都需要一次观察、翻转或组合。", "依次检查校园卡余额、体艺记录、设置齿轮背面和盆栽。"],
+      hints: ["数字分散在校园卡、体艺、主屏设置和植物相关界面。", "道具可以组合。看看控制中心的各种按键。", "光照把控制中心的光拉满。齿轮和微信斜线用自动旋转转下来。"],
       targetSurface: "phone",
       recommendedScene: "phone_home"
     };
@@ -81,7 +81,7 @@ function movementQuest(state: GameState): QuestViewModel {
     { id: "respond", label: "让地图人物回应你", done: state.actOne.characterNamed },
     { id: "move", label: "让地图人物动起来", done: state.actOne.exerciseStarted },
     { id: "direction", label: "找到控制方向的方法", done: state.actOne.gamepadPurchased },
-    { id: "library", label: "去图书馆", done: state.actOne.phase === "complete" }
+    { id: "library", label: "去图书馆", done: state.ui.libraryFinalsPuzzle.occupancyNoteCollected }
   ];
   const nextById: Record<string, NextAction> = {
     respond: {
@@ -98,13 +98,13 @@ function movementQuest(state: GameState): QuestViewModel {
     },
     direction: {
       objective: "找到控制方向的方法",
-      hints: ["他会走，但不知道听谁指挥。", "论坛里可能有人卖很便宜的控制设备。", "去 CC98 二手交易，用处理过的校园卡余额买手柄。"],
+      hints: ["论坛里可能有人卖很便宜的控制设备。", "去 CC98 二手交易，用处理过的校园卡余额买手柄。", "组合成箭头放在校园卡余额上，小数点右移两位。"],
       targetSurface: "phone",
       recommendedScene: "cc98"
     },
     library: {
       objective: "去图书馆",
-      hints: ["你已经能控制小人了。", "系统朋友在图书馆，不在寝室门口。", "操控小人离开寝室，在校园地图上前往图书馆。"],
+      hints: ["你已经能控制小人了。", "系统朋友在图书馆，不在寝室门口。", "操控小人前往图书馆二楼南区 022，检查座位并拿起占座纸条。"],
       targetSurface: "rpg"
     }
   };
@@ -124,8 +124,6 @@ function libraryQuest(state: GameState): QuestViewModel {
   const puzzle = state.ui.libraryFinalsPuzzle;
   const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
   const sources: StepSource[] = [
-    { id: "reserve", label: "预约 022", done: state.ui.librarySeatReserved && state.ui.librarySelectedSeat === "022" },
-    { id: "confirm", label: "确认座位状态", done: puzzle.occupancyNoteCollected },
     { id: "rules", label: "查清占座规则", done: puzzle.archivedRuleCollected },
     { id: "materials", label: "凑齐恢复材料", done: proofCount === 3 },
     { id: "visibility", label: "让帖子被看见", done: puzzle.bdCount >= 3 },
@@ -136,10 +134,8 @@ function libraryQuest(state: GameState): QuestViewModel {
   const phone = (objective: string, scene: SceneId, hints = DEFAULT_HINTS): NextAction => ({ objective, recommendedScene: scene, targetSurface: "phone", hints });
   const rpg = (objective: string, hints = DEFAULT_HINTS): NextAction => ({ objective, targetSurface: "rpg", hints });
   const next: Record<string, NextAction> = {
-    reserve: phone("预约 022", "zjuding", ["系统朋友绑定在一个座位上。", "没有预约，图书馆不会承认你和它有关系。", "去浙大钉图书馆预约二楼南区 022。"]),
-    confirm: rpg("确认座位状态", ["手机里预约成功，不代表现场没问题。", "去 RPG 图书馆地图找 022。", "检查 022 上的东西和旁边的纸条。"]),
     rules: phone("查清占座规则", "cc98", ["纸条提到了一个更吵的地方。", "CC98 里有人讨论过 022。", "用占座纸条搜索 CC98，再顺着帖子找旧规则。"]),
-    materials: phone(`凑齐恢复材料（${proofCount}/3）`, "photos", ["旧规则说恢复座位需要三种证明。", "分别证明“你来过”“座位是 022”“书包不是本人”。", "照片、座位夹缝和体艺都能帮上忙。"]),
+    materials: phone(`凑齐恢复材料（${proofCount}/3）`, "photos", ["照片、座位夹缝和体艺都能帮上忙。", "曝光了就把光调小", "体艺 7,47,3"]),
     visibility: phone("让帖子被看见", "cc98", ["上传证据只是让它存在。", "管理员只会处理足够显眼的问题。", "选择能和证据对应上的回复 bd。"]),
     application: phone("提交恢复申请", "zjuding", ["帖子热度已经触发图书馆 App。", "恢复申请不需要所有材料，只需要三份证明。", "把三份证明拖进图书馆恢复申请槽。"]),
     return: rpg("回到 022", ["申请通过不等于书包会自己走。", "PASS 要在现场使用。", "回 RPG 图书馆，把 PASS 用在 022 的书包上。"])
@@ -177,6 +173,6 @@ export function selectQuestViewModel(state: GameState): QuestViewModel {
   const access = selectFeatureAccess(state);
   if (access.chapter === "chapter_one") return chapterOneQuest(state);
   if (access.chapter === "chapter_three") return chapterThreeQuest(state);
-  if (state.actOne.phase !== "complete" && state.ui.libraryFinalsPhase === "idle") return movementQuest(state);
+  if (!state.ui.libraryFinalsPuzzle.occupancyNoteCollected) return movementQuest(state);
   return libraryQuest(state);
 }

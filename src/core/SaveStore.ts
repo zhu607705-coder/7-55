@@ -12,6 +12,7 @@ import type {
 } from "./types";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
+import { CC98_READABLE_STORY_FLOORS } from "../modules/library-finals/puzzleRules";
 
 const SAVE_VERSION = 5;
 const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, SAVE_VERSION]);
@@ -360,7 +361,8 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
     backpackInspected: booleanOr(saved.backpackInspected, initial.backpackInspected),
     occupancyNoteCollected: booleanOr(saved.occupancyNoteCollected, initial.occupancyNoteCollected),
     investigationOpened: booleanOr(saved.investigationOpened, initial.investigationOpened),
-    optionalAc01Floors: rangedIntegerArray(saved.optionalAc01Floors, 1, 23, initial.optionalAc01Floors, 5),
+    optionalAc01Floors: rangedIntegerArray(saved.optionalAc01Floors, 1, 23, initial.optionalAc01Floors, 5)
+      .filter((floor) => CC98_READABLE_STORY_FLOORS.includes(floor as typeof CC98_READABLE_STORY_FLOORS[number])),
     catalogSearchCompleted: booleanOr(saved.catalogSearchCompleted, initial.catalogSearchCompleted),
     callNumberCollected: booleanOr(saved.callNumberCollected, initial.callNumberCollected),
     archivedRuleCollected: booleanOr(saved.archivedRuleCollected, initial.archivedRuleCollected),

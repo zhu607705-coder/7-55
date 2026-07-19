@@ -13,6 +13,7 @@ import type {
   UiState
 } from "../core/types";
 import {
+  CC98_READABLE_STORY_FLOORS,
   hasAllEvidence,
   hasRecoveryEvidence,
   isLibraryEvidenceId,
@@ -174,6 +175,7 @@ export class LibraryFinalsController {
       || !Number.isInteger(floor)
       || floor < 1
       || floor > LIBRARY_FINALS_PUZZLE_CONFIG.threadFloorCount
+      || !CC98_READABLE_STORY_FLOORS.includes(floor as typeof CC98_READABLE_STORY_FLOORS[number])
       || puzzle.optionalAc01Floors.includes(floor)
       || puzzle.optionalAc01Floors.length >= LIBRARY_FINALS_PUZZLE_CONFIG.optionalAc01Count
     ) {
@@ -262,7 +264,12 @@ export class LibraryFinalsController {
 
   stampNonPersonProof(): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "evidence_gathering" || !puzzle.itemReportGenerated || puzzle.nonPersonProofStamped) {
+    if (
+      this.getPhase() !== "evidence_gathering"
+      || !puzzle.archivedRuleCollected
+      || !puzzle.itemReportGenerated
+      || puzzle.nonPersonProofStamped
+    ) {
       return false;
     }
     this.patchGame("evidence_gathering", {

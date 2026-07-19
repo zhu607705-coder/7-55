@@ -34,6 +34,8 @@ const RECOVERY_EVIDENCE_IDS = new Set<LibraryRecoveryEvidenceId>([
   "library_presence_proof"
 ]);
 
+export const CC98_READABLE_STORY_FLOORS = Object.freeze([1, 4, 12, 18, 23] as const);
+
 function positiveInteger(value: number, field: string): number {
   if (!Number.isInteger(value) || value <= 0) {
     throw new Error(`library-finals.puzzle.json contains an invalid ${field}`);
