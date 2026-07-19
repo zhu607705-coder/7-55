@@ -128,7 +128,13 @@ export class AudioDirector {
     if (!beat) {
       return;
     }
-    beat.cues.forEach((cue) => {
+    const cues = cueId === "library_story_line"
+      ? beat.cues.map((cue) => ({
+          ...cue,
+          subtitleKey: String(event.payload?.subtitleKey ?? cue.subtitleKey ?? "")
+        }))
+      : beat.cues;
+    cues.forEach((cue) => {
       const onceKey = cue.asset ?? `${cueId}:${cue.subtitleKey ?? cue.channel}`;
       if (cue.once && this.playedOnce.has(onceKey)) {
         return;

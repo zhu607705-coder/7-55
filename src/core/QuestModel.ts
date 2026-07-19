@@ -171,7 +171,11 @@ function libraryQuest(state: GameState): QuestViewModel {
     { id: "sit", label: "坐到 022", done: puzzle.playerSeated },
     { id: "dialogue", label: "完成 022 对话", done: puzzle.nextQuestId === "chapter_three_book_hunt" }
   ];
-  const nextId = sources.find((step) => !step.done)?.id ?? "dialogue";
+  const firstIncompleteId = sources.find((step) => !step.done)?.id ?? "dialogue";
+  const nextId = ["bd_briefing", "top_ten_rising"].includes(state.ui.libraryFinalsPhase)
+    && !puzzle.preBdBriefingSeen
+    ? "bd_briefing"
+    : firstIncompleteId;
   const phone = (objective: string, scene: SceneId, hints = DEFAULT_HINTS): NextAction => ({ objective, recommendedScene: scene, targetSurface: "phone", hints });
   const rpg = (objective: string, hints = DEFAULT_HINTS): NextAction => ({ objective, targetSurface: "rpg", hints });
   const next: Record<string, NextAction> = {
@@ -190,6 +194,7 @@ function libraryQuest(state: GameState): QuestViewModel {
     proof_receipt: rpg("检查 022 桌面夹缝"),
     proof_presence: phone("核对本人到馆记录", "tiyi"),
     cc98_upload: phone(`上传四项公示材料（${puzzle.cc98UploadedEvidenceIds.length}/4）`, "cc98", ["旧规则和三份证明都属于公示材料。", "每个上传槽只接受对应类型的纸质道具。", "进入 CC98 调查帖，将兼容道具拖到四个上传槽。"]),
+    bd_briefing: phone("确认系统说明，开始筛选有效回复", "cc98", ["四项材料已经公开。", "下一阶段只接受现有证据能够支持的回复。", "继续当前剧情说明。"]),
     bd_one: phone("选择与证据一致的回复推进排名", "cc98"),
     bd_two: phone("继续筛选有效回复推进排名", "cc98"),
     bd_three: phone("完成最后一次有效回复", "cc98"),

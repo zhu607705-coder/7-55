@@ -64,7 +64,6 @@ export function TopTenRisePuzzle({
   const [rankAnimating, setRankAnimating] = useState(false);
   const [topTenBurst, setTopTenBurst] = useState(false);
   const [invalidReplyKey, setInvalidReplyKey] = useState<ReplyOption["key"] | null>(null);
-  const [briefingLine, setBriefingLine] = useState(0);
   const previousUploadedRef = useRef(uploadedEvidenceIds);
   const previousBdCountRef = useRef(bdCount);
   const uploadTimerRef = useRef<number | null>(null);
@@ -73,11 +72,6 @@ export function TopTenRisePuzzle({
   const invalidTimerRef = useRef<number | null>(null);
   const allUploaded = uploadedEvidenceIds.length === EVIDENCE.length;
   const rank = String(4 - bdCount).padStart(2, "0");
-  const briefingLines = [
-    "四份证据都公开了，但帖子的流量还不够。",
-    "只选能被现有证据支持的回复。三类证明各对应一条有效回复。",
-    "完成三次有效 bd，把排名从 04 推进到 01。"
-  ];
 
   useEffect(() => {
     const previous = previousUploadedRef.current;
@@ -124,29 +118,29 @@ export function TopTenRisePuzzle({
   useEffect(() => {
     if (!events) return undefined;
     return events.subscribe((event) => {
-    if (event.name === "inventory_drag_started") {
-      setDraggedItem(String(event.payload?.itemId ?? ""));
-      return;
-    }
-    if (event.name === "inventory_drag_ended") {
-      setDraggedItem("");
-      return;
-    }
-    if (event.name !== "item_dropped") return;
-    const target = String(event.payload?.target ?? "");
-    if (!target.startsWith("cc98-upload:")) return;
-    const evidenceId = target.slice("cc98-upload:".length);
-    const item = String(event.payload?.item ?? "");
-    const expectedItem: Record<LibraryEvidenceId, string> = {
-      archived_leave_rule: "archivedLeaveRule",
-      bag_non_person_proof: "bagNonPersonProof",
-      seat_022_receipt: "seat022Receipt",
-      library_presence_proof: "libraryPresenceProof"
-    };
-    if (!isLibraryEvidenceId(evidenceId) || expectedItem[evidenceId] !== item) {
-      setFeedback("这个槽位需要对应名称的纸质材料。");
-      return;
-    }
+      if (event.name === "inventory_drag_started") {
+        setDraggedItem(String(event.payload?.itemId ?? ""));
+        return;
+      }
+      if (event.name === "inventory_drag_ended") {
+        setDraggedItem("");
+        return;
+      }
+      if (event.name !== "item_dropped") return;
+      const target = String(event.payload?.target ?? "");
+      if (!target.startsWith("cc98-upload:")) return;
+      const evidenceId = target.slice("cc98-upload:".length);
+      const item = String(event.payload?.item ?? "");
+      const expectedItem: Record<LibraryEvidenceId, string> = {
+        archived_leave_rule: "archivedLeaveRule",
+        bag_non_person_proof: "bagNonPersonProof",
+        seat_022_receipt: "seat022Receipt",
+        library_presence_proof: "libraryPresenceProof"
+      };
+      if (!isLibraryEvidenceId(evidenceId) || expectedItem[evidenceId] !== item) {
+        setFeedback("这个槽位需要对应名称的纸质材料。");
+        return;
+      }
       upload(evidenceId);
     });
   }, [events, uploadedEvidenceIds]);
@@ -180,14 +174,6 @@ export function TopTenRisePuzzle({
     }, 460);
   }
 
-  function advanceBriefing() {
-    if (briefingLine < briefingLines.length - 1) {
-      setBriefingLine((current) => current + 1);
-      return;
-    }
-    kit.libraryFinals.completePreBdBriefing();
-  }
-
   return (
     <section
       className={`cc98-top-ten-puzzle cc98-evidence-puzzle ${phase === "top_ten_reached" ? "is-top-ten" : ""} ${rankAnimating ? "is-rank-rising" : ""} ${topTenBurst ? "is-top-ten-burst" : ""}`.trim()}
@@ -199,7 +185,7 @@ export function TopTenRisePuzzle({
             <strong>楼主编辑：上传证据</strong>
             <small>证据完整度：{uploadedEvidenceIds.length}/4</small>
           </div>
-          <span>{allUploaded ? "可进入 bd" : "待补齐"}</span>
+          <span>{phase === "bd_briefing" ? "等待说明" : allUploaded ? "可进入 bd" : "待补齐"}</span>
         </header>
         <div>
           {EVIDENCE.map((evidence) => {
@@ -227,17 +213,6 @@ export function TopTenRisePuzzle({
           })}
         </div>
       </section> : null}
-
-      {showBd && allUploaded && !preBdBriefingSeen ? (
-        <section className="cc98-pre-bd-dialogue" role="dialog" aria-label="系统 bd 前说明">
-          <span aria-hidden="true">求</span>
-          <div>
-            <small>系统 · {briefingLine + 1}/{briefingLines.length}</small>
-            <p>{briefingLines[briefingLine]}</p>
-          </div>
-          <button type="button" onClick={advanceBriefing}>{briefingLine === briefingLines.length - 1 ? "开始 bd" : "继续"}</button>
-        </section>
-      ) : null}
 
       {showBd && preBdBriefingSeen ? <section className="cc98-rank-status" aria-live="polite">
         <span>当前排名</span>

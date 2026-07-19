@@ -5,91 +5,98 @@
     "id": "English_Graceful_Lady",
     "language": "English"
   },
-  "narration": {
-    "library_route_unlocked": {
-      "text": "System: Movement problem solved. Head to the Basic Library and find seat zero-two-two in the south section, second floor. Try not to break the controller on the way.",
-      "subtitleZh": "系统：移动问题解决了。去基础图书馆二楼南区找 022。路上尽量别再把手柄弄坏。",
-      "tone": "xiaoying",
-      "delivery": "brisk mission briefing with a dry warning at the end"
-    },
-    "library_entered": {
-      "text": "System: Seven minutes. You took seven minutes from the dorm to the library. Ordinary speed, impeccable paperwork.",
-      "subtitleZh": "系统：七分钟。你从寝室走到图书馆用了七分钟。速度普通，手续无可挑剔。",
-      "tone": "xiaoying",
-      "delivery": "bureaucratic timing report, deadpan final contrast"
-    },
-    "library_occupied_seat_found": {
-      "text": "System: This is zero-two-two. There is a backpack on the seat. It has been here longer than you, so the system currently trusts it more.",
-      "subtitleZh": "系统：这里是 022。座位上有个书包。它待得比你久，所以系统目前更信任它。",
-      "tone": "xiaoying",
-      "delivery": "low, suspicious observation followed by calm institutional irony"
-    },
-    "cc98_occupation_post_opened": {
-      "text": "System: Twenty-three floors are enough for an investigation. You may read the five A-C-zero-one replies, but they carry no course credit.",
-      "subtitleZh": "系统：二十三楼已经够调查了。那五条 ac01 可以看，但不计课程学分。",
-      "tone": "xiaoying",
-      "delivery": "quick forum scan, amused dismissal of the filler replies"
-    },
-    "library_catalog_match_found": {
-      "text": "System: Out of five books, you found the only useful one. Call number seven-five-five. Take it to the actual shelf.",
-      "subtitleZh": "系统：五本书里，你找到了唯一有用的一本。索书号 755。去真正的书架。",
-      "tone": "xiaoying",
-      "delivery": "focused confirmation, deliberate call number, firm instruction"
-    },
-    "library_archived_rule_recovered": {
-      "text": "System: The old rule requires three proofs. The rule is old. The inconvenience is freshly issued.",
-      "subtitleZh": "系统：旧规则要求三份证明。规则很旧，麻烦刚刚签发。",
-      "tone": "xiaoying",
-      "delivery": "slow document reading, dry emphasis on freshly issued"
-    },
-    "photo_bag_report_generated": {
-      "text": "System: Once you lowered the brightness, the photo finally admitted it was a backpack. Recognition report generated.",
-      "subtitleZh": "系统：亮度降下来以后，照片终于承认那是个书包。识别报告已生成。",
-      "tone": "xiaoying",
-      "delivery": "understated amusement followed by a clean machine confirmation"
-    },
-    "library_bag_nonperson_proof_issued": {
-      "text": "System: Stamp complete. Officially, this backpack is currently not a person.",
-      "subtitleZh": "系统：盖章完成。按当前认定，这个书包暂时不是人。",
-      "tone": "xiaoying",
-      "delivery": "mock-official certification, precise and completely serious"
-    },
-    "library_seat_receipt_recovered": {
-      "text": "System: The shift-right arrow is back on duty. The zero-two-two receipt is out, and the arrow survived.",
-      "subtitleZh": "系统：右移箭头重新上岗。022 小票出来了，而且箭头没有损坏。",
-      "tone": "xiaoying",
-      "delivery": "crisp action report with a small relieved finish"
-    },
-    "tiyi_presence_proof_issued": {
-      "text": "System: Seven. Forty-seven. Three. ZJU Sports acknowledges that you visited the library through an adequately complicated process.",
-      "subtitleZh": "系统：七，四十七，三。浙大体艺确认你通过一套足够复杂的流程到过图书馆。",
-      "tone": "xiaoying",
-      "delivery": "deliberate numeric recitation, formal administrative conclusion"
-    },
-    "cc98_top_ten_reached": {
-      "text": "System: Three valid B-D replies. The post is now number one. The truth has finally acquired sufficient traffic.",
-      "subtitleZh": "系统：三条有效 bd。帖子现在是十大第一。真相终于获得了足够流量。",
-      "tone": "xiaoying",
-      "delivery": "restrained celebration, faster tempo, proud final sentence"
-    },
-    "library_seat_release_pass_issued": {
-      "text": "System: Seat-release PASS generated. It only works on the backpack at zero-two-two. Do not use it on your roommate.",
-      "subtitleZh": "系统：清退 PASS 已生成。它只对 022 的书包有效，别拿去试你的室友。",
-      "tone": "xiaoying",
-      "delivery": "authoritative permit issuance, low dry warning"
-    },
-    "library_backpack_evicted": {
-      "text": "System: Backpack transferred to Lost and Found. Zero-two-two is open. Sit down before the system recalculates.",
-      "subtitleZh": "系统：书包已转交失物招领。022 空出来了。趁系统重新计算前坐下。",
-      "tone": "xiaoying",
-      "delivery": "decisive enforcement report, urgent final command"
-    },
-    "library_friend_contacted": {
-      "text": "System: You found her. An attendance record was checked out by a book. Next step: find that book.",
-      "subtitleZh": "系统：找到她了。一条签到记录被一本书借走了。下一步，找到那本书。",
-      "tone": "xiaoying",
-      "delivery": "quiet reveal, slower pace, unresolved final instruction"
-    }
+  "storyDialogues": {
+    "library_route_unlocked": [
+      { "speaker": "系统", "text": "我得说实话了，我没有修改记录权限。" },
+      { "speaker": "系统", "text": "但我有一个朋友她或许能做到。" },
+      { "speaker": "系统", "text": "如果我们还想要平时分，就得去图书馆找她。" }
+    ],
+    "library_entered": [
+      { "speaker": "玩家", "text": "这里就是图书馆？" },
+      { "speaker": "系统", "text": "准确地说，是她最后一次还在线的地方。" },
+      { "speaker": "玩家", "text": "你朋友是管理员？" },
+      { "speaker": "系统", "text": "比管理员更难联系。" },
+      { "speaker": "玩家", "text": "馆长？" },
+      { "speaker": "系统", "text": "比馆长更容易被忽略。" },
+      { "speaker": "玩家", "text": "所以是？" },
+      { "speaker": "系统", "text": "一个座位。" },
+      { "speaker": "玩家", "text": "……" },
+      { "speaker": "系统", "text": "别用这种眼神看我，你刚刚还在和一个红圈说话。" },
+      { "speaker": "系统", "text": "她以前在二楼南区 022。" },
+      { "speaker": "玩家", "text": "以前？" },
+      { "speaker": "系统", "text": "图书馆的“以前”通常指三分钟前，也可能指三年前。" },
+      { "speaker": "旁白", "text": "这取决于系统想不想负责。" }
+    ],
+    "library_occupied_seat_found": [
+      { "speaker": "书包", "text": "……" },
+      { "speaker": "旁白", "text": "它沉默得很有产权意识。" },
+      { "speaker": "玩家", "text": "一个书包。" },
+      { "speaker": "系统", "text": "别直呼它的真名。" },
+      { "speaker": "玩家", "text": "占座书包？" },
+      { "speaker": "系统", "text": "你非要把 BOSS 名字念出来吗？" }
+    ],
+    "cc98_occupation_post_opened": [
+      { "speaker": "系统", "text": "看，传统流程。" },
+      { "speaker": "玩家", "text": "找规则？" },
+      { "speaker": "系统", "text": "不，先在论坛确认世界观。" }
+    ],
+    "library_catalog_match_found": [
+      { "speaker": "旁白", "text": "你找到了一本看起来不该存在，但非常有用的书。" },
+      { "speaker": "系统", "text": "这就是图书馆。存在感越低，权限越高。" }
+    ],
+    "library_archived_rule_recovered": [
+      { "speaker": "系统", "text": "好消息，规则找到了。" },
+      { "speaker": "玩家", "text": "坏消息？" },
+      { "speaker": "系统", "text": "它要求我们证明书包不是人。" },
+      { "speaker": "玩家", "text": "这不是常识吗？" },
+      { "speaker": "系统", "text": "常识没有盖章。" },
+      { "speaker": "系统", "text": "总结一下，你要证明：你预约了，你来了，那个书包不是你" },
+      { "speaker": "玩家", "text": "……" }
+    ],
+    "library_front_desk_proof_request": [
+      { "speaker": "前台", "text": "请问要认领什么？" },
+      { "speaker": "玩家", "text": "一个座位。" },
+      { "speaker": "前台", "text": "座位不能认领。" },
+      { "speaker": "玩家", "text": "那一个书包。" },
+      { "speaker": "前台", "text": "请证明它不是本人。" },
+      { "speaker": "玩家", "text": "你们听听自己在说什么。" },
+      { "speaker": "前台", "text": "听见了，所以需要证明。" }
+    ],
+    "library_bag_nonperson_proof_issued": [
+      { "speaker": "系统", "text": "恭喜，你在行政意义上击败了一个书包。" },
+      { "speaker": "玩家", "text": "我觉得我的人生被它击败了。" }
+    ],
+    "tiyi_presence_proof_issued": [
+      { "speaker": "体艺", "text": "补录成功。" },
+      { "speaker": "体艺", "text": "系统已承认你确实来过图书馆，且来得很复杂。" },
+      { "speaker": "系统", "text": "现实终于被填进了表格。" },
+      { "speaker": "玩家", "text": "所以我现在存在了？" },
+      { "speaker": "系统", "text": "在体艺里存在。别要求太高。" }
+    ],
+    "cc98_evidence_set_completed": [
+      { "speaker": "玩家", "text": "好了，证据齐了。现在图书馆会处理了吧？" },
+      { "speaker": "系统", "text": "不会。" },
+      { "speaker": "玩家", "text": "为什么？" },
+      { "speaker": "系统", "text": "因为它们还没看见。" },
+      { "speaker": "玩家", "text": "我都上传了。" },
+      { "speaker": "系统", "text": "上传只是把真相放进互联网的地下室。" }
+    ],
+    "cc98_top_ten_reached": [
+      { "speaker": "旁白", "text": "问题终于变得足够公开，于是它暂时变得可以处理。" }
+    ],
+    "library_seat_release_pass_issued": [
+      { "speaker": "系统", "text": "看，流程走完了。" },
+      { "speaker": "玩家", "text": "所以可以坐了？" },
+      { "speaker": "系统", "text": "不，还要把流程砸到书包脸上。" }
+    ],
+    "library_backpack_evicted": [
+      { "speaker": "图书馆提示", "text": "请非人格占座物品有序离场。" },
+      { "speaker": "图书馆提示", "text": "如您是书包本人，请前往失物招领申诉。" },
+      { "speaker": "书包", "text": "主人马上回来。" },
+      { "speaker": "玩家", "text": "什么时候？" },
+      { "speaker": "书包", "text": "三分钟。" },
+      { "speaker": "系统", "text": "它三天前也是这么说的。" }
+    ]
   },
   "cc98": {
     "post": {
@@ -157,10 +164,18 @@
     "fillerReplies": {
       "authors": ["二南窗边位", "续杯失败者", "期末周返场员", "自习室回声"],
       "texts": [
-        "蹲个后续，杯子已经替我接上电源了。",
-        "三分钟过去了，楼主和座位目前只回来一个。",
-        "证明材料先放这，万一下一楼正好带章。",
-        "书包连续三天到场，建议先给它发本学期全勤。"
+        "先蹲个后续，座位没回来，刷新按钮倒是很准时。",
+        "离开三分钟就换人？我去接杯水的工夫，连自己的记忆都要重新登录。",
+        "路过帮顶。书包看起来比我更熟悉这套座位规则。",
+        "建议给这条帖子的楼层也设预约制，晚来一步只能坐地板。",
+        "三分钟是规则，回来是愿望，中间差一个能解释清楚的页面。",
+        "如果书包算常驻用户，那我下次带它一起选课。",
+        "先收藏，等系统把‘本人’和‘物品’的区别也更新一下。",
+        "有人问结论吗？目前只知道书包没迟到，楼主迟到了。",
+        "这条回复先放着，等座位重新分配完再决定它属于谁。",
+        "建议通知书包本人来认领自己的占座记录。",
+        "我也遇到过：人还在路上，座位已经完成了社会化流动。",
+        "看完了，规则写得很完整，唯独没写人应该站在哪里。"
       ]
     },
     "evidenceSlots": [

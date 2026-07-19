@@ -35,6 +35,7 @@ const LIBRARY_ACCESS_PHASES: readonly LibraryFinalsPhase[] = [
   "library_entered",
   "occupied_seat_found",
   "evidence_gathering",
+  "bd_briefing",
   "top_ten_rising",
   "top_ten_reached",
   "recovery_application",
@@ -87,7 +88,10 @@ export class LibraryFinalsController {
       rpgCheckpoint: checkpoint
     });
     if (firstEntry) {
-      this.events.emit("library_entered", { seat: LIBRARY_FINALS_PUZZLE_CONFIG.targetSeat });
+      this.events.emit("library_entered", {
+        seat: LIBRARY_FINALS_PUZZLE_CONFIG.targetSeat,
+        firstEntry: true
+      });
     } else {
       this.events.emit("library_reentered", { phase, checkpoint });
     }
@@ -417,7 +421,7 @@ export class LibraryFinalsController {
       return false;
     }
     const uploaded = [...puzzle.cc98UploadedEvidenceIds, evidenceId];
-    this.patchFinals(hasAllEvidence(uploaded) ? "top_ten_rising" : "evidence_gathering", {
+    this.patchFinals(hasAllEvidence(uploaded) ? "bd_briefing" : "evidence_gathering", {
       cc98UploadedEvidenceIds: uploaded
     }, {}, evidenceId === "archived_leave_rule" ? { archivedLeaveRule: false } : {});
     this.events.emit("cc98_evidence_uploaded", { evidenceId, uploadedCount: uploaded.length });
@@ -427,17 +431,24 @@ export class LibraryFinalsController {
     return true;
   }
 
-  completePreBdBriefing(): boolean {
+  acknowledgeBdBriefing(): boolean {
     const puzzle = this.getPuzzle();
-    if (this.getPhase() !== "top_ten_rising" || !hasAllEvidence(puzzle.cc98UploadedEvidenceIds)) {
+    if (
+      !["bd_briefing", "top_ten_rising"].includes(this.getPhase())
+      || !hasAllEvidence(puzzle.cc98UploadedEvidenceIds)
+    ) {
       return false;
     }
-    if (puzzle.preBdBriefingSeen) {
+    if (puzzle.preBdBriefingSeen && this.getPhase() === "top_ten_rising") {
       return true;
     }
     this.patchFinals("top_ten_rising", { preBdBriefingSeen: true });
     this.events.emit("cc98_pre_bd_briefing_completed");
     return true;
+  }
+
+  completePreBdBriefing(): boolean {
+    return this.acknowledgeBdBriefing();
   }
 
   applyBd(replyId: LibraryFinalsBdReplyId): boolean {

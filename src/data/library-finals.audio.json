@@ -433,6 +433,14 @@
           "playbackRate": 1.2
         }
       ]
+    },
+    "library_story_line": {
+      "cues": [
+        {
+          "channel": "text",
+          "subtitleSurface": "scene"
+        }
+      ]
     }
   }
 }

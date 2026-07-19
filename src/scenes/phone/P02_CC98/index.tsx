@@ -452,6 +452,8 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             ) : undefined
           }
           showBdContent={openPostIsInvestigation && access.cc98Bd}
+          locked={openPostIsInvestigation && finalsPuzzle.bdCount >= 3}
+          showLibraryAdminReply={openPostIsInvestigation && finalsPuzzle.bdCount >= 3}
         />
       ) : null}
 

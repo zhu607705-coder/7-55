@@ -62,8 +62,7 @@ const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; item
   stampNonPersonProof: { targetId: "lost_found_machine", itemId: "itemRecognitionReport" },
   useRightArrowOnReceipt: { targetId: "seat_022_gap", itemId: "rightArrow" },
   applyPassToBackpack: { targetId: "seat_022_backpack", itemId: "seatReleasePass" },
-  sitAt022: { targetId: "seat_022_chair", itemId: "" },
-  complete022Dialogue: { targetId: "seat_022_chair", itemId: "" }
+  sitAt022: { targetId: "seat_022_chair", itemId: "" }
 };
 const LIBRARY_VISIT_CHECKPOINTS: Record<LibraryLocationId, RpgCheckpointId | ""> = {
   entrance: "library_entrance",
@@ -137,7 +136,8 @@ export function RpgGameHost({
   const keyboardBlockedRef = useRef(keyboardBlocked);
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
-  inputBlockedRef.current = inputBlocked;
+  const itemInspectOpen = inspectedMapItem !== null;
+  inputBlockedRef.current = inputBlocked || itemInspectOpen;
   keyboardBlockedRef.current = keyboardBlocked;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
@@ -220,7 +220,7 @@ export function RpgGameHost({
     if (!game) {
       return undefined;
     }
-    if (inputBlocked) {
+    if (inputBlocked || itemInspectOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
@@ -238,7 +238,7 @@ export function RpgGameHost({
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [events, inputBlocked, keyboardBlocked]);
+  }, [events, inputBlocked, itemInspectOpen, keyboardBlocked]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -383,8 +383,6 @@ export function RpgGameHost({
           accepted = libraryController.applyPassToBackpack();
         } else if (action === "sitAt022") {
           accepted = libraryController.sitAt022();
-        } else if (action === "complete022Dialogue") {
-          accepted = libraryController.complete022Dialogue();
         }
         if (accepted) {
           events.emit("rpg_library_action_accepted", { action, targetId });
@@ -417,13 +415,13 @@ export function RpgGameHost({
 
   useEffect(() => {
     const handleFullscreenKey = (event: KeyboardEvent) => {
-      if (!keyboardBlocked && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         toggleRpgFullscreen();
       }
     };
     window.addEventListener("keydown", handleFullscreenKey);
     return () => window.removeEventListener("keydown", handleFullscreenKey);
-  }, [keyboardBlocked]);
+  }, [inputBlocked, itemInspectOpen, keyboardBlocked]);
 
   function direction(x: number, y: number) {
     events.emit("rpg_direction_changed", { x, y });
@@ -502,7 +500,7 @@ export function RpgGameHost({
     <main
       className={`rpg-stage ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
-      data-input-blocked={inputBlocked ? "true" : "false"}
+      data-input-blocked={inputBlocked || itemInspectOpen ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
@@ -650,6 +648,7 @@ function getLibraryObjective(state: GameState): string {
     const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
     return proofCount < 3 ? "补齐恢复座位所需的三项证明" : "把四项公开证据整理进 CC98";
   }
+  if (phase === "bd_briefing") return "确认系统说明，开始筛选有效回复";
   if (phase === "top_ten_rising" || phase === "top_ten_reached") return "让证据公示进入 CC98 十大";
   if (phase === "recovery_application") return "完成图书馆座位恢复申请";
   if (phase === "pass_ready") return "对 022 书包使用离座清退 PASS";
@@ -663,6 +662,9 @@ function getLibraryProgress(state: GameState): string {
   const puzzle = state.ui.libraryFinalsPuzzle;
   if (state.ui.libraryFinalsPhase === "friend_contacted") {
     return "完成";
+  }
+  if (state.ui.libraryFinalsPhase === "bd_briefing") {
+    return "说明";
   }
   if (state.ui.libraryFinalsPhase === "top_ten_rising" || state.ui.libraryFinalsPhase === "top_ten_reached") {
     return `R${String(4 - puzzle.bdCount).padStart(2, "0")}`;
@@ -680,6 +682,7 @@ function resolveRuntimeScene(state: GameState): RpgSceneId {
     "library_entered",
     "occupied_seat_found",
     "evidence_gathering",
+    "bd_briefing",
     "top_ten_rising",
     "top_ten_reached",
     "recovery_application",

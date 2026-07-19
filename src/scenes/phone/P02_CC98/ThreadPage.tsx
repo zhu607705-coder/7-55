@@ -33,6 +33,8 @@ interface Cc98ThreadPageProps {
   onBack: () => void;
   interactiveContent?: ReactNode;
   showBdContent?: boolean;
+  locked?: boolean;
+  showLibraryAdminReply?: boolean;
 }
 
 const thread = {
@@ -107,7 +109,14 @@ const thread = {
 const personas = new Map(personaData.map((persona) => [persona.id, persona]));
 
 /** 普通帖子保持独立论坛详情外观；剧情调查内容由交互区提供。 */
-export function Cc98ThreadPage({ post, onBack, interactiveContent, showBdContent = false }: Cc98ThreadPageProps) {
+export function Cc98ThreadPage({
+  post,
+  onBack,
+  interactiveContent,
+  showBdContent = false,
+  locked = false,
+  showLibraryAdminReply = false
+}: Cc98ThreadPageProps) {
   const operation = post.threadOperation ?? thread.operation;
   const metrics = {
     views: post.views ?? thread.metrics.views,
@@ -149,6 +158,10 @@ export function Cc98ThreadPage({ post, onBack, interactiveContent, showBdContent
       </header>
 
       <main className="cc98-thread-scroll">
+        {locked ? (
+          <div className="cc98-thread-lock-notice" role="status">已锁定无法回复</div>
+        ) : null}
+
         <header className="cc98-thread-title">
           <span>{thread.hotBadge}</span>
           <h2>{post.title}</h2>
@@ -191,7 +204,25 @@ export function Cc98ThreadPage({ post, onBack, interactiveContent, showBdContent
           </footer>
         </article>
 
-        {interactiveContent ?? (
+        {interactiveContent ? (
+          <>
+            {interactiveContent}
+            {showLibraryAdminReply ? (
+              <article className="cc98-thread-card is-library-admin">
+                <header className="cc98-floor-header">
+                  <span className="cc98-thread-avatar persona-library-admin" aria-hidden="true" />
+                  <div>
+                    <strong>图书管理员</strong>
+                    <small>今天 08:55</small>
+                  </div>
+                  <em>管理员</em>
+                  <b>24楼</b>
+                </header>
+                <p>您好已收到您的问题反馈，请前往图书馆程序进行系统申诉。</p>
+              </article>
+            ) : null}
+          </>
+        ) : (
           <>
             <section className="cc98-reply-filter" aria-label="回复筛选">
               <strong>{thread.replyTitle}</strong>

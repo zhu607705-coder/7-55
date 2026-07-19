@@ -273,7 +273,7 @@ function libraryPhaseFor(id: LibraryDeveloperCheckpointId): LibraryFinalsPhase {
   if (id === "c2-entrance-record" || id === "c2-seat-arrival") return "library_entered";
   if (id === "c2-occupancy-note") return "occupied_seat_found";
   if (["c2-catalog", "c2-archived-rule", "c2-photo-report", "c2-nonperson-stamp", "c2-seat-receipt", "c2-tiyi-proof", "c2-cc98-upload"].includes(id)) return "evidence_gathering";
-  if (id === "c2-bd-rise") return "top_ten_rising";
+  if (id === "c2-bd-rise") return "bd_briefing";
   if (id === "c2-recovery-form" || id === "c2-pass-generate") return "recovery_application";
   if (id === "c2-pass-apply") return "pass_ready";
   if (id === "c2-seat-sit") return "backpack_removed";
@@ -575,7 +575,7 @@ function checkpointFromLegacyParams(params: URLSearchParams): DeveloperCheckpoin
     if (page === "library_catalog") return "c2-catalog";
     return "c2-catalog";
   }
-  if (phase === "top_ten_rising") return "c2-bd-rise";
+  if (phase === "bd_briefing" || phase === "top_ten_rising") return "c2-bd-rise";
   if (phase === "top_ten_reached") return "c2-recovery-form";
   if (phase === "recovery_application") return "c2-pass-generate";
   if (phase === "pass_ready") return "c2-pass-apply";

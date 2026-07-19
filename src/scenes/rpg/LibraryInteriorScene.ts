@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.png";
 import type { GameState, ItemId, LibraryLocationId } from "../../core/types";
-import libraryFinalsContent from "../../data/library-finals.content.json";
 import type { RpgBridge } from "./RpgBridge";
 import {
   acceptsLibraryItem,
@@ -18,7 +17,7 @@ import {
   type LibraryInteractionTarget,
   type LibraryInteractionTargetId
 } from "./LibraryInteriorModel";
-import { formatRpgInteractionHint, RPG_CONTROL_HINTS } from "./RpgControlHints";
+import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   configureRpgPlayerSprite,
@@ -38,7 +37,6 @@ const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   seatReleasePass: "离座清退 PASS"
 };
 
-const SEAT_DIALOGUE = libraryFinalsContent.library.dialogue022;
 const SHELF_REVEAL_SHIFT_PX = 16;
 const SHELF_SPRITE_FRAME = "library-shelf-755-sprite";
 const SHELF_FLOOR_FRAME = "library-shelf-755-floor";
@@ -102,10 +100,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private lostFoundStatusText!: Phaser.GameObjects.Text;
   private catalogIndicator!: Phaser.GameObjects.Arc;
   private catalogScanLine!: Phaser.GameObjects.Rectangle;
-  private dialoguePanel!: Phaser.GameObjects.Container;
-  private dialogueSpeaker!: Phaser.GameObjects.Text;
-  private dialogueText!: Phaser.GameObjects.Text;
-  private dialogueIndex = -1;
   private lastVisitCheck = 0;
   private entranceDoorLeft!: Phaser.GameObjects.Container;
   private entranceDoorRight!: Phaser.GameObjects.Container;
@@ -115,6 +109,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private entranceDoorMotion: EntranceDoorMotion = "closed";
   private entranceAccessGranted = false;
   private reducedMotion = false;
+  private frontDeskStoryShown = false;
 
   constructor() {
     super("library-interior");
@@ -167,10 +162,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.bridge.emit("rpg_library_room_opened");
     this.publishRuntimeDebug(this.getActiveTargets(this.bridge.getState()));
 
-    const puzzle = this.bridge.getState().ui.libraryFinalsPuzzle;
-    if (puzzle.playerSeated && puzzle.nextQuestId === null) {
-      this.time.delayedCall(240, () => this.publishDialogueLine(0));
-    }
   }
 
   update(): void {
@@ -298,12 +289,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.animateSitDown();
       return;
     }
-    if (name === "library_022_dialogue_line") {
-      this.renderDialogueLine(Number(payload?.index), String(payload?.speaker ?? "022"), String(payload?.text ?? ""));
-      return;
-    }
     if (name === "library_friend_contacted") {
-      this.dialoguePanel.setVisible(false);
       this.animateChapterHandoff();
       this.showFeedback("任务更新：找到那本借走签到记录的书", "chapter");
       return;
@@ -368,7 +354,17 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.id === "seat_022_chair" && puzzle.playerSeated && puzzle.nextQuestId === null) {
-      this.advanceSeatDialogue();
+      this.bridge.emit("library_story_request", { sequenceId: "library_friend_contacted" });
+      return;
+    }
+    if (
+      target.id === "front_desk"
+      && puzzle.archivedRuleRead
+      && !puzzle.nonPersonProofStamped
+      && !this.frontDeskStoryShown
+    ) {
+      this.frontDeskStoryShown = true;
+      this.bridge.emit("library_story_request", { sequenceId: "library_front_desk_proof_request" });
       return;
     }
 
@@ -562,36 +558,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
         paperVisible: this.shelfPaper.visible
       }
     });
-  }
-
-  private advanceSeatDialogue(): void {
-    if (this.dialogueIndex < SEAT_DIALOGUE.length - 1) {
-      this.publishDialogueLine(this.dialogueIndex + 1);
-      return;
-    }
-    this.requestAction("complete022Dialogue", "seat_022_chair");
-  }
-
-  private publishDialogueLine(index: number): void {
-    const line = SEAT_DIALOGUE[index];
-    if (!line) {
-      return;
-    }
-    this.bridge.emit("library_022_dialogue_line", { index, speaker: line.speaker, text: line.text });
-  }
-
-  private renderDialogueLine(index: number, speaker: string, text: string): void {
-    if (!Number.isInteger(index) || index < 0 || index >= SEAT_DIALOGUE.length) {
-      return;
-    }
-    this.dialogueIndex = index;
-    this.feedbackTween?.stop();
-    this.feedbackText.setVisible(false).setAlpha(0).setScale(1);
-    this.dialogueSpeaker.setText(speaker);
-    this.dialogueSpeaker.setColor(speaker === "022" ? "#f0d56a" : speaker === "系统" ? "#e46666" : "#8ed8ff");
-    this.dialogueText.setText(text);
-    this.dialoguePanel.setVisible(true).setAlpha(0);
-    this.tweens.add({ targets: this.dialoguePanel, alpha: 1, duration: 120, ease: "Stepped" });
   }
 
   private showFailure(reason: string, targetId: string): void {
@@ -980,7 +946,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       onComplete: () => {
         this.player.setTexture("act1-player-up-0");
         this.showFeedback("022 已恢复。", "success");
-        this.time.delayedCall(420, () => this.publishDialogueLine(0));
       }
     });
   }
@@ -1314,37 +1279,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       padding: { x: 14, y: 8 }
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10020).setVisible(false);
 
-    const shadow = this.add.rectangle(5, 6, 700, 88, 0x000000, 0.45);
-    const panel = this.add.rectangle(0, 0, 700, 88, 0x101b19, 0.97).setStrokeStyle(3, 0xbca55f, 0.95);
-    const accent = this.add.rectangle(-342, 0, 7, 84, 0xd6be62, 0.95);
-    this.dialogueSpeaker = this.add.text(-324, -26, "022", {
-      color: "#17201e",
-      backgroundColor: "#f0d56a",
-      fontFamily: "monospace",
-      fontSize: "12px",
-      fontStyle: "bold",
-      padding: { x: 7, y: 3 }
-    }).setOrigin(0, 0.5);
-    this.dialogueText = this.add.text(-324, 12, "", {
-      color: "#fff7df",
-      fontFamily: "monospace",
-      fontSize: "14px",
-      lineSpacing: 3,
-      wordWrap: { width: 625 }
-    }).setOrigin(0, 0.5);
-    const continueText = this.add.text(324, 29, RPG_CONTROL_HINTS.continueDialogue, {
-      color: "#8ed8ff",
-      fontFamily: "monospace",
-      fontSize: "10px"
-    }).setOrigin(1, 0.5);
-    this.dialoguePanel = this.add.container(
-      RPG_HUD_LAYOUT.centerX,
-      RPG_HUD_LAYOUT.dialogueCenterY,
-      [shadow, panel, accent, this.dialogueSpeaker, this.dialogueText, continueText]
-    )
-      .setScrollFactor(0)
-      .setDepth(10010)
-      .setVisible(false);
   }
 
   private drawInterior(): void {

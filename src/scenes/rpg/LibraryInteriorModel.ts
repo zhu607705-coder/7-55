@@ -146,7 +146,7 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 585,
     width: 320,
     height: 150,
-    proximity: 140,
+    proximity: 210,
     label: "询问信息台",
     location: "front_desk",
     checkpoint: "library_front_desk"
