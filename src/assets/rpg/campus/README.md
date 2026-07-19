@@ -18,6 +18,7 @@
 
 - GPT Image owns campus artwork generation. MiniMax remains audio-only.
 - `npm run map:zijingang:rebuild` deterministically rebuilds the selected PNG from the source folder and reports its SHA-256.
+- `npm run map:zijingang:walkability` rebuilds only the collision mask and runtime coordinates from the existing selected PNG, so entrance calibration cannot rewrite the approved panorama.
 - `npm run map:zijingang` verifies the selected panorama, its SHA-256, dimensions, runtime coordinates, compressed walkability bitset, and the matching mask PNG without rewriting assets.
 - `npm run map:zijingang:mosaic` remains available only for rebuilding the alternate `3840 x 3840` candidate. Running it changes the active plate and therefore requires an explicit selection decision before delivery.
 - All tiles use one strict 90-degree top-down projection, north-up orientation, palette, pixel density, light direction, and final scale. Facade elevation and isometric 45-degree views are not accepted.

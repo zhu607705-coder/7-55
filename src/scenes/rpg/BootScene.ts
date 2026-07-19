@@ -6,7 +6,7 @@ import type { RpgBridge } from "./RpgBridge";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { preloadZijingangWorldAssets } from "./ZijingangLandmarkAssets";
 import { drawZijingangWorld, ZIJINGANG_WORLD } from "./ZijingangWorld";
-import { CAMPUS_LIBRARY_GATE } from "./LibraryInteriorModel";
+import { CAMPUS_LIBRARY_GATE, LIBRARY_CHECKPOINT_SPAWNS } from "./LibraryInteriorModel";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -63,7 +63,12 @@ export class BootScene extends Phaser.Scene {
     );
 
     ensureRpgPlayerTextures(this);
-    this.player = this.physics.add.sprite(ZIJINGANG_WORLD.spawn.x, ZIJINGANG_WORLD.spawn.y, "act1-player-down-0");
+    const state = this.bridge.getState();
+    const spawn = state.rpgCheckpoint === "campus_library_gate"
+      && state.ui.libraryFinalsPhase === "library_route_unlocked"
+      ? LIBRARY_CHECKPOINT_SPAWNS.campus_library_gate
+      : ZIJINGANG_WORLD.spawn;
+    this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-down-0");
     this.player.setCollideWorldBounds(true).setDepth(this.player.y + 30);
     configureRpgPlayerSprite(this.player);
     this.physics.add.collider(this.player, this.obstacles);

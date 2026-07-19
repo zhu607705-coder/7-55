@@ -11,6 +11,7 @@
     "build:single": "npm run build:demo",
     "map:zijingang": "node scripts/verify-zijingang-campus-panorama.mjs",
     "map:zijingang:rebuild": "python3 scripts/build-repository-campus-panorama.py",
+    "map:zijingang:walkability": "python3 scripts/build-repository-campus-panorama.py --walkability-only",
     "map:zijingang:repository-panorama": "node scripts/verify-zijingang-campus-panorama.mjs",
     "map:zijingang:legacy-tilemap": "node scripts/generate-zijingang-tilemap.mjs",
     "map:zijingang:mosaic": "python3 scripts/build-campus-mosaic.py",
