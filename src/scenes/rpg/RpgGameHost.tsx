@@ -639,7 +639,7 @@ export function activateRpgScene(game: Phaser.Game, target: string): void {
 function getLibraryObjective(state: GameState): string {
   const phase = state.ui.libraryFinalsPhase;
   const puzzle = state.ui.libraryFinalsPuzzle;
-  if (phase === "library_entered") return puzzle.entranceRecordRead ? "前往二层南区寻找 022" : "读取入馆记录，确认 022 的位置";
+  if (phase === "library_entered") return puzzle.entranceRecordRead ? "前往二层南区寻找 022" : "点击闸机小屏，核对入馆与到达时间";
   if (phase === "occupied_seat_found") return puzzle.occupancyNoteCollected ? "调查纸条提到的公开记录" : "检查书包旁边的占座纸条";
   if (phase === "evidence_gathering") {
     if (!puzzle.investigationOpened) return "用占座纸条查找公开记录";
