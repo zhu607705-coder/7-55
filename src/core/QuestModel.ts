@@ -98,12 +98,39 @@ function movementQuest(state: GameState): QuestViewModel {
     { id: "seat_reservation", label: "预约基础馆二层南区 022", done: state.ui.librarySeatReserved },
     { id: "leave_dorm", label: "离开寝室", done: state.actOne.phase === "complete" }
   ];
+  const arrowNextAction: NextAction = !state.actOne.pushTriangleTaken
+    ? {
+        objective: "查看主页的「方向校准」推送",
+        hints: ["锻炼记录已经同步到手机。", "主页通知列表出现了新的「方向校准」。", "回到手机主页，多观察几次推送头像边缘的变化。"],
+        targetSurface: "phone",
+        recommendedScene: "phone_home"
+      }
+    : !state.actOne.weatherWaterTaken
+      ? {
+          objective: "从天气页面取得一滴水",
+          hints: ["三角形已经进入道具栏。", "主页的天气通知现在可以打开。", "进入天气页面，接住界面下方的水滴。"],
+          targetSurface: "phone",
+          recommendedScene: "weather"
+        }
+      : !state.actOne.mentorLineReleased
+        ? {
+            objective: "用天气水滴处理导师头像",
+            hints: ["水滴可以用于处理黏着物。", "微信导师头像边缘有一条被黏住的竖线。", "打开微信，将天气水滴拖到导师头像。"],
+            targetSurface: "phone",
+            recommendedScene: "wechat"
+          }
+        : {
+            objective: "组合三角形与竖线",
+            hints: ["两个图形素材已经齐全。", "道具栏支持把互补形状拖到一起。", "将三角形与竖线组合。"],
+            targetSurface: "phone",
+            recommendedScene: "phone_home"
+          };
   const nextById: Record<string, NextAction> = {
     system_dialogue: { objective: state.actOne.phase === "friend_message_required" ? "回复朋友的新消息" : "找到系统", hints: ["新消息仍在微信。", "朋友会把你引向浙大钉里的异常。", "完成微信对话后，检查浙大钉身份区域“求”字旁的红圈。"], targetSurface: "phone", recommendedScene: state.actOne.phase === "friend_message_required" ? "wechat" : "zjuding" },
     inventory: { objective: "找到道具栏", hints: ["系统已经开放寝室地图。", "个人物品留在右侧书桌。", "进入浙大钉校园地图，打开右侧个人书桌上的宝箱。"], targetSurface: "rpg" },
     identity: { objective: "为地图人物补齐身份", hints: ["第二章开放了新的校园服务。", "电子校园卡包含姓名和学号，部门黄页可以读取它。", "进入浙大钉部门黄页，使用校园卡读卡区。"], targetSurface: "phone", recommendedScene: "zjuding" },
     exercise: { objective: "让人物先自动走起来", hints: ["体艺记录与运动能力有关。", "完成身份登记后，体艺页面会识别参与者。", "进入浙大体艺，使用页面中的开始锻炼按钮。"], targetSurface: "phone", recommendedScene: "tiyi" },
-    arrow: { objective: "拼出一个能移动对象的方向", hints: ["主页推送与导师头像各缺少一部分图形。", "天气里的水滴能处理头像边缘的连接处。", "取得三角形和竖线后，在物品栏中将两者组合。"], targetSurface: "phone", recommendedScene: "phone_home" },
+    arrow: arrowNextAction,
     balance: { objective: "让校园卡余额发生位移", hints: ["新道具只描述移动方向。", "校园卡上有一串位置值得改变的数字。", "打开校园卡余额，把右移箭头拖到余额区域。"], targetSurface: "phone", recommendedScene: "campus_card" },
     gamepad: { objective: "找到可以控制方向的设备", hints: ["第二章已经开放 CC98。", "余额变化后可以处理一笔低价交易。", "进入 CC98 今日热门，查看二手交易帖。"], targetSurface: "phone", recommendedScene: "cc98" },
     controls: { objective: "把手柄拖到寝室小人身上", hints: ["购买只会把手柄放入道具栏。", "返回寝室后展开 RPG 道具栏。", "将手柄拖到小人身上完成安装。"], targetSurface: "rpg" },

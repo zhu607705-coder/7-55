@@ -203,22 +203,22 @@
       "delivery": "administrative confirmation, clean and matter-of-fact"
     },
     "act2_exercise_started": {
-      "text": "He is walking. His sense of direction did not arrive with the exercise record.",
-      "subtitleZh": "他走起来了。可惜方向感没有随锻炼记录一起到账。",
-      "tone": "xiaoying",
-      "delivery": "observational, dry punchline after a short pause"
+      "text": "Exercise record synced. Check the new Direction Calibration notice on the phone home screen.",
+      "subtitleZh": "锻炼记录已同步。回到手机主页，查看新出现的「方向校准」推送。",
+      "tone": "task",
+      "delivery": "clear progression cue with emphasis on the newly available home-screen notice"
     },
     "act2_push_triangle_collected": {
-      "text": "You removed an avatar from a notification. The notification center has filed no objection.",
-      "subtitleZh": "你从通知里拆下了一个头像。通知中心暂未提出异议。",
-      "tone": "xiaoying",
-      "delivery": "curious first sentence, mock-official second sentence"
+      "text": "Triangle collected. Open Weather next and catch one drop of rain.",
+      "subtitleZh": "获得道具：三角形。下一步，打开天气并接住一滴水。",
+      "tone": "task",
+      "delivery": "clear progression cue that points to the newly available weather interaction"
     },
     "act2_weather_water_collected": {
-      "text": "You collected one drop from the weather forecast. It has finally delivered a physical product.",
-      "subtitleZh": "你从天气预报里接到了一滴水。它终于交付了实体产品。",
-      "tone": "xiaoying",
-      "delivery": "mild surprise followed by understated amusement"
+      "text": "Weather drop collected. Use it on the stuck vertical line beside the mentor avatar.",
+      "subtitleZh": "获得道具：天气水滴。下一步，用它处理微信导师头像边缘的黏着竖线。",
+      "tone": "task",
+      "delivery": "clear progression cue that points to the mentor-avatar interaction"
     },
     "act2_mentor_line_stuck": {
       "text": "That vertical line is stuck. Apparently, even your advisor's avatar has formatting requirements.",

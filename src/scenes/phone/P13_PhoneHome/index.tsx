@@ -142,14 +142,16 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
 
   function collectPushTriangle() {
     const result = kit.actOne.collectPushTriangle();
+    if (result === "collected") {
+      return;
+    }
     const feedback = {
       inactive: state.actOne.exerciseStarted ? "这条推送现在只负责占位置。" : "先在浙大体艺开始课外锻炼。",
       hint_one: "头像边缘松了一点，再点一次。",
       hint_two: "三角形已经翘起，再点一次就能取下。",
-      collected: "获得道具：三角形",
       already_owned: "三角形已经在道具栏里。"
     }[result];
-    kit.flags.toast(feedback, result === "collected" ? "task" : "system");
+    kit.flags.toast(feedback, "system");
   }
 
   function openBikeArcade() {
