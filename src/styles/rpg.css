@@ -344,9 +344,10 @@
 
 .rpg-inventory-drag-ghost {
   align-items: center;
-  background: rgba(239, 229, 198, 0.95);
-  border: 3px solid #23322d;
+  background: transparent;
+  border: 0;
   display: flex;
+  filter: drop-shadow(0 5px 0 rgba(16, 27, 25, 0.52));
   height: 54px;
   justify-content: center;
   pointer-events: none;

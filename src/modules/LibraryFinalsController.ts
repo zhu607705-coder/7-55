@@ -411,6 +411,7 @@ export class LibraryFinalsController {
       this.getPhase() !== "evidence_gathering"
       || !isLibraryEvidenceId(evidenceId)
       || !this.hasEvidenceItem(evidenceId)
+      || (evidenceId === "archived_leave_rule" && !puzzle.archivedRuleRead)
       || puzzle.cc98UploadedEvidenceIds.includes(evidenceId)
     ) {
       return false;

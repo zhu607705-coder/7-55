@@ -4,6 +4,7 @@ export type ChapterId = "chapter_one" | "chapter_two" | "chapter_three";
 
 export interface FeatureAccess {
   chapter: ChapterId;
+  checkin: boolean;
   cc98: boolean;
   photos: boolean;
   departmentDirectory: boolean;
