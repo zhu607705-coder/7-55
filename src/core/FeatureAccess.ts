@@ -37,10 +37,7 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     || state.ui.librarySeatReserved;
   const library = librarySceneAccess || libraryReservation;
   const libraryCatalog = librarySceneAccess && puzzle.catalogUnlocked;
-  const recoveryProofsReady = puzzle.nonPersonProofStamped
-    && puzzle.seatReceiptCollected
-    && puzzle.presenceProofCollected;
-  const cc98OwnerUpload = librarySceneAccess && puzzle.archivedRuleRead && recoveryProofsReady;
+  const cc98OwnerUpload = librarySceneAccess && puzzle.investigationOpened;
   const cc98Bd = puzzle.cc98UploadedEvidenceIds.length === 4
     && ["top_ten_rising", "top_ten_reached", "recovery_application", "pass_ready", "backpack_removed", "seat_recovered", "friend_contacted"]
       .includes(state.ui.libraryFinalsPhase);
@@ -51,7 +48,7 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     chapter,
     checkin: chapter === "chapter_one",
     cc98: chapterTwoOpen,
-    photos: librarySceneAccess && puzzle.backpackInspected && puzzle.archivedRuleRead,
+    photos: librarySceneAccess && puzzle.backpackInspected && puzzle.investigationOpened,
     departmentDirectory: chapterTwoOpen,
     weather: chapterTwoOpen,
     fullCampusMap: chapterTwoOpen && state.actOne.dormHubUnlocked,

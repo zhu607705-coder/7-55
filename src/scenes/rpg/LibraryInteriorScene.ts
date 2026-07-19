@@ -23,7 +23,8 @@ import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
   preloadRpgPlayerTextures,
-  type RpgPlayerFacing
+  RpgPlayerAnimator,
+  RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
@@ -37,6 +38,9 @@ const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   seatReleasePass: "离座清退 PASS"
 };
 
+const BACKPACK_BASE_SCALE = 0.6;
+const BACKPACK_TABLE_PATCH_FRAME = "library-seat-022-clear-patch";
+const BACKPACK_TABLE_PATCH_SOURCE = { left: 1080, top: 392, width: 34, height: 38 } as const;
 const SHELF_REVEAL_SHIFT_PX = 16;
 const SHELF_SPRITE_FRAME = "library-shelf-755-sprite";
 const SHELF_FLOOR_FRAME = "library-shelf-755-floor";
@@ -72,13 +76,13 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
   private virtualDirection = { x: 0, y: 0 };
   private interactRequested = false;
-  private facing: RpgPlayerFacing = "up";
-  private walkingFrame = 0;
+  private playerAnimator!: RpgPlayerAnimator;
   private promptText!: Phaser.GameObjects.Text;
   private feedbackText!: Phaser.GameObjects.Text;
   private feedbackTween?: Phaser.Tweens.Tween;
   private markers = new Map<LibraryInteractionTargetId, MarkerParts>();
   private backpack!: Phaser.GameObjects.Container;
+  private backpackClearPatch!: Phaser.GameObjects.Image;
   private backpackShadow!: Phaser.GameObjects.Ellipse;
   private backpackTag!: Phaser.GameObjects.Rectangle;
   private backpackEvictionAnimating = false;
@@ -148,6 +152,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
     this.player.setCollideWorldBounds(true).setDepth(spawn.y + 120);
     configureRpgPlayerSprite(this.player);
+    this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
     this.physics.add.collider(this.player, this.obstacles);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
@@ -197,7 +202,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       vector.set(0, 0);
     }
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 120);
-    this.updatePlayerAnimation(vector);
+    this.playerAnimator.update(vector, this.time.now);
     this.updateEntranceDoor(state);
 
     const activeTargets = this.getActiveTargets(state);
@@ -287,7 +292,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "library_archived_rule_recovered") {
-      this.showFeedback("旧规则已确认：开始收集三项证明。", "system");
+      this.showFeedback("旧规则已确认：三项证明要求已核对，可继续补齐未完成材料。", "system");
       return;
     }
     if (name === "library_catalog_unlocked") {
@@ -415,7 +420,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       if (target.id === "entrance_record") return true;
       if (target.id === "occupancy_note") return puzzle.backpackInspected && !puzzle.occupancyNoteCollected;
       if (target.id === "seat_022_backpack") return puzzle.entranceRecordRead && !puzzle.backpackEvicted;
-      if (target.id === "seat_022_gap") return puzzle.archivedRuleRead && puzzle.backpackInspected && !puzzle.seatReceiptCollected;
+      if (target.id === "seat_022_gap") return puzzle.investigationOpened && puzzle.backpackInspected && !puzzle.seatReceiptCollected;
       if (target.id === "library_shelf_755") return puzzle.callNumberCollected && !puzzle.archivedRuleCollected;
       if (target.id === "lost_found_machine") return puzzle.lostFoundStage !== "stamped";
       if (target.id === "seat_022_chair") {
@@ -475,7 +480,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (targetId === "front_desk") {
-      if (!puzzle.archivedRuleRead) return "前台目录只写着：先读完适用规则，再受理证明。";
+      if (!puzzle.archivedRuleRead) return "前台目录显示：三条证明可分别办理，旧版规则用于确认材料总要求。";
       const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
       return proofCount < 3 ? `旧规则要求三项证明，目前已确认 ${proofCount} 项。` : "三项证明已齐，公开记录仍需完成公示。";
     }
@@ -545,7 +550,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
       scene: "library_interior",
       checkpoint: state.rpgCheckpoint,
       world: { width: LIBRARY_INTERIOR_WORLD.width, height: LIBRARY_INTERIOR_WORLD.height },
-      player: { x: this.player.x, y: this.player.y, facing: this.facing },
+      player: {
+        x: this.player.x,
+        y: this.player.y,
+        facing: this.playerAnimator.facing,
+        texture: this.playerAnimator.textureKey,
+        turning: this.playerAnimator.isTurning,
+        walkFps: RPG_PLAYER_WALK_FPS,
+        angle: this.player.angle
+      },
       input: {
         gameEnabled: this.game.input.enabled,
         sceneEnabled: this.input.enabled,
@@ -596,6 +609,18 @@ export class LibraryInteriorScene extends Phaser.Scene {
             }
           : {})
       },
+      backpack: {
+        visible: this.backpackEvictionAnimating || !state.ui.libraryFinalsPuzzle.backpackEvicted,
+        mapVisible: !state.ui.libraryFinalsPuzzle.backpackEvicted && !this.backpackClearPatch.visible,
+        overlayVisible: this.backpack.visible,
+        clearPatchVisible: this.backpackClearPatch.visible,
+        x: this.backpack.x,
+        y: this.backpack.y,
+        scaleX: this.backpack.scaleX,
+        scaleY: this.backpack.scaleY,
+        angle: this.backpack.angle,
+        evictionAnimating: this.backpackEvictionAnimating
+      },
       shelfReveal: {
         phase: this.shelfRevealPhase,
         offsetPx: this.shelfRevealOffsetPx,
@@ -644,7 +669,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private animateOccupiedSeat(): void {
     this.occupancyNote.setVisible(true).setAlpha(1);
     this.seatStatusDot.setFillStyle(0xe65c57).setAlpha(1).setScale(1);
-    this.backpackTag.setFillStyle(0xf0d55f);
     const signalRings = [18, 30, 42].map((radius, index) => {
       const ring = this.add.circle(this.backpack.x, this.backpack.y + 8, radius, 0x9fd8cf, 0)
         .setStrokeStyle(3, index === 2 ? 0xe65c57 : 0x7ed0c3, 0.9)
@@ -676,23 +700,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       yoyo: true,
       hold: 900,
       onComplete: () => signalLabel.destroy()
-    });
-    this.tweens.add({
-      targets: this.backpack,
-      scaleX: 1.08,
-      scaleY: 0.92,
-      duration: 90,
-      yoyo: true,
-      repeat: 4,
-      onComplete: () => this.backpack.setScale(1)
-    });
-    this.tweens.add({
-      targets: this.backpackShadow,
-      scaleX: 1.25,
-      alpha: 0.18,
-      duration: 90,
-      yoyo: true,
-      repeat: 4
     });
     this.tweens.add({
       targets: this.seatStatusDot,
@@ -929,6 +936,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private animateBackpackEviction(): void {
     this.backpackEvictionAnimating = true;
+    const backpackTarget = getLibraryTarget("seat_022_backpack");
+    this.backpackClearPatch.setVisible(true);
+    this.backpack
+      .setPosition(backpackTarget.x, backpackTarget.y)
+      .setScale(BACKPACK_BASE_SCALE)
+      .setAngle(-4)
+      .setAlpha(1)
+      .setVisible(true);
+    this.backpackShadow.setAlpha(0.32).setScale(1);
     this.seatStatusDot.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
     this.seatStatusText.setText("022 · 转移中").setColor("#f0d56a");
     const lines = [
@@ -988,7 +1004,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       duration: 420,
       ease: "Stepped",
       onComplete: () => {
-        this.player.setTexture("act1-player-up-0");
+        this.playerAnimator.setFacing("up");
         this.showFeedback("022 已恢复。", "success");
       }
     });
@@ -1229,29 +1245,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
   }
 
-  private updatePlayerAnimation(vector: Phaser.Math.Vector2): void {
-    if (vector.lengthSq() > 0) {
-      if (Math.abs(vector.x) > Math.abs(vector.y)) {
-        this.facing = "side";
-        this.player.setFlipX(vector.x < 0);
-      } else {
-        this.facing = vector.y < 0 ? "up" : "down";
-        this.player.setFlipX(false);
-      }
-      const nextFrame = Math.floor(this.time.now / 130) % 2;
-      this.walkingFrame = nextFrame;
-      this.player.setTexture(`act1-player-${this.facing}-${nextFrame}`);
-      return;
-    }
-    this.walkingFrame = 0;
-    this.player.setTexture(`act1-player-${this.facing}-0`);
-  }
-
   private syncWorldFromState(): void {
     const puzzle = this.bridge.getState().ui.libraryFinalsPuzzle;
     if (puzzle.playerSeated && puzzle.nextQuestId === null) {
       const seat = getLibraryTarget("seat_022_chair");
-      this.player.setPosition(seat.x, seat.y).setTexture("act1-player-up-0");
+      this.player.setPosition(seat.x, seat.y);
+      this.playerAnimator.setFacing("up");
     }
     this.entranceAccessGranted = puzzle.entranceRecordRead;
     this.updateEntranceRecordDevice(puzzle.entranceRecordRead);
@@ -1260,7 +1259,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.player.x,
       this.player.y
     ));
-    this.backpack.setVisible(!puzzle.backpackEvicted);
+    const backpackTarget = getLibraryTarget("seat_022_backpack");
+    this.backpackClearPatch.setVisible(puzzle.backpackEvicted);
+    this.backpack
+      .setPosition(backpackTarget.x, backpackTarget.y)
+      .setScale(BACKPACK_BASE_SCALE)
+      .setAngle(-4)
+      .setAlpha(1)
+      .setVisible(false);
     this.backpackEvictionAnimating = false;
     this.occupancyNote.setVisible(puzzle.backpackInspected && !puzzle.occupancyNoteCollected);
     this.receipt.setVisible(false);
@@ -1874,7 +1880,24 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const backpack = getLibraryTarget("seat_022_backpack");
     const note = getLibraryTarget("occupancy_note");
     const gap = getLibraryTarget("seat_022_gap");
-    this.backpack = this.createBackpack(backpack.x, backpack.y);
+    const mapTexture = this.textures.get(LIBRARY_INTERIOR_MAP_KEY);
+    if (!mapTexture.has(BACKPACK_TABLE_PATCH_FRAME)) {
+      mapTexture.add(
+        BACKPACK_TABLE_PATCH_FRAME,
+        0,
+        BACKPACK_TABLE_PATCH_SOURCE.left,
+        BACKPACK_TABLE_PATCH_SOURCE.top,
+        BACKPACK_TABLE_PATCH_SOURCE.width,
+        BACKPACK_TABLE_PATCH_SOURCE.height
+      );
+    }
+    this.backpackClearPatch = this.add.image(
+      backpack.x,
+      backpack.y,
+      LIBRARY_INTERIOR_MAP_KEY,
+      BACKPACK_TABLE_PATCH_FRAME
+    ).setDepth(2).setVisible(false);
+    this.backpack = this.createBackpack(backpack.x, backpack.y).setVisible(false);
     this.occupancyNote = this.createPaperObject(note.x, note.y, "纸条", 0xe9dcae);
     this.receipt = this.createPaperObject(gap.x, gap.y, "022", 0xf1ead8).setVisible(false);
   }
@@ -1896,12 +1919,98 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private createBackpack(x: number, y: number): Phaser.GameObjects.Container {
-    this.backpackShadow = this.add.ellipse(0, 22, 64, 18, 0x191714, 0.35);
-    const body = this.add.rectangle(0, 4, 58, 50, 0xb87538).setStrokeStyle(4, 0x2b211a);
-    const pocket = this.add.rectangle(0, 14, 42, 20, 0x8d542c).setStrokeStyle(3, 0x35241a);
-    const handle = this.add.arc(0, -22, 18, 180, 360, false, 0x000000, 0).setStrokeStyle(5, 0x2b211a);
-    this.backpackTag = this.add.rectangle(11, 10, 12, 9, 0xf0d55f).setStrokeStyle(2, 0x6e5620);
-    return this.add.container(x, y, [this.backpackShadow, body, pocket, handle, this.backpackTag]).setDepth(y + 150);
+    const outline = 0x111820;
+    const strap = 0x273c54;
+    const body = 0x244b71;
+    const bodyLight = 0x3f7196;
+    const pocket = 0x183a5b;
+    const hardware = 0xc87842;
+
+    this.backpackShadow = this.add.ellipse(2, 29, 54, 14, 0x111715, 0.32);
+
+    const leftStrap = this.add.rectangle(-22, 4, 8, 44, strap).setAngle(-10);
+    const rightStrap = this.add.rectangle(22, 4, 8, 44, strap).setAngle(10);
+    const leftStrapEnd = this.add.rectangle(-20, 25, 8, 7, hardware).setAngle(-10);
+    const rightStrapEnd = this.add.rectangle(20, 25, 8, 7, hardware).setAngle(10);
+
+    const handleTop = this.add.rectangle(0, -38, 18, 5, outline);
+    const handleLeft = this.add.rectangle(-7, -34, 4, 8, outline);
+    const handleRight = this.add.rectangle(7, -34, 4, 8, outline);
+    const handleInset = this.add.rectangle(0, -37, 10, 2, bodyLight);
+
+    const outerCap = this.add.rectangle(0, -27, 30, 8, outline);
+    const outerShoulders = this.add.rectangle(0, -21, 44, 8, outline);
+    const outerBody = this.add.rectangle(0, -5, 54, 28, outline);
+    const outerLower = this.add.rectangle(0, 13, 50, 12, outline);
+    const outerBase = this.add.rectangle(0, 23, 40, 8, outline);
+    const innerCap = this.add.rectangle(0, -26, 24, 5, bodyLight);
+    const innerShoulders = this.add.rectangle(0, -20, 38, 6, body);
+    const innerBody = this.add.rectangle(0, -5, 46, 24, body);
+    const innerLower = this.add.rectangle(0, 13, 42, 9, body);
+    const innerBase = this.add.rectangle(0, 22, 32, 5, 0x1d4163);
+
+    const leftPipingTop = this.add.rectangle(-21, -15, 3, 10, hardware, 0.88);
+    const leftPipingBody = this.add.rectangle(-24, 1, 3, 21, hardware, 0.88);
+    const rightShade = this.add.rectangle(22, 0, 3, 23, 0x122f49, 0.92);
+    const fabricHighlight = this.add.rectangle(-10, -17, 10, 3, 0x77a1b8, 0.7);
+    const zipperTrack = this.add.rectangle(0, -10, 36, 3, outline);
+    const zipperTeeth = [-12, -6, 0, 6, 12].map((offset) => (
+      this.add.rectangle(offset, -9, 2, 2, hardware)
+    ));
+    const zipperPull = this.add.rectangle(17, -7, 4, 7, hardware).setStrokeStyle(1, outline);
+
+    const pocketTopOutline = this.add.rectangle(0, 5, 30, 5, outline);
+    const pocketOutline = this.add.rectangle(0, 12, 36, 12, outline);
+    const pocketBottomOutline = this.add.rectangle(0, 20, 28, 6, outline);
+    const pocketTop = this.add.rectangle(0, 5, 24, 3, 0x356b8b);
+    const pocketBody = this.add.rectangle(0, 12, 30, 9, pocket);
+    const pocketBottom = this.add.rectangle(0, 19, 22, 4, pocket);
+    const pocketFlap = this.add.rectangle(0, 8, 24, 2, 0x4f7f9a);
+    const leftBuckle = this.add.rectangle(-21, 21, 5, 5, hardware).setAngle(-10);
+    const rightBuckle = this.add.rectangle(21, 21, 5, 5, hardware).setAngle(10);
+
+    this.backpackTag = this.add.rectangle(8, 9, 9, 7, 0xe7d9a7).setStrokeStyle(2, 0x5f552f);
+    const tagMark = this.add.rectangle(8, 9, 4, 2, 0x53615a);
+
+    return this.add.container(x, y, [
+      this.backpackShadow,
+      leftStrap,
+      rightStrap,
+      leftStrapEnd,
+      rightStrapEnd,
+      handleTop,
+      handleLeft,
+      handleRight,
+      handleInset,
+      outerCap,
+      outerShoulders,
+      outerBody,
+      outerLower,
+      outerBase,
+      innerCap,
+      innerShoulders,
+      innerBody,
+      innerLower,
+      innerBase,
+      leftPipingTop,
+      leftPipingBody,
+      rightShade,
+      fabricHighlight,
+      zipperTrack,
+      ...zipperTeeth,
+      zipperPull,
+      pocketTopOutline,
+      pocketOutline,
+      pocketBottomOutline,
+      pocketTop,
+      pocketBody,
+      pocketBottom,
+      pocketFlap,
+      leftBuckle,
+      rightBuckle,
+      this.backpackTag,
+      tagMark
+    ]).setDepth(y + 150).setScale(BACKPACK_BASE_SCALE).setAngle(-4);
   }
 
   private createPaperObject(x: number, y: number, text: string, color: number): Phaser.GameObjects.Container {
