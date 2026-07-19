@@ -13,10 +13,10 @@
       "delivery": "brisk mission briefing with a dry warning at the end"
     },
     "library_entered": {
-      "text": "System: Seven minutes. You took seven minutes from the dorm to the library. Ordinary speed, impeccable paperwork.",
-      "subtitleZh": "系统：七分钟。你从寝室走到图书馆用了七分钟。速度普通，手续无可挑剔。",
+      "text": "System: The entrance screen saved two timestamps. Open the log and check them before you go upstairs.",
+      "subtitleZh": "系统：闸机旁的小屏保存了两条时间。先打开记录核对，再去二楼。",
       "tone": "xiaoying",
-      "delivery": "bureaucratic timing report, deadpan final contrast"
+      "delivery": "brief procedural direction with restrained urgency"
     },
     "library_occupied_seat_found": {
       "text": "System: This is zero-two-two. There is a backpack on the seat. It has been here longer than you, so the system currently trusts it more.",
