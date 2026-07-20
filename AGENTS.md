@@ -80,6 +80,7 @@
 - Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
 - Run `npm run typecheck` and `npm run build:single` after behavior changes.
+- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the campus map contract, TypeScript, the production build, and the offline single-file artifact for every PR and push to `main`.
 - Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.
