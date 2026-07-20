@@ -43,10 +43,10 @@ function getSafeAreaInsets(): SafeAreaInsets {
     "position:fixed",
     "visibility:hidden",
     "pointer-events:none",
-    "padding-top:env(safe-area-inset-top)",
-    "padding-right:env(safe-area-inset-right)",
-    "padding-bottom:env(safe-area-inset-bottom)",
-    "padding-left:env(safe-area-inset-left)"
+    "padding-top:env(safe-area-inset-top,0px)",
+    "padding-right:env(safe-area-inset-right,0px)",
+    "padding-bottom:env(safe-area-inset-bottom,0px)",
+    "padding-left:env(safe-area-inset-left,0px)"
   ].join(";");
   document.body.appendChild(probe);
   const style = window.getComputedStyle(probe);
@@ -65,8 +65,17 @@ function getPhoneScale(container?: HTMLElement | null, embedded = false) {
     return 1;
   }
   const viewport = window.visualViewport;
-  const width = embedded && container ? container.clientWidth : viewport?.width ?? window.innerWidth;
-  const height = embedded && container ? container.clientHeight : viewport?.height ?? window.innerHeight;
+  const visualScale = viewport?.scale ?? 1;
+  const width = embedded && container
+    ? container.clientWidth
+    : viewport
+      ? viewport.width * visualScale
+      : window.innerWidth;
+  const height = embedded && container
+    ? container.clientHeight
+    : viewport
+      ? viewport.height * visualScale
+      : window.innerHeight;
   const safeArea = embedded ? { top: 0, right: 0, bottom: 0, left: 0 } : getSafeAreaInsets();
   const edgePadding = embedded ? 10 : STAGE_EDGE_PADDING;
   const horizontalPadding = Math.max(edgePadding, safeArea.left) + Math.max(edgePadding, safeArea.right);

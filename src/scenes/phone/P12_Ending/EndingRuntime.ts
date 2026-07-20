@@ -1,3 +1,5 @@
+import { cloneSerializable } from "../../../core/ClientCompatibility";
+
 export type EndingRuntimePhase =
   | "blackout"
   | "deploy"
@@ -29,11 +31,11 @@ export interface EndingRuntimeSnapshot {
 let currentSnapshot: EndingRuntimeSnapshot | null = null;
 
 export function setEndingRuntimeSnapshot(snapshot: EndingRuntimeSnapshot): void {
-  currentSnapshot = structuredClone(snapshot);
+  currentSnapshot = cloneSerializable(snapshot);
 }
 
 export function getEndingRuntimeSnapshot(): EndingRuntimeSnapshot | null {
-  return currentSnapshot ? structuredClone(currentSnapshot) : null;
+  return currentSnapshot ? cloneSerializable(currentSnapshot) : null;
 }
 
 export function clearEndingRuntimeSnapshot(): void {

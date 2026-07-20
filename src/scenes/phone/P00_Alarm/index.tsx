@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { playSfx, type SfxHandle } from "../../../modules/Sfx";
 import { preloadVo } from "../../../modules/VoicePlayer";
+import { getAudioContextConstructor } from "../../../core/ClientCompatibility";
 
 /** 闹钟响铃时的方波警报音 */
 function useAlarmTone(active: boolean) {
@@ -13,12 +14,13 @@ function useAlarmTone(active: boolean) {
       return undefined;
     }
 
-    const AudioCtor = window.AudioContext;
+    const AudioCtor = getAudioContextConstructor();
     if (!AudioCtor) {
       return undefined;
     }
 
     const audio = new AudioCtor();
+    void audio.resume().catch(() => undefined);
     const oscillator = audio.createOscillator();
     const gain = audio.createGain();
     oscillator.type = "square";
@@ -39,7 +41,7 @@ function useAlarmTone(active: boolean) {
       window.clearInterval(wobble);
       oscillatorRef.current?.stop();
       oscillatorRef.current?.disconnect();
-      audioRef.current?.close();
+      audioRef.current?.close().catch(() => undefined);
       oscillatorRef.current = null;
       audioRef.current = null;
     };

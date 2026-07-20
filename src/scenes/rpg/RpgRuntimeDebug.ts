@@ -1,3 +1,5 @@
+import { cloneSerializable } from "../../core/ClientCompatibility";
+
 export interface RpgRuntimeDebugState {
   coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down";
   world: { width: number; height: number };
@@ -79,7 +81,7 @@ export function setRpgRuntimeDebugState(state: RpgRuntimeDebugState): void {
 }
 
 export function getRpgRuntimeDebugState(): RpgRuntimeDebugState | null {
-  return currentState ? structuredClone(currentState) : null;
+  return currentState ? cloneSerializable(currentState) : null;
 }
 
 export function clearRpgRuntimeDebugState(): void {

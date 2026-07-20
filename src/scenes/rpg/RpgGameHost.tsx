@@ -26,6 +26,7 @@ import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
 import { QuestTaskBar } from "../../components/QuestClueStrip";
 import { RpgSubtitleLayer } from "../../components/RpgSubtitleLayer";
+import { useMediaQuery } from "../../components/useMediaQuery";
 
 interface RpgGameHostProps {
   store: GameStore;
@@ -53,7 +54,8 @@ const SCENE_CLASSES = {
 } as const;
 
 const DOUBLE_TAP_WINDOW_MS = 380;
-const RPG_TOUCH_CONTROLS_QUERY = "(pointer: coarse)";
+const MIN_TOUCH_DIRECTION_PULSE_MS = 96;
+const RPG_TOUCH_CONTROLS_QUERY = "(any-pointer: coarse)";
 const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; itemId: ItemId | "" }>> = {
   readEntranceRecord: { targetId: "entrance_record", itemId: "" },
   inspectBackpack: { targetId: "seat_022_backpack", itemId: "" },
@@ -74,25 +76,6 @@ const LIBRARY_VISIT_CHECKPOINTS: Record<LibraryLocationId, RpgCheckpointId | "">
   printer: "",
   shelf_755: "library_shelf_755"
 };
-
-function useTouchControls(): boolean {
-  const [enabled, setEnabled] = useState(() => (
-    typeof window !== "undefined" && typeof window.matchMedia === "function"
-      ? window.matchMedia(RPG_TOUCH_CONTROLS_QUERY).matches
-      : false
-  ));
-
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") return undefined;
-    const query = window.matchMedia(RPG_TOUCH_CONTROLS_QUERY);
-    const update = () => setEnabled(query.matches);
-    update();
-    query.addEventListener?.("change", update);
-    return () => query.removeEventListener?.("change", update);
-  }, []);
-
-  return enabled;
-}
 
 function setRpgInputEnabled(game: Phaser.Game, enabled: boolean): void {
   game.input.enabled = enabled;
@@ -136,6 +119,8 @@ export function RpgGameHost({
   const inputBlockedRef = useRef(inputBlocked);
   const keyboardBlockedRef = useRef(keyboardBlocked);
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
+  const activeDirectionPointerRef = useRef<{ pointerId: number; startedAt: number } | null>(null);
+  const directionStopTimerRef = useRef<number | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
   const itemInspectOpen = inspectedMapItem !== null;
   inputBlockedRef.current = inputBlocked || itemInspectOpen;
@@ -145,7 +130,8 @@ export function RpgGameHost({
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const runtimeScene = resolveRuntimeScene(state);
-  const touchControls = useTouchControls();
+  const touchControls = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY)
+    || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
   const bindShellRef = useCallback((node: HTMLElement | null) => {
     shellRef.current = node;
     setShellRoot((current) => current === node ? current : node);
@@ -403,14 +389,51 @@ export function RpgGameHost({
   }, [libraryController, state.ui.libraryFinalsPuzzle.lostFoundStage]);
 
   useEffect(() => {
-    const stopDirection = () => {
+    const emitStop = () => {
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
     };
-    window.addEventListener("pointerup", stopDirection, true);
-    window.addEventListener("pointercancel", stopDirection, true);
+
+    const clearStopTimer = () => {
+      if (directionStopTimerRef.current === null) return;
+      window.clearTimeout(directionStopTimerRef.current);
+      directionStopTimerRef.current = null;
+    };
+
+    const stopDirection = (event: PointerEvent, preserveShortTap: boolean) => {
+      const activePointer = activeDirectionPointerRef.current;
+      if (activePointer && activePointer.pointerId !== event.pointerId) return;
+      activeDirectionPointerRef.current = null;
+      clearStopTimer();
+      const elapsed = activePointer ? performance.now() - activePointer.startedAt : MIN_TOUCH_DIRECTION_PULSE_MS;
+      const remaining = preserveShortTap ? Math.max(0, MIN_TOUCH_DIRECTION_PULSE_MS - elapsed) : 0;
+      if (remaining <= 0) {
+        emitStop();
+        return;
+      }
+      directionStopTimerRef.current = window.setTimeout(() => {
+        directionStopTimerRef.current = null;
+        emitStop();
+      }, remaining);
+    };
+
+    const onPointerUp = (event: PointerEvent) => stopDirection(event, true);
+    const onPointerCancel = (event: PointerEvent) => stopDirection(event, false);
+    const stopImmediately = () => {
+      activeDirectionPointerRef.current = null;
+      clearStopTimer();
+      emitStop();
+    };
+
+    window.addEventListener("pointerup", onPointerUp, true);
+    window.addEventListener("pointercancel", onPointerCancel, true);
+    window.addEventListener("blur", stopImmediately);
+    window.addEventListener("pagehide", stopImmediately);
     return () => {
-      window.removeEventListener("pointerup", stopDirection, true);
-      window.removeEventListener("pointercancel", stopDirection, true);
+      window.removeEventListener("pointerup", onPointerUp, true);
+      window.removeEventListener("pointercancel", onPointerCancel, true);
+      window.removeEventListener("blur", stopImmediately);
+      window.removeEventListener("pagehide", stopImmediately);
+      stopImmediately();
     };
   }, [events]);
 
@@ -424,8 +447,19 @@ export function RpgGameHost({
     return () => window.removeEventListener("keydown", handleFullscreenKey);
   }, [inputBlocked, itemInspectOpen, keyboardBlocked]);
 
-  function direction(x: number, y: number) {
+  function direction(event: React.PointerEvent<HTMLButtonElement>, x: number, y: number) {
+    if (directionStopTimerRef.current !== null) {
+      window.clearTimeout(directionStopTimerRef.current);
+      directionStopTimerRef.current = null;
+    }
+    activeDirectionPointerRef.current = { pointerId: event.pointerId, startedAt: performance.now() };
+    try {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Pointer capture is optional in older WebKit and some embedded browsers.
+    }
     events.emit("rpg_direction_changed", { x, y });
+    event.preventDefault();
   }
 
   function returnToPhone() {
@@ -598,10 +632,10 @@ export function RpgGameHost({
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"
           >
-            <button type="button" aria-label="向上" disabled={!state.actOne.movementEnabled} onPointerDown={() => direction(0, -1)}>↑</button>
-            <button type="button" aria-label="向左" disabled={!state.actOne.movementEnabled} onPointerDown={() => direction(-1, 0)}>←</button>
-            <button type="button" aria-label="向下" disabled={!state.actOne.movementEnabled} onPointerDown={() => direction(0, 1)}>↓</button>
-            <button type="button" aria-label="向右" disabled={!state.actOne.movementEnabled} onPointerDown={() => direction(1, 0)}>→</button>
+            <button type="button" aria-label="向上" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, -1)}>↑</button>
+            <button type="button" aria-label="向左" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, -1, 0)}>←</button>
+            <button type="button" aria-label="向下" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, 1)}>↓</button>
+            <button type="button" aria-label="向右" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 1, 0)}>→</button>
             <button
               type="button"
               className="interact"

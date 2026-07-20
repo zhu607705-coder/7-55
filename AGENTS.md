@@ -27,6 +27,16 @@
 - Interactive hit areas must be anchored to their rendered control, not to viewport guesses. Minimum pointer target is `28px × 28px` unless the visible control is smaller and an invisible expanded target is required.
 - Before delivery, visually inspect at logical `430×860` and at one scaled mobile viewport. Page changes must not resize or shift the phone frame.
 
+## Web Client Compatibility
+
+- The supported build baseline is Chrome and Edge 90+, Firefox 91+, and Safari and iOS Safari 15+. Every shared-shell, viewport, input, audio, fullscreen, or Phaser change must remain functional in Blink, Gecko, and WebKit.
+- Runtime branches use capability detection. Engine and platform detection are debug metadata only and must not become the authority for enabling a feature.
+- `src/core/ClientCompatibility.ts` owns viewport metrics, capability snapshots, platform/input metadata, and legacy media-query subscriptions. React components use `src/components/useMediaQuery.ts`; scenes must not create parallel UA or `matchMedia` compatibility logic.
+- Layouts use `--app-viewport-width` and `--app-viewport-height` with `100vh` fallbacks, and every safe-area `env()` call includes a `0px` fallback. A new use of dynamic viewport units or container-query units requires an executable baseline fallback.
+- Pointer Events are the primary cross-device input contract and keyboard equivalents remain available. Hybrid devices use `any-pointer`; any coarse pointer preserves touch controls, while desktop split mode also requires a fine pointer, hover, landscape orientation, and at least `1100px` width.
+- Validation covers desktop and mobile UA scenarios in Blink, Gecko, and WebKit. Minimum viewports are `1280×720`, a non-16:9 desktop viewport, and `390×844`; pass criteria include zero document overflow, stable `1:2` phone and `16:9` RPG ratios, real keyboard and touch movement, and zero page or console errors.
+- The detailed fallback and QA matrix lives in `docs/client-compatibility.md` and must be updated when the support baseline or shared compatibility mechanism changes.
+
 ## Canonical RPG Viewport And Campus Map
 
 - Phaser RPG scenes use one logical canvas: `960px × 540px`. Keep the rendered shell at `16:9`; fill the available desktop viewport and letterbox non-16:9 windows without stretching.

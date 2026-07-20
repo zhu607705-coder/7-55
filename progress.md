@@ -962,3 +962,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 门控修正：道具栏现在以 `flags.checkinDone && !actOne.inventoryRecovered` 为唯一隐藏条件；签到成功写入 `checkinDone` 后立即隐藏，寝室取回校园卡并写入 `inventoryRecovered` 后恢复。项目规则、签到场景说明和调试对照表已同步。
 - 浏览器验收：在签到页预置一个真实已拥有道具后，`430×860` 下签到前道具栏节点为 `1`，提交 `0798` 后的 `stamp1` 和 `geoerror` 阶段均为 `0`，取回校园卡状态后恢复为 `1`；`390×844` 复验为 `1 → 0`，横向溢出为 `0`。最终 `file://` 单文件同样验证 `1 → 0`，外部 HTTP 请求与控制台错误均为 `0`。
 - 构建验证：共享 Web 游戏客户端、`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,591,079 bytes`，SHA-256 为 `ecaa997e56d83719aad76a5621ac185ad4f9763a399e240f342f6649e47d6d2a`。
+
+## 2026-07-20 Web 多端与三内核适配
+
+- 共享适配层：新增 `ClientCompatibility` 与 `useMediaQuery`，统一输出 Blink / Gecko / WebKit、iOS / Android / desktop、fine / coarse / hybrid 输入类型、VisualViewport 尺寸和能力快照；根节点同步写入可视区 CSS 变量，`render_game_to_text()` 可直接读取同一快照。页面缩放到 `2×` 时，原始 VisualViewport 为 `195×422`，归一化应用视口仍为 `390×844`，手机框保持 `354×708`，没有被反向缩小或外层裁切。
+- 布局与输入：桌面分栏门控改为 `≥1100px + 横屏 + any-pointer:fine + any-hover:hover`；存在粗指针的混合设备保留 RPG 触控键。控制中心亮度改按 `pointerId` 跟踪，Pointer Capture 缺失或丢失时仍可收口；移动端方向键加入 `96ms` 最短脉冲，快速点按在 Blink / Gecko / WebKit 中分别产生 `13px / 13px / 9px` 实际位移。粗指针竖屏的 `DEV` 入口移到右下安全区，不再遮挡左方向键。
+- 内核降级：标准与 WebKit 前缀 Fullscreen、`AudioContext` / `webkitAudioContext`、新旧 MediaQueryList 监听、原生与 CSS/ARIA inert 路径均进入共享契约；调试快照在缺少 `structuredClone` 时使用纯数据 JSON 深拷贝，音频资源索引移除负数 `.at()` 依赖。动态视口、容器查询单位、安全区和 `image-rendering` 均提供基线声明。Vite 构建目标固定为 Chrome / Edge 90+、Firefox 91+、Safari 15+。
+- 开发版矩阵：共享网页游戏客户端完成一次真实闹钟点击；定向矩阵在 Chromium `149.0.7827.55`、Firefox `152.0.4`、WebKit `26.5` 中各运行桌面手机、移动手机、桌面控制中心、移动控制中心、桌面 RPG、移动 RPG，共 `18` 个组合。错误、文档溢出、手机比例、RPG 比例、空画布、亮度键盘/指针输入、桌面键盘移动、移动触控移动、触控键数量的失败数均为 `0`。
+- 离线矩阵：最终 `file://` 单文件在三内核各复验桌面手机与移动 RPG，共 `6` 个组合，并在所有上下文中主动关闭原生 `structuredClone` 验证 JSON 降级；页面和控制台错误为 `0`，外部 HTTP 请求为 `0`，溢出为 `0`，三个移动端均显示 5 个触控键并完成右移。`demo/index.html` 为 `99,593,953 bytes`，SHA-256 为 `e151934c0168ce752eda567bf2a908cb395f61005c401e25c94fef985cb990bd`。
+- 规则沉淀：`AGENTS.md`、`CLAUDE.md` 和 `docs/client-compatibility.md` 固化支持基线、设备布局、能力降级、输入契约和验收矩阵。项目自动测试体系保持移除状态，本轮未添加测试依赖；改动范围不含 `godot/`。
