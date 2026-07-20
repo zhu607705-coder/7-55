@@ -1,5 +1,7 @@
 # 7:55
 
+[![Web CI](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml)
+
 《7:55》的可玩版本与技术框架。当前项目使用 Vite、TypeScript、React、Phaser 和
 Zustand。
 
@@ -15,8 +17,11 @@ npm run dev
 提交前执行：
 
 ```bash
+npm run map:zijingang
 npm run typecheck
 npm run build
+npm run build:single
+npm run verify:single
 ```
 
 生成单文件离线演示：
@@ -27,6 +32,9 @@ npm run build:demo
 
 输出位于 `demo/index.html`。`demo/` 和 `dist/` 是可重建产物，不提交到 Git；
 需要交付离线演示时，请作为 Release 附件发布。
+
+GitHub Actions 会对每个 PR 和每次推送到 `main` 执行上述检查。工作流不恢复已经移除的
+自动测试体系，也不执行 Godot 构建。
 
 ## 目录
 

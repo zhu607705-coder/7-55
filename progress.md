@@ -971,3 +971,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 开发版矩阵：共享网页游戏客户端完成一次真实闹钟点击；定向矩阵在 Chromium `149.0.7827.55`、Firefox `152.0.4`、WebKit `26.5` 中各运行桌面手机、移动手机、桌面控制中心、移动控制中心、桌面 RPG、移动 RPG，共 `18` 个组合。错误、文档溢出、手机比例、RPG 比例、空画布、亮度键盘/指针输入、桌面键盘移动、移动触控移动、触控键数量的失败数均为 `0`。
 - 离线矩阵：最终 `file://` 单文件在三内核各复验桌面手机与移动 RPG，共 `6` 个组合，并在所有上下文中主动关闭原生 `structuredClone` 验证 JSON 降级；页面和控制台错误为 `0`，外部 HTTP 请求为 `0`，溢出为 `0`，三个移动端均显示 5 个触控键并完成右移。`demo/index.html` 为 `99,593,953 bytes`，SHA-256 为 `e151934c0168ce752eda567bf2a908cb395f61005c401e25c94fef985cb990bd`。
 - 规则沉淀：`AGENTS.md`、`CLAUDE.md` 和 `docs/client-compatibility.md` 固化支持基线、设备布局、能力降级、输入契约和验收矩阵。项目自动测试体系保持移除状态，本轮未添加测试依赖；改动范围不含 `godot/`。
+
+## 2026-07-20 GitHub Web CI
+
+- 触发范围：新增 `.github/workflows/web-ci.yml`，每个 PR、每次推送到 `main` 和手动触发都会运行；同一 PR 或分支的新提交会取消旧运行。
+- 检查范围：Node.js 22 下执行锁文件安装、紫金港地图契约、TypeScript 类型检查、常规生产构建、离线单文件构建和单文件内联校验。
+- 产物校验：新增 `npm run verify:single`，要求 `demo/` 只生成非空的 `index.html`，包含内联 module runtime 与样式，且不存在外部脚本、样式表或 HTTP 媒体资源。
+- 权限与依赖：工作流只授予 `contents: read`，官方 `checkout` 与 `setup-node` 固定到当前 `v4` commit SHA；未恢复自动测试依赖，未增加 Godot 构建。
+- 基线验证：在最新 `main` 提交 `c373433` 的干净 worktree 中，`npm ci`、地图契约、`npm run typecheck`、`npm run build` 与 `npm run build:single` 均已通过。
+- 实现后验证：按 CI 顺序重新执行 `npm ci`、地图契约、类型检查、常规构建、单文件构建与 `verify:single`，全部通过；`demo/index.html` 为 `99,593,953 bytes`，包含 2 个内联脚本和 1 个内联样式。共享 Web 游戏客户端无页面或控制台错误，真实点击“开始游戏”后进入响铃态并显示“关闭”。临时截图已删除。
