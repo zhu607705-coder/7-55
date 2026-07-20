@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { eventBus } from "../core/EventBus";
-import { selectFeatureAccess } from "../core/FeatureAccess";
 import type { GameState, ItemId } from "../core/types";
 import { kit } from "../modules/GameKit";
 import { ItemInspectDialog } from "./ItemInspectDialog";
@@ -163,12 +162,6 @@ export function InventoryBar({ state }: InventoryBarProps) {
   const open = state.ui.inventoryOpen;
   const owned = ITEM_ORDER.filter((id) => state.items[id]);
   const recentItem = useRecentInventoryItem(owned);
-  const showCheckinDigits = selectFeatureAccess(state).chapter === "chapter_one";
-  const digitSlots = [state.digits.d1, state.digits.d2, state.digits.d3, state.digits.d4];
-  const acquiredDigitCount = digitSlots.filter(Boolean).length;
-  const digitAriaLabel = `已获取签到数字：${digitSlots
-    .map((digit, index) => `第${index + 1}位${digit ?? "未获得"}`)
-    .join("，")}`;
 
   function clampBarTop(nextTop: number) {
     const height = barRef.current?.offsetHeight ?? (open ? 328 : 42);
@@ -451,29 +444,11 @@ export function InventoryBar({ state }: InventoryBarProps) {
         >
           <PixelIcon name="backpack" size={26} />
           <span className="inv-arrow">{open ? "‹" : "›"}</span>
-          {showCheckinDigits && acquiredDigitCount > 0 ? (
-            <span className="inv-digit-mini" aria-label={digitAriaLabel}>
-              {digitSlots.map((digit) => digit ?? "·").join("")}
-            </span>
-          ) : null}
           {!open && owned.length > 0 ? <i className="inv-count">{owned.length}</i> : null}
         </button>
 
         {open ? (
           <div className="inv-body">
-            {showCheckinDigits ? (
-              <section className="inv-digits" aria-label={digitAriaLabel}>
-                <span>签到数字</span>
-                <ol>
-                  {digitSlots.map((digit, index) => (
-                    <li key={index} className={digit ? "is-acquired" : ""}>
-                      <small>{index + 1}</small>
-                      <strong>{digit ?? "?"}</strong>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            ) : null}
             <div
               ref={slotsRef}
               className={`inv-slots ${scrollDragging ? "is-scroll-dragging" : ""}`}

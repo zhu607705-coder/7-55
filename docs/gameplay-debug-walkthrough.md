@@ -415,7 +415,7 @@ JSON.parse(window.render_game_to_text())
 
 | 现象 | 检查项 | 正确条件 |
 | --- | --- | --- |
-| 左侧没有背包 | `ownedItems`、`actOne.phase` | 至少有一个道具；旧存档处于 `inventory_required` 时暂时隐藏 |
+| 左侧没有背包 | `ownedItems`、`flags.checkinDone`、`actOne.inventoryRecovered` | 至少有一个道具；成功签到后立即隐藏，取回寝室校园卡后恢复 |
 | 体艺第一章总闪退 | `networkMode` | 切到 `cellular` |
 | 角色无法命名 | 姓名与学号 | `林星宇 / 3250100755` |
 | 买不了手柄 | `balanceShifted` | 先用右移箭头把 `0.06` 变成 `6.00` |

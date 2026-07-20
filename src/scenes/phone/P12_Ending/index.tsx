@@ -11,7 +11,7 @@ import {
 
 const BLACKOUT_MS = 7000;
 const ERROR_DEPLOY_MS = 1500;
-const ATTEMPT_DURATION_MS = [2700, 2500, 2300] as const;
+const ATTEMPT_DURATION_MS = [2200, 1900, 1650] as const;
 const IMPACT_PAUSE_MS = 350;
 const MISS_PAUSE_MS = 650;
 const HOLD_TO_CATCH_MS = 1400;
@@ -77,22 +77,22 @@ function narratorPath(round: number, progress: number): { x: number; y: number; 
   const p = clamp(progress, 0, 1);
   if (round === 0) {
     return {
-      x: 82 - 58 * p + Math.sin(p * Math.PI) * 5,
-      y: 12 + 69 * p,
-      rotation: -12 + 24 * p
+      x: clamp(84 - 60 * p + Math.sin(p * Math.PI * 2) * 9 + Math.sin(p * Math.PI * 5) * 3, 8, 92),
+      y: 12 + 69 * p + Math.sin(p * Math.PI * 3) * 2.5,
+      rotation: -18 + 56 * p + Math.sin(p * Math.PI * 4) * 18
     };
   }
   if (round === 1) {
     return {
-      x: 16 + 60 * p - Math.sin(p * Math.PI) * 6,
-      y: 12 + 69 * p,
-      rotation: 14 - 28 * p
+      x: clamp(14 + 64 * p + Math.sin(p * Math.PI * 3) * 10 - Math.sin(p * Math.PI * 7) * 3, 8, 92),
+      y: 12 + 69 * p + Math.sin(p * Math.PI * 4) * 3,
+      rotation: 22 - 60 * p + Math.sin(p * Math.PI * 6) * 22
     };
   }
   return {
-    x: 50 + 29 * Math.sin(p * Math.PI * 2),
-    y: 12 + 69 * p,
-    rotation: -10 + 360 * p
+    x: clamp(50 + 32 * Math.sin(p * Math.PI * 3) + 7 * Math.sin(p * Math.PI * 8), 8, 92),
+    y: 12 + 69 * p + Math.sin(p * Math.PI * 5) * 3,
+    rotation: -20 + 540 * p
   };
 }
 

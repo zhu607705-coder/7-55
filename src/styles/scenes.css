@@ -8690,6 +8690,10 @@
   z-index: 50;
 }
 
+.checkin-finale.phase-geoerror {
+  background: rgba(4, 7, 10, 0.42);
+}
+
 .stamp-chars {
   align-items: center;
   display: flex;
@@ -8745,16 +8749,16 @@
 .checkin-geo-error {
   animation: checkin-geo-error-enter 420ms steps(6, end) both;
   background: #06080b;
-  border: 4px solid #f1ece2;
-  box-shadow: 8px 8px 0 rgba(111, 22, 35, 0.78);
+  border: 3px solid #f1ece2;
+  box-shadow: 6px 6px 0 rgba(111, 22, 35, 0.78), 0 0 0 2px #87283a;
   color: #f1ece2;
   left: 50%;
-  min-height: 184px;
-  padding: 0 16px 14px;
+  min-height: 116px;
+  padding: 0 14px 12px;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 334px;
+  width: min(350px, calc(100% - 36px));
 }
 
 .checkin-geo-error header {
@@ -8765,8 +8769,8 @@
   font: 700 10px/1 monospace;
   justify-content: space-between;
   letter-spacing: 1.2px;
-  margin-bottom: 18px;
-  min-height: 34px;
+  margin-bottom: 11px;
+  min-height: 29px;
 }
 
 .checkin-geo-error header i {
@@ -8777,23 +8781,23 @@
 .checkin-geo-error > strong {
   color: #f05a70;
   display: block;
-  font-size: 22px;
+  font-size: 18px;
   letter-spacing: 1px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .checkin-geo-error p,
 .checkin-geo-error small {
   color: #aeb5bf;
-  font: 11px/1.55 monospace;
+  font: 10px/1.45 monospace;
   margin: 0;
 }
 
 .checkin-geo-error small {
-  bottom: 13px;
+  bottom: 12px;
   color: #6d7781;
   position: absolute;
-  right: 15px;
+  right: 14px;
 }
 
 @keyframes stamp-pop {
