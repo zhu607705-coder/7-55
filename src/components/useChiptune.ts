@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { getAudioContextConstructor } from "../core/ClientCompatibility";
 
 /** 音乐播放时的简易 8bit 循环旋律（全局，跟随 ui.musicPlaying） */
 export function useChiptune(playing: boolean) {
@@ -6,16 +7,18 @@ export function useChiptune(playing: boolean) {
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!playing || typeof window === "undefined" || !window.AudioContext) {
+    const AudioContextConstructor = getAudioContextConstructor();
+    if (!playing || typeof window === "undefined" || !AudioContextConstructor) {
       return undefined;
     }
 
-    const ctx = new window.AudioContext();
+    const ctx = new AudioContextConstructor();
     ctxRef.current = ctx;
     const melody = [523, 587, 659, 587, 523, 440, 494, 523, 392, 440, 494, 523];
     let step = 0;
 
     const tick = () => {
+      if (document.hidden || ctx.state !== "running") return;
       try {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -33,10 +36,27 @@ export function useChiptune(playing: boolean) {
       }
     };
 
-    tick();
+    void ctx.resume().then(tick).catch(() => undefined);
     timerRef.current = window.setInterval(tick, 260);
 
+    const syncVisibility = () => {
+      const action = document.hidden ? ctx.suspend() : ctx.resume();
+      action.catch(() => undefined);
+    };
+    const suspendForPageCache = () => {
+      ctx.suspend().catch(() => undefined);
+    };
+    const resumeFromPageCache = () => {
+      if (!document.hidden) ctx.resume().catch(() => undefined);
+    };
+    document.addEventListener("visibilitychange", syncVisibility);
+    window.addEventListener("pagehide", suspendForPageCache);
+    window.addEventListener("pageshow", resumeFromPageCache);
+
     return () => {
+      document.removeEventListener("visibilitychange", syncVisibility);
+      window.removeEventListener("pagehide", suspendForPageCache);
+      window.removeEventListener("pageshow", resumeFromPageCache);
       if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
         timerRef.current = null;

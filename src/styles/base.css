@@ -25,6 +25,8 @@
   --phone-scale: 1;
   --phone-stage-width: 430px;
   --phone-stage-height: 860px;
+  --app-viewport-width: 100vw;
+  --app-viewport-height: 100vh;
   --font-pixel: "Fusion Pixel 12px Proportional SC", "Fusion Pixel", "Zpix", "PingFang SC",
     "Microsoft YaHei", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
 
@@ -45,14 +47,17 @@ html,
 body,
 #root {
   height: 100%;
-  min-height: 100dvh;
+  min-height: 100vh;
+  min-height: var(--app-viewport-height, 100vh);
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100dvh;
+  min-height: 100vh;
+  min-height: var(--app-viewport-height, 100vh);
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 button {
@@ -69,7 +74,7 @@ img {
   -webkit-user-drag: none;
 }
 
-@media (pointer: coarse), (max-width: 700px) {
+@media (pointer: coarse), (any-pointer: coarse), (max-width: 700px) {
   #root,
   #root * {
     user-select: none;
@@ -91,16 +96,18 @@ img {
   background:
     radial-gradient(circle at 50% 12%, #26231d 0%, #141310 62%);
   display: flex;
-  height: 100dvh;
+  height: 100vh;
+  height: var(--app-viewport-height, 100vh);
   justify-content: center;
-  min-height: 100dvh;
+  min-height: 100vh;
+  min-height: var(--app-viewport-height, 100vh);
   overflow: hidden;
   padding: 18px;
   padding:
-    max(18px, env(safe-area-inset-top))
-    max(18px, env(safe-area-inset-right))
-    max(18px, env(safe-area-inset-bottom))
-    max(18px, env(safe-area-inset-left));
+    max(18px, env(safe-area-inset-top, 0px))
+    max(18px, env(safe-area-inset-right, 0px))
+    max(18px, env(safe-area-inset-bottom, 0px))
+    max(18px, env(safe-area-inset-left, 0px));
 }
 
 .app-stage.is-embedded {
@@ -114,11 +121,17 @@ img {
 .desktop-gameplay-shell {
   background: #080b0e;
   display: block;
-  height: 100dvh;
+  height: 100vh;
+  height: var(--app-viewport-height, 100vh);
   overflow: hidden;
   padding: 0;
   position: relative;
   width: 100vw;
+}
+
+.is-inert-fallback {
+  pointer-events: none !important;
+  user-select: none;
 }
 
 .desktop-phone-pane,

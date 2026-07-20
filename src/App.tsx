@@ -9,6 +9,7 @@ import { DeveloperChannel } from "./components/DeveloperChannel";
 import { LibraryStoryOverlay } from "./components/LibraryStoryOverlay";
 import { PresentationLayer } from "./components/PresentationLayer";
 import { ToastLayer } from "./components/ToastLayer";
+import { useMediaQuery } from "./components/useMediaQuery";
 import { QuestTaskBar } from "./components/QuestClueStrip";
 import { audioDirector } from "./modules/AudioDirector";
 import { kit } from "./modules/GameKit";
@@ -46,26 +47,7 @@ function getSnapshot(): GameState {
   return gameStore.getState();
 }
 
-const DESKTOP_GAMEPLAY_QUERY = "(min-width: 1100px) and (orientation: landscape) and (pointer: fine)";
-
-function useDesktopGameplayLayout(): boolean {
-  const [matches, setMatches] = useState(() => (
-    typeof window !== "undefined" && typeof window.matchMedia === "function"
-      ? window.matchMedia(DESKTOP_GAMEPLAY_QUERY).matches
-      : false
-  ));
-
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") return undefined;
-    const query = window.matchMedia(DESKTOP_GAMEPLAY_QUERY);
-    const update = () => setMatches(query.matches);
-    update();
-    query.addEventListener?.("change", update);
-    return () => query.removeEventListener?.("change", update);
-  }, []);
-
-  return matches;
-}
+const DESKTOP_GAMEPLAY_QUERY = "(min-width: 1100px) and (orientation: landscape) and (any-pointer: fine) and (any-hover: hover)";
 
 export function App() {
   const state = useSyncExternalStore(gameStore.subscribe, getSnapshot, getSnapshot);
@@ -74,7 +56,7 @@ export function App() {
   const libraryStorySequenceRef = useRef<string | null>(null);
   const libraryStoryQueueRef = useRef<string[]>([]);
   const [activeSurface, setActiveSurface] = useState<"phone" | "rpg">("rpg");
-  const desktopGameplay = useDesktopGameplayLayout();
+  const desktopGameplay = useMediaQuery(DESKTOP_GAMEPLAY_QUERY);
   const phonePaneRef = useRef<HTMLElement>(null);
   const Scene = getPhoneScene(state.currentScene);
   const access = selectFeatureAccess(state);
@@ -205,11 +187,15 @@ export function App() {
     if (!phonePane) return;
     if (campusCardInspectionActive) {
       phonePane.setAttribute("inert", "");
+      phonePane.setAttribute("aria-hidden", "true");
+      phonePane.classList.add("is-inert-fallback");
       const focused = document.activeElement;
       if (focused instanceof HTMLElement && phonePane.contains(focused)) focused.blur();
       return;
     }
     phonePane.removeAttribute("inert");
+    phonePane.removeAttribute("aria-hidden");
+    phonePane.classList.remove("is-inert-fallback");
   }, [campusCardInspectionActive, desktopGameplay]);
 
   function focusRpg() {

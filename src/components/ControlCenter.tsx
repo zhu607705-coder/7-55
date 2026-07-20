@@ -18,6 +18,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
   const [headphoneFalling, setHeadphoneFalling] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const sliderRef = useRef<HTMLDivElement | null>(null);
+  const sliderPointerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -79,18 +80,40 @@ export function ControlCenter({ state }: ControlCenterProps) {
   }
 
   function onSliderPointerDown(e: React.PointerEvent) {
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    sliderPointerRef.current = e.pointerId;
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      // Pointer capture can be unavailable in older WebKit or synthetic events.
+    }
     updateBrightness(e.clientY);
+    e.preventDefault();
   }
 
   function onSliderPointerMove(e: React.PointerEvent) {
-    if (e.buttons > 0) {
+    if (sliderPointerRef.current === e.pointerId) {
       updateBrightness(e.clientY);
+      e.preventDefault();
     }
   }
 
-  function onSliderPointerUp() {
-    playSfx("14_", { volume: 0.6 });
+  function finishSliderPointer(e: React.PointerEvent, playFeedback: boolean) {
+    if (sliderPointerRef.current !== e.pointerId) return;
+    sliderPointerRef.current = null;
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+    } catch {
+      // The browser may already have released the pointer.
+    }
+    if (playFeedback) playSfx("14_", { volume: 0.6 });
+  }
+
+  function onSliderPointerUp(e: React.PointerEvent) {
+    finishSliderPointer(e, true);
+  }
+
+  function onSliderPointerCancel(e: React.PointerEvent) {
+    finishSliderPointer(e, false);
   }
 
   function toggleAutoRotate() {
@@ -196,6 +219,10 @@ export function ControlCenter({ state }: ControlCenterProps) {
             onPointerDown={onSliderPointerDown}
             onPointerMove={onSliderPointerMove}
             onPointerUp={onSliderPointerUp}
+            onPointerCancel={onSliderPointerCancel}
+            onLostPointerCapture={() => {
+              sliderPointerRef.current = null;
+            }}
             onKeyDown={(e) => {
               if (e.key === "ArrowUp") {
                 kit.flags.setUi("brightness", Math.min(100, brightness + 10));

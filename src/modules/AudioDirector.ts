@@ -56,7 +56,8 @@ const audioUrls = import.meta.glob("../assets/audio/**/*.mp3", {
 
 const audioUrlsByAsset = new Map<string, string>();
 for (const [path, url] of Object.entries(audioUrls)) {
-  const filename = path.split("/").at(-1);
+  const pathParts = path.split("/");
+  const filename = pathParts[pathParts.length - 1];
   if (filename?.endsWith(".mp3")) audioUrlsByAsset.set(filename.slice(0, -4), url);
 }
 

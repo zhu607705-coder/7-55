@@ -229,7 +229,8 @@
 
 .quest-task-bar--phone .quest-task-drawer {
   left: 14px;
-  max-height: calc(100dvh - 64px);
+  max-height: calc(100vh - 64px);
+  max-height: calc(var(--app-viewport-height, 100vh) - 64px);
   position: fixed;
   right: 14px;
   top: var(--phone-page-control-top, 80px);
@@ -281,7 +282,8 @@
 
 .quest-task-bar--desktop .quest-task-drawer {
   left: 50%;
-  max-height: calc(100dvh - 86px);
+  max-height: calc(100vh - 86px);
+  max-height: calc(var(--app-viewport-height, 100vh) - 86px);
   position: fixed;
   top: 68px;
   transform: translateX(-50%);
@@ -1699,7 +1701,7 @@
 }
 
 .item-inspect-backdrop--phone {
-  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  padding: max(18px, env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) max(18px, env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
 }
 
 .item-inspect-dialog {

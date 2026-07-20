@@ -19,7 +19,8 @@
   font-family: "Fusion Pixel 12px Proportional SC", monospace;
   grid-template-rows: auto minmax(0, 1fr) auto;
   left: 12px;
-  max-height: calc(100dvh - 24px);
+  max-height: calc(100vh - 24px);
+  max-height: calc(var(--app-viewport-height, 100vh) - 24px);
   position: fixed;
   top: 12px;
   width: min(310px, calc(100vw - 24px));
@@ -41,3 +42,11 @@
 .developer-channel > footer { align-items: center; border-top: 2px solid #526176; display: flex; justify-content: space-between; padding: 9px; }
 .developer-channel > footer button { background: #f2c84b; border: 2px solid #6d5720; color: #191713; font: inherit; font-size: 11px; padding: 7px 9px; }
 .developer-channel > footer span { color: #8e9aab; font-size: 9px; }
+
+@media (max-width: 700px) and (orientation: portrait) and (any-pointer: coarse) {
+  .developer-channel-trigger {
+    bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    left: auto;
+    right: max(10px, env(safe-area-inset-right, 0px));
+  }
+}

@@ -12,6 +12,7 @@ import { getPresentationRuntimeSnapshot } from "./modules/PresentationRuntime";
 import { getEndingRuntimeSnapshot } from "./scenes/phone/P12_Ending/EndingRuntime";
 import { getBikeArcadeSnapshot } from "./scenes/phone/P16_BikeArcade/BikeArcadeRuntime";
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
+import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
 import "@fontsource/fusion-pixel-12px-proportional-sc";
 import "./styles.css";
 
@@ -22,6 +23,7 @@ function summarizeGameState(state: GameState) {
   const desktopShell = document.querySelector<HTMLElement>(".desktop-gameplay-shell");
   return {
     coordinateSystem: "DOM viewport coordinates, origin at top-left, x right, y down",
+    clientCompatibility: getClientCompatibilitySnapshot(),
     runtimeMode: state.runtimeMode,
     rpgScene: state.rpgScene,
     rpgCheckpoint: state.rpgCheckpoint,
@@ -110,6 +112,11 @@ function summarizeGameState(state: GameState) {
       }
     }
   };
+}
+
+const detachClientCompatibility = installClientCompatibility();
+if (import.meta.hot) {
+  import.meta.hot.dispose(detachClientCompatibility);
 }
 
 window.render_game_to_text = () => JSON.stringify(summarizeGameState(gameStore.getState()));

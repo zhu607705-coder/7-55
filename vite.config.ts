@@ -2,6 +2,8 @@ import react from "@vitejs/plugin-react";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import { defineConfig, type Plugin } from "vite";
 
+const BROWSER_BUILD_TARGET = ["chrome90", "edge90", "firefox91", "safari15"];
+
 function moveSingleFileRuntimeAfterShell(): Plugin {
   return {
     name: "move-single-file-runtime-after-shell",
@@ -50,11 +52,15 @@ export default defineConfig(({ mode }) => {
           plugins: [react(), viteSingleFile({ removeViteModuleLoader: true }), moveSingleFileRuntimeAfterShell()],
           build: {
             outDir: "demo",
-            chunkSizeWarningLimit: 8000
+            chunkSizeWarningLimit: 8000,
+            target: BROWSER_BUILD_TARGET
           }
         }
       : {
-          plugins: [react()]
+          plugins: [react()],
+          build: {
+            target: BROWSER_BUILD_TARGET
+          }
         })
   };
 });
