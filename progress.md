@@ -947,3 +947,18 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 浏览器验收：定向 Chromium（gstack）经 `?devCheckpoint=c2-library-gate` 进入：大地图渲染与集成前逐字节一致；WASD 行走 220、SHIFT 跑 320、松手减速刹车；点击寻路全程 arrived、中途 7 个路径点指示可见；建筑北侧被 overlay 完全遮挡、南侧贴边压住建筑；拖拽平移+松手惯性漂移、wheel 缩放落档且 manual、小地图点击跳视角、⌖/+/- 按钮（bridge）正常；走近 (3000,538) 出现 gate 提示，空格进入图书馆 interior；DEV 控制台 `applyTransform("crescent_building", { offsetX: 200, scaleY: 1.3 })` 后 overlay 移动变形、碰撞体同步 (2585,2087,481,476)，`resetTransform` 后画面与初始截图逐字节一致；`game.scene.start` 重启与进出图书馆两种生命周期后底图/overlay/小地图完整；`1280×720` 与 `1280×800` 视口均无拉伸遮挡；`file://` 单文件冒烟与 dev 基线逐字节一致；控制台错误为 0。
 - 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,583,860 bytes`，SHA-256 为 `4a71afca594801adf5b8d943bc5f7a349e623efdfdbea00a5d79953d0d86782c`。
 - 验证边界与遗留：movementEnabled 锁定分支保持原有 setVelocity(0)+静止+toast 逻辑（校园检查点均 seed 解锁状态，该路径代码未变、经类型检查）；applyTransform 后原位 walkability 掩码障碍与原位底图像素仍在（模块既定限制）；小地图始终显示原始底图；QA 截图已全部删除。
+
+## 2026-07-20 序章错误通知、逃脱节奏与签到码显示收敛
+
+- 居中通知：签到成功演出先在原签到页面中央显示紧凑的 `系统通知 · LOCATION ERROR`，正文保留“经度与纬度不存在”和空坐标；通知停留 `1900ms` 后依次进入 `1200ms` 红闪、黑屏与逃脱场景，未改变控制器的签到校验和章节推进权限。
+- 逃脱节奏：三轮旁白拦截时限由 `2700 / 2500 / 2300ms` 缩短为 `2200 / 1900 / 1650ms`；三条轨迹改为多段弯折、S 形折返和三波段摆动，并继续限制在可玩区域内。
+- 显示收敛：第一章四位签到码只由顶部共享任务栏和任务抽屉显示；`InventoryBar` 删除展开态数字条和收起态紧凑数字串，道具槽只承载真实物品。`AGENTS.md` 与 `CLAUDE.md` 已同步该唯一展示规则。
+- 浏览器验收：`430×860` 和缩放后的 `390×844` 视口均显示居中通知，后者通知边界约为 `285.7×94.7`，横向溢出为 `0`；实际时序验证经过签到、通知、红闪、黑屏并进入 `ending`。完整键盘流程连续挡住三轮并完成 `1400ms` 锁定，三轮轨迹采样分别出现 `1 / 3 / 3` 次方向变化；Pointer Events 拖动把错误框中心从 `50%` 更新到 `24%`。打开含道具的物品栏后，顶部任务栏仍显示 `0 7 9 8`，物品栏数字节点为 `0`，控制台错误为 `0`。
+- 构建验证：项目自动测试体系保持移除状态，本轮未恢复测试依赖；共享 Web 游戏客户端、定向 Chromium、`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,591,121 bytes`，SHA-256 为 `20d8df0c9b10da00618cba598e0739b1823d34c034f25e7e93a70ec297f36285`。
+
+## 2026-07-20 签到后道具栏隐藏时机修正
+
+- 根因：手机壳原先只在 `friend_message_required / system_required / inventory_required` 三个第二章阶段隐藏道具栏，导致成功签到后的盖章、经纬度通知、红闪和旁白拦截期间仍会显示已有道具。
+- 门控修正：道具栏现在以 `flags.checkinDone && !actOne.inventoryRecovered` 为唯一隐藏条件；签到成功写入 `checkinDone` 后立即隐藏，寝室取回校园卡并写入 `inventoryRecovered` 后恢复。项目规则、签到场景说明和调试对照表已同步。
+- 浏览器验收：在签到页预置一个真实已拥有道具后，`430×860` 下签到前道具栏节点为 `1`，提交 `0798` 后的 `stamp1` 和 `geoerror` 阶段均为 `0`，取回校园卡状态后恢复为 `1`；`390×844` 复验为 `1 → 0`，横向溢出为 `0`。最终 `file://` 单文件同样验证 `1 → 0`，外部 HTTP 请求与控制台错误均为 `0`。
+- 构建验证：共享 Web 游戏客户端、`npm run typecheck`、`git diff --check` 与 `npm run build:single` 均通过。`demo/index.html` 为 `99,591,079 bytes`，SHA-256 为 `ecaa997e56d83719aad76a5621ac185ad4f9763a399e240f342f6649e47d6d2a`。

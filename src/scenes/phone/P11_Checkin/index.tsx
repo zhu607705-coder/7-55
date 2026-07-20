@@ -6,6 +6,8 @@ import { playSfx, type SfxHandle } from "../../../modules/Sfx";
 
 type FinalePhase = "none" | "stamp1" | "stamp2" | "geoerror" | "redflash" | "blackout";
 
+const GEO_NOTIFICATION_MS = 1900;
+
 /**
  * P11 校务签到（学在浙大）：4 位签到码输入 + 像素数字键盘。
  * 流量 → 提示请连接校园网；错码 → 报错；0798 → “签”“到”逐字跳出 → 红闪 → 黑屏序章演出。
@@ -41,7 +43,7 @@ export function CheckinScene({ state, router, events }: SceneComponentProps) {
     if (finale === "geoerror") {
       kit.flags.shake();
       events.emit("checkin_geo_error_presented", { longitude: null, latitude: null });
-      timers.push(window.setTimeout(() => setFinale("redflash"), 1350));
+      timers.push(window.setTimeout(() => setFinale("redflash"), GEO_NOTIFICATION_MS));
     }
     if (finale === "redflash") {
       kit.flags.shake(true);
@@ -195,9 +197,9 @@ export function CheckinScene({ state, router, events }: SceneComponentProps) {
           ) : null}
           {finale === "geoerror" ? (
             <section className="checkin-geo-error" role="alertdialog" aria-labelledby="checkin-geo-error-title">
-              <header><span>LOCATION ERROR</span><i aria-hidden="true">×</i></header>
+              <header><span>系统通知 · LOCATION ERROR</span><i aria-hidden="true">×</i></header>
               <strong id="checkin-geo-error-title">经度与纬度不存在</strong>
-              <p>longitude: null<br />latitude: null</p>
+              <p>longitude: null · latitude: null</p>
               <small>ERR_GEO_0798</small>
             </section>
           ) : null}

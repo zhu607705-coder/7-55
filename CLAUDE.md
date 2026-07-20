@@ -100,7 +100,7 @@
 
 - The shared task trigger must accept pointer, Enter, and Space input on phone, RPG, and split-screen layouts. Its drawer always labels `当前任务`, `当前进度`, and the next objective explicitly.
 - The task drawer reveals only the current next objective. Locked future step labels must not be rendered, because even disabled checklist rows disclose the remaining puzzle chain. Completed paper documents may remain available only inside a collapsed acquired-material archive derived from completed facts.
-- Chapter-one digit discoveries remain visible in both the task trigger/drawer and the inventory bar as four ordered slots. Unknown slots stay masked; acquired digits keep their original positions. Every surface reads `state.digits` directly and must not maintain a duplicate clue state.
+- Chapter-one digit discoveries remain visible only in the shared task trigger/drawer as four ordered slots. Unknown slots stay masked and acquired digits keep their original positions. The inventory bar must not repeat the digit strip or compact digit string; the task UI reads `state.digits` directly and remains the sole visual owner.
 - Every newly owned item in phone or RPG runtime uses the shared inventory acquisition contract: a pixel-stepped flight, inventory receive pulse, and new-slot lock. Later chapters may add object-local pickup motion, but they must still complete the same shared inventory feedback and reduced-motion fallback.
 - Phaser checkpoints that represent difficulty stages must set the real simulation value. Labels such as `377m` or `566m` cannot point to a zero-distance run.
 
@@ -148,7 +148,7 @@
 - RPG desktop controls use `WASD` for movement and `Space` for entering, inspecting, and continuing dialogue. `A` is the move-left key and must never be presented as an interaction key; touch controls may emit the same interaction event through a button labelled `空格`.
 - The dorm exit remains locked until the player has produced one manual movement input after buying the gamepad. That first input publishes the `can leave` cue; crossing the exit then completes the movement gate and opens the campus route toward the library.
 - Phone/RPG actions publish domain events. Music, voice, sound effects, subtitles, flashes, screen shake, and transition animation consume presentation cues independently and cannot unlock a puzzle step.
-- The phone inventory appears after the first owned chapter-one item. During the chapter-two missing-inventory exchange it stays hidden through `friend_message_required`, `system_required`, and `inventory_required`, then returns when the dorm campus card is collected.
+- The phone inventory appears after the first owned chapter-one item. A successful `0798` check-in hides it immediately, before the coordinate-error notification and interception sequence. It stays hidden while `checkinDone` is true and `inventoryRecovered` is false, then returns when the dorm campus card is collected.
 
 ## Chapter Two: Library 022 Backpack
 

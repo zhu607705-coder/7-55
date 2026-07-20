@@ -3,7 +3,7 @@
 - Scene ID: `ending`
 - Entry: P11 签到成功红闪后
 - Required state: `checkinDone === true`
-- Sequence: `7s` 黑屏 → 经纬度错误框部署 → 三次拦截 → `1400ms` 按住锁定 → 对话 → 白色连闪 → 手机主页
+- Sequence: `7s` 黑屏 → 经纬度错误框部署 → `2200 / 1900 / 1650ms` 三条多段折返轨迹拦截 → `1400ms` 按住锁定 → 对话 → 白色连闪 → 手机主页
 - Controls: pointer drag, `A/D`, left/right arrows; final lock accepts pointer hold, `Space`, and `Enter`
 - Failure: three misses open a retry state; retry restarts the error-window game without replaying the seven-second blackout
 - Runtime inspection: `window.render_game_to_text().endingGame`
