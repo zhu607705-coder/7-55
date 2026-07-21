@@ -95,7 +95,7 @@
 
 .quest-task-trigger > span {
   color: #f0d54e;
-  font-size: var(--fs-micro);
+  font-size: 8px;
   font-weight: 900;
   white-space: nowrap;
 }
@@ -109,7 +109,7 @@
 
 .quest-task-trigger-copy > span {
   color: #fff8e4;
-  font-size: var(--fs-micro);
+  font-size: 8px;
   font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -118,7 +118,7 @@
 
 .quest-task-digit-hint {
   color: #f0d54e;
-  font: 900 var(--fs-micro)/1 monospace;
+  font: 900 8px/1 monospace;
   font-style: normal;
   letter-spacing: 0.5px;
   overflow: hidden;
@@ -148,7 +148,7 @@
 }
 
 .quest-digit-acquisition b {
-  font: 900 var(--fs-display)/1 monospace;
+  font: 900 20px/1 monospace;
 }
 
 .quest-digit-acquisition i {
@@ -181,7 +181,7 @@
 
 .quest-task-trigger b {
   color: #9fd3ff;
-  font: 800 var(--fs-micro)/1 monospace;
+  font: 800 8px/1 monospace;
 }
 
 @keyframes quest-task-update-lock {
@@ -287,15 +287,15 @@
 
 .quest-task-bar--desktop .quest-task-trigger span,
 .quest-task-bar--desktop .quest-task-trigger b {
-  font-size: var(--fs-caption);
+  font-size: 11px;
 }
 
 .quest-task-bar--desktop .quest-task-trigger-copy > span {
-  font-size: var(--fs-body);
+  font-size: 13px;
 }
 
 .quest-task-bar--desktop .quest-task-digit-hint {
-  font-size: var(--fs-caption);
+  font-size: 10px;
 }
 
 .quest-task-bar--desktop .quest-task-drawer {
@@ -324,12 +324,12 @@
 
 .quest-task-drawer > header small {
   color: #f0d54e;
-  font-size: var(--fs-caption);
+  font-size: 10px;
   font-weight: 900;
 }
 
 .quest-task-drawer h2 {
-  font-size: var(--fs-title);
+  font-size: 20px;
   line-height: 1.25;
   margin: 0;
 }
@@ -351,19 +351,19 @@
 
 .quest-task-overview span {
   color: #9fd3ff;
-  font-size: var(--fs-caption);
+  font-size: 10px;
   font-weight: 900;
 }
 
 .quest-task-overview strong {
   color: #fff5dc;
-  font-size: var(--fs-body);
+  font-size: 13px;
   line-height: 1.35;
 }
 
 .quest-task-overview > section:last-child strong {
   color: #f0d54e;
-  font: 900 var(--fs-label)/1.2 monospace;
+  font: 900 16px/1.2 monospace;
 }
 
 .quest-task-digits {
@@ -382,13 +382,13 @@
 
 .quest-task-digits > header span {
   color: #9fd3ff;
-  font-size: var(--fs-caption);
+  font-size: 10px;
   font-weight: 900;
 }
 
 .quest-task-digits > header strong {
   color: #f0d54e;
-  font: 900 var(--fs-caption)/1 monospace;
+  font: 900 11px/1 monospace;
 }
 
 .quest-task-digits > div {
@@ -416,11 +416,11 @@
 }
 
 .quest-task-digits small {
-  font-size: var(--fs-micro);
+  font-size: 7px;
 }
 
 .quest-task-digits b {
-  font: 900 var(--fs-display)/1 monospace;
+  font: 900 16px/1 monospace;
 }
 
 .quest-task-drawer > header button {
@@ -446,18 +446,18 @@
 
 .quest-task-objective span {
   color: #9fd3ff;
-  font-size: var(--fs-caption);
+  font-size: 10px;
   grid-column: 1 / -1;
 }
 
 .quest-task-objective strong {
-  font-size: var(--fs-body);
+  font-size: 13px;
   line-height: 1.4;
 }
 
 .quest-task-objective b {
   color: #f0d54e;
-  font: 900 var(--fs-caption)/1.4 monospace;
+  font: 900 12px/1.4 monospace;
 }
 
 .quest-proof-requirements {
@@ -476,12 +476,12 @@
 
 .quest-proof-requirements > header strong {
   color: #f0d54e;
-  font-size: var(--fs-caption);
+  font-size: 11px;
 }
 
 .quest-proof-requirements > header span {
   color: #9fd3ff;
-  font: 900 var(--fs-caption)/1 monospace;
+  font: 900 10px/1 monospace;
 }
 
 .quest-proof-requirements ul {
@@ -509,13 +509,13 @@
 
 .quest-proof-requirements li span {
   color: #f0d54e;
-  font: 900 var(--fs-body)/1 monospace;
+  font: 900 13px/1 monospace;
   text-align: center;
 }
 
 .quest-proof-requirements li strong {
   color: #dbe1e5;
-  font-size: var(--fs-caption);
+  font-size: 10px;
   line-height: 1.35;
 }
 
@@ -529,7 +529,7 @@
   align-items: center;
   cursor: pointer;
   display: flex;
-  font-size: var(--fs-caption);
+  font-size: 11px;
   font-weight: 900;
   justify-content: space-between;
   min-height: 38px;
@@ -538,7 +538,7 @@
 
 .quest-task-materials summary b {
   color: #9fd3ff;
-  font: 900 var(--fs-caption)/1 monospace;
+  font: 900 10px/1 monospace;
 }
 
 .quest-task-materials ul {
@@ -566,7 +566,7 @@
 }
 
 .quest-task-materials li span {
-  font-size: var(--fs-caption);
+  font-size: 11px;
   line-height: 1.35;
 }
 
@@ -574,7 +574,7 @@
   background: #e9e2cb;
   border: 2px solid #111820;
   color: #1b242c;
-  font-size: var(--fs-label);
+  font-size: 9px;
   min-height: 28px;
   padding: 3px 8px;
 }
@@ -592,9 +592,9 @@
   justify-content: space-between;
 }
 
-.quest-task-hints header strong { color: #f0d54e; font-size: var(--fs-label); }
-.quest-task-hints header span { color: #9fd3ff; font: 800 var(--fs-caption)/1 monospace; }
-.quest-task-hints p { color: #c5ccd1; font-size: var(--fs-body); line-height: 1.5; margin: 0; }
+.quest-task-hints header strong { color: #f0d54e; font-size: 12px; }
+.quest-task-hints header span { color: #9fd3ff; font: 800 10px/1 monospace; }
+.quest-task-hints p { color: #c5ccd1; font-size: 10px; line-height: 1.5; margin: 0; }
 .quest-task-hints p b { color: #f0d54e; display: inline-block; margin-right: 7px; }
 
 .quest-task-hints > button,
@@ -602,7 +602,7 @@
   background: #edf2f6;
   border: 3px solid #111820;
   color: #15202a;
-  font-size: var(--fs-label);
+  font-size: 11px;
   font-weight: 900;
   min-height: 40px;
   padding: 7px 10px;
@@ -714,14 +714,12 @@
   padding: 0;
   place-items: center;
   position: relative;
-  transition:
-    opacity var(--dur-fast) var(--ease-pixel),
-    transform var(--dur-fast) var(--ease-pixel);
+  transition: opacity 120ms linear, transform 120ms steps(2, end);
   width: 28px;
 }
 
 .quest-clue-glyph {
-  font-size: var(--fs-micro);
+  font-size: 8px;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
@@ -736,7 +734,7 @@
   background: rgba(35, 37, 43, 0.97);
   border: 1px solid #f4ecd7;
   color: #fff6df;
-  font-size: var(--fs-caption);
+  font-size: 10px;
   left: 0;
   line-height: 1.2;
   max-width: 164px;
@@ -748,9 +746,7 @@
   text-overflow: ellipsis;
   top: 32px;
   transform: translateY(-2px);
-  transition:
-    opacity var(--dur-press) var(--ease-pixel),
-    transform var(--dur-press) var(--ease-pixel);
+  transition: opacity 100ms linear, transform 100ms linear;
   white-space: nowrap;
   width: max-content;
   z-index: 1;

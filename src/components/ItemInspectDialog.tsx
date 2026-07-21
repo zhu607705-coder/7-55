@@ -149,9 +149,9 @@ function ItemInspectDialogBody({
   const item = ITEM_META[itemId];
   const itemDocument = ITEM_CATALOG[itemId].document;
   const identityReadable = selectIdentityReadable(gameStore.getState());
-  const visibleDescription = itemId === "campusCard" && identityReadable
+  const campusCardHolder = itemId === "campusCard" && identityReadable
     ? `${actOneContent.studentName} · ${actOneContent.studentId}`
-    : item.desc;
+    : null;
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -228,7 +228,6 @@ function ItemInspectDialogBody({
         <header className="item-inspect-header">
           <span className="item-inspect-badge">{variant === "phone" ? "PHONE" : "RPG"}</span>
           <h2 id={titleId}>{item.name}</h2>
-          <p id={descId}>{visibleDescription}</p>
         </header>
         <div className="item-inspect-body">
           <div className="item-inspect-icon-frame" aria-hidden="true">
@@ -243,9 +242,15 @@ function ItemInspectDialogBody({
               <dt>来源</dt>
               <dd>{entry.source}</dd>
             </div>
+            {campusCardHolder ? (
+              <div className="item-inspect-row">
+                <dt>持卡人</dt>
+                <dd>{campusCardHolder}</dd>
+              </div>
+            ) : null}
             <div className="item-inspect-row">
               <dt>简介</dt>
-              <dd>{entry.intro}</dd>
+              <dd id={descId}>{item.desc}</dd>
             </div>
           </dl>
         </div>
