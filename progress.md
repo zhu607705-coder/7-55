@@ -1002,3 +1002,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 图书馆流程：删除入馆前旧三句和四证据剧情末尾的口令解释；调整闸机、CC98 搜索、馆藏检索、755 书架、照片识别、盖章机、小票、体艺补录与 BD 谜题反馈。删除项同时移除空提示容器或空事件发布，不影响原有状态推进、动画、道具和音效。
 - 前台交互：新增 `frontDeskProofRequestSeen` 持久状态，在前台强制剧情完整播放后写入；剧情后、物品识别报告生成前，玩家每次与前台交互依次显示四句修订提示。旧存档通过报告/盖章进度推断已看状态，开发检查点和完成态同步补齐。
 - 复核与构建：两组旧句残留扫描均为 `0`，新增关键文本均可定位；`npm.cmd run typecheck`、`git diff --check` 与 `npm.cmd run build:single` 均通过。浏览器环境拒绝访问本地 `file://` 构建，本轮未完成实机交互复验。`demo/index.html` 为 `99,590,391 bytes`，SHA-256 为 `db5b28f5910c9227f69b7248e4cc351ccd7390b2ba29ee75d64149f4d6b1be50`。
+
+## 2026-07-21 GitHub 最新版本同步与 Godot 路线停止
+
+- 同步基线：当前工作区从 GitHub `main` 最新提交 `27ab6d6` 建立 `codex/sync-main-no-godot`，保留远端 Web CI、三内核兼容、Phaser 地图、任务栏和第一、二章文本修改。
+- 冲突处理：体艺采用远端简化版本；README、构建脚本、浏览器目标和 RPG 样式采用最新 Phaser/Web 版本；与 Godot 无关的场景说明、注册说明和共享字体 token 调整继续保留。
+- 任务栏兼容：保留远端任务栏的简化结构，同时恢复第一章四位签到数字在顶部任务按钮和任务抽屉中的显示；物品栏继续不重复显示数字。手机任务抽屉改用稳定的手机框 DOM 引用，避免首次渲染时 portal 目标为空而被压缩到任务按钮宽度。
+- 引擎决策：Godot 迁移路线正式停止。活动工作区移除 `godot/`、Godot bridge、Godot 模型状态、Godot 构建脚本和生成的 `.import` 文件；React、TypeScript 与 Phaser 继续承担全部运行时。
+- 恢复边界：同步前的完整普通工作区保存在 Git stash；Godot 目录与生成缓存移到工作区外恢复目录，避免在活动源码中继续保留接线。
+- 验证结果：地图契约、`npm run typecheck`、常规生产构建、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。浏览器在逻辑 `430×860` 和移动 `390×844` 视口验证完整任务抽屉、四个签到数字槽和顶部 `0 7 9 8`，横向溢出与页面错误均为 `0`。最终 `demo/index.html` 为 `99,591,358 bytes`，SHA-256 为 `3f603dcd15a5692a056dda4ffbcce593fc509a392155ab0292b7e7e0304d3dee`。

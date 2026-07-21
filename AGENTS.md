@@ -9,6 +9,13 @@
 - `src/styles/`: shared tokens, shell layout, and scene-specific styling.
 - `demo/index.html`: generated standalone game build; do not edit it by hand.
 
+## Runtime Engine Decision
+
+- The Godot migration route was abandoned on 2026-07-21. The active product uses React, TypeScript, and Phaser only.
+- Do not add a `godot/` workspace, Godot bridge, Godot model state, Godot dependencies, or Godot build commands back into the application.
+- Campus, dorm, library, phone pages, and portrait mini-games all remain on the existing React and Phaser runtime.
+- Reopening an engine migration requires a new explicit project decision and a separate branch. Dormant Godot hooks must not remain in the active source tree.
+
 ## Naming
 
 - React components and exported types use `PascalCase`.

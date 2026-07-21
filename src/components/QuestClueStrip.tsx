@@ -75,9 +75,17 @@ export function QuestTaskBar({
   if (!visible) return null;
 
   const hintTotal = quest.hints.length;
+  const digitSlots = [state.digits.d1, state.digits.d2, state.digits.d3, state.digits.d4];
+  const acquiredDigitCount = digitSlots.filter(Boolean).length;
+  const showDigitHint = quest.chapter === "chapter_one"
+    && (state.flags.codeScattered || acquiredDigitCount > 0);
+  const digitHintText = digitSlots.map((digit) => digit ?? "?").join(" ");
+  const digitHintAria = `已找到的签到数字：${digitSlots
+    .map((digit, index) => `第${index + 1}位${digit ?? "未找到"}`)
+    .join("，")}`;
   return (
     <aside
-      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""}`.trim()}
+      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${showDigitHint ? "has-digits" : ""}`.trim()}
       role="region"
       aria-label="当前任务"
       data-quest-id={quest.id}
@@ -86,7 +94,7 @@ export function QuestTaskBar({
       <button
         type="button"
         className="quest-task-trigger"
-        aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${quest.objective}。点击查看任务提示`}
+        aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${quest.objective}${showDigitHint ? `。${digitHintAria}` : ""}。点击查看任务提示`}
         aria-expanded={open}
         aria-controls={`quest-drawer-${variant}`}
         title="点击查看当前任务和提示"
@@ -100,6 +108,7 @@ export function QuestTaskBar({
         {variant === "phone" ? null : <span>{CHAPTER_LABEL[quest.chapter]}</span>}
         <strong className="quest-task-trigger-copy">
           <span>{variant === "phone" ? (open ? "收起任务" : "任务") : quest.objective}</span>
+          {showDigitHint ? <em className="quest-task-digit-hint" aria-hidden="true">签到码 {digitHintText}</em> : null}
         </strong>
       </button>
 
@@ -122,6 +131,23 @@ export function QuestTaskBar({
               <span>当前任务</span>
               <strong>{quest.objective}</strong>
             </section>
+
+            {showDigitHint ? (
+              <section className="quest-task-digits" aria-label={digitHintAria}>
+                <header>
+                  <span>签到数字</span>
+                  <strong>{acquiredDigitCount}/4</strong>
+                </header>
+                <div>
+                  {digitSlots.map((digit, index) => (
+                    <span key={index} className={digit ? "is-acquired" : ""}>
+                      <small>第 {index + 1} 位</small>
+                      <b>{digit ?? "?"}</b>
+                    </span>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             <section className="quest-task-hints" aria-label="任务提示">
               <header>

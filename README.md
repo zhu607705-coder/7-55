@@ -5,6 +5,8 @@
 《7:55》的可玩版本与技术框架。当前项目使用 Vite、TypeScript、React、Phaser 和
 Zustand。
 
+项目运行时统一使用 React 与 Phaser。Godot 迁移路线已于 2026-07-21 停止，活动源码、依赖和构建流程均不接入 Godot。
+
 ## 开始开发
 
 需要 Node.js 22：

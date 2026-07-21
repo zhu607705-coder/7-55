@@ -1,4 +1,6 @@
-# P08 Settings
+# P08 Settings（已并入主屏）
+
+> 旧 `settings` SceneId 已移除；齿轮互动由 P13 手机主页承载。本文仅保留历史设计记录。
 
 - Scene ID: `settings`
 - Entry: desktop settings icon

@@ -97,8 +97,8 @@ export function PhoneShell({
 }: PhoneShellProps) {
   const [shake, setShake] = useState<"" | "shake" | "shake-strong">("");
   const [phoneScale, setPhoneScale] = useState(() => getPhoneScale(null, embedded));
+  const [frameElement, setFrameElement] = useState<HTMLElement | null>(null);
   const stageRef = useRef<HTMLElement>(null);
-  const frameRef = useRef<HTMLElement>(null);
   const bare = BARE_SCENES.includes(state.currentScene);
   const inventorySuppressed = state.flags.checkinDone && !state.actOne.inventoryRecovered;
   // 音乐全局播放（不局限于控制中心打开时）
@@ -144,7 +144,7 @@ export function PhoneShell({
     <main ref={stageRef} className={`app-stage ${embedded ? "is-embedded" : ""}`.trim()} style={scaleStyle}>
       <section className="phone-scale-box" aria-label="7:55 scaled phone viewport">
         <div className="phone-scale-shell">
-          <section ref={frameRef} className={`phone-frame ${shake}`} role="application" aria-label="7:55 phone runtime">
+          <section ref={setFrameElement} className={`phone-frame ${shake}`} role="application" aria-label="7:55 phone runtime">
             <section className="scene-surface">{children}</section>
             {!bare ? <StatusBar state={state} /> : null}
             {!bare && showTaskBar ? (
@@ -153,7 +153,7 @@ export function PhoneShell({
                 router={router}
                 events={events}
                 variant="phone"
-                portalRoot={frameRef.current}
+                portalRoot={frameElement}
                 onNavigate={onTaskNavigate}
               />
             ) : null}
