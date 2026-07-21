@@ -1,0 +1,530 @@
+/* ---------- P06 浙大体艺 ---------- */
+
+.tiyi-loading {
+  background: #fff;
+}
+
+.tiyi-loading .loading-dots i {
+  background: #4d7ed9;
+}
+
+.tiyi-loading.is-crashing {
+  animation: crash-glitch 0.6s steps(6, end) both;
+}
+
+@keyframes crash-glitch {
+  0% { filter: none; opacity: 1; transform: none; }
+  30% { filter: invert(0.9) hue-rotate(90deg); transform: translateX(-8px) skewX(4deg); }
+  55% { filter: contrast(3); transform: translateX(10px) scaleY(0.92); }
+  80% { filter: invert(1); opacity: 0.6; transform: scaleY(0.4); }
+  100% { opacity: 0; transform: scaleY(0.02); }
+}
+
+.tiyi-main {
+  background: #eef0f4;
+}
+
+.tiyi-finals-route {
+  background: rgba(255, 253, 244, 0.96);
+  border: 3px solid #17376c;
+  box-shadow: 5px 5px 0 rgba(14, 37, 78, 0.28);
+  color: #15223a;
+  display: grid;
+  gap: 4px;
+  left: 50%;
+  min-height: 76px;
+  padding: 11px 14px;
+  position: absolute;
+  text-align: left;
+  top: 72%;
+  transform: translateX(-50%);
+  width: 86%;
+  z-index: 18;
+}
+
+.tiyi-finals-route strong {
+  color: #164b9b;
+  font-size: var(--fs-title);
+}
+
+.tiyi-finals-route span {
+  font-size: var(--fs-body);
+}
+
+.tiyi-finals-route.is-alert {
+  border-color: #9e2b2b;
+}
+
+.tiyi-finals-route.is-alert strong {
+  color: #b33131;
+}
+
+.tiyi-finals-route.is-evidence {
+  background: #eaf6ff;
+  border-color: #175997;
+}
+
+.tiyi-act1-exercise {
+  background: #fff9df;
+  border: 3px solid #8b6512;
+  box-shadow: 5px 5px 0 rgba(75, 55, 15, 0.28);
+  display: grid;
+  gap: 5px;
+  left: 35px;
+  min-height: 88px;
+  padding: 13px 15px;
+  pointer-events: none;
+  position: absolute;
+  text-align: left;
+  top: 650px;
+  width: 360px;
+  z-index: 19;
+}
+
+.tiyi-act1-exercise strong {
+  color: #805a06;
+  font-size: var(--fs-title);
+}
+
+.tiyi-act1-exercise span {
+  font-size: var(--fs-body);
+}
+
+.tiyi-act1-exercise.is-ready {
+  background: #e2f4e6;
+  border-color: #2d7040;
+}
+
+.tiyi-act1-exercise.is-ready strong {
+  color: #245f35;
+}
+
+.tiyi-act1-exercise-hotspot {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  height: 54px;
+  left: 65px;
+  padding: 0;
+  position: absolute;
+  top: 752px;
+  touch-action: manipulation;
+  width: 290px;
+  z-index: 20;
+}
+
+.tiyi-act1-exercise-hotspot:focus-visible {
+  outline: 3px solid #f0cf3f;
+  outline-offset: 2px;
+}
+
+.tiyi-route-puzzle {
+  background: #f4f8ec;
+  border: 3px solid #163348;
+  box-shadow: 5px 5px 0 rgba(22, 51, 72, 0.34);
+  display: grid;
+  grid-template-rows: 42px 520px 34px;
+  left: 35px;
+  overflow: hidden;
+  position: absolute;
+  top: 92px;
+  width: 360px;
+  z-index: 18;
+}
+
+.tiyi-route-puzzle > header {
+  align-items: center;
+  background: #183f5a;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.tiyi-route-puzzle > header strong {
+  font-size: var(--fs-title);
+}
+
+.tiyi-route-puzzle > header span {
+  background: #f0d54e;
+  border: 2px solid #0f2638;
+  color: #102536;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  padding: 2px 7px;
+}
+
+.tiyi-route-puzzle > p {
+  align-items: center;
+  background: #fff;
+  border-top: 2px solid #163348;
+  display: flex;
+  font-size: var(--fs-body);
+  font-weight: 800;
+  margin: 0;
+  padding: 0 10px;
+}
+
+.tiyi-route-board {
+  background: #b9d89e;
+  height: 520px;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  width: 360px;
+}
+
+.tiyi-route-map {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.tiyi-route-map .road {
+  background: #e2d8bd;
+  border: 3px solid #8b8068;
+  height: 54px;
+  position: absolute;
+  transform-origin: left center;
+  width: 410px;
+}
+
+.tiyi-route-map .road-a { left: 18px; top: 455px; transform: rotate(-48deg); }
+.tiyi-route-map .road-b { left: 65px; top: 375px; transform: rotate(-28deg); }
+.tiyi-route-map .road-c { left: 178px; top: 252px; transform: rotate(-57deg); }
+
+.tiyi-route-map .map-water {
+  background: #75b9d4;
+  border: 3px solid #2a6d89;
+  height: 112px;
+  left: 104px;
+  position: absolute;
+  top: 218px;
+  transform: rotate(-18deg);
+  width: 92px;
+}
+
+.tiyi-route-map .map-building {
+  background: #a85642;
+  border: 3px solid #5e2e29;
+  height: 72px;
+  position: absolute;
+  width: 96px;
+}
+
+.tiyi-route-map .map-building.one { left: 225px; top: 36px; }
+.tiyi-route-map .map-building.two { left: 12px; top: 168px; }
+
+.tiyi-route-line {
+  inset: 0;
+  position: absolute;
+  z-index: 4;
+}
+
+.tiyi-route-line i {
+  background: #4bb15e;
+  height: 4px;
+  position: absolute;
+  transform-origin: left center;
+}
+
+.tiyi-route-puzzle.is-route-complete .tiyi-route-line i {
+  background: #2378d0;
+}
+
+.tiyi-route-checkpoint {
+  align-items: center;
+  background: #fff;
+  border: 3px solid #273b4c;
+  display: flex;
+  font-size: var(--fs-caption);
+  gap: 4px;
+  min-height: 30px;
+  padding: 3px 6px 3px 3px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  z-index: 6;
+}
+
+.tiyi-route-checkpoint b {
+  align-items: center;
+  background: #273b4c;
+  color: #fff;
+  display: flex;
+  height: 19px;
+  justify-content: center;
+  width: 19px;
+}
+
+.tiyi-route-checkpoint.is-visited {
+  background: #dff2e3;
+  border-color: #287b3a;
+  color: #1e6b30;
+}
+
+.tiyi-route-bicycle {
+  animation: tiyi-bike-cross var(--bike-duration) linear var(--bike-delay) infinite;
+  color: #1a2935;
+  display: grid;
+  grid-template-columns: 9px 17px 9px;
+  height: 18px;
+  left: -48px;
+  place-items: center;
+  position: absolute;
+  width: 43px;
+  z-index: 8;
+}
+
+.tiyi-route-bicycle i {
+  border: 2px solid #1a2935;
+  border-radius: 50%;
+  height: 9px;
+  width: 9px;
+}
+
+.tiyi-route-bicycle b {
+  font-size: var(--fs-title);
+  transform: rotate(-16deg);
+}
+
+@keyframes tiyi-bike-cross {
+  from { transform: translateX(0); }
+  to { transform: translateX(455px); }
+}
+
+.tiyi-route-marker {
+  background: transparent;
+  height: 42px;
+  position: absolute;
+  touch-action: none;
+  transform: translate(-50%, -82%);
+  width: 42px;
+  z-index: 12;
+}
+
+.tiyi-route-marker i {
+  background: #36b85b;
+  border: 3px solid #0b4c28;
+  border-radius: 50% 50% 50% 0;
+  display: block;
+  height: 26px;
+  margin: 4px auto 0;
+  transform: rotate(-45deg);
+  width: 26px;
+}
+
+.tiyi-route-marker i::after {
+  background: #fff;
+  border: 2px solid #0b4c28;
+  border-radius: 50%;
+  content: "";
+  height: 7px;
+  left: 7px;
+  position: absolute;
+  top: 7px;
+  width: 7px;
+}
+
+.tiyi-route-marker:focus-visible {
+  outline: 3px solid #f0d54e;
+  outline-offset: 2px;
+}
+
+.tiyi-route-puzzle.is-collision .tiyi-route-board {
+  animation: tiyi-route-collision var(--dur-med) var(--ease-press);
+}
+
+@keyframes tiyi-route-collision {
+  0%, 100% { transform: translateX(0); }
+  33% { transform: translateX(-4px); }
+  66% { transform: translateX(4px); }
+}
+
+.tiyi-route-flash {
+  animation: tiyi-route-flash var(--dur-fast) var(--ease-press);
+  background: #fff;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 20;
+}
+
+@keyframes tiyi-route-flash {
+  from { opacity: 0.92; }
+  to { opacity: 0; }
+}
+
+.tiyi-audit-panel {
+  background: #fffdf4;
+  border: 3px solid #6f591b;
+  box-shadow: 5px 5px 0 rgba(43, 42, 28, 0.28);
+  display: grid;
+  gap: 12px;
+  left: 32px;
+  min-height: 460px;
+  padding: 14px;
+  position: absolute;
+  top: 148px;
+  width: 366px;
+  z-index: 19;
+}
+
+.tiyi-audit-panel > header {
+  background: #e8c94e;
+  border: 3px solid #6f591b;
+  display: grid;
+  gap: 4px;
+  min-height: 72px;
+  padding: 10px 12px;
+}
+
+.tiyi-audit-panel > header strong {
+  color: #6b4d06;
+  font-size: var(--fs-title);
+}
+
+.tiyi-audit-panel > header span {
+  font-size: var(--fs-body);
+}
+
+.tiyi-audit-panel.is-audit-rollback > header {
+  animation: tiyi-audit-rollback 800ms steps(8, end);
+  background: #bce8c4;
+  border-color: #2f743c;
+}
+
+@keyframes tiyi-audit-rollback {
+  0%, 72% { background: #bce8c4; border-color: #2f743c; transform: translateX(0); }
+  80% { transform: translateX(-4px); }
+  90% { transform: translateX(4px); }
+  100% { background: #e8c94e; border-color: #6f591b; transform: translateX(0); }
+}
+
+.tiyi-audit-panel.is-passed > header {
+  background: #bce8c4;
+  border-color: #2f743c;
+}
+
+.tiyi-audit-panel.is-passed > header strong {
+  color: #236333;
+}
+
+.tiyi-audit-steppers {
+  display: grid;
+  gap: 9px;
+}
+
+.tiyi-audit-steppers > section {
+  align-items: center;
+  background: #fff;
+  border: 2px solid #aaa28c;
+  display: grid;
+  grid-template-columns: 1fr 166px;
+  min-height: 62px;
+  padding: 8px 10px;
+}
+
+.tiyi-audit-steppers > section > span {
+  font-size: var(--fs-label);
+  font-weight: 900;
+}
+
+.tiyi-audit-steppers > section > div {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  height: 42px;
+}
+
+.tiyi-audit-steppers button {
+  background: #edf3fa;
+  border: 2px solid #284a69;
+  color: #17334c;
+  font-size: var(--fs-display);
+  font-weight: 900;
+}
+
+.tiyi-audit-steppers button:disabled {
+  background: #ddd;
+  border-color: #aaa;
+  color: #888;
+}
+
+.tiyi-audit-steppers strong {
+  align-items: center;
+  border-block: 2px solid #284a69;
+  display: flex;
+  font-size: var(--fs-display);
+  justify-content: center;
+}
+
+.tiyi-audit-submit,
+.tiyi-audit-return {
+  background: #1f6099;
+  border: 3px solid #123d62;
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  min-height: 48px;
+}
+
+.tiyi-audit-panel > p {
+  color: #6a5a2b;
+  font-size: var(--fs-caption);
+  margin: 0;
+  min-height: 18px;
+  text-align: center;
+}
+
+.tiyi-audit-steppers button:focus-visible,
+.tiyi-audit-submit:focus-visible,
+.tiyi-audit-return:focus-visible {
+  outline: 3px solid #f0cf3f;
+  outline-offset: 2px;
+}
+
+.tiyi-crop {
+  --tiyi-hotspot-x: 14.1%;
+  --tiyi-hotspot-y: 27.4%;
+
+  aspect-ratio: 852 / 1846;
+  height: 100%;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: auto;
+}
+
+.tiyi-crop .app-bg {
+  height: 100%;
+  margin-top: 0;
+  object-fit: fill;
+  width: 100%;
+}
+
+.tiyi-47 {
+  background: transparent;
+  border: 0;
+  color: transparent;
+  cursor: pointer;
+  font-size: 0;
+  height: 8.8%;
+  left: var(--tiyi-hotspot-x);
+  padding: 0;
+  position: absolute;
+  text-shadow: none;
+  top: var(--tiyi-hotspot-y);
+  transform: translate(-50%, -50%);
+  width: 25.4%;
+  z-index: 10;
+}
+
+.tiyi-47:focus-visible {
+  outline: 2px solid rgba(245, 197, 66, 0.85);
+  outline-offset: 2px;
+}
+
+.tiyi-47.is-taken {
+  text-shadow: none;
+}

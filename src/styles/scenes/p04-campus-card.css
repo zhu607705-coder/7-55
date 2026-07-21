@@ -1,0 +1,347 @@
+/* ---------- P04 校园卡 ---------- */
+
+.campus-card {
+  background:
+    linear-gradient(rgba(20, 45, 120, 0.05) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(20, 45, 120, 0.04) 2px, transparent 2px),
+    linear-gradient(180deg, #2c56a8 0 148px, #eef0f6 148px);
+  background-size: 12px 12px, 12px 12px, auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: calc(52px + var(--phone-scene-page-control-offset, 40px)) 14px 48px;
+}
+
+.campus-card-quest {
+  background: #fffdf4;
+  border: 3px solid #17376c;
+  box-shadow: 4px 4px 0 rgba(14, 37, 78, 0.24);
+  color: #17223a;
+  display: grid;
+  gap: 4px;
+  min-height: 68px;
+  padding: 10px 13px;
+  text-align: left;
+}
+
+.campus-card-quest strong {
+  color: #174d9d;
+  font-size: var(--fs-title);
+}
+
+.campus-card-quest span {
+  font-size: var(--fs-body);
+}
+
+.campus-card-quest.is-complete {
+  border-color: #1e7447;
+}
+
+.campus-card-quest.is-complete strong {
+  color: #1e7447;
+}
+
+.card-actions {
+  color: #fff;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 2px 4px 6px;
+  text-align: center;
+  font-size: var(--fs-label);
+  font-weight: 700;
+}
+
+.card-actions span {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.ca-ico {
+  border: 3px solid #fff;
+  display: block;
+  height: 26px;
+  width: 26px;
+}
+
+.ca-ico.scan { border-style: dashed; }
+.ca-ico.pay { border-radius: 4px 4px 0 0; }
+.ca-ico.charge { border-radius: 50%; }
+.ca-ico.wallet { border-bottom-width: 8px; }
+
+.zju-card {
+  padding: 14px;
+}
+
+.zju-card-head {
+  align-items: baseline;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.zju-badge {
+  align-self: center;
+  background: radial-gradient(circle at 50% 50%, #fff 0 5px, transparent 6px), #dfe9ff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: block;
+  height: 30px;
+  width: 30px;
+}
+
+.zju-card-head h1 {
+  font-size: var(--fs-title);
+  letter-spacing: 3px;
+  margin: 0;
+}
+
+.zju-card-head small {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.zju-card-body {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 96px 1fr;
+  padding: 12px 0 4px;
+}
+
+.zju-photo {
+  background: #7ea4e0;
+  border: 3px solid #cfdcf5;
+  height: 118px;
+  overflow: hidden;
+  position: relative;
+}
+
+.zju-photo .hair {
+  background: #3a2c22;
+  height: 34px;
+  left: 16px;
+  position: absolute;
+  top: 12px;
+  width: 56px;
+}
+
+.zju-photo .face {
+  background: #f2c9a0;
+  height: 34px;
+  left: 24px;
+  position: absolute;
+  top: 30px;
+  width: 40px;
+}
+
+.zju-photo .face::before {
+  background: #2c2118;
+  box-shadow: 22px 0 0 #2c2118;
+  content: "";
+  height: 5px;
+  left: 7px;
+  position: absolute;
+  top: 14px;
+  width: 5px;
+}
+
+.zju-photo .hoodie {
+  background: #2f5fb3;
+  border-top: 3px solid #244b8f;
+  height: 52px;
+  left: 8px;
+  position: absolute;
+  top: 62px;
+  width: 72px;
+}
+
+.zju-photo .hoodie::before {
+  background: #fff;
+  box-shadow: 14px 0 0 #fff;
+  content: "";
+  height: 20px;
+  left: 26px;
+  position: absolute;
+  top: 6px;
+  width: 4px;
+}
+
+.zju-fields {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.zju-fields div {
+  display: flex;
+  font-size: var(--fs-label);
+  gap: 4px;
+}
+
+.zju-fields dt {
+  opacity: 0.85;
+}
+
+.zju-fields dd {
+  font-weight: 700;
+  margin: 0;
+}
+
+.balance-value {
+  align-items: center;
+  display: inline-flex;
+  font-size: var(--fs-display);
+  gap: 1px;
+}
+
+.yellow-zero {
+  color: var(--yellow);
+  font-size: var(--fs-display);
+  font-weight: 900;
+  line-height: 1;
+  padding: 1px 2px;
+}
+
+.yellow-zero.is-taken {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.zju-wallet-row {
+  align-items: center;
+  background: rgba(10, 25, 70, 0.35);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  display: flex;
+  font-size: var(--fs-label);
+  gap: 8px;
+  margin-top: 10px;
+  padding: 9px 12px;
+}
+
+.zju-wallet-row strong {
+  color: #fff;
+  flex: 1;
+  font-size: var(--fs-title);
+}
+
+.zju-wallet-row .coin {
+  background: radial-gradient(circle at 50% 50%, #8f6b16 0 4px, transparent 5px), var(--yellow);
+  border: 2px solid #8f6b16;
+  border-radius: 50%;
+  display: block;
+  height: 20px;
+  width: 20px;
+}
+
+.card-shortcuts {
+  background: #fffdf6;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 rgba(40, 50, 90, 0.18);
+  display: grid;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 12px 4px;
+  text-align: center;
+}
+
+.card-shortcuts span {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.cs-ico {
+  border: 3px solid var(--blue);
+  display: block;
+  height: 24px;
+  width: 24px;
+}
+
+.cs-ico.bill { border-left-width: 8px; }
+.cs-ico.pay2 { border-radius: 4px; }
+.cs-ico.charge2 { border-radius: 50%; }
+.cs-ico.lost { border-style: dashed; }
+
+.card-news {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+  min-height: 0;
+  padding: 12px 14px;
+}
+
+.card-news header {
+  display: flex;
+  font-size: var(--fs-label);
+  justify-content: space-between;
+}
+
+.card-news header em {
+  color: var(--blue);
+  font-size: var(--fs-caption);
+  font-style: normal;
+}
+
+.card-news p {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  margin: 0;
+}
+
+.news-banner {
+  align-items: center;
+  background:
+    linear-gradient(rgba(38, 80, 160, 0.35), rgba(38, 80, 160, 0.35)),
+    linear-gradient(180deg, #79b7e8 0 55%, #7ec27e 55%);
+  border: 2px solid var(--ink);
+  color: #fff;
+  display: grid;
+  font-size: var(--fs-title);
+  font-weight: 900;
+  min-height: 74px;
+  place-items: center;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.card-news footer {
+  color: #999;
+  font-size: var(--fs-caption);
+}
+
+.card-nav {
+  background: #fbfcfe;
+  border-top: 2px solid #d5dae4;
+  bottom: 0;
+  color: #7a8194;
+  display: grid;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  grid-template-columns: repeat(5, 1fr);
+  left: 0;
+  padding: 12px 0 10px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  z-index: 15;
+}
+
+.card-nav .is-active {
+  color: var(--blue);
+}
+
+.card-nav .qr {
+  background: var(--blue);
+  border: 2px solid #1d3f8f;
+  border-radius: 50%;
+  color: #fff;
+  justify-self: center;
+  margin-top: -22px;
+  padding: 12px 6px;
+}
+
+.campus-card .app-back {
+  top: calc(10px + var(--phone-scene-page-control-offset, 40px));
+}

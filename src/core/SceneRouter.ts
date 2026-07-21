@@ -24,9 +24,14 @@ export class SceneRouter {
 
   back(): void {
     const previousScene = this.history.pop();
-    if (previousScene) {
-      this.goTo(previousScene);
+    if (!previousScene) return;
+    if (!canEnterScene(this.store.getState(), previousScene)) {
+      this.history.push(previousScene);
+      this.events.emit("feature_access_denied", { sceneId: previousScene });
+      return;
     }
+    this.store.setState((state) => ({ ...state, currentScene: previousScene }));
+    this.events.emit("enter_scene", { sceneId: previousScene });
   }
 
   reload(): void {

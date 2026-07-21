@@ -42,7 +42,7 @@ const CONTROLS: Array<{
     max: 12,
     stateKey: "auditArrivalMinutes",
     sourceIndex: "01",
-    sourceHint: "计算时间差"
+    sourceHint: "入口小屏 · 计算时间差"
   },
   {
     field: "publicNoticeFloor",
@@ -52,7 +52,7 @@ const CONTROLS: Array<{
     max: 63,
     stateKey: "auditPublicNoticeFloor",
     sourceIndex: "02",
-    sourceHint: "读取楼主编辑"
+    sourceHint: "CC98 楼主编辑 · 读取编号"
   },
   {
     field: "proofCount",
@@ -62,7 +62,7 @@ const CONTROLS: Array<{
     max: 5,
     stateKey: "auditProofCount",
     sourceIndex: "03",
-    sourceHint: "数规则条目"
+    sourceHint: "旧版规则 · 统计类别"
   }
 ];
 
@@ -89,12 +89,12 @@ function currentValues(puzzle: LibraryFinalsPuzzleState): LibraryFinalsAuditValu
 
 function rejectionHint(attempt: number): string {
   if (attempt <= 1) {
-    return "按来源 01/02/03 逐项处理：计算时间差、读取公示编号、数规则条目。";
+    return "逐项核对：入口小屏算时间差，CC98 楼主编辑读编号，旧版规则统计证明类别。";
   }
   if (attempt === 2) {
-    return "来源 01 看两次时间，来源 02 看 23 楼楼主编辑，来源 03 看旧规则正文。";
+    return "入馆记录看两次时间；23 是 CC98 回复楼层；证明数量来自旧版规则正文。";
   }
-  return "仍有字段与来源不一致。注意：23 是回复楼层，表单需要读取原文中的公示编号。";
+  return "仍有字段与材料原文不一致。请按每张材料卡右侧标出的字段重新核对。";
 }
 
 /** 后期体艺只认证已收集的路线证据，不再控制 RPG 移动。 */
@@ -106,7 +106,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
   const stepTimerRef = useRef<number | null>(null);
   const values = currentValues(puzzle);
   const recordedRoute = puzzle.libraryVisitedPoints.map((point) => LOCATION_LABELS[point]);
-  const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened;
+  const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened && puzzle.archivedRuleRead;
   const passed = puzzle.presenceProofCollected;
   const attempt = Math.max(puzzle.auditAttemptCount, visibleAttempt ?? 0);
 
@@ -152,11 +152,11 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
     >
       {motion !== "idle" ? <i className="tiyi-audit-sweep" aria-hidden="true" /> : null}
       <header>
-        <div>
-          <strong>{passed ? "补录成功" : "本人来过证明补录单"}</strong>
-          <span>{passed ? "系统已承认你确实来过图书馆" : "状态：待补录 · 把三份来源转换成三个字段"}</span>
+        <div className="tiyi-audit-heading">
+          <strong className="tiyi-audit-title">{passed ? "补录成功" : "本人来过证明补录单"}</strong>
+          <span className="tiyi-audit-status">{passed ? "系统已承认你确实来过图书馆" : "待补录 · 先核对下方三项调查材料"}</span>
         </div>
-        <b>{passed ? "已认证" : "V0.22"}</b>
+        <span className="tiyi-audit-form-code">{passed ? "已认证" : "表单 022"}</span>
       </header>
 
       <section className="tiyi-recorded-route" aria-label="已记录的图书馆路线">
@@ -170,39 +170,44 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
       </section>
 
       <section className="tiyi-audit-guide" aria-label="补录方法">
-        <strong>三份来源，对应三个字段</strong>
-        <p><span>01 时间相减</span><span>02 读取编号</span><span>03 计算条目数</span></p>
+        <strong>三项材料从哪里取得</strong>
+        <ul>
+          <li><span>01 图书馆入口小屏</span><em>填写到座耗时</em></li>
+          <li><span>02 CC98 调查帖楼主编辑</span><em>填写公示编号</em></li>
+          <li><span>03 二楼南区 755 书架旧版规则</span><em>填写证明数量</em></li>
+        </ul>
+        <small>三项材料可按任意顺序收集；取得后，下方会显示可核对的原文。</small>
       </section>
 
       <section className="tiyi-audit-sources" aria-label="审核依据">
         <article id="tiyi-audit-source-01" className={puzzle.entranceRecordRead ? "is-ready" : ""}>
           <span>01</span>
           <div>
-            <strong>入馆记录 <em>→ 到座耗时</em></strong>
+            <strong>图书馆入口小屏 <em>填：到座耗时</em></strong>
             {puzzle.entranceRecordRead ? (
               <>
                 <small className="tiyi-audit-source-evidence"><b>07:55</b> 主馆入口 <i>→</i> <b>08:02</b> 二楼南区 022</small>
                 <small>填写两次记录的分钟差</small>
               </>
-            ) : <small>来源未读取 · 查看基础图书馆入口小屏</small>}
+            ) : <small>未取得 · 回到基础图书馆入口，查看门禁记录小屏</small>}
           </div>
         </article>
         <article id="tiyi-audit-source-02" className={puzzle.investigationOpened ? "is-ready" : ""}>
           <span>02</span>
           <div>
-            <strong>CC98 23 楼楼主编辑 <em>→ 公示编号</em></strong>
+            <strong>CC98 调查帖 · 23 楼楼主编辑 <em>填：公示编号</em></strong>
             {puzzle.investigationOpened ? (
               <>
                 <small className="tiyi-audit-source-evidence">楼主编辑原文：旧申请统一挂在 <b>公示编号 {PUBLIC_NOTICE_NUMBER}</b></small>
                 <small>23 是回复楼层；填写原文中的公示编号</small>
               </>
-            ) : <small>来源未建立 · 用占座纸条打开 CC98 调查帖</small>}
+            ) : <small>未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖</small>}
           </div>
         </article>
         <article id="tiyi-audit-source-03" className={puzzle.archivedRuleRead ? "is-ready" : ""}>
           <span>03</span>
           <div>
-            <strong>旧版规则 <em>→ 证明数量</em></strong>
+            <strong>《旧版临时离座恢复规定》 <em>填：证明数量</em></strong>
             {puzzle.archivedRuleRead ? (
               <>
                 <small className="tiyi-audit-rule-evidence">
@@ -210,7 +215,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
                 </small>
                 <small>填写规则列出的证明类别数量</small>
               </>
-            ) : <small>来源未读取 · 从 755 书架取得并阅读旧版规则</small>}
+            ) : <small>未取得 · 在二楼南区 755 书架使用“索书号 755”，取得并阅读规则</small>}
           </div>
         </article>
       </section>
@@ -240,12 +245,10 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
           <button type="button" className="tiyi-audit-submit" disabled={!sourceReady || phase !== "evidence_gathering"} onClick={submit}>提交补录</button>
           <p aria-live="polite">
             {!sourceReady
-              ? "先读取入馆记录并找到 CC98 公示，旧版规则可以后补。"
+              ? "三项材料均取得后可提交；收集顺序不限。"
               : attempt > 0
                 ? rejectionHint(attempt)
-                : puzzle.archivedRuleRead
-                  ? "三项字段分别对应三份已保存的证据。"
-                  : "可以先核对已知字段；证明数量仍需从旧版规则确认。"}
+                : "三项材料原文已齐，可以逐项填写。"}
           </p>
         </>
       ) : (

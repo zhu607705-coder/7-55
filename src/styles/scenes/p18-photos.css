@@ -1,0 +1,200 @@
+/* ---------- 照片证据 ---------- */
+
+.photo-evidence-layer {
+  background: #f7f8fb;
+  bottom: 0;
+  color: #111820;
+  display: grid;
+  grid-template-rows: 60px minmax(0, 1fr);
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  z-index: 60;
+}
+
+.photo-evidence-layer > header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 2px solid #c8cdd4;
+  display: grid;
+  grid-template-columns: 48px 1fr 60px;
+  padding: 0 12px;
+}
+
+.photo-evidence-layer > header button {
+  color: #236fc8;
+  font-size: 34px;
+  height: 42px;
+  width: 42px;
+}
+
+.photo-evidence-layer > header button:focus-visible {
+  outline: 3px solid #f0cf3f;
+}
+
+.photo-evidence-layer > header h2 {
+  font-size: var(--fs-title);
+  line-height: 1.2;
+  margin: 0;
+  text-align: center;
+}
+
+.photo-evidence-layer > header span {
+  color: #68717c;
+  font-size: var(--fs-caption);
+  text-align: right;
+}
+
+.photo-evidence-layer > main {
+  overflow-y: auto;
+  padding: 15px 16px 26px;
+}
+
+.photo-route-card {
+  background: #fff;
+  border: 3px solid #1b3852;
+  box-shadow: 4px 4px 0 rgba(27, 56, 82, 0.2);
+  padding: 12px;
+}
+
+.photo-route-card > header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.photo-route-card > header strong {
+  font-size: var(--fs-title);
+  line-height: 1.2;
+}
+
+.photo-route-card > header time {
+  color: #68717c;
+  font-size: var(--fs-caption);
+}
+
+.photo-route-card > p {
+  color: #56616d;
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+  margin: 8px 0 10px;
+}
+
+.photo-route-card > button {
+  background: #2675c9;
+  border: 3px solid #123f70;
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  min-height: 42px;
+  width: 100%;
+}
+
+.photo-route-card > button:disabled {
+  background: #8c98a5;
+  border-color: #59636e;
+}
+
+.photo-route-card > button:focus-visible {
+  outline: 3px solid #f0cf3f;
+  outline-offset: 2px;
+}
+
+.photo-route-miniature {
+  background: #c7dda8;
+  border: 2px solid #526b45;
+  height: 238px;
+  margin-top: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-route-miniature .mini-road {
+  background: #e3d8bd;
+  border: 2px solid #8a806b;
+  height: 38px;
+  left: 12px;
+  position: absolute;
+  transform-origin: left center;
+  width: 340px;
+}
+
+.photo-route-miniature .mini-road.one { top: 203px; transform: rotate(-34deg); }
+.photo-route-miniature .mini-road.two { left: 138px; top: 128px; transform: rotate(-54deg); }
+
+.mini-route-point {
+  align-items: center;
+  background: #fff;
+  border: 2px solid #1f5687;
+  display: flex;
+  font-size: var(--fs-caption);
+  gap: 4px;
+  min-height: 27px;
+  padding: 2px 5px;
+  position: absolute;
+  z-index: 2;
+}
+
+.mini-route-point b {
+  align-items: center;
+  background: #2378d0;
+  color: #fff;
+  display: flex;
+  height: 17px;
+  justify-content: center;
+  width: 17px;
+}
+
+.mini-route-point.point-1 { bottom: 22px; left: 25px; }
+.mini-route-point.point-2 { left: 146px; top: 111px; }
+.mini-route-point.point-3 { right: 18px; top: 20px; }
+
+.photo-joke-grid {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 17px;
+}
+
+.photo-joke-grid > div {
+  aspect-ratio: 1;
+  background: #e5e7eb;
+  border: 2px solid #a3a9b0;
+  display: grid;
+  place-items: center;
+}
+
+.photo-joke-grid > div i {
+  background: #d98843;
+  border: 3px solid #7b4926;
+  height: 34px;
+  width: 46px;
+}
+
+.photo-joke-grid > div.is-plant i {
+  background: #6caa53;
+  border-color: #31572a;
+  height: 44px;
+  width: 28px;
+}
+
+.photo-joke-caption {
+  color: #616b75;
+  font-size: var(--fs-caption);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tiyi-route-bicycle {
+    animation: none;
+    left: -60px;
+  }
+
+  .tiyi-route-puzzle.is-collision .tiyi-route-board,
+  .tiyi-route-flash,
+  .tiyi-audit-panel.is-audit-rollback > header {
+    animation-duration: 1ms;
+    transform: none;
+  }
+}

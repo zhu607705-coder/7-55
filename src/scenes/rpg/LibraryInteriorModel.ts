@@ -153,7 +153,7 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
   },
   {
     id: "lost_found_machine",
-    x: 160,
+    x: 132,
     y: 520,
     width: 108,
     height: 126,
@@ -243,10 +243,11 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
   }
 ] as const;
 
-export const LIBRARY_CHECKPOINT_SPAWNS: Record<RpgCheckpointId, { x: number; y: number }> = {
+export const LIBRARY_CHECKPOINT_SPAWNS: Record<Exclude<RpgCheckpointId, "campus_spawn" | "dorm_spawn">, { x: number; y: number }> = {
   campus_library_gate: { x: CAMPUS_LIBRARY_GATE.x, y: CAMPUS_LIBRARY_GATE.y + 72 },
   library_entrance: { x: 715, y: 842 },
-  library_seat_022: { x: 1180, y: 505 },
+  // Keep the complete foot box above the south rail at y=534.
+  library_seat_022: { x: 1180, y: 500 },
   library_front_desk: { x: 430, y: 700 },
   library_shelf_755: { x: 625, y: 355 }
 };

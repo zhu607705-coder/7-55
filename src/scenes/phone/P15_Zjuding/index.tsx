@@ -754,7 +754,6 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       kit.flags.toast("电子校园卡将在第二章寝室任务中取得。", "system");
       return;
     }
-    kit.flags.setUi("zjudingPage", "hub");
     router.goTo("campus_card");
   }
 

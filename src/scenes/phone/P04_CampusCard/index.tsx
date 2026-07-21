@@ -43,7 +43,6 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
   }, [events]);
 
   function returnToZjuding() {
-    kit.flags.setUi("zjudingPage", "hub");
     router.goTo("zjuding");
   }
 

@@ -1,0 +1,89 @@
+/* ---------- P10 盆栽 ---------- */
+
+.bonsai-scene {
+  background: #cfc3de;
+}
+
+.bonsai-stage {
+  inset: 0;
+  position: absolute;
+  transform-origin: 50% 72%;
+  /* 0.6s 为盆栽生长/开花演出时长，保留数值；steps(6) 超出 2–5 档，归一到最近档 steps(4) */
+  transition: transform 0.6s var(--ease-in-pixel);
+}
+
+.bonsai-plant {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.bonsai-img {
+  object-position: center;
+}
+
+.bonsai-status {
+  left: 50%;
+  position: absolute;
+  top: 52px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.flower-eight {
+  animation: eight-pop 0.6s steps(5, end) both;
+  color: var(--yellow);
+  font-size: 64px;
+  font-weight: 900;
+  left: 50%;
+  line-height: 1;
+  padding: 10px 16px;
+  position: absolute;
+  text-shadow: 3px 3px 0 rgba(74, 52, 3, 0.7);
+  top: 33%;
+  transform: translateX(-50%);
+  z-index: 12;
+}
+
+@keyframes eight-pop {
+  0% { opacity: 0; transform: translate(-50%, 40px) scale(0.3) rotate(-40deg); }
+  70% { opacity: 1; transform: translate(-50%, -14px) scale(1.15) rotate(8deg); }
+  100% { transform: translate(-50%, 0) scale(1) rotate(0); }
+}
+
+/* 三个养护状态指示图标（不可交互，完成后点亮） */
+.bonsai-actions {
+  bottom: 16px;
+  display: flex;
+  gap: 22px;
+  justify-content: center;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  z-index: 10;
+}
+
+.bonsai-act {
+  align-items: center;
+  background: rgba(60, 50, 82, 0.28);
+  border: 2px solid rgba(40, 32, 58, 0.5);
+  display: grid;
+  filter: grayscale(0.9);
+  height: 46px;
+  opacity: 0.55;
+  place-items: center;
+  width: 46px;
+}
+
+.bonsai-act.is-done {
+  background: rgba(255, 253, 244, 0.85);
+  border-color: var(--ink);
+  filter: none;
+  opacity: 1;
+}
+
+.bonsai-scene .app-back {
+  top: 48px;
+}

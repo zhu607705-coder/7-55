@@ -3,7 +3,7 @@
   border: 2px solid #f2c84b;
   bottom: 10px;
   color: #f2c84b;
-  font: 700 11px/1 monospace;
+  font: 700 var(--fs-caption)/1 monospace;
   left: 10px;
   padding: 7px 8px;
   position: fixed;
@@ -16,7 +16,7 @@
   box-shadow: 8px 8px 0 rgba(0, 0, 0, .38);
   color: #f4f0df;
   display: grid;
-  font-family: "Fusion Pixel 12px Proportional SC", monospace;
+  font-family: var(--font-pixel);
   grid-template-rows: auto minmax(0, 1fr) auto;
   left: 12px;
   max-height: calc(100vh - 24px);
@@ -29,19 +29,19 @@
 
 .developer-channel > header { align-items: center; border-bottom: 2px solid #526176; display: flex; justify-content: space-between; padding: 11px; }
 .developer-channel > header div { display: grid; gap: 3px; }
-.developer-channel > header small { color: #56b8e7; font-size: 10px; }
-.developer-channel > header strong { font-size: 17px; }
+.developer-channel > header small { color: #56b8e7; font-size: var(--fs-caption); }
+.developer-channel > header strong { font-size: var(--fs-title); }
 .developer-channel > header button { background: transparent; border: 0; color: #fff; font-size: 24px; height: 30px; width: 30px; }
 .developer-channel-scroll { overflow-y: auto; padding: 8px 10px 12px; }
 .developer-channel section { border-bottom: 1px solid #39465a; padding-bottom: 9px; }
-.developer-channel h2 { color: #f2c84b; font-size: 13px; margin: 10px 0 7px; }
+.developer-channel h2 { color: #f2c84b; font-size: var(--fs-label); margin: 10px 0 7px; }
 .developer-channel section button { align-items: center; background: #1d2939; border: 1px solid #46566e; color: #fff; display: grid; gap: 2px; grid-template-columns: minmax(0, 1fr) auto; margin: 4px 0; padding: 7px 8px; text-align: left; width: 100%; }
 .developer-channel section button:hover, .developer-channel section button.is-active { background: #174e70; border-color: #69c8ef; }
-.developer-channel section button strong { font-size: 12px; }
-.developer-channel section button span { color: #aeb8c6; font-size: 9px; }
+.developer-channel section button strong { font-size: var(--fs-label); }
+.developer-channel section button span { color: #aeb8c6; font-size: var(--fs-micro); }
 .developer-channel > footer { align-items: center; border-top: 2px solid #526176; display: flex; justify-content: space-between; padding: 9px; }
-.developer-channel > footer button { background: #f2c84b; border: 2px solid #6d5720; color: #191713; font: inherit; font-size: 11px; padding: 7px 9px; }
-.developer-channel > footer span { color: #8e9aab; font-size: 9px; }
+.developer-channel > footer button { background: #f2c84b; border: 2px solid #6d5720; color: #191713; font: inherit; font-size: var(--fs-label); padding: 7px 9px; }
+.developer-channel > footer span { color: #8e9aab; font-size: var(--fs-micro); }
 
 @media (max-width: 700px) and (orientation: portrait) and (any-pointer: coarse) {
   .developer-channel-trigger {

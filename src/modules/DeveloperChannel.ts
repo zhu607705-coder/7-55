@@ -206,7 +206,7 @@ function createMovementCheckpointState(id: DeveloperCheckpointId): GameState {
   if (id === "c2-gamepad-market") return { ...state, currentScene: "cc98" };
   state = withMovementFacts(state, { gamepadPurchased: true }, { gamepad: true });
   if (id === "c2-manual-movement") {
-    return { ...state, runtimeMode: "rpg", rpgScene: "dorm_hub" };
+    return { ...state, runtimeMode: "rpg", rpgScene: "dorm_hub", rpgCheckpoint: "dorm_spawn" };
   }
   state = withMovementFacts(state, {
     phase: "reservation_briefing_required",
@@ -229,6 +229,7 @@ function createMovementCheckpointState(id: DeveloperCheckpointId): GameState {
     ...reservedState,
     runtimeMode: "rpg",
     rpgScene: "dorm_hub",
+    rpgCheckpoint: "dorm_spawn",
     ui: {
       ...reservedState.ui,
       librarySelectedSeat: "022",

@@ -727,7 +727,12 @@ function getLibraryProgress(state: GameState): string {
 }
 
 function resolveRuntimeScene(state: GameState): RpgSceneId {
-  const hasLibraryCheckpoint = state.rpgCheckpoint !== "campus_library_gate";
+  const hasLibraryCheckpoint = [
+    "library_entrance",
+    "library_front_desk",
+    "library_shelf_755",
+    "library_seat_022"
+  ].includes(state.rpgCheckpoint);
   const activeLibraryPhase = [
     "library_entered",
     "occupied_seat_found",

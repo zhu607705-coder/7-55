@@ -1,0 +1,636 @@
+/* ---------- P16 求是潮 755 ---------- */
+
+.bike-arcade-screen {
+  background: #c6c2b3;
+  color: #182129;
+  display: grid;
+  grid-template-rows: 56px 48px minmax(0, 1fr) 84px;
+  height: 100%;
+  padding-top: 40px;
+  position: relative;
+  width: 100%;
+}
+
+.bike-arcade-header {
+  align-items: center;
+  background: #20272f;
+  border-bottom: 4px solid #f0d54e;
+  color: #f7f3df;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 44px 1fr auto;
+  padding: 0 14px 0 8px;
+}
+
+.bike-arcade-header button {
+  background: transparent;
+  border: 0;
+  color: #f7f3df;
+  font-size: 34px;
+  height: 42px;
+  line-height: 1;
+  padding: 0;
+  width: 42px;
+}
+
+.bike-arcade-header div {
+  min-width: 0;
+}
+
+.bike-arcade-header span {
+  color: #8fc7d1;
+  display: block;
+  font-family: monospace;
+  font-size: var(--fs-micro);
+  line-height: 1.2;
+}
+
+.bike-arcade-header h1 {
+  font-size: var(--fs-title);
+  letter-spacing: 0;
+  line-height: 1.12;
+  margin: 3px 0 0;
+}
+
+.bike-arcade-header b {
+  animation: bike-status-pop var(--dur-med) var(--ease-in-pixel) both;
+  border: 2px solid #e97b70;
+  color: #e97b70;
+  font-family: var(--font-pixel);
+  font-size: var(--fs-micro);
+  padding: 3px 5px;
+}
+
+.bike-arcade-hud {
+  align-items: center;
+  background: #e7e2d4;
+  border-bottom: 3px solid #4a5359;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 5px 16px;
+}
+
+.bike-arcade-hud div {
+  display: grid;
+  gap: 2px;
+}
+
+.bike-arcade-hud div:last-child {
+  text-align: right;
+}
+
+.bike-arcade-hud span {
+  color: #5b6266;
+  font-size: var(--fs-caption);
+}
+
+.bike-arcade-hud strong {
+  color: #24323c;
+  font-family: monospace;
+  font-size: var(--fs-label);
+  letter-spacing: 0;
+}
+
+.bike-distance-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.bike-lives-value {
+  animation: bike-lives-pulse var(--dur-fast) var(--ease-press) both;
+  display: inline-block;
+  transform-origin: right center;
+}
+
+.bike-arcade-hud div:last-child strong {
+  color: #c95349;
+}
+
+.bike-arcade-arena {
+  background: #73945f;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.bike-arcade-arena::after {
+  animation: bike-arena-scan 2600ms linear infinite;
+  background: rgba(240, 213, 78, 0.12);
+  content: "";
+  height: 3px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: -4px;
+  z-index: 3;
+}
+
+.bike-arcade-canvas-host,
+.bike-arcade-canvas-host canvas {
+  display: block;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.bike-arcade-canvas-host {
+  inset: 0;
+  position: absolute;
+}
+
+.bike-arcade-speed-lines {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.bike-arcade-speed-lines i {
+  animation: bike-speed-line 820ms linear infinite;
+  background: rgba(247, 243, 223, 0.45);
+  height: 34px;
+  left: 15%;
+  position: absolute;
+  top: -60px;
+  width: 3px;
+}
+
+.bike-arcade-speed-lines i:nth-child(2) { animation-delay: 110ms; left: 31%; height: 19px; }
+.bike-arcade-speed-lines i:nth-child(3) { animation-delay: 260ms; left: 44%; height: 46px; }
+.bike-arcade-speed-lines i:nth-child(4) { animation-delay: 370ms; left: 61%; height: 25px; }
+.bike-arcade-speed-lines i:nth-child(5) { animation-delay: 510ms; left: 74%; height: 41px; }
+.bike-arcade-speed-lines i:nth-child(6) { animation-delay: 640ms; left: 87%; height: 21px; }
+
+.bike-arcade-intro {
+  animation: bike-intro-in var(--dur-slow) var(--ease-in-pixel) both;
+  align-content: center;
+  background: #78935f;
+  display: grid;
+  gap: 20px;
+  inset: 0;
+  justify-items: center;
+  padding: 28px 34px;
+  position: absolute;
+  text-align: center;
+}
+
+.bike-arcade-intro p {
+  background: #ece7d8;
+  border: 3px solid #283239;
+  box-shadow: 5px 5px 0 rgba(28, 39, 45, 0.38);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  margin: 0;
+  padding: 14px 16px;
+}
+
+.bike-arcade-intro > button,
+.bike-arcade-result button {
+  background: #f0d54e;
+  border: 3px solid #20272f;
+  box-shadow: 4px 4px 0 #20272f;
+  color: #20272f;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  min-height: 48px;
+  padding: 8px 24px;
+}
+
+.bike-arcade-road-preview {
+  animation: bike-preview-enter var(--dur-slow) var(--ease-in-pixel) both;
+  background: #485055;
+  border: 5px solid #252c30;
+  height: 250px;
+  overflow: hidden;
+  position: relative;
+  width: 210px;
+}
+
+.bike-arcade-road-preview::before,
+.bike-arcade-road-preview::after {
+  background: #f0d54e;
+  content: "";
+  inset-block: 0;
+  position: absolute;
+  width: 7px;
+}
+
+.bike-arcade-road-preview::before { left: 10px; }
+.bike-arcade-road-preview::after { right: 10px; }
+
+.bike-arcade-road-preview i {
+  animation: bike-preview-road 760ms linear infinite;
+  border-left: 4px dashed rgba(255, 255, 255, 0.72);
+  height: 230px;
+  left: 72px;
+  position: absolute;
+  top: 10px;
+}
+
+.bike-arcade-road-preview i:nth-child(2) {
+  left: 138px;
+}
+
+.bike-arcade-road-preview i:nth-child(3) {
+  border: 0;
+}
+
+.bike-preview-sign {
+  animation: bike-preview-sign 1200ms var(--ease-pixel) infinite;
+  background: #e7e2d4;
+  border: 3px solid #20272f;
+  color: #20272f;
+  font-family: monospace;
+  font-size: var(--fs-caption);
+  padding: 4px 6px;
+  position: absolute;
+  right: 15px;
+  top: 88px;
+}
+
+.bike-preview-rider,
+.bike-preview-block {
+  align-items: center;
+  border: 3px solid #20272f;
+  display: flex;
+  font-size: var(--fs-title);
+  font-weight: 900;
+  height: 42px;
+  justify-content: center;
+  position: absolute;
+  width: 42px;
+}
+
+.bike-preview-rider {
+  animation: bike-preview-rider 520ms var(--ease-in-pixel) infinite;
+  background: #315f9f;
+  bottom: 22px;
+  color: #fff;
+  left: 84px;
+}
+
+.bike-preview-block {
+  animation: bike-preview-block 1500ms linear infinite;
+  background: #e97b70;
+  color: #20272f;
+  left: 22px;
+  top: 28px;
+}
+
+.bike-arcade-result {
+  animation: bike-result-curtain var(--dur-slow) var(--ease-in-pixel) both;
+  align-content: center;
+  background: rgba(24, 32, 38, 0.94);
+  color: #f5f1df;
+  display: grid;
+  gap: 13px;
+  inset: 0;
+  justify-items: center;
+  padding: 34px;
+  position: absolute;
+  text-align: center;
+  z-index: 4;
+}
+
+.bike-arcade-result > span {
+  animation: bike-result-item var(--dur-slow) var(--ease-in-pixel) var(--dur-press) both;
+  border: 2px solid #8fc7d1;
+  color: #8fc7d1;
+  font-family: monospace;
+  font-size: var(--fs-body);
+  padding: 5px 9px;
+}
+
+.bike-arcade-result h2 {
+  animation: bike-result-title var(--dur-slow) var(--ease-in-pixel) var(--dur-med) both;
+  color: #f0d54e;
+  font-size: var(--fs-display);
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.bike-arcade-result.is-lost h2 {
+  color: #e97b70;
+}
+
+.bike-arcade-result p {
+  animation: bike-result-item var(--dur-slow) var(--ease-in-pixel) var(--dur-slow) both;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  margin: 0 0 10px;
+  max-width: 280px;
+}
+
+.bike-arcade-result button {
+  animation: bike-result-item var(--dur-slow) var(--ease-in-pixel) var(--dur-scene) both;
+  min-width: 160px;
+}
+
+.bike-arcade-result button:nth-of-type(2) { animation-delay: calc(var(--dur-scene) + var(--dur-press)); }
+.bike-arcade-result button:nth-of-type(3) { animation-delay: calc(var(--dur-scene) + var(--dur-fast)); }
+
+.bike-arcade-result button.secondary {
+  background: #e8e4d8;
+  box-shadow: none;
+  min-height: 40px;
+}
+
+.bike-arcade-intro > small {
+  background: rgba(32, 39, 47, 0.88);
+  color: #f7f3df;
+  font-family: monospace;
+  font-size: var(--fs-caption);
+  padding: 6px 9px;
+}
+
+.bike-arcade-loading,
+.bike-arcade-load-error,
+.bike-arcade-locked {
+  align-content: center;
+  background: rgba(32, 39, 47, 0.94);
+  color: #f7f3df;
+  display: grid;
+  gap: 14px;
+  inset: 0;
+  justify-items: center;
+  padding: 32px;
+  position: absolute;
+  text-align: center;
+  z-index: 6;
+}
+
+.bike-arcade-loading {
+  grid-template-columns: repeat(3, 10px);
+}
+
+.bike-arcade-loading > span {
+  grid-column: 1 / -1;
+  font-family: var(--font-pixel);
+  font-size: var(--fs-body);
+}
+
+.bike-arcade-loading > i {
+  animation: bike-loading 720ms var(--ease-press) infinite;
+  background: #f0d54e;
+  height: 10px;
+  width: 10px;
+}
+
+.bike-arcade-loading > i:nth-of-type(2) { animation-delay: 120ms; }
+.bike-arcade-loading > i:nth-of-type(3) { animation-delay: 240ms; }
+
+.bike-arcade-load-error button,
+.bike-arcade-locked button {
+  background: #f0d54e;
+  border: 3px solid #10161b;
+  color: #20272f;
+  font-size: var(--fs-label);
+  min-height: 44px;
+  padding: 8px 18px;
+}
+
+.bike-arcade-load-error button.secondary {
+  background: #e7e2d4;
+}
+
+.bike-arcade-screen.is-locked {
+  display: block;
+}
+
+.bike-arcade-screen.is-locked .bike-arcade-locked {
+  top: 40px;
+}
+
+.bike-arcade-locked > span {
+  border: 2px solid #e97b70;
+  color: #e97b70;
+  font-family: var(--font-pixel);
+  padding: 5px 8px;
+}
+
+.bike-arcade-locked h1,
+.bike-arcade-locked p {
+  margin: 0;
+}
+
+.bike-arcade-milestone {
+  animation: bike-milestone-pass var(--dur-scene) var(--ease-in-pixel) both;
+  background: #f0d54e;
+  border: 4px solid #20272f;
+  box-shadow: 5px 5px 0 rgba(32, 39, 47, 0.45);
+  color: #20272f;
+  display: grid;
+  gap: 2px;
+  left: 50%;
+  min-width: 130px;
+  padding: 9px 14px;
+  position: absolute;
+  text-align: center;
+  top: 18px;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.bike-arcade-milestone span {
+  font-family: monospace;
+  font-size: var(--fs-title);
+  font-weight: 900;
+}
+
+.bike-arcade-milestone small {
+  font-size: var(--fs-caption);
+}
+
+.bike-arcade-pause {
+  animation: bike-pause-in var(--dur-scene) var(--ease-in-pixel) both;
+  background: rgba(32, 39, 47, 0.92);
+  border: 3px solid #f0d54e;
+  color: #f7f3df;
+  font-size: var(--fs-title);
+  left: 50%;
+  padding: 12px 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+.bike-arcade-pause.is-resuming {
+  border-color: #8fc7d1;
+}
+
+.bike-arcade-hud .sr-only {
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+}
+
+@keyframes bike-loading {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes bike-status-pop {
+  0% { opacity: 0; transform: scale(1.7); }
+  45% { opacity: 1; transform: scale(0.88); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bike-lives-pulse {
+  0% { color: #fff; transform: scale(1.45); }
+  35% { color: #e97b70; transform: scale(0.92); }
+  100% { color: #c95349; transform: scale(1); }
+}
+
+@keyframes bike-arena-scan {
+  from { transform: translateY(0); }
+  to { transform: translateY(650px); }
+}
+
+@keyframes bike-speed-line {
+  from { opacity: 0; transform: translateY(0); }
+  15% { opacity: 0.52; }
+  85% { opacity: 0.18; }
+  to { opacity: 0; transform: translateY(720px); }
+}
+
+@keyframes bike-intro-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bike-preview-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bike-preview-road {
+  from { transform: translateY(-86px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes bike-preview-rider {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@keyframes bike-preview-block {
+  0% { opacity: 0; transform: translateY(-64px) scale(0.72); }
+  18% { opacity: 1; }
+  72% { opacity: 1; transform: translateY(176px) scale(1); }
+  100% { opacity: 0; transform: translateY(216px) scale(1.08); }
+}
+
+@keyframes bike-preview-sign {
+  0%, 100% { background: #e7e2d4; transform: translateX(0); }
+  50% { background: #f0d54e; transform: translateX(-3px); }
+}
+
+@keyframes bike-result-curtain {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bike-result-title {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bike-result-item {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bike-milestone-pass {
+  0% { opacity: 0; transform: translate(-50%, 16px); }
+  25%, 75% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -16px); }
+}
+
+@keyframes bike-pause-in {
+  0% { opacity: 0; transform: translate(-50%, calc(-50% + 16px)); }
+  100% { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.bike-arcade-controls {
+  align-items: center;
+  background: #20272f;
+  border-top: 4px solid #e97b70;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 78px 1fr 78px;
+  padding: 8px 24px 10px;
+}
+
+.bike-arcade-controls > button {
+  background: #e8e4d8;
+  border: 3px solid #10161b;
+  color: #20272f;
+  font-size: 28px;
+  font-weight: 900;
+  height: 58px;
+  padding: 0;
+  width: 78px;
+}
+
+.bike-arcade-controls > button:active:not(:disabled) {
+  background: #f0d54e;
+  transform: translateY(2px);
+}
+
+.bike-arcade-controls > button:disabled {
+  color: #777d81;
+  opacity: 0.48;
+}
+
+.bike-arcade-controls div {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.bike-arcade-controls div span {
+  border: 2px solid #78838b;
+  color: #aab2b8;
+  display: grid;
+  font-family: monospace;
+  font-size: var(--fs-caption);
+  height: 24px;
+  place-items: center;
+  width: 24px;
+}
+
+.bike-arcade-screen button:focus-visible {
+  outline: 3px solid #8fc7d1;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bike-arcade-screen * {
+    transition-duration: 1ms !important;
+  }
+
+  .phone .bike-game-app.is-unlock-pulse .app-icon,
+  .bike-arcade-loading > i,
+  .bike-arcade-header b,
+  .bike-lives-value,
+  .bike-arcade-arena::after,
+  .bike-arcade-speed-lines i,
+  .bike-arcade-intro,
+  .bike-arcade-road-preview,
+  .bike-arcade-road-preview i,
+  .bike-preview-rider,
+  .bike-preview-block,
+  .bike-preview-sign,
+  .bike-arcade-result,
+  .bike-arcade-result > span,
+  .bike-arcade-result h2,
+  .bike-arcade-result p,
+  .bike-arcade-result button,
+  .bike-arcade-milestone,
+  .bike-arcade-pause {
+    animation: none;
+  }
+}
