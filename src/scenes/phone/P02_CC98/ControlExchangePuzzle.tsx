@@ -16,7 +16,6 @@ export function ControlExchangePuzzle({ router, balanceShifted, purchased }: Con
   function purchase() {
     const result = kit.actOne.purchaseGamepad();
     if (result === "insufficient_balance") {
-      kit.flags.toast("你只有 0.06 块。卖家拒绝 100 期免息。", "system");
       return;
     }
     if (result === "inactive") {

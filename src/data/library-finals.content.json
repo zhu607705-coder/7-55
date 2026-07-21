@@ -6,11 +6,6 @@
     "language": "English"
   },
   "storyDialogues": {
-    "library_route_unlocked": [
-      { "speaker": "系统", "text": "我得说实话了，我没有修改记录权限。" },
-      { "speaker": "系统", "text": "但我有一个朋友她或许能做到。" },
-      { "speaker": "系统", "text": "如果我们还想要平时分，就得去图书馆找她。" }
-    ],
     "library_entered": [
       { "speaker": "玩家", "text": "这里就是图书馆？" },
       { "speaker": "系统", "text": "准确地说，是她最后一次还在线的地方。" },
@@ -77,9 +72,7 @@
       { "speaker": "玩家", "text": "好了，证据齐了。现在图书馆会处理了吧？" },
       { "speaker": "系统", "text": "还差一次公开确认。图书馆 App 只读取十大帖的四位热度口令。" },
       { "speaker": "玩家", "text": "bd 到底是什么？" },
-      { "speaker": "系统", "text": "bd 是“帮顶”。在一条数字回复上点 bd，数字就会按顺序写入口令。" },
-      { "speaker": "玩家", "text": "四位数字从哪里来？" },
-      { "speaker": "系统", "text": "按四项证据从上到下：规则条数、身份通过项数、座位末位、到座耗时。" }
+      { "speaker": "系统", "text": "bd 是“帮顶”。在一条数字回复上点 bd，数字就会按顺序写入口令。" }
     ],
     "cc98_top_ten_reached": [
       { "speaker": "旁白", "text": "问题终于变得足够公开，于是它暂时变得可以处理。" }

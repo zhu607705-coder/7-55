@@ -312,6 +312,8 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
   if (reached("c2-photo-report")) {
     puzzle.archivedRuleCollected = true;
     puzzle.archivedRuleRead = true;
+    puzzle.archivedRuleBriefingSeen = true;
+    puzzle.frontDeskProofRequestSeen = true;
     puzzle.libraryVisitedPoints = [...new Set([...puzzle.libraryVisitedPoints, "catalog_terminal", "shelf_755"])] as GameState["ui"]["libraryFinalsPuzzle"]["libraryVisitedPoints"];
     puzzle.clueIds = [...puzzle.clueIds, "archived_leave_rule"];
     items.callNumber755 = false;
@@ -366,6 +368,7 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
   }
   if (reached("c2-pass-apply")) {
     puzzle.evictionPassGenerated = true;
+    puzzle.passBriefingSeen = true;
     items.seatReleasePass = true;
   }
   if (reached("c2-seat-sit")) {

@@ -175,7 +175,6 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
         return;
       }
       if (!kit.actOne.releaseMentorLine()) {
-        kit.flags.toast("先从天气页面接一滴水。", "system");
         return;
       }
       setMentorLineFalling(true);
@@ -236,14 +235,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     events.emit("act2_mentor_line_stuck");
-    const hints = [
-      "这条竖线被透明胶和两枚卡扣封在头像框里。",
-      "硬拽只会让卡扣更紧。先让黏着处变滑一点。"
-    ];
-    const hintIndex = Math.min(mentorHintStep, hints.length - 1);
-    kit.flags.toast(hints[hintIndex], "system");
-    events.emit("act2_mentor_hint_advanced", { step: hintIndex + 1 });
-    setMentorHintStep((current) => Math.min(current + 1, hints.length - 1));
+    kit.flags.toast("这条竖线被透明胶和两枚卡扣封在头像框里。", "system");
+    events.emit("act2_mentor_hint_advanced", { step: 1 });
+    setMentorHintStep((current) => Math.max(current, 1));
   }
 
   function skipAttackVoice() {

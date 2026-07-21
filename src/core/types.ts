@@ -36,7 +36,7 @@ export interface QuestViewModel {
   completed: number;
   total: number;
   steps: QuestStep[];
-  hints: [string, string, string];
+  hints: readonly string[];
   targetSurface: "phone" | "rpg";
   recommendedScene?: SceneId;
 }
@@ -207,6 +207,8 @@ export interface LibraryFinalsPuzzleState {
   callNumberCollected: boolean;
   archivedRuleCollected: boolean;
   archivedRuleRead: boolean;
+  archivedRuleBriefingSeen: boolean;
+  frontDeskProofRequestSeen: boolean;
   photoCaptured: boolean;
   photoDimmed: boolean;
   itemReportGenerated: boolean;
@@ -226,6 +228,7 @@ export interface LibraryFinalsPuzzleState {
   bdPasswordAttemptCount: number;
   recoverySubmittedEvidenceIds: LibraryRecoveryEvidenceId[];
   evictionPassGenerated: boolean;
+  passBriefingSeen: boolean;
   backpackEvicted: boolean;
   playerSeated: boolean;
   nextQuestId: "chapter_three_book_hunt" | null;

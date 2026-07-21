@@ -87,14 +87,8 @@ function currentValues(puzzle: LibraryFinalsPuzzleState): LibraryFinalsAuditValu
   };
 }
 
-function rejectionHint(attempt: number): string {
-  if (attempt <= 1) {
-    return "逐项核对：入口小屏算时间差，CC98 楼主编辑读编号，旧版规则统计证明类别。";
-  }
-  if (attempt === 2) {
-    return "入馆记录看两次时间；23 是 CC98 回复楼层；证明数量来自旧版规则正文。";
-  }
-  return "仍有字段与材料原文不一致。请按每张材料卡右侧标出的字段重新核对。";
+function rejectionHint(attempt: number): string | null {
+  return attempt >= 3 ? "仍有字段与来源不一致。" : null;
 }
 
 /** 后期体艺只认证已收集的路线证据，不再控制 RPG 移动。 */
@@ -109,6 +103,13 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
   const sourceReady = puzzle.entranceRecordRead && puzzle.investigationOpened && puzzle.archivedRuleRead;
   const passed = puzzle.presenceProofCollected;
   const attempt = Math.max(puzzle.auditAttemptCount, visibleAttempt ?? 0);
+  const guidance = !sourceReady
+    ? null
+    : attempt > 0
+      ? rejectionHint(attempt)
+      : puzzle.archivedRuleRead
+        ? "三项字段分别对应三份已保存的证据。"
+        : null;
 
   function step(field: AuditField, value: number) {
     setVisibleAttempt(null);
@@ -243,13 +244,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             })}
           </div>
           <button type="button" className="tiyi-audit-submit" disabled={!sourceReady || phase !== "evidence_gathering"} onClick={submit}>提交补录</button>
-          <p aria-live="polite">
-            {!sourceReady
-              ? "三项材料均取得后可提交；收集顺序不限。"
-              : attempt > 0
-                ? rejectionHint(attempt)
-                : "三项材料原文已齐，可以逐项填写。"}
-          </p>
+          {guidance ? <p aria-live="polite">{guidance}</p> : null}
         </>
       ) : (
         <section className="tiyi-presence-proof-result">

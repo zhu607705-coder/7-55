@@ -100,26 +100,26 @@
       "delivery": "deadpan completion notice; let the final sentence land as exhausted mock celebration"
     },
     "prologue_narrator_intro": {
-      "text": "Well, that failed exactly as expected. Get up, go to class, and deal with it yourself. Best of luck. I'm leaving before this becomes my problem.",
-      "subtitleZh": "嗯，失败得完全符合预期。起床，去上课，自己处理后果吧。祝你好运。趁这还没变成我的问题，我先走了。",
+      "text": "Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it? I suppose you will have to get up, drag yourself to class, and deal with it. Good luck, kid! I am leaving!",
+      "subtitleZh": "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。我想你只好乖乖起来滚去上课了。祝你好运，孩子！我要走了！",
       "subtitleSegmentsZh": [
-        "嗯，失败得完全符合预期。",
-        "起床，去上课，自己处理后果吧。",
-        "祝你好运。趁这还没变成我的问题，我先走了。"
+        "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。",
+        "我想你只好乖乖起来滚去上课了。",
+        "祝你好运，孩子！我要走了！"
       ],
       "tone": "xiaoying",
       "delivery": "British male narrator, dry and condescending; suppress a laugh at the opening, savour the failed result, offer conspicuously false concern, then exit with weary self-preservation",
       "segments": [
         {
-          "text": "Well, that failed exactly as expected.",
+          "text": "Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it?",
           "profile": { "speed": 0.93, "pitch": -4 }
         },
         {
-          "text": "Get up, go to class, and deal with it yourself.",
+          "text": "I suppose you will have to get up, drag yourself to class, and deal with it.",
           "profile": { "speed": 0.98, "pitch": -4 }
         },
         {
-          "text": "Best of luck. I'm leaving before this becomes my problem.",
+          "text": "Good luck, kid! I am leaving!",
           "profile": { "speed": 1.03, "pitch": -4 }
         }
       ]
@@ -162,31 +162,31 @@
     },
     "act2_system_departure": {
       "text": "You found it. Great. Then let us get moving.",
-      "subtitleZh": "你找到了。很好。那就出发。",
+      "subtitleZh": "你找到了，那就太好了，我们出发吧！",
       "tone": "xiaoying",
       "delivery": "brief relief turning into brisk momentum"
     },
     "act2_system_confession": {
       "text": "I should be honest. I do not have permission to edit attendance records.",
-      "subtitleZh": "我得说实话。我没有修改签到记录的权限。",
+      "subtitleZh": "我得说实话了，我没有修改记录权限",
       "tone": "xiaoying",
       "delivery": "reluctant confession, lower register, slower second sentence"
     },
     "act2_system_friend": {
       "text": "But I have a friend who might.",
-      "subtitleZh": "但我有个朋友，她也许有。",
+      "subtitleZh": "但我有一个朋友她或许能做到",
       "tone": "xiaoying",
       "delivery": "quiet confidence, hint of secrecy, soft ending"
     },
     "act2_system_library": {
       "text": "If we still want your participation grade, we need to find her in the library.",
-      "subtitleZh": "如果还想保住你的平时分，我们得去图书馆找她。",
+      "subtitleZh": "如果我们还想要平时分，就得去图书馆找她",
       "tone": "xiaoying",
       "delivery": "practical urgency, clear emphasis on participation grade and library"
     },
     "act2_system_move_now": {
       "text": "Understood? Then move.",
-      "subtitleZh": "明白了吗？那就动起来。",
+      "subtitleZh": "明白了？那就快行动吧！",
       "tone": "xiaoying",
       "delivery": "sharp check followed by a firm command"
     },
@@ -204,19 +204,19 @@
     },
     "act2_exercise_started": {
       "text": "Exercise record synced. Check the new Direction Calibration notice on the phone home screen.",
-      "subtitleZh": "锻炼记录已同步。回到手机主页，查看新出现的「方向校准」推送。",
+      "subtitleZh": "锻炼记录已同步。",
       "tone": "task",
       "delivery": "clear progression cue with emphasis on the newly available home-screen notice"
     },
     "act2_push_triangle_collected": {
       "text": "Triangle collected. Open Weather next and catch one drop of rain.",
-      "subtitleZh": "获得道具：三角形。下一步，打开天气并接住一滴水。",
+      "subtitleZh": "获得道具：三角形。",
       "tone": "task",
       "delivery": "clear progression cue that points to the newly available weather interaction"
     },
     "act2_weather_water_collected": {
       "text": "Weather drop collected. Use it on the stuck vertical line beside the mentor avatar.",
-      "subtitleZh": "获得道具：天气水滴。下一步，用它处理微信导师头像边缘的黏着竖线。",
+      "subtitleZh": "获得道具：天气水滴。",
       "tone": "task",
       "delivery": "clear progression cue that points to the mentor-avatar interaction"
     },
@@ -225,12 +225,6 @@
       "subtitleZh": "那条竖线粘住了。看来导师头像也有自己的排版要求。",
       "tone": "xiaoying",
       "delivery": "dry annoyance, emphasize apparently and formatting requirements"
-    },
-    "act2_mentor_line_released": {
-      "text": "The water worked. The avatar is missing one vertical line, but it remains recognizable.",
-      "subtitleZh": "水有效。头像少了一条竖线，但目前还能认出来。",
-      "tone": "xiaoying",
-      "delivery": "satisfied observation, light comic restraint"
     },
     "act2_right_arrow_assembled": {
       "text": "A triangle plus a vertical line. You now have an arrow that can move things to the right.",
@@ -249,12 +243,6 @@
       "subtitleZh": "你只有零点零六元。卖家拒绝了你分一百期付款的方案。",
       "tone": "xiaoying",
       "delivery": "dismissive first sentence, deadpan punchline"
-    },
-    "act2_gamepad_purchased": {
-      "text": "Sold for six yuan. The controller is now in your inventory. Install it on the character.",
-      "subtitleZh": "六元成交。手柄已放入道具栏，请回寝室安装到小人身上。",
-      "tone": "xiaoying",
-      "delivery": "decisive transaction confirmation, then a concise installation instruction"
     },
     "act2_exit_ready": {
       "text": "You can leave now.",

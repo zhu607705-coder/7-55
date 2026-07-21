@@ -504,11 +504,6 @@
           "channel": "sfx",
           "asset": "fx_adhesive_release",
           "volume": 0.66
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "act2_mentor_line_released",
-          "offsetMs": 180
         }
       ]
     },
@@ -554,11 +549,6 @@
           "channel": "sfx",
           "asset": "fx_gamepad_purchase",
           "volume": 0.72
-        },
-        {
-          "channel": "text",
-          "subtitleKey": "act2_gamepad_purchased",
-          "offsetMs": 220
         }
       ]
     },

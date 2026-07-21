@@ -275,6 +275,30 @@ export class LibraryFinalsController {
     return true;
   }
 
+  acknowledgeArchivedRuleBriefing(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.archivedRuleRead) {
+      return false;
+    }
+    if (puzzle.archivedRuleBriefingSeen) {
+      return true;
+    }
+    this.patchFinals("evidence_gathering", { archivedRuleBriefingSeen: true });
+    return true;
+  }
+
+  acknowledgeFrontDeskProofRequest(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "evidence_gathering" || !puzzle.archivedRuleRead) {
+      return false;
+    }
+    if (puzzle.frontDeskProofRequestSeen) {
+      return true;
+    }
+    this.patchFinals("evidence_gathering", { frontDeskProofRequestSeen: true });
+    return true;
+  }
+
   capturePhoto(): boolean {
     const puzzle = this.getPuzzle();
     if (
@@ -583,6 +607,18 @@ export class LibraryFinalsController {
     this.patchFinals("pass_ready", { evictionPassGenerated: true }, {}, { seatReleasePass: true });
     this.events.emit("library_seat_release_pass_issued", { seat: "022" });
     this.events.emit("get_item", { itemId: "seatReleasePass", sourceScene: "zjuding" });
+    return true;
+  }
+
+  acknowledgePassBriefing(): boolean {
+    const puzzle = this.getPuzzle();
+    if (this.getPhase() !== "pass_ready" || !puzzle.evictionPassGenerated) {
+      return false;
+    }
+    if (puzzle.passBriefingSeen) {
+      return true;
+    }
+    this.patchFinals("pass_ready", { passBriefingSeen: true });
     return true;
   }
 

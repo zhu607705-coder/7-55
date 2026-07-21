@@ -145,11 +145,13 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     if (result === "collected") {
       return;
     }
+    if (result === "already_owned" || (result === "inactive" && !state.actOne.exerciseStarted)) {
+      return;
+    }
     const feedback = {
-      inactive: state.actOne.exerciseStarted ? "这条推送现在只负责占位置。" : "先在浙大体艺开始课外锻炼。",
+      inactive: "这条推送现在只负责占位置。",
       hint_one: "头像边缘松了一点，再点一次。",
-      hint_two: "三角形已经翘起，再点一次就能取下。",
-      already_owned: "三角形已经在道具栏里。"
+      hint_two: "三角形已经翘起，再点一次就能取下。"
     }[result];
     kit.flags.toast(feedback, "system");
   }

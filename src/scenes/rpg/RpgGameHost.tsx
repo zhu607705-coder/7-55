@@ -463,10 +463,7 @@ export function RpgGameHost({
   }
 
   function returnToPhone() {
-    if (store.getState().actOne.phase === "system_return_required") {
-      setInspectedMapItem("campusCard");
-      return;
-    }
+    setInspectedMapItem(null);
     if (desktopSplit) {
       onFocusPhone?.();
       return;
@@ -522,10 +519,6 @@ export function RpgGameHost({
   function closeMapItemDetails() {
     const closingItem = inspectedMapItem;
     setInspectedMapItem(null);
-    if (closingItem === "campusCard" && store.getState().actOne.phase === "system_return_required") {
-      controller.startMovementQuest();
-      events.emit("toast", { text: "任务更新：找到移动的办法", tone: "task", durationMs: 3200 });
-    }
     if (closingItem === "archivedLeaveRule") {
       libraryController.confirmArchivedRuleRead();
     }
@@ -636,15 +629,17 @@ export function RpgGameHost({
             <button type="button" aria-label="向左" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, -1, 0)}>←</button>
             <button type="button" aria-label="向下" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, 1)}>↓</button>
             <button type="button" aria-label="向右" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 1, 0)}>→</button>
-            <button
-              type="button"
-              className="interact"
-              aria-label="交互（键盘为空格键）"
-              disabled={!state.actOne.movementEnabled}
-              onClick={() => events.emit("rpg_interact")}
-            >
-              {RPG_CONTROL_HINTS.touchInteraction}
-            </button>
+            {runtimeScene !== "dorm_hub" ? (
+              <button
+                type="button"
+                className="interact"
+                aria-label="交互（键盘为空格键）"
+                disabled={!state.actOne.movementEnabled}
+                onClick={() => events.emit("rpg_interact")}
+              >
+                {RPG_CONTROL_HINTS.touchInteraction}
+              </button>
+            ) : null}
           </nav>
         ) : null}
 

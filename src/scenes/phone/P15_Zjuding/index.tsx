@@ -67,12 +67,18 @@ const SYSTEM_DIALOGUES: Record<SystemDialogueKind, SystemDialogueLine[]> = {
     { speaker: "system", text: "先把校园卡收好。寝室里的人还需要找到移动方法。", cue: "act2_system_move_now" }
   ],
   departure: [
-    { speaker: "system", text: "校园卡已经拿回。先想办法让寝室里的人动起来。", cue: "act2_system_move_now" }
+    { speaker: "system", text: actOneContent.audioNarration.act2_system_departure.subtitleZh, cue: "act2_system_departure" },
+    { speaker: "player", text: "？" },
+    { speaker: "system", text: actOneContent.audioNarration.act2_system_confession.subtitleZh, cue: "act2_system_confession" },
+    { speaker: "system", text: actOneContent.audioNarration.act2_system_friend.subtitleZh, cue: "act2_system_friend" },
+    { speaker: "system", text: actOneContent.audioNarration.act2_system_library.subtitleZh, cue: "act2_system_library" },
+    { speaker: "system", text: actOneContent.audioNarration.act2_system_move_now.subtitleZh, cue: "act2_system_move_now" }
   ],
   reservation: [
-    { speaker: "system", text: "我没有修改签到记录的权限。" },
-    { speaker: "system", text: "基础图书馆里有可协助处理记录的对象。" },
-    { speaker: "system", text: "你需要先完成座位预约。" }
+    { speaker: "system", text: "别打扰我……哦，你已经完事了，速度还挺快的" },
+    { speaker: "system", text: "我以为你要在寝室“就再睡一会儿”呢" },
+    { speaker: "system", text: "你知道的，去图书馆要先完成座位预约。" },
+    { speaker: "system", text: "基础馆二楼南区022，记住了。" }
   ]
 };
 
@@ -460,7 +466,6 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     () => selectIdentityReadable(state) && state.actOne.characterNamed ? "read" : "idle"
   );
   const [directoryEntryActive, setDirectoryEntryActive] = useState(false);
-  const [directoryHintStep, setDirectoryHintStep] = useState(0);
   const [systemDialogue, setSystemDialogue] = useState<SystemDialogueKind | null>(null);
   const [systemDialogueIndex, setSystemDialogueIndex] = useState(0);
   const [catalogQuery, setCatalogQuery] = useState("");
@@ -543,7 +548,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         studentId: actOneContent.studentId
       });
       kit.flags.setUi("selectedItem", null);
-      kit.flags.toast("证件信息已读入。黄页还在等你主动呼叫。", "task");
+      kit.flags.toast("证件信息已读入。", "task");
     }, 650);
   }
 
@@ -738,7 +743,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       kit.flags.toast("任务更新：找到移动的办法", "task");
     } else if (systemDialogue === "departure") {
       kit.actOne.startMovementQuest();
-      kit.flags.toast("任务更新：找到移动的办法", "task");
+      kit.flags.toast("任务更新：让地图人物回应你", "task");
     } else {
       kit.actOne.completeReservationBriefing();
       kit.flags.setUi("zjudingPage", "hub");
@@ -760,12 +765,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   function submitDirectoryIdentity() {
     if (kit.actOne.identifyCharacter(directoryName, directoryStudentId)) {
       setDirectoryEntryActive(false);
-      kit.flags.toast("黄页联络成功：寝室人物已显示姓名。", "task");
+      kit.flags.toast("黄页联络成功", "task");
       goPage("hub");
       return;
     }
     playSfx("03_");
-    kit.flags.toast("姓名或学号不匹配。校园卡上写着完整信息。", "system");
+    kit.flags.toast("姓名或学号不匹配。", "system");
   }
 
   function inspectDirectoryCardReader() {
@@ -774,22 +779,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     if (visibleDirectoryCardStatus === "read") {
-      kit.flags.toast("姓名和学号已经读入。现在只差拨出这通电话。", "system");
+      kit.flags.toast("姓名和学号已经读入。拨出这通电话。", "system");
       return;
     }
     if (state.ui.selectedItem === "campusCard") {
       scanDirectoryCampusCard();
       return;
     }
-    const hints = [
-      "黄页要核对两个字段：姓名和 10 位编号。",
-      "这两个字段印在同一张校园身份凭证上。",
-      "在物品栏选中电子校园卡，再点击读卡区；也可以直接拖过来。"
-    ];
-    const hintIndex = Math.min(directoryHintStep, hints.length - 1);
-    kit.flags.toast(hints[hintIndex], "system");
-    events.emit("act2_directory_hint_advanced", { step: hintIndex + 1 });
-    setDirectoryHintStep((current) => Math.min(current + 1, hints.length - 1));
   }
 
   function enterRoom(room: string) {
@@ -865,10 +861,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       setCatalogFeedback(`检索完成：找到 ${results.length} 本馆藏。`);
       return;
     }
-    const clueSynchronized = finalsPuzzle.catalogSearchCompleted || kit.libraryFinals.searchCatalog(query);
-    setCatalogFeedback(clueSynchronized
-      ? `检索完成：找到 ${results.length} 本相似馆藏，请核对题名与索书号。`
-      : `检索完成：找到 ${results.length} 本相似馆藏。调查帖中的题名提示尚未同步。`);
+    if (!finalsPuzzle.catalogSearchCompleted) {
+      kit.libraryFinals.searchCatalog(query);
+    }
+    setCatalogFeedback(`检索完成：找到 ${results.length} 本相似馆藏`);
   }
 
   function chooseCatalogResult(result: CatalogResult) {
@@ -880,7 +876,6 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     if (!kit.libraryFinals.selectCatalogResult(result.id)) {
       if (result.id === "three-minute-leave-method") {
         setCatalogSelectedId(null);
-        setCatalogFeedback("这本书可能相关，但调查帖中的题名提示还没有完成核对。");
       } else {
         setCatalogSelectedId(result.id);
         setCatalogFeedback(`${result.title}的索书号和 022 没有可核对的关系。`);

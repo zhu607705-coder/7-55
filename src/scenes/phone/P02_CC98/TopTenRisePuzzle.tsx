@@ -11,7 +11,6 @@ import { isLibraryEvidenceId, isLibraryFinalsBdPostId } from "../../../modules/l
 
 interface TopTenRisePuzzleProps {
   selectedPostIds: LibraryFinalsBdPostId[];
-  passwordAttemptCount: number;
   bdCount: 0 | 1 | 2 | 3;
   phase: LibraryFinalsPhase;
   ownedEvidenceIds: LibraryEvidenceId[];
@@ -45,20 +44,9 @@ const BD_POSTS: BdPasswordPost[] = BD_PASSWORD.posts.flatMap((post) => (
 ));
 const BD_DIGIT_BY_POST = new Map(BD_POSTS.map((post) => [post.id, post.digit]));
 
-function passwordHint(attempt: number): string {
-  if (attempt <= 1) {
-    return "口令顺序跟随上方证据上传栏，从旧版规则开始逐项核对。";
-  }
-  if (attempt === 2) {
-    return "四项操作依次是：数规则条目、数身份通过项、取座位末位、取到座耗时。";
-  }
-  return "检查回复引用的材料。公示编号、目标排名、索书号和回复总数都不属于这四项。";
-}
-
 /** 证据上传和 BD 口令只调用领域命令；选择、排名与解锁由控制器完成。 */
 export function TopTenRisePuzzle({
   selectedPostIds,
-  passwordAttemptCount,
   bdCount,
   phase,
   ownedEvidenceIds,
@@ -76,7 +64,6 @@ export function TopTenRisePuzzle({
   const [passwordInvalid, setPasswordInvalid] = useState(false);
   const previousUploadedRef = useRef(uploadedEvidenceIds);
   const previousBdCountRef = useRef(bdCount);
-  const previousSelectedCountRef = useRef(selectedPostIds.length);
   const passwordPanelRef = useRef<HTMLElement>(null);
   const uploadTimerRef = useRef<number | null>(null);
   const rankTimerRef = useRef<number | null>(null);
@@ -122,17 +109,6 @@ export function TopTenRisePuzzle({
       }, 1180);
     }
   }, [bdCount, phase]);
-
-  useEffect(() => {
-    const previous = previousSelectedCountRef.current;
-    previousSelectedCountRef.current = selectedPostIds.length;
-    if (previous !== 3 || selectedPostIds.length !== 4 || solved) return;
-    setFeedback("四位数字已选满，请核对顺序后提交口令。");
-    passwordPanelRef.current?.scrollIntoView({
-      block: "center",
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
-    });
-  }, [selectedPostIds.length, solved]);
 
   useEffect(() => () => {
     [uploadTimerRef, rankTimerRef, topTenTimerRef, invalidTimerRef].forEach((timerRef) => {
@@ -180,7 +156,7 @@ export function TopTenRisePuzzle({
   function selectPost(post: BdPasswordPost) {
     setFeedback("");
     if (!kit.libraryFinals.selectBdPost(post.id)) {
-      setFeedback(passwordFull ? "四位口令已填满，请提交、撤回或清空。" : "当前阶段不能选入这条回复。");
+      if (!passwordFull) setFeedback("当前阶段不能选入这条回复。");
     }
   }
 
@@ -190,7 +166,6 @@ export function TopTenRisePuzzle({
       return;
     }
     setPasswordInvalid(true);
-    setFeedback(passwordHint(passwordAttemptCount + 1));
     if (invalidTimerRef.current !== null) window.clearTimeout(invalidTimerRef.current);
     invalidTimerRef.current = window.setTimeout(() => {
       invalidTimerRef.current = null;
@@ -299,7 +274,7 @@ export function TopTenRisePuzzle({
       </div> : null}
 
       {showBd && preBdBriefingSeen && solved ? (
-        <p className="cc98-top-ten-complete">四位热度口令已确认，排名更新为 01。图书馆 App 已开放 022 恢复申请。</p>
+        <p className="cc98-top-ten-complete">排名更新为 01。查看图书管理员的回复。</p>
       ) : null}
       {feedback ? <p className="cc98-bd-feedback" aria-live="polite">{feedback}</p> : null}
     </section>

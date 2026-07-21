@@ -9,7 +9,6 @@ import {
   DORM_INTERACTION_TARGETS,
   DORM_SPAWN,
   DORM_STATIC_COLLISION_RECTS,
-  distanceToDormTarget,
   findNearestDormTarget,
   type DormInteractionTarget,
   type DormInteractionTargetId
@@ -58,7 +57,6 @@ export class DormHubScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
   private virtualDirection = { x: 0, y: 0 };
-  private interactRequested = false;
   private exitTriggered = false;
   private manualMovementReported = false;
   private pacingDirection = 1;
@@ -96,7 +94,6 @@ export class DormHubScene extends Phaser.Scene {
     this.obstacles = this.physics.add.staticGroup();
     this.drawRoom();
     this.createAmbientAnimations();
-    this.createInteractionTargets();
     this.createCampusCardPickup();
     ensureRpgPlayerTextures(this);
 
@@ -126,10 +123,6 @@ export class DormHubScene extends Phaser.Scene {
       .setZoom(DORM_CAMERA_ZOOM)
       .startFollow(this.player, true, 0.12, 0.12, 0, 12)
       .setDeadzone(230, 130);
-
-    const exitZone = this.add.zone(470, 1540, 132, 80);
-    this.physics.add.existing(exitZone, true);
-    this.physics.add.overlap(this.player, exitZone, () => this.tryExitDorm());
 
     subscribeRpgSceneBridge(
       this.events,
@@ -184,24 +177,19 @@ export class DormHubScene extends Phaser.Scene {
     this.updatePrompt(nearest, nearCard);
 
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    if (keyboardInteract || this.interactRequested) {
+    if (keyboardInteract) {
       if (nearCard) {
         this.collectCampusCard();
       } else if (nearest) {
         this.triggerInteraction(nearest);
       }
     }
-    this.interactRequested = false;
     this.publishRuntimeDebug();
   }
 
   private handleBridgeEvent(name: string, payload?: Record<string, unknown>): void {
     if (name === "rpg_direction_changed") {
       this.virtualDirection = { x: Number(payload?.x) || 0, y: Number(payload?.y) || 0 };
-      return;
-    }
-    if (name === "rpg_interact") {
-      this.interactRequested = true;
       return;
     }
     if (name === "rpg_inventory_drop_requested") {
@@ -281,24 +269,6 @@ export class DormHubScene extends Phaser.Scene {
     pickup.add([glow, shadow, chestBody, chestLid, metalBandLeft, metalBandRight, lock, hitTarget]);
     this.campusCardPickup = pickup;
     this.tweens.add({ targets: [glow, pickup], alpha: { from: 0.72, to: 1 }, y: "-=3", duration: 760, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
-  }
-
-  private createInteractionTargets(): void {
-    for (const target of DORM_INTERACTION_TARGETS) {
-      this.add.zone(target.x, target.y, target.width, target.height)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerdown", () => {
-          const distance = this.player
-            ? distanceToDormTarget(this.player.x, this.player.y, target)
-            : Number.POSITIVE_INFINITY;
-          if (distance <= target.proximity + 24) {
-            this.triggerInteraction(target);
-          } else {
-            this.showFeedback(`先走近一点，再${target.label}。`);
-            this.pulseTarget(target, 0x7fd8ff);
-          }
-        });
-    }
   }
 
   private createAmbientAnimations(): void {
@@ -534,16 +504,12 @@ export class DormHubScene extends Phaser.Scene {
 
   private inspectCharacter(): void {
     const actOne = this.bridge.getState().actOne;
-    const feedback = !actOne.characterNamed
-      ? "他听不到你说话。"
-      : !actOne.exerciseStarted
-        ? "他知道自己是谁，但还没有开始走。"
-        : !actOne.controlsInstalled
-          ? "他在来回走，但不知道往哪里走。"
-          : !actOne.manualControlTested
-            ? "方向控制已安装，试着让他走一步。"
-            : "他现在会按你的方向移动。";
-    this.showFeedback(feedback);
+    if (actOne.characterNamed && actOne.controlsInstalled) {
+      this.showFeedback(actOne.manualControlTested
+        ? "他现在会按你的方向移动。"
+        : "方向控制已安装，试着让他走一步。");
+      return;
+    }
     this.bridge.emit("rpg_character_inspected");
   }
 

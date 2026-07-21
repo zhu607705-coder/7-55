@@ -60,7 +60,6 @@ export function App() {
   const phonePaneRef = useRef<HTMLElement>(null);
   const Scene = getPhoneScene(state.currentScene);
   const access = selectFeatureAccess(state);
-  const campusCardInspectionActive = state.actOne.phase === "system_return_required";
   const showChapterTwoIntro = access.chapter !== "chapter_one"
     && !state.ui.seenChapterIntros.includes("chapter_two");
   const libraryStoryVisible = libraryStorySequence !== null && !showChapterTwoIntro;
@@ -89,6 +88,12 @@ export function App() {
 
     const progressionAccepted = sequenceId === "cc98_evidence_set_completed"
       ? kit.libraryFinals.acknowledgeBdBriefing()
+      : sequenceId === "library_archived_rule_recovered"
+        ? kit.libraryFinals.acknowledgeArchivedRuleBriefing()
+      : sequenceId === "library_front_desk_proof_request"
+        ? kit.libraryFinals.acknowledgeFrontDeskProofRequest()
+      : sequenceId === "library_seat_release_pass_issued"
+        ? kit.libraryFinals.acknowledgePassBriefing()
       : sequenceId === "library_friend_contacted"
         ? kit.libraryFinals.complete022Dialogue()
         : true;
@@ -159,11 +164,27 @@ export function App() {
   useEffect(() => {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (
+      puzzle.archivedRuleRead
+      && !puzzle.archivedRuleBriefingSeen
+      && state.ui.libraryFinalsPhase === "evidence_gathering"
+    ) {
+      startLibraryStory("library_archived_rule_recovered");
+      return;
+    }
+    if (
       !puzzle.preBdBriefingSeen
       && puzzle.cc98UploadedEvidenceIds.length === 4
       && ["bd_briefing", "top_ten_rising"].includes(state.ui.libraryFinalsPhase)
     ) {
       startLibraryStory("cc98_evidence_set_completed");
+      return;
+    }
+    if (
+      state.ui.libraryFinalsPhase === "pass_ready"
+      && puzzle.evictionPassGenerated
+      && !puzzle.passBriefingSeen
+    ) {
+      startLibraryStory("library_seat_release_pass_issued");
       return;
     }
     if (
@@ -176,27 +197,15 @@ export function App() {
   }, [
     startLibraryStory,
     state.ui.libraryFinalsPhase,
+    state.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen,
+    state.ui.libraryFinalsPuzzle.archivedRuleRead,
     state.ui.libraryFinalsPuzzle.cc98UploadedEvidenceIds.length,
+    state.ui.libraryFinalsPuzzle.evictionPassGenerated,
     state.ui.libraryFinalsPuzzle.nextQuestId,
     state.ui.libraryFinalsPuzzle.playerSeated,
+    state.ui.libraryFinalsPuzzle.passBriefingSeen,
     state.ui.libraryFinalsPuzzle.preBdBriefingSeen
   ]);
-
-  useEffect(() => {
-    const phonePane = phonePaneRef.current;
-    if (!phonePane) return;
-    if (campusCardInspectionActive) {
-      phonePane.setAttribute("inert", "");
-      phonePane.setAttribute("aria-hidden", "true");
-      phonePane.classList.add("is-inert-fallback");
-      const focused = document.activeElement;
-      if (focused instanceof HTMLElement && phonePane.contains(focused)) focused.blur();
-      return;
-    }
-    phonePane.removeAttribute("inert");
-    phonePane.removeAttribute("aria-hidden");
-    phonePane.classList.remove("is-inert-fallback");
-  }, [campusCardInspectionActive, desktopGameplay]);
 
   function focusRpg() {
     const focused = document.activeElement;
@@ -205,7 +214,6 @@ export function App() {
   }
 
   function navigateFromTask(quest: QuestViewModel) {
-    if (campusCardInspectionActive) return;
     if (quest.targetSurface === "phone") {
       if (!desktopGameplay) {
         gameStore.setState((current) => ({ ...current, runtimeMode: "phone" }));
@@ -256,18 +264,19 @@ export function App() {
       return (
         <>
           <main className="desktop-gameplay-shell" data-active-surface={activeSurface}>
-            <QuestTaskBar
-              state={state}
-              events={eventBus}
-              router={router}
-              variant="desktop"
-              onNavigate={navigateFromTask}
-            />
+            {activeSurface === "rpg" ? (
+              <QuestTaskBar
+                state={state}
+                events={eventBus}
+                router={router}
+                variant="desktop"
+                onNavigate={navigateFromTask}
+              />
+            ) : null}
             <section
               ref={phonePaneRef}
               className="desktop-phone-pane"
               aria-label="手机交互区"
-              aria-hidden={campusCardInspectionActive ? true : undefined}
               onPointerDownCapture={() => setActiveSurface("phone")}
               onFocusCapture={() => setActiveSurface("phone")}
             >
@@ -276,7 +285,7 @@ export function App() {
                 router={router}
                 events={eventBus}
                 embedded
-                showTaskBar={false}
+                showTaskBar={activeSurface === "phone"}
                 showGlobalLayers={false}
                 onTaskNavigate={navigateFromTask}
               >

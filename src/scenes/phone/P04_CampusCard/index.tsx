@@ -32,7 +32,6 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
       }
       setBalanceAnimating(true);
       timer = window.setTimeout(() => setBalanceAnimating(false), 1100);
-      kit.flags.toast("小数点向右移动两位：余额 ¥6.00", "task");
     });
     return () => {
       unsubscribe();

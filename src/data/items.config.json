@@ -2,21 +2,21 @@
   {
     "id": "waterDrop",
     "name": "水滴",
-    "desc": "从主屏的早八雨里接住的一滴水。",
+    "desc": "从早八雨里接住的一滴水。它看起来很普通，但已经比你更早起床。",
     "sourceScene": "phone_home",
     "target": "bonsai_water"
   },
   {
     "id": "headphone",
     "name": "耳机",
-    "desc": "从控制中心掉下来的，背面朝下，像个小水瓢。",
+    "desc": "从控制中心掉下来的耳机。背面朝下，像一个不太情愿的小水瓢。",
     "sourceScene": "phone_home",
     "target": "bonsai_water"
   },
   {
     "id": "reverseGear",
     "name": "反转齿轮",
-    "desc": "设置图标上掉落的齿轮，背面刻着 9。",
+    "desc": "从设置里掉下来的齿轮。背面刻着 9，说明它一直有背着你生活。",
     "sourceScene": "phone_home",
     "target": "combine_slash"
   },
@@ -30,14 +30,14 @@
   {
     "id": "towerKey",
     "name": "钥匙",
-    "desc": "斜线与齿轮的组合体，齿轮是柄，斜线是杆。",
+    "desc": "斜线和齿轮拼成的钥匙。合法性很低，开锁欲很强。",
     "sourceScene": "phone_home",
     "target": "tower_slot"
   },
   {
     "id": "fertilizer",
     "name": "一袋肥料",
-    "desc": "钟楼特产。不要问为什么钟楼里有肥料。",
+    "desc": "钟楼里掉出来的肥料。不要问钟楼为什么会长出农业属性。",
     "sourceScene": "phone_home",
     "target": "bonsai_fertilize"
   },
@@ -51,21 +51,21 @@
   {
     "id": "pushTriangle",
     "name": "三角形",
-    "desc": "从主页第一条推送头像上取下来的三角形。",
+    "desc": "从主页推送头像里抠下来的三角形。它还没想好自己是播放键还是箭头的一部分。",
     "sourceScene": "phone_home",
     "target": "combine_mentor_line"
   },
   {
     "id": "weatherWater",
     "name": "天气水滴",
-    "desc": "从天气页接住的一滴水，可以松开黏着物。",
+    "desc": "从天气页面接到的一滴水。天气预报终于做了一件可以直接拿来用的事。",
     "sourceScene": "weather",
     "target": "mentor_avatar"
   },
   {
     "id": "mentorLine",
     "name": "竖线",
-    "desc": "从导师头像上滑落的竖线。",
+    "desc": "从导师头像上滑落的一条竖线。它看起来很严肃，像一句还没发完的消息。",
     "sourceScene": "wechat",
     "target": "combine_push_triangle"
   },
@@ -79,7 +79,7 @@
   {
     "id": "gamepad",
     "name": "游戏手柄",
-    "desc": "二手市场六块钱购入。它让你终于可以操作自己，听起来很悲伤。",
+    "desc": "CC98 二手市场六块钱成交。它让你终于可以操作自己，听起来很悲伤。",
     "sourceScene": "cc98",
     "target": "dorm_character"
   },
@@ -100,14 +100,14 @@
   {
     "id": "archivedLeaveRule",
     "name": "旧版离座规则",
-    "desc": "一份已经过期但仍然有效的规则。它最大的优点是没人敢确认它无效。",
+    "desc": "一份已经过期但仍然有效的规定。它最大的优点是没人敢确认它无效。",
     "sourceScene": "phone_home",
     "target": "cc98_evidence_upload"
   },
   {
     "id": "itemRecognitionReport",
     "name": "物品识别报告",
-    "desc": "它很沉重，但不是法律意义上的同学。",
+    "desc": "一份关于书包的严肃报告。结论是：它很沉重，但不是法律意义上的同学。",
     "sourceScene": "photos",
     "target": "lost_found_machine"
   },

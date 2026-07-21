@@ -197,7 +197,6 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
     return events.subscribe((event) => {
       if (event.name !== "item_dropped" || event.payload?.target !== "cc98_search") return;
       if (event.payload?.item !== "occupancyNote") {
-        setInvestigationFeedback("搜索框只识别与 022 占座直接相关的纸条。");
         return;
       }
       setInvestigationSearchReady(true);
@@ -272,11 +271,10 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   function searchWithOccupancyNote() {
     setInvestigationFeedback("");
     if (!state.items.occupancyNote) {
-      setInvestigationFeedback("请先把 022 旁边的占座纸条带到搜索框。");
       return;
     }
     setInvestigationSearchReady(true);
-    setInvestigationFeedback("找到 4 条候选记录。只有一条同时匹配来源、时间和附件。");
+    setInvestigationFeedback("找到 4 条候选记录。");
   }
 
   function selectInvestigationResult(result: typeof INVESTIGATION_SEARCH_RESULTS[number]) {
@@ -485,7 +483,6 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                 />
                 <TopTenRisePuzzle
                   selectedPostIds={finalsPuzzle.bdSelectedPostIds}
-                  passwordAttemptCount={finalsPuzzle.bdPasswordAttemptCount}
                   bdCount={finalsPuzzle.bdCount}
                   phase={finalsPhase}
                   ownedEvidenceIds={ownedEvidenceIds}

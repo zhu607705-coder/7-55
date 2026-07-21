@@ -12,12 +12,29 @@
 .quest-task-bar--phone {
   align-items: center;
   display: flex;
-  height: var(--phone-questbar-h, 40px);
-  left: var(--phone-shell-gutter, 8px);
+  height: 30px;
+  left: 50%;
   position: absolute;
-  right: var(--phone-shell-gutter, 8px);
-  top: var(--phone-questbar-top, 40px);
-  width: auto;
+  right: auto;
+  top: 5px;
+  transform: translateX(-50%);
+  width: 76px;
+}
+
+.quest-task-bar--phone .quest-task-trigger {
+  display: flex;
+  height: 30px;
+  justify-content: center;
+  min-height: 30px;
+  padding: 3px 8px;
+  text-align: center;
+  width: 76px;
+}
+
+.quest-task-bar--phone .quest-task-trigger-copy > span {
+  font-size: 10px;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .quest-task-trigger {
@@ -28,7 +45,7 @@
   color: #fff8e4;
   display: grid;
   gap: 5px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   height: 34px;
   min-height: 34px;
   padding: 3px 6px;
@@ -227,13 +244,14 @@
   text-align: left;
 }
 
-.quest-task-bar--phone .quest-task-drawer {
+.quest-task-drawer--phone {
   left: 14px;
-  max-height: calc(100vh - 64px);
-  max-height: calc(var(--app-viewport-height, 100vh) - 64px);
-  position: fixed;
+  max-height: calc(100vh - 58px);
+  max-height: calc(var(--app-viewport-height, 100vh) - 58px);
+  position: absolute;
   right: 14px;
-  top: var(--phone-page-control-top, 80px);
+  top: calc(var(--phone-statusbar-h, 40px) + 7px);
+  z-index: 77;
 }
 
 .quest-task-bar--rpg {
@@ -601,11 +619,11 @@
 .phone-frame {
   --phone-statusbar-top: 0px;
   --phone-statusbar-h: 40px;
-  --phone-questbar-top: var(--phone-statusbar-h);
-  --phone-questbar-h: 40px;
-  --phone-page-control-top: calc(var(--phone-statusbar-h) + var(--phone-questbar-h));
-  --phone-scene-safe-offset: var(--phone-questbar-h);
-  --phone-scene-page-control-offset: calc(var(--phone-page-control-top) - var(--phone-questbar-top));
+  --phone-questbar-top: 0px;
+  --phone-questbar-h: 0px;
+  --phone-page-control-top: var(--phone-statusbar-h);
+  --phone-scene-safe-offset: 0px;
+  --phone-scene-page-control-offset: var(--phone-statusbar-h);
   --phone-shell-gutter: 8px;
   --phone-header-h: 60px;
   --phone-nav-hit: 44px;
@@ -649,7 +667,7 @@
 }
 
 .phone-frame:has(> .quest-task-bar--phone) > .scene-surface {
-  inset: var(--phone-scene-safe-offset) 0 0;
+  inset: 0;
 }
 
 .quest-clue-strip {

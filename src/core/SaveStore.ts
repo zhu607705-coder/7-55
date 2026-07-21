@@ -456,6 +456,14 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
     callNumberCollected: booleanOr(saved.callNumberCollected, initial.callNumberCollected),
     archivedRuleCollected: booleanOr(saved.archivedRuleCollected, initial.archivedRuleCollected),
     archivedRuleRead: booleanOr(saved.archivedRuleRead, initial.archivedRuleRead),
+    archivedRuleBriefingSeen: typeof saved.archivedRuleBriefingSeen === "boolean"
+      ? saved.archivedRuleBriefingSeen
+      : booleanOr(saved.archivedRuleRead, initial.archivedRuleRead),
+    frontDeskProofRequestSeen: booleanOr(
+      saved.frontDeskProofRequestSeen,
+      booleanOr(saved.itemReportGenerated, initial.itemReportGenerated)
+        || booleanOr(saved.nonPersonProofStamped, initial.nonPersonProofStamped)
+    ),
     photoCaptured: booleanOr(saved.photoCaptured, initial.photoCaptured),
     photoDimmed: booleanOr(saved.photoDimmed, initial.photoDimmed),
     itemReportGenerated: booleanOr(saved.itemReportGenerated, initial.itemReportGenerated),
@@ -480,6 +488,9 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
     bdPasswordAttemptCount: nonNegativeIntegerOr(saved.bdPasswordAttemptCount, initial.bdPasswordAttemptCount),
     recoverySubmittedEvidenceIds: stringArrayFromSet(saved.recoverySubmittedEvidenceIds, VALID_LIBRARY_RECOVERY_EVIDENCE_IDS, initial.recoverySubmittedEvidenceIds),
     evictionPassGenerated: booleanOr(saved.evictionPassGenerated, initial.evictionPassGenerated),
+    passBriefingSeen: typeof saved.passBriefingSeen === "boolean"
+      ? saved.passBriefingSeen
+      : booleanOr(saved.evictionPassGenerated, initial.evictionPassGenerated),
     backpackEvicted: booleanOr(saved.backpackEvicted, initial.backpackEvicted),
     playerSeated: booleanOr(saved.playerSeated, initial.playerSeated),
     nextQuestId: saved.nextQuestId === "chapter_three_book_hunt" ? saved.nextQuestId : initial.nextQuestId,
@@ -500,6 +511,8 @@ function completedLegacyPuzzle(initial: LibraryFinalsPuzzleState): LibraryFinals
     callNumberCollected: true,
     archivedRuleCollected: true,
     archivedRuleRead: true,
+    archivedRuleBriefingSeen: true,
+    frontDeskProofRequestSeen: true,
     photoCaptured: true,
     photoDimmed: true,
     itemReportGenerated: true,
@@ -518,6 +531,7 @@ function completedLegacyPuzzle(initial: LibraryFinalsPuzzleState): LibraryFinals
     bdPasswordAttemptCount: 1,
     recoverySubmittedEvidenceIds: ["bag_non_person_proof", "seat_022_receipt", "library_presence_proof"],
     evictionPassGenerated: true,
+    passBriefingSeen: true,
     backpackEvicted: true,
     playerSeated: true,
     nextQuestId: "chapter_three_book_hunt",

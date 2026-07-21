@@ -83,8 +83,11 @@
 
 .toast-layer.subtitle-layer--phone {
   bottom: 86px;
-  left: 18px;
-  right: 18px;
+  left: 50%;
+  max-width: calc(var(--phone-width, 430px) - 36px);
+  right: auto;
+  transform: translateX(-50%);
+  width: min(calc(100% - 36px), calc(var(--phone-width, 430px) - 36px));
 }
 
 .toast-layer.subtitle-layer--rpg {

@@ -82,7 +82,7 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
   function startActOneExercise() {
     const alreadyStarted = state.actOne.exerciseStarted;
     if (!kit.actOne.startExercise()) {
-      kit.flags.toast("锻炼对象没有姓名。先去部门黄页叫出他的名字。", "system");
+      kit.flags.toast("锻炼对象没有姓名。先去给他打电话。", "system");
       return;
     }
     if (alreadyStarted) {

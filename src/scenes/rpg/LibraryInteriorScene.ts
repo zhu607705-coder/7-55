@@ -38,6 +38,13 @@ const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   seatReleasePass: "离座清退 PASS"
 };
 
+const FRONT_DESK_REPORT_HINTS = [
+  "前台：请出示物品识别报告。",
+  "玩家：我用肉眼看不行吗？",
+  "前台：肉眼不是本部门认可设备。",
+  "系统：你看，眼睛又输了。"
+] as const;
+
 const BACKPACK_BASE_SCALE = 0.6;
 const BACKPACK_TABLE_PATCH_FRAME = "library-seat-022-clear-patch";
 const BACKPACK_TABLE_PATCH_SOURCE = { left: 1080, top: 392, width: 34, height: 38 } as const;
@@ -131,7 +138,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private enterKey!: Phaser.Input.Keyboard.Key;
   private escapeKey!: Phaser.Input.Keyboard.Key;
   private reducedMotion = false;
-  private frontDeskStoryShown = false;
+  private frontDeskReportHintIndex = 0;
 
   constructor() {
     super("library-interior");
@@ -147,6 +154,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+    this.frontDeskReportHintIndex = 0;
     this.cameras.main.setBackgroundColor(0x0b1110);
     this.physics.world.setBounds(48, 48, LIBRARY_INTERIOR_WORLD.width - 96, LIBRARY_INTERIOR_WORLD.height - 96);
     this.obstacles = this.physics.add.staticGroup();
@@ -280,14 +288,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "library_rpg_context_inspected") {
-      this.showFeedback(String(payload?.text ?? "这里暂时没有更多信息。"), "system");
+      const text = String(payload?.text ?? "");
+      if (text) this.showFeedback(text, "system");
       return;
     }
     if (name === "library_entrance_record_read") {
       this.entranceAccessGranted = true;
       this.updateEntranceRecordDevice(true);
       this.animateEntranceAccessGranted();
-      this.showFeedback("记录已保存：到达时间减去入馆时间，可得出到座耗时。", "success");
+      this.showFeedback("记录已保存", "success");
       return;
     }
     if (name === "library_occupied_seat_found") {
@@ -408,17 +417,29 @@ export class LibraryInteriorScene extends Phaser.Scene {
       target.id === "front_desk"
       && puzzle.archivedRuleRead
       && !puzzle.nonPersonProofStamped
-      && !this.frontDeskStoryShown
+      && !puzzle.frontDeskProofRequestSeen
     ) {
-      this.frontDeskStoryShown = true;
       this.bridge.emit("library_story_request", { sequenceId: "library_front_desk_proof_request" });
       return;
     }
+    if (
+      target.id === "front_desk"
+      && puzzle.frontDeskProofRequestSeen
+      && !puzzle.itemReportGenerated
+    ) {
+      const text = FRONT_DESK_REPORT_HINTS[this.frontDeskReportHintIndex];
+      this.frontDeskReportHintIndex = Math.min(
+        this.frontDeskReportHintIndex + 1,
+        FRONT_DESK_REPORT_HINTS.length - 1
+      );
+      this.showFeedback(text, "system");
+      return;
+    }
 
-    this.bridge.emit("library_rpg_context_inspected", {
-      targetId: target.id,
-      text: this.getContextText(target.id, state)
-    });
+    const text = this.getContextText(target.id, state);
+    if (text) {
+      this.bridge.emit("library_rpg_context_inspected", { targetId: target.id, text });
+    }
   }
 
   private requestAction(action: string, targetId: LibraryInteractionTargetId): void {
@@ -491,35 +512,35 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (targetId === "front_desk") {
-      if (!puzzle.archivedRuleRead) return "前台目录显示：三条证明可分别办理，旧版规则用于确认材料总要求。";
+      if (!puzzle.archivedRuleRead) return "";
       const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
-      return proofCount < 3 ? `旧规则要求三项证明，目前已确认 ${proofCount} 项。` : "三项证明已齐，公开记录仍需完成公示。";
+      return proofCount < 3 ? "" : "三项证明已齐，上传给大家看看。";
     }
     if (targetId === "lost_found_machine") {
       return {
         missing_report: "物品身份盖章机：缺少物品识别报告。",
         ready: "物品身份盖章机：将报告拖入进纸托盘。",
         scanning: "物品身份盖章机：报告正在扫描，压章头已就位。",
-        stamped: "物品身份盖章机：本次盖章完成，证明已进入道具栏。"
+        stamped: ""
       }[puzzle.lostFoundStage];
     }
     if (targetId === "catalog_terminal") {
       return puzzle.investigationOpened
-        ? "馆藏检索已同步到浙大钉，可按帖子中的题名继续查找。"
+        ? "馆藏检索已同步到图书馆，可按帖子中的题名继续查找。"
         : "终端可以检索题名、作者和索书号，当前没有调查关键词。";
     }
     if (targetId === "library_shelf_755") {
       return puzzle.callNumberCollected
         ? "书架：I247.55 区域。它看起来不是书架，是一串密码伪装成家具。"
-        : "书架：I247.?? 区域。编号过密，需要先确认具体索书号。";
+        : "书架：I247.?? 区域。看不清楚，有没有具体索书号？";
     }
     if (targetId === "seat_022_backpack") {
       return puzzle.evictionPassGenerated
         ? "恢复申请已经通过，PASS 可对现场占用物生效。"
-        : "022 的会话信号就在书包下面，普通点击无法完成清退。";
+        : "";
     }
     const contextByTarget: Record<LibraryInteractionTargetId, string> = {
-      entrance_record: "闸机保留了进入时间和目标区域。",
+      entrance_record: "",
       front_desk: "",
       lost_found_machine: "",
       catalog_terminal: "",
@@ -764,7 +785,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       });
       this.time.delayedCall(slideOffsets.length * slideStepDuration, () => this.animateShelfPaperReveal());
     });
-    this.showFeedback("书架横移了一格，后面夹着一份旧版离座规定。", "success");
+    this.showFeedback("书架横移了一格，后面夹着一份很旧的黄纸。", "success");
   }
 
   private animateShelfPaperReveal(): void {
@@ -1005,7 +1026,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
         this.time.delayedCall(500, () => this.receipt.setVisible(false));
       }
     });
-    this.showFeedback("右移箭头推出了 022 座位小票，箭头仍保留。", "success");
+    this.showFeedback("小票向“右”了。", "success");
   }
 
   private animatePassApplication(): void {
@@ -1628,7 +1649,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
           this.openEntranceRecordPanel();
           return;
         }
-        this.showFeedback("先走近闸机旁的小屏，再查看入馆记录。", "system");
         this.tweens.add({
           targets: this.entranceRecordDevice,
           x: { from: 747, to: 753 },
@@ -1923,10 +1943,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
           return;
         }
         this.bridge.setCheckpoint("library_front_desk");
-        this.bridge.emit("library_rpg_context_inspected", {
-          targetId: target.id,
-          text: this.getContextText(target.id, this.bridge.getState())
-        });
+        const text = this.getContextText(target.id, this.bridge.getState());
+        if (text) {
+          this.bridge.emit("library_rpg_context_inspected", { targetId: target.id, text });
+        }
       });
   }
 

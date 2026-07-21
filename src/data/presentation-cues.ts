@@ -39,8 +39,8 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
   },
   act2_movement_quest_started: {
     kind: "chapter",
-    title: "找到移动的办法",
-    detail: "让寝室里的人离开房间",
+    title: "让地图人物回应你",
+    detail: "先让寝室里的人知道自己是谁",
     mark: "MOVE",
     durationMs: 1900,
     priority: 3

@@ -411,28 +411,28 @@ export function PixelIcon({ name, size = 36, className }: PixelIconProps) {
 }
 
 export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
-  waterDrop: { name: "水滴", desc: "从早八雨里接住的一滴水。" },
-  headphone: { name: "耳机", desc: "背面朝下，像个小水瓢。" },
-  wateredHeadphone: { name: "盛水的耳机", desc: "晃一晃，里面有水声。" },
-  reverseGear: { name: "反转齿轮", desc: "背面刻着 9 的齿轮。" },
-  slashLine: { name: "斜线", desc: "朋友头像上掉下来的一撇。" },
-  towerKey: { name: "钥匙", desc: "斜线与齿轮的组合体。" },
-  fertilizer: { name: "一袋肥料", desc: "钟楼特产。" },
+  waterDrop: { name: "水滴", desc: "从早八雨里接住的一滴水。它看起来很普通，但已经比你更早起床。" },
+  headphone: { name: "耳机", desc: "从控制中心掉下来的耳机。背面朝下，像一个不太情愿的小水瓢。" },
+  wateredHeadphone: { name: "盛水的耳机", desc: "一只装了水的耳机。音质未知，灌溉能力暂时领先。" },
+  reverseGear: { name: "反转齿轮", desc: "从设置里掉下来的齿轮。背面刻着 9，说明它一直有背着你生活。" },
+  slashLine: { name: "斜线", desc: "朋友头像上掉下来的一撇。检测到未经授权的友情支援。" },
+  towerKey: { name: "钥匙", desc: "斜线和齿轮拼成的钥匙。合法性很低，开锁欲很强。" },
+  fertilizer: { name: "一袋肥料", desc: "钟楼里掉出来的肥料。不要问钟楼为什么会长出农业属性。" },
   campusCard: {
     name: "电子校园卡",
-    desc: "随身校园身份凭证。完整信息仅在卡片详情中显示。"
+    desc: "证明你是你的卡。余额方面，它持保留意见。"
   },
-  pushTriangle: { name: "三角形", desc: "从主页推送头像里抠下来的三角形。" },
-  weatherWater: { name: "天气水滴", desc: "从天气页面接到的另一滴水。" },
-  mentorLine: { name: "竖线", desc: "从导师头像上滑落的一条竖线。" },
-  rightArrow: { name: "右移箭头", desc: "由三角形与竖线拼成，箭头朝右。" },
-  gamepad: { name: "游戏手柄", desc: "CC98 二手市场，六块钱成交。" },
-  occupancyNote: { name: "占座纸条", desc: "022 座位旁留下的一张纸条。" },
-  callNumber755: { name: "索书号 755", desc: "一串写成 I247.55 / 755 的馆藏编号。" },
-  archivedLeaveRule: { name: "旧离座规定", desc: "从 755 书架夹层取出的旧版规定。" },
-  itemRecognitionReport: { name: "物品识别报告", desc: "照片识别生成的书包报告，右下角仍是空白。" },
-  bagNonPersonProof: { name: "书包非本人证明", desc: "失物招领机器盖章确认：书包不等于本人。" },
-  seat022Receipt: { name: "022 座位小票", desc: "从 022 桌面夹缝里取出的座位凭据。" },
-  libraryPresenceProof: { name: "本人来过证明", desc: "浙大体艺根据图书馆访问记录生成的证明。" },
-  seatReleasePass: { name: "离座清退 PASS", desc: "恢复申请签发的临时处置凭证。" }
+  pushTriangle: { name: "三角形", desc: "从主页推送头像里抠下来的三角形。它还没想好自己是播放键还是箭头的一部分。" },
+  weatherWater: { name: "天气水滴", desc: "从天气页面接到的一滴水。天气预报终于做了一件可以直接拿来用的事。" },
+  mentorLine: { name: "竖线", desc: "从导师头像上滑落的一条竖线。它看起来很严肃，像一句还没发完的消息。" },
+  rightArrow: { name: "右移箭头", desc: "能把什么东西往右移。它不解决问题，只负责让问题换个位置。" },
+  gamepad: { name: "游戏手柄", desc: "CC98 二手市场六块钱成交。它让你终于可以操作自己，听起来很悲伤。" },
+  occupancyNote: { name: "占座纸条", desc: "022 座位旁留下的一张纸条。它声称主人只离开三分钟，但纸张老化程度不支持这个说法。" },
+  callNumber755: { name: "索书号 755", desc: "一串看起来属于书架、实际上更像咒语的编号。图书馆用它证明“你找不到”也是一种服务。" },
+  archivedLeaveRule: { name: "旧离座规定", desc: "一份已经过期但仍然有效的规定。它最大的优点是没人敢确认它无效。" },
+  itemRecognitionReport: { name: "物品识别报告", desc: "一份关于书包的严肃报告。结论是：它很沉重，但不是法律意义上的同学。" },
+  bagNonPersonProof: { name: "书包非本人证明", desc: "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。" },
+  seat022Receipt: { name: "022 座位小票", desc: "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。" },
+  libraryPresenceProof: { name: "本人来过证明", desc: "一张证明你来过的证明。它没有证明你为什么要来。" },
+  seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" }
 };

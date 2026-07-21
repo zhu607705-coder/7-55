@@ -1,270 +1,252 @@
-import type { GameState, ItemId, QuestStep, QuestViewModel, SceneId } from "./types";
+import type { ChapterId, GameState, QuestStep, QuestViewModel, SceneId } from "./types";
 import { selectFeatureAccess } from "./FeatureAccess";
 
-interface StepSource {
+interface TaskDefinition {
   id: string;
   label: string;
-  done: boolean;
-  itemId?: ItemId;
-}
-
-interface NextAction {
-  objective: string;
-  hints: [string, string, string];
+  hints: readonly string[];
   targetSurface: "phone" | "rpg";
   recommendedScene?: SceneId;
 }
 
-const DEFAULT_HINTS: [string, string, string] = [
-  "先检查当前任务提到的应用或现场。",
-  "对照物品来源与界面里仍缺少的证据类型。",
-  "留意当前界面中可展开、可拖入或可继续对话的区域。"
-];
-
-function buildSteps(sources: StepSource[]): QuestStep[] {
-  const firstPending = sources.findIndex((step) => !step.done);
-  return sources.map((step, index) => ({
-    id: step.id,
-    label: step.label,
-    status: step.done ? "completed" : index === firstPending ? "active" : "locked",
-    ...(step.itemId ? { itemId: step.itemId } : {})
+function buildQuest(
+  chapter: ChapterId,
+  title: string,
+  tasks: readonly TaskDefinition[],
+  currentIndex: number
+): QuestViewModel {
+  const activeIndex = Math.max(0, Math.min(currentIndex, tasks.length - 1));
+  const active = tasks[activeIndex];
+  const steps: QuestStep[] = tasks.map((task, index) => ({
+    id: task.id,
+    label: task.label,
+    status: index < activeIndex ? "completed" : index === activeIndex ? "active" : "locked"
   }));
-}
-
-function countDone(sources: StepSource[]): number {
-  return sources.filter((step) => step.done).length;
+  return {
+    id: active.id,
+    chapter,
+    title,
+    objective: active.label,
+    completed: activeIndex,
+    total: tasks.length,
+    steps,
+    hints: active.hints,
+    targetSurface: active.targetSurface,
+    ...(active.recommendedScene ? { recommendedScene: active.recommendedScene } : {})
+  };
 }
 
 function chapterOneQuest(state: GameState): QuestViewModel {
   const digitCount = Object.values(state.digits).filter(Boolean).length;
-  const sources: StepSource[] = [
-    { id: "friend_message", label: "查看朋友消息", done: state.flags.codeScattered },
-    { id: "digit_1", label: "找回第 1 位签到码", done: digitCount >= 1 },
-    { id: "digit_2", label: "找回第 2 位签到码", done: digitCount >= 2 },
-    { id: "digit_3", label: "找回第 3 位签到码", done: digitCount >= 3 },
-    { id: "digit_4", label: "找回第 4 位签到码", done: digitCount >= 4 },
-    { id: "checkin", label: "完成签到", done: state.flags.checkinDone }
-  ];
-  let next: NextAction;
-  if (!state.flags.codeScattered) {
-    next = {
-      objective: "查看朋友发来的新消息",
-      hints: ["从手机里的聊天应用开始。", "朋友消息会说明签到遇到的异常。", "查看微信会话列表里带新提示的联系人。"],
+  const tasks: readonly TaskDefinition[] = [
+    {
+      id: "chapter_one_view_info",
+      label: "查看信息",
+      hints: [],
       targetSurface: "phone",
       recommendedScene: "wechat"
-    };
-  } else if (digitCount < 4) {
-    next = {
-      objective: `找回四位签到码（${digitCount}/4）`,
-      hints: ["数字分散在校园卡、体艺、主屏设置和植物相关界面。", "每个数字都需要一次观察、翻转或组合。", "依次检查校园卡余额、体艺记录、设置齿轮背面和盆栽。"],
+    },
+    {
+      id: "chapter_one_find_code",
+      label: `找签到码（${digitCount}/4）`,
+      hints: [
+        "先检查浙大体艺、设置齿轮和盆栽相关界面。",
+        "道具可以拖拽合并。",
+        "浙大体艺打不开时，试试换一种网络。",
+        "微信界面也用“自动旋转”",
+        "光照在控制中心拖动调节",
+        "还有一个在签到页面"
+      ],
       targetSurface: "phone",
       recommendedScene: "phone_home"
-    };
-  } else {
-    next = {
-      objective: "回到学在浙大完成签到",
-      hints: ["四位数字已经齐全。", "签到入口位于浙大钉的学习服务中。", "打开浙大钉，再进入学在浙大。"],
+    },
+    {
+      id: "chapter_one_check_in",
+      label: "去签到",
+      hints: [],
       targetSurface: "phone",
-      recommendedScene: "zjuding"
-    };
-  }
-  return {
-    id: "chapter_one_checkin",
-    chapter: "chapter_one",
-    title: "找回签到码",
-    completed: countDone(sources),
-    total: sources.length,
-    steps: buildSteps(sources),
-    ...next
-  };
+      recommendedScene: "checkin"
+    }
+  ];
+  const currentIndex = !state.flags.codeScattered ? 0 : digitCount < 4 ? 1 : 2;
+  return buildQuest("chapter_one", "五分钟", tasks, currentIndex);
 }
 
 function movementQuest(state: GameState): QuestViewModel {
-  const phaseOrder = ["friend_message_required", "system_required"];
-  const dialogueDone = !phaseOrder.includes(state.actOne.phase);
-  const cardRecovered = state.actOne.inventoryRecovered && state.items.campusCard;
-  const reservationBriefed = ["reservation_required", "movement_ready", "complete"].includes(state.actOne.phase);
-  const sources: StepSource[] = [
-    { id: "system_dialogue", label: "完成系统对话", done: dialogueDone },
-    { id: "inventory", label: "找到道具栏", done: cardRecovered },
-    { id: "identity", label: "登记人物身份", done: state.actOne.characterNamed },
-    { id: "exercise", label: "启动课外锻炼", done: state.actOne.exerciseStarted },
-    { id: "arrow", label: "取得右移箭头", done: state.actOne.rightArrowAssembled },
-    { id: "balance", label: "调整校园卡余额", done: state.actOne.balanceShifted },
-    { id: "gamepad", label: "取得游戏手柄", done: state.actOne.gamepadPurchased },
-    { id: "controls", label: "把手柄安装给人物", done: state.actOne.controlsInstalled },
-    { id: "manual_move", label: "完成首次手动移动", done: state.actOne.manualControlTested },
-    { id: "reservation_briefing", label: "听取系统的图书馆说明", done: reservationBriefed },
-    { id: "seat_reservation", label: "预约基础馆二层南区 022", done: state.ui.librarySeatReserved },
-    { id: "leave_dorm", label: "离开寝室", done: state.actOne.phase === "complete" }
+  const inventoryTaskActive = ["inventory_required", "system_return_required"].includes(state.actOne.phase);
+  const tasks: readonly TaskDefinition[] = [
+    {
+      id: "chapter_two_character_response",
+      label: inventoryTaskActive ? "找到道具栏" : "让地图人物回应你",
+      hints: inventoryTaskActive ? [] : [
+        "手机里有能联系校内人员的地方。",
+        "用校园卡上的身份信息，在部门黄页里找到他。"
+      ],
+      targetSurface: inventoryTaskActive ? "rpg" : "phone",
+      ...(inventoryTaskActive ? {} : { recommendedScene: "zjuding" })
+    },
+    {
+      id: "chapter_two_character_move",
+      label: "让地图人物动起来",
+      hints: [
+        "有一个 App 专门负责把普通走路变成记录。",
+        "打开浙大体艺，开始课外锻炼。"
+      ],
+      targetSurface: "phone",
+      recommendedScene: "tiyi"
+    },
+    {
+      id: "chapter_two_direction_control",
+      label: "找到控制方向的方法",
+      hints: [
+        "论坛里可能有人卖很便宜的控制设备。",
+        "去 CC98 二手交易，用处理过的校园卡余额买手柄。",
+        "组合成箭头放在校园卡余额上，小数点右移两位。"
+      ],
+      targetSurface: "phone",
+      recommendedScene: "cc98"
+    },
+    {
+      id: "chapter_two_reserve_022",
+      label: "预约 022",
+      hints: ["二层南区022"],
+      targetSurface: "phone",
+      recommendedScene: "zjuding"
+    }
   ];
-  const triangleCollected = state.actOne.pushTriangleTaken;
-  const weatherCollected = state.actOne.weatherWaterTaken;
-  const arrowNextAction: NextAction = !triangleCollected && !weatherCollected
-    ? {
-        objective: "收集三角形与天气水滴",
-        hints: ["锻炼记录已经同步到手机。", "主页的「方向校准」与天气页面各有一项变化，两边可以分别检查。", "先检查任意一边，再去另一边补齐素材。"],
-        targetSurface: "phone",
-        recommendedScene: "phone_home"
-      }
-    : !triangleCollected
-      ? {
-          objective: "从主页取得三角形",
-          hints: ["天气水滴已经进入道具栏。", "主页通知列表出现了新的「方向校准」。", "回到手机主页，多观察几次推送头像边缘的变化。"],
-          targetSurface: "phone",
-          recommendedScene: "phone_home"
-        }
-      : !weatherCollected
-        ? {
-            objective: "从天气页面取得一滴水",
-            hints: ["三角形已经进入道具栏。", "天气页面也出现了一项可收集变化。", "进入天气页面，接住界面下方的水滴。"],
-            targetSurface: "phone",
-            recommendedScene: "weather"
-          }
-        : !state.actOne.mentorLineReleased
-        ? {
-            objective: "用天气水滴处理导师头像",
-            hints: ["水滴可以用于处理黏着物。", "微信导师头像边缘有一条被黏住的竖线。", "打开微信，将天气水滴拖到导师头像。"],
-            targetSurface: "phone",
-            recommendedScene: "wechat"
-          }
-        : {
-            objective: "组合三角形与竖线",
-            hints: ["两个图形素材已经齐全。", "道具栏支持把互补形状拖到一起。", "将三角形与竖线组合。"],
-            targetSurface: "phone",
-            recommendedScene: "phone_home"
-          };
-  const nextById: Record<string, NextAction> = {
-    system_dialogue: { objective: state.actOne.phase === "friend_message_required" ? "回复朋友的新消息" : "找到系统", hints: ["新消息仍在微信。", "朋友会把你引向浙大钉里的异常。", "完成微信对话后，检查浙大钉身份区域“求”字旁的红圈。"], targetSurface: "phone", recommendedScene: state.actOne.phase === "friend_message_required" ? "wechat" : "zjuding" },
-    inventory: { objective: "找到道具栏", hints: ["系统已经开放寝室地图。", "个人物品留在右侧书桌。", "进入浙大钉校园地图，打开右侧个人书桌上的宝箱。"], targetSurface: "rpg" },
-    identity: { objective: "为地图人物补齐身份", hints: ["第二章开放了新的校园服务。", "电子校园卡包含姓名和学号，部门黄页可以读取它。", "进入浙大钉部门黄页，使用校园卡读卡区。"], targetSurface: "phone", recommendedScene: "zjuding" },
-    exercise: { objective: "让人物先自动走起来", hints: ["体艺记录与运动能力有关。", "完成身份登记后，体艺页面会识别参与者。", "进入浙大体艺，使用页面中的开始锻炼按钮。"], targetSurface: "phone", recommendedScene: "tiyi" },
-    arrow: arrowNextAction,
-    balance: { objective: "让校园卡余额发生位移", hints: ["新道具只描述移动方向。", "校园卡上有一串位置值得改变的数字。", "打开校园卡余额，把右移箭头拖到余额区域。"], targetSurface: "phone", recommendedScene: "campus_card" },
-    gamepad: { objective: "找到可以控制方向的设备", hints: ["第二章已经开放 CC98。", "余额变化后可以处理一笔低价交易。", "进入 CC98 今日热门，查看二手交易帖。"], targetSurface: "phone", recommendedScene: "cc98" },
-    controls: { objective: "把手柄拖到寝室小人身上", hints: ["购买只会把手柄放入道具栏。", "返回寝室后展开 RPG 道具栏。", "将手柄拖到小人身上完成安装。"], targetSurface: "rpg" },
-    manual_move: { objective: "在寝室完成一次手动移动", hints: ["手柄已安装，自动走动已停止。", "桌面端使用 WASD 或方向键。", "真实输入任意一次方向。"], targetSurface: "rpg" },
-    reservation_briefing: { objective: "听系统说明图书馆方案", hints: ["系统已回到浙大钉。", "它会说明权限限制和可协助的对象。", "继续当前系统对话。"], targetSurface: "phone", recommendedScene: "zjuding" },
-    seat_reservation: { objective: ["library_spaces", "library_seat"].includes(state.ui.zjudingPage) ? "预约基础馆二层南区 022" : "在浙大钉预约图书馆座位", hints: ["打开浙大钉的图书馆服务。", "进入座位预约，选择基础馆二层南区。", "选中 022 并确认预约。"], targetSurface: "phone", recommendedScene: "zjuding" },
-    leave_dorm: { objective: "前往基础图书馆 022", hints: ["座位预约已经完成。", "回到寝室，出口现在可以通行。", "离开寝室后沿校园道路前往基础图书馆。"], targetSurface: "rpg" }
-  };
-  const nextId = sources.find((step) => !step.done)?.id ?? "leave_dorm";
-  return {
-    id: "chapter_two_movement",
-    chapter: "chapter_two",
-    title: "找到移动的办法",
-    completed: countDone(sources),
-    total: sources.length,
-    steps: buildSteps(sources),
-    ...nextById[nextId]
-  };
+
+  // 系统说明属于上一关的过渡；完成说明、正式开放预约后才切换到“预约 022”。
+  const currentIndex = !state.actOne.characterNamed
+    ? 0
+    : !state.actOne.exerciseStarted
+      ? 1
+      : state.actOne.phase === "reservation_required"
+        ? 3
+        : 2;
+  return buildQuest("chapter_two", "找到移动的办法", tasks, currentIndex);
 }
 
 function libraryQuest(state: GameState): QuestViewModel {
   const puzzle = state.ui.libraryFinalsPuzzle;
-  const evidenceReadyCount = [
-    puzzle.archivedRuleRead,
-    puzzle.presenceProofCollected,
+  const proofCount = [
+    puzzle.nonPersonProofStamped,
     puzzle.seatReceiptCollected,
-    puzzle.nonPersonProofStamped
+    puzzle.presenceProofCollected
   ].filter(Boolean).length;
-  const sources: StepSource[] = [
-    { id: "entrance_record", label: "读取入馆记录", done: puzzle.entranceRecordRead },
-    { id: "seat_022", label: "找到 022", done: puzzle.backpackInspected },
-    { id: "note", label: "取得占座纸条", done: puzzle.occupancyNoteCollected, itemId: "occupancyNote" },
-    { id: "catalog", label: "完成馆藏检索", done: puzzle.callNumberCollected, itemId: "callNumber755" },
-    { id: "rule", label: "阅读旧版临时离座恢复规定", done: puzzle.archivedRuleRead, itemId: "archivedLeaveRule" },
-    { id: "proof_presence", label: "本人确实到馆", done: puzzle.presenceProofCollected, itemId: "libraryPresenceProof" },
-    { id: "proof_receipt", label: "目标座位与凭据一致", done: puzzle.seatReceiptCollected, itemId: "seat022Receipt" },
-    { id: "proof_nonperson", label: "当前占用物不具备本人身份", done: puzzle.nonPersonProofStamped, itemId: "bagNonPersonProof" },
-    { id: "cc98_upload", label: "提交四项公示材料", done: puzzle.cc98UploadedEvidenceIds.length === 4 },
-    { id: "bd_password", label: "完成 BD 四位热度口令", done: puzzle.bdCount >= 3 },
-    { id: "recovery", label: "提交恢复申请", done: puzzle.evictionPassGenerated },
-    { id: "apply_pass", label: "使用清退 PASS", done: puzzle.backpackEvicted, itemId: "seatReleasePass" },
-    { id: "sit", label: "坐到 022", done: puzzle.playerSeated },
-    { id: "dialogue", label: "完成 022 对话", done: puzzle.nextQuestId === "chapter_three_book_hunt" }
+  const tasks: readonly TaskDefinition[] = [
+    {
+      id: "chapter_two_go_library",
+      label: "去图书馆",
+      hints: ["地图缩放仔细找"],
+      targetSurface: "rpg"
+    },
+    {
+      id: "chapter_two_confirm_seat",
+      label: "确认座位状态",
+      hints: [
+        "去 RPG 图书馆地图找 022。",
+        "检查 022 上的东西和旁边的纸条。"
+      ],
+      targetSurface: "rpg"
+    },
+    {
+      id: "chapter_two_check_rules",
+      label: "查清占座规则",
+      hints: [
+        "纸条提到了一个更吵的地方。",
+        "CC98 里有人讨论过 022。",
+        "用占座纸条搜索 CC98，再顺着帖子找旧规则。"
+      ],
+      targetSurface: "phone",
+      recommendedScene: "cc98"
+    },
+    {
+      id: "chapter_two_collect_materials",
+      label: `凑齐恢复材料（${proofCount}/3）`,
+      hints: [
+        "照片、座位夹缝和体艺都能帮上忙。",
+        "照片曝光了就把光调小（控制中心光条）",
+        "体艺 7,47,3"
+      ],
+      targetSurface: "phone",
+      recommendedScene: "phone_home"
+    },
+    {
+      id: "chapter_two_make_post_visible",
+      label: "让帖子被看见",
+      hints: ["3027，为什么自己想"],
+      targetSurface: "phone",
+      recommendedScene: "cc98"
+    },
+    {
+      id: "chapter_two_submit_recovery",
+      label: "提交恢复申请",
+      hints: ["在浙大钉->图书馆->pass申请"],
+      targetSurface: "phone",
+      recommendedScene: "zjuding"
+    },
+    {
+      id: "chapter_two_return_022",
+      label: "回到 022",
+      hints: ["字面意思。"],
+      targetSurface: "rpg"
+    }
   ];
-  const firstIncompleteId = sources.find((step) => !step.done)?.id ?? "dialogue";
-  const nextId = ["bd_briefing", "top_ten_rising"].includes(state.ui.libraryFinalsPhase)
-    && !puzzle.preBdBriefingSeen
-    ? "bd_briefing"
-    : firstIncompleteId;
-  const phone = (objective: string, scene: SceneId, hints = DEFAULT_HINTS): NextAction => ({ objective, recommendedScene: scene, targetSurface: "phone", hints });
-  const rpg = (objective: string, hints = DEFAULT_HINTS): NextAction => ({ objective, targetSurface: "rpg", hints });
-  const next: Record<string, NextAction> = {
-    entrance_record: rpg("读取基础图书馆入馆记录", ["闸机旁的小屏保存了两条时间记录。", "点击小屏查看入馆与到达时间。", "两条时间后续可用于计算到座耗时。"]),
-    seat_022: rpg("前往二层南区寻找 022", ["入馆记录已经给出座位区域。", "目标会话与一个具体座位相连。", "在阅览区找到 022 并检查占座书包。"]),
-    note: rpg("检查书包旁留下的信息"),
-    catalog: puzzle.investigationOpened
-      ? puzzle.catalogUnlocked
-        ? phone("在浙大钉馆藏检索核对书名", "zjuding", ["调查帖已经给出题名线索。", "图书馆终端已开放手机馆藏检索。", "进入浙大钉图书馆，打开馆藏检索。"])
-        : rpg("在图书馆终端解锁馆藏检索", ["调查帖提到了馆藏题名。", "馆内终端负责开放检索权限。", "回到图书馆的馆藏检索终端并互动。"])
-      : phone("用纸条查找公开记录", "cc98", ["占座纸条可以作为论坛搜索材料。", "公开记录会提到一条旧版离座规则。", "进入 CC98，将占座纸条拖到搜索框。"]),
-    rule: rpg("按索书号找到旧版规则"),
-    proof_nonperson: puzzle.itemReportGenerated
-      ? rpg("把识别报告交给物品身份盖章机")
-      : phone("生成物品识别报告", "photos"),
-    proof_receipt: rpg("检查 022 桌面夹缝"),
-    proof_presence: phone("核对本人到馆记录", "tiyi", [
-      "体艺补录单会列出三份已收集的来源记录。",
-      "到座耗时、公示编号、证明数量分别对应入馆记录、CC98 楼主编辑和旧版规则。",
-      "依次计算时间差、读取编号、数规则条目。"
-    ]),
-    cc98_upload: phone(`上传四项公示材料（${puzzle.cc98UploadedEvidenceIds.length}/4）`, "cc98", ["旧规则和三份证明都属于公示材料。", "每个上传槽只接受对应类型的纸质道具。", "进入 CC98 调查帖，将兼容道具拖到四个上传槽。"]),
-    bd_briefing: phone("确认 BD 帮顶与四位口令说明", "cc98", ["四项材料已经公开。", "系统会解释 bd 的含义和数字选择方法。", "继续当前剧情说明。"]),
-    bd_password: phone(`按证据顺序完成 BD 四位口令（${puzzle.bdSelectedPostIds.length}/4）`, "cc98", [
-      "bd 表示帮顶；每次对数字回复点击 bd，会选入口令一位。",
-      "按上方四项证据从上到下，依次处理规则、身份、座位和到馆记录。",
-      "对应操作是数规则条目、数身份通过项、取座位末位、取到座耗时。"
-    ]),
-    recovery: phone(`提交恢复材料（${puzzle.recoverySubmittedEvidenceIds.length}/3）`, "zjuding", ["进入十大后，图书馆会开放恢复申请。", "恢复申请只需要三份个人与座位证明。", "在浙大钉图书馆打开 022 恢复申请并提交材料。"]),
-    apply_pass: rpg("把离座清退 PASS 用于 022 书包"),
-    sit: rpg("坐到已经空出的 022"),
-    dialogue: rpg("与 022 完成对话")
-  };
-  const parallelEvidenceActive = state.ui.libraryFinalsPhase === "evidence_gathering"
-    && puzzle.investigationOpened
-    && evidenceReadyCount < 4;
-  const nextAction = parallelEvidenceActive
-    ? phone(`并行收集公示材料（${evidenceReadyCount}/4）`, "phone_home", [
-        "四条材料支线可以交叉完成，取得一份后即可先上传 CC98。",
-        "馆藏规则、照片识别、022 夹缝和体艺补录都可以独立推进。",
-        "体艺补录会显示三份来源摘要：计算时间差、读取公示编号、数旧规则条目。"
-      ])
-    : next[nextId];
-  return {
-    id: "chapter_two_library",
-    chapter: "chapter_two",
-    title: "恢复 022 座位",
-    completed: countDone(sources),
-    total: sources.length,
-    steps: buildSteps(sources),
-    ...nextAction
-  };
+
+  let currentIndex = 0;
+  if (state.ui.libraryFinalsPhase === "recovery_application") {
+    currentIndex = 5;
+  } else if (["backpack_removed", "seat_recovered"].includes(state.ui.libraryFinalsPhase)
+    || (state.ui.libraryFinalsPhase === "pass_ready" && puzzle.passBriefingSeen)) {
+    currentIndex = 6;
+  } else if (puzzle.preBdBriefingSeen) {
+    // 十大成功后的管理员剧情仍属于“让帖子被看见”，直到恢复申请真的打开。
+    currentIndex = 4;
+  } else if (puzzle.archivedRuleBriefingSeen) {
+    // 四项证据上传后的系统说明仍属于“凑齐恢复材料”，说明结束才进入下一关。
+    currentIndex = 3;
+  } else if (puzzle.occupancyNoteCollected) {
+    currentIndex = 2;
+  } else if (puzzle.entranceRecordRead) {
+    // 入馆演出是“去图书馆”的收尾；读取现场记录后才正式开始确认座位。
+    currentIndex = 1;
+  }
+  return buildQuest("chapter_two", "恢复 022 座位", tasks, currentIndex);
 }
 
 function chapterThreeQuest(state: GameState): QuestViewModel {
-  const sources: StepSource[] = [
-    { id: "book_hunt", label: "找到借走签到记录的书", done: state.bikeArcade.completed }
-  ];
-  return {
+  return buildQuest("chapter_three", "寻找借走记录的书", [{
     id: "chapter_three_book_hunt",
-    chapter: "chapter_three",
-    title: "寻找借走记录的书",
-    objective: state.bikeArcade.completed ? "第三章任务完成" : "打开求是潮，追上那本书",
-    completed: countDone(sources),
-    total: 1,
-    steps: buildSteps(sources),
+    label: state.bikeArcade.completed ? "第三章任务完成" : "打开求是潮，追上那本书",
     hints: ["新的游戏入口已出现在手机。", "目标距离与书上的编号有关。", "打开求是潮，完成骑行关卡。"],
     targetSurface: "phone",
     recommendedScene: "bike_arcade"
-  };
+  }], 0);
+}
+
+export function isQuestTaskBarVisible(state: GameState): boolean {
+  const chapter = selectFeatureAccess(state).chapter;
+  if (chapter !== "chapter_two") return true;
+  return ![
+    "friend_message_required",
+    "system_required"
+  ].includes(state.actOne.phase);
 }
 
 export function selectQuestViewModel(state: GameState): QuestViewModel {
   const access = selectFeatureAccess(state);
   if (access.chapter === "chapter_one") return chapterOneQuest(state);
   if (access.chapter === "chapter_three") return chapterThreeQuest(state);
-  if (state.actOne.phase !== "complete" && state.ui.libraryFinalsPhase === "idle") return movementQuest(state);
+  if ([
+    "friend_message_required",
+    "system_required",
+    "inventory_required",
+    "system_return_required",
+    "movement_required",
+    "reservation_briefing_required",
+    "reservation_required"
+  ].includes(state.actOne.phase)) {
+    return movementQuest(state);
+  }
   return libraryQuest(state);
 }
