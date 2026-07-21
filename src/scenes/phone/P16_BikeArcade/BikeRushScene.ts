@@ -42,6 +42,7 @@ export interface BikeArcadeBridge {
 const LANE_X = [88, 195, 302] as const;
 const BIKE_ARCADE_INVULNERABLE_MS = 900;
 const BIKE_ARCADE_INITIAL_SPAWN_DELAY_MS = 720;
+const BIKE_CANVAS_PIXEL_FONT = '"Fusion Pixel 12px Proportional SC", "Fusion Pixel", "PingFang SC", sans-serif';
 
 export class BikeRushScene extends Phaser.Scene {
   private bridge!: BikeArcadeBridge;
@@ -99,7 +100,7 @@ export class BikeRushScene extends Phaser.Scene {
         targets: this.player,
         alpha: 1,
         y: 552,
-        duration: 360,
+        duration: 320,
         ease: "Back.easeOut",
         onComplete: () => this.player?.setY(560)
       });
@@ -230,7 +231,7 @@ export class BikeRushScene extends Phaser.Scene {
     this.drawCampusLandmarks();
     this.add.text(195, 22, "求是大道", {
       color: "#f2e3a2",
-      fontFamily: "monospace",
+      fontFamily: BIKE_CANVAS_PIXEL_FONT,
       fontSize: "14px",
       backgroundColor: "#20272fd9",
       padding: { x: 8, y: 4 }
@@ -496,7 +497,7 @@ export class BikeRushScene extends Phaser.Scene {
         alpha: 0,
         scaleX: 0.35,
         scaleY: 0.35,
-        duration: 360,
+        duration: 320,
         ease: "Quad.easeOut",
         onComplete: () => shard.destroy()
       });

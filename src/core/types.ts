@@ -65,7 +65,9 @@ export interface ItemCatalogEntry {
 export type RpgSceneId = "campus_bootstrap" | "dorm_hub" | "library_interior";
 
 export type RpgCheckpointId =
+  | "campus_spawn"
   | "campus_library_gate"
+  | "dorm_spawn"
   | "library_entrance"
   | "library_seat_022"
   | "library_front_desk"

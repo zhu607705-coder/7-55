@@ -1,0 +1,207 @@
+/* ---------- P17 章节过渡 ---------- */
+
+.chapter-transition-screen {
+  animation: chapter-transition-in 720ms var(--ease-in-pixel) both;
+  background: #20272f;
+  color: #f7f3df;
+  height: 100%;
+  overflow: hidden;
+  padding-top: 40px;
+  position: relative;
+  width: 100%;
+}
+
+.chapter-transition-track {
+  animation: chapter-track-open 900ms steps(9, end) both;
+  background: #474e52;
+  border-left: 8px solid #f0d54e;
+  border-right: 8px solid #f0d54e;
+  bottom: 0;
+  left: 50%;
+  opacity: 0.42;
+  position: absolute;
+  top: 40px;
+  transform: translateX(-50%);
+  width: 260px;
+}
+
+.chapter-transition-track i {
+  animation: chapter-road-scroll 720ms linear infinite;
+  border-left: 5px dashed #f7f3df;
+  bottom: -70px;
+  position: absolute;
+  top: -70px;
+}
+
+.chapter-transition-track i:first-child { left: 84px; }
+.chapter-transition-track i:nth-child(2) { right: 84px; }
+.chapter-transition-track i:nth-child(3) { display: none; }
+
+.chapter-transition-track span {
+  animation: chapter-milepost-rise 1500ms steps(12, end) both;
+  border: 4px solid #f7f3df;
+  bottom: 48px;
+  color: #f7f3df;
+  font-family: monospace;
+  font-size: var(--fs-display);
+  left: 50%;
+  padding: 8px 13px;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.chapter-transition-screen > main {
+  animation: chapter-main-in 1100ms steps(10, end) both;
+  align-content: center;
+  display: grid;
+  gap: 14px;
+  height: calc(100% - 40px);
+  justify-items: center;
+  padding: 44px 34px 78px;
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+.chapter-transition-time {
+  border: 2px solid #8fc7d1;
+  color: #8fc7d1;
+  font-family: monospace;
+  font-size: var(--fs-body);
+  padding: 5px 9px;
+}
+
+.chapter-transition-screen main > p {
+  color: #f0d54e;
+  font-family: monospace;
+  font-size: var(--fs-caption);
+  margin: 0;
+}
+
+.chapter-transition-screen h1 {
+  animation: chapter-title-lock 1000ms steps(9, end) 260ms both;
+  color: #f0d54e;
+  font-size: 42px;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.chapter-transition-screen main > strong {
+  font-size: var(--fs-label);
+  font-weight: 700;
+}
+
+.chapter-transition-screen dl {
+  animation: chapter-stats-in 840ms steps(8, end) 480ms both;
+  background: rgba(32, 39, 47, 0.88);
+  border: 3px solid #e7e2d4;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 14px 0;
+  width: 100%;
+}
+
+.chapter-transition-screen dl > div {
+  padding: 10px 5px;
+}
+
+.chapter-transition-screen dl > div + div {
+  border-left: 2px solid #78838b;
+}
+
+.chapter-transition-screen dt {
+  color: #aab2b8;
+  font-size: var(--fs-caption);
+}
+
+.chapter-transition-screen dd {
+  color: #f7f3df;
+  font-family: monospace;
+  font-size: var(--fs-label);
+  margin: 4px 0 0;
+}
+
+.chapter-transition-screen button {
+  animation: chapter-button-in 640ms steps(6, end) 620ms both;
+  background: #f0d54e;
+  border: 3px solid #10161b;
+  box-shadow: 4px 4px 0 #10161b;
+  color: #20272f;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  min-height: 48px;
+  width: 190px;
+}
+
+.chapter-transition-screen button.secondary {
+  animation-delay: 720ms;
+  background: #e7e2d4;
+  box-shadow: none;
+  min-height: 42px;
+}
+
+.chapter-transition-screen button:focus-visible {
+  outline: 3px solid #8fc7d1;
+  outline-offset: 2px;
+}
+
+@keyframes chapter-transition-in {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  28% { transform: translateX(5px); }
+  36% { transform: translateX(-5px); }
+  44%, 100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes chapter-track-open {
+  0% { opacity: 0; transform: translateX(-50%) scaleX(0.18); }
+  70% { opacity: 0.42; transform: translateX(-50%) scaleX(1.04); }
+  100% { opacity: 0.42; transform: translateX(-50%) scaleX(1); }
+}
+
+@keyframes chapter-road-scroll {
+  from { transform: translateY(-70px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes chapter-milepost-rise {
+  0% { opacity: 0; transform: translate(-50%, 150px) scale(0.7); }
+  45%, 82% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0.65; transform: translate(-50%, -18px) scale(0.96); }
+}
+
+@keyframes chapter-main-in {
+  0%, 18% { opacity: 0; transform: translateY(34px); }
+  58% { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes chapter-title-lock {
+  0% { opacity: 0; transform: scale(2.4); }
+  46% { opacity: 1; transform: scale(0.86); }
+  64% { transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes chapter-stats-in {
+  0% { opacity: 0; transform: translateY(22px) scaleX(0.72); }
+  100% { opacity: 1; transform: translateY(0) scaleX(1); }
+}
+
+@keyframes chapter-button-in {
+  0% { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-transition-screen,
+  .chapter-transition-track,
+  .chapter-transition-track i,
+  .chapter-transition-track span,
+  .chapter-transition-screen > main,
+  .chapter-transition-screen h1,
+  .chapter-transition-screen dl,
+  .chapter-transition-screen button {
+    animation: none;
+  }
+}

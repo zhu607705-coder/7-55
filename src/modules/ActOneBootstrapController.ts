@@ -1,5 +1,5 @@
 import type { EventBus } from "../core/EventBus";
-import type { ActOneBootstrapState, GameStore, RpgSceneId } from "../core/types";
+import type { ActOneBootstrapState, GameStore, RpgCheckpointId, RpgSceneId } from "../core/types";
 import content from "../data/act-one-bootstrap.content.json";
 
 export type GamepadPurchaseResult = "purchased" | "already_owned" | "insufficient_balance" | "inactive";
@@ -33,10 +33,18 @@ export class ActOneBootstrapController {
     if (scene === "dorm_hub" && !state.actOne.dormHubUnlocked) {
       return false;
     }
+    const entryCheckpoint: RpgCheckpointId = state.rpgScene === scene
+      ? state.rpgCheckpoint
+      : scene === "dorm_hub"
+        ? "dorm_spawn"
+        : scene === "library_interior"
+          ? "library_entrance"
+          : "campus_spawn";
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "rpg",
       rpgScene: scene,
+      rpgCheckpoint: entryCheckpoint,
       actOne: scene === "dorm_hub"
         ? { ...current.actOne, dormHubUnlocked: true }
         : current.actOne

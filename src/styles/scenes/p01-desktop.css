@@ -1,0 +1,75 @@
+/* ---------- P01 起床 ---------- */
+
+.wake-scene {
+  background:
+    linear-gradient(rgba(250, 231, 185, 0.18) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(250, 231, 185, 0.14) 2px, transparent 2px),
+    linear-gradient(135deg, #fff6df 0%, #fff0cc 52%, #fff7e2 100%);
+  background-size: 14px 14px, 14px 14px, auto;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.wake-status {
+  display: flex;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+
+.wake-status strong {
+  font-size: var(--fs-display);
+}
+
+.wake-center {
+  align-content: center;
+  display: grid;
+  gap: 26px;
+  height: 78%;
+  justify-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.sleep-choice {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+}
+
+.wake-flash {
+  animation: wake-flash 0.42s var(--ease-press) infinite;
+  color: var(--red);
+  font-size: clamp(2.8rem, 15vw, 4.6rem);
+  line-height: 1.15;
+  margin: 0;
+  text-shadow: 4px 4px 0 var(--ink);
+  white-space: nowrap;
+}
+
+.wake-flash-marks {
+  display: block;
+  letter-spacing: 8px;
+  transform: translateX(10px);
+}
+
+@keyframes wake-flash {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.24; transform: scale(1.06); }
+}
+
+.bottom-narration {
+  background: rgba(255, 247, 226, 0.96);
+  border-top: 2px solid var(--ink);
+  bottom: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  left: 0;
+  line-height: 1.5;
+  margin: 0;
+  padding: 16px 18px;
+  position: absolute;
+  right: 0;
+}

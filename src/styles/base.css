@@ -29,10 +29,27 @@
   --app-viewport-height: 100vh;
   --font-pixel: "Fusion Pixel 12px Proportional SC", "Fusion Pixel", "Zpix", "PingFang SC",
     "Microsoft YaHei", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  /* 动效与排版统一 token，规范见 docs/ui-motion-typography-standard.md */
+  --dur-press: 90ms;
+  --dur-fast: 120ms;
+  --dur-med: 180ms;
+  --dur-slow: 240ms;
+  --dur-scene: 320ms;
+  --ease-press: steps(2, end);
+  --ease-pixel: steps(3, end);
+  --ease-in-pixel: steps(4, end);
+  --ease-out-pixel: steps(2, end);
+  --fs-micro: 9px;
+  --fs-caption: 11px;
+  --fs-body: 13px;
+  --fs-label: 14px;
+  --fs-title: 18px;
+  --fs-display: 24px;
 
   color: var(--ink);
   background: #141310;
   font-family: var(--font-pixel);
+  font-size: var(--fs-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -66,6 +83,7 @@ button {
   background: transparent;
   cursor: pointer;
   font: inherit;
+  font-size: var(--fs-label);
   padding: 0;
 }
 
@@ -196,7 +214,10 @@ img {
 
 .chapter-intro-overlay small {
   color: #9fd3ff;
-  font: 900 12px/1 monospace;
+  font-family: monospace;
+  font-size: var(--fs-caption);
+  font-weight: 900;
+  line-height: 1;
 }
 
 .chapter-intro-overlay h1 {
@@ -206,7 +227,7 @@ img {
 }
 
 .chapter-intro-overlay p {
-  font-size: 20px;
+  font-size: var(--fs-title);
   margin: 0 0 10px;
 }
 
@@ -214,7 +235,7 @@ img {
   background: #f0d54e;
   border: 4px solid #101820;
   color: #101820;
-  font-size: 16px;
+  font-size: var(--fs-label);
   font-weight: 900;
   min-height: 52px;
   padding: 10px 28px;
@@ -256,13 +277,13 @@ img {
 
 .library-story-dialogue-header {
   color: #a9d8ec;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   margin-bottom: 9px;
 }
 
 .library-story-dialogue-header span {
   color: #e4c85d;
-  font-size: 11px;
+  font-size: var(--fs-caption);
 }
 
 .library-story-dialogue-box {
@@ -286,7 +307,7 @@ img {
 .library-story-dialogue-box strong {
   color: #efcf61;
   display: block;
-  font-size: 13px;
+  font-size: var(--fs-body);
   margin-bottom: 8px;
 }
 
@@ -299,14 +320,14 @@ img {
 }
 
 .library-story-dialogue-box p {
-  font-size: clamp(15px, 2vw, 20px);
+  font-size: var(--fs-body);
   line-height: 1.65;
   margin: 0;
 }
 
 .library-story-dialogue-actions {
   color: #9eb4bc;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   margin-top: 12px;
 }
 
@@ -370,11 +391,11 @@ img {
 }
 
 .phone-frame.shake {
-  animation: frame-shake 0.12s steps(2, end) 5;
+  animation: frame-shake var(--dur-fast) var(--ease-press) 5;
 }
 
 .phone-frame.shake-strong {
-  animation: frame-shake 0.09s steps(2, end) 8;
+  animation: frame-shake var(--dur-press) var(--ease-press) 8;
 }
 
 @keyframes frame-shake {
@@ -396,7 +417,7 @@ img {
   inset: 0;
   pointer-events: none;
   position: absolute;
-  transition: opacity 0.25s steps(5, end);
+  transition: opacity var(--dur-slow) var(--ease-in-pixel);
   z-index: 55;
 }
 
@@ -420,7 +441,7 @@ img {
   background: rgba(255, 246, 223, 0.82);
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--shadow-warm);
-  font-size: 15px;
+  font-size: var(--fs-label);
   font-weight: 700;
   letter-spacing: 1px;
   padding: 2px 8px;
@@ -433,7 +454,7 @@ img {
   box-shadow: 2px 2px 0 var(--shadow-warm);
   display: flex;
   gap: 7px;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   padding: 3px 8px;
   pointer-events: auto;
@@ -444,13 +465,13 @@ img {
 }
 
 .sb-right strong {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   letter-spacing: 0.5px;
 }
 
 .sb-5g {
   border: 2px solid var(--ink);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-style: normal;
   font-weight: 900;
   padding: 0 2px;
@@ -543,7 +564,7 @@ img {
 }
 
 .px-btn.big {
-  font-size: 18px;
+  font-size: var(--fs-title);
   min-width: 170px;
   padding: 14px 20px;
 }
@@ -575,7 +596,7 @@ img {
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--shadow-warm);
   display: inline-block;
-  font-size: 13px;
+  font-size: var(--fs-body);
   font-weight: 700;
   padding: 5px 10px;
 }
@@ -608,11 +629,11 @@ img {
 }
 
 .px-toast {
-  animation: toast-in 0.22s steps(4, end) both;
+  animation: toast-in var(--dur-slow) var(--ease-in-pixel) both;
   background: rgba(255, 247, 226, 0.97);
   border: 2px solid var(--ink);
   box-shadow: 3px 3px 0 var(--shadow-warm);
-  font-size: 14px;
+  font-size: var(--fs-label);
   font-weight: 700;
   line-height: 1.45;
   margin: 0;
@@ -657,7 +678,7 @@ img {
 }
 
 .scene-placeholder h1 {
-  font-size: clamp(1.6rem, 7vw, 2.6rem);
+  font-size: var(--fs-display);
   line-height: 1.05;
   margin: 0;
 }
@@ -677,7 +698,7 @@ img {
 
 .scene-kicker {
   color: var(--green);
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
   text-transform: uppercase;
 }
 

@@ -389,6 +389,7 @@ export class LibraryFinalsController {
       this.getPhase() !== "evidence_gathering"
       || !puzzle.investigationOpened
       || !puzzle.entranceRecordRead
+      || !puzzle.archivedRuleRead
       || puzzle.presenceProofCollected
     ) {
       return false;

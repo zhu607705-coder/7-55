@@ -15,7 +15,6 @@ export interface DormCollisionRect {
 // Furniture keeps its visible source-pixel silhouette while the blue aisle stays open.
 export const DORM_STATIC_COLLISION_RECTS: readonly DormCollisionRect[] = [
   { id: "north_wall", left: 20, top: 10, right: 920, bottom: 403 },
-  { id: "north_player_clearance", left: 20, top: 403, right: 920, bottom: 469 },
   { id: "west_wall", left: 18, top: 42, right: 66, bottom: 1518 },
   { id: "east_wall", left: 878, top: 42, right: 923, bottom: 1518 },
   { id: "south_wall_west", left: 20, top: 1484, right: 399, bottom: 1595 },

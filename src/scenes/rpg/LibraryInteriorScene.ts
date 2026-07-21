@@ -154,7 +154,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
     ensureRpgPlayerTextures(this);
 
     const storedCheckpoint = this.bridge.getState().rpgCheckpoint;
-    const checkpoint = storedCheckpoint === "campus_library_gate" ? "library_entrance" : storedCheckpoint;
+    const checkpoint = storedCheckpoint === "campus_spawn"
+      || storedCheckpoint === "campus_library_gate"
+      || storedCheckpoint === "dorm_spawn"
+      ? "library_entrance"
+      : storedCheckpoint;
     const spawn = LIBRARY_CHECKPOINT_SPAWNS[checkpoint];
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
     this.player.setCollideWorldBounds(true).setDepth(spawn.y + 120);

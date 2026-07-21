@@ -21,7 +21,9 @@ const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, SAVE_VERSION]);
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>(["campus_bootstrap", "dorm_hub", "library_interior"]);
 const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
+  "campus_spawn",
   "campus_library_gate",
+  "dorm_spawn",
   "library_entrance",
   "library_seat_022",
   "library_front_desk",

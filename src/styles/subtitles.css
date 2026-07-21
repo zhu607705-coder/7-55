@@ -41,8 +41,8 @@
 .game-subtitle-speaker {
   color: var(--subtitle-accent);
   display: block;
-  font-family: monospace;
-  font-size: 10px;
+  font-family: var(--font-pixel);
+  font-size: var(--fs-caption);
   font-weight: 900;
   letter-spacing: 0.08em;
   line-height: 1.2;
@@ -50,7 +50,7 @@
 }
 
 .game-subtitle-frame.is-line-entering {
-  animation: game-subtitle-enter 280ms steps(5, end) both;
+  animation: game-subtitle-enter var(--dur-slow) var(--ease-in-pixel) both;
 }
 
 .game-subtitle-frame.is-timed {
@@ -63,8 +63,7 @@
 }
 
 @keyframes game-subtitle-enter {
-  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(14px); }
-  60% { clip-path: inset(0); opacity: 1; transform: translateY(-2px); }
+  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(16px); }
   100% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
 }
 
@@ -104,7 +103,7 @@
   box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.56);
   color: var(--subtitle-ink);
   display: grid;
-  font-size: 14px;
+  font-size: var(--fs-label);
   font-weight: 700;
   gap: 4px;
   justify-items: start;
@@ -145,8 +144,8 @@
 }
 
 .rpg-subtitle-layer .game-subtitle-frame > span {
-  font-family: monospace;
-  font-size: 14px;
+  font-family: var(--font-pixel);
+  font-size: var(--fs-label);
   font-weight: 700;
   line-height: 1.45;
   text-align: left;
@@ -190,12 +189,12 @@
 
 .library-story-dialogue.game-subtitle-frame .game-subtitle-speaker {
   color: var(--subtitle-accent);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   margin-bottom: 7px;
 }
 
 .library-story-dialogue-box p {
-  font-size: clamp(15px, 2vw, 19px);
+  font-size: var(--fs-label);
   line-height: 1.6;
 }
 
@@ -233,7 +232,7 @@
 
 .zju-system-dialogue.game-subtitle-frame p {
   animation: none;
-  font-size: 16px;
+  font-size: var(--fs-label);
   line-height: 1.55;
 }
 
@@ -267,12 +266,12 @@
 
 .ending-game-subtitle.game-subtitle-frame {
   align-items: start;
-  font-size: 14px;
+  font-size: var(--fs-label);
 }
 
 .ending-dialogue.game-subtitle-frame,
 .ending-dialogue.game-subtitle-frame.is-player {
-  font-size: 15px;
+  font-size: var(--fs-label);
   left: 18px;
 }
 
@@ -316,7 +315,7 @@
   }
 
   .rpg-subtitle-layer .game-subtitle-frame > span {
-    font-size: 12px;
+    font-size: var(--fs-caption);
   }
 }
 

@@ -1,0 +1,812 @@
+/* ---------- P13 手机主界面（像素校园壁纸） ---------- */
+
+.phone {
+  background:
+    radial-gradient(circle at 18% 5%, rgba(255, 255, 255, 0.95), transparent 34%),
+    linear-gradient(135deg, #fff6df 0%, #fff0cc 50%, #fff6de 100%);
+  height: 100%;
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.phone::before {
+  background-image:
+    linear-gradient(rgba(250, 231, 185, 0.17) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(250, 231, 185, 0.13) 1px, transparent 1px);
+  background-size: 12px 12px;
+  content: "";
+  inset: 0;
+  mix-blend-mode: multiply;
+  opacity: 0.28;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.pixelated {
+  image-rendering: pixelated;
+}
+
+.phone .background {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.phone .cloud {
+  background: var(--sky);
+  opacity: 0.72;
+  position: absolute;
+}
+
+.phone .cloud.c1 {
+  clip-path: polygon(0 45%, 12% 45%, 12% 28%, 26% 28%, 26% 12%, 43% 12%, 43% 28%, 60% 28%, 60% 45%, 74% 45%, 74% 60%, 100% 60%, 100% 100%, 0 100%);
+  height: 58px;
+  left: 238px;
+  top: 210px;
+  width: 170px;
+}
+
+.phone .cloud.c2 {
+  clip-path: polygon(0 38%, 15% 38%, 15% 20%, 36% 20%, 36% 0, 64% 0, 64% 25%, 85% 25%, 85% 42%, 100% 42%, 100% 100%, 0 100%);
+  height: 80px;
+  right: -6px;
+  top: 116px;
+  width: 70px;
+}
+
+.phone .cloud.c3 {
+  height: 48px;
+  left: 285px;
+  opacity: 0.35;
+  top: 450px;
+  width: 120px;
+}
+
+.phone .small-cloud {
+  background: #fff5cf;
+  clip-path: polygon(0 64%, 14% 64%, 14% 43%, 28% 43%, 28% 24%, 52% 24%, 52% 39%, 76% 39%, 76% 63%, 100% 63%, 100% 100%, 0 100%);
+  height: 28px;
+  left: 320px;
+  opacity: 0.9;
+  position: absolute;
+  top: 252px;
+  width: 72px;
+}
+
+.phone .campus-base {
+  background: linear-gradient(to bottom, rgba(237, 218, 178, 0.65), rgba(229, 208, 168, 0.35));
+  bottom: 142px;
+  clip-path: polygon(0 38%, 8% 34%, 8% 25%, 15% 25%, 15% 16%, 100% 16%, 100% 100%, 0 100%);
+  height: 210px;
+  left: 205px;
+  opacity: 0.78;
+  position: absolute;
+  right: -20px;
+}
+
+.phone .campus-base::after {
+  background: repeating-linear-gradient(90deg, transparent 0 27px, rgba(205, 176, 128, 0.45) 27px 33px, transparent 33px 58px);
+  content: "";
+  inset: 75px 14px 0 10px;
+  opacity: 0.55;
+  position: absolute;
+}
+
+.phone .lake {
+  background: linear-gradient(to bottom, rgba(168, 216, 204, 0.45), rgba(238, 226, 189, 0.35));
+  bottom: 90px;
+  height: 100px;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.phone .lake::before {
+  background: rgba(105, 139, 126, 0.24);
+  box-shadow: 0 12px 0 rgba(105, 139, 126, 0.18), 0 28px 0 rgba(105, 139, 126, 0.1);
+  content: "";
+  height: 1px;
+  inset: 18px 0 auto;
+  position: absolute;
+}
+
+.phone .portal {
+  background: #ead1a5;
+  border: 2px solid #b99c71;
+  box-shadow: -8px 8px 0 rgba(183, 146, 93, 0.36);
+  height: 78px;
+  position: absolute;
+  right: 58px;
+  top: 400px;
+  width: 48px;
+}
+
+.phone .portal::before {
+  background: #285b6f;
+  border: 2px solid #1c4555;
+  box-shadow: inset 6px 0 0 #3d7891;
+  content: "";
+  height: 55px;
+  left: 8px;
+  position: absolute;
+  top: 13px;
+  width: 30px;
+}
+
+.phone .steps {
+  height: 120px;
+  position: absolute;
+  right: 85px;
+  top: 480px;
+  transform: skewY(-26deg);
+  width: 95px;
+}
+
+.phone .steps span {
+  background: #c3a078;
+  border-top: 2px solid #f0d3a6;
+  box-shadow: 9px 10px 0 rgba(116, 86, 54, 0.16);
+  display: block;
+  height: 13px;
+  margin-top: 5px;
+  width: 100%;
+}
+
+.phone .plinth {
+  background: #d7bb8d;
+  border-top: 3px solid #f2d8ac;
+  height: 28px;
+  position: absolute;
+  right: 62px;
+  top: 596px;
+  width: 132px;
+}
+
+.phone .trees {
+  bottom: 252px;
+  height: 184px;
+  opacity: 0.85;
+  position: absolute;
+  right: -16px;
+  width: 106px;
+}
+
+.phone .leaf {
+  background: #86b870;
+  clip-path: polygon(24% 0, 72% 0, 72% 20%, 96% 20%, 96% 68%, 74% 68%, 74% 96%, 20% 96%, 20% 72%, 0 72%, 0 24%, 24% 24%);
+  height: 54px;
+  position: absolute;
+  width: 54px;
+}
+
+.phone .leaf.l1 { left: 42px; top: 0; }
+.phone .leaf.l2 { left: 12px; top: 38px; }
+.phone .leaf.l3 { left: 46px; top: 78px; }
+.phone .leaf.l4 { left: 3px; top: 96px; }
+
+.phone .trunk {
+  background: #99744d;
+  bottom: 0;
+  height: 100px;
+  left: 51px;
+  position: absolute;
+  width: 14px;
+}
+
+/* 钟楼（可交互：钥匙孔） */
+
+.tower.tower-button {
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 0 rgba(161, 128, 83, 0.18));
+  height: 330px;
+  padding: 0;
+  position: absolute;
+  right: 70px;
+  top: 116px;
+  width: 66px;
+  z-index: 2;
+}
+
+.tower-top {
+  background: #edd9b7;
+  border: 2px solid #d3b98d;
+  display: block;
+  height: 62px;
+  left: 10px;
+  position: absolute;
+  top: 0;
+  transform: skewY(-2deg);
+  width: 48px;
+}
+
+.tower-top::before {
+  background: #ead2a7;
+  border: 2px solid #d3b98d;
+  content: "";
+  height: 11px;
+  left: -2px;
+  position: absolute;
+  top: -9px;
+  transform: skewX(-8deg);
+  width: 52px;
+}
+
+.tower-top .slot {
+  background: #75bdd4;
+  border: 2px solid #d3b98d;
+  height: 28px;
+  position: absolute;
+  top: 23px;
+  width: 7px;
+}
+
+.tower-top .slot:nth-child(1) { left: 10px; }
+.tower-top .slot:nth-child(2) { left: 28px; }
+
+.tower-body {
+  background: linear-gradient(90deg, #f0dcb8 0 67%, #e5c89a 68%);
+  border-left: 2px solid #d3b98d;
+  border-right: 2px solid #d3b98d;
+  display: block;
+  height: 268px;
+  left: 15px;
+  position: absolute;
+  top: 60px;
+  width: 44px;
+}
+
+.tower-body::before {
+  background: repeating-linear-gradient(to bottom, #77c4db 0 15px, #d1ba8e 15px 21px);
+  border-left: 2px solid #d1ba8e;
+  border-right: 2px solid #d1ba8e;
+  bottom: 12px;
+  content: "";
+  left: 13px;
+  position: absolute;
+  top: 64px;
+  width: 11px;
+}
+
+.tower-body .clock {
+  background: #f2dfbd;
+  border: 2px dashed #bda37a;
+  border-radius: 50%;
+  height: 29px;
+  left: 8px;
+  position: absolute;
+  top: 34px;
+  width: 29px;
+}
+
+.tower-body .clock::before {
+  background: #bda37a;
+  content: "";
+  height: 9px;
+  left: 13px;
+  position: absolute;
+  top: 5px;
+  width: 2px;
+}
+
+.tower-body .clock::after {
+  background: #bda37a;
+  content: "";
+  height: 2px;
+  left: 13px;
+  position: absolute;
+  top: 14px;
+  transform: rotate(42deg);
+  transform-origin: left;
+  width: 8px;
+}
+
+@keyframes keyhole-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* 塔楼锁孔：深色圆孔 + 竖槽 */
+.tower-keyhole {
+  background: #241d12;
+  border: 2px solid #120e08;
+  border-radius: 50%;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.6);
+  display: block;
+  height: 16px;
+  left: 14px;
+  position: absolute;
+  top: 40px;
+  width: 16px;
+}
+
+.tower-keyhole::after {
+  background: #120e08;
+  content: "";
+  height: 12px;
+  left: 5px;
+  position: absolute;
+  top: 12px;
+  width: 4px;
+}
+
+.tower-drop-zone {
+  display: block;
+  height: 62px;
+  left: -9px;
+  position: absolute;
+  top: 17px;
+  width: 62px;
+  z-index: 3;
+}
+
+.tower-key {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  height: 8px;
+  left: 39px;
+  position: absolute;
+  top: 104px;
+  transform-origin: left center;
+  transition: transform 0.8s var(--ease-in-pixel);
+  width: 30px;
+}
+
+.tower-key::before {
+  background: var(--gray);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  content: "";
+  height: 14px;
+  position: absolute;
+  right: -8px;
+  top: -5px;
+  width: 14px;
+}
+
+.tower-key.is-rotating {
+  transform: rotate(90deg);
+}
+
+/* 盆栽摆件入口 */
+
+.bonsai-pot {
+  bottom: 238px;
+  cursor: pointer;
+  height: 58px;
+  left: 30px;
+  position: absolute;
+  width: 50px;
+  z-index: 10;
+}
+
+.bonsai-pot:hover {
+  transform: translateY(-2px);
+}
+
+.pot-plant {
+  background: #6fae59;
+  clip-path: polygon(45% 0, 60% 12%, 55% 30%, 85% 22%, 92% 45%, 65% 48%, 60% 60%, 40% 60%, 34% 46%, 8% 50%, 14% 26%, 42% 32%);
+  display: block;
+  height: 30px;
+  left: 2px;
+  position: absolute;
+  top: 0;
+  width: 40px;
+}
+
+.pot-body {
+  background: #b46a3c;
+  border: 2px solid #7c4526;
+  clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+  display: block;
+  height: 24px;
+  left: 6px;
+  position: absolute;
+  top: 27px;
+  width: 32px;
+}
+
+/* 天气组件 */
+
+.phone .weather-card {
+  backdrop-filter: blur(2px);
+  background: rgba(255, 248, 226, 0.75);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow-warm);
+  height: 182px;
+  left: 15px;
+  padding: 18px 20px 14px;
+  position: absolute;
+  top: 56px;
+  width: 212px;
+  z-index: 5;
+}
+
+.phone .weather-top {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 84px 1fr;
+}
+
+.phone .rain-icon {
+  height: 72px;
+  position: relative;
+  width: 74px;
+}
+
+.phone .rain-icon .cloud-pixel {
+  background: #bfd1db;
+  clip-path: polygon(0 53%, 13% 53%, 13% 35%, 27% 35%, 27% 17%, 40% 17%, 40% 2%, 63% 2%, 63% 16%, 78% 16%, 78% 34%, 92% 34%, 92% 53%, 100% 53%, 100% 77%, 0 77%);
+  height: 36px;
+  left: 7px;
+  position: absolute;
+  top: 8px;
+  width: 70px;
+}
+
+.phone .drop {
+  background: #6aa8df;
+  height: 12px;
+  position: absolute;
+  top: 55px;
+  transform: skewX(-12deg);
+  width: 6px;
+}
+
+.phone .drop.d1 { left: 24px; }
+.phone .drop.d2 { left: 48px; top: 52px; }
+.phone .drop.d3 { left: 62px; top: 61px; }
+
+.phone .drop.drop-live {
+  animation: drop-pulse 0.9s var(--ease-press) infinite;
+  background: #7db6ec;
+  cursor: pointer;
+  height: 16px;
+  left: 34px;
+  top: 50px;
+  width: 9px;
+  z-index: 2;
+}
+
+@keyframes drop-pulse {
+  0%, 100% { transform: skewX(-12deg) translateY(0); }
+  50% { transform: skewX(-12deg) translateY(4px); }
+}
+
+.phone .temp-title .cond {
+  font-size: var(--fs-title);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.phone .temp {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 0.95;
+}
+
+.phone .temp small {
+  font-size: var(--fs-display);
+}
+
+.phone .weather-range {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  margin-top: 12px;
+  white-space: nowrap;
+}
+
+.phone .divider {
+  background: var(--line);
+  height: 2px;
+  margin: 12px 0 10px;
+}
+
+.phone .weather-meta {
+  color: var(--red);
+  display: flex;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  justify-content: space-between;
+}
+
+/* 应用格 */
+
+.phone .apps {
+  column-gap: 16px;
+  display: grid;
+  grid-auto-rows: 84px;
+  grid-template-columns: repeat(4, 56px);
+  left: 20px;
+  position: absolute;
+  row-gap: 12px;
+  top: 292px;
+  width: 268px;
+  z-index: 8;
+}
+
+.phone .app {
+  align-content: start;
+  display: grid;
+  grid-template-rows: 54px 18px;
+  justify-items: center;
+  row-gap: 6px;
+  text-align: center;
+}
+
+.phone .app:active .app-icon {
+  transform: translateY(2px);
+}
+
+.phone .app:focus-visible .app-icon {
+  outline: 3px solid rgba(80, 126, 219, 0.55);
+  outline-offset: 3px;
+}
+
+.phone .app.is-chapter-open .app-icon {
+  animation: chapter-service-open 0.72s steps(4, end) 1;
+}
+
+@keyframes chapter-service-open {
+  0%, 100% { box-shadow: 0 3px 0 var(--shadow-warm), inset -3px -3px 0 rgba(0, 0, 0, 0.14); }
+  35% { box-shadow: 0 3px 0 var(--shadow-warm), 0 0 0 5px #fff, 0 0 0 8px #c51f32; }
+  70% { box-shadow: 0 3px 0 var(--shadow-warm), 0 0 0 3px #f0d54e; }
+}
+
+.phone .app-icon {
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 var(--shadow-warm), inset -3px -3px 0 rgba(0, 0, 0, 0.14);
+  display: grid;
+  height: 54px;
+  margin: 0 auto;
+  overflow: visible;
+  place-items: center;
+  position: relative;
+  width: 54px;
+}
+
+.phone .app span.label {
+  display: block;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  line-height: 18px;
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.phone .b-blue { background: var(--blue); }
+.phone .b-green { background: var(--green); }
+.phone .b-orange { background: var(--orange); }
+.phone .b-gray { background: var(--gray); }
+.phone .b-purple { background: var(--purple); }
+.phone .b-light { background: #ece9df; }
+
+.phone .cc98-text {
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.phone .app-locked {
+  min-height: 84px;
+  pointer-events: none;
+  position: relative;
+  user-select: none;
+}
+
+.phone .app-locked .app-icon {
+  filter: grayscale(0.62);
+  opacity: 0.58;
+}
+
+.phone .app-locked .cc98-text,
+.phone .app-locked .game-app-icon {
+  color: #d6d9dd;
+}
+
+.phone .app-locked .game-app-icon i {
+  border-color: #d6d9dd;
+}
+
+.phone .app-locked::after {
+  border: 1px solid rgba(31, 37, 44, 0.34);
+  content: "";
+  display: flex;
+  height: 62px;
+  left: -4px;
+  opacity: 0.55;
+  pointer-events: none;
+  position: absolute;
+  top: -4px;
+  width: 62px;
+}
+
+.phone .wechat-icon {
+  height: 34px;
+  position: relative;
+  width: 42px;
+}
+
+.phone .bubble {
+  background: #fff;
+  border-radius: 12px;
+  position: absolute;
+}
+
+.phone .bubble.one { height: 21px; left: 0; top: 4px; width: 29px; }
+.phone .bubble.two { height: 18px; opacity: 0.95; right: 0; top: 12px; width: 24px; }
+
+.phone .eye {
+  background: var(--green);
+  height: 4px;
+  position: absolute;
+  top: 12px;
+  width: 4px;
+}
+
+.phone .eye.e1 { left: 8px; }
+.phone .eye.e2 { left: 18px; }
+.phone .eye.e3 { right: 12px; top: 19px; }
+.phone .eye.e4 { right: 5px; top: 19px; }
+
+.phone .card-icon {
+  background: #f7fbff;
+  border: 3px solid #fff;
+  height: 26px;
+  position: relative;
+  width: 35px;
+}
+
+.phone .card-icon::before {
+  background: #d9c083;
+  content: "";
+  height: 5px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 4px;
+}
+
+.phone .card-icon::after {
+  background: #ec9d3f;
+  bottom: 4px;
+  content: "";
+  height: 6px;
+  left: 5px;
+  position: absolute;
+  width: 8px;
+}
+
+.phone .runner {
+  height: 40px;
+  position: relative;
+  width: 40px;
+}
+
+.phone .runner::before {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 8px 2px 0 -2px #fff;
+  content: "";
+  height: 8px;
+  position: absolute;
+  right: 7px;
+  top: 2px;
+  width: 8px;
+}
+
+.phone .runner .body { background: #fff; height: 20px; left: 16px; position: absolute; top: 12px; transform: skewX(-16deg); width: 10px; }
+.phone .runner .arm1 { background: #fff; height: 6px; left: 24px; position: absolute; top: 15px; transform: rotate(-33deg); width: 15px; }
+.phone .runner .arm2 { background: #fff; height: 6px; left: 10px; position: absolute; top: 19px; transform: rotate(37deg); width: 13px; }
+.phone .runner .leg1 { background: #fff; height: 6px; left: 12px; position: absolute; top: 29px; transform: rotate(-45deg); width: 20px; }
+.phone .runner .leg2 { background: #fff; height: 6px; left: 22px; position: absolute; top: 30px; transform: rotate(33deg); width: 18px; }
+
+.phone .control {
+  height: 31px;
+  position: relative;
+  width: 34px;
+}
+
+.phone .control::before,
+.phone .control::after {
+  border: 3px solid #fff;
+  content: "";
+  height: 22px;
+  position: absolute;
+  width: 20px;
+}
+
+.phone .control::before { left: 2px; top: 2px; }
+.phone .control::after { bottom: 1px; right: 2px; }
+
+.phone .zjuding-img {
+  height: 46px;
+  object-fit: contain;
+  width: 46px;
+}
+
+.phone .photo-flower {
+  background:
+    radial-gradient(circle at 50% 50%, #f5c542 0 6px, transparent 7px),
+    radial-gradient(circle at 30% 34%, #e88a9f 0 8px, transparent 9px),
+    radial-gradient(circle at 70% 34%, #7fb0e8 0 8px, transparent 9px),
+    radial-gradient(circle at 30% 68%, #8fce7c 0 8px, transparent 9px),
+    radial-gradient(circle at 70% 68%, #e8a05f 0 8px, transparent 9px);
+  display: block;
+  height: 38px;
+  width: 38px;
+}
+
+.phone .game-app-icon {
+  background: #20272f;
+  color: #f0d54e;
+  overflow: hidden;
+}
+
+.phone .bike-game-app .game-app-icon {
+  overflow: visible;
+}
+
+.phone .game-app-badge {
+  align-items: center;
+  background: #c95349;
+  border: 2px solid #20272f;
+  color: #fff;
+  display: flex;
+  font-family: monospace;
+  font-size: var(--fs-micro);
+  height: 18px;
+  justify-content: center;
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  width: 18px;
+  z-index: 4;
+}
+
+.phone .bike-game-app.is-complete .game-app-badge {
+  background: #4e8f61;
+}
+
+.phone .bike-game-app.is-unlock-pulse .app-icon {
+  animation: bike-app-unlock var(--dur-scene) var(--ease-pixel) 1;
+}
+
+.phone .bike-arcade-task-note {
+  border-color: #b48d24;
+}
+
+.phone .bike-arcade-task-note .mini.game-app-icon {
+  align-items: center;
+  display: flex;
+  font-family: monospace;
+  font-size: var(--fs-micro);
+  justify-content: center;
+}
+
+@keyframes bike-app-unlock {
+  0%, 100% { box-shadow: 0 3px 0 var(--shadow-warm), 0 0 0 0 #f0d54e; }
+  50% { box-shadow: 0 3px 0 var(--shadow-warm), 0 0 0 5px #f0d54e; }
+}
+
+.phone .game-app-icon span {
+  font-size: var(--fs-body);
+  font-weight: 900;
+  position: relative;
+  z-index: 2;
+}
+
+.phone .game-app-icon i {
+  border: 2px solid #f0d54e;
+  bottom: 5px;
+  height: 13px;
+  left: 7px;
+  position: absolute;
+  right: 7px;
+}
