@@ -2,29 +2,27 @@
 
 ## Runtime ownership
 
-- `zijingang_campus_plate.png` is the single panorama loaded by Phaser. Its final size is `5016 x 5016`; the runtime never positions or scales individual source tiles.
-- The plate contains terrain, roads, water, bridges, buildings, and vegetation only.
-- Phaser owns the player, movement, foreground occlusion, labels, interaction targets, task markers, and story transitions.
-- The world is `5016 x 5016`, renders at source size without stretching, and is sampled with `LINEAR` filtering so fractional camera zoom does not make the detailed plate shimmer.
+- `zijingang_campus_plate.png` is the only campus panorama loaded by Phaser. Its approved dimensions are `11744 × 1084`; runtime code does not position or scale the nine source scenes independently.
+- The plate owns buildings, roads, lake, sidewalks, landscaping, and other static artwork. Phaser owns the player, fixed foot collision, vertical perspective scale, camera, labels, interactions, and story transitions.
+- The world renders from this source coordinate system without stretching. The campus minimap is intentionally absent.
 
-## Source references
+## Visual contract
 
-- The selected panorama is rebuilt from `~/Downloads/大地图/` in row-major order: `(1,1)` through `(1,4)`, then rows `2`, `3`, and `4` in the same order.
-- Twelve source images are `1254 x 1254`. `(3,1)`, `(3,2)`, and `(4,1)` are `1477 x 1065`; `(4,2)` is `1364 x 1153`. Those four are normalized to `1254 x 1254` with Lanczos resampling before composition.
-- The source images do not meet continuously at their internal edges. The rebuild converts all three vertical and three horizontal joins into continuous campus connector roads inside the final PNG, preventing visible hard offsets at every camera zoom.
-- `source/mosaic/tile_01.png` through `tile_16.png` and `source/mosaic/zijingang_road_walkability_mask.png` belong to the alternate `3840 x 3840` mosaic and are not imported by application code.
+- The plate uses one continuous wide `2.5D` pixel-art panorama. The player grows uniformly toward the lower foreground through the shared perspective curve in `RpgPlayerTextures.ts`.
+- The museum join at world `x=7079` has one locally generated and blended transition. Sky, treeline, lake bank, water, sidewalk, curb, road surface, and lane markings must remain continuous there.
+- GPT Image owns campus artwork editing. MiniMax remains audio-only.
+- Do not run the retired square `4×4` panorama builder against this asset. It uses a different `5016 × 5016` coordinate system.
 
-## Generation contract
+## Collision and entrance contract
 
-- GPT Image owns campus artwork generation. MiniMax remains audio-only.
-- `npm run map:zijingang:rebuild` deterministically rebuilds the selected PNG from the source folder and reports its SHA-256.
-- `npm run map:zijingang:walkability` rebuilds only the collision mask and runtime coordinates from the existing selected PNG, so entrance calibration cannot rewrite the approved panorama.
-- `npm run map:zijingang` verifies the selected panorama, its SHA-256, dimensions, runtime coordinates, compressed walkability bitset, and the matching mask PNG without rewriting assets.
-- `npm run map:zijingang:mosaic` remains available only for rebuilding the alternate `3840 x 3840` candidate. Running it changes the active plate and therefore requires an explicit selection decision before delivery.
-- All tiles use one strict 90-degree top-down projection, north-up orientation, palette, pixel density, light direction, and final scale. Facade elevation and isometric 45-degree views are not accepted.
+- `zijingang_road_walkability_mask.png` is the reviewable nearest-neighbor expansion of the runtime `4px` collision grid.
+- The foundation-library approach follows the visible clear stone path at `x=9072..9172`, from the road to the building front. The interaction gate is `(9120,780)` and the safe approach checkpoint is `(9120,824)`.
+- The flower beds immediately west and east of the approach, plus the lamp at the east edge, remain blocked.
+- `npm run map:zijingang:rebuild` and `npm run map:zijingang:walkability` both run `scripts/calibrate-wide-campus-runtime.py`. The script preserves the approved artwork, recalibrates the measured entrance corridor, rebuilds the compressed bitset, and synchronizes plate/mask hashes.
+- `npm run map:zijingang` is read-only. It verifies dimensions, the selected plate hash, runtime coordinates, the bitset, the mask hash, the complete entrance corridor, and blocked planter samples.
 
-## Selected panorama contract
+## Current selected asset
 
-- The selected plate SHA-256 is `600e3010c7b1ccb4e4c697850e9ee37b6670d84aaec3ba5ce8fc0c1274a718bd`.
-- Phaser reads the `5016 x 5016` world, spawn, library entrance, landmarks, and compressed `4px` walkability grid from `src/data/maps/zijingang-campus-runtime.json`.
-- `zijingang_road_walkability_mask.png` is the reviewable `5016 x 5016` nearest-neighbor expansion of that grid. Runtime code merges blocked grid cells into static collision runs, so the player's foot box remains on the connected road region.
+- Plate SHA-256: `9bb6c5593697601fa1347655e43dc563bbc2e32768987df2d602aca31f525986`.
+- Runtime manifest: `src/data/maps/zijingang-campus-runtime.json`.
+- World: `11744 × 1084`; walkability grid: `2936 × 271`; cell size: `4px`.

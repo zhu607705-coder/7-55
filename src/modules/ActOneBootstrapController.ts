@@ -4,6 +4,7 @@ import content from "../data/act-one-bootstrap.content.json";
 
 export type GamepadPurchaseResult = "purchased" | "already_owned" | "insufficient_balance" | "inactive";
 export type GamepadUseResult = "active" | "identity_required" | "exercise_required" | "not_owned" | "inactive";
+export type IdentifyCharacterResult = "connected" | "busy" | "identity_mismatch";
 export type SeatReservationResult = "reserved" | "wrong_library" | "wrong_room" | "wrong_seat" | "inactive";
 export type PushTriangleTapResult = "hint_one" | "hint_two" | "collected" | "already_owned" | "inactive";
 
@@ -188,10 +189,10 @@ export class ActOneBootstrapController {
     return true;
   }
 
-  identifyCharacter(name: string, studentId: string): boolean {
+  identifyCharacter(name: string, studentId: string): IdentifyCharacterResult {
     const actOne = this.getState();
     if (!this.isMovementPhase(actOne) || !actOne.inventoryRecovered) {
-      return false;
+      return "busy";
     }
     const normalizedName = normalizeIdentityName(name);
     const normalizedStudentId = normalizeStudentId(studentId);
@@ -205,14 +206,14 @@ export class ActOneBootstrapController {
         nameMatches: normalizedName === normalizeIdentityName(content.studentName),
         studentIdMatches: normalizedStudentId === normalizeStudentId(content.studentId)
       });
-      return false;
+      return "identity_mismatch";
     }
     if (actOne.characterNamed) {
-      return true;
+      return "connected";
     }
     this.updateMovementFacts({ characterNamed: true, identityVerified: true });
     this.events.emit("act2_character_named", { name: content.studentName, studentId: content.studentId });
-    return true;
+    return "connected";
   }
 
   startExercise(): boolean {

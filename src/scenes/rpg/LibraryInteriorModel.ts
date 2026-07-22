@@ -121,6 +121,8 @@ export interface LibraryInteractionTarget {
   y: number;
   width: number;
   height: number;
+  dropWidth?: number;
+  dropHeight?: number;
   proximity: number;
   label: string;
   location?: LibraryLocationId;
@@ -154,7 +156,7 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
   {
     id: "lost_found_machine",
     x: 132,
-    y: 520,
+    y: 488,
     width: 108,
     height: 126,
     proximity: 112,
@@ -213,7 +215,9 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 445,
     width: 66,
     height: 46,
-    proximity: 96,
+    dropWidth: 144,
+    dropHeight: 104,
+    proximity: 128,
     label: "桌面夹缝",
     location: "seat_022",
     checkpoint: "library_seat_022",
@@ -276,10 +280,10 @@ export function findLibraryTargetAt(
   targets: readonly LibraryInteractionTarget[] = LIBRARY_INTERACTION_TARGETS
 ): LibraryInteractionTarget | null {
   return targets.find((target) => (
-    x >= target.x - target.width / 2
-    && x <= target.x + target.width / 2
-    && y >= target.y - target.height / 2
-    && y <= target.y + target.height / 2
+    x >= target.x - (target.dropWidth ?? target.width) / 2
+    && x <= target.x + (target.dropWidth ?? target.width) / 2
+    && y >= target.y - (target.dropHeight ?? target.height) / 2
+    && y <= target.y + (target.dropHeight ?? target.height) / 2
   )) ?? null;
 }
 

@@ -27,7 +27,16 @@ export class CheckinController {
 
     this.store.setState((s) => ({
       ...s,
-      flags: { ...s.flags, checkinDone: true }
+      items: {
+        ...s.items,
+        waterDrop: false,
+        headphone: false,
+        wateredHeadphone: false
+      },
+      flags: { ...s.flags, checkinDone: true },
+      ui: ["waterDrop", "headphone", "wateredHeadphone"].includes(s.ui.selectedItem ?? "")
+        ? { ...s.ui, selectedItem: null }
+        : s.ui
     }));
     this.events.emit("checkin_success", { code });
     return "success";

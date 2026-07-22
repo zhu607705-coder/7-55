@@ -12,6 +12,7 @@ export const RPG_PLAYER_FRAME_WIDTH = 48;
 export const RPG_PLAYER_FRAME_HEIGHT = 64;
 export const RPG_PLAYER_DISPLAY_SCALE = 1.3;
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
+export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = 2;
 export const RPG_PLAYER_WALK_FRAME_MS = 80;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
@@ -20,6 +21,32 @@ export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   offsetX: 16.5,
   offsetY: 50.75
 });
+
+export const RPG_CAMPUS_PLAYER_PERSPECTIVE = Object.freeze({
+  farY: 880,
+  nearY: 1040,
+  farMultiplier: 1,
+  nearMultiplier: 1.5
+});
+
+const RPG_PLAYER_GROUND_OFFSET_Y = RPG_PLAYER_FRAME_HEIGHT * RPG_PLAYER_DISPLAY_SCALE / 2;
+const RPG_PLAYER_NAME_GAP_Y = RPG_PLAYER_NAME_OFFSET_Y - RPG_PLAYER_GROUND_OFFSET_Y;
+const RPG_PLAYER_FOOT_WORLD_WIDTH = RPG_PLAYER_FOOT_COLLISION.width * RPG_PLAYER_DISPLAY_SCALE;
+const RPG_PLAYER_FOOT_WORLD_HEIGHT = RPG_PLAYER_FOOT_COLLISION.height * RPG_PLAYER_DISPLAY_SCALE;
+const RPG_PLAYER_FOOT_BOTTOM_INSET = (
+  RPG_PLAYER_FRAME_HEIGHT
+  - RPG_PLAYER_FOOT_COLLISION.offsetY
+  - RPG_PLAYER_FOOT_COLLISION.height
+) * RPG_PLAYER_DISPLAY_SCALE;
+
+export interface RpgPlayerPerspectiveMetrics {
+  normalizedDepth: number;
+  perspectiveMultiplier: number;
+  displayScale: number;
+  displayWidth: number;
+  displayHeight: number;
+  nameOffsetY: number;
+}
 
 const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-down-0": playerDown0Url,
@@ -88,11 +115,59 @@ export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
   });
 }
 
-export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): void {
-  player.setScale(RPG_PLAYER_DISPLAY_SCALE);
+function applyRpgPlayerVisualScale(player: Phaser.Physics.Arcade.Sprite, displayScale: number): void {
+  const safeScale = Math.max(0.01, displayScale);
+  const originY = 1 - RPG_PLAYER_GROUND_OFFSET_Y / (RPG_PLAYER_FRAME_HEIGHT * safeScale);
+
+  player.setScale(safeScale).setOrigin(0.5, originY);
   player.body
-    ?.setSize(RPG_PLAYER_FOOT_COLLISION.width, RPG_PLAYER_FOOT_COLLISION.height)
-    .setOffset(RPG_PLAYER_FOOT_COLLISION.offsetX, RPG_PLAYER_FOOT_COLLISION.offsetY);
+    ?.setSize(
+      RPG_PLAYER_FOOT_WORLD_WIDTH / safeScale,
+      RPG_PLAYER_FOOT_WORLD_HEIGHT / safeScale
+    )
+    .setOffset(
+      RPG_PLAYER_FRAME_WIDTH / 2 - RPG_PLAYER_FOOT_WORLD_WIDTH / (2 * safeScale),
+      RPG_PLAYER_FRAME_HEIGHT
+        - (RPG_PLAYER_FOOT_BOTTOM_INSET + RPG_PLAYER_FOOT_WORLD_HEIGHT) / safeScale
+    );
+}
+
+export function getRpgPlayerNameOffsetY(displayScale = RPG_PLAYER_DISPLAY_SCALE): number {
+  return RPG_PLAYER_FRAME_HEIGHT * displayScale - RPG_PLAYER_GROUND_OFFSET_Y + RPG_PLAYER_NAME_GAP_Y;
+}
+
+export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): void {
+  applyRpgPlayerVisualScale(player, RPG_PLAYER_DISPLAY_SCALE);
+}
+
+export function applyCampusRpgPlayerPerspectiveScale(
+  player: Phaser.Physics.Arcade.Sprite,
+  worldY: number
+): RpgPlayerPerspectiveMetrics {
+  const perspective = RPG_CAMPUS_PLAYER_PERSPECTIVE;
+  const normalizedDepth = Phaser.Math.Clamp(
+    (worldY - perspective.farY) / (perspective.nearY - perspective.farY),
+    0,
+    1
+  );
+  const perspectiveMultiplier = Phaser.Math.Linear(
+    perspective.farMultiplier,
+    perspective.nearMultiplier,
+    normalizedDepth
+  );
+  const displayScale = RPG_PLAYER_DISPLAY_SCALE
+    * RPG_CAMPUS_PLAYER_BASE_MULTIPLIER
+    * perspectiveMultiplier;
+
+  applyRpgPlayerVisualScale(player, displayScale);
+  return {
+    normalizedDepth,
+    perspectiveMultiplier,
+    displayScale,
+    displayWidth: RPG_PLAYER_FRAME_WIDTH * displayScale,
+    displayHeight: RPG_PLAYER_FRAME_HEIGHT * displayScale,
+    nameOffsetY: getRpgPlayerNameOffsetY(displayScale)
+  };
 }
 
 interface TurnState {

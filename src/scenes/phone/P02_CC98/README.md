@@ -1,7 +1,7 @@
 # P02 CC98
 
 - Scene ID: `cc98`
-- Entry: desktop CC98 icon
+- Entry: 手机主页 CC98 应用图标
 - Reads: `networkMode`
 - Network rule: only `campus_wifi` may enter; mobile data and offline entries fail validation and return to the phone home screen.
 - Viewport: shared `430 × 860` phone canvas

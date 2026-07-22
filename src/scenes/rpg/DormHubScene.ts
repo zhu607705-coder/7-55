@@ -256,19 +256,24 @@ export class DormHubScene extends Phaser.Scene {
   private createCampusCardPickup(): void {
     const actOne = this.bridge.getState().actOne;
     if (actOne.inventoryRecovered || actOne.phase !== "inventory_required") return;
-    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y).setDepth(1500).setSize(76, 58);
-    const glow = this.add.rectangle(0, 0, 64, 46, 0xffe56a, 0.08).setStrokeStyle(2, 0xffe56a, 0.62);
-    const shadow = this.add.rectangle(2, 8, 50, 28, 0x251f1a, 0.42);
-    const chestBody = this.add.rectangle(0, 5, 48, 27, 0x8d552b).setStrokeStyle(3, 0x3a2112);
-    const chestLid = this.add.rectangle(0, -9, 48, 15, 0xb87332).setStrokeStyle(3, 0x3a2112);
-    const metalBandLeft = this.add.rectangle(-16, 2, 5, 37, 0xd3ae54).setStrokeStyle(1, 0x6f4c18);
-    const metalBandRight = this.add.rectangle(16, 2, 5, 37, 0xd3ae54).setStrokeStyle(1, 0x6f4c18);
-    const lock = this.add.rectangle(0, 3, 9, 12, 0xf1d36d).setStrokeStyle(2, 0x6f4c18);
-    const hitTarget = this.add.rectangle(0, 0, 76, 58, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
+    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y)
+      .setDepth(DORM_CAMPUS_CARD.y + 320)
+      .setSize(68, 52);
+    const shadow = this.add.rectangle(1, 2, 40, 26, 0x21180f, 0.32);
+    const cardBody = this.add.rectangle(0, 0, 40, 26, 0xe8efec)
+      .setStrokeStyle(2, 0x174f86);
+    const cardHeader = this.add.rectangle(0, -9, 38, 6, 0x185ba8);
+    const portrait = this.add.rectangle(-11, 3, 8, 9, 0x71b6a0)
+      .setStrokeStyle(1, 0x174f86);
+    const nameLine = this.add.rectangle(7, 0, 15, 2, 0x35444d);
+    const numberLine = this.add.rectangle(5, 5, 19, 2, 0x718087);
+    const cardMark = this.add.circle(14, -8, 2, 0xe4c45d);
+    const cardArt = this.add.container(0, 0, [shadow, cardBody, cardHeader, portrait, nameLine, numberLine, cardMark])
+      .setAngle(-3);
+    const hitTarget = this.add.rectangle(0, 0, 68, 52, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
     hitTarget.on("pointerdown", () => this.collectCampusCard());
-    pickup.add([glow, shadow, chestBody, chestLid, metalBandLeft, metalBandRight, lock, hitTarget]);
+    pickup.add([cardArt, hitTarget]);
     this.campusCardPickup = pickup;
-    this.tweens.add({ targets: [glow, pickup], alpha: { from: 0.72, to: 1 }, y: "-=3", duration: 760, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
   }
 
   private createAmbientAnimations(): void {
@@ -456,7 +461,7 @@ export class DormHubScene extends Phaser.Scene {
 
   private updatePrompt(target: DormInteractionTarget | null, nearCard: boolean): void {
     if (nearCard) {
-      this.interactionPrompt.setText(formatRpgInteractionHint("打开个人书桌上的宝箱")).setVisible(true);
+      this.interactionPrompt.setText(formatRpgInteractionHint("拿起个人书桌上的校园卡")).setVisible(true);
       return;
     }
     if (target) {
@@ -523,7 +528,7 @@ export class DormHubScene extends Phaser.Scene {
       height: target.height
     }));
     if (!state.actOne.inventoryRecovered && state.actOne.phase === "inventory_required") {
-      activeTargets.push({ id: "campus_card", x: DORM_CAMPUS_CARD.x, y: DORM_CAMPUS_CARD.y, width: 76, height: 58 });
+      activeTargets.push({ id: "campus_card", x: DORM_CAMPUS_CARD.x, y: DORM_CAMPUS_CARD.y, width: 68, height: 52 });
     }
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",

@@ -25,7 +25,8 @@ export type DeveloperCheckpointId =
   | "c2-tiyi-proof" | "c2-cc98-upload" | "c2-bd-rise"
   | "c2-recovery-form" | "c2-pass-generate" | "c2-pass-apply"
   | "c2-seat-sit" | "c2-seat-dialogue" | "c2-chapter-exit"
-  | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result";
+  | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result"
+  | "canteen-hunt";
 
 type LegacyDeveloperCheckpointId =
   | "c2-movement" | "c2-seat-022" | "c2-evidence"
@@ -36,7 +37,7 @@ type LibraryDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c2-${string}
 
 export interface DeveloperCheckpoint {
   id: DeveloperCheckpointId;
-  chapter: "第一章" | "第二章" | "第三章";
+  chapter: "第一章" | "第二章" | "第三章" | "寻人篇";
   label: string;
   detail: string;
 }
@@ -85,7 +86,8 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-intro", chapter: "第三章", label: "求是潮起点", detail: "0 米" },
   { id: "c3-congestion", chapter: "第三章", label: "拥堵阶段", detail: "377 米起跑" },
   { id: "c3-sprint", chapter: "第三章", label: "冲刺阶段", detail: "566 米起跑" },
-  { id: "c3-result", chapter: "第三章", label: "755 结算", detail: "章节完成" }
+  { id: "c3-result", chapter: "第三章", label: "755 结算", detail: "章节完成" },
+  { id: "canteen-hunt", chapter: "寻人篇", label: "脚印寻人", detail: "暗色校园，沿脚印到大食堂" }
 ];
 
 const CHECKPOINT_IDS = new Set(DEVELOPER_CHECKPOINTS.map((checkpoint) => checkpoint.id));
@@ -507,6 +509,21 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   ].includes(id)) return createMovementCheckpointState(id);
   if (LIBRARY_CHECKPOINT_ORDER.includes(id as LibraryDeveloperCheckpointId)) {
     return createLibraryCheckpointState(id as LibraryDeveloperCheckpointId);
+  }
+  if (id === "canteen-hunt") {
+    const state = createCompletedMovementState();
+    return {
+      ...state,
+      runtimeMode: "rpg",
+      rpgScene: "campus_bootstrap",
+      rpgCheckpoint: "campus_spawn",
+      themeMode: "dark",
+      canteenHunt: { active: true, phase: "tracking" },
+      ui: {
+        ...state.ui,
+        seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three"]
+      }
+    };
   }
 
   const state = createLibraryCheckpointState("c2-chapter-exit");

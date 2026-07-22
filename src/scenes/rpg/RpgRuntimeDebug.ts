@@ -11,6 +11,13 @@ export interface RpgRuntimeDebugState {
     turning?: boolean;
     walkFps?: number;
     angle?: number;
+    normalizedDepth?: number;
+    perspectiveMultiplier?: number;
+    displayScale?: number;
+    displayWidth?: number;
+    displayHeight?: number;
+    collisionWidth?: number;
+    collisionHeight?: number;
   };
   input?: {
     gameEnabled: boolean;
@@ -63,6 +70,8 @@ export interface RpgRuntimeDebugState {
     y: number;
     width: number;
     height: number;
+    dropWidth?: number;
+    dropHeight?: number;
     acceptedItem?: string;
   }>;
   collisionRects?: ReadonlyArray<{

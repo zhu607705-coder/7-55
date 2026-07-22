@@ -82,8 +82,8 @@ export const DORM_INTERACTION_TARGETS: readonly DormInteractionTarget[] = [
 ] as const;
 
 export const DORM_CAMPUS_CARD = {
-  x: 790,
-  y: 920,
+  x: 792,
+  y: 928,
   proximity: 148
 } as const;
 

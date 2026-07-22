@@ -615,6 +615,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
         y: target.y,
         width: target.width,
         height: target.height,
+        ...(target.dropWidth ? { dropWidth: target.dropWidth } : {}),
+        ...(target.dropHeight ? { dropHeight: target.dropHeight } : {}),
         ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {})
       })),
       collisionRects: LIBRARY_STATIC_COLLISION_RECTS.map((rect) => rect.id === "north_display_shelf"

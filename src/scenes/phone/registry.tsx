@@ -39,11 +39,11 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   zjuding: {
     label: "P15 浙大钉",
-    contract: "流量或离线卡加载；校园网进内页，绿色卡片→签到，底部我的不响应。"
+    contract: "仅校园网可进入；承载系统入口、图书馆预约和移动图书馆证据流程。"
   },
   tiyi: {
     label: "P06 浙大体艺",
-    contract: "非移动数据加载3秒闪退（≥3次嘲讽）；流量进入，点黄色47得 d2=7。"
+    contract: "仅流量可进入；先开启课外锻炼，图书馆阶段再核对 7 / 47 / 3 到馆材料。"
   },
   weather: {
     label: "P07 天气",
@@ -67,7 +67,7 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   checkin: {
     label: "P11 校务签到",
-    contract: "校园网输入 0798 → 签/到逐字 → 红闪 → 黑屏“经度或纬度不存在”。"
+    contract: "校园网输入 0798 → 短暂成功 → 经度与纬度错误 → 红闪和七秒黑屏。"
   },
   bonsai: {
     label: "P10 盆栽",
@@ -75,7 +75,7 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   ending: {
     label: "P12 序章结算",
-    contract: "手机黑屏 → 现实寝室 → 保留进度进入校园 RPG 第一章。"
+    contract: "移动错误框拦截三次旁白路径，完成长按锁定和系统对话后返回手机主页。"
   }
 };
 

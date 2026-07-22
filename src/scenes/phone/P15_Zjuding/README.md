@@ -16,6 +16,6 @@
   - `hub`、`library`、`library_spaces`、`library_seat` 使用原生 React/HTML/CSS；文字、按钮、卡片、列表和座位均为独立 DOM。
   - `pageexample/*_reference.png` 下的四张整页图只作为视觉参考，禁止作为整页背景或热点坐标层进入运行时。
   - 房间实景和读者头像允许作为独立媒体，分别位于 `library_room_*.png` 与 `library_avatar.png`。
-  - 全部页面遵循 `430×930` 统一手机画布，顶部 `40px` 由全局状态栏占用。
+  - 全部页面遵循 `430×860` 统一手机画布，顶部 `40px` 由全局状态栏占用。
 - 原“学在浙大”页面保留既有签到交互，右上卡片进入 P11。
 - Assets: `zjuding_loading.png`、`zjuding_home.png`、`library_avatar.png`、`library_room_*.png`
