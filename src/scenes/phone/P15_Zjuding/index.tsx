@@ -763,13 +763,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   }
 
   function submitDirectoryIdentity() {
-    if (kit.actOne.identifyCharacter(directoryName, directoryStudentId)) {
+    const result = kit.actOne.identifyCharacter(directoryName, directoryStudentId);
+    if (result === "connected") {
       setDirectoryEntryActive(false);
       kit.flags.toast("黄页联络成功", "task");
       goPage("hub");
       return;
     }
     playSfx("03_");
+    if (result === "busy") {
+      kit.flags.toast("您拨打的电话正在通话中，请稍后再拨。", "system");
+      return;
+    }
     kit.flags.toast("姓名或学号不匹配。", "system");
   }
 

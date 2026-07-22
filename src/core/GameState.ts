@@ -92,6 +92,10 @@ export function createInitialGameState(): GameState {
       bestDistance: 0,
       bestLives: 0
     },
+    canteenHunt: {
+      active: false,
+      phase: "tracking"
+    },
     ui: {
       controlCenterOpen: false,
       autoRotate: false,

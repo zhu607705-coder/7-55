@@ -2,11 +2,11 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 const EXPECTED = {
-  width: 5016,
-  height: 5016,
-  sha256: "600e3010c7b1ccb4e4c697850e9ee37b6670d84aaec3ba5ce8fc0c1274a718bd",
-  foundationLibrary: { x: 3000, y: 280 },
-  libraryGate: { x: 3000, y: 538, radius: 112 }
+  width: 11744,
+  height: 1084,
+  sha256: "9bb6c5593697601fa1347655e43dc563bbc2e32768987df2d602aca31f525986",
+  foundationLibrary: { x: 9120, y: 700 },
+  libraryGate: { x: 9120, y: 780, radius: 80 }
 };
 
 const plateUrl = new URL("../src/assets/rpg/campus/zijingang_campus_plate.png", import.meta.url);
@@ -116,6 +116,17 @@ assertStandable("Campus library checkpoint", {
   x: runtime.libraryGate.x,
   y: runtime.libraryGate.y + 72
 });
+for (const y of [800, 824, 852, 920, 990]) {
+  assertStandable(`Campus library approach at y=${y}`, { x: runtime.libraryGate.x, y });
+}
+for (const [name, point] of [
+  ["Campus library west flower bed", { x: 9052, y: 840 }],
+  ["Campus library east flower bed", { x: 9192, y: 840 }]
+]) {
+  if (isWalkable(point.x, point.y)) {
+    throw new Error(`${name} must remain blocked outside the measured entrance corridor`);
+  }
+}
 if (Math.hypot(gateApproach.x - runtime.libraryGate.x, gateApproach.y - runtime.libraryGate.y) > runtime.libraryGate.radius) {
   throw new Error("Campus library approach is outside the interaction radius");
 }

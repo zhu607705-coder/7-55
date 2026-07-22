@@ -100,19 +100,7 @@ function collisionRectsFromWalkability(): CollisionRect[] {
 
 const CAMPUS_COLLISION_RECTS = collisionRectsFromWalkability();
 
-const LANDMARK_TONES: Record<keyof typeof ZIJINGANG_CAMPUS_LANDMARKS, LabelTone> = {
-  main_library: "cyan",
-  qiushi_auditorium: "red",
-  crescent_building: "silver",
-  foundation_library: "blue",
-  information_tower: "cyan",
-  asia_games_hall: "gold",
-  indoor_stadium: "silver",
-  west_track: "green",
-  east_track: "green",
-  nanhuayuan: "green",
-  south_gate: "blue"
-};
+const LANDMARK_TONES: Record<keyof typeof ZIJINGANG_CAMPUS_LANDMARKS, LabelTone> = {};
 
 export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: ZijingangWorldOptions): void {
   const texture = scene.textures.get(ZIJINGANG_CAMPUS_PLATE_KEY);
@@ -126,7 +114,7 @@ export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: Zijinga
   scene.add.image(0, 0, ZIJINGANG_CAMPUS_PLATE_KEY)
     .setOrigin(0)
     .setDepth(0)
-    .setData("campusProjection", "top-down-90deg");
+    .setData("campusProjection", "wide-panorama-2.5d");
 
   CAMPUS_COLLISION_RECTS.forEach((rect) => {
     addObstacle(rect.x, rect.y, rect.width, rect.height);
@@ -145,11 +133,6 @@ export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: Zijinga
       .setData("anchorY", landmark.worldCenter.y)
       .setData("revealRadius", Math.max(150, Math.min(225, landmark.visualFootprint.width + 72)));
   });
-
-  createLandmarkLabel(scene, 2157, 2761, "启真湖", "cyan")
-    .setData("anchorX", 2157)
-    .setData("anchorY", 2761)
-    .setData("revealRadius", 397);
 }
 
 export function createLandmarkLabel(

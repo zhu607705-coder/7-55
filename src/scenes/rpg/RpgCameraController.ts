@@ -9,7 +9,7 @@ export interface RpgCameraOptions {
   zoomStep?: number;
   deadzone?: { width: number; height: number };
   followOffsetY?: number;
-  minimap?: { x: number; y: number; size: number; name: string } | null;
+  minimap?: { x: number; y: number; width: number; height: number; name: string } | null;
 }
 
 const DEFAULT_MIN_ZOOM = 0.25;
@@ -18,7 +18,7 @@ const DEFAULT_ZOOM = 0.375;
 const DEFAULT_ZOOM_STEP = 0.0625;
 const DEFAULT_DEADZONE = { width: 300, height: 180 };
 const DEFAULT_FOLLOW_OFFSET_Y = 34;
-const DEFAULT_MINIMAP = { x: 16, y: 392, size: 128, name: "campus-minimap" };
+const DEFAULT_MINIMAP = { x: 16, y: 504, width: 220, height: 20, name: "campus-minimap" };
 
 const DRAG_THRESHOLD_PX = 8;
 const TAP_MAX_DURATION_MS = 400;
@@ -60,7 +60,7 @@ export class RpgCameraController {
   private readonly zoomStep: number;
   private readonly deadzone: { width: number; height: number };
   private readonly followOffsetY: number;
-  private readonly minimapOptions: { x: number; y: number; size: number; name: string } | null;
+  private readonly minimapOptions: { x: number; y: number; width: number; height: number; name: string } | null;
 
   private camera!: Phaser.Cameras.Scene2D.Camera;
   private minimap: Phaser.Cameras.Scene2D.Camera | null = null;
@@ -116,11 +116,11 @@ export class RpgCameraController {
     camera.centerOn(this.player.x, this.player.y);
 
     if (this.minimapOptions) {
-      const { x, y, size, name } = this.minimapOptions;
-      const minimap = this.scene.cameras.add(x, y, size, size, false, name);
+      const { x, y, width, height, name } = this.minimapOptions;
+      const minimap = this.scene.cameras.add(x, y, width, height, false, name);
       minimap
         .setBounds(0, 0, this.world.width, this.world.height)
-        .setZoom(size / this.world.width)
+        .setZoom(Math.min(width / this.world.width, height / this.world.height))
         .setBackgroundColor(MINIMAP_BACKGROUND)
         .centerOn(this.world.width / 2, this.world.height / 2);
       this.minimap = minimap;
@@ -449,8 +449,8 @@ export class RpgCameraController {
     if (!this.minimapOptions) {
       return false;
     }
-    const { x: mx, y: my, size } = this.minimapOptions;
-    return x >= mx && x <= mx + size && y >= my && y <= my + size;
+    const { x: mx, y: my, width, height } = this.minimapOptions;
+    return x >= mx && x <= mx + width && y >= my && y <= my + height;
   }
 
   private syncMinimapViewport(): void {

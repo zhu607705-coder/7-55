@@ -1020,3 +1020,43 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 文案同步：附近交互提示由“打开个人书桌上的宝箱”改为“拿起个人书桌上的校园卡”。
 - 浏览器验收：开发版和最终 `file://` 单文件均直达 `c2-inventory`，确认校园卡平放在书桌且无悬浮动画；空格与鼠标点击均可拾取，随后卡片消失、`ownedItems=["campusCard"]`、`inventoryRecovered=true`、阶段进入 `system_return_required`，页面与控制台错误为 `0`。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过；最终 `demo/index.html` 为 `67,890,337 bytes`。临时浏览器截图在检查后删除。
+
+## 2026-07-22 黄页联络忙线门控
+
+- 用户反馈：部门黄页的“联络成功”应在后续找到系统并完成交互后开放；此前提前拨号会被笼统归类为姓名或学号错误。
+- 状态修正：`ActOneBootstrapController.identifyCharacter()` 改为区分 `connected / busy / identity_mismatch`；正常联络继续只允许在第二章移动任务及其后续阶段发生，剧情门控仍由控制器负责。
+- 前置反馈：在联络尚未开放的阶段点击“呼叫”，显示“您拨打的电话正在通话中，请稍后再拨。”；开放后正确身份仍会写入人物姓名，错误身份继续显示不匹配反馈。
+- 离线浏览器验收：`c2-system` 中拨号保持 `system_required / characterNamed=false / directory`，并显示完整忙线文案；`c2-name` 中输入校园卡姓名与学号后进入 `movement_required / characterNamed=true / hub`，显示“黄页联络成功”。两条路径页面错误、控制台错误、外部 HTTP 请求和横向溢出均为 `0`。
+
+## 2026-07-22 校园宽幅地图道路与建筑接缝修正
+
+- 道路对齐：在世界 `x=2644` 的花园接缝前，将左侧图像整体上移 `32px`，使两侧车道线、路缘、人行道和栅栏高度连续。
+- 建筑裁切：删除原图 `x=5700..7000` 的 `1300px` 重复半幅塔楼，使花园直接衔接完整圆形建筑；地图宽度由 `13044` 收敛为 `11744`。
+- 坐标与遮罩：图书馆入口平移到 `(9200, 950)`，食堂追踪出生点平移到 `x=10500`；按 `4px` 网格重建可行走遮罩与运行时 manifest，出生点、图书馆通路和食堂通路仍在同一连通区域。
+- 实机验收：开发版与最终 `file://` 单文件均通过小地图定位检查两处接缝；图书馆门口按住空格后进入 `library_interior / library_entrance`，食堂追踪检查点正常渲染，页面与控制台错误为 `0`。
+- 构建验证：`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 全部通过。`demo/index.html` 为 `64,397,731 bytes`，SHA-256 为 `3c256916e1aaf1aba94fb327836e0a23cde743192d2e9b54a4c9b2bab1915a4c`。
+
+## 2026-07-22 第二章过期水滴清理
+
+- 问题复现：构造 `checkinDone=true` 且同时持有第一章 `waterDrop` 和第二章 `weatherWater` 的旧存档，原实现会在天气页同时显示两个水滴道具。
+- 即时收口：成功提交 `0798` 时同步清除第一章配方中已过期的 `waterDrop / headphone / wateredHeadphone`，并清空指向它们的道具选中状态。
+- 存档兼容：`SaveStore` 读取已完成签到的旧存档时执行同样清理，保留独立的第二章 `weatherWater`；如果旧选中项指向第一章水滴，会自动回到未选中。
+- 浏览器验收：共享网页游戏客户端已运行并检查天气页；开发版和最终 `file://` 单文件均验证旧存档迁移及实际收集流程。道具栏仅显示“电子校园卡 / 三角形 / 天气水滴”，无第一章“水滴”；页面错误、控制台错误、外部 HTTP 请求和横向溢出均为 `0`。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。`demo/index.html` 为 `64,397,982 bytes`，SHA-256 为 `6e48c81e651b95dd3aff2aba5daedfbf3f313160a0aa23f116d05ef95a6c5aa6`。
+
+## 2026-07-22 校园 RPG 总览小地图移除
+
+- 用户反馈：校园 RPG 左下角的“紫金港全图”总览条占用主地图视野，需要完全移除。
+- 渲染收口：`BootScene` 将 `RpgCameraController` 的 `minimap` 显式设为 `null`，停止创建 Phaser 总览相机和视口标记；同时删除仅供小地图使用的玩家标记。
+- UI 清理：`RpgGameHost` 移除“紫金港全图”外框 DOM，`rpg.css` 删除桌面与移动端的小地图样式。人物定位、地图放大/缩小、键盘移动、相机跟随和点击寻路继续保留。
+- 浏览器验收：共享网页游戏客户端、`1200×1280` 开发版和最终 `file://` 单文件均直达 `canteen-hunt`；左下角只显示主地图，`.rpg-minimap-frame` 与“紫金港全图”节点数均为 `0`。`A` 键实际左移 `73px`，放大按钮将缩放从 `0.55` 提高到 `0.61`。最终单文件追加 Blink / Gecko / WebKit 三内核定向复验，三者均为单 canvas、可键盘移动且无总览地图；页面错误、控制台错误、外部 HTTP 请求和横向溢出均为 `0`。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。`demo/index.html` 为 `64,397,119 bytes`，SHA-256 为 `1d7053d90cb1b0cbf8bf648148957e583f9037cf420327a631d3a77f33c5314f`。
+
+## 2026-07-22 校园人物透视、建筑通路与图书馆交互修正
+
+- 人物与透视：校园人物基础显示尺寸提高到原先的 `2×`，并按脚底世界坐标从远处 `1.0×` 平滑过渡到近处 `1.5×`；显示尺寸随纵深变化，脚底碰撞盒继续保持固定世界尺寸，避免人物放大后空气墙同步扩大。
+- 建筑通路：图书馆入口校准为 `(9120, 780)`，建筑前可行走通道延伸至 `y=760`；人物可以从道路走到门前并按空格进入，同时相邻花坛仍保持阻挡。最终可行走网格为 `147136` 个单元。
+- 接缝修复：局部重绘并融合校园宽幅图在世界 `x≈7079` 的天空、树林、湖面、人行道和车道衔接；最终全景保持 `11744×1084`，SHA-256 为 `9bb6c5593697601fa1347655e43dc563bbc2e32768987df2d602aca31f525986`。
+- 图书馆交互：座位 `022` 的右箭头目标视觉范围保持 `66×46`，实际拖放判定扩大为 `144×104`；最终单文件实拖到旧范围外、新范围内后成功取得小票，右箭头继续保留。盖章机向场景后方移动 `32px` 至 `y=488`，遮住原先突出的盆栽区域并保留完整机身和交互提示。
+- 浏览器验收：Blink 在 `1280×720`、`1440×900` 和 `390×844` 下完成键盘或触控移动；Gecko 与 WebKit 在 `1280×720` 下完成键盘移动。各场景维持 `16:9`，非宽屏窗口正确留黑边，移动端显示 5 个触控键，文档溢出、页面错误和控制台错误均为 `0`。
+- 构建验证：`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。最终 `demo/index.html` 为 `64,467,543 bytes`，SHA-256 为 `2d458de460b7ae576af2893f2d4223149f8f391b7f36e63ecae2eb3b2f0bdae4`。

@@ -125,6 +125,18 @@ export interface BikeArcadeChapterState {
   bestLives: number;
 }
 
+export type CanteenHuntPhase =
+  | "tracking"
+  | "canteen_reached"
+  | "entered"
+  | "chase_ready"
+  | "chasing";
+
+export interface CanteenHuntState {
+  active: boolean;
+  phase: CanteenHuntPhase;
+}
+
 export type NetworkMode = "campus_wifi" | "cellular" | "offline";
 
 export type ThemeMode = "normal" | "dark" | "backside";
@@ -354,6 +366,7 @@ export interface GameState {
   flags: GameFlags;
   actOne: ActOneBootstrapState;
   bikeArcade: BikeArcadeChapterState;
+  canteenHunt: CanteenHuntState;
   ui: UiState;
 }
 

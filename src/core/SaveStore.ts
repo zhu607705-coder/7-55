@@ -43,6 +43,9 @@ const VALID_SCENES = new Set<GameState["currentScene"]>([
 ]);
 const VALID_NETWORK_MODES = new Set<GameState["networkMode"]>(["campus_wifi", "cellular", "offline"]);
 const VALID_THEME_MODES = new Set<GameState["themeMode"]>(["normal", "dark", "backside"]);
+const VALID_CANTEEN_HUNT_PHASES = new Set<GameState["canteenHunt"]["phase"]>([
+  "tracking", "canteen_reached", "entered", "chase_ready", "chasing"
+]);
 const VALID_DIGIT_VALUES = new Set<NonNullable<GameState["digits"]["d1"]>>(["0", "7", "9", "8"]);
 const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "waterDrop", "headphone", "wateredHeadphone", "reverseGear", "slashLine", "towerKey",
@@ -242,11 +245,16 @@ export class SaveStore {
       }
 
       const bikeArcade = normalizeBikeArcade(saved.bikeArcade, initial.bikeArcade);
+      const savedCanteenHunt = isRecord(saved.canteenHunt) ? saved.canteenHunt : {};
+      const canteenHunt: GameState["canteenHunt"] = {
+        active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
+        phase: enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase)
+      };
       if (ui.libraryFinalsPhase === "friend_contacted" || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_book_hunt") {
         bikeArcade.unlocked = true;
       }
 
-      normalizeConsumedItems(items, ui);
+      normalizeConsumedItems(items, ui, flags);
       if (ui.selectedItem && !items[ui.selectedItem]) {
         ui.selectedItem = null;
       }
@@ -262,6 +270,7 @@ export class SaveStore {
         flags,
         actOne,
         bikeArcade,
+        canteenHunt,
         ui
       };
       hydrated.currentScene = canEnterScene(hydrated, hydrated.currentScene) ? hydrated.currentScene : "phone_home";
@@ -420,7 +429,20 @@ function normalizeUi(
   };
 }
 
-function normalizeConsumedItems(items: GameState["items"], ui: GameState["ui"]): void {
+function normalizeConsumedItems(
+  items: GameState["items"],
+  ui: GameState["ui"],
+  flags: GameState["flags"]
+): void {
+  // A successful check-in proves the first-chapter water recipe was completed.
+  // Remove stale inputs/intermediates from older saves while preserving the
+  // separate chapter-two weatherWater item.
+  if (flags.checkinDone) {
+    items.waterDrop = false;
+    items.headphone = false;
+    items.wateredHeadphone = false;
+  }
+
   const puzzle = ui.libraryFinalsPuzzle;
   if (puzzle.occupancyNoteCollected && !puzzle.investigationOpened) items.occupancyNote = true;
   if (puzzle.callNumberCollected && !puzzle.archivedRuleCollected) items.callNumber755 = true;
