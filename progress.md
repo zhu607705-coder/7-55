@@ -1011,3 +1011,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 引擎决策：Godot 迁移路线正式停止。活动工作区移除 `godot/`、Godot bridge、Godot 模型状态、Godot 构建脚本和生成的 `.import` 文件；React、TypeScript 与 Phaser 继续承担全部运行时。
 - 恢复边界：同步前的完整普通工作区保存在 Git stash；Godot 目录与生成缓存移到工作区外恢复目录，避免在活动源码中继续保留接线。
 - 验证结果：地图契约、`npm run typecheck`、常规生产构建、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。浏览器在逻辑 `430×860` 和移动 `390×844` 视口验证完整任务抽屉、四个签到数字槽和顶部 `0 7 9 8`，横向溢出与页面错误均为 `0`。最终 `demo/index.html` 为 `99,591,358 bytes`，SHA-256 为 `3f603dcd15a5692a056dda4ffbcce593fc509a392155ab0292b7e7e0304d3dee`。
+
+## 2026-07-22 寝室校园卡拾取点改造
+
+- 用户反馈：右侧个人书桌上的宝箱造型与寝室环境不协调，拾取物悬浮感明显；目标改为直接展示平放在桌面的校园卡。
+- 视觉实现：移除宝箱箱体、锁、金属带、金色光框和上下漂浮动画；改为蓝白像素校园卡，包含照片区、姓名/卡号线和校色标记，仅保留贴近桌面的 `1–2px` 阴影，并顺着桌面轻微旋转。
+- 空间关系：校园卡位置从 `(790, 920)` 微调至 `(792, 928)`，落在第三张个人书桌的纸张旁；透明点击区域保持 `68×52`，剧情门控、拾取距离和获得校园卡事件不变。
+- 文案同步：附近交互提示由“打开个人书桌上的宝箱”改为“拿起个人书桌上的校园卡”。
+- 浏览器验收：开发版和最终 `file://` 单文件均直达 `c2-inventory`，确认校园卡平放在书桌且无悬浮动画；空格与鼠标点击均可拾取，随后卡片消失、`ownedItems=["campusCard"]`、`inventoryRecovered=true`、阶段进入 `system_return_required`，页面与控制台错误为 `0`。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过；最终 `demo/index.html` 为 `67,890,337 bytes`。临时浏览器截图在检查后删除。
