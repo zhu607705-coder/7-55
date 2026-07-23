@@ -333,6 +333,14 @@ export function RpgGameHost({
             reason: "unavailable"
           });
         }
+      } else if (event.name === "rpg_library_leave_requested") {
+        if (!libraryController.leaveLibrary()) {
+          events.emit("library_rpg_interaction_failed", {
+            action: "leaveLibrary",
+            targetId: "library_exit",
+            reason: "unavailable"
+          });
+        }
       } else if (event.name === "rpg_library_action_requested") {
         const action = String(event.payload?.action ?? "");
         const targetId = String(event.payload?.targetId ?? "");

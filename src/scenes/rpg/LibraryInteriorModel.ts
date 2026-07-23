@@ -105,6 +105,7 @@ export const LIBRARY_ENTRANCE_DOOR = {
 
 export type LibraryInteractionTargetId =
   | "entrance_record"
+  | "library_exit"
   | "front_desk"
   | "lost_found_machine"
   | "catalog_terminal"
@@ -131,6 +132,15 @@ export interface LibraryInteractionTarget {
 }
 
 export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = [
+  {
+    id: "library_exit",
+    x: 715,
+    y: 842,
+    width: 48,
+    height: 28,
+    proximity: 72,
+    label: "离开图书馆"
+  },
   {
     id: "entrance_record",
     x: 750,

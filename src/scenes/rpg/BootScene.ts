@@ -126,7 +126,6 @@ export class BootScene extends Phaser.Scene {
       : this.canteenHuntActive && ["tracking", "canteen_reached"].includes(this.canteenPhase)
         ? CANTEEN_HUNT_SPAWN
       : state.rpgCheckpoint === "campus_library_gate"
-        && state.ui.libraryFinalsPhase === "library_route_unlocked"
         ? LIBRARY_CHECKPOINT_SPAWNS.campus_library_gate
         : ZIJINGANG_WORLD.spawn;
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-down-0");

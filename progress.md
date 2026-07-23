@@ -1069,3 +1069,10 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 食堂实际入口：校园大地图的食堂门口在第二章校园路线开放后始终存在；普通探索不会提前启动寻人剧情。从大地图按空格或触控交互会进入 `canteen_interior / canteen_entrance`，东南出口返回 `campus_bootstrap / campus_canteen_gate`；寻人流程则从 `tray_search` 开始。
 - 室内碰撞实测：人物从东南出生点沿明显空地向北移动 `101px`，在托盘台可见前沿停下；返回门口后可正常退回校园，证明出生点、清空地面和固体边缘三类条件均生效。
 - 最终单文件实测：重新生成的 `demo/index.html` 为 `66,641,740 bytes`，SHA-256 为 `5c268efe2e7675dbab91ae2529dd5de9dea80ef6c66547feac47240ec38daef4`。直接通过 `file://` 打开该文件，Blink、Gecko、WebKit 均完成“校园门口 → 食堂 → 移动 → 返回校园”；`1280×720`、`1024×768` 和 `390×844` 均无文档溢出，Canvas 保持 `16:9`。三内核移动端均显示触控键并完成实际触控进入和移动，页面错误与控制台错误均为 `0`。
+
+## 2026-07-23 图书馆入口离开与返回校园
+
+- 入口外侧新增“离开图书馆”交互标记与空格提示；桌面键盘、触控虚拟“空格”键均可触发。
+- 状态收口：`LibraryFinalsController.leaveLibrary()` 只切换至 `campus_bootstrap / campus_library_gate`，第二章阶段、证据、道具和已读入馆记录不写回初始值；校园场景始终从图书馆门前出生，随后可正常重新进入。
+- 浏览器验收：Blink 桌面完成“入口离开 → 图书馆门前 → 再次进入”；Gecko 桌面完成离开并保留 `library_entered`、`campusCard`、`rightArrow`；Blink `390×844` 触控端显示 5 个虚拟控制键，点击“空格”后回到图书馆门前。三次成功路径均为单 Canvas、无页面或控制台错误、无文档溢出。
+- 构建验证：`npm run typecheck`、`npm run build` 与 `git diff --check` 通过。当前本机 WebKit 自动化包与已缓存二进制版本不一致，启动阶段中止；本次未安装新的测试依赖，待匹配运行时可再次执行 WebKit 复验。

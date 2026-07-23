@@ -391,6 +391,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private triggerInteraction(target: LibraryInteractionTarget, state: GameState): void {
     const puzzle = state.ui.libraryFinalsPuzzle;
+    if (target.id === "library_exit") {
+      this.bridge.emit("rpg_library_leave_requested");
+      return;
+    }
     if (target.id === "entrance_record") {
       this.openEntranceRecordPanel();
       return;
@@ -543,6 +547,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     const contextByTarget: Record<LibraryInteractionTargetId, string> = {
       entrance_record: "",
+      library_exit: "",
       front_desk: "",
       lost_found_machine: "",
       catalog_terminal: "",
@@ -1405,13 +1410,13 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private createMarkers(): void {
     LIBRARY_INTERACTION_TARGETS.forEach((target, index) => {
       const ring = this.add.circle(0, 0, 10, 0x173331, 0.72).setStrokeStyle(3, 0xe8d46c, 0.95);
-      const glyph = this.add.text(0, -1, target.acceptedItem ? "↧" : "·", {
+      const glyph = this.add.text(0, -1, target.acceptedItem ? "↧" : target.id === "library_exit" ? "↙" : "·", {
         color: target.acceptedItem ? "#8fd7ff" : "#fff6c7",
         fontFamily: "monospace",
-        fontSize: target.acceptedItem ? "11px" : "18px",
+        fontSize: target.acceptedItem ? "11px" : target.id === "library_exit" ? "14px" : "18px",
         fontStyle: "bold"
       }).setOrigin(0.5);
-      const markerGap = target.id === "entrance_record" ? 44 : 18;
+      const markerGap = target.id === "entrance_record" ? 44 : target.id === "library_exit" ? 30 : 18;
       const container = this.add.container(target.x, target.y - target.height / 2 - markerGap, [ring, glyph])
         .setDepth(5000 + index)
         .setVisible(false);
