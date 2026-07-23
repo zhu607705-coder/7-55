@@ -70,7 +70,10 @@ const ITEM_ORDER: ItemId[] = [
   "bagNonPersonProof",
   "seat022Receipt",
   "libraryPresenceProof",
-  "seatReleasePass"
+  "seatReleasePass",
+  "cafeteriaWages",
+  "greaseTissue",
+  "pickupTicket0755"
 ];
 const INVENTORY_TOP_DEFAULT = 240;
 const INVENTORY_TOP_MIN = 108;

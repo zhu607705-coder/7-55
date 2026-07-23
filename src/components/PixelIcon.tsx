@@ -325,6 +325,27 @@ const ICONS: Record<string, PixelMap> = {
     ],
     palette: { g: "#3d8d5d", w: "#f4f0dd", k: "#23313a", y: "#e8c45b" }
   },
+  cafeteriaWages: {
+    rows: [
+      "..yyyyy..", ".ywwwwwy.", "ywyyyyywy", "ywykkkywy", "ywykykywy",
+      "ywykkkywy", "ywyyyyywy", ".ywwwwwy.", "..yyyyy..", "........."
+    ],
+    palette: { y: "#d89f32", w: "#f7df8b", k: "#744f20" }
+  },
+  greaseTissue: {
+    rows: [
+      "..kkkk...", ".kwwwwk..", "kwwwwwwk.", "kwwyywwk.", "kwwyyywk.",
+      "kwwwyywk.", ".kwwwwwk.", "..kwwwk..", "...kkk...", "........."
+    ],
+    palette: { k: "#c6bca5", w: "#f2ead8", y: "#9f7637" }
+  },
+  pickupTicket0755: {
+    rows: [
+      "kkkkkkkkk", "kwwwwwwwk", "kwbwbwbwk", "kwbbbwwwk", "kwbwbwbwk",
+      "kwwwwwwwk", "kwyyyyywk", "kwwwwwwwk", "kkkkkkkkk", "........."
+    ],
+    palette: { k: "#26313b", w: "#f4eddb", b: "#3973b8", y: "#d8a64a" }
+  },
   backpack: {
     rows: [
       "..kkkk...",
@@ -434,5 +455,8 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   bagNonPersonProof: { name: "书包非本人证明", desc: "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。" },
   seat022Receipt: { name: "022 座位小票", desc: "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。" },
   libraryPresenceProof: { name: "本人来过证明", desc: "一张证明你来过的证明。它没有证明你为什么要来。" },
-  seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" }
+  seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" },
+  cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "回收餐盘后得到的两元报酬。" },
+  greaseTissue: { name: "油渍纸巾", desc: "带有油渍的纸巾，可以擦掉强反光污迹。" },
+  pickupTicket0755: { name: "0755 取餐号", desc: "点餐机打印的 0755 号取餐小票。" }
 };

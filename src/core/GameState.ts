@@ -38,7 +38,10 @@ export function createInitialGameState(): GameState {
       bagNonPersonProof: false,
       seat022Receipt: false,
       libraryPresenceProof: false,
-      seatReleasePass: false
+      seatReleasePass: false,
+      cafeteriaWages: false,
+      greaseTissue: false,
+      pickupTicket0755: false
     },
     flags: {
       codeScattered: false,
@@ -94,7 +97,17 @@ export function createInitialGameState(): GameState {
     },
     canteenHunt: {
       active: false,
-      phase: "tracking"
+      phase: "tracking",
+      mode: "light",
+      identifiedTrayIds: [],
+      returnedTrayIds: [],
+      orderAttemptCount: 0,
+      pickupAttemptCount: 0,
+      blockHits: 0,
+      bikeCodeRead: false,
+      bikeLockCleaned: false,
+      bikePaid: false,
+      chaseCollisions: 0
     },
     ui: {
       controlCenterOpen: false,

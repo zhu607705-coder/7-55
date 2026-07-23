@@ -62,12 +62,14 @@ export interface ItemCatalogEntry {
   uses: Array<{ target: string; result: "retain" | "consume" | "transform" }>;
 }
 
-export type RpgSceneId = "campus_bootstrap" | "dorm_hub" | "library_interior";
+export type RpgSceneId = "campus_bootstrap" | "dorm_hub" | "library_interior" | "canteen_interior";
 
 export type RpgCheckpointId =
   | "campus_spawn"
   | "campus_library_gate"
+  | "campus_canteen_gate"
   | "dorm_spawn"
+  | "canteen_entrance"
   | "library_entrance"
   | "library_seat_022"
   | "library_front_desk"
@@ -128,13 +130,32 @@ export interface BikeArcadeChapterState {
 export type CanteenHuntPhase =
   | "tracking"
   | "canteen_reached"
+  // Legacy prototype value. SaveStore migrates it to tray_search.
   | "entered"
+  | "tray_search"
+  | "menu_order"
+  | "pickup_search"
+  | "exit_blocking"
   | "chase_ready"
   | "chasing";
+
+export type CanteenMode = "light" | "dark";
+
+export type CanteenExitId = "west" | "southeast" | "steam";
 
 export interface CanteenHuntState {
   active: boolean;
   phase: CanteenHuntPhase;
+  mode: CanteenMode;
+  identifiedTrayIds: string[];
+  returnedTrayIds: string[];
+  orderAttemptCount: number;
+  pickupAttemptCount: number;
+  blockHits: number;
+  bikeCodeRead: boolean;
+  bikeLockCleaned: boolean;
+  bikePaid: boolean;
+  chaseCollisions: number;
 }
 
 export type NetworkMode = "campus_wifi" | "cellular" | "offline";
@@ -272,7 +293,10 @@ export type ItemId =
   | "bagNonPersonProof"
   | "seat022Receipt"
   | "libraryPresenceProof"
-  | "seatReleasePass";
+  | "seatReleasePass"
+  | "cafeteriaWages"
+  | "greaseTissue"
+  | "pickupTicket0755";
 
 export type SceneId =
   | "alarm"

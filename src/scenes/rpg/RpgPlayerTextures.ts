@@ -1,25 +1,31 @@
 import Phaser from "phaser";
 import playerDown0Url from "../../assets/rpg/player/player_down_0.png";
 import playerDown1Url from "../../assets/rpg/player/player_down_1.png";
+import playerDown2Url from "../../assets/rpg/player/player_down_2.png";
+import playerDown3Url from "../../assets/rpg/player/player_down_3.png";
 import playerSide0Url from "../../assets/rpg/player/player_side_0.png";
 import playerSide1Url from "../../assets/rpg/player/player_side_1.png";
+import playerSide2Url from "../../assets/rpg/player/player_side_2.png";
+import playerSide3Url from "../../assets/rpg/player/player_side_3.png";
 import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
+import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
+import playerUp3Url from "../../assets/rpg/player/player_up_3.png";
 
 export type RpgPlayerFacing = "down" | "up" | "side";
 
-export const RPG_PLAYER_FRAME_WIDTH = 48;
-export const RPG_PLAYER_FRAME_HEIGHT = 64;
-export const RPG_PLAYER_DISPLAY_SCALE = 1.3;
+export const RPG_PLAYER_FRAME_WIDTH = 96;
+export const RPG_PLAYER_FRAME_HEIGHT = 128;
+export const RPG_PLAYER_DISPLAY_SCALE = 0.65;
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
 export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = 2;
-export const RPG_PLAYER_WALK_FRAME_MS = 80;
+export const RPG_PLAYER_WALK_FRAME_MS = 90;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
-  width: 15,
-  height: 11.25,
-  offsetX: 16.5,
-  offsetY: 50.75
+  width: 30,
+  height: 22.5,
+  offsetX: 33,
+  offsetY: 101.5
 });
 
 export const RPG_CAMPUS_PLAYER_PERSPECTIVE = Object.freeze({
@@ -51,10 +57,16 @@ export interface RpgPlayerPerspectiveMetrics {
 const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-down-0": playerDown0Url,
   "act1-player-down-1": playerDown1Url,
+  "act1-player-down-2": playerDown2Url,
+  "act1-player-down-3": playerDown3Url,
   "act1-player-up-0": playerUp0Url,
   "act1-player-up-1": playerUp1Url,
+  "act1-player-up-2": playerUp2Url,
+  "act1-player-up-3": playerUp3Url,
   "act1-player-side-0": playerSide0Url,
-  "act1-player-side-1": playerSide1Url
+  "act1-player-side-1": playerSide1Url,
+  "act1-player-side-2": playerSide2Url,
+  "act1-player-side-3": playerSide3Url
 } as const;
 
 export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
@@ -66,15 +78,17 @@ export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
 }
 
 export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
-  const drawPlayer = (texture: string, facing: RpgPlayerFacing, stepping: boolean) => {
+  const drawPlayer = (texture: string, facing: RpgPlayerFacing, frame: 0 | 1 | 2 | 3) => {
     if (scene.textures.exists(texture)) {
       return;
     }
     const graphics = scene.make.graphics({ x: 0, y: 0 });
     graphics.scaleCanvas(RPG_PLAYER_FRAME_WIDTH / 28, RPG_PLAYER_FRAME_HEIGHT / 43);
     graphics.fillStyle(0x172028, 0.42).fillEllipse(14, 39, 24, 7);
-    const leftStep = stepping ? 2 : 5;
-    const rightStep = stepping ? 17 : 15;
+    const stepping = frame === 1 || frame === 3;
+    const alternateStep = frame === 3;
+    const leftStep = stepping ? (alternateStep ? 17 : 2) : 5;
+    const rightStep = stepping ? (alternateStep ? 2 : 17) : 15;
     graphics.fillStyle(0x26313b).fillRect(leftStep, 32, 8, 7).fillRect(rightStep, stepping ? 30 : 32, 8, 7);
     graphics.fillStyle(0x17212a).fillRect(leftStep - 1, 37, 10, 4).fillRect(rightStep - 1, stepping ? 35 : 37, 10, 4);
 
@@ -110,8 +124,9 @@ export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
   };
 
   (["down", "up", "side"] as const).forEach((direction) => {
-    drawPlayer(`act1-player-${direction}-0`, direction, false);
-    drawPlayer(`act1-player-${direction}-1`, direction, true);
+    ([0, 1, 2, 3] as const).forEach((frame) => {
+      drawPlayer(`act1-player-${direction}-${frame}`, direction, frame);
+    });
   });
 }
 
@@ -296,7 +311,7 @@ export class RpgPlayerAnimator {
       return;
     }
 
-    const nextFrame = (Math.floor(now / RPG_PLAYER_WALK_FRAME_MS) % 2) as 0 | 1;
+    const nextFrame = (Math.floor(now / RPG_PLAYER_WALK_FRAME_MS) % 4) as 0 | 1 | 2 | 3;
     if (
       nextFrame !== this.walkingFrame
       || this.player.texture.key !== `act1-player-${this.targetFacing}-${nextFrame}`
@@ -307,7 +322,12 @@ export class RpgPlayerAnimator {
     }
   }
 
-  private applyPose(facing: RpgPlayerFacing, frame: 0 | 1, flipX: boolean, angle = 0): void {
+  private applyPose(
+    facing: RpgPlayerFacing,
+    frame: 0 | 1 | 2 | 3,
+    flipX: boolean,
+    angle = 0
+  ): void {
     const texture = `act1-player-${facing}-${frame}`;
     if (this.player.texture.key !== texture) {
       this.player.setTexture(texture);
