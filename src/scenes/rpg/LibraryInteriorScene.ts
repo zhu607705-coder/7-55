@@ -164,7 +164,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const storedCheckpoint = this.bridge.getState().rpgCheckpoint;
     const checkpoint = storedCheckpoint === "campus_spawn"
       || storedCheckpoint === "campus_library_gate"
+      || storedCheckpoint === "campus_canteen_gate"
       || storedCheckpoint === "dorm_spawn"
+      || storedCheckpoint === "canteen_entrance"
       ? "library_entrance"
       : storedCheckpoint;
     const spawn = LIBRARY_CHECKPOINT_SPAWNS[checkpoint];

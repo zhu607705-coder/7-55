@@ -4,6 +4,8 @@ import type { EventBus } from "../../core/EventBus";
 import type { SceneRouter } from "../../core/SceneRouter";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type {
+  CanteenExitId,
+  CanteenMode,
   GameState,
   GameStore,
   ItemId,
@@ -17,10 +19,12 @@ import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
 import { LibraryFinalsController } from "../../modules/LibraryFinalsController";
+import { ChapterThreeCanteenController } from "../../modules/ChapterThreeCanteenController";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
 import { DormHubScene } from "./DormHubScene";
 import { LibraryInteriorScene } from "./LibraryInteriorScene";
+import { CanteenInteriorScene } from "./CanteenInteriorScene";
 import { createRpgBridge } from "./RpgBridge";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
@@ -44,13 +48,15 @@ interface RpgGameHostProps {
 const SCENE_KEYS = {
   campus_bootstrap: "campus-bootstrap",
   dorm_hub: "dorm-hub",
-  library_interior: "library-interior"
+  library_interior: "library-interior",
+  canteen_interior: "canteen-interior"
 } as const;
 
 const SCENE_CLASSES = {
   campus_bootstrap: BootScene,
   dorm_hub: DormHubScene,
-  library_interior: LibraryInteriorScene
+  library_interior: LibraryInteriorScene,
+  canteen_interior: CanteenInteriorScene
 } as const;
 
 const DOUBLE_TAP_WINDOW_MS = 380;
@@ -128,6 +134,7 @@ export function RpgGameHost({
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
+  const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const runtimeScene = resolveRuntimeScene(state);
   const touchControls = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY)
@@ -376,9 +383,26 @@ export function RpgGameHost({
         } else if (action !== "visitLibraryPoint") {
           events.emit("library_rpg_interaction_failed", { action, targetId, reason: "unavailable" });
         }
+      } else if (event.name === "rpg_canteen_entry_requested") {
+        canteenController.enterCanteen();
+      } else if (event.name === "rpg_canteen_mode_requested") {
+        canteenController.setMode(String(event.payload?.mode ?? "light") as CanteenMode);
+      } else if (event.name === "rpg_canteen_tray_requested") {
+        canteenController.useTray(
+          String(event.payload?.trayId ?? ""),
+          event.payload?.queueCollision === true
+        );
+      } else if (event.name === "rpg_canteen_menu_selected") {
+        canteenController.selectMenuOption(String(event.payload?.optionId ?? ""));
+      } else if (event.name === "rpg_canteen_pickup_selected") {
+        canteenController.selectPickupWindow(String(event.payload?.windowId ?? ""));
+      } else if (event.name === "rpg_canteen_exit_block_requested") {
+        canteenController.blockExit(String(event.payload?.exitId ?? "west") as CanteenExitId);
+      } else if (event.name === "rpg_canteen_leave_requested") {
+        canteenController.leaveCanteen();
       }
     });
-  }, [controller, events, libraryController]);
+  }, [canteenController, controller, events, libraryController]);
 
   useEffect(() => {
     if (state.ui.libraryFinalsPuzzle.lostFoundStage !== "scanning") {
@@ -526,7 +550,7 @@ export function RpgGameHost({
 
   return (
     <main
-      className={`rpg-stage ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
+      className={`rpg-stage ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
       data-input-blocked={inputBlocked || itemInspectOpen ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
@@ -556,6 +580,20 @@ export function RpgGameHost({
             <button type="button" aria-label="放大地图" title="放大地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: 0.1 }); event.currentTarget.blur(); }}>+</button>
             <button type="button" aria-label="缩小地图" title="缩小地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: -0.1 }); event.currentTarget.blur(); }}>−</button>
           </nav>
+        ) : null}
+
+        {runtimeScene === "canteen_interior" && state.canteenHunt.active
+          && ["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase) ? (
+          <button
+            type="button"
+            className={`rpg-canteen-mode-toggle is-${state.canteenHunt.mode}`}
+            aria-pressed={state.canteenHunt.mode === "dark"}
+            onClick={() => events.emit("rpg_canteen_mode_requested", {
+              mode: state.canteenHunt.mode === "dark" ? "light" : "dark"
+            })}
+          >
+            {state.canteenHunt.mode === "dark" ? "浅色模式" : "深色模式"}
+          </button>
         ) : null}
 
         {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" ? (
@@ -600,7 +638,7 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {runtimeScene === "library_interior" || runtimeScene === "dorm_hub" ? (
+        {runtimeScene === "library_interior" || runtimeScene === "dorm_hub" || runtimeScene === "canteen_interior" ? (
           <RpgInventoryDock
             state={state}
             events={events}

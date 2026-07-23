@@ -128,6 +128,21 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     category: "执行凭证",
     source: "022 恢复申请签发",
     intro: "材料已经换成临时处置权限。回到那件长期占着位置、现场却找不到主人的物品旁。"
+  },
+  cafeteriaWages: {
+    category: "食堂报酬",
+    source: "餐盘回收",
+    intro: "完成餐盘回收后得到的两元报酬，可用于食堂门口的后续交互。"
+  },
+  greaseTissue: {
+    category: "清洁道具",
+    source: "食堂桌面",
+    intro: "带有油渍的纸巾，可用于处理强反光污迹。"
+  },
+  pickupTicket0755: {
+    category: "取餐凭据",
+    source: "食堂点餐机",
+    intro: "编号为 0755 的取餐小票，窗口会按编号核验。"
   }
 };
 

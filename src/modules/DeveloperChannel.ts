@@ -26,7 +26,7 @@ export type DeveloperCheckpointId =
   | "c2-recovery-form" | "c2-pass-generate" | "c2-pass-apply"
   | "c2-seat-sit" | "c2-seat-dialogue" | "c2-chapter-exit"
   | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result"
-  | "canteen-hunt";
+  | "campus-canteen-entry" | "canteen-hunt";
 
 type LegacyDeveloperCheckpointId =
   | "c2-movement" | "c2-seat-022" | "c2-evidence"
@@ -83,6 +83,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-seat-sit", chapter: "第二章", label: "坐到 022", detail: "书包已清退" },
   { id: "c2-seat-dialogue", chapter: "第二章", label: "022 对话", detail: "联系异常意识" },
   { id: "c2-chapter-exit", chapter: "第二章", label: "第三章入口", detail: "求是潮应用已开放" },
+  { id: "campus-canteen-entry", chapter: "第二章", label: "食堂门口", detail: "校园大地图的可进入门口" },
   { id: "c3-intro", chapter: "第三章", label: "求是潮起点", detail: "0 米" },
   { id: "c3-congestion", chapter: "第三章", label: "拥堵阶段", detail: "377 米起跑" },
   { id: "c3-sprint", chapter: "第三章", label: "冲刺阶段", detail: "566 米起跑" },
@@ -510,6 +511,20 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   if (LIBRARY_CHECKPOINT_ORDER.includes(id as LibraryDeveloperCheckpointId)) {
     return createLibraryCheckpointState(id as LibraryDeveloperCheckpointId);
   }
+  if (id === "campus-canteen-entry") {
+    const state = createCompletedMovementState();
+    return {
+      ...state,
+      runtimeMode: "rpg",
+      rpgScene: "campus_bootstrap",
+      rpgCheckpoint: "campus_canteen_gate",
+      canteenHunt: { ...state.canteenHunt, active: false, phase: "tracking" },
+      ui: {
+        ...state.ui,
+        seenChapterIntros: ["chapter_one", "chapter_two"]
+      }
+    };
+  }
   if (id === "canteen-hunt") {
     const state = createCompletedMovementState();
     return {
@@ -518,7 +533,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
       rpgScene: "campus_bootstrap",
       rpgCheckpoint: "campus_spawn",
       themeMode: "dark",
-      canteenHunt: { active: true, phase: "tracking" },
+      canteenHunt: { ...state.canteenHunt, active: true, phase: "tracking" },
       ui: {
         ...state.ui,
         seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three"]

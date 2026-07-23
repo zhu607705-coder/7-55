@@ -247,8 +247,16 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
   }
 ] as const;
 
-export const LIBRARY_CHECKPOINT_SPAWNS: Record<Exclude<RpgCheckpointId, "campus_spawn" | "dorm_spawn">, { x: number; y: number }> = {
-  campus_library_gate: { x: CAMPUS_LIBRARY_GATE.x, y: CAMPUS_LIBRARY_GATE.y + 72 },
+type LibraryCheckpointId = Extract<
+  RpgCheckpointId,
+  "campus_library_gate" | "library_entrance" | "library_seat_022" | "library_front_desk" | "library_shelf_755"
+>;
+
+export const LIBRARY_CHECKPOINT_SPAWNS: Record<LibraryCheckpointId, { x: number; y: number }> = {
+  campus_library_gate: {
+    x: campusRuntimeData.walkability.gateApproach.x,
+    y: campusRuntimeData.walkability.gateApproach.y
+  },
   library_entrance: { x: 715, y: 842 },
   // Keep the complete foot box above the south rail at y=534.
   library_seat_022: { x: 1180, y: 500 },
