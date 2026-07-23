@@ -27,7 +27,7 @@ export interface RpgRuntimeDebugState {
   };
   camera: { scrollX: number; scrollY: number; zoom: number; mode: "follow" | "manual" };
   path?: { followingPath: boolean; pathLength: number };
-  scene?: "campus_bootstrap" | "dorm_hub" | "library_interior";
+  scene?: "campus_bootstrap" | "dorm_hub" | "library_interior" | "canteen_interior";
   checkpoint?: string;
   entranceDoor?: {
     state: "closed" | "opening" | "open" | "closing";
@@ -63,6 +63,19 @@ export interface RpgRuntimeDebugState {
     stampHeadY: number;
     leverAngle: number;
     stampVisible: boolean;
+  };
+  canteen?: {
+    phase: string;
+    mode: "light" | "dark";
+    identifiedTrayIds: string[];
+    returnedTrayIds: string[];
+    blockHits: number;
+    activeTarget: string | null;
+    menuOpen: boolean;
+    dialogueLocked: boolean;
+    paperBusy: boolean;
+    activeOcclusionIds?: string[];
+    softenedOcclusionIds?: string[];
   };
   activeTargets?: Array<{
     id: string;

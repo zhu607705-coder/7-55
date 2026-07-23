@@ -138,5 +138,26 @@
     "desc": "仅对非本人书包有效。如书包已进化为本人，请联系下一章。",
     "sourceScene": "zjuding",
     "target": "seat_022_backpack"
+  },
+  {
+    "id": "cafeteriaWages",
+    "name": "餐盘回收费 2.00 元",
+    "desc": "回收餐盘后得到的两元报酬。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_bike"
+  },
+  {
+    "id": "greaseTissue",
+    "name": "油渍纸巾",
+    "desc": "带有油渍的纸巾，可以擦掉强反光污迹。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_bike_lock"
+  },
+  {
+    "id": "pickupTicket0755",
+    "name": "0755 取餐号",
+    "desc": "点餐机打印的 0755 号取餐小票。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_pickup_window_3"
   }
 ]

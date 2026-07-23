@@ -22,6 +22,7 @@
 - Landmark bounding boxes are visual metadata only and are never added as physics rectangles. The Basic Library solid is a measured polygon subtracted from its open forecourt. Purple Cloud/Bifeng and East Canteen use the separated road layer without additional collision polygons.
 - The spawn is `(2550,650)`, on the road immediately south of `紫云碧峰`.
 - The story library is `基础图书馆`. Its gate is `(3706,1696)` with radius `112`; the safe approach checkpoint is `(3805,1680)`.
+- The `东区大食堂` campus gate remains `(3120,620)` with approach checkpoint `(3120,650)`. Normal exploration enters `canteen_interior / canteen_entrance`; its southeast exit returns to `campus_bootstrap / campus_canteen_gate` without resetting story progress.
 - `基础图书馆` and `月牙楼` currently use clipped silhouettes from the same plate. `紫云碧峰` and `东区大食堂` occlusion are disabled until their silhouettes are manually recalibrated.
 - The actor has half the former campus world size and the nominal default camera zoom is doubled to `1.1`. This doubles the map-to-actor ratio while preserving the actor's initial absolute screen size. Campus walk/run speeds are `110/160` world pixels per second.
 - The camera deadzone is `300/960` of the current visible world width and `180/540` of its height. It is recomputed whenever zoom or backing resolution changes.

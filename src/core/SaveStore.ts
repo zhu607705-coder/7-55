@@ -15,15 +15,19 @@ import type {
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 7;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, SAVE_VERSION]);
+const SAVE_VERSION = 8;
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
-const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>(["campus_bootstrap", "dorm_hub", "library_interior"]);
+const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
+  "campus_bootstrap", "dorm_hub", "library_interior", "canteen_interior"
+]);
 const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
   "campus_spawn",
   "campus_library_gate",
+  "campus_canteen_gate",
   "dorm_spawn",
+  "canteen_entrance",
   "library_entrance",
   "library_seat_022",
   "library_front_desk",
@@ -44,14 +48,18 @@ const VALID_SCENES = new Set<GameState["currentScene"]>([
 const VALID_NETWORK_MODES = new Set<GameState["networkMode"]>(["campus_wifi", "cellular", "offline"]);
 const VALID_THEME_MODES = new Set<GameState["themeMode"]>(["normal", "dark", "backside"]);
 const VALID_CANTEEN_HUNT_PHASES = new Set<GameState["canteenHunt"]["phase"]>([
-  "tracking", "canteen_reached", "entered", "chase_ready", "chasing"
+  "tracking", "canteen_reached", "entered", "tray_search", "menu_order",
+  "pickup_search", "exit_blocking", "chase_ready", "chasing"
 ]);
+const VALID_CANTEEN_MODES = new Set<GameState["canteenHunt"]["mode"]>(["light", "dark"]);
+const VALID_CANTEEN_TRAY_IDS = new Set(["tray_blue_01", "tray_blue_02", "tray_blue_03"]);
 const VALID_DIGIT_VALUES = new Set<NonNullable<GameState["digits"]["d1"]>>(["0", "7", "9", "8"]);
 const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "waterDrop", "headphone", "wateredHeadphone", "reverseGear", "slashLine", "towerKey",
   "fertilizer", "campusCard", "pushTriangle", "weatherWater", "mentorLine", "rightArrow",
   "gamepad", "occupancyNote", "callNumber755", "archivedLeaveRule", "itemRecognitionReport",
-  "bagNonPersonProof", "seat022Receipt", "libraryPresenceProof", "seatReleasePass"
+  "bagNonPersonProof", "seat022Receipt", "libraryPresenceProof", "seatReleasePass",
+  "cafeteriaWages", "greaseTissue", "pickupTicket0755"
 ]);
 const VALID_ZJUDING_PAGES = new Set<GameState["ui"]["zjudingPage"]>([
   "hub", "login", "directory", "learn", "library", "library_spaces", "library_seat",
@@ -92,7 +100,7 @@ const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>(
 ]);
 
 interface SaveEnvelope {
-  version: 7;
+  version: 8;
   state: GameState;
   savedAt: number;
 }
@@ -246,9 +254,38 @@ export class SaveStore {
 
       const bikeArcade = normalizeBikeArcade(saved.bikeArcade, initial.bikeArcade);
       const savedCanteenHunt = isRecord(saved.canteenHunt) ? saved.canteenHunt : {};
+      const savedCanteenPhase = enumOr(
+        savedCanteenHunt.phase,
+        VALID_CANTEEN_HUNT_PHASES,
+        initial.canteenHunt.phase
+      );
       const canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
-        phase: enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase)
+        phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
+        mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
+        identifiedTrayIds: filteredStringArrayFromSet(
+          savedCanteenHunt.identifiedTrayIds,
+          VALID_CANTEEN_TRAY_IDS,
+          initial.canteenHunt.identifiedTrayIds
+        ),
+        returnedTrayIds: filteredStringArrayFromSet(
+          savedCanteenHunt.returnedTrayIds,
+          VALID_CANTEEN_TRAY_IDS,
+          initial.canteenHunt.returnedTrayIds
+        ),
+        orderAttemptCount: nonNegativeIntegerOr(
+          savedCanteenHunt.orderAttemptCount,
+          initial.canteenHunt.orderAttemptCount
+        ),
+        pickupAttemptCount: nonNegativeIntegerOr(
+          savedCanteenHunt.pickupAttemptCount,
+          initial.canteenHunt.pickupAttemptCount
+        ),
+        blockHits: rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits),
+        bikeCodeRead: booleanOr(savedCanteenHunt.bikeCodeRead, initial.canteenHunt.bikeCodeRead),
+        bikeLockCleaned: booleanOr(savedCanteenHunt.bikeLockCleaned, initial.canteenHunt.bikeLockCleaned),
+        bikePaid: booleanOr(savedCanteenHunt.bikePaid, initial.canteenHunt.bikePaid),
+        chaseCollisions: nonNegativeIntegerOr(savedCanteenHunt.chaseCollisions, initial.canteenHunt.chaseCollisions)
       };
       if (ui.libraryFinalsPhase === "friend_contacted" || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_book_hunt") {
         bikeArcade.unlocked = true;

@@ -99,6 +99,25 @@ export class LibraryFinalsController {
     return true;
   }
 
+  leaveLibrary(): boolean {
+    const state = this.store.getState();
+    const phase = state.ui.libraryFinalsPhase;
+    if (
+      state.rpgScene !== "library_interior"
+      || phase === "idle"
+      || phase === "library_route_unlocked"
+    ) {
+      return false;
+    }
+    this.patchGame(phase, {}, {
+      runtimeMode: "rpg",
+      rpgScene: "campus_bootstrap",
+      rpgCheckpoint: "campus_library_gate"
+    });
+    this.events.emit("library_returned_to_campus", { phase, checkpoint: "campus_library_gate" });
+    return true;
+  }
+
   visitLibraryPoint(point: LibraryLocationId, checkpoint?: RpgCheckpointId): boolean {
     const phase = this.getPhase();
     if (phase === "idle" || phase === "library_route_unlocked" || phase === "friend_contacted") {

@@ -123,7 +123,18 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     ],
     body: ["已完成公开公示与三项恢复材料核验。"],
     footer: "仅对登记为非本人的占用物有效。"
-  }, [{ target: "seat-022-backpack", result: "consume" }])
+  }, [{ target: "seat-022-backpack", result: "consume" }]),
+  cafeteriaWages: object([{ target: "canteen-bike", result: "consume" }]),
+  greaseTissue: object([{ target: "canteen-bike-lock", result: "retain" }]),
+  pickupTicket0755: paper({
+    heading: "0755 取餐号",
+    fields: [
+      { label: "取餐号", value: "0755" },
+      { label: "状态", value: "请取餐" }
+    ],
+    body: ["取纸不取餐，找纸不找饭。"],
+    footer: "一张从点餐机吐出来的小票。"
+  }, [{ target: "canteen-pickup-window-3", result: "consume" }])
 };
 
 export function isPaperItem(itemId: ItemId): boolean {

@@ -193,6 +193,30 @@
   background: #315f86;
 }
 
+.rpg-canteen-mode-toggle {
+  background: rgba(10, 24, 35, 0.94);
+  border: 3px solid #74d6f2;
+  color: #e9f9ff;
+  font-size: var(--fs-label);
+  min-height: 40px;
+  padding: 6px 10px;
+  position: absolute;
+  right: 14px;
+  top: 66px;
+  z-index: 24;
+}
+
+.rpg-canteen-mode-toggle.is-dark {
+  background: rgba(236, 229, 202, 0.96);
+  border-color: #9b7f3d;
+  color: #26313b;
+}
+
+.rpg-canteen-mode-toggle:focus-visible {
+  outline: 3px solid #f0d54e;
+  outline-offset: 2px;
+}
+
 .rpg-temp-inventory {
   background: rgba(10, 14, 18, 0.94);
   border: 3px solid #77818a;
@@ -654,6 +678,13 @@
     width: 44px;
   }
 
+  .rpg-canteen-mode-toggle {
+    left: 8px;
+    min-height: 44px;
+    right: auto;
+    top: calc(var(--rpg-mobile-canvas-height) + 96px);
+  }
+
   .rpg-temp-inventory {
     left: 8px;
     padding: 6px;
@@ -673,6 +704,10 @@
     padding: 6px;
     right: 8px;
     top: calc(var(--rpg-mobile-canvas-height) + 96px);
+  }
+
+  .rpg-stage.is-canteen-interior .rpg-inventory-dock {
+    top: calc(var(--rpg-mobile-canvas-height) + 146px);
   }
 
   .rpg-inventory-dock > header strong {

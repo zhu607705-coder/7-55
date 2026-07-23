@@ -107,6 +107,7 @@ export const LIBRARY_ENTRANCE_DOOR = {
 
 export type LibraryInteractionTargetId =
   | "entrance_record"
+  | "library_exit"
   | "front_desk"
   | "lost_found_machine"
   | "catalog_terminal"
@@ -133,6 +134,15 @@ export interface LibraryInteractionTarget {
 }
 
 export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = [
+  {
+    id: "library_exit",
+    x: 715,
+    y: 842,
+    width: 48,
+    height: 28,
+    proximity: 72,
+    label: "离开图书馆"
+  },
   {
     id: "entrance_record",
     x: 750,
@@ -249,7 +259,12 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
   }
 ] as const;
 
-export const LIBRARY_CHECKPOINT_SPAWNS: Record<Exclude<RpgCheckpointId, "campus_spawn" | "dorm_spawn">, { x: number; y: number }> = {
+type LibraryCheckpointId = Extract<
+  RpgCheckpointId,
+  "campus_library_gate" | "library_entrance" | "library_seat_022" | "library_front_desk" | "library_shelf_755"
+>;
+
+export const LIBRARY_CHECKPOINT_SPAWNS: Record<LibraryCheckpointId, { x: number; y: number }> = {
   campus_library_gate: {
     x: CAMPUS_LIBRARY_APPROACH.x,
     y: CAMPUS_LIBRARY_APPROACH.y
