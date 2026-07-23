@@ -26,7 +26,14 @@ export type DeveloperCheckpointId =
   | "c2-recovery-form" | "c2-pass-generate" | "c2-pass-apply"
   | "c2-seat-sit" | "c2-seat-dialogue" | "c2-chapter-exit"
   | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result"
-  | "canteen-hunt";
+  | "canteen-hunt" | "c3-canteen-entry" | "c3-canteen-menu" | "c3-canteen-pickup"
+  | "c3-canteen-block" | "c3-canteen-block-2" | "c3-canteen-block-3"
+  | "c3-canteen-bike" | "c3-canteen-chase" | "c3-canteen-theater"
+  | "c3-theater-entry" | "c3-theater-code" | "c3-theater-program"
+  | "c3-theater-prop" | "c3-theater-spotlight" | "c3-theater-spotlight-round" | "c3-theater-complete"
+  | "c3-qizhen-location" | "c3-qizhen-map" | "c3-qizhen-gate"
+  | "c3-qizhen-reflection" | "c3-qizhen-signs" | "c3-qizhen-decoy"
+  | "c3-qizhen-mist" | "c3-qizhen-release";
 
 type LegacyDeveloperCheckpointId =
   | "c2-movement" | "c2-seat-022" | "c2-evidence"
@@ -34,6 +41,9 @@ type LegacyDeveloperCheckpointId =
 
 type DeveloperCheckpointRequestId = DeveloperCheckpointId | LegacyDeveloperCheckpointId;
 type LibraryDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c2-${string}`>;
+type CanteenDeveloperCheckpointId = Extract<DeveloperCheckpointId, "canteen-hunt" | `c3-canteen-${string}`>;
+type TheaterDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-theater-${string}`>;
+type QizhenDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-qizhen-${string}`>;
 
 export interface DeveloperCheckpoint {
   id: DeveloperCheckpointId;
@@ -87,7 +97,31 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-congestion", chapter: "第三章", label: "拥堵阶段", detail: "377 米起跑" },
   { id: "c3-sprint", chapter: "第三章", label: "冲刺阶段", detail: "566 米起跑" },
   { id: "c3-result", chapter: "第三章", label: "755 结算", detail: "章节完成" },
-  { id: "canteen-hunt", chapter: "寻人篇", label: "脚印寻人", detail: "暗色校园，沿脚印到大食堂" }
+  { id: "canteen-hunt", chapter: "第三章", label: "脚印寻人", detail: "暗色校园，沿脚印到大食堂" },
+  { id: "c3-canteen-entry", chapter: "第三章", label: "进入食堂", detail: "寻找三只残影餐盘" },
+  { id: "c3-canteen-menu", chapter: "第三章", label: "点餐机", detail: "浅色与深色菜单" },
+  { id: "c3-canteen-pickup", chapter: "第三章", label: "0755 取餐", detail: "按暗号选择窗口" },
+  { id: "c3-canteen-block", chapter: "第三章", label: "截住纸条", detail: "餐盘车封住第一个出口" },
+  { id: "c3-canteen-block-2", chapter: "第三章", label: "第二次拦截", detail: "纸条转向蒸汽出口" },
+  { id: "c3-canteen-block-3", chapter: "第三章", label: "第三次拦截", detail: "纸条转向西侧出口" },
+  { id: "c3-canteen-bike", chapter: "第三章", label: "扫码自行车", detail: "使用餐盘回收费" },
+  { id: "c3-canteen-chase", chapter: "第三章", label: "第一次追逐", detail: "校园大地图 SVG 演出" },
+  { id: "c3-canteen-theater", chapter: "第三章", label: "抵达剧院", detail: "纸条钻进剧院" },
+  { id: "c3-theater-entry", chapter: "第三章", label: "剧院检票", detail: "海报栏与取票机" },
+  { id: "c3-theater-code", chapter: "第三章", label: "取票码 0832", detail: "两张半票根待合成" },
+  { id: "c3-theater-program", chapter: "第三章", label: "节目顺序", detail: "追光、开场、谢幕" },
+  { id: "c3-theater-prop", chapter: "第三章", label: "后台道具箱", detail: "票根验证与荧光粉刷" },
+  { id: "c3-theater-spotlight", chapter: "第三章", label: "追光围捕", detail: "三轮路径预判" },
+  { id: "c3-theater-spotlight-round", chapter: "第三章", label: "追光第一轮", detail: "观察路径终点并选择光圈" },
+  { id: "c3-theater-complete", chapter: "第三章", label: "替身揭晓", detail: "假纸条与湿节目单" },
+  { id: "c3-qizhen-location", chapter: "第三章", label: "寻找启真湖", detail: "CC98、馆藏与微信三条线索" },
+  { id: "c3-qizhen-map", chapter: "第三章", label: "地图猜谜", detail: "桥边、倒影与湖自由组合" },
+  { id: "c3-qizhen-gate", chapter: "第三章", label: "启真湖入口", detail: "从校园大地图步行进入" },
+  { id: "c3-qizhen-reflection", chapter: "第三章", label: "倒影追踪", detail: "深浅模式辨认三次残影" },
+  { id: "c3-qizhen-signs", chapter: "第三章", label: "指示牌校准", detail: "旋转三块湖边指示牌" },
+  { id: "c3-qizhen-decoy", chapter: "第三章", label: "悬挂假纸条", detail: "按倒影坐标选择目标" },
+  { id: "c3-qizhen-mist", chapter: "第三章", label: "喷雾显形", detail: "观察节奏后切换浅色模式" },
+  { id: "c3-qizhen-release", chapter: "第三章", label: "纸条脱离倒影", detail: "准备追往东教学楼" }
 ];
 
 const CHECKPOINT_IDS = new Set(DEVELOPER_CHECKPOINTS.map((checkpoint) => checkpoint.id));
@@ -437,6 +471,210 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
   return state;
 }
 
+function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameState {
+  const state = createLibraryCheckpointState("c2-chapter-exit");
+  const identifiedTrayIds = ["tray_blue_01", "tray_blue_02", "tray_blue_03"];
+  const afterTrayStage = id !== "canteen-hunt" && id !== "c3-canteen-entry";
+  const afterMenuStage = ["c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
+  const afterPickupStage = ["c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
+  const afterBlockingStage = ["c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
+  const phase: GameState["canteenHunt"]["phase"] = id === "canteen-hunt"
+    ? "tracking"
+    : id === "c3-canteen-entry"
+      ? "tray_search"
+      : id === "c3-canteen-menu"
+        ? "menu_order"
+        : id === "c3-canteen-pickup"
+          ? "pickup_search"
+          : ["c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3"].includes(id)
+            ? "exit_blocking"
+            : id === "c3-canteen-bike"
+              ? "chase_ready"
+              : id === "c3-canteen-chase"
+                ? "chasing"
+                : "theater_reached";
+  const inCanteen = ["c3-canteen-entry", "c3-canteen-menu", "c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3"].includes(id);
+
+  return {
+    ...state,
+    runtimeMode: "rpg",
+    rpgScene: inCanteen ? "canteen_interior" : "campus_bootstrap",
+    rpgCheckpoint: inCanteen
+      ? "canteen_entrance"
+      : afterBlockingStage
+        ? id === "c3-canteen-theater" ? "campus_theater_junction" : "campus_canteen_gate"
+        : "campus_spawn",
+    themeMode: "normal",
+    items: {
+      ...state.items,
+      cafeteriaWages: afterTrayStage && !["c3-canteen-chase", "c3-canteen-theater"].includes(id),
+      greaseTissue: afterTrayStage,
+      pickupTicket0755: afterMenuStage && !afterPickupStage
+    },
+    canteenHunt: {
+      ...state.canteenHunt,
+      active: true,
+      phase,
+      mode: "light",
+      identifiedTrayIds: afterTrayStage ? identifiedTrayIds : [],
+      returnedTrayIds: afterTrayStage ? identifiedTrayIds : [],
+      orderAttemptCount: afterMenuStage ? 1 : 0,
+      pickupAttemptCount: afterPickupStage ? 1 : 0,
+      blockHits: afterBlockingStage ? 3 : id === "c3-canteen-block-3" ? 2 : id === "c3-canteen-block-2" ? 1 : 0,
+      bikeCodeRead: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
+      bikeLockCleaned: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
+      bikePaid: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
+      chaseCollisions: id === "c3-canteen-theater" ? 1 : 0
+    },
+    ui: {
+      ...state.ui,
+      inventoryOpen: false,
+      selectedItem: null,
+      seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three"]
+    }
+  };
+}
+
+function createTheaterCheckpointState(id: TheaterDeveloperCheckpointId): GameState {
+  const base = createCanteenCheckpointState("c3-canteen-theater");
+  const reachedCode = ["c3-theater-code", "c3-theater-program", "c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
+  const admitted = ["c3-theater-program", "c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
+  const programSolved = ["c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
+  const propSolved = ["c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
+  const complete = id === "c3-theater-complete";
+  const phase: GameState["theaterHunt"]["phase"] = complete
+    ? "complete"
+    : id === "c3-theater-spotlight-round"
+      ? "spotlight_hunt"
+    : id === "c3-theater-spotlight"
+      ? "spotlight_ready"
+      : id === "c3-theater-prop"
+        ? "prop_setup"
+        : id === "c3-theater-program"
+          ? "program_search"
+          : "entry_ticket";
+  return {
+    ...base,
+    rpgScene: "theater_interior",
+    rpgCheckpoint: programSolved ? "theater_stage" : admitted ? "theater_auditorium" : "theater_lobby",
+    items: {
+      ...base.items,
+      greaseTissue: true,
+      theaterTicketHalfA: reachedCode && !admitted,
+      theaterTicketHalfB: false,
+      temporaryTheaterTicket: admitted,
+      theaterProgramOpening: admitted && !programSolved,
+      theaterProgramSpotlight: admitted && !programSolved,
+      theaterProgramFinale: admitted && !programSolved,
+      spotlightRemote: programSolved,
+      fluorescentBrush: propSolved,
+      decoyPaper: complete,
+      wetProgram: complete
+    },
+    theaterHunt: {
+      ...base.theaterHunt,
+      active: true,
+      phase,
+      mode: id === "c3-theater-spotlight-round" ? "dark" : "light",
+      posterCleaned: reachedCode,
+      ticketCodeRead: reachedCode,
+      ticketCodeAttempts: admitted ? 1 : 0,
+      admitted,
+      collectedProgramIds: admitted ? ["opening", "spotlight", "finale"] : [],
+      programOrder: programSolved ? ["spotlight", "opening", "finale"] : [],
+      propGhostRead: programSolved,
+      managerHintRead: programSolved,
+      propBoxOpened: propSolved,
+      paperDusted: propSolved,
+      spotlightRound: complete ? 3 : 0,
+      decoyRevealed: complete
+    }
+  };
+}
+
+function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState {
+  const base = createTheaterCheckpointState("c3-theater-complete");
+  const inLake = [
+    "c3-qizhen-reflection",
+    "c3-qizhen-signs",
+    "c3-qizhen-decoy",
+    "c3-qizhen-mist",
+    "c3-qizhen-release"
+  ].includes(id);
+  const phase: GameState["qizhenLake"]["phase"] = id === "c3-qizhen-location" || id === "c3-qizhen-map"
+    ? "location_search"
+    : id === "c3-qizhen-gate"
+      ? "lake_unlocked"
+      : id === "c3-qizhen-reflection"
+        ? "reflection_hunt"
+        : id === "c3-qizhen-signs"
+          ? "sign_alignment"
+          : id === "c3-qizhen-decoy"
+            ? "decoy_setup"
+            : id === "c3-qizhen-mist"
+              ? "mist_timing"
+              : "chase_ready";
+  const signsSolved = ["c3-qizhen-decoy", "c3-qizhen-mist", "c3-qizhen-release"].includes(id);
+  const mistReached = ["c3-qizhen-mist", "c3-qizhen-release"].includes(id);
+  const releaseReady = id === "c3-qizhen-release";
+
+  return {
+    ...base,
+    runtimeMode: id === "c3-qizhen-location" || id === "c3-qizhen-map" ? "phone" : "rpg",
+    currentScene: id === "c3-qizhen-location" ? "cc98" : id === "c3-qizhen-map" ? "zjuding" : base.currentScene,
+    rpgScene: inLake ? "qizhen_lake" : "campus_bootstrap",
+    rpgCheckpoint: id === "c3-qizhen-gate"
+      ? "campus_qizhen_gate"
+      : id === "c3-qizhen-signs"
+        ? "qizhen_signs"
+        : id === "c3-qizhen-decoy"
+          ? "qizhen_decoy"
+          : mistReached
+            ? "qizhen_mist"
+            : inLake
+              ? "qizhen_reflection"
+              : base.rpgCheckpoint,
+    items: {
+      ...base.items,
+      wetProgram: true,
+      decoyPaper: true,
+      bridgeKeyword: id !== "c3-qizhen-location",
+      reflectionKeyword: id !== "c3-qizhen-location",
+      lakeKeyword: id !== "c3-qizhen-location",
+      reflectionCoordinate: signsSolved
+    },
+    qizhenLake: {
+      ...base.qizhenLake,
+      active: true,
+      phase,
+      mode: id === "c3-qizhen-signs" || id === "c3-qizhen-mist" ? "dark" : "light",
+      locationBriefingSeen: id !== "c3-qizhen-location",
+      bridgeClueFound: id !== "c3-qizhen-location",
+      reflectionClueFound: id !== "c3-qizhen-location",
+      lakeClueFound: id !== "c3-qizhen-location",
+      mapClueIds: id === "c3-qizhen-location"
+        ? []
+        : id === "c3-qizhen-map"
+          ? ["bridge", "reflection"]
+          : ["bridge", "reflection", "lake"],
+      introSeen: ["c3-qizhen-signs", "c3-qizhen-decoy", "c3-qizhen-mist", "c3-qizhen-release"].includes(id),
+      reflectionRound: ["sign_alignment", "decoy_setup", "mist_timing", "chase_ready"].includes(phase) ? 3 : 0,
+      signRotations: signsSolved ? [1, 2, 3] : [0, 0, 0],
+      signsSolved,
+      decoyPlacedAt: mistReached ? "lamp" : null,
+      mistRhythmRead: releaseReady,
+      mistAttempts: releaseReady ? 1 : 0,
+      paperReleased: releaseReady
+    },
+    ui: {
+      ...base.ui,
+      zjudingPage: id === "c3-qizhen-map" ? "campus_map" : "hub",
+      inventoryOpen: false,
+      selectedItem: null
+    }
+  };
+}
+
 export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointRequestId): GameState {
   const id = resolveCheckpointId(requestedId) ?? "c1-alarm";
   const initial = createInitialGameState();
@@ -510,20 +748,14 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   if (LIBRARY_CHECKPOINT_ORDER.includes(id as LibraryDeveloperCheckpointId)) {
     return createLibraryCheckpointState(id as LibraryDeveloperCheckpointId);
   }
-  if (id === "canteen-hunt") {
-    const state = createCompletedMovementState();
-    return {
-      ...state,
-      runtimeMode: "rpg",
-      rpgScene: "campus_bootstrap",
-      rpgCheckpoint: "campus_spawn",
-      themeMode: "dark",
-      canteenHunt: { active: true, phase: "tracking" },
-      ui: {
-        ...state.ui,
-        seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three"]
-      }
-    };
+  if (id === "canteen-hunt" || id.startsWith("c3-canteen-")) {
+    return createCanteenCheckpointState(id as CanteenDeveloperCheckpointId);
+  }
+  if (id.startsWith("c3-theater-")) {
+    return createTheaterCheckpointState(id as TheaterDeveloperCheckpointId);
+  }
+  if (id.startsWith("c3-qizhen-")) {
+    return createQizhenCheckpointState(id as QizhenDeveloperCheckpointId);
   }
 
   const state = createLibraryCheckpointState("c2-chapter-exit");

@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type { GameState } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
+import canteenContent from "../../data/chapter3-canteen.content.json";
+import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
 import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
 import type { RpgBridge } from "./RpgBridge";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
@@ -34,9 +36,18 @@ const CAMERA_FOLLOW_OFFSET_Y = 34;
 
 // 寻人篇 · 地图层：暗色校园里沿脚印一路追到大食堂（第 1 张场景，最左侧）。
 const CANTEEN_HUNT_SPAWN = { x: 10500, y: 1004 };
-const CANTEEN_GATE = { x: 770, y: 898, radius: 80 };
-const CANTEEN_APPROACH = { x: 800, y: 958 };
+const CANTEEN_GATE = { x: 756, y: 756, radius: 88 };
+const CANTEEN_APPROACH = { x: 756, y: 756 };
 const CANTEEN_BIKE = { x: 980, y: 973 };
+const CANTEEN_BIKE_RADIUS = 190;
+const CANTEEN_DARK_OVERLAY_COLOR = 0x050b1d;
+const CANTEEN_DARK_OVERLAY_ALPHA = 0.76;
+const CANTEEN_PLAYER_LIGHT_ALPHA = 0.82;
+const CANTEEN_PLAYER_LIGHT_SCALE = 0.72;
+const CANTEEN_THEATER_JUNCTION = campusRuntimeData.walkability.theaterApproach;
+const THEATER_GATE = campusRuntimeData.theaterGate;
+const QIZHEN_GATE = campusRuntimeData.qizhenGate;
+const QIZHEN_APPROACH = campusRuntimeData.walkability.qizhenApproach;
 const CANTEEN_NARRATION_RADIUS = 320;
 const FOOTPRINT_SPACING = 46;
 const FOOTPRINT_MESSY_RATIO = 0.86;
@@ -68,6 +79,7 @@ export class BootScene extends Phaser.Scene {
   private pathIndicatorObjects: Phaser.GameObjects.Arc[] = [];
   private currentPathLength = 0;
   private canteenHuntActive = false;
+  private canteenPhase: GameState["canteenHunt"]["phase"] = "tracking";
   private canteenDarkOverlay: Phaser.GameObjects.Rectangle | null = null;
   private canteenPlayerLight: Phaser.GameObjects.Image | null = null;
   private canteenFootprints: Phaser.GameObjects.Image[] = [];
@@ -75,8 +87,15 @@ export class BootScene extends Phaser.Scene {
   private canteenGatePrompt: Phaser.GameObjects.Text | null = null;
   private canteenBike: Phaser.GameObjects.Image | null = null;
   private canteenBikeHint: Phaser.GameObjects.Text | null = null;
+  private canteenBikeCodeGlow: Phaser.GameObjects.Arc | null = null;
+  private canteenBikeGlare: Phaser.GameObjects.Rectangle | null = null;
   private canteenMessyNarrationShown = false;
-  private canteenBikeHintShown = false;
+  private canteenBikeIntroComplete = false;
+  private theaterGateMarker: Phaser.GameObjects.Arc | null = null;
+  private theaterGatePrompt: Phaser.GameObjects.Text | null = null;
+  private qizhenGateMarker: Phaser.GameObjects.Arc | null = null;
+  private qizhenGatePrompt: Phaser.GameObjects.Text | null = null;
+  private qizhenBriefingQueued = false;
 
   constructor() {
     super("campus-bootstrap");
@@ -119,8 +138,15 @@ export class BootScene extends Phaser.Scene {
     ensureRpgPlayerTextures(this);
     const state = this.bridge.getState();
     this.canteenHuntActive = state.canteenHunt.active;
-    const spawn = this.canteenHuntActive
-      ? CANTEEN_HUNT_SPAWN
+    this.canteenPhase = state.canteenHunt.phase;
+    const spawn = state.rpgCheckpoint === "campus_qizhen_gate"
+      ? QIZHEN_APPROACH
+      : this.canteenHuntActive
+      ? this.canteenPhase === "chase_ready" || this.canteenPhase === "chasing"
+        ? CANTEEN_APPROACH
+        : this.canteenPhase === "theater_reached"
+          ? CANTEEN_THEATER_JUNCTION
+          : CANTEEN_HUNT_SPAWN
       : state.rpgCheckpoint === "campus_library_gate"
         && state.ui.libraryFinalsPhase === "library_route_unlocked"
         ? LIBRARY_CHECKPOINT_SPAWNS.campus_library_gate
@@ -174,6 +200,7 @@ export class BootScene extends Phaser.Scene {
     if (this.canteenHuntActive) {
       this.setupCanteenHunt();
     }
+    this.setupQizhenCampus(state);
 
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
       if (event.name === "rpg_direction_changed") {
@@ -187,6 +214,31 @@ export class BootScene extends Phaser.Scene {
         this.cameraController.zoomBy(Number(event.payload?.delta) || 0);
       } else if (event.name === "rpg_interact") {
         this.interactRequested = true;
+      } else if (event.name === "rpg_inventory_drop_requested") {
+        this.handleCanteenInventoryDrop(event.payload);
+      } else if (event.name === "canteen_mode_changed" && this.canteenPhase === "chase_ready") {
+        this.applyCanteenBikeMode(String(event.payload?.mode) === "dark" ? "dark" : "light");
+      } else if (event.name === "canteen_bike_code_read") {
+        this.animateCanteenBikeCodeRead();
+      } else if (event.name === "canteen_bike_glare_failed") {
+        this.showCanteenFeedback(canteenContent.bike.glareFailed, "system");
+      } else if (event.name === "canteen_bike_dark_payment_rejected") {
+        this.showCanteenFeedback(canteenContent.bike.darkPaymentRejected, "system");
+      } else if (event.name === "canteen_bike_scan_rule") {
+        this.showCanteenFeedback(canteenContent.bike.scanRule, "task");
+      } else if (event.name === "canteen_bike_lock_cleaned") {
+        this.animateCanteenBikeCleaned();
+      } else if (event.name === "canteen_bike_payment_ready") {
+        this.showCanteenFeedback(canteenContent.bike.unlock, "task");
+      } else if (event.name === "canteen_chase_completed") {
+        this.player.setPosition(CANTEEN_THEATER_JUNCTION.x, CANTEEN_THEATER_JUNCTION.y);
+        this.movement.clearPath();
+        this.cameraController.recenter(true);
+        this.bridge.emit("rpg_subtitle", {
+          text: canteenContent.bike.finish,
+          tone: "system",
+          durationMs: 3200
+        });
       }
     }, clearRpgRuntimeDebugState);
     this.bridge.emit("rpg_booted", { scene: "campus_bootstrap" });
@@ -206,6 +258,8 @@ export class BootScene extends Phaser.Scene {
     if (this.canteenHuntActive) {
       this.updateCanteenHunt();
     }
+    this.updateQizhenGate();
+    this.interactRequested = false;
     this.publishDebugState();
 
     if (!state.actOne.movementEnabled) {
@@ -289,25 +343,67 @@ export class BootScene extends Phaser.Scene {
     this.libraryGateMarker.setVisible(available);
     this.libraryGatePrompt.setVisible(nearby);
 
-    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    const keyboardInteract = nearby && Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearby && (keyboardInteract || this.interactRequested)) {
       this.bridge.setCheckpoint("campus_library_gate");
       this.bridge.emit("rpg_library_gate_requested", { landmark: "foundation_library" });
     }
-    this.interactRequested = false;
   }
 
   private setupCanteenHunt(): void {
     this.ensureCanteenTextures();
-    this.createCanteenDarkness();
-    this.createCanteenFootprintTrail();
-    this.createCanteenGate();
-    this.createCanteenBike();
-    this.bridge.emit("rpg_subtitle", {
-      text: "夜里了。跟着地上的脚印，看看它去了哪。",
-      tone: "narrator",
-      durationMs: 4200
+    if (["tracking", "canteen_reached"].includes(this.canteenPhase)) {
+      this.createCanteenDarkness();
+      this.createCanteenFootprintTrail();
+      this.createCanteenGate();
+      this.bridge.emit("rpg_subtitle", {
+        text: canteenContent.hints[0],
+        tone: "task",
+        durationMs: 4200
+      });
+      return;
+    }
+    if (this.canteenPhase === "chase_ready") {
+      this.createCanteenBike();
+      this.createCanteenBikeModeLayer();
+      const bikeIntro = [...canteenContent.bike.setupDialogue, ...canteenContent.bike.noMoney];
+      this.emitCanteenSequence(bikeIntro);
+      this.time.delayedCall(bikeIntro.length * 2500, () => {
+        this.canteenBikeIntroComplete = true;
+      });
+      return;
+    }
+    if (this.canteenPhase === "theater_reached") {
+      this.createTheaterGate();
+    }
+  }
+
+  private createTheaterGate(): void {
+    this.theaterGateMarker = this.add.circle(THEATER_GATE.x, THEATER_GATE.y, 25, 0x8d3244, 0.24)
+      .setStrokeStyle(5, 0xe8c16f, 0.95)
+      .setDepth(THEATER_GATE.y + 85);
+    this.theaterGatePrompt = this.add.text(
+      THEATER_GATE.x,
+      THEATER_GATE.y - 54,
+      `剧院入口  ·  ${formatRpgInteractionHint("进入剧院")}`,
+      {
+        color: "#fff4df",
+        backgroundColor: "#28141cee",
+        fontFamily: "monospace",
+        fontSize: "13px",
+        padding: { x: 8, y: 5 }
+      }
+    ).setOrigin(0.5).setDepth(THEATER_GATE.y + 90).setVisible(false);
+    this.tweens.add({
+      targets: this.theaterGateMarker,
+      scale: { from: 0.86, to: 1.18 },
+      alpha: { from: 0.5, to: 1 },
+      duration: 760,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut"
     });
+    this.cameraController.minimapCamera?.ignore([this.theaterGateMarker, this.theaterGatePrompt]);
   }
 
   private ensureCanteenTextures(): void {
@@ -363,22 +459,23 @@ export class BootScene extends Phaser.Scene {
   private createCanteenDarkness(): void {
     const w = ZIJINGANG_WORLD.width;
     const h = ZIJINGANG_WORLD.height;
-    this.canteenDarkOverlay = this.add.rectangle(w / 2, h / 2, w, h, 0x0a1230, 1)
+    this.canteenDarkOverlay = this.add.rectangle(w / 2, h / 2, w, h, CANTEEN_DARK_OVERLAY_COLOR, 1)
       .setAlpha(0)
       .setDepth(500);
     this.tweens.add({
       targets: this.canteenDarkOverlay,
-      alpha: 0.66,
+      alpha: CANTEEN_DARK_OVERLAY_ALPHA,
       duration: 2000,
       ease: "Cubic.easeOut"
     });
     this.canteenPlayerLight = this.add.image(this.player.x, this.player.y, "canteen-light")
       .setDepth(501)
       .setBlendMode(Phaser.BlendModes.ADD)
+      .setScale(CANTEEN_PLAYER_LIGHT_SCALE)
       .setAlpha(0);
     this.tweens.add({
       targets: this.canteenPlayerLight,
-      alpha: 0.55,
+      alpha: CANTEEN_PLAYER_LIGHT_ALPHA,
       duration: 2000,
       delay: 300
     });
@@ -416,6 +513,8 @@ export class BootScene extends Phaser.Scene {
         .setRotation(rotation)
         .setAlpha(0)
         .setScale(scale)
+        .setTint(0xb6efff)
+        .setBlendMode(Phaser.BlendModes.ADD)
         .setDepth(oy + 4);
       this.tweens.add({
         targets: footprint,
@@ -428,12 +527,14 @@ export class BootScene extends Phaser.Scene {
     });
     const tail = spaced[spaced.length - 1];
     for (let k = 0; k < 28; k++) {
-      const ox = tail.x + Phaser.Math.Between(-160, 160);
-      const oy = tail.y + Phaser.Math.Between(-95, 70);
+      const ox = tail.x + Phaser.Math.Between(-140, 140);
+      const oy = tail.y + Phaser.Math.Between(8, 96);
       const footprint = this.add.image(ox, oy, "canteen-footprint")
         .setRotation(Phaser.Math.FloatBetween(-Math.PI, Math.PI))
         .setAlpha(0)
         .setScale(Phaser.Math.FloatBetween(0.6, 1.1))
+        .setTint(0xb6efff)
+        .setBlendMode(Phaser.BlendModes.ADD)
         .setDepth(oy + 4);
       this.tweens.add({
         targets: footprint,
@@ -477,8 +578,8 @@ export class BootScene extends Phaser.Scene {
   }
 
   private createCanteenGate(): void {
-    this.canteenGateMarker = this.add.circle(CANTEEN_GATE.x, CANTEEN_GATE.y, 24, 0x1d9b75, 0.22)
-      .setStrokeStyle(5, 0xe6d268, 0.95)
+    this.canteenGateMarker = this.add.circle(CANTEEN_GATE.x, CANTEEN_GATE.y, 24, 0x9b7228, 0.3)
+      .setStrokeStyle(5, 0xffdf73, 1)
       .setDepth(CANTEEN_GATE.y + 80);
     this.canteenGatePrompt = this.add.text(
       CANTEEN_GATE.x,
@@ -507,11 +608,13 @@ export class BootScene extends Phaser.Scene {
   private createCanteenBike(): void {
     this.canteenBike = this.add.image(CANTEEN_BIKE.x, CANTEEN_BIKE.y, "canteen-bike")
       .setDepth(CANTEEN_BIKE.y + 6)
-      .setAlpha(0.95);
+      .setAlpha(0.95)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => this.requestCanteenBikeIfNearby());
     this.canteenBikeHint = this.add.text(
       CANTEEN_BIKE.x,
       CANTEEN_BIKE.y - 40,
-      "门口的自行车……刷卡就能追上去",
+      `${canteenContent.bike.scan}\n${canteenContent.bike.balance}`,
       {
         color: "#fff7df",
         backgroundColor: "#241a12ee",
@@ -523,7 +626,106 @@ export class BootScene extends Phaser.Scene {
     this.cameraController.minimapCamera?.ignore([this.canteenBike, this.canteenBikeHint]);
   }
 
+  private createCanteenBikeModeLayer(): void {
+    const state = this.bridge.getState();
+    this.canteenDarkOverlay = this.add.rectangle(
+      ZIJINGANG_WORLD.width / 2,
+      ZIJINGANG_WORLD.height / 2,
+      ZIJINGANG_WORLD.width,
+      ZIJINGANG_WORLD.height,
+      CANTEEN_DARK_OVERLAY_COLOR,
+      CANTEEN_DARK_OVERLAY_ALPHA
+    ).setDepth(500).setAlpha(state.canteenHunt.mode === "dark" ? CANTEEN_DARK_OVERLAY_ALPHA : 0);
+    this.canteenPlayerLight = this.add.image(this.player.x, this.player.y, "canteen-light")
+      .setDepth(501)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setScale(CANTEEN_PLAYER_LIGHT_SCALE)
+      .setAlpha(state.canteenHunt.mode === "dark" ? CANTEEN_PLAYER_LIGHT_ALPHA : 0);
+    this.canteenBikeCodeGlow = this.add.circle(CANTEEN_BIKE.x, CANTEEN_BIKE.y, 31, 0x4bc9ff, 0.16)
+      .setStrokeStyle(4, 0x88e7ff, 0.95)
+      .setDepth(CANTEEN_BIKE.y + 4)
+      .setVisible(state.canteenHunt.mode === "dark");
+    this.canteenBikeGlare = this.add.rectangle(CANTEEN_BIKE.x + 8, CANTEEN_BIKE.y - 5, 22, 18, 0xffffff, 0.76)
+      .setStrokeStyle(2, 0xffedba, 0.9)
+      .setRotation(-0.18)
+      .setDepth(CANTEEN_BIKE.y + 10)
+      .setVisible(state.canteenHunt.mode === "light" && !state.canteenHunt.bikeLockCleaned);
+    this.tweens.add({
+      targets: this.canteenBikeCodeGlow,
+      scale: { from: 0.86, to: 1.16 },
+      alpha: { from: 0.35, to: 0.95 },
+      duration: 720,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut"
+    });
+    this.cameraController.minimapCamera?.ignore([
+      this.canteenDarkOverlay,
+      this.canteenPlayerLight,
+      this.canteenBikeCodeGlow,
+      this.canteenBikeGlare
+    ]);
+  }
+
+  private applyCanteenBikeMode(mode: GameState["canteenHunt"]["mode"]): void {
+    const duration = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? 120 : 420;
+    if (this.canteenDarkOverlay) {
+      this.tweens.add({ targets: this.canteenDarkOverlay, alpha: mode === "dark" ? CANTEEN_DARK_OVERLAY_ALPHA : 0, duration, ease: "Sine.easeInOut" });
+    }
+    if (this.canteenPlayerLight) {
+      this.tweens.add({ targets: this.canteenPlayerLight, alpha: mode === "dark" ? CANTEEN_PLAYER_LIGHT_ALPHA : 0, duration, ease: "Sine.easeInOut" });
+    }
+    this.canteenBikeCodeGlow?.setVisible(mode === "dark");
+    this.canteenBikeGlare?.setVisible(mode === "light" && !this.bridge.getState().canteenHunt.bikeLockCleaned);
+    this.bridge.emit(mode === "dark" ? "canteen_dark_mode_enabled" : "canteen_light_mode_enabled");
+  }
+
+  private animateCanteenBikeCodeRead(): void {
+    this.showCanteenFeedback(canteenContent.bike.codeVisible, "system");
+    if (!this.canteenBikeCodeGlow) return;
+    this.tweens.add({
+      targets: this.canteenBikeCodeGlow,
+      scale: 1.34,
+      duration: 170,
+      yoyo: true,
+      repeat: 1,
+      ease: "Cubic.easeOut"
+    });
+  }
+
+  private animateCanteenBikeCleaned(): void {
+    this.showCanteenFeedback(canteenContent.bike.lockCleaned, "success");
+    if (!this.canteenBikeGlare) return;
+    this.tweens.add({
+      targets: this.canteenBikeGlare,
+      x: CANTEEN_BIKE.x + 28,
+      alpha: 0,
+      duration: 360,
+      ease: "Cubic.easeOut",
+      onComplete: () => this.canteenBikeGlare?.setVisible(false)
+    });
+  }
+
+  private showCanteenFeedback(text: string, tone: "system" | "task" | "success"): void {
+    this.bridge.emit("rpg_subtitle", { text, tone, durationMs: 3200 });
+  }
+
   private updateCanteenHunt(): void {
+    this.canteenPhase = this.bridge.getState().canteenHunt.phase;
+    if (this.canteenPhase === "theater_reached") {
+      this.updateTheaterGate();
+      return;
+    }
+    if (this.canteenPhase === "chase_ready") {
+      this.updateCanteenBike();
+      return;
+    }
+    if (!["tracking", "canteen_reached"].includes(this.canteenPhase)) {
+      this.canteenGateMarker?.setVisible(false);
+      this.canteenGatePrompt?.setVisible(false);
+      this.canteenBikeHint?.setVisible(false);
+      return;
+    }
     if (this.canteenPlayerLight) {
       this.canteenPlayerLight.setPosition(this.player.x, this.player.y);
     }
@@ -535,11 +737,6 @@ export class BootScene extends Phaser.Scene {
     );
     if (!this.canteenMessyNarrationShown && distanceToGate <= CANTEEN_NARRATION_RADIUS) {
       this.canteenMessyNarrationShown = true;
-      this.bridge.emit("rpg_subtitle", {
-        text: "食堂门口人太多，脚印全乱了……只能进去找。",
-        tone: "narrator",
-        durationMs: 4200
-      });
     }
     if (this.canteenGateMarker) {
       this.canteenGateMarker.setVisible(true);
@@ -548,14 +745,99 @@ export class BootScene extends Phaser.Scene {
     if (this.canteenGatePrompt) {
       this.canteenGatePrompt.setVisible(nearby);
     }
-    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    const keyboardInteract = nearby && Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearby && (keyboardInteract || this.interactRequested)) {
-      this.bridge.emit("rpg_subtitle", {
-        text: "（食堂内部场景待开放：解谜 + 打工收钱）",
-        tone: "system",
-        durationMs: 3600
+      this.bridge.setCheckpoint("campus_canteen_gate");
+      this.bridge.emit("rpg_canteen_entry_requested");
+    }
+  }
+
+  private updateTheaterGate(): void {
+    const distance = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      THEATER_GATE.x,
+      THEATER_GATE.y
+    );
+    const nearby = distance <= 110;
+    this.theaterGateMarker?.setVisible(true);
+    this.theaterGatePrompt?.setVisible(nearby);
+    const keyboardInteract = nearby && Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    if (nearby && (keyboardInteract || this.interactRequested)) {
+      this.bridge.setCheckpoint("campus_theater_junction");
+      this.bridge.emit("rpg_theater_entry_requested");
+    }
+  }
+
+  private setupQizhenCampus(state: GameState): void {
+    if (
+      state.qizhenLake.active
+      && state.qizhenLake.phase === "location_search"
+      && !state.qizhenLake.locationBriefingSeen
+      && !this.qizhenBriefingQueued
+    ) {
+      this.qizhenBriefingQueued = true;
+      this.emitCanteenSequence(qizhenContent.locationSearch.dialogue);
+      this.time.delayedCall(qizhenContent.locationSearch.dialogue.length * 2500, () => {
+        this.bridge.emit("rpg_qizhen_location_briefing_seen_requested");
       });
     }
+    if (state.qizhenLake.active && !["inactive", "location_search"].includes(state.qizhenLake.phase)) {
+      this.createQizhenGate();
+    }
+  }
+
+  private createQizhenGate(): void {
+    if (this.qizhenGateMarker) return;
+    this.qizhenGateMarker = this.add.circle(QIZHEN_GATE.x, QIZHEN_GATE.y, 27, 0x1c8297, 0.24)
+      .setStrokeStyle(5, 0xa5e6d5, 0.96)
+      .setDepth(QIZHEN_GATE.y + 85);
+    this.qizhenGatePrompt = this.add.text(
+      QIZHEN_GATE.x,
+      QIZHEN_GATE.y - 56,
+      `启真湖入口  ·  ${formatRpgInteractionHint("进入启真湖")}`,
+      {
+        color: "#effff8",
+        backgroundColor: "#0d2930ee",
+        fontFamily: "monospace",
+        fontSize: "13px",
+        padding: { x: 8, y: 5 }
+      }
+    ).setOrigin(0.5).setDepth(QIZHEN_GATE.y + 90).setVisible(false);
+    this.tweens.add({
+      targets: this.qizhenGateMarker,
+      scale: { from: 0.86, to: 1.18 },
+      alpha: { from: 0.52, to: 1 },
+      duration: 760,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut"
+    });
+    this.cameraController.minimapCamera?.ignore([this.qizhenGateMarker, this.qizhenGatePrompt]);
+  }
+
+  private updateQizhenGate(): void {
+    const state = this.bridge.getState();
+    const available = state.qizhenLake.active && !["inactive", "location_search"].includes(state.qizhenLake.phase);
+    if (!available) {
+      this.qizhenGateMarker?.setVisible(false);
+      this.qizhenGatePrompt?.setVisible(false);
+      return;
+    }
+    if (!this.qizhenGateMarker) this.createQizhenGate();
+    const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, QIZHEN_GATE.x, QIZHEN_GATE.y);
+    const nearby = distance <= QIZHEN_GATE.radius;
+    this.qizhenGateMarker?.setVisible(true);
+    this.qizhenGatePrompt?.setVisible(nearby);
+    const keyboardInteract = nearby && Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    if (nearby && (keyboardInteract || this.interactRequested)) {
+      this.bridge.setCheckpoint("campus_qizhen_gate");
+      this.bridge.emit("rpg_qizhen_entry_requested");
+    }
+  }
+
+  private updateCanteenBike(): void {
+    this.canteenPlayerLight?.setPosition(this.player.x, this.player.y);
     const distanceToBike = Phaser.Math.Distance.Between(
       this.player.x,
       this.player.y,
@@ -563,9 +845,44 @@ export class BootScene extends Phaser.Scene {
       CANTEEN_BIKE.y
     );
     if (this.canteenBikeHint) {
-      this.canteenBikeHint.setVisible(distanceToBike <= 130);
+      this.canteenBikeHint.setVisible(this.canteenBikeIntroComplete && distanceToBike <= CANTEEN_BIKE_RADIUS);
     }
-    this.interactRequested = false;
+    const keyboardInteract = distanceToBike <= CANTEEN_BIKE_RADIUS
+      && Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    if (distanceToBike <= CANTEEN_BIKE_RADIUS && (keyboardInteract || this.interactRequested)) {
+      this.requestCanteenBikeIfNearby();
+    }
+  }
+
+  private requestCanteenBikeIfNearby(): void {
+    if (this.canteenPhase !== "chase_ready" || !this.canteenBikeIntroComplete) return;
+    if (Phaser.Math.Distance.Between(this.player.x, this.player.y, CANTEEN_BIKE.x, CANTEEN_BIKE.y) > CANTEEN_BIKE_RADIUS) return;
+    this.bridge.emit("rpg_canteen_bike_inspect_requested");
+  }
+
+  private handleCanteenInventoryDrop(payload?: Record<string, unknown>): void {
+    if (this.canteenPhase !== "chase_ready" || !this.canteenBikeIntroComplete) return;
+    const itemId = String(payload?.itemId ?? "");
+    if (itemId !== "cafeteriaWages" && itemId !== "greaseTissue") return;
+    const canvasX = Number(payload?.canvasX);
+    const canvasY = Number(payload?.canvasY);
+    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) return;
+    const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
+    if (Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, CANTEEN_BIKE.x, CANTEEN_BIKE.y) <= 100) {
+      this.bridge.emit(itemId === "greaseTissue" ? "rpg_canteen_bike_tissue_requested" : "rpg_canteen_bike_requested");
+    }
+  }
+
+  private emitCanteenSequence(lines: readonly string[]): void {
+    lines.forEach((text, index) => {
+      this.time.delayedCall(index * 2500, () => {
+        this.bridge.emit("rpg_subtitle", {
+          text,
+          tone: text.startsWith("玩家：") ? "player" : text.startsWith("系统：") ? "system" : "narrator",
+          durationMs: 2380
+        });
+      });
+    });
   }
 
   private syncBuildingCollisionRect(id: string): void {

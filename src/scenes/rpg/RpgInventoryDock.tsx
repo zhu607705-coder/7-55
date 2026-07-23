@@ -38,7 +38,24 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "rightArrow",
   "seat022Receipt",
   "libraryPresenceProof",
-  "seatReleasePass"
+  "seatReleasePass",
+  "cafeteriaWages",
+  "greaseTissue",
+  "pickupTicket0755",
+  "theaterTicketHalfA",
+  "theaterTicketHalfB",
+  "temporaryTheaterTicket",
+  "theaterProgramOpening",
+  "theaterProgramSpotlight",
+  "theaterProgramFinale",
+  "spotlightRemote",
+  "fluorescentBrush",
+  "decoyPaper",
+  "wetProgram",
+  "bridgeKeyword",
+  "reflectionKeyword",
+  "lakeKeyword",
+  "reflectionCoordinate"
 ];
 
 export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onInspect }: RpgInventoryDockProps) {

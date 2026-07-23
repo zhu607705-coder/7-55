@@ -27,7 +27,7 @@ export interface RpgRuntimeDebugState {
   };
   camera: { scrollX: number; scrollY: number; zoom: number; mode: "follow" | "manual" };
   path?: { followingPath: boolean; pathLength: number };
-  scene?: "campus_bootstrap" | "dorm_hub" | "library_interior";
+  scene?: "campus_bootstrap" | "dorm_hub" | "library_interior" | "canteen_interior" | "theater_interior" | "qizhen_lake";
   checkpoint?: string;
   entranceDoor?: {
     state: "closed" | "opening" | "open" | "closing";
@@ -63,6 +63,58 @@ export interface RpgRuntimeDebugState {
     stampHeadY: number;
     leverAngle: number;
     stampVisible: boolean;
+  };
+  canteen?: {
+    phase: string;
+    mode: "light" | "dark";
+    identifiedTrayIds: string[];
+    returnedTrayIds: string[];
+    blockHits: number;
+    activeTarget: string | null;
+    menuOpen: boolean;
+    dialogueLocked: boolean;
+    paperBusy: boolean;
+    activeOcclusionIds?: string[];
+    softenedOcclusionIds?: string[];
+  };
+  theater?: {
+    phase: string;
+    mode: "light" | "dark";
+    activeTarget: string | null;
+    panel: "code" | "program" | null;
+    spotlightChoiceOpen: boolean;
+    spotlight?: {
+      stage: "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
+      round: number;
+      aimX: number;
+      aimLane: "left" | "center" | "right";
+      beamActive: boolean;
+      actionElapsedMs: number;
+      actionRemainingMs: number;
+      currentLockMs: number;
+      maxContinuousLockMs: number;
+      requiredLockMs: number;
+      earlyExposureMs: number;
+      assistActive: boolean;
+      lastFailureReason: string | null;
+      target: { x: number; y: number; visible: boolean } | null;
+      decoyVisible: boolean;
+    };
+    activeOcclusionIds?: string[];
+    softenedOcclusionIds?: string[];
+  };
+  qizhenLake?: {
+    phase: string;
+    mode: "light" | "dark";
+    plate: "reflection" | "signs" | "decoy" | "mist";
+    activeTarget: string | null;
+    reflectionRound: number;
+    signRotations: [number, number, number];
+    decoyPlacedAt: string | null;
+    mistRhythmRead: boolean;
+    mistPhase: number;
+    activeOcclusionIds?: string[];
+    softenedOcclusionIds?: string[];
   };
   activeTargets?: Array<{
     id: string;

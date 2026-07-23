@@ -325,6 +325,149 @@ const ICONS: Record<string, PixelMap> = {
     ],
     palette: { g: "#3d8d5d", w: "#f4f0dd", k: "#23313a", y: "#e8c45b" }
   },
+  cafeteriaWages: {
+    rows: [
+      "..yyyyy..",
+      ".ywwwwwy.",
+      "ywyyyyywy",
+      "ywykkkywy",
+      "ywykykywy",
+      "ywykkkywy",
+      "ywyyyyywy",
+      ".ywwwwwy.",
+      "..yyyyy..",
+      "........."
+    ],
+    palette: { y: "#d89f32", w: "#f7df8b", k: "#744f20" }
+  },
+  greaseTissue: {
+    rows: [
+      "..kkkk...",
+      ".kwwwwk..",
+      "kwwwwwwk.",
+      "kwwyywwk.",
+      "kwwyyywk.",
+      "kwwwyywk.",
+      ".kwwwwwk.",
+      "..kwwwk..",
+      "...kkk...",
+      "........."
+    ],
+    palette: { k: "#c6bca5", w: "#f2ead8", y: "#9f7637" }
+  },
+  pickupTicket0755: {
+    rows: [
+      "kkkkkkkkk",
+      "kwwwwwwwk",
+      "kwbwbwbwk",
+      "kwbbbwwwk",
+      "kwbwbwbwk",
+      "kwwwwwwwk",
+      "kwyyyyywk",
+      "kwwwwwwwk",
+      "kkkkkkkkk",
+      "........."
+    ],
+    palette: { k: "#26313b", w: "#f4eddb", b: "#3973b8", y: "#d8a64a" }
+  },
+  theaterTicketHalfA: {
+    rows: [
+      "kkkkk....", "kwwww....", "kwrrr....", "kwwww....", "kwkkw....",
+      "kwwww....", "kwyww....", "kwwww....", "kkkkk....", "........."
+    ],
+    palette: { k: "#442a2c", w: "#ead8ac", r: "#9b4048", y: "#d9a94a" }
+  },
+  theaterTicketHalfB: {
+    rows: [
+      "....kkkkk", "....wwwwk", "....bbbwk", "....wwwwk", "....wkkwk",
+      "....wwwwk", "....wwywk", "....wwwwk", "....kkkkk", "........."
+    ],
+    palette: { k: "#26384a", w: "#dce9ec", b: "#3979a8", y: "#d9a94a" }
+  },
+  temporaryTheaterTicket: {
+    rows: [
+      "kkkkkkkkk", "kwwwwwwwk", "kwrrrbbwk", "kwwwwwwwk", "kwkkwkkwk",
+      "kwwwwwwwk", "kwyyyyywk", "kwwwwwwwk", "kkkkkkkkk", "........."
+    ],
+    palette: { k: "#3a3030", w: "#efe1bd", r: "#9b4048", b: "#3979a8", y: "#d9a94a" }
+  },
+  theaterProgramOpening: {
+    rows: [
+      "kkkkkkkkk", "kwwwwwwwk", "kwrrrrrwk", "kwwwwwwwk", "kwkkkkkwk",
+      "kwwwwwwwk", "kwkkkwwwk", "kwwwwwwwk", "kkkkkkkkk", "........."
+    ],
+    palette: { k: "#533237", w: "#efe3c7", r: "#a94b52" }
+  },
+  theaterProgramSpotlight: {
+    rows: [
+      "kkkkkkkkk", "kwwywwwwk", "kwwywwwwk", "kwwywwwwk", "kwyyywwwk",
+      "kwwywwwwk", "kwkkkkkwk", "kwwwwwwwk", "kkkkkkkkk", "........."
+    ],
+    palette: { k: "#533237", w: "#efe3c7", y: "#e6bf5a" }
+  },
+  theaterProgramFinale: {
+    rows: [
+      "kkkkkkkkk", "kwrrwrrwk", "kwrrrrrwk", "kwwrrrwwk", "kwwwrwwwk",
+      "kwwwwwwwk", "kwkkkkkwk", "kwwwwwwwk", "kkkkkkkkk", "........."
+    ],
+    palette: { k: "#533237", w: "#efe3c7", r: "#a94b52" }
+  },
+  spotlightRemote: {
+    rows: [
+      "..kkkkk..", ".kgggggk.", "kgyyyyggk", "kgggggggk", "kggbgbggk",
+      "kgggggggk", ".kgggggk.", "..kgggk..", "...kkk...", "........."
+    ],
+    palette: { k: "#22272b", g: "#54636d", y: "#e5c95e", b: "#61c8e8" }
+  },
+  fluorescentBrush: {
+    rows: [
+      ".ccccccc.", ".cgggggc.", "..cgggc..", "...kkk...", "....kk...",
+      "....kk...", "....kk...", "....kk...", "....kk...", "........."
+    ],
+    palette: { c: "#4dcbe8", g: "#b7f0c7", k: "#72533a" }
+  },
+  decoyPaper: {
+    rows: [
+      "..kkkk...", ".kwwwwk..", "kwwwwwwk.", "kwwkkwwk.", "kwwwwwwk.",
+      "kwwkkwwk.", ".kwwwwwk.", "..kwwwk..", "...kkk...", "........."
+    ],
+    palette: { k: "#4b5054", w: "#e8e3d5" }
+  },
+  wetProgram: {
+    rows: [
+      "kkkkkkkkk", "kwwwwwwwk", "kwbbwwwwk", "kwbbbwwwk", "kwkkkkkwk",
+      "kwwwwbbbk", "kwkkkbbbk", "kwwwwbbbk", "kkkkkkkkk", "........."
+    ],
+    palette: { k: "#39414a", w: "#e8dfc8", b: "#5598b8" }
+  },
+  bridgeKeyword: {
+    rows: [
+      ".........", "..kkkkk..", ".kgggggk.", "kgkgggkgk", "kkkkkkkkk",
+      "...kkk...", "..kkkkk..", ".kk...kk.", ".........", "........."
+    ],
+    palette: { k: "#3f4b4d", g: "#86c6af" }
+  },
+  reflectionKeyword: {
+    rows: [
+      ".........", ".bbbbbbb.", "bbwwwwwbb", "bwwbbbwwb", "bwbwwwbwb",
+      "bwwbbbwwb", "bbwwwwwbb", ".bbbbbbb.", ".........", "........."
+    ],
+    palette: { b: "#3b83a5", w: "#bfeaf0" }
+  },
+  lakeKeyword: {
+    rows: [
+      ".........", "..ggggg..", ".ggggggg.", "ggbbbbbgg", "gbbbbbbgg",
+      "ggbbbbbg.", ".ggbbbg..", "..gggg...", ".........", "........."
+    ],
+    palette: { g: "#4f8b62", b: "#55a8c9" }
+  },
+  reflectionCoordinate: {
+    rows: [
+      "....y....", "...yyy...", "..yykyy..", ".yykkkyy.", "yykkkkkyy",
+      ".yykkkyy.", "..yykyy..", "...yyy...", "....y....", "........."
+    ],
+    palette: { y: "#d6c66e", k: "#3e5f67" }
+  },
   backpack: {
     rows: [
       "..kkkk...",
@@ -434,5 +577,22 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   bagNonPersonProof: { name: "书包非本人证明", desc: "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。" },
   seat022Receipt: { name: "022 座位小票", desc: "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。" },
   libraryPresenceProof: { name: "本人来过证明", desc: "一张证明你来过的证明。它没有证明你为什么要来。" },
-  seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" }
+  seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" },
+  cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。" },
+  greaseTissue: { name: "油渍纸巾", desc: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。" },
+  pickupTicket0755: { name: "0755 取餐号", desc: "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。" },
+  theaterTicketHalfA: { name: "半张剧院票根 A", desc: "它证明你的一半可以进场，另一半还在流程里。" },
+  theaterTicketHalfB: { name: "半张剧院票根 B", desc: "来自一台失败的取票机。它至少努力过。" },
+  temporaryTheaterTicket: { name: "临时观演票", desc: "两张半真半假的票根拼出来的票。剧院看了都沉默了一秒。" },
+  theaterProgramOpening: { name: "节目单残页·开场", desc: "普通节目单，看起来很会假装正式。" },
+  theaterProgramSpotlight: { name: "节目单残页·追光", desc: "普通节目单，看起来很会假装正式。" },
+  theaterProgramFinale: { name: "节目单残页·谢幕", desc: "普通节目单，看起来很会假装正式。" },
+  spotlightRemote: { name: "追光灯遥控器", desc: "能让舞台中央变亮。也能让逃避责任的纸条短暂接受审判。" },
+  fluorescentBrush: { name: "荧光粉刷", desc: "刷过之后，连借口都会发光。" },
+  decoyPaper: { name: "假纸条", desc: "长得很像目标，但态度没那么差。" },
+  wetProgram: { name: "湿掉的节目单", desc: "纸条逃跑时留下的节目单，边角湿得很有方向感。" },
+  bridgeKeyword: { name: "桥边", desc: "CC98 目击者留下的地点关键词。" },
+  reflectionKeyword: { name: "倒影", desc: "馆藏系统留下的地点关键词。" },
+  lakeKeyword: { name: "湖", desc: "微信消息留下的地点关键词。" },
+  reflectionCoordinate: { name: "倒影坐标", desc: "两种观察模式共同确认的位置。" }
 };

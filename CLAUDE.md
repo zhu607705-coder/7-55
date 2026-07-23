@@ -54,7 +54,7 @@
 - The user-selected repository panorama is the campus spatial and visual source of truth. The current approved plate is one `11744px × 1084px` PNG stored at `src/assets/rpg/campus/zijingang_campus_plate.png`; runtime code must never position or scale source scenes independently.
 - `npm run map:zijingang:rebuild` and `npm run map:zijingang:walkability` recalibrate the collision mask and runtime hashes against the already approved wide plate; they do not regenerate or replace its artwork. Legacy square `4×4` output must not overwrite the current wide panorama.
 - The runtime manifest owns world width, world height, spawn, library entrance, landmarks, and collision data. The plate, player, camera, labels, and story triggers all read this one active coordinate system; retired `5016 × 5016`, `2400 × 1920`, and `3840 × 3840` coordinates must not be attached to the wide panorama.
-- The campus camera follows the player in both axes, supports bounded pointer panning and discrete zoom, and never stretches the map. Default zoom is `0.55`; the overview minimap stays removed. The campus actor starts at twice the shared interior visual baseline, then uses the shared foot-position perspective curve so foreground and distant scales remain visibly distinct.
+- The campus camera follows the player in both axes, supports bounded pointer panning and discrete zoom, and never stretches the map. Default zoom is `0.55`; the overview minimap stays removed. The campus actor starts at `1.5×` the shared interior visual baseline, then uses the shared foot-position perspective curve so foreground and distant scales remain visibly distinct.
 - The selected panorama must render at source size `1:1`; runtime code must not resize, crop, reorder, or independently transform any quadrant.
 - Every campus asset uses the same wide-panorama projection, pixel density, and lighting direction. Dynamic actors may change uniform scale only through the shared vertical perspective curve; unequal `scaleX` and `scaleY`, mixed viewpoints, and scene-local perspective constants are prohibited.
 - Campus walkability comes from the compressed `4px` cell mask embedded in `src/data/maps/zijingang-campus-runtime.json`. Its dimensions must match the active wide plate, and runtime collision must keep the fixed player foot box on its connected road region. Alternate-size masks must never be attached to this panorama.
@@ -69,7 +69,18 @@
 - The Basic Library gate supports first entry and re-entry throughout every unfinished library phase. Re-entry must preserve `libraryFinalsPhase` and puzzle facts, select a safe interior checkpoint, and must never regress progress to `library_entered`.
 - A pre-rendered RPG interior whose source image matches the world dimensions owns one source-pixel collision table in its model module. Static walls, furniture, and clear aisles must be calibrated from visible pixel bounds; repeated approximate obstacle grids are not allowed.
 - Interior collision changes require three checks: solid-pixel samples are blocked, clear-floor samples and checkpoint spawns remain open, and a real player body stops at the expected source edge. Development-only collision overlays may be enabled by a URL flag but never appear in the single-file release.
+- Interior furniture that can cover a controllable actor defines source-pixel occlusion rectangles beside the collision table. Depth sorting uses the canonical world-space foot position; an overlapping foreground crop eases to at least `0.52` alpha so the actor stays readable. Reuse cropped regions of the approved plate, and never assign visual cover to an invisible air-wall region.
 - Validate campus identity at `1280×720` and one non-16:9 desktop viewport. Passing requires stable nonblank canvas rendering, readable landmark labels, preserved spatial relationships, and no overlap with the player, objectives, inventory, or controls.
+
+## Chapter Three Canteen, Theater, And Qizhen Lake
+
+- Chapter-three visible text follows the authored documents through scene-local JSON content files. Runtime components may split lines for timing, but must not paraphrase puzzle answers or dialogue.
+- The physical route is campus canteen entrance → canteen interior → campus SVG chase → visible theater door → theater interior → three independent phone clues → campus Qizhen gate → Qizhen interior. Every interior exit returns to its matching campus gate and preserves phase state.
+- Campus theater and Qizhen entrances live in `src/data/maps/zijingang-campus-runtime.json`. Their approach points and canonical player foot box must remain walkable, while nearby buildings, water, planting beds, and road boundaries remain blocked.
+- Qizhen location solving requires the independent `bridge`, `reflection`, and `lake` clues. They may be collected and inserted into the campus map in any order; only the controller may unlock the campus gate after all three are present.
+- `QizhenLakeModel.ts` owns the source-pixel collision, spawn, interaction, and occlusion tables for the four `1672×941` plates. Water and landscaping are solid, visible paving is walkable, and foreground vegetation softens only while it overlaps the player.
+- Lake interactions render as object-local props, ground glints, signs, a lamp, or a mist device. Large generic target panels must not cover the supplied scenery. The authored right-side lamp must remain visible during the decoy step.
+- Qizhen music uses the verified MiniMax `music-2.6` manifest. Mode changes and puzzle events publish domain events; audio playback cannot advance the lake state.
 
 ## Portrait Mini-games
 
@@ -111,6 +122,7 @@
 
 - The generated offline build shows the collapsed `DEV` trigger by default so a reviewer can recover from a stale save or jump to a gameplay checkpoint. `?dev=0` is the explicit presentation-only opt-out.
 - Developer navigation uses chapter groups only as the first level. Every entry must seed a named gameplay checkpoint with all required quest, item, scene, runtime, and UI facts.
+- Inside a chapter, long checkpoint lists use gameplay-segment filters. With no active developer checkpoint, opening the panel selects the latest implemented chapter and segment; an active checkpoint or `?devCheckpoint=<id>` selects its matching chapter and segment automatically.
 - Granular checkpoints cover puzzle starts, intermediate evidence states, presentation handoffs, action gates, and chapter results. A route-only scene change is not a valid checkpoint.
 - `?devCheckpoint=<id>` is the stable direct-entry contract for both Vite and the generated single file. `Ctrl+Shift+D` toggles the panel.
 - Before the first developer jump, preserve the current state and provide an explicit restore action. Developer seeds must not become reachable through normal story controls.

@@ -13,6 +13,7 @@ interface ItemInspectEntry {
   category: string;
   source: string;
   intro: string;
+  useHint?: string;
 }
 
 export interface ItemInspectDialogProps {
@@ -128,6 +129,92 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     category: "执行凭证",
     source: "022 恢复申请签发",
     intro: "材料已经换成临时处置权限。回到那件长期占着位置、现场却找不到主人的物品旁。"
+  },
+  cafeteriaWages: {
+    category: "餐盘回收费 2.00 元",
+    source: "餐盘回收",
+    intro: "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。"
+  },
+  greaseTissue: {
+    category: "油渍纸巾",
+    source: "食堂桌面",
+    intro: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。"
+  },
+  pickupTicket0755: {
+    category: "0755 取餐号",
+    source: "点餐机",
+    intro: "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。"
+  },
+  theaterTicketHalfA: {
+    category: "半张剧院票根 A",
+    source: "剧院海报栏",
+    intro: "它证明你的一半可以进场，另一半还在流程里。"
+  },
+  theaterTicketHalfB: {
+    category: "半张剧院票根 B",
+    source: "剧院取票机",
+    intro: "来自一台失败的取票机。它至少努力过。"
+  },
+  temporaryTheaterTicket: {
+    category: "临时观演票",
+    source: "两张半票根",
+    intro: "两张半真半假的票根拼出来的票。剧院看了都沉默了一秒。"
+  },
+  theaterProgramOpening: {
+    category: "节目单残页",
+    source: "剧院座席",
+    intro: "普通节目单，看起来很会假装正式。"
+  },
+  theaterProgramSpotlight: {
+    category: "节目单残页",
+    source: "剧院座席",
+    intro: "普通节目单，看起来很会假装正式。"
+  },
+  theaterProgramFinale: {
+    category: "节目单残页",
+    source: "剧院座席",
+    intro: "普通节目单，看起来很会假装正式。"
+  },
+  spotlightRemote: {
+    category: "追光灯遥控器",
+    source: "剧院灯控台",
+    intro: "能让舞台中央变亮。也能让逃避责任的纸条短暂接受审判。"
+  },
+  fluorescentBrush: {
+    category: "荧光粉刷",
+    source: "后台道具箱",
+    intro: "刷过之后，连借口都会发光。"
+  },
+  decoyPaper: {
+    category: "假纸条",
+    source: "剧院追光灯下",
+    intro: "长得很像目标，但态度没那么差。",
+    useHint: "可以制造一次错误目标"
+  },
+  wetProgram: {
+    category: "湿掉的节目单",
+    source: "剧院舞台",
+    intro: "纸条逃跑时留下的节目单，边角湿得很有方向感。"
+  },
+  bridgeKeyword: {
+    category: "地点关键词",
+    source: "CC98 目击回复",
+    intro: "目击者只确认了桥附近，仍不足以确定具体地点。"
+  },
+  reflectionKeyword: {
+    category: "地点关键词",
+    source: "图书馆馆藏状态",
+    intro: "异常页码只出现在水面反射区域。"
+  },
+  lakeKeyword: {
+    category: "地点关键词",
+    source: "微信朋友消息",
+    intro: "群聊只留下了一个不完整的湖名。"
+  },
+  reflectionCoordinate: {
+    category: "场景坐标",
+    source: "启真湖指示牌",
+    intro: "深浅两种观察结果共同指向右侧路灯杆。"
   }
 };
 
@@ -252,6 +339,12 @@ function ItemInspectDialogBody({
               <dt>简介</dt>
               <dd id={descId}>{item.desc}</dd>
             </div>
+            {entry.useHint ? (
+              <div className="item-inspect-row">
+                <dt>用途提示</dt>
+                <dd>{entry.useHint}</dd>
+              </div>
+            ) : null}
           </dl>
         </div>
         {itemDocument ? (

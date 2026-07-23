@@ -1,0 +1,133 @@
+{
+  "chapterId": "chapter-3-theater-audio",
+  "music": [
+    {
+      "cue": "music.lobby",
+      "asset": "music_theater_lobby",
+      "path": "chapter3-theater/music/music_theater_lobby.mp3",
+      "stage": "lobby",
+      "prompt": "Immediate-start top-down pixel RPG theater lobby loop. Restrained velvet-room atmosphere, ticket-machine pulse, dry wood accents, and generous space for dialogue.",
+      "genre": "minimal theatrical pixel chiptune",
+      "mood": "formal, dry, lightly comic",
+      "instruments": "muted square-wave pulse, soft marimba, ticket-printer clicks, warm FM bass",
+      "bpm": 86,
+      "durationSeconds": 20
+    },
+    {
+      "cue": "music.dark",
+      "asset": "music_theater_dark",
+      "path": "chapter3-theater/music/music_theater_dark.mp3",
+      "stage": "dark",
+      "prompt": "Immediate-start dark-mode theater investigation loop for a pixel RPG. Hidden ticket ink and stage residue become readable through focused scanner pulses and sparse unresolved tones.",
+      "genre": "minimal electronic mystery chiptune",
+      "mood": "uncanny, observant, controlled",
+      "instruments": "filtered pulse wave, glass harmonics, dry clock tick, low digital hum",
+      "bpm": 104,
+      "durationSeconds": 20
+    },
+    {
+      "cue": "music.spotlight",
+      "asset": "music_theater_spotlight",
+      "path": "chapter3-theater/music/music_theater_spotlight.mp3",
+      "stage": "spotlight",
+      "prompt": "Immediate-start three-round spotlight pursuit loop for a top-down pixel theater. Precise timing, short rising figures, sharp pauses for each hit, and no vocals.",
+      "genre": "pixel stage pursuit chiptune",
+      "mood": "tense, precise, playful",
+      "instruments": "tight electronic kick, clipped hi-hat, bright arpeggiator, short brass-like FM stabs",
+      "bpm": 138,
+      "durationSeconds": 24
+    }
+  ],
+  "sfx": [
+    {
+      "cue": "sfx.mode_switch",
+      "asset": "fx_theater_mode_switch",
+      "path": "chapter3-theater/sfx/fx_theater_mode_switch.mp3",
+      "group": "ticketing",
+      "cutStartSeconds": 0,
+      "durationSeconds": 0.7,
+      "description": "short theater light-state switch with one dry scanner tick"
+    },
+    {
+      "cue": "sfx.glass_wipe",
+      "asset": "fx_theater_glass_wipe",
+      "path": "chapter3-theater/sfx/fx_theater_glass_wipe.mp3",
+      "group": "ticketing",
+      "cutStartSeconds": 3,
+      "durationSeconds": 0.9,
+      "description": "one concise greasy cloth wipe across a glass poster case"
+    },
+    {
+      "cue": "sfx.printer_fail",
+      "asset": "fx_theater_printer_fail",
+      "path": "chapter3-theater/sfx/fx_theater_printer_fail.mp3",
+      "group": "ticketing",
+      "cutStartSeconds": 6,
+      "durationSeconds": 1.2,
+      "description": "small thermal ticket printer feeding briefly then stopping with a mechanical error click"
+    },
+    {
+      "cue": "sfx.ticket_join",
+      "asset": "fx_theater_ticket_join",
+      "path": "chapter3-theater/sfx/fx_theater_ticket_join.mp3",
+      "group": "ticketing",
+      "cutStartSeconds": 9,
+      "durationSeconds": 0.9,
+      "description": "two paper ticket halves sliding together followed by a compact confirmation tone"
+    },
+    {
+      "cue": "sfx.gate_scan",
+      "asset": "fx_theater_gate_scan",
+      "path": "chapter3-theater/sfx/fx_theater_gate_scan.mp3",
+      "group": "ticketing",
+      "cutStartSeconds": 12,
+      "durationSeconds": 1,
+      "description": "theater ticket scanner reading a code and unlocking a small gate"
+    },
+    {
+      "cue": "sfx.program_pickup",
+      "asset": "fx_theater_program_pickup",
+      "path": "chapter3-theater/sfx/fx_theater_program_pickup.mp3",
+      "group": "stage",
+      "cutStartSeconds": 0,
+      "durationSeconds": 0.8,
+      "description": "single program leaflet lifted from a velvet theater seat"
+    },
+    {
+      "cue": "sfx.program_reject",
+      "asset": "fx_theater_program_reject",
+      "path": "chapter3-theater/sfx/fx_theater_program_reject.mp3",
+      "group": "stage",
+      "cutStartSeconds": 3,
+      "durationSeconds": 0.75,
+      "description": "lighting console rejects an order with a dry low electronic buzz"
+    },
+    {
+      "cue": "sfx.prop_box",
+      "asset": "fx_theater_prop_box",
+      "path": "chapter3-theater/sfx/fx_theater_prop_box.mp3",
+      "group": "stage",
+      "cutStartSeconds": 6,
+      "durationSeconds": 1.15,
+      "description": "heavy backstage prop chest latch releasing and lid opening"
+    },
+    {
+      "cue": "sfx.spotlight_hit",
+      "asset": "fx_theater_spotlight_hit",
+      "path": "chapter3-theater/sfx/fx_theater_spotlight_hit.mp3",
+      "group": "stage",
+      "cutStartSeconds": 9,
+      "durationSeconds": 0.8,
+      "description": "tight stage spotlight snaps onto paper with a bright compact impact"
+    },
+    {
+      "cue": "sfx.decoy_break",
+      "asset": "fx_theater_decoy_break",
+      "path": "chapter3-theater/sfx/fx_theater_decoy_break.mp3",
+      "group": "stage",
+      "cutStartSeconds": 12,
+      "durationSeconds": 1.3,
+      "description": "paper decoy cracks into ordinary pieces followed by a short empty stage echo"
+    }
+  ]
+}

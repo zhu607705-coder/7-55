@@ -6,7 +6,9 @@ const EXPECTED = {
   height: 1084,
   sha256: "9bb6c5593697601fa1347655e43dc563bbc2e32768987df2d602aca31f525986",
   foundationLibrary: { x: 9120, y: 700 },
-  libraryGate: { x: 9120, y: 780, radius: 80 }
+  libraryGate: { x: 9120, y: 780, radius: 80 },
+  theaterGate: { x: 7730, y: 735, radius: 86 },
+  qizhenGate: { x: 7080, y: 900, radius: 92 }
 };
 
 const plateUrl = new URL("../src/assets/rpg/campus/zijingang_campus_plate.png", import.meta.url);
@@ -36,9 +38,21 @@ if (runtime.world?.width !== width || runtime.world?.height !== height) {
 if (runtime.source?.plateSha256 !== sha256) {
   throw new Error("Campus runtime SHA-256 does not match the panorama");
 }
-for (const [name, point] of [["spawn", runtime.spawn], ["libraryGate", runtime.libraryGate]]) {
+for (const [name, point] of [
+  ["spawn", runtime.spawn],
+  ["libraryGate", runtime.libraryGate],
+  ["theaterGate", runtime.theaterGate],
+  ["qizhenGate", runtime.qizhenGate]
+]) {
   if (!point || point.x < 0 || point.x > width || point.y < 0 || point.y > height) {
     throw new Error(`Campus runtime ${name} is outside the panorama`);
+  }
+}
+for (const gateId of ["theaterGate", "qizhenGate"]) {
+  const expected = EXPECTED[gateId];
+  const actual = runtime[gateId];
+  if (actual.x !== expected.x || actual.y !== expected.y || actual.radius !== expected.radius) {
+    throw new Error(`Campus ${gateId} is not calibrated to its visible entrance`);
   }
 }
 if (
@@ -108,10 +122,16 @@ const assertStandable = (name, point) => {
   }
 };
 const gateApproach = walkability.gateApproach;
-if (!gateApproach) {
-  throw new Error("Campus walkability gate approach is missing");
+const theaterApproach = walkability.theaterApproach;
+const qizhenApproach = walkability.qizhenApproach;
+if (!gateApproach || !theaterApproach || !qizhenApproach) {
+  throw new Error("Campus walkability approaches are missing");
 }
 assertStandable("Campus library gate approach", gateApproach);
+assertStandable("Campus theater gate approach", theaterApproach);
+assertStandable("Campus Qizhen gate approach", qizhenApproach);
+const theaterEntrySample = { x: runtime.theaterGate.x, y: runtime.theaterGate.y + 65 };
+assertStandable("Campus theater interaction point", theaterEntrySample);
 assertStandable("Campus library checkpoint", {
   x: runtime.libraryGate.x,
   y: runtime.libraryGate.y + 72
@@ -130,7 +150,13 @@ for (const [name, point] of [
 if (Math.hypot(gateApproach.x - runtime.libraryGate.x, gateApproach.y - runtime.libraryGate.y) > runtime.libraryGate.radius) {
   throw new Error("Campus library approach is outside the interaction radius");
 }
+if (Math.hypot(theaterEntrySample.x - runtime.theaterGate.x, theaterEntrySample.y - runtime.theaterGate.y) > runtime.theaterGate.radius) {
+  throw new Error("Campus theater interaction point is outside the interaction radius");
+}
+if (Math.hypot(qizhenApproach.x - runtime.qizhenGate.x, qizhenApproach.y - runtime.qizhenGate.y) > runtime.qizhenGate.radius) {
+  throw new Error("Campus Qizhen approach is outside the interaction radius");
+}
 
 console.log(
-  `verified repository panorama ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells} libraryGate=${runtime.libraryGate.x},${runtime.libraryGate.y} approach=${gateApproach.x},${gateApproach.y}`
+  `verified repository panorama ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells} libraryGate=${runtime.libraryGate.x},${runtime.libraryGate.y} theaterGate=${runtime.theaterGate.x},${runtime.theaterGate.y} qizhenGate=${runtime.qizhenGate.x},${runtime.qizhenGate.y}`
 );

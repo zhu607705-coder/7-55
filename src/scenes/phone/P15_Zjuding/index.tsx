@@ -18,6 +18,7 @@ import { sanitizeZjudingPage, selectFeatureAccess } from "../../../core/FeatureA
 import { selectIdentityReadable } from "../../../core/IdentityAccess";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
+import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
 import { kit } from "../../../modules/GameKit";
 import { isCatalogClueQuery, normalizeCatalogQuery } from "../../../modules/library-finals/puzzleRules";
 import { playSfx } from "../../../modules/Sfx";
@@ -120,7 +121,7 @@ interface RoomData {
 const HUB_APPS: HubApp[] = [
   { label: "学在浙大", icon: "学", tone: "paper", page: "learn" },
   { label: "智云课堂", icon: "云", tone: "violet" },
-  { label: "校园地图", icon: "位", tone: "sky" },
+  { label: "校园地图", icon: "位", tone: "sky", page: "campus_map" },
   { label: "网络缴费", icon: "¥", tone: "aqua" },
   { label: "后勤服务", icon: "勤", tone: "orange" },
   { label: "失物招领", icon: "寻", tone: "green" },
@@ -474,6 +475,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const [catalogAdvanced, setCatalogAdvanced] = useState(false);
   const [catalogFeedback, setCatalogFeedback] = useState("");
   const [catalogSelectedId, setCatalogSelectedId] = useState<string | null>(null);
+  const [qizhenCatalogVisible, setQizhenCatalogVisible] = useState(() => state.qizhenLake.reflectionClueFound);
+  const [qizhenMapFeedback, setQizhenMapFeedback] = useState("");
   const [recoveryFeedback, setRecoveryFeedback] = useState("");
   const [submittedDocument, setSubmittedDocument] = useState<ItemId | null>(null);
   const [draggedRecoveryItem, setDraggedRecoveryItem] = useState("");
@@ -589,6 +592,24 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     }
     if (event.name !== "item_dropped") return;
     const target = String(event.payload?.target ?? "");
+    if (target === "library_catalog_search") {
+      if (event.payload?.item !== "wetProgram" || state.qizhenLake.phase !== "location_search") {
+        setCatalogFeedback("馆藏检索没有识别这件道具中的页码特征。");
+        return;
+      }
+      setCatalogQuery(qizhenContent.locationSearch.catalog.query);
+      setCatalogSubmitted(false);
+      setCatalogSubmittedQuery("");
+      setCatalogSelectedId(null);
+      setQizhenCatalogVisible(true);
+      setCatalogFeedback("节目单的潮湿页码已送入馆藏状态检索。");
+      return;
+    }
+    if (target === "qizhen_map_search") {
+      const itemId = String(event.payload?.item ?? "") as ItemId;
+      addQizhenMapClue(itemId);
+      return;
+    }
     if (!target.startsWith("recovery-upload:")) return;
     const evidenceId = target.slice("recovery-upload:".length) as LibraryRecoveryEvidenceId;
     const expectedItem: Record<LibraryRecoveryEvidenceId, ItemId> = {
@@ -601,7 +622,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     uploadRecoveryEvidence(evidenceId);
-  }), [events]);
+  }), [events, state.qizhenLake.phase]);
 
   useEffect(() => {
     if (!identityReadable) {
@@ -648,6 +669,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       login: "hub",
       directory: "hub",
       learn: "hub",
+      campus_map: "hub",
       library: "hub",
       library_spaces: "library",
       library_seat: "library_spaces",
@@ -681,6 +703,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     }
     playSfx("01_");
     setOverlay(null);
+    if (state.qizhenLake.active && state.qizhenLake.phase !== "inactive") {
+      goPage("campus_map");
+      return;
+    }
     const libraryActive = finalsPhase !== "idle" && finalsPhase !== "library_route_unlocked";
     const scene = libraryActive ? state.rpgScene : actOnePhase === "complete" ? "campus_bootstrap" : "dorm_hub";
     if (!kit.actOne.enterRpg(scene)) {
@@ -854,6 +880,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       setCatalogFeedback("请输入书名、作者或索书号。");
       return;
     }
+    if (
+      state.qizhenLake.active
+      && state.qizhenLake.phase === "location_search"
+      && normalizeCatalogQuery(query) === normalizeCatalogQuery(qizhenContent.locationSearch.catalog.query)
+    ) {
+      setCatalogSubmitted(false);
+      setCatalogSubmittedQuery("");
+      setCatalogSelectedId(null);
+      setQizhenCatalogVisible(true);
+      setCatalogFeedback("检索完成：发现 1 条异常外借记录。");
+      return;
+    }
     const results = findCatalogResults(query);
     setCatalogSubmitted(true);
     setCatalogSubmittedQuery(query);
@@ -870,6 +908,40 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       kit.libraryFinals.searchCatalog(query);
     }
     setCatalogFeedback(`检索完成：找到 ${results.length} 本相似馆藏`);
+  }
+
+  function collectReflectionKeyword() {
+    if (!kit.qizhenLake.collectReflectionClue()) {
+      setCatalogFeedback("当前无法保存这条异常定位信息。");
+      return;
+    }
+    setCatalogFeedback(`${qizhenContent.locationSearch.catalog.player}\n${qizhenContent.locationSearch.catalog.system}`);
+  }
+
+  function addQizhenMapClue(itemId: ItemId) {
+    const result = kit.qizhenLake.addMapClue(itemId);
+    if (result === "wrong_item") {
+      setQizhenMapFeedback("地图没有从这件道具中读到地点关键词。");
+      return;
+    }
+    if (result === "inactive") {
+      setQizhenMapFeedback("当前没有需要合并的地点线索。");
+      return;
+    }
+    const count = kit.qizhenLake.getMapClueCount();
+    setQizhenMapFeedback(
+      count >= 3
+        ? qizhenContent.locationSearch.map.three
+        : count === 2
+          ? qizhenContent.locationSearch.map.two
+          : qizhenContent.locationSearch.map.one
+    );
+  }
+
+  function enterQizhenCampusApproach() {
+    if (!kit.qizhenLake.enterCampusApproach()) {
+      setQizhenMapFeedback("启真湖入口还没有在大地图上开放。");
+    }
   }
 
   function chooseCatalogResult(result: CatalogResult) {
@@ -1097,6 +1169,53 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </nav>
       </section>
     );
+  } else if (currentPage === "campus_map") {
+    const clueLabels: Record<string, string> = { bridge: "桥边", reflection: "倒影", lake: "湖" };
+    const availableClues: Array<{ id: ItemId; clue: string; label: string }> = [
+      { id: "bridgeKeyword", clue: "bridge", label: "桥边" },
+      { id: "reflectionKeyword", clue: "reflection", label: "倒影" },
+      { id: "lakeKeyword", clue: "lake", label: "湖" }
+    ];
+    const solved = state.qizhenLake.phase !== "location_search" && state.qizhenLake.phase !== "inactive";
+    page = (
+      <section className="app-screen zju-native-page zju-qizhen-map-page" aria-label="校园地图地点检索">
+        <NativeHeader title="校园地图" onBack={goBack} />
+        <main className="zju-qizhen-map-content">
+          <header>
+            <span aria-hidden="true">位</span>
+            <div><strong>地点特征检索</strong><small>将不同来源的关键词放入同一地点查询</small></div>
+          </header>
+          <section className="zju-qizhen-map-board" data-drop-target="qizhen_map_search" aria-label="地点关键词槽位">
+            {[0, 1, 2].map((slot) => {
+              const clueId = state.qizhenLake.mapClueIds[slot];
+              return <span key={slot} className={clueId ? "is-filled" : ""}>{clueId ? clueLabels[clueId] : "拖入关键词"}</span>;
+            })}
+          </section>
+          <section className="zju-qizhen-clue-cards" aria-label="可用地点关键词">
+            {availableClues.map((clue) => {
+              const owned = state.items[clue.id];
+              const added = state.qizhenLake.mapClueIds.includes(clue.clue as "bridge" | "reflection" | "lake");
+              return (
+                <button key={clue.id} type="button" disabled={!owned || added} onClick={() => addQizhenMapClue(clue.id)}>
+                  <b>{clue.label}</b><small>{added ? "已加入" : owned ? "加入地图" : "尚未取得"}</small>
+                </button>
+              );
+            })}
+          </section>
+          <p className="zju-qizhen-map-feedback" aria-live="polite">
+            {qizhenMapFeedback || (solved ? qizhenContent.locationSearch.map.three : "三个来源可以按任意顺序收集。")}
+          </p>
+          {solved ? (
+            <section className="zju-qizhen-map-result">
+              <strong>启真湖</strong>
+              <p>{qizhenContent.locationSearch.map.reason}</p>
+              <p>{qizhenContent.locationSearch.map.player}<br />{qizhenContent.locationSearch.map.system}</p>
+              <button type="button" onClick={enterQizhenCampusApproach}>前往大地图上的启真湖入口</button>
+            </section>
+          ) : null}
+        </main>
+      </section>
+    );
   } else if (currentPage === "library") {
     page = (
       <section className="app-screen zju-native-page zju-library-home" aria-label="浙大移动图书馆">
@@ -1222,7 +1341,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </nav>
 
           <section className="zju-catalog-query-panel" aria-label="检索条件">
-            <div className="zju-catalog-search">
+            <div className="zju-catalog-search" data-drop-target="library_catalog_search">
             <label>
               <span aria-hidden="true">⌕</span>
               <input
@@ -1256,6 +1375,23 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           ) : null}
 
           {catalogFeedback ? <p className="zju-catalog-feedback" aria-live="polite">{catalogFeedback}</p> : null}
+
+          {qizhenCatalogVisible ? (
+            <section className="zju-qizhen-catalog-result" aria-label="异常外借状态">
+              <header><strong>签到记录夹页</strong><span>异常外借</span></header>
+              <dl>
+                {qizhenContent.locationSearch.catalog.fields.map(([label, value]) => (
+                  <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+                ))}
+              </dl>
+              <button type="button" onClick={collectReflectionKeyword} disabled={state.qizhenLake.reflectionClueFound}>
+                {state.qizhenLake.reflectionClueFound ? "已取得：倒影" : "记录关键词：倒影"}
+              </button>
+              {state.qizhenLake.reflectionClueFound ? (
+                <p>{qizhenContent.locationSearch.catalog.player}<br />{qizhenContent.locationSearch.catalog.system}</p>
+              ) : null}
+            </section>
+          ) : null}
 
           {resultsVisible ? (
             <section

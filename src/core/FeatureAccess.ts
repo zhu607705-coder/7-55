@@ -75,6 +75,7 @@ export function canEnterScene(state: GameState, scene: SceneId): boolean {
 
 export function sanitizeZjudingPage(state: GameState, requested = state.ui.zjudingPage): ZjudingPage {
   const access = selectFeatureAccess(state);
+  if (requested === "campus_map" && !access.fullCampusMap) return "hub";
   if (requested === "directory" && !access.departmentDirectory) return "hub";
   if (requested === "library_recovery" && !access.libraryRecovery) return access.library ? "library" : "hub";
   if (requested === "library_catalog" && !access.libraryCatalog) return access.library ? "library" : "hub";

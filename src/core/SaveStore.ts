@@ -10,20 +10,36 @@ import type {
   LibraryFinalsPuzzleState,
   LibraryLocationId,
   LostFoundStage,
-  LibraryRecoveryEvidenceId
+  LibraryRecoveryEvidenceId,
+  QizhenDecoyTargetId,
+  QizhenLakePhase,
+  QizhenMapClueId
 } from "./types";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 7;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, SAVE_VERSION]);
+const SAVE_VERSION = 10;
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
-const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>(["campus_bootstrap", "dorm_hub", "library_interior"]);
+const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
+  "campus_bootstrap", "dorm_hub", "library_interior", "canteen_interior", "theater_interior", "qizhen_lake"
+]);
 const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
   "campus_spawn",
   "campus_library_gate",
+  "campus_canteen_gate",
+  "campus_theater_junction",
+  "campus_qizhen_gate",
   "dorm_spawn",
+  "canteen_entrance",
+  "theater_lobby",
+  "theater_auditorium",
+  "theater_stage",
+  "qizhen_reflection",
+  "qizhen_signs",
+  "qizhen_decoy",
+  "qizhen_mist",
   "library_entrance",
   "library_seat_022",
   "library_front_desk",
@@ -44,17 +60,39 @@ const VALID_SCENES = new Set<GameState["currentScene"]>([
 const VALID_NETWORK_MODES = new Set<GameState["networkMode"]>(["campus_wifi", "cellular", "offline"]);
 const VALID_THEME_MODES = new Set<GameState["themeMode"]>(["normal", "dark", "backside"]);
 const VALID_CANTEEN_HUNT_PHASES = new Set<GameState["canteenHunt"]["phase"]>([
-  "tracking", "canteen_reached", "entered", "chase_ready", "chasing"
+  "tracking", "canteen_reached", "entered", "tray_search", "menu_order", "pickup_search",
+  "exit_blocking", "chase_ready", "chasing", "theater_reached"
 ]);
+const VALID_CANTEEN_MODES = new Set<GameState["canteenHunt"]["mode"]>(["light", "dark"]);
+const VALID_CANTEEN_TRAY_IDS = new Set(["tray_blue_01", "tray_blue_02", "tray_blue_03"]);
+const VALID_THEATER_HUNT_PHASES = new Set<GameState["theaterHunt"]["phase"]>([
+  "entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"
+]);
+const VALID_THEATER_MODES = new Set<GameState["theaterHunt"]["mode"]>(["light", "dark"]);
+const VALID_THEATER_PROGRAM_IDS = new Set<GameState["theaterHunt"]["collectedProgramIds"][number]>([
+  "opening", "spotlight", "finale"
+]);
+const VALID_QIZHEN_PHASES = new Set<QizhenLakePhase>([
+  "inactive", "location_search", "lake_unlocked", "reflection_hunt", "sign_alignment",
+  "decoy_setup", "mist_timing", "chase_ready"
+]);
+const VALID_QIZHEN_MODES = new Set<GameState["qizhenLake"]["mode"]>(["light", "dark"]);
+const VALID_QIZHEN_MAP_CLUES = new Set<QizhenMapClueId>(["bridge", "reflection", "lake"]);
+const VALID_QIZHEN_DECOY_TARGETS = new Set<QizhenDecoyTargetId>(["notice", "bridge", "lamp"]);
 const VALID_DIGIT_VALUES = new Set<NonNullable<GameState["digits"]["d1"]>>(["0", "7", "9", "8"]);
 const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "waterDrop", "headphone", "wateredHeadphone", "reverseGear", "slashLine", "towerKey",
   "fertilizer", "campusCard", "pushTriangle", "weatherWater", "mentorLine", "rightArrow",
   "gamepad", "occupancyNote", "callNumber755", "archivedLeaveRule", "itemRecognitionReport",
-  "bagNonPersonProof", "seat022Receipt", "libraryPresenceProof", "seatReleasePass"
+  "bagNonPersonProof", "seat022Receipt", "libraryPresenceProof", "seatReleasePass",
+  "cafeteriaWages", "greaseTissue", "pickupTicket0755", "theaterTicketHalfA",
+  "theaterTicketHalfB", "temporaryTheaterTicket", "theaterProgramOpening",
+  "theaterProgramSpotlight", "theaterProgramFinale", "spotlightRemote",
+  "fluorescentBrush", "decoyPaper", "wetProgram", "bridgeKeyword", "reflectionKeyword",
+  "lakeKeyword", "reflectionCoordinate"
 ]);
 const VALID_ZJUDING_PAGES = new Set<GameState["ui"]["zjudingPage"]>([
-  "hub", "login", "directory", "learn", "library", "library_spaces", "library_seat",
+  "hub", "login", "directory", "learn", "campus_map", "library", "library_spaces", "library_seat",
   "library_catalog", "library_recovery"
 ]);
 const VALID_LIBRARY_FINALS_PHASES = new Set<LibraryFinalsPhase>([
@@ -92,7 +130,7 @@ const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>(
 ]);
 
 interface SaveEnvelope {
-  version: 7;
+  version: 10;
   state: GameState;
   savedAt: number;
 }
@@ -246,10 +284,62 @@ export class SaveStore {
 
       const bikeArcade = normalizeBikeArcade(saved.bikeArcade, initial.bikeArcade);
       const savedCanteenHunt = isRecord(saved.canteenHunt) ? saved.canteenHunt : {};
+      const savedCanteenPhase = enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase);
       const canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
-        phase: enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase)
+        phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
+        mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
+        identifiedTrayIds: filteredStringArrayFromSet(
+          savedCanteenHunt.identifiedTrayIds,
+          VALID_CANTEEN_TRAY_IDS,
+          initial.canteenHunt.identifiedTrayIds
+        ),
+        returnedTrayIds: filteredStringArrayFromSet(
+          savedCanteenHunt.returnedTrayIds,
+          VALID_CANTEEN_TRAY_IDS,
+          initial.canteenHunt.returnedTrayIds
+        ),
+        orderAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.orderAttemptCount, initial.canteenHunt.orderAttemptCount),
+        pickupAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.pickupAttemptCount, initial.canteenHunt.pickupAttemptCount),
+        blockHits: rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits),
+        bikeCodeRead: booleanOr(savedCanteenHunt.bikeCodeRead, initial.canteenHunt.bikeCodeRead),
+        bikeLockCleaned: booleanOr(savedCanteenHunt.bikeLockCleaned, initial.canteenHunt.bikeLockCleaned),
+        bikePaid: booleanOr(savedCanteenHunt.bikePaid, initial.canteenHunt.bikePaid),
+        chaseCollisions: nonNegativeIntegerOr(savedCanteenHunt.chaseCollisions, initial.canteenHunt.chaseCollisions)
       };
+      const savedTheaterHunt = isRecord(saved.theaterHunt) ? saved.theaterHunt : {};
+      const theaterHunt: GameState["theaterHunt"] = {
+        active: booleanOr(savedTheaterHunt.active, initial.theaterHunt.active),
+        phase: enumOr(savedTheaterHunt.phase, VALID_THEATER_HUNT_PHASES, initial.theaterHunt.phase),
+        mode: enumOr(savedTheaterHunt.mode, VALID_THEATER_MODES, initial.theaterHunt.mode),
+        posterCleaned: booleanOr(savedTheaterHunt.posterCleaned, initial.theaterHunt.posterCleaned),
+        ticketCodeRead: booleanOr(savedTheaterHunt.ticketCodeRead, initial.theaterHunt.ticketCodeRead),
+        ticketCodeAttempts: nonNegativeIntegerOr(savedTheaterHunt.ticketCodeAttempts, initial.theaterHunt.ticketCodeAttempts),
+        admitted: booleanOr(savedTheaterHunt.admitted, initial.theaterHunt.admitted),
+        collectedProgramIds: filteredStringArrayFromSet(
+          savedTheaterHunt.collectedProgramIds,
+          VALID_THEATER_PROGRAM_IDS,
+          initial.theaterHunt.collectedProgramIds
+        ),
+        programOrder: filteredStringArrayFromSet(
+          savedTheaterHunt.programOrder,
+          VALID_THEATER_PROGRAM_IDS,
+          initial.theaterHunt.programOrder
+        ).slice(0, 3),
+        programWrongAttempts: nonNegativeIntegerOr(savedTheaterHunt.programWrongAttempts, initial.theaterHunt.programWrongAttempts),
+        propGhostRead: booleanOr(savedTheaterHunt.propGhostRead, initial.theaterHunt.propGhostRead),
+        managerHintRead: booleanOr(savedTheaterHunt.managerHintRead, initial.theaterHunt.managerHintRead),
+        propBoxOpened: booleanOr(savedTheaterHunt.propBoxOpened, initial.theaterHunt.propBoxOpened),
+        paperDusted: booleanOr(savedTheaterHunt.paperDusted, initial.theaterHunt.paperDusted),
+        spotlightRound: rangedIntegerOr(savedTheaterHunt.spotlightRound, 0, 3, initial.theaterHunt.spotlightRound),
+        spotlightMistakes: nonNegativeIntegerOr(savedTheaterHunt.spotlightMistakes, initial.theaterHunt.spotlightMistakes),
+        decoyRevealed: booleanOr(savedTheaterHunt.decoyRevealed, initial.theaterHunt.decoyRevealed)
+      };
+      const qizhenLake = normalizeQizhenLake(saved.qizhenLake, initial.qizhenLake);
+      if ((theaterHunt.phase === "complete" || items.wetProgram) && qizhenLake.phase === "inactive") {
+        qizhenLake.active = true;
+        qizhenLake.phase = "location_search";
+      }
       if (ui.libraryFinalsPhase === "friend_contacted" || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_book_hunt") {
         bikeArcade.unlocked = true;
       }
@@ -271,6 +361,8 @@ export class SaveStore {
         actOne,
         bikeArcade,
         canteenHunt,
+        theaterHunt,
+        qizhenLake,
         ui
       };
       hydrated.currentScene = canEnterScene(hydrated, hydrated.currentScene) ? hydrated.currentScene : "phone_home";
@@ -313,6 +405,40 @@ export class SaveStore {
     this.storage.removeItem(GAME_SAVE_BACKUP_KEY);
     this.storage.removeItem(BIKE_SAVE_KEY);
   }
+}
+
+function normalizeQizhenLake(
+  value: unknown,
+  initial: GameState["qizhenLake"]
+): GameState["qizhenLake"] {
+  const saved = asRecord(value);
+  const signRotations = Array.isArray(saved.signRotations)
+    && saved.signRotations.length === 3
+    && saved.signRotations.every((entry) => Number.isInteger(entry) && entry >= 0 && entry <= 3)
+    ? saved.signRotations as [number, number, number]
+    : [...initial.signRotations] as [number, number, number];
+  const phase = enumOr(saved.phase, VALID_QIZHEN_PHASES, initial.phase);
+  const decoyPlacedAt = nullableEnumOr(saved.decoyPlacedAt, VALID_QIZHEN_DECOY_TARGETS, initial.decoyPlacedAt);
+  return {
+    active: booleanOr(saved.active, phase !== "inactive" || initial.active),
+    phase,
+    mode: enumOr(saved.mode, VALID_QIZHEN_MODES, initial.mode),
+    locationBriefingSeen: booleanOr(saved.locationBriefingSeen, initial.locationBriefingSeen),
+    bridgeClueFound: booleanOr(saved.bridgeClueFound, initial.bridgeClueFound),
+    reflectionClueFound: booleanOr(saved.reflectionClueFound, initial.reflectionClueFound),
+    lakeClueFound: booleanOr(saved.lakeClueFound, initial.lakeClueFound),
+    mapClueIds: filteredStringArrayFromSet(saved.mapClueIds, VALID_QIZHEN_MAP_CLUES, initial.mapClueIds),
+    introSeen: booleanOr(saved.introSeen, initial.introSeen),
+    reflectionRound: rangedIntegerOr(saved.reflectionRound, 0, 3, initial.reflectionRound),
+    reflectionMistakes: nonNegativeIntegerOr(saved.reflectionMistakes, initial.reflectionMistakes),
+    signRotations,
+    signsSolved: booleanOr(saved.signsSolved, initial.signsSolved),
+    decoyPlacedAt,
+    decoyAttempts: nonNegativeIntegerOr(saved.decoyAttempts, initial.decoyAttempts),
+    mistRhythmRead: booleanOr(saved.mistRhythmRead, initial.mistRhythmRead),
+    mistAttempts: nonNegativeIntegerOr(saved.mistAttempts, initial.mistAttempts),
+    paperReleased: booleanOr(saved.paperReleased, initial.paperReleased)
+  };
 }
 
 function createPersistentSnapshot(state: GameState): GameState {

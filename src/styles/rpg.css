@@ -189,6 +189,147 @@
   background: #315f86;
 }
 
+.rpg-canteen-mode-toggle {
+  background: rgba(10, 24, 35, 0.94);
+  border: 3px solid #74d6f2;
+  color: #e9f9ff;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  min-height: 42px;
+  min-width: 118px;
+  position: absolute;
+  right: 14px;
+  top: 66px;
+  z-index: 24;
+}
+
+.rpg-canteen-mode-toggle.is-dark {
+  background: rgba(236, 229, 202, 0.96);
+  border-color: #9b7f3d;
+  color: #26313b;
+}
+
+.rpg-stage.is-canteen-bike .rpg-canteen-mode-toggle {
+  right: 154px;
+}
+
+.rpg-canteen-mode-toggle:focus-visible,
+.canteen-chase-controls button:focus-visible {
+  outline: 3px solid #f0d54e;
+  outline-offset: 2px;
+}
+
+.canteen-chase-overlay {
+  background: #081018;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  touch-action: none;
+  z-index: 18;
+}
+
+.canteen-chase-overlay svg {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  transition: filter 140ms steps(3, end);
+  width: 100%;
+}
+
+.canteen-chase-overlay.is-slowed svg {
+  filter: saturate(0.68) brightness(0.82);
+}
+
+.canteen-chase-paper {
+  animation: canteen-chase-paper-hover 800ms steps(8, end) infinite alternate;
+}
+
+.canteen-chase-overlay.is-finishing .canteen-chase-paper {
+  animation: none;
+  transition: transform 820ms cubic-bezier(0.3, 0.82, 0.25, 1);
+}
+
+.canteen-chase-player {
+  transition: transform 220ms steps(6, end);
+}
+
+.canteen-chase-overlay.is-counting-down .canteen-chase-player {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.canteen-chase-edge-fibers {
+  animation: canteen-chase-edge-fibers 520ms steps(5, end) infinite alternate;
+}
+
+.canteen-chase-controls {
+  bottom: 18px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, 52px);
+  left: 18px;
+  position: absolute;
+  z-index: 26;
+}
+
+.canteen-chase-controls button {
+  background: rgba(237, 242, 246, 0.92);
+  border: 3px solid #25313d;
+  color: #17212a;
+  font-size: 22px;
+  font-weight: 900;
+  height: 52px;
+  touch-action: none;
+  width: 52px;
+}
+
+.canteen-chase-controls button:disabled {
+  background: rgba(74, 81, 88, 0.84);
+  color: #a2a8ad;
+}
+
+.canteen-chase-paused {
+  background: rgba(8, 16, 24, 0.92);
+  border: 3px solid #7fcbe3;
+  color: #fff7df;
+  font-size: var(--fs-title);
+  left: 50%;
+  padding: 12px 24px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 28;
+}
+
+.canteen-chase-countdown {
+  align-items: center;
+  background: rgba(7, 16, 25, 0.88);
+  border: 4px solid #8fe7ff;
+  color: #fff7df;
+  display: flex;
+  font-family: var(--font-pixel);
+  font-size: 72px;
+  font-weight: 900;
+  height: 132px;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 132px;
+  z-index: 27;
+}
+
+@keyframes canteen-chase-edge-fibers {
+  from { opacity: 0.28; transform: translateX(-3px); }
+  to { opacity: 0.82; transform: translateX(3px); }
+}
+
+@keyframes canteen-chase-paper-hover {
+  from { opacity: 0.82; }
+  to { opacity: 1; }
+}
+
 .rpg-temp-inventory {
   background: rgba(10, 14, 18, 0.94);
   border: 3px solid #77818a;
@@ -648,6 +789,36 @@
     font-size: 17px;
     height: 44px;
     width: 44px;
+  }
+
+  .rpg-canteen-mode-toggle {
+    left: 8px;
+    min-height: 44px;
+    right: auto;
+    top: calc(var(--rpg-mobile-canvas-height) + 96px);
+  }
+
+  .rpg-stage.is-canteen-bike .rpg-canteen-mode-toggle {
+    left: 8px;
+    right: auto;
+  }
+
+  .rpg-stage.is-canteen-bike .rpg-temp-inventory {
+    top: calc(var(--rpg-mobile-canvas-height) + 146px);
+  }
+
+  .rpg-stage.is-canteen-interior .rpg-inventory-dock,
+  .rpg-stage.is-theater-interior .rpg-inventory-dock {
+    top: calc(var(--rpg-mobile-canvas-height) + 146px);
+  }
+
+  .rpg-stage.is-canteen-bike .rpg-inventory-dock {
+    top: calc(var(--rpg-mobile-canvas-height) + 230px);
+  }
+
+  .canteen-chase-overlay {
+    bottom: auto;
+    height: var(--rpg-mobile-canvas-height);
   }
 
   .rpg-temp-inventory {

@@ -62,12 +62,29 @@ export interface ItemCatalogEntry {
   uses: Array<{ target: string; result: "retain" | "consume" | "transform" }>;
 }
 
-export type RpgSceneId = "campus_bootstrap" | "dorm_hub" | "library_interior";
+export type RpgSceneId =
+  | "campus_bootstrap"
+  | "dorm_hub"
+  | "library_interior"
+  | "canteen_interior"
+  | "theater_interior"
+  | "qizhen_lake";
 
 export type RpgCheckpointId =
   | "campus_spawn"
   | "campus_library_gate"
+  | "campus_canteen_gate"
+  | "campus_theater_junction"
+  | "campus_qizhen_gate"
   | "dorm_spawn"
+  | "canteen_entrance"
+  | "theater_lobby"
+  | "theater_auditorium"
+  | "theater_stage"
+  | "qizhen_reflection"
+  | "qizhen_signs"
+  | "qizhen_decoy"
+  | "qizhen_mist"
   | "library_entrance"
   | "library_seat_022"
   | "library_front_desk"
@@ -128,13 +145,103 @@ export interface BikeArcadeChapterState {
 export type CanteenHuntPhase =
   | "tracking"
   | "canteen_reached"
+  // Legacy prototype value. SaveStore migrates it to tray_search.
   | "entered"
+  | "tray_search"
+  | "menu_order"
+  | "pickup_search"
+  | "exit_blocking"
   | "chase_ready"
-  | "chasing";
+  | "chasing"
+  | "theater_reached";
+
+export type CanteenMode = "light" | "dark";
+
+export type CanteenExitId = "west" | "southeast" | "steam";
 
 export interface CanteenHuntState {
   active: boolean;
   phase: CanteenHuntPhase;
+  mode: CanteenMode;
+  identifiedTrayIds: string[];
+  returnedTrayIds: string[];
+  orderAttemptCount: number;
+  pickupAttemptCount: number;
+  blockHits: number;
+  bikeCodeRead: boolean;
+  bikeLockCleaned: boolean;
+  bikePaid: boolean;
+  chaseCollisions: number;
+}
+
+export type TheaterHuntPhase =
+  | "entry_ticket"
+  | "program_search"
+  | "prop_setup"
+  | "spotlight_ready"
+  | "spotlight_hunt"
+  | "reversal"
+  | "complete";
+
+export type TheaterMode = "light" | "dark";
+
+export type TheaterProgramId = "opening" | "spotlight" | "finale";
+
+export interface TheaterHuntState {
+  active: boolean;
+  phase: TheaterHuntPhase;
+  mode: TheaterMode;
+  posterCleaned: boolean;
+  ticketCodeRead: boolean;
+  ticketCodeAttempts: number;
+  admitted: boolean;
+  collectedProgramIds: TheaterProgramId[];
+  programOrder: TheaterProgramId[];
+  programWrongAttempts: number;
+  propGhostRead: boolean;
+  managerHintRead: boolean;
+  propBoxOpened: boolean;
+  paperDusted: boolean;
+  spotlightRound: number;
+  spotlightMistakes: number;
+  decoyRevealed: boolean;
+}
+
+export type QizhenLakeMode = "light" | "dark";
+
+export type QizhenLakePhase =
+  | "inactive"
+  | "location_search"
+  | "lake_unlocked"
+  | "reflection_hunt"
+  | "sign_alignment"
+  | "decoy_setup"
+  | "mist_timing"
+  | "chase_ready";
+
+export type QizhenMapClueId = "bridge" | "reflection" | "lake";
+
+export type QizhenDecoyTargetId = "notice" | "bridge" | "lamp";
+
+export interface QizhenLakeState {
+  active: boolean;
+  phase: QizhenLakePhase;
+  mode: QizhenLakeMode;
+  locationBriefingSeen: boolean;
+  bridgeClueFound: boolean;
+  reflectionClueFound: boolean;
+  lakeClueFound: boolean;
+  mapClueIds: QizhenMapClueId[];
+  introSeen: boolean;
+  reflectionRound: number;
+  reflectionMistakes: number;
+  signRotations: [number, number, number];
+  signsSolved: boolean;
+  decoyPlacedAt: QizhenDecoyTargetId | null;
+  decoyAttempts: number;
+  mistRhythmRead: boolean;
+  mistAttempts: number;
+  paperReleased: boolean;
 }
 
 export type NetworkMode = "campus_wifi" | "cellular" | "offline";
@@ -146,6 +253,7 @@ export type ZjudingPage =
   | "login"
   | "directory"
   | "learn"
+  | "campus_map"
   | "library"
   | "library_spaces"
   | "library_seat"
@@ -272,7 +380,24 @@ export type ItemId =
   | "bagNonPersonProof"
   | "seat022Receipt"
   | "libraryPresenceProof"
-  | "seatReleasePass";
+  | "seatReleasePass"
+  | "cafeteriaWages"
+  | "greaseTissue"
+  | "pickupTicket0755"
+  | "theaterTicketHalfA"
+  | "theaterTicketHalfB"
+  | "temporaryTheaterTicket"
+  | "theaterProgramOpening"
+  | "theaterProgramSpotlight"
+  | "theaterProgramFinale"
+  | "spotlightRemote"
+  | "fluorescentBrush"
+  | "decoyPaper"
+  | "wetProgram"
+  | "bridgeKeyword"
+  | "reflectionKeyword"
+  | "lakeKeyword"
+  | "reflectionCoordinate";
 
 export type SceneId =
   | "alarm"
@@ -367,6 +492,8 @@ export interface GameState {
   actOne: ActOneBootstrapState;
   bikeArcade: BikeArcadeChapterState;
   canteenHunt: CanteenHuntState;
+  theaterHunt: TheaterHuntState;
+  qizhenLake: QizhenLakeState;
   ui: UiState;
 }
 

@@ -34,6 +34,24 @@ LIBRARY_GATE = {"x": 9120, "y": 780, "radius": 80}
 LIBRARY_APPROACH = {"x": 9120, "y": 824}
 FOUNDATION_LIBRARY = {"x": 9120, "y": 700}
 
+# The theater door is visible in the round building at x≈7730. Its front path
+# runs through a flower-bed gap to the road. Carve only that measured path so
+# the marker stays physically reachable without opening the surrounding facade.
+THEATER_CORRIDOR = {
+    "left": 7672,
+    "right": 7788,
+    "top": 700,
+    "bottom": WORLD_HEIGHT,
+}
+THEATER_GATE = {"x": 7730, "y": 735, "radius": 86}
+THEATER_APPROACH = {"x": 7730, "y": 840}
+
+# The Qizhen Lake story branches from the open sidewalk west of the theater.
+# This gate already sits on the approved road mask and therefore needs no
+# additional carving; it remains a real campus-walk destination.
+QIZHEN_GATE = {"x": 7080, "y": 900, "radius": 92}
+QIZHEN_APPROACH = {"x": 7160, "y": 930}
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -74,6 +92,12 @@ def main() -> None:
     bottom = aligned_cell(LIBRARY_CORRIDOR["bottom"], edge="end")
     grid[top:bottom, left:right] = True
 
+    theater_left = aligned_cell(THEATER_CORRIDOR["left"], edge="start")
+    theater_right = aligned_cell(THEATER_CORRIDOR["right"], edge="end")
+    theater_top = aligned_cell(THEATER_CORRIDOR["top"], edge="start")
+    theater_bottom = aligned_cell(THEATER_CORRIDOR["bottom"], edge="end")
+    grid[theater_top:theater_bottom, theater_left:theater_right] = True
+
     mask_image = Image.fromarray((grid * 255).astype(np.uint8), mode="L").resize(
         (WORLD_WIDTH, WORLD_HEIGHT),
         Image.Resampling.NEAREST,
@@ -95,6 +119,8 @@ def main() -> None:
     )
     runtime["world"] = {"width": WORLD_WIDTH, "height": WORLD_HEIGHT}
     runtime["libraryGate"] = LIBRARY_GATE
+    runtime["theaterGate"] = THEATER_GATE
+    runtime["qizhenGate"] = QIZHEN_GATE
     for landmark in runtime.get("landmarks", []):
         if landmark.get("id") == "foundation_library":
             landmark.update(FOUNDATION_LIBRARY)
@@ -112,6 +138,8 @@ def main() -> None:
         "bitsetSha256": bitset_digest,
         "sourcePlateSha256": plate_digest,
         "gateApproach": LIBRARY_APPROACH,
+        "theaterApproach": THEATER_APPROACH,
+        "qizhenApproach": QIZHEN_APPROACH,
     }
     RUNTIME_PATH.write_text(
         json.dumps(runtime, ensure_ascii=False, indent=2) + "\n",
@@ -123,6 +151,9 @@ def main() -> None:
         f"walkable={int(grid.sum())}/{grid.size} "
         f"libraryGate={LIBRARY_GATE['x']},{LIBRARY_GATE['y']} "
         f"approach={LIBRARY_APPROACH['x']},{LIBRARY_APPROACH['y']} "
+        f"theaterGate={THEATER_GATE['x']},{THEATER_GATE['y']} "
+        f"theaterApproach={THEATER_APPROACH['x']},{THEATER_APPROACH['y']} "
+        f"qizhenGate={QIZHEN_GATE['x']},{QIZHEN_GATE['y']} "
         f"plateSha256={plate_digest} maskSha256={mask_digest} "
         f"bitsetSha256={bitset_digest}"
     )

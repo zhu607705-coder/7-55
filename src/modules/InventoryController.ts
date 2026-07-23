@@ -12,7 +12,8 @@ export interface CombineRecipe {
 export const COMBINE_RECIPES: CombineRecipe[] = [
   { a: "slashLine", b: "reverseGear", result: "towerKey", resultName: "钥匙" },
   { a: "waterDrop", b: "headphone", result: "wateredHeadphone", resultName: "盛水的耳机" },
-  { a: "pushTriangle", b: "mentorLine", result: "rightArrow", resultName: "右移箭头" }
+  { a: "pushTriangle", b: "mentorLine", result: "rightArrow", resultName: "右移箭头" },
+  { a: "theaterTicketHalfA", b: "theaterTicketHalfB", result: "temporaryTheaterTicket", resultName: "临时观演票" }
 ];
 
 export class InventoryController {

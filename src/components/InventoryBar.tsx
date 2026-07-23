@@ -70,7 +70,24 @@ const ITEM_ORDER: ItemId[] = [
   "bagNonPersonProof",
   "seat022Receipt",
   "libraryPresenceProof",
-  "seatReleasePass"
+  "seatReleasePass",
+  "cafeteriaWages",
+  "greaseTissue",
+  "pickupTicket0755",
+  "theaterTicketHalfA",
+  "theaterTicketHalfB",
+  "temporaryTheaterTicket",
+  "theaterProgramOpening",
+  "theaterProgramSpotlight",
+  "theaterProgramFinale",
+  "spotlightRemote",
+  "fluorescentBrush",
+  "decoyPaper",
+  "wetProgram",
+  "bridgeKeyword",
+  "reflectionKeyword",
+  "lakeKeyword",
+  "reflectionCoordinate"
 ];
 const INVENTORY_TOP_DEFAULT = 240;
 const INVENTORY_TOP_MIN = 108;
