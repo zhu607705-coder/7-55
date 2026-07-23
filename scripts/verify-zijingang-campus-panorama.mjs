@@ -2,11 +2,19 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 const EXPECTED = {
-  width: 11744,
-  height: 1084,
-  sha256: "9bb6c5593697601fa1347655e43dc563bbc2e32768987df2d602aca31f525986",
-  foundationLibrary: { x: 9120, y: 700 },
-  libraryGate: { x: 9120, y: 780, radius: 80 }
+  width: 4516,
+  height: 3420,
+  sha256: "57e27997d0c24a77dd758869bcc1bab8665b10496a77ec0f802986461ceb116d",
+  spawn: { x: 2550, y: 650 },
+  foundationLibrary: { x: 3718, y: 1568 },
+  libraryGate: { x: 3706, y: 1696, radius: 112 },
+  libraryApproach: { x: 3805, y: 1680 },
+  canteen: {
+    huntSpawn: { x: 4200, y: 2868 },
+    gate: { x: 3120, y: 620, radius: 88 },
+    approach: { x: 3120, y: 650 },
+    bike: { x: 3220, y: 650 }
+  }
 };
 
 const plateUrl = new URL("../src/assets/rpg/campus/zijingang_campus_plate.png", import.meta.url);
@@ -35,6 +43,9 @@ if (runtime.world?.width !== width || runtime.world?.height !== height) {
 }
 if (runtime.source?.plateSha256 !== sha256) {
   throw new Error("Campus runtime SHA-256 does not match the panorama");
+}
+if (runtime.spawn?.x !== EXPECTED.spawn.x || runtime.spawn?.y !== EXPECTED.spawn.y) {
+  throw new Error("Campus spawn must stay on the road south of the Ziyun/Bifeng residential area");
 }
 for (const [name, point] of [["spawn", runtime.spawn], ["libraryGate", runtime.libraryGate]]) {
   if (!point || point.x < 0 || point.x > width || point.y < 0 || point.y > height) {
@@ -111,26 +122,79 @@ const gateApproach = walkability.gateApproach;
 if (!gateApproach) {
   throw new Error("Campus walkability gate approach is missing");
 }
-assertStandable("Campus library gate approach", gateApproach);
-assertStandable("Campus library checkpoint", {
-  x: runtime.libraryGate.x,
-  y: runtime.libraryGate.y + 72
-});
-for (const y of [800, 824, 852, 920, 990]) {
-  assertStandable(`Campus library approach at y=${y}`, { x: runtime.libraryGate.x, y });
+if (
+  gateApproach.x !== EXPECTED.libraryApproach.x
+  || gateApproach.y !== EXPECTED.libraryApproach.y
+) {
+  throw new Error("Campus library approach is not calibrated to the Basic Library east forecourt");
 }
+assertStandable("Campus library gate approach", gateApproach);
+assertStandable("Campus spawn", runtime.spawn);
+assertStandable("East Canteen approach", runtime.canteen?.approach);
+assertStandable("Canteen hunt spawn", runtime.canteen?.huntSpawn);
+assertStandable("Canteen bicycle", runtime.canteen?.bike);
 for (const [name, point] of [
-  ["Campus library west flower bed", { x: 9052, y: 840 }],
-  ["Campus library east flower bed", { x: 9192, y: 840 }]
+  ["Basic Library building body", { x: 3706, y: 1600 }],
+  ["Basic Library west river bank", { x: 3500, y: 1700 }],
+  ["East Canteen building body", { x: 3120, y: 520 }],
+  ["Ziyun/Bifeng building body", { x: 2572, y: 525 }]
 ]) {
   if (isWalkable(point.x, point.y)) {
-    throw new Error(`${name} must remain blocked outside the measured entrance corridor`);
+    throw new Error(`${name} must remain blocked`);
   }
 }
 if (Math.hypot(gateApproach.x - runtime.libraryGate.x, gateApproach.y - runtime.libraryGate.y) > runtime.libraryGate.radius) {
   throw new Error("Campus library approach is outside the interaction radius");
 }
+if (JSON.stringify(runtime.canteen) !== JSON.stringify(EXPECTED.canteen)) {
+  throw new Error("East Canteen story coordinates do not match the selected top-down plate");
+}
+
+const cellIndexAt = (point) => {
+  const x = Math.floor(point.x / walkability.cellSize);
+  const y = Math.floor(point.y / walkability.cellSize);
+  return y * walkability.gridWidth + x;
+};
+const reachable = new Uint8Array(walkability.gridWidth * walkability.gridHeight);
+const queue = new Int32Array(reachable.length);
+let head = 0;
+let tail = 0;
+const start = cellIndexAt(runtime.spawn);
+reachable[start] = 1;
+queue[tail++] = start;
+while (head < tail) {
+  const current = queue[head++];
+  const x = current % walkability.gridWidth;
+  const y = Math.floor(current / walkability.gridWidth);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    const nextX = x + dx;
+    const nextY = y + dy;
+    if (
+      nextX < 0
+      || nextY < 0
+      || nextX >= walkability.gridWidth
+      || nextY >= walkability.gridHeight
+    ) {
+      continue;
+    }
+    const next = nextY * walkability.gridWidth + nextX;
+    if (reachable[next] || !isWalkable(nextX * walkability.cellSize, nextY * walkability.cellSize)) {
+      continue;
+    }
+    reachable[next] = 1;
+    queue[tail++] = next;
+  }
+}
+for (const [name, point] of [
+  ["Basic Library", gateApproach],
+  ["East Canteen", runtime.canteen.approach],
+  ["night hunt spawn", runtime.canteen.huntSpawn]
+]) {
+  if (!reachable[cellIndexAt(point)]) {
+    throw new Error(`${name} must be connected to the Ziyun/Bifeng campus spawn`);
+  }
+}
 
 console.log(
-  `verified repository panorama ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells} libraryGate=${runtime.libraryGate.x},${runtime.libraryGate.y} approach=${gateApproach.x},${gateApproach.y}`
+  `verified repository top-down campus ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells} spawn=${runtime.spawn.x},${runtime.spawn.y} libraryGate=${runtime.libraryGate.x},${runtime.libraryGate.y} approach=${gateApproach.x},${gateApproach.y}`
 );

@@ -1,5 +1,10 @@
 import Phaser from "phaser";
-import { ZIJINGANG_CAMPUS_LANDMARKS, ZIJINGANG_PLATE, type CampusScaleClass } from "./ZijingangCampusLayout";
+import {
+  CAMPUS_LANDMARK_LABEL_TOP_INSET,
+  ZIJINGANG_CAMPUS_LANDMARKS,
+  ZIJINGANG_PLATE,
+  type CampusScaleClass
+} from "./ZijingangCampusLayout";
 
 // 分层约定：校园底图 depth 0；建筑遮挡层是同源裁剪 overlay，depth = 该建筑 footprint 南缘 y；
 // 玩家 depth = player.y + 30，于是玩家在南缘以北（建筑后方）被 overlay 盖住，以南（前方）盖住建筑。
@@ -25,8 +30,7 @@ export interface CampusBuildingState {
 
 // athletics / landscape 是平地与园林，不参与前后遮挡
 const OCCLUDING_SCALE_CLASSES: ReadonlySet<CampusScaleClass> = new Set(["landmark", "major", "campus_block"]);
-const LANDMARK_LABEL_GAP = 18; // 与 drawZijingangWorld 的标签锚点间距一致
-const OVERLAY_FRAME_PREFIX = "campus-building-overlay-";
+const OVERLAY_TEXTURE_PREFIX = "campus-building-overlay-";
 
 const IDENTITY_TRANSFORM: Required<CampusBuildingTransform> = {
   offsetX: 0,
@@ -41,8 +45,9 @@ interface CampusBuildingEntry {
   label: string;
   baseCenter: { x: number; y: number };
   baseFootprint: { width: number; height: number };
+  occlusionPolygons: readonly (readonly Readonly<{ x: number; y: number }>[])[];
   transform: Required<CampusBuildingTransform>;
-  frameName: string;
+  textureKey: string;
   // overlay 图像中心与 footprint 中心的固定差值（源矩形取整 / clamp 产生），变换时保持像素对齐
   imageOffsetX: number;
   imageOffsetY: number;
@@ -83,7 +88,7 @@ export class CampusBuildingLayer {
 
   constructor(private readonly scene: Phaser.Scene, private readonly plateTextureKey: string) {
     Object.values(ZIJINGANG_CAMPUS_LANDMARKS).forEach((landmark) => {
-      if (!OCCLUDING_SCALE_CLASSES.has(landmark.scaleClass)) {
+      if (!landmark.occlusionEnabled || !OCCLUDING_SCALE_CLASSES.has(landmark.scaleClass)) {
         return;
       }
       this.entries.set(landmark.id, {
@@ -91,8 +96,9 @@ export class CampusBuildingLayer {
         label: landmark.label,
         baseCenter: { x: landmark.worldCenter.x, y: landmark.worldCenter.y },
         baseFootprint: { width: landmark.visualFootprint.width, height: landmark.visualFootprint.height },
+        occlusionPolygons: landmark.occlusionPolygons,
         transform: { ...IDENTITY_TRANSFORM },
-        frameName: `${OVERLAY_FRAME_PREFIX}${landmark.id}`,
+        textureKey: `${OVERLAY_TEXTURE_PREFIX}${landmark.id}`,
         imageOffsetX: 0,
         imageOffsetY: 0
       });
@@ -110,6 +116,7 @@ export class CampusBuildingLayer {
       throw new Error(`CampusBuildingLayer: plate texture "${this.plateTextureKey}" must be loaded before build()`);
     }
     const texture = this.scene.textures.get(this.plateTextureKey);
+    const source = texture.getSourceImage() as CanvasImageSource;
     this.entries.forEach((entry) => {
       const halfWidth = entry.baseFootprint.width / 2;
       const halfHeight = entry.baseFootprint.height / 2;
@@ -123,25 +130,45 @@ export class CampusBuildingLayer {
       if (width <= 0 || height <= 0) {
         return;
       }
-      if (!texture.has(entry.frameName)) {
-        texture.add(entry.frameName, 0, left, top, width, height);
+      if (this.scene.textures.exists(entry.textureKey)) {
+        this.scene.textures.remove(entry.textureKey);
       }
+      const overlayTexture = this.scene.textures.createCanvas(entry.textureKey, width, height);
+      if (!overlayTexture) {
+        throw new Error(`CampusBuildingLayer: failed to create overlay texture "${entry.textureKey}"`);
+      }
+      const context = overlayTexture.getContext();
+      context.save();
+      context.beginPath();
+      entry.occlusionPolygons.forEach((polygon) => {
+        polygon.forEach((point, index) => {
+          const x = point.x - left;
+          const y = point.y - top;
+          if (index === 0) {
+            context.moveTo(x, y);
+          } else {
+            context.lineTo(x, y);
+          }
+        });
+        context.closePath();
+      });
+      context.clip();
+      context.drawImage(source, left, top, width, height, 0, 0, width, height);
+      context.restore();
+      overlayTexture.refresh();
+      overlayTexture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       entry.imageOffsetX = left + width / 2 - entry.baseCenter.x;
       entry.imageOffsetY = top + height / 2 - entry.baseCenter.y;
       const overlay = this.scene.add.image(
         entry.baseCenter.x + entry.imageOffsetX,
         entry.baseCenter.y + entry.imageOffsetY,
-        this.plateTextureKey,
-        entry.frameName
+        entry.textureKey
       );
       overlay.setData("campusBuildingOverlay", true).setData("buildingId", entry.id);
       entry.overlay = overlay;
       this.syncOverlay(entry);
       this.overlays.push(overlay);
     });
-    // Phaser 的 texture.add 会把 firstFrame 从 __BASE 改为首个自定义帧，
-    // 导致场景重建时无底图参数创建的底图 image 渲染成裁剪帧；恢复默认帧，避免副作用外泄。
-    texture.firstFrame = "__BASE";
     this.built = true;
     return [...this.overlays];
   }
@@ -153,6 +180,26 @@ export class CampusBuildingLayer {
 
   listBuildings(): CampusBuildingState[] {
     return [...this.entries.values()].map((entry) => this.toState(entry));
+  }
+
+  /**
+   * 玩家只有在建筑实际横向轮廓内且位于南缘之后时才会被遮挡。
+   * 脚底在建筑侧面时将 overlay 放到玩家下方，避免矩形裁片切掉半个角色。
+   */
+  updateOcclusionForPlayer(playerX: number, playerY: number, playerDepth: number): void {
+    this.entries.forEach((entry) => {
+      const overlay = entry.overlay;
+      if (!overlay) {
+        return;
+      }
+      const geometry = resolveEffectiveGeometry(entry);
+      const left = geometry.centerX - geometry.aabbWidth / 2;
+      const right = geometry.centerX + geometry.aabbWidth / 2;
+      const south = geometry.centerY + geometry.aabbHeight / 2;
+      const behind = playerY < south;
+      const horizontallyBehind = playerX >= left && playerX <= right;
+      overlay.setDepth(behind && !horizontallyBehind ? playerDepth - 1 : south);
+    });
   }
 
   /**
@@ -186,38 +233,28 @@ export class CampusBuildingLayer {
     return true;
   }
 
-  /** 当前应参与碰撞的矩形（center/footprint 经 transform 后的 world 轴对齐包围盒），供场景同步 static body；x/y 为矩形中心 */
-  getCollisionRect(id: string): { x: number; y: number; width: number; height: number } | undefined {
-    const entry = this.entries.get(id);
-    if (!entry) {
-      return undefined;
-    }
-    const geometry = resolveEffectiveGeometry(entry);
-    return { x: geometry.centerX, y: geometry.centerY, width: geometry.aabbWidth, height: geometry.aabbHeight };
-  }
-
-  /** 地标标签锚点（建筑顶部上方），随 transform 移动 */
+  /** 地标标签锚点（建筑顶部内侧），随 transform 移动。 */
   getLabelAnchor(id: string): { x: number; y: number } | undefined {
     const entry = this.entries.get(id);
     if (!entry) {
       return undefined;
     }
     const geometry = resolveEffectiveGeometry(entry);
-    return { x: geometry.centerX, y: geometry.centerY - geometry.aabbHeight / 2 - LANDMARK_LABEL_GAP };
+    return {
+      x: geometry.centerX,
+      y: geometry.centerY - geometry.aabbHeight / 2 + CAMPUS_LANDMARK_LABEL_TOP_INSET
+    };
   }
 
   destroy(): void {
     this.scene.events.off(Phaser.Scenes.Events.SHUTDOWN, this.handleSceneShutdown, this);
     this.overlays.forEach((overlay) => overlay.destroy());
     this.overlays = [];
-    if (this.scene.textures.exists(this.plateTextureKey)) {
-      const texture = this.scene.textures.get(this.plateTextureKey);
-      this.entries.forEach((entry) => {
-        if (texture.has(entry.frameName)) {
-          texture.remove(entry.frameName);
-        }
-      });
-    }
+    this.entries.forEach((entry) => {
+      if (this.scene.textures.exists(entry.textureKey)) {
+        this.scene.textures.remove(entry.textureKey);
+      }
+    });
     this.entries.forEach((entry) => {
       entry.overlay = undefined;
     });
@@ -253,7 +290,11 @@ export class CampusBuildingLayer {
     this.overlays = [];
     this.entries.forEach((entry) => {
       entry.overlay = undefined;
+      if (this.scene.textures.exists(entry.textureKey)) {
+        this.scene.textures.remove(entry.textureKey);
+      }
     });
     this.built = false;
+    this.onBuildingChanged = undefined;
   }
 }

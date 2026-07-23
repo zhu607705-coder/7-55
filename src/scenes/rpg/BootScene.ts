@@ -24,19 +24,22 @@ import {
 import { RPG_CONTROL_HINTS, formatRpgInteractionHint } from "./RpgControlHints";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 
-const CAMERA_MIN_ZOOM = 0.5;
-const CAMERA_MAX_ZOOM = 0.8;
-const CAMERA_DEFAULT_ZOOM = 0.55;
-const CAMERA_ZOOM_STEP = 0.0625;
-const CAMERA_DEADZONE_WIDTH = 300;
-const CAMERA_DEADZONE_HEIGHT = 180;
+const CAMERA_MIN_ZOOM = 0.7;
+const CAMERA_MAX_ZOOM = 1.8;
+const CAMERA_DEFAULT_ZOOM = 1.1;
+const CAMERA_ZOOM_STEP = 0.125;
 const CAMERA_FOLLOW_OFFSET_Y = 34;
+const RPG_LOGICAL_WIDTH = 960;
+const RPG_LOGICAL_HEIGHT = 540;
+const CAMERA_DEADZONE_WIDTH_RATIO = 300 / RPG_LOGICAL_WIDTH;
+const CAMERA_DEADZONE_HEIGHT_RATIO = 180 / RPG_LOGICAL_HEIGHT;
+const MAX_CAMPUS_RENDER_SCALE = 3;
 
 // 寻人篇 · 地图层：暗色校园里沿脚印一路追到大食堂（第 1 张场景，最左侧）。
-const CANTEEN_HUNT_SPAWN = { x: 10500, y: 1004 };
-const CANTEEN_GATE = { x: 770, y: 898, radius: 80 };
-const CANTEEN_APPROACH = { x: 800, y: 958 };
-const CANTEEN_BIKE = { x: 980, y: 973 };
+const CANTEEN_HUNT_SPAWN = campusRuntimeData.canteen.huntSpawn;
+const CANTEEN_GATE = campusRuntimeData.canteen.gate;
+const CANTEEN_APPROACH = campusRuntimeData.canteen.approach;
+const CANTEEN_BIKE = campusRuntimeData.canteen.bike;
 const CANTEEN_NARRATION_RADIUS = 320;
 const FOOTPRINT_SPACING = 46;
 const FOOTPRINT_MESSY_RATIO = 0.86;
@@ -61,12 +64,12 @@ export class BootScene extends Phaser.Scene {
   private libraryGatePrompt!: Phaser.GameObjects.Text;
   private interactRequested = false;
   private buildingLayer!: CampusBuildingLayer;
-  private buildingCollisionRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private pathGrid!: CampusPathGrid;
   private movement!: RpgMovementController;
   private cameraController!: RpgCameraController;
   private pathIndicatorObjects: Phaser.GameObjects.Arc[] = [];
   private currentPathLength = 0;
+  private campusRenderScale = 1;
   private canteenHuntActive = false;
   private canteenDarkOverlay: Phaser.GameObjects.Rectangle | null = null;
   private canteenPlayerLight: Phaser.GameObjects.Image | null = null;
@@ -88,6 +91,8 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.campusRenderScale = this.enableNativeCampusResolution();
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.restoreLogicalCanvasResolution, this);
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     this.physics.world.setBounds(0, 0, ZIJINGANG_WORLD.width, ZIJINGANG_WORLD.height);
     this.cameras.main.setBackgroundColor(0x080a0c);
@@ -100,18 +105,6 @@ export class BootScene extends Phaser.Scene {
 
     this.buildingLayer = new CampusBuildingLayer(this, ZIJINGANG_CAMPUS_PLATE_KEY);
     const buildingOverlays = this.buildingLayer.build();
-    this.buildingCollisionRects = new Map();
-    this.buildingLayer.listBuildings().forEach((building) => {
-      const collision = this.buildingLayer.getCollisionRect(building.id);
-      if (!collision) {
-        return;
-      }
-      const rect = this.add.rectangle(collision.x, collision.y, collision.width, collision.height, 0x000000, 0)
-        .setDepth(collision.y - 10);
-      this.obstacles.add(rect);
-      this.buildingCollisionRects.set(building.id, rect);
-    });
-    this.buildingLayer.onBuildingChanged = (id) => this.syncBuildingCollisionRect(id);
     if (import.meta.env.DEV) {
       this.registry.set("campusBuildingLayer", this.buildingLayer);
     }
@@ -136,7 +129,8 @@ export class BootScene extends Phaser.Scene {
       backgroundColor: "#17212add",
       fontFamily: "monospace",
       fontSize: "11px",
-      padding: { x: 4, y: 2 }
+      padding: { x: 4, y: 2 },
+      resolution: Math.max(2, window.devicePixelRatio || 1)
     }).setOrigin(0.5).setDepth(this.player.y + 55).setVisible(false);
     this.syncCharacterNameplate(this.bridge.getState());
 
@@ -146,17 +140,20 @@ export class BootScene extends Phaser.Scene {
     // 24px 采样格：玩家足盒宽 ~20px，16px 格会把窄于足盒的缝隙（如路缘石之间的缺口）
     // 标为可走，寻路会把玩家卡进物理无法穿行的死角；24px 保守合并保证 nav 通道可容纳足盒。
     this.pathGrid = new CampusPathGrid(campusRuntimeData.walkability, 24);
-    this.movement = new RpgMovementController(this.player, { walkSpeed: 220, runSpeed: 320 });
+    this.movement = new RpgMovementController(this.player, { walkSpeed: 110, runSpeed: 160 });
     this.movement.onPathFinished = () => this.clearPathIndicator();
 
     this.cameraController = new RpgCameraController(this, {
       player: this.player,
       world: { width: ZIJINGANG_WORLD.width, height: ZIJINGANG_WORLD.height },
-      minZoom: CAMERA_MIN_ZOOM,
-      maxZoom: CAMERA_MAX_ZOOM,
-      defaultZoom: CAMERA_DEFAULT_ZOOM,
-      zoomStep: CAMERA_ZOOM_STEP,
-      deadzone: { width: CAMERA_DEADZONE_WIDTH, height: CAMERA_DEADZONE_HEIGHT },
+      minZoom: CAMERA_MIN_ZOOM * this.campusRenderScale,
+      maxZoom: CAMERA_MAX_ZOOM * this.campusRenderScale,
+      defaultZoom: CAMERA_DEFAULT_ZOOM * this.campusRenderScale,
+      zoomStep: CAMERA_ZOOM_STEP * this.campusRenderScale,
+      deadzoneRatio: {
+        width: CAMERA_DEADZONE_WIDTH_RATIO,
+        height: CAMERA_DEADZONE_HEIGHT_RATIO
+      },
       followOffsetY: CAMERA_FOLLOW_OFFSET_Y,
       minimap: null
     });
@@ -225,6 +222,11 @@ export class BootScene extends Phaser.Scene {
     const velocity = this.movement.update(delta);
     this.playerAnimator.update(velocity, this.time.now);
     this.player.setDepth(this.player.y + 30);
+    this.buildingLayer.updateOcclusionForPlayer(
+      this.player.x,
+      this.player.y,
+      this.player.depth
+    );
     this.cameraController.update(delta);
   }
 
@@ -258,7 +260,8 @@ export class BootScene extends Phaser.Scene {
         backgroundColor: "#10231fee",
         fontFamily: "monospace",
         fontSize: "13px",
-        padding: { x: 8, y: 5 }
+        padding: { x: 8, y: 5 },
+        resolution: Math.max(2, window.devicePixelRatio || 1)
       }
     ).setOrigin(0.5).setDepth(CAMPUS_LIBRARY_GATE.y + 90).setVisible(false);
     this.cameraController.minimapCamera?.ignore([this.libraryGateMarker, this.libraryGatePrompt]);
@@ -365,7 +368,7 @@ export class BootScene extends Phaser.Scene {
     const h = ZIJINGANG_WORLD.height;
     this.canteenDarkOverlay = this.add.rectangle(w / 2, h / 2, w, h, 0x0a1230, 1)
       .setAlpha(0)
-      .setDepth(500);
+      .setDepth(9000);
     this.tweens.add({
       targets: this.canteenDarkOverlay,
       alpha: 0.66,
@@ -373,7 +376,7 @@ export class BootScene extends Phaser.Scene {
       ease: "Cubic.easeOut"
     });
     this.canteenPlayerLight = this.add.image(this.player.x, this.player.y, "canteen-light")
-      .setDepth(501)
+      .setDepth(9001)
       .setBlendMode(Phaser.BlendModes.ADD)
       .setAlpha(0);
     this.tweens.add({
@@ -489,7 +492,8 @@ export class BootScene extends Phaser.Scene {
         backgroundColor: "#10231fee",
         fontFamily: "monospace",
         fontSize: "13px",
-        padding: { x: 8, y: 5 }
+        padding: { x: 8, y: 5 },
+        resolution: Math.max(2, window.devicePixelRatio || 1)
       }
     ).setOrigin(0.5).setDepth(CANTEEN_GATE.y + 90).setVisible(false);
     this.cameraController.minimapCamera?.ignore([this.canteenGateMarker, this.canteenGatePrompt]);
@@ -517,7 +521,8 @@ export class BootScene extends Phaser.Scene {
         backgroundColor: "#241a12ee",
         fontFamily: "monospace",
         fontSize: "12px",
-        padding: { x: 7, y: 4 }
+        padding: { x: 7, y: 4 },
+        resolution: Math.max(2, window.devicePixelRatio || 1)
       }
     ).setOrigin(0.5).setDepth(CANTEEN_BIKE.y + 12).setVisible(false);
     this.cameraController.minimapCamera?.ignore([this.canteenBike, this.canteenBikeHint]);
@@ -566,18 +571,6 @@ export class BootScene extends Phaser.Scene {
       this.canteenBikeHint.setVisible(distanceToBike <= 130);
     }
     this.interactRequested = false;
-  }
-
-  private syncBuildingCollisionRect(id: string): void {
-    const rect = this.buildingCollisionRects.get(id);
-    const collision = this.buildingLayer.getCollisionRect(id);
-    if (!rect || !collision) {
-      return;
-    }
-    rect.setPosition(collision.x, collision.y);
-    rect.setSize(collision.width, collision.height);
-    rect.setDepth(collision.y - 10);
-    (rect.body as Phaser.Physics.Arcade.StaticBody | null)?.updateFromGameObject();
   }
 
   private handleWorldTap(worldX: number, worldY: number): void {
@@ -722,6 +715,32 @@ export class BootScene extends Phaser.Scene {
   private addObstacle(x: number, y: number, width: number, height: number): void {
     const collision = this.add.rectangle(x, y, width, height, 0x000000, 0).setDepth(y - 10);
     this.obstacles.add(collision);
+  }
+
+  private enableNativeCampusResolution(): number {
+    const bounds = this.game.canvas.getBoundingClientRect();
+    this.game.canvas.style.imageRendering = "auto";
+    const deviceScale = Math.max(1, window.devicePixelRatio || 1);
+    const displayScale = Math.min(
+      bounds.width / RPG_LOGICAL_WIDTH,
+      bounds.height / RPG_LOGICAL_HEIGHT
+    );
+    const renderScale = Phaser.Math.Clamp(
+      Math.max(1, displayScale * deviceScale),
+      1,
+      MAX_CAMPUS_RENDER_SCALE
+    );
+    this.scale.setGameSize(
+      Math.round(RPG_LOGICAL_WIDTH * renderScale),
+      Math.round(RPG_LOGICAL_HEIGHT * renderScale)
+    );
+    return renderScale;
+  }
+
+  private restoreLogicalCanvasResolution(): void {
+    this.scale.setGameSize(RPG_LOGICAL_WIDTH, RPG_LOGICAL_HEIGHT);
+    this.game.canvas.style.imageRendering = "";
+    this.campusRenderScale = 1;
   }
 
 }

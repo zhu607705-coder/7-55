@@ -12,7 +12,7 @@ export const RPG_PLAYER_FRAME_WIDTH = 48;
 export const RPG_PLAYER_FRAME_HEIGHT = 64;
 export const RPG_PLAYER_DISPLAY_SCALE = 1.3;
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
-export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = 2;
+export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = 0.5;
 export const RPG_PLAYER_WALK_FRAME_MS = 80;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
@@ -23,10 +23,10 @@ export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
 });
 
 export const RPG_CAMPUS_PLAYER_PERSPECTIVE = Object.freeze({
-  farY: 880,
-  nearY: 1040,
-  farMultiplier: 1,
-  nearMultiplier: 1.5
+  farY: 0,
+  nearY: 3420,
+  farMultiplier: 0.96,
+  nearMultiplier: 1.08
 });
 
 const RPG_PLAYER_GROUND_OFFSET_Y = RPG_PLAYER_FRAME_HEIGHT * RPG_PLAYER_DISPLAY_SCALE / 2;

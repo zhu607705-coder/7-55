@@ -526,7 +526,7 @@ export function RpgGameHost({
 
   return (
     <main
-      className={`rpg-stage ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
+      className={`rpg-stage ${runtimeScene === "campus_bootstrap" ? "is-campus-map" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
       data-input-blocked={inputBlocked || itemInspectOpen ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}

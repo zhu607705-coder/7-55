@@ -1,12 +1,13 @@
 import Phaser from "phaser";
 import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
-import { ZIJINGANG_CAMPUS_LANDMARKS } from "./ZijingangCampusLayout";
+import {
+  CAMPUS_LANDMARK_LABEL_TOP_INSET,
+  ZIJINGANG_CAMPUS_LANDMARKS
+} from "./ZijingangCampusLayout";
 import { ZIJINGANG_CAMPUS_PLATE_KEY } from "./ZijingangLandmarkAssets";
 import { ZIJINGANG_WORLD } from "./ZijingangWorldModel";
 
 export { ZIJINGANG_WORLD } from "./ZijingangWorldModel";
-
-type LabelTone = "blue" | "cyan" | "gold" | "green" | "red" | "silver";
 
 interface CollisionRect {
   x: number;
@@ -100,8 +101,6 @@ function collisionRectsFromWalkability(): CollisionRect[] {
 
 const CAMPUS_COLLISION_RECTS = collisionRectsFromWalkability();
 
-const LANDMARK_TONES: Record<keyof typeof ZIJINGANG_CAMPUS_LANDMARKS, LabelTone> = {};
-
 export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: ZijingangWorldOptions): void {
   const texture = scene.textures.get(ZIJINGANG_CAMPUS_PLATE_KEY);
   const source = texture.getSourceImage() as HTMLImageElement;
@@ -114,7 +113,7 @@ export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: Zijinga
   scene.add.image(0, 0, ZIJINGANG_CAMPUS_PLATE_KEY)
     .setOrigin(0)
     .setDepth(0)
-    .setData("campusProjection", "wide-panorama-2.5d");
+    .setData("campusProjection", "north-up-top-down-2d");
 
   CAMPUS_COLLISION_RECTS.forEach((rect) => {
     addObstacle(rect.x, rect.y, rect.width, rect.height);
@@ -124,9 +123,10 @@ export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: Zijinga
     const label = createLandmarkLabel(
       scene,
       landmark.worldCenter.x,
-      landmark.worldCenter.y - landmark.visualFootprint.height / 2 - 18,
-      landmark.label,
-      LANDMARK_TONES[landmark.id]
+      landmark.worldCenter.y
+        - landmark.visualFootprint.height / 2
+        + CAMPUS_LANDMARK_LABEL_TOP_INSET,
+      landmark.label
     );
     label
       .setData("anchorX", landmark.worldCenter.x)
@@ -139,27 +139,17 @@ export function createLandmarkLabel(
   scene: Phaser.Scene,
   x: number,
   y: number,
-  text: string,
-  tone: LabelTone
+  text: string
 ): Phaser.GameObjects.Text {
-  const accents = {
-    blue: "#5ba2e6",
-    cyan: "#74d4db",
-    gold: "#f0d54e",
-    green: "#83c77b",
-    red: "#e97b70",
-    silver: "#d6d8d8"
-  } as const;
   return scene.add.text(x, y, text, {
     color: "#ffffff",
     fontFamily: "monospace",
-    fontSize: "15px",
+    fontSize: "18px",
     backgroundColor: "#13202bea",
     padding: { x: 8, y: 5 },
-    stroke: accents[tone],
-    strokeThickness: 1
+    resolution: Math.max(2, window.devicePixelRatio || 1)
   })
-    .setOrigin(0.5)
+    .setOrigin(0.5, 0)
     .setDepth(10000)
     .setVisible(false)
     .setData("contextualLandmark", true)

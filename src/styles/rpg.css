@@ -68,6 +68,10 @@
   image-rendering: pixelated;
 }
 
+.rpg-stage.is-campus-map .rpg-canvas-host canvas {
+  image-rendering: auto;
+}
+
 .rpg-objective-bar {
   align-items: center;
   background: rgba(10, 14, 18, 0.94);

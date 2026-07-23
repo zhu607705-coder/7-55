@@ -8,6 +8,7 @@ export interface RpgCameraOptions {
   defaultZoom?: number;
   zoomStep?: number;
   deadzone?: { width: number; height: number };
+  deadzoneRatio?: { width: number; height: number };
   followOffsetY?: number;
   minimap?: { x: number; y: number; width: number; height: number; name: string } | null;
 }
@@ -59,6 +60,7 @@ export class RpgCameraController {
   private readonly defaultZoom: number;
   private readonly zoomStep: number;
   private readonly deadzone: { width: number; height: number };
+  private readonly deadzoneRatio: { width: number; height: number } | null;
   private readonly followOffsetY: number;
   private readonly minimapOptions: { x: number; y: number; width: number; height: number; name: string } | null;
 
@@ -78,6 +80,8 @@ export class RpgCameraController {
   private inertiaX = 0;
   private inertiaY = 0;
   private zoomTween: ZoomTween | null = null;
+  private lastDeadzoneWidth = -1;
+  private lastDeadzoneHeight = -1;
 
   constructor(scene: Phaser.Scene, options: RpgCameraOptions) {
     this.scene = scene;
@@ -88,6 +92,12 @@ export class RpgCameraController {
     this.defaultZoom = options.defaultZoom ?? DEFAULT_ZOOM;
     this.zoomStep = options.zoomStep ?? DEFAULT_ZOOM_STEP;
     this.deadzone = options.deadzone ?? DEFAULT_DEADZONE;
+    this.deadzoneRatio = options.deadzoneRatio
+      ? {
+          width: Phaser.Math.Clamp(options.deadzoneRatio.width, 0.05, 0.9),
+          height: Phaser.Math.Clamp(options.deadzoneRatio.height, 0.05, 0.9)
+        }
+      : null;
     this.followOffsetY = options.followOffsetY ?? DEFAULT_FOLLOW_OFFSET_Y;
     this.minimapOptions = options.minimap === null ? null : (options.minimap ?? DEFAULT_MINIMAP);
   }
@@ -111,8 +121,8 @@ export class RpgCameraController {
     camera
       .setBounds(0, 0, this.world.width, this.world.height)
       .setZoom(this.defaultZoom)
-      .startFollow(this.player, true, 0.1, 0.1, 0, this.followOffsetY)
-      .setDeadzone(this.deadzone.width, this.deadzone.height);
+      .startFollow(this.player, true, 0.1, 0.1, 0, this.followOffsetY);
+    this.syncDeadzoneToViewport();
     camera.centerOn(this.player.x, this.player.y);
 
     if (this.minimapOptions) {
@@ -215,6 +225,7 @@ export class RpgCameraController {
       }
     }
 
+    this.syncDeadzoneToViewport();
     this.syncMinimapViewport();
   }
 
@@ -429,9 +440,8 @@ export class RpgCameraController {
     this.stopInertia();
     this.completeZoomTween();
     this.manual = false;
-    this.camera
-      .startFollow(this.player, true, 0.1, 0.1, 0, this.followOffsetY)
-      .setDeadzone(this.deadzone.width, this.deadzone.height);
+    this.camera.startFollow(this.player, true, 0.1, 0.1, 0, this.followOffsetY);
+    this.syncDeadzoneToViewport();
     if (immediate) {
       this.camera.centerOn(this.player.x, this.player.y + this.followOffsetY);
     }
@@ -462,5 +472,23 @@ export class RpgCameraController {
     this.viewportFrame
       .setPosition(this.camera.scrollX + width / 2, this.camera.scrollY + height / 2)
       .setSize(width, height);
+  }
+
+  private syncDeadzoneToViewport(): void {
+    const width = this.deadzoneRatio
+      ? (this.camera.width / this.camera.zoom) * this.deadzoneRatio.width
+      : this.deadzone.width;
+    const height = this.deadzoneRatio
+      ? (this.camera.height / this.camera.zoom) * this.deadzoneRatio.height
+      : this.deadzone.height;
+    if (
+      Math.abs(width - this.lastDeadzoneWidth) < 0.01
+      && Math.abs(height - this.lastDeadzoneHeight) < 0.01
+    ) {
+      return;
+    }
+    this.camera.setDeadzone(width, height);
+    this.lastDeadzoneWidth = width;
+    this.lastDeadzoneHeight = height;
   }
 }

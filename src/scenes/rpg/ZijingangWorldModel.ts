@@ -13,7 +13,7 @@ export const ZIJINGANG_WORLD = {
   height: campusRuntime.world.height,
   spawn: campusRuntime.spawn,
   libraryGate: campusRuntime.libraryGate,
-  projection: "top-down-90deg",
+  projection: "north-up-top-down-2d",
   northUp: true
 } as const;
 

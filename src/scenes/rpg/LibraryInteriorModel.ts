@@ -91,6 +91,8 @@ export const CAMPUS_LIBRARY_GATE = {
   radius: campusRuntimeData.libraryGate.radius
 } as const;
 
+const CAMPUS_LIBRARY_APPROACH = campusRuntimeData.walkability.gateApproach;
+
 export const LIBRARY_ENTRANCE_DOOR = {
   x: 750,
   y: 724,
@@ -248,7 +250,10 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
 ] as const;
 
 export const LIBRARY_CHECKPOINT_SPAWNS: Record<Exclude<RpgCheckpointId, "campus_spawn" | "dorm_spawn">, { x: number; y: number }> = {
-  campus_library_gate: { x: CAMPUS_LIBRARY_GATE.x, y: CAMPUS_LIBRARY_GATE.y + 72 },
+  campus_library_gate: {
+    x: CAMPUS_LIBRARY_APPROACH.x,
+    y: CAMPUS_LIBRARY_APPROACH.y
+  },
   library_entrance: { x: 715, y: 842 },
   // Keep the complete foot box above the south rail at y=534.
   library_seat_022: { x: 1180, y: 500 },
