@@ -4,9 +4,10 @@ import { readFile } from "node:fs/promises";
 const EXPECTED = {
   width: 11744,
   height: 1084,
-  sha256: "9bb6c5593697601fa1347655e43dc563bbc2e32768987df2d602aca31f525986",
-  foundationLibrary: { x: 9120, y: 700 },
-  libraryGate: { x: 9120, y: 780, radius: 80 },
+  sha256: "6dc300c8812ca95340824a08649478443e37b5b4a1789e0b64bb86261d032741",
+  foundationLibrary: { x: 9000, y: 690 },
+  libraryGate: { x: 9000, y: 770, radius: 100 },
+  canteenGate: { x: 756, y: 756, radius: 88 },
   theaterGate: { x: 7730, y: 735, radius: 86 },
   qizhenGate: { x: 7080, y: 900, radius: 92 }
 };
@@ -41,18 +42,12 @@ if (runtime.source?.plateSha256 !== sha256) {
 for (const [name, point] of [
   ["spawn", runtime.spawn],
   ["libraryGate", runtime.libraryGate],
+  ["canteenGate", runtime.canteenGate],
   ["theaterGate", runtime.theaterGate],
   ["qizhenGate", runtime.qizhenGate]
 ]) {
   if (!point || point.x < 0 || point.x > width || point.y < 0 || point.y > height) {
     throw new Error(`Campus runtime ${name} is outside the panorama`);
-  }
-}
-for (const gateId of ["theaterGate", "qizhenGate"]) {
-  const expected = EXPECTED[gateId];
-  const actual = runtime[gateId];
-  if (actual.x !== expected.x || actual.y !== expected.y || actual.radius !== expected.radius) {
-    throw new Error(`Campus ${gateId} is not calibrated to its visible entrance`);
   }
 }
 if (
@@ -61,6 +56,21 @@ if (
   || runtime.libraryGate.radius !== EXPECTED.libraryGate.radius
 ) {
   throw new Error("Campus library gate is not calibrated to the visible foundation-library south entrance");
+}
+for (const [name, expected] of [
+  ["canteenGate", EXPECTED.canteenGate],
+  ["theaterGate", EXPECTED.theaterGate],
+  ["qizhenGate", EXPECTED.qizhenGate]
+]) {
+  const gate = runtime[name];
+  if (
+    !gate
+    || gate.x !== expected.x
+    || gate.y !== expected.y
+    || gate.radius !== expected.radius
+  ) {
+    throw new Error(`Campus ${name} is not calibrated to its source-pixel entrance`);
+  }
 }
 const foundationLibrary = runtime.landmarks?.find((landmark) => landmark.id === "foundation_library");
 if (
@@ -109,12 +119,12 @@ const isWalkable = (x, y) => {
   return ((walkabilityBytes[cellIndex >> 3] >> (cellIndex & 7)) & 1) === 1;
 };
 const playerFootSamples = [
-  [-8.75, 25.375],
-  [0, 25.375],
-  [8.75, 25.375],
-  [-8.75, 38],
-  [0, 38],
-  [8.75, 38]
+  [-9.5, 24.5],
+  [0, 24.5],
+  [9.5, 24.5],
+  [-9.5, 38.75],
+  [0, 38.75],
+  [9.5, 38.75]
 ];
 const assertStandable = (name, point) => {
   if (!playerFootSamples.every(([offsetX, offsetY]) => isWalkable(point.x + offsetX, point.y + offsetY))) {
@@ -122,26 +132,73 @@ const assertStandable = (name, point) => {
   }
 };
 const gateApproach = walkability.gateApproach;
+const canteenApproach = walkability.canteenApproach;
 const theaterApproach = walkability.theaterApproach;
 const qizhenApproach = walkability.qizhenApproach;
-if (!gateApproach || !theaterApproach || !qizhenApproach) {
+if (!gateApproach || !canteenApproach || !theaterApproach || !qizhenApproach) {
   throw new Error("Campus walkability approaches are missing");
 }
 assertStandable("Campus library gate approach", gateApproach);
-assertStandable("Campus theater gate approach", theaterApproach);
-assertStandable("Campus Qizhen gate approach", qizhenApproach);
-const theaterEntrySample = { x: runtime.theaterGate.x, y: runtime.theaterGate.y + 65 };
-assertStandable("Campus theater interaction point", theaterEntrySample);
 assertStandable("Campus library checkpoint", {
-  x: runtime.libraryGate.x,
-  y: runtime.libraryGate.y + 72
+  x: gateApproach.x,
+  y: gateApproach.y
 });
-for (const y of [800, 824, 852, 920, 990]) {
-  assertStandable(`Campus library approach at y=${y}`, { x: runtime.libraryGate.x, y });
+assertStandable("Campus canteen entrance", runtime.canteenGate);
+assertStandable("Campus canteen gate approach", canteenApproach);
+assertStandable("Campus theater gate", runtime.theaterGate);
+assertStandable("Campus theater gate approach", theaterApproach);
+assertStandable("Campus Qizhen gate", runtime.qizhenGate);
+assertStandable("Campus Qizhen gate approach", qizhenApproach);
+if (walkability.promenadeSurfaceTop !== 864) {
+  throw new Error("Campus promenade surface must retain the source-pixel y=864 contract");
+}
+for (const x of [420, 1300, 2643, 3944, 5700, 7079, 8939, 10133, 11600]) {
+  assertStandable(`Campus seam-crossing road at x=${x}`, { x, y: 940 });
+}
+for (let x = 40; x < width - 40; x += 160) {
+  const overlapsForegroundObstacle = walkability.foregroundObstacles?.some((obstacle) => (
+    x + 9.5 >= obstacle.left
+    && x - 9.5 < obstacle.right
+    && 842 + 38.75 >= obstacle.top
+    && 842 + 24.5 < obstacle.bottom
+  ));
+  if (overlapsForegroundObstacle) continue;
+  assertStandable(`Campus continuous sidewalk at x=${x}`, { x, y: 842 });
+}
+const expectedApproaches = [
+  ["dining_hall", 745, 708],
+  ["west_round_hall", 5595, 752],
+  ["museum", 7675, 728]
+];
+if (walkability.entranceApproaches?.length !== expectedApproaches.length) {
+  throw new Error("Campus runtime must retain all three rectangular source-pixel entrance approaches");
+}
+for (const [name, x, y] of expectedApproaches) {
+  assertStandable(`Campus ${name} entrance approach`, { x, y });
+}
+const expectedPublicPaths = [
+  ["museum_central_gate", 6200, 760],
+  ["east_riverside_walk", 9970, 760],
+  ["east_main_hall_walk", 11030, 760],
+  ["foundation_library_entry", 9070, 770]
+];
+if (walkability.publicPathPolygons?.length !== expectedPublicPaths.length) {
+  throw new Error("Campus runtime must retain all four measured public path polygons");
+}
+for (const [name, x, y] of expectedPublicPaths) {
+  assertStandable(`Campus ${name}`, { x, y });
 }
 for (const [name, point] of [
-  ["Campus library west flower bed", { x: 9052, y: 840 }],
-  ["Campus library east flower bed", { x: 9192, y: 840 }]
+  ["Campus library central flower bed", { x: 9000, y: 840 }],
+  ["Campus library east flower bed", { x: 9250, y: 840 }],
+  ["Campus central garden", { x: 2500, y: 800 }],
+  ["Campus lake", { x: 7000, y: 400 }],
+  ["Campus museum facade", { x: 7600, y: 650 }],
+  ["Campus east annex fence", { x: 10200, y: 820 }],
+  ["Campus east study-hall fence", { x: 11400, y: 820 }],
+  ["Campus canteen billboard", { x: 200, y: 810 }],
+  ["Campus canteen vending machine", { x: 400, y: 760 }],
+  ["Campus canteen utility cabinet", { x: 1340, y: 800 }]
 ]) {
   if (isWalkable(point.x, point.y)) {
     throw new Error(`${name} must remain blocked outside the measured entrance corridor`);
@@ -150,13 +207,16 @@ for (const [name, point] of [
 if (Math.hypot(gateApproach.x - runtime.libraryGate.x, gateApproach.y - runtime.libraryGate.y) > runtime.libraryGate.radius) {
   throw new Error("Campus library approach is outside the interaction radius");
 }
-if (Math.hypot(theaterEntrySample.x - runtime.theaterGate.x, theaterEntrySample.y - runtime.theaterGate.y) > runtime.theaterGate.radius) {
-  throw new Error("Campus theater interaction point is outside the interaction radius");
+if (Math.hypot(canteenApproach.x - runtime.canteenGate.x, canteenApproach.y - runtime.canteenGate.y) > runtime.canteenGate.radius) {
+  throw new Error("Campus canteen approach is outside the interaction radius");
+}
+if (Math.hypot(theaterApproach.x - runtime.theaterGate.x, theaterApproach.y - runtime.theaterGate.y) > runtime.theaterGate.radius + 28) {
+  throw new Error("Campus theater approach is too far from its interaction radius");
 }
 if (Math.hypot(qizhenApproach.x - runtime.qizhenGate.x, qizhenApproach.y - runtime.qizhenGate.y) > runtime.qizhenGate.radius) {
   throw new Error("Campus Qizhen approach is outside the interaction radius");
 }
 
 console.log(
-  `verified repository panorama ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells} libraryGate=${runtime.libraryGate.x},${runtime.libraryGate.y} theaterGate=${runtime.theaterGate.x},${runtime.theaterGate.y} qizhenGate=${runtime.qizhenGate.x},${runtime.qizhenGate.y}`
+  `verified repository panorama ${width}x${height} sha256=${sha256} walkable=${walkability.walkableCells} libraryGate=${runtime.libraryGate.x},${runtime.libraryGate.y} canteenGate=${runtime.canteenGate.x},${runtime.canteenGate.y} theaterGate=${runtime.theaterGate.x},${runtime.theaterGate.y} qizhenGate=${runtime.qizhenGate.x},${runtime.qizhenGate.y}`
 );

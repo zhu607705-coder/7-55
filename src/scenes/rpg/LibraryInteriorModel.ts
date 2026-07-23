@@ -253,7 +253,10 @@ type LibraryCheckpointId = Extract<
 >;
 
 export const LIBRARY_CHECKPOINT_SPAWNS: Record<LibraryCheckpointId, { x: number; y: number }> = {
-  campus_library_gate: { x: CAMPUS_LIBRARY_GATE.x, y: CAMPUS_LIBRARY_GATE.y + 72 },
+  campus_library_gate: {
+    x: campusRuntimeData.walkability.gateApproach.x,
+    y: campusRuntimeData.walkability.gateApproach.y
+  },
   library_entrance: { x: 715, y: 842 },
   // Keep the complete foot box above the south rail at y=534.
   library_seat_022: { x: 1180, y: 500 },

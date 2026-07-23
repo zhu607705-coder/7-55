@@ -739,7 +739,10 @@ function digitOr(value: unknown, fallback: GameState["digits"]["d1"]): GameState
   if (value === null) return null;
   return typeof value === "string" && VALID_DIGIT_VALUES.has(value as NonNullable<typeof fallback>) ? value as NonNullable<typeof fallback> : fallback;
 }
-function nullableStringOr(value: unknown, fallback: string | null): string | null { return value === null || typeof value === "string" ? value : fallback; }
+function nullableStringOr(value: unknown, fallback: string | null): string | null {
+  if (value === null) return null;
+  return typeof value === "string" ? value : fallback;
+}
 function booleanOr(value: unknown, fallback: boolean): boolean { return typeof value === "boolean" ? value : fallback; }
 function rangedNumberOr(value: unknown, min: number, max: number, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) && value >= min && value <= max ? value : fallback;

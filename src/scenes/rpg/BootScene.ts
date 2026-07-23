@@ -36,8 +36,8 @@ const CAMERA_FOLLOW_OFFSET_Y = 34;
 
 // 寻人篇 · 地图层：暗色校园里沿脚印一路追到大食堂（第 1 张场景，最左侧）。
 const CANTEEN_HUNT_SPAWN = { x: 10500, y: 1004 };
-const CANTEEN_GATE = { x: 756, y: 756, radius: 88 };
-const CANTEEN_APPROACH = { x: 756, y: 756 };
+const CANTEEN_GATE = campusRuntimeData.canteenGate;
+const CANTEEN_APPROACH = campusRuntimeData.walkability.canteenApproach;
 const CANTEEN_BIKE = { x: 980, y: 973 };
 const CANTEEN_BIKE_RADIUS = 190;
 const CANTEEN_DARK_OVERLAY_COLOR = 0x050b1d;
@@ -139,7 +139,9 @@ export class BootScene extends Phaser.Scene {
     const state = this.bridge.getState();
     this.canteenHuntActive = state.canteenHunt.active;
     this.canteenPhase = state.canteenHunt.phase;
-    const spawn = state.rpgCheckpoint === "campus_qizhen_gate"
+    const spawn = state.rpgCheckpoint === "campus_canteen_gate"
+      ? CANTEEN_APPROACH
+      : state.rpgCheckpoint === "campus_qizhen_gate"
       ? QIZHEN_APPROACH
       : this.canteenHuntActive
       ? this.canteenPhase === "chase_ready" || this.canteenPhase === "chasing"
@@ -197,6 +199,7 @@ export class BootScene extends Phaser.Scene {
     this.currentPathLength = 0;
 
     this.createLibraryGate();
+    this.createCanteenGate();
     if (this.canteenHuntActive) {
       this.setupCanteenHunt();
     }
@@ -255,6 +258,7 @@ export class BootScene extends Phaser.Scene {
 
     this.updateContextualLandmarkLabel();
     this.updateLibraryGate();
+    this.updateCanteenGate(state);
     if (this.canteenHuntActive) {
       this.updateCanteenHunt();
     }
@@ -578,6 +582,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   private createCanteenGate(): void {
+    if (this.canteenGateMarker) return;
     this.canteenGateMarker = this.add.circle(CANTEEN_GATE.x, CANTEEN_GATE.y, 24, 0x9b7228, 0.3)
       .setStrokeStyle(5, 0xffdf73, 1)
       .setDepth(CANTEEN_GATE.y + 80);
@@ -721,8 +726,6 @@ export class BootScene extends Phaser.Scene {
       return;
     }
     if (!["tracking", "canteen_reached"].includes(this.canteenPhase)) {
-      this.canteenGateMarker?.setVisible(false);
-      this.canteenGatePrompt?.setVisible(false);
       this.canteenBikeHint?.setVisible(false);
       return;
     }
@@ -738,17 +741,28 @@ export class BootScene extends Phaser.Scene {
     if (!this.canteenMessyNarrationShown && distanceToGate <= CANTEEN_NARRATION_RADIUS) {
       this.canteenMessyNarrationShown = true;
     }
-    if (this.canteenGateMarker) {
-      this.canteenGateMarker.setVisible(true);
-    }
-    const nearby = distanceToGate <= CANTEEN_GATE.radius;
-    if (this.canteenGatePrompt) {
-      this.canteenGatePrompt.setVisible(nearby);
-    }
+  }
+
+  private updateCanteenGate(state: GameState): void {
+    const storyEntry = state.canteenHunt.active
+      && ["tracking", "canteen_reached"].includes(state.canteenHunt.phase);
+    const freeExploreEntry = !state.canteenHunt.active && state.actOne.canLeaveDorm;
+    const available = storyEntry || freeExploreEntry;
+    const distanceToGate = Phaser.Math.Distance.Between(
+      this.player.x,
+      this.player.y,
+      CANTEEN_GATE.x,
+      CANTEEN_GATE.y
+    );
+    const nearby = available && distanceToGate <= CANTEEN_GATE.radius;
+
+    this.canteenGateMarker?.setVisible(available);
+    this.canteenGatePrompt?.setVisible(nearby);
+
     const keyboardInteract = nearby && Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearby && (keyboardInteract || this.interactRequested)) {
       this.bridge.setCheckpoint("campus_canteen_gate");
-      this.bridge.emit("rpg_canteen_entry_requested");
+      this.bridge.emit("rpg_canteen_entry_requested", { mode: storyEntry ? "story" : "explore" });
     }
   }
 

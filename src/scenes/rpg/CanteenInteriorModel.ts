@@ -56,7 +56,10 @@ export const CANTEEN_OCCLUSION_RECTS: readonly CanteenOcclusionRect[] = [
   { id: "tray_station_front", left: 1258, top: 620, right: 1629, bottom: 761, sortY: 761 },
   { id: "ordering_kiosks_front", left: 51, top: 682, right: 469, bottom: 846, sortY: 846 },
   { id: "pickup_counter_front", left: 542, top: 688, right: 1087, bottom: 876, sortY: 876 },
-  { id: "southeast_exit_front", left: 1252, top: 760, right: 1450, bottom: 934, sortY: 934 },
+  // Keep the doorway clear. The two wall frames still occlude the actor, while the
+  // middle opening remains readable and walkable when entering or leaving the canteen.
+  { id: "southeast_exit_west_frame", left: 1252, top: 760, right: 1310, bottom: 934, sortY: 934 },
+  { id: "southeast_exit_east_frame", left: 1450, top: 760, right: 1643, bottom: 934, sortY: 934 },
   ...TABLE_ROWS.flatMap((y, rowIndex) => TABLE_COLUMNS.map((x, columnIndex) => ({
     id: `table_front_${rowIndex + 1}_${columnIndex + 1}`,
     left: x - 49,
@@ -118,7 +121,9 @@ export const CANTEEN_ESCAPE_ANCHORS: Record<CanteenExitId, { x: number; y: numbe
   steam: { x: 1235, y: 227 }
 };
 
-export const CANTEEN_SPAWN = { x: 1380, y: 838 } as const;
+// This is the clear inner lobby directly west of the southeast doors. It avoids
+// spawning the actor beneath the doorway art or inside a static collision rect.
+export const CANTEEN_SPAWN = { x: 1194, y: 834 } as const;
 export const CANTEEN_PHASE_SPAWNS = {
   tray_search: CANTEEN_SPAWN,
   menu_order: { x: 500, y: 650 },
