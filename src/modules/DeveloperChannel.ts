@@ -151,7 +151,11 @@ function createActTwoBase(phase: GameState["actOne"]["phase"]): GameState {
       inventoryRecovered: cardRecovered,
       dormHubUnlocked: !["friend_message_required", "system_required"].includes(phase)
     },
-    ui: { ...state.ui, zjudingPage: "hub" }
+    ui: {
+      ...state.ui,
+      zjudingPage: "hub",
+      seenChapterIntros: ["chapter_one", "chapter_two"]
+    }
   };
 }
 
@@ -552,6 +556,10 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
       attemptCount: id === "c3-result" ? 1 : 0,
       bestDistance: id === "c3-result" ? 755 : 0,
       bestLives: id === "c3-result" ? 2 : 0
+    },
+    ui: {
+      ...state.ui,
+      seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three"]
     }
   };
 }

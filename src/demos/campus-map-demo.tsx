@@ -224,7 +224,12 @@ function CampusMapDemo() {
   }, [refreshRuntime, store]);
 
   const move = useCallback((event: ReactPointerEvent<HTMLButtonElement>, x: number, y: number) => {
-    event.currentTarget.setPointerCapture?.(event.pointerId);
+    try {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Some WebKit and synthetic-pointer paths reject capture; the window-level
+      // pointerup/pointercancel listeners still stop movement safely.
+    }
     events.emit("rpg_direction_changed", { x, y });
     event.preventDefault();
   }, [events]);
