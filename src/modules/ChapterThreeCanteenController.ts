@@ -9,6 +9,12 @@ export type CanteenChoiceResult = "correct" | "wrong" | "inactive";
 export type CanteenBlockResult = "correct" | "wrong" | "complete" | "inactive";
 export type CanteenBikeResult = "code_read" | "glare" | "cleaned" | "payment_ready" | "dark_rejected" | "rule" | "paid" | "inactive";
 
+export interface ChapterThreeCanteenEventBindingOptions {
+  beforeEnter?: () => void;
+  onEnterResult?: (entered: boolean) => void;
+  onLeaveResult?: (left: boolean) => void;
+}
+
 export class ChapterThreeCanteenController {
   constructor(private readonly store: GameStore, private readonly events: EventBus) {}
 
@@ -245,4 +251,34 @@ export class ChapterThreeCanteenController {
     this.events.emit("canteen_chase_completed", { collisions: Math.max(0, Math.floor(collisions)) });
     return true;
   }
+}
+
+export function bindChapterThreeCanteenEvents(
+  controller: ChapterThreeCanteenController,
+  events: EventBus,
+  options: ChapterThreeCanteenEventBindingOptions = {}
+): () => void {
+  return events.subscribe((event) => {
+    if (event.name === "rpg_canteen_entry_requested") {
+      options.beforeEnter?.();
+      const entered = controller.enterCanteen();
+      options.onEnterResult?.(entered);
+    } else if (event.name === "rpg_canteen_mode_requested") {
+      controller.setMode(String(event.payload?.mode ?? "light") as CanteenMode);
+    } else if (event.name === "rpg_canteen_tray_requested") {
+      controller.useTray(
+        String(event.payload?.trayId ?? ""),
+        event.payload?.queueCollision === true
+      );
+    } else if (event.name === "rpg_canteen_menu_selected") {
+      controller.selectMenuOption(String(event.payload?.optionId ?? ""));
+    } else if (event.name === "rpg_canteen_pickup_selected") {
+      controller.selectPickupWindow(String(event.payload?.windowId ?? ""));
+    } else if (event.name === "rpg_canteen_exit_block_requested") {
+      controller.blockExit(String(event.payload?.exitId ?? "west") as CanteenExitId);
+    } else if (event.name === "rpg_canteen_leave_requested") {
+      const left = controller.leaveCanteen();
+      options.onLeaveResult?.(left);
+    }
+  });
 }

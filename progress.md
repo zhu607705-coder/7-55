@@ -1114,3 +1114,13 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 输入兼容：触控方向键在 Pointer Capture 被旧 WebKit 或合成输入拒绝时继续发送移动事件，并由全局 `pointerup / pointercancel` 安全停止。
 - 浏览器验收：最终单文件在 Blink、Gecko、WebKit 桌面 `1280×720` 均完成右移，角色从 `(3805,1680)` 移至约 `(3857,1680)`；Blink 与 WebKit `390×844` 均显示 5 个触控键并完成同等移动。所有场景为单 Canvas、文档溢出、页面错误和控制台错误均为 `0`。
 - 构建验证：`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run build:campus-map-demo`、`npm run verify:single`、`npm run verify:campus-map-demo` 与 `git diff --check` 通过。`demo/index.html` 为 `72,531,325 bytes`，SHA-256 为 `9807b2a1285eb3f617553d55ce6429423652f544d57155e7463aaf5a54482ae6`；`demo/campus-map-demo.html` 为 `37,550,426 bytes`，SHA-256 为 `92e3d8186c21b130d708d103f3b8d98b4fb5ec88cd8defa5782a60ec90f8bb83`。
+
+## 2026-07-24 独立校园 Demo 接入大食堂剧情
+
+- 遗漏定位：`src/demos/campus-map-demo.tsx` 原先只注册 `BootScene`，收到 `rpg_canteen_entry_requested` 后明确停留大地图并显示占位提示，因此独立单文件无法进入已有的 `CanteenInteriorScene`。
+- 场景接入：独立 Demo 注册校园与食堂两个 Phaser 场景，使用内存状态启动食堂寻人阶段；“大食堂剧情”会重置到门前，空格进入后按 `餐盘识别与回收 → 点餐机 → 0755 取餐窗口 → 三次出口封堵 → 返回校园` 推进。
+- 共享控制：新增 `bindChapterThreeCanteenEvents()`，正式 `RpgGameHost` 与独立 Demo 共用一套食堂事件到控制器的绑定，避免演示入口再次退化为只弹提示。`src/demos/README.md` 已记录该约束。
+- 跨端操作：桌面继续使用 WASD / 方向键、空格与 Tab；触控继续使用方向键和空格，并在食堂阶段提供显式“切到深色 / 切回浅色”按钮。剧情字幕写入独立 Demo 的可见通知区，移动端不再隐藏该区域。
+- 状态验证：使用真实 `EventBus + ChapterThreeCanteenController` 执行 35 个领域事件，完整状态链到达 `campus_bootstrap / campus_canteen_gate / chase_ready`，三项餐盘、点餐 D、3 号窗口与 `southeast → steam → west` 封堵顺序全部通过断言。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`npm run build:campus-map-demo`、`npm run verify:campus-map-demo` 与 `git diff --check` 通过。`demo/index.html` 为 `72,531,548 bytes`，SHA-256 为 `123da5ddb208298417d8248f9bc8af3f82fe17aa186432fb97606bc3806bf17b`；`demo/campus-map-demo.html` 为 `41,104,600 bytes`，SHA-256 为 `d1d141a68ea199f51881057c098b0a390862c0ace1b2211e7cb35e01b4bf8f87`。
+- 验收边界：当前浏览器控制通道对 `file://` 页面的刷新、DOM 读取和截图均按安全策略拒绝；本轮没有把构建或控制器断言冒充为最终视觉验收。需要在当前单文件手动刷新后完成一次入口、字幕、明暗按钮和返回校园的可见链路确认。

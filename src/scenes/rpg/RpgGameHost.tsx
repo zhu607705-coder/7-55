@@ -4,8 +4,6 @@ import type { EventBus } from "../../core/EventBus";
 import type { SceneRouter } from "../../core/SceneRouter";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type {
-  CanteenExitId,
-  CanteenMode,
   GameState,
   GameStore,
   ItemId,
@@ -19,7 +17,10 @@ import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
 import { LibraryFinalsController } from "../../modules/LibraryFinalsController";
-import { ChapterThreeCanteenController } from "../../modules/ChapterThreeCanteenController";
+import {
+  bindChapterThreeCanteenEvents,
+  ChapterThreeCanteenController
+} from "../../modules/ChapterThreeCanteenController";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
 import { DormHubScene } from "./DormHubScene";
@@ -287,6 +288,10 @@ export function RpgGameHost({
   }, [events, inspectedMapItem, runtimeScene, state.items.archivedLeaveRule, state.ui.libraryFinalsPuzzle, store]);
 
   useEffect(() => {
+    return bindChapterThreeCanteenEvents(canteenController, events);
+  }, [canteenController, events]);
+
+  useEffect(() => {
     return events.subscribe((event) => {
       if (event.name === "library_archived_rule_opened") {
         archivedRuleRevealPendingRef.current = true;
@@ -391,26 +396,9 @@ export function RpgGameHost({
         } else if (action !== "visitLibraryPoint") {
           events.emit("library_rpg_interaction_failed", { action, targetId, reason: "unavailable" });
         }
-      } else if (event.name === "rpg_canteen_entry_requested") {
-        canteenController.enterCanteen();
-      } else if (event.name === "rpg_canteen_mode_requested") {
-        canteenController.setMode(String(event.payload?.mode ?? "light") as CanteenMode);
-      } else if (event.name === "rpg_canteen_tray_requested") {
-        canteenController.useTray(
-          String(event.payload?.trayId ?? ""),
-          event.payload?.queueCollision === true
-        );
-      } else if (event.name === "rpg_canteen_menu_selected") {
-        canteenController.selectMenuOption(String(event.payload?.optionId ?? ""));
-      } else if (event.name === "rpg_canteen_pickup_selected") {
-        canteenController.selectPickupWindow(String(event.payload?.windowId ?? ""));
-      } else if (event.name === "rpg_canteen_exit_block_requested") {
-        canteenController.blockExit(String(event.payload?.exitId ?? "west") as CanteenExitId);
-      } else if (event.name === "rpg_canteen_leave_requested") {
-        canteenController.leaveCanteen();
       }
     });
-  }, [canteenController, controller, events, libraryController]);
+  }, [controller, events, libraryController]);
 
   useEffect(() => {
     if (state.ui.libraryFinalsPuzzle.lostFoundStage !== "scanning") {
