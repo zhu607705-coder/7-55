@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 const EXPECTED = {
   width: 11744,
   height: 1084,
-  sha256: "6dc300c8812ca95340824a08649478443e37b5b4a1789e0b64bb86261d032741",
+  sha256: "c049150bf9b5408756b8baf479b9a7ef38cc98d9ebb3d829e2080d73b5d8c021",
   foundationLibrary: { x: 9000, y: 690 },
   libraryGate: { x: 9000, y: 770, radius: 100 }
 };

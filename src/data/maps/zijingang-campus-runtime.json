@@ -3,7 +3,7 @@
     "map": "https://map.zju.edu.cn/mobile/index.html",
     "officialFeatureCount": 254,
     "worldScale": "single 11744px x 1084px side-view panorama stitched from 9 generated campus scenes; west and middle joins use source-aligned local transitions, the former x=8939 and x=10133 east joins are replaced by one continuous regenerated campus strip, and a coherent sky treatment removes the former placeholder bands",
-    "plateSha256": "6dc300c8812ca95340824a08649478443e37b5b4a1789e0b64bb86261d032741",
+    "plateSha256": "c049150bf9b5408756b8baf479b9a7ef38cc98d9ebb3d829e2080d73b5d8c021",
     "tileOrder": [
       "1",
       "2",
@@ -62,7 +62,7 @@
     "totalCells": 795656,
     "maskSha256": "d478711ef3e62c34adbbc2ca60a29e2241dffca3a290a0be9c9d870b42497162",
     "bitsetSha256": "108f7af63fb0cc456ccebae643189564536a2135356a485599afbf16fba7160d",
-    "sourcePlateSha256": "6dc300c8812ca95340824a08649478443e37b5b4a1789e0b64bb86261d032741",
+    "sourcePlateSha256": "c049150bf9b5408756b8baf479b9a7ef38cc98d9ebb3d829e2080d73b5d8c021",
     "gateApproach": {
       "x": 9070,
       "y": 770
