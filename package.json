@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "build:single": "npm run build:demo",
     "verify:single": "node scripts/verify-single-file-build.mjs",
+    "build:campus-map-demo": "tsc --noEmit && vite build --mode campus-demo",
+    "verify:campus-map-demo": "node scripts/verify-single-file-build.mjs campus-map-demo.html",
     "map:zijingang": "node scripts/verify-zijingang-campus-panorama.mjs && npm run verify:rpg-player",
     "map:zijingang:rebuild": "python3 scripts/calibrate-topdown-campus-runtime.py",
     "map:zijingang:walkability": "python3 scripts/calibrate-topdown-campus-runtime.py",

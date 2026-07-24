@@ -1104,3 +1104,13 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 图书馆出口：入口外侧新增离开交互，返回 `campus_bootstrap / campus_library_gate`，保留第二章阶段、证据、道具和已读记录。
 - 浏览器验收：Blink 桌面实际完成“基础图书馆门口 → 图书馆室内 → 返回基础图书馆门口”以及“东区大食堂门口 → 食堂室内”；食堂内景恢复 `960×540` 后备画布，文档溢出、页面错误和控制台错误均为 `0`。
 - 构建验证：`npm run typecheck`、`npm run map:zijingang`、`npm run build`、`npm run verify:single` 与 `git diff --check` 通过；单文件使用工作区 Node 24 和 `8192MB` 堆完成生成，`demo/index.html` 为 `72,531,190 bytes`，SHA-256 为 `868995bfd00c58d200b56ee1d31b07bbaa54e87ec29f67a9a91eab06bff48586`。
+
+## 2026-07-24 独立校园地图 Demo 与 DEV 直达收口
+
+- 合并基线：从远端最新 `main` 的 `4516×3420` 俯视校园地图建立合并分支；旧 `11744×1084` 宽幅接缝提交未带入，避免回退地图坐标、碰撞和建筑遮挡。Three.js Bike Arcade 草稿因违反正式运行时 Phaser-only 约束未进入本次合并，并保留在本地 stash。
+- 独立 Demo：新增 `campus-map-demo.html`、`src/demos/campus-map-demo.tsx` 与响应式样式，直接复用正式 `BootScene`、俯视地图、碰撞、镜头、键盘、触控和点击寻路；状态使用内存 `GameStore`，不会读写正式剧情存档。
+- 单文件交付：Vite 新增 `campus-demo` 模式，`npm run build:campus-map-demo` 生成 `demo/campus-map-demo.html`；验证器同时允许并检查正式 `index.html` 与独立地图产物，拒绝外部脚本、样式和 HTTP 资源。
+- DEV 修复：第二章和第三章检查点现在预置相应的 `seenChapterIntros`，`c2-name`、`c3-congestion` 与 `campus-canteen-entry` 直达不再被旧章节弹窗拦截；`c3-congestion` 保持 `377 / 755m`，默认 DEV 触发器与 `?dev=0` 隐藏契约保持有效。
+- 输入兼容：触控方向键在 Pointer Capture 被旧 WebKit 或合成输入拒绝时继续发送移动事件，并由全局 `pointerup / pointercancel` 安全停止。
+- 浏览器验收：最终单文件在 Blink、Gecko、WebKit 桌面 `1280×720` 均完成右移，角色从 `(3805,1680)` 移至约 `(3857,1680)`；Blink 与 WebKit `390×844` 均显示 5 个触控键并完成同等移动。所有场景为单 Canvas、文档溢出、页面错误和控制台错误均为 `0`。
+- 构建验证：`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run build:campus-map-demo`、`npm run verify:single`、`npm run verify:campus-map-demo` 与 `git diff --check` 通过。`demo/index.html` 为 `72,531,325 bytes`，SHA-256 为 `9807b2a1285eb3f617553d55ce6429423652f544d57155e7463aaf5a54482ae6`；`demo/campus-map-demo.html` 为 `37,550,426 bytes`，SHA-256 为 `92e3d8186c21b130d708d103f3b8d98b4fb5ec88cd8defa5782a60ec90f8bb83`。

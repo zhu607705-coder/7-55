@@ -33,6 +33,15 @@ npm run build:demo
 ```
 
 输出位于 `demo/index.html`。`demo/` 和 `dist/` 是可重建产物，不提交到 Git；
+
+### 独立校园大地图 Demo
+
+```bash
+npm run build:campus-map-demo
+npm run verify:campus-map-demo
+```
+
+输出位于 `demo/campus-map-demo.html`。它只加载当前紫金港大地图运行时与演示状态，不会写入正式剧情存档。
 需要交付离线演示时，请作为 Release 附件发布。
 
 GitHub Actions 会对每个 PR 和每次推送到 `main` 执行上述检查。工作流不恢复已经移除的
