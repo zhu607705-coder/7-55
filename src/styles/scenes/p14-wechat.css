@@ -573,3 +573,27 @@
   padding: 11px;
   text-align: center;
 }
+
+.wx-qizhen-location-chat {
+  display: grid;
+  gap: 12px;
+}
+
+.wx-qizhen-message {
+  animation: wx-followup-in var(--dur-slow) var(--ease-in-pixel) both;
+}
+
+.wx-qizhen-message > b {
+  background: #fff2ba;
+  border: 2px solid #8f6b16;
+  color: #5d4407;
+  font-size: var(--fs-caption);
+  grid-column: 2;
+  justify-self: start;
+  padding: 5px 8px;
+}
+
+.wx-qizhen-message.is-self > b {
+  grid-column: 1;
+  justify-self: end;
+}

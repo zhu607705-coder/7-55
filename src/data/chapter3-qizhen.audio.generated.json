@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "chapterId": "chapter-3-qizhen-audio",
+  "model": "music-2.6",
+  "generatedAt": "2026-07-22T23:07:20.613Z",
+  "assets": {
+    "music_qizhen_lakeside": {
+      "path": "chapter3-qizhen/music/music_qizhen_lakeside.mp3",
+      "durationMs": 22000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "4f93e504bb98d8e252f1138bbe8ec62bfbad503163e3592282747523010b1331",
+      "sourceConfigHash": "8ac35a179205039bd1326426a943138ad0c27491f51b2f23889537ff28bf376f"
+    },
+    "music_qizhen_reflection": {
+      "path": "chapter3-qizhen/music/music_qizhen_reflection.mp3",
+      "durationMs": 22000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "e4e6154892540d2222ccb05e1fa1767ad027e26846df213e58ec0d4c3bb89902",
+      "sourceConfigHash": "72b6c75fbadb1187a7feeea77750296ab773635a265785299bc0ca9d8874bd42"
+    },
+    "music_qizhen_mist": {
+      "path": "chapter3-qizhen/music/music_qizhen_mist.mp3",
+      "durationMs": 20000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "a36d5fdaaa5f90a79e8fb4dcc3092f533a886b8d6cefe41f49d705520fd64179",
+      "sourceConfigHash": "3146f8779dd42da1d269ca4803394e6c88994da96b2b14a388083e77939608f5"
+    }
+  }
+}

@@ -5,6 +5,7 @@ import { kit } from "../../../modules/GameKit";
 import { consumeFriendChatIntent } from "../../../modules/NavIntent";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo, type VoPlaybackHandle } from "../../../modules/VoicePlayer";
+import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
 
 /**
  * P14 微信：聊天列表（朋友头像＝斜线，藏着 P03 谜题）＋朋友聊天页（小影散码演出）。
@@ -24,6 +25,8 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   const followupPending = state.actOne.phase === "friend_message_required";
   const followupVisible = flags.checkinDone && state.actOne.phase !== "prologue";
   const movementQuestActive = state.actOne.phase === "movement_required" || state.actOne.phase === "movement_ready";
+  const qizhenLocationChat = state.qizhenLake.active && state.qizhenLake.phase === "location_search";
+  const [qizhenChatStep, setQizhenChatStep] = useState(() => state.qizhenLake.lakeClueFound ? qizhenContent.locationSearch.wechat.length : 0);
   const [followupStep, setFollowupStep] = useState(followupVisible && !followupPending ? 3 : 0);
   const sequenceVoRef = useRef<VoPlaybackHandle | null>(null);
 
@@ -127,6 +130,17 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
     ];
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, [events, followupPending, openedFriend]);
+
+  useEffect(() => {
+    if (!openedFriend || !qizhenLocationChat || state.qizhenLake.lakeClueFound) return undefined;
+    const timers = qizhenContent.locationSearch.wechat.map((_, index) => window.setTimeout(() => {
+      setQizhenChatStep(index + 1);
+      if (index === qizhenContent.locationSearch.wechat.length - 1) {
+        kit.qizhenLake.collectLakeClue();
+      }
+    }, 260 + index * 520));
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [openedFriend, qizhenLocationChat, state.qizhenLake.lakeClueFound]);
 
   // 自动旋转触发斜线掉一半
   useEffect(() => {
@@ -319,7 +333,9 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                 <span className="wx-row-main">
                   <strong>朋友</strong>
                   <em>
-                    {followupVisible
+                    {qizhenLocationChat
+                      ? "你到底到哪了？"
+                      : followupVisible
                       ? followupPending ? "成功了吗" : "？"
                       : flags.codeScattered
                       ? "这是签到码 ▓▓▓▓"
@@ -508,6 +524,18 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
                 <span className="wx-msg-avatar" aria-hidden="true"><i /></span>
                 <p>？</p>
               </div>
+            ) : null}
+
+            {qizhenLocationChat ? (
+              <section className="wx-qizhen-location-chat" aria-label="启真湖地点线索">
+                {qizhenContent.locationSearch.wechat.slice(0, qizhenChatStep).map((line, index) => (
+                  <div key={line} className={`wx-msg wx-qizhen-message ${line.startsWith("自动回复：") ? "is-self" : ""}`.trim()}>
+                    {!line.startsWith("自动回复：") ? <span className="wx-msg-avatar" aria-hidden="true"><i /></span> : null}
+                    <p>{line}</p>
+                    {index === qizhenContent.locationSearch.wechat.length - 1 && state.qizhenLake.lakeClueFound ? <b>获得关键词：湖</b> : null}
+                  </div>
+                ))}
+              </section>
             ) : null}
 
             {followupVisible && !followupPending ? (

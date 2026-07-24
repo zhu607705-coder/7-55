@@ -133,8 +133,48 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "状态", value: "请取餐" }
     ],
     body: ["取纸不取餐，找纸不找饭。"],
-    footer: "一张从点餐机吐出来的小票。"
-  }, [{ target: "canteen-pickup-window-3", result: "consume" }])
+    footer: "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。"
+  }, [{ target: "canteen-pickup-window-3", result: "consume" }]),
+  theaterTicketHalfA: object([{ target: "theaterTicketHalfB", result: "transform" }]),
+  theaterTicketHalfB: object([{ target: "theaterTicketHalfA", result: "transform" }]),
+  temporaryTheaterTicket: object([
+    { target: "theater-ticket-gate", result: "retain" },
+    { target: "theater-prop-scanner", result: "retain" }
+  ]),
+  theaterProgramOpening: object([{ target: "theater-light-console", result: "retain" }]),
+  theaterProgramSpotlight: object([{ target: "theater-light-console", result: "retain" }]),
+  theaterProgramFinale: object([{ target: "theater-light-console", result: "retain" }]),
+  spotlightRemote: object([{ target: "theater-spotlight-console", result: "retain" }]),
+  fluorescentBrush: object([{ target: "theater-backstage-vent", result: "retain" }]),
+  decoyPaper: object([]),
+  wetProgram: paper({
+    heading: "湿掉的节目单",
+    fields: [
+      { label: "状态", value: "边角湿润" },
+      { label: "来源", value: "剧院舞台" }
+    ],
+    body: [
+      "纸条这次没有留下连续脚印。",
+      "潮湿痕迹只能说明它经过了有水的地方。",
+      "仍需从不同来源核对地点特征。"
+    ],
+    footer: "边角湿得很有方向感。"
+  }, [
+    { target: "cc98-search", result: "retain" },
+    { target: "library-catalog-search", result: "retain" }
+  ]),
+  bridgeKeyword: object([{ target: "qizhen-map-search", result: "retain" }]),
+  reflectionKeyword: object([{ target: "qizhen-map-search", result: "retain" }]),
+  lakeKeyword: object([{ target: "qizhen-map-search", result: "retain" }]),
+  reflectionCoordinate: paper({
+    heading: "倒影坐标",
+    fields: [
+      { label: "暗色细节", value: "湖面左侧 / 桥影下方 / 亮点偏右" },
+      { label: "浅色细节", value: "右侧路灯杆" }
+    ],
+    body: ["两种模式记录的是同一个位置。"],
+    footer: "来源：启真湖倒影指示牌。"
+  }, [])
 };
 
 export function isPaperItem(itemId: ItemId): boolean {

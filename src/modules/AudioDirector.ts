@@ -4,6 +4,12 @@ import actOneTimelineData from "../data/act-one.audio.json";
 import actOneGeneratedAudioData from "../data/act-one.audio.generated.json";
 import bikeArcadeTimelineData from "../data/bike-arcade.audio.json";
 import bikeArcadeGeneratedAudioData from "../data/bike-arcade.audio.generated.json";
+import chapterThreeCanteenTimelineData from "../data/chapter3-canteen.audio.json";
+import chapterThreeCanteenGeneratedAudioData from "../data/chapter3-canteen.audio.generated.json";
+import chapterThreeTheaterTimelineData from "../data/chapter3-theater.audio.json";
+import chapterThreeTheaterGeneratedAudioData from "../data/chapter3-theater.audio.generated.json";
+import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
+import chapterThreeQizhenGeneratedAudioData from "../data/chapter3-qizhen.audio.generated.json";
 import audioTimelineData from "../data/library-finals.audio.json";
 import generatedAudioData from "../data/library-finals.audio.generated.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
@@ -40,13 +46,19 @@ const audioTimeline: AudioTimeline = {
   events: {
     ...(actOneTimelineData as AudioTimeline).events,
     ...(audioTimelineData as AudioTimeline).events,
-    ...(bikeArcadeTimelineData as AudioTimeline).events
+    ...(bikeArcadeTimelineData as AudioTimeline).events,
+    ...(chapterThreeCanteenTimelineData as AudioTimeline).events,
+    ...(chapterThreeTheaterTimelineData as AudioTimeline).events,
+    ...(chapterThreeQizhenTimelineData as AudioTimeline).events
   }
 };
 const generatedAssets = {
   ...(actOneGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(generatedAudioData.assets as Record<string, GeneratedAsset>),
-  ...(bikeArcadeGeneratedAudioData.assets as Record<string, GeneratedAsset>)
+  ...(bikeArcadeGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(chapterThreeCanteenGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(chapterThreeTheaterGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(chapterThreeQizhenGeneratedAudioData.assets as Record<string, GeneratedAsset>)
 };
 const audioUrls = import.meta.glob("../assets/audio/**/*.mp3", {
   eager: true,

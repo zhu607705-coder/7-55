@@ -2,6 +2,9 @@ import type { EventBus } from "../core/EventBus";
 import type { GameState, GameStore } from "../core/types";
 import actOneTimelineData from "../data/act-one.audio.json";
 import bikeArcadeTimelineData from "../data/bike-arcade.audio.json";
+import chapterThreeCanteenTimelineData from "../data/chapter3-canteen.audio.json";
+import chapterThreeTheaterTimelineData from "../data/chapter3-theater.audio.json";
+import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import libraryFinalsTimelineData from "../data/library-finals.audio.json";
 import { PRESENTATION_VISUAL_CUE_IDS } from "../data/presentation-cues";
 
@@ -20,6 +23,9 @@ const TIMELINE_CUE_IDS = new Set([
   ...Object.keys((actOneTimelineData as AudioTimelineShape).events),
   ...Object.keys((libraryFinalsTimelineData as AudioTimelineShape).events),
   ...Object.keys((bikeArcadeTimelineData as AudioTimelineShape).events),
+  ...Object.keys((chapterThreeCanteenTimelineData as AudioTimelineShape).events),
+  ...Object.keys((chapterThreeTheaterTimelineData as AudioTimelineShape).events),
+  ...Object.keys((chapterThreeQizhenTimelineData as AudioTimelineShape).events),
   ...PRESENTATION_VISUAL_CUE_IDS
 ]);
 

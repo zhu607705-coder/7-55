@@ -290,6 +290,14 @@
   grid-template-rows: auto 38px minmax(0, 1fr) 31px auto;
 }
 
+.cc98-qizhen-search {
+  grid-template-rows: auto 38px auto;
+}
+
+.cc98-qizhen-search .cc98-search-feedback {
+  white-space: pre-line;
+}
+
 .cc98-search-heading {
   align-items: center;
   display: flex;
@@ -2035,6 +2043,40 @@
   line-height: 1.45;
   margin: 0;
   padding: 7px 9px;
+}
+
+.cc98-qizhen-keyword {
+  background: #eaf6ff;
+  border: 3px solid #174d9d;
+  display: grid;
+  gap: 10px;
+  margin: 12px;
+  padding: 12px;
+}
+
+.cc98-qizhen-keyword > strong {
+  color: #0a2e67;
+  font-size: var(--fs-body);
+}
+
+.cc98-qizhen-keyword > button {
+  background: #1e62b8;
+  border: 3px solid #0a3777;
+  color: #fff;
+  font-weight: 900;
+  min-height: 42px;
+}
+
+.cc98-qizhen-keyword > button:disabled {
+  background: #dce9f7;
+  color: #36546f;
+}
+
+.cc98-qizhen-keyword > p {
+  color: #304a62;
+  font-size: var(--fs-caption);
+  line-height: 1.55;
+  margin: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

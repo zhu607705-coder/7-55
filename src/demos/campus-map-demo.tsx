@@ -51,7 +51,8 @@ const CANTEEN_PHASE_LABELS: Record<GameState["canteenHunt"]["phase"], string> = 
   pickup_search: "寻找 0755 窗口",
   exit_blocking: "封堵纸条出口",
   chase_ready: "准备继续追赶",
-  chasing: "追逐中"
+  chasing: "追逐中",
+  theater_reached: "抵达体艺馆"
 };
 
 const CANTEEN_MODE_PHASES: readonly GameState["canteenHunt"]["phase"][] = [

@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "events": {
+    "theater_interior_opened": {
+      "cues": [
+        { "channel": "music", "asset": "music_theater_lobby", "action": "play", "volume": 0.17, "loop": true }
+      ]
+    },
+    "theater_dark_mode_enabled": {
+      "cues": [
+        { "channel": "music", "asset": "music_theater_dark", "action": "play", "volume": 0.19, "loop": true },
+        { "channel": "sfx", "asset": "fx_theater_mode_switch", "volume": 0.58 }
+      ]
+    },
+    "theater_light_mode_enabled": {
+      "cues": [
+        { "channel": "music", "asset": "music_theater_lobby", "action": "play", "volume": 0.17, "loop": true },
+        { "channel": "sfx", "asset": "fx_theater_mode_switch", "volume": 0.52 }
+      ]
+    },
+    "theater_poster_cleaned": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_glass_wipe", "volume": 0.6 }]
+    },
+    "theater_ticket_print_failed": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_printer_fail", "volume": 0.62 }]
+    },
+    "theater_ticket_combined": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_ticket_join", "volume": 0.64 }]
+    },
+    "theater_ticket_admitted": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_gate_scan", "volume": 0.65 }]
+    },
+    "theater_program_collected": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_pickup", "volume": 0.55 }]
+    },
+    "theater_program_order_wrong": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_reject", "volume": 0.62 }]
+    },
+    "theater_program_order_solved": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_gate_scan", "playbackRate": 1.08, "volume": 0.58 }]
+    },
+    "theater_prop_box_opened": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_prop_box", "volume": 0.66 }]
+    },
+    "theater_paper_dusted": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_glass_wipe", "playbackRate": 1.2, "volume": 0.48 }]
+    },
+    "theater_spotlight_started": {
+      "cues": [
+        { "channel": "music", "asset": "music_theater_spotlight", "action": "play", "volume": 0.22, "loop": true }
+      ]
+    },
+    "theater_spotlight_hit": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_spotlight_hit", "volume": 0.72 }]
+    },
+    "theater_spotlight_third_hit": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_spotlight_hit", "playbackRate": 0.92, "volume": 0.78 }]
+    },
+    "theater_spotlight_missed": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_reject", "playbackRate": 1.15, "volume": 0.48 }]
+    },
+    "theater_reversal_completed": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "sfx", "asset": "fx_theater_decoy_break", "volume": 0.78 }
+      ]
+    }
+  }
+}

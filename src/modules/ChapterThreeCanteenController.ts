@@ -20,6 +20,8 @@ export class ChapterThreeCanteenController {
 
   enterCanteen(): boolean {
     const state = this.store.getState();
+    // The canteen is a normal campus destination outside the authored hunt. When the
+    // hunt is active, keep its entry gate so an unrelated visit cannot skip a phase.
     if (state.canteenHunt.active && !["tracking", "canteen_reached", "entered"].includes(state.canteenHunt.phase)) {
       return false;
     }
@@ -166,6 +168,8 @@ export class ChapterThreeCanteenController {
 
   leaveCanteen(): boolean {
     const state = this.store.getState();
+    // The lower-right door is always a valid return route during ordinary
+    // exploration. The chapter hunt still requires its cart-blocking phase.
     if (state.canteenHunt.active && state.canteenHunt.phase !== "chase_ready") return false;
     this.store.setState((current) => ({
       ...current,
@@ -240,11 +244,10 @@ export class ChapterThreeCanteenController {
     this.store.setState((current) => ({
       ...current,
       rpgScene: "campus_bootstrap",
-      rpgCheckpoint: "campus_canteen_gate",
+      rpgCheckpoint: "campus_theater_junction",
       canteenHunt: {
         ...current.canteenHunt,
-        active: false,
-        phase: "tracking",
+        phase: "theater_reached",
         chaseCollisions: Math.max(0, Math.floor(collisions))
       }
     }));

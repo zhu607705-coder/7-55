@@ -1,0 +1,133 @@
+{
+  "chapterId": "chapter-3-canteen-audio",
+  "music": [
+    {
+      "cue": "music.light",
+      "asset": "music_canteen_light",
+      "path": "chapter3-canteen/music/music_canteen_light.mp3",
+      "stage": "light",
+      "prompt": "Immediate-start top-down pixel RPG cafeteria exploration loop. Calm queue motion, clean ceramic rhythm, short repeating phrases, and enough silence for dialogue and interaction sounds.",
+      "genre": "minimal pixel chiptune",
+      "mood": "ordinary, observant, lightly comic",
+      "instruments": "soft square-wave pulse, muted woodblock, tiny ceramic clicks, warm FM bass",
+      "bpm": 92,
+      "durationSeconds": 20
+    },
+    {
+      "cue": "music.dark",
+      "asset": "music_canteen_dark",
+      "path": "chapter3-canteen/music/music_canteen_dark.mp3",
+      "stage": "dark",
+      "prompt": "Immediate-start alternate dark-mode loop for the same pixel cafeteria. Hidden paper traces become readable through restrained scanner pulses, dry ticking, and a compact unresolved motif.",
+      "genre": "minimal electronic mystery chiptune",
+      "mood": "focused, uncanny, controlled",
+      "instruments": "filtered pulse wave, glass ticks, dry low tom, sparse digital scanner tones",
+      "bpm": 110,
+      "durationSeconds": 20
+    },
+    {
+      "cue": "music.chase",
+      "asset": "music_canteen_chase",
+      "path": "chapter3-canteen/music/music_canteen_chase.mp3",
+      "stage": "chase",
+      "prompt": "Immediate-start campus bicycle chase loop for a pixel RPG. Fast forward motion, three-lane dodging rhythm, short urgent figures, and clear space for collision and near-miss cues.",
+      "genre": "pixel breakbeat chiptune",
+      "mood": "urgent, playful, precise",
+      "instruments": "tight electronic kick, clipped hi-hats, bright arpeggiator, small bicycle bell accents",
+      "bpm": 146,
+      "durationSeconds": 24
+    }
+  ],
+  "sfx": [
+    {
+      "cue": "sfx.mode_switch",
+      "asset": "fx_canteen_mode_switch",
+      "path": "chapter3-canteen/sfx/fx_canteen_mode_switch.mp3",
+      "group": "cafeteria",
+      "cutStartSeconds": 0,
+      "durationSeconds": 0.7,
+      "description": "short CRT luminance switch with one dry scanner confirmation tick"
+    },
+    {
+      "cue": "sfx.tray_slide",
+      "asset": "fx_canteen_tray_slide",
+      "path": "chapter3-canteen/sfx/fx_canteen_tray_slide.mp3",
+      "group": "cafeteria",
+      "cutStartSeconds": 3,
+      "durationSeconds": 0.9,
+      "description": "plastic cafeteria tray sliding quickly across a clean counter"
+    },
+    {
+      "cue": "sfx.tray_return",
+      "asset": "fx_canteen_tray_return",
+      "path": "chapter3-canteen/sfx/fx_canteen_tray_return.mp3",
+      "group": "cafeteria",
+      "cutStartSeconds": 6,
+      "durationSeconds": 1,
+      "description": "tray entering a return machine followed by a compact two-note confirmation"
+    },
+    {
+      "cue": "sfx.order_confirm",
+      "asset": "fx_canteen_order_confirm",
+      "path": "chapter3-canteen/sfx/fx_canteen_order_confirm.mp3",
+      "group": "cafeteria",
+      "cutStartSeconds": 9,
+      "durationSeconds": 0.8,
+      "description": "touchscreen order button with one positive digital confirmation tone"
+    },
+    {
+      "cue": "sfx.ticket_print",
+      "asset": "fx_canteen_ticket_print",
+      "path": "chapter3-canteen/sfx/fx_canteen_ticket_print.mp3",
+      "group": "cafeteria",
+      "cutStartSeconds": 12,
+      "durationSeconds": 1.25,
+      "description": "small thermal printer feeding a paper ticket and cutting it cleanly"
+    },
+    {
+      "cue": "sfx.paper_burst",
+      "asset": "fx_canteen_paper_burst",
+      "path": "chapter3-canteen/sfx/fx_canteen_paper_burst.mp3",
+      "group": "action",
+      "cutStartSeconds": 0,
+      "durationSeconds": 1,
+      "description": "single sheet of paper bursting from steam with a crisp airy snap"
+    },
+    {
+      "cue": "sfx.cart_roll",
+      "asset": "fx_canteen_cart_roll",
+      "path": "chapter3-canteen/sfx/fx_canteen_cart_roll.mp3",
+      "group": "action",
+      "cutStartSeconds": 3,
+      "durationSeconds": 1.2,
+      "description": "heavy cafeteria plate cart rolling half a meter and braking abruptly"
+    },
+    {
+      "cue": "sfx.paper_impact",
+      "asset": "fx_canteen_paper_impact",
+      "path": "chapter3-canteen/sfx/fx_canteen_paper_impact.mp3",
+      "group": "action",
+      "cutStartSeconds": 6,
+      "durationSeconds": 0.95,
+      "description": "fast paper sheet striking a metal cart with a bright blue energy crack"
+    },
+    {
+      "cue": "sfx.chase_lane",
+      "asset": "fx_canteen_chase_lane",
+      "path": "chapter3-canteen/sfx/fx_canteen_chase_lane.mp3",
+      "group": "action",
+      "cutStartSeconds": 9,
+      "durationSeconds": 0.7,
+      "description": "quick bicycle lateral lane shift with a short tire sweep"
+    },
+    {
+      "cue": "sfx.chase_collision",
+      "asset": "fx_canteen_chase_collision",
+      "path": "chapter3-canteen/sfx/fx_canteen_chase_collision.mp3",
+      "group": "action",
+      "cutStartSeconds": 12,
+      "durationSeconds": 1.15,
+      "description": "dry bicycle obstacle impact followed by a brief deceleration scrape"
+    }
+  ]
+}

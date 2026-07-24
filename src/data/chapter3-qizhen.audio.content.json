@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "chapterId": "chapter-3-qizhen-audio",
+  "model": "music-2.6",
+  "music": [
+    {
+      "cue": "qizhen.lakeside",
+      "asset": "music_qizhen_lakeside",
+      "path": "chapter3-qizhen/music/music_qizhen_lakeside.mp3",
+      "durationSeconds": 22,
+      "prompt": "Immediate-start top-down pixel RPG lakeside exploration loop at a bright university lake. Gentle water shimmer, restrained marimba droplets, soft plucked strings, light electronic pulse, calm surface with a subtle unresolved undertone, generous space for dialogue.",
+      "genre": "ambient pixel game soundtrack",
+      "mood": "calm, curious, faintly uneasy",
+      "instruments": "soft marimba, glass droplets, muted plucked strings, restrained synth pulse",
+      "bpm": 82
+    },
+    {
+      "cue": "qizhen.reflection",
+      "asset": "music_qizhen_reflection",
+      "path": "chapter3-qizhen/music/music_qizhen_reflection.mp3",
+      "durationSeconds": 22,
+      "prompt": "Immediate-start dark reflection puzzle loop for a top-down pixel RPG at a university lake. Sparse reversed glass notes, low water pulses, dry clocklike taps, an uneasy mirrored motif that never fully resolves, clear space for dialogue and short interaction sounds.",
+      "genre": "minimal ambient puzzle game soundtrack",
+      "mood": "uncanny, focused, restrained",
+      "instruments": "reversed glass, muted kalimba, low synth pulse, dry ticks",
+      "bpm": 76
+    },
+    {
+      "cue": "qizhen.mist",
+      "asset": "music_qizhen_mist",
+      "path": "chapter3-qizhen/music/music_qizhen_mist.mp3",
+      "durationSeconds": 20,
+      "prompt": "Immediate-start timing challenge loop for a top-down pixel RPG lake mist device. Compact four-beat pulse, soft breathy spray rhythm, bright digital metronome accents, rising tension without becoming frantic, a clear central timing beat, space for dialogue and a paper-release sound.",
+      "genre": "minimal electronic pixel game soundtrack",
+      "mood": "tense, precise, playful",
+      "instruments": "soft electronic pulse, muted percussion, airy synth, tiny bell accents",
+      "bpm": 96
+    }
+  ]
+}

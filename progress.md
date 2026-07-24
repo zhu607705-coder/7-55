@@ -1124,3 +1124,11 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 状态验证：使用真实 `EventBus + ChapterThreeCanteenController` 执行 35 个领域事件，完整状态链到达 `campus_bootstrap / campus_canteen_gate / chase_ready`，三项餐盘、点餐 D、3 号窗口与 `southeast → steam → west` 封堵顺序全部通过断言。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`npm run build:campus-map-demo`、`npm run verify:campus-map-demo` 与 `git diff --check` 通过。`demo/index.html` 为 `72,531,548 bytes`，SHA-256 为 `123da5ddb208298417d8248f9bc8af3f82fe17aa186432fb97606bc3806bf17b`；`demo/campus-map-demo.html` 为 `41,104,600 bytes`，SHA-256 为 `d1d141a68ea199f51881057c098b0a390862c0ace1b2211e7cb35e01b4bf8f87`。
 - 验收边界：当前浏览器控制通道对 `file://` 页面的刷新、DOM 读取和截图均按安全策略拒绝；本轮没有把构建或控制器断言冒充为最终视觉验收。需要在当前单文件手动刷新后完成一次入口、字幕、明暗按钮和返回校园的可见链路确认。
+
+## 2026-07-24 全分支本地集成预览
+
+- 预览基线：本地 `codex/preview-all-integrated-demo` 以远程 PR #20、独立 Demo 食堂接入提交 `abbfab6` 为基础，再 merge `codex/chapter3-canteen-20260722` 的两个独有提交；本分支只用于合并前查看，未推送、未改远程 `main`。
+- 冲突处理：保留当前 `4516×3420` 俯视校园底图、通行掩码、碰撞、人物缩放、镜头、跨浏览器适配和 DEV 直达修复；加入第三章食堂后续自行车追逐、体艺馆、启真湖、剧情状态、道具、音频和场景资产。项目规则与旧宽幅地图生成脚本未被旧分支覆盖。
+- 地图衔接：东区大食堂继续使用当前坐标；体艺馆入口落在当前东侧体育区可走道路 `(4100,1350)`，启真湖入口落在当前湖区道路 `(2900,1800)`，两个点均通过现有 `4px` 通行位图取样。
+- 校验：`npm run typecheck`、`npm run map:zijingang`、`npm run build:single`、`npm run verify:single` 与暂存区 `git diff --check` 通过。最终 `demo/index.html` 为 `96,530,366 bytes`，包含 2 个内联脚本和 1 个内联样式。
+- 浏览器边界：已接管当前 `file://.../demo/index.html` 标签页，但浏览器安全策略拒绝刷新本地文件；未切换到其他自动化表面规避限制。用户手动刷新当前标签页后即可查看新产物。

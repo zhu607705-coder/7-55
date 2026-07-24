@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "events": {
+    "canteen_interior_opened": {
+      "cues": [
+        { "channel": "music", "asset": "music_canteen_light", "action": "play", "volume": 0.17, "loop": true }
+      ]
+    },
+    "canteen_dark_mode_enabled": {
+      "cues": [
+        { "channel": "music", "asset": "music_canteen_dark", "action": "play", "volume": 0.19, "loop": true },
+        { "channel": "sfx", "asset": "fx_canteen_mode_switch", "volume": 0.58 }
+      ]
+    },
+    "canteen_light_mode_enabled": {
+      "cues": [
+        { "channel": "music", "asset": "music_canteen_light", "action": "play", "volume": 0.17, "loop": true },
+        { "channel": "sfx", "asset": "fx_canteen_mode_switch", "volume": 0.52 }
+      ]
+    },
+    "canteen_tray_slide_started": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_tray_slide", "volume": 0.65 }
+      ]
+    },
+    "canteen_tray_slide_completed": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_tray_return", "volume": 0.62 }
+      ]
+    },
+    "canteen_order_solved": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_order_confirm", "volume": 0.57 },
+        { "channel": "sfx", "asset": "fx_canteen_ticket_print", "offsetMs": 420, "volume": 0.62 }
+      ]
+    },
+    "canteen_paper_burst_started": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_paper_burst", "volume": 0.72 }
+      ]
+    },
+    "canteen_exit_blocked": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_cart_roll", "volume": 0.62 }
+      ]
+    },
+    "canteen_exit_blocking_completed": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_cart_roll", "volume": 0.68 }
+      ]
+    },
+    "canteen_paper_block_impact": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_paper_impact", "volume": 0.76 }
+      ]
+    },
+    "canteen_returned_to_campus": {
+      "cues": [
+        { "channel": "music", "action": "stop" }
+      ]
+    },
+    "canteen_bike_code_read": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_mode_switch", "playbackRate": 0.86, "volume": 0.56 }
+      ]
+    },
+    "canteen_bike_glare_failed": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_chase_collision", "playbackRate": 1.22, "volume": 0.34 }
+      ]
+    },
+    "canteen_bike_lock_cleaned": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_tray_slide", "playbackRate": 1.08, "volume": 0.48 }
+      ]
+    },
+    "canteen_bike_payment_ready": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_order_confirm", "volume": 0.52 }
+      ]
+    },
+    "canteen_chase_started": {
+      "cues": [
+        { "channel": "music", "asset": "music_canteen_chase", "action": "play", "volume": 0.22, "loop": true }
+      ]
+    },
+    "canteen_chase_countdown": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_order_confirm", "volume": 0.48 }
+      ]
+    },
+    "canteen_chase_lane_changed": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_chase_lane", "volume": 0.54 }
+      ]
+    },
+    "canteen_chase_near_miss": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_chase_lane", "playbackRate": 1.18, "volume": 0.43 }
+      ]
+    },
+    "canteen_chase_collision": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_chase_collision", "volume": 0.75 }
+      ]
+    },
+    "canteen_chase_paper_nearer": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_order_confirm", "playbackRate": 1.12, "volume": 0.48 }
+      ]
+    },
+    "canteen_chase_finish": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_paper_burst", "volume": 0.67 }
+      ]
+    },
+    "canteen_chase_completed": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "sfx", "asset": "fx_canteen_paper_impact", "offsetMs": 40, "volume": 0.55 }
+      ]
+    }
+  }
+}

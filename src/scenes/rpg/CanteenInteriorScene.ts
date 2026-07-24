@@ -37,6 +37,7 @@ const CANTEEN_PAPER_KEY = "chapter-3-canteen-paper";
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
+const ENTRY_DIALOGUE_STEP_MS = 1600;
 
 interface TrayVisual {
   container: Phaser.GameObjects.Container;
@@ -143,17 +144,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.bridge.emit("rpg_booted", { scene: "canteen_interior", checkpoint: "canteen_entrance" });
     this.bridge.emit("canteen_interior_opened");
 
+    this.cameras.main.startFollow(this.player, true, 0.13, 0.13, 0, 24).setDeadzone(250, 150);
     if (this.bridge.getState().canteenHunt.active && this.currentPhase === "tray_search") {
-      this.dialogueLocked = true;
-      this.cameras.main.pan(835, 470, this.reducedMotion ? 120 : 3200, "Sine.easeInOut");
-      this.time.delayedCall(this.reducedMotion ? 140 : 1900, () => {
-        this.cameras.main.startFollow(this.player, true, 0.13, 0.13, 0, 24).setDeadzone(250, 150);
-      });
       this.queueDialogue(canteenContent.entryDialogue, () => {
         this.dialogueLocked = false;
-      });
-    } else {
-      this.cameras.main.startFollow(this.player, true, 0.13, 0.13, 0, 24).setDeadzone(250, 150);
+      }, ENTRY_DIALOGUE_STEP_MS);
     }
   }
 
@@ -553,6 +548,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private getActiveTargets(state: GameState): CanteenInteractionTarget[] {
+    // Ordinary exploration has no story puzzle targets. Keep the physical exit
+    // available so the scene reads as a normal visit and has a deterministic return.
     if (!state.canteenHunt.active) {
       return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "exit");
     }
@@ -846,14 +843,18 @@ export class CanteenInteriorScene extends Phaser.Scene {
     });
   }
 
-  private queueDialogue(lines: readonly string[], onComplete?: () => void): void {
+  private queueDialogue(
+    lines: readonly string[],
+    onComplete?: () => void,
+    stepMs = DIALOGUE_STEP_MS
+  ): void {
     this.dialogueLocked = true;
     lines.forEach((text, index) => {
-      this.time.delayedCall(index * DIALOGUE_STEP_MS, () => {
-        this.showFeedback(text, this.dialogueToneFor(text));
+      this.time.delayedCall(index * stepMs, () => {
+        this.showFeedback(text, this.dialogueToneFor(text), stepMs - 120);
       });
     });
-    this.time.delayedCall(lines.length * DIALOGUE_STEP_MS, () => {
+    this.time.delayedCall(lines.length * stepMs, () => {
       this.dialogueLocked = false;
       onComplete?.();
     });
@@ -866,11 +867,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
     return "narrator";
   }
 
-  private showFeedback(text: string, tone: GameSubtitleTone): void {
+  private showFeedback(text: string, tone: GameSubtitleTone, durationMs = DIALOGUE_STEP_MS - 120): void {
     this.bridge.emit("rpg_subtitle", {
       text,
       tone,
-      durationMs: DIALOGUE_STEP_MS - 120
+      durationMs
     });
   }
 

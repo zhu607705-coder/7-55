@@ -1,5 +1,8 @@
 import type { ChapterId, GameState, QuestStep, QuestViewModel, SceneId } from "./types";
 import { selectFeatureAccess } from "./FeatureAccess";
+import canteenContent from "../data/chapter3-canteen.content.json";
+import theaterContent from "../data/chapter3-theater.content.json";
+import qizhenContent from "../data/chapter3-qizhen-lake.content.json";
 
 interface TaskDefinition {
   id: string;
@@ -215,6 +218,137 @@ function libraryQuest(state: GameState): QuestViewModel {
 }
 
 function chapterThreeQuest(state: GameState): QuestViewModel {
+  if (state.qizhenLake.active) {
+    const task: TaskDefinition = state.qizhenLake.phase === "location_search"
+      ? {
+          id: "chapter_three_qizhen_location",
+          label: theaterContent.completionTask.label,
+          hints: theaterContent.completionTask.hints,
+          targetSurface: "phone",
+          recommendedScene: "phone_home"
+        }
+      : state.qizhenLake.phase === "lake_unlocked"
+        ? {
+            id: "chapter_three_qizhen_gate",
+            label: "从校园地图前往启真湖",
+            hints: ["手机地图已确认地点。", "进入大地图后走到启真湖入口。"],
+            targetSurface: "phone",
+            recommendedScene: "zjuding"
+          }
+        : state.qizhenLake.phase === "chase_ready"
+          ? {
+              id: "chapter_three_qizhen_chase",
+              label: qizhenContent.quest.chase,
+              hints: [],
+              targetSurface: "rpg"
+            }
+          : {
+              id: `chapter_three_qizhen_${state.qizhenLake.phase}`,
+              label: qizhenContent.quest.lake,
+              hints: state.qizhenLake.phase === "reflection_hunt"
+                ? [qizhenContent.quest.lakeHints[0]]
+                : state.qizhenLake.phase === "sign_alignment"
+                  ? [qizhenContent.signs.dialogue[1]]
+                  : state.qizhenLake.phase === "decoy_setup"
+                    ? ["倒影坐标需要与假纸条一起核对。"]
+                    : ["先观察湖面的周期变化，再操作现实中的装置。"],
+              targetSurface: "rpg"
+            };
+    return buildQuest("chapter_three", "启真湖追纸", [task], 0);
+  }
+  if (state.theaterHunt.active) {
+    const task: TaskDefinition = state.theaterHunt.phase === "entry_ticket"
+      ? {
+          id: "chapter_three_theater_ticket",
+          label: theaterContent.entryTask.label,
+          hints: theaterContent.entryTask.hints,
+          targetSurface: "rpg"
+        }
+      : state.theaterHunt.phase === "program_search"
+        ? {
+            id: "chapter_three_theater_program",
+            label: theaterContent.program.task,
+            hints: [theaterContent.program.consolePrompt, theaterContent.program.consoleState],
+            targetSurface: "rpg"
+          }
+        : state.theaterHunt.phase === "prop_setup"
+          ? {
+              id: "chapter_three_theater_prop",
+              label: theaterContent.prop.task,
+              hints: [theaterContent.prop.ghost, theaterContent.prop.managerHint],
+              targetSurface: "rpg"
+            }
+          : state.theaterHunt.phase === "spotlight_ready"
+            ? {
+                id: "chapter_three_theater_spotlight_ready",
+                label: theaterContent.spotlight.readyHint,
+                hints: [theaterContent.spotlight.task],
+                targetSurface: "rpg"
+              }
+            : state.theaterHunt.phase === "spotlight_hunt"
+              ? {
+                  id: "chapter_three_theater_spotlight",
+                  label: `追光第 ${Math.min(state.theaterHunt.spotlightRound + 1, 3)} / 3 轮：观察轨迹，预置灯位并持续照射`,
+                  hints: [
+                    `已完成 ${state.theaterHunt.spotlightRound} / 3 轮，失败只重试当前轮。`,
+                    theaterContent.spotlight.preview,
+                    theaterContent.spotlight.choose,
+                    theaterContent.spotlight.controlHint
+                  ],
+                  targetSurface: "rpg"
+                }
+              : state.theaterHunt.phase === "reversal"
+                ? {
+                    id: "chapter_three_theater_reversal",
+                    label: "查看追光灯下的纸条",
+                    hints: [theaterContent.spotlight.reversal],
+                    targetSurface: "rpg"
+                  }
+            : {
+                id: "chapter_three_theater_next_stop",
+                label: theaterContent.completionTask.label,
+                hints: theaterContent.completionTask.hints,
+                targetSurface: "phone"
+              };
+    return buildQuest("chapter_three", "剧院追纸", [task], 0);
+  }
+  if (state.canteenHunt.active) {
+    const task: TaskDefinition = state.canteenHunt.phase === "tracking"
+      ? {
+          id: "chapter_three_find_escape_direction",
+          label: canteenContent.trackingTask.label,
+          hints: canteenContent.trackingTask.hints,
+          targetSurface: "rpg"
+        }
+      : ["canteen_reached", "tray_search", "menu_order", "pickup_search", "exit_blocking", "entered"].includes(state.canteenHunt.phase)
+        ? {
+            id: "chapter_three_canteen_intercept",
+            label: canteenContent.task.replace(/^任务：/, ""),
+            hints: canteenContent.hints,
+            targetSurface: "rpg"
+          }
+        : state.canteenHunt.phase === "theater_reached"
+          ? {
+              id: "chapter_three_theater_reached",
+              label: canteenContent.theaterTask.label,
+              hints: canteenContent.theaterTask.hints,
+              targetSurface: "rpg"
+            }
+          : state.canteenHunt.phase === "chasing"
+            ? {
+                id: "chapter_three_canteen_chase",
+                label: canteenContent.trackingTask.label,
+                hints: canteenContent.trackingTask.hints,
+                targetSurface: "rpg"
+              }
+          : {
+              id: "chapter_three_unlock_bike",
+              label: canteenContent.bike.task.replace(/^任务：/, ""),
+              hints: canteenContent.bike.hints,
+              targetSurface: "rpg"
+            };
+    return buildQuest("chapter_three", canteenContent.trackingTask.label, [task], 0);
+  }
   return buildQuest("chapter_three", "寻找借走记录的书", [{
     id: "chapter_three_book_hunt",
     label: state.bikeArcade.completed ? "第三章任务完成" : "打开求是潮，追上那本书",

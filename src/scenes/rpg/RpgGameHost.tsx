@@ -9,8 +9,12 @@ import type {
   ItemId,
   LibraryLocationId,
   QuestViewModel,
+  QizhenDecoyTargetId,
+  QizhenLakeMode,
   RpgCheckpointId,
-  RpgSceneId
+  RpgSceneId,
+  TheaterMode,
+  TheaterProgramId
 } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
@@ -21,11 +25,17 @@ import {
   bindChapterThreeCanteenEvents,
   ChapterThreeCanteenController
 } from "../../modules/ChapterThreeCanteenController";
+import { ChapterThreeTheaterController } from "../../modules/ChapterThreeTheaterController";
+import { ChapterThreeQizhenLakeController } from "../../modules/ChapterThreeQizhenLakeController";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
 import { DormHubScene } from "./DormHubScene";
 import { LibraryInteriorScene } from "./LibraryInteriorScene";
 import { CanteenInteriorScene } from "./CanteenInteriorScene";
+import { TheaterInteriorScene } from "./TheaterInteriorScene";
+import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
+import { QizhenLakeScene } from "./QizhenLakeScene";
+import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
 import { createRpgBridge } from "./RpgBridge";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
@@ -50,14 +60,18 @@ const SCENE_KEYS = {
   campus_bootstrap: "campus-bootstrap",
   dorm_hub: "dorm-hub",
   library_interior: "library-interior",
-  canteen_interior: "canteen-interior"
+  canteen_interior: "canteen-interior",
+  theater_interior: "theater-interior",
+  qizhen_lake: "qizhen-lake"
 } as const;
 
 const SCENE_CLASSES = {
   campus_bootstrap: BootScene,
   dorm_hub: DormHubScene,
   library_interior: LibraryInteriorScene,
-  canteen_interior: CanteenInteriorScene
+  canteen_interior: CanteenInteriorScene,
+  theater_interior: TheaterInteriorScene,
+  qizhen_lake: QizhenLakeScene
 } as const;
 
 const DOUBLE_TAP_WINDOW_MS = 380;
@@ -130,12 +144,15 @@ export function RpgGameHost({
   const directionStopTimerRef = useRef<number | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
   const itemInspectOpen = inspectedMapItem !== null;
-  inputBlockedRef.current = inputBlocked || itemInspectOpen;
-  keyboardBlockedRef.current = keyboardBlocked;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
+  const chaseActive = state.canteenHunt.phase === "chasing";
+  inputBlockedRef.current = inputBlocked || itemInspectOpen || chaseActive;
+  keyboardBlockedRef.current = keyboardBlocked || chaseActive;
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
+  const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
+  const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const runtimeScene = resolveRuntimeScene(state);
   const touchControls = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY)
@@ -215,7 +232,7 @@ export function RpgGameHost({
     if (!game) {
       return undefined;
     }
-    if (inputBlocked || itemInspectOpen) {
+    if (inputBlocked || itemInspectOpen || chaseActive) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
@@ -233,7 +250,7 @@ export function RpgGameHost({
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [events, inputBlocked, itemInspectOpen, keyboardBlocked]);
+  }, [chaseActive, events, inputBlocked, itemInspectOpen, keyboardBlocked]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -401,6 +418,96 @@ export function RpgGameHost({
   }, [controller, events, libraryController]);
 
   useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name === "rpg_canteen_bike_inspect_requested") {
+        canteenController.inspectBikeLock();
+      } else if (event.name === "rpg_canteen_bike_tissue_requested") {
+        canteenController.cleanBikeLock();
+      } else if (event.name === "rpg_canteen_bike_requested") {
+        canteenController.payForBike();
+      } else if (event.name === "rpg_theater_entry_requested") {
+        theaterController.enterTheater();
+      } else if (event.name === "rpg_theater_mode_requested") {
+        theaterController.setMode(String(event.payload?.mode ?? "light") as TheaterMode);
+      } else if (event.name === "rpg_theater_poster_tissue_requested") {
+        theaterController.cleanPoster();
+      } else if (event.name === "rpg_theater_ticket_kiosk_requested") {
+        theaterController.inspectTicketKiosk();
+      } else if (event.name === "rpg_theater_ticket_code_submitted") {
+        theaterController.submitTicketCode(String(event.payload?.code ?? ""));
+      } else if (event.name === "rpg_theater_ticket_combine_requested") {
+        theaterController.combineTicketHalves();
+      } else if (event.name === "rpg_theater_admission_requested") {
+        theaterController.admitWithTicket();
+      } else if (event.name === "rpg_theater_program_collect_requested") {
+        theaterController.collectProgram(String(event.payload?.programId ?? "") as TheaterProgramId);
+      } else if (event.name === "rpg_theater_program_order_read_requested") {
+        theaterController.readProgramOrder();
+      } else if (event.name === "rpg_theater_program_order_set_requested") {
+        const order = Array.isArray(event.payload?.order)
+          ? event.payload.order.filter((value): value is TheaterProgramId => ["opening", "spotlight", "finale"].includes(String(value)))
+          : [];
+        theaterController.setProgramOrder(order);
+      } else if (event.name === "rpg_theater_program_order_submit_requested") {
+        theaterController.submitProgramOrder();
+      } else if (event.name === "rpg_theater_prop_inspect_requested") {
+        theaterController.inspectPropBox();
+      } else if (event.name === "rpg_theater_prop_ticket_requested") {
+        theaterController.openPropBoxWithTicket();
+      } else if (event.name === "rpg_theater_vent_brush_requested") {
+        theaterController.dustPaperAtVent();
+      } else if (event.name === "rpg_theater_spotlight_start_requested") {
+        theaterController.startSpotlightHunt();
+      } else if (event.name === "rpg_theater_spotlight_attempt") {
+        const firstBeamAt = event.payload?.firstBeamAtMs;
+        const attempt: TheaterSpotlightAttempt = {
+          round: Number(event.payload?.round),
+          lane: String(event.payload?.lane ?? "center") as TheaterSpotlightLane,
+          maxContinuousLockMs: Number(event.payload?.maxContinuousLockMs),
+          beamActivated: event.payload?.beamActivated === true,
+          firstBeamAtMs: firstBeamAt === null || firstBeamAt === undefined
+            ? null
+            : Number(firstBeamAt),
+          actionMs: Number(event.payload?.actionMs),
+          submittedAtMs: Number(event.payload?.submittedAtMs)
+        };
+        theaterController.resolveSpotlightAttempt(attempt);
+      } else if (event.name === "rpg_theater_spotlight_choice") {
+        theaterController.resolveSpotlightChoice(String(event.payload?.lane ?? "center") as TheaterSpotlightLane);
+      } else if (event.name === "rpg_theater_spotlight_timeout") {
+        theaterController.missSpotlightRound();
+      } else if (event.name === "rpg_theater_reversal_complete_requested") {
+        theaterController.completeReversal();
+      } else if (event.name === "rpg_theater_exit_requested") {
+        theaterController.leaveTheater();
+      } else if (event.name === "theater_decoy_inspect_requested") {
+        setInspectedMapItem("decoyPaper");
+        events.emit("inventory_item_inspected", { itemId: "decoyPaper", surface: "rpg", automatic: true });
+      } else if (event.name === "rpg_qizhen_location_briefing_seen_requested") {
+        qizhenController.acknowledgeLocationBriefing();
+      } else if (event.name === "rpg_qizhen_entry_requested") {
+        qizhenController.enterLake();
+      } else if (event.name === "rpg_qizhen_leave_requested") {
+        qizhenController.leaveLake();
+      } else if (event.name === "rpg_qizhen_intro_seen_requested") {
+        qizhenController.markIntroSeen();
+      } else if (event.name === "rpg_qizhen_mode_requested") {
+        qizhenController.setMode(String(event.payload?.mode ?? "light") as QizhenLakeMode);
+      } else if (event.name === "rpg_qizhen_reflection_requested") {
+        qizhenController.interceptReflection(String(event.payload?.positionId ?? ""));
+      } else if (event.name === "rpg_qizhen_sign_rotate_requested") {
+        qizhenController.rotateSign(Number(event.payload?.signIndex));
+      } else if (event.name === "rpg_qizhen_decoy_requested") {
+        qizhenController.placeDecoy(String(event.payload?.targetId ?? "notice") as QizhenDecoyTargetId);
+      } else if (event.name === "rpg_qizhen_mist_observe_requested") {
+        qizhenController.observeMistRhythm();
+      } else if (event.name === "rpg_qizhen_mist_trigger_requested") {
+        qizhenController.triggerMist(event.payload?.success === true);
+      }
+    });
+  }, [canteenController, events, qizhenController, theaterController]);
+
+  useEffect(() => {
     if (state.ui.libraryFinalsPuzzle.lostFoundStage !== "scanning") {
       return undefined;
     }
@@ -542,17 +649,27 @@ export function RpgGameHost({
     if (closingItem === "archivedLeaveRule") {
       libraryController.confirmArchivedRuleRead();
     }
+    if (closingItem === "decoyPaper" && store.getState().theaterHunt.phase === "complete") {
+      events.emit("theater_decoy_inspect_closed");
+    }
   }
 
   return (
     <main
-      className={`rpg-stage ${runtimeScene === "campus_bootstrap" ? "is-campus-map" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
+      className={`rpg-stage ${runtimeScene === "campus_bootstrap" ? "is-campus-map" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
       data-input-blocked={inputBlocked || itemInspectOpen ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
         <div ref={hostRef} className="rpg-canvas-host" aria-hidden="true" />
+
+        {chaseActive ? (
+          <CanteenChaseOverlay
+            events={events}
+            onComplete={(collisions) => canteenController.completeChase(collisions)}
+          />
+        ) : null}
 
         {showTaskBar ? (
           <QuestTaskBar
@@ -578,8 +695,8 @@ export function RpgGameHost({
           </nav>
         ) : null}
 
-        {runtimeScene === "canteen_interior" && state.canteenHunt.active
-          && ["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase) ? (
+        {((runtimeScene === "canteen_interior" && state.canteenHunt.active && ["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase))
+          || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
           <button
             type="button"
             className={`rpg-canteen-mode-toggle is-${state.canteenHunt.mode}`}
@@ -589,6 +706,32 @@ export function RpgGameHost({
             })}
           >
             {state.canteenHunt.mode === "dark" ? "浅色模式" : "深色模式"}
+          </button>
+        ) : null}
+
+        {runtimeScene === "theater_interior" && ["entry_ticket", "program_search", "prop_setup", "spotlight_ready"].includes(state.theaterHunt.phase) ? (
+          <button
+            type="button"
+            className={`rpg-canteen-mode-toggle rpg-theater-mode-toggle is-${state.theaterHunt.mode}`}
+            aria-pressed={state.theaterHunt.mode === "dark"}
+            onClick={() => events.emit("rpg_theater_mode_requested", {
+              mode: state.theaterHunt.mode === "dark" ? "light" : "dark"
+            })}
+          >
+            {state.theaterHunt.mode === "dark" ? "浅色模式" : "深色模式"}
+          </button>
+        ) : null}
+
+        {runtimeScene === "qizhen_lake" && ["reflection_hunt", "sign_alignment", "decoy_setup", "mist_timing"].includes(state.qizhenLake.phase) ? (
+          <button
+            type="button"
+            className={`rpg-canteen-mode-toggle rpg-qizhen-mode-toggle is-${state.qizhenLake.mode}`}
+            aria-pressed={state.qizhenLake.mode === "dark"}
+            onClick={() => events.emit("rpg_qizhen_mode_requested", {
+              mode: state.qizhenLake.mode === "dark" ? "light" : "dark"
+            })}
+          >
+            {state.qizhenLake.mode === "dark" ? "浅色模式" : "深色模式"}
           </button>
         ) : null}
 
@@ -634,7 +777,12 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {runtimeScene === "library_interior" || runtimeScene === "dorm_hub" || runtimeScene === "canteen_interior" ? (
+        {runtimeScene === "library_interior"
+          || runtimeScene === "dorm_hub"
+          || runtimeScene === "canteen_interior"
+          || (runtimeScene === "theater_interior" && !["spotlight_hunt", "reversal"].includes(state.theaterHunt.phase))
+          || runtimeScene === "qizhen_lake"
+          || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") ? (
           <RpgInventoryDock
             state={state}
             events={events}
@@ -648,7 +796,7 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen}
+          blocked={inputBlocked || itemInspectOpen || chaseActive}
         />
 
         {state.actOne.controlsInstalled && touchControls ? (
