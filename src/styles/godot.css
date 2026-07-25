@@ -105,15 +105,22 @@
 }
 
 @media (max-width: 600px), (orientation: portrait) {
+  .godot-rpg-frame {
+    height: var(--rpg-mobile-canvas-height);
+    inset: 0 auto auto 0;
+  }
+
   .godot-runtime-status {
     bottom: 8px;
-    left: 8px;
-    min-width: 190px;
+    left: auto;
+    min-width: 0;
     padding: 5px 7px;
+    right: 8px;
+    width: 150px;
   }
 
   .godot-runtime-status small {
-    max-width: 210px;
+    max-width: 132px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
