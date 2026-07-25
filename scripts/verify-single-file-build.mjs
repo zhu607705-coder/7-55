@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const outputDirectory = resolve(process.cwd(), "demo");
 const requestedArtifact = process.argv[2] ?? "index.html";
-const allowedArtifacts = new Set(["index.html", "campus-map-demo.html"]);
+const allowedArtifacts = new Set(["index.html", "campus-map-demo.html", "project-preview.html"]);
 
 if (!allowedArtifacts.has(requestedArtifact)) {
   throw new Error(`Unknown single-file artifact: ${requestedArtifact}`);
@@ -50,6 +50,14 @@ function verifyHtmlArtifact(name, html, outputStat) {
 
   if (resourceTags.some((tag) => /\b(?:src|href|poster)\s*=\s*["']https?:\/\//i.test(tag))) {
     throw new Error(`demo/${name} contains an HTTP-loaded resource.`);
+  }
+
+  if (name === "project-preview.html") {
+    for (const requiredText of ["仓库预览与四人协作门户", "文件分类与依赖边界", "四人并行开发通道", "版本与发布规则"]) {
+      if (!html.includes(requiredText)) {
+        throw new Error(`demo/${name} is missing portal content: ${requiredText}`);
+      }
+    }
   }
 
   return { bytes: outputStat.size, inlineScripts: scriptTags.length, inlineStyles: styleTags.length };
