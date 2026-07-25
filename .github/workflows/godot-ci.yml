@@ -5,6 +5,7 @@ on:
     paths:
       - "godot/**"
       - "src/App.tsx"
+      - "src/main.tsx"
       - "src/core/GodotBridge.ts"
       - "src/core/RuntimeEngine.ts"
       - "src/scenes/rpg/GodotRpgGameHost.tsx"
@@ -19,6 +20,7 @@ on:
     paths:
       - "godot/**"
       - "src/App.tsx"
+      - "src/main.tsx"
       - "src/core/GodotBridge.ts"
       - "src/core/RuntimeEngine.ts"
       - "src/scenes/rpg/GodotRpgGameHost.tsx"
@@ -88,17 +90,32 @@ jobs:
           cp -R "$TEMPLATE_TEMP/templates/." "$TEMPLATE_DIR/"
           "$GODOT_EXECUTABLE" --version
 
+      - name: Prepare diagnostic directory
+        run: mkdir -p artifacts/godot-migration
+
       - name: Verify synchronized project contract
-        run: npm run godot:verify
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:verify 2>&1 | tee artifacts/godot-migration/godot-project-verify.log
 
       - name: Import project and parse GDScript
-        run: npm run godot:check
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:check 2>&1 | tee artifacts/godot-migration/godot-import.log
 
       - name: Run headless boundary smoke
-        run: npm run godot:test
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:test 2>&1 | tee artifacts/godot-migration/godot-headless-smoke.log
 
       - name: Export Godot Web runtime
-        run: npm run godot:export:web
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:export:web 2>&1 | tee artifacts/godot-migration/godot-web-export.log
 
       - name: Type-check React bridge
         run: npm run typecheck
@@ -115,7 +132,6 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p artifacts/godot-migration
           npx vite preview --host 127.0.0.1 --port 4173 > /tmp/godot-vite.log 2>&1 &
           PREVIEW_PID=$!
           set +e
@@ -129,11 +145,11 @@ jobs:
       - name: Check whitespace and generated-file cleanliness
         run: git diff --check
 
-      - name: Upload visual evidence
+      - name: Upload migration diagnostics and visual evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: godot-migration-visual-${{ github.run_attempt }}
+          name: godot-migration-evidence-${{ github.run_attempt }}
           path: artifacts/godot-migration
           if-no-files-found: warn
           retention-days: 7
