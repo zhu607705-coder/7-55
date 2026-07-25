@@ -253,7 +253,7 @@ func _on_player_position_changed(_world_position: Vector2) -> void:
 
 
 func _adjust_zoom(delta: float) -> void:
-	var next_zoom := clamp(_camera.zoom.x + delta, 0.65, 1.8)
+	var next_zoom: float = clampf(_camera.zoom.x + delta, 0.65, 1.8)
 	_camera.zoom = Vector2.ONE * next_zoom
 	_post_snapshot()
 
