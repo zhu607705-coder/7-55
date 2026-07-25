@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-25",
+  "repository": "zhu607705-coder/7-55",
+  "lanes": [
+    {
+      "id": "phone-ui",
+      "label": "A · 手机端与界面",
+      "owner": "待填写 GitHub 用户名",
+      "mission": "负责手机壳层、应用页面、响应式布局、字幕与可访问性。",
+      "paths": [
+        "src/scenes/phone/**",
+        "src/components/**",
+        "src/styles/**"
+      ],
+      "reviewPartners": ["gameplay-state", "delivery-qa"]
+    },
+    {
+      "id": "gameplay-state",
+      "label": "B · 剧情状态与玩法控制器",
+      "owner": "待填写 GitHub 用户名",
+      "mission": "负责 GameState、任务门控、控制器、存档迁移和领域事件。",
+      "paths": [
+        "src/core/**",
+        "src/modules/**",
+        "tests/core/**"
+      ],
+      "reviewPartners": ["phone-ui", "world-engine"]
+    },
+    {
+      "id": "world-engine",
+      "label": "C · 地图与引擎迁移",
+      "owner": "待填写 GitHub 用户名",
+      "mission": "负责 Phaser RPG、Godot、地图、碰撞、寻路、场景入口和角色运动。",
+      "paths": [
+        "src/scenes/rpg/**",
+        "godot/**",
+        "src/data/maps/**",
+        "scripts/*godot*.mjs",
+        "scripts/*zijingang*.mjs"
+      ],
+      "reviewPartners": ["gameplay-state", "delivery-qa"]
+    },
+    {
+      "id": "delivery-qa",
+      "label": "D · 内容资源与交付质量",
+      "owner": "待填写 GitHub 用户名",
+      "mission": "负责剧情数据、素材清单、测试、CI、预览构建、发布记录和文档。",
+      "paths": [
+        "src/data/**",
+        "src/assets/**",
+        "tests/**",
+        "scripts/**",
+        ".github/**",
+        "docs/**"
+      ],
+      "reviewPartners": ["phone-ui", "world-engine"]
+    }
+  ],
+  "sharedCriticalPaths": [
+    "package.json",
+    "package-lock.json",
+    "vite.config.ts",
+    "src/core/types.ts",
+    "src/core/GameState.ts",
+    "src/core/SaveStore.ts",
+    ".github/workflows/**"
+  ],
+  "generatedPaths": [
+    "dist/**",
+    "demo/**",
+    "public/godot/**",
+    "godot/assets/generated/**",
+    "artifacts/**"
+  ],
+  "branchPrefixes": ["feat", "fix", "test", "docs", "chore", "refactor", "integration"],
+  "mergeMethod": "squash",
+  "requiredApprovals": 1
+}
