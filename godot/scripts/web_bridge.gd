@@ -22,10 +22,7 @@ func _ready() -> void:
 		_expected_origin = str(_window.location.origin)
 		_message_callback = JavaScriptBridge.create_callback(_on_window_message)
 		_window.addEventListener("message", _message_callback)
-		post_message("ready", {
-			"protocolVersion": PROTOCOL_VERSION,
-			"engine": Engine.get_version_info()
-		})
+		_post_ready()
 	else:
 		print("[GodotBridge] native/headless mode; browser bridge disabled")
 	bridge_ready.emit()
@@ -60,6 +57,13 @@ func post_event(event_name: String, payload: Dictionary = {}) -> void:
 	})
 
 
+func _post_ready() -> void:
+	post_message("ready", {
+		"protocolVersion": PROTOCOL_VERSION,
+		"engine": Engine.get_version_info()
+	})
+
+
 func _on_window_message(arguments: Array) -> void:
 	if arguments.is_empty() or _json == null:
 		return
@@ -76,6 +80,9 @@ func _on_window_message(arguments: Array) -> void:
 	if int(message.get("protocolVersion", -1)) != PROTOCOL_VERSION:
 		return
 	var message_type := str(message.get("type", ""))
+	if message_type == "hello":
+		_post_ready()
+		return
 	var raw_payload: Variant = message.get("payload", {})
 	var payload: Dictionary = raw_payload if raw_payload is Dictionary else {}
 	if message_type == "hydrate":
