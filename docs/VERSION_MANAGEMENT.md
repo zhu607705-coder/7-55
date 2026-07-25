@@ -1,33 +1,36 @@
 # 7:55 版本管理规范
 
+详细的 PR 规模、风险分级和测试矩阵见 [PR 与自动化测试规范](PR_AND_TEST_POLICY.md)。
+
 ## 1. 唯一版本源
 
-- 唯一远端仓库：`https://github.com/zhu607705-coder/7-55.git`
-- `main` 始终表示可构建、可演示的最新稳定版本。
-- 迁移完成后，旧目录、ZIP、聊天附件只能作为备份，不能再作为开发基准。
-- 每位成员从远端单独克隆；禁止共享 GitHub 账号、访问令牌或 `.git` 目录。
+- 唯一远端仓库：`https://github.com/zhu607705-coder/7-55.git`。
+- `main` 始终表示通过质量门槛、可构建、可演示的最新版本。
+- 旧目录、ZIP、聊天附件和本地副本只能作为备份，不能继续承载开发。
+- 每位成员使用自己的 GitHub 账号和本地克隆，禁止共享账号、令牌或 `.git` 目录。
 
-## 2. 四人权限
+## 2. 权限
 
-仓库所有者邀请另外 3 名成员为 GitHub Collaborator，4 人均使用自己的账号：
+- 日常协作者使用 `Write` 权限。
+- 仓库设置、协作者管理、规则集和发布由仓库所有者负责。
+- 成员离组时及时移除权限，并轮换曾经共享的密钥。
+- 任何密钥、令牌、学号、手机号和私有素材都不得写入 Git 历史。
 
-- 日常开发权限：`Write`。
-- 仓库设置、协作者管理和分支保护：由仓库所有者负责。
-- 成员离组时及时移除权限，并轮换曾共享过的密钥。
+## 3. `main` 规则
 
-邀请完成后，在 GitHub 的 `Settings → Collaborators` 中逐一确认 4 个账号均已接受。
+所有变更通过 PR 进入 `main`。仓库所有者应启用：
 
-## 3. `main` 分支保护
-
-本次基线替换完成后，在 `Settings → Branches` 为 `main` 启用：
-
-- Require linear history。
+- Require a pull request before merging。
+- Require 1 approval。
+- Dismiss stale approvals when new commits are pushed。
+- Require conversation resolution before merging。
+- Require status checks to pass。
+- 必需检查：`PR metadata contract`、`Verify web build`。
 - Block force pushes。
 - Block deletions。
+- Require linear history。
 
-不要启用 Pull Request 或 CI 必须通过的规则；4 名协作者可直接推送 `main`。
-本次从无 Git 历史的合并目录建立新基线，是唯一一次迁移例外。之后不得重写
-`main` 历史。
+推荐只保留 Squash merge，关闭 Merge commit。管理员也应遵守相同规则。
 
 ## 4. 首次设置
 
@@ -39,36 +42,40 @@ git config pull.ff only
 git config core.hooksPath .githooks
 ```
 
-`core.hooksPath` 会启用仓库内置的 pre-push 检查。每位协作者只需设置一次。
+`.githooks/pre-push` 会运行类型检查、单元测试和生产构建。
 
-## 5. 日常直接推送
+## 5. 日常开发
 
-开始工作前：
+开始工作：
 
 ```bash
 git switch main
 git pull --ff-only
+git switch -c feat/<账号>-<主题>
 ```
 
-完成修改后：
+完成修改：
 
 ```bash
 git add <明确的文件>
 git commit -m "feat(scope): 简短说明"
 git pull --rebase origin main
-git push origin main
+git push -u origin HEAD
 ```
 
-pre-push hook 会在推送前执行类型检查和生产构建。如果远端已被其他成员更新，Git 会
-拒绝非快进推送；先 rebase、解决冲突并重新验证，禁止用强制推送覆盖他人提交。
+随后创建 PR。禁止直接推送 `main`，禁止强制推送任何共享分支。
 
-预计超过一天、会改动共享核心模块的大任务可以使用临时分支
-`feature/<账号>-<主题>`，完成后在本地验证并快进合并到 `main`，不要求 PR。
+## 6. 分支命名
 
-多人同时开发时，在群里简单登记“负责人 + 模块/文件 + 预计完成时间”，避免同时改同一
-文件。提交尽量小而单一，不把多个无关功能塞进同一提交。
+- `feat/<账号>-<主题>`：新增功能。
+- `fix/<账号>-<主题>`：修复问题。
+- `test/<账号>-<主题>`：测试与质量门槛。
+- `docs/<账号>-<主题>`：正式文档。
+- `chore/<账号>-<主题>`：构建、依赖与仓库维护。
 
-## 6. 提交格式
+短期分支在 PR 合并后删除。长期开发应持续从 `main` rebase，避免一次性积累大量冲突。
+
+## 7. 提交格式
 
 ```text
 <type>(<scope>): <简短说明>
@@ -78,64 +85,116 @@ pre-push hook 会在推送前执行类型检查和生产构建。如果远端已
 
 - `feat`：新增功能。
 - `fix`：修复问题。
-- `docs`：只改文档。
-- `refactor`：不改变行为的代码调整。
 - `test`：测试相关。
-- `chore`：构建、依赖或仓库维护。
+- `docs`：只改文档。
+- `refactor`：行为不变的代码调整。
+- `perf`：性能优化。
+- `build`：构建系统。
+- `ci`：持续集成。
+- `chore`：仓库维护。
 
-UI 改动在群里附截图或录屏；涉及存档、剧情进度、资源体积或移动端交互时，说明验证
-结果。提交前确认没有密钥、账号、个人信息或临时素材。
+提交应小而单一。一个提交不应混合地图替换、状态迁移和无关文案修改。
 
-## 7. 文件与大资源
+## 8. PR 规模
+
+推荐：
+
+- 不超过 20 个文件。
+- 增删总量不超过 800 行。
+- 一个主要玩法闭环或一个基础设施主题。
+
+超过 30 个文件，或增删总量超过 1500 行时，必须在 PR 正文填写大型 PR 拆分说明。
+
+地图底图、坐标、存档版本、构建配置和大资源更新优先使用独立 PR。
+
+## 9. 文件与资源
 
 必须跟踪：
 
-- `src/`、`public/`、`scripts/`、正式文档和项目配置。
-- `package.json` 与 `package-lock.json` 必须一起更新。
+- `src/`、`public/`、`scripts/`、`tests/`、正式文档和项目配置。
+- `package.json` 与 `package-lock.json`，依赖变化时同步更新。
+- `.github/workflows/`、PR 模板和仓库质量脚本。
 
 不得跟踪：
 
 - `node_modules/`。
-- `dist/`、`demo/` 等可重建产物。
-- `uploads/`、`artifacts/` 等临时上传或候选素材。
+- `dist/`、`demo/`、`.test-dist/`、`coverage/` 等可重建产物。
+- `uploads/`、`artifacts/` 等候选素材和临时交付目录。
 - ZIP、日志、系统元数据、编辑器缓存和 `.env`。
-
-离线单文件演示由 `npm run build:demo` 生成，作为 Release 附件或其他交付物发布，
-不要提交进 Git 历史。
 
 新增或替换二进制资源前：
 
-1. 确认运行时确实引用，删除重复源文件。
-2. 尽量压缩图片和音频。
-3. 单文件超过 20 MiB 时在群里说明；超过 50 MiB 时先由团队决定使用 Git LFS、
-   Release 或外部素材库，不直接提交。
+1. 确认运行时实际引用。
+2. 删除重复源文件。
+3. 压缩图片和音频。
+4. 单文件超过 20 MiB 时在 PR 中说明。
+5. 单文件超过 50 MiB 时先决定 Git LFS、Release 或外部素材库方案。
 
-## 8. 质量门槛
+## 10. 本地质量门槛
 
-每次推送至少执行：
+快速检查：
 
 ```bash
 npm run typecheck
+npm test
 npm run build
 ```
 
-`.githooks/pre-push` 会自动执行以上命令。当前仓库尚无自动测试套件；增加测试后，
-必须把 `npm test` 同时加入 `package.json`、pre-push hook 和本规范。
+完整 PR 检查：
 
-生成目录只能由脚本生成，禁止手工修改。生成失败时修复源码或脚本，不提交半成品。
+```bash
+npm run verify:pr
+```
 
-如果 pre-push 检查失败，修复后重新提交或补充提交；不要用 `--no-verify` 绕过。
+完整检查包含地图契约、TypeScript、单元测试、生产构建、正式离线单文件、校园地图单文件和两个产物校验。
 
-## 9. 发布与回退
+禁止使用 `--no-verify` 绕过 pre-push。生成失败时修复源码或脚本，不提交手工修改后的生成目录。
 
-- 发布版本使用语义化标签：`v主版本.次版本.修订号`，例如 `v0.2.0`。
-- 标签只打在 `main` 已验证的提交上。
-- 发布说明列出功能、修复、已知问题和验证方式。
-- 已推送的问题使用 `git revert <commit>` 回退，禁止重写 `main`。
-- 基线迁移前的远端版本保存在专用归档分支，详情见
-  [基线迁移记录](BASELINE_MIGRATION_20260718.md)。
+## 11. 审查
 
-## 10. 冲突处理
+PR 至少由一名非作者协作者审查。审查重点：
+
+- 状态前置、成功、失败、重试和重入。
+- 存档迁移与旧版本兼容。
+- React 与 Phaser 事件边界。
+- 地图坐标、碰撞和遮挡。
+- 键盘、指针和触控路径。
+- 手机和 RPG 逻辑比例。
+- 离线单文件资源。
+- 未覆盖项是否影响当前发布目标。
+
+所有 review thread 解决后才能合并。新增提交会使旧批准失效时，应重新审查变化部分。
+
+## 12. 合并与回退
+
+- 合并方式使用 Squash merge。
+- Squash 标题使用规范化 PR 标题。
+- 合并后删除短期分支。
+- 出现问题时使用 `git revert` 或 GitHub Revert。
+- 禁止通过重写 `main` 历史处理已发布问题。
+
+## 13. 发布
+
+发布使用语义化标签：
+
+```text
+v主版本.次版本.修订号
+```
+
+示例：`v0.2.0`。
+
+标签只能创建在 `main` 已验证提交上。发布说明包含：
+
+- 新功能。
+- 修复。
+- 已知问题。
+- 验证方式。
+- 离线单文件 SHA-256。
+- 存档版本和兼容范围。
+
+`demo/index.html` 与 `demo/campus-map-demo.html` 作为 Release 附件发布，不提交进 Git 历史。
+
+## 14. 冲突处理
 
 ```bash
 git fetch origin
@@ -148,9 +207,9 @@ git rebase origin/main
 git add <已解决文件>
 git rebase --continue
 npm run typecheck
+npm test
 npm run build
-git push origin main
+git push --force-with-lease
 ```
 
-不能确定时，与相关成员共同确认；不要使用 `git reset --hard`、整目录覆盖或
-`git push --force` 来“解决”冲突。
+`--force-with-lease` 仅用于更新自己的 PR 分支，不能用于 `main` 或他人的共享分支。无法确认冲突语义时，与相关模块负责人共同处理，禁止用整目录覆盖解决冲突。
