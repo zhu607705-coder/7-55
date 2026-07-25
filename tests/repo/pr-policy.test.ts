@@ -9,6 +9,8 @@ const validBody = [
   "增加可执行的 PR 门禁与自动化测试。",
   "## 原因",
   "避免缺少验证的状态改动进入主分支。",
+  "## 协作范围与依赖",
+  "工作通道：D\n负责人：@tester\nPR base：main\n依赖：直接面向 main。",
   "## 验证",
   "类型检查、单元测试和构建均通过。",
   "## 风险与回滚",
@@ -57,6 +59,26 @@ test("PR 规范拒绝缺少必需章节和有效内容的正文", () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /PR 正文缺少必需章节/);
   assert.match(result.stderr, /PR 正文信息不足/);
+});
+
+test("PR 规范拒绝缺少工作通道和依赖字段的协作章节", () => {
+  const body = validBody.replace(
+    "工作通道：D\n负责人：@tester\nPR base：main\n依赖：直接面向 main。",
+    "本次由多人协作完成。"
+  );
+  const result = runVerifier({
+    PR_TITLE: "feat(preview): 增加协作门户",
+    PR_BODY: body,
+    PR_CHANGED_FILES: "8",
+    PR_ADDITIONS: "500",
+    PR_DELETIONS: "20"
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /缺少字段：工作通道/);
+  assert.match(result.stderr, /缺少字段：负责人/);
+  assert.match(result.stderr, /缺少字段：PR base/);
+  assert.match(result.stderr, /缺少字段：依赖/);
 });
 
 test("大型 PR 必须提供实际拆分说明", () => {

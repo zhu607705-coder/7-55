@@ -41,13 +41,18 @@ function moveSingleFileRuntimeAfterShell(): Plugin {
   };
 }
 
-// 仅当 mode === "demo"（npm run build:demo）时启用单文件打包：
-// JS/CSS 内联进 index.html、相对路径、输出到 demo/，双击即可运行。
-// 正常 dev / build 行为与原配置完全一致。
+// Single-file modes inline JS and CSS into demo/*.html. Each demo remains an
+// independent entry while sharing the same Vite and browser compatibility baseline.
 export default defineConfig(({ mode }) => {
   const isDemo = mode === "demo";
   const isCampusMapDemo = mode === "campus-demo";
-  const isSingleFileDemo = isDemo || isCampusMapDemo;
+  const isProjectPreview = mode === "project-preview";
+  const isSingleFileDemo = isDemo || isCampusMapDemo || isProjectPreview;
+  const singleFileInput = isCampusMapDemo
+    ? resolve(import.meta.dirname, "campus-map-demo.html")
+    : isProjectPreview
+      ? resolve(import.meta.dirname, "project-preview.html")
+      : null;
 
   return {
     ...(isSingleFileDemo
@@ -56,13 +61,11 @@ export default defineConfig(({ mode }) => {
           plugins: [react(), viteSingleFile({ removeViteModuleLoader: true }), moveSingleFileRuntimeAfterShell()],
           build: {
             outDir: "demo",
-            // Keep the formal game and the map-only demo side by side. Both artifacts are self-contained.
+            // Formal game, map demo and repository portal are generated side by side.
             emptyOutDir: false,
             chunkSizeWarningLimit: 8000,
             target: BROWSER_BUILD_TARGET,
-            ...(isCampusMapDemo
-              ? { rollupOptions: { input: resolve(import.meta.dirname, "campus-map-demo.html") } }
-              : {})
+            ...(singleFileInput ? { rollupOptions: { input: singleFileInput } } : {})
           }
         }
       : {

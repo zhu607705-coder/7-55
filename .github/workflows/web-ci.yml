@@ -18,7 +18,7 @@ jobs:
   verify-web:
     name: Verify web build
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       CI: "true"
 
@@ -34,6 +34,9 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Verify repository structure
+        run: npm run verify:structure
 
       - name: Verify campus map contract
         run: npm run map:zijingang
@@ -53,11 +56,17 @@ jobs:
       - name: Build offline campus-map demo
         run: npm run build:campus-map-demo
 
+      - name: Build repository preview portal
+        run: npm run build:project-preview
+
       - name: Verify offline single-file game
         run: npm run verify:single
 
       - name: Verify offline campus-map demo
         run: npm run verify:campus-map-demo
+
+      - name: Verify repository preview portal
+        run: npm run verify:project-preview
 
       - name: Check whitespace errors
         run: git diff --check

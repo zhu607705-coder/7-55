@@ -1,0 +1,91 @@
+name: Project Preview CI
+
+on:
+  pull_request:
+    paths:
+      - "project-preview.html"
+      - "config/team-workstreams.json"
+      - "src/demos/project-preview.*"
+      - "docs/REPOSITORY_STRUCTURE.md"
+      - "docs/FOUR_PERSON_WORKFLOW.md"
+      - "scripts/project-preview-visual-smoke.mjs"
+      - "scripts/verify-repository-structure.mjs"
+      - "scripts/verify-single-file-build.mjs"
+      - "vite.config.ts"
+      - "package.json"
+      - ".github/workflows/project-preview-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "project-preview.html"
+      - "config/team-workstreams.json"
+      - "src/demos/project-preview.*"
+      - "scripts/project-preview-visual-smoke.mjs"
+      - "scripts/verify-repository-structure.mjs"
+      - "vite.config.ts"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: project-preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-project-preview:
+    name: Verify project preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify repository structure
+        run: npm run verify:structure
+
+      - name: Build adjacent preview artifacts
+        run: |
+          npm run build:single
+          npm run build:campus-map-demo
+          npm run build:project-preview
+
+      - name: Verify all preview artifacts
+        run: |
+          npm run verify:single
+          npm run verify:campus-map-demo
+          npm run verify:project-preview
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.61.1
+          npx playwright install --with-deps chromium
+
+      - name: Run desktop and mobile portal smoke
+        run: npm run test:project-preview:visual
+
+      - name: Check whitespace errors
+        run: git diff --check
+
+      - name: Upload preview visual evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: project-preview-evidence-${{ github.run_attempt }}
+          path: artifacts/project-preview
+          if-no-files-found: warn
+          retention-days: 7

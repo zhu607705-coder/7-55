@@ -18,6 +18,7 @@ if (!titlePattern.test(title)) {
 const requiredHeadings = [
   "## 改动",
   "## 原因",
+  "## 协作范围与依赖",
   "## 验证",
   "## 风险与回滚",
   "## 未覆盖"
@@ -29,12 +30,19 @@ for (const heading of requiredHeadings) {
   }
 }
 
+const collaborationSection = readSection(body, "## 协作范围与依赖");
+for (const field of ["工作通道", "负责人", "PR base", "依赖"]) {
+  if (collaborationSection && !collaborationSection.includes(field)) {
+    errors.push(`“## 协作范围与依赖”缺少字段：${field}`);
+  }
+}
+
 const visibleBody = body
   .replace(/<!--[\s\S]*?-->/g, "")
   .replace(/^\s*[-*]\s*$/gm, "")
   .trim();
-if (visibleBody.length < 80) {
-  errors.push("PR 正文信息不足，请填写实际改动、原因、验证结果、风险和未覆盖项。");
+if (visibleBody.length < 120) {
+  errors.push("PR 正文信息不足，请填写实际改动、原因、协作范围、验证结果、风险和未覆盖项。");
 }
 
 const isLargePullRequest = changedFiles > 30 || totalChangedLines > 1500;
@@ -74,7 +82,7 @@ if (errors.length > 0) {
   summary.push("## 必须修正", "", ...errors.map((error) => `- ${error}`), "");
   errors.forEach((error) => console.error(`error: ${error}`));
 } else {
-  summary.push("PR 标题、正文结构和规模说明符合仓库契约。", "");
+  summary.push("PR 标题、正文结构、协作范围和规模说明符合仓库契约。", "");
 }
 
 if (process.env.GITHUB_STEP_SUMMARY) {
