@@ -1,6 +1,9 @@
 #!/bin/sh
 set -eu
 
+echo "Running pre-push repository structure check..."
+npm run verify:structure
+
 echo "Running pre-push type-check..."
 npm run typecheck
 
