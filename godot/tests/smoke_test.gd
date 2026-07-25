@@ -8,6 +8,12 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	var migration_state := root.get_node_or_null("MigrationState")
+	_expect(migration_state != null, "MigrationState autoload exists")
+	if migration_state == null:
+		_finish()
+		return
+
 	var packed := load("res://scenes/main.tscn") as PackedScene
 	if packed == null:
 		_fail("main scene could not be loaded")
@@ -40,7 +46,7 @@ func _run() -> void:
 		_expect(is_equal_approx(player.global_position.x, 0.0), "negative x is clamped")
 		_expect(is_equal_approx(player.global_position.y, 3420.0), "oversized y is clamped")
 
-	MigrationState.hydrate({
+	migration_state.call("hydrate", {
 		"runtimeMode": "rpg",
 		"rpgScene": "campus_bootstrap",
 		"rpgCheckpoint": "campus_library_gate",
