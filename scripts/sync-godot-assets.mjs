@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm, stat } from "node:fs/promises";
+import { copyFile, mkdir, readFile, stat } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const root = process.cwd();
@@ -10,10 +10,11 @@ if (manifest.version !== 1 || !Array.isArray(manifest.assets) || manifest.assets
   throw new Error("godot/assets/asset-manifest.json is invalid or empty.");
 }
 
-await rm(generatedRoot, { recursive: true, force: true });
 await mkdir(generatedRoot, { recursive: true });
 
-let copiedBytes = 0;
+let copiedFiles = 0;
+let reusedFiles = 0;
+let totalBytes = 0;
 for (const entry of manifest.assets) {
   if (!entry || typeof entry.source !== "string" || typeof entry.target !== "string") {
     throw new Error("Godot asset manifest entries require source and target strings.");
@@ -29,10 +30,23 @@ for (const entry of manifest.assets) {
     throw new Error(`Godot source asset is missing: ${entry.source}`);
   }
 
-  await mkdir(dirname(target), { recursive: true });
-  await cp(source, target, { force: true });
-  copiedBytes += sourceStat.size;
+  totalBytes += sourceStat.size;
+  const targetStat = await stat(target).catch(() => null);
+  let changed = !targetStat?.isFile() || targetStat.size !== sourceStat.size;
+  if (!changed) {
+    const [sourceBytes, targetBytes] = await Promise.all([readFile(source), readFile(target)]);
+    changed = !sourceBytes.equals(targetBytes);
+  }
+
+  if (changed) {
+    await mkdir(dirname(target), { recursive: true });
+    await copyFile(source, target);
+    copiedFiles += 1;
+  } else {
+    reusedFiles += 1;
+  }
 }
 
-await mkdir(generatedRoot, { recursive: true });
-console.log(`synced Godot assets count=${manifest.assets.length} bytes=${copiedBytes}`);
+console.log(
+  `synced Godot assets count=${manifest.assets.length} copied=${copiedFiles} reused=${reusedFiles} bytes=${totalBytes}`
+);
