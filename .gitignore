@@ -5,6 +5,7 @@ node_modules/
 dist/
 demo/
 coverage/
+.test-dist/
 .vite/
 
 # Local candidate assets and legacy upload drops
