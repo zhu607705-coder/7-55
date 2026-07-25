@@ -3,6 +3,7 @@ import { selectQuestViewModel } from "./QuestModel";
 import type { GameState, GameStore } from "./types";
 
 const BRIDGE_PROTOCOL_VERSION = 1;
+const HELLO_INTERVAL_MS = 500;
 const REACT_SOURCE = "seven-fifty-five-react";
 const GODOT_SOURCE = "seven-fifty-five-godot";
 
@@ -59,6 +60,10 @@ export function createGodotBridge({
     }, targetOrigin);
   };
 
+  const requestReady = () => {
+    if (!ready) post("hello");
+  };
+
   const hydrate = () => {
     if (!ready) return;
     post("hydrate", { state: selectGodotState(store.getState()) });
@@ -69,6 +74,7 @@ export function createGodotBridge({
     const message = event.data;
     if (message.type === "ready") {
       ready = true;
+      window.clearInterval(helloTimer);
       const engine = isRecord(message.payload?.engine) ? message.payload.engine : {};
       onReady(engine);
       hydrate();
@@ -87,16 +93,21 @@ export function createGodotBridge({
 
   const onFrameError = () => onError("Godot Web 导出未加载，请先运行 npm run godot:export:web。");
   window.addEventListener("message", onMessage);
+  iframe.addEventListener("load", requestReady);
   iframe.addEventListener("error", onFrameError);
   const unsubscribe = store.subscribe(hydrate);
+  const helloTimer = window.setInterval(requestReady, HELLO_INTERVAL_MS);
+  requestReady();
 
   return {
     sendCommand: post,
     destroy: () => {
       destroyed = true;
       ready = false;
+      window.clearInterval(helloTimer);
       unsubscribe();
       window.removeEventListener("message", onMessage);
+      iframe.removeEventListener("load", requestReady);
       iframe.removeEventListener("error", onFrameError);
     }
   };
