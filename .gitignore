@@ -7,6 +7,16 @@ demo/
 coverage/
 .vite/
 
+# Godot imports, synchronized assets and web exports
+.godot/
+godot/.godot/
+godot/assets/generated/
+public/godot/
+
+# Browser test output
+test-results/
+playwright-report/
+
 # Local candidate assets and legacy upload drops
 artifacts/
 uploads/
