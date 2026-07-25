@@ -40,6 +40,10 @@ export function GodotRpgGameHost({
   const shellRef = useRef<HTMLElement | null>(null);
   const bridgeRef = useRef<GodotBridgeController | null>(null);
   const activePointerRef = useRef<number | null>(null);
+  const inputBlockedRef = useRef(inputBlocked);
+  const keyboardBlockedRef = useRef(keyboardBlocked);
+  inputBlockedRef.current = inputBlocked;
+  keyboardBlockedRef.current = keyboardBlocked;
   const [shellRoot, setShellRoot] = useState<HTMLElement | null>(null);
   const [status, setStatus] = useState<LoadStatus>("loading");
   const [engineLabel, setEngineLabel] = useState("Godot 4.7.1");
@@ -48,10 +52,20 @@ export function GodotRpgGameHost({
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const touchControls = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY)
     || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
+  const interactionBlocked = inputBlocked || keyboardBlocked;
   const bindShellRef = useCallback((node: HTMLElement | null) => {
     shellRef.current = node;
     setShellRoot((current) => current === node ? current : node);
   }, []);
+
+  function syncInputState(controller = bridgeRef.current) {
+    controller?.sendCommand("set_input_enabled", {
+      enabled: !(inputBlockedRef.current || keyboardBlockedRef.current)
+    });
+    controller?.sendCommand("set_paused", {
+      paused: inputBlockedRef.current
+    });
+  }
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -77,6 +91,7 @@ export function GodotRpgGameHost({
         const minor = typeof engine.minor === "number" ? engine.minor : 7;
         const patch = typeof engine.patch === "number" ? engine.patch : 1;
         setEngineLabel(`Godot ${major}.${minor}.${patch}`);
+        syncInputState(bridgeRef.current);
         events.emit("godot_runtime_ready", { major, minor, patch });
       },
       onSnapshot: (nextSnapshot) => setSnapshot(nextSnapshot),
@@ -95,12 +110,7 @@ export function GodotRpgGameHost({
   }, [events, store]);
 
   useEffect(() => {
-    bridgeRef.current?.sendCommand("set_input_enabled", {
-      enabled: !(inputBlocked || keyboardBlocked)
-    });
-    bridgeRef.current?.sendCommand("set_paused", {
-      paused: inputBlocked
-    });
+    syncInputState();
   }, [inputBlocked, keyboardBlocked]);
 
   useEffect(() => {
@@ -208,10 +218,10 @@ export function GodotRpgGameHost({
 
         {state.actOne.controlsInstalled && touchControls ? (
           <nav className="rpg-touch-controls godot-touch-controls" aria-label="Godot RPG 操作键">
-            <button type="button" aria-label="向上" disabled={inputBlocked} onPointerDown={(event) => startDirection(event, 0, -1)}>↑</button>
-            <button type="button" aria-label="向左" disabled={inputBlocked} onPointerDown={(event) => startDirection(event, -1, 0)}>←</button>
-            <button type="button" aria-label="向下" disabled={inputBlocked} onPointerDown={(event) => startDirection(event, 0, 1)}>↓</button>
-            <button type="button" aria-label="向右" disabled={inputBlocked} onPointerDown={(event) => startDirection(event, 1, 0)}>→</button>
+            <button type="button" aria-label="向上" disabled={interactionBlocked} onPointerDown={(event) => startDirection(event, 0, -1)}>↑</button>
+            <button type="button" aria-label="向左" disabled={interactionBlocked} onPointerDown={(event) => startDirection(event, -1, 0)}>←</button>
+            <button type="button" aria-label="向下" disabled={interactionBlocked} onPointerDown={(event) => startDirection(event, 0, 1)}>↓</button>
+            <button type="button" aria-label="向右" disabled={interactionBlocked} onPointerDown={(event) => startDirection(event, 1, 0)}>→</button>
             <button type="button" className="interact" disabled>迁移中</button>
           </nav>
         ) : null}
