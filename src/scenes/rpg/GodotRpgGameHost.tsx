@@ -155,6 +155,7 @@ export function GodotRpgGameHost({
       data-godot-status={status}
       data-godot-player-x={snapshot?.player.x ?? ""}
       data-godot-player-y={snapshot?.player.y ?? ""}
+      data-godot-camera-zoom={snapshot?.camera.zoom ?? ""}
       data-input-blocked={inputBlocked ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
     >
