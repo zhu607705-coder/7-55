@@ -10,6 +10,10 @@
       "target": "godot/assets/generated/data/maps/zijingang-campus-runtime.json"
     },
     {
+      "source": "src/data/maps/zijingang-campus-occlusion.json",
+      "target": "godot/assets/generated/data/maps/zijingang-campus-occlusion.json"
+    },
+    {
       "source": "src/assets/rpg/player/player_down_0.png",
       "target": "godot/assets/generated/rpg/player/player_down_0.png"
     },
