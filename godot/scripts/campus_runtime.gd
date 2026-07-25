@@ -197,8 +197,8 @@ func _add_landmark(text: String, world_position: Vector2) -> void:
 
 	var label := Label.new()
 	label.text = text
-	label.position = Vector2(-54.0, -42.0)
-	label.size = Vector2(108.0, 24.0)
+	label.position = Vector2(-60.0, 18.0)
+	label.size = Vector2(120.0, 24.0)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_color_override("font_color", Color("fff7df"))
 	label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.85))
