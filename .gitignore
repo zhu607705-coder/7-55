@@ -7,6 +7,9 @@ demo/
 coverage/
 .test-dist/
 .vite/
+public/godot/
+godot/assets/generated/
+godot/.godot/
 
 # Local candidate assets and legacy upload drops
 artifacts/
