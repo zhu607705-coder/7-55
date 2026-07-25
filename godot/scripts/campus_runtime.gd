@@ -14,12 +14,13 @@ var _player
 var _camera: Camera2D
 var _canvas_modulate: CanvasModulate
 var _objective_label: Label
-var _status_label: Label
 var _last_checkpoint := ""
 var _last_snapshot_at := 0
+var _embedded_web := false
 
 
 func _ready() -> void:
+	_embedded_web = _detect_embedded_web()
 	_read_runtime_manifest()
 	_build_world()
 	_build_overlay()
@@ -71,6 +72,7 @@ func snapshot() -> Dictionary:
 		"camera": {
 			"zoom": snappedf(_camera.zoom.x, 0.01)
 		},
+		"embedded": _embedded_web,
 		"engine": Engine.get_version_info()
 	}
 
@@ -112,9 +114,9 @@ func _build_world() -> void:
 		background.z_index = -100
 		add_child(background)
 
-	_add_landmark("基础图书馆", Vector2(3718.0, 1568.0))
+	_add_landmark("Basic Library", Vector2(3718.0, 1568.0))
 	var canteen: Dictionary = _runtime_manifest.get("canteen", {})
-	_add_landmark("东区大食堂", _point_from(canteen.get("gate", {}), Vector2(3120.0, 620.0)))
+	_add_landmark("East Canteen", _point_from(canteen.get("gate", {}), Vector2(3120.0, 620.0)))
 
 	_player = CharacterBody2D.new()
 	_player.name = "Player"
@@ -137,6 +139,9 @@ func _build_world() -> void:
 
 
 func _build_overlay() -> void:
+	if _embedded_web:
+		return
+
 	var layer := CanvasLayer.new()
 	layer.name = "MigrationHud"
 	layer.layer = 20
@@ -159,22 +164,22 @@ func _build_overlay() -> void:
 	_objective_label.position = Vector2(16.0, 35.0)
 	_objective_label.size = Vector2(495.0, 30.0)
 	_objective_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	_objective_label.text = "验证校园地图与人物控制"
+	_objective_label.text = "CAMPUS MAP AND PLAYER CONTROL"
 	_objective_label.add_theme_color_override("font_color", Color("f7f0dc"))
 	_objective_label.add_theme_font_size_override("font_size", 15)
 	panel.add_child(_objective_label)
 
-	_status_label = Label.new()
-	_status_label.position = Vector2(14.0, 500.0)
-	_status_label.size = Vector2(920.0, 28.0)
-	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_status_label.text = "WASD / 方向键移动 · Shift 加速 · 滚轮缩放 · R 回到人物"
-	_status_label.add_theme_color_override("font_color", Color("e8edf1"))
-	_status_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.9))
-	_status_label.add_theme_constant_override("shadow_offset_x", 2)
-	_status_label.add_theme_constant_override("shadow_offset_y", 2)
-	_status_label.add_theme_font_size_override("font_size", 14)
-	layer.add_child(_status_label)
+	var status_label := Label.new()
+	status_label.position = Vector2(14.0, 500.0)
+	status_label.size = Vector2(920.0, 28.0)
+	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	status_label.text = "WASD / ARROWS · SHIFT RUN · WHEEL ZOOM · R RECENTER"
+	status_label.add_theme_color_override("font_color", Color("e8edf1"))
+	status_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.9))
+	status_label.add_theme_constant_override("shadow_offset_x", 2)
+	status_label.add_theme_constant_override("shadow_offset_y", 2)
+	status_label.add_theme_font_size_override("font_size", 14)
+	layer.add_child(status_label)
 
 
 func _add_landmark(text: String, world_position: Vector2) -> void:
@@ -208,8 +213,6 @@ func _apply_state(state: Dictionary) -> void:
 		_last_checkpoint = checkpoint
 		_player.global_position = _spawn_for_checkpoint(checkpoint, state)
 		_camera.global_position = _player.global_position
-	var quest: Dictionary = state.get("quest", {})
-	_objective_label.text = str(quest.get("objective", "验证校园地图与人物控制"))
 	var theme_mode := str(state.get("themeMode", "normal"))
 	var canteen_hunt: Dictionary = state.get("canteenHunt", {})
 	var dark := theme_mode == "dark" or (
@@ -261,6 +264,16 @@ func _adjust_zoom(delta: float) -> void:
 func _post_snapshot() -> void:
 	_last_snapshot_at = Time.get_ticks_msec()
 	WebBridge.post_snapshot(snapshot())
+
+
+func _detect_embedded_web() -> bool:
+	if not OS.has_feature("web"):
+		return false
+	var embedded: Variant = JavaScriptBridge.eval(
+		"new URLSearchParams(window.location.search).get('embed') === '1'",
+		true
+	)
+	return bool(embedded)
 
 
 func _point_from(value: Variant, fallback: Vector2) -> Vector2:
