@@ -63,8 +63,14 @@ async function runDesktopCheck() {
     if (state.rpgCheckpoint !== "campus_library_gate") {
       failures.push(`desktop React state checkpoint mismatch: ${state.rpgCheckpoint}`);
     }
-    if (state.desktopGameplay?.phaserCanvasCount !== 1) {
-      failures.push(`desktop expected one Godot canvas, found ${state.desktopGameplay?.phaserCanvasCount}`);
+    if (state.desktopGameplay?.godotFrameCount !== 1) {
+      failures.push(`desktop expected one Godot iframe, found ${state.desktopGameplay?.godotFrameCount}`);
+    }
+    if (state.desktopGameplay?.phaserCanvasCount !== 0) {
+      failures.push(`desktop Phaser canvas should be absent in Godot mode, found ${state.desktopGameplay?.phaserCanvasCount}`);
+    }
+    if (state.desktopGameplay?.activeRpgSurfaceCount !== 1) {
+      failures.push(`desktop expected one active RPG surface, found ${state.desktopGameplay?.activeRpgSurfaceCount}`);
     }
   } catch (error) {
     failures.push(`desktop: ${formatError(error)}`);
