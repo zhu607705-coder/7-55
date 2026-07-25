@@ -73,10 +73,13 @@ export function createGodotBridge({
     if (event.origin !== targetOrigin || event.source !== iframe.contentWindow || !isGodotEnvelope(event.data)) return;
     const message = event.data;
     if (message.type === "ready") {
+      const firstReady = !ready;
       ready = true;
       window.clearInterval(helloTimer);
-      const engine = isRecord(message.payload?.engine) ? message.payload.engine : {};
-      onReady(engine);
+      if (firstReady) {
+        const engine = isRecord(message.payload?.engine) ? message.payload.engine : {};
+        onReady(engine);
+      }
       hydrate();
       return;
     }
