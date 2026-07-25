@@ -1,10 +1,15 @@
-import { mkdir, stat } from "node:fs/promises";
-import { resolve } from "node:path";
+import { createServer } from "node:http";
+import { mkdir, readFile, stat } from "node:fs/promises";
+import { extname, resolve } from "node:path";
 import { chromium } from "playwright";
 
-const baseUrl = process.env.PROJECT_PREVIEW_BASE_URL ?? "http://127.0.0.1:4175";
 const outputDirectory = resolve(process.cwd(), "artifacts/project-preview");
+const demoDirectory = resolve(process.cwd(), "demo");
 await mkdir(outputDirectory, { recursive: true });
+
+const externalBaseUrl = process.env.PROJECT_PREVIEW_BASE_URL;
+const localServer = externalBaseUrl ? null : await startStaticServer(demoDirectory, 4175);
+const baseUrl = externalBaseUrl ?? "http://127.0.0.1:4175";
 await waitForServer(`${baseUrl}/project-preview.html`);
 
 const browser = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
@@ -15,6 +20,7 @@ try {
   await runViewport("mobile", { width: 390, height: 844 }, true);
 } finally {
   await browser.close();
+  if (localServer) await new Promise((resolvePromise) => localServer.close(resolvePromise));
 }
 
 if (failures.length > 0) {
@@ -148,6 +154,43 @@ function collectDiagnostics(page, label) {
     messages.push(`${label} request failed: ${request.url()} ${request.failure()?.errorText ?? "unknown"}`);
   });
   return () => messages;
+}
+
+async function startStaticServer(rootDirectory, port) {
+  const server = createServer(async (request, response) => {
+    try {
+      const url = new URL(request.url ?? "/", `http://127.0.0.1:${port}`);
+      const requestedPath = decodeURIComponent(url.pathname === "/" ? "/project-preview.html" : url.pathname);
+      const filePath = resolve(rootDirectory, `.${requestedPath}`);
+      if (!filePath.startsWith(rootDirectory)) {
+        response.writeHead(403).end();
+        return;
+      }
+      const file = await readFile(filePath);
+      response.setHeader("Content-Type", mimeType(filePath));
+      response.setHeader("Cache-Control", "no-store");
+      response.writeHead(200);
+      if (request.method === "HEAD") response.end();
+      else response.end(file);
+    } catch {
+      response.writeHead(404).end();
+    }
+  });
+  await new Promise((resolvePromise, reject) => {
+    server.once("error", reject);
+    server.listen(port, "127.0.0.1", resolvePromise);
+  });
+  return server;
+}
+
+function mimeType(path) {
+  const extension = extname(path).toLowerCase();
+  if (extension === ".html") return "text/html; charset=utf-8";
+  if (extension === ".js") return "text/javascript; charset=utf-8";
+  if (extension === ".css") return "text/css; charset=utf-8";
+  if (extension === ".json") return "application/json; charset=utf-8";
+  if (extension === ".png") return "image/png";
+  return "application/octet-stream";
 }
 
 async function waitForServer(url) {
