@@ -11,6 +11,7 @@ var _window: JavaScriptObject
 var _json: JavaScriptObject
 var _message_callback: JavaScriptObject
 var _web_enabled := false
+var _expected_origin := ""
 
 
 func _ready() -> void:
@@ -18,6 +19,7 @@ func _ready() -> void:
 	if _web_enabled:
 		_window = JavaScriptBridge.get_interface("window")
 		_json = JavaScriptBridge.get_interface("JSON")
+		_expected_origin = str(_window.location.origin)
 		_message_callback = JavaScriptBridge.create_callback(_on_window_message)
 		_window.addEventListener("message", _message_callback)
 		post_message("ready", {
@@ -39,11 +41,12 @@ func post_message(message_type: String, payload: Dictionary = {}) -> void:
 		return
 	var envelope := {
 		"source": GODOT_SOURCE,
+		"protocolVersion": PROTOCOL_VERSION,
 		"type": message_type,
 		"payload": payload
 	}
 	var encoded := JSON.stringify(envelope)
-	JavaScriptBridge.eval("window.parent.postMessage(%s, '*');" % encoded, true)
+	JavaScriptBridge.eval("window.parent.postMessage(%s, window.location.origin);" % encoded, true)
 
 
 func post_snapshot(snapshot: Dictionary) -> void:
@@ -61,7 +64,7 @@ func _on_window_message(arguments: Array) -> void:
 	if arguments.is_empty() or _json == null:
 		return
 	var event: JavaScriptObject = arguments[0]
-	if event == null:
+	if event == null or str(event.origin) != _expected_origin:
 		return
 	var serialized: Variant = _json.stringify(event.data)
 	var decoded: Variant = JSON.parse_string(str(serialized))
@@ -69,6 +72,8 @@ func _on_window_message(arguments: Array) -> void:
 		return
 	var message: Dictionary = decoded
 	if message.get("source", "") != REACT_SOURCE:
+		return
+	if int(message.get("protocolVersion", -1)) != PROTOCOL_VERSION:
 		return
 	var message_type := str(message.get("type", ""))
 	var raw_payload: Variant = message.get("payload", {})
