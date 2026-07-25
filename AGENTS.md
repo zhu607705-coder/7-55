@@ -88,9 +88,9 @@
 - Preserve direct browser opening through the generated `demo/index.html`.
 - Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
-- Run `npm run typecheck` and `npm run build:single` after behavior changes.
-- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the campus map contract, TypeScript, the production build, and the offline single-file artifact for every PR and push to `main`.
-- Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
+- Run `npm run typecheck`, `npm test`, and `npm run build` after behavior changes. Run `npm run verify:pr` before marking a runtime PR ready for review.
+- `.github/workflows/pr-policy.yml` is the canonical PR metadata check. `.github/workflows/web-ci.yml` is the canonical source, test, build, and offline-artifact check.
+- Automated tests under `tests/` are required repository assets. Do not delete, skip, or weaken a regression test to make a change pass; repair the behavior or document a justified temporary `todo` with a tracked follow-up.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.
 - Record meaningful implementation and verification updates in `progress.md`.
@@ -98,6 +98,15 @@
 - Keep one validated previous snapshot beside the primary save and recover it when the primary JSON cannot be loaded.
 - Developer checkpoints use session-only state and must never overwrite the formal local save.
 - Story reset lives in the control center and requires an inline second confirmation. It clears chapter, item, puzzle, and bike progress while preserving player-edited CC98 post content.
+
+## Pull Requests And Automated Tests
+
+- All changes enter `main` through a pull request. Direct pushes to `main` are prohibited.
+- PR titles use `<type>(<scope>): <summary>`. PR bodies include `改动`, `原因`, `验证`, `风险与回滚`, and `未覆盖`.
+- Runtime PRs require at least one non-author approval, resolved review threads, `PR metadata contract`, and `Verify web build`.
+- Prefer PRs below 20 files and 800 changed lines. PRs above 30 files or 1500 changed lines require a written split justification.
+- Unit tests cover controller state transitions, gameplay rules, feature access, save recovery, and repository contracts. Browser E2E cases use deterministic developer checkpoints and must cover the chapter-three canteen-to-bike bridge before that chapter is released.
+- The full policy and test matrix live in `docs/PR_AND_TEST_POLICY.md`.
 
 ## Locked Feature Visual Contract
 

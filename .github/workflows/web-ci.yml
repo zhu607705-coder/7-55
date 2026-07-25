@@ -18,7 +18,7 @@ jobs:
   verify-web:
     name: Verify web build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CI: "true"
 
@@ -41,11 +41,23 @@ jobs:
       - name: Type-check source
         run: npm run typecheck
 
+      - name: Run controller and state tests
+        run: npm test
+
       - name: Build production bundle
         run: npm run build
 
-      - name: Build offline single-file demo
+      - name: Build offline single-file game
         run: npm run build:single
 
-      - name: Verify offline single-file artifact
+      - name: Build offline campus-map demo
+        run: npm run build:campus-map-demo
+
+      - name: Verify offline single-file game
         run: npm run verify:single
+
+      - name: Verify offline campus-map demo
+        run: npm run verify:campus-map-demo
+
+      - name: Check whitespace errors
+        run: git diff --check
