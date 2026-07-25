@@ -21,6 +21,8 @@ function summarizeGameState(state: GameState) {
   const featureAccess = selectFeatureAccess(state);
   const quest = selectQuestViewModel(state);
   const desktopShell = document.querySelector<HTMLElement>(".desktop-gameplay-shell");
+  const phaserCanvasCount = document.querySelectorAll("canvas").length;
+  const godotFrameCount = document.querySelectorAll(".godot-rpg-frame").length;
   return {
     coordinateSystem: "DOM viewport coordinates, origin at top-left, x right, y down",
     clientCompatibility: getClientCompatibilitySnapshot(),
@@ -43,7 +45,9 @@ function summarizeGameState(state: GameState) {
       enabled: desktopShell !== null,
       activeSurface: desktopShell?.dataset.activeSurface ?? (state.runtimeMode === "rpg" ? "rpg" : "phone"),
       phoneShellCount: document.querySelectorAll(".phone-frame").length,
-      phaserCanvasCount: document.querySelectorAll("canvas").length
+      phaserCanvasCount,
+      godotFrameCount,
+      activeRpgSurfaceCount: phaserCanvasCount + godotFrameCount
     },
     networkMode: state.networkMode,
     digits: state.digits,

@@ -1,0 +1,155 @@
+name: Godot Migration CI
+
+on:
+  pull_request:
+    paths:
+      - "godot/**"
+      - "src/App.tsx"
+      - "src/main.tsx"
+      - "src/core/GodotBridge.ts"
+      - "src/core/RuntimeEngine.ts"
+      - "src/scenes/rpg/GodotRpgGameHost.tsx"
+      - "src/styles/godot.css"
+      - "src/styles.css"
+      - "scripts/*godot*.mjs"
+      - "package.json"
+      - ".github/workflows/godot-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "godot/**"
+      - "src/App.tsx"
+      - "src/main.tsx"
+      - "src/core/GodotBridge.ts"
+      - "src/core/RuntimeEngine.ts"
+      - "src/scenes/rpg/GodotRpgGameHost.tsx"
+      - "src/styles/godot.css"
+      - "src/styles.css"
+      - "scripts/*godot*.mjs"
+      - "package.json"
+      - ".github/workflows/godot-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: godot-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-godot-migration:
+    name: Verify Godot migration
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      CI: "true"
+      GODOT_VERSION: "4.7.1"
+      GODOT_RELEASE: "4.7.1-stable"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked web dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Godot 4.7.1 and Web templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENGINE_ZIP="$RUNNER_TEMP/godot.zip"
+          ENGINE_DIR="$RUNNER_TEMP/godot-engine"
+          TEMPLATE_ARCHIVE="$RUNNER_TEMP/godot-templates.tpz"
+          TEMPLATE_TEMP="$RUNNER_TEMP/godot-templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          RELEASE_BASE="https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}"
+
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "$RELEASE_BASE/Godot_v${GODOT_RELEASE}_linux.x86_64.zip" \
+            --output "$ENGINE_ZIP"
+          mkdir -p "$ENGINE_DIR"
+          unzip -q "$ENGINE_ZIP" -d "$ENGINE_DIR"
+          GODOT_EXECUTABLE="$(find "$ENGINE_DIR" -maxdepth 1 -type f -name 'Godot*' | head -n 1)"
+          test -n "$GODOT_EXECUTABLE"
+          chmod +x "$GODOT_EXECUTABLE"
+          echo "GODOT_BIN=$GODOT_EXECUTABLE" >> "$GITHUB_ENV"
+
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "$RELEASE_BASE/Godot_v${GODOT_RELEASE}_export_templates.tpz" \
+            --output "$TEMPLATE_ARCHIVE"
+          mkdir -p "$TEMPLATE_TEMP" "$TEMPLATE_DIR"
+          unzip -q "$TEMPLATE_ARCHIVE" -d "$TEMPLATE_TEMP"
+          cp -R "$TEMPLATE_TEMP/templates/." "$TEMPLATE_DIR/"
+          "$GODOT_EXECUTABLE" --version
+
+      - name: Prepare diagnostic directory
+        run: mkdir -p artifacts/godot-migration
+
+      - name: Verify synchronized project contract
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:verify 2>&1 | tee artifacts/godot-migration/godot-project-verify.log
+
+      - name: Import project and parse GDScript
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:check 2>&1 | tee artifacts/godot-migration/godot-import.log
+
+      - name: Run headless boundary smoke
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:test 2>&1 | tee artifacts/godot-migration/godot-headless-smoke.log
+
+      - name: Export Godot Web runtime
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run godot:export:web 2>&1 | tee artifacts/godot-migration/godot-web-export.log
+
+      - name: Type-check React bridge
+        run: npm run typecheck
+
+      - name: Build integrated React and Godot application
+        run: npm run build
+
+      - name: Install Playwright Chromium for visual smoke
+        run: |
+          npm install --no-save --package-lock=false playwright@1.61.1
+          npx playwright install --with-deps chromium
+
+      - name: Run desktop and mobile Playwright visual smoke
+        shell: bash
+        run: |
+          set -uo pipefail
+          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/godot-vite.log 2>&1 &
+          PREVIEW_PID=$!
+          set +e
+          GODOT_VISUAL_BASE_URL=http://127.0.0.1:4173 npm run test:godot:visual
+          STATUS=$?
+          cp /tmp/godot-vite.log artifacts/godot-migration/vite-preview.log || true
+          kill "$PREVIEW_PID" 2>/dev/null || true
+          wait "$PREVIEW_PID" 2>/dev/null || true
+          exit "$STATUS"
+
+      - name: Check whitespace and generated-file cleanliness
+        run: git diff --check
+
+      - name: Upload migration diagnostics and visual evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: godot-migration-evidence-${{ github.run_attempt }}
+          path: artifacts/godot-migration
+          if-no-files-found: warn
+          retention-days: 7

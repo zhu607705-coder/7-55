@@ -1,0 +1,128 @@
+.godot-rpg-shell {
+  background: #080a0c;
+  isolation: isolate;
+}
+
+.godot-rpg-frame {
+  background: #080a0c;
+  border: 0;
+  display: block;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+}
+
+.godot-runtime-status {
+  align-content: center;
+  background: rgba(7, 13, 20, 0.92);
+  border: 2px solid #637481;
+  bottom: 14px;
+  color: #f7f0dc;
+  display: grid;
+  gap: 2px;
+  left: 14px;
+  min-height: 54px;
+  min-width: 236px;
+  padding: 6px 9px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 25;
+}
+
+.godot-runtime-status span {
+  color: #f0d54e;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+}
+
+.godot-runtime-status strong {
+  font-size: var(--fs-caption);
+}
+
+.godot-runtime-status small {
+  color: #aebbc4;
+  font-size: var(--fs-micro);
+}
+
+.godot-runtime-status.is-loading {
+  border-color: #8d7b46;
+}
+
+.godot-runtime-status.is-ready {
+  border-color: #5f9b7d;
+}
+
+.godot-runtime-status.is-error {
+  border-color: #c06161;
+}
+
+.godot-runtime-error {
+  background: rgba(17, 20, 25, 0.97);
+  border: 3px solid #c06161;
+  color: #f8ece8;
+  display: grid;
+  gap: 10px;
+  left: 50%;
+  max-width: 520px;
+  padding: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 64px);
+  z-index: 40;
+}
+
+.godot-runtime-error strong {
+  color: #ffb7aa;
+  font-size: var(--fs-heading);
+}
+
+.godot-runtime-error p {
+  line-height: 1.55;
+  margin: 0;
+}
+
+.godot-runtime-error code {
+  background: #080a0c;
+  border: 1px solid #59636b;
+  color: #f0d54e;
+  overflow-wrap: anywhere;
+  padding: 8px;
+}
+
+.godot-rpg-stage .rpg-system-actions,
+.godot-rpg-stage .rpg-camera-actions,
+.godot-rpg-stage .rpg-touch-controls,
+.godot-rpg-stage .quest-task-trigger {
+  z-index: 30;
+}
+
+.godot-touch-controls .interact:disabled {
+  color: #a6a6a6;
+  opacity: 0.72;
+}
+
+@media (max-width: 600px), (orientation: portrait) {
+  .godot-rpg-frame {
+    height: var(--rpg-mobile-canvas-height);
+    inset: 0 auto auto 0;
+  }
+
+  .godot-runtime-status {
+    bottom: 8px;
+    left: auto;
+    min-width: 0;
+    padding: 5px 7px;
+    right: 8px;
+    width: 150px;
+  }
+
+  .godot-runtime-status small {
+    max-width: 132px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

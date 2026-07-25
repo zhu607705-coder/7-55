@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "source": "src/assets/rpg/campus/zijingang_campus_plate.png",
+      "target": "godot/assets/generated/rpg/campus/zijingang_campus_plate.png"
+    },
+    {
+      "source": "src/data/maps/zijingang-campus-runtime.json",
+      "target": "godot/assets/generated/data/maps/zijingang-campus-runtime.json"
+    },
+    {
+      "source": "src/assets/rpg/player/player_down_0.png",
+      "target": "godot/assets/generated/rpg/player/player_down_0.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_down_1.png",
+      "target": "godot/assets/generated/rpg/player/player_down_1.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_down_2.png",
+      "target": "godot/assets/generated/rpg/player/player_down_2.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_down_3.png",
+      "target": "godot/assets/generated/rpg/player/player_down_3.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_up_0.png",
+      "target": "godot/assets/generated/rpg/player/player_up_0.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_up_1.png",
+      "target": "godot/assets/generated/rpg/player/player_up_1.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_up_2.png",
+      "target": "godot/assets/generated/rpg/player/player_up_2.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_up_3.png",
+      "target": "godot/assets/generated/rpg/player/player_up_3.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_side_0.png",
+      "target": "godot/assets/generated/rpg/player/player_side_0.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_side_1.png",
+      "target": "godot/assets/generated/rpg/player/player_side_1.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_side_2.png",
+      "target": "godot/assets/generated/rpg/player/player_side_2.png"
+    },
+    {
+      "source": "src/assets/rpg/player/player_side_3.png",
+      "target": "godot/assets/generated/rpg/player/player_side_3.png"
+    }
+  ]
+}

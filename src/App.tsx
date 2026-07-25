@@ -3,6 +3,7 @@ import { eventBus } from "./core/EventBus";
 import { gameStore } from "./core/GameState";
 import { SceneRouter } from "./core/SceneRouter";
 import { selectFeatureAccess } from "./core/FeatureAccess";
+import { resolveRpgRuntimeEngine } from "./core/RuntimeEngine";
 import type { GameState, QuestViewModel } from "./core/types";
 import { PhoneShell } from "./components/PhoneShell";
 import { DeveloperChannel } from "./components/DeveloperChannel";
@@ -18,9 +19,14 @@ import { getPhoneScene } from "./scenes/phone/registry";
 import { LIBRARY_STORY_SEQUENCES } from "./data/libraryFinalsStory";
 
 const router = new SceneRouter(gameStore, eventBus);
-const RpgGameHost = lazy(() =>
+const PhaserRpgGameHost = lazy(() =>
   import("./scenes/rpg/RpgGameHost").then((module) => ({ default: module.RpgGameHost }))
 );
+const GodotRpgGameHost = lazy(() =>
+  import("./scenes/rpg/GodotRpgGameHost").then((module) => ({ default: module.GodotRpgGameHost }))
+);
+const ACTIVE_RPG_ENGINE = resolveRpgRuntimeEngine(typeof window === "undefined" ? "" : window.location.search);
+const ActiveRpgGameHost = ACTIVE_RPG_ENGINE === "godot" ? GodotRpgGameHost : PhaserRpgGameHost;
 
 const LIBRARY_STORY_SEQUENCE_BY_EVENT: Readonly<Record<string, string>> = {
   library_route_unlocked: "library_route_unlocked",
@@ -263,7 +269,7 @@ export function App() {
     if (desktopGameplay) {
       return (
         <>
-          <main className="desktop-gameplay-shell" data-active-surface={activeSurface}>
+          <main className="desktop-gameplay-shell" data-active-surface={activeSurface} data-rpg-engine={ACTIVE_RPG_ENGINE}>
             {activeSurface === "rpg" ? (
               <QuestTaskBar
                 state={state}
@@ -299,8 +305,8 @@ export function App() {
               onWheelCapture={focusRpg}
               onFocusCapture={focusRpg}
             >
-              <Suspense fallback={<main className="rpg-stage is-embedded">Loading RPG runtime</main>}>
-                <RpgGameHost
+              <Suspense fallback={<main className="rpg-stage is-embedded">Loading {ACTIVE_RPG_ENGINE} RPG runtime</main>}>
+                <ActiveRpgGameHost
                   store={gameStore}
                   router={router}
                   events={eventBus}
@@ -325,8 +331,8 @@ export function App() {
     }
     return (
       <>
-        <Suspense fallback={<main className="rpg-stage">Loading RPG runtime</main>}>
-          <RpgGameHost
+        <Suspense fallback={<main className="rpg-stage">Loading {ACTIVE_RPG_ENGINE} RPG runtime</main>}>
+          <ActiveRpgGameHost
             store={gameStore}
             router={router}
             events={eventBus}
