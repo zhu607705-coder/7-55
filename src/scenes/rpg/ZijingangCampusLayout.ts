@@ -1,3 +1,5 @@
+import campusOcclusionData from "../../data/maps/zijingang-campus-occlusion.json";
+
 export type CampusScaleClass = "landmark" | "major" | "campus_block" | "landscape" | "athletics";
 
 export interface OfficialCampusPoint {
@@ -46,8 +48,20 @@ export function projectOfficialCampusPoint(point: OfficialCampusPoint): { x: num
   };
 }
 
+const SHARED_OCCLUSION_POLYGONS = Object.fromEntries(
+  campusOcclusionData.buildings.map((building) => [building.id, building.polygons])
+) as Record<string, CampusLandmarkLayout["occlusionPolygons"]>;
+
+function sharedOcclusion(id: string): CampusLandmarkLayout["occlusionPolygons"] {
+  const polygons = SHARED_OCCLUSION_POLYGONS[id];
+  if (!polygons) {
+    throw new Error(`Missing shared campus occlusion polygons for ${id}`);
+  }
+  return polygons;
+}
+
 // This is the manual authority for landmark labels and same-source occlusion.
-// Keep occlusion disabled until its polygons have been checked against the plate.
+// Enabled polygons are stored in the shared JSON manifest consumed by Phaser and Godot.
 export const ZIJINGANG_CAMPUS_LANDMARKS: Record<string, CampusLandmarkLayout> = {
   ziyun_bifeng: {
     id: "ziyun_bifeng",
@@ -103,28 +117,7 @@ export const ZIJINGANG_CAMPUS_LANDMARKS: Record<string, CampusLandmarkLayout> = 
     worldCenter: { x: 3718, y: 1568 },
     visualFootprint: { width: 216, height: 196 },
     occlusionEnabled: true,
-    occlusionPolygons: [
-      [
-        { x: 3642, y: 1470 },
-        { x: 3720, y: 1470 },
-        { x: 3738, y: 1645 },
-        { x: 3610, y: 1645 },
-        { x: 3610, y: 1570 },
-        { x: 3642, y: 1570 }
-      ],
-      [
-        { x: 3690, y: 1510 },
-        { x: 3825, y: 1510 },
-        { x: 3825, y: 1665 },
-        { x: 3690, y: 1665 }
-      ],
-      [
-        { x: 3610, y: 1600 },
-        { x: 3740, y: 1600 },
-        { x: 3740, y: 1665 },
-        { x: 3610, y: 1665 }
-      ]
-    ],
+    occlusionPolygons: sharedOcclusion("foundation_library"),
     scaleClass: "landmark",
     entrance: "south",
     adjacentTo: ["east_academic", "campus_river"],
@@ -139,30 +132,9 @@ export const ZIJINGANG_CAMPUS_LANDMARKS: Record<string, CampusLandmarkLayout> = 
     visualFootprint: { width: 390, height: 220 },
     occlusionEnabled: true,
     // The only walkable overlap is the north road ending at x=3324..3399,
-    // y<=1130. This measured same-source silhouette therefore covers a player
-    // approaching south from that road without affecting side-adjacent areas.
-    occlusionPolygons: [[
-      { x: 3405, y: 1080 },
-      { x: 3455, y: 1080 },
-      { x: 3455, y: 1106 },
-      { x: 3490, y: 1120 },
-      { x: 3525, y: 1150 },
-      { x: 3550, y: 1190 },
-      { x: 3560, y: 1240 },
-      { x: 3550, y: 1280 },
-      { x: 3490, y: 1295 },
-      { x: 3435, y: 1282 },
-      { x: 3390, y: 1295 },
-      { x: 3335, y: 1280 },
-      { x: 3260, y: 1295 },
-      { x: 3210, y: 1270 },
-      { x: 3180, y: 1235 },
-      { x: 3180, y: 1190 },
-      { x: 3200, y: 1150 },
-      { x: 3240, y: 1120 },
-      { x: 3300, y: 1106 },
-      { x: 3405, y: 1106 }
-    ]],
+    // y<=1130. The shared same-source silhouette covers a player approaching
+    // south from that road without affecting side-adjacent areas.
+    occlusionPolygons: sharedOcclusion("crescent_building"),
     scaleClass: "landmark",
     entrance: "south",
     adjacentTo: ["central_lake", "cultural_square"],
