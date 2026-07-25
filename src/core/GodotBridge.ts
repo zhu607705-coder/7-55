@@ -2,6 +2,7 @@ import type { EventBus } from "./EventBus";
 import { selectQuestViewModel } from "./QuestModel";
 import type { GameState, GameStore } from "./types";
 
+const BRIDGE_PROTOCOL_VERSION = 1;
 const REACT_SOURCE = "seven-fifty-five-react";
 const GODOT_SOURCE = "seven-fifty-five-godot";
 
@@ -11,11 +12,13 @@ export interface GodotRuntimeSnapshot {
   world: { width: number; height: number };
   player: { x: number; y: number; velocityX: number; velocityY: number };
   camera: { zoom: number };
+  embedded?: boolean;
   engine?: Record<string, unknown>;
 }
 
 interface GodotEnvelope {
   source: typeof GODOT_SOURCE;
+  protocolVersion: typeof BRIDGE_PROTOCOL_VERSION;
   type: "ready" | "snapshot" | "event";
   payload?: Record<string, unknown>;
 }
@@ -44,10 +47,16 @@ export function createGodotBridge({
 }: CreateGodotBridgeOptions): GodotBridgeController {
   let ready = false;
   let destroyed = false;
+  const targetOrigin = new URL(iframe.src, window.location.href).origin;
 
   const post = (type: string, payload: Record<string, unknown> = {}) => {
     if (destroyed || !iframe.contentWindow) return;
-    iframe.contentWindow.postMessage({ source: REACT_SOURCE, type, payload }, "*");
+    iframe.contentWindow.postMessage({
+      source: REACT_SOURCE,
+      protocolVersion: BRIDGE_PROTOCOL_VERSION,
+      type,
+      payload
+    }, targetOrigin);
   };
 
   const hydrate = () => {
@@ -56,7 +65,7 @@ export function createGodotBridge({
   };
 
   const onMessage = (event: MessageEvent<unknown>) => {
-    if (event.source !== iframe.contentWindow || !isGodotEnvelope(event.data)) return;
+    if (event.origin !== targetOrigin || event.source !== iframe.contentWindow || !isGodotEnvelope(event.data)) return;
     const message = event.data;
     if (message.type === "ready") {
       ready = true;
@@ -117,6 +126,7 @@ function selectGodotState(state: GameState): Record<string, unknown> {
 
 function isGodotEnvelope(value: unknown): value is GodotEnvelope {
   if (!isRecord(value) || value.source !== GODOT_SOURCE) return false;
+  if (value.protocolVersion !== BRIDGE_PROTOCOL_VERSION) return false;
   return value.type === "ready" || value.type === "snapshot" || value.type === "event";
 }
 
@@ -127,9 +137,11 @@ function isGodotSnapshot(value: unknown): value is GodotRuntimeSnapshot {
     && typeof value.world.height === "number"
     && typeof value.player.x === "number"
     && typeof value.player.y === "number"
+    && typeof value.player.velocityX === "number"
+    && typeof value.player.velocityY === "number"
     && typeof value.camera.zoom === "number";
 }
 
-function isRecord(value: unknown): value is Record<string, any> {
+function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
