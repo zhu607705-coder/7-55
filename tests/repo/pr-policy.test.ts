@@ -29,7 +29,7 @@ test("PR 规范接受合格标题与完整正文", () => {
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /PR 标题、正文结构和规模说明符合仓库契约/);
+  assert.equal(result.stderr, "");
 });
 
 test("PR 规范拒绝不符合格式的标题", () => {
