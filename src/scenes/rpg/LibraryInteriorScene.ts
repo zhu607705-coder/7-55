@@ -366,6 +366,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const target = findLibraryTargetAt(worldPoint.x, worldPoint.y, activeDropTargets);
     if (!target) {
       this.bridge.emit("library_rpg_interaction_failed", { itemId, reason: "no_target" });
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "missed_target",
+        detail: "松手点落在所有可用目标范围之外。拖动时请对准场景中的高亮框。"
+      });
       return;
     }
     if (!acceptsLibraryItem(target, itemId)) {
@@ -375,6 +380,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
         reason: "wrong_item",
         expectedCategory: target.label
       });
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "wrong_item",
+        targetLabel: target.label
+      });
       return;
     }
     if (!this.isPlayerAtDropTargetEdge(target)) {
@@ -382,6 +392,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
         itemId,
         targetId: target.id,
         reason: "too_far"
+      });
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "too_far",
+        targetLabel: target.label
       });
       return;
     }
@@ -395,6 +410,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const action = actionByTarget[target.id];
     if (!action) {
       this.bridge.emit("library_rpg_interaction_failed", { itemId, targetId: target.id, reason: "unavailable" });
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel: target.label
+      });
       return;
     }
     this.bridge.emit("rpg_library_action_requested", { action, targetId: target.id, itemId });

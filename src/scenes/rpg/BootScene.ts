@@ -434,27 +434,70 @@ export class BootScene extends Phaser.Scene {
     }
     if (!this.textures.exists("canteen-bike")) {
       const g = this.add.graphics();
-      g.lineStyle(3, 0x2b2f36, 1);
-      g.strokeCircle(13, 27, 9);
-      g.strokeCircle(41, 27, 9);
-      g.lineStyle(3, 0xe8654f, 1);
+      // Full campus-scale bike silhouette: rims, spokes, frame, chain,
+      // mudguards, saddle, basket and the QR lock all remain readable at the
+      // default campus zoom.
+      [20, 70].forEach((wheelX) => {
+        g.lineStyle(6, 0x152129, 1);
+        g.strokeCircle(wheelX, 42, 16);
+        g.lineStyle(2, 0x8d9ca2, 1);
+        g.strokeCircle(wheelX, 42, 12);
+        g.lineBetween(wheelX - 11, 42, wheelX + 11, 42);
+        g.lineBetween(wheelX, 31, wheelX, 53);
+        g.lineBetween(wheelX - 8, 34, wheelX + 8, 50);
+        g.lineBetween(wheelX + 8, 34, wheelX - 8, 50);
+        g.fillStyle(0xd3dad8, 1);
+        g.fillCircle(wheelX, 42, 3);
+      });
+      g.lineStyle(3, 0x51656d, 1);
       g.beginPath();
-      g.moveTo(13, 27);
-      g.lineTo(27, 13);
-      g.lineTo(41, 27);
-      g.moveTo(27, 13);
-      g.lineTo(21, 27);
-      g.moveTo(27, 13);
-      g.lineTo(35, 12);
+      g.arc(20, 42, 19, Phaser.Math.DegToRad(200), Phaser.Math.DegToRad(340), false);
+      g.arc(70, 42, 19, Phaser.Math.DegToRad(200), Phaser.Math.DegToRad(340), false);
       g.strokePath();
-      g.lineStyle(3, 0x2b2f36, 1);
+      g.lineStyle(6, 0xe8654f, 1);
       g.beginPath();
-      g.moveTo(35, 12);
-      g.lineTo(39, 7);
-      g.moveTo(23, 13);
-      g.lineTo(27, 10);
+      g.moveTo(20, 42);
+      g.lineTo(42, 19);
+      g.lineTo(70, 42);
+      g.lineTo(37, 42);
+      g.lineTo(20, 42);
+      g.moveTo(37, 42);
+      g.lineTo(42, 19);
       g.strokePath();
-      g.generateTexture("canteen-bike", 54, 40);
+      g.lineStyle(4, 0x26343c, 1);
+      g.beginPath();
+      g.moveTo(42, 19);
+      g.lineTo(58, 17);
+      g.lineTo(70, 42);
+      g.moveTo(57, 17);
+      g.lineTo(65, 10);
+      g.lineTo(75, 11);
+      g.moveTo(39, 18);
+      g.lineTo(35, 13);
+      g.strokePath();
+      g.fillStyle(0x202c33, 1);
+      g.fillRoundedRect(29, 10, 17, 6, 3);
+      g.fillStyle(0xf0d54e, 1);
+      g.fillCircle(37, 42, 7);
+      g.lineStyle(2, 0x26343c, 1);
+      g.strokeCircle(37, 42, 7);
+      g.lineBetween(37, 42, 48, 50);
+      g.lineBetween(48, 50, 56, 50);
+      g.fillStyle(0x526b76, 1);
+      g.fillRoundedRect(67, 16, 20, 14, 3);
+      g.lineStyle(2, 0xe6eeec, 0.85);
+      g.strokeRoundedRect(67, 16, 20, 14, 3);
+      g.lineBetween(72, 19, 72, 27);
+      g.lineBetween(78, 19, 78, 27);
+      g.lineBetween(84, 19, 84, 27);
+      g.fillStyle(0x26343c, 1);
+      g.fillRoundedRect(55, 20, 14, 13, 2);
+      g.fillStyle(0x73d7f2, 1);
+      g.fillRect(59, 23, 6, 6);
+      g.fillStyle(0xf4f1df, 1);
+      g.fillRect(60, 24, 2, 2);
+      g.fillRect(63, 27, 1, 1);
+      g.generateTexture("canteen-bike", 92, 62);
       g.destroy();
     }
   }
@@ -618,7 +661,7 @@ export class BootScene extends Phaser.Scene {
       .on("pointerdown", () => this.requestCanteenBikeIfNearby());
     this.canteenBikeHint = this.add.text(
       CANTEEN_BIKE.x,
-      CANTEEN_BIKE.y - 40,
+      CANTEEN_BIKE.y - 58,
       this.getCanteenBikeWalletHint(),
       {
         color: "#fff7df",
@@ -653,11 +696,11 @@ export class BootScene extends Phaser.Scene {
       .setBlendMode(Phaser.BlendModes.ADD)
       .setScale(CANTEEN_PLAYER_LIGHT_SCALE)
       .setAlpha(state.canteenHunt.mode === "dark" ? CANTEEN_PLAYER_LIGHT_ALPHA : 0);
-    this.canteenBikeCodeGlow = this.add.circle(CANTEEN_BIKE.x, CANTEEN_BIKE.y, 31, 0x4bc9ff, 0.16)
+    this.canteenBikeCodeGlow = this.add.circle(CANTEEN_BIKE.x + 18, CANTEEN_BIKE.y - 5, 22, 0x4bc9ff, 0.16)
       .setStrokeStyle(4, 0x88e7ff, 0.95)
       .setDepth(CANTEEN_BIKE.y + 4)
       .setVisible(state.canteenHunt.mode === "dark");
-    this.canteenBikeGlare = this.add.rectangle(CANTEEN_BIKE.x + 8, CANTEEN_BIKE.y - 5, 22, 18, 0xffffff, 0.76)
+    this.canteenBikeGlare = this.add.rectangle(CANTEEN_BIKE.x + 18, CANTEEN_BIKE.y - 5, 13, 11, 0xffffff, 0.7)
       .setStrokeStyle(2, 0xffedba, 0.9)
       .setRotation(-0.18)
       .setDepth(CANTEEN_BIKE.y + 10)
@@ -883,16 +926,42 @@ export class BootScene extends Phaser.Scene {
   }
 
   private handleCanteenInventoryDrop(payload?: Record<string, unknown>): void {
-    if (this.canteenPhase !== "chase_ready") return;
     const itemId = String(payload?.itemId ?? "");
-    if (itemId !== "cafeteriaWages" && itemId !== "greaseTissue") return;
+    if (this.canteenPhase !== "chase_ready") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel: "共享单车",
+        detail: "共享单车交互尚未开放，请先完成食堂内部流程。"
+      });
+      return;
+    }
+    if (itemId !== "cafeteriaWages" && itemId !== "greaseTissue") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "wrong_item",
+        targetLabel: "共享单车",
+        detail: "共享单车当前只接收纸巾或 2 元现金。"
+      });
+      return;
+    }
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
-    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) return;
+    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
+      this.bridge.emit("rpg_item_use_feedback", { itemId, reason: "missed_target", targetLabel: "共享单车" });
+      return;
+    }
     const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
     if (Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, CANTEEN_BIKE.x, CANTEEN_BIKE.y) <= 100) {
       this.bridge.emit(itemId === "greaseTissue" ? "rpg_canteen_bike_tissue_requested" : "rpg_canteen_bike_requested");
+      return;
     }
+    this.bridge.emit("rpg_item_use_feedback", {
+      itemId,
+      reason: "missed_target",
+      targetLabel: "共享单车",
+      detail: "松手点没有进入共享单车的车身范围。"
+    });
   }
 
   private emitCanteenSequence(lines: readonly string[]): void {

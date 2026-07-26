@@ -67,6 +67,7 @@ const VALID_CANTEEN_HUNT_PHASES = new Set<GameState["canteenHunt"]["phase"]>([
 ]);
 const VALID_CANTEEN_MODES = new Set<GameState["canteenHunt"]["mode"]>(["light", "dark"]);
 const VALID_CANTEEN_TRAY_IDS = new Set(["tray_blue_01", "tray_blue_02", "tray_blue_03"]);
+const VALID_CANTEEN_EXIT_IDS = new Set(["west", "southeast", "steam"]);
 const VALID_THEATER_HUNT_PHASES = new Set<GameState["theaterHunt"]["phase"]>([
   "entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"
 ]);
@@ -289,6 +290,9 @@ export class SaveStore {
       const savedCanteenPhase = enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase);
       const legacyChaseCompleted = savedCanteenPhase === "theater_reached";
       const chaseCompleted = booleanOr(savedCanteenHunt.chaseCompleted, legacyChaseCompleted);
+      const savedBlockHits = rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits);
+      const menuPreviouslyCompleted = ["pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
+      const pickupPreviouslyCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       let canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
         phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
@@ -303,9 +307,16 @@ export class SaveStore {
           VALID_CANTEEN_TRAY_IDS,
           initial.canteenHunt.returnedTrayIds
         ),
+        menuDarkClueRead: booleanOr(savedCanteenHunt.menuDarkClueRead, menuPreviouslyCompleted),
+        pickupDarkClueRead: booleanOr(savedCanteenHunt.pickupDarkClueRead, pickupPreviouslyCompleted),
+        identifiedExitIds: filteredStringArrayFromSet(
+          savedCanteenHunt.identifiedExitIds,
+          VALID_CANTEEN_EXIT_IDS,
+          ["southeast", "steam", "west"].slice(0, savedBlockHits)
+        ) as GameState["canteenHunt"]["identifiedExitIds"],
         orderAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.orderAttemptCount, initial.canteenHunt.orderAttemptCount),
         pickupAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.pickupAttemptCount, initial.canteenHunt.pickupAttemptCount),
-        blockHits: rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits),
+        blockHits: savedBlockHits,
         bikeCodeRead: booleanOr(savedCanteenHunt.bikeCodeRead, initial.canteenHunt.bikeCodeRead),
         bikeLockCleaned: booleanOr(savedCanteenHunt.bikeLockCleaned, initial.canteenHunt.bikeLockCleaned),
         bikePaid: booleanOr(savedCanteenHunt.bikePaid, initial.canteenHunt.bikePaid),
@@ -501,6 +512,9 @@ function hasChapterThreeProgress(
     || canteenHunt.mode !== "light"
     || canteenHunt.identifiedTrayIds.length > 0
     || canteenHunt.returnedTrayIds.length > 0
+    || canteenHunt.menuDarkClueRead
+    || canteenHunt.pickupDarkClueRead
+    || canteenHunt.identifiedExitIds.length > 0
     || canteenHunt.orderAttemptCount > 0
     || canteenHunt.pickupAttemptCount > 0
     || canteenHunt.blockHits > 0

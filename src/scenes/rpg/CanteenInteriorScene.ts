@@ -150,6 +150,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     this.createTrays();
     this.createCarts();
+    this.createPickupWindowSigns();
     this.createPaper();
     this.createWorldHotspots();
     this.createDarkModeLayer();
@@ -209,7 +210,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     const activeTargets = this.getActiveTargets(state);
     const nearest = findNearestCanteenTarget(this.player.x, this.player.y, activeTargets);
-    this.updatePrompt(nearest);
+    this.updatePrompt(nearest, state);
     this.publishDebugState(nearest, state);
 
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
@@ -300,31 +301,49 @@ export class CanteenInteriorScene extends Phaser.Scene {
     CANTEEN_CART_FRAME_KEYS.forEach((key, phase) => {
       if (this.textures.exists(key)) return;
       const g = this.add.graphics();
-      // The cart faces right by default: the dark U-shaped handle stays on the
-      // left, the front rail on the right, and the four wheel phases make the
-      // trolley read as a physical object while it rolls.
-      g.fillStyle(0x0d151a, 0.28).fillEllipse(38, 50, 66, 12);
-      g.fillStyle(0x1c2528).fillRect(10, 14, 54, 30);
-      g.fillStyle(0x60747a).fillRect(13, 16, 48, 24);
-      g.fillStyle(0xb9c7c6).fillRect(16, 18, 42, 4).fillRect(16, 27, 42, 4).fillRect(16, 36, 42, 3);
-      g.fillStyle(0xd9dfd9).fillRect(24, 8, 28, 6).fillRect(28, 3, 20, 5);
-      g.lineStyle(3, 0x162126)
-        .strokeRect(10, 14, 54, 30)
-        .lineBetween(5, 14, 5, 44)
-        .lineBetween(5, 14, 13, 14)
-        .lineBetween(5, 44, 13, 44)
-        .lineBetween(64, 17, 71, 21)
-        .lineBetween(64, 41, 71, 37);
-      g.fillStyle(0xe6b953).fillRect(13, 23, 5, 8).fillRect(56, 23, 5, 8);
+      // East-facing three-tier stainless-steel trolley. The shelves, stacked
+      // trays, corner bumpers, push handle and caster forks remain distinct at
+      // the world camera's default zoom.
+      g.fillStyle(0x081014, 0.3).fillEllipse(52, 65, 94, 14);
+      g.fillStyle(0x10191e).fillRoundedRect(16, 17, 74, 42, 5);
+      g.fillStyle(0x667b80).fillRoundedRect(19, 19, 68, 36, 3);
+      g.fillStyle(0xc9d5d2)
+        .fillRect(22, 21, 62, 5)
+        .fillRect(22, 34, 62, 5)
+        .fillRect(22, 47, 62, 5);
+      g.fillStyle(0x26373b)
+        .fillRect(24, 27, 58, 5)
+        .fillRect(24, 40, 58, 5);
+      g.fillStyle(0xe8ece7)
+        .fillRoundedRect(34, 10, 42, 7, 2)
+        .fillRoundedRect(39, 5, 32, 6, 2)
+        .fillRoundedRect(44, 1, 22, 5, 2);
+      g.lineStyle(3, 0x152126)
+        .strokeRoundedRect(16, 17, 74, 42, 5)
+        .lineBetween(7, 17, 7, 57)
+        .lineBetween(7, 17, 18, 17)
+        .lineBetween(7, 57, 18, 57)
+        .lineBetween(90, 20, 99, 25)
+        .lineBetween(90, 55, 99, 50);
+      g.lineStyle(2, 0xf3f7f2, 0.65)
+        .lineBetween(23, 22, 82, 22)
+        .lineBetween(23, 35, 82, 35)
+        .lineBetween(23, 48, 82, 48);
+      g.fillStyle(0xe6b953)
+        .fillRoundedRect(18, 30, 6, 11, 2)
+        .fillRoundedRect(82, 30, 6, 11, 2);
+      g.fillStyle(0x284958).fillRoundedRect(48, 27, 20, 8, 2);
+      g.fillStyle(0x91d4e6).fillRect(51, 29, 14, 2);
       const wheelLift = phase % 2 === 0 ? 0 : 1;
       const spokeOffset = phase < 2 ? 0 : 2;
-      [[17, 47], [57, 47]].forEach(([x, y]) => {
-        g.fillStyle(0x151c20).fillCircle(x, y - wheelLift, 6);
-        g.fillStyle(0x6e7d80).fillCircle(x, y - wheelLift, 3);
-        g.fillStyle(0xdbe1dc).fillRect(x - 1, y - 4 + spokeOffset, 2, 8 - spokeOffset * 2);
-        g.fillStyle(0xdbe1dc).fillRect(x - 4 + spokeOffset, y - 1, 8 - spokeOffset * 2, 2);
+      [[27, 61], [79, 61]].forEach(([x, y]) => {
+        g.fillStyle(0x11191e).fillRoundedRect(x - 5, y - 7, 10, 7, 2);
+        g.fillStyle(0x0c1216).fillCircle(x, y - wheelLift, 8);
+        g.fillStyle(0x718286).fillCircle(x, y - wheelLift, 4);
+        g.fillStyle(0xe5ebe7).fillRect(x - 1, y - 5 + spokeOffset, 2, 10 - spokeOffset * 2);
+        g.fillStyle(0xe5ebe7).fillRect(x - 5 + spokeOffset, y - 1, 10 - spokeOffset * 2, 2);
       });
-      g.generateTexture(key, 76, 58);
+      g.generateTexture(key, 104, 74);
       g.destroy();
     });
     if (!this.textures.exists(CANTEEN_PAPER_KEY)) {
@@ -378,7 +397,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private createCarts(): void {
     Object.values(CANTEEN_CARTS).forEach((definition) => {
       const { exitId, x, y } = definition;
-      const glow = this.add.circle(x, y, 34, 0x2aaeff, 0.12)
+      const glow = this.add.circle(x, y, 47, 0x2aaeff, 0.12)
         .setStrokeStyle(4, 0x7ad8ff, 0.9)
         .setDepth(y + 19)
         .setVisible(false);
@@ -388,7 +407,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true });
       // The visual cart rolls freely. Once parked, its lower frame becomes a
       // real obstacle so the player cannot walk through a sealed exit.
-      const blocker = this.add.rectangle(x, y + 14, 58, 26, 0x000000, 0)
+      const blocker = this.add.rectangle(x, y + 17, 82, 34, 0x000000, 0)
         .setDepth(-900)
         .setVisible(false);
       this.obstacles.add(blocker);
@@ -411,6 +430,34 @@ export class CanteenInteriorScene extends Phaser.Scene {
         repeat: -1,
         ease: "Sine.easeInOut"
       });
+    });
+  }
+
+  private createPickupWindowSigns(): void {
+    [
+      { number: "1", x: 654 },
+      { number: "2", x: 815 },
+      { number: "3", x: 978 }
+    ].forEach(({ number, x }) => {
+      const plate = this.add.rectangle(0, 0, 118, 42, 0x173544, 0.98)
+        .setStrokeStyle(3, 0xe2c866, 0.96);
+      const badge = this.add.rectangle(-43, 0, 27, 28, 0xe2c866, 1)
+        .setStrokeStyle(2, 0x3b3013, 1);
+      const digit = this.add.text(-43, 0, number, {
+        color: "#172128",
+        fontFamily: "monospace",
+        fontSize: "21px",
+        fontStyle: "bold"
+      }).setOrigin(0.5);
+      const label = this.add.text(20, 0, "号窗口", {
+        color: "#fff7df",
+        fontFamily: "monospace",
+        fontSize: "17px",
+        fontStyle: "bold"
+      }).setOrigin(0.5);
+      this.add.container(x, 678, [plate, badge, digit, label])
+        .setDepth(1705)
+        .setSize(124, 48);
     });
   }
 
@@ -531,6 +578,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.queueDialogue(canteenContent.tray.completionDialogue);
       return;
     }
+    if (name === "canteen_menu_dark_clue_read") {
+      this.showFeedback(canteenContent.menu.darkClueRead, "task");
+      return;
+    }
+    if (name === "canteen_menu_order_locked") {
+      this.showFeedback(canteenContent.menu.orderLocked, "task");
+      return;
+    }
     if (name === "canteen_order_wrong") {
       const optionId = String(payload?.optionId ?? "");
       this.closeMenuPanel();
@@ -546,6 +601,18 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.showFeedback(canteenContent.pickup.noTicket, "system");
       return;
     }
+    if (name === "canteen_pickup_dark_clue_read") {
+      this.showFeedback(canteenContent.pickup.darkClueRead, "task");
+      return;
+    }
+    if (name === "canteen_pickup_dark_clue_missed") {
+      this.showFeedback(canteenContent.pickup.ticketBack, "system");
+      return;
+    }
+    if (name === "canteen_pickup_order_locked") {
+      this.showFeedback(canteenContent.pickup.orderLocked, "task");
+      return;
+    }
     if (name === "canteen_pickup_wrong") {
       const windowId = String(payload?.windowId ?? "");
       this.queueDialogue(windowId === "1" ? canteenContent.pickup.window1 : canteenContent.pickup.window2);
@@ -553,6 +620,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (name === "canteen_pickup_solved") {
       this.animatePaperBurst();
+      return;
+    }
+    if (name === "canteen_exit_dark_clue_read") {
+      this.showFeedback(canteenContent.blocking.darkClueRead, "task");
+      return;
+    }
+    if (name === "canteen_exit_dark_clue_missed") {
+      this.showFeedback(canteenContent.blocking.darkClueMissed, "system");
+      return;
+    }
+    if (name === "canteen_exit_block_unidentified") {
+      this.showFeedback(canteenContent.blocking.orderLocked, "task");
+      this.finishCartMotion(String(payload?.exitId ?? "west") as CanteenExitId);
       return;
     }
     if (name === "canteen_exit_block_wrong") {
@@ -646,10 +726,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (target.kind === "pickup") {
       if (state.canteenHunt.mode === "dark") {
-        this.showFeedback(
-          target.value === "3" ? canteenContent.pickup.darkWindow3 : canteenContent.pickup.ticketBack,
-          "system"
-        );
+        this.bridge.emit("rpg_canteen_pickup_clue_requested", { windowId: target.value });
       } else {
         this.bridge.emit("rpg_canteen_pickup_selected", { windowId: target.value });
       }
@@ -688,7 +765,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (!state.canteenHunt.active || state.canteenHunt.phase !== "exit_blocking" || this.paperBusy || this.cartPushBusy) return;
     if (CANTEEN_EXIT_SEQUENCE.indexOf(exitId) < state.canteenHunt.blockHits) return;
     if (state.canteenHunt.mode === "dark") {
-      this.showFeedback(canteenContent.blocking.cart, "system");
+      this.bridge.emit("rpg_canteen_cart_clue_requested", { exitId });
       return;
     }
     if (!this.cartVisuals.get(exitId)?.visible) return;
@@ -835,7 +912,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private syncCartBlocker(exitId: CanteenExitId, x: number, y: number, enabled: boolean): void {
     const blocker = this.cartBlockers.get(exitId);
     if (!blocker) return;
-    blocker.setPosition(x, y + 14);
+    blocker.setPosition(x, y + 17);
     const body = blocker.body as Phaser.Physics.Arcade.StaticBody | null;
     if (!body) return;
     body.enable = enabled;
@@ -862,20 +939,34 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.playerAnimator.setFacing(deltaY < 0 ? "up" : "down");
   }
 
-  private updatePrompt(nearest: CanteenInteractionTarget | null): void {
+  private updatePrompt(nearest: CanteenInteractionTarget | null, state: GameState): void {
     if (!nearest || this.dialogueLocked || this.menuPanel || this.paperBusy || this.cartPushBusy) {
       this.promptText.setVisible(false);
       return;
     }
     const label = nearest.kind === "tray"
-      ? "检查眼前餐盘"
+      ? state.canteenHunt.mode === "dark"
+        ? "识别餐盘蓝色纸屑"
+        : "回收已识别餐盘"
       : nearest.kind === "kiosk"
-        ? "站在点餐机下方操作"
+        ? state.canteenHunt.mode === "dark"
+          ? "查看点餐菜单残影"
+          : state.canteenHunt.menuDarkClueRead
+            ? "站在点餐机下方操作"
+            : "先切深色模式查看菜单"
         : nearest.kind === "pickup"
-          ? "站在取餐窗口下方核对取餐"
+          ? state.canteenHunt.mode === "dark"
+            ? `查看${nearest.value}号窗口暗号`
+            : state.canteenHunt.pickupDarkClueRead
+              ? `在${nearest.value}号窗口核验 0755`
+              : "先切深色模式确认窗口"
           : nearest.kind === "exit"
             ? "靠近东南门离开食堂"
-            : "站在餐盘车后方推动";
+            : state.canteenHunt.mode === "dark"
+              ? "确认蓝色轨迹指向"
+              : state.canteenHunt.identifiedExitIds.includes(String(nearest.value) as CanteenExitId)
+                ? "站在餐盘车后方推动"
+                : "先切深色模式确认这辆餐车";
     this.promptText.setText(formatRpgInteractionHint(label)).setVisible(true);
   }
 
@@ -948,6 +1039,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private openMenuPanel(): void {
     if (this.menuPanel) return;
     const state = this.bridge.getState();
+    if (state.canteenHunt.mode === "light" && !state.canteenHunt.menuDarkClueRead) {
+      this.showFeedback(canteenContent.menu.orderLocked, "task");
+      return;
+    }
+    const canOrder = state.canteenHunt.mode === "light" && state.canteenHunt.menuDarkClueRead;
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(6000);
     const shade = this.add.rectangle(0, 0, 570, 376, 0x081018, 0.97).setStrokeStyle(4, 0xd1b766, 0.95);
     const title = this.add.text(0, -148, state.canteenHunt.mode === "dark" ? canteenContent.menu.darkIntro : canteenContent.menu.lightIntro, {
@@ -959,8 +1055,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
     panel.add([shade, title]);
     canteenContent.menu.options.forEach((option, index) => {
       const y = -94 + index * 55;
-      const button = this.add.rectangle(0, y, 430, 42, 0x183041, 0.94)
-        .setStrokeStyle(2, 0x7aa5b6, 0.9);
+      const button = this.add.rectangle(0, y, 430, 42, canOrder ? 0x183f43 : 0x263039, 0.94)
+        .setStrokeStyle(2, canOrder ? 0x80d4aa : 0x75818a, 0.9);
       const label = this.add.text(0, y, `${option.id}  ${state.canteenHunt.mode === "dark" ? option.dark : option.light}`, {
         color: state.canteenHunt.mode === "dark" ? "#86dcff" : "#fff7df",
         fontFamily: "monospace",
@@ -975,8 +1071,21 @@ export class CanteenInteriorScene extends Phaser.Scene {
       fontSize: "28px"
     }).setOrigin(0.5);
     panel.add(close);
+    const gateText = state.canteenHunt.mode === "dark"
+      ? "观察模式 · 已记录残影后切回浅色"
+      : canOrder
+        ? "操作模式 · 可以下单"
+        : "操作锁定 · 先查看深色残影";
+    panel.add(this.add.text(0, 166, gateText, {
+      color: canOrder ? "#9af0bd" : "#f0c875",
+      fontFamily: "monospace",
+      fontSize: "13px"
+    }).setOrigin(0.5));
     this.menuPanel = panel;
     this.showFeedback(state.canteenHunt.mode === "dark" ? canteenContent.menu.darkIntro : canteenContent.menu.lightIntro, "system");
+    if (state.canteenHunt.mode === "dark") {
+      this.bridge.emit("rpg_canteen_menu_clue_requested");
+    }
   }
 
   private handleMenuPointer(pointer: Phaser.Input.Pointer): void {
@@ -985,6 +1094,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const localY = pointer.y - 270;
     if (Math.abs(localX - 255) <= 28 && Math.abs(localY + 168) <= 28) {
       this.closeMenuPanel();
+      return;
+    }
+    const state = this.bridge.getState();
+    if (state.canteenHunt.mode !== "light" || !state.canteenHunt.menuDarkClueRead) {
+      this.showFeedback(canteenContent.menu.orderLocked, "task");
       return;
     }
     if (Math.abs(localX) > 215) return;
@@ -1148,6 +1262,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
         mode: state.canteenHunt.mode,
         identifiedTrayIds: state.canteenHunt.identifiedTrayIds,
         returnedTrayIds: state.canteenHunt.returnedTrayIds,
+        menuDarkClueRead: state.canteenHunt.menuDarkClueRead,
+        pickupDarkClueRead: state.canteenHunt.pickupDarkClueRead,
+        identifiedExitIds: state.canteenHunt.identifiedExitIds,
         blockHits: state.canteenHunt.blockHits,
         activeTarget: nearest?.id ?? null,
         menuOpen: this.menuPanel !== null,

@@ -174,6 +174,9 @@ export interface CanteenHuntState {
   mode: CanteenMode;
   identifiedTrayIds: string[];
   returnedTrayIds: string[];
+  menuDarkClueRead: boolean;
+  pickupDarkClueRead: boolean;
+  identifiedExitIds: CanteenExitId[];
   orderAttemptCount: number;
   pickupAttemptCount: number;
   blockHits: number;

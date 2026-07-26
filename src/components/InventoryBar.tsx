@@ -105,6 +105,7 @@ const DROP_HIT_OFFSETS = [
   [-18, 18],
   [18, 18]
 ] as const;
+const PHONE_DROP_FEEDBACK_MS = 3200;
 
 function getPhoneScale() {
   const stage = document.querySelector<HTMLElement>(".app-stage");
@@ -168,6 +169,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
   const [barTop, setBarTop] = useState(INVENTORY_TOP_DEFAULT);
   const [barDragging, setBarDragging] = useState(false);
   const [scrollDragging, setScrollDragging] = useState(false);
+  const [dropFeedback, setDropFeedback] = useState<string | null>(null);
   const dragFrom = useRef<ItemDrag | null>(null);
   const barDrag = useRef<BarDrag | null>(null);
   const suppressHandleClick = useRef(false);
@@ -176,9 +178,42 @@ export function InventoryBar({ state }: InventoryBarProps) {
   const barRef = useRef<HTMLElement>(null);
   const slotsRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
+  const hoveredDropTarget = useRef<HTMLElement | null>(null);
+  const feedbackTimer = useRef<number | null>(null);
   const open = state.ui.inventoryOpen;
   const owned = ITEM_ORDER.filter((id) => state.items[id]);
   const recentItem = useRecentInventoryItem(owned);
+
+  function showDropFeedback(text: string) {
+    if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
+    setDropFeedback(text);
+    feedbackTimer.current = window.setTimeout(() => {
+      setDropFeedback(null);
+      feedbackTimer.current = null;
+    }, PHONE_DROP_FEEDBACK_MS);
+  }
+
+  function setHoveredDropTarget(target: HTMLElement | null) {
+    if (hoveredDropTarget.current === target) return;
+    hoveredDropTarget.current?.classList.remove("is-inventory-drop-hover");
+    hoveredDropTarget.current = target;
+    target?.classList.add("is-inventory-drop-hover");
+  }
+
+  useEffect(() => {
+    if (!ghost?.moved) return undefined;
+    const candidates = Array.from(document.querySelectorAll<HTMLElement>("[data-drop-target]"));
+    candidates.forEach((element) => element.classList.add("is-inventory-drop-candidate"));
+    return () => {
+      candidates.forEach((element) => element.classList.remove("is-inventory-drop-candidate", "is-inventory-drop-hover"));
+      hoveredDropTarget.current = null;
+    };
+  }, [ghost?.item, ghost?.moved]);
+
+  useEffect(() => () => {
+    if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
+    setHoveredDropTarget(null);
+  }, []);
 
   function clampBarTop(nextTop: number) {
     const height = barRef.current?.offsetHeight ?? (open ? 328 : 42);
@@ -297,9 +332,11 @@ export function InventoryBar({ state }: InventoryBarProps) {
     dragFrom.current.moved = dragFrom.current.moved || moved;
     if (!wasMoved && dragFrom.current.moved) {
       eventBus.emit("inventory_drag_started", { itemId: item, surface: "phone" });
+      setDropFeedback(null);
     }
     if (moved) {
       moveGhost(e.clientX, e.clientY);
+      setHoveredDropTarget(closestDropTarget("[data-drop-target]", e.clientX, e.clientY));
       e.preventDefault();
     }
     if (!ghost || ghost.item !== item || ghost.moved !== dragFrom.current.moved) {
@@ -330,6 +367,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
     }
     dragFrom.current = null;
     setGhost(null);
+    setHoveredDropTarget(null);
     if (!from) {
       return;
     }
@@ -384,10 +422,12 @@ export function InventoryBar({ state }: InventoryBarProps) {
     const dropZone = closestDropTarget("[data-drop-target]", e.clientX, e.clientY);
     if (dropZone?.dataset.dropTarget) {
       eventBus.emit("item_dropped", { item: from.item, target: dropZone.dataset.dropTarget });
+      showDropFeedback("已命中高亮目标，正在校验当前剧情条件。");
       return;
     }
 
     eventBus.emit("inventory_drop_missed", { itemId: from.item });
+    showDropFeedback("没有放进高亮区域，请在目标框内松手。");
   }
 
   function onPointerMove(e: React.PointerEvent) {
@@ -496,7 +536,14 @@ export function InventoryBar({ state }: InventoryBarProps) {
                 </button>
               ))}
             </div>
-            <p className="inv-tip">{state.ui.selectedItem ? `${ITEM_META[state.ui.selectedItem].name} · 双击查看` : "可拖动 · 双击查看"}</p>
+            <p className={`inv-tip ${dropFeedback ? "is-feedback" : ""}`} role="status" aria-live="polite">
+              {dropFeedback
+                ?? (ghost?.moved
+                  ? "高亮框是投放范围；松手后会继续校验剧情条件"
+                  : state.ui.selectedItem
+                    ? `${ITEM_META[state.ui.selectedItem].name} · 双击查看`
+                    : "可拖动 · 双击查看")}
+            </p>
           </div>
         ) : null}
       </aside>

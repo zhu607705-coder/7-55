@@ -210,11 +210,23 @@ export class DormHubScene extends Phaser.Scene {
       const canvasY = Number(payload?.canvasY);
       if (itemId !== "gamepad" || !Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
         this.showFeedback("这件道具暂时不需要交给他。");
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId,
+          reason: itemId === "gamepad" ? "missed_target" : "wrong_item",
+          targetLabel: "角色",
+          detail: itemId === "gamepad" ? "道具没有进入有效的游戏画布。" : "角色当前只接收游戏手柄。"
+        });
         return;
       }
       const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
       if (Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, this.player.x, this.player.y) > 96) {
         this.showFeedback("把手柄拖到小人身上。");
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId,
+          reason: "missed_target",
+          targetLabel: "角色",
+          detail: "松手点没有进入角色身体范围。"
+        });
         return;
       }
       this.bridge.emit("rpg_gamepad_install_requested");

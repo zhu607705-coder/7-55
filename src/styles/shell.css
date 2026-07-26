@@ -1332,6 +1332,23 @@
   text-align: center;
 }
 
+.inv-tip.is-feedback {
+  color: #ffe17a;
+  font-weight: 800;
+}
+
+[data-drop-target].is-inventory-drop-candidate {
+  outline: 3px dashed rgba(240, 213, 78, 0.88);
+  outline-offset: 3px;
+}
+
+[data-drop-target].is-inventory-drop-hover {
+  filter: brightness(1.08);
+  outline-color: #75e3ac;
+  outline-style: solid;
+  outline-width: 4px;
+}
+
 @keyframes inventory-item-flight {
   0% { opacity: 0; transform: translateX(30px) translateY(-18px) scale(1.45); }
   12% { opacity: 1; }

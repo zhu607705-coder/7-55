@@ -121,6 +121,8 @@
 - The task drawer reveals only the current next objective. Locked future step labels must not be rendered, because even disabled checklist rows disclose the remaining puzzle chain. Completed paper documents may remain available only inside a collapsed acquired-material archive derived from completed facts.
 - Chapter-one digit discoveries remain visible only in the shared task trigger/drawer as four ordered slots. Unknown slots stay masked and acquired digits keep their original positions. The inventory bar must not repeat the digit strip or compact digit string; the task UI reads `state.digits` directly and remains the sole visual owner.
 - Phaser checkpoints that represent difficulty stages must set the real simulation value. Labels such as `377m` or `566m` cannot point to a zero-distance run.
+- Every phone or RPG item-use attempt must resolve to one visible result: accepted, missed target, wrong item, too far from the real target, or locked by the current story phase. Holding or starting to drag an item shows its current-use guidance, and valid DOM targets highlight their measured hit area. Silent early returns are prohibited.
+- A light/dark two-mode puzzle persists the relevant observation fact in dark mode before its light-mode action becomes available. Controllers reject out-of-order requests, and scenes must not open an actionable choice panel before the observation fact exists.
 
 ## Scene Reuse And Audio Contrast
 
