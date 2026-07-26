@@ -1,0 +1,91 @@
+# Godot 4 Web RPG 工作区
+
+## 职责边界
+
+此目录承载校园地图和横屏 RPG 内景的 Godot 4 Web 实现。React / TypeScript 继续持有
+`GameState`、控制器、存档、钱包、任务、道具栏、音频调度和表现层。Godot 接收版本化
+快照并提交意图，不直接写共享状态。
+
+首个接入场景是剧院。契约版本为 `1.0.0`，定义在
+`src/scenes/rpg/TheaterRuntimeContract.ts`；宿主和消息协议位于
+`src/integrations/godot/`。
+
+## 固定工具版本
+
+- Godot `4.7.1.stable`
+- 同版本官方 export templates
+- Web 导出使用单线程兼容配置、WebAssembly 与 WebGL 2
+- 逻辑视口固定为 `960 × 540`
+
+macOS 默认命令查找：
+
+```text
+$HOME/Downloads/Godot.app/Contents/MacOS/Godot
+```
+
+可通过 `GODOT_BIN` 指向其他同版本可执行文件。
+
+## 同步、导入与导出
+
+```bash
+npm run godot:sync
+npm run godot:import
+npm run godot:export:web
+npm run godot:check
+```
+
+- `godot:sync` 从 TypeScript 场景模型和原始资产生成 `godot/data/`、
+  `godot/assets/` 与资产哈希清单。
+- `godot:import` 在无界面模式解析并导入项目。
+- `godot:export:web` 同步资产、导出 `public/godot/theater/`、生成
+  `build-manifest.json` 并执行一致性检查。
+- `godot:check` 不调用 Godot 编辑器；它用于本地快速检查和 GitHub CI，要求已提交的
+  Web 导出与当前源码及资产完全匹配。
+
+`godot/assets/`、`godot/data/` 和 `public/godot/theater/` 都由命令生成，禁止手工
+修改。需要调整碰撞、目标或剧情位置时，修改 TypeScript 单源模型或 Godot 场景源码，
+然后重新同步和导出。
+
+## 本地预览
+
+先运行：
+
+```bash
+npm run dev
+```
+
+再打开：
+
+```text
+http://127.0.0.1:5173/?devCheckpoint=c3-theater-entry&rpgEngine=godot&dev=1
+```
+
+- `rpgEngine=godot`：显式使用已迁移的 Godot 阶段。
+- `rpgEngine=phaser`：强制使用 Phaser 回退。
+- 缺少 WebAssembly、WebGL 2、HTTP(S) 资源加载或阶段尚未迁移时，宿主显示可读原因并
+  选择 Phaser。
+- `demo/index.html` 通过 `file://` 打开时固定使用 Phaser；Godot Web 资源需要 HTTP(S)。
+
+## 当前剧院覆盖
+
+Godot 已覆盖 `entry_ticket`、`program_search`、`prop_setup`、
+`spotlight_ready` 和 `complete` 的画面、人物、碰撞、交互目标与状态同步。
+`spotlight_hunt` 和 `reversal` 的三轮追光玩法仍使用 Phaser 回退。整段追光、保存恢复、
+重新进入和离场通过跨浏览器验收后，才能把默认 `auto` 模式切到 Godot。
+
+## 提交检查
+
+Godot 相关 PR 至少执行：
+
+```bash
+npm run godot:export:web
+npm run map:zijingang
+npm run typecheck
+npm run build
+npm run build:single
+npm run verify:single
+```
+
+浏览器检查覆盖 Blink、Gecko、WebKit，包含 `1280 × 720`、非 `16:9` 桌面视口和
+`390 × 844` 粗指针视口。检查画布比例、人物移动、交互键、道具拖放、深浅模式、阶段
+回退、文档溢出、页面错误和控制台错误。

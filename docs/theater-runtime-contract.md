@@ -4,7 +4,7 @@
 
 剧院流程的存档、剧情、任务、钱包和道具状态继续由 React/TypeScript 主应用管理。Godot 4 Web 承接剧院画面、碰撞、动画和输入，并通过版本化契约读取状态和提交意图。
 
-当前契约入口是 `src/scenes/rpg/TheaterRuntimeContract.ts`，版本为 `1.0.0`。现有 Phaser 剧院已通过该契约运行，它同时是迁移期基准实现和 Godot 适配的领域边界。
+当前契约入口是 `src/scenes/rpg/TheaterRuntimeContract.ts`，版本为 `1.0.0`。现有 Phaser 剧院与 Godot 剧院预览都通过该契约运行。React 宿主位于 `src/integrations/godot/`，Godot 项目位于 `godot/`，已登记的 Web 导出位于 `public/godot/theater/`。
 
 ## 固定边界
 
@@ -15,14 +15,31 @@
 - `setRpgLocation()` 只更新剧院场景检查点。
 - 外部实现不得直接写存档、发放道具、扣款、推进任务或维护第二套剧情状态。
 - `temporaryTheaterTicket` 的两次使用都保留道具：入口右侧读票器验票、后台道具箱旁扫描器解锁。
+- 取票码和节目单排序继续由 React DOM 面板收集输入并交给 TypeScript 控制器验证；Godot 只请求打开面板，不复制题目状态。
+- 道具拖放继续由共享 React 道具栏处理，iframe 画布坐标统一换算到 `960 × 540` 后再提交契约意图。
 
-## 替换实现接入顺序
+## 当前接入状态
 
-1. 在 `godot/` 剧院场景和 `src/integrations/godot/` 宿主适配器中实现 `TheaterRuntimePort`，保持契约版本与逻辑画布一致。
-2. 逐项实现 `TheaterRuntimeIntentName`，不要添加未声明的旁路事件。
-3. 用 `c3-theater-entry`、`c3-theater-code`、`c3-theater-program`、`c3-theater-prop`、`c3-theater-spotlight`、`c3-theater-spotlight-round`、`c3-theater-complete` 七个 DEV 检查点验收。
-4. 通过入口取票、两次观演票拖放、节目单排序、道具箱、三轮追光和离场完整流程。
-5. 在独立分支提交 Godot Web 宿主挂载层。React 和 Phaser 基准实现保留到 Godot 剧院通过完整验收，再切换该场景的默认运行时。
+| 剧院阶段 | 当前画面运行时 | 状态与判定 |
+| --- | --- | --- |
+| `entry_ticket` | Godot 预览 | TypeScript 控制入口验票与取票码 |
+| `program_search` | Godot 预览 | React 节目单面板提交控制器 |
+| `prop_setup` | Godot 预览 | React 道具栏拖放到 Godot 精确目标 |
+| `spotlight_ready` | Godot 预览 | TypeScript 控制追光准备状态 |
+| `spotlight_hunt` / `reversal` | Phaser 回退 | 三轮追光玩法尚未迁入 Godot |
+| `complete` | Godot 预览 | TypeScript 保留完成事实与离场判定 |
+
+默认 `auto` 模式仍使用 Phaser。开发验收通过
+`?devCheckpoint=c3-theater-entry&rpgEngine=godot&dev=1` 显式开启 Godot；使用
+`rpgEngine=phaser` 可强制检查回退。`file://` 单文件固定回退 Phaser，完整 Godot Web
+运行时必须由 HTTP(S) 提供 `.wasm`、`.pck` 和脚本资源。
+
+## 后续替换顺序
+
+1. 把 `spotlight_hunt` 与 `reversal` 的三轮追光玩法迁入同一个 Godot 场景。
+2. 用 `c3-theater-entry`、`c3-theater-code`、`c3-theater-program`、`c3-theater-prop`、`c3-theater-spotlight`、`c3-theater-spotlight-round`、`c3-theater-complete` 七个 DEV 检查点复验。
+3. 完成入口、两次观演票拖放、节目单排序、道具箱、三轮追光、离场、保存恢复和重新进入的完整浏览器链路。
+4. 在 Blink、Gecko、WebKit 的桌面、非 `16:9` 与 `390 × 844` 环境通过后，才把剧院 `auto` 模式切到 Godot。
 
 ## 兼容与失败规则
 
@@ -30,3 +47,4 @@
 - 缺少音频或动画时仍要提交已经完成的领域意图，表现层不能阻塞剧情。
 - Pointer Events 为鼠标、触摸和笔的统一输入协议；键盘交互只显示真实可用的按键。
 - 输入、全屏、音频和可见性暂停需要覆盖 Blink、Gecko 与 WebKit 支持基线。
+- `npm run godot:sync` 生成可追踪资产副本，`npm run godot:export:web` 生成并登记 Web 产物，`npm run godot:check` 在本地和 CI 验证源码、资产与已提交导出哈希一致。

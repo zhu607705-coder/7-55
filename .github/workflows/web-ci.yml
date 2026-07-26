@@ -38,6 +38,9 @@ jobs:
       - name: Verify campus map contract
         run: npm run map:zijingang
 
+      - name: Verify Godot source and committed Web export
+        run: npm run godot:check
+
       - name: Type-check source
         run: npm run typecheck
 

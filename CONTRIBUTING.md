@@ -18,9 +18,18 @@ git config core.hooksPath .githooks
 ## 提交前
 
 ```bash
+npm run map:zijingang
+npm run godot:check
 npm run typecheck
 npm run build
+npm run build:single
+npm run verify:single
 ```
+
+若改动 `godot/`、Godot 同步资产或运行时导出，先安装 Godot `4.7.1` 与同版本导出
+模板，再运行 `npm run godot:export:web`，并把 Godot 源码、
+`public/godot/theater/` 和 `build-manifest.json` 放在同一个 PR 中。生成的 Web 文件
+不得手工编辑。
 
 仓库的 pre-push hook 会自动执行以上检查。当前项目尚无自动测试套件；新增测试框架后，
 应把测试命令加入这里和 pre-push hook。
@@ -44,5 +53,5 @@ git push origin main
 
 若远端已被其他成员更新，Git 会拒绝非快进推送。此时先 rebase、解决冲突并重新验证。
 
-允许直接向 `main` 推送，但绝不允许强制推送。大改动或多人同时修改同一模块前，先在
-团队群里明确负责人和文件范围。
+小型低风险改动允许直接向 `main` 推送，绝不允许强制推送。引擎、共享状态、存档或完整
+关卡改动使用 PR，并在多人同时修改同一模块前明确负责人和文件范围。

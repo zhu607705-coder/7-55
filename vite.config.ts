@@ -53,6 +53,7 @@ export default defineConfig(({ mode }) => {
     ...(isSingleFileDemo
       ? {
           base: "./",
+          publicDir: false,
           plugins: [react(), viteSingleFile({ removeViteModuleLoader: true }), moveSingleFileRuntimeAfterShell()],
           build: {
             outDir: "demo",

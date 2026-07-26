@@ -1,7 +1,10 @@
 import { cloneSerializable } from "../../core/ClientCompatibility";
 
 export interface RpgRuntimeDebugState {
-  coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down";
+  engine?: "phaser" | "godot";
+  coordinateSystem:
+    | "Phaser world coordinates, origin at top-left, x right, y down"
+    | "Godot world coordinates, origin at top-left, x right, y down";
   world: { width: number; height: number };
   player: {
     x: number;

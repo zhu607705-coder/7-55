@@ -17,6 +17,7 @@ import type {
   TheaterProgramId
 } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
+import theaterContent from "../../data/chapter3-theater.content.json";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
@@ -43,6 +44,15 @@ import { RpgInventoryDock } from "./RpgInventoryDock";
 import { QuestTaskBar } from "../../components/QuestClueStrip";
 import { RpgSubtitleLayer } from "../../components/RpgSubtitleLayer";
 import { useMediaQuery } from "../../components/useMediaQuery";
+import { GodotRpgFrame } from "../../integrations/godot/GodotRpgFrame";
+import {
+  getRpgRuntimeSelection,
+  isGodotTheaterPreviewPhase
+} from "../../integrations/godot/GodotRuntimePolicy";
+import {
+  GodotTheaterPanel,
+  type GodotTheaterPanelKind
+} from "../../integrations/godot/GodotTheaterPanel";
 
 interface RpgGameHostProps {
   store: GameStore;
@@ -137,6 +147,7 @@ export function RpgGameHost({
   const [shellRoot, setShellRoot] = useState<HTMLElement | null>(null);
   const shellRef = useRef<HTMLElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
+  const phaserHostRef = useRef<HTMLDivElement | null>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const inputBlockedRef = useRef(inputBlocked);
   const keyboardBlockedRef = useRef(keyboardBlocked);
@@ -157,12 +168,30 @@ export function RpgGameHost({
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const theaterRuntimePort = useMemo(() => createTheaterRuntimePort(bridge), [bridge]);
   const runtimeScene = resolveRuntimeScene(state);
+  const runtimeSelection = useMemo(() => getRpgRuntimeSelection(runtimeScene), [runtimeScene]);
+  const [failedGodotScene, setFailedGodotScene] = useState<RpgSceneId | null>(null);
+  const [godotTheaterPanel, setGodotTheaterPanel] = useState<GodotTheaterPanelKind | null>(null);
+  const godotPhaseSupported = runtimeScene !== "theater_interior"
+    || isGodotTheaterPreviewPhase(state.theaterHunt.phase);
+  const useGodotRuntime = runtimeSelection.engine === "godot"
+    && failedGodotScene !== runtimeScene
+    && godotPhaseSupported;
   const touchControls = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY)
     || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
   const bindShellRef = useCallback((node: HTMLElement | null) => {
     shellRef.current = node;
     setShellRoot((current) => current === node ? current : node);
   }, []);
+  const closeGodotTheaterPanel = useCallback(() => setGodotTheaterPanel(null), []);
+  const handleGodotRuntimeFailure = useCallback((reason: string) => {
+    console.warn(`[Godot RPG] ${reason}`);
+    setFailedGodotScene(runtimeScene);
+    events.emit("toast", {
+      text: "Godot 场景载入失败，已切回兼容场景。",
+      tone: "system",
+      durationMs: 4200
+    });
+  }, [events, runtimeScene]);
   const selectDraggedRpgItem = useCallback((itemId: ItemId | null) => {
     store.setState((current) => current.ui.selectedItem === itemId
       ? current
@@ -170,8 +199,16 @@ export function RpgGameHost({
   }, [store]);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host) {
+    setFailedGodotScene(null);
+  }, [runtimeScene]);
+
+  useEffect(() => {
+    if (!useGodotRuntime) setGodotTheaterPanel(null);
+  }, [useGodotRuntime]);
+
+  useEffect(() => {
+    const host = phaserHostRef.current;
+    if (!host || useGodotRuntime) {
       return undefined;
     }
     clearRpgCanvasHost(host);
@@ -233,7 +270,7 @@ export function RpgGameHost({
       game.destroy(true);
       clearRpgCanvasHost(host);
     };
-  }, [bridge, store, theaterRuntimePort]);
+  }, [bridge, store, theaterRuntimePort, useGodotRuntime]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -496,6 +533,15 @@ export function RpgGameHost({
         theaterController.collectProgram(String(event.payload?.programId ?? "") as TheaterProgramId);
       } else if (event.name === "rpg_theater_program_order_read_requested") {
         theaterController.readProgramOrder();
+      } else if (event.name === "rpg_theater_program_panel_requested") {
+        if (
+          useGodotRuntime
+          && store.getState().theaterHunt.phase === "program_search"
+          && store.getState().theaterHunt.mode === "light"
+          && store.getState().theaterHunt.collectedProgramIds.length === 3
+        ) {
+          setGodotTheaterPanel("program");
+        }
       } else if (event.name === "rpg_theater_program_order_set_requested") {
         const order = Array.isArray(event.payload?.order)
           ? event.payload.order.filter((value): value is TheaterProgramId => ["opening", "spotlight", "finale"].includes(String(value)))
@@ -584,7 +630,44 @@ export function RpgGameHost({
         qizhenController.triggerMist(event.payload?.success === true);
       }
     });
-  }, [canteenController, events, qizhenController, theaterController]);
+  }, [canteenController, events, qizhenController, store, theaterController, useGodotRuntime]);
+
+  useEffect(() => {
+    if (!useGodotRuntime) return undefined;
+    return events.subscribe((event) => {
+      const showGodotSubtitle = (text: string, durationMs = 4200) => {
+        events.emit("rpg_subtitle", {
+          text,
+          tone: "system",
+          durationMs
+        });
+      };
+      if (event.name === "theater_ticket_code_panel_opened") {
+        setGodotTheaterPanel("code");
+      } else if (event.name === "theater_ticket_halves_ready") {
+        theaterController.combineTicketHalves();
+      } else if (event.name === "theater_ticket_admitted" || event.name === "theater_program_order_solved") {
+        setGodotTheaterPanel(null);
+        showGodotSubtitle(
+          event.name === "theater_ticket_admitted"
+            ? "临时观演票通过，闸机已经开放。"
+            : theaterContent.program.unlocked
+        );
+      } else if (event.name === "theater_ticket_code_read") {
+        showGodotSubtitle(`深色模式：${theaterContent.ticket.codeVisible} 切回浅色模式输入。`, 4800);
+      } else if (event.name === "theater_program_order_read") {
+        showGodotSubtitle(theaterContent.program.darkOrder, 5200);
+      } else if (event.name === "theater_prop_ghost_read") {
+        showGodotSubtitle(`${theaterContent.prop.ghost} ${theaterContent.prop.managerHint}`, 5600);
+      } else if (event.name === "theater_prop_box_locked") {
+        showGodotSubtitle(theaterContent.prop.locked);
+      } else if (event.name === "theater_prop_box_opened") {
+        showGodotSubtitle(theaterContent.prop.scannerAccepted);
+      } else if (event.name === "theater_paper_dusted") {
+        showGodotSubtitle(theaterContent.prop.ventComplete);
+      }
+    });
+  }, [events, theaterController, useGodotRuntime]);
 
   useEffect(() => {
     if (state.ui.libraryFinalsPuzzle.lostFoundStage !== "scanning") {
@@ -737,11 +820,29 @@ export function RpgGameHost({
     <main
       className={`rpg-stage ${runtimeScene === "campus_bootstrap" ? "is-campus-map" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
-      data-input-blocked={inputBlocked || itemInspectOpen ? "true" : "false"}
+      data-input-blocked={inputBlocked || itemInspectOpen || godotTheaterPanel !== null ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
+      data-rpg-engine={useGodotRuntime ? "godot" : "phaser"}
+      data-rpg-engine-reason={
+        failedGodotScene === runtimeScene
+          ? "godot_runtime_failed"
+          : !godotPhaseSupported
+            ? "godot_phase_not_migrated"
+            : runtimeSelection.reason
+      }
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
-        <div ref={hostRef} className="rpg-canvas-host" aria-hidden="true" />
+        <div ref={hostRef} className="rpg-canvas-host">
+          <div ref={phaserHostRef} className="rpg-phaser-host" aria-hidden={useGodotRuntime ? "true" : "false"} />
+          {useGodotRuntime && runtimeScene === "theater_interior" ? (
+            <GodotRpgFrame
+              store={store}
+              events={events}
+              inputBlocked={inputBlocked || itemInspectOpen || chaseActive || keyboardBlocked || godotTheaterPanel !== null}
+              onRuntimeFailure={handleGodotRuntimeFailure}
+            />
+          ) : null}
+        </div>
 
         {chaseActive ? (
           <CanteenChaseOverlay
@@ -752,6 +853,15 @@ export function RpgGameHost({
             bestLives={state.canteenHunt.chaseBestLives}
             onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
             onContinue={() => { canteenController.completeChase(); }}
+          />
+        ) : null}
+
+        {useGodotRuntime && godotTheaterPanel ? (
+          <GodotTheaterPanel
+            kind={godotTheaterPanel}
+            state={state}
+            events={events}
+            onClose={closeGodotTheaterPanel}
           />
         ) : null}
 
@@ -888,7 +998,7 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || chaseActive}
+          blocked={inputBlocked || itemInspectOpen || chaseActive || godotTheaterPanel !== null}
         />
 
         {state.actOne.controlsInstalled && touchControls && !chaseActive ? (
