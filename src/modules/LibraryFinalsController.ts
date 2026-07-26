@@ -675,19 +675,40 @@ export class LibraryFinalsController {
     }
     this.store.setState((state) => ({
       ...state,
-      bikeArcade: { ...state.bikeArcade, unlocked: true },
+      runtimeMode: "rpg",
+      rpgScene: "campus_bootstrap",
+      rpgCheckpoint: "campus_spawn",
+      currentScene: "phone_home",
+      canteenHunt: {
+        active: true,
+        phase: "tracking",
+        mode: "light",
+        identifiedTrayIds: [],
+        returnedTrayIds: [],
+        orderAttemptCount: 0,
+        pickupAttemptCount: 0,
+        blockHits: 0,
+        bikeCodeRead: false,
+        bikeLockCleaned: false,
+        bikePaid: false,
+        chaseCompleted: false,
+        chaseAttemptCount: 0,
+        chaseBestDistance: 0,
+        chaseBestLives: 0,
+        chaseCollisions: 0
+      },
       ui: {
         ...state.ui,
         libraryFinalsPhase: "friend_contacted",
         libraryFinalsPuzzle: {
           ...state.ui.libraryFinalsPuzzle,
-          nextQuestId: "chapter_three_book_hunt",
+          nextQuestId: "chapter_three_canteen_hunt",
           clueIds: addUnique(state.ui.libraryFinalsPuzzle.clueIds, "borrowed_attendance_record")
         }
       }
     }));
     this.events.emit("library_friend_contacted", { seat: "022" });
-    this.events.emit("chapter_three_book_hunt_unlocked", { objective: "找到那本借走签到记录的书" });
+    this.events.emit("chapter_three_canteen_hunt_unlocked", { objective: "追到东区大食堂" });
     return true;
   }
 

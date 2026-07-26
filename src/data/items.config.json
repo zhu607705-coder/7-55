@@ -142,22 +142,120 @@
   {
     "id": "cafeteriaWages",
     "name": "餐盘回收费 2.00 元",
-    "desc": "回收餐盘后得到的两元报酬。",
+    "desc": "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。",
     "sourceScene": "canteen_interior",
     "target": "canteen_bike"
   },
   {
     "id": "greaseTissue",
     "name": "油渍纸巾",
-    "desc": "带有油渍的纸巾，可以擦掉强反光污迹。",
+    "desc": "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。",
     "sourceScene": "canteen_interior",
     "target": "canteen_bike_lock"
   },
   {
     "id": "pickupTicket0755",
     "name": "0755 取餐号",
-    "desc": "点餐机打印的 0755 号取餐小票。",
+    "desc": "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。",
     "sourceScene": "canteen_interior",
     "target": "canteen_pickup_window_3"
+  },
+  {
+    "id": "theaterTicketHalfA",
+    "name": "半张剧院票根 A",
+    "desc": "它证明你的一半可以进场，另一半还在流程里。",
+    "sourceScene": "phone_home",
+    "target": "combine_theater_ticket_b"
+  },
+  {
+    "id": "theaterTicketHalfB",
+    "name": "半张剧院票根 B",
+    "desc": "来自一台失败的取票机。它至少努力过。",
+    "sourceScene": "phone_home",
+    "target": "combine_theater_ticket_a"
+  },
+  {
+    "id": "temporaryTheaterTicket",
+    "name": "临时观演票",
+    "desc": "两张半真半假的票根拼出来的票。剧院看了都沉默了一秒。",
+    "sourceScene": "phone_home",
+    "target": "theater_ticket_gate|theater_prop_scanner"
+  },
+  {
+    "id": "theaterProgramOpening",
+    "name": "节目单残页·开场",
+    "desc": "普通节目单，看起来很会假装正式。",
+    "sourceScene": "phone_home",
+    "target": "theater_light_console"
+  },
+  {
+    "id": "theaterProgramSpotlight",
+    "name": "节目单残页·追光",
+    "desc": "普通节目单，看起来很会假装正式。",
+    "sourceScene": "phone_home",
+    "target": "theater_light_console"
+  },
+  {
+    "id": "theaterProgramFinale",
+    "name": "节目单残页·谢幕",
+    "desc": "普通节目单，看起来很会假装正式。",
+    "sourceScene": "phone_home",
+    "target": "theater_light_console"
+  },
+  {
+    "id": "spotlightRemote",
+    "name": "追光灯遥控器",
+    "desc": "能让舞台中央变亮。也能让逃避责任的纸条短暂接受审判。",
+    "sourceScene": "phone_home",
+    "target": "theater_spotlight_console"
+  },
+  {
+    "id": "fluorescentBrush",
+    "name": "荧光粉刷",
+    "desc": "刷过之后，连借口都会发光。",
+    "sourceScene": "phone_home",
+    "target": "theater_backstage_vent"
+  },
+  {
+    "id": "decoyPaper",
+    "name": "假纸条",
+    "desc": "长得很像目标，但态度没那么差。",
+    "sourceScene": "phone_home",
+    "target": ""
+  },
+  {
+    "id": "wetProgram",
+    "name": "湿掉的节目单",
+    "desc": "纸条逃跑时留下的节目单，边角湿得很有方向感。",
+    "sourceScene": "phone_home",
+    "target": "cc98_search|library_catalog_search"
+  },
+  {
+    "id": "bridgeKeyword",
+    "name": "桥边",
+    "desc": "CC98 目击者留下的地点关键词。",
+    "sourceScene": "cc98",
+    "target": "qizhen_map_search"
+  },
+  {
+    "id": "reflectionKeyword",
+    "name": "倒影",
+    "desc": "馆藏系统留下的地点关键词。",
+    "sourceScene": "zjuding",
+    "target": "qizhen_map_search"
+  },
+  {
+    "id": "lakeKeyword",
+    "name": "湖",
+    "desc": "微信消息留下的地点关键词。",
+    "sourceScene": "wechat",
+    "target": "qizhen_map_search"
+  },
+  {
+    "id": "reflectionCoordinate",
+    "name": "倒影坐标",
+    "desc": "两种观察模式共同确认的位置。",
+    "sourceScene": "phone_home",
+    "target": ""
   }
 ]

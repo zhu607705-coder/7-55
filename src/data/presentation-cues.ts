@@ -213,11 +213,11 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     priority: 3,
     visual: false
   },
-  chapter_three_book_hunt_unlocked: {
+  chapter_three_canteen_hunt_unlocked: {
     kind: "chapter",
-    title: "找到那本借走签到记录的书",
-    detail: "第三章任务已更新",
-    mark: "BOOK",
+    title: "追到东区大食堂",
+    detail: "沿校园地图中的脚印继续追踪",
+    mark: "EAST",
     durationMs: 2400,
     priority: 3
   },

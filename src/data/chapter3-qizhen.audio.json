@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "events": {
+    "qizhen_lake_opened": {
+      "cues": [{ "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "volume": 0.17, "loop": true }]
+    },
+    "qizhen_dark_mode_enabled": {
+      "cues": [
+        { "channel": "music", "asset": "music_qizhen_reflection", "action": "play", "volume": 0.18, "loop": true },
+        { "channel": "sfx", "asset": "fx_canteen_mode_switch", "playbackRate": 0.9, "volume": 0.45 }
+      ]
+    },
+    "qizhen_light_mode_enabled": {
+      "cues": [
+        { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "volume": 0.17, "loop": true },
+        { "channel": "sfx", "asset": "fx_canteen_mode_switch", "playbackRate": 1.1, "volume": 0.45 }
+      ]
+    },
+    "qizhen_reflection_wrong": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_reject", "playbackRate": 0.86, "volume": 0.46 }]
+    },
+    "qizhen_reflection_correct": {
+      "cues": [{ "channel": "sfx", "asset": "fx_canteen_paper_impact", "playbackRate": 0.92, "volume": 0.58 }]
+    },
+    "qizhen_reflection_completed": {
+      "cues": [
+        { "channel": "music", "asset": "music_qizhen_reflection", "action": "play", "volume": 0.18, "loop": true },
+        { "channel": "sfx", "asset": "fx_canteen_paper_impact", "playbackRate": 1.08, "volume": 0.66 }
+      ]
+    },
+    "qizhen_sign_rotated": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_ticket_join", "playbackRate": 1.22, "volume": 0.42 }]
+    },
+    "qizhen_signs_completed": {
+      "cues": [
+        { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "volume": 0.17, "loop": true },
+        { "channel": "sfx", "asset": "fx_theater_gate_scan", "playbackRate": 1.08, "volume": 0.56 }
+      ]
+    },
+    "qizhen_decoy_wrong": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_reject", "playbackRate": 1.12, "volume": 0.45 }]
+    },
+    "qizhen_decoy_placed": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_ticket_join", "playbackRate": 0.86, "volume": 0.52 }]
+    },
+    "qizhen_decoy_revealed": {
+      "cues": [
+        { "channel": "music", "asset": "music_qizhen_mist", "action": "play", "volume": 0.2, "loop": true },
+        { "channel": "sfx", "asset": "fx_canteen_paper_burst", "playbackRate": 0.84, "volume": 0.54 }
+      ]
+    },
+    "qizhen_mist_music_started": {
+      "cues": [{ "channel": "music", "asset": "music_qizhen_mist", "action": "play", "volume": 0.2, "loop": true }]
+    },
+    "qizhen_mist_wrong": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_reject", "playbackRate": 0.72, "volume": 0.42 }]
+    },
+    "qizhen_mist_completed": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "sfx", "asset": "fx_canteen_paper_burst", "playbackRate": 1.08, "volume": 0.72 }
+      ]
+    },
+    "qizhen_lake_left": {
+      "cues": [{ "channel": "music", "action": "stop" }]
+    }
+  }
+}

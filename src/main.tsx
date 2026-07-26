@@ -12,6 +12,7 @@ import { getPresentationRuntimeSnapshot } from "./modules/PresentationRuntime";
 import { getEndingRuntimeSnapshot } from "./scenes/phone/P12_Ending/EndingRuntime";
 import { getBikeArcadeSnapshot } from "./scenes/phone/P16_BikeArcade/BikeArcadeRuntime";
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
+import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
 import "@fontsource/fusion-pixel-12px-proportional-sc";
 import "./styles.css";
@@ -59,10 +60,14 @@ function summarizeGameState(state: GameState) {
     },
     actOne: state.actOne,
     bikeArcadeChapter: state.bikeArcade,
+    canteenHunt: state.canteenHunt,
+    theaterHunt: state.theaterHunt,
+    qizhenLake: state.qizhenLake,
     presentation: getPresentationRuntimeSnapshot(),
     endingGame: getEndingRuntimeSnapshot(),
     rpgRuntime: getRpgRuntimeDebugState(),
     bikeArcade: getBikeArcadeSnapshot(),
+    canteenChase: getCanteenChaseSnapshot(),
     ui: {
       inventoryOpen: state.ui.inventoryOpen,
       selectedItem: state.ui.selectedItem,

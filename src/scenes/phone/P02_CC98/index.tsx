@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
+import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { LibraryEvidenceId } from "../../../core/types";
@@ -66,13 +67,33 @@ const INVESTIGATION_POST: Cc98Post = {
   time: investigationPostContent.time,
   body: investigationPostContent.body
 };
+const QIZHEN_WITNESS_POST: Cc98Post = {
+  id: "qizhen-wet-paper-witness",
+  author: "匿名用户",
+  avatar: "anonymous",
+  rank: "12",
+  board: "校园生活",
+  title: qizhenContent.locationSearch.cc98.title,
+  replies: "3",
+  views: "755",
+  time: "刚刚",
+  body: "如题。",
+  threadReplies: qizhenContent.locationSearch.cc98.replies.map((reply, index) => ({
+    personaId: ["late-printer", "yuquan-wind", "anonymous-user"][index] ?? "anonymous-user",
+    time: `今天 09:${String(12 + index * 2).padStart(2, "0")}`,
+    floor: `${[3, 8, 14][index]}楼`,
+    text: reply.replace(/^\d+楼：/, ""),
+    likes: String([7, 4, 14][index]),
+    dislikes: "0"
+  }))
+};
 const INVESTIGATION_SEARCH_RESULTS = [
   { id: "seat-022-backpack", title: INVESTIGATION_POST.title, floors: "23 楼", body: INVESTIGATION_POST.body, rejection: null },
   { id: "seat-022-old-source", title: "【求助】022 座位今日临时离开", floors: "12 楼", body: "来源为今日新帖，没有旧版离座规定的引用。", rejection: "来源不匹配：这是今日新帖，纸条引用的是旧版公开记录。" },
   { id: "seat-022-wrong-time", title: "【记录】二南 022 晚间使用情况", floors: "31 楼", body: "发布时间为当日 22:40，早于纸条中的本次离座事件。", rejection: "时间不匹配：这条记录早于本次 022 占用事件。" },
   { id: "seat-022-missing-attachment", title: "【闲聊】二楼南区今天还有位置吗", floors: "18 楼", body: "正文提到 022，附件区为空。", rejection: "附件不匹配：这条帖子没有纸条对应的离座凭据。" }
 ] as const;
-const QUEST_POST_IDS = new Set([ACT_ONE_EXCHANGE_POST.id, INVESTIGATION_POST.id]);
+const QUEST_POST_IDS = new Set([ACT_ONE_EXCHANGE_POST.id, INVESTIGATION_POST.id, QIZHEN_WITNESS_POST.id]);
 const TOP_TABS = ["今日", "发现", "本周", "本月", "往年今日", "活动"];
 const BOTTOM_TABS = [
   { label: "热门", icon: "◉" },
@@ -172,6 +193,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   });
   const [investigationFeedback, setInvestigationFeedback] = useState("");
   const [investigationSearchReady, setInvestigationSearchReady] = useState(false);
+  const [qizhenSearchReady, setQizhenSearchReady] = useState(() => state.qizhenLake.bridgeClueFound);
   const finalsPhase = state.ui.libraryFinalsPhase;
   const finalsPuzzle = state.ui.libraryFinalsPuzzle;
   const access = selectFeatureAccess(state);
@@ -179,6 +201,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const exchangeVisible = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const investigationVisible = finalsPuzzle.investigationOpened;
   const noteSearchVisible = finalsPhase === "evidence_gathering" && finalsPuzzle.occupancyNoteCollected && !investigationVisible;
+  const qizhenSearchVisible = state.qizhenLake.active && state.qizhenLake.phase === "location_search";
   const ownedEvidenceIds = useMemo(() => {
     const owned: LibraryEvidenceId[] = [];
     if (state.items.archivedLeaveRule) owned.push("archived_leave_rule");
@@ -196,13 +219,17 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   useEffect(() => {
     return events.subscribe((event) => {
       if (event.name !== "item_dropped" || event.payload?.target !== "cc98_search") return;
-      if (event.payload?.item !== "occupancyNote") {
+      if (event.payload?.item === "occupancyNote") {
+        setInvestigationSearchReady(true);
+        setInvestigationFeedback("纸条已读取。请核对搜索结果的来源、时间和附件。");
         return;
       }
-      setInvestigationSearchReady(true);
-      setInvestigationFeedback("纸条已读取。请核对搜索结果的来源、时间和附件。");
+      if (event.payload?.item === "wetProgram" && qizhenSearchVisible) {
+        setQizhenSearchReady(true);
+        setInvestigationFeedback("湿纸特征已加入搜索。找到一条刚发布的目击帖。");
+      }
     });
-  }, [events]);
+  }, [events, qizhenSearchVisible]);
 
   const questPosts = useMemo(() => {
     const next: Cc98Post[] = [];
@@ -219,14 +246,18 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
           : INVESTIGATION_POST.replies
       });
     }
+    if (qizhenSearchVisible && (qizhenSearchReady || state.qizhenLake.bridgeClueFound)) {
+      next.push(withOverride(QIZHEN_WITNESS_POST));
+    }
     return next;
-  }, [exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, questPostOverrides]);
+  }, [exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, qizhenSearchReady, qizhenSearchVisible, questPostOverrides, state.qizhenLake.bridgeClueFound]);
   const openPost = useMemo(
     () => questPosts.find((post) => post.id === openPostId) ?? posts.find((post) => post.id === openPostId) ?? null,
     [openPostId, posts, questPosts]
   );
   const openPostIsInvestigation = openPost?.id === INVESTIGATION_POST.id;
   const openPostIsExchange = openPost?.id === ACT_ONE_EXCHANGE_POST.id;
+  const openPostIsQizhen = openPost?.id === QIZHEN_WITNESS_POST.id;
   const visiblePosts = useMemo(() => {
     return [...questPosts, ...posts];
   }, [posts, questPosts]);
@@ -275,6 +306,24 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
     }
     setInvestigationSearchReady(true);
     setInvestigationFeedback("找到 4 条候选记录。");
+  }
+
+  function searchWithWetProgram() {
+    setInvestigationFeedback("");
+    if (!state.items.wetProgram) {
+      setInvestigationFeedback("需要能说明纸张状态的实物线索。");
+      return;
+    }
+    setQizhenSearchReady(true);
+    setInvestigationFeedback("找到 1 条刚发布的目击帖。");
+  }
+
+  function collectBridgeKeyword() {
+    if (!kit.qizhenLake.collectBridgeClue()) {
+      setInvestigationFeedback("当前无法记录这条目击信息。");
+      return;
+    }
+    setInvestigationFeedback(`${qizhenContent.locationSearch.cc98.system}\n${qizhenContent.locationSearch.cc98.player}`);
   }
 
   function selectInvestigationResult(result: typeof INVESTIGATION_SEARCH_RESULTS[number]) {
@@ -334,7 +383,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   }
 
   return (
-    <section className={`cc98-scene ${noteSearchVisible ? "has-search" : ""}`.trim()} aria-label="CC98热门话题">
+    <section className={`cc98-scene ${noteSearchVisible || qizhenSearchVisible ? "has-search" : ""}`.trim()} aria-label="CC98热门话题">
       <header className="cc98-header">
         <PhoneNavButton
           kind="exit"
@@ -399,6 +448,25 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
           </div>
           <p className="cc98-search-feedback" aria-live="polite">
             {investigationFeedback || "论坛会根据纸条内容建立 23 楼调查索引。"}
+          </p>
+        </section>
+      ) : null}
+
+      {qizhenSearchVisible ? (
+        <section className="cc98-search-panel cc98-qizhen-search" aria-label="湿纸目击搜索">
+          <header className="cc98-search-heading"><strong>目击搜索</strong><span>可接收道具</span></header>
+          <label className="cc98-search-row" data-drop-target="cc98_search">
+            <span className="cc98-search-icon" aria-hidden="true" />
+            <input
+              aria-label="湿纸目击搜索内容"
+              readOnly
+              value={state.items.wetProgram ? "剧院门口 湿纸" : ""}
+              placeholder="把湿掉的节目单拖到这里"
+            />
+            <button type="button" onClick={searchWithWetProgram}>搜索</button>
+          </label>
+          <p className="cc98-search-feedback" aria-live="polite">
+            {investigationFeedback || "先用实物特征建立目击范围。"}
           </p>
         </section>
       ) : null}
@@ -472,7 +540,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             openPostIsExchange ? (
               <ControlExchangePuzzle
                 router={router}
-                balanceShifted={state.actOne.balanceShifted}
+                campusCardCents={state.wallet.campusCardCents}
                 purchased={state.actOne.gamepadPurchased}
               />
             ) : openPostIsInvestigation ? (
@@ -495,6 +563,17 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
               </>
             ) : undefined
           }
+          afterRepliesContent={openPostIsQizhen ? (
+            <section className="cc98-qizhen-keyword" aria-label="提取目击关键词">
+              <strong>目击信息可归纳为一个地点关键词</strong>
+              <button type="button" onClick={collectBridgeKeyword} disabled={state.qizhenLake.bridgeClueFound}>
+                {state.qizhenLake.bridgeClueFound ? "已取得：桥边" : "记录关键词：桥边"}
+              </button>
+              {state.qizhenLake.bridgeClueFound ? (
+                <p>{qizhenContent.locationSearch.cc98.system}<br />{qizhenContent.locationSearch.cc98.player}</p>
+              ) : null}
+            </section>
+          ) : undefined}
           showBdContent={openPostIsInvestigation && access.cc98Bd}
           locked={openPostIsInvestigation && finalsPuzzle.bdCount >= 3}
           showLibraryAdminReply={openPostIsInvestigation && finalsPuzzle.bdCount >= 3}

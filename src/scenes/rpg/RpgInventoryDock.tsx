@@ -41,7 +41,21 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "seatReleasePass",
   "cafeteriaWages",
   "greaseTissue",
-  "pickupTicket0755"
+  "pickupTicket0755",
+  "theaterTicketHalfA",
+  "theaterTicketHalfB",
+  "temporaryTheaterTicket",
+  "theaterProgramOpening",
+  "theaterProgramSpotlight",
+  "theaterProgramFinale",
+  "spotlightRemote",
+  "fluorescentBrush",
+  "decoyPaper",
+  "wetProgram",
+  "bridgeKeyword",
+  "reflectionKeyword",
+  "lakeKeyword",
+  "reflectionCoordinate"
 ];
 
 export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onInspect }: RpgInventoryDockProps) {
@@ -125,7 +139,13 @@ export function RpgInventoryDock({ state, events, shellRef, canvasHostRef, onIns
     }
     const canvas = canvasHostRef.current?.querySelector("canvas");
     const canvasPoint = canvas
-      ? clientToRpgCanvasPoint(event.clientX, event.clientY, canvas.getBoundingClientRect())
+      ? clientToRpgCanvasPoint(
+        event.clientX,
+        event.clientY,
+        canvas.getBoundingClientRect(),
+        canvas.width,
+        canvas.height
+      )
       : null;
     if (canvasPoint) {
       events.emit("rpg_inventory_drop_requested", {

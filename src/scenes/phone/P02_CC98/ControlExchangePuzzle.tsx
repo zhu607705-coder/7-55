@@ -6,11 +6,15 @@ import { kit } from "../../../modules/GameKit";
 
 interface ControlExchangePuzzleProps {
   router: Pick<SceneRouter, "goTo">;
-  balanceShifted: boolean;
+  campusCardCents: number;
   purchased: boolean;
 }
 
-export function ControlExchangePuzzle({ router, balanceShifted, purchased }: ControlExchangePuzzleProps) {
+function formatCents(cents: number): string {
+  return (Math.max(0, cents) / 100).toFixed(2);
+}
+
+export function ControlExchangePuzzle({ router, campusCardCents, purchased }: ControlExchangePuzzleProps) {
   const identityReadable = selectIdentityReadable(gameStore.getState());
 
   function purchase() {
@@ -45,7 +49,7 @@ export function ControlExchangePuzzle({ router, balanceShifted, purchased }: Con
       <dl>
         <div><dt>商品</dt><dd>二手游戏手柄 × 1</dd></div>
         <div><dt>售价</dt><dd>¥6.00，不议价</dd></div>
-        <div><dt>你的余额</dt><dd className={balanceShifted ? "is-enough" : "is-short"}>¥{balanceShifted ? "6.00" : "0.06"}</dd></div>
+        <div><dt>你的余额</dt><dd className={campusCardCents >= 600 ? "is-enough" : "is-short"}>¥{formatCents(campusCardCents)}</dd></div>
         <div>
           <dt>收货人</dt>
           <dd>{identityReadable ? `${actOneContent.studentName} · ${actOneContent.studentId}` : "身份信息尚未读取"}</dd>

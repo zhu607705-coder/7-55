@@ -3,17 +3,38 @@ import type { CanteenExitId, CanteenMode, GameStore } from "../core/types";
 
 export const CANTEEN_TARGET_TRAYS = ["tray_blue_01", "tray_blue_02", "tray_blue_03"] as const;
 export const CANTEEN_EXIT_SEQUENCE: readonly CanteenExitId[] = ["southeast", "steam", "west"];
+const CANTEEN_TRAY_REWARD_CENTS = 200;
+const CANTEEN_BIKE_FARE_CENTS = 200;
+const CANTEEN_CHASE_GOAL = 755;
+const CANTEEN_CHASE_MAX_LIVES = 3;
+
+export interface CanteenChaseAttempt {
+  mode: "story" | "endless";
+  distance: number;
+  lives: number;
+  collisions: number;
+}
+
+export type CanteenChaseAttemptResult = "won" | "lost" | "invalid";
 
 export type CanteenTrayResult = "identified" | "returned" | "ordinary" | "wrong_mode" | "already_done" | "inactive";
 export type CanteenChoiceResult = "correct" | "wrong" | "inactive";
 export type CanteenBlockResult = "correct" | "wrong" | "complete" | "inactive";
 export type CanteenBikeResult = "code_read" | "glare" | "cleaned" | "payment_ready" | "dark_rejected" | "rule" | "paid" | "inactive";
 
+export interface ChapterThreeCanteenEventBindingOptions {
+  beforeEnter?: () => void;
+  onEnterResult?: (entered: boolean) => void;
+  onLeaveResult?: (left: boolean) => void;
+}
+
 export class ChapterThreeCanteenController {
   constructor(private readonly store: GameStore, private readonly events: EventBus) {}
 
   enterCanteen(): boolean {
     const state = this.store.getState();
+    // The canteen is a normal campus destination outside the authored hunt. When the
+    // hunt is active, keep its entry gate so an unrelated visit cannot skip a phase.
     if (state.canteenHunt.active && !["tracking", "canteen_reached", "entered"].includes(state.canteenHunt.phase)) {
       return false;
     }
@@ -81,6 +102,9 @@ export class ChapterThreeCanteenController {
       items: completed
         ? { ...current.items, cafeteriaWages: true, greaseTissue: true }
         : current.items,
+      wallet: completed
+        ? { ...current.wallet, cashCents: current.wallet.cashCents + CANTEEN_TRAY_REWARD_CENTS }
+        : current.wallet,
       canteenHunt: {
         ...current.canteenHunt,
         returnedTrayIds,
@@ -138,7 +162,10 @@ export class ChapterThreeCanteenController {
 
   blockExit(exitId: CanteenExitId): CanteenBlockResult {
     const state = this.store.getState();
-    if (!state.canteenHunt.active || state.canteenHunt.phase !== "exit_blocking") return "inactive";
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "exit_blocking") {
+      this.events.emit("canteen_exit_block_rejected", { exitId });
+      return "inactive";
+    }
     const expected = CANTEEN_EXIT_SEQUENCE[state.canteenHunt.blockHits];
     if (exitId !== expected) {
       this.events.emit("canteen_exit_block_wrong", { exitId, expected });
@@ -160,6 +187,8 @@ export class ChapterThreeCanteenController {
 
   leaveCanteen(): boolean {
     const state = this.store.getState();
+    // The lower-right door is always a valid return route during ordinary
+    // exploration. The chapter hunt still requires its cart-blocking phase.
     if (state.canteenHunt.active && state.canteenHunt.phase !== "chase_ready") return false;
     this.store.setState((current) => ({
       ...current,
@@ -213,7 +242,11 @@ export class ChapterThreeCanteenController {
 
   payForBike(): CanteenBikeResult {
     const state = this.store.getState();
-    if (state.canteenHunt.phase !== "chase_ready" || !state.items.cafeteriaWages) return "inactive";
+    if (
+      state.canteenHunt.phase !== "chase_ready"
+      || !state.items.cafeteriaWages
+      || state.wallet.cashCents < CANTEEN_BIKE_FARE_CENTS
+    ) return "inactive";
     if (state.canteenHunt.mode !== "light" || !state.canteenHunt.bikeCodeRead || !state.canteenHunt.bikeLockCleaned) {
       this.events.emit("canteen_bike_scan_rule");
       return "rule";
@@ -221,28 +254,104 @@ export class ChapterThreeCanteenController {
     this.store.setState((current) => ({
       ...current,
       items: { ...current.items, cafeteriaWages: false },
-      canteenHunt: { ...current.canteenHunt, phase: "chasing", bikePaid: true }
+      wallet: {
+        ...current.wallet,
+        cashCents: current.wallet.cashCents - CANTEEN_BIKE_FARE_CENTS
+      },
+      canteenHunt: {
+        ...current.canteenHunt,
+        phase: "chasing",
+        bikePaid: true
+      }
     }));
     this.events.emit("use_item", { itemId: "cafeteriaWages", targetId: "canteen_bike" });
     this.events.emit("canteen_chase_started");
     return "paid";
   }
 
-  completeChase(collisions: number): boolean {
+  resolveChaseAttempt(attempt: CanteenChaseAttempt): CanteenChaseAttemptResult {
     const state = this.store.getState();
-    if (state.canteenHunt.phase !== "chasing") return false;
+    if (state.canteenHunt.phase !== "chasing") return "invalid";
+    const distance = Math.max(0, Math.floor(attempt.distance));
+    const lives = Math.max(0, Math.min(CANTEEN_CHASE_MAX_LIVES, Math.floor(attempt.lives)));
+    const collisions = Math.max(0, Math.floor(attempt.collisions));
+    const won = attempt.mode === "story" && distance === CANTEEN_CHASE_GOAL && lives > 0;
+    const lost = lives === 0;
+    if (!won && !lost) return "invalid";
+
+    this.store.setState((current) => ({
+      ...current,
+      canteenHunt: {
+        ...current.canteenHunt,
+        chaseCompleted: current.canteenHunt.chaseCompleted || won,
+        chaseAttemptCount: current.canteenHunt.chaseAttemptCount + 1,
+        chaseBestDistance: Math.max(current.canteenHunt.chaseBestDistance, distance),
+        chaseBestLives: distance >= current.canteenHunt.chaseBestDistance
+          ? Math.max(current.canteenHunt.chaseBestLives, lives)
+          : current.canteenHunt.chaseBestLives,
+        chaseCollisions: won ? collisions : current.canteenHunt.chaseCollisions
+      }
+    }));
+    this.events.emit(won ? "canteen_chase_story_cleared" : "canteen_chase_attempt_failed", {
+      mode: attempt.mode,
+      distance,
+      lives,
+      collisions
+    });
+    return won ? "won" : "lost";
+  }
+
+  completeChase(): boolean {
+    const state = this.store.getState();
+    if (
+      state.canteenHunt.phase !== "chasing"
+      || !state.canteenHunt.chaseCompleted
+      || state.canteenHunt.chaseBestDistance < CANTEEN_CHASE_GOAL
+    ) return false;
     this.store.setState((current) => ({
       ...current,
       rpgScene: "campus_bootstrap",
-      rpgCheckpoint: "campus_canteen_gate",
+      rpgCheckpoint: "campus_theater_junction",
       canteenHunt: {
         ...current.canteenHunt,
-        active: false,
-        phase: "tracking",
-        chaseCollisions: Math.max(0, Math.floor(collisions))
+        phase: "theater_reached"
       }
     }));
-    this.events.emit("canteen_chase_completed", { collisions: Math.max(0, Math.floor(collisions)) });
+    this.events.emit("canteen_chase_completed", {
+      collisions: state.canteenHunt.chaseCollisions,
+      distance: CANTEEN_CHASE_GOAL,
+      lives: state.canteenHunt.chaseBestLives
+    });
     return true;
   }
+}
+
+export function bindChapterThreeCanteenEvents(
+  controller: ChapterThreeCanteenController,
+  events: EventBus,
+  options: ChapterThreeCanteenEventBindingOptions = {}
+): () => void {
+  return events.subscribe((event) => {
+    if (event.name === "rpg_canteen_entry_requested") {
+      options.beforeEnter?.();
+      const entered = controller.enterCanteen();
+      options.onEnterResult?.(entered);
+    } else if (event.name === "rpg_canteen_mode_requested") {
+      controller.setMode(String(event.payload?.mode ?? "light") as CanteenMode);
+    } else if (event.name === "rpg_canteen_tray_requested") {
+      controller.useTray(
+        String(event.payload?.trayId ?? ""),
+        event.payload?.queueCollision === true
+      );
+    } else if (event.name === "rpg_canteen_menu_selected") {
+      controller.selectMenuOption(String(event.payload?.optionId ?? ""));
+    } else if (event.name === "rpg_canteen_pickup_selected") {
+      controller.selectPickupWindow(String(event.payload?.windowId ?? ""));
+    } else if (event.name === "rpg_canteen_exit_block_requested") {
+      controller.blockExit(String(event.payload?.exitId ?? "west") as CanteenExitId);
+    } else if (event.name === "rpg_canteen_leave_requested") {
+      const left = controller.leaveCanteen();
+      options.onLeaveResult?.(left);
+    }
+  });
 }

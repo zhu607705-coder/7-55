@@ -57,6 +57,7 @@ export class DormHubScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
   private virtualDirection = { x: 0, y: 0 };
+  private interactRequested = false;
   private exitTriggered = false;
   private manualMovementReported = false;
   private pacingDirection = 1;
@@ -118,6 +119,7 @@ export class DormHubScene extends Phaser.Scene {
     this.createHud();
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D") as Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.cameras.main
       .setBounds(0, 0, DORM_HUB_WORLD.width, DORM_HUB_WORLD.height)
       .setZoom(DORM_CAMERA_ZOOM)
@@ -176,20 +178,30 @@ export class DormHubScene extends Phaser.Scene {
       && Phaser.Math.Distance.Between(this.player.x, this.player.y, DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y) <= DORM_CAMPUS_CARD.proximity;
     this.updatePrompt(nearest, nearCard);
 
-    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    if (keyboardInteract) {
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+      this.interactRequested = true;
+    }
+    if (this.interactRequested) {
       if (nearCard) {
         this.collectCampusCard();
       } else if (nearest) {
         this.triggerInteraction(nearest);
       }
     }
+    this.interactRequested = false;
     this.publishRuntimeDebug();
   }
 
   private handleBridgeEvent(name: string, payload?: Record<string, unknown>): void {
+    if (!this.sys?.isActive()) {
+      return;
+    }
     if (name === "rpg_direction_changed") {
       this.virtualDirection = { x: Number(payload?.x) || 0, y: Number(payload?.y) || 0 };
+      return;
+    }
+    if (name === "rpg_interact") {
+      this.interactRequested = true;
       return;
     }
     if (name === "rpg_inventory_drop_requested") {

@@ -62,14 +62,29 @@ export interface ItemCatalogEntry {
   uses: Array<{ target: string; result: "retain" | "consume" | "transform" }>;
 }
 
-export type RpgSceneId = "campus_bootstrap" | "dorm_hub" | "library_interior" | "canteen_interior";
+export type RpgSceneId =
+  | "campus_bootstrap"
+  | "dorm_hub"
+  | "library_interior"
+  | "canteen_interior"
+  | "theater_interior"
+  | "qizhen_lake";
 
 export type RpgCheckpointId =
   | "campus_spawn"
   | "campus_library_gate"
   | "campus_canteen_gate"
+  | "campus_theater_junction"
+  | "campus_qizhen_gate"
   | "dorm_spawn"
   | "canteen_entrance"
+  | "theater_lobby"
+  | "theater_auditorium"
+  | "theater_stage"
+  | "qizhen_reflection"
+  | "qizhen_signs"
+  | "qizhen_decoy"
+  | "qizhen_mist"
   | "library_entrance"
   | "library_seat_022"
   | "library_front_desk"
@@ -127,6 +142,15 @@ export interface BikeArcadeChapterState {
   bestLives: number;
 }
 
+/**
+ * Persistent player money. All amounts are stored as integer cents so story
+ * transactions do not depend on formatted decimal strings.
+ */
+export interface WalletState {
+  campusCardCents: number;
+  cashCents: number;
+}
+
 export type CanteenHuntPhase =
   | "tracking"
   | "canteen_reached"
@@ -137,7 +161,8 @@ export type CanteenHuntPhase =
   | "pickup_search"
   | "exit_blocking"
   | "chase_ready"
-  | "chasing";
+  | "chasing"
+  | "theater_reached";
 
 export type CanteenMode = "light" | "dark";
 
@@ -155,7 +180,81 @@ export interface CanteenHuntState {
   bikeCodeRead: boolean;
   bikeLockCleaned: boolean;
   bikePaid: boolean;
+  chaseCompleted: boolean;
+  chaseAttemptCount: number;
+  chaseBestDistance: number;
+  chaseBestLives: number;
   chaseCollisions: number;
+}
+
+export type TheaterHuntPhase =
+  | "entry_ticket"
+  | "program_search"
+  | "prop_setup"
+  | "spotlight_ready"
+  | "spotlight_hunt"
+  | "reversal"
+  | "complete";
+
+export type TheaterMode = "light" | "dark";
+
+export type TheaterProgramId = "opening" | "spotlight" | "finale";
+
+export interface TheaterHuntState {
+  active: boolean;
+  phase: TheaterHuntPhase;
+  mode: TheaterMode;
+  posterCleaned: boolean;
+  ticketCodeRead: boolean;
+  ticketCodeAttempts: number;
+  admitted: boolean;
+  collectedProgramIds: TheaterProgramId[];
+  programOrder: TheaterProgramId[];
+  programWrongAttempts: number;
+  propGhostRead: boolean;
+  managerHintRead: boolean;
+  propBoxOpened: boolean;
+  paperDusted: boolean;
+  spotlightRound: number;
+  spotlightMistakes: number;
+  decoyRevealed: boolean;
+}
+
+export type QizhenLakeMode = "light" | "dark";
+
+export type QizhenLakePhase =
+  | "inactive"
+  | "location_search"
+  | "lake_unlocked"
+  | "reflection_hunt"
+  | "sign_alignment"
+  | "decoy_setup"
+  | "mist_timing"
+  | "chase_ready";
+
+export type QizhenMapClueId = "bridge" | "reflection" | "lake";
+
+export type QizhenDecoyTargetId = "notice" | "bridge" | "lamp";
+
+export interface QizhenLakeState {
+  active: boolean;
+  phase: QizhenLakePhase;
+  mode: QizhenLakeMode;
+  locationBriefingSeen: boolean;
+  bridgeClueFound: boolean;
+  reflectionClueFound: boolean;
+  lakeClueFound: boolean;
+  mapClueIds: QizhenMapClueId[];
+  introSeen: boolean;
+  reflectionRound: number;
+  reflectionMistakes: number;
+  signRotations: [number, number, number];
+  signsSolved: boolean;
+  decoyPlacedAt: QizhenDecoyTargetId | null;
+  decoyAttempts: number;
+  mistRhythmRead: boolean;
+  mistAttempts: number;
+  paperReleased: boolean;
 }
 
 export type NetworkMode = "campus_wifi" | "cellular" | "offline";
@@ -167,6 +266,7 @@ export type ZjudingPage =
   | "login"
   | "directory"
   | "learn"
+  | "campus_map"
   | "library"
   | "library_spaces"
   | "library_seat"
@@ -264,7 +364,7 @@ export interface LibraryFinalsPuzzleState {
   passBriefingSeen: boolean;
   backpackEvicted: boolean;
   playerSeated: boolean;
-  nextQuestId: "chapter_three_book_hunt" | null;
+  nextQuestId: "chapter_three_canteen_hunt" | null;
   clueIds: string[];
 }
 
@@ -296,7 +396,21 @@ export type ItemId =
   | "seatReleasePass"
   | "cafeteriaWages"
   | "greaseTissue"
-  | "pickupTicket0755";
+  | "pickupTicket0755"
+  | "theaterTicketHalfA"
+  | "theaterTicketHalfB"
+  | "temporaryTheaterTicket"
+  | "theaterProgramOpening"
+  | "theaterProgramSpotlight"
+  | "theaterProgramFinale"
+  | "spotlightRemote"
+  | "fluorescentBrush"
+  | "decoyPaper"
+  | "wetProgram"
+  | "bridgeKeyword"
+  | "reflectionKeyword"
+  | "lakeKeyword"
+  | "reflectionCoordinate";
 
 export type SceneId =
   | "alarm"
@@ -389,8 +503,11 @@ export interface GameState {
   items: Record<ItemId, boolean>;
   flags: GameFlags;
   actOne: ActOneBootstrapState;
+  wallet: WalletState;
   bikeArcade: BikeArcadeChapterState;
   canteenHunt: CanteenHuntState;
+  theaterHunt: TheaterHuntState;
+  qizhenLake: QizhenLakeState;
   ui: UiState;
 }
 

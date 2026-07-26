@@ -1114,3 +1114,57 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 输入兼容：触控方向键在 Pointer Capture 被旧 WebKit 或合成输入拒绝时继续发送移动事件，并由全局 `pointerup / pointercancel` 安全停止。
 - 浏览器验收：最终单文件在 Blink、Gecko、WebKit 桌面 `1280×720` 均完成右移，角色从 `(3805,1680)` 移至约 `(3857,1680)`；Blink 与 WebKit `390×844` 均显示 5 个触控键并完成同等移动。所有场景为单 Canvas、文档溢出、页面错误和控制台错误均为 `0`。
 - 构建验证：`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run build:campus-map-demo`、`npm run verify:single`、`npm run verify:campus-map-demo` 与 `git diff --check` 通过。`demo/index.html` 为 `72,531,325 bytes`，SHA-256 为 `9807b2a1285eb3f617553d55ce6429423652f544d57155e7463aaf5a54482ae6`；`demo/campus-map-demo.html` 为 `37,550,426 bytes`，SHA-256 为 `92e3d8186c21b130d708d103f3b8d98b4fb5ec88cd8defa5782a60ec90f8bb83`。
+
+## 2026-07-24 独立校园 Demo 接入大食堂剧情
+
+- 遗漏定位：`src/demos/campus-map-demo.tsx` 原先只注册 `BootScene`，收到 `rpg_canteen_entry_requested` 后明确停留大地图并显示占位提示，因此独立单文件无法进入已有的 `CanteenInteriorScene`。
+- 场景接入：独立 Demo 注册校园与食堂两个 Phaser 场景，使用内存状态启动食堂寻人阶段；“大食堂剧情”会重置到门前，空格进入后按 `餐盘识别与回收 → 点餐机 → 0755 取餐窗口 → 三次出口封堵 → 返回校园` 推进。
+- 共享控制：新增 `bindChapterThreeCanteenEvents()`，正式 `RpgGameHost` 与独立 Demo 共用一套食堂事件到控制器的绑定，避免演示入口再次退化为只弹提示。`src/demos/README.md` 已记录该约束。
+- 跨端操作：桌面继续使用 WASD / 方向键、空格与 Tab；触控继续使用方向键和空格，并在食堂阶段提供显式“切到深色 / 切回浅色”按钮。剧情字幕写入独立 Demo 的可见通知区，移动端不再隐藏该区域。
+- 状态验证：使用真实 `EventBus + ChapterThreeCanteenController` 执行 35 个领域事件，完整状态链到达 `campus_bootstrap / campus_canteen_gate / chase_ready`，三项餐盘、点餐 D、3 号窗口与 `southeast → steam → west` 封堵顺序全部通过断言。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`npm run build:campus-map-demo`、`npm run verify:campus-map-demo` 与 `git diff --check` 通过。`demo/index.html` 为 `72,531,548 bytes`，SHA-256 为 `123da5ddb208298417d8248f9bc8af3f82fe17aa186432fb97606bc3806bf17b`；`demo/campus-map-demo.html` 为 `41,104,600 bytes`，SHA-256 为 `d1d141a68ea199f51881057c098b0a390862c0ace1b2211e7cb35e01b4bf8f87`。
+- 验收边界：当前浏览器控制通道对 `file://` 页面的刷新、DOM 读取和截图均按安全策略拒绝；本轮没有把构建或控制器断言冒充为最终视觉验收。需要在当前单文件手动刷新后完成一次入口、字幕、明暗按钮和返回校园的可见链路确认。
+
+## 2026-07-24 全分支本地集成预览
+
+- 预览基线：本地 `codex/preview-all-integrated-demo` 以远程 PR #20、独立 Demo 食堂接入提交 `abbfab6` 为基础，再 merge `codex/chapter3-canteen-20260722` 的两个独有提交；本分支只用于合并前查看，未推送、未改远程 `main`。
+- 冲突处理：保留当前 `4516×3420` 俯视校园底图、通行掩码、碰撞、人物缩放、镜头、跨浏览器适配和 DEV 直达修复；加入第三章食堂后续自行车追逐、体艺馆、启真湖、剧情状态、道具、音频和场景资产。项目规则与旧宽幅地图生成脚本未被旧分支覆盖。
+- 地图衔接：东区大食堂继续使用当前坐标；体艺馆入口落在当前东侧体育区可走道路 `(4100,1350)`，启真湖入口落在当前湖区道路 `(2900,1800)`，两个点均通过现有 `4px` 通行位图取样。
+- 校验：`npm run typecheck`、`npm run map:zijingang`、`npm run build:single`、`npm run verify:single` 与暂存区 `git diff --check` 通过。最终 `demo/index.html` 为 `96,530,366 bytes`，包含 2 个内联脚本和 1 个内联样式。
+- 浏览器边界：已接管当前 `file://.../demo/index.html` 标签页，但浏览器安全策略拒绝刷新本地文件；未切换到其他自动化表面规避限制。用户手动刷新当前标签页后即可查看新产物。
+
+## 2026-07-24 第三章食堂直连与实体交互收口
+
+- 主线入口：`022` 对话完成后直接写入 `canteenHunt.tracking`，运行时转入 `campus_bootstrap / campus_spawn`；第三章任务统一为“追到东区大食堂”。求是潮骑行不再出现在正式入口、任务或 DEV 节点中，旧入口参数保留到食堂检查点的兼容映射。
+- 存档兼容：保存版本升至 `11`。旧 `friend_contacted`、`chapter_three_book_hunt`、`bike_arcade`、`chapter_transition` 状态在读取时迁入食堂追踪；已有食堂、剧院和启真湖进度保持原状态。
+- 食堂实体：点餐机、取餐窗和三辆餐盘车拆为“实体锚点 + 可走操作站位”。点餐机与取餐窗的玩家站位位于柜台下方；控制器先验证餐盘车封堵选择，场景再让人物从后方连续推车，按验证结果停靠或回退。
+- 输入与空间：食堂、寝室、图书馆、剧院、校园和启真湖捕获 Space；寝室触控交互键恢复。图书馆道具拖放追加目标边缘距离校验，剧院海报与取票机使用可走侧站位，舞台出生点离开舞台前沿碰撞区。
+- 浏览器验收：开发地址的 `c2-chapter-exit` 显示“追到东区大食堂”并进入 RPG；`c3-canteen-menu` 中角色位于点餐机正下方；`c3-canteen-block` 点击实体餐盘车后角色与餐车共同移动，随后出现第一段拦截反馈。浏览器控制台错误为 `0`。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `96,534,912 bytes`，SHA-256 为 `9c7b737ea75e631356784ceb7c6af4c874cbf69ca753c43ab60e76027d02a2a7`。
+
+## 2026-07-24 食堂餐车连续推进与余额账本
+
+- 余额事实源：新增以分为单位的 `wallet`。右箭头将校园卡从 `¥0.06` 变为 `¥6.00`，购买手柄扣至 `¥0.00`；三只目标餐盘回收完成后零钱增加 `¥2.00`，自行车付款后零钱扣至 `¥0.00`。校园卡页与 CC98 交易页都读取该状态；v11 及更早存档会按既有手柄、餐盘回收费和骑车事实推导余额。
+- 餐车动作：三辆餐车使用四帧轮组、车架、托盘和把手绘制，人物先走到把手，再以固定相对位置随车连续前进；滚轮帧、人物步态和滚轮音效从实际滚动时刻开始。错误封堵沿原路线回推，已封住的车不再可二次交互。
+- 空间约束：西侧车终点对齐纸条逃逸锚点 `(82,250)`；完成封堵后启用车箱下部碰撞，人物不能穿过已封出口。推车期间禁用明暗切换，并为控制器拒绝结果恢复本地输入锁。
+- 状态验证：Vite SSR 以真实 `GameStore + EventBus + Controller` 运行“余额右移 → 购买手柄 → 三餐盘回收 → 点餐 D → 3 号窗口 → southeast / steam / west 封堵 → 自行车付款”，结果为校园卡 `0` 分、零钱 `0` 分、阶段 `chasing`。另验证 v11 旧存档迁移和校园卡页面渲染，已消费页输出 `¥0.00` 与 `我的零钱 ¥2.00`。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`git diff --check` 通过。最终 `demo/index.html` 为 `96,539,357 bytes`，SHA-256 为 `1a30f46c833462c37f289b1fa9dd8fcb700a58f4e041f702deed78a8ba88c42d`。浏览器控制通道拒绝接管 `file://` 产物，因此本轮不记录新的截图验收；需要用户手动刷新当前单文件页面完成画面复核。
+- 支付提示：自行车旁的提示直接读取 `wallet.cashCents`，餐盘回收完成后显示“我的零钱：2.00 元”；付款事件写入后同步显示 `0.00 元`，避免将食堂收入误解为未到账或校园卡余额。
+
+## 2026-07-25 食堂油渍纸巾命中修正
+
+- 根因：校园地图会提高 Phaser canvas backing-store 分辨率，但 RPG 道具栏拖放始终按 `960×540` 换算 client 坐标，导致自行车锁的世界坐标偏移，落点经常落在 `100px` 命中圈外。
+- 修正：`RpgInventoryDock` 现在传入实际 canvas 宽高；室内仍为 `960×540`，校园则使用当前 backing-store 尺寸。食堂自行车开场字幕仍会播放，但不再阻塞查看、读码和纸巾拖放。
+- 浏览器验证：本地 `1280×720 @ DPR 2` 的 `c3-canteen-bike` 检查点中，关闭 DEV 面板后执行“切深色 → 点击自行车读码 → 切浅色 → 从道具栏拖油渍纸巾到自行车锁”。结果为 `bikeCodeRead=true`、`bikeLockCleaned=true`、`greaseTissue` 仍在道具栏、阶段仍为 `chase_ready`，浏览器错误为 `0`；画面出现“反光消失，二维码可读”。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `96,539,177 bytes`，SHA-256 为 `bae9920f1196c5bcdd389c97baf3b272493a50d27365de92ab3cc8fab508b97b`。
+
+## 2026-07-26 东区大食堂 755 米 3D 骑行替换
+
+- 用户输入：保留东区大食堂内部剧情、追逐和餐盘车流程，使用 `/Users/zhuhangcheng/.qoderworkcn/workspace/mrucdokos7lsy4mk/outputs/bike_rush_3d_demo.html` 替换原有扫码后的骑行流程。
+- 运行时边界：外部 Demo 依赖 Three.js CDN，正式项目需要离线单文件并保持 React / TypeScript / Phaser 运行时，因此移植玩法、低多边形 3D 视觉与交互契约，不引入外链脚本或第二套引擎。
+- 已实现：食堂车锁识别、油渍纸巾清理和 2 元支付继续作为剧情门槛；付款后进入三车道 755 米骑行，支持 A / D、方向键、触控换道、三次机会、六类障碍、188 / 377 / 566 米节点、失败重试、剧情通关和无尽模式。
+- 状态契约：`canteenHunt` 新增通关、尝试次数、最佳距离和最佳剩余机会；SaveStore 升至 v13，并兼容 v12 钱包及旧 `theater_reached` 存档。控制器只接受 `755m 且 lives > 0` 的剧情胜利或 `lives === 0` 的失败结算，通关后由玩家确认继续进入剧院。
+- 可观测性：`window.render_game_to_text()` 的 `canteenChase` 现在输出模式、运行阶段、距离、目标、机会、车道、碰撞和前方障碍；追逐层接管 `window.advanceTime(ms)` 供确定性玩法验证。
+- CI 同款验证：`npm run map:zijingang`、`npm run typecheck`、`npm run build`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 全部通过；Web CI 同步覆盖上述地图契约、类型检查、生产构建和离线单文件检查。
+- 单文件浏览器验收：正式 `demo/index.html` 在桌面完成开始追逐、A / D 换道、755m 通关、持久化最佳成绩和“继续追踪纸条”进入 `campus_theater_junction`；失败分支在三次碰撞后停在 `474m` 并提供重试。`390×844` 触控环境保持 `390×219.375` 的 16:9 画面，左右换道按钮为 `42×42`，实际右移由车道 `1` 变为 `2`。两端横向溢出、页面错误、控制台错误和外部请求均为 `0`。
+- 最终产物：`demo/index.html` 为 `96,556,169 bytes`，SHA-256 为 `b77678c636ca714a357dd017f516c82e43a3ccfcf926459e4bc891fedb934bef`。

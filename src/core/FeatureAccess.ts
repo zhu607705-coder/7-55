@@ -26,7 +26,12 @@ const RECOVERY_VISIBLE_PHASES = new Set<GameState["ui"]["libraryFinalsPhase"]>([
 
 export function selectFeatureAccess(state: GameState): FeatureAccess {
   const puzzle = state.ui.libraryFinalsPuzzle;
-  const chapter = puzzle.nextQuestId === "chapter_three_book_hunt" || state.ui.libraryFinalsPhase === "friend_contacted"
+  const chapterThreeActive = puzzle.nextQuestId === "chapter_three_canteen_hunt"
+    || state.ui.libraryFinalsPhase === "friend_contacted"
+    || state.canteenHunt.active
+    || state.theaterHunt.active
+    || state.qizhenLake.active;
+  const chapter = chapterThreeActive
     ? "chapter_three"
     : state.actOne.phase === "prologue"
       ? "chapter_one"
@@ -42,7 +47,9 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     && ["top_ten_rising", "top_ten_reached", "recovery_application", "pass_ready", "backpack_removed", "seat_recovered", "friend_contacted"]
       .includes(state.ui.libraryFinalsPhase);
   const libraryRecovery = RECOVERY_VISIBLE_PHASES.has(state.ui.libraryFinalsPhase);
-  const bikeArcade = chapter === "chapter_three" || state.bikeArcade.unlocked;
+  // The portrait runner remains a retained mini-game implementation, but it
+  // no longer participates in the formal chapter-three unlock path.
+  const bikeArcade = false;
 
   return {
     chapter,
@@ -75,6 +82,7 @@ export function canEnterScene(state: GameState, scene: SceneId): boolean {
 
 export function sanitizeZjudingPage(state: GameState, requested = state.ui.zjudingPage): ZjudingPage {
   const access = selectFeatureAccess(state);
+  if (requested === "campus_map" && !access.fullCampusMap) return "hub";
   if (requested === "directory" && !access.departmentDirectory) return "hub";
   if (requested === "library_recovery" && !access.libraryRecovery) return access.library ? "library" : "hub";
   if (requested === "library_catalog" && !access.libraryCatalog) return access.library ? "library" : "hub";

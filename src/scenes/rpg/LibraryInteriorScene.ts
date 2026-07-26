@@ -65,6 +65,7 @@ const SHELF_COLLISION_BASE_X = (SHELF_COLLISION_RECT.left + SHELF_COLLISION_RECT
 const SHELF_PAPER_HIDDEN_X = SHELF_SPRITE_BOUNDS.left + 12;
 const SHELF_PAPER_REVEALED_X = SHELF_SPRITE_BOUNDS.left - 8;
 const SHELF_PAPER_Y = SHELF_SPRITE_BOUNDS.top + 42;
+const INVENTORY_DROP_EDGE_DISTANCE = 72;
 
 interface MarkerParts {
   container: Phaser.GameObjects.Container;
@@ -167,8 +168,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
       || storedCheckpoint === "campus_canteen_gate"
       || storedCheckpoint === "dorm_spawn"
       || storedCheckpoint === "canteen_entrance"
+      || !Object.prototype.hasOwnProperty.call(LIBRARY_CHECKPOINT_SPAWNS, storedCheckpoint)
       ? "library_entrance"
-      : storedCheckpoint;
+      : storedCheckpoint as keyof typeof LIBRARY_CHECKPOINT_SPAWNS;
     const spawn = LIBRARY_CHECKPOINT_SPAWNS[checkpoint];
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
     this.player.setCollideWorldBounds(true).setDepth(spawn.y + 120);
@@ -178,6 +180,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT") as Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.enterKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.escapeKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.cameras.main
@@ -349,7 +352,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
     if (name === "library_friend_contacted") {
       this.animateChapterHandoff();
-      this.showFeedback("任务更新：找到那本借走签到记录的书", "chapter");
+      this.showFeedback("任务更新：追上逃跑的记录纸条", "chapter");
       return;
     }
     if (name === "library_backpack_broadcast_line") {
@@ -374,6 +377,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
       });
       return;
     }
+    if (!this.isPlayerAtDropTargetEdge(target)) {
+      this.bridge.emit("library_rpg_interaction_failed", {
+        itemId,
+        targetId: target.id,
+        reason: "too_far"
+      });
+      return;
+    }
 
     const actionByTarget: Partial<Record<LibraryInteractionTargetId, string>> = {
       library_shelf_755: "useCallNumberOnShelf",
@@ -387,6 +398,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     this.bridge.emit("rpg_library_action_requested", { action, targetId: target.id, itemId });
+  }
+
+  private isPlayerAtDropTargetEdge(target: LibraryInteractionTarget): boolean {
+    const halfWidth = target.width / 2;
+    const halfHeight = target.height / 2;
+    const edgeX = Phaser.Math.Clamp(this.player.x, target.x - halfWidth, target.x + halfWidth);
+    const edgeY = Phaser.Math.Clamp(this.player.y, target.y - halfHeight, target.y + halfHeight);
+    return Phaser.Math.Distance.Between(this.player.x, this.player.y, edgeX, edgeY) <= INVENTORY_DROP_EDGE_DISTANCE;
   }
 
   private triggerInteraction(target: LibraryInteractionTarget, state: GameState): void {
@@ -679,8 +698,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private showFailure(reason: string, targetId: string): void {
+    const targetLabel = LIBRARY_INTERACTION_TARGETS.find((target) => target.id === targetId)?.label;
     const text = reason === "wrong_item"
       ? "这个道具和目标的证据类型对不上。"
+      : reason === "too_far"
+        ? `先走到${targetLabel ? `「${targetLabel}」` : "目标"}的可操作边缘，再使用道具。`
       : reason === "no_target"
         ? "道具没有落在可交互目标上。"
         : "条件还不完整，目标暂时不接受这个操作。";
