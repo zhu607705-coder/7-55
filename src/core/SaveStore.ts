@@ -13,13 +13,15 @@ import type {
   LibraryRecoveryEvidenceId,
   QizhenDecoyTargetId,
   QizhenLakePhase,
-  QizhenMapClueId
+  QizhenMapClueId,
+  WalletState
 } from "./types";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 10;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, SAVE_VERSION]);
+const SAVE_VERSION = 13;
+const WALLET_SAVE_VERSION = 12;
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
@@ -130,7 +132,7 @@ const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>(
 ]);
 
 interface SaveEnvelope {
-  version: 10;
+  version: 13;
   state: GameState;
   savedAt: number;
 }
@@ -285,7 +287,9 @@ export class SaveStore {
       const bikeArcade = normalizeBikeArcade(saved.bikeArcade, initial.bikeArcade);
       const savedCanteenHunt = isRecord(saved.canteenHunt) ? saved.canteenHunt : {};
       const savedCanteenPhase = enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase);
-      const canteenHunt: GameState["canteenHunt"] = {
+      const legacyChaseCompleted = savedCanteenPhase === "theater_reached";
+      const chaseCompleted = booleanOr(savedCanteenHunt.chaseCompleted, legacyChaseCompleted);
+      let canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
         phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
         mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
@@ -305,6 +309,18 @@ export class SaveStore {
         bikeCodeRead: booleanOr(savedCanteenHunt.bikeCodeRead, initial.canteenHunt.bikeCodeRead),
         bikeLockCleaned: booleanOr(savedCanteenHunt.bikeLockCleaned, initial.canteenHunt.bikeLockCleaned),
         bikePaid: booleanOr(savedCanteenHunt.bikePaid, initial.canteenHunt.bikePaid),
+        chaseCompleted,
+        chaseAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.chaseAttemptCount, legacyChaseCompleted ? 1 : initial.canteenHunt.chaseAttemptCount),
+        chaseBestDistance: Math.max(
+          chaseCompleted ? 755 : 0,
+          nonNegativeIntegerOr(savedCanteenHunt.chaseBestDistance, initial.canteenHunt.chaseBestDistance)
+        ),
+        chaseBestLives: rangedIntegerOr(
+          savedCanteenHunt.chaseBestLives,
+          0,
+          3,
+          legacyChaseCompleted ? 3 : initial.canteenHunt.chaseBestLives
+        ),
         chaseCollisions: nonNegativeIntegerOr(savedCanteenHunt.chaseCollisions, initial.canteenHunt.chaseCollisions)
       };
       const savedTheaterHunt = isRecord(saved.theaterHunt) ? saved.theaterHunt : {};
@@ -340,11 +356,28 @@ export class SaveStore {
         qizhenLake.active = true;
         qizhenLake.phase = "location_search";
       }
-      if (ui.libraryFinalsPhase === "friend_contacted" || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_book_hunt") {
-        bikeArcade.unlocked = true;
+      const requiresCanteenMigration = isLegacyChapterThreeState(saved, ui);
+      const chapterThreeAlreadyProgressed = hasChapterThreeProgress(canteenHunt, theaterHunt, qizhenLake);
+      if (requiresCanteenMigration) {
+        ui.libraryFinalsPhase = "friend_contacted";
+        ui.libraryFinalsPuzzle = {
+          ...ui.libraryFinalsPuzzle,
+          nextQuestId: "chapter_three_canteen_hunt"
+        };
+        if (!chapterThreeAlreadyProgressed) {
+          canteenHunt = createCanteenTrackingState(initial.canteenHunt);
+        }
       }
 
       normalizeConsumedItems(items, ui, flags);
+      const wallet = normalizeWallet(
+        saved.wallet,
+        initial.wallet,
+        actOne,
+        items,
+        canteenHunt,
+        envelopeVersion >= WALLET_SAVE_VERSION
+      );
       if (ui.selectedItem && !items[ui.selectedItem]) {
         ui.selectedItem = null;
       }
@@ -359,12 +392,19 @@ export class SaveStore {
         items,
         flags,
         actOne,
+        wallet,
         bikeArcade,
         canteenHunt,
         theaterHunt,
         qizhenLake,
         ui
       };
+      if (requiresCanteenMigration && !chapterThreeAlreadyProgressed) {
+        hydrated.runtimeMode = "rpg";
+        hydrated.rpgScene = "campus_bootstrap";
+        hydrated.rpgCheckpoint = "campus_spawn";
+        hydrated.currentScene = "phone_home";
+      }
       hydrated.currentScene = canEnterScene(hydrated, hydrated.currentScene) ? hydrated.currentScene : "phone_home";
       hydrated.ui.zjudingPage = sanitizeZjudingPage(hydrated);
       return hydrated;
@@ -441,6 +481,75 @@ function normalizeQizhenLake(
   };
 }
 
+function isLegacyChapterThreeState(saved: Record<string, unknown>, ui: GameState["ui"]): boolean {
+  const savedUi = asRecord(saved.ui);
+  const savedPuzzle = asRecord(savedUi.libraryFinalsPuzzle);
+  return ui.libraryFinalsPhase === "friend_contacted"
+    || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_canteen_hunt"
+    || savedPuzzle.nextQuestId === "chapter_three_book_hunt"
+    || saved.currentScene === "bike_arcade"
+    || saved.currentScene === "chapter_transition";
+}
+
+function hasChapterThreeProgress(
+  canteenHunt: GameState["canteenHunt"],
+  theaterHunt: GameState["theaterHunt"],
+  qizhenLake: GameState["qizhenLake"]
+): boolean {
+  const canteenProgressed = canteenHunt.active
+    || canteenHunt.phase !== "tracking"
+    || canteenHunt.mode !== "light"
+    || canteenHunt.identifiedTrayIds.length > 0
+    || canteenHunt.returnedTrayIds.length > 0
+    || canteenHunt.orderAttemptCount > 0
+    || canteenHunt.pickupAttemptCount > 0
+    || canteenHunt.blockHits > 0
+    || canteenHunt.bikeCodeRead
+    || canteenHunt.bikeLockCleaned
+    || canteenHunt.bikePaid
+    || canteenHunt.chaseCollisions > 0;
+  const theaterProgressed = theaterHunt.active
+    || theaterHunt.phase !== "entry_ticket"
+    || theaterHunt.posterCleaned
+    || theaterHunt.ticketCodeRead
+    || theaterHunt.admitted
+    || theaterHunt.collectedProgramIds.length > 0
+    || theaterHunt.propBoxOpened
+    || theaterHunt.spotlightRound > 0;
+  const qizhenProgressed = qizhenLake.active
+    || qizhenLake.phase !== "inactive"
+    || qizhenLake.mapClueIds.length > 0
+    || qizhenLake.introSeen
+    || qizhenLake.reflectionRound > 0
+    || qizhenLake.signsSolved
+    || qizhenLake.paperReleased;
+  return canteenProgressed || theaterProgressed || qizhenProgressed;
+}
+
+function createCanteenTrackingState(
+  initial: GameState["canteenHunt"]
+): GameState["canteenHunt"] {
+  return {
+    ...initial,
+    active: true,
+    phase: "tracking",
+    mode: "light",
+    identifiedTrayIds: [],
+    returnedTrayIds: [],
+    orderAttemptCount: 0,
+    pickupAttemptCount: 0,
+    blockHits: 0,
+    bikeCodeRead: false,
+    bikeLockCleaned: false,
+    bikePaid: false,
+    chaseCompleted: false,
+    chaseAttemptCount: 0,
+    chaseBestDistance: 0,
+    chaseBestLives: 0,
+    chaseCollisions: 0
+  };
+}
+
 function createPersistentSnapshot(state: GameState): GameState {
   return {
     ...state,
@@ -477,6 +586,30 @@ function normalizeBikeArcade(
     attemptCount: nonNegativeSafeIntegerOr(saved.attemptCount, initial.attemptCount),
     bestDistance: rangedNumberOr(saved.bestDistance, 0, 755, initial.bestDistance),
     bestLives: rangedIntegerOr(saved.bestLives, 0, 3, initial.bestLives)
+  };
+}
+
+function normalizeWallet(
+  value: unknown,
+  initial: WalletState,
+  actOne: ActOneBootstrapState,
+  items: GameState["items"],
+  canteenHunt: GameState["canteenHunt"],
+  saveHasWallet: boolean
+): WalletState {
+  const saved = asRecord(value);
+  const inferred: WalletState = {
+    // The 6.00 balance is spent by the gamepad purchase, so that fact wins
+    // when old saves contain a contradictory combination of flags.
+    campusCardCents: actOne.gamepadPurchased ? 0 : actOne.balanceShifted ? 600 : 6,
+    // The tray receipt represents the two yuan cash payment. Once the bike
+    // has been paid for, the receipt has already been consumed.
+    cashCents: canteenHunt.bikePaid ? 0 : items.cafeteriaWages ? 200 : 0
+  };
+  if (!saveHasWallet) return inferred;
+  return {
+    campusCardCents: nonNegativeSafeIntegerOr(saved.campusCardCents, inferred.campusCardCents),
+    cashCents: nonNegativeSafeIntegerOr(saved.cashCents, inferred.cashCents)
   };
 }
 
@@ -641,7 +774,9 @@ function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzz
       : booleanOr(saved.evictionPassGenerated, initial.evictionPassGenerated),
     backpackEvicted: booleanOr(saved.backpackEvicted, initial.backpackEvicted),
     playerSeated: booleanOr(saved.playerSeated, initial.playerSeated),
-    nextQuestId: saved.nextQuestId === "chapter_three_book_hunt" ? saved.nextQuestId : initial.nextQuestId,
+    nextQuestId: saved.nextQuestId === "chapter_three_canteen_hunt" || saved.nextQuestId === "chapter_three_book_hunt"
+      ? "chapter_three_canteen_hunt"
+      : initial.nextQuestId,
     clueIds: isStringArray(saved.clueIds) ? [...new Set(saved.clueIds)] : [...initial.clueIds]
   };
 }
@@ -682,7 +817,7 @@ function completedLegacyPuzzle(initial: LibraryFinalsPuzzleState): LibraryFinals
     passBriefingSeen: true,
     backpackEvicted: true,
     playerSeated: true,
-    nextQuestId: "chapter_three_book_hunt",
+    nextQuestId: "chapter_three_canteen_hunt",
     clueIds: ["borrowed_attendance_record"]
   };
 }

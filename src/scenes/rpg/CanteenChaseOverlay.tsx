@@ -1,66 +1,295 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import campusPlateUrl from "../../assets/rpg/campus/zijingang_campus_plate.png";
 import type { EventBus } from "../../core/EventBus";
-import canteenContent from "../../data/chapter3-canteen.content.json";
+import type { CanteenChaseAttempt } from "../../modules/ChapterThreeCanteenController";
 import { setCanteenChaseSnapshot } from "./CanteenChaseRuntime";
 
 interface CanteenChaseOverlayProps {
   events: EventBus;
-  onComplete: (collisions: number) => void;
+  completed: boolean;
+  attemptCount: number;
+  bestDistance: number;
+  bestLives: number;
+  onAttempt: (attempt: CanteenChaseAttempt) => void;
+  onContinue: () => void;
 }
+
+type ChaseMode = "story" | "endless";
+type ChaseRunState = "ready" | "countdown" | "running" | "won" | "lost";
+type ChaseObstacleKind = "barrier" | "bicycle" | "crowd" | "cone" | "car" | "runner";
 
 interface ChaseObstacle {
   id: string;
-  at: number;
+  distance: number;
   lane: number;
-  kind: "delivery" | "runner" | "bike";
+  kind: ChaseObstacleKind;
 }
 
-const CHASE_DURATION_MS = 34000;
-const LANE_Y = [220, 320, 420] as const;
-const PLAYER_X = 220;
-const OBSTACLE_APPROACH_SCALE = 1480;
-const OBSTACLES: readonly ChaseObstacle[] = [
-  { id: "delivery-1", at: 0.16, lane: 1, kind: "delivery" },
-  { id: "runner-1", at: 0.28, lane: 0, kind: "runner" },
-  { id: "bike-1", at: 0.39, lane: 2, kind: "bike" },
-  { id: "runner-2", at: 0.51, lane: 1, kind: "runner" },
-  { id: "delivery-2", at: 0.64, lane: 2, kind: "delivery" },
-  { id: "bike-2", at: 0.76, lane: 0, kind: "bike" },
-  { id: "delivery-3", at: 0.88, lane: 1, kind: "delivery" }
+interface ChaseRuntime {
+  mode: ChaseMode;
+  runState: ChaseRunState;
+  distance: number;
+  lives: number;
+  lane: number;
+  collisions: number;
+  countdownMs: number;
+  invulnerableMs: number;
+  milestone: number | null;
+  milestoneMs: number;
+  paused: boolean;
+  hitObstacleIds: Set<string>;
+  reachedMilestones: Set<number>;
+  lastPublishedDistance: number;
+}
+
+interface ChaseView {
+  mode: ChaseMode;
+  runState: ChaseRunState;
+  distance: number;
+  lives: number;
+  lane: number;
+  collisions: number;
+  countdown: number | null;
+  milestone: number | null;
+  paused: boolean;
+}
+
+const GOAL_DISTANCE = 755;
+const MAX_LIVES = 3;
+const OBSTACLE_START_DISTANCE = 78;
+const OBSTACLE_INTERVAL = 66;
+const VISIBLE_DISTANCE = 220;
+const MILESTONES = [188, 377, 566] as const;
+const OBSTACLE_KINDS: readonly ChaseObstacleKind[] = [
+  "barrier",
+  "bicycle",
+  "crowd",
+  "cone",
+  "car",
+  "runner"
 ];
 
-export function CanteenChaseOverlay({ events, onComplete }: CanteenChaseOverlayProps) {
-  const [progress, setProgress] = useState(0);
-  const [lane, setLane] = useState(1);
-  const [collisions, setCollisions] = useState(0);
-  const [slowed, setSlowed] = useState(false);
-  const [paused, setPaused] = useState(document.visibilityState === "hidden");
-  const [finishing, setFinishing] = useState(false);
-  const [countdown, setCountdown] = useState<number | null>(3);
-  const progressRef = useRef(0);
-  const laneRef = useRef(1);
-  const collisionsRef = useRef(0);
-  const lastFrameRef = useRef<number | null>(null);
-  const slowedUntilRef = useRef(0);
-  const hitObstacleIdsRef = useRef(new Set<string>());
-  const milestoneRef = useRef(new Set<number>());
-  const completionScheduledRef = useRef(false);
-  const lastLaneChangeAtRef = useRef(0);
-  const chaseRunStartedRef = useRef(false);
-  const countdownCueRef = useRef(new Set<number>());
+function createInitialRuntime(completed: boolean): ChaseRuntime {
+  return {
+    mode: "story",
+    runState: completed ? "won" : "ready",
+    distance: completed ? GOAL_DISTANCE : 0,
+    lives: completed ? MAX_LIVES : MAX_LIVES,
+    lane: 1,
+    collisions: 0,
+    countdownMs: 0,
+    invulnerableMs: 0,
+    milestone: null,
+    milestoneMs: 0,
+    paused: typeof document !== "undefined" && document.visibilityState === "hidden",
+    hitObstacleIds: new Set<string>(),
+    reachedMilestones: new Set<number>(),
+    lastPublishedDistance: -1
+  };
+}
+
+function obstacleAt(index: number): ChaseObstacle {
+  const hash = Math.imul(index + 11, 1103515245) >>> 0;
+  return {
+    id: `rush-${index}`,
+    distance: OBSTACLE_START_DISTANCE + index * OBSTACLE_INTERVAL,
+    lane: (hash >>> 8) % 3,
+    kind: OBSTACLE_KINDS[(hash >>> 16) % OBSTACLE_KINDS.length]
+  };
+}
+
+function obstaclesBetween(start: number, end: number): ChaseObstacle[] {
+  const first = Math.max(0, Math.ceil((start - OBSTACLE_START_DISTANCE) / OBSTACLE_INTERVAL));
+  const last = Math.max(first - 1, Math.floor((end - OBSTACLE_START_DISTANCE) / OBSTACLE_INTERVAL));
+  const result: ChaseObstacle[] = [];
+  for (let index = first; index <= last; index += 1) result.push(obstacleAt(index));
+  return result;
+}
+
+function visibleObstacles(distance: number): ChaseObstacle[] {
+  return obstaclesBetween(distance + 0.01, distance + VISIBLE_DISTANCE)
+    .sort((left, right) => right.distance - left.distance);
+}
+
+function paceAt(distance: number, mode: ChaseMode): number {
+  const capped = mode === "story" ? Math.min(distance, GOAL_DISTANCE) : Math.min(distance, 3200);
+  return 0.031 + capped * 0.000021;
+}
+
+function projectRoadPoint(distanceAhead: number, lane: number) {
+  const depth = Math.max(0, Math.min(1, 1 - distanceAhead / VISIBLE_DISTANCE));
+  const perspective = depth * depth;
+  return {
+    x: 480 + (lane - 1) * (44 + perspective * 260),
+    y: 148 + perspective * 350,
+    scale: 0.18 + perspective * 1.28,
+    opacity: 0.32 + perspective * 0.68
+  };
+}
+
+export function CanteenChaseOverlay({
+  events,
+  completed,
+  attemptCount,
+  bestDistance,
+  bestLives,
+  onAttempt,
+  onContinue
+}: CanteenChaseOverlayProps) {
+  const runtimeRef = useRef<ChaseRuntime>(createInitialRuntime(completed));
+  const eventsRef = useRef(events);
+  const onAttemptRef = useRef(onAttempt);
+  const [view, setView] = useState<ChaseView>(() => toView(runtimeRef.current));
+  eventsRef.current = events;
+  onAttemptRef.current = onAttempt;
+
+  const publish = useCallback((force = false) => {
+    const runtime = runtimeRef.current;
+    const roundedDistance = Math.floor(runtime.distance);
+    if (!force && roundedDistance === runtime.lastPublishedDistance && runtime.runState === "running") return;
+    runtime.lastPublishedDistance = roundedDistance;
+    setView(toView(runtime));
+  }, []);
+
+  const finishRun = useCallback((result: "won" | "lost") => {
+    const runtime = runtimeRef.current;
+    if (runtime.runState !== "running") return;
+    runtime.runState = result;
+    runtime.distance = result === "won" ? GOAL_DISTANCE : Math.floor(runtime.distance);
+    runtime.countdownMs = 0;
+    runtime.milestone = null;
+    eventsRef.current.emit("canteen_chase_finish", {
+      result,
+      mode: runtime.mode,
+      distance: Math.floor(runtime.distance),
+      lives: runtime.lives,
+      collisions: runtime.collisions
+    });
+    onAttemptRef.current({
+      mode: runtime.mode,
+      distance: Math.floor(runtime.distance),
+      lives: runtime.lives,
+      collisions: runtime.collisions
+    });
+    publish(true);
+  }, [publish]);
+
+  const advanceSimulation = useCallback((milliseconds: number) => {
+    const runtime = runtimeRef.current;
+    if (runtime.paused || milliseconds <= 0) return;
+    let remaining = Math.min(5000, milliseconds);
+
+    if (runtime.runState === "countdown") {
+      const previousValue = Math.max(1, Math.ceil(runtime.countdownMs / 1000));
+      const consumed = Math.min(remaining, runtime.countdownMs);
+      runtime.countdownMs -= consumed;
+      remaining -= consumed;
+      const nextValue = runtime.countdownMs > 0 ? Math.max(1, Math.ceil(runtime.countdownMs / 1000)) : null;
+      if (nextValue !== null && nextValue !== previousValue) {
+        eventsRef.current.emit("canteen_chase_countdown", { value: nextValue });
+      }
+      if (runtime.countdownMs <= 0) {
+        runtime.runState = "running";
+        eventsRef.current.emit("canteen_chase_run_started", { mode: runtime.mode });
+      }
+      publish(true);
+    }
+
+    if (runtime.runState !== "running" || remaining <= 0) return;
+    const previousDistance = runtime.distance;
+    const nextDistance = runtime.mode === "story"
+      ? Math.min(GOAL_DISTANCE, previousDistance + remaining * paceAt(previousDistance, runtime.mode))
+      : previousDistance + remaining * paceAt(previousDistance, runtime.mode);
+    runtime.invulnerableMs = Math.max(0, runtime.invulnerableMs - remaining);
+    runtime.milestoneMs = Math.max(0, runtime.milestoneMs - remaining);
+    if (runtime.milestoneMs === 0) runtime.milestone = null;
+
+    for (const obstacle of obstaclesBetween(previousDistance, nextDistance)) {
+      if (runtime.hitObstacleIds.has(obstacle.id)) continue;
+      runtime.hitObstacleIds.add(obstacle.id);
+      if (obstacle.lane === runtime.lane && runtime.invulnerableMs <= 0) {
+        runtime.collisions += 1;
+        runtime.lives = Math.max(0, runtime.lives - 1);
+        runtime.invulnerableMs = 900;
+        eventsRef.current.emit("canteen_chase_collision", {
+          obstacleId: obstacle.id,
+          kind: obstacle.kind,
+          collisions: runtime.collisions,
+          lives: runtime.lives
+        });
+        if (runtime.lives === 0) {
+          runtime.distance = Math.floor(obstacle.distance);
+          finishRun("lost");
+          return;
+        }
+      } else {
+        eventsRef.current.emit("canteen_chase_near_miss", {
+          obstacleId: obstacle.id,
+          kind: obstacle.kind
+        });
+      }
+    }
+
+    runtime.distance = nextDistance;
+    for (const milestone of MILESTONES) {
+      if (
+        previousDistance < milestone
+        && nextDistance >= milestone
+        && !runtime.reachedMilestones.has(milestone)
+      ) {
+        runtime.reachedMilestones.add(milestone);
+        runtime.milestone = milestone;
+        runtime.milestoneMs = 1100;
+        eventsRef.current.emit("canteen_chase_paper_nearer", { milestone });
+      }
+    }
+
+    if (runtime.mode === "story" && runtime.distance >= GOAL_DISTANCE) {
+      finishRun("won");
+      return;
+    }
+    publish();
+  }, [finishRun, publish]);
+
+  const beginRun = useCallback((mode: ChaseMode) => {
+    const runtime = runtimeRef.current;
+    runtime.mode = mode;
+    runtime.runState = "countdown";
+    runtime.distance = 0;
+    runtime.lives = MAX_LIVES;
+    runtime.lane = 1;
+    runtime.collisions = 0;
+    runtime.countdownMs = 3000;
+    runtime.invulnerableMs = 0;
+    runtime.milestone = null;
+    runtime.milestoneMs = 0;
+    runtime.hitObstacleIds.clear();
+    runtime.reachedMilestones.clear();
+    runtime.lastPublishedDistance = -1;
+    eventsRef.current.emit("canteen_chase_countdown", { value: 3, mode });
+    publish(true);
+  }, [publish]);
 
   const changeLane = useCallback((delta: number) => {
-    if (finishing || paused || countdown !== null) return;
-    const now = Date.now();
-    if (now - lastLaneChangeAtRef.current < 120) return;
-    const next = Math.max(0, Math.min(2, laneRef.current + delta));
-    if (next === laneRef.current) return;
-    lastLaneChangeAtRef.current = now;
-    laneRef.current = next;
-    setLane(next);
-    events.emit("canteen_chase_lane_changed", { lane: next });
-  }, [countdown, events, finishing, paused]);
+    const runtime = runtimeRef.current;
+    if (runtime.runState !== "running" || runtime.paused) return;
+    const nextLane = Math.max(0, Math.min(2, runtime.lane + delta));
+    if (nextLane === runtime.lane) return;
+    runtime.lane = nextLane;
+    eventsRef.current.emit("canteen_chase_lane_changed", { lane: nextLane });
+    publish(true);
+  }, [publish]);
+
+  const showTitle = useCallback(() => {
+    const runtime = runtimeRef.current;
+    runtime.runState = "ready";
+    runtime.mode = "story";
+    runtime.distance = 0;
+    runtime.lives = MAX_LIVES;
+    runtime.lane = 1;
+    runtime.collisions = 0;
+    runtime.milestone = null;
+    publish(true);
+  }, [publish]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -71,212 +300,450 @@ export function CanteenChaseOverlay({ events, onComplete }: CanteenChaseOverlayP
       } else if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
         event.preventDefault();
         changeLane(1);
+      } else if (
+        (event.key === "Enter" || event.key === " ")
+        && runtimeRef.current.runState === "ready"
+      ) {
+        event.preventDefault();
+        beginRun("story");
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [changeLane]);
+  }, [beginRun, changeLane]);
 
   useEffect(() => {
     const handleVisibility = () => {
-      const nextPaused = document.visibilityState === "hidden";
-      setPaused(nextPaused);
-      lastFrameRef.current = null;
-      events.emit(nextPaused ? "canteen_chase_paused" : "canteen_chase_resumed");
+      const runtime = runtimeRef.current;
+      runtime.paused = document.visibilityState === "hidden";
+      eventsRef.current.emit(runtime.paused ? "canteen_chase_paused" : "canteen_chase_resumed");
+      publish(true);
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [events]);
-
-  useEffect(() => {
-    if (paused || countdown === null) {
-      if (countdown === null && !chaseRunStartedRef.current) {
-        chaseRunStartedRef.current = true;
-        events.emit("canteen_chase_run_started");
-      }
-      return undefined;
-    }
-    if (!countdownCueRef.current.has(countdown)) {
-      countdownCueRef.current.add(countdown);
-      events.emit("canteen_chase_countdown", { value: countdown });
-    }
-    const timer = window.setTimeout(() => {
-      setCountdown((current) => current === null || current <= 1 ? null : current - 1);
-    }, 1000);
-    return () => window.clearTimeout(timer);
-  }, [countdown, events, paused]);
+  }, [publish]);
 
   useEffect(() => {
     let frame = 0;
+    let previous = performance.now();
     const tick = (now: number) => {
-      if (paused || finishing || countdown !== null) {
-        lastFrameRef.current = now;
-        frame = window.requestAnimationFrame(tick);
-        return;
-      }
-      const lastFrame = lastFrameRef.current ?? now;
-      const delta = Math.min(48, Math.max(0, now - lastFrame));
-      lastFrameRef.current = now;
-      const isSlowed = now < slowedUntilRef.current;
-      setSlowed(isSlowed);
-      const speedFactor = isSlowed ? 0.8 : 1;
-      const nextProgress = Math.min(1, progressRef.current + delta * speedFactor / CHASE_DURATION_MS);
-      progressRef.current = nextProgress;
-      setProgress(nextProgress);
-
-      OBSTACLES.forEach((obstacle) => {
-        if (hitObstacleIdsRef.current.has(obstacle.id)) return;
-        const obstacleX = PLAYER_X + (obstacle.at - nextProgress) * OBSTACLE_APPROACH_SCALE;
-        if (obstacleX >= PLAYER_X - 22 && obstacleX <= PLAYER_X + 26) {
-          hitObstacleIdsRef.current.add(obstacle.id);
-          if (obstacle.lane === laneRef.current) {
-            collisionsRef.current += 1;
-            setCollisions(collisionsRef.current);
-            slowedUntilRef.current = now + 800;
-            setSlowed(true);
-            events.emit("canteen_chase_collision", {
-              obstacleId: obstacle.id,
-              kind: obstacle.kind,
-              collisions: collisionsRef.current
-            });
-          } else {
-            events.emit("canteen_chase_near_miss", { obstacleId: obstacle.id, kind: obstacle.kind });
-          }
-        }
-      });
-
-      [0.34, 0.67].forEach((milestone) => {
-        if (nextProgress >= milestone && !milestoneRef.current.has(milestone)) {
-          milestoneRef.current.add(milestone);
-          events.emit("canteen_chase_paper_nearer", { milestone });
-        }
-      });
-
-      if (nextProgress >= 1 && !completionScheduledRef.current) {
-        completionScheduledRef.current = true;
-        setFinishing(true);
-        events.emit("canteen_chase_finish", { collisions: collisionsRef.current });
-        window.setTimeout(() => onComplete(collisionsRef.current), 900);
-        return;
-      }
+      const delta = Math.min(48, Math.max(0, now - previous));
+      previous = now;
+      advanceSimulation(delta);
       frame = window.requestAnimationFrame(tick);
     };
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
-  }, [countdown, events, finishing, onComplete, paused]);
+  }, [advanceSimulation]);
+
+  useEffect(() => {
+    const previousAdvance = window.advanceTime;
+    const advanceTime = (milliseconds: number) => {
+      const duration = Math.max(0, Number(milliseconds) || 0);
+      let remaining = duration;
+      while (remaining > 0) {
+        const step = Math.min(1000 / 60, remaining);
+        advanceSimulation(step);
+        remaining -= step;
+      }
+    };
+    window.advanceTime = advanceTime;
+    return () => {
+      if (window.advanceTime !== advanceTime) return;
+      if (previousAdvance) window.advanceTime = previousAdvance;
+      else delete window.advanceTime;
+    };
+  }, [advanceSimulation]);
+
+  const visible = useMemo(
+    () => visibleObstacles(view.distance).map((obstacle) => ({
+      ...obstacle,
+      projection: projectRoadPoint(obstacle.distance - view.distance, obstacle.lane)
+    })),
+    [view.distance]
+  );
 
   useEffect(() => {
     setCanteenChaseSnapshot({
       active: true,
-      progress: Number(progress.toFixed(3)),
-      lane,
-      collisions,
-      slowed,
-      paused,
-      countdown
+      coordinateSystem: "3D road projection, horizon at top center, distance increases forward",
+      mode: view.mode,
+      runState: view.runState,
+      distance: Math.floor(view.distance),
+      goal: view.mode === "story" ? GOAL_DISTANCE : null,
+      lives: view.lives,
+      lane: view.lane,
+      collisions: view.collisions,
+      paused: view.paused,
+      countdown: view.countdown,
+      visibleObstacles: visible.slice(-5).map((obstacle) => ({
+        id: obstacle.id,
+        kind: obstacle.kind,
+        lane: obstacle.lane,
+        distanceAhead: Math.round(obstacle.distance - view.distance)
+      }))
     });
     return () => setCanteenChaseSnapshot(null);
-  }, [collisions, countdown, lane, paused, progress, slowed]);
+  }, [view, visible]);
 
-  const visibleObstacles = useMemo(() => OBSTACLES.map((obstacle) => ({
-    ...obstacle,
-    x: PLAYER_X + (obstacle.at - progress) * OBSTACLE_APPROACH_SCALE,
-    y: LANE_Y[obstacle.lane]
-  })).filter((obstacle) => obstacle.x > -120 && obstacle.x < 1080), [progress]);
-
-  const imageX = -260 - progress * 2780;
-  const paperX = finishing ? 1015 : 590 + Math.sin(progress * 28) * 22;
-  const paperY = finishing ? 135 : 150 + Math.sin(progress * 18) * 18;
+  const roadside = useMemo(() => createRoadside(view.distance), [view.distance]);
+  const roadDashes = useMemo(() => createRoadDashes(view.distance), [view.distance]);
+  const currentBest = Math.max(bestDistance, Math.floor(view.distance));
+  const storyCleared = completed || view.runState === "won";
+  const resultDistance = Math.floor(view.distance);
+  const resultBestLives = view.runState === "won" ? view.lives : bestLives;
 
   return (
-    <section className={`canteen-chase-overlay ${slowed ? "is-slowed" : ""} ${finishing ? "is-finishing" : ""} ${countdown !== null ? "is-counting-down" : ""}`} aria-label="食堂到剧院：扫码自行车与第一次追逐">
-      <svg viewBox="0 0 960 540" role="img" aria-label="玩家骑车沿主路追纸条">
+    <section
+      className={`canteen-chase-overlay canteen-bike-rush-3d is-${view.runState} ${view.paused ? "is-paused" : ""}`}
+      aria-label="食堂到剧院：755 米 3D 自行车追逐"
+      data-run-state={view.runState}
+      data-mode={view.mode}
+    >
+      <svg className="canteen-bike-3d-scene" viewBox="0 0 960 540" role="img" aria-label="三车道校园道路、骑车人物和前方障碍">
         <defs>
-          <linearGradient id="canteen-chase-vignette" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#071019" stopOpacity="0.74" />
-            <stop offset="0.18" stopColor="#071019" stopOpacity="0.06" />
-            <stop offset="0.82" stopColor="#071019" stopOpacity="0.08" />
-            <stop offset="1" stopColor="#071019" stopOpacity="0.76" />
+          <linearGradient id="bike-rush-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#77b8ed" />
+            <stop offset="1" stopColor="#d6e7ef" />
           </linearGradient>
-          <filter id="canteen-chase-paper-glow" x="-100%" y="-100%" width="300%" height="300%">
-            <feDropShadow dx="0" dy="0" stdDeviation="7" floodColor="#65d7ff" floodOpacity="0.95" />
+          <linearGradient id="bike-rush-road" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#667074" />
+            <stop offset="1" stopColor="#343b40" />
+          </linearGradient>
+          <linearGradient id="bike-rush-vignette" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#071019" stopOpacity="0.55" />
+            <stop offset="0.22" stopColor="#071019" stopOpacity="0" />
+            <stop offset="0.78" stopColor="#071019" stopOpacity="0" />
+            <stop offset="1" stopColor="#071019" stopOpacity="0.55" />
+          </linearGradient>
+          <filter id="bike-rush-shadow" x="-100%" y="-100%" width="300%" height="300%">
+            <feDropShadow dx="0" dy="5" stdDeviation="4" floodColor="#071019" floodOpacity="0.42" />
           </filter>
         </defs>
-        <image href={campusPlateUrl} x={imageX} y="0" width="5849.45" height="540" preserveAspectRatio="xMinYMid meet" />
-        <path d="M -60 460 C 200 420, 395 410, 1030 165" fill="none" stroke="#18222a" strokeOpacity="0.58" strokeWidth="250" />
-        <path d="M -60 460 C 200 420, 395 410, 1030 165" fill="none" stroke="#ccd2c7" strokeOpacity="0.58" strokeWidth="8" strokeDasharray="28 28" />
-        <rect x="0" y="0" width="960" height="540" fill="url(#canteen-chase-vignette)" />
 
-        {visibleObstacles.map((obstacle) => (
-          <Obstacle key={obstacle.id} x={obstacle.x} y={obstacle.y} kind={obstacle.kind} />
+        <rect width="960" height="540" fill="url(#bike-rush-sky)" />
+        <circle cx="790" cy="76" r="36" fill="#fff4c2" opacity="0.9" />
+        <path d="M0 145 L0 540 L960 540 L960 145 L540 128 L420 128 Z" fill="#658a55" />
+        <path d="M420 145 L540 145 L930 540 L30 540 Z" fill="url(#bike-rush-road)" />
+        <path d="M420 145 L30 540" stroke="#f0d54e" strokeWidth="8" />
+        <path d="M540 145 L930 540" stroke="#f0d54e" strokeWidth="8" />
+        <path d="M480 145 L480 540" stroke="#f4f0de" strokeWidth="3" opacity="0.55" />
+
+        {roadDashes.map((dash) => (
+          <path
+            key={dash.id}
+            d={`M ${dash.leftTop} ${dash.top} L ${dash.rightTop} ${dash.top} L ${dash.rightBottom} ${dash.bottom} L ${dash.leftBottom} ${dash.bottom} Z`}
+            fill="#f4f0de"
+            opacity={dash.opacity}
+          />
         ))}
 
-        <g className="canteen-chase-paper" transform={`translate(${paperX} ${paperY})`} filter="url(#canteen-chase-paper-glow)">
-          <path d={`M ${-72 + progress * 34} 1 L -22 1`} fill="none" stroke="#8ee6ff" strokeWidth="6" strokeLinecap="square" opacity="0.54" />
-          <path d="M -18 -14 L 17 -10 L 14 16 L -14 13 Z" fill="#f2f4ed" stroke="#68d8ff" strokeWidth="3" />
-          <path d="M -9 -5 L 9 -2 M -10 2 L 7 5" stroke="#71808a" strokeWidth="2" />
+        <g className="canteen-bike-roadside">
+          {roadside.map((prop) => (
+            <RoadsideProp key={prop.id} {...prop} />
+          ))}
         </g>
 
-        {progress >= 0.67 ? (
-          <g className="canteen-chase-edge-fibers" fill="none" stroke="#7fdcf7" strokeWidth="3" opacity="0.58">
-            <path d="M 6 110 Q 34 126 8 144 M 6 174 Q 38 190 9 210 M 954 96 Q 927 116 953 134 M 953 170 Q 922 188 952 207" />
-          </g>
-        ) : null}
-
-        <g className="canteen-chase-player" transform={`translate(${PLAYER_X} ${LANE_Y[lane]})`}>
-          <ellipse cx="0" cy="20" rx="34" ry="9" fill="#071019" opacity="0.38" />
-          <circle cx="-20" cy="12" r="13" fill="none" stroke="#1d2630" strokeWidth="5" />
-          <circle cx="22" cy="12" r="13" fill="none" stroke="#1d2630" strokeWidth="5" />
-          <path d="M -20 12 L 0 -10 L 22 12 L -4 12 Z M 0 -10 L 13 -11" fill="none" stroke="#e35b4d" strokeWidth="5" />
-          <rect x="-7" y="-39" width="17" height="26" fill="#315f9f" stroke="#17212a" strokeWidth="3" />
-          <circle cx="2" cy="-49" r="10" fill="#e0b36f" stroke="#17212a" strokeWidth="3" />
+        <g className="canteen-bike-target-paper" transform="translate(480 122)">
+          <path d="M-17 -11 L17 -8 L14 15 L-14 12 Z" fill="#f5f3e8" stroke="#68d8ff" strokeWidth="2" />
+          <path d="M-9 -3 L8 -1 M-8 4 L6 6" stroke="#71808a" strokeWidth="1.5" />
         </g>
 
-        <g className="canteen-chase-progress" transform="translate(180 72)">
-          <rect x="0" y="0" width="310" height="18" rx="4" fill="#071019" opacity="0.82" />
-          <rect x="3" y="3" width={304 * progress} height="12" rx="2" fill="#62c8e8" />
-          <text x="0" y="42" fill="#fff7df" fontFamily="monospace" fontSize="16">{canteenContent.bike.setupDialogue[0]}</text>
+        <g className="canteen-bike-obstacles">
+          {visible.map((obstacle) => (
+            <Obstacle3D
+              key={obstacle.id}
+              kind={obstacle.kind}
+              x={obstacle.projection.x}
+              y={obstacle.projection.y}
+              scale={obstacle.projection.scale}
+              opacity={obstacle.projection.opacity}
+            />
+          ))}
         </g>
-        <text x="760" y="90" fill="#fff7df" textAnchor="end" fontFamily="monospace" fontSize="18">{Math.round(progress * 70)}%</text>
+
+        <g
+          className={`canteen-bike-player ${runtimeRef.current.invulnerableMs > 0 ? "is-invulnerable" : ""}`}
+          transform={`translate(${480 + (view.lane - 1) * 258} 452)`}
+          filter="url(#bike-rush-shadow)"
+        >
+          <Rider3D />
+        </g>
+
+        <rect width="960" height="540" fill="url(#bike-rush-vignette)" pointerEvents="none" />
       </svg>
 
-      <nav className="canteen-chase-controls" aria-label="追逐方向">
-        <button type="button" aria-label="向左换道" disabled={lane === 0 || finishing || countdown !== null} onPointerDown={() => changeLane(-1)}>←</button>
-        <button type="button" aria-label="向右换道" disabled={lane === 2 || finishing || countdown !== null} onPointerDown={() => changeLane(1)}>→</button>
-      </nav>
-      {countdown !== null ? <div className="canteen-chase-countdown" role="status" aria-live="polite">{countdown}</div> : null}
-      {paused ? <div className="canteen-chase-paused" role="status">暂停</div> : null}
+      <header className="canteen-bike-hud" aria-label="骑行状态">
+        <div className="canteen-bike-hud-card">
+          <span>距离 DIST</span>
+          <strong>{String(Math.floor(view.distance)).padStart(3, "0")}<small>{view.mode === "story" ? " / 755m" : "m"}</small></strong>
+        </div>
+        <div className="canteen-bike-hud-stack">
+          <em>{view.mode === "story" ? "剧情模式" : "无尽模式"}</em>
+          <div className="canteen-bike-hud-card is-lives">
+            <span>机会 LIVES</span>
+            <strong>{"■".repeat(view.lives)}{"□".repeat(MAX_LIVES - view.lives)}</strong>
+          </div>
+          <div className="canteen-bike-hud-card is-best">
+            <span>最佳 BEST</span>
+            <strong>{currentBest}m</strong>
+          </div>
+        </div>
+      </header>
+
+      {view.milestone !== null ? (
+        <div className="canteen-bike-milestone" role="status">
+          <strong>{view.milestone}m</strong>
+          <span>{view.milestone === 188 ? "节奏提升" : view.milestone === 377 ? "拥堵升级" : "最后冲刺"}</span>
+        </div>
+      ) : null}
+
+      {view.runState === "running" ? (
+        <>
+          <div className="canteen-bike-key-hint"><kbd>A</kbd> / <kbd>←</kbd> 左移　·　右移 <kbd>→</kbd> / <kbd>D</kbd></div>
+          <nav className="canteen-chase-controls" aria-label="追逐方向">
+            <button type="button" aria-label="向左换道" disabled={view.lane === 0} onPointerDown={() => changeLane(-1)}>←</button>
+            <button type="button" aria-label="向右换道" disabled={view.lane === 2} onPointerDown={() => changeLane(1)}>→</button>
+          </nav>
+        </>
+      ) : null}
+
+      {view.runState === "ready" ? (
+        <div className="canteen-bike-overlay-card">
+          <span className="canteen-bike-kicker">EAST CANTEEN · 3D CHASE</span>
+          <h2>755 米骑行追逐</h2>
+          <p>餐盘回收费已经完成解锁。使用 A / D 或方向键换道，保留至少一次机会追到剧院。</p>
+          <div className="canteen-bike-stats">
+            <span>最佳<strong>{bestDistance}m</strong></span>
+            <span>尝试<strong>{attemptCount}</strong></span>
+          </div>
+          <button type="button" className="canteen-bike-primary" onClick={() => beginRun("story")}>开始追逐 755m</button>
+          {completed ? <button type="button" className="canteen-bike-secondary" onClick={() => beginRun("endless")}>无尽模式</button> : null}
+          {!completed ? <small>完成 755 米剧情后开放无尽模式</small> : null}
+        </div>
+      ) : null}
+
+      {view.runState === "won" || view.runState === "lost" ? (
+        <div className="canteen-bike-overlay-card is-result">
+          <b className={view.runState === "won" ? "is-win" : "is-loss"}>{view.runState === "won" ? "CLEAR" : "STOP"}</b>
+          <h2>{view.runState === "won" ? "已追到剧院路口" : view.mode === "endless" ? "无尽骑行结束" : "追逐中断"}</h2>
+          <p>{view.runState === "won" ? "755 米剧情骑行完成，纸条已经钻进剧院。" : `本次抵达 ${resultDistance} 米，重新规划换道时机后继续。`}</p>
+          <div className="canteen-bike-stats">
+            <span>本次<strong>{resultDistance}m</strong></span>
+            <span>剩余<strong>{view.lives}</strong></span>
+            <span>最佳机会<strong>{resultBestLives}</strong></span>
+          </div>
+          {view.runState === "won" || completed ? (
+            <button type="button" className="canteen-bike-primary" onClick={onContinue}>继续追踪纸条</button>
+          ) : null}
+          {(view.runState === "won" || completed) ? (
+            <button type="button" className="canteen-bike-secondary" onClick={() => beginRun("endless")}>无尽模式</button>
+          ) : null}
+          <button type="button" className="canteen-bike-secondary" onClick={() => beginRun(view.mode)}>再来一次</button>
+          <button type="button" className="canteen-bike-text-button" onClick={showTitle}>返回骑行标题</button>
+        </div>
+      ) : null}
+
+      {view.countdown !== null ? <div className="canteen-chase-countdown" role="status">{view.countdown}</div> : null}
+      {view.paused ? <div className="canteen-chase-paused" role="status">已暂停<br /><small>返回页面后继续</small></div> : null}
     </section>
   );
 }
 
-function Obstacle({ x, y, kind }: { x: number; y: number; kind: ChaseObstacle["kind"] }) {
-  if (kind === "runner") {
+function toView(runtime: ChaseRuntime): ChaseView {
+  return {
+    mode: runtime.mode,
+    runState: runtime.runState,
+    distance: runtime.distance,
+    lives: runtime.lives,
+    lane: runtime.lane,
+    collisions: runtime.collisions,
+    countdown: runtime.runState === "countdown" ? Math.max(1, Math.ceil(runtime.countdownMs / 1000)) : null,
+    milestone: runtime.milestone,
+    paused: runtime.paused
+  };
+}
+
+interface RoadsideProjection {
+  id: string;
+  side: -1 | 1;
+  kind: "building" | "tree" | "lamp";
+  x: number;
+  y: number;
+  scale: number;
+  opacity: number;
+  variant: number;
+}
+
+function createRoadside(distance: number): RoadsideProjection[] {
+  const result: RoadsideProjection[] = [];
+  const spacing = 24;
+  const offset = distance % spacing;
+  for (let index = 0; index < 10; index += 1) {
+    const ahead = index * spacing + (spacing - offset);
+    const depth = Math.max(0, Math.min(1, 1 - ahead / VISIBLE_DISTANCE));
+    const perspective = depth * depth;
+    for (const side of [-1, 1] as const) {
+      const variant = index * 2 + (side > 0 ? 1 : 0);
+      result.push({
+        id: `roadside-${index}-${side}`,
+        side,
+        kind: variant % 5 === 0 ? "lamp" : variant % 3 === 0 ? "tree" : "building",
+        x: 480 + side * (78 + perspective * 430),
+        y: 145 + perspective * 350,
+        scale: 0.15 + perspective * 1.18,
+        opacity: 0.28 + perspective * 0.72,
+        variant
+      });
+    }
+  }
+  return result.sort((left, right) => left.y - right.y);
+}
+
+function createRoadDashes(distance: number) {
+  const offset = (distance * 0.72) % 42;
+  return Array.from({ length: 10 }, (_, index) => {
+    const ahead = index * 42 + (42 - offset);
+    const depthNear = Math.max(0, Math.min(1, 1 - ahead / 420));
+    const depthFar = Math.max(0, Math.min(1, 1 - (ahead + 18) / 420));
+    const top = 145 + depthFar * depthFar * 395;
+    const bottom = 145 + depthNear * depthNear * 395;
+    const halfTop = 4 + depthFar * 5;
+    const halfBottom = 5 + depthNear * 7;
+    return {
+      id: `dash-${index}`,
+      top,
+      bottom,
+      leftTop: 480 - halfTop,
+      rightTop: 480 + halfTop,
+      leftBottom: 480 - halfBottom,
+      rightBottom: 480 + halfBottom,
+      opacity: 0.18 + depthNear * 0.72
+    };
+  });
+}
+
+function RoadsideProp({ side, kind, x, y, scale, opacity, variant }: RoadsideProjection) {
+  const transform = `translate(${x} ${y}) scale(${scale})`;
+  if (kind === "tree") {
     return (
-      <g transform={`translate(${x} ${y})`}>
-        <ellipse cx="0" cy="18" rx="16" ry="6" fill="#071019" opacity="0.35" />
-        <circle cx="0" cy="-17" r="8" fill="#d6aa70" stroke="#17212a" strokeWidth="3" />
-        <path d="M 0 -9 L -4 8 L -17 20 M -3 5 L 13 18 M -2 -2 L 14 -8" fill="none" stroke="#7c4a9b" strokeWidth="6" strokeLinecap="square" />
+      <g transform={transform} opacity={opacity}>
+        <rect x="-6" y="-54" width="12" height="58" fill="#725037" />
+        <polygon points="-42,-42 0,-104 42,-42" fill={variant % 2 ? "#397343" : "#4b8548"} />
+        <polygon points="-34,-70 0,-126 34,-70" fill="#2f6b3f" />
       </g>
     );
   }
-  if (kind === "bike") {
+  if (kind === "lamp") {
     return (
-      <g transform={`translate(${x} ${y})`}>
-        <circle cx="-22" cy="12" r="13" fill="none" stroke="#202a32" strokeWidth="5" />
-        <circle cx="22" cy="12" r="13" fill="none" stroke="#202a32" strokeWidth="5" />
-        <path d="M -22 12 L 0 -10 L 22 12 L -2 12 Z" fill="none" stroke="#d0b34d" strokeWidth="5" />
+      <g transform={transform} opacity={opacity}>
+        <rect x="-4" y="-104" width="8" height="108" fill="#30363b" />
+        <rect x={side < 0 ? -4 : -38} y="-105" width="42" height="7" fill="#30363b" />
+        <circle cx={side < 0 ? 34 : -34} cy="-100" r="11" fill="#fff1bd" stroke="#52616a" strokeWidth="4" />
+      </g>
+    );
+  }
+  const height = 86 + (variant % 4) * 18;
+  const width = 76 + (variant % 3) * 16;
+  const wall = ["#cfc6b4", "#bbc4ca", "#d8cdb8", "#b94b39"][variant % 4];
+  return (
+    <g transform={transform} opacity={opacity}>
+      <rect x={-width / 2} y={-height} width={width} height={height} fill={wall} stroke="#5d6770" strokeWidth="5" />
+      <rect x={-width / 2 - 5} y={-height - 12} width={width + 10} height="14" fill="#69737b" />
+      {[-1, 0, 1].map((column) => (
+        <rect key={column} x={column * 22 - 7} y={-height + 22} width="14" height="20" fill="#759db5" />
+      ))}
+      <rect x="-12" y="-30" width="24" height="30" fill="#4c5962" />
+    </g>
+  );
+}
+
+function Rider3D() {
+  return (
+    <g>
+      <ellipse cx="0" cy="18" rx="54" ry="12" fill="#071019" opacity="0.35" />
+      <ellipse cx="-35" cy="2" rx="18" ry="34" fill="none" stroke="#17222a" strokeWidth="8" />
+      <ellipse cx="35" cy="2" rx="18" ry="34" fill="none" stroke="#17222a" strokeWidth="8" />
+      <path d="M-35 2 L0 -22 L35 2 L-6 2 Z M0 -22 L22 -25" fill="none" stroke="#f0d54e" strokeWidth="8" />
+      <path d="M-5 -20 L-10 -54 L14 -72" fill="none" stroke="#2f5f9c" strokeWidth="15" strokeLinecap="round" />
+      <circle cx="16" cy="-91" r="17" fill="#e0b36f" stroke="#17212a" strokeWidth="5" />
+      <path d="M0 -100 Q16 -119 32 -98 L30 -87 L6 -88 Z" fill="#f0d54e" stroke="#17212a" strokeWidth="5" />
+      <path d="M-7 -53 L-31 -28 M2 -54 L25 -34" fill="none" stroke="#315f9f" strokeWidth="10" strokeLinecap="round" />
+    </g>
+  );
+}
+
+function Obstacle3D({
+  kind,
+  x,
+  y,
+  scale,
+  opacity
+}: {
+  kind: ChaseObstacleKind;
+  x: number;
+  y: number;
+  scale: number;
+  opacity: number;
+}) {
+  const transform = `translate(${x} ${y}) scale(${scale})`;
+  if (kind === "barrier") {
+    return (
+      <g transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+        <rect x="-58" y="-46" width="116" height="43" fill="#f0d54e" stroke="#283139" strokeWidth="7" />
+        <path d="M-48 -43 L-20 -5 M-8 -43 L20 -5 M32 -43 L55 -12" stroke="#283139" strokeWidth="12" />
+        <path d="M-43 -3 L-53 35 M43 -3 L53 35" stroke="#4e565c" strokeWidth="9" />
+        <circle cx="0" cy="-58" r="10" fill="#ef5e51" />
+      </g>
+    );
+  }
+  if (kind === "cone") {
+    return (
+      <g transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+        <rect x="-32" y="0" width="64" height="12" fill="#d9702e" />
+        <path d="M-23 0 L0 -72 L23 0 Z" fill="#ff8c42" stroke="#773b1e" strokeWidth="5" />
+        <path d="M-15 -25 L15 -25 L11 -39 L-11 -39 Z" fill="#f2eee2" />
+      </g>
+    );
+  }
+  if (kind === "car") {
+    return (
+      <g transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+        <path d="M-56 -12 L-42 -65 L36 -65 L56 -12 L48 27 L-48 27 Z" fill="#d75649" stroke="#26313a" strokeWidth="7" />
+        <path d="M-31 -57 L27 -57 L38 -24 L-41 -24 Z" fill="#98c3d5" />
+        <circle cx="-37" cy="27" r="13" fill="#17212a" />
+        <circle cx="37" cy="27" r="13" fill="#17212a" />
+      </g>
+    );
+  }
+  if (kind === "crowd") {
+    return (
+      <g transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+        {[-32, 0, 32].map((personX, index) => (
+          <g key={personX} transform={`translate(${personX} ${index % 2 ? 4 : 0})`}>
+            <circle cy="-59" r="13" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
+            <rect x="-14" y="-46" width="28" height="44" fill={["#315f9f", "#756aa9", "#e97b70"][index]} />
+            <path d="M-8 -2 L-13 30 M8 -2 L13 30" stroke="#27323b" strokeWidth="9" />
+          </g>
+        ))}
+      </g>
+    );
+  }
+  if (kind === "runner") {
+    return (
+      <g transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+        <circle cy="-67" r="15" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
+        <path d="M0 -52 L-7 -10 L-38 20 M-4 -22 L30 -6 M-2 -38 L28 -55" fill="none" stroke="#756aa9" strokeWidth="13" strokeLinecap="round" />
       </g>
     );
   }
   return (
-    <g transform={`translate(${x} ${y})`}>
-      <ellipse cx="0" cy="25" rx="39" ry="9" fill="#071019" opacity="0.36" />
-      <rect x="-36" y="-25" width="72" height="47" rx="5" fill="#355b72" stroke="#17212a" strokeWidth="5" />
-      <rect x="-30" y="-18" width="29" height="16" fill="#9bd2dd" />
-      <rect x="8" y="-18" width="21" height="27" fill="#d4ad5d" />
-      <circle cx="-22" cy="24" r="8" fill="#1a232a" />
-      <circle cx="22" cy="24" r="8" fill="#1a232a" />
+    <g transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+      <ellipse cx="-29" cy="14" rx="14" ry="27" fill="none" stroke="#17212a" strokeWidth="7" />
+      <ellipse cx="29" cy="14" rx="14" ry="27" fill="none" stroke="#17212a" strokeWidth="7" />
+      <path d="M-29 14 L0 -13 L29 14 L-5 14 Z" fill="none" stroke="#d0b34d" strokeWidth="8" />
+      <circle cx="2" cy="-58" r="14" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
+      <path d="M0 -45 L-6 -10" stroke="#e97b70" strokeWidth="16" />
     </g>
   );
 }

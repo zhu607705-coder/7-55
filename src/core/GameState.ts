@@ -102,6 +102,10 @@ export function createInitialGameState(): GameState {
       gameMenuUnlocked: false,
       dormHubUnlocked: false
     },
+    wallet: {
+      campusCardCents: 6,
+      cashCents: 0
+    },
     bikeArcade: {
       unlocked: false,
       completed: false,
@@ -121,6 +125,10 @@ export function createInitialGameState(): GameState {
       bikeCodeRead: false,
       bikeLockCleaned: false,
       bikePaid: false,
+      chaseCompleted: false,
+      chaseAttemptCount: 0,
+      chaseBestDistance: 0,
+      chaseBestLives: 0,
       chaseCollisions: 0
     },
     theaterHunt: {

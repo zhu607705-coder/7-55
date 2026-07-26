@@ -168,6 +168,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       Phaser.Input.Keyboard.Key
     >;
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.TAB);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
     const keyHandler = (event: KeyboardEvent) => this.handlePanelKey(event);
     const pointerHandler = (pointer: Phaser.Input.Pointer) => this.handlePanelPointer(pointer);
     const pointerMoveHandler = (pointer: Phaser.Input.Pointer) => this.handleSpotlightPointerMove(pointer);
@@ -871,7 +872,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const state = this.bridge.getState();
     if (this.dialogueLocked || this.paperBusy || this.panel || this.spotlightPanel) return;
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
-    if (!findNearestTheaterTarget(this.player.x, this.player.y, [target])) return;
+    if (!findNearestTheaterTarget(this.player.x, this.player.y, [target])) {
+      if (target.stand) this.showFeedback("先走到设备前的可站立位置再操作。", "system");
+      return;
+    }
     this.triggerTarget(target, state);
   }
 

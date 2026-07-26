@@ -39,14 +39,9 @@
         { "channel": "sfx", "asset": "fx_canteen_paper_burst", "volume": 0.72 }
       ]
     },
-    "canteen_exit_blocked": {
+    "canteen_cart_roll_started": {
       "cues": [
-        { "channel": "sfx", "asset": "fx_canteen_cart_roll", "volume": 0.62 }
-      ]
-    },
-    "canteen_exit_blocking_completed": {
-      "cues": [
-        { "channel": "sfx", "asset": "fx_canteen_cart_roll", "volume": 0.68 }
+        { "channel": "sfx", "asset": "fx_canteen_cart_roll", "volume": 0.66 }
       ]
     },
     "canteen_paper_block_impact": {

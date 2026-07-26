@@ -16,6 +16,11 @@ export interface NarratorInterventionResult {
 
 const REQUIRED_NARRATOR_INTERCEPTS = 3;
 const REQUIRED_NARRATOR_LOCK_MS = 1400;
+const GAMEPAD_PRICE_CENTS = 600;
+
+function formatCents(cents: number): string {
+  return (Math.max(0, cents) / 100).toFixed(2);
+}
 
 /**
  * Owns the prologue exit and chapter-two movement puzzle facts.
@@ -307,6 +312,7 @@ export class ActOneBootstrapController {
     this.store.setState((current) => ({
       ...current,
       actOne: { ...current.actOne, balanceShifted: true },
+      wallet: { ...current.wallet, campusCardCents: GAMEPAD_PRICE_CENTS },
       ui: { ...current.ui, selectedItem: null }
     }));
     this.events.emit("use_item", { itemId: "rightArrow", targetId: "campus_card_balance" });
@@ -322,17 +328,24 @@ export class ActOneBootstrapController {
     if (state.actOne.gamepadPurchased || state.items.gamepad) {
       return "already_owned";
     }
-    if (!state.actOne.balanceShifted) {
-      this.events.emit("act2_gamepad_purchase_rejected", { balance: "0.06", price: "6.00" });
+    if (!state.actOne.balanceShifted || state.wallet.campusCardCents < GAMEPAD_PRICE_CENTS) {
+      this.events.emit("act2_gamepad_purchase_rejected", {
+        balance: formatCents(state.wallet.campusCardCents),
+        price: formatCents(GAMEPAD_PRICE_CENTS)
+      });
       return "insufficient_balance";
     }
     this.store.setState((current) => ({
       ...current,
       items: { ...current.items, gamepad: true },
-      actOne: { ...current.actOne, gamepadPurchased: true }
+      actOne: { ...current.actOne, gamepadPurchased: true },
+      wallet: {
+        ...current.wallet,
+        campusCardCents: current.wallet.campusCardCents - GAMEPAD_PRICE_CENTS
+      }
     }));
     this.events.emit("get_item", { itemId: "gamepad", sourceScene: "cc98" });
-    this.events.emit("act2_gamepad_purchased", { price: "6.00" });
+    this.events.emit("act2_gamepad_purchased", { price: formatCents(GAMEPAD_PRICE_CENTS), balance: "0.00" });
     return "purchased";
   }
 

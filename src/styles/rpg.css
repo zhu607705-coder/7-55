@@ -224,7 +224,7 @@
 }
 
 .canteen-chase-overlay {
-  background: #081018;
+  background: #0d1420;
   inset: 0;
   overflow: hidden;
   position: absolute;
@@ -232,64 +232,290 @@
   z-index: 18;
 }
 
-.canteen-chase-overlay svg {
+.canteen-bike-3d-scene {
   display: block;
   height: 100%;
-  image-rendering: pixelated;
-  transition: filter 140ms steps(3, end);
+  transition: filter 140ms ease;
   width: 100%;
 }
 
-.canteen-chase-overlay.is-slowed svg {
-  filter: saturate(0.68) brightness(0.82);
+.canteen-bike-rush-3d.is-paused .canteen-bike-3d-scene {
+  filter: saturate(0.65) brightness(0.68);
 }
 
-.canteen-chase-paper {
-  animation: canteen-chase-paper-hover 800ms steps(8, end) infinite alternate;
+.canteen-bike-target-paper {
+  animation: canteen-bike-paper-hover 780ms ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8px rgba(104, 216, 255, 0.9));
 }
 
-.canteen-chase-overlay.is-finishing .canteen-chase-paper {
-  animation: none;
-  transition: transform 820ms cubic-bezier(0.3, 0.82, 0.25, 1);
+.canteen-bike-player {
+  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.canteen-chase-player {
-  transition: transform 220ms steps(6, end);
+.canteen-bike-player.is-invulnerable {
+  animation: canteen-bike-hit-flash 110ms steps(2, end) infinite;
 }
 
-.canteen-chase-overlay.is-counting-down .canteen-chase-player {
-  transform-box: fill-box;
-  transform-origin: center;
+.canteen-bike-hud {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  left: 0;
+  padding: 72px 16px 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 22;
 }
 
-.canteen-chase-edge-fibers {
-  animation: canteen-chase-edge-fibers 520ms steps(5, end) infinite alternate;
+.canteen-bike-hud-card {
+  backdrop-filter: blur(6px);
+  background: rgba(13, 20, 32, 0.72);
+  border: 1px solid #304155;
+  border-radius: 10px;
+  display: grid;
+  gap: 2px;
+  min-width: 122px;
+  padding: 7px 11px;
+}
+
+.canteen-bike-hud-card > span {
+  color: #a9bac9;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.canteen-bike-hud-card strong {
+  color: #f0d54e;
+  font-family: var(--font-pixel);
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.canteen-bike-hud-card strong small {
+  color: #a9bac9;
+  font-size: 11px;
+}
+
+.canteen-bike-hud-card.is-lives strong {
+  color: #e97b70;
+  letter-spacing: 2px;
+}
+
+.canteen-bike-hud-card.is-best strong {
+  color: #74d4db;
+  font-size: 15px;
+}
+
+.canteen-bike-hud-stack {
+  align-items: flex-end;
+  display: grid;
+  gap: 6px;
+}
+
+.canteen-bike-hud-stack > em {
+  background: rgba(13, 20, 32, 0.72);
+  border: 1px solid #304155;
+  border-radius: 999px;
+  color: #74d4db;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-style: normal;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
+}
+
+.canteen-bike-milestone {
+  background: rgba(13, 20, 32, 0.9);
+  border: 1px solid #f0d54e;
+  border-radius: 12px;
+  color: #f0d54e;
+  display: grid;
+  left: 50%;
+  min-width: 136px;
+  padding: 7px 16px;
+  position: absolute;
+  text-align: center;
+  top: 80px;
+  transform: translateX(-50%);
+  z-index: 24;
+}
+
+.canteen-bike-milestone strong {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+}
+
+.canteen-bike-milestone span {
+  color: #a9bac9;
+  font-size: 11px;
+}
+
+.canteen-bike-key-hint {
+  bottom: 22px;
+  color: #d4dee6;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  left: 50%;
+  letter-spacing: 1px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 22;
+}
+
+.canteen-bike-key-hint kbd {
+  background: rgba(13, 20, 32, 0.75);
+  border: 1px solid #526478;
+  border-radius: 4px;
+  color: #f6f3e6;
+  padding: 2px 7px;
 }
 
 .canteen-chase-controls {
-  bottom: 18px;
+  bottom: 16px;
   display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(2, 52px);
+  gap: 18px;
+  grid-template-columns: repeat(2, 66px);
   left: 18px;
   position: absolute;
   z-index: 26;
 }
 
 .canteen-chase-controls button {
-  background: rgba(237, 242, 246, 0.92);
-  border: 3px solid #25313d;
-  color: #17212a;
-  font-size: 22px;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  background: rgba(13, 20, 32, 0.58);
+  border: 2px solid #526478;
+  border-radius: 50%;
+  color: #f6f3e6;
+  display: flex;
+  font-size: 28px;
   font-weight: 900;
-  height: 52px;
+  height: 66px;
+  justify-content: center;
   touch-action: none;
-  width: 52px;
+  width: 66px;
 }
 
 .canteen-chase-controls button:disabled {
-  background: rgba(74, 81, 88, 0.84);
-  color: #a2a8ad;
+  opacity: 0.34;
+}
+
+.canteen-bike-overlay-card {
+  align-items: center;
+  background: radial-gradient(120% 90% at 50% 25%, rgba(25, 43, 62, 0.96), rgba(8, 13, 21, 0.985));
+  color: #eef3f8;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  inset: 0;
+  justify-content: center;
+  padding: 84px 28px 28px;
+  position: absolute;
+  text-align: center;
+  z-index: 25;
+}
+
+.canteen-bike-overlay-card h2 {
+  color: #f0d54e;
+  font-family: var(--font-pixel);
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.canteen-bike-overlay-card p {
+  color: #b2c2d0;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 480px;
+}
+
+.canteen-bike-overlay-card > small {
+  color: #9fb2c6;
+  font-size: 11px;
+}
+
+.canteen-bike-kicker {
+  color: #74d4db;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 4px;
+}
+
+.canteen-bike-overlay-card.is-result > b {
+  color: #83c77b;
+  font-family: var(--font-pixel);
+  font-size: clamp(48px, 10vw, 74px);
+  line-height: 0.9;
+}
+
+.canteen-bike-overlay-card.is-result > b.is-loss {
+  color: #e97b70;
+}
+
+.canteen-bike-stats {
+  display: flex;
+  gap: 26px;
+  justify-content: center;
+  margin: 2px 0;
+}
+
+.canteen-bike-stats span {
+  color: #9fb2c6;
+  display: grid;
+  font-size: 10px;
+  gap: 2px;
+}
+
+.canteen-bike-stats strong {
+  color: #f0d54e;
+  font-family: var(--font-pixel);
+  font-size: 20px;
+}
+
+.canteen-bike-primary,
+.canteen-bike-secondary,
+.canteen-bike-text-button {
+  cursor: pointer;
+  font-family: var(--font-pixel);
+  font-weight: 800;
+  min-height: 42px;
+  width: min(280px, 78vw);
+}
+
+.canteen-bike-primary {
+  background: linear-gradient(#ffe27a, #f0d54e);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 5px 0 #ae921c;
+  color: #1c1606;
+  font-size: 15px;
+}
+
+.canteen-bike-primary:active {
+  box-shadow: 0 2px 0 #ae921c;
+  transform: translateY(3px);
+}
+
+.canteen-bike-secondary {
+  background: rgba(116, 212, 219, 0.12);
+  border: 1px solid #74d4db;
+  border-radius: 10px;
+  color: #b8f2f5;
+  font-size: 13px;
+}
+
+.canteen-bike-text-button {
+  background: transparent;
+  border: 0;
+  color: #9fb2c6;
+  font-size: 12px;
 }
 
 .canteen-chase-paused {
@@ -303,6 +529,11 @@
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 28;
+}
+
+.canteen-chase-paused small {
+  color: #a9bac9;
+  font-size: 11px;
 }
 
 .canteen-chase-countdown {
@@ -324,13 +555,13 @@
   z-index: 27;
 }
 
-@keyframes canteen-chase-edge-fibers {
-  from { opacity: 0.28; transform: translateX(-3px); }
-  to { opacity: 0.82; transform: translateX(3px); }
+@keyframes canteen-bike-paper-hover {
+  from { transform: translateY(-4px) rotate(-2deg); }
+  to { transform: translateY(5px) rotate(2deg); }
 }
 
-@keyframes canteen-chase-paper-hover {
-  from { opacity: 0.82; }
+@keyframes canteen-bike-hit-flash {
+  from { opacity: 0.2; }
   to { opacity: 1; }
 }
 
@@ -825,6 +1056,131 @@
     height: var(--rpg-mobile-canvas-height);
   }
 
+  .canteen-bike-hud {
+    padding: 7px 8px 0;
+  }
+
+  .canteen-bike-hud-card {
+    border-radius: 6px;
+    min-width: 88px;
+    padding: 4px 7px;
+  }
+
+  .canteen-bike-hud-card > span {
+    font-size: 7px;
+  }
+
+  .canteen-bike-hud-card strong {
+    font-size: 13px;
+  }
+
+  .canteen-bike-hud-card.is-best {
+    display: none;
+  }
+
+  .canteen-bike-hud-stack {
+    gap: 3px;
+  }
+
+  .canteen-bike-hud-stack > em {
+    font-size: 7px;
+    padding: 2px 6px;
+  }
+
+  .canteen-bike-milestone {
+    min-width: 92px;
+    padding: 3px 8px;
+    top: 8px;
+  }
+
+  .canteen-bike-milestone strong {
+    font-size: 12px;
+  }
+
+  .canteen-bike-milestone span {
+    font-size: 8px;
+  }
+
+  .canteen-bike-key-hint {
+    display: none;
+  }
+
+  .canteen-chase-controls {
+    bottom: 7px;
+    gap: 10px;
+    grid-template-columns: repeat(2, 42px);
+    left: 8px;
+  }
+
+  .canteen-chase-controls button {
+    font-size: 20px;
+    height: 42px;
+    width: 42px;
+  }
+
+  .canteen-bike-overlay-card {
+    gap: 4px;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 9px 12px;
+  }
+
+  .canteen-bike-kicker {
+    font-size: 7px;
+    letter-spacing: 2px;
+  }
+
+  .canteen-bike-overlay-card h2 {
+    font-size: 19px;
+  }
+
+  .canteen-bike-overlay-card p {
+    font-size: 9px;
+    line-height: 1.35;
+    max-width: 330px;
+  }
+
+  .canteen-bike-overlay-card > small {
+    font-size: 8px;
+  }
+
+  .canteen-bike-overlay-card.is-result > b {
+    font-size: 30px;
+  }
+
+  .canteen-bike-stats {
+    gap: 14px;
+    margin: 0;
+  }
+
+  .canteen-bike-stats span {
+    font-size: 7px;
+  }
+
+  .canteen-bike-stats strong {
+    font-size: 13px;
+  }
+
+  .canteen-bike-primary,
+  .canteen-bike-secondary,
+  .canteen-bike-text-button {
+    font-size: 9px;
+    min-height: 27px;
+    width: min(220px, 80vw);
+  }
+
+  .canteen-chase-countdown {
+    border-width: 3px;
+    font-size: 42px;
+    height: 72px;
+    width: 72px;
+  }
+
+  .canteen-chase-paused {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
   .rpg-temp-inventory {
     left: 8px;
     padding: 6px;
@@ -935,6 +1291,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .canteen-bike-target-paper,
+  .canteen-bike-player.is-invulnerable {
+    animation: none;
+  }
+
+  .canteen-bike-player,
+  .canteen-bike-3d-scene {
+    transition: none;
+  }
+
   .rpg-shell *,
   .rpg-shell *::before,
   .rpg-shell *::after {

@@ -25,7 +25,6 @@ export type DeveloperCheckpointId =
   | "c2-tiyi-proof" | "c2-cc98-upload" | "c2-bd-rise"
   | "c2-recovery-form" | "c2-pass-generate" | "c2-pass-apply"
   | "c2-seat-sit" | "c2-seat-dialogue" | "c2-chapter-exit"
-  | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result"
   | "campus-canteen-entry"
   | "canteen-hunt" | "c3-canteen-entry" | "c3-canteen-menu" | "c3-canteen-pickup"
   | "c3-canteen-block" | "c3-canteen-block-2" | "c3-canteen-block-3"
@@ -38,7 +37,8 @@ export type DeveloperCheckpointId =
 
 type LegacyDeveloperCheckpointId =
   | "c2-movement" | "c2-seat-022" | "c2-evidence"
-  | "c2-top-ten" | "c2-recovery" | "c2-pass";
+  | "c2-top-ten" | "c2-recovery" | "c2-pass"
+  | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result";
 
 type DeveloperCheckpointRequestId = DeveloperCheckpointId | LegacyDeveloperCheckpointId;
 type LibraryDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c2-${string}`>;
@@ -93,21 +93,17 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-pass-apply", chapter: "第二章", label: "使用 PASS", detail: "拖到 022 书包" },
   { id: "c2-seat-sit", chapter: "第二章", label: "坐到 022", detail: "书包已清退" },
   { id: "c2-seat-dialogue", chapter: "第二章", label: "022 对话", detail: "联系异常意识" },
-  { id: "c2-chapter-exit", chapter: "第二章", label: "第三章入口", detail: "求是潮应用已开放" },
+  { id: "c2-chapter-exit", chapter: "第二章", label: "追往东区大食堂", detail: "022 对话后沿校园脚印继续追踪" },
   { id: "campus-canteen-entry", chapter: "第二章", label: "食堂门口", detail: "普通校园探索入口" },
-  { id: "c3-intro", chapter: "第三章", label: "求是潮起点", detail: "0 米" },
-  { id: "c3-congestion", chapter: "第三章", label: "拥堵阶段", detail: "377 米起跑" },
-  { id: "c3-sprint", chapter: "第三章", label: "冲刺阶段", detail: "566 米起跑" },
-  { id: "c3-result", chapter: "第三章", label: "755 结算", detail: "章节完成" },
-  { id: "canteen-hunt", chapter: "第三章", label: "脚印寻人", detail: "暗色校园，沿脚印到大食堂" },
+  { id: "canteen-hunt", chapter: "第三章", label: "东区大食堂追踪", detail: "从校园出生点沿脚印前往东区大食堂" },
   { id: "c3-canteen-entry", chapter: "第三章", label: "进入食堂", detail: "寻找三只残影餐盘" },
   { id: "c3-canteen-menu", chapter: "第三章", label: "点餐机", detail: "浅色与深色菜单" },
   { id: "c3-canteen-pickup", chapter: "第三章", label: "0755 取餐", detail: "按暗号选择窗口" },
   { id: "c3-canteen-block", chapter: "第三章", label: "截住纸条", detail: "餐盘车封住第一个出口" },
   { id: "c3-canteen-block-2", chapter: "第三章", label: "第二次拦截", detail: "纸条转向蒸汽出口" },
   { id: "c3-canteen-block-3", chapter: "第三章", label: "第三次拦截", detail: "纸条转向西侧出口" },
-  { id: "c3-canteen-bike", chapter: "第三章", label: "扫码自行车", detail: "使用餐盘回收费" },
-  { id: "c3-canteen-chase", chapter: "第三章", label: "第一次追逐", detail: "校园大地图 SVG 演出" },
+  { id: "c3-canteen-bike", chapter: "第三章", label: "解锁自行车", detail: "使用餐盘回收费" },
+  { id: "c3-canteen-chase", chapter: "第三章", label: "755 米 3D 追逐", detail: "A / D 三车道骑行" },
   { id: "c3-canteen-theater", chapter: "第三章", label: "抵达剧院", detail: "纸条钻进剧院" },
   { id: "c3-theater-entry", chapter: "第三章", label: "剧院检票", detail: "海报栏与取票机" },
   { id: "c3-theater-code", chapter: "第三章", label: "取票码 0832", detail: "两张半票根待合成" },
@@ -133,7 +129,11 @@ const LEGACY_CHECKPOINT_ALIASES: Record<LegacyDeveloperCheckpointId, DeveloperCh
   "c2-evidence": "c2-catalog",
   "c2-top-ten": "c2-cc98-upload",
   "c2-recovery": "c2-recovery-form",
-  "c2-pass": "c2-pass-apply"
+  "c2-pass": "c2-pass-apply",
+  "c3-intro": "canteen-hunt",
+  "c3-congestion": "canteen-hunt",
+  "c3-sprint": "canteen-hunt",
+  "c3-result": "canteen-hunt"
 };
 
 const LIBRARY_CHECKPOINT_ORDER: readonly LibraryDeveloperCheckpointId[] = [
@@ -244,9 +244,15 @@ function createMovementCheckpointState(id: DeveloperCheckpointId): GameState {
       ui: { ...state.ui, inventoryOpen: true, selectedItem: "rightArrow" }
     };
   }
-  state = withMovementFacts(state, { balanceShifted: true });
+  state = {
+    ...withMovementFacts(state, { balanceShifted: true }),
+    wallet: { ...state.wallet, campusCardCents: 600 }
+  };
   if (id === "c2-gamepad-market") return { ...state, currentScene: "cc98" };
-  state = withMovementFacts(state, { gamepadPurchased: true }, { gamepad: true });
+  state = {
+    ...withMovementFacts(state, { gamepadPurchased: true }, { gamepad: true }),
+    wallet: { ...state.wallet, campusCardCents: 0 }
+  };
   if (id === "c2-manual-movement") {
     return { ...state, runtimeMode: "rpg", rpgScene: "dorm_hub", rpgCheckpoint: "dorm_spawn" };
   }
@@ -303,6 +309,7 @@ function createCompletedMovementState(): GameState {
   });
   return {
     ...state,
+    wallet: { ...state.wallet, campusCardCents: 0 },
     ui: {
       ...state.ui,
       librarySelectedSeat: "022",
@@ -419,7 +426,7 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
   }
   if (reached("c2-seat-dialogue")) puzzle.playerSeated = true;
   if (reached("c2-chapter-exit")) {
-    puzzle.nextQuestId = "chapter_three_book_hunt";
+    puzzle.nextQuestId = "chapter_three_canteen_hunt";
     puzzle.clueIds = [...puzzle.clueIds, "borrowed_attendance_record"];
   }
 
@@ -433,7 +440,8 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
     "c2-seat-receipt": "library_seat_022",
     "c2-pass-apply": "library_seat_022",
     "c2-seat-sit": "library_seat_022",
-    "c2-seat-dialogue": "library_seat_022"
+    "c2-seat-dialogue": "library_seat_022",
+    "c2-chapter-exit": "campus_spawn"
   };
   const rpgCheckpoint = rpgCheckpoints[id];
   const runtimeMode = rpgCheckpoint ? "rpg" : "phone";
@@ -457,11 +465,31 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
     ...state,
     networkMode: id === "c2-tiyi-proof" ? "cellular" : state.networkMode,
     runtimeMode,
-    rpgScene: id === "c2-library-gate" ? "campus_bootstrap" : rpgCheckpoint ? "library_interior" : state.rpgScene,
+    rpgScene: id === "c2-library-gate" || id === "c2-chapter-exit" ? "campus_bootstrap" : rpgCheckpoint ? "library_interior" : state.rpgScene,
     rpgCheckpoint: rpgCheckpoint ?? state.rpgCheckpoint,
     currentScene: currentSceneByCheckpoint[id] ?? state.currentScene,
     items,
-    bikeArcade: { ...state.bikeArcade, unlocked: reached("c2-chapter-exit") },
+    canteenHunt: reached("c2-chapter-exit")
+      ? {
+          ...state.canteenHunt,
+          active: true,
+          phase: "tracking",
+          mode: "light",
+          identifiedTrayIds: [],
+          returnedTrayIds: [],
+          orderAttemptCount: 0,
+          pickupAttemptCount: 0,
+          blockHits: 0,
+          bikeCodeRead: false,
+          bikeLockCleaned: false,
+          bikePaid: false,
+          chaseCompleted: false,
+          chaseAttemptCount: 0,
+          chaseBestDistance: 0,
+          chaseBestLives: 0,
+          chaseCollisions: 0
+        }
+      : state.canteenHunt,
     ui: {
       ...state.ui,
       brightness: id === "c2-photo-report" ? 33 : state.ui.brightness,
@@ -511,6 +539,14 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
         ? id === "c3-canteen-theater" ? "campus_theater_junction" : "campus_canteen_gate"
         : "campus_spawn",
     themeMode: "normal",
+    wallet: {
+      ...state.wallet,
+      cashCents: id === "c3-canteen-chase" || id === "c3-canteen-theater"
+        ? 0
+        : afterTrayStage
+          ? 200
+          : 0
+    },
     items: {
       ...state.items,
       cafeteriaWages: afterTrayStage && !["c3-canteen-chase", "c3-canteen-theater"].includes(id),
@@ -530,6 +566,10 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       bikeCodeRead: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       bikeLockCleaned: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       bikePaid: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
+      chaseCompleted: id === "c3-canteen-theater",
+      chaseAttemptCount: id === "c3-canteen-theater" ? 1 : 0,
+      chaseBestDistance: id === "c3-canteen-theater" ? 755 : 0,
+      chaseBestLives: id === "c3-canteen-theater" ? 2 : 0,
       chaseCollisions: id === "c3-canteen-theater" ? 1 : 0
     },
     ui: {
@@ -784,23 +824,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     return createQizhenCheckpointState(id as QizhenDeveloperCheckpointId);
   }
 
-  const state = createLibraryCheckpointState("c2-chapter-exit");
-  return {
-    ...state,
-    runtimeMode: "phone",
-    currentScene: id === "c3-result" ? "chapter_transition" : "bike_arcade",
-    bikeArcade: {
-      unlocked: true,
-      completed: id === "c3-result",
-      attemptCount: id === "c3-result" ? 1 : 0,
-      bestDistance: id === "c3-result" ? 755 : 0,
-      bestLives: id === "c3-result" ? 2 : 0
-    },
-    ui: {
-      ...state.ui,
-      seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three"]
-    }
-  };
+  return createCanteenCheckpointState("canteen-hunt");
 }
 
 export function applyDeveloperCheckpoint(
@@ -814,7 +838,7 @@ export function applyDeveloperCheckpoint(
     storage.setItem(DEVELOPER_BACKUP_KEY, JSON.stringify(store.getState()));
   }
   storage.setItem(DEVELOPER_ACTIVE_KEY, id);
-  storage.setItem(DEVELOPER_BIKE_START_KEY, id === "c3-congestion" ? "377" : id === "c3-sprint" ? "566" : "0");
+  storage.setItem(DEVELOPER_BIKE_START_KEY, "0");
   store.setState(() => createDeveloperCheckpointState(id));
 }
 
@@ -868,8 +892,7 @@ function checkpointFromLegacyParams(params: URLSearchParams): DeveloperCheckpoin
   if (phase === "backpack_removed") return "c2-seat-sit";
   if (phase === "seat_recovered") return "c2-seat-dialogue";
   if (phase === "friend_contacted") return "c2-chapter-exit";
-  if (scene === "bike_arcade") return "c3-intro";
-  if (scene === "chapter_transition") return "c3-result";
+  if (scene === "bike_arcade" || scene === "chapter_transition") return "canteen-hunt";
   if (scene === "photos") return "c2-photo-report";
   if (scene === "tiyi") return "c2-exercise";
   if (scene === "cc98") return "c2-gamepad-market";

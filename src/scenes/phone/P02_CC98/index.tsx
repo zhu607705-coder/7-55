@@ -540,7 +540,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             openPostIsExchange ? (
               <ControlExchangePuzzle
                 router={router}
-                balanceShifted={state.actOne.balanceShifted}
+                campusCardCents={state.wallet.campusCardCents}
                 purchased={state.actOne.gamepadPurchased}
               />
             ) : openPostIsInvestigation ? (

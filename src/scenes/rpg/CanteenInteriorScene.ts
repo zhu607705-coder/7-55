@@ -18,6 +18,7 @@ import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntime
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   CANTEEN_BLOCK_SPAWNS,
+  CANTEEN_CARTS,
   CANTEEN_ESCAPE_ANCHORS,
   CANTEEN_INTERACTION_TARGETS,
   CANTEEN_INTERIOR_WORLD,
@@ -32,12 +33,20 @@ import {
 
 const CANTEEN_MAP_KEY = "chapter-3-canteen-interior-map";
 const CANTEEN_TRAY_KEY = "chapter-3-canteen-tray";
-const CANTEEN_CART_KEY = "chapter-3-canteen-cart";
+const CANTEEN_CART_FRAME_KEYS = [
+  "chapter-3-canteen-cart-0",
+  "chapter-3-canteen-cart-1",
+  "chapter-3-canteen-cart-2",
+  "chapter-3-canteen-cart-3"
+] as const;
 const CANTEEN_PAPER_KEY = "chapter-3-canteen-paper";
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
 const ENTRY_DIALOGUE_STEP_MS = 1600;
+const CART_APPROACH_SPEED = 175;
+const CART_MIN_ROLL_DURATION_MS = 520;
+const CART_ROLL_FRAME_MS = 82;
 
 interface TrayVisual {
   container: Phaser.GameObjects.Container;
@@ -65,6 +74,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private modeFibers: Phaser.GameObjects.Arc[] = [];
   private trayVisuals = new Map<string, TrayVisual>();
   private cartVisuals = new Map<CanteenExitId, Phaser.GameObjects.Image>();
+  private cartBlockers = new Map<CanteenExitId, Phaser.GameObjects.Rectangle>();
   private exitGlows = new Map<CanteenExitId, Phaser.GameObjects.Arc>();
   private paper!: Phaser.GameObjects.Image;
   private menuPanel: Phaser.GameObjects.Container | null = null;
@@ -72,6 +82,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private currentPhase: GameState["canteenHunt"]["phase"] = "tray_search";
   private dialogueLocked = false;
   private paperBusy = false;
+  private cartPushBusy = false;
+  private cartMotionExit: CanteenExitId | null = null;
+  private cartMotionVector = new Phaser.Math.Vector2();
   private reducedMotion = false;
   private occlusionVisuals: OcclusionVisual[] = [];
   private activeOcclusionIds: string[] = [];
@@ -119,6 +132,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
       Phaser.Input.Keyboard.Key
     >;
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.TAB);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const requestKeyboardInteraction = (event: KeyboardEvent) => {
+      event.preventDefault();
+      if (!event.repeat) this.interactRequested = true;
+    };
+    this.input.keyboard!.on("keydown-SPACE", requestKeyboardInteraction);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.input.keyboard?.off("keydown-SPACE", requestKeyboardInteraction);
+    });
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => this.handleMenuPointer(pointer));
 
     this.cameras.main
@@ -171,14 +193,18 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const movementAllowed = state.actOne.movementEnabled
       && !this.dialogueLocked
       && !this.menuPanel
-      && !this.paperBusy;
+      && !this.paperBusy
+      && !this.cartPushBusy;
     if (movementAllowed && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
       vector.set(0, 0);
     }
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 120);
-    this.playerAnimator.update(vector, this.time.now);
+    this.playerAnimator.update(
+      this.cartPushBusy && this.cartMotionVector.lengthSq() > 0 ? this.cartMotionVector : vector,
+      this.time.now
+    );
     this.updateOcclusion();
 
     const activeTargets = this.getActiveTargets(state);
@@ -187,7 +213,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.publishDebugState(nearest, state);
 
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    if (nearest && !this.dialogueLocked && !this.menuPanel && !this.paperBusy && (keyboardInteract || this.interactRequested)) {
+    if (nearest && !this.dialogueLocked && !this.menuPanel && !this.paperBusy && !this.cartPushBusy && (keyboardInteract || this.interactRequested)) {
       this.triggerTarget(nearest, state);
     }
     this.interactRequested = false;
@@ -271,16 +297,36 @@ export class CanteenInteriorScene extends Phaser.Scene {
       g.generateTexture(CANTEEN_TRAY_KEY, 36, 24);
       g.destroy();
     }
-    if (!this.textures.exists(CANTEEN_CART_KEY)) {
+    CANTEEN_CART_FRAME_KEYS.forEach((key, phase) => {
+      if (this.textures.exists(key)) return;
       const g = this.add.graphics();
-      g.fillStyle(0x20282d, 0.3).fillEllipse(24, 36, 46, 10);
-      g.fillStyle(0x68767b).fillRect(3, 5, 42, 24);
-      g.fillStyle(0xb8c1c0).fillRect(6, 8, 36, 4).fillRect(6, 15, 36, 4).fillRect(6, 22, 36, 4);
-      g.lineStyle(3, 0x39464b).strokeRect(3, 5, 42, 24).lineBetween(6, 29, 6, 35).lineBetween(42, 29, 42, 35);
-      g.fillStyle(0x22292d).fillCircle(6, 36, 4).fillCircle(42, 36, 4);
-      g.generateTexture(CANTEEN_CART_KEY, 48, 41);
+      // The cart faces right by default: the dark U-shaped handle stays on the
+      // left, the front rail on the right, and the four wheel phases make the
+      // trolley read as a physical object while it rolls.
+      g.fillStyle(0x0d151a, 0.28).fillEllipse(38, 50, 66, 12);
+      g.fillStyle(0x1c2528).fillRect(10, 14, 54, 30);
+      g.fillStyle(0x60747a).fillRect(13, 16, 48, 24);
+      g.fillStyle(0xb9c7c6).fillRect(16, 18, 42, 4).fillRect(16, 27, 42, 4).fillRect(16, 36, 42, 3);
+      g.fillStyle(0xd9dfd9).fillRect(24, 8, 28, 6).fillRect(28, 3, 20, 5);
+      g.lineStyle(3, 0x162126)
+        .strokeRect(10, 14, 54, 30)
+        .lineBetween(5, 14, 5, 44)
+        .lineBetween(5, 14, 13, 14)
+        .lineBetween(5, 44, 13, 44)
+        .lineBetween(64, 17, 71, 21)
+        .lineBetween(64, 41, 71, 37);
+      g.fillStyle(0xe6b953).fillRect(13, 23, 5, 8).fillRect(56, 23, 5, 8);
+      const wheelLift = phase % 2 === 0 ? 0 : 1;
+      const spokeOffset = phase < 2 ? 0 : 2;
+      [[17, 47], [57, 47]].forEach(([x, y]) => {
+        g.fillStyle(0x151c20).fillCircle(x, y - wheelLift, 6);
+        g.fillStyle(0x6e7d80).fillCircle(x, y - wheelLift, 3);
+        g.fillStyle(0xdbe1dc).fillRect(x - 1, y - 4 + spokeOffset, 2, 8 - spokeOffset * 2);
+        g.fillStyle(0xdbe1dc).fillRect(x - 4 + spokeOffset, y - 1, 8 - spokeOffset * 2, 2);
+      });
+      g.generateTexture(key, 76, 58);
       g.destroy();
-    }
+    });
     if (!this.textures.exists(CANTEEN_PAPER_KEY)) {
       const g = this.add.graphics();
       g.fillStyle(0x142a44, 0.3).fillEllipse(18, 26, 34, 10);
@@ -330,25 +376,31 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private createCarts(): void {
-    const cartPositions: Record<CanteenExitId, { x: number; y: number }> = {
-      west: { x: 150, y: 287 },
-      southeast: { x: 1198, y: 824 },
-      steam: { x: 1212, y: 300 }
-    };
-    (Object.entries(cartPositions) as [CanteenExitId, { x: number; y: number }][]).forEach(([exitId, point]) => {
-      const glow = this.add.circle(point.x, point.y, 34, 0x2aaeff, 0.12)
+    Object.values(CANTEEN_CARTS).forEach((definition) => {
+      const { exitId, x, y } = definition;
+      const glow = this.add.circle(x, y, 34, 0x2aaeff, 0.12)
         .setStrokeStyle(4, 0x7ad8ff, 0.9)
-        .setDepth(point.y + 19)
+        .setDepth(y + 19)
         .setVisible(false);
-      const cart = this.add.image(point.x, point.y, CANTEEN_CART_KEY)
-        .setDepth(point.y + 20)
+      const cart = this.add.image(x, y, CANTEEN_CART_FRAME_KEYS[0])
+        .setDepth(y + 20)
         .setVisible(false)
         .setInteractive({ useHandCursor: true });
+      // The visual cart rolls freely. Once parked, its lower frame becomes a
+      // real obstacle so the player cannot walk through a sealed exit.
+      const blocker = this.add.rectangle(x, y + 14, 58, 26, 0x000000, 0)
+        .setDepth(-900)
+        .setVisible(false);
+      this.obstacles.add(blocker);
+      const blockerBody = blocker.body as Phaser.Physics.Arcade.StaticBody | null;
+      if (blockerBody) blockerBody.enable = false;
+      this.applyCartOrientation(cart, definition);
       cart.on("pointerdown", () => {
         const target = CANTEEN_INTERACTION_TARGETS.find((candidate) => candidate.id === `cart_${exitId}`);
         if (target) this.triggerPointerTarget(target);
       });
       this.cartVisuals.set(exitId, cart);
+      this.cartBlockers.set(exitId, blocker);
       this.exitGlows.set(exitId, glow);
       this.tweens.add({
         targets: glow,
@@ -504,19 +556,31 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_exit_block_wrong") {
-      this.animateWrongBlock(String(payload?.expected ?? "west") as CanteenExitId);
+      const exitId = String(payload?.exitId ?? "west") as CanteenExitId;
+      this.animateValidatedCartPush(exitId, () => {
+        this.animateWrongBlock(exitId, String(payload?.expected ?? "west") as CanteenExitId);
+      });
+      return;
+    }
+    if (name === "canteen_exit_block_rejected") {
+      this.finishCartMotion(String(payload?.exitId ?? "west") as CanteenExitId);
       return;
     }
     if (name === "canteen_exit_blocked") {
-      this.animateCorrectBlock(String(payload?.exitId ?? "west") as CanteenExitId, Number(payload?.blockHits) || 1, false);
+      const exitId = String(payload?.exitId ?? "west") as CanteenExitId;
+      this.animateValidatedCartPush(exitId, () => {
+        this.animateCorrectBlock(exitId, Number(payload?.blockHits) || 1, false);
+      });
       return;
     }
     if (name === "canteen_exit_blocking_completed") {
-      this.animateCorrectBlock(String(payload?.exitId ?? "steam") as CanteenExitId, 3, true);
+      const exitId = String(payload?.exitId ?? "steam") as CanteenExitId;
+      this.animateValidatedCartPush(exitId, () => this.animateCorrectBlock(exitId, 3, true));
     }
   }
 
   private requestModeToggle(): void {
+    if (this.cartPushBusy) return;
     const state = this.bridge.getState();
     if (!["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase)) return;
     const mode: CanteenMode = state.canteenHunt.mode === "light" ? "dark" : "light";
@@ -563,7 +627,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "pickup");
     }
     if (state.canteenHunt.phase === "exit_blocking") {
-      return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "cart");
+      return CANTEEN_INTERACTION_TARGETS.filter((target) => (
+        target.kind === "cart"
+        && CANTEEN_EXIT_SEQUENCE.indexOf(String(target.value) as CanteenExitId) >= state.canteenHunt.blockHits
+      ));
     }
     return [];
   }
@@ -599,7 +666,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private triggerPointerTarget(target: CanteenInteractionTarget): void {
     const state = this.bridge.getState();
-    if (this.dialogueLocked || this.menuPanel || this.paperBusy) return;
+    if (this.dialogueLocked || this.menuPanel || this.paperBusy || this.cartPushBusy) return;
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
     if (!findNearestCanteenTarget(this.player.x, this.player.y, [target])) return;
     this.triggerTarget(target, state);
@@ -618,28 +685,197 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private triggerCart(exitId: CanteenExitId): void {
     const state = this.bridge.getState();
-    if (state.canteenHunt.phase !== "exit_blocking" || this.paperBusy) return;
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "exit_blocking" || this.paperBusy || this.cartPushBusy) return;
+    if (CANTEEN_EXIT_SEQUENCE.indexOf(exitId) < state.canteenHunt.blockHits) return;
     if (state.canteenHunt.mode === "dark") {
       this.showFeedback(canteenContent.blocking.cart, "system");
       return;
     }
+    if (!this.cartVisuals.get(exitId)?.visible) return;
+
+    // The controller validates the requested exit before the visual sequence
+    // begins. The subsequent result event selects either a settle or a return.
+    this.cartPushBusy = true;
+    this.cartMotionExit = exitId;
+    this.cartMotionVector.set(0, 0);
+    const definition = CANTEEN_CARTS[exitId];
+    this.syncCartBlocker(exitId, definition.x, definition.y, false);
+    this.player.setVelocity(0, 0);
     this.bridge.emit("rpg_canteen_exit_block_requested", { exitId });
   }
 
+  private animateValidatedCartPush(exitId: CanteenExitId, onSettled: () => void): void {
+    const definition = CANTEEN_CARTS[exitId];
+    const cart = this.cartVisuals.get(exitId);
+    if (!cart || !cart.visible) {
+      this.finishCartMotion(exitId);
+      return;
+    }
+
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (playerBody) playerBody.enable = false;
+    this.syncCartBlocker(exitId, cart.x, cart.y, false);
+    const handleX = cart.x + definition.handleOffsetX;
+    const handleY = cart.y + definition.handleOffsetY;
+    const approachVector = new Phaser.Math.Vector2(handleX - this.player.x, handleY - this.player.y);
+
+    const startRoll = () => {
+      this.rollCartTo(exitId, definition.pushToX, definition.pushToY, onSettled);
+    };
+
+    if (approachVector.lengthSq() <= 4) {
+      startRoll();
+      return;
+    }
+
+    this.cartMotionVector.copy(approachVector).normalize().scale(WALK_SPEED);
+    this.tweens.add({
+      targets: this.player,
+      x: handleX,
+      y: handleY,
+      duration: this.reducedMotion ? 120 : Phaser.Math.Clamp(
+        Math.round(approachVector.length() / CART_APPROACH_SPEED * 1000),
+        120,
+        320
+      ),
+      ease: "Sine.easeOut",
+      onUpdate: () => this.player.setDepth(this.player.y + 120),
+      onComplete: startRoll
+    });
+  }
+
+  private rollCartTo(exitId: CanteenExitId, targetX: number, targetY: number, onComplete: () => void): void {
+    const definition = CANTEEN_CARTS[exitId];
+    const cart = this.cartVisuals.get(exitId);
+    if (!cart) {
+      onComplete();
+      return;
+    }
+
+    const startX = cart.x;
+    const startY = cart.y;
+    const rollVector = new Phaser.Math.Vector2(targetX - startX, targetY - startY);
+    const distance = rollVector.length();
+    if (distance <= 1) {
+      this.placeCart(exitId, targetX, targetY, 0);
+      onComplete();
+      return;
+    }
+
+    this.cartMotionVector.copy(rollVector).normalize().scale(WALK_SPEED);
+    this.setPushFacing(rollVector.x, rollVector.y);
+    const motion = { progress: 0 };
+    const duration = this.reducedMotion
+      ? 120
+      : Math.max(CART_MIN_ROLL_DURATION_MS, Math.round(distance / definition.pushSpeed * 1000));
+    this.bridge.emit("canteen_cart_roll_started", {
+      exitId,
+      direction: targetX === definition.x && targetY === definition.y ? "return" : "forward"
+    });
+
+    this.tweens.add({
+      targets: motion,
+      progress: 1,
+      duration,
+      ease: "Sine.easeInOut",
+      onUpdate: () => {
+        const x = Phaser.Math.Linear(startX, targetX, motion.progress);
+        const y = Phaser.Math.Linear(startY, targetY, motion.progress);
+        const wheelFrame = Math.floor(this.time.now / CART_ROLL_FRAME_MS) % CANTEEN_CART_FRAME_KEYS.length;
+        this.placeCart(exitId, x, y, wheelFrame);
+        this.player.setPosition(x + definition.handleOffsetX, y + definition.handleOffsetY);
+        this.player.setDepth(this.player.y + 120);
+      },
+      onComplete: () => {
+        this.placeCart(exitId, targetX, targetY, 0);
+        this.player.setPosition(targetX + definition.handleOffsetX, targetY + definition.handleOffsetY)
+          .setDepth(this.player.y + 120);
+        this.time.delayedCall(this.reducedMotion ? 0 : 90, onComplete);
+      }
+    });
+  }
+
+  private restoreFailedCartPush(exitId: CanteenExitId, onComplete: () => void): void {
+    const definition = CANTEEN_CARTS[exitId];
+    const cart = this.cartVisuals.get(exitId);
+    if (!cart) {
+      this.finishCartMotion(exitId);
+      onComplete();
+      return;
+    }
+    this.rollCartTo(exitId, definition.x, definition.y, () => {
+      this.finishCartMotion(exitId);
+      onComplete();
+    });
+  }
+
+  private finishCartMotion(exitId: CanteenExitId): void {
+    if (this.cartMotionExit !== exitId) return;
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (playerBody) {
+      playerBody.enable = true;
+      playerBody.reset(this.player.x, this.player.y);
+    }
+    this.cartPushBusy = false;
+    this.cartMotionExit = null;
+    this.cartMotionVector.set(0, 0);
+  }
+
+  private placeCart(exitId: CanteenExitId, x: number, y: number, wheelFrame = 0): void {
+    const cart = this.cartVisuals.get(exitId);
+    if (!cart) return;
+    cart
+      .setTexture(CANTEEN_CART_FRAME_KEYS[wheelFrame % CANTEEN_CART_FRAME_KEYS.length])
+      .setPosition(x, y)
+      .setDepth(y + 20);
+    this.applyCartOrientation(cart, CANTEEN_CARTS[exitId]);
+    this.exitGlows.get(exitId)?.setPosition(x, y).setDepth(y + 19);
+  }
+
+  private syncCartBlocker(exitId: CanteenExitId, x: number, y: number, enabled: boolean): void {
+    const blocker = this.cartBlockers.get(exitId);
+    if (!blocker) return;
+    blocker.setPosition(x, y + 14);
+    const body = blocker.body as Phaser.Physics.Arcade.StaticBody | null;
+    if (!body) return;
+    body.enable = enabled;
+    body.updateFromGameObject();
+  }
+
+  private applyCartOrientation(cart: Phaser.GameObjects.Image, definition: typeof CANTEEN_CARTS[CanteenExitId]): void {
+    const deltaX = definition.pushToX - definition.x;
+    const deltaY = definition.pushToY - definition.y;
+    if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+      cart.setAngle(0).setFlipX(deltaX < 0);
+      return;
+    }
+    // The authored texture faces east with its handle on the left. A 90-degree
+    // rotation keeps the handle behind the player for the vertical service route.
+    cart.setAngle(deltaY < 0 ? -90 : 90).setFlipX(false);
+  }
+
+  private setPushFacing(deltaX: number, deltaY: number): void {
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      this.playerAnimator.setFacing("side", deltaX < 0);
+      return;
+    }
+    this.playerAnimator.setFacing(deltaY < 0 ? "up" : "down");
+  }
+
   private updatePrompt(nearest: CanteenInteractionTarget | null): void {
-    if (!nearest || this.dialogueLocked || this.menuPanel || this.paperBusy) {
+    if (!nearest || this.dialogueLocked || this.menuPanel || this.paperBusy || this.cartPushBusy) {
       this.promptText.setVisible(false);
       return;
     }
     const label = nearest.kind === "tray"
-      ? "点击餐盘"
+      ? "检查眼前餐盘"
       : nearest.kind === "kiosk"
-        ? "点击食堂点餐机"
+        ? "站在点餐机下方操作"
         : nearest.kind === "pickup"
-          ? "按暗号找窗口"
+          ? "站在取餐窗口下方核对取餐"
           : nearest.kind === "exit"
-            ? "离开食堂"
-            : "推动餐盘车封堵";
+            ? "靠近东南门离开食堂"
+            : "站在餐盘车后方推动";
     this.promptText.setText(formatRpgInteractionHint(label)).setVisible(true);
   }
 
@@ -666,7 +902,22 @@ export class CanteenInteriorScene extends Phaser.Scene {
     });
     const blocking = state.canteenHunt.phase === "exit_blocking";
     const expectedExit = CANTEEN_EXIT_SEQUENCE[state.canteenHunt.blockHits];
-    this.cartVisuals.forEach((cart, exitId) => cart.setVisible(blocking && state.canteenHunt.blockHits <= CANTEEN_EXIT_SEQUENCE.indexOf(exitId)));
+    this.cartVisuals.forEach((cart, exitId) => {
+      const index = CANTEEN_EXIT_SEQUENCE.indexOf(exitId);
+      const isPlaced = index >= 0 && index < state.canteenHunt.blockHits;
+      const isAnimating = this.cartPushBusy && this.cartMotionExit === exitId;
+      const definition = CANTEEN_CARTS[exitId];
+      if (!isAnimating) {
+        this.placeCart(
+          exitId,
+          isPlaced ? definition.pushToX : definition.x,
+          isPlaced ? definition.pushToY : definition.y
+        );
+      }
+      const visible = isAnimating || isPlaced || (blocking && index >= state.canteenHunt.blockHits);
+      cart.setVisible(visible);
+      this.syncCartBlocker(exitId, cart.x, cart.y, isPlaced && !isAnimating);
+    });
     this.exitGlows.forEach((glow, exitId) => glow.setVisible(blocking && state.canteenHunt.mode === "dark" && exitId === expectedExit));
     if (blocking && !this.paper.visible) {
       this.paper.setPosition(836, 470).setVisible(true);
@@ -775,7 +1026,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     });
   }
 
-  private animateWrongBlock(expectedExit: CanteenExitId): void {
+  private animateWrongBlock(exitId: CanteenExitId, expectedExit: CanteenExitId): void {
     if (this.paperBusy) return;
     this.paperBusy = true;
     const anchor = CANTEEN_ESCAPE_ANCHORS[expectedExit];
@@ -791,7 +1042,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
       onYoyo: () => this.showFeedback(canteenContent.blocking.wrong, "system"),
       onComplete: () => {
         this.paper.setPosition(origin.x, origin.y);
-        this.paperBusy = false;
+        this.restoreFailedCartPush(exitId, () => {
+          this.paperBusy = false;
+        });
       }
     });
   }
@@ -800,17 +1053,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (this.paperBusy) return;
     this.paperBusy = true;
     const anchor = CANTEEN_ESCAPE_ANCHORS[exitId];
-    const cart = this.cartVisuals.get(exitId);
     const paperOrigin = { x: this.paper.x, y: this.paper.y };
-    if (cart) {
-      this.tweens.add({
-        targets: cart,
-        x: anchor.x,
-        y: anchor.y,
-        duration: this.reducedMotion ? 100 : 200,
-        ease: "Cubic.easeOut"
-      });
-    }
     this.bridge.emit("canteen_paper_block_impact", { blockHits, exitId });
     this.tweens.add({
       targets: this.paper,
@@ -831,11 +1074,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
             angle: "+=180",
             duration: this.reducedMotion ? 120 : 420,
             ease: "Back.easeOut",
-            onComplete: () => { this.paperBusy = false; }
+            onComplete: () => {
+              this.paperBusy = false;
+              this.finishCartMotion(exitId);
+            }
           });
           return;
         }
         this.paperBusy = false;
+        this.finishCartMotion(exitId);
         this.queueDialogue(canteenContent.blocking.escapeDialogue, () => {
           this.bridge.emit("rpg_canteen_leave_requested");
         });

@@ -1,11 +1,21 @@
 export interface CanteenChaseSnapshot {
   active: boolean;
-  progress: number;
+  coordinateSystem: "3D road projection, horizon at top center, distance increases forward";
+  mode: "story" | "endless";
+  runState: "ready" | "countdown" | "running" | "won" | "lost";
+  distance: number;
+  goal: number | null;
+  lives: number;
   lane: number;
   collisions: number;
-  slowed: boolean;
   paused: boolean;
   countdown: number | null;
+  visibleObstacles: Array<{
+    id: string;
+    kind: string;
+    lane: number;
+    distanceAhead: number;
+  }>;
 }
 
 let snapshot: CanteenChaseSnapshot | null = null;

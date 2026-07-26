@@ -667,11 +667,16 @@ export function RpgGameHost({
         {chaseActive ? (
           <CanteenChaseOverlay
             events={events}
-            onComplete={(collisions) => canteenController.completeChase(collisions)}
+            completed={state.canteenHunt.chaseCompleted}
+            attemptCount={state.canteenHunt.chaseAttemptCount}
+            bestDistance={state.canteenHunt.chaseBestDistance}
+            bestLives={state.canteenHunt.chaseBestLives}
+            onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
+            onContinue={() => { canteenController.completeChase(); }}
           />
         ) : null}
 
-        {showTaskBar ? (
+        {showTaskBar && !chaseActive ? (
           <QuestTaskBar
             state={state}
             events={events}
@@ -687,7 +692,7 @@ export function RpgGameHost({
           <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
         </div>
 
-        {runtimeScene === "campus_bootstrap" ? (
+        {runtimeScene === "campus_bootstrap" && !chaseActive ? (
           <nav className="rpg-camera-actions" aria-label="地图视角">
             <button type="button" aria-label="定位人物" title="定位人物" onClick={(event) => { events.emit("rpg_camera_recenter"); event.currentTarget.blur(); }}>⌖</button>
             <button type="button" aria-label="放大地图" title="放大地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: 0.1 }); event.currentTarget.blur(); }}>+</button>
@@ -701,9 +706,15 @@ export function RpgGameHost({
             type="button"
             className={`rpg-canteen-mode-toggle is-${state.canteenHunt.mode}`}
             aria-pressed={state.canteenHunt.mode === "dark"}
-            onClick={() => events.emit("rpg_canteen_mode_requested", {
-              mode: state.canteenHunt.mode === "dark" ? "light" : "dark"
-            })}
+            onClick={() => {
+              if (runtimeScene === "canteen_interior") {
+                events.emit("rpg_canteen_toggle_mode");
+                return;
+              }
+              events.emit("rpg_canteen_mode_requested", {
+                mode: state.canteenHunt.mode === "dark" ? "light" : "dark"
+              });
+            }}
           >
             {state.canteenHunt.mode === "dark" ? "浅色模式" : "深色模式"}
           </button>
@@ -735,7 +746,7 @@ export function RpgGameHost({
           </button>
         ) : null}
 
-        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" ? (
+        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" && !chaseActive ? (
           <aside className="rpg-temp-inventory" aria-label="地图物品栏">
             <strong>物品栏</strong>
             <div className="rpg-temp-items">
@@ -799,7 +810,7 @@ export function RpgGameHost({
           blocked={inputBlocked || itemInspectOpen || chaseActive}
         />
 
-        {state.actOne.controlsInstalled && touchControls ? (
+        {state.actOne.controlsInstalled && touchControls && !chaseActive ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"
@@ -808,17 +819,15 @@ export function RpgGameHost({
             <button type="button" aria-label="向左" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, -1, 0)}>←</button>
             <button type="button" aria-label="向下" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 0, 1)}>↓</button>
             <button type="button" aria-label="向右" disabled={!state.actOne.movementEnabled} onPointerDown={(event) => direction(event, 1, 0)}>→</button>
-            {runtimeScene !== "dorm_hub" ? (
-              <button
-                type="button"
-                className="interact"
-                aria-label="交互（键盘为空格键）"
-                disabled={!state.actOne.movementEnabled}
-                onClick={() => events.emit("rpg_interact")}
-              >
-                {RPG_CONTROL_HINTS.touchInteraction}
-              </button>
-            ) : null}
+            <button
+              type="button"
+              className="interact"
+              aria-label="交互（键盘为空格键）"
+              disabled={!state.actOne.movementEnabled}
+              onClick={() => events.emit("rpg_interact")}
+            >
+              {RPG_CONTROL_HINTS.touchInteraction}
+            </button>
           </nav>
         ) : null}
 
@@ -873,7 +882,7 @@ function getLibraryObjective(state: GameState): string {
   if (phase === "pass_ready") return "对 022 书包使用离座清退 PASS";
   if (phase === "backpack_removed") return "坐到已经恢复的 022";
   if (phase === "seat_recovered") return "与 022 继续对话";
-  if (phase === "friend_contacted") return "找到那本借走签到记录的书";
+  if (phase === "friend_contacted") return "追上逃跑的记录纸条";
   return "前往基础图书馆，寻找系统的朋友";
 }
 

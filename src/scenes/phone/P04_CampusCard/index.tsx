@@ -6,6 +6,10 @@ import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import { kit } from "../../../modules/GameKit";
 import { playSfx } from "../../../modules/Sfx";
 
+function formatCents(cents: number): string {
+  return (Math.max(0, cents) / 100).toFixed(2);
+}
+
 /**
  * P04 校园卡余额（浙大钉「我的」页）：第二章取得校园卡后显示余额并承接右移箭头交互。
  */
@@ -13,6 +17,7 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
   const [balanceAnimating, setBalanceAnimating] = useState(false);
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const shifted = state.actOne.balanceShifted;
+  const canShiftBalance = movementQuestActive && !shifted;
   const identityReadable = selectIdentityReadable(state);
 
   useEffect(() => {
@@ -94,24 +99,18 @@ export function CampusCardScene({ state, router, events }: SceneComponentProps) 
             <div className="balance-row">
               <dt>校园卡余额：</dt>
               <dd
-                className={`balance-value ${movementQuestActive ? "is-act2-target" : ""} ${shifted ? "is-shifted" : ""} ${balanceAnimating ? "is-shifting" : ""}`}
-                data-drop-target={movementQuestActive && !shifted ? "campus_card_balance" : undefined}
+                className={`balance-value ${canShiftBalance ? "is-act2-target" : ""} ${shifted ? "is-shifted" : ""} ${balanceAnimating ? "is-shifting" : ""}`}
+                data-drop-target={canShiftBalance ? "campus_card_balance" : undefined}
               >
-                {movementQuestActive ? (
-                  <>
-                    ¥<span className="act2-balance-number">{shifted ? "6.00" : "0.06"}</span>
-                    {balanceAnimating ? <i className="balance-shift-arrow" aria-hidden="true">→</i> : null}
-                  </>
-                ) : (
-                  <>¥<span>0.06</span></>
-                )}
+                ¥<span className={movementQuestActive ? "act2-balance-number" : undefined}>{formatCents(state.wallet.campusCardCents)}</span>
+                {balanceAnimating ? <i className="balance-shift-arrow" aria-hidden="true">→</i> : null}
               </dd>
             </div>
           </dl>
         </div>
         <div className="zju-wallet-row">
           <i className="coin" aria-hidden="true" />
-          我的零钱：<strong>{shifted ? "¥6.00" : "¥0.06"}</strong>
+          我的零钱：<strong>¥{formatCents(state.wallet.cashCents)}</strong>
           <span aria-hidden="true">›</span>
         </div>
       </article>

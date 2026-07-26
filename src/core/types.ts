@@ -142,6 +142,15 @@ export interface BikeArcadeChapterState {
   bestLives: number;
 }
 
+/**
+ * Persistent player money. All amounts are stored as integer cents so story
+ * transactions do not depend on formatted decimal strings.
+ */
+export interface WalletState {
+  campusCardCents: number;
+  cashCents: number;
+}
+
 export type CanteenHuntPhase =
   | "tracking"
   | "canteen_reached"
@@ -171,6 +180,10 @@ export interface CanteenHuntState {
   bikeCodeRead: boolean;
   bikeLockCleaned: boolean;
   bikePaid: boolean;
+  chaseCompleted: boolean;
+  chaseAttemptCount: number;
+  chaseBestDistance: number;
+  chaseBestLives: number;
   chaseCollisions: number;
 }
 
@@ -351,7 +364,7 @@ export interface LibraryFinalsPuzzleState {
   passBriefingSeen: boolean;
   backpackEvicted: boolean;
   playerSeated: boolean;
-  nextQuestId: "chapter_three_book_hunt" | null;
+  nextQuestId: "chapter_three_canteen_hunt" | null;
   clueIds: string[];
 }
 
@@ -490,6 +503,7 @@ export interface GameState {
   items: Record<ItemId, boolean>;
   flags: GameFlags;
   actOne: ActOneBootstrapState;
+  wallet: WalletState;
   bikeArcade: BikeArcadeChapterState;
   canteenHunt: CanteenHuntState;
   theaterHunt: TheaterHuntState;

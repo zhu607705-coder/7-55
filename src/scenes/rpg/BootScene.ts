@@ -93,7 +93,6 @@ export class BootScene extends Phaser.Scene {
   private canteenBikeCodeGlow: Phaser.GameObjects.Arc | null = null;
   private canteenBikeGlare: Phaser.GameObjects.Rectangle | null = null;
   private canteenMessyNarrationShown = false;
-  private canteenBikeIntroComplete = false;
   private theaterGateMarker: Phaser.GameObjects.Arc | null = null;
   private theaterGatePrompt: Phaser.GameObjects.Text | null = null;
   private qizhenGateMarker: Phaser.GameObjects.Arc | null = null;
@@ -163,6 +162,7 @@ export class BootScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT") as Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     // 24px 采样格：玩家足盒宽 ~20px，16px 格会把窄于足盒的缝隙（如路缘石之间的缺口）
     // 标为可走，寻路会把玩家卡进物理无法穿行的死角；24px 保守合并保证 nav 通道可容纳足盒。
@@ -374,9 +374,6 @@ export class BootScene extends Phaser.Scene {
       this.createCanteenBikeModeLayer();
       const bikeIntro = [...canteenContent.bike.setupDialogue, ...canteenContent.bike.noMoney];
       this.emitCanteenSequence(bikeIntro);
-      this.time.delayedCall(bikeIntro.length * 2500, () => {
-        this.canteenBikeIntroComplete = true;
-      });
       return;
     }
     if (this.canteenPhase === "theater_reached") {
@@ -622,7 +619,7 @@ export class BootScene extends Phaser.Scene {
     this.canteenBikeHint = this.add.text(
       CANTEEN_BIKE.x,
       CANTEEN_BIKE.y - 40,
-      `${canteenContent.bike.scan}\n${canteenContent.bike.balance}`,
+      this.getCanteenBikeWalletHint(),
       {
         color: "#fff7df",
         backgroundColor: "#241a12ee",
@@ -633,6 +630,12 @@ export class BootScene extends Phaser.Scene {
       }
     ).setOrigin(0.5).setDepth(CANTEEN_BIKE.y + 12).setVisible(false);
     this.cameraController.minimapCamera?.ignore([this.canteenBike, this.canteenBikeHint]);
+  }
+
+  private getCanteenBikeWalletHint(): string {
+    const cashCents = Math.max(0, this.bridge.getState().wallet.cashCents);
+    const cashAmount = (cashCents / 100).toFixed(2);
+    return `${canteenContent.bike.scan}\n${canteenContent.bike.balance.replace("{amount}", cashAmount)}`;
   }
 
   private createCanteenBikeModeLayer(): void {
@@ -863,7 +866,8 @@ export class BootScene extends Phaser.Scene {
       CANTEEN_BIKE.y
     );
     if (this.canteenBikeHint) {
-      this.canteenBikeHint.setVisible(this.canteenBikeIntroComplete && distanceToBike <= CANTEEN_BIKE_RADIUS);
+      this.canteenBikeHint.setText(this.getCanteenBikeWalletHint());
+      this.canteenBikeHint.setVisible(distanceToBike <= CANTEEN_BIKE_RADIUS);
     }
     const keyboardInteract = distanceToBike <= CANTEEN_BIKE_RADIUS
       && Phaser.Input.Keyboard.JustDown(this.cursors.space);
@@ -873,13 +877,13 @@ export class BootScene extends Phaser.Scene {
   }
 
   private requestCanteenBikeIfNearby(): void {
-    if (this.canteenPhase !== "chase_ready" || !this.canteenBikeIntroComplete) return;
+    if (this.canteenPhase !== "chase_ready") return;
     if (Phaser.Math.Distance.Between(this.player.x, this.player.y, CANTEEN_BIKE.x, CANTEEN_BIKE.y) > CANTEEN_BIKE_RADIUS) return;
     this.bridge.emit("rpg_canteen_bike_inspect_requested");
   }
 
   private handleCanteenInventoryDrop(payload?: Record<string, unknown>): void {
-    if (this.canteenPhase !== "chase_ready" || !this.canteenBikeIntroComplete) return;
+    if (this.canteenPhase !== "chase_ready") return;
     const itemId = String(payload?.itemId ?? "");
     if (itemId !== "cafeteriaWages" && itemId !== "greaseTissue") return;
     const canvasX = Number(payload?.canvasX);

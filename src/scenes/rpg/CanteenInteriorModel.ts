@@ -89,30 +89,109 @@ export const CANTEEN_TRAYS: readonly CanteenTrayDefinition[] = [
 
 export interface CanteenInteractionTarget {
   id: string;
+  // `x`/`y` stay attached to the rendered world entity. `standX`/`standY`
+  // are the reachable player position from which that entity is operated.
   x: number;
   y: number;
+  standX: number;
+  standY: number;
   proximity: number;
   kind: "tray" | "kiosk" | "pickup" | "cart" | "exit";
   value?: string;
 }
+
+export interface CanteenCartDefinition {
+  exitId: CanteenExitId;
+  x: number;
+  y: number;
+  /** Player offset from the trolley origin while both hands stay on the rear handle. */
+  handleOffsetX: number;
+  handleOffsetY: number;
+  standX: number;
+  standY: number;
+  pushToX: number;
+  pushToY: number;
+  proximity: number;
+  /** Source-pixel movement speed. All routes use the same readable walking cadence. */
+  pushSpeed: number;
+}
+
+// Each trolley owns an explicit rear-handle offset. The scene keeps the player at
+// that offset while rolling, so the cart never pulls the player from its centre.
+export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition>> = {
+  west: {
+    exitId: "west",
+    x: 150,
+    y: 287,
+    // After the westbound flip, the rear U-handle sits on the cart's right
+    // edge. Keep the actor's hand close to that edge instead of leaving a gap.
+    handleOffsetX: 54,
+    handleOffsetY: -19,
+    standX: 204,
+    standY: 268,
+    pushToX: 82,
+    // The paper crosses the west service opening at y=250. Park the trolley
+    // on that same line so the visible cart covers the interception point.
+    pushToY: 250,
+    proximity: 70,
+    pushSpeed: 112
+  },
+  southeast: {
+    exitId: "southeast",
+    x: 1198,
+    y: 824,
+    handleOffsetX: -56,
+    handleOffsetY: -20,
+    standX: 1142,
+    standY: 804,
+    pushToX: 1368,
+    pushToY: 852,
+    proximity: 70,
+    pushSpeed: 118
+  },
+  steam: {
+    exitId: "steam",
+    x: 1212,
+    y: 300,
+    handleOffsetX: 15,
+    handleOffsetY: 56,
+    standX: 1227,
+    standY: 356,
+    pushToX: 1212,
+    pushToY: 245,
+    proximity: 70,
+    pushSpeed: 108
+  }
+};
 
 export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = [
   ...CANTEEN_TRAYS.map((tray) => ({
     id: tray.id,
     x: tray.x,
     y: tray.y,
+    standX: tray.x,
+    standY: tray.y,
     proximity: 72,
     kind: "tray" as const,
     value: tray.id
   })),
-  { id: "ordering_kiosk", x: 460, y: 654, proximity: 105, kind: "kiosk" },
-  { id: "pickup_window_1", x: 654, y: 650, proximity: 90, kind: "pickup", value: "1" },
-  { id: "pickup_window_2", x: 815, y: 650, proximity: 90, kind: "pickup", value: "2" },
-  { id: "pickup_window_3", x: 978, y: 650, proximity: 90, kind: "pickup", value: "3" },
-  { id: "cart_west", x: 150, y: 287, proximity: 88, kind: "cart", value: "west" },
-  { id: "cart_southeast", x: 1198, y: 824, proximity: 96, kind: "cart", value: "southeast" },
-  { id: "cart_steam", x: 1212, y: 300, proximity: 92, kind: "cart", value: "steam" },
-  { id: "southeast_exit", x: 1380, y: 835, proximity: 100, kind: "exit" }
+  // Kiosk and pickup anchors remain on the visible machines. Their operation
+  // positions are in the clear aisle below the respective counter fronts.
+  { id: "ordering_kiosk", x: 260, y: 760, standX: 260, standY: 870, proximity: 72, kind: "kiosk" },
+  { id: "pickup_window_1", x: 654, y: 781, standX: 654, standY: 875, proximity: 66, kind: "pickup", value: "1" },
+  { id: "pickup_window_2", x: 815, y: 781, standX: 815, standY: 875, proximity: 66, kind: "pickup", value: "2" },
+  { id: "pickup_window_3", x: 978, y: 781, standX: 978, standY: 875, proximity: 66, kind: "pickup", value: "3" },
+  ...Object.values(CANTEEN_CARTS).map((cart) => ({
+    id: `cart_${cart.exitId}`,
+    x: cart.x,
+    y: cart.y,
+    standX: cart.standX,
+    standY: cart.standY,
+    proximity: cart.proximity,
+    kind: "cart" as const,
+    value: cart.exitId
+  })),
+  { id: "southeast_exit", x: 1380, y: 835, standX: 1380, standY: 835, proximity: 100, kind: "exit" }
 ] as const;
 
 export const CANTEEN_ESCAPE_ANCHORS: Record<CanteenExitId, { x: number; y: number }> = {
@@ -126,14 +205,14 @@ export const CANTEEN_ESCAPE_ANCHORS: Record<CanteenExitId, { x: number; y: numbe
 export const CANTEEN_SPAWN = { x: 1194, y: 834 } as const;
 export const CANTEEN_PHASE_SPAWNS = {
   tray_search: CANTEEN_SPAWN,
-  menu_order: { x: 500, y: 650 },
-  pickup_search: { x: 900, y: 650 },
-  exit_blocking: { x: 1154, y: 824 }
+  menu_order: { x: 260, y: 870 },
+  pickup_search: { x: 978, y: 875 },
+  exit_blocking: { x: CANTEEN_CARTS.southeast.standX, y: CANTEEN_CARTS.southeast.standY }
 } as const;
 export const CANTEEN_BLOCK_SPAWNS = [
   CANTEEN_PHASE_SPAWNS.exit_blocking,
-  { x: 1165, y: 286 },
-  { x: 120, y: 287 }
+  { x: CANTEEN_CARTS.steam.standX, y: CANTEEN_CARTS.steam.standY },
+  { x: CANTEEN_CARTS.west.standX, y: CANTEEN_CARTS.west.standY }
 ] as const;
 export const CANTEEN_RETURN_POINT = { x: 1222, y: 520 } as const;
 
@@ -145,7 +224,7 @@ export function findNearestCanteenTarget(
   let nearest: CanteenInteractionTarget | null = null;
   let nearestDistance = Number.POSITIVE_INFINITY;
   targets.forEach((target) => {
-    const distance = Math.hypot(x - target.x, y - target.y);
+    const distance = Math.hypot(x - target.standX, y - target.standY);
     if (distance <= target.proximity && distance < nearestDistance) {
       nearest = target;
       nearestDistance = distance;

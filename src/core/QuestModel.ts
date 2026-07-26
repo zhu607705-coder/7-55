@@ -315,9 +315,9 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
   if (state.canteenHunt.active) {
     const task: TaskDefinition = state.canteenHunt.phase === "tracking"
       ? {
-          id: "chapter_three_find_escape_direction",
-          label: canteenContent.trackingTask.label,
-          hints: canteenContent.trackingTask.hints,
+          id: "chapter_three_reach_east_canteen",
+          label: "追到东区大食堂",
+          hints: ["沿校园地图中留下的脚印前往东区大食堂。"],
           targetSurface: "rpg"
         }
       : ["canteen_reached", "tray_search", "menu_order", "pickup_search", "exit_blocking", "entered"].includes(state.canteenHunt.phase)
@@ -347,14 +347,13 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
               hints: canteenContent.bike.hints,
               targetSurface: "rpg"
             };
-    return buildQuest("chapter_three", canteenContent.trackingTask.label, [task], 0);
+    return buildQuest("chapter_three", "追到东区大食堂", [task], 0);
   }
-  return buildQuest("chapter_three", "寻找借走记录的书", [{
-    id: "chapter_three_book_hunt",
-    label: state.bikeArcade.completed ? "第三章任务完成" : "打开求是潮，追上那本书",
-    hints: ["新的游戏入口已出现在手机。", "目标距离与书上的编号有关。", "打开求是潮，完成骑行关卡。"],
-    targetSurface: "phone",
-    recommendedScene: "bike_arcade"
+  return buildQuest("chapter_three", "追到东区大食堂", [{
+    id: "chapter_three_reach_east_canteen",
+    label: "追到东区大食堂",
+    hints: ["沿校园地图中留下的脚印前往东区大食堂。"],
+    targetSurface: "rpg"
   }], 0);
 }
 

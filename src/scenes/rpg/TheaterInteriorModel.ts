@@ -65,8 +65,11 @@ export type TheaterTargetKind = "poster" | "kiosk" | "gate" | "program" | "conso
 
 export interface TheaterInteractionTarget {
   id: string;
+  /** Visual entity anchor in source-pixel coordinates. */
   x: number;
   y: number;
+  /** Reachable floor position from which the visual entity can be operated. */
+  stand?: { x: number; y: number };
   proximity: number;
   kind: TheaterTargetKind;
   programId?: TheaterProgramId;
@@ -74,8 +77,26 @@ export interface TheaterInteractionTarget {
 }
 
 export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = [
-  { id: "theater_poster", x: 282, y: 846, proximity: 115, kind: "poster", acceptedItem: "greaseTissue" },
-  { id: "theater_ticket_kiosk", x: 1146, y: 840, proximity: 104, kind: "kiosk" },
+  {
+    id: "theater_poster",
+    x: 282,
+    y: 755,
+    // The narrow aisle between the poster case and the lobby bin is the
+    // reachable side of this fixture. Keep the player out of both collision
+    // rectangles while retaining a short, physical interaction distance.
+    stand: { x: 476, y: 755 },
+    proximity: 48,
+    kind: "poster",
+    acceptedItem: "greaseTissue"
+  },
+  {
+    id: "theater_ticket_kiosk",
+    x: 1146,
+    y: 755,
+    stand: { x: 1080, y: 750 },
+    proximity: 72,
+    kind: "kiosk"
+  },
   { id: "theater_ticket_gate", x: 836, y: 710, proximity: 98, kind: "gate", acceptedItem: "temporaryTheaterTicket" },
   { id: "theater_program_opening", x: 568, y: 405, proximity: 74, kind: "program", programId: "opening" },
   { id: "theater_program_spotlight", x: 1080, y: 594, proximity: 78, kind: "program", programId: "spotlight" },
@@ -89,7 +110,8 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
 
 export const THEATER_LOBBY_SPAWN = { x: 836, y: 842 } as const;
 export const THEATER_AUDITORIUM_SPAWN = { x: 1080, y: 590 } as const;
-export const THEATER_STAGE_SPAWN = { x: 420, y: 236 } as const;
+// Keep the player's foot box above the stage-front collision at y = 258.
+export const THEATER_STAGE_SPAWN = { x: 420, y: 200 } as const;
 export const THEATER_GATE_BLOCKER = { left: 774, top: 650, right: 900, bottom: 713 } as const;
 
 export function findNearestTheaterTarget(
@@ -100,7 +122,8 @@ export function findNearestTheaterTarget(
   let nearest: TheaterInteractionTarget | null = null;
   let distance = Number.POSITIVE_INFINITY;
   targets.forEach((target) => {
-    const candidateDistance = Math.hypot(x - target.x, y - target.y);
+    const stand = target.stand ?? target;
+    const candidateDistance = Math.hypot(x - stand.x, y - stand.y);
     if (candidateDistance <= target.proximity && candidateDistance < distance) {
       nearest = target;
       distance = candidateDistance;

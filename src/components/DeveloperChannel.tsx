@@ -35,7 +35,7 @@ function getCheckpointLane(checkpoint: DeveloperCheckpoint): string {
   if (checkpoint.id === "canteen-hunt" || checkpoint.id.startsWith("c3-canteen-")) return "食堂";
   if (checkpoint.id.startsWith("c3-theater-")) return "剧场";
   if (checkpoint.id.startsWith("c3-qizhen-")) return "启真湖";
-  return "求是潮";
+  return "第三章";
 }
 
 function getChapterLanes(chapter: DeveloperChapter): string[] {
@@ -55,7 +55,7 @@ function getInitialDeveloperSelection(active: DeveloperCheckpointId | null): {
   }
   const chapter: DeveloperChapter = "第三章";
   const lanes = getChapterLanes(chapter);
-  return { chapter, lane: lanes[lanes.length - 1] ?? "全部" };
+  return { chapter, lane: lanes[0] ?? "全部" };
 }
 
 export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannelProps) {
@@ -109,7 +109,7 @@ export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannel
           onClick={() => {
             const lanes = getChapterLanes(chapter);
             setSelectedChapter(chapter);
-            setSelectedLane(lanes[lanes.length - 1] ?? "全部");
+            setSelectedLane(lanes[0] ?? "全部");
           }}
         ><strong>{chapter}</strong><span>{count}</span></button>;
       })}

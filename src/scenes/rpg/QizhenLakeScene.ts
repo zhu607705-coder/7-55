@@ -123,6 +123,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       Phaser.Input.Keyboard.Key
     >;
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.TAB);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     this.cameras.main
       .setBounds(0, 0, QIZHEN_LAKE_WORLD.width, QIZHEN_LAKE_WORLD.height)
