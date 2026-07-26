@@ -3,8 +3,7 @@ import theaterInteriorMapUrl from "../../assets/rpg/interiors/theater_interior.p
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import type { GameState, TheaterMode, TheaterProgramId } from "../../core/types";
 import theaterContent from "../../data/chapter3-theater.content.json";
-import type { RpgBridge } from "./RpgBridge";
-import { formatRpgInteractionHint } from "./RpgControlHints";
+import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   configureRpgPlayerSprite,
@@ -15,6 +14,10 @@ import {
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
+import {
+  requireTheaterRuntimePort,
+  type TheaterRuntimePort
+} from "./TheaterRuntimeContract";
 import {
   getTheaterSpotlightAssist,
   THEATER_SPOTLIGHT_ROUNDS,
@@ -31,6 +34,7 @@ import {
   THEATER_STAGE_SPAWN,
   THEATER_STATIC_COLLISION_RECTS,
   findNearestTheaterTarget,
+  isTheaterDropPointWithin,
   type TheaterInteractionTarget
 } from "./TheaterInteriorModel";
 
@@ -61,13 +65,22 @@ interface PanelButtonHitArea {
   action: () => void;
 }
 
+interface TicketDropGuideVisual {
+  target: TheaterInteractionTarget;
+  dropFrame: Phaser.GameObjects.Rectangle;
+  dropLabel: Phaser.GameObjects.Text;
+  standRing: Phaser.GameObjects.Arc;
+  standLabel: Phaser.GameObjects.Text;
+  link: Phaser.GameObjects.Graphics;
+}
+
 type SpotlightStage = "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
 
 function theaterDropTargetLabel(kind: TheaterInteractionTarget["kind"]): string {
   return {
     poster: "入口海报",
-    gate: "检票闸机",
-    scanner: "道具票据扫描器",
+    gate: "检票闸机右侧读票器",
+    scanner: "道具箱旁票据扫描器",
     vent: "后台通风口",
     console: "灯光控制台",
     kiosk: "取票机",
@@ -78,7 +91,7 @@ function theaterDropTargetLabel(kind: TheaterInteractionTarget["kind"]): string 
 }
 
 export class TheaterInteriorScene extends Phaser.Scene {
-  private bridge!: RpgBridge;
+  private runtime!: TheaterRuntimePort;
   private player!: Phaser.Physics.Arcade.Sprite;
   private playerAnimator!: RpgPlayerAnimator;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
@@ -144,6 +157,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private ticketInspectorArm: Phaser.GameObjects.Rectangle | null = null;
   private ticketReader: Phaser.GameObjects.Container | null = null;
   private ticketReaderLight: Phaser.GameObjects.Rectangle | null = null;
+  private ticketDropGuides = new Map<string, TicketDropGuideVisual>();
 
   constructor() {
     super("theater-interior");
@@ -157,8 +171,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.bridge = this.registry.get("rpgBridge") as RpgBridge;
-    const state = this.bridge.getState();
+    this.runtime = requireTheaterRuntimePort(this.registry.get("theaterRuntimePort"));
+    const state = this.runtime.getState();
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     this.currentMode = state.theaterHunt.mode;
     this.currentPhase = state.theaterHunt.phase;
@@ -207,6 +221,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
     this.createProgramFragments();
     this.createTicketInspectionPoint();
+    this.createTicketDropGuides();
     this.syncTicketInspectionPoint(state);
     this.createWorldHotspots();
     this.createModeLayer();
@@ -216,16 +231,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
     subscribeRpgSceneBridge(
       this.events,
-      this.bridge,
+      this.runtime,
       (event) => this.handleBridgeEvent(event.name, event.payload),
       clearRpgRuntimeDebugState
     );
-    this.bridge.setRpgLocation(
+    this.runtime.setRpgLocation(
       "theater_interior",
       state.theaterHunt.admitted ? state.rpgCheckpoint === "theater_stage" ? "theater_stage" : "theater_auditorium" : "theater_lobby"
     );
-    this.bridge.emit("rpg_booted", { scene: "theater_interior", checkpoint: this.bridge.getState().rpgCheckpoint });
-    this.bridge.emit("theater_interior_opened");
+    this.runtime.emit("rpg_booted", { scene: "theater_interior", checkpoint: this.runtime.getState().rpgCheckpoint });
+    this.runtime.emit("theater_interior_opened");
 
     if (this.currentPhase === "entry_ticket" && !state.theaterHunt.posterCleaned && !state.theaterHunt.ticketCodeRead) {
       this.dialogueLocked = true;
@@ -241,7 +256,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     this.syncWorldFromState(state);
     this.updateSpotlightRound(delta);
 
@@ -538,14 +553,122 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
   }
 
+  private createTicketDropGuides(): void {
+    THEATER_INTERACTION_TARGETS
+      .filter((target) => (
+        target.acceptedItem === "temporaryTheaterTicket"
+        && target.stand
+        && target.dropWidth
+        && target.dropHeight
+      ))
+      .forEach((target) => {
+        const dropWidth = target.dropWidth!;
+        const dropHeight = target.dropHeight!;
+        const dropFrame = this.add.rectangle(
+          target.x,
+          target.y,
+          dropWidth,
+          dropHeight,
+          0x2a9fd6,
+          0.13
+        )
+          .setStrokeStyle(4, 0x72dcff, 0.98)
+          .setDepth(2240)
+          .setVisible(false);
+        const dropLabel = this.add.text(
+          target.x,
+          target.y - dropHeight / 2 - 7,
+          target.kind === "gate" ? "松手区 · 右侧验票槽" : "松手区 · 票据扫描口",
+          {
+            color: "#d9f8ff",
+            backgroundColor: "#102332ee",
+            fontFamily: "monospace",
+            fontSize: "12px",
+            padding: { x: 7, y: 4 }
+          }
+        )
+          .setOrigin(0.5, 1)
+          .setDepth(2242)
+          .setVisible(false);
+        const standRing = this.add.circle(target.stand!.x, target.stand!.y, 27, 0x2a9fd6, 0.12)
+          .setStrokeStyle(4, 0x72dcff, 0.96)
+          .setDepth(2240)
+          .setVisible(false);
+        const standLabel = this.add.text(target.stand!.x, target.stand!.y + 37, "先让人物站到这里", {
+          color: "#d9f8ff",
+          backgroundColor: "#102332ee",
+          fontFamily: "monospace",
+          fontSize: "11px",
+          padding: { x: 6, y: 4 }
+        })
+          .setOrigin(0.5, 0)
+          .setDepth(2242)
+          .setVisible(false);
+        const link = this.add.graphics().setDepth(2239).setVisible(false);
+        this.ticketDropGuides.set(target.id, { target, dropFrame, dropLabel, standRing, standLabel, link });
+        if (!this.reducedMotion) {
+          this.tweens.add({
+            targets: [dropFrame, standRing],
+            alpha: { from: 0.62, to: 1 },
+            duration: 720,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut"
+          });
+        }
+      });
+  }
+
+  private syncTicketDropGuides(state: GameState): void {
+    this.ticketDropGuides.forEach((guide) => {
+      const phaseReady = guide.target.kind === "gate"
+        ? state.theaterHunt.phase === "entry_ticket" && !state.theaterHunt.admitted
+        : state.theaterHunt.phase === "prop_setup"
+          && state.theaterHunt.mode === "light"
+          && state.theaterHunt.managerHintRead
+          && !state.theaterHunt.propBoxOpened;
+      const visible = state.ui.selectedItem === "temporaryTheaterTicket" && phaseReady;
+      const objects = [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel, guide.link];
+      objects.forEach((object) => object.setVisible(visible));
+      if (!visible) return;
+
+      const inPosition = Boolean(findNearestTheaterTarget(this.player.x, this.player.y, [guide.target]));
+      const accent = inPosition ? 0x63e58b : 0x72dcff;
+      const fill = inPosition ? 0x235d3a : 0x2a9fd6;
+      guide.dropFrame
+        .setFillStyle(fill, 0.14)
+        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
+      guide.standRing
+        .setFillStyle(fill, inPosition ? 0.22 : 0.12)
+        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
+      guide.dropLabel
+        .setText(inPosition
+          ? guide.target.kind === "gate" ? "站位正确 · 票拖进验票槽松手" : "站位正确 · 票拖进扫描口松手"
+          : guide.target.kind === "gate" ? "目标 · 右侧验票槽" : "目标 · 票据扫描口")
+        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
+      guide.standLabel
+        .setText(inPosition ? "站位已满足" : "先让人物站到这里")
+        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
+      guide.link
+        .clear()
+        .lineStyle(inPosition ? 4 : 3, accent, inPosition ? 0.94 : 0.78)
+        .lineBetween(
+          guide.target.stand!.x,
+          guide.target.stand!.y - 28,
+          guide.target.x,
+          guide.target.y + (guide.target.dropHeight ?? 0) / 2
+        );
+    });
+  }
+
   private createWorldHotspots(): void {
     const bounds: Record<string, { x: number; y: number; width: number; height: number }> = {
       theater_poster: { x: 278, y: 755, width: 365, height: 160 },
       theater_ticket_kiosk: { x: 1146, y: 755, width: 100, height: 150 },
-      theater_ticket_gate: { x: 836, y: 690, width: 150, height: 85 },
+      theater_ticket_gate: { x: 907, y: 690, width: 90, height: 100 },
       theater_light_console: { x: 1140, y: 500, width: 130, height: 110 },
       theater_prop_box: { x: 292, y: 166, width: 100, height: 100 },
-      theater_prop_scanner: { x: 365, y: 170, width: 52, height: 90 },
+      theater_prop_scanner: { x: 364, y: 170, width: 76, height: 94 },
       theater_backstage_vent: { x: 936, y: 95, width: 78, height: 55 },
       theater_exit: { x: 836, y: 842, width: 156, height: 92 }
     };
@@ -766,7 +889,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     if (name === "theater_reversal_completed") {
       this.queueDialogue(theaterContent.spotlight.endingDialogue.slice(0, 2), () => {
-        this.bridge.emit("theater_decoy_inspect_requested");
+        this.runtime.emit("theater_decoy_inspect_requested");
       });
       return;
     }
@@ -776,10 +899,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private requestModeToggle(): void {
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     if (!state.theaterHunt.active || ["reversal", "complete"].includes(state.theaterHunt.phase)) return;
     const mode: TheaterMode = state.theaterHunt.mode === "light" ? "dark" : "light";
-    this.bridge.emit("rpg_theater_mode_requested", { mode });
+    this.runtime.emit("rpg_theater_mode_requested", { mode });
   }
 
   private playModeTransition(mode: TheaterMode): void {
@@ -791,8 +914,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
       duration: this.reducedMotion ? 120 : 450,
       ease: "Sine.easeInOut"
     });
-    this.syncDarkClues(this.bridge.getState());
-    this.bridge.emit(mode === "dark" ? "theater_dark_mode_enabled" : "theater_light_mode_enabled");
+    this.syncDarkClues(this.runtime.getState());
+    this.runtime.emit(mode === "dark" ? "theater_dark_mode_enabled" : "theater_light_mode_enabled");
   }
 
   private syncDarkClues(state: GameState): void {
@@ -834,7 +957,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private triggerTarget(target: TheaterInteractionTarget, state: GameState): void {
     if (target.kind === "exit") {
-      this.bridge.emit("rpg_theater_exit_requested");
+      this.runtime.emit("rpg_theater_exit_requested");
       return;
     }
     if (target.kind === "poster") {
@@ -842,7 +965,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "kiosk") {
-      this.bridge.emit("rpg_theater_ticket_kiosk_requested");
+      this.runtime.emit("rpg_theater_ticket_kiosk_requested");
       return;
     }
     if (target.kind === "gate") {
@@ -851,16 +974,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     if (target.kind === "program" && target.programId) {
       if (state.theaterHunt.mode === "light") {
-        this.bridge.emit("rpg_theater_program_collect_requested", { programId: target.programId });
+        this.runtime.emit("rpg_theater_program_collect_requested", { programId: target.programId });
       } else if (state.theaterHunt.collectedProgramIds.length === 3) {
-        this.bridge.emit("rpg_theater_program_order_read_requested");
+        this.runtime.emit("rpg_theater_program_order_read_requested");
       }
       return;
     }
     if (target.kind === "console") {
       if (state.theaterHunt.phase === "program_search") {
         if (state.theaterHunt.mode === "dark") {
-          this.bridge.emit("rpg_theater_program_order_read_requested");
+          this.runtime.emit("rpg_theater_program_order_read_requested");
         } else if (state.theaterHunt.collectedProgramIds.length === 3) {
           this.openProgramPanel();
         } else {
@@ -870,7 +993,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "prop") {
-      this.bridge.emit("rpg_theater_prop_inspect_requested");
+      this.runtime.emit("rpg_theater_prop_inspect_requested");
       return;
     }
     if (target.kind === "scanner") {
@@ -883,7 +1006,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private triggerPointerTarget(target: TheaterInteractionTarget): void {
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     if (this.dialogueLocked || this.paperBusy || this.panel || this.spotlightPanel) return;
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
     if (!findNearestTheaterTarget(this.player.x, this.player.y, [target])) {
@@ -898,24 +1021,31 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.promptText.setVisible(false);
       return;
     }
+    const dragOnly = (target.kind === "poster" && state.items.greaseTissue && !state.theaterHunt.posterCleaned)
+      || (target.kind === "gate" && state.items.temporaryTheaterTicket)
+      || (target.kind === "console" && state.theaterHunt.phase === "spotlight_ready" && state.items.spotlightRemote)
+      || (target.kind === "scanner" && state.items.temporaryTheaterTicket)
+      || (target.kind === "vent" && state.items.fluorescentBrush);
     const label = target.kind === "poster"
-      ? state.items.greaseTissue && !state.theaterHunt.posterCleaned ? "拖入油渍纸巾擦除反光" : "查看海报栏"
+      ? dragOnly ? "油渍纸巾 → 入口海报" : "查看海报栏"
       : target.kind === "kiosk"
         ? "查看取票机"
         : target.kind === "gate"
-          ? state.items.temporaryTheaterTicket ? "拖入临时观演票" : "与检票员对话"
+          ? dragOnly ? "临时观演票 → 右侧验票槽" : "与检票员对话"
           : target.kind === "program"
             ? state.theaterHunt.mode === "dark" ? "查看残影" : "取得节目单残页"
             : target.kind === "console"
-              ? state.theaterHunt.phase === "spotlight_ready" ? "拖入追光灯遥控器" : "操作灯控台"
+              ? dragOnly ? "追光灯遥控器 → 灯控台" : "操作灯控台"
               : target.kind === "prop"
                 ? "查看道具箱"
                 : target.kind === "scanner"
-                  ? "拖入临时观演票"
+                  ? dragOnly ? "临时观演票 → 票据扫描口" : "检查票据扫描器"
                   : target.kind === "exit"
                     ? "离开剧院"
-                    : "拖入荧光粉刷";
-    this.promptText.setText(formatRpgInteractionHint(label)).setVisible(true);
+                    : dragOnly ? "荧光粉刷 → 后台通风口" : "检查后台通风口";
+    this.promptText
+      .setText(dragOnly ? formatRpgDragHint(label) : formatRpgInteractionHint(label))
+      .setVisible(true);
   }
 
   private syncWorldFromState(state: GameState, immediate = false): void {
@@ -938,6 +1068,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightConsoleGuide?.setVisible(state.theaterHunt.phase === "spotlight_ready");
     if (state.theaterHunt.admitted && this.gateBlocker) this.removeGateBlocker();
     this.syncTicketInspectionPoint(state);
+    this.syncTicketDropGuides(state);
   }
 
   private removeGateBlocker(): void {
@@ -951,24 +1082,43 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
     if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
-      this.bridge.emit("rpg_item_use_feedback", { itemId, reason: "missed_target" });
+      this.runtime.emit("rpg_item_use_feedback", { itemId, reason: "missed_target" });
       return;
     }
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
-    const activeTargets = this.getActiveTargets(this.bridge.getState());
+    const state = this.runtime.getState();
+    const activeTargets = this.getActiveTargets(state);
     const targetAtPoint = activeTargets
-      .find((candidate) => Math.hypot(world.x - candidate.x, world.y - candidate.y) <= Math.max(105, candidate.proximity));
+      .filter((candidate) => isTheaterDropPointWithin(candidate, world.x, world.y))
+      .sort((a, b) => {
+        const aAcceptsItem = a.acceptedItem === itemId;
+        const bAcceptsItem = b.acceptedItem === itemId;
+        if (aAcceptsItem !== bAcceptsItem) return aAcceptsItem ? -1 : 1;
+        const aHasItemContract = Boolean(a.acceptedItem);
+        const bHasItemContract = Boolean(b.acceptedItem);
+        if (aHasItemContract !== bHasItemContract) return aHasItemContract ? -1 : 1;
+        const aArea = (a.dropWidth ?? a.proximity * 2) * (a.dropHeight ?? a.proximity * 2);
+        const bArea = (b.dropWidth ?? b.proximity * 2) * (b.dropHeight ?? b.proximity * 2);
+        return aArea - bArea;
+      })[0];
     if (!targetAtPoint) {
-      this.bridge.emit("rpg_item_use_feedback", {
+      const ticketDetail = itemId === "temporaryTheaterTicket"
+        ? state.theaterHunt.phase === "entry_ticket"
+          ? "票已退回：请拖到检票闸机右侧发蓝光的「验票」读票器框内。"
+          : state.theaterHunt.phase === "prop_setup"
+            ? "票已退回：请拖到道具箱旁发蓝光的票据扫描口框内。"
+            : "票已退回：当前阶段没有临时观演票的使用点。"
+        : "松手点没有进入当前阶段的高亮目标。";
+      this.runtime.emit("rpg_item_use_feedback", {
         itemId,
         reason: "missed_target",
-        detail: "松手点没有进入当前阶段的高亮目标。"
+        detail: ticketDetail
       });
       return;
     }
     const targetLabel = theaterDropTargetLabel(targetAtPoint.kind);
     if (targetAtPoint.acceptedItem !== itemId) {
-      this.bridge.emit("rpg_item_use_feedback", {
+      this.runtime.emit("rpg_item_use_feedback", {
         itemId,
         reason: targetAtPoint.acceptedItem ? "wrong_item" : "locked",
         targetLabel
@@ -976,19 +1126,24 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (!findNearestTheaterTarget(this.player.x, this.player.y, [targetAtPoint])) {
-      this.bridge.emit("rpg_item_use_feedback", {
+      this.runtime.emit("rpg_item_use_feedback", {
         itemId,
         reason: "too_far",
-        targetLabel
+        targetLabel,
+        detail: itemId === "temporaryTheaterTicket"
+          ? targetAtPoint.kind === "gate"
+            ? "落点正确；人物还没有站进读票器前的蓝色站位。票已退回。"
+            : "落点正确；人物还没有站进扫描器前的蓝色站位。票已退回。"
+          : undefined
       });
       return;
     }
     const target = targetAtPoint;
-    if (target.kind === "poster") this.bridge.emit("rpg_theater_poster_tissue_requested");
-    else if (target.kind === "gate") this.bridge.emit("rpg_theater_admission_requested");
-    else if (target.kind === "scanner") this.bridge.emit("rpg_theater_prop_ticket_requested");
-    else if (target.kind === "vent") this.bridge.emit("rpg_theater_vent_brush_requested");
-    else if (target.kind === "console") this.bridge.emit("rpg_theater_spotlight_start_requested");
+    if (target.kind === "poster") this.runtime.emit("rpg_theater_poster_tissue_requested");
+    else if (target.kind === "gate") this.runtime.emit("rpg_theater_admission_requested");
+    else if (target.kind === "scanner") this.runtime.emit("rpg_theater_prop_ticket_requested");
+    else if (target.kind === "vent") this.runtime.emit("rpg_theater_vent_brush_requested");
+    else if (target.kind === "console") this.runtime.emit("rpg_theater_spotlight_start_requested");
   }
 
   private openCodePanel(): void {
@@ -1016,7 +1171,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.updateCodeDisplay();
     });
     this.addPanelButton(panel, 0, 132, 120, 42, "提交", () => {
-      if (this.codeInput.length === 4) this.bridge.emit("rpg_theater_ticket_code_submitted", { code: this.codeInput });
+      if (this.codeInput.length === 4) this.runtime.emit("rpg_theater_ticket_code_submitted", { code: this.codeInput });
     });
     this.addPanelButton(panel, 150, 132, 120, 42, "关闭", () => this.closePanel());
     this.panel = panel;
@@ -1030,7 +1185,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private openProgramPanel(): void {
     if (this.panel) return;
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(6200);
     const shade = this.add.rectangle(0, 0, 620, 390, 0x0b0b12, 0.98).setStrokeStyle(4, 0xb18b4b, 0.96);
     const title = this.add.text(0, -160, `${theaterContent.program.consolePrompt}\n${theaterContent.program.consoleState}`, {
@@ -1044,21 +1199,21 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }).setOrigin(0.5));
     state.theaterHunt.collectedProgramIds.forEach((programId, index) => {
       this.addPanelButton(panel, -190 + index * 190, 4, 150, 48, labels[programId], () => {
-        const current = this.bridge.getState().theaterHunt.programOrder;
+        const current = this.runtime.getState().theaterHunt.programOrder;
         if (!current.includes(programId) && current.length < 3) {
-          this.bridge.emit("rpg_theater_program_order_set_requested", { order: [...current, programId] });
+          this.runtime.emit("rpg_theater_program_order_set_requested", { order: [...current, programId] });
         }
       });
     });
     this.addPanelButton(panel, -205, 92, 120, 42, "撤回", () => {
-      const current = this.bridge.getState().theaterHunt.programOrder;
-      this.bridge.emit("rpg_theater_program_order_set_requested", { order: current.slice(0, -1) });
+      const current = this.runtime.getState().theaterHunt.programOrder;
+      this.runtime.emit("rpg_theater_program_order_set_requested", { order: current.slice(0, -1) });
     });
     this.addPanelButton(panel, -68, 92, 120, 42, "清空", () => {
-      this.bridge.emit("rpg_theater_program_order_set_requested", { order: [] });
+      this.runtime.emit("rpg_theater_program_order_set_requested", { order: [] });
     });
     this.addPanelButton(panel, 68, 92, 120, 42, "提交", () => {
-      this.bridge.emit("rpg_theater_program_order_submit_requested");
+      this.runtime.emit("rpg_theater_program_order_submit_requested");
     });
     this.addPanelButton(panel, 205, 92, 120, 42, "关闭", () => this.closePanel());
     this.panel = panel;
@@ -1152,7 +1307,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         this.codeInput = this.codeInput.slice(0, -1);
         this.updateCodeDisplay();
       } else if (event.key === "Enter" && this.codeInput.length === 4) {
-        this.bridge.emit("rpg_theater_ticket_code_submitted", { code: this.codeInput });
+        this.runtime.emit("rpg_theater_ticket_code_submitted", { code: this.codeInput });
       } else if (event.key === "Escape") {
         this.closePanel();
       }
@@ -1202,7 +1357,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         left.destroy();
         right.destroy();
         this.paperBusy = false;
-        this.bridge.emit("rpg_theater_ticket_combine_requested");
+        this.runtime.emit("rpg_theater_ticket_combine_requested");
       }
     });
   }
@@ -1295,7 +1450,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private beginSpotlightRound(): void {
     this.destroySpotlightPanel();
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     if (state.theaterHunt.phase !== "spotlight_hunt") return;
     const round = state.theaterHunt.spotlightRound;
     const config = THEATER_SPOTLIGHT_ROUNDS[round];
@@ -1422,8 +1577,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private prepareSpotlightAction(round: number): void {
-    if (!this.spotlightPanel || this.bridge.getState().theaterHunt.spotlightRound !== round) return;
-    this.bridge.emit("rpg_theater_mode_requested", { mode: "light" });
+    if (!this.spotlightPanel || this.runtime.getState().theaterHunt.spotlightRound !== round) return;
+    this.runtime.emit("rpg_theater_mode_requested", { mode: "light" });
     this.spotlightStage = "ready";
     this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 预置`);
     this.spotlightStatus?.setText("预置追光灯").setColor("#ffe49a");
@@ -1443,7 +1598,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private startSpotlightTracking(round: number): void {
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     if (!this.spotlightPanel || state.theaterHunt.spotlightRound !== round || state.theaterHunt.phase !== "spotlight_hunt") return;
     this.spotlightStage = "tracking";
     this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 锁定`);
@@ -1462,7 +1617,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private updateSpotlightRound(delta: number): void {
     if (!this.spotlightPanel || !["ready", "tracking"].includes(this.spotlightStage)) return;
-    const state = this.bridge.getState();
+    const state = this.runtime.getState();
     const round = state.theaterHunt.spotlightRound;
     const config = THEATER_SPOTLIGHT_ROUNDS[round];
     if (!config) return;
@@ -1509,7 +1664,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (this.spotlightEarlyExposureMs >= 450) {
       this.spotlightChoiceOpen = false;
       this.spotlightStage = "miss";
-      this.bridge.emit("rpg_theater_spotlight_attempt", {
+      this.runtime.emit("rpg_theater_spotlight_attempt", {
         round,
         lane: this.getSpotlightAimLane(),
         maxContinuousLockMs: this.spotlightMaxContinuousLockMs,
@@ -1541,7 +1696,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (this.spotlightCurrentLockMs >= requiredLockMs) {
       this.spotlightChoiceOpen = false;
       this.spotlightStage = "hit";
-      this.bridge.emit("rpg_theater_spotlight_attempt", {
+      this.runtime.emit("rpg_theater_spotlight_attempt", {
         round,
         lane: this.getSpotlightAimLane(),
         maxContinuousLockMs: this.spotlightMaxContinuousLockMs,
@@ -1555,7 +1710,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (this.spotlightActionElapsedMs >= config.actionMs) {
       this.spotlightChoiceOpen = false;
       this.spotlightStage = "miss";
-      this.bridge.emit("rpg_theater_spotlight_attempt", {
+      this.runtime.emit("rpg_theater_spotlight_attempt", {
         round,
         lane: this.getSpotlightAimLane(),
         maxContinuousLockMs: this.spotlightMaxContinuousLockMs,
@@ -1639,7 +1794,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightBeamActive = false;
     this.spotlightPointerFiring = false;
     this.resetSpotlightBeamVisual();
-    const hitCount = this.bridge.getState().theaterHunt.spotlightRound;
+    const hitCount = this.runtime.getState().theaterHunt.spotlightRound;
     this.spotlightTitle?.setText(`第 ${hitCount} / 3 轮 · 命中`);
     this.spotlightStatus?.setText(`${theaterContent.spotlight.hit}  已命中 ${hitCount} / 3`).setColor("#fff4b2");
     this.spotlightControlHint?.setText("连续锁定完成。").setColor("#fff4b2");
@@ -1658,7 +1813,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightBeamActive = false;
     this.spotlightPointerFiring = false;
     this.resetSpotlightBeamVisual();
-    this.spotlightTitle?.setText(`第 ${this.bridge.getState().theaterHunt.spotlightRound + 1} / 3 轮 · 重试`);
+    this.spotlightTitle?.setText(`第 ${this.runtime.getState().theaterHunt.spotlightRound + 1} / 3 轮 · 重试`);
     const reason = String(payload?.failureReason ?? "late") as TheaterSpotlightFailureReason;
     this.spotlightLastFailureReason = reason;
     const failureHints = theaterContent.spotlight.failureHints as Partial<Record<TheaterSpotlightFailureReason, string>>;
@@ -1742,7 +1897,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.scheduleSpotlight(1320, () => {
       this.paperBusy = false;
       this.destroySpotlightPanel();
-      this.bridge.emit("rpg_theater_reversal_complete_requested");
+      this.runtime.emit("rpg_theater_reversal_complete_requested");
     });
   }
 
@@ -1796,12 +1951,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private showFeedback(text: string, tone: GameSubtitleTone): void {
-    this.bridge.emit("rpg_subtitle", { text, tone, durationMs: DIALOGUE_STEP_MS - 120 });
+    this.runtime.emit("rpg_subtitle", { text, tone, durationMs: DIALOGUE_STEP_MS - 120 });
   }
 
   private publishDebugState(target: TheaterInteractionTarget | null, state: GameState): void {
     const spotlightConfig = THEATER_SPOTLIGHT_ROUNDS[state.theaterHunt.spotlightRound];
     const spotlightAssist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
+    const activeTicketGuide = Array.from(this.ticketDropGuides.values())
+      .find((guide) => guide.dropFrame.visible);
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: THEATER_INTERIOR_WORLD,
@@ -1827,17 +1984,37 @@ export class TheaterInteriorScene extends Phaser.Scene {
         id: candidate.id,
         x: candidate.x,
         y: candidate.y,
-        width: candidate.proximity * 2,
-        height: candidate.proximity * 2,
+        width: candidate.dropWidth ?? candidate.proximity * 2,
+        height: candidate.dropHeight ?? candidate.proximity * 2,
+        dropWidth: candidate.dropWidth,
+        dropHeight: candidate.dropHeight,
         acceptedItem: candidate.acceptedItem
       })),
       collisionRects: THEATER_STATIC_COLLISION_RECTS,
       theater: {
+        runtimeContractVersion: this.runtime.contractVersion,
         phase: state.theaterHunt.phase,
         mode: state.theaterHunt.mode,
         activeTarget: target?.id ?? null,
         panel: this.panelKind,
         spotlightChoiceOpen: this.spotlightChoiceOpen,
+        ticketDropGuide: activeTicketGuide && activeTicketGuide.target.stand
+          ? {
+              targetId: activeTicketGuide.target.id,
+              targetLabel: theaterDropTargetLabel(activeTicketGuide.target.kind),
+              visible: true,
+              playerInPosition: Boolean(
+                findNearestTheaterTarget(this.player.x, this.player.y, [activeTicketGuide.target])
+              ),
+              stand: activeTicketGuide.target.stand,
+              dropBounds: {
+                x: activeTicketGuide.target.x,
+                y: activeTicketGuide.target.y,
+                width: activeTicketGuide.target.dropWidth ?? activeTicketGuide.target.proximity * 2,
+                height: activeTicketGuide.target.dropHeight ?? activeTicketGuide.target.proximity * 2
+              }
+            }
+          : null,
         spotlight: {
           stage: this.spotlightStage,
           round: state.theaterHunt.spotlightRound,

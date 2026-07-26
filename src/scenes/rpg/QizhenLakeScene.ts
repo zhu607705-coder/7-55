@@ -8,7 +8,7 @@ import type { GameState, QizhenDecoyTargetId, QizhenLakeMode } from "../../core/
 import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
 import { QIZHEN_REFLECTION_REAL_SEQUENCE } from "../../modules/ChapterThreeQizhenLakeController";
 import type { RpgBridge } from "./RpgBridge";
-import { formatRpgInteractionHint } from "./RpgControlHints";
+import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   configureRpgPlayerSprite,
@@ -539,7 +539,9 @@ export class QizhenLakeScene extends Phaser.Scene {
             : target.kind === "decoy_spot"
               ? "拖入假纸条"
               : "启动自动喷雾";
-    this.promptText.setText(formatRpgInteractionHint(label)).setVisible(true);
+    this.promptText
+      .setText(target.kind === "decoy_spot" ? formatRpgDragHint("假纸条 → 候选位置") : formatRpgInteractionHint(label))
+      .setVisible(true);
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {

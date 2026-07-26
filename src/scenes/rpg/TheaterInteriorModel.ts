@@ -71,6 +71,9 @@ export interface TheaterInteractionTarget {
   /** Reachable floor position from which the visual entity can be operated. */
   stand?: { x: number; y: number };
   proximity: number;
+  /** Exact item drop area centered on the visual anchor. */
+  dropWidth?: number;
+  dropHeight?: number;
   kind: TheaterTargetKind;
   programId?: TheaterProgramId;
   acceptedItem?: string;
@@ -97,13 +100,33 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     proximity: 72,
     kind: "kiosk"
   },
-  { id: "theater_ticket_gate", x: 836, y: 710, proximity: 98, kind: "gate", acceptedItem: "temporaryTheaterTicket" },
+  {
+    id: "theater_ticket_gate",
+    x: 907,
+    y: 690,
+    stand: { x: 907, y: 770 },
+    proximity: 70,
+    dropWidth: 90,
+    dropHeight: 100,
+    kind: "gate",
+    acceptedItem: "temporaryTheaterTicket"
+  },
   { id: "theater_program_opening", x: 568, y: 405, proximity: 74, kind: "program", programId: "opening" },
   { id: "theater_program_spotlight", x: 1080, y: 594, proximity: 78, kind: "program", programId: "spotlight" },
   { id: "theater_program_finale", x: 1460, y: 418, proximity: 78, kind: "program", programId: "finale" },
   { id: "theater_light_console", x: 1070, y: 495, proximity: 105, kind: "console", acceptedItem: "spotlightRemote" },
   { id: "theater_prop_box", x: 292, y: 229, proximity: 92, kind: "prop" },
-  { id: "theater_prop_scanner", x: 376, y: 226, proximity: 82, kind: "scanner", acceptedItem: "temporaryTheaterTicket" },
+  {
+    id: "theater_prop_scanner",
+    x: 364,
+    y: 170,
+    stand: { x: 420, y: 218 },
+    proximity: 76,
+    dropWidth: 76,
+    dropHeight: 94,
+    kind: "scanner",
+    acceptedItem: "temporaryTheaterTicket"
+  },
   { id: "theater_backstage_vent", x: 936, y: 145, proximity: 105, kind: "vent", acceptedItem: "fluorescentBrush" },
   { id: "theater_exit", x: 836, y: 842, proximity: 110, kind: "exit" }
 ] as const;
@@ -130,6 +153,16 @@ export function findNearestTheaterTarget(
     }
   });
   return nearest;
+}
+
+export function isTheaterDropPointWithin(
+  target: TheaterInteractionTarget,
+  x: number,
+  y: number
+): boolean {
+  const width = target.dropWidth ?? target.proximity * 2;
+  const height = target.dropHeight ?? target.proximity * 2;
+  return Math.abs(x - target.x) <= width / 2 && Math.abs(y - target.y) <= height / 2;
 }
 
 export function isTheaterPointBlocked(x: number, y: number): boolean {

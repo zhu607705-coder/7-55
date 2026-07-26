@@ -33,6 +33,7 @@ import { DormHubScene } from "./DormHubScene";
 import { LibraryInteriorScene } from "./LibraryInteriorScene";
 import { CanteenInteriorScene } from "./CanteenInteriorScene";
 import { TheaterInteriorScene } from "./TheaterInteriorScene";
+import { createTheaterRuntimePort } from "./TheaterRuntimeContract";
 import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
 import { QizhenLakeScene } from "./QizhenLakeScene";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
@@ -154,6 +155,7 @@ export function RpgGameHost({
   const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
   const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
+  const theaterRuntimePort = useMemo(() => createTheaterRuntimePort(bridge), [bridge]);
   const runtimeScene = resolveRuntimeScene(state);
   const touchControls = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY)
     || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
@@ -200,6 +202,7 @@ export function RpgGameHost({
       callbacks: {
         preBoot: (phaserGame) => {
           phaserGame.registry.set("rpgBridge", bridge);
+          phaserGame.registry.set("theaterRuntimePort", theaterRuntimePort);
         },
         postBoot: (phaserGame) => {
           setRpgInputEnabled(phaserGame, !inputBlockedRef.current);
@@ -230,7 +233,7 @@ export function RpgGameHost({
       game.destroy(true);
       clearRpgCanvasHost(host);
     };
-  }, [bridge, store]);
+  }, [bridge, store, theaterRuntimePort]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -484,7 +487,10 @@ export function RpgGameHost({
         events.emit("rpg_item_use_feedback", {
           itemId: "temporaryTheaterTicket",
           reason: accepted ? "accepted" : "locked",
-          targetLabel: "检票闸机"
+          targetLabel: "检票闸机右侧读票器",
+          detail: accepted
+            ? "验票完成，闸机已经放行；临时观演票会保留。"
+            : "当前剧情条件不允许验票，请先完成入口取票流程。"
         });
       } else if (event.name === "rpg_theater_program_collect_requested") {
         theaterController.collectProgram(String(event.payload?.programId ?? "") as TheaterProgramId);
@@ -504,7 +510,10 @@ export function RpgGameHost({
         events.emit("rpg_item_use_feedback", {
           itemId: "temporaryTheaterTicket",
           reason: accepted ? "accepted" : "locked",
-          targetLabel: "道具票据扫描器"
+          targetLabel: "道具箱旁票据扫描器",
+          detail: accepted
+            ? "票据扫描完成，道具箱已经解锁；临时观演票会保留。"
+            : "先在深色模式读取管理员提示，再切回浅色模式扫描票据。"
         });
       } else if (event.name === "rpg_theater_vent_brush_requested") {
         const accepted = theaterController.dustPaperAtVent();

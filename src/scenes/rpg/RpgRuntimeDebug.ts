@@ -88,11 +88,20 @@ export interface RpgRuntimeDebugState {
     softenedOcclusionIds?: string[];
   };
   theater?: {
+    runtimeContractVersion: string;
     phase: string;
     mode: "light" | "dark";
     activeTarget: string | null;
     panel: "code" | "program" | null;
     spotlightChoiceOpen: boolean;
+    ticketDropGuide?: {
+      targetId: string;
+      targetLabel: string;
+      visible: boolean;
+      playerInPosition: boolean;
+      stand: { x: number; y: number };
+      dropBounds: { x: number; y: number; width: number; height: number };
+    } | null;
     spotlight?: {
       stage: "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
       round: number;

@@ -9,3 +9,7 @@ export const RPG_CONTROL_HINTS = {
 export function formatRpgInteractionHint(label: string): string {
   return `${RPG_CONTROL_HINTS.interactionKey}  ${label}`;
 }
+
+export function formatRpgDragHint(label: string): string {
+  return `拖动道具  ${label}`;
+}
