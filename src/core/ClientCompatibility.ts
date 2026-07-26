@@ -17,6 +17,8 @@ export interface ClientCompatibilitySnapshot {
   viewport: ClientViewportMetrics;
   capabilities: {
     pointerEvents: boolean;
+    webAssembly: boolean;
+    webGl2: boolean;
     visualViewport: boolean;
     resizeObserver: boolean;
     inert: boolean;
@@ -40,6 +42,22 @@ function mediaMatches(query: string): boolean {
   return typeof window !== "undefined"
     && typeof window.matchMedia === "function"
     && window.matchMedia(query).matches;
+}
+
+let cachedWebGl2Support: boolean | null = null;
+
+function supportsWebGl2(): boolean {
+  if (typeof document === "undefined") return false;
+  if (cachedWebGl2Support !== null) return cachedWebGl2Support;
+  try {
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("webgl2");
+    context?.getExtension("WEBGL_lose_context")?.loseContext();
+    cachedWebGl2Support = context !== null;
+  } catch {
+    cachedWebGl2Support = false;
+  }
+  return cachedWebGl2Support;
 }
 
 function isIosPlatform(): boolean {
@@ -129,6 +147,8 @@ export function getClientCompatibilitySnapshot(): ClientCompatibilitySnapshot {
     viewport: getClientViewportMetrics(),
     capabilities: {
       pointerEvents: typeof window !== "undefined" && "PointerEvent" in window,
+      webAssembly: typeof WebAssembly === "object",
+      webGl2: supportsWebGl2(),
       visualViewport: typeof window !== "undefined" && window.visualViewport !== undefined,
       resizeObserver: typeof window !== "undefined" && "ResizeObserver" in window,
       inert: typeof HTMLElement !== "undefined" && "inert" in HTMLElement.prototype,

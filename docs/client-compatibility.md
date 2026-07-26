@@ -25,6 +25,7 @@
 - `src/components/useMediaQuery.ts` 负责 React 媒体查询订阅，并兼容旧 WebKit 的 `MediaQueryList.addListener`。
 - `src/integrations/godot/` 负责 Godot Web 导出加载、能力检测、生命周期、焦点、输入转发、错误降级和销毁。
 - 每个 Godot RPG 场景通过版本化运行时端口读取 TypeScript 状态并提交领域意图；不能自行维护 UA 判断、存档或任务状态。
+- 剧院迁移预览用 `?rpgEngine=godot` 显式开启；`auto` 在完整关卡验收前继续选择 Phaser，`?rpgEngine=phaser` 可用于定向回退检查。
 - `src/main.tsx` 在 React 首次渲染前安装适配层，并向根节点写入：
   - `data-browser-engine`
   - `data-client-platform`
@@ -92,6 +93,7 @@
 - Web Audio 可能因自动播放策略处于 suspended 状态。首次用户操作后恢复；音频失败不得阻塞剧情状态。
 - `image-rendering` 同时声明 WebKit、Gecko 与标准路径。像素画面的空间尺寸不能依赖某一内核的锐化结果。
 - Godot Web 导出不能依赖 `file://` 加载 `.wasm` 和 `.pck`。完整 RPG 预览使用本地 HTTP；离线单文件继续挂载已验收 Phaser 回退。
+- CI 运行 `npm run godot:check` 核对同步资产、运行时配置和已提交 Web 导出的构建哈希。改动 Godot 源码时，提交者先用固定版本编辑器运行 `npm run godot:export:web`。
 
 ## 变更检查清单
 

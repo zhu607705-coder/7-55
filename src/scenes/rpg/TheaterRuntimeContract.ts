@@ -14,6 +14,7 @@ export type TheaterRuntimeIntentName =
   | "rpg_theater_poster_tissue_requested"
   | "rpg_theater_program_collect_requested"
   | "rpg_theater_program_order_read_requested"
+  | "rpg_theater_program_panel_requested"
   | "rpg_theater_program_order_set_requested"
   | "rpg_theater_program_order_submit_requested"
   | "rpg_theater_prop_inspect_requested"

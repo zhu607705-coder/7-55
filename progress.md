@@ -1200,3 +1200,13 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 引擎决策：项目规则已改为 React/TypeScript 负责手机、共享状态、控制器、存档、任务、道具和表现层；Godot 4 Web 负责校园大地图和全部横屏 RPG 内景。迁移期 Phaser 横屏场景仅作为逐场景回退，宽屏并置一个手机壳和一个活动 RPG 画布。
 - 浏览器实测：Blink 桌面完成入口 `0832` 取票、票根自动合成、远距离正确落点拒绝、走入站位后闸机放行、后台精确扫描、框外退票；两次成功均保留观演票。Blink `390×844` 实际拖票成功，文档横纵溢出为 `0`；Gecko、WebKit `1280×720` 均载入 `theater_interior / prop_setup`，契约版本为 `1.0.0`，页面和控制台错误为 `0`。
 - 构建验证：`npm run typecheck`、`npm run build:single`、技能网页游戏客户端、`npm run verify:single` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `96,600,714 bytes`，SHA-256 为 `c73aacce18d797e299cda28f0b361d3edad80b3f18658ceb86e85fd5de9e8b3e`。
+
+## 2026-07-27 Godot Web 剧院宿主基础与并置验证
+
+- Godot 工作区：新增固定 Godot `4.7.1` 的 `godot/` 项目、单线程 Web 导出配置、剧院场景脚本、TypeScript 资产同步、构建清单和静态一致性验证。`npm run godot:export:web` 已实际导出 `public/godot/theater/`；`index.wasm` 为 `39,513,091 bytes`，`index.pck` 为 `1,774,296 bytes`。
+- 状态边界：React / TypeScript 继续持有剧情、存档、任务、道具和控制器。Godot 通过 `1.0.0` 版本协议接收递增快照、提交意图并输出调试快照；取票码和节目单使用 React DOM 面板，物品栏拖放通过 iframe 映射到固定 `960×540` 坐标。
+- 当前覆盖：Godot 预览覆盖 `entry_ticket`、`program_search`、`prop_setup`、`spotlight_ready` 和 `complete`，同时复用剧院底图的前景裁片实现人物遮挡，并为纸巾、观演票、荧光刷和追光遥控器显示精确目标与站位。`spotlight_hunt` 与 `reversal` 会按 `godot_phase_not_migrated` 定向回退 Phaser，默认 `auto` 在整段验收前保持 Phaser；`?rpgEngine=godot` 用于显式预览。
+- 实际流程：Blink 中完成取票机 `0832`、票根自动合成、节目顺序 `追光 → 开场 → 谢幕`、临时观演票拖入后台扫描器、错误落点解释、人物移动与实体碰撞、深浅模式同步。入口人物向上移动后脚部碰撞停在闸机实体边缘，页面错误和控制台错误均为 `0`。
+- 浏览器矩阵：Blink `1280×800`、Gecko `1280×720`、WebKit `1280×720` 均运行 Godot，画布保持 `16:9`，文档横纵溢出和页面错误为 `0`。WebKit `390×844` 显示 `5` 个 `48×48` 触控键；持续按右键后人物 `x` 从 `1080` 变为 `1171`。
+- 离线回退：重新生成的 `demo/index.html` 通过 `file://` 打开并在显式 `rpgEngine=godot` 请求下返回 `phaser / file_protocol`，未挂载 Godot iframe，外部请求、文档溢出、页面错误和控制台错误均为 `0`。
+- 构建验证：技能网页游戏客户端、`npm run godot:export:web`、`npm run godot:check`、`npm run build`、`npm run build:single` 和 `npm run verify:single` 通过。`demo/` 仅保留两个离线 HTML，不再复制 Godot Web 目录；最终 `demo/index.html` 为 `96,616,390 bytes`，SHA-256 为 `87a0b9c7d2407b3a4910e799d531ef5be0151edcde19bca21e5eeb20e29514fd`。

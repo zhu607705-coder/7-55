@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "godotVersion": "4.7.1",
+  "runtimeContractVersion": "1.0.0",
+  "sources": [
+    {
+      "path": "godot/asset-manifest.json",
+      "bytes": 3422,
+      "sha256": "a1a87db720fc1a05f5785834e645489f6af365527f8f7485dc8454d31f9d6f36"
+    },
+    {
+      "path": "godot/assets/rpg/interiors/theater_interior.png.import",
+      "bytes": 973,
+      "sha256": "0da5efd4d5d2d47dfe35141bf59bbd8449d18778607c3c81fcfb2a21a7125910"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_down_0.png.import",
+      "bytes": 961,
+      "sha256": "a15259ea29bc3255632f80031d847165a99dcc667d3e8633fdcdd4f8673e080a"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_down_1.png.import",
+      "bytes": 961,
+      "sha256": "b8422288b6644eca36cda60f79139e4e4e7a40d8ee51da37942e67f492cd40ff"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_down_2.png.import",
+      "bytes": 961,
+      "sha256": "e22dd0b101e10fe468fca3dfad9ba2d1841f24e129a84b7aa67da6c5e73edbc0"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_down_3.png.import",
+      "bytes": 961,
+      "sha256": "0418b0fa6afa27a466407949599bea8b53be7d4986e1403cccb749c7e9166f11"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_side_0.png.import",
+      "bytes": 961,
+      "sha256": "c6d904a4a8a5e060e9700433fbf1581516a30fbe26292d5fd08651ff97475653"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_side_1.png.import",
+      "bytes": 960,
+      "sha256": "36d45a1af4c5f745c406771c68625ea0da4e6f9e7eb5566cf255b00040f30f60"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_side_2.png.import",
+      "bytes": 960,
+      "sha256": "ea98684559b4508cc5a976e0f7b64b2fc07e956ec79c000188ccbae133a82bbd"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_side_3.png.import",
+      "bytes": 961,
+      "sha256": "d1fcf5b613b1f3f8dc0fca5d8f5ff3d34c1e5425b035c7ab94df30a4a9ac6ab9"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_up_0.png.import",
+      "bytes": 955,
+      "sha256": "d0abca573c09203727fe8d1af4cf38d7150123296ffbc7ea9fb5710e2fb8d3a1"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_up_1.png.import",
+      "bytes": 954,
+      "sha256": "f2e1f7c6bbbeccbcdb409cd0cdf2e118198020a3ac93f8081b435b4e5fd89390"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_up_2.png.import",
+      "bytes": 955,
+      "sha256": "07f07e5a3b7da1922bd2b5d76f9a87b839a61c85ddba7aec15e00a8293cd2d65"
+    },
+    {
+      "path": "godot/assets/rpg/player/player_up_3.png.import",
+      "bytes": 955,
+      "sha256": "c688b16b5fbad3e4acffa0f5755d0ea4a4536968a70bcebd4c154fd76fa0f6c8"
+    },
+    {
+      "path": "godot/data/theater-runtime.json",
+      "bytes": 7977,
+      "sha256": "21b08c4d051451a39aef3e30ca8dd05bc4eaed47abf7a91846d2299330158735"
+    },
+    {
+      "path": "godot/export_presets.cfg",
+      "bytes": 729,
+      "sha256": "a2f2dba3160148f7168941dc2f5aaf0a378efcfe00a0e24e8e2f06f189046e13"
+    },
+    {
+      "path": "godot/project.godot",
+      "bytes": 692,
+      "sha256": "5100d5f2a3bd19aca82d92dfcacdcf27bf3a07166a13b5613201a95a4d2de879"
+    },
+    {
+      "path": "godot/scenes/theater_runtime.tscn",
+      "bytes": 196,
+      "sha256": "d1f3724942687798e7dc3d6d0da4e8d29dc6a57b84b6121873356b29340e4a5c"
+    },
+    {
+      "path": "godot/scripts/theater_runtime.gd",
+      "bytes": 20791,
+      "sha256": "2ad0a3cc9591c6eccec4a49ec1b402d635520b92060a12b0f231e20036e273c1"
+    },
+    {
+      "path": "godot/scripts/theater_runtime.gd.uid",
+      "bytes": 20,
+      "sha256": "74401c6407ea2d1bd3554e239832eab30398b3c3a1d24106940d186498ea521a"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "public/godot/theater/index.html",
+      "bytes": 5448,
+      "sha256": "aea00ac2f4880d759679f3f4e1fabe08889373710e11a050c1005855d0877d8a"
+    },
+    {
+      "path": "public/godot/theater/index.js",
+      "bytes": 279815,
+      "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c"
+    },
+    {
+      "path": "public/godot/theater/index.wasm",
+      "bytes": 39513091,
+      "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277"
+    },
+    {
+      "path": "public/godot/theater/index.pck",
+      "bytes": 1774296,
+      "sha256": "3bb3f95afb7439316a18fde6b70a7ea92adf1e55a6b699597b78be78db5cd872"
+    },
+    {
+      "path": "public/godot/theater/index.png",
+      "bytes": 21443,
+      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
+    },
+    {
+      "path": "public/godot/theater/index.icon.png",
+      "bytes": 5700,
+      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"
+    },
+    {
+      "path": "public/godot/theater/index.apple-touch-icon.png",
+      "bytes": 11944,
+      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"
+    },
+    {
+      "path": "public/godot/theater/index.audio.worklet.js",
+      "bytes": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    {
+      "path": "public/godot/theater/index.audio.position.worklet.js",
+      "bytes": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    }
+  ]
+}

@@ -6,6 +6,8 @@ dist/
 demo/
 coverage/
 .vite/
+godot/.godot/
+godot/.generated/
 
 # Local candidate assets and legacy upload drops
 artifacts/

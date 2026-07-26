@@ -9,15 +9,20 @@ if (!allowedArtifacts.has(requestedArtifact)) {
   throw new Error(`Unknown single-file artifact: ${requestedArtifact}`);
 }
 
-const outputFiles = (await readdir(outputDirectory, { withFileTypes: true }))
-  .filter((entry) => entry.isFile())
+const outputEntries = await readdir(outputDirectory, { withFileTypes: true });
+const unexpectedEntries = outputEntries
+  .filter((entry) => !entry.isFile() || !allowedArtifacts.has(entry.name))
   .map((entry) => entry.name)
   .sort();
 
-const unexpectedFiles = outputFiles.filter((file) => !allowedArtifacts.has(file));
-if (unexpectedFiles.length > 0) {
-  throw new Error(`Unexpected files in demo/: ${unexpectedFiles.join(", ")}`);
+if (unexpectedEntries.length > 0) {
+  throw new Error(`Unexpected entries in demo/: ${unexpectedEntries.join(", ")}`);
 }
+
+const outputFiles = outputEntries
+  .filter((entry) => entry.isFile())
+  .map((entry) => entry.name)
+  .sort();
 
 if (!outputFiles.includes(requestedArtifact)) {
   throw new Error(`demo/${requestedArtifact} is missing.`);

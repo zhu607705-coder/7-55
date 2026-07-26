@@ -17,6 +17,11 @@
 *.yaml text eol=lf
 *.py text eol=lf
 *.sh text eol=lf
+*.gd text eol=lf
+*.tscn text eol=lf
+*.cfg text eol=lf
+*.uid text eol=lf
+*.import text eol=lf
 .githooks/* text eol=lf
 *.ps1 text eol=crlf
 *.bat text eol=crlf
@@ -35,4 +40,9 @@
 *.woff -text
 *.woff2 -text
 *.ttf -text
+*.wasm -text
+*.pck -text
 *.zip -text
+
+# Godot's generated HTML shell ends with a separator line. Keep the export byte-identical.
+public/godot/**/*.html whitespace=-blank-at-eof

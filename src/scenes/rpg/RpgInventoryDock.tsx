@@ -258,15 +258,21 @@ export function RpgInventoryDock({
       event.preventDefault();
       return;
     }
-    const canvas = canvasHostRef.current?.querySelector("canvas");
-    const canvasPoint = canvas
-      ? clientToRpgCanvasPoint(
-        event.clientX,
-        event.clientY,
-        canvas.getBoundingClientRect(),
-        canvas.width,
-        canvas.height
-      )
+    const surface = canvasHostRef.current?.querySelector<HTMLElement>("canvas, iframe[data-rpg-canvas]");
+    const canvasPoint = surface
+      ? surface instanceof HTMLCanvasElement
+        ? clientToRpgCanvasPoint(
+          event.clientX,
+          event.clientY,
+          surface.getBoundingClientRect(),
+          surface.width,
+          surface.height
+        )
+        : clientToRpgCanvasPoint(
+          event.clientX,
+          event.clientY,
+          surface.getBoundingClientRect()
+        )
       : null;
     if (canvasPoint) {
       events.emit("rpg_inventory_drop_requested", {
