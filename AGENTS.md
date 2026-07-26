@@ -7,14 +7,19 @@
 - `src/assets/ui/`: bundled visual references used by scenes.
 - `src/core/`: shared game state, routing, and types.
 - `src/styles/`: shared tokens, shell layout, and scene-specific styling.
+- `godot/`: Godot 4 Web project for the campus map and all landscape RPG interiors; source scenes, scripts, imported assets, and export presets stay here.
+- `src/integrations/godot/`: React host adapter, versioned runtime bridge, Web export loader, and compatibility fallback UI only.
 - `demo/index.html`: generated standalone game build; do not edit it by hand.
 
 ## Runtime Engine Decision
 
-- The Godot migration route was abandoned on 2026-07-21. The active product uses React, TypeScript, and Phaser only.
-- Do not add a `godot/` workspace, Godot bridge, Godot model state, Godot dependencies, or Godot build commands back into the application.
-- Campus, dorm, library, phone pages, and portrait mini-games all remain on the existing React and Phaser runtime.
-- Reopening an engine migration requires a new explicit project decision and a separate branch. Dormant Godot hooks must not remain in the active source tree.
+- The Godot migration was explicitly reopened on 2026-07-26. The target product uses React and TypeScript for the phone, shell, shared state, controllers, saves, task UI, inventory, audio direction, and presentation overlays; Godot 4 Web owns the campus map and every landscape RPG interior.
+- Migration scope includes campus, dorm, library, east canteen, theater, Qizhen Lake, and future landscape exploration scenes. Portrait phone pages and portrait mini-games remain in the React/TypeScript application; existing Phaser portrait mini-games may remain.
+- The React host and Godot canvas are presented side by side in supported wide desktop layouts. Single-screen and mobile layouts switch between the fixed `430 × 860` phone surface and the fixed `960 × 540` RPG surface without resizing either logical viewport.
+- TypeScript `GameState`, controllers, `SaveStore`, `selectFeatureAccess`, and `selectQuestViewModel` remain the only progression authority. Godot renders state and submits versioned intents; it must not own a second save, wallet, inventory, quest graph, or story controller.
+- Every migrated scene uses a versioned runtime port exercised first by the current implementation. The host rejects incompatible contract versions and reports a readable error. Engine-specific messages may exist only inside the adapter layer; gameplay controllers consume engine-neutral domain intents.
+- Existing Phaser landscape scenes are temporary migration references and per-scene fallbacks until the matching Godot Web scene passes asset, collision, input, save-resume, browser, and full-flow acceptance. After a Godot scene is accepted, new permanent behavior goes into Godot and its shared TypeScript controller contract; do not extend the retired Phaser scene as a parallel product path.
+- Godot source, export presets, asset synchronization, and Web build commands must be reviewable in the repository. Generated Godot Web output is never edited by hand.
 
 ## Naming
 
@@ -36,7 +41,7 @@
 
 ## Web Client Compatibility
 
-- The supported build baseline is Chrome and Edge 90+, Firefox 91+, and Safari and iOS Safari 15+. Every shared-shell, viewport, input, audio, fullscreen, or Phaser change must remain functional in Blink, Gecko, and WebKit.
+- The supported build baseline is Chrome and Edge 90+, Firefox 91+, and Safari and iOS Safari 15+. Every shared-shell, viewport, input, audio, fullscreen, Phaser fallback, or Godot Web change must remain functional in Blink, Gecko, and WebKit.
 - Runtime branches use capability detection. Engine and platform detection are debug metadata only and must not become the authority for enabling a feature.
 - `src/core/ClientCompatibility.ts` owns viewport metrics, capability snapshots, platform/input metadata, and legacy media-query subscriptions. React components use `src/components/useMediaQuery.ts`; scenes must not create parallel UA or `matchMedia` compatibility logic.
 - Layouts use `--app-viewport-width` and `--app-viewport-height` with `100vh` fallbacks, and every safe-area `env()` call includes a `0px` fallback. A new use of dynamic viewport units or container-query units requires an executable baseline fallback.
@@ -46,11 +51,11 @@
 
 ## Canonical RPG Viewport And Campus Map
 
-- Phaser RPG scenes use one logical canvas: `960px × 540px`. Keep the rendered shell at `16:9`; fill the available desktop viewport and letterbox non-16:9 windows without stretching. The campus scene may raise only the canvas backing-store resolution to match its rendered CSS size and device-pixel ratio, then compensate the camera by the same factor; it must restore the `960×540` backing store before an interior scene starts.
-- Every current and future controllable RPG player sprite must use the helpers in `src/scenes/rpg/RpgPlayerTextures.ts`. Runtime frames are `96px × 128px`; that shared module alone owns the compensating interior display scale, the campus visual baseline, the subtle campus depth curve, the fixed world-space foot collision box, the four-phase walk cycle, and the dynamic name-label offset. Scene files must not define their own player scale, body geometry, or frame cadence.
+- Every RPG implementation uses one logical canvas: `960px × 540px`. Keep the rendered shell at `16:9`; fill the available desktop viewport and letterbox non-16:9 windows without stretching. Godot viewport scaling uses the same visible world extent and compensates backing-store density without changing collision coordinates.
+- During migration, `src/scenes/rpg/RpgPlayerTextures.ts` remains the player visual and collision reference. Runtime frames are `96px × 128px`; migration tooling exports its display scale, campus depth curve, fixed world-space foot box, four-phase walk cycle, and name-label offset into one Godot-consumable player manifest. Scene files in either engine must not define competing values.
 - Phone app scenes remain portrait-only. Entering the RPG changes to the horizontal runtime; it must not rotate or resize the shared `430px × 860px` phone shell.
 - The campus RPG entry lives only in `浙大钉 → 校园地图`. A phone-home `游戏` icon may open a separate portrait mini-game, but it must never route into, unlock, or visually impersonate the campus RPG.
-- Campus exploration uses the approved north-up `2D` RPG plate. The player moves in four directions on the connected road network and explicitly calibrated plazas; Phaser owns the player, collisions, depth, the Basic Library and Moon Building same-source occlusion crops, labels, hotspots, quest markers, camera, and state transitions.
+- Campus exploration uses the approved north-up `2D` RPG plate. The player moves in four directions on the connected road network and explicitly calibrated plazas; the active Godot scene owns rendering, player physics, depth, same-source occlusion crops, labels, hotspots, quest markers, and camera, while TypeScript controllers validate state transitions.
 - The user-selected repository map is the campus spatial and visual source of truth. The current approved plate is one `4516px × 3420px` PNG stored at `src/assets/rpg/campus/zijingang_campus_plate.png`; its separated road, water, and building layers live under `src/assets/rpg/campus/source/topdown/` for calibration and are not independent runtime scenes.
 - `npm run map:zijingang:rebuild` and `npm run map:zijingang:walkability` derive the conservative collision mask and runtime hashes from the already approved plate and separated layers; they do not regenerate or replace the artwork. Retired wide-panorama and square-map builders must not overwrite the active plate.
 - The runtime manifest owns world width, world height, spawn, library entrance, landmarks, and collision data. The plate, player, camera, labels, and story triggers all read this one active coordinate system; retired `11744 × 1084`, `5016 × 5016`, `2400 × 1920`, and `3840 × 3840` coordinates must not be attached to the top-down map.
@@ -63,13 +68,24 @@
 - Future campus-art replacements must preserve the approved top-down viewpoint, active coordinate system, separated calibration layers, and landmark positions. MiniMax remains audio-only and must not generate campus artwork.
 - Persistent map captions are limited to the campus title and the current objective. At most one nearby landmark name may appear; shape explanations, control hints, and repeated route reminders do not stay on the playfield.
 - The RPG task drawer is owned by the `rpg-shell` overlay layer, not by the narrow task-trigger bar. It must be portaled directly into the shell and stay fully scrollable inside the `960px × 540px` logical map bounds at every rendered scale.
-- The top of the Phaser canvas is reserved for the shared task bar. RPG dialogue, feedback subtitles, and interaction hints use the bottom safe zone defined by `src/scenes/rpg/RpgHudLayout.ts`: dialogue/feedback grows upward from the lower subtitle row and the interaction hint occupies the final row. Scene files must not restore local top-positioned feedback coordinates or render two subtitle surfaces at once.
+- The top of the RPG canvas is reserved for the shared React task bar. RPG dialogue, feedback subtitles, and interaction hints use the bottom safe zone defined by `src/scenes/rpg/RpgHudLayout.ts`; the Godot adapter receives the same measurements. Scene files must not restore local top-positioned feedback coordinates or render two subtitle surfaces at once.
 - Virtual direction and interaction buttons are touch-only controls. Render them only when the primary input is a coarse pointer; fine-pointer desktop maps use keyboard input and must not expose, focus, or reserve space for the virtual D-pad.
 - The single-screen map action is labelled `返回手机主页` and always restores `runtimeMode: "phone"` with `currentScene: "phone_home"`. It preserves the RPG scene, checkpoint, quest facts, and inventory so the player can return to the same map later.
 - The Basic Library gate supports first entry and re-entry throughout every unfinished library phase. Re-entry must preserve `libraryFinalsPhase` and puzzle facts, select a safe interior checkpoint, and must never regress progress to `library_entered`.
-- A pre-rendered RPG interior whose source image matches the world dimensions owns one source-pixel collision table in its model module. Static walls, furniture, and clear aisles must be calibrated from visible pixel bounds; repeated approximate obstacle grids are not allowed.
-- Interior collision changes require three checks: solid-pixel samples are blocked, clear-floor samples and checkpoint spawns remain open, and a real player body stops at the expected source edge. Development-only collision overlays may be enabled by a URL flag but never appear in the single-file release.
+- A pre-rendered RPG interior whose source image matches the world dimensions owns one source-pixel collision dataset. During migration, existing TypeScript model coordinates are exported into Godot resources and remain traceable to the source image; repeated approximate obstacle grids are not allowed.
+- Interior collision changes require three checks: solid-pixel samples are blocked, clear-floor samples and checkpoint spawns remain open, and a real Godot player body stops at the expected source edge. Development-only collision overlays may be enabled by a URL flag but never appear in a release build.
 - Validate campus identity at `1280×720` and one non-16:9 desktop viewport. Passing requires stable nonblank canvas rendering, readable landmark labels, preserved spatial relationships, and no overlap with the player, objectives, inventory, or controls.
+
+## Godot RPG Integration Contract
+
+- `src/scenes/rpg/TheaterRuntimeContract.ts` is the first exercised versioned port. Generalize the same state-read, intent-write, event-subscription, viewport, and checkpoint contract for each migrated scene; do not connect Godot directly to `GameStore` mutation.
+- The React adapter owns Godot Web loading, lifecycle, focus, visibility pause, responsive placement, Pointer Events forwarding, keyboard focus, audio unlock, fullscreen, error handling, and teardown. One RPG surface may be mounted at a time.
+- Godot-to-React messages use JSON-serializable payloads with an explicit contract version, scene id, intent name, and request id. React-to-Godot snapshots include an increasing revision; Godot discards older revisions and must not infer progression from animation completion.
+- A Godot scene submits intents such as inspect, interact, inventory drop, movement checkpoint, dialogue continue, and scene exit. TypeScript controllers validate each intent and publish the resulting state and presentation events back through the port.
+- Inventory drag feedback remains owned by the shared React dock. Godot reports exact world-space drop bounds, required stand positions, accepted item ids, and rejection reasons so the dock can display accepted, missed target, wrong item, too far, and locked states consistently.
+- Migration assets keep one source of truth. Sync scripts may copy or convert approved assets into Godot imports, but generated copies must include source hashes and must never replace the approved originals.
+- The Godot Web export must pause on `visibilitychange`, release input and audio on unmount, restore from the latest validated TypeScript state, and survive scene re-entry without resetting progress.
+- A scene switches from Phaser fallback to Godot only after complete browser validation in Blink, Gecko, and WebKit at `1280×720`, one non-16:9 desktop viewport, and `390×844`, including keyboard, touch, inventory drag, save/reload, and entry/exit flow.
 
 ## Portrait Mini-games
 
@@ -85,11 +101,11 @@
 
 ## Delivery
 
-- Preserve direct browser opening through the generated `demo/index.html`.
+- Preserve direct browser opening through the generated `demo/index.html` during migration by keeping the accepted Phaser fallback for scenes whose Godot Web export cannot run under `file://`. The canonical full Godot RPG preview is served over the documented local HTTP preview and deployed web URL; the UI must explain this requirement instead of showing a blank canvas.
 - Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
-- Run `npm run typecheck` and `npm run build:single` after behavior changes.
-- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the campus map contract, TypeScript, the production build, and the offline single-file artifact for every PR and push to `main`.
+- Run `npm run typecheck` and `npm run build:single` after React, shared-state, controller, bridge, or fallback behavior changes. Godot changes additionally run the repository’s checked-in Godot validation and Web export commands once those scripts are introduced.
+- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the campus map contract, TypeScript, production build, offline single-file fallback, Godot project validation, and Godot Web export for every PR and push to `main` after the Godot workspace lands.
 - Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.
@@ -120,7 +136,7 @@
 - The shared task trigger must accept pointer, Enter, and Space input on phone, RPG, and split-screen layouts. Its drawer always labels `当前任务`, `当前进度`, and the next objective explicitly.
 - The task drawer reveals only the current next objective. Locked future step labels must not be rendered, because even disabled checklist rows disclose the remaining puzzle chain. Completed paper documents may remain available only inside a collapsed acquired-material archive derived from completed facts.
 - Chapter-one digit discoveries remain visible only in the shared task trigger/drawer as four ordered slots. Unknown slots stay masked and acquired digits keep their original positions. The inventory bar must not repeat the digit strip or compact digit string; the task UI reads `state.digits` directly and remains the sole visual owner.
-- Phaser checkpoints that represent difficulty stages must set the real simulation value. Labels such as `377m` or `566m` cannot point to a zero-distance run.
+- RPG checkpoints that represent difficulty stages must set the real simulation value. Labels such as `377m` or `566m` cannot point to a zero-distance run.
 - Every phone or RPG item-use attempt must resolve to one visible result: accepted, missed target, wrong item, too far from the real target, or locked by the current story phase. Holding or starting to drag an item shows its current-use guidance, and valid DOM targets highlight their measured hit area. Silent early returns are prohibited.
 - A light/dark two-mode puzzle persists the relevant observation fact in dark mode before its light-mode action becomes available. Controllers reject out-of-order requests, and scenes must not open an actionable choice panel before the observation fact exists.
 
@@ -158,7 +174,7 @@
 - The old bootstrap route based on a login receipt, free CC98 controls, a game cartridge, and visiting four map areas is retired. Do not restore those gates in UI, controllers, saves, or reports.
 - Chapter one keeps the campus card unavailable and the campus map locked and static. The first digit `0` comes from the `本周缺勤 0 次` record on the check-in page, without an RPG route.
 - The canonical dorm plate is `src/assets/rpg/interiors/dorm_hub.png`, a user-selected `941×1672` strict top-down pixel map. Its fixed structure is two bunk-bed groups with their long edges on the left wall and exactly four desks with their long edges on the right wall. Replacing, independently resizing, perspective-warping, or adding central furniture to this plate requires explicit user approval.
-- `DormHubModel.ts` owns the dorm source-pixel collision and interaction coordinates. The `960×540` Phaser camera may follow and zoom over the tall world, but furniture collision must continue to match visible source pixels and the central aisle and bottom doorway must remain walkable. Large furniture interactions measure proximity from the visible target rectangle edge, not only from its center.
+- `DormHubModel.ts` remains the migration source for dorm source-pixel collision and interaction coordinates until the generated Godot resource reaches parity. The `960×540` RPG camera may follow and zoom over the tall world, but furniture collision must continue to match visible source pixels and the central aisle and bottom doorway must remain walkable. Large furniture interactions measure proximity from the visible target rectangle edge, not only from its center.
 - Chapter two opens the dorm map only after the system requests an inventory. The player retrieves the campus card from the right-side personal desk; this grants `items.campusCard`, restores the inventory, and advances to `system_return_required`.
 - Chapter two movement readiness is assembled from reusable scenes: campus-card identity, department directory, ZJU Sports, phone-home notification, Weather, WeChat mentor avatar, campus-card balance, CC98 marketplace, and the dorm mini-game.
 - The movement puzzle keeps independent validated facts for character naming, automatic exercise movement, triangle collection, weather water, mentor-line release, right-arrow assembly, balance shift, gamepad purchase, first manual movement, and dorm exit. Scene-local animation state must never replace these facts.
@@ -189,7 +205,7 @@
 - `selectFeatureAccess(state)` is the only feature-unlock authority. Components and routes derive access from story facts; do not add parallel unlock booleans.
 - `selectQuestViewModel(state)` is the only task-progress authority. Phone, RPG, and desktop split mode render one `QuestTaskBar`; task navigation may change the relevant surface or scene but must never execute a puzzle action.
 - Locked or irrelevant application slots remain non-interactive static `xxx` elements with no icon, button semantics, focus, toast, or developer-copy feedback.
-- Desktop split mode applies only to RPG runtime at a landscape fine-pointer viewport of at least `1100px`. It keeps one phone shell, one Phaser canvas, one task bar, one presentation layer, and one toast layer mounted against the shared game state.
+- Desktop split mode applies only to RPG runtime at a landscape fine-pointer viewport of at least `1100px`. It keeps one phone shell, one active RPG canvas, one task bar, one presentation layer, and one toast layer mounted against the shared game state. The active RPG canvas is Godot after scene acceptance and the Phaser fallback during migration; both must never mount together.
 - `ITEM_CATALOG` owns inspect mode, paper document content, target use, and retain/consume/transform semantics. Controller validation owns every successful use; UI drop zones only submit requests.
 - A paper item opens on an unmoved click or Enter. Dragging past the shared threshold suppresses inspection. Submitted paper remains readable through the task or upload record after the inventory instance is consumed.
 - Only `StoryLine.kind === "dialogue"` with an explicit `voiceRole` may play speech. Male narrator dialogue uses `English_expressive_narrator` at base pitch `-4`; female system dialogue uses `English_Graceful_Lady`. Player, seat 022, task, success, failure, and taunt lines are text-only.

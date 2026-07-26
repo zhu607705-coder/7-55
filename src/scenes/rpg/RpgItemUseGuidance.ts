@@ -129,13 +129,29 @@ export function selectRpgItemUseGuidance(
       return ready("入口海报");
     }
     if (itemId === "temporaryTheaterTicket") {
-      if (theater.phase === "entry_ticket" && !theater.admitted) return ready("检票闸机");
-      if (theater.phase === "prop_setup") {
-        return theater.mode === "light" && theater.managerHintRead && !theater.propBoxOpened
-          ? ready("道具票据扫描器")
-          : locked("先在深色模式检查道具箱并读取管理员提示，再切回浅色模式。", "道具票据扫描器");
+      if (theater.phase === "entry_ticket" && !theater.admitted) {
+        return ready(
+          "检票闸机右侧读票器",
+          "先让人物站进读票器前的蓝色站位，再把票拖进发光的「验票」槽内松手。"
+        );
       }
-      return locked("临时票会在检票或道具箱阶段使用。");
+      if (theater.phase === "prop_setup") {
+        if (theater.propBoxOpened) return passive("票据扫描已经完成，临时观演票会保留。");
+        if (!theater.managerHintRead) {
+          return locked("先切到深色模式检查道具箱并读完管理员提示。", "道具箱旁票据扫描器");
+        }
+        if (theater.mode !== "light") {
+          return locked("管理员提示已经取得；切回浅色模式后才能扫描票据。", "道具箱旁票据扫描器");
+        }
+        return ready(
+          "道具箱旁票据扫描器",
+          "人物站进扫描器前的蓝色站位后，把票拖进发光的扫描口内松手。"
+        );
+      }
+      if (theater.admitted && ["program_search"].includes(theater.phase)) {
+        return passive("入场核验已完成。票会在后台道具箱阶段再次使用，先完成当前节目单任务。");
+      }
+      return passive("当前流程不需要再次拖动临时观演票。");
     }
     if (itemId === "fluorescentBrush") {
       return theater.phase === "prop_setup"
