@@ -1179,3 +1179,13 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 真实流程：Blink 中实走点餐链为“亮色空格保持 `menuOpen=false` → 暗色观察写入 `menuDarkClueRead=true` → 亮色选择 D 进入 `pickup_search`”；取餐链为“亮色拒绝 → 暗色确认 3 号窗口 → 亮色核验后进入 `exit_blocking`”；餐车链为“亮色封堵计数保持 `0` → 暗色记录 `southeast` → 亮色推车后计数为 `1`”。误拖校园卡显示“本场景没有使用点”，按住油渍纸巾显示共享单车车锁的阶段条件。
 - 浏览器矩阵：Blink、Gecko、WebKit 在 `1280×720` 均进入 `canteen_interior / pickup_search`，保持单 Canvas、横纵溢出为 `0`，页面和控制台错误为 `0`。移动 WebKit 追逐保持两个触控目标且无溢出。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `96,592,706 bytes`，SHA-256 为 `0181561cfc00c283d091d603e3830f6d9ea66617cda58166f5dad99a6054eeb7`。
+
+## 2026-07-26 食堂顶部取餐窗口与低像素纸条模型
+
+- 窗口位置：`1 / 2 / 3` 号取餐窗口从南侧旧柜台迁到食堂最上方服务栏的三个连续档口；`3` 号绑定有可见蒸汽的最右档口。窗口实体锚点分别为 `(790,218)`、`(1035,218)`、`(1235,218)`。
+- 交互站位：三个站位统一位于 `y=260` 的净空带，人物脚部碰撞不会再压进第一排餐桌。浏览器实走后，人物到达 `(1043,260)` 时命中 `pickup_window_2`，到达 `(792,260)` 时命中 `pickup_window_1`，初始 `(1235,260)` 命中 `pickup_window_3`。
+- 可见引导：取餐阶段显示完整的 `1号取餐窗口 / 2号取餐窗口 / 3号取餐窗口` 牌、对应编号圆环和“站这里 · 空格”；号牌、站位、距离判定、点击热区、DEV 出生点、深色纤维与纸条弹出点全部读取 `CANTEEN_PICKUP_WINDOWS`，避免视觉与判定坐标再次分离。
+- 纸条模型：原 `36×34` 扁平四边形改为 `64×50` 低像素 `2.5D` 模型，包含底部厚边、三块折面、翘角、投影、蓝色 `0755` 点阵和编码条。纸条从 `3` 号蒸汽档口以窄侧展开、翻转后落到追逐位置，落定保留轻微折面摆动。
+- 真实流程：Blink 单文件完成“浅色空格保持 `pickup_search / clue=false` → 深色在 3 号位读取暗号 → 浅色核验 0755 → `exit_blocking / paperBusy=false`”，页面和控制台错误为 `0`。
+- 跨端矩阵：Blink `1280×720`、非 `16:9` 的 `1440×900`、移动 `390×844`，以及 Gecko、WebKit `1280×720` 均保持一个 Canvas、三个取餐目标、文档横纵溢出为 `0`、页面和控制台错误为 `0`；移动端保留一个触控控制组。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `96,594,748 bytes`，SHA-256 为 `21f19c9d703fb97bb61d26a9e2c9198b2bbc81d4f44217af05d5d9b8c2994ca6`。

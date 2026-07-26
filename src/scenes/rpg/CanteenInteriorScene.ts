@@ -24,6 +24,7 @@ import {
   CANTEEN_INTERIOR_WORLD,
   CANTEEN_OCCLUSION_RECTS,
   CANTEEN_PHASE_SPAWNS,
+  CANTEEN_PICKUP_WINDOWS,
   CANTEEN_SPAWN,
   CANTEEN_STATIC_COLLISION_RECTS,
   CANTEEN_TRAYS,
@@ -60,6 +61,11 @@ interface OcclusionVisual {
   image: Phaser.GameObjects.Image;
 }
 
+interface PickupWindowVisual {
+  sign: Phaser.GameObjects.Container;
+  standMarker: Phaser.GameObjects.Container;
+}
+
 export class CanteenInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -73,10 +79,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private darkOverlay!: Phaser.GameObjects.Rectangle;
   private modeFibers: Phaser.GameObjects.Arc[] = [];
   private trayVisuals = new Map<string, TrayVisual>();
+  private pickupWindowVisuals = new Map<string, PickupWindowVisual>();
   private cartVisuals = new Map<CanteenExitId, Phaser.GameObjects.Image>();
   private cartBlockers = new Map<CanteenExitId, Phaser.GameObjects.Rectangle>();
   private exitGlows = new Map<CanteenExitId, Phaser.GameObjects.Arc>();
   private paper!: Phaser.GameObjects.Image;
+  private paperFloatTween!: Phaser.Tweens.Tween;
   private menuPanel: Phaser.GameObjects.Container | null = null;
   private currentMode: CanteenMode = "light";
   private currentPhase: GameState["canteenHunt"]["phase"] = "tray_search";
@@ -348,21 +356,76 @@ export class CanteenInteriorScene extends Phaser.Scene {
     });
     if (!this.textures.exists(CANTEEN_PAPER_KEY)) {
       const g = this.add.graphics();
-      g.fillStyle(0x142a44, 0.3).fillEllipse(18, 26, 34, 10);
-      g.fillStyle(0xe8edf1).fillPoints([
-        new Phaser.Geom.Point(4, 4),
-        new Phaser.Geom.Point(31, 8),
-        new Phaser.Geom.Point(27, 30),
-        new Phaser.Geom.Point(7, 27)
+      // Low-pixel 2.5D paper model: a separate shadow, dark thickness,
+      // three folded planes, a raised corner and a tiny 0755 dot-matrix print.
+      g.fillStyle(0x0d1c2d, 0.34).fillEllipse(32, 43, 54, 10);
+      g.fillStyle(0x60717c).fillPoints([
+        new Phaser.Geom.Point(7, 9),
+        new Phaser.Geom.Point(48, 6),
+        new Phaser.Geom.Point(58, 34),
+        new Phaser.Geom.Point(17, 46),
+        new Phaser.Geom.Point(5, 36)
       ], true);
-      g.lineStyle(2, 0x58c7ff, 0.95).strokePoints([
-        new Phaser.Geom.Point(4, 4),
-        new Phaser.Geom.Point(31, 8),
-        new Phaser.Geom.Point(27, 30),
-        new Phaser.Geom.Point(7, 27)
+      g.fillStyle(0xd7e0e3).fillPoints([
+        new Phaser.Geom.Point(5, 5),
+        new Phaser.Geom.Point(46, 2),
+        new Phaser.Geom.Point(55, 30),
+        new Phaser.Geom.Point(15, 41),
+        new Phaser.Geom.Point(3, 32)
       ], true);
-      g.lineStyle(2, 0x5f7180, 0.75).lineBetween(10, 12, 25, 15).lineBetween(9, 18, 23, 21);
-      g.generateTexture(CANTEEN_PAPER_KEY, 36, 34);
+      g.fillStyle(0xf3f6f3).fillPoints([
+        new Phaser.Geom.Point(5, 5),
+        new Phaser.Geom.Point(25, 8),
+        new Phaser.Geom.Point(15, 41),
+        new Phaser.Geom.Point(3, 32)
+      ], true);
+      g.fillStyle(0xe5ebec).fillPoints([
+        new Phaser.Geom.Point(25, 8),
+        new Phaser.Geom.Point(46, 2),
+        new Phaser.Geom.Point(55, 30),
+        new Phaser.Geom.Point(34, 27),
+        new Phaser.Geom.Point(15, 41)
+      ], true);
+      g.fillStyle(0xc1ced4).fillPoints([
+        new Phaser.Geom.Point(46, 2),
+        new Phaser.Geom.Point(55, 30),
+        new Phaser.Geom.Point(41, 18)
+      ], true);
+      g.lineStyle(2, 0x4a6371, 0.95).strokePoints([
+        new Phaser.Geom.Point(5, 5),
+        new Phaser.Geom.Point(46, 2),
+        new Phaser.Geom.Point(55, 30),
+        new Phaser.Geom.Point(15, 41),
+        new Phaser.Geom.Point(3, 32)
+      ], true);
+      g.lineStyle(2, 0x91a4ae, 0.88)
+        .lineBetween(25, 8, 15, 41)
+        .lineBetween(34, 27, 55, 30)
+        .lineBetween(41, 18, 46, 2);
+
+      const digitPixels: Record<string, readonly string[]> = {
+        "0": ["111", "101", "101", "101", "111"],
+        "5": ["111", "100", "111", "001", "111"],
+        "7": ["111", "001", "010", "010", "010"]
+      };
+      g.fillStyle(0x236f9d, 0.98);
+      [..."0755"].forEach((digit, digitIndex) => {
+        digitPixels[digit].forEach((row, rowIndex) => {
+          [...row].forEach((pixel, columnIndex) => {
+            if (pixel === "1") {
+              g.fillRect(13 + digitIndex * 8 + columnIndex * 2, 12 + rowIndex * 2, 2, 2);
+            }
+          });
+        });
+      });
+      g.fillStyle(0x58c7ff, 0.9)
+        .fillRect(13, 24, 27, 2)
+        .fillRect(13, 29, 18, 2);
+      g.fillStyle(0x2f86b4, 0.92)
+        .fillRect(44, 23, 3, 3)
+        .fillRect(48, 22, 3, 3)
+        .fillRect(45, 28, 6, 2);
+      g.generateTexture(CANTEEN_PAPER_KEY, 64, 50);
       g.destroy();
     }
   }
@@ -434,54 +497,82 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private createPickupWindowSigns(): void {
-    [
-      { number: "1", x: 654 },
-      { number: "2", x: 815 },
-      { number: "3", x: 978 }
-    ].forEach(({ number, x }) => {
-      const plate = this.add.rectangle(0, 0, 118, 42, 0x173544, 0.98)
+    CANTEEN_PICKUP_WINDOWS.forEach((window) => {
+      const plate = this.add.rectangle(0, 0, 154, 38, 0x173544, 0.98)
         .setStrokeStyle(3, 0xe2c866, 0.96);
-      const badge = this.add.rectangle(-43, 0, 27, 28, 0xe2c866, 1)
+      const badge = this.add.rectangle(-59, 0, 28, 28, 0xe2c866, 1)
         .setStrokeStyle(2, 0x3b3013, 1);
-      const digit = this.add.text(-43, 0, number, {
+      const digit = this.add.text(-59, 0, window.value, {
         color: "#172128",
         fontFamily: "monospace",
         fontSize: "21px",
         fontStyle: "bold"
       }).setOrigin(0.5);
-      const label = this.add.text(20, 0, "号窗口", {
+      const label = this.add.text(17, 0, "号取餐窗口", {
+        color: "#fff7df",
+        fontFamily: "monospace",
+        fontSize: "15px",
+        fontStyle: "bold"
+      }).setOrigin(0.5);
+      const sign = this.add.container(window.x, window.y + 15, [plate, badge, digit, label])
+        .setDepth(1705)
+        .setSize(160, 44);
+
+      const guide = this.add.rectangle(0, -21, 3, 18, 0x7ad8ff, 0.82);
+      const ring = this.add.circle(0, 0, 21, 0x103347, 0.32)
+        .setStrokeStyle(3, 0x7ad8ff, 0.96);
+      const standDigit = this.add.text(0, 0, window.value, {
         color: "#fff7df",
         fontFamily: "monospace",
         fontSize: "17px",
         fontStyle: "bold"
       }).setOrigin(0.5);
-      this.add.container(x, 678, [plate, badge, digit, label])
-        .setDepth(1705)
-        .setSize(124, 48);
+      const standLabel = this.add.text(31, 0, "站这里 · 空格", {
+        color: "#e9fbff",
+        backgroundColor: "#102b3bdd",
+        fontFamily: "monospace",
+        fontSize: "12px",
+        padding: { x: 5, y: 3 }
+      }).setOrigin(0, 0.5);
+      const standMarker = this.add.container(
+        window.standX,
+        window.standY,
+        [guide, ring, standDigit, standLabel]
+      ).setDepth(1604).setSize(136, 48);
+
+      this.pickupWindowVisuals.set(window.id, { sign, standMarker });
     });
   }
 
   private createPaper(): void {
-    this.paper = this.add.image(978, 637, CANTEEN_PAPER_KEY)
+    const steamWindow = CANTEEN_PICKUP_WINDOWS[2];
+    this.paper = this.add.image(steamWindow.x, steamWindow.y, CANTEEN_PAPER_KEY)
       .setDepth(2100)
       .setVisible(false);
-    this.tweens.add({
+    this.paperFloatTween = this.tweens.add({
       targets: this.paper,
-      y: "+=8",
-      angle: { from: -4, to: 4 },
-      duration: 800,
+      scaleY: { from: 0.96, to: 1.04 },
+      angle: { from: -3, to: 3 },
+      duration: 720,
       yoyo: true,
       repeat: -1,
-      ease: "Sine.easeInOut"
+      ease: "Sine.easeInOut",
+      paused: true
     });
   }
 
   private createWorldHotspots(): void {
     const hotspotBounds: Record<string, { x: number; y: number; width: number; height: number }> = {
       ordering_kiosk: { x: 260, y: 760, width: 420, height: 160 },
-      pickup_window_1: { x: 654, y: 746, width: 145, height: 150 },
-      pickup_window_2: { x: 815, y: 746, width: 145, height: 150 },
-      pickup_window_3: { x: 978, y: 746, width: 145, height: 150 },
+      ...Object.fromEntries(CANTEEN_PICKUP_WINDOWS.map((window) => [
+        window.id,
+        {
+          x: window.x,
+          y: (window.y + window.standY) / 2,
+          width: 166,
+          height: 112
+        }
+      ])),
       southeast_exit: { x: 1380, y: 835, width: 170, height: 150 }
     };
     Object.entries(hotspotBounds).forEach(([targetId, bounds]) => {
@@ -505,7 +596,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
     ).setDepth(1500).setAlpha(this.currentMode === "dark" ? 0.56 : 0);
     const fiberPoints = [
       { x: 296, y: 282 }, { x: 750, y: 510 }, { x: 1132, y: 636 },
-      { x: 978, y: 640 }, { x: 82, y: 250 }, { x: 1380, y: 850 }, { x: 1235, y: 227 }
+      { x: CANTEEN_PICKUP_WINDOWS[2].x, y: CANTEEN_PICKUP_WINDOWS[2].y },
+      { x: 82, y: 250 }, { x: 1380, y: 850 }, { x: 1235, y: 227 }
     ];
     this.modeFibers = fiberPoints.map((point, index) => {
       const fiber = this.add.circle(point.x, point.y, 2 + index % 2, 0x8be6ff, 0.92)
@@ -980,6 +1072,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
       }
     }
     this.currentPhase = state.canteenHunt.phase;
+    const pickupVisible = state.canteenHunt.active && state.canteenHunt.phase === "pickup_search";
+    this.pickupWindowVisuals.forEach((visual) => {
+      visual.sign.setVisible(pickupVisible);
+      visual.standMarker.setVisible(pickupVisible);
+    });
     this.trayVisuals.forEach((visual, trayId) => {
       const returned = state.canteenHunt.returnedTrayIds.includes(trayId);
       const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
@@ -1012,6 +1109,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.exitGlows.forEach((glow, exitId) => glow.setVisible(blocking && state.canteenHunt.mode === "dark" && exitId === expectedExit));
     if (blocking && !this.paper.visible) {
       this.paper.setPosition(836, 470).setVisible(true);
+      this.paperFloatTween.restart();
     }
   }
 
@@ -1120,21 +1218,30 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private animatePaperBurst(): void {
+    const steamWindow = CANTEEN_PICKUP_WINDOWS[2];
     this.paperBusy = true;
-    this.paper.setPosition(978, 637).setScale(0.45).setAlpha(0).setVisible(true);
+    this.paperFloatTween.pause();
+    this.paper
+      .setPosition(steamWindow.x, steamWindow.y)
+      .setScale(0.32, 0.72)
+      .setAngle(-18)
+      .setAlpha(0)
+      .setVisible(true);
     this.showFeedback(canteenContent.pickup.window3, "system");
     this.bridge.emit("canteen_paper_burst_started");
     this.tweens.add({
       targets: this.paper,
       x: 836,
       y: 470,
-      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
       alpha: 1,
-      angle: 350,
+      angle: 340,
       duration: this.reducedMotion ? 120 : 680,
       ease: "Back.easeOut",
       onComplete: () => {
         this.paperBusy = false;
+        this.paperFloatTween.restart();
         this.bridge.emit("canteen_paper_burst_completed");
       }
     });
@@ -1267,6 +1374,13 @@ export class CanteenInteriorScene extends Phaser.Scene {
         identifiedExitIds: state.canteenHunt.identifiedExitIds,
         blockHits: state.canteenHunt.blockHits,
         activeTarget: nearest?.id ?? null,
+        pickupTargets: CANTEEN_PICKUP_WINDOWS.map((window) => ({
+          id: window.id,
+          window: window.value,
+          anchor: { x: window.x, y: window.y },
+          stand: { x: window.standX, y: window.standY },
+          proximity: window.proximity
+        })),
         menuOpen: this.menuPanel !== null,
         dialogueLocked: this.dialogueLocked,
         paperBusy: this.paperBusy,

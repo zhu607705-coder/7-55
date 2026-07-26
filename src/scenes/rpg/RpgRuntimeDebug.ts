@@ -74,6 +74,13 @@ export interface RpgRuntimeDebugState {
     identifiedExitIds: string[];
     blockHits: number;
     activeTarget: string | null;
+    pickupTargets?: Array<{
+      id: string;
+      window: string;
+      anchor: { x: number; y: number };
+      stand: { x: number; y: number };
+      proximity: number;
+    }>;
     menuOpen: boolean;
     dialogueLocked: boolean;
     paperBusy: boolean;

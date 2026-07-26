@@ -100,6 +100,20 @@ export interface CanteenInteractionTarget {
   value?: string;
 }
 
+export interface CanteenPickupWindowDefinition extends CanteenInteractionTarget {
+  kind: "pickup";
+  value: "1" | "2" | "3";
+}
+
+// The pickup route uses the three rightmost bays of the north service counter.
+// Window 3 shares the visible steam bay used by the authored paper-burst beat.
+// Every coordinate below is in the source image's 1672 x 941 pixel system.
+export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = [
+  { id: "pickup_window_1", x: 790, y: 218, standX: 790, standY: 260, proximity: 58, kind: "pickup", value: "1" },
+  { id: "pickup_window_2", x: 1035, y: 218, standX: 1035, standY: 260, proximity: 58, kind: "pickup", value: "2" },
+  { id: "pickup_window_3", x: 1235, y: 218, standX: 1235, standY: 260, proximity: 58, kind: "pickup", value: "3" }
+] as const;
+
 export interface CanteenCartDefinition {
   exitId: CanteenExitId;
   x: number;
@@ -178,9 +192,7 @@ export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = 
   // Kiosk and pickup anchors remain on the visible machines. Their operation
   // positions are in the clear aisle below the respective counter fronts.
   { id: "ordering_kiosk", x: 260, y: 760, standX: 260, standY: 870, proximity: 72, kind: "kiosk" },
-  { id: "pickup_window_1", x: 654, y: 781, standX: 654, standY: 875, proximity: 66, kind: "pickup", value: "1" },
-  { id: "pickup_window_2", x: 815, y: 781, standX: 815, standY: 875, proximity: 66, kind: "pickup", value: "2" },
-  { id: "pickup_window_3", x: 978, y: 781, standX: 978, standY: 875, proximity: 66, kind: "pickup", value: "3" },
+  ...CANTEEN_PICKUP_WINDOWS,
   ...Object.values(CANTEEN_CARTS).map((cart) => ({
     id: `cart_${cart.exitId}`,
     x: cart.x,
@@ -206,7 +218,10 @@ export const CANTEEN_SPAWN = { x: 1194, y: 834 } as const;
 export const CANTEEN_PHASE_SPAWNS = {
   tray_search: CANTEEN_SPAWN,
   menu_order: { x: 260, y: 870 },
-  pickup_search: { x: 978, y: 875 },
+  pickup_search: {
+    x: CANTEEN_PICKUP_WINDOWS[2].standX,
+    y: CANTEEN_PICKUP_WINDOWS[2].standY
+  },
   exit_blocking: { x: CANTEEN_CARTS.southeast.standX, y: CANTEEN_CARTS.southeast.standY }
 } as const;
 export const CANTEEN_BLOCK_SPAWNS = [
