@@ -248,6 +248,23 @@
   filter: drop-shadow(0 0 8px rgba(104, 216, 255, 0.9));
 }
 
+.canteen-bike-clouds {
+  animation: canteen-bike-cloud-drift 8s ease-in-out infinite alternate;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-wheel > ellipse:first-child {
+  animation: canteen-bike-wheel-roll 320ms linear infinite;
+  stroke-dasharray: 9 5;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-crank {
+  animation: canteen-bike-crank-pulse 320ms ease-in-out infinite alternate;
+}
+
+.canteen-bike-warning-light {
+  animation: canteen-bike-warning-pulse 520ms steps(2, end) infinite;
+}
+
 .canteen-bike-player {
   transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -565,6 +582,26 @@
   to { opacity: 1; }
 }
 
+@keyframes canteen-bike-cloud-drift {
+  from { transform: translateX(-7px); }
+  to { transform: translateX(9px); }
+}
+
+@keyframes canteen-bike-wheel-roll {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -28; }
+}
+
+@keyframes canteen-bike-crank-pulse {
+  from { stroke-width: 3px; }
+  to { stroke-width: 5px; }
+}
+
+@keyframes canteen-bike-warning-pulse {
+  from { filter: drop-shadow(0 0 2px rgba(239, 94, 81, 0.3)); opacity: 0.62; }
+  to { filter: drop-shadow(0 0 9px rgba(239, 94, 81, 0.95)); opacity: 1; }
+}
+
 .rpg-temp-inventory {
   background: rgba(10, 14, 18, 0.94);
   border: 3px solid #77818a;
@@ -703,6 +740,64 @@
 .rpg-inventory-dock > header span {
   color: #9eb0aa;
   font-size: var(--fs-micro);
+}
+
+.rpg-item-use-guidance {
+  background: rgba(18, 29, 31, 0.98);
+  border: 2px solid #6b8079;
+  display: grid;
+  gap: 3px;
+  max-width: 480px;
+  padding: 7px 9px;
+}
+
+.rpg-item-use-guidance strong {
+  color: #f5eedb;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.rpg-item-use-guidance span {
+  color: #bdc9c4;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.rpg-item-use-guidance.is-ready,
+.rpg-item-use-guidance.is-success {
+  background: rgba(19, 48, 38, 0.98);
+  border-color: #7de0a3;
+}
+
+.rpg-item-use-guidance.is-ready strong,
+.rpg-item-use-guidance.is-success strong {
+  color: #a8f0c0;
+}
+
+.rpg-item-use-guidance.is-locked,
+.rpg-item-use-guidance.is-warning {
+  background: rgba(55, 43, 20, 0.98);
+  border-color: #e4b85b;
+}
+
+.rpg-item-use-guidance.is-locked strong,
+.rpg-item-use-guidance.is-warning strong {
+  color: #ffd982;
+}
+
+.rpg-item-use-guidance.is-error {
+  background: rgba(58, 27, 28, 0.98);
+  border-color: #e67f79;
+}
+
+.rpg-item-use-guidance.is-error strong {
+  color: #ffaaa5;
+}
+
+.rpg-item-use-guidance.is-passive,
+.rpg-item-use-guidance.is-elsewhere {
+  background: rgba(30, 39, 47, 0.98);
+  border-color: #8194a2;
 }
 
 .rpg-inventory-items {
@@ -1291,6 +1386,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .canteen-bike-clouds,
+  .canteen-bike-rush-3d.is-running .canteen-bike-wheel > ellipse:first-child,
+  .canteen-bike-rush-3d.is-running .canteen-bike-crank,
+  .canteen-bike-warning-light,
   .canteen-bike-target-paper,
   .canteen-bike-player.is-invulnerable {
     animation: none;

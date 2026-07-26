@@ -69,6 +69,9 @@ export interface RpgRuntimeDebugState {
     mode: "light" | "dark";
     identifiedTrayIds: string[];
     returnedTrayIds: string[];
+    menuDarkClueRead: boolean;
+    pickupDarkClueRead: boolean;
+    identifiedExitIds: string[];
     blockHits: number;
     activeTarget: string | null;
     menuOpen: boolean;

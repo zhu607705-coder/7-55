@@ -161,6 +161,11 @@ export function RpgGameHost({
     shellRef.current = node;
     setShellRoot((current) => current === node ? current : node);
   }, []);
+  const selectDraggedRpgItem = useCallback((itemId: ItemId | null) => {
+    store.setState((current) => current.ui.selectedItem === itemId
+      ? current
+      : { ...current, ui: { ...current.ui, selectedItem: itemId } });
+  }, [store]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -333,6 +338,12 @@ export function RpgGameHost({
           inactive: "当前流程还不能安装手柄。"
         }[result];
         events.emit("toast", { text: feedback, tone: result === "active" ? "task" : "system", durationMs: 4200 });
+        events.emit("rpg_item_use_feedback", {
+          itemId: "gamepad",
+          reason: result === "active" ? "accepted" : "locked",
+          targetLabel: "角色",
+          detail: feedback
+        });
       } else if (event.name === "rpg_manual_movement_started") {
         if (!store.getState().actOne.manualControlTested && controller.confirmManualControl()) {
           events.emit("toast", { text: "可以出门了", tone: "task", durationMs: 2800 });
@@ -410,8 +421,22 @@ export function RpgGameHost({
         }
         if (accepted) {
           events.emit("rpg_library_action_accepted", { action, targetId });
+          if (itemId) {
+            events.emit("rpg_item_use_feedback", {
+              itemId,
+              reason: "accepted",
+              targetLabel: LIBRARY_ACTION_CONTRACTS[action]?.targetId ?? targetId
+            });
+          }
         } else if (action !== "visitLibraryPoint") {
           events.emit("library_rpg_interaction_failed", { action, targetId, reason: "unavailable" });
+          if (itemId) {
+            events.emit("rpg_item_use_feedback", {
+              itemId,
+              reason: "locked",
+              targetLabel: targetId
+            });
+          }
         }
       }
     });
@@ -422,15 +447,32 @@ export function RpgGameHost({
       if (event.name === "rpg_canteen_bike_inspect_requested") {
         canteenController.inspectBikeLock();
       } else if (event.name === "rpg_canteen_bike_tissue_requested") {
-        canteenController.cleanBikeLock();
+        const result = canteenController.cleanBikeLock();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "greaseTissue",
+          reason: result === "cleaned" ? "accepted" : "locked",
+          targetLabel: "共享单车车锁",
+          detail: result === "rule" ? "先在深色模式读取二维码，再切回浅色模式清洁车锁。" : undefined
+        });
       } else if (event.name === "rpg_canteen_bike_requested") {
-        canteenController.payForBike();
+        const result = canteenController.payForBike();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "cafeteriaWages",
+          reason: result === "paid" ? "accepted" : "locked",
+          targetLabel: "共享单车",
+          detail: result === "rule" ? "先读取二维码并清洁车锁，再在浅色模式付款。" : undefined
+        });
       } else if (event.name === "rpg_theater_entry_requested") {
         theaterController.enterTheater();
       } else if (event.name === "rpg_theater_mode_requested") {
         theaterController.setMode(String(event.payload?.mode ?? "light") as TheaterMode);
       } else if (event.name === "rpg_theater_poster_tissue_requested") {
-        theaterController.cleanPoster();
+        const accepted = theaterController.cleanPoster();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "greaseTissue",
+          reason: accepted ? "accepted" : "locked",
+          targetLabel: "入口海报"
+        });
       } else if (event.name === "rpg_theater_ticket_kiosk_requested") {
         theaterController.inspectTicketKiosk();
       } else if (event.name === "rpg_theater_ticket_code_submitted") {
@@ -438,7 +480,12 @@ export function RpgGameHost({
       } else if (event.name === "rpg_theater_ticket_combine_requested") {
         theaterController.combineTicketHalves();
       } else if (event.name === "rpg_theater_admission_requested") {
-        theaterController.admitWithTicket();
+        const accepted = theaterController.admitWithTicket();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "temporaryTheaterTicket",
+          reason: accepted ? "accepted" : "locked",
+          targetLabel: "检票闸机"
+        });
       } else if (event.name === "rpg_theater_program_collect_requested") {
         theaterController.collectProgram(String(event.payload?.programId ?? "") as TheaterProgramId);
       } else if (event.name === "rpg_theater_program_order_read_requested") {
@@ -453,11 +500,26 @@ export function RpgGameHost({
       } else if (event.name === "rpg_theater_prop_inspect_requested") {
         theaterController.inspectPropBox();
       } else if (event.name === "rpg_theater_prop_ticket_requested") {
-        theaterController.openPropBoxWithTicket();
+        const accepted = theaterController.openPropBoxWithTicket();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "temporaryTheaterTicket",
+          reason: accepted ? "accepted" : "locked",
+          targetLabel: "道具票据扫描器"
+        });
       } else if (event.name === "rpg_theater_vent_brush_requested") {
-        theaterController.dustPaperAtVent();
+        const accepted = theaterController.dustPaperAtVent();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "fluorescentBrush",
+          reason: accepted ? "accepted" : "locked",
+          targetLabel: "后台通风口"
+        });
       } else if (event.name === "rpg_theater_spotlight_start_requested") {
-        theaterController.startSpotlightHunt();
+        const accepted = theaterController.startSpotlightHunt();
+        events.emit("rpg_item_use_feedback", {
+          itemId: "spotlightRemote",
+          reason: accepted ? "accepted" : "locked",
+          targetLabel: "灯光控制台"
+        });
       } else if (event.name === "rpg_theater_spotlight_attempt") {
         const firstBeamAt = event.payload?.firstBeamAtMs;
         const attempt: TheaterSpotlightAttempt = {
@@ -498,7 +560,15 @@ export function RpgGameHost({
       } else if (event.name === "rpg_qizhen_sign_rotate_requested") {
         qizhenController.rotateSign(Number(event.payload?.signIndex));
       } else if (event.name === "rpg_qizhen_decoy_requested") {
-        qizhenController.placeDecoy(String(event.payload?.targetId ?? "notice") as QizhenDecoyTargetId);
+        const result = qizhenController.placeDecoy(String(event.payload?.targetId ?? "notice") as QizhenDecoyTargetId);
+        events.emit("rpg_item_use_feedback", {
+          itemId: "decoyPaper",
+          reason: result === "correct" ? "accepted" : result === "wrong" ? "wrong_item" : "locked",
+          targetLabel: "候选布置点",
+          detail: result === "wrong"
+            ? "目标范围已经命中，但该位置与倒影坐标不一致。"
+            : undefined
+        });
       } else if (event.name === "rpg_qizhen_mist_observe_requested") {
         qizhenController.observeMistRhythm();
       } else if (event.name === "rpg_qizhen_mist_trigger_requested") {
@@ -799,7 +869,9 @@ export function RpgGameHost({
             events={events}
             shellRef={shellRef}
             canvasHostRef={hostRef}
+            runtimeScene={runtimeScene}
             onInspect={openMapItemDetails}
+            onDragSelectionChange={selectDraggedRpgItem}
           />
         ) : null}
 

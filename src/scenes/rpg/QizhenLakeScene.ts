@@ -544,15 +544,42 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
     const itemId = String(payload?.itemId ?? "");
-    if (itemId !== "decoyPaper") return;
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
-    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) return;
+    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
+      this.bridge.emit("rpg_item_use_feedback", { itemId, reason: "missed_target" });
+      return;
+    }
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
-    const target = this.getActiveTargets(this.bridge.getState())
-      .filter((candidate) => candidate.acceptedItem === itemId)
+    const activeTargets = this.getActiveTargets(this.bridge.getState());
+    const targetAtPoint = activeTargets
       .find((candidate) => Math.hypot(world.x - candidate.x, world.y - candidate.y) <= Math.max(125, candidate.proximity));
-    if (!target || !findNearestQizhenTarget(this.player.x, this.player.y, [target])) return;
+    if (!targetAtPoint) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "missed_target",
+        detail: "松手点没有进入当前阶段的候选目标范围。"
+      });
+      return;
+    }
+    const targetLabel = targetAtPoint.kind === "decoy_spot" ? "假纸条候选位置" : "当前交互点";
+    if (targetAtPoint.acceptedItem !== itemId) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: targetAtPoint.acceptedItem ? "wrong_item" : "locked",
+        targetLabel
+      });
+      return;
+    }
+    if (!findNearestQizhenTarget(this.player.x, this.player.y, [targetAtPoint])) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "too_far",
+        targetLabel
+      });
+      return;
+    }
+    const target = targetAtPoint;
     this.bridge.emit("rpg_qizhen_decoy_requested", { targetId: target.value as QizhenDecoyTargetId });
   }
 

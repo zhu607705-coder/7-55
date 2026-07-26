@@ -63,6 +63,20 @@ interface PanelButtonHitArea {
 
 type SpotlightStage = "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
 
+function theaterDropTargetLabel(kind: TheaterInteractionTarget["kind"]): string {
+  return {
+    poster: "入口海报",
+    gate: "检票闸机",
+    scanner: "道具票据扫描器",
+    vent: "后台通风口",
+    console: "灯光控制台",
+    kiosk: "取票机",
+    program: "节目单",
+    prop: "道具箱",
+    exit: "剧院出口"
+  }[kind];
+}
+
 export class TheaterInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -936,12 +950,40 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const itemId = String(payload?.itemId ?? "");
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
-    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) return;
+    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
+      this.bridge.emit("rpg_item_use_feedback", { itemId, reason: "missed_target" });
+      return;
+    }
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
-    const target = THEATER_INTERACTION_TARGETS
-      .filter((candidate) => candidate.acceptedItem === itemId)
+    const activeTargets = this.getActiveTargets(this.bridge.getState());
+    const targetAtPoint = activeTargets
       .find((candidate) => Math.hypot(world.x - candidate.x, world.y - candidate.y) <= Math.max(105, candidate.proximity));
-    if (!target || !findNearestTheaterTarget(this.player.x, this.player.y, [target])) return;
+    if (!targetAtPoint) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "missed_target",
+        detail: "松手点没有进入当前阶段的高亮目标。"
+      });
+      return;
+    }
+    const targetLabel = theaterDropTargetLabel(targetAtPoint.kind);
+    if (targetAtPoint.acceptedItem !== itemId) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: targetAtPoint.acceptedItem ? "wrong_item" : "locked",
+        targetLabel
+      });
+      return;
+    }
+    if (!findNearestTheaterTarget(this.player.x, this.player.y, [targetAtPoint])) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "too_far",
+        targetLabel
+      });
+      return;
+    }
+    const target = targetAtPoint;
     if (target.kind === "poster") this.bridge.emit("rpg_theater_poster_tissue_requested");
     else if (target.kind === "gate") this.bridge.emit("rpg_theater_admission_requested");
     else if (target.kind === "scanner") this.bridge.emit("rpg_theater_prop_ticket_requested");

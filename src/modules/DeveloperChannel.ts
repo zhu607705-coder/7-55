@@ -477,6 +477,9 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
           mode: "light",
           identifiedTrayIds: [],
           returnedTrayIds: [],
+          menuDarkClueRead: false,
+          pickupDarkClueRead: false,
+          identifiedExitIds: [],
           orderAttemptCount: 0,
           pickupAttemptCount: 0,
           blockHits: 0,
@@ -560,6 +563,15 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       mode: "light",
       identifiedTrayIds: afterTrayStage ? identifiedTrayIds : [],
       returnedTrayIds: afterTrayStage ? identifiedTrayIds : [],
+      menuDarkClueRead: afterMenuStage,
+      pickupDarkClueRead: afterPickupStage,
+      identifiedExitIds: afterBlockingStage
+        ? ["southeast", "steam", "west"]
+        : id === "c3-canteen-block-3"
+          ? ["southeast", "steam"]
+          : id === "c3-canteen-block-2"
+            ? ["southeast"]
+            : [],
       orderAttemptCount: afterMenuStage ? 1 : 0,
       pickupAttemptCount: afterPickupStage ? 1 : 0,
       blockHits: afterBlockingStage ? 3 : id === "c3-canteen-block-3" ? 2 : id === "c3-canteen-block-2" ? 1 : 0,

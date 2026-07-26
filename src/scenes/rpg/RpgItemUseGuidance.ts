@@ -1,0 +1,168 @@
+import type { GameState, ItemId, RpgSceneId } from "../../core/types";
+
+export type RpgItemUseStatus = "ready" | "locked" | "passive" | "elsewhere";
+
+export interface RpgItemUseGuidance {
+  status: RpgItemUseStatus;
+  title: string;
+  detail: string;
+  targetLabel?: string;
+}
+
+const ELSEWHERE_HINTS: Partial<Record<ItemId, string>> = {
+  campusCard: "校园卡在手机应用和地图入口中读取",
+  occupancyNote: "前往 CC98 搜索栏提交占座纸条",
+  archivedLeaveRule: "前往 CC98 证据上传区提交旧版规定",
+  bagNonPersonProof: "前往 CC98 或恢复申请页面提交证明",
+  seat022Receipt: "前往 CC98 或恢复申请页面提交凭据",
+  libraryPresenceProof: "前往 CC98 或恢复申请页面提交证明",
+  pickupTicket0755: "到食堂三号取餐窗口，靠近后自动核验",
+  theaterTicketHalfA: "与另一半临时票合成，无需拖到场景",
+  theaterTicketHalfB: "与另一半临时票合成，无需拖到场景",
+  theaterProgramOpening: "到剧院灯光控制台打开节目单排序",
+  theaterProgramSpotlight: "到剧院灯光控制台打开节目单排序",
+  theaterProgramFinale: "到剧院灯光控制台打开节目单排序",
+  wetProgram: "前往 CC98 或馆藏检索提交湿节目单",
+  bridgeKeyword: "前往校园地图搜索栏提交地点关键词",
+  reflectionKeyword: "前往校园地图搜索栏提交地点关键词",
+  lakeKeyword: "前往校园地图搜索栏提交地点关键词",
+  reflectionCoordinate: "坐标会在启真湖布置假纸条时自动核验"
+};
+
+const ready = (targetLabel: string, detail = "拖到场景中的高亮区域，并在框内松手。"): RpgItemUseGuidance => ({
+  status: "ready",
+  title: "当前可以使用",
+  detail,
+  targetLabel
+});
+
+const locked = (detail: string, targetLabel?: string): RpgItemUseGuidance => ({
+  status: "locked",
+  title: "剧情条件尚未满足",
+  detail,
+  targetLabel
+});
+
+const passive = (detail: string): RpgItemUseGuidance => ({
+  status: "passive",
+  title: "无需拖动",
+  detail
+});
+
+const elsewhere = (itemId: ItemId): RpgItemUseGuidance => ({
+  status: "elsewhere",
+  title: "本场景没有使用点",
+  detail: ELSEWHERE_HINTS[itemId] ?? "保留该道具，跟随当前任务前往对应页面或场景。"
+});
+
+export function selectRpgItemUseGuidance(
+  state: GameState,
+  runtimeScene: RpgSceneId,
+  itemId: ItemId
+): RpgItemUseGuidance {
+  if (runtimeScene === "dorm_hub" && itemId === "gamepad") {
+    if (state.actOne.movementEnabled) return passive("手柄已经连接，使用方向键完成第一次手动移动。");
+    if (!state.actOne.characterNamed) return locked("先在部门黄页完成角色命名。", "角色");
+    if (!state.actOne.exerciseStarted) return locked("先在浙大体艺开始课外锻炼。", "角色");
+    if (!state.actOne.gamepadPurchased) return locked("先在 CC98 完成手柄购买。", "角色");
+    return ready("角色", "把手柄拖到角色身体范围内，并在人物轮廓内松手。");
+  }
+
+  if (runtimeScene === "library_interior") {
+    const puzzle = state.ui.libraryFinalsPuzzle;
+    if (itemId === "callNumber755") {
+      return state.ui.libraryFinalsPhase === "evidence_gathering"
+        && puzzle.callNumberCollected
+        && !puzzle.archivedRuleCollected
+        ? ready("文学书架 755 段")
+        : locked("先完成馆藏检索并取得索书号 755。", "文学书架 755 段");
+    }
+    if (itemId === "itemRecognitionReport") {
+      if (puzzle.lostFoundStage === "scanning") return passive("盖章机正在扫描，等待流程完成。");
+      return state.ui.libraryFinalsPhase === "evidence_gathering"
+        && puzzle.itemReportGenerated
+        && puzzle.lostFoundStage === "ready"
+        && !puzzle.nonPersonProofStamped
+        ? ready("物品身份盖章机")
+        : locked("先在照片页面生成物品识别报告。", "物品身份盖章机");
+    }
+    if (itemId === "rightArrow") {
+      return !puzzle.seatReceiptCollected
+        ? ready("022 桌面夹缝")
+        : passive("022 座位凭据已经取出，右移箭头会保留供其他流程使用。");
+    }
+    if (itemId === "seatReleasePass") {
+      return state.ui.libraryFinalsPhase === "pass_ready"
+        && puzzle.evictionPassGenerated
+        && !puzzle.backpackEvicted
+        ? ready("022 占座书包")
+        : locked("先完成公开公示和三项恢复材料，取得清退 PASS。", "022 占座书包");
+    }
+  }
+
+  if (runtimeScene === "canteen_interior" && itemId === "pickupTicket0755") {
+    return passive("走到三号取餐窗口前，系统会自动核验 0755 取餐号。");
+  }
+
+  if (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") {
+    if (itemId === "greaseTissue") {
+      if (state.canteenHunt.bikeLockCleaned) return passive("车锁已经擦净，接下来使用 2 元现金付款。");
+      if (state.canteenHunt.mode === "dark") return locked("切回浅色模式后再清洁车锁。", "共享单车车锁");
+      if (!state.canteenHunt.bikeCodeRead) return locked("先在深色模式检查车锁二维码，再切回浅色模式。", "共享单车车锁");
+      return ready("共享单车车锁");
+    }
+    if (itemId === "cafeteriaWages") {
+      if (!state.canteenHunt.bikeCodeRead) return locked("先在深色模式读取二维码。", "共享单车");
+      if (!state.canteenHunt.bikeLockCleaned) return locked("先用纸巾清洁车锁。", "共享单车");
+      if (state.canteenHunt.mode === "dark") return locked("切回浅色模式后付款。", "共享单车");
+      if (state.wallet.cashCents < 200) return locked("现金余额不足 2 元。", "共享单车");
+      return ready("共享单车", "把 2 元现金拖到共享单车范围内，并在车身上松手。");
+    }
+  }
+
+  if (runtimeScene === "theater_interior") {
+    const theater = state.theaterHunt;
+    if (itemId === "greaseTissue") {
+      if (theater.posterCleaned) return passive("海报玻璃已经擦净。");
+      if (theater.phase !== "entry_ticket") return locked("擦拭海报只在剧院入口取票阶段开放。", "入口海报");
+      if (theater.mode !== "light") return locked("切回浅色模式后擦拭海报玻璃。", "入口海报");
+      return ready("入口海报");
+    }
+    if (itemId === "temporaryTheaterTicket") {
+      if (theater.phase === "entry_ticket" && !theater.admitted) return ready("检票闸机");
+      if (theater.phase === "prop_setup") {
+        return theater.mode === "light" && theater.managerHintRead && !theater.propBoxOpened
+          ? ready("道具票据扫描器")
+          : locked("先在深色模式检查道具箱并读取管理员提示，再切回浅色模式。", "道具票据扫描器");
+      }
+      return locked("临时票会在检票或道具箱阶段使用。");
+    }
+    if (itemId === "fluorescentBrush") {
+      return theater.phase === "prop_setup"
+        && theater.mode === "light"
+        && theater.propBoxOpened
+        && !theater.paperDusted
+        ? ready("后台通风口")
+        : locked("先打开道具箱并取得荧光刷。", "后台通风口");
+    }
+    if (itemId === "spotlightRemote") {
+      return theater.phase === "spotlight_ready" && theater.paperDusted
+        ? ready("灯光控制台")
+        : locked("先完成后台纸屑显影。", "灯光控制台");
+    }
+    if (["theaterProgramOpening", "theaterProgramSpotlight", "theaterProgramFinale"].includes(itemId)) {
+      return passive("靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。");
+    }
+  }
+
+  if (runtimeScene === "qizhen_lake" && itemId === "decoyPaper") {
+    if (state.qizhenLake.mode !== "light") return locked("切回浅色模式后布置假纸条。", "三个候选位置");
+    if (state.qizhenLake.phase !== "decoy_setup") return locked("先完成倒影拦截和指示牌校准。", "三个候选位置");
+    if (!state.qizhenLake.signsSolved || !state.items.reflectionCoordinate) {
+      return locked("先取得倒影坐标。", "三个候选位置");
+    }
+    return ready("三个候选位置", "靠近候选位置，再把假纸条拖进对应的高亮范围。");
+  }
+
+  return elsewhere(itemId);
+}
