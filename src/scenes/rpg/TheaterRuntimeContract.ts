@@ -3,6 +3,17 @@ import type { RpgBridge } from "./RpgBridge";
 
 export const THEATER_RUNTIME_CONTRACT_VERSION = "1.0.0" as const;
 export const THEATER_RUNTIME_LOGICAL_VIEWPORT = { width: 960, height: 540 } as const;
+export type TheaterRuntimeSpawnZone = "lobby" | "auditorium" | "stage";
+
+export function selectTheaterRuntimeSpawnZone(
+  state: Pick<GameState, "theaterHunt">
+): TheaterRuntimeSpawnZone {
+  if (!state.theaterHunt.admitted || state.theaterHunt.phase === "complete") return "lobby";
+  if (["prop_setup", "spotlight_ready", "spotlight_hunt", "reversal"].includes(state.theaterHunt.phase)) {
+    return "stage";
+  }
+  return "auditorium";
+}
 
 export type TheaterRuntimeIntentName =
   | "rpg_booted"

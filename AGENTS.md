@@ -87,6 +87,16 @@
 - The Godot Web export must pause on `visibilitychange`, release input and audio on unmount, restore from the latest validated TypeScript state, and survive scene re-entry without resetting progress.
 - A scene switches from Phaser fallback to Godot only after complete browser validation in Blink, Gecko, and WebKit at `1280×720`, one non-16:9 desktop viewport, and `390×844`, including keyboard, touch, inventory drag, save/reload, and entry/exit flow.
 
+## RPG Reality Modes And Spatial Item Use
+
+- `src/scenes/rpg/RpgInteractionContract.ts` is the shared authority for reality-mode labels, item drop bounds, reachable stand positions, accepted item ids, required modes, target ordering, and drop rejection classes. Phaser fallbacks and Godot exports consume the same authored target data.
+- The global mode rule is fixed: `深色观察` reads clues, residual images, routes, rhythms, and abnormal state; it never performs physical pickup, drag, cleaning, payment, pushing, scanning, or device activation. `浅色操作` performs those physical actions after any required observation has been recorded.
+- The mode toggle always states the current mode and the destination mode. A control labelled only with the destination mode is prohibited because it does not tell the player which rule currently applies.
+- A physical item use point declares one visible target label, exact world-space drop bounds, an accepted item id, a reachable stand position or visible-edge distance, and `requiredMode: "light"` when the scene supports reality modes.
+- Drag feedback distinguishes `missed_target`, `wrong_item`, `too_far`, `wrong_mode` or another controller-owned lock, and `accepted`. A failed drop keeps the item and states the next corrective action.
+- Repeating the same observation on multiple equivalent objects cannot become a prerequisite chain. One observation may register all simultaneously visible equivalent targets; independent collectible branches remain order-independent unless the order itself carries puzzle information.
+- Scene instructions mention `Space` only for an action currently accepted through the shared interaction event. Item-only targets tell the player to drag the named item into the named frame and do not advertise `Space`.
+
 ## Portrait Mini-games
 
 - Standalone phone mini-games stay inside the shared `430px × 860px` portrait shell and preserve the top `40px` status-bar reservation.
@@ -105,7 +115,7 @@
 - Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
 - Run `npm run typecheck` and `npm run build:single` after React, shared-state, controller, bridge, or fallback behavior changes. Godot changes additionally run the repository’s checked-in Godot validation and Web export commands once those scripts are introduced.
-- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the campus map contract, TypeScript, production build, offline single-file fallback, and source-to-committed-Godot-Web-export hash parity for every PR and push to `main`. Contributors who change Godot source must run the local Web export command with the pinned Godot version before pushing; CI validates that the reviewed export matches those sources without downloading the editor or export templates.
+- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the complete Chapter 3 audio contract, campus map contract, TypeScript, production build, offline single-file fallback, and source-to-committed-Godot-Web-export hash parity for every PR and push to `main`. Contributors who change Godot source must run the local Web export command with the pinned Godot version before pushing; CI validates that the reviewed export matches those sources without downloading the editor or export templates.
 - Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.
@@ -149,6 +159,7 @@
 - Keep one narrator identity unless the story explicitly introduces another speaker. Use speed, pitch, pauses, and emphasis to separate phase delivery.
 - Game logic emits domain events only. `AudioDirector` and JSON timelines own filenames, subtitles, offsets, levels, ducking, and music replacement.
 - Missing or blocked audio must never stop a state transition or prevent interaction.
+- A generated audio manifest is runtime-readable only when its complete authored asset set has passed path, format, duration, configuration-hash, file-hash, and duplicate-byte checks. Interrupted generation writes recovery progress only to an ignored cache checkpoint; it must never replace the canonical manifest with a partial asset set. `--verify-only` is strictly read-only, and validated media plus canonical manifests use staged atomic replacement.
 - Every spoken voice asset ships in English. Every on-screen voice subtitle uses Chinese and has exactly one owner: a scene dialogue surface when that scene already renders the line, or the shared `ToastLayer` for voice-only cues. Set `subtitleSurface: "scene"` for scene-owned lines and never emit the same text through both surfaces. Shared toasts keep their global position, type size, and audio-derived duration contract unchanged. TTS source text, voice language, generated manifests, and runtime audio must use English.
 - Preserve role continuity: every narrator line uses the established English male narrator voice at the shared base pitch; context may change wording, pauses, emphasis, and speed without changing narrator timbre or pitch. The system uses the established English female voice. Narrator sarcasm stays dry and condescending, while system frustration reads as restrained irritation and reluctant assistance.
 - The legacy `playVo` scene lines and data-driven `AudioDirector` cues belong to the same English voice contract and must be regenerated and validated together.

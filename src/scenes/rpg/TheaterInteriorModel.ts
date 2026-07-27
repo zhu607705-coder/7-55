@@ -1,4 +1,8 @@
 import type { TheaterProgramId } from "../../core/types";
+import {
+  isPlayerWithinRpgTarget,
+  type RpgSpatialInteractionTarget
+} from "./RpgInteractionContract";
 
 export const THEATER_INTERIOR_WORLD = { width: 1672, height: 941 } as const;
 
@@ -63,25 +67,15 @@ export const THEATER_OCCLUSION_RECTS: readonly TheaterOcclusionRect[] = [
 
 export type TheaterTargetKind = "poster" | "kiosk" | "gate" | "program" | "console" | "prop" | "scanner" | "vent" | "exit";
 
-export interface TheaterInteractionTarget {
-  id: string;
-  /** Visual entity anchor in source-pixel coordinates. */
-  x: number;
-  y: number;
-  /** Reachable floor position from which the visual entity can be operated. */
-  stand?: { x: number; y: number };
-  proximity: number;
-  /** Exact item drop area centered on the visual anchor. */
-  dropWidth?: number;
-  dropHeight?: number;
+export interface TheaterInteractionTarget extends RpgSpatialInteractionTarget {
   kind: TheaterTargetKind;
   programId?: TheaterProgramId;
-  acceptedItem?: string;
 }
 
 export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = [
   {
     id: "theater_poster",
+    label: "入口海报玻璃",
     x: 282,
     y: 755,
     // The narrow aisle between the poster case and the lobby bin is the
@@ -89,11 +83,15 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     // rectangles while retaining a short, physical interaction distance.
     stand: { x: 476, y: 755 },
     proximity: 48,
+    dropWidth: 96,
+    dropHeight: 96,
     kind: "poster",
-    acceptedItem: "greaseTissue"
+    acceptedItem: "greaseTissue",
+    requiredMode: "light"
   },
   {
     id: "theater_ticket_kiosk",
+    label: "临时票打印机",
     x: 1146,
     y: 755,
     stand: { x: 1080, y: 750 },
@@ -102,6 +100,7 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
   },
   {
     id: "theater_ticket_gate",
+    label: "检票闸机右侧读票器",
     x: 907,
     y: 690,
     stand: { x: 907, y: 770 },
@@ -109,15 +108,29 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     dropWidth: 90,
     dropHeight: 100,
     kind: "gate",
-    acceptedItem: "temporaryTheaterTicket"
+    acceptedItem: "temporaryTheaterTicket",
+    requiredMode: "light"
   },
-  { id: "theater_program_opening", x: 568, y: 405, proximity: 74, kind: "program", programId: "opening" },
-  { id: "theater_program_spotlight", x: 1080, y: 594, proximity: 78, kind: "program", programId: "spotlight" },
-  { id: "theater_program_finale", x: 1460, y: 418, proximity: 78, kind: "program", programId: "finale" },
-  { id: "theater_light_console", x: 1070, y: 495, proximity: 105, kind: "console", acceptedItem: "spotlightRemote" },
-  { id: "theater_prop_box", x: 292, y: 229, proximity: 92, kind: "prop" },
+  { id: "theater_program_opening", label: "开场节目单残页", x: 568, y: 405, proximity: 74, requiredMode: "light", kind: "program", programId: "opening" },
+  { id: "theater_program_spotlight", label: "追光节目单残页", x: 1080, y: 594, proximity: 78, requiredMode: "light", kind: "program", programId: "spotlight" },
+  { id: "theater_program_finale", label: "终场节目单残页", x: 1460, y: 418, proximity: 78, requiredMode: "light", kind: "program", programId: "finale" },
+  {
+    id: "theater_light_console",
+    label: "剧院灯光控制台",
+    x: 1140,
+    y: 500,
+    stand: { x: 1140, y: 590 },
+    proximity: 72,
+    dropWidth: 130,
+    dropHeight: 110,
+    kind: "console",
+    acceptedItem: "spotlightRemote",
+    requiredMode: "light"
+  },
+  { id: "theater_prop_box", label: "后台道具箱", x: 292, y: 229, proximity: 92, kind: "prop" },
   {
     id: "theater_prop_scanner",
+    label: "道具箱旁票据扫描器",
     x: 364,
     y: 170,
     stand: { x: 420, y: 218 },
@@ -125,10 +138,23 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     dropWidth: 76,
     dropHeight: 94,
     kind: "scanner",
-    acceptedItem: "temporaryTheaterTicket"
+    acceptedItem: "temporaryTheaterTicket",
+    requiredMode: "light"
   },
-  { id: "theater_backstage_vent", x: 936, y: 145, proximity: 105, kind: "vent", acceptedItem: "fluorescentBrush" },
-  { id: "theater_exit", x: 836, y: 842, proximity: 110, kind: "exit" }
+  {
+    id: "theater_backstage_vent",
+    label: "后台通风口",
+    x: 936,
+    y: 145,
+    stand: { x: 936, y: 228 },
+    proximity: 72,
+    dropWidth: 78,
+    dropHeight: 55,
+    kind: "vent",
+    acceptedItem: "fluorescentBrush",
+    requiredMode: "light"
+  },
+  { id: "theater_exit", label: "剧院出口", x: 836, y: 842, proximity: 110, kind: "exit" }
 ] as const;
 
 export const THEATER_LOBBY_SPAWN = { x: 836, y: 842 } as const;
@@ -147,22 +173,12 @@ export function findNearestTheaterTarget(
   targets.forEach((target) => {
     const stand = target.stand ?? target;
     const candidateDistance = Math.hypot(x - stand.x, y - stand.y);
-    if (candidateDistance <= target.proximity && candidateDistance < distance) {
+    if (isPlayerWithinRpgTarget(target, x, y) && candidateDistance < distance) {
       nearest = target;
       distance = candidateDistance;
     }
   });
   return nearest;
-}
-
-export function isTheaterDropPointWithin(
-  target: TheaterInteractionTarget,
-  x: number,
-  y: number
-): boolean {
-  const width = target.dropWidth ?? target.proximity * 2;
-  const height = target.dropHeight ?? target.proximity * 2;
-  return Math.abs(x - target.x) <= width / 2 && Math.abs(y - target.y) <= height / 2;
 }
 
 export function isTheaterPointBlocked(x: number, y: number): boolean {

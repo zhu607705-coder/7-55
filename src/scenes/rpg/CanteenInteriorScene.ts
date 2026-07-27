@@ -1,12 +1,17 @@
 import Phaser from "phaser";
 import canteenInteriorMapUrl from "../../assets/rpg/interiors/canteen_interior.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
-import type { CanteenExitId, CanteenMode, GameState } from "../../core/types";
+import type { CanteenExitId, CanteenMode, GameState, ItemId } from "../../core/types";
 import canteenContent from "../../data/chapter3-canteen.content.json";
 import { CANTEEN_EXIT_SEQUENCE } from "../../modules/ChapterThreeCanteenController";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
+import {
+  formatRpgModeRequirement,
+  getRpgDropBounds,
+  resolveRpgItemDrop
+} from "./RpgInteractionContract";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -64,6 +69,8 @@ interface OcclusionVisual {
 interface PickupWindowVisual {
   sign: Phaser.GameObjects.Container;
   standMarker: Phaser.GameObjects.Container;
+  dropFrame: Phaser.GameObjects.Rectangle;
+  dropLabel: Phaser.GameObjects.Text;
 }
 
 export class CanteenInteriorScene extends Phaser.Scene {
@@ -518,6 +525,33 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setDepth(1705)
         .setSize(160, 44);
 
+      const dropBounds = getRpgDropBounds(window);
+      const dropFrame = this.add.rectangle(
+        window.x,
+        window.y,
+        dropBounds.width,
+        dropBounds.height,
+        0x173544,
+        0.18
+      ).setStrokeStyle(4, 0x7ad8ff, 1)
+        .setDepth(1712)
+        .setVisible(false);
+      const dropLabel = this.add.text(
+        window.x,
+        window.y - dropBounds.height / 2 - 7,
+        `拖入 0755 · ${window.value}号`,
+        {
+          color: "#e9fbff",
+          backgroundColor: "#102b3bee",
+          fontFamily: "monospace",
+          fontSize: "12px",
+          fontStyle: "bold",
+          padding: { x: 6, y: 3 }
+        }
+      ).setOrigin(0.5, 1)
+        .setDepth(1713)
+        .setVisible(false);
+
       const guide = this.add.rectangle(0, -21, 3, 18, 0x7ad8ff, 0.82);
       const ring = this.add.circle(0, 0, 21, 0x103347, 0.32)
         .setStrokeStyle(3, 0x7ad8ff, 0.96);
@@ -527,7 +561,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         fontSize: "17px",
         fontStyle: "bold"
       }).setOrigin(0.5);
-      const standLabel = this.add.text(31, 0, "站这里 · 空格", {
+      const standLabel = this.add.text(31, 0, "站这里 · 再拖票", {
         color: "#e9fbff",
         backgroundColor: "#102b3bdd",
         fontFamily: "monospace",
@@ -535,12 +569,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
         padding: { x: 5, y: 3 }
       }).setOrigin(0, 0.5);
       const standMarker = this.add.container(
-        window.standX,
-        window.standY,
+        window.stand!.x,
+        window.stand!.y,
         [guide, ring, standDigit, standLabel]
       ).setDepth(1604).setSize(136, 48);
 
-      this.pickupWindowVisuals.set(window.id, { sign, standMarker });
+      this.pickupWindowVisuals.set(window.id, { sign, standMarker, dropFrame, dropLabel });
     });
   }
 
@@ -568,7 +602,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         window.id,
         {
           x: window.x,
-          y: (window.y + window.standY) / 2,
+          y: (window.y + window.stand!.y) / 2,
           width: 166,
           height: 112
         }
@@ -635,6 +669,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (name === "rpg_interact") {
       this.interactRequested = true;
+      return;
+    }
+    if (name === "rpg_inventory_drop_requested") {
+      this.handleInventoryDrop(payload);
       return;
     }
     if (name === "rpg_canteen_toggle_mode") {
@@ -820,7 +858,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
       if (state.canteenHunt.mode === "dark") {
         this.bridge.emit("rpg_canteen_pickup_clue_requested", { windowId: target.value });
       } else {
-        this.bridge.emit("rpg_canteen_pickup_selected", { windowId: target.value });
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId: "pickupTicket0755",
+          reason: "locked",
+          targetLabel: target.label,
+          detail: state.canteenHunt.pickupDarkClueRead
+            ? `人物已到${target.value}号窗口。请把 0755 取餐号拖进窗口上方的发光验票框。`
+            : "先切到深色模式观察取餐号和窗口残影。"
+        });
       }
       return;
     }
@@ -839,6 +884,74 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
     if (!findNearestCanteenTarget(this.player.x, this.player.y, [target])) return;
     this.triggerTarget(target, state);
+  }
+
+  private handleInventoryDrop(payload?: Record<string, unknown>): void {
+    const itemId = String(payload?.itemId ?? "") as ItemId;
+    const canvasX = Number(payload?.canvasX);
+    const canvasY = Number(payload?.canvasY);
+    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
+      this.bridge.emit("rpg_item_use_feedback", { itemId, reason: "missed_target" });
+      return;
+    }
+    const state = this.bridge.getState();
+    const pickupTargets = this.getActiveTargets(state)
+      .filter((target) => target.kind === "pickup");
+    const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
+    const result = resolveRpgItemDrop({
+      targets: pickupTargets,
+      itemId,
+      dropX: worldPoint.x,
+      dropY: worldPoint.y,
+      playerX: this.player.x,
+      playerY: this.player.y,
+      mode: state.canteenHunt.mode
+    });
+    if (!result.target) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "missed_target",
+        detail: "取餐号已退回：请拖进 1、2、3 号窗口上方明确标出的验票框。"
+      });
+      return;
+    }
+    if (result.kind === "wrong_item") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "wrong_item",
+        targetLabel: result.target.label
+      });
+      return;
+    }
+    if (result.kind === "wrong_mode") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel: result.target.label,
+        detail: formatRpgModeRequirement(result.expectedMode ?? "light")
+      });
+      return;
+    }
+    if (!state.canteenHunt.pickupDarkClueRead) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel: result.target.label,
+        detail: "先在深色模式观察取餐号背面的窗口残影，再切回浅色模式验票。"
+      });
+      return;
+    }
+    if (result.kind === "too_far") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "too_far",
+        targetLabel: result.target.label,
+        detail: `落点正确；人物还没有站进${result.target.value}号窗口前的蓝色站位。`
+      });
+      return;
+    }
+    if (result.kind !== "accepted") return;
+    this.bridge.emit("rpg_canteen_pickup_selected", { windowId: result.target.value });
   }
 
   private triggerTrayById(trayId: string): void {
@@ -1050,7 +1163,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
           ? state.canteenHunt.mode === "dark"
             ? `查看${nearest.value}号窗口暗号`
             : state.canteenHunt.pickupDarkClueRead
-              ? `在${nearest.value}号窗口核验 0755`
+              ? `把 0755 拖入${nearest.value}号窗口验票框`
               : "先切深色模式确认窗口"
           : nearest.kind === "exit"
             ? "靠近东南门离开食堂"
@@ -1073,9 +1186,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     this.currentPhase = state.canteenHunt.phase;
     const pickupVisible = state.canteenHunt.active && state.canteenHunt.phase === "pickup_search";
+    const showPickupDrop = pickupVisible
+      && state.canteenHunt.mode === "light"
+      && state.canteenHunt.pickupDarkClueRead
+      && state.ui.selectedItem === "pickupTicket0755";
     this.pickupWindowVisuals.forEach((visual) => {
       visual.sign.setVisible(pickupVisible);
       visual.standMarker.setVisible(pickupVisible);
+      visual.dropFrame.setVisible(showPickupDrop);
+      visual.dropLabel.setVisible(showPickupDrop);
     });
     this.trayVisuals.forEach((visual, trayId) => {
       const returned = state.canteenHunt.returnedTrayIds.includes(trayId);
@@ -1364,6 +1483,23 @@ export class CanteenInteriorScene extends Phaser.Scene {
         mode: "follow"
       },
       scene: "canteen_interior",
+      activeTargets: this.getActiveTargets(state).map((target) => {
+        const bounds = getRpgDropBounds(target);
+        return {
+          id: target.id,
+          label: target.label,
+          x: target.x,
+          y: target.y,
+          width: bounds.width,
+          height: bounds.height,
+          dropWidth: target.dropWidth,
+          dropHeight: target.dropHeight,
+          stand: target.stand,
+          proximity: target.proximity,
+          acceptedItem: target.acceptedItem,
+          requiredMode: target.requiredMode
+        };
+      }),
       canteen: {
         phase: state.canteenHunt.phase,
         mode: state.canteenHunt.mode,
@@ -1378,8 +1514,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
           id: window.id,
           window: window.value,
           anchor: { x: window.x, y: window.y },
-          stand: { x: window.standX, y: window.standY },
-          proximity: window.proximity
+          stand: window.stand!,
+          proximity: window.proximity,
+          dropBounds: getRpgDropBounds(window),
+          acceptedItem: window.acceptedItem,
+          requiredMode: window.requiredMode
         })),
         menuOpen: this.menuPanel !== null,
         dialogueLocked: this.dialogueLocked,

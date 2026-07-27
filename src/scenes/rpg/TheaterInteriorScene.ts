@@ -1,10 +1,14 @@
 import Phaser from "phaser";
 import theaterInteriorMapUrl from "../../assets/rpg/interiors/theater_interior.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
-import type { GameState, TheaterMode, TheaterProgramId } from "../../core/types";
+import type { GameState, ItemId, TheaterMode, TheaterProgramId } from "../../core/types";
 import theaterContent from "../../data/chapter3-theater.content.json";
 import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
+import {
+  formatRpgModeRequirement,
+  resolveRpgItemDrop
+} from "./RpgInteractionContract";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -16,6 +20,7 @@ import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntime
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   requireTheaterRuntimePort,
+  selectTheaterRuntimeSpawnZone,
   type TheaterRuntimePort
 } from "./TheaterRuntimeContract";
 import {
@@ -34,7 +39,6 @@ import {
   THEATER_STAGE_SPAWN,
   THEATER_STATIC_COLLISION_RECTS,
   findNearestTheaterTarget,
-  isTheaterDropPointWithin,
   type TheaterInteractionTarget
 } from "./TheaterInteriorModel";
 
@@ -118,6 +122,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private panel: Phaser.GameObjects.Container | null = null;
   private panelKind: "code" | "program" | null = null;
   private panelButtons: PanelButtonHitArea[] = [];
+  private panelInputReadyAtMs = 0;
   private codeInput = "";
   private codeDisplay: Phaser.GameObjects.Text | null = null;
   private spotlightPanel: Phaser.GameObjects.Container | null = null;
@@ -298,11 +303,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private resolveSpawn(state: GameState): { x: number; y: number } {
-    if (!state.theaterHunt.admitted) return THEATER_LOBBY_SPAWN;
-    if (state.theaterHunt.phase === "complete") return THEATER_LOBBY_SPAWN;
-    if (["prop_setup", "spotlight_ready", "spotlight_hunt", "reversal"].includes(state.theaterHunt.phase)) {
-      return THEATER_STAGE_SPAWN;
-    }
+    const spawnZone = selectTheaterRuntimeSpawnZone(state);
+    if (spawnZone === "lobby") return THEATER_LOBBY_SPAWN;
+    if (spawnZone === "stage") return THEATER_STAGE_SPAWN;
     return THEATER_AUDITORIUM_SPAWN;
   }
 
@@ -556,7 +559,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private createTicketDropGuides(): void {
     THEATER_INTERACTION_TARGETS
       .filter((target) => (
-        target.acceptedItem === "temporaryTheaterTicket"
+        target.acceptedItem
         && target.stand
         && target.dropWidth
         && target.dropHeight
@@ -578,7 +581,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         const dropLabel = this.add.text(
           target.x,
           target.y - dropHeight / 2 - 7,
-          target.kind === "gate" ? "松手区 · 右侧验票槽" : "松手区 · 票据扫描口",
+          `松手区 · ${target.label}`,
           {
             color: "#d9f8ff",
             backgroundColor: "#102332ee",
@@ -621,13 +624,27 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private syncTicketDropGuides(state: GameState): void {
     this.ticketDropGuides.forEach((guide) => {
-      const phaseReady = guide.target.kind === "gate"
-        ? state.theaterHunt.phase === "entry_ticket" && !state.theaterHunt.admitted
-        : state.theaterHunt.phase === "prop_setup"
-          && state.theaterHunt.mode === "light"
-          && state.theaterHunt.managerHintRead
-          && !state.theaterHunt.propBoxOpened;
-      const visible = state.ui.selectedItem === "temporaryTheaterTicket" && phaseReady;
+      const phaseReady = guide.target.kind === "poster"
+        ? state.theaterHunt.phase === "entry_ticket"
+          && !state.theaterHunt.posterCleaned
+        : guide.target.kind === "gate"
+          ? state.theaterHunt.phase === "entry_ticket"
+            && !state.theaterHunt.admitted
+          : guide.target.kind === "scanner"
+            ? state.theaterHunt.phase === "prop_setup"
+              && state.theaterHunt.managerHintRead
+              && !state.theaterHunt.propBoxOpened
+            : guide.target.kind === "vent"
+              ? state.theaterHunt.phase === "prop_setup"
+                && state.theaterHunt.propBoxOpened
+                && !state.theaterHunt.paperDusted
+              : guide.target.kind === "console"
+                ? state.theaterHunt.phase === "spotlight_ready"
+                  && state.theaterHunt.paperDusted
+                : false;
+      const visible = state.ui.selectedItem === guide.target.acceptedItem
+        && state.theaterHunt.mode === guide.target.requiredMode
+        && phaseReady;
       const objects = [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel, guide.link];
       objects.forEach((object) => object.setVisible(visible));
       if (!visible) return;
@@ -643,8 +660,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
         .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
       guide.dropLabel
         .setText(inPosition
-          ? guide.target.kind === "gate" ? "站位正确 · 票拖进验票槽松手" : "站位正确 · 票拖进扫描口松手"
-          : guide.target.kind === "gate" ? "目标 · 右侧验票槽" : "目标 · 票据扫描口")
+          ? `站位正确 · 道具拖进${guide.target.label}松手`
+          : `目标 · ${guide.target.label}`)
         .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
       guide.standLabel
         .setText(inPosition ? "站位已满足" : "先让人物站到这里")
@@ -1078,7 +1095,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
-    const itemId = String(payload?.itemId ?? "");
+    const itemId = String(payload?.itemId ?? "") as ItemId;
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
     if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
@@ -1088,20 +1105,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
     const state = this.runtime.getState();
     const activeTargets = this.getActiveTargets(state);
-    const targetAtPoint = activeTargets
-      .filter((candidate) => isTheaterDropPointWithin(candidate, world.x, world.y))
-      .sort((a, b) => {
-        const aAcceptsItem = a.acceptedItem === itemId;
-        const bAcceptsItem = b.acceptedItem === itemId;
-        if (aAcceptsItem !== bAcceptsItem) return aAcceptsItem ? -1 : 1;
-        const aHasItemContract = Boolean(a.acceptedItem);
-        const bHasItemContract = Boolean(b.acceptedItem);
-        if (aHasItemContract !== bHasItemContract) return aHasItemContract ? -1 : 1;
-        const aArea = (a.dropWidth ?? a.proximity * 2) * (a.dropHeight ?? a.proximity * 2);
-        const bArea = (b.dropWidth ?? b.proximity * 2) * (b.dropHeight ?? b.proximity * 2);
-        return aArea - bArea;
-      })[0];
-    if (!targetAtPoint) {
+    const result = resolveRpgItemDrop({
+      targets: activeTargets,
+      itemId,
+      dropX: world.x,
+      dropY: world.y,
+      playerX: this.player.x,
+      playerY: this.player.y,
+      mode: state.theaterHunt.mode
+    });
+    if (!result.target) {
       const ticketDetail = itemId === "temporaryTheaterTicket"
         ? state.theaterHunt.phase === "entry_ticket"
           ? "票已退回：请拖到检票闸机右侧发蓝光的「验票」读票器框内。"
@@ -1116,29 +1129,39 @@ export class TheaterInteriorScene extends Phaser.Scene {
       });
       return;
     }
-    const targetLabel = theaterDropTargetLabel(targetAtPoint.kind);
-    if (targetAtPoint.acceptedItem !== itemId) {
+    const targetLabel = result.target.label;
+    if (result.kind === "wrong_item") {
       this.runtime.emit("rpg_item_use_feedback", {
         itemId,
-        reason: targetAtPoint.acceptedItem ? "wrong_item" : "locked",
+        reason: result.target.acceptedItem ? "wrong_item" : "locked",
         targetLabel
       });
       return;
     }
-    if (!findNearestTheaterTarget(this.player.x, this.player.y, [targetAtPoint])) {
+    if (result.kind === "wrong_mode") {
+      this.runtime.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel,
+        detail: formatRpgModeRequirement(result.expectedMode ?? "light")
+      });
+      return;
+    }
+    if (result.kind === "too_far") {
       this.runtime.emit("rpg_item_use_feedback", {
         itemId,
         reason: "too_far",
         targetLabel,
         detail: itemId === "temporaryTheaterTicket"
-          ? targetAtPoint.kind === "gate"
+          ? result.target.kind === "gate"
             ? "落点正确；人物还没有站进读票器前的蓝色站位。票已退回。"
             : "落点正确；人物还没有站进扫描器前的蓝色站位。票已退回。"
           : undefined
       });
       return;
     }
-    const target = targetAtPoint;
+    if (result.kind !== "accepted") return;
+    const target = result.target;
     if (target.kind === "poster") this.runtime.emit("rpg_theater_poster_tissue_requested");
     else if (target.kind === "gate") this.runtime.emit("rpg_theater_admission_requested");
     else if (target.kind === "scanner") this.runtime.emit("rpg_theater_prop_ticket_requested");
@@ -1176,6 +1199,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.addPanelButton(panel, 150, 132, 120, 42, "关闭", () => this.closePanel());
     this.panel = panel;
     this.panelKind = "code";
+    this.panelInputReadyAtMs = this.time.now + 90;
   }
 
   private updateCodeDisplay(): void {
@@ -1218,6 +1242,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.addPanelButton(panel, 205, 92, 120, 42, "关闭", () => this.closePanel());
     this.panel = panel;
     this.panelKind = "program";
+    this.panelInputReadyAtMs = this.time.now + 90;
   }
 
   private refreshProgramPanel(): void {
@@ -1246,12 +1271,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.panel = null;
     this.panelKind = null;
     this.panelButtons = [];
+    this.panelInputReadyAtMs = 0;
     this.codeDisplay = null;
   }
 
   private handlePanelPointer(pointer: Phaser.Input.Pointer): void {
     const logical = this.getLogicalPointerPosition(pointer);
     if (this.panel) {
+      if (this.time.now < this.panelInputReadyAtMs) return;
       const localX = logical.x - 480;
       const localY = logical.y - 270;
       const button = [...this.panelButtons].reverse().find((candidate) => (
@@ -1982,13 +2009,17 @@ export class TheaterInteriorScene extends Phaser.Scene {
       checkpoint: state.rpgCheckpoint,
       activeTargets: this.getActiveTargets(state).map((candidate) => ({
         id: candidate.id,
+        label: candidate.label,
         x: candidate.x,
         y: candidate.y,
         width: candidate.dropWidth ?? candidate.proximity * 2,
         height: candidate.dropHeight ?? candidate.proximity * 2,
         dropWidth: candidate.dropWidth,
         dropHeight: candidate.dropHeight,
-        acceptedItem: candidate.acceptedItem
+        stand: candidate.stand,
+        proximity: candidate.proximity,
+        acceptedItem: candidate.acceptedItem,
+        requiredMode: candidate.requiredMode
       })),
       collisionRects: THEATER_STATIC_COLLISION_RECTS,
       theater: {

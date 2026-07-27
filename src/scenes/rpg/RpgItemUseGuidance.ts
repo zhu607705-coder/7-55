@@ -16,7 +16,7 @@ const ELSEWHERE_HINTS: Partial<Record<ItemId, string>> = {
   bagNonPersonProof: "前往 CC98 或恢复申请页面提交证明",
   seat022Receipt: "前往 CC98 或恢复申请页面提交凭据",
   libraryPresenceProof: "前往 CC98 或恢复申请页面提交证明",
-  pickupTicket0755: "到食堂三号取餐窗口，靠近后自动核验",
+  pickupTicket0755: "到食堂取餐区，先观察窗口残影，再把取餐号拖入具体验票槽",
   theaterTicketHalfA: "与另一半临时票合成，无需拖到场景",
   theaterTicketHalfB: "与另一半临时票合成，无需拖到场景",
   theaterProgramOpening: "到剧院灯光控制台打开节目单排序",
@@ -38,7 +38,7 @@ const ready = (targetLabel: string, detail = "拖到场景中的高亮区域，�
 
 const locked = (detail: string, targetLabel?: string): RpgItemUseGuidance => ({
   status: "locked",
-  title: "剧情条件尚未满足",
+  title: "当前使用条件未满足",
   detail,
   targetLabel
 });
@@ -101,7 +101,19 @@ export function selectRpgItemUseGuidance(
   }
 
   if (runtimeScene === "canteen_interior" && itemId === "pickupTicket0755") {
-    return passive("走到三号取餐窗口前，系统会自动核验 0755 取餐号。");
+    if (state.canteenHunt.phase !== "pickup_search") {
+      return locked("取餐号只在取餐阶段使用。先完成当前食堂任务。", "1、2、3号取餐窗口验票槽");
+    }
+    if (state.canteenHunt.mode !== "light") {
+      return locked("深色模式只负责观察窗口残影；确认线索后切回浅色模式验票。", "1、2、3号取餐窗口验票槽");
+    }
+    if (!state.canteenHunt.pickupDarkClueRead) {
+      return locked("切到深色模式靠近窗口查看残影，找到暗号对应的窗口。", "1、2、3号取餐窗口验票槽");
+    }
+    return ready(
+      "1、2、3号取餐窗口验票槽",
+      "先让人物站进窗口前的蓝色站位，再把 0755 取餐号拖进该窗口上方的发光验票框。"
+    );
   }
 
   if (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") {
@@ -126,10 +138,13 @@ export function selectRpgItemUseGuidance(
       if (theater.posterCleaned) return passive("海报玻璃已经擦净。");
       if (theater.phase !== "entry_ticket") return locked("擦拭海报只在剧院入口取票阶段开放。", "入口海报");
       if (theater.mode !== "light") return locked("切回浅色模式后擦拭海报玻璃。", "入口海报");
-      return ready("入口海报");
+      return ready("入口海报玻璃", "先走到海报右侧的蓝色站位，再把油渍纸巾拖进海报玻璃上的高亮框。");
     }
     if (itemId === "temporaryTheaterTicket") {
       if (theater.phase === "entry_ticket" && !theater.admitted) {
+        if (theater.mode !== "light") {
+          return locked("深色模式只读取异常；切回浅色操作后再把票拖入读票器。", "检票闸机右侧读票器");
+        }
         return ready(
           "检票闸机右侧读票器",
           "先让人物站进读票器前的蓝色站位，再把票拖进发光的「验票」槽内松手。"
@@ -154,17 +169,23 @@ export function selectRpgItemUseGuidance(
       return passive("当前流程不需要再次拖动临时观演票。");
     }
     if (itemId === "fluorescentBrush") {
-      return theater.phase === "prop_setup"
-        && theater.mode === "light"
-        && theater.propBoxOpened
-        && !theater.paperDusted
-        ? ready("后台通风口")
-        : locked("先打开道具箱并取得荧光刷。", "后台通风口");
+      if (theater.paperDusted) return passive("后台纸屑已经显影，荧光粉刷无需再次使用。");
+      if (theater.phase !== "prop_setup" || !theater.propBoxOpened) {
+        return locked("先在后台完成票据扫描并打开道具箱，取得荧光粉刷。", "后台通风口");
+      }
+      if (theater.mode !== "light") {
+        return locked("切回浅色操作后，把荧光粉刷拖入通风口。", "后台通风口");
+      }
+      return ready("后台通风口", "人物站到通风口前的蓝色站位后，把荧光粉刷拖进通风口高亮框。");
     }
     if (itemId === "spotlightRemote") {
-      return theater.phase === "spotlight_ready" && theater.paperDusted
-        ? ready("灯光控制台")
-        : locked("先完成后台纸屑显影。", "灯光控制台");
+      if (theater.phase !== "spotlight_ready" || !theater.paperDusted) {
+        return locked("先完成后台纸屑显影，灯光控制台随后开放。", "灯光控制台");
+      }
+      if (theater.mode !== "light") {
+        return locked("深色模式只观察追光残影；切回浅色操作后启动灯光控制台。", "灯光控制台");
+      }
+      return ready("灯光控制台", "人物站进控制台下方的蓝色站位后，把追光灯遥控器拖进控制台高亮框。");
     }
     if (["theaterProgramOpening", "theaterProgramSpotlight", "theaterProgramFinale"].includes(itemId)) {
       return passive("靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。");
@@ -172,12 +193,22 @@ export function selectRpgItemUseGuidance(
   }
 
   if (runtimeScene === "qizhen_lake" && itemId === "decoyPaper") {
-    if (state.qizhenLake.mode !== "light") return locked("切回浅色模式后布置假纸条。", "三个候选位置");
-    if (state.qizhenLake.phase !== "decoy_setup") return locked("先完成倒影拦截和指示牌校准。", "三个候选位置");
-    if (!state.qizhenLake.signsSolved || !state.items.reflectionCoordinate) {
-      return locked("先取得倒影坐标。", "三个候选位置");
+    if (state.qizhenLake.decoyPlacedAt) {
+      return passive("假纸条已经放入选定夹位，继续完成喷雾时机。");
     }
-    return ready("三个候选位置", "靠近候选位置，再把假纸条拖进对应的高亮范围。");
+    if (state.qizhenLake.phase !== "decoy_setup") {
+      return locked("先完成倒影拦截和指示牌校准。", "公告栏、桥影、路灯三个夹位");
+    }
+    if (!state.qizhenLake.signsSolved || !state.items.reflectionCoordinate) {
+      return locked("先取得倒影坐标。", "公告栏、桥影、路灯三个夹位");
+    }
+    if (state.qizhenLake.mode !== "light") {
+      return locked("切回浅色操作后布置假纸条。", "公告栏、桥影、路灯三个夹位");
+    }
+    return ready(
+      "公告栏、桥影、路灯三个夹位",
+      "人物先站进所选夹位前的蓝色站位，再把假纸条拖进该夹位的发光框。"
+    );
   }
 
   return elsewhere(itemId);

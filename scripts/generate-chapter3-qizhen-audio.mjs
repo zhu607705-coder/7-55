@@ -1,7 +1,16 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync
+} from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
@@ -35,8 +44,13 @@ function run(command, args, label) {
 }
 
 function findMmx() {
+  const pathCandidates = (process.env.PATH ?? "")
+    .split(delimiter)
+    .filter(Boolean)
+    .map((directory) => join(directory, "mmx"));
   const candidates = [
     process.env.MMX_BIN,
+    ...pathCandidates,
     join(homedir(), ".hermes/node/bin/mmx"),
     "/opt/homebrew/bin/mmx",
     "/usr/local/bin/mmx"
@@ -71,17 +85,30 @@ function probeAudio(path, expectedDurationSeconds) {
   if (Math.abs(durationMs - expectedDurationMs) > 80) {
     throw new Error(`Unexpected duration for ${path}: ${durationMs}ms; expected ${expectedDurationMs}ms`);
   }
+  const sampleRate = Number(stream.sample_rate);
+  const channels = Number(stream.channels);
+  if (sampleRate !== 44100 || channels !== 2) {
+    throw new Error(`Qizhen music must be 44100Hz stereo: ${path}`);
+  }
   run("ffmpeg", ["-v", "error", "-i", path, "-f", "null", "-"], `Decode ${path}`);
   return {
     durationMs,
     codec: stream.codec_name,
-    sampleRate: Number(stream.sample_rate),
-    channels: Number(stream.channels)
+    sampleRate,
+    channels
   };
+}
+
+function replaceValidatedFile(source, destination) {
+  const staged = `${destination}.tmp-${process.pid}`;
+  rmSync(staged, { force: true });
+  copyFileSync(source, staged);
+  renameSync(staged, destination);
 }
 
 function generate(definition) {
   const raw = join(tempDir, `${definition.asset}.raw.mp3`);
+  const normalized = join(tempDir, `${definition.asset}.normalized.mp3`);
   run(findMmx(), [
     "music", "generate",
     "--model", content.model,
@@ -104,11 +131,25 @@ function generate(definition) {
   ], `MiniMax music ${definition.cue}`);
   const fadeOutStart = Math.max(0, definition.durationSeconds - 0.2);
   run("ffmpeg", [
-    "-y", "-hide_banner", "-loglevel", "error", "-i", raw,
+    "-y", "-hide_banner", "-loglevel", "error", "-stream_loop", "-1", "-i", raw,
     "-t", String(definition.durationSeconds),
     "-af", `loudnorm=I=-23:TP=-1.5:LRA=8,afade=t=in:st=0:d=0.06,afade=t=out:st=${fadeOutStart}:d=0.2`,
-    "-ar", "44100", "-ac", "2", "-b:a", "192k", outputPath(definition)
+    "-ar", "44100", "-ac", "2", "-b:a", "192k", normalized
   ], `Normalize ${definition.asset}`);
+  probeAudio(normalized, definition.durationSeconds);
+  replaceValidatedFile(normalized, outputPath(definition));
+}
+
+function writeManifest(assets) {
+  const staged = `${generatedPath}.tmp-${process.pid}`;
+  writeFileSync(staged, `${JSON.stringify({
+    version: 1,
+    chapterId: content.chapterId,
+    model: content.model,
+    generatedAt: new Date().toISOString(),
+    assets
+  }, null, 2)}\n`);
+  renameSync(staged, generatedPath);
 }
 
 function validateContent() {
@@ -133,8 +174,11 @@ function main() {
     const path = outputPath(definition);
     mkdirSync(dirname(path), { recursive: true });
     const configHash = sourceConfigHash(definition);
-    const previousHash = previous.assets?.[definition.asset]?.sourceConfigHash;
-    const reusable = existsSync(path) && !force && (!previousHash || previousHash === configHash);
+    const cached = previous.assets?.[definition.asset];
+    const reusable = existsSync(path)
+      && !force
+      && cached?.sourceConfigHash === configHash
+      && cached?.sha256 === hash(readFileSync(path));
     if (!reusable) {
       if (verifyOnly) throw new Error(`Qizhen audio requires regeneration: ${definition.asset}`);
       generate(definition);
@@ -154,13 +198,7 @@ function main() {
       sourceConfigHash: sourceConfigHash(definition)
     };
   }
-  writeFileSync(generatedPath, `${JSON.stringify({
-    version: 1,
-    chapterId: content.chapterId,
-    model: content.model,
-    generatedAt: new Date().toISOString(),
-    assets
-  }, null, 2)}\n`);
+  if (!verifyOnly && generated.length > 0) writeManifest(assets);
   process.stdout.write(`${JSON.stringify({ generated, verified: Object.keys(assets), manifest: generatedPath })}\n`);
 }
 

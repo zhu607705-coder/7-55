@@ -19,6 +19,8 @@
 
 手机场景始终由 `PhoneShell` 持有 `430 × 860` 逻辑尺寸。RPG 始终由 `RpgGameHost` 持有 `960 × 540` 逻辑画布；迁移期可挂载 Phaser 回退或 Godot Web 画布，同一时间只允许一个。任何设备适配都只能调整外层缩放、分区和安全区，不能改变这两个逻辑坐标系。
 
+Godot Web 导出使用 `html/canvas_resize_policy=2`。iframe 与内部 canvas 跟随宿主的实际 `16:9` CSS 尺寸，Godot 继续保留 `960 × 540` 逻辑坐标；React 道具栏把指针位置换算到该逻辑坐标后提交投放意图。禁止把内部 canvas 固定在 `960 × 540` 的左上角，因为宿主放大后会造成可见目标与投放坐标分离。
+
 ## 共享适配入口
 
 - `src/core/ClientCompatibility.ts` 负责浏览器引擎、平台、输入类型、可视视口和能力快照。
@@ -93,6 +95,7 @@
 - Web Audio 可能因自动播放策略处于 suspended 状态。首次用户操作后恢复；音频失败不得阻塞剧情状态。
 - `image-rendering` 同时声明 WebKit、Gecko 与标准路径。像素画面的空间尺寸不能依赖某一内核的锐化结果。
 - Godot Web 导出不能依赖 `file://` 加载 `.wasm` 和 `.pck`。完整 RPG 预览使用本地 HTTP；离线单文件继续挂载已验收 Phaser 回退。
+- Godot Web 内部 canvas 必须与 iframe 的渲染矩形同步缩放。验收时同时读取 iframe、canvas 的 `getBoundingClientRect()`，并用一次可见目标拖放确认逻辑坐标换算。
 - CI 运行 `npm run godot:check` 核对同步资产、运行时配置和已提交 Web 导出的构建哈希。改动 Godot 源码时，提交者先用固定版本编辑器运行 `npm run godot:export:web`。
 
 ## 变更检查清单

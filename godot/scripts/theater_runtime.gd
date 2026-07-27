@@ -90,11 +90,15 @@ func _draw() -> void:
 			break
 	if target.is_empty():
 		return
+	var required_mode := str(target.get("requiredMode", ""))
+	var current_mode := str(_snapshot.get("theater", {}).get("mode", "light"))
+	if not required_mode.is_empty() and required_mode != current_mode:
+		return
 	var stand := _target_stand(target)
 	var in_position := _player.position.distance_to(stand) <= float(target.get("proximity", 0))
 	var color := Color("#7ddca7") if in_position else Color("#5ab2ff")
-	var width := float(target.get("dropWidth", float(target.get("proximity", 40)) * 2.0))
-	var height := float(target.get("dropHeight", float(target.get("proximity", 40)) * 2.0))
+	var width := float(target.get("dropWidth", target.get("width", float(target.get("proximity", 40)) * 2.0)))
+	var height := float(target.get("dropHeight", target.get("height", float(target.get("proximity", 40)) * 2.0)))
 	var center := Vector2(float(target.get("x", 0)), float(target.get("y", 0)))
 	draw_rect(Rect2(center - Vector2(width, height) / 2.0, Vector2(width, height)), color, false, 4.0)
 	draw_arc(stand, 24.0, 0.0, TAU, 32, color, 4.0)
@@ -167,7 +171,7 @@ func _create_static_rect(rect: Dictionary, disabled: bool) -> StaticBody2D:
 func _create_player() -> void:
 	_player = CharacterBody2D.new()
 	_player.name = "Player"
-	_player.position = _spawn_for_checkpoint("theater_lobby", false)
+	_player.position = _spawn_for_zone("lobby")
 	_player.collision_layer = 1
 	_player.collision_mask = 1
 
@@ -257,7 +261,13 @@ func _apply_snapshot(message: Dictionary) -> void:
 	if not _has_initial_snapshot:
 		_has_initial_snapshot = true
 		var theater: Dictionary = _snapshot.get("theater", {})
-		_player.position = _spawn_for_checkpoint(str(_snapshot.get("checkpoint", "theater_lobby")), bool(theater.get("admitted", false)))
+		var spawn_zone := str(_snapshot.get("spawnZone", ""))
+		if spawn_zone != "lobby" and spawn_zone != "auditorium" and spawn_zone != "stage":
+			spawn_zone = _legacy_spawn_zone(
+				str(theater.get("phase", "entry_ticket")),
+				bool(theater.get("admitted", false))
+			)
+		_player.position = _spawn_for_zone(spawn_zone)
 	_sync_from_snapshot()
 
 
@@ -399,7 +409,17 @@ func _interact_with_nearest_target() -> void:
 				"durationMs": 3600
 			})
 	elif str(target.get("kind", "")) == "program":
-		_post_intent("rpg_theater_program_collect_requested", { "programId": str(target.get("programId", "")) })
+		var theater: Dictionary = _snapshot.get("theater", {})
+		if str(theater.get("mode", "light")) == "light":
+			_post_intent("rpg_theater_program_collect_requested", { "programId": str(target.get("programId", "")) })
+		elif theater.get("collectedProgramIds", []).size() >= 3:
+			_post_intent("rpg_theater_program_order_read_requested")
+		else:
+			_post_intent("rpg_subtitle", {
+				"text": "深色观察只显示节目单残影；切回浅色操作后取得残页。",
+				"tone": "task",
+				"durationMs": 3600
+			})
 
 
 func _handle_inventory_drop(payload: Dictionary) -> void:
@@ -413,6 +433,11 @@ func _handle_inventory_drop(payload: Dictionary) -> void:
 	var label := _target_label(target)
 	if str(target.get("acceptedItem", "")) != item_id:
 		_post_item_feedback(item_id, "wrong_item", label, "目标范围命中，但该道具不匹配。")
+		return
+	var required_mode := str(target.get("requiredMode", ""))
+	var current_mode := str(_snapshot.get("theater", {}).get("mode", "light"))
+	if not required_mode.is_empty() and required_mode != current_mode:
+		_post_item_feedback(item_id, "locked", label, "需要浅色操作：深色模式只读取线索和异常。")
 		return
 	if _player.position.distance_to(_target_stand(target)) > float(target.get("proximity", 0)):
 		_post_item_feedback(item_id, "too_far", label, "松手位置正确；先让人物站进蓝色站位圈。")
@@ -435,8 +460,8 @@ func _handle_inventory_drop(payload: Dictionary) -> void:
 func _drop_target_at(point: Vector2, item_id: String) -> Dictionary:
 	var matches: Array[Dictionary] = []
 	for target in _active_targets():
-		var width := float(target.get("dropWidth", float(target.get("proximity", 40)) * 2.0))
-		var height := float(target.get("dropHeight", float(target.get("proximity", 40)) * 2.0))
+		var width := float(target.get("dropWidth", target.get("width", float(target.get("proximity", 40)) * 2.0)))
+		var height := float(target.get("dropHeight", target.get("height", float(target.get("proximity", 40)) * 2.0)))
 		var center := Vector2(float(target.get("x", 0)), float(target.get("y", 0)))
 		if absf(point.x - center.x) <= width / 2.0 and absf(point.y - center.y) <= height / 2.0:
 			matches.append(target)
@@ -445,8 +470,8 @@ func _drop_target_at(point: Vector2, item_id: String) -> Dictionary:
 		var b_accepts := str(b.get("acceptedItem", "")) == item_id
 		if a_accepts != b_accepts:
 			return a_accepts
-		var a_area := float(a.get("dropWidth", a.get("proximity", 40) * 2)) * float(a.get("dropHeight", a.get("proximity", 40) * 2))
-		var b_area := float(b.get("dropWidth", b.get("proximity", 40) * 2)) * float(b.get("dropHeight", b.get("proximity", 40) * 2))
+		var a_area := float(a.get("dropWidth", a.get("width", a.get("proximity", 40) * 2))) * float(a.get("dropHeight", a.get("height", a.get("proximity", 40) * 2)))
+		var b_area := float(b.get("dropWidth", b.get("width", b.get("proximity", 40) * 2))) * float(b.get("dropHeight", b.get("height", b.get("proximity", 40) * 2)))
 		return a_area < b_area
 	)
 	return matches[0] if not matches.is_empty() else {}
@@ -468,6 +493,9 @@ func _target_stand(target: Dictionary) -> Vector2:
 
 
 func _target_label(target: Dictionary) -> String:
+	var authored_label := str(target.get("label", ""))
+	if not authored_label.is_empty():
+		return authored_label
 	var labels := {
 		"theater_poster": "入口海报",
 		"theater_ticket_kiosk": "取票机",
@@ -484,15 +512,21 @@ func _target_label(target: Dictionary) -> String:
 	return str(labels.get(str(target.get("id", "")), "场景目标"))
 
 
-func _spawn_for_checkpoint(checkpoint: String, admitted: bool) -> Vector2:
+func _spawn_for_zone(spawn_zone: String) -> Vector2:
 	var spawns: Dictionary = _runtime_data.get("spawns", {})
-	var key := "lobby"
-	if checkpoint == "theater_stage":
-		key = "stage"
-	elif admitted or checkpoint == "theater_auditorium":
-		key = "auditorium"
+	var key := spawn_zone
+	if key != "lobby" and key != "auditorium" and key != "stage":
+		key = "lobby"
 	var spawn: Dictionary = spawns.get(key, { "x": 836, "y": 842 })
 	return Vector2(float(spawn.get("x", 836)), float(spawn.get("y", 842)))
+
+
+func _legacy_spawn_zone(phase: String, admitted: bool) -> String:
+	if not admitted or phase == "complete":
+		return "lobby"
+	if phase == "prop_setup" or phase == "spotlight_ready" or phase == "spotlight_hunt" or phase == "reversal":
+		return "stage"
+	return "auditorium"
 
 
 func _theater_phase() -> String:
@@ -557,9 +591,11 @@ func _post_debug_snapshot() -> void:
 			},
 			"scene": SCENE_ID,
 			"checkpoint": str(_snapshot.get("checkpoint", "")),
+			"activeTargets": _active_targets(),
 			"theater": {
 				"runtimeContractVersion": PROTOCOL_VERSION,
 				"phase": _theater_phase(),
+				"spawnZone": str(_snapshot.get("spawnZone", "")),
 				"mode": str(_snapshot.get("theater", {}).get("mode", "light")),
 				"activeTarget": str(nearest.get("id", "")) if not nearest.is_empty() else null,
 				"panel": null,

@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-26T23:30:57.567Z",
+  "assets": {
+    "fx_qizhen_mode_switch": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mode_switch.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "116cc20e2f0709d028087db4e90c766ebc4c5fc77f7943923ff10bf24c19c709",
+      "sourceConfigHash": "3fcc133bde30882d8277259c235958bc831cd675e8a5c3b4eb012cfd1e43af9c",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_reflection_shimmer": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_reflection_shimmer.mp3",
+      "kind": "sfx",
+      "durationMs": 1000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "1a4fd143c1b6d442ad856a31ac0174741ac8174bc7e81402eab8f09440720c1b",
+      "sourceConfigHash": "956f260a39c98a4ffe90670e866cc86ffcefcf448aada467d06d1561c9623650",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_reflection_miss": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_reflection_miss.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "6bc1120a0f9e60268445aa8ecb26034b8237bbd8e13c15c4bd5bad2d28320a27",
+      "sourceConfigHash": "24c9640d71643409c587bd6ca9b7303f6e3ee6c0e168f6dd37a176abec44746a",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_sign_rotate": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_sign_rotate.mp3",
+      "kind": "sfx",
+      "durationMs": 900,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "3b9d61f16fa1c1425c9a80bb4c08fae0d644bdb35caa6c2886035cfc36ed2c5f",
+      "sourceConfigHash": "58d3102a980cda5a7c60858913e124ad0b7069156d6d72cda58eb159ba44b9f2",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_decoy_clip": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_decoy_clip.mp3",
+      "kind": "sfx",
+      "durationMs": 1000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "2708074c14e49652812121bae42465fa8557cddeffa7e78a95282e4df6061d75",
+      "sourceConfigHash": "7a35ca8541eb9d3c086065d53f2fec0baab76ea2605d24986e61a356cf341719",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_mist_observe": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mist_observe.mp3",
+      "kind": "sfx",
+      "durationMs": 1000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "c5a78d4f48759846d29d156c1eb48ab875b492401269c1ed864f869f8aa3a9ca",
+      "sourceConfigHash": "4ee5fae39eab654e95e2434c94a4dddfdeb4c296b7ffc62600f78609ab115fe4",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_mist_spray": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mist_spray.mp3",
+      "kind": "sfx",
+      "durationMs": 1300,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "14bbe1e15a36d7310d28a8b30c065866ffd4445445b48c32ce6e2d289e7d7db5",
+      "sourceConfigHash": "32473cf66501881fe710c57e91be1203d1c0cdbaa1569b475f2d74ada2e47d2f",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_mist_wrong": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mist_wrong.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "0bb493e97e70d2891a3167a7738d82435aa2522781edee2aa40330a5abb8be2d",
+      "sourceConfigHash": "e67f2fb7f7ed8847343b31c0dc9db8f9006ff542f573225de7e3a6126a16ba7a",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_paper_release": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_paper_release.mp3",
+      "kind": "sfx",
+      "durationMs": 1200,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "bcfacb27e144327e4e1f8fd6f648500e9e78e0b6cc9ef9a4efcbe3d19bd54dae",
+      "sourceConfigHash": "ef9a3947d03f247a37b1b526e3fb10d1aad70ddc8eae69974b182e455d30c27b",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "fx_qizhen_lake_exit": {
+      "path": "chapter3-qizhen/sfx/fx_qizhen_lake_exit.mp3",
+      "kind": "sfx",
+      "durationMs": 900,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "331f73ea32539a9715531783b83582208f649a67e9b9c1e61fdc0367bfdf4401",
+      "sourceConfigHash": "96513f5c44e91c7effbada5958c8eb67483d881e133eb1ce15a11ed427ecf1c3",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    }
+  }
+}

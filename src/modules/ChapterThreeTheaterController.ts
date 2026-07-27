@@ -147,7 +147,11 @@ export class ChapterThreeTheaterController {
 
   admitWithTicket(): boolean {
     const state = this.store.getState();
-    if (state.theaterHunt.phase !== "entry_ticket" || !state.items.temporaryTheaterTicket) return false;
+    if (
+      state.theaterHunt.phase !== "entry_ticket"
+      || state.theaterHunt.mode !== "light"
+      || !state.items.temporaryTheaterTicket
+    ) return false;
     this.store.setState((current) => ({
       ...current,
       rpgCheckpoint: "theater_auditorium",

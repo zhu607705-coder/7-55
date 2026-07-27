@@ -2,6 +2,7 @@ import type { StoryLine } from "../core/types";
 import actOneContent from "./act-one-bootstrap.content.json";
 import bikeContent from "./bike-arcade.content.json";
 import legacyDialogue from "./dialogue.lines.json";
+import { CHAPTER_THREE_STORY_LINES } from "./chapterThreeStory";
 import { LIBRARY_STORY_SEQUENCES, libraryStoryLineKey } from "./libraryFinalsStory";
 
 const MALE_DIALOGUE_KEYS = new Set([
@@ -91,6 +92,10 @@ for (const [sequenceId, sequence] of Object.entries(LIBRARY_STORY_SEQUENCES)) {
 
 for (const [key, subtitleZh] of Object.entries(bikeContent.subtitles)) {
   lines[key] = textLine("taunt", subtitleZh);
+}
+
+for (const [key, line] of CHAPTER_THREE_STORY_LINES) {
+  lines[key] = line;
 }
 
 export const STORY_LINE_CATALOG: Readonly<Record<string, StoryLine>> = Object.freeze(lines);

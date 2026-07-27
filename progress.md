@@ -1210,3 +1210,27 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 浏览器矩阵：Blink `1280×800`、Gecko `1280×720`、WebKit `1280×720` 均运行 Godot，画布保持 `16:9`，文档横纵溢出和页面错误为 `0`。WebKit `390×844` 显示 `5` 个 `48×48` 触控键；持续按右键后人物 `x` 从 `1080` 变为 `1171`。
 - 离线回退：重新生成的 `demo/index.html` 通过 `file://` 打开并在显式 `rpgEngine=godot` 请求下返回 `phaser / file_protocol`，未挂载 Godot iframe，外部请求、文档溢出、页面错误和控制台错误均为 `0`。
 - 构建验证：技能网页游戏客户端、`npm run godot:export:web`、`npm run godot:check`、`npm run build`、`npm run build:single` 和 `npm run verify:single` 通过。`demo/` 仅保留两个离线 HTML，不再复制 Godot Web 目录；最终 `demo/index.html` 为 `96,616,390 bytes`，SHA-256 为 `87a0b9c7d2407b3a4910e799d531ef5be0151edcde19bca21e5eeb20e29514fd`。
+
+## 2026-07-27 深浅模式、精确投放与第三章音频统一
+
+- 交互规则：新增 `RpgInteractionContract.ts` 作为深浅模式、目标框、可达站位、可接收道具、投放顺序和失败类别的共享事实源。深色模式统一承担观察，浅色模式统一承担拖入、清洁、付款、推动、扫描和设备启动；等价目标只需观察一次，食堂取餐提示改为寻找暗号对应窗口，不再要求按窗口顺序逐个检查。
+- 精确投放：食堂 `1 / 2 / 3` 号窗口、图书馆书架与 `022` 夹缝、剧院海报/闸机/扫描器/灯控台/通风口、启真湖九个诱饵点均提供可见目标框和人物站位。失败结果区分框外、道具错误、人物过远、模式错误和剧情锁定，失败时保留道具并说明下一步。
+- 真实拖动验收：图书馆规则纸在远距离正确目标上被拒绝，人物走入绿色站位后拖入书架成功并转换为离馆规则；WebKit 重复通过。Godot 剧院在深色模式远距离拖遥控器保持道具，人物到位并切回浅色后拖入灯控台成功进入 `spotlight_hunt`。
+- Godot 画布：Web 导出改用自适应画布策略，HTTP 预览中 iframe 与内部 canvas 在 `1280×720` 同步填满，固定 `960×540` 逻辑坐标继续用于碰撞和道具映射。`npm run godot:export:web` 与 `npm run godot:check` 实际运行通过，结果为 Godot `4.7.1`、`14` 个同步资产、`11` 个目标、`27` 个碰撞体和匹配的 Web 导出。
+- Godot 完成态：实走发现完成检查点仍按舞台出生，座椅与隔断会阻止人物抵达大厅出口；TypeScript 运行时契约现统一按 `admitted + phase` 解析 `spawnZone`，Phaser 与 Godot 读取同一结果。隔离浏览器存档重载后保持 `phase=complete / spawnZone=lobby`，人物位于 `(836,842)`、出口目标激活；按 Space 后进入 `campus_bootstrap / campus_theater_junction` 并开启启真湖定位任务，页面和控制台错误为 `0`。
+- 移动端布局：模式切换按钮与道具栏改为独立纵向区间，食堂、剧院和启真湖统一生效。WebKit `390×844` 实测按钮底边 `373.375px`、道具栏顶边 `383.375px`，间隔 `10px`，文档溢出和控制台错误均为 `0`。
+- 浏览器矩阵：Blink `1440×900`、Blink `390×844`、Gecko `1280×720`、WebKit `1280×720` 与 WebKit Godot `390×844` 均保持 `16:9` RPG 画面、真实键盘或触控移动、零文档溢出和零页面错误。技能网页游戏客户端在剧院检查点完成渲染与运行时状态读取，临时截图已删除。
+- 音频契约：新增第三章 `37` 条英文配音脚本、角色/音色/字幕归属、批量生成器、状态报告和哈希去重校验。男旁白固定 `English_expressive_narrator / pitch -4`，女系统固定 `English_Graceful_Lady`，场景继续显示中文字幕；食堂、剧院和启真湖各有 `3` 首音乐与 `10` 个音效。
+- 音频生成：MiniMax 配额恢复后补齐启真湖 `10` 个独立短音效和 `37` 条配音；音效改为逐条生成、静音裁切、定长归一化、原子替换和逐项清单检查点，配音生成器同步增加原子替换、逐项清单检查点及限流重试。再次执行 `npm run audio:chapter3` 的四个生成阶段均返回空数组，确认可重复运行且不会重写有效资产。
+- 生成链路审计：合并前审查发现部分检查点可能覆盖运行时 canonical manifest；现将启真湖音效和配音的中断进度迁入 `node_modules/.cache/seven-fifty-five/`，只有完整资产集才能原子更新正式清单。食堂、剧院、启真湖音乐、启真湖音效与配音生成器统一要求配置哈希和文件哈希同时匹配；`--verify-only` 严格只读。缺失 `1` 个启真湖音效的故障注入通过 `1/1`：命令非零退出、缓存记录 `9` 项、正式清单哈希不变、测试资产恢复；完整验证和普通增量运行也各通过 `1/1`，五份正式清单哈希均保持不变。
+- CI 门禁：`.github/workflows/web-ci.yml` 新增 `npm run audio:chapter3:verify`，每个 PR 和 `main` 推送都会核对 `76` 项音频、五份正式清单、配置指纹、文件哈希与重复字节，再进入地图、Godot、类型和构建步骤。
+- 音频完整性：`npm run audio:chapter3:status` 与 `npm run audio:chapter3:verify` 均报告 `expected=76 / ready=76 / missing=0 / unrecorded=0 / stale=0 / errors=0`；启真湖 `10` 个音效均为 `44.1kHz` 双声道、时长符合各自契约且文件哈希互不重复。
+- 音频运行验收：Blink、Gecko 与 WebKit `1280×720` 均实走“Space 推进系统台词 → 切换深色观察”，系统配音、反射段音乐和模式切换音效在用户输入后成功播放，页面、控制台、媒体与请求错误均为 `0`。WebKit `390×844` 同样播放成功，显示 `5` 个触控按钮，模式按钮与道具栏重叠为 `0`，文档溢出为 `0`；WebKit 在首次用户输入前拒绝背景音乐自动播放，输入后按统一音频解锁流程恢复。
+- 单文件交付：`npm run typecheck`、`npm run godot:check`、`npm run build`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。Blink 直接打开最新 `file://` 单文件后，内联配音、音乐和音效的 SHA-256 与生成清单对应，三类媒体均成功播放；`390×844` 下画布为 `390×219.375`、模式按钮与道具栏重叠为 `0`、文档溢出为 `0`。`demo/index.html` 为 `99,824,173 bytes`，SHA-256 为 `ee62ae55176a8d00785fa0a7dfda2d1ca262f0b6f124cdf65bd4af28ed5aa65c`；技能网页游戏客户端截图已检查并移入废纸篓。
+
+## 2026-07-28 第三章音频 CI 环境收口
+
+- 远端失败定位：PR #30 首轮 Web CI 在音频契约步骤中止。生成器的 `probeAudio()` 需要 `ffmpeg` 和 `ffprobe`，Ubuntu job 未显式准备这两个工具；缓存复用分支同时隐藏了底层 `ENOENT`，最终只显示“需要重新生成”。
+- CI 修正：`.github/workflows/web-ci.yml` 在音频校验前检查 `ffmpeg` / `ffprobe`，缺失时通过 Ubuntu 包管理器安装，随后输出两者版本。食堂、剧院、启真湖音效与第三章配音生成器在 `--verify-only` 下保留底层探测异常，方便后续直接识别缺工具、解码失败或媒体参数越界。
+- 诊断验证：用限制 `PATH` 的负向运行得到 `Probe ... failed: spawnSync ffprobe ENOENT`，确认错误已精确透出；恢复正常工具后 `npm run audio:chapter3:verify` 仍为 `76/76`。
+- 本地回归：Workflow YAML 解析、`npm run typecheck`、`npm run godot:check`、`npm run map:zijingang`、`npm run build`、`npm run build:single`、`npm run verify:single` 和 `git diff --check` 全部通过；单文件仍为 `99,824,173 bytes`。

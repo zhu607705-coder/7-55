@@ -3,8 +3,6 @@ import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.p
 import type { GameState, ItemId, LibraryLocationId } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import {
-  acceptsLibraryItem,
-  findLibraryTargetAt,
   findNearestLibraryTarget,
   getLibraryTarget,
   getVisibleLibraryMarkerIds,
@@ -19,6 +17,11 @@ import {
 } from "./LibraryInteriorModel";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
+import {
+  getRpgDropBounds,
+  isPlayerWithinRpgTarget,
+  resolveRpgItemDrop
+} from "./RpgInteractionContract";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -65,12 +68,19 @@ const SHELF_COLLISION_BASE_X = (SHELF_COLLISION_RECT.left + SHELF_COLLISION_RECT
 const SHELF_PAPER_HIDDEN_X = SHELF_SPRITE_BOUNDS.left + 12;
 const SHELF_PAPER_REVEALED_X = SHELF_SPRITE_BOUNDS.left - 8;
 const SHELF_PAPER_Y = SHELF_SPRITE_BOUNDS.top + 42;
-const INVENTORY_DROP_EDGE_DISTANCE = 72;
 
 interface MarkerParts {
   container: Phaser.GameObjects.Container;
   ring: Phaser.GameObjects.Arc;
   glyph: Phaser.GameObjects.Text;
+}
+
+interface LibraryDropGuideParts {
+  target: LibraryInteractionTarget;
+  dropFrame: Phaser.GameObjects.Rectangle;
+  dropLabel: Phaser.GameObjects.Text;
+  standRing: Phaser.GameObjects.Arc;
+  standLabel: Phaser.GameObjects.Text;
 }
 
 type EntranceDoorMotion = "closed" | "opening" | "open" | "closing";
@@ -88,6 +98,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private playerAnimator!: RpgPlayerAnimator;
   private promptText!: Phaser.GameObjects.Text;
   private markers = new Map<LibraryInteractionTargetId, MarkerParts>();
+  private dropGuides = new Map<LibraryInteractionTargetId, LibraryDropGuideParts>();
   private backpack!: Phaser.GameObjects.Container;
   private backpackClearPatch!: Phaser.GameObjects.Image;
   private backpackShadow!: Phaser.GameObjects.Ellipse;
@@ -190,6 +201,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       .setDeadzone(250, 150);
 
     this.createMarkers();
+    this.createDropGuides();
     this.createHud();
     this.syncWorldFromState();
     this.bridge.setRpgLocation("library_interior", checkpoint);
@@ -240,6 +252,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
     if (entranceRecordOpen) {
       this.promptText.setVisible(false);
       this.markers.forEach((marker) => marker.container.setVisible(false));
+      this.dropGuides.forEach((guide) => {
+        [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel]
+          .forEach((object) => object.setVisible(false));
+      });
       const confirmRequested = keyboardInteract
         || Phaser.Input.Keyboard.JustDown(this.enterKey)
         || this.interactRequested;
@@ -363,8 +379,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private handleInventoryDrop(itemId: ItemId, canvasX: number, canvasY: number): void {
     const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
     const activeDropTargets = this.getActiveDropTargets(this.bridge.getState());
-    const target = findLibraryTargetAt(worldPoint.x, worldPoint.y, activeDropTargets);
-    if (!target) {
+    const result = resolveRpgItemDrop({
+      targets: activeDropTargets,
+      itemId,
+      dropX: worldPoint.x,
+      dropY: worldPoint.y,
+      playerX: this.player.x,
+      playerY: this.player.y
+    });
+    if (!result.target) {
       this.bridge.emit("library_rpg_interaction_failed", { itemId, reason: "no_target" });
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
@@ -373,7 +396,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
       });
       return;
     }
-    if (!acceptsLibraryItem(target, itemId)) {
+    const target = result.target;
+    if (result.kind === "wrong_item") {
       this.bridge.emit("library_rpg_interaction_failed", {
         itemId,
         targetId: target.id,
@@ -387,7 +411,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       });
       return;
     }
-    if (!this.isPlayerAtDropTargetEdge(target)) {
+    if (result.kind === "too_far") {
       this.bridge.emit("library_rpg_interaction_failed", {
         itemId,
         targetId: target.id,
@@ -400,6 +424,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       });
       return;
     }
+    if (result.kind !== "accepted") return;
 
     const actionByTarget: Partial<Record<LibraryInteractionTargetId, string>> = {
       library_shelf_755: "useCallNumberOnShelf",
@@ -418,14 +443,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     this.bridge.emit("rpg_library_action_requested", { action, targetId: target.id, itemId });
-  }
-
-  private isPlayerAtDropTargetEdge(target: LibraryInteractionTarget): boolean {
-    const halfWidth = target.width / 2;
-    const halfHeight = target.height / 2;
-    const edgeX = Phaser.Math.Clamp(this.player.x, target.x - halfWidth, target.x + halfWidth);
-    const edgeY = Phaser.Math.Clamp(this.player.y, target.y - halfHeight, target.y + halfHeight);
-    return Phaser.Math.Distance.Between(this.player.x, this.player.y, edgeX, edgeY) <= INVENTORY_DROP_EDGE_DISTANCE;
   }
 
   private triggerInteraction(target: LibraryInteractionTarget, state: GameState): void {
@@ -552,6 +569,37 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.updateSeatStatus(puzzle.backpackEvicted);
     }
     this.targetShelfTag.setText(puzzle.callNumberCollected || puzzle.archivedRuleCollected ? "I247.55" : "I247.??");
+    this.syncDropGuides(activeTargets, selectedItem);
+  }
+
+  private syncDropGuides(
+    activeTargets: readonly LibraryInteractionTarget[],
+    selectedItem: ItemId | null
+  ): void {
+    const activeIds = new Set(activeTargets.map((target) => target.id));
+    this.dropGuides.forEach((guide) => {
+      const visible = selectedItem === guide.target.acceptedItem && activeIds.has(guide.target.id);
+      [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel]
+        .forEach((object) => object.setVisible(visible));
+      if (!visible) return;
+      const inPosition = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y);
+      const accent = inPosition ? 0x63e58b : 0x72dcff;
+      const fill = inPosition ? 0x235d3a : 0x2a9fd6;
+      guide.dropFrame
+        .setFillStyle(fill, 0.14)
+        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
+      guide.standRing
+        .setFillStyle(fill, inPosition ? 0.22 : 0.12)
+        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
+      guide.dropLabel
+        .setText(inPosition
+          ? `站位正确 · 道具拖进${guide.target.label}松手`
+          : `目标 · ${guide.target.label}`)
+        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
+      guide.standLabel
+        .setText(inPosition ? "站位已满足" : "先让人物站到这里")
+        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
+    });
   }
 
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
@@ -657,10 +705,13 @@ export class LibraryInteriorScene extends Phaser.Scene {
       },
       activeTargets: activeTargets.map((target) => ({
         id: target.id,
+        label: target.label,
         x: target.x,
         y: target.y,
         width: target.width,
         height: target.height,
+        stand: target.stand,
+        proximity: target.proximity,
         ...(target.dropWidth ? { dropWidth: target.dropWidth } : {}),
         ...(target.dropHeight ? { dropHeight: target.dropHeight } : {}),
         ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {})
@@ -1472,6 +1523,53 @@ export class LibraryInteriorScene extends Phaser.Scene {
       });
       this.markers.set(target.id, { container, ring, glyph });
     });
+  }
+
+  private createDropGuides(): void {
+    LIBRARY_INTERACTION_TARGETS
+      .filter((target) => target.acceptedItem && target.stand)
+      .forEach((target) => {
+        const bounds = getRpgDropBounds(target);
+        const dropFrame = this.add.rectangle(
+          target.x,
+          target.y,
+          bounds.width,
+          bounds.height,
+          0x2a9fd6,
+          0.13
+        ).setStrokeStyle(4, 0x72dcff, 0.98)
+          .setDepth(4960)
+          .setVisible(false);
+        const dropLabel = this.add.text(
+          target.x,
+          target.y - bounds.height / 2 - 7,
+          `目标 · ${target.label}`,
+          {
+            color: "#d9f8ff",
+            backgroundColor: "#102332ee",
+            fontFamily: "monospace",
+            fontSize: "12px",
+            padding: { x: 7, y: 4 }
+          }
+        ).setOrigin(0.5, 1)
+          .setDepth(4962)
+          .setVisible(false);
+        const stand = target.stand!;
+        const standRing = this.add.circle(stand.x, stand.y, 27, 0x2a9fd6, 0.12)
+          .setStrokeStyle(4, 0x72dcff, 0.96)
+          .setDepth(4960)
+          .setVisible(false);
+        const standLabel = this.add.text(stand.x, stand.y + 37, "先让人物站到这里", {
+          color: "#d9f8ff",
+          backgroundColor: "#102332ee",
+          fontFamily: "monospace",
+          fontSize: "11px",
+          padding: { x: 6, y: 4 }
+        }).setOrigin(0.5, 0)
+          .setDepth(4962)
+          .setVisible(false);
+        this.dropGuides.set(target.id, { target, dropFrame, dropLabel, standRing, standLabel });
+      });
   }
 
   private createHud(): void {

@@ -79,16 +79,25 @@ export class ChapterThreeCanteenController {
     }
     if (state.canteenHunt.returnedTrayIds.includes(trayId)) return "already_done";
     if (state.canteenHunt.mode === "dark") {
-      if (!state.canteenHunt.identifiedTrayIds.includes(trayId)) {
+      const allTargetsIdentified = CANTEEN_TARGET_TRAYS.every((targetId) => (
+        state.canteenHunt.identifiedTrayIds.includes(targetId)
+      ));
+      if (!allTargetsIdentified) {
         this.store.setState((current) => ({
           ...current,
           canteenHunt: {
             ...current.canteenHunt,
-            identifiedTrayIds: [...current.canteenHunt.identifiedTrayIds, trayId]
+            // One dark-mode observation exposes the same blue residue on all
+            // three target trays. Requiring three identical scans adds order
+            // without adding information, so the observation is recorded once.
+            identifiedTrayIds: [...CANTEEN_TARGET_TRAYS]
           }
         }));
       }
-      this.events.emit("canteen_tray_identified", { trayId });
+      this.events.emit("canteen_tray_identified", {
+        trayId,
+        identifiedTrayIds: [...CANTEEN_TARGET_TRAYS]
+      });
       return "identified";
     }
     if (!state.canteenHunt.identifiedTrayIds.includes(trayId)) {

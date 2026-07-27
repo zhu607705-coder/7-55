@@ -17,6 +17,7 @@
 - `temporaryTheaterTicket` 的两次使用都保留道具：入口右侧读票器验票、后台道具箱旁扫描器解锁。
 - 取票码和节目单排序继续由 React DOM 面板收集输入并交给 TypeScript 控制器验证；Godot 只请求打开面板，不复制题目状态。
 - 道具拖放继续由共享 React 道具栏处理，iframe 画布坐标统一换算到 `960 × 540` 后再提交契约意图。
+- Godot Web 使用自适应 canvas 策略填满宿主 `16:9` 区域；完成态按 TypeScript 快照中的 `admitted + phase` 选择出生区，`complete` 必须直接落在大厅出口。
 
 ## 当前接入状态
 
@@ -33,6 +34,13 @@
 `?devCheckpoint=c3-theater-entry&rpgEngine=godot&dev=1` 显式开启 Godot；使用
 `rpgEngine=phaser` 可强制检查回退。`file://` 单文件固定回退 Phaser，完整 Godot Web
 运行时必须由 HTTP(S) 提供 `.wasm`、`.pck` 和脚本资源。
+
+## 已验证链路
+
+- 完成态隔离存档重载后仍为 `phase=complete`，人物位于大厅出口 `(836,842)`，`theater_exit` 为当前目标。
+- Space 离场后进入 `campus_bootstrap / campus_theater_junction`，启真湖阶段为 `location_search`。
+- `1280 × 720` HTTP 预览中 iframe 与内部 canvas 同为 `1280 × 720`；可见灯控台拖放按 `960 × 540` 逻辑坐标命中。
+- WebKit `390 × 844` 中 Godot 画布为 `390 × 219.375`，触控移动、精确拖放和外层布局无溢出。
 
 ## 后续替换顺序
 

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
+import { delimiter, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
@@ -10,7 +10,6 @@ const contentPath = join(root, "src/data/chapter3-theater.audio.content.json");
 const generatedPath = join(root, "src/data/chapter3-theater.audio.generated.json");
 const audioRoot = join(root, "src/assets/audio");
 const content = JSON.parse(readFileSync(contentPath, "utf8"));
-const hasPreviousManifest = existsSync(generatedPath);
 const previous = existsSync(generatedPath)
   ? JSON.parse(readFileSync(generatedPath, "utf8"))
   : { assets: {} };
@@ -32,8 +31,13 @@ function fileHash(path) {
 }
 
 function findMmx() {
+  const pathCandidates = (process.env.PATH ?? "")
+    .split(delimiter)
+    .filter(Boolean)
+    .map((directory) => join(directory, "mmx"));
   const candidates = [
     process.env.MMX_BIN,
+    ...pathCandidates,
     join(homedir(), ".hermes/node/bin/mmx"),
     "/opt/homebrew/bin/mmx",
     "/usr/local/bin/mmx"
@@ -122,7 +126,7 @@ function outputPath(definition) {
 function normalizeBed(input, output, durationSeconds, loudness) {
   const fadeOutStart = Math.max(0, durationSeconds - 0.2);
   run("ffmpeg", [
-    "-y", "-hide_banner", "-loglevel", "error", "-i", input,
+    "-y", "-hide_banner", "-loglevel", "error", "-stream_loop", "-1", "-i", input,
     "-t", String(durationSeconds),
     "-af", `loudnorm=I=${loudness}:TP=-1.5:LRA=8,afade=t=in:st=0:d=0.06,afade=t=out:st=${fadeOutStart}:d=0.2`,
     "-ar", "44100", "-ac", "2", "-b:a", "192k", output
@@ -168,13 +172,14 @@ function configHash(definition, groupDefinitions) {
 function canReuse(definition, kind, currentHash) {
   const output = outputPath(definition);
   if (force || !existsSync(output)) return false;
-  const previousHash = previous.assets?.[definition.asset]?.sourceConfigHash;
-  if (previousHash !== currentHash && (hasPreviousManifest || previousHash)) return false;
+  const cached = previous.assets?.[definition.asset];
+  if (cached?.sourceConfigHash !== currentHash || cached?.sha256 !== fileHash(output)) return false;
   try {
     probeAudio(output, LIMITS[kind]);
     if (kind === "sfx") probeAudibility(output);
     return true;
-  } catch {
+  } catch (error) {
+    if (verifyOnly) throw error;
     return false;
   }
 }
@@ -237,7 +242,11 @@ function main() {
   for (const definition of content.music) {
     const currentHash = configHash(definition);
     hashes.set(definition.cue, currentHash);
-    if (!verifyOnly && !canReuse(definition, "music", currentHash)) {
+    const reusable = canReuse(definition, "music", currentHash);
+    if (!reusable && verifyOnly) {
+      throw new Error(`Theater music requires regeneration: ${definition.asset}`);
+    }
+    if (!reusable) {
       generateMusic(definition);
       generated.push(definition.asset);
     }
@@ -245,7 +254,11 @@ function main() {
   for (const definition of content.sfx) {
     const currentHash = configHash(definition);
     hashes.set(definition.cue, currentHash);
-    if (!verifyOnly && !canReuse(definition, "sfx", currentHash)) {
+    const reusable = canReuse(definition, "sfx", currentHash);
+    if (!reusable && verifyOnly) {
+      throw new Error(`Theater sound effect requires regeneration: ${definition.asset}`);
+    }
+    if (!reusable) {
       generateSfx(definition);
       generated.push(definition.asset);
     }
@@ -271,10 +284,14 @@ function main() {
   }
   const manifest = {
     version: 1,
-    generatedAt: verifyOnly && typeof previous.generatedAt === "string" ? previous.generatedAt : new Date().toISOString(),
+    generatedAt: new Date().toISOString(),
     assets
   };
-  writeFileSync(generatedPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  if (!verifyOnly && generated.length > 0) {
+    const staged = `${generatedPath}.tmp-${process.pid}`;
+    writeFileSync(staged, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+    renameSync(staged, generatedPath);
+  }
   process.stdout.write(`${JSON.stringify({ generated, verified: assets, manifest: generatedPath }, null, 2)}\n`);
 }
 
