@@ -1,4 +1,8 @@
 import type { QizhenLakePhase } from "../../core/types";
+import {
+  isPlayerWithinRpgTarget,
+  type RpgSpatialInteractionTarget
+} from "./RpgInteractionContract";
 
 export const QIZHEN_LAKE_WORLD = { width: 1672, height: 941 } as const;
 
@@ -18,14 +22,9 @@ export interface QizhenLakeOcclusionRect extends QizhenLakeCollisionRect {
 
 export type QizhenLakeTargetKind = "water" | "reflection_spot" | "sign" | "decoy_spot" | "mister" | "exit";
 
-export interface QizhenLakeInteractionTarget {
-  id: string;
-  x: number;
-  y: number;
-  proximity: number;
+export interface QizhenLakeInteractionTarget extends RpgSpatialInteractionTarget {
   kind: QizhenLakeTargetKind;
   value?: string;
-  acceptedItem?: string;
 }
 
 export interface QizhenLakePlateDefinition {
@@ -110,18 +109,57 @@ export const QIZHEN_LAKE_PLATES: Readonly<Record<QizhenLakePlateId, QizhenLakePl
 } as const;
 
 export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
-  { id: "qizhen_water", x: 836, y: 455, proximity: 145, kind: "water" },
-  { id: "qizhen_reflection_left", x: 430, y: 650, proximity: 112, kind: "reflection_spot", value: "left" },
-  { id: "qizhen_reflection_center", x: 836, y: 650, proximity: 112, kind: "reflection_spot", value: "center" },
-  { id: "qizhen_reflection_right", x: 1240, y: 650, proximity: 112, kind: "reflection_spot", value: "right" },
-  { id: "qizhen_sign_0", x: 430, y: 675, proximity: 118, kind: "sign", value: "0" },
-  { id: "qizhen_sign_1", x: 836, y: 675, proximity: 118, kind: "sign", value: "1" },
-  { id: "qizhen_sign_2", x: 1240, y: 675, proximity: 118, kind: "sign", value: "2" },
-  { id: "qizhen_decoy_notice", x: 330, y: 755, proximity: 125, kind: "decoy_spot", value: "notice", acceptedItem: "decoyPaper" },
-  { id: "qizhen_decoy_bridge", x: 836, y: 755, proximity: 125, kind: "decoy_spot", value: "bridge", acceptedItem: "decoyPaper" },
-  { id: "qizhen_decoy_lamp", x: 1360, y: 755, proximity: 125, kind: "decoy_spot", value: "lamp", acceptedItem: "decoyPaper" },
-  { id: "qizhen_mister", x: 836, y: 655, proximity: 135, kind: "mister" },
-  { id: "qizhen_exit", x: 100, y: 740, proximity: 115, kind: "exit" }
+  { id: "qizhen_water", label: "启真湖水面", x: 836, y: 455, proximity: 145, kind: "water" },
+  { id: "qizhen_reflection_left", label: "左侧倒影拦截点", x: 430, y: 650, proximity: 112, kind: "reflection_spot", value: "left" },
+  { id: "qizhen_reflection_center", label: "中央倒影拦截点", x: 836, y: 650, proximity: 112, kind: "reflection_spot", value: "center" },
+  { id: "qizhen_reflection_right", label: "右侧倒影拦截点", x: 1240, y: 650, proximity: 112, kind: "reflection_spot", value: "right" },
+  { id: "qizhen_sign_0", label: "左侧指示牌", x: 430, y: 675, proximity: 118, kind: "sign", value: "0" },
+  { id: "qizhen_sign_1", label: "中央指示牌", x: 836, y: 675, proximity: 118, kind: "sign", value: "1" },
+  { id: "qizhen_sign_2", label: "右侧指示牌", x: 1240, y: 675, proximity: 118, kind: "sign", value: "2" },
+  {
+    id: "qizhen_decoy_notice",
+    label: "公告栏前假纸条夹位",
+    x: 330,
+    y: 755,
+    stand: { x: 330, y: 780 },
+    proximity: 82,
+    dropWidth: 164,
+    dropHeight: 86,
+    requiredMode: "light",
+    kind: "decoy_spot",
+    value: "notice",
+    acceptedItem: "decoyPaper"
+  },
+  {
+    id: "qizhen_decoy_bridge",
+    label: "桥影前假纸条夹位",
+    x: 836,
+    y: 755,
+    stand: { x: 836, y: 780 },
+    proximity: 82,
+    dropWidth: 164,
+    dropHeight: 86,
+    requiredMode: "light",
+    kind: "decoy_spot",
+    value: "bridge",
+    acceptedItem: "decoyPaper"
+  },
+  {
+    id: "qizhen_decoy_lamp",
+    label: "路灯前假纸条夹位",
+    x: 1360,
+    y: 755,
+    stand: { x: 1360, y: 780 },
+    proximity: 82,
+    dropWidth: 164,
+    dropHeight: 86,
+    requiredMode: "light",
+    kind: "decoy_spot",
+    value: "lamp",
+    acceptedItem: "decoyPaper"
+  },
+  { id: "qizhen_mister", label: "湖心喷雾器", x: 836, y: 655, proximity: 135, kind: "mister" },
+  { id: "qizhen_exit", label: "离开启真湖", x: 100, y: 740, proximity: 115, kind: "exit" }
 ] as const;
 
 export function plateForQizhenPhase(phase: QizhenLakePhase): QizhenLakePlateId {
@@ -139,8 +177,9 @@ export function findNearestQizhenTarget(
   let nearest: QizhenLakeInteractionTarget | null = null;
   let bestDistance = Number.POSITIVE_INFINITY;
   targets.forEach((target) => {
-    const distance = Math.hypot(x - target.x, y - target.y);
-    if (distance <= target.proximity && distance < bestDistance) {
+    const stand = target.stand ?? target;
+    const distance = Math.hypot(x - stand.x, y - stand.y);
+    if (isPlayerWithinRpgTarget(target, x, y) && distance < bestDistance) {
       nearest = target;
       bestDistance = distance;
     }

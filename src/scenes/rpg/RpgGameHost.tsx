@@ -18,6 +18,7 @@ import type {
 } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import theaterContent from "../../data/chapter3-theater.content.json";
+import { chapterThreeStoryLineKeyForSubtitle } from "../../data/chapterThreeStory";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
@@ -38,6 +39,7 @@ import { createTheaterRuntimePort } from "./TheaterRuntimeContract";
 import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
 import { QizhenLakeScene } from "./QizhenLakeScene";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
+import { RpgRealityModeToggle } from "./RpgRealityModeToggle";
 import { createRpgBridge } from "./RpgBridge";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
@@ -352,6 +354,15 @@ export function RpgGameHost({
   useEffect(() => {
     return bindChapterThreeCanteenEvents(canteenController, events);
   }, [canteenController, events]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_subtitle") return;
+      const subtitleKey = chapterThreeStoryLineKeyForSubtitle(String(event.payload?.text ?? ""));
+      if (!subtitleKey) return;
+      events.emit("chapter3_story_line", { subtitleKey });
+    });
+  }, [events]);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -891,11 +902,9 @@ export function RpgGameHost({
 
         {((runtimeScene === "canteen_interior" && state.canteenHunt.active && ["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase))
           || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
-          <button
-            type="button"
-            className={`rpg-canteen-mode-toggle is-${state.canteenHunt.mode}`}
-            aria-pressed={state.canteenHunt.mode === "dark"}
-            onClick={() => {
+          <RpgRealityModeToggle
+            mode={state.canteenHunt.mode}
+            onToggle={() => {
               if (runtimeScene === "canteen_interior") {
                 events.emit("rpg_canteen_toggle_mode");
                 return;
@@ -904,35 +913,27 @@ export function RpgGameHost({
                 mode: state.canteenHunt.mode === "dark" ? "light" : "dark"
               });
             }}
-          >
-            {state.canteenHunt.mode === "dark" ? "浅色模式" : "深色模式"}
-          </button>
+          />
         ) : null}
 
         {runtimeScene === "theater_interior" && ["entry_ticket", "program_search", "prop_setup", "spotlight_ready"].includes(state.theaterHunt.phase) ? (
-          <button
-            type="button"
-            className={`rpg-canteen-mode-toggle rpg-theater-mode-toggle is-${state.theaterHunt.mode}`}
-            aria-pressed={state.theaterHunt.mode === "dark"}
-            onClick={() => events.emit("rpg_theater_mode_requested", {
+          <RpgRealityModeToggle
+            className="rpg-theater-mode-toggle"
+            mode={state.theaterHunt.mode}
+            onToggle={() => events.emit("rpg_theater_mode_requested", {
               mode: state.theaterHunt.mode === "dark" ? "light" : "dark"
             })}
-          >
-            {state.theaterHunt.mode === "dark" ? "浅色模式" : "深色模式"}
-          </button>
+          />
         ) : null}
 
         {runtimeScene === "qizhen_lake" && ["reflection_hunt", "sign_alignment", "decoy_setup", "mist_timing"].includes(state.qizhenLake.phase) ? (
-          <button
-            type="button"
-            className={`rpg-canteen-mode-toggle rpg-qizhen-mode-toggle is-${state.qizhenLake.mode}`}
-            aria-pressed={state.qizhenLake.mode === "dark"}
-            onClick={() => events.emit("rpg_qizhen_mode_requested", {
+          <RpgRealityModeToggle
+            className="rpg-qizhen-mode-toggle"
+            mode={state.qizhenLake.mode}
+            onToggle={() => events.emit("rpg_qizhen_mode_requested", {
               mode: state.qizhenLake.mode === "dark" ? "light" : "dark"
             })}
-          >
-            {state.qizhenLake.mode === "dark" ? "浅色模式" : "深色模式"}
-          </button>
+          />
         ) : null}
 
         {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" && !chaseActive ? (

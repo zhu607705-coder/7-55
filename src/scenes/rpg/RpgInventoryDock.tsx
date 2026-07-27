@@ -125,7 +125,7 @@ function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
   return {
     itemId,
     tone: "warning",
-    title: "剧情条件尚未满足",
+    title: "当前使用条件未满足",
     detail: customDetail || `「${targetLabel}」当前还不能接收该道具。`
   };
 }

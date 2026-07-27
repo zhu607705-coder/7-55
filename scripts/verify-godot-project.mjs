@@ -31,6 +31,15 @@ for (const required of [
   }
 }
 
+try {
+  const exportPresets = await readFile(resolve(repoRoot, "godot/export_presets.cfg"), "utf8");
+  if (!/^html\/canvas_resize_policy=2$/m.test(exportPresets)) {
+    failures.push("Godot Web export must use adaptive canvas resize policy 2");
+  }
+} catch {
+  failures.push("missing or invalid godot/export_presets.cfg");
+}
+
 for (const file of manifest.files ?? []) {
   const sourcePath = resolve(repoRoot, file.source);
   const targetPath = resolve(repoRoot, file.target);

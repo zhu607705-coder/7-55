@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-22T14:18:20.842Z",
+  "generatedAt": "2026-07-26T23:30:55.946Z",
   "assets": {
     "music_theater_lobby": {
       "path": "chapter3-theater/music/music_theater_lobby.mp3",
@@ -9,29 +9,29 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "f9ed70e3f06f17283591d83faa07730e3c003850ae928d2c1d04eb0d01b4e59e",
+      "sha256": "0381d26ac824ba7e962eb2148673ea7d202ead6028249a30cb28647104ce7c1d",
       "source": "MiniMax music-2.6",
       "sourceConfigHash": "723f039fe2ad19d5bb1e8df77058451018a1829cb613b7d3ce3f7f364a99ee1c"
     },
     "music_theater_dark": {
       "path": "chapter3-theater/music/music_theater_dark.mp3",
       "kind": "music",
-      "durationMs": 20000,
+      "durationMs": 19975,
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "e38942fc185dde035bd6128e0e46104f089b501f3762ba02d968a069492063d8",
+      "sha256": "581fcd18bbf25717deb7c9943368bd7f90f823f3ae5b1bb3518d4264d284688d",
       "source": "MiniMax music-2.6",
       "sourceConfigHash": "04810c121f7220ea745655905326b4a2b60c986e2fddd64ff3e832a592928bba"
     },
     "music_theater_spotlight": {
       "path": "chapter3-theater/music/music_theater_spotlight.mp3",
       "kind": "music",
-      "durationMs": 24000,
+      "durationMs": 23975,
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "f05478b29cd368d87ae9eb9b81765486cab20130b0ba328a7b8ed2eb9070c1f9",
+      "sha256": "feef2c6d8c28c1e4a44a9b836e86c5087b00d2c4afc58a1b0783d476370658c4",
       "source": "MiniMax music-2.6",
       "sourceConfigHash": "7fcf3798c178d3f32a66d54c8fc1665dc17b4ba174c7154be242ab919fd6479c"
     },
@@ -42,8 +42,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -1.8,
-      "sha256": "3a18f003854fb6c2b957c0e6d1a61adb1e37b7da4cd7d50a03c028ac974527d1",
+      "maxVolumeDb": -15.9,
+      "sha256": "b51ca504af5653205bfc9ef2b5ba936504f4f53815c396f3e9b2f24ec03c2eaa",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "80de945952eb0e9fd29ead683b229cb030e973af3899204e22ed9ef05a0454c2"
     },
@@ -54,8 +54,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -7,
-      "sha256": "1b2774b9c62ad12e518ac7d66f377f785c96ae7409d1cbaff40f76666d4b3170",
+      "maxVolumeDb": -6.3,
+      "sha256": "e092eda194c5a37246f184a6270432dc64d3a1c0a22f0aace593296226a65ee1",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "fbce921a257ce1ea359be19c53012797c4fb217e61fb5f3e3db25cce89d5afaf"
     },
@@ -66,8 +66,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -2,
-      "sha256": "3f56e983ec02d0cdf179cb427988df734f4c967352ee101a6abd9eba13f20e3e",
+      "maxVolumeDb": -4.9,
+      "sha256": "c39d5b2c4fe508ca9c5f7412f03c739c54417ca5c6088011aa20fbbc66749285",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "20c46b866df1f62fd040d16f1497a010957dfb04f58c695c0dce00dfc85b4f52"
     },
@@ -78,8 +78,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -4.2,
-      "sha256": "f1d7c8e9db9d2fb92aa5a786d7c8bbc93f8c2899ef6b72c33ee37f6578e85bce",
+      "maxVolumeDb": -4.3,
+      "sha256": "5150b271a0faa5f0c3c999daed9d41329022365a1f0750ea4884574515a469cb",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "b97b622948f221e1c9e2163f4c99374a95e13311225a55cacfc17e8d94e90f05"
     },
@@ -90,8 +90,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -5.2,
-      "sha256": "e036735451e5de24d604f5e6e206fac9a1b7d46f521d531659879ba150d4c733",
+      "maxVolumeDb": -6.7,
+      "sha256": "53dfea10448cbdfc0adfcd0998c8b2a8c0798ff36dc28900a4912759a64e09db",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "9bcbf90fec5c1ecb59eb00c27df7e2dee2fb74f8360fb31825495f53a256375b"
     },
@@ -102,8 +102,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -2.1,
-      "sha256": "c785bb1dc25d336a49bbff70b352cec42fa4ead25d0fdf0f918baa7aabdfed24",
+      "maxVolumeDb": -5.9,
+      "sha256": "e4ac652bbfead8c63a868254da716662097e0a4b2ed8eb8a8a03588a7fdd555d",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "288ab93e2e24551dd2d503f0740be5c9702341643ebfd5884f7edea29ff511aa"
     },
@@ -114,8 +114,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -6.2,
-      "sha256": "f69b72771b25cd3aba32404bbe476b7267b5eeef22dcaa5ce208228e8094180c",
+      "maxVolumeDb": -6.7,
+      "sha256": "2a26ce3fe3b46ea0f2bec8ac4da68eb23340da5ae599a63ed3af795c93b6dde1",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "f2e63c54b72d96a1d3cd3ec204baf18fb705f9a64f556f668b73af9a6f08fc78"
     },
@@ -126,8 +126,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -2.4,
-      "sha256": "e1207603669e413a43ba28394c0e54120423618c2596a1c9b6fde3d564e80e62",
+      "maxVolumeDb": -28,
+      "sha256": "f7e21c78a7e761a683098b4d8d33ca653e7c48d48442867f05f0dd6c6052f28d",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "d4830d5353b944d00a79a9bb9aa4aaf671d51f25347cd0fa23143417bf60323a"
     },
@@ -138,8 +138,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -1.9,
-      "sha256": "41691ee023152c73a6293310851ae4105e23fc30efe0e0192c5f6c2333946270",
+      "maxVolumeDb": -11.3,
+      "sha256": "b36c1d42049a36d40f50a8cd368eb00a9da955e9ab9c7040d169f294e38550a3",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "49a14ea8fad5bff748795bd9ca253977cde37fa76b3a012528d6da74d27e9ba0"
     },
@@ -150,8 +150,8 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "maxVolumeDb": -1.7,
-      "sha256": "8b7640aa65de8cb1d3cce9336d4b696f9afdc4727e5faccff0d55dbb8c5242b0",
+      "maxVolumeDb": -5.8,
+      "sha256": "862de628ed03e0927c855b83528ce28056d9916bfcc157a65e3e93ae77599aa2",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "3475a4060ffe9df5045ac9cf53790d50ad2871f47c9048d1f1d0d8b99b1ed3d4"
     }

@@ -37,7 +37,11 @@
     "audio:chapter3-canteen": "node scripts/generate-chapter3-canteen-audio.mjs",
     "audio:chapter3-theater": "node scripts/generate-chapter3-theater-audio.mjs",
     "audio:chapter3-qizhen": "node scripts/generate-chapter3-qizhen-audio.mjs",
-    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only"
+    "audio:chapter3": "node scripts/generate-chapter3-audio.mjs",
+    "audio:chapter3:verify": "node scripts/verify-chapter3-audio-contract.mjs && node scripts/generate-chapter3-audio.mjs --verify-only",
+    "audio:chapter3:status": "node scripts/verify-chapter3-audio-contract.mjs --report-only",
+    "audio:chapter3:qizhen:checkpoint": "node scripts/generate-chapter3-qizhen-sfx-audio.mjs --checkpoint-existing",
+    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only"
   },
   "dependencies": {
     "@fontsource/fusion-pixel-12px-proportional-sc": "^5.2.5",

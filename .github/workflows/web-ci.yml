@@ -35,6 +35,9 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Verify Chapter 3 audio contract
+        run: npm run audio:chapter3:verify
+
       - name: Verify campus map contract
         run: npm run map:zijingang
 

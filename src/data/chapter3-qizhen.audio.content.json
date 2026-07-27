@@ -36,5 +36,97 @@
       "instruments": "soft electronic pulse, muted percussion, airy synth, tiny bell accents",
       "bpm": 96
     }
+  ],
+  "sfx": [
+    {
+      "cue": "qizhen.mode_switch",
+      "asset": "fx_qizhen_mode_switch",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mode_switch.mp3",
+      "group": "reflection",
+      "cutStartSeconds": 0,
+      "durationSeconds": 0.8,
+      "description": "a short dry two-layer reality switch with one low watery click and one bright glass tick"
+    },
+    {
+      "cue": "qizhen.reflection_shimmer",
+      "asset": "fx_qizhen_reflection_shimmer",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_reflection_shimmer.mp3",
+      "group": "reflection",
+      "cutStartSeconds": 3,
+      "durationSeconds": 1,
+      "description": "a compact mirrored water shimmer that snaps to a precise point"
+    },
+    {
+      "cue": "qizhen.reflection_miss",
+      "asset": "fx_qizhen_reflection_miss",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_reflection_miss.mp3",
+      "group": "reflection",
+      "cutStartSeconds": 6,
+      "durationSeconds": 0.8,
+      "description": "a dry reversed water blip ending in a muted rejection click"
+    },
+    {
+      "cue": "qizhen.sign_rotate",
+      "asset": "fx_qizhen_sign_rotate",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_sign_rotate.mp3",
+      "group": "reflection",
+      "cutStartSeconds": 9,
+      "durationSeconds": 0.9,
+      "description": "one small wooden sign ratchet rotation followed by a concise metal stop"
+    },
+    {
+      "cue": "qizhen.decoy_clip",
+      "asset": "fx_qizhen_decoy_clip",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_decoy_clip.mp3",
+      "group": "reflection",
+      "cutStartSeconds": 12,
+      "durationSeconds": 1,
+      "description": "a paper sheet clipped firmly to an outdoor fixture with a light flutter"
+    },
+    {
+      "cue": "qizhen.mist_observe",
+      "asset": "fx_qizhen_mist_observe",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mist_observe.mp3",
+      "group": "mist",
+      "cutStartSeconds": 0,
+      "durationSeconds": 1,
+      "description": "a compact three-pulse timing scan with a clear center beat"
+    },
+    {
+      "cue": "qizhen.mist_spray",
+      "asset": "fx_qizhen_mist_spray",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mist_spray.mp3",
+      "group": "mist",
+      "cutStartSeconds": 3,
+      "durationSeconds": 1.3,
+      "description": "a concise pressurized mist burst with a short mechanical valve click"
+    },
+    {
+      "cue": "qizhen.mist_wrong",
+      "asset": "fx_qizhen_mist_wrong",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_mist_wrong.mp3",
+      "group": "mist",
+      "cutStartSeconds": 6,
+      "durationSeconds": 0.8,
+      "description": "a weak mist sputter followed by a soft descending digital error tone"
+    },
+    {
+      "cue": "qizhen.paper_release",
+      "asset": "fx_qizhen_paper_release",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_paper_release.mp3",
+      "group": "mist",
+      "cutStartSeconds": 9,
+      "durationSeconds": 1.2,
+      "description": "wet paper snapping out of a reflection and accelerating close to the ground"
+    },
+    {
+      "cue": "qizhen.lake_exit",
+      "asset": "fx_qizhen_lake_exit",
+      "path": "chapter3-qizhen/sfx/fx_qizhen_lake_exit.mp3",
+      "group": "mist",
+      "cutStartSeconds": 12,
+      "durationSeconds": 0.9,
+      "description": "a short lakeside route confirmation with one dry footstep and a fading water tick"
+    }
   ]
 }

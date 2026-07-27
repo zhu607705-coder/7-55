@@ -1,6 +1,10 @@
 import { cloneSerializable } from "../../core/ClientCompatibility";
 import type { GameState, ItemId, RpgSceneId, TheaterHuntState } from "../../core/types";
-import type { TheaterRuntimeIntentName } from "../../scenes/rpg/TheaterRuntimeContract";
+import {
+  selectTheaterRuntimeSpawnZone,
+  type TheaterRuntimeIntentName,
+  type TheaterRuntimeSpawnZone
+} from "../../scenes/rpg/TheaterRuntimeContract";
 
 export const GODOT_RPG_PROTOCOL_VERSION = "1.0.0" as const;
 export const GODOT_RPG_LOGICAL_VIEWPORT = { width: 960, height: 540 } as const;
@@ -17,6 +21,7 @@ export type GodotHostCommandName =
 export interface GodotTheaterSnapshot {
   sceneId: "theater_interior";
   checkpoint: GameState["rpgCheckpoint"];
+  spawnZone: TheaterRuntimeSpawnZone;
   inputBlocked: boolean;
   selectedItem: ItemId | null;
   theater: TheaterHuntState;
@@ -205,6 +210,7 @@ export function selectGodotTheaterSnapshot(
   return cloneSerializable({
     sceneId: "theater_interior",
     checkpoint: state.rpgCheckpoint,
+    spawnZone: selectTheaterRuntimeSpawnZone(state),
     inputBlocked,
     selectedItem: state.ui.selectedItem,
     theater: state.theaterHunt,
