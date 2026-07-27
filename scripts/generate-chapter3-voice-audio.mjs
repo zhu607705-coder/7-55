@@ -278,7 +278,8 @@ function main() {
         sourceConfigHash,
         source: `MiniMax ${MODEL} ${content.voices[line.voiceRole].id}`
       };
-    } catch {
+    } catch (error) {
+      if (verifyOnly) throw error;
       // Regenerate invalid cached files below.
     }
   }

@@ -1227,3 +1227,10 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 音频完整性：`npm run audio:chapter3:status` 与 `npm run audio:chapter3:verify` 均报告 `expected=76 / ready=76 / missing=0 / unrecorded=0 / stale=0 / errors=0`；启真湖 `10` 个音效均为 `44.1kHz` 双声道、时长符合各自契约且文件哈希互不重复。
 - 音频运行验收：Blink、Gecko 与 WebKit `1280×720` 均实走“Space 推进系统台词 → 切换深色观察”，系统配音、反射段音乐和模式切换音效在用户输入后成功播放，页面、控制台、媒体与请求错误均为 `0`。WebKit `390×844` 同样播放成功，显示 `5` 个触控按钮，模式按钮与道具栏重叠为 `0`，文档溢出为 `0`；WebKit 在首次用户输入前拒绝背景音乐自动播放，输入后按统一音频解锁流程恢复。
 - 单文件交付：`npm run typecheck`、`npm run godot:check`、`npm run build`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。Blink 直接打开最新 `file://` 单文件后，内联配音、音乐和音效的 SHA-256 与生成清单对应，三类媒体均成功播放；`390×844` 下画布为 `390×219.375`、模式按钮与道具栏重叠为 `0`、文档溢出为 `0`。`demo/index.html` 为 `99,824,173 bytes`，SHA-256 为 `ee62ae55176a8d00785fa0a7dfda2d1ca262f0b6f124cdf65bd4af28ed5aa65c`；技能网页游戏客户端截图已检查并移入废纸篓。
+
+## 2026-07-28 第三章音频 CI 环境收口
+
+- 远端失败定位：PR #30 首轮 Web CI 在音频契约步骤中止。生成器的 `probeAudio()` 需要 `ffmpeg` 和 `ffprobe`，Ubuntu job 未显式准备这两个工具；缓存复用分支同时隐藏了底层 `ENOENT`，最终只显示“需要重新生成”。
+- CI 修正：`.github/workflows/web-ci.yml` 在音频校验前检查 `ffmpeg` / `ffprobe`，缺失时通过 Ubuntu 包管理器安装，随后输出两者版本。食堂、剧院、启真湖音效与第三章配音生成器在 `--verify-only` 下保留底层探测异常，方便后续直接识别缺工具、解码失败或媒体参数越界。
+- 诊断验证：用限制 `PATH` 的负向运行得到 `Probe ... failed: spawnSync ffprobe ENOENT`，确认错误已精确透出；恢复正常工具后 `npm run audio:chapter3:verify` 仍为 `76/76`。
+- 本地回归：Workflow YAML 解析、`npm run typecheck`、`npm run godot:check`、`npm run map:zijingang`、`npm run build`、`npm run build:single`、`npm run verify:single` 和 `git diff --check` 全部通过；单文件仍为 `99,824,173 bytes`。

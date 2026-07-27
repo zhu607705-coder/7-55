@@ -178,7 +178,8 @@ function canReuse(definition, kind, currentConfigHash) {
   try {
     probeAudio(output, LIMITS[kind]);
     return true;
-  } catch {
+  } catch (error) {
+    if (verifyOnly) throw error;
     return false;
   }
 }

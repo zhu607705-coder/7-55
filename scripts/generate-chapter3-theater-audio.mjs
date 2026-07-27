@@ -178,7 +178,8 @@ function canReuse(definition, kind, currentHash) {
     probeAudio(output, LIMITS[kind]);
     if (kind === "sfx") probeAudibility(output);
     return true;
-  } catch {
+  } catch (error) {
+    if (verifyOnly) throw error;
     return false;
   }
 }

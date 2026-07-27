@@ -259,7 +259,8 @@ function main() {
             source: `MiniMax ${MODEL} isolated one-shot`
           };
         }
-      } catch {
+      } catch (error) {
+        if (verifyOnly) throw error;
         // Regenerate invalid cached files below.
       }
     }
