@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { dirname, join, relative, resolve } from "node:path";
+import { delimiter, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
@@ -33,8 +33,13 @@ function fileHash(path) {
 }
 
 function findMmx() {
+  const pathCandidates = (process.env.PATH ?? "")
+    .split(delimiter)
+    .filter(Boolean)
+    .map((directory) => join(directory, "mmx"));
   const candidates = [
     process.env.MMX_BIN,
+    ...pathCandidates,
     join(homedir(), ".hermes/node/bin/mmx"),
     "/opt/homebrew/bin/mmx",
     "/usr/local/bin/mmx"
@@ -117,7 +122,7 @@ function normalizeBed(input, output, durationSeconds, loudness) {
   run(
     "ffmpeg",
     [
-      "-y", "-hide_banner", "-loglevel", "error", "-i", input,
+      "-y", "-hide_banner", "-loglevel", "error", "-stream_loop", "-1", "-i", input,
       "-t", String(durationSeconds),
       "-af", `loudnorm=I=${loudness}:TP=-1.5:LRA=8,afade=t=in:st=0:d=0.06,afade=t=out:st=${fadeOutStart}:d=0.2`,
       "-ar", "44100", "-ac", "2", "-b:a", "192k", output
@@ -168,11 +173,13 @@ function configHash(definition, groupDefinitions) {
 function canReuse(definition, kind, currentConfigHash) {
   const output = outputPath(definition);
   if (force || !existsSync(output)) return false;
-  if (previous.assets?.[definition.asset]?.sourceConfigHash !== currentConfigHash) return false;
+  const cached = previous.assets?.[definition.asset];
+  if (cached?.sourceConfigHash !== currentConfigHash || cached?.sha256 !== fileHash(output)) return false;
   try {
     probeAudio(output, LIMITS[kind]);
     return true;
-  } catch {
+  } catch (error) {
+    if (verifyOnly) throw error;
     return false;
   }
 }
@@ -239,7 +246,11 @@ function main() {
   for (const definition of content.music) {
     const currentHash = configHash(definition);
     hashes.set(definition.cue, currentHash);
-    if (!verifyOnly && !canReuse(definition, "music", currentHash)) {
+    const reusable = canReuse(definition, "music", currentHash);
+    if (!reusable && verifyOnly) {
+      throw new Error(`Canteen music requires regeneration: ${definition.asset}`);
+    }
+    if (!reusable) {
       generateMusic(definition);
       generated.push(definition.asset);
     }
@@ -253,7 +264,10 @@ function main() {
       return canReuse(definition, "sfx", currentHash);
     });
     const reusable = reuseChecks.every(Boolean);
-    if (!verifyOnly && !reusable) {
+    if (!reusable && verifyOnly) {
+      throw new Error(`Canteen sound-effect group requires regeneration: ${group}`);
+    }
+    if (!reusable) {
       generateSfxGroup(group, groupDefinitions);
       generated.push(...groupDefinitions.map(({ asset }) => asset));
     }
@@ -280,12 +294,14 @@ function main() {
 
   const manifest = {
     version: 1,
-    generatedAt: verifyOnly && typeof previous.generatedAt === "string"
-      ? previous.generatedAt
-      : new Date().toISOString(),
+    generatedAt: new Date().toISOString(),
     assets
   };
-  writeFileSync(generatedPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  if (!verifyOnly && generated.length > 0) {
+    const staged = `${generatedPath}.tmp-${process.pid}`;
+    writeFileSync(staged, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+    renameSync(staged, generatedPath);
+  }
   process.stdout.write(`${JSON.stringify({ generated, verified: assets, manifest: generatedPath }, null, 2)}\n`);
 }
 

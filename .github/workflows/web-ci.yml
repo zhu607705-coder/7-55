@@ -35,6 +35,18 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Ensure FFmpeg audio validation tools
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --yes --no-install-recommends ffmpeg
+          fi
+          ffmpeg -version
+          ffprobe -version
+
+      - name: Verify Chapter 3 audio contract
+        run: npm run audio:chapter3:verify
+
       - name: Verify campus map contract
         run: npm run map:zijingang
 

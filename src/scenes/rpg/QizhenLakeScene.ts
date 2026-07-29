@@ -4,12 +4,17 @@ import qizhenMistUrl from "../../assets/rpg/interiors/qizhen_lake_mist.png";
 import qizhenReflectionUrl from "../../assets/rpg/interiors/qizhen_lake_reflection.png";
 import qizhenSignsUrl from "../../assets/rpg/interiors/qizhen_lake_signs.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
-import type { GameState, QizhenDecoyTargetId, QizhenLakeMode } from "../../core/types";
+import type { GameState, ItemId, QizhenDecoyTargetId, QizhenLakeMode } from "../../core/types";
 import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
 import { QIZHEN_REFLECTION_REAL_SEQUENCE } from "../../modules/ChapterThreeQizhenLakeController";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
+import {
+  formatRpgModeRequirement,
+  getRpgDropBounds,
+  resolveRpgItemDrop
+} from "./RpgInteractionContract";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -71,6 +76,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private reducedMotion = false;
   private occlusionVisuals: OcclusionVisual[] = [];
   private phaseVisuals: Phaser.GameObjects.GameObject[] = [];
+  private decoyDropGuides: Array<Phaser.GameObjects.Shape | Phaser.GameObjects.Text> = [];
   private activeOcclusionIds: string[] = [];
   private softenedOcclusionIds: string[] = [];
   private mistHud: Phaser.GameObjects.Container | null = null;
@@ -265,6 +271,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private rebuildPhaseVisuals(state: GameState): void {
     this.phaseVisuals.forEach((visual) => visual.destroy());
     this.phaseVisuals = [];
+    this.decoyDropGuides = [];
     this.mistHud?.destroy();
     this.mistHud = null;
     this.mistMarker = null;
@@ -382,7 +389,45 @@ export class QizhenLakeScene extends Phaser.Scene {
         .setSize(kind === "lamp" ? 120 : 150, kind === "lamp" ? 210 : 110)
         .setInteractive({ useHandCursor: true });
       marker.on("pointerdown", () => this.triggerPointerTarget(target));
-      this.phaseVisuals.push(marker);
+      const dropBounds = getRpgDropBounds(target);
+      const dropFrame = this.add.rectangle(
+        target.x,
+        target.y,
+        dropBounds.width,
+        dropBounds.height,
+        0x123f4a,
+        0.2
+      ).setStrokeStyle(4, 0x7ad8ff, 1)
+        .setDepth(target.y + 42)
+        .setName("qizhenDecoyDropGuide")
+        .setVisible(false);
+      dropFrame.setData("targetId", target.id);
+      const dropLabel = this.add.text(
+        target.x,
+        target.y - dropBounds.height / 2 - 7,
+        `拖入假纸条 · ${target.label}`,
+        {
+          color: "#e9fbff",
+          backgroundColor: "#102b3bee",
+          fontFamily: "monospace",
+          fontSize: "12px",
+          fontStyle: "bold",
+          padding: { x: 6, y: 3 }
+        }
+      ).setOrigin(0.5, 1)
+        .setDepth(target.y + 43)
+        .setName("qizhenDecoyDropGuide")
+        .setVisible(false);
+      dropLabel.setData("targetId", target.id);
+      const stand = target.stand ?? target;
+      const standRing = this.add.circle(stand.x, stand.y, 22, 0x103347, 0.24)
+        .setStrokeStyle(3, 0x7ad8ff, 0.96)
+        .setDepth(stand.y + 36)
+        .setName("qizhenDecoyDropGuide")
+        .setVisible(false);
+      standRing.setData("targetId", target.id);
+      this.decoyDropGuides.push(dropFrame, dropLabel, standRing);
+      this.phaseVisuals.push(marker, dropFrame, dropLabel, standRing);
     });
   }
 
@@ -435,6 +480,10 @@ export class QizhenLakeScene extends Phaser.Scene {
         arrow?.setAngle(state.qizhenLake.signRotations[signIndex] * 90);
       }
     });
+    const showDecoyGuides = state.qizhenLake.phase === "decoy_setup"
+      && state.qizhenLake.mode === "light"
+      && state.ui.selectedItem === "decoyPaper";
+    this.decoyDropGuides.forEach((guide) => guide.setVisible(showDecoyGuides));
     if (state.qizhenLake.phase === "reflection_hunt") {
       const expected = QIZHEN_REFLECTION_REAL_SEQUENCE[Math.min(state.qizhenLake.reflectionRound, 2)];
       const ghostX = expected === "right" ? 430 : expected === "left" ? 1240 : 836;
@@ -545,7 +594,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
-    const itemId = String(payload?.itemId ?? "");
+    const itemId = String(payload?.itemId ?? "") as ItemId;
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
     if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
@@ -553,35 +602,63 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
-    const activeTargets = this.getActiveTargets(this.bridge.getState());
-    const targetAtPoint = activeTargets
-      .find((candidate) => Math.hypot(world.x - candidate.x, world.y - candidate.y) <= Math.max(125, candidate.proximity));
-    if (!targetAtPoint) {
+    const state = this.bridge.getState();
+    const activeTargets = this.getActiveTargets(state);
+    const result = resolveRpgItemDrop({
+      targets: activeTargets,
+      itemId,
+      dropX: world.x,
+      dropY: world.y,
+      playerX: this.player.x,
+      playerY: this.player.y,
+      mode: state.qizhenLake.mode
+    });
+    if (!result.target) {
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
         reason: "missed_target",
-        detail: "松手点没有进入当前阶段的候选目标范围。"
+        detail: "假纸条已退回：请拖进当前场景中明确描边的候选夹位。"
       });
       return;
     }
-    const targetLabel = targetAtPoint.kind === "decoy_spot" ? "假纸条候选位置" : "当前交互点";
-    if (targetAtPoint.acceptedItem !== itemId) {
+    const targetLabel = result.target.label;
+    if (result.kind === "wrong_item") {
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
-        reason: targetAtPoint.acceptedItem ? "wrong_item" : "locked",
+        reason: result.target.acceptedItem ? "wrong_item" : "locked",
         targetLabel
       });
       return;
     }
-    if (!findNearestQizhenTarget(this.player.x, this.player.y, [targetAtPoint])) {
+    if (result.kind === "wrong_mode") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel,
+        detail: formatRpgModeRequirement(result.expectedMode ?? "light")
+      });
+      return;
+    }
+    if (!state.qizhenLake.signsSolved || !state.items.reflectionCoordinate) {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "locked",
+        targetLabel,
+        detail: "先完成指示牌校准并取得倒影坐标，候选夹位随后会开放。"
+      });
+      return;
+    }
+    if (result.kind === "too_far") {
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
         reason: "too_far",
-        targetLabel
+        targetLabel,
+        detail: `落点正确；人物还没有站进“${targetLabel}”前的蓝色站位。`
       });
       return;
     }
-    const target = targetAtPoint;
+    if (result.kind !== "accepted") return;
+    const target = result.target;
     this.bridge.emit("rpg_qizhen_decoy_requested", { targetId: target.value as QizhenDecoyTargetId });
   }
 
@@ -821,11 +898,17 @@ export class QizhenLakeScene extends Phaser.Scene {
       checkpoint: state.rpgCheckpoint,
       activeTargets: this.getActiveTargets(state).map((candidate) => ({
         id: candidate.id,
+        label: candidate.label,
         x: candidate.x,
         y: candidate.y,
-        width: candidate.proximity * 2,
-        height: candidate.proximity * 2,
-        acceptedItem: candidate.acceptedItem
+        width: getRpgDropBounds(candidate).width,
+        height: getRpgDropBounds(candidate).height,
+        dropWidth: candidate.dropWidth,
+        dropHeight: candidate.dropHeight,
+        stand: candidate.stand,
+        proximity: candidate.proximity,
+        acceptedItem: candidate.acceptedItem,
+        requiredMode: candidate.requiredMode
       })),
       collisionRects: plate.collisions,
       qizhenLake: {

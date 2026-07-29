@@ -46,6 +46,7 @@ export interface StoryLine {
   speaker?: "narrator" | "system" | "player" | "seat022";
   voiceRole?: "male_narrator" | "female_system";
   voiceTextEn?: string;
+  voiceAsset?: string;
   subtitleZh: string;
 }
 

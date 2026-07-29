@@ -6,7 +6,7 @@
     {
       "path": "godot/asset-manifest.json",
       "bytes": 3422,
-      "sha256": "a1a87db720fc1a05f5785834e645489f6af365527f8f7485dc8454d31f9d6f36"
+      "sha256": "4bac5ec4f71d705db6d399f5039b160020fb9b94b73d96c957de4be7ff6fd26f"
     },
     {
       "path": "godot/assets/rpg/interiors/theater_interior.png.import",
@@ -75,13 +75,13 @@
     },
     {
       "path": "godot/data/theater-runtime.json",
-      "bytes": 7977,
-      "sha256": "21b08c4d051451a39aef3e30ca8dd05bc4eaed47abf7a91846d2299330158735"
+      "bytes": 8914,
+      "sha256": "1ea858fff7e09eb9e98caa0ebf2ed784e0d966c5da390b741b3494c05069cc04"
     },
     {
       "path": "godot/export_presets.cfg",
       "bytes": 729,
-      "sha256": "a2f2dba3160148f7168941dc2f5aaf0a378efcfe00a0e24e8e2f06f189046e13"
+      "sha256": "94664a1ac6c342ec581b8078e5f375681f4842ea963c890d152bd39d539f33aa"
     },
     {
       "path": "godot/project.godot",
@@ -95,8 +95,8 @@
     },
     {
       "path": "godot/scripts/theater_runtime.gd",
-      "bytes": 20791,
-      "sha256": "2ad0a3cc9591c6eccec4a49ec1b402d635520b92060a12b0f231e20036e273c1"
+      "bytes": 22464,
+      "sha256": "582f1820343cb9e3758273e4315e125eec7f062edddd8a8861efe4d519a3c60b"
     },
     {
       "path": "godot/scripts/theater_runtime.gd.uid",
@@ -108,7 +108,7 @@
     {
       "path": "public/godot/theater/index.html",
       "bytes": 5448,
-      "sha256": "aea00ac2f4880d759679f3f4e1fabe08889373710e11a050c1005855d0877d8a"
+      "sha256": "8d504354ccfccce597db7fa1408ac35a863c8c02e074903aa6dc722c1586552a"
     },
     {
       "path": "public/godot/theater/index.js",
@@ -122,8 +122,8 @@
     },
     {
       "path": "public/godot/theater/index.pck",
-      "bytes": 1774296,
-      "sha256": "3bb3f95afb7439316a18fde6b70a7ea92adf1e55a6b699597b78be78db5cd872"
+      "bytes": 1776552,
+      "sha256": "7c983a2421ff75145c86141290f9ee3568a493a805d74ba645866281c3d7c0ba"
     },
     {
       "path": "public/godot/theater/index.png",

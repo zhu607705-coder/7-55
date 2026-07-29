@@ -83,6 +83,9 @@ export interface RpgRuntimeDebugState {
       anchor: { x: number; y: number };
       stand: { x: number; y: number };
       proximity: number;
+      dropBounds?: { left: number; top: number; right: number; bottom: number; width: number; height: number };
+      acceptedItem?: string;
+      requiredMode?: "light" | "dark";
     }>;
     menuOpen: boolean;
     dialogueLocked: boolean;
@@ -93,6 +96,7 @@ export interface RpgRuntimeDebugState {
   theater?: {
     runtimeContractVersion: string;
     phase: string;
+    spawnZone?: "lobby" | "auditorium" | "stage";
     mode: "light" | "dark";
     activeTarget: string | null;
     panel: "code" | "program" | null;
@@ -140,13 +144,17 @@ export interface RpgRuntimeDebugState {
   };
   activeTargets?: Array<{
     id: string;
+    label?: string;
     x: number;
     y: number;
     width: number;
     height: number;
     dropWidth?: number;
     dropHeight?: number;
+    stand?: { x: number; y: number };
+    proximity?: number;
     acceptedItem?: string;
+    requiredMode?: "light" | "dark";
   }>;
   collisionRects?: ReadonlyArray<{
     id: string;

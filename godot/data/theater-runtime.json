@@ -318,6 +318,7 @@
   "targets": [
     {
       "id": "theater_poster",
+      "label": "入口海报玻璃",
       "x": 282,
       "y": 755,
       "stand": {
@@ -325,11 +326,15 @@
         "y": 755
       },
       "proximity": 48,
+      "dropWidth": 96,
+      "dropHeight": 96,
       "kind": "poster",
-      "acceptedItem": "greaseTissue"
+      "acceptedItem": "greaseTissue",
+      "requiredMode": "light"
     },
     {
       "id": "theater_ticket_kiosk",
+      "label": "临时票打印机",
       "x": 1146,
       "y": 755,
       "stand": {
@@ -341,6 +346,7 @@
     },
     {
       "id": "theater_ticket_gate",
+      "label": "检票闸机右侧读票器",
       "x": 907,
       "y": 690,
       "stand": {
@@ -351,42 +357,58 @@
       "dropWidth": 90,
       "dropHeight": 100,
       "kind": "gate",
-      "acceptedItem": "temporaryTheaterTicket"
+      "acceptedItem": "temporaryTheaterTicket",
+      "requiredMode": "light"
     },
     {
       "id": "theater_program_opening",
+      "label": "开场节目单残页",
       "x": 568,
       "y": 405,
       "proximity": 74,
+      "requiredMode": "light",
       "kind": "program",
       "programId": "opening"
     },
     {
       "id": "theater_program_spotlight",
+      "label": "追光节目单残页",
       "x": 1080,
       "y": 594,
       "proximity": 78,
+      "requiredMode": "light",
       "kind": "program",
       "programId": "spotlight"
     },
     {
       "id": "theater_program_finale",
+      "label": "终场节目单残页",
       "x": 1460,
       "y": 418,
       "proximity": 78,
+      "requiredMode": "light",
       "kind": "program",
       "programId": "finale"
     },
     {
       "id": "theater_light_console",
-      "x": 1070,
-      "y": 495,
-      "proximity": 105,
+      "label": "剧院灯光控制台",
+      "x": 1140,
+      "y": 500,
+      "stand": {
+        "x": 1140,
+        "y": 590
+      },
+      "proximity": 72,
+      "dropWidth": 130,
+      "dropHeight": 110,
       "kind": "console",
-      "acceptedItem": "spotlightRemote"
+      "acceptedItem": "spotlightRemote",
+      "requiredMode": "light"
     },
     {
       "id": "theater_prop_box",
+      "label": "后台道具箱",
       "x": 292,
       "y": 229,
       "proximity": 92,
@@ -394,6 +416,7 @@
     },
     {
       "id": "theater_prop_scanner",
+      "label": "道具箱旁票据扫描器",
       "x": 364,
       "y": 170,
       "stand": {
@@ -404,18 +427,28 @@
       "dropWidth": 76,
       "dropHeight": 94,
       "kind": "scanner",
-      "acceptedItem": "temporaryTheaterTicket"
+      "acceptedItem": "temporaryTheaterTicket",
+      "requiredMode": "light"
     },
     {
       "id": "theater_backstage_vent",
+      "label": "后台通风口",
       "x": 936,
       "y": 145,
-      "proximity": 105,
+      "stand": {
+        "x": 936,
+        "y": 228
+      },
+      "proximity": 72,
+      "dropWidth": 78,
+      "dropHeight": 55,
       "kind": "vent",
-      "acceptedItem": "fluorescentBrush"
+      "acceptedItem": "fluorescentBrush",
+      "requiredMode": "light"
     },
     {
       "id": "theater_exit",
+      "label": "剧院出口",
       "x": 836,
       "y": 842,
       "proximity": 110,

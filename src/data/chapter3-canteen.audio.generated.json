@@ -1,15 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-22T10:58:03.423Z",
+  "generatedAt": "2026-07-26T23:30:53.165Z",
   "assets": {
     "music_canteen_light": {
       "path": "chapter3-canteen/music/music_canteen_light.mp3",
       "kind": "music",
-      "durationMs": 20000,
+      "durationMs": 16208,
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "c7d5bc634e38ac2c06942dd554ef3450b2663b6c928e0d84c7b2cdd4dc94575d",
+      "sha256": "be0b17abadd89cf45412c53f586bc47fe13720900ca7895a3cba8b16cb7df2db",
       "source": "MiniMax music-2.6",
       "sourceConfigHash": "2ceb915c1045ad12a0d55a7024b6a25368b9ac77d856b45d4b45bee054b97977"
     },
@@ -20,18 +20,18 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "5692b803152b5f24ab8c43826e60e47fb3e7153045c87f5625442d0e1fd4d288",
+      "sha256": "361989a6d4b7e07fcac68b3002d092c3f1c4fa38a4e556c84388760c014fe4b7",
       "source": "MiniMax music-2.6",
       "sourceConfigHash": "1017b7377f269ea4ca437b62a9370d28878a561aff9e39f4cbe104c2f0fd6f04"
     },
     "music_canteen_chase": {
       "path": "chapter3-canteen/music/music_canteen_chase.mp3",
       "kind": "music",
-      "durationMs": 24000,
+      "durationMs": 23948,
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "6ba79dd0a0d17e86c7b66772e8d3ca2a6ee2d211dd2d1c32a90407ddb6e86ee2",
+      "sha256": "0f910e2db89ed21082dc4ee87aff91c2ca51fbb17d8f1392a724560b4fb726db",
       "source": "MiniMax music-2.6",
       "sourceConfigHash": "2c41d51b819f39ff04b7e10348f6fbd02a1affd97c241dfde5e2f7b509789504"
     },
@@ -42,7 +42,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "0976065ad79a1a8f56e18a7cb017d6b3482df1be9ae779fb36f64b807eee892d",
+      "sha256": "62d51fdf214f6f9e0f20ca67246dd080800cecfd5ce40966b4379427d566dbd8",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "92432fb74b98bda08177a317b85167f6f250e1beb22a6e0537fe9f6a6c7518b2"
     },
@@ -53,7 +53,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "009a51026da14ddf588f20e95709b3f6a4bfa4d1594601df9ce377bcb6d55386",
+      "sha256": "c0cf0871546be98f3dec4d96fa33e69ba4ffb743605b8d580b6f73883dd87605",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "e86def1cfb6e0ccc848dd2c05e7efb0e1e51bca1c43255af6c87be381f458809"
     },
@@ -64,7 +64,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "307c92f420d3a0aab08d2252aa2292c218a480e7b766b90f4bdfcd38b0cbb080",
+      "sha256": "b4f555c14b4cd366d9adb7483120327356b5faabb1743f9f68d80fc3776c80a1",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "2e69f08183a4125b1b2f8413325538afafe97a3cbb584b0bfd0fc4d04e620b8a"
     },
@@ -75,7 +75,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "8050abdff6aaf2a30d661414cf7076735efb489ff46fa68ec1e90c9b65aef6d3",
+      "sha256": "348da4fac66788dcb9e60c1a59c0803365bae14ac254410f2a336ab6b5e17c54",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "d511e642a8a3e483f76b4894cee0ef9b1cc6f5b7491425173c2dfc15183dc4f3"
     },
@@ -86,7 +86,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "7d592664a7c6571596dea6dfd768439f70bb7f5e13a86829e5f9eb8d0cecddb2",
+      "sha256": "e24112b3925336ebc957e7f6c5549d9c11b84d45bdff816b0a2b1c4478c6cb3a",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "70df0bf26f0190b76440b13d7cf980e97e198146bafc1bd1a7cc872b94a37765"
     },
@@ -97,7 +97,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "efd79b8e76139e95677fda0d7c8e946acf7e9ba582d208d270c5488b20900be7",
+      "sha256": "9acddc47eea5d18a67dd94fd837dcaee4d21a7b5525fad5f33317ea8775a5bfe",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "33dd80727a0992ac68c6a0ed4111e058e029d1a6c8194a93a8a3c5b4a6ff058f"
     },
@@ -108,7 +108,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "6b7b4f426f062340477eff8135866cc80c7dea831681449de59f67ef2d1de86a",
+      "sha256": "0f899cd103fa475ac1e85c19ce95f502046a933588ad685e85a1cc3c7c376780",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "5493660f3298b7ec7da0c1d1983c886f6729e0330eef51bb03952a8683b17f3e"
     },
@@ -119,7 +119,7 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "c4e63f1698984c84cf551dc921016ab2993565fb24ec5cf777ab863c05742a42",
+      "sha256": "61b3bc5e532f8eff32f30ca85e2f41f51a5af48a7b094340f005ebf661ccd890",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "279db6e85d2396812065eea358616246e6e1f2233183591b5c12a95b212d7ae5"
     },
@@ -130,18 +130,18 @@
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "07d34ac9e6fbf31976a1b4e79ef422aa5aff607a495937ed7d4a612739b7d24a",
+      "sha256": "dadb2ea153c527e4ec638643d45e21ec477c0739e423158fd49dd050bfde33b9",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "7d89cb758e863ab44d1e4ec7716fc41cc7a1c0482eb678e10c5f8bbd76ffd0e5"
     },
     "fx_canteen_chase_collision": {
       "path": "chapter3-canteen/sfx/fx_canteen_chase_collision.mp3",
       "kind": "sfx",
-      "durationMs": 1150,
+      "durationMs": 1091,
       "codec": "mp3",
       "sampleRate": 44100,
       "channels": 2,
-      "sha256": "1f3edf852308cce49526664ebae763a5296a6d347ca852bf3e3ecdb75578b105",
+      "sha256": "e19b435a734adafd4fb6e75f2d56230b38f8410f0e4048e13bfebadb62acd881",
       "source": "MiniMax music-2.6 sound-design cut",
       "sourceConfigHash": "82ab00fdf099e699ac27a72a89ad33b32703ca6f8b6a11b02040d6c1c80cfbba"
     }

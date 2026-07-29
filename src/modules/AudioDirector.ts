@@ -10,6 +10,9 @@ import chapterThreeTheaterTimelineData from "../data/chapter3-theater.audio.json
 import chapterThreeTheaterGeneratedAudioData from "../data/chapter3-theater.audio.generated.json";
 import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import chapterThreeQizhenGeneratedAudioData from "../data/chapter3-qizhen.audio.generated.json";
+import chapterThreeQizhenSfxGeneratedAudioData from "../data/chapter3-qizhen-sfx.audio.generated.json";
+import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
+import chapterThreeStoryGeneratedAudioData from "../data/chapter3-story.audio.generated.json";
 import audioTimelineData from "../data/library-finals.audio.json";
 import generatedAudioData from "../data/library-finals.audio.generated.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
@@ -49,7 +52,8 @@ const audioTimeline: AudioTimeline = {
     ...(bikeArcadeTimelineData as AudioTimeline).events,
     ...(chapterThreeCanteenTimelineData as AudioTimeline).events,
     ...(chapterThreeTheaterTimelineData as AudioTimeline).events,
-    ...(chapterThreeQizhenTimelineData as AudioTimeline).events
+    ...(chapterThreeQizhenTimelineData as AudioTimeline).events,
+    ...(chapterThreeStoryTimelineData as AudioTimeline).events
   }
 };
 const generatedAssets = {
@@ -58,7 +62,9 @@ const generatedAssets = {
   ...(bikeArcadeGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapterThreeCanteenGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapterThreeTheaterGeneratedAudioData.assets as Record<string, GeneratedAsset>),
-  ...(chapterThreeQizhenGeneratedAudioData.assets as Record<string, GeneratedAsset>)
+  ...(chapterThreeQizhenGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(chapterThreeQizhenSfxGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(chapterThreeStoryGeneratedAudioData.assets as Record<string, GeneratedAsset>)
 };
 const audioUrls = import.meta.glob("../assets/audio/**/*.mp3", {
   eager: true,
@@ -141,12 +147,18 @@ export class AudioDirector {
     if (!beat) {
       return;
     }
-    const cues = cueId === "library_story_line"
-      ? beat.cues.map((cue) => ({
-          ...cue,
-          subtitleKey: String(event.payload?.subtitleKey ?? cue.subtitleKey ?? "")
-        }))
-      : beat.cues;
+    const dynamicSubtitleKey = typeof event.payload?.subtitleKey === "string"
+      ? event.payload.subtitleKey
+      : null;
+    const cues = beat.cues.map((cue) => {
+      const subtitleKey = dynamicSubtitleKey ?? cue.subtitleKey;
+      const storyLine = storyLineForKey(subtitleKey);
+      return {
+        ...cue,
+        subtitleKey,
+        asset: cue.asset ?? (cue.channel === "voice" ? storyLine?.voiceAsset : undefined)
+      };
+    });
     cues.forEach((cue) => {
       const onceKey = cue.asset ?? `${cueId}:${cue.subtitleKey ?? cue.channel}`;
       if (cue.once && this.playedOnce.has(onceKey)) {

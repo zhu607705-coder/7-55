@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "events": {
+    "chapter3_story_line": {
+      "cues": [
+        {
+          "channel": "voice",
+          "subtitleSurface": "scene",
+          "duckMusicTo": 0.07,
+          "volume": 0.96
+        }
+      ]
+    },
+    "qizhen_bridge_clue_found": {
+      "cues": [
+        {
+          "channel": "voice",
+          "subtitleKey": "c3_qizhen_cc98_system",
+          "subtitleSurface": "scene",
+          "duckMusicTo": 0.07,
+          "volume": 0.96
+        }
+      ]
+    },
+    "qizhen_reflection_clue_found": {
+      "cues": [
+        {
+          "channel": "voice",
+          "subtitleKey": "c3_qizhen_catalog_system",
+          "subtitleSurface": "scene",
+          "duckMusicTo": 0.07,
+          "volume": 0.96
+        }
+      ]
+    },
+    "qizhen_location_solved": {
+      "cues": [
+        {
+          "channel": "voice",
+          "subtitleKey": "c3_qizhen_map_system",
+          "subtitleSurface": "scene",
+          "duckMusicTo": 0.07,
+          "volume": 0.96
+        }
+      ]
+    }
+  }
+}
