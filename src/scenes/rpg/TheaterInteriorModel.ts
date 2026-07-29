@@ -1,8 +1,56 @@
-import type { TheaterProgramId } from "../../core/types";
-import {
-  isPlayerWithinRpgTarget,
-  type RpgSpatialInteractionTarget
-} from "./RpgInteractionContract";
+export type TheaterProgramId = "opening" | "spotlight" | "finale";
+export type TheaterMode = "light" | "dark";
+export type TheaterItemId =
+  | "greaseTissue"
+  | "temporaryTheaterTicket"
+  | "spotlightRemote"
+  | "fluorescentBrush";
+
+export interface TheaterWorldPoint {
+  x: number;
+  y: number;
+}
+
+export interface RpgSpatialInteractionTarget {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  stand?: TheaterWorldPoint;
+  proximity: number;
+  width?: number;
+  height?: number;
+  dropWidth?: number;
+  dropHeight?: number;
+  acceptedItem?: TheaterItemId;
+  requiredMode?: TheaterMode;
+}
+
+export function distanceFromPlayerToRpgTarget(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number
+): number {
+  if (target.stand) {
+    return Math.hypot(playerX - target.stand.x, playerY - target.stand.y);
+  }
+  if (target.width && target.height) {
+    const halfWidth = target.width / 2;
+    const halfHeight = target.height / 2;
+    const nearestX = Math.max(target.x - halfWidth, Math.min(playerX, target.x + halfWidth));
+    const nearestY = Math.max(target.y - halfHeight, Math.min(playerY, target.y + halfHeight));
+    return Math.hypot(playerX - nearestX, playerY - nearestY);
+  }
+  return Math.hypot(playerX - target.x, playerY - target.y);
+}
+
+export function isPlayerWithinRpgTarget(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number
+): boolean {
+  return distanceFromPlayerToRpgTarget(target, playerX, playerY) <= target.proximity;
+}
 
 export const THEATER_INTERIOR_WORLD = { width: 1672, height: 941 } as const;
 
