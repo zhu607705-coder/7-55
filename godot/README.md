@@ -73,6 +73,17 @@ Godot 已覆盖 `entry_ticket`、`program_search`、`prop_setup`、
 `spotlight_hunt` 和 `reversal` 的三轮追光玩法仍使用 Phaser 回退。整段追光、保存恢复、
 重新进入和离场通过跨浏览器验收后，才能把默认 `auto` 模式切到 Godot。
 
+## Standalone 剧院原型
+
+`scenes/theatre_interactive.tscn` 和 `scenes/theatre_plaza.tscn` 保留来自
+`godot剧院4.7` 的 640 × 360 standalone 原型，用于剧院空间探索、区域识别和后续二层
+场景制作。它们依赖 `assets/maps/`、`assets/player/` 和 `scripts/theatre_*`，可在 Godot
+编辑器中直接打开单场景预览。
+
+该原型不替换 `project.godot` 的 `theater_runtime.tscn` 主入口，也不接管 React/TypeScript
+运行契约；正式 Web runtime 仍由 `theater_runtime.gd`、`data/theater-runtime.json` 和
+`public/godot/theater/` 负责。
+
 ## 提交检查
 
 Godot 相关 PR 至少执行：

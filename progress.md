@@ -1210,3 +1210,9 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 浏览器矩阵：Blink `1280×800`、Gecko `1280×720`、WebKit `1280×720` 均运行 Godot，画布保持 `16:9`，文档横纵溢出和页面错误为 `0`。WebKit `390×844` 显示 `5` 个 `48×48` 触控键；持续按右键后人物 `x` 从 `1080` 变为 `1171`。
 - 离线回退：重新生成的 `demo/index.html` 通过 `file://` 打开并在显式 `rpgEngine=godot` 请求下返回 `phaser / file_protocol`，未挂载 Godot iframe，外部请求、文档溢出、页面错误和控制台错误均为 `0`。
 - 构建验证：技能网页游戏客户端、`npm run godot:export:web`、`npm run godot:check`、`npm run build`、`npm run build:single` 和 `npm run verify:single` 通过。`demo/` 仅保留两个离线 HTML，不再复制 Godot Web 目录；最终 `demo/index.html` 为 `96,616,390 bytes`，SHA-256 为 `87a0b9c7d2407b3a4910e799d531ef5be0151edcde19bca21e5eeb20e29514fd`。
+## 2026-07-29 Godot 剧院 4.7 standalone 场景合入
+
+- 集成范围：从 `C:\Users\·\Desktop\godot剧院4.7` 合入 `theatre_interactive.tscn`、`theatre_plaza.tscn`、`scripts/theatre_*`、`assets/maps/` 和 `assets/player/`，放置在远端 Godot 分支的 `godot/` 子项目内，保留原始 `res://assets/...` 与 `res://scripts/...` 引用。
+- 运行边界：未替换 `godot/project.godot` 的 `theater_runtime.tscn` 主入口，也未接管 React/TypeScript `1.0.0` 剧院 runtime 契约；新增场景作为 640 × 360 standalone 原型供 Godot 编辑器直接打开，正式 Web runtime 继续使用现有 `theater_runtime.gd` 与 `public/godot/theater/`。
+- 仓库修正：补充 `.gitattributes` 的 `*.godot text eol=lf`，让 Windows 工作树中的 `project.godot` 与现有 Web build manifest 的 LF hash 保持一致。
+- 验证结果：新增场景与脚本的 `res://` 引用全部能在 `godot/` 下找到；`node scripts/verify-godot-project.mjs` 通过，输出 `verified Godot project version=4.7.1 assets=14 targets=11 collisions=27 webBuild=matched`；`git diff --cached --check` 通过。未运行 Godot headless import，因为本机 `godot` 命令不在 PATH；未运行 `npm run godot:check`，因为 sparse 工作树未安装 `node_modules/esbuild`，本轮使用不依赖包安装的静态 Godot 校验覆盖现有 manifest。

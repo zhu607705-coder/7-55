@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://cyjcusiqllxfi"]
+
+[ext_resource type="Script" uid="uid://d08ramfhit0w1" path="res://scripts/theatre_plaza.gd" id="1_scene"]
+
+[node name="TheatrePlaza" type="Node2D" unique_id=448252455]
+script = ExtResource("1_scene")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=76256729]
+
+[node name="Title" type="Label" parent="HUD" unique_id=700858569]
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 37.0
+theme_override_colors/font_color = Color(0.945098, 0.968627, 0.941176, 1)
+theme_override_colors/font_shadow_color = Color(0.0627451, 0.0941176, 0.105882, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 16
+text = "紫金港校区 · 剧院广场"
+
+[node name="HintPanel" type="ColorRect" parent="HUD" unique_id=2056623745]
+offset_left = 14.0
+offset_top = 325.0
+offset_right = 442.0
+offset_bottom = 348.0
+mouse_filter = 2
+color = Color(0.0470588, 0.0862745, 0.109804, 0.82)
+
+[node name="Hint" type="Label" parent="HUD/HintPanel" unique_id=1220559670]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 3.0
+offset_right = 420.0
+offset_bottom = 22.0
+theme_override_colors/font_color = Color(0.890196, 0.929412, 0.901961, 1)
+theme_override_font_sizes/font_size = 12
+text = "WASD / 方向键移动   ·   R 回到广场中央"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1584142235]
