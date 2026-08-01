@@ -23,6 +23,7 @@ interface ChaseObstacle {
   distance: number;
   lane: number;
   kind: ChaseObstacleKind;
+  crossingSide: -1 | 1;
 }
 
 interface ChaseRuntime {
@@ -94,7 +95,8 @@ function obstacleAt(index: number): ChaseObstacle {
     id: `rush-${index}`,
     distance: OBSTACLE_START_DISTANCE + index * OBSTACLE_INTERVAL,
     lane: (hash >>> 8) % 3,
-    kind: OBSTACLE_KINDS[(hash >>> 16) % OBSTACLE_KINDS.length]
+    kind: OBSTACLE_KINDS[(hash >>> 16) % OBSTACLE_KINDS.length],
+    crossingSide: (hash & 1) === 0 ? -1 : 1
   };
 }
 
@@ -127,6 +129,24 @@ function projectRoadPoint(distanceAhead: number, lane: number) {
   };
 }
 
+function projectObstaclePoint(obstacle: ChaseObstacle, distanceAhead: number) {
+  if (obstacle.kind !== "runner") {
+    return {
+      ...projectRoadPoint(distanceAhead, obstacle.lane),
+      crossingSide: obstacle.crossingSide
+    };
+  }
+  const depth = Math.max(0, Math.min(1, 1 - distanceAhead / VISIBLE_DISTANCE));
+  const crossingProgress = Math.max(0, Math.min(1, (depth - 0.32) / 0.62));
+  const easedProgress = crossingProgress * crossingProgress * (3 - 2 * crossingProgress);
+  const roadsideLane = obstacle.crossingSide < 0 ? -1.25 : 3.25;
+  const movingLane = roadsideLane + (obstacle.lane - roadsideLane) * easedProgress;
+  return {
+    ...projectRoadPoint(distanceAhead, movingLane),
+    crossingSide: obstacle.crossingSide
+  };
+}
+
 export function CanteenChaseOverlay({
   events,
   completed,
@@ -140,17 +160,41 @@ export function CanteenChaseOverlay({
   const runtimeRef = useRef<ChaseRuntime>(createInitialRuntime(completed));
   const eventsRef = useRef(events);
   const onAttemptRef = useRef(onAttempt);
+  const onContinueRef = useRef(onContinue);
+  const theaterTransitionedRef = useRef(false);
+  const theaterTransitionTimerRef = useRef<number | null>(null);
   const [view, setView] = useState<ChaseView>(() => toView(runtimeRef.current));
   eventsRef.current = events;
   onAttemptRef.current = onAttempt;
+  onContinueRef.current = onContinue;
 
   const publish = useCallback((force = false) => {
     const runtime = runtimeRef.current;
-    const roundedDistance = Math.floor(runtime.distance);
-    if (!force && roundedDistance === runtime.lastPublishedDistance && runtime.runState === "running") return;
-    runtime.lastPublishedDistance = roundedDistance;
+    if (
+      !force
+      && runtime.runState === "running"
+      && runtime.distance - runtime.lastPublishedDistance < 0.42
+    ) return;
+    runtime.lastPublishedDistance = runtime.distance;
     setView(toView(runtime));
   }, []);
+
+  const enterTheater = useCallback(() => {
+    if (theaterTransitionedRef.current) return;
+    theaterTransitionedRef.current = true;
+    if (theaterTransitionTimerRef.current !== null) {
+      window.clearTimeout(theaterTransitionTimerRef.current);
+      theaterTransitionTimerRef.current = null;
+    }
+    onContinueRef.current();
+  }, []);
+
+  const scheduleTheaterEntry = useCallback(() => {
+    if (theaterTransitionTimerRef.current !== null) {
+      window.clearTimeout(theaterTransitionTimerRef.current);
+    }
+    theaterTransitionTimerRef.current = window.setTimeout(enterTheater, 1650);
+  }, [enterTheater]);
 
   const finishRun = useCallback((result: "won" | "lost") => {
     const runtime = runtimeRef.current;
@@ -173,7 +217,8 @@ export function CanteenChaseOverlay({
       collisions: runtime.collisions
     });
     publish(true);
-  }, [publish]);
+    if (result === "won" && runtime.mode === "story") scheduleTheaterEntry();
+  }, [publish, scheduleTheaterEntry]);
 
   const advanceSimulation = useCallback((milliseconds: number) => {
     const runtime = runtimeRef.current;
@@ -267,6 +312,11 @@ export function CanteenChaseOverlay({
     runtime.hitObstacleIds.clear();
     runtime.reachedMilestones.clear();
     runtime.lastPublishedDistance = -1;
+    theaterTransitionedRef.current = false;
+    if (theaterTransitionTimerRef.current !== null) {
+      window.clearTimeout(theaterTransitionTimerRef.current);
+      theaterTransitionTimerRef.current = null;
+    }
     eventsRef.current.emit("canteen_chase_countdown", { value: 3, mode });
     publish(true);
   }, [publish]);
@@ -290,8 +340,18 @@ export function CanteenChaseOverlay({
     runtime.lane = 1;
     runtime.collisions = 0;
     runtime.milestone = null;
+    if (theaterTransitionTimerRef.current !== null) {
+      window.clearTimeout(theaterTransitionTimerRef.current);
+      theaterTransitionTimerRef.current = null;
+    }
     publish(true);
   }, [publish]);
+
+  useEffect(() => () => {
+    if (theaterTransitionTimerRef.current !== null) {
+      window.clearTimeout(theaterTransitionTimerRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -360,7 +420,7 @@ export function CanteenChaseOverlay({
   const visible = useMemo(
     () => visibleObstacles(view.distance).map((obstacle) => ({
       ...obstacle,
-      projection: projectRoadPoint(obstacle.distance - view.distance, obstacle.lane)
+      projection: projectObstaclePoint(obstacle, obstacle.distance - view.distance)
     })),
     [view.distance]
   );
@@ -512,6 +572,7 @@ export function CanteenChaseOverlay({
               y={obstacle.projection.y}
               scale={obstacle.projection.scale}
               opacity={obstacle.projection.opacity}
+              crossingSide={obstacle.projection.crossingSide}
             />
           ))}
         </g>
@@ -583,14 +644,14 @@ export function CanteenChaseOverlay({
         <div className="canteen-bike-overlay-card is-result">
           <b className={view.runState === "won" ? "is-win" : "is-loss"}>{view.runState === "won" ? "CLEAR" : "STOP"}</b>
           <h2>{view.runState === "won" ? "已追到剧院路口" : view.mode === "endless" ? "无尽骑行结束" : "追逐中断"}</h2>
-          <p>{view.runState === "won" ? "755 米剧情骑行完成，纸条已经钻进剧院。" : `本次抵达 ${resultDistance} 米，重新规划换道时机后继续。`}</p>
+          <p>{view.runState === "won" ? "纸条钻进剧院。正在跟进。" : `本次抵达 ${resultDistance} 米，重新规划换道时机后继续。`}</p>
           <div className="canteen-bike-stats">
             <span>本次<strong>{resultDistance}m</strong></span>
             <span>剩余<strong>{view.lives}</strong></span>
             <span>最佳机会<strong>{resultBestLives}</strong></span>
           </div>
           {view.runState === "won" || completed ? (
-            <button type="button" className="canteen-bike-primary" onClick={onContinue}>继续追踪纸条</button>
+            <button type="button" className="canteen-bike-primary" onClick={enterTheater}>立即进入剧院</button>
           ) : null}
           {(view.runState === "won" || completed) ? (
             <button type="button" className="canteen-bike-secondary" onClick={() => beginRun("endless")}>无尽模式</button>
@@ -634,15 +695,16 @@ interface RoadsideProjection {
 function createRoadside(distance: number): RoadsideProjection[] {
   const result: RoadsideProjection[] = [];
   const spacing = 24;
-  const offset = distance % spacing;
+  const firstWorldIndex = Math.floor(distance / spacing) + 1;
   for (let index = 0; index < 10; index += 1) {
-    const ahead = index * spacing + (spacing - offset);
+    const worldIndex = firstWorldIndex + index;
+    const ahead = worldIndex * spacing - distance;
     const depth = Math.max(0, Math.min(1, 1 - ahead / VISIBLE_DISTANCE));
     const perspective = depth * depth;
     for (const side of [-1, 1] as const) {
-      const variant = index * 2 + (side > 0 ? 1 : 0);
+      const variant = worldIndex * 2 + (side > 0 ? 1 : 0);
       result.push({
-        id: `roadside-${index}-${side}`,
+        id: `roadside-${worldIndex}-${side}`,
         side,
         kind: variant % 5 === 0 ? "lamp" : variant % 3 === 0 ? "tree" : "building",
         x: 480 + side * (78 + perspective * 430),
@@ -657,9 +719,12 @@ function createRoadside(distance: number): RoadsideProjection[] {
 }
 
 function createRoadDashes(distance: number) {
-  const offset = (distance * 0.72) % 42;
+  const travel = distance * 0.72;
+  const spacing = 42;
+  const firstWorldIndex = Math.floor(travel / spacing) + 1;
   return Array.from({ length: 10 }, (_, index) => {
-    const ahead = index * 42 + (42 - offset);
+    const worldIndex = firstWorldIndex + index;
+    const ahead = worldIndex * spacing - travel;
     const depthNear = Math.max(0, Math.min(1, 1 - ahead / 420));
     const depthFar = Math.max(0, Math.min(1, 1 - (ahead + 18) / 420));
     const top = 145 + depthFar * depthFar * 395;
@@ -667,7 +732,7 @@ function createRoadDashes(distance: number) {
     const halfTop = 4 + depthFar * 5;
     const halfBottom = 5 + depthNear * 7;
     return {
-      id: `dash-${index}`,
+      id: `dash-${worldIndex}`,
       top,
       bottom,
       leftTop: 480 - halfTop,
@@ -764,33 +829,46 @@ function RoadsideProp({ side, kind, x, y, scale, opacity, variant }: RoadsidePro
 function Rider3D() {
   return (
     <g className="canteen-bike-rider-model">
-      <ellipse cx="0" cy="22" rx="63" ry="14" fill="#071019" opacity="0.36" />
-      <path d="M-53 1 Q-35 -30 -17 1 Q-35 34 -53 1 Z M17 1 Q35 -30 53 1 Q35 34 17 1 Z" fill="#172229" opacity="0.35" />
-      {[-35, 35].map((wheelX) => (
-        <g key={wheelX} className="canteen-bike-wheel" transform={`translate(${wheelX} 1)`}>
-          <ellipse rx="19" ry="36" fill="none" stroke="#111b22" strokeWidth="8" />
-          <ellipse rx="14" ry="30" fill="none" stroke="#788991" strokeWidth="2" />
-          <path d="M0 -29 V29 M-13 0 H13 M-10 -21 L10 21 M10 -21 L-10 21" stroke="#9daab0" strokeWidth="1.7" opacity="0.82" />
-          <circle r="4" fill="#d8deda" stroke="#1b2429" strokeWidth="2" />
+      <ellipse cx="0" cy="31" rx="49" ry="13" fill="#071019" opacity="0.38" />
+      <g className="canteen-bike-wheel is-front" transform="translate(0 -19)">
+        <ellipse rx="9" ry="27" fill="none" stroke="#121c22" strokeWidth="7" />
+        <ellipse rx="5" ry="22" fill="none" stroke="#819097" strokeWidth="2" />
+      </g>
+      <g className="canteen-bike-wheel is-rear" transform="translate(0 11)">
+        <ellipse rx="18" ry="43" fill="none" stroke="#111b22" strokeWidth="9" />
+        <ellipse rx="12" ry="36" fill="none" stroke="#87969d" strokeWidth="2" />
+        <path d="M0 -34 V34 M-10 -24 L10 24 M10 -24 L-10 24" stroke="#aab5b9" strokeWidth="1.6" opacity="0.86" />
+        <circle r="5" fill="#d8deda" stroke="#1b2429" strokeWidth="2" />
+      </g>
+      <path d="M-17 9 L-12 -31 L14 -31 L17 9 L0 21 Z M-12 -31 L0 8 L14 -31" fill="none" stroke="#f0d54e" strokeWidth="7" strokeLinejoin="round" />
+      <path d="M0 -31 V-51 M-17 -51 H17" fill="none" stroke="#26333b" strokeWidth="6" strokeLinecap="round" />
+      <path d="M-29 -57 Q0 -65 29 -57" fill="none" stroke="#26333b" strokeWidth="6" strokeLinecap="round" />
+      <circle className="canteen-bike-crank" cx="0" cy="7" r="8" fill="#27343c" stroke="#e8d36b" strokeWidth="3" />
+      <path className="canteen-bike-crank" d="M0 7 L11 16 M11 16 H20" stroke="#28343b" strokeWidth="4" strokeLinecap="round" />
+      <path d="M-25 -43 H25 L20 -35 H-20 Z" fill="#202b32" stroke="#10181d" strokeWidth="3" />
+      <rect x="-14" y="-3" width="28" height="11" rx="4" fill="#26343a" stroke="#111b20" strokeWidth="3" />
+      <rect x="-7" y="-1" width="14" height="5" rx="2" fill="#e35d52" />
+
+      <g className="canteen-bike-rider-bob">
+        <g className="canteen-bike-leg is-left">
+          <path d="M-10 -48 L-17 -18 L-9 6" fill="none" stroke="#1d2d42" strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M-14 7 H-1" stroke="#edf1ed" strokeWidth="7" strokeLinecap="round" />
         </g>
-      ))}
-      <path d="M-35 1 L-5 -25 L35 1 L-8 1 Z M-5 -25 L19 -29 M-8 1 L3 15" fill="none" stroke="#f0d54e" strokeWidth="8" strokeLinejoin="round" />
-      <path d="M16 -31 L34 -38 M31 -39 L42 -34" fill="none" stroke="#26333b" strokeWidth="5" strokeLinecap="round" />
-      <path d="M-35 1 Q-36 -20 -32 -32 M35 1 Q37 -14 34 -25" fill="none" stroke="#52636b" strokeWidth="3" />
-      <circle className="canteen-bike-crank" cx="-6" cy="1" r="9" fill="#27343c" stroke="#e8d36b" strokeWidth="3" />
-      <path className="canteen-bike-crank" d="M-6 1 L8 12 M8 12 H18" stroke="#28343b" strokeWidth="4" strokeLinecap="round" />
-      <rect x="-26" y="-34" width="29" height="6" rx="3" fill="#202b32" />
-      <path d="M-8 -22 L-13 -56 L12 -73" fill="none" stroke="#315f9f" strokeWidth="17" strokeLinecap="round" />
-      <path d="M-5 -48 Q-28 -55 -31 -35 L-27 -12 H-4 Z" fill="#253e64" stroke="#17283d" strokeWidth="4" />
-      <rect x="-28" y="-45" width="18" height="23" rx="4" fill="#2d4d75" stroke="#111d2d" strokeWidth="3" />
-      <path d="M-20 -42 H-13 M-20 -35 H-13" stroke="#74d4db" strokeWidth="2" />
-      <circle cx="15" cy="-93" r="18" fill="#ddb071" stroke="#17212a" strokeWidth="5" />
-      <path d="M-2 -102 Q15 -123 34 -101 L31 -88 L5 -89 Z" fill="#f0d54e" stroke="#17212a" strokeWidth="5" />
-      <path d="M3 -100 Q16 -111 30 -99" fill="none" stroke="#fff0a7" strokeWidth="3" />
-      <path d="M-10 -55 L-34 -29 M1 -56 L27 -36" fill="none" stroke="#315f9f" strokeWidth="11" strokeLinecap="round" />
-      <circle cx="-34" cy="-29" r="5" fill="#ddb071" /><circle cx="27" cy="-36" r="5" fill="#ddb071" />
-      <path d="M-9 -20 L-24 3 M-2 -18 L11 6" fill="none" stroke="#1d2d42" strokeWidth="11" strokeLinecap="round" />
-      <path d="M-31 5 H-16 M6 8 H21" stroke="#e5e9e5" strokeWidth="6" strokeLinecap="round" />
+        <g className="canteen-bike-leg is-right">
+          <path d="M10 -48 L17 -15 L8 13" fill="none" stroke="#263b56" strokeWidth="13" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 14 H18" stroke="#edf1ed" strokeWidth="7" strokeLinecap="round" />
+        </g>
+        <path d="M-18 -93 Q0 -103 18 -93 L21 -49 Q0 -40 -21 -49 Z" fill="#315f9f" stroke="#17283d" strokeWidth="5" />
+        <path d="M-15 -84 H15 M-16 -57 H16" stroke="#75d5dc" strokeWidth="3" opacity="0.82" />
+        <rect x="-14" y="-88" width="28" height="30" rx="6" fill="#294b73" stroke="#13253c" strokeWidth="3" />
+        <path d="M-7 -82 H7 M-7 -75 H7" stroke="#9ee6e7" strokeWidth="2" />
+        <path d="M-15 -88 L-28 -61 M15 -88 L28 -61" fill="none" stroke="#315f9f" strokeWidth="11" strokeLinecap="round" />
+        <circle cx="-28" cy="-60" r="5" fill="#d8aa70" /><circle cx="28" cy="-60" r="5" fill="#d8aa70" />
+        <circle cx="0" cy="-121" r="19" fill="#d8aa70" stroke="#17212a" strokeWidth="5" />
+        <path d="M-18 -126 Q-9 -147 12 -143 Q25 -139 20 -119 L12 -111 H-15 Z" fill="#1d252b" stroke="#11181d" strokeWidth="4" />
+        <path d="M-12 -130 Q0 -141 14 -133" fill="none" stroke="#4a555b" strokeWidth="3" />
+        <path d="M-14 -112 Q0 -106 14 -112" fill="none" stroke="#2e3940" strokeWidth="3" />
+      </g>
     </g>
   );
 }
@@ -800,13 +878,15 @@ function Obstacle3D({
   x,
   y,
   scale,
-  opacity
+  opacity,
+  crossingSide
 }: {
   kind: ChaseObstacleKind;
   x: number;
   y: number;
   scale: number;
   opacity: number;
+  crossingSide: -1 | 1;
 }) {
   const transform = `translate(${x} ${y}) scale(${scale})`;
   if (kind === "barrier") {
@@ -881,42 +961,59 @@ function Obstacle3D({
     );
   }
   if (kind === "runner") {
+    const runnerTransform = `translate(${x} ${y}) scale(${scale * crossingSide} ${scale})`;
     return (
-      <g className="canteen-bike-obstacle is-runner" transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
+      <g className="canteen-bike-obstacle is-runner" transform={runnerTransform} opacity={opacity} filter="url(#bike-rush-shadow)">
         <ellipse cy="29" rx="49" ry="10" fill="#11191e" opacity="0.34" />
-        <path d="M-57 -20 H-31 M-52 -8 H-34" stroke="#dce8ea" strokeWidth="4" opacity="0.65" />
-        <circle cy="-72" r="16" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
-        <path d="M-15 -77 Q0 -91 16 -75 L12 -65 H-13 Z" fill="#2d2727" />
-        <path d="M-12 -56 Q1 -62 14 -52 L8 -13 H-13 Z" fill="#756aa9" stroke="#34314b" strokeWidth="4" />
-        <rect x="-6" y="-44" width="13" height="14" rx="2" fill="#f2e8d5" />
-        <path d="M-1 -41 V-33 M-5 -37 H4" stroke="#6b5a8f" strokeWidth="2" />
-        <path d="M-6 -14 L-38 22 M2 -13 L35 14" fill="none" stroke="#263442" strokeWidth="13" strokeLinecap="round" />
-        <path d="M-42 24 H-25 M31 17 H48" stroke="#edf1eb" strokeWidth="7" strokeLinecap="round" />
-        <path d="M-9 -49 L-40 -27 M12 -46 L39 -65" fill="none" stroke="#756aa9" strokeWidth="11" strokeLinecap="round" />
-        <circle cx="-40" cy="-27" r="5" fill="#d9aa70" /><circle cx="39" cy="-65" r="5" fill="#d9aa70" />
+        <path d="M-63 -22 H-35 M-58 -10 H-39 M-69 2 H-49" stroke="#dce8ea" strokeWidth="4" opacity="0.62" />
+        <g className="canteen-bike-runner-body">
+          <circle cy="-75" r="17" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
+          <path d="M-16 -80 Q-5 -96 13 -87 L18 -72 L7 -64 H-15 Z" fill="#2d2727" />
+          <path d="M-2 -73 H10" stroke="#382a25" strokeWidth="2" />
+          <circle cx="11" cy="-74" r="2" fill="#29201e" />
+          <path d="M-14 -57 Q0 -64 17 -53 L10 -13 H-14 Z" fill="#756aa9" stroke="#34314b" strokeWidth="4" />
+          <path d="M-8 -50 H11" stroke="#a89dd6" strokeWidth="3" />
+          <rect x="-4" y="-45" width="14" height="16" rx="2" fill="#f2e8d5" />
+          <path d="M3 -42 V-32 M-1 -37 H7" stroke="#6b5a8f" strokeWidth="2" />
+          <path d="M15 -51 Q31 -50 30 -28 H15 Z" fill="#293c50" stroke="#172534" strokeWidth="3" />
+        </g>
+        <g className="canteen-bike-runner-leg is-leading">
+          <path d="M-5 -14 L-39 22" fill="none" stroke="#263442" strokeWidth="13" strokeLinecap="round" />
+          <path d="M-43 24 H-25" stroke="#edf1eb" strokeWidth="7" strokeLinecap="round" />
+        </g>
+        <g className="canteen-bike-runner-leg is-trailing">
+          <path d="M3 -13 L36 14" fill="none" stroke="#33465a" strokeWidth="13" strokeLinecap="round" />
+          <path d="M32 17 H49" stroke="#edf1eb" strokeWidth="7" strokeLinecap="round" />
+        </g>
+        <g className="canteen-bike-runner-arm is-leading">
+          <path d="M-10 -50 L-41 -27" fill="none" stroke="#756aa9" strokeWidth="11" strokeLinecap="round" />
+          <circle cx="-41" cy="-27" r="5" fill="#d9aa70" />
+        </g>
+        <g className="canteen-bike-runner-arm is-trailing">
+          <path d="M12 -47 L40 -65" fill="none" stroke="#756aa9" strokeWidth="11" strokeLinecap="round" />
+          <circle cx="40" cy="-65" r="5" fill="#d9aa70" />
+        </g>
       </g>
     );
   }
   return (
     <g className="canteen-bike-obstacle is-bicycle" transform={transform} opacity={opacity} filter="url(#bike-rush-shadow)">
-      <ellipse cy="38" rx="58" ry="11" fill="#11191e" opacity="0.34" />
-      {[-31, 31].map((wheelX) => (
-        <g key={wheelX} transform={`translate(${wheelX} 15)`}>
-          <ellipse rx="15" ry="29" fill="none" stroke="#17212a" strokeWidth="7" />
-          <ellipse rx="11" ry="24" fill="none" stroke="#87969c" strokeWidth="2" />
-          <path d="M0 -23 V23 M-10 0 H10 M-8 -18 L8 18 M8 -18 L-8 18" stroke="#9eaaae" strokeWidth="1.6" />
-        </g>
-      ))}
-      <path d="M-31 15 L-2 -13 L31 15 L-6 15 Z M-2 -13 L20 -18" fill="none" stroke="#d0b34d" strokeWidth="8" strokeLinejoin="round" />
-      <circle cx="-6" cy="15" r="8" fill="#26333a" stroke="#e4c95a" strokeWidth="3" />
-      <path d="M18 -20 L34 -28 M31 -29 L42 -24" stroke="#26333a" strokeWidth="5" strokeLinecap="round" />
-      <path d="M31 4 H52 V19 H35" fill="#687b82" stroke="#26333a" strokeWidth="4" />
-      <path d="M34 7 H49 M34 12 H49" stroke="#d8e0dd" strokeWidth="2" />
-      <circle cx="2" cy="-66" r="15" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
-      <path d="M-12 -71 Q2 -84 17 -69 L14 -59 H-11 Z" fill="#234a66" />
-      <path d="M0 -50 L-6 -12" stroke="#e97b70" strokeWidth="17" strokeLinecap="round" />
-      <path d="M-2 -43 L-25 -19 M6 -42 L26 -26" stroke="#e97b70" strokeWidth="10" strokeLinecap="round" />
-      <path d="M-6 -13 L-19 12 M-2 -12 L12 14" stroke="#283743" strokeWidth="10" strokeLinecap="round" />
+      <ellipse cy="32" rx="43" ry="10" fill="#11191e" opacity="0.34" />
+      <g className="canteen-bike-wheel" transform="translate(0 12)">
+        <ellipse rx="16" ry="39" fill="none" stroke="#17212a" strokeWidth="8" />
+        <ellipse rx="10" ry="33" fill="none" stroke="#87969c" strokeWidth="2" />
+        <path d="M0 -31 V31 M-8 -22 L8 22 M8 -22 L-8 22" stroke="#9eaaae" strokeWidth="1.6" />
+      </g>
+      <path d="M-15 10 L-10 -26 L12 -26 L16 10 L0 20 Z M-10 -26 L0 8 L12 -26" fill="none" stroke="#d0b34d" strokeWidth="7" strokeLinejoin="round" />
+      <path d="M0 -27 V-43 M-24 -47 H24" stroke="#26333a" strokeWidth="5" strokeLinecap="round" />
+      <rect x="-19" y="-37" width="38" height="8" rx="3" fill="#26333a" />
+      <circle cy="-86" r="16" fill="#d9aa70" stroke="#26313a" strokeWidth="4" />
+      <path d="M-15 -91 Q0 -106 16 -89 L13 -78 H-13 Z" fill="#234a66" />
+      <path d="M-16 -72 Q0 -79 16 -70 L18 -35 H-18 Z" fill="#e97b70" stroke="#793d3b" strokeWidth="4" />
+      <path d="M-13 -65 L-25 -46 M13 -65 L25 -46" stroke="#e97b70" strokeWidth="10" strokeLinecap="round" />
+      <path d="M-8 -35 L-15 -8 M8 -35 L15 -5" stroke="#283743" strokeWidth="10" strokeLinecap="round" />
+      <rect x="-20" y="-30" width="40" height="18" rx="3" fill="#687b82" stroke="#26333a" strokeWidth="4" />
+      <path d="M-15 -25 H15 M-15 -19 H15" stroke="#d8e0dd" strokeWidth="2" />
     </g>
   );
 }

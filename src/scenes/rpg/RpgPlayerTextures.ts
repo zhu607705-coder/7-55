@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
 import playerDown0Url from "../../assets/rpg/player/player_down_0.png";
 import playerDown1Url from "../../assets/rpg/player/player_down_1.png";
 import playerDown2Url from "../../assets/rpg/player/player_down_2.png";
@@ -18,7 +19,7 @@ export const RPG_PLAYER_FRAME_WIDTH = 96;
 export const RPG_PLAYER_FRAME_HEIGHT = 128;
 export const RPG_PLAYER_DISPLAY_SCALE = 0.65;
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
-export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = 0.5;
+export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = campusRuntimeData.perspective.baseMultiplier;
 export const RPG_PLAYER_WALK_FRAME_MS = 90;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
@@ -29,10 +30,10 @@ export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
 });
 
 export const RPG_CAMPUS_PLAYER_PERSPECTIVE = Object.freeze({
-  farY: 0,
-  nearY: 3420,
-  farMultiplier: 0.96,
-  nearMultiplier: 1.08
+  farY: campusRuntimeData.perspective.farY,
+  nearY: campusRuntimeData.perspective.nearY,
+  farMultiplier: campusRuntimeData.perspective.farMultiplier,
+  nearMultiplier: campusRuntimeData.perspective.nearMultiplier
 });
 
 const RPG_PLAYER_GROUND_OFFSET_Y = RPG_PLAYER_FRAME_HEIGHT * RPG_PLAYER_DISPLAY_SCALE / 2;

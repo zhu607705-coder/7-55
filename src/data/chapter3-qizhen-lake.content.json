@@ -2,6 +2,18 @@
   "chapterId": "chapter-3-qizhen-lake",
   "locationTitle": "启真湖",
   "locationSearch": {
+    "approachTransition": {
+      "label": "剧场外 · 湖畔方向",
+      "paperLeadMs": 420,
+      "trailFadeAtMs": 2700,
+      "dialogueAtMs": [700, 2800, 5700, 8000],
+      "completeAtMs": 10300,
+      "visualBeats": [
+        "湿纸从剧场门边窜出，贴着路面向东。",
+        "路边只留下几段不连续的水迹。",
+        "水迹在湖畔一侧中断，无法直接确认地点。"
+      ]
+    },
     "dialogue": [
       "玩家：它去哪了？",
       "系统：不知道。它这次没有沿路掉纸屑。",

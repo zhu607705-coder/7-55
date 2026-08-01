@@ -106,14 +106,14 @@ export function drawZijingangWorld(scene: Phaser.Scene, { addObstacle }: Zijinga
   const source = texture.getSourceImage() as HTMLImageElement;
   if (source.naturalWidth !== ZIJINGANG_WORLD.width || source.naturalHeight !== ZIJINGANG_WORLD.height) {
     throw new Error(
-      `Campus plate must match the top-down world: expected ${ZIJINGANG_WORLD.width}x${ZIJINGANG_WORLD.height}, received ${source.naturalWidth}x${source.naturalHeight}`
+      `Campus plate must match the loop panorama: expected ${ZIJINGANG_WORLD.width}x${ZIJINGANG_WORLD.height}, received ${source.naturalWidth}x${source.naturalHeight}`
     );
   }
   texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
   scene.add.image(0, 0, ZIJINGANG_CAMPUS_PLATE_KEY)
     .setOrigin(0)
     .setDepth(0)
-    .setData("campusProjection", "north-up-top-down-2d");
+    .setData("campusProjection", "side-view-pseudo-2.5d-loop");
 
   CAMPUS_COLLISION_RECTS.forEach((rect) => {
     addObstacle(rect.x, rect.y, rect.width, rect.height);

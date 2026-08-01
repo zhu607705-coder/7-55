@@ -80,6 +80,7 @@ export class RpgCameraController {
   private inertiaX = 0;
   private inertiaY = 0;
   private zoomTween: ZoomTween | null = null;
+  private cinematicReturnZoom: number | null = null;
   private lastDeadzoneWidth = -1;
   private lastDeadzoneHeight = -1;
 
@@ -162,6 +163,30 @@ export class RpgCameraController {
       return;
     }
     this.resumeFollow(immediate);
+  }
+
+  beginCinematicFollow(offsetY: number, zoom: number): void {
+    if (this.destroyed || !this.attached) return;
+    this.stopInertia();
+    this.completeZoomTween();
+    if (this.cinematicReturnZoom === null) {
+      this.cinematicReturnZoom = this.camera.zoom;
+    }
+    this.manual = false;
+    this.camera
+      .setZoom(Phaser.Math.Clamp(zoom, this.minZoom, this.maxZoom))
+      .setDeadzone(0, 0)
+      .startFollow(this.player, true, 0.075, 0.075, 0, offsetY)
+      .centerOn(this.player.x, this.player.y + offsetY);
+  }
+
+  endCinematicFollow(): void {
+    if (this.destroyed || !this.attached) return;
+    if (this.cinematicReturnZoom !== null) {
+      this.camera.setZoom(this.cinematicReturnZoom);
+      this.cinematicReturnZoom = null;
+    }
+    this.resumeFollow(true);
   }
 
   zoomBy(direction: number): void {
