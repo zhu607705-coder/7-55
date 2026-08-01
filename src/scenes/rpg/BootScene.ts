@@ -98,6 +98,12 @@ export class BootScene extends Phaser.Scene {
   private qizhenGateMarker: Phaser.GameObjects.Arc | null = null;
   private qizhenGatePrompt: Phaser.GameObjects.Text | null = null;
   private qizhenBriefingQueued = false;
+  private qizhenApproachCinematicActive = false;
+  private qizhenTransitionPaper: Phaser.GameObjects.Image | null = null;
+  private qizhenTransitionTrail: Phaser.GameObjects.Ellipse[] = [];
+  private campusLoopWrapping = false;
+  private campusLoopCooldownUntil = 0;
+  private campusLoopWrapCount = 0;
 
   constructor() {
     super("campus-bootstrap");
@@ -133,6 +139,8 @@ export class BootScene extends Phaser.Scene {
     this.canteenPhase = state.canteenHunt.phase;
     const spawn = state.rpgCheckpoint === "campus_canteen_gate"
       ? CANTEEN_APPROACH
+      : state.rpgCheckpoint === "campus_qizhen_transition_stop"
+      ? campusRuntimeData.qizhen.approachTransition.stop
       : state.rpgCheckpoint === "campus_qizhen_gate"
       ? QIZHEN_APPROACH
       : this.canteenHuntActive
@@ -167,7 +175,7 @@ export class BootScene extends Phaser.Scene {
     // 24px 采样格：玩家足盒宽 ~20px，16px 格会把窄于足盒的缝隙（如路缘石之间的缺口）
     // 标为可走，寻路会把玩家卡进物理无法穿行的死角；24px 保守合并保证 nav 通道可容纳足盒。
     this.pathGrid = new CampusPathGrid(campusRuntimeData.walkability, 24);
-    this.movement = new RpgMovementController(this.player, { walkSpeed: 110, runSpeed: 160 });
+    this.movement = new RpgMovementController(this.player, { walkSpeed: 220, runSpeed: 320 });
     this.movement.onPathFinished = () => this.clearPathIndicator();
 
     this.cameraController = new RpgCameraController(this, {
@@ -253,6 +261,16 @@ export class BootScene extends Phaser.Scene {
     const y = Math.max(-1, Math.min(1, keyboardY + this.virtualDirection.y));
 
     this.updateContextualLandmarkLabel();
+    if (this.qizhenApproachCinematicActive) {
+      this.interactRequested = false;
+      this.movement.setManualInput(0, 0, false);
+      this.movement.clearPath();
+      this.player.setVelocity(0);
+      this.player.setDepth(this.player.y + 30);
+      this.cameraController.update(delta);
+      this.publishDebugState();
+      return;
+    }
     this.updateLibraryGate();
     this.updateCanteenGate(state);
     if (this.canteenHuntActive) {
@@ -284,6 +302,7 @@ export class BootScene extends Phaser.Scene {
       this.player.y,
       this.player.depth
     );
+    this.updateCampusLoop();
     this.cameraController.update(delta);
   }
 
@@ -841,14 +860,213 @@ export class BootScene extends Phaser.Scene {
       && !this.qizhenBriefingQueued
     ) {
       this.qizhenBriefingQueued = true;
-      this.emitCanteenSequence(qizhenContent.locationSearch.dialogue);
-      this.time.delayedCall(qizhenContent.locationSearch.dialogue.length * 2500, () => {
-        this.bridge.emit("rpg_qizhen_location_briefing_seen_requested");
-      });
+      this.startQizhenApproachTransition();
     }
     if (state.qizhenLake.active && !["inactive", "location_search"].includes(state.qizhenLake.phase)) {
       this.createQizhenGate();
     }
+  }
+
+  private startQizhenApproachTransition(): void {
+    const runtime = campusRuntimeData.qizhen.approachTransition;
+    const content = qizhenContent.locationSearch.approachTransition;
+    this.qizhenApproachCinematicActive = true;
+    this.movement.clearPath();
+    this.clearPathIndicator();
+    this.virtualDirection = { x: 0, y: 0 };
+    this.player.setPosition(runtime.start.x, runtime.start.y);
+    this.player.setVelocity(0);
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (body) {
+      body.stop();
+      body.enable = false;
+    }
+    this.cameraController.beginCinematicFollow(
+      -270,
+      CAMERA_MIN_ZOOM * this.campusRenderScale
+    );
+    this.ensureQizhenTransitionTexture();
+
+    this.qizhenTransitionPaper = this.add.image(
+      runtime.paperStart.x,
+      runtime.paperStart.y,
+      "qizhen-transition-wet-paper"
+    )
+      .setDepth(runtime.paperStart.y + 140)
+      .setAngle(-8);
+
+    const trailStartX = runtime.paperStart.x + 28;
+    const trailEndX = runtime.paperStop.x - 120;
+    const trailCount = Math.max(
+      6,
+      Math.floor((trailEndX - trailStartX) / runtime.trailSpacing)
+    );
+    for (let index = 0; index <= trailCount; index += 1) {
+      const progress = index / Math.max(1, trailCount);
+      const x = Phaser.Math.Linear(trailStartX, trailEndX, progress);
+      const y = Phaser.Math.Linear(
+        runtime.paperStart.y + 4,
+        runtime.paperStop.y + 4,
+        progress
+      ) + Math.sin(index * 1.7) * 3;
+      const drop = this.add.ellipse(
+        x,
+        y,
+        index % 3 === 0 ? 15 : 9,
+        index % 2 === 0 ? 5 : 4,
+        0x8fd8e6,
+        0
+      ).setDepth(y + 8);
+      this.qizhenTransitionTrail.push(drop);
+      this.time.delayedCall(content.paperLeadMs + index * 95, () => {
+        if (!drop.active) return;
+        drop.setAlpha(0.72);
+        this.tweens.add({
+          targets: drop,
+          alpha: 0.18,
+          scaleX: 1.45,
+          duration: 860,
+          ease: "Sine.easeOut"
+        });
+      });
+      this.time.delayedCall(content.trailFadeAtMs + index * 34, () => {
+        if (!drop.active) return;
+        this.tweens.add({
+          targets: drop,
+          alpha: 0,
+          duration: 900,
+          onComplete: () => drop.destroy()
+        });
+      });
+    }
+
+    this.tweens.add({
+      targets: this.qizhenTransitionPaper,
+      x: runtime.paperStop.x,
+      y: runtime.paperStop.y,
+      angle: 18,
+      duration: 4550,
+      ease: "Sine.easeInOut",
+      onUpdate: (_tween, target) => {
+        const paper = target as Phaser.GameObjects.Image;
+        paper.setDepth(paper.y + 140);
+        paper.setScale(1 + Math.sin(this.time.now / 115) * 0.08);
+      },
+      onComplete: () => {
+        if (!this.qizhenTransitionPaper?.active) return;
+        this.tweens.add({
+          targets: this.qizhenTransitionPaper,
+          alpha: 0,
+          y: runtime.paperStop.y - 18,
+          duration: 720,
+          onComplete: () => {
+            this.qizhenTransitionPaper?.destroy();
+            this.qizhenTransitionPaper = null;
+          }
+        });
+      }
+    });
+
+    this.movePlayerThroughQizhenTransition(0);
+    [0, 2250, 5000].forEach((atMs, index) => {
+      const text = content.visualBeats[index];
+      if (!text) return;
+      this.time.delayedCall(atMs, () => {
+        this.bridge.emit("rpg_subtitle", {
+          text,
+          tone: "narrator",
+          durationMs: index === 2 ? 620 : 540
+        });
+      });
+    });
+    content.dialogueAtMs.forEach((atMs, index) => {
+      const text = qizhenContent.locationSearch.dialogue[index];
+      if (!text) return;
+      this.time.delayedCall(atMs, () => {
+        this.bridge.emit("rpg_subtitle", {
+          text,
+          tone: text.startsWith("玩家：") ? "player" : "system",
+          durationMs: 1980
+        });
+      });
+    });
+    this.time.delayedCall(content.completeAtMs, () => {
+      this.finishQizhenApproachTransition();
+    });
+  }
+
+  private ensureQizhenTransitionTexture(): void {
+    if (this.textures.exists("qizhen-transition-wet-paper")) return;
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0x10222c, 0.34).fillEllipse(24, 22, 42, 11);
+    graphics.fillStyle(0xdce6df, 1).fillPoints([
+      new Phaser.Geom.Point(4, 4),
+      new Phaser.Geom.Point(43, 1),
+      new Phaser.Geom.Point(47, 25),
+      new Phaser.Geom.Point(8, 29)
+    ]);
+    graphics.lineStyle(3, 0x315f6b, 1).strokePoints([
+      new Phaser.Geom.Point(4, 4),
+      new Phaser.Geom.Point(43, 1),
+      new Phaser.Geom.Point(47, 25),
+      new Phaser.Geom.Point(8, 29),
+      new Phaser.Geom.Point(4, 4)
+    ]);
+    graphics.fillStyle(0x8ebac2, 0.9).fillTriangle(34, 2, 43, 1, 45, 10);
+    graphics.lineStyle(2, 0x577a82, 0.86)
+      .lineBetween(12, 10, 34, 8)
+      .lineBetween(11, 16, 38, 14)
+      .lineBetween(15, 22, 33, 20);
+    graphics.generateTexture("qizhen-transition-wet-paper", 52, 34);
+    graphics.destroy();
+  }
+
+  private movePlayerThroughQizhenTransition(index: number): void {
+    const waypoints = campusRuntimeData.qizhen.approachTransition.waypoints;
+    const waypoint = waypoints[index];
+    if (!waypoint || !this.qizhenApproachCinematicActive) {
+      this.playerAnimator.update(new Phaser.Math.Vector2(0, 0), this.time.now);
+      return;
+    }
+    const previousX = this.player.x;
+    const previousY = this.player.y;
+    this.tweens.add({
+      targets: this.player,
+      x: waypoint.x,
+      y: waypoint.y,
+      duration: waypoint.durationMs,
+      ease: "Sine.easeInOut",
+      onUpdate: () => {
+        const direction = new Phaser.Math.Vector2(
+          this.player.x - previousX,
+          this.player.y - previousY
+        );
+        this.playerAnimator.update(direction, this.time.now);
+        this.player.setDepth(this.player.y + 30);
+      },
+      onComplete: () => this.movePlayerThroughQizhenTransition(index + 1)
+    });
+  }
+
+  private finishQizhenApproachTransition(): void {
+    if (!this.qizhenApproachCinematicActive) return;
+    this.qizhenApproachCinematicActive = false;
+    const stop = campusRuntimeData.qizhen.approachTransition.stop;
+    this.player.setPosition(stop.x, stop.y);
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (body) {
+      body.enable = true;
+      body.reset(stop.x, stop.y);
+    }
+    this.player.setVelocity(0);
+    this.playerAnimator.update(new Phaser.Math.Vector2(0, 0), this.time.now);
+    this.qizhenTransitionTrail.forEach((drop) => drop.destroy());
+    this.qizhenTransitionTrail = [];
+    this.qizhenTransitionPaper?.destroy();
+    this.qizhenTransitionPaper = null;
+    this.cameraController.endCinematicFollow();
+    this.bridge.setCheckpoint("campus_qizhen_transition_stop");
+    this.bridge.emit("rpg_qizhen_location_briefing_seen_requested");
   }
 
   private createQizhenGate(): void {
@@ -976,8 +1194,58 @@ export class BootScene extends Phaser.Scene {
     });
   }
 
+  private updateCampusLoop(): void {
+    const loop = campusRuntimeData.loop;
+    if (
+      !loop.enabled
+      || this.campusLoopWrapping
+      || this.qizhenApproachCinematicActive
+      || this.time.now < this.campusLoopCooldownUntil
+      || this.player.y < loop.roadTop
+      || this.player.y > loop.roadBottom
+    ) {
+      return;
+    }
+    const direction = this.player.x <= loop.leftTriggerX
+      ? "left"
+      : this.player.x >= loop.rightTriggerX
+        ? "right"
+        : null;
+    if (!direction) return;
+
+    this.campusLoopWrapping = true;
+    this.movement.clearPath();
+    this.clearPathIndicator();
+    this.player.setVelocity(0);
+    const arrival = direction === "left" ? loop.rightArrival : loop.leftArrival;
+    this.cameras.main.fadeOut(loop.fadeMs, 0, 0, 0);
+    this.time.delayedCall(loop.fadeMs, () => {
+      this.player.setPosition(arrival.x, arrival.y);
+      const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+      body?.reset(arrival.x, arrival.y);
+      this.cameraController.recenter(true);
+      this.cameras.main.fadeIn(loop.fadeMs, 0, 0, 0);
+      this.campusLoopWrapCount += 1;
+      if (this.campusLoopWrapCount === 1) {
+        this.bridge.emit("rpg_subtitle", {
+          text: "沿湖道路已从校园另一侧接回。",
+          tone: "task",
+          durationMs: 1500
+        });
+      }
+      this.campusLoopCooldownUntil = this.time.now + loop.cooldownMs;
+      this.time.delayedCall(loop.cooldownMs, () => {
+        this.campusLoopWrapping = false;
+      });
+    });
+  }
+
   private handleWorldTap(worldX: number, worldY: number): void {
-    if (!this.bridge.getState().actOne.movementEnabled) {
+    if (
+      this.qizhenApproachCinematicActive
+      || this.campusLoopWrapping
+      || !this.bridge.getState().actOne.movementEnabled
+    ) {
       return;
     }
     // walkability 掩码描述的是足盒可站立区域，而路点需要驱动精灵锚点；
@@ -1111,6 +1379,18 @@ export class BootScene extends Phaser.Scene {
       path: {
         followingPath: this.movement.followingPath,
         pathLength: this.currentPathLength
+      },
+      campusLoop: {
+        enabled: campusRuntimeData.loop.enabled,
+        wrapping: this.campusLoopWrapping,
+        wrapCount: this.campusLoopWrapCount,
+        leftTriggerX: campusRuntimeData.loop.leftTriggerX,
+        rightTriggerX: campusRuntimeData.loop.rightTriggerX
+      },
+      qizhenApproach: {
+        active: this.qizhenApproachCinematicActive,
+        briefingSeen: this.bridge.getState().qizhenLake.locationBriefingSeen,
+        stop: campusRuntimeData.qizhen.approachTransition.stop
       }
     });
   }

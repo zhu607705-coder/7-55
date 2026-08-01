@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Calibrate collision and runtime metadata for the approved wide campus plate."""
+"""Calibrate collision, story gates, depth, and wrap metadata for the loop panorama."""
 
 from __future__ import annotations
 
@@ -8,76 +8,117 @@ import hashlib
 import json
 from pathlib import Path
 
-import numpy as np
 from PIL import Image, ImageDraw
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PLATE_PATH = ROOT / "src/assets/rpg/campus/zijingang_campus_plate.png"
-MASK_PATH = ROOT / "src/assets/rpg/campus/zijingang_road_walkability_mask.png"
+CAMPUS_ASSET_DIR = ROOT / "src/assets/rpg/campus"
+PLATE_PATH = CAMPUS_ASSET_DIR / "zijingang_campus_loop_panorama.png"
+MASK_PATH = CAMPUS_ASSET_DIR / "zijingang_road_walkability_mask.png"
+LEGACY_PANORAMA_PATH = (
+    CAMPUS_ASSET_DIR / "source/panorama/zijingang_legacy_panorama.png"
+)
+QIZHEN_PLATE_PATH = ROOT / "src/assets/rpg/interiors/qizhen_lake_reflection.png"
 RUNTIME_PATH = ROOT / "src/data/maps/zijingang-campus-runtime.json"
 
-WORLD_WIDTH = 11744
+WORLD_WIDTH = 13668
 WORLD_HEIGHT = 1084
 CELL_SIZE = 4
-
-# Walkable pixels describe ground beneath the shared player foot box.  The old
-# texture classifier fragmented the asphalt and paving whenever it encountered a
-# drain, lane marking, shadow, or a slightly different paving colour.  The wide
-# panorama has a stable foreground promenade, so source-pixel geometry is both
-# more accurate and reproducible than classifying the rendered colours.
-# The visible roadside pavement begins at y=864 across the complete panorama.
-# Keeping the former y=880 cutoff left the canonical player foot box partly
-# inside the blocked band at the y=842 story checkpoint, so stepping sideways
-# away from an entrance immediately hit an invisible wall.
 PROMENADE_SURFACE_TOP = 864
+INSERT_SPLIT_X = 8400
+INSERT_WIDTH = 1924
 
-# Each entry is a visible paved route from the continuous foreground promenade
-# to a building entrance.  These are intentionally narrow enough to leave the
-# adjacent flower beds, fences, water, and facades solid.
+SPAWN = {"x": 800, "y": 968}
+LIBRARY_GATE = {"x": 10924, "y": 770, "radius": 100}
+LIBRARY_APPROACH = {"x": 10994, "y": 770}
+FOUNDATION_LIBRARY = {"x": 10924, "y": 690}
+
+CANTEEN = {
+    "huntSpawn": {"x": 12424, "y": 1004},
+    "gate": {"x": 756, "y": 756, "radius": 88},
+    "approach": {"x": 756, "y": 756},
+    "bike": {"x": 980, "y": 973},
+}
+THEATER = {
+    "gate": {"x": 7730, "y": 735, "radius": 86},
+    "approach": {"x": 7730, "y": 840},
+}
+QIZHEN = {
+    "gate": {"x": 9362, "y": 900, "radius": 110},
+    "approach": {"x": 9362, "y": 930},
+    "segment": {
+        "left": INSERT_SPLIT_X,
+        "right": INSERT_SPLIT_X + INSERT_WIDTH,
+        "center": INSERT_SPLIT_X + INSERT_WIDTH // 2,
+    },
+    "approachTransition": {
+        "start": {"x": 7730, "y": 840},
+        "stop": {"x": 9040, "y": 930},
+        "waypoints": [
+            {"x": 7820, "y": 900, "durationMs": 650},
+            {"x": 8150, "y": 930, "durationMs": 1250},
+            {"x": 8460, "y": 930, "durationMs": 1200},
+            {"x": 8780, "y": 930, "durationMs": 1400},
+            {"x": 9040, "y": 930, "durationMs": 1100},
+        ],
+        "paperStart": {"x": 7770, "y": 910},
+        "paperStop": {"x": 9060, "y": 914},
+        "trailSpacing": 74,
+    },
+}
+LOOP = {
+    "enabled": True,
+    "roadTop": PROMENADE_SURFACE_TOP,
+    "roadBottom": WORLD_HEIGHT,
+    "leftTriggerX": 120,
+    "rightTriggerX": WORLD_WIDTH - 120,
+    "leftArrival": {"x": 360, "y": 960},
+    "rightArrival": {"x": WORLD_WIDTH - 360, "y": 960},
+    "fadeMs": 180,
+    "cooldownMs": 900,
+}
+PERSPECTIVE = {
+    "farY": 840,
+    "nearY": 1040,
+    "farMultiplier": 1.0,
+    "nearMultiplier": 1.5,
+    "baseMultiplier": 1.5,
+}
+
 ENTRANCE_APPROACHES = (
     {"id": "dining_hall", "left": 560, "right": 930, "top": 700},
     {"id": "west_round_hall", "left": 5440, "right": 5750, "top": 744},
-    {"id": "museum", "left": 7580, "right": 7770, "top": 720},
+    {"id": "theater", "left": 7672, "right": 7788, "top": 700},
 )
 
-# Several visible campus walks are angled instead of rectangular. Keeping their
-# source-pixel outlines opens the paved route without opening the flower bed or
-# fence beside it.
 PUBLIC_PATH_POLYGONS = (
     {
         "id": "museum_central_gate",
         "points": ((6130, 880), (6270, 880), (6260, 720), (6150, 720)),
     },
     {
+        "id": "foundation_library_entry",
+        "points": (
+            (11044, 864),
+            (11104, 864),
+            (11104, 812),
+            (11224, 812),
+            (11224, 760),
+            (10674, 760),
+            (10674, 812),
+            (11044, 812),
+        ),
+    },
+    {
         "id": "east_riverside_walk",
-        "points": ((9940, 900), (10060, 900), (9955, 600), (9870, 600)),
+        "points": ((11864, 900), (11984, 900), (11879, 600), (11794, 600)),
     },
     {
         "id": "east_main_hall_walk",
-        "points": ((11030, 900), (11190, 900), (10965, 690), (10880, 690)),
-    },
-    {
-        # The library flower bed blocks the straight line below the door.  This
-        # L-shaped route follows the real right-side gap and then the paved
-        # forecourt, so the player can reach the entrance without crossing soil.
-        "id": "foundation_library_entry",
-        "points": (
-            (9120, 864),
-            (9180, 864),
-            (9180, 812),
-            (9300, 812),
-            (9300, 760),
-            (8750, 760),
-            (8750, 812),
-            (9120, 812),
-        ),
+        "points": ((12954, 900), (13114, 900), (12889, 690), (12804, 690)),
     },
 )
 
-# The canteen forecourt is wider than its doorway.  This polygon follows the
-# visible stone paving while keeping the billboard, bins, utility cabinet, and
-# surrounding lawn outside the playable ground.
 CANTEEN_FORECOURT = (
     (100, 744),
     (1260, 744),
@@ -85,21 +126,12 @@ CANTEEN_FORECOURT = (
     (0, PROMENADE_SURFACE_TOP),
 )
 
-# Foreground props inside otherwise walkable paving retain a compact collision
-# footprint.  Coordinates are measured from the final panorama, not inferred
-# from colour or browser viewport size.
 FOREGROUND_OBSTACLES = (
     {"id": "canteen_billboard", "left": 88, "right": 330, "top": 760, "bottom": 887},
     {"id": "canteen_vending_machine", "left": 350, "right": 456, "top": 736, "bottom": 874},
     {"id": "canteen_bins", "left": 322, "right": 474, "top": 850, "bottom": 904},
     {"id": "canteen_utility_box", "left": 1284, "right": 1396, "top": 776, "bottom": 900},
 )
-
-# The regenerated east plate places the library door at x=9000. Interaction and
-# collision use the same source coordinate, leaving both flower beds blocked.
-LIBRARY_GATE = {"x": 9000, "y": 770, "radius": 100}
-LIBRARY_APPROACH = {"x": 9070, "y": 770}
-FOUNDATION_LIBRARY = {"x": 9000, "y": 690}
 
 
 def sha256(path: Path) -> str:
@@ -110,153 +142,194 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def aligned_cell(value: int, *, edge: str) -> int:
-    if edge == "start":
-        return value // CELL_SIZE
-    return (value + CELL_SIZE - 1) // CELL_SIZE
+def to_cell(value: int, *, end: bool = False) -> int:
+    return (value + CELL_SIZE - 1) // CELL_SIZE if end else value // CELL_SIZE
 
 
-def grid_rect(
-    grid: np.ndarray,
+def draw_grid_rect(
+    draw: ImageDraw.ImageDraw,
     *,
     left: int,
     right: int,
     top: int,
     bottom: int,
-    walkable: bool,
+    fill: int,
 ) -> None:
-    grid[
-        aligned_cell(top, edge="start"):aligned_cell(bottom, edge="end"),
-        aligned_cell(left, edge="start"):aligned_cell(right, edge="end"),
-    ] = walkable
-
-
-def build_walkability_grid() -> np.ndarray:
-    grid_width = WORLD_WIDTH // CELL_SIZE
-    grid_height = WORLD_HEIGHT // CELL_SIZE
-    grid = np.zeros((grid_height, grid_width), dtype=bool)
-
-    # One connected road-and-sidewalk surface removes false walls at every lane
-    # marking, drain, curb shadow, and stitched scene boundary.
-    grid_rect(
-        grid,
-        left=0,
-        right=WORLD_WIDTH,
-        top=PROMENADE_SURFACE_TOP,
-        bottom=WORLD_HEIGHT,
-        walkable=True,
+    draw.rectangle(
+        (
+            to_cell(left),
+            to_cell(top),
+            max(to_cell(left), to_cell(right, end=True) - 1),
+            max(to_cell(top), to_cell(bottom, end=True) - 1),
+        ),
+        fill=fill,
     )
 
-    polygon = [
-        (int(round(x / CELL_SIZE)), int(round(y / CELL_SIZE)))
-        for x, y in CANTEEN_FORECOURT
-    ]
-    polygon_mask = Image.new("1", (grid_width, grid_height), 0)
-    ImageDraw.Draw(polygon_mask).polygon(polygon, fill=1)
-    grid |= np.asarray(polygon_mask, dtype=bool)
 
-    for approach in ENTRANCE_APPROACHES:
-        grid_rect(
-            grid,
-            left=approach["left"],
-            right=approach["right"],
-            top=approach["top"],
-            bottom=WORLD_HEIGHT,
-            walkable=True,
-        )
+def draw_grid_polygon(
+    draw: ImageDraw.ImageDraw,
+    points: tuple[tuple[int, int], ...],
+    *,
+    fill: int,
+) -> None:
+    draw.polygon(
+        [(round(x / CELL_SIZE), round(y / CELL_SIZE)) for x, y in points],
+        fill=fill,
+    )
 
-    for path in PUBLIC_PATH_POLYGONS:
-        polygon = [
-            (int(round(x / CELL_SIZE)), int(round(y / CELL_SIZE)))
-            for x, y in path["points"]
-        ]
-        path_mask = Image.new("1", (grid_width, grid_height), 0)
-        ImageDraw.Draw(path_mask).polygon(polygon, fill=1)
-        grid |= np.asarray(path_mask, dtype=bool)
 
-    for obstacle in FOREGROUND_OBSTACLES:
-        grid_rect(
-            grid,
-            left=obstacle["left"],
-            right=obstacle["right"],
-            top=obstacle["top"],
-            bottom=obstacle["bottom"],
-            walkable=False,
-        )
+def is_walkable(grid: bytearray, width: int, x: int, y: int) -> bool:
+    grid_x = x // CELL_SIZE
+    grid_y = y // CELL_SIZE
+    return (
+        0 <= grid_x < width
+        and 0 <= grid_y < WORLD_HEIGHT // CELL_SIZE
+        and bool(grid[grid_y * width + grid_x])
+    )
 
-    return grid
+
+def require_walkable(grid: bytearray, width: int, label: str, point: dict[str, int]) -> None:
+    if not is_walkable(grid, width, point["x"], point["y"]):
+        raise RuntimeError(f"{label} must be walkable at {point['x']},{point['y']}")
+
+
+def pack_little_endian_bits(grid: bytearray) -> bytes:
+    packed = bytearray((len(grid) + 7) // 8)
+    for index, value in enumerate(grid):
+        if value:
+            packed[index >> 3] |= 1 << (index & 7)
+    return bytes(packed)
 
 
 def main() -> None:
     plate = Image.open(PLATE_PATH).convert("RGB")
     if plate.size != (WORLD_WIDTH, WORLD_HEIGHT):
         raise RuntimeError(
-            f"Wide campus plate must be {WORLD_WIDTH}x{WORLD_HEIGHT}; received "
-            f"{plate.width}x{plate.height}"
+            f"Loop panorama must be {WORLD_WIDTH}x{WORLD_HEIGHT}; "
+            f"received {plate.width}x{plate.height}"
         )
 
     grid_width = WORLD_WIDTH // CELL_SIZE
     grid_height = WORLD_HEIGHT // CELL_SIZE
-    grid = build_walkability_grid()
+    grid_image = Image.new("L", (grid_width, grid_height), 0)
+    draw = ImageDraw.Draw(grid_image)
 
-    mask_image = Image.fromarray((grid * 255).astype(np.uint8), mode="L").resize(
+    draw_grid_rect(
+        draw,
+        left=0,
+        right=WORLD_WIDTH,
+        top=PROMENADE_SURFACE_TOP,
+        bottom=WORLD_HEIGHT,
+        fill=255,
+    )
+    draw_grid_polygon(draw, CANTEEN_FORECOURT, fill=255)
+    for approach in ENTRANCE_APPROACHES:
+        draw_grid_rect(
+            draw,
+            left=approach["left"],
+            right=approach["right"],
+            top=approach["top"],
+            bottom=WORLD_HEIGHT,
+            fill=255,
+        )
+    for path in PUBLIC_PATH_POLYGONS:
+        draw_grid_polygon(draw, path["points"], fill=255)
+    for obstacle in FOREGROUND_OBSTACLES:
+        draw_grid_rect(draw, **{key: value for key, value in obstacle.items() if key != "id"}, fill=0)
+
+    grid = bytearray(1 if value else 0 for value in grid_image.tobytes())
+    for label, point in (
+        ("Campus spawn", SPAWN),
+        ("Library gate", LIBRARY_GATE),
+        ("Library approach", LIBRARY_APPROACH),
+        ("Canteen hunt spawn", CANTEEN["huntSpawn"]),
+        ("Canteen gate", CANTEEN["gate"]),
+        ("Canteen approach", CANTEEN["approach"]),
+        ("Canteen bike", CANTEEN["bike"]),
+        ("Theater gate", THEATER["gate"]),
+        ("Theater approach", THEATER["approach"]),
+        ("Qizhen gate", QIZHEN["gate"]),
+        ("Qizhen approach", QIZHEN["approach"]),
+        ("Loop left arrival", LOOP["leftArrival"]),
+        ("Loop right arrival", LOOP["rightArrival"]),
+        ("Qizhen transition stop", QIZHEN["approachTransition"]["stop"]),
+    ):
+        require_walkable(grid, grid_width, label, point)
+    for index, point in enumerate(QIZHEN["approachTransition"]["waypoints"]):
+        require_walkable(grid, grid_width, f"Qizhen transition waypoint {index + 1}", point)
+
+    mask_image = grid_image.resize(
         (WORLD_WIDTH, WORLD_HEIGHT),
         Image.Resampling.NEAREST,
     )
     mask_image.save(MASK_PATH, format="PNG", optimize=True)
 
-    packed = np.packbits(grid.reshape(-1), bitorder="little").tobytes()
+    packed = pack_little_endian_bits(grid)
     plate_digest = sha256(PLATE_PATH)
     mask_digest = sha256(MASK_PATH)
-    bitset_digest = hashlib.sha256(packed).hexdigest()
-
-    runtime = json.loads(RUNTIME_PATH.read_text(encoding="utf-8"))
-    runtime["source"]["plateSha256"] = plate_digest
-    runtime["source"]["worldScale"] = (
-        "single 11744px x 1084px side-view panorama stitched from 9 generated campus scenes; "
-        "west and middle joins use source-aligned local transitions, the former x=8939 and "
-        "x=10133 east joins are replaced by one continuous regenerated campus strip, and a "
-        "coherent sky treatment removes the former placeholder bands"
-    )
-    runtime["world"] = {"width": WORLD_WIDTH, "height": WORLD_HEIGHT}
-    runtime["libraryGate"] = LIBRARY_GATE
-    for landmark in runtime.get("landmarks", []):
-        if landmark.get("id") == "foundation_library":
-            landmark.update(FOUNDATION_LIBRARY)
-            break
-
-    runtime["walkability"] = {
-        "cellSize": CELL_SIZE,
-        "gridWidth": grid_width,
-        "gridHeight": grid_height,
-        "bitOrder": "little",
-        "bitsBase64": base64.b64encode(packed).decode("ascii"),
-        "walkableCells": int(grid.sum()),
-        "totalCells": int(grid.size),
-        "maskSha256": mask_digest,
-        "bitsetSha256": bitset_digest,
-        "sourcePlateSha256": plate_digest,
-        "gateApproach": LIBRARY_APPROACH,
-        "promenadeSurfaceTop": PROMENADE_SURFACE_TOP,
-        "entranceApproaches": list(ENTRANCE_APPROACHES),
-        "publicPathPolygons": [
-            {"id": path["id"], "points": [list(point) for point in path["points"]]}
-            for path in PUBLIC_PATH_POLYGONS
+    runtime = {
+        "source": {
+            "map": "user-approved side-view campus loop panorama",
+            "projection": "side-view-pseudo-2.5d",
+            "worldScale": (
+                "legacy 11744x1084 campus panorama plus one 1924px Qizhen Lake "
+                "segment inserted east of the first theater; one continuous foreground "
+                "road and bidirectional boundary wrap form the loop"
+            ),
+            "plateSha256": plate_digest,
+            "sourceSha256": {
+                "legacyPanorama": sha256(LEGACY_PANORAMA_PATH),
+                "qizhenReflection": sha256(QIZHEN_PLATE_PATH),
+            },
+            "insertion": {
+                "splitX": INSERT_SPLIT_X,
+                "width": INSERT_WIDTH,
+                "leftFeather": 260,
+                "rightFeather": 260,
+            },
+        },
+        "world": {"width": WORLD_WIDTH, "height": WORLD_HEIGHT},
+        "spawn": SPAWN,
+        "libraryGate": LIBRARY_GATE,
+        "bridges": [],
+        "landmarks": [
+            {"id": "foundation_library", **FOUNDATION_LIBRARY},
         ],
-        "foregroundObstacles": list(FOREGROUND_OBSTACLES),
+        "walkability": {
+            "cellSize": CELL_SIZE,
+            "gridWidth": grid_width,
+            "gridHeight": grid_height,
+            "bitOrder": "little",
+            "bitsBase64": base64.b64encode(packed).decode("ascii"),
+            "walkableCells": int(sum(grid)),
+            "totalCells": len(grid),
+            "maskSha256": mask_digest,
+            "bitsetSha256": hashlib.sha256(packed).hexdigest(),
+            "sourcePlateSha256": plate_digest,
+            "gateApproach": LIBRARY_APPROACH,
+            "promenadeSurfaceTop": PROMENADE_SURFACE_TOP,
+            "entranceApproaches": list(ENTRANCE_APPROACHES),
+            "publicPathPolygons": [
+                {"id": path["id"], "points": [list(point) for point in path["points"]]}
+                for path in PUBLIC_PATH_POLYGONS
+            ],
+            "foregroundObstacles": list(FOREGROUND_OBSTACLES),
+        },
+        "canteen": CANTEEN,
+        "theater": THEATER,
+        "qizhen": QIZHEN,
+        "loop": LOOP,
+        "perspective": PERSPECTIVE,
     }
     RUNTIME_PATH.write_text(
         json.dumps(runtime, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-
     print(
-        f"calibrated wide campus {WORLD_WIDTH}x{WORLD_HEIGHT} "
-        f"walkable={int(grid.sum())}/{grid.size} "
-        f"libraryGate={LIBRARY_GATE['x']},{LIBRARY_GATE['y']} "
-        f"approach={LIBRARY_APPROACH['x']},{LIBRARY_APPROACH['y']} "
-        f"plateSha256={plate_digest} maskSha256={mask_digest} "
-        f"bitsetSha256={bitset_digest}"
+        f"calibrated loop campus {WORLD_WIDTH}x{WORLD_HEIGHT} "
+        f"walkable={sum(grid)}/{len(grid)} theater={THEATER['gate']['x']},{THEATER['gate']['y']} "
+        f"qizhen={QIZHEN['gate']['x']},{QIZHEN['gate']['y']} "
+        f"plateSha256={plate_digest}"
     )
 
 

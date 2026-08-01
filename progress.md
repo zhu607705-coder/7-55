@@ -1274,6 +1274,17 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 开发预览：从 `c3-canteen-chase` 实跑至 `755m`，自动进入 `rpgScene=theater_interior / rpgCheckpoint=theater_lobby`，同时得到 `canteenHunt.phase=theater_reached / theaterHunt.active=true / theaterHunt.phase=entry_ticket`；页面与控制台错误为 `0`。
 - 离线单文件：同一完整流程在 `file://` 产物再次通过，外部请求为 `0`。`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过；`demo/index.html` 为 `99,843,996 bytes`，SHA-256 为 `71fed111d1889fc489e54361d3cdd1bea637ef8c5397095bd3247f7d7923dfdb`。
 
+## 2026-07-30 剧场后启真湖环湖地图与剧情过场
+
+- 地图恢复：恢复旧 `11744 × 1084` 多图拼接校园全景，在剧场东侧 `x=8400` 插入 `1924px` 启真湖片段，生成当前 `13668 × 1084` 环湖运行图。两侧使用各 `260px` 同源环境融合，前景车道贯穿插入段，地图左右边界通过短淡出双向接回。
+- 可复现生成：新增 `scripts/build-zijingang-loop-panorama.py`，由旧全景源图和启真湖源图原子生成 `zijingang_campus_loop_panorama.png`；新增环湖坐标与碰撞校准，统一维护食堂、剧场、启真湖、图书馆、出生点、循环边界和过场轨迹。运行图 SHA-256 为 `c2f3c887bb6c1d5f58e09a89883a28bd0050d0ccc8b1c85e10b5236ec3a4136d`。
+- 通行与纵深：前景道路 `y≥864` 连续可走，食堂、剧场、启真湖和图书馆入口使用实测通路；人物继续读取共享纵深曲线，远处 `1.0`、近处 `1.5`，当前湖畔停点显示约 `115 × 153px`。静态连通验证覆盖两端循环到达点和四处剧情入口。
+- 剧情衔接：食堂追逐完成仍直达首次剧场；剧场完成态在画布获得焦点后按 Space 退出，立即进入校园剧场路口并启动湖畔过场。湿纸沿路面领先、间断水迹淡出、人物自动追到 `(9040,930)`，四段台词和三段视觉节拍读取第三章启真湖内容配置；过场不提前公开启真湖谜题答案。
+- 存档与开发入口：新增 `campus_qizhen_transition_stop` 正式检查点。首次过场结束后保存 `locationBriefingSeen=true`，重载停在湖畔且不重复播放；未完成时仍从剧场安全点重播。新增 `c3-qizhen-transition` DEV 检查点，DEV 会话仍不写正式存档。
+- 浏览器实测：Blink 完成正式存档过场、重载跳过、剧场完成态真实退出和右端环湖接回，环湖次数为 `1`；Gecko、WebKit `1280×720` 均完成过场，画布为 `1280×720`、文档溢出和错误为 `0`。WebKit `390×844` 显示 `5` 个触控键，右移后人物 `x=9040→9091`，画布为 `390×219.375`，文档溢出和错误为 `0`。
+- 离线与 Godot：`file://` 单文件在请求 Godot 时保持一个 Phaser Canvas、零 iframe、零外部请求并正常播放过场。前序 Godot 剧场源码同步后重新导出 Web 产物，`npm run godot:check` 报告 Godot `4.7.1`、`15` 个资产、`11` 个目标、`27` 个碰撞体和匹配的 Web 构建。
+- 构建验证：`npm run map:zijingang:rebuild`、`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`npm run godot:export:web`、`npm run godot:check` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `130,734,222 bytes`，SHA-256 为 `2421482c074eb8148dfd3ab80790de643df6535ab14373de1e7d80a208950aee`。
+
 ## 2026-07-29 Godot 剧院 4.7 standalone 场景合入
 
 - 集成范围：从 `C:\Users\·\Desktop\godot剧院4.7` 合入 `theatre_interactive.tscn`、`theatre_plaza.tscn`、`scripts/theatre_*`、`assets/maps/` 和 `assets/player/`，放置在远端 Godot 分支的 `godot/` 子项目内，保留原始 `res://assets/...` 与 `res://scripts/...` 引用。
