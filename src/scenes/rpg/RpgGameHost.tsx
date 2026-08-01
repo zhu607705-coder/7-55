@@ -863,7 +863,9 @@ export function RpgGameHost({
             bestDistance={state.canteenHunt.chaseBestDistance}
             bestLives={state.canteenHunt.chaseBestLives}
             onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
-            onContinue={() => { canteenController.completeChase(); }}
+            onContinue={() => {
+              if (canteenController.completeChase()) theaterController.enterTheater();
+            }}
           />
         ) : null}
 

@@ -115,7 +115,7 @@
 .godot-rpg-interaction-hint {
   background: rgba(9, 13, 18, 0.94);
   border: 2px solid #d8c96b;
-  bottom: 7px;
+  bottom: 132px;
   color: #f4f2df;
   font-family: var(--font-pixel);
   font-size: var(--fs-caption);
@@ -433,12 +433,12 @@
 }
 
 .canteen-bike-rush-3d.is-running .canteen-bike-wheel > ellipse:first-child {
-  animation: canteen-bike-wheel-roll 320ms linear infinite;
+  animation: canteen-bike-wheel-roll 210ms linear infinite;
   stroke-dasharray: 9 5;
 }
 
 .canteen-bike-rush-3d.is-running .canteen-bike-crank {
-  animation: canteen-bike-crank-pulse 320ms ease-in-out infinite alternate;
+  animation: canteen-bike-crank-pulse 210ms ease-in-out infinite alternate;
 }
 
 .canteen-bike-warning-light {
@@ -446,11 +446,45 @@
 }
 
 .canteen-bike-player {
-  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 145ms cubic-bezier(0.18, 0.76, 0.22, 1);
+  will-change: transform;
 }
 
 .canteen-bike-player.is-invulnerable {
   animation: canteen-bike-hit-flash 110ms steps(2, end) infinite;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-rider-bob {
+  animation: canteen-bike-rider-bob 210ms ease-in-out infinite alternate;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-leg,
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-leg,
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-arm {
+  transform-box: fill-box;
+  transform-origin: center top;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-leg.is-left {
+  animation: canteen-bike-pedal-left 240ms ease-in-out infinite alternate;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-leg.is-right {
+  animation: canteen-bike-pedal-right 240ms ease-in-out infinite alternate;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-body {
+  animation: canteen-bike-runner-bob 190ms ease-in-out infinite alternate;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-leg.is-leading,
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-arm.is-trailing {
+  animation: canteen-bike-runner-forward 230ms ease-in-out infinite alternate;
+}
+
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-leg.is-trailing,
+.canteen-bike-rush-3d.is-running .canteen-bike-runner-arm.is-leading {
+  animation: canteen-bike-runner-back 230ms ease-in-out infinite alternate;
 }
 
 .canteen-bike-hud {
@@ -775,6 +809,36 @@
 @keyframes canteen-bike-crank-pulse {
   from { stroke-width: 3px; }
   to { stroke-width: 5px; }
+}
+
+@keyframes canteen-bike-rider-bob {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3px); }
+}
+
+@keyframes canteen-bike-pedal-left {
+  from { transform: rotate(-7deg) translateY(-1px); }
+  to { transform: rotate(8deg) translateY(2px); }
+}
+
+@keyframes canteen-bike-pedal-right {
+  from { transform: rotate(8deg) translateY(2px); }
+  to { transform: rotate(-7deg) translateY(-1px); }
+}
+
+@keyframes canteen-bike-runner-bob {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+@keyframes canteen-bike-runner-forward {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(9deg); }
+}
+
+@keyframes canteen-bike-runner-back {
+  from { transform: rotate(9deg); }
+  to { transform: rotate(-7deg); }
 }
 
 @keyframes canteen-bike-warning-pulse {
