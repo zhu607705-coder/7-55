@@ -173,6 +173,8 @@ export interface CanteenHuntState {
   active: boolean;
   phase: CanteenHuntPhase;
   mode: CanteenMode;
+  trayTaskStarted: boolean;
+  carriedTrayIds: string[];
   identifiedTrayIds: string[];
   returnedTrayIds: string[];
   menuDarkClueRead: boolean;

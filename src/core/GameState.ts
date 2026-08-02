@@ -117,6 +117,8 @@ export function createInitialGameState(): GameState {
       active: false,
       phase: "tracking",
       mode: "light",
+      trayTaskStarted: false,
+      carriedTrayIds: [],
       identifiedTrayIds: [],
       returnedTrayIds: [],
       menuDarkClueRead: false,

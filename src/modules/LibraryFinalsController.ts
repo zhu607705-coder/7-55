@@ -683,6 +683,8 @@ export class LibraryFinalsController {
         active: true,
         phase: "tracking",
         mode: "light",
+        trayTaskStarted: false,
+        carriedTrayIds: [],
         identifiedTrayIds: [],
         returnedTrayIds: [],
         menuDarkClueRead: false,

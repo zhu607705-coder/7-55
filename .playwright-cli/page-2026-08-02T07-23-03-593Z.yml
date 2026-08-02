@@ -1,0 +1,31 @@
+- generic [ref=f3e2]:
+  - main [ref=f3e3]:
+    - region "当前任务" [ref=f3e4]:
+      - button "第 3 章当前任务：在食堂截住纸条。点击查看任务提示" [ref=f3e5] [cursor=pointer]:
+        - generic [ref=f3e6]: 第 3 章
+        - strong [ref=f3e7]:
+          - generic [ref=f3e8]: 在食堂截住纸条
+    - region "地图交互区" [ref=f3e9]:
+      - main "7:55 RPG runtime" [ref=f3e72]:
+        - region "7:55 横屏游戏" [ref=f3e73]:
+          - generic [ref=f3e77]:
+            - button "聚焦手机" [ref=f3e78] [cursor=pointer]
+            - button "全屏" [ref=f3e79] [cursor=pointer]
+          - button "当前浅色操作。点击切换到深色观察" [ref=f3e80] [cursor=pointer]:
+            - generic [ref=f3e81]: 当前模式
+            - strong [ref=f3e82]: 浅色操作
+            - generic [ref=f3e83]: 切换：深色观察
+          - complementary "RPG 道具栏" [ref=f3e84]:
+            - generic [ref=f3e85]:
+              - strong [ref=f3e86]: 道具
+              - generic [ref=f3e87]: 按住查看可用时机 · 拖到高亮目标
+            - generic [ref=f3e88]:
+              - button "拖动电子校园卡，双击查看详情" [ref=f3e89]:
+                - generic [ref=f3e172]: 电子校园卡
+              - button "拖动右移箭头，双击查看详情" [ref=f3e173]:
+                - generic [ref=f3e204]: 右移箭头
+              - button "拖动餐盘回收费 2.00 元，双击查看详情" [ref=f3e205]:
+                - generic [ref=f3e276]: 餐盘回收费 2.00 元
+              - button "拖动油渍纸巾，双击查看详情" [ref=f3e277]:
+                - generic [ref=f3e336]: 油渍纸巾
+  - button "打开开发者通道" [ref=f3e337] [cursor=pointer]: DEV

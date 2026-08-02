@@ -22,34 +22,50 @@ export interface CanteenOcclusionRect extends CanteenCollisionRect {
 }
 
 const TABLE_COLUMNS = [227, 376, 525, 675, 831, 985, 1144] as const;
-const TABLE_ROWS = [359, 466, 573] as const;
+const TABLE_ROWS = [361, 470, 579] as const;
 
 // Bounds are authored once against canteen_interior.png (1672 x 941).
-// The rectangles cover visible solid pixels; the floor loops between rows and columns remain open.
+// Furniture colliders follow the painted solid area. Canteen traversal uses a
+// small foot-point body, so narrow visible aisles remain usable without allowing
+// the character to walk through chairs, tables or counter fronts.
 export const CANTEEN_STATIC_COLLISION_RECTS: readonly CanteenCollisionRect[] = [
   { id: "north_service_wall", left: 126, top: 15, right: 1314, bottom: 241 },
-  { id: "north_drink_wall", left: 1314, top: 14, right: 1643, bottom: 242 },
-  { id: "west_wall_upper", left: 27, top: 17, right: 72, bottom: 192 },
-  { id: "west_wall_lower", left: 27, top: 315, right: 58, bottom: 920 },
+  { id: "north_drink_wall", left: 1314, top: 14, right: 1643, bottom: 224 },
+  { id: "west_wall_upper", left: 24, top: 16, right: 69, bottom: 191 },
+  { id: "west_wall_lower", left: 27, top: 308, right: 54, bottom: 920 },
   { id: "east_wall", left: 1618, top: 18, right: 1647, bottom: 920 },
   { id: "west_planter_strip", left: 34, top: 314, right: 74, bottom: 547 },
-  { id: "north_lost_found_shelf", left: 1344, top: 253, right: 1618, bottom: 407 },
-  { id: "dish_return", left: 1260, top: 425, right: 1628, bottom: 585 },
-  { id: "tray_station", left: 1258, top: 620, right: 1629, bottom: 761 },
-  { id: "ordering_kiosks", left: 51, top: 682, right: 469, bottom: 846 },
-  { id: "pickup_counter", left: 542, top: 688, right: 1087, bottom: 876 },
-  { id: "pickup_left_pillar", left: 526, top: 665, right: 578, bottom: 892 },
-  { id: "pickup_right_pillar", left: 1060, top: 664, right: 1112, bottom: 893 },
-  { id: "southeast_wall_west_upper", left: 1252, top: 760, right: 1310, bottom: 792 },
-  { id: "southeast_wall_west_lower", left: 1252, top: 890, right: 1310, bottom: 934 },
-  { id: "southeast_wall_east", left: 1450, top: 760, right: 1643, bottom: 934 },
-  ...TABLE_ROWS.flatMap((y, rowIndex) => TABLE_COLUMNS.map((x, columnIndex) => ({
-    id: `table_${rowIndex + 1}_${columnIndex + 1}`,
-    left: x - 49,
-    top: y - 50,
-    right: x + 49,
-    bottom: y + 50
-  })))
+  { id: "north_lost_found_shelf", left: 1344, top: 237, right: 1618, bottom: 379 },
+  { id: "dish_return", left: 1260, top: 425, right: 1628, bottom: 592 },
+  { id: "tray_station", left: 1253, top: 619, right: 1630, bottom: 760 },
+  { id: "ordering_kiosks", left: 93, top: 676, right: 474, bottom: 850 },
+  { id: "pickup_counter", left: 543, top: 679, right: 1088, bottom: 872 },
+  { id: "pickup_left_pillar", left: 542, top: 662, right: 578, bottom: 872 },
+  { id: "pickup_right_pillar", left: 1050, top: 664, right: 1105, bottom: 907 },
+  { id: "southeast_wall_west_upper", left: 1155, top: 655, right: 1195, bottom: 700 },
+  { id: "southeast_wall_west_lower", left: 1450, top: 354, right: 1483, bottom: 410 },
+  { id: "southeast_wall_east", left: 1254, top: 760, right: 1643, bottom: 925 },
+  { id: "table_1_1", left: 179, top: 315, right: 273, bottom: 401 },
+  { id: "table_1_2", left: 329, top: 314, right: 423, bottom: 402 },
+  { id: "table_1_3", left: 478, top: 314, right: 572, bottom: 401 },
+  { id: "table_1_4", left: 628, top: 314, right: 722, bottom: 402 },
+  { id: "table_1_5", left: 786, top: 317, right: 880, bottom: 402 },
+  { id: "table_1_6", left: 940, top: 317, right: 1034, bottom: 402 },
+  { id: "table_1_7", left: 1098, top: 318, right: 1192, bottom: 403 },
+  { id: "table_2_1", left: 180, top: 432, right: 274, bottom: 512 },
+  { id: "table_2_2", left: 329, top: 434, right: 423, bottom: 511 },
+  { id: "table_2_3", left: 478, top: 431, right: 572, bottom: 512 },
+  { id: "table_2_4", left: 628, top: 434, right: 722, bottom: 514 },
+  { id: "table_2_5", left: 784, top: 432, right: 878, bottom: 512 },
+  { id: "table_2_6", left: 941, top: 437, right: 1035, bottom: 510 },
+  { id: "table_2_7", left: 1099, top: 434, right: 1193, bottom: 509 },
+  { id: "table_3_1", left: 182, top: 543, right: 276, bottom: 621 },
+  { id: "table_3_2", left: 331, top: 542, right: 425, bottom: 623 },
+  { id: "table_3_3", left: 478, top: 545, right: 572, bottom: 623 },
+  { id: "table_3_4", left: 633, top: 544, right: 727, bottom: 624 },
+  { id: "table_3_5", left: 788, top: 544, right: 882, bottom: 624 },
+  { id: "table_3_6", left: 941, top: 543, right: 1035, bottom: 622 },
+  { id: "table_3_7", left: 1101, top: 544, right: 1195, bottom: 620 }
 ] as const;
 
 // Only the visible front faces are redrawn above the actor. The source map remains the
@@ -79,21 +95,31 @@ export interface CanteenTrayDefinition {
   x: number;
   y: number;
   target: boolean;
-  queueCollision?: boolean;
 }
 
+// Twelve plates are scattered across otherwise empty tables. Their ordering is
+// intentionally irregular so the three target ids do not form a visible row or
+// route in light mode. Each plate is centred on the painted tabletop, never the
+// surrounding floor or a table occupied by a seated NPC.
 export const CANTEEN_TRAYS: readonly CanteenTrayDefinition[] = [
-  { id: "tray_blue_01", x: 299, y: 287, target: true },
-  { id: "tray_blue_02", x: 751, y: 516, target: true },
-  { id: "tray_blue_03", x: 1134, y: 642, target: true },
-  { id: "tray_plain_01", x: 454, y: 296, target: false },
-  { id: "tray_plain_02", x: 907, y: 410, target: false },
-  { id: "tray_queue_01", x: 1222, y: 338, target: false, queueCollision: true }
+  { id: "tray_blue_01", x: 227, y: 349, target: true },
+  { id: "tray_plain_01", x: 525, y: 348, target: false },
+  { id: "tray_plain_02", x: 675, y: 349, target: false },
+  { id: "tray_plain_03", x: 985, y: 350, target: false },
+  { id: "tray_plain_04", x: 1144, y: 350, target: false },
+  { id: "tray_plain_05", x: 376, y: 458, target: false },
+  { id: "tray_plain_06", x: 675, y: 460, target: false },
+  { id: "tray_blue_02", x: 831, y: 459, target: true },
+  { id: "tray_plain_07", x: 1144, y: 459, target: false },
+  { id: "tray_plain_08", x: 227, y: 569, target: false },
+  { id: "tray_plain_09", x: 376, y: 569, target: false },
+  { id: "tray_blue_03", x: 1144, y: 570, target: true }
 ] as const;
 
 export interface CanteenInteractionTarget extends RpgSpatialInteractionTarget {
-  kind: "tray" | "kiosk" | "pickup" | "cart" | "exit";
+  kind: "tray" | "kiosk" | "pickup" | "cart" | "exit" | "npc";
   value?: string;
+  dialogue?: string;
 }
 
 export interface CanteenPickupWindowDefinition extends CanteenInteractionTarget {
@@ -216,7 +242,7 @@ export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition
 export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = [
   ...CANTEEN_TRAYS.map((tray) => ({
     id: tray.id,
-    label: tray.target ? "异常蓝色餐盘" : "普通餐盘",
+    label: "桌上的餐盘",
     x: tray.x,
     y: tray.y,
     stand: { x: tray.x, y: tray.y },

@@ -1,5 +1,12 @@
 import Phaser from "phaser";
 import canteenInteriorMapUrl from "../../assets/rpg/interiors/canteen_interior.png";
+import canteenCounterAuntiesSheetUrl from "../../assets/rpg/npcs/canteen/counter_aunties_2frame.png";
+import canteenQueueStudentsSheetUrl from "../../assets/rpg/npcs/canteen/queue_students_2frame.png";
+import canteenReturnAuntieSheetUrl from "../../assets/rpg/npcs/canteen/return_auntie_2frame.png";
+import canteenSeatedStudentsExtraSheetUrl from "../../assets/rpg/npcs/canteen/seated_students_extra_2frame.png";
+import canteenSeatedStudentsSheetUrl from "../../assets/rpg/npcs/canteen/seated_students_2frame.png";
+import canteenShadowAuntieSheetUrl from "../../assets/rpg/npcs/canteen/shadow_auntie_3frame.png";
+import playerPushCartSheetUrl from "../../assets/rpg/player/player_push_cart_sheet.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import type { CanteenExitId, CanteenMode, GameState, ItemId } from "../../core/types";
 import canteenContent from "../../data/chapter3-canteen.content.json";
@@ -17,10 +24,16 @@ import {
   ensureRpgPlayerTextures,
   preloadRpgPlayerTextures,
   RpgPlayerAnimator,
+  RPG_PLAYER_DISPLAY_SCALE,
+  RPG_PLAYER_FOOT_COLLISION,
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
+import {
+  CanteenDefenseRuntime,
+  type CanteenDefenseExitId
+} from "./CanteenDefenseRuntime";
 import {
   CANTEEN_BLOCK_SPAWNS,
   CANTEEN_CARTS,
@@ -38,7 +51,72 @@ import {
 } from "./CanteenInteriorModel";
 
 const CANTEEN_MAP_KEY = "chapter-3-canteen-interior-map";
+const CANTEEN_PUSH_CART_SHEET_KEY = "chapter-3-canteen-player-push-cart";
+const CANTEEN_QUEUE_NPC_SHEET_KEY = "chapter-3-canteen-queue-npcs";
+const CANTEEN_COUNTER_NPC_SHEET_KEY = "chapter-3-canteen-counter-npcs";
+const CANTEEN_SEATED_NPC_SHEET_KEY = "chapter-3-canteen-seated-npcs";
+const CANTEEN_SEATED_EXTRA_NPC_SHEET_KEY = "chapter-3-canteen-seated-extra-npcs";
+const CANTEEN_RETURN_NPC_SHEET_KEY = "chapter-3-canteen-return-npc";
+const CANTEEN_SHADOW_NPC_SHEET_KEY = "chapter-3-canteen-shadow-npc";
+const CANTEEN_NPC_FRAME_WIDTH = 96;
+const CANTEEN_NPC_FRAME_HEIGHT = 128;
+const CANTEEN_NPC_DISPLAY_SCALE = RPG_PLAYER_DISPLAY_SCALE;
+const CANTEEN_WORLD_DEPTH_OFFSET = 120;
+const CANTEEN_COUNTER_NPC_Y = 214;
+const CANTEEN_COUNTER_NPC_X = [301, 550, 790, 1035] as const;
+const CANTEEN_QUEUE_NPC_Y = [246, 266, 286] as const;
+const CANTEEN_COUNTER_FRONT_CROP = {
+  left: 126,
+  top: 176,
+  right: 1314,
+  bottom: 241,
+  depth: 340
+} as const;
+const CANTEEN_SEATED_NPC_PLACEMENTS = [
+  { framePair: 0, x: 344, y: 377 },
+  { framePair: 4, x: 408, y: 389 },
+  { framePair: 1, x: 799, y: 383 },
+  { framePair: 5, x: 863, y: 383 },
+  { framePair: 2, x: 493, y: 486 },
+  { framePair: 6, x: 557, y: 498 },
+  { framePair: 3, x: 953, y: 601 },
+  { framePair: 7, x: 1017, y: 601 }
+] as const;
+const CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS = [
+  { framePair: 0, x: 195, y: 486 },
+  { framePair: 3, x: 259, y: 498 },
+  { framePair: 1, x: 953, y: 486 },
+  { framePair: 4, x: 1017, y: 498 },
+  { framePair: 2, x: 493, y: 595 },
+  { framePair: 5, x: 557, y: 607 }
+] as const;
+const CANTEEN_SEATED_TABLE_CROPS = [
+  { left: 329, top: 374, right: 423, bottom: 402 },
+  { left: 786, top: 374, right: 880, bottom: 402 },
+  { left: 478, top: 483, right: 572, bottom: 512 },
+  { left: 941, top: 592, right: 1035, bottom: 622 },
+  { left: 180, top: 483, right: 274, bottom: 512 },
+  { left: 941, top: 483, right: 1035, bottom: 510 },
+  { left: 478, top: 592, right: 572, bottom: 623 }
+] as const;
+const CANTEEN_RETURN_NPC_POSITION = { x: 1515, y: 610 } as const;
+const CANTEEN_QUEUE_NPC_DIALOGUE = [
+  "前面没动，我也没动。大家都很稳定。",
+  "你说的对。虽然不知道你说了什么。",
+  "是啊，吃什么。",
+  "今天有气泡水喝吗？",
+  "早十不慌，先来个西红柿鸡蛋。",
+  "为什么早上吃西红柿鸡蛋。"
+] as const;
+const CANTEEN_SEATED_NPC_DIALOGUE = [
+  "刚才有张纸过去了。它没拿餐盘。",
+  "看手机。",
+  "依旧看手机。",
+  "不用问了可以坐这里。"
+] as const;
+const CANTEEN_COUNTER_NPC_DIALOGUE = "要什么？快点，后面排着呢。";
 const CANTEEN_TRAY_KEY = "chapter-3-canteen-tray";
+const CANTEEN_DIRTY_TRAY_KEY = "chapter-3-canteen-dirty-tray";
 const CANTEEN_CART_FRAME_KEYS = [
   "chapter-3-canteen-cart-0",
   "chapter-3-canteen-cart-1",
@@ -46,6 +124,12 @@ const CANTEEN_CART_FRAME_KEYS = [
   "chapter-3-canteen-cart-3"
 ] as const;
 const CANTEEN_PAPER_KEY = "chapter-3-canteen-paper";
+const CANTEEN_PAPER_RUN_KEYS = [
+  "chapter-3-canteen-paper-run-0",
+  "chapter-3-canteen-paper-run-1",
+  "chapter-3-canteen-paper-run-2",
+  "chapter-3-canteen-paper-run-3"
+] as const;
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
@@ -56,7 +140,9 @@ const CART_ROLL_FRAME_MS = 82;
 
 interface TrayVisual {
   container: Phaser.GameObjects.Container;
-  glow: Phaser.GameObjects.Arc;
+  cleanImage: Phaser.GameObjects.Image;
+  dirtyImage: Phaser.GameObjects.Image;
+  sparkles: Phaser.GameObjects.Arc[];
 }
 
 interface OcclusionVisual {
@@ -73,10 +159,16 @@ interface PickupWindowVisual {
   dropLabel: Phaser.GameObjects.Text;
 }
 
+interface CanteenNpcSheetDefinition {
+  key: string;
+  url: string;
+}
+
 export class CanteenInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
   private playerAnimator!: RpgPlayerAnimator;
+  private playerCollisionDebug: Phaser.GameObjects.Rectangle | null = null;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
@@ -86,9 +178,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private darkOverlay!: Phaser.GameObjects.Rectangle;
   private modeFibers: Phaser.GameObjects.Arc[] = [];
   private trayVisuals = new Map<string, TrayVisual>();
+  private trayInteractionTargets = new Map<string, CanteenInteractionTarget>();
+  private carriedTrayVisual!: Phaser.GameObjects.Image;
   private pickupWindowVisuals = new Map<string, PickupWindowVisual>();
   private cartVisuals = new Map<CanteenExitId, Phaser.GameObjects.Image>();
-  private cartBlockers = new Map<CanteenExitId, Phaser.GameObjects.Rectangle>();
   private exitGlows = new Map<CanteenExitId, Phaser.GameObjects.Arc>();
   private paper!: Phaser.GameObjects.Image;
   private paperFloatTween!: Phaser.Tweens.Tween;
@@ -104,6 +197,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private occlusionVisuals: OcclusionVisual[] = [];
   private activeOcclusionIds: string[] = [];
   private softenedOcclusionIds: string[] = [];
+  private lightNpcSprites: Phaser.GameObjects.Sprite[] = [];
+  private lightNpcCollisionBodies: Phaser.GameObjects.Rectangle[] = [];
+  private initialNpcInteractionTargets: CanteenInteractionTarget[] = [];
+  private returnAuntieTarget!: CanteenInteractionTarget;
+  private shadowNpcSprite: Phaser.GameObjects.Sprite | null = null;
+  private defenseRuntime: CanteenDefenseRuntime | null = null;
+  private defenseRouteGraphics: Phaser.GameObjects.Graphics | null = null;
+  private defenseRestartTimer: Phaser.Time.TimerEvent | null = null;
 
   constructor() {
     super("canteen-interior");
@@ -113,6 +214,27 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (!this.textures.exists(CANTEEN_MAP_KEY)) {
       this.load.image(CANTEEN_MAP_KEY, canteenInteriorMapUrl);
     }
+    if (!this.textures.exists(CANTEEN_PUSH_CART_SHEET_KEY)) {
+      this.load.spritesheet(CANTEEN_PUSH_CART_SHEET_KEY, playerPushCartSheetUrl, {
+        frameWidth: 314,
+        frameHeight: 314
+      });
+    }
+    const npcSheets: readonly CanteenNpcSheetDefinition[] = [
+      { key: CANTEEN_QUEUE_NPC_SHEET_KEY, url: canteenQueueStudentsSheetUrl },
+      { key: CANTEEN_COUNTER_NPC_SHEET_KEY, url: canteenCounterAuntiesSheetUrl },
+      { key: CANTEEN_SEATED_NPC_SHEET_KEY, url: canteenSeatedStudentsSheetUrl },
+      { key: CANTEEN_SEATED_EXTRA_NPC_SHEET_KEY, url: canteenSeatedStudentsExtraSheetUrl },
+      { key: CANTEEN_RETURN_NPC_SHEET_KEY, url: canteenReturnAuntieSheetUrl },
+      { key: CANTEEN_SHADOW_NPC_SHEET_KEY, url: canteenShadowAuntieSheetUrl }
+    ];
+    npcSheets.forEach(({ key, url }) => {
+      if (this.textures.exists(key)) return;
+      this.load.spritesheet(key, url, {
+        frameWidth: CANTEEN_NPC_FRAME_WIDTH,
+        frameHeight: CANTEEN_NPC_FRAME_HEIGHT
+      });
+    });
     preloadRpgPlayerTextures(this);
   }
 
@@ -127,6 +249,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.drawInterior();
     this.ensureCanteenTextures();
     ensureRpgPlayerTextures(this);
+    this.createCanteenNpcs();
+    this.createInitialNpcInteractions();
 
     const spawn = this.currentPhase === "menu_order"
       ? CANTEEN_PHASE_SPAWNS.menu_order
@@ -136,8 +260,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
           ? CANTEEN_BLOCK_SPAWNS[Math.min(2, this.bridge.getState().canteenHunt.blockHits)]
           : CANTEEN_SPAWN;
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
-    this.player.setCollideWorldBounds(true).setDepth(spawn.y + 120);
+    this.player.setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
+    this.applyPlayerCollisionBody();
+    this.updatePlayerWorldDepth();
+    if (
+      import.meta.env.DEV
+      && new URLSearchParams(window.location.search).get("rpgCollision") === "1"
+    ) {
+      this.playerCollisionDebug = this.add.rectangle(0, 0, 1, 1, 0xffef66, 0.5)
+        .setStrokeStyle(3, 0xffffff, 1)
+        .setDepth(6100);
+      this.updatePlayerCollisionDebug();
+    }
     this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
     this.physics.add.collider(this.player, this.obstacles);
 
@@ -155,6 +290,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.input.keyboard!.on("keydown-SPACE", requestKeyboardInteraction);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.input.keyboard?.off("keydown-SPACE", requestKeyboardInteraction);
+      this.defenseRestartTimer?.remove(false);
+      this.defenseRuntime?.destroy();
+      this.defenseRuntime = null;
     });
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => this.handleMenuPointer(pointer));
 
@@ -164,6 +302,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
       .centerOn(835, 470);
 
     this.createTrays();
+    this.carriedTrayVisual = this.add.image(0, 0, CANTEEN_TRAY_KEY)
+      .setScale(0.75)
+      .setDepth(2300)
+      .setVisible(false);
     this.createCarts();
     this.createPickupWindowSigns();
     this.createPaper();
@@ -183,6 +325,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.bridge.emit("canteen_interior_opened");
 
     this.cameras.main.startFollow(this.player, true, 0.13, 0.13, 0, 24).setDeadzone(250, 150);
+    if (this.currentPhase === "exit_blocking") {
+      this.startDefense();
+    }
     if (this.bridge.getState().canteenHunt.active && this.currentPhase === "tray_search") {
       this.queueDialogue(canteenContent.entryDialogue, () => {
         this.dialogueLocked = false;
@@ -190,11 +335,24 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
   }
 
-  update(): void {
+  update(_time: number, deltaMs: number): void {
     const state = this.bridge.getState();
     this.syncWorldFromState(state);
+    this.updateCarriedTrayVisual(state);
+    if (
+      state.canteenHunt.phase === "exit_blocking"
+      && !this.defenseRuntime
+      && !this.paperBusy
+    ) {
+      this.startDefense();
+    }
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.menuPanel && !this.dialogueLocked) {
+    if (
+      !this.defenseRuntime
+      && Phaser.Input.Keyboard.JustDown(this.keys.TAB)
+      && !this.menuPanel
+      && !this.dialogueLocked
+    ) {
       this.requestModeToggle();
     }
 
@@ -206,6 +364,22 @@ export class CanteenInteriorScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardX + this.virtualDirection.x, -1, 1),
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
+    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    if (this.defenseRuntime) {
+      const defenseMotion = this.defenseRuntime.update(
+        deltaMs,
+        vector,
+        keyboardInteract || this.interactRequested
+      );
+      this.playerAnimator.update(defenseMotion, this.time.now);
+      this.updateOcclusion();
+      this.updateCarriedTrayVisual(state);
+      this.updatePlayerCollisionDebug();
+      this.promptText.setVisible(false);
+      this.publishDebugState(null, state);
+      this.interactRequested = false;
+      return;
+    }
     const movementAllowed = state.actOne.movementEnabled
       && !this.dialogueLocked
       && !this.menuPanel
@@ -216,19 +390,21 @@ export class CanteenInteriorScene extends Phaser.Scene {
     } else {
       vector.set(0, 0);
     }
-    this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 120);
+    this.player.setVelocity(vector.x, vector.y);
+    this.updatePlayerWorldDepth();
     this.playerAnimator.update(
       this.cartPushBusy && this.cartMotionVector.lengthSq() > 0 ? this.cartMotionVector : vector,
       this.time.now
     );
     this.updateOcclusion();
+    this.updateCarriedTrayVisual(state);
+    this.updatePlayerCollisionDebug();
 
     const activeTargets = this.getActiveTargets(state);
     const nearest = findNearestCanteenTarget(this.player.x, this.player.y, activeTargets);
     this.updatePrompt(nearest, state);
     this.publishDebugState(nearest, state);
 
-    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearest && !this.dialogueLocked && !this.menuPanel && !this.paperBusy && !this.cartPushBusy && (keyboardInteract || this.interactRequested)) {
       this.triggerTarget(nearest, state);
     }
@@ -257,6 +433,284 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setDepth(-900)
         .setVisible(false)
     }));
+    this.rebuildStaticCollisionBodies();
+  }
+
+  private createCanteenNpcs(): void {
+    this.lightNpcSprites = [];
+    this.lightNpcCollisionBodies = [];
+
+    CANTEEN_COUNTER_NPC_X.forEach((x, index) => {
+      this.createLightNpc(
+        x,
+        CANTEEN_COUNTER_NPC_Y,
+        CANTEEN_COUNTER_NPC_SHEET_KEY,
+        index,
+        300,
+        1.7 + index * 0.08,
+        260 + index * 83
+      );
+    });
+
+    // The authored counter front stays above workers, but below customers and
+    // the player. This keeps heads in the service opening and bodies behind food trays.
+    this.add.image(0, 0, CANTEEN_MAP_KEY)
+      .setOrigin(0)
+      .setCrop(
+        CANTEEN_COUNTER_FRONT_CROP.left,
+        CANTEEN_COUNTER_FRONT_CROP.top,
+        CANTEEN_COUNTER_FRONT_CROP.right - CANTEEN_COUNTER_FRONT_CROP.left,
+        CANTEEN_COUNTER_FRONT_CROP.bottom - CANTEEN_COUNTER_FRONT_CROP.top
+      )
+      .setDepth(CANTEEN_COUNTER_FRONT_CROP.depth);
+
+    let queueIndex = 0;
+    CANTEEN_COUNTER_NPC_X.forEach((x, columnIndex) => {
+      CANTEEN_QUEUE_NPC_Y.forEach((y, rowIndex) => {
+        this.createLightNpc(
+          x,
+          y,
+          CANTEEN_QUEUE_NPC_SHEET_KEY,
+          queueIndex,
+          y + 120,
+          1.35 + (queueIndex % 4) * 0.1,
+          180 + ((columnIndex * 3 + rowIndex) * 137) % 520
+        );
+        this.createLightNpcFootCollision(x, y, `queue-${queueIndex}`);
+        queueIndex += 1;
+      });
+    });
+
+    CANTEEN_SEATED_NPC_PLACEMENTS.forEach((placement, index) => {
+      this.createLightNpc(
+        placement.x,
+        placement.y,
+        CANTEEN_SEATED_NPC_SHEET_KEY,
+        placement.framePair,
+        placement.y + 120,
+        1.45 + (index % 4) * 0.12,
+        220 + (index * 149) % 640
+      );
+    });
+    CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS.forEach((placement, index) => {
+      this.createLightNpc(
+        placement.x,
+        placement.y,
+        CANTEEN_SEATED_EXTRA_NPC_SHEET_KEY,
+        placement.framePair,
+        placement.y + 120,
+        1.5 + (index % 3) * 0.13,
+        310 + (index * 173) % 620
+      );
+    });
+
+    // Redraw the occupied table bodies above the seated sprites. Heads, arms and
+    // plates remain readable while knees and feet tuck behind the table edge.
+    CANTEEN_SEATED_TABLE_CROPS.forEach((crop) => {
+      this.add.image(0, 0, CANTEEN_MAP_KEY)
+        .setOrigin(0)
+        .setCrop(crop.left, crop.top, crop.right - crop.left, crop.bottom - crop.top)
+        .setDepth(crop.bottom + CANTEEN_WORLD_DEPTH_OFFSET);
+    });
+
+    this.createLightNpc(
+      CANTEEN_RETURN_NPC_POSITION.x,
+      CANTEEN_RETURN_NPC_POSITION.y,
+      CANTEEN_RETURN_NPC_SHEET_KEY,
+      0,
+      CANTEEN_RETURN_NPC_POSITION.y + 120,
+      1.65,
+      390
+    );
+    this.createLightNpcFootCollision(
+      CANTEEN_RETURN_NPC_POSITION.x,
+      CANTEEN_RETURN_NPC_POSITION.y,
+      "return-worker"
+    );
+
+    const shadowAnimationKey = `${CANTEEN_SHADOW_NPC_SHEET_KEY}-flicker`;
+    if (!this.anims.exists(shadowAnimationKey)) {
+      this.anims.create({
+        key: shadowAnimationKey,
+        frames: [0, 0, 1, 0, 0, 0, 2].map((frame) => ({
+          key: CANTEEN_SHADOW_NPC_SHEET_KEY,
+          frame
+        })),
+        frameRate: 7,
+        repeat: -1,
+        repeatDelay: 780
+      });
+    }
+    this.shadowNpcSprite = this.add.sprite(
+      CANTEEN_COUNTER_NPC_X[2],
+      CANTEEN_COUNTER_NPC_Y,
+      CANTEEN_SHADOW_NPC_SHEET_KEY,
+      0
+    )
+      .setOrigin(0.5, 1)
+      .setScale(CANTEEN_NPC_DISPLAY_SCALE)
+      .setDepth(310)
+      .setBlendMode(Phaser.BlendModes.SCREEN);
+    if (!this.reducedMotion) this.shadowNpcSprite.play(shadowAnimationKey);
+    this.applyCanteenNpcMode(this.currentMode, true);
+  }
+
+  private createLightNpc(
+    x: number,
+    y: number,
+    sheetKey: string,
+    framePair: number,
+    depth: number,
+    frameRate: number,
+    repeatDelay: number
+  ): Phaser.GameObjects.Sprite {
+    const animationKey = `${sheetKey}-idle-${framePair}`;
+    if (!this.anims.exists(animationKey)) {
+      this.anims.create({
+        key: animationKey,
+        frames: [framePair * 2, framePair * 2 + 1].map((frame) => ({
+          key: sheetKey,
+          frame
+        })),
+        frameRate,
+        repeat: -1,
+        repeatDelay
+      });
+    }
+    const sprite = this.add.sprite(x, y, sheetKey, framePair * 2)
+      .setOrigin(0.5, 1)
+      .setScale(CANTEEN_NPC_DISPLAY_SCALE)
+      .setDepth(depth);
+    this.lightNpcSprites.push(sprite);
+    if (!this.reducedMotion) {
+      this.time.delayedCall(repeatDelay % 540, () => {
+        if (sprite.active) sprite.play(animationKey, true);
+      });
+    }
+    return sprite;
+  }
+
+  private createLightNpcFootCollision(x: number, footBottomY: number, npcId: string): void {
+    const width = RPG_PLAYER_FOOT_COLLISION.width * RPG_PLAYER_DISPLAY_SCALE;
+    const height = RPG_PLAYER_FOOT_COLLISION.height * RPG_PLAYER_DISPLAY_SCALE;
+    const showCollision = import.meta.env.DEV
+      && new URLSearchParams(window.location.search).get("rpgCollision") === "1";
+    const collision = this.add.rectangle(
+      x,
+      footBottomY - height / 2,
+      width,
+      height,
+      showCollision ? 0x58e3ff : 0x000000,
+      showCollision ? 0.35 : 0
+    ).setDepth(showCollision ? 4902 : footBottomY + 1);
+    collision.setData("debugVisible", showCollision);
+    collision.setData("npcId", npcId);
+    if (showCollision) collision.setStrokeStyle(2, 0xdffaff, 0.95);
+    this.obstacles.add(collision);
+    this.lightNpcCollisionBodies.push(collision);
+  }
+
+  private createInitialNpcInteractions(): void {
+    const queuePositions = CANTEEN_COUNTER_NPC_X.flatMap((x) => (
+      CANTEEN_QUEUE_NPC_Y.map((y) => ({ x, y }))
+    ));
+    const seatedPositions = [
+      ...CANTEEN_SEATED_NPC_PLACEMENTS,
+      ...CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS
+    ];
+    const shuffledQueue = Phaser.Utils.Array.Shuffle([...queuePositions]);
+    const shuffledSeated = Phaser.Utils.Array.Shuffle([...seatedPositions]);
+    const counterIndex = Phaser.Math.Between(0, CANTEEN_COUNTER_NPC_X.length - 1);
+
+    const queueTargets = CANTEEN_QUEUE_NPC_DIALOGUE.map((dialogue, index) => {
+      const position = shuffledQueue[index];
+      return {
+        id: `initial-queue-npc-${index}`,
+        label: "交谈",
+        x: position.x,
+        y: position.y,
+        proximity: 48,
+        kind: "npc" as const,
+        dialogue
+      };
+    });
+    const seatedTargets = CANTEEN_SEATED_NPC_DIALOGUE.map((dialogue, index) => {
+      const position = shuffledSeated[index];
+      return {
+        id: `initial-seated-npc-${index}`,
+        label: "交谈",
+        x: position.x,
+        y: position.y - 30,
+        width: 72,
+        height: 88,
+        proximity: 54,
+        kind: "npc" as const,
+        dialogue
+      };
+    });
+    const counterX = CANTEEN_COUNTER_NPC_X[counterIndex];
+    const counterTarget: CanteenInteractionTarget = {
+      id: "initial-counter-npc",
+      label: "交谈",
+      x: counterX,
+      y: CANTEEN_COUNTER_NPC_Y,
+      stand: { x: counterX, y: 265 },
+      proximity: 48,
+      kind: "npc",
+      dialogue: CANTEEN_COUNTER_NPC_DIALOGUE
+    };
+
+    this.returnAuntieTarget = {
+      id: "return-auntie",
+      label: "与收餐口阿姨交谈",
+      x: CANTEEN_RETURN_NPC_POSITION.x,
+      y: CANTEEN_RETURN_NPC_POSITION.y,
+      stand: { x: 1215, y: 600 },
+      proximity: 58,
+      kind: "npc"
+    };
+
+    this.initialNpcInteractionTargets = [
+      ...queueTargets,
+      ...seatedTargets,
+      counterTarget,
+      this.returnAuntieTarget
+    ];
+  }
+
+  private applyCanteenNpcMode(mode: CanteenMode, immediate = false): void {
+    const showSceneNpcs = this.currentPhase !== "exit_blocking" && !this.defenseRuntime;
+    const showLightNpcs = showSceneNpcs && mode === "light";
+    const showShadowNpc = showSceneNpcs && mode === "dark";
+    const duration = immediate || this.reducedMotion ? 0 : 180;
+
+    const transitionSprite = (sprite: Phaser.GameObjects.Sprite, visible: boolean) => {
+      this.tweens.killTweensOf(sprite);
+      if (duration === 0) {
+        sprite.setVisible(visible).setAlpha(visible ? 1 : 0);
+        return;
+      }
+      if (visible) sprite.setVisible(true).setAlpha(0);
+      this.tweens.add({
+        targets: sprite,
+        alpha: visible ? 1 : 0,
+        duration,
+        ease: "Sine.easeInOut",
+        onComplete: () => sprite.setVisible(visible)
+      });
+    };
+
+    this.lightNpcSprites.forEach((sprite) => transitionSprite(sprite, showLightNpcs));
+    if (this.shadowNpcSprite) transitionSprite(this.shadowNpcSprite, showShadowNpc);
+    this.lightNpcCollisionBodies.forEach((collision) => {
+      const body = collision.body as Phaser.Physics.Arcade.StaticBody | null;
+      if (body) body.enable = showLightNpcs;
+      collision.setVisible(Boolean(collision.getData("debugVisible")) && showLightNpcs);
+    });
+  }
+
+  private rebuildStaticCollisionBodies(): void {
+    this.obstacles.clear(true, true);
     const showCollision = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("rpgCollision") === "1";
     CANTEEN_STATIC_COLLISION_RECTS.forEach((rect) => {
@@ -280,6 +734,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const activeIds: string[] = [];
     const softenedIds: string[] = [];
 
+    this.player.setDepth(footY + CANTEEN_WORLD_DEPTH_OFFSET);
     this.occlusionVisuals.forEach((visual) => {
       const horizontalOverlap = playerBounds.right > visual.bounds.left
         && playerBounds.left < visual.bounds.right;
@@ -303,14 +758,33 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.softenedOcclusionIds = softenedIds;
   }
 
+  private updatePlayerWorldDepth(): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    this.player.setDepth((body?.bottom ?? this.player.y) + CANTEEN_WORLD_DEPTH_OFFSET);
+  }
+
   private ensureCanteenTextures(): void {
     if (!this.textures.exists(CANTEEN_TRAY_KEY)) {
       const g = this.add.graphics();
-      g.fillStyle(0x172028, 0.34).fillEllipse(18, 14, 36, 10);
-      g.fillStyle(0xaab5b8).fillRoundedRect(2, 2, 32, 18, 4);
-      g.fillStyle(0xe7ece9).fillRoundedRect(5, 5, 26, 12, 3);
-      g.lineStyle(2, 0x657278).strokeRoundedRect(2, 2, 32, 18, 4);
-      g.generateTexture(CANTEEN_TRAY_KEY, 36, 24);
+      g.fillStyle(0x172028, 0.28).fillEllipse(12, 14, 22, 5);
+      g.fillStyle(0x9eabad).fillRoundedRect(1, 2, 22, 13, 3);
+      g.fillStyle(0xe7ece9).fillRoundedRect(3, 4, 18, 9, 2);
+      g.lineStyle(1, 0x59686d).strokeRoundedRect(1, 2, 22, 13, 3);
+      g.generateTexture(CANTEEN_TRAY_KEY, 24, 18);
+      g.destroy();
+    }
+    if (!this.textures.exists(CANTEEN_DIRTY_TRAY_KEY)) {
+      const g = this.add.graphics();
+      g.fillStyle(0x172028, 0.3).fillEllipse(12, 14, 22, 5);
+      g.fillStyle(0x89989a).fillRoundedRect(1, 2, 22, 13, 3);
+      g.fillStyle(0xcbd1c9).fillRoundedRect(3, 4, 18, 9, 2);
+      g.fillStyle(0x8a4f28, 0.95)
+        .fillEllipse(9, 8, 8, 5)
+        .fillCircle(16, 10, 3)
+        .fillRect(6, 11, 8, 2);
+      g.fillStyle(0xc59142, 0.9).fillCircle(13, 6, 2);
+      g.lineStyle(1, 0x4d5b60).strokeRoundedRect(1, 2, 22, 13, 3);
+      g.generateTexture(CANTEEN_DIRTY_TRAY_KEY, 24, 18);
       g.destroy();
     }
     CANTEEN_CART_FRAME_KEYS.forEach((key, phase) => {
@@ -435,33 +909,158 @@ export class CanteenInteriorScene extends Phaser.Scene {
       g.generateTexture(CANTEEN_PAPER_KEY, 64, 50);
       g.destroy();
     }
+    CANTEEN_PAPER_RUN_KEYS.forEach((key, frame) => {
+      if (!this.textures.exists(key)) this.generatePaperRunTexture(key, frame);
+    });
+  }
+
+  private generatePaperRunTexture(key: string, frame: number): void {
+    const g = this.add.graphics();
+    const lift = frame % 2 === 0 ? 2 : 0;
+    const leftKick = frame === 1 ? -5 : frame === 3 ? 4 : 0;
+    const rightKick = frame === 1 ? 4 : frame === 3 ? -5 : 0;
+    const y = (value: number) => value - lift;
+
+    g.fillStyle(0x0d1c2d, 0.3).fillEllipse(32, 45, frame % 2 === 0 ? 48 : 55, 8);
+    // Two folded corners act as tiny legs. Their exaggerated alternating step
+    // remains readable after the whole-map camera zooms out.
+    g.fillStyle(0x41535e)
+      .fillPoints([
+        new Phaser.Geom.Point(16, y(36)),
+        new Phaser.Geom.Point(24, y(38)),
+        new Phaser.Geom.Point(21 + leftKick, 47),
+        new Phaser.Geom.Point(14 + leftKick, 46)
+      ], true)
+      .fillPoints([
+        new Phaser.Geom.Point(39, y(34)),
+        new Phaser.Geom.Point(48, y(33)),
+        new Phaser.Geom.Point(50 + rightKick, 44),
+        new Phaser.Geom.Point(43 + rightKick, 46)
+      ], true);
+    g.fillStyle(0x60717c).fillPoints([
+      new Phaser.Geom.Point(7, y(9)),
+      new Phaser.Geom.Point(48, y(6)),
+      new Phaser.Geom.Point(58, y(34)),
+      new Phaser.Geom.Point(17, y(46)),
+      new Phaser.Geom.Point(5, y(36))
+    ], true);
+    g.fillStyle(0xd7e0e3).fillPoints([
+      new Phaser.Geom.Point(5, y(5)),
+      new Phaser.Geom.Point(46, y(2)),
+      new Phaser.Geom.Point(55, y(30)),
+      new Phaser.Geom.Point(15, y(41)),
+      new Phaser.Geom.Point(3, y(32))
+    ], true);
+    g.fillStyle(0xf3f6f3).fillPoints([
+      new Phaser.Geom.Point(5, y(5)),
+      new Phaser.Geom.Point(25, y(8)),
+      new Phaser.Geom.Point(15, y(41)),
+      new Phaser.Geom.Point(3, y(32))
+    ], true);
+    g.fillStyle(0xe5ebec).fillPoints([
+      new Phaser.Geom.Point(25, y(8)),
+      new Phaser.Geom.Point(46, y(2)),
+      new Phaser.Geom.Point(55, y(30)),
+      new Phaser.Geom.Point(34, y(27)),
+      new Phaser.Geom.Point(15, y(41))
+    ], true);
+    g.fillStyle(0xc1ced4).fillPoints([
+      new Phaser.Geom.Point(46, y(2)),
+      new Phaser.Geom.Point(55, y(30)),
+      new Phaser.Geom.Point(41, y(18))
+    ], true);
+    g.lineStyle(2, 0x4a6371, 0.95).strokePoints([
+      new Phaser.Geom.Point(5, y(5)),
+      new Phaser.Geom.Point(46, y(2)),
+      new Phaser.Geom.Point(55, y(30)),
+      new Phaser.Geom.Point(15, y(41)),
+      new Phaser.Geom.Point(3, y(32))
+    ], true);
+    g.lineStyle(2, 0x91a4ae, 0.88)
+      .lineBetween(25, y(8), 15, y(41))
+      .lineBetween(34, y(27), 55, y(30));
+    g.fillStyle(0x236f9d, 0.98)
+      .fillRect(13, y(13), 30, 3)
+      .fillRect(13, y(20), 24, 2)
+      .fillRect(13, y(25), 29, 2);
+    g.fillStyle(0x58c7ff, 0.92)
+      .fillRect(45, y(22), 3, 3)
+      .fillRect(49, y(21), 3, 3)
+      .fillRect(46, y(28), 6, 2);
+    g.generateTexture(key, 64, 50);
+    g.destroy();
   }
 
   private createTrays(): void {
-    CANTEEN_TRAYS.forEach((tray) => {
-      const glow = this.add.circle(0, 0, 23, 0x2aaeff, 0.18)
-        .setStrokeStyle(4, 0x7ad8ff, 0.95)
+    const shuffledPositions = Phaser.Utils.Array.Shuffle(
+      CANTEEN_TRAYS.map(({ x, y }) => ({ x, y }))
+    );
+    CANTEEN_TRAYS.forEach((tray, index) => {
+      const position = shuffledPositions[index];
+      const cleanImage = this.add.image(0, 0, CANTEEN_TRAY_KEY).setScale(0.75);
+      const dirtyImage = this.add.image(0, 0, CANTEEN_DIRTY_TRAY_KEY)
+        .setScale(0.75)
         .setVisible(false);
-      const image = this.add.image(0, 0, CANTEEN_TRAY_KEY);
-      const container = this.add.container(tray.x, tray.y, [glow, image])
-        .setDepth(tray.y + 30)
-        .setSize(46, 40)
+      const sparkles = [
+        this.add.circle(-9, -7, 2, 0x7ce7ff, 0.95),
+        this.add.circle(8, -9, 1.5, 0xbbefff, 0.9),
+        this.add.circle(11, 4, 1.5, 0x4fcaff, 0.92)
+      ];
+      sparkles.forEach((sparkle, sparkleIndex) => {
+        sparkle.setVisible(false);
+        this.tweens.add({
+          targets: sparkle,
+          y: sparkle.y - 4 - sparkleIndex,
+          alpha: { from: 0.22, to: 1 },
+          duration: 430 + sparkleIndex * 90,
+          yoyo: true,
+          repeat: -1,
+          ease: "Stepped"
+        });
+      });
+      const container = this.add.container(
+        position.x,
+        position.y,
+        [cleanImage, dirtyImage, ...sparkles]
+      )
+        .setDepth(position.y + 110)
+        .setSize(30, 24)
         .setInteractive({ useHandCursor: true });
+      const target: CanteenInteractionTarget = {
+        id: tray.id,
+        label: "桌上的餐盘",
+        x: position.x,
+        y: position.y,
+        stand: { x: position.x, y: position.y + 62 },
+        proximity: 55,
+        kind: "tray",
+        value: tray.id
+      };
       container.on("pointerdown", () => {
-        const target = CANTEEN_INTERACTION_TARGETS.find((candidate) => candidate.id === tray.id);
-        if (target) this.triggerPointerTarget(target);
+        this.triggerPointerTarget(target);
       });
-      this.trayVisuals.set(tray.id, { container, glow });
-      this.tweens.add({
-        targets: glow,
-        scale: { from: 0.82, to: 1.16 },
-        alpha: { from: 0.42, to: 0.92 },
-        duration: 800,
-        yoyo: true,
-        repeat: -1,
-        ease: "Sine.easeInOut"
-      });
+      this.trayInteractionTargets.set(tray.id, target);
+      this.trayVisuals.set(tray.id, { container, cleanImage, dirtyImage, sparkles });
     });
+  }
+
+  private applyPlayerCollisionBody(): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (!body) return;
+    body.enable = true;
+    body
+      .setSize(RPG_PLAYER_FOOT_COLLISION.width, RPG_PLAYER_FOOT_COLLISION.height)
+      .setOffset(RPG_PLAYER_FOOT_COLLISION.offsetX, RPG_PLAYER_FOOT_COLLISION.offsetY);
+  }
+
+  private updatePlayerCollisionDebug(): void {
+    if (!this.playerCollisionDebug) return;
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (!body) return;
+    this.playerCollisionDebug
+      .setPosition(body.center.x, body.center.y)
+      .setSize(body.width, body.height)
+      .setDisplaySize(body.width, body.height);
   }
 
   private createCarts(): void {
@@ -475,21 +1074,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setDepth(y + 20)
         .setVisible(false)
         .setInteractive({ useHandCursor: true });
-      // The visual cart rolls freely. Once parked, its lower frame becomes a
-      // real obstacle so the player cannot walk through a sealed exit.
-      const blocker = this.add.rectangle(x, y + 17, 82, 34, 0x000000, 0)
-        .setDepth(-900)
-        .setVisible(false);
-      this.obstacles.add(blocker);
-      const blockerBody = blocker.body as Phaser.Physics.Arcade.StaticBody | null;
-      if (blockerBody) blockerBody.enable = false;
+      // Carts are visual-only. Pushing never enlarges the player's collider,
+      // and the cart silhouette itself does not block traversal.
       this.applyCartOrientation(cart, definition);
       cart.on("pointerdown", () => {
         const target = CANTEEN_INTERACTION_TARGETS.find((candidate) => candidate.id === `cart_${exitId}`);
         if (target) this.triggerPointerTarget(target);
       });
       this.cartVisuals.set(exitId, cart);
-      this.cartBlockers.set(exitId, blocker);
       this.exitGlows.set(exitId, glow);
       this.tweens.add({
         targets: glow,
@@ -629,7 +1221,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       0.56
     ).setDepth(1500).setAlpha(this.currentMode === "dark" ? 0.56 : 0);
     const fiberPoints = [
-      { x: 296, y: 282 }, { x: 750, y: 510 }, { x: 1132, y: 636 },
       { x: CANTEEN_PICKUP_WINDOWS[2].x, y: CANTEEN_PICKUP_WINDOWS[2].y },
       { x: 82, y: 250 }, { x: 1380, y: 850 }, { x: 1235, y: 227 }
     ];
@@ -683,31 +1274,39 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.playModeTransition(String(payload?.mode) === "dark" ? "dark" : "light");
       return;
     }
-    if (name === "canteen_tray_identified") {
-      this.showFeedback(canteenContent.tray.glowing, "system");
+    if (name === "canteen_tray_task_started") {
+      this.showFeedback(canteenContent.tray.taskStarted, "task", 2600);
       return;
     }
-    if (name === "canteen_tray_unidentified") {
-      this.showFeedback(canteenContent.tray.wrongReturn, "system");
+    if (name === "canteen_tray_collect_wrong_mode") {
+      this.showFeedback(canteenContent.tray.collectWrongMode, "task");
       return;
     }
-    if (name === "canteen_tray_rejected") {
-      this.showFeedback(canteenContent.tray.ordinary, "system");
+    if (name === "canteen_tray_hands_full") {
+      this.showFeedback(canteenContent.tray.handsFull, "task");
       return;
     }
-    if (name === "canteen_tray_hit_student") {
-      this.showFeedback(canteenContent.tray.studentHit, "system");
+    if (name === "canteen_tray_empty_handed") {
+      this.showFeedback(canteenContent.tray.emptyHanded, "narrator");
       return;
     }
-    if (name === "canteen_tray_returned") {
+    if (name === "canteen_tray_collected") {
       const trayId = String(payload?.trayId ?? "");
-      this.animateTrayReturn(trayId, Number(payload?.count) || 0);
+      this.animateTrayCollection(trayId);
       return;
     }
-    if (name === "canteen_trays_completed") {
-      this.queueDialogue(canteenContent.tray.completionDialogue);
+    if (name === "canteen_tray_delivered") {
+      const target = payload?.target === true;
+      const completed = payload?.completed === true;
+      const response = target
+        ? canteenContent.tray.correctReturn
+        : canteenContent.tray.wrongReturn;
+      this.queueDialogue(
+        completed ? [response, ...canteenContent.tray.completionDialogue] : [response]
+      );
       return;
     }
+    if (name === "canteen_trays_completed") return;
     if (name === "canteen_menu_dark_clue_read") {
       this.showFeedback(canteenContent.menu.darkClueRead, "task");
       return;
@@ -752,6 +1351,13 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.animatePaperBurst();
       return;
     }
+    if (name === "canteen_defense_completed") {
+      this.finishDefense();
+      this.queueDialogue(canteenContent.blocking.escapeDialogue, () => {
+        this.bridge.emit("rpg_canteen_leave_requested");
+      });
+      return;
+    }
     if (name === "canteen_exit_dark_clue_read") {
       this.showFeedback(canteenContent.blocking.darkClueRead, "task");
       return;
@@ -790,15 +1396,16 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private requestModeToggle(): void {
-    if (this.cartPushBusy) return;
+    if (this.cartPushBusy || this.defenseRuntime) return;
     const state = this.bridge.getState();
-    if (!["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase)) return;
+    if (!["tray_search", "menu_order", "pickup_search"].includes(state.canteenHunt.phase)) return;
     const mode: CanteenMode = state.canteenHunt.mode === "light" ? "dark" : "light";
     this.bridge.emit("rpg_canteen_mode_requested", { mode });
   }
 
   private playModeTransition(mode: CanteenMode): void {
     this.currentMode = mode;
+    this.applyCanteenNpcMode(mode);
     const duration = this.reducedMotion ? 120 : 450;
     this.tweens.killTweensOf(this.darkOverlay);
     this.tweens.add({
@@ -828,24 +1435,51 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "exit");
     }
     if (state.canteenHunt.phase === "tray_search") {
-      return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "tray");
+      if (state.canteenHunt.mode !== "light") return [];
+      return [
+        ...this.initialNpcInteractionTargets,
+        ...(state.canteenHunt.trayTaskStarted
+          ? [...this.trayInteractionTargets.values()]
+          : [])
+      ];
     }
     if (state.canteenHunt.phase === "menu_order") {
-      return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "kiosk");
+      return [
+        ...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "kiosk"),
+        ...(state.canteenHunt.mode === "light" ? [this.returnAuntieTarget] : [])
+      ];
     }
     if (state.canteenHunt.phase === "pickup_search") {
-      return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "pickup");
+      return [
+        ...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "pickup"),
+        ...(state.canteenHunt.mode === "light" ? [this.returnAuntieTarget] : [])
+      ];
     }
     if (state.canteenHunt.phase === "exit_blocking") {
-      return CANTEEN_INTERACTION_TARGETS.filter((target) => (
-        target.kind === "cart"
-        && CANTEEN_EXIT_SEQUENCE.indexOf(String(target.value) as CanteenExitId) >= state.canteenHunt.blockHits
-      ));
+      return [];
     }
     return [];
   }
 
   private triggerTarget(target: CanteenInteractionTarget, state: GameState): void {
+    if (target.kind === "npc") {
+      if (target.id === "return-auntie") {
+        if (state.canteenHunt.phase !== "tray_search" || state.items.greaseTissue) {
+          this.queueDialogue([canteenContent.tray.afterCompletion]);
+          return;
+        }
+        if (!state.canteenHunt.trayTaskStarted) {
+          this.queueDialogue(canteenContent.tray.introDialogue, () => {
+            this.bridge.emit("rpg_canteen_tray_task_start_requested");
+          });
+          return;
+        }
+        this.bridge.emit("rpg_canteen_tray_delivery_requested");
+        return;
+      }
+      if (target.dialogue) this.queueDialogue([target.dialogue]);
+      return;
+    }
     if (target.kind === "tray") {
       this.triggerTrayById(target.value ?? target.id);
       return;
@@ -959,10 +1593,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (state.canteenHunt.phase !== "tray_search" || this.dialogueLocked) return;
     const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
     if (!definition) return;
-    this.bridge.emit("rpg_canteen_tray_requested", {
-      trayId,
-      queueCollision: definition.queueCollision === true
-    });
+    this.bridge.emit("rpg_canteen_tray_requested", { trayId });
   }
 
   private triggerCart(exitId: CanteenExitId): void {
@@ -980,8 +1611,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.cartPushBusy = true;
     this.cartMotionExit = exitId;
     this.cartMotionVector.set(0, 0);
-    const definition = CANTEEN_CARTS[exitId];
-    this.syncCartBlocker(exitId, definition.x, definition.y, false);
     this.player.setVelocity(0, 0);
     this.bridge.emit("rpg_canteen_exit_block_requested", { exitId });
   }
@@ -994,9 +1623,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
 
-    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | null;
-    if (playerBody) playerBody.enable = false;
-    this.syncCartBlocker(exitId, cart.x, cart.y, false);
+    this.applyPlayerCollisionBody();
     const handleX = cart.x + definition.handleOffsetX;
     const handleY = cart.y + definition.handleOffsetY;
     const approachVector = new Phaser.Math.Vector2(handleX - this.player.x, handleY - this.player.y);
@@ -1021,7 +1648,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         320
       ),
       ease: "Sine.easeOut",
-      onUpdate: () => this.player.setDepth(this.player.y + 120),
+      onUpdate: () => this.updatePlayerWorldDepth(),
       onComplete: startRoll
     });
   }
@@ -1066,12 +1693,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
         const wheelFrame = Math.floor(this.time.now / CART_ROLL_FRAME_MS) % CANTEEN_CART_FRAME_KEYS.length;
         this.placeCart(exitId, x, y, wheelFrame);
         this.player.setPosition(x + definition.handleOffsetX, y + definition.handleOffsetY);
-        this.player.setDepth(this.player.y + 120);
+        this.updatePlayerWorldDepth();
       },
       onComplete: () => {
         this.placeCart(exitId, targetX, targetY, 0);
-        this.player.setPosition(targetX + definition.handleOffsetX, targetY + definition.handleOffsetY)
-          .setDepth(this.player.y + 120);
+        this.player.setPosition(targetX + definition.handleOffsetX, targetY + definition.handleOffsetY);
+        this.updatePlayerWorldDepth();
         this.time.delayedCall(this.reducedMotion ? 0 : 90, onComplete);
       }
     });
@@ -1095,7 +1722,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (this.cartMotionExit !== exitId) return;
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body | null;
     if (playerBody) {
-      playerBody.enable = true;
+      this.applyPlayerCollisionBody();
       playerBody.reset(this.player.x, this.player.y);
     }
     this.cartPushBusy = false;
@@ -1112,16 +1739,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       .setDepth(y + 20);
     this.applyCartOrientation(cart, CANTEEN_CARTS[exitId]);
     this.exitGlows.get(exitId)?.setPosition(x, y).setDepth(y + 19);
-  }
-
-  private syncCartBlocker(exitId: CanteenExitId, x: number, y: number, enabled: boolean): void {
-    const blocker = this.cartBlockers.get(exitId);
-    if (!blocker) return;
-    blocker.setPosition(x, y + 17);
-    const body = blocker.body as Phaser.Physics.Arcade.StaticBody | null;
-    if (!body) return;
-    body.enable = enabled;
-    body.updateFromGameObject();
   }
 
   private applyCartOrientation(cart: Phaser.GameObjects.Image, definition: typeof CANTEEN_CARTS[CanteenExitId]): void {
@@ -1149,10 +1766,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.promptText.setVisible(false);
       return;
     }
-    const label = nearest.kind === "tray"
-      ? state.canteenHunt.mode === "dark"
-        ? "识别餐盘蓝色纸屑"
-        : "回收已识别餐盘"
+    const label = nearest.kind === "npc"
+      ? nearest.label
+      : nearest.kind === "tray"
+      ? state.canteenHunt.carriedTrayIds.length > 0
+        ? "先把手上的餐盘交给阿姨"
+        : "拿起桌上的餐盘"
       : nearest.kind === "kiosk"
         ? state.canteenHunt.mode === "dark"
           ? "查看点餐菜单残影"
@@ -1176,15 +1795,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private syncWorldFromState(state: GameState, immediate = false): void {
+    const phaseChanged = state.canteenHunt.phase !== this.currentPhase;
+    this.currentPhase = state.canteenHunt.phase;
     if (state.canteenHunt.mode !== this.currentMode) {
       if (immediate) {
         this.currentMode = state.canteenHunt.mode;
         this.darkOverlay?.setAlpha(this.currentMode === "dark" ? 0.56 : 0);
+        this.applyCanteenNpcMode(this.currentMode, true);
       } else {
         this.playModeTransition(state.canteenHunt.mode);
       }
+    } else if (phaseChanged) {
+      this.applyCanteenNpcMode(this.currentMode, immediate);
     }
-    this.currentPhase = state.canteenHunt.phase;
     const pickupVisible = state.canteenHunt.active && state.canteenHunt.phase === "pickup_search";
     const showPickupDrop = pickupVisible
       && state.canteenHunt.mode === "light"
@@ -1197,60 +1820,80 @@ export class CanteenInteriorScene extends Phaser.Scene {
       visual.dropLabel.setVisible(showPickupDrop);
     });
     this.trayVisuals.forEach((visual, trayId) => {
-      const returned = state.canteenHunt.returnedTrayIds.includes(trayId);
       const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
-      visual.container.setVisible(state.canteenHunt.phase === "tray_search" && !returned);
-      visual.glow.setVisible(
-        state.canteenHunt.phase === "tray_search"
+      const removed = state.canteenHunt.returnedTrayIds.includes(trayId)
+        || state.canteenHunt.carriedTrayIds.includes(trayId);
+      const visible = state.canteenHunt.phase === "tray_search" && !removed;
+      const dirtyVisible = visible
+        && state.canteenHunt.trayTaskStarted
         && state.canteenHunt.mode === "dark"
-        && definition?.target === true
-        && !returned
-      );
+        && definition?.target === true;
+      visual.container
+        .setVisible(visible)
+        .setDepth(dirtyVisible ? 1605 : visual.container.y + 110);
+      visual.cleanImage.setVisible(visible && !dirtyVisible);
+      visual.dirtyImage.setVisible(dirtyVisible);
+      visual.sparkles.forEach((sparkle) => sparkle.setVisible(dirtyVisible));
     });
+    this.updateCarriedTrayVisual(state);
     const blocking = state.canteenHunt.phase === "exit_blocking";
-    const expectedExit = CANTEEN_EXIT_SEQUENCE[state.canteenHunt.blockHits];
+    if (blocking) {
+      this.tweens.killTweensOf(this.darkOverlay);
+      this.darkOverlay.setAlpha(0);
+      this.modeFibers.forEach((fiber) => fiber.setVisible(false));
+    }
     this.cartVisuals.forEach((cart, exitId) => {
-      const index = CANTEEN_EXIT_SEQUENCE.indexOf(exitId);
-      const isPlaced = index >= 0 && index < state.canteenHunt.blockHits;
       const isAnimating = this.cartPushBusy && this.cartMotionExit === exitId;
       const definition = CANTEEN_CARTS[exitId];
       if (!isAnimating) {
-        this.placeCart(
-          exitId,
-          isPlaced ? definition.pushToX : definition.x,
-          isPlaced ? definition.pushToY : definition.y
-        );
+        this.placeCart(exitId, definition.x, definition.y);
       }
-      const visible = isAnimating || isPlaced || (blocking && index >= state.canteenHunt.blockHits);
-      cart.setVisible(visible);
-      this.syncCartBlocker(exitId, cart.x, cart.y, isPlaced && !isAnimating);
+      cart.setVisible(false);
     });
-    this.exitGlows.forEach((glow, exitId) => glow.setVisible(blocking && state.canteenHunt.mode === "dark" && exitId === expectedExit));
+    this.exitGlows.forEach((glow) => glow.setVisible(false));
     if (blocking && !this.paper.visible) {
       this.paper.setPosition(836, 470).setVisible(true);
       this.paperFloatTween.restart();
+    } else if (!blocking && !this.paperBusy && !this.defenseRuntime) {
+      this.paper.setVisible(false);
     }
   }
 
-  private animateTrayReturn(trayId: string, count: number): void {
+  private animateTrayCollection(trayId: string): void {
     const visual = this.trayVisuals.get(trayId);
     if (!visual) return;
     this.dialogueLocked = true;
+    const pickupVisual = this.add.image(
+      visual.container.x,
+      visual.container.y,
+      CANTEEN_TRAY_KEY
+    ).setScale(0.75).setDepth(2300);
+    visual.container.setVisible(false);
     this.bridge.emit("canteen_tray_slide_started", { trayId });
     this.tweens.add({
-      targets: visual.container,
-      x: 1215,
-      y: 506,
-      angle: 10,
-      duration: this.reducedMotion ? 120 : 620,
-      ease: "Cubic.easeInOut",
+      targets: pickupVisual,
+      x: this.player.x,
+      y: this.player.y - 48,
+      scale: 0.58,
+      duration: this.reducedMotion ? 100 : 360,
+      ease: "Back.easeIn",
       onComplete: () => {
-        visual.container.setVisible(false);
+        pickupVisual.destroy();
         this.dialogueLocked = false;
-        this.bridge.emit("canteen_tray_slide_completed", { trayId, count });
-        if (count < 3) this.showFeedback(canteenContent.tray.incomplete, "system");
+        this.bridge.emit("canteen_tray_slide_completed", { trayId });
+        this.showFeedback(canteenContent.tray.collected, "task", 2200);
       }
     });
+  }
+
+  private updateCarriedTrayVisual(state: GameState): void {
+    if (!this.carriedTrayVisual) return;
+    const carrying = state.canteenHunt.phase === "tray_search"
+      && state.canteenHunt.carriedTrayIds.length > 0;
+    this.carriedTrayVisual
+      .setPosition(this.player.x, this.player.y - 48)
+      .setDepth(this.player.depth + 4)
+      .setVisible(carrying && !this.dialogueLocked);
   }
 
   private openMenuPanel(): void {
@@ -1360,8 +2003,110 @@ export class CanteenInteriorScene extends Phaser.Scene {
       ease: "Back.easeOut",
       onComplete: () => {
         this.paperBusy = false;
-        this.paperFloatTween.restart();
         this.bridge.emit("canteen_paper_burst_completed");
+        this.startDefense();
+      }
+    });
+  }
+
+  private startDefense(): void {
+    if (this.defenseRuntime || this.bridge.getState().canteenHunt.phase !== "exit_blocking") return;
+    this.currentPhase = "exit_blocking";
+    this.applyCanteenNpcMode(this.currentMode, true);
+    this.tweens.killTweensOf(this.darkOverlay);
+    this.darkOverlay.setAlpha(0);
+    this.modeFibers.forEach((fiber) => fiber.setVisible(false));
+    // Recreate the Arcade bodies from the authored rectangles when the chase
+    // starts. This prevents a long-lived Phaser scene (including dev HMR) from
+    // retaining the pre-calibration obstacle geometry.
+    this.rebuildStaticCollisionBodies();
+    this.paperFloatTween.pause();
+    this.cartVisuals.forEach((cart) => {
+      cart.setVisible(false);
+    });
+    this.applyPlayerCollisionBody();
+    this.exitGlows.forEach((glow) => glow.setVisible(false));
+    this.promptText.setVisible(false);
+    this.dialogueLocked = false;
+    this.paperBusy = false;
+
+    const camera = this.cameras.main;
+    const fullMapZoom = Math.min(
+      camera.width / CANTEEN_INTERIOR_WORLD.width,
+      camera.height / CANTEEN_INTERIOR_WORLD.height
+    ) * 0.985;
+    camera
+      .stopFollow()
+      .setDeadzone(0, 0)
+      .setZoom(fullMapZoom)
+      .centerOn(CANTEEN_INTERIOR_WORLD.width / 2, CANTEEN_INTERIOR_WORLD.height / 2);
+
+    this.defenseRuntime = new CanteenDefenseRuntime(
+      this,
+      this.player,
+      this.paper,
+      {
+        onComplete: () => {
+          this.showFeedback("纸条暂时没有找到能钻出去的流程。", "success", 1500);
+          this.bridge.emit("rpg_canteen_defense_completed");
+        },
+        onFailure: (exitId) => {
+          const exitLabel: Record<CanteenDefenseExitId, string> = {
+            northwest: "左上门",
+            south_gap: "左中下通道",
+            southeast: "右下门"
+          };
+          this.showFeedback(`纸条从${exitLabel[exitId]}溜走了。`, "system", 1100);
+          this.defenseRestartTimer?.remove(false);
+          this.defenseRestartTimer = this.time.delayedCall(1150, () => {
+            this.defenseRuntime?.restartAttempt();
+            this.defenseRestartTimer = null;
+          });
+        },
+        onTurnaround: (_exitId, route) => {
+          this.flashDefenseRoute(route);
+          this.cameras.main.shake(this.reducedMotion ? 0 : 75, 0.0025);
+        }
+      }
+    );
+    this.showFeedback("守住三个出口。空格键冲刺，纸条回头时会自动闪出路线。", "task", 2600);
+  }
+
+  private finishDefense(): void {
+    this.defenseRestartTimer?.remove(false);
+    this.defenseRestartTimer = null;
+    this.defenseRuntime?.destroy();
+    this.defenseRuntime = null;
+    this.defenseRouteGraphics?.clear().setVisible(false);
+    this.tweens.killTweensOf(this.darkOverlay);
+    this.darkOverlay.setAlpha(0);
+    this.modeFibers.forEach((fiber) => fiber.setVisible(false));
+    this.paperFloatTween.pause();
+    this.paper.setVisible(false);
+    this.player.setVelocity(0, 0);
+  }
+
+  private flashDefenseRoute(route: readonly Phaser.Math.Vector2[]): void {
+    if (!this.defenseRouteGraphics) {
+      this.defenseRouteGraphics = this.add.graphics().setDepth(1604);
+    }
+    const graphics = this.defenseRouteGraphics;
+    this.tweens.killTweensOf(graphics);
+    graphics.clear().setVisible(true).setAlpha(0.95);
+    graphics.lineStyle(5, 0x78ddff, 0.88).beginPath();
+    graphics.moveTo(this.paper.x, this.paper.y);
+    route.forEach((point) => graphics.lineTo(point.x, point.y));
+    graphics.strokePath();
+    route.forEach((point, index) => {
+      if (index % 2 === 0) graphics.fillStyle(0xdff9ff, 0.9).fillCircle(point.x, point.y, 5);
+    });
+
+    this.tweens.add({
+      targets: graphics,
+      alpha: 0,
+      duration: this.reducedMotion ? 420 : 760,
+      onComplete: () => {
+        graphics.clear().setVisible(false);
       }
     });
   }
@@ -1480,7 +2225,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         scrollX: Math.round(this.cameras.main.scrollX),
         scrollY: Math.round(this.cameras.main.scrollY),
         zoom: Number(this.cameras.main.zoom.toFixed(2)),
-        mode: "follow"
+        mode: this.defenseRuntime ? "manual" : "follow"
       },
       scene: "canteen_interior",
       activeTargets: this.getActiveTargets(state).map((target) => {

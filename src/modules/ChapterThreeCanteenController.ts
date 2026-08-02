@@ -2,6 +2,12 @@ import type { EventBus } from "../core/EventBus";
 import type { CanteenExitId, CanteenMode, GameStore } from "../core/types";
 
 export const CANTEEN_TARGET_TRAYS = ["tray_blue_01", "tray_blue_02", "tray_blue_03"] as const;
+export const CANTEEN_TRAY_IDS = [
+  ...CANTEEN_TARGET_TRAYS,
+  "tray_plain_01", "tray_plain_02", "tray_plain_03",
+  "tray_plain_04", "tray_plain_05", "tray_plain_06",
+  "tray_plain_07", "tray_plain_08", "tray_plain_09"
+] as const;
 export const CANTEEN_EXIT_SEQUENCE: readonly CanteenExitId[] = ["southeast", "steam", "west"];
 const CANTEEN_TRAY_REWARD_CENTS = 200;
 const CANTEEN_BIKE_FARE_CENTS = 200;
@@ -17,7 +23,16 @@ export interface CanteenChaseAttempt {
 
 export type CanteenChaseAttemptResult = "won" | "lost" | "invalid";
 
-export type CanteenTrayResult = "identified" | "returned" | "ordinary" | "wrong_mode" | "already_done" | "inactive";
+export type CanteenTrayResult =
+  | "task_started"
+  | "collected"
+  | "delivered_target"
+  | "delivered_ordinary"
+  | "wrong_mode"
+  | "already_done"
+  | "hands_full"
+  | "empty_handed"
+  | "inactive";
 export type CanteenChoiceResult = "correct" | "wrong" | "locked" | "inactive";
 export type CanteenBlockResult = "correct" | "wrong" | "complete" | "inactive";
 export type CanteenBikeResult = "code_read" | "glare" | "cleaned" | "payment_ready" | "dark_rejected" | "rule" | "paid" | "inactive";
@@ -63,70 +78,106 @@ export class ChapterThreeCanteenController {
     if (state.canteenHunt.mode === mode) return true;
     this.store.setState((current) => ({
       ...current,
-      canteenHunt: { ...current.canteenHunt, mode }
+      canteenHunt: {
+        ...current.canteenHunt,
+        mode,
+        identifiedTrayIds: mode === "dark"
+          && current.canteenHunt.phase === "tray_search"
+          && current.canteenHunt.trayTaskStarted
+            ? [...CANTEEN_TARGET_TRAYS]
+            : current.canteenHunt.identifiedTrayIds
+      }
     }));
     this.events.emit("canteen_mode_changed", { mode });
     return true;
   }
 
-  useTray(trayId: string, isQueueCollision = false): CanteenTrayResult {
+  startTrayTask(): CanteenTrayResult {
     const state = this.store.getState();
     if (!state.canteenHunt.active || state.canteenHunt.phase !== "tray_search") return "inactive";
-    const isTarget = (CANTEEN_TARGET_TRAYS as readonly string[]).includes(trayId);
-    if (!isTarget) {
-      this.events.emit(isQueueCollision ? "canteen_tray_hit_student" : "canteen_tray_rejected", { trayId });
-      return "ordinary";
-    }
-    if (state.canteenHunt.returnedTrayIds.includes(trayId)) return "already_done";
-    if (state.canteenHunt.mode === "dark") {
-      const allTargetsIdentified = CANTEEN_TARGET_TRAYS.every((targetId) => (
-        state.canteenHunt.identifiedTrayIds.includes(targetId)
-      ));
-      if (!allTargetsIdentified) {
-        this.store.setState((current) => ({
-          ...current,
-          canteenHunt: {
-            ...current.canteenHunt,
-            // One dark-mode observation exposes the same blue residue on all
-            // three target trays. Requiring three identical scans adds order
-            // without adding information, so the observation is recorded once.
-            identifiedTrayIds: [...CANTEEN_TARGET_TRAYS]
-          }
-        }));
-      }
-      this.events.emit("canteen_tray_identified", {
-        trayId,
-        identifiedTrayIds: [...CANTEEN_TARGET_TRAYS]
-      });
-      return "identified";
-    }
-    if (!state.canteenHunt.identifiedTrayIds.includes(trayId)) {
-      this.events.emit("canteen_tray_unidentified", { trayId });
-      return "wrong_mode";
-    }
-    const returnedTrayIds = [...state.canteenHunt.returnedTrayIds, trayId];
-    const completed = returnedTrayIds.length === CANTEEN_TARGET_TRAYS.length;
+    if (state.canteenHunt.trayTaskStarted) return "task_started";
     this.store.setState((current) => ({
       ...current,
-      items: completed
+      canteenHunt: { ...current.canteenHunt, trayTaskStarted: true }
+    }));
+    this.events.emit("canteen_tray_task_started");
+    return "task_started";
+  }
+
+  collectTray(trayId: string): CanteenTrayResult {
+    const state = this.store.getState();
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "tray_search") return "inactive";
+    if (!state.canteenHunt.trayTaskStarted || !(CANTEEN_TRAY_IDS as readonly string[]).includes(trayId)) {
+      return "inactive";
+    }
+    if (state.canteenHunt.mode !== "light") {
+      this.events.emit("canteen_tray_collect_wrong_mode", { trayId });
+      return "wrong_mode";
+    }
+    if (
+      state.canteenHunt.carriedTrayIds.includes(trayId)
+      || state.canteenHunt.returnedTrayIds.includes(trayId)
+    ) return "already_done";
+    if (state.canteenHunt.carriedTrayIds.length > 0) {
+      this.events.emit("canteen_tray_hands_full", { trayId });
+      return "hands_full";
+    }
+    this.store.setState((current) => ({
+      ...current,
+      canteenHunt: {
+        ...current.canteenHunt,
+        carriedTrayIds: [trayId]
+      }
+    }));
+    this.events.emit("canteen_tray_collected", {
+      trayId,
+      target: (CANTEEN_TARGET_TRAYS as readonly string[]).includes(trayId)
+    });
+    return "collected";
+  }
+
+  deliverCarriedTray(): CanteenTrayResult {
+    const state = this.store.getState();
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "tray_search") return "inactive";
+    const trayId = state.canteenHunt.carriedTrayIds[0];
+    if (!trayId) {
+      this.events.emit("canteen_tray_empty_handed");
+      return "empty_handed";
+    }
+    const target = (CANTEEN_TARGET_TRAYS as readonly string[]).includes(trayId);
+    const returnedTrayIds = [...state.canteenHunt.returnedTrayIds, trayId];
+    const correctCount = returnedTrayIds.filter((id) => (
+      (CANTEEN_TARGET_TRAYS as readonly string[]).includes(id)
+    )).length;
+    const completed = correctCount === CANTEEN_TARGET_TRAYS.length;
+    const rewardGranted = completed && !state.items.cafeteriaWages;
+    this.store.setState((current) => ({
+      ...current,
+      items: rewardGranted
         ? { ...current.items, cafeteriaWages: true, greaseTissue: true }
         : current.items,
-      wallet: completed
+      wallet: rewardGranted
         ? { ...current.wallet, cashCents: current.wallet.cashCents + CANTEEN_TRAY_REWARD_CENTS }
         : current.wallet,
       canteenHunt: {
         ...current.canteenHunt,
+        carriedTrayIds: [],
         returnedTrayIds,
         phase: completed ? "menu_order" : current.canteenHunt.phase
       }
     }));
-    this.events.emit("canteen_tray_returned", { trayId, count: returnedTrayIds.length });
+    this.events.emit("canteen_tray_delivered", {
+      trayId,
+      target,
+      correctCount,
+      completed
+    });
     if (completed) {
       this.events.emit("get_item", { itemId: "cafeteriaWages", sourceScene: "canteen_interior" });
       this.events.emit("get_item", { itemId: "greaseTissue", sourceScene: "canteen_interior" });
       this.events.emit("canteen_trays_completed");
     }
-    return "returned";
+    return target ? "delivered_target" : "delivered_ordinary";
   }
 
   inspectMenuClue(): boolean {
@@ -276,6 +327,27 @@ export class ChapterThreeCanteenController {
     }));
     this.events.emit(complete ? "canteen_exit_blocking_completed" : "canteen_exit_blocked", { exitId, blockHits });
     return complete ? "complete" : "correct";
+  }
+
+  completeDefense(): boolean {
+    const state = this.store.getState();
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "exit_blocking") {
+      return false;
+    }
+    this.store.setState((current) => ({
+      ...current,
+      canteenHunt: {
+        ...current.canteenHunt,
+        mode: "light",
+        phase: "chase_ready",
+        // Keep the legacy fields complete so old saves and later chapter checks
+        // continue to understand that the exit-defense beat has been cleared.
+        blockHits: CANTEEN_EXIT_SEQUENCE.length,
+        identifiedExitIds: [...CANTEEN_EXIT_SEQUENCE]
+      }
+    }));
+    this.events.emit("canteen_defense_completed");
+    return true;
   }
 
   leaveCanteen(): boolean {
@@ -431,11 +503,12 @@ export function bindChapterThreeCanteenEvents(
       options.onEnterResult?.(entered);
     } else if (event.name === "rpg_canteen_mode_requested") {
       controller.setMode(String(event.payload?.mode ?? "light") as CanteenMode);
+    } else if (event.name === "rpg_canteen_tray_task_start_requested") {
+      controller.startTrayTask();
     } else if (event.name === "rpg_canteen_tray_requested") {
-      controller.useTray(
-        String(event.payload?.trayId ?? ""),
-        event.payload?.queueCollision === true
-      );
+      controller.collectTray(String(event.payload?.trayId ?? ""));
+    } else if (event.name === "rpg_canteen_tray_delivery_requested") {
+      controller.deliverCarriedTray();
     } else if (event.name === "rpg_canteen_menu_clue_requested") {
       controller.inspectMenuClue();
     } else if (event.name === "rpg_canteen_menu_selected") {
@@ -448,6 +521,8 @@ export function bindChapterThreeCanteenEvents(
       controller.inspectExitCart(String(event.payload?.exitId ?? "west") as CanteenExitId);
     } else if (event.name === "rpg_canteen_exit_block_requested") {
       controller.blockExit(String(event.payload?.exitId ?? "west") as CanteenExitId);
+    } else if (event.name === "rpg_canteen_defense_completed") {
+      controller.completeDefense();
     } else if (event.name === "rpg_canteen_leave_requested") {
       const left = controller.leaveCanteen();
       options.onLeaveResult?.(left);

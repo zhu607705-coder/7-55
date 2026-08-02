@@ -66,7 +66,12 @@ const VALID_CANTEEN_HUNT_PHASES = new Set<GameState["canteenHunt"]["phase"]>([
   "exit_blocking", "chase_ready", "chasing", "theater_reached"
 ]);
 const VALID_CANTEEN_MODES = new Set<GameState["canteenHunt"]["mode"]>(["light", "dark"]);
-const VALID_CANTEEN_TRAY_IDS = new Set(["tray_blue_01", "tray_blue_02", "tray_blue_03"]);
+const VALID_CANTEEN_TRAY_IDS = new Set([
+  "tray_blue_01", "tray_blue_02", "tray_blue_03",
+  "tray_plain_01", "tray_plain_02", "tray_plain_03",
+  "tray_plain_04", "tray_plain_05", "tray_plain_06",
+  "tray_plain_07", "tray_plain_08", "tray_plain_09"
+]);
 const VALID_CANTEEN_EXIT_IDS = new Set(["west", "southeast", "steam"]);
 const VALID_THEATER_HUNT_PHASES = new Set<GameState["theaterHunt"]["phase"]>([
   "entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"
@@ -297,6 +302,17 @@ export class SaveStore {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
         phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
         mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
+        trayTaskStarted: booleanOr(
+          savedCanteenHunt.trayTaskStarted,
+          savedCanteenPhase !== "tray_search"
+          || (Array.isArray(savedCanteenHunt.identifiedTrayIds) && savedCanteenHunt.identifiedTrayIds.length > 0)
+          || (Array.isArray(savedCanteenHunt.returnedTrayIds) && savedCanteenHunt.returnedTrayIds.length > 0)
+        ),
+        carriedTrayIds: filteredStringArrayFromSet(
+          savedCanteenHunt.carriedTrayIds,
+          VALID_CANTEEN_TRAY_IDS,
+          initial.canteenHunt.carriedTrayIds
+        ).slice(0, 1),
         identifiedTrayIds: filteredStringArrayFromSet(
           savedCanteenHunt.identifiedTrayIds,
           VALID_CANTEEN_TRAY_IDS,
@@ -548,6 +564,8 @@ function createCanteenTrackingState(
     active: true,
     phase: "tracking",
     mode: "light",
+    trayTaskStarted: false,
+    carriedTrayIds: [],
     identifiedTrayIds: [],
     returnedTrayIds: [],
     orderAttemptCount: 0,

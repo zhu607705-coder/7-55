@@ -1,0 +1,21 @@
+- main "紫金港校园大地图与大食堂剧情演示" [ref=e3]:
+  - generic [ref=e4]:
+    - generic "校园与大食堂剧情交互区" [ref=e5]
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: 7:55
+        - strong [ref=e10]: 紫金港校园大地图
+      - paragraph [ref=e11]: 大食堂剧情已开始：沿脚印到入口，按空格进入。
+    - generic "演示操作" [ref=e12]:
+      - button "自由探索" [ref=e13] [cursor=pointer]
+      - button "大食堂剧情" [active] [ref=e14] [cursor=pointer]
+      - button "回到角色" [ref=e15] [cursor=pointer]
+      - button "缩小地图" [ref=e16] [cursor=pointer]: −
+      - button "放大地图" [ref=e17] [cursor=pointer]: +
+      - button "全屏" [ref=e18] [cursor=pointer]
+    - generic [ref=e19]:
+      - generic [ref=e20]: 坐标 3120, 650
+      - generic [ref=e21]: 缩放 1.65
+      - generic [ref=e23]: 剧情 追踪脚印
+      - generic [ref=e24]: 浅色模式
+      - generic [ref=e22]: WASD / 方向键移动 · Shift 冲刺 · 空格进入 · 单击路面寻路
