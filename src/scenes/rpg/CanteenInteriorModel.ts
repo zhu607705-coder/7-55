@@ -92,28 +92,71 @@ export const CANTEEN_OCCLUSION_RECTS: readonly CanteenOcclusionRect[] = [
 
 export interface CanteenTrayDefinition {
   id: string;
-  x: number;
-  y: number;
   target: boolean;
 }
 
-// Twelve plates are scattered across otherwise empty tables. Their ordering is
-// intentionally irregular so the three target ids do not form a visible row or
-// route in light mode. Each plate is centred on the painted tabletop, never the
-// surrounding floor or a table occupied by a seated NPC.
+export interface CanteenTraySlot {
+  tableId: string;
+  x: number;
+  y: number;
+  stand: { x: number; y: number };
+}
+
+// These are the fourteen tables without seated NPCs. Every table contributes four
+// tabletop-corner slots, so one table can naturally hold up to four abandoned plates.
+const CANTEEN_EMPTY_TABLES = [
+  { id: "table_1_1", x: 227, y: 350 },
+  { id: "table_1_3", x: 525, y: 350 },
+  { id: "table_1_4", x: 675, y: 350 },
+  { id: "table_1_6", x: 987, y: 350 },
+  { id: "table_1_7", x: 1145, y: 350 },
+  { id: "table_2_2", x: 376, y: 459 },
+  { id: "table_2_4", x: 675, y: 459 },
+  { id: "table_2_5", x: 831, y: 459 },
+  { id: "table_2_7", x: 1146, y: 459 },
+  { id: "table_3_1", x: 229, y: 568 },
+  { id: "table_3_2", x: 378, y: 568 },
+  { id: "table_3_4", x: 680, y: 568 },
+  { id: "table_3_5", x: 835, y: 568 },
+  { id: "table_3_7", x: 1148, y: 568 }
+] as const;
+
+const CANTEEN_TRAY_CORNER_OFFSETS = [
+  // After the 90-degree rotation, the visible plate is about 10 x 17 px on a
+  // 46 x 71 px tabletop. These offsets leave an even ~5 px inset on both edges.
+  { x: -13, y: -22, standSide: "left" },
+  { x: 13, y: -22, standSide: "right" },
+  { x: -13, y: 22, standSide: "left" },
+  { x: 13, y: 22, standSide: "right" }
+] as const;
+
+export const CANTEEN_TRAY_SLOTS: readonly CanteenTraySlot[] = CANTEEN_EMPTY_TABLES.flatMap((table) => (
+  CANTEEN_TRAY_CORNER_OFFSETS.map((corner) => ({
+    tableId: table.id,
+    x: table.x + corner.x,
+    y: table.y + corner.y,
+    stand: {
+      x: table.x + (corner.standSide === "left" ? -72 : 72),
+      y: table.y + corner.y
+    }
+  }))
+));
+
+// Runtime placement randomly assigns these twelve ids to twelve distinct corner
+// slots. The target ids therefore remain invisible in light mode.
 export const CANTEEN_TRAYS: readonly CanteenTrayDefinition[] = [
-  { id: "tray_blue_01", x: 227, y: 349, target: true },
-  { id: "tray_plain_01", x: 525, y: 348, target: false },
-  { id: "tray_plain_02", x: 675, y: 349, target: false },
-  { id: "tray_plain_03", x: 985, y: 350, target: false },
-  { id: "tray_plain_04", x: 1144, y: 350, target: false },
-  { id: "tray_plain_05", x: 376, y: 458, target: false },
-  { id: "tray_plain_06", x: 675, y: 460, target: false },
-  { id: "tray_blue_02", x: 831, y: 459, target: true },
-  { id: "tray_plain_07", x: 1144, y: 459, target: false },
-  { id: "tray_plain_08", x: 227, y: 569, target: false },
-  { id: "tray_plain_09", x: 376, y: 569, target: false },
-  { id: "tray_blue_03", x: 1144, y: 570, target: true }
+  { id: "tray_blue_01", target: true },
+  { id: "tray_plain_01", target: false },
+  { id: "tray_plain_02", target: false },
+  { id: "tray_plain_03", target: false },
+  { id: "tray_plain_04", target: false },
+  { id: "tray_plain_05", target: false },
+  { id: "tray_plain_06", target: false },
+  { id: "tray_blue_02", target: true },
+  { id: "tray_plain_07", target: false },
+  { id: "tray_plain_08", target: false },
+  { id: "tray_plain_09", target: false },
+  { id: "tray_blue_03", target: true }
 ] as const;
 
 export interface CanteenInteractionTarget extends RpgSpatialInteractionTarget {
@@ -240,16 +283,6 @@ export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition
 };
 
 export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = [
-  ...CANTEEN_TRAYS.map((tray) => ({
-    id: tray.id,
-    label: "桌上的餐盘",
-    x: tray.x,
-    y: tray.y,
-    stand: { x: tray.x, y: tray.y },
-    proximity: 72,
-    kind: "tray" as const,
-    value: tray.id
-  })),
   // Kiosk and pickup anchors remain on the visible machines. Their operation
   // positions are in the clear aisle below the respective counter fronts.
   {

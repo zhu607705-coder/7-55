@@ -46,6 +46,7 @@ import {
   CANTEEN_SPAWN,
   CANTEEN_STATIC_COLLISION_RECTS,
   CANTEEN_TRAYS,
+  CANTEEN_TRAY_SLOTS,
   findNearestCanteenTarget,
   type CanteenInteractionTarget
 } from "./CanteenInteriorModel";
@@ -665,8 +666,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
       label: "与收餐口阿姨交谈",
       x: CANTEEN_RETURN_NPC_POSITION.x,
       y: CANTEEN_RETURN_NPC_POSITION.y,
-      stand: { x: 1215, y: 600 },
-      proximity: 58,
+      // This is the clear strip immediately beside the visible return worker.
+      stand: { x: 1466, y: 608 },
+      proximity: 64,
       kind: "npc"
     };
 
@@ -993,13 +995,16 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private createTrays(): void {
     const shuffledPositions = Phaser.Utils.Array.Shuffle(
-      CANTEEN_TRAYS.map(({ x, y }) => ({ x, y }))
-    );
+      CANTEEN_TRAY_SLOTS.map((slot) => ({ ...slot, stand: { ...slot.stand } }))
+    ).slice(0, CANTEEN_TRAYS.length);
     CANTEEN_TRAYS.forEach((tray, index) => {
       const position = shuffledPositions[index];
-      const cleanImage = this.add.image(0, 0, CANTEEN_TRAY_KEY).setScale(0.75);
+      const cleanImage = this.add.image(0, 0, CANTEEN_TRAY_KEY)
+        .setScale(0.75)
+        .setAngle(90);
       const dirtyImage = this.add.image(0, 0, CANTEEN_DIRTY_TRAY_KEY)
         .setScale(0.75)
+        .setAngle(90)
         .setVisible(false);
       const sparkles = [
         this.add.circle(-9, -7, 2, 0x7ce7ff, 0.95),
@@ -1031,8 +1036,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
         label: "桌上的餐盘",
         x: position.x,
         y: position.y,
-        stand: { x: position.x, y: position.y + 62 },
-        proximity: 55,
+        stand: position.stand,
+        proximity: 58,
         kind: "tray",
         value: tray.id
       };
