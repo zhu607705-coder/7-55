@@ -1,52 +1,38 @@
 # Zijingang Campus Artwork
 
-## Runtime ownership
+## 当前运行基线
 
-- `zijingang_campus_plate.png` is the only campus map image loaded by Phaser. Its approved dimensions are `4516 × 3420`; it renders in one north-up, top-down source-pixel coordinate system without stretching.
-- The plate owns buildings, roads, water, landscaping, plazas, and other static artwork. Phaser owns the player, fixed foot collision, subtle uniform depth scaling, camera, labels, interactions, story transitions, and the verified Basic Library and Moon Building occlusion crops.
-- The campus keeps a `960 × 540` logical coordinate system but raises its canvas backing store to the displayed CSS size and device-pixel ratio, up to `3×`. Camera values receive the same multiplier, so native-resolution rendering does not change the visible world extent or interaction coordinates.
-- The overview minimap remains intentionally absent.
+- Phaser 当前只加载 `zijingang_campus_loop_panorama.png`。正式尺寸为 `13668 × 1084`，保持源像素比例和横向伪 `2.5D` 视角。
+- `zijingang_campus_plate.png` 与 `source/topdown/` 保留给 Godot 校园重建和空间参考，当前 Phaser 场景不加载它们。
+- `source/panorama/zijingang_legacy_panorama.png` 是旧 `11744 × 1084` 拼接图的可复现输入。`qizhen_lake_reflection.png` 在旧图 `x=8400` 后插入 `1924px`，得到当前环湖图。
+- 插入点位于首次剧场东侧。旧坐标 `x>=8400` 的建筑和入口统一右移 `1924px`，不允许场景文件各自补偿。
 
-## Calibration sources
+## 道路、空气墙和环线
 
-- `source/topdown/campus_roads_source.png` supplies the primary connected road mask.
-- `source/topdown/campus_water_source.png` blocks water inside manually opened areas.
-- `source/topdown/campus_buildings_source.png` is retained for building-bound and occlusion calibration.
-- `source/topdown/zijingang_schematic_reference.jpg` records the real-building correspondence used to identify `紫云碧峰`, `东区大食堂`, and the story destination `基础图书馆`.
-- Source layers share the plate's `4516 × 3420` coordinate system and must not be positioned as separate runtime scenes.
+- `zijingang_road_walkability_mask.png` 是运行时 `4px` 压缩网格的可审查展开图。
+- 可走主面从 `y=864` 开始，覆盖整张图的连续道路。入口走廊、前景障碍和剧情站位由 `scripts/calibrate-wide-campus-runtime.py` 统一生成。
+- 湖水、草坪、围栏、建筑立面和未标定区域保持阻挡。空气墙不得覆盖画面中连续的人行道、入口走廊、拼接缝或环线抵达点。
+- 左右边界只在前景道路上触发双向环线。短淡入隐藏边界传送；剧情、道具、任务、存档和相机缩放保持不变。
+- 人物统一读取 `RpgPlayerTextures.ts` 的深度曲线。远处为基础尺寸，靠近画面底部逐步放大；碰撞脚盒保持固定世界尺寸。
+- 侧视建筑属于背景美术，顶视图的建筑矩形和遮挡多边形不得附加到当前环湖图。
 
-## Movement, collision, and occlusion
+## 剧情衔接
 
-- `zijingang_road_walkability_mask.png` is the reviewable nearest-neighbor expansion of the compressed runtime `4px` grid.
-- Roads are walkable by default. Only the manually verified Basic Library east/south forecourt is added. Dense planting, water, buildings, and uncertain open-looking regions remain blocked.
-- Landmark bounding boxes are visual metadata only and are never added as physics rectangles. The Basic Library solid is a measured polygon subtracted from its open forecourt. Purple Cloud/Bifeng and East Canteen use the separated road layer without additional collision polygons.
-- The spawn is `(2550,650)`, on the road immediately south of `紫云碧峰`.
-- The story library is `基础图书馆`. Its gate is `(3706,1696)` with radius `112`; the safe approach checkpoint is `(3805,1680)`.
-- The `东区大食堂` campus gate remains `(3120,620)` with approach checkpoint `(3120,650)`. Normal exploration enters `canteen_interior / canteen_entrance`; its southeast exit returns to `campus_bootstrap / campus_canteen_gate` without resetting story progress.
-- `基础图书馆` and `月牙楼` currently use clipped silhouettes from the same plate. `紫云碧峰` and `东区大食堂` occlusion are disabled until their silhouettes are manually recalibrated.
-- The actor has half the former campus world size and the nominal default camera zoom is doubled to `1.1`. This doubles the map-to-actor ratio while preserving the actor's initial absolute screen size. Campus walk/run speeds are `110/160` world pixels per second.
-- The camera deadzone is `300/960` of the current visible world width and `180/540` of its height. It is recomputed whenever zoom or backing resolution changes.
-- Landmark labels use `18px` high-resolution text without a stroke. Their top edge starts `12px` inside the measured building roof so they remain attached to the building and clear the shared task bar.
-- Manual collision polygons are authored in `scripts/calibrate-topdown-campus-runtime.py`. Landmark bounds, label anchors, occlusion polygons, and each building's `occlusionEnabled` switch are authored in `src/scenes/rpg/ZijingangCampusLayout.ts`.
+- 东区大食堂追逐完成后进入首次剧场。
+- 首次剧场反转完成并离场后，玩家从 `campus_theater_junction` 进入一次性湖畔过场：湿纸和残留轨迹向东移动，在启真湖插入段前消失。
+- 过场只建立“朝有水的方向移动”的证据，不显示最终地点答案。之后继续使用 CC98、馆藏和微信三条来源完成手机地图推断。
+- `qizhenLake.locationBriefingSeen` 是过场完成事实。已完成存档直接恢复自由移动；未完成存档从安全的剧场路口重放。
 
-## 手动修改方法
+## 修改和验证
 
-1. 建筑身份先以 `source/topdown/zijingang_schematic_reference.jpg` 为准，再到 `zijingang_campus_plate.png` 中测量运行时像素坐标；不要根据外形猜建筑名称。
-2. 道路以外需要额外开放的广场写入 `scripts/calibrate-topdown-campus-runtime.py` 的 `WALKABLE_POLYGONS`；开放区内的建筑实体写入 `SOLID_POLYGONS`。修改后运行 `npm run map:zijingang:walkability`，不要直接编辑生成的 PNG 或 JSON。
-3. 建筑遮挡统一写在 `src/scenes/rpg/ZijingangCampusLayout.ts`。`worldCenter` 和 `visualFootprint` 定义同源裁片范围，`occlusionPolygons` 描出实际轮廓，确认后把 `occlusionEnabled` 设为 `true`。
-4. 建筑名称也读取同一个布局文件。标签位置由建筑实测顶部和 `CAMPUS_LANDMARK_LABEL_TOP_INSET` 计算，不要在场景文件中另写坐标。
-5. 月牙楼当前只增加遮挡，不增加特殊碰撞。其北侧道路可行走范围约为 `x=3324..3399, y<=1130`，所以遮挡只需覆盖从该道路向南接近建筑的角色。
-6. 修改后依次运行 `npm run map:zijingang`、`npm run typecheck`、`npm run build:single` 和 `npm run verify:single`，并在浏览器中从实际道路方向检查人物脚点和建筑前后层级。
+1. 修改湖段拼接参数时编辑 `scripts/build-zijingang-loop-panorama.py`，运行 `npm run map:zijingang:rebuild`；不要手工改生成图。
+2. 只修改空气墙或入口坐标时编辑 `scripts/calibrate-wide-campus-runtime.py`，运行 `npm run map:zijingang:walkability`。
+3. 所有入口、剧情站位、插入边界、深度参数和环线点都写入 `src/data/maps/zijingang-campus-runtime.json`，场景只读取该文件。
+4. 运行 `npm run map:zijingang` 验证图像哈希、完整道路、脚盒、入口、剧场到湖段路径和双向环线。
+5. 运行 `npm run typecheck`、`npm run build:single`、`npm run verify:single`，再从真实浏览器完成键盘、点击移动、触摸、首次过场、退出重进和左右环线验收。
 
-## Rebuild and verification
+## Godot 迁移边界
 
-- `npm run map:zijingang:rebuild` and `npm run map:zijingang:walkability` run `scripts/calibrate-topdown-campus-runtime.py`. They preserve the approved artwork, rebuild the compressed bitset and review mask, and synchronize all hashes.
-- `npm run map:zijingang` is read-only. It verifies dimensions, hashes, story points, solid samples, entrance proximity, and connected routes from the spawn to the library, canteen, and canteen-hunt region.
-- Retired wide-panorama and square-map builders must not overwrite this plate.
-
-## Current selected asset
-
-- Plate SHA-256: `57e27997d0c24a77dd758869bcc1bab8665b10496a77ec0f802986461ceb116d`.
-- Mask SHA-256: `04f45dfe97cd7eab30cc5a4a170c7e2778536ec7c0f84245145b6d2dbf74824d`.
-- Runtime manifest: `src/data/maps/zijingang-campus-runtime.json`.
-- World: `4516 × 3420`; walkability grid: `1129 × 855`; cell size: `4px`; walkable cells: `158952`.
+- TypeScript `GameState`、控制器、存档和任务仍是唯一进度权威。
+- Godot 校园场景接入前必须复现当前图像比例、世界坐标、碰撞网格、深度曲线、环线传送和食堂→剧场→启真湖状态流程。
+- 当前 Phaser 图是迁移验收基线；Godot 通过资产、碰撞、输入、存档恢复和 Blink/Gecko/WebKit 全流程验收后再替换。

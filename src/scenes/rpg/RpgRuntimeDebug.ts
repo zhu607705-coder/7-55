@@ -30,6 +30,18 @@ export interface RpgRuntimeDebugState {
   };
   camera: { scrollX: number; scrollY: number; zoom: number; mode: "follow" | "manual" };
   path?: { followingPath: boolean; pathLength: number };
+  campusLoop?: {
+    enabled: boolean;
+    wrapping: boolean;
+    wrapCount: number;
+    leftTriggerX: number;
+    rightTriggerX: number;
+  };
+  qizhenApproach?: {
+    active: boolean;
+    briefingSeen: boolean;
+    stop: { x: number; y: number };
+  };
   scene?: "campus_bootstrap" | "dorm_hub" | "library_interior" | "canteen_interior" | "theater_interior" | "qizhen_lake";
   checkpoint?: string;
   entranceDoor?: {

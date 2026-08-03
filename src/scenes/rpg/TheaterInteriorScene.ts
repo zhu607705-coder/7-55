@@ -48,6 +48,22 @@ const THEATER_PROGRAM_KEY = "chapter-3-theater-program";
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
+const THEATER_TICKET_FIXTURE_COLLISION_RECTS = [
+  {
+    id: "ticket_inspector_fixture",
+    left: 720,
+    top: 633,
+    right: 786,
+    bottom: 786
+  },
+  {
+    id: "ticket_reader_fixture",
+    left: 883,
+    top: 650,
+    right: 931,
+    bottom: 786
+  }
+] as const;
 
 interface OcclusionVisual {
   id: string;
@@ -509,18 +525,15 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
     const collisionVisible = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("rpgCollision") === "1";
-    [
-      { x: 753, y: 692, width: 28, height: 48 },
-      { x: 907, y: 694, width: 24, height: 48 }
-    ].forEach((bounds) => {
+    THEATER_TICKET_FIXTURE_COLLISION_RECTS.forEach((bounds) => {
       const collision = this.add.rectangle(
-        bounds.x,
-        bounds.y,
-        bounds.width,
-        bounds.height,
+        (bounds.left + bounds.right) / 2,
+        (bounds.top + bounds.bottom) / 2,
+        bounds.right - bounds.left,
+        bounds.bottom - bounds.top,
         collisionVisible ? 0xffcc33 : 0x000000,
         collisionVisible ? 0.28 : 0
-      ).setDepth(collisionVisible ? 4901 : bounds.y);
+      ).setDepth(collisionVisible ? 4901 : bounds.bottom);
       if (collisionVisible) collision.setStrokeStyle(2, 0xfff0ad, 0.9);
       this.obstacles.add(collision);
     });
@@ -2022,7 +2035,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
         acceptedItem: candidate.acceptedItem,
         requiredMode: candidate.requiredMode
       })),
-      collisionRects: THEATER_STATIC_COLLISION_RECTS,
+      collisionRects: [
+        ...THEATER_STATIC_COLLISION_RECTS,
+        ...THEATER_TICKET_FIXTURE_COLLISION_RECTS
+      ],
       theater: {
         runtimeContractVersion: this.runtime.contractVersion,
         phase: state.theaterHunt.phase,

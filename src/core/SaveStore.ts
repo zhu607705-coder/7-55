@@ -34,6 +34,7 @@ const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
   "campus_library_gate",
   "campus_canteen_gate",
   "campus_theater_junction",
+  "campus_qizhen_transition_stop",
   "campus_qizhen_gate",
   "dorm_spawn",
   "canteen_entrance",

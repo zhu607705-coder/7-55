@@ -31,7 +31,7 @@ export type DeveloperCheckpointId =
   | "c3-canteen-bike" | "c3-canteen-chase" | "c3-canteen-theater"
   | "c3-theater-entry" | "c3-theater-code" | "c3-theater-program"
   | "c3-theater-prop" | "c3-theater-spotlight" | "c3-theater-spotlight-round" | "c3-theater-complete"
-  | "c3-qizhen-location" | "c3-qizhen-map" | "c3-qizhen-gate"
+  | "c3-qizhen-transition" | "c3-qizhen-location" | "c3-qizhen-map" | "c3-qizhen-gate"
   | "c3-qizhen-reflection" | "c3-qizhen-signs" | "c3-qizhen-decoy"
   | "c3-qizhen-mist" | "c3-qizhen-release";
 
@@ -113,6 +113,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-theater-spotlight", chapter: "第三章", label: "追光围捕", detail: "三轮路径预判" },
   { id: "c3-theater-spotlight-round", chapter: "第三章", label: "追光第一轮", detail: "观察路径终点并选择光圈" },
   { id: "c3-theater-complete", chapter: "第三章", label: "替身揭晓", detail: "假纸条与湿节目单" },
+  { id: "c3-qizhen-transition", chapter: "第三章", label: "剧场到湖畔过场", detail: "湿纸、水迹和环湖道路衔接" },
   { id: "c3-qizhen-location", chapter: "第三章", label: "寻找启真湖", detail: "CC98、馆藏与微信三条线索" },
   { id: "c3-qizhen-map", chapter: "第三章", label: "地图猜谜", detail: "桥边、倒影与湖自由组合" },
   { id: "c3-qizhen-gate", chapter: "第三章", label: "启真湖入口", detail: "从校园大地图步行进入" },
@@ -682,7 +683,7 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
     "c3-qizhen-mist",
     "c3-qizhen-release"
   ].includes(id);
-  const phase: GameState["qizhenLake"]["phase"] = id === "c3-qizhen-location" || id === "c3-qizhen-map"
+  const phase: GameState["qizhenLake"]["phase"] = id === "c3-qizhen-transition" || id === "c3-qizhen-location" || id === "c3-qizhen-map"
     ? "location_search"
     : id === "c3-qizhen-gate"
       ? "lake_unlocked"
@@ -703,8 +704,10 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
     ...base,
     runtimeMode: id === "c3-qizhen-location" || id === "c3-qizhen-map" ? "phone" : "rpg",
     currentScene: id === "c3-qizhen-location" ? "cc98" : id === "c3-qizhen-map" ? "zjuding" : base.currentScene,
-    rpgScene: inLake ? "qizhen_lake" : "campus_bootstrap",
-    rpgCheckpoint: id === "c3-qizhen-gate"
+    rpgScene: inLake ? "qizhen_lake" : id === "c3-qizhen-transition" ? "campus_bootstrap" : base.rpgScene,
+    rpgCheckpoint: id === "c3-qizhen-transition"
+      ? "campus_theater_junction"
+      : id === "c3-qizhen-gate"
       ? "campus_qizhen_gate"
       : id === "c3-qizhen-signs"
         ? "qizhen_signs"
@@ -719,9 +722,9 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       ...base.items,
       wetProgram: true,
       decoyPaper: true,
-      bridgeKeyword: id !== "c3-qizhen-location",
-      reflectionKeyword: id !== "c3-qizhen-location",
-      lakeKeyword: id !== "c3-qizhen-location",
+      bridgeKeyword: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
+      reflectionKeyword: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
+      lakeKeyword: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
       reflectionCoordinate: signsSolved
     },
     qizhenLake: {
@@ -729,11 +732,11 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       active: true,
       phase,
       mode: id === "c3-qizhen-signs" || id === "c3-qizhen-mist" ? "dark" : "light",
-      locationBriefingSeen: id !== "c3-qizhen-location",
-      bridgeClueFound: id !== "c3-qizhen-location",
-      reflectionClueFound: id !== "c3-qizhen-location",
-      lakeClueFound: id !== "c3-qizhen-location",
-      mapClueIds: id === "c3-qizhen-location"
+      locationBriefingSeen: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
+      bridgeClueFound: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
+      reflectionClueFound: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
+      lakeClueFound: !["c3-qizhen-transition", "c3-qizhen-location"].includes(id),
+      mapClueIds: id === "c3-qizhen-transition" || id === "c3-qizhen-location"
         ? []
         : id === "c3-qizhen-map"
           ? ["bridge", "reflection"]

@@ -85,7 +85,7 @@
       "source": "src/scenes/rpg/TheaterInteriorModel.ts",
       "target": "godot/data/theater-runtime.json",
       "bytes": 8914,
-      "sha256": "1ea858fff7e09eb9e98caa0ebf2ed784e0d966c5da390b741b3494c05069cc04"
+      "sha256": "40e48d4785a517099965eaf360d3c9337d7366d43400b3fa2039ff2056cea11a"
     }
   ]
 }

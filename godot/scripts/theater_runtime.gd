@@ -41,6 +41,8 @@ func _ready() -> void:
 	_create_world()
 	_create_player()
 	_install_web_bridge()
+	if not OS.has_feature("web"):
+		_apply_standalone_snapshot()
 	call_deferred("_announce_ready")
 
 
@@ -269,6 +271,24 @@ func _apply_snapshot(message: Dictionary) -> void:
 			)
 		_player.position = _spawn_for_zone(spawn_zone)
 	_sync_from_snapshot()
+
+
+func _apply_standalone_snapshot() -> void:
+	_apply_snapshot({
+		"revision": 0,
+		"snapshot": {
+			"checkpoint": "theater_lobby",
+			"spawnZone": "lobby",
+			"inputBlocked": false,
+			"selectedItem": "",
+			"theater": {
+				"phase": "entry_ticket",
+				"admitted": true,
+				"mode": "light",
+				"collectedProgramIds": []
+			}
+		}
+	})
 
 
 func _sync_from_snapshot() -> void:

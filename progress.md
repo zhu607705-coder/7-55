@@ -239,6 +239,23 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 完整验证：`npm run typecheck` 通过；35 个测试文件、168 项测试全部通过；新增地图测试同时验证桥下仍有 Water tile 且不存在 WaterCollision。
 - 单文件：`npm run build:single` 成功生成 `48,752,468 bytes` 的 `demo/index.html`；桥体与延长段均已内联，外链脚本和外链样式数量为 `0`。
 
+## 2026-07-30 启真湖场景继续打磨
+
+- 范围：只继续修改 `/src/scenes/rpg/QizhenLakeScene.ts` 的启真湖场景视觉层和交互 UI，不改手机页、不改状态机、不打包单文件。
+- 外部参考：用本机 Kimi CLI 做了一轮只读审美和演出审查，主要吸收了“深色模式避免平铺遮罩、关键交互点需要可读聚焦、装置类 UI 要带结构细节”的建议。
+- 已做：为启真湖补了更强的环境层，包含水面 shimmer、glint、ripple、漂浮粒子，以及按 plate 区分的深色聚焦光斑。
+- 已做：指示牌阶段把三块牌子的实体感继续拉高，新增编号圆章、水面缺口提示文案，并把深色模式下的可见度进一步抬高，避免只能看到一排发灰方框。
+- 已做：喷雾阶段让机器本体和同步 HUD 同时可读，避免 HUD 把核心可交互物完全压住；当前截图里可同时看到喷雾控制器和同步条。
+- 实机检查：按 `develop-web-game` 流程重新跑了 `c3-qizhen-reflection / signs / decoy / mist` 四个检查点截图，并逐张人工查看。
+- 实机结果：reflection 看到三段拦截圈与岸线环境；signs 能稳定看到三块编号指示牌和顶部缺口提示；decoy 有更明确的挂载位和站位圈；mist 能同时看到喷雾控制器与同步 HUD。
+- 交互回归：倒影阶段在开场对白结束后执行一次中央拦截，状态按规则记录 `reflectionMistakes=1`；指示牌阶段从深色观察切到浅色操作并旋转中央牌，状态变为 `signRotations=[0,1,0]`；喷雾阶段实际移动到湖面观察点并交互，状态写入 `mistRhythmRead=true`。三次浏览器运行均没有页面或控制台错误。
+- 文案收紧：只调整场景新增的物件名、操作提示和失败反馈，删除“同步、观测、目标、校准”等抽象界面术语，改成可直接对应画面与动作的短句；谜题目标、状态条件和事件名均未改动。
+- 原文边界：已将 `chapter3-qizhen-lake.content.json` 与《755_chapter3_detailed_gdd_animation_spec_v1.0》《第三章文本总》逐段对照，文档规定的剧情对白保持原文，本轮没有为追求口语化擅改剧情文本。
+- 文案实机：重新检查 `c3-qizhen-signs / decoy / mist` 三个检查点；新提示在 `960×540` 画面内无截断，实际旋转中央指示牌后仍写入 `signRotations=[0,1,0]`，观察水面后仍写入 `mistRhythmRead=true`，浏览器未记录页面或控制台错误。
+- 校验：`npm run typecheck` 通过；`git diff --check -- src/scenes/rpg/QizhenLakeScene.ts progress.md` 通过。
+- 交付更新：前一轮按当时要求未打包；用户随后明确标注需要重建，现已执行 `npm run build:single`。生成的 `demo/index.html` 为 `99,836,762 bytes`，SHA-256 为 `1ff3bf509c91ae20b503267c332f13ab95f2f8f7b998d2fd61d22f70601fb13d`。
+- 离线单文件检查：直接通过 `file://` 打开 `c3-qizhen-signs` 与 `c3-qizhen-mist`，新文案和场景画面均已进入生成文件；实际旋转中央指示牌后得到 `signRotations=[0,1,0]`，观察水面后得到 `mistRhythmRead=true`，没有页面或控制台错误。
+
 ## 2026-07-11 桥面接缝、体育场比例与道路净空修复
 
 - 桥面连续化：桥素材改为 `430×132` 单一模型，左右桥头保留原始比例，仅将中央桥面扩展到完整跨度；三座桥共享模型，中央砖缝、栏杆和桥身不再错位。
@@ -1234,6 +1251,40 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - CI 修正：`.github/workflows/web-ci.yml` 在音频校验前检查 `ffmpeg` / `ffprobe`，缺失时通过 Ubuntu 包管理器安装，随后输出两者版本。食堂、剧院、启真湖音效与第三章配音生成器在 `--verify-only` 下保留底层探测异常，方便后续直接识别缺工具、解码失败或媒体参数越界。
 - 诊断验证：用限制 `PATH` 的负向运行得到 `Probe ... failed: spawnSync ffprobe ENOENT`，确认错误已精确透出；恢复正常工具后 `npm run audio:chapter3:verify` 仍为 `76/76`。
 - 本地回归：Workflow YAML 解析、`npm run typecheck`、`npm run godot:check`、`npm run map:zijingang`、`npm run build`、`npm run build:single`、`npm run verify:single` 和 `git diff --check` 全部通过；单文件仍为 `99,824,173 bytes`。
+## 2026-07-30 剧院入口穿模与提示安全区
+
+- 检票实体：Phaser 回退场景为检票员和右侧读票器补齐按完整可视高度计算的导航碰撞区，人物从正面靠近时停在设备外侧；统一调试状态同步输出两块碰撞矩形。
+- 提示位置：Phaser 场景交互提示与 Godot 宿主提示统一使用底部内缩 `132px` 的字幕安全基线，检票提示不再贴住画布底边或遮住入口门。
+- 轻量验证：`npm run typecheck` 与 `git diff --check` 通过。开发预览从剧院大厅出生点实际执行右移、上移，人物停在 `(921,762)`，当前目标为 `theater_ticket_gate`，控制台与页面错误均为 `0`；截图已人工检查并在记录结论后删除。本轮按用户要求未重新打包 `demo/index.html`。
+
+## 2026-07-30 启真湖假纸条占位提示精修
+
+- 新需求：保留启真湖假纸条阶段的占位提醒，但把当前提示框的体块感压下去，让提示更细、更像场景里的像素引导。
+- 已做：`src/scenes/rpg/QizhenLakeScene.ts` 收窄了夹位边角、减弱了大面积蓝色填充、缩小了顶部说明牌，并把站位框改成更贴脚下的地面引导标记。
+- 已做：保留原命中范围、原站位坐标、原提示文案和原剧情判定，没有改玩法。
+- 验证：`npm run typecheck` 通过；使用 `develop-web-game` 的 Playwright 客户端抓取 `c3-qizhen-decoy` 检查点画布截图，提示仍清楚可读。
+- 验证：重新执行 `npm run build:single`，并用 `file:///Users/zhuhangcheng/Documents/黑客松/7-55/demo/index.html?devCheckpoint=c3-qizhen-decoy&dev=0&rpgEngine=phaser` 打开离线单文件复看，确认新版占位提示已进入当前 demo。
+
+## 2026-07-30 食堂骑行纵深演出与剧院直连
+
+- 骑行视角：玩家与前车统一改为背向镜头的纵深模型，保留三车道换道规则；玩家增加背部、服装、背包、手臂、腿部、车架、前后轮和踏频细节，骑行动作使用连续 CSS 帧。
+- 横穿行人：`runner` 障碍从道路左右边缘进入，随着接近程度横穿到真实碰撞车道；四肢和身体分别播放跑步动作，视觉位置与结算车道保持一致。
+- 路景稳定：路边建筑、树、路灯和道路虚线改用连续世界索引。每次仅替换已经越过镜头的一组物件，消除原先按固定间距整组重排造成的建筑跳动与闪动；追逐视图从整数米刷新提高到约每 `0.42m` 刷新一次。
+- 剧院直连：755 米剧情胜利后显示短暂抵达结果，`1650ms` 后依次通过食堂控制器完成追逐、通过剧院控制器进入 `theater_lobby`；玩家也可点“立即进入剧院”，不再返回校园剧院路口二次操作。
+- 开发预览：从 `c3-canteen-chase` 实跑至 `755m`，自动进入 `rpgScene=theater_interior / rpgCheckpoint=theater_lobby`，同时得到 `canteenHunt.phase=theater_reached / theaterHunt.active=true / theaterHunt.phase=entry_ticket`；页面与控制台错误为 `0`。
+- 离线单文件：同一完整流程在 `file://` 产物再次通过，外部请求为 `0`。`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过；`demo/index.html` 为 `99,843,996 bytes`，SHA-256 为 `71fed111d1889fc489e54361d3cdd1bea637ef8c5397095bd3247f7d7923dfdb`。
+
+## 2026-07-30 剧场后启真湖环湖地图与剧情过场
+
+- 地图恢复：恢复旧 `11744 × 1084` 多图拼接校园全景，在剧场东侧 `x=8400` 插入 `1924px` 启真湖片段，生成当前 `13668 × 1084` 环湖运行图。两侧使用各 `260px` 同源环境融合，前景车道贯穿插入段，地图左右边界通过短淡出双向接回。
+- 可复现生成：新增 `scripts/build-zijingang-loop-panorama.py`，由旧全景源图和启真湖源图原子生成 `zijingang_campus_loop_panorama.png`；新增环湖坐标与碰撞校准，统一维护食堂、剧场、启真湖、图书馆、出生点、循环边界和过场轨迹。运行图 SHA-256 为 `c2f3c887bb6c1d5f58e09a89883a28bd0050d0ccc8b1c85e10b5236ec3a4136d`。
+- 通行与纵深：前景道路 `y≥864` 连续可走，食堂、剧场、启真湖和图书馆入口使用实测通路；人物继续读取共享纵深曲线，远处 `1.0`、近处 `1.5`，当前湖畔停点显示约 `115 × 153px`。静态连通验证覆盖两端循环到达点和四处剧情入口。
+- 剧情衔接：食堂追逐完成仍直达首次剧场；剧场完成态在画布获得焦点后按 Space 退出，立即进入校园剧场路口并启动湖畔过场。湿纸沿路面领先、间断水迹淡出、人物自动追到 `(9040,930)`，四段台词和三段视觉节拍读取第三章启真湖内容配置；过场不提前公开启真湖谜题答案。
+- 存档与开发入口：新增 `campus_qizhen_transition_stop` 正式检查点。首次过场结束后保存 `locationBriefingSeen=true`，重载停在湖畔且不重复播放；未完成时仍从剧场安全点重播。新增 `c3-qizhen-transition` DEV 检查点，DEV 会话仍不写正式存档。
+- 浏览器实测：Blink 完成正式存档过场、重载跳过、剧场完成态真实退出和右端环湖接回，环湖次数为 `1`；Gecko、WebKit `1280×720` 均完成过场，画布为 `1280×720`、文档溢出和错误为 `0`。WebKit `390×844` 显示 `5` 个触控键，右移后人物 `x=9040→9091`，画布为 `390×219.375`，文档溢出和错误为 `0`。
+- 离线与 Godot：`file://` 单文件在请求 Godot 时保持一个 Phaser Canvas、零 iframe、零外部请求并正常播放过场。前序 Godot 剧场源码同步后重新导出 Web 产物，`npm run godot:check` 报告 Godot `4.7.1`、`15` 个资产、`11` 个目标、`27` 个碰撞体和匹配的 Web 构建。
+- 构建验证：`npm run map:zijingang:rebuild`、`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`npm run godot:export:web`、`npm run godot:check` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `130,734,222 bytes`，SHA-256 为 `2421482c074eb8148dfd3ab80790de643df6535ab14373de1e7d80a208950aee`。
+
 ## 2026-07-29 Godot 剧院 4.7 standalone 场景合入
 
 - 集成范围：从 `C:\Users\·\Desktop\godot剧院4.7` 合入 `theatre_interactive.tscn`、`theatre_plaza.tscn`、`scripts/theatre_*`、`assets/maps/` 和 `assets/player/`，放置在远端 Godot 分支的 `godot/` 子项目内，保留原始 `res://assets/...` 与 `res://scripts/...` 引用。
