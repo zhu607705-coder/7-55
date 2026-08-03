@@ -2,6 +2,8 @@ import type {
   ActOneBootstrapPhase,
   ActOneBootstrapState,
   BikeArcadeChapterState,
+  CanteenDrinkIngredientId,
+  CanteenMenuOptionId,
   GameState,
   LibraryEvidenceId,
   LibraryFinalsBdPostId,
@@ -19,9 +21,9 @@ import type {
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 13;
+const SAVE_VERSION = 15;
 const WALLET_SAVE_VERSION = 12;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, SAVE_VERSION]);
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
@@ -62,7 +64,7 @@ const VALID_SCENES = new Set<GameState["currentScene"]>([
 const VALID_NETWORK_MODES = new Set<GameState["networkMode"]>(["campus_wifi", "cellular", "offline"]);
 const VALID_THEME_MODES = new Set<GameState["themeMode"]>(["normal", "dark", "backside"]);
 const VALID_CANTEEN_HUNT_PHASES = new Set<GameState["canteenHunt"]["phase"]>([
-  "tracking", "canteen_reached", "entered", "tray_search", "menu_order", "pickup_search",
+  "tracking", "canteen_reached", "entered", "tray_search", "drink_mix", "menu_order", "pickup_search",
   "exit_blocking", "chase_ready", "chasing", "theater_reached"
 ]);
 const VALID_CANTEEN_MODES = new Set<GameState["canteenHunt"]["mode"]>(["light", "dark"]);
@@ -73,6 +75,10 @@ const VALID_CANTEEN_TRAY_IDS = new Set([
   "tray_plain_07", "tray_plain_08", "tray_plain_09"
 ]);
 const VALID_CANTEEN_EXIT_IDS = new Set(["west", "southeast", "steam"]);
+const VALID_CANTEEN_DRINK_IDS = new Set<CanteenDrinkIngredientId>([
+  "sparklingWater", "lemonTea", "blackCoffee"
+]);
+const VALID_CANTEEN_MENU_OPTIONS = new Set<CanteenMenuOptionId>(["A", "B", "C", "D", "E"]);
 const VALID_THEATER_HUNT_PHASES = new Set<GameState["theaterHunt"]["phase"]>([
   "entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"
 ]);
@@ -93,7 +99,9 @@ const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "fertilizer", "campusCard", "pushTriangle", "weatherWater", "mentorLine", "rightArrow",
   "gamepad", "occupancyNote", "callNumber755", "archivedLeaveRule", "itemRecognitionReport",
   "bagNonPersonProof", "seat022Receipt", "libraryPresenceProof", "seatReleasePass",
-  "cafeteriaWages", "greaseTissue", "pickupTicket0755", "theaterTicketHalfA",
+  "cafeteriaWages", "greaseTissue", "pickupTicket0755", "canteenRealBun",
+  "canteenCluelessSoyMilk", "canteenEdgeEgg", "canteenUselessCongee", "theaterTicketHalfA",
+  "sparklingWater", "lemonTea", "blackCoffee", "badDrink", "dailySpecialSparklingWater",
   "theaterTicketHalfB", "temporaryTheaterTicket", "theaterProgramOpening",
   "theaterProgramSpotlight", "theaterProgramFinale", "spotlightRemote",
   "fluorescentBrush", "decoyPaper", "wetProgram", "bridgeKeyword", "reflectionKeyword",
@@ -138,7 +146,7 @@ const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>(
 ]);
 
 interface SaveEnvelope {
-  version: 13;
+  version: 15;
   state: GameState;
   savedAt: number;
 }
@@ -296,6 +304,7 @@ export class SaveStore {
       const legacyChaseCompleted = savedCanteenPhase === "theater_reached";
       const chaseCompleted = booleanOr(savedCanteenHunt.chaseCompleted, legacyChaseCompleted);
       const savedBlockHits = rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits);
+      const drinkPreviouslyCompleted = ["menu_order", "pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const menuPreviouslyCompleted = ["pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const pickupPreviouslyCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       let canteenHunt: GameState["canteenHunt"] = {
@@ -323,8 +332,27 @@ export class SaveStore {
           VALID_CANTEEN_TRAY_IDS,
           initial.canteenHunt.returnedTrayIds
         ),
+        drinkShelfRead: booleanOr(savedCanteenHunt.drinkShelfRead, drinkPreviouslyCompleted),
+        drinkMixSequence: filteredStringArrayFromSet(
+          savedCanteenHunt.drinkMixSequence,
+          VALID_CANTEEN_DRINK_IDS,
+          initial.canteenHunt.drinkMixSequence
+        ).slice(0, 3) as CanteenDrinkIngredientId[],
+        drinkMixAttemptCount: nonNegativeIntegerOr(
+          savedCanteenHunt.drinkMixAttemptCount,
+          drinkPreviouslyCompleted ? 1 : initial.canteenHunt.drinkMixAttemptCount
+        ),
+        queueChallengeSeen: booleanOr(savedCanteenHunt.queueChallengeSeen, drinkPreviouslyCompleted),
+        promoDrinkPlaced: booleanOr(savedCanteenHunt.promoDrinkPlaced, drinkPreviouslyCompleted),
+        queueGapOpened: booleanOr(savedCanteenHunt.queueGapOpened, drinkPreviouslyCompleted),
         menuDarkClueRead: booleanOr(savedCanteenHunt.menuDarkClueRead, menuPreviouslyCompleted),
         pickupDarkClueRead: booleanOr(savedCanteenHunt.pickupDarkClueRead, pickupPreviouslyCompleted),
+        orderedMenuOption: typeof savedCanteenHunt.orderedMenuOption === "string"
+          && VALID_CANTEEN_MENU_OPTIONS.has(savedCanteenHunt.orderedMenuOption as CanteenMenuOptionId)
+            ? savedCanteenHunt.orderedMenuOption as CanteenMenuOptionId
+            : savedCanteenPhase === "pickup_search" && booleanOr((saved.items as Record<string, unknown> | undefined)?.pickupTicket0755, false)
+              ? "D"
+              : initial.canteenHunt.orderedMenuOption,
         identifiedExitIds: filteredStringArrayFromSet(
           savedCanteenHunt.identifiedExitIds,
           VALID_CANTEEN_EXIT_IDS,
@@ -568,6 +596,12 @@ function createCanteenTrackingState(
     carriedTrayIds: [],
     identifiedTrayIds: [],
     returnedTrayIds: [],
+    drinkShelfRead: false,
+    drinkMixSequence: [],
+    drinkMixAttemptCount: 0,
+    queueChallengeSeen: false,
+    promoDrinkPlaced: false,
+    queueGapOpened: false,
     orderAttemptCount: 0,
     pickupAttemptCount: 0,
     blockHits: 0,
@@ -707,6 +741,7 @@ function normalizeUi(
     controlCenterOpen: booleanOr(saved.controlCenterOpen, initial.controlCenterOpen),
     autoRotate: booleanOr(saved.autoRotate, initial.autoRotate),
     musicPlaying: booleanOr(saved.musicPlaying, initial.musicPlaying),
+    musicMuted: booleanOr(saved.musicMuted, initial.musicMuted),
     brightness: rangedNumberOr(saved.brightness, 0, 100, initial.brightness),
     inventoryOpen: booleanOr(saved.inventoryOpen, initial.inventoryOpen),
     selectedItem: nullableEnumOr(saved.selectedItem, VALID_ITEM_IDS, initial.selectedItem),

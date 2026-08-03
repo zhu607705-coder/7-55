@@ -47,6 +47,7 @@ const CANTEEN_PHASE_LABELS: Record<GameState["canteenHunt"]["phase"], string> = 
   canteen_reached: "抵达食堂",
   entered: "进入食堂",
   tray_search: "寻找异常餐盘",
+  drink_mix: "调配今日新品",
   menu_order: "破解点餐机",
   pickup_search: "寻找 0755 窗口",
   exit_blocking: "封堵纸条出口",
@@ -57,9 +58,11 @@ const CANTEEN_PHASE_LABELS: Record<GameState["canteenHunt"]["phase"], string> = 
 
 const CANTEEN_MODE_PHASES: readonly GameState["canteenHunt"]["phase"][] = [
   "tray_search",
+  "drink_mix",
   "menu_order",
   "pickup_search",
-  "exit_blocking"
+  "exit_blocking",
+  "chase_ready"
 ];
 
 function createCampusMapDemoState(spawn: DemoSpawn = "library"): GameState {

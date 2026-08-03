@@ -26,7 +26,7 @@ export type DeveloperCheckpointId =
   | "c2-recovery-form" | "c2-pass-generate" | "c2-pass-apply"
   | "c2-seat-sit" | "c2-seat-dialogue" | "c2-chapter-exit"
   | "campus-canteen-entry"
-  | "canteen-hunt" | "c3-canteen-entry" | "c3-canteen-menu" | "c3-canteen-pickup"
+  | "canteen-hunt" | "c3-canteen-entry" | "c3-canteen-drinks" | "c3-canteen-menu" | "c3-canteen-pickup"
   | "c3-canteen-block" | "c3-canteen-block-2" | "c3-canteen-block-3"
   | "c3-canteen-bike" | "c3-canteen-chase" | "c3-canteen-theater"
   | "c3-theater-entry" | "c3-theater-code" | "c3-theater-program"
@@ -97,6 +97,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "campus-canteen-entry", chapter: "第二章", label: "食堂门口", detail: "普通校园探索入口" },
   { id: "canteen-hunt", chapter: "第三章", label: "东区大食堂追踪", detail: "从校园出生点沿脚印前往东区大食堂" },
   { id: "c3-canteen-entry", chapter: "第三章", label: "进入食堂", detail: "寻找三只残影餐盘" },
+  { id: "c3-canteen-drinks", chapter: "第三章", label: "调配今日新品", detail: "三种饮料与插队合法化" },
   { id: "c3-canteen-menu", chapter: "第三章", label: "点餐机", detail: "浅色与深色菜单" },
   { id: "c3-canteen-pickup", chapter: "第三章", label: "0755 取餐", detail: "按暗号选择窗口" },
   { id: "c3-canteen-block", chapter: "第三章", label: "截住纸条", detail: "餐盘车封住第一个出口" },
@@ -479,6 +480,12 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
           carriedTrayIds: [],
           identifiedTrayIds: [],
           returnedTrayIds: [],
+          drinkShelfRead: false,
+          drinkMixSequence: [],
+          drinkMixAttemptCount: 0,
+          queueChallengeSeen: false,
+          promoDrinkPlaced: false,
+          queueGapOpened: false,
           menuDarkClueRead: false,
           pickupDarkClueRead: false,
           identifiedExitIds: [],
@@ -513,7 +520,10 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
 function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameState {
   const state = createLibraryCheckpointState("c2-chapter-exit");
   const identifiedTrayIds = ["tray_blue_01", "tray_blue_02", "tray_blue_03"];
-  const afterTrayStage = id !== "canteen-hunt" && id !== "c3-canteen-entry";
+  // Tray work is deliberately independent from the paper chase. Keep every
+  // checkpoint before the bike unpaid so the deferred-return path stays testable.
+  const afterTrayStage = ["c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
+  const afterDrinkStage = !["canteen-hunt", "c3-canteen-entry", "c3-canteen-drinks"].includes(id);
   const afterMenuStage = ["c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
   const afterPickupStage = ["c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
   const afterBlockingStage = ["c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
@@ -521,6 +531,8 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
     ? "tracking"
     : id === "c3-canteen-entry"
       ? "tray_search"
+      : id === "c3-canteen-drinks"
+        ? "drink_mix"
       : id === "c3-canteen-menu"
         ? "menu_order"
         : id === "c3-canteen-pickup"
@@ -532,7 +544,7 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
               : id === "c3-canteen-chase"
                 ? "chasing"
                 : "theater_reached";
-  const inCanteen = ["c3-canteen-entry", "c3-canteen-menu", "c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3"].includes(id);
+  const inCanteen = ["c3-canteen-entry", "c3-canteen-drinks", "c3-canteen-menu", "c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3"].includes(id);
 
   return {
     ...state,
@@ -567,8 +579,15 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       carriedTrayIds: [],
       identifiedTrayIds: afterTrayStage ? identifiedTrayIds : [],
       returnedTrayIds: afterTrayStage ? identifiedTrayIds : [],
+      drinkShelfRead: afterDrinkStage,
+      drinkMixSequence: [],
+      drinkMixAttemptCount: afterDrinkStage ? 1 : 0,
+      queueChallengeSeen: afterDrinkStage,
+      promoDrinkPlaced: afterDrinkStage,
+      queueGapOpened: afterDrinkStage,
       menuDarkClueRead: afterMenuStage,
       pickupDarkClueRead: afterPickupStage,
+      orderedMenuOption: afterMenuStage && !afterPickupStage ? "D" : null,
       identifiedExitIds: afterBlockingStage
         ? ["southeast", "steam", "west"]
         : id === "c3-canteen-block-3"

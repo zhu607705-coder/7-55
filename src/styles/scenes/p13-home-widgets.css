@@ -77,6 +77,149 @@
   transform: translate(-50%, -52%);
 }
 
+.phone-settings-backdrop {
+  align-items: center;
+  background: rgba(8, 18, 24, 0.64);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 36px 24px 82px;
+  position: absolute;
+  z-index: 78;
+}
+
+.phone-settings-panel {
+  background: #e9eee8;
+  border: 4px solid #172a30;
+  box-shadow: 8px 8px 0 rgba(10, 20, 24, 0.42);
+  color: #172a30;
+  image-rendering: pixelated;
+  padding: 18px;
+  width: min(430px, 100%);
+}
+
+.phone-settings-panel > header {
+  align-items: center;
+  border-bottom: 3px solid #8aa0a0;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 12px;
+}
+
+.phone-settings-panel h2 {
+  font-size: 28px;
+  line-height: 1;
+  margin: 3px 0 0;
+}
+
+.phone-settings-panel header small {
+  color: #547078;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.phone-settings-close {
+  align-items: center;
+  background: #d9e2df;
+  border: 3px solid #263d43;
+  color: #172a30;
+  display: flex;
+  font: 700 24px/1 monospace;
+  height: 38px;
+  justify-content: center;
+  padding: 0;
+  width: 38px;
+}
+
+.phone-settings-row {
+  align-items: center;
+  background: #f8faf4;
+  border: 3px solid #82999a;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 46px 1fr auto;
+  margin-top: 18px;
+  min-height: 88px;
+  padding: 12px;
+}
+
+.phone-settings-music-icon {
+  align-items: center;
+  background: #42677a;
+  border: 3px solid #19333d;
+  color: #fff8cc;
+  display: flex;
+  font: 700 26px/1 monospace;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.phone-settings-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.phone-settings-copy strong {
+  font-size: 17px;
+}
+
+.phone-settings-copy small,
+.phone-settings-note {
+  color: #52666b;
+  font-size: 11px;
+}
+
+.phone-settings-switch {
+  align-items: center;
+  border: 3px solid #20383f;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 72px;
+  padding: 7px 8px 6px;
+}
+
+.phone-settings-switch.is-on {
+  background: #70b99c;
+}
+
+.phone-settings-switch.is-off {
+  background: #aeb8b6;
+}
+
+.phone-settings-switch > span {
+  background: #f7fbf1;
+  border: 2px solid #20383f;
+  height: 12px;
+  position: relative;
+  width: 42px;
+}
+
+.phone-settings-switch > span::after {
+  background: #20383f;
+  content: "";
+  height: 8px;
+  left: 2px;
+  position: absolute;
+  top: 0;
+  transition: transform 120ms steps(2, end);
+  width: 16px;
+}
+
+.phone-settings-switch.is-on > span::after {
+  transform: translateX(18px);
+}
+
+.phone-settings-switch b {
+  font-size: 11px;
+}
+
+.phone-settings-note {
+  margin: 12px 2px 0;
+}
+
 /* 掉落齿轮/通知等 */
 
 .phone .notifications {

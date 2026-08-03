@@ -16,7 +16,16 @@ const ELSEWHERE_HINTS: Partial<Record<ItemId, string>> = {
   bagNonPersonProof: "前往 CC98 或恢复申请页面提交证明",
   seat022Receipt: "前往 CC98 或恢复申请页面提交凭据",
   libraryPresenceProof: "前往 CC98 或恢复申请页面提交证明",
-  pickupTicket0755: "到食堂取餐区，先观察窗口残影，再把取餐号拖入具体验票槽",
+  sparklingWater: "到食堂左下角混合台倒入玻璃杯",
+  lemonTea: "到食堂左下角混合台倒入玻璃杯",
+  blackCoffee: "到食堂左下角混合台倒入玻璃杯",
+  badDrink: "在食堂地图中拖到自己身上喝掉",
+  dailySpecialSparklingWater: "到食堂第五个打饭窗口下方的宣传板空杯位",
+  pickupTicket0755: "靠近取餐窗口后按空格使用；纸包鸡需在深色第三窗口交票",
+  canteenRealBun: "食物彩蛋，没有剧情用途",
+  canteenCluelessSoyMilk: "食物彩蛋，没有剧情用途",
+  canteenEdgeEgg: "食物彩蛋，没有剧情用途",
+  canteenUselessCongee: "食物彩蛋，没有剧情用途",
   theaterTicketHalfA: "与另一半临时票合成，无需拖到场景",
   theaterTicketHalfB: "与另一半临时票合成，无需拖到场景",
   theaterProgramOpening: "到剧院灯光控制台打开节目单排序",
@@ -104,16 +113,31 @@ export function selectRpgItemUseGuidance(
     if (state.canteenHunt.phase !== "pickup_search") {
       return locked("取餐号只在取餐阶段使用。先完成当前食堂任务。", "1、2、3号取餐窗口验票槽");
     }
-    if (state.canteenHunt.mode !== "light") {
-      return locked("深色模式只负责观察窗口残影；确认线索后切回浅色模式验票。", "1、2、3号取餐窗口验票槽");
+    return ready("取餐窗口", "不需要拖拽或站位。普通餐品在浅色对应窗口使用；纸包鸡先在浅色第三窗口报错，再切深色查看残影阿姨并按空格交票。");
+  }
+
+  if (
+    runtimeScene === "canteen_interior"
+    && state.canteenHunt.active
+    && ["tray_search", "drink_mix", "menu_order", "pickup_search"].includes(state.canteenHunt.phase)
+  ) {
+    if (
+      !state.canteenHunt.promoDrinkPlaced
+      && !state.canteenHunt.queueGapOpened
+      && ["sparklingWater", "lemonTea", "blackCoffee"].includes(itemId)
+    ) {
+      return ready("左下角混合台", "靠近混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。");
     }
-    if (!state.canteenHunt.pickupDarkClueRead) {
-      return locked("切到深色模式靠近窗口查看残影，找到暗号对应的窗口。", "1、2、3号取餐窗口验票槽");
+    if (
+      itemId === "dailySpecialSparklingWater"
+      && !state.canteenHunt.promoDrinkPlaced
+      && !state.canteenHunt.queueGapOpened
+    ) {
+      return ready("第五个打饭窗口下方的宣传板空杯位", "先靠近宣传板，再把今日新品气泡水拖进发光的空杯位。");
     }
-    return ready(
-      "1、2、3号取餐窗口验票槽",
-      "先让人物站进窗口前的蓝色站位，再把 0755 取餐号拖进该窗口上方的发光验票框。"
-    );
+    if (itemId === "badDrink") {
+      return ready("玩家自己", "把难喝饮料拖到人物身上可以喝掉，但不会推进剧情。");
+    }
   }
 
   if (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") {
@@ -127,7 +151,7 @@ export function selectRpgItemUseGuidance(
       if (!state.canteenHunt.bikeCodeRead) return locked("先在深色模式读取二维码。", "共享单车");
       if (!state.canteenHunt.bikeLockCleaned) return locked("先用纸巾清洁车锁。", "共享单车");
       if (state.canteenHunt.mode === "dark") return locked("切回浅色模式后付款。", "共享单车");
-      if (state.wallet.cashCents < 200) return locked("现金余额不足 2 元。", "共享单车");
+      if (state.wallet.cashCents < 200) return locked("现金余额不足 2 元。回食堂完成收餐盘，领取 2 元和油渍纸巾。", "共享单车");
       return ready("共享单车", "把 2 元现金拖到共享单车范围内，并在车身上松手。");
     }
   }

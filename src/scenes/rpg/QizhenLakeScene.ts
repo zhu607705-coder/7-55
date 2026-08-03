@@ -194,7 +194,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardX + this.virtualDirection.x, -1, 1),
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
-    if (state.actOne.movementEnabled && !this.dialogueLocked && !this.phaseTransitioning && vector.lengthSq() > 0) {
+    // Dialogue subtitles may stay on screen while the player keeps walking.
+    // dialogueLocked continues to prevent a second interaction from firing.
+    if (state.actOne.movementEnabled && !this.phaseTransitioning && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
       vector.set(0, 0);

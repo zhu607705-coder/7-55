@@ -320,7 +320,7 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
           hints: ["沿校园地图中留下的脚印前往东区大食堂。"],
           targetSurface: "rpg"
         }
-      : ["canteen_reached", "tray_search", "menu_order", "pickup_search", "exit_blocking", "entered"].includes(state.canteenHunt.phase)
+      : ["canteen_reached", "tray_search", "drink_mix", "menu_order", "pickup_search", "exit_blocking", "entered"].includes(state.canteenHunt.phase)
         ? {
             id: "chapter_three_canteen_intercept",
             label: canteenContent.task.replace(/^任务：/, ""),

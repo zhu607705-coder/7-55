@@ -900,7 +900,7 @@ export function RpgGameHost({
           </nav>
         ) : null}
 
-        {((runtimeScene === "canteen_interior" && state.canteenHunt.active && ["tray_search", "menu_order", "pickup_search", "exit_blocking"].includes(state.canteenHunt.phase))
+        {((runtimeScene === "canteen_interior" && state.canteenHunt.active && ["tray_search", "drink_mix", "menu_order", "pickup_search", "exit_blocking", "chase_ready"].includes(state.canteenHunt.phase))
           || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
           <RpgRealityModeToggle
             mode={state.canteenHunt.mode}

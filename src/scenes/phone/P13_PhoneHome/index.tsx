@@ -15,6 +15,7 @@ import { selectFeatureAccess } from "../../../core/FeatureAccess";
 export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const [noticeStep, setNoticeStep] = useState(0);
   const [gearSpinning, setGearSpinning] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [towerPhase, setTowerPhase] = useState<"idle" | "inserting" | "rotating">("idle");
   const towerTimersRef = useRef<number[]>([]);
   const towerInFlightRef = useRef(false);
@@ -119,6 +120,15 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     };
   }, [events]);
 
+  useEffect(() => {
+    if (!settingsOpen) return undefined;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSettingsOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [settingsOpen]);
+
   function enterWechat(openFriendChat = false) {
     playSfx("02_");
     if (openFriendChat) {
@@ -172,6 +182,22 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     }
     events.emit("gear_hint");
     kit.flags.toast(ui.autoRotate ? "它转起来了！" : "它看起来很想转转。");
+  }
+
+  function openSettings() {
+    playSfx("02_");
+    if (access.chapter === "chapter_one") {
+      clickGearIcon();
+      return;
+    }
+    setSettingsOpen(true);
+  }
+
+  function toggleBackgroundMusic() {
+    playSfx("02_", { volume: 0.5 });
+    const nextMuted = !ui.musicMuted;
+    kit.flags.setUi("musicMuted", nextMuted);
+    kit.flags.toast(nextMuted ? "背景音乐已关闭。语音和操作音效保留。" : "背景音乐已开启。");
   }
 
   function collectGearNine() {
@@ -347,7 +373,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           </div>
           <span className="label">浙大钉</span>
         </button>
-        <button type="button" className="app" aria-label="设置" onClick={clickGearIcon}>
+        <button type="button" className="app" aria-label="设置" onClick={openSettings}>
           <div className="app-icon b-gray gear-slot">
             <span className={`gear-sprite ${gearClass}`} aria-hidden="true">
               ✱
@@ -417,6 +443,40 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           <span className="label">控制中心</span>
         </button>
       </section>
+
+      {settingsOpen ? (
+        <section className="phone-settings-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setSettingsOpen(false);
+        }}>
+          <section className="phone-settings-panel" role="dialog" aria-modal="true" aria-labelledby="phone-settings-title">
+            <header>
+              <div>
+                <small>PHONE SETTINGS</small>
+                <h2 id="phone-settings-title">设置</h2>
+              </div>
+              <button type="button" className="phone-settings-close" aria-label="关闭设置" onClick={() => setSettingsOpen(false)}>×</button>
+            </header>
+            <div className="phone-settings-row">
+              <span className="phone-settings-music-icon" aria-hidden="true">♪</span>
+              <span className="phone-settings-copy">
+                <strong>背景音乐</strong>
+                <small>语音和操作音效不会关闭</small>
+              </span>
+              <button
+                type="button"
+                className={`phone-settings-switch ${ui.musicMuted ? "is-off" : "is-on"}`}
+                aria-label={ui.musicMuted ? "开启背景音乐" : "关闭背景音乐"}
+                aria-pressed={!ui.musicMuted}
+                onClick={toggleBackgroundMusic}
+              >
+                <span aria-hidden="true" />
+                <b>{ui.musicMuted ? "关闭" : "开启"}</b>
+              </button>
+            </div>
+            <p className="phone-settings-note">音乐设置会自动保存。</p>
+          </section>
+        </section>
+      ) : null}
 
       {flags.gearFallen && !flags.gearNineTaken ? (
         <button type="button" className="fallen-gear" aria-label="掉落的齿轮，背面刻着 9" onClick={collectGearNine}>

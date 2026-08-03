@@ -277,8 +277,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardX + this.virtualDirection.x, -1, 1),
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
+    // Text overlays only pause interactions. Movement remains available while
+    // the subtitle is visible, unless a real panel or animation is active.
     const movementAllowed = state.actOne.movementEnabled
-      && !this.dialogueLocked
       && !this.paperBusy
       && !this.panel
       && !this.spotlightPanel;

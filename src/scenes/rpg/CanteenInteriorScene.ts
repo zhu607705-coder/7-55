@@ -8,7 +8,14 @@ import canteenSeatedStudentsSheetUrl from "../../assets/rpg/npcs/canteen/seated_
 import canteenShadowAuntieSheetUrl from "../../assets/rpg/npcs/canteen/shadow_auntie_3frame.png";
 import playerPushCartSheetUrl from "../../assets/rpg/player/player_push_cart_sheet.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
-import type { CanteenExitId, CanteenMode, GameState, ItemId } from "../../core/types";
+import type {
+  CanteenDrinkIngredientId,
+  CanteenExitId,
+  CanteenHuntPhase,
+  CanteenMode,
+  GameState,
+  ItemId
+} from "../../core/types";
 import canteenContent from "../../data/chapter3-canteen.content.json";
 import { CANTEEN_EXIT_SEQUENCE } from "../../modules/ChapterThreeCanteenController";
 import type { RpgBridge } from "./RpgBridge";
@@ -37,14 +44,19 @@ import {
 import {
   CANTEEN_BLOCK_SPAWNS,
   CANTEEN_CARTS,
+  CANTEEN_DRINK_MACHINES,
+  CANTEEN_DRINK_SHELF,
   CANTEEN_ESCAPE_ANCHORS,
   CANTEEN_INTERACTION_TARGETS,
   CANTEEN_INTERIOR_WORLD,
   CANTEEN_OCCLUSION_RECTS,
+  CANTEEN_MIX_STATION,
   CANTEEN_PHASE_SPAWNS,
   CANTEEN_PICKUP_WINDOWS,
   CANTEEN_SPAWN,
   CANTEEN_STATIC_COLLISION_RECTS,
+  CANTEEN_PROMO_BOARD,
+  CANTEEN_QUEUE_COLUMN_THREE,
   CANTEEN_TRAYS,
   CANTEEN_TRAY_SLOTS,
   findNearestCanteenTarget,
@@ -73,6 +85,24 @@ const CANTEEN_COUNTER_FRONT_CROP = {
   bottom: 241,
   depth: 340
 } as const;
+const CANTEEN_SIDE_GAME_PHASES: readonly CanteenHuntPhase[] = [
+  "tray_search", "drink_mix", "menu_order", "pickup_search", "chase_ready"
+];
+function canPlayCanteenSideGames(state: GameState): boolean {
+  return state.canteenHunt.active && CANTEEN_SIDE_GAME_PHASES.includes(state.canteenHunt.phase);
+}
+
+function hasCompletedCanteenTrayTask(state: GameState): boolean {
+  return CANTEEN_TRAYS
+    .filter((tray) => tray.target)
+    .every((tray) => state.canteenHunt.returnedTrayIds.includes(tray.id));
+}
+
+function canPlayCanteenDrinkPuzzle(state: GameState): boolean {
+  return canPlayCanteenSideGames(state)
+    && !state.canteenHunt.promoDrinkPlaced
+    && !state.canteenHunt.queueGapOpened;
+}
 const CANTEEN_SEATED_NPC_PLACEMENTS = [
   { framePair: 0, x: 344, y: 377 },
   { framePair: 4, x: 408, y: 389 },
@@ -165,6 +195,12 @@ interface CanteenNpcSheetDefinition {
   url: string;
 }
 
+interface QueueNpcVisual {
+  sprite: Phaser.GameObjects.Sprite;
+  collision: Phaser.GameObjects.Rectangle;
+  baseY: number;
+}
+
 export class CanteenInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -181,12 +217,30 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private trayVisuals = new Map<string, TrayVisual>();
   private trayInteractionTargets = new Map<string, CanteenInteractionTarget>();
   private carriedTrayVisual!: Phaser.GameObjects.Image;
+  private exitButton: Phaser.GameObjects.Container | null = null;
   private pickupWindowVisuals = new Map<string, PickupWindowVisual>();
   private cartVisuals = new Map<CanteenExitId, Phaser.GameObjects.Image>();
   private exitGlows = new Map<CanteenExitId, Phaser.GameObjects.Arc>();
   private paper!: Phaser.GameObjects.Image;
   private paperFloatTween!: Phaser.Tweens.Tween;
   private menuPanel: Phaser.GameObjects.Container | null = null;
+  private drinkChoicePanel: Phaser.GameObjects.Container | null = null;
+  private drinkChoiceItem: CanteenDrinkIngredientId | null = null;
+  private drinkChoiceSelection: 0 | 1 = 0;
+  private drinkChoiceControls: {
+    takeButton: Phaser.GameObjects.Rectangle;
+    takeLabel: Phaser.GameObjects.Text;
+    cancelButton: Phaser.GameObjects.Rectangle;
+    cancelLabel: Phaser.GameObjects.Text;
+  } | null = null;
+  private suppressWorldPointerUntil = 0;
+  private mixerPanel: Phaser.GameObjects.Container | null = null;
+  private mixerButtonOrder: CanteenDrinkIngredientId[] = [];
+  private promoPanel: Phaser.GameObjects.Container | null = null;
+  private promoEmptyCup: Phaser.GameObjects.Container | null = null;
+  private promoDropFrame: Phaser.GameObjects.Rectangle | null = null;
+  private thirdColumnQueue: QueueNpcVisual[] = [];
+  private queueShiftAnimating = false;
   private currentMode: CanteenMode = "light";
   private currentPhase: GameState["canteenHunt"]["phase"] = "tray_search";
   private dialogueLocked = false;
@@ -253,7 +307,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.createCanteenNpcs();
     this.createInitialNpcInteractions();
 
-    const spawn = this.currentPhase === "menu_order"
+    const spawn = this.currentPhase === "drink_mix"
+      ? CANTEEN_PHASE_SPAWNS.drink_mix
+      : this.currentPhase === "menu_order"
       ? CANTEEN_PHASE_SPAWNS.menu_order
       : this.currentPhase === "pickup_search"
         ? CANTEEN_PHASE_SPAWNS.pickup_search
@@ -284,18 +340,30 @@ export class CanteenInteriorScene extends Phaser.Scene {
     >;
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.TAB);
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.ESC);
     const requestKeyboardInteraction = (event: KeyboardEvent) => {
       event.preventDefault();
+      if (this.hasModalPanel()) return;
       if (!event.repeat) this.interactRequested = true;
     };
+    const handleModalKeyboard = (event: KeyboardEvent) => this.handleModalKeyboard(event);
     this.input.keyboard!.on("keydown-SPACE", requestKeyboardInteraction);
+    this.input.keyboard!.on("keydown", handleModalKeyboard);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.input.keyboard?.off("keydown-SPACE", requestKeyboardInteraction);
+      this.input.keyboard?.off("keydown", handleModalKeyboard);
       this.defenseRestartTimer?.remove(false);
       this.defenseRuntime?.destroy();
       this.defenseRuntime = null;
     });
-    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => this.handleMenuPointer(pointer));
+    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      this.handleMenuPointer(pointer);
+      this.handleDrinkChoicePointer(pointer);
+      this.handleMixerPointer(pointer);
+    });
 
     this.cameras.main
       .setBounds(0, 0, CANTEEN_INTERIOR_WORLD.width, CANTEEN_INTERIOR_WORLD.height)
@@ -311,7 +379,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.createPickupWindowSigns();
     this.createPaper();
     this.createWorldHotspots();
+    this.createPromoBoardVisual();
     this.createDarkModeLayer();
+    this.createCanteenExitButton();
     this.createPrompt();
     this.syncWorldFromState(this.bridge.getState(), true);
 
@@ -334,6 +404,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
         this.dialogueLocked = false;
       }, ENTRY_DIALOGUE_STEP_MS);
     }
+    const initialState = this.bridge.getState();
+    if (
+      canPlayCanteenSideGames(initialState)
+      && initialState.canteenHunt.promoDrinkPlaced
+      && !initialState.canteenHunt.queueGapOpened
+    ) {
+      this.time.delayedCall(220, () => this.animatePromoAndQueueShift());
+    }
   }
 
   update(_time: number, deltaMs: number): void {
@@ -351,7 +429,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (
       !this.defenseRuntime
       && Phaser.Input.Keyboard.JustDown(this.keys.TAB)
-      && !this.menuPanel
+      && !this.hasModalPanel()
       && !this.dialogueLocked
     ) {
       this.requestModeToggle();
@@ -381,9 +459,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.interactRequested = false;
       return;
     }
+    // Text overlays only pause interactions. A short prompt or a story line must
+    // not freeze navigation across the canteen.
     const movementAllowed = state.actOne.movementEnabled
-      && !this.dialogueLocked
-      && !this.menuPanel
+      && !this.hasModalPanel()
       && !this.paperBusy
       && !this.cartPushBusy;
     if (movementAllowed && vector.lengthSq() > 0) {
@@ -406,7 +485,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.updatePrompt(nearest, state);
     this.publishDebugState(nearest, state);
 
-    if (nearest && !this.dialogueLocked && !this.menuPanel && !this.paperBusy && !this.cartPushBusy && (keyboardInteract || this.interactRequested)) {
+    if (nearest && !this.dialogueLocked && !this.hasModalPanel() && !this.paperBusy && !this.cartPushBusy && (keyboardInteract || this.interactRequested)) {
       this.triggerTarget(nearest, state);
     }
     this.interactRequested = false;
@@ -466,18 +545,24 @@ export class CanteenInteriorScene extends Phaser.Scene {
       .setDepth(CANTEEN_COUNTER_FRONT_CROP.depth);
 
     let queueIndex = 0;
+    const queueGapAlreadyOpen = this.bridge.getState().canteenHunt.queueGapOpened;
+    this.thirdColumnQueue = [];
     CANTEEN_COUNTER_NPC_X.forEach((x, columnIndex) => {
       CANTEEN_QUEUE_NPC_Y.forEach((y, rowIndex) => {
-        this.createLightNpc(
+        const shiftedY = y + (columnIndex === 2 && queueGapAlreadyOpen ? 36 : 0);
+        const sprite = this.createLightNpc(
           x,
-          y,
+          shiftedY,
           CANTEEN_QUEUE_NPC_SHEET_KEY,
           queueIndex,
-          y + 120,
+          shiftedY + 120,
           1.35 + (queueIndex % 4) * 0.1,
           180 + ((columnIndex * 3 + rowIndex) * 137) % 520
         );
-        this.createLightNpcFootCollision(x, y, `queue-${queueIndex}`);
+        const collision = this.createLightNpcFootCollision(x, shiftedY, `queue-${queueIndex}`);
+        if (columnIndex === 2) {
+          this.thirdColumnQueue.push({ sprite, collision, baseY: y });
+        }
         queueIndex += 1;
       });
     });
@@ -591,7 +676,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
     return sprite;
   }
 
-  private createLightNpcFootCollision(x: number, footBottomY: number, npcId: string): void {
+  private createLightNpcFootCollision(
+    x: number,
+    footBottomY: number,
+    npcId: string
+  ): Phaser.GameObjects.Rectangle {
     const width = RPG_PLAYER_FOOT_COLLISION.width * RPG_PLAYER_DISPLAY_SCALE;
     const height = RPG_PLAYER_FOOT_COLLISION.height * RPG_PLAYER_DISPLAY_SCALE;
     const showCollision = import.meta.env.DEV
@@ -609,6 +698,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (showCollision) collision.setStrokeStyle(2, 0xdffaff, 0.95);
     this.obstacles.add(collision);
     this.lightNpcCollisionBodies.push(collision);
+    return collision;
   }
 
   private createInitialNpcInteractions(): void {
@@ -1194,7 +1284,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private createWorldHotspots(): void {
     const hotspotBounds: Record<string, { x: number; y: number; width: number; height: number }> = {
-      ordering_kiosk: { x: 260, y: 760, width: 420, height: 160 },
+      ordering_kiosk: { x: 790, y: 238, width: 150, height: 92 },
       ...Object.fromEntries(CANTEEN_PICKUP_WINDOWS.map((window) => [
         window.id,
         {
@@ -1214,6 +1304,120 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => this.triggerPointerTarget(target));
     });
+
+    const drinkPuzzleHotspots: Array<{
+      target: CanteenInteractionTarget;
+      x?: number;
+      y?: number;
+      width: number;
+      height: number;
+    }> = [
+      ...CANTEEN_DRINK_MACHINES.map((target) => ({ target, width: 46, height: 104 })),
+      ...CANTEEN_DRINK_MACHINES.map((target) => ({
+        target,
+        x: target.stand?.x ?? target.x,
+        y: target.stand?.y ?? target.y,
+        width: 42,
+        height: 68
+      })),
+      { target: CANTEEN_DRINK_SHELF, width: 260, height: 132 },
+      { target: CANTEEN_MIX_STATION, width: 420, height: 170 },
+      { target: CANTEEN_PROMO_BOARD, width: 150, height: 96 },
+      { target: CANTEEN_QUEUE_COLUMN_THREE, width: 88, height: 100 }
+    ];
+    drinkPuzzleHotspots.forEach(({ target, x = target.x, y = target.y, width, height }) => {
+      this.add.zone(x, y, width, height)
+        .setDepth(y + 2)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerdown", () => this.triggerPointerTarget(target));
+    });
+  }
+
+  private createCanteenExitButton(): void {
+    const exit = CANTEEN_INTERACTION_TARGETS.find((target) => target.kind === "exit");
+    if (!exit) return;
+
+    const shadow = this.add.rectangle(1, 2, 78, 28, 0x221713, 0.72);
+    const plate = this.add.rectangle(0, 0, 78, 28, 0x123548, 0.98)
+      .setStrokeStyle(2, 0xf1c85d, 1);
+    const door = this.add.rectangle(-27, 0, 10, 16, 0x70cbe3, 0.96)
+      .setStrokeStyle(1, 0xeaf9ff, 1);
+    const handle = this.add.rectangle(-24, 1, 2, 3, 0xf1c85d, 1);
+    const label = this.add.text(8, 0, "出门", {
+      color: "#fff6dc",
+      fontFamily: "monospace",
+      fontSize: "14px",
+      fontStyle: "bold"
+    }).setOrigin(0.5);
+    const button = this.add.container(exit.x, exit.y - 42, [shadow, plate, door, handle, label])
+      .setSize(78, 28)
+      .setDepth(2500)
+      .setInteractive({ useHandCursor: true })
+      .setVisible(false);
+    button.on("pointerover", () => plate.setFillStyle(0x1a4e66, 1));
+    button.on("pointerout", () => plate.setFillStyle(0x123548, 0.98));
+    button.on("pointerdown", () => {
+      this.suppressWorldPointerUntil = this.time.now + 180;
+      const state = this.bridge.getState();
+      if (
+        !this.canLeaveThroughDoor(state)
+        || this.dialogueLocked
+        || this.hasModalPanel()
+        || this.paperBusy
+        || this.cartPushBusy
+        || this.defenseRuntime
+      ) return;
+      this.bridge.emit("rpg_canteen_leave_requested");
+    });
+    this.exitButton = button;
+  }
+
+  private createPromoBoardVisual(): void {
+    const emptyCup = this.add.container(CANTEEN_PROMO_BOARD.x, CANTEEN_PROMO_BOARD.y)
+      .setDepth(1698)
+      .setVisible(false);
+    const cupShadow = this.add.rectangle(1, 13, 26, 6, 0x351f18, 0.34);
+    const cup = this.add.graphics();
+    cup.fillStyle(0xf7f1dc, 1).fillRect(-11, -11, 22, 22);
+    cup.fillStyle(0xc7bda2, 1).fillRect(-8, 8, 16, 4);
+    cup.fillStyle(0x6e4f35, 1).fillRect(-7, -8, 14, 4);
+    cup.lineStyle(2, 0x4b3324, 1).strokeRect(-11, -11, 22, 22);
+    cup.lineStyle(3, 0xf7f1dc, 1).strokeRect(11, -5, 8, 11);
+    cup.lineStyle(1, 0x4b3324, 1).strokeRect(12, -4, 7, 9);
+    emptyCup.add([cupShadow, cup]);
+    this.promoEmptyCup = emptyCup;
+
+    // The finished ad replaces the small wooden placard above the steam bay.
+    // Keep the empty cup at counter height as the drop target below it.
+    const panel = this.add.container(CANTEEN_PROMO_BOARD.x, 127)
+      .setDepth(1700)
+      .setVisible(false);
+    const backing = this.add.rectangle(0, 0, 96, 42, 0x0d2c43, 0.98)
+      .setStrokeStyle(3, 0xf0c85c, 1);
+    const stripe = this.add.rectangle(0, -16, 90, 5, 0x39bce7, 0.95);
+    const bottle = this.add.graphics();
+    bottle.fillStyle(0xdffaff).fillRect(-38, -8, 9, 20);
+    bottle.fillStyle(0x40bde7).fillRect(-36, -4, 5, 13);
+    bottle.fillStyle(0xf0c85c).fillRect(-35, -12, 3, 4);
+    bottle.lineStyle(1, 0x173f63).strokeRect(-38, -8, 9, 20);
+    const title = this.add.text(-23, -10, canteenContent.drinks.promoTitle.replace("气泡水", "\n气泡水"), {
+      color: "#f4fbff",
+      fontFamily: "monospace",
+      fontSize: "10px",
+      fontStyle: "bold",
+      lineSpacing: -2
+    });
+    panel.add([backing, stripe, bottle, title]);
+    this.promoPanel = panel;
+
+    this.promoDropFrame = this.add.rectangle(
+      CANTEEN_PROMO_BOARD.x,
+      CANTEEN_PROMO_BOARD.y,
+      94,
+      62,
+      0x3bc5ef,
+      0.14
+    ).setStrokeStyle(3, 0x6fe2ff, 0.95).setDepth(1699).setVisible(false);
   }
 
   private createDarkModeLayer(): void {
@@ -1312,6 +1516,53 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_trays_completed") return;
+    if (name === "canteen_queue_challenge_read") {
+      this.queueDialogue(canteenContent.drinks.queueDialogue);
+      return;
+    }
+    if (name === "canteen_drink_collected") {
+      const itemId = String(payload?.itemId ?? "") as CanteenDrinkIngredientId;
+      this.showFeedback(canteenContent.drinks.collected[itemId], "task");
+      return;
+    }
+    if (name === "canteen_drink_already_owned") {
+      this.showFeedback(canteenContent.drinks.alreadyOwned, "task");
+      return;
+    }
+    if (name === "canteen_drink_shelf_read") {
+      this.showFeedback(`${canteenContent.drinks.shelfPrompt}\n${canteenContent.drinks.shelfOrder}`, "task", 3000);
+      return;
+    }
+    if (name === "canteen_mix_ingredient_added") {
+      this.refreshMixerPanel();
+      if (payload?.completeAttempt !== true) {
+        this.showFeedback(canteenContent.drinks.ingredientAdded, "task", 1600);
+      }
+      return;
+    }
+    if (name === "canteen_mix_failed") {
+      this.closeMixerPanel();
+      this.showFeedback(canteenContent.drinks.wrongMix, "task", 2600);
+      return;
+    }
+    if (name === "canteen_mix_solved") {
+      this.closeMixerPanel();
+      this.showFeedback(canteenContent.drinks.correctMix, "task", 2600);
+      return;
+    }
+    if (name === "canteen_mix_missing_drink") {
+      this.showFeedback(canteenContent.drinks.ingredientMissing, "task");
+      return;
+    }
+    if (name === "canteen_bad_drink_consumed") {
+      this.queueDialogue(canteenContent.drinks.badDrinkConsumed);
+      return;
+    }
+    if (name === "canteen_promo_activated") {
+      this.animatePromoAndQueueShift();
+      return;
+    }
+    if (name === "canteen_queue_gap_opened") return;
     if (name === "canteen_menu_dark_clue_read") {
       this.showFeedback(canteenContent.menu.darkClueRead, "task");
       return;
@@ -1320,10 +1571,13 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.showFeedback(canteenContent.menu.orderLocked, "task");
       return;
     }
+    if (name === "canteen_order_already_active") {
+      this.showFeedback(canteenContent.menu.alreadyActive, "task");
+      return;
+    }
     if (name === "canteen_order_wrong") {
-      const optionId = String(payload?.optionId ?? "");
       this.closeMenuPanel();
-      this.queueDialogue(optionId === "A" ? canteenContent.menu.wrongA : canteenContent.menu.wrongGeneric);
+      this.queueDialogue(canteenContent.menu.wrongGeneric);
       return;
     }
     if (name === "canteen_order_solved") {
@@ -1336,23 +1590,32 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_pickup_dark_clue_read") {
-      this.showFeedback(canteenContent.pickup.darkClueRead, "task");
+      this.queueDialogue([canteenContent.pickup.darkClueRead]);
       return;
     }
-    if (name === "canteen_pickup_dark_clue_missed") {
-      this.showFeedback(canteenContent.pickup.ticketBack, "system");
+    if (name === "canteen_pickup_dark_window_empty") {
+      this.showFeedback(canteenContent.pickup.darkEmpty, "system");
       return;
     }
     if (name === "canteen_pickup_order_locked") {
       this.showFeedback(canteenContent.pickup.orderLocked, "task");
       return;
     }
-    if (name === "canteen_pickup_wrong") {
-      const windowId = String(payload?.windowId ?? "");
-      this.queueDialogue(windowId === "1" ? canteenContent.pickup.window1 : canteenContent.pickup.window2);
+    if (name === "canteen_pickup_wrong_window") {
+      this.showFeedback(canteenContent.pickup.wrongWindow, "system");
+      return;
+    }
+    if (name === "canteen_correct_meal_time_error") {
+      this.queueDialogue(canteenContent.pickup.timeError);
+      return;
+    }
+    if (name === "canteen_wrong_meal_collected") {
+      const optionId = String(payload?.optionId ?? "") as keyof typeof canteenContent.pickup.foodCollected;
+      this.showFeedback(canteenContent.pickup.foodCollected[optionId] ?? "窗口正常出餐。", "success", 2800);
       return;
     }
     if (name === "canteen_pickup_solved") {
+      this.showFeedback(canteenContent.pickup.ticketAccepted, "system", 1800);
       this.animatePaperBurst();
       return;
     }
@@ -1403,7 +1666,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private requestModeToggle(): void {
     if (this.cartPushBusy || this.defenseRuntime) return;
     const state = this.bridge.getState();
-    if (!["tray_search", "menu_order", "pickup_search"].includes(state.canteenHunt.phase)) return;
+    if (!["tray_search", "drink_mix", "menu_order", "pickup_search", "chase_ready"].includes(state.canteenHunt.phase)) return;
     const mode: CanteenMode = state.canteenHunt.mode === "light" ? "dark" : "light";
     this.bridge.emit("rpg_canteen_mode_requested", { mode });
   }
@@ -1439,37 +1702,52 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (!state.canteenHunt.active) {
       return CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "exit");
     }
-    if (state.canteenHunt.phase === "tray_search") {
-      if (state.canteenHunt.mode !== "light") return [];
-      return [
-        ...this.initialNpcInteractionTargets,
-        ...(state.canteenHunt.trayTaskStarted
-          ? [...this.trayInteractionTargets.values()]
-          : [])
-      ];
-    }
+    if (!canPlayCanteenSideGames(state)) return [];
+
+    const targets: CanteenInteractionTarget[] = [
+      ...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "exit")
+    ];
     if (state.canteenHunt.phase === "menu_order") {
-      return [
-        ...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "kiosk"),
-        ...(state.canteenHunt.mode === "light" ? [this.returnAuntieTarget] : [])
-      ];
+      targets.push(...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "kiosk"));
     }
     if (state.canteenHunt.phase === "pickup_search") {
-      return [
-        ...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "pickup"),
-        ...(state.canteenHunt.mode === "light" ? [this.returnAuntieTarget] : [])
-      ];
+      targets.push(...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "pickup"));
     }
-    if (state.canteenHunt.phase === "exit_blocking") {
-      return [];
+    if (state.canteenHunt.mode === "light") {
+      if (["tray_search", "drink_mix"].includes(state.canteenHunt.phase)) {
+        targets.push(...this.initialNpcInteractionTargets.filter((target) => (
+          target.id !== "return-auntie"
+          && !(
+            target.id.startsWith("initial-queue-npc-")
+            && Math.abs(target.x - CANTEEN_QUEUE_COLUMN_THREE.x) < 1
+          )
+        )));
+      }
+      targets.push(this.returnAuntieTarget);
+      if (state.canteenHunt.trayTaskStarted && !hasCompletedCanteenTrayTask(state)) {
+        targets.push(...this.trayInteractionTargets.values());
+      }
+      if (canPlayCanteenDrinkPuzzle(state)) {
+        targets.push(
+          CANTEEN_QUEUE_COLUMN_THREE,
+          ...CANTEEN_DRINK_MACHINES,
+          CANTEEN_DRINK_SHELF,
+          CANTEEN_MIX_STATION,
+          CANTEEN_PROMO_BOARD
+        );
+      }
     }
-    return [];
+    return [...new Map(targets.map((target) => [target.id, target])).values()];
+  }
+
+  private canLeaveThroughDoor(state: GameState): boolean {
+    return !state.canteenHunt.active || canPlayCanteenSideGames(state);
   }
 
   private triggerTarget(target: CanteenInteractionTarget, state: GameState): void {
     if (target.kind === "npc") {
       if (target.id === "return-auntie") {
-        if (state.canteenHunt.phase !== "tray_search" || state.items.greaseTissue) {
+        if (hasCompletedCanteenTrayTask(state)) {
           this.queueDialogue([canteenContent.tray.afterCompletion]);
           return;
         }
@@ -1485,6 +1763,26 @@ export class CanteenInteriorScene extends Phaser.Scene {
       if (target.dialogue) this.queueDialogue([target.dialogue]);
       return;
     }
+    if (target.kind === "queue_gap") {
+      this.bridge.emit("rpg_canteen_queue_challenge_requested");
+      return;
+    }
+    if (target.kind === "drink_machine") {
+      this.openDrinkChoicePanel(String(target.value) as CanteenDrinkIngredientId);
+      return;
+    }
+    if (target.kind === "drink_shelf") {
+      this.bridge.emit("rpg_canteen_drink_shelf_requested");
+      return;
+    }
+    if (target.kind === "mixer") {
+      this.openMixerPanel();
+      return;
+    }
+    if (target.kind === "promo") {
+      this.showFeedback(canteenContent.drinks.promoDropHint, "task");
+      return;
+    }
     if (target.kind === "tray") {
       this.triggerTrayById(target.value ?? target.id);
       return;
@@ -1495,16 +1793,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (target.kind === "pickup") {
       if (state.canteenHunt.mode === "dark") {
-        this.bridge.emit("rpg_canteen_pickup_clue_requested", { windowId: target.value });
+        const canUseTicket = target.value === "3"
+          && state.canteenHunt.pickupDarkClueRead
+          && state.items.pickupTicket0755;
+        this.bridge.emit(
+          canUseTicket ? "rpg_canteen_pickup_selected" : "rpg_canteen_pickup_clue_requested",
+          { windowId: target.value }
+        );
       } else {
-        this.bridge.emit("rpg_item_use_feedback", {
-          itemId: "pickupTicket0755",
-          reason: "locked",
-          targetLabel: target.label,
-          detail: state.canteenHunt.pickupDarkClueRead
-            ? `人物已到${target.value}号窗口。请把 0755 取餐号拖进窗口上方的发光验票框。`
-            : "先切到深色模式观察取餐号和窗口残影。"
-        });
+        this.bridge.emit("rpg_canteen_pickup_selected", { windowId: target.value });
       }
       return;
     }
@@ -1519,7 +1816,13 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private triggerPointerTarget(target: CanteenInteractionTarget): void {
     const state = this.bridge.getState();
-    if (this.dialogueLocked || this.menuPanel || this.paperBusy || this.cartPushBusy) return;
+    if (
+      this.time.now < this.suppressWorldPointerUntil
+      || this.dialogueLocked
+      || this.hasModalPanel()
+      || this.paperBusy
+      || this.cartPushBusy
+    ) return;
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
     if (!findNearestCanteenTarget(this.player.x, this.player.y, [target])) return;
     this.triggerTarget(target, state);
@@ -1534,11 +1837,28 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     const state = this.bridge.getState();
-    const pickupTargets = this.getActiveTargets(state)
-      .filter((target) => target.kind === "pickup");
     const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
+    if (itemId === "badDrink") {
+      if (Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, this.player.x, this.player.y - 24) <= 58) {
+        this.bridge.emit("rpg_canteen_bad_drink_requested");
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId,
+          reason: "accepted",
+          targetLabel: "玩家自己"
+        });
+      } else {
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId,
+          reason: "missed_target",
+          detail: "把难喝饮料拖到人物自己身上才能喝掉。"
+        });
+      }
+      return;
+    }
+    const dropTargets = this.getActiveTargets(state)
+      .filter((target) => target.acceptedItem !== undefined);
     const result = resolveRpgItemDrop({
-      targets: pickupTargets,
+      targets: dropTargets,
       itemId,
       dropX: worldPoint.x,
       dropY: worldPoint.y,
@@ -1550,7 +1870,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
         reason: "missed_target",
-        detail: "取餐号已退回：请拖进 1、2、3 号窗口上方明确标出的验票框。"
+        detail: itemId === "dailySpecialSparklingWater"
+          ? "请拖到第五个打饭窗口下方宣传板的发光空杯位。"
+          : "小票不需要拖拽：靠近取餐窗口后按空格使用。"
       });
       return;
     }
@@ -1571,31 +1893,33 @@ export class CanteenInteriorScene extends Phaser.Scene {
       });
       return;
     }
-    if (!state.canteenHunt.pickupDarkClueRead) {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "locked",
-        targetLabel: result.target.label,
-        detail: "先在深色模式观察取餐号背面的窗口残影，再切回浅色模式验票。"
-      });
-      return;
-    }
     if (result.kind === "too_far") {
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
         reason: "too_far",
         targetLabel: result.target.label,
-        detail: `落点正确；人物还没有站进${result.target.value}号窗口前的蓝色站位。`
+        detail: result.target.kind === "promo"
+          ? "落点正确；人物还没有靠近宣传板。"
+          : "落点正确；靠近设施后再操作。"
       });
       return;
     }
     if (result.kind !== "accepted") return;
+    if (result.target.kind === "promo") {
+      this.bridge.emit("rpg_canteen_promo_requested");
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "accepted",
+        targetLabel: result.target.label
+      });
+      return;
+    }
     this.bridge.emit("rpg_canteen_pickup_selected", { windowId: result.target.value });
   }
 
   private triggerTrayById(trayId: string): void {
     const state = this.bridge.getState();
-    if (state.canteenHunt.phase !== "tray_search" || this.dialogueLocked) return;
+    if (!canPlayCanteenSideGames(state) || hasCompletedCanteenTrayTask(state) || this.dialogueLocked) return;
     const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
     if (!definition) return;
     this.bridge.emit("rpg_canteen_tray_requested", { trayId });
@@ -1767,35 +2091,38 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private updatePrompt(nearest: CanteenInteractionTarget | null, state: GameState): void {
-    if (!nearest || this.dialogueLocked || this.menuPanel || this.paperBusy || this.cartPushBusy) {
+    if (!nearest || this.dialogueLocked || this.hasModalPanel() || this.paperBusy || this.cartPushBusy) {
       this.promptText.setVisible(false);
       return;
     }
-    const label = nearest.kind === "npc"
-      ? nearest.label
-      : nearest.kind === "tray"
-      ? state.canteenHunt.carriedTrayIds.length > 0
+    let label = nearest.label;
+    if (nearest.kind === "tray") {
+      label = state.canteenHunt.carriedTrayIds.length > 0
         ? "先把手上的餐盘交给阿姨"
-        : "拿起桌上的餐盘"
-      : nearest.kind === "kiosk"
-        ? state.canteenHunt.mode === "dark"
-          ? "查看点餐菜单残影"
-          : state.canteenHunt.menuDarkClueRead
-            ? "站在点餐机下方操作"
-            : "先切深色模式查看菜单"
-        : nearest.kind === "pickup"
-          ? state.canteenHunt.mode === "dark"
-            ? `查看${nearest.value}号窗口暗号`
-            : state.canteenHunt.pickupDarkClueRead
-              ? `把 0755 拖入${nearest.value}号窗口验票框`
-              : "先切深色模式确认窗口"
-          : nearest.kind === "exit"
-            ? "靠近东南门离开食堂"
-            : state.canteenHunt.mode === "dark"
-              ? "确认蓝色轨迹指向"
-              : state.canteenHunt.identifiedExitIds.includes(String(nearest.value) as CanteenExitId)
-                ? "站在餐盘车后方推动"
-                : "先切深色模式确认这辆餐车";
+        : "拿起桌上的餐盘";
+    } else if (nearest.kind === "kiosk") {
+      label = "使用点餐机";
+    } else if (nearest.kind === "pickup") {
+      label = state.canteenHunt.mode === "dark"
+        ? nearest.value === "3" && state.canteenHunt.pickupDarkClueRead && state.items.pickupTicket0755
+          ? "使用小票 · 3号窗口"
+          : `查看${nearest.value}号窗口`
+        : state.items.pickupTicket0755
+          ? `使用小票 · ${nearest.value}号窗口`
+          : `${nearest.value}号取餐窗口`;
+    } else if (nearest.kind === "promo") {
+      label = state.items.dailySpecialSparklingWater
+        ? "把今日新品放入宣传板空杯位"
+        : "宣传板空杯位";
+    } else if (nearest.kind === "cart") {
+      label = state.canteenHunt.mode === "dark"
+        ? "确认蓝色轨迹指向"
+        : state.canteenHunt.identifiedExitIds.includes(String(nearest.value) as CanteenExitId)
+          ? "站在餐盘车后方推动"
+          : "先切深色模式确认这辆餐车";
+    } else if (nearest.kind === "exit") {
+      label = "靠近东南门离开食堂";
+    }
     this.promptText.setText(formatRpgInteractionHint(label)).setVisible(true);
   }
 
@@ -1814,22 +2141,38 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.applyCanteenNpcMode(this.currentMode, immediate);
     }
     const pickupVisible = state.canteenHunt.active && state.canteenHunt.phase === "pickup_search";
-    const showPickupDrop = pickupVisible
-      && state.canteenHunt.mode === "light"
-      && state.canteenHunt.pickupDarkClueRead
-      && state.ui.selectedItem === "pickupTicket0755";
     this.pickupWindowVisuals.forEach((visual) => {
-      visual.sign.setVisible(pickupVisible);
-      visual.standMarker.setVisible(pickupVisible);
-      visual.dropFrame.setVisible(showPickupDrop);
-      visual.dropLabel.setVisible(showPickupDrop);
+      visual.sign.setVisible(false);
+      visual.standMarker.setVisible(false);
+      visual.dropFrame.setVisible(false);
+      visual.dropLabel.setVisible(false);
     });
+    const sideGamesAvailable = canPlayCanteenSideGames(state);
+    this.exitButton?.setVisible(
+      this.canLeaveThroughDoor(state)
+      && !this.dialogueLocked
+      && !this.hasModalPanel()
+      && !this.paperBusy
+      && !this.cartPushBusy
+      && !this.defenseRuntime
+    );
+    const drinkPuzzleAvailable = canPlayCanteenDrinkPuzzle(state);
+    this.promoPanel?.setVisible(state.canteenHunt.promoDrinkPlaced);
+    this.promoEmptyCup?.setVisible(
+      drinkPuzzleAvailable
+    );
+    this.promoDropFrame?.setVisible(
+      drinkPuzzleAvailable
+      && state.ui.selectedItem === "dailySpecialSparklingWater"
+      && state.canteenHunt.mode === "light"
+    );
     this.trayVisuals.forEach((visual, trayId) => {
       const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
       const removed = state.canteenHunt.returnedTrayIds.includes(trayId)
         || state.canteenHunt.carriedTrayIds.includes(trayId);
-      const visible = state.canteenHunt.phase === "tray_search" && !removed;
+      const visible = sideGamesAvailable && !removed;
       const dirtyVisible = visible
+        && !hasCompletedCanteenTrayTask(state)
         && state.canteenHunt.trayTaskStarted
         && state.canteenHunt.mode === "dark"
         && definition?.target === true;
@@ -1893,7 +2236,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private updateCarriedTrayVisual(state: GameState): void {
     if (!this.carriedTrayVisual) return;
-    const carrying = state.canteenHunt.phase === "tray_search"
+    const carrying = canPlayCanteenSideGames(state)
       && state.canteenHunt.carriedTrayIds.length > 0;
     this.carriedTrayVisual
       .setPosition(this.player.x, this.player.y - 48)
@@ -1901,18 +2244,435 @@ export class CanteenInteriorScene extends Phaser.Scene {
       .setVisible(carrying && !this.dialogueLocked);
   }
 
+  private animatePromoAndQueueShift(): void {
+    if (this.queueShiftAnimating || this.bridge.getState().canteenHunt.queueGapOpened) return;
+    this.queueShiftAnimating = true;
+    this.dialogueLocked = true;
+    this.closeDrinkChoicePanel();
+    this.closeMixerPanel();
+    this.promoPanel?.setVisible(true).setAlpha(0).setScale(0.94);
+    if (this.promoPanel) {
+      this.tweens.add({
+        targets: this.promoPanel,
+        alpha: 1,
+        scale: 1,
+        duration: this.reducedMotion ? 100 : 360,
+        ease: "Back.easeOut",
+        yoyo: false
+      });
+      this.tweens.add({
+        targets: this.promoPanel,
+        alpha: { from: 0.42, to: 1 },
+        duration: this.reducedMotion ? 90 : 180,
+        repeat: this.reducedMotion ? 0 : 2,
+        yoyo: true
+      });
+    }
+    this.showFeedback(canteenContent.drinks.promoCopy, "task", 3000);
+
+    const frontStudent = this.thirdColumnQueue[0];
+    if (frontStudent) {
+      const phone = this.add.container(frontStudent.sprite.x + 23, frontStudent.sprite.y - 37)
+        .setDepth(frontStudent.sprite.depth + 8)
+        .setAlpha(0);
+      const phoneBody = this.add.rectangle(0, 0, 12, 18, 0x16242d, 1)
+        .setStrokeStyle(2, 0xb9dce6, 1);
+      const phoneScreen = this.add.rectangle(0, -1, 7, 11, 0x73dff5, 1);
+      phone.add([phoneBody, phoneScreen]);
+      this.tweens.add({
+        targets: phone,
+        alpha: 1,
+        y: phone.y - 3,
+        duration: this.reducedMotion ? 70 : 180,
+        yoyo: true,
+        hold: this.reducedMotion ? 40 : 330,
+        onComplete: () => phone.destroy(true)
+      });
+    }
+
+    this.thirdColumnQueue.forEach((entry, index) => {
+      const body = entry.collision.body as Phaser.Physics.Arcade.StaticBody | null;
+      if (body) body.enable = false;
+      this.time.delayedCall((this.reducedMotion ? 70 : 260) * index + 360, () => {
+        this.tweens.add({
+          targets: entry.sprite,
+          y: entry.baseY + 36,
+          duration: this.reducedMotion ? 100 : 330,
+          ease: "Sine.easeInOut"
+        });
+      });
+    });
+
+    const shiftDuration = this.reducedMotion ? 620 : 1350;
+    this.time.delayedCall(shiftDuration, () => {
+      this.thirdColumnQueue.forEach((entry) => {
+        const height = RPG_PLAYER_FOOT_COLLISION.height * RPG_PLAYER_DISPLAY_SCALE;
+        entry.sprite.setY(entry.baseY + 36);
+        entry.collision.setPosition(entry.sprite.x, entry.sprite.y - height / 2);
+        const body = entry.collision.body as Phaser.Physics.Arcade.StaticBody | null;
+        if (body) {
+          body.enable = true;
+          body.updateFromGameObject();
+        }
+      });
+      this.movePlayerIntoQueueGap();
+    });
+  }
+
+  private movePlayerIntoQueueGap(): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    if (body) body.enable = false;
+    this.player.setVelocity(0, 0);
+    const runSegment = (
+      x: number,
+      y: number,
+      facing: "up" | "down" | "side",
+      flipX: boolean,
+      onComplete: () => void
+    ) => {
+      this.playerAnimator.setFacing(facing, flipX);
+      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, x, y);
+      this.tweens.add({
+        targets: this.player,
+        x,
+        y,
+        duration: this.reducedMotion ? 90 : Math.max(180, distance / 0.42),
+        ease: "Linear",
+        onUpdate: () => this.updatePlayerWorldDepth(),
+        onComplete
+      });
+    };
+    // The aisle below the service counter (y≈280) is clear. Routing through it
+    // keeps this automatic beat from visually cutting through the first table row.
+    runSegment(this.player.x, 280, this.player.y > 280 ? "up" : "down", false, () => {
+      runSegment(735, 280, "side", this.player.x > 735, () => {
+        runSegment(735, 255, "up", false, () => {
+          runSegment(790, 255, "side", false, () => {
+            if (body) {
+              body.enable = true;
+              this.applyPlayerCollisionBody();
+              body.reset(this.player.x, this.player.y);
+            }
+            this.queueShiftAnimating = false;
+            this.dialogueLocked = false;
+            this.bridge.emit("rpg_canteen_queue_shift_completed");
+            this.queueDialogue(canteenContent.drinks.queueShiftDialogue);
+          });
+        });
+      });
+    });
+  }
+
+  private hasModalPanel(): boolean {
+    return this.menuPanel !== null || this.drinkChoicePanel !== null || this.mixerPanel !== null;
+  }
+
+  private handleModalKeyboard(event: KeyboardEvent): void {
+    if (this.drinkChoicePanel) {
+      if (event.code === "ArrowLeft" || event.code === "KeyA" || event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
+        event.preventDefault();
+        this.drinkChoiceSelection = 0;
+        this.refreshDrinkChoiceSelection();
+        return;
+      }
+      if (event.code === "ArrowRight" || event.code === "KeyD" || event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
+        event.preventDefault();
+        this.drinkChoiceSelection = 1;
+        this.refreshDrinkChoiceSelection();
+        return;
+      }
+      if ((event.code === "Enter" || event.code === "Space" || event.key === "Enter" || event.key === " " || event.key === "Spacebar") && !event.repeat) {
+        event.preventDefault();
+        this.confirmDrinkChoiceSelection();
+        return;
+      }
+      if ((event.code === "Escape" || event.key === "Escape") && !event.repeat) {
+        event.preventDefault();
+        this.closeDrinkChoicePanel();
+      }
+      return;
+    }
+    if (this.mixerPanel && (event.code === "Escape" || event.key === "Escape") && !event.repeat) {
+      event.preventDefault();
+      this.closeMixerPanel();
+    }
+  }
+
+  private openDrinkChoicePanel(itemId: CanteenDrinkIngredientId): void {
+    if (this.hasModalPanel()) return;
+    const presentation: Record<CanteenDrinkIngredientId, { name: string; color: number; accent: number }> = {
+      sparklingWater: { name: "气泡水（蓝色）", color: 0x43bce9, accent: 0xe9fbff },
+      lemonTea: { name: "柠檬茶（白色）", color: 0xf2f0dc, accent: 0xd0a636 },
+      blackCoffee: { name: "黑咖啡（黑色）", color: 0x1b1d20, accent: 0x8b6846 }
+    };
+    const drink = presentation[itemId];
+    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(6100);
+    const shade = this.add.rectangle(0, 0, 470, 278, 0x07131d, 0.98)
+      .setStrokeStyle(4, 0x63d4ef, 0.96);
+    const header = this.add.rectangle(0, -116, 458, 34, 0x123c54, 0.98);
+    const title = this.add.text(-205, -125, drink.name, {
+      color: "#f4fbff",
+      fontFamily: "monospace",
+      fontSize: "20px",
+      fontStyle: "bold"
+    });
+    const bottle = this.add.graphics();
+    bottle.fillStyle(drink.accent).fillRect(-128, -66, 50, 92);
+    bottle.fillStyle(drink.color).fillRect(-120, -50, 34, 66);
+    bottle.fillStyle(0xf0cb59).fillRect(-112, -78, 18, 12);
+    bottle.lineStyle(4, 0x142c3b).strokeRect(-128, -66, 50, 92);
+    const prompt = this.add.text(18, -45, canteenContent.drinks.machinePrompt, {
+      color: "#d9f6ff",
+      fontFamily: "monospace",
+      fontSize: "17px"
+    }).setOrigin(0.5);
+    const takeButton = this.add.rectangle(-95, 82, 164, 48, 0x17637a, 1)
+      .setStrokeStyle(3, 0x75e4ff, 1);
+    const takeLabel = this.add.text(-95, 82, canteenContent.drinks.takeOption, {
+      color: "#ffffff",
+      fontFamily: "monospace",
+      fontSize: "17px"
+    }).setOrigin(0.5);
+    const cancelButton = this.add.rectangle(95, 82, 164, 48, 0x293039, 1)
+      .setStrokeStyle(3, 0x82919b, 1);
+    const cancelLabel = this.add.text(95, 82, canteenContent.drinks.cancelOption, {
+      color: "#dce2e3",
+      fontFamily: "monospace",
+      fontSize: "17px"
+    }).setOrigin(0.5);
+    const keyboardHint = this.add.text(0, 121, "← / → 选择 · 空格 / 回车确认 · Esc 退出", {
+      color: "#8fb5c3",
+      fontFamily: "monospace",
+      fontSize: "11px"
+    }).setOrigin(0.5);
+    panel.add([
+      shade, header, title, bottle, prompt,
+      takeButton, takeLabel, cancelButton, cancelLabel, keyboardHint
+    ]);
+    this.drinkChoiceItem = itemId;
+    this.drinkChoiceSelection = 0;
+    this.drinkChoiceControls = { takeButton, takeLabel, cancelButton, cancelLabel };
+    this.drinkChoicePanel = panel;
+    this.refreshDrinkChoiceSelection();
+    const chooseTake = () => {
+      if (this.drinkChoicePanel !== panel) return;
+      this.drinkChoiceSelection = 0;
+      this.confirmDrinkChoiceSelection(true);
+    };
+    const chooseCancel = () => {
+      if (this.drinkChoicePanel !== panel) return;
+      this.drinkChoiceSelection = 1;
+      this.closeDrinkChoicePanel(true);
+    };
+    const bindChoiceButton = (
+      target: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Text,
+      action: () => void
+    ) => {
+      target.setInteractive({ useHandCursor: true }).on(
+        "pointerdown",
+        (
+          _pointer: Phaser.Input.Pointer,
+          _localX: number,
+          _localY: number,
+          event: Phaser.Types.Input.EventData
+        ) => {
+          event.stopPropagation();
+          action();
+        }
+      );
+    };
+    bindChoiceButton(takeButton, chooseTake);
+    bindChoiceButton(takeLabel, chooseTake);
+    bindChoiceButton(cancelButton, chooseCancel);
+    bindChoiceButton(cancelLabel, chooseCancel);
+  }
+
+  private handleDrinkChoicePointer(pointer: Phaser.Input.Pointer): void {
+    if (!this.drinkChoicePanel || !this.drinkChoiceItem) return;
+    const localX = pointer.x - 480;
+    const localY = pointer.y - 270;
+    if (Math.abs(localY - 82) > 30) return;
+    if (Math.abs(localX + 95) <= 88) {
+      this.drinkChoiceSelection = 0;
+      this.confirmDrinkChoiceSelection(true);
+    } else if (Math.abs(localX - 95) <= 88) {
+      this.drinkChoiceSelection = 1;
+      this.confirmDrinkChoiceSelection(true);
+    }
+  }
+
+  private refreshDrinkChoiceSelection(): void {
+    if (!this.drinkChoiceControls) return;
+    const takeSelected = this.drinkChoiceSelection === 0;
+    this.drinkChoiceControls.takeButton
+      .setFillStyle(takeSelected ? 0x17637a : 0x20323b, 1)
+      .setStrokeStyle(3, takeSelected ? 0x75e4ff : 0x58727c, 1);
+    this.drinkChoiceControls.cancelButton
+      .setFillStyle(takeSelected ? 0x293039 : 0x4e5760, 1)
+      .setStrokeStyle(3, takeSelected ? 0x82919b : 0x75e4ff, 1);
+    this.drinkChoiceControls.takeLabel
+      .setText(`${takeSelected ? "▶ " : ""}${canteenContent.drinks.takeOption}`)
+      .setColor(takeSelected ? "#ffffff" : "#a9bac0");
+    this.drinkChoiceControls.cancelLabel
+      .setText(`${takeSelected ? "" : "▶ "}${canteenContent.drinks.cancelOption}`)
+      .setColor(takeSelected ? "#b7c1c5" : "#ffffff");
+  }
+
+  private confirmDrinkChoiceSelection(suppressWorldPointer = false): void {
+    const itemId = this.drinkChoiceItem;
+    if (!itemId) return;
+    if (this.drinkChoiceSelection === 0) {
+      this.bridge.emit("rpg_canteen_drink_requested", { itemId });
+    }
+    this.closeDrinkChoicePanel(suppressWorldPointer);
+  }
+
+  private closeDrinkChoicePanel(suppressWorldPointer = false): void {
+    if (suppressWorldPointer) {
+      this.suppressWorldPointerUntil = this.time.now + 500;
+    }
+    this.drinkChoicePanel?.destroy(true);
+    this.drinkChoicePanel = null;
+    this.drinkChoiceItem = null;
+    this.drinkChoiceControls = null;
+  }
+
+  private openMixerPanel(): void {
+    if (this.hasModalPanel()) return;
+    const state = this.bridge.getState();
+    if (this.mixerButtonOrder.length === 0) {
+      const recipeOrder: CanteenDrinkIngredientId[] = ["blackCoffee", "sparklingWater", "lemonTea"];
+      this.mixerButtonOrder = Phaser.Utils.Array.Shuffle([...recipeOrder]);
+      if (this.mixerButtonOrder.every((ingredient, index) => ingredient === recipeOrder[index])) {
+        this.mixerButtonOrder.push(this.mixerButtonOrder.shift()!);
+      }
+    }
+    const panel = this.add.container(480, 245).setScrollFactor(0).setDepth(6100);
+    const shade = this.add.rectangle(0, 0, 690, 390, 0x08151c, 0.985)
+      .setStrokeStyle(5, 0xe0b858, 1);
+    const header = this.add.rectangle(0, -170, 676, 42, 0x183847, 1);
+    const title = this.add.text(-318, -182, "食堂新品混合台", {
+      color: "#fff3c4",
+      fontFamily: "monospace",
+      fontSize: "22px",
+      fontStyle: "bold"
+    });
+    const exitButton = this.add.rectangle(274, -170, 126, 30, 0x2a4651, 1)
+      .setStrokeStyle(2, 0xe0b858, 1);
+    const exitLabel = this.add.text(274, -170, "退出  Esc", {
+      color: "#fff3c4",
+      fontFamily: "monospace",
+      fontSize: "14px"
+    }).setOrigin(0.5);
+
+    const worktop = this.add.rectangle(0, 62, 620, 58, 0x8a6135, 1)
+      .setStrokeStyle(4, 0x3f2b20, 1);
+    const glass = this.add.graphics();
+    glass.fillStyle(0xdff8ff, 0.13).fillRect(-56, -94, 112, 158);
+    const colors: Record<CanteenDrinkIngredientId, number> = {
+      sparklingWater: 0x40bfe8,
+      lemonTea: 0xf0edcf,
+      blackCoffee: 0x242226
+    };
+    state.canteenHunt.drinkMixSequence.forEach((ingredient, index) => {
+      glass.fillStyle(colors[ingredient], 0.92).fillRect(-49, 37 - index * 38, 98, 36);
+    });
+    glass.lineStyle(5, 0xb9e6ee, 1)
+      .lineBetween(-58, -98, -50, 64)
+      .lineBetween(58, -98, 50, 64)
+      .lineBetween(-50, 64, 50, 64)
+      .lineBetween(-58, -98, 58, -98);
+    const glassLabel = this.add.text(0, -118, "大玻璃杯", {
+      color: "#c8f3ff",
+      fontFamily: "monospace",
+      fontSize: "14px"
+    }).setOrigin(0.5);
+    const instruction = this.add.text(0, 98, canteenContent.drinks.mixerPrompt, {
+      color: "#fff2c4",
+      fontFamily: "monospace",
+      fontSize: "15px"
+    }).setOrigin(0.5);
+    const shelfStatus = this.add.text(0, 122, state.canteenHunt.drinkShelfRead
+      ? "货架提示已记录：黑色 → 蓝色 → 白色"
+      : "货架提示：尚未查看", {
+      color: state.canteenHunt.drinkShelfRead ? "#91e4ba" : "#e3b878",
+      fontFamily: "monospace",
+      fontSize: "13px"
+    }).setOrigin(0.5);
+    panel.add([
+      shade, header, title, exitButton, exitLabel,
+      worktop, glass, glassLabel, instruction, shelfStatus
+    ]);
+
+    const ingredientPresentation: Record<CanteenDrinkIngredientId, { name: string; color: number }> = {
+      blackCoffee: { name: "黑咖啡", color: 0x242226 },
+      sparklingWater: { name: "气泡水", color: 0x40bfe8 },
+      lemonTea: { name: "柠檬茶", color: 0xf0edcf }
+    };
+    const buttonPositions = [-210, 0, 210] as const;
+    const buttons = this.mixerButtonOrder.map((id, index) => ({
+      id,
+      ...ingredientPresentation[id],
+      x: buttonPositions[index]
+    }));
+    buttons.forEach((button) => {
+      const owned = state.items[button.id];
+      const frame = this.add.rectangle(button.x, 160, 174, 48, owned ? 0x164b59 : 0x263038, 1)
+        .setStrokeStyle(3, owned ? 0x6cdcf3 : 0x56636a, 1);
+      const swatch = this.add.rectangle(button.x - 57, 160, 18, 24, button.color, 1)
+        .setStrokeStyle(2, 0xc7d9dc, 0.85);
+      const label = this.add.text(button.x + 10, 160, owned ? `倒入${button.name}` : `${button.name}·未持有`, {
+        color: owned ? "#f4fbff" : "#7f8d92",
+        fontFamily: "monospace",
+        fontSize: "13px"
+      }).setOrigin(0.5);
+      panel.add([frame, swatch, label]);
+    });
+    this.mixerPanel = panel;
+  }
+
+  private handleMixerPointer(pointer: Phaser.Input.Pointer): void {
+    if (!this.mixerPanel) return;
+    const localX = pointer.x - 480;
+    const localY = pointer.y - 245;
+    if (Math.abs(localX - 274) <= 66 && Math.abs(localY + 170) <= 20) {
+      this.closeMixerPanel();
+      return;
+    }
+    if (Math.abs(localY - 160) > 27) return;
+    const buttonPositions = [-210, 0, 210] as const;
+    const candidates = this.mixerButtonOrder.map((id, index) => ({ id, x: buttonPositions[index] }));
+    const candidate = candidates.find((entry) => Math.abs(localX - entry.x) <= 88);
+    if (!candidate) return;
+    if (!this.bridge.getState().items[candidate.id]) {
+      this.showFeedback(canteenContent.drinks.ingredientMissing, "task");
+      return;
+    }
+    this.bridge.emit("rpg_canteen_mix_ingredient_requested", { itemId: candidate.id });
+  }
+
+  private closeMixerPanel(resetButtonOrder = true): void {
+    this.mixerPanel?.destroy(true);
+    this.mixerPanel = null;
+    if (resetButtonOrder) this.mixerButtonOrder = [];
+  }
+
+  private refreshMixerPanel(): void {
+    if (!this.mixerPanel) return;
+    this.closeMixerPanel(false);
+    this.openMixerPanel();
+  }
+
   private openMenuPanel(): void {
     if (this.menuPanel) return;
     const state = this.bridge.getState();
-    if (state.canteenHunt.mode === "light" && !state.canteenHunt.menuDarkClueRead) {
-      this.showFeedback(canteenContent.menu.orderLocked, "task");
-      return;
-    }
-    const canOrder = state.canteenHunt.mode === "light" && state.canteenHunt.menuDarkClueRead;
+    const isDark = state.canteenHunt.mode === "dark";
+    const canOrder = !isDark;
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(6000);
-    const shade = this.add.rectangle(0, 0, 570, 376, 0x081018, 0.97).setStrokeStyle(4, 0xd1b766, 0.95);
-    const title = this.add.text(0, -148, state.canteenHunt.mode === "dark" ? canteenContent.menu.darkIntro : canteenContent.menu.lightIntro, {
-      color: "#fff7df",
+    const shade = this.add.rectangle(0, 0, 570, 376, isDark ? 0x080a0d : 0xf7f4ea, 0.98)
+      .setStrokeStyle(4, isDark ? 0x6d8390 : 0x5a4932, 0.95);
+    const title = this.add.text(0, -148, isDark ? canteenContent.menu.darkIntro : canteenContent.menu.lightIntro, {
+      color: isDark ? "#e8f7ff" : "#241f19",
       fontFamily: "monospace",
       fontSize: "20px",
       align: "center"
@@ -1920,10 +2680,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
     panel.add([shade, title]);
     canteenContent.menu.options.forEach((option, index) => {
       const y = -94 + index * 55;
-      const button = this.add.rectangle(0, y, 430, 42, canOrder ? 0x183f43 : 0x263039, 0.94)
-        .setStrokeStyle(2, canOrder ? 0x80d4aa : 0x75818a, 0.9);
-      const label = this.add.text(0, y, `${option.id}  ${state.canteenHunt.mode === "dark" ? option.dark : option.light}`, {
-        color: state.canteenHunt.mode === "dark" ? "#86dcff" : "#fff7df",
+      const button = this.add.rectangle(0, y, 430, 42, isDark ? 0x1b2126 : 0xffffff, 0.96)
+        .setStrokeStyle(2, isDark ? 0x75818a : 0x8a775b, 0.9);
+      const label = this.add.text(0, y, `${option.id}  ${isDark ? option.dark : option.light}`, {
+        color: isDark ? "#86dcff" : "#201d19",
         fontFamily: "monospace",
         fontSize: "18px"
       }).setOrigin(0.5);
@@ -1931,18 +2691,16 @@ export class CanteenInteriorScene extends Phaser.Scene {
       panel.add([button, label]);
     });
     const close = this.add.text(255, -168, "×", {
-      color: "#fff7df",
+      color: isDark ? "#fff7df" : "#3b3025",
       fontFamily: "monospace",
       fontSize: "28px"
     }).setOrigin(0.5);
     panel.add(close);
-    const gateText = state.canteenHunt.mode === "dark"
-      ? "观察模式 · 已记录残影后切回浅色"
-      : canOrder
-        ? "操作模式 · 可以下单"
-        : "操作锁定 · 先查看深色残影";
+    const gateText = isDark
+      ? "观察模式 · 菜名留下了另一层字"
+      : "选择一份餐品 · 取餐前不能重复下单";
     panel.add(this.add.text(0, 166, gateText, {
-      color: canOrder ? "#9af0bd" : "#f0c875",
+      color: isDark ? "#91d8f5" : "#6c5236",
       fontFamily: "monospace",
       fontSize: "13px"
     }).setOrigin(0.5));
@@ -1962,7 +2720,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     const state = this.bridge.getState();
-    if (state.canteenHunt.mode !== "light" || !state.canteenHunt.menuDarkClueRead) {
+    if (state.canteenHunt.mode !== "light") {
       this.showFeedback(canteenContent.menu.orderLocked, "task");
       return;
     }
@@ -1994,7 +2752,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       .setAngle(-18)
       .setAlpha(0)
       .setVisible(true);
-    this.showFeedback(canteenContent.pickup.window3, "system");
+    this.showFeedback(canteenContent.pickup.ticketAccepted, "system");
     this.bridge.emit("canteen_paper_burst_started");
     this.tweens.add({
       targets: this.paper,

@@ -140,11 +140,42 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     source: "食堂桌面",
     intro: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。"
   },
+  sparklingWater: {
+    category: "调配原料 · 蓝色",
+    source: "食堂饮料区",
+    intro: "蓝色包装的气泡水。货架没有建议你直接喝。"
+  },
+  lemonTea: {
+    category: "调配原料 · 白色",
+    source: "食堂饮料区",
+    intro: "白色包装的柠檬茶。它负责让新品看起来比较无辜。"
+  },
+  blackCoffee: {
+    category: "调配原料 · 黑色",
+    source: "食堂饮料区",
+    intro: "黑色包装的咖啡。闻起来像一节已经开始的早八。"
+  },
+  badDrink: {
+    category: "失败饮品",
+    source: "食堂混合台",
+    intro: "不建议喝。喝完之后会理解早八，但不能推进剧情。",
+    useHint: "在食堂 RPG 中拖到自己身上可以喝掉。"
+  },
+  dailySpecialSparklingWater: {
+    category: "今日新品",
+    source: "食堂混合台",
+    intro: "让队伍承认你存在的。",
+    useHint: "拖到第五个打饭窗口下方的宣传板空杯位。"
+  },
   pickupTicket0755: {
     category: "0755 取餐号",
     source: "点餐机",
-    intro: "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。"
+    intro: "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。"
   },
+  canteenRealBun: { category: "食堂彩蛋", source: "1号取餐窗口", intro: "比较真实的包子。" },
+  canteenCluelessSoyMilk: { category: "食堂彩蛋", source: "2号取餐窗口", intro: "没什么线索的豆浆。" },
+  canteenEdgeEgg: { category: "食堂彩蛋", source: "4号取餐窗口", intro: "世界观边缘的鸡蛋。" },
+  canteenUselessCongee: { category: "食堂彩蛋", source: "5号取餐窗口", intro: "很热但很没用的白粥。" },
   theaterTicketHalfA: {
     category: "半张剧院票根 A",
     source: "剧院海报栏",

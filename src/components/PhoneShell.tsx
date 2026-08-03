@@ -102,7 +102,7 @@ export function PhoneShell({
   const bare = BARE_SCENES.includes(state.currentScene);
   const inventorySuppressed = state.flags.checkinDone && !state.actOne.inventoryRecovered;
   // 音乐全局播放（不局限于控制中心打开时）
-  useChiptune(state.ui.musicPlaying);
+  useChiptune(state.ui.musicPlaying && !state.ui.musicMuted);
 
   useEffect(() => {
     return events.subscribe((event) => {

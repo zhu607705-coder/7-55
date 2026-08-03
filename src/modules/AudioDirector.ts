@@ -114,6 +114,7 @@ export class AudioDirector {
   private music: HTMLAudioElement | null = null;
   private musicAsset: string | null = null;
   private musicTargetVolume = 0.2;
+  private musicMuted = false;
   private readonly scheduled = new Map<number, string>();
   private readonly playedOnce = new Set<string>();
   private voiceRestoreTimer: number | null = null;
@@ -129,6 +130,13 @@ export class AudioDirector {
       this.music = null;
       this.musicAsset = null;
     };
+  }
+
+  setMusicMuted(muted: boolean): void {
+    this.musicMuted = muted;
+    if (this.music) {
+      this.music.muted = muted;
+    }
   }
 
   private onEvent(events: EventBus, event: GameEvent): void {
@@ -238,6 +246,7 @@ export class AudioDirector {
         }
         this.music?.pause();
         this.music = new Audio(url);
+        this.music.muted = this.musicMuted;
         this.musicAsset = cue.asset;
       }
 

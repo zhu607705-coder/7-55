@@ -126,15 +126,24 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   }, [{ target: "seat-022-backpack", result: "consume" }]),
   cafeteriaWages: object([{ target: "canteen-bike", result: "consume" }]),
   greaseTissue: object([{ target: "canteen-bike-lock", result: "retain" }]),
+  sparklingWater: object([{ target: "canteen-mixer", result: "consume" }]),
+  lemonTea: object([{ target: "canteen-mixer", result: "consume" }]),
+  blackCoffee: object([{ target: "canteen-mixer", result: "consume" }]),
+  badDrink: object([{ target: "rpg-player", result: "consume" }]),
+  dailySpecialSparklingWater: object([{ target: "canteen-promo-board", result: "consume" }]),
   pickupTicket0755: paper({
     heading: "0755 取餐号",
     fields: [
       { label: "取餐号", value: "0755" },
       { label: "状态", value: "请取餐" }
     ],
-    body: ["取纸不取餐，找纸不找饭。"],
-    footer: "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。"
+    body: ["一张从点餐机吐出来的小票。"],
+    footer: "它证明你认真排过队，也认真被骗进流程。"
   }, [{ target: "canteen-pickup-window-3", result: "consume" }]),
+  canteenRealBun: object([]),
+  canteenCluelessSoyMilk: object([]),
+  canteenEdgeEgg: object([]),
+  canteenUselessCongee: object([]),
   theaterTicketHalfA: object([{ target: "theaterTicketHalfB", result: "transform" }]),
   theaterTicketHalfB: object([{ target: "theaterTicketHalfA", result: "transform" }]),
   temporaryTheaterTicket: object([

@@ -131,6 +131,10 @@ export function App() {
   }, []);
 
   useEffect(() => {
+    audioDirector.setMusicMuted(state.ui.musicMuted);
+  }, [state.ui.musicMuted]);
+
+  useEffect(() => {
     const pendingTimers = new Set<number>();
     const detach = eventBus.subscribe((event) => {
       if (event.name === "library_entered" && event.payload?.firstEntry === true) {

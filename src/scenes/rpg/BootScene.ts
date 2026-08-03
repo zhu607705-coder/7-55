@@ -795,7 +795,10 @@ export class BootScene extends Phaser.Scene {
 
   private updateCanteenGate(state: GameState): void {
     const storyEntry = state.canteenHunt.active
-      && ["tracking", "canteen_reached"].includes(state.canteenHunt.phase);
+      && [
+        "tracking", "canteen_reached", "tray_search", "drink_mix",
+        "menu_order", "pickup_search", "chase_ready"
+      ].includes(state.canteenHunt.phase);
     const freeExploreEntry = !state.canteenHunt.active && state.actOne.canLeaveDorm;
     const available = storyEntry || freeExploreEntry;
     const distanceToGate = Phaser.Math.Distance.Between(

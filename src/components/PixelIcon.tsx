@@ -355,6 +355,81 @@ const ICONS: Record<string, PixelMap> = {
     ],
     palette: { k: "#c6bca5", w: "#f2ead8", y: "#9f7637" }
   },
+  sparklingWater: {
+    rows: [
+      "...bbb...",
+      "..bwwwb..",
+      "..bcbwb..",
+      ".bcccccb.",
+      ".bcwcwcb.",
+      ".bccbccb.",
+      ".bcwcwcb.",
+      ".bcccccb.",
+      "..bbbbb..",
+      "........."
+    ],
+    palette: { b: "#1d4f79", c: "#4ab9e9", w: "#e9fbff" }
+  },
+  lemonTea: {
+    rows: [
+      "...yyy...",
+      "..ywwwy..",
+      "..ywwwy..",
+      ".ywwwwwy.",
+      ".ywwywwy.",
+      ".ywywywy.",
+      ".ywwywwy.",
+      ".ywwwwwy.",
+      "..yyyyy..",
+      "........."
+    ],
+    palette: { y: "#c99d2e", w: "#f4f2df" }
+  },
+  blackCoffee: {
+    rows: [
+      "...ggg...",
+      "..gkkkg..",
+      "..gkkkg..",
+      ".gkkkkkg.",
+      ".gkbkbkg.",
+      ".gkkkkkg.",
+      ".gkkkkkg.",
+      ".gkkkkkg.",
+      "..ggggg..",
+      "........."
+    ],
+    palette: { g: "#59636a", k: "#171b1e", b: "#7a4a2a" }
+  },
+  badDrink: {
+    rows: [
+      "..wwwww..",
+      ".w.....w.",
+      ".w.....w.",
+      ".wmmmmmw.",
+      ".wmgmgmw.",
+      ".wmmmmmw.",
+      ".wmgmmmw.",
+      ".wmmmmmw.",
+      "..wwwww..",
+      "........."
+    ],
+    palette: { w: "#bac5c5", m: "#736447", g: "#3e5548" }
+  },
+  dailySpecialSparklingWater: {
+    rows: [
+      "y..bbb..y",
+      "..bwwwb...",
+      "..bcbwb...",
+      ".bcccccb..",
+      ".bcwcwcb.y",
+      ".bccbccb..",
+      ".bcwcwcb..",
+      ".bcccccb..",
+      "y.bbbbb...",
+      "........."
+    ],
+    palette: { b: "#173f6b", c: "#39c6ef", w: "#f0fdff", y: "#f2cf59" }
+  },
   pickupTicket0755: {
     rows: [
       "kkkkkkkkk",
@@ -369,6 +444,22 @@ const ICONS: Record<string, PixelMap> = {
       "........."
     ],
     palette: { k: "#26313b", w: "#f4eddb", b: "#3973b8", y: "#d8a64a" }
+  },
+  canteenRealBun: {
+    rows: [".........", "...kkk...", "..kwwwk..", ".kwwywwk.", ".kwwwwwk.", ".kwwwwwk.", "..kkkkk..", ".........", ".........", "........."],
+    palette: { k: "#5d4028", w: "#ead6a8", y: "#f6e6bf" }
+  },
+  canteenCluelessSoyMilk: {
+    rows: ["..kkkk...", ".kwwwwk..", ".kwwwwk..", ".kwywwk..", ".kwywwk..", ".kwwwwk..", ".kwwwwk..", "..kkkk...", ".........", "........."],
+    palette: { k: "#39434a", w: "#f3eee0", y: "#d9b84b" }
+  },
+  canteenEdgeEgg: {
+    rows: [".........", "...kk....", "..kwwk...", ".kwwwwk..", ".kwwywwk.", ".kwwywwk.", "..kwwwk..", "...kkk...", ".........", "........."],
+    palette: { k: "#6b5635", w: "#f6f0d7", y: "#e6a62f" }
+  },
+  canteenUselessCongee: {
+    rows: [".........", ".kkkkkkk.", ".kwwwwwk.", "..kwwwk..", "..kwwwk..", "..kwwwk..", "...kkk...", "...sss...", ".........", "........."],
+    palette: { k: "#45606a", w: "#f0ead7", s: "#a7d8df" }
   },
   theaterTicketHalfA: {
     rows: [
@@ -580,7 +671,16 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" },
   cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。" },
   greaseTissue: { name: "油渍纸巾", desc: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。" },
-  pickupTicket0755: { name: "0755 取餐号", desc: "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。" },
+  sparklingWater: { name: "气泡水", desc: "蓝色包装的气泡水。不是拿来喝的，至少目前不是。" },
+  lemonTea: { name: "柠檬茶", desc: "白色包装的柠檬茶。配料表比它本人更有颜色。" },
+  blackCoffee: { name: "黑咖啡", desc: "黑色包装的咖啡。看起来已经理解了早八。" },
+  badDrink: { name: "难喝饮料", desc: "不建议喝。喝完之后会理解早八，但不能推进剧情。" },
+  dailySpecialSparklingWater: { name: "今日新品气泡水", desc: "让队伍承认你存在的。" },
+  pickupTicket0755: { name: "0755 取餐号", desc: "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。" },
+  canteenRealBun: { name: "比较真实的包子", desc: "一份真的包子。过于真实，因此没有线索价值。" },
+  canteenCluelessSoyMilk: { name: "没什么线索的豆浆", desc: "温度正常，味道正常，剧情价值也很稳定地接近零。" },
+  canteenEdgeEgg: { name: "世界观边缘的鸡蛋", desc: "不要追问它和纸条之间的关系。" },
+  canteenUselessCongee: { name: "很热但很没用的白粥", desc: "很热，但没有用。至少描述非常诚实。" },
   theaterTicketHalfA: { name: "半张剧院票根 A", desc: "它证明你的一半可以进场，另一半还在流程里。" },
   theaterTicketHalfB: { name: "半张剧院票根 B", desc: "来自一台失败的取票机。它至少努力过。" },
   temporaryTheaterTicket: { name: "临时观演票", desc: "两张半真半假的票根拼出来的票。剧院看了都沉默了一秒。" },

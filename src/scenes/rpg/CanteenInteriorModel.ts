@@ -35,7 +35,9 @@ export const CANTEEN_STATIC_COLLISION_RECTS: readonly CanteenCollisionRect[] = [
   { id: "west_wall_lower", left: 27, top: 308, right: 54, bottom: 920 },
   { id: "east_wall", left: 1618, top: 18, right: 1647, bottom: 920 },
   { id: "west_planter_strip", left: 34, top: 314, right: 74, bottom: 547 },
-  { id: "north_lost_found_shelf", left: 1344, top: 237, right: 1618, bottom: 379 },
+  // Keep roughly a 25 px aisle between the drink wall and the shelf. The small
+  // extra margin lets the player's foot collider pass without making it look wide.
+  { id: "north_lost_found_shelf", left: 1350, top: 252, right: 1618, bottom: 379 },
   { id: "dish_return", left: 1260, top: 425, right: 1628, bottom: 592 },
   { id: "tray_station", left: 1253, top: 619, right: 1630, bottom: 760 },
   { id: "ordering_kiosks", left: 93, top: 676, right: 474, bottom: 850 },
@@ -160,61 +162,167 @@ export const CANTEEN_TRAYS: readonly CanteenTrayDefinition[] = [
 ] as const;
 
 export interface CanteenInteractionTarget extends RpgSpatialInteractionTarget {
-  kind: "tray" | "kiosk" | "pickup" | "cart" | "exit" | "npc";
+  kind:
+    | "tray"
+    | "kiosk"
+    | "pickup"
+    | "cart"
+    | "exit"
+    | "npc"
+    | "drink_machine"
+    | "drink_shelf"
+    | "mixer"
+    | "promo"
+    | "queue_gap";
   value?: string;
   dialogue?: string;
 }
 
+export const CANTEEN_DRINK_MACHINES: readonly CanteenInteractionTarget[] = [
+  {
+    id: "drink-machine-sparkling",
+    label: "蓝色饮料机",
+    x: 1421,
+    y: 148,
+    stand: { x: 1421, y: 208 },
+    proximity: 48,
+    kind: "drink_machine",
+    value: "sparklingWater"
+  },
+  {
+    id: "drink-machine-lemon",
+    label: "白色饮料机",
+    x: 1473,
+    y: 148,
+    stand: { x: 1473, y: 208 },
+    proximity: 48,
+    kind: "drink_machine",
+    value: "lemonTea"
+  },
+  {
+    id: "drink-machine-coffee",
+    label: "黑色饮料机",
+    x: 1525,
+    y: 148,
+    stand: { x: 1525, y: 208 },
+    proximity: 48,
+    kind: "drink_machine",
+    value: "blackCoffee"
+  }
+] as const;
+
+export const CANTEEN_DRINK_SHELF: CanteenInteractionTarget = {
+  id: "drink-bottle-shelf",
+  label: "查看右侧瓶罐架",
+  x: 1425,
+  y: 315,
+  stand: { x: 1320, y: 400 },
+  proximity: 72,
+  kind: "drink_shelf"
+};
+
+export const CANTEEN_MIX_STATION: CanteenInteractionTarget = {
+  id: "canteen-mixer",
+  label: "使用混合台",
+  x: 260,
+  y: 760,
+  stand: { x: 260, y: 870 },
+  proximity: 76,
+  kind: "mixer"
+};
+
+export const CANTEEN_PROMO_BOARD: CanteenInteractionTarget = {
+  id: "canteen-promo-board",
+  label: "第五个窗口宣传板空杯位",
+  x: 1232,
+  y: 218,
+  stand: { x: 1232, y: 285 },
+  proximity: 64,
+  dropWidth: 94,
+  dropHeight: 62,
+  acceptedItem: "dailySpecialSparklingWater",
+  requiredMode: "light",
+  kind: "promo"
+};
+
+export const CANTEEN_QUEUE_COLUMN_THREE: CanteenInteractionTarget = {
+  id: "queue-column-three-front",
+  label: "询问第三列第一个同学",
+  x: 790,
+  y: 246,
+  stand: { x: 735, y: 255 },
+  proximity: 62,
+  kind: "queue_gap"
+};
+
 export interface CanteenPickupWindowDefinition extends CanteenInteractionTarget {
   kind: "pickup";
-  value: "1" | "2" | "3";
+  value: "1" | "2" | "3" | "4" | "5";
 }
 
-// The pickup route uses the three rightmost bays of the north service counter.
-// Window 3 shares the visible steam bay used by the authored paper-burst beat.
+// The pickup route uses all five bays of the north service counter.
+// Window 3 shares the ghost-auntie and paper-burst beat.
 // Every coordinate below is in the source image's 1672 x 941 pixel system.
 export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = [
   {
     id: "pickup_window_1",
     label: "1号取餐窗口验票槽",
-    x: 790,
+    x: 301,
     y: 218,
-    stand: { x: 790, y: 260 },
+    stand: { x: 301, y: 260 },
     proximity: 58,
-    dropWidth: 150,
+    dropWidth: 140,
     dropHeight: 74,
-    acceptedItem: "pickupTicket0755",
-    requiredMode: "light",
     kind: "pickup",
     value: "1"
   },
   {
     id: "pickup_window_2",
     label: "2号取餐窗口验票槽",
-    x: 1035,
+    x: 550,
     y: 218,
-    stand: { x: 1035, y: 260 },
+    stand: { x: 550, y: 260 },
     proximity: 58,
-    dropWidth: 150,
+    dropWidth: 140,
     dropHeight: 74,
-    acceptedItem: "pickupTicket0755",
-    requiredMode: "light",
     kind: "pickup",
     value: "2"
   },
   {
     id: "pickup_window_3",
     label: "3号取餐窗口验票槽",
+    x: 790,
+    y: 218,
+    stand: { x: 790, y: 260 },
+    proximity: 58,
+    dropWidth: 140,
+    dropHeight: 74,
+    kind: "pickup",
+    value: "3"
+  },
+  {
+    id: "pickup_window_4",
+    label: "4号取餐窗口验票槽",
+    x: 1035,
+    y: 218,
+    stand: { x: 1035, y: 260 },
+    proximity: 58,
+    dropWidth: 140,
+    dropHeight: 74,
+    kind: "pickup",
+    value: "4"
+  },
+  {
+    id: "pickup_window_5",
+    label: "5号取餐窗口验票槽",
     x: 1235,
     y: 218,
     stand: { x: 1235, y: 260 },
     proximity: 58,
-    dropWidth: 150,
+    dropWidth: 140,
     dropHeight: 74,
-    acceptedItem: "pickupTicket0755",
-    requiredMode: "light",
     kind: "pickup",
-    value: "3"
+    value: "5"
   }
 ] as const;
 
@@ -283,15 +391,15 @@ export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition
 };
 
 export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = [
-  // Kiosk and pickup anchors remain on the visible machines. Their operation
-  // positions are in the clear aisle below the respective counter fronts.
+  // The queue makes room directly in front of the third service window. That
+  // window is the point-of-order machine as well as the later pickup route.
   {
     id: "ordering_kiosk",
-    label: "食堂点餐机",
-    x: 260,
-    y: 760,
-    stand: { x: 260, y: 870 },
-    proximity: 72,
+    label: "第三窗口点餐机",
+    x: 790,
+    y: 218,
+    stand: { x: 790, y: 260 },
+    proximity: 58,
     kind: "kiosk"
   },
   ...CANTEEN_PICKUP_WINDOWS,
@@ -327,7 +435,8 @@ export const CANTEEN_ESCAPE_ANCHORS: Record<CanteenExitId, { x: number; y: numbe
 export const CANTEEN_SPAWN = { x: 1194, y: 834 } as const;
 export const CANTEEN_PHASE_SPAWNS = {
   tray_search: CANTEEN_SPAWN,
-  menu_order: { x: 260, y: 870 },
+  drink_mix: { x: 1473, y: 208 },
+  menu_order: { x: 790, y: 260 },
   pickup_search: {
     x: CANTEEN_PICKUP_WINDOWS[2].stand!.x,
     y: CANTEEN_PICKUP_WINDOWS[2].stand!.y
@@ -349,9 +458,14 @@ export function findNearestCanteenTarget(
   let nearest: CanteenInteractionTarget | null = null;
   let nearestDistance = Number.POSITIVE_INFINITY;
   targets.forEach((target) => {
-    const stand = target.stand ?? target;
-    const distance = Math.hypot(x - stand.x, y - stand.y);
-    if (isPlayerWithinRpgTarget(target, x, y) && distance < nearestDistance) {
+    // Pickup windows only require getting close to the counter itself. Their
+    // former stand coordinates remain visual layout data, not a movement gate.
+    const interactionPoint = target.kind === "pickup" ? target : target.stand ?? target;
+    const distance = Math.hypot(x - interactionPoint.x, y - interactionPoint.y);
+    const withinRange = target.kind === "pickup"
+      ? distance <= target.proximity
+      : isPlayerWithinRpgTarget(target, x, y);
+    if (withinRange && distance < nearestDistance) {
       nearest = target;
       nearestDistance = distance;
     }

@@ -154,11 +154,74 @@
     "target": "canteen_bike_lock"
   },
   {
+    "id": "sparklingWater",
+    "name": "气泡水",
+    "desc": "蓝色饮料。单独喝只是饮料，按流程加入则可能成为制度创新。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_mixer"
+  },
+  {
+    "id": "lemonTea",
+    "name": "柠檬茶",
+    "desc": "白色饮料。颜色很克制，配方里的位置并不克制。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_mixer"
+  },
+  {
+    "id": "blackCoffee",
+    "name": "黑咖啡",
+    "desc": "黑色饮料。今日新品配方要求它先承担责任。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_mixer"
+  },
+  {
+    "id": "badDrink",
+    "name": "难喝饮料",
+    "desc": "不建议喝。喝完之后会理解早八，但不能推进剧情。",
+    "sourceScene": "canteen_interior",
+    "target": "rpg_player"
+  },
+  {
+    "id": "dailySpecialSparklingWater",
+    "name": "今日新品气泡水",
+    "desc": "让队伍承认你存在的。",
+    "sourceScene": "canteen_interior",
+    "target": "canteen_promo_board"
+  },
+  {
     "id": "pickupTicket0755",
     "name": "0755 取餐号",
-    "desc": "一张从点餐机吐出来的小票。它证明纸条曾经认真地排过队。",
+    "desc": "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。",
     "sourceScene": "canteen_interior",
     "target": "canteen_pickup_window_3"
+  },
+  {
+    "id": "canteenRealBun",
+    "name": "比较真实的包子",
+    "desc": "一份真的包子。过于真实，因此没有线索价值。",
+    "sourceScene": "canteen_interior",
+    "target": ""
+  },
+  {
+    "id": "canteenCluelessSoyMilk",
+    "name": "没什么线索的豆浆",
+    "desc": "温度正常，味道正常，剧情价值也很稳定地接近零。",
+    "sourceScene": "canteen_interior",
+    "target": ""
+  },
+  {
+    "id": "canteenEdgeEgg",
+    "name": "世界观边缘的鸡蛋",
+    "desc": "不要追问它和纸条之间的关系。",
+    "sourceScene": "canteen_interior",
+    "target": ""
+  },
+  {
+    "id": "canteenUselessCongee",
+    "name": "很热但很没用的白粥",
+    "desc": "很热，但没有用。至少描述非常诚实。",
+    "sourceScene": "canteen_interior",
+    "target": ""
   },
   {
     "id": "theaterTicketHalfA",

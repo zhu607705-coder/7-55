@@ -158,6 +158,7 @@ export type CanteenHuntPhase =
   // Legacy prototype value. SaveStore migrates it to tray_search.
   | "entered"
   | "tray_search"
+  | "drink_mix"
   | "menu_order"
   | "pickup_search"
   | "exit_blocking"
@@ -169,6 +170,10 @@ export type CanteenMode = "light" | "dark";
 
 export type CanteenExitId = "west" | "southeast" | "steam";
 
+export type CanteenDrinkIngredientId = "sparklingWater" | "lemonTea" | "blackCoffee";
+
+export type CanteenMenuOptionId = "A" | "B" | "C" | "D" | "E";
+
 export interface CanteenHuntState {
   active: boolean;
   phase: CanteenHuntPhase;
@@ -177,8 +182,15 @@ export interface CanteenHuntState {
   carriedTrayIds: string[];
   identifiedTrayIds: string[];
   returnedTrayIds: string[];
+  drinkShelfRead: boolean;
+  drinkMixSequence: CanteenDrinkIngredientId[];
+  drinkMixAttemptCount: number;
+  queueChallengeSeen: boolean;
+  promoDrinkPlaced: boolean;
+  queueGapOpened: boolean;
   menuDarkClueRead: boolean;
   pickupDarkClueRead: boolean;
+  orderedMenuOption: CanteenMenuOptionId | null;
   identifiedExitIds: CanteenExitId[];
   orderAttemptCount: number;
   pickupAttemptCount: number;
@@ -402,7 +414,16 @@ export type ItemId =
   | "seatReleasePass"
   | "cafeteriaWages"
   | "greaseTissue"
+  | "sparklingWater"
+  | "lemonTea"
+  | "blackCoffee"
+  | "badDrink"
+  | "dailySpecialSparklingWater"
   | "pickupTicket0755"
+  | "canteenRealBun"
+  | "canteenCluelessSoyMilk"
+  | "canteenEdgeEgg"
+  | "canteenUselessCongee"
   | "theaterTicketHalfA"
   | "theaterTicketHalfB"
   | "temporaryTheaterTicket"
@@ -478,6 +499,8 @@ export interface UiState {
   controlCenterOpen: boolean;
   autoRotate: boolean;
   musicPlaying: boolean;
+  /** 全局背景音乐静音；不影响语音和操作音效。 */
+  musicMuted: boolean;
   /** 0-100 */
   brightness: number;
   /** 物品栏是否展开 */

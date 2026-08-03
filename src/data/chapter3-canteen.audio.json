@@ -34,6 +34,17 @@
         { "channel": "sfx", "asset": "fx_canteen_ticket_print", "offsetMs": 420, "volume": 0.62 }
       ]
     },
+    "canteen_order_wrong": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_order_confirm", "volume": 0.57 },
+        { "channel": "sfx", "asset": "fx_canteen_ticket_print", "offsetMs": 420, "volume": 0.62 }
+      ]
+    },
+    "canteen_wrong_meal_collected": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_canteen_order_confirm", "playbackRate": 1.08, "volume": 0.48 }
+      ]
+    },
     "canteen_paper_burst_started": {
       "cues": [
         { "channel": "sfx", "asset": "fx_canteen_paper_burst", "volume": 0.72 }
