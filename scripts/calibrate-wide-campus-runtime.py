@@ -14,12 +14,12 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 CAMPUS_ASSET_DIR = ROOT / "src/assets/rpg/campus"
 PLATE_PATH = CAMPUS_ASSET_DIR / "zijingang_campus_loop_panorama.png"
-MASK_PATH = CAMPUS_ASSET_DIR / "zijingang_road_walkability_mask.png"
+MASK_PATH = CAMPUS_ASSET_DIR / "zijingang_loop_walkability_mask.png"
 LEGACY_PANORAMA_PATH = (
     CAMPUS_ASSET_DIR / "source/panorama/zijingang_legacy_panorama.png"
 )
 QIZHEN_PLATE_PATH = ROOT / "src/assets/rpg/interiors/qizhen_lake_reflection.png"
-RUNTIME_PATH = ROOT / "src/data/maps/zijingang-campus-runtime.json"
+RUNTIME_PATH = ROOT / "src/data/maps/zijingang-campus-loop-runtime.json"
 
 WORLD_WIDTH = 13668
 WORLD_HEIGHT = 1084
@@ -27,6 +27,8 @@ CELL_SIZE = 4
 PROMENADE_SURFACE_TOP = 864
 INSERT_SPLIT_X = 8400
 INSERT_WIDTH = 1924
+INSERT_EDGE_FEATHER = 260
+INSERT_BLEND_MODE = "layered-multiband-v1"
 
 SPAWN = {"x": 800, "y": 968}
 LIBRARY_GATE = {"x": 10924, "y": 770, "radius": 100}
@@ -284,8 +286,11 @@ def main() -> None:
             "insertion": {
                 "splitX": INSERT_SPLIT_X,
                 "width": INSERT_WIDTH,
-                "leftFeather": 260,
-                "rightFeather": 260,
+                "leftFeather": INSERT_EDGE_FEATHER,
+                "rightFeather": INSERT_EDGE_FEATHER,
+                "blendMode": INSERT_BLEND_MODE,
+                "detailFeatherRange": [40, 52],
+                "roadTop": PROMENADE_SURFACE_TOP,
             },
         },
         "world": {"width": WORLD_WIDTH, "height": WORLD_HEIGHT},

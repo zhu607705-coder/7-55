@@ -409,8 +409,11 @@ export class LibraryFinalsController {
     this.patchGame(phase, {
       seatReceiptCollected: true,
       libraryVisitedPoints: addUnique(puzzle.libraryVisitedPoints, "seat_022")
-    }, { rpgCheckpoint: "library_seat_022" }, { seat022Receipt: true });
-    this.events.emit("use_item", { itemId: "rightArrow", targetId: "seat_022_gap" });
+    }, { rpgCheckpoint: "library_seat_022" }, {
+      rightArrow: false,
+      seat022Receipt: true
+    });
+    this.events.emit("use_item", { itemId: "rightArrow", targetId: "seat_022_gap", result: "consume" });
     this.events.emit("library_seat_receipt_recovered", { seat: "022" });
     this.events.emit("get_item", { itemId: "seat022Receipt", sourceScene: "phone_home" });
     return true;
@@ -677,7 +680,7 @@ export class LibraryFinalsController {
       ...state,
       runtimeMode: "rpg",
       rpgScene: "campus_bootstrap",
-      rpgCheckpoint: "campus_spawn",
+      rpgCheckpoint: "campus_library_gate",
       currentScene: "phone_home",
       canteenHunt: {
         active: true,
@@ -694,7 +697,9 @@ export class LibraryFinalsController {
         promoDrinkPlaced: false,
         queueGapOpened: false,
         menuDarkClueRead: false,
+        pickupTimeErrorSeen: false,
         pickupDarkClueRead: false,
+        defenseDrinkUsed: false,
         orderedMenuOption: null,
         identifiedExitIds: [],
         orderAttemptCount: 0,
@@ -711,6 +716,9 @@ export class LibraryFinalsController {
       },
       ui: {
         ...state.ui,
+        seenChapterIntros: state.ui.seenChapterIntros.includes("chapter_three")
+          ? state.ui.seenChapterIntros
+          : [...state.ui.seenChapterIntros, "chapter_three"],
         libraryFinalsPhase: "friend_contacted",
         libraryFinalsPuzzle: {
           ...state.ui.libraryFinalsPuzzle,
@@ -719,7 +727,9 @@ export class LibraryFinalsController {
         }
       }
     }));
-    this.events.emit("library_friend_contacted", { seat: "022" });
+    this.events.emit("chapter_three_opening_completed", {
+      destination: "campus_library_gate"
+    });
     this.events.emit("chapter_three_canteen_hunt_unlocked", { objective: "追到东区大食堂" });
     return true;
   }

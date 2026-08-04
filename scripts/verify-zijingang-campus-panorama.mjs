@@ -4,10 +4,18 @@ import { readFile } from "node:fs/promises";
 const EXPECTED = {
   width: 13668,
   height: 1084,
-  sha256: "c2f3c887bb6c1d5f58e09a89883a28bd0050d0ccc8b1c85e10b5236ec3a4136d",
+  sha256: "504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6",
   legacySha256: "c049150bf9b5408756b8baf479b9a7ef38cc98d9ebb3d829e2080d73b5d8c021",
   qizhenSha256: "21a83373372458b2c0f80886eb667b78c02986da10d3033d07bd6e88db3b89a8",
-  insertion: { splitX: 8400, width: 1924 },
+  insertion: {
+    splitX: 8400,
+    width: 1924,
+    leftFeather: 260,
+    rightFeather: 260,
+    blendMode: "layered-multiband-v1",
+    detailFeatherRange: [40, 52],
+    roadTop: 864
+  },
   spawn: { x: 800, y: 968 },
   foundationLibrary: { x: 10924, y: 690 },
   libraryGate: { x: 10924, y: 770, radius: 100 },
@@ -45,8 +53,8 @@ const EXPECTED = {
 const plateUrl = new URL("../src/assets/rpg/campus/zijingang_campus_loop_panorama.png", import.meta.url);
 const legacyUrl = new URL("../src/assets/rpg/campus/source/panorama/zijingang_legacy_panorama.png", import.meta.url);
 const qizhenUrl = new URL("../src/assets/rpg/interiors/qizhen_lake_reflection.png", import.meta.url);
-const maskUrl = new URL("../src/assets/rpg/campus/zijingang_road_walkability_mask.png", import.meta.url);
-const runtimeUrl = new URL("../src/data/maps/zijingang-campus-runtime.json", import.meta.url);
+const maskUrl = new URL("../src/assets/rpg/campus/zijingang_loop_walkability_mask.png", import.meta.url);
+const runtimeUrl = new URL("../src/data/maps/zijingang-campus-loop-runtime.json", import.meta.url);
 const [plate, legacy, qizhen, mask, runtimeText] = await Promise.all([
   readFile(plateUrl),
   readFile(legacyUrl),
@@ -83,10 +91,7 @@ if (
 ) {
   throw new Error("Campus runtime source hashes do not match the reviewed images");
 }
-if (
-  runtime.source?.insertion?.splitX !== EXPECTED.insertion.splitX
-  || runtime.source?.insertion?.width !== EXPECTED.insertion.width
-) {
+if (JSON.stringify(runtime.source?.insertion) !== JSON.stringify(EXPECTED.insertion)) {
   throw new Error("Qizhen insertion metadata changed");
 }
 for (const [name, actual, expected] of [
@@ -125,6 +130,7 @@ if (walkabilityBytes.length !== expectedBytes) {
 if (
   walkability.sourcePlateSha256 !== plateSha256
   || sha256(mask) !== walkability.maskSha256
+  || sha256(walkabilityBytes) !== walkability.bitsetSha256
   || mask.readUInt32BE(16) !== EXPECTED.width
   || mask.readUInt32BE(20) !== EXPECTED.height
 ) {

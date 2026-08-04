@@ -1,19 +1,16 @@
 import Phaser from "phaser";
-import qizhenDecoyUrl from "../../assets/rpg/interiors/qizhen_lake_decoy.png";
-import qizhenMistUrl from "../../assets/rpg/interiors/qizhen_lake_mist.png";
-import qizhenReflectionUrl from "../../assets/rpg/interiors/qizhen_lake_reflection.png";
-import qizhenSignsUrl from "../../assets/rpg/interiors/qizhen_lake_signs.png";
-import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
-import type { GameState, ItemId, QizhenDecoyTargetId, QizhenLakeMode } from "../../core/types";
-import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
-import { QIZHEN_REFLECTION_REAL_SEQUENCE } from "../../modules/ChapterThreeQizhenLakeController";
+import qizhenChannelUrl from "../../assets/rpg/interiors/qizhen_lake_channel.png";
+import qizhenDockUrl from "../../assets/rpg/interiors/qizhen_lake_dock.png";
+import qizhenOpenWaterUrl from "../../assets/rpg/interiors/qizhen_lake_open_water.png";
+import qizhenSwanCoveUrl from "../../assets/rpg/interiors/qizhen_lake_swan_cove.png";
+import type { GameState, ItemId, QizhenLakeMode } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
-  formatRpgModeRequirement,
   getRpgDropBounds,
-  resolveRpgItemDrop
+  isPlayerWithinRpgTarget,
+  isRpgDropPointWithin
 } from "./RpgInteractionContract";
 import {
   configureRpgPlayerSprite,
@@ -25,30 +22,115 @@ import {
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
-  QIZHEN_LAKE_PLATES,
   QIZHEN_LAKE_TARGETS,
   QIZHEN_LAKE_WORLD,
+  QIZHEN_LAKE_ZONES,
+  clampKayakToWater,
   findNearestQizhenTarget,
-  plateForQizhenPhase,
+  targetsForQizhenZone,
   type QizhenLakeInteractionTarget,
   type QizhenLakeOcclusionRect,
-  type QizhenLakePlateId
+  type QizhenLakeVehicle,
+  type QizhenLakeZoneId
 } from "./QizhenLakeModel";
+import {
+  createQizhenBlackSwanVisual,
+  QizhenKayakVisual,
+  type QizhenBlackSwanVisual,
+  type QizhenPaddleSide
+} from "./QizhenKayakTextures";
 
-const PLATE_TEXTURE_KEYS: Readonly<Record<QizhenLakePlateId, string>> = {
-  reflection: "chapter-3-qizhen-reflection",
-  signs: "chapter-3-qizhen-signs",
-  decoy: "chapter-3-qizhen-decoy",
-  mist: "chapter-3-qizhen-mist"
+const ZONE_TEXTURE_KEYS: Readonly<Record<QizhenLakeZoneId, string>> = {
+  dock: "chapter-3-qizhen-dock",
+  open_water: "chapter-3-qizhen-open-water",
+  channel: "chapter-3-qizhen-channel",
+  swan_cove: "chapter-3-qizhen-swan-cove"
 };
 
-const PAPER_TEXTURE_KEY = "chapter-3-qizhen-paper";
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
-const DIALOGUE_STEP_MS = 2500;
-const MIST_CYCLE_MS = 2200;
-const MIST_WINDOW_START = 0.43;
-const MIST_WINDOW_END = 0.57;
+const KAYAK_MAX_SPEED = 340;
+const KAYAK_STROKE_SPEED = 104;
+const KAYAK_SAME_SIDE_SPEED = 52;
+const KAYAK_DRAG_PER_SECOND = 0.68;
+const KAYAK_ROLL_DECAY_PER_SECOND = 1.05;
+const KAYAK_TURN_PER_STROKE = 0.16;
+const KAYAK_CAPSIZE_THRESHOLD = 0.92;
+const KAYAK_COLLISION_CAPSIZE_SPEED = 270;
+const SWAN_CHASE_START_SPEED = 212;
+const SWAN_CHASE_END_SPEED = 286;
+const SWAN_CHASE_START_GAP = 150;
+const SWAN_CHASE_END_GAP = 40;
+const SWAN_CHASE_PRESSURE_SECONDS = 5.5;
+const SWAN_CATCH_DISTANCE = 66;
+const FEEDBACK_MS = 2700;
+
+const CHAIN_ITEMS = {
+  fishingRod: "fishingRod",
+  key: "rustedLockerKey",
+  cord: "nylonCord",
+  netFrame: "brokenNetFrame",
+  dipNet: "improvisedDipNet",
+  feedTin: "sealedFeedTin",
+  pellets: "fishFeedPellets",
+  fish: "smallCarp",
+  magnet: "swanMagnet",
+  magneticRod: "magneticFishingRod",
+  decoy: "decoyPaper"
+} as const satisfies Record<string, ItemId>;
+
+type QizhenRuntimePhase =
+  | "inactive"
+  | "location_search"
+  | "lake_unlocked"
+  | "dock_outfitting"
+  | "boarding_tutorial"
+  | "lake_exploration"
+  | "tool_chain"
+  | "swan_exchange"
+  | "paper_capture"
+  | "swan_chase"
+  | "complete"
+  | "reflection_hunt"
+  | "sign_alignment"
+  | "decoy_setup"
+  | "mist_timing"
+  | "chase_ready";
+
+interface QizhenRuntimeProjection {
+  phase: QizhenRuntimePhase;
+  mode: QizhenLakeMode;
+  zone: QizhenLakeZoneId;
+  vehicle: QizhenLakeVehicle;
+  introSeen: boolean;
+  kayakEquipped: boolean;
+  leftPaddleEquipped: boolean;
+  rightPaddleEquipped: boolean;
+  boardingStrokeCount: number;
+  boardingLastSide: QizhenPaddleSide | null;
+  boardingTutorialCompleted: boolean;
+  capsizeCount: number;
+  rodFound: boolean;
+  decoyBaitAttached: boolean;
+  reflectionLocationObserved: boolean;
+  observedFishingSpotIds: string[];
+  directPaperCastFailures: number;
+  lockerOpened: boolean;
+  netCombined: boolean;
+  feedTinRetrieved: boolean;
+  feedTinOpened: boolean;
+  fishCaught: boolean;
+  swanFed: boolean;
+  magneticRodCombined: boolean;
+  paperCaptured: boolean;
+  swanReleased: boolean;
+  chaseDistance: number;
+  chaseBestDistance: number;
+  chaseAttempts: number;
+  magneticAttachmentBroken: boolean;
+  transitionReady: boolean;
+  safeSpawnId: string;
+}
 
 interface OcclusionVisual {
   definition: QizhenLakeOcclusionRect;
@@ -56,50 +138,78 @@ interface OcclusionVisual {
   image: Phaser.GameObjects.Image;
 }
 
+interface TargetVisual {
+  target: QizhenLakeInteractionTarget;
+  root: Phaser.GameObjects.Container;
+  label: Phaser.GameObjects.Text;
+  pulse: Phaser.GameObjects.Shape;
+}
+
 export class QizhenLakeScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
   private playerAnimator!: RpgPlayerAnimator;
+  private playerCollider!: Phaser.Physics.Arcade.Collider;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
   private mapImage!: Phaser.GameObjects.Image;
+  private kayak!: QizhenKayakVisual;
   private darkOverlay!: Phaser.GameObjects.Rectangle;
   private promptText!: Phaser.GameObjects.Text;
+  private statusText!: Phaser.GameObjects.Text;
+  private zoneText!: Phaser.GameObjects.Text;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
-  private currentPlate: QizhenLakePlateId = "reflection";
-  private currentPhase: GameState["qizhenLake"]["phase"] = "reflection_hunt";
+
+  private currentZone: QizhenLakeZoneId = "dock";
+  private currentVehicle: QizhenLakeVehicle = "on_foot";
+  private currentPhase: QizhenRuntimePhase = "dock_outfitting";
   private currentMode: QizhenLakeMode = "light";
   private virtualDirection = { x: 0, y: 0 };
+  private lastVirtualPaddleX = 0;
   private interactRequested = false;
   private dialogueLocked = false;
-  private phaseTransitioning = false;
+  private zoneTransitioning = false;
+  private capsizing = false;
   private reducedMotion = false;
+
+  private targetVisuals: TargetVisual[] = [];
+  private ambientVisuals: Phaser.GameObjects.GameObject[] = [];
   private occlusionVisuals: OcclusionVisual[] = [];
-  private phaseVisuals: Phaser.GameObjects.GameObject[] = [];
-  private decoyDropGuides: Array<
-    Phaser.GameObjects.Shape | Phaser.GameObjects.Text | Phaser.GameObjects.Container
-  > = [];
   private activeOcclusionIds: string[] = [];
   private softenedOcclusionIds: string[] = [];
-  private mistHud: Phaser.GameObjects.Container | null = null;
-  private mistMarker: Phaser.GameObjects.Container | null = null;
-  private mistStatusText: Phaser.GameObjects.Text | null = null;
-  private lastMistPhase = 0;
+  private staticSwan: QizhenBlackSwanVisual | null = null;
+  private chaseSwan: QizhenBlackSwanVisual | null = null;
+
+  private kayakHeading = -Math.PI / 2;
+  private kayakSpeed = 0;
+  private kayakRoll = 0;
+  private lastStrokeSide: QizhenPaddleSide | null = null;
+  private sameSideStreak = 0;
+  private strokeIndex = 0;
+  private lastStrokeAt = 0;
+  private lastChaseProgressSent = 0;
+  private chaseStartX = 0;
+  private chaseElapsedSeconds = 0;
+  private chaseDesiredGap = SWAN_CHASE_START_GAP;
+  private chaseSwanX = 0;
+  private chaseSwanY = 0;
+  private chaseAnnounced = false;
 
   constructor() {
     super("qizhen-lake");
   }
 
   preload(): void {
-    const sources: Readonly<Record<QizhenLakePlateId, string>> = {
-      reflection: qizhenReflectionUrl,
-      signs: qizhenSignsUrl,
-      decoy: qizhenDecoyUrl,
-      mist: qizhenMistUrl
+    const sources: Readonly<Record<QizhenLakeZoneId, string>> = {
+      dock: qizhenDockUrl,
+      open_water: qizhenOpenWaterUrl,
+      channel: qizhenChannelUrl,
+      swan_cove: qizhenSwanCoveUrl
     };
-    (Object.keys(sources) as QizhenLakePlateId[]).forEach((plateId) => {
-      const key = PLATE_TEXTURE_KEYS[plateId];
-      if (!this.textures.exists(key)) this.load.image(key, sources[plateId]);
+    (Object.keys(sources) as QizhenLakeZoneId[]).forEach((zone) => {
+      if (!this.textures.exists(ZONE_TEXTURE_KEYS[zone])) {
+        this.load.image(ZONE_TEXTURE_KEYS[zone], sources[zone]);
+      }
     });
     preloadRpgPlayerTextures(this);
   }
@@ -107,37 +217,48 @@ export class QizhenLakeScene extends Phaser.Scene {
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     const state = this.bridge.getState();
+    const runtime = readQizhenRuntime(state);
+    this.currentZone = runtime.zone;
+    this.currentVehicle = runtime.vehicle;
+    this.currentPhase = runtime.phase;
+    this.currentMode = runtime.mode;
+    this.strokeIndex = runtime.boardingStrokeCount;
+    this.lastStrokeSide = runtime.boardingLastSide;
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-    this.currentPhase = state.qizhenLake.phase;
-    this.currentMode = state.qizhenLake.mode;
-    this.currentPlate = plateForQizhenPhase(this.currentPhase);
-    this.cameras.main.setBackgroundColor(0x071724);
-    this.physics.world.setBounds(42, 0, QIZHEN_LAKE_WORLD.width - 84, QIZHEN_LAKE_WORLD.height);
-    this.obstacles = this.physics.add.staticGroup();
-    this.mapImage = this.add.image(0, 0, PLATE_TEXTURE_KEYS[this.currentPlate]).setOrigin(0).setDepth(-1000);
-    this.ensurePaperTexture();
-    ensureRpgPlayerTextures(this);
-    this.rebuildPlate(this.currentPlate, false);
 
-    const spawn = QIZHEN_LAKE_PLATES[this.currentPlate].spawn;
+    this.cameras.main.setBackgroundColor(0x031722);
+    this.physics.world.setBounds(0, 0, QIZHEN_LAKE_WORLD.width, QIZHEN_LAKE_WORLD.height);
+    this.obstacles = this.physics.add.staticGroup();
+    this.mapImage = this.add.image(0, 0, ZONE_TEXTURE_KEYS[this.currentZone]).setOrigin(0).setDepth(-1000);
+
+    ensureRpgPlayerTextures(this);
+    const spawn = this.getSpawn(this.currentZone, this.currentVehicle, null);
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
+    if ("heading" in spawn) this.kayakHeading = spawn.heading;
     this.player.setCollideWorldBounds(true).setDepth(spawn.y + 120);
     configureRpgPlayerSprite(this.player);
     this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
-    this.physics.add.collider(this.player, this.obstacles);
+    this.playerCollider = this.physics.add.collider(this.player, this.obstacles);
+    this.kayak = new QizhenKayakVisual(this);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT,TAB") as Record<
       "W" | "A" | "S" | "D" | "SHIFT" | "TAB",
       Phaser.Input.Keyboard.Key
     >;
-    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.TAB);
-    this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.input.keyboard!.addCapture([
+      Phaser.Input.Keyboard.KeyCodes.TAB,
+      Phaser.Input.Keyboard.KeyCodes.SPACE,
+      Phaser.Input.Keyboard.KeyCodes.LEFT,
+      Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      Phaser.Input.Keyboard.KeyCodes.A,
+      Phaser.Input.Keyboard.KeyCodes.D
+    ]);
 
     this.cameras.main
       .setBounds(0, 0, QIZHEN_LAKE_WORLD.width, QIZHEN_LAKE_WORLD.height)
       .setZoom(1)
-      .startFollow(this.player, true, 0.13, 0.13, 0, 22)
+      .startFollow(this.player, true, 0.13, 0.13, 0, 18)
       .setDeadzone(250, 150);
 
     this.darkOverlay = this.add.rectangle(
@@ -145,9 +266,24 @@ export class QizhenLakeScene extends Phaser.Scene {
       QIZHEN_LAKE_WORLD.height / 2,
       QIZHEN_LAKE_WORLD.width,
       QIZHEN_LAKE_WORLD.height,
-      0x07142b,
-      0.64
-    ).setDepth(1500).setAlpha(this.currentMode === "dark" ? 0.64 : 0);
+      0x06142d,
+      0.66
+    ).setDepth(3000).setAlpha(this.currentMode === "dark" ? 0.66 : 0).setInteractive(false);
+
+    this.zoneText = this.add.text(18, 78, "", {
+      color: "#e9ffff",
+      backgroundColor: "#092432de",
+      fontFamily: "monospace",
+      fontSize: "13px",
+      padding: { x: 9, y: 5 }
+    }).setScrollFactor(0).setDepth(5200);
+    this.statusText = this.add.text(18, 112, "", {
+      color: "#fff2b6",
+      backgroundColor: "#102334e8",
+      fontFamily: "monospace",
+      fontSize: "12px",
+      padding: { x: 9, y: 5 }
+    }).setScrollFactor(0).setDepth(5200);
     this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
       backgroundColor: "#102334ee",
@@ -155,7 +291,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       fontSize: "13px",
       padding: { x: 9, y: 5 }
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(5200).setVisible(false);
-    this.rebuildPhaseVisuals(state);
+
+    this.rebuildZone(this.currentZone, this.currentVehicle, null, false);
+    this.applyVehicle(this.currentVehicle, false);
 
     subscribeRpgSceneBridge(
       this.events,
@@ -163,32 +301,77 @@ export class QizhenLakeScene extends Phaser.Scene {
       (event) => this.handleBridgeEvent(event.name, event.payload),
       clearRpgRuntimeDebugState
     );
-    this.bridge.setRpgLocation("qizhen_lake", checkpointForPhase(this.currentPhase));
-    this.bridge.emit("rpg_booted", { scene: "qizhen_lake", checkpoint: this.bridge.getState().rpgCheckpoint });
-    this.bridge.emit("qizhen_lake_opened", { phase: this.currentPhase });
-    if (this.currentPhase === "mist_timing" || this.currentPhase === "chase_ready") {
-      this.bridge.emit("qizhen_mist_music_started", { phase: this.currentPhase });
-    } else if (this.currentMode === "dark") {
-      this.bridge.emit("qizhen_dark_mode_enabled", { mode: this.currentMode });
-    }
-
-    if (!state.qizhenLake.introSeen && this.currentPhase === "reflection_hunt") {
-      this.queueDialogue(qizhenContent.reflection.dialogue, () => {
-        this.bridge.emit("rpg_qizhen_intro_seen_requested");
+    if (runtime.zone === "dock" && runtime.mode !== "light") {
+      this.emitDomain("rpg_qizhen_mode_requested", {
+        mode: "light",
+        reason: "dock_restore"
       });
+    }
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.kayak.destroy();
+      this.staticSwan?.destroy();
+      this.chaseSwan?.destroy();
+    });
+
+    this.emitDomain("rpg_booted", {
+      scene: "qizhen_lake",
+      zone: this.currentZone,
+      vehicle: this.currentVehicle,
+      projection: "top-down-water"
+    });
+    this.emitDomain("qizhen_lake_opened", {
+      phase: this.currentPhase,
+      zone: this.currentZone,
+      vehicle: this.currentVehicle
+    });
+    if (!runtime.introSeen && runtime.phase === "dock_outfitting") {
+      this.queueDialogue([
+        "任务：到小码头取皮划艇和两支临时船桨。",
+        "系统：左右桨要交替划；连续划同一侧会偏航并增加侧倾。"
+      ], () => this.emitDomain("rpg_qizhen_intro_seen_requested"));
     }
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
     const state = this.bridge.getState();
-    this.syncState(state);
+    const runtime = readQizhenRuntime(state);
+    this.syncState(runtime);
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.dialogueLocked && !this.phaseTransitioning) {
-      this.bridge.emit("rpg_qizhen_mode_requested", {
-        mode: state.qizhenLake.mode === "dark" ? "light" : "dark"
+    if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.dialogueLocked && !this.zoneTransitioning) {
+      this.emitDomain("rpg_qizhen_mode_requested", {
+        mode: runtime.mode === "dark" ? "light" : "dark"
       });
     }
 
+    if (this.currentVehicle === "kayak") {
+      this.updateKayakInput(runtime);
+      this.updateKayakMotion(delta / 1000, runtime);
+    } else {
+      this.updateOnFootMovement(state);
+    }
+
+    this.updateOcclusion();
+    const targets = this.getActiveTargets(state, runtime);
+    const nearest = findNearestQizhenTarget(this.player.x, this.player.y, targets);
+    this.updateTargetVisuals(targets, nearest, runtime);
+    this.updatePrompt(nearest, runtime);
+    this.updateStatus(runtime);
+    this.publishDebugState(nearest, targets, runtime);
+
+    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    if (
+      nearest
+      && !this.dialogueLocked
+      && !this.zoneTransitioning
+      && !this.capsizing
+      && (keyboardInteract || this.interactRequested)
+    ) {
+      this.triggerTarget(nearest, state, runtime);
+    }
+    this.interactRequested = false;
+  }
+
+  private updateOnFootMovement(state: GameState): void {
     const keyboardX = Number(this.cursors.right.isDown || this.keys.D.isDown)
       - Number(this.cursors.left.isDown || this.keys.A.isDown);
     const keyboardY = Number(this.cursors.down.isDown || this.keys.S.isDown)
@@ -197,1127 +380,649 @@ export class QizhenLakeScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardX + this.virtualDirection.x, -1, 1),
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
-    // Dialogue subtitles may stay on screen while the player keeps walking.
-    // dialogueLocked continues to prevent a second interaction from firing.
-    if (state.actOne.movementEnabled && !this.phaseTransitioning && vector.lengthSq() > 0) {
+    if (state.actOne.movementEnabled && !this.dialogueLocked && !this.zoneTransitioning && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
       vector.set(0, 0);
     }
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 120);
     this.playerAnimator.update(vector, this.time.now);
-    this.updateOcclusion();
-    this.updatePhaseVisuals(state);
-    this.updateMistTiming(state);
-
-    const targets = this.getActiveTargets(state);
-    const nearest = findNearestQizhenTarget(this.player.x, this.player.y, targets);
-    this.updatePrompt(nearest, state);
-    this.publishDebugState(nearest, state);
-    const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
-    if (nearest && !this.dialogueLocked && !this.phaseTransitioning && (keyboardInteract || this.interactRequested)) {
-      this.triggerTarget(nearest, state);
-    }
-    this.interactRequested = false;
   }
 
-  private rebuildPlate(plateId: QizhenLakePlateId, repositionPlayer: boolean): void {
-    const definition = QIZHEN_LAKE_PLATES[plateId];
-    this.currentPlate = plateId;
-    this.mapImage.setTexture(PLATE_TEXTURE_KEYS[plateId]);
-    this.obstacles.clear(true, true);
-    this.occlusionVisuals.forEach((visual) => visual.image.destroy());
-    this.occlusionVisuals = [];
+  private updateKayakInput(runtime: QizhenRuntimeProjection): void {
+    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keys.A)) {
+      this.performPaddleStroke("left", runtime);
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.right) || Phaser.Input.Keyboard.JustDown(this.keys.D)) {
+      this.performPaddleStroke("right", runtime);
+    }
+  }
 
+  private performPaddleStroke(
+    side: QizhenPaddleSide,
+    runtime: QizhenRuntimeProjection,
+    emitIntent = true
+  ): void {
+    if (this.currentVehicle !== "kayak" || this.capsizing || this.zoneTransitioning) return;
+    const now = this.time.now;
+    const withinCadence = now - this.lastStrokeAt <= 1450;
+    const alternating = withinCadence && this.lastStrokeSide !== null && this.lastStrokeSide !== side;
+    const repeated = withinCadence && this.lastStrokeSide === side;
+    this.sameSideStreak = repeated ? this.sameSideStreak + 1 : 1;
+    this.strokeIndex += 1;
+
+    if (alternating) {
+      this.kayakSpeed = Math.min(KAYAK_MAX_SPEED, this.kayakSpeed + KAYAK_STROKE_SPEED);
+      this.kayakRoll *= 0.36;
+      this.sameSideStreak = 1;
+    } else {
+      this.kayakSpeed = Math.min(KAYAK_MAX_SPEED, this.kayakSpeed + KAYAK_SAME_SIDE_SPEED);
+      const sideSign = side === "left" ? 1 : -1;
+      this.kayakHeading += sideSign * (KAYAK_TURN_PER_STROKE + Math.min(0.13, this.sameSideStreak * 0.025));
+      this.kayakRoll += sideSign * (0.23 + Math.min(0.18, this.sameSideStreak * 0.035));
+    }
+
+    this.lastStrokeAt = now;
+    this.lastStrokeSide = side;
+    this.kayak.stroke(side, repeated ? 1.2 : 1);
+    if (emitIntent) {
+      this.emitDomain("rpg_qizhen_paddle_requested", {
+        side,
+        zone: this.currentZone,
+        strokeIndex: this.strokeIndex,
+        alternating,
+        sameSideStreak: this.sameSideStreak,
+        speed: Math.round(this.kayakSpeed),
+        tilt: Number(this.kayakRoll.toFixed(3))
+      });
+    }
+
+    const tutorialAllowance = runtime.boardingTutorialCompleted
+      ? 0
+      : Math.max(0, 0.3 - runtime.boardingStrokeCount * 0.045);
+    if (
+      this.sameSideStreak >= 4
+      || Math.abs(this.kayakRoll) >= KAYAK_CAPSIZE_THRESHOLD + tutorialAllowance
+    ) {
+      this.triggerCapsize("same_side_strokes", runtime);
+    }
+  }
+
+  private updateKayakMotion(deltaSeconds: number, runtime: QizhenRuntimeProjection): void {
+    if (this.capsizing || this.zoneTransitioning) {
+      this.player.setVelocity(0, 0);
+      return;
+    }
+    this.kayakSpeed *= Math.exp(-KAYAK_DRAG_PER_SECOND * deltaSeconds);
+    this.kayakRoll *= Math.exp(-KAYAK_ROLL_DECAY_PER_SECOND * deltaSeconds);
+    const velocityX = Math.cos(this.kayakHeading) * this.kayakSpeed;
+    const velocityY = Math.sin(this.kayakHeading) * this.kayakSpeed;
+    this.player.setVelocity(velocityX, velocityY).setDepth(this.player.y + 120);
+
+    const water = clampKayakToWater(this.currentZone, this.player.x, this.player.y);
+    if (!water.contained) {
+      this.player.setPosition(water.x, water.y);
+      this.kayakSpeed *= 0.42;
+      this.kayakRoll += velocityX >= 0 ? 0.08 : -0.08;
+    }
+
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const hitObstacle = body.blocked.left || body.blocked.right || body.blocked.up || body.blocked.down;
+    if (hitObstacle) {
+      const impactSpeed = Math.abs(this.kayakSpeed);
+      this.kayakSpeed *= 0.34;
+      this.kayakRoll += body.blocked.left || body.blocked.up ? 0.18 : -0.18;
+      if (impactSpeed >= KAYAK_COLLISION_CAPSIZE_SPEED) {
+        this.triggerCapsize("obstacle_impact", runtime);
+      }
+    }
+
+    this.kayak.setPose({
+      x: this.player.x,
+      y: this.player.y,
+      heading: this.kayakHeading,
+      roll: this.kayakRoll,
+      speed: this.kayakSpeed,
+      chasing: runtime.phase === "swan_chase"
+    });
+    if (runtime.phase === "swan_chase" && this.currentZone === "channel") {
+      this.updateSwanChase(deltaSeconds, runtime);
+    }
+  }
+
+  private updateSwanChase(deltaSeconds: number, runtime: QizhenRuntimeProjection): void {
+    if (!this.chaseSwan) this.createChaseSwan();
+    this.chaseElapsedSeconds += deltaSeconds;
+    const pressure = Phaser.Math.Clamp(
+      this.chaseElapsedSeconds / SWAN_CHASE_PRESSURE_SECONDS,
+      0,
+      1
+    );
+    this.chaseDesiredGap = Phaser.Math.Linear(
+      SWAN_CHASE_START_GAP,
+      SWAN_CHASE_END_GAP,
+      pressure
+    );
+    const pursuitSpeed = Phaser.Math.Linear(
+      SWAN_CHASE_START_SPEED,
+      SWAN_CHASE_END_SPEED,
+      pressure
+    );
+    const desiredX = Math.min(
+      QIZHEN_LAKE_WORLD.width - 70,
+      this.player.x + this.chaseDesiredGap
+    );
+    const desiredY = this.player.y;
+    const dx = desiredX - this.chaseSwanX;
+    const dy = desiredY - this.chaseSwanY;
+    const distanceToDesired = Math.hypot(dx, dy);
+    if (distanceToDesired > 0.001) {
+      const step = Math.min(distanceToDesired, pursuitSpeed * deltaSeconds);
+      this.chaseSwanX += dx / distanceToDesired * step;
+      this.chaseSwanY += dy / distanceToDesired * step;
+    }
+    const heading = Math.atan2(this.player.y - this.chaseSwanY, this.player.x - this.chaseSwanX);
+    const beat = Math.sin(this.time.now / 90);
+    this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, heading, beat);
+
+    const progress = Math.max(runtime.chaseDistance, this.chaseStartX - this.player.x);
+    if (progress >= this.lastChaseProgressSent + 20) {
+      this.lastChaseProgressSent = progress;
+      this.emitDomain("rpg_qizhen_chase_progress", { distance: Math.round(progress), zone: "channel" });
+    }
+    if (Math.hypot(this.chaseSwanX - this.player.x, this.chaseSwanY - this.player.y) <= SWAN_CATCH_DISTANCE) {
+      this.triggerCapsize("swan_hit", runtime);
+    }
+  }
+
+  private triggerCapsize(reason: "same_side_strokes" | "obstacle_impact" | "swan_hit", runtime: QizhenRuntimeProjection): void {
+    if (this.capsizing) return;
+    this.capsizing = true;
+    this.kayakSpeed = 0;
+    this.player.setVelocity(0, 0);
+    this.emitDomain("rpg_qizhen_capsized", {
+      zone: this.currentZone,
+      reason,
+      count: runtime.capsizeCount + 1,
+      safeSpawnId: runtime.safeSpawnId
+    });
+    this.showFeedback(
+      reason === "swan_hit"
+        ? "黑天鹅撞上船尾。保持左右交替，重新拉开距离。"
+        : reason === "obstacle_impact"
+          ? "船身撞上障碍。减速后再调整朝向。"
+          : "连续划同一侧导致翻船。左右交替可以稳住船身。",
+      "system"
+    );
+    this.kayak.playCapsize(() => {
+      const safe = this.getSpawn(this.currentZone, "kayak", null);
+      this.player.setPosition(safe.x, safe.y).setVelocity(0, 0);
+      this.kayakHeading = "heading" in safe ? safe.heading : -Math.PI / 2;
+      this.kayakRoll = 0;
+      this.sameSideStreak = 0;
+      this.lastStrokeSide = null;
+      if (this.currentZone === "channel" && runtime.phase === "swan_chase") {
+        this.resetChaseSwan();
+      }
+      this.capsizing = false;
+    });
+  }
+
+  private syncState(runtime: QizhenRuntimeProjection): void {
+    if (runtime.phase !== this.currentPhase) {
+      const previous = this.currentPhase;
+      this.currentPhase = runtime.phase;
+      if (runtime.phase === "swan_chase" && previous !== "swan_chase" && !this.chaseAnnounced) {
+        this.chaseAnnounced = true;
+        this.emitDomain("rpg_qizhen_chase_started", { zone: runtime.zone });
+        this.showFeedback("围栏机关已被触发。黑天鹅进入直河道，立刻返航！", "task");
+      }
+      if (runtime.phase !== "swan_chase") this.chaseAnnounced = false;
+    }
+    if (runtime.zone !== this.currentZone && !this.zoneTransitioning) {
+      this.transitionToZone(runtime.zone, runtime.vehicle);
+      return;
+    }
+    if (runtime.vehicle !== this.currentVehicle && !this.zoneTransitioning) {
+      this.currentVehicle = runtime.vehicle;
+      this.applyVehicle(runtime.vehicle, true);
+      this.rebuildCollision(runtime.vehicle);
+    }
+    if (runtime.mode !== this.currentMode) this.playModeTransition(runtime.mode);
+  }
+
+  private transitionToZone(zone: QizhenLakeZoneId, vehicle: QizhenLakeVehicle): void {
+    const previousZone = this.currentZone;
+    this.zoneTransitioning = true;
+    this.player.setVelocity(0, 0);
+    this.kayakSpeed = 0;
+    const fadeMs = this.reducedMotion ? 50 : 180;
+    this.cameras.main.fadeOut(fadeMs, 3, 12, 20);
+    this.time.delayedCall(fadeMs, () => {
+      this.currentZone = zone;
+      this.currentVehicle = vehicle;
+      this.rebuildZone(zone, vehicle, previousZone, true);
+      this.applyVehicle(vehicle, false);
+      this.cameras.main.fadeIn(fadeMs, 3, 12, 20);
+      this.zoneTransitioning = false;
+    });
+  }
+
+  private rebuildZone(
+    zone: QizhenLakeZoneId,
+    vehicle: QizhenLakeVehicle,
+    fromZone: QizhenLakeZoneId | null,
+    reposition: boolean
+  ): void {
+    this.mapImage.setTexture(ZONE_TEXTURE_KEYS[zone]);
+    this.destroyZoneVisuals();
+    this.rebuildCollision(vehicle);
+    this.createOcclusionVisuals();
+    this.createAmbientVisuals();
+    this.createTargetVisuals();
+    this.createZoneSwan();
+    if (reposition) {
+      const spawn = this.getSpawn(zone, vehicle, fromZone);
+      this.player.setPosition(spawn.x, spawn.y).setVelocity(0, 0);
+      if ("heading" in spawn) this.kayakHeading = spawn.heading;
+      this.kayakRoll = 0;
+      this.kayakSpeed = 0;
+      this.cameras.main.centerOn(spawn.x, spawn.y);
+    }
+    if (zone === "channel" && this.currentPhase === "swan_chase") {
+      this.resetChaseSwan();
+    }
+  }
+
+  private rebuildCollision(vehicle: QizhenLakeVehicle): void {
+    this.obstacles.clear(true, true);
+    const definition = QIZHEN_LAKE_ZONES[this.currentZone];
+    const collisions = vehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions;
     const collisionVisible = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("rpgCollision") === "1";
-    definition.collisions.forEach((rect) => {
+    collisions.forEach((rect) => {
       const collision = this.add.rectangle(
         (rect.left + rect.right) / 2,
         (rect.top + rect.bottom) / 2,
         rect.right - rect.left,
         rect.bottom - rect.top,
-        collisionVisible ? 0xff3355 : 0x000000,
-        collisionVisible ? 0.24 : 0
-      ).setDepth(collisionVisible ? 4900 : rect.bottom - 20);
-      if (collisionVisible) collision.setStrokeStyle(2, 0xffd4dc, 0.9);
+        collisionVisible ? 0xff365b : 0x000000,
+        collisionVisible ? 0.25 : 0
+      ).setDepth(collisionVisible ? 4950 : rect.bottom - 20);
+      if (collisionVisible) collision.setStrokeStyle(2, 0xffd6de, 0.9);
       this.obstacles.add(collision);
     });
+  }
 
-    definition.occlusions.forEach((occlusion) => {
-      const image = this.add.image(0, 0, PLATE_TEXTURE_KEYS[plateId])
+  private createOcclusionVisuals(): void {
+    const textureKey = ZONE_TEXTURE_KEYS[this.currentZone];
+    QIZHEN_LAKE_ZONES[this.currentZone].occlusions.forEach((definition) => {
+      const image = this.add.image(0, 0, textureKey)
         .setOrigin(0)
         .setCrop(
-          occlusion.left,
-          occlusion.top,
-          occlusion.right - occlusion.left,
-          occlusion.bottom - occlusion.top
+          definition.left,
+          definition.top,
+          definition.right - definition.left,
+          definition.bottom - definition.top
         )
         .setDepth(-900)
         .setVisible(false);
       this.occlusionVisuals.push({
-        definition: occlusion,
+        definition,
         bounds: new Phaser.Geom.Rectangle(
-          occlusion.left,
-          occlusion.top,
-          occlusion.right - occlusion.left,
-          occlusion.bottom - occlusion.top
+          definition.left,
+          definition.top,
+          definition.right - definition.left,
+          definition.bottom - definition.top
         ),
         image
       });
     });
-
-    if (repositionPlayer && this.player) {
-      this.player.setPosition(definition.spawn.x, definition.spawn.y).setVelocity(0, 0);
-      this.cameras.main.centerOn(definition.spawn.x, definition.spawn.y);
-    }
   }
 
-  private rebuildPhaseVisuals(state: GameState): void {
-    this.phaseVisuals.forEach((visual) => {
-      this.tweens.killTweensOf(visual);
-      if (visual instanceof Phaser.GameObjects.Container) {
-        visual.list.forEach((child) => this.tweens.killTweensOf(child));
-      }
-      visual.destroy();
-    });
-    this.phaseVisuals = [];
-    this.decoyDropGuides = [];
-    if (this.mistHud) {
-      this.tweens.killTweensOf(this.mistHud);
-      this.mistHud.list.forEach((child) => {
-        this.tweens.killTweensOf(child);
-        if (child instanceof Phaser.GameObjects.Container) {
-          child.list.forEach((nestedChild) => this.tweens.killTweensOf(nestedChild));
-        }
-      });
-      this.mistHud.destroy();
-    }
-    this.mistHud = null;
-    this.mistMarker = null;
-    this.mistStatusText = null;
-
-    this.createAmbientVisuals(state);
-    this.createExitMarker();
-    if (state.qizhenLake.phase === "reflection_hunt") this.createReflectionVisuals(state);
-    else if (state.qizhenLake.phase === "sign_alignment") this.createSignVisuals(state);
-    else if (state.qizhenLake.phase === "decoy_setup") this.createDecoyVisuals(state);
-    else if (state.qizhenLake.phase === "mist_timing" || state.qizhenLake.phase === "chase_ready") {
-      this.createMistVisuals(state);
-    }
-  }
-
-  private createAmbientVisuals(state: GameState): void {
-    const waterBands: ReadonlyArray<readonly [number, number, number]> = this.currentPlate === "decoy"
-      ? [[690, 378, 92], [905, 442, 72], [1170, 350, 88]]
-      : this.currentPlate === "mist"
-        ? [[690, 330, 82], [930, 310, 104], [1210, 345, 76]]
-        : [[470, 300, 86], [710, 350, 112], [1005, 288, 92], [1270, 370, 78]];
-    waterBands.forEach(([x, y, width], index) => {
-      const shimmer = this.add.rectangle(x, y, width, 3, 0xc8f7ff, 0.22)
-        .setDepth(1120)
-        .setBlendMode(Phaser.BlendModes.ADD);
-      const glint = this.add.rectangle(x - width * 0.2, y - 4, Math.max(18, width * 0.34), 2, 0xffffff, 0.28)
-        .setDepth(1121)
-        .setBlendMode(Phaser.BlendModes.ADD);
-      this.phaseVisuals.push(shimmer, glint);
+  private createAmbientVisuals(): void {
+    const bands: ReadonlyArray<readonly [number, number, number]> = this.currentZone === "channel"
+      ? [[330, 340, 110], [930, 600, 150], [1320, 390, 94]]
+      : this.currentZone === "swan_cove"
+        ? [[380, 360, 120], [735, 610, 156], [1180, 650, 96]]
+        : this.currentZone === "dock"
+          ? [[930, 290, 145], [1220, 540, 118], [1480, 340, 84]]
+          : [[560, 500, 130], [915, 350, 180], [1320, 620, 112]];
+    bands.forEach(([x, y, width], index) => {
+      const glint = this.add.ellipse(x, y, width, 12, 0xd7fbff, 0)
+        .setStrokeStyle(2, 0xd7fbff, 0.32)
+        .setDepth(1120);
+      this.ambientVisuals.push(glint);
       if (!this.reducedMotion) {
-        this.tweens.add({
-          targets: shimmer,
-          x: x + 22,
-          alpha: { from: 0.12, to: 0.46 },
-          duration: 1800 + index * 230,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1,
-          delay: index * 180
-        });
         this.tweens.add({
           targets: glint,
-          x: x + width * 0.28,
-          alpha: { from: 0.08, to: 0.5 },
-          duration: 1320 + index * 190,
+          scaleX: 1.35,
+          alpha: { from: 0.1, to: 0.48 },
+          duration: 1700 + index * 260,
           ease: "Sine.easeInOut",
           yoyo: true,
           repeat: -1,
-          delay: 220 + index * 260
-        });
-      }
-    });
-
-    const rippleDefinitions: ReadonlyArray<readonly [number, number, number]> = this.currentPlate === "decoy"
-      ? [[1010, 492, 28], [1260, 430, 22], [770, 430, 18]]
-      : [[560, 356, 22], [1110, 325, 27], [1340, 395, 18]];
-    rippleDefinitions.forEach(([x, y, radius], index) => {
-      const ripple = this.add.ellipse(x, y, radius * 2, Math.max(8, radius * 0.52), 0x9beaff, 0)
-        .setStrokeStyle(2, 0xc7f7ff, 0.42)
-        .setDepth(1118)
-        .setScale(0.62);
-      this.phaseVisuals.push(ripple);
-      if (!this.reducedMotion) {
-        this.tweens.add({
-          targets: ripple,
-          scaleX: 1.72,
-          scaleY: 1.72,
-          alpha: { from: 0.54, to: 0 },
-          duration: 2200,
-          ease: "Cubic.easeOut",
-          repeat: -1,
-          delay: index * 640
+          delay: index * 360
         });
       } else {
-        ripple.setScale(1).setAlpha(0.28);
+        glint.setAlpha(0.28);
       }
-    });
-
-    const motes = [
-      { x: 395, y: 565, color: 0xffed9e },
-      { x: 660, y: 610, color: 0xd8ffbd },
-      { x: 1080, y: 575, color: 0xfff1b6 },
-      { x: 1320, y: 620, color: 0xc9f7ff }
-    ];
-    motes.forEach((definition, index) => {
-      const mote = this.add.rectangle(definition.x, definition.y, 4, 4, definition.color, 0.42)
-        .setDepth(definition.y + 8);
-      this.phaseVisuals.push(mote);
-      if (!this.reducedMotion) {
-        this.tweens.add({
-          targets: mote,
-          x: definition.x + (index % 2 === 0 ? 18 : -14),
-          y: definition.y - 13,
-          alpha: { from: 0.18, to: 0.7 },
-          duration: 1700 + index * 270,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1,
-          delay: index * 240
-        });
-      }
-    });
-
-    const scanner = this.add.rectangle(480, 116, 820, 2, 0x89e9ff, 0.2)
-      .setScrollFactor(0)
-      .setDepth(1555)
-      .setBlendMode(Phaser.BlendModes.ADD)
-      .setName("darkOnly");
-    const upperShade = this.add.rectangle(480, 58, 960, 30, 0x03101f, 0.32)
-      .setScrollFactor(0)
-      .setDepth(1552)
-      .setName("darkOnly");
-    const lowerShade = this.add.rectangle(480, 522, 960, 36, 0x03101f, 0.34)
-      .setScrollFactor(0)
-      .setDepth(1552)
-      .setName("darkOnly");
-    this.phaseVisuals.push(scanner, upperShade, lowerShade);
-    if (!this.reducedMotion) {
-      this.tweens.add({
-        targets: scanner,
-        y: 398,
-        alpha: { from: 0.08, to: 0.28 },
-        duration: 2800,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: -1
-      });
-    }
-    [scanner, upperShade, lowerShade].forEach((visual) => visual.setVisible(state.qizhenLake.mode === "dark"));
-
-    const darkFocusOverlays: Phaser.GameObjects.Shape[] = [];
-    if (this.currentPlate === "signs") {
-      [430, 836, 1240].forEach((x) => {
-        darkFocusOverlays.push(
-          this.add.ellipse(x, 650, 196, 102, 0x8cefff, 0.1)
-            .setDepth(684)
-            .setBlendMode(Phaser.BlendModes.ADD)
-            .setName("darkOnly")
-        );
-      });
-      darkFocusOverlays.push(
-        this.add.ellipse(836, 446, 236, 52, 0x89e9ff, 0.08)
-          .setDepth(1652)
-          .setBlendMode(Phaser.BlendModes.ADD)
-          .setName("darkOnly")
-      );
-    } else if (this.currentPlate === "mist") {
-      darkFocusOverlays.push(
-        this.add.ellipse(836, 654, 176, 96, 0x92f4ff, 0.09)
-          .setDepth(690)
-          .setBlendMode(Phaser.BlendModes.ADD)
-          .setName("darkOnly"),
-        this.add.ellipse(836, 454, 254, 42, 0xc0ffff, 0.06)
-          .setDepth(1122)
-          .setBlendMode(Phaser.BlendModes.ADD)
-          .setName("darkOnly")
-      );
-    }
-    darkFocusOverlays.forEach((overlay) => {
-      overlay.setVisible(state.qizhenLake.mode === "dark");
-      this.phaseVisuals.push(overlay);
     });
   }
 
-  private createExitMarker(): void {
-    const target = QIZHEN_LAKE_TARGETS.find((candidate) => candidate.kind === "exit")!;
-    const marker = this.add.container(target.x, target.y, [
-      this.add.rectangle(-20, -22, 5, 52, 0x284c47, 1),
-      this.add.triangle(-3, -35, 0, 0, 28, 13, 0, 26, 0x9ee0c7, 0.96),
-      this.add.text(8, 10, "离开湖区", {
-        color: "#e7fff3",
-        backgroundColor: "#102b2acc",
+  private createTargetVisuals(): void {
+    QIZHEN_LAKE_TARGETS.filter((target) => target.zone === this.currentZone).forEach((target) => {
+      const color = target.kind === "zone_portal" || target.kind === "escape"
+        ? 0xffe36d
+        : target.kind === "reflection" || target.kind === "paper"
+          ? 0x7de8ff
+          : target.kind === "swan"
+            ? 0xffd1a4
+            : 0xb8ffd7;
+      const pulse = target.kind === "zone_portal" || target.kind === "escape"
+        ? this.add.triangle(0, 0, -22, -18, 24, 0, -22, 18, color, 0.25).setStrokeStyle(3, color, 0.88)
+        : this.add.ellipse(0, 0, 72, 34, color, 0.08).setStrokeStyle(3, color, 0.82);
+      const center = this.add.circle(0, 0, 5, color, 0.96);
+      const label = this.add.text(0, -34, target.label, {
+        color: "#f4ffff",
+        backgroundColor: "#09212dda",
         fontFamily: "monospace",
-        fontSize: "12px",
+        fontSize: "11px",
         padding: { x: 6, y: 3 }
-      }).setOrigin(0.5)
-    ]).setDepth(target.y + 35).setSize(110, 82).setInteractive({ useHandCursor: true });
-    marker.on("pointerdown", () => this.triggerPointerTarget(target));
-    this.phaseVisuals.push(marker);
-  }
-
-  private createReflectionVisuals(state: GameState): void {
-    const expected = QIZHEN_REFLECTION_REAL_SEQUENCE[Math.min(state.qizhenLake.reflectionRound, 2)];
-    const ghostX = expected === "right" ? 430 : expected === "left" ? 1240 : 836;
-    const ghostPaper = this.add.container(0, 0, [
-      this.add.image(-10, 3, PAPER_TEXTURE_KEY).setAlpha(0.2).setTint(0x6ec9ef),
-      this.add.image(-5, 1, PAPER_TEXTURE_KEY).setAlpha(0.38).setTint(0x8fe7ff),
-      this.add.image(0, 0, PAPER_TEXTURE_KEY).setAlpha(0.94),
-      this.add.rectangle(2, 3, 24, 2, 0xd8fbff, 0.8).setAngle(7)
-    ]).setName("ghostPaper");
-    const ghost = this.add.container(ghostX, 390, [
-      this.add.ellipse(0, 5, 128, 42, 0x65d9ff, 0.09).setStrokeStyle(2, 0x9ceaff, 0.52),
-      this.add.ellipse(0, 5, 84, 26, 0xb7f4ff, 0.08).setStrokeStyle(2, 0xd5fbff, 0.72),
-      ghostPaper
-    ]).setDepth(1650).setName("reflectionGhost");
-    ghost.setData("reflectionRound", state.qizhenLake.reflectionRound);
-    if (!this.reducedMotion) {
-      this.tweens.add({
-        targets: ghostPaper,
-        y: -7,
-        angle: 3,
-        alpha: { from: 0.72, to: 1 },
-        duration: 860,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: -1
-      });
-    }
-    this.phaseVisuals.push(ghost);
-    QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "reflection_spot").forEach((target) => {
-      const outerRing = this.add.circle(0, 0, 44, 0xf0dc89, 0.025)
-        .setStrokeStyle(3, 0xeed97a, 0.48)
-        .setName("outerRing");
-      const proximityGlow = this.add.circle(0, 0, 35, 0xffed9e, 0.1)
-        .setStrokeStyle(2, 0xfff4bc, 0.76)
-        .setAlpha(0)
-        .setName("proximityGlow");
-      const marker = this.add.container(target.x, target.y, [
-        this.add.ellipse(0, 7, 58, 20, 0xf0dc89, 0.08).setStrokeStyle(2, 0xeed97a, 0.34),
-        outerRing,
-        proximityGlow,
-        this.add.rectangle(-33, 0, 13, 3, 0xfff0a8, 0.72),
-        this.add.rectangle(33, 0, 13, 3, 0xfff0a8, 0.72),
-        this.add.rectangle(0, -33, 3, 13, 0xfff0a8, 0.72),
-        this.add.rectangle(0, 33, 3, 13, 0xfff0a8, 0.72),
-        this.add.circle(0, 1, 4, 0xfff6c9, 0.96),
-        this.add.circle(0, 1, 13, 0xfff6c9, 0.03).setStrokeStyle(1, 0xfff6c9, 0.5)
-      ]).setDepth(target.y + 30)
-        .setSize(96, 96)
+      }).setOrigin(0.5, 1);
+      const root = this.add.container(target.x, target.y, [pulse, center, label])
+        .setDepth(target.y + 48)
+        .setSize(Math.max(88, target.dropWidth ?? 88), Math.max(64, target.dropHeight ?? 64))
         .setInteractive({ useHandCursor: true })
-        .setName("reflectionSpot");
-      marker.setData("targetId", target.id);
-      marker.on("pointerdown", () => this.triggerPointerTarget(target));
+        .setVisible(false)
+        .setName("qizhenTarget");
+      root.setData("targetId", target.id);
+      root.on("pointerdown", () => this.triggerPointerTarget(target));
       if (!this.reducedMotion) {
         this.tweens.add({
-          targets: outerRing,
-          scale: 1.08,
-          alpha: { from: 0.5, to: 0.92 },
-          duration: 1400,
+          targets: pulse,
+          scale: 1.18,
+          alpha: { from: 0.38, to: 0.9 },
+          duration: 1100,
           ease: "Sine.easeInOut",
           yoyo: true,
           repeat: -1,
-          delay: target.x % 300
+          delay: target.x % 420
         });
       }
-      this.phaseVisuals.push(marker);
+      this.targetVisuals.push({ target, root, label, pulse });
     });
   }
 
-  private createSignVisuals(state: GameState): void {
-    const signs = QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "sign");
-    signs.forEach((target, index) => {
-      const arrow = this.add.container(0, -14, [
-        this.add.circle(0, 0, 19, 0x123d49, 0.1).setStrokeStyle(2, 0x4b8790, 0.62),
-        this.add.rectangle(-3, 0, 28, 5, 0x28758a, 1),
-        this.add.triangle(16, 0, 0, -9, 15, 0, 0, 9, 0x28758a, 1),
-        this.add.circle(-14, 0, 4, 0xcaf7f3, 0.92)
-      ]).setName("arrow");
-      arrow.setData("renderedRotation", state.qizhenLake.signRotations[index]);
-      arrow.setAngle(state.qizhenLake.signRotations[index] * 90);
-      const proximityGlow = this.add.rectangle(0, -28, 176, 58, 0x8ee9ef, 0.1)
-        .setStrokeStyle(3, 0xaef8ff, 0.9)
-        .setAlpha(0)
-        .setName("proximityGlow");
-      const sign = this.add.container(target.x, target.y, [
-        this.add.ellipse(0, 35, 42, 10, 0x142520, 0.28),
-        this.add.rectangle(0, 8, 9, 66, 0x243c38, 1).setStrokeStyle(2, 0x7f9c94, 0.78),
-        this.add.rectangle(0, -25, 174, 56, 0x203c39, 0.92).setStrokeStyle(2, 0x18312e, 1),
-        this.add.rectangle(0, -29, 166, 48, 0xd9e4df, 0.98).setStrokeStyle(3, 0x315a55, 1),
-        this.add.rectangle(0, -50, 160, 4, 0xf4f9f6, 0.7),
-        this.add.rectangle(0, -8, 160, 4, 0x244d49, 0.36),
-        proximityGlow,
-        this.add.circle(-73, -39, 11, 0x2f686f, 0.94).setStrokeStyle(2, 0xc7fcff, 0.86),
-        this.add.text(-73, -39, `${index + 1}`, {
-          color: "#f0ffff",
-          fontFamily: "monospace",
-          fontSize: "10px",
-          fontStyle: "bold"
-        }).setOrigin(0.5),
-        this.add.text(0, -39, qizhenContent.signs.labels[index], {
-          color: "#203f3b",
-          fontFamily: "monospace",
-          fontSize: "11px",
-          align: "center"
-        }).setOrigin(0.5),
-        arrow,
-        this.add.circle(-59, -15, 3, 0x6f8c83, 0.9),
-        this.add.circle(59, -15, 3, 0x6f8c83, 0.9)
-      ]).setDepth(target.y + 40)
-        .setSize(194, 118)
-        .setInteractive({ useHandCursor: true })
-        .setName("qizhenSign");
-      sign.setData("signIndex", index);
-      sign.setData("targetId", target.id);
-      sign.on("pointerdown", () => this.triggerPointerTarget(target));
-      this.phaseVisuals.push(sign);
-    });
-    const clueText = this.add.text(0, 0, "◀   ◇   ▶", {
-      color: "#b8f5ff",
-      fontFamily: "monospace",
-      fontSize: "22px",
-      fontStyle: "bold"
-    }).setOrigin(0.5);
-    const reflectionArrow = this.add.container(836, 445, [
-      this.add.ellipse(0, 4, 196, 54, 0x56cff3, 0.08).setStrokeStyle(2, 0x8de8ff, 0.46),
-      this.add.ellipse(0, 4, 150, 34, 0xbaf7ff, 0.05),
-      clueText,
-      this.add.text(0, 24, "水里的箭头缺了一截", {
-        color: "#d8fbff",
-        fontFamily: "monospace",
-        fontSize: "11px"
-      }).setOrigin(0.5)
-    ]).setAlpha(0.9).setDepth(1650).setName("reflectionArrow");
-    if (!this.reducedMotion) {
-      this.tweens.add({
-        targets: reflectionArrow,
-        y: 439,
-        alpha: { from: 0.66, to: 1 },
-        duration: 1400,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: -1
-      });
-    }
-    this.phaseVisuals.push(reflectionArrow);
-    this.updatePhaseVisuals(state);
+  private createZoneSwan(): void {
+    this.staticSwan?.destroy();
+    this.staticSwan = null;
+    if (this.currentZone !== "swan_cove" || this.currentPhase === "swan_chase") return;
+    this.staticSwan = createQizhenBlackSwanVisual(this);
+    this.staticSwan.update(1160, 400, 2.8, 0.08);
   }
 
-  private createDecoyVisuals(state: GameState): void {
-    QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "decoy_spot").forEach((target) => {
-      const kind = target.value ?? "notice";
-      const focusWidth = kind === "lamp" ? 82 : 148;
-      const focusHeight = kind === "lamp" ? 190 : 82;
-      const focusY = kind === "lamp" ? -92 : -50;
-      const focusChildren: Phaser.GameObjects.GameObject[] = [
-        this.add.rectangle(2, 3, focusWidth, focusHeight, 0x061517, 0.01)
-          .setStrokeStyle(1, 0x061517, 0.2),
-        this.add.rectangle(0, -focusHeight / 2 + 3, 28, 7, 0x173d42, 0.92)
-          .setStrokeStyle(1, 0x83c7c4, 0.74),
-        this.add.rectangle(0, -focusHeight / 2 + 3, 15, 2, 0xdbfff3, 0.7),
-        this.add.circle(-9, -focusHeight / 2 + 3, 2, 0xf0d58b, 0.96),
-        this.add.circle(9, -focusHeight / 2 + 3, 2, 0xf0d58b, 0.96),
-        this.add.triangle(
-          0,
-          focusHeight / 2 + 8,
-          0,
-          0,
-          10,
-          0,
-          5,
-          7,
-          0xf0d58b,
-          0.9
-        )
-      ];
-      ([-1, 1] as const).forEach((horizontal) => {
-        ([-1, 1] as const).forEach((vertical) => {
-          focusChildren.push(
-            this.add.rectangle(
-              horizontal * (focusWidth / 2 - 10),
-              vertical * focusHeight / 2,
-              20,
-              3,
-              0x07191b,
-              0.76
-            ),
-            this.add.rectangle(
-              horizontal * focusWidth / 2,
-              vertical * (focusHeight / 2 - 10),
-              3,
-              20,
-              0x07191b,
-              0.76
-            ),
-            this.add.rectangle(
-              horizontal * (focusWidth / 2 - 9),
-              vertical * focusHeight / 2,
-              17,
-              2,
-              0xa8f5ff,
-              0.96
-            ),
-            this.add.rectangle(
-              horizontal * focusWidth / 2,
-              vertical * (focusHeight / 2 - 9),
-              2,
-              17,
-              0xa8f5ff,
-              0.96
-            ),
-            this.add.rectangle(
-              horizontal * (focusWidth / 2 - 4),
-              vertical * (focusHeight / 2 - 4),
-              3,
-              3,
-              0xdbfff3,
-              0.9
-            )
-          );
-        });
-      });
-      const proximityGlow = this.add.container(0, focusY, focusChildren)
-        .setAlpha(0)
-        .setName("proximityGlow");
-      const children: Phaser.GameObjects.GameObject[] = [
-        this.add.ellipse(0, 4, 54, 14, 0x11231d, 0.3),
-        proximityGlow
-      ];
-      if (kind === "lamp") {
-        children.push(
-          this.add.ellipse(0, -136, 112, 154, 0xffdda0, 0.08).setName("lampGlow"),
-          this.add.rectangle(0, -76, 9, 154, 0x24383b, 1).setStrokeStyle(2, 0x779094, 0.75),
-          this.add.rectangle(0, -154, 42, 48, 0x23353a, 1).setStrokeStyle(3, 0x80989b, 0.9),
-          this.add.rectangle(0, -154, 25, 29, 0xffefad, 0.72),
-          this.add.rectangle(0, -163, 21, 3, 0xfffacf, 0.86),
-          this.add.triangle(0, -182, -24, 16, 0, 0, 24, 16, 0x1c2d31, 1),
-          this.add.rectangle(0, 3, 34, 8, 0x1c3032, 1),
-          this.add.circle(0, -154, 4, 0xfff8d2, 0.95)
-        );
-      } else if (kind === "bridge") {
-        children.push(
-          this.add.rectangle(-43, -18, 7, 52, 0x3b5045, 1),
-          this.add.rectangle(43, -18, 7, 52, 0x3b5045, 1),
-          this.add.rectangle(0, -48, 120, 46, 0x263f3b, 0.92).setStrokeStyle(2, 0x172c29, 1),
-          this.add.rectangle(0, -51, 112, 42, 0xb8cbb9, 0.97).setStrokeStyle(3, 0x3a5e54, 1),
-          this.add.rectangle(0, -69, 106, 3, 0xe9f4e9, 0.7),
-          this.add.text(0, -48, "桥边告示", {
-            color: "#2b4a42", fontFamily: "monospace", fontSize: "11px"
-          }).setOrigin(0.5),
-          this.add.circle(-48, -52, 3, 0x5e756a, 1),
-          this.add.circle(48, -52, 3, 0x5e756a, 1)
-        );
-      } else {
-        children.push(
-          this.add.rectangle(-28, -20, 6, 54, 0x544a36, 1),
-          this.add.rectangle(28, -20, 6, 54, 0x544a36, 1),
-          this.add.rectangle(0, -55, 120, 58, 0x564b34, 0.96).setStrokeStyle(2, 0x392f20, 1),
-          this.add.rectangle(0, -57, 110, 50, 0xe6dfbd, 0.98).setStrokeStyle(3, 0x695c3d, 1),
-          this.add.rectangle(0, -78, 104, 3, 0xfff7d7, 0.72),
-          this.add.text(0, -55, "岸边告示", {
-            color: "#51472f", fontFamily: "monospace", fontSize: "11px"
-          }).setOrigin(0.5),
-          this.add.circle(-47, -72, 3, 0x9b8350, 1),
-          this.add.circle(47, -72, 3, 0x9b8350, 1)
-        );
-      }
-      const marker = this.add.container(target.x, target.y, children)
-        .setDepth(target.y + 38)
-        .setSize(kind === "lamp" ? 120 : 150, kind === "lamp" ? 210 : 110)
-        .setInteractive({ useHandCursor: true })
-        .setName("qizhenDecoyFixture");
-      marker.setData("targetId", target.id);
-      marker.setData("targetValue", kind);
-      marker.on("pointerdown", () => this.triggerPointerTarget(target));
-      const dropBounds = getRpgDropBounds(target);
-      const guideWidth = dropBounds.width;
-      const guideHeight = dropBounds.height;
-      const bracketColor = 0x8fd8d4;
-      const bracketHighlight = 0xdbfff3;
-      const guideShadow = 0x041315;
-      const bracketChildren: Phaser.GameObjects.GameObject[] = [
-        this.add.rectangle(2, 3, guideWidth, guideHeight, 0x061517, 0.04)
-          .setStrokeStyle(1, 0x061517, 0.18),
-        this.add.rectangle(0, 0, guideWidth, guideHeight, 0x0b2b31, 0.012)
-          .setStrokeStyle(1, 0x5d9291, 0.22),
-        this.add.rectangle(0, -guideHeight / 2 + 3, 24, 7, 0x173d42, 0.9)
-          .setStrokeStyle(2, 0x6aaead, 0.76),
-        this.add.rectangle(0, -guideHeight / 2 + 3, 14, 2, bracketHighlight, 0.62),
-        this.add.circle(-8, -guideHeight / 2 + 3, 2, 0xf0d58b, 0.92),
-        this.add.circle(8, -guideHeight / 2 + 3, 2, 0xf0d58b, 0.92)
-      ];
-      ([-1, 1] as const).forEach((horizontal) => {
-        ([-1, 1] as const).forEach((vertical) => {
-          bracketChildren.push(
-            this.add.rectangle(
-              horizontal * (guideWidth / 2 - 11),
-              vertical * guideHeight / 2,
-              22,
-              4,
-              0x07191b,
-              0.72
-            ),
-            this.add.rectangle(
-              horizontal * guideWidth / 2,
-              vertical * (guideHeight / 2 - 11),
-              4,
-              22,
-              0x07191b,
-              0.72
-            ),
-            this.add.rectangle(
-              horizontal * (guideWidth / 2 - 10),
-              vertical * guideHeight / 2,
-              18,
-              2,
-              bracketColor,
-              0.92
-            ),
-            this.add.rectangle(
-              horizontal * guideWidth / 2,
-              vertical * (guideHeight / 2 - 10),
-              2,
-              18,
-              bracketColor,
-              0.92
-            ),
-            this.add.rectangle(
-              horizontal * (guideWidth / 2 - 4),
-              vertical * (guideHeight / 2 - 4),
-              3,
-              3,
-              bracketHighlight,
-              0.72
-            )
-          );
-        });
-      });
-      const idleBracket = this.add.container(target.x, target.y, bracketChildren)
-        .setDepth(target.y + 41)
-        .setAlpha(0.22)
-        .setName("qizhenDecoyIdleGuide");
-      idleBracket.setData("targetId", target.id);
-      const paperSlot = this.add.container(0, 2, [
-        this.add.rectangle(0, 0, 24, 30, 0xe8f7e9, 0.035)
-          .setStrokeStyle(2, bracketHighlight, 0.56),
-        this.add.rectangle(0, -12, 11, 4, 0x24565c, 0.94)
-          .setStrokeStyle(1, 0xb9eee4, 0.8),
-        this.add.rectangle(0, -1, 14, 2, bracketHighlight, 0.34),
-        this.add.rectangle(0, 5, 11, 2, bracketHighlight, 0.24)
-      ]).setAngle(-3);
-      const scanLine = this.add.rectangle(
-        0,
-        -guideHeight / 2 + 11,
-        guideWidth - 24,
-        2,
-        bracketHighlight,
-        0.32
-      ).setName("qizhenDecoyScanLine");
-      const activeFrameChildren: Phaser.GameObjects.GameObject[] = [
-        this.add.rectangle(3, 4, guideWidth + 4, guideHeight + 4, guideShadow, 0.16),
-        this.add.rectangle(0, 0, guideWidth, guideHeight, 0x0d3540, 0.045)
-          .setStrokeStyle(2, bracketColor, 0.96),
-        this.add.rectangle(0, 0, guideWidth - 12, guideHeight - 12, 0x0d3540, 0)
-          .setStrokeStyle(1, bracketHighlight, 0.22),
-        scanLine,
-        paperSlot
-      ];
-      ([-1, 1] as const).forEach((horizontal) => {
-        ([-1, 1] as const).forEach((vertical) => {
-          activeFrameChildren.push(
-            this.add.rectangle(
-              horizontal * (guideWidth / 2 - 10),
-              vertical * guideHeight / 2,
-              20,
-              4,
-              bracketHighlight,
-              0.96
-            ),
-            this.add.rectangle(
-              horizontal * guideWidth / 2,
-              vertical * (guideHeight / 2 - 10),
-              4,
-              20,
-              bracketHighlight,
-              0.96
-            ),
-            this.add.rectangle(
-              horizontal * (guideWidth / 2 - 4),
-              vertical * (guideHeight / 2 - 4),
-              4,
-              4,
-              0xf0d58b,
-              0.96
-            )
-          );
-        });
-      });
-      const dropFrame = this.add.container(target.x, target.y, activeFrameChildren)
-        .setDepth(target.y + 42)
-        .setName("qizhenDecoyDropGuide")
-        .setVisible(false);
-      dropFrame.setData("targetId", target.id);
-      if (!this.reducedMotion) {
-        this.tweens.add({
-          targets: scanLine,
-          y: guideHeight / 2 - 11,
-          alpha: { from: 0.14, to: 0.5 },
-          duration: 1180,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1
-        });
-      } else {
-        scanLine.setY(0).setAlpha(0.24);
-      }
-      const dropLabelText = this.add.text(5, 0, "假纸条夹这里", {
-        color: "#effff8",
-        fontFamily: "monospace",
-        fontSize: "11px",
-        fontStyle: "bold"
-      }).setOrigin(0.5);
-      const dropLabelWidth = Math.ceil(dropLabelText.width) + 32;
-      const dropLabel = this.add.container(
-        target.x,
-        target.y - guideHeight / 2 - 18,
-        [
-          this.add.rectangle(2, 3, dropLabelWidth, 24, guideShadow, 0.28),
-          this.add.rectangle(0, 0, dropLabelWidth, 24, 0x102b32, 0.94)
-            .setStrokeStyle(2, bracketColor, 0.92),
-          this.add.rectangle(-dropLabelWidth / 2 + 8, 0, 4, 12, 0xf0d58b, 0.92),
-          dropLabelText,
-          this.add.triangle(0, 15, 0, 0, 8, 0, 4, 5, bracketColor, 0.94)
-        ]
-      )
-        .setDepth(target.y + 43)
-        .setName("qizhenDecoyDropGuide")
-        .setVisible(false);
-      dropLabel.setData("targetId", target.id);
-      const stand = target.stand ?? target;
-      const leftFoot = this.add.rectangle(-7, 1, 6, 10, bracketHighlight, 0.74);
-      const leftToe = this.add.rectangle(-7, -5, 8, 3, bracketHighlight, 0.86);
-      const rightFoot = this.add.rectangle(7, 1, 6, 10, bracketHighlight, 0.74);
-      const rightToe = this.add.rectangle(7, -5, 8, 3, bracketHighlight, 0.86);
-      const standMarker = this.add.container(stand.x, stand.y, [
-        this.add.ellipse(2, 3, 58, 24, guideShadow, 0.22),
-        this.add.ellipse(0, 0, 54, 20, 0x0d3038, 0.04)
-          .setStrokeStyle(2, bracketColor, 0.82),
-        this.add.rectangle(-19, -9, 10, 3, bracketHighlight, 0.78),
-        this.add.rectangle(19, -9, 10, 3, bracketHighlight, 0.78),
-        this.add.rectangle(-22, 0, 3, 8, bracketHighlight, 0.78),
-        this.add.rectangle(22, 0, 3, 8, bracketHighlight, 0.78),
-        this.add.rectangle(0, -8, 10, 2, 0xf0d58b, 0.72),
-        leftFoot,
-        leftToe,
-        rightFoot,
-        rightToe,
-        this.add.text(0, 18, "站这里", {
-          color: "#effff8",
-          backgroundColor: "#102b32d8",
-          fontFamily: "monospace",
-          fontSize: "9px",
-          padding: { x: 4, y: 1 }
-        }).setOrigin(0.5)
-      ])
-        .setDepth(stand.y + 36)
-        .setName("qizhenDecoyDropGuide")
-        .setVisible(false);
-      standMarker.setData("targetId", target.id);
-      if (!this.reducedMotion) {
-        this.tweens.add({
-          targets: [leftFoot, leftToe, rightFoot, rightToe],
-          alpha: { from: 0.58, to: 1 },
-          duration: 720,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1
-        });
-      }
-      const pinnedPaper = this.add.container(target.x, target.y - 5, [
-        this.add.image(0, 0, PAPER_TEXTURE_KEY).setScale(1.18),
-        this.add.circle(0, -12, 4, 0xc8534d, 1).setStrokeStyle(1, 0xffd5a2, 0.9),
-        this.add.rectangle(0, -12, 2, 9, 0x6e2e2a, 0.9)
-      ]).setDepth(target.y + 44)
-        .setName("decoyPlacedPaper")
-        .setVisible(state.qizhenLake.decoyPlacedAt === kind);
-      pinnedPaper.setData("targetValue", kind);
-      if (pinnedPaper.visible && !this.reducedMotion) {
-        this.tweens.add({
-          targets: pinnedPaper,
-          angle: { from: -2.5, to: 2.5 },
-          duration: 900,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1
-        });
-      }
-      const lampGlow = marker.getByName("lampGlow");
-      if (lampGlow && !this.reducedMotion) {
-        this.tweens.add({
-          targets: lampGlow,
-          alpha: { from: 0.05, to: 0.16 },
-          scale: { from: 0.94, to: 1.06 },
-          duration: 2000,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1
-        });
-      }
-      this.decoyDropGuides.push(dropFrame, dropLabel, standMarker);
-      this.phaseVisuals.push(marker, idleBracket, dropFrame, dropLabel, standMarker, pinnedPaper);
-    });
+  private createChaseSwan(): void {
+    this.chaseSwan?.destroy();
+    this.chaseSwan = createQizhenBlackSwanVisual(this);
+    this.resetChaseSwan();
   }
 
-  private createMistVisuals(state: GameState): void {
-    const mister = QIZHEN_LAKE_TARGETS.find((target) => target.kind === "mister")!;
-    const proximityGlow = this.add.ellipse(0, 0, 132, 88, 0x8af6ff, 0.1)
-      .setStrokeStyle(3, 0xbefcff, 0.86)
-      .setAlpha(0)
-      .setName("proximityGlow");
-    const indicator = this.add.circle(-24, -3, 7, 0x5fd7c4, 0.92)
-      .setStrokeStyle(2, 0xd5fff8, 0.88)
-      .setName("mistIndicator");
-    const machine = this.add.container(mister.x, mister.y, [
-      this.add.ellipse(0, 25, 104, 22, 0x10252a, 0.38),
-      proximityGlow,
-      this.add.rectangle(0, 6, 92, 52, 0x18363d, 0.98).setStrokeStyle(3, 0x82cbd2, 0.92),
-      this.add.rectangle(0, -14, 84, 11, 0x315f68, 1).setStrokeStyle(2, 0x9de3e5, 0.72),
-      this.add.rectangle(-31, 7, 11, 35, 0x10282f, 0.96),
-      this.add.rectangle(31, 7, 11, 35, 0x10282f, 0.96),
-      indicator,
-      this.add.circle(-24, -3, 2, 0xe8fffa, 1),
-      this.add.rectangle(7, 2, 25, 13, 0x0b2028, 0.92).setStrokeStyle(1, 0x7bc8d0, 0.8),
-      this.add.rectangle(7, 2, 15, 3, 0x9ef3df, 0.9),
-      this.add.rectangle(48, -3, 25, 13, 0x1e4650, 1).setStrokeStyle(2, 0x9de3e5, 0.9),
-      this.add.triangle(67, -3, 0, 0, 18, 7, 0, 14, 0xb8f1ef, 0.96),
-      this.add.rectangle(-11, 25, 18, 6, 0x0f272d, 0.95),
-      this.add.rectangle(11, 25, 18, 6, 0x0f272d, 0.95),
-      this.add.text(0, 43, "喷雾机", {
-        color: "#efffff",
-        backgroundColor: "#102c36e8",
-        fontFamily: "monospace",
-        fontSize: "11px",
-        padding: { x: 7, y: 3 }
-      }).setOrigin(0.5)
-    ]).setDepth(mister.y + 35)
-      .setSize(150, 106)
-      .setInteractive({ useHandCursor: true })
-      .setName("qizhenMister");
-    machine.setData("targetId", mister.id);
-    machine.on("pointerdown", () => this.triggerPointerTarget(mister));
-    const mistWisps = [0, 1, 2].map((index) => {
-      const wisp = this.add.ellipse(mister.x + 73 + index * 11, mister.y - 3 - index * 4, 26, 12, 0xe8ffff, 0.12)
-        .setDepth(mister.y + 30)
-        .setScale(0.55)
-        .setName("mistWisp");
-      if (!this.reducedMotion) {
-        this.tweens.add({
-          targets: wisp,
-          x: wisp.x + 52,
-          y: wisp.y - 12,
-          scaleX: 1.55,
-          scaleY: 1.3,
-          alpha: { from: 0.26, to: 0 },
-          duration: 820,
-          ease: "Cubic.easeOut",
-          repeat: -1,
-          delay: index * 340,
-          repeatDelay: MIST_CYCLE_MS - 820
-        });
-      }
-      return wisp;
+  private resetChaseSwan(): void {
+    this.chaseStartX = this.player.x;
+    this.chaseElapsedSeconds = 0;
+    this.chaseDesiredGap = SWAN_CHASE_START_GAP;
+    this.lastChaseProgressSent = 0;
+    this.chaseSwanX = Math.min(QIZHEN_LAKE_WORLD.width - 70, this.player.x + 240);
+    this.chaseSwanY = this.player.y;
+    this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, Math.PI, 0);
+  }
+
+  private destroyZoneVisuals(): void {
+    this.targetVisuals.forEach(({ root }) => {
+      this.tweens.killTweensOf(root);
+      root.destroy(true);
     });
-    if (!this.reducedMotion) {
-      this.tweens.add({
-        targets: indicator,
-        alpha: { from: 0.45, to: 1 },
-        scale: { from: 0.9, to: 1.12 },
-        duration: MIST_CYCLE_MS / 2,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: -1
-      });
-    }
-    this.phaseVisuals.push(machine, ...mistWisps);
+    this.targetVisuals = [];
+    this.ambientVisuals.forEach((visual) => {
+      this.tweens.killTweensOf(visual);
+      visual.destroy();
+    });
+    this.ambientVisuals = [];
+    this.occlusionVisuals.forEach(({ image }) => image.destroy());
+    this.occlusionVisuals = [];
+    this.staticSwan?.destroy();
+    this.staticSwan = null;
+    this.chaseSwan?.destroy();
+    this.chaseSwan = null;
+  }
 
-    const plaque = this.add.container(1518, 575, [
-      this.add.rectangle(4, 6, 220, 120, 0x21140d, 0.46),
-      this.add.rectangle(0, 0, 216, 116, 0x402311, 0.99).setStrokeStyle(6, 0xd6a947, 1),
-      this.add.rectangle(0, -48, 198, 4, 0xffdc7d, 0.68),
-      this.add.text(0, -20, "启真湖", {
-        color: "#ffd767", fontFamily: "monospace", fontSize: "24px", fontStyle: "bold"
-      }).setOrigin(0.5),
-      this.add.text(0, 26, "湖边步道", {
-        color: "#f6e9c8", fontFamily: "monospace", fontSize: "13px"
-      }).setOrigin(0.5),
-      this.add.rectangle(-74, 49, 42, 3, 0xd6a947, 0.68),
-      this.add.rectangle(74, 49, 42, 3, 0xd6a947, 0.68)
-    ]).setDepth(720);
-    this.phaseVisuals.push(plaque);
-
-    const hud = this.add.container(750, 175).setScrollFactor(0).setDepth(5100);
-    const shade = this.add.rectangle(3, 4, 384, 96, 0x020a10, 0.48);
-    const panel = this.add.rectangle(0, 0, 384, 96, 0x07151f, 0.95).setStrokeStyle(3, 0x75ccd6, 0.9);
-    const title = this.add.text(-168, -35, "喷雾时机", {
-      color: "#8de7f0", fontFamily: "monospace", fontSize: "12px", fontStyle: "bold"
-    }).setOrigin(0, 0.5);
-    this.mistStatusText = this.add.text(168, -35, "", {
-      color: "#d7fbff", fontFamily: "monospace", fontSize: "11px"
-    }).setOrigin(1, 0.5).setName("mistStatus");
-    const track = this.add.rectangle(0, 7, 304, 14, 0x102d3a, 1).setStrokeStyle(2, 0x28566a, 0.9);
-    const windowGlow = this.add.rectangle(0, 7, 52, 28, 0x6cf0b5, 0.12)
-      .setStrokeStyle(2, 0xb8ffe0, 0.96)
-      .setName("mistWindowGlow");
-    const tickMarks = [-120, -80, -40, 0, 40, 80, 120].map((x) => (
-      this.add.rectangle(x, 7, x === 0 ? 3 : 2, x === 0 ? 21 : 12, x === 0 ? 0xb8ffe0 : 0x5a8290, x === 0 ? 0.86 : 0.56)
-    ));
-    const modeLabel = this.add.text(0, 34, "", {
-      color: "#c9eef2", fontFamily: "monospace", fontSize: "11px"
-    }).setOrigin(0.5).setName("mistModeLabel");
-    const trail = [-16, -10, -5].map((x, index) => (
-      this.add.circle(x, 0, Math.max(2, 5 - index), 0xffe98a, 0.14 + index * 0.12)
-    ));
-    const diamond = this.add.rectangle(0, 0, 12, 12, 0xfff0a1, 1)
-      .setAngle(45)
-      .setStrokeStyle(2, 0xffffff, 0.92)
-      .setName("mistDiamond");
-    this.mistMarker = this.add.container(-140, 7, [...trail, diamond]).setName("mistMarker");
-    hud.add([shade, panel, title, this.mistStatusText, track, windowGlow, ...tickMarks, modeLabel, this.mistMarker]);
-    this.mistHud = hud;
-    if (!this.reducedMotion) {
-      this.tweens.add({
-        targets: windowGlow,
-        alpha: { from: 0.54, to: 1 },
-        scaleY: { from: 0.92, to: 1.08 },
-        duration: 740,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: -1
+  private applyVehicle(vehicle: QizhenLakeVehicle, reposition: boolean): void {
+    this.currentVehicle = vehicle;
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    if (vehicle === "kayak") {
+      this.player.setVisible(false).setAlpha(0);
+      body.setSize(76, 38, true);
+      this.kayak.setVisible(true);
+      if (reposition) {
+        const spawn = this.getSpawn(this.currentZone, vehicle, null);
+        this.player.setPosition(spawn.x, spawn.y).setVelocity(0, 0);
+        if ("heading" in spawn) this.kayakHeading = spawn.heading;
+      }
+      this.kayak.setPose({
+        x: this.player.x,
+        y: this.player.y,
+        heading: this.kayakHeading,
+        roll: 0,
+        speed: 0
       });
+    } else {
+      this.kayak.setVisible(false);
+      this.player.setVisible(true).setAlpha(1);
+      configureRpgPlayerSprite(this.player);
+      this.playerAnimator.setFacing("up");
+      if (reposition) {
+        const spawn = QIZHEN_LAKE_ZONES[this.currentZone].onFootSpawn;
+        this.player.setPosition(spawn.x, spawn.y).setVelocity(0, 0);
+      }
     }
   }
 
-  private updatePhaseVisuals(state: GameState): void {
-    this.phaseVisuals.forEach((visual) => {
-      if (visual.name === "reflectionArrow") {
-        (visual as Phaser.GameObjects.Container).setVisible(state.qizhenLake.mode === "dark");
+  private getActiveTargets(state: GameState, runtime: QizhenRuntimeProjection): QizhenLakeInteractionTarget[] {
+    return targetsForQizhenZone(this.currentZone, this.currentVehicle).filter((target) => {
+      if (target.kind === "exit") return runtime.phase !== "swan_chase";
+      if (target.kind === "outfit") {
+        return !runtime.kayakEquipped || !runtime.leftPaddleEquipped || !runtime.rightPaddleEquipped;
       }
-      if (visual.name === "darkOnly") {
-        (visual as Phaser.GameObjects.Rectangle).setVisible(state.qizhenLake.mode === "dark");
+      if (target.kind === "board") {
+        return runtime.kayakEquipped
+          && runtime.leftPaddleEquipped
+          && runtime.rightPaddleEquipped
+          && this.currentVehicle === "on_foot";
       }
-      if (visual.name === "reflectionSpot") {
-        (visual as Phaser.GameObjects.Container).setAlpha(state.qizhenLake.mode === "light" ? 1 : 0.24);
-      }
-      if (visual instanceof Phaser.GameObjects.Container && visual.getData("signIndex") !== undefined) {
-        const signIndex = Number(visual.getData("signIndex"));
-        const arrow = visual.getByName("arrow") as Phaser.GameObjects.Container | null;
-        const rotation = state.qizhenLake.signRotations[signIndex];
-        if (arrow && Number(arrow.getData("renderedRotation")) !== rotation) {
-          arrow.setData("renderedRotation", rotation);
-          const targetAngle = rotation * 90;
-          this.tweens.killTweensOf(arrow);
-          if (this.reducedMotion) {
-            arrow.setAngle(targetAngle);
-          } else {
-            this.tweens.add({
-              targets: arrow,
-              angle: targetAngle,
-              scale: { from: 1.14, to: 1 },
-              duration: 210,
-              ease: "Back.easeOut"
-            });
-          }
+      if (target.kind === "zone_portal") {
+        if (target.id === "qizhen_dock_to_open") return runtime.boardingTutorialCompleted;
+        if (target.id === "qizhen_open_to_dock") return runtime.phase !== "swan_chase";
+        if (target.id === "qizhen_open_to_swan") return runtime.fishCaught || runtime.phase === "swan_exchange";
+        if (target.id === "qizhen_open_to_channel") {
+          return runtime.netCombined && !runtime.feedTinOpened && runtime.phase !== "swan_chase";
         }
-        visual.setAlpha(state.qizhenLake.mode === "light" ? 1 : 0.9);
+        if (target.id === "qizhen_swan_to_open") return runtime.phase !== "swan_chase" && !runtime.paperCaptured;
+        if (target.id === "qizhen_swan_to_channel") return runtime.phase === "swan_chase" || runtime.swanReleased;
+        if (target.id === "qizhen_channel_from_swan") return false;
+        if (target.id === "qizhen_channel_to_open") return runtime.phase !== "swan_chase" && runtime.feedTinOpened;
+        return true;
       }
-      if (visual.name === "qizhenDecoyIdleGuide") {
-        (visual as Phaser.GameObjects.Container)
-          .setVisible(state.qizhenLake.mode === "light" && !state.qizhenLake.decoyPlacedAt)
-          .setAlpha(state.ui.selectedItem === "decoyPaper" ? 0.08 : 0.2);
+      if (target.kind === "reflection") {
+        return ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(runtime.phase)
+          && runtime.mode === "dark"
+          && !runtime.observedFishingSpotIds.includes(String(target.value));
       }
-      if (visual.name === "decoyPlacedPaper" && visual instanceof Phaser.GameObjects.Container) {
-        const placed = state.qizhenLake.decoyPlacedAt === visual.getData("targetValue");
-        const previouslyPlaced = visual.getData("renderedPlaced") === true;
-        visual.setVisible(placed);
-        if (placed && !previouslyPlaced) {
-          visual.setData("renderedPlaced", true);
-          if (!this.reducedMotion) {
-            visual.setScale(0.42).setAngle(-12);
-            this.tweens.add({
-              targets: visual,
-              scale: 1,
-              angle: 0,
-              duration: 280,
-              ease: "Back.easeOut"
-            });
-          }
+      if (target.kind === "fishing_spot") {
+        if (runtime.mode !== "light") return false;
+        if (target.value === "fishing_rod") {
+          return runtime.reflectionLocationObserved && !runtime.rodFound;
         }
+        if (target.value === "item_1") {
+          return runtime.rodFound
+            && runtime.decoyBaitAttached
+            && runtime.observedFishingSpotIds.includes("locker_key")
+            && !hasItem(state, CHAIN_ITEMS.key)
+            && !runtime.lockerOpened;
+        }
+        if (target.value === "item_3") {
+          return runtime.lockerOpened
+            && runtime.observedFishingSpotIds.includes("net_frame")
+            && !hasItem(state, CHAIN_ITEMS.netFrame)
+            && !runtime.netCombined;
+        }
+        if (target.value === "fish") {
+          return runtime.feedTinOpened
+            && runtime.observedFishingSpotIds.includes("fish")
+            && !runtime.fishCaught;
+        }
+        return false;
       }
+      if (target.kind === "item_use") {
+        if (runtime.mode !== "light") return false;
+        if (target.value === "item_1_to_2") return hasItem(state, CHAIN_ITEMS.key) && !runtime.lockerOpened;
+        if (target.value === "combine_net") {
+          return hasItem(state, CHAIN_ITEMS.cord) && hasItem(state, CHAIN_ITEMS.netFrame) && !runtime.netCombined;
+        }
+        if (target.value === "item_4_to_5") return runtime.netCombined && !runtime.feedTinRetrieved;
+        if (target.value === "item_5_to_6") return runtime.feedTinRetrieved && !runtime.feedTinOpened;
+        if (target.value === "combine_magnetic_rod") {
+          return runtime.swanFed && hasItem(state, CHAIN_ITEMS.magnet) && !runtime.magneticRodCombined;
+        }
+        return false;
+      }
+      if (target.kind === "swan") {
+        return runtime.mode === "light" && runtime.fishCaught && !runtime.swanFed;
+      }
+      if (target.kind === "paper") {
+        if (runtime.mode !== "light") return false;
+        if (target.value === "paper_reflection") {
+          return runtime.rodFound
+            && runtime.observedFishingSpotIds.includes("paper")
+            && !runtime.paperCaptured;
+        }
+        return runtime.magneticRodCombined
+          && runtime.observedFishingSpotIds.includes("paper")
+          && !runtime.paperCaptured;
+      }
+      if (target.kind === "escape") return runtime.phase === "swan_chase";
+      return true;
     });
-    const showDecoyGuides = state.qizhenLake.phase === "decoy_setup"
-      && state.qizhenLake.mode === "light"
-      && state.ui.selectedItem === "decoyPaper"
-      && !state.qizhenLake.decoyPlacedAt;
-    this.decoyDropGuides.forEach((guide) => guide.setVisible(showDecoyGuides));
-    if (state.qizhenLake.phase === "reflection_hunt") {
-      const expected = QIZHEN_REFLECTION_REAL_SEQUENCE[Math.min(state.qizhenLake.reflectionRound, 2)];
-      const ghostX = expected === "right" ? 430 : expected === "left" ? 1240 : 836;
-      const ghost = this.phaseVisuals.find((visual) => visual.name === "reflectionGhost") as Phaser.GameObjects.Container | undefined;
-      if (ghost && Number(ghost.getData("reflectionRound")) !== state.qizhenLake.reflectionRound) {
-        ghost.setData("reflectionRound", state.qizhenLake.reflectionRound);
-        this.tweens.killTweensOf(ghost);
-        if (this.reducedMotion) {
-          ghost.setX(ghostX);
-        } else {
-          this.tweens.add({
-            targets: ghost,
-            x: ghostX,
-            alpha: { from: 0.36, to: 1 },
-            duration: 460,
-            ease: "Cubic.easeOut"
-          });
-        }
-      }
-      ghost?.setVisible(state.qizhenLake.mode === "dark");
-    }
-    const showMistHud = state.qizhenLake.phase === "mist_timing"
-      && (state.qizhenLake.mode === "dark" || state.qizhenLake.mistRhythmRead);
-    this.mistHud?.setVisible(showMistHud);
-    const modeLabel = this.mistHud?.getByName("mistModeLabel") as Phaser.GameObjects.Text | null;
-    modeLabel?.setText(state.qizhenLake.mode === "dark"
-      ? "看纸条怎么过中线"
-      : "进绿框时启动喷雾");
-    this.mistStatusText?.setText(state.qizhenLake.mistRhythmRead ? "看清了" : "先看一轮");
   }
 
-  private getActiveTargets(state: GameState): QizhenLakeInteractionTarget[] {
-    const targets: QizhenLakeInteractionTarget[] = QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "exit");
-    if (state.qizhenLake.phase === "reflection_hunt") {
-      if (state.qizhenLake.mode === "dark") {
-        targets.push(...QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "water"));
-      } else {
-        targets.push(...QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "reflection_spot"));
-      }
-    } else if (state.qizhenLake.phase === "sign_alignment") {
-      targets.push(...QIZHEN_LAKE_TARGETS.filter((target) => (
-        state.qizhenLake.mode === "dark" ? target.kind === "water" : target.kind === "sign"
-      )));
-    } else if (state.qizhenLake.phase === "decoy_setup") {
-      targets.push(...QIZHEN_LAKE_TARGETS.filter((target) => target.kind === "decoy_spot"));
-    } else if (state.qizhenLake.phase === "mist_timing") {
-      targets.push(...QIZHEN_LAKE_TARGETS.filter((target) => (
-        state.qizhenLake.mode === "dark" ? target.kind === "water" : target.kind === "mister"
-      )));
-    }
-    return targets;
-  }
-
-  private triggerTarget(target: QizhenLakeInteractionTarget, state: GameState): void {
+  private triggerTarget(
+    target: QizhenLakeInteractionTarget,
+    state: GameState,
+    runtime: QizhenRuntimeProjection
+  ): void {
     if (target.kind === "exit") {
-      this.bridge.emit("rpg_qizhen_leave_requested");
+      this.emitDomain("rpg_qizhen_leave_requested");
       return;
     }
-    if (target.kind === "water") {
-      if (state.qizhenLake.phase === "reflection_hunt") {
-        this.showFeedback(
-          state.qizhenLake.mode === "dark" ? qizhenContent.reflection.darkWater : qizhenContent.reflection.lightWater,
-          "system"
-        );
-      } else if (state.qizhenLake.phase === "sign_alignment") {
-        this.showFeedback("水里的箭头缺了一截。", "task");
-      } else if (state.qizhenLake.phase === "mist_timing") {
-        this.bridge.emit("rpg_qizhen_mist_observe_requested");
-      }
+    if (target.kind === "outfit") {
+      this.emitDomain("rpg_qizhen_outfit_requested", { targetId: target.id });
       return;
     }
-    if (target.kind === "reflection_spot") {
-      this.bridge.emit("rpg_qizhen_reflection_requested", { positionId: target.value });
+    if (target.kind === "board") {
+      this.emitDomain("rpg_qizhen_board_requested", { targetId: target.id });
       return;
     }
-    if (target.kind === "sign") {
-      this.bridge.emit("rpg_qizhen_sign_rotate_requested", { signIndex: Number(target.value) });
+    if (target.kind === "zone_portal" && target.targetZone) {
+      this.emitDomain("rpg_qizhen_zone_requested", {
+        zone: target.targetZone,
+        from: this.currentZone,
+        entry: target.id
+      });
       return;
     }
-    if (target.kind === "decoy_spot") {
-      if (!state.items.reflectionCoordinate) {
-        this.showFeedback(qizhenContent.decoy.missingCoordinate, "system");
+    if (target.kind === "reflection") {
+      this.emitDomain("rpg_qizhen_reflection_observe_requested", {
+        targetId: target.value ?? target.id,
+        zone: this.currentZone
+      });
+      return;
+    }
+    if (target.kind === "fishing_spot") {
+      if (target.value === "fishing_rod") {
+        this.emitDomain("rpg_qizhen_rod_requested", { targetId: target.id });
+        this.animateFishingCast(target, false);
         return;
       }
-      this.showFeedback("假纸条夹这里。", "task");
+      const itemId = target.value === "fish" ? CHAIN_ITEMS.pellets : CHAIN_ITEMS.fishingRod;
+      this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId });
+      this.animateFishingCast(target, true);
       return;
     }
-    if (target.kind === "mister") {
-      if (state.qizhenLake.mode === "dark") {
-        this.showFeedback(qizhenContent.mist.darkPrompt, "system");
+    if (target.kind === "item_use") {
+      if (target.value === "combine_net") {
+        this.emitDomain("rpg_qizhen_combine_requested", {
+          itemIds: [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame],
+          targetId: target.id
+        });
         return;
       }
-      if (!state.qizhenLake.mistRhythmRead) {
-        this.showFeedback(qizhenContent.mist.lightPrompt, "system");
+      if (target.value === "combine_magnetic_rod") {
+        this.emitDomain("rpg_qizhen_combine_requested", {
+          itemIds: [CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod],
+          targetId: target.id
+        });
         return;
       }
-      const success = this.lastMistPhase >= MIST_WINDOW_START && this.lastMistPhase <= MIST_WINDOW_END;
-      this.bridge.emit("rpg_qizhen_mist_trigger_requested", { success });
+      const itemId = target.value === "item_1_to_2"
+        ? CHAIN_ITEMS.key
+        : target.value === "item_4_to_5" ? CHAIN_ITEMS.dipNet : CHAIN_ITEMS.feedTin;
+      this.emitDomain("rpg_qizhen_item_use_requested", { targetId: target.id, itemId });
+      return;
+    }
+    if (target.kind === "swan") {
+      this.emitDomain("rpg_qizhen_swan_feed_requested", { itemId: CHAIN_ITEMS.fish, targetId: target.id });
+      return;
+    }
+    if (target.kind === "paper") {
+      if (target.value === "paper_reflection") {
+        this.emitDomain("rpg_qizhen_fish_requested", {
+          targetId: target.id,
+          itemId: CHAIN_ITEMS.fishingRod,
+          directPaperCast: true
+        });
+        this.animateFishingCast(target, true);
+        return;
+      }
+      this.emitDomain("rpg_qizhen_paper_caught_requested", {
+        rigItemId: CHAIN_ITEMS.magneticRod,
+        targetId: target.id
+      });
+      this.animateFishingCast(target, true);
+      return;
+    }
+    if (target.kind === "escape") {
+      this.emitDomain("rpg_qizhen_escape_completed_requested", {
+        zone: "dock",
+        distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x))
+      });
     }
   }
 
   private triggerPointerTarget(target: QizhenLakeInteractionTarget): void {
+    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
     const state = this.bridge.getState();
-    if (this.dialogueLocked || this.phaseTransitioning) return;
-    if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
-    if (!findNearestQizhenTarget(this.player.x, this.player.y, [target])) return;
-    this.triggerTarget(target, state);
-  }
-
-  private updatePrompt(target: QizhenLakeInteractionTarget | null, state: GameState): void {
-    this.updateTargetProximity(target?.id ?? null);
-    if (!target || this.dialogueLocked || this.phaseTransitioning) {
-      this.promptText.setVisible(false);
+    const runtime = readQizhenRuntime(state);
+    if (!this.getActiveTargets(state, runtime).some((candidate) => candidate.id === target.id)) return;
+    if (!findNearestQizhenTarget(this.player.x, this.player.y, [target])) {
+      this.emitDomain("rpg_item_use_feedback", {
+        reason: "too_far",
+        targetLabel: target.label,
+        detail: "先把人物或皮划艇划到发光范围内。"
+      });
       return;
     }
-    const label = target.kind === "exit"
-      ? "离开湖区"
-      : target.kind === "water"
-        ? state.qizhenLake.phase === "mist_timing" ? "看水面" : "看倒影"
-        : target.kind === "reflection_spot"
-          ? "拦住纸条"
-          : target.kind === "sign"
-            ? "转动指示牌"
-            : target.kind === "decoy_spot"
-              ? "夹上假纸条"
-              : "启动喷雾";
-    this.promptText
-      .setText(target.kind === "decoy_spot" ? formatRpgDragHint("假纸条 → 蓝色夹位") : formatRpgInteractionHint(label))
-      .setVisible(true);
-  }
-
-  private updateTargetProximity(targetId: string | null): void {
-    this.phaseVisuals.forEach((visual) => {
-      if (!(visual instanceof Phaser.GameObjects.Container)) return;
-      const visualTargetId = String(visual.getData("targetId") ?? "");
-      const proximityGlow = visual.getByName("proximityGlow") as
-        | Phaser.GameObjects.Shape
-        | Phaser.GameObjects.Container
-        | null;
-      if (!proximityGlow) return;
-      proximityGlow.setAlpha(visualTargetId === targetId ? 0.92 : 0);
-    });
+    this.triggerTarget(target, state, runtime);
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
@@ -1325,78 +1030,113 @@ export class QizhenLakeScene extends Phaser.Scene {
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
     if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
-      this.bridge.emit("rpg_item_use_feedback", { itemId, reason: "missed_target" });
+      this.emitDropFailure(itemId, "missed_target", undefined, "拖到场景中明确标出的发光框内。");
       return;
     }
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
     const state = this.bridge.getState();
-    const activeTargets = this.getActiveTargets(state);
-    const result = resolveRpgItemDrop({
-      targets: activeTargets,
-      itemId,
-      dropX: world.x,
-      dropY: world.y,
-      playerX: this.player.x,
-      playerY: this.player.y,
-      mode: state.qizhenLake.mode
-    });
-    if (!result.target) {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "missed_target",
-        detail: "没夹住。把假纸条拖进蓝色夹位。"
+    const runtime = readQizhenRuntime(state);
+    const targets = this.getActiveTargets(state, runtime)
+      .filter((candidate) => isRpgDropPointWithin(candidate, world.x, world.y))
+      .sort((a, b) => getRpgDropBounds(a).width * getRpgDropBounds(a).height
+        - getRpgDropBounds(b).width * getRpgDropBounds(b).height);
+    const target = targets[0];
+    if (!target) {
+      this.emitDropFailure(itemId, "missed_target", undefined, "没有命中当前可用目标，靠近后拖进发光框。");
+      return;
+    }
+    if (runtime.mode !== "light") {
+      this.emitDropFailure(itemId, "wrong_mode", target.label, "当前是深色观察，切到浅色操作后再使用实体道具。");
+      return;
+    }
+    if (!isPlayerWithinRpgTarget(target, this.player.x, this.player.y)) {
+      this.emitDropFailure(itemId, "too_far", target.label, "目标对了，先把皮划艇划进标记圈。 ");
+      return;
+    }
+
+    if (target.value === "paper_reflection") {
+      if (itemId === CHAIN_ITEMS.decoy && !runtime.decoyBaitAttached) {
+        this.emitDomain("rpg_qizhen_bait_requested", { itemId, targetId: target.id });
+        return;
+      }
+      if (itemId === CHAIN_ITEMS.fishingRod) {
+        this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId, directPaperCast: true });
+        this.animateFishingCast(target, true);
+        return;
+      }
+    }
+    if (target.kind === "fishing_spot") {
+      if (target.value === "fish" && itemId === CHAIN_ITEMS.pellets) {
+        this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId });
+        this.animateFishingCast(target, true);
+        return;
+      }
+      if (["item_1", "item_3"].includes(String(target.value)) && itemId === CHAIN_ITEMS.fishingRod) {
+        this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId });
+        this.animateFishingCast(target, true);
+        return;
+      }
+    }
+    if (target.value === "item_1_to_2" && itemId === CHAIN_ITEMS.key) {
+      this.emitDomain("rpg_qizhen_item_use_requested", { targetId: target.id, itemId });
+      return;
+    }
+    if (target.value === "item_4_to_5" && itemId === CHAIN_ITEMS.dipNet) {
+      this.emitDomain("rpg_qizhen_item_use_requested", { targetId: target.id, itemId });
+      return;
+    }
+    if (target.value === "item_5_to_6" && itemId === CHAIN_ITEMS.feedTin) {
+      this.emitDomain("rpg_qizhen_item_use_requested", { targetId: target.id, itemId });
+      return;
+    }
+    if (target.value === "combine_net" && [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame].includes(itemId as never)) {
+      this.emitDomain("rpg_qizhen_combine_requested", {
+        itemIds: [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame],
+        targetId: target.id
       });
       return;
     }
-    const targetLabel = result.target.label;
-    if (result.kind === "wrong_item") {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: result.target.acceptedItem ? "wrong_item" : "locked",
-        targetLabel
+    if (target.kind === "swan" && itemId === CHAIN_ITEMS.fish) {
+      this.emitDomain("rpg_qizhen_swan_feed_requested", { itemId, targetId: target.id });
+      return;
+    }
+    if (target.value === "combine_magnetic_rod" && [CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod].includes(itemId as never)) {
+      this.emitDomain("rpg_qizhen_combine_requested", {
+        itemIds: [CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod],
+        targetId: target.id
       });
       return;
     }
-    if (result.kind === "wrong_mode") {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "locked",
-        targetLabel,
-        detail: formatRpgModeRequirement(result.expectedMode ?? "light")
-      });
+    if (target.value === "paper_body" && itemId === CHAIN_ITEMS.magneticRod) {
+      this.emitDomain("rpg_qizhen_paper_caught_requested", { rigItemId: itemId, targetId: target.id });
+      this.animateFishingCast(target, true);
       return;
     }
-    if (!state.qizhenLake.signsSolved || !state.items.reflectionCoordinate) {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "locked",
-        targetLabel,
-        detail: "还不能放。先把三块指示牌转对，再记下倒影位置。"
-      });
-      return;
-    }
-    if (result.kind === "too_far") {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "too_far",
-        targetLabel,
-        detail: "位置对了。先站到夹位前的脚印上。"
-      });
-      return;
-    }
-    if (result.kind !== "accepted") return;
-    const target = result.target;
-    this.bridge.emit("rpg_qizhen_decoy_requested", { targetId: target.value as QizhenDecoyTargetId });
+    this.emitDropFailure(itemId, "wrong_item", target.label, this.dropCorrectionFor(target));
   }
 
   private handleBridgeEvent(name: string, payload?: Record<string, unknown>): void {
     if (!this.sys?.isActive()) return;
     if (name === "rpg_direction_changed") {
-      this.virtualDirection = { x: Number(payload?.x) || 0, y: Number(payload?.y) || 0 };
+      const x = Number(payload?.x) || 0;
+      const y = Number(payload?.y) || 0;
+      if (this.currentVehicle === "kayak") {
+        if (x < 0 && this.lastVirtualPaddleX >= 0) this.performPaddleStroke("left", readQizhenRuntime(this.bridge.getState()));
+        if (x > 0 && this.lastVirtualPaddleX <= 0) this.performPaddleStroke("right", readQizhenRuntime(this.bridge.getState()));
+        this.lastVirtualPaddleX = x;
+        this.virtualDirection = { x: 0, y: 0 };
+      } else {
+        this.virtualDirection = { x, y };
+      }
       return;
     }
     if (name === "rpg_interact") {
       this.interactRequested = true;
+      return;
+    }
+    if (name === "rpg_qizhen_paddle_input" && typeof payload?.pointerType === "string") {
+      const side = String(payload?.side) === "right" ? "right" : "left";
+      this.performPaddleStroke(side, readQizhenRuntime(this.bridge.getState()));
       return;
     }
     if (name === "rpg_inventory_drop_requested") {
@@ -1407,109 +1147,150 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.playModeTransition(String(payload?.mode) === "dark" ? "dark" : "light");
       return;
     }
-    if (name === "qizhen_reflection_wrong") {
-      this.showFeedback(qizhenContent.reflection.wrong, "system");
+    if (name === "qizhen_outfit_collected") {
+      this.showFeedback("皮划艇就绪：左桨是削去叶子的树枝，右桨是“禁止游泳”三角牌。", "success");
       return;
     }
-    if (name === "qizhen_reflection_correct") {
-      this.animateReflectionHit(false);
+    if (name === "qizhen_kayak_boarded") {
+      this.showFeedback("上船阶段横向稳定性低。左右交替划四次，先把重心稳住。", "task");
       return;
     }
-    if (name === "qizhen_reflection_completed") {
-      this.animateReflectionHit(true);
+    if (name === "qizhen_boarding_completed") {
+      this.showFeedback("船身稳定，可以划向大湖。", "success");
       return;
     }
-    if (name === "qizhen_sign_rotated") {
-      this.showFeedback(qizhenContent.signs.wrong, "system");
+    if (name === "qizhen_reflection_observed") {
+      this.showFeedback("暗色倒影标出了真实水面的对应位置。切回浅色操作。", "task");
       return;
     }
-    if (name === "qizhen_signs_completed") {
-      this.showFeedback(qizhenContent.signs.correct, "success");
+    if (name === "qizhen_fishing_rod_found") {
+      this.showFeedback("钓鱼竿已捞起。纸条本体现在还钓不上来。", "success");
       return;
     }
-    if (name === "qizhen_decoy_wrong") {
-      this.showFeedback(qizhenContent.decoy.missingCoordinate, "system");
+    if (name === "qizhen_decoy_bait_attached") {
+      this.showFeedback("假纸条已经装成诱饵，去倒影对应的浅色水面抛竿。", "success");
       return;
     }
-    if (name === "qizhen_decoy_placed") {
-      this.showFeedback(qizhenContent.decoy.correct, "success");
+    if (name === "qizhen_direct_paper_cast_failed") {
+      this.showFeedback("鱼钩穿过倒影，纸条没有实体响应。需要先完成水下道具链。", "system");
       return;
     }
-    if (name === "qizhen_decoy_revealed") {
-      this.showFeedback(qizhenContent.decoy.darkReveal, "system");
+    if (name === "qizhen_locker_opened") {
+      this.showFeedback("码头储物柜打开，里面是一卷尼龙绳。", "success");
       return;
     }
-    if (name === "qizhen_mist_rhythm_read") {
-      this.showFeedback("纸条每隔一会儿会从湖心经过。", "task");
+    if (name === "qizhen_dip_net_combined") {
+      this.showFeedback("尼龙绳已经固定到破损网框，临时抄网完成。去浮排下取密封盒。", "success");
       return;
     }
-    if (name === "qizhen_mist_wrong") {
-      this.animateMist(false);
+    if (name === "qizhen_feed_tin_retrieved") {
+      this.showFeedback("临时抄网从浮排下捞出了密封饲料盒。", "success");
       return;
     }
-    if (name === "qizhen_mist_completed") {
-      this.animateMist(true);
+    if (name === "qizhen_feed_tin_opened") {
+      this.showFeedback("在浮排硬边撬开盒盖，得到鱼食颗粒。", "success");
+      return;
+    }
+    if (name === "qizhen_fish_caught") {
+      this.showFeedback("鱼食颗粒引来一条小鲤鱼。带去黑天鹅围栏。", "success");
+      return;
+    }
+    if (name === "qizhen_swan_fed") {
+      this.showFeedback("黑天鹅吞下小鲤鱼，推来一个磁吸配件。", "success");
+      return;
+    }
+    if (name === "qizhen_magnetic_rod_combined") {
+      this.showFeedback("磁吸钓竿组合完成，现在可以钓纸条本体。", "success");
+      return;
+    }
+    if (name === "qizhen_paper_captured") {
+      this.showFeedback("纸条被磁吸钓竿拉出水面，却悄悄拨开了围栏。", "system");
+      return;
+    }
+    if (name === "qizhen_escape_completed") {
+      this.showFeedback("已逃回小码头。磁吸配件损坏，纸条再次逃走。", "success");
     }
   }
 
-  private syncState(state: GameState): void {
-    if (state.qizhenLake.phase !== this.currentPhase && !this.phaseTransitioning) {
-      const previousPhase = this.currentPhase;
-      this.currentPhase = state.qizhenLake.phase;
-      this.transitionToPhase(state, previousPhase);
-    }
-    if (state.qizhenLake.mode !== this.currentMode) {
-      this.playModeTransition(state.qizhenLake.mode);
-    }
-  }
-
-  private transitionToPhase(state: GameState, previousPhase: GameState["qizhenLake"]["phase"]): void {
-    const plate = plateForQizhenPhase(state.qizhenLake.phase);
-    this.phaseTransitioning = true;
-    const fadeMs = this.reducedMotion ? 60 : 180;
-    this.cameras.main.fadeOut(fadeMs, 6, 16, 26);
-    this.time.delayedCall(fadeMs, () => {
-      this.rebuildPlate(plate, true);
-      this.rebuildPhaseVisuals(state);
-      this.cameras.main.fadeIn(fadeMs, 6, 16, 26);
-      this.phaseTransitioning = false;
-      if (state.qizhenLake.phase === "sign_alignment" && previousPhase === "reflection_hunt") {
-        this.queueDialogue(qizhenContent.signs.dialogue);
-      } else if (state.qizhenLake.phase === "decoy_setup" && previousPhase === "sign_alignment") {
-        this.queueDialogue(qizhenContent.decoy.dialogue);
+  private updateTargetVisuals(
+    targets: readonly QizhenLakeInteractionTarget[],
+    nearest: QizhenLakeInteractionTarget | null,
+    runtime: QizhenRuntimeProjection
+  ): void {
+    const activeIds = new Set(targets.map((target) => target.id));
+    this.targetVisuals.forEach((visual) => {
+      const active = activeIds.has(visual.target.id);
+      visual.root.setVisible(active);
+      if (!active) return;
+      const distance = Math.hypot(this.player.x - visual.target.x, this.player.y - visual.target.y);
+      visual.label.setVisible(distance <= Math.max(250, visual.target.proximity * 1.8));
+      const selected = nearest?.id === visual.target.id;
+      visual.pulse.setAlpha(selected ? 0.96 : 0.5);
+      visual.root.setScale(selected ? 1.08 : 1);
+      if ((visual.target.kind === "reflection" || visual.target.value === "paper_reflection") && runtime.mode !== "dark") {
+        visual.root.setAlpha(0.38);
+      } else {
+        visual.root.setAlpha(1);
       }
     });
+    this.staticSwan?.root.setVisible(this.currentZone === "swan_cove" && runtime.phase !== "swan_chase");
   }
 
-  private playModeTransition(mode: QizhenLakeMode): void {
-    this.currentMode = mode;
-    if (!this.darkOverlay) return;
-    this.tweens.killTweensOf(this.darkOverlay);
-    this.tweens.add({
-      targets: this.darkOverlay,
-      alpha: mode === "dark" ? 0.64 : 0,
-      duration: this.reducedMotion ? 60 : 260,
-      ease: "Cubic.easeInOut"
-    });
+  private updatePrompt(target: QizhenLakeInteractionTarget | null, runtime: QizhenRuntimeProjection): void {
+    if (!target || this.dialogueLocked || this.zoneTransitioning || this.capsizing) {
+      this.promptText.setVisible(false);
+      return;
+    }
+    const action = target.kind === "outfit"
+      ? "取皮划艇和船桨"
+      : target.kind === "board"
+        ? "从小码头上船"
+        : target.kind === "zone_portal"
+          ? target.label
+          : target.kind === "reflection"
+            ? "观察倒影位置"
+            : target.kind === "fishing_spot"
+              ? target.value === "fishing_rod" ? "捞起钓鱼竿" : "在对应位置抛竿"
+              : target.kind === "item_use"
+                ? target.label
+                : target.kind === "swan"
+                  ? "把小鲤鱼喂给黑天鹅"
+                  : target.kind === "paper"
+                    ? target.value === "paper_reflection" && !runtime.decoyBaitAttached
+                      ? "直接抛竿会失败；拖入假纸条作饵"
+                      : "使用当前钓具"
+                    : target.kind === "escape"
+                      ? "冲回小码头"
+                      : "离开启真湖";
+    const itemOnly = target.kind === "paper" && target.value === "paper_reflection" && !runtime.decoyBaitAttached;
+    this.promptText.setText(itemOnly ? formatRpgDragHint(action) : formatRpgInteractionHint(action)).setVisible(true);
   }
 
-  private updateMistTiming(state: GameState): void {
-    if (state.qizhenLake.phase !== "mist_timing") return;
-    this.lastMistPhase = (this.time.now % MIST_CYCLE_MS) / MIST_CYCLE_MS;
-    const markerX = -140 + this.lastMistPhase * 280;
-    const inWindow = this.lastMistPhase >= MIST_WINDOW_START && this.lastMistPhase <= MIST_WINDOW_END;
-    this.mistMarker?.setX(markerX).setScale(inWindow ? 1.18 : 1);
-    const diamond = this.mistMarker?.getByName("mistDiamond") as Phaser.GameObjects.Rectangle | null;
-    diamond?.setFillStyle(inWindow ? 0xb8ffe0 : 0xfff0a1, 1);
-    this.mistStatusText?.setText(inWindow
-      ? state.qizhenLake.mode === "dark" ? "经过中线" : "现在可以喷"
-      : state.qizhenLake.mistRhythmRead ? "等它进框" : "先看一轮");
+  private updateStatus(runtime: QizhenRuntimeProjection): void {
+    const zoneLabel = this.currentZone === "dock"
+      ? "小码头"
+      : this.currentZone === "open_water"
+        ? "启真湖大湖面"
+        : this.currentZone === "channel" ? "浮排直河道" : "黑天鹅围栏";
+    this.zoneText.setText(`${zoneLabel} · ${runtime.mode === "dark" ? "深色观察" : "浅色操作"}`);
+    if (this.currentVehicle === "kayak") {
+      const tilt = Math.round(Math.min(1, Math.abs(this.kayakRoll)) * 100);
+      const danger = tilt >= 70 ? " · 即将翻船" : "";
+      this.statusText.setText(`A/← 左桨 · D/→ 右桨 · 侧倾 ${tilt}%${danger}`);
+      this.statusText.setColor(tilt >= 70 ? "#ffaaa0" : "#fff2b6");
+    } else if (!runtime.kayakEquipped) {
+      this.statusText.setText("先到皮划艇架领取船和两支创意桨").setColor("#fff2b6");
+    } else {
+      this.statusText.setText("装备已取齐，走到小码头上船位").setColor("#fff2b6");
+    }
   }
 
   private updateOcclusion(): void {
-    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
-    const footY = body?.bottom ?? this.player.y;
-    const playerBounds = this.player.getBounds();
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const playerBounds = this.currentVehicle === "kayak"
+      ? new Phaser.Geom.Rectangle(this.player.x - 60, this.player.y - 30, 120, 60)
+      : this.player.getBounds();
+    const footY = body.bottom;
     const active: string[] = [];
     const softened: string[] = [];
     this.occlusionVisuals.forEach((visual) => {
@@ -1518,7 +1299,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       const intersects = behind && Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, visual.bounds);
       const targetAlpha = intersects ? 0.48 : 1;
       visual.image
-        .setDepth(behind ? this.player.depth + 2 : -900)
+        .setDepth(behind ? this.player.y + 175 : -900)
         .setVisible(behind)
         .setAlpha(this.reducedMotion ? targetAlpha : Phaser.Math.Linear(visual.image.alpha, targetAlpha, 0.18));
       if (behind) active.push(visual.definition.id);
@@ -1528,97 +1309,119 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.softenedOcclusionIds = softened;
   }
 
-  private animateReflectionHit(complete: boolean): void {
-    this.showFeedback(qizhenContent.reflection.correct, complete ? "success" : "system");
-    this.cameras.main.shake(this.reducedMotion ? 60 : 180, 0.004);
+  private playModeTransition(mode: QizhenLakeMode): void {
+    this.currentMode = mode;
+    this.tweens.killTweensOf(this.darkOverlay);
+    this.tweens.add({
+      targets: this.darkOverlay,
+      alpha: mode === "dark" ? 0.66 : 0,
+      duration: this.reducedMotion ? 60 : 260,
+      ease: "Cubic.easeInOut"
+    });
   }
 
-  private animateMist(success: boolean): void {
-    const mist = this.add.rectangle(836, 470, 1500, 360, 0xeafcff, 0).setDepth(1800);
-    this.tweens.add({
-      targets: mist,
-      alpha: success ? 0.9 : 0.55,
+  private animateFishingCast(target: QizhenLakeInteractionTarget, splash: boolean): void {
+    const line = this.add.line(
+      0,
+      0,
+      this.player.x,
+      this.player.y,
+      this.player.x,
+      this.player.y,
+      0xeaf6ee,
+      0.9
+    ).setOrigin(0).setDepth(2500);
+    const bobber = this.add.circle(this.player.x, this.player.y, 7, 0xfff0c4, 1)
+      .setStrokeStyle(3, 0xe54d46, 1)
+      .setDepth(2502);
+    this.tweens.addCounter({
+      from: 0,
+      to: 1,
       duration: this.reducedMotion ? 80 : 360,
-      yoyo: !success,
+      ease: "Cubic.easeOut",
+      onUpdate: (tween) => {
+        const progress = tween.getValue() ?? 0;
+        const x = Phaser.Math.Linear(this.player.x, target.x, progress);
+        const y = Phaser.Math.Linear(this.player.y, target.y, progress) - Math.sin(progress * Math.PI) * 72;
+        bobber.setPosition(x, y);
+        line.setTo(this.player.x, this.player.y, x, y);
+      },
       onComplete: () => {
-        if (!success) {
-          mist.destroy();
-          this.queueDialogue(qizhenContent.mist.wrongDialogue);
+        line.destroy();
+        if (!splash) {
+          bobber.destroy();
           return;
         }
-        const paper = this.add.image(836, 450, PAPER_TEXTURE_KEY).setDepth(2200).setScale(0.8);
+        const ring = this.add.ellipse(target.x, target.y, 26, 10, 0xdafaff, 0)
+          .setStrokeStyle(3, 0xeaffff, 0.9)
+          .setDepth(2501)
+          .setScale(0.5);
+        bobber.destroy();
         this.tweens.add({
-          targets: paper,
-          x: 1150,
-          y: 700,
-          angle: 420,
-          scale: 1.5,
-          duration: this.reducedMotion ? 160 : 880,
+          targets: ring,
+          scale: 2.1,
+          alpha: { from: 0.9, to: 0 },
+          duration: 520,
           ease: "Cubic.easeOut",
-          onComplete: () => {
-            mist.destroy();
-            paper.destroy();
-            this.queueDialogue(qizhenContent.mist.successDialogue);
-          }
+          onComplete: () => ring.destroy()
         });
       }
     });
   }
 
-  private ensurePaperTexture(): void {
-    if (this.textures.exists(PAPER_TEXTURE_KEY)) return;
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0xece8d8).fillPoints([
-      new Phaser.Geom.Point(3, 4),
-      new Phaser.Geom.Point(34, 7),
-      new Phaser.Geom.Point(29, 35),
-      new Phaser.Geom.Point(7, 31)
-    ], true);
-    graphics.lineStyle(3, 0x5a6870, 0.95).strokePoints([
-      new Phaser.Geom.Point(3, 4),
-      new Phaser.Geom.Point(34, 7),
-      new Phaser.Geom.Point(29, 35),
-      new Phaser.Geom.Point(7, 31)
-    ], true);
-    graphics.lineStyle(2, 0x76878e, 0.9).lineBetween(10, 14, 26, 16).lineBetween(9, 22, 24, 24);
-    graphics.generateTexture(PAPER_TEXTURE_KEY, 38, 38);
-    graphics.destroy();
-  }
-
   private queueDialogue(lines: readonly string[], onComplete?: () => void): void {
     this.dialogueLocked = true;
     lines.forEach((text, index) => {
-      this.time.delayedCall(index * DIALOGUE_STEP_MS, () => this.showFeedback(text, this.dialogueToneFor(text)));
+      this.time.delayedCall(index * FEEDBACK_MS, () => this.showFeedback(text, text.startsWith("任务：") ? "task" : "system"));
     });
-    this.time.delayedCall(lines.length * DIALOGUE_STEP_MS, () => {
+    this.time.delayedCall(lines.length * FEEDBACK_MS, () => {
       this.dialogueLocked = false;
       onComplete?.();
     });
   }
 
-  private dialogueToneFor(text: string): GameSubtitleTone {
-    if (text.startsWith("玩家：")) return "player";
-    if (text.startsWith("系统：")) return "system";
-    if (text.startsWith("任务：")) return "task";
-    return "narrator";
+  private showFeedback(text: string, tone: "system" | "task" | "success"): void {
+    this.emitDomain("rpg_subtitle", { text, tone, durationMs: FEEDBACK_MS - 120 });
   }
 
-  private showFeedback(text: string, tone: GameSubtitleTone): void {
-    this.bridge.emit("rpg_subtitle", { text, tone, durationMs: DIALOGUE_STEP_MS - 120 });
+  private emitDropFailure(
+    itemId: ItemId,
+    reason: "missed_target" | "wrong_item" | "too_far" | "wrong_mode" | "locked",
+    targetLabel?: string,
+    detail?: string
+  ): void {
+    this.emitDomain("rpg_item_use_feedback", { itemId, reason, targetLabel, detail });
   }
 
-  private publishDebugState(target: QizhenLakeInteractionTarget | null, state: GameState): void {
-    const plate = QIZHEN_LAKE_PLATES[this.currentPlate];
+  private dropCorrectionFor(target: QizhenLakeInteractionTarget): string {
+    if (target.value === "paper_reflection") return "先拖入假纸条当饵；直接用普通钓鱼竿只会穿过倒影。";
+    if (target.value === "item_1_to_2") return "这里需要锈蚀储物柜钥匙。";
+    if (target.value === "combine_net") return "把尼龙绳或破损抄网框拖进组合位。";
+    if (target.value === "item_4_to_5") return "这里需要临时抄网。";
+    if (target.value === "item_5_to_6") return "把密封饲料罐拖到硬边上撬开。";
+    if (target.kind === "swan") return "黑天鹅只接受刚钓到的小鲤鱼。";
+    if (target.value === "combine_magnetic_rod") return "把天鹅磁吸件或普通钓鱼竿拖进组合位。";
+    if (target.value === "paper_body") return "需要磁吸钓鱼竿。";
+    return "当前道具与这个目标不匹配。";
+  }
+
+  private publishDebugState(
+    target: QizhenLakeInteractionTarget | null,
+    targets: readonly QizhenLakeInteractionTarget[],
+    runtime: QizhenRuntimeProjection
+  ): void {
+    const definition = QIZHEN_LAKE_ZONES[this.currentZone];
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: QIZHEN_LAKE_WORLD,
       player: {
         x: Math.round(this.player.x),
         y: Math.round(this.player.y),
-        facing: this.playerAnimator.facing,
-        texture: this.playerAnimator.textureKey,
-        turning: this.playerAnimator.isTurning,
-        walkFps: RPG_PLAYER_WALK_FPS,
+        facing: this.currentVehicle === "kayak" ? "side" : this.playerAnimator.facing,
+        texture: this.currentVehicle === "kayak" ? "dynamic-kayak-rower" : this.playerAnimator.textureKey,
+        turning: this.currentVehicle === "kayak" ? Math.abs(this.kayakRoll) > 0.08 : this.playerAnimator.isTurning,
+        walkFps: this.currentVehicle === "kayak" ? undefined : RPG_PLAYER_WALK_FPS,
+        angle: Number(Phaser.Math.RadToDeg(this.kayakHeading).toFixed(1)),
         collisionWidth: Number((this.player.body?.width ?? 0).toFixed(2)),
         collisionHeight: Number((this.player.body?.height ?? 0).toFixed(2))
       },
@@ -1629,8 +1432,8 @@ export class QizhenLakeScene extends Phaser.Scene {
         mode: "follow"
       },
       scene: "qizhen_lake",
-      checkpoint: state.rpgCheckpoint,
-      activeTargets: this.getActiveTargets(state).map((candidate) => ({
+      checkpoint: this.bridge.getState().rpgCheckpoint,
+      activeTargets: targets.map((candidate) => ({
         id: candidate.id,
         label: candidate.label,
         x: candidate.x,
@@ -1644,27 +1447,124 @@ export class QizhenLakeScene extends Phaser.Scene {
         acceptedItem: candidate.acceptedItem,
         requiredMode: candidate.requiredMode
       })),
-      collisionRects: plate.collisions,
+      collisionRects: this.currentVehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions,
       qizhenLake: {
-        phase: state.qizhenLake.phase,
-        mode: state.qizhenLake.mode,
-        plate: this.currentPlate,
+        phase: runtime.phase,
+        mode: runtime.mode,
+        plate: this.currentZone,
+        zone: this.currentZone,
+        vehicle: this.currentVehicle,
         activeTarget: target?.id ?? null,
-        reflectionRound: state.qizhenLake.reflectionRound,
-        signRotations: state.qizhenLake.signRotations,
-        decoyPlacedAt: state.qizhenLake.decoyPlacedAt,
-        mistRhythmRead: state.qizhenLake.mistRhythmRead,
-        mistPhase: Number(this.lastMistPhase.toFixed(3)),
+        kayak: {
+          heading: Number(this.kayakHeading.toFixed(3)),
+          speed: Math.round(this.kayakSpeed),
+          roll: Number(this.kayakRoll.toFixed(3)),
+          strokeIndex: this.strokeIndex,
+          lastStrokeSide: this.lastStrokeSide,
+          sameSideStreak: this.sameSideStreak,
+          capsizing: this.capsizing
+        },
+        reflectionLocationObserved: runtime.reflectionLocationObserved,
+        directPaperCastFailures: runtime.directPaperCastFailures,
+        chain: {
+          rodFound: runtime.rodFound,
+          decoyBaitAttached: runtime.decoyBaitAttached,
+          lockerOpened: runtime.lockerOpened,
+          netCombined: runtime.netCombined,
+          feedTinRetrieved: runtime.feedTinRetrieved,
+          feedTinOpened: runtime.feedTinOpened,
+          fishCaught: runtime.fishCaught,
+          swanFed: runtime.swanFed,
+          magneticRodCombined: runtime.magneticRodCombined,
+          paperCaptured: runtime.paperCaptured
+        },
+        chase: {
+          active: runtime.phase === "swan_chase",
+          distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x)),
+          elapsedSeconds: Number(this.chaseElapsedSeconds.toFixed(2)),
+          desiredGap: Number(this.chaseDesiredGap.toFixed(1)),
+          actualGap: Number(Math.hypot(this.chaseSwanX - this.player.x, this.chaseSwanY - this.player.y).toFixed(1)),
+          swanX: Math.round(this.chaseSwanX),
+          swanY: Math.round(this.chaseSwanY)
+        },
         activeOcclusionIds: this.activeOcclusionIds,
         softenedOcclusionIds: this.softenedOcclusionIds
       }
-    });
+    } as unknown as Parameters<typeof setRpgRuntimeDebugState>[0]);
+  }
+
+  private getSpawn(
+    zone: QizhenLakeZoneId,
+    vehicle: QizhenLakeVehicle,
+    fromZone: QizhenLakeZoneId | null
+  ): { x: number; y: number } | { x: number; y: number; heading: number } {
+    const definition = QIZHEN_LAKE_ZONES[zone];
+    if (vehicle === "on_foot") return definition.onFootSpawn;
+    if (fromZone && definition.kayakEntrySpawns[fromZone]) return definition.kayakEntrySpawns[fromZone]!;
+    return definition.kayakSpawn;
+  }
+
+  private emitDomain(name: string, payload?: Record<string, unknown>): void {
+    this.bridge.emit(name, payload);
   }
 }
 
-function checkpointForPhase(phase: GameState["qizhenLake"]["phase"]): GameState["rpgCheckpoint"] {
-  if (phase === "sign_alignment") return "qizhen_signs";
-  if (phase === "decoy_setup") return "qizhen_decoy";
-  if (phase === "mist_timing" || phase === "chase_ready") return "qizhen_mist";
-  return "qizhen_reflection";
+function hasItem(state: GameState, itemId: ItemId): boolean {
+  return Boolean((state.items as unknown as Record<string, boolean>)[itemId]);
+}
+
+function readQizhenRuntime(state: GameState): QizhenRuntimeProjection {
+  const source = state.qizhenLake as unknown as Partial<QizhenRuntimeProjection> & {
+    phase: QizhenRuntimePhase;
+    mode: QizhenLakeMode;
+  };
+  const zone = isQizhenZone(source.zone) ? source.zone : "dock";
+  const vehicle = source.vehicle === "kayak" ? "kayak" : "on_foot";
+  return {
+    phase: source.phase,
+    mode: source.mode,
+    zone,
+    vehicle,
+    introSeen: source.introSeen === true,
+    kayakEquipped: source.kayakEquipped === true,
+    leftPaddleEquipped: source.leftPaddleEquipped === true,
+    rightPaddleEquipped: source.rightPaddleEquipped === true,
+    boardingStrokeCount: finiteCount(source.boardingStrokeCount),
+    boardingLastSide: source.boardingLastSide === "left" || source.boardingLastSide === "right"
+      ? source.boardingLastSide
+      : null,
+    boardingTutorialCompleted: source.boardingTutorialCompleted === true,
+    capsizeCount: finiteCount(source.capsizeCount),
+    rodFound: source.rodFound === true,
+    decoyBaitAttached: source.decoyBaitAttached === true,
+    reflectionLocationObserved: source.reflectionLocationObserved === true,
+    observedFishingSpotIds: Array.isArray(source.observedFishingSpotIds)
+      ? source.observedFishingSpotIds.map(String)
+      : [],
+    directPaperCastFailures: finiteCount(source.directPaperCastFailures),
+    lockerOpened: source.lockerOpened === true,
+    netCombined: source.netCombined === true,
+    feedTinRetrieved: source.feedTinRetrieved === true,
+    feedTinOpened: source.feedTinOpened === true,
+    fishCaught: source.fishCaught === true,
+    swanFed: source.swanFed === true,
+    magneticRodCombined: source.magneticRodCombined === true,
+    paperCaptured: source.paperCaptured === true,
+    swanReleased: source.swanReleased === true,
+    chaseDistance: finiteCount(source.chaseDistance),
+    chaseBestDistance: finiteCount(source.chaseBestDistance),
+    chaseAttempts: finiteCount(source.chaseAttempts),
+    magneticAttachmentBroken: source.magneticAttachmentBroken === true,
+    transitionReady: source.transitionReady === true,
+    safeSpawnId: typeof source.safeSpawnId === "string" ? source.safeSpawnId : "qizhen_dock_board"
+  };
+}
+
+function isQizhenZone(value: unknown): value is QizhenLakeZoneId {
+  return value === "dock" || value === "open_water" || value === "channel" || value === "swan_cove";
+}
+
+function finiteCount(value: unknown): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }

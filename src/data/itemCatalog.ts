@@ -23,7 +23,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   mentorLine: object([{ target: "pushTriangle", result: "transform" }]),
   rightArrow: object([
     { target: "campus-card-balance", result: "retain" },
-    { target: "seat-022-gap", result: "retain" }
+    { target: "seat-022-gap", result: "consume" }
   ]),
   gamepad: object([{ target: "rpg-player", result: "consume" }]),
   occupancyNote: paper({
@@ -125,12 +125,18 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     footer: "仅对登记为非本人的占用物有效。"
   }, [{ target: "seat-022-backpack", result: "consume" }]),
   cafeteriaWages: object([{ target: "canteen-bike", result: "consume" }]),
-  greaseTissue: object([{ target: "canteen-bike-lock", result: "retain" }]),
+  greaseTissue: object([
+    { target: "canteen-bike-lock", result: "retain" },
+    { target: "theater-poster-glass", result: "consume" }
+  ]),
   sparklingWater: object([{ target: "canteen-mixer", result: "consume" }]),
   lemonTea: object([{ target: "canteen-mixer", result: "consume" }]),
   blackCoffee: object([{ target: "canteen-mixer", result: "consume" }]),
   badDrink: object([{ target: "rpg-player", result: "consume" }]),
-  dailySpecialSparklingWater: object([{ target: "canteen-promo-board", result: "consume" }]),
+  dailySpecialSparklingWater: object([
+    { target: "canteen-promo-board", result: "retain" },
+    { target: "canteen-defense-floor", result: "consume" }
+  ]),
   pickupTicket0755: paper({
     heading: "0755 取餐号",
     fields: [
@@ -148,14 +154,14 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   theaterTicketHalfB: object([{ target: "theaterTicketHalfA", result: "transform" }]),
   temporaryTheaterTicket: object([
     { target: "theater-ticket-gate", result: "retain" },
-    { target: "theater-prop-scanner", result: "retain" }
+    { target: "theater-prop-scanner", result: "consume" }
   ]),
-  theaterProgramOpening: object([{ target: "theater-light-console", result: "retain" }]),
-  theaterProgramSpotlight: object([{ target: "theater-light-console", result: "retain" }]),
-  theaterProgramFinale: object([{ target: "theater-light-console", result: "retain" }]),
-  spotlightRemote: object([{ target: "theater-spotlight-console", result: "retain" }]),
-  fluorescentBrush: object([{ target: "theater-backstage-vent", result: "retain" }]),
-  decoyPaper: object([]),
+  theaterProgramOpening: object([{ target: "theater-light-console", result: "consume" }]),
+  theaterProgramSpotlight: object([{ target: "theater-light-console", result: "consume" }]),
+  theaterProgramFinale: object([{ target: "theater-light-console", result: "consume" }]),
+  spotlightRemote: object([{ target: "theater-spotlight-console", result: "consume" }]),
+  fluorescentBrush: object([{ target: "theater-backstage-vent", result: "consume" }]),
+  decoyPaper: object([{ target: "fishingRod", result: "consume" }]),
   wetProgram: paper({
     heading: "湿掉的节目单",
     fields: [
@@ -170,11 +176,12 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     footer: "边角湿得很有方向感。"
   }, [
     { target: "cc98-search", result: "retain" },
-    { target: "library-catalog-search", result: "retain" }
+    { target: "library-catalog-search", result: "retain" },
+    { target: "qizhen-location-sources-complete", result: "consume" }
   ]),
-  bridgeKeyword: object([{ target: "qizhen-map-search", result: "retain" }]),
-  reflectionKeyword: object([{ target: "qizhen-map-search", result: "retain" }]),
-  lakeKeyword: object([{ target: "qizhen-map-search", result: "retain" }]),
+  bridgeKeyword: object([{ target: "qizhen-map-search", result: "consume" }]),
+  reflectionKeyword: object([{ target: "qizhen-map-search", result: "consume" }]),
+  lakeKeyword: object([{ target: "qizhen-map-search", result: "consume" }]),
   reflectionCoordinate: paper({
     heading: "倒影坐标",
     fields: [
@@ -183,7 +190,24 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     ],
     body: ["两种模式记录的是同一个位置。"],
     footer: "来源：启真湖倒影指示牌。"
-  }, [])
+  }, []),
+  fishingRod: object([
+    { target: "decoyPaper", result: "retain" },
+    { target: "qizhen-net-frame", result: "retain" },
+    { target: "swanMagnet", result: "transform" }
+  ]),
+  rustedLockerKey: object([{ target: "qizhen-dock-locker", result: "consume" }]),
+  nylonCord: object([{ target: "brokenNetFrame", result: "transform" }]),
+  brokenNetFrame: object([{ target: "nylonCord", result: "transform" }]),
+  improvisedDipNet: object([{ target: "qizhen-feed-tin", result: "consume" }]),
+  sealedFeedTin: object([{ target: "qizhen-feed-tin-lid", result: "consume" }]),
+  fishFeedPellets: object([{ target: "qizhen-fish-school", result: "consume" }]),
+  smallCarp: object([{ target: "qizhen-black-swan", result: "consume" }]),
+  swanMagnet: object([{ target: "fishingRod", result: "transform" }]),
+  magneticFishingRod: object([
+    { target: "qizhen-clipped-paper", result: "retain" },
+    { target: "qizhen-chase-finish", result: "consume" }
+  ])
 };
 
 export function isPaperItem(itemId: ItemId): boolean {

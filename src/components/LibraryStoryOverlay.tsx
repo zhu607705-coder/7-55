@@ -14,8 +14,7 @@ interface LibraryStoryOverlayProps {
 }
 
 const CONFIRMATION_REQUIRED_SEQUENCES = new Set([
-  "cc98_evidence_set_completed",
-  "library_friend_contacted"
+  "cc98_evidence_set_completed"
 ]);
 
 /** 第二章剧情对白层：剧情期间吞掉底层操作，只保留逐句快进。 */

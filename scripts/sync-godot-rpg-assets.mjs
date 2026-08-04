@@ -7,12 +7,16 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const godotRoot = resolve(repoRoot, "godot");
 const webExportRoot = resolve(repoRoot, "public", "godot", "theater");
-const generatedModulePath = resolve(godotRoot, ".generated", "theater-model.mjs");
+const generatedModuleRoot = resolve(godotRoot, ".generated");
 
 const assetCopies = [
   {
     source: "src/assets/rpg/interiors/theater_interior.png",
     target: "godot/assets/rpg/interiors/theater_interior.png"
+  },
+  {
+    source: "src/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+    target: "godot/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"
   },
   ...["down", "side", "up"].flatMap((facing) =>
     [0, 1, 2, 3].map((frame) => ({
@@ -30,10 +34,11 @@ function repoPath(path) {
   return relative(repoRoot, path).split("\\").join("/");
 }
 
-async function loadTheaterModel() {
+async function loadTypeScriptModule(sourcePath, outputName) {
+  const generatedModulePath = resolve(generatedModuleRoot, outputName);
   await mkdir(dirname(generatedModulePath), { recursive: true });
   await build({
-    entryPoints: [resolve(repoRoot, "src/scenes/rpg/TheaterInteriorModel.ts")],
+    entryPoints: [resolve(repoRoot, sourcePath)],
     bundle: true,
     format: "esm",
     platform: "node",
@@ -44,7 +49,10 @@ async function loadTheaterModel() {
   return import(`${pathToFileURL(generatedModulePath).href}?v=${Date.now()}`);
 }
 
-const theaterModel = await loadTheaterModel();
+const [theaterModel, spotlightModel] = await Promise.all([
+  loadTypeScriptModule("src/scenes/rpg/TheaterInteriorModel.ts", "theater-model.mjs"),
+  loadTypeScriptModule("src/scenes/rpg/TheaterSpotlightModel.ts", "theater-spotlight-model.mjs")
+]);
 await mkdir(webExportRoot, { recursive: true });
 const runtimeData = {
   schemaVersion: 1,
@@ -60,7 +68,17 @@ const runtimeData = {
     auditorium: theaterModel.THEATER_AUDITORIUM_SPAWN,
     stage: theaterModel.THEATER_STAGE_SPAWN
   },
-  gateBlocker: theaterModel.THEATER_GATE_BLOCKER
+  gateBlocker: theaterModel.THEATER_GATE_BLOCKER,
+  spotlight: {
+    rounds: spotlightModel.THEATER_SPOTLIGHT_ROUNDS,
+    baseAssist: spotlightModel.getTheaterSpotlightAssist(0),
+    failureAssist: spotlightModel.getTheaterSpotlightAssist(3),
+    assistMistakes: 3,
+    readyMs: 900,
+    retryMs: 1100,
+    hitMs: 350,
+    reversalMs: 1320
+  }
 };
 const runtimeTarget = resolve(godotRoot, "data/theater-runtime.json");
 const runtimeBytes = Buffer.from(`${JSON.stringify(runtimeData, null, 2)}\n`);

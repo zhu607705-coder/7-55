@@ -278,6 +278,36 @@
   height: 44px;
 }
 
+.rpg-stage.is-qizhen-lake .quest-task-bar--rpg .quest-task-trigger {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding-inline: 64px;
+  text-align: center;
+}
+
+.rpg-stage.is-qizhen-lake .quest-task-bar--rpg .quest-task-trigger > span {
+  left: 10px;
+  position: absolute;
+}
+
+.rpg-stage.is-qizhen-lake .quest-task-bar--rpg .quest-task-trigger-copy {
+  justify-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.rpg-stage.is-qizhen-lake .quest-task-bar--rpg .quest-task-trigger-copy > span {
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
+@media (max-width: 699px) {
+  .quest-task-bar--rpg {
+    right: 14px;
+  }
+}
+
 .quest-task-drawer--rpg {
   left: 14px;
   max-height: calc(100% - 78px);
@@ -305,6 +335,24 @@
 
 .quest-task-bar--desktop .quest-task-trigger-copy > span {
   font-size: var(--fs-body);
+}
+
+.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger {
+  grid-template-columns: minmax(0, 1fr);
+  padding-inline: 64px;
+  text-align: center;
+}
+
+.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger > span {
+  left: 14px;
+  position: absolute;
+}
+
+.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger-copy,
+.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger-copy > span {
+  justify-items: center;
+  text-align: center;
+  width: 100%;
 }
 
 .quest-task-bar--desktop .quest-task-digit-hint {

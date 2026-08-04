@@ -5,8 +5,8 @@
   "sources": [
     {
       "path": "godot/asset-manifest.json",
-      "bytes": 3422,
-      "sha256": "aa96ce321faab3392b390b4b4c21f0aefa444d3c129d2ccb677426ed0283e585"
+      "bytes": 3711,
+      "sha256": "d6f06c94c55d693edc065505517a576fd170b429f432dce75abfc187a300a3ab"
     },
     {
       "path": "godot/assets/maps/theatre_hall_original.jpg.import",
@@ -52,6 +52,11 @@
       "path": "godot/assets/player/player_up_1.png.import",
       "bytes": 951,
       "sha256": "97c767a635687a33ed1f39ed75e03befe2138283b66a0208443243a5125585fc"
+    },
+    {
+      "path": "godot/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import",
+      "bytes": 856,
+      "sha256": "6596563f522808a7db1f81ab8c7445c307224f522f94b4b10804b6791ade0922"
     },
     {
       "path": "godot/assets/rpg/interiors/theater_interior.png.import",
@@ -120,8 +125,8 @@
     },
     {
       "path": "godot/data/theater-runtime.json",
-      "bytes": 8914,
-      "sha256": "40e48d4785a517099965eaf360d3c9337d7366d43400b3fa2039ff2056cea11a"
+      "bytes": 11265,
+      "sha256": "bcff9ac6425e743679ad5c22004acbc3428ebb7947f8cb9e6a9a21679eda7a1b"
     },
     {
       "path": "godot/export_presets.cfg",
@@ -140,8 +145,8 @@
     },
     {
       "path": "godot/scripts/theater_runtime.gd",
-      "bytes": 22862,
-      "sha256": "a037fb1d6c7f79068610ac512e9c1e9697ca25385b40e6e1fb2848e4fc62c6fb"
+      "bytes": 56275,
+      "sha256": "fd9bf2e15d28c3671c66428ea75c00f7cfaf9bb99e04da0780a314aba3118fb1"
     },
     {
       "path": "godot/scripts/theater_runtime.gd.uid",
@@ -163,7 +168,7 @@
     {
       "path": "public/godot/theater/index.html",
       "bytes": 5448,
-      "sha256": "8d504354ccfccce597db7fa1408ac35a863c8c02e074903aa6dc722c1586552a"
+      "sha256": "18f04dc58f3e599335807f679934305638f3d30707747b9b7b09e6f6d19d27c2"
     },
     {
       "path": "public/godot/theater/index.js",
@@ -177,8 +182,8 @@
     },
     {
       "path": "public/godot/theater/index.pck",
-      "bytes": 7008132,
-      "sha256": "5f4aac86c7b2917054cc12c5ab8fe1eb57065ad238a02b148ae84518b37e0616"
+      "bytes": 9129996,
+      "sha256": "ca3a2f1ee96f5ed20c1bed044e85f072445e2d7379021c22dc95fe117f626698"
     },
     {
       "path": "public/godot/theater/index.png",

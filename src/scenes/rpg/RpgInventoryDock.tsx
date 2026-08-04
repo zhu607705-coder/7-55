@@ -75,7 +75,17 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "bridgeKeyword",
   "reflectionKeyword",
   "lakeKeyword",
-  "reflectionCoordinate"
+  "reflectionCoordinate",
+  "fishingRod",
+  "rustedLockerKey",
+  "nylonCord",
+  "brokenNetFrame",
+  "improvisedDipNet",
+  "sealedFeedTin",
+  "fishFeedPellets",
+  "smallCarp",
+  "swanMagnet",
+  "magneticFishingRod"
 ];
 
 function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
@@ -113,6 +123,38 @@ function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
       tone: "error",
       title: "没有放进目标范围",
       detail: customDetail || "拖动位置有效，但松手点落在高亮框外。"
+    };
+  }
+  if (reason === "wrong_mode") {
+    return {
+      itemId,
+      tone: "warning",
+      title: "当前模式不能执行该动作",
+      detail: customDetail || "切回浅色操作后，再把道具拖入目标范围。"
+    };
+  }
+  if (reason === "unobserved") {
+    return {
+      itemId,
+      tone: "warning",
+      title: "目标位置尚未记录",
+      detail: customDetail || "先切到深色观察并记录目标轮廓，再回到浅色操作。"
+    };
+  }
+  if (reason === "direct_paper_failure") {
+    return {
+      itemId,
+      tone: "error",
+      title: "纸张无法直接钓取",
+      detail: customDetail || "钓钩无法固定纸张。检查已获得的工具，补充适合金属夹具的连接方式。"
+    };
+  }
+  if (reason === "already_complete") {
+    return {
+      itemId,
+      tone: "success",
+      title: "当前步骤已经完成",
+      detail: customDetail || "无需重复使用该道具，继续查看当前任务。"
     };
   }
   if (reason === "passive") {
@@ -155,6 +197,20 @@ export function RpgInventoryDock({
   const visibleItems = RPG_DOCK_ORDER.filter((itemId) => state.items[itemId]);
   const recentItem = useRecentInventoryItem(visibleItems);
   const guidance = drag ? selectRpgItemUseGuidance(state, runtimeScene, drag.itemId) : null;
+
+  useEffect(() => {
+    if (!drag || state.items[drag.itemId]) return;
+    if (drag.moved) {
+      events.emit("rpg_inventory_drag_ended", {
+        itemId: drag.itemId,
+        surface: "rpg",
+        cancelled: true,
+        reason: "consumed"
+      });
+    }
+    setDrag(null);
+    onDragSelectionChange(null);
+  }, [drag, events, onDragSelectionChange, state.items]);
 
   useEffect(() => {
     return events.subscribe((event) => {

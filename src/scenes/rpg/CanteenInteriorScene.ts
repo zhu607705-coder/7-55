@@ -6,7 +6,7 @@ import canteenReturnAuntieSheetUrl from "../../assets/rpg/npcs/canteen/return_au
 import canteenSeatedStudentsExtraSheetUrl from "../../assets/rpg/npcs/canteen/seated_students_extra_2frame.png";
 import canteenSeatedStudentsSheetUrl from "../../assets/rpg/npcs/canteen/seated_students_2frame.png";
 import canteenShadowAuntieSheetUrl from "../../assets/rpg/npcs/canteen/shadow_auntie_3frame.png";
-import playerPushCartSheetUrl from "../../assets/rpg/player/player_push_cart_sheet.png";
+import playerPushCartSheetUrl from "../../assets/rpg/player/player_push_cart_sheet_8f.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import type {
   CanteenDrinkIngredientId,
@@ -57,6 +57,7 @@ import {
   CANTEEN_STATIC_COLLISION_RECTS,
   CANTEEN_PROMO_BOARD,
   CANTEEN_QUEUE_COLUMN_THREE,
+  CANTEEN_SERVICE_WINDOWS,
   CANTEEN_TRAYS,
   CANTEEN_TRAY_SLOTS,
   findNearestCanteenTarget,
@@ -75,9 +76,6 @@ const CANTEEN_NPC_FRAME_WIDTH = 96;
 const CANTEEN_NPC_FRAME_HEIGHT = 128;
 const CANTEEN_NPC_DISPLAY_SCALE = RPG_PLAYER_DISPLAY_SCALE;
 const CANTEEN_WORLD_DEPTH_OFFSET = 120;
-const CANTEEN_COUNTER_NPC_Y = 214;
-const CANTEEN_COUNTER_NPC_X = [301, 550, 790, 1035] as const;
-const CANTEEN_QUEUE_NPC_Y = [246, 266, 286] as const;
 const CANTEEN_COUNTER_FRONT_CROP = {
   left: 126,
   top: 176,
@@ -99,7 +97,9 @@ function hasCompletedCanteenTrayTask(state: GameState): boolean {
 }
 
 function canPlayCanteenDrinkPuzzle(state: GameState): boolean {
-  return canPlayCanteenSideGames(state)
+  return state.canteenHunt.active
+    && state.canteenHunt.phase === "drink_mix"
+    && hasCompletedCanteenTrayTask(state)
     && !state.canteenHunt.promoDrinkPlaced
     && !state.canteenHunt.queueGapOpened;
 }
@@ -260,6 +260,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private defenseRuntime: CanteenDefenseRuntime | null = null;
   private defenseRouteGraphics: Phaser.GameObjects.Graphics | null = null;
   private defenseRestartTimer: Phaser.Time.TimerEvent | null = null;
+  private defenseModeTimer: Phaser.Time.TimerEvent | null = null;
+  private defenseBubbleContainer: Phaser.GameObjects.Container | null = null;
 
   constructor() {
     super("canteen-interior");
@@ -356,8 +358,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.input.keyboard?.off("keydown-SPACE", requestKeyboardInteraction);
       this.input.keyboard?.off("keydown", handleModalKeyboard);
       this.defenseRestartTimer?.remove(false);
+      this.defenseModeTimer?.remove(false);
       this.defenseRuntime?.destroy();
       this.defenseRuntime = null;
+      this.defenseBubbleContainer?.destroy(true);
+      this.defenseBubbleContainer = null;
     });
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
       this.handleMenuPointer(pointer);
@@ -399,10 +404,16 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (this.currentPhase === "exit_blocking") {
       this.startDefense();
     }
-    if (this.bridge.getState().canteenHunt.active && this.currentPhase === "tray_search") {
-      this.queueDialogue(canteenContent.entryDialogue, () => {
-        this.dialogueLocked = false;
-      }, ENTRY_DIALOGUE_STEP_MS);
+    if (
+      this.bridge.getState().canteenHunt.active
+      && this.currentPhase === "tray_search"
+      && !this.bridge.getState().canteenHunt.trayTaskStarted
+    ) {
+      this.animateEntryPaperQueue(() => {
+        this.queueDialogue(canteenContent.entryDialogue, () => {
+          this.dialogueLocked = false;
+        }, ENTRY_DIALOGUE_STEP_MS);
+      });
     }
     const initialState = this.bridge.getState();
     if (
@@ -415,6 +426,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   update(_time: number, deltaMs: number): void {
+    // Phaser can deliver one final update while a stopped interior is being
+    // replaced by the bike overlay. The player body has already been released
+    // at that point, so the stale frame must not write velocity into it.
+    if (!this.player?.active || !this.player.body) return;
     const state = this.bridge.getState();
     this.syncWorldFromState(state);
     this.updateCarriedTrayVisual(state);
@@ -427,8 +442,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
 
     if (
-      !this.defenseRuntime
-      && Phaser.Input.Keyboard.JustDown(this.keys.TAB)
+      Phaser.Input.Keyboard.JustDown(this.keys.TAB)
       && !this.hasModalPanel()
       && !this.dialogueLocked
     ) {
@@ -520,12 +534,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.lightNpcSprites = [];
     this.lightNpcCollisionBodies = [];
 
-    CANTEEN_COUNTER_NPC_X.forEach((x, index) => {
+    CANTEEN_SERVICE_WINDOWS.forEach((window, index) => {
       this.createLightNpc(
-        x,
-        CANTEEN_COUNTER_NPC_Y,
+        window.counterNpc.x,
+        window.counterNpc.y,
         CANTEEN_COUNTER_NPC_SHEET_KEY,
-        index,
+        index % 4,
         300,
         1.7 + index * 0.08,
         260 + index * 83
@@ -547,11 +561,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
     let queueIndex = 0;
     const queueGapAlreadyOpen = this.bridge.getState().canteenHunt.queueGapOpened;
     this.thirdColumnQueue = [];
-    CANTEEN_COUNTER_NPC_X.forEach((x, columnIndex) => {
-      CANTEEN_QUEUE_NPC_Y.forEach((y, rowIndex) => {
-        const shiftedY = y + (columnIndex === 2 && queueGapAlreadyOpen ? 36 : 0);
+    CANTEEN_SERVICE_WINDOWS.forEach((window, columnIndex) => {
+      window.queueNpcPositions.forEach((position, rowIndex) => {
+        const shiftedY = position.y + (window.value === "3" && queueGapAlreadyOpen ? 36 : 0);
         const sprite = this.createLightNpc(
-          x,
+          position.x,
           shiftedY,
           CANTEEN_QUEUE_NPC_SHEET_KEY,
           queueIndex,
@@ -559,9 +573,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
           1.35 + (queueIndex % 4) * 0.1,
           180 + ((columnIndex * 3 + rowIndex) * 137) % 520
         );
-        const collision = this.createLightNpcFootCollision(x, shiftedY, `queue-${queueIndex}`);
-        if (columnIndex === 2) {
-          this.thirdColumnQueue.push({ sprite, collision, baseY: y });
+        const collision = this.createLightNpcFootCollision(position.x, shiftedY, `queue-${queueIndex}`);
+        if (window.value === "3") {
+          this.thirdColumnQueue.push({ sprite, collision, baseY: position.y });
         }
         queueIndex += 1;
       });
@@ -628,8 +642,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
       });
     }
     this.shadowNpcSprite = this.add.sprite(
-      CANTEEN_COUNTER_NPC_X[2],
-      CANTEEN_COUNTER_NPC_Y,
+      CANTEEN_SERVICE_WINDOWS[2].counterNpc.x,
+      CANTEEN_SERVICE_WINDOWS[2].counterNpc.y,
       CANTEEN_SHADOW_NPC_SHEET_KEY,
       0
     )
@@ -702,8 +716,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private createInitialNpcInteractions(): void {
-    const queuePositions = CANTEEN_COUNTER_NPC_X.flatMap((x) => (
-      CANTEEN_QUEUE_NPC_Y.map((y) => ({ x, y }))
+    const queuePositions = CANTEEN_SERVICE_WINDOWS.flatMap((window) => (
+      window.queueNpcPositions.map((position) => ({ ...position }))
     ));
     const seatedPositions = [
       ...CANTEEN_SEATED_NPC_PLACEMENTS,
@@ -711,7 +725,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     ];
     const shuffledQueue = Phaser.Utils.Array.Shuffle([...queuePositions]);
     const shuffledSeated = Phaser.Utils.Array.Shuffle([...seatedPositions]);
-    const counterIndex = Phaser.Math.Between(0, CANTEEN_COUNTER_NPC_X.length - 1);
+    const counterIndex = Phaser.Math.Between(0, CANTEEN_SERVICE_WINDOWS.length - 1);
 
     const queueTargets = CANTEEN_QUEUE_NPC_DIALOGUE.map((dialogue, index) => {
       const position = shuffledQueue[index];
@@ -739,13 +753,13 @@ export class CanteenInteriorScene extends Phaser.Scene {
         dialogue
       };
     });
-    const counterX = CANTEEN_COUNTER_NPC_X[counterIndex];
+    const counter = CANTEEN_SERVICE_WINDOWS[counterIndex].counterNpc;
     const counterTarget: CanteenInteractionTarget = {
       id: "initial-counter-npc",
       label: "交谈",
-      x: counterX,
-      y: CANTEEN_COUNTER_NPC_Y,
-      stand: { x: counterX, y: 265 },
+      x: counter.x,
+      y: counter.y,
+      stand: { x: counter.x, y: 265 },
       proximity: 48,
       kind: "npc",
       dialogue: CANTEEN_COUNTER_NPC_DIALOGUE
@@ -771,9 +785,13 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private applyCanteenNpcMode(mode: CanteenMode, immediate = false): void {
+    const state = this.bridge.getState();
     const showSceneNpcs = this.currentPhase !== "exit_blocking" && !this.defenseRuntime;
     const showLightNpcs = showSceneNpcs && mode === "light";
-    const showShadowNpc = showSceneNpcs && mode === "dark";
+    const showShadowNpc = showSceneNpcs
+      && mode === "dark"
+      && state.canteenHunt.phase === "pickup_search"
+      && state.canteenHunt.pickupTimeErrorSeen;
     const duration = immediate || this.reducedMotion ? 0 : 180;
 
     const transitionSprite = (sprite: Phaser.GameObjects.Sprite, visible: boolean) => {
@@ -1282,6 +1300,86 @@ export class CanteenInteriorScene extends Phaser.Scene {
     });
   }
 
+  private animateEntryPaperQueue(onComplete: () => void): void {
+    const queueStart = CANTEEN_SERVICE_WINDOWS[2].queueNpcPositions[1];
+    const wallCorner = { x: 92, y: 202 };
+    const counterRun = { x: 168, y: 258 };
+    this.paperBusy = true;
+    this.dialogueLocked = true;
+    this.paperFloatTween.pause();
+    this.paper
+      .setTexture(CANTEEN_PAPER_KEY)
+      .setPosition(queueStart.x + 18, queueStart.y - 5)
+      .setScale(0.82)
+      .setAngle(-4)
+      .setAlpha(1)
+      .setVisible(true);
+
+    const alarm = this.add.text(this.paper.x + 2, this.paper.y - 40, "!", {
+      color: "#fff7df",
+      backgroundColor: "#173544ee",
+      fontFamily: "monospace",
+      fontSize: "22px",
+      fontStyle: "bold",
+      padding: { x: 7, y: 2 }
+    }).setOrigin(0.5, 1).setDepth(2120).setAlpha(0);
+    const trailPoints = [
+      { x: 720, y: 258 }, { x: 574, y: 258 }, { x: 426, y: 258 },
+      { x: 276, y: 258 }, { x: 164, y: 249 }, { x: 110, y: 218 }
+    ];
+    const trail = trailPoints.map((point, index) => {
+      const scrap = this.add.circle(point.x, point.y, index % 2 === 0 ? 3 : 2, 0x75dcff, 0.92)
+        .setDepth(1603)
+        .setVisible(false);
+      this.modeFibers.push(scrap);
+      return scrap;
+    });
+
+    this.tweens.add({
+      targets: alarm,
+      alpha: 1,
+      y: alarm.y - 8,
+      duration: this.reducedMotion ? 70 : 180,
+      yoyo: true,
+      hold: this.reducedMotion ? 20 : 250,
+      onComplete: () => {
+        alarm.destroy();
+        this.tweens.add({
+          targets: this.paper,
+          x: counterRun.x,
+          y: counterRun.y,
+          angle: -10,
+          duration: this.reducedMotion ? 120 : 620,
+          ease: "Sine.easeIn",
+          onUpdate: (_tween, target) => {
+            trail.forEach((scrap, index) => {
+              if (target.x <= trailPoints[index].x) {
+                scrap.setVisible(this.currentMode === "dark");
+              }
+            });
+          },
+          onComplete: () => {
+            this.tweens.add({
+              targets: this.paper,
+              x: wallCorner.x,
+              y: wallCorner.y,
+              scaleX: 0.64,
+              scaleY: 0.9,
+              angle: -72,
+              duration: this.reducedMotion ? 90 : 300,
+              ease: "Quad.easeIn",
+              onComplete: () => {
+                this.paper.setVisible(false).setAngle(0).setScale(1);
+                this.paperBusy = false;
+                onComplete();
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
   private createWorldHotspots(): void {
     const hotspotBounds: Record<string, { x: number; y: number; width: number; height: number }> = {
       ordering_kiosk: { x: 790, y: 238, width: 150, height: 92 },
@@ -1321,7 +1419,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         height: 68
       })),
       { target: CANTEEN_DRINK_SHELF, width: 260, height: 132 },
-      { target: CANTEEN_MIX_STATION, width: 420, height: 170 },
+      { target: CANTEEN_MIX_STATION, width: 150, height: 118 },
       { target: CANTEEN_PROMO_BOARD, width: 150, height: 96 },
       { target: CANTEEN_QUEUE_COLUMN_THREE, width: 88, height: 100 }
     ];
@@ -1533,6 +1631,24 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.showFeedback(`${canteenContent.drinks.shelfPrompt}\n${canteenContent.drinks.shelfOrder}`, "task", 3000);
       return;
     }
+    if (name === "canteen_drink_shelf_locked") {
+      this.showFeedback("先切到深色观察，再查看瓶罐颜色顺序。", "task", 2400);
+      return;
+    }
+    if (name === "canteen_drink_action_locked") {
+      const mode = String(payload?.mode ?? "light");
+      const queueSeen = payload?.queueSeen === true;
+      const shelfRead = payload?.shelfRead === true;
+      const detail = !queueSeen
+        ? "先去第三列队伍前方询问空位。"
+        : !shelfRead
+          ? "切到深色观察右上瓶罐架的颜色顺序。"
+          : mode !== "light"
+            ? "切回浅色操作后再拿饮料或调配。"
+            : "当前步骤尚未开放。";
+      this.showFeedback(detail, "task", 2400);
+      return;
+    }
     if (name === "canteen_mix_ingredient_added") {
       this.refreshMixerPanel();
       if (payload?.completeAttempt !== true) {
@@ -1619,10 +1735,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.animatePaperBurst();
       return;
     }
+    if (name === "canteen_defense_bubbles_activated") {
+      if (this.defenseRuntime?.activatePromoDrinkSlowdown()) {
+        this.animateDefenseBubbles();
+        this.showFeedback("地面起泡。", "task", 1500);
+      }
+      return;
+    }
     if (name === "canteen_defense_completed") {
-      this.finishDefense();
-      this.queueDialogue(canteenContent.blocking.escapeDialogue, () => {
-        this.bridge.emit("rpg_canteen_leave_requested");
+      this.animateDefenseVictory(() => {
+        this.finishDefense();
+        this.queueDialogue(canteenContent.blocking.escapeDialogue, () => {
+          this.bridge.emit("rpg_canteen_leave_requested");
+        }, 1200);
       });
       return;
     }
@@ -1636,36 +1761,52 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (name === "canteen_exit_block_unidentified") {
       this.showFeedback(canteenContent.blocking.orderLocked, "task");
-      this.finishCartMotion(String(payload?.exitId ?? "west") as CanteenExitId);
+      this.finishCartMotion(String(payload?.exitId ?? "northwest") as CanteenExitId);
       return;
     }
     if (name === "canteen_exit_block_wrong") {
-      const exitId = String(payload?.exitId ?? "west") as CanteenExitId;
+      const exitId = String(payload?.exitId ?? "northwest") as CanteenExitId;
       this.animateValidatedCartPush(exitId, () => {
-        this.animateWrongBlock(exitId, String(payload?.expected ?? "west") as CanteenExitId);
+        this.animateWrongBlock(exitId, String(payload?.expected ?? "northwest") as CanteenExitId);
       });
       return;
     }
     if (name === "canteen_exit_block_rejected") {
-      this.finishCartMotion(String(payload?.exitId ?? "west") as CanteenExitId);
+      this.finishCartMotion(String(payload?.exitId ?? "northwest") as CanteenExitId);
       return;
     }
     if (name === "canteen_exit_blocked") {
-      const exitId = String(payload?.exitId ?? "west") as CanteenExitId;
+      const exitId = String(payload?.exitId ?? "northwest") as CanteenExitId;
       this.animateValidatedCartPush(exitId, () => {
         this.animateCorrectBlock(exitId, Number(payload?.blockHits) || 1, false);
       });
       return;
     }
     if (name === "canteen_exit_blocking_completed") {
-      const exitId = String(payload?.exitId ?? "steam") as CanteenExitId;
+      const exitId = String(payload?.exitId ?? "south_gap") as CanteenExitId;
       this.animateValidatedCartPush(exitId, () => this.animateCorrectBlock(exitId, 3, true));
     }
   }
 
   private requestModeToggle(): void {
-    if (this.cartPushBusy || this.defenseRuntime) return;
+    if (this.cartPushBusy) return;
     const state = this.bridge.getState();
+    if (this.defenseRuntime) {
+      if (state.canteenHunt.phase !== "exit_blocking" || state.canteenHunt.mode !== "light") return;
+      const hint = this.defenseRuntime.requestNextExitHint();
+      if (!hint) return;
+      this.defenseModeTimer?.remove(false);
+      this.bridge.emit("rpg_canteen_mode_requested", { mode: "dark" });
+      this.flashDefenseExit(hint.exitId);
+      this.defenseModeTimer = this.time.delayedCall(hint.remainingMs, () => {
+        this.defenseModeTimer = null;
+        const latest = this.bridge.getState();
+        if (latest.canteenHunt.phase === "exit_blocking" && latest.canteenHunt.mode === "dark") {
+          this.bridge.emit("rpg_canteen_mode_requested", { mode: "light" });
+        }
+      });
+      return;
+    }
     if (!["tray_search", "drink_mix", "menu_order", "pickup_search", "chase_ready"].includes(state.canteenHunt.phase)) return;
     const mode: CanteenMode = state.canteenHunt.mode === "light" ? "dark" : "light";
     this.bridge.emit("rpg_canteen_mode_requested", { mode });
@@ -1713,6 +1854,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
     if (state.canteenHunt.phase === "pickup_search") {
       targets.push(...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "pickup"));
     }
+    if (
+      state.canteenHunt.mode === "dark"
+      && state.canteenHunt.phase === "drink_mix"
+      && state.canteenHunt.queueChallengeSeen
+      && !state.canteenHunt.drinkShelfRead
+    ) {
+      targets.push(CANTEEN_DRINK_SHELF);
+    }
     if (state.canteenHunt.mode === "light") {
       if (["tray_search", "drink_mix"].includes(state.canteenHunt.phase)) {
         targets.push(...this.initialNpcInteractionTargets.filter((target) => (
@@ -1723,8 +1872,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
           )
         )));
       }
-      targets.push(this.returnAuntieTarget);
-      if (state.canteenHunt.trayTaskStarted && !hasCompletedCanteenTrayTask(state)) {
+      if (state.canteenHunt.phase === "tray_search") {
+        targets.push(this.returnAuntieTarget);
+      }
+      if (
+        state.canteenHunt.phase === "tray_search"
+        && state.canteenHunt.trayTaskStarted
+        && !hasCompletedCanteenTrayTask(state)
+      ) {
         targets.push(...this.trayInteractionTargets.values());
       }
       if (canPlayCanteenDrinkPuzzle(state)) {
@@ -1793,13 +1948,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (target.kind === "pickup") {
       if (state.canteenHunt.mode === "dark") {
-        const canUseTicket = target.value === "3"
+        this.bridge.emit("rpg_canteen_pickup_clue_requested", { windowId: target.value });
+        if (
+          target.value === "3"
           && state.canteenHunt.pickupDarkClueRead
-          && state.items.pickupTicket0755;
-        this.bridge.emit(
-          canUseTicket ? "rpg_canteen_pickup_selected" : "rpg_canteen_pickup_clue_requested",
-          { windowId: target.value }
-        );
+          && state.items.pickupTicket0755
+        ) {
+          this.showFeedback("把 0755 取餐号拖入 3 号窗口的验票框。", "task");
+        }
       } else {
         this.bridge.emit("rpg_canteen_pickup_selected", { windowId: target.value });
       }
@@ -1838,6 +1994,33 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     const state = this.bridge.getState();
     const worldPoint = this.cameras.main.getWorldPoint(canvasX, canvasY);
+    if (itemId === "dailySpecialSparklingWater" && state.canteenHunt.phase === "exit_blocking") {
+      if (state.canteenHunt.mode !== "light") {
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId,
+          reason: "locked",
+          targetLabel: "食堂地面",
+          detail: "切回浅色操作，再把今日新品拖进食堂地图。"
+        });
+        return;
+      }
+      if (!state.items.dailySpecialSparklingWater || state.canteenHunt.defenseDrinkUsed) {
+        this.bridge.emit("rpg_item_use_feedback", {
+          itemId,
+          reason: "locked",
+          targetLabel: "食堂地面",
+          detail: "本轮减速饮料已经使用。"
+        });
+        return;
+      }
+      this.bridge.emit("rpg_canteen_defense_drink_requested");
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "accepted",
+        targetLabel: "食堂地面"
+      });
+      return;
+    }
     if (itemId === "badDrink") {
       if (Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, this.player.x, this.player.y - 24) <= 58) {
         this.bridge.emit("rpg_canteen_bad_drink_requested");
@@ -1867,12 +2050,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
       mode: state.canteenHunt.mode
     });
     if (!result.target) {
+      const detail = itemId === "dailySpecialSparklingWater"
+        ? state.canteenHunt.phase === "drink_mix"
+          ? "把今日新品拖到第三个餐口宣传板下方的发光空杯位。"
+          : "这杯饮料当前没有可用目标。"
+        : itemId === "pickupTicket0755"
+          ? state.canteenHunt.phase === "pickup_search"
+            ? "先在浅色的3号窗口看见时间报错，再切到深色，把票拖入3号验票框。"
+            : "0755 取餐号当前没有可用窗口。"
+          : "没有命中当前可用的交互框。";
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
         reason: "missed_target",
-        detail: itemId === "dailySpecialSparklingWater"
-          ? "请拖到第五个打饭窗口下方宣传板的发光空杯位。"
-          : "小票不需要拖拽：靠近取餐窗口后按空格使用。"
+        detail
       });
       return;
     }
@@ -1914,6 +2104,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
       });
       return;
     }
+    // Spatial acceptance alone cannot complete pickup. The controller owns the
+    // time-error and dark-observation gates and emits the final visible result.
     this.bridge.emit("rpg_canteen_pickup_selected", { windowId: result.target.value });
   }
 
@@ -2105,7 +2297,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     } else if (nearest.kind === "pickup") {
       label = state.canteenHunt.mode === "dark"
         ? nearest.value === "3" && state.canteenHunt.pickupDarkClueRead && state.items.pickupTicket0755
-          ? "使用小票 · 3号窗口"
+          ? "拖入0755取餐号 · 3号窗口"
           : `查看${nearest.value}号窗口`
         : state.items.pickupTicket0755
           ? `使用小票 · ${nearest.value}号窗口`
@@ -2141,11 +2333,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.applyCanteenNpcMode(this.currentMode, immediate);
     }
     const pickupVisible = state.canteenHunt.active && state.canteenHunt.phase === "pickup_search";
-    this.pickupWindowVisuals.forEach((visual) => {
-      visual.sign.setVisible(false);
-      visual.standMarker.setVisible(false);
-      visual.dropFrame.setVisible(false);
-      visual.dropLabel.setVisible(false);
+    this.pickupWindowVisuals.forEach((visual, windowId) => {
+      const window = CANTEEN_PICKUP_WINDOWS.find((candidate) => candidate.id === windowId);
+      const isTicketTarget = window?.value === "3";
+      const showTicketFrame = pickupVisible
+        && isTicketTarget
+        && state.ui.selectedItem === "pickupTicket0755"
+        && state.canteenHunt.mode === "dark"
+        && state.canteenHunt.pickupTimeErrorSeen
+        && state.canteenHunt.pickupDarkClueRead;
+      visual.sign.setVisible(pickupVisible);
+      visual.standMarker.setVisible(pickupVisible);
+      visual.dropFrame.setVisible(showTicketFrame);
+      visual.dropLabel.setVisible(showTicketFrame);
     });
     const sideGamesAvailable = canPlayCanteenSideGames(state);
     this.exitButton?.setVisible(
@@ -2170,7 +2370,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
       const removed = state.canteenHunt.returnedTrayIds.includes(trayId)
         || state.canteenHunt.carriedTrayIds.includes(trayId);
-      const visible = sideGamesAvailable && !removed;
+      const visible = state.canteenHunt.phase === "tray_search" && !removed;
       const dirtyVisible = visible
         && !hasCompletedCanteenTrayTask(state)
         && state.canteenHunt.trayTaskStarted
@@ -2186,8 +2386,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.updateCarriedTrayVisual(state);
     const blocking = state.canteenHunt.phase === "exit_blocking";
     if (blocking) {
-      this.tweens.killTweensOf(this.darkOverlay);
-      this.darkOverlay.setAlpha(0);
       this.modeFibers.forEach((fiber) => fiber.setVisible(false));
     }
     this.cartVisuals.forEach((cart, exitId) => {
@@ -2199,7 +2397,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       cart.setVisible(false);
     });
     this.exitGlows.forEach((glow) => glow.setVisible(false));
-    if (blocking && !this.paper.visible) {
+    if (blocking && !this.paper.visible && !this.paperBusy && !this.defenseRuntime) {
       this.paper.setPosition(836, 470).setVisible(true);
       this.paperFloatTween.restart();
     } else if (!blocking && !this.paperBusy && !this.defenseRuntime) {
@@ -2745,36 +2943,162 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private animatePaperBurst(): void {
     const steamWindow = CANTEEN_PICKUP_WINDOWS[2];
     this.paperBusy = true;
+    this.dialogueLocked = true;
     this.paperFloatTween.pause();
-    this.paper
-      .setPosition(steamWindow.x, steamWindow.y)
-      .setScale(0.32, 0.72)
-      .setAngle(-18)
-      .setAlpha(0)
-      .setVisible(true);
+    this.lightNpcSprites.forEach((sprite) => sprite.setVisible(false));
+    this.lightNpcCollisionBodies.forEach((body) => {
+      const staticBody = body.body as Phaser.Physics.Arcade.StaticBody | null;
+      if (staticBody) staticBody.enable = false;
+    });
+    this.shadowNpcSprite?.setVisible(true).setAlpha(0.68);
+    this.paper.setVisible(false);
     this.showFeedback(canteenContent.pickup.ticketAccepted, "system");
     this.bridge.emit("canteen_paper_burst_started");
+    const camera = this.cameras.main;
+    camera.stopFollow().setDeadzone(0, 0);
+    camera.pan(steamWindow.x, steamWindow.y + 24, this.reducedMotion ? 80 : 520, "Sine.easeInOut");
+    camera.zoomTo(1.62, this.reducedMotion ? 80 : 520, "Sine.easeInOut");
+
+    const packageGlow = this.add.circle(0, 0, 50, 0x55cfff, 0.16)
+      .setStrokeStyle(3, 0x83e3ff, 0.72);
+    const packageBody = this.add.polygon(
+      0,
+      0,
+      [-43, -22, 34, -28, 48, 12, 19, 31, -37, 24, -51, 1],
+      0xd4b36b,
+      1
+    ).setStrokeStyle(4, 0x6bdcff, 0.95);
+    const foldA = this.add.rectangle(-14, 1, 44, 4, 0x73552f, 0.78).setAngle(24);
+    const foldB = this.add.rectangle(15, 2, 40, 4, 0x73552f, 0.72).setAngle(-19);
+    const packageVisual = this.add.container(steamWindow.x, steamWindow.y + 18, [packageGlow, packageBody, foldA, foldB])
+      .setDepth(2110)
+      .setAlpha(0)
+      .setScale(0.72);
+
+    this.time.delayedCall(this.reducedMotion ? 90 : 600, () => {
+      this.tweens.add({
+        targets: packageVisual,
+        alpha: 1,
+        scale: 1,
+        duration: this.reducedMotion ? 80 : 260,
+        ease: "Back.easeOut",
+        onComplete: () => this.shakePaperChickenPackage(packageVisual, 0, () => {
+          this.emitPaperChickenBurst(packageVisual.x, packageVisual.y);
+          packageVisual.setScale(1.42).setAlpha(0.25);
+          const cameraPaper = this.add.image(RPG_HUD_LAYOUT.centerX, 252, CANTEEN_PAPER_KEY)
+            .setScrollFactor(0)
+            .setDepth(6500)
+            .setScale(2.7)
+            .setAngle(-8);
+          const cameraLine = this.add.text(RPG_HUD_LAYOUT.centerX, 326, "本人马上回来。", {
+            color: "#172128",
+            backgroundColor: "#fff7dfef",
+            fontFamily: "monospace",
+            fontSize: "22px",
+            fontStyle: "bold",
+            padding: { x: 14, y: 7 }
+          }).setOrigin(0.5).setScrollFactor(0).setDepth(6501);
+
+          this.time.delayedCall(this.reducedMotion ? 120 : 520, () => {
+            cameraPaper.destroy();
+            cameraLine.destroy();
+            packageVisual.destroy(true);
+            this.shadowNpcSprite?.setVisible(false);
+            const fullMapZoom = Math.min(
+              camera.width / CANTEEN_INTERIOR_WORLD.width,
+              camera.height / CANTEEN_INTERIOR_WORLD.height
+            ) * 0.985;
+            camera.pan(
+              CANTEEN_INTERIOR_WORLD.width / 2,
+              CANTEEN_INTERIOR_WORLD.height / 2,
+              this.reducedMotion ? 90 : 520,
+              "Sine.easeOut"
+            );
+            camera.zoomTo(fullMapZoom, this.reducedMotion ? 90 : 520, "Sine.easeOut");
+            this.paper
+              .setTexture(CANTEEN_PAPER_KEY)
+              .setPosition(steamWindow.x, steamWindow.y + 20)
+              .setScale(0.9)
+              .setAlpha(1)
+              .setAngle(-14)
+              .setVisible(true);
+            this.tweens.add({
+              targets: this.paper,
+              x: 836,
+              y: 470,
+              scale: 1.12,
+              angle: 352,
+              duration: this.reducedMotion ? 120 : 620,
+              ease: "Back.easeOut",
+              onComplete: () => {
+                this.bridge.emit("canteen_paper_burst_completed");
+                this.queueDialogue(["玩家：那是鸡吗？", "系统：现在不是了。"], () => {
+                  this.startDefense();
+                }, 1150);
+              }
+            });
+          });
+        })
+      });
+    });
+  }
+
+  private shakePaperChickenPackage(
+    visual: Phaser.GameObjects.Container,
+    index: number,
+    onComplete: () => void
+  ): void {
+    if (index >= 3) {
+      onComplete();
+      return;
+    }
+    const amount = this.reducedMotion ? 2 : 4 + index * 2;
     this.tweens.add({
-      targets: this.paper,
-      x: 836,
-      y: 470,
-      scaleX: 1,
-      scaleY: 1,
-      alpha: 1,
-      angle: 340,
-      duration: this.reducedMotion ? 120 : 680,
-      ease: "Back.easeOut",
-      onComplete: () => {
-        this.paperBusy = false;
-        this.bridge.emit("canteen_paper_burst_completed");
-        this.startDefense();
-      }
+      targets: visual,
+      x: visual.x + (index % 2 === 0 ? amount : -amount),
+      angle: index % 2 === 0 ? 3 + index : -3 - index,
+      scaleX: 1 + index * 0.045,
+      scaleY: 1 - index * 0.025,
+      duration: this.reducedMotion ? 45 : 115,
+      yoyo: true,
+      hold: this.reducedMotion ? 20 : 115,
+      onComplete: () => this.shakePaperChickenPackage(visual, index + 1, onComplete)
+    });
+  }
+
+  private emitPaperChickenBurst(x: number, y: number): void {
+    const colors = [0xffce55, 0x7bdbff, 0xffffff, 0xd98b44] as const;
+    Array.from({ length: 22 }, (_unused, index) => {
+      const angle = Phaser.Math.DegToRad((360 / 22) * index + Phaser.Math.Between(-9, 9));
+      const distance = Phaser.Math.Between(46, 118);
+      const shape = index % 3 === 0
+        ? this.add.rectangle(x, y, 7, 4, colors[index % colors.length], 0.95)
+        : this.add.circle(x, y, index % 4 === 0 ? 6 : 3, colors[index % colors.length], 0.9);
+      shape.setDepth(2120 + index);
+      this.tweens.add({
+        targets: shape,
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance - (index % 4) * 7,
+        alpha: 0,
+        scale: index % 3 === 0 ? 1.4 : 0.45,
+        duration: this.reducedMotion ? 160 : Phaser.Math.Between(480, 760),
+        ease: "Quad.easeOut",
+        onComplete: () => shape.destroy()
+      });
     });
   }
 
   private startDefense(): void {
     if (this.defenseRuntime || this.bridge.getState().canteenHunt.phase !== "exit_blocking") return;
+    if (!this.player?.active || !this.player.body || !this.paper?.active) {
+      this.showFeedback("场景仍在初始化，请稍后再试。", "system", 1200);
+      return;
+    }
     this.currentPhase = "exit_blocking";
+    if (this.bridge.getState().canteenHunt.mode !== "light") {
+      this.bridge.emit("rpg_canteen_mode_requested", { mode: "light" });
+    }
+    this.currentMode = "light";
     this.applyCanteenNpcMode(this.currentMode, true);
     this.tweens.killTweensOf(this.darkOverlay);
     this.darkOverlay.setAlpha(0);
@@ -2810,66 +3134,127 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.paper,
       {
         onComplete: () => {
-          this.showFeedback("纸条暂时没有找到能钻出去的流程。", "success", 1500);
+          this.showFeedback("堵住了。", "success", 1200);
           this.bridge.emit("rpg_canteen_defense_completed");
         },
-        onFailure: (exitId) => {
-          const exitLabel: Record<CanteenDefenseExitId, string> = {
-            northwest: "左上门",
-            south_gap: "左中下通道",
-            southeast: "右下门"
-          };
-          this.showFeedback(`纸条从${exitLabel[exitId]}溜走了。`, "system", 1100);
+        onFailure: (_exitId) => {
+          this.showFeedback("纸条跑了。", "system", 1100);
           this.defenseRestartTimer?.remove(false);
           this.defenseRestartTimer = this.time.delayedCall(1150, () => {
             this.defenseRuntime?.restartAttempt();
             this.defenseRestartTimer = null;
           });
         },
-        onTurnaround: (_exitId, route) => {
-          this.flashDefenseRoute(route);
+        onTurnaround: () => {
           this.cameras.main.shake(this.reducedMotion ? 0 : 75, 0.0025);
         }
       }
     );
-    this.showFeedback("守住三个出口。空格键冲刺，纸条回头时会自动闪出路线。", "task", 2600);
+    this.showFeedback("推车挡住出口。暗色闪一下查看下一个门。", "task", 2600);
   }
 
   private finishDefense(): void {
     this.defenseRestartTimer?.remove(false);
     this.defenseRestartTimer = null;
+    this.defenseModeTimer?.remove(false);
+    this.defenseModeTimer = null;
     this.defenseRuntime?.destroy();
     this.defenseRuntime = null;
+    this.defenseBubbleContainer?.destroy(true);
+    this.defenseBubbleContainer = null;
     this.defenseRouteGraphics?.clear().setVisible(false);
     this.tweens.killTweensOf(this.darkOverlay);
     this.darkOverlay.setAlpha(0);
     this.modeFibers.forEach((fiber) => fiber.setVisible(false));
     this.paperFloatTween.pause();
     this.paper.setVisible(false);
-    this.player.setVelocity(0, 0);
+    if (this.player?.active) this.player.setVelocity(0, 0);
   }
 
-  private flashDefenseRoute(route: readonly Phaser.Math.Vector2[]): void {
+  private flashDefenseExit(exitId: CanteenDefenseExitId): void {
     if (!this.defenseRouteGraphics) {
       this.defenseRouteGraphics = this.add.graphics().setDepth(1604);
     }
+    const point = this.defenseRuntime?.getExitPoint(exitId);
+    if (!point) return;
     const graphics = this.defenseRouteGraphics;
     this.tweens.killTweensOf(graphics);
     graphics.clear().setVisible(true).setAlpha(0.95);
-    graphics.lineStyle(5, 0x78ddff, 0.88).beginPath();
-    graphics.moveTo(this.paper.x, this.paper.y);
-    route.forEach((point) => graphics.lineTo(point.x, point.y));
-    graphics.strokePath();
-    route.forEach((point, index) => {
-      if (index % 2 === 0) graphics.fillStyle(0xdff9ff, 0.9).fillCircle(point.x, point.y, 5);
-    });
+    graphics.fillStyle(0xdff9ff, 0.16).fillCircle(point.x, point.y, 46);
+    graphics.lineStyle(8, 0x78ddff, 0.96).strokeCircle(point.x, point.y, 46);
+    graphics.fillStyle(0xdff9ff, 0.96).fillTriangle(
+      point.x,
+      point.y - 30,
+      point.x - 18,
+      point.y + 10,
+      point.x + 18,
+      point.y + 10
+    );
 
     this.tweens.add({
       targets: graphics,
       alpha: 0,
-      duration: this.reducedMotion ? 420 : 760,
+      duration: this.reducedMotion ? 650 : 1000,
       onComplete: () => {
         graphics.clear().setVisible(false);
+      }
+    });
+  }
+
+  private animateDefenseBubbles(): void {
+    this.defenseBubbleContainer?.destroy(true);
+    const bubbles = Array.from({ length: 24 }, (_unused, index) => {
+      const angle = Phaser.Math.DegToRad((360 / 24) * index);
+      const radius = 44 + (index % 6) * 18;
+      return this.add.circle(
+        this.paper.x + Math.cos(angle) * radius,
+        this.paper.y + Math.sin(angle) * radius * 0.58,
+        4 + index % 4,
+        0x7ce9ff,
+        0.2
+      ).setStrokeStyle(2, 0xc9f8ff, 0.88);
+    });
+    const container = this.add.container(0, 0, bubbles).setDepth(2050);
+    this.defenseBubbleContainer = container;
+    bubbles.forEach((bubble, index) => {
+      this.tweens.add({
+        targets: bubble,
+        y: bubble.y - 22 - (index % 5) * 5,
+        alpha: { from: 0.2, to: 0.9 },
+        scale: { from: 0.75, to: 1.35 },
+        duration: this.reducedMotion ? 300 : 760 + (index % 5) * 90,
+        yoyo: true,
+        repeat: 1
+      });
+    });
+    this.time.delayedCall(2000, () => {
+      if (this.defenseBubbleContainer === container) {
+        container.destroy(true);
+        this.defenseBubbleContainer = null;
+      }
+    });
+  }
+
+  private animateDefenseVictory(onComplete: () => void): void {
+    if (this.paperBusy) return;
+    this.paperBusy = true;
+    this.defenseModeTimer?.remove(false);
+    this.defenseModeTimer = null;
+    const destination = this.defenseRuntime?.getExitPoint("southeast") ?? { x: 1380, y: 852 };
+    this.tweens.add({
+      targets: this.paper,
+      x: destination.x,
+      y: destination.y,
+      scaleX: 0.28,
+      scaleY: 0.84,
+      angle: 86,
+      duration: this.reducedMotion ? 160 : 760,
+      ease: "Quad.easeIn",
+      onComplete: () => {
+        this.time.delayedCall(this.reducedMotion ? 60 : 260, () => {
+          this.paperBusy = false;
+          onComplete();
+        });
       }
     });
   }
@@ -3014,7 +3399,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
         identifiedTrayIds: state.canteenHunt.identifiedTrayIds,
         returnedTrayIds: state.canteenHunt.returnedTrayIds,
         menuDarkClueRead: state.canteenHunt.menuDarkClueRead,
+        pickupTimeErrorSeen: state.canteenHunt.pickupTimeErrorSeen,
         pickupDarkClueRead: state.canteenHunt.pickupDarkClueRead,
+        defenseDrinkUsed: state.canteenHunt.defenseDrinkUsed,
         identifiedExitIds: state.canteenHunt.identifiedExitIds,
         blockHits: state.canteenHunt.blockHits,
         activeTarget: nearest?.id ?? null,

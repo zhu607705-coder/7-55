@@ -12,8 +12,9 @@ import zjudingHomeUrl from "../../../assets/ui/zjuding_home.png";
 import zjudingLoadingUrl from "../../../assets/ui/zjuding_loading.png";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import { ItemInspectDialog } from "../../../components/ItemInspectDialog";
+import { PixelIcon } from "../../../components/PixelIcon";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
-import type { ItemId, LibraryRecoveryEvidenceId, ZjudingPage } from "../../../core/types";
+import type { ItemId, LibraryRecoveryEvidenceId, QizhenMapClueId, ZjudingPage } from "../../../core/types";
 import { sanitizeZjudingPage, selectFeatureAccess } from "../../../core/FeatureAccess";
 import { selectIdentityReadable } from "../../../core/IdentityAccess";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
@@ -1170,8 +1171,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       </section>
     );
   } else if (currentPage === "campus_map") {
-    const clueLabels: Record<string, string> = { bridge: "桥边", reflection: "倒影", lake: "湖" };
-    const availableClues: Array<{ id: ItemId; clue: string; label: string }> = [
+    const clueLabels: Record<QizhenMapClueId, string> = { bridge: "桥边", reflection: "倒影", lake: "湖" };
+    const clueItems: Record<QizhenMapClueId, ItemId> = {
+      bridge: "bridgeKeyword",
+      reflection: "reflectionKeyword",
+      lake: "lakeKeyword"
+    };
+    const availableClues: Array<{ id: ItemId; clue: QizhenMapClueId; label: string }> = [
       { id: "bridgeKeyword", clue: "bridge", label: "桥边" },
       { id: "reflectionKeyword", clue: "reflection", label: "倒影" },
       { id: "lakeKeyword", clue: "lake", label: "湖" }
@@ -1188,16 +1194,33 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           <section className="zju-qizhen-map-board" data-drop-target="qizhen_map_search" aria-label="地点关键词槽位">
             {[0, 1, 2].map((slot) => {
               const clueId = state.qizhenLake.mapClueIds[slot];
-              return <span key={slot} className={clueId ? "is-filled" : ""}>{clueId ? clueLabels[clueId] : "拖入关键词"}</span>;
+              return (
+                <span key={slot} className={clueId ? "is-filled" : "is-empty"}>
+                  {clueId ? (
+                    <>
+                      <span className="zju-qizhen-clue-texture" aria-hidden="true">
+                        <PixelIcon name={clueItems[clueId]} size={62} />
+                      </span>
+                      <b>{clueLabels[clueId]}</b>
+                    </>
+                  ) : (
+                    <small>拖入关键词</small>
+                  )}
+                </span>
+              );
             })}
           </section>
           <section className="zju-qizhen-clue-cards" aria-label="可用地点关键词">
             {availableClues.map((clue) => {
               const owned = state.items[clue.id];
-              const added = state.qizhenLake.mapClueIds.includes(clue.clue as "bridge" | "reflection" | "lake");
+              const added = state.qizhenLake.mapClueIds.includes(clue.clue);
               return (
                 <button key={clue.id} type="button" disabled={!owned || added} onClick={() => addQizhenMapClue(clue.id)}>
-                  <b>{clue.label}</b><small>{added ? "已加入" : owned ? "加入地图" : "尚未取得"}</small>
+                  <span className="zju-qizhen-clue-texture is-card" aria-hidden="true">
+                    <PixelIcon name={clue.id} size={58} />
+                  </span>
+                  <b>{clue.label}</b>
+                  <small>{added ? "已加入" : owned ? "加入地图" : "尚未取得"}</small>
                 </button>
               );
             })}

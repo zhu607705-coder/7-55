@@ -73,6 +73,26 @@ if (!Array.isArray(runtime.collisions) || runtime.collisions.length < 20) {
 if (!Array.isArray(runtime.targets) || runtime.targets.length < 10) {
   failures.push("theater runtime interaction targets are incomplete");
 }
+if (!Array.isArray(runtime.spotlight?.rounds) || runtime.spotlight.rounds.length !== 3) {
+  failures.push("theater spotlight runtime must contain exactly three rounds");
+} else {
+  const expectedLanes = ["left", "right", "center"];
+  runtime.spotlight.rounds.forEach((round, index) => {
+    if (round.round !== index || round.lane !== expectedLanes[index]) {
+      failures.push(`theater spotlight round ${index} does not match the controller sequence`);
+    }
+    if (
+      !Number.isFinite(round.previewMs)
+      || !Number.isFinite(round.actionMs)
+      || !Number.isFinite(round.requiredLockMs)
+      || !Number.isFinite(round.beamRadius)
+      || !Array.isArray(round.pathPoints)
+      || round.pathPoints.length < 4
+    ) {
+      failures.push(`theater spotlight round ${index} is incomplete`);
+    }
+  });
+}
 
 const exportFiles = [
   "public/godot/theater/index.html",

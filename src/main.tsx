@@ -14,6 +14,7 @@ import { getBikeArcadeSnapshot } from "./scenes/phone/P16_BikeArcade/BikeArcadeR
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
+import { getChapterThreeOpeningRuntimeSnapshot } from "./components/ChapterThreeOpeningRuntime";
 import "@fontsource/fusion-pixel-12px-proportional-sc";
 import "./styles.css";
 
@@ -64,6 +65,7 @@ function summarizeGameState(state: GameState) {
     theaterHunt: state.theaterHunt,
     qizhenLake: state.qizhenLake,
     presentation: getPresentationRuntimeSnapshot(),
+    chapterThreeOpening: getChapterThreeOpeningRuntimeSnapshot(),
     endingGame: getEndingRuntimeSnapshot(),
     rpgRuntime: getRpgRuntimeDebugState(),
     bikeArcade: getBikeArcadeSnapshot(),

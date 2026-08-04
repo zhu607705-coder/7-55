@@ -24,7 +24,12 @@ export function RpgRealityModeToggle({
       aria-pressed={mode === "dark"}
       aria-label={`当前${current.label}。点击切换到${next.label}`}
       title={`${current.shortHint} 点击切换到${next.label}。`}
-      onClick={onToggle}
+      onClick={(event) => {
+        onToggle();
+        // Return keyboard control to the RPG surface. Otherwise Space activates
+        // this focused button again instead of the nearby world interaction.
+        event.currentTarget.blur();
+      }}
     >
       <span>当前模式</span>
       <strong>{current.label}</strong>

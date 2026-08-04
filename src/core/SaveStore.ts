@@ -14,6 +14,7 @@ import type {
   LostFoundStage,
   LibraryRecoveryEvidenceId,
   QizhenDecoyTargetId,
+  QizhenFishingSpotId,
   QizhenLakePhase,
   QizhenMapClueId,
   WalletState
@@ -21,13 +22,13 @@ import type {
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 15;
+const SAVE_VERSION = 16;
 const WALLET_SAVE_VERSION = 12;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, SAVE_VERSION]);
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
-  "campus_bootstrap", "dorm_hub", "library_interior", "canteen_interior", "theater_interior", "qizhen_lake"
+  "campus_bootstrap", "campus_qizhen_loop", "dorm_hub", "library_interior", "canteen_interior", "theater_interior", "qizhen_lake"
 ]);
 const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
   "campus_spawn",
@@ -45,6 +46,12 @@ const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
   "qizhen_signs",
   "qizhen_decoy",
   "qizhen_mist",
+  "qizhen_dock",
+  "qizhen_open_water",
+  "qizhen_channel",
+  "qizhen_swan_cove",
+  "qizhen_chase",
+  "qizhen_complete",
   "library_entrance",
   "library_seat_022",
   "library_front_desk",
@@ -75,7 +82,7 @@ const VALID_CANTEEN_TRAY_IDS = new Set([
   "tray_plain_04", "tray_plain_05", "tray_plain_06",
   "tray_plain_07", "tray_plain_08", "tray_plain_09"
 ]);
-const VALID_CANTEEN_EXIT_IDS = new Set(["west", "southeast", "steam"]);
+const VALID_CANTEEN_EXIT_IDS = new Set(["northwest", "south_gap", "southeast"]);
 const VALID_CANTEEN_DRINK_IDS = new Set<CanteenDrinkIngredientId>([
   "sparklingWater", "lemonTea", "blackCoffee"
 ]);
@@ -88,10 +95,20 @@ const VALID_THEATER_PROGRAM_IDS = new Set<GameState["theaterHunt"]["collectedPro
   "opening", "spotlight", "finale"
 ]);
 const VALID_QIZHEN_PHASES = new Set<QizhenLakePhase>([
-  "inactive", "location_search", "lake_unlocked", "reflection_hunt", "sign_alignment",
-  "decoy_setup", "mist_timing", "chase_ready"
+  "inactive", "location_search", "lake_unlocked", "dock_outfitting", "boarding_tutorial",
+  "lake_exploration", "tool_chain", "swan_exchange", "paper_capture", "swan_chase", "complete"
+]);
+const LEGACY_QIZHEN_INTERIOR_PHASES = new Set([
+  "reflection_hunt", "sign_alignment", "decoy_setup", "mist_timing", "chase_ready"
 ]);
 const VALID_QIZHEN_MODES = new Set<GameState["qizhenLake"]["mode"]>(["light", "dark"]);
+const VALID_QIZHEN_ZONES = new Set<GameState["qizhenLake"]["zone"]>(["dock", "open_water", "channel", "swan_cove"]);
+const VALID_QIZHEN_VEHICLES = new Set<GameState["qizhenLake"]["vehicle"]>(["on_foot", "kayak"]);
+const VALID_QIZHEN_SAFE_SPAWNS = new Set<GameState["qizhenLake"]["safeSpawnId"]>([
+  "dock_entry", "dock_kayak", "open_water_entry", "channel_entry", "swan_cove_entry", "channel_chase"
+]);
+const VALID_QIZHEN_PADDLE_SIDES = new Set<NonNullable<GameState["qizhenLake"]["boardingLastSide"]>>(["left", "right"]);
+const VALID_QIZHEN_FISHING_SPOTS = new Set<QizhenFishingSpotId>(["locker_key", "net_frame", "paper", "fish"]);
 const VALID_QIZHEN_MAP_CLUES = new Set<QizhenMapClueId>(["bridge", "reflection", "lake"]);
 const VALID_QIZHEN_DECOY_TARGETS = new Set<QizhenDecoyTargetId>(["notice", "bridge", "lamp"]);
 const VALID_DIGIT_VALUES = new Set<NonNullable<GameState["digits"]["d1"]>>(["0", "7", "9", "8"]);
@@ -106,7 +123,9 @@ const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "theaterTicketHalfB", "temporaryTheaterTicket", "theaterProgramOpening",
   "theaterProgramSpotlight", "theaterProgramFinale", "spotlightRemote",
   "fluorescentBrush", "decoyPaper", "wetProgram", "bridgeKeyword", "reflectionKeyword",
-  "lakeKeyword", "reflectionCoordinate"
+  "lakeKeyword", "reflectionCoordinate", "fishingRod", "rustedLockerKey", "nylonCord",
+  "brokenNetFrame", "improvisedDipNet", "sealedFeedTin", "fishFeedPellets", "smallCarp",
+  "swanMagnet", "magneticFishingRod"
 ]);
 const VALID_ZJUDING_PAGES = new Set<GameState["ui"]["zjudingPage"]>([
   "hub", "login", "directory", "learn", "campus_map", "library", "library_spaces", "library_seat",
@@ -147,7 +166,7 @@ const VALID_CHAPTER_IDS = new Set<GameState["ui"]["seenChapterIntros"][number]>(
 ]);
 
 interface SaveEnvelope {
-  version: 15;
+  version: typeof SAVE_VERSION;
   state: GameState;
   savedAt: number;
 }
@@ -158,7 +177,7 @@ export class SaveStore {
   save(state: GameState): boolean {
     try {
       const existing = this.storage.getItem(GAME_SAVE_KEY);
-      if (existing && isValidJsonRecord(existing)) {
+      if (existing && isPotentiallyLoadableSave(existing)) {
         this.storage.setItem(GAME_SAVE_BACKUP_KEY, existing);
       }
       const envelope: SaveEnvelope = {
@@ -196,6 +215,9 @@ export class SaveStore {
       if (!isRecord(parsed)) return null;
 
       const isVersionedEnvelope = SUPPORTED_ENVELOPE_VERSIONS.has(Number(parsed.version)) && isRecord(parsed.state);
+      const hasEnvelopeShape = Object.prototype.hasOwnProperty.call(parsed, "version")
+        || Object.prototype.hasOwnProperty.call(parsed, "state");
+      if (hasEnvelopeShape && !isVersionedEnvelope) return null;
       const envelopeVersion = isVersionedEnvelope ? Number(parsed.version) : 0;
       const saved = isVersionedEnvelope ? parsed.state as Record<string, unknown> : parsed;
       const legacySave = !isVersionedEnvelope || envelopeVersion <= 6;
@@ -311,7 +333,11 @@ export class SaveStore {
       let canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
         phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
-        mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
+        // The one-second defense observation flash is presentation-only. A save
+        // captured during that flash must always resume in physical-operation mode.
+        mode: savedCanteenPhase === "exit_blocking"
+          ? "light"
+          : enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
         trayTaskStarted: booleanOr(
           savedCanteenHunt.trayTaskStarted,
           savedCanteenPhase !== "tray_search"
@@ -347,7 +373,12 @@ export class SaveStore {
         promoDrinkPlaced: booleanOr(savedCanteenHunt.promoDrinkPlaced, drinkPreviouslyCompleted),
         queueGapOpened: booleanOr(savedCanteenHunt.queueGapOpened, drinkPreviouslyCompleted),
         menuDarkClueRead: booleanOr(savedCanteenHunt.menuDarkClueRead, menuPreviouslyCompleted),
+        pickupTimeErrorSeen: booleanOr(savedCanteenHunt.pickupTimeErrorSeen, pickupPreviouslyCompleted),
         pickupDarkClueRead: booleanOr(savedCanteenHunt.pickupDarkClueRead, pickupPreviouslyCompleted),
+        defenseDrinkUsed: booleanOr(
+          savedCanteenHunt.defenseDrinkUsed,
+          ["chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase)
+        ),
         orderedMenuOption: typeof savedCanteenHunt.orderedMenuOption === "string"
           && VALID_CANTEEN_MENU_OPTIONS.has(savedCanteenHunt.orderedMenuOption as CanteenMenuOptionId)
             ? savedCanteenHunt.orderedMenuOption as CanteenMenuOptionId
@@ -357,7 +388,7 @@ export class SaveStore {
         identifiedExitIds: filteredStringArrayFromSet(
           savedCanteenHunt.identifiedExitIds,
           VALID_CANTEEN_EXIT_IDS,
-          ["southeast", "steam", "west"].slice(0, savedBlockHits)
+          ["northwest", "south_gap", "southeast"].slice(0, savedBlockHits)
         ) as GameState["canteenHunt"]["identifiedExitIds"],
         orderAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.orderAttemptCount, initial.canteenHunt.orderAttemptCount),
         pickupAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.pickupAttemptCount, initial.canteenHunt.pickupAttemptCount),
@@ -407,7 +438,12 @@ export class SaveStore {
         spotlightMistakes: nonNegativeIntegerOr(savedTheaterHunt.spotlightMistakes, initial.theaterHunt.spotlightMistakes),
         decoyRevealed: booleanOr(savedTheaterHunt.decoyRevealed, initial.theaterHunt.decoyRevealed)
       };
-      const qizhenLake = normalizeQizhenLake(saved.qizhenLake, initial.qizhenLake);
+      const qizhenNormalization = normalizeQizhenLake(
+        saved.qizhenLake,
+        initial.qizhenLake,
+        envelopeVersion < SAVE_VERSION
+      );
+      const qizhenLake = qizhenNormalization.state;
       if ((theaterHunt.phase === "complete" || items.wetProgram) && qizhenLake.phase === "inactive") {
         qizhenLake.active = true;
         qizhenLake.phase = "location_search";
@@ -425,7 +461,8 @@ export class SaveStore {
         }
       }
 
-      normalizeConsumedItems(items, ui, flags);
+      normalizeConsumedItems(items, ui, flags, canteenHunt, theaterHunt, qizhenLake);
+      normalizeQizhenItems(items, qizhenLake, qizhenNormalization);
       const wallet = normalizeWallet(
         saved.wallet,
         initial.wallet,
@@ -455,6 +492,18 @@ export class SaveStore {
         qizhenLake,
         ui
       };
+      if (
+        hydrated.rpgScene === "campus_bootstrap"
+        && ["campus_qizhen_transition_stop", "campus_qizhen_gate"].includes(hydrated.rpgCheckpoint)
+      ) {
+        hydrated.rpgScene = "campus_qizhen_loop";
+      }
+      if (qizhenNormalization.migratedLegacyInterior && saved.rpgScene === "qizhen_lake") {
+        hydrated.rpgScene = "qizhen_lake";
+        hydrated.rpgCheckpoint = qizhenNormalization.migratedLegacyChase
+          ? "qizhen_chase"
+          : "qizhen_dock";
+      }
       if (requiresCanteenMigration && !chapterThreeAlreadyProgressed) {
         hydrated.runtimeMode = "rpg";
         hydrated.rpgScene = "campus_bootstrap";
@@ -503,28 +552,168 @@ export class SaveStore {
   }
 }
 
+interface QizhenNormalizationResult {
+  state: GameState["qizhenLake"];
+  migratedLegacyInterior: boolean;
+  migratedLegacyChase: boolean;
+}
+
 function normalizeQizhenLake(
   value: unknown,
-  initial: GameState["qizhenLake"]
-): GameState["qizhenLake"] {
+  initial: GameState["qizhenLake"],
+  migrateLegacyPaperRelease: boolean
+): QizhenNormalizationResult {
   const saved = asRecord(value);
   const signRotations = Array.isArray(saved.signRotations)
     && saved.signRotations.length === 3
     && saved.signRotations.every((entry) => Number.isInteger(entry) && entry >= 0 && entry <= 3)
     ? saved.signRotations as [number, number, number]
     : [...initial.signRotations] as [number, number, number];
-  const phase = enumOr(saved.phase, VALID_QIZHEN_PHASES, initial.phase);
+  const savedPhase = typeof saved.phase === "string" ? saved.phase : initial.phase;
+  const migratedLegacyChase = savedPhase === "chase_ready"
+    || (migrateLegacyPaperRelease && booleanOr(saved.paperReleased, false));
+  const migratedLegacyInterior = migratedLegacyChase || LEGACY_QIZHEN_INTERIOR_PHASES.has(savedPhase);
+  const phase: QizhenLakePhase = migratedLegacyChase
+    ? "swan_chase"
+    : migratedLegacyInterior
+      ? "dock_outfitting"
+      : enumOr(saved.phase, VALID_QIZHEN_PHASES, initial.phase);
   const decoyPlacedAt = nullableEnumOr(saved.decoyPlacedAt, VALID_QIZHEN_DECOY_TARGETS, initial.decoyPlacedAt);
-  return {
-    active: booleanOr(saved.active, phase !== "inactive" || initial.active),
+  const reachedBoarding = [
+    "boarding_tutorial", "lake_exploration", "tool_chain", "swan_exchange",
+    "paper_capture", "swan_chase", "complete"
+  ].includes(phase);
+  const reachedExploration = [
+    "lake_exploration", "tool_chain", "swan_exchange", "paper_capture", "swan_chase", "complete"
+  ].includes(phase);
+  const reachedToolChain = ["tool_chain", "swan_exchange", "paper_capture", "swan_chase", "complete"].includes(phase);
+  const reachedSwanExchange = ["swan_exchange", "paper_capture", "swan_chase", "complete"].includes(phase);
+  const reachedPaperCapture = ["paper_capture", "swan_chase", "complete"].includes(phase);
+  const reachedChase = ["swan_chase", "complete"].includes(phase);
+  const completed = phase === "complete";
+
+  const magneticRodCombined = reachedChase
+    || migratedLegacyChase
+    || booleanOr(saved.magneticRodCombined, initial.magneticRodCombined);
+  const swanFed = reachedPaperCapture
+    || magneticRodCombined
+    || migratedLegacyChase
+    || booleanOr(saved.swanFed, initial.swanFed);
+  const fishCaught = reachedSwanExchange
+    || swanFed
+    || migratedLegacyChase
+    || booleanOr(saved.fishCaught, initial.fishCaught);
+  const feedTinOpened = fishCaught
+    || migratedLegacyChase
+    || booleanOr(saved.feedTinOpened, initial.feedTinOpened);
+  const feedTinRetrieved = feedTinOpened
+    || migratedLegacyChase
+    || booleanOr(saved.feedTinRetrieved, initial.feedTinRetrieved);
+  const netCombined = feedTinRetrieved
+    || migratedLegacyChase
+    || booleanOr(saved.netCombined, initial.netCombined);
+  const lockerOpened = netCombined
+    || migratedLegacyChase
+    || booleanOr(saved.lockerOpened, initial.lockerOpened);
+  const paperCaptured = reachedChase
+    || migratedLegacyChase
+    || booleanOr(saved.paperCaptured, initial.paperCaptured);
+  const swanReleased = paperCaptured
+    || migratedLegacyChase
+    || booleanOr(saved.swanReleased, initial.swanReleased);
+  const observedFishingSpotIds = new Set(filteredStringArrayFromSet(
+    saved.observedFishingSpotIds,
+    VALID_QIZHEN_FISHING_SPOTS,
+    initial.observedFishingSpotIds
+  ));
+  if (lockerOpened) observedFishingSpotIds.add("locker_key");
+  if (netCombined) observedFishingSpotIds.add("net_frame");
+  if (fishCaught) observedFishingSpotIds.add("fish");
+  if (paperCaptured) observedFishingSpotIds.add("paper");
+
+  let zone = enumOr(saved.zone, VALID_QIZHEN_ZONES, initial.zone);
+  let vehicle = enumOr(saved.vehicle, VALID_QIZHEN_VEHICLES, initial.vehicle);
+  let safeSpawnId = enumOr(saved.safeSpawnId, VALID_QIZHEN_SAFE_SPAWNS, initial.safeSpawnId);
+  if (migratedLegacyChase || phase === "swan_chase") {
+    zone = "channel";
+    vehicle = "kayak";
+    safeSpawnId = "channel_chase";
+  } else if (migratedLegacyInterior) {
+    zone = "dock";
+    vehicle = "on_foot";
+    safeSpawnId = "dock_entry";
+  } else if (phase === "complete") {
+    zone = "dock";
+    vehicle = "on_foot";
+    safeSpawnId = "dock_entry";
+  } else {
+    if (zone !== "dock" && vehicle === "on_foot") vehicle = "kayak";
+    if (!safeSpawnMatchesZone(safeSpawnId, zone)) {
+      safeSpawnId = defaultSafeSpawnFor(zone, vehicle);
+    }
+  }
+
+  const chaseDistance = completed
+    ? 1000
+    : rangedIntegerOr(saved.chaseDistance, 0, 1000, initial.chaseDistance);
+  const chaseBestDistance = Math.max(
+    chaseDistance,
+    rangedIntegerOr(saved.chaseBestDistance, 0, 1000, initial.chaseBestDistance)
+  );
+  const state: GameState["qizhenLake"] = {
+    active: phase !== "inactive" || booleanOr(saved.active, initial.active),
     phase,
     mode: enumOr(saved.mode, VALID_QIZHEN_MODES, initial.mode),
+    zone,
+    vehicle,
+    safeSpawnId,
     locationBriefingSeen: booleanOr(saved.locationBriefingSeen, initial.locationBriefingSeen),
     bridgeClueFound: booleanOr(saved.bridgeClueFound, initial.bridgeClueFound),
     reflectionClueFound: booleanOr(saved.reflectionClueFound, initial.reflectionClueFound),
     lakeClueFound: booleanOr(saved.lakeClueFound, initial.lakeClueFound),
     mapClueIds: filteredStringArrayFromSet(saved.mapClueIds, VALID_QIZHEN_MAP_CLUES, initial.mapClueIds),
     introSeen: booleanOr(saved.introSeen, initial.introSeen),
+    kayakEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.kayakEquipped, initial.kayakEquipped),
+    leftPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.leftPaddleEquipped, initial.leftPaddleEquipped),
+    rightPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.rightPaddleEquipped, initial.rightPaddleEquipped),
+    boardingStrokeCount: Math.max(
+      migratedLegacyChase ? 4 : 0,
+      nonNegativeIntegerOr(saved.boardingStrokeCount, initial.boardingStrokeCount)
+    ),
+    boardingLastSide: nullableEnumOr(saved.boardingLastSide, VALID_QIZHEN_PADDLE_SIDES, initial.boardingLastSide),
+    boardingTutorialCompleted: reachedExploration
+      || migratedLegacyChase
+      || booleanOr(saved.boardingTutorialCompleted, initial.boardingTutorialCompleted),
+    capsizeCount: nonNegativeIntegerOr(saved.capsizeCount, initial.capsizeCount),
+    rodFound: reachedToolChain
+      || magneticRodCombined
+      || migratedLegacyChase
+      || booleanOr(saved.rodFound, initial.rodFound),
+    decoyBaitAttached: reachedSwanExchange
+      || migratedLegacyChase
+      || booleanOr(saved.decoyBaitAttached, initial.decoyBaitAttached),
+    reflectionLocationObserved: reachedToolChain
+      || migratedLegacyChase
+      || booleanOr(saved.reflectionLocationObserved, initial.reflectionLocationObserved),
+    observedFishingSpotIds: [...observedFishingSpotIds],
+    directPaperCastFailures: nonNegativeIntegerOr(saved.directPaperCastFailures, initial.directPaperCastFailures),
+    lockerOpened,
+    netCombined,
+    feedTinRetrieved,
+    feedTinOpened,
+    fishCaught,
+    swanFed,
+    magneticRodCombined,
+    paperCaptured,
+    swanReleased,
+    chaseDistance,
+    chaseBestDistance,
+    chaseAttempts: Math.max(
+      reachedChase ? 1 : 0,
+      nonNegativeIntegerOr(saved.chaseAttempts, initial.chaseAttempts)
+    ),
+    magneticAttachmentBroken: completed || booleanOr(saved.magneticAttachmentBroken, initial.magneticAttachmentBroken),
+    transitionReady: completed || booleanOr(saved.transitionReady, initial.transitionReady),
     reflectionRound: rangedIntegerOr(saved.reflectionRound, 0, 3, initial.reflectionRound),
     reflectionMistakes: nonNegativeIntegerOr(saved.reflectionMistakes, initial.reflectionMistakes),
     signRotations,
@@ -535,6 +724,27 @@ function normalizeQizhenLake(
     mistAttempts: nonNegativeIntegerOr(saved.mistAttempts, initial.mistAttempts),
     paperReleased: booleanOr(saved.paperReleased, initial.paperReleased)
   };
+  return { state, migratedLegacyInterior, migratedLegacyChase };
+}
+
+function safeSpawnMatchesZone(
+  safeSpawnId: GameState["qizhenLake"]["safeSpawnId"],
+  zone: GameState["qizhenLake"]["zone"]
+): boolean {
+  if (zone === "dock") return safeSpawnId === "dock_entry" || safeSpawnId === "dock_kayak";
+  if (zone === "open_water") return safeSpawnId === "open_water_entry";
+  if (zone === "channel") return safeSpawnId === "channel_entry" || safeSpawnId === "channel_chase";
+  return safeSpawnId === "swan_cove_entry";
+}
+
+function defaultSafeSpawnFor(
+  zone: GameState["qizhenLake"]["zone"],
+  vehicle: GameState["qizhenLake"]["vehicle"]
+): GameState["qizhenLake"]["safeSpawnId"] {
+  if (zone === "dock") return vehicle === "kayak" ? "dock_kayak" : "dock_entry";
+  if (zone === "open_water") return "open_water_entry";
+  if (zone === "channel") return "channel_entry";
+  return "swan_cove_entry";
 }
 
 function isLegacyChapterThreeState(saved: Record<string, unknown>, ui: GameState["ui"]): boolean {
@@ -558,7 +768,9 @@ function hasChapterThreeProgress(
     || canteenHunt.identifiedTrayIds.length > 0
     || canteenHunt.returnedTrayIds.length > 0
     || canteenHunt.menuDarkClueRead
+    || canteenHunt.pickupTimeErrorSeen
     || canteenHunt.pickupDarkClueRead
+    || canteenHunt.defenseDrinkUsed
     || canteenHunt.identifiedExitIds.length > 0
     || canteenHunt.orderAttemptCount > 0
     || canteenHunt.pickupAttemptCount > 0
@@ -579,6 +791,19 @@ function hasChapterThreeProgress(
     || qizhenLake.phase !== "inactive"
     || qizhenLake.mapClueIds.length > 0
     || qizhenLake.introSeen
+    || qizhenLake.zone !== "dock"
+    || qizhenLake.vehicle !== "on_foot"
+    || qizhenLake.boardingTutorialCompleted
+    || qizhenLake.capsizeCount > 0
+    || qizhenLake.observedFishingSpotIds.length > 0
+    || qizhenLake.lockerOpened
+    || qizhenLake.netCombined
+    || qizhenLake.feedTinOpened
+    || qizhenLake.fishCaught
+    || qizhenLake.swanFed
+    || qizhenLake.paperCaptured
+    || qizhenLake.chaseAttempts > 0
+    || qizhenLake.transitionReady
     || qizhenLake.reflectionRound > 0
     || qizhenLake.signsSolved
     || qizhenLake.paperReleased;
@@ -629,9 +854,14 @@ function createPersistentSnapshot(state: GameState): GameState {
   };
 }
 
-function isValidJsonRecord(value: string): boolean {
+function isPotentiallyLoadableSave(value: string): boolean {
   try {
-    return isRecord(JSON.parse(value));
+    const parsed = JSON.parse(value) as unknown;
+    if (!isRecord(parsed)) return false;
+    const hasEnvelopeShape = Object.prototype.hasOwnProperty.call(parsed, "version")
+      || Object.prototype.hasOwnProperty.call(parsed, "state");
+    return !hasEnvelopeShape
+      || (SUPPORTED_ENVELOPE_VERSIONS.has(Number(parsed.version)) && isRecord(parsed.state));
   } catch {
     return false;
   }
@@ -759,7 +989,10 @@ function normalizeUi(
 function normalizeConsumedItems(
   items: GameState["items"],
   ui: GameState["ui"],
-  flags: GameState["flags"]
+  flags: GameState["flags"],
+  canteenHunt: GameState["canteenHunt"],
+  theaterHunt: GameState["theaterHunt"],
+  qizhenLake: GameState["qizhenLake"]
 ): void {
   // A successful check-in proves the first-chapter water recipe was completed.
   // Remove stale inputs/intermediates from older saves while preserving the
@@ -787,6 +1020,127 @@ function normalizeConsumedItems(
   if (puzzle.recoverySubmittedEvidenceIds.includes("seat_022_receipt")) items.seat022Receipt = false;
   if (puzzle.recoverySubmittedEvidenceIds.includes("library_presence_proof")) items.libraryPresenceProof = false;
   if (puzzle.backpackEvicted) items.seatReleasePass = false;
+
+  // The right arrow is retained after adjusting the campus-card balance, then
+  // consumed when it pushes the 022 receipt out of the library desk gap.
+  if (puzzle.seatReceiptCollected) items.rightArrow = false;
+
+  const pickupCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(canteenHunt.phase);
+  if (pickupCompleted) {
+    items.pickupTicket0755 = false;
+    items.sparklingWater = false;
+    items.lemonTea = false;
+    items.blackCoffee = false;
+    items.badDrink = false;
+    items.canteenRealBun = false;
+    items.canteenCluelessSoyMilk = false;
+    items.canteenEdgeEgg = false;
+    items.canteenUselessCongee = false;
+  }
+  const defenseCompleted = ["chase_ready", "chasing", "theater_reached"].includes(canteenHunt.phase);
+  if (canteenHunt.promoDrinkPlaced && !canteenHunt.defenseDrinkUsed && !defenseCompleted) {
+    items.dailySpecialSparklingWater = true;
+  }
+  if (canteenHunt.defenseDrinkUsed || defenseCompleted) {
+    items.dailySpecialSparklingWater = false;
+  }
+  if (canteenHunt.bikePaid || ["chasing", "theater_reached"].includes(canteenHunt.phase)) {
+    items.cafeteriaWages = false;
+  }
+
+  const programSolved = ["prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"].includes(theaterHunt.phase);
+  const ticketScanned = theaterHunt.propBoxOpened
+    || ["spotlight_ready", "spotlight_hunt", "reversal", "complete"].includes(theaterHunt.phase);
+  const brushUsed = theaterHunt.paperDusted
+    || ["spotlight_ready", "spotlight_hunt", "reversal", "complete"].includes(theaterHunt.phase);
+  const spotlightStarted = ["spotlight_hunt", "reversal", "complete"].includes(theaterHunt.phase);
+  if (theaterHunt.posterCleaned || theaterHunt.phase !== "entry_ticket") items.greaseTissue = false;
+  if (theaterHunt.admitted || theaterHunt.phase !== "entry_ticket") {
+    items.theaterTicketHalfA = false;
+    items.theaterTicketHalfB = false;
+  }
+  if (ticketScanned) items.temporaryTheaterTicket = false;
+  if (programSolved) {
+    items.theaterProgramOpening = false;
+    items.theaterProgramSpotlight = false;
+    items.theaterProgramFinale = false;
+  }
+  if (brushUsed) items.fluorescentBrush = false;
+  if (spotlightStarted) items.spotlightRemote = false;
+
+  const allLocationSourcesRead = qizhenLake.bridgeClueFound
+    && qizhenLake.reflectionClueFound
+    && qizhenLake.lakeClueFound;
+  const locationSolved = !["inactive", "location_search"].includes(qizhenLake.phase);
+  if (allLocationSourcesRead || locationSolved) items.wetProgram = false;
+  if (qizhenLake.mapClueIds.includes("bridge") || locationSolved) items.bridgeKeyword = false;
+  if (qizhenLake.mapClueIds.includes("reflection") || locationSolved) items.reflectionKeyword = false;
+  if (qizhenLake.mapClueIds.includes("lake") || locationSolved) items.lakeKeyword = false;
+
+  if (!["inactive", "location_search", "lake_unlocked"].includes(qizhenLake.phase)) {
+    items.reflectionCoordinate = false;
+  }
+}
+
+function normalizeQizhenItems(
+  items: GameState["items"],
+  qizhenLake: GameState["qizhenLake"],
+  normalization: QizhenNormalizationResult
+): void {
+  const kayakItemIds: Array<keyof GameState["items"]> = [
+    "fishingRod",
+    "rustedLockerKey",
+    "nylonCord",
+    "brokenNetFrame",
+    "improvisedDipNet",
+    "sealedFeedTin",
+    "fishFeedPellets",
+    "smallCarp",
+    "swanMagnet",
+    "magneticFishingRod"
+  ];
+
+  if (normalization.migratedLegacyInterior) {
+    for (const itemId of kayakItemIds) items[itemId] = false;
+    items.reflectionCoordinate = false;
+    items.decoyPaper = !normalization.migratedLegacyChase;
+    if (normalization.migratedLegacyChase) items.magneticFishingRod = true;
+  }
+
+  if (qizhenLake.rodFound && !qizhenLake.magneticRodCombined) items.fishingRod = true;
+  if (qizhenLake.decoyBaitAttached) items.decoyPaper = false;
+
+  if (qizhenLake.lockerOpened) {
+    items.rustedLockerKey = false;
+    if (!qizhenLake.netCombined) items.nylonCord = true;
+  }
+  if (qizhenLake.netCombined) {
+    items.nylonCord = false;
+    items.brokenNetFrame = false;
+    items.improvisedDipNet = !qizhenLake.feedTinRetrieved;
+  }
+  if (qizhenLake.feedTinRetrieved) {
+    items.improvisedDipNet = false;
+    items.sealedFeedTin = !qizhenLake.feedTinOpened;
+  }
+  if (qizhenLake.feedTinOpened) {
+    items.sealedFeedTin = false;
+    items.fishFeedPellets = !qizhenLake.fishCaught;
+  }
+  if (qizhenLake.fishCaught) {
+    items.fishFeedPellets = false;
+    items.smallCarp = !qizhenLake.swanFed;
+  }
+  if (qizhenLake.swanFed) {
+    items.smallCarp = false;
+    items.swanMagnet = !qizhenLake.magneticRodCombined;
+  }
+  if (qizhenLake.magneticRodCombined) {
+    items.fishingRod = false;
+    items.swanMagnet = false;
+    items.magneticFishingRod = !qizhenLake.magneticAttachmentBroken;
+  }
+  if (qizhenLake.magneticAttachmentBroken) items.magneticFishingRod = false;
 }
 
 function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzzleState): LibraryFinalsPuzzleState {

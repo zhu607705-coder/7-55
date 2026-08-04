@@ -223,20 +223,23 @@ export const CANTEEN_DRINK_SHELF: CanteenInteractionTarget = {
 
 export const CANTEEN_MIX_STATION: CanteenInteractionTarget = {
   id: "canteen-mixer",
-  label: "使用混合台",
-  x: 260,
-  y: 760,
-  stand: { x: 260, y: 870 },
-  proximity: 76,
+  label: "右上饮料区混合台",
+  x: 1530,
+  y: 330,
+  // The service side of the upper-right worktop is clear floor. It stays
+  // outside both the shelf collider (ending at y=379) and the dish-return
+  // collider (starting at y=425), so the player can physically stand here.
+  stand: { x: 1530, y: 404 },
+  proximity: 68,
   kind: "mixer"
 };
 
 export const CANTEEN_PROMO_BOARD: CanteenInteractionTarget = {
   id: "canteen-promo-board",
-  label: "第五个窗口宣传板空杯位",
-  x: 1232,
+  label: "3号取餐窗口宣传板空杯位",
+  x: 790,
   y: 218,
-  stand: { x: 1232, y: 285 },
+  stand: { x: 790, y: 260 },
   proximity: 64,
   dropWidth: 94,
   dropHeight: 62,
@@ -260,71 +263,56 @@ export interface CanteenPickupWindowDefinition extends CanteenInteractionTarget 
   value: "1" | "2" | "3" | "4" | "5";
 }
 
+export interface CanteenServiceWindowDefinition {
+  id: string;
+  value: CanteenPickupWindowDefinition["value"];
+  x: number;
+  counterNpc: { x: number; y: number };
+  queueNpcPositions: readonly { x: number; y: number }[];
+}
+
+// The five visible north-counter bays share one authored coordinate table.
+// Keeping the fifth bay here prevents the queue and auntie population from
+// silently stopping at window 4 when the scene consumes the model data.
+export const CANTEEN_SERVICE_WINDOWS: readonly CanteenServiceWindowDefinition[] = (
+  [
+    ["1", 301],
+    ["2", 550],
+    ["3", 790],
+    ["4", 1035],
+    ["5", 1235]
+  ] as const
+).map(([value, x]) => ({
+  id: `canteen-service-window-${value}`,
+  value,
+  x,
+  counterNpc: { x, y: 214 },
+  queueNpcPositions: [246, 266, 286].map((y) => ({ x, y }))
+}));
+
 // The pickup route uses all five bays of the north service counter.
 // Window 3 shares the ghost-auntie and paper-burst beat.
 // Every coordinate below is in the source image's 1672 x 941 pixel system.
-export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = [
-  {
-    id: "pickup_window_1",
-    label: "1号取餐窗口验票槽",
-    x: 301,
+export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = (
+  CANTEEN_SERVICE_WINDOWS.map((window) => ({
+    id: `canteen-pickup-window-${window.value}`,
+    label: `${window.value}号取餐窗口验票槽`,
+    x: window.x,
     y: 218,
-    stand: { x: 301, y: 260 },
+    stand: { x: window.x, y: 260 },
     proximity: 58,
     dropWidth: 140,
     dropHeight: 74,
-    kind: "pickup",
-    value: "1"
-  },
-  {
-    id: "pickup_window_2",
-    label: "2号取餐窗口验票槽",
-    x: 550,
-    y: 218,
-    stand: { x: 550, y: 260 },
-    proximity: 58,
-    dropWidth: 140,
-    dropHeight: 74,
-    kind: "pickup",
-    value: "2"
-  },
-  {
-    id: "pickup_window_3",
-    label: "3号取餐窗口验票槽",
-    x: 790,
-    y: 218,
-    stand: { x: 790, y: 260 },
-    proximity: 58,
-    dropWidth: 140,
-    dropHeight: 74,
-    kind: "pickup",
-    value: "3"
-  },
-  {
-    id: "pickup_window_4",
-    label: "4号取餐窗口验票槽",
-    x: 1035,
-    y: 218,
-    stand: { x: 1035, y: 260 },
-    proximity: 58,
-    dropWidth: 140,
-    dropHeight: 74,
-    kind: "pickup",
-    value: "4"
-  },
-  {
-    id: "pickup_window_5",
-    label: "5号取餐窗口验票槽",
-    x: 1235,
-    y: 218,
-    stand: { x: 1235, y: 260 },
-    proximity: 58,
-    dropWidth: 140,
-    dropHeight: 74,
-    kind: "pickup",
-    value: "5"
-  }
-] as const;
+    ...(window.value === "3"
+      ? {
+          acceptedItem: "pickupTicket0755" as const,
+          requiredMode: "dark" as const
+        }
+      : {}),
+    kind: "pickup" as const,
+    value: window.value
+  }))
+);
 
 export interface CanteenCartDefinition {
   exitId: CanteenExitId;
@@ -345,8 +333,8 @@ export interface CanteenCartDefinition {
 // Each trolley owns an explicit rear-handle offset. The scene keeps the player at
 // that offset while rolling, so the cart never pulls the player from its centre.
 export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition>> = {
-  west: {
-    exitId: "west",
+  northwest: {
+    exitId: "northwest",
     x: 150,
     y: 287,
     // After the westbound flip, the rear U-handle sits on the cart's right
@@ -375,16 +363,16 @@ export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition
     proximity: 70,
     pushSpeed: 118
   },
-  steam: {
-    exitId: "steam",
-    x: 1212,
-    y: 300,
-    handleOffsetX: 15,
-    handleOffsetY: 56,
-    standX: 1227,
-    standY: 356,
-    pushToX: 1212,
-    pushToY: 245,
+  south_gap: {
+    exitId: "south_gap",
+    x: 500,
+    y: 820,
+    handleOffsetX: 0,
+    handleOffsetY: -56,
+    standX: 500,
+    standY: 764,
+    pushToX: 500,
+    pushToY: 914,
     proximity: 70,
     pushSpeed: 108
   }
@@ -425,9 +413,9 @@ export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = 
 ] as const;
 
 export const CANTEEN_ESCAPE_ANCHORS: Record<CanteenExitId, { x: number; y: number }> = {
-  west: { x: 82, y: 250 },
+  northwest: { x: 82, y: 250 },
+  south_gap: { x: 500, y: 914 },
   southeast: { x: 1381, y: 853 },
-  steam: { x: 1235, y: 227 }
 };
 
 // This is the clear inner lobby directly west of the southeast doors. It avoids
@@ -445,8 +433,8 @@ export const CANTEEN_PHASE_SPAWNS = {
 } as const;
 export const CANTEEN_BLOCK_SPAWNS = [
   CANTEEN_PHASE_SPAWNS.exit_blocking,
-  { x: CANTEEN_CARTS.steam.standX, y: CANTEEN_CARTS.steam.standY },
-  { x: CANTEEN_CARTS.west.standX, y: CANTEEN_CARTS.west.standY }
+  { x: CANTEEN_CARTS.south_gap.standX, y: CANTEEN_CARTS.south_gap.standY },
+  { x: CANTEEN_CARTS.northwest.standX, y: CANTEEN_CARTS.northwest.standY }
 ] as const;
 export const CANTEEN_RETURN_POINT = { x: 1222, y: 520 } as const;
 

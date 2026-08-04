@@ -16,7 +16,7 @@ export const CANTEEN_TRAY_IDS = [
   "tray_plain_04", "tray_plain_05", "tray_plain_06",
   "tray_plain_07", "tray_plain_08", "tray_plain_09"
 ] as const;
-export const CANTEEN_EXIT_SEQUENCE: readonly CanteenExitId[] = ["southeast", "steam", "west"];
+export const CANTEEN_EXIT_SEQUENCE: readonly CanteenExitId[] = ["northwest", "south_gap", "southeast"];
 const CANTEEN_TRAY_REWARD_CENTS = 200;
 const CANTEEN_BIKE_FARE_CENTS = 200;
 const CANTEEN_CHASE_GOAL = 755;
@@ -50,7 +50,9 @@ function canPlayCanteenSideGames(state: ReturnType<GameStore["getState"]>): bool
 }
 
 function canPlayDrinkPuzzle(state: ReturnType<GameStore["getState"]>): boolean {
-  return canPlayCanteenSideGames(state)
+  return state.canteenHunt.active
+    && state.canteenHunt.phase === "drink_mix"
+    && hasCompletedTrayTask(state)
     && !state.canteenHunt.promoDrinkPlaced
     && !state.canteenHunt.queueGapOpened;
 }
@@ -141,7 +143,7 @@ export class ChapterThreeCanteenController {
 
   startTrayTask(): CanteenTrayResult {
     const state = this.store.getState();
-    if (!canPlayCanteenSideGames(state)) return "inactive";
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "tray_search") return "inactive";
     if (hasCompletedTrayTask(state)) return "already_done";
     if (state.canteenHunt.trayTaskStarted) return "task_started";
     this.store.setState((current) => ({
@@ -154,7 +156,7 @@ export class ChapterThreeCanteenController {
 
   collectTray(trayId: string): CanteenTrayResult {
     const state = this.store.getState();
-    if (!canPlayCanteenSideGames(state)) return "inactive";
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "tray_search") return "inactive";
     if (hasCompletedTrayTask(state)) return "already_done";
     if (!state.canteenHunt.trayTaskStarted || !(CANTEEN_TRAY_IDS as readonly string[]).includes(trayId)) {
       return "inactive";
@@ -187,7 +189,7 @@ export class ChapterThreeCanteenController {
 
   deliverCarriedTray(): CanteenTrayResult {
     const state = this.store.getState();
-    if (!canPlayCanteenSideGames(state)) return "inactive";
+    if (!state.canteenHunt.active || state.canteenHunt.phase !== "tray_search") return "inactive";
     if (hasCompletedTrayTask(state)) return "already_done";
     const trayId = state.canteenHunt.carriedTrayIds[0];
     if (!trayId) {
@@ -212,7 +214,8 @@ export class ChapterThreeCanteenController {
       canteenHunt: {
         ...current.canteenHunt,
         carriedTrayIds: [],
-        returnedTrayIds
+        returnedTrayIds,
+        phase: completed ? "drink_mix" : current.canteenHunt.phase
       }
     }));
     this.events.emit("canteen_tray_delivered", {
@@ -231,7 +234,7 @@ export class ChapterThreeCanteenController {
 
   inspectQueueChallenge(): boolean {
     const state = this.store.getState();
-    if (!canPlayDrinkPuzzle(state)) return false;
+    if (!canPlayDrinkPuzzle(state) || state.canteenHunt.mode !== "light") return false;
     if (!state.canteenHunt.queueChallengeSeen) {
       this.store.setState((current) => ({
         ...current,
@@ -244,7 +247,19 @@ export class ChapterThreeCanteenController {
 
   collectDrink(itemId: CanteenDrinkIngredientId): boolean {
     const state = this.store.getState();
-    if (!canPlayDrinkPuzzle(state)) return false;
+    if (
+      !canPlayDrinkPuzzle(state)
+      || state.canteenHunt.mode !== "light"
+      || !state.canteenHunt.queueChallengeSeen
+      || !state.canteenHunt.drinkShelfRead
+    ) {
+      this.events.emit("canteen_drink_action_locked", {
+        mode: state.canteenHunt.mode,
+        queueSeen: state.canteenHunt.queueChallengeSeen,
+        shelfRead: state.canteenHunt.drinkShelfRead
+      });
+      return false;
+    }
     if (!CANTEEN_DRINK_RECIPE.includes(itemId)) return false;
     if (state.items[itemId]) {
       this.events.emit("canteen_drink_already_owned", { itemId });
@@ -261,7 +276,11 @@ export class ChapterThreeCanteenController {
 
   inspectDrinkShelf(): boolean {
     const state = this.store.getState();
-    if (!canPlayDrinkPuzzle(state)) return false;
+    if (!canPlayDrinkPuzzle(state) || !state.canteenHunt.queueChallengeSeen) return false;
+    if (state.canteenHunt.mode !== "dark") {
+      this.events.emit("canteen_drink_shelf_locked", { mode: state.canteenHunt.mode });
+      return false;
+    }
     if (!state.canteenHunt.drinkShelfRead) {
       this.store.setState((current) => ({
         ...current,
@@ -274,7 +293,18 @@ export class ChapterThreeCanteenController {
 
   addDrinkToMixer(itemId: CanteenDrinkIngredientId): boolean {
     const state = this.store.getState();
-    if (!canPlayDrinkPuzzle(state)) return false;
+    if (
+      !canPlayDrinkPuzzle(state)
+      || state.canteenHunt.mode !== "light"
+      || !state.canteenHunt.drinkShelfRead
+    ) {
+      this.events.emit("canteen_drink_action_locked", {
+        mode: state.canteenHunt.mode,
+        queueSeen: state.canteenHunt.queueChallengeSeen,
+        shelfRead: state.canteenHunt.drinkShelfRead
+      });
+      return false;
+    }
     if (!CANTEEN_DRINK_RECIPE.includes(itemId) || !state.items[itemId]) {
       this.events.emit("canteen_mix_missing_drink", { itemId });
       return false;
@@ -324,15 +354,16 @@ export class ChapterThreeCanteenController {
     if (
       !canPlayDrinkPuzzle(state)
       || !state.items.dailySpecialSparklingWater
+      || state.canteenHunt.mode !== "light"
     ) return false;
     this.store.setState((current) => ({
       ...current,
-      items: { ...current.items, dailySpecialSparklingWater: false },
       canteenHunt: { ...current.canteenHunt, promoDrinkPlaced: true }
     }));
     this.events.emit("use_item", {
       itemId: "dailySpecialSparklingWater",
-      targetId: "canteen-promo-board"
+      targetId: "canteen-promo-board",
+      result: "retain"
     });
     this.events.emit("canteen_promo_activated");
     return true;
@@ -377,7 +408,11 @@ export class ChapterThreeCanteenController {
   selectMenuOption(optionId: string): CanteenChoiceResult {
     const state = this.store.getState();
     if (!state.canteenHunt.active || state.canteenHunt.phase !== "menu_order") return "inactive";
-    if (state.canteenHunt.mode !== "light") {
+    if (
+      state.canteenHunt.mode !== "light"
+      || !state.canteenHunt.queueGapOpened
+      || !state.canteenHunt.menuDarkClueRead
+    ) {
       this.events.emit("canteen_menu_order_locked", {
         mode: state.canteenHunt.mode,
         clueRead: state.canteenHunt.menuDarkClueRead
@@ -414,6 +449,18 @@ export class ChapterThreeCanteenController {
       || state.canteenHunt.mode !== "dark"
     ) return false;
     const clueFound = windowId === "3";
+    if (
+      clueFound
+      && state.canteenHunt.orderedMenuOption === "D"
+      && !state.canteenHunt.pickupTimeErrorSeen
+    ) {
+      this.events.emit("canteen_pickup_order_locked", {
+        mode: state.canteenHunt.mode,
+        timeErrorSeen: false,
+        windowId
+      });
+      return false;
+    }
     if (clueFound && !state.canteenHunt.pickupDarkClueRead) {
       this.store.setState((current) => ({
         ...current,
@@ -450,6 +497,9 @@ export class ChapterThreeCanteenController {
       this.store.setState((current) => ({
         ...current,
         items: { ...current.items, pickupTicket0755: false, [itemId]: true },
+        ui: current.ui.selectedItem === "pickupTicket0755"
+          ? { ...current.ui, selectedItem: null }
+          : current.ui,
         canteenHunt: {
           ...current.canteenHunt,
           orderedMenuOption: null,
@@ -458,12 +508,34 @@ export class ChapterThreeCanteenController {
         }
       }));
       this.events.emit("canteen_wrong_meal_collected", { optionId: menuOption, itemId, windowId });
-      this.events.emit("use_item", { itemId: "pickupTicket0755", targetId: `canteen_pickup_${windowId}` });
+      this.events.emit("use_item", {
+        itemId: "pickupTicket0755",
+        targetId: `canteen_pickup_${windowId}`,
+        result: "consume"
+      });
       this.events.emit("get_item", { itemId, sourceScene: "canteen_interior" });
       return "wrong";
     }
     if (state.canteenHunt.mode === "light") {
+      if (!state.canteenHunt.pickupTimeErrorSeen) {
+        this.store.setState((current) => ({
+          ...current,
+          canteenHunt: {
+            ...current.canteenHunt,
+            pickupTimeErrorSeen: true,
+            pickupAttemptCount: current.canteenHunt.pickupAttemptCount + 1
+          }
+        }));
+      }
       this.events.emit("canteen_correct_meal_time_error", { windowId });
+      return "locked";
+    }
+    if (!state.canteenHunt.pickupTimeErrorSeen) {
+      this.events.emit("canteen_pickup_order_locked", {
+        mode: state.canteenHunt.mode,
+        timeErrorSeen: false,
+        windowId
+      });
       return "locked";
     }
     if (!state.canteenHunt.pickupDarkClueRead) {
@@ -472,17 +544,65 @@ export class ChapterThreeCanteenController {
     }
     this.store.setState((current) => ({
       ...current,
-      items: { ...current.items, pickupTicket0755: false },
+      items: {
+        ...current.items,
+        pickupTicket0755: false,
+        sparklingWater: false,
+        lemonTea: false,
+        blackCoffee: false,
+        badDrink: false,
+        canteenRealBun: false,
+        canteenCluelessSoyMilk: false,
+        canteenEdgeEgg: false,
+        canteenUselessCongee: false
+      },
+      ui: current.ui.selectedItem === "pickupTicket0755"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       canteenHunt: {
         ...current.canteenHunt,
+        mode: "light",
         orderedMenuOption: null,
         pickupAttemptCount: current.canteenHunt.pickupAttemptCount + 1,
         phase: "exit_blocking"
       }
     }));
     this.events.emit("canteen_pickup_solved", { windowId });
-    this.events.emit("use_item", { itemId: "pickupTicket0755", targetId: "canteen_pickup_3" });
+    this.events.emit("use_item", {
+      itemId: "pickupTicket0755",
+      targetId: "canteen_pickup_3",
+      result: "consume"
+    });
     return "correct";
+  }
+
+  useDefensePromoDrink(): boolean {
+    const state = this.store.getState();
+    if (
+      !state.canteenHunt.active
+      || state.canteenHunt.phase !== "exit_blocking"
+      || state.canteenHunt.mode !== "light"
+      || state.canteenHunt.defenseDrinkUsed
+      || !state.items.dailySpecialSparklingWater
+    ) return false;
+    this.store.setState((current) => ({
+      ...current,
+      items: { ...current.items, dailySpecialSparklingWater: false },
+      ui: current.ui.selectedItem === "dailySpecialSparklingWater"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
+      canteenHunt: {
+        ...current.canteenHunt,
+        defenseDrinkUsed: true
+      }
+    }));
+    this.events.emit("use_item", {
+      itemId: "dailySpecialSparklingWater",
+      targetId: "canteen-defense-floor",
+      result: "consume"
+    });
+    this.events.emit("canteen_defense_bubbles_activated");
+    return true;
   }
 
   inspectExitCart(exitId: CanteenExitId): boolean {
@@ -551,6 +671,10 @@ export class ChapterThreeCanteenController {
     }
     this.store.setState((current) => ({
       ...current,
+      items: { ...current.items, dailySpecialSparklingWater: false },
+      ui: current.ui.selectedItem === "dailySpecialSparklingWater"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       canteenHunt: {
         ...current.canteenHunt,
         mode: "light",
@@ -635,6 +759,9 @@ export class ChapterThreeCanteenController {
     this.store.setState((current) => ({
       ...current,
       items: { ...current.items, cafeteriaWages: false },
+      ui: current.ui.selectedItem === "cafeteriaWages"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       wallet: {
         ...current.wallet,
         cashCents: current.wallet.cashCents - CANTEEN_BIKE_FARE_CENTS
@@ -645,7 +772,7 @@ export class ChapterThreeCanteenController {
         bikePaid: true
       }
     }));
-    this.events.emit("use_item", { itemId: "cafeteriaWages", targetId: "canteen_bike" });
+    this.events.emit("use_item", { itemId: "cafeteriaWages", targetId: "canteen_bike", result: "consume" });
     this.events.emit("canteen_chase_started");
     return "paid";
   }
@@ -747,12 +874,10 @@ export function bindChapterThreeCanteenEvents(
       controller.inspectPickupWindow(String(event.payload?.windowId ?? ""));
     } else if (event.name === "rpg_canteen_pickup_selected") {
       controller.selectPickupWindow(String(event.payload?.windowId ?? ""));
-    } else if (event.name === "rpg_canteen_cart_clue_requested") {
-      controller.inspectExitCart(String(event.payload?.exitId ?? "west") as CanteenExitId);
-    } else if (event.name === "rpg_canteen_exit_block_requested") {
-      controller.blockExit(String(event.payload?.exitId ?? "west") as CanteenExitId);
     } else if (event.name === "rpg_canteen_defense_completed") {
       controller.completeDefense();
+    } else if (event.name === "rpg_canteen_defense_drink_requested") {
+      controller.useDefensePromoDrink();
     } else if (event.name === "rpg_canteen_leave_requested") {
       const left = controller.leaveCanteen();
       options.onLeaveResult?.(left);

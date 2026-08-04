@@ -6,6 +6,7 @@ import { selectFeatureAccess } from "./core/FeatureAccess";
 import type { GameState, QuestViewModel } from "./core/types";
 import { PhoneShell } from "./components/PhoneShell";
 import { DeveloperChannel } from "./components/DeveloperChannel";
+import { ChapterThreeOpeningOverlay } from "./components/ChapterThreeOpeningOverlay";
 import { LibraryStoryOverlay } from "./components/LibraryStoryOverlay";
 import { PresentationLayer } from "./components/PresentationLayer";
 import { ToastLayer } from "./components/ToastLayer";
@@ -254,20 +255,33 @@ export function App() {
     </section>
   ) : null;
 
-  const libraryStoryLayer = libraryStoryVisible && libraryStorySequence ? (
-    <LibraryStoryOverlay
-      key={libraryStorySequence}
-      events={eventBus}
-      sequenceId={libraryStorySequence}
-      onFinished={finishLibraryStory}
-    />
-  ) : null;
+  const libraryStoryLayer = libraryStoryVisible && libraryStorySequence
+    ? libraryStorySequence === "library_friend_contacted"
+      ? (
+          <ChapterThreeOpeningOverlay
+            key={libraryStorySequence}
+            events={eventBus}
+            onFinished={finishLibraryStory}
+          />
+        )
+      : (
+          <LibraryStoryOverlay
+            key={libraryStorySequence}
+            events={eventBus}
+            sequenceId={libraryStorySequence}
+            onFinished={finishLibraryStory}
+          />
+        )
+    : null;
 
   if (state.runtimeMode === "rpg") {
     if (desktopGameplay) {
       return (
         <>
-          <main className="desktop-gameplay-shell" data-active-surface={activeSurface}>
+          <main
+            className={`desktop-gameplay-shell ${state.rpgScene === "qizhen_lake" ? "is-qizhen-lake" : ""}`.trim()}
+            data-active-surface={activeSurface}
+          >
             {activeSurface === "rpg" ? (
               <QuestTaskBar
                 state={state}
