@@ -172,6 +172,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private spotlightDecoyOverlap = false;
   private spotlightLastFailureReason: TheaterSpotlightFailureReason | null = null;
   private spotlightPreviewTween: Phaser.Tweens.Tween | null = null;
+  private spotlightVisualTweens: Phaser.Tweens.Tween[] = [];
   private spotlightDelayTimers: Phaser.Time.TimerEvent[] = [];
   private spotlightChoiceOpen = false;
   private ticketInspector: Phaser.GameObjects.Container | null = null;
@@ -1499,16 +1500,31 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const assist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
     const previewMs = config.previewMs + assist.previewBonusMs;
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(7000);
-    const shade = this.add.rectangle(0, 0, 840, 430, 0x060817, 0.92).setStrokeStyle(4, 0x6dcce5, 0.88);
-    const arena = this.add.rectangle(0, 10, 720, 238, 0x10192a, 0.8).setStrokeStyle(2, 0x415d73, 0.92);
-    this.spotlightTitle = this.add.text(0, -184, `第 ${round + 1} / 3 轮 · 观察`, {
-      color: "#fff4dc", fontFamily: "monospace", fontSize: "21px"
+    const shade = this.add.rectangle(0, 0, 858, 446, 0x040611, 0.96)
+      .setStrokeStyle(5, 0xe3c76e, 0.96);
+    const innerFrame = this.add.rectangle(0, 0, 832, 420, 0x08101d, 0.88)
+      .setStrokeStyle(2, 0x66d9ed, 0.84);
+    const headerBand = this.add.rectangle(0, -181, 792, 50, 0x172338, 0.98)
+      .setStrokeStyle(2, 0xd7bd68, 0.72);
+    const arena = this.add.rectangle(0, 8, 724, 242, 0x0b1628, 0.94)
+      .setStrokeStyle(3, 0x4d7188, 0.94);
+    const stageTop = this.add.rectangle(0, -112, 724, 5, 0x73e3ef, 0.52);
+    const stageFloor = this.add.rectangle(0, 104, 724, 45, 0x111827, 0.92)
+      .setStrokeStyle(2, 0x2e5064, 0.7);
+    const leftCurtain = this.add.rectangle(-398, 6, 34, 342, 0x4e1625, 0.9)
+      .setStrokeStyle(2, 0xa64551, 0.72);
+    const rightCurtain = this.add.rectangle(398, 6, 34, 342, 0x4e1625, 0.9)
+      .setStrokeStyle(2, 0xa64551, 0.72);
+    const scanLine = this.add.rectangle(0, -102, 716, 3, 0x73efff, 0.18);
+    this.spotlightTitle = this.add.text(-330, -181, `第 ${round + 1} / 3 轮 · 观察`, {
+      color: "#fff2c6", fontFamily: "monospace", fontSize: "20px", fontStyle: "bold"
+    }).setOrigin(0, 0.5);
+    this.spotlightStatus = this.add.text(0, -143, theaterContent.spotlight.preview, {
+      color: "#91edff", fontFamily: "monospace", fontSize: "15px", align: "center",
+      wordWrap: { width: 660 }
     }).setOrigin(0.5);
-    this.spotlightStatus = this.add.text(0, -140, theaterContent.spotlight.preview, {
-      color: "#8fe8ff", fontFamily: "monospace", fontSize: "16px", align: "center"
-    }).setOrigin(0.5);
-    this.spotlightControlHint = this.add.text(0, 145, "记住完整尾迹与最后灯区。", {
-      color: "#8fe8ff", fontFamily: "monospace", fontSize: "14px", align: "center"
+    this.spotlightControlHint = this.add.text(0, 145, "观察尾迹，记住最后一个灯区。", {
+      color: "#bcefff", fontFamily: "monospace", fontSize: "14px", align: "center"
     }).setOrigin(0.5);
     const lockTrack = this.add.rectangle(-192, 178, 270, 10, 0x26313e, 0.96).setOrigin(0, 0.5).setVisible(false);
     const timerTrack = this.add.rectangle(-192, 200, 270, 8, 0x26313e, 0.92).setOrigin(0, 0.5).setVisible(false);
@@ -1528,7 +1544,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }).setOrigin(0.5).setVisible(false);
     panel.add([
       shade,
+      innerFrame,
+      leftCurtain,
+      rightCurtain,
+      headerBand,
       arena,
+      stageTop,
+      stageFloor,
+      scanLine,
       this.spotlightTitle,
       this.spotlightStatus,
       this.spotlightControlHint,
@@ -1541,16 +1564,63 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.spotlightFireButton,
       this.spotlightFireLabel
     ]);
-    panel.add(this.add.rectangle(0, 90, 640, 4, 0x708394, 0.55));
+    const roundPipX = 245;
+    for (let index = 0; index < 3; index += 1) {
+      const completed = index < round;
+      const active = index === round;
+      const pip = this.add.rectangle(roundPipX + index * 34, -181, 24, 12, completed ? 0xf0d56d : active ? 0x78e6f5 : 0x2b3a49, 1)
+        .setStrokeStyle(2, active ? 0xe9fbff : 0x7c7250, active ? 0.96 : 0.58);
+      panel.add(pip);
+      if (active && !this.reducedMotion) {
+        this.spotlightVisualTweens.push(this.tweens.add({
+          targets: pip,
+          alpha: { from: 0.52, to: 1 },
+          scaleX: { from: 0.86, to: 1.08 },
+          duration: 360,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        }));
+      }
+    }
+    panel.add(this.add.rectangle(0, 90, 650, 4, 0x708394, 0.62));
+    [-230, 0, 230].forEach((x) => {
+      panel.add(this.add.rectangle(x, 5, 2, 210, 0x41617a, 0.2));
+    });
     const lanePositions: Record<TheaterSpotlightLane, number> = { left: -230, center: 0, right: 230 };
     (Object.entries(lanePositions) as [TheaterSpotlightLane, number][]).forEach(([lane, x]) => {
       const laneLabel = lane === "left" ? "左" : lane === "center" ? "中" : "右";
-      const circle = this.add.circle(x, 90, 49, 0xe7c769, 0.035).setStrokeStyle(2, 0x8b814f, 0.34);
-      const label = this.add.text(x, 121, laneLabel, {
-        color: "#8f927f", fontFamily: "monospace", fontSize: "13px"
+      const circle = this.add.circle(x, 90, 52, 0x65dded, 0.025).setStrokeStyle(3, 0x80dbe5, 0.34);
+      const innerCircle = this.add.circle(x, 90, 38, 0xe7c769, 0.025).setStrokeStyle(2, 0xd9c76d, 0.32);
+      const labelPlate = this.add.rectangle(x, 116, 54, 22, 0x101c2a, 0.94).setStrokeStyle(1, 0x66889a, 0.72);
+      const label = this.add.text(x, 116, laneLabel, {
+        color: "#d9eef2", fontFamily: "monospace", fontSize: "13px", fontStyle: "bold"
       }).setOrigin(0.5);
-      panel.add([circle, label]);
+      panel.add([circle, innerCircle, labelPlate, label]);
+      if (!this.reducedMotion) {
+        this.spotlightVisualTweens.push(this.tweens.add({
+          targets: circle,
+          alpha: { from: 0.35, to: 0.95 },
+          scale: { from: 0.94, to: 1.06 },
+          duration: 660 + Math.abs(x),
+          delay: x + 230,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        }));
+      }
     });
+
+    if (!this.reducedMotion) {
+      this.spotlightVisualTweens.push(this.tweens.add({
+        targets: scanLine,
+        y: { from: -102, to: 105 },
+        alpha: { from: 0.04, to: 0.32 },
+        duration: 1500,
+        repeat: -1,
+        ease: "Linear"
+      }));
+    }
 
     this.spotlightPathPreview = this.add.graphics();
     this.spotlightPathPreview.lineStyle(6, 0x62dfff, 0.82);
@@ -1560,11 +1630,40 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     panel.add(this.spotlightPathPreview);
     const path = this.createSpotlightSpline(config.pathPoints);
+    const trailDots = Array.from({ length: 13 }, (_, index) => {
+      const point = path.getPoint(index / 12);
+      const dot = this.add.circle(point.x, point.y, index % 3 === 0 ? 4 : 2, 0x8df2ff, 0.72);
+      panel.add(dot);
+      if (!this.reducedMotion) {
+        this.spotlightVisualTweens.push(this.tweens.add({
+          targets: dot,
+          alpha: { from: 0.18, to: 0.95 },
+          scale: { from: 0.65, to: 1.28 },
+          duration: 420,
+          delay: index * 58,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        }));
+      }
+      return dot;
+    });
     const start = path.getPoint(0);
     this.spotlightPaper = this.add.image(start.x, start.y, THEATER_PAPER_KEY)
       .setTint(0x90efff)
       .setAlpha(0.88);
     panel.add(this.spotlightPaper);
+    if (!this.reducedMotion) {
+      this.spotlightVisualTweens.push(this.tweens.add({
+        targets: this.spotlightPaper,
+        scale: { from: 0.96, to: 1.08 },
+        alpha: { from: 0.72, to: 1 },
+        duration: 180,
+        yoyo: true,
+        repeat: -1,
+        ease: "Stepped"
+      }));
+    }
     if (config.decoyPathPoints) {
       const decoyPath = this.createSpotlightSpline(config.decoyPathPoints);
       const decoyStart = decoyPath.getPoint(0);
@@ -1578,8 +1677,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
       .setStrokeStyle(4, 0xffe999, 0.58)
       .setVisible(false);
     this.spotlightAimMarker = this.add.circle(0, 90, 5, 0xfff2aa, 0.94).setVisible(false);
-    panel.addAt(this.spotlightBeam, 3);
+    panel.add(this.spotlightBeam);
     panel.add([this.spotlightAimRing, this.spotlightAimMarker]);
+    trailDots.forEach((dot) => panel.bringToTop(dot));
+    panel.bringToTop(this.spotlightPaper);
     this.spotlightPanel = panel;
     this.spotlightStage = "preview";
     this.spotlightAimX = 0;
@@ -1840,6 +1941,38 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightStatus?.setText(`${theaterContent.spotlight.hit}  已命中 ${hitCount} / 3`).setColor("#fff4b2");
     this.spotlightControlHint?.setText("连续锁定完成。").setColor("#fff4b2");
     this.spotlightLockBar?.setScale(1, 1).setFillStyle(0xffe487, 1);
+    if (this.spotlightPanel) {
+      const originX = this.spotlightPaper?.x ?? this.spotlightAimX;
+      const originY = this.spotlightPaper?.y ?? 90;
+      for (let index = 0; index < 3; index += 1) {
+        const ring = this.add.circle(originX, originY, 18 + index * 8, 0xffe68a, 0)
+          .setStrokeStyle(4 - index, index === 0 ? 0xffffff : 0xffdf73, 0.92);
+        this.spotlightPanel.add(ring);
+        this.spotlightVisualTweens.push(this.tweens.add({
+          targets: ring,
+          scale: 2.5 + index * 0.35,
+          alpha: 0,
+          duration: this.reducedMotion ? 100 : 420 + index * 90,
+          ease: "Cubic.easeOut",
+          onComplete: () => ring.destroy()
+        }));
+      }
+      for (let index = 0; index < 12; index += 1) {
+        const angle = Math.PI * 2 * index / 12;
+        const spark = this.add.rectangle(originX, originY, 7, 3, index % 2 === 0 ? 0xffe68a : 0x8ff2ff, 0.96)
+          .setAngle(Phaser.Math.RadToDeg(angle));
+        this.spotlightPanel.add(spark);
+        this.spotlightVisualTweens.push(this.tweens.add({
+          targets: spark,
+          x: originX + Math.cos(angle) * 72,
+          y: originY + Math.sin(angle) * 48,
+          alpha: 0,
+          duration: this.reducedMotion ? 100 : 360,
+          ease: "Cubic.easeOut",
+          onComplete: () => spark.destroy()
+        }));
+      }
+    }
     if (!this.reducedMotion) this.cameras.main.shake(80, 0.002);
     if (finalHit) {
       this.scheduleSpotlight(80, () => this.animateReversal());
@@ -1861,6 +1994,20 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const failureHint = failureHints[reason] ?? theaterContent.spotlight.wrongHint;
     this.spotlightStatus?.setText(`${theaterContent.spotlight.miss}\n${failureHint}`).setColor("#ff9f9f");
     this.spotlightControlHint?.setText("保持已完成轮次，重新观察本轮。").setColor("#bcefff");
+    if (this.spotlightPanel) {
+      for (let index = 0; index < 5; index += 1) {
+        const strip = this.add.rectangle(-300 + index * 150, -80 + index * 37, 96, 8, index % 2 === 0 ? 0xe65867 : 0x65dbe8, 0.72);
+        this.spotlightPanel.add(strip);
+        this.spotlightVisualTweens.push(this.tweens.add({
+          targets: strip,
+          x: strip.x + (index % 2 === 0 ? 86 : -86),
+          alpha: 0,
+          duration: this.reducedMotion ? 90 : 260 + index * 35,
+          ease: "Cubic.easeOut",
+          onComplete: () => strip.destroy()
+        }));
+      }
+    }
     if (this.spotlightPaper && !this.reducedMotion) {
       this.tweens.add({
         targets: this.spotlightPaper,
@@ -1945,6 +2092,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private destroySpotlightPanel(): void {
     this.spotlightPreviewTween?.stop();
     this.spotlightPreviewTween = null;
+    this.spotlightVisualTweens.forEach((tween) => tween.stop());
+    this.spotlightVisualTweens = [];
     this.spotlightDelayTimers.forEach((timer) => timer.remove(false));
     this.spotlightDelayTimers = [];
     this.spotlightPanel?.destroy(true);

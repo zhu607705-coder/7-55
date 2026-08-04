@@ -35,6 +35,7 @@ import {
 } from "./QizhenLakeModel";
 import {
   createQizhenBlackSwanVisual,
+  preloadQizhenKayakTextures,
   QizhenKayakVisual,
   type QizhenBlackSwanVisual,
   type QizhenPaddleSide
@@ -211,6 +212,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         this.load.image(ZONE_TEXTURE_KEYS[zone], sources[zone]);
       }
     });
+    preloadQizhenKayakTextures(this);
     preloadRpgPlayerTextures(this);
   }
 
@@ -1223,8 +1225,8 @@ export class QizhenLakeScene extends Phaser.Scene {
       visual.root.setVisible(active);
       if (!active) return;
       const distance = Math.hypot(this.player.x - visual.target.x, this.player.y - visual.target.y);
-      visual.label.setVisible(distance <= Math.max(250, visual.target.proximity * 1.8));
       const selected = nearest?.id === visual.target.id;
+      visual.label.setVisible(!selected && distance <= Math.max(250, visual.target.proximity * 1.8));
       visual.pulse.setAlpha(selected ? 0.96 : 0.5);
       visual.root.setScale(selected ? 1.08 : 1);
       if ((visual.target.kind === "reflection" || visual.target.value === "paper_reflection") && runtime.mode !== "dark") {
@@ -1263,7 +1265,15 @@ export class QizhenLakeScene extends Phaser.Scene {
                       ? "冲回小码头"
                       : "离开启真湖";
     const itemOnly = target.kind === "paper" && target.value === "paper_reflection" && !runtime.decoyBaitAttached;
-    this.promptText.setText(itemOnly ? formatRpgDragHint(action) : formatRpgInteractionHint(action)).setVisible(true);
+    const camera = this.cameras.main;
+    const playerScreenY = (this.player.y - camera.worldView.y) * camera.zoom;
+    const promptY = Math.abs(playerScreenY - RPG_HUD_LAYOUT.promptBottomY) < 78
+      ? Math.min(492, RPG_HUD_LAYOUT.promptBottomY + 70)
+      : RPG_HUD_LAYOUT.promptBottomY;
+    this.promptText
+      .setY(promptY)
+      .setText(itemOnly ? formatRpgDragHint(action) : formatRpgInteractionHint(action))
+      .setVisible(true);
   }
 
   private updateStatus(runtime: QizhenRuntimeProjection): void {

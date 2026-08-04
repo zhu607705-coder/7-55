@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "build:single": "npm run build:demo",
     "verify:single": "node scripts/verify-single-file-build.mjs",
+    "dev:library-shelf": "vite --host 0.0.0.0 --open library-shelf-debug.html",
     "godot:sync": "node scripts/sync-godot-rpg-assets.mjs",
     "godot:check": "npm run godot:sync && node scripts/verify-godot-project.mjs",
     "godot:import": "\"${GODOT_BIN:-$HOME/Downloads/Godot.app/Contents/MacOS/Godot}\" --headless --path godot --import",
