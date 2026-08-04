@@ -13,7 +13,9 @@ export const COMBINE_RECIPES: CombineRecipe[] = [
   { a: "slashLine", b: "reverseGear", result: "towerKey", resultName: "钥匙" },
   { a: "waterDrop", b: "headphone", result: "wateredHeadphone", resultName: "盛水的耳机" },
   { a: "pushTriangle", b: "mentorLine", result: "rightArrow", resultName: "右移箭头" },
-  { a: "theaterTicketHalfA", b: "theaterTicketHalfB", result: "temporaryTheaterTicket", resultName: "临时观演票" }
+  { a: "theaterTicketHalfA", b: "theaterTicketHalfB", result: "temporaryTheaterTicket", resultName: "临时观演票" },
+  { a: "nylonCord", b: "brokenNetFrame", result: "improvisedDipNet", resultName: "临时抄网" },
+  { a: "swanMagnet", b: "fishingRod", result: "magneticFishingRod", resultName: "磁性钓鱼竿" }
 ];
 
 export class InventoryController {
@@ -39,7 +41,10 @@ export class InventoryController {
       items: {
         ...state.items,
         [itemId]: false
-      }
+      },
+      ui: state.ui.selectedItem === itemId
+        ? { ...state.ui, selectedItem: null }
+        : state.ui
     }));
   }
 
@@ -58,9 +63,10 @@ export class InventoryController {
 
   /** 消耗道具（使用后从物品栏消失） */
   consumeItem(itemId: ItemId, targetId: string): boolean {
-    if (!this.useItem(itemId, targetId)) {
+    if (!this.hasItem(itemId)) {
       return false;
     }
+    this.events.emit("use_item", { itemId, targetId, result: "consume" });
     this.removeItem(itemId);
     return true;
   }

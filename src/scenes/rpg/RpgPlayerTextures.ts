@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
+import campusRuntimeData from "../../data/maps/zijingang-campus-loop-runtime.json";
 import playerDown0Url from "../../assets/rpg/player/player_down_0.png";
 import playerDown1Url from "../../assets/rpg/player/player_down_1.png";
 import playerDown2Url from "../../assets/rpg/player/player_down_2.png";

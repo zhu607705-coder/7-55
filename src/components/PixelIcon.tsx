@@ -559,6 +559,76 @@ const ICONS: Record<string, PixelMap> = {
     ],
     palette: { y: "#d6c66e", k: "#3e5f67" }
   },
+  fishingRod: {
+    rows: [
+      ".......kk", "......kk.", ".....kk..", "....kk...", "...kk....",
+      "..kk.....", ".kk......", "kk....h..", ".k...hh..", ".....h..."
+    ],
+    palette: { k: "#755234", h: "#52636a" }
+  },
+  rustedLockerKey: {
+    rows: [
+      "..rrrr...", ".ryyyr...", "ry...yr..", "ry...yr..", ".ryyyr...",
+      "..rrr....", "...rrr...", "....rrrr.", "......rrr", "........."
+    ],
+    palette: { r: "#9a5934", y: "#d2a350" }
+  },
+  nylonCord: {
+    rows: [
+      "..nnnn...", ".nn..nn..", "nn....nn.", "nn.nnnnn.", "nn.nn.nn.",
+      "nn....nn.", ".nn..nn..", "..nnnnnn.", ".....nn..", "......nn."
+    ],
+    palette: { n: "#d8d2bd" }
+  },
+  brokenNetFrame: {
+    rows: [
+      ".kkkkkkk.", "kk.n.n.kk", "k.n.n.n.k", "kn.n.n..k", "k.n.n....",
+      "kn.n.n..k", "k.n.n.n.k", "kk.n.n.kk", ".kkkkkkk.", "....kk..."
+    ],
+    palette: { k: "#536165", n: "#9ba7a2" }
+  },
+  improvisedDipNet: {
+    rows: [
+      ".kkkkkkk.", "kkn.n.nkk", "kn.n.n.nk", "k.n.n.n.k", "kn.n.n.nk",
+      "kkn.n.nkk", ".kkkkkkk.", "....kk...", "....kk...", "....kk..."
+    ],
+    palette: { k: "#59656a", n: "#d8d2bd" }
+  },
+  sealedFeedTin: {
+    rows: [
+      "..kkkkk..", ".kwwwwwk.", ".kgggggk.", ".kgpppgk.", ".kgggggk.",
+      ".kgpppgk.", ".kgggggk.", ".kwwwwwk.", "..kkkkk..", "........."
+    ],
+    palette: { k: "#455158", w: "#c7d1d0", g: "#748b79", p: "#d0a24b" }
+  },
+  fishFeedPellets: {
+    rows: [
+      "...kkk...", "..kgggk..", ".kgggggk.", ".kgpgpgk.", "kgpgpgpgk",
+      "kggpgpggk", "kgpgpgpgk", ".kgggggk.", "..kkkkk..", "........."
+    ],
+    palette: { k: "#5a4633", g: "#b79c69", p: "#6e4f31" }
+  },
+  smallCarp: {
+    rows: [
+      ".........", ".....o...", ".o..oooo.", "o.oooyyoo", ".oooyyyyo",
+      "..ooyykyo", ".o..oooo.", ".....o...", ".........", "........."
+    ],
+    palette: { o: "#b85b35", y: "#e3a448", k: "#26333b" }
+  },
+  swanMagnet: {
+    rows: [
+      "rr.....bb", "rr.....bb", "rr.....bb", "rr.....bb", "rr.....bb",
+      "rr.....bb", ".rr...bb.", "..rrrbb..", "...rbb...", "........."
+    ],
+    palette: { r: "#c64f4d", b: "#487db5" }
+  },
+  magneticFishingRod: {
+    rows: [
+      ".......kk", "......kk.", ".....kk..", "....kk...", "...kk....",
+      "..kk.....", ".kk......", "kk....rb.", ".k...rrbb", ".....r..b"
+    ],
+    palette: { k: "#755234", r: "#c64f4d", b: "#487db5" }
+  },
   backpack: {
     rows: [
       "..kkkk...",
@@ -589,6 +659,36 @@ const ICONS: Record<string, PixelMap> = {
     ],
     palette: { k: "#222322" }
   },
+  willowBranchPaddle: {
+    rows: [
+      "........g",
+      ".......gg",
+      "......gb.",
+      ".....gb..",
+      "....gb...",
+      "...gb....",
+      "..gb.....",
+      ".bbb.....",
+      "bbbb.....",
+      ".bb......"
+    ],
+    palette: { b: "#765333", g: "#9fbe61" }
+  },
+  warningSignPaddle: {
+    rows: [
+      "...rr....",
+      "..ryyr...",
+      ".ryyyyr..",
+      "ryyyyyyr.",
+      "rrrrrrrr.",
+      "....k....",
+      "....k....",
+      "....k....",
+      "....k....",
+      "...kkk..."
+    ],
+    palette: { r: "#bb3232", y: "#f4d85d", k: "#5c6469" }
+  },
   sun: {
     rows: [
       "....y....",
@@ -607,7 +707,7 @@ const ICONS: Record<string, PixelMap> = {
 };
 
 interface PixelIconProps {
-  name: ItemId | "backpack" | "music" | "sun";
+  name: ItemId | "backpack" | "music" | "sun" | "willowBranchPaddle" | "warningSignPaddle";
   size?: number;
   className?: string;
 }
@@ -671,11 +771,11 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" },
   cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。" },
   greaseTissue: { name: "油渍纸巾", desc: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。" },
-  sparklingWater: { name: "气泡水", desc: "蓝色包装的气泡水。不是拿来喝的，至少目前不是。" },
-  lemonTea: { name: "柠檬茶", desc: "白色包装的柠檬茶。配料表比它本人更有颜色。" },
-  blackCoffee: { name: "黑咖啡", desc: "黑色包装的咖啡。看起来已经理解了早八。" },
+  sparklingWater: { name: "气泡水", desc: "看起来很清爽，实际上是队伍秩序的原材料。" },
+  lemonTea: { name: "柠檬茶", desc: "瓶罐架残字写着它的颜色。请结合暗色观察确认配方位置。" },
+  blackCoffee: { name: "黑咖啡", desc: "早八指定燃料。喝了也不一定清醒。" },
   badDrink: { name: "难喝饮料", desc: "不建议喝。喝完之后会理解早八，但不能推进剧情。" },
-  dailySpecialSparklingWater: { name: "今日新品气泡水", desc: "让队伍承认你存在的。" },
+  dailySpecialSparklingWater: { name: "今日新品气泡水", desc: "它让队伍承认你存在，也能在守出口时制造两秒气泡。" },
   pickupTicket0755: { name: "0755 取餐号", desc: "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。" },
   canteenRealBun: { name: "比较真实的包子", desc: "一份真的包子。过于真实，因此没有线索价值。" },
   canteenCluelessSoyMilk: { name: "没什么线索的豆浆", desc: "温度正常，味道正常，剧情价值也很稳定地接近零。" },
@@ -694,5 +794,15 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   bridgeKeyword: { name: "桥边", desc: "CC98 目击者留下的地点关键词。" },
   reflectionKeyword: { name: "倒影", desc: "馆藏系统留下的地点关键词。" },
   lakeKeyword: { name: "湖", desc: "微信消息留下的地点关键词。" },
-  reflectionCoordinate: { name: "倒影坐标", desc: "两种观察模式共同确认的位置。" }
+  reflectionCoordinate: { name: "倒影坐标", desc: "两种观察模式共同确认的位置。" },
+  fishingRod: { name: "钓竿", desc: "码头装备架上的基础钓竿，可安装诱饵或磁吸附件。" },
+  rustedLockerKey: { name: "锈蚀柜钥匙", desc: "从湖中钓起的旧钥匙，表面锈迹与码头储物柜一致。" },
+  nylonCord: { name: "尼龙绳", desc: "储物柜内的耐水尼龙绳，长度足够固定一圈网框。" },
+  brokenNetFrame: { name: "断裂网框", desc: "从水下钓起的旧网框，网面已经脱落。" },
+  improvisedDipNet: { name: "临时抄网", desc: "用尼龙绳修复的网框，可打捞钓钩无法稳定带回的物品。" },
+  sealedFeedTin: { name: "密封饲料罐", desc: "从水中捞出的密封金属罐，内部有颗粒滚动声。" },
+  fishFeedPellets: { name: "鱼食颗粒", desc: "密封罐中的鱼食，可用于吸引小型鱼群靠近。" },
+  smallCarp: { name: "小鲤鱼", desc: "用鱼食引到钓点的小鲤鱼，暂时保持活性。" },
+  swanMagnet: { name: "天鹅磁铁", desc: "黑天鹅带回的小型磁铁，可固定到钓竿末端。" },
+  magneticFishingRod: { name: "磁吸钓竿", desc: "安装磁吸附件的钓竿，可接近夹在金属结构上的纸张。" }
 };

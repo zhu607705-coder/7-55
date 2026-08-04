@@ -14,6 +14,13 @@
     "target": "bonsai_water"
   },
   {
+    "id": "wateredHeadphone",
+    "name": "盛水的耳机",
+    "desc": "耳机背面的凹处已经装水，可用于完成盆栽浇水。",
+    "sourceScene": "phone_home",
+    "target": "bonsai_water"
+  },
+  {
     "id": "reverseGear",
     "name": "反转齿轮",
     "desc": "从设置里掉下来的齿轮。背面刻着 9，说明它一直有背着你生活。",
@@ -151,26 +158,26 @@
     "name": "油渍纸巾",
     "desc": "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。",
     "sourceScene": "canteen_interior",
-    "target": "canteen_bike_lock"
+    "target": "canteen_bike_lock|theater_poster_glass"
   },
   {
     "id": "sparklingWater",
     "name": "气泡水",
-    "desc": "蓝色饮料。单独喝只是饮料，按流程加入则可能成为制度创新。",
+    "desc": "看起来很清爽，实际上是队伍秩序的原材料。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "lemonTea",
     "name": "柠檬茶",
-    "desc": "白色饮料。颜色很克制，配方里的位置并不克制。",
+    "desc": "瓶罐架残字写着它的颜色。请结合暗色观察确认配方位置。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "blackCoffee",
     "name": "黑咖啡",
-    "desc": "黑色饮料。今日新品配方要求它先承担责任。",
+    "desc": "早八指定燃料。喝了也不一定清醒。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
@@ -184,9 +191,9 @@
   {
     "id": "dailySpecialSparklingWater",
     "name": "今日新品气泡水",
-    "desc": "让队伍承认你存在的。",
+    "desc": "它让队伍承认你存在，也能在守出口时制造两秒气泡。",
     "sourceScene": "canteen_interior",
-    "target": "canteen_promo_board"
+    "target": "canteen_promo_board|canteen_defense_floor"
   },
   {
     "id": "pickupTicket0755",
@@ -284,7 +291,7 @@
     "name": "假纸条",
     "desc": "长得很像目标，但态度没那么差。",
     "sourceScene": "phone_home",
-    "target": ""
+    "target": "fishing_rod_bait"
   },
   {
     "id": "wetProgram",
@@ -320,5 +327,75 @@
     "desc": "两种观察模式共同确认的位置。",
     "sourceScene": "phone_home",
     "target": ""
+  },
+  {
+    "id": "fishingRod",
+    "name": "钓竿",
+    "desc": "码头装备架上的基础钓竿，可安装诱饵或磁吸附件。",
+    "sourceScene": "qizhen_lake",
+    "target": "fishing_rod_bait|qizhen_net_frame|swan_magnet"
+  },
+  {
+    "id": "rustedLockerKey",
+    "name": "锈蚀柜钥匙",
+    "desc": "从湖中钓起的旧钥匙，表面锈迹与码头储物柜一致。",
+    "sourceScene": "qizhen_lake",
+    "target": "qizhen_dock_locker"
+  },
+  {
+    "id": "nylonCord",
+    "name": "尼龙绳",
+    "desc": "储物柜内的耐水尼龙绳，长度足够固定一圈网框。",
+    "sourceScene": "qizhen_lake",
+    "target": "broken_net_frame"
+  },
+  {
+    "id": "brokenNetFrame",
+    "name": "断裂网框",
+    "desc": "从水下钓起的旧网框，网面已经脱落。",
+    "sourceScene": "qizhen_lake",
+    "target": "nylon_cord"
+  },
+  {
+    "id": "improvisedDipNet",
+    "name": "临时抄网",
+    "desc": "用尼龙绳修复的网框，可打捞钓钩无法稳定带回的物品。",
+    "sourceScene": "qizhen_lake",
+    "target": "qizhen_feed_tin"
+  },
+  {
+    "id": "sealedFeedTin",
+    "name": "密封饲料罐",
+    "desc": "从水中捞出的密封金属罐，内部有颗粒滚动声。",
+    "sourceScene": "qizhen_lake",
+    "target": "qizhen_feed_tin_lid"
+  },
+  {
+    "id": "fishFeedPellets",
+    "name": "鱼食颗粒",
+    "desc": "密封罐中的鱼食，可用于吸引小型鱼群靠近。",
+    "sourceScene": "qizhen_lake",
+    "target": "qizhen_fish_school"
+  },
+  {
+    "id": "smallCarp",
+    "name": "小鲤鱼",
+    "desc": "用鱼食引到钓点的小鲤鱼，暂时保持活性。",
+    "sourceScene": "qizhen_lake",
+    "target": "qizhen_black_swan"
+  },
+  {
+    "id": "swanMagnet",
+    "name": "天鹅磁铁",
+    "desc": "黑天鹅带回的小型磁铁，可固定到钓竿末端。",
+    "sourceScene": "qizhen_lake",
+    "target": "fishing_rod"
+  },
+  {
+    "id": "magneticFishingRod",
+    "name": "磁吸钓竿",
+    "desc": "安装磁吸附件的钓竿，可接近夹在金属结构上的纸张。",
+    "sourceScene": "qizhen_lake",
+    "target": "qizhen_clipped_paper|qizhen_chase_finish"
   }
 ]

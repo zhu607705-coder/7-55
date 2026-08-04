@@ -9,8 +9,10 @@ import type {
   ItemId,
   LibraryLocationId,
   QuestViewModel,
-  QizhenDecoyTargetId,
+  QizhenFishingSpotId,
   QizhenLakeMode,
+  QizhenLakeZone,
+  QizhenPaddleSide,
   RpgCheckpointId,
   RpgSceneId,
   TheaterMode,
@@ -28,9 +30,13 @@ import {
   ChapterThreeCanteenController
 } from "../../modules/ChapterThreeCanteenController";
 import { ChapterThreeTheaterController } from "../../modules/ChapterThreeTheaterController";
-import { ChapterThreeQizhenLakeController } from "../../modules/ChapterThreeQizhenLakeController";
+import {
+  ChapterThreeQizhenLakeController,
+  type QizhenActionResult
+} from "../../modules/ChapterThreeQizhenLakeController";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
+import { QizhenLoopScene } from "./QizhenLoopScene";
 import { DormHubScene } from "./DormHubScene";
 import { LibraryInteriorScene } from "./LibraryInteriorScene";
 import { CanteenInteriorScene } from "./CanteenInteriorScene";
@@ -71,6 +77,7 @@ interface RpgGameHostProps {
 
 const SCENE_KEYS = {
   campus_bootstrap: "campus-bootstrap",
+  campus_qizhen_loop: "campus-qizhen-loop",
   dorm_hub: "dorm-hub",
   library_interior: "library-interior",
   canteen_interior: "canteen-interior",
@@ -80,6 +87,7 @@ const SCENE_KEYS = {
 
 const SCENE_CLASSES = {
   campus_bootstrap: BootScene,
+  campus_qizhen_loop: QizhenLoopScene,
   dorm_hub: DormHubScene,
   library_interior: LibraryInteriorScene,
   canteen_interior: CanteenInteriorScene,
@@ -110,6 +118,38 @@ const LIBRARY_VISIT_CHECKPOINTS: Record<LibraryLocationId, RpgCheckpointId | "">
   printer: "",
   shelf_755: "library_shelf_755"
 };
+
+function normalizeQizhenFishingSpot(value: unknown): QizhenFishingSpotId {
+  const target = String(value ?? "");
+  if (target === "locker_key" || target.includes("item_1") || target.includes("locker")) return "locker_key";
+  if (target === "net_frame" || target.includes("item_3") || target.includes("net")) return "net_frame";
+  if (target === "fish" || target.includes("fish")) return "fish";
+  return "paper";
+}
+
+function emitQizhenItemFeedback(
+  events: EventBus,
+  itemId: ItemId,
+  result: QizhenActionResult,
+  targetLabel: string
+): void {
+  const detail: Partial<Record<QizhenActionResult, string>> = {
+    accepted: `${targetLabel}已完成当前操作。`,
+    wrong_mode: "切到浅色操作后再使用道具。",
+    wrong_item: `${targetLabel}当前需要其他道具。`,
+    unobserved: "先切到深色观察，记录该目标的倒影坐标。",
+    direct_paper_failure: "普通鱼钩无法固定纸条。需要完成湖区道具链。",
+    already_complete: "这个目标已经完成，请查看当前任务。",
+    locked: "当前剧情条件尚未满足。",
+    inactive: "该交互点当前未开放。"
+  };
+  events.emit("rpg_item_use_feedback", {
+    itemId,
+    reason: result,
+    targetLabel,
+    detail: detail[result]
+  });
+}
 
 function setRpgInputEnabled(game: Phaser.Game, enabled: boolean): void {
   game.input.enabled = enabled;
@@ -173,6 +213,12 @@ export function RpgGameHost({
   const runtimeSelection = useMemo(() => getRpgRuntimeSelection(runtimeScene), [runtimeScene]);
   const [failedGodotScene, setFailedGodotScene] = useState<RpgSceneId | null>(null);
   const [godotTheaterPanel, setGodotTheaterPanel] = useState<GodotTheaterPanelKind | null>(null);
+
+  useEffect(() => {
+    if (inspectedMapItem && !state.items[inspectedMapItem]) {
+      setInspectedMapItem(null);
+    }
+  }, [inspectedMapItem, state.items]);
   const godotPhaseSupported = runtimeScene !== "theater_interior"
     || isGodotTheaterPreviewPhase(state.theaterHunt.phase);
   const useGodotRuntime = runtimeSelection.engine === "godot"
@@ -569,7 +615,7 @@ export function RpgGameHost({
           reason: accepted ? "accepted" : "locked",
           targetLabel: "道具箱旁票据扫描器",
           detail: accepted
-            ? "票据扫描完成，道具箱已经解锁；临时观演票会保留。"
+            ? "票据扫描完成，道具箱已经解锁；临时观演票已完成用途并从道具栏移除。"
             : "先在深色模式读取管理员提示，再切回浅色模式扫描票据。"
         });
       } else if (event.name === "rpg_theater_vent_brush_requested") {
@@ -621,31 +667,65 @@ export function RpgGameHost({
         qizhenController.markIntroSeen();
       } else if (event.name === "rpg_qizhen_mode_requested") {
         qizhenController.setMode(String(event.payload?.mode ?? "light") as QizhenLakeMode);
-      } else if (event.name === "rpg_qizhen_reflection_requested") {
-        qizhenController.interceptReflection(String(event.payload?.positionId ?? ""));
-      } else if (event.name === "rpg_qizhen_sign_rotate_requested") {
-        qizhenController.rotateSign(Number(event.payload?.signIndex));
-      } else if (event.name === "rpg_qizhen_decoy_requested") {
-        const result = qizhenController.placeDecoy(String(event.payload?.targetId ?? "notice") as QizhenDecoyTargetId);
-        events.emit("rpg_item_use_feedback", {
-          itemId: "decoyPaper",
-          reason: result === "correct" ? "accepted" : result === "wrong" ? "wrong_item" : "locked",
-          targetLabel: "候选布置点",
-          detail: result === "wrong"
-            ? "目标范围已经命中，但该位置与倒影坐标不一致。"
-            : undefined
-        });
-      } else if (event.name === "rpg_qizhen_mist_observe_requested") {
-        qizhenController.observeMistRhythm();
-      } else if (event.name === "rpg_qizhen_mist_trigger_requested") {
-        qizhenController.triggerMist(event.payload?.success === true);
+      } else if (event.name === "rpg_qizhen_outfit_requested") {
+        qizhenController.collectOutfit();
+      } else if (event.name === "rpg_qizhen_board_requested") {
+        qizhenController.boardKayak();
+      } else if (event.name === "rpg_qizhen_paddle_requested") {
+        qizhenController.recordPaddleStroke(String(event.payload?.side ?? "left") as QizhenPaddleSide);
+      } else if (event.name === "rpg_qizhen_capsized") {
+        qizhenController.recordCapsize(String(event.payload?.reason ?? "balance_limit"));
+      } else if (event.name === "rpg_qizhen_zone_requested") {
+        qizhenController.enterZone(String(event.payload?.zone ?? "dock") as QizhenLakeZone);
+      } else if (event.name === "rpg_qizhen_reflection_observe_requested") {
+        qizhenController.observeReflection(String(event.payload?.targetId ?? "qizhen_reflection_probe"));
+      } else if (event.name === "rpg_qizhen_rod_requested") {
+        const result = qizhenController.findFishingRod();
+        emitQizhenItemFeedback(events, "fishingRod", result, "浮排边钓鱼竿");
+      } else if (event.name === "rpg_qizhen_bait_requested") {
+        const result = qizhenController.attachDecoyBait();
+        emitQizhenItemFeedback(events, "decoyPaper", result, "钓鱼竿装饵框");
+      } else if (event.name === "rpg_qizhen_fish_requested") {
+        const spotId = normalizeQizhenFishingSpot(event.payload?.targetId);
+        const fallbackItem: ItemId = spotId === "fish" ? "fishFeedPellets" : spotId === "paper" ? "fishingRod" : "fishingRod";
+        const itemId = String(event.payload?.itemId ?? fallbackItem) as ItemId;
+        const result = qizhenController.castAt(spotId);
+        emitQizhenItemFeedback(events, itemId, result, String(event.payload?.targetLabel ?? "已观察抛竿点"));
+      } else if (event.name === "rpg_qizhen_item_use_requested") {
+        const itemId = String(event.payload?.itemId ?? "campusCard") as ItemId;
+        const targetId = String(event.payload?.targetId ?? "");
+        const result = qizhenController.useItemAt(targetId, itemId);
+        emitQizhenItemFeedback(events, itemId, result, String(event.payload?.targetLabel ?? "湖区道具点"));
+      } else if (event.name === "rpg_qizhen_combine_requested") {
+        const rawItems = Array.isArray(event.payload?.itemIds) ? event.payload.itemIds : [];
+        const itemIds = rawItems.map((itemId) => String(itemId) as ItemId);
+        const result = qizhenController.combineItems(itemIds);
+        emitQizhenItemFeedback(events, itemIds[0] ?? "fishingRod", result, "工具装配框");
+      } else if (event.name === "combine_item") {
+        qizhenController.recordInventoryCombination(String(event.payload?.result ?? "campusCard") as ItemId);
+      } else if (event.name === "rpg_qizhen_swan_feed_requested") {
+        const itemId = String(event.payload?.itemId ?? "smallCarp") as ItemId;
+        const result = qizhenController.feedSwan(itemId);
+        emitQizhenItemFeedback(events, itemId, result, "黑天鹅投喂区");
+      } else if (event.name === "rpg_qizhen_paper_caught_requested") {
+        const itemId = String(event.payload?.rigItemId ?? "magneticFishingRod") as ItemId;
+        const result = qizhenController.castAt("paper");
+        emitQizhenItemFeedback(events, itemId, result, "纸条本体水纹");
+      } else if (event.name === "rpg_qizhen_chase_progress") {
+        qizhenController.recordChaseProgress(Number(event.payload?.distance ?? 0));
+      } else if (event.name === "rpg_qizhen_escape_completed_requested") {
+        qizhenController.completeEscape();
       }
     });
   }, [canteenController, events, qizhenController, store, theaterController, useGodotRuntime]);
 
   useEffect(() => {
     if (!useGodotRuntime) return undefined;
-    return events.subscribe((event) => {
+    const timers: number[] = [];
+    const later = (delayMs: number, action: () => void) => {
+      timers.push(window.setTimeout(action, delayMs));
+    };
+    const unsubscribe = events.subscribe((event) => {
       const showGodotSubtitle = (text: string, durationMs = 4200) => {
         events.emit("rpg_subtitle", {
           text,
@@ -676,8 +756,21 @@ export function RpgGameHost({
         showGodotSubtitle(theaterContent.prop.scannerAccepted);
       } else if (event.name === "theater_paper_dusted") {
         showGodotSubtitle(theaterContent.prop.ventComplete);
+      } else if (event.name === "theater_reversal_completed") {
+        const [caughtLine, systemLine] = theaterContent.spotlight.endingDialogue;
+        showGodotSubtitle(caughtLine, 1500);
+        later(1350, () => showGodotSubtitle(systemLine, 1500));
+        later(2700, () => events.emit("theater_decoy_inspect_requested"));
+      } else if (event.name === "theater_decoy_inspect_closed") {
+        theaterContent.spotlight.endingDialogue.slice(2).forEach((line, index) => {
+          later(index * 1450, () => showGodotSubtitle(line, 1600));
+        });
       }
     });
+    return () => {
+      unsubscribe();
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
   }, [events, theaterController, useGodotRuntime]);
 
   useEffect(() => {
@@ -829,7 +922,7 @@ export function RpgGameHost({
 
   return (
     <main
-      className={`rpg-stage ${runtimeScene === "campus_bootstrap" ? "is-campus-map" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
+      className={`rpg-stage ${runtimeScene === "campus_bootstrap" || runtimeScene === "campus_qizhen_loop" ? "is-campus-map" : ""} ${runtimeScene === "campus_qizhen_loop" ? "is-qizhen-approach" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
       data-input-blocked={inputBlocked || itemInspectOpen || godotTheaterPanel !== null ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked ? "true" : "false"}
@@ -864,7 +957,7 @@ export function RpgGameHost({
             bestLives={state.canteenHunt.chaseBestLives}
             onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
             onContinue={() => {
-              if (canteenController.completeChase()) theaterController.enterTheater();
+              canteenController.completeChase();
             }}
           />
         ) : null}
@@ -928,7 +1021,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "qizhen_lake" && ["reflection_hunt", "sign_alignment", "decoy_setup", "mist_timing"].includes(state.qizhenLake.phase) ? (
+        {runtimeScene === "qizhen_lake" && ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
           <RpgRealityModeToggle
             className="rpg-qizhen-mode-toggle"
             mode={state.qizhenLake.mode}
@@ -1004,7 +1097,35 @@ export function RpgGameHost({
           blocked={inputBlocked || itemInspectOpen || chaseActive || godotTheaterPanel !== null}
         />
 
-        {state.actOne.controlsInstalled && touchControls && !chaseActive ? (
+        {state.actOne.controlsInstalled && touchControls && !chaseActive && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
+          <nav className="rpg-kayak-controls" aria-label="皮划艇左右桨和交互按钮">
+            <button
+              type="button"
+              className="left-paddle"
+              aria-label="划左桨，键盘使用 A 或左方向键"
+              onPointerDown={(event) => {
+                events.emit("rpg_qizhen_paddle_input", { side: "left", pointerType: event.pointerType });
+                event.preventDefault();
+              }}
+            >
+              <PixelIcon name="willowBranchPaddle" size={34} />
+              <span>左桨</span>
+            </button>
+            <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
+            <button
+              type="button"
+              className="right-paddle"
+              aria-label="划右桨，键盘使用 D 或右方向键"
+              onPointerDown={(event) => {
+                events.emit("rpg_qizhen_paddle_input", { side: "right", pointerType: event.pointerType });
+                event.preventDefault();
+              }}
+            >
+              <PixelIcon name="warningSignPaddle" size={34} />
+              <span>右桨</span>
+            </button>
+          </nav>
+        ) : state.actOne.controlsInstalled && touchControls && !chaseActive ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"

@@ -4,7 +4,7 @@
 
 剧院流程的存档、剧情、任务、钱包和道具状态继续由 React/TypeScript 主应用管理。Godot 4 Web 承接剧院画面、碰撞、动画和输入，并通过版本化契约读取状态和提交意图。
 
-当前契约入口是 `src/scenes/rpg/TheaterRuntimeContract.ts`，版本为 `1.0.0`。现有 Phaser 剧院与 Godot 剧院预览都通过该契约运行。React 宿主位于 `src/integrations/godot/`，Godot 项目位于 `godot/`，已登记的 Web 导出位于 `public/godot/theater/`。
+当前契约入口是 `src/scenes/rpg/TheaterRuntimeContract.ts`，版本为 `1.0.0`。Godot 是 HTTP(S) 下的正式剧院运行时，Phaser 保留为兼容回退；两者都通过该契约运行。React 宿主位于 `src/integrations/godot/`，Godot 项目位于 `godot/`，已登记的 Web 导出位于 `public/godot/theater/`。
 
 ## 固定边界
 
@@ -23,15 +23,16 @@
 
 | 剧院阶段 | 当前画面运行时 | 状态与判定 |
 | --- | --- | --- |
-| `entry_ticket` | Godot 预览 | TypeScript 控制入口验票与取票码 |
-| `program_search` | Godot 预览 | React 节目单面板提交控制器 |
-| `prop_setup` | Godot 预览 | React 道具栏拖放到 Godot 精确目标 |
-| `spotlight_ready` | Godot 预览 | TypeScript 控制追光准备状态 |
-| `spotlight_hunt` / `reversal` | Phaser 回退 | 三轮追光玩法尚未迁入 Godot |
-| `complete` | Godot 预览 | TypeScript 保留完成事实与离场判定 |
+| `entry_ticket` | Godot 正式 | TypeScript 控制入口验票与取票码 |
+| `program_search` | Godot 正式 | React 节目单面板提交控制器 |
+| `prop_setup` | Godot 正式 | React 道具栏拖放到 Godot 精确目标 |
+| `spotlight_ready` | Godot 正式 | TypeScript 控制追光准备状态 |
+| `spotlight_hunt` | Godot 正式 | Godot 播放三轮轨迹并提交实测锁定数据 |
+| `reversal` | Godot 正式 | Godot 播放纸条破裂与残影逃离，TypeScript 验证完成 |
+| `complete` | Godot 正式 | TypeScript 保留完成事实与离场判定 |
 
-默认 `auto` 模式仍使用 Phaser。开发验收通过
-`?devCheckpoint=c3-theater-entry&rpgEngine=godot&dev=1` 显式开启 Godot；使用
+HTTP(S) 下默认 `auto` 模式使用 Godot。开发验收可通过
+`?devCheckpoint=c3-theater-entry&dev=1` 直接进入；`rpgEngine=godot` 可显式检查 Godot，
 `rpgEngine=phaser` 可强制检查回退。`file://` 单文件固定回退 Phaser，完整 Godot Web
 运行时必须由 HTTP(S) 提供 `.wasm`、`.pck` 和脚本资源。
 
@@ -41,13 +42,17 @@
 - Space 离场后进入 `campus_bootstrap / campus_theater_junction`，启真湖阶段为 `location_search`。
 - `1280 × 720` HTTP 预览中 iframe 与内部 canvas 同为 `1280 × 720`；可见灯控台拖放按 `960 × 540` 逻辑坐标命中。
 - WebKit `390 × 844` 中 Godot 画布为 `390 × 219.375`，触控移动、精确拖放和外层布局无溢出。
+- 三轮追光分别验证 `300ms`、`433.33ms` 和 `550ms` 的连续锁定；第 1、2 轮重载后保持当前轮次。
+- `reversal / round 3` 写入存档后重载仍恢复反转阶段，随后发放 `decoyPaper` 与 `wetProgram` 并进入 `complete`。
+- 临时观演票拖放与框外、错道具、距离不足、模式错误反馈均有可见结果，失败不会移除道具。
+- Blink、Gecko、WebKit 在 `1280 × 720`、`1440 × 900` 与 `390 × 844` 保持 `16:9`、无文档溢出、可键盘或触控移动且零页面与控制台错误。
 
-## 后续替换顺序
+## 接管状态
 
-1. 把 `spotlight_hunt` 与 `reversal` 的三轮追光玩法迁入同一个 Godot 场景。
-2. 用 `c3-theater-entry`、`c3-theater-code`、`c3-theater-program`、`c3-theater-prop`、`c3-theater-spotlight`、`c3-theater-spotlight-round`、`c3-theater-complete` 七个 DEV 检查点复验。
-3. 完成入口、两次观演票拖放、节目单排序、道具箱、三轮追光、离场、保存恢复和重新进入的完整浏览器链路。
-4. 在 Blink、Gecko、WebKit 的桌面、非 `16:9` 与 `390 × 844` 环境通过后，才把剧院 `auto` 模式切到 Godot。
+1. `spotlight_hunt` 与 `reversal` 已在同一个 Godot 场景实现。
+2. 七个剧院 DEV 检查点继续作为回归入口。
+3. `GODOT_ACCEPTED_SCENES` 已包含 `theater_interior`。
+4. Phaser 剧院只用于 `file://`、能力不足或显式 `rpgEngine=phaser` 的兼容回退；永久新行为写入 Godot 与共享 TypeScript 控制器契约。
 
 ## 兼容与失败规则
 

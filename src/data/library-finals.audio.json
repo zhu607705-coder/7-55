@@ -424,6 +424,96 @@
         }
       ]
     },
+    "chapter_three_opening_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "play",
+          "asset": "music_library_022_reveal_v2",
+          "volume": 0.24,
+          "loop": true
+        }
+      ]
+    },
+    "chapter_three_opening_record_scan": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.66,
+          "playbackRate": 0.82
+        }
+      ]
+    },
+    "chapter_three_opening_mode_unlock": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_catalog_correct_v2",
+          "volume": 0.58,
+          "playbackRate": 1.08
+        }
+      ]
+    },
+    "chapter_three_opening_paper_burst": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_note_pickup_v2",
+          "volume": 0.72,
+          "playbackRate": 1.28
+        }
+      ]
+    },
+    "chapter_three_opening_exit_observation": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.46,
+          "playbackRate": 1.28
+        }
+      ]
+    },
+    "chapter_three_opening_cart_clear": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_canteen_cart_roll",
+          "volume": 0.54,
+          "playbackRate": 0.94
+        }
+      ]
+    },
+    "chapter_three_opening_route_confirm": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.42,
+          "playbackRate": 1.36
+        }
+      ]
+    },
+    "chapter_three_opening_route": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_022_signal_v2",
+          "volume": 0.48,
+          "playbackRate": 1.22
+        }
+      ]
+    },
+    "chapter_three_opening_arrival": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "01_global_ui_button_tap_confirm",
+          "volume": 0.46
+        }
+      ]
+    },
     "chapter_three_canteen_hunt_unlocked": {
       "cues": [
         {

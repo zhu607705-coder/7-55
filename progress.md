@@ -1251,11 +1251,35 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - CI 修正：`.github/workflows/web-ci.yml` 在音频校验前检查 `ffmpeg` / `ffprobe`，缺失时通过 Ubuntu 包管理器安装，随后输出两者版本。食堂、剧院、启真湖音效与第三章配音生成器在 `--verify-only` 下保留底层探测异常，方便后续直接识别缺工具、解码失败或媒体参数越界。
 - 诊断验证：用限制 `PATH` 的负向运行得到 `Probe ... failed: spawnSync ffprobe ENOENT`，确认错误已精确透出；恢复正常工具后 `npm run audio:chapter3:verify` 仍为 `76/76`。
 - 本地回归：Workflow YAML 解析、`npm run typecheck`、`npm run godot:check`、`npm run map:zijingang`、`npm run build`、`npm run build:single`、`npm run verify:single` 和 `git diff --check` 全部通过；单文件仍为 `99,824,173 bytes`。
+## 2026-07-28 Godot 剧院完整接管
+
+- 追光与反转：Godot 剧院补齐 `spotlight_hunt` 和 `reversal`。三轮轨迹、诱饵残影、灯位预置、连续锁定、提前照射、超时、三次失败辅助、纸条破裂和残影逃离均读取 `TheaterSpotlightModel.ts` 同源数据；Godot 只提交实测意图，TypeScript 控制器继续验证并写入状态。
+- 恢复链路：第 1、2 轮分别重载后保持 `spotlightRound=1 / 2`；`reversal / round 3` 写入正式存档后重载仍恢复反转，再正常进入 `complete`，发放 `decoyPaper` 与 `wetProgram`。完成态从 `(836,842)` 的剧院出口按 Space 返回 `campus_bootstrap / campus_theater_junction`，启真湖进入 `location_search`。
+- 道具反馈：临时观演票拖入后台扫描器后保留票据、解锁道具箱并发放荧光粉刷。实际拖动同时验证框外、错道具、距离不足和深色模式锁定，界面分别显示下一步，失败不移除道具。
+- 中文字体：Godot Web 加入 Fusion Pixel Font `2024.05.12` 的简体中文比例字体与 OFL/上游许可证记录，中文追光提示不再显示缺字方框。字体 SHA-256 为 `a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08`。
+- WebKit 兼容：追光图元改为回合创建时一次生成，瞄准只移动节点，照射状态只切换透明度；避免 WebKit 对动态索引缓冲的 `bindBuffer / bufferSubData` 错误。分阶段复验从每帧重复错误降至 `0`。
+- 三内核验收：Blink、Gecko、WebKit 三次独立完整流程均命中三轮并进入 `complete`，回合锁定值为 `300 / 433.33 / 550ms`，存档重载、观演票拖放、`1440×900` 键盘移动和 `390×844` Pointer Event 触控移动全部通过。Blink `390×844` 另用原生 `touchStart / touchEnd` 在 Godot 画布完成左灯位瞄准与按住照射，`spotlightRound` 从 `0` 进入 `1`，失误为 `0`。两种附加视口保持 `16:9`，文档溢出、页面错误和控制台错误均为 `0`。
+- 接管结果：`GODOT_ACCEPTED_SCENES` 已加入 `theater_interior`。HTTP(S) 默认 `auto` 在三内核均挂载一个 Godot iframe；显式 `rpgEngine=phaser` 与 `file://` 单文件继续使用 Phaser。三内核离线单文件均为一个 Phaser canvas、零 Godot iframe和零错误。
+- 构建验证：`npm run godot:export:web`、`npm run godot:check`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。`demo/index.html` 为 `99,824,721 bytes`，SHA-256 为 `a49ac5448b7fa18481c7902d8d29f6ba613e01323dfd11732f4ad62a6464e748`；Godot `index.pck` 为 `3,898,448 bytes`。
+
+## 2026-07-29 Godot 剧院 4.7 standalone 场景合入
+
+- 集成范围：从 `C:\Users\·\Desktop\godot剧院4.7` 合入 `theatre_interactive.tscn`、`theatre_plaza.tscn`、`scripts/theatre_*`、`assets/maps/` 和 `assets/player/`，放置在远端 Godot 分支的 `godot/` 子项目内，保留原始 `res://assets/...` 与 `res://scripts/...` 引用。
+- 运行边界：未替换 `godot/project.godot` 的 `theater_runtime.tscn` 主入口，也未接管 React/TypeScript `1.0.0` 剧院 runtime 契约；新增场景作为 640 × 360 standalone 原型供 Godot 编辑器直接打开，正式 Web runtime 继续使用现有 `theater_runtime.gd` 与 `public/godot/theater/`。
+- 仓库修正：补充 `.gitattributes` 的 `*.godot text eol=lf`，让 Windows 工作树中的 `project.godot` 与现有 Web build manifest 的 LF hash 保持一致。
+- 验证结果：新增场景与脚本的 `res://` 引用全部能在 `godot/` 下找到；`node scripts/verify-godot-project.mjs` 通过，输出 `verified Godot project version=4.7.1 assets=14 targets=11 collisions=27 webBuild=matched`；`git diff --cached --check` 通过。未运行 Godot headless import，因为本机 `godot` 命令不在 PATH；未运行 `npm run godot:check`，因为 sparse 工作树未安装 `node_modules/esbuild`，本轮使用不依赖包安装的静态 Godot 校验覆盖现有 manifest。
+
 ## 2026-07-30 剧院入口穿模与提示安全区
 
 - 检票实体：Phaser 回退场景为检票员和右侧读票器补齐按完整可视高度计算的导航碰撞区，人物从正面靠近时停在设备外侧；统一调试状态同步输出两块碰撞矩形。
 - 提示位置：Phaser 场景交互提示与 Godot 宿主提示统一使用底部内缩 `132px` 的字幕安全基线，检票提示不再贴住画布底边或遮住入口门。
 - 轻量验证：`npm run typecheck` 与 `git diff --check` 通过。开发预览从剧院大厅出生点实际执行右移、上移，人物停在 `(921,762)`，当前目标为 `theater_ticket_gate`，控制台与页面错误均为 `0`；截图已人工检查并在记录结论后删除。本轮按用户要求未重新打包 `demo/index.html`。
+
+## 2026-07-30 剧院舞台右侧设备空气墙
+
+- 坐标修正：`stage_right_equipment` 从覆盖整块侧台的 `1260–1512 × 42–258` 收紧为设备本体 `1290–1478 × 90–210`，恢复设备前棕色操作区和右侧台阶的行走范围；Godot 运行数据已通过 `godot:sync` 同步。
+- 实际行走：从 `theater_stage` 出生点持续向右，人物可进入原阻挡区域并停留在 `(1333,200)`；继续移动可抵达真实东侧墙体 `(1502,200)`，没有页面或控制台错误。
+- 验证：`npm run typecheck`、`git diff --check` 通过；两张临时验证截图均已人工检查并在记录结论后删除。本轮未重新打包 `demo/index.html`。
 
 ## 2026-07-30 启真湖假纸条占位提示精修
 
@@ -1285,9 +1309,62 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 离线与 Godot：`file://` 单文件在请求 Godot 时保持一个 Phaser Canvas、零 iframe、零外部请求并正常播放过场。前序 Godot 剧场源码同步后重新导出 Web 产物，`npm run godot:check` 报告 Godot `4.7.1`、`15` 个资产、`11` 个目标、`27` 个碰撞体和匹配的 Web 构建。
 - 构建验证：`npm run map:zijingang:rebuild`、`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run verify:single`、`npm run godot:export:web`、`npm run godot:check` 与 `git diff --check` 通过。最终 `demo/index.html` 为 `130,734,222 bytes`，SHA-256 为 `2421482c074eb8148dfd3ab80790de643df6535ab14373de1e7d80a208950aee`。
 
-## 2026-07-29 Godot 剧院 4.7 standalone 场景合入
+## 2026-07-30 图书馆 022 至第三章食堂自动转场
 
-- 集成范围：从 `C:\Users\·\Desktop\godot剧院4.7` 合入 `theatre_interactive.tscn`、`theatre_plaza.tscn`、`scripts/theatre_*`、`assets/maps/` 和 `assets/player/`，放置在远端 Godot 分支的 `godot/` 子项目内，保留原始 `res://assets/...` 与 `res://scripts/...` 引用。
-- 运行边界：未替换 `godot/project.godot` 的 `theater_runtime.tscn` 主入口，也未接管 React/TypeScript `1.0.0` 剧院 runtime 契约；新增场景作为 640 × 360 standalone 原型供 Godot 编辑器直接打开，正式 Web runtime 继续使用现有 `theater_runtime.gd` 与 `public/godot/theater/`。
-- 仓库修正：补充 `.gitattributes` 的 `*.godot text eol=lf`，让 Windows 工作树中的 `project.godot` 与现有 Web build manifest 的 LF hash 保持一致。
-- 验证结果：新增场景与脚本的 `res://` 引用全部能在 `godot/` 下找到；`node scripts/verify-godot-project.mjs` 通过，输出 `verified Godot project version=4.7.1 assets=14 targets=11 collisions=27 webBuild=matched`；`git diff --cached --check` 通过。未运行 Godot headless import，因为本机 `godot` 命令不在 PATH；未运行 `npm run godot:check`，因为 sparse 工作树未安装 `node_modules/esbuild`，本轮使用不依赖包安装的静态 Godot 校验覆盖现有 manifest。
+- 文档对齐：逐句沿用第三章剧情与动画规格中的 `022` 对话，共 `26` 句；补齐记录查询、签到记录逃离、外观模式解锁、纸条破窗、深色脚印、浅色推书车、再次确认路径、校园路线和食堂抵达镜头。首次触发不再显示“是否继续追踪”选择，直接开始演出。
+- 演出运行时：新增 `34` 节拍确定性时间轴，普通模式总长约 `45.2s`。每个阶段有独立状态、字幕、安全跳过、键盘焦点闭环、页面隐藏暂停和 `window.advanceTime()` 测试入口；减弱动态模式压缩非对白阶段，总长约 `40.7s`，对白仍保留阅读时间。
+- 视觉落地：图书馆、当前校园总图与东区大食堂底图按阶段切换；出口段用实际人物像素图推动书车，路线段用 SVG 描绘纸条移动路径，食堂抵达段依次显示地点牌、蒸汽中的纸条残影和真实校园卡余额 `¥0.00`。有限动画改为进入对应阶段后才启动，避免路线与余额动画提前耗尽。
+- 状态衔接：演出自然结束或跳过后统一进入 `chapter_three / canteen_interior / canteen_entrance`，开启 `canteenHunt.phase=tray_search`，任务更新为“在食堂截住纸条”。完成事件改为 `chapter_three_opening_completed`，避免已退出的图书馆场景继续响应旧事件。
+- 浏览器验收：技能网页游戏客户端完成 `7` 段连续自动推进，状态依次覆盖对话、记录逃离、模式说明、纸条对话、抵达与食堂接管；桌面完整播放、桌面跳过、`390×844` 键盘焦点/跳过/进入食堂、减弱动态和离线 `file://` 单文件均通过。最终状态一致，外部请求、页面错误和控制台错误均为 `0`。
+- 构建验证：`npm run typecheck`、`npm run audio:chapter3:verify`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。`demo/index.html` 为 `130,734,868 bytes`，SHA-256 为 `96160f620d815368a4820c69f7dac1aecbf970fd462ce9162793472efba4a102`。
+
+## 2026-08-01 当前总体单文件预览重打包
+
+- 打包范围：以已合并的校园环湖与启真湖提交为基础，叠加当前本地保留的 Godot 剧场完整接管、图书馆 022 至食堂开场、舞台右侧空气墙及相关 DEV 修改，重新生成总体离线预览。
+- 完整性验证：第三章音频 `76/76`、校园环湖 `13668 × 1084`、Godot `4.7.1 / 15` 个资产 / `11` 个目标 / `27` 个碰撞体及 Web 构建哈希一致；`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。
+- 最终产物：`demo/index.html` 为 `130,734,868 bytes`，SHA-256 为 `96160f620d815368a4820c69f7dac1aecbf970fd462ce9162793472efba4a102`。
+- 预览交接：应用内浏览器自动化不允许控制 `file://` 标签页，未绕过该限制；用户当前打开的 `demo/index.html` 标签页手动刷新后即可加载本次总体版本。
+
+## 2026-08-01 启真湖指示牌箭头转轴对齐
+
+- 根因与修正：三块指示牌共用的箭头容器绕局部 `(0, 0)` 旋转，但可见浅色转轴原本画在 `(-14, 0)`，旋转时会沿半径 `14px` 的圆周偏移；现将转轴固定到真实旋转原点 `(0, 0)`，保留箭杆、箭尖、牌子坐标和解谜判定。
+- 交互验收：网页游戏客户端从 `c3-qizhen-signs` 检查点切到浅色操作，连续旋转中央 2 号牌；运行状态依次为 `[0,1,0]`、`[0,2,0]`、`[0,3,0]`、`[0,0,0]`，四个方向的实际画布截图均已逐张检查，转轴保持在外圈圆心，无新增控制台或页面错误。
+- 当前预览：应用内 HTTP 预览已打开中央指示牌可操作状态，真实点击后触发旋转反馈，可直接复看。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。`demo/index.html` 为 `130,734,866 bytes`，SHA-256 为 `a1152968768504a95f6464b0be829529a5df1e69585c104b2d931251a5c33863`。
+
+## 2026-08-02 启真湖右侧拼接带重构
+
+- 根因：启真湖插入段右边界位于世界坐标 `x=10324`，旧生成器在 `x=10064–10324` 对整张图使用同一条水平透明度渐变，导致湖区柳树、灰色建筑、路灯和右侧圆形建筑在约 `x=10194` 形成双重曝光；前景道路本身保持连续。
+- 图像重构：拼接生成器改为分层多频融合。天空使用宽色彩过渡，中景与前景沿树干、绿篱和围栏轮廓切换，细节羽化宽度保持 `40–52px`；`y≥864` 的道路继续使用原线性融合，避免改变道路几何、世界宽度、入口坐标和碰撞坐标。
+- 可验证契约：运行清单记录 `blendMode=layered-multiband-v1`、左右 `260px` 融合范围、细节羽化范围和道路起始线；地图验证同步校验完整插入元数据与碰撞位图 SHA-256。新环湖图 SHA-256 为 `504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6`。
+- DEV 修正：`c3-qizhen-gate` 现在直接进入 `campus_bootstrap / campus_qizhen_gate`，不会沿用剧场场景；该入口仍为会话态，不写正式存档。
+- 实际通行：从启真湖入口 `x=9362,y=930` 连续右移，人物通过 `x=10324` 后抵达 `x=10486`，并继续走至 `x=12175`。五个连续画面均已检查，接缝处灰色重影消失，前景人行道、车道、绿篱和围栏保持连续；页面错误与控制台错误均为 `0`。
+- 构建验证：`npm run map:zijingang:rebuild`、`npm run map:zijingang`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。应用内 HTTP 总体预览已刷新到本次单文件版本。
+
+## 2026-08-02 第三章剧场至湖畔 MiniMax-H3 CG 任务
+
+- 剧情与分镜：按剧场反转完成后的 `location_search` 状态设计一条 `10s` 横向过场。画面只表现湿纸向水域方向逃离、断续水迹中断和玩家停下调查，不显示启真湖名称、桥梁机关、倒影解法或其他未解答案。
+- 角色连续性：林星宇保持黑色短发、蓝灰外套、深色长裤和白色运动鞋；湿纸保持贴地移动、断续水滴与低饱和青蓝残影。字幕、对白和声音仍由 React 表现层拥有。
+- 参考帧：从当前 `13668×1084` 环湖全景裁出剧场门口与无标识湖畔两张 `1920×1080` 参考帧，并合成当前侧面人物像素图；两帧均已人工检查。
+- CLI：默认 `mmx` 已升级并立即验证为 `1.0.19`，认证仍来自本机 MiniMax 配置。H3 干跑确认请求包含 `2K / 10s / adaptive / first_frame + last_frame`。
+- 正式任务：通过 `mmx video generate --model MiniMax-H3` 提交后，服务端返回 `HTTP 400 / code 2013`，当前 TokenPlan 或 Credit 不支持 H3，任务未创建且没有任务 ID。未擅自降级到 Hailuo。
+- 规则：仓库允许经用户明确批准的独立 MiniMax 剧情 CG；视频继续作为 React 表现资产，不替换校园全景、碰撞、Godot 场景或 TypeScript 进度权威。
+
+## 2026-08-03 道具最终消费与启真湖关键词贴图
+
+- 生命周期：补齐 `rightArrow`、`greaseTissue`、`temporaryTheaterTicket`、`spotlightRemote`、`fluorescentBrush`、`wetProgram`、三个地点关键词、`decoyPaper` 与 `reflectionCoordinate` 的最终消费点；校园卡继续作为跨章节身份物品保留。旧存档按既有剧情事实清理残留道具和失效选中项，DEV 检查点同步到相同状态。
+- 交互反馈：物品移除会同时清除选中态和详情弹窗；剧场扫描、启真湖地点检索等成功反馈明确说明物品已使用并从道具栏移除。
+- 地点检索视觉：启真湖校园地图的 `桥边 / 倒影 / 湖` 三个槽位和候选卡片改为显示现有像素贴图，贴图置于方框主体，文字只作为下方标签；根据实机反馈再次把槽位贴图放大到 `62px`、候选贴图放大到 `58px`，让图形占据方框主体。
+- 浏览器验收：桌面 DEV 检查点实际加入第三个关键词后，三个放大贴图槽位完整显示，阶段进入 `lake_unlocked`，`lakeKeyword=false`，道具栏只保留校园卡和尚待使用的假纸条；`390×844` 下页面宽度保持 `390px`，贴图在缩放后仍占方框约 `91%–94%`，零文档横向溢出，零控制台与页面错误。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过；当前 `demo/index.html` 为 `130,665,894 bytes`。
+- Kimi K3 剪辑：按官方宣传片案例的代理式剪辑方法，让本机 `kimi 0.30.0` / `kimi-code/k3` 检查全景、角色帧与临时音乐，完成镜头选择、运动匹配、节拍对齐、联系表复审和一轮证据驱动返修；输出 `10.000s / 1920×1080 / H.264 / yuv420p / 30fps / 300 帧` 静音母版及带临时 AAC 音轨的审片版。独立完整解码和三个关键节拍抽帧通过，视频暂未接入正式剧情，等待审片确认。
+
+## 2026-08-04 校园主图、食堂动画、骑行重绘与启真湖适配收口
+
+- 校园主图：普通宿舍、图书馆、东区食堂和剧场通行段恢复为 IonicJian 提交的 `4516 × 3420` 俯视校园图，运行图 SHA-256 为 `57e27997d0c24a77dd758869bcc1bab8665b10496a77ec0f802986461ceb116d`；剧场到启真湖继续使用独立 `13668 × 1084` 伪 2.5D 环湖衔接图。两套地图的运行清单、碰撞遮罩和验证命令已分离。
+- 食堂稳定性：食堂守出口运行时在场景销毁和玩家实体释放后停止更新，食堂主场景也拒绝处理释放后的最后一帧，消除切换场景时访问空玩家 `setVelocity` 的崩溃。图书馆文学书架前景深度同步修正，人物位于书架南侧时保持前景遮挡关系。
+- 推车动画：增加可追溯的 8 帧四方向推车人物源图、洋红键透明处理和确定性构建脚本；运行帧改为 8 帧循环，普通推动与冲刺分别使用 `58ms / 42ms` 帧时长，减少原 4 帧循环的抖动。
+- 骑行重绘：按 Kimi K3 的先审查后执行流程，将原大型 SVG 场景替换为低分辨率 Canvas 像素渲染。骑车人物含 3 帧踏频，横穿行人含 4 帧跑步，路障、锥桶、汽车、人群、共享单车、建筑、树、路灯和纸条统一到同一像素网格；保留 `755m`、三车道、三次机会、`188 / 377 / 566m` 节点、碰撞和存档契约。
+- 启真湖适配：划船人物在皮划艇内部单独缩放到 `0.72`，整船保持现有水面碰撞和操控坐标；桌面分屏与单屏任务文字居中。`390 × 844` 单屏任务栏扩展到 `362px`，任务文本保留 `230px` 可用宽度，返回、全屏、模式切换和道具栏保持可操作。
+- 浏览器实测：Blink `1280 × 720` 实际启动骑行、完成左右变道并进入碰撞结算；食堂守出口持续运行且控制台错误为 `0`；启真湖桌面和 `390 × 844` 均重载检查，移动视口控制台错误与文档横向溢出为 `0`。图书馆检查点实际移动到书架站位，人物前景深度符合修正。
+- 自动验证：`npm run map:zijingang`、`npm run godot:check`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。远端 `origin/main` 与本地基线均为 `4863231`，开发期间没有新增远端提交。当前 `demo/index.html` 为 `133,210,912 bytes`，SHA-256 为 `bae3907e2bbc4c1c2fcd178a36c1c0245c9f79b142ee0eb2c69c5bc3143a47db`。

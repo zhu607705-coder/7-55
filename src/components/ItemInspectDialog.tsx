@@ -143,17 +143,17 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   sparklingWater: {
     category: "调配原料 · 蓝色",
     source: "食堂饮料区",
-    intro: "蓝色包装的气泡水。货架没有建议你直接喝。"
+    intro: "看起来很清爽，实际上是队伍秩序的原材料。"
   },
   lemonTea: {
     category: "调配原料 · 白色",
     source: "食堂饮料区",
-    intro: "白色包装的柠檬茶。它负责让新品看起来比较无辜。"
+    intro: "瓶罐架残字写着它的颜色。请结合暗色观察确认配方位置。"
   },
   blackCoffee: {
     category: "调配原料 · 黑色",
     source: "食堂饮料区",
-    intro: "黑色包装的咖啡。闻起来像一节已经开始的早八。"
+    intro: "早八指定燃料。喝了也不一定清醒。"
   },
   badDrink: {
     category: "失败饮品",
@@ -164,8 +164,8 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   dailySpecialSparklingWater: {
     category: "今日新品",
     source: "食堂混合台",
-    intro: "让队伍承认你存在的。",
-    useHint: "拖到第五个打饭窗口下方的宣传板空杯位。"
+    intro: "它让队伍承认你存在，也能在守出口时制造两秒气泡。",
+    useHint: "先拖到第三个餐口宣传板空杯位；守出口时可再拖进食堂地面减速纸条。"
   },
   pickupTicket0755: {
     category: "0755 取餐号",
@@ -220,7 +220,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     category: "假纸条",
     source: "剧院追光灯下",
     intro: "长得很像目标，但态度没那么差。",
-    useHint: "可以制造一次错误目标"
+    useHint: "可安装到钓竿上作为诱饵，装饵成功后会消耗"
   },
   wetProgram: {
     category: "湿掉的节目单",
@@ -246,6 +246,66 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     category: "场景坐标",
     source: "启真湖指示牌",
     intro: "深浅两种观察结果共同指向右侧路灯杆。"
+  },
+  fishingRod: {
+    category: "湖面工具",
+    source: "启真湖码头装备架",
+    intro: "竿梢保留了附件连接位。先在深色观察中记录目标，再在浅色操作中抛竿。",
+    useHint: "可安装诱饵、钓取水面物品，或与磁铁组合"
+  },
+  rustedLockerKey: {
+    category: "解锁工具",
+    source: "启真湖开放水域钓点",
+    intro: "钥匙表面的锈蚀和码头储物柜锁孔一致。",
+    useHint: "靠近码头储物柜后拖入锁孔"
+  },
+  nylonCord: {
+    category: "修复材料",
+    source: "启真湖码头储物柜",
+    intro: "耐水绳结仍然完整，长度适合重新固定一圈网框。",
+    useHint: "与缺少网面的框架组合"
+  },
+  brokenNetFrame: {
+    category: "修复材料",
+    source: "启真湖开放水域钓点",
+    intro: "框架仍可承重，固定网面的绳索已经脱落。",
+    useHint: "与耐水绳索组合"
+  },
+  improvisedDipNet: {
+    category: "打捞工具",
+    source: "尼龙绳 + 断裂网框",
+    intro: "网框已经恢复封闭，可承托钓钩难以稳定带回的物品。",
+    useHint: "在浅色操作中拖向已观察的水下罐体"
+  },
+  sealedFeedTin: {
+    category: "密封容器",
+    source: "启真湖水下打捞点",
+    intro: "罐盖仍然密封，摇动时能听到细小颗粒碰撞。",
+    useHint: "返回安全位置后打开罐盖"
+  },
+  fishFeedPellets: {
+    category: "投喂材料",
+    source: "密封饲料罐",
+    intro: "颗粒遇水后会缓慢下沉，可让鱼群在短时间内集中。",
+    useHint: "在已观察的鱼群位置使用"
+  },
+  smallCarp: {
+    category: "活体诱导物",
+    source: "启真湖鱼群钓点",
+    intro: "小鲤鱼仍有活性，需要尽快完成当前湖区操作。",
+    useHint: "靠近黑天鹅后进行投喂"
+  },
+  swanMagnet: {
+    category: "磁吸附件",
+    source: "启真湖黑天鹅",
+    intro: "小型磁铁的固定环与钓竿末端尺寸一致。",
+    useHint: "与基础钓竿组合"
+  },
+  magneticFishingRod: {
+    category: "组合工具",
+    source: "钓竿 + 天鹅磁铁",
+    intro: "磁吸附件可接近金属夹具，同时保留钓竿的距离优势。",
+    useHint: "用于捕获被夹住的纸张；返航完成后附件会损坏"
   }
 };
 

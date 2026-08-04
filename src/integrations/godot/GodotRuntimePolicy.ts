@@ -18,12 +18,14 @@ export interface RpgRuntimeSelection {
 }
 
 const GODOT_PREVIEW_SCENES = new Set<RpgSceneId>(["theater_interior"]);
-const GODOT_ACCEPTED_SCENES = new Set<RpgSceneId>();
+const GODOT_ACCEPTED_SCENES = new Set<RpgSceneId>(["theater_interior"]);
 const GODOT_THEATER_PREVIEW_PHASES = new Set<TheaterHuntState["phase"]>([
   "entry_ticket",
   "program_search",
   "prop_setup",
   "spotlight_ready",
+  "spotlight_hunt",
+  "reversal",
   "complete"
 ]);
 

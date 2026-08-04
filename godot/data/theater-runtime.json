@@ -69,10 +69,10 @@
     },
     {
       "id": "stage_right_equipment",
-      "left": 1260,
-      "top": 42,
-      "right": 1512,
-      "bottom": 258
+      "left": 1290,
+      "top": 90,
+      "right": 1478,
+      "bottom": 210
     },
     {
       "id": "stage_front",
@@ -474,5 +474,131 @@
     "top": 650,
     "right": 900,
     "bottom": 713
+  },
+  "spotlight": {
+    "rounds": [
+      {
+        "round": 0,
+        "lane": "left",
+        "previewMs": 1200,
+        "actionMs": 3000,
+        "requiredLockMs": 300,
+        "beamRadius": 60,
+        "pathKind": "direct",
+        "pathPoints": [
+          {
+            "x": -340,
+            "y": -55
+          },
+          {
+            "x": -300,
+            "y": -10
+          },
+          {
+            "x": -265,
+            "y": 35
+          },
+          {
+            "x": -230,
+            "y": 90
+          }
+        ]
+      },
+      {
+        "round": 1,
+        "lane": "right",
+        "previewMs": 1000,
+        "actionMs": 2700,
+        "requiredLockMs": 420,
+        "beamRadius": 54,
+        "pathKind": "broken_decoy",
+        "pathPoints": [
+          {
+            "x": 340,
+            "y": -55
+          },
+          {
+            "x": 285,
+            "y": -4
+          },
+          {
+            "x": 250,
+            "y": 44
+          },
+          {
+            "x": 230,
+            "y": 90
+          }
+        ],
+        "decoyPathPoints": [
+          {
+            "x": -340,
+            "y": 20
+          },
+          {
+            "x": -205,
+            "y": 40
+          },
+          {
+            "x": -90,
+            "y": 64
+          },
+          {
+            "x": 0,
+            "y": 90
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "lane": "center",
+        "previewMs": 900,
+        "actionMs": 2500,
+        "requiredLockMs": 550,
+        "beamRadius": 48,
+        "pathKind": "lamp_boundary",
+        "pathPoints": [
+          {
+            "x": -340,
+            "y": -55
+          },
+          {
+            "x": -210,
+            "y": -5
+          },
+          {
+            "x": -112,
+            "y": 25
+          },
+          {
+            "x": 18,
+            "y": 58
+          },
+          {
+            "x": 0,
+            "y": 90
+          }
+        ]
+      }
+    ],
+    "baseAssist": {
+      "active": false,
+      "enabled": false,
+      "previewBonusMs": 0,
+      "radiusScale": 1,
+      "lockScale": 1
+    },
+    "failureAssist": {
+      "active": true,
+      "enabled": true,
+      "previewBonusMs": 800,
+      "radiusScale": 1.2,
+      "lockScale": 1
+    },
+    "assistMistakes": 3,
+    "readyMs": 900,
+    "retryMs": 1100,
+    "hitMs": 350,
+    "reversalMs": 1320
   }
 }

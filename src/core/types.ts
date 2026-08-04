@@ -65,6 +65,7 @@ export interface ItemCatalogEntry {
 
 export type RpgSceneId =
   | "campus_bootstrap"
+  | "campus_qizhen_loop"
   | "dorm_hub"
   | "library_interior"
   | "canteen_interior"
@@ -87,6 +88,12 @@ export type RpgCheckpointId =
   | "qizhen_signs"
   | "qizhen_decoy"
   | "qizhen_mist"
+  | "qizhen_dock"
+  | "qizhen_open_water"
+  | "qizhen_channel"
+  | "qizhen_swan_cove"
+  | "qizhen_chase"
+  | "qizhen_complete"
   | "library_entrance"
   | "library_seat_022"
   | "library_front_desk"
@@ -169,7 +176,7 @@ export type CanteenHuntPhase =
 
 export type CanteenMode = "light" | "dark";
 
-export type CanteenExitId = "west" | "southeast" | "steam";
+export type CanteenExitId = "northwest" | "south_gap" | "southeast";
 
 export type CanteenDrinkIngredientId = "sparklingWater" | "lemonTea" | "blackCoffee";
 
@@ -190,7 +197,9 @@ export interface CanteenHuntState {
   promoDrinkPlaced: boolean;
   queueGapOpened: boolean;
   menuDarkClueRead: boolean;
+  pickupTimeErrorSeen: boolean;
   pickupDarkClueRead: boolean;
+  defenseDrinkUsed: boolean;
   orderedMenuOption: CanteenMenuOptionId | null;
   identifiedExitIds: CanteenExitId[];
   orderAttemptCount: number;
@@ -245,11 +254,30 @@ export type QizhenLakePhase =
   | "inactive"
   | "location_search"
   | "lake_unlocked"
-  | "reflection_hunt"
-  | "sign_alignment"
-  | "decoy_setup"
-  | "mist_timing"
-  | "chase_ready";
+  | "dock_outfitting"
+  | "boarding_tutorial"
+  | "lake_exploration"
+  | "tool_chain"
+  | "swan_exchange"
+  | "paper_capture"
+  | "swan_chase"
+  | "complete";
+
+export type QizhenLakeZone = "dock" | "open_water" | "channel" | "swan_cove";
+
+export type QizhenLakeVehicle = "on_foot" | "kayak";
+
+export type QizhenLakeSafeSpawnId =
+  | "dock_entry"
+  | "dock_kayak"
+  | "open_water_entry"
+  | "channel_entry"
+  | "swan_cove_entry"
+  | "channel_chase";
+
+export type QizhenPaddleSide = "left" | "right";
+
+export type QizhenFishingSpotId = "locker_key" | "net_frame" | "paper" | "fish";
 
 export type QizhenMapClueId = "bridge" | "reflection" | "lake";
 
@@ -259,12 +287,43 @@ export interface QizhenLakeState {
   active: boolean;
   phase: QizhenLakePhase;
   mode: QizhenLakeMode;
+  zone: QizhenLakeZone;
+  vehicle: QizhenLakeVehicle;
+  safeSpawnId: QizhenLakeSafeSpawnId;
   locationBriefingSeen: boolean;
   bridgeClueFound: boolean;
   reflectionClueFound: boolean;
   lakeClueFound: boolean;
   mapClueIds: QizhenMapClueId[];
   introSeen: boolean;
+  kayakEquipped: boolean;
+  leftPaddleEquipped: boolean;
+  rightPaddleEquipped: boolean;
+  boardingStrokeCount: number;
+  boardingLastSide: QizhenPaddleSide | null;
+  boardingTutorialCompleted: boolean;
+  capsizeCount: number;
+  rodFound: boolean;
+  decoyBaitAttached: boolean;
+  reflectionLocationObserved: boolean;
+  observedFishingSpotIds: QizhenFishingSpotId[];
+  directPaperCastFailures: number;
+  lockerOpened: boolean;
+  netCombined: boolean;
+  feedTinRetrieved: boolean;
+  feedTinOpened: boolean;
+  fishCaught: boolean;
+  swanFed: boolean;
+  magneticRodCombined: boolean;
+  paperCaptured: boolean;
+  swanReleased: boolean;
+  chaseDistance: number;
+  chaseBestDistance: number;
+  chaseAttempts: number;
+  magneticAttachmentBroken: boolean;
+  transitionReady: boolean;
+  // v13 compatibility fields. SaveStore reads them once when upgrading old
+  // lake saves; the kayak runtime does not use them as progression authority.
   reflectionRound: number;
   reflectionMistakes: number;
   signRotations: [number, number, number];
@@ -438,7 +497,17 @@ export type ItemId =
   | "bridgeKeyword"
   | "reflectionKeyword"
   | "lakeKeyword"
-  | "reflectionCoordinate";
+  | "reflectionCoordinate"
+  | "fishingRod"
+  | "rustedLockerKey"
+  | "nylonCord"
+  | "brokenNetFrame"
+  | "improvisedDipNet"
+  | "sealedFeedTin"
+  | "fishFeedPellets"
+  | "smallCarp"
+  | "swanMagnet"
+  | "magneticFishingRod";
 
 export type SceneId =
   | "alarm"

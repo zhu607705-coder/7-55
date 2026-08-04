@@ -42,7 +42,7 @@ export interface RpgRuntimeDebugState {
     briefingSeen: boolean;
     stop: { x: number; y: number };
   };
-  scene?: "campus_bootstrap" | "dorm_hub" | "library_interior" | "canteen_interior" | "theater_interior" | "qizhen_lake";
+  scene?: "campus_bootstrap" | "campus_qizhen_loop" | "dorm_hub" | "library_interior" | "canteen_interior" | "theater_interior" | "qizhen_lake";
   checkpoint?: string;
   entranceDoor?: {
     state: "closed" | "opening" | "open" | "closing";
@@ -85,7 +85,9 @@ export interface RpgRuntimeDebugState {
     identifiedTrayIds: string[];
     returnedTrayIds: string[];
     menuDarkClueRead: boolean;
+    pickupTimeErrorSeen?: boolean;
     pickupDarkClueRead: boolean;
+    defenseDrinkUsed?: boolean;
     identifiedExitIds: string[];
     blockHits: number;
     activeTarget: string | null;
@@ -121,8 +123,8 @@ export interface RpgRuntimeDebugState {
       stand: { x: number; y: number };
       dropBounds: { x: number; y: number; width: number; height: number };
     } | null;
-    spotlight?: {
-      stage: "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
+	    spotlight?: {
+	      stage: "idle" | "preview" | "ready" | "tracking" | "awaiting" | "hit" | "miss" | "reversal";
       round: number;
       aimX: number;
       aimLane: "left" | "center" | "right";

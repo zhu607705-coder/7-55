@@ -217,6 +217,67 @@ function libraryQuest(state: GameState): QuestViewModel {
   return buildQuest("chapter_two", "恢复 022 座位", tasks, currentIndex);
 }
 
+function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
+  const lake = state.qizhenLake;
+  const task = (suffix: string, label: string, hints: readonly string[] = []): TaskDefinition => ({
+    id: `chapter_three_qizhen_${suffix}`,
+    label,
+    hints,
+    targetSurface: "rpg"
+  });
+
+  if (lake.phase === "dock_outfitting") {
+    return task("dock_outfitting", qizhenContent.quest.dock, [qizhenContent.dock.outfitPrompt]);
+  }
+  if (lake.phase === "boarding_tutorial") {
+    return task("boarding", qizhenContent.quest.boarding, [qizhenContent.boarding.instruction]);
+  }
+  if (lake.phase === "lake_exploration") {
+    if (!lake.reflectionLocationObserved) {
+      return task("observe_reflection", qizhenContent.quest.observe, [qizhenContent.lake.darkPrompt]);
+    }
+    if (!lake.rodFound) {
+      return task("find_rod", "在浮排边找到钓鱼竿", ["切回浅色操作，靠近浮排检查可取物位置。"]);
+    }
+    return task("attach_decoy", "把假纸条固定到钓鱼竿", ["在道具栏中把假纸条拖到钓鱼竿。"]);
+  }
+  if (lake.phase === "tool_chain") {
+    if (!lake.lockerOpened) {
+      return state.items.rustedLockerKey
+        ? task("open_locker", "用道具 1 打开码头柜门", ["返回码头柜门前的明确交互位置。"])
+        : task("catch_key", "在已观察坐标钓取道具 1", ["浅色操作中抛竿；未观察坐标会被拒绝。"]);
+    }
+    if (!lake.netCombined) {
+      if (!state.items.brokenNetFrame) {
+        return task("catch_net_frame", "在旧木桩倒影处钓取道具 3", ["先在深色观察记录对应坐标。"]);
+      }
+      return task("combine_net", "组合道具 2 和道具 3", ["在道具栏内将尼龙绳与破损网框组合。"]);
+    }
+    if (!lake.feedTinRetrieved) {
+      return task("retrieve_tin", "用道具 4 取回浮标系绳旁的密封盒", ["先进入浮排直河道的可交互位置。"]);
+    }
+    if (!lake.feedTinOpened) {
+      return task("open_tin", "打开道具 5", ["把密封饲料盒拖到已标记的开启位置。"]);
+    }
+    return task("catch_fish", "用道具 6 钓取小鲤鱼", ["先在深色观察中记录鱼群水纹。"]);
+  }
+  if (lake.phase === "swan_exchange") {
+    return task("feed_swan", qizhenContent.quest.swan, [qizhenContent.swan.feedPrompt]);
+  }
+  if (lake.phase === "paper_capture") {
+    return lake.magneticRodCombined
+      ? task("capture_paper", qizhenContent.quest.paper, ["在深色观察记录纸条本体坐标，再切回浅色操作。"])
+      : task("combine_magnetic_rod", "组合道具 7 和钓鱼竿", ["在道具栏中将磁性扣拖到钓鱼竿。"]);
+  }
+  if (lake.phase === "swan_chase") {
+    return task("swan_chase", qizhenContent.quest.chase, [qizhenContent.chase.instruction]);
+  }
+  if (lake.phase === "complete") {
+    return task("complete", qizhenContent.quest.complete);
+  }
+  return task(lake.phase, qizhenContent.quest.lake, qizhenContent.quest.lakeHints.slice(0, 1));
+}
+
 function chapterThreeQuest(state: GameState): QuestViewModel {
   if (state.qizhenLake.active) {
     const task: TaskDefinition = state.qizhenLake.phase === "location_search"
@@ -235,25 +296,7 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
             targetSurface: "phone",
             recommendedScene: "zjuding"
           }
-        : state.qizhenLake.phase === "chase_ready"
-          ? {
-              id: "chapter_three_qizhen_chase",
-              label: qizhenContent.quest.chase,
-              hints: [],
-              targetSurface: "rpg"
-            }
-          : {
-              id: `chapter_three_qizhen_${state.qizhenLake.phase}`,
-              label: qizhenContent.quest.lake,
-              hints: state.qizhenLake.phase === "reflection_hunt"
-                ? [qizhenContent.quest.lakeHints[0]]
-                : state.qizhenLake.phase === "sign_alignment"
-                  ? [qizhenContent.signs.dialogue[1]]
-                  : state.qizhenLake.phase === "decoy_setup"
-                    ? ["倒影坐标需要与假纸条一起核对。"]
-                    : ["先观察湖面的周期变化，再操作现实中的装置。"],
-              targetSurface: "rpg"
-            };
+        : qizhenTaskForLakePhase(state);
     return buildQuest("chapter_three", "启真湖追纸", [task], 0);
   }
   if (state.theaterHunt.active) {

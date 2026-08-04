@@ -10,6 +10,12 @@
       "sha256": "8de37e1976c36c637b3022df76ce52d81b31a40ce9bbf64a7d82255fd5c9f5d3"
     },
     {
+      "source": "src/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "target": "godot/assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf",
+      "bytes": 5897176,
+      "sha256": "a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08"
+    },
+    {
       "source": "src/assets/rpg/player/player_down_0.png",
       "target": "godot/assets/rpg/player/player_down_0.png",
       "bytes": 13211,
@@ -84,8 +90,8 @@
     {
       "source": "src/scenes/rpg/TheaterInteriorModel.ts",
       "target": "godot/data/theater-runtime.json",
-      "bytes": 8914,
-      "sha256": "40e48d4785a517099965eaf360d3c9337d7366d43400b3fa2039ff2056cea11a"
+      "bytes": 11265,
+      "sha256": "bcff9ac6425e743679ad5c22004acbc3428ebb7947f8cb9e6a9a21679eda7a1b"
     }
   ]
 }

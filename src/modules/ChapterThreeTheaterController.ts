@@ -76,10 +76,13 @@ export class ChapterThreeTheaterController {
     ) return false;
     this.store.setState((current) => ({
       ...current,
-      items: { ...current.items, theaterTicketHalfA: true },
+      items: { ...current.items, greaseTissue: false, theaterTicketHalfA: true },
+      ui: current.ui.selectedItem === "greaseTissue"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       theaterHunt: { ...current.theaterHunt, posterCleaned: true }
     }));
-    this.events.emit("use_item", { itemId: "greaseTissue", targetId: "theater-poster-glass", result: "retain" });
+    this.events.emit("use_item", { itemId: "greaseTissue", targetId: "theater-poster-glass", result: "consume" });
     this.events.emit("get_item", { itemId: "theaterTicketHalfA", sourceScene: "phone_home" });
     this.events.emit("theater_poster_cleaned");
     this.publishTicketHalvesReady();
@@ -133,7 +136,10 @@ export class ChapterThreeTheaterController {
         theaterTicketHalfA: false,
         theaterTicketHalfB: false,
         temporaryTheaterTicket: true
-      }
+      },
+      ui: current.ui.selectedItem === "theaterTicketHalfA" || current.ui.selectedItem === "theaterTicketHalfB"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui
     }));
     this.events.emit("combine_item", {
       a: "theaterTicketHalfA",
@@ -232,6 +238,13 @@ export class ChapterThreeTheaterController {
         theaterProgramFinale: false,
         spotlightRemote: true
       },
+      ui: current.ui.selectedItem && [
+        "theaterProgramOpening",
+        "theaterProgramSpotlight",
+        "theaterProgramFinale"
+      ].includes(current.ui.selectedItem)
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       theaterHunt: { ...current.theaterHunt, phase: "prop_setup", programOrder: [...THEATER_PROGRAM_ORDER] }
     }));
     this.events.emit("get_item", { itemId: "spotlightRemote", sourceScene: "phone_home" });
@@ -265,10 +278,17 @@ export class ChapterThreeTheaterController {
     ) return false;
     this.store.setState((current) => ({
       ...current,
-      items: { ...current.items, fluorescentBrush: true },
+      items: {
+        ...current.items,
+        temporaryTheaterTicket: false,
+        fluorescentBrush: true
+      },
+      ui: current.ui.selectedItem === "temporaryTheaterTicket"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       theaterHunt: { ...current.theaterHunt, propBoxOpened: true }
     }));
-    this.events.emit("use_item", { itemId: "temporaryTheaterTicket", targetId: "theater-prop-scanner", result: "retain" });
+    this.events.emit("use_item", { itemId: "temporaryTheaterTicket", targetId: "theater-prop-scanner", result: "consume" });
     this.events.emit("get_item", { itemId: "fluorescentBrush", sourceScene: "phone_home" });
     this.events.emit("theater_prop_box_opened");
     return true;
@@ -284,9 +304,13 @@ export class ChapterThreeTheaterController {
     ) return false;
     this.store.setState((current) => ({
       ...current,
+      items: { ...current.items, fluorescentBrush: false },
+      ui: current.ui.selectedItem === "fluorescentBrush"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       theaterHunt: { ...current.theaterHunt, paperDusted: true, phase: "spotlight_ready" }
     }));
-    this.events.emit("use_item", { itemId: "fluorescentBrush", targetId: "theater-backstage-vent", result: "retain" });
+    this.events.emit("use_item", { itemId: "fluorescentBrush", targetId: "theater-backstage-vent", result: "consume" });
     this.events.emit("theater_paper_dusted");
     return true;
   }
@@ -300,9 +324,13 @@ export class ChapterThreeTheaterController {
     ) return false;
     this.store.setState((current) => ({
       ...current,
+      items: { ...current.items, spotlightRemote: false },
+      ui: current.ui.selectedItem === "spotlightRemote"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       theaterHunt: { ...current.theaterHunt, phase: "spotlight_hunt", mode: "dark" }
     }));
-    this.events.emit("use_item", { itemId: "spotlightRemote", targetId: "theater-spotlight-console", result: "retain" });
+    this.events.emit("use_item", { itemId: "spotlightRemote", targetId: "theater-spotlight-console", result: "consume" });
     this.events.emit("theater_spotlight_started");
     return true;
   }
@@ -413,7 +441,7 @@ export class ChapterThreeTheaterController {
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "rpg",
-      rpgScene: "campus_bootstrap",
+      rpgScene: "campus_qizhen_loop",
       rpgCheckpoint: "campus_theater_junction",
       qizhenLake: {
         ...current.qizhenLake,

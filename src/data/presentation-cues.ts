@@ -215,11 +215,12 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
   },
   chapter_three_canteen_hunt_unlocked: {
     kind: "chapter",
-    title: "追到东区大食堂",
-    detail: "沿校园地图中的脚印继续追踪",
+    title: "抵达东区大食堂",
+    detail: "继续追踪逃进食堂的记录纸条",
     mark: "EAST",
     durationMs: 2400,
-    priority: 3
+    priority: 3,
+    visual: false
   },
   bike_arcade_unlocked: {
     kind: "chapter",

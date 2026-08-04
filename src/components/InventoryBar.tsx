@@ -96,7 +96,17 @@ const ITEM_ORDER: ItemId[] = [
   "bridgeKeyword",
   "reflectionKeyword",
   "lakeKeyword",
-  "reflectionCoordinate"
+  "reflectionCoordinate",
+  "fishingRod",
+  "rustedLockerKey",
+  "nylonCord",
+  "brokenNetFrame",
+  "improvisedDipNet",
+  "sealedFeedTin",
+  "fishFeedPellets",
+  "smallCarp",
+  "swanMagnet",
+  "magneticFishingRod"
 ];
 const INVENTORY_TOP_DEFAULT = 240;
 const INVENTORY_TOP_MIN = 108;
@@ -233,6 +243,20 @@ export function InventoryBar({ state }: InventoryBarProps) {
   useEffect(() => {
     setBarTop((top) => clampBarTop(top));
   }, [open, owned.length]);
+
+  useEffect(() => {
+    if (inspectedItem && !state.items[inspectedItem]) {
+      setInspectedItem(null);
+    }
+  }, [inspectedItem, state.items]);
+
+  useEffect(() => {
+    const draggedItem = dragFrom.current?.item ?? ghost?.item;
+    if (!draggedItem || state.items[draggedItem]) return;
+    dragFrom.current = null;
+    setGhost(null);
+    setHoveredDropTarget(null);
+  }, [ghost?.item, state.items]);
 
   function toggleOpen() {
     kit.flags.setUi("inventoryOpen", !open);

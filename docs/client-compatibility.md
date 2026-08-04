@@ -91,7 +91,7 @@ Godot Web 导出使用 `html/canvas_resize_policy=2`。iframe 与内部 canvas �
 
 - iOS WebKit 通常不提供任意元素 Fullscreen API。全屏按钮可以保持可见，但运行时会退回 CSS 可视区布局。
 - Gecko 在 `390px` 宽度下可能把 `16:9` 画布高度计算为约 `219.383px`；这是亚像素舍入，画布仍保持允许误差内的 `16:9`。
-- WebKit 对 `13668 × 1084` 校园环湖底图的 Canvas2D 线性缩小结果会比 Blink、Gecko 更柔和；坐标、碰撞和非空像素保持一致。保持源图 `1:1` 与 `LINEAR` 纹理契约，避免为单一内核更换世界坐标或资源尺寸。
+- WebKit 对剧场→启真湖专用的 `13668 × 1084` 侧视底图进行 Canvas2D 线性缩小时，会比 Blink、Gecko 更柔和；坐标、碰撞和非空像素保持一致。普通校园使用 IonicJian 的 `4516 × 3420` 俯视源图。两种投影都保持各自源图 `1:1` 契约，不能为单一内核改写世界坐标。
 - Web Audio 可能因自动播放策略处于 suspended 状态。首次用户操作后恢复；音频失败不得阻塞剧情状态。
 - `image-rendering` 同时声明 WebKit、Gecko 与标准路径。像素画面的空间尺寸不能依赖某一内核的锐化结果。
 - Godot Web 导出不能依赖 `file://` 加载 `.wasm` 和 `.pck`。完整 RPG 预览使用本地 HTTP；离线单文件继续挂载已验收 Phaser 回退。

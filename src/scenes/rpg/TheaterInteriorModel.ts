@@ -75,7 +75,7 @@ export const THEATER_STATIC_COLLISION_RECTS: readonly TheaterCollisionRect[] = [
   { id: "stage_left_wing", left: 145, top: 40, right: 244, bottom: 258 },
   { id: "stage_prop_chest", left: 246, top: 118, right: 342, bottom: 213 },
   { id: "stage_prop_scanner", left: 343, top: 132, right: 384, bottom: 210 },
-  { id: "stage_right_equipment", left: 1260, top: 42, right: 1512, bottom: 258 },
+  { id: "stage_right_equipment", left: 1290, top: 90, right: 1478, bottom: 210 },
   { id: "stage_front", left: 390, top: 258, right: 1280, bottom: 316 },
   // Keep the visible red-carpet aisles open: the source artwork leaves a
   // narrow horizontal aisle between the seat banks and another at the lobby

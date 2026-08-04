@@ -18,15 +18,15 @@ npm ci
 npm run dev
 ```
 
-剧院 Godot 预览使用本地 HTTP 地址：
+剧院 Godot 正式运行使用本地 HTTP 地址：
 
 ```text
-http://127.0.0.1:5173/?devCheckpoint=c3-theater-entry&rpgEngine=godot&dev=1
+http://127.0.0.1:5173/?devCheckpoint=c3-theater-entry&dev=1
 ```
 
-`rpgEngine=godot` 显式进入迁移预览，`rpgEngine=phaser` 强制使用回退。默认自动模式在
-场景整段验收完成前仍选择 Phaser。直接打开 `demo/index.html` 时也会选择 Phaser，
-因为浏览器不能从 `file://` 正常加载 Godot 的 `.wasm` 和 `.pck`。
+剧院已通过整段验收，HTTP(S) 下默认 `auto` 使用 Godot。`rpgEngine=godot` 可显式检查
+Godot，`rpgEngine=phaser` 强制检查兼容回退。直接打开 `demo/index.html` 时仍选择
+Phaser，因为浏览器不能从 `file://` 正常加载 Godot 的 `.wasm` 和 `.pck`。
 
 提交前执行：
 

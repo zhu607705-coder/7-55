@@ -57,21 +57,21 @@ npm run dev
 再打开：
 
 ```text
-http://127.0.0.1:5173/?devCheckpoint=c3-theater-entry&rpgEngine=godot&dev=1
+http://127.0.0.1:5173/?devCheckpoint=c3-theater-entry&dev=1
 ```
 
-- `rpgEngine=godot`：显式使用已迁移的 Godot 阶段。
+- 默认 `auto`：HTTP(S) 下剧院使用已验收的 Godot 运行时。
+- `rpgEngine=godot`：显式使用 Godot，适合迁移诊断。
 - `rpgEngine=phaser`：强制使用 Phaser 回退。
-- 缺少 WebAssembly、WebGL 2、HTTP(S) 资源加载或阶段尚未迁移时，宿主显示可读原因并
-  选择 Phaser。
+- 缺少 WebAssembly、WebGL 2 或 HTTP(S) 资源加载时，宿主显示可读原因并选择 Phaser。
 - `demo/index.html` 通过 `file://` 打开时固定使用 Phaser；Godot Web 资源需要 HTTP(S)。
 
 ## 当前剧院覆盖
 
-Godot 已覆盖 `entry_ticket`、`program_search`、`prop_setup`、
-`spotlight_ready` 和 `complete` 的画面、人物、碰撞、交互目标与状态同步。
-`spotlight_hunt` 和 `reversal` 的三轮追光玩法仍使用 Phaser 回退。整段追光、保存恢复、
-重新进入和离场通过跨浏览器验收后，才能把默认 `auto` 模式切到 Godot。
+Godot 已覆盖 `entry_ticket`、`program_search`、`prop_setup`、`spotlight_ready`、
+`spotlight_hunt`、`reversal` 和 `complete` 的画面、人物、碰撞、交互目标、三轮追光、
+反转动画与状态同步。整段流程、回合与反转存档恢复、重新进入、道具拖放和离场已经通过
+Blink、Gecko、WebKit 的桌面、非 `16:9` 与 `390 × 844` 验收，默认 `auto` 已切到 Godot。
 
 ## Standalone 剧院原型
 

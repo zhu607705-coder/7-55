@@ -64,6 +64,7 @@ const SHELF_FLOOR_SOURCE_TOP = SHELF_SPRITE_BOUNDS.top + 160;
 const SHELF_BASE_X = SHELF_SPRITE_BOUNDS.left + SHELF_SPRITE_BOUNDS.width / 2;
 const SHELF_BASE_Y = SHELF_SPRITE_BOUNDS.top + SHELF_SPRITE_BOUNDS.height / 2;
 const SHELF_COLLISION_RECT = LIBRARY_STATIC_COLLISION_RECTS.find((rect) => rect.id === "north_display_shelf")!;
+const SHELF_FRONT_DEPTH = SHELF_COLLISION_RECT.bottom + 96;
 const SHELF_COLLISION_BASE_X = (SHELF_COLLISION_RECT.left + SHELF_COLLISION_RECT.right) / 2;
 const SHELF_PAPER_HIDDEN_X = SHELF_SPRITE_BOUNDS.left + 12;
 const SHELF_PAPER_REVEALED_X = SHELF_SPRITE_BOUNDS.left - 8;
@@ -917,7 +918,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
           duration: this.reducedMotion ? 100 : 220,
           ease: "Stepped",
           onComplete: () => {
-            this.shelfPanel.setDepth(430);
+            this.shelfPanel.setDepth(SHELF_FRONT_DEPTH);
             this.shelfPaper.setVisible(false);
             this.shelfPaperGlow.setVisible(false);
             this.shelfRevealAnimating = false;
@@ -2238,7 +2239,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       SHELF_BASE_X,
       SHELF_BASE_Y,
       [shelfSprite, this.targetShelfTag]
-    ).setDepth(430);
+    ).setDepth(SHELF_FRONT_DEPTH);
   }
 
   private drawSeatingArea(): void {
