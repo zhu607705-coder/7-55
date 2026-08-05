@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
+import { GameSubtitleFrame } from "../../components/GameSubtitleFrame";
 import type { EventBus } from "../../core/EventBus";
+import canteenContent from "../../data/chapter3-canteen.content.json";
 import type { CanteenChaseAttempt } from "../../modules/ChapterThreeCanteenController";
 import { setCanteenChaseSnapshot } from "./CanteenChaseRuntime";
-import { obstaclesBetween, visibleObstacles } from "./canteen-chase/ChaseGeometry";
+import { obstaclesBetween, visibleObstacles, visiblePedestrians } from "./canteen-chase/ChaseGeometry";
 import { ChaseRenderer } from "./canteen-chase/ChaseRenderer";
 
 interface CanteenChaseOverlayProps {
@@ -13,6 +15,7 @@ interface CanteenChaseOverlayProps {
 }
 
 type ChaseRunState = "running" | "won" | "lost";
+type ChaseNarrationId = keyof typeof canteenContent.bike.narration;
 
 interface ChaseRuntime {
   runState: ChaseRunState;
@@ -23,6 +26,8 @@ interface ChaseRuntime {
   invulnerableMs: number;
   milestone: number | null;
   milestoneMs: number;
+  narrationId: ChaseNarrationId | null;
+  narrationMs: number;
   paused: boolean;
   hitObstacleIds: Set<string>;
   reachedMilestones: Set<number>;
@@ -36,12 +41,19 @@ interface ChaseView {
   lane: number;
   collisions: number;
   milestone: number | null;
+  narration: { id: ChaseNarrationId; text: string } | null;
   paused: boolean;
 }
 
 const GOAL_DISTANCE = 755;
 const MAX_LIVES = 3;
 const MILESTONES = [188, 377, 566] as const;
+const NARRATION_DURATION_MS = 2900;
+const MILESTONE_NARRATION: Readonly<Record<(typeof MILESTONES)[number], ChaseNarrationId>> = {
+  188: "m188",
+  377: "m377",
+  566: "m566"
+};
 
 function createInitialRuntime(): ChaseRuntime {
   return {
@@ -53,6 +65,8 @@ function createInitialRuntime(): ChaseRuntime {
     invulnerableMs: 0,
     milestone: null,
     milestoneMs: 0,
+    narrationId: null,
+    narrationMs: 0,
     paused: typeof document !== "undefined" && document.visibilityState === "hidden",
     hitObstacleIds: new Set<string>(),
     reachedMilestones: new Set<number>(),
@@ -98,6 +112,14 @@ export function CanteenChaseOverlay({
     setView(toView(runtime));
   }, []);
 
+  // Narration is presentation-only: it never gates distance, collisions, or
+  // the finish transition, and each line plays once per run.
+  const showNarration = useCallback((id: ChaseNarrationId) => {
+    const runtime = runtimeRef.current;
+    runtime.narrationId = id;
+    runtime.narrationMs = NARRATION_DURATION_MS;
+  }, []);
+
   const enterTheater = useCallback(() => {
     if (theaterTransitionedRef.current) return;
     theaterTransitionedRef.current = true;
@@ -133,9 +155,10 @@ export function CanteenChaseOverlay({
       window.clearTimeout(retryTimerRef.current);
       retryTimerRef.current = null;
     }
+    showNarration("start");
     eventsRef.current.emit("canteen_chase_run_started", { mode: "story" });
     publish(true);
-  }, [publish]);
+  }, [publish, showNarration]);
 
   const finishRun = useCallback((result: "won" | "lost") => {
     const runtime = runtimeRef.current;
@@ -143,6 +166,8 @@ export function CanteenChaseOverlay({
     runtime.runState = result;
     runtime.distance = result === "won" ? GOAL_DISTANCE : Math.floor(runtime.distance);
     runtime.milestone = null;
+    runtime.narrationId = null;
+    runtime.narrationMs = 0;
     eventsRef.current.emit("canteen_chase_finish", {
       result,
       mode: "story",
@@ -174,6 +199,8 @@ export function CanteenChaseOverlay({
     runtime.invulnerableMs = Math.max(0, runtime.invulnerableMs - remaining);
     runtime.milestoneMs = Math.max(0, runtime.milestoneMs - remaining);
     if (runtime.milestoneMs === 0) runtime.milestone = null;
+    runtime.narrationMs = Math.max(0, runtime.narrationMs - remaining);
+    if (runtime.narrationMs === 0) runtime.narrationId = null;
 
     for (const obstacle of obstaclesBetween(previousDistance, nextDistance)) {
       if (runtime.hitObstacleIds.has(obstacle.id)) continue;
@@ -211,6 +238,7 @@ export function CanteenChaseOverlay({
         runtime.reachedMilestones.add(milestone);
         runtime.milestone = milestone;
         runtime.milestoneMs = 1100;
+        showNarration(MILESTONE_NARRATION[milestone]);
         eventsRef.current.emit("canteen_chase_paper_nearer", { milestone });
       }
     }
@@ -220,7 +248,7 @@ export function CanteenChaseOverlay({
       return;
     }
     publish();
-  }, [finishRun, publish]);
+  }, [finishRun, publish, showNarration]);
 
   const changeLane = useCallback((delta: number) => {
     const runtime = runtimeRef.current;
@@ -244,9 +272,10 @@ export function CanteenChaseOverlay({
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
+    showNarration("start");
     eventsRef.current.emit("canteen_chase_run_started", { mode: "story" });
     publish(true);
-  }, [publish]);
+  }, [publish, showNarration]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -328,6 +357,12 @@ export function CanteenChaseOverlay({
       lane: obstacle.lane,
       distanceAhead: Math.round(obstacle.distance - view.distance)
     }));
+    const pedestrians = visiblePedestrians(view.distance).slice(-6).map((pedestrian) => ({
+      id: pedestrian.id,
+      kind: pedestrian.kind,
+      side: pedestrian.side,
+      distanceAhead: Math.round(pedestrian.distance - view.distance)
+    }));
     setCanteenChaseSnapshot({
       active: true,
       coordinateSystem: "3D road projection, horizon at top center, distance increases forward",
@@ -340,7 +375,9 @@ export function CanteenChaseOverlay({
       collisions: view.collisions,
       paused: view.paused,
       countdown: null,
-      visibleObstacles: near
+      visibleObstacles: near,
+      visiblePedestrians: pedestrians,
+      narration: view.narration ? { id: view.narration.id, text: view.narration.text } : null
     });
     return () => setCanteenChaseSnapshot(null);
   }, [view]);
@@ -356,7 +393,7 @@ export function CanteenChaseOverlay({
         ref={canvasRef}
         className="canteen-bike-canvas"
         role="img"
-        aria-label="三车道校园道路、骑车人物和前方障碍"
+        aria-label="三车道校园道路、骑车人物、前方障碍，以及两侧人行道上的校园路人"
       />
 
       <header className="canteen-bike-hud" aria-label="骑行状态">
@@ -375,6 +412,16 @@ export function CanteenChaseOverlay({
           <strong>{view.milestone}m</strong>
           <span>{view.milestone === 188 ? "节奏提升" : view.milestone === 377 ? "拥堵升级" : "最后冲刺"}</span>
         </div>
+      ) : null}
+
+      {view.narration !== null ? (
+        <GameSubtitleFrame
+          key={view.narration.id}
+          text={view.narration.text}
+          tone="narrator"
+          durationMs={NARRATION_DURATION_MS}
+          className="canteen-chase-narration"
+        />
       ) : null}
 
       {view.runState === "running" ? (
@@ -402,6 +449,9 @@ function toView(runtime: ChaseRuntime): ChaseView {
     lane: runtime.lane,
     collisions: runtime.collisions,
     milestone: runtime.milestone,
+    narration: runtime.narrationId === null
+      ? null
+      : { id: runtime.narrationId, text: canteenContent.bike.narration[runtime.narrationId] },
     paused: runtime.paused
   };
 }
