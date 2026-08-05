@@ -54,6 +54,12 @@ export interface ChaseSprites {
   buildings: HTMLCanvasElement[];
   clouds: HTMLCanvasElement[];
   sun: HTMLCanvasElement;
+  pedestrians: {
+    phoneWalker: HTMLCanvasElement[];
+    chattingPair: HTMLCanvasElement[];
+    soyMilk: HTMLCanvasElement[];
+    bikePusher: HTMLCanvasElement[];
+  };
 }
 
 function makeSprite(width: number, height: number, draw: (ctx: PixelContext) => void): HTMLCanvasElement {
@@ -418,6 +424,158 @@ function buildSun(): HTMLCanvasElement {
   });
 }
 
+// Sidewalk pedestrians, side view facing +x (renderer flips for the right
+// sidewalk). Two frames each, swapped at a low rate; reduced motion pins
+// frame 0. All stay within the 24-36px base-sprite band of the scene.
+
+// Phone walker: hurrying while staring at the phone, 24x32. Frames swap the
+// step and bob the glowing phone.
+function buildPhoneWalkerFrame(frame: number): HTMLCanvasElement {
+  return makeSprite(24, 32, (ctx) => {
+    // legs, mid-stride
+    if (frame === 0) {
+      line(ctx, 10, 20, 6, 28, 3, NAVY);
+      line(ctx, 11, 20, 15, 28, 3, NAVY_L);
+      rect(ctx, 4, 28, 4, 2, WHITE);
+      rect(ctx, 14, 28, 4, 2, WHITE);
+    } else {
+      line(ctx, 10, 20, 9, 28, 3, NAVY);
+      line(ctx, 11, 20, 12, 28, 3, NAVY_L);
+      rect(ctx, 7, 28, 4, 2, WHITE);
+      rect(ctx, 11, 28, 4, 2, WHITE);
+    }
+    // torso leaning into the screen
+    rect(ctx, 6, 10, 9, 11, INK);
+    rect(ctx, 7, 11, 7, 9, CORAL);
+    rect(ctx, 7, 11, 2, 9, CORAL_D);
+    // backpack
+    rect(ctx, 4, 11, 3, 7, INK);
+    rect(ctx, 5, 12, 1, 5, BLUE_D);
+    // arm holding the phone low in front
+    line(ctx, 13, 13, 17, 16 + frame, 2, CORAL_D);
+    rect(ctx, 16, 13 + frame, 4, 6, INK);
+    rect(ctx, 17, 14 + frame, 2, 4, CYAN);
+    // head tilted down toward the screen
+    disc(ctx, 11, 6, 3, INK);
+    disc(ctx, 11, 6, 2, SKIN);
+    rect(ctx, 8, 2, 6, 3, HAIR);
+    rect(ctx, 13, 7, 1, 1, INK);
+  });
+}
+
+// Chatting pair: two students walking and talking, 36x30. Frames swap who
+// gestures and trade the speech tick side.
+function buildChattingPairFrame(frame: number): HTMLCanvasElement {
+  return makeSprite(36, 30, (ctx) => {
+    const walker = (cx: number, shirt: string, shade: string, facing: -1 | 1, step: number) => {
+      // legs
+      line(ctx, cx - 1, 19, cx - 3 * facing, 27, 3, step === 0 ? NAVY : NAVY_L);
+      line(ctx, cx + 1, 19, cx + 3 * facing, 27, 3, step === 0 ? NAVY_L : NAVY);
+      rect(ctx, cx - 3 * facing - 1, 27, 4, 2, WHITE);
+      rect(ctx, cx + 3 * facing - 1, 27, 4, 2, WHITE);
+      // torso
+      rect(ctx, cx - 4, 9, 9, 11, INK);
+      rect(ctx, cx - 3, 10, 7, 9, shirt);
+      rect(ctx, cx - 3, 10, 2, 9, shade);
+      // head
+      disc(ctx, cx + facing, 5, 3, INK);
+      disc(ctx, cx + facing, 5, 2, SKIN);
+      rect(ctx, cx + facing - 3, 1, 6, 3, HAIR);
+      rect(ctx, cx + facing * 2, 6, 1, 1, INK);
+    };
+    walker(9, BLUE, BLUE_D, 1, frame);
+    walker(27, PURPLE, PURPLE_D, -1, 1 - frame);
+    // gesturing free arm toward the partner
+    if (frame === 0) {
+      line(ctx, 12, 12, 16, 9, 2, BLUE_D);
+      rect(ctx, 15, 8, 2, 2, SKIN);
+      rect(ctx, 17, 3, 2, 2, WHITE);
+    } else {
+      line(ctx, 24, 12, 20, 9, 2, PURPLE_D);
+      rect(ctx, 19, 8, 2, 2, SKIN);
+      rect(ctx, 16, 3, 2, 2, WHITE);
+    }
+  });
+}
+
+// Soy milk stander: stopped on the sidewalk with a hot cup, 24x30. Frame 1
+// raises the cup for a sip.
+function buildSoyMilkFrame(frame: number): HTMLCanvasElement {
+  return makeSprite(24, 30, (ctx) => {
+    // planted legs
+    rect(ctx, 8, 20, 3, 8, NAVY);
+    rect(ctx, 13, 20, 3, 8, NAVY_L);
+    rect(ctx, 7, 28, 4, 2, WHITE);
+    rect(ctx, 13, 28, 4, 2, WHITE);
+    // torso
+    rect(ctx, 6, 9, 11, 12, INK);
+    rect(ctx, 7, 10, 9, 10, ORANGE);
+    rect(ctx, 7, 10, 2, 10, ORANGE_D);
+    // head
+    disc(ctx, 11, 5, 3, INK);
+    disc(ctx, 11, 5, 2, SKIN);
+    rect(ctx, 8, 1, 6, 3, HAIR);
+    rect(ctx, 13, 6, 1, 1, INK);
+    // soy milk cup: chest height, then raised to the mouth
+    if (frame === 0) {
+      line(ctx, 14, 12, 17, 15, 2, ORANGE_D);
+      rect(ctx, 16, 12, 4, 5, WHITE);
+      rect(ctx, 16, 12, 4, 1, AMBER);
+    } else {
+      line(ctx, 14, 12, 14, 8, 2, ORANGE_D);
+      rect(ctx, 13, 5, 4, 5, WHITE);
+      rect(ctx, 13, 5, 4, 1, AMBER);
+      rect(ctx, 17, 3, 1, 1, CLOUD);
+    }
+  });
+}
+
+// Bike pusher: walking a shared bike by the handlebar, 36x30. Frames swap the
+// step and rotate the wheel spokes.
+function buildBikePusherFrame(frame: number): HTMLCanvasElement {
+  return makeSprite(36, 30, (ctx) => {
+    // shared bike, side view
+    ring(ctx, 23, 24, 4, 4, 1, INK);
+    ring(ctx, 32, 24, 4, 4, 1, INK);
+    if (frame === 0) {
+      line(ctx, 23, 24, 26, 21, 1, METAL_D);
+      line(ctx, 32, 24, 29, 21, 1, METAL_D);
+    } else {
+      line(ctx, 23, 24, 23, 20, 1, METAL_D);
+      line(ctx, 32, 24, 32, 20, 1, METAL_D);
+    }
+    line(ctx, 23, 24, 27, 16, 2, YELLOW);
+    line(ctx, 32, 24, 28, 16, 2, YELLOW);
+    line(ctx, 27, 16, 28, 16, 2, YELLOW_D);
+    rect(ctx, 25, 14, 4, 2, DARK);
+    line(ctx, 31, 15, 32, 24, 2, YELLOW);
+    rect(ctx, 28, 12, 6, 2, INK);
+    rect(ctx, 28, 12, 2, 2, DARK);
+    // person at the left grip
+    if (frame === 0) {
+      line(ctx, 11, 19, 7, 27, 3, NAVY);
+      line(ctx, 12, 19, 15, 27, 3, NAVY_L);
+      rect(ctx, 5, 27, 4, 2, WHITE);
+      rect(ctx, 14, 27, 4, 2, WHITE);
+    } else {
+      line(ctx, 11, 19, 10, 27, 3, NAVY);
+      line(ctx, 12, 19, 13, 27, 3, NAVY_L);
+      rect(ctx, 8, 27, 4, 2, WHITE);
+      rect(ctx, 12, 27, 4, 2, WHITE);
+    }
+    rect(ctx, 7, 9, 9, 11, INK);
+    rect(ctx, 8, 10, 7, 9, SLATE);
+    rect(ctx, 8, 10, 2, 9, METAL_D);
+    // arm forward onto the handlebar grip
+    line(ctx, 14, 12, 28, 13, 2, SLATE);
+    rect(ctx, 27, 12, 2, 2, SKIN);
+    disc(ctx, 11, 5, 3, INK);
+    disc(ctx, 11, 5, 2, SKIN);
+    rect(ctx, 8, 1, 6, 3, HAIR);
+    rect(ctx, 13, 6, 1, 1, INK);
+  });
+}
+
 export function createChaseSprites(): ChaseSprites {
   return {
     rider: [buildRiderFrame(0), buildRiderFrame(1), buildRiderFrame(2)],
@@ -436,6 +594,12 @@ export function createChaseSprites(): ChaseSprites {
       buildBuilding(SLATE, 3, 4, false)
     ],
     clouds: [buildCloud(0), buildCloud(1)],
-    sun: buildSun()
+    sun: buildSun(),
+    pedestrians: {
+      phoneWalker: [buildPhoneWalkerFrame(0), buildPhoneWalkerFrame(1)],
+      chattingPair: [buildChattingPairFrame(0), buildChattingPairFrame(1)],
+      soyMilk: [buildSoyMilkFrame(0), buildSoyMilkFrame(1)],
+      bikePusher: [buildBikePusherFrame(0), buildBikePusherFrame(1)]
+    }
   };
 }

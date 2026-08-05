@@ -572,6 +572,29 @@
   font-size: 11px;
 }
 
+/* Chase narration sits above the key hint and below the milestone banner;
+   `translate` is used instead of `transform` because the timed subtitle
+   keyframes animate `transform`. */
+.canteen-chase-narration.game-subtitle-frame {
+  bottom: 58px;
+  display: grid;
+  gap: 4px;
+  left: 50%;
+  margin: 0;
+  max-width: min(560px, 62%);
+  padding: 8px 14px 9px;
+  pointer-events: none;
+  position: absolute;
+  translate: -50% 0;
+  width: max-content;
+  z-index: 23;
+}
+
+.canteen-chase-narration.game-subtitle-frame > span {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .rpg-temp-inventory {
   background: rgba(10, 14, 18, 0.94);
   border: 3px solid #77818a;
@@ -1214,6 +1237,16 @@
     font-size: 20px;
     height: 42px;
     width: 42px;
+  }
+
+  .canteen-chase-narration.game-subtitle-frame {
+    bottom: 58px;
+    max-width: calc(100% - 128px);
+    padding: 6px 10px 7px;
+  }
+
+  .canteen-chase-narration.game-subtitle-frame > span {
+    font-size: 11px;
   }
 
   .canteen-chase-paused {

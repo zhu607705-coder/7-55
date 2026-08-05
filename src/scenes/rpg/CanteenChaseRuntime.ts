@@ -16,6 +16,13 @@ export interface CanteenChaseSnapshot {
     lane: number;
     distanceAhead: number;
   }>;
+  visiblePedestrians: Array<{
+    id: string;
+    kind: string;
+    side: -1 | 1;
+    distanceAhead: number;
+  }>;
+  narration: { id: string; text: string } | null;
 }
 
 let snapshot: CanteenChaseSnapshot | null = null;

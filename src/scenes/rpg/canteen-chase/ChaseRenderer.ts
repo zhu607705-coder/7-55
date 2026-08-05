@@ -1,7 +1,10 @@
 import {
   projectObstaclePoint,
   visibleObstacles,
-  type ChaseObstacleKind
+  visiblePedestrians,
+  VISIBLE_DISTANCE,
+  type ChaseObstacleKind,
+  type ChasePedestrianKind
 } from "./ChaseGeometry";
 import { createChaseSprites, type ChaseSprites } from "./ChaseSprites";
 
@@ -46,6 +49,7 @@ export class ChaseRenderer {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly sprites: ChaseSprites;
   private readonly obstacles: Record<ChaseObstacleKind, ObstacleMeta>;
+  private readonly pedestrians: Record<ChasePedestrianKind, ObstacleMeta>;
   private readonly background: HTMLCanvasElement;
   private readonly scaledCache = new Map<string, HTMLCanvasElement>();
   private readonly observer: ResizeObserver;
@@ -69,6 +73,12 @@ export class ChaseRenderer {
       crowd: { frames: [this.sprites.crowd], baseWidth: 140 },
       bicycle: { frames: [this.sprites.bicycle], baseWidth: 92 },
       runner: { frames: this.sprites.runner, baseWidth: 96 }
+    };
+    this.pedestrians = {
+      phoneWalker: { frames: this.sprites.pedestrians.phoneWalker, baseWidth: 92 },
+      chattingPair: { frames: this.sprites.pedestrians.chattingPair, baseWidth: 108 },
+      soyMilk: { frames: this.sprites.pedestrians.soyMilk, baseWidth: 88 },
+      bikePusher: { frames: this.sprites.pedestrians.bikePusher, baseWidth: 116 }
     };
     this.background = document.createElement("canvas");
     this.observer = new ResizeObserver(() => this.handleResize());
@@ -100,6 +110,7 @@ export class ChaseRenderer {
     this.drawLaneDashes(ctx, state.distance, -0.5);
     this.drawLaneDashes(ctx, state.distance, 0.5);
     this.drawRoadside(ctx, state.distance);
+    this.drawPedestrians(ctx, state.distance);
     this.drawPaper(ctx, state.distance);
     this.drawObstacles(ctx, state);
     this.drawRider(ctx, state, deltaMs);
@@ -344,6 +355,37 @@ export class ChaseRenderer {
           this.blit(ctx, `building${buildingIndex}`, this.sprites.buildings[buildingIndex], x, y, 200 * scale, opacity);
         }
       }
+    }
+  }
+
+  // Sidewalk pedestrians: deterministic world slots on both sidewalks, drawn
+  // between the roadside props and the road traffic so crossing obstacles
+  // still pass in front. They never enter the road or the collision set.
+  private drawPedestrians(ctx: CanvasRenderingContext2D, distance: number): void {
+    const frameStep = this.reduceMotion ? 0 : Math.floor(distance * 0.15);
+    for (const pedestrian of visiblePedestrians(distance)) {
+      const ahead = pedestrian.distance - distance;
+      const depth = clamp01(1 - ahead / VISIBLE_DISTANCE);
+      const perspective = depth * depth;
+      const half = 88 + perspective * 436 + (pedestrian.laneOffset - 0.5) * 22;
+      const x = 480 + pedestrian.side * half;
+      const y = HORIZON_Y + 3 + perspective * 352;
+      const scale = 0.16 + perspective * 1.22;
+      const opacity = 0.3 + perspective * 0.7;
+      const meta = this.pedestrians[pedestrian.kind];
+      const frame = (frameStep + pedestrian.phase) % 2;
+      const logicalWidth = meta.baseWidth * scale;
+      this.drawShadow(ctx, x, y, logicalWidth, opacity);
+      this.blit(
+        ctx,
+        `ped-${pedestrian.kind}${frame}`,
+        meta.frames[frame],
+        x,
+        y,
+        logicalWidth,
+        opacity,
+        pedestrian.side > 0
+      );
     }
   }
 
