@@ -477,29 +477,6 @@
   letter-spacing: 2px;
 }
 
-.canteen-bike-hud-card.is-best strong {
-  color: #74d4db;
-  font-size: 15px;
-}
-
-.canteen-bike-hud-stack {
-  align-items: flex-end;
-  display: grid;
-  gap: 6px;
-}
-
-.canteen-bike-hud-stack > em {
-  background: rgba(13, 20, 32, 0.72);
-  border: 1px solid #304155;
-  border-radius: 999px;
-  color: #74d4db;
-  font-family: var(--font-pixel);
-  font-size: 10px;
-  font-style: normal;
-  letter-spacing: 1.5px;
-  padding: 4px 10px;
-}
-
 .canteen-bike-milestone {
   background: rgba(13, 20, 32, 0.9);
   border: 1px solid #f0d54e;
@@ -577,119 +554,6 @@
   opacity: 0.34;
 }
 
-.canteen-bike-overlay-card {
-  align-items: center;
-  background: radial-gradient(120% 90% at 50% 25%, rgba(25, 43, 62, 0.96), rgba(8, 13, 21, 0.985));
-  color: #eef3f8;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  inset: 0;
-  justify-content: center;
-  padding: 84px 28px 28px;
-  position: absolute;
-  text-align: center;
-  z-index: 25;
-}
-
-.canteen-bike-overlay-card h2 {
-  color: #f0d54e;
-  font-family: var(--font-pixel);
-  font-size: clamp(28px, 5vw, 42px);
-  line-height: 1.05;
-  margin: 0;
-}
-
-.canteen-bike-overlay-card p {
-  color: #b2c2d0;
-  font-size: 14px;
-  line-height: 1.7;
-  margin: 0;
-  max-width: 480px;
-}
-
-.canteen-bike-overlay-card > small {
-  color: #9fb2c6;
-  font-size: 11px;
-}
-
-.canteen-bike-kicker {
-  color: #74d4db;
-  font-family: var(--font-pixel);
-  font-size: 11px;
-  letter-spacing: 4px;
-}
-
-.canteen-bike-overlay-card.is-result > b {
-  color: #83c77b;
-  font-family: var(--font-pixel);
-  font-size: clamp(48px, 10vw, 74px);
-  line-height: 0.9;
-}
-
-.canteen-bike-overlay-card.is-result > b.is-loss {
-  color: #e97b70;
-}
-
-.canteen-bike-stats {
-  display: flex;
-  gap: 26px;
-  justify-content: center;
-  margin: 2px 0;
-}
-
-.canteen-bike-stats span {
-  color: #9fb2c6;
-  display: grid;
-  font-size: 10px;
-  gap: 2px;
-}
-
-.canteen-bike-stats strong {
-  color: #f0d54e;
-  font-family: var(--font-pixel);
-  font-size: 20px;
-}
-
-.canteen-bike-primary,
-.canteen-bike-secondary,
-.canteen-bike-text-button {
-  cursor: pointer;
-  font-family: var(--font-pixel);
-  font-weight: 800;
-  min-height: 42px;
-  width: min(280px, 78vw);
-}
-
-.canteen-bike-primary {
-  background: linear-gradient(#ffe27a, #f0d54e);
-  border: 0;
-  border-radius: 10px;
-  box-shadow: 0 5px 0 #ae921c;
-  color: #1c1606;
-  font-size: 15px;
-}
-
-.canteen-bike-primary:active {
-  box-shadow: 0 2px 0 #ae921c;
-  transform: translateY(3px);
-}
-
-.canteen-bike-secondary {
-  background: rgba(116, 212, 219, 0.12);
-  border: 1px solid #74d4db;
-  border-radius: 10px;
-  color: #b8f2f5;
-  font-size: 13px;
-}
-
-.canteen-bike-text-button {
-  background: transparent;
-  border: 0;
-  color: #9fb2c6;
-  font-size: 12px;
-}
-
 .canteen-chase-paused {
   background: rgba(8, 16, 24, 0.92);
   border: 3px solid #7fcbe3;
@@ -706,25 +570,6 @@
 .canteen-chase-paused small {
   color: #a9bac9;
   font-size: 11px;
-}
-
-.canteen-chase-countdown {
-  align-items: center;
-  background: rgba(7, 16, 25, 0.88);
-  border: 4px solid #8fe7ff;
-  color: #fff7df;
-  display: flex;
-  font-family: var(--font-pixel);
-  font-size: 72px;
-  font-weight: 900;
-  height: 132px;
-  justify-content: center;
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 132px;
-  z-index: 27;
 }
 
 .rpg-temp-inventory {
@@ -1340,19 +1185,6 @@
     font-size: 13px;
   }
 
-  .canteen-bike-hud-card.is-best {
-    display: none;
-  }
-
-  .canteen-bike-hud-stack {
-    gap: 3px;
-  }
-
-  .canteen-bike-hud-stack > em {
-    font-size: 7px;
-    padding: 2px 6px;
-  }
-
   .canteen-bike-milestone {
     min-width: 92px;
     padding: 3px 8px;
@@ -1382,64 +1214,6 @@
     font-size: 20px;
     height: 42px;
     width: 42px;
-  }
-
-  .canteen-bike-overlay-card {
-    gap: 4px;
-    justify-content: flex-start;
-    overflow-y: auto;
-    padding: 9px 12px;
-  }
-
-  .canteen-bike-kicker {
-    font-size: 7px;
-    letter-spacing: 2px;
-  }
-
-  .canteen-bike-overlay-card h2 {
-    font-size: 19px;
-  }
-
-  .canteen-bike-overlay-card p {
-    font-size: 9px;
-    line-height: 1.35;
-    max-width: 330px;
-  }
-
-  .canteen-bike-overlay-card > small {
-    font-size: 8px;
-  }
-
-  .canteen-bike-overlay-card.is-result > b {
-    font-size: 30px;
-  }
-
-  .canteen-bike-stats {
-    gap: 14px;
-    margin: 0;
-  }
-
-  .canteen-bike-stats span {
-    font-size: 7px;
-  }
-
-  .canteen-bike-stats strong {
-    font-size: 13px;
-  }
-
-  .canteen-bike-primary,
-  .canteen-bike-secondary,
-  .canteen-bike-text-button {
-    font-size: 9px;
-    min-height: 27px;
-    width: min(220px, 80vw);
-  }
-
-  .canteen-chase-countdown {
-    border-width: 3px;
-    font-size: 42px;
-    height: 72px;
-    width: 72px;
   }
 
   .canteen-chase-paused {

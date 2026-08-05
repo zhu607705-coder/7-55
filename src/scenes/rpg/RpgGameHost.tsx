@@ -951,10 +951,6 @@ export function RpgGameHost({
         {chaseActive ? (
           <CanteenChaseOverlay
             events={events}
-            completed={state.canteenHunt.chaseCompleted}
-            attemptCount={state.canteenHunt.chaseAttemptCount}
-            bestDistance={state.canteenHunt.chaseBestDistance}
-            bestLives={state.canteenHunt.chaseBestLives}
             onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
             onContinue={() => {
               canteenController.completeChase();

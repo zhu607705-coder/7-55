@@ -1,10 +1,10 @@
 export interface CanteenChaseSnapshot {
   active: boolean;
   coordinateSystem: "3D road projection, horizon at top center, distance increases forward";
-  mode: "story" | "endless";
-  runState: "ready" | "countdown" | "running" | "won" | "lost";
+  mode: "story";
+  runState: "running" | "won" | "lost";
   distance: number;
-  goal: number | null;
+  goal: number;
   lives: number;
   lane: number;
   collisions: number;

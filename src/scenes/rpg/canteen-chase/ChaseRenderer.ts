@@ -6,7 +6,7 @@ import {
 import { createChaseSprites, type ChaseSprites } from "./ChaseSprites";
 
 export interface ChaseRenderState {
-  runState: "ready" | "countdown" | "running" | "won" | "lost";
+  runState: "running" | "won" | "lost";
   distance: number;
   lane: number;
   invulnerableMs: number;
