@@ -62,7 +62,7 @@ function hasCompletedTrayTask(state: ReturnType<GameStore["getState"]>): boolean
 }
 
 export interface CanteenChaseAttempt {
-  mode: "story" | "endless";
+  mode: "story";
   distance: number;
   lives: number;
   collisions: number;
@@ -783,7 +783,7 @@ export class ChapterThreeCanteenController {
     const distance = Math.max(0, Math.floor(attempt.distance));
     const lives = Math.max(0, Math.min(CANTEEN_CHASE_MAX_LIVES, Math.floor(attempt.lives)));
     const collisions = Math.max(0, Math.floor(attempt.collisions));
-    const won = attempt.mode === "story" && distance === CANTEEN_CHASE_GOAL && lives > 0;
+    const won = distance === CANTEEN_CHASE_GOAL && lives > 0;
     const lost = lives === 0;
     if (!won && !lost) return "invalid";
 
