@@ -1451,3 +1451,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 完整流程：Blink `1280×720` 使用真实 `A/D` 输入完成全段逃离，最终为 `phase=complete`、`zone=dock`、`transitionReady=true`、`magneticAttachmentBroken=true`；未增加终点交互步骤。
 - 跨内核与移动端：Blink、Gecko、WebKit 的远距帧约为 `209px`，逼近帧约为 `114px`，三种内核均无页面错误、控制台错误和文档溢出；iOS WebKit `390×844` 使用左右桨触控完成全段逃离并进入相同完成状态。
 - 构建验证：网页游戏客户端、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,617,825 bytes`，SHA-256 为 `c73bab3fe1cdac68f9da7eb65b5b11b24d74346265ac79a8d05f41428a7001a9`。
+
+## 2026-08-06 图书馆书架多帧开启与前台两帧角色
+
+- 书架演出：文学书架开启改为 `13` 个离散像素阶段，先以 `0 / -2 / 1 / -1 / 0px` 轻微变化，再按 `2px` 递增缓慢横移到 `16px` 终态；每帧持续约 `120–190ms`，机械夹层随位移逐步显现，碰撞边界和人物遮挡同步使用当前帧坐标。
+- 减弱动态：启用 `prefers-reduced-motion` 时直接进入终态帧并保留纸张出现，避免持续动画；旧存档恢复到已完成状态时固定为第 `13/13` 帧。
+- 校准入口：`library-shelf-debug.html` 从两帧轮换升级为完整 `13` 帧预览，继续支持手动调整裁片、终态偏移、帧间隔、人物位置和前后深度；实测状态从第 `4/13` 帧、`-1px` 过渡到第 `9/13` 帧、`8px`，无页面错误和文档溢出。
+- 前台角色：信息台新增一名 `96×128` 双帧前台工作人员，低头登记与抬头翻页缓慢轮换；柜台前景按源图坐标单独回绘，角色下半身由柜台遮挡，玩家位于柜台前时继续覆盖角色。生成源图保留在 `src/assets/rpg/npcs/library/source/`，运行图为透明 `192×128` 双帧表。
+- 完整流程：Blink、Gecko、WebKit 均记录到前台第 `2` 帧，控制台与页面错误为 `0`；iOS WebKit `390×844` 同样完成两帧切换，无文档溢出。书架道具在移动 WebKit 中通过真实触控拖动，状态依次到达第 `8/13` 帧 `6px` 和终态 `16px`，旧规则纸张成功取得且索书号被消费。
+- 构建验证：网页游戏客户端、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,657,287 bytes`，SHA-256 为 `9c916ef5bc8d292ec3b71b9273c22c395b5fa7e1079d0948604c8424955371e2`。

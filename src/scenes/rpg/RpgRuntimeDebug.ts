@@ -68,8 +68,18 @@ export interface RpgRuntimeDebugState {
   };
   shelfReveal?: {
     phase: "idle" | "shaking" | "sliding" | "paper" | "complete";
+    frameIndex: number;
+    frameCount: number;
     offsetPx: number;
     paperVisible: boolean;
+  };
+  frontDeskStaff?: {
+    frameIndex: number;
+    animationKey: string | null;
+    visible: boolean;
+    x: number;
+    y: number;
+    depth: number;
   };
   lostFoundStampMachine?: {
     stage: "missing_report" | "ready" | "scanning" | "stamped";

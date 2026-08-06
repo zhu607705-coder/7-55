@@ -1,5 +1,10 @@
 import libraryInteriorUrl from "../assets/rpg/interiors/library_interior.png";
 import playerUpUrl from "../assets/rpg/player/player_up_0.png";
+import {
+  LIBRARY_SHELF_REVEAL_FRAMES,
+  LIBRARY_SHELF_REVEAL_SHIFT_PX,
+  scaleLibraryShelfRevealOffset
+} from "../scenes/rpg/LibraryShelfRevealMotion";
 
 type Selection = "shelf" | "player";
 
@@ -36,8 +41,8 @@ const DEFAULTS: ShelfDebugConfig = {
   playerX: 567,
   playerY: 252,
   playerScale: 0.65,
-  frameOffset: 1,
-  frameMs: 320
+  frameOffset: LIBRARY_SHELF_REVEAL_SHIFT_PX,
+  frameMs: 165
 };
 
 const root = document.querySelector<HTMLDivElement>("#library-shelf-debug");
@@ -92,7 +97,7 @@ root.innerHTML = `
       <div class="actions">
         <button id="select-shelf" type="button" aria-pressed="true">调书架</button>
         <button id="select-player" type="button" aria-pressed="false">调人物</button>
-        <button id="toggle-frames" type="button" aria-pressed="true">双帧轮换：开</button>
+        <button id="toggle-frames" type="button" aria-pressed="true">多帧动画：开</button>
         <button id="reset-config" type="button">恢复代码值</button>
       </div>
       <fieldset>
@@ -113,7 +118,7 @@ root.innerHTML = `
           <label>Y<input data-key="renderY" type="number" /></label>
           <label>Width<input data-key="renderWidth" type="number" min="8" /></label>
           <label>Height<input data-key="renderHeight" type="number" min="8" /></label>
-          <label>B 帧偏移<input data-key="frameOffset" type="number" min="0" max="4" /></label>
+          <label>终态偏移<input data-key="frameOffset" type="number" min="0" max="24" /></label>
           <label>帧间隔 ms<input data-key="frameMs" type="number" min="120" step="20" /></label>
         </div>
       </fieldset>
@@ -147,7 +152,7 @@ const toggleFrames = document.querySelector<HTMLButtonElement>("#toggle-frames")
 let config: ShelfDebugConfig = { ...DEFAULTS };
 let selection: Selection = "shelf";
 let animateFrames = true;
-let frameB = false;
+let frameIndex = 0;
 let dragging: null | {
   kind: "move" | "resize";
   startX: number;
@@ -188,7 +193,10 @@ function shelfBounds() {
 }
 
 function drawShelf(): void {
-  const offset = animateFrames && frameB ? config.frameOffset : 0;
+  const frame = LIBRARY_SHELF_REVEAL_FRAMES[frameIndex] ?? LIBRARY_SHELF_REVEAL_FRAMES[0];
+  const offset = animateFrames
+    ? scaleLibraryShelfRevealOffset(frame.offsetPx, config.frameOffset)
+    : 0;
   context.drawImage(
     mapImage,
     config.cropLeft,
@@ -200,7 +208,7 @@ function drawShelf(): void {
     config.renderWidth,
     config.renderHeight
   );
-  if (animateFrames && frameB) {
+  if (animateFrames && frame.phase === "sliding") {
     const unitX = config.renderWidth / config.cropWidth;
     const unitY = config.renderHeight / config.cropHeight;
     context.fillStyle = "rgba(255, 232, 129, 0.86)";
@@ -260,7 +268,7 @@ function draw(): void {
   if (playerDepth >= config.shelfDepth) drawPlayer();
   drawSelection();
   const relation = playerDepth >= config.shelfDepth ? "人物在书架前" : "人物在书架后";
-  status.textContent = `当前：${relation} · player depth ${playerDepth.toFixed(0)} / shelf depth ${config.shelfDepth} · ${frameB ? "B" : "A"} 帧`;
+  status.textContent = `当前：${relation} · player depth ${playerDepth.toFixed(0)} / shelf depth ${config.shelfDepth} · 第 ${frameIndex + 1}/${LIBRARY_SHELF_REVEAL_FRAMES.length} 帧 · 偏移 ${scaleLibraryShelfRevealOffset((LIBRARY_SHELF_REVEAL_FRAMES[frameIndex] ?? LIBRARY_SHELF_REVEAL_FRAMES[0]).offsetPx, config.frameOffset)}px`;
 }
 
 function setSelection(next: Selection): void {
@@ -349,7 +357,8 @@ selectPlayer.addEventListener("click", () => setSelection("player"));
 toggleFrames.addEventListener("click", () => {
   animateFrames = !animateFrames;
   toggleFrames.setAttribute("aria-pressed", String(animateFrames));
-  toggleFrames.textContent = `双帧轮换：${animateFrames ? "开" : "关"}`;
+  toggleFrames.textContent = `多帧动画：${animateFrames ? "开" : "关"}`;
+  if (!animateFrames) frameIndex = 0;
   draw();
 });
 document.querySelector<HTMLButtonElement>("#reset-config")!.addEventListener("click", () => {
@@ -374,7 +383,7 @@ document.querySelector<HTMLButtonElement>("#copy-constants")!.addEventListener("
 let lastFrameAt = performance.now();
 function animate(now: number): void {
   if (animateFrames && now - lastFrameAt >= Math.max(120, config.frameMs)) {
-    frameB = !frameB;
+    frameIndex = (frameIndex + 1) % LIBRARY_SHELF_REVEAL_FRAMES.length;
     lastFrameAt = now;
     draw();
   }

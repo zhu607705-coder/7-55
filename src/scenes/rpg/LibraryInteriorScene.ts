@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.png";
+import libraryFrontDeskStaffSheetUrl from "../../assets/rpg/npcs/library/front_desk_staff_2frame.png";
 import type { GameState, ItemId, LibraryLocationId } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import {
@@ -31,8 +32,23 @@ import {
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
+import {
+  LIBRARY_SHELF_REVEAL_FRAMES,
+  LIBRARY_SHELF_REVEAL_SHIFT_PX
+} from "./LibraryShelfRevealMotion";
 
 const LIBRARY_INTERIOR_MAP_KEY = "library-interior-gpt-image-map";
+const LIBRARY_FRONT_DESK_STAFF_SHEET_KEY = "library-front-desk-staff-2frame";
+const LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY = "library-front-desk-staff-idle";
+const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME = "library-front-desk-counter-foreground";
+const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS = {
+  left: 148,
+  top: 606,
+  width: 341,
+  height: 68
+} as const;
+const LIBRARY_FRONT_DESK_STAFF_POSITION = { x: 334, y: 632 } as const;
+const LIBRARY_FRONT_DESK_STAFF_SCALE = 0.72;
 
 const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   callNumber755: "索书号 755",
@@ -51,7 +67,6 @@ const FRONT_DESK_REPORT_HINTS = [
 const BACKPACK_BASE_SCALE = 0.6;
 const BACKPACK_TABLE_PATCH_FRAME = "library-seat-022-clear-patch";
 const BACKPACK_TABLE_PATCH_SOURCE = { left: 1080, top: 392, width: 34, height: 38 } as const;
-const SHELF_REVEAL_SHIFT_PX = 16;
 const SHELF_SPRITE_FRAME = "library-shelf-755-sprite";
 const SHELF_FLOOR_FRAME = "library-shelf-755-floor";
 const SHELF_SPRITE_BOUNDS = {
@@ -119,6 +134,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private shelfRevealAnimating = false;
   private shelfRevealPhase: ShelfRevealPhase = "idle";
   private shelfRevealOffsetPx = 0;
+  private shelfRevealFrameIndex = 0;
   private lostFoundIndicator!: Phaser.GameObjects.Arc;
   private lostFoundScanLine!: Phaser.GameObjects.Rectangle;
   private lostFoundStatusText!: Phaser.GameObjects.Text;
@@ -153,6 +169,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private escapeKey!: Phaser.Input.Keyboard.Key;
   private reducedMotion = false;
   private frontDeskReportHintIndex = 0;
+  private frontDeskStaff!: Phaser.GameObjects.Sprite;
 
   constructor() {
     super("library-interior");
@@ -161,6 +178,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
   preload(): void {
     if (!this.textures.exists(LIBRARY_INTERIOR_MAP_KEY)) {
       this.load.image(LIBRARY_INTERIOR_MAP_KEY, libraryInteriorMapUrl);
+    }
+    if (!this.textures.exists(LIBRARY_FRONT_DESK_STAFF_SHEET_KEY)) {
+      this.load.spritesheet(LIBRARY_FRONT_DESK_STAFF_SHEET_KEY, libraryFrontDeskStaffSheetUrl, {
+        frameWidth: 96,
+        frameHeight: 128
+      });
     }
     preloadRpgPlayerTextures(this);
   }
@@ -756,8 +779,18 @@ export class LibraryInteriorScene extends Phaser.Scene {
       },
       shelfReveal: {
         phase: this.shelfRevealPhase,
+        frameIndex: this.shelfRevealFrameIndex,
+        frameCount: LIBRARY_SHELF_REVEAL_FRAMES.length,
         offsetPx: this.shelfRevealOffsetPx,
         paperVisible: this.shelfPaper.visible
+      },
+      frontDeskStaff: {
+        frameIndex: Number(this.frontDeskStaff.frame.name),
+        animationKey: this.frontDeskStaff.anims.currentAnim?.key ?? null,
+        visible: this.frontDeskStaff.visible,
+        x: this.frontDeskStaff.x,
+        y: this.frontDeskStaff.y,
+        depth: this.frontDeskStaff.depth
       },
       lostFoundStampMachine: {
         stage: state.ui.libraryFinalsPuzzle.lostFoundStage,
@@ -873,27 +906,31 @@ export class LibraryInteriorScene extends Phaser.Scene {
       .setVisible(true)
       .setPosition(SHELF_PAPER_HIDDEN_X, SHELF_PAPER_Y)
       .setAlpha(this.reducedMotion ? 0.12 : 0.04);
-    const shakeOffsets = this.reducedMotion ? [0] : [4, -5, 3, -4, 0];
-    const shakeDuration = this.reducedMotion ? 1 : 45;
-    shakeOffsets.forEach((offset, index) => {
-      this.time.delayedCall(index * shakeDuration, () => {
-        this.setShelfRevealOffset(offset);
+    if (this.reducedMotion) {
+      this.time.delayedCall(140, () => {
+        this.shelfRevealFrameIndex = LIBRARY_SHELF_REVEAL_FRAMES.length - 1;
+        this.shelfRevealPhase = "sliding";
+        this.setShelfRevealOffset(LIBRARY_SHELF_REVEAL_SHIFT_PX);
+        this.animateShelfPaperReveal();
       });
-    });
-    this.time.delayedCall(shakeOffsets.length * shakeDuration, () => {
-      this.shelfRevealPhase = "sliding";
-      const slideOffsets = this.reducedMotion ? [SHELF_REVEAL_SHIFT_PX] : [4, 8, 12, SHELF_REVEAL_SHIFT_PX];
-      const slideStepDuration = this.reducedMotion ? 140 : 115;
-      slideOffsets.forEach((offset, index) => {
-        this.time.delayedCall((index + 1) * slideStepDuration, () => this.setShelfRevealOffset(offset));
+    } else {
+      let elapsedMs = 0;
+      LIBRARY_SHELF_REVEAL_FRAMES.forEach((frame, index) => {
+        elapsedMs += frame.durationMs;
+        this.time.delayedCall(elapsedMs, () => {
+          this.shelfRevealFrameIndex = index;
+          this.shelfRevealPhase = frame.phase;
+          this.setShelfRevealOffset(frame.offsetPx);
+        });
       });
-      this.time.delayedCall(slideOffsets.length * slideStepDuration, () => this.animateShelfPaperReveal());
-    });
-    this.showFeedback("书架横移了一格，后面夹着一份很旧的黄纸。", "success");
+      this.time.delayedCall(elapsedMs + 110, () => this.animateShelfPaperReveal());
+    }
+    this.showFeedback("书架开始缓慢横移，后面的夹层逐渐露出一份旧黄纸。", "success");
   }
 
   private animateShelfPaperReveal(): void {
-    this.setShelfRevealOffset(SHELF_REVEAL_SHIFT_PX);
+    this.shelfRevealFrameIndex = LIBRARY_SHELF_REVEAL_FRAMES.length - 1;
+    this.setShelfRevealOffset(LIBRARY_SHELF_REVEAL_SHIFT_PX);
     this.shelfRevealPhase = "paper";
     this.tweens.add({
       targets: this.shelfPaperGlow,
@@ -935,6 +972,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const snappedOffset = Math.round(offsetPx);
     this.shelfRevealOffsetPx = snappedOffset;
     this.shelfPanel.setX(SHELF_BASE_X + snappedOffset);
+    this.shelfMechanism.setAlpha(Phaser.Math.Clamp(0.18 + Math.max(0, snappedOffset) / LIBRARY_SHELF_REVEAL_SHIFT_PX * 0.82, 0.18, 1));
     this.shelfCollision.setX(SHELF_COLLISION_BASE_X + snappedOffset);
     const body = this.shelfCollision.body as Phaser.Physics.Arcade.StaticBody | null;
     body?.updateFromGameObject();
@@ -1488,7 +1526,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.backpackEvictionAnimating = false;
     this.occupancyNote.setVisible(puzzle.backpackInspected && !puzzle.occupancyNoteCollected);
     this.receipt.setVisible(false);
-    this.setShelfRevealOffset(puzzle.archivedRuleCollected ? SHELF_REVEAL_SHIFT_PX : 0);
+    this.shelfRevealFrameIndex = puzzle.archivedRuleCollected ? LIBRARY_SHELF_REVEAL_FRAMES.length - 1 : 0;
+    this.setShelfRevealOffset(puzzle.archivedRuleCollected ? LIBRARY_SHELF_REVEAL_SHIFT_PX : 0);
     this.shelfRevealPhase = puzzle.archivedRuleCollected ? "complete" : "idle";
     this.targetShelfTag.setText(puzzle.callNumberCollected || puzzle.archivedRuleCollected ? "I247.55" : "I247.??");
     this.shelfMechanism.setVisible(puzzle.archivedRuleCollected);
@@ -1979,6 +2018,50 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "14px",
       padding: { x: 8, y: 4 }
     }).setOrigin(0.5).setDepth(810);
+
+    const staffAnimationFrames = [0, 0, 0, 1, 1, 0].map((frame) => ({
+      key: LIBRARY_FRONT_DESK_STAFF_SHEET_KEY,
+      frame
+    }));
+    if (!this.anims.exists(LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY)) {
+      this.anims.create({
+        key: LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY,
+        frames: staffAnimationFrames,
+        frameRate: 1.8,
+        repeat: -1,
+        repeatDelay: 900
+      });
+    }
+    this.frontDeskStaff = this.add.sprite(
+      LIBRARY_FRONT_DESK_STAFF_POSITION.x,
+      LIBRARY_FRONT_DESK_STAFF_POSITION.y,
+      LIBRARY_FRONT_DESK_STAFF_SHEET_KEY,
+      0
+    )
+      .setOrigin(0.5, 1)
+      .setScale(LIBRARY_FRONT_DESK_STAFF_SCALE)
+      .setDepth(706);
+    if (!this.reducedMotion) {
+      this.frontDeskStaff.play(LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY);
+    }
+
+    const mapTexture = this.textures.get(LIBRARY_INTERIOR_MAP_KEY);
+    if (!mapTexture.has(LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME)) {
+      mapTexture.add(
+        LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME,
+        0,
+        LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.left,
+        LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.top,
+        LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.width,
+        LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.height
+      );
+    }
+    this.add.image(
+      LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.left + LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.width / 2,
+      LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.top + LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS.height / 2,
+      LIBRARY_INTERIOR_MAP_KEY,
+      LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME
+    ).setDepth(728);
 
     const target = getLibraryTarget("lost_found_machine");
     const shadow = this.add.ellipse(2, 57, 88, 18, 0x101715, 0.5);
