@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import { GameSubtitleFrame } from "../../components/GameSubtitleFrame";
 import type { EventBus } from "../../core/EventBus";
@@ -97,6 +97,9 @@ export function CanteenChaseOverlay({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<ChaseRenderer | null>(null);
   const [view, setView] = useState<ChaseView>(() => toView(runtimeRef.current));
+  const progressStyle = {
+    "--canteen-chase-progress": `${Math.min(100, (view.distance / GOAL_DISTANCE) * 100)}%`
+  } as CSSProperties;
   eventsRef.current = events;
   onAttemptRef.current = onAttempt;
   onContinueRef.current = onContinue;
@@ -396,14 +399,25 @@ export function CanteenChaseOverlay({
         aria-label="三车道校园道路、骑车人物、前方障碍，以及两侧人行道上的校园路人"
       />
 
-      <header className="canteen-bike-hud" aria-label="骑行状态">
-        <div className="canteen-bike-hud-card">
-          <span>距离 DIST</span>
+      <header className="canteen-bike-hud" aria-label="骑行状态" style={progressStyle}>
+        <div className="canteen-bike-hud-card is-distance">
+          <span>追纸距离</span>
           <strong>{String(Math.floor(view.distance)).padStart(3, "0")}<small> / 755m</small></strong>
         </div>
+        <div
+          className="canteen-bike-progress"
+          role="progressbar"
+          aria-label="骑行进度"
+          aria-valuemin={0}
+          aria-valuemax={GOAL_DISTANCE}
+          aria-valuenow={Math.floor(view.distance)}
+        >
+          <i />
+          {MILESTONES.map((milestone) => <b key={milestone} style={{ left: `${(milestone / GOAL_DISTANCE) * 100}%` }} />)}
+        </div>
         <div className="canteen-bike-hud-card is-lives">
-          <span>机会 LIVES</span>
-          <strong>{"■".repeat(view.lives)}{"□".repeat(MAX_LIVES - view.lives)}</strong>
+          <span>机会</span>
+          <strong aria-label={`剩余 ${view.lives} 次机会`}>{"●".repeat(view.lives)}{"○".repeat(MAX_LIVES - view.lives)}</strong>
         </div>
       </header>
 
@@ -426,7 +440,7 @@ export function CanteenChaseOverlay({
 
       {view.runState === "running" ? (
         <>
-          {!hasCoarsePointer ? <div className="canteen-bike-key-hint"><kbd>A</kbd> / <kbd>←</kbd> 左移　·　右移 <kbd>→</kbd> / <kbd>D</kbd></div> : null}
+          {!hasCoarsePointer ? <div className="canteen-bike-key-hint"><kbd>A</kbd><kbd>←</kbd><span>换道</span><kbd>→</kbd><kbd>D</kbd></div> : null}
           {hasCoarsePointer ? (
             <nav className="canteen-chase-controls" aria-label="追逐方向">
               <button type="button" aria-label="向左换道" disabled={view.lane === 0} onPointerDown={() => changeLane(-1)}>←</button>
