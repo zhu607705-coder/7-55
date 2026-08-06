@@ -1424,3 +1424,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 完整验收：Blink `1280 × 720` 从启真湖入口实际进入码头、绕过器材架底座并拾取右桨，状态从 `dockSignRemoved=false` 切换为 `true`，右桨目标同步消失，架后与架前截图均完成检查，控制台和页面错误为 `0`。
 - 跨内核与移动端：Gecko `1366 × 768`、WebKit `1280 × 720` 与 iOS WebKit `390 × 844` 均通过真实空格交互进入 `qizhen_lake / dock`；三种场景均无文档溢出、控制台错误或页面错误。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,619,294 bytes`，SHA-256 为 `929edecada25c923c347eaa2ba41152df65d7f9f143fae37fae0046bec0c79c0`。
+
+## 2026-08-06 启真湖直河道抵达终点自动通过
+
+- 通关条件：黑天鹅追逐改为抵达河道左端 `x≤190` 后立即完成，不再要求终点再次按空格；任务配置、场内提示和船体状态栏均明确显示“左端抵达即通过”。
+- 难度调整：删除黑天鹅逐步缩短距离和追上船尾强制翻船的判定，追逐表现改为固定安全跟随；左右同侧连续划桨和撞击河岸的既有平衡规则继续生效。
+- 河道贯通：追逐阶段的浮排与旧网栏保留画面和前后遮挡，但不再作为实体阻断水路；普通探索阶段仍读取原始碰撞数据。运行调试状态同步输出实际追逐碰撞列表和终点坐标。
+- 完整流程：Blink `1280×720` 从 `c3-qizhen-chase` 仅用真实 `A/D` 左右桨输入，从 `(1390,505)` 抵达左端并自动切回小码头；最终 `phase=complete`、`zone=dock`、`transitionReady=true`，全过程未发送空格键，页面与控制台错误为 `0`。
+- 跨内核与移动端：Blink `1280×720`、Gecko `1366×768` 与 iOS WebKit `390×844` 均完成八次左右桨输入，人物前进约 `450px`，追逐碰撞列表均只保留世界边界、南北河岸和右侧码头；三种环境均无文档溢出、控制台错误或页面错误。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,619,790 bytes`，SHA-256 为 `feb1293aaf0bf7ab185272ac274eea32ab8647ac022b1356957c825d3e31f756`。
