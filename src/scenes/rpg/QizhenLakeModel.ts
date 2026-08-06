@@ -107,7 +107,7 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       { id: "pier_east_water", left: 790, top: 430, right: 1672, bottom: 650 },
       { id: "southeast_water", left: 1080, top: 650, right: 1672, bottom: 941 },
       { id: "kayak_house", left: 80, top: 642, right: 425, bottom: 825 },
-      { id: "kayak_rack", left: 438, top: 676, right: 552, bottom: 842 },
+      { id: "kayak_rack_base", left: 448, top: 814, right: 542, bottom: 842 },
       { id: "south_planter", left: 690, top: 795, right: 1080, bottom: 941 }
     ],
     kayakCollisions: [
@@ -125,6 +125,7 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
     ],
     occlusions: [
       { id: "dock_walkway_front", left: 620, top: 450, right: 790, bottom: 688, sortY: 688 },
+      { id: "kayak_rack_front", left: 438, top: 714, right: 542, bottom: 844, sortY: 814 },
       { id: "south_willow", left: 830, top: 600, right: 1100, bottom: 910, sortY: 910 }
     ]
   },
