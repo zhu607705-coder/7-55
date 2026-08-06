@@ -668,7 +668,10 @@ export function RpgGameHost({
       } else if (event.name === "rpg_qizhen_mode_requested") {
         qizhenController.setMode(String(event.payload?.mode ?? "light") as QizhenLakeMode);
       } else if (event.name === "rpg_qizhen_outfit_requested") {
-        qizhenController.collectOutfit();
+        const part = String(event.payload?.part ?? "");
+        if (part === "kayak" || part === "left_paddle" || part === "right_paddle") {
+          qizhenController.collectOutfit(part);
+        }
       } else if (event.name === "rpg_qizhen_board_requested") {
         qizhenController.boardKayak();
       } else if (event.name === "rpg_qizhen_paddle_requested") {

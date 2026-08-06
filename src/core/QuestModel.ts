@@ -227,7 +227,12 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
   });
 
   if (lake.phase === "dock_outfitting") {
-    return task("dock_outfitting", qizhenContent.quest.dock, [qizhenContent.dock.outfitPrompt]);
+    const hint = !lake.kayakEquipped
+      ? qizhenContent.dock.kayakHint
+      : !lake.leftPaddleEquipped
+        ? qizhenContent.dock.leftPaddleHint
+        : qizhenContent.dock.rightPaddleHint;
+    return task("dock_outfitting", qizhenContent.quest.dock, [hint]);
   }
   if (lake.phase === "boarding_tutorial") {
     return task("boarding", qizhenContent.quest.boarding, [qizhenContent.boarding.instruction]);

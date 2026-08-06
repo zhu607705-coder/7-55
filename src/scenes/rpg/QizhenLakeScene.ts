@@ -328,8 +328,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     });
     if (!runtime.introSeen && runtime.phase === "dock_outfitting") {
       this.queueDialogue([
-        "任务：到小码头取皮划艇和两支临时船桨。",
-        "系统：左右桨要交替划；连续划同一侧会偏航并增加侧倾。"
+        "任务：先在小码头分别找到皮划艇和两支临时船桨。",
+        "系统：器材架只放着船。左桨和右桨散在码头环境里，靠近实物再拾取。"
       ], () => this.emitDomain("rpg_qizhen_intro_seen_requested"));
     }
   }
@@ -715,6 +715,7 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private createTargetVisuals(): void {
     QIZHEN_LAKE_TARGETS.filter((target) => target.zone === this.currentZone).forEach((target) => {
+      const isOutfit = target.kind === "outfit";
       const color = target.kind === "zone_portal" || target.kind === "escape"
         ? 0xffe36d
         : target.kind === "reflection" || target.kind === "paper"
@@ -724,8 +725,10 @@ export class QizhenLakeScene extends Phaser.Scene {
             : 0xb8ffd7;
       const pulse = target.kind === "zone_portal" || target.kind === "escape"
         ? this.add.triangle(0, 0, -22, -18, 24, 0, -22, 18, color, 0.25).setStrokeStyle(3, color, 0.88)
-        : this.add.ellipse(0, 0, 72, 34, color, 0.08).setStrokeStyle(3, color, 0.82);
-      const center = this.add.circle(0, 0, 5, color, 0.96);
+        : isOutfit
+          ? this.add.ellipse(0, 0, 48, 22, color, 0.015).setStrokeStyle(2, color, 0.16)
+          : this.add.ellipse(0, 0, 72, 34, color, 0.08).setStrokeStyle(3, color, 0.82);
+      const center = this.add.circle(0, 0, 5, color, isOutfit ? 0 : 0.96);
       const label = this.add.text(0, -34, target.label, {
         color: "#f4ffff",
         backgroundColor: "#09212dda",
@@ -733,7 +736,11 @@ export class QizhenLakeScene extends Phaser.Scene {
         fontSize: "11px",
         padding: { x: 6, y: 3 }
       }).setOrigin(0.5, 1);
-      const root = this.add.container(target.x, target.y, [pulse, center, label])
+      const prop = this.createDockOutfitProp(target);
+      const rootChildren: Phaser.GameObjects.GameObject[] = prop
+        ? [prop, pulse, center, label]
+        : [pulse, center, label];
+      const root = this.add.container(target.x, target.y, rootChildren)
         .setDepth(target.y + 48)
         .setSize(Math.max(88, target.dropWidth ?? 88), Math.max(64, target.dropHeight ?? 64))
         .setInteractive({ useHandCursor: true })
@@ -741,7 +748,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         .setName("qizhenTarget");
       root.setData("targetId", target.id);
       root.on("pointerdown", () => this.triggerPointerTarget(target));
-      if (!this.reducedMotion) {
+      if (!this.reducedMotion && !isOutfit) {
         this.tweens.add({
           targets: pulse,
           scale: 1.18,
@@ -755,6 +762,39 @@ export class QizhenLakeScene extends Phaser.Scene {
       }
       this.targetVisuals.push({ target, root, label, pulse });
     });
+  }
+
+  private createDockOutfitProp(target: QizhenLakeInteractionTarget): Phaser.GameObjects.GameObject | null {
+    if (target.kind !== "outfit") return null;
+    const graphics = this.add.graphics();
+    if (target.value === "left_paddle") {
+      graphics.lineStyle(5, 0x67472c, 0.96);
+      graphics.beginPath();
+      graphics.moveTo(-34, 11);
+      graphics.lineTo(31, -10);
+      graphics.strokePath();
+      graphics.lineStyle(2, 0xa57947, 0.88);
+      graphics.beginPath();
+      graphics.moveTo(-8, 3);
+      graphics.lineTo(-17, -7);
+      graphics.moveTo(12, -4);
+      graphics.lineTo(20, -15);
+      graphics.strokePath();
+      return graphics;
+    }
+    if (target.value === "right_paddle") {
+      graphics.lineStyle(4, 0x5f625e, 0.9);
+      graphics.beginPath();
+      graphics.moveTo(0, -8);
+      graphics.lineTo(0, 37);
+      graphics.strokePath();
+      graphics.fillStyle(0xcfc5a2, 0.62);
+      graphics.fillTriangle(0, -36, -23, -3, 23, -3);
+      graphics.lineStyle(3, 0x6c7069, 0.82);
+      graphics.strokeTriangle(0, -36, -23, -3, 23, -3);
+      return graphics;
+    }
+    return null;
   }
 
   private createZoneSwan(): void {
@@ -835,7 +875,10 @@ export class QizhenLakeScene extends Phaser.Scene {
     return targetsForQizhenZone(this.currentZone, this.currentVehicle).filter((target) => {
       if (target.kind === "exit") return runtime.phase !== "swan_chase";
       if (target.kind === "outfit") {
-        return !runtime.kayakEquipped || !runtime.leftPaddleEquipped || !runtime.rightPaddleEquipped;
+        if (target.value === "kayak") return !runtime.kayakEquipped;
+        if (target.value === "left_paddle") return !runtime.leftPaddleEquipped;
+        if (target.value === "right_paddle") return !runtime.rightPaddleEquipped;
+        return false;
       }
       if (target.kind === "board") {
         return runtime.kayakEquipped
@@ -928,7 +971,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "outfit") {
-      this.emitDomain("rpg_qizhen_outfit_requested", { targetId: target.id });
+      this.emitDomain("rpg_qizhen_outfit_requested", {
+        targetId: target.id,
+        part: target.value
+      });
       return;
     }
     if (target.kind === "board") {
@@ -1149,8 +1195,17 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.playModeTransition(String(payload?.mode) === "dark" ? "dark" : "light");
       return;
     }
-    if (name === "qizhen_outfit_collected") {
-      this.showFeedback("皮划艇就绪：左桨是削去叶子的树枝，右桨是“禁止游泳”三角牌。", "success");
+    if (name === "qizhen_outfit_part_collected") {
+      const part = String(payload?.part ?? "kayak");
+      const complete = payload?.complete === true;
+      const message = complete
+        ? "皮划艇和两支临时桨都已收齐。去码头前端上船。"
+        : part === "kayak"
+          ? "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。"
+          : part === "left_paddle"
+            ? "柳树枝长度合适，已作为左桨。还要找另一侧的桨。"
+            : "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。";
+      this.showFeedback(message, "success");
       return;
     }
     if (name === "qizhen_kayak_boarded") {
@@ -1226,9 +1281,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (!active) return;
       const distance = Math.hypot(this.player.x - visual.target.x, this.player.y - visual.target.y);
       const selected = nearest?.id === visual.target.id;
-      visual.label.setVisible(!selected && distance <= Math.max(250, visual.target.proximity * 1.8));
-      visual.pulse.setAlpha(selected ? 0.96 : 0.5);
-      visual.root.setScale(selected ? 1.08 : 1);
+      const isOutfit = visual.target.kind === "outfit";
+      visual.label.setVisible(!isOutfit && !selected && distance <= Math.max(250, visual.target.proximity * 1.8));
+      visual.pulse.setAlpha(isOutfit ? selected ? 0.34 : 0 : selected ? 0.96 : 0.5);
+      visual.root.setScale(selected ? isOutfit ? 1.03 : 1.08 : 1);
       if ((visual.target.kind === "reflection" || visual.target.value === "paper_reflection") && runtime.mode !== "dark") {
         visual.root.setAlpha(0.38);
       } else {
@@ -1244,7 +1300,11 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     const action = target.kind === "outfit"
-      ? "取皮划艇和船桨"
+      ? target.value === "kayak"
+        ? "确认器材架上的皮划艇"
+        : target.value === "left_paddle"
+          ? "拾取花坛边的柳树枝左桨"
+          : "拆下旧三角牌右桨"
       : target.kind === "board"
         ? "从小码头上船"
         : target.kind === "zone_portal"
@@ -1289,9 +1349,13 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.statusText.setText(`A/← 左桨 · D/→ 右桨 · 侧倾 ${tilt}%${danger}`);
       this.statusText.setColor(tilt >= 70 ? "#ffaaa0" : "#fff2b6");
     } else if (!runtime.kayakEquipped) {
-      this.statusText.setText("先到皮划艇架领取船和两支创意桨").setColor("#fff2b6");
+      this.statusText.setText("先确认救生圈旁器材架上的皮划艇").setColor("#fff2b6");
+    } else if (!runtime.leftPaddleEquipped) {
+      this.statusText.setText("还缺左桨：留意临水花坛边的细长树枝").setColor("#fff2b6");
+    } else if (!runtime.rightPaddleEquipped) {
+      this.statusText.setText("还缺右桨：查看码头设备区的旧三角牌").setColor("#fff2b6");
     } else {
-      this.statusText.setText("装备已取齐，走到小码头上船位").setColor("#fff2b6");
+      this.statusText.setText("三件装备已收齐，走到码头前端上船位").setColor("#fff2b6");
     }
   }
 

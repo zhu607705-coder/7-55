@@ -1406,3 +1406,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 完整流程：自动规避障碍实跑到 `755m`，依次记录 `start / m188 / m377 / m566` 四段旁白，最终状态为 `won`、三次机会、零碰撞，页面与控制台错误为 `0`。
 - 跨内核验收：Blink、Gecko、WebKit 均在 `1280×720` 和 `390×844` 载入追逐、显示 `6` 个可见路人并完成一次右换道；桌面隐藏触控键，移动端显示两个触控键，六种组合均无文档溢出、控制台错误或页面错误。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `133,234,366 bytes`，SHA-256 为 `bec66060f061cbf1e28974e68d0f31f4bb3bc183f1ee49eefb31043f2832acd2`。
+
+## 2026-08-06 启真湖码头左右桨场景化拾取
+
+- 拾取状态：码头装备从一次串行领取拆为皮划艇、柳树枝左桨和旧三角牌右桨三个独立事实；任意顺序可拾取，只有三件齐全才进入 `boarding_tutorial` 并解锁上船点。宿主对桨类型进行白名单校验，无效的桥接载荷不会写入进度。
+- 场景融合：皮划艇继续使用救生圈旁的实景器材架；左桨作为临水花坛边的细枝，右桨作为码头设备区的旧三角牌。两个动态物件按原图投影、像素密度和光照方向绘制，远距离时不显示名称或光圈，只在玩家进入可交互距离后显示低强度反馈。
+- 提示流程：任务抽屉和码头状态按未收集的实物逐步提示，交互文案分别为确认皮划艇、拾取柳树枝、拆下旧三角牌；删除“装备已取齐”的提前表述。
+- 完整验收：同一 Blink 会话从 `(330,830)` 实际行走至器材架、柳树枝和三角牌，三次拾取后状态依次为 `[true,false,false]`、`[true,true,false]`、`[true,true,true]`；最后实际行走到码头前端上船，进入 `vehicle=kayak / phase=boarding_tutorial`。全链路页面与控制台错误为 `0`。
+- 跨内核与移动端：Blink、Gecko、WebKit 在 `1280×720` 均进入 `qizhen_lake / dock_outfitting`，画布 `1280×720`，文档溢出和错误为 `0`；iOS WebKit `390×844` 识别为粗粒度指针，画布保持 `390×219.375` 的 `16:9`，显示触控操作区，无文档溢出和页面错误。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `133,237,129 bytes`，SHA-256 为 `ddfa8c6e87d317a32ee53dc5441df87b2aae08ab49741a4adb73238b197512fc`。
