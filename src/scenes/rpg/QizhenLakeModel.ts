@@ -221,7 +221,9 @@ const target = (
 
 export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
   target({ id: "qizhen_dock_exit", label: "离开启真湖", x: 225, y: 845, kind: "exit", zone: "dock", vehicle: "on_foot" }),
-  target({ id: "qizhen_dock_outfit", label: "皮划艇与创意船桨架", x: 500, y: 790, stand: { x: 590, y: 790 }, kind: "outfit", zone: "dock", vehicle: "on_foot", proximity: 110 }),
+  target({ id: "qizhen_dock_kayak", label: "器材架上的皮划艇", x: 500, y: 780, stand: { x: 590, y: 790 }, kind: "outfit", value: "kayak", zone: "dock", vehicle: "on_foot", proximity: 108 }),
+  target({ id: "qizhen_dock_left_paddle", label: "花坛边的柳树枝", x: 245, y: 570, stand: { x: 260, y: 635 }, kind: "outfit", value: "left_paddle", zone: "dock", vehicle: "on_foot", proximity: 96 }),
+  target({ id: "qizhen_dock_right_paddle", label: "可拆的旧三角牌", x: 585, y: 780, stand: { x: 645, y: 805 }, kind: "outfit", value: "right_paddle", zone: "dock", vehicle: "on_foot", proximity: 94 }),
   target({ id: "qizhen_dock_board", label: "小码头上船位", x: 710, y: 650, stand: { x: 610, y: 650 }, kind: "board", zone: "dock", vehicle: "on_foot", proximity: 126 }),
   target({ id: "qizhen_use_item_1", label: "码头储物柜", x: 390, y: 750, stand: { x: 430, y: 835 }, kind: "item_use", zone: "dock", vehicle: "on_foot", proximity: 118, value: "item_1_to_2", dropWidth: 118, dropHeight: 104, requiredMode: "light", acceptedItem: "rustedLockerKey" }),
   target({ id: "qizhen_dock_to_open", label: "划向大湖", x: 1430, y: 390, kind: "zone_portal", zone: "dock", targetZone: "open_water", vehicle: "kayak", proximity: 155 }),

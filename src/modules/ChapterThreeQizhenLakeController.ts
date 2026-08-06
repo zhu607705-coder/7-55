@@ -21,6 +21,8 @@ export type QizhenActionResult =
   | "direct_paper_failure"
   | "already_complete";
 
+export type QizhenDockOutfitPart = "kayak" | "left_paddle" | "right_paddle";
+
 const MAP_CLUE_ITEMS: Readonly<Record<QizhenMapClueId, ItemId>> = {
   bridge: "bridgeKeyword",
   reflection: "reflectionKeyword",
@@ -191,25 +193,42 @@ export class ChapterThreeQizhenLakeController {
     return true;
   }
 
-  collectOutfit(): QizhenActionResult {
+  collectOutfit(part: QizhenDockOutfitPart): QizhenActionResult {
     const state = this.store.getState();
     if (state.qizhenLake.phase !== "dock_outfitting" || state.qizhenLake.zone !== "dock") return "inactive";
     if (state.qizhenLake.mode !== "light") return "wrong_mode";
+
+    const alreadyCollected = part === "kayak"
+      ? state.qizhenLake.kayakEquipped
+      : part === "left_paddle"
+        ? state.qizhenLake.leftPaddleEquipped
+        : state.qizhenLake.rightPaddleEquipped;
+    if (alreadyCollected) return "already_complete";
+
+    const kayakEquipped = state.qizhenLake.kayakEquipped || part === "kayak";
+    const leftPaddleEquipped = state.qizhenLake.leftPaddleEquipped || part === "left_paddle";
+    const rightPaddleEquipped = state.qizhenLake.rightPaddleEquipped || part === "right_paddle";
+    const complete = kayakEquipped && leftPaddleEquipped && rightPaddleEquipped;
+    const collectedCount = Number(kayakEquipped) + Number(leftPaddleEquipped) + Number(rightPaddleEquipped);
+
     this.store.setState((current) => ({
       ...current,
       rpgCheckpoint: "qizhen_dock",
       qizhenLake: {
         ...current.qizhenLake,
-        phase: "boarding_tutorial",
-        kayakEquipped: true,
-        leftPaddleEquipped: true,
-        rightPaddleEquipped: true,
-        safeSpawnId: "dock_kayak"
+        phase: complete ? "boarding_tutorial" : "dock_outfitting",
+        kayakEquipped,
+        leftPaddleEquipped,
+        rightPaddleEquipped,
+        safeSpawnId: complete ? "dock_kayak" : current.qizhenLake.safeSpawnId
       }
     }));
-    this.events.emit("qizhen_outfit_collected", {
-      leftPaddle: "willow_branch",
-      rightPaddle: "no_swimming_sign"
+    this.events.emit("qizhen_outfit_part_collected", {
+      part,
+      collectedCount,
+      complete,
+      leftPaddle: leftPaddleEquipped ? "willow_branch" : null,
+      rightPaddle: rightPaddleEquipped ? "no_swimming_sign" : null
     });
     return "accepted";
   }
