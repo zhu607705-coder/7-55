@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import qizhenChannelUrl from "../../assets/rpg/interiors/qizhen_lake_channel.png";
 import qizhenDockUrl from "../../assets/rpg/interiors/qizhen_lake_dock.png";
+import qizhenDockNoSignUrl from "../../assets/rpg/interiors/qizhen_lake_dock_no_sign.png";
 import qizhenOpenWaterUrl from "../../assets/rpg/interiors/qizhen_lake_open_water.png";
 import qizhenSwanCoveUrl from "../../assets/rpg/interiors/qizhen_lake_swan_cove.png";
 import type { GameState, ItemId, QizhenLakeMode } from "../../core/types";
@@ -47,6 +48,7 @@ const ZONE_TEXTURE_KEYS: Readonly<Record<QizhenLakeZoneId, string>> = {
   channel: "chapter-3-qizhen-channel",
   swan_cove: "chapter-3-qizhen-swan-cove"
 };
+const DOCK_NO_SIGN_TEXTURE_KEY = "chapter-3-qizhen-dock-no-sign";
 
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
@@ -165,6 +167,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private currentVehicle: QizhenLakeVehicle = "on_foot";
   private currentPhase: QizhenRuntimePhase = "dock_outfitting";
   private currentMode: QizhenLakeMode = "light";
+  private currentDockSignRemoved = false;
   private virtualDirection = { x: 0, y: 0 };
   private lastVirtualPaddleX = 0;
   private interactRequested = false;
@@ -212,6 +215,9 @@ export class QizhenLakeScene extends Phaser.Scene {
         this.load.image(ZONE_TEXTURE_KEYS[zone], sources[zone]);
       }
     });
+    if (!this.textures.exists(DOCK_NO_SIGN_TEXTURE_KEY)) {
+      this.load.image(DOCK_NO_SIGN_TEXTURE_KEY, qizhenDockNoSignUrl);
+    }
     preloadQizhenKayakTextures(this);
     preloadRpgPlayerTextures(this);
   }
@@ -224,6 +230,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.currentVehicle = runtime.vehicle;
     this.currentPhase = runtime.phase;
     this.currentMode = runtime.mode;
+    this.currentDockSignRemoved = runtime.rightPaddleEquipped;
     this.strokeIndex = runtime.boardingStrokeCount;
     this.lastStrokeSide = runtime.boardingLastSide;
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
@@ -231,7 +238,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x031722);
     this.physics.world.setBounds(0, 0, QIZHEN_LAKE_WORLD.width, QIZHEN_LAKE_WORLD.height);
     this.obstacles = this.physics.add.staticGroup();
-    this.mapImage = this.add.image(0, 0, ZONE_TEXTURE_KEYS[this.currentZone]).setOrigin(0).setDepth(-1000);
+    this.mapImage = this.add.image(0, 0, this.getZoneTextureKey(this.currentZone)).setOrigin(0).setDepth(-1000);
 
     ensureRpgPlayerTextures(this);
     const spawn = this.getSpawn(this.currentZone, this.currentVehicle, null);
@@ -591,6 +598,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.applyVehicle(runtime.vehicle, true);
       this.rebuildCollision(runtime.vehicle);
     }
+    if (runtime.rightPaddleEquipped !== this.currentDockSignRemoved) {
+      this.applyDockSignVariant(runtime.rightPaddleEquipped);
+    }
     if (runtime.mode !== this.currentMode) this.playModeTransition(runtime.mode);
   }
 
@@ -617,7 +627,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     fromZone: QizhenLakeZoneId | null,
     reposition: boolean
   ): void {
-    this.mapImage.setTexture(ZONE_TEXTURE_KEYS[zone]);
+    this.mapImage.setTexture(this.getZoneTextureKey(zone));
     this.destroyZoneVisuals();
     this.rebuildCollision(vehicle);
     this.createOcclusionVisuals();
@@ -658,7 +668,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private createOcclusionVisuals(): void {
-    const textureKey = ZONE_TEXTURE_KEYS[this.currentZone];
+    const textureKey = this.getZoneTextureKey(this.currentZone);
     QIZHEN_LAKE_ZONES[this.currentZone].occlusions.forEach((definition) => {
       const image = this.add.image(0, 0, textureKey)
         .setOrigin(0)
@@ -680,6 +690,29 @@ export class QizhenLakeScene extends Phaser.Scene {
         ),
         image
       });
+    });
+  }
+
+  private getZoneTextureKey(zone: QizhenLakeZoneId): string {
+    return zone === "dock" && this.currentDockSignRemoved
+      ? DOCK_NO_SIGN_TEXTURE_KEY
+      : ZONE_TEXTURE_KEYS[zone];
+  }
+
+  private applyDockSignVariant(removed: boolean): void {
+    this.currentDockSignRemoved = removed;
+    if (this.currentZone !== "dock") return;
+    const textureKey = this.getZoneTextureKey("dock");
+    this.mapImage.setTexture(textureKey);
+    this.occlusionVisuals.forEach(({ definition, image }) => {
+      image
+        .setTexture(textureKey)
+        .setCrop(
+          definition.left,
+          definition.top,
+          definition.right - definition.left,
+          definition.bottom - definition.top
+        );
     });
   }
 
@@ -783,16 +816,8 @@ export class QizhenLakeScene extends Phaser.Scene {
       return graphics;
     }
     if (target.value === "right_paddle") {
-      graphics.lineStyle(4, 0x5f625e, 0.9);
-      graphics.beginPath();
-      graphics.moveTo(0, -8);
-      graphics.lineTo(0, 37);
-      graphics.strokePath();
-      graphics.fillStyle(0xcfc5a2, 0.62);
-      graphics.fillTriangle(0, -36, -23, -3, 23, -3);
-      graphics.lineStyle(3, 0x6c7069, 0.82);
-      graphics.strokeTriangle(0, -36, -23, -3, 23, -3);
-      return graphics;
+      graphics.destroy();
+      return null;
     }
     return null;
   }
@@ -1528,6 +1553,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         plate: this.currentZone,
         zone: this.currentZone,
         vehicle: this.currentVehicle,
+        dockSignRemoved: this.currentDockSignRemoved,
         activeTarget: target?.id ?? null,
         kayak: {
           heading: Number(this.kayakHeading.toFixed(3)),

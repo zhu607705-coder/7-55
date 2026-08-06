@@ -1415,3 +1415,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 完整验收：同一 Blink 会话从 `(330,830)` 实际行走至器材架、柳树枝和三角牌，三次拾取后状态依次为 `[true,false,false]`、`[true,true,false]`、`[true,true,true]`；最后实际行走到码头前端上船，进入 `vehicle=kayak / phase=boarding_tutorial`。全链路页面与控制台错误为 `0`。
 - 跨内核与移动端：Blink、Gecko、WebKit 在 `1280×720` 均进入 `qizhen_lake / dock_outfitting`，画布 `1280×720`，文档溢出和错误为 `0`；iOS WebKit `390×844` 识别为粗粒度指针，画布保持 `390×219.375` 的 `16:9`，显示触控操作区，无文档溢出和页面错误。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `133,237,129 bytes`，SHA-256 为 `ddfa8c6e87d317a32ee53dc5441df87b2aae08ab49741a4adb73238b197512fc`。
+
+## 2026-08-06 启真湖码头空气墙、遮挡与三角牌底图切换
+
+- 空气墙：器材架碰撞从覆盖整件立面改为只覆盖落地底座 `kayak_rack_base`；同一会话中人物从入口绕至架后 `(523,726)`，确认原先阻挡的铺装区域可以通行。
+- 前后遮挡：新增器材架前景裁片 `kayak_rack_front`，人物脚底位于架后时启用前景覆盖，移动到架前 `(523,874)` 后解除覆盖；碰撞和视觉深度共用同一组源图坐标。
+- 三角牌状态：在原始码头图上局部生成无牌版本，除 `92 × 137` 的牌体与投影区域外不改动场景；拾取右桨前使用原图，拾取后切换无牌底图并同步全部前景裁片，删除运行时重复绘制的三角牌。
+- 完整验收：Blink `1280 × 720` 从启真湖入口实际进入码头、绕过器材架底座并拾取右桨，状态从 `dockSignRemoved=false` 切换为 `true`，右桨目标同步消失，架后与架前截图均完成检查，控制台和页面错误为 `0`。
+- 跨内核与移动端：Gecko `1366 × 768`、WebKit `1280 × 720` 与 iOS WebKit `390 × 844` 均通过真实空格交互进入 `qizhen_lake / dock`；三种场景均无文档溢出、控制台错误或页面错误。
+- 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,619,294 bytes`，SHA-256 为 `929edecada25c923c347eaa2ba41152df65d7f9f143fae37fae0046bec0c79c0`。
