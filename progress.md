@@ -1442,3 +1442,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 完整流程：Blink `1280 × 720` 实际完成左移、右移、主动碰撞一次、后续动态避障与 `755m` 结算；碰撞后机会从 `3` 降为 `2`，最终 `chaseCompleted=true` 并进入 `campus_theater_junction`，页面与控制台错误为 `0`。
 - 跨内核与移动端：Gecko `1366 × 768`、WebKit `1180 × 820` 与 iOS WebKit `390 × 844` 均完成载入和换道；移动端两个触控按钮可点击，四种环境均无文档横向或纵向溢出、控制台错误或页面错误。
 - 构建验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,616,888 bytes`，SHA-256 为 `f5bf0e6696634732c44e0e0785f8cef166033289976ea16565ae69731e305d25`。
+
+## 2026-08-06 启真湖黑天鹅动态追逐恢复
+
+- 根因：上一轮降低直河道难度后，黑天鹅被固定在船后 `135px`，船与黑天鹅长期保持相同相对位置，画面缺少逼近变化。
+- 追逐表现：黑天鹅按 `3.2s` 周期在约 `210px` 至 `112px` 间往复逼近，并沿船尾横向追踪；逼近强度同步控制扑翼频率、体型变化和三层水面尾迹。减弱动态模式继续关闭高频扑翼。
+- 难度边界：黑天鹅不会触发强制翻船或额外失败条件；玩家保持左右交替划桨，到达河道左端后立即通过。左右同侧连续划桨和河岸碰撞仍沿用皮划艇基础规则。
+- 完整流程：Blink `1280×720` 使用真实 `A/D` 输入完成全段逃离，最终为 `phase=complete`、`zone=dock`、`transitionReady=true`、`magneticAttachmentBroken=true`；未增加终点交互步骤。
+- 跨内核与移动端：Blink、Gecko、WebKit 的远距帧约为 `209px`，逼近帧约为 `114px`，三种内核均无页面错误、控制台错误和文档溢出；iOS WebKit `390×844` 使用左右桨触控完成全段逃离并进入相同完成状态。
+- 构建验证：网页游戏客户端、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。最新 `demo/index.html` 为 `136,617,825 bytes`，SHA-256 为 `c73bab3fe1cdac68f9da7eb65b5b11b24d74346265ac79a8d05f41428a7001a9`。
