@@ -81,12 +81,11 @@ export interface RpgRuntimeDebugState {
     y: number;
     depth: number;
   };
-  lostFoundStampMachine?: {
+  frontDeskStampService?: {
     stage: "missing_report" | "ready" | "scanning" | "stamped";
-    motion: "idle" | "feeding" | "scanning" | "stamping" | "ejecting" | "complete";
+    motion: "idle" | "receiving" | "checking" | "stamping" | "returning" | "complete";
     reportVisible: boolean;
     stampHeadY: number;
-    leverAngle: number;
     stampVisible: boolean;
   };
   canteen?: {

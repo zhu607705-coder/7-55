@@ -414,10 +414,31 @@ export function CanteenChaseOverlay({
         >
           <i />
           {MILESTONES.map((milestone) => <b key={milestone} style={{ left: `${(milestone / GOAL_DISTANCE) * 100}%` }} />)}
+          <em className="canteen-bike-progress-paper" aria-hidden="true">
+            <svg viewBox="0 0 14 14">
+              <rect x="1.5" y="1" width="11" height="12" rx="1" fill="#f7f2df" stroke="#2a241c" strokeWidth="1.4" />
+              <path d="M4 4.5h6M4 7h4.5M4 9.5h5.5" stroke="#35689b" strokeWidth="1.2" />
+              <rect x="8.5" y="8.5" width="3" height="3" fill="#d45a48" />
+            </svg>
+          </em>
+          <span className="canteen-bike-progress-goal" aria-hidden="true">
+            <svg viewBox="0 0 18 16">
+              <rect x="2" y="3" width="14" height="12" fill="#a8583f" stroke="#2a241c" strokeWidth="1.2" />
+              <rect x="2" y="3" width="14" height="4.5" fill="#f0b93e" stroke="#2a241c" strokeWidth="1.2" />
+              <rect x="7" y="9" width="4" height="6" fill="#2a241c" />
+            </svg>
+          </span>
         </div>
         <div className="canteen-bike-hud-card is-lives">
           <span>机会</span>
-          <strong aria-label={`剩余 ${view.lives} 次机会`}>{"●".repeat(view.lives)}{"○".repeat(MAX_LIVES - view.lives)}</strong>
+          <strong aria-label={`剩余 ${view.lives} 次机会`} className={view.collisions > 0 ? "was-hit" : ""} key={view.lives}>
+            {Array.from({ length: MAX_LIVES }, (_, index) => (
+              <svg key={index} viewBox="0 0 16 16" className={index < view.lives ? "is-alive" : "is-lost"} aria-hidden="true">
+                <circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" strokeWidth="2.4" />
+                <path d="M8 2.4v11.2M2.4 8h11.2" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            ))}
+          </strong>
         </div>
       </header>
 

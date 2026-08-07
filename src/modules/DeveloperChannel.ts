@@ -86,7 +86,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-catalog", chapter: "第二章", label: "馆藏检索", detail: "搜索正确书籍" },
   { id: "c2-archived-rule", chapter: "第二章", label: "旧版规则", detail: "索书号拖到书架" },
   { id: "c2-photo-report", chapter: "第二章", label: "照片识别报告", detail: "调暗照片并生成报告" },
-  { id: "c2-nonperson-stamp", chapter: "第二章", label: "非本人证明", detail: "报告拖到登记机" },
+  { id: "c2-nonperson-stamp", chapter: "第二章", label: "非本人证明", detail: "报告交给前台工作人员核验盖章" },
   { id: "c2-seat-receipt", chapter: "第二章", label: "022 座位小票", detail: "箭头拖到座位缝隙" },
   { id: "c2-tiyi-proof", chapter: "第二章", label: "本人来过证明", detail: "填写 7 / 47 / 3" },
   { id: "c2-cc98-upload", chapter: "第二章", label: "上传四项证据", detail: "CC98 调查帖" },

@@ -367,12 +367,12 @@ items.itemRecognitionReport = true
 播放：fx_report_print_v2
 ```
 
-## 九、P26 失物身份登记
+## 九、P26 前台人工核验
 
-玩家返回 RPG，将“物品识别报告”拖到物品身份盖章机：
+玩家返回 RPG，将“物品识别报告”拖到前台工作人员和柜台之间的高亮区域：
 
 ```text
-目标：lost_found_machine
+目标：front_desk
 接受道具：itemRecognitionReport
 动作：stampNonPersonProof()
 ```
@@ -655,8 +655,8 @@ clueIds += borrowed_attendance_record
 | `occupancyNote` | 022 纸条 | CC98 调查入口 | 保留 |
 | `callNumber755` | 正确馆藏 | RPG 书架 | 保留 |
 | `archivedLeaveRule` | 书架背面 | CC98 证据 | 保留 |
-| `itemRecognitionReport` | 照片 | 失物登记机 | 消耗 |
-| `bagNonPersonProof` | 失物登记机 | CC98 / 恢复申请 | 保留 |
+| `itemRecognitionReport` | 照片 | 前台工作人员 | 消耗 |
+| `bagNonPersonProof` | 前台工作人员 | CC98 / 恢复申请 | 保留 |
 | `rightArrow` | 第一章 | 022 桌面夹缝 | 保留 |
 | `seat022Receipt` | 桌面夹缝 | CC98 / 恢复申请 | 保留 |
 | `libraryPresenceProof` | 浙大体艺 | CC98 / 恢复申请 | 保留 |

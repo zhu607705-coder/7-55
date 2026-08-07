@@ -69,9 +69,9 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "学号", value: "未识别" },
       { label: "识别结果", value: "未检测到可签到主体" }
     ],
-    body: ["检测到大量期末周使用痕迹。", "身份结论需由馆内物品登记机确认。"],
+    body: ["检测到大量期末周使用痕迹。", "身份结论需由馆内前台工作人员确认。"],
     footer: "报告状态：待盖章。"
-  }, [{ target: "lost-found-machine", result: "transform" }]),
+  }, [{ target: "library-front-desk-staff", result: "transform" }]),
   bagNonPersonProof: paper({
     heading: "书包非本人证明",
     fields: [

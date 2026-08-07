@@ -205,8 +205,8 @@ const RECOVERY_EVIDENCE: Array<{
     id: "bag_non_person_proof",
     label: "书包非本人证明",
     item: "bagNonPersonProof",
-    source: "失物招领 · 身份登记机",
-    nextStep: "先生成物品识别报告，再到馆内登记机盖章"
+    source: "失物招领 · 前台工作人员",
+    nextStep: "先生成物品识别报告，再交给馆内前台工作人员核验盖章"
   },
   {
     id: "seat_022_receipt",

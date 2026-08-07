@@ -404,7 +404,7 @@
 }
 
 .canteen-chase-overlay {
-  background: #9bc6d1;
+  background: #7cb6d9;
   inset: 0;
   overflow: hidden;
   position: absolute;
@@ -413,7 +413,7 @@
 }
 
 .canteen-bike-canvas {
-  background: #9bc6d1;
+  background: #7cb6d9;
   display: block;
   height: 100%;
   image-rendering: pixelated;
@@ -430,9 +430,9 @@
 
 .canteen-bike-hud {
   align-items: center;
-  background: rgba(17, 34, 39, 0.88);
-  border-bottom: 3px solid rgba(242, 240, 223, 0.88);
-  border-top: 3px solid rgba(242, 240, 223, 0.88);
+  background: rgba(40, 30, 18, 0.88);
+  border-bottom: 3px solid rgba(242, 234, 210, 0.9);
+  border-top: 3px solid rgba(242, 234, 210, 0.9);
   display: grid;
   gap: 14px;
   grid-template-columns: 116px minmax(120px, 1fr) 94px;
@@ -454,7 +454,7 @@
 }
 
 .canteen-bike-hud-card > span {
-  color: #b9c8c0;
+  color: #d8c9a8;
   font-family: var(--font-pixel);
   font-size: 9px;
   letter-spacing: 0.12em;
@@ -469,7 +469,7 @@
 }
 
 .canteen-bike-hud-card strong small {
-  color: #b9c8c0;
+  color: #d8c9a8;
   font-size: 10px;
 }
 
@@ -478,31 +478,55 @@
 }
 
 .canteen-bike-hud-card.is-lives strong {
-  color: #e67b6f;
-  font-size: 16px;
-  letter-spacing: 4px;
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+
+.canteen-bike-hud-card.is-lives strong svg {
+  height: 17px;
+  width: 17px;
+}
+
+.canteen-bike-hud-card.is-lives strong svg.is-alive {
+  color: #f2b25c;
+}
+
+.canteen-bike-hud-card.is-lives strong svg.is-lost {
+  color: #8a7a60;
+  opacity: 0.4;
+}
+
+.canteen-bike-hud-card.is-lives strong.was-hit {
+  animation: canteen-life-shake 320ms ease;
+}
+
+@keyframes canteen-life-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 .canteen-bike-progress {
-  background: #263b3f;
-  border: 2px solid #7d9187;
+  background: #3d332a;
+  border: 2px solid #a8946a;
   height: 13px;
   position: relative;
 }
 
 .canteen-bike-progress::after {
-  color: #d9dfcf;
+  color: #d8c9a8;
   content: "东区食堂　　　　　　　　　　剧院";
   font-family: var(--font-pixel);
   font-size: 8px;
-  inset: 16px 0 auto;
+  inset: 18px 0 auto;
   letter-spacing: 0.04em;
   position: absolute;
   white-space: pre;
 }
 
 .canteen-bike-progress > i {
-  background: #f0d668;
+  background: linear-gradient(90deg, #f0d668, #f0b93e);
   bottom: 2px;
   display: block;
   left: 2px;
@@ -512,7 +536,7 @@
 }
 
 .canteen-bike-progress > b {
-  background: #f2f0df;
+  background: #f2ead2;
   height: 17px;
   position: absolute;
   top: -4px;
@@ -520,9 +544,34 @@
   width: 2px;
 }
 
+/* The note rides the progress head, flying toward the theater icon. */
+.canteen-bike-progress-paper {
+  height: 16px;
+  left: calc(var(--canteen-chase-progress) - 8px);
+  position: absolute;
+  top: -19px;
+  width: 16px;
+}
+
+.canteen-bike-progress-paper svg,
+.canteen-bike-progress-goal svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.canteen-bike-progress-goal {
+  height: 17px;
+  position: absolute;
+  right: -3px;
+  top: -20px;
+  width: 19px;
+}
+
 .canteen-bike-milestone {
-  background: #17272c;
-  border-left: 5px solid #f0d668;
+  animation: canteen-milestone-pop 360ms cubic-bezier(0.2, 1.4, 0.4, 1);
+  background: rgba(58, 42, 20, 0.95);
+  border-left: 5px solid #f0b93e;
   color: #f0d668;
   display: grid;
   left: 20px;
@@ -534,21 +583,27 @@
   z-index: 24;
 }
 
+@keyframes canteen-milestone-pop {
+  0% { transform: scale(0.82); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
 .canteen-bike-milestone strong {
   font-family: var(--font-pixel);
   font-size: 18px;
 }
 
 .canteen-bike-milestone span {
-  color: #b9c8c0;
+  color: #e8d9b8;
   font-size: 11px;
 }
 
 .canteen-bike-key-hint {
   align-items: center;
-  background: rgba(19, 36, 41, 0.82);
-  border-bottom: 2px solid #7d9187;
-  color: #d8dfd2;
+  background: rgba(40, 30, 18, 0.85);
+  border-bottom: 2px solid #a8946a;
+  color: #e8dcc0;
   display: flex;
   gap: 5px;
   font-family: var(--font-pixel);
@@ -564,9 +619,9 @@
 }
 
 .canteen-bike-key-hint kbd {
-  background: #e8ebdd;
+  background: #f2ead2;
   border: 0;
-  color: #1d3035;
+  color: #3a2c16;
   min-width: 22px;
   padding: 2px 4px;
   text-align: center;
@@ -584,8 +639,8 @@
 
 .canteen-chase-controls button {
   align-items: center;
-  background: rgba(23, 39, 44, 0.9);
-  border: 3px solid #d8dfd2;
+  background: rgba(43, 32, 20, 0.92);
+  border: 3px solid #e8dcc0;
   border-radius: 0;
   color: #f0d668;
   display: flex;
@@ -602,9 +657,9 @@
 }
 
 .canteen-chase-paused {
-  background: rgba(17, 34, 39, 0.95);
-  border: 3px solid #f0d668;
-  color: #f2f0df;
+  background: rgba(40, 30, 18, 0.95);
+  border: 3px solid #f0b93e;
+  color: #f7f2df;
   font-size: var(--fs-title);
   left: 50%;
   padding: 12px 24px;
@@ -615,13 +670,13 @@
 }
 
 .canteen-chase-paused small {
-  color: #b9c8c0;
+  color: #d8c9a8;
   font-size: 11px;
 }
 
 .canteen-chase-narration.game-subtitle-frame {
-  --subtitle-panel: rgba(17, 34, 39, 0.9);
-  --subtitle-accent: #d9dfcf;
+  --subtitle-panel: rgba(40, 30, 18, 0.92);
+  --subtitle-accent: #e8dcc0;
   bottom: auto;
   display: grid;
   gap: 2px;
@@ -1266,7 +1321,13 @@
 
   .canteen-bike-hud-card.is-lives strong {
     font-size: 10px;
+    gap: 3px;
     letter-spacing: 2px;
+  }
+
+  .canteen-bike-hud-card.is-lives strong svg {
+    height: 12px;
+    width: 12px;
   }
 
   .canteen-bike-progress {
@@ -1275,6 +1336,19 @@
 
   .canteen-bike-progress::after {
     display: none;
+  }
+
+  .canteen-bike-progress-paper {
+    height: 12px;
+    left: calc(var(--canteen-chase-progress) - 6px);
+    top: -14px;
+    width: 12px;
+  }
+
+  .canteen-bike-progress-goal {
+    height: 13px;
+    top: -15px;
+    width: 15px;
   }
 
   .canteen-bike-progress > b {
@@ -1302,14 +1376,14 @@
   .canteen-chase-controls {
     bottom: 7px;
     gap: 10px;
-    grid-template-columns: repeat(2, 42px);
+    grid-template-columns: repeat(2, 50px);
     left: 8px;
   }
 
   .canteen-chase-controls button {
-    font-size: 20px;
-    height: 42px;
-    width: 42px;
+    font-size: 22px;
+    height: 50px;
+    width: 50px;
   }
 
   .canteen-chase-narration.game-subtitle-frame {

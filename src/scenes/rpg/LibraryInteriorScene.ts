@@ -49,6 +49,7 @@ const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS = {
 } as const;
 const LIBRARY_FRONT_DESK_STAFF_POSITION = { x: 334, y: 632 } as const;
 const LIBRARY_FRONT_DESK_STAFF_SCALE = 0.72;
+const LIBRARY_FRONT_DESK_STAMP_POSITION = { x: 334, y: 594 } as const;
 
 const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   callNumber755: "索书号 755",
@@ -102,7 +103,7 @@ interface LibraryDropGuideParts {
 
 type EntranceDoorMotion = "closed" | "opening" | "open" | "closing";
 type ShelfRevealPhase = "idle" | "shaking" | "sliding" | "paper" | "complete";
-type LostFoundMachineMotion = "idle" | "feeding" | "scanning" | "stamping" | "ejecting" | "complete";
+type FrontDeskStampMotion = "idle" | "receiving" | "checking" | "stamping" | "returning" | "complete";
 
 export class LibraryInteriorScene extends Phaser.Scene {
   private bridge!: RpgBridge;
@@ -135,17 +136,16 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private shelfRevealPhase: ShelfRevealPhase = "idle";
   private shelfRevealOffsetPx = 0;
   private shelfRevealFrameIndex = 0;
-  private lostFoundIndicator!: Phaser.GameObjects.Arc;
-  private lostFoundScanLine!: Phaser.GameObjects.Rectangle;
-  private lostFoundStatusText!: Phaser.GameObjects.Text;
-  private lostFoundMachine!: Phaser.GameObjects.Container;
-  private lostFoundMachineCasing!: Phaser.GameObjects.Rectangle;
-  private lostFoundReport!: Phaser.GameObjects.Container;
-  private lostFoundStampHead!: Phaser.GameObjects.Container;
-  private lostFoundStampLever!: Phaser.GameObjects.Container;
-  private lostFoundStampMark!: Phaser.GameObjects.Text;
-  private lostFoundValidationLights: Phaser.GameObjects.Arc[] = [];
-  private lostFoundMachineMotion: LostFoundMachineMotion = "idle";
+  private frontDeskStampIndicator!: Phaser.GameObjects.Arc;
+  private frontDeskScanLine!: Phaser.GameObjects.Rectangle;
+  private frontDeskStampStatusText!: Phaser.GameObjects.Text;
+  private frontDeskStampService!: Phaser.GameObjects.Container;
+  private frontDeskStampHitFrame!: Phaser.GameObjects.Rectangle;
+  private frontDeskReport!: Phaser.GameObjects.Container;
+  private frontDeskStampHead!: Phaser.GameObjects.Container;
+  private frontDeskStampMark!: Phaser.GameObjects.Text;
+  private frontDeskValidationLights: Phaser.GameObjects.Arc[] = [];
+  private frontDeskStampMotion: FrontDeskStampMotion = "idle";
   private catalogIndicator!: Phaser.GameObjects.Arc;
   private catalogScanLine!: Phaser.GameObjects.Rectangle;
   private lastVisitCheck = 0;
@@ -295,7 +295,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     this.updatePrompt(nearest, state);
     this.updateMarkerVisibility(activeTargets, state, nearest);
-    this.updateLostFoundStatus(state);
+    this.updateFrontDeskStampStatus(state);
 
     if (nearest && (keyboardInteract || this.interactRequested)) {
       this.triggerInteraction(nearest, state);
@@ -367,12 +367,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "library_lost_found_scan_started") {
-      this.animateLostFoundScan();
-      this.showFeedback("物品身份盖章机：报告已进入托盘，正在扫描。", "system");
+      this.animateFrontDeskReportCheck();
+      this.showFeedback("前台接过报告，正在核对照片、座位号和物品身份。", "system");
       return;
     }
     if (name === "library_bag_nonperson_proof_issued") {
-      this.animateLostFoundStamp();
+      this.animateFrontDeskStamp();
       return;
     }
     if (name === "library_seat_receipt_recovered") {
@@ -453,7 +453,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     const actionByTarget: Partial<Record<LibraryInteractionTargetId, string>> = {
       library_shelf_755: "useCallNumberOnShelf",
-      lost_found_machine: "stampNonPersonProof",
+      front_desk: "stampNonPersonProof",
       seat_022_gap: "useRightArrowOnReceipt",
       seat_022_backpack: "applyPassToBackpack"
     };
@@ -541,7 +541,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       if (target.id === "seat_022_backpack") return puzzle.entranceRecordRead && !puzzle.backpackEvicted;
       if (target.id === "seat_022_gap") return !puzzle.seatReceiptCollected;
       if (target.id === "library_shelf_755") return puzzle.callNumberCollected && !puzzle.archivedRuleCollected;
-      if (target.id === "lost_found_machine") return puzzle.lostFoundStage !== "stamped";
       if (target.id === "seat_022_chair") {
         return puzzle.backpackEvicted && puzzle.nextQuestId === null && !this.backpackEvictionAnimating;
       }
@@ -564,7 +563,13 @@ export class LibraryInteriorScene extends Phaser.Scene {
       const itemLabel = ITEM_LABELS[target.acceptedItem] ?? "对应道具";
       prompt = `拖入「${itemLabel}」  ${target.label}`;
     }
-    if (target.id === "seat_022_backpack" && !puzzle.backpackInspected) {
+    if (target.id === "front_desk") {
+      if (puzzle.lostFoundStage === "scanning") {
+        prompt = "前台正在核验并盖章";
+      } else if (!puzzle.itemReportGenerated || puzzle.nonPersonProofStamped) {
+        prompt = formatRpgInteractionHint("询问前台工作人员");
+      }
+    } else if (target.id === "seat_022_backpack" && !puzzle.backpackInspected) {
       prompt = formatRpgInteractionHint("检查占座书包");
     } else if (target.id === "seat_022_chair" && puzzle.playerSeated && puzzle.nextQuestId === null) {
       prompt = formatRpgInteractionHint("继续与 022 对话");
@@ -630,16 +635,14 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
     const puzzle = state.ui.libraryFinalsPuzzle;
     if (targetId === "front_desk") {
-      if (!puzzle.archivedRuleRead) return "";
+      if (!puzzle.archivedRuleRead) return "前台正在整理失物记录，目前没有需要办理的材料。";
       const proofCount = [puzzle.nonPersonProofStamped, puzzle.seatReceiptCollected, puzzle.presenceProofCollected].filter(Boolean).length;
-      return proofCount < 3 ? "" : "三项证明已齐，上传给大家看看。";
-    }
-    if (targetId === "lost_found_machine") {
+      if (proofCount >= 3) return "三项证明已齐，上传给大家看看。";
       return {
-        missing_report: "物品身份盖章机：缺少物品识别报告。",
-        ready: "物品身份盖章机：将报告拖入进纸托盘。",
-        scanning: "物品身份盖章机：报告正在扫描，压章头已就位。",
-        stamped: ""
+        missing_report: "前台：先在照片页面生成物品识别报告，再拿来核验。",
+        ready: "前台：把物品识别报告递到柜台上，我核验后盖章。",
+        scanning: "前台正在核对报告，请等她完成盖章。",
+        stamped: "前台：非本人证明已经盖好，继续补齐另外两项材料。"
       }[puzzle.lostFoundStage];
     }
     if (targetId === "catalog_terminal") {
@@ -661,7 +664,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       entrance_record: "",
       library_exit: "",
       front_desk: "",
-      lost_found_machine: "",
       catalog_terminal: "",
       printer: "打印机显示缺纸；旁边的纸盒显示库存充足。",
       library_shelf_755: "",
@@ -792,13 +794,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
         y: this.frontDeskStaff.y,
         depth: this.frontDeskStaff.depth
       },
-      lostFoundStampMachine: {
+      frontDeskStampService: {
         stage: state.ui.libraryFinalsPuzzle.lostFoundStage,
-        motion: this.lostFoundMachineMotion,
-        reportVisible: this.lostFoundReport.visible,
-        stampHeadY: this.lostFoundStampHead.y,
-        leverAngle: this.lostFoundStampLever.angle,
-        stampVisible: this.lostFoundStampMark.visible
+        motion: this.frontDeskStampMotion,
+        reportVisible: this.frontDeskReport.visible,
+        stampHeadY: this.frontDeskStampHead.y,
+        stampVisible: this.frontDeskStampMark.visible
       }
     });
   }
@@ -1000,59 +1001,68 @@ export class LibraryInteriorScene extends Phaser.Scene {
     });
   }
 
-  private animateLostFoundScan(): void {
+  private animateFrontDeskReportCheck(): void {
     this.tweens.killTweensOf([
-      this.lostFoundReport,
-      this.lostFoundScanLine,
-      this.lostFoundStampHead,
-      this.lostFoundStampLever
+      this.frontDeskReport,
+      this.frontDeskScanLine,
+      this.frontDeskStampHead,
+      this.frontDeskStaff
     ]);
-    this.lostFoundMachineMotion = "feeding";
-    this.lostFoundIndicator.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
-    this.lostFoundStampHead.setY(5);
-    this.lostFoundStampLever.setAngle(-24);
-    this.lostFoundStampMark.setVisible(false).setAlpha(0).setScale(1.4);
-    this.lostFoundReport.setVisible(true).setAlpha(1).setPosition(-58, 39);
-    this.lostFoundScanLine.setVisible(false).setAlpha(0.95).setY(26);
+    this.frontDeskStampMotion = "receiving";
+    this.frontDeskStampIndicator.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
+    this.frontDeskStampHead.setY(-14);
+    this.frontDeskStampMark.setVisible(false).setAlpha(0).setScale(1.35);
+    this.frontDeskReport.setVisible(true).setAlpha(1).setPosition(-78, 24);
+    this.frontDeskScanLine.setVisible(false).setAlpha(0.95).setPosition(-20, 11);
+    this.frontDeskStaff.stop().setFrame(1);
 
-    const beginScan = () => {
-      this.lostFoundMachineMotion = "scanning";
+    const beginCheck = () => {
+      this.frontDeskStampMotion = "checking";
       if (this.reducedMotion) {
-        this.lostFoundScanLine.setVisible(false);
+        this.frontDeskScanLine.setVisible(false);
         return;
       }
-      this.lostFoundScanLine.setVisible(true).setAlpha(0.95).setY(26);
+      this.frontDeskScanLine.setVisible(true).setAlpha(0.95).setPosition(-20, 11);
       this.tweens.add({
-        targets: this.lostFoundScanLine,
-        y: 51,
+        targets: this.frontDeskScanLine,
+        y: 36,
         alpha: 0.28,
-        duration: 340,
+        duration: 250,
         yoyo: true,
         repeat: 1,
         ease: "Stepped",
-        onComplete: () => this.lostFoundScanLine.setVisible(false)
+        onComplete: () => this.frontDeskScanLine.setVisible(false)
       });
     };
 
     if (this.reducedMotion) {
-      this.lostFoundReport.setX(0);
-      beginScan();
+      this.frontDeskReport.setX(-20);
+      beginCheck();
     } else {
       this.tweens.add({
-        targets: this.lostFoundReport,
-        x: 0,
-        duration: 220,
+        targets: this.frontDeskReport,
+        x: -20,
+        duration: 240,
         ease: "Stepped",
-        onComplete: beginScan
+        onComplete: beginCheck
+      });
+      this.tweens.add({
+        targets: this.frontDeskStaff,
+        y: LIBRARY_FRONT_DESK_STAFF_POSITION.y + 3,
+        duration: 120,
+        yoyo: true,
+        repeat: 1,
+        ease: "Stepped",
+        onComplete: () => this.frontDeskStaff.setY(LIBRARY_FRONT_DESK_STAFF_POSITION.y)
       });
     }
     this.tweens.add({
-      targets: this.lostFoundIndicator,
+      targets: this.frontDeskStampIndicator,
       alpha: 0.35,
       duration: 120,
       yoyo: true,
       repeat: 4,
-      onComplete: () => this.lostFoundIndicator.setAlpha(1)
+      onComplete: () => this.frontDeskStampIndicator.setAlpha(1)
     });
   }
 
@@ -1063,95 +1073,106 @@ export class LibraryInteriorScene extends Phaser.Scene {
       .setColor(isAvailable ? "#8ce1b4" : "#f0d56a");
   }
 
-  private animateLostFoundStamp(): void {
-    const machine = getLibraryTarget("lost_found_machine");
+  private animateFrontDeskStamp(): void {
+    const desk = getLibraryTarget("front_desk");
     this.tweens.killTweensOf([
-      this.lostFoundReport,
-      this.lostFoundScanLine,
-      this.lostFoundStampHead,
-      this.lostFoundStampLever,
-      this.lostFoundMachine
+      this.frontDeskReport,
+      this.frontDeskScanLine,
+      this.frontDeskStampHead,
+      this.frontDeskStampService,
+      this.frontDeskStaff
     ]);
-    this.lostFoundMachine.setPosition(machine.x, machine.y);
-    this.lostFoundMachineMotion = "stamping";
-    this.lostFoundScanLine.setVisible(false).setY(26);
-    this.lostFoundIndicator.setFillStyle(0x5ed68d).setAlpha(1).setScale(1);
-    this.lostFoundReport.setVisible(true).setAlpha(1).setPosition(0, 39);
-    this.lostFoundStampMark.setVisible(true).setAlpha(0).setScale(1.45);
+    this.frontDeskStampService.setPosition(LIBRARY_FRONT_DESK_STAMP_POSITION.x, LIBRARY_FRONT_DESK_STAMP_POSITION.y);
+    this.frontDeskStampMotion = "stamping";
+    this.frontDeskScanLine.setVisible(false).setPosition(-20, 11);
+    this.frontDeskStampIndicator.setFillStyle(0x5ed68d).setAlpha(1).setScale(1);
+    this.frontDeskReport.setVisible(true).setAlpha(1).setPosition(-20, 24);
+    this.frontDeskStampHead.setY(-14);
+    this.frontDeskStampMark.setVisible(true).setAlpha(0).setScale(1.35);
+    this.frontDeskStaff.stop().setFrame(1);
     this.tweens.add({
-      targets: this.lostFoundIndicator,
+      targets: this.frontDeskStampIndicator,
       scale: 2,
       alpha: 0.3,
       duration: 110,
       yoyo: true,
       repeat: 4,
-      onComplete: () => this.lostFoundIndicator.setScale(1).setAlpha(1)
+      onComplete: () => this.frontDeskStampIndicator.setScale(1).setAlpha(1)
     });
 
     const impact = () => {
-      this.lostFoundStampMark.setAlpha(1);
+      this.frontDeskStampMark.setAlpha(1);
       if (this.reducedMotion) {
-        this.lostFoundStampMark.setScale(1);
+        this.frontDeskStampMark.setScale(1);
       } else {
         this.tweens.add({
-          targets: this.lostFoundStampMark,
+          targets: this.frontDeskStampMark,
           scale: 1,
           duration: 120,
           ease: "Stepped"
         });
         this.tweens.add({
-          targets: this.lostFoundMachine,
-          y: machine.y + 3,
+          targets: this.frontDeskStampService,
+          y: LIBRARY_FRONT_DESK_STAMP_POSITION.y + 3,
           duration: 45,
           yoyo: true,
           repeat: 1,
-          onComplete: () => this.lostFoundMachine.setY(machine.y)
+          onComplete: () => this.frontDeskStampService.setY(LIBRARY_FRONT_DESK_STAMP_POSITION.y)
+        });
+        this.tweens.add({
+          targets: this.frontDeskStaff,
+          y: LIBRARY_FRONT_DESK_STAFF_POSITION.y + 4,
+          duration: 55,
+          yoyo: true,
+          repeat: 1,
+          ease: "Stepped",
+          onComplete: () => this.frontDeskStaff.setY(LIBRARY_FRONT_DESK_STAFF_POSITION.y)
         });
       }
 
       this.time.delayedCall(this.reducedMotion ? 1 : 140, () => {
-        this.tweens.add({ targets: this.lostFoundStampHead, y: 5, duration: this.reducedMotion ? 1 : 120, ease: "Stepped" });
-        this.tweens.add({ targets: this.lostFoundStampLever, angle: -24, duration: this.reducedMotion ? 1 : 140, ease: "Stepped" });
+        this.tweens.add({ targets: this.frontDeskStampHead, y: -14, duration: this.reducedMotion ? 1 : 120, ease: "Stepped" });
       });
       this.time.delayedCall(this.reducedMotion ? 2 : 280, () => {
-        this.lostFoundMachineMotion = "ejecting";
+        this.frontDeskStampMotion = "returning";
         this.tweens.add({
-          targets: this.lostFoundReport,
-          x: 58,
-          y: 50,
+          targets: this.frontDeskReport,
+          x: 64,
+          y: 30,
           alpha: 0,
           duration: this.reducedMotion ? 1 : 420,
           ease: "Stepped",
           onComplete: () => {
-            this.lostFoundReport.setVisible(false).setPosition(-58, 39).setAlpha(1);
-            this.lostFoundStampMark.setVisible(false).setAlpha(0);
-            this.lostFoundMachineMotion = "complete";
-            this.animateEvidenceTransfer(machine.x + 52, machine.y + 42, 0x5ed68d);
+            this.frontDeskReport.setVisible(false).setPosition(-78, 24).setAlpha(1);
+            this.frontDeskStampMark.setVisible(false).setAlpha(0);
+            this.frontDeskStampMotion = "complete";
+            this.animateEvidenceTransfer(desk.x + 64, desk.y + 30, 0x5ed68d);
+            this.resumeFrontDeskIdle();
           }
         });
       });
     };
 
     if (this.reducedMotion) {
-      this.lostFoundStampHead.setY(25);
-      this.lostFoundStampLever.setAngle(8);
+      this.frontDeskStampHead.setY(10);
       impact();
     } else {
       this.tweens.add({
-        targets: this.lostFoundStampHead,
-        y: 25,
+        targets: this.frontDeskStampHead,
+        y: 10,
         duration: 110,
         ease: "Stepped",
         onComplete: impact
       });
-      this.tweens.add({
-        targets: this.lostFoundStampLever,
-        angle: 8,
-        duration: 110,
-        ease: "Stepped"
-      });
     }
-    this.showFeedback("盖章完成：书包不等于本人。", "success");
+    this.showFeedback("前台盖章完成：书包不等于本人。", "success");
+  }
+
+  private resumeFrontDeskIdle(): void {
+    this.frontDeskStaff.setPosition(LIBRARY_FRONT_DESK_STAFF_POSITION.x, LIBRARY_FRONT_DESK_STAFF_POSITION.y).setFrame(0);
+    if (!this.reducedMotion) {
+      this.frontDeskStaff.play(LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY);
+    }
   }
 
   private animateReceiptRecovery(): void {
@@ -1221,8 +1242,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
       onComplete: () => {
         this.tweens.add({
           targets: this.backpack,
-          x: getLibraryTarget("lost_found_machine").x,
-          y: getLibraryTarget("lost_found_machine").y + 40,
+          x: getLibraryTarget("front_desk").x,
+          y: getLibraryTarget("front_desk").y + 40,
           alpha: 0,
           duration: 1200,
           delay: 1900,
@@ -1538,7 +1559,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.seatStatusText.setAlpha(1).setScale(1);
     this.catalogIndicator.setFillStyle(puzzle.catalogUnlocked ? 0x65dca0 : 0xd2aa54).setAlpha(1);
     this.catalogScanLine.setVisible(false);
-    this.syncLostFoundStampMachine(puzzle.lostFoundStage);
+    this.syncFrontDeskStampService(puzzle.lostFoundStage);
   }
 
   private createMarkers(): void {
@@ -2063,38 +2084,27 @@ export class LibraryInteriorScene extends Phaser.Scene {
       LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME
     ).setDepth(728);
 
-    const target = getLibraryTarget("lost_found_machine");
-    const shadow = this.add.ellipse(2, 57, 88, 18, 0x101715, 0.5);
-    this.lostFoundMachineCasing = this.add.rectangle(0, 0, 82, 94, 0x34433f, 1)
-      .setStrokeStyle(4, 0x18231f, 1);
-    const topCap = this.add.rectangle(0, -51, 90, 12, 0x65736c, 1)
-      .setStrokeStyle(3, 0x18231f, 1);
-    const titlePlate = this.add.text(0, -60, "STAMP 0.22", {
-      color: "#f0d56a",
-      backgroundColor: "#1b2824ee",
-      fontFamily: "monospace",
-      fontSize: "9px",
-      fontStyle: "bold",
-      padding: { x: 4, y: 2 }
-    }).setOrigin(0.5);
-    const screen = this.add.rectangle(0, -33, 54, 18, 0x173b35, 1)
+    const target = getLibraryTarget("front_desk");
+    this.frontDeskStampHitFrame = this.add.rectangle(0, 8, target.dropWidth ?? 116, target.dropHeight ?? 86, 0x5ed68d, 0)
+      .setStrokeStyle(3, 0x75dcad, 0);
+    const statusPlate = this.add.rectangle(51, -40, 92, 22, 0x173b35, 0.92)
       .setStrokeStyle(2, 0x7fa89b, 0.9);
-    this.lostFoundIndicator = this.add.circle(-33, -33, 5, 0xc96a5e, 1)
-      .setStrokeStyle(2, 0x18231f, 1);
-    this.lostFoundStatusText = this.add.text(0, -33, "", {
+    this.frontDeskStampIndicator = this.add.circle(14, -40, 4, 0xc96a5e, 1)
+      .setStrokeStyle(1, 0x18231f, 1);
+    this.frontDeskStampStatusText = this.add.text(54, -40, "", {
       color: "#f2e5c6",
       fontFamily: "monospace",
       fontSize: "9px",
       fontStyle: "bold"
     }).setOrigin(0.5);
 
-    const validationXs = [-22, 0, 22];
-    const validationLabels = ["名", "号", "人"];
+    const validationXs = [28, 50, 72];
+    const validationLabels = ["图", "座", "物"];
     const validationTexts: Phaser.GameObjects.Text[] = [];
-    this.lostFoundValidationLights = validationXs.map((x, index) => {
-      const light = this.add.circle(x, -13, 4, 0xc96a5e, 1)
+    this.frontDeskValidationLights = validationXs.map((x, index) => {
+      const light = this.add.circle(x, -21, 3, 0xc96a5e, 1)
         .setStrokeStyle(1, 0x18231f, 1);
-      validationTexts.push(this.add.text(x, -4, validationLabels[index], {
+      validationTexts.push(this.add.text(x, -12, validationLabels[index], {
         color: "#c6d1ca",
         fontFamily: "monospace",
         fontSize: "7px"
@@ -2102,95 +2112,73 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return light;
     });
 
-    const leftGuide = this.add.rectangle(-25, 18, 6, 52, 0x718078, 1)
-      .setStrokeStyle(2, 0x18231f, 1);
-    const rightGuide = this.add.rectangle(25, 18, 6, 52, 0x718078, 1)
-      .setStrokeStyle(2, 0x18231f, 1);
-    const stampBridge = this.add.rectangle(0, 4, 54, 8, 0x56645e, 1)
-      .setStrokeStyle(2, 0x18231f, 1);
-    const tray = this.add.rectangle(0, 39, 64, 28, 0x232f2c, 1)
-      .setStrokeStyle(3, 0x18231f, 1);
-    const feedSlot = this.add.rectangle(0, 28, 48, 5, 0x0d1513, 1)
-      .setStrokeStyle(1, 0xa0b1a9, 0.7);
-    const base = this.add.rectangle(0, 52, 90, 12, 0x59665f, 1)
-      .setStrokeStyle(3, 0x18231f, 1);
-
-    const stampStem = this.add.rectangle(0, -9, 8, 23, 0x9ba69f, 1)
-      .setStrokeStyle(2, 0x26332f, 1);
-    const stampHead = this.add.rectangle(0, 6, 36, 12, 0xb94f49, 1)
-      .setStrokeStyle(3, 0x5a2624, 1);
-    this.lostFoundStampHead = this.add.container(0, 5, [stampStem, stampHead]);
-
-    const leverArm = this.add.rectangle(0, 12, 6, 38, 0x9ba69f, 1)
-      .setStrokeStyle(2, 0x26332f, 1);
-    const leverKnob = this.add.rectangle(0, 33, 14, 10, 0xb94f49, 1)
+    const stampHandle = this.add.rectangle(0, -7, 9, 18, 0x8d5a3d, 1)
+      .setStrokeStyle(2, 0x3b261c, 1);
+    const stampGrip = this.add.rectangle(0, -18, 18, 8, 0xb4774f, 1)
+      .setStrokeStyle(2, 0x3b261c, 1);
+    const stampBase = this.add.rectangle(0, 4, 30, 8, 0xb94f49, 1)
       .setStrokeStyle(2, 0x5a2624, 1);
-    this.lostFoundStampLever = this.add.container(33, -10, [leverArm, leverKnob]).setAngle(-24);
+    this.frontDeskStampHead = this.add.container(-9, -14, [stampHandle, stampGrip, stampBase]);
 
     const paper = this.add.rectangle(0, 0, 46, 28, 0xf2ead5, 1)
       .setStrokeStyle(2, 0x5a625d, 1);
     const reportLineOne = this.add.rectangle(-5, -7, 25, 2, 0x87928c, 0.9);
     const reportLineTwo = this.add.rectangle(-8, -1, 19, 2, 0x87928c, 0.7);
-    this.lostFoundStampMark = this.add.text(4, 5, "非本人", {
+    this.frontDeskStampMark = this.add.text(4, 5, "非本人", {
       color: "#b43f3f",
       fontFamily: "monospace",
       fontSize: "9px",
       fontStyle: "bold"
     }).setOrigin(0.5).setVisible(false);
-    this.lostFoundReport = this.add.container(-58, 39, [paper, reportLineOne, reportLineTwo, this.lostFoundStampMark])
+    this.frontDeskReport = this.add.container(-78, 24, [paper, reportLineOne, reportLineTwo, this.frontDeskStampMark])
       .setVisible(false);
-    this.lostFoundScanLine = this.add.rectangle(0, 26, 46, 3, 0xe1b953, 0.95)
+    this.frontDeskScanLine = this.add.rectangle(-20, 11, 46, 3, 0xe1b953, 0.95)
       .setVisible(false);
 
-    const hitTarget = this.add.zone(0, 0, target.width, target.height)
+    const hitTarget = this.add.zone(0, 8, target.dropWidth ?? 116, target.dropHeight ?? 86)
       .setInteractive({ useHandCursor: true });
-    this.lostFoundMachine = this.add.container(target.x, target.y, [
-      shadow,
-      this.lostFoundMachineCasing,
-      topCap,
-      titlePlate,
-      screen,
-      this.lostFoundIndicator,
-      this.lostFoundStatusText,
-      ...this.lostFoundValidationLights,
+    this.frontDeskStampService = this.add.container(
+      LIBRARY_FRONT_DESK_STAMP_POSITION.x,
+      LIBRARY_FRONT_DESK_STAMP_POSITION.y,
+      [
+      this.frontDeskStampHitFrame,
+      statusPlate,
+      this.frontDeskStampIndicator,
+      this.frontDeskStampStatusText,
+      ...this.frontDeskValidationLights,
       ...validationTexts,
-      leftGuide,
-      rightGuide,
-      stampBridge,
-      tray,
-      feedSlot,
-      base,
-      this.lostFoundStampHead,
-      this.lostFoundStampLever,
-      this.lostFoundReport,
-      this.lostFoundScanLine,
+      this.frontDeskStampHead,
+      this.frontDeskReport,
+      this.frontDeskScanLine,
       hitTarget
-    ]).setDepth(target.y + 82);
+    ]).setDepth(742);
+
+    const interactWithFrontDesk = () => {
+      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
+      if (distance > target.proximity + 24) {
+        this.showFeedback("先走到信息台柜台前。", "system");
+        return;
+      }
+      this.bridge.setCheckpoint("library_front_desk");
+      this.triggerInteraction(target, this.bridge.getState());
+    };
 
     hitTarget
-      .on("pointerover", () => this.lostFoundMachineCasing.setStrokeStyle(4, 0xe1b953, 1))
-      .on("pointerout", () => this.lostFoundMachineCasing.setStrokeStyle(4, 0x18231f, 1))
-      .on("pointerdown", () => {
-        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
-        if (distance > target.proximity + 24) {
-          this.showFeedback("先走近物品身份盖章机。", "system");
-          return;
-        }
-        this.bridge.setCheckpoint("library_front_desk");
-        const text = this.getContextText(target.id, this.bridge.getState());
-        if (text) {
-          this.bridge.emit("library_rpg_context_inspected", { targetId: target.id, text });
-        }
-      });
+      .on("pointerover", () => this.frontDeskStampHitFrame.setStrokeStyle(3, 0x75dcad, 0.9))
+      .on("pointerout", () => this.frontDeskStampHitFrame.setStrokeStyle(3, 0x75dcad, 0))
+      .on("pointerdown", interactWithFrontDesk);
+    this.frontDeskStaff
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", interactWithFrontDesk);
   }
 
-  private updateLostFoundStatus(state: GameState): void {
+  private updateFrontDeskStampStatus(state: GameState): void {
     const stage = state.ui.libraryFinalsPuzzle.lostFoundStage;
     const labels = {
-      missing_report: "缺报告",
-      ready: "投入报告",
-      scanning: "扫描",
-      stamped: "完成"
+      missing_report: "等待报告",
+      ready: "递交报告",
+      scanning: "人工核验",
+      stamped: "已盖章"
     } as const;
     const colors = {
       missing_report: 0xc96a5e,
@@ -2198,10 +2186,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
       scanning: 0xe1b953,
       stamped: 0x5ed68d
     } as const;
-    this.lostFoundStatusText.setText(labels[stage]);
-    this.lostFoundIndicator.setFillStyle(colors[stage]);
-    this.lostFoundStatusText.setColor(stage === "stamped" ? "#bdebc9" : stage === "missing_report" ? "#f1b3ad" : "#f7e6a6");
-    this.lostFoundValidationLights.forEach((light, index) => {
+    this.frontDeskStampStatusText.setText(labels[stage]);
+    this.frontDeskStampIndicator.setFillStyle(colors[stage]);
+    this.frontDeskStampStatusText.setColor(stage === "stamped" ? "#bdebc9" : stage === "missing_report" ? "#f1b3ad" : "#f7e6a6");
+    this.frontDeskValidationLights.forEach((light, index) => {
       const color = stage === "stamped"
         ? 0x5ed68d
         : stage === "scanning" && index < 2
@@ -2213,25 +2201,24 @@ export class LibraryInteriorScene extends Phaser.Scene {
     });
   }
 
-  private syncLostFoundStampMachine(stage: GameState["ui"]["libraryFinalsPuzzle"]["lostFoundStage"]): void {
-    const machine = getLibraryTarget("lost_found_machine");
+  private syncFrontDeskStampService(stage: GameState["ui"]["libraryFinalsPuzzle"]["lostFoundStage"]): void {
     this.tweens.killTweensOf([
-      this.lostFoundMachine,
-      this.lostFoundReport,
-      this.lostFoundScanLine,
-      this.lostFoundStampHead,
-      this.lostFoundStampLever,
-      this.lostFoundStampMark
+      this.frontDeskStampService,
+      this.frontDeskReport,
+      this.frontDeskScanLine,
+      this.frontDeskStampHead,
+      this.frontDeskStampMark,
+      this.frontDeskStaff
     ]);
-    this.lostFoundMachine.setPosition(machine.x, machine.y);
-    this.lostFoundStampHead.setY(5);
-    this.lostFoundStampLever.setAngle(-24);
-    this.lostFoundScanLine.setVisible(false).setY(26).setAlpha(0.95);
-    this.lostFoundReport.setVisible(false).setPosition(-58, 39).setAlpha(1);
-    this.lostFoundStampMark.setVisible(false).setAlpha(0).setScale(1.4);
-    this.lostFoundMachineMotion = stage === "stamped" ? "complete" : "idle";
+    this.frontDeskStampService.setPosition(LIBRARY_FRONT_DESK_STAMP_POSITION.x, LIBRARY_FRONT_DESK_STAMP_POSITION.y);
+    this.frontDeskStampHead.setY(-14);
+    this.frontDeskScanLine.setVisible(false).setPosition(-20, 11).setAlpha(0.95);
+    this.frontDeskReport.setVisible(false).setPosition(-78, 24).setAlpha(1);
+    this.frontDeskStampMark.setVisible(false).setAlpha(0).setScale(1.35);
+    this.frontDeskStampMotion = stage === "stamped" ? "complete" : "idle";
+    this.resumeFrontDeskIdle();
     if (stage === "scanning") {
-      this.animateLostFoundScan();
+      this.animateFrontDeskReportCheck();
     }
   }
 

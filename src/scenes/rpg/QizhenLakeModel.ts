@@ -124,7 +124,7 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       { id: "dock_basin", left: 520, top: 28, right: 1644, bottom: 913 }
     ],
     occlusions: [
-      { id: "dock_walkway_front", left: 620, top: 450, right: 790, bottom: 688, sortY: 688 },
+      { id: "dock_walkway_front", left: 620, top: 450, right: 790, bottom: 688, sortY: 610 },
       { id: "kayak_rack_front", left: 438, top: 714, right: 542, bottom: 844, sortY: 814 },
       { id: "south_willow", left: 830, top: 600, right: 1100, bottom: 910, sortY: 910 }
     ]

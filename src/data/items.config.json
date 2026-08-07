@@ -116,7 +116,7 @@
     "name": "物品识别报告",
     "desc": "一份关于书包的严肃报告。结论是：它很沉重，但不是法律意义上的同学。",
     "sourceScene": "photos",
-    "target": "lost_found_machine"
+    "target": "library_front_desk_staff"
   },
   {
     "id": "bagNonPersonProof",

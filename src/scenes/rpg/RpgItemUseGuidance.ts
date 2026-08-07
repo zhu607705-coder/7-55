@@ -87,13 +87,13 @@ export function selectRpgItemUseGuidance(
         : locked("先完成馆藏检索并取得索书号 755。", "文学书架 755 段");
     }
     if (itemId === "itemRecognitionReport") {
-      if (puzzle.lostFoundStage === "scanning") return passive("盖章机正在扫描，等待流程完成。");
+      if (puzzle.lostFoundStage === "scanning") return passive("前台正在人工核验并盖章，等待流程完成。");
       return state.ui.libraryFinalsPhase === "evidence_gathering"
         && puzzle.itemReportGenerated
         && puzzle.lostFoundStage === "ready"
         && !puzzle.nonPersonProofStamped
-        ? ready("物品身份盖章机")
-        : locked("先在照片页面生成物品识别报告。", "物品身份盖章机");
+        ? ready("前台工作人员", "把物品识别报告拖到信息台工作人员和柜台之间的高亮区域。")
+        : locked("先在照片页面生成物品识别报告。", "前台工作人员");
     }
     if (itemId === "rightArrow") {
       return !puzzle.seatReceiptCollected
