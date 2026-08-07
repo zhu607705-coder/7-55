@@ -404,7 +404,7 @@
 }
 
 .canteen-chase-overlay {
-  background: #0d1420;
+  background: #7cb6d9;
   inset: 0;
   overflow: hidden;
   position: absolute;
@@ -413,7 +413,7 @@
 }
 
 .canteen-bike-canvas {
-  background: #0d1420;
+  background: #7cb6d9;
   display: block;
   height: 100%;
   image-rendering: pixelated;
@@ -429,68 +429,164 @@
 }
 
 .canteen-bike-hud {
-  align-items: flex-start;
-  display: flex;
-  justify-content: space-between;
-  left: 0;
-  padding: 72px 16px 0;
+  align-items: center;
+  background: rgba(40, 30, 18, 0.88);
+  border-bottom: 3px solid rgba(242, 234, 210, 0.9);
+  border-top: 3px solid rgba(242, 234, 210, 0.9);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 116px minmax(120px, 1fr) 94px;
+  left: 20px;
+  min-height: 54px;
+  padding: 6px 12px;
   pointer-events: none;
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 20px;
+  top: 72px;
   z-index: 22;
 }
 
 .canteen-bike-hud-card {
-  backdrop-filter: blur(6px);
-  background: rgba(13, 20, 32, 0.72);
-  border: 1px solid #304155;
-  border-radius: 10px;
   display: grid;
-  gap: 2px;
-  min-width: 122px;
-  padding: 7px 11px;
+  gap: 1px;
+  min-width: 0;
+  padding: 0;
 }
 
 .canteen-bike-hud-card > span {
-  color: #a9bac9;
+  color: #d8c9a8;
   font-family: var(--font-pixel);
-  font-size: 10px;
-  letter-spacing: 1.5px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
 }
 
 .canteen-bike-hud-card strong {
-  color: #f0d54e;
+  color: #f0d668;
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 19px;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 
 .canteen-bike-hud-card strong small {
-  color: #a9bac9;
-  font-size: 11px;
+  color: #d8c9a8;
+  font-size: 10px;
+}
+
+.canteen-bike-hud-card.is-lives {
+  justify-items: end;
 }
 
 .canteen-bike-hud-card.is-lives strong {
-  color: #e97b70;
-  letter-spacing: 2px;
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+
+.canteen-bike-hud-card.is-lives strong svg {
+  height: 17px;
+  width: 17px;
+}
+
+.canteen-bike-hud-card.is-lives strong svg.is-alive {
+  color: #f2b25c;
+}
+
+.canteen-bike-hud-card.is-lives strong svg.is-lost {
+  color: #8a7a60;
+  opacity: 0.4;
+}
+
+.canteen-bike-hud-card.is-lives strong.was-hit {
+  animation: canteen-life-shake 320ms ease;
+}
+
+@keyframes canteen-life-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.canteen-bike-progress {
+  background: #3d332a;
+  border: 2px solid #a8946a;
+  height: 13px;
+  position: relative;
+}
+
+.canteen-bike-progress::after {
+  color: #d8c9a8;
+  content: "东区食堂　　　　　　　　　　剧院";
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  inset: 18px 0 auto;
+  letter-spacing: 0.04em;
+  position: absolute;
+  white-space: pre;
+}
+
+.canteen-bike-progress > i {
+  background: linear-gradient(90deg, #f0d668, #f0b93e);
+  bottom: 2px;
+  display: block;
+  left: 2px;
+  position: absolute;
+  top: 2px;
+  width: calc(var(--canteen-chase-progress) - 4px);
+}
+
+.canteen-bike-progress > b {
+  background: #f2ead2;
+  height: 17px;
+  position: absolute;
+  top: -4px;
+  transform: translateX(-1px);
+  width: 2px;
+}
+
+/* The note rides the progress head, flying toward the theater icon. */
+.canteen-bike-progress-paper {
+  height: 16px;
+  left: calc(var(--canteen-chase-progress) - 8px);
+  position: absolute;
+  top: -19px;
+  width: 16px;
+}
+
+.canteen-bike-progress-paper svg,
+.canteen-bike-progress-goal svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.canteen-bike-progress-goal {
+  height: 17px;
+  position: absolute;
+  right: -3px;
+  top: -20px;
+  width: 19px;
 }
 
 .canteen-bike-milestone {
-  background: rgba(13, 20, 32, 0.9);
-  border: 1px solid #f0d54e;
-  border-radius: 12px;
-  color: #f0d54e;
+  animation: canteen-milestone-pop 360ms cubic-bezier(0.2, 1.4, 0.4, 1);
+  background: rgba(58, 42, 20, 0.95);
+  border-left: 5px solid #f0b93e;
+  color: #f0d668;
   display: grid;
-  left: 50%;
-  min-width: 136px;
-  padding: 7px 16px;
+  left: 20px;
+  min-width: 122px;
+  padding: 6px 12px;
   position: absolute;
   text-align: center;
-  top: 80px;
-  transform: translateX(-50%);
+  top: 136px;
   z-index: 24;
+}
+
+@keyframes canteen-milestone-pop {
+  0% { transform: scale(0.82); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
 
 .canteen-bike-milestone strong {
@@ -499,17 +595,23 @@
 }
 
 .canteen-bike-milestone span {
-  color: #a9bac9;
+  color: #e8d9b8;
   font-size: 11px;
 }
 
 .canteen-bike-key-hint {
-  bottom: 22px;
-  color: #d4dee6;
+  align-items: center;
+  background: rgba(40, 30, 18, 0.85);
+  border-bottom: 2px solid #a8946a;
+  color: #e8dcc0;
+  display: flex;
+  gap: 5px;
   font-family: var(--font-pixel);
-  font-size: 11px;
+  font-size: 9px;
+  bottom: 14px;
   left: 50%;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  padding: 6px 9px;
   pointer-events: none;
   position: absolute;
   transform: translateX(-50%);
@@ -517,37 +619,37 @@
 }
 
 .canteen-bike-key-hint kbd {
-  background: rgba(13, 20, 32, 0.75);
-  border: 1px solid #526478;
-  border-radius: 4px;
-  color: #f6f3e6;
-  padding: 2px 7px;
+  background: #f2ead2;
+  border: 0;
+  color: #3a2c16;
+  min-width: 22px;
+  padding: 2px 4px;
+  text-align: center;
 }
 
 .canteen-chase-controls {
-  bottom: 16px;
+  bottom: 12px;
   display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(2, 66px);
-  left: 18px;
+  gap: 12px;
+  grid-template-columns: repeat(2, 58px);
+  left: 12px;
   position: absolute;
   z-index: 26;
 }
 
 .canteen-chase-controls button {
   align-items: center;
-  backdrop-filter: blur(5px);
-  background: rgba(13, 20, 32, 0.58);
-  border: 2px solid #526478;
-  border-radius: 50%;
-  color: #f6f3e6;
+  background: rgba(43, 32, 20, 0.92);
+  border: 3px solid #e8dcc0;
+  border-radius: 0;
+  color: #f0d668;
   display: flex;
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 900;
-  height: 66px;
+  height: 52px;
   justify-content: center;
   touch-action: none;
-  width: 66px;
+  width: 58px;
 }
 
 .canteen-chase-controls button:disabled {
@@ -555,9 +657,9 @@
 }
 
 .canteen-chase-paused {
-  background: rgba(8, 16, 24, 0.92);
-  border: 3px solid #7fcbe3;
-  color: #fff7df;
+  background: rgba(40, 30, 18, 0.95);
+  border: 3px solid #f0b93e;
+  color: #f7f2df;
   font-size: var(--fs-title);
   left: 50%;
   padding: 12px 24px;
@@ -568,31 +670,31 @@
 }
 
 .canteen-chase-paused small {
-  color: #a9bac9;
+  color: #d8c9a8;
   font-size: 11px;
 }
 
-/* Chase narration sits above the key hint and below the milestone banner;
-   `translate` is used instead of `transform` because the timed subtitle
-   keyframes animate `transform`. */
 .canteen-chase-narration.game-subtitle-frame {
-  bottom: 58px;
+  --subtitle-panel: rgba(40, 30, 18, 0.92);
+  --subtitle-accent: #e8dcc0;
+  bottom: auto;
   display: grid;
-  gap: 4px;
-  left: 50%;
+  gap: 2px;
+  left: auto;
   margin: 0;
-  max-width: min(560px, 62%);
-  padding: 8px 14px 9px;
+  max-width: min(470px, 54%);
+  padding: 7px 12px 8px;
   pointer-events: none;
   position: absolute;
-  translate: -50% 0;
+  right: 20px;
+  top: 136px;
   width: max-content;
   z-index: 23;
 }
 
 .canteen-chase-narration.game-subtitle-frame > span {
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .rpg-temp-inventory {
@@ -1191,13 +1293,18 @@
   }
 
   .canteen-bike-hud {
-    padding: 7px 8px 0;
+    gap: 6px;
+    grid-template-columns: 62px minmax(70px, 1fr) 52px;
+    left: 6px;
+    min-height: 36px;
+    padding: 3px 6px;
+    right: 6px;
+    top: 4px;
   }
 
   .canteen-bike-hud-card {
-    border-radius: 6px;
-    min-width: 88px;
-    padding: 4px 7px;
+    min-width: 0;
+    padding: 0;
   }
 
   .canteen-bike-hud-card > span {
@@ -1205,13 +1312,53 @@
   }
 
   .canteen-bike-hud-card strong {
-    font-size: 13px;
+    font-size: 11px;
+  }
+
+  .canteen-bike-hud-card strong small {
+    font-size: 7px;
+  }
+
+  .canteen-bike-hud-card.is-lives strong {
+    font-size: 10px;
+    gap: 3px;
+    letter-spacing: 2px;
+  }
+
+  .canteen-bike-hud-card.is-lives strong svg {
+    height: 12px;
+    width: 12px;
+  }
+
+  .canteen-bike-progress {
+    height: 9px;
+  }
+
+  .canteen-bike-progress::after {
+    display: none;
+  }
+
+  .canteen-bike-progress-paper {
+    height: 12px;
+    left: calc(var(--canteen-chase-progress) - 6px);
+    top: -14px;
+    width: 12px;
+  }
+
+  .canteen-bike-progress-goal {
+    height: 13px;
+    top: -15px;
+    width: 15px;
+  }
+
+  .canteen-bike-progress > b {
+    height: 13px;
   }
 
   .canteen-bike-milestone {
     min-width: 92px;
     padding: 3px 8px;
-    top: 8px;
+    top: 46px;
   }
 
   .canteen-bike-milestone strong {
@@ -1229,24 +1376,32 @@
   .canteen-chase-controls {
     bottom: 7px;
     gap: 10px;
-    grid-template-columns: repeat(2, 42px);
+    grid-template-columns: repeat(2, 50px);
     left: 8px;
   }
 
   .canteen-chase-controls button {
-    font-size: 20px;
-    height: 42px;
-    width: 42px;
+    font-size: 22px;
+    height: 50px;
+    width: 50px;
   }
 
   .canteen-chase-narration.game-subtitle-frame {
-    bottom: 58px;
-    max-width: calc(100% - 128px);
-    padding: 6px 10px 7px;
+    bottom: 7px;
+    left: 106px;
+    max-width: calc(100% - 112px);
+    padding: 5px 8px 6px;
+    right: auto;
+    top: auto;
+  }
+
+  .canteen-chase-narration.game-subtitle-frame .game-subtitle-speaker {
+    font-size: 7px;
   }
 
   .canteen-chase-narration.game-subtitle-frame > span {
-    font-size: 11px;
+    font-size: 8px;
+    line-height: 1.25;
   }
 
   .canteen-chase-paused {

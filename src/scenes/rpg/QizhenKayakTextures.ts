@@ -144,13 +144,19 @@ export class QizhenKayakVisual {
 
 export interface QizhenBlackSwanVisual {
   root: Phaser.GameObjects.Container;
-  update: (x: number, y: number, heading: number, wingBeat: number) => void;
+  update: (x: number, y: number, heading: number, wingBeat: number, chaseIntensity?: number) => void;
   destroy: () => void;
 }
 
 export function createQizhenBlackSwanVisual(scene: Phaser.Scene): QizhenBlackSwanVisual {
+  const outerWake = scene.add.ellipse(-46, 0, 126, 46, 0xdefaff, 0)
+    .setStrokeStyle(2, 0xdafaff, 0.3);
   const wake = scene.add.ellipse(-30, 0, 92, 30, 0xdefaff, 0)
     .setStrokeStyle(2, 0xdafaff, 0.48);
+  const wakeLeft = scene.add.ellipse(-34, -17, 66, 16, 0xdefaff, 0)
+    .setStrokeStyle(2, 0xf1ffff, 0.34).setAngle(-12);
+  const wakeRight = scene.add.ellipse(-34, 17, 66, 16, 0xdefaff, 0)
+    .setStrokeStyle(2, 0xf1ffff, 0.34).setAngle(12);
   const tail = scene.add.triangle(-31, 0, 15, -14, 15, 14, -18, 0, 0x10151c, 1)
     .setStrokeStyle(2, 0x344652, 0.9);
   const body = scene.add.ellipse(-2, 0, 64, 38, 0x10151c, 1)
@@ -193,7 +199,10 @@ export function createQizhenBlackSwanVisual(scene: Phaser.Scene): QizhenBlackSwa
   const eye = scene.add.circle(48, -11, 2, 0xf6e37a, 1)
     .setStrokeStyle(1, 0x050608, 1);
   const root = scene.add.container(0, 0, [
+    outerWake,
     wake,
+    wakeLeft,
+    wakeRight,
     tail,
     body,
     breast,
@@ -211,11 +220,28 @@ export function createQizhenBlackSwanVisual(scene: Phaser.Scene): QizhenBlackSwa
     .setName("qizhenBlackSwan");
   return {
     root,
-    update: (x, y, heading, wingBeat) => {
-      root.setPosition(x, y).setRotation(heading).setDepth(y + 165);
-      leftWing.setAngle(-16 - wingBeat * 24);
-      rightWing.setAngle(16 + wingBeat * 24);
-      wake.setScale(0.9 + Math.abs(wingBeat) * 0.35).setAlpha(0.24 + Math.abs(wingBeat) * 0.35);
+    update: (x, y, heading, wingBeat, chaseIntensity = 0) => {
+      const intensity = Math.max(0, Math.min(1, chaseIntensity));
+      const beatStrength = Math.abs(wingBeat);
+      root
+        .setPosition(x, y)
+        .setRotation(heading)
+        .setScale(1 + intensity * 0.09)
+        .setDepth(y + 165);
+      leftWing.setAngle(-16 - wingBeat * (24 + intensity * 11));
+      rightWing.setAngle(16 + wingBeat * (24 + intensity * 11));
+      outerWake
+        .setScale(0.88 + intensity * 0.44, 0.86 + intensity * 0.22)
+        .setAlpha(0.12 + intensity * 0.42);
+      wake
+        .setScale(0.9 + beatStrength * 0.35 + intensity * 0.28)
+        .setAlpha(0.24 + beatStrength * 0.28 + intensity * 0.26);
+      wakeLeft
+        .setScale(0.82 + intensity * 0.7, 0.84 + beatStrength * 0.28)
+        .setAlpha(0.12 + intensity * 0.5);
+      wakeRight
+        .setScale(0.82 + intensity * 0.7, 0.84 + (1 - Math.min(1, beatStrength)) * 0.18)
+        .setAlpha(0.12 + intensity * 0.5);
     },
     destroy: () => root.destroy(true)
   };

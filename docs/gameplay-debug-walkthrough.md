@@ -373,7 +373,7 @@
 | `c2-catalog` | 浙大钉馆藏检索 |
 | `c2-archived-rule` | RPG 755 书架恢复旧规则 |
 | `c2-photo-report` | 照片调暗与识别报告 |
-| `c2-nonperson-stamp` | RPG 登记机盖章 |
+| `c2-nonperson-stamp` | RPG 前台人工核验与盖章 |
 | `c2-seat-receipt` | 右移箭头取得 022 小票 |
 | `c2-tiyi-proof` | 体艺填写 7 / 47 / 3 |
 | `c2-cc98-upload` | 调查帖上传四项证据 |

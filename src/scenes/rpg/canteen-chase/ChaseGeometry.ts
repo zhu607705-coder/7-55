@@ -10,7 +10,7 @@ export interface ChaseObstacle {
 
 export const OBSTACLE_START_DISTANCE = 78;
 export const OBSTACLE_INTERVAL = 66;
-export const VISIBLE_DISTANCE = 220;
+export const VISIBLE_DISTANCE = 240;
 
 const OBSTACLE_KINDS: readonly ChaseObstacleKind[] = [
   "barrier",
@@ -56,10 +56,10 @@ export function projectRoadPoint(distanceAhead: number, lane: number): RoadPoint
   const depth = Math.max(0, Math.min(1, 1 - distanceAhead / VISIBLE_DISTANCE));
   const perspective = depth * depth;
   return {
-    x: 480 + (lane - 1) * (44 + perspective * 260),
-    y: 148 + perspective * 350,
-    scale: 0.18 + perspective * 1.28,
-    opacity: 0.32 + perspective * 0.68
+    x: 480 + (lane - 1) * (36 + perspective * 210),
+    y: 138 + perspective * 362,
+    scale: 0.16 + perspective * 1.12,
+    opacity: 0.26 + perspective * 0.74
   };
 }
 
@@ -80,8 +80,8 @@ export interface ChasePedestrian {
   phase: number;
 }
 
-export const PEDESTRIAN_START_DISTANCE = 14;
-export const PEDESTRIAN_INTERVAL = 24;
+export const PEDESTRIAN_START_DISTANCE = 30;
+export const PEDESTRIAN_INTERVAL = 52;
 
 const PEDESTRIAN_KINDS: readonly ChasePedestrianKind[] = [
   "phoneWalker",
@@ -110,8 +110,8 @@ function pedestrianBand(distance: number): number {
 // anchored to the roadside, and never part of the collision set.
 export function pedestrianAt(index: number): ChasePedestrian | null {
   const hash = Math.imul(index + 37, 22695477) >>> 0;
-  // Leave deterministic gaps so the sidewalk never reads as a solid wall.
-  if ((hash >>> 3) % 5 === 0) return null;
+  // Sparse deterministic gaps preserve readable sidewalk space.
+  if ((hash >>> 3) % 4 === 0) return null;
   const distance = PEDESTRIAN_START_DISTANCE + index * PEDESTRIAN_INTERVAL;
   const featured = BAND_FEATURED_KIND[pedestrianBand(distance)];
   const kind = (hash >>> 6) % 3 === 0 ? featured : PEDESTRIAN_KINDS[(hash >>> 8) % PEDESTRIAN_KINDS.length];

@@ -60,12 +60,13 @@ const KAYAK_ROLL_DECAY_PER_SECOND = 1.05;
 const KAYAK_TURN_PER_STROKE = 0.16;
 const KAYAK_CAPSIZE_THRESHOLD = 0.92;
 const KAYAK_COLLISION_CAPSIZE_SPEED = 270;
-const SWAN_CHASE_START_SPEED = 212;
-const SWAN_CHASE_END_SPEED = 286;
-const SWAN_CHASE_START_GAP = 150;
-const SWAN_CHASE_END_GAP = 40;
-const SWAN_CHASE_PRESSURE_SECONDS = 5.5;
-const SWAN_CATCH_DISTANCE = 66;
+const SWAN_CHASE_FOLLOW_SPEED = 240;
+const SWAN_CHASE_RECOVERY_SPEED = 78;
+const SWAN_CHASE_FAR_GAP = 210;
+const SWAN_CHASE_SAFE_GAP = 112;
+const SWAN_CHASE_SURGE_PERIOD_SECONDS = 3.2;
+const SWAN_CHASE_SWAY = 22;
+const SWAN_CHASE_FINISH_X = 190;
 const FEEDBACK_MS = 2700;
 
 const CHAIN_ITEMS = {
@@ -194,10 +195,12 @@ export class QizhenLakeScene extends Phaser.Scene {
   private lastChaseProgressSent = 0;
   private chaseStartX = 0;
   private chaseElapsedSeconds = 0;
-  private chaseDesiredGap = SWAN_CHASE_START_GAP;
+  private chaseDesiredGap = SWAN_CHASE_FAR_GAP;
+  private chaseIntensity = 0;
   private chaseSwanX = 0;
   private chaseSwanY = 0;
   private chaseAnnounced = false;
+  private chaseCompleting = false;
 
   constructor() {
     super("qizhen-lake");
@@ -413,7 +416,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     runtime: QizhenRuntimeProjection,
     emitIntent = true
   ): void {
-    if (this.currentVehicle !== "kayak" || this.capsizing || this.zoneTransitioning) return;
+    if (this.currentVehicle !== "kayak" || this.capsizing || this.zoneTransitioning || this.chaseCompleting) return;
     const now = this.time.now;
     const withinCadence = now - this.lastStrokeAt <= 1450;
     const alternating = withinCadence && this.lastStrokeSide !== null && this.lastStrokeSide !== side;
@@ -503,49 +506,53 @@ export class QizhenLakeScene extends Phaser.Scene {
   private updateSwanChase(deltaSeconds: number, runtime: QizhenRuntimeProjection): void {
     if (!this.chaseSwan) this.createChaseSwan();
     this.chaseElapsedSeconds += deltaSeconds;
-    const pressure = Phaser.Math.Clamp(
-      this.chaseElapsedSeconds / SWAN_CHASE_PRESSURE_SECONDS,
-      0,
-      1
-    );
-    this.chaseDesiredGap = Phaser.Math.Linear(
-      SWAN_CHASE_START_GAP,
-      SWAN_CHASE_END_GAP,
-      pressure
-    );
-    const pursuitSpeed = Phaser.Math.Linear(
-      SWAN_CHASE_START_SPEED,
-      SWAN_CHASE_END_SPEED,
-      pressure
-    );
+    const surgeRadians = this.chaseElapsedSeconds / SWAN_CHASE_SURGE_PERIOD_SECONDS * Math.PI * 2;
+    const surgeWave = (1 - Math.cos(surgeRadians)) / 2;
+    this.chaseIntensity = surgeWave * surgeWave * (3 - 2 * surgeWave);
+    this.chaseDesiredGap = SWAN_CHASE_FAR_GAP
+      - (SWAN_CHASE_FAR_GAP - SWAN_CHASE_SAFE_GAP) * this.chaseIntensity;
     const desiredX = Math.min(
       QIZHEN_LAKE_WORLD.width - 70,
       this.player.x + this.chaseDesiredGap
     );
-    const desiredY = this.player.y;
+    const desiredY = this.player.y
+      + Math.sin(this.chaseElapsedSeconds * 4.6) * SWAN_CHASE_SWAY * (0.35 + this.chaseIntensity * 0.65);
     const dx = desiredX - this.chaseSwanX;
     const dy = desiredY - this.chaseSwanY;
     const distanceToDesired = Math.hypot(dx, dy);
     if (distanceToDesired > 0.001) {
-      const step = Math.min(distanceToDesired, pursuitSpeed * deltaSeconds);
+      const followSpeed = dx < 0
+        ? SWAN_CHASE_FOLLOW_SPEED + this.chaseIntensity * 230
+        : SWAN_CHASE_RECOVERY_SPEED;
+      const step = Math.min(distanceToDesired, followSpeed * deltaSeconds);
       this.chaseSwanX += dx / distanceToDesired * step;
       this.chaseSwanY += dy / distanceToDesired * step;
     }
     const heading = Math.atan2(this.player.y - this.chaseSwanY, this.player.x - this.chaseSwanX);
-    const beat = Math.sin(this.time.now / 90);
-    this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, heading, beat);
+    const beat = this.reducedMotion
+      ? 0
+      : Math.sin(this.time.now / (105 - this.chaseIntensity * 48)) * (0.42 + this.chaseIntensity * 0.78);
+    this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, heading, beat, this.chaseIntensity);
 
     const progress = Math.max(runtime.chaseDistance, this.chaseStartX - this.player.x);
     if (progress >= this.lastChaseProgressSent + 20) {
       this.lastChaseProgressSent = progress;
       this.emitDomain("rpg_qizhen_chase_progress", { distance: Math.round(progress), zone: "channel" });
     }
-    if (Math.hypot(this.chaseSwanX - this.player.x, this.chaseSwanY - this.player.y) <= SWAN_CATCH_DISTANCE) {
-      this.triggerCapsize("swan_hit", runtime);
+    if (!this.chaseCompleting && this.player.x <= SWAN_CHASE_FINISH_X) {
+      this.chaseCompleting = true;
+      this.kayakSpeed = 0;
+      this.player.setVelocity(0, 0);
+      this.showFeedback("已抵达河道另一端。", "success");
+      this.emitDomain("rpg_qizhen_escape_completed_requested", {
+        zone: "dock",
+        distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x)),
+        completion: "far_bank_reached"
+      });
     }
   }
 
-  private triggerCapsize(reason: "same_side_strokes" | "obstacle_impact" | "swan_hit", runtime: QizhenRuntimeProjection): void {
+  private triggerCapsize(reason: "same_side_strokes" | "obstacle_impact", runtime: QizhenRuntimeProjection): void {
     if (this.capsizing) return;
     this.capsizing = true;
     this.kayakSpeed = 0;
@@ -557,11 +564,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       safeSpawnId: runtime.safeSpawnId
     });
     this.showFeedback(
-      reason === "swan_hit"
-        ? "黑天鹅撞上船尾。保持左右交替，重新拉开距离。"
-        : reason === "obstacle_impact"
-          ? "船身撞上障碍。减速后再调整朝向。"
-          : "连续划同一侧导致翻船。左右交替可以稳住船身。",
+      reason === "obstacle_impact"
+        ? "船身撞上障碍。减速后再调整朝向。"
+        : "连续划同一侧导致翻船。左右交替可以稳住船身。",
       "system"
     );
     this.kayak.playCapsize(() => {
@@ -649,8 +654,7 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private rebuildCollision(vehicle: QizhenLakeVehicle): void {
     this.obstacles.clear(true, true);
-    const definition = QIZHEN_LAKE_ZONES[this.currentZone];
-    const collisions = vehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions;
+    const collisions = this.getActiveCollisionRects(vehicle);
     const collisionVisible = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("rpgCollision") === "1";
     collisions.forEach((rect) => {
@@ -665,6 +669,15 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (collisionVisible) collision.setStrokeStyle(2, 0xffd6de, 0.9);
       this.obstacles.add(collision);
     });
+  }
+
+  private getActiveCollisionRects(vehicle: QizhenLakeVehicle) {
+    const definition = QIZHEN_LAKE_ZONES[this.currentZone];
+    const collisions = vehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions;
+    if (vehicle !== "kayak" || this.currentZone !== "channel" || this.currentPhase !== "swan_chase") {
+      return collisions;
+    }
+    return collisions.filter((rect) => rect.id !== "floating_raft" && rect.id !== "west_net");
   }
 
   private createOcclusionVisuals(): void {
@@ -839,9 +852,11 @@ export class QizhenLakeScene extends Phaser.Scene {
   private resetChaseSwan(): void {
     this.chaseStartX = this.player.x;
     this.chaseElapsedSeconds = 0;
-    this.chaseDesiredGap = SWAN_CHASE_START_GAP;
+    this.chaseDesiredGap = SWAN_CHASE_FAR_GAP;
+    this.chaseIntensity = 0;
     this.lastChaseProgressSent = 0;
-    this.chaseSwanX = Math.min(QIZHEN_LAKE_WORLD.width - 70, this.player.x + 240);
+    this.chaseCompleting = false;
+    this.chaseSwanX = Math.min(QIZHEN_LAKE_WORLD.width - 70, this.player.x + SWAN_CHASE_FAR_GAP + 20);
     this.chaseSwanY = this.player.y;
     this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, Math.PI, 0);
   }
@@ -1350,6 +1365,7 @@ export class QizhenLakeScene extends Phaser.Scene {
                       ? "冲回小码头"
                       : "离开启真湖";
     const itemOnly = target.kind === "paper" && target.value === "paper_reflection" && !runtime.decoyBaitAttached;
+    const automaticEscape = target.kind === "escape" && runtime.phase === "swan_chase";
     const camera = this.cameras.main;
     const playerScreenY = (this.player.y - camera.worldView.y) * camera.zoom;
     const promptY = Math.abs(playerScreenY - RPG_HUD_LAYOUT.promptBottomY) < 78
@@ -1357,7 +1373,11 @@ export class QizhenLakeScene extends Phaser.Scene {
       : RPG_HUD_LAYOUT.promptBottomY;
     this.promptText
       .setY(promptY)
-      .setText(itemOnly ? formatRpgDragHint(action) : formatRpgInteractionHint(action))
+      .setText(
+        automaticEscape
+          ? "抵达河道左端即自动通过"
+          : itemOnly ? formatRpgDragHint(action) : formatRpgInteractionHint(action)
+      )
       .setVisible(true);
   }
 
@@ -1371,7 +1391,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (this.currentVehicle === "kayak") {
       const tilt = Math.round(Math.min(1, Math.abs(this.kayakRoll)) * 100);
       const danger = tilt >= 70 ? " · 即将翻船" : "";
-      this.statusText.setText(`A/← 左桨 · D/→ 右桨 · 侧倾 ${tilt}%${danger}`);
+      const destination = runtime.phase === "swan_chase" ? " · 左端抵达即通过" : "";
+      this.statusText.setText(`A/← 左桨 · D/→ 右桨 · 侧倾 ${tilt}%${danger}${destination}`);
       this.statusText.setColor(tilt >= 70 ? "#ffaaa0" : "#fff2b6");
     } else if (!runtime.kayakEquipped) {
       this.statusText.setText("先确认救生圈旁器材架上的皮划艇").setColor("#fff2b6");
@@ -1546,7 +1567,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         acceptedItem: candidate.acceptedItem,
         requiredMode: candidate.requiredMode
       })),
-      collisionRects: this.currentVehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions,
+      collisionRects: this.getActiveCollisionRects(this.currentVehicle),
       qizhenLake: {
         phase: runtime.phase,
         mode: runtime.mode,
@@ -1581,7 +1602,11 @@ export class QizhenLakeScene extends Phaser.Scene {
         chase: {
           active: runtime.phase === "swan_chase",
           distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x)),
+          finishX: SWAN_CHASE_FINISH_X,
+          reachedFinish: this.player.x <= SWAN_CHASE_FINISH_X,
+          completing: this.chaseCompleting,
           elapsedSeconds: Number(this.chaseElapsedSeconds.toFixed(2)),
+          intensity: Number(this.chaseIntensity.toFixed(3)),
           desiredGap: Number(this.chaseDesiredGap.toFixed(1)),
           actualGap: Number(Math.hypot(this.chaseSwanX - this.player.x, this.chaseSwanY - this.player.y).toFixed(1)),
           swanX: Math.round(this.chaseSwanX),

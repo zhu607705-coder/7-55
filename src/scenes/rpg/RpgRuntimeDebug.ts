@@ -68,15 +68,24 @@ export interface RpgRuntimeDebugState {
   };
   shelfReveal?: {
     phase: "idle" | "shaking" | "sliding" | "paper" | "complete";
+    frameIndex: number;
+    frameCount: number;
     offsetPx: number;
     paperVisible: boolean;
   };
-  lostFoundStampMachine?: {
+  frontDeskStaff?: {
+    frameIndex: number;
+    animationKey: string | null;
+    visible: boolean;
+    x: number;
+    y: number;
+    depth: number;
+  };
+  frontDeskStampService?: {
     stage: "missing_report" | "ready" | "scanning" | "stamped";
-    motion: "idle" | "feeding" | "scanning" | "stamping" | "ejecting" | "complete";
+    motion: "idle" | "receiving" | "checking" | "stamping" | "returning" | "complete";
     reportVisible: boolean;
     stampHeadY: number;
-    leverAngle: number;
     stampVisible: boolean;
   };
   canteen?: {

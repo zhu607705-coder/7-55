@@ -104,7 +104,7 @@ const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; item
   collectOccupancyNote: { targetId: "occupancy_note", itemId: "" },
   unlockCatalogAtTerminal: { targetId: "catalog_terminal", itemId: "" },
   useCallNumberOnShelf: { targetId: "library_shelf_755", itemId: "callNumber755" },
-  stampNonPersonProof: { targetId: "lost_found_machine", itemId: "itemRecognitionReport" },
+  stampNonPersonProof: { targetId: "front_desk", itemId: "itemRecognitionReport" },
   useRightArrowOnReceipt: { targetId: "seat_022_gap", itemId: "rightArrow" },
   applyPassToBackpack: { targetId: "seat_022_backpack", itemId: "seatReleasePass" },
   sitAt022: { targetId: "seat_022_chair", itemId: "" }

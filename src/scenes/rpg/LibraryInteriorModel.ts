@@ -114,7 +114,6 @@ export type LibraryInteractionTargetId =
   | "entrance_record"
   | "library_exit"
   | "front_desk"
-  | "lost_found_machine"
   | "catalog_terminal"
   | "printer"
   | "library_shelf_755"
@@ -154,25 +153,16 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
   },
   {
     id: "front_desk",
-    x: 315,
-    y: 585,
+    x: 334,
+    y: 594,
     width: 320,
     height: 150,
-    proximity: 210,
-    label: "询问信息台",
+    stand: { x: 334, y: 724 },
+    proximity: 168,
+    dropWidth: 116,
+    dropHeight: 86,
+    label: "前台工作人员",
     location: "front_desk",
-    checkpoint: "library_front_desk"
-  },
-  {
-    id: "lost_found_machine",
-    x: 132,
-    y: 488,
-    width: 108,
-    height: 126,
-    stand: { x: 190, y: 488 },
-    proximity: 72,
-    label: "物品身份盖章机",
-    location: "lost_found",
     checkpoint: "library_front_desk",
     acceptedItem: "itemRecognitionReport"
   },

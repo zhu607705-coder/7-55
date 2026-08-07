@@ -388,7 +388,7 @@ export class LibraryFinalsController {
       itemRecognitionReport: false,
       bagNonPersonProof: true
     });
-    this.events.emit("use_item", { itemId: "itemRecognitionReport", targetId: "lost_found_machine" });
+    this.events.emit("use_item", { itemId: "itemRecognitionReport", targetId: "front_desk" });
     this.events.emit("library_bag_nonperson_proof_issued");
     this.events.emit("get_item", { itemId: "bagNonPersonProof", sourceScene: "phone_home" });
     return true;
