@@ -133,10 +133,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   lemonTea: object([{ target: "canteen-mixer", result: "consume" }]),
   blackCoffee: object([{ target: "canteen-mixer", result: "consume" }]),
   badDrink: object([{ target: "rpg-player", result: "consume" }]),
-  dailySpecialSparklingWater: object([
-    { target: "canteen-promo-board", result: "retain" },
-    { target: "canteen-defense-floor", result: "consume" }
-  ]),
+  dailySpecialSparklingWater: object([{ target: "canteen-promo-board", result: "consume" }]),
   pickupTicket0755: paper({
     heading: "0755 取餐号",
     fields: [

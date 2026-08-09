@@ -16,12 +16,12 @@ const ELSEWHERE_HINTS: Partial<Record<ItemId, string>> = {
   bagNonPersonProof: "前往 CC98 或恢复申请页面提交证明",
   seat022Receipt: "前往 CC98 或恢复申请页面提交凭据",
   libraryPresenceProof: "前往 CC98 或恢复申请页面提交证明",
-  sparklingWater: "到食堂右上饮料区混合台倒入玻璃杯",
-  lemonTea: "到食堂右上饮料区混合台倒入玻璃杯",
-  blackCoffee: "到食堂右上饮料区混合台倒入玻璃杯",
+  sparklingWater: "到食堂左下角混合台倒入玻璃杯",
+  lemonTea: "到食堂左下角混合台倒入玻璃杯",
+  blackCoffee: "到食堂左下角混合台倒入玻璃杯",
   badDrink: "在食堂地图中拖到自己身上喝掉",
-  dailySpecialSparklingWater: "先放到食堂第三个餐口宣传板，守出口时还可减速纸条一次",
-  pickupTicket0755: "按取餐单前往对应窗口；纸包鸡需在深色第三窗口拖票",
+  dailySpecialSparklingWater: "到食堂第五个打饭窗口上方的宣传灯箱空杯位",
+  pickupTicket0755: "靠近取餐窗口后按空格使用；纸包鸡需在深色第三窗口交票",
   canteenRealBun: "食物彩蛋，没有剧情用途",
   canteenCluelessSoyMilk: "食物彩蛋，没有剧情用途",
   canteenEdgeEgg: "食物彩蛋，没有剧情用途",
@@ -111,26 +111,9 @@ export function selectRpgItemUseGuidance(
 
   if (runtimeScene === "canteen_interior" && itemId === "pickupTicket0755") {
     if (state.canteenHunt.phase !== "pickup_search") {
-      return locked("取餐号只在取餐阶段使用。先完成当前食堂任务。", "1–5号取餐窗口");
+      return locked("取餐号只在取餐阶段使用。先完成当前食堂任务。", "1、2、3号取餐窗口验票槽");
     }
-    const option = state.canteenHunt.orderedMenuOption;
-    const optionWindow = { A: "1", B: "2", C: "4", D: "3", E: "5" }[option ?? "D"];
-    if (option !== "D") {
-      return locked(
-        `站到${optionWindow}号窗口前的数字标记，按空格交出取餐号。普通餐会正常出餐。`,
-        `${optionWindow}号取餐窗口`
-      );
-    }
-    if (!state.canteenHunt.pickupTimeErrorSeen) {
-      return locked("先在浅色走到3号窗口前，按空格交票并看完时间报错。", "3号取餐窗口");
-    }
-    if (state.canteenHunt.mode !== "dark") {
-      return locked("时间报错已经出现。切到深色观察，再检查3号窗口的残影阿姨。", "3号取餐窗口");
-    }
-    if (!state.canteenHunt.pickupDarkClueRead) {
-      return locked("站到3号窗口前的数字标记，按空格确认残影阿姨的验票提示。", "3号取餐窗口");
-    }
-    return ready("3号窗口验票框", "人物站进3号数字标记后，把0755取餐号拖进窗口上方发光验票框。");
+    return ready("取餐窗口", "不需要拖拽或站位。普通餐品在浅色对应窗口使用；纸包鸡先在浅色第三窗口报错，再切深色查看残影阿姨并按空格交票。");
   }
 
   if (
@@ -143,30 +126,18 @@ export function selectRpgItemUseGuidance(
       && !state.canteenHunt.queueGapOpened
       && ["sparklingWater", "lemonTea", "blackCoffee"].includes(itemId)
     ) {
-      return ready("右上饮料区混合台", "靠近右上混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。");
+      return ready("左下角混合台", "靠近混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。");
     }
     if (
       itemId === "dailySpecialSparklingWater"
       && !state.canteenHunt.promoDrinkPlaced
       && !state.canteenHunt.queueGapOpened
     ) {
-      return ready("第三个餐口宣传板空杯位", "先靠近第三个餐口宣传板，再把今日新品气泡水拖进发光空杯位。");
+      return ready("第五个打饭窗口下方的宣传板空杯位", "先靠近宣传板，再把今日新品气泡水拖进发光的空杯位。");
     }
     if (itemId === "badDrink") {
       return ready("玩家自己", "把难喝饮料拖到人物身上可以喝掉，但不会推进剧情。");
     }
-  }
-
-  if (
-    runtimeScene === "canteen_interior"
-    && itemId === "dailySpecialSparklingWater"
-    && state.canteenHunt.phase === "exit_blocking"
-  ) {
-    if (state.canteenHunt.defenseDrinkUsed) return passive("气泡减速已经使用，本轮不会再次生效。");
-    if (state.canteenHunt.mode !== "light") {
-      return locked("切回浅色操作，再把今日新品拖进食堂地图。", "食堂地面");
-    }
-    return ready("食堂地面", "把今日新品拖进食堂地图任意地面，产生两秒气泡并减速纸条一次。");
   }
 
   if (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") {

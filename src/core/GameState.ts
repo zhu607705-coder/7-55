@@ -136,6 +136,7 @@ export function createInitialGameState(): GameState {
       active: false,
       phase: "tracking",
       mode: "light",
+      entryPaperEscaped: false,
       trayTaskStarted: false,
       carriedTrayIds: [],
       identifiedTrayIds: [],

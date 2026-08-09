@@ -176,7 +176,7 @@ export type CanteenHuntPhase =
 
 export type CanteenMode = "light" | "dark";
 
-export type CanteenExitId = "northwest" | "south_gap" | "southeast";
+export type CanteenExitId = "west" | "southeast" | "steam";
 
 export type CanteenDrinkIngredientId = "sparklingWater" | "lemonTea" | "blackCoffee";
 
@@ -186,6 +186,7 @@ export interface CanteenHuntState {
   active: boolean;
   phase: CanteenHuntPhase;
   mode: CanteenMode;
+  entryPaperEscaped: boolean;
   trayTaskStarted: boolean;
   carriedTrayIds: string[];
   identifiedTrayIds: string[];

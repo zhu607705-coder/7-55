@@ -82,7 +82,7 @@ const VALID_CANTEEN_TRAY_IDS = new Set([
   "tray_plain_04", "tray_plain_05", "tray_plain_06",
   "tray_plain_07", "tray_plain_08", "tray_plain_09"
 ]);
-const VALID_CANTEEN_EXIT_IDS = new Set(["northwest", "south_gap", "southeast"]);
+const VALID_CANTEEN_EXIT_IDS = new Set(["west", "southeast", "steam"]);
 const VALID_CANTEEN_DRINK_IDS = new Set<CanteenDrinkIngredientId>([
   "sparklingWater", "lemonTea", "blackCoffee"
 ]);
@@ -333,11 +333,13 @@ export class SaveStore {
       let canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
         phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
-        // The one-second defense observation flash is presentation-only. A save
-        // captured during that flash must always resume in physical-operation mode.
-        mode: savedCanteenPhase === "exit_blocking"
-          ? "light"
-          : enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
+        mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
+        entryPaperEscaped: booleanOr(
+          savedCanteenHunt.entryPaperEscaped,
+          savedCanteenPhase !== "tray_search"
+          || booleanOr(savedCanteenHunt.trayTaskStarted, false)
+          || (Array.isArray(savedCanteenHunt.returnedTrayIds) && savedCanteenHunt.returnedTrayIds.length > 0)
+        ),
         trayTaskStarted: booleanOr(
           savedCanteenHunt.trayTaskStarted,
           savedCanteenPhase !== "tray_search"
@@ -388,7 +390,7 @@ export class SaveStore {
         identifiedExitIds: filteredStringArrayFromSet(
           savedCanteenHunt.identifiedExitIds,
           VALID_CANTEEN_EXIT_IDS,
-          ["northwest", "south_gap", "southeast"].slice(0, savedBlockHits)
+          ["southeast", "steam", "west"].slice(0, savedBlockHits)
         ) as GameState["canteenHunt"]["identifiedExitIds"],
         orderAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.orderAttemptCount, initial.canteenHunt.orderAttemptCount),
         pickupAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.pickupAttemptCount, initial.canteenHunt.pickupAttemptCount),
@@ -461,7 +463,7 @@ export class SaveStore {
         }
       }
 
-      normalizeConsumedItems(items, ui, flags, canteenHunt, theaterHunt, qizhenLake);
+      normalizeConsumedItems(items, ui, flags, theaterHunt, qizhenLake);
       normalizeQizhenItems(items, qizhenLake, qizhenNormalization);
       const wallet = normalizeWallet(
         saved.wallet,
@@ -990,7 +992,6 @@ function normalizeConsumedItems(
   items: GameState["items"],
   ui: GameState["ui"],
   flags: GameState["flags"],
-  canteenHunt: GameState["canteenHunt"],
   theaterHunt: GameState["theaterHunt"],
   qizhenLake: GameState["qizhenLake"]
 ): void {
@@ -1024,29 +1025,6 @@ function normalizeConsumedItems(
   // The right arrow is retained after adjusting the campus-card balance, then
   // consumed when it pushes the 022 receipt out of the library desk gap.
   if (puzzle.seatReceiptCollected) items.rightArrow = false;
-
-  const pickupCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(canteenHunt.phase);
-  if (pickupCompleted) {
-    items.pickupTicket0755 = false;
-    items.sparklingWater = false;
-    items.lemonTea = false;
-    items.blackCoffee = false;
-    items.badDrink = false;
-    items.canteenRealBun = false;
-    items.canteenCluelessSoyMilk = false;
-    items.canteenEdgeEgg = false;
-    items.canteenUselessCongee = false;
-  }
-  const defenseCompleted = ["chase_ready", "chasing", "theater_reached"].includes(canteenHunt.phase);
-  if (canteenHunt.promoDrinkPlaced && !canteenHunt.defenseDrinkUsed && !defenseCompleted) {
-    items.dailySpecialSparklingWater = true;
-  }
-  if (canteenHunt.defenseDrinkUsed || defenseCompleted) {
-    items.dailySpecialSparklingWater = false;
-  }
-  if (canteenHunt.bikePaid || ["chasing", "theater_reached"].includes(canteenHunt.phase)) {
-    items.cafeteriaWages = false;
-  }
 
   const programSolved = ["prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"].includes(theaterHunt.phase);
   const ticketScanned = theaterHunt.propBoxOpened

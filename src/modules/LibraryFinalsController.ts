@@ -686,6 +686,7 @@ export class LibraryFinalsController {
         active: true,
         phase: "tracking",
         mode: "light",
+        entryPaperEscaped: false,
         trayTaskStarted: false,
         carriedTrayIds: [],
         identifiedTrayIds: [],

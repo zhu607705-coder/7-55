@@ -489,6 +489,7 @@ function createLibraryCheckpointState(id: LibraryDeveloperCheckpointId): GameSta
           active: true,
           phase: "tracking",
           mode: "light",
+          entryPaperEscaped: false,
           trayTaskStarted: false,
           carriedTrayIds: [],
           identifiedTrayIds: [],
@@ -537,7 +538,7 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
   const identifiedTrayIds = ["tray_blue_01", "tray_blue_02", "tray_blue_03"];
   // Tray work is deliberately independent from the paper chase. Keep every
   // checkpoint before the bike unpaid so the deferred-return path stays testable.
-  const afterTrayStage = !["canteen-hunt", "c3-canteen-entry"].includes(id);
+  const afterTrayStage = ["c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
   const afterDrinkStage = !["canteen-hunt", "c3-canteen-entry", "c3-canteen-drinks"].includes(id);
   const afterMenuStage = ["c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
   const afterPickupStage = ["c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
@@ -583,7 +584,6 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       ...state.items,
       cafeteriaWages: afterTrayStage && !["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       greaseTissue: afterTrayStage,
-      dailySpecialSparklingWater: afterDrinkStage && !afterBlockingStage,
       pickupTicket0755: afterMenuStage && !afterPickupStage
     },
     canteenHunt: {
@@ -591,6 +591,7 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       active: true,
       phase,
       mode: "light",
+      entryPaperEscaped: id !== "c3-canteen-entry",
       trayTaskStarted: afterTrayStage,
       carriedTrayIds: [],
       identifiedTrayIds: afterTrayStage ? identifiedTrayIds : [],
@@ -602,16 +603,16 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       promoDrinkPlaced: afterDrinkStage,
       queueGapOpened: afterDrinkStage,
       menuDarkClueRead: afterMenuStage,
-      pickupTimeErrorSeen: afterPickupStage,
+      pickupTimeErrorSeen: false,
       pickupDarkClueRead: afterPickupStage,
-      defenseDrinkUsed: afterBlockingStage,
+      defenseDrinkUsed: false,
       orderedMenuOption: afterMenuStage && !afterPickupStage ? "D" : null,
       identifiedExitIds: afterBlockingStage
-        ? ["northwest", "south_gap", "southeast"]
+        ? ["southeast", "steam", "west"]
         : id === "c3-canteen-block-3"
-          ? ["northwest", "south_gap"]
+          ? ["southeast", "steam"]
           : id === "c3-canteen-block-2"
-            ? ["northwest"]
+            ? ["southeast"]
             : [],
       orderAttemptCount: afterMenuStage ? 1 : 0,
       pickupAttemptCount: afterPickupStage ? 1 : 0,

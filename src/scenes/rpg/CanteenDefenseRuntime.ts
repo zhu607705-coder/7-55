@@ -18,11 +18,7 @@ const PAPER_START_SPEED = 78;
 const PAPER_MAX_SPEED = 118;
 const PAPER_EXIT_RADIUS = 24;
 const PAPER_HIT_COOLDOWN_MS = 720;
-const EXIT_HINT_DURATION_MS = 1_000;
-const PROMO_DRINK_SLOWDOWN_DURATION_MS = 2_000;
-const PROMO_DRINK_SPEED_MULTIPLIER = 0.52;
 const PUSH_CART_DISPLAY_SCALE = 0.3;
-const PUSH_CART_FRAME_COUNT = 8;
 const PLAYER_WORLD_DEPTH_OFFSET = 120;
 
 export type CanteenDefenseExitId = "northwest" | "south_gap" | "southeast";
@@ -34,29 +30,6 @@ export interface CanteenDefenseCallbacks {
     exitId: CanteenDefenseExitId,
     route: readonly Phaser.Math.Vector2[]
   ) => void;
-}
-
-export interface CanteenDefenseExitHintSnapshot {
-  exitId: CanteenDefenseExitId;
-  remainingMs: number;
-}
-
-export interface CanteenDefenseSlowdownSnapshot {
-  available: boolean;
-  active: boolean;
-  remainingMs: number;
-  speedMultiplier: number;
-}
-
-export interface CanteenDefenseRuntimeSnapshot {
-  active: boolean;
-  paused: boolean;
-  completed: boolean;
-  elapsedMs: number;
-  remainingMs: number;
-  dashCooldownMs: number;
-  exitHint: CanteenDefenseExitHintSnapshot | null;
-  slowdown: CanteenDefenseSlowdownSnapshot;
 }
 
 interface NavNode {
@@ -136,12 +109,8 @@ export class CanteenDefenseRuntime {
   private pushFrameElapsedMs = 0;
   private pushFrameIndex = 0;
   private routeIndex = 0;
-  private exitHintRemainingMs = 0;
-  private promoDrinkSlowdownRemainingMs = 0;
-  private promoDrinkSlowdownUsed = false;
   private paused = false;
   private completed = false;
-  private destroyed = false;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -150,8 +119,8 @@ export class CanteenDefenseRuntime {
     private readonly callbacks: CanteenDefenseCallbacks
   ) {
     this.scene.textures.get(PUSH_CART_SHEET_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
-    this.player?.setVisible(false);
-    this.pushSprite = scene.add.sprite(PLAYER_START.x, PLAYER_START.y, PUSH_CART_SHEET_KEY, 16)
+    this.player.setVisible(false);
+    this.pushSprite = scene.add.sprite(PLAYER_START.x, PLAYER_START.y, PUSH_CART_SHEET_KEY, 8)
       .setScale(PUSH_CART_DISPLAY_SCALE)
       .setOrigin(0.5, 0.74)
       .setDepth(this.playerWorldDepth());
@@ -175,57 +144,7 @@ export class CanteenDefenseRuntime {
   }
 
   get active(): boolean {
-    return !this.destroyed && Boolean(this.player?.active) && !this.paused && !this.completed;
-  }
-
-  /**
-   * Opens the dark-observation hint window. The caller decides how to draw the
-   * exit marker; the runtime deliberately exposes no route geometry here.
-   */
-  requestNextExitHint(): CanteenDefenseExitHintSnapshot | null {
-    if (!this.active) return null;
-    this.exitHintRemainingMs = EXIT_HINT_DURATION_MS;
-    return {
-      exitId: this.currentExit,
-      remainingMs: this.exitHintRemainingMs
-    };
-  }
-
-  /** Consumes the optional promotion drink once for the lifetime of this run. */
-  activatePromoDrinkSlowdown(): boolean {
-    if (!this.active || this.promoDrinkSlowdownUsed) return false;
-    this.promoDrinkSlowdownUsed = true;
-    this.promoDrinkSlowdownRemainingMs = PROMO_DRINK_SLOWDOWN_DURATION_MS;
-    return true;
-  }
-
-  getSnapshot(): CanteenDefenseRuntimeSnapshot {
-    const exitHint = this.exitHintRemainingMs > 0
-      ? {
-          exitId: this.currentExit,
-          remainingMs: this.exitHintRemainingMs
-        }
-      : null;
-    return {
-      active: this.active,
-      paused: this.paused,
-      completed: this.completed,
-      elapsedMs: this.elapsedMs,
-      remainingMs: Math.max(0, DEFENSE_DURATION_MS - this.elapsedMs),
-      dashCooldownMs: this.dashCooldownMs,
-      exitHint,
-      slowdown: {
-        available: !this.promoDrinkSlowdownUsed,
-        active: this.promoDrinkSlowdownRemainingMs > 0,
-        remainingMs: this.promoDrinkSlowdownRemainingMs,
-        speedMultiplier: PROMO_DRINK_SPEED_MULTIPLIER
-      }
-    };
-  }
-
-  getExitPoint(exitId: CanteenDefenseExitId): { x: number; y: number } {
-    const point = EXIT_POINTS[exitId];
-    return { x: point.x, y: point.y };
+    return !this.paused && !this.completed;
   }
 
   update(
@@ -233,9 +152,6 @@ export class CanteenDefenseRuntime {
     inputDirection: Phaser.Math.Vector2,
     dashRequested: boolean
   ): Phaser.Math.Vector2 {
-    if (this.destroyed || !this.player?.active) {
-      return new Phaser.Math.Vector2();
-    }
     if (this.paused || this.completed) {
       this.player.setVelocity(0, 0);
       return new Phaser.Math.Vector2();
@@ -245,11 +161,6 @@ export class CanteenDefenseRuntime {
     this.dashRemainingMs = Math.max(0, this.dashRemainingMs - deltaMs);
     this.dashCooldownMs = Math.max(0, this.dashCooldownMs - deltaMs);
     this.paperHitCooldownMs = Math.max(0, this.paperHitCooldownMs - deltaMs);
-    this.exitHintRemainingMs = Math.max(0, this.exitHintRemainingMs - deltaMs);
-    this.promoDrinkSlowdownRemainingMs = Math.max(
-      0,
-      this.promoDrinkSlowdownRemainingMs - deltaMs
-    );
     if (dashRequested && this.dashCooldownMs <= 0 && inputDirection.lengthSq() > 0) {
       this.dashRemainingMs = DASH_DURATION_MS;
       this.dashCooldownMs = DASH_COOLDOWN_MS;
@@ -264,39 +175,31 @@ export class CanteenDefenseRuntime {
     this.player.setVelocity(movement.x, movement.y)
       .setDepth(this.playerWorldDepth());
     this.updatePushSprite(deltaMs, movement.lengthSq() > 0);
+    this.updatePaper(deltaMs);
+    this.updateHud();
 
-    // Reaching the authored duration wins before another exit collision can
-    // produce a failure in the same frame.
     if (this.elapsedMs >= DEFENSE_DURATION_MS) {
       this.completed = true;
       this.player.setVelocity(0, 0);
-      this.updateHud();
       this.callbacks.onComplete();
-      return movement;
     }
-
-    this.updatePaper(deltaMs);
-    this.updateHud();
     return movement;
   }
 
   pauseAfterFailure(): void {
     this.paused = true;
-    this.player?.setVelocity(0, 0);
+    this.player.setVelocity(0, 0);
     this.timerText.setText("纸条已离开 · 重新拦截");
     this.dashText.setText("准备重新开始");
   }
 
   restartAttempt(): void {
-    if (this.destroyed || !this.player?.active) return;
     this.paused = false;
     this.completed = false;
     this.elapsedMs = 0;
     this.dashRemainingMs = 0;
     this.dashCooldownMs = 0;
     this.paperHitCooldownMs = 500;
-    this.exitHintRemainingMs = 0;
-    this.promoDrinkSlowdownRemainingMs = 0;
     this.paperFrameElapsedMs = 0;
     this.paperFrameIndex = 0;
     this.pushFrameElapsedMs = 0;
@@ -319,27 +222,21 @@ export class CanteenDefenseRuntime {
   }
 
   destroy(): void {
-    if (this.destroyed) return;
-    this.destroyed = true;
-    if (this.player?.active) {
-      this.player.setVelocity(0, 0);
-      this.player.setVisible(true);
-    }
-    if (this.paper.active) {
-      this.paper.setTexture(PAPER_IDLE_KEY).setFlipX(false).setAngle(0).setScale(1);
-    }
-    if (this.pushSprite.active) this.pushSprite.destroy();
-    if (this.timerText.active) this.timerText.destroy();
-    if (this.dashText.active) this.dashText.destroy();
+    this.player.setVelocity(0, 0);
+    this.player.setVisible(true);
+    this.paper.setTexture(PAPER_IDLE_KEY).setFlipX(false).setAngle(0).setScale(1);
+    this.pushSprite.destroy();
+    this.timerText.destroy();
+    this.dashText.destroy();
   }
 
   private updatePushSprite(deltaMs: number, moving: boolean): void {
     if (moving) {
       this.pushFrameElapsedMs += deltaMs;
-      const frameDuration = this.dashRemainingMs > 0 ? 42 : 58;
+      const frameDuration = this.dashRemainingMs > 0 ? 72 : 104;
       if (this.pushFrameElapsedMs >= frameDuration) {
         this.pushFrameElapsedMs %= frameDuration;
-        this.pushFrameIndex = (this.pushFrameIndex + 1) % PUSH_CART_FRAME_COUNT;
+        this.pushFrameIndex = (this.pushFrameIndex + 1) % 4;
       }
     } else {
       this.pushFrameElapsedMs = 0;
@@ -364,15 +261,15 @@ export class CanteenDefenseRuntime {
       originY = 0.26;
     }
     this.pushSprite
-      .setFrame(row * PUSH_CART_FRAME_COUNT + this.pushFrameIndex)
+      .setFrame(row * 4 + this.pushFrameIndex)
       .setOrigin(originX, originY)
       .setPosition(this.player.x, this.player.y)
       .setDepth(this.playerWorldDepth());
   }
 
   private playerWorldDepth(): number {
-    const body = this.player?.body as Phaser.Physics.Arcade.Body | null | undefined;
-    return (body?.bottom ?? this.player?.y ?? PLAYER_START.y) + PLAYER_WORLD_DEPTH_OFFSET;
+    const body = this.player.body as Phaser.Physics.Arcade.Body | null;
+    return (body?.bottom ?? this.player.y) + PLAYER_WORLD_DEPTH_OFFSET;
   }
 
   private updatePaper(deltaMs: number): void {
@@ -384,10 +281,7 @@ export class CanteenDefenseRuntime {
     const toTarget = target.clone().subtract(new Phaser.Math.Vector2(this.paper.x, this.paper.y));
     const distance = toTarget.length();
     const progress = this.elapsedMs / DEFENSE_DURATION_MS;
-    const baseSpeed = Phaser.Math.Linear(PAPER_START_SPEED, PAPER_MAX_SPEED, progress);
-    const speed = this.promoDrinkSlowdownRemainingMs > 0
-      ? baseSpeed * PROMO_DRINK_SPEED_MULTIPLIER
-      : baseSpeed;
+    const speed = Phaser.Math.Linear(PAPER_START_SPEED, PAPER_MAX_SPEED, progress);
     this.paperFrameElapsedMs += deltaMs;
     const frameDurationMs = Phaser.Math.Linear(112, 82, progress);
     if (this.paperFrameElapsedMs >= frameDurationMs) {
@@ -408,28 +302,42 @@ export class CanteenDefenseRuntime {
     }
     // The table-front crops sort against the hidden physics actor, so a normal
     // Y-sorted paper can disappear beneath unrelated chairs. Keep the target
-    // above scenery throughout this chase.
+    // above scenery and the automatic dark-mode flash throughout this chase.
     this.paper.setDepth(2100);
 
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | null;
     const paperBounds = this.paper.getBounds();
-    const pushCartBounds = this.pushSprite.getBounds();
-    const paperTouchesPushCart = Phaser.Geom.Intersects.RectangleToRectangle(
-      paperBounds,
-      pushCartBounds
+    const playerBounds = playerBody
+      ? {
+          left: playerBody.x,
+          top: playerBody.y,
+          right: playerBody.x + playerBody.width,
+          bottom: playerBody.y + playerBody.height
+        }
+      : {
+          left: this.player.x - 7,
+          top: this.player.y - 6,
+          right: this.player.x + 7,
+          bottom: this.player.y + 6
+        };
+    const paperTouchesPlayer = (
+      paperBounds.right >= playerBounds.left
+      && paperBounds.left <= playerBounds.right
+      && paperBounds.bottom >= playerBounds.top
+      && paperBounds.top <= playerBounds.bottom
     );
-    if (paperTouchesPushCart && this.paperHitCooldownMs <= 0) {
+    if (paperTouchesPlayer && this.paperHitCooldownMs <= 0) {
       this.paperHitCooldownMs = PAPER_HIT_COOLDOWN_MS;
       const away = new Phaser.Math.Vector2(
-        this.paper.x - pushCartBounds.centerX,
-        this.paper.y - pushCartBounds.centerY
+        this.paper.x - (playerBounds.left + playerBounds.right) / 2,
+        this.paper.y - (playerBounds.top + playerBounds.bottom) / 2
       );
       if (away.lengthSq() === 0) away.copy(this.facing).negate();
-      this.separatePaperFromPushCart(paperBounds, pushCartBounds, away);
+      away.normalize().scale(34);
+      this.paper.setPosition(this.paper.x + away.x, this.paper.y + away.y);
       this.currentExit = this.pickNextExit(this.currentExit);
       this.rebuildRoute(this.currentExit);
-      // Route geometry remains private. Dark observation must explicitly call
-      // requestNextExitHint(), which exposes only the current exit for one second.
-      this.callbacks.onTurnaround(this.currentExit, []);
+      this.callbacks.onTurnaround(this.currentExit, this.route);
       return;
     }
 
@@ -446,29 +354,6 @@ export class CanteenDefenseRuntime {
     if (this.paused || this.completed) return;
     this.pauseAfterFailure();
     this.callbacks.onFailure(this.currentExit);
-  }
-
-  private separatePaperFromPushCart(
-    paperBounds: Phaser.Geom.Rectangle,
-    pushCartBounds: Phaser.Geom.Rectangle,
-    away: Phaser.Math.Vector2
-  ): void {
-    const overlapX = Math.min(
-      paperBounds.right - pushCartBounds.left,
-      pushCartBounds.right - paperBounds.left
-    );
-    const overlapY = Math.min(
-      paperBounds.bottom - pushCartBounds.top,
-      pushCartBounds.bottom - paperBounds.top
-    );
-    const padding = 3;
-    if (overlapX <= overlapY) {
-      const directionX = away.x === 0 ? (this.facing.x >= 0 ? -1 : 1) : Math.sign(away.x);
-      this.paper.x += directionX * (overlapX + padding);
-      return;
-    }
-    const directionY = away.y === 0 ? (this.facing.y >= 0 ? -1 : 1) : Math.sign(away.y);
-    this.paper.y += directionY * (overlapY + padding);
   }
 
   private pickNextExit(exclude?: CanteenDefenseExitId): CanteenDefenseExitId {
