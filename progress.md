@@ -1487,3 +1487,11 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 定向实测：边界碰撞前后船头角度均为 `-0.185rad`，碰撞次数增加到 `1` 且未侧翻；交替后划后船体从 `x=1625.05` 退到 `x=1541.84`。追逐静置实测触发失败并回到 `qizhen_chase`，移动端双指测试保持首指后划状态直到首指松开。
 - 跨内核与构建：Blink、Gecko、WebKit 均以 `960×540` 逻辑画布进入 `qizhen_lake / swan_chase`，文档溢出和控制台错误为 `0`；`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。单文件为 `136,618,118 bytes`，SHA-256 为 `9ee5363e1194ef38c61a19fdd17399390d8eac62fc6be19362b582f74aa8867f`。
 - GitHub 交付门禁：移除 `Web CI` 中已退役的 Godot 同步与 Web 导出检查，保留章节三音频、校园地图、TypeScript、生产构建和离线单文件验证作为活跃浏览器运行时门禁。
+
+## 2026-08-10 启真湖移动端划桨手势
+
+- 触屏输入：删除需要双指配合的独立“按住后划”按钮；左桨和右桨分别读取纵向手势，上划执行前进桨、下划执行后退桨，位移不足 `18px` 的轻触继续按前进桨处理。
+- 即时反馈：手指按下、越过前划阈值、越过后划阈值时，桨按钮分别显示待判定、`↑ 前进` 和 `↓ 后退` 状态；左右桨允许两根手指同时操作，单侧拒绝重复触点。
+- 兼容规则：Pointer Events 继续覆盖 Blink、Gecko 与 WebKit；指针取消、失焦、离开启真湖或下船会清理未完成手势。桌面键盘保持 `A/←`、`D/→` 前划和 `S/↓ + 左右桨` 后划。
+- 真实验收：`390×844` 触屏视口中，上划左桨记录 `forward`，下划右桨记录 `reverse`，轻触左桨回落为 `forward`；连续六次交替下划后速度为 `-215px/s`、行进方向为 `reverse`、水波起点为船头且未侧翻。Blink、Gecko、WebKit 均支持左右桨双指同时手势，三种内核的页面错误、控制台错误和横纵溢出均为 `0`。
+- 构建验证：网页游戏客户端、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。单文件为 `136,618,882 bytes`，SHA-256 为 `2adc8ddc6a6452cc39ccecfc3e7d59d396ca14f1f9c687be8720514c8350b64c`。
