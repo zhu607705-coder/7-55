@@ -1030,7 +1030,7 @@
   bottom: 16px;
   display: grid;
   gap: 8px;
-  grid-template-columns: 82px 62px 82px;
+  grid-template-columns: 82px 72px 82px 62px;
   left: 16px;
   position: absolute;
   z-index: 24;
@@ -1048,7 +1048,7 @@
   justify-content: center;
   min-height: 68px;
   padding: 4px;
-  touch-action: manipulation;
+  touch-action: none;
 }
 
 .rpg-kayak-controls button.left-paddle {
@@ -1057,6 +1057,23 @@
 
 .rpg-kayak-controls button.right-paddle {
   border-color: #a52d2d;
+}
+
+.rpg-kayak-controls button.reverse-paddle {
+  background: rgba(219, 232, 239, 0.96);
+  border-color: #315f78;
+}
+
+.rpg-kayak-controls button.reverse-paddle strong {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.rpg-kayak-controls button.reverse-paddle.is-active {
+  background: #2d6e8e;
+  border-color: #d7f7ff;
+  color: #f4fdff;
+  transform: translateY(2px);
 }
 
 .rpg-kayak-controls button.interact {

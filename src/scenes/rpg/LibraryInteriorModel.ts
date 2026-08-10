@@ -1,6 +1,7 @@
 import type { ItemId, LibraryLocationId, RpgCheckpointId } from "../../core/types";
 import campusRuntimeData from "../../data/maps/zijingang-campus-runtime.json";
 import {
+  distanceFromPlayerToRpgTarget,
   isPlayerWithinRpgTarget,
   isRpgDropPointWithin,
   type RpgSpatialInteractionTarget
@@ -138,15 +139,17 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     width: 48,
     height: 28,
     proximity: 72,
+    requiredFacing: "down",
     label: "离开图书馆"
   },
   {
     id: "entrance_record",
     x: 750,
-    y: 770,
-    width: 118,
-    height: 72,
-    proximity: 96,
+    y: 727,
+    width: 154,
+    height: 68,
+    proximity: 64,
+    requiredFacing: "up",
     label: "查看入馆记录",
     location: "entrance",
     checkpoint: "library_entrance"
@@ -158,13 +161,14 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     width: 320,
     height: 150,
     stand: { x: 334, y: 724 },
-    proximity: 168,
+    proximity: 64,
     dropWidth: 116,
     dropHeight: 86,
     label: "前台工作人员",
     location: "front_desk",
     checkpoint: "library_front_desk",
-    acceptedItem: "itemRecognitionReport"
+    acceptedItem: "itemRecognitionReport",
+    requiredFacing: "up"
   },
   {
     id: "catalog_terminal",
@@ -172,7 +176,8 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 555,
     width: 112,
     height: 96,
-    proximity: 105,
+    proximity: 70,
+    requiredFacing: "up",
     label: "馆藏检索终端",
     location: "catalog_terminal"
   },
@@ -182,7 +187,8 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 555,
     width: 102,
     height: 92,
-    proximity: 98,
+    proximity: 70,
+    requiredFacing: "up",
     label: "自助打印机",
     location: "printer"
   },
@@ -193,7 +199,8 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     width: 124,
     height: 210,
     stand: { x: 548, y: 355 },
-    proximity: 72,
+    proximity: 64,
+    requiredFacing: "up",
     label: "文学书架夹层",
     location: "shelf_755",
     checkpoint: "library_shelf_755",
@@ -204,9 +211,10 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     x: 1255,
     y: 407,
     width: 36,
-    height: 42,
+    height: 64,
     stand: { x: 1255, y: 500 },
-    proximity: 72,
+    proximity: 64,
+    requiredFacing: "up",
     label: "检查占座书包",
     location: "seat_022",
     checkpoint: "library_seat_022",
@@ -218,10 +226,11 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 445,
     width: 66,
     height: 46,
-    dropWidth: 144,
-    dropHeight: 104,
+    dropWidth: 84,
+    dropHeight: 58,
     stand: { x: 1390, y: 500 },
-    proximity: 72,
+    proximity: 56,
+    requiredFacing: ["up", "left"],
     label: "桌面夹缝",
     location: "seat_022",
     checkpoint: "library_seat_022",
@@ -233,7 +242,8 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 422,
     width: 42,
     height: 32,
-    proximity: 86,
+    proximity: 64,
+    requiredFacing: "up",
     label: "拿起占座纸条",
     location: "seat_022",
     checkpoint: "library_seat_022"
@@ -244,7 +254,8 @@ export const LIBRARY_INTERACTION_TARGETS: readonly LibraryInteractionTarget[] = 
     y: 500,
     width: 80,
     height: 64,
-    proximity: 94,
+    proximity: 56,
+    requiredFacing: "up",
     label: "坐到 022",
     location: "seat_022",
     checkpoint: "library_seat_022"
@@ -302,7 +313,7 @@ export function findNearestLibraryTarget(
   let nearest: LibraryInteractionTarget | null = null;
   let nearestDistance = Number.POSITIVE_INFINITY;
   for (const target of targets) {
-    const distance = Math.hypot(x - target.x, y - target.y);
+    const distance = distanceFromPlayerToRpgTarget(target, x, y);
     if (isPlayerWithinRpgTarget(target, x, y) && distance < nearestDistance) {
       nearest = target;
       nearestDistance = distance;

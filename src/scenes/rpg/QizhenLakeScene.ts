@@ -4,14 +4,20 @@ import qizhenDockUrl from "../../assets/rpg/interiors/qizhen_lake_dock.png";
 import qizhenDockNoSignUrl from "../../assets/rpg/interiors/qizhen_lake_dock_no_sign.png";
 import qizhenOpenWaterUrl from "../../assets/rpg/interiors/qizhen_lake_open_water.png";
 import qizhenSwanCoveUrl from "../../assets/rpg/interiors/qizhen_lake_swan_cove.png";
-import type { GameState, ItemId, QizhenLakeMode } from "../../core/types";
+import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
+import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
+import type { GameState, ItemId, QizhenLakeMode, QizhenPaddleDirection } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
+  formatRpgModeRequirement,
   getRpgDropBounds,
+  isFacingVectorTowardRpgTarget,
+  isPlayerFacingRpgTarget,
   isPlayerWithinRpgTarget,
-  isRpgDropPointWithin
+  isRpgDropPointWithin,
+  RPG_REALITY_MODE_CONTRACT
 } from "./RpgInteractionContract";
 import {
   configureRpgPlayerSprite,
@@ -28,6 +34,7 @@ import {
   QIZHEN_LAKE_ZONES,
   clampKayakToWater,
   findNearestQizhenTarget,
+  qizhenTargetAcceptsItem,
   targetsForQizhenZone,
   type QizhenLakeInteractionTarget,
   type QizhenLakeOcclusionRect,
@@ -53,21 +60,30 @@ const DOCK_NO_SIGN_TEXTURE_KEY = "chapter-3-qizhen-dock-no-sign";
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
 const KAYAK_MAX_SPEED = 340;
+const KAYAK_MAX_REVERSE_SPEED = 230;
 const KAYAK_STROKE_SPEED = 104;
 const KAYAK_SAME_SIDE_SPEED = 52;
+const KAYAK_REVERSE_STROKE_SPEED = 84;
+const KAYAK_REVERSE_SAME_SIDE_SPEED = 42;
 const KAYAK_DRAG_PER_SECOND = 0.68;
 const KAYAK_ROLL_DECAY_PER_SECOND = 1.05;
 const KAYAK_TURN_PER_STROKE = 0.16;
 const KAYAK_CAPSIZE_THRESHOLD = 0.92;
-const KAYAK_COLLISION_CAPSIZE_SPEED = 270;
-const SWAN_CHASE_FOLLOW_SPEED = 240;
-const SWAN_CHASE_RECOVERY_SPEED = 78;
-const SWAN_CHASE_FAR_GAP = 210;
-const SWAN_CHASE_SAFE_GAP = 112;
-const SWAN_CHASE_SURGE_PERIOD_SECONDS = 3.2;
-const SWAN_CHASE_SWAY = 22;
+const KAYAK_COLLISION_LENGTH = 83;
+const KAYAK_COLLISION_WIDTH = 67;
+const SWAN_CHASE_INITIAL_GAP = 230;
+const SWAN_CHASE_CATCH_DISTANCE = 104;
+const SWAN_CHASE_NEAR_DISTANCE = 150;
+const SWAN_CHASE_FAR_DISTANCE = 360;
+const SWAN_CHASE_NEAR_SPEED = 168;
+const SWAN_CHASE_FAR_SPEED = 440;
+const SWAN_CHASE_GRACE_SECONDS = 4;
+const SWAN_CHASE_SWAY = 16;
 const SWAN_CHASE_FINISH_X = 190;
 const FEEDBACK_MS = 2700;
+const LOCKED_PORTAL_HINT_REPEAT_MS = 6000;
+const SAME_SIDE_HINT_COOLDOWN_MS = 2600;
+const BOUNDARY_BLOCKED_HINT_COOLDOWN_MS = 2400;
 
 const CHAIN_ITEMS = {
   fishingRod: "fishingRod",
@@ -147,6 +163,13 @@ interface TargetVisual {
   root: Phaser.GameObjects.Container;
   label: Phaser.GameObjects.Text;
   pulse: Phaser.GameObjects.Shape;
+  color: number;
+  sparkles: Phaser.GameObjects.Arc[];
+}
+
+interface DropGuideVisual {
+  target: QizhenLakeInteractionTarget;
+  targetOutline: Phaser.GameObjects.Rectangle;
 }
 
 export class QizhenLakeScene extends Phaser.Scene {
@@ -171,6 +194,8 @@ export class QizhenLakeScene extends Phaser.Scene {
   private currentDockSignRemoved = false;
   private virtualDirection = { x: 0, y: 0 };
   private lastVirtualPaddleX = 0;
+  private virtualReverseHeld = false;
+  private reverseInputHeld = false;
   private interactRequested = false;
   private dialogueLocked = false;
   private zoneTransitioning = false;
@@ -178,6 +203,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private reducedMotion = false;
 
   private targetVisuals: TargetVisual[] = [];
+  private dropGuides: DropGuideVisual[] = [];
   private ambientVisuals: Phaser.GameObjects.GameObject[] = [];
   private occlusionVisuals: OcclusionVisual[] = [];
   private activeOcclusionIds: string[] = [];
@@ -189,18 +215,30 @@ export class QizhenLakeScene extends Phaser.Scene {
   private kayakSpeed = 0;
   private kayakRoll = 0;
   private lastStrokeSide: QizhenPaddleSide | null = null;
+  private lastStrokeDirection: QizhenPaddleDirection | null = null;
   private sameSideStreak = 0;
   private strokeIndex = 0;
   private lastStrokeAt = 0;
   private lastChaseProgressSent = 0;
   private chaseStartX = 0;
   private chaseElapsedSeconds = 0;
-  private chaseDesiredGap = SWAN_CHASE_FAR_GAP;
+  private chaseActualGap = SWAN_CHASE_INITIAL_GAP;
+  private chaseSwanSpeed = 0;
   private chaseIntensity = 0;
   private chaseSwanX = 0;
   private chaseSwanY = 0;
   private chaseAnnounced = false;
   private chaseCompleting = false;
+  private chaseFailing = false;
+  private lockedPortalHintId: string | null = null;
+  private lockedPortalHintAt = 0;
+  private sameSideHintAt = 0;
+  private boundaryBlockedHintAt = Number.NEGATIVE_INFINITY;
+  private kayakBoundaryBlocked = false;
+  private boundaryBlockCount = 0;
+  private boundaryHeadingAtBlock = 0;
+  private boundaryRollAtBlock = 0;
+  private reflectionDialoguePlayed = false;
 
   constructor() {
     super("qizhen-lake");
@@ -226,6 +264,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.resetTransientKayakState();
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     const state = this.bridge.getState();
     const runtime = readQizhenRuntime(state);
@@ -263,8 +302,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.SPACE,
       Phaser.Input.Keyboard.KeyCodes.LEFT,
       Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
       Phaser.Input.Keyboard.KeyCodes.A,
-      Phaser.Input.Keyboard.KeyCodes.D
+      Phaser.Input.Keyboard.KeyCodes.D,
+      Phaser.Input.Keyboard.KeyCodes.S
     ]);
 
     this.cameras.main
@@ -284,24 +325,25 @@ export class QizhenLakeScene extends Phaser.Scene {
 
     this.zoneText = this.add.text(18, 78, "", {
       color: "#e9ffff",
-      backgroundColor: "#092432de",
       fontFamily: "monospace",
       fontSize: "13px",
-      padding: { x: 9, y: 5 }
+      stroke: "#07111c",
+      strokeThickness: 4
     }).setScrollFactor(0).setDepth(5200);
     this.statusText = this.add.text(18, 112, "", {
       color: "#fff2b6",
-      backgroundColor: "#102334e8",
       fontFamily: "monospace",
       fontSize: "12px",
-      padding: { x: 9, y: 5 }
+      stroke: "#07111c",
+      strokeThickness: 4
     }).setScrollFactor(0).setDepth(5200);
     this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
-      backgroundColor: "#102334ee",
       fontFamily: "monospace",
       fontSize: "13px",
-      padding: { x: 9, y: 5 }
+      stroke: "#07111c",
+      strokeThickness: 4,
+      align: "center"
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(5200).setVisible(false);
 
     this.rebuildZone(this.currentZone, this.currentVehicle, null, false);
@@ -320,6 +362,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       });
     }
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.resetTransientKayakState();
       this.kayak.destroy();
       this.staticSwan?.destroy();
       this.chaseSwan?.destroy();
@@ -338,9 +381,11 @@ export class QizhenLakeScene extends Phaser.Scene {
     });
     if (!runtime.introSeen && runtime.phase === "dock_outfitting") {
       this.queueDialogue([
-        "任务：先在小码头分别找到皮划艇和两支临时船桨。",
-        "系统：器材架只放着船。左桨和右桨散在码头环境里，靠近实物再拾取。"
+        ...qizhenContent.dock.intro,
+        qizhenContent.dock.outfitPrompt
       ], () => this.emitDomain("rpg_qizhen_intro_seen_requested"));
+    } else {
+      this.maybePlayReflectionDialogue();
     }
   }
 
@@ -350,9 +395,13 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.syncState(runtime);
 
     if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.dialogueLocked && !this.zoneTransitioning) {
-      this.emitDomain("rpg_qizhen_mode_requested", {
-        mode: runtime.mode === "dark" ? "light" : "dark"
-      });
+      if (runtime.phase === "swan_chase" || runtime.phase === "complete") {
+        this.showFeedback(qizhenContent.mist.modeLocked, "system");
+      } else {
+        this.emitDomain("rpg_qizhen_mode_requested", {
+          mode: runtime.mode === "dark" ? "light" : "dark"
+        });
+      }
     }
 
     if (this.currentVehicle === "kayak") {
@@ -365,9 +414,10 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.updateOcclusion();
     const targets = this.getActiveTargets(state, runtime);
     const nearest = findNearestQizhenTarget(this.player.x, this.player.y, targets);
-    this.updateTargetVisuals(targets, nearest, runtime);
+    this.updateTargetVisuals(targets, nearest, state, runtime);
     this.updatePrompt(nearest, runtime);
     this.updateStatus(runtime);
+    this.updateLockedPortalHint(targets, runtime);
     this.publishDebugState(nearest, targets, runtime);
 
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
@@ -378,7 +428,11 @@ export class QizhenLakeScene extends Phaser.Scene {
       && !this.capsizing
       && (keyboardInteract || this.interactRequested)
     ) {
-      this.triggerTarget(nearest, state, runtime);
+      if (this.isFacingTarget(nearest)) {
+        this.triggerTarget(nearest, state, runtime);
+      } else {
+        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task");
+      }
     }
     this.interactRequested = false;
   }
@@ -402,45 +456,83 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private updateKayakInput(runtime: QizhenRuntimeProjection): void {
+    this.reverseInputHeld = this.cursors.down.isDown || this.keys.S.isDown || this.virtualReverseHeld;
     if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
+    const direction: QizhenPaddleDirection = this.reverseInputHeld ? "reverse" : "forward";
     if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keys.A)) {
-      this.performPaddleStroke("left", runtime);
+      this.performPaddleStroke("left", direction, runtime);
     }
     if (Phaser.Input.Keyboard.JustDown(this.cursors.right) || Phaser.Input.Keyboard.JustDown(this.keys.D)) {
-      this.performPaddleStroke("right", runtime);
+      this.performPaddleStroke("right", direction, runtime);
     }
+  }
+
+  private resetTransientKayakState(): void {
+    this.virtualDirection = { x: 0, y: 0 };
+    this.lastVirtualPaddleX = 0;
+    this.virtualReverseHeld = false;
+    this.reverseInputHeld = false;
+    this.kayakSpeed = 0;
+    this.kayakRoll = 0;
+    this.lastStrokeDirection = null;
+    this.sameSideStreak = 0;
+    this.lastStrokeAt = 0;
+    this.capsizing = false;
+    this.chaseFailing = false;
+    this.chaseSwanSpeed = 0;
+    this.chaseActualGap = SWAN_CHASE_INITIAL_GAP;
+    this.boundaryBlockedHintAt = Number.NEGATIVE_INFINITY;
+    this.kayakBoundaryBlocked = false;
+    this.boundaryBlockCount = 0;
+    this.boundaryHeadingAtBlock = this.kayakHeading;
+    this.boundaryRollAtBlock = 0;
   }
 
   private performPaddleStroke(
     side: QizhenPaddleSide,
+    direction: QizhenPaddleDirection,
     runtime: QizhenRuntimeProjection,
     emitIntent = true
   ): void {
     if (this.currentVehicle !== "kayak" || this.capsizing || this.zoneTransitioning || this.chaseCompleting) return;
     const now = this.time.now;
     const withinCadence = now - this.lastStrokeAt <= 1450;
-    const alternating = withinCadence && this.lastStrokeSide !== null && this.lastStrokeSide !== side;
-    const repeated = withinCadence && this.lastStrokeSide === side;
+    const sameDirection = withinCadence && this.lastStrokeDirection === direction;
+    const alternating = sameDirection && this.lastStrokeSide !== null && this.lastStrokeSide !== side;
+    const repeated = sameDirection && this.lastStrokeSide === side;
     this.sameSideStreak = repeated ? this.sameSideStreak + 1 : 1;
     this.strokeIndex += 1;
+    const directionSign = direction === "reverse" ? -1 : 1;
+    const sideSign = side === "left" ? 1 : -1;
+    const strokeSpeed = direction === "reverse" ? KAYAK_REVERSE_STROKE_SPEED : KAYAK_STROKE_SPEED;
+    const sameSideSpeed = direction === "reverse" ? KAYAK_REVERSE_SAME_SIDE_SPEED : KAYAK_SAME_SIDE_SPEED;
+    const addStrokeImpulse = (amount: number) => {
+      this.kayakSpeed = Phaser.Math.Clamp(
+        this.kayakSpeed + directionSign * amount,
+        -KAYAK_MAX_REVERSE_SPEED,
+        KAYAK_MAX_SPEED
+      );
+    };
+    const turnAmount = KAYAK_TURN_PER_STROKE + Math.min(0.13, this.sameSideStreak * 0.025);
+    this.kayakHeading += sideSign * directionSign * turnAmount * (alternating ? 2 : 1);
 
     if (alternating) {
-      this.kayakSpeed = Math.min(KAYAK_MAX_SPEED, this.kayakSpeed + KAYAK_STROKE_SPEED);
+      addStrokeImpulse(strokeSpeed);
       this.kayakRoll *= 0.36;
       this.sameSideStreak = 1;
     } else {
-      this.kayakSpeed = Math.min(KAYAK_MAX_SPEED, this.kayakSpeed + KAYAK_SAME_SIDE_SPEED);
-      const sideSign = side === "left" ? 1 : -1;
-      this.kayakHeading += sideSign * (KAYAK_TURN_PER_STROKE + Math.min(0.13, this.sameSideStreak * 0.025));
+      addStrokeImpulse(sameSideSpeed);
       this.kayakRoll += sideSign * (0.23 + Math.min(0.18, this.sameSideStreak * 0.035));
     }
 
     this.lastStrokeAt = now;
     this.lastStrokeSide = side;
-    this.kayak.stroke(side, repeated ? 1.2 : 1);
+    this.lastStrokeDirection = direction;
+    this.kayak.stroke(side, direction, repeated ? 1.2 : 1);
     if (emitIntent) {
       this.emitDomain("rpg_qizhen_paddle_requested", {
         side,
+        direction,
         zone: this.currentZone,
         strokeIndex: this.strokeIndex,
         alternating,
@@ -467,27 +559,35 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     this.kayakSpeed *= Math.exp(-KAYAK_DRAG_PER_SECOND * deltaSeconds);
+    if (Math.abs(this.kayakSpeed) < 0.4) this.kayakSpeed = 0;
     this.kayakRoll *= Math.exp(-KAYAK_ROLL_DECAY_PER_SECOND * deltaSeconds);
     const velocityX = Math.cos(this.kayakHeading) * this.kayakSpeed;
     const velocityY = Math.sin(this.kayakHeading) * this.kayakSpeed;
+    const wasBoundaryBlocked = this.kayakBoundaryBlocked;
+    let boundaryBlockedNow = false;
+    this.syncKayakCollisionBody();
     this.player.setVelocity(velocityX, velocityY).setDepth(this.player.y + 120);
 
     const water = clampKayakToWater(this.currentZone, this.player.x, this.player.y);
     if (!water.contained) {
       this.player.setPosition(water.x, water.y);
-      this.kayakSpeed *= 0.42;
-      this.kayakRoll += velocityX >= 0 ? 0.08 : -0.08;
+      boundaryBlockedNow = true;
     }
 
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-    const hitObstacle = body.blocked.left || body.blocked.right || body.blocked.up || body.blocked.down;
-    if (hitObstacle) {
-      const impactSpeed = Math.abs(this.kayakSpeed);
-      this.kayakSpeed *= 0.34;
-      this.kayakRoll += body.blocked.left || body.blocked.up ? 0.18 : -0.18;
-      if (impactSpeed >= KAYAK_COLLISION_CAPSIZE_SPEED) {
-        this.triggerCapsize("obstacle_impact", runtime);
-      }
+    const movingIntoBlockedEdge = (
+      (body.blocked.left && velocityX < 0)
+      || (body.blocked.right && velocityX > 0)
+      || (body.blocked.up && velocityY < 0)
+      || (body.blocked.down && velocityY > 0)
+    );
+    if (movingIntoBlockedEdge) {
+      boundaryBlockedNow = true;
+    }
+    if (boundaryBlockedNow) {
+      this.stopKayakAtBoundary(!wasBoundaryBlocked);
+    } else {
+      this.kayakBoundaryBlocked = false;
     }
 
     this.kayak.setPose({
@@ -503,31 +603,77 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
   }
 
+  private stopKayakAtBoundary(newEncounter: boolean): void {
+    this.kayakBoundaryBlocked = true;
+    this.kayakSpeed = 0;
+    this.player.setVelocity(0, 0);
+    if (newEncounter) {
+      this.boundaryBlockCount += 1;
+      this.boundaryHeadingAtBlock = this.kayakHeading;
+      this.boundaryRollAtBlock = this.kayakRoll;
+    }
+    if (this.time.now - this.boundaryBlockedHintAt >= BOUNDARY_BLOCKED_HINT_COOLDOWN_MS) {
+      this.boundaryBlockedHintAt = this.time.now;
+      this.showFeedback(qizhenContent.boarding.boundaryBlocked, "task", 2200);
+    }
+  }
+
   private updateSwanChase(deltaSeconds: number, runtime: QizhenRuntimeProjection): void {
     if (!this.chaseSwan) this.createChaseSwan();
-    this.chaseElapsedSeconds += deltaSeconds;
-    const surgeRadians = this.chaseElapsedSeconds / SWAN_CHASE_SURGE_PERIOD_SECONDS * Math.PI * 2;
-    const surgeWave = (1 - Math.cos(surgeRadians)) / 2;
-    this.chaseIntensity = surgeWave * surgeWave * (3 - 2 * surgeWave);
-    this.chaseDesiredGap = SWAN_CHASE_FAR_GAP
-      - (SWAN_CHASE_FAR_GAP - SWAN_CHASE_SAFE_GAP) * this.chaseIntensity;
-    const desiredX = Math.min(
-      QIZHEN_LAKE_WORLD.width - 70,
-      this.player.x + this.chaseDesiredGap
+    const chaseDeltaSeconds = Math.min(deltaSeconds, 0.05);
+    this.chaseElapsedSeconds += chaseDeltaSeconds;
+    const playerDx = this.player.x - this.chaseSwanX;
+    const playerDy = this.player.y - this.chaseSwanY;
+    const distanceBeforeMove = Math.hypot(playerDx, playerDy);
+    const distanceFactor = Phaser.Math.Clamp(
+      (distanceBeforeMove - SWAN_CHASE_NEAR_DISTANCE)
+        / (SWAN_CHASE_FAR_DISTANCE - SWAN_CHASE_NEAR_DISTANCE),
+      0,
+      1
     );
-    const desiredY = this.player.y
-      + Math.sin(this.chaseElapsedSeconds * 4.6) * SWAN_CHASE_SWAY * (0.35 + this.chaseIntensity * 0.65);
-    const dx = desiredX - this.chaseSwanX;
-    const dy = desiredY - this.chaseSwanY;
-    const distanceToDesired = Math.hypot(dx, dy);
-    if (distanceToDesired > 0.001) {
-      const followSpeed = dx < 0
-        ? SWAN_CHASE_FOLLOW_SPEED + this.chaseIntensity * 230
-        : SWAN_CHASE_RECOVERY_SPEED;
-      const step = Math.min(distanceToDesired, followSpeed * deltaSeconds);
-      this.chaseSwanX += dx / distanceToDesired * step;
-      this.chaseSwanY += dy / distanceToDesired * step;
+    const easedDistanceFactor = distanceFactor * distanceFactor * (3 - 2 * distanceFactor);
+    const targetSpeed = Phaser.Math.Linear(
+      SWAN_CHASE_NEAR_SPEED,
+      SWAN_CHASE_FAR_SPEED,
+      easedDistanceFactor
+    );
+    const graceRamp = Phaser.Math.Clamp(this.chaseElapsedSeconds / SWAN_CHASE_GRACE_SECONDS, 0, 1);
+    const easedGrace = graceRamp * graceRamp * (3 - 2 * graceRamp);
+    const graceLimitedSpeed = Phaser.Math.Linear(76, targetSpeed, easedGrace);
+    const speedBlend = 1 - Math.exp(-4.8 * chaseDeltaSeconds);
+    this.chaseSwanSpeed = Phaser.Math.Linear(this.chaseSwanSpeed, graceLimitedSpeed, speedBlend);
+
+    const pursuitY = this.player.y
+      + Math.sin(this.chaseElapsedSeconds * 4.2) * SWAN_CHASE_SWAY * easedDistanceFactor;
+    const dx = this.player.x - this.chaseSwanX;
+    const dy = pursuitY - this.chaseSwanY;
+    const distanceToPursuit = Math.hypot(dx, dy);
+    if (distanceToPursuit > 0.001) {
+      const step = Math.min(distanceToPursuit, this.chaseSwanSpeed * chaseDeltaSeconds);
+      this.chaseSwanX += dx / distanceToPursuit * step;
+      this.chaseSwanY += dy / distanceToPursuit * step;
     }
+    this.chaseActualGap = Math.hypot(
+      this.chaseSwanX - this.player.x,
+      this.chaseSwanY - this.player.y
+    );
+    if (this.chaseElapsedSeconds < SWAN_CHASE_GRACE_SECONDS) {
+      const protectedGap = SWAN_CHASE_CATCH_DISTANCE + 18;
+      if (this.chaseActualGap < protectedGap) {
+        const awayX = this.chaseSwanX - this.player.x;
+        const awayY = this.chaseSwanY - this.player.y;
+        const awayLength = Math.max(0.001, Math.hypot(awayX, awayY));
+        this.chaseSwanX = this.player.x + awayX / awayLength * protectedGap;
+        this.chaseSwanY = this.player.y + awayY / awayLength * protectedGap;
+        this.chaseActualGap = protectedGap;
+      }
+    }
+    this.chaseIntensity = 1 - Phaser.Math.Clamp(
+      (this.chaseActualGap - SWAN_CHASE_CATCH_DISTANCE)
+        / (SWAN_CHASE_FAR_DISTANCE - SWAN_CHASE_CATCH_DISTANCE),
+      0,
+      1
+    );
     const heading = Math.atan2(this.player.y - this.chaseSwanY, this.player.x - this.chaseSwanX);
     const beat = this.reducedMotion
       ? 0
@@ -543,16 +689,71 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.chaseCompleting = true;
       this.kayakSpeed = 0;
       this.player.setVelocity(0, 0);
-      this.showFeedback("已抵达河道另一端。", "success");
+      this.showFeedback(qizhenContent.chase.finishReached, "success");
       this.emitDomain("rpg_qizhen_escape_completed_requested", {
         zone: "dock",
         distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x)),
         completion: "far_bank_reached"
       });
+      return;
+    }
+    if (
+      !this.chaseFailing
+      && !this.chaseCompleting
+      && this.chaseElapsedSeconds >= SWAN_CHASE_GRACE_SECONDS
+      && this.chaseActualGap <= SWAN_CHASE_CATCH_DISTANCE
+    ) {
+      this.triggerSwanCatch(runtime);
     }
   }
 
-  private triggerCapsize(reason: "same_side_strokes" | "obstacle_impact", runtime: QizhenRuntimeProjection): void {
+  private triggerSwanCatch(runtime: QizhenRuntimeProjection): void {
+    if (this.chaseFailing || this.chaseCompleting || this.capsizing) return;
+    this.chaseFailing = true;
+    this.capsizing = true;
+    this.kayakSpeed = 0;
+    this.player.setVelocity(0, 0);
+    this.chaseSwanSpeed = 0;
+    this.chaseSwanX = this.player.x + Math.cos(this.kayakHeading + Math.PI) * SWAN_CHASE_CATCH_DISTANCE;
+    this.chaseSwanY = this.player.y + Math.sin(this.kayakHeading + Math.PI) * SWAN_CHASE_CATCH_DISTANCE;
+    this.chaseActualGap = SWAN_CHASE_CATCH_DISTANCE;
+    this.chaseSwan?.update(
+      this.chaseSwanX,
+      this.chaseSwanY,
+      Math.atan2(this.player.y - this.chaseSwanY, this.player.x - this.chaseSwanX),
+      1,
+      1
+    );
+    if (!this.reducedMotion) {
+      this.cameras.main.shake(260, 0.009);
+      this.cameras.main.flash(150, 224, 246, 255, false);
+    }
+    this.showFeedback(qizhenContent.chase.caught, "system", 3000);
+    this.emitDomain("rpg_qizhen_chase_failed", {
+      reason: "swan_caught",
+      zone: this.currentZone,
+      distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x)),
+      attempt: runtime.chaseAttempts + 1,
+      restartCheckpoint: "qizhen_chase"
+    });
+    this.kayak.playCapsize(() => {
+      const safe = this.getSpawn("channel", "kayak", null);
+      this.player.setPosition(safe.x, safe.y).setVelocity(0, 0);
+      this.kayakHeading = "heading" in safe ? safe.heading : Math.PI;
+      this.kayakSpeed = 0;
+      this.kayakRoll = 0;
+      this.sameSideStreak = 0;
+      this.lastStrokeSide = null;
+      this.lastStrokeDirection = null;
+      this.lastStrokeAt = 0;
+      this.resetChaseSwan();
+      this.capsizing = false;
+      this.chaseFailing = false;
+      this.showFeedback(qizhenContent.chase.failed, "task", 2200);
+    });
+  }
+
+  private triggerCapsize(reason: "same_side_strokes", runtime: QizhenRuntimeProjection): void {
     if (this.capsizing) return;
     this.capsizing = true;
     this.kayakSpeed = 0;
@@ -564,9 +765,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       safeSpawnId: runtime.safeSpawnId
     });
     this.showFeedback(
-      reason === "obstacle_impact"
-        ? "船身撞上障碍。减速后再调整朝向。"
-        : "连续划同一侧导致翻船。左右交替可以稳住船身。",
+      runtime.phase === "swan_chase"
+        ? `${qizhenContent.boarding.capsizeSameSide}${qizhenContent.chase.failed}`
+        : qizhenContent.boarding.capsizeSameSide,
       "system"
     );
     this.kayak.playCapsize(() => {
@@ -576,6 +777,8 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.kayakRoll = 0;
       this.sameSideStreak = 0;
       this.lastStrokeSide = null;
+      this.lastStrokeDirection = null;
+      this.lastStrokeAt = 0;
       if (this.currentZone === "channel" && runtime.phase === "swan_chase") {
         this.resetChaseSwan();
       }
@@ -590,7 +793,8 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (runtime.phase === "swan_chase" && previous !== "swan_chase" && !this.chaseAnnounced) {
         this.chaseAnnounced = true;
         this.emitDomain("rpg_qizhen_chase_started", { zone: runtime.zone });
-        this.showFeedback("围栏机关已被触发。黑天鹅进入直河道，立刻返航！", "task");
+        this.showFeedback(qizhenContent.swan.gateRelease, "system");
+        this.time.delayedCall(1500, () => this.showFeedback(qizhenContent.chase.instruction, "task"));
       }
       if (runtime.phase !== "swan_chase") this.chaseAnnounced = false;
     }
@@ -623,7 +827,17 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.applyVehicle(vehicle, false);
       this.cameras.main.fadeIn(fadeMs, 3, 12, 20);
       this.zoneTransitioning = false;
+      this.maybePlayReflectionDialogue();
     });
+  }
+
+  private maybePlayReflectionDialogue(): void {
+    if (this.reflectionDialoguePlayed || this.currentZone !== "open_water") return;
+    const runtime = readQizhenRuntime(this.bridge.getState());
+    if (runtime.reflectionLocationObserved) return;
+    if (!["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(runtime.phase)) return;
+    this.reflectionDialoguePlayed = true;
+    this.queueDialogue(qizhenContent.reflection.dialogue);
   }
 
   private rebuildZone(
@@ -673,11 +887,7 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private getActiveCollisionRects(vehicle: QizhenLakeVehicle) {
     const definition = QIZHEN_LAKE_ZONES[this.currentZone];
-    const collisions = vehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions;
-    if (vehicle !== "kayak" || this.currentZone !== "channel" || this.currentPhase !== "swan_chase") {
-      return collisions;
-    }
-    return collisions.filter((rect) => rect.id !== "floating_raft" && rect.id !== "west_net");
+    return vehicle === "kayak" ? definition.kayakCollisions : definition.onFootCollisions;
   }
 
   private createOcclusionVisuals(): void {
@@ -772,20 +982,40 @@ export class QizhenLakeScene extends Phaser.Scene {
       const pulse = target.kind === "zone_portal" || target.kind === "escape"
         ? this.add.triangle(0, 0, -22, -18, 24, 0, -22, 18, color, 0.25).setStrokeStyle(3, color, 0.88)
         : isOutfit
-          ? this.add.ellipse(0, 0, 48, 22, color, 0.015).setStrokeStyle(2, color, 0.16)
+          ? this.add.ellipse(0, 0, 64, 30, color, 0.1).setStrokeStyle(3, color, 0.9)
           : this.add.ellipse(0, 0, 72, 34, color, 0.08).setStrokeStyle(3, color, 0.82);
-      const center = this.add.circle(0, 0, 5, color, isOutfit ? 0 : 0.96);
+      pulse.setVisible(false);
       const label = this.add.text(0, -34, target.label, {
         color: "#f4ffff",
         backgroundColor: "#09212dda",
         fontFamily: "monospace",
         fontSize: "11px",
         padding: { x: 6, y: 3 }
-      }).setOrigin(0.5, 1);
+      }).setOrigin(0.5, 1).setVisible(false);
+      const sparkles: Phaser.GameObjects.Arc[] = [];
+      if (target.kind === "reflection") {
+        const sparkleOffsets: ReadonlyArray<readonly [number, number, number]> = [[-16, -10, 2], [14, -13, 1.5], [20, 6, 1.5]];
+        sparkleOffsets.forEach(([offsetX, offsetY, radius], sparkleIndex) => {
+          const sparkle = this.add.circle(offsetX, offsetY, radius, sparkleIndex === 1 ? 0xbbefff : 0x7ce7ff, 0.95);
+          sparkle.setVisible(false);
+          sparkles.push(sparkle);
+          if (!this.reducedMotion) {
+            this.tweens.add({
+              targets: sparkle,
+              y: offsetY - 4 - sparkleIndex,
+              alpha: { from: 0.22, to: 1 },
+              duration: 430 + sparkleIndex * 90,
+              yoyo: true,
+              repeat: -1,
+              ease: "Stepped"
+            });
+          }
+        });
+      }
       const prop = this.createDockOutfitProp(target);
       const rootChildren: Phaser.GameObjects.GameObject[] = prop
-        ? [prop, pulse, center, label]
-        : [pulse, center, label];
+        ? [prop, pulse, label, ...sparkles]
+        : [pulse, label, ...sparkles];
       const root = this.add.container(target.x, target.y, rootChildren)
         .setDepth(target.y + 48)
         .setSize(Math.max(88, target.dropWidth ?? 88), Math.max(64, target.dropHeight ?? 64))
@@ -794,20 +1024,31 @@ export class QizhenLakeScene extends Phaser.Scene {
         .setName("qizhenTarget");
       root.setData("targetId", target.id);
       root.on("pointerdown", () => this.triggerPointerTarget(target));
-      if (!this.reducedMotion && !isOutfit) {
-        this.tweens.add({
-          targets: pulse,
-          scale: 1.18,
-          alpha: { from: 0.38, to: 0.9 },
-          duration: 1100,
-          ease: "Sine.easeInOut",
-          yoyo: true,
-          repeat: -1,
-          delay: target.x % 420
-        });
-      }
-      this.targetVisuals.push({ target, root, label, pulse });
+      this.targetVisuals.push({ target, root, label, pulse, color, sparkles });
     });
+    this.createDropGuides();
+  }
+
+  private createDropGuides(): void {
+    QIZHEN_LAKE_TARGETS
+      .filter((target) => (
+        target.zone === this.currentZone
+        && (target.acceptedItem !== undefined || target.acceptedItems !== undefined)
+      ))
+      .forEach((target) => {
+        const bounds = getRpgDropBounds(target);
+        const targetOutline = this.add.rectangle(
+          target.x,
+          target.y,
+          bounds.width,
+          bounds.height,
+          0x000000,
+          0
+        ).setStrokeStyle(2, 0x72dcff, 0.9)
+          .setDepth(4960)
+          .setVisible(false);
+        this.dropGuides.push({ target, targetOutline });
+      });
   }
 
   private createDockOutfitProp(target: QizhenLakeInteractionTarget): Phaser.GameObjects.GameObject | null {
@@ -852,21 +1093,29 @@ export class QizhenLakeScene extends Phaser.Scene {
   private resetChaseSwan(): void {
     this.chaseStartX = this.player.x;
     this.chaseElapsedSeconds = 0;
-    this.chaseDesiredGap = SWAN_CHASE_FAR_GAP;
+    this.chaseActualGap = SWAN_CHASE_INITIAL_GAP;
+    this.chaseSwanSpeed = 0;
     this.chaseIntensity = 0;
     this.lastChaseProgressSent = 0;
     this.chaseCompleting = false;
-    this.chaseSwanX = Math.min(QIZHEN_LAKE_WORLD.width - 70, this.player.x + SWAN_CHASE_FAR_GAP + 20);
+    this.chaseFailing = false;
+    this.chaseSwanX = Math.min(QIZHEN_LAKE_WORLD.width - 70, this.player.x + SWAN_CHASE_INITIAL_GAP);
     this.chaseSwanY = this.player.y;
     this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, Math.PI, 0);
   }
 
   private destroyZoneVisuals(): void {
-    this.targetVisuals.forEach(({ root }) => {
+    this.targetVisuals.forEach(({ root, pulse, sparkles }) => {
       this.tweens.killTweensOf(root);
+      this.tweens.killTweensOf(pulse);
+      sparkles.forEach((sparkle) => this.tweens.killTweensOf(sparkle));
       root.destroy(true);
     });
     this.targetVisuals = [];
+    this.dropGuides.forEach((guide) => {
+      guide.targetOutline.destroy();
+    });
+    this.dropGuides = [];
     this.ambientVisuals.forEach((visual) => {
       this.tweens.killTweensOf(visual);
       visual.destroy();
@@ -884,8 +1133,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.currentVehicle = vehicle;
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     if (vehicle === "kayak") {
-      this.player.setVisible(false).setAlpha(0);
-      body.setSize(76, 38, true);
+      this.player.setVisible(false).setAlpha(0).setScale(1).setOrigin(0.5, 0.5);
+      this.syncKayakCollisionBody();
       this.kayak.setVisible(true);
       if (reposition) {
         const spawn = this.getSpawn(this.currentZone, vehicle, null);
@@ -909,6 +1158,15 @@ export class QizhenLakeScene extends Phaser.Scene {
         this.player.setPosition(spawn.x, spawn.y).setVelocity(0, 0);
       }
     }
+  }
+
+  private syncKayakCollisionBody(): void {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const absCos = Math.abs(Math.cos(this.kayakHeading));
+    const absSin = Math.abs(Math.sin(this.kayakHeading));
+    const width = KAYAK_COLLISION_LENGTH * absCos + KAYAK_COLLISION_WIDTH * absSin;
+    const height = KAYAK_COLLISION_LENGTH * absSin + KAYAK_COLLISION_WIDTH * absCos;
+    body.setSize(width, height, true);
   }
 
   private getActiveTargets(state: GameState, runtime: QizhenRuntimeProjection): QizhenLakeInteractionTarget[] {
@@ -1006,6 +1264,13 @@ export class QizhenLakeScene extends Phaser.Scene {
     state: GameState,
     runtime: QizhenRuntimeProjection
   ): void {
+    if ((target.kind === "outfit" || target.kind === "board") && runtime.mode !== "light") {
+      this.showFeedback(
+        `${qizhenContent.mist.darkPrompt} ${formatRpgModeRequirement("light")}`,
+        "system"
+      );
+      return;
+    }
     if (target.kind === "exit") {
       this.emitDomain("rpg_qizhen_leave_requested");
       return;
@@ -1101,16 +1366,37 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
     const state = this.bridge.getState();
     const runtime = readQizhenRuntime(state);
-    if (!this.getActiveTargets(state, runtime).some((candidate) => candidate.id === target.id)) return;
+    if (!this.getActiveTargets(state, runtime).some((candidate) => candidate.id === target.id)) {
+      const lockedHint = this.lockedPortalHintFor(target, runtime);
+      if (lockedHint) this.showFeedback(lockedHint, this.dialogueToneFor(lockedHint));
+      return;
+    }
     if (!findNearestQizhenTarget(this.player.x, this.player.y, [target])) {
-      this.emitDomain("rpg_item_use_feedback", {
-        reason: "too_far",
-        targetLabel: target.label,
-        detail: "先把人物或皮划艇划到发光范围内。"
-      });
+      this.showFeedback(qizhenContent.drop.tooFarGeneric, "system");
+      return;
+    }
+    if (!this.isFacingTarget(target)) {
+      this.showFeedback(`面向「${target.label}」后再操作。`, "system");
       return;
     }
     this.triggerTarget(target, state, runtime);
+  }
+
+  private isFacingTarget(target: QizhenLakeInteractionTarget): boolean {
+    if (this.currentVehicle === "kayak") {
+      return isFacingVectorTowardRpgTarget(
+        target,
+        this.player.x,
+        this.player.y,
+        { x: Math.cos(this.kayakHeading), y: Math.sin(this.kayakHeading) }
+      );
+    }
+    return isPlayerFacingRpgTarget(
+      target,
+      this.player.x,
+      this.player.y,
+      this.playerAnimator.cardinalFacing
+    );
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
@@ -1118,7 +1404,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     const canvasX = Number(payload?.canvasX);
     const canvasY = Number(payload?.canvasY);
     if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
-      this.emitDropFailure(itemId, "missed_target", undefined, "拖到场景中明确标出的发光框内。");
+      this.emitDropFailure(itemId, "missed_target", undefined, qizhenContent.drop.missedTargetNoCoords);
       return;
     }
     const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
@@ -1130,15 +1416,24 @@ export class QizhenLakeScene extends Phaser.Scene {
         - getRpgDropBounds(b).width * getRpgDropBounds(b).height);
     const target = targets[0];
     if (!target) {
-      this.emitDropFailure(itemId, "missed_target", undefined, "没有命中当前可用目标，靠近后拖进发光框。");
+      this.emitDropFailure(itemId, "missed_target", undefined, qizhenContent.drop.missedTarget);
       return;
     }
     if (runtime.mode !== "light") {
-      this.emitDropFailure(itemId, "wrong_mode", target.label, "当前是深色观察，切到浅色操作后再使用实体道具。");
+      this.emitDropFailure(itemId, "wrong_mode", target.label, qizhenContent.drop.wrongMode);
       return;
     }
     if (!isPlayerWithinRpgTarget(target, this.player.x, this.player.y)) {
-      this.emitDropFailure(itemId, "too_far", target.label, "目标对了，先把皮划艇划进标记圈。 ");
+      this.emitDropFailure(itemId, "too_far", target.label, qizhenContent.drop.tooFar);
+      return;
+    }
+    if (!this.isFacingTarget(target)) {
+      this.emitDropFailure(
+        itemId,
+        "wrong_facing",
+        target.label,
+        `靠近并面向「${target.label}」后再操作。`
+      );
       return;
     }
 
@@ -1209,8 +1504,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       const x = Number(payload?.x) || 0;
       const y = Number(payload?.y) || 0;
       if (this.currentVehicle === "kayak") {
-        if (x < 0 && this.lastVirtualPaddleX >= 0) this.performPaddleStroke("left", readQizhenRuntime(this.bridge.getState()));
-        if (x > 0 && this.lastVirtualPaddleX <= 0) this.performPaddleStroke("right", readQizhenRuntime(this.bridge.getState()));
+        this.virtualReverseHeld = y > 0;
+        const direction: QizhenPaddleDirection = this.virtualReverseHeld ? "reverse" : "forward";
+        if (x < 0 && this.lastVirtualPaddleX >= 0) this.performPaddleStroke("left", direction, readQizhenRuntime(this.bridge.getState()));
+        if (x > 0 && this.lastVirtualPaddleX <= 0) this.performPaddleStroke("right", direction, readQizhenRuntime(this.bridge.getState()));
         this.lastVirtualPaddleX = x;
         this.virtualDirection = { x: 0, y: 0 };
       } else {
@@ -1224,7 +1521,13 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (name === "rpg_qizhen_paddle_input" && typeof payload?.pointerType === "string") {
       const side = String(payload?.side) === "right" ? "right" : "left";
-      this.performPaddleStroke(side, readQizhenRuntime(this.bridge.getState()));
+      const direction: QizhenPaddleDirection = String(payload?.direction) === "reverse" ? "reverse" : "forward";
+      this.performPaddleStroke(side, direction, readQizhenRuntime(this.bridge.getState()));
+      return;
+    }
+    if (name === "rpg_qizhen_reverse_changed") {
+      this.virtualReverseHeld = payload?.held === true;
+      this.reverseInputHeld = this.virtualReverseHeld;
       return;
     }
     if (name === "rpg_inventory_drop_requested") {
@@ -1232,106 +1535,220 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "qizhen_mode_changed") {
-      this.playModeTransition(String(payload?.mode) === "dark" ? "dark" : "light");
+      this.playModeTransition(
+        String(payload?.mode) === "dark" ? "dark" : "light",
+        typeof payload?.reason === "string" ? payload.reason : undefined
+      );
       return;
     }
     if (name === "qizhen_outfit_part_collected") {
       const part = String(payload?.part ?? "kayak");
       const complete = payload?.complete === true;
       const message = complete
-        ? "皮划艇和两支临时桨都已收齐。去码头前端上船。"
+        ? qizhenContent.dock.outfitComplete
         : part === "kayak"
-          ? "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。"
+          ? qizhenContent.dock.kayakCollected
           : part === "left_paddle"
-            ? "柳树枝长度合适，已作为左桨。还要找另一侧的桨。"
-            : "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。";
+            ? qizhenContent.dock.leftPaddleCollected
+            : qizhenContent.dock.rightPaddleCollected;
       this.showFeedback(message, "success");
       return;
     }
     if (name === "qizhen_kayak_boarded") {
-      this.showFeedback("上船阶段横向稳定性低。左右交替划四次，先把重心稳住。", "task");
+      this.showFeedback(qizhenContent.boarding.start, "task");
+      return;
+    }
+    if (name === "qizhen_boarding_stroke_recorded") {
+      const count = Number(payload?.count) || 0;
+      if (String(payload?.direction ?? "forward") === "reverse") {
+        this.showFeedback(qizhenContent.boarding.reverseTutorial, "task", 1800);
+      } else if (payload?.alternating === true && count >= 1) {
+        const strokes = qizhenContent.boarding.strokes;
+        const line = strokes[Math.min(count, strokes.length) - 1];
+        this.showFeedback(line, this.dialogueToneFor(line), 1500);
+      } else if (payload?.alternating !== true && this.time.now - this.sameSideHintAt > SAME_SIDE_HINT_COOLDOWN_MS) {
+        this.sameSideHintAt = this.time.now;
+        this.showFeedback(qizhenContent.boarding.sameSide, "system", 1800);
+      }
       return;
     }
     if (name === "qizhen_boarding_completed") {
-      this.showFeedback("船身稳定，可以划向大湖。", "success");
+      this.showFeedback(qizhenContent.boarding.complete, "success");
       return;
     }
     if (name === "qizhen_reflection_observed") {
-      this.showFeedback("暗色倒影标出了真实水面的对应位置。切回浅色操作。", "task");
+      if (String(payload?.spotId ?? "") === "paper") {
+        this.playSubtitleSequence(qizhenContent.reflection.afterPaper);
+      } else {
+        this.showFeedback(qizhenContent.reflection.correct, "success");
+      }
       return;
     }
     if (name === "qizhen_fishing_rod_found") {
-      this.showFeedback("钓鱼竿已捞起。纸条本体现在还钓不上来。", "success");
+      this.queueDialogue([qizhenContent.lake.rodFound, ...qizhenContent.decoy.dialogue]);
       return;
     }
     if (name === "qizhen_decoy_bait_attached") {
-      this.showFeedback("假纸条已经装成诱饵，去倒影对应的浅色水面抛竿。", "success");
+      this.playSubtitleSequence([qizhenContent.decoy.correct, qizhenContent.lake.baitNext]);
       return;
     }
     if (name === "qizhen_direct_paper_cast_failed") {
-      this.showFeedback("鱼钩穿过倒影，纸条没有实体响应。需要先完成水下道具链。", "system");
+      this.showFeedback(qizhenContent.lake.directPaperFailure, "system");
+      return;
+    }
+    if (name === "qizhen_item_caught") {
+      const spotId = String(payload?.spotId ?? "");
+      this.showFeedback(
+        spotId === "locker_key" ? qizhenContent.toolChain.keyCaught : qizhenContent.toolChain.netFrameCaught,
+        "success"
+      );
       return;
     }
     if (name === "qizhen_locker_opened") {
-      this.showFeedback("码头储物柜打开，里面是一卷尼龙绳。", "success");
+      this.showFeedback(qizhenContent.toolChain.lockerOpened, "success");
       return;
     }
     if (name === "qizhen_dip_net_combined") {
-      this.showFeedback("尼龙绳已经固定到破损网框，临时抄网完成。去浮排下取密封盒。", "success");
+      this.showFeedback(qizhenContent.toolChain.netCombined, "success");
       return;
     }
     if (name === "qizhen_feed_tin_retrieved") {
-      this.showFeedback("临时抄网从浮排下捞出了密封饲料盒。", "success");
+      this.showFeedback(qizhenContent.toolChain.feedTinRetrieved, "success");
       return;
     }
     if (name === "qizhen_feed_tin_opened") {
-      this.showFeedback("在浮排硬边撬开盒盖，得到鱼食颗粒。", "success");
+      this.showFeedback(qizhenContent.toolChain.feedTinOpened, "success");
       return;
     }
     if (name === "qizhen_fish_caught") {
-      this.showFeedback("鱼食颗粒引来一条小鲤鱼。带去黑天鹅围栏。", "success");
+      this.showFeedback(qizhenContent.toolChain.fishCaught, "success");
       return;
     }
     if (name === "qizhen_swan_fed") {
-      this.showFeedback("黑天鹅吞下小鲤鱼，推来一个磁吸配件。", "success");
+      this.queueDialogue([qizhenContent.swan.reward, qizhenContent.swan.combineHint]);
       return;
     }
     if (name === "qizhen_magnetic_rod_combined") {
-      this.showFeedback("磁吸钓竿组合完成，现在可以钓纸条本体。", "success");
+      this.showFeedback(qizhenContent.swan.rodReady, "success");
       return;
     }
     if (name === "qizhen_paper_captured") {
-      this.showFeedback("纸条被磁吸钓竿拉出水面，却悄悄拨开了围栏。", "system");
+      this.showFeedback(qizhenContent.swan.paperCapture, "success");
       return;
     }
     if (name === "qizhen_escape_completed") {
-      this.showFeedback("已逃回小码头。磁吸配件损坏，纸条再次逃走。", "success");
+      this.showFeedback(qizhenContent.chase.complete, "success");
+      return;
+    }
+    if (name === "qizhen_lake_leave_rejected") {
+      this.showFeedback(qizhenContent.dock.leaveLocked, "system");
     }
   }
 
   private updateTargetVisuals(
     targets: readonly QizhenLakeInteractionTarget[],
     nearest: QizhenLakeInteractionTarget | null,
+    state: GameState,
     runtime: QizhenRuntimeProjection
   ): void {
     const activeIds = new Set(targets.map((target) => target.id));
+    const selectedItem = state.ui.selectedItem;
     this.targetVisuals.forEach((visual) => {
       const active = activeIds.has(visual.target.id);
-      visual.root.setVisible(active);
-      if (!active) return;
-      const distance = Math.hypot(this.player.x - visual.target.x, this.player.y - visual.target.y);
-      const selected = nearest?.id === visual.target.id;
-      const isOutfit = visual.target.kind === "outfit";
-      visual.label.setVisible(!isOutfit && !selected && distance <= Math.max(250, visual.target.proximity * 1.8));
-      visual.pulse.setAlpha(isOutfit ? selected ? 0.34 : 0 : selected ? 0.96 : 0.5);
-      visual.root.setScale(selected ? isOutfit ? 1.03 : 1.08 : 1);
-      if ((visual.target.kind === "reflection" || visual.target.value === "paper_reflection") && runtime.mode !== "dark") {
-        visual.root.setAlpha(0.38);
-      } else {
-        visual.root.setAlpha(1);
+      const vehicleMatches = !visual.target.vehicle || visual.target.vehicle === this.currentVehicle;
+      const lockedPortal = !active && vehicleMatches && this.lockedPortalHintFor(visual.target, runtime) !== null;
+      visual.root.setVisible(active || lockedPortal);
+      visual.sparkles.forEach((sparkle) => sparkle.setVisible(active));
+      if (!active) {
+        if (lockedPortal) {
+          visual.root.setAlpha(0.35).setScale(1);
+          visual.pulse.setStrokeStyle(3, visual.color, 0.88);
+          visual.label.setVisible(false);
+        }
+        return;
       }
+      const isNearest = nearest?.id === visual.target.id;
+      const matchesSelectedItem = selectedItem !== null && qizhenTargetAcceptsItem(visual.target, selectedItem);
+      visual.label.setVisible(false);
+      visual.pulse
+        .setAlpha(isNearest || matchesSelectedItem ? 0.96 : 0.5)
+        .setStrokeStyle(3, matchesSelectedItem ? 0x63e58b : visual.color, matchesSelectedItem ? 1 : 0.88);
+      visual.root.setScale(isNearest ? 1.08 : 1);
+      let alpha = 1;
+      if ((visual.target.kind === "reflection" || visual.target.value === "paper_reflection") && runtime.mode !== "dark") {
+        alpha = 0.38;
+      }
+      if (selectedItem !== null && !matchesSelectedItem) alpha = Math.min(alpha, 0.3);
+      visual.root.setAlpha(alpha);
     });
     this.staticSwan?.root.setVisible(this.currentZone === "swan_cove" && runtime.phase !== "swan_chase");
+    this.syncDropGuides(targets, selectedItem);
+  }
+
+  private syncDropGuides(
+    targets: readonly QizhenLakeInteractionTarget[],
+    selectedItem: ItemId | null
+  ): void {
+    const activeIds = new Set(targets.map((target) => target.id));
+    this.dropGuides.forEach((guide) => {
+      const matches = selectedItem !== null && qizhenTargetAcceptsItem(guide.target, selectedItem);
+      const visible = activeIds.has(guide.target.id) && matches;
+      guide.targetOutline.setVisible(visible);
+      if (!visible) return;
+      const ready = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y)
+        && this.isFacingTarget(guide.target);
+      guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
+    });
+  }
+
+  private lockedPortalHintFor(
+    target: QizhenLakeInteractionTarget,
+    runtime: QizhenRuntimeProjection
+  ): string | null {
+    if (target.kind !== "zone_portal") return null;
+    if (target.id === "qizhen_dock_to_open" && !runtime.boardingTutorialCompleted) {
+      return qizhenContent.portals.lockedDockToOpen;
+    }
+    if (target.id === "qizhen_open_to_swan" && !runtime.fishCaught && runtime.phase !== "swan_exchange") {
+      return qizhenContent.portals.lockedOpenToSwan;
+    }
+    if (target.id === "qizhen_open_to_channel" && runtime.phase !== "swan_chase") {
+      if (!runtime.netCombined) return qizhenContent.portals.lockedOpenToChannelNet;
+      if (runtime.feedTinOpened && !runtime.fishCaught) return qizhenContent.portals.lockedOpenToChannelDone;
+    }
+    if (target.id === "qizhen_swan_to_channel" && runtime.phase !== "swan_chase" && !runtime.swanReleased) {
+      return qizhenContent.portals.lockedSwanToChannel;
+    }
+    if (target.id === "qizhen_channel_to_open" && runtime.phase !== "swan_chase" && !runtime.feedTinOpened) {
+      return qizhenContent.portals.lockedChannelToOpen;
+    }
+    return null;
+  }
+
+  private updateLockedPortalHint(
+    targets: readonly QizhenLakeInteractionTarget[],
+    runtime: QizhenRuntimeProjection
+  ): void {
+    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
+    const activeIds = new Set(targets.map((target) => target.id));
+    const portal = targetsForQizhenZone(this.currentZone, this.currentVehicle)
+      .find((target) => (
+        !activeIds.has(target.id)
+        && this.lockedPortalHintFor(target, runtime) !== null
+        && isPlayerWithinRpgTarget(target, this.player.x, this.player.y)
+      ));
+    if (!portal) {
+      this.lockedPortalHintId = null;
+      return;
+    }
+    const now = this.time.now;
+    if (this.lockedPortalHintId === portal.id && now - this.lockedPortalHintAt < LOCKED_PORTAL_HINT_REPEAT_MS) {
+      return;
+    }
+    this.lockedPortalHintId = portal.id;
+    this.lockedPortalHintAt = now;
+    const hint = this.lockedPortalHintFor(portal, runtime)!;
+    this.showFeedback(hint, this.dialogueToneFor(hint));
   }
 
   private updatePrompt(target: QizhenLakeInteractionTarget | null, runtime: QizhenRuntimeProjection): void {
@@ -1339,31 +1756,34 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.promptText.setVisible(false);
       return;
     }
-    const action = target.kind === "outfit"
+    let action = target.kind === "outfit"
       ? target.value === "kayak"
-        ? "确认器材架上的皮划艇"
+        ? qizhenContent.prompts.collectKayak
         : target.value === "left_paddle"
-          ? "拾取花坛边的柳树枝左桨"
-          : "拆下旧三角牌右桨"
+          ? qizhenContent.prompts.collectLeftPaddle
+          : qizhenContent.prompts.collectRightPaddle
       : target.kind === "board"
-        ? "从小码头上船"
+        ? qizhenContent.prompts.board
         : target.kind === "zone_portal"
           ? target.label
           : target.kind === "reflection"
-            ? "观察倒影位置"
+            ? qizhenContent.prompts.observeReflection
             : target.kind === "fishing_spot"
-              ? target.value === "fishing_rod" ? "捞起钓鱼竿" : "在对应位置抛竿"
+              ? target.value === "fishing_rod" ? qizhenContent.prompts.collectRod : qizhenContent.prompts.cast
               : target.kind === "item_use"
                 ? target.label
                 : target.kind === "swan"
-                  ? "把小鲤鱼喂给黑天鹅"
+                  ? qizhenContent.prompts.feedSwan
                   : target.kind === "paper"
                     ? target.value === "paper_reflection" && !runtime.decoyBaitAttached
-                      ? "直接抛竿会失败；拖入假纸条作饵"
-                      : "使用当前钓具"
+                      ? qizhenContent.prompts.decoyFirst
+                      : qizhenContent.prompts.useRig
                     : target.kind === "escape"
-                      ? "冲回小码头"
-                      : "离开启真湖";
+                      ? qizhenContent.prompts.escape
+                      : qizhenContent.prompts.leave;
+    if ((target.kind === "outfit" || target.kind === "board") && runtime.mode !== "light") {
+      action = qizhenContent.prompts.needLight;
+    }
     const itemOnly = target.kind === "paper" && target.value === "paper_reflection" && !runtime.decoyBaitAttached;
     const automaticEscape = target.kind === "escape" && runtime.phase === "swan_chase";
     const camera = this.cameras.main;
@@ -1375,7 +1795,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       .setY(promptY)
       .setText(
         automaticEscape
-          ? "抵达河道左端即自动通过"
+          ? qizhenContent.prompts.escapeAuto
           : itemOnly ? formatRpgDragHint(action) : formatRpgInteractionHint(action)
       )
       .setVisible(true);
@@ -1383,25 +1803,37 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private updateStatus(runtime: QizhenRuntimeProjection): void {
     const zoneLabel = this.currentZone === "dock"
-      ? "小码头"
+      ? qizhenContent.zones.dock
       : this.currentZone === "open_water"
-        ? "启真湖大湖面"
-        : this.currentZone === "channel" ? "浮排直河道" : "黑天鹅围栏";
-    this.zoneText.setText(`${zoneLabel} · ${runtime.mode === "dark" ? "深色观察" : "浅色操作"}`);
+        ? qizhenContent.zones.openWater
+        : this.currentZone === "channel" ? qizhenContent.zones.channel : qizhenContent.zones.swanCove;
+    this.zoneText.setText(`${zoneLabel} · ${RPG_REALITY_MODE_CONTRACT[runtime.mode].label}`);
     if (this.currentVehicle === "kayak") {
       const tilt = Math.round(Math.min(1, Math.abs(this.kayakRoll)) * 100);
-      const danger = tilt >= 70 ? " · 即将翻船" : "";
-      const destination = runtime.phase === "swan_chase" ? " · 左端抵达即通过" : "";
-      this.statusText.setText(`A/← 左桨 · D/→ 右桨 · 侧倾 ${tilt}%${danger}${destination}`);
-      this.statusText.setColor(tilt >= 70 ? "#ffaaa0" : "#fff2b6");
+      const danger = tilt >= 70 ? ` · ${qizhenContent.boarding.capsizeWarning}` : "";
+      const chaseGap = runtime.phase === "swan_chase"
+        ? ` · ${qizhenContent.chase.statusSuffix} · ${qizhenContent.chase.gapLabel} ${Math.max(0, Math.round(this.chaseActualGap))}`
+        : "";
+      const chaseDanger = runtime.phase === "swan_chase" && this.chaseActualGap <= SWAN_CHASE_NEAR_DISTANCE
+        ? ` · ${qizhenContent.chase.dangerClose}`
+        : "";
+      const strokeMode = this.reverseInputHeld
+        ? qizhenContent.boarding.reverseMode
+        : this.kayakSpeed < -0.4
+          ? qizhenContent.boarding.reverseCoast
+          : qizhenContent.boarding.forwardMode;
+      this.statusText.setText(
+        `${qizhenContent.boarding.controls} · ${strokeMode} · ${qizhenContent.boarding.tilt} ${tilt}%${danger}${chaseGap}${chaseDanger}`
+      );
+      this.statusText.setColor(tilt >= 70 || chaseDanger.length > 0 ? "#ffaaa0" : "#fff2b6");
     } else if (!runtime.kayakEquipped) {
-      this.statusText.setText("先确认救生圈旁器材架上的皮划艇").setColor("#fff2b6");
+      this.statusText.setText(qizhenContent.dock.kayakHint).setColor("#fff2b6");
     } else if (!runtime.leftPaddleEquipped) {
-      this.statusText.setText("还缺左桨：留意临水花坛边的细长树枝").setColor("#fff2b6");
+      this.statusText.setText(qizhenContent.dock.leftPaddleHint).setColor("#fff2b6");
     } else if (!runtime.rightPaddleEquipped) {
-      this.statusText.setText("还缺右桨：查看码头设备区的旧三角牌").setColor("#fff2b6");
+      this.statusText.setText(qizhenContent.dock.rightPaddleHint).setColor("#fff2b6");
     } else {
-      this.statusText.setText("三件装备已收齐，走到码头前端上船位").setColor("#fff2b6");
+      this.statusText.setText(qizhenContent.dock.boardPrompt).setColor("#fff2b6");
     }
   }
 
@@ -1429,7 +1861,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.softenedOcclusionIds = softened;
   }
 
-  private playModeTransition(mode: QizhenLakeMode): void {
+  private playModeTransition(mode: QizhenLakeMode, reason?: string): void {
+    const changed = mode !== this.currentMode;
     this.currentMode = mode;
     this.tweens.killTweensOf(this.darkOverlay);
     this.tweens.add({
@@ -1438,6 +1871,13 @@ export class QizhenLakeScene extends Phaser.Scene {
       duration: this.reducedMotion ? 60 : 260,
       ease: "Cubic.easeInOut"
     });
+    if (!changed) return;
+    const text = reason === "dock_return"
+      ? qizhenContent.mist.lightPrompt
+      : mode === "dark"
+        ? qizhenContent.lake.darkPrompt
+        : qizhenContent.lake.lightPrompt;
+    this.showFeedback(text, "system", 2200);
   }
 
   private animateFishingCast(target: QizhenLakeInteractionTarget, splash: boolean): void {
@@ -1489,24 +1929,45 @@ export class QizhenLakeScene extends Phaser.Scene {
     });
   }
 
-  private queueDialogue(lines: readonly string[], onComplete?: () => void): void {
+  private queueDialogue(
+    lines: readonly string[],
+    onComplete?: () => void,
+    stepMs = FEEDBACK_MS
+  ): void {
     this.dialogueLocked = true;
     lines.forEach((text, index) => {
-      this.time.delayedCall(index * FEEDBACK_MS, () => this.showFeedback(text, text.startsWith("任务：") ? "task" : "system"));
+      this.time.delayedCall(index * stepMs, () => {
+        this.showFeedback(text, this.dialogueToneFor(text), stepMs - 120);
+      });
     });
-    this.time.delayedCall(lines.length * FEEDBACK_MS, () => {
+    this.time.delayedCall(lines.length * stepMs, () => {
       this.dialogueLocked = false;
       onComplete?.();
     });
   }
 
-  private showFeedback(text: string, tone: "system" | "task" | "success"): void {
-    this.emitDomain("rpg_subtitle", { text, tone, durationMs: FEEDBACK_MS - 120 });
+  private playSubtitleSequence(lines: readonly string[], stepMs = 1500): void {
+    lines.forEach((text, index) => {
+      this.time.delayedCall(index * stepMs, () => {
+        this.showFeedback(text, this.dialogueToneFor(text), stepMs - 120);
+      });
+    });
+  }
+
+  private dialogueToneFor(text: string): GameSubtitleTone {
+    if (text.startsWith("玩家：")) return "player";
+    if (text.startsWith("系统：")) return "system";
+    if (text.startsWith("任务：")) return "task";
+    return "narrator";
+  }
+
+  private showFeedback(text: string, tone: GameSubtitleTone, durationMs = FEEDBACK_MS - 120): void {
+    this.emitDomain("rpg_subtitle", { text, tone, durationMs });
   }
 
   private emitDropFailure(
     itemId: ItemId,
-    reason: "missed_target" | "wrong_item" | "too_far" | "wrong_mode" | "locked",
+    reason: "missed_target" | "wrong_item" | "too_far" | "wrong_facing" | "wrong_mode" | "locked",
     targetLabel?: string,
     detail?: string
   ): void {
@@ -1514,15 +1975,15 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private dropCorrectionFor(target: QizhenLakeInteractionTarget): string {
-    if (target.value === "paper_reflection") return "先拖入假纸条当饵；直接用普通钓鱼竿只会穿过倒影。";
-    if (target.value === "item_1_to_2") return "这里需要锈蚀储物柜钥匙。";
-    if (target.value === "combine_net") return "把尼龙绳或破损抄网框拖进组合位。";
-    if (target.value === "item_4_to_5") return "这里需要临时抄网。";
-    if (target.value === "item_5_to_6") return "把密封饲料罐拖到硬边上撬开。";
-    if (target.kind === "swan") return "黑天鹅只接受刚钓到的小鲤鱼。";
-    if (target.value === "combine_magnetic_rod") return "把天鹅磁吸件或普通钓鱼竿拖进组合位。";
-    if (target.value === "paper_body") return "需要磁吸钓鱼竿。";
-    return "当前道具与这个目标不匹配。";
+    if (target.value === "paper_reflection") return qizhenContent.decoy.baitFirst;
+    if (target.value === "item_1_to_2") return qizhenContent.toolChain.needKey;
+    if (target.value === "combine_net") return qizhenContent.toolChain.needNetParts;
+    if (target.value === "item_4_to_5") return qizhenContent.toolChain.needDipNet;
+    if (target.value === "item_5_to_6") return qizhenContent.toolChain.needFeedTin;
+    if (target.kind === "swan") return qizhenContent.swan.wrongItem;
+    if (target.value === "combine_magnetic_rod") return qizhenContent.swan.needMagnetParts;
+    if (target.value === "paper_body") return qizhenContent.swan.needMagneticRod;
+    return qizhenContent.drop.wrongItemFallback;
   }
 
   private publishDebugState(
@@ -1538,6 +1999,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         x: Math.round(this.player.x),
         y: Math.round(this.player.y),
         facing: this.currentVehicle === "kayak" ? "side" : this.playerAnimator.facing,
+        cardinalFacing: this.currentVehicle === "kayak" ? undefined : this.playerAnimator.cardinalFacing,
         texture: this.currentVehicle === "kayak" ? "dynamic-kayak-rower" : this.playerAnimator.textureKey,
         turning: this.currentVehicle === "kayak" ? Math.abs(this.kayakRoll) > 0.08 : this.playerAnimator.isTurning,
         walkFps: this.currentVehicle === "kayak" ? undefined : RPG_PLAYER_WALK_FPS,
@@ -1565,7 +2027,8 @@ export class QizhenLakeScene extends Phaser.Scene {
         stand: candidate.stand,
         proximity: candidate.proximity,
         acceptedItem: candidate.acceptedItem,
-        requiredMode: candidate.requiredMode
+        requiredMode: candidate.requiredMode,
+        requiredFacing: candidate.requiredFacing
       })),
       collisionRects: this.getActiveCollisionRects(this.currentVehicle),
       qizhenLake: {
@@ -1579,11 +2042,20 @@ export class QizhenLakeScene extends Phaser.Scene {
         kayak: {
           heading: Number(this.kayakHeading.toFixed(3)),
           speed: Math.round(this.kayakSpeed),
+          travelDirection: this.kayakSpeed < -0.4 ? "reverse" : this.kayakSpeed > 0.4 ? "forward" : "stopped",
+          reverseInputHeld: this.reverseInputHeld,
+          wakeOrigin: this.kayakSpeed < -0.4 ? "bow" : this.kayakSpeed > 0.4 ? "stern" : "none",
           roll: Number(this.kayakRoll.toFixed(3)),
           strokeIndex: this.strokeIndex,
           lastStrokeSide: this.lastStrokeSide,
+          lastStrokeDirection: this.lastStrokeDirection,
           sameSideStreak: this.sameSideStreak,
-          capsizing: this.capsizing
+          capsizing: this.capsizing,
+          boundaryBlocked: this.kayakBoundaryBlocked,
+          boundaryBlockCount: this.boundaryBlockCount,
+          boundaryHeadingAtBlock: Number(this.boundaryHeadingAtBlock.toFixed(3)),
+          boundaryRollAtBlock: Number(this.boundaryRollAtBlock.toFixed(3)),
+          collisionResponse: "stop_preserve_heading_allow_reverse"
         },
         reflectionLocationObserved: runtime.reflectionLocationObserved,
         directPaperCastFailures: runtime.directPaperCastFailures,
@@ -1605,10 +2077,14 @@ export class QizhenLakeScene extends Phaser.Scene {
           finishX: SWAN_CHASE_FINISH_X,
           reachedFinish: this.player.x <= SWAN_CHASE_FINISH_X,
           completing: this.chaseCompleting,
+          failing: this.chaseFailing,
           elapsedSeconds: Number(this.chaseElapsedSeconds.toFixed(2)),
           intensity: Number(this.chaseIntensity.toFixed(3)),
-          desiredGap: Number(this.chaseDesiredGap.toFixed(1)),
-          actualGap: Number(Math.hypot(this.chaseSwanX - this.player.x, this.chaseSwanY - this.player.y).toFixed(1)),
+          actualGap: Number(this.chaseActualGap.toFixed(1)),
+          catchDistance: SWAN_CHASE_CATCH_DISTANCE,
+          catchReady: this.chaseElapsedSeconds >= SWAN_CHASE_GRACE_SECONDS,
+          swanSpeed: Number(this.chaseSwanSpeed.toFixed(1)),
+          speedRule: "far_faster_near_slower",
           swanX: Math.round(this.chaseSwanX),
           swanY: Math.round(this.chaseSwanY)
         },

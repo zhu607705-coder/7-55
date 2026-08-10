@@ -2259,6 +2259,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       dropY: worldPoint.y,
       playerX: this.player.x,
       playerY: this.player.y,
+      playerFacing: this.playerAnimator.cardinalFacing,
       mode: state.canteenHunt.mode
     });
     if (!result.target) {

@@ -1127,6 +1127,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       dropY: world.y,
       playerX: this.player.x,
       playerY: this.player.y,
+      playerFacing: this.playerAnimator.cardinalFacing,
       mode: state.theaterHunt.mode
     });
     if (!result.target) {

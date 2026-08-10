@@ -1,3 +1,9 @@
+import {
+  distanceFromPlayerToRpgTarget,
+  isPlayerWithinRpgTarget,
+  type RpgSpatialInteractionTarget
+} from "./RpgInteractionContract";
+
 export type TheaterProgramId = "opening" | "spotlight" | "finale";
 export type TheaterMode = "light" | "dark";
 export type TheaterItemId =
@@ -5,52 +11,6 @@ export type TheaterItemId =
   | "temporaryTheaterTicket"
   | "spotlightRemote"
   | "fluorescentBrush";
-
-export interface TheaterWorldPoint {
-  x: number;
-  y: number;
-}
-
-export interface RpgSpatialInteractionTarget {
-  id: string;
-  label: string;
-  x: number;
-  y: number;
-  stand?: TheaterWorldPoint;
-  proximity: number;
-  width?: number;
-  height?: number;
-  dropWidth?: number;
-  dropHeight?: number;
-  acceptedItem?: TheaterItemId;
-  requiredMode?: TheaterMode;
-}
-
-export function distanceFromPlayerToRpgTarget(
-  target: RpgSpatialInteractionTarget,
-  playerX: number,
-  playerY: number
-): number {
-  if (target.stand) {
-    return Math.hypot(playerX - target.stand.x, playerY - target.stand.y);
-  }
-  if (target.width && target.height) {
-    const halfWidth = target.width / 2;
-    const halfHeight = target.height / 2;
-    const nearestX = Math.max(target.x - halfWidth, Math.min(playerX, target.x + halfWidth));
-    const nearestY = Math.max(target.y - halfHeight, Math.min(playerY, target.y + halfHeight));
-    return Math.hypot(playerX - nearestX, playerY - nearestY);
-  }
-  return Math.hypot(playerX - target.x, playerY - target.y);
-}
-
-export function isPlayerWithinRpgTarget(
-  target: RpgSpatialInteractionTarget,
-  playerX: number,
-  playerY: number
-): boolean {
-  return distanceFromPlayerToRpgTarget(target, playerX, playerY) <= target.proximity;
-}
 
 export const THEATER_INTERIOR_WORLD = { width: 1672, height: 941 } as const;
 
@@ -133,12 +93,15 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     // reachable side of this fixture. Keep the player out of both collision
     // rectangles while retaining a short, physical interaction distance.
     stand: { x: 476, y: 755 },
-    proximity: 48,
+    width: 230,
+    height: 160,
+    proximity: 80,
     dropWidth: 96,
     dropHeight: 96,
     kind: "poster",
     acceptedItem: "greaseTissue",
-    requiredMode: "light"
+    requiredMode: "light",
+    requiredFacing: "left"
   },
   {
     id: "theater_ticket_kiosk",
@@ -146,7 +109,10 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     x: 1146,
     y: 755,
     stand: { x: 1080, y: 750 },
-    proximity: 72,
+    width: 92,
+    height: 146,
+    proximity: 56,
+    requiredFacing: "right",
     kind: "kiosk"
   },
   {
@@ -155,12 +121,15 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     x: 907,
     y: 690,
     stand: { x: 907, y: 770 },
-    proximity: 70,
+    width: 90,
+    height: 100,
+    proximity: 56,
     dropWidth: 90,
     dropHeight: 100,
     kind: "gate",
     acceptedItem: "temporaryTheaterTicket",
-    requiredMode: "light"
+    requiredMode: "light",
+    requiredFacing: "up"
   },
   { id: "theater_program_opening", label: "开场节目单残页", x: 568, y: 405, proximity: 74, requiredMode: "light", kind: "program", programId: "opening" },
   { id: "theater_program_spotlight", label: "追光节目单残页", x: 1080, y: 594, proximity: 78, requiredMode: "light", kind: "program", programId: "spotlight" },
@@ -171,12 +140,15 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     x: 1140,
     y: 500,
     stand: { x: 1140, y: 590 },
-    proximity: 72,
+    width: 160,
+    height: 100,
+    proximity: 64,
     dropWidth: 130,
     dropHeight: 110,
     kind: "console",
     acceptedItem: "spotlightRemote",
-    requiredMode: "light"
+    requiredMode: "light",
+    requiredFacing: "up"
   },
   { id: "theater_prop_box", label: "后台道具箱", x: 292, y: 229, proximity: 92, kind: "prop" },
   {
@@ -185,12 +157,15 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     x: 364,
     y: 170,
     stand: { x: 420, y: 218 },
-    proximity: 76,
+    width: 42,
+    height: 78,
+    proximity: 56,
     dropWidth: 76,
     dropHeight: 94,
     kind: "scanner",
     acceptedItem: "temporaryTheaterTicket",
-    requiredMode: "light"
+    requiredMode: "light",
+    requiredFacing: ["up", "left"]
   },
   {
     id: "theater_backstage_vent",
@@ -198,14 +173,17 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     x: 936,
     y: 145,
     stand: { x: 936, y: 228 },
-    proximity: 72,
+    width: 78,
+    height: 55,
+    proximity: 64,
     dropWidth: 78,
     dropHeight: 55,
     kind: "vent",
     acceptedItem: "fluorescentBrush",
-    requiredMode: "light"
+    requiredMode: "light",
+    requiredFacing: "up"
   },
-  { id: "theater_exit", label: "剧院出口", x: 836, y: 842, proximity: 110, kind: "exit" }
+  { id: "theater_exit", label: "剧院出口", x: 836, y: 842, proximity: 90, requiredFacing: "down", kind: "exit" }
 ] as const;
 
 export const THEATER_LOBBY_SPAWN = { x: 836, y: 842 } as const;
@@ -222,8 +200,7 @@ export function findNearestTheaterTarget(
   let nearest: TheaterInteractionTarget | null = null;
   let distance = Number.POSITIVE_INFINITY;
   targets.forEach((target) => {
-    const stand = target.stand ?? target;
-    const candidateDistance = Math.hypot(x - stand.x, y - stand.y);
+    const candidateDistance = distanceFromPlayerToRpgTarget(target, x, y);
     if (isPlayerWithinRpgTarget(target, x, y) && candidateDistance < distance) {
       nearest = target;
       distance = candidateDistance;

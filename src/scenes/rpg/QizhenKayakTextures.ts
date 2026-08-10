@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import type { QizhenPaddleDirection } from "../../core/types";
 import kayakFrameAUrl from "../../assets/rpg/qizhen/kayak_overhead_frame_a.png";
 import kayakFrameBUrl from "../../assets/rpg/qizhen/kayak_overhead_frame_b.png";
 
@@ -37,6 +38,8 @@ export class QizhenKayakVisual {
   private readonly sprite: Phaser.GameObjects.Image;
   private readonly wakeLeft: Phaser.GameObjects.Ellipse;
   private readonly wakeRight: Phaser.GameObjects.Ellipse;
+  private readonly bowWakeLeft: Phaser.GameObjects.Ellipse;
+  private readonly bowWakeRight: Phaser.GameObjects.Ellipse;
   private lastHeading = -Math.PI / 2;
   private forcedFrameUntil = 0;
   private forcedFrame: 0 | 1 = 0;
@@ -51,11 +54,23 @@ export class QizhenKayakVisual {
     this.wakeRight = scene.add.ellipse(0, 72, 46, 112, 0xbcefff, 0)
       .setStrokeStyle(2, 0xa8eaff, 0.3)
       .setName("kayakWakeRight");
+    this.bowWakeLeft = scene.add.ellipse(0, -54, 30, 68, 0xd9fbff, 0)
+      .setStrokeStyle(2, 0xe7fdff, 0.5)
+      .setName("kayakReverseWakeLeft");
+    this.bowWakeRight = scene.add.ellipse(0, -66, 44, 94, 0xbcefff, 0)
+      .setStrokeStyle(2, 0xbcefff, 0.36)
+      .setName("kayakReverseWakeRight");
     this.sprite = scene.add.image(0, 0, KAYAK_FRAME_A_KEY)
       .setName("qizhenKayakTwoFrameSprite");
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.body = scene.add.container(0, 0, [this.sprite]);
-    this.root = scene.add.container(0, 0, [this.wakeRight, this.wakeLeft, this.body])
+    this.root = scene.add.container(0, 0, [
+      this.wakeRight,
+      this.wakeLeft,
+      this.bowWakeRight,
+      this.bowWakeLeft,
+      this.body
+    ])
       .setDepth(1900)
       .setScale(KAYAK_DISPLAY_SCALE)
       .setVisible(false)
@@ -71,7 +86,9 @@ export class QizhenKayakVisual {
     if (this.destroyed) return;
     this.lastHeading = pose.heading;
     const rollRatio = Phaser.Math.Clamp(pose.roll, -1, 1);
-    const speedRatio = Phaser.Math.Clamp(Math.abs(pose.speed) / 360, 0, 1);
+    const forwardSpeedRatio = Phaser.Math.Clamp(Math.max(0, pose.speed) / 360, 0, 1);
+    const reverseSpeedRatio = Phaser.Math.Clamp(Math.max(0, -pose.speed) / 230, 0, 1);
+    const speedRatio = Math.max(forwardSpeedRatio, reverseSpeedRatio);
     this.root
       .setPosition(pose.x, pose.y)
       .setRotation(pose.heading + Math.PI / 2)
@@ -80,19 +97,29 @@ export class QizhenKayakVisual {
       .setPosition(0, rollRatio * 5)
       .setAngle(0)
       .setScale(1 + (pose.chasing ? 0.012 : 0));
-    this.wakeLeft.setAlpha(0.12 + speedRatio * 0.54).setScale(0.76 + speedRatio * 0.7);
-    this.wakeRight.setAlpha(0.08 + speedRatio * 0.36).setScale(0.68 + speedRatio * 0.9);
+    this.wakeLeft
+      .setAlpha(forwardSpeedRatio * 0.66)
+      .setScale(0.76 + forwardSpeedRatio * 0.7);
+    this.wakeRight
+      .setAlpha(forwardSpeedRatio * 0.44)
+      .setScale(0.68 + forwardSpeedRatio * 0.9);
+    this.bowWakeLeft
+      .setAlpha(reverseSpeedRatio * 0.72)
+      .setScale(0.7 + reverseSpeedRatio * 0.82);
+    this.bowWakeRight
+      .setAlpha(reverseSpeedRatio * 0.5)
+      .setScale(0.62 + reverseSpeedRatio * 0.96);
     const automaticFrame = Math.floor(this.scene.time.now / (speedRatio > 0.08 ? 150 : 420)) % 2 as 0 | 1;
     const frame = this.scene.time.now < this.forcedFrameUntil ? this.forcedFrame : automaticFrame;
     this.sprite.setTexture(frame === 0 ? KAYAK_FRAME_A_KEY : KAYAK_FRAME_B_KEY);
   }
 
-  stroke(side: QizhenPaddleSide, intensity = 1): void {
+  stroke(side: QizhenPaddleSide, direction: QizhenPaddleDirection, intensity = 1): void {
     if (this.destroyed || !this.root.visible) return;
     this.forcedFrame = side === "left" ? 1 : 0;
     this.forcedFrameUntil = this.scene.time.now + 180;
     this.sprite.setTexture(this.forcedFrame === 0 ? KAYAK_FRAME_A_KEY : KAYAK_FRAME_B_KEY);
-    this.splash(side, intensity);
+    this.splash(side, direction, intensity);
   }
 
   playCapsize(onComplete: () => void): void {
@@ -122,7 +149,7 @@ export class QizhenKayakVisual {
     this.root.destroy(true);
   }
 
-  private splash(side: QizhenPaddleSide, intensity: number): void {
+  private splash(side: QizhenPaddleSide, direction: QizhenPaddleDirection, intensity: number): void {
     const sideAngle = this.lastHeading + (side === "left" ? -Math.PI / 2 : Math.PI / 2);
     const x = this.root.x + Math.cos(sideAngle) * 48;
     const y = this.root.y + Math.sin(sideAngle) * 48;
@@ -138,6 +165,31 @@ export class QizhenKayakVisual {
       duration: 430,
       ease: "Cubic.easeOut",
       onComplete: () => splash.destroy()
+    });
+
+    const forwardX = Math.cos(this.lastHeading);
+    const forwardY = Math.sin(this.lastHeading);
+    const wakeOffset = direction === "reverse" ? 58 : -58;
+    const strokeWake = this.scene.add.ellipse(
+      this.root.x + forwardX * wakeOffset,
+      this.root.y + forwardY * wakeOffset,
+      direction === "reverse" ? 34 : 42,
+      direction === "reverse" ? 18 : 14,
+      0xd7fbff,
+      0
+    )
+      .setStrokeStyle(3, direction === "reverse" ? 0xf3ffff : 0xcdf7ff, 0.9)
+      .setRotation(this.lastHeading)
+      .setDepth(this.root.depth - 1)
+      .setScale(0.5);
+    this.scene.tweens.add({
+      targets: strokeWake,
+      scaleX: 1.7 + intensity * 0.32,
+      scaleY: 1.2 + intensity * 0.16,
+      alpha: { from: 0.94, to: 0 },
+      duration: direction === "reverse" ? 520 : 460,
+      ease: "Cubic.easeOut",
+      onComplete: () => strokeWake.destroy()
     });
   }
 }

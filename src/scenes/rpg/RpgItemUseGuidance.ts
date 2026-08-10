@@ -38,7 +38,7 @@ const ELSEWHERE_HINTS: Partial<Record<ItemId, string>> = {
   reflectionCoordinate: "坐标会在启真湖布置假纸条时自动核验"
 };
 
-const ready = (targetLabel: string, detail = "拖到场景中的高亮区域，并在框内松手。"): RpgItemUseGuidance => ({
+const ready = (targetLabel: string, detail = "靠近并面向目标，把道具拖到物体本身后松手。"): RpgItemUseGuidance => ({
   status: "ready",
   title: "当前可以使用",
   detail,
@@ -92,7 +92,7 @@ export function selectRpgItemUseGuidance(
         && puzzle.itemReportGenerated
         && puzzle.lostFoundStage === "ready"
         && !puzzle.nonPersonProofStamped
-        ? ready("前台工作人员", "把物品识别报告拖到信息台工作人员和柜台之间的高亮区域。")
+        ? ready("前台工作人员", "靠近并面向前台，把物品识别报告拖到工作人员与盖章台之间。")
         : locked("先在照片页面生成物品识别报告。", "前台工作人员");
     }
     if (itemId === "rightArrow") {
@@ -162,7 +162,7 @@ export function selectRpgItemUseGuidance(
       if (theater.posterCleaned) return passive("海报玻璃已经擦净。");
       if (theater.phase !== "entry_ticket") return locked("擦拭海报只在剧院入口取票阶段开放。", "入口海报");
       if (theater.mode !== "light") return locked("切回浅色模式后擦拭海报玻璃。", "入口海报");
-      return ready("入口海报玻璃", "先走到海报右侧的蓝色站位，再把油渍纸巾拖进海报玻璃上的高亮框。");
+      return ready("入口海报玻璃", "从海报右侧靠近并面向左，把油渍纸巾拖到玻璃污渍上。");
     }
     if (itemId === "temporaryTheaterTicket") {
       if (theater.phase === "entry_ticket" && !theater.admitted) {
@@ -171,7 +171,7 @@ export function selectRpgItemUseGuidance(
         }
         return ready(
           "检票闸机右侧读票器",
-          "先让人物站进读票器前的蓝色站位，再把票拖进发光的「验票」槽内松手。"
+          "靠近并面向读票器，把票拖到右侧验票槽内松手。"
         );
       }
       if (theater.phase === "prop_setup") {
@@ -184,7 +184,7 @@ export function selectRpgItemUseGuidance(
         }
         return ready(
           "道具箱旁票据扫描器",
-          "人物站进扫描器前的蓝色站位后，把票拖进发光的扫描口内松手。"
+          "靠近并面向道具箱旁的扫描器，把票拖到扫描口内松手。"
         );
       }
       if (theater.admitted && ["program_search"].includes(theater.phase)) {
@@ -200,7 +200,7 @@ export function selectRpgItemUseGuidance(
       if (theater.mode !== "light") {
         return locked("切回浅色操作后，把荧光粉刷拖入通风口。", "后台通风口");
       }
-      return ready("后台通风口", "人物站到通风口前的蓝色站位后，把荧光粉刷拖进通风口高亮框。");
+      return ready("后台通风口", "靠近并面向通风口，把荧光粉刷拖到栅格上。");
     }
     if (itemId === "spotlightRemote") {
       if (theater.phase !== "spotlight_ready" || !theater.paperDusted) {
@@ -209,7 +209,7 @@ export function selectRpgItemUseGuidance(
       if (theater.mode !== "light") {
         return locked("深色模式只观察追光残影；切回浅色操作后启动灯光控制台。", "灯光控制台");
       }
-      return ready("灯光控制台", "人物站进控制台下方的蓝色站位后，把追光灯遥控器拖进控制台高亮框。");
+      return ready("灯光控制台", "从下方靠近并面向控制台，把追光灯遥控器拖到控制面板上。");
     }
     if (["theaterProgramOpening", "theaterProgramSpotlight", "theaterProgramFinale"].includes(itemId)) {
       return passive("靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。");
@@ -234,7 +234,7 @@ export function selectRpgItemUseGuidance(
         return locked("先在深色观察中记录纸条倒影。", "纸条倒影装饵框");
       }
       return requireLight("纸条倒影装饵框")
-        ?? ready("纸条倒影装饵框", "把假纸条拖进纸条倒影的发光框，系统会将它固定到鱼钩。");
+        ?? ready("纸条倒影水纹", "让船头对准纸条倒影，把假纸条拖到对应水纹。");
     }
 
     if (itemId === "fishingRod") {
@@ -243,7 +243,7 @@ export function selectRpgItemUseGuidance(
           return locked("先划到黑天鹅围栏区。", "船头磁吸组合位");
         }
         return requireLight("工具装配框")
-          ?? ready("工具装配框", "把钓鱼竿拖到道具 7 所在的装配框。");
+          ?? ready("船头工具区", "让船头对准工具区，把钓鱼竿拖到天鹅磁扣旁。");
       }
       if (lake.zone !== "open_water") {
         return locked("当前抛竿点位于大湖，先划回大湖。", "已观察的抛竿点");
@@ -252,7 +252,7 @@ export function selectRpgItemUseGuidance(
         return locked("先把假纸条拖到钓鱼竿装饵框。", "钓鱼竿装饵框");
       }
       return requireLight("已观察的抛竿点")
-        ?? ready("已观察的抛竿点", "拖到倒影坐标的高亮水纹。直接钓纸条会显示失败原因。");
+        ?? ready("已观察的抛竿点", "让船头对准已记录的倒影水纹后抛竿。直接钓纸条会显示失败原因。");
     }
 
     if (itemId === "rustedLockerKey") {
@@ -261,7 +261,7 @@ export function selectRpgItemUseGuidance(
         : lake.zone !== "dock"
           ? locked("返回小码头，储物柜锁孔只在码头区域开放。", "码头储物柜")
         : requireLight("码头储物柜")
-          ?? ready("码头储物柜", "返回小码头，靠近柜门站位后把钥匙拖入锁孔。");
+          ?? ready("码头储物柜", "返回小码头，靠近并面向柜门，把钥匙拖到锁孔。");
     }
 
     if (itemId === "nylonCord" || itemId === "brokenNetFrame") {
@@ -283,7 +283,7 @@ export function selectRpgItemUseGuidance(
         : lake.zone !== "channel"
           ? locked("进入浮排直河道，再靠近浮排系绳。", "浮排系绳下方")
         : requireLight("浮排系绳下方")
-          ?? ready("浮排系绳下方", "进入直河道，靠近浮排交互位后把抄网拖入高亮框。");
+          ?? ready("浮排系绳下方", "进入直河道，让船头对准浮排下方，把抄网拖到密封饲料盒上。");
     }
 
     if (itemId === "sealedFeedTin") {
@@ -292,7 +292,7 @@ export function selectRpgItemUseGuidance(
         : lake.zone !== "channel"
           ? locked("返回浮排直河道，开盒位在浮排上缘。", "浮排开盒位")
         : requireLight("浮排开盒位")
-          ?? ready("浮排开盒位", "把密封饲料盒拖入标有「开启」的高亮框。");
+          ?? ready("浮排硬边", "让船头对准浮排硬边，把密封饲料盒拖到边缘上开启。");
     }
 
     if (itemId === "fishFeedPellets") {
@@ -308,7 +308,7 @@ export function selectRpgItemUseGuidance(
     if (itemId === "smallCarp") {
       return requireLight("黑天鹅投喂区")
         ?? (lake.zone === "swan_cove"
-          ? ready("黑天鹅投喂区", "靠近围栏前站位，把小鲤鱼拖入投喂框。")
+          ? ready("黑天鹅", "让船头对准黑天鹅，把小鲤鱼拖到天鹅面前。")
           : locked("划到黑天鹅围栏区。", "黑天鹅投喂区"));
     }
 

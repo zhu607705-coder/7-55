@@ -106,7 +106,15 @@ function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
       itemId,
       tone: "warning",
       title: "目标命中，人物距离不足",
-      detail: customDetail || `先让人物走到「${targetLabel}」旁边，再拖入道具。`
+      detail: customDetail || `靠近「${targetLabel}」后再拖入道具。`
+    };
+  }
+  if (reason === "wrong_facing") {
+    return {
+      itemId,
+      tone: "warning",
+      title: "需要面向目标",
+      detail: customDetail || `面向「${targetLabel}」后再拖入道具。`
     };
   }
   if (reason === "wrong_item") {
@@ -122,7 +130,7 @@ function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
       itemId,
       tone: "error",
       title: "没有放进目标范围",
-      detail: customDetail || "拖动位置有效，但松手点落在高亮框外。"
+      detail: customDetail || "请把道具放到画面中对应的真实物体上。"
     };
   }
   if (reason === "wrong_mode") {
@@ -350,7 +358,7 @@ export function RpgInventoryDock({
       events.emit("rpg_item_use_feedback", {
         itemId: drag.itemId,
         reason: "missed_target",
-        detail: "道具没有进入游戏画布，请拖到场景内的高亮目标。"
+        detail: "道具没有进入游戏画布，请拖到场景中的对应物体。"
       });
     }
     events.emit("rpg_inventory_drag_ended", { itemId: drag.itemId, surface: "rpg" });
@@ -372,7 +380,7 @@ export function RpgInventoryDock({
       <InventoryAcquisitionFlight item={recentItem} className="rpg-inventory-acquisition-flight" />
       <header>
         <strong>道具</strong>
-        <span>按住查看可用时机 · 拖到高亮目标</span>
+        <span>靠近并面向物体 · 拖到物体本身</span>
       </header>
       {guidance ? (
         <div className={`rpg-item-use-guidance is-${guidance.status}`} role="status">

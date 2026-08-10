@@ -12,6 +12,7 @@ import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
 import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
 import playerUp3Url from "../../assets/rpg/player/player_up_3.png";
+import type { RpgCardinalFacing } from "./RpgInteractionContract";
 
 export type RpgPlayerFacing = "down" | "up" | "side";
 
@@ -238,6 +239,13 @@ export class RpgPlayerAnimator {
   }
 
   get facing(): RpgPlayerFacing {
+    return this.targetFacing;
+  }
+
+  get cardinalFacing(): RpgCardinalFacing {
+    if (this.targetFacing === "side") {
+      return this.targetFlipX ? "left" : "right";
+    }
     return this.targetFacing;
   }
 

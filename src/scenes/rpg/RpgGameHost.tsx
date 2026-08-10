@@ -12,6 +12,7 @@ import type {
   QizhenFishingSpotId,
   QizhenLakeMode,
   QizhenLakeZone,
+  QizhenPaddleDirection,
   QizhenPaddleSide,
   RpgCheckpointId,
   RpgSceneId,
@@ -210,6 +211,9 @@ export function RpgGameHost({
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const theaterRuntimePort = useMemo(() => createTheaterRuntimePort(bridge), [bridge]);
   const runtimeScene = resolveRuntimeScene(state);
+  const [kayakReverseHeld, setKayakReverseHeld] = useState(false);
+  const kayakReverseHeldRef = useRef(false);
+  const kayakReversePointerRef = useRef<number | null>(null);
   const runtimeSelection = useMemo(() => getRpgRuntimeSelection(runtimeScene), [runtimeScene]);
   const [failedGodotScene, setFailedGodotScene] = useState<RpgSceneId | null>(null);
   const [godotTheaterPanel, setGodotTheaterPanel] = useState<GodotTheaterPanelKind | null>(null);
@@ -675,7 +679,10 @@ export function RpgGameHost({
       } else if (event.name === "rpg_qizhen_board_requested") {
         qizhenController.boardKayak();
       } else if (event.name === "rpg_qizhen_paddle_requested") {
-        qizhenController.recordPaddleStroke(String(event.payload?.side ?? "left") as QizhenPaddleSide);
+        qizhenController.recordPaddleStroke(
+          String(event.payload?.side ?? "left") as QizhenPaddleSide,
+          (String(event.payload?.direction ?? "forward") === "reverse" ? "reverse" : "forward") as QizhenPaddleDirection
+        );
       } else if (event.name === "rpg_qizhen_capsized") {
         qizhenController.recordCapsize(String(event.payload?.reason ?? "balance_limit"));
       } else if (event.name === "rpg_qizhen_zone_requested") {
@@ -716,6 +723,8 @@ export function RpgGameHost({
         emitQizhenItemFeedback(events, itemId, result, "纸条本体水纹");
       } else if (event.name === "rpg_qizhen_chase_progress") {
         qizhenController.recordChaseProgress(Number(event.payload?.distance ?? 0));
+      } else if (event.name === "rpg_qizhen_chase_failed") {
+        qizhenController.recordChaseFailure(String(event.payload?.reason ?? "swan_caught"));
       } else if (event.name === "rpg_qizhen_escape_completed_requested") {
         qizhenController.completeEscape();
       }
@@ -797,10 +806,10 @@ export function RpgGameHost({
 
     const stopDirection = (event: PointerEvent, preserveShortTap: boolean) => {
       const activePointer = activeDirectionPointerRef.current;
-      if (activePointer && activePointer.pointerId !== event.pointerId) return;
+      if (!activePointer || activePointer.pointerId !== event.pointerId) return;
       activeDirectionPointerRef.current = null;
       clearStopTimer();
-      const elapsed = activePointer ? performance.now() - activePointer.startedAt : MIN_TOUCH_DIRECTION_PULSE_MS;
+      const elapsed = performance.now() - activePointer.startedAt;
       const remaining = preserveShortTap ? Math.max(0, MIN_TOUCH_DIRECTION_PULSE_MS - elapsed) : 0;
       if (remaining <= 0) {
         emitStop();
@@ -834,6 +843,39 @@ export function RpgGameHost({
   }, [events]);
 
   useEffect(() => {
+    const releaseReverse = (event?: PointerEvent) => {
+      if (event && kayakReversePointerRef.current !== null && kayakReversePointerRef.current !== event.pointerId) return;
+      kayakReversePointerRef.current = null;
+      if (!kayakReverseHeldRef.current) return;
+      kayakReverseHeldRef.current = false;
+      setKayakReverseHeld(false);
+      events.emit("rpg_qizhen_reverse_changed", { held: false, pointerType: event?.pointerType ?? "system" });
+    };
+    const releaseOnPointer = (event: PointerEvent) => releaseReverse(event);
+    const releaseImmediately = () => releaseReverse();
+    window.addEventListener("pointerup", releaseOnPointer, true);
+    window.addEventListener("pointercancel", releaseOnPointer, true);
+    window.addEventListener("blur", releaseImmediately);
+    window.addEventListener("pagehide", releaseImmediately);
+    return () => {
+      window.removeEventListener("pointerup", releaseOnPointer, true);
+      window.removeEventListener("pointercancel", releaseOnPointer, true);
+      window.removeEventListener("blur", releaseImmediately);
+      window.removeEventListener("pagehide", releaseImmediately);
+      releaseImmediately();
+    };
+  }, [events]);
+
+  useEffect(() => {
+    if (runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak") return;
+    kayakReversePointerRef.current = null;
+    if (!kayakReverseHeldRef.current) return;
+    kayakReverseHeldRef.current = false;
+    setKayakReverseHeld(false);
+    events.emit("rpg_qizhen_reverse_changed", { held: false, pointerType: "system" });
+  }, [events, runtimeScene, state.qizhenLake.vehicle]);
+
+  useEffect(() => {
     const handleFullscreenKey = (event: KeyboardEvent) => {
       if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         toggleRpgFullscreen();
@@ -856,6 +898,32 @@ export function RpgGameHost({
     }
     events.emit("rpg_direction_changed", { x, y });
     event.preventDefault();
+  }
+
+  function holdKayakReverse(event: React.PointerEvent<HTMLButtonElement>) {
+    if (kayakReversePointerRef.current !== null && kayakReversePointerRef.current !== event.pointerId) {
+      event.preventDefault();
+      return;
+    }
+    kayakReversePointerRef.current = event.pointerId;
+    kayakReverseHeldRef.current = true;
+    setKayakReverseHeld(true);
+    try {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    } catch {
+      // Pointer capture is optional in older WebKit and some embedded browsers.
+    }
+    events.emit("rpg_qizhen_reverse_changed", { held: true, pointerType: event.pointerType });
+    event.preventDefault();
+  }
+
+  function releaseKayakReverse(event: React.PointerEvent<HTMLButtonElement>) {
+    if (kayakReversePointerRef.current !== null && kayakReversePointerRef.current !== event.pointerId) return;
+    kayakReversePointerRef.current = null;
+    if (!kayakReverseHeldRef.current) return;
+    kayakReverseHeldRef.current = false;
+    setKayakReverseHeld(false);
+    events.emit("rpg_qizhen_reverse_changed", { held: false, pointerType: event.pointerType });
   }
 
   function returnToPhone() {
@@ -1097,32 +1165,53 @@ export function RpgGameHost({
         />
 
         {state.actOne.controlsInstalled && touchControls && !chaseActive && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
-          <nav className="rpg-kayak-controls" aria-label="皮划艇左右桨和交互按钮">
+          <nav className="rpg-kayak-controls" aria-label="皮划艇左右桨、后划和交互按钮">
             <button
               type="button"
               className="left-paddle"
               aria-label="划左桨，键盘使用 A 或左方向键"
               onPointerDown={(event) => {
-                events.emit("rpg_qizhen_paddle_input", { side: "left", pointerType: event.pointerType });
+                events.emit("rpg_qizhen_paddle_input", {
+                  side: "left",
+                  direction: kayakReverseHeldRef.current ? "reverse" : "forward",
+                  pointerType: event.pointerType
+                });
                 event.preventDefault();
               }}
             >
               <PixelIcon name="willowBranchPaddle" size={34} />
               <span>左桨</span>
             </button>
-            <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
+            <button
+              type="button"
+              className={`reverse-paddle ${kayakReverseHeld ? "is-active" : ""}`.trim()}
+              aria-label="按住后划，再点击左桨或右桨"
+              aria-pressed={kayakReverseHeld}
+              onPointerDown={holdKayakReverse}
+              onPointerUp={releaseKayakReverse}
+              onPointerCancel={releaseKayakReverse}
+              onLostPointerCapture={releaseKayakReverse}
+            >
+              <strong>↓</strong>
+              <span>后划</span>
+            </button>
             <button
               type="button"
               className="right-paddle"
               aria-label="划右桨，键盘使用 D 或右方向键"
               onPointerDown={(event) => {
-                events.emit("rpg_qizhen_paddle_input", { side: "right", pointerType: event.pointerType });
+                events.emit("rpg_qizhen_paddle_input", {
+                  side: "right",
+                  direction: kayakReverseHeldRef.current ? "reverse" : "forward",
+                  pointerType: event.pointerType
+                });
                 event.preventDefault();
               }}
             >
               <PixelIcon name="warningSignPaddle" size={34} />
               <span>右桨</span>
             </button>
+            <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
           </nav>
         ) : state.actOne.controlsInstalled && touchControls && !chaseActive ? (
           <nav

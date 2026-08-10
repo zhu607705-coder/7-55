@@ -62,27 +62,47 @@
       "系统：左桨是去掉叶子的树枝，右桨是禁止游泳三角牌。",
       "玩家：先完成上船平衡。"
     ],
-    "outfitPrompt": "皮划艇在器材架，两支桨散落在码头环境里。靠近实物后分别拾取。",
+    "outfitPrompt": "任务：皮划艇在器材架，两支桨散落在码头环境里。靠近实物后分别拾取。",
     "kayakHint": "先查看救生圈旁的器材架。",
     "leftPaddleHint": "左桨是去掉叶子的树枝，临水绿化边可能找得到。",
     "rightPaddleHint": "右桨来自旧三角牌，码头设备区留有一块。",
     "boardPrompt": "三件装备收齐后，到码头前端上船，再交替划左右桨。",
-    "leaveLocked": "先把皮划艇划回小码头并上岸。"
+    "leaveLocked": "先把皮划艇划回小码头并上岸。",
+    "kayakCollected": "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。",
+    "leftPaddleCollected": "柳树枝长度合适，已作为左桨。还要找另一侧的桨。",
+    "rightPaddleCollected": "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。",
+    "outfitComplete": "皮划艇和两支临时桨都已收齐。去码头前端上船。"
   },
   "boarding": {
     "title": "上船平衡",
-    "instruction": "A/左方向键划左桨，D/右方向键划右桨。连续交替四次完成上船。",
+    "instruction": "A/左方向键划左桨，D/右方向键划右桨，默认向前。按住 S 或下方向键再划任一侧可后退。上船时先连续交替前划四次。",
     "sameSide": "连续划同一侧会增大倾角。",
+    "reverseTutorial": "后划可以离岸或修正位置；上船平衡仍需交替前划。",
     "capsize": "皮划艇翻转，已回到最近安全点。",
-    "complete": "平衡已稳定，可以进入大湖。"
+    "complete": "平衡已稳定，可以进入大湖。",
+    "start": "上船阶段横向稳定性低。左右桨默认前划；先交替前划四次稳住重心。按住下方向键再划任一侧可后退。",
+    "strokes": [
+      "任务：交替第 1 次，继续保持。",
+      "任务：交替第 2 次，船身渐稳。",
+      "任务：交替第 3 次，还差一次。"
+    ],
+    "capsizeSameSide": "连续划同一侧导致翻船，左右交替可以稳住船身。",
+    "boundaryBlocked": "船身被边界挡住。船头方向保持不变；按住 S 或下方向键，再交替划左右桨倒出。",
+    "controls": "A/← 左桨 · D/→ 右桨 · ↓/S+左/右 后划",
+    "forwardMode": "默认前划",
+    "reverseMode": "后划已按住",
+    "reverseCoast": "后退中",
+    "tilt": "侧倾",
+    "capsizeWarning": "即将翻船"
   },
   "lake": {
     "lightPrompt": "浅色操作：划船、取物、抛竿和组合道具。",
     "darkPrompt": "深色观察：记录纸条倒影和物品位置。",
     "unobserved": "这个坐标尚未在深色观察中记录。",
-    "rodFound": "已在浮排边找到钓鱼竿。",
+    "rodFound": "系统：已在浮排边找到钓鱼竿。",
     "baitAttached": "假纸条已固定在鱼钩上。",
-    "directPaperFailure": "普通鱼钩无法固定纸条。先完成湖区道具链。"
+    "directPaperFailure": "普通鱼钩无法固定纸条。先完成湖区道具链。",
+    "baitNext": "任务：去钥匙倒影对应的浅色水面抛竿。"
   },
   "items": {
     "rustedLockerKey": "道具 1：生锈的柜门钥匙",
@@ -97,22 +117,33 @@
   },
   "swan": {
     "feedPrompt": "把小鲤鱼放到黑天鹅面前的投喂区。",
-    "reward": "黑天鹅留下一枚磁性扣。",
+    "reward": "系统：黑天鹅吞下小鲤鱼，推来一枚磁性扣。",
     "paperCapture": "磁性钓鱼竿已固定纸条。",
-    "gateRelease": "纸条触发围栏机关，黑天鹅进入直河道。"
+    "gateRelease": "纸条触发围栏机关，黑天鹅进入直河道。",
+    "combineHint": "任务：把磁性扣和钓鱼竿拖到船头磁吸组合位。",
+    "rodReady": "磁性钓鱼竿组合完成，现在可以钓纸条本体。",
+    "wrongItem": "黑天鹅只接受刚钓到的小鲤鱼。",
+    "needMagnetParts": "把黑天鹅磁性扣或钓鱼竿拖进组合位。",
+    "needMagneticRod": "需要磁性钓鱼竿。"
   },
   "chase": {
     "title": "黑天鹅追逐",
-    "instruction": "交替划桨驶向河道左端，抵达终点后自动通过。",
+    "instruction": "交替划桨驶向河道左端。停划或撞上障碍会让黑天鹅追上船体。",
+    "caught": "黑天鹅撞上船尾，追逐失败。",
     "failed": "已回到直河道追逐检查点。",
-    "complete": "已返回小码头。磁性扣损坏，纸条再次逃离。"
+    "complete": "已返回小码头。磁性扣损坏，纸条再次逃离。",
+    "finishReached": "已抵达河道另一端。",
+    "statusSuffix": "左端抵达即通过",
+    "gapLabel": "追击距离",
+    "dangerClose": "黑天鹅接近船尾"
   },
   "reflection": {
     "dialogue": ["玩家：纸条只在倒影里出现。", "系统：切换深色观察后记录它的坐标。"],
+    "afterPaper": ["系统：位置已记录。", "任务：切回浅色操作，在浮排边捞起漂浮的钓鱼竿。"],
     "lightWater": "浅色操作只显示实体水纹。",
     "darkWater": "深色观察显示纸条倒影和物品位置。",
     "wrong": "该位置没有记录到目标。",
-    "correct": "位置已记录。",
+    "correct": "位置已记录，切回浅色操作后抛竿。",
     "task": "在启真湖找到纸条"
   },
   "signs": {
@@ -124,17 +155,70 @@
     "coordinateLight": "切回浅色操作后抛竿。"
   },
   "decoy": {
-    "dialogue": ["把假纸条固定到钓鱼竿上。"],
+    "dialogue": ["任务：把假纸条固定到钓鱼竿上作饵。"],
     "missingCoordinate": "先在深色观察中确认坐标。",
-    "correct": "假纸条已作为诱饵。",
-    "darkReveal": "倒影中出现可抛竿的位置。"
+    "correct": "系统：假纸条已装成诱饵，固定到鱼钩上。",
+    "darkReveal": "倒影中出现可抛竿的位置。",
+    "baitFirst": "先拖入假纸条当饵；直接用普通钓鱼竿只会穿过倒影。"
   },
   "mist": {
     "lightPrompt": "当前为浅色操作。",
     "darkPrompt": "当前为深色观察。",
+    "modeLocked": "当前阶段无法切换观察模式。",
     "wrongDialogue": ["操作未命中已观察坐标。"],
     "wrong": "未命中目标。",
     "successDialogue": ["目标已命中。"]
+  },
+  "toolChain": {
+    "keyCaught": "钓起一把生锈的柜门钥匙，回小码头储物柜试试。",
+    "netFrameCaught": "钓起一个破损网框，也许能和尼龙绳组合。",
+    "lockerOpened": "码头储物柜打开，里面是一卷尼龙绳。",
+    "netCombined": "尼龙绳已经固定到破损网框，临时抄网完成。去浮排河道取下密封盒。",
+    "feedTinRetrieved": "临时抄网从浮排下捞出了密封饲料盒。",
+    "feedTinOpened": "在浮排硬边撬开盒盖，得到鱼食颗粒。",
+    "fishCaught": "鱼食颗粒引来一条小鲤鱼。带去黑天鹅围栏。",
+    "needKey": "这里需要生锈的柜门钥匙。",
+    "needNetParts": "把尼龙绳或破损网框拖进组合位。",
+    "needDipNet": "这里需要临时抄网。",
+    "needFeedTin": "把密封饲料盒拖到硬边上撬开。"
+  },
+  "drop": {
+    "missedTargetNoCoords": "把道具拖到场景中对应的真实物体。",
+    "missedTarget": "没有命中当前可用物体，靠近并对准后重试。",
+    "wrongMode": "当前是深色观察，切到浅色操作后再使用实体道具。",
+    "tooFar": "目标对了，先把皮划艇划进标记圈。",
+    "tooFarGeneric": "先把人物或皮划艇划到发光范围内。",
+    "wrongItemFallback": "当前道具与这个目标不匹配。"
+  },
+  "prompts": {
+    "collectKayak": "确认器材架上的皮划艇",
+    "collectLeftPaddle": "拾取花坛边的柳树枝左桨",
+    "collectRightPaddle": "拆下旧三角牌右桨",
+    "board": "从小码头上船",
+    "observeReflection": "观察倒影位置",
+    "collectRod": "捞起钓鱼竿",
+    "cast": "在对应位置抛竿",
+    "feedSwan": "把小鲤鱼喂给黑天鹅",
+    "decoyFirst": "直接抛竿会失败；拖入假纸条作饵",
+    "useRig": "使用当前钓具",
+    "escape": "冲回小码头",
+    "escapeAuto": "抵达河道左端即自动通过",
+    "leave": "离开启真湖",
+    "needLight": "切回浅色操作后再动手"
+  },
+  "zones": {
+    "dock": "小码头",
+    "openWater": "启真湖大湖面",
+    "channel": "浮排直河道",
+    "swanCove": "黑天鹅围栏"
+  },
+  "portals": {
+    "lockedDockToOpen": "任务：先完成上船平衡，再划向大湖。",
+    "lockedOpenToSwan": "任务：先在大湖面钓到小鲤鱼，再前往黑天鹅围栏。",
+    "lockedOpenToChannelNet": "任务：先把尼龙绳和破损网框组合成临时抄网。",
+    "lockedOpenToChannelDone": "任务：浮排河道的事已完成，去鱼群水纹钓小鲤鱼。",
+    "lockedSwanToChannel": "任务：围栏机关还没触发，先用磁性钓鱼竿取出纸条。",
+    "lockedChannelToOpen": "任务：先捞起浮排下的密封饲料盒，并在浮排硬边撬开。"
   },
   "quest": {
     "dock": "在小码头分别找齐皮划艇和左右桨",
@@ -150,6 +234,52 @@
       "深色观察记录坐标，浅色操作完成抛竿。",
       "普通鱼钩无法直接固定纸条。",
       "道具会在最后一次成功使用后消失。"
-    ]
+    ],
+    "steps": {
+      "findRod": {
+        "label": "在大湖面捞起钓鱼竿",
+        "hints": ["切回浅色操作，在大湖面浮排边捞起钓鱼竿。", "捞竿前先确认已在深色观察记录纸条倒影。"]
+      },
+      "attachDecoy": {
+        "label": "把假纸条装上钓鱼竿作饵",
+        "hints": ["把假纸条拖到大湖面的纸条倒影上装饵。", "直接对倒影抛竿只会穿过去。"]
+      },
+      "catchKey": {
+        "label": "在钥匙倒影处钓起储物柜钥匙",
+        "hints": ["深色观察先记录钥匙倒影坐标。", "切回浅色操作，在钥匙倒影位置抛竿。"]
+      },
+      "openLocker": {
+        "label": "用钥匙打开码头储物柜",
+        "hints": ["带着生锈的柜门钥匙回小码头。", "靠近并面向储物柜，把钥匙拖到锁孔。"]
+      },
+      "catchNetFrame": {
+        "label": "在旧木桩倒影处钓起破损网框",
+        "hints": ["深色观察先记录网框倒影坐标。", "切回浅色操作，在旧木桩倒影处抛竿。"]
+      },
+      "combineNet": {
+        "label": "组合尼龙绳和破损网框",
+        "hints": ["浮标组合位在大湖面。", "把尼龙绳或破损网框拖进组合位，也可以在道具栏内直接组合。"]
+      },
+      "retrieveTin": {
+        "label": "用临时抄网捞起密封饲料盒",
+        "hints": ["从大湖北侧进入浮排直河道。", "把临时抄网拖到浮排下方的投放框。"]
+      },
+      "openTin": {
+        "label": "在浮排硬边撬开密封饲料盒",
+        "hints": ["密封饲料盒要借浮排硬边撬开。", "把密封饲料盒拖到浮排硬边开罐位。"]
+      },
+      "catchFish": {
+        "label": "用鱼饲料颗粒钓一条小鲤鱼",
+        "hints": ["深色观察先记录鱼群水纹坐标。", "切回浅色操作，把鱼饲料颗粒拖到鱼群水纹。"]
+      },
+      "combineMagneticRod": {
+        "label": "组合磁性扣和钓鱼竿",
+        "hints": ["把黑天鹅磁性扣拖到钓鱼竿上，或去船头磁吸组合位。", "组合位在黑天鹅围栏外的水面。"]
+      },
+      "capturePaper": {
+        "label": "用磁性钓鱼竿吸住纸条本体",
+        "hints": ["深色观察确认纸条坐标后，切回浅色操作。", "把磁性钓鱼竿拖到黑天鹅围栏外的纸条水纹。"]
+      }
+    }
   }
 }

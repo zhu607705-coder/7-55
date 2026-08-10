@@ -21,16 +21,24 @@ export interface RpgWorldPoint {
   y: number;
 }
 
+export type RpgCardinalFacing = "up" | "down" | "left" | "right";
+
+export type RpgFacingRequirement = RpgCardinalFacing | "toward_target";
+
 export interface RpgSpatialInteractionTarget {
   id: string;
   label: string;
   /** Visible entity or control center in world coordinates. */
   x: number;
   y: number;
-  /** Reachable floor position used for proximity validation. */
+  /**
+   * Legacy checkpoint/spawn hint. It is never used as an interaction gate.
+   * Runtime interaction is measured from the player's foot point to the
+   * visible object bounds, so scenes do not require one exact floor spot.
+   */
   stand?: RpgWorldPoint;
   proximity: number;
-  /** Visible entity bounds, used when no explicit stand point exists. */
+  /** Visible entity bounds, always used for proximity and facing checks. */
   width?: number;
   height?: number;
   /** Exact item drop bounds centered on x/y. */
@@ -38,6 +46,14 @@ export interface RpgSpatialInteractionTarget {
   dropHeight?: number;
   acceptedItem?: ItemId;
   requiredMode?: RpgRealityMode;
+  /**
+   * Fixed direction for wall/counter fixtures, or toward_target for objects
+   * that can be approached from several sides. Omitted targets also default
+   * to toward_target, keeping facing part of the global interaction contract.
+  */
+  requiredFacing?: RpgFacingRequirement | readonly RpgCardinalFacing[];
+  /** Forward cone used by toward_target checks. Defaults to 60 degrees. */
+  facingToleranceDegrees?: number;
 }
 
 export interface RpgDropBounds {
@@ -54,6 +70,7 @@ export type RpgItemDropResultKind =
   | "missed_target"
   | "wrong_item"
   | "too_far"
+  | "wrong_facing"
   | "wrong_mode";
 
 export interface RpgItemDropResult<TTarget extends RpgSpatialInteractionTarget> {
@@ -92,17 +109,91 @@ export function distanceFromPlayerToRpgTarget(
   playerX: number,
   playerY: number
 ): number {
-  if (target.stand) {
-    return Math.hypot(playerX - target.stand.x, playerY - target.stand.y);
-  }
+  const nearest = nearestRpgTargetPoint(target, playerX, playerY);
+  return Math.hypot(playerX - nearest.x, playerY - nearest.y);
+}
+
+export function nearestRpgTargetPoint(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number
+): RpgWorldPoint {
   if (target.width && target.height) {
     const halfWidth = target.width / 2;
     const halfHeight = target.height / 2;
-    const nearestX = Math.max(target.x - halfWidth, Math.min(playerX, target.x + halfWidth));
-    const nearestY = Math.max(target.y - halfHeight, Math.min(playerY, target.y + halfHeight));
-    return Math.hypot(playerX - nearestX, playerY - nearestY);
+    return {
+      x: Math.max(target.x - halfWidth, Math.min(playerX, target.x + halfWidth)),
+      y: Math.max(target.y - halfHeight, Math.min(playerY, target.y + halfHeight))
+    };
   }
-  return Math.hypot(playerX - target.x, playerY - target.y);
+  return { x: target.x, y: target.y };
+}
+
+const RPG_FACING_VECTORS: Readonly<Record<RpgCardinalFacing, RpgWorldPoint>> = {
+  up: { x: 0, y: -1 },
+  down: { x: 0, y: 1 },
+  left: { x: -1, y: 0 },
+  right: { x: 1, y: 0 }
+};
+
+export function isFacingVectorTowardRpgTarget(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number,
+  facingVector: RpgWorldPoint,
+  minimumForwardDot?: number
+): boolean {
+  const vectorLength = Math.hypot(facingVector.x, facingVector.y);
+  if (vectorLength < 0.001) return false;
+  const normalizedFacing = {
+    x: facingVector.x / vectorLength,
+    y: facingVector.y / vectorLength
+  };
+  const forwardThreshold = minimumForwardDot
+    ?? Math.cos((target.facingToleranceDegrees ?? 60) * Math.PI / 180);
+  const requirement = target.requiredFacing ?? "toward_target";
+  if (typeof requirement !== "string") {
+    return requirement.some((direction) => {
+      const requiredVector = RPG_FACING_VECTORS[direction];
+      return normalizedFacing.x * requiredVector.x + normalizedFacing.y * requiredVector.y >= 0.8;
+    });
+  }
+  if (requirement !== "toward_target") {
+    const requiredVector = RPG_FACING_VECTORS[requirement];
+    return normalizedFacing.x * requiredVector.x + normalizedFacing.y * requiredVector.y >= 0.8;
+  }
+
+  const nearest = nearestRpgTargetPoint(target, playerX, playerY);
+  let dx = nearest.x - playerX;
+  let dy = nearest.y - playerY;
+  if (dx === 0 && dy === 0) {
+    dx = target.x - playerX;
+    dy = target.y - playerY;
+  }
+  const targetDistance = Math.hypot(dx, dy);
+  if (targetDistance < 0.001) return true;
+  return (
+    dx * normalizedFacing.x + dy * normalizedFacing.y
+  ) / targetDistance >= forwardThreshold;
+}
+
+/**
+ * Facing uses a broad forward cone so diagonal approaches accept either
+ * adjacent cardinal pose. Fixed wall/counter fixtures can request one exact
+ * direction through requiredFacing.
+ */
+export function isPlayerFacingRpgTarget(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number,
+  playerFacing: RpgCardinalFacing
+): boolean {
+  return isFacingVectorTowardRpgTarget(
+    target,
+    playerX,
+    playerY,
+    RPG_FACING_VECTORS[playerFacing]
+  );
 }
 
 export function isPlayerWithinRpgTarget(
@@ -111,6 +202,16 @@ export function isPlayerWithinRpgTarget(
   playerY: number
 ): boolean {
   return distanceFromPlayerToRpgTarget(target, playerX, playerY) <= target.proximity;
+}
+
+export function isPlayerReadyForRpgTarget(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number,
+  playerFacing: RpgCardinalFacing
+): boolean {
+  return isPlayerWithinRpgTarget(target, playerX, playerY)
+    && isPlayerFacingRpgTarget(target, playerX, playerY, playerFacing);
 }
 
 function targetPriority<TTarget extends RpgSpatialInteractionTarget>(
@@ -132,6 +233,7 @@ export function resolveRpgItemDrop<TTarget extends RpgSpatialInteractionTarget>(
   dropY: number;
   playerX: number;
   playerY: number;
+  playerFacing: RpgCardinalFacing;
   mode?: RpgRealityMode;
 }): RpgItemDropResult<TTarget> {
   const target = options.targets
@@ -155,6 +257,14 @@ export function resolveRpgItemDrop<TTarget extends RpgSpatialInteractionTarget>(
   }
   if (!isPlayerWithinRpgTarget(target, options.playerX, options.playerY)) {
     return { kind: "too_far", target };
+  }
+  if (!isPlayerFacingRpgTarget(
+    target,
+    options.playerX,
+    options.playerY,
+    options.playerFacing
+  )) {
+    return { kind: "wrong_facing", target };
   }
   return { kind: "accepted", target };
 }

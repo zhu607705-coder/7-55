@@ -410,7 +410,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
       dropX: worldPoint.x,
       dropY: worldPoint.y,
       playerX: this.player.x,
-      playerY: this.player.y
+      playerY: this.player.y,
+      playerFacing: this.playerAnimator.cardinalFacing
     });
     if (!result.target) {
       this.bridge.emit("library_rpg_interaction_failed", { itemId, reason: "no_target" });

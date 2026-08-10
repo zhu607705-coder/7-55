@@ -6,6 +6,7 @@ import type {
   QizhenLakeMode,
   QizhenLakeZone,
   QizhenMapClueId,
+  QizhenPaddleDirection,
   QizhenPaddleSide,
   RpgCheckpointId
 } from "../core/types";
@@ -257,11 +258,23 @@ export class ChapterThreeQizhenLakeController {
     return "accepted";
   }
 
-  recordPaddleStroke(side: QizhenPaddleSide): QizhenActionResult {
+  recordPaddleStroke(
+    side: QizhenPaddleSide,
+    direction: QizhenPaddleDirection = "forward"
+  ): QizhenActionResult {
     const state = this.store.getState();
     if (state.qizhenLake.vehicle !== "kayak") return "inactive";
     if (state.qizhenLake.phase !== "boarding_tutorial") {
-      this.events.emit("qizhen_paddle_stroke_recorded", { side, tutorial: false });
+      this.events.emit("qizhen_paddle_stroke_recorded", { side, direction, tutorial: false });
+      return "accepted";
+    }
+    if (direction === "reverse") {
+      this.events.emit("qizhen_boarding_stroke_recorded", {
+        side,
+        direction,
+        alternating: false,
+        count: state.qizhenLake.boardingStrokeCount
+      });
       return "accepted";
     }
     const alternating = state.qizhenLake.boardingLastSide !== side;
@@ -282,6 +295,7 @@ export class ChapterThreeQizhenLakeController {
     }));
     this.events.emit(completed ? "qizhen_boarding_completed" : "qizhen_boarding_stroke_recorded", {
       side,
+      direction,
       alternating,
       count: boardingStrokeCount
     });
@@ -292,13 +306,15 @@ export class ChapterThreeQizhenLakeController {
     const state = this.store.getState();
     if (state.qizhenLake.vehicle !== "kayak") return "inactive";
     const inTutorial = state.qizhenLake.phase === "boarding_tutorial";
+    const inChase = state.qizhenLake.phase === "swan_chase";
     this.store.setState((current) => ({
       ...current,
       rpgCheckpoint: inTutorial ? "qizhen_dock" : checkpointForCurrentLakeState(current),
       qizhenLake: {
         ...current.qizhenLake,
         capsizeCount: current.qizhenLake.capsizeCount + 1,
-        chaseAttempts: current.qizhenLake.phase === "swan_chase"
+        chaseDistance: inChase ? 0 : current.qizhenLake.chaseDistance,
+        chaseAttempts: inChase
           ? current.qizhenLake.chaseAttempts + 1
           : current.qizhenLake.chaseAttempts,
         boardingStrokeCount: inTutorial ? 0 : current.qizhenLake.boardingStrokeCount,
@@ -569,6 +585,32 @@ export class ChapterThreeQizhenLakeController {
         chaseBestDistance: Math.max(current.qizhenLake.chaseBestDistance, chaseDistance)
       }
     }));
+    return "accepted";
+  }
+
+  recordChaseFailure(reason: string): QizhenActionResult {
+    const state = this.store.getState();
+    if (state.qizhenLake.phase !== "swan_chase") return "inactive";
+    const nextAttempt = state.qizhenLake.chaseAttempts + 1;
+    this.store.setState((current) => ({
+      ...current,
+      rpgCheckpoint: "qizhen_chase",
+      qizhenLake: {
+        ...current.qizhenLake,
+        phase: "swan_chase",
+        zone: "channel",
+        vehicle: "kayak",
+        mode: "light",
+        safeSpawnId: "channel_chase",
+        chaseDistance: 0,
+        chaseAttempts: nextAttempt
+      }
+    }));
+    this.events.emit("qizhen_chase_failed", {
+      reason,
+      attempt: nextAttempt,
+      checkpoint: "qizhen_chase"
+    });
     return "accepted";
   }
 

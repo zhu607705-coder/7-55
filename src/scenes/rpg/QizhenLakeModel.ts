@@ -1,4 +1,6 @@
+import type { ItemId } from "../../core/types";
 import {
+  distanceFromPlayerToRpgTarget,
   isPlayerWithinRpgTarget,
   type RpgSpatialInteractionTarget
 } from "./RpgInteractionContract";
@@ -46,6 +48,8 @@ export interface QizhenLakeInteractionTarget extends RpgSpatialInteractionTarget
   value?: string;
   targetZone?: QizhenLakeZoneId;
   vehicle?: QizhenLakeVehicle;
+  /** Assembly targets accept either of their two parts. */
+  acceptedItems?: readonly ItemId[];
 }
 
 export interface QizhenLakeZoneDefinition {
@@ -160,9 +164,9 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
   channel: {
     id: "channel",
     onFootSpawn: { x: 1540, y: 505 },
-    kayakSpawn: { x: 1390, y: 505, heading: Math.PI },
+    kayakSpawn: { x: 1280, y: 680, heading: Math.PI },
     kayakEntrySpawns: {
-      swan_cove: { x: 1390, y: 510, heading: Math.PI },
+      swan_cove: { x: 1280, y: 680, heading: Math.PI },
       open_water: { x: 840, y: 755, heading: -Math.PI / 2 },
       dock: { x: 120, y: 510, heading: 0 }
     },
@@ -172,14 +176,32 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       FULL_RIGHT,
       FULL_TOP,
       FULL_BOTTOM,
-      { id: "north_bank", left: 0, top: 0, right: 1672, bottom: 180 },
-      { id: "south_bank", left: 0, top: 780, right: 1672, bottom: 941 },
-      { id: "floating_raft", left: 545, top: 360, right: 735, bottom: 555 },
-      { id: "west_net", left: 430, top: 420, right: 535, bottom: 560 },
-      { id: "right_dock", left: 1530, top: 438, right: 1672, bottom: 570 }
+      { id: "north_bank_west", left: 0, top: 0, right: 650, bottom: 174 },
+      { id: "north_bank_willow_1", left: 650, top: 0, right: 755, bottom: 198 },
+      { id: "north_bank_center", left: 755, top: 0, right: 1185, bottom: 174 },
+      { id: "north_bank_willow_2", left: 1185, top: 0, right: 1300, bottom: 202 },
+      { id: "north_bank_east", left: 1300, top: 0, right: 1605, bottom: 178 },
+      { id: "right_upper_bank", left: 1605, top: 0, right: 1672, bottom: 438 },
+      { id: "south_bank_west", left: 0, top: 770, right: 1400, bottom: 941 },
+      { id: "south_bank_step_1", left: 1400, top: 730, right: 1500, bottom: 941 },
+      { id: "south_bank_step_2", left: 1500, top: 650, right: 1560, bottom: 941 },
+      { id: "south_bank_step_3", left: 1560, top: 570, right: 1672, bottom: 941 },
+      { id: "floating_raft", left: 555, top: 374, right: 712, bottom: 525 },
+      { id: "west_net", left: 448, top: 432, right: 555, bottom: 532 },
+      { id: "raft_mooring_nw", left: 505, top: 388, right: 528, bottom: 435 },
+      { id: "raft_mooring_se", left: 685, top: 525, right: 708, bottom: 572 },
+      { id: "right_dock", left: 1548, top: 450, right: 1672, bottom: 580 },
+      { id: "rock_west", left: 285, top: 548, right: 350, bottom: 608 },
+      { id: "rock_mid_east", left: 1215, top: 525, right: 1322, bottom: 607 },
+      { id: "rock_east", left: 1350, top: 492, right: 1424, bottom: 557 },
+      { id: "buoy_1", left: 78, top: 485, right: 102, bottom: 523 },
+      { id: "buoy_2", left: 360, top: 440, right: 385, bottom: 479 },
+      { id: "buoy_3", left: 932, top: 440, right: 957, bottom: 479 },
+      { id: "buoy_4", left: 1228, top: 440, right: 1253, bottom: 479 },
+      { id: "buoy_5", left: 1478, top: 439, right: 1503, bottom: 478 }
     ],
     waterAreas: [
-      { id: "straight_channel", left: 28, top: 180, right: 1644, bottom: 780 }
+      { id: "straight_channel", left: 28, top: 174, right: 1644, bottom: 770 }
     ],
     occlusions: [
       { id: "floating_raft", left: 535, top: 340, right: 745, bottom: 570, sortY: 570 },
@@ -218,15 +240,21 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
 
 const target = (
   definition: Omit<QizhenLakeInteractionTarget, "proximity"> & { proximity?: number }
-): QizhenLakeInteractionTarget => ({ proximity: 128, ...definition });
+): QizhenLakeInteractionTarget => ({
+  proximity: 128,
+  facingToleranceDegrees: definition.vehicle === "kayak"
+    ? (["zone_portal", "swan", "paper"].includes(definition.kind) ? 45 : 60)
+    : 60,
+  ...definition
+});
 
 export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
-  target({ id: "qizhen_dock_exit", label: "离开启真湖", x: 225, y: 845, kind: "exit", zone: "dock", vehicle: "on_foot" }),
-  target({ id: "qizhen_dock_kayak", label: "器材架上的皮划艇", x: 500, y: 780, stand: { x: 590, y: 790 }, kind: "outfit", value: "kayak", zone: "dock", vehicle: "on_foot", proximity: 108 }),
-  target({ id: "qizhen_dock_left_paddle", label: "花坛边的柳树枝", x: 245, y: 570, stand: { x: 260, y: 635 }, kind: "outfit", value: "left_paddle", zone: "dock", vehicle: "on_foot", proximity: 96 }),
-  target({ id: "qizhen_dock_right_paddle", label: "可拆的旧三角牌", x: 585, y: 780, stand: { x: 645, y: 805 }, kind: "outfit", value: "right_paddle", zone: "dock", vehicle: "on_foot", proximity: 94 }),
-  target({ id: "qizhen_dock_board", label: "小码头上船位", x: 710, y: 650, stand: { x: 610, y: 650 }, kind: "board", zone: "dock", vehicle: "on_foot", proximity: 126 }),
-  target({ id: "qizhen_use_item_1", label: "码头储物柜", x: 390, y: 750, stand: { x: 430, y: 835 }, kind: "item_use", zone: "dock", vehicle: "on_foot", proximity: 118, value: "item_1_to_2", dropWidth: 118, dropHeight: 104, requiredMode: "light", acceptedItem: "rustedLockerKey" }),
+  target({ id: "qizhen_dock_exit", label: "离开启真湖", x: 225, y: 845, kind: "exit", zone: "dock", vehicle: "on_foot", proximity: 72, requiredFacing: "down" }),
+  target({ id: "qizhen_dock_kayak", label: "器材架上的皮划艇", x: 500, y: 780, width: 110, height: 80, stand: { x: 590, y: 790 }, kind: "outfit", value: "kayak", zone: "dock", vehicle: "on_foot", proximity: 56, requiredFacing: "left" }),
+  target({ id: "qizhen_dock_left_paddle", label: "花坛边的柳树枝", x: 245, y: 570, width: 70, height: 30, stand: { x: 260, y: 635 }, kind: "outfit", value: "left_paddle", zone: "dock", vehicle: "on_foot", proximity: 52, requiredFacing: "up" }),
+  target({ id: "qizhen_dock_right_paddle", label: "可拆的旧三角牌", x: 585, y: 780, width: 70, height: 70, stand: { x: 645, y: 805 }, kind: "outfit", value: "right_paddle", zone: "dock", vehicle: "on_foot", proximity: 52, requiredFacing: "left" }),
+  target({ id: "qizhen_dock_board", label: "小码头登船边", x: 710, y: 650, width: 80, height: 120, stand: { x: 610, y: 650 }, kind: "board", zone: "dock", vehicle: "on_foot", proximity: 64, requiredFacing: "right" }),
+  target({ id: "qizhen_use_item_1", label: "码头储物柜", x: 390, y: 750, width: 92, height: 100, stand: { x: 430, y: 835 }, kind: "item_use", zone: "dock", vehicle: "on_foot", proximity: 56, value: "item_1_to_2", dropWidth: 92, dropHeight: 100, requiredMode: "light", requiredFacing: "up", acceptedItem: "rustedLockerKey" }),
   target({ id: "qizhen_dock_to_open", label: "划向大湖", x: 1430, y: 390, kind: "zone_portal", zone: "dock", targetZone: "open_water", vehicle: "kayak", proximity: 155 }),
 
   target({ id: "qizhen_open_to_dock", label: "返回小码头", x: 560, y: 820, kind: "zone_portal", zone: "open_water", targetZone: "dock", vehicle: "kayak", proximity: 138 }),
@@ -237,17 +265,17 @@ export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
   target({ id: "qizhen_reflection_item_3", label: "网框倒影位置", x: 910, y: 360, kind: "reflection", zone: "open_water", vehicle: "kayak", proximity: 165, value: "net_frame" }),
   target({ id: "qizhen_reflection_fish", label: "鱼群倒影位置", x: 705, y: 585, kind: "reflection", zone: "open_water", vehicle: "kayak", proximity: 170, value: "fish" }),
   target({ id: "qizhen_fishing_rod", label: "漂浮的钓鱼竿", x: 620, y: 520, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 160, value: "fishing_rod" }),
-  target({ id: "qizhen_paper_reflection", label: "纸条倒影", x: 1320, y: 330, kind: "paper", zone: "open_water", vehicle: "kayak", proximity: 160, value: "paper_reflection" }),
-  target({ id: "qizhen_fishing_item_1", label: "倒影对应点一", x: 1040, y: 620, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 155, value: "item_1" }),
-  target({ id: "qizhen_fishing_item_3", label: "旧木桩倒影", x: 910, y: 360, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 165, value: "item_3" }),
-  target({ id: "qizhen_open_workbench", label: "浮标组合位", x: 840, y: 430, kind: "item_use", zone: "open_water", vehicle: "kayak", proximity: 165, value: "combine_net" }),
-  target({ id: "qizhen_fishing_fish", label: "鱼群水纹", x: 705, y: 585, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 170, value: "fish" }),
+  target({ id: "qizhen_paper_reflection", label: "纸条倒影", x: 1320, y: 330, kind: "paper", zone: "open_water", vehicle: "kayak", proximity: 160, value: "paper_reflection", acceptedItem: "decoyPaper" }),
+  target({ id: "qizhen_fishing_item_1", label: "倒影对应点一", x: 1040, y: 620, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 155, value: "item_1", acceptedItem: "fishingRod" }),
+  target({ id: "qizhen_fishing_item_3", label: "旧木桩倒影", x: 910, y: 360, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 165, value: "item_3", acceptedItem: "fishingRod" }),
+  target({ id: "qizhen_open_workbench", label: "浮标组合位", x: 840, y: 430, stand: { x: 840, y: 580 }, kind: "item_use", zone: "open_water", vehicle: "kayak", proximity: 165, value: "combine_net", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItems: ["nylonCord", "brokenNetFrame"] }),
+  target({ id: "qizhen_fishing_fish", label: "鱼群水纹", x: 705, y: 585, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 170, value: "fish", acceptedItem: "fishFeedPellets" }),
 
   target({ id: "qizhen_swan_to_open", label: "返回大湖", x: 165, y: 510, kind: "zone_portal", zone: "swan_cove", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
   target({ id: "qizhen_swan_to_channel", label: "进入返航河道", x: 405, y: 840, kind: "zone_portal", zone: "swan_cove", targetZone: "channel", vehicle: "kayak", proximity: 150 }),
-  target({ id: "qizhen_black_swan", label: "围栏里的黑天鹅", x: 1165, y: 470, stand: { x: 890, y: 505 }, kind: "swan", zone: "swan_cove", vehicle: "kayak", proximity: 190, value: "black_swan" }),
-  target({ id: "qizhen_swan_workbench", label: "船头磁吸组合位", x: 760, y: 520, kind: "item_use", zone: "swan_cove", vehicle: "kayak", proximity: 165, value: "combine_magnetic_rod" }),
-  target({ id: "qizhen_final_paper_cast", label: "纸条本体水纹", x: 760, y: 450, kind: "paper", zone: "swan_cove", vehicle: "kayak", proximity: 175, value: "paper_body" }),
+  target({ id: "qizhen_black_swan", label: "围栏里的黑天鹅", x: 1165, y: 470, width: 470, height: 220, stand: { x: 890, y: 505 }, kind: "swan", zone: "swan_cove", vehicle: "kayak", proximity: 180, value: "black_swan", dropWidth: 150, dropHeight: 110, requiredMode: "light", requiredFacing: "toward_target", acceptedItem: "smallCarp" }),
+  target({ id: "qizhen_swan_workbench", label: "船头磁吸组合位", x: 760, y: 520, stand: { x: 760, y: 660 }, kind: "item_use", zone: "swan_cove", vehicle: "kayak", proximity: 165, value: "combine_magnetic_rod", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItems: ["swanMagnet", "fishingRod"] }),
+  target({ id: "qizhen_final_paper_cast", label: "纸条本体水纹", x: 760, y: 450, kind: "paper", zone: "swan_cove", vehicle: "kayak", proximity: 175, value: "paper_body", acceptedItem: "magneticFishingRod" }),
 
   target({ id: "qizhen_channel_from_swan", label: "黑天鹅追逐起点", x: 1515, y: 510, kind: "zone_portal", zone: "channel", targetZone: "swan_cove", vehicle: "kayak", proximity: 150 }),
   target({ id: "qizhen_channel_to_open", label: "返回大湖", x: 840, y: 735, kind: "zone_portal", zone: "channel", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
@@ -265,6 +293,10 @@ export function targetsForQizhenZone(
   ));
 }
 
+export function qizhenTargetAcceptsItem(target: QizhenLakeInteractionTarget, itemId: ItemId): boolean {
+  return target.acceptedItem === itemId || target.acceptedItems?.includes(itemId) === true;
+}
+
 export function findNearestQizhenTarget(
   x: number,
   y: number,
@@ -273,8 +305,7 @@ export function findNearestQizhenTarget(
   let nearest: QizhenLakeInteractionTarget | null = null;
   let bestDistance = Number.POSITIVE_INFINITY;
   targets.forEach((candidate) => {
-    const stand = candidate.stand ?? candidate;
-    const distance = Math.hypot(x - stand.x, y - stand.y);
+    const distance = distanceFromPlayerToRpgTarget(candidate, x, y);
     if (isPlayerWithinRpgTarget(candidate, x, y) && distance < bestDistance) {
       nearest = candidate;
       bestDistance = distance;

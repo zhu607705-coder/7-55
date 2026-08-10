@@ -278,6 +278,8 @@ export type QizhenLakeSafeSpawnId =
 
 export type QizhenPaddleSide = "left" | "right";
 
+export type QizhenPaddleDirection = "forward" | "reverse";
+
 export type QizhenFishingSpotId = "locker_key" | "net_frame" | "paper" | "fish";
 
 export type QizhenMapClueId = "bridge" | "reflection" | "lake";
