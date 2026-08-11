@@ -1495,3 +1495,22 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 兼容规则：Pointer Events 继续覆盖 Blink、Gecko 与 WebKit；指针取消、失焦、离开启真湖或下船会清理未完成手势。桌面键盘保持 `A/←`、`D/→` 前划和 `S/↓ + 左右桨` 后划。
 - 真实验收：`390×844` 触屏视口中，上划左桨记录 `forward`，下划右桨记录 `reverse`，轻触左桨回落为 `forward`；连续六次交替下划后速度为 `-215px/s`、行进方向为 `reverse`、水波起点为船头且未侧翻。Blink、Gecko、WebKit 均支持左右桨双指同时手势，三种内核的页面错误、控制台错误和横纵溢出均为 `0`。
 - 构建验证：网页游戏客户端、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。单文件为 `136,618,882 bytes`，SHA-256 为 `2adc8ddc6a6452cc39ccecfc3e7d59d396ca14f1f9c687be8720514c8350b64c`。
+
+## 2026-08-11 启真湖场景内节奏钓鱼
+
+- 玩法闭环：生锈钥匙、破损网框、小鲤鱼和纸条本体已接入 `precheck → rhythm → resolve`，只在谱面通过后调用原控制器发奖。普通鱼钩直抛纸条仍立即失败，不启动节奏。
+- 判定与视觉：新增四张 96 BPM JSON 谱面、纯 TypeScript 张力模型与 Phaser 浮标水纹视觉。键盘、触摸、视觉和程序节拍器共用 `AudioContext.currentTime`，不可用时回退单调 `performance.now()`。
+- 输入与生命周期：钓鱼期间船速和侧倾清零，镜头锁定浮标，划桨、模式切换、道具栏与普通字幕停用；页面隐藏和场景卸载取消本轮。两次失败后开启宽判定辅助，成功后清零该目标计数。
+- 浏览器验收：Blink `1280×720` 完整键盘通过钥匙 10 秒谱和纸条 20 秒谱；纸条通过后只发生 `1` 次捕获与 `1` 次追逐入场，没有评级停顿。Blink `390×844` 三键约 `75×75px`，触摸首音判定 `perfect`且船速为 `0`。Firefox 和 WebKit 亦通过首音判定，全部浏览器错误为 `0`。
+- 道具安全：钥匙在谱面开始后仍为 `false`，成功才加入道具栏；小鲤鱼谱失败后 `fishFeedPellets=true / smallCarp=false / fishCaught=false`，剧情阶段保持 `tool_chain`。
+- 音频阻塞：MiniMax CLI 实际请求再次返回 Token Plan 用量上限，未产生 `music_qizhen_fishing.mp3` 或部分 manifest。当前主线由同时钟程序节拍保证可玩，时间线临时复用旧启真湖 SFX。
+- 构建验证：`npm run typecheck`、目标文件 `git diff --check` 与 `npm run build:single` 通过。新生成的 `demo/index.html` 为 `190904822 bytes`，SHA-256 `51ae70ae5ab2530dadc6c7139ac2386b857f8f2cf2149decc3734df5456b2ef8`；通过本地 HTTP 从 `c3-qizhen-open-water` 启动，画布和运行状态正常，无错误文件。
+
+## 2026-08-11 启真湖水纹钓鱼隐藏朝向门槛移除
+
+- 实际体验问题：水纹钓鱼的界面文案要求“船头对准”，但钓鱼玩法未把朝向呈现为可读、可稳定控制的判定条件。
+- 交互修正：`fishing_spot` 和 `paper` 水纹目标改为只按皮划艇到真实目标边界的距离判定；码头储物柜、黑天鹅等有明确正面的实体仍保留朝向要求。
+- 文案修正：装饵和抛竿指引改为“划到水纹附近”，道具栏通用文案改为“靠近目标 · 拖到目标上”，不再对所有道具目标误报朝向要求。
+- 实际操作验证：Blink `1280×720` 从 `c3-qizhen-paper` 组合磁吸钓竿，划到纸条水纹约 `50px` 处后将船头转向目标反方向（朝向点积 `-0.897`）；拖入钓竿仍进入 `fishing.state=running / spotId=paper`，道具在节奏通过前保留，页面与控制台错误为 `0`。
+- 验证与产物：`npm run typecheck`、`npm run build:single` 与目标文件 `git diff --check` 通过。`demo/index.html` 为 `180393544 bytes`，SHA-256 `c8ea0096cac447481d47e67dde1ccc21aeade4dc4d6456ad7d7441686ed9c0e5`。
+- 合并复验：基于最新 `origin/main` 的隔离分支再次以 `50px` 距离、朝向点积 `-1` 拖入磁性钓竿，节奏进入 `running / paper / 26 notes`；静置失败后磁性钓竿仍保留、纸条未捕获、失败次数增加为 `1`，浏览器错误为 `0`。单文件为 `136655340 bytes`，SHA-256 `dd2b4ae6a2157058fbfe5b44ab5e2e84f36e0d645410db3de4f761bbeb4e9e44`。

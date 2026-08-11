@@ -410,14 +410,15 @@ export class ChapterThreeQizhenLakeController {
     return "accepted";
   }
 
+  /** castAt 的只读镜像：相同验证、零副作用、零事件、零存档写入。 */
+  precheckCast(spotId: QizhenFishingSpotId): QizhenActionResult {
+    return this.validateCast(spotId);
+  }
+
   castAt(spotId: QizhenFishingSpotId): QizhenActionResult {
-    const state = this.store.getState();
-    if (state.qizhenLake.vehicle !== "kayak" || !["tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase)) {
-      return "inactive";
-    }
-    if (state.qizhenLake.mode !== "light") return "wrong_mode";
-    if (!state.qizhenLake.observedFishingSpotIds.includes(spotId)) return "unobserved";
-    if (spotId === "paper" && !state.items.magneticFishingRod) {
+    const validation = this.validateCast(spotId);
+    if (validation === "direct_paper_failure") {
+      const state = this.store.getState();
       this.store.setState((current) => ({
         ...current,
         qizhenLake: {
@@ -428,21 +429,12 @@ export class ChapterThreeQizhenLakeController {
       this.events.emit("qizhen_direct_paper_cast_failed", {
         attempts: state.qizhenLake.directPaperCastFailures + 1
       });
-      return "direct_paper_failure";
+      return validation;
     }
-    if (spotId === "locker_key") {
-      if (!state.items.fishingRod || !state.qizhenLake.decoyBaitAttached) return "wrong_item";
-      if (state.items.rustedLockerKey || state.qizhenLake.lockerOpened) return "already_complete";
-      return this.grantCaughtItem(spotId, "rustedLockerKey");
-    }
-    if (spotId === "net_frame") {
-      if (!state.items.fishingRod || !state.qizhenLake.lockerOpened) return "locked";
-      if (state.items.brokenNetFrame || state.qizhenLake.netCombined) return "already_complete";
-      return this.grantCaughtItem(spotId, "brokenNetFrame");
-    }
+    if (validation !== "accepted") return validation;
+    if (spotId === "locker_key") return this.grantCaughtItem(spotId, "rustedLockerKey");
+    if (spotId === "net_frame") return this.grantCaughtItem(spotId, "brokenNetFrame");
     if (spotId === "fish") {
-      if (!state.items.fishingRod || !state.items.fishFeedPellets) return "wrong_item";
-      if (state.qizhenLake.fishCaught || state.items.smallCarp) return "already_complete";
       this.store.setState((current) => ({
         ...current,
         items: { ...current.items, fishFeedPellets: false, smallCarp: true },
@@ -454,7 +446,6 @@ export class ChapterThreeQizhenLakeController {
       this.events.emit("qizhen_fish_caught");
       return "accepted";
     }
-    if (!state.items.magneticFishingRod || !state.qizhenLake.swanFed) return "wrong_item";
     return this.capturePaper();
   }
 
@@ -639,6 +630,37 @@ export class ChapterThreeQizhenLakeController {
     this.events.emit("qizhen_chapter_transition_requested", {
       reason: "paper_escaped_after_swan_chase"
     });
+    return "accepted";
+  }
+
+  /**
+   * castAt 的纯验证段：零 setState、零事件、零计数器。
+   * 直抛纸条分支只返回 "direct_paper_failure"，其计数与事件副作用留在 castAt。
+   */
+  private validateCast(spotId: QizhenFishingSpotId): QizhenActionResult {
+    const state = this.store.getState();
+    if (state.qizhenLake.vehicle !== "kayak" || !["tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase)) {
+      return "inactive";
+    }
+    if (state.qizhenLake.mode !== "light") return "wrong_mode";
+    if (!state.qizhenLake.observedFishingSpotIds.includes(spotId)) return "unobserved";
+    if (spotId === "paper" && !state.items.magneticFishingRod) return "direct_paper_failure";
+    if (spotId === "locker_key") {
+      if (!state.items.fishingRod || !state.qizhenLake.decoyBaitAttached) return "wrong_item";
+      if (state.items.rustedLockerKey || state.qizhenLake.lockerOpened) return "already_complete";
+      return "accepted";
+    }
+    if (spotId === "net_frame") {
+      if (!state.items.fishingRod || !state.qizhenLake.lockerOpened) return "locked";
+      if (state.items.brokenNetFrame || state.qizhenLake.netCombined) return "already_complete";
+      return "accepted";
+    }
+    if (spotId === "fish") {
+      if (!state.items.fishingRod || !state.items.fishFeedPellets) return "wrong_item";
+      if (state.qizhenLake.fishCaught || state.items.smallCarp) return "already_complete";
+      return "accepted";
+    }
+    if (!state.items.magneticFishingRod || !state.qizhenLake.swanFed) return "wrong_item";
     return "accepted";
   }
 

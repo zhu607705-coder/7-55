@@ -380,7 +380,7 @@ export function RpgInventoryDock({
       <InventoryAcquisitionFlight item={recentItem} className="rpg-inventory-acquisition-flight" />
       <header>
         <strong>道具</strong>
-        <span>靠近并面向物体 · 拖到物体本身</span>
+        <span>靠近目标 · 拖到目标上</span>
       </header>
       {guidance ? (
         <div className={`rpg-item-use-guidance is-${guidance.status}`} role="status">

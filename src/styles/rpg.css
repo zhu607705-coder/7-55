@@ -1093,6 +1093,11 @@
   transform: translateY(2px);
 }
 
+.rpg-kayak-controls.is-fishing {
+  grid-template-columns: repeat(3, minmax(62px, 1fr));
+  width: 286px;
+}
+
 .rpg-game-menu {
   background: #f4f1e8;
   border: 4px solid #20272f;
@@ -1500,6 +1505,10 @@
     gap: 5px;
     grid-template-columns: 84px 84px 58px;
     left: 14px;
+  }
+
+  .rpg-kayak-controls.is-fishing {
+    width: 236px;
   }
 
   .rpg-kayak-controls button {
