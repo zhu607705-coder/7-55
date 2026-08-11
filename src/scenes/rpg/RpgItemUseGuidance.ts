@@ -234,7 +234,7 @@ export function selectRpgItemUseGuidance(
         return locked("先在深色观察中记录纸条倒影。", "纸条倒影装饵框");
       }
       return requireLight("纸条倒影装饵框")
-        ?? ready("纸条倒影水纹", "让船头对准纸条倒影，把假纸条拖到对应水纹。");
+        ?? ready("纸条倒影水纹", "把船划到纸条倒影附近，再把假纸条拖到对应水纹。");
     }
 
     if (itemId === "fishingRod") {
@@ -252,7 +252,7 @@ export function selectRpgItemUseGuidance(
         return locked("先把假纸条拖到钓鱼竿装饵框。", "钓鱼竿装饵框");
       }
       return requireLight("已观察的抛竿点")
-        ?? ready("已观察的抛竿点", "让船头对准已记录的倒影水纹后抛竿。直接钓纸条会显示失败原因。");
+        ?? ready("已观察的抛竿点", "把船划到已记录的倒影水纹附近后抛竿。直接钓纸条会显示失败原因。");
     }
 
     if (itemId === "rustedLockerKey") {

@@ -225,7 +225,16 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       FULL_BOTTOM,
       { id: "north_bank", left: 0, top: 0, right: 1672, bottom: 160 },
       { id: "east_walkway", left: 1450, top: 0, right: 1672, bottom: 941 },
-      { id: "swan_enclosure", left: 930, top: 155, right: 1435, bottom: 565 },
+      { id: "swan_fence_north", left: 924, top: 158, right: 1155, bottom: 190 },
+      { id: "swan_fence_west_upper", left: 924, top: 158, right: 951, bottom: 383 },
+      { id: "swan_fence_west_curve_1", left: 938, top: 362, right: 984, bottom: 404 },
+      { id: "swan_fence_west_curve_2", left: 970, top: 391, right: 1026, bottom: 430 },
+      { id: "swan_fence_west_curve_3", left: 1012, top: 416, right: 1077, bottom: 451 },
+      { id: "swan_fence_southwest_curve", left: 1060, top: 438, right: 1137, bottom: 474 },
+      { id: "swan_fence_south_west", left: 1120, top: 460, right: 1252, bottom: 493 },
+      { id: "swan_fence_south_center", left: 1232, top: 475, right: 1372, bottom: 514 },
+      { id: "swan_fence_southeast_curve", left: 1350, top: 487, right: 1428, bottom: 535 },
+      { id: "swan_fence_east", left: 1402, top: 220, right: 1438, bottom: 535 },
       { id: "south_bank", left: 500, top: 760, right: 1450, bottom: 941 }
     ],
     waterAreas: [
@@ -274,7 +283,7 @@ export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
   target({ id: "qizhen_swan_to_open", label: "返回大湖", x: 165, y: 510, kind: "zone_portal", zone: "swan_cove", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
   target({ id: "qizhen_swan_to_channel", label: "进入返航河道", x: 405, y: 840, kind: "zone_portal", zone: "swan_cove", targetZone: "channel", vehicle: "kayak", proximity: 150 }),
   target({ id: "qizhen_black_swan", label: "围栏里的黑天鹅", x: 1165, y: 470, width: 470, height: 220, stand: { x: 890, y: 505 }, kind: "swan", zone: "swan_cove", vehicle: "kayak", proximity: 180, value: "black_swan", dropWidth: 150, dropHeight: 110, requiredMode: "light", requiredFacing: "toward_target", acceptedItem: "smallCarp" }),
-  target({ id: "qizhen_swan_workbench", label: "船头磁吸组合位", x: 760, y: 520, stand: { x: 760, y: 660 }, kind: "item_use", zone: "swan_cove", vehicle: "kayak", proximity: 165, value: "combine_magnetic_rod", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItems: ["swanMagnet", "fishingRod"] }),
+  target({ id: "qizhen_swan_workbench", label: "船头磁吸组合位", x: 760, y: 520, stand: { x: 760, y: 660 }, kind: "item_use", zone: "swan_cove", vehicle: "kayak", proximity: 165, value: "combine_magnetic_rod", dropWidth: 96, dropHeight: 64, requiredMode: "light", acceptedItems: ["swanMagnet", "fishingRod"] }),
   target({ id: "qizhen_final_paper_cast", label: "纸条本体水纹", x: 760, y: 450, kind: "paper", zone: "swan_cove", vehicle: "kayak", proximity: 175, value: "paper_body", acceptedItem: "magneticFishingRod" }),
 
   target({ id: "qizhen_channel_from_swan", label: "黑天鹅追逐起点", x: 1515, y: 510, kind: "zone_portal", zone: "channel", targetZone: "swan_cove", vehicle: "kayak", proximity: 150 }),

@@ -45,6 +45,7 @@ import { TheaterInteriorScene } from "./TheaterInteriorScene";
 import { createTheaterRuntimePort } from "./TheaterRuntimeContract";
 import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
 import { QizhenLakeScene } from "./QizhenLakeScene";
+import type { QizhenFishingAction, QizhenFishingResult } from "./QizhenFishingRhythmModel";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
 import { RpgRealityModeToggle } from "./RpgRealityModeToggle";
 import { createRpgBridge } from "./RpgBridge";
@@ -107,6 +108,20 @@ interface KayakPaddleGesture {
   lastY: number;
   pointerType: string;
 }
+interface QizhenFishingSessionSnapshot {
+  sessionId: string;
+  spotId: string;
+  chartId: string;
+  targetLabel: string;
+  totalNotes: number;
+  assist: boolean;
+}
+const QIZHEN_FISHING_SPOT_FEEDBACK: Record<QizhenFishingSpotId, { itemId: ItemId; targetLabel: string }> = {
+  locker_key: { itemId: "fishingRod", targetLabel: "倒影对应点一" },
+  net_frame: { itemId: "fishingRod", targetLabel: "旧木桩倒影" },
+  fish: { itemId: "fishFeedPellets", targetLabel: "鱼群水纹" },
+  paper: { itemId: "magneticFishingRod", targetLabel: "纸条本体水纹" }
+};
 const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; itemId: ItemId | "" }>> = {
   readEntranceRecord: { targetId: "entrance_record", itemId: "" },
   inspectBackpack: { targetId: "seat_022_backpack", itemId: "" },
@@ -196,6 +211,7 @@ export function RpgGameHost({
 }: RpgGameHostProps) {
   const [inspectedMapItem, setInspectedMapItem] = useState<ItemId | null>(null);
   const [shellRoot, setShellRoot] = useState<HTMLElement | null>(null);
+  const [fishingSession, setFishingSession] = useState<QizhenFishingSessionSnapshot | null>(null);
   const shellRef = useRef<HTMLElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const phaserHostRef = useRef<HTMLDivElement | null>(null);
@@ -206,6 +222,7 @@ export function RpgGameHost({
   const activeDirectionPointerRef = useRef<{ pointerId: number; startedAt: number } | null>(null);
   const directionStopTimerRef = useRef<number | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
+  const pendingFishingRef = useRef<{ sessionId: string; spotId: QizhenFishingSpotId } | null>(null);
   const itemInspectOpen = inspectedMapItem !== null;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const chaseActive = state.canteenHunt.phase === "chasing";
@@ -728,6 +745,59 @@ export function RpgGameHost({
         const itemId = String(event.payload?.rigItemId ?? "magneticFishingRod") as ItemId;
         const result = qizhenController.castAt("paper");
         emitQizhenItemFeedback(events, itemId, result, "纸条本体水纹");
+      } else if (event.name === "rpg_qizhen_fishing_attempt_requested") {
+        const sessionId = String(event.payload?.sessionId ?? "");
+        const spotId = normalizeQizhenFishingSpot(event.payload?.spotId ?? event.payload?.targetId);
+        const feedback = QIZHEN_FISHING_SPOT_FEEDBACK[spotId];
+        const itemId = String(event.payload?.itemId ?? feedback.itemId) as ItemId;
+        const result = qizhenController.precheckCast(spotId);
+        if (result === "accepted") {
+          pendingFishingRef.current = { sessionId, spotId };
+          events.emit("qizhen_fishing_prechecked", { sessionId, spotId, chartId: spotId });
+        } else {
+          events.emit("qizhen_fishing_precheck_failed", { sessionId, spotId, reason: result });
+          emitQizhenItemFeedback(events, itemId, result, feedback.targetLabel);
+        }
+      } else if (event.name === "rpg_qizhen_fishing_resolve_requested") {
+        const sessionId = String(event.payload?.sessionId ?? "");
+        const pending = pendingFishingRef.current;
+        if (pending && pending.sessionId === sessionId) {
+          pendingFishingRef.current = null;
+          const spotId = pending.spotId;
+          const result = qizhenController.castAt(spotId);
+          if (result === "accepted") {
+            const fishingResult = event.payload?.result as QizhenFishingResult | undefined;
+            events.emit("qizhen_fishing_completed", {
+              sessionId,
+              spotId,
+              grade: fishingResult?.grade ?? "C",
+              accuracy: fishingResult?.accuracy ?? 0
+            });
+          } else {
+            events.emit("qizhen_fishing_failed", { sessionId, spotId, reason: result });
+            const feedback = QIZHEN_FISHING_SPOT_FEEDBACK[spotId];
+            emitQizhenItemFeedback(events, feedback.itemId, result, feedback.targetLabel);
+          }
+        }
+      } else if (event.name === "qizhen_fishing_started") {
+        kayakPaddleGesturesRef.current.clear();
+        setKayakPaddleSwipeState({});
+        setFishingSession({
+          sessionId: String(event.payload?.sessionId ?? ""),
+          spotId: String(event.payload?.spotId ?? ""),
+          chartId: String(event.payload?.chartId ?? ""),
+          targetLabel: String(event.payload?.targetLabel ?? ""),
+          totalNotes: Number(event.payload?.totalNotes ?? 0),
+          assist: event.payload?.assist === true
+        });
+      } else if (event.name === "qizhen_fishing_completed"
+        || event.name === "qizhen_fishing_failed"
+        || event.name === "qizhen_fishing_cancelled") {
+        const sessionId = String(event.payload?.sessionId ?? "");
+        if (pendingFishingRef.current?.sessionId === sessionId) {
+          pendingFishingRef.current = null;
+        }
+        setFishingSession(null);
       } else if (event.name === "rpg_qizhen_chase_progress") {
         qizhenController.recordChaseProgress(Number(event.payload?.distance ?? 0));
       } else if (event.name === "rpg_qizhen_chase_failed") {
@@ -973,6 +1043,18 @@ export function RpgGameHost({
     setKayakPaddlePhase(gesture.side, null);
   }
 
+  function emitFishingTouchInput(action: QizhenFishingAction, type: "press" | "release", event: React.PointerEvent<HTMLButtonElement>) {
+    if (type === "press") {
+      try {
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+      } catch {
+        // Pointer capture is optional in older WebKit and some embedded browsers.
+      }
+    }
+    events.emit("rpg_qizhen_fishing_input", { action, type, pointerType: event.pointerType });
+    event.preventDefault();
+  }
+
   function returnToPhone() {
     setInspectedMapItem(null);
     if (desktopSplit) {
@@ -1135,7 +1217,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "qizhen_lake" && ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
+        {runtimeScene === "qizhen_lake" && !fishingSession && ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
           <RpgRealityModeToggle
             className="rpg-qizhen-mode-toggle"
             mode={state.qizhenLake.mode}
@@ -1187,12 +1269,12 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {runtimeScene === "library_interior"
+        {!fishingSession && (runtimeScene === "library_interior"
           || runtimeScene === "dorm_hub"
           || runtimeScene === "canteen_interior"
           || (runtimeScene === "theater_interior" && !["spotlight_hunt", "reversal"].includes(state.theaterHunt.phase))
           || runtimeScene === "qizhen_lake"
-          || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") ? (
+          || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
           <RpgInventoryDock
             state={state}
             events={events}
@@ -1208,41 +1290,85 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || chaseActive || godotTheaterPanel !== null}
+          blocked={inputBlocked || itemInspectOpen || chaseActive || godotTheaterPanel !== null || Boolean(fishingSession)}
         />
 
         {state.actOne.controlsInstalled && touchControls && !chaseActive && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
-          <nav className="rpg-kayak-controls" aria-label="皮划艇划桨手势和交互按钮">
-            <button
-              type="button"
-              className={`left-paddle is-swipe-${kayakPaddleSwipeState.left ?? "idle"}`}
-              aria-label="左桨，上划前进，下划后退，轻触默认前进"
-              onPointerDown={(event) => startKayakPaddleGesture("left", event)}
-              onPointerMove={updateKayakPaddleGesture}
-              onPointerUp={(event) => completeKayakPaddleGesture(event.pointerId, event.clientY, event.pointerType)}
-              onPointerCancel={(event) => cancelKayakPaddleGesture(event.pointerId)}
-              onLostPointerCapture={(event) => cancelKayakPaddleGesture(event.pointerId)}
-            >
-              <PixelIcon name="willowBranchPaddle" size={34} />
-              <span>左桨</span>
-              <small>{kayakPaddleSwipeState.left === "reverse" ? "↓ 后退" : kayakPaddleSwipeState.left === "forward" ? "↑ 前进" : "↑前进 · ↓后退"}</small>
-            </button>
-            <button
-              type="button"
-              className={`right-paddle is-swipe-${kayakPaddleSwipeState.right ?? "idle"}`}
-              aria-label="右桨，上划前进，下划后退，轻触默认前进"
-              onPointerDown={(event) => startKayakPaddleGesture("right", event)}
-              onPointerMove={updateKayakPaddleGesture}
-              onPointerUp={(event) => completeKayakPaddleGesture(event.pointerId, event.clientY, event.pointerType)}
-              onPointerCancel={(event) => cancelKayakPaddleGesture(event.pointerId)}
-              onLostPointerCapture={(event) => cancelKayakPaddleGesture(event.pointerId)}
-            >
-              <PixelIcon name="warningSignPaddle" size={34} />
-              <span>右桨</span>
-              <small>{kayakPaddleSwipeState.right === "reverse" ? "↓ 后退" : kayakPaddleSwipeState.right === "forward" ? "↑ 前进" : "↑前进 · ↓后退"}</small>
-            </button>
-            <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
-          </nav>
+          fishingSession ? (
+            <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼收线和提竿按钮">
+              <button
+                type="button"
+                className="left-paddle"
+                aria-label="左收线"
+                onPointerDown={(event) => emitFishingTouchInput("left", "press", event)}
+                onPointerUp={(event) => emitFishingTouchInput("left", "release", event)}
+                onPointerCancel={(event) => emitFishingTouchInput("left", "release", event)}
+                onLostPointerCapture={(event) => emitFishingTouchInput("left", "release", event)}
+              >
+                <PixelIcon name="willowBranchPaddle" size={34} />
+                <span>左收线</span>
+                <small>←</small>
+              </button>
+              <button
+                type="button"
+                className="right-paddle"
+                aria-label="右收线"
+                onPointerDown={(event) => emitFishingTouchInput("right", "press", event)}
+                onPointerUp={(event) => emitFishingTouchInput("right", "release", event)}
+                onPointerCancel={(event) => emitFishingTouchInput("right", "release", event)}
+                onLostPointerCapture={(event) => emitFishingTouchInput("right", "release", event)}
+              >
+                <PixelIcon name="warningSignPaddle" size={34} />
+                <span>右收线</span>
+                <small>→</small>
+              </button>
+              <button
+                type="button"
+                className="interact"
+                aria-label="提竿"
+                onPointerDown={(event) => emitFishingTouchInput("hook", "press", event)}
+                onPointerUp={(event) => emitFishingTouchInput("hook", "release", event)}
+                onPointerCancel={(event) => emitFishingTouchInput("hook", "release", event)}
+                onLostPointerCapture={(event) => emitFishingTouchInput("hook", "release", event)}
+              >
+                <PixelIcon name="fishingRod" size={34} />
+                <span>提竿</span>
+                <small>↑</small>
+              </button>
+            </nav>
+          ) : (
+            <nav className="rpg-kayak-controls" aria-label="皮划艇划桨手势和交互按钮">
+              <button
+                type="button"
+                className={`left-paddle is-swipe-${kayakPaddleSwipeState.left ?? "idle"}`}
+                aria-label="左桨，上划前进，下划后退，轻触默认前进"
+                onPointerDown={(event) => startKayakPaddleGesture("left", event)}
+                onPointerMove={updateKayakPaddleGesture}
+                onPointerUp={(event) => completeKayakPaddleGesture(event.pointerId, event.clientY, event.pointerType)}
+                onPointerCancel={(event) => cancelKayakPaddleGesture(event.pointerId)}
+                onLostPointerCapture={(event) => cancelKayakPaddleGesture(event.pointerId)}
+              >
+                <PixelIcon name="willowBranchPaddle" size={34} />
+                <span>左桨</span>
+                <small>{kayakPaddleSwipeState.left === "reverse" ? "↓ 后退" : kayakPaddleSwipeState.left === "forward" ? "↑ 前进" : "↑前进 · ↓后退"}</small>
+              </button>
+              <button
+                type="button"
+                className={`right-paddle is-swipe-${kayakPaddleSwipeState.right ?? "idle"}`}
+                aria-label="右桨，上划前进，下划后退，轻触默认前进"
+                onPointerDown={(event) => startKayakPaddleGesture("right", event)}
+                onPointerMove={updateKayakPaddleGesture}
+                onPointerUp={(event) => completeKayakPaddleGesture(event.pointerId, event.clientY, event.pointerType)}
+                onPointerCancel={(event) => cancelKayakPaddleGesture(event.pointerId)}
+                onLostPointerCapture={(event) => cancelKayakPaddleGesture(event.pointerId)}
+              >
+                <PixelIcon name="warningSignPaddle" size={34} />
+                <span>右桨</span>
+                <small>{kayakPaddleSwipeState.right === "reverse" ? "↓ 后退" : kayakPaddleSwipeState.right === "forward" ? "↑ 前进" : "↑前进 · ↓后退"}</small>
+              </button>
+              <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
+            </nav>
+          )
         ) : state.actOne.controlsInstalled && touchControls && !chaseActive ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}

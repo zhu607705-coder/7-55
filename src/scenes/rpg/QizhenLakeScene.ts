@@ -48,6 +48,16 @@ import {
   type QizhenBlackSwanVisual,
   type QizhenPaddleSide
 } from "./QizhenKayakTextures";
+import { getAudioContextConstructor } from "../../core/ClientCompatibility";
+import {
+  QIZHEN_FISHING_TIMING,
+  QizhenFishingRhythmModel,
+  type QizhenFishingAction,
+  type QizhenFishingChartId,
+  type QizhenFishingFailReason,
+  type QizhenFishingResult
+} from "./QizhenFishingRhythmModel";
+import { QizhenFishingRhythmVisual } from "./QizhenFishingRhythmVisual";
 
 const ZONE_TEXTURE_KEYS: Readonly<Record<QizhenLakeZoneId, string>> = {
   dock: "chapter-3-qizhen-dock",
@@ -98,6 +108,22 @@ const CHAIN_ITEMS = {
   magneticRod: "magneticFishingRod",
   decoy: "decoyPaper"
 } as const satisfies Record<string, ItemId>;
+
+/** 四个节奏钓鱼目标：targetId → spotId（spotId 与谱面 id 一一对应）。 */
+const QIZHEN_FISHING_SPOT_BY_TARGET: Readonly<Record<string, QizhenFishingChartId>> = {
+  qizhen_fishing_item_1: "locker_key",
+  qizhen_fishing_item_3: "net_frame",
+  qizhen_fishing_fish: "fish",
+  qizhen_final_paper_cast: "paper"
+};
+const QIZHEN_FISHING_SPOT_LABELS: Readonly<Record<QizhenFishingChartId, string>> = {
+  locker_key: "生锈的柜门钥匙",
+  net_frame: "破损网框",
+  fish: "小鲤鱼",
+  paper: "纸条本体"
+};
+/** 宿主预检回包超时兜底（正常为同一事件轮回包）。 */
+const FISHING_PRECHECK_TIMEOUT_MS = 2000;
 
 type QizhenRuntimePhase =
   | "inactive"
@@ -172,6 +198,14 @@ interface DropGuideVisual {
   targetOutline: Phaser.GameObjects.Rectangle;
 }
 
+interface QizhenFishingAttempt {
+  sessionId: string;
+  spotId: QizhenFishingChartId;
+  target: QizhenLakeInteractionTarget;
+  itemId: ItemId;
+  targetLabel: string;
+}
+
 export class QizhenLakeScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -239,6 +273,27 @@ export class QizhenLakeScene extends Phaser.Scene {
   private boundaryHeadingAtBlock = 0;
   private boundaryRollAtBlock = 0;
   private reflectionDialoguePlayed = false;
+
+  private fishingPendingAttempt: QizhenFishingAttempt | null = null;
+  private fishingActiveAttempt: QizhenFishingAttempt | null = null;
+  private fishingModel: QizhenFishingRhythmModel | null = null;
+  private fishingVisual: QizhenFishingRhythmVisual | null = null;
+  private fishingPrecheckTimer: Phaser.Time.TimerEvent | null = null;
+  private fishingAudioContext: AudioContext | null = null;
+  private fishingClockNow: () => number = () => performance.now() / 1000;
+  private fishingUsesAudioClock = false;
+  private fishingStartedAtSec = 0;
+  private fishingNextMetronomeBeat = 0;
+  private fishingSessionSerial = 0;
+  private fishingResolving = false;
+  private fishingHeldActions = new Set<QizhenFishingAction>();
+  private readonly fishingFailureCounts: Record<QizhenFishingChartId, number> = {
+    locker_key: 0,
+    net_frame: 0,
+    fish: 0,
+    paper: 0
+  };
+  private fishingVisibilityHandler: (() => void) | null = null;
 
   constructor() {
     super("qizhen-lake");
@@ -355,6 +410,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       (event) => this.handleBridgeEvent(event.name, event.payload),
       clearRpgRuntimeDebugState
     );
+    this.fishingVisibilityHandler = () => {
+      if (document.visibilityState === "hidden") {
+        this.cancelFishingSession("visibility_hidden");
+      }
+    };
+    document.addEventListener("visibilitychange", this.fishingVisibilityHandler);
     if (runtime.zone === "dock" && runtime.mode !== "light") {
       this.emitDomain("rpg_qizhen_mode_requested", {
         mode: "light",
@@ -362,6 +423,16 @@ export class QizhenLakeScene extends Phaser.Scene {
       });
     }
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.cancelFishingSession("scene_shutdown");
+      if (this.fishingVisibilityHandler) {
+        document.removeEventListener("visibilitychange", this.fishingVisibilityHandler);
+        this.fishingVisibilityHandler = null;
+      }
+      const audioContext = this.fishingAudioContext;
+      this.fishingAudioContext = null;
+      if (audioContext && audioContext.state !== "closed") {
+        void audioContext.close().catch(() => undefined);
+      }
       this.resetTransientKayakState();
       this.kayak.destroy();
       this.staticSwan?.destroy();
@@ -393,6 +464,12 @@ export class QizhenLakeScene extends Phaser.Scene {
     const state = this.bridge.getState();
     const runtime = readQizhenRuntime(state);
     this.syncState(runtime);
+
+    if (this.fishingPendingAttempt || this.fishingActiveAttempt) {
+      this.updateFishingSession(runtime);
+      this.interactRequested = false;
+      return;
+    }
 
     if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.dialogueLocked && !this.zoneTransitioning) {
       if (runtime.phase === "swan_chase" || runtime.phase === "complete") {
@@ -1170,7 +1247,17 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private getActiveTargets(state: GameState, runtime: QizhenRuntimeProjection): QizhenLakeInteractionTarget[] {
-    return targetsForQizhenZone(this.currentZone, this.currentVehicle).filter((target) => {
+    const zoneTargets = targetsForQizhenZone(this.currentZone, this.currentVehicle).map((target) => {
+      if (target.id !== "qizhen_swan_workbench" || this.currentVehicle !== "kayak") return target;
+      const bowOffset = 52;
+      return {
+        ...target,
+        x: this.player.x + Math.cos(this.kayakHeading) * bowOffset,
+        y: this.player.y + Math.sin(this.kayakHeading) * bowOffset,
+        stand: { x: this.player.x, y: this.player.y }
+      };
+    });
+    return zoneTargets.filter((target) => {
       if (target.kind === "exit") return runtime.phase !== "swan_chase";
       if (target.kind === "outfit") {
         if (target.value === "kayak") return !runtime.kayakEquipped;
@@ -1259,6 +1346,339 @@ export class QizhenLakeScene extends Phaser.Scene {
     });
   }
 
+  private requestFishingAttempt(target: QizhenLakeInteractionTarget, itemId: ItemId): void {
+    const spotId = QIZHEN_FISHING_SPOT_BY_TARGET[target.id];
+    if (!spotId || this.fishingPendingAttempt || this.fishingActiveAttempt) return;
+
+    const attempt: QizhenFishingAttempt = {
+      sessionId: `qizhen-${spotId}-${++this.fishingSessionSerial}-${Math.round(performance.now())}`,
+      spotId,
+      target,
+      itemId,
+      targetLabel: QIZHEN_FISHING_SPOT_LABELS[spotId]
+    };
+    this.prepareFishingAudioClock();
+    this.fishingPendingAttempt = attempt;
+    this.lockFishingPresentation();
+    this.fishingPrecheckTimer?.remove();
+    this.fishingPrecheckTimer = this.time.delayedCall(FISHING_PRECHECK_TIMEOUT_MS, () => {
+      if (this.fishingPendingAttempt?.sessionId !== attempt.sessionId) return;
+      this.showFeedback("节奏钓取未能启动，道具已保留，请重试。", "system");
+      this.cancelFishingSession("precheck_timeout");
+    });
+    this.emitDomain("rpg_qizhen_fishing_attempt_requested", {
+      sessionId: attempt.sessionId,
+      spotId,
+      chartId: spotId,
+      targetId: target.id,
+      targetLabel: attempt.targetLabel,
+      itemId
+    });
+  }
+
+  private prepareFishingAudioClock(): void {
+    if (!this.fishingAudioContext) {
+      const AudioContextConstructor = getAudioContextConstructor();
+      if (AudioContextConstructor) {
+        try {
+          this.fishingAudioContext = new AudioContextConstructor();
+        } catch {
+          this.fishingAudioContext = null;
+        }
+      }
+    }
+    if (this.fishingAudioContext?.state === "suspended") {
+      void this.fishingAudioContext.resume().catch(() => undefined);
+    }
+  }
+
+  private beginFishingSession(attempt: QizhenFishingAttempt): void {
+    if (!this.sys?.isActive() || this.fishingPendingAttempt?.sessionId !== attempt.sessionId) return;
+    const audioContext = this.fishingAudioContext;
+    this.fishingUsesAudioClock = audioContext?.state === "running";
+    this.fishingClockNow = this.fishingUsesAudioClock && audioContext
+      ? () => audioContext.currentTime
+      : () => performance.now() / 1000;
+    this.fishingActiveAttempt = attempt;
+    this.fishingPendingAttempt = null;
+    this.fishingResolving = false;
+    this.fishingHeldActions.clear();
+
+    const assist = this.fishingFailureCounts[attempt.spotId] >= 2;
+    const model = new QizhenFishingRhythmModel({
+      chartId: attempt.spotId,
+      now: () => this.fishingClockNow(),
+      assist,
+      events: {
+        onNoteJudged: (note, judgment, errorMs, tension) => {
+          this.fishingVisual?.notifyJudgment(note, judgment, errorMs);
+          this.emitDomain("qizhen_fishing_note_judged", {
+            sessionId: attempt.sessionId,
+            spotId: attempt.spotId,
+            action: note.action,
+            judgment,
+            errorMs: Math.round(errorMs),
+            tension: Math.round(tension)
+          });
+        },
+        onHoldBroken: (note, tension) => {
+          this.fishingVisual?.notifyHoldBroken(note);
+          this.emitDomain("qizhen_fishing_hold_broken", {
+            sessionId: attempt.sessionId,
+            spotId: attempt.spotId,
+            action: note.action,
+            tension: Math.round(tension)
+          });
+        },
+        onWarning: (kind, tension) => {
+          this.fishingVisual?.notifyWarning(kind, tension);
+          this.emitDomain("qizhen_fishing_warning", {
+            sessionId: attempt.sessionId,
+            spotId: attempt.spotId,
+            kind,
+            tension: Math.round(tension)
+          });
+        },
+        onCompleted: (result) => this.resolveFishingModelResult(attempt, result),
+        onFailed: (reason) => this.resolveFishingModelFailure(attempt, reason)
+      }
+    });
+    this.fishingModel = model;
+    this.fishingVisual = new QizhenFishingRhythmVisual({
+      scene: this,
+      model,
+      anchor: { x: attempt.target.x, y: attempt.target.y },
+      targetLabel: attempt.targetLabel,
+      lineFrom: () => ({
+        x: this.player.x + Math.cos(this.kayakHeading) * 44,
+        y: this.player.y + Math.sin(this.kayakHeading) * 44
+      }),
+      reducedMotion: this.reducedMotion
+    });
+    this.cameras.main.stopFollow();
+    this.cameras.main.centerOn(attempt.target.x, attempt.target.y);
+    this.fishingNextMetronomeBeat = 0;
+    model.start();
+    this.fishingStartedAtSec = this.fishingClockNow() - model.elapsedSec;
+    this.emitDomain("qizhen_fishing_started", {
+      sessionId: attempt.sessionId,
+      spotId: attempt.spotId,
+      chartId: attempt.spotId,
+      targetLabel: attempt.targetLabel,
+      totalNotes: model.totalNotes,
+      assist
+    });
+  }
+
+  private updateFishingSession(runtime: QizhenRuntimeProjection): void {
+    const attempt = this.fishingActiveAttempt ?? this.fishingPendingAttempt;
+    if (!attempt) return;
+    if (
+      runtime.mode !== "light"
+      || runtime.vehicle !== "kayak"
+      || runtime.zone !== attempt.target.zone
+      || !["tool_chain", "swan_exchange", "paper_capture"].includes(runtime.phase)
+    ) {
+      this.cancelFishingSession("runtime_changed");
+      return;
+    }
+
+    this.lockFishingPresentation();
+    this.player.setVelocity(0, 0);
+    this.kayakSpeed = 0;
+    this.kayakRoll = 0;
+    this.kayak.setPose({
+      x: this.player.x,
+      y: this.player.y,
+      heading: this.kayakHeading,
+      roll: 0,
+      speed: 0,
+      chasing: false
+    });
+
+    const model = this.fishingModel;
+    if (model) {
+      this.updateFishingKeyboardInput(model);
+      model.update();
+      this.scheduleFishingMetronome();
+      this.fishingVisual?.update();
+    }
+    this.updateOcclusion();
+    this.publishDebugState(null, [], runtime);
+  }
+
+  private updateFishingKeyboardInput(model: QizhenFishingRhythmModel): void {
+    const leftPressed = Phaser.Input.Keyboard.JustDown(this.cursors.left)
+      || Phaser.Input.Keyboard.JustDown(this.keys.A);
+    const rightPressed = Phaser.Input.Keyboard.JustDown(this.cursors.right)
+      || Phaser.Input.Keyboard.JustDown(this.keys.D);
+    if (leftPressed) this.applyFishingInput(model, "left", "press");
+    if (rightPressed) this.applyFishingInput(model, "right", "press");
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) this.applyFishingInput(model, "hook", "press");
+
+    const leftReleased = (Phaser.Input.Keyboard.JustUp(this.cursors.left)
+      || Phaser.Input.Keyboard.JustUp(this.keys.A))
+      && !this.cursors.left.isDown
+      && !this.keys.A.isDown;
+    const rightReleased = (Phaser.Input.Keyboard.JustUp(this.cursors.right)
+      || Phaser.Input.Keyboard.JustUp(this.keys.D))
+      && !this.cursors.right.isDown
+      && !this.keys.D.isDown;
+    if (leftReleased) this.applyFishingInput(model, "left", "release");
+    if (rightReleased) this.applyFishingInput(model, "right", "release");
+    if (Phaser.Input.Keyboard.JustUp(this.cursors.space)) this.applyFishingInput(model, "hook", "release");
+  }
+
+  private applyFishingInput(
+    model: QizhenFishingRhythmModel,
+    action: QizhenFishingAction,
+    type: "press" | "release"
+  ): void {
+    if (type === "press") {
+      if (this.fishingHeldActions.has(action)) return;
+      this.fishingHeldActions.add(action);
+      model.handlePress(action);
+      return;
+    }
+    if (!this.fishingHeldActions.delete(action)) return;
+    model.handleRelease(action);
+  }
+
+  private scheduleFishingMetronome(): void {
+    const audioContext = this.fishingAudioContext;
+    const model = this.fishingModel;
+    if (!this.fishingUsesAudioClock || !audioContext || audioContext.state !== "running" || model?.phase !== "running") {
+      return;
+    }
+    const scheduleUntil = audioContext.currentTime + 0.12;
+    while (
+      this.fishingStartedAtSec + this.fishingNextMetronomeBeat * QIZHEN_FISHING_TIMING.beatSec
+      <= scheduleUntil
+    ) {
+      const beatIndex = this.fishingNextMetronomeBeat;
+      const beatTime = Math.max(
+        audioContext.currentTime,
+        this.fishingStartedAtSec + beatIndex * QIZHEN_FISHING_TIMING.beatSec
+      );
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(beatIndex % 4 === 0 ? 820 : 610, beatTime);
+        gain.gain.setValueAtTime(0.0001, beatTime);
+        gain.gain.exponentialRampToValueAtTime(beatIndex % 4 === 0 ? 0.035 : 0.022, beatTime + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.0001, beatTime + 0.055);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start(beatTime);
+        oscillator.stop(beatTime + 0.06);
+      } catch {
+        this.fishingUsesAudioClock = false;
+        break;
+      }
+      this.fishingNextMetronomeBeat += 1;
+    }
+  }
+
+  private resolveFishingModelResult(attempt: QizhenFishingAttempt, result: QizhenFishingResult): void {
+    if (this.fishingResolving || this.fishingActiveAttempt?.sessionId !== attempt.sessionId) return;
+    this.fishingResolving = true;
+    if (!result.passed) {
+      this.fishingFailureCounts[attempt.spotId] += 1;
+      this.fishingVisual?.playFailure("grade", () => {
+        this.finishFishingFailure(attempt, "grade", result);
+      });
+      return;
+    }
+    const submit = () => {
+      if (this.fishingActiveAttempt?.sessionId !== attempt.sessionId) return;
+      this.emitDomain("rpg_qizhen_fishing_resolve_requested", {
+        sessionId: attempt.sessionId,
+        spotId: attempt.spotId,
+        targetId: attempt.target.id,
+        itemId: attempt.itemId,
+        result: result as unknown as Record<string, unknown>
+      });
+    };
+    if (attempt.spotId === "paper") {
+      submit();
+    } else {
+      this.fishingVisual?.playResult(result, submit);
+    }
+  }
+
+  private resolveFishingModelFailure(attempt: QizhenFishingAttempt, reason: QizhenFishingFailReason): void {
+    if (this.fishingResolving || this.fishingActiveAttempt?.sessionId !== attempt.sessionId) return;
+    this.fishingResolving = true;
+    this.fishingFailureCounts[attempt.spotId] += 1;
+    this.fishingVisual?.playFailure(reason, () => this.finishFishingFailure(attempt, reason));
+  }
+
+  private finishFishingFailure(
+    attempt: QizhenFishingAttempt,
+    reason: QizhenFishingFailReason | "grade",
+    result?: QizhenFishingResult
+  ): void {
+    if (this.fishingActiveAttempt?.sessionId !== attempt.sessionId) return;
+    this.clearFishingSession();
+    this.emitDomain("qizhen_fishing_failed", {
+      sessionId: attempt.sessionId,
+      spotId: attempt.spotId,
+      reason,
+      result: result as unknown as Record<string, unknown> | undefined,
+      failures: this.fishingFailureCounts[attempt.spotId],
+      assistNext: this.fishingFailureCounts[attempt.spotId] >= 2
+    });
+    this.showFeedback(
+      this.fishingFailureCounts[attempt.spotId] >= 2
+        ? "未通过：道具已保留。下次将扩大判定窗口并精简节拍。"
+        : "未通过：道具已保留，靠近同一水纹可立即重试。",
+      "system"
+    );
+  }
+
+  private lockFishingPresentation(): void {
+    this.zoneText?.setVisible(false);
+    this.statusText?.setVisible(false);
+    this.promptText?.setVisible(false);
+    this.targetVisuals.forEach((visual) => visual.root.setVisible(false));
+    this.dropGuides.forEach((guide) => guide.targetOutline.setVisible(false));
+  }
+
+  private clearFishingSession(): void {
+    this.fishingPrecheckTimer?.remove();
+    this.fishingPrecheckTimer = null;
+    this.fishingModel?.cancel();
+    this.fishingVisual?.destroy();
+    this.fishingModel = null;
+    this.fishingVisual = null;
+    this.fishingPendingAttempt = null;
+    this.fishingActiveAttempt = null;
+    this.fishingHeldActions.clear();
+    this.fishingResolving = false;
+    this.fishingUsesAudioClock = false;
+    this.fishingClockNow = () => performance.now() / 1000;
+    this.zoneText?.setVisible(true);
+    this.statusText?.setVisible(true);
+    if (this.cameras?.main && this.player) {
+      this.cameras.main
+        .startFollow(this.player, true, 0.13, 0.13, 0, 18)
+        .setDeadzone(250, 150);
+    }
+  }
+
+  private cancelFishingSession(reason: string): void {
+    const attempt = this.fishingActiveAttempt ?? this.fishingPendingAttempt;
+    if (!attempt) return;
+    this.clearFishingSession();
+    if (this.bridge) {
+      this.emitDomain("qizhen_fishing_cancelled", {
+        sessionId: attempt.sessionId,
+        spotId: attempt.spotId,
+        reason
+      });
+    }
+  }
+
   private triggerTarget(
     target: QizhenLakeInteractionTarget,
     state: GameState,
@@ -1308,8 +1728,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         return;
       }
       const itemId = target.value === "fish" ? CHAIN_ITEMS.pellets : CHAIN_ITEMS.fishingRod;
-      this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId });
-      this.animateFishingCast(target, true);
+      this.requestFishingAttempt(target, itemId);
       return;
     }
     if (target.kind === "item_use") {
@@ -1347,11 +1766,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         this.animateFishingCast(target, true);
         return;
       }
-      this.emitDomain("rpg_qizhen_paper_caught_requested", {
-        rigItemId: CHAIN_ITEMS.magneticRod,
-        targetId: target.id
-      });
-      this.animateFishingCast(target, true);
+      this.requestFishingAttempt(target, CHAIN_ITEMS.magneticRod);
       return;
     }
     if (target.kind === "escape") {
@@ -1383,6 +1798,9 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private isFacingTarget(target: QizhenLakeInteractionTarget): boolean {
+    if (target.kind === "fishing_spot" || target.kind === "paper") {
+      return true;
+    }
     if (this.currentVehicle === "kayak") {
       return isFacingVectorTowardRpgTarget(
         target,
@@ -1450,13 +1868,11 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (target.kind === "fishing_spot") {
       if (target.value === "fish" && itemId === CHAIN_ITEMS.pellets) {
-        this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId });
-        this.animateFishingCast(target, true);
+        this.requestFishingAttempt(target, itemId);
         return;
       }
       if (["item_1", "item_3"].includes(String(target.value)) && itemId === CHAIN_ITEMS.fishingRod) {
-        this.emitDomain("rpg_qizhen_fish_requested", { targetId: target.id, itemId });
-        this.animateFishingCast(target, true);
+        this.requestFishingAttempt(target, itemId);
         return;
       }
     }
@@ -1491,8 +1907,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (target.value === "paper_body" && itemId === CHAIN_ITEMS.magneticRod) {
-      this.emitDomain("rpg_qizhen_paper_caught_requested", { rigItemId: itemId, targetId: target.id });
-      this.animateFishingCast(target, true);
+      this.requestFishingAttempt(target, itemId);
       return;
     }
     this.emitDropFailure(itemId, "wrong_item", target.label, this.dropCorrectionFor(target));
@@ -1500,6 +1915,55 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private handleBridgeEvent(name: string, payload?: Record<string, unknown>): void {
     if (!this.sys?.isActive()) return;
+    if (name === "qizhen_fishing_prechecked") {
+      const sessionId = String(payload?.sessionId ?? "");
+      const attempt = this.fishingPendingAttempt;
+      if (!attempt || attempt.sessionId !== sessionId) return;
+      this.fishingPrecheckTimer?.remove();
+      this.fishingPrecheckTimer = null;
+      this.animateFishingCast(attempt.target, true, () => this.beginFishingSession(attempt));
+      return;
+    }
+    if (name === "qizhen_fishing_precheck_failed") {
+      const sessionId = String(payload?.sessionId ?? "");
+      if (this.fishingPendingAttempt?.sessionId === sessionId) {
+        this.cancelFishingSession(String(payload?.reason ?? "precheck_failed"));
+      }
+      return;
+    }
+    if (name === "rpg_qizhen_fishing_input") {
+      const model = this.fishingModel;
+      const action = String(payload?.action ?? "");
+      const type = String(payload?.type ?? "");
+      if (
+        model
+        && (action === "left" || action === "right" || action === "hook")
+        && (type === "press" || type === "release")
+      ) {
+        this.applyFishingInput(model, action, type);
+      }
+      return;
+    }
+    if (name === "qizhen_fishing_completed" || name === "qizhen_fishing_failed") {
+      const sessionId = String(payload?.sessionId ?? "");
+      const attempt = this.fishingActiveAttempt ?? this.fishingPendingAttempt;
+      if (attempt?.sessionId === sessionId) {
+        if (name === "qizhen_fishing_completed") this.fishingFailureCounts[attempt.spotId] = 0;
+        this.clearFishingSession();
+      }
+      return;
+    }
+    if (name === "qizhen_fishing_cancelled") return;
+
+    if (this.fishingPendingAttempt || this.fishingActiveAttempt) {
+      if (
+        name === "rpg_direction_changed"
+        || name === "rpg_interact"
+        || name === "rpg_qizhen_paddle_input"
+        || name === "rpg_qizhen_reverse_changed"
+        || name === "rpg_inventory_drop_requested"
+      ) return;
+    }
     if (name === "rpg_direction_changed") {
       const x = Number(payload?.x) || 0;
       const y = Number(payload?.y) || 0;
@@ -1651,10 +2115,13 @@ export class QizhenLakeScene extends Phaser.Scene {
     state: GameState,
     runtime: QizhenRuntimeProjection
   ): void {
-    const activeIds = new Set(targets.map((target) => target.id));
+    const activeById = new Map(targets.map((target) => [target.id, target] as const));
+    const activeIds = new Set(activeById.keys());
     const selectedItem = state.ui.selectedItem;
     this.targetVisuals.forEach((visual) => {
       const active = activeIds.has(visual.target.id);
+      const activeTarget = activeById.get(visual.target.id);
+      if (activeTarget) visual.root.setPosition(activeTarget.x, activeTarget.y);
       const vehicleMatches = !visual.target.vehicle || visual.target.vehicle === this.currentVehicle;
       const lockedPortal = !active && vehicleMatches && this.lockedPortalHintFor(visual.target, runtime) !== null;
       visual.root.setVisible(active || lockedPortal);
@@ -1689,14 +2156,16 @@ export class QizhenLakeScene extends Phaser.Scene {
     targets: readonly QizhenLakeInteractionTarget[],
     selectedItem: ItemId | null
   ): void {
-    const activeIds = new Set(targets.map((target) => target.id));
+    const activeById = new Map(targets.map((target) => [target.id, target] as const));
     this.dropGuides.forEach((guide) => {
+      const activeTarget = activeById.get(guide.target.id);
       const matches = selectedItem !== null && qizhenTargetAcceptsItem(guide.target, selectedItem);
-      const visible = activeIds.has(guide.target.id) && matches;
+      const visible = activeTarget !== undefined && matches;
       guide.targetOutline.setVisible(visible);
       if (!visible) return;
-      const ready = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y)
-        && this.isFacingTarget(guide.target);
+      guide.targetOutline.setPosition(activeTarget.x, activeTarget.y);
+      const ready = isPlayerWithinRpgTarget(activeTarget, this.player.x, this.player.y)
+        && this.isFacingTarget(activeTarget);
       guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
     });
   }
@@ -1880,7 +2349,11 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.showFeedback(text, "system", 2200);
   }
 
-  private animateFishingCast(target: QizhenLakeInteractionTarget, splash: boolean): void {
+  private animateFishingCast(
+    target: QizhenLakeInteractionTarget,
+    splash: boolean,
+    onLanded?: () => void
+  ): void {
     const line = this.add.line(
       0,
       0,
@@ -1910,6 +2383,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         line.destroy();
         if (!splash) {
           bobber.destroy();
+          onLanded?.();
           return;
         }
         const ring = this.add.ellipse(target.x, target.y, 26, 10, 0xdafaff, 0)
@@ -1925,6 +2399,7 @@ export class QizhenLakeScene extends Phaser.Scene {
           ease: "Cubic.easeOut",
           onComplete: () => ring.destroy()
         });
+        onLanded?.();
       }
     });
   }
@@ -2011,7 +2486,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         scrollX: Math.round(this.cameras.main.scrollX),
         scrollY: Math.round(this.cameras.main.scrollY),
         zoom: Number(this.cameras.main.zoom.toFixed(2)),
-        mode: "follow"
+        mode: this.fishingActiveAttempt ? "fishing_lock" : "follow"
       },
       scene: "qizhen_lake",
       checkpoint: this.bridge.getState().rpgCheckpoint,
@@ -2070,6 +2545,20 @@ export class QizhenLakeScene extends Phaser.Scene {
           swanFed: runtime.swanFed,
           magneticRodCombined: runtime.magneticRodCombined,
           paperCaptured: runtime.paperCaptured
+        },
+        fishing: {
+          state: this.fishingActiveAttempt
+            ? this.fishingResolving ? "resolving" : "running"
+            : this.fishingPendingAttempt ? "prechecking" : "idle",
+          sessionId: this.fishingActiveAttempt?.sessionId ?? this.fishingPendingAttempt?.sessionId ?? null,
+          spotId: this.fishingActiveAttempt?.spotId ?? this.fishingPendingAttempt?.spotId ?? null,
+          elapsedSeconds: Number((this.fishingModel?.elapsedSec ?? 0).toFixed(3)),
+          tension: Math.round(this.fishingModel?.tension ?? 50),
+          judged: this.fishingModel?.judgedCount ?? 0,
+          totalNotes: this.fishingModel?.totalNotes ?? 0,
+          assist: this.fishingModel?.assist ?? false,
+          failureCounts: { ...this.fishingFailureCounts },
+          clock: this.fishingUsesAudioClock ? "audio_context" : "performance_fallback"
         },
         chase: {
           active: runtime.phase === "swan_chase",
