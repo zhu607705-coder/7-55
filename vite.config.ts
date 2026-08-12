@@ -50,10 +50,12 @@ export default defineConfig(({ mode }) => {
   const isSingleFileDemo = isDemo || isCampusMapDemo;
 
   return {
+    // All active browser assets are explicit imports. `public/` only contains
+    // the retired Godot export and would otherwise add roughly 58 MB.
+    publicDir: false,
     ...(isSingleFileDemo
       ? {
           base: "./",
-          publicDir: false,
           plugins: [react(), viteSingleFile({ removeViteModuleLoader: true }), moveSingleFileRuntimeAfterShell()],
           build: {
             outDir: "demo",

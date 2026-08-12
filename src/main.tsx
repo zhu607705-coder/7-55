@@ -15,7 +15,7 @@ import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
 import { getChapterThreeOpeningRuntimeSnapshot } from "./components/ChapterThreeOpeningRuntime";
-import "@fontsource/fusion-pixel-12px-proportional-sc";
+import "./styles/pixel-font.css";
 import "./styles.css";
 
 function summarizeGameState(state: GameState) {

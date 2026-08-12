@@ -1514,3 +1514,13 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 实际操作验证：Blink `1280×720` 从 `c3-qizhen-paper` 组合磁吸钓竿，划到纸条水纹约 `50px` 处后将船头转向目标反方向（朝向点积 `-0.897`）；拖入钓竿仍进入 `fishing.state=running / spotId=paper`，道具在节奏通过前保留，页面与控制台错误为 `0`。
 - 验证与产物：`npm run typecheck`、`npm run build:single` 与目标文件 `git diff --check` 通过。`demo/index.html` 为 `180393544 bytes`，SHA-256 `c8ea0096cac447481d47e67dde1ccc21aeade4dc4d6456ad7d7441686ed9c0e5`。
 - 合并复验：基于最新 `origin/main` 的隔离分支再次以 `50px` 距离、朝向点积 `-1` 拖入磁性钓竿，节奏进入 `running / paper / 26 notes`；静置失败后磁性钓竿仍保留、纸条未捕获、失败次数增加为 `1`，浏览器错误为 `0`。单文件为 `136655340 bytes`，SHA-256 `dd2b4ae6a2157058fbfe5b44ab5e2e84f36e0d645410db3de4f761bbeb4e9e44`。
+
+## 2026-08-12 压缩精简版性能补丁
+
+- 部署裁剪：活动 Vite 构建关闭 `public/` 自动复制。退役 Godot Web 导出继续保留在历史源目录，不进入正常浏览器部署。
+- 字体去重：统一使用 WOFF2 像素字体源，保持字形与支持内核范围，移除发行物中的重复 WOFF 副本。
+- 素材加载：新增 `RpgAssetLoader`，集中玩家、校园底图与启真湖船体的纹理存在检查，场景重启不会重复排队同一资源。
+- 交付范围：该分支基于最新 `origin/main`，只包含性能与封装补丁；不包含本地未提交的第四章、3D 追逐、剧情、美术或 Godot 修改。
+- 体积实测：普通 `dist/` 从 `149868 KiB / 254 files` 降至 `99780 KiB / 243 files`，减少 `50088 KiB`（约 `33.4%`）；其中退役 Godot 复制目录原占 `48648 KiB`。离线单文件从 `136655340 bytes` 降至 `134691490 bytes`，减少 `1963850 bytes`（约 `1.44%`）。
+- 构建验收：`npm run typecheck`、`npm run build`、`npm run build:single` 与 `npm run verify:single` 通过；补丁单文件 SHA-256 为 `c26d53486eb03b501b9bd8b6e0d779a089eea34e9ae10f33de4fcf475d6035dd`。
+- 浏览器验收：网页游戏客户端从单文件进入 `qizhen_lake / qizhen_open_water`，画布、底图、船体与状态输出正常；Blink `1280×720`、Gecko `1180×820`、WebKit `390×844` 均加载同一单文件，字体可用、文档无横纵溢出、控制台和页面错误为 `0`。

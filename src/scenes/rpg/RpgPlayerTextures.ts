@@ -12,6 +12,7 @@ import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
 import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
 import playerUp3Url from "../../assets/rpg/player/player_up_3.png";
+import { preloadRpgImages } from "./RpgAssetLoader";
 import type { RpgCardinalFacing } from "./RpgInteractionContract";
 
 export type RpgPlayerFacing = "down" | "up" | "side";
@@ -72,11 +73,7 @@ const RPG_PLAYER_TEXTURE_ASSETS = {
 } as const;
 
 export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
-  Object.entries(RPG_PLAYER_TEXTURE_ASSETS).forEach(([key, url]) => {
-    if (!scene.textures.exists(key)) {
-      scene.load.image(key, url);
-    }
-  });
+  preloadRpgImages(scene, Object.entries(RPG_PLAYER_TEXTURE_ASSETS));
 }
 
 export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
