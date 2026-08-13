@@ -1297,11 +1297,11 @@ export function RpgGameHost({
 
         {state.actOne.controlsInstalled && touchControls && !chaseActive && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
-            <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼收线和提竿按钮">
+            <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼 A 左收线、S 提竿、D 右收线按钮">
               <button
                 type="button"
                 className="left-paddle"
-                aria-label="左收线"
+                aria-label="A 左收线"
                 onPointerDown={(event) => emitFishingTouchInput("left", "press", event)}
                 onPointerUp={(event) => emitFishingTouchInput("left", "release", event)}
                 onPointerCancel={(event) => emitFishingTouchInput("left", "release", event)}
@@ -1309,25 +1309,12 @@ export function RpgGameHost({
               >
                 <PixelIcon name="willowBranchPaddle" size={34} />
                 <span>左收线</span>
-                <small>←</small>
-              </button>
-              <button
-                type="button"
-                className="right-paddle"
-                aria-label="右收线"
-                onPointerDown={(event) => emitFishingTouchInput("right", "press", event)}
-                onPointerUp={(event) => emitFishingTouchInput("right", "release", event)}
-                onPointerCancel={(event) => emitFishingTouchInput("right", "release", event)}
-                onLostPointerCapture={(event) => emitFishingTouchInput("right", "release", event)}
-              >
-                <PixelIcon name="warningSignPaddle" size={34} />
-                <span>右收线</span>
-                <small>→</small>
+                <small>A</small>
               </button>
               <button
                 type="button"
                 className="interact"
-                aria-label="提竿"
+                aria-label="S 提竿"
                 onPointerDown={(event) => emitFishingTouchInput("hook", "press", event)}
                 onPointerUp={(event) => emitFishingTouchInput("hook", "release", event)}
                 onPointerCancel={(event) => emitFishingTouchInput("hook", "release", event)}
@@ -1335,7 +1322,20 @@ export function RpgGameHost({
               >
                 <PixelIcon name="fishingRod" size={34} />
                 <span>提竿</span>
-                <small>↑</small>
+                <small>S</small>
+              </button>
+              <button
+                type="button"
+                className="right-paddle"
+                aria-label="D 右收线"
+                onPointerDown={(event) => emitFishingTouchInput("right", "press", event)}
+                onPointerUp={(event) => emitFishingTouchInput("right", "release", event)}
+                onPointerCancel={(event) => emitFishingTouchInput("right", "release", event)}
+                onLostPointerCapture={(event) => emitFishingTouchInput("right", "release", event)}
+              >
+                <PixelIcon name="warningSignPaddle" size={34} />
+                <span>右收线</span>
+                <small>D</small>
               </button>
             </nav>
           ) : (

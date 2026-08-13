@@ -49,6 +49,7 @@ import {
   type QizhenPaddleSide
 } from "./QizhenKayakTextures";
 import { getAudioContextConstructor } from "../../core/ClientCompatibility";
+import { DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY } from "../../core/StorageKeys";
 import {
   QIZHEN_FISHING_TIMING,
   QizhenFishingRhythmModel,
@@ -338,7 +339,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.mapImage = this.add.image(0, 0, this.getZoneTextureKey(this.currentZone)).setOrigin(0).setDepth(-1000);
 
     ensureRpgPlayerTextures(this);
-    const spawn = this.getSpawn(this.currentZone, this.currentVehicle, null);
+    const spawn = this.getInitialSpawn(runtime);
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
     if ("heading" in spawn) this.kayakHeading = spawn.heading;
     this.player.setCollideWorldBounds(true).setDepth(spawn.y + 120);
@@ -835,18 +836,18 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.capsizing = true;
     this.kayakSpeed = 0;
     this.player.setVelocity(0, 0);
-    this.emitDomain("rpg_qizhen_capsized", {
-      zone: this.currentZone,
-      reason,
-      count: runtime.capsizeCount + 1,
-      safeSpawnId: runtime.safeSpawnId
-    });
     this.showFeedback(
       runtime.phase === "swan_chase"
         ? `${qizhenContent.boarding.capsizeSameSide}${qizhenContent.chase.failed}`
         : qizhenContent.boarding.capsizeSameSide,
       "system"
     );
+    this.emitDomain("rpg_qizhen_capsized", {
+      zone: this.currentZone,
+      reason,
+      count: runtime.capsizeCount + 1,
+      safeSpawnId: runtime.safeSpawnId
+    });
     this.kayak.playCapsize(() => {
       const safe = this.getSpawn(this.currentZone, "kayak", null);
       this.player.setPosition(safe.x, safe.y).setVelocity(0, 0);
@@ -1508,25 +1509,17 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private updateFishingKeyboardInput(model: QizhenFishingRhythmModel): void {
-    const leftPressed = Phaser.Input.Keyboard.JustDown(this.cursors.left)
-      || Phaser.Input.Keyboard.JustDown(this.keys.A);
-    const rightPressed = Phaser.Input.Keyboard.JustDown(this.cursors.right)
-      || Phaser.Input.Keyboard.JustDown(this.keys.D);
+    const leftPressed = Phaser.Input.Keyboard.JustDown(this.keys.A);
+    const rightPressed = Phaser.Input.Keyboard.JustDown(this.keys.D);
     if (leftPressed) this.applyFishingInput(model, "left", "press");
     if (rightPressed) this.applyFishingInput(model, "right", "press");
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) this.applyFishingInput(model, "hook", "press");
+    if (Phaser.Input.Keyboard.JustDown(this.keys.S)) this.applyFishingInput(model, "hook", "press");
 
-    const leftReleased = (Phaser.Input.Keyboard.JustUp(this.cursors.left)
-      || Phaser.Input.Keyboard.JustUp(this.keys.A))
-      && !this.cursors.left.isDown
-      && !this.keys.A.isDown;
-    const rightReleased = (Phaser.Input.Keyboard.JustUp(this.cursors.right)
-      || Phaser.Input.Keyboard.JustUp(this.keys.D))
-      && !this.cursors.right.isDown
-      && !this.keys.D.isDown;
+    const leftReleased = Phaser.Input.Keyboard.JustUp(this.keys.A) && !this.keys.A.isDown;
+    const rightReleased = Phaser.Input.Keyboard.JustUp(this.keys.D) && !this.keys.D.isDown;
     if (leftReleased) this.applyFishingInput(model, "left", "release");
     if (rightReleased) this.applyFishingInput(model, "right", "release");
-    if (Phaser.Input.Keyboard.JustUp(this.cursors.space)) this.applyFishingInput(model, "hook", "release");
+    if (Phaser.Input.Keyboard.JustUp(this.keys.S)) this.applyFishingInput(model, "hook", "release");
   }
 
   private applyFishingInput(
@@ -2038,6 +2031,10 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (name === "qizhen_boarding_completed") {
       this.showFeedback(qizhenContent.boarding.complete, "success");
+      return;
+    }
+    if (name === "qizhen_capsize_loss_subtitle_unlocked") {
+      this.showFeedback(qizhenContent.boarding.capsizeLossSubtitle, "narrator", 6500);
       return;
     }
     if (name === "qizhen_reflection_observed") {
@@ -2592,6 +2589,29 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (vehicle === "on_foot") return definition.onFootSpawn;
     if (fromZone && definition.kayakEntrySpawns[fromZone]) return definition.kayakEntrySpawns[fromZone]!;
     return definition.kayakSpawn;
+  }
+
+  private getInitialSpawn(
+    runtime: QizhenRuntimeProjection
+  ): { x: number; y: number } | { x: number; y: number; heading: number } {
+    const rhythmSpawns: Readonly<Record<string, { x: number; y: number; heading: number }>> = {
+      rhythm_locker_key: { x: 895, y: 620, heading: 0 },
+      rhythm_net_frame: { x: 910, y: 515, heading: -Math.PI / 2 },
+      rhythm_fish: { x: 705, y: 740, heading: -Math.PI / 2 },
+      rhythm_paper: { x: 760, y: 615, heading: -Math.PI / 2 }
+    };
+    const developerRhythmSpawn = window.sessionStorage.getItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);
+    const rhythmSpawnId = developerRhythmSpawn === "key"
+      ? "rhythm_locker_key"
+      : developerRhythmSpawn === "net"
+        ? "rhythm_net_frame"
+        : developerRhythmSpawn === "fish"
+          ? "rhythm_fish"
+          : developerRhythmSpawn === "paper"
+            ? "rhythm_paper"
+            : "";
+    return rhythmSpawns[rhythmSpawnId]
+      ?? this.getSpawn(runtime.zone, runtime.vehicle, null);
   }
 
   private emitDomain(name: string, payload?: Record<string, unknown>): void {
