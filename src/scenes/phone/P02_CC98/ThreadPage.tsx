@@ -32,6 +32,7 @@ interface Cc98ThreadPageProps {
   post: ThreadPost;
   onBack: () => void;
   interactiveContent?: ReactNode;
+  beforeRepliesContent?: ReactNode;
   afterRepliesContent?: ReactNode;
   showBdContent?: boolean;
   locked?: boolean;
@@ -114,6 +115,7 @@ export function Cc98ThreadPage({
   post,
   onBack,
   interactiveContent,
+  beforeRepliesContent,
   afterRepliesContent,
   showBdContent = false,
   locked = false,
@@ -169,7 +171,7 @@ export function Cc98ThreadPage({
           <h2>{post.title}</h2>
         </header>
 
-        <article className={`cc98-thread-card is-owner ${interactiveContent || afterRepliesContent ? "is-investigation-owner" : ""}`.trim()}>
+        <article className={`cc98-thread-card is-owner ${interactiveContent || beforeRepliesContent || afterRepliesContent ? "is-investigation-owner" : ""}`.trim()}>
           <header className="cc98-floor-header">
             <span className="cc98-thread-avatar anonymous" aria-hidden="true" />
             <div>
@@ -180,7 +182,7 @@ export function Cc98ThreadPage({
             <b>{thread.mainFloor}</b>
           </header>
           <p>{post.body}</p>
-          {!interactiveContent && !afterRepliesContent ? (
+          {!interactiveContent && !beforeRepliesContent && !afterRepliesContent ? (
             <dl className="cc98-operation-log">
               <div>
                 <dt>用户</dt>
@@ -205,6 +207,8 @@ export function Cc98ThreadPage({
             <span>♢ {metrics.dislikes}</span>
           </footer>
         </article>
+
+        {beforeRepliesContent}
 
         {interactiveContent ? (
           <>

@@ -569,7 +569,9 @@ export function RpgGameHost({
 
   useEffect(() => {
     return events.subscribe((event) => {
-      if (event.name === "rpg_canteen_bike_inspect_requested") {
+      if (event.name === "theater_interior_opened") {
+        theaterController.recoverTicketCombination();
+      } else if (event.name === "rpg_canteen_bike_inspect_requested") {
         canteenController.inspectBikeLock();
       } else if (event.name === "rpg_canteen_bike_tissue_requested") {
         const result = canteenController.cleanBikeLock();

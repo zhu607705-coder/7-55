@@ -17,6 +17,7 @@ import { kit } from "./modules/GameKit";
 import { presentationDirector } from "./modules/PresentationDirector";
 import { getPhoneScene } from "./scenes/phone/registry";
 import { LIBRARY_STORY_SEQUENCES } from "./data/libraryFinalsStory";
+import { requestCc98Thread } from "./modules/NavIntent";
 
 const router = new SceneRouter(gameStore, eventBus);
 const RpgGameHost = lazy(() =>
@@ -224,7 +225,17 @@ export function App() {
         gameStore.setState((current) => ({ ...current, runtimeMode: "phone" }));
       }
       setActiveSurface("phone");
-      if (quest.recommendedScene) router.goTo(quest.recommendedScene);
+      if (quest.recommendedScene) {
+        if (
+          quest.recommendedScene === "cc98"
+          && ["accepted", "first_wave_failed", "delivered"].includes(
+            gameStore.getState().theaterHunt.cc98TicketCommissionPhase
+          )
+        ) {
+          requestCc98Thread("theater-755-ticket-commission");
+        }
+        router.goTo(quest.recommendedScene);
+      }
       return;
     }
     gameStore.setState((current) => ({ ...current, runtimeMode: "rpg" }));

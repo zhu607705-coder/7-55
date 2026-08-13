@@ -91,6 +91,9 @@ const VALID_THEATER_HUNT_PHASES = new Set<GameState["theaterHunt"]["phase"]>([
   "entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt", "reversal", "complete"
 ]);
 const VALID_THEATER_MODES = new Set<GameState["theaterHunt"]["mode"]>(["light", "dark"]);
+const VALID_THEATER_TICKET_COMMISSION_PHASES = new Set<GameState["theaterHunt"]["cc98TicketCommissionPhase"]>([
+  "locked", "posted", "accepted", "first_wave_failed", "delivered"
+]);
 const VALID_THEATER_PROGRAM_IDS = new Set<GameState["theaterHunt"]["collectedProgramIds"][number]>([
   "opening", "spotlight", "finale"
 ]);
@@ -413,14 +416,41 @@ export class SaveStore {
         chaseCollisions: nonNegativeIntegerOr(savedCanteenHunt.chaseCollisions, initial.canteenHunt.chaseCollisions)
       };
       const savedTheaterHunt = isRecord(saved.theaterHunt) ? saved.theaterHunt : {};
+      const savedTheaterPhase = enumOr(savedTheaterHunt.phase, VALID_THEATER_HUNT_PHASES, initial.theaterHunt.phase);
+      const savedTheaterActive = booleanOr(savedTheaterHunt.active, initial.theaterHunt.active);
+      const savedTheaterAdmitted = booleanOr(savedTheaterHunt.admitted, initial.theaterHunt.admitted);
+      const savedTicketCodeRead = booleanOr(savedTheaterHunt.ticketCodeRead, initial.theaterHunt.ticketCodeRead);
+      const savedTicketCodeAttempts = nonNegativeIntegerOr(savedTheaterHunt.ticketCodeAttempts, initial.theaterHunt.ticketCodeAttempts);
+      const migratedTicketCommissionPhase: GameState["theaterHunt"]["cc98TicketCommissionPhase"] =
+        savedTheaterPhase !== "entry_ticket"
+        || savedTheaterAdmitted
+        || items.theaterTicketHalfB
+        || items.temporaryTheaterTicket
+          ? "delivered"
+          : savedTheaterActive && (savedTicketCodeRead || savedTicketCodeAttempts > 0)
+            ? "accepted"
+            : savedTheaterActive
+              ? "posted"
+              : "locked";
+      const savedTicketCommissionPhase = enumOr(
+        savedTheaterHunt.cc98TicketCommissionPhase,
+        VALID_THEATER_TICKET_COMMISSION_PHASES,
+        migratedTicketCommissionPhase
+      );
       const theaterHunt: GameState["theaterHunt"] = {
-        active: booleanOr(savedTheaterHunt.active, initial.theaterHunt.active),
-        phase: enumOr(savedTheaterHunt.phase, VALID_THEATER_HUNT_PHASES, initial.theaterHunt.phase),
+        active: savedTheaterActive,
+        phase: savedTheaterPhase,
         mode: enumOr(savedTheaterHunt.mode, VALID_THEATER_MODES, initial.theaterHunt.mode),
+        cc98TicketCommissionPhase: savedTicketCommissionPhase,
+        cc98TicketClaimedWave: savedTicketCommissionPhase === "delivered"
+          ? savedTheaterHunt.cc98TicketClaimedWave === 1 || savedTheaterHunt.cc98TicketClaimedWave === 2
+            ? savedTheaterHunt.cc98TicketClaimedWave
+            : 2
+          : null,
         posterCleaned: booleanOr(savedTheaterHunt.posterCleaned, initial.theaterHunt.posterCleaned),
-        ticketCodeRead: booleanOr(savedTheaterHunt.ticketCodeRead, initial.theaterHunt.ticketCodeRead),
-        ticketCodeAttempts: nonNegativeIntegerOr(savedTheaterHunt.ticketCodeAttempts, initial.theaterHunt.ticketCodeAttempts),
-        admitted: booleanOr(savedTheaterHunt.admitted, initial.theaterHunt.admitted),
+        ticketCodeRead: savedTicketCodeRead,
+        ticketCodeAttempts: savedTicketCodeAttempts,
+        admitted: savedTheaterAdmitted,
         collectedProgramIds: filteredStringArrayFromSet(
           savedTheaterHunt.collectedProgramIds,
           VALID_THEATER_PROGRAM_IDS,

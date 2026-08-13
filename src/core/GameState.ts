@@ -169,6 +169,8 @@ export function createInitialGameState(): GameState {
       active: false,
       phase: "entry_ticket",
       mode: "light",
+      cc98TicketCommissionPhase: "locked",
+      cc98TicketClaimedWave: null,
       posterCleaned: false,
       ticketCodeRead: false,
       ticketCodeAttempts: 0,

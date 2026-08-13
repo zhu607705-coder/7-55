@@ -306,12 +306,86 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
   }
   if (state.theaterHunt.active) {
     const task: TaskDefinition = state.theaterHunt.phase === "entry_ticket"
-      ? {
-          id: "chapter_three_theater_ticket",
-          label: theaterContent.entryTask.label,
-          hints: theaterContent.entryTask.hints,
-          targetSurface: "rpg"
-        }
+      ? state.theaterHunt.cc98TicketCommissionPhase === "posted"
+        ? {
+            id: "chapter_three_theater_ticket_commission",
+            label: "去 CC98 接下学生剧现场帮抢委托",
+            hints: ["手机 CC98 出现了一条学生剧临时退票求助帖。", "接单后再到剧院大厅确认取票时间。"],
+            targetSurface: "phone",
+            recommendedScene: "cc98"
+          }
+        : state.theaterHunt.cc98TicketCommissionPhase === "accepted"
+          ? !state.theaterHunt.ticketCodeRead
+            ? {
+                id: "chapter_three_theater_ticket_read_time",
+                label: "在剧院大厅确认 08:32 放票时间",
+                hints: ["在深色观察中靠近取票机，读取屏幕残影。", "确认时间后回到手机 CC98 帖子参加第一波。"],
+                targetSurface: "rpg"
+              }
+            : {
+                id: "chapter_three_theater_ticket_first_wave",
+                label: "在手机 CC98 票务页参加第一波放票",
+                hints: ["打开学生剧现场帮抢帖，在票务卡中操作。", "可以直接抢第一波，也可以先打开控制中心切换到移动数据。"],
+                targetSurface: "phone",
+                recommendedScene: "cc98"
+              }
+          : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed"
+            ? state.networkMode === "cellular"
+              ? {
+                  id: "chapter_three_theater_ticket_second_wave",
+                  label: "在手机票务页参加第二波放票",
+                  hints: ["移动数据已经开启。", "回到 CC98 帮抢帖，等待倒计时结束后点击第二波。"],
+                  targetSurface: "phone",
+                  recommendedScene: "cc98"
+                }
+              : {
+                  id: "chapter_three_theater_ticket_enable_cellular",
+                  label: "开启手机移动数据，等待第二波放票",
+                  hints: ["第一波已结束，系统提示响应速度过慢。", "在 CC98 票务卡中打开控制中心，切换为移动数据。"],
+                  targetSurface: "phone",
+                  recommendedScene: "cc98"
+                }
+            : state.theaterHunt.cc98TicketCommissionPhase === "delivered"
+              ? state.items.temporaryTheaterTicket
+                ? {
+                    id: "chapter_three_theater_admission",
+                    label: "把临时观演票交给检票闸机",
+                    hints: ["靠近闸机右侧读票器并面向它。", "把道具栏里的临时观演票拖到读票器的发光框内。"],
+                    targetSurface: "rpg"
+                  }
+                : state.items.theaterTicketHalfA && state.items.theaterTicketHalfB
+                  ? {
+                      id: "chapter_three_theater_combine_ticket",
+                      label: "合成两张半票根",
+                      hints: ["在道具栏中将半张票根 A 与半张票根 B 组合。"],
+                      targetSurface: "rpg"
+                    }
+                  : !state.items.theaterTicketHalfB
+                    ? {
+                        id: "chapter_three_theater_print_ticket",
+                        label: "去剧院取票机打印半张票根 B",
+                        hints: ["手机抢票已经成功，订单取票码是 0832。", "在浅色操作中靠近取票机，输入取票码打印实体票根。"],
+                        targetSurface: "rpg"
+                      }
+                    : !state.items.theaterTicketHalfA
+                      ? {
+                          id: "chapter_three_theater_find_half_a",
+                          label: "从入口海报栏取得半张票根 A",
+                          hints: ["靠近大厅左侧海报栏并面向玻璃。", "把去油纸巾拖到海报玻璃的发光区域。"],
+                          targetSurface: "rpg"
+                        }
+                      : {
+                          id: "chapter_three_theater_recover_ticket",
+                          label: "确认两张半票根",
+                          hints: ["打开道具栏确认票根 A 与票根 B，再完成组合。"],
+                          targetSurface: "rpg"
+                        }
+              : {
+                  id: "chapter_three_theater_ticket",
+                  label: theaterContent.entryTask.label,
+                  hints: theaterContent.entryTask.hints,
+                  targetSurface: "rpg"
+                }
       : state.theaterHunt.phase === "program_search"
         ? {
             id: "chapter_three_theater_program",

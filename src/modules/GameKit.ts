@@ -10,6 +10,7 @@ import { LibraryFinalsController } from "./LibraryFinalsController";
 import { NetworkController } from "./NetworkController";
 import { PlantController } from "./PlantController";
 import { ChapterThreeQizhenLakeController } from "./ChapterThreeQizhenLakeController";
+import { ChapterThreeTheaterController } from "./ChapterThreeTheaterController";
 import { SaveController } from "./SaveController";
 
 /**
@@ -22,6 +23,7 @@ export const kit = {
   flags: new FlagController(gameStore, eventBus),
   inventory: new InventoryController(gameStore, eventBus),
   libraryFinals: new LibraryFinalsController(gameStore, eventBus),
+  theater: new ChapterThreeTheaterController(gameStore, eventBus),
   qizhenLake: new ChapterThreeQizhenLakeController(gameStore, eventBus),
   digits: new DigitCollector(gameStore, eventBus),
   network: new NetworkController(gameStore, eventBus),

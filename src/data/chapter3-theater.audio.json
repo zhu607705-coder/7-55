@@ -21,8 +21,17 @@
     "theater_poster_cleaned": {
       "cues": [{ "channel": "sfx", "asset": "fx_theater_glass_wipe", "volume": 0.6 }]
     },
-    "theater_ticket_print_failed": {
-      "cues": [{ "channel": "sfx", "asset": "fx_theater_printer_fail", "volume": 0.62 }]
+    "theater_ticket_first_wave_slow": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_program_reject", "playbackRate": 1.08, "volume": 0.48 }]
+    },
+    "theater_ticket_first_wave_cellular_success": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_ticket_join", "playbackRate": 1.08, "volume": 0.58 }]
+    },
+    "theater_ticket_second_wave_success": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_ticket_join", "playbackRate": 0.92, "volume": 0.58 }]
+    },
+    "theater_ticket_printed": {
+      "cues": [{ "channel": "sfx", "asset": "fx_theater_gate_scan", "playbackRate": 1.04, "volume": 0.56 }]
     },
     "theater_ticket_combined": {
       "cues": [{ "channel": "sfx", "asset": "fx_theater_ticket_join", "volume": 0.64 }]

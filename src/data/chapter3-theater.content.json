@@ -15,15 +15,57 @@
     "玩家：它从门缝进去的。",
     "检票员：那它脸皮至少比你薄。"
   ],
+  "cc98TicketCommission": {
+    "id": "theater-755-ticket-commission",
+    "author": "紫金港学生剧社",
+    "rank": "03",
+    "board": "校园生活",
+    "title": "【求助】学生剧《7:55》临时退票，求现场帮抢",
+    "replies": "1",
+    "views": "832",
+    "time": "刚刚",
+    "body": "学生剧《7:55》临时释放一张现场测试票。请在本帖的手机票务页面完成两波抢票；放票时间需要先从求是大讲堂大厅的残留记录中确认。校园网参加第一波会因响应过慢失败，第二波需要移动数据。抢票成功后会生成取票码，再到大厅自助取票机打印票根并完成闸机核验。",
+    "initialReply": "大厅取票机的普通界面不显示放票时间，深色观察里应该还留着一组四位数字。",
+    "acceptLabel": "接下现场帮抢",
+    "postedStatus": "委托待接：前往剧院前台也无法直接取票，需要先在这里接单。",
+    "timeRequiredStatus": "先到剧院大厅用深色观察确认 08:32，确认后回到本页参加第一波。",
+    "acceptedStatus": "08:32 已确认。第一波将在本手机页面提交；可先打开控制中心切换到移动数据。",
+    "firstWaveStatus": "第一波已结束：系统判定响应速度过慢。打开手机控制中心，切换到移动数据后参加第二波。",
+    "secondWaveCountdownStatus": "第一波请求已结束，手机票务页正在等待第二波：",
+    "cellularReadyStatus": "移动数据已开启，第二波已可在本手机页面提交。",
+    "cellularRequiredStatus": "第二波仅接受移动数据。打开手机控制中心切换网络后再提交。",
+    "deliveredFirstWaveStatus": "第一波抢票成功。你的运气很好，但是钱包就没那么好了。",
+    "deliveredStatus": "第二波抢票成功。手机已收到 0832 取票码。",
+    "secondWaveSuccessStatus": "第二波抢票成功，取票码 0832 已写入手机回执。",
+    "firstWaveCellularComment": "你的运气很好，但是钱包就没那么好了。",
+    "phonePortalLabel": "手机票务 H5",
+    "networkCampusWifi": "校园网",
+    "networkCellular": "移动数据",
+    "networkOffline": "无网络",
+    "firstWaveLabel": "参加第一波抢票",
+    "secondWaveLabel": "参加第二波抢票",
+    "confirmTimeLabel": "先确认 08:32",
+    "controlCenterLabel": "打开控制中心切换网络",
+    "cellularRequiredLabel": "需要移动数据",
+    "countdownLabel": "第二波倒计时",
+    "secondWaveOpenLabel": "第二波已开放",
+    "pickupCodeLabel": "剧院取票码",
+    "pickupInstruction": "去求是大讲堂大厅，在自助取票机输入 0832，打印半张票根 B。",
+    "acceptedReply": "我已经在大厅，接下这次帮抢。",
+    "firstWaveReply": "系统提示：第一波请求响应超时。第二波开始前请切换到移动数据。",
+    "deliveredFirstWaveReply": "手机票务回执：第一波抢票成功。你的运气很好，但是钱包就没那么好了。取票码 0832。",
+    "deliveredReply": "手机票务回执：第二波抢票成功，取票码 0832 已生成。请到大厅取票机打印票根。"
+  },
   "ticket": {
     "gateDenied": "检票员：没有票不能进。",
     "posterGlare": "玻璃反光严重，你只能看见一个很需要睡觉的人。",
     "posterCleaned": "方法很脏，但有效。海报栏交出了它藏着的半张票。",
     "codePrompt": "请输入取票码。它坚信你记得自己没买过的票。",
-    "codeVisible": "0832 号，未取票。",
+    "codeVisible": "0832 号，两波释放，当前未取票。",
     "codeWrong": "取票机：查无此票。你的观演资格仍停留在想象中。",
-    "printFailure": "取票机：出票失败。",
-    "printComment": "旁白：失败得很慷慨。",
+    "commissionRequired": "取票机：当前没有已确认的代取委托。先在手机 CC98 接单。",
+    "phoneReleaseRequired": "取票机：手机票务页尚未抢到票。请先回到 CC98 帖子完成放票。",
+    "ticketPrinted": "取票机：取票码核验通过，半张票根 B 已打印并进入物品栏。",
     "admissionDialogue": [
       "检票员：这张票为什么有两种字体？",
       "玩家：艺术效果。",
@@ -36,6 +78,7 @@
     "consoleState": "当前状态：追光灯锁定。",
     "ordinary": "普通节目单，看起来很会假装正式。",
     "darkOrder": "三张分别背面浮出残影顺序：追光 -> 开场 -> 谢幕。",
+    "darkIncomplete": "残影读不出顺序：先在浅色模式找齐三张节目单残页。",
     "wrongDialogue": [
       "灯控台：节目逻辑不成立。",
       "系统：这场演出本来也没什么逻辑。"
@@ -50,6 +93,7 @@
   "prop": {
     "task": "让纸条留下能够被追光灯识别的痕迹。",
     "locked": "锁住了。它看起来非常相信流程。",
+    "opened": "道具箱已经空了，荧光粉刷等着去后台通风口。",
     "ghost": "箱内有荧光粉刷的残影，但你摸不到 7:55 的东西。",
     "managerHint": "会谢幕的道具才能出箱。",
     "scannerAccepted": "验票口沉默片刻，承认了这张票的艺术性。",
@@ -58,6 +102,7 @@
   "spotlight": {
     "task": "根据深色模式中的路径残影，用追光灯连续照中纸条三次。",
     "readyHint": "前往观众席右侧灯控台，将追光灯遥控器拖入控制台。",
+    "consoleHint": "把追光灯遥控器拖入灯控台的蓝色投放框。",
     "preview": "深色模式：观察纸条的移动路径。",
     "choose": "浅色模式：预置追光灯，等纸条进入光圈后持续照射。",
     "controlHint": "拖动滑轨或按左右键移动追光灯；按住照射键或空格完成锁定。",
@@ -92,5 +137,22 @@
       "湿掉的节目单可以用于查询不同来源。",
       "手机地图需要三条相互独立的地点特征。"
     ]
+  },
+  "mode": {
+    "darkConfirm": "已切换到深色观察：读取残影与异常痕迹，不搬动实体。",
+    "lightConfirm": "已切换到浅色操作：可以拖放道具、清洁玻璃和操作设备。"
+  },
+  "feedback": {
+    "inactiveTarget": "这里暂时没有要处理的事。",
+    "standRequired": "先走到设备前的可站立位置再操作。",
+    "moveCloser": "先走近一点再操作。"
+  },
+  "phaseUpdates": {
+    "program_search": "任务更新：找齐三张节目单残页，确认节目顺序。",
+    "prop_setup": "任务更新：让纸条留下能被追光灯识别的痕迹。",
+    "spotlight_ready": "任务更新：把追光灯遥控器拖到观众席右侧灯控台。",
+    "spotlight_hunt": "任务更新：观察残影路径，用追光灯连续照中纸条三次。",
+    "reversal": "任务更新：看清纸条真正的去向。",
+    "complete": "任务更新：从剧院出口离开，追查纸条的下一站。"
   }
 }

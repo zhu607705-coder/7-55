@@ -229,10 +229,14 @@ export type TheaterMode = "light" | "dark";
 
 export type TheaterProgramId = "opening" | "spotlight" | "finale";
 
+export type TheaterTicketCommissionPhase = "locked" | "posted" | "accepted" | "first_wave_failed" | "delivered";
+
 export interface TheaterHuntState {
   active: boolean;
   phase: TheaterHuntPhase;
   mode: TheaterMode;
+  cc98TicketCommissionPhase: TheaterTicketCommissionPhase;
+  cc98TicketClaimedWave: 1 | 2 | null;
   posterCleaned: boolean;
   ticketCodeRead: boolean;
   ticketCodeAttempts: number;
