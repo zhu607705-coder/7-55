@@ -19,7 +19,8 @@ export interface QuestTaskBarProps {
 const CHAPTER_LABEL: Record<QuestViewModel["chapter"], string> = {
   chapter_one: "第 1 章",
   chapter_two: "第 2 章",
-  chapter_three: "第 3 章"
+  chapter_three: "第 3 章",
+  chapter_four: "第 4 章"
 };
 
 function QuestDrawerLayer({

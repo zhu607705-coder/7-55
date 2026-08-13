@@ -2,6 +2,9 @@
 let openWechatFriendChat = false;
 let requestGeneration = 0;
 let scheduledClearGeneration: number | null = null;
+let openCc98ThreadId: string | null = null;
+let cc98RequestGeneration = 0;
+let scheduledCc98ClearGeneration: number | null = null;
 
 export function requestFriendChat(): void {
   openWechatFriendChat = true;
@@ -19,6 +22,28 @@ export function consumeFriendChatIntent(): boolean {
       }
       if (scheduledClearGeneration === generation) {
         scheduledClearGeneration = null;
+      }
+    });
+  }
+  return value;
+}
+
+export function requestCc98Thread(threadId: string): void {
+  openCc98ThreadId = threadId;
+  cc98RequestGeneration += 1;
+}
+
+export function consumeCc98ThreadIntent(): string | null {
+  const value = openCc98ThreadId;
+  if (value && scheduledCc98ClearGeneration !== cc98RequestGeneration) {
+    const generation = cc98RequestGeneration;
+    scheduledCc98ClearGeneration = generation;
+    queueMicrotask(() => {
+      if (cc98RequestGeneration === generation) {
+        openCc98ThreadId = null;
+      }
+      if (scheduledCc98ClearGeneration === generation) {
+        scheduledCc98ClearGeneration = null;
       }
     });
   }

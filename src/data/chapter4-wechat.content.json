@@ -1,0 +1,43 @@
+{
+  "official": {
+    "name": "紫金港楼宇服务",
+    "accountType": "公众号",
+    "articleTitle": "段永平教学楼夜间运行提醒",
+    "publishedAt": "22:40",
+    "summary": "夜间清楼期间，部分通道将分时关闭，主电梯停靠状态可能调整。",
+    "details": [
+      "教学楼自 22:45 起按楼层分区清楼。",
+      "主电梯停靠状态以轿厢显示和现场提示音为准。",
+      "部分通道可能临时关闭，请留意楼层公告。",
+      "现场广播和安全指引优先于本推送。"
+    ],
+    "readAction": "读完并保存通知"
+  },
+  "group": {
+    "name": "麦斯威夜间自习群",
+    "memberCount": 18,
+    "messages": [
+      { "sender": "林昊", "text": "203 还开着吗？我电脑没关。" },
+      { "sender": "陈嘉", "text": "刚看见保安从东边过去。" },
+      { "sender": "周琪", "text": "东边不是已经封了吗？" },
+      { "sender": "室友", "text": "我在西侧看见保洁推车，应该还能走。" }
+    ],
+    "recalled": "陈嘉撤回了一条消息",
+    "followup": "算了，我去楼梯口看看。",
+    "saveAction": "保存路线讨论截图"
+  },
+  "archive": {
+    "name": "文件传输助手",
+    "empty": "还没有第四章现场资料。",
+    "officialNotice": "夜间运行通知",
+    "elevatorAudio": "主电梯到站提示音 00:07",
+    "studentRoute": "麦斯威夜间自习群路线讨论",
+    "wayfindingPhotos": "三楼新旧导视板对照照片"
+  },
+  "friend": {
+    "request": "把现在使用的导视板和残留的旧导视板都发我。",
+    "selfCaption": "[图片] 三楼新旧导视板",
+    "analysis": "两张图的二楼箭头方向相反。去现场核对仍保留旧编号的一侧，再调整导视板。",
+    "compareAction": "对照两张照片"
+  }
+}

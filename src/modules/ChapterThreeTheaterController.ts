@@ -21,6 +21,14 @@ export type {
   TheaterSpotlightLane
 };
 
+export type TheaterTicketReleaseResult =
+  | "first_wave_slow"
+  | "cellular_required"
+  | "won_first_wave"
+  | "won_second_wave"
+  | "already_won"
+  | "inactive";
+
 export const THEATER_PROGRAM_ORDER: readonly TheaterProgramId[] = ["spotlight", "opening", "finale"];
 
 const PROGRAM_ITEMS: Record<TheaterProgramId, "theaterProgramOpening" | "theaterProgramSpotlight" | "theaterProgramFinale"> = {
@@ -36,6 +44,7 @@ export class ChapterThreeTheaterController {
     const state = this.store.getState();
     const canStart = state.canteenHunt.phase === "theater_reached";
     if (!canStart && !state.theaterHunt.active) return false;
+    const shouldPublishCommission = state.theaterHunt.cc98TicketCommissionPhase === "locked";
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "rpg",
@@ -47,10 +56,32 @@ export class ChapterThreeTheaterController {
         ...current.theaterHunt,
         active: true,
         phase: current.theaterHunt.active ? current.theaterHunt.phase : "entry_ticket",
-        mode: current.theaterHunt.active ? current.theaterHunt.mode : "light"
+        mode: current.theaterHunt.active ? current.theaterHunt.mode : "light",
+        cc98TicketCommissionPhase: current.theaterHunt.cc98TicketCommissionPhase === "locked"
+          ? "posted"
+          : current.theaterHunt.cc98TicketCommissionPhase
       }
     }));
     this.events.emit("theater_entered");
+    if (shouldPublishCommission) {
+      this.events.emit("cc98_ticket_commission_posted");
+    }
+    return true;
+  }
+
+  acceptCc98TicketCommission(): boolean {
+    const state = this.store.getState();
+    const phase = state.theaterHunt.cc98TicketCommissionPhase;
+    if (phase === "accepted" || phase === "first_wave_failed" || phase === "delivered") return true;
+    if (!state.theaterHunt.active || state.theaterHunt.phase !== "entry_ticket" || phase !== "posted") return false;
+    this.store.setState((current) => ({
+      ...current,
+      theaterHunt: {
+        ...current.theaterHunt,
+        cc98TicketCommissionPhase: "accepted"
+      }
+    }));
+    this.events.emit("cc98_ticket_commission_accepted");
     return true;
   }
 
@@ -89,7 +120,42 @@ export class ChapterThreeTheaterController {
     return true;
   }
 
-  inspectTicketKiosk(): "code_read" | "code_panel" | "inactive" {
+  attemptCc98TicketRelease(): TheaterTicketReleaseResult {
+    const state = this.store.getState();
+    if (
+      !state.theaterHunt.active
+      || state.theaterHunt.phase !== "entry_ticket"
+      || !state.theaterHunt.ticketCodeRead
+    ) return "inactive";
+    const commissionPhase = state.theaterHunt.cc98TicketCommissionPhase;
+    if (commissionPhase === "delivered") return "already_won";
+    if (commissionPhase === "accepted") {
+      if (state.networkMode === "cellular") {
+        this.completeTicketCommission(1);
+        return "won_first_wave";
+      }
+      this.store.setState((current) => ({
+        ...current,
+        theaterHunt: {
+          ...current.theaterHunt,
+          cc98TicketCommissionPhase: "first_wave_failed"
+        }
+      }));
+      this.events.emit("theater_ticket_first_wave_slow", { releaseWave: 1, surface: "phone" });
+      return "first_wave_slow";
+    }
+    if (commissionPhase === "first_wave_failed") {
+      if (state.networkMode !== "cellular") {
+        this.events.emit("theater_ticket_cellular_required", { releaseWave: 2, surface: "phone" });
+        return "cellular_required";
+      }
+      this.completeTicketCommission(2);
+      return "won_second_wave";
+    }
+    return "inactive";
+  }
+
+  inspectTicketKiosk(): "code_read" | "code_panel" | "phone_release_required" | "already_printed" | "inactive" {
     const state = this.store.getState();
     if (state.theaterHunt.phase !== "entry_ticket") return "inactive";
     if (state.theaterHunt.mode === "dark") {
@@ -102,6 +168,14 @@ export class ChapterThreeTheaterController {
       this.events.emit("theater_ticket_code_read");
       return "code_read";
     }
+    if (state.theaterHunt.cc98TicketCommissionPhase !== "delivered") {
+      this.events.emit("theater_ticket_phone_release_required");
+      return "phone_release_required";
+    }
+    if (state.items.theaterTicketHalfB || state.items.temporaryTheaterTicket) {
+      this.events.emit("theater_ticket_already_delivered");
+      return "already_printed";
+    }
     this.events.emit("theater_ticket_code_panel_opened");
     return "code_panel";
   }
@@ -109,21 +183,70 @@ export class ChapterThreeTheaterController {
   submitTicketCode(code: string): boolean {
     const state = this.store.getState();
     if (state.theaterHunt.phase !== "entry_ticket" || state.theaterHunt.mode !== "light") return false;
-    const correct = code === "0832" && state.theaterHunt.ticketCodeRead;
+    const codeMatches = code === "0832";
+    if (!codeMatches) {
+      this.store.setState((current) => ({
+        ...current,
+        theaterHunt: {
+          ...current.theaterHunt,
+          ticketCodeAttempts: current.theaterHunt.ticketCodeAttempts + 1
+        }
+      }));
+      this.events.emit("theater_ticket_code_wrong", { code });
+      return false;
+    }
+    if (state.theaterHunt.cc98TicketCommissionPhase !== "delivered") {
+      this.store.setState((current) => ({
+        ...current,
+        theaterHunt: {
+          ...current.theaterHunt,
+          ticketCodeAttempts: current.theaterHunt.ticketCodeAttempts + 1
+        }
+      }));
+      this.events.emit("theater_ticket_phone_release_required", { code });
+      return false;
+    }
+    if (state.items.theaterTicketHalfB || state.items.temporaryTheaterTicket) {
+      this.events.emit("theater_ticket_already_delivered");
+      return true;
+    }
     this.store.setState((current) => ({
       ...current,
-      items: correct ? { ...current.items, theaterTicketHalfB: true } : current.items,
+      items: { ...current.items, theaterTicketHalfB: true },
       theaterHunt: {
         ...current.theaterHunt,
-        ticketCodeAttempts: current.theaterHunt.ticketCodeAttempts + 1
+        ticketCodeAttempts: current.theaterHunt.ticketCodeAttempts + 1,
+        ticketCodeRead: true
       }
     }));
-    this.events.emit(correct ? "theater_ticket_print_failed" : "theater_ticket_code_wrong", { code });
-    if (correct) {
-      this.events.emit("get_item", { itemId: "theaterTicketHalfB", sourceScene: "phone_home" });
-      this.publishTicketHalvesReady();
+    this.events.emit("theater_ticket_printed", { code });
+    this.events.emit("get_item", { itemId: "theaterTicketHalfB", sourceScene: "phone_home" });
+    this.publishTicketHalvesReady();
+    return true;
+  }
+
+  private completeTicketCommission(releaseWave: 1 | 2): void {
+    this.store.setState((current) => ({
+      ...current,
+      theaterHunt: {
+        ...current.theaterHunt,
+        cc98TicketCommissionPhase: "delivered",
+        cc98TicketClaimedWave: releaseWave
+      }
+    }));
+    this.events.emit(
+      releaseWave === 1 ? "theater_ticket_first_wave_cellular_success" : "theater_ticket_second_wave_success",
+      { releaseWave, surface: "phone" }
+    );
+    this.events.emit("cc98_ticket_commission_delivered", { releaseWave });
+  }
+
+  recoverTicketCombination(): boolean {
+    const state = this.store.getState();
+    if (!state.items.theaterTicketHalfA || !state.items.theaterTicketHalfB || state.items.temporaryTheaterTicket) {
+      return false;
     }
-    return correct;
+    return this.combineTicketHalves();
   }
 
   combineTicketHalves(): boolean {

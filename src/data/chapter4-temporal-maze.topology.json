@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "logicalViewport": { "width": 960, "height": 540 },
+  "buildings": {
+    "A": { "floors": ["A1", "A2", "A3", "A4"] },
+    "B": { "floors": ["B2", "B3"] }
+  },
+  "nodes": ["A1", "A2", "A3", "A4", "B2", "B3"],
+  "connectors": [
+    { "id": "a_main_elevator", "kind": "elevator", "nodes": ["A1", "A2", "A3", "A4"], "boardAllowed": true },
+    { "id": "a_stair", "kind": "stair", "nodes": ["A1", "A2", "A3", "A4"], "boardAllowed": false, "landingEntry": "side_fire_door", "flightEnds": "open_vertical_continuation" },
+    { "id": "b_service_elevator", "kind": "elevator", "nodes": ["B2", "B3"], "boardAllowed": true },
+    { "id": "b_stair", "kind": "stair", "nodes": ["B2", "B3"], "boardAllowed": false, "landingEntry": "side_fire_door", "flightEnds": "open_vertical_continuation", "temporalAlignmentPuzzle": "stair_echo_direction" },
+    { "id": "a3_b3_skybridge", "kind": "skybridge", "nodes": ["A3", "B3"], "boardAllowed": true }
+  ],
+  "rooms": [
+    { "id": "a1_lobby", "floor": "A1", "label": "一楼门厅与麦斯威" },
+    { "id": "a1_main_elevator", "floor": "A1", "label": "主电梯厅" },
+    { "id": "a2_corridor", "floor": "A2", "label": "阶梯大教室侧廊" },
+    { "id": "a3_skybridge", "floor": "A3", "label": "三楼连廊" },
+    { "id": "a4_dead_end", "floor": "A4", "label": "四楼尽端走廊" },
+    { "id": "b3_landing", "floor": "B3", "label": "B 楼三层平台" },
+    { "id": "b2_activity", "floor": "B2", "label": "B 楼二层活动区" },
+    { "id": "b2_04", "floor": "B2", "label": "B2-04" }
+  ],
+  "puzzleOrder": [
+    "airflow_overlay",
+    "elevator_track_sync",
+    "npc_schedule_route",
+    "corridor_bay_reconstruction",
+    "wayfinding_fragment_board",
+    "bridge_floor_discrimination",
+    "stair_echo_direction",
+    "multicam_video_edit",
+    "echo_action_record",
+    "dual_lift_logistics",
+    "warm_air_balance",
+    "route_schedule",
+    "clock_phase_lock"
+  ],
+  "cycleRoutes": {
+    "first": ["B2", "B3", "A3", "A1"],
+    "second": ["A1", "A3", "B3", "B2", "B2-04"]
+  }
+}

@@ -1,6 +1,6 @@
 export type RuntimeMode = "phone" | "rpg";
 
-export type ChapterId = "chapter_one" | "chapter_two" | "chapter_three";
+export type ChapterId = "chapter_one" | "chapter_two" | "chapter_three" | "chapter_four";
 
 export interface FeatureAccess {
   chapter: ChapterId;
@@ -17,6 +17,7 @@ export interface FeatureAccess {
   cc98Bd: boolean;
   libraryRecovery: boolean;
   bikeArcade: boolean;
+  clockCalibration: boolean;
 }
 
 export type QuestStepStatus = "completed" | "active" | "locked";
@@ -43,8 +44,8 @@ export interface QuestViewModel {
 
 export interface StoryLine {
   kind: "dialogue" | "taunt" | "task";
-  speaker?: "narrator" | "system" | "player" | "seat022";
-  voiceRole?: "male_narrator" | "female_system";
+  speaker?: "narrator" | "system" | "player" | "seat022" | "cleaner" | "guard";
+  voiceRole?: "male_narrator" | "female_system" | "male_player" | "female_cleaner" | "male_guard";
   voiceTextEn?: string;
   voiceAsset?: string;
   subtitleZh: string;
@@ -70,7 +71,8 @@ export type RpgSceneId =
   | "library_interior"
   | "canteen_interior"
   | "theater_interior"
-  | "qizhen_lake";
+  | "qizhen_lake"
+  | "duan_yongping_temporal_maze";
 
 export type RpgCheckpointId =
   | "campus_spawn"
@@ -97,7 +99,15 @@ export type RpgCheckpointId =
   | "library_entrance"
   | "library_seat_022"
   | "library_front_desk"
-  | "library_shelf_755";
+  | "library_shelf_755"
+  | "c4_a1_lobby"
+  | "c4_a1_main_elevator"
+  | "c4_a2_corridor"
+  | "c4_a3_wayfinding"
+  | "c4_a3_skybridge"
+  | "c4_b3_landing"
+  | "c4_b2_activity"
+  | "c4_b2_final_room";
 
 export type ActOneBootstrapPhase =
   | "prologue"
@@ -229,10 +239,14 @@ export type TheaterMode = "light" | "dark";
 
 export type TheaterProgramId = "opening" | "spotlight" | "finale";
 
+export type TheaterTicketCommissionPhase = "locked" | "posted" | "accepted" | "first_wave_failed" | "delivered";
+
 export interface TheaterHuntState {
   active: boolean;
   phase: TheaterHuntPhase;
   mode: TheaterMode;
+  cc98TicketCommissionPhase: TheaterTicketCommissionPhase;
+  cc98TicketClaimedWave: 1 | 2 | null;
   posterCleaned: boolean;
   ticketCodeRead: boolean;
   ticketCodeAttempts: number;
@@ -336,6 +350,114 @@ export interface QizhenLakeState {
   mistRhythmRead: boolean;
   mistAttempts: number;
   paperReleased: boolean;
+}
+
+export type ClockCalibrationPhase = "tampered" | "calibrating" | "release_ready" | "aligned";
+
+/**
+ * 校时页的四段可玩流程。`complete` 仅用于完成后的只读回执，不计入四个
+ * DEV 试玩节点。
+ */
+export type ClockCalibrationStep =
+  | "target_selection"
+  | "coarse_time"
+  | "seconds_trim"
+  | "phase_lock"
+  | "complete";
+
+export type ClockArchiveClueId = "room_b2_04" | "schedule_0800" | "attendance_open";
+export type ClockCoarseLockId = "hour" | "minute";
+export type ClockDriftChannelId = "gate" | "elevator" | "room";
+
+/**
+ * 第四章「校时」：手机状态栏时间被系统篡改并冻结在 07:55:23。
+ * 秒数按一天 86400 环绕计量；displayedSeconds 为当前显示，targetSeconds
+ * 为校时目标 08:00:00，adjustCount 记录玩家调整次数。
+ */
+export interface ClockCalibrationState {
+  phase: ClockCalibrationPhase;
+  step: ClockCalibrationStep;
+  displayedSeconds: number;
+  targetSeconds: number;
+  selectedTargetSeconds: number | null;
+  archiveClueIds: ClockArchiveClueId[];
+  coarseLockIds: ClockCoarseLockId[];
+  driftCorrectedChannelIds: ClockDriftChannelId[];
+  driftAttempts: number;
+  phaseLockHits: number;
+  phaseLockAttempts: number;
+  adjustCount: number;
+}
+
+/**
+ * 第四章「时间迷宫」章节级事实。prologueSeen 记录「纸条进入段永平教学楼」
+ * 序幕过场是否已看完（含跳过）；过场本身不改写任何第三章事实。
+ */
+export type ChapterFourRealityMode = "light" | "dark";
+
+export type ChapterFourBuildingId = "A" | "B";
+export type ChapterFourFloorId = "A1" | "A2" | "A3" | "A4" | "B2" | "B3";
+export type ChapterFourCycle = 1 | 2;
+export type ChapterFourStairRotation = 0 | 1 | 2 | 3;
+
+export type ChapterFourPuzzleId =
+  | "airflow_overlay"
+  | "elevator_track_sync"
+  | "npc_schedule_route"
+  | "corridor_bay_reconstruction"
+  | "wayfinding_fragment_board"
+  | "bridge_floor_discrimination"
+  | "stair_echo_direction"
+  | "multicam_video_edit"
+  | "echo_action_record"
+  | "dual_lift_logistics"
+  | "warm_air_balance"
+  | "route_schedule"
+  | "clock_phase_lock";
+
+export type ChapterFourPhase =
+  | "inactive"
+  | "arrival"
+  | ChapterFourPuzzleId
+  | "first_cycle_reset"
+  | "complete";
+
+export interface ChapterFourTemporalAnchor {
+  floor: ChapterFourFloorId;
+  roomId: string;
+  timeSeconds: number;
+}
+
+/**
+ * 第四章「段永平教学楼时间迷宫」的控制器事实。场景运行时只读取这些事实并
+ * 提交领域意图；移动速度、动画帧、局部特效和临时输入不进入存档。
+ */
+export interface ChapterFourState {
+  prologueSeen: boolean;
+  phase: ChapterFourPhase;
+  cycle: ChapterFourCycle;
+  mode: ChapterFourRealityMode;
+  building: ChapterFourBuildingId;
+  floor: ChapterFourFloorId;
+  roomId: string;
+  buildingTimeSeconds: number;
+  airflowObserved: boolean;
+  paperGuidedToElevator: boolean;
+  elevatorHistoryObserved: boolean;
+  elevatorSelectedStartSeconds: number | null;
+  elevatorTrackAligned: boolean;
+  elevatorReplayAttempts: number;
+  elevatorPlayerBoarded: boolean;
+  stairEchoObserved: boolean;
+  stairRotationQuarterTurns: ChapterFourStairRotation;
+  stairAlignmentSolved: boolean;
+  solvedPuzzleIds: ChapterFourPuzzleId[];
+  clueIds: string[];
+  anchor: ChapterFourTemporalAnchor | null;
+  echoRecorded: boolean;
+  resetCount: number;
+  finalCode: string | null;
+  completed: boolean;
 }
 
 export type NetworkMode = "campus_wifi" | "cellular" | "offline";
@@ -527,6 +649,7 @@ export type SceneId =
   | "chapter_transition"
   | "checkin"
   | "bonsai"
+  | "clock"
   | "ending";
 
 export interface GameFlags {
@@ -610,6 +733,8 @@ export interface GameState {
   canteenHunt: CanteenHuntState;
   theaterHunt: TheaterHuntState;
   qizhenLake: QizhenLakeState;
+  clockCalibration: ClockCalibrationState;
+  chapter4: ChapterFourState;
   ui: UiState;
 }
 

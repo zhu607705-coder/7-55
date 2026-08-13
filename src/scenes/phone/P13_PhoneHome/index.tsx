@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import zjudingUrl from "../../../assets/ui/zjuding.png";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { kit } from "../../../modules/GameKit";
-import { requestFriendChat } from "../../../modules/NavIntent";
+import { requestCc98Thread, requestFriendChat } from "../../../modules/NavIntent";
+import theaterContent from "../../../data/chapter3-theater.content.json";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
 import { selectFeatureAccess } from "../../../core/FeatureAccess";
+import { selectChapterFourWechatObjective } from "../../../modules/ChapterFourWechatModel";
 
 /**
  * P13 手机主界面：像素浙大校园壁纸。
@@ -25,6 +27,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const chapterServicesOpen = state.actOne.phase !== "prologue";
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const bikeArcadeUnlocked = state.bikeArcade.unlocked;
+  const chapterFourWechatObjective = selectChapterFourWechatObjective(state.chapter4);
 
   // 微信弹窗：1s 出第一条，2.4s 出第二条（散码前）
   useEffect(() => {
@@ -145,6 +148,22 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     router.goTo(sceneId);
   }
 
+  function openTheaterTicketCommission() {
+    const ticketPortalCanUseCellular = state.networkMode === "cellular"
+      && ["accepted", "first_wave_failed", "delivered"].includes(
+        state.theaterHunt.cc98TicketCommissionPhase
+      );
+    if (state.networkMode !== "campus_wifi" && !ticketPortalCanUseCellular) {
+      kit.flags.toast(
+        "CC98 需要校园网；已经载入的手机票务页面可在移动数据下继续。",
+        "task"
+      );
+      return;
+    }
+    requestCc98Thread(theaterContent.cc98TicketCommission.id);
+    openApp("cc98");
+  }
+
   function openWeather() {
     playSfx("02_");
     router.goTo("weather");
@@ -248,6 +267,11 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     router.goTo("photos");
   }
 
+  function openClock() {
+    playSfx("02_");
+    router.goTo("clock");
+  }
+
   const gearClass = flags.gearNineTaken
     ? "is-gone"
     : gearSpinning
@@ -342,7 +366,12 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       </section>
 
       <section className="apps" aria-label="应用">
-        <button type="button" className="app" aria-label="微信" onClick={() => enterWechat(false)}>
+        <button
+          type="button"
+          className={`app chapter-four-wechat-app ${chapterFourWechatObjective ? "is-pending" : ""}`.trim()}
+          aria-label={chapterFourWechatObjective ? `微信，待处理：${chapterFourWechatObjective.label}` : "微信"}
+          onClick={() => enterWechat(false)}
+        >
           <div className="app-icon b-green">
             <div className="wechat-icon">
               <i className="bubble one" />
@@ -442,6 +471,22 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           </div>
           <span className="label">控制中心</span>
         </button>
+        {access.clockCalibration ? (
+          <button
+            type="button"
+            className={`app is-chapter-open clock-app ${state.clockCalibration.phase === "aligned" ? "is-aligned" : ""}`}
+            aria-label="时钟"
+            onClick={openClock}
+          >
+            <div className="app-icon clock-app-icon"><i className="clock-app-face" /></div>
+            <span className="label">时钟</span>
+          </button>
+        ) : (
+          <div className="app app-locked" data-locked-app="时钟" aria-hidden="true">
+            <div className="app-icon clock-app-icon"><i className="clock-app-face" /></div>
+            <span className="label">时钟</span>
+          </div>
+        )}
       </section>
 
       {settingsOpen ? (
@@ -488,6 +533,41 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       <section className="notifications" aria-label="通知列表">
         {access.chapter === "chapter_three" ? (
           <>
+            {state.theaterHunt.cc98TicketCommissionPhase !== "locked" ? (
+              <button
+                type="button"
+                className="note theater-ticket-note"
+                onClick={openTheaterTicketCommission}
+                aria-label="打开 CC98 学生剧现场帮抢帖"
+              >
+                <div className="mini b-blue" aria-hidden="true"><b className="cc98-text">98</b></div>
+                <div>
+                  <div className="note-title">CC98 · 学生剧《7:55》</div>
+                  <div className="note-msg">
+                    {state.theaterHunt.cc98TicketCommissionPhase === "posted"
+                      ? "现场帮抢委托待接"
+                      : state.theaterHunt.cc98TicketCommissionPhase === "accepted"
+                        ? "已接单，第一波待开始"
+                        : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed"
+                          ? state.networkMode === "cellular"
+                            ? "流量已开启，返回手机票务页抢第二波"
+                            : "第一波结束：网速过慢，开启流量"
+                          : state.theaterHunt.cc98TicketClaimedWave === 1
+                            ? "第一波抢票成功，运气很好，钱包没那么好"
+                            : "08:32 第二波取票回执已同步"}
+                  </div>
+                </div>
+                <time className="note-time">
+                  {state.theaterHunt.cc98TicketClaimedWave === 1
+                    ? "08:31"
+                    : state.theaterHunt.cc98TicketCommissionPhase === "posted"
+                    ? "08:29"
+                    : state.theaterHunt.cc98TicketCommissionPhase === "accepted"
+                      ? "08:30"
+                      : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed" ? "08:31" : "08:32"}
+                </time>
+              </button>
+            ) : null}
             <article className="note" aria-label="图书馆：您有一本书已逾期 755 天">
               <div className="mini b-blue" aria-hidden="true"><i className="schedule-mini" /></div>
               <div><div className="note-title">图书馆</div><div className="note-msg">您有一本书已逾期 755 天</div></div>

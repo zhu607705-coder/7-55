@@ -6,6 +6,7 @@ import chapterThreeCanteenTimelineData from "../data/chapter3-canteen.audio.json
 import chapterThreeTheaterTimelineData from "../data/chapter3-theater.audio.json";
 import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
+import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
 import libraryFinalsTimelineData from "../data/library-finals.audio.json";
 import { PRESENTATION_VISUAL_CUE_IDS } from "../data/presentation-cues";
 
@@ -28,6 +29,7 @@ const TIMELINE_CUE_IDS = new Set([
   ...Object.keys((chapterThreeTheaterTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeQizhenTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeStoryTimelineData as AudioTimelineShape).events),
+  ...Object.keys((chapterFourPrologueTimelineData as AudioTimelineShape).events),
   ...PRESENTATION_VISUAL_CUE_IDS
 ]);
 

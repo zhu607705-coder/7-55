@@ -1,5 +1,5 @@
 import type { EventBus } from "../core/EventBus";
-import type { GameEvent } from "../core/types";
+import type { GameEvent, StoryLine } from "../core/types";
 import actOneTimelineData from "../data/act-one.audio.json";
 import actOneGeneratedAudioData from "../data/act-one.audio.generated.json";
 import bikeArcadeTimelineData from "../data/bike-arcade.audio.json";
@@ -13,6 +13,7 @@ import chapterThreeQizhenGeneratedAudioData from "../data/chapter3-qizhen.audio.
 import chapterThreeQizhenSfxGeneratedAudioData from "../data/chapter3-qizhen-sfx.audio.generated.json";
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterThreeStoryGeneratedAudioData from "../data/chapter3-story.audio.generated.json";
+import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
 import audioTimelineData from "../data/library-finals.audio.json";
 import generatedAudioData from "../data/library-finals.audio.generated.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
@@ -53,7 +54,8 @@ const audioTimeline: AudioTimeline = {
     ...(chapterThreeCanteenTimelineData as AudioTimeline).events,
     ...(chapterThreeTheaterTimelineData as AudioTimeline).events,
     ...(chapterThreeQizhenTimelineData as AudioTimeline).events,
-    ...(chapterThreeStoryTimelineData as AudioTimeline).events
+    ...(chapterThreeStoryTimelineData as AudioTimeline).events,
+    ...(chapterFourPrologueTimelineData as AudioTimeline).events
   }
 };
 const generatedAssets = {
@@ -100,7 +102,7 @@ export function textFeedbackDuration(text: string): number {
   return Math.max(2400, Math.min(6500, 1600 + 120 * visibleGraphemeCount(text)));
 }
 
-function toastTone(kind: "dialogue" | "taunt" | "task", speaker?: "narrator" | "system" | "player" | "seat022") {
+function toastTone(kind: "dialogue" | "taunt" | "task", speaker?: StoryLine["speaker"]) {
   if (kind === "task") return "task" as const;
   return speaker === "narrator" ? "system" as const : "xiaoying" as const;
 }
@@ -149,6 +151,16 @@ export class AudioDirector {
     }
     if (cueId === "bike_arcade_closed") {
       this.cancelScheduled("bike_arcade_");
+      this.stopVoice();
+    }
+    // 第四章序幕：跳过、完成或中途离开时取消未播音效并停止人声；音乐由
+    // chapter4_prologue_finished / chapter4_prologue_closed 的 music stop 接管。
+    if (
+      cueId === "chapter4_prologue_skip"
+      || cueId === "chapter4_prologue_finished"
+      || cueId === "chapter4_prologue_closed"
+    ) {
+      this.cancelScheduled("chapter4_prologue_");
       this.stopVoice();
     }
     const beat = audioTimeline.events[cueId];

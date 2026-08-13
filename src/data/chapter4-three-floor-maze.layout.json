@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "worldSize": { "width": 1672, "height": 941 },
+  "floors": [
+    {
+      "displayFloor": 1,
+      "storyFloor": "A1",
+      "checkpoint": "c4_a1_lobby",
+      "roomId": "a1_lobby",
+      "assetId": "teaching-building-floor-1",
+      "staticCollisions": [
+        { "id": "north_facade", "left": 0, "top": 0, "right": 1672, "bottom": 145 },
+        { "id": "west_boundary", "left": 0, "top": 0, "right": 34, "bottom": 941 },
+        { "id": "east_boundary", "left": 1638, "top": 0, "right": 1672, "bottom": 941 },
+        { "id": "portrait_case_west", "left": 338, "top": 112, "right": 620, "bottom": 158 },
+        { "id": "portrait_case_east", "left": 1050, "top": 112, "right": 1338, "bottom": 158 },
+        { "id": "lobby_planter_west", "left": 648, "top": 246, "right": 768, "bottom": 424 },
+        { "id": "lobby_planter_east", "left": 904, "top": 246, "right": 1024, "bottom": 424 },
+        { "id": "south_west_boundary", "left": 0, "top": 808, "right": 636, "bottom": 941 },
+        { "id": "south_east_boundary", "left": 1036, "top": 808, "right": 1672, "bottom": 941 },
+        { "id": "bakery_north_wall", "left": 36, "top": 226, "right": 512, "bottom": 258 },
+        { "id": "bakery_counter", "left": 118, "top": 392, "right": 500, "bottom": 536 },
+        { "id": "bakery_west_service", "left": 36, "top": 338, "right": 112, "bottom": 548 },
+        { "id": "bakery_table_north_west", "left": 105, "top": 567, "right": 188, "bottom": 654 },
+        { "id": "bakery_table_north_center", "left": 258, "top": 593, "right": 333, "bottom": 671 },
+        { "id": "bakery_table_north_east", "left": 396, "top": 564, "right": 468, "bottom": 650 },
+        { "id": "bakery_table_south_west", "left": 109, "top": 670, "right": 190, "bottom": 756 },
+        { "id": "bakery_table_south_center", "left": 252, "top": 686, "right": 330, "bottom": 766 },
+        { "id": "bakery_table_south_east", "left": 396, "top": 670, "right": 470, "bottom": 756 },
+        { "id": "bakery_divider", "left": 505, "top": 224, "right": 548, "bottom": 772 },
+        { "id": "reception_counter", "left": 720, "top": 550, "right": 986, "bottom": 646 },
+        { "id": "reception_planter_west", "left": 668, "top": 527, "right": 720, "bottom": 648 },
+        { "id": "reception_planter_east", "left": 970, "top": 526, "right": 1020, "bottom": 648 },
+        { "id": "classroom_104_north_wall", "left": 1136, "top": 225, "right": 1640, "bottom": 255 },
+        { "id": "classroom_104_west_wall", "left": 1136, "top": 225, "right": 1164, "bottom": 520 },
+        { "id": "classroom_104_south_wall", "left": 1136, "top": 490, "right": 1640, "bottom": 526 },
+        { "id": "classroom_104_desk_block", "left": 1268, "top": 335, "right": 1588, "bottom": 478 },
+        { "id": "classroom_105_north_wall", "left": 1136, "top": 536, "right": 1640, "bottom": 568 },
+        { "id": "classroom_105_west_wall", "left": 1136, "top": 536, "right": 1164, "bottom": 808 },
+        { "id": "classroom_105_south_wall", "left": 1136, "top": 792, "right": 1640, "bottom": 826 },
+        { "id": "classroom_105_desk_block", "left": 1268, "top": 648, "right": 1588, "bottom": 786 },
+        { "id": "entrance_glass_west", "left": 636, "top": 744, "right": 758, "bottom": 792 },
+        { "id": "entrance_glass_east", "left": 930, "top": 744, "right": 1036, "bottom": 792 },
+        { "id": "turnstile_west", "left": 762, "top": 774, "right": 786, "bottom": 852 },
+        { "id": "turnstile_center", "left": 830, "top": 774, "right": 854, "bottom": 852 },
+        { "id": "turnstile_east", "left": 900, "top": 774, "right": 924, "bottom": 852 }
+      ],
+      "anchors": [
+        { "id": "maxwell_bakery", "label": "麦斯威面包坊餐厅", "bounds": { "left": 36, "top": 226, "right": 548, "bottom": 800 } },
+        { "id": "alumni_gallery_1", "label": "一楼校友头像长廊", "bounds": { "left": 330, "top": 34, "right": 1342, "bottom": 174 } },
+        { "id": "classroom_104_entry", "label": "104 教室门厅", "bounds": { "left": 1134, "top": 226, "right": 1270, "bottom": 348 } },
+        { "id": "classroom_105_entry", "label": "105 教室门厅", "bounds": { "left": 1134, "top": 536, "right": 1270, "bottom": 676 } },
+        { "id": "main_entrance", "label": "教学楼主入口", "bounds": { "left": 626, "top": 736, "right": 1050, "bottom": 941 } }
+      ],
+      "stairLandings": [
+        {
+          "id": "a1_stair_up",
+          "direction": "up",
+          "targetStoryFloor": "A2",
+          "bounds": { "left": 932, "top": 145, "right": 1070, "bottom": 252 },
+          "standPosition": { "x": 1001, "y": 214 },
+          "arrivalPosition": { "x": 1001, "y": 214 },
+          "requiredFacing": "up"
+        }
+      ],
+      "elevatorStand": { "id": "a1_elevator_stand", "x": 836, "y": 204, "facing": "up" },
+      "safeSpawn": { "id": "a1_lobby_safe", "x": 836, "y": 716, "facing": "up" }
+    },
+    {
+      "displayFloor": 2,
+      "storyFloor": "A2",
+      "checkpoint": "c4_a2_corridor",
+      "roomId": "a2_corridor",
+      "assetId": "teaching-building-floor-2",
+      "staticCollisions": [
+        { "id": "north_facade", "left": 0, "top": 0, "right": 1672, "bottom": 145 },
+        { "id": "west_boundary", "left": 0, "top": 0, "right": 34, "bottom": 941 },
+        { "id": "east_boundary", "left": 1638, "top": 0, "right": 1672, "bottom": 941 },
+        { "id": "portrait_case_west", "left": 338, "top": 112, "right": 620, "bottom": 158 },
+        { "id": "portrait_case_east", "left": 1050, "top": 112, "right": 1338, "bottom": 158 },
+        { "id": "lobby_planter_west", "left": 648, "top": 246, "right": 768, "bottom": 424 },
+        { "id": "lobby_planter_east", "left": 904, "top": 246, "right": 1024, "bottom": 424 },
+        { "id": "south_boundary", "left": 0, "top": 814, "right": 1672, "bottom": 941 },
+        { "id": "maker_north_wall", "left": 32, "top": 224, "right": 536, "bottom": 252 },
+        { "id": "maker_east_wall", "left": 400, "top": 224, "right": 428, "bottom": 546 },
+        { "id": "maker_workbench_north", "left": 72, "top": 336, "right": 370, "bottom": 422 },
+        { "id": "maker_workbench_south", "left": 72, "top": 448, "right": 370, "bottom": 526 },
+        { "id": "seminar_north_wall", "left": 32, "top": 544, "right": 400, "bottom": 572 },
+        { "id": "seminar_east_wall", "left": 400, "top": 544, "right": 428, "bottom": 814 },
+        { "id": "seminar_east_portrait_planter", "left": 536, "top": 526, "right": 580, "bottom": 690 },
+        { "id": "seminar_table_block", "left": 74, "top": 590, "right": 370, "bottom": 782 },
+        { "id": "lecture_north_wall", "left": 1134, "top": 224, "right": 1640, "bottom": 252 },
+        { "id": "lecture_west_wall", "left": 1134, "top": 224, "right": 1162, "bottom": 546 },
+        { "id": "lecture_desk_block", "left": 1272, "top": 342, "right": 1596, "bottom": 520 },
+        { "id": "computer_north_wall", "left": 1134, "top": 544, "right": 1640, "bottom": 572 },
+        { "id": "computer_west_wall_north", "left": 1134, "top": 544, "right": 1162, "bottom": 610 },
+        { "id": "computer_west_wall_south", "left": 1134, "top": 690, "right": 1162, "bottom": 814 },
+        { "id": "computer_west_portrait_planter", "left": 1072, "top": 526, "right": 1134, "bottom": 690 },
+        { "id": "computer_desk_block", "left": 1280, "top": 648, "right": 1595, "bottom": 798 },
+        { "id": "study_bookshelf", "left": 648, "top": 526, "right": 1006, "bottom": 598 },
+        { "id": "study_seating_island_west", "left": 674, "top": 622, "right": 804, "bottom": 686 },
+        { "id": "study_seating_island_east", "left": 862, "top": 622, "right": 994, "bottom": 686 }
+      ],
+      "anchors": [
+        { "id": "maker_workshop_201", "label": "201 创客工坊", "bounds": { "left": 32, "top": 224, "right": 428, "bottom": 546 } },
+        { "id": "seminar_room_204", "label": "204 研讨教室", "bounds": { "left": 32, "top": 544, "right": 428, "bottom": 814 } },
+        { "id": "lecture_room_202", "label": "202 阶梯教室", "bounds": { "left": 1134, "top": 224, "right": 1640, "bottom": 546 } },
+        { "id": "computer_room_203", "label": "203 计算机教室", "bounds": { "left": 1134, "top": 544, "right": 1640, "bottom": 814 } },
+        { "id": "open_study", "label": "二楼开放学习区", "bounds": { "left": 612, "top": 520, "right": 1060, "bottom": 814 } },
+        { "id": "alumni_gallery_2", "label": "二楼校友纪念长廊", "bounds": { "left": 326, "top": 34, "right": 1342, "bottom": 174 } },
+        { "id": "a2_schedule_observation", "label": "二楼人员动线观察区", "bounds": { "left": 648, "top": 258, "right": 1024, "bottom": 424 } },
+        { "id": "a2_fragment_west", "label": "西侧导视碎片", "bounds": { "left": 580, "top": 598, "right": 648, "bottom": 680 } },
+        { "id": "a2_fragment_east", "label": "东侧导视碎片", "bounds": { "left": 1006, "top": 598, "right": 1074, "bottom": 680 } },
+        { "id": "a2_return_window", "label": "203 返程取证窗口", "bounds": { "left": 1110, "top": 590, "right": 1248, "bottom": 720 } }
+      ],
+      "stairLandings": [
+        {
+          "id": "a2_stair_down",
+          "direction": "down",
+          "targetStoryFloor": "A1",
+          "bounds": { "left": 932, "top": 145, "right": 1001, "bottom": 252 },
+          "standPosition": { "x": 966, "y": 214 },
+          "arrivalPosition": { "x": 966, "y": 214 },
+          "requiredFacing": "up"
+        },
+        {
+          "id": "a2_stair_up",
+          "direction": "up",
+          "targetStoryFloor": "A3",
+          "bounds": { "left": 1001, "top": 145, "right": 1070, "bottom": 252 },
+          "standPosition": { "x": 1036, "y": 214 },
+          "arrivalPosition": { "x": 1036, "y": 214 },
+          "requiredFacing": "up"
+        }
+      ],
+      "elevatorStand": { "id": "a2_elevator_stand", "x": 836, "y": 204, "facing": "up" },
+      "safeSpawn": { "id": "a2_corridor_safe", "x": 836, "y": 204, "facing": "down" }
+    },
+    {
+      "displayFloor": 3,
+      "storyFloor": "A3",
+      "checkpoint": "c4_a3_wayfinding",
+      "roomId": "a3_wayfinding",
+      "assetId": "teaching-building-floor-3",
+      "staticCollisions": [
+        { "id": "north_facade", "left": 0, "top": 0, "right": 1672, "bottom": 145 },
+        { "id": "west_boundary", "left": 0, "top": 0, "right": 34, "bottom": 941 },
+        { "id": "east_boundary", "left": 1638, "top": 0, "right": 1672, "bottom": 941 },
+        { "id": "portrait_case_west", "left": 338, "top": 112, "right": 620, "bottom": 158 },
+        { "id": "portrait_case_east", "left": 1050, "top": 112, "right": 1338, "bottom": 158 },
+        { "id": "lobby_planter_west", "left": 648, "top": 246, "right": 768, "bottom": 424 },
+        { "id": "lobby_planter_east", "left": 904, "top": 246, "right": 1024, "bottom": 424 },
+        { "id": "south_boundary", "left": 0, "top": 814, "right": 1672, "bottom": 941 },
+        { "id": "archive_north_wall", "left": 32, "top": 224, "right": 536, "bottom": 252 },
+        { "id": "archive_east_wall", "left": 402, "top": 224, "right": 430, "bottom": 516 },
+        { "id": "archive_case_north", "left": 54, "top": 252, "right": 376, "bottom": 340 },
+        { "id": "archive_case_center", "left": 88, "top": 374, "right": 336, "bottom": 444 },
+        { "id": "archive_case_south", "left": 88, "top": 466, "right": 338, "bottom": 510 },
+        { "id": "media_north_wall", "left": 32, "top": 516, "right": 536, "bottom": 548 },
+        { "id": "media_east_wall", "left": 402, "top": 516, "right": 430, "bottom": 814 },
+        { "id": "media_equipment_north", "left": 68, "top": 558, "right": 366, "bottom": 648 },
+        { "id": "media_console_south", "left": 72, "top": 668, "right": 372, "bottom": 798 },
+        { "id": "hall_north_wall", "left": 1134, "top": 224, "right": 1640, "bottom": 252 },
+        { "id": "hall_west_wall", "left": 1134, "top": 224, "right": 1162, "bottom": 516 },
+        { "id": "hall_seating", "left": 1270, "top": 330, "right": 1598, "bottom": 496 },
+        { "id": "smart_room_north_wall", "left": 1134, "top": 516, "right": 1640, "bottom": 548 },
+        { "id": "smart_room_west_wall", "left": 1134, "top": 516, "right": 1162, "bottom": 814 },
+        { "id": "smart_room_console", "left": 1320, "top": 616, "right": 1542, "bottom": 684 },
+        { "id": "smart_room_desks", "left": 1282, "top": 708, "right": 1594, "bottom": 798 },
+        { "id": "honor_portraits", "left": 620, "top": 548, "right": 1050, "bottom": 642 },
+        { "id": "honor_cases", "left": 632, "top": 660, "right": 1038, "bottom": 740 },
+        { "id": "honor_planter_west", "left": 600, "top": 640, "right": 652, "bottom": 790 },
+        { "id": "honor_planter_east", "left": 1018, "top": 640, "right": 1070, "bottom": 790 }
+      ],
+      "anchors": [
+        { "id": "archive_exhibition_301", "label": "301 校史档案展", "bounds": { "left": 32, "top": 224, "right": 430, "bottom": 516 } },
+        { "id": "media_studio_302", "label": "302 媒体工作室", "bounds": { "left": 32, "top": 516, "right": 430, "bottom": 814 } },
+        { "id": "report_hall_304", "label": "304 报告厅", "bounds": { "left": 1134, "top": 224, "right": 1640, "bottom": 516 } },
+        { "id": "smart_classroom_303", "label": "303 智慧教室", "bounds": { "left": 1134, "top": 516, "right": 1640, "bottom": 814 } },
+        { "id": "alumni_honor_vestibule", "label": "三楼校友荣誉门厅", "bounds": { "left": 590, "top": 530, "right": 1080, "bottom": 794 } },
+        { "id": "alumni_gallery_3", "label": "三楼校友头像长廊", "bounds": { "left": 326, "top": 34, "right": 1342, "bottom": 174 } },
+        { "id": "a3_old_signage", "label": "旧导视残影", "bounds": { "left": 430, "top": 158, "right": 620, "bottom": 238 } },
+        { "id": "a3_wayfinding_board", "label": "三楼导视板", "bounds": { "left": 600, "top": 500, "right": 790, "bottom": 650 } },
+        { "id": "a3_bridge_history", "label": "连廊历史入口", "bounds": { "left": 1070, "top": 252, "right": 1188, "bottom": 390 } }
+      ],
+      "stairLandings": [
+        {
+          "id": "a3_stair_down",
+          "direction": "down",
+          "targetStoryFloor": "A2",
+          "bounds": { "left": 932, "top": 145, "right": 1070, "bottom": 252 },
+          "standPosition": { "x": 1001, "y": 214 },
+          "arrivalPosition": { "x": 1001, "y": 214 },
+          "requiredFacing": "up"
+        }
+      ],
+      "elevatorStand": { "id": "a3_elevator_stand", "x": 836, "y": 204, "facing": "up" },
+      "safeSpawn": { "id": "a3_wayfinding_safe", "x": 836, "y": 204, "facing": "down" }
+    }
+  ],
+  "transportCore": {
+    "elevators": [
+      { "id": "main_elevator", "centerX": 836, "storyFloors": ["A1", "A2", "A3"] }
+    ],
+    "stairs": [
+      { "id": "main_stair", "left": 932, "top": 145, "right": 1070, "bottom": 252, "storyFloors": ["A1", "A2", "A3"] }
+    ]
+  },
+  "safeRoutes": {
+    "floor2West": { "displayFloor": 2, "left": 428, "top": 526, "right": 536, "bottom": 814, "width": 108, "height": 288 },
+    "floor2East": { "displayFloor": 2, "left": 1006, "top": 526, "right": 1072, "bottom": 814, "width": 66, "height": 288 },
+    "floor2South": { "displayFloor": 2, "left": 428, "top": 700, "right": 1134, "bottom": 814, "width": 706, "height": 114 }
+  },
+  "dynamicGates": [
+    {
+      "id": "a2_partition_west",
+      "collisionId": "a2_partition_west",
+      "displayFloor": 2,
+      "kind": "partition",
+      "bounds": { "left": 536, "top": 478, "right": 648, "bottom": 506 },
+      "closedRouteStates": ["baseline", "schedule_observed"]
+    },
+    {
+      "id": "a2_partition_east",
+      "collisionId": "a2_partition_east",
+      "displayFloor": 2,
+      "kind": "partition",
+      "bounds": { "left": 1028, "top": 478, "right": 1134, "bottom": 506 },
+      "closedRouteStates": ["baseline", "schedule_observed"]
+    },
+    {
+      "id": "a2_room_203_return_door",
+      "collisionId": "a2_room_203_return_door",
+      "displayFloor": 2,
+      "kind": "door",
+      "bounds": { "left": 1134, "top": 610, "right": 1162, "bottom": 690 },
+      "closedRouteStates": ["baseline", "schedule_observed", "corridor_reconfigured", "wayfinding_aligned"]
+    }
+  ]
+}

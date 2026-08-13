@@ -17,6 +17,7 @@ import { kit } from "./modules/GameKit";
 import { presentationDirector } from "./modules/PresentationDirector";
 import { getPhoneScene } from "./scenes/phone/registry";
 import { LIBRARY_STORY_SEQUENCES } from "./data/libraryFinalsStory";
+import { requestCc98Thread } from "./modules/NavIntent";
 
 const router = new SceneRouter(gameStore, eventBus);
 const RpgGameHost = lazy(() =>
@@ -61,6 +62,8 @@ export function App() {
   const phonePaneRef = useRef<HTMLElement>(null);
   const Scene = getPhoneScene(state.currentScene);
   const access = selectFeatureAccess(state);
+  // 第四章校时：桌面 RPG 模式下打开手机时钟页时，左右两栏真分屏并排
+  const clockSplit = access.clockCalibration && state.currentScene === "clock";
   const showChapterTwoIntro = access.chapter !== "chapter_one"
     && !state.ui.seenChapterIntros.includes("chapter_two");
   const libraryStoryVisible = libraryStorySequence !== null && !showChapterTwoIntro;
@@ -224,7 +227,17 @@ export function App() {
         gameStore.setState((current) => ({ ...current, runtimeMode: "phone" }));
       }
       setActiveSurface("phone");
-      if (quest.recommendedScene) router.goTo(quest.recommendedScene);
+      if (quest.recommendedScene) {
+        if (
+          quest.recommendedScene === "cc98"
+          && ["accepted", "first_wave_failed", "delivered"].includes(
+            gameStore.getState().theaterHunt.cc98TicketCommissionPhase
+          )
+        ) {
+          requestCc98Thread("theater-755-ticket-commission");
+        }
+        router.goTo(quest.recommendedScene);
+      }
       return;
     }
     gameStore.setState((current) => ({ ...current, runtimeMode: "rpg" }));
@@ -281,8 +294,9 @@ export function App() {
           <main
             className={`desktop-gameplay-shell ${state.rpgScene === "qizhen_lake" ? "is-qizhen-lake" : ""}`.trim()}
             data-active-surface={activeSurface}
+            data-split={clockSplit ? "clock" : undefined}
           >
-            {activeSurface === "rpg" ? (
+            {activeSurface === "rpg" && state.rpgScene !== "duan_yongping_temporal_maze" ? (
               <QuestTaskBar
                 state={state}
                 events={eventBus}

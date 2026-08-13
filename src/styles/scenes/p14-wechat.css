@@ -338,6 +338,270 @@
   border-color: #74c851;
 }
 
+/* 第四章：微信证据链 */
+
+.wx-group-avatar {
+  background: #d8e9df;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(2, 16px);
+  grid-template-rows: repeat(2, 16px);
+  padding: 7px;
+}
+
+.wx-group-avatar i {
+  background: #2e5760;
+  border: 2px solid #fff;
+  display: block;
+}
+
+.wx-group-avatar i:nth-child(2) { background: #786148; }
+.wx-group-avatar i:nth-child(3) { background: #3e6a45; }
+.wx-group-avatar i:nth-child(4) { background: #5b537d; }
+
+.wx-official-avatar {
+  align-items: center;
+  background: #244f5e;
+  color: #f3e5b3;
+  display: flex;
+  font-size: 13px;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: -1px;
+}
+
+.wx-chapter4-chat .wx-chat-body {
+  background: #e7e7e7;
+  padding: 14px 12px 22px 38px;
+}
+
+.wx-official-article,
+.wx-evidence-archive,
+.wx-group-thread,
+.wx-chapter4-friend {
+  display: grid;
+  gap: 12px;
+}
+
+.wx-official-article {
+  background: #fff;
+  border: 2px solid #c6c6c6;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.13);
+  padding: 16px;
+}
+
+.wx-official-article > small,
+.wx-evidence-card small {
+  color: #6d7479;
+  font-size: var(--fs-caption);
+}
+
+.wx-official-article h2 {
+  color: #20282d;
+  font-size: 21px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.wx-official-cover {
+  align-items: end;
+  background: #203e4a;
+  border: 3px solid #172a31;
+  display: grid;
+  grid-template-columns: 1fr 54px 1fr;
+  height: 108px;
+  overflow: hidden;
+  padding: 0 12px;
+}
+
+.wx-official-cover i {
+  background: #75909a;
+  border: 4px solid #c8d4d8;
+  height: 72px;
+}
+
+.wx-official-cover b {
+  align-self: start;
+  background: #c4a24f;
+  border: 3px solid #f0dda2;
+  color: #17252b;
+  font-size: 20px;
+  margin-top: 12px;
+  padding: 7px 0;
+  text-align: center;
+}
+
+.wx-official-article p,
+.wx-official-article li,
+.wx-field-note,
+.wx-evidence-archive > p {
+  color: #3d464c;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.wx-official-article ul {
+  border-left: 4px solid #244f5e;
+  display: grid;
+  gap: 7px;
+  list-style: square;
+  margin: 0;
+  padding: 10px 10px 10px 28px;
+}
+
+.wx-evidence-action,
+.wx-evidence-card button {
+  background: #167d46;
+  border: 2px solid #0d5730;
+  color: #fff;
+  font-size: var(--fs-body);
+  font-weight: 800;
+  min-height: 42px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.wx-evidence-action:active,
+.wx-evidence-card button:active {
+  transform: translateY(2px);
+}
+
+.wx-time-divider,
+.wx-recalled-message {
+  color: #70777c;
+  font-size: var(--fs-caption);
+  justify-self: center;
+  padding: 4px 10px;
+}
+
+.wx-recalled-message {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid #c7c7c7;
+}
+
+.wx-group-thread .wx-msg p b {
+  color: #68757d;
+  display: block;
+  font-size: var(--fs-caption);
+  margin-bottom: 3px;
+}
+
+.wx-student-avatar {
+  background: #c9d9d2;
+  position: relative;
+}
+
+.wx-student-avatar::before,
+.wx-student-avatar::after {
+  content: "";
+  position: absolute;
+}
+
+.wx-student-avatar::before {
+  background: #e0b78b;
+  border-top: 7px solid #283640;
+  height: 18px;
+  left: 8px;
+  top: 6px;
+  width: 15px;
+}
+
+.wx-student-avatar::after {
+  background: #345f70;
+  bottom: 3px;
+  height: 8px;
+  left: 6px;
+  width: 19px;
+}
+
+.wx-student-avatar.student-2::after { background: #6a5147; }
+.wx-student-avatar.student-3::after { background: #466c47; }
+.wx-student-avatar.student-4::after { background: #5b527e; }
+
+.wx-field-note {
+  background: #fff7cf;
+  border: 2px solid #b2984e;
+  padding: 9px 10px;
+}
+
+.wx-evidence-card {
+  align-items: center;
+  background: #fff;
+  border: 2px solid #bfc5c8;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 12px;
+}
+
+.wx-evidence-card small,
+.wx-evidence-card strong {
+  grid-column: 1;
+}
+
+.wx-evidence-card strong {
+  color: #263036;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+}
+
+.wx-evidence-card em {
+  color: #237247;
+  font-size: var(--fs-caption);
+  font-style: normal;
+  font-weight: 800;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.wx-evidence-card button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-width: 76px;
+  width: auto;
+}
+
+.wx-photo-comparison {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wx-photo-comparison figure {
+  background: #fff;
+  border: 2px solid #b9bec0;
+  margin: 0;
+  padding: 8px;
+}
+
+.wx-photo-comparison figcaption {
+  color: #626b70;
+  font-size: var(--fs-caption);
+  padding-top: 6px;
+  text-align: center;
+}
+
+.wx-sign-board {
+  align-items: center;
+  border: 4px solid #e5d8a8;
+  color: #f6edcb;
+  display: flex;
+  font-size: 20px;
+  font-weight: 900;
+  height: 74px;
+  justify-content: center;
+}
+
+.wx-sign-board.is-current { background: #294b58; }
+.wx-sign-board.is-old { background: #50432f; }
+
+@media (prefers-reduced-motion: reduce) {
+  .phone .chapter-four-wechat-app.is-pending .app-icon::after {
+    animation: none !important;
+  }
+}
+
 .wx-followup-message {
   animation: wx-followup-in var(--dur-slow) var(--ease-in-pixel) both;
 }

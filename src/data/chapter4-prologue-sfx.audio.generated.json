@@ -1,0 +1,204 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-08T05:53:18.418Z",
+  "assets": {
+    "sfx_ch4_magnet_tension": {
+      "path": "chapter4/prologue/sfx_ch4_magnet_tension.mp3",
+      "kind": "sfx",
+      "durationMs": 1200,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "37c8561a538d3c296205d877fda802d9de72fd6717f795bd052b35665b9f900f",
+      "sourceConfigHash": "474c6e811f120b29557d3e30580d1d35ebfe59388dc3b5fe5f67acc8543ca7e0",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_magnet_snap": {
+      "path": "chapter4/prologue/sfx_ch4_magnet_snap.mp3",
+      "kind": "sfx",
+      "durationMs": 700,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "75d5d0026e42fbfde65b8d6b5fe13e98e735a8d6eaa6b377e15355498636f482",
+      "sourceConfigHash": "cb9d44d008185921d860e8bb8e4d533a96874b54d0445adf095b61637d7c81c6",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_line_recoil": {
+      "path": "chapter4/prologue/sfx_ch4_line_recoil.mp3",
+      "kind": "sfx",
+      "durationMs": 1000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "88557f3d839e862a0ec49a91a5978b0dd5e42a7ffbbc4bdbe60727c4a0f81d13",
+      "sourceConfigHash": "37bfee7c62d0fb2b7a79f5bcb97a314b69655d403e46980f071213ab83eeeed0",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_water_ripple": {
+      "path": "chapter4/prologue/sfx_ch4_water_ripple.mp3",
+      "kind": "sfx",
+      "durationMs": 1400,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "1ca309fc1d019565d4f3ac492079acc36514a11c0ed0d38f98c001a39937911c",
+      "sourceConfigHash": "a55fbd1460efafddff25ba6f44b2bfd670d232175bf6f345d84eb4a7cd543bf8",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_paper_water_slide": {
+      "path": "chapter4/prologue/sfx_ch4_paper_water_slide.mp3",
+      "kind": "sfx",
+      "durationMs": 1800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "50af3358769f03891d839bb2eeadb97a5bb828f47171e8f66ff3ef164bf6a32e",
+      "sourceConfigHash": "3ff41a589d550c5d4d12df0967abf53ff10561d9785c0c0e1d57abcce74ab325",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_railing_hit": {
+      "path": "chapter4/prologue/sfx_ch4_railing_hit.mp3",
+      "kind": "sfx",
+      "durationMs": 600,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "c8beaa486e7e1a327f2ecb05be0aff27665abc785cf5ced67263ef685846b5f9",
+      "sourceConfigHash": "f49a023f12a8c3bbfd0d50af87292ee55dcc7b86c16c58959205cacf20b8cdb1",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_paper_flip": {
+      "path": "chapter4/prologue/sfx_ch4_paper_flip.mp3",
+      "kind": "sfx",
+      "durationMs": 500,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "a62ddbc2e2056c4007589defe9ce38c3239cfbb96261c996dbcb333ba6232e76",
+      "sourceConfigHash": "699820a17b902f90771bd9d6a1faf6f3439b2310098baa74e0f07e482edd5371",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_stone_land": {
+      "path": "chapter4/prologue/sfx_ch4_stone_land.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "d00780146c2fce5760a56beb46ef644e2fd2045fa64002e9bd7b0fa1ec4fd029",
+      "sourceConfigHash": "22365b8c58e4b9ec0f97d32a78d31f400b07e2de4805cc9a635f335d6a3ea8cc",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_gust_skim": {
+      "path": "chapter4/prologue/sfx_ch4_gust_skim.mp3",
+      "kind": "sfx",
+      "durationMs": 2200,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "df78b996ccd323aecdb8cf512511f7fa572f61379b04a6cda9acbeb6afb034a3",
+      "sourceConfigHash": "32dd57e13ecf365af506c248e02a338007fc56cb2ddfb5b67a12f8211c22b52b",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_arcade_crosswind": {
+      "path": "chapter4/prologue/sfx_ch4_arcade_crosswind.mp3",
+      "kind": "sfx",
+      "durationMs": 2400,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "8898e2acfca59fd45a0e91e5af166ba38e0a470bdf4bff8cd447ad69dc09b294",
+      "sourceConfigHash": "03df2793777e1c333a5b358e9b6bec716c81e28e80558a745aee021b2e2ee8fc",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_step_fold": {
+      "path": "chapter4/prologue/sfx_ch4_step_fold.mp3",
+      "kind": "sfx",
+      "durationMs": 600,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "e2667d21019ddd6043dcada7ccf38ec0127293dbc752d23b217aaee7620dca26",
+      "sourceConfigHash": "6c951bcbf9a403abf4d0bd67dc6aad284b1bb81e36648287d0553ddd25262e0e",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_glass_door_open": {
+      "path": "chapter4/prologue/sfx_ch4_glass_door_open.mp3",
+      "kind": "sfx",
+      "durationMs": 1500,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "d7edb83fa41775ec55efc1e27f2299fc1a6053f338ac29998f66eddbdafb8250",
+      "sourceConfigHash": "d53cde01c1cf4210e216c3900cd01044ab33573404f32f5ca73f74b287c0aad9",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_pressure_suction": {
+      "path": "chapter4/prologue/sfx_ch4_pressure_suction.mp3",
+      "kind": "sfx",
+      "durationMs": 1200,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "cb75da576422c64732f6005c3da4dd327016956c3fc63e931603a2e0ca7922aa",
+      "sourceConfigHash": "6863fff10a3a85308cf8f50d4589f07c9ba52aa54cb828d44dd2cf606472d259",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_clock_chime": {
+      "path": "chapter4/prologue/sfx_ch4_clock_chime.mp3",
+      "kind": "sfx",
+      "durationMs": 1000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "8ecdd2833d2dd7fad9ff1ac59e0834961021d277263d3fb0b74882488862f1af",
+      "sourceConfigHash": "27156c4372f80cbf55b1f9315d7ef654f076698836c34578014a782b5d120e9b",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_wet_floor_slide": {
+      "path": "chapter4/prologue/sfx_ch4_wet_floor_slide.mp3",
+      "kind": "sfx",
+      "durationMs": 2000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "44298f90a23be87bdc33dadda257ea18e22d587c8e4f932745881937999293be",
+      "sourceConfigHash": "c83fcc6a3e16c6ad61d9626634375cd3537e9d639306c0dd0083a7c7d64b2f79",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_broadcast_static": {
+      "path": "chapter4/prologue/sfx_ch4_broadcast_static.mp3",
+      "kind": "sfx",
+      "durationMs": 800,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "eae1a1e46b99f6c5812779d3662ebec30a42da353c91fd5af6b71ba365cda630",
+      "sourceConfigHash": "7da0a9be30e79de0988c39bb2f7a14beef5ae2c0d927d472d0ea19e9749d7622",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_lights_powerdown": {
+      "path": "chapter4/prologue/sfx_ch4_lights_powerdown.mp3",
+      "kind": "sfx",
+      "durationMs": 1000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "8033c828bbae8223fa595052f5e85a181d70439f8bcc63f6e3ba940586aca97b",
+      "sourceConfigHash": "7106bb0859f0a8e25e4d5b79be98068ba5222bd90b69168cd437052efcfece92",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    },
+    "sfx_ch4_phone_task_notify": {
+      "path": "chapter4/prologue/sfx_ch4_phone_task_notify.mp3",
+      "kind": "sfx",
+      "durationMs": 900,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "587e1f0c1dd128cd98a168a23ec0a66501e1483a1b1bf6e9635cc2ff1f4be987",
+      "sourceConfigHash": "ad20da628f84926b829a8eca853efa37d3ca4ec0ce6ce668f7b6bdf46a124461",
+      "source": "MiniMax music-2.6 isolated one-shot"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "license": {
+    "spdx": "CC0-1.0",
+    "url": "https://docs.ambientcg.com/license/",
+    "note": "ambientCG permits copying, modification, redistribution, commercial use, and inclusion of the raw files in a video game without required attribution."
+  },
+  "runtimePolicy": {
+    "sourceResolution": "1K-JPG",
+    "colorSpace": "sRGB source color maps converted to a small grayscale luminance palette before Chapter 4 palette modulation",
+    "runtimeReduction": "Each 1K color map becomes one 64x64 pixel tile in memory; plaster uses a restrained 248-255 range while concrete and metal use up to six luminance levels.",
+    "sampling": "NearestFilter with nearest mip levels at the 480x270 internal render resolution",
+    "networkDependency": false
+  },
+  "materials": [
+    {
+      "id": "Plaster001",
+      "role": "warm stairwell walls",
+      "sourcePage": "https://ambientcg.com/a/Plaster001",
+      "download": "https://ambientcg.com/get?file=Plaster001_1K-JPG.zip",
+      "maps": [
+        {
+          "file": "Plaster001_1K-JPG_Color.jpg",
+          "kind": "color",
+          "bytes": 828790,
+          "sha256": "d3fe43282859ab7293ad41f2fa3c29f02df077e5bc326cf90a65cc588a4ac5a4"
+        }
+      ]
+    },
+    {
+      "id": "Concrete010",
+      "role": "landings and stair treads",
+      "sourcePage": "https://ambientcg.com/a/Concrete010",
+      "download": "https://ambientcg.com/get?file=Concrete010_1K-JPG.zip",
+      "maps": [
+        {
+          "file": "Concrete010_1K-JPG_Color.jpg",
+          "kind": "color",
+          "bytes": 655999,
+          "sha256": "8d95dfe50aa66ddced1a89d47a16aad6a0affd36b00c06686b4fa982221c525c"
+        }
+      ]
+    },
+    {
+      "id": "Metal012",
+      "role": "moving mechanisms, frames, and structural steel",
+      "sourcePage": "https://ambientcg.com/a/Metal012",
+      "download": "https://ambientcg.com/get?file=Metal012_1K-JPG.zip",
+      "maps": [
+        {
+          "file": "Metal012_1K-JPG_Color.jpg",
+          "kind": "color",
+          "bytes": 412556,
+          "sha256": "9d32b9bbcf071433a3ed69f0409cc11886bb3c554300acaf0da93a92a2059e5b"
+        }
+      ]
+    }
+  ]
+}

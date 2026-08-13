@@ -844,9 +844,24 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.showFeedback(theaterContent.ticket.codeWrong, "system");
       return;
     }
+    if (name === "theater_ticket_phone_release_required") {
+      this.closePanel();
+      this.showFeedback(theaterContent.ticket.phoneReleaseRequired, "system");
+      return;
+    }
+    if (name === "theater_ticket_printed") {
+      this.closePanel();
+      this.queueDialogue([theaterContent.ticket.ticketPrinted]);
+      return;
+    }
+    if (name === "theater_ticket_already_delivered") {
+      this.closePanel();
+      this.showFeedback(theaterContent.ticket.ticketPrinted, "system");
+      return;
+    }
     if (name === "theater_ticket_print_failed") {
       this.closePanel();
-      this.queueDialogue([theaterContent.ticket.printFailure, theaterContent.ticket.printComment]);
+      this.showFeedback(theaterContent.ticket.phoneReleaseRequired, "system");
       return;
     }
     if (name === "theater_poster_cleaned") {

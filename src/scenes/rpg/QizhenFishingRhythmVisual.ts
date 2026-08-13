@@ -42,7 +42,7 @@ const RING_END_RADIUS = 14;
 const HOLD_ARC_RADIUS = 24;
 const REDUCED_RING_STEPS = [72, 48, 32, 14] as const;
 const STATUS_BAR_X = 480;
-const STATUS_BAR_Y = 64;
+const STATUS_BAR_Y = 112;
 
 const RING_COLORS: Record<QizhenFishingAction, number> = {
   left: 0x86d98a,
@@ -55,9 +55,9 @@ const RING_COLORS_ASSIST: Record<QizhenFishingAction, number> = {
   hook: 0xd6f2ff,
 };
 const ACTION_ARROWS: Record<QizhenFishingAction, string> = {
-  left: "←",
-  right: "→",
-  hook: "↑",
+  left: "A",
+  right: "D",
+  hook: "S",
 };
 const ACTION_CSS: Record<QizhenFishingAction, string> = {
   left: "#a5e8a8",
@@ -128,6 +128,7 @@ export class QizhenFishingRhythmVisual {
   private readonly labelText: Phaser.GameObjects.Text;
   private readonly tensionText: Phaser.GameObjects.Text;
   private readonly comboText: Phaser.GameObjects.Text;
+  private readonly controlsText: Phaser.GameObjects.Text;
   private statusCache = "";
   private warningUntil = 0;
   private warningCss = "#ff9a6e";
@@ -171,7 +172,13 @@ export class QizhenFishingRhythmVisual {
       color: "#fff2b6",
     }).setOrigin(0, 0.5);
     this.comboText = this.scene.add.text(0, 0, "", HUD_TEXT_STYLE).setOrigin(0, 0.5);
-    this.statusBar.add([this.statusBg, this.labelText, this.tensionText, this.comboText]);
+    this.controlsText = this.scene.add.text(
+      0,
+      20,
+      "绿色 A 左收线  ·  蓝色 S 提竿  ·  黄色 D 右收线  ·  圆环收紧时输入",
+      { ...HUD_TEXT_STYLE, fontSize: "12px", color: "#f4f1d4" }
+    ).setOrigin(0.5, 0.5);
+    this.statusBar.add([this.statusBg, this.labelText, this.tensionText, this.comboText, this.controlsText]);
     this.refreshStatusBar(true);
   }
 
@@ -454,9 +461,10 @@ export class QizhenFishingRhythmVisual {
       this.comboText.setX(x);
       this.statusBg.clear();
       this.statusBg.fillStyle(0x07111c, 0.62);
-      this.statusBg.fillRect(-contentWidth / 2 - pad, -13, contentWidth + pad * 2, 26);
+      const barWidth = Math.max(contentWidth + pad * 2, this.controlsText.width + pad * 2);
+      this.statusBg.fillRect(-barWidth / 2, -13, barWidth, 48);
       this.statusBg.lineStyle(1, 0x9fd8ff, 0.35);
-      this.statusBg.strokeRect(-contentWidth / 2 - pad, -13, contentWidth + pad * 2, 26);
+      this.statusBg.strokeRect(-barWidth / 2, -13, barWidth, 48);
     }
     // The numeric tension stays visible at all times; color is auxiliary.
     const now = this.scene.time.now;

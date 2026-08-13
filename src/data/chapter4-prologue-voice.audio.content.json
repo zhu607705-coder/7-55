@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "chapterId": "chapter-4-prologue-voice",
+  "voices": {
+    "male_narrator": {
+      "id": "English_expressive_narrator",
+      "language": "English",
+      "basePitch": -4
+    },
+    "male_player": {
+      "id": "English_Diligent_Man",
+      "language": "English",
+      "basePitch": 0
+    },
+    "female_cleaner": {
+      "id": "Chinese (Mandarin)_Kind-hearted_Antie",
+      "language": "English",
+      "basePitch": 0
+    },
+    "male_guard": {
+      "id": "English_Trustworthy_Man",
+      "language": "English",
+      "basePitch": 0
+    }
+  },
+  "lines": [
+    {
+      "key": "ch4_prologue_player_01",
+      "speaker": "player",
+      "voiceRole": "male_player",
+      "subtitleZh": "又断了。",
+      "voiceTextEn": "It broke again.",
+      "subtitleSurface": "scene",
+      "speed": 1.0,
+      "pitch": 0
+    },
+    {
+      "key": "ch4_prologue_narrator_01",
+      "speaker": "narrator",
+      "voiceRole": "male_narrator",
+      "subtitleZh": "湖面没有留下它。夜风把它送进了仍然亮着灯的教学楼。",
+      "voiceTextEn": "The lake did not keep it. The night wind carried it into the teaching building that was still lit.",
+      "subtitleSurface": "scene",
+      "speed": 0.95,
+      "pitch": -4
+    },
+    {
+      "key": "ch4_prologue_cleaner_01",
+      "speaker": "cleaner",
+      "voiceRole": "female_cleaner",
+      "subtitleZh": "小心，刚拖过。刚才有张纸贴着地往里卷了。",
+      "voiceTextEn": "Careful, the floor was just mopped. A piece of paper slid in just now, hugging the ground.",
+      "subtitleSurface": "scene",
+      "speed": 1.02,
+      "pitch": 0
+    },
+    {
+      "key": "ch4_prologue_guard_01",
+      "speaker": "guard",
+      "voiceRole": "male_guard",
+      "subtitleZh": "同学，北教准备清楼了，手上的东西收一下。",
+      "voiceTextEn": "Excuse me, the North Teaching Building is being cleared soon. Please pack up whatever you are holding.",
+      "subtitleSurface": "scene",
+      "speed": 1.0,
+      "pitch": 0
+    }
+  ]
+}

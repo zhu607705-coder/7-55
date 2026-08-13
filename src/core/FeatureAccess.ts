@@ -31,11 +31,15 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     || state.canteenHunt.active
     || state.theaterHunt.active
     || state.qizhenLake.active;
-  const chapter = chapterThreeActive
-    ? "chapter_three"
-    : state.actOne.phase === "prologue"
-      ? "chapter_one"
-      : "chapter_two";
+  // 第四章「校时」：启真湖流程完成后开放，优先级高于第三章。
+  const chapterFourActive = state.qizhenLake.phase === "complete";
+  const chapter = chapterFourActive
+    ? "chapter_four"
+    : chapterThreeActive
+      ? "chapter_three"
+      : state.actOne.phase === "prologue"
+        ? "chapter_one"
+        : "chapter_two";
   const chapterTwoOpen = chapter !== "chapter_one";
   const librarySceneAccess = state.actOne.phase === "complete" || LIBRARY_VISIBLE_PHASES.has(state.ui.libraryFinalsPhase);
   const libraryReservation = ["reservation_required", "movement_ready", "complete"].includes(state.actOne.phase)
@@ -65,7 +69,8 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     cc98OwnerUpload,
     cc98Bd,
     libraryRecovery,
-    bikeArcade
+    bikeArcade,
+    clockCalibration: chapter === "chapter_four"
   };
 }
 
@@ -77,6 +82,7 @@ export function canEnterScene(state: GameState, scene: SceneId): boolean {
   if (scene === "weather") return access.weather;
   if (scene === "bike_arcade") return access.bikeArcade;
   if (scene === "chapter_transition") return access.chapter !== "chapter_one";
+  if (scene === "clock") return access.clockCalibration;
   return true;
 }
 

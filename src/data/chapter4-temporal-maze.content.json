@@ -1,0 +1,116 @@
+{
+  "chapterId": "chapter-four-temporal-maze",
+  "title": "段永平教学楼时间迷宫",
+  "arrival": {
+    "objective": "进入一楼门厅，确认湿纸留下的气流轨迹",
+    "hint": "先切到深色观察，查看门厅中央的断续水迹。"
+  },
+  "airflow": {
+    "objective": "恢复纸条进入主电梯厅的风路",
+    "observePrompt": "深色观察：地面水迹从玻璃门延伸到麦斯威卷帘门。",
+    "lightPrompt": "浅色操作：到麦斯威卷帘门前，借助暖风把纸条送向主电梯。",
+    "observed": "已记录气流轨迹。切回浅色操作，前往麦斯威卷帘门。",
+    "guided": "暖风重新接上水迹，湿纸进入主电梯厅。"
+  },
+  "elevator": {
+    "objective": "在主电梯厅同步纸条留下的历史轨道",
+    "observePrompt": "深色观察：读取轿厢、门体与玩家进入窗口三条历史轨道。",
+    "operatePrompt": "浅色操作：拖动轿厢轨道，让一楼开门区间完整覆盖六秒进入窗口。",
+    "locked": "先切到深色观察，读取主电梯的三条历史轨道。",
+    "aligned": "三轨已经对齐。电梯返回一楼，等待门体完全打开。",
+    "misaligned": "开门区间没有完整覆盖进入窗口。调整重放起点后再试。",
+    "missed": "开门窗口已经结束。再次启动历史重放。",
+    "arrived": "历史片段继续运行，已到达 A2。",
+    "timeline": {
+      "timelineStartSeconds": 81807,
+      "timelineEndSeconds": 81838,
+      "selectableStartMinSeconds": 81807,
+      "selectableStartMaxSeconds": 81815,
+      "correctReplayStartSeconds": 81811,
+      "playerWindowStartSeconds": 81811,
+      "playerWindowEndSeconds": 81817,
+      "firstFloorDoorOpenDurationSeconds": 8,
+      "riseOffsetSeconds": 12,
+      "secondFloorDoorOpenOffsetSeconds": 19,
+      "entryWindowMs": 6000,
+      "doorTransitionMs": 920,
+      "doorPassableRatio": 0.82,
+      "rideDurationMs": 1450,
+      "arrivedAtSeconds": 81830
+    }
+  },
+  "threeFloorMaze": {
+    "transport": {
+      "elevatorId": "main_elevator",
+      "stairId": "main_stair"
+    },
+    "schedule": {
+      "targetId": "a2_schedule_observation",
+      "npcIds": ["a2_discussion_group", "a2_headphone_student", "a2_clearance_staff", "a2_security_patrol", "a2_upper_corridor_student", "a2_returning_student", "a2_study_student_201_west", "a2_study_student_201_east", "a2_study_student_204_west", "a2_study_student_204_east"],
+      "residualNpcIds": ["a2_discussion_group_residual", "a2_headphone_student_residual", "a2_clearance_staff_residual", "a2_security_patrol_residual", "a2_upper_corridor_student_residual", "a2_returning_student_residual", "a2_study_student_201_west_residual", "a2_study_student_201_east_residual", "a2_study_student_204_west_residual", "a2_study_student_204_east_residual"],
+      "observePrompt": "深色观察：记录同一时间片内经过门口和停留区的人员残影。",
+      "observed": "三组人员时刻已记录。切回浅色操作，处理可见隔断。"
+    },
+    "corridor": {
+      "partitionIds": ["a2_partition_west", "a2_partition_east"],
+      "operatePrompt": "浅色操作：依照已记录的空档逐一移动两组可见隔断。",
+      "locked": "仍缺人员时刻证据，先记录可见残影。",
+      "completed": "内圈支路已接通，开放学习区现在可达。"
+    },
+    "wayfinding": {
+      "fragmentIds": ["a2_fragment_west", "a2_fragment_east"],
+      "oldSignageTargetId": "a3_old_signage",
+      "boardTargetId": "a3_wayfinding_board",
+      "historyStartsAtSeconds": 81900,
+      "correctOrder": ["a2_fragment_west", "empty", "a2_fragment_east"],
+      "collectPrompt": "在开放学习区取得两块导视碎片。",
+      "observePrompt": "深色观察：先读取旧导视残影。",
+      "oldSignageObserved": "旧导视残影已记录。切回浅色操作，重建导视板。",
+      "alignPrompt": "浅色操作：按旧导视残影排列两块碎片，并保留中间的未验证空槽。",
+      "misaligned": "碎片与当前历史记录不一致，重新检查已记录的导视痕迹。",
+      "aligned": "导视板恢复了一段可验证记录。返回已访问楼层继续取证。"
+    },
+    "bridge": {
+      "historyTargetId": "a3_bridge_history",
+      "observePrompt": "导视板恢复后，切到深色观察并读取入口开合与人员经过留下的历史痕迹。",
+      "observed": "连廊历史已记录，可与导视碎片交叉核对。"
+    },
+    "returnWindow": {
+      "doorId": "a2_room_203_return_door",
+      "targetId": "a2_return_window",
+      "opensAtSeconds": 81960,
+      "objective": "回到已访问区域，检查新出现的取证窗口。",
+      "locked": "当前历史窗口尚未形成，继续核对已有证据。",
+      "opened": "新的取证窗口已经开放，当前安全位置已保存。"
+    },
+    "movementFeedback": {
+      "invalidFloor": "当前交通核心不能到达该楼层。",
+      "missingEvidence": "仍缺当前步骤所需的证据。",
+      "wrongMode": "切换现实模式后再执行当前动作。",
+      "outOfOrder": "当前路线条件尚未满足。"
+    }
+  },
+  "mode": {
+    "light": "浅色操作",
+    "dark": "深色观察"
+  },
+  "phaseObjectives": {
+    "inactive": "完成启真湖逃脱并进入教学楼",
+    "arrival": "进入一楼门厅，确认湿纸留下的气流轨迹",
+    "airflow_overlay": "恢复纸条进入主电梯厅的风路",
+    "elevator_track_sync": "在主电梯厅同步纸条留下的历史轨道",
+    "npc_schedule_route": "根据夜间人员动线重建纸条路线",
+    "corridor_bay_reconstruction": "重建二楼走廊等待区",
+    "wayfinding_fragment_board": "拼合楼层导视碎片",
+    "bridge_floor_discrimination": "确认连廊只位于三楼",
+    "stair_echo_direction": "记录下层回声，旋转折返楼梯并接通 B2",
+    "multicam_video_edit": "剪合多机位监控记录",
+    "echo_action_record": "录制可在复位后重放的动作回声",
+    "dual_lift_logistics": "用两部电梯运输大型签到板",
+    "warm_air_balance": "在麦斯威暖风中控制纸条含水量",
+    "first_cycle_reset": "从 23:30 复位点恢复第二循环",
+    "route_schedule": "安排第二循环的逆向运输路线",
+    "clock_phase_lock": "校准 07:55 相位并打开 B2-04",
+    "complete": "读取异常签到记录"
+  }
+}

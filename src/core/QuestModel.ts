@@ -3,6 +3,9 @@ import { selectFeatureAccess } from "./FeatureAccess";
 import canteenContent from "../data/chapter3-canteen.content.json";
 import theaterContent from "../data/chapter3-theater.content.json";
 import qizhenContent from "../data/chapter3-qizhen-lake.content.json";
+import clockContent from "../data/chapter4-clock.content.json";
+import chapterFourContent from "../data/chapter4-temporal-maze.content.json";
+import { selectChapterFourWechatObjective } from "../modules/ChapterFourWechatModel";
 
 interface TaskDefinition {
   id: string;
@@ -225,6 +228,8 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     hints,
     targetSurface: "rpg"
   });
+  const stripPrefix = (text: string): string => text.replace(/^任务：/, "");
+  const steps = qizhenContent.quest.steps;
 
   if (lake.phase === "dock_outfitting") {
     const hint = !lake.kayakEquipped
@@ -232,47 +237,55 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
       : !lake.leftPaddleEquipped
         ? qizhenContent.dock.leftPaddleHint
         : qizhenContent.dock.rightPaddleHint;
-    return task("dock_outfitting", qizhenContent.quest.dock, [hint]);
+    return task("dock_outfitting", qizhenContent.quest.dock, [hint, stripPrefix(qizhenContent.dock.outfitPrompt)]);
   }
   if (lake.phase === "boarding_tutorial") {
-    return task("boarding", qizhenContent.quest.boarding, [qizhenContent.boarding.instruction]);
+    return task("boarding", qizhenContent.quest.boarding, [
+      qizhenContent.boarding.instruction,
+      qizhenContent.boarding.sameSide
+    ]);
   }
   if (lake.phase === "lake_exploration") {
     if (!lake.reflectionLocationObserved) {
-      return task("observe_reflection", qizhenContent.quest.observe, [qizhenContent.lake.darkPrompt]);
+      return task("observe_reflection", qizhenContent.quest.observe, [
+        qizhenContent.lake.darkPrompt,
+        qizhenContent.reflection.lightWater
+      ]);
     }
     if (!lake.rodFound) {
-      return task("find_rod", "在浮排边找到钓鱼竿", ["切回浅色操作，靠近浮排检查可取物位置。"]);
+      return task("find_rod", steps.findRod.label, steps.findRod.hints);
     }
-    return task("attach_decoy", "把假纸条固定到钓鱼竿", ["在道具栏中把假纸条拖到钓鱼竿。"]);
+    return task("attach_decoy", steps.attachDecoy.label, steps.attachDecoy.hints);
   }
   if (lake.phase === "tool_chain") {
     if (!lake.lockerOpened) {
       return state.items.rustedLockerKey
-        ? task("open_locker", "用道具 1 打开码头柜门", ["返回码头柜门前的明确交互位置。"])
-        : task("catch_key", "在已观察坐标钓取道具 1", ["浅色操作中抛竿；未观察坐标会被拒绝。"]);
+        ? task("open_locker", steps.openLocker.label, steps.openLocker.hints)
+        : task("catch_key", steps.catchKey.label, steps.catchKey.hints);
     }
     if (!lake.netCombined) {
-      if (!state.items.brokenNetFrame) {
-        return task("catch_net_frame", "在旧木桩倒影处钓取道具 3", ["先在深色观察记录对应坐标。"]);
-      }
-      return task("combine_net", "组合道具 2 和道具 3", ["在道具栏内将尼龙绳与破损网框组合。"]);
+      return state.items.brokenNetFrame
+        ? task("combine_net", steps.combineNet.label, steps.combineNet.hints)
+        : task("catch_net_frame", steps.catchNetFrame.label, steps.catchNetFrame.hints);
     }
     if (!lake.feedTinRetrieved) {
-      return task("retrieve_tin", "用道具 4 取回浮标系绳旁的密封盒", ["先进入浮排直河道的可交互位置。"]);
+      return task("retrieve_tin", steps.retrieveTin.label, steps.retrieveTin.hints);
     }
     if (!lake.feedTinOpened) {
-      return task("open_tin", "打开道具 5", ["把密封饲料盒拖到已标记的开启位置。"]);
+      return task("open_tin", steps.openTin.label, steps.openTin.hints);
     }
-    return task("catch_fish", "用道具 6 钓取小鲤鱼", ["先在深色观察中记录鱼群水纹。"]);
+    return task("catch_fish", steps.catchFish.label, steps.catchFish.hints);
   }
   if (lake.phase === "swan_exchange") {
-    return task("feed_swan", qizhenContent.quest.swan, [qizhenContent.swan.feedPrompt]);
+    return task("feed_swan", qizhenContent.quest.swan, [
+      qizhenContent.swan.feedPrompt,
+      stripPrefix(qizhenContent.swan.combineHint)
+    ]);
   }
   if (lake.phase === "paper_capture") {
     return lake.magneticRodCombined
-      ? task("capture_paper", qizhenContent.quest.paper, ["在深色观察记录纸条本体坐标，再切回浅色操作。"])
-      : task("combine_magnetic_rod", "组合道具 7 和钓鱼竿", ["在道具栏中将磁性扣拖到钓鱼竿。"]);
+      ? task("capture_paper", qizhenContent.quest.paper, steps.capturePaper.hints)
+      : task("combine_magnetic_rod", steps.combineMagneticRod.label, steps.combineMagneticRod.hints);
   }
   if (lake.phase === "swan_chase") {
     return task("swan_chase", qizhenContent.quest.chase, [qizhenContent.chase.instruction]);
@@ -280,7 +293,7 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
   if (lake.phase === "complete") {
     return task("complete", qizhenContent.quest.complete);
   }
-  return task(lake.phase, qizhenContent.quest.lake, qizhenContent.quest.lakeHints.slice(0, 1));
+  return task(lake.phase, qizhenContent.quest.lake, qizhenContent.quest.lakeHints);
 }
 
 function chapterThreeQuest(state: GameState): QuestViewModel {
@@ -306,12 +319,110 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
   }
   if (state.theaterHunt.active) {
     const task: TaskDefinition = state.theaterHunt.phase === "entry_ticket"
-      ? {
-          id: "chapter_three_theater_ticket",
-          label: theaterContent.entryTask.label,
-          hints: theaterContent.entryTask.hints,
-          targetSurface: "rpg"
-        }
+      ? state.theaterHunt.cc98TicketCommissionPhase === "posted"
+        ? {
+            id: "chapter_three_theater_ticket_commission",
+            label: "去 CC98 接下学生剧现场帮抢委托",
+            hints: [
+              "手机 CC98 出现了一条学生剧临时退票求助帖。",
+              "接单后再到剧院大厅确认取票时间。"
+            ],
+            targetSurface: "phone",
+            recommendedScene: "cc98"
+          }
+        : state.theaterHunt.cc98TicketCommissionPhase === "accepted"
+          ? !state.theaterHunt.ticketCodeRead
+            ? {
+                id: "chapter_three_theater_ticket_read_time",
+                label: "在剧院大厅确认 08:32 放票时间",
+                hints: [
+                  "在深色观察中靠近取票机，读取屏幕残影。",
+                  "确认时间后回到手机 CC98 帖子参加第一波。"
+                ],
+                targetSurface: "rpg"
+              }
+            : {
+                id: "chapter_three_theater_ticket_first_wave",
+                label: "在手机 CC98 票务页参加第一波放票",
+                hints: [
+                  "打开学生剧现场帮抢帖，在票务卡中操作。",
+                  "可以直接抢第一波，也可以先打开控制中心切换到移动数据。"
+                ],
+                targetSurface: "phone",
+                recommendedScene: "cc98"
+              }
+          : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed"
+            ? state.networkMode === "cellular"
+              ? {
+                  id: "chapter_three_theater_ticket_second_wave",
+                  label: "在手机票务页参加第二波放票",
+                  hints: [
+                    "移动数据已经开启。",
+                    "回到 CC98 帮抢帖，等待倒计时结束后点击第二波。"
+                  ],
+                  targetSurface: "phone",
+                  recommendedScene: "cc98"
+                }
+              : {
+                  id: "chapter_three_theater_ticket_enable_cellular",
+                  label: "开启手机移动数据，等待第二波放票",
+                  hints: [
+                    "第一波已结束，系统提示响应速度过慢。",
+                    "在 CC98 票务卡中打开控制中心，切换为移动数据。"
+                  ],
+                  targetSurface: "phone",
+                  recommendedScene: "cc98"
+                }
+          : state.theaterHunt.cc98TicketCommissionPhase === "delivered"
+            ? state.items.temporaryTheaterTicket
+              ? {
+                  id: "chapter_three_theater_admission",
+                  label: "把临时观演票交给检票闸机",
+                  hints: [
+                    "靠近闸机右侧读票器并面向它。",
+                    "把道具栏里的临时观演票拖到读票器的发光框内。"
+                  ],
+                  targetSurface: "rpg"
+                }
+              : state.items.theaterTicketHalfA && state.items.theaterTicketHalfB
+                ? {
+                    id: "chapter_three_theater_combine_ticket",
+                    label: "合成两张半票根",
+                    hints: ["在道具栏中将半张票根 A 与半张票根 B 组合。"],
+                    targetSurface: "rpg"
+                  }
+                : !state.items.theaterTicketHalfB
+                  ? {
+                      id: "chapter_three_theater_print_ticket",
+                      label: "去剧院取票机打印半张票根 B",
+                      hints: [
+                        "手机抢票已经成功，订单取票码是 0832。",
+                        "在浅色操作中靠近取票机，输入取票码打印实体票根。"
+                      ],
+                      targetSurface: "rpg"
+                    }
+                  : !state.items.theaterTicketHalfA
+                  ? {
+                      id: "chapter_three_theater_find_half_a",
+                      label: "从入口海报栏取得半张票根 A",
+                      hints: [
+                        "靠近大厅左侧海报栏并面向玻璃。",
+                        "把去油纸巾拖到海报玻璃的发光区域。"
+                      ],
+                      targetSurface: "rpg"
+                    }
+                  : {
+                      id: "chapter_three_theater_recover_ticket",
+                      label: "确认两张半票根",
+                      hints: ["打开道具栏确认票根 A 与票根 B，再完成组合。"],
+                      targetSurface: "rpg"
+                    }
+          : {
+              id: "chapter_three_theater_ticket",
+              label: theaterContent.entryTask.label,
+              hints: theaterContent.entryTask.hints,
+              targetSurface: "rpg"
+            }
       : state.theaterHunt.phase === "program_search"
         ? {
             id: "chapter_three_theater_program",
@@ -414,9 +525,93 @@ export function isQuestTaskBarVisible(state: GameState): boolean {
   ].includes(state.actOne.phase);
 }
 
+function chapterFourQuest(state: GameState): QuestViewModel {
+  const chapter = state.chapter4;
+  const wechatObjective = selectChapterFourWechatObjective(chapter);
+  const phaseObjectives = chapterFourContent.phaseObjectives as Record<GameState["chapter4"]["phase"], string>;
+  const clockPhase = chapter.phase === "clock_phase_lock";
+  const completed = chapter.completed || chapter.phase === "complete";
+  const label = wechatObjective?.label
+    ?? phaseObjectives[chapter.phase]
+    ?? chapterFourContent.arrival.objective;
+  return {
+    id: "chapter_four_temporal_maze",
+    chapter: "chapter_four",
+    title: chapterFourContent.title,
+    objective: label,
+    completed: completed ? 13 : chapter.solvedPuzzleIds.length,
+    total: 13,
+    steps: [{
+      id: `chapter_four_${chapter.phase}`,
+      label,
+      status: completed ? "completed" : "active"
+    }],
+    hints: wechatObjective ? [wechatObjective.hint] : selectChapterFourHints(state),
+    targetSurface: clockPhase || wechatObjective ? "phone" : "rpg",
+    recommendedScene: clockPhase ? "clock" : wechatObjective ? "wechat" : undefined
+  };
+}
+
+function selectChapterFourHints(state: GameState): string[] {
+  const chapter = state.chapter4;
+  if (chapter.completed || chapter.phase === "complete") return [];
+  if (chapter.phase === "clock_phase_lock") {
+    const clock = state.clockCalibration;
+    return [clockContent.quest.hints[clock.step]];
+  }
+  if (chapter.phase === "elevator_track_sync") {
+    return [
+      !chapter.elevatorHistoryObserved
+        ? chapterFourContent.elevator.observePrompt
+        : chapter.elevatorTrackAligned
+          ? chapterFourContent.elevator.aligned
+          : chapterFourContent.elevator.operatePrompt
+    ];
+  }
+  if (chapter.airflowObserved && chapter.phase === "airflow_overlay") {
+    return [chapterFourContent.airflow.lightPrompt];
+  }
+  if (chapter.phase === "arrival" || chapter.phase === "airflow_overlay") {
+    return [chapterFourContent.arrival.hint];
+  }
+  if (chapter.phase === "npc_schedule_route") {
+    return [chapterFourContent.threeFloorMaze.schedule.observePrompt];
+  }
+  if (chapter.phase === "corridor_bay_reconstruction") {
+    return [chapterFourContent.threeFloorMaze.corridor.operatePrompt];
+  }
+  if (chapter.phase === "wayfinding_fragment_board") {
+    const fragmentsCollected = ["a2_fragment_west_collected", "a2_fragment_east_collected"]
+      .every((clueId) => chapter.clueIds.includes(clueId));
+    if (!fragmentsCollected) {
+      return [chapterFourContent.threeFloorMaze.wayfinding.collectPrompt];
+    }
+    if (chapter.floor === "A2") {
+      return ["回到交通核心，在仍有历史残影的楼层核对旧导视。"];
+    }
+    if (!chapter.clueIds.includes("a3_old_signage_observed")) {
+      return [chapterFourContent.threeFloorMaze.wayfinding.observePrompt];
+    }
+    return [chapterFourContent.threeFloorMaze.wayfinding.alignPrompt];
+  }
+  if (chapter.phase === "bridge_floor_discrimination") {
+    if (chapter.floor === "A2") {
+      return [chapter.clueIds.includes("a2_return_window_open")
+        ? chapterFourContent.threeFloorMaze.returnWindow.opened
+        : chapterFourContent.threeFloorMaze.returnWindow.objective];
+    }
+    if (!chapter.clueIds.includes("a3_bridge_history_observed")) {
+      return [chapterFourContent.threeFloorMaze.bridge.observePrompt];
+    }
+    return [chapterFourContent.threeFloorMaze.wayfinding.aligned];
+  }
+  return [];
+}
+
 export function selectQuestViewModel(state: GameState): QuestViewModel {
   const access = selectFeatureAccess(state);
   if (access.chapter === "chapter_one") return chapterOneQuest(state);
+  if (access.chapter === "chapter_four") return chapterFourQuest(state);
   if (access.chapter === "chapter_three") return chapterThreeQuest(state);
   if ([
     "friend_message_required",

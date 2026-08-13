@@ -1,18 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
+import theaterContent from "../../../data/chapter3-theater.content.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
 import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
-import type { LibraryEvidenceId } from "../../../core/types";
+import type { LibraryEvidenceId, TheaterTicketCommissionPhase } from "../../../core/types";
 import { selectFeatureAccess } from "../../../core/FeatureAccess";
 import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import { getActiveDeveloperCheckpoint, getDeveloperCc98Mode } from "../../../modules/DeveloperChannel";
 import { kit } from "../../../modules/GameKit";
+import { consumeCc98ThreadIntent } from "../../../modules/NavIntent";
 import { playSfx } from "../../../modules/Sfx";
 import { Ac01FilterPuzzle } from "./Ac01FilterPuzzle";
 import { ControlExchangePuzzle } from "./ControlExchangePuzzle";
 import { Cc98ThreadPage } from "./ThreadPage";
+import { TheaterTicketCommission } from "./TheaterTicketCommission";
 import { TopTenRisePuzzle } from "./TopTenRisePuzzle";
 import "../../../styles/library-v2-phone.css";
 
@@ -87,13 +90,83 @@ const QIZHEN_WITNESS_POST: Cc98Post = {
     dislikes: "0"
   }))
 };
+const theaterTicketCommissionContent = theaterContent.cc98TicketCommission;
+
+function createTheaterTicketCommissionPost(
+  phase: TheaterTicketCommissionPhase,
+  claimedWave: 1 | 2 | null
+): Cc98Post {
+  const threadReplies: NonNullable<Cc98Post["threadReplies"]> = [
+    {
+      personaId: "late-printer",
+      time: "今天 08:29",
+      floor: "2楼",
+      text: theaterTicketCommissionContent.initialReply,
+      likes: "12",
+      dislikes: "0"
+    }
+  ];
+  if (phase === "accepted" || phase === "first_wave_failed" || phase === "delivered") {
+    threadReplies.push({
+      personaId: "qiushi-rider",
+      time: "今天 08:30",
+      floor: "3楼",
+      role: "玩家",
+      text: theaterTicketCommissionContent.acceptedReply,
+      likes: "7",
+      dislikes: "0"
+    });
+  }
+  if (phase === "first_wave_failed" || (phase === "delivered" && claimedWave !== 1)) {
+    threadReplies.push({
+      personaId: "socket-observer",
+      time: "今天 08:31",
+      floor: "4楼",
+      role: "网络提示",
+      text: theaterTicketCommissionContent.firstWaveReply,
+      likes: "32",
+      dislikes: "0"
+    });
+  }
+  if (phase === "delivered") {
+    threadReplies.push({
+      personaId: "wild-auditor",
+      time: "今天 08:32",
+      floor: "5楼",
+      role: "系统回执",
+      text: claimedWave === 1
+        ? theaterTicketCommissionContent.deliveredFirstWaveReply
+        : theaterTicketCommissionContent.deliveredReply,
+      likes: "55",
+      dislikes: "0"
+    });
+  }
+  return {
+    id: theaterTicketCommissionContent.id,
+    author: theaterTicketCommissionContent.author,
+    avatar: "warrior",
+    rank: theaterTicketCommissionContent.rank,
+    board: theaterTicketCommissionContent.board,
+    title: theaterTicketCommissionContent.title,
+    replies: String(threadReplies.length),
+    views: theaterTicketCommissionContent.views,
+    time: theaterTicketCommissionContent.time,
+    body: theaterTicketCommissionContent.body,
+    threadReplies
+  };
+}
 const INVESTIGATION_SEARCH_RESULTS = [
   { id: "seat-022-backpack", title: INVESTIGATION_POST.title, floors: "23 楼", body: INVESTIGATION_POST.body, rejection: null },
   { id: "seat-022-old-source", title: "【求助】022 座位今日临时离开", floors: "12 楼", body: "来源为今日新帖，没有旧版离座规定的引用。", rejection: "来源不匹配：这是今日新帖，纸条引用的是旧版公开记录。" },
   { id: "seat-022-wrong-time", title: "【记录】二南 022 晚间使用情况", floors: "31 楼", body: "发布时间为当日 22:40，早于纸条中的本次离座事件。", rejection: "时间不匹配：这条记录早于本次 022 占用事件。" },
   { id: "seat-022-missing-attachment", title: "【闲聊】二楼南区今天还有位置吗", floors: "18 楼", body: "正文提到 022，附件区为空。", rejection: "附件不匹配：这条帖子没有纸条对应的离座凭据。" }
 ] as const;
-const QUEST_POST_IDS = new Set([ACT_ONE_EXCHANGE_POST.id, INVESTIGATION_POST.id, QIZHEN_WITNESS_POST.id]);
+const QUEST_POST_IDS = new Set([
+  ACT_ONE_EXCHANGE_POST.id,
+  INVESTIGATION_POST.id,
+  QIZHEN_WITNESS_POST.id,
+  theaterTicketCommissionContent.id
+]);
 const TOP_TABS = ["今日", "发现", "本周", "本月", "往年今日", "活动"];
 const BOTTOM_TABS = [
   { label: "热门", icon: "◉" },
@@ -179,16 +252,27 @@ function EditableText({
 }
 
 export function Cc98Scene({ state, router, events }: SceneComponentProps) {
-  const [entryOnCampusWifi] = useState(() => kit.network.canOpenCc98());
+  const [requestedThreadId] = useState(() => consumeCc98ThreadIntent());
+  const ticketPortalCellularAccess = state.networkMode === "cellular"
+    && ["accepted", "first_wave_failed", "delivered"].includes(
+      state.theaterHunt.cc98TicketCommissionPhase
+    );
+  const [entryAccessAllowed] = useState(() => {
+    if (kit.network.canOpenCc98()) return true;
+    return ticketPortalCellularAccess;
+  });
   const [networkPhase, setNetworkPhase] = useState<"loading" | "ready" | "crashing">("loading");
   const [posts, setPosts] = useState<Cc98Post[]>(loadPosts);
   const [questPostOverrides, setQuestPostOverrides] = useState<Record<string, Partial<Cc98Post>>>(loadQuestPostOverrides);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openPostId, setOpenPostId] = useState<string | null>(() => {
+    if (requestedThreadId) return requestedThreadId;
+    if (ticketPortalCellularAccess) return theaterTicketCommissionContent.id;
     const mode = getDeveloperCc98Mode();
     if (mode === "exchange") return ACT_ONE_EXCHANGE_POST.id;
     if (mode === "investigation") return INVESTIGATION_POST.id;
+    if (mode === "theater_ticket") return theaterTicketCommissionContent.id;
     return null;
   });
   const [investigationFeedback, setInvestigationFeedback] = useState("");
@@ -202,6 +286,9 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const investigationVisible = finalsPuzzle.investigationOpened;
   const noteSearchVisible = finalsPhase === "evidence_gathering" && finalsPuzzle.occupancyNoteCollected && !investigationVisible;
   const qizhenSearchVisible = state.qizhenLake.active && state.qizhenLake.phase === "location_search";
+  const theaterTicketCommissionPhase = state.theaterHunt.cc98TicketCommissionPhase;
+  const theaterTicketClaimedWave = state.theaterHunt.cc98TicketClaimedWave;
+  const theaterTicketCommissionVisible = theaterTicketCommissionPhase !== "locked";
   const ownedEvidenceIds = useMemo(() => {
     const owned: LibraryEvidenceId[] = [];
     if (state.items.archivedLeaveRule) owned.push("archived_leave_rule");
@@ -246,11 +333,14 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
           : INVESTIGATION_POST.replies
       });
     }
+    if (theaterTicketCommissionVisible) {
+      next.push(withOverride(createTheaterTicketCommissionPost(theaterTicketCommissionPhase, theaterTicketClaimedWave)));
+    }
     if (qizhenSearchVisible && (qizhenSearchReady || state.qizhenLake.bridgeClueFound)) {
       next.push(withOverride(QIZHEN_WITNESS_POST));
     }
     return next;
-  }, [exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, qizhenSearchReady, qizhenSearchVisible, questPostOverrides, state.qizhenLake.bridgeClueFound]);
+  }, [exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, qizhenSearchReady, qizhenSearchVisible, questPostOverrides, state.qizhenLake.bridgeClueFound, theaterTicketClaimedWave, theaterTicketCommissionPhase, theaterTicketCommissionVisible]);
   const openPost = useMemo(
     () => questPosts.find((post) => post.id === openPostId) ?? posts.find((post) => post.id === openPostId) ?? null,
     [openPostId, posts, questPosts]
@@ -258,6 +348,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const openPostIsInvestigation = openPost?.id === INVESTIGATION_POST.id;
   const openPostIsExchange = openPost?.id === ACT_ONE_EXCHANGE_POST.id;
   const openPostIsQizhen = openPost?.id === QIZHEN_WITNESS_POST.id;
+  const openPostIsTheaterTicket = openPost?.id === theaterTicketCommissionContent.id;
   const visiblePosts = useMemo(() => {
     return [...questPosts, ...posts];
   }, [posts, questPosts]);
@@ -265,7 +356,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   useEffect(() => {
     let exitTimer: number | null = null;
     const gateTimer = window.setTimeout(() => {
-      if (entryOnCampusWifi) {
+      if (entryAccessAllowed) {
         setNetworkPhase("ready");
         return;
       }
@@ -274,13 +365,13 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
       events.emit("cc98_network_rejected", { requiredNetwork: "campus_wifi" });
       kit.flags.toast("CC98 仅支持校园网。请切换后重新进入。", "system");
       exitTimer = window.setTimeout(() => router.goTo("phone_home"), NETWORK_CRASH_DELAY_MS);
-    }, entryOnCampusWifi ? NETWORK_LOAD_DELAY_MS : NETWORK_REJECT_DELAY_MS);
+    }, entryAccessAllowed ? NETWORK_LOAD_DELAY_MS : NETWORK_REJECT_DELAY_MS);
 
     return () => {
       window.clearTimeout(gateTimer);
       if (exitTimer !== null) window.clearTimeout(exitTimer);
     };
-  }, [entryOnCampusWifi, events, router]);
+  }, [entryAccessAllowed, events, router]);
 
   if (networkPhase !== "ready") {
     return (
@@ -291,7 +382,9 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
         <div className="cc98-network-card" role="status" aria-live="polite">
           <span className="cc98-network-logo" aria-hidden="true">CC98</span>
           <strong>{networkPhase === "crashing" ? "网络验证失败" : "校内访问验证"}</strong>
-          <p>{entryOnCampusWifi ? "正在连接校园网服务" : "正在检查 ZJUWLAN"}</p>
+          <p>{entryAccessAllowed
+            ? ticketPortalCellularAccess ? "正在恢复手机票务页面" : "正在连接校园网服务"
+            : "正在检查 ZJUWLAN"}</p>
           <span className="cc98-network-dots" aria-hidden="true"><i /><i /><i /></span>
         </div>
         <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>退出</button>
@@ -563,6 +656,14 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
               </>
             ) : undefined
           }
+          beforeRepliesContent={openPostIsTheaterTicket && theaterTicketCommissionPhase !== "locked" ? (
+            <TheaterTicketCommission
+              phase={theaterTicketCommissionPhase}
+              networkMode={state.networkMode}
+              claimedWave={theaterTicketClaimedWave}
+              ticketCodeRead={state.theaterHunt.ticketCodeRead}
+            />
+          ) : undefined}
           afterRepliesContent={openPostIsQizhen ? (
             <section className="cc98-qizhen-keyword" aria-label="提取目击关键词">
               <strong>目击信息可归纳为一个地点关键词</strong>

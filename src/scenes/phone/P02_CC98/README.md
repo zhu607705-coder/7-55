@@ -3,7 +3,7 @@
 - Scene ID: `cc98`
 - Entry: 手机主页 CC98 应用图标
 - Reads: `networkMode`
-- Network rule: only `campus_wifi` may enter; mobile data and offline entries fail validation and return to the phone home screen.
+- Network rule: normal CC98 browsing requires `campus_wifi`. The theater commission is the sole cached-page exception: after the player has accepted it, its phone ticket portal may be resumed on `cellular` for the two release waves. Offline entry still fails validation and returns to the phone home screen.
 - Viewport: shared `430 × 860` phone canvas
 - Default post data: `src/data/cc98.posts.json`
 - Runtime editing: top-right `编辑/保存`; persisted to `localStorage` key `seven-fifty-five.cc98-posts.v2`
