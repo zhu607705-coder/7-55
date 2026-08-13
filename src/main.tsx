@@ -64,6 +64,8 @@ function summarizeGameState(state: GameState) {
     canteenHunt: state.canteenHunt,
     theaterHunt: state.theaterHunt,
     qizhenLake: state.qizhenLake,
+    clockCalibration: state.clockCalibration,
+    chapter4: state.chapter4,
     presentation: getPresentationRuntimeSnapshot(),
     chapterThreeOpening: getChapterThreeOpeningRuntimeSnapshot(),
     endingGame: getEndingRuntimeSnapshot(),

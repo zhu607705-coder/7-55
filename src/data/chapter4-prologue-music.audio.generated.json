@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "chapterId": "chapter-4-prologue-music-audio",
+  "model": "music-2.6",
+  "generatedAt": "2026-08-08T05:24:36.504Z",
+  "assets": {
+    "music_ch4_prologue_night_pursuit": {
+      "path": "chapter4/prologue/music_ch4_prologue_night_pursuit.mp3",
+      "kind": "music",
+      "durationMs": 68000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "d4272a5e5f54dc4a119cc92c3c9b1a30aa33f767af128bdd42c760dda810a1ea",
+      "sourceConfigHash": "1e647502413a8f4287193cafa6bb986b46533e973328ce9410f2fa908f0a3c67",
+      "source": "MiniMax music-2.6 instrumental cutscene bed"
+    }
+  }
+}

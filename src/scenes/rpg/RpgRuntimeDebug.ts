@@ -1,15 +1,14 @@
 import { cloneSerializable } from "../../core/ClientCompatibility";
 
 export interface RpgRuntimeDebugState {
-  engine?: "phaser" | "godot";
-  coordinateSystem:
-    | "Phaser world coordinates, origin at top-left, x right, y down"
-    | "Godot world coordinates, origin at top-left, x right, y down";
+  engine?: "phaser";
+  coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down";
   world: { width: number; height: number };
   player: {
     x: number;
     y: number;
     facing: "down" | "up" | "side";
+    cardinalFacing?: "up" | "down" | "left" | "right";
     texture?: string;
     turning?: boolean;
     walkFps?: number;
@@ -42,7 +41,7 @@ export interface RpgRuntimeDebugState {
     briefingSeen: boolean;
     stop: { x: number; y: number };
   };
-  scene?: "campus_bootstrap" | "campus_qizhen_loop" | "dorm_hub" | "library_interior" | "canteen_interior" | "theater_interior" | "qizhen_lake";
+  scene?: "campus_bootstrap" | "campus_qizhen_loop" | "dorm_hub" | "library_interior" | "canteen_interior" | "theater_interior" | "qizhen_lake" | "duan_yongping_temporal_maze";
   checkpoint?: string;
   entranceDoor?: {
     state: "closed" | "opening" | "open" | "closing";
@@ -104,11 +103,13 @@ export interface RpgRuntimeDebugState {
       id: string;
       window: string;
       anchor: { x: number; y: number };
-      stand: { x: number; y: number };
+      objectBounds?: { width: number; height: number };
+      stand?: { x: number; y: number };
       proximity: number;
       dropBounds?: { left: number; top: number; right: number; bottom: number; width: number; height: number };
       acceptedItem?: string;
       requiredMode?: "light" | "dark";
+      requiredFacing?: string | readonly string[];
     }>;
     menuOpen: boolean;
     dialogueLocked: boolean;
@@ -128,8 +129,11 @@ export interface RpgRuntimeDebugState {
       targetId: string;
       targetLabel: string;
       visible: boolean;
-      playerInPosition: boolean;
-      stand: { x: number; y: number };
+      playerReady?: boolean;
+      playerInPosition?: boolean;
+      stand?: { x: number; y: number };
+      maxDistance?: number;
+      requiredFacing?: string | readonly string[];
       dropBounds: { x: number; y: number; width: number; height: number };
     } | null;
 	    spotlight?: {
@@ -165,6 +169,122 @@ export interface RpgRuntimeDebugState {
     activeOcclusionIds?: string[];
     softenedOcclusionIds?: string[];
   };
+  chapterFour?: {
+    phase: string;
+    mode: "light" | "dark";
+    cycle: 1 | 2;
+    airflowObserved: boolean;
+    paperGuidedToElevator: boolean;
+    mapPreviewOnly?: boolean;
+    mapAssetId?: string;
+    mapAssetIds?: readonly string[];
+    stitchedWorld?: boolean;
+    currentFloor?: 1 | 2 | 3;
+    floorOffsetX?: number;
+    elevatorPanelOpen?: boolean;
+    nearbyTravelZone?: string | null;
+    nearbyTargetId?: string | null;
+    nearbyPartitionId?: string | null;
+    a1NearbyTargetId?: string | null;
+    a1PendingAction?: {
+      requestId: string;
+      action: string;
+      targetId: string;
+    } | null;
+    currentLandmark?: string | null;
+    npcFrames?: ReadonlyArray<{
+      id: string;
+      residualId: string;
+      animationId: string;
+      frame: number;
+      residualFrame: number;
+      normalVisible: boolean;
+      residualVisible: boolean;
+      routeVisible: boolean;
+      x: number;
+      y: number;
+    }>;
+    targetBounds?: ReadonlyArray<{
+      id: string;
+      label: string;
+      floor: 1 | 2 | 3;
+      kind: "anchor" | "partition";
+      bounds: { left: number; top: number; right: number; bottom: number };
+      stand: { x: number; y: number };
+      proximity: number;
+      requiredMode: "light" | "dark";
+      requiredFacing: string | readonly string[];
+    }>;
+    pendingAction?: {
+      requestId: string;
+      action: string;
+      targetId: string;
+      partitionId?: string;
+      fragmentId?: string;
+      order?: readonly string[];
+    } | null;
+    storyAnchors?: ReadonlyArray<{
+      id: string;
+      label: string;
+      floor: 1 | 2 | 3;
+      bounds: { left: number; top: number; right: number; bottom: number };
+    }>;
+    gameplayTargetsActive?: number;
+    routeState?:
+      | "baseline"
+      | "schedule_observed"
+      | "corridor_reconfigured"
+      | "wayfinding_aligned"
+      | "return_window";
+    activeCollisionIds?: readonly string[];
+    activeTargetIds?: readonly string[];
+    visibleNpcIds?: readonly string[];
+    residualNpcIds?: readonly string[];
+    activeDoorIds?: readonly string[];
+    activePartitionIds?: readonly string[];
+    safeRouteRects?: ReadonlyArray<{
+      id: string;
+      floor: 1 | 2 | 3;
+      left: number;
+      top: number;
+      right: number;
+      bottom: number;
+    }>;
+    transportCore?: {
+      coordinateSpace: "floor-local";
+      elevator: {
+        id: string;
+        centerX: number;
+        storyFloors: readonly ("A1" | "A2" | "A3")[];
+      };
+      stair: {
+        id: string;
+        left: number;
+        top: number;
+        right: number;
+        bottom: number;
+        storyFloors: readonly ("A1" | "A2" | "A3")[];
+      };
+    };
+    currentStoryFloor?: "A1" | "A2" | "A3";
+    currentSafeCheckpoint?: string;
+    elevatorHistoryObserved?: boolean;
+    elevatorTrackAligned?: boolean;
+    elevatorReplayAttempts?: number;
+    elevatorPlayerBoarded?: boolean;
+    elevatorRuntimePhase?: string;
+    elevatorDoorProgress?: number;
+    elevatorTargetFloor?: 1 | 2 | 3 | null;
+    elevatorDisplayFloor?: 1 | 2 | 3;
+    elevatorWaitRemainingMs?: number;
+    historicalElevatorDoorOpen?: boolean;
+    historicalElevatorEntryRemainingMs?: number;
+    historicalElevatorRideInProgress?: boolean;
+    lastAppliedCheckpoint?: string | null;
+    stairEchoObserved?: boolean;
+    stairRotationQuarterTurns?: 0 | 1 | 2 | 3;
+    stairAlignmentSolved?: boolean;
+  };
   activeTargets?: Array<{
     id: string;
     label?: string;
@@ -178,6 +298,7 @@ export interface RpgRuntimeDebugState {
     proximity?: number;
     acceptedItem?: string;
     requiredMode?: "light" | "dark";
+    requiredFacing?: string | readonly string[];
   }>;
   collisionRects?: ReadonlyArray<{
     id: string;

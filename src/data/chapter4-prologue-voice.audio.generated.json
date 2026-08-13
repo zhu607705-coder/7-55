@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "generatedAt": "2026-08-08T05:24:12.633Z",
+  "assets": {
+    "vo_ch4_prologue_player_01": {
+      "path": "chapter4/prologue/vo_ch4_prologue_player_01.mp3",
+      "durationMs": 547,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "a128d3efbe56bedbcf7ac201249696fabbd8dfa022a1763b1f047789e75230b3",
+      "sourceTextHash": "05406119d7238746f8087db277234e98795d23a38069766f14702207cad81868",
+      "sourceConfigHash": "7da5cad9570358d4693b8fc229ff569d9366e4d54b4b6c5317be80570424318c",
+      "source": "MiniMax speech-2.8-hd English_Diligent_Man"
+    },
+    "vo_ch4_prologue_narrator_01": {
+      "path": "chapter4/prologue/vo_ch4_prologue_narrator_01.mp3",
+      "durationMs": 6042,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "6ba626d2ba9ffa1d9341cf73df0007ffe149e588f13eeec88451ba579f23605d",
+      "sourceTextHash": "88f59a4d89946d7725eacd5648938321bc8270e38f95fb1ab682a8d7b8302fb0",
+      "sourceConfigHash": "bfd19ed667105e6275017e733e5f371a6dc46878df338622a45c56c8bcd892b1",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_ch4_prologue_cleaner_01": {
+      "path": "chapter4/prologue/vo_ch4_prologue_cleaner_01.mp3",
+      "durationMs": 6211,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "bce6830496f09c42ca7e62b9cd9de722ecb3d43f2a4a07c15aa08798b1895513",
+      "sourceTextHash": "c8f4988e7ded4623794a53ba7671221b72a274dd098e6b141651ac58e7d05d83",
+      "sourceConfigHash": "fe2a67adc25640b223bb47d0af1de260645119ff81883e99b7da252397803df3",
+      "source": "MiniMax speech-2.8-hd Chinese (Mandarin)_Kind-hearted_Antie"
+    },
+    "vo_ch4_prologue_guard_01": {
+      "path": "chapter4/prologue/vo_ch4_prologue_guard_01.mp3",
+      "durationMs": 4805,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "1ddd20acf3e350c94f94f9d0d28faffd2253a6004173ef285eb7ffed57b45c25",
+      "sourceTextHash": "5dbba0757dbf9bcc6243e863f95f800a915a922e43991189cb880fd1981247c8",
+      "sourceConfigHash": "a19a7701357b75e0a0399d2d272e9598facd7633961b4662047b1d27eb9a6503",
+      "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
+    }
+  }
+}

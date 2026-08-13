@@ -6,6 +6,12 @@ import { consumeFriendChatIntent } from "../../../modules/NavIntent";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo, type VoPlaybackHandle } from "../../../modules/VoicePlayer";
 import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
+import chapterFourWechatContent from "../../../data/chapter4-wechat.content.json";
+import {
+  selectChapterFourWechatProjection
+} from "../../../modules/ChapterFourWechatModel";
+
+type ChapterFourChatView = "official" | "group" | "archive" | "friend" | null;
 
 /**
  * P14 微信：聊天列表（朋友头像＝斜线，藏着 P03 谜题）＋朋友聊天页（小影散码演出）。
@@ -21,6 +27,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   const [mentorLineFalling, setMentorLineFalling] = useState(false);
   const [mentorHintStep, setMentorHintStep] = useState(0);
   const [friendAvatarPreDropTapCount, setFriendAvatarPreDropTapCount] = useState(0);
+  const [chapterFourChatView, setChapterFourChatView] = useState<ChapterFourChatView>(null);
   const { flags, ui } = state;
   const followupPending = state.actOne.phase === "friend_message_required";
   const followupVisible = flags.checkinDone && state.actOne.phase !== "prologue";
@@ -29,10 +36,11 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   const [qizhenChatStep, setQizhenChatStep] = useState(() => state.qizhenLake.lakeClueFound ? qizhenContent.locationSearch.wechat.length : 0);
   const [followupStep, setFollowupStep] = useState(followupVisible && !followupPending ? 3 : 0);
   const sequenceVoRef = useRef<VoPlaybackHandle | null>(null);
+  const chapterFourWechat = selectChapterFourWechatProjection(state.chapter4);
 
   // 首次进入朋友聊天：视觉节奏由剧情计时器控制，音频失败不影响推进。
   useEffect(() => {
-    if (!openedFriend || flags.codeScattered) {
+    if (chapterFourWechat.active || !openedFriend || flags.codeScattered) {
       return undefined;
     }
     let cancelled = false;
@@ -105,7 +113,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
       sequenceVoRef.current?.cancel();
       sequenceVoRef.current = null;
     };
-  }, [openedFriend, flags.codeScattered, events]);
+  }, [chapterFourWechat.active, openedFriend, flags.codeScattered, events]);
 
   useEffect(() => {
     if (!openedFriend || !followupPending) {
@@ -205,6 +213,10 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
 
   function clickFriendAvatar(e: React.MouseEvent) {
     e.stopPropagation();
+    if (chapterFourWechat.active) {
+      setChapterFourChatView("friend");
+      return;
+    }
     if (!flags.codeScattered || flags.slashTaken) {
       setOpenedFriend(true);
       return;
@@ -262,6 +274,174 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
     sequenceVoRef.current?.skip();
   }
 
+  function showChapterFourResult(
+    result: ReturnType<typeof kit.chapterFour.readWechatOfficialNotice>,
+    accepted: string,
+    locked: string
+  ) {
+    if (result === "accepted") {
+      playSfx("07_");
+      kit.flags.toast(accepted, "task");
+      return;
+    }
+    if (result === "already_complete") {
+      kit.flags.toast("这份资料已经保存。", "system");
+      return;
+    }
+    kit.flags.toast(locked, "system");
+  }
+
+  function readOfficialNotice() {
+    showChapterFourResult(
+      kit.chapterFour.readWechatOfficialNotice(),
+      "已保存夜间运行通知。回到一楼核对电梯历史状态。",
+      "第四章开始后才能查看这条运行通知。"
+    );
+  }
+
+  function archiveElevatorAudio() {
+    showChapterFourResult(
+      kit.chapterFour.archiveWechatElevatorAudio(),
+      "已归档主电梯提示音。可以返回电梯进行时间对齐。",
+      "先回到一楼，在深色观察中记录电梯历史提示音。"
+    );
+  }
+
+  function saveStudentRoute() {
+    showChapterFourResult(
+      kit.chapterFour.saveWechatStudentRoute(),
+      "路线讨论已保存。消息存在矛盾，需要回二楼现场核验。",
+      "先阅读公众号通知，并抵达二楼清楼阶段。"
+    );
+  }
+
+  function archiveWayfindingPhotos() {
+    showChapterFourResult(
+      kit.chapterFour.archiveWechatWayfindingPhotos(),
+      "新旧导视板照片已归档，可以发给朋友对照。",
+      "先在三楼深色观察中找到旧导视板残影。"
+    );
+  }
+
+  function compareWayfindingPhotos() {
+    showChapterFourResult(
+      kit.chapterFour.compareWechatWayfindingPhotos(),
+      "照片对照完成。回三楼按旧编号校准导视板。",
+      "先把三楼新旧导视板照片保存到文件传输助手。"
+    );
+  }
+
+  function openFriendConversation() {
+    if (chapterFourWechat.active) {
+      setChapterFourChatView("friend");
+      return;
+    }
+    setOpenedFriend(true);
+  }
+
+  function renderChapterFourChat() {
+    const view = chapterFourChatView;
+    if (!view) return null;
+    const titles = {
+      official: chapterFourWechatContent.official.name,
+      group: chapterFourWechatContent.group.name,
+      archive: chapterFourWechatContent.archive.name,
+      friend: "朋友"
+    } as const;
+    return (
+      <div className="wx-chat wx-chapter4-chat">
+        <header className="wx-header">
+          <PhoneNavButton
+            kind="back"
+            className="wx-back"
+            onClick={() => setChapterFourChatView(null)}
+            label="返回聊天列表"
+          />
+          <h1>{titles[view]}</h1>
+          <span className="wx-header-tools" aria-hidden="true">…</span>
+        </header>
+        <div className="wx-chat-body">
+          {view === "official" ? (
+            <article className="wx-official-article">
+              <small>{chapterFourWechatContent.official.accountType} · {chapterFourWechatContent.official.publishedAt}</small>
+              <h2>{chapterFourWechatContent.official.articleTitle}</h2>
+              <div className="wx-official-cover" aria-hidden="true"><i /><b>1F</b><i /></div>
+              <p>{chapterFourWechatContent.official.summary}</p>
+              <ul>
+                {chapterFourWechatContent.official.details.map((line) => <li key={line}>{line}</li>)}
+              </ul>
+              <button type="button" className="wx-evidence-action" onClick={readOfficialNotice}>
+                {chapterFourWechat.officialNoticeRead ? "已保存通知" : chapterFourWechatContent.official.readAction}
+              </button>
+            </article>
+          ) : null}
+          {view === "group" ? (
+            <section className="wx-group-thread" aria-label="麦斯威夜间自习群聊天记录">
+              <div className="wx-time-divider">22:47 · {chapterFourWechatContent.group.memberCount}人</div>
+              {chapterFourWechatContent.group.messages.map((message, index) => (
+                <div className="wx-msg" key={`${message.sender}-${message.text}`}>
+                  <span className={`wx-msg-avatar wx-student-avatar student-${index + 1}`} aria-hidden="true" />
+                  <p><b>{message.sender}</b>{message.text}</p>
+                </div>
+              ))}
+              <div className="wx-recalled-message">{chapterFourWechatContent.group.recalled}</div>
+              <div className="wx-msg">
+                <span className="wx-msg-avatar wx-student-avatar student-1" aria-hidden="true" />
+                <p><b>林昊</b>{chapterFourWechatContent.group.followup}</p>
+              </div>
+              <button type="button" className="wx-evidence-action" onClick={saveStudentRoute}>
+                {chapterFourWechat.studentRouteSaved ? "路线讨论已保存" : chapterFourWechatContent.group.saveAction}
+              </button>
+            </section>
+          ) : null}
+          {view === "archive" ? (
+            <section className="wx-evidence-archive" aria-label="第四章现场资料">
+              {chapterFourWechat.archiveCount === 0 ? <p>{chapterFourWechatContent.archive.empty}</p> : null}
+              {chapterFourWechat.officialNoticeRead ? (
+                <article className="wx-evidence-card"><small>公众号推送 · 22:40</small><strong>{chapterFourWechatContent.archive.officialNotice}</strong><em>已读</em></article>
+              ) : null}
+              {chapterFourWechat.elevatorAudioAvailable ? (
+                <article className="wx-evidence-card">
+                  <small>现场录音 · 1F</small><strong>▶ {chapterFourWechatContent.archive.elevatorAudio}</strong>
+                  <button type="button" onClick={archiveElevatorAudio}>{chapterFourWechat.elevatorAudioArchived ? "已归档" : "保存录音"}</button>
+                </article>
+              ) : null}
+              {chapterFourWechat.studentRouteSaved ? (
+                <article className="wx-evidence-card"><small>群聊截图 · 2F</small><strong>{chapterFourWechatContent.archive.studentRoute}</strong><em>待现场核验</em></article>
+              ) : null}
+              {chapterFourWechat.wayfindingPhotosAvailable ? (
+                <article className="wx-evidence-card">
+                  <small>现场照片 · 3F</small><strong>{chapterFourWechatContent.archive.wayfindingPhotos}</strong>
+                  <button type="button" onClick={archiveWayfindingPhotos}>{chapterFourWechat.wayfindingPhotosArchived ? "已归档" : "保存照片"}</button>
+                </article>
+              ) : null}
+            </section>
+          ) : null}
+          {view === "friend" ? (
+            <section className="wx-chapter4-friend" aria-label="朋友导视板对照聊天">
+              <div className="wx-msg"><span className="wx-msg-avatar" aria-hidden="true"><i /></span><p>{chapterFourWechatContent.friend.request}</p></div>
+              {chapterFourWechat.wayfindingPhotosArchived ? (
+                <>
+                  <div className="wx-msg is-self"><p>{chapterFourWechatContent.friend.selfCaption}</p></div>
+                  <div className="wx-photo-comparison" aria-label="新旧导视板照片">
+                    <figure><div className="wx-sign-board is-current">2F →</div><figcaption>当前导视</figcaption></figure>
+                    <figure><div className="wx-sign-board is-old">← 2F</div><figcaption>历史残影</figcaption></figure>
+                  </div>
+                  <button type="button" className="wx-evidence-action" onClick={compareWayfindingPhotos}>
+                    {chapterFourWechat.wayfindingCompared ? "照片已完成对照" : chapterFourWechatContent.friend.compareAction}
+                  </button>
+                  {chapterFourWechat.wayfindingCompared ? (
+                    <div className="wx-msg"><span className="wx-msg-avatar" aria-hidden="true"><i /></span><p>{chapterFourWechatContent.friend.analysis}</p></div>
+                  ) : null}
+                </>
+              ) : <p className="wx-field-note">文件传输助手里还没有两张导视板照片。</p>}
+            </section>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
   const slashState = flags.slashTaken
     ? "gone"
     : flags.slashHalfDropped
@@ -270,7 +450,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
 
   return (
     <section className="wechat-scene" aria-label="微信">
-      {!openedFriend ? (
+      {chapterFourChatView ? renderChapterFourChat() : !openedFriend ? (
         <div className={`wx-list ${listTilt ? "is-tilting" : ""}`}>
           <header className="wx-header">
             <PhoneNavButton
@@ -279,7 +459,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
               onClick={() => router.goTo("phone_home")}
               label="退出微信，返回手机主页"
             />
-            <h1>聊天(4)</h1>
+            <h1>聊天({chapterFourWechat.active ? 6 : 4})</h1>
             <span className="wx-header-tools" aria-hidden="true">
               ⌕ ⊕
             </span>
@@ -287,18 +467,36 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           <div className="wx-device-tip">已登录 2 台设备 ›</div>
 
           <ul className="wx-rows">
+            {chapterFourWechat.active ? (
+              <>
+                <li>
+                  <button type="button" className="wx-row" onClick={() => setChapterFourChatView("group")}>
+                    <span className="wx-avatar wx-group-avatar" aria-hidden="true"><i /><i /><i /><i /></span>
+                    <span className="wx-row-main"><strong>{chapterFourWechatContent.group.name}</strong><em>{chapterFourWechat.studentRouteSaved ? "路线讨论已保存" : chapterFourWechatContent.group.recalled}</em></span>
+                    <time>22:47</time>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" className="wx-row" onClick={() => setChapterFourChatView("official")}>
+                    <span className="wx-avatar wx-official-avatar" aria-hidden="true">后勤</span>
+                    <span className="wx-row-main"><strong>{chapterFourWechatContent.official.name}</strong><em>{chapterFourWechatContent.official.articleTitle}</em></span>
+                    <time>22:40</time>
+                  </button>
+                </li>
+              </>
+            ) : null}
             <li>
               <button
                 type="button"
                 className="wx-row"
-                onClick={() =>
-                  kit.flags.toast("文件传输助手：只有你给自己发的表情包。")
-                }
+                onClick={() => chapterFourWechat.active
+                  ? setChapterFourChatView("archive")
+                  : kit.flags.toast("文件传输助手：只有你给自己发的表情包。")}
               >
                 <span className="wx-avatar file-helper" aria-hidden="true" />
                 <span className="wx-row-main">
                   <strong>文件传输助手</strong>
-                  <em>[图片]</em>
+                  <em>{chapterFourWechat.active ? `已保存 ${chapterFourWechat.archiveCount} 项现场资料` : "[图片]"}</em>
                 </span>
                 <time>09:28</time>
               </button>
@@ -307,7 +505,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
               <button
                 type="button"
                 className="wx-row"
-                onClick={() => setOpenedFriend(true)}
+                onClick={openFriendConversation}
                 aria-label="打开朋友聊天"
               >
                 <span

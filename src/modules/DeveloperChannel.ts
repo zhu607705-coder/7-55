@@ -9,8 +9,28 @@ import type {
 import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
-  DEVELOPER_BIKE_START_KEY
+  DEVELOPER_BIKE_START_KEY,
+  DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY,
+  DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY
 } from "../core/StorageKeys";
+import { CHAPTER_FOUR_ELEVATOR } from "./ChapterFourElevatorModel";
+import {
+  CHAPTER_FOUR_MAZE_CLUES,
+  CHAPTER_FOUR_MAZE_TIMES
+} from "./ChapterFourMazeProjection";
+import { CHAPTER_FOUR_WECHAT_CLUES } from "./ChapterFourWechatModel";
+
+const CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS = {
+  "c4-prologue": 0,
+  "c4-prologue-lake-exit": 4200,
+  "c4-prologue-arcade": 12400,
+  "c4-prologue-entrance": 24400,
+  "c4-prologue-lobby": 32400,
+  "c4-prologue-closing": 44200,
+  "c4-prologue-task-card": 51600
+} as const;
+
+type Chapter4PrologueDeveloperCheckpointId = keyof typeof CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS;
 
 export type DeveloperCheckpointId =
   | "c1-alarm" | "c1-home" | "c1-code-hunt" | "c1-dorm-card" | "c1-checkin" | "c1-narrator-block"
@@ -29,19 +49,28 @@ export type DeveloperCheckpointId =
   | "canteen-hunt" | "c3-canteen-entry" | "c3-canteen-drinks" | "c3-canteen-menu" | "c3-canteen-pickup"
   | "c3-canteen-block" | "c3-canteen-block-2" | "c3-canteen-block-3"
   | "c3-canteen-bike" | "c3-canteen-chase" | "c3-canteen-theater"
-  | "c3-theater-entry" | "c3-theater-code" | "c3-theater-program"
+  | "c3-theater-entry" | "c3-theater-ticket-request" | "c3-theater-ticket-accepted"
+  | "c3-theater-ticket-first-wave" | "c3-theater-ticket-first-wave-won"
+  | "c3-theater-ticket-delivered" | "c3-theater-code" | "c3-theater-program"
   | "c3-theater-prop" | "c3-theater-spotlight" | "c3-theater-spotlight-round" | "c3-theater-complete"
   | "c3-qizhen-transition" | "c3-qizhen-location" | "c3-qizhen-map" | "c3-qizhen-gate"
   | "c3-qizhen-dock" | "c3-qizhen-boarding" | "c3-qizhen-open-water"
+  | "c3-qizhen-rhythm-key" | "c3-qizhen-rhythm-net" | "c3-qizhen-rhythm-fish" | "c3-qizhen-rhythm-paper"
   | "c3-qizhen-tool-chain" | "c3-qizhen-swan" | "c3-qizhen-paper"
-  | "c3-qizhen-chase" | "c3-qizhen-complete";
+  | "c3-qizhen-chase" | "c3-qizhen-complete"
+  | Chapter4PrologueDeveloperCheckpointId
+  | "c4-prologue-done" | "c4-arrival" | "c4-airflow" | "c4-main-elevator"
+  | "c4-wechat-notice" | "c4-wechat-elevator-audio" | "c4-elevator-aligned"
+  | "c4-a2-arrival" | "c4-wechat-student-route" | "c4-a2-schedule-observed"
+  | "c4-a3-wayfinding" | "c4-wechat-wayfinding" | "c4-a2-return-window"
+  | "c4-stair-echo" | "c4-clock-intro" | "c4-clock-coarse" | "c4-clock-precision" | "c4-clock-release";
 
 type LegacyDeveloperCheckpointId =
   | "c2-movement" | "c2-seat-022" | "c2-evidence"
   | "c2-top-ten" | "c2-recovery" | "c2-pass"
   | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result"
   | "c3-qizhen-reflection" | "c3-qizhen-signs" | "c3-qizhen-decoy"
-  | "c3-qizhen-mist" | "c3-qizhen-release";
+  | "c3-qizhen-mist" | "c3-qizhen-release" | "c4-clock-calibration";
 
 type DeveloperCheckpointRequestId = DeveloperCheckpointId | LegacyDeveloperCheckpointId;
 type LibraryDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c2-${string}`>;
@@ -51,7 +80,7 @@ type QizhenDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-qizhen-${s
 
 export interface DeveloperCheckpoint {
   id: DeveloperCheckpointId;
-  chapter: "第一章" | "第二章" | "第三章" | "寻人篇";
+  chapter: "第一章" | "第二章" | "第三章" | "第四章" | "寻人篇";
   label: string;
   detail: string;
 }
@@ -110,7 +139,12 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-canteen-chase", chapter: "第三章", label: "755 米 3D 追逐", detail: "A / D 三车道骑行" },
   { id: "c3-canteen-theater", chapter: "第三章", label: "抵达剧院", detail: "纸条钻进剧院" },
   { id: "c3-theater-entry", chapter: "第三章", label: "剧院检票", detail: "海报栏与取票机" },
-  { id: "c3-theater-code", chapter: "第三章", label: "取票码 0832", detail: "两张半票根待合成" },
+  { id: "c3-theater-ticket-request", chapter: "第三章", label: "CC98 帮抢委托", detail: "打开帖子，等待玩家接单" },
+  { id: "c3-theater-ticket-accepted", chapter: "第三章", label: "帮抢已接单", detail: "先在剧场确认 08:32 放票时间" },
+  { id: "c3-theater-ticket-first-wave", chapter: "第三章", label: "第一波网速过慢", detail: "手机票务页等待第二波" },
+  { id: "c3-theater-ticket-first-wave-won", chapter: "第三章", label: "第一波流量中票", detail: "手机已抢中，实体票根尚未打印" },
+  { id: "c3-theater-ticket-delivered", chapter: "第三章", label: "第二波抢票成功", detail: "手机显示 0832 取票码" },
+  { id: "c3-theater-code", chapter: "第三章", label: "剧场打印票根 B", detail: "手机已抢中，在取票机输入 0832" },
   { id: "c3-theater-program", chapter: "第三章", label: "节目顺序", detail: "追光、开场、谢幕" },
   { id: "c3-theater-prop", chapter: "第三章", label: "后台道具箱", detail: "票根验证与荧光粉刷" },
   { id: "c3-theater-spotlight", chapter: "第三章", label: "追光围捕", detail: "三轮路径预判" },
@@ -123,11 +157,40 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-qizhen-dock", chapter: "第三章", label: "小码头取装备", detail: "皮划艇、树枝左桨和三角牌右桨" },
   { id: "c3-qizhen-boarding", chapter: "第三章", label: "上船平衡", detail: "交替左右桨与翻船安全恢复" },
   { id: "c3-qizhen-open-water", chapter: "第三章", label: "大湖倒影", detail: "深色记录、浅色取钓竿和装饵" },
+  { id: "c3-qizhen-rhythm-key", chapter: "第三章", label: "节奏钓鱼·钥匙", detail: "倒影点已就位，验收 A / S / D 三键节奏" },
+  { id: "c3-qizhen-rhythm-net", chapter: "第三章", label: "节奏钓鱼·网框", detail: "已开柜门，验收长按节拍" },
+  { id: "c3-qizhen-rhythm-fish", chapter: "第三章", label: "节奏钓鱼·小鲤鱼", detail: "鱼饲料已装饵，验收快节拍" },
+  { id: "c3-qizhen-rhythm-paper", chapter: "第三章", label: "节奏钓鱼·纸条", detail: "磁性钓竿已组合，验收最终八小节" },
   { id: "c3-qizhen-tool-chain", chapter: "第三章", label: "湖区工具链", detail: "道具 2 和 3 待组合" },
   { id: "c3-qizhen-swan", chapter: "第三章", label: "黑天鹅交换", detail: "小鲤鱼待投喂" },
   { id: "c3-qizhen-paper", chapter: "第三章", label: "磁性钓竿", detail: "道具 7 与钓竿待组合" },
   { id: "c3-qizhen-chase", chapter: "第三章", label: "直河道追逐", detail: "黑天鹅追逐并返回码头" },
-  { id: "c3-qizhen-complete", chapter: "第三章", label: "启真湖结束", detail: "磁性扣损坏，纸条逃离" }
+  { id: "c3-qizhen-complete", chapter: "第三章", label: "启真湖结束", detail: "磁性扣损坏，纸条逃离" },
+  { id: "c4-prologue", chapter: "第四章", label: "序幕·磁扣断裂", detail: "从启真湖磁性附件断裂开始" },
+  { id: "c4-prologue-lake-exit", chapter: "第四章", label: "序幕·离开启真湖", detail: "纸条滑水、撞栏杆并落上石板" },
+  { id: "c4-prologue-arcade", chapter: "第四章", label: "序幕·夜间拱廊", detail: "纸条沿拱廊向教学楼移动" },
+  { id: "c4-prologue-entrance", chapter: "第四章", label: "序幕·学生推门", detail: "学生推开玻璃门，电子钟跳到 22:45" },
+  { id: "c4-prologue-lobby", chapter: "第四章", label: "序幕·门厅湿地", detail: "纸条穿过湿地，保洁员出现" },
+  { id: "c4-prologue-closing", chapter: "第四章", label: "序幕·清楼关灯", detail: "保安广播、手电与分区熄灯" },
+  { id: "c4-prologue-task-card", chapter: "第四章", label: "序幕·新任务卡", detail: "直接检查第四章任务卡与确认入口" },
+  { id: "c4-prologue-done", chapter: "第四章", label: "第四章起点", detail: "序幕已看完，进入 A1 门厅" },
+  { id: "c4-arrival", chapter: "第四章", label: "A1 入楼", detail: "22:45 门厅起点与气流教学" },
+  { id: "c4-airflow", chapter: "第四章", label: "A1 气流叠图", detail: "已在深色模式记录断续水迹" },
+  { id: "c4-main-elevator", chapter: "第四章", label: "A1 主电梯厅", detail: "气流谜题完成，进入历史轨道同步" },
+  { id: "c4-wechat-notice", chapter: "第四章", label: "微信·夜间通知", detail: "在公众号中读取主电梯夜间运行规则" },
+  { id: "c4-wechat-elevator-audio", chapter: "第四章", label: "微信·电梯录音", detail: "历史提示音已记录，等待归档" },
+  { id: "c4-elevator-aligned", chapter: "第四章", label: "A1 电梯已对齐", detail: "三轨正确，直接检查完整开门与六秒登梯" },
+  { id: "c4-a2-arrival", chapter: "第四章", label: "A2 到站开门", detail: "轿厢上行完成，从到站闭门状态播放开门" },
+  { id: "c4-wechat-student-route", chapter: "第四章", label: "微信·学生路线", detail: "保存麦斯威夜间自习群的矛盾行程" },
+  { id: "c4-a2-schedule-observed", chapter: "第四章", label: "A2 人员时刻", detail: "三组人员残影已记录，等待重建内圈支路" },
+  { id: "c4-a3-wayfinding", chapter: "第四章", label: "A3 导视重建", detail: "二楼碎片已取得，等待核对旧导视与连廊历史" },
+  { id: "c4-wechat-wayfinding", chapter: "第四章", label: "微信·导视对照", detail: "旧导视残影已发现，等待归档和朋友对照" },
+  { id: "c4-a2-return-window", chapter: "第四章", label: "A2 返程窗口", detail: "导视记录已确认，203 门口的新取证窗口已开放" },
+  { id: "c4-stair-echo", chapter: "第四章", label: "B3 错位楼梯", detail: "记录回声并旋转折返楼梯接通 B2" },
+  { id: "c4-clock-intro", chapter: "第四章", label: "校时关卡 1·档案", detail: "筛选三条有效记录并重建 B2-04 目标时刻" },
+  { id: "c4-clock-coarse", chapter: "第四章", label: "校时关卡 2·机芯", detail: "分别校准并锁定小时轮与分钟轮" },
+  { id: "c4-clock-precision", chapter: "第四章", label: "校时关卡 3·漂移", detail: "为校门、电梯和教室选择反向秒差修正" },
+  { id: "c4-clock-release", chapter: "第四章", label: "校时关卡 4·放行", detail: "依次通过宽窗、窄窗和反向三种协议" }
 ];
 
 const CHECKPOINT_IDS = new Set(DEVELOPER_CHECKPOINTS.map((checkpoint) => checkpoint.id));
@@ -146,7 +209,8 @@ const LEGACY_CHECKPOINT_ALIASES: Record<LegacyDeveloperCheckpointId, DeveloperCh
   "c3-qizhen-signs": "c3-qizhen-tool-chain",
   "c3-qizhen-decoy": "c3-qizhen-tool-chain",
   "c3-qizhen-mist": "c3-qizhen-paper",
-  "c3-qizhen-release": "c3-qizhen-chase"
+  "c3-qizhen-release": "c3-qizhen-chase",
+  "c4-clock-calibration": "c4-clock-intro"
 };
 
 const LIBRARY_CHECKPOINT_ORDER: readonly LibraryDeveloperCheckpointId[] = [
@@ -174,6 +238,12 @@ function resolveCheckpointId(value: string | null): DeveloperCheckpointId | null
   if (!value) return null;
   if (CHECKPOINT_IDS.has(value as DeveloperCheckpointId)) return value as DeveloperCheckpointId;
   return LEGACY_CHECKPOINT_ALIASES[value as LegacyDeveloperCheckpointId] ?? null;
+}
+
+function isChapter4PrologueDeveloperCheckpoint(
+  id: DeveloperCheckpointId
+): id is Chapter4PrologueDeveloperCheckpointId {
+  return Object.prototype.hasOwnProperty.call(CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS, id);
 }
 
 function createActTwoBase(phase: GameState["actOne"]["phase"]): GameState {
@@ -637,7 +707,13 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
 
 function createTheaterCheckpointState(id: TheaterDeveloperCheckpointId): GameState {
   const base = createCanteenCheckpointState("c3-canteen-theater");
-  const reachedCode = ["c3-theater-code", "c3-theater-program", "c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
+  const ticketRequestCheckpoint = id === "c3-theater-ticket-request";
+  const ticketAcceptedCheckpoint = id === "c3-theater-ticket-accepted";
+  const ticketFirstWaveCheckpoint = id === "c3-theater-ticket-first-wave";
+  const ticketFirstWaveWonCheckpoint = id === "c3-theater-ticket-first-wave-won";
+  const ticketDeliveredCheckpoint = id === "c3-theater-ticket-delivered";
+  const phoneTicketCheckpoint = ticketRequestCheckpoint || ticketAcceptedCheckpoint || ticketFirstWaveCheckpoint || ticketFirstWaveWonCheckpoint || ticketDeliveredCheckpoint;
+  const reachedCode = ["c3-theater-ticket-first-wave", "c3-theater-ticket-first-wave-won", "c3-theater-ticket-delivered", "c3-theater-code", "c3-theater-program", "c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
   const admitted = ["c3-theater-program", "c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
   const programSolved = ["c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
   const propSolved = ["c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"].includes(id);
@@ -655,6 +731,9 @@ function createTheaterCheckpointState(id: TheaterDeveloperCheckpointId): GameSta
           : "entry_ticket";
   return {
     ...base,
+    runtimeMode: phoneTicketCheckpoint ? "phone" : "rpg",
+    currentScene: ticketFirstWaveCheckpoint ? "phone_home" : phoneTicketCheckpoint ? "cc98" : base.currentScene,
+    networkMode: ticketFirstWaveWonCheckpoint || ticketDeliveredCheckpoint ? "cellular" : base.networkMode,
     rpgScene: "theater_interior",
     rpgCheckpoint: programSolved ? "theater_stage" : admitted ? "theater_auditorium" : "theater_lobby",
     items: {
@@ -676,6 +755,18 @@ function createTheaterCheckpointState(id: TheaterDeveloperCheckpointId): GameSta
       active: true,
       phase,
       mode: id === "c3-theater-spotlight-round" ? "dark" : "light",
+      cc98TicketCommissionPhase: ticketRequestCheckpoint
+        ? "posted"
+        : ticketAcceptedCheckpoint
+          ? "accepted"
+          : ticketFirstWaveCheckpoint
+            ? "first_wave_failed"
+            : ticketFirstWaveWonCheckpoint
+              ? "delivered"
+          : reachedCode || admitted
+            ? "delivered"
+            : "posted",
+      cc98TicketClaimedWave: ticketFirstWaveWonCheckpoint ? 1 : ticketDeliveredCheckpoint || id === "c3-theater-code" || admitted ? 2 : null,
       posterCleaned: reachedCode,
       ticketCodeRead: reachedCode,
       ticketCodeAttempts: admitted ? 1 : 0,
@@ -694,10 +785,19 @@ function createTheaterCheckpointState(id: TheaterDeveloperCheckpointId): GameSta
 
 function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState {
   const base = createTheaterCheckpointState("c3-theater-complete");
+  const rhythmKey = id === "c3-qizhen-rhythm-key";
+  const rhythmNet = id === "c3-qizhen-rhythm-net";
+  const rhythmFish = id === "c3-qizhen-rhythm-fish";
+  const rhythmPaper = id === "c3-qizhen-rhythm-paper";
+  const rhythmCheckpoint = rhythmKey || rhythmNet || rhythmFish || rhythmPaper;
   const inLake = [
     "c3-qizhen-dock",
     "c3-qizhen-boarding",
     "c3-qizhen-open-water",
+    "c3-qizhen-rhythm-key",
+    "c3-qizhen-rhythm-net",
+    "c3-qizhen-rhythm-fish",
+    "c3-qizhen-rhythm-paper",
     "c3-qizhen-tool-chain",
     "c3-qizhen-swan",
     "c3-qizhen-paper",
@@ -714,6 +814,10 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
           ? "boarding_tutorial"
           : id === "c3-qizhen-open-water"
             ? "lake_exploration"
+            : rhythmKey || rhythmNet || rhythmFish
+              ? "tool_chain"
+              : rhythmPaper
+                ? "paper_capture"
             : id === "c3-qizhen-tool-chain"
               ? "tool_chain"
               : id === "c3-qizhen-swan"
@@ -725,21 +829,21 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
                     : "complete";
   const locationSourcesCompleted = !["c3-qizhen-transition", "c3-qizhen-location"].includes(id);
   const locationSolved = !["c3-qizhen-transition", "c3-qizhen-location", "c3-qizhen-map"].includes(id);
-  const boardingReady = [
+  const boardingReady = rhythmCheckpoint || [
     "c3-qizhen-boarding", "c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan",
     "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"
   ].includes(id);
-  const onWater = ["c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase"].includes(id);
-  const toolChain = ["c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
+  const onWater = rhythmCheckpoint || ["c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase"].includes(id);
+  const toolChain = rhythmCheckpoint || ["c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
   const swanReached = ["c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
   const paperReached = ["c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
   const chaseReached = ["c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
   const completed = id === "c3-qizhen-complete";
-  const zone: GameState["qizhenLake"]["zone"] = id === "c3-qizhen-swan" || id === "c3-qizhen-paper"
+  const zone: GameState["qizhenLake"]["zone"] = id === "c3-qizhen-swan" || id === "c3-qizhen-paper" || rhythmPaper
     ? "swan_cove"
     : id === "c3-qizhen-chase"
       ? "channel"
-      : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain"
+      : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain" || rhythmKey || rhythmNet || rhythmFish
         ? "open_water"
         : "dock";
 
@@ -756,9 +860,9 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       ? "campus_theater_junction"
       : id === "c3-qizhen-gate"
         ? "campus_qizhen_gate"
-        : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain"
+        : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain" || rhythmKey || rhythmNet || rhythmFish
           ? "qizhen_open_water"
-          : id === "c3-qizhen-swan" || id === "c3-qizhen-paper"
+          : id === "c3-qizhen-swan" || id === "c3-qizhen-paper" || rhythmPaper
             ? "qizhen_swan_cove"
             : id === "c3-qizhen-chase"
               ? "qizhen_chase"
@@ -775,16 +879,16 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       reflectionKeyword: false,
       lakeKeyword: id === "c3-qizhen-map" && !locationSolved,
       reflectionCoordinate: false,
-      fishingRod: (id === "c3-qizhen-open-water" || toolChain || swanReached || paperReached) && !chaseReached,
+      fishingRod: (id === "c3-qizhen-open-water" || toolChain || swanReached || paperReached) && !chaseReached && !rhythmPaper,
       rustedLockerKey: false,
-      nylonCord: id === "c3-qizhen-tool-chain",
+      nylonCord: id === "c3-qizhen-tool-chain" || rhythmNet,
       brokenNetFrame: id === "c3-qizhen-tool-chain",
       improvisedDipNet: false,
       sealedFeedTin: false,
-      fishFeedPellets: false,
+      fishFeedPellets: rhythmFish,
       smallCarp: id === "c3-qizhen-swan",
       swanMagnet: id === "c3-qizhen-paper",
-      magneticFishingRod: id === "c3-qizhen-chase"
+      magneticFishingRod: id === "c3-qizhen-chase" || rhythmPaper
     },
     qizhenLake: {
       ...base.qizhenLake,
@@ -819,18 +923,26 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       rodFound: id === "c3-qizhen-open-water" || toolChain || swanReached || paperReached || chaseReached || completed,
       decoyBaitAttached: toolChain || swanReached || paperReached || chaseReached || completed,
       reflectionLocationObserved: id === "c3-qizhen-open-water" || toolChain || swanReached || paperReached || chaseReached || completed,
-      observedFishingSpotIds: id === "c3-qizhen-open-water"
+      observedFishingSpotIds: rhythmKey
+        ? ["locker_key"]
+        : rhythmNet
+          ? ["net_frame"]
+          : rhythmFish
+            ? ["fish"]
+            : rhythmPaper
+              ? ["paper"]
+              : id === "c3-qizhen-open-water"
         ? ["locker_key", "paper"]
         : toolChain || swanReached || paperReached || chaseReached || completed
           ? ["locker_key", "net_frame", "fish", "paper"]
           : [],
-      lockerOpened: toolChain || swanReached || paperReached || chaseReached || completed,
-      netCombined: swanReached || paperReached || chaseReached || completed,
-      feedTinRetrieved: swanReached || paperReached || chaseReached || completed,
-      feedTinOpened: swanReached || paperReached || chaseReached || completed,
+      lockerOpened: !rhythmKey && (toolChain || swanReached || paperReached || chaseReached || completed),
+      netCombined: rhythmFish || swanReached || paperReached || chaseReached || completed,
+      feedTinRetrieved: rhythmFish || swanReached || paperReached || chaseReached || completed,
+      feedTinOpened: rhythmFish || swanReached || paperReached || chaseReached || completed,
       fishCaught: swanReached || paperReached || chaseReached || completed,
-      swanFed: paperReached || chaseReached || completed,
-      magneticRodCombined: chaseReached || completed,
+      swanFed: rhythmPaper || paperReached || chaseReached || completed,
+      magneticRodCombined: rhythmPaper || chaseReached || completed,
       paperCaptured: chaseReached || completed,
       swanReleased: chaseReached || completed,
       chaseDistance: completed ? 1000 : 0,
@@ -951,6 +1063,358 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   if (id.startsWith("c3-qizhen-")) {
     return createQizhenCheckpointState(id as QizhenDeveloperCheckpointId);
   }
+  if (isChapter4PrologueDeveloperCheckpoint(id)) {
+    // 启真湖完成态 + 序幕未看：进入湖区画布即播放第四章序幕过场。
+    return createQizhenCheckpointState("c3-qizhen-complete");
+  }
+  if (id === "c4-prologue-done") {
+    // 过场后第四章起点：序幕已看，进入 A1 门厅。
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    return {
+      ...base,
+      runtimeMode: "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_a1_lobby",
+      chapter4: { ...base.chapter4, prologueSeen: true, phase: "arrival" },
+      ui: {
+        ...base.ui,
+        inventoryOpen: false,
+        selectedItem: null
+      }
+    };
+  }
+  if (
+    id === "c4-arrival"
+    || id === "c4-airflow"
+    || id === "c4-main-elevator"
+    || id === "c4-wechat-notice"
+    || id === "c4-wechat-elevator-audio"
+  ) {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const airflowObserved = id !== "c4-arrival";
+    const paperGuidedToElevator = ["c4-main-elevator", "c4-wechat-notice", "c4-wechat-elevator-audio"].includes(id);
+    const elevatorHistoryObserved = id === "c4-wechat-elevator-audio";
+    const phoneCheckpoint = id === "c4-wechat-notice" || id === "c4-wechat-elevator-audio";
+    return {
+      ...base,
+      currentScene: phoneCheckpoint ? "wechat" : base.currentScene,
+      runtimeMode: phoneCheckpoint ? "phone" : "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: paperGuidedToElevator ? "c4_a1_main_elevator" : "c4_a1_lobby",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: paperGuidedToElevator ? "elevator_track_sync" : airflowObserved ? "airflow_overlay" : "arrival",
+        mode: airflowObserved ? "dark" : "light",
+        building: "A",
+        floor: "A1",
+        airflowObserved,
+        paperGuidedToElevator,
+        elevatorHistoryObserved,
+        roomId: paperGuidedToElevator ? "a1_main_elevator" : "a1_lobby",
+        clueIds: elevatorHistoryObserved
+          ? [
+              "a1_airflow_trace",
+              "a1_elevator_history_tracks",
+              CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead
+            ]
+          : airflowObserved ? ["a1_airflow_trace"] : [],
+        solvedPuzzleIds: paperGuidedToElevator ? ["airflow_overlay"] : []
+      },
+      ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-elevator-aligned") {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    return {
+      ...base,
+      runtimeMode: "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_a1_main_elevator",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "elevator_track_sync",
+        mode: "light",
+        building: "A",
+        floor: "A1",
+        roomId: "a1_main_elevator",
+        buildingTimeSeconds: CHAPTER_FOUR_ELEVATOR.correctReplayStartSeconds,
+        airflowObserved: true,
+        paperGuidedToElevator: true,
+        elevatorHistoryObserved: true,
+        elevatorSelectedStartSeconds: CHAPTER_FOUR_ELEVATOR.correctReplayStartSeconds,
+        elevatorTrackAligned: true,
+        elevatorReplayAttempts: 1,
+        elevatorPlayerBoarded: false,
+        solvedPuzzleIds: ["airflow_overlay"],
+        clueIds: [
+          "a1_airflow_trace",
+          "a1_elevator_history_tracks",
+          CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead,
+          CHAPTER_FOUR_WECHAT_CLUES.elevatorAudioArchived
+        ]
+      },
+      ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-a2-arrival" || id === "c4-wechat-student-route") {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const phoneCheckpoint = id === "c4-wechat-student-route";
+    return {
+      ...base,
+      currentScene: phoneCheckpoint ? "wechat" : base.currentScene,
+      runtimeMode: phoneCheckpoint ? "phone" : "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_a2_corridor",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "npc_schedule_route",
+        mode: "light",
+        building: "A",
+        floor: "A2",
+        roomId: "a2_corridor",
+        buildingTimeSeconds: CHAPTER_FOUR_ELEVATOR.arrivedAtSeconds,
+        airflowObserved: true,
+        paperGuidedToElevator: true,
+        elevatorHistoryObserved: true,
+        elevatorSelectedStartSeconds: CHAPTER_FOUR_ELEVATOR.correctReplayStartSeconds,
+        elevatorTrackAligned: true,
+        elevatorReplayAttempts: 1,
+        elevatorPlayerBoarded: true,
+        solvedPuzzleIds: ["airflow_overlay", "elevator_track_sync"],
+        clueIds: [
+          "a1_airflow_trace",
+          "a1_elevator_history_tracks",
+          "A2_ELEVATOR",
+          CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead,
+          CHAPTER_FOUR_WECHAT_CLUES.elevatorAudioArchived
+        ]
+      },
+      ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-a2-schedule-observed") {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    return {
+      ...base,
+      runtimeMode: "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_a2_corridor",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "corridor_bay_reconstruction",
+        mode: "dark",
+        building: "A",
+        floor: "A2",
+        roomId: "a2_corridor",
+        buildingTimeSeconds: CHAPTER_FOUR_ELEVATOR.arrivedAtSeconds,
+        airflowObserved: true,
+        paperGuidedToElevator: true,
+        elevatorHistoryObserved: true,
+        elevatorSelectedStartSeconds: CHAPTER_FOUR_ELEVATOR.correctReplayStartSeconds,
+        elevatorTrackAligned: true,
+        elevatorReplayAttempts: 1,
+        elevatorPlayerBoarded: true,
+        solvedPuzzleIds: ["airflow_overlay", "elevator_track_sync", "npc_schedule_route"],
+        clueIds: [
+          "a1_airflow_trace",
+          "a1_elevator_history_tracks",
+          "A2_ELEVATOR",
+          CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead,
+          CHAPTER_FOUR_WECHAT_CLUES.elevatorAudioArchived,
+          CHAPTER_FOUR_WECHAT_CLUES.studentRouteSaved,
+          CHAPTER_FOUR_MAZE_CLUES.scheduleObserved
+        ]
+      },
+      ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-a3-wayfinding" || id === "c4-wechat-wayfinding") {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const phoneCheckpoint = id === "c4-wechat-wayfinding";
+    return {
+      ...base,
+      currentScene: phoneCheckpoint ? "wechat" : base.currentScene,
+      runtimeMode: phoneCheckpoint ? "phone" : "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_a3_wayfinding",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "wayfinding_fragment_board",
+        mode: "dark",
+        building: "A",
+        floor: "A3",
+        roomId: "a3_wayfinding",
+        buildingTimeSeconds: CHAPTER_FOUR_MAZE_TIMES.thirdFloorHistorySeconds,
+        airflowObserved: true,
+        paperGuidedToElevator: true,
+        elevatorHistoryObserved: true,
+        elevatorSelectedStartSeconds: CHAPTER_FOUR_ELEVATOR.correctReplayStartSeconds,
+        elevatorTrackAligned: true,
+        elevatorReplayAttempts: 1,
+        elevatorPlayerBoarded: true,
+        solvedPuzzleIds: [
+          "airflow_overlay",
+          "elevator_track_sync",
+          "npc_schedule_route",
+          "corridor_bay_reconstruction"
+        ],
+        clueIds: [
+          "a1_airflow_trace",
+          "a1_elevator_history_tracks",
+          "A2_ELEVATOR",
+          CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead,
+          CHAPTER_FOUR_WECHAT_CLUES.elevatorAudioArchived,
+          CHAPTER_FOUR_WECHAT_CLUES.studentRouteSaved,
+          CHAPTER_FOUR_MAZE_CLUES.scheduleObserved,
+          CHAPTER_FOUR_MAZE_CLUES.partitionWestReconfigured,
+          CHAPTER_FOUR_MAZE_CLUES.partitionEastReconfigured,
+          CHAPTER_FOUR_MAZE_CLUES.fragmentWestCollected,
+          CHAPTER_FOUR_MAZE_CLUES.fragmentEastCollected,
+          ...(phoneCheckpoint ? [CHAPTER_FOUR_MAZE_CLUES.oldSignageObserved] : [])
+        ]
+      },
+      ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-a2-return-window") {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    return {
+      ...base,
+      runtimeMode: "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_a2_corridor",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "bridge_floor_discrimination",
+        mode: "light",
+        building: "A",
+        floor: "A2",
+        roomId: "a2_corridor",
+        buildingTimeSeconds: CHAPTER_FOUR_MAZE_TIMES.secondFloorReturnSeconds,
+        airflowObserved: true,
+        paperGuidedToElevator: true,
+        elevatorHistoryObserved: true,
+        elevatorSelectedStartSeconds: CHAPTER_FOUR_ELEVATOR.correctReplayStartSeconds,
+        elevatorTrackAligned: true,
+        elevatorReplayAttempts: 1,
+        elevatorPlayerBoarded: true,
+        solvedPuzzleIds: [
+          "airflow_overlay",
+          "elevator_track_sync",
+          "npc_schedule_route",
+          "corridor_bay_reconstruction",
+          "wayfinding_fragment_board",
+          "bridge_floor_discrimination"
+        ],
+        clueIds: [
+          "a1_airflow_trace",
+          "a1_elevator_history_tracks",
+          "A2_ELEVATOR",
+          CHAPTER_FOUR_MAZE_CLUES.scheduleObserved,
+          CHAPTER_FOUR_MAZE_CLUES.partitionWestReconfigured,
+          CHAPTER_FOUR_MAZE_CLUES.partitionEastReconfigured,
+          CHAPTER_FOUR_MAZE_CLUES.fragmentWestCollected,
+          CHAPTER_FOUR_MAZE_CLUES.fragmentEastCollected,
+          CHAPTER_FOUR_MAZE_CLUES.oldSignageObserved,
+          CHAPTER_FOUR_MAZE_CLUES.bridgeHistoryObserved,
+          CHAPTER_FOUR_MAZE_CLUES.wayfindingAligned,
+          CHAPTER_FOUR_MAZE_CLUES.secondFloorReturnWindowOpen
+        ]
+      },
+      ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-stair-echo") {
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    return {
+      ...base,
+      runtimeMode: "rpg",
+      rpgScene: "duan_yongping_temporal_maze",
+      rpgCheckpoint: "c4_b3_landing",
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "stair_echo_direction",
+        mode: "dark",
+        building: "B",
+        floor: "B3",
+        roomId: "b3_landing",
+        airflowObserved: true,
+        paperGuidedToElevator: true,
+        stairEchoObserved: false,
+        stairRotationQuarterTurns: 0,
+        stairAlignmentSolved: false,
+        solvedPuzzleIds: [
+          "airflow_overlay", "elevator_track_sync", "npc_schedule_route",
+          "corridor_bay_reconstruction", "wayfinding_fragment_board",
+          "bridge_floor_discrimination"
+        ],
+        clueIds: ["a1_airflow_trace"]
+      },
+      ui: { ...base.ui, inventoryOpen: false, selectedItem: null }
+    };
+  }
+  if (id === "c4-clock-intro" || id === "c4-clock-coarse" || id === "c4-clock-precision" || id === "c4-clock-release") {
+    // 第三章完成态 + 第四章 clockCalibration 分阶段快照，直接进入时钟页检查四段流程。
+    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const seededClock = { ...createInitialGameState().clockCalibration };
+    if (id === "c4-clock-coarse") {
+      seededClock.phase = "calibrating";
+      seededClock.step = "coarse_time";
+      seededClock.selectedTargetSeconds = seededClock.targetSeconds;
+      seededClock.archiveClueIds = ["room_b2_04", "schedule_0800", "attendance_open"];
+      seededClock.displayedSeconds = 28523;
+    } else if (id === "c4-clock-precision") {
+      seededClock.phase = "calibrating";
+      seededClock.step = "seconds_trim";
+      seededClock.selectedTargetSeconds = seededClock.targetSeconds;
+      seededClock.archiveClueIds = ["room_b2_04", "schedule_0800", "attendance_open"];
+      seededClock.coarseLockIds = ["hour", "minute"];
+      seededClock.displayedSeconds = 28823;
+    } else if (id === "c4-clock-release") {
+      seededClock.phase = "release_ready";
+      seededClock.step = "phase_lock";
+      seededClock.selectedTargetSeconds = seededClock.targetSeconds;
+      seededClock.archiveClueIds = ["room_b2_04", "schedule_0800", "attendance_open"];
+      seededClock.coarseLockIds = ["hour", "minute"];
+      seededClock.driftCorrectedChannelIds = ["gate", "elevator", "room"];
+      seededClock.displayedSeconds = seededClock.targetSeconds;
+      seededClock.phaseLockHits = 0;
+      seededClock.phaseLockAttempts = 0;
+    }
+    return {
+      ...base,
+      runtimeMode: "phone",
+      currentScene: "clock",
+      clockCalibration: seededClock,
+      chapter4: {
+        ...base.chapter4,
+        prologueSeen: true,
+        phase: "clock_phase_lock",
+        cycle: 2,
+        floor: "B2",
+        building: "B",
+        roomId: "b2_04",
+        solvedPuzzleIds: [
+          "airflow_overlay", "elevator_track_sync", "npc_schedule_route",
+          "corridor_bay_reconstruction", "wayfinding_fragment_board",
+          "bridge_floor_discrimination", "stair_echo_direction", "multicam_video_edit",
+          "echo_action_record", "dual_lift_logistics", "warm_air_balance", "route_schedule"
+        ]
+      },
+      ui: {
+        ...base.ui,
+        inventoryOpen: false,
+        selectedItem: null
+      }
+    };
+  }
 
   return createCanteenCheckpointState("canteen-hunt");
 }
@@ -967,6 +1431,16 @@ export function applyDeveloperCheckpoint(
   }
   storage.setItem(DEVELOPER_ACTIVE_KEY, id);
   storage.setItem(DEVELOPER_BIKE_START_KEY, "0");
+  if (id.startsWith("c3-qizhen-rhythm-")) {
+    storage.setItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY, id.slice("c3-qizhen-rhythm-".length));
+  } else {
+    storage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);
+  }
+  if (isChapter4PrologueDeveloperCheckpoint(id)) {
+    storage.setItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY, String(CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS[id]));
+  } else {
+    storage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
+  }
   store.setState(() => createDeveloperCheckpointState(id));
 }
 
@@ -981,6 +1455,8 @@ export function restoreDeveloperBackup(store: GameStore, storage: Storage = wind
   storage.removeItem(DEVELOPER_BACKUP_KEY);
   storage.removeItem(DEVELOPER_ACTIVE_KEY);
   storage.removeItem(DEVELOPER_BIKE_START_KEY);
+  storage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
+  storage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);
   return true;
 }
 
@@ -988,14 +1464,30 @@ export function getDeveloperBikeStart(storage: Storage = window.sessionStorage):
   return Number(storage.getItem(DEVELOPER_BIKE_START_KEY) ?? 0) || 0;
 }
 
+export function getDeveloperChapter4PrologueOffset(storage: Storage = window.sessionStorage): number {
+  const checkpoint = getActiveDeveloperCheckpoint(storage);
+  if (!checkpoint || !isChapter4PrologueDeveloperCheckpoint(checkpoint)) return 0;
+  const raw = storage.getItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
+  if (raw === null) return CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS[checkpoint];
+  const stored = Number(raw);
+  return Number.isFinite(stored) && stored >= 0
+    ? stored
+    : CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS[checkpoint];
+}
+
 export function getActiveDeveloperCheckpoint(storage: Storage = window.sessionStorage): DeveloperCheckpointId | null {
   return resolveCheckpointId(storage.getItem(DEVELOPER_ACTIVE_KEY));
 }
 
-export function getDeveloperCc98Mode(storage: Storage = window.sessionStorage): "exchange" | "investigation" | null {
+export function getDeveloperCc98Mode(storage: Storage = window.sessionStorage): "exchange" | "investigation" | "theater_ticket" | null {
   const checkpoint = getActiveDeveloperCheckpoint(storage);
   if (checkpoint === "c2-gamepad-market") return "exchange";
   if (checkpoint === "c2-cc98-upload" || checkpoint === "c2-bd-rise") return "investigation";
+  if (
+    checkpoint === "c3-theater-ticket-request"
+    || checkpoint === "c3-theater-ticket-accepted"
+    || checkpoint === "c3-theater-ticket-delivered"
+  ) return "theater_ticket";
   return null;
 }
 

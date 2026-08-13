@@ -1,0 +1,478 @@
+/* ==========================================================================
+   第四章楼梯间三视角空间解谜 —— 像素 UI（设计文档 §8.6）
+   深蓝黑底、米白 2px 边框、黄色章节号、像素字体；无圆角玻璃卡 / 模糊 / 胶囊条。
+   ========================================================================== */
+
+#stair-demo {
+  --stair-bg: #101a24;
+  --stair-panel: #17252d;
+  --stair-panel-2: #1d2f39;
+  --stair-ink: #e7d9b9;
+  --stair-ink-dim: #bfaf91;
+  --stair-line: #e7d9b9;
+  --stair-chapter: #f5c542;
+  --stair-accent: #6eb7d6;
+  --stair-ok: #5fe2c2;
+  --stair-warn: #d89262;
+  --stair-font: "Fusion Pixel 12px Proportional SC", "Fusion Pixel", "Zpix", "PingFang SC",
+    "Microsoft YaHei", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+}
+
+#stair-demo,
+#stair-demo * {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#stair-demo button {
+  font: inherit;
+}
+
+#stair-demo {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  background: var(--stair-bg);
+  color: var(--stair-ink);
+  font-family: var(--stair-font);
+  font-size: 13px;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+#stair-demo[hidden] {
+  display: none !important;
+}
+
+#stair-demo.is-standalone {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.stair-shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  max-width: 100%;
+}
+
+/* ------------------------------ 顶部：章节号 + 关卡名 + 目标 ------------------------------ */
+
+.stair-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1060px;
+  padding: 6px 10px;
+  background: var(--stair-panel);
+  border: 2px solid var(--stair-line);
+}
+
+.stair-chapter {
+  color: var(--stair-chapter);
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 6px;
+  border: 2px solid var(--stair-chapter);
+}
+
+.stair-topbar-text {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.stair-level-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--stair-ink);
+  letter-spacing: 1px;
+}
+
+.stair-objective {
+  margin: 0;
+  font-size: 12px;
+  color: var(--stair-ink-dim);
+}
+
+/* ------------------------------ 中部：舞台 + 右侧视角轨 ------------------------------ */
+
+.stair-mid {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1060px;
+}
+
+.stair-stage-wrap {
+  position: relative;
+  flex: 0 0 auto;
+  /* 960×540 的绝对定位舞台经 transform 缩放，布局盒不随缩放收缩，
+     这里裁剪掉未缩放的溢出部分，避免撑出文档横向溢出。 */
+  overflow: hidden;
+}
+
+.stair-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 960px;
+  height: 540px;
+  transform-origin: top left;
+  border: 2px solid var(--stair-line);
+  background: #17252d;
+  overflow: hidden;
+}
+
+.stair-canvas {
+  display: block;
+  width: 960px;
+  height: 540px;
+  /* §8.1：最近邻放大，crisp-edges 回退。 */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* ------------------------------ 右侧纵向视角按钮 ------------------------------ */
+
+.stair-views {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.stair-view-button {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--stair-panel);
+  border: 2px solid var(--stair-line);
+  color: var(--stair-ink);
+  cursor: pointer;
+}
+
+.stair-view-glyph {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--stair-ink);
+}
+
+.stair-view-num {
+  font-size: 12px;
+  color: var(--stair-ink-dim);
+}
+
+.stair-view-button.is-current {
+  border-color: var(--stair-accent);
+  background: var(--stair-panel-2);
+}
+
+.stair-view-button.is-current .stair-view-glyph,
+.stair-view-button.is-current .stair-view-num {
+  color: var(--stair-accent);
+}
+
+.stair-view-button:disabled {
+  cursor: default;
+  border-color: var(--stair-ink-dim);
+  opacity: 0.55;
+}
+
+.stair-view-button:not(:disabled):hover {
+  background: var(--stair-panel-2);
+}
+
+/* ------------------------------ 底部：状态 + 选中机关操作 ------------------------------ */
+
+.stair-bottombar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  max-width: 1060px;
+  padding: 6px 10px;
+  background: var(--stair-panel);
+  border: 2px solid var(--stair-line);
+  min-height: 48px;
+}
+
+.stair-status {
+  flex: 1 1 220px;
+  margin: 0;
+  min-height: 18px;
+  font-size: 13px;
+  color: var(--stair-ink);
+}
+
+.stair-status.is-ok {
+  color: var(--stair-ok);
+}
+
+.stair-status.is-warn {
+  color: var(--stair-warn);
+}
+
+.stair-mech {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stair-mech-label {
+  min-width: 96px;
+  padding: 4px 8px;
+  border: 2px solid var(--stair-ink-dim);
+  color: var(--stair-ink-dim);
+  text-align: center;
+  font-size: 12px;
+}
+
+.stair-pixel-button {
+  min-width: 48px;
+  min-height: 44px;
+  padding: 6px 12px;
+  background: var(--stair-panel-2);
+  border: 2px solid var(--stair-line);
+  color: var(--stair-ink);
+  font-family: var(--stair-font);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stair-pixel-button:not(:disabled):hover {
+  border-color: var(--stair-accent);
+  color: var(--stair-accent);
+}
+
+.stair-pixel-button:not(:disabled):active {
+  transform: translate(1px, 1px);
+}
+
+.stair-pixel-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.stair-reset {
+  margin-left: auto;
+}
+
+/* 重复输入被忽略时的短促按钮反馈（§11）。 */
+.is-denied {
+  animation: stair-deny 180ms steps(2, end) 1;
+}
+
+@keyframes stair-deny {
+  0% {
+    outline: 2px solid var(--stair-warn);
+    outline-offset: 1px;
+  }
+  100% {
+    outline: 2px solid transparent;
+    outline-offset: 1px;
+  }
+}
+
+/* ------------------------------ 16×9 像素块遮罩（§9） ------------------------------ */
+
+.stair-curtain {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.stair-curtain-block {
+  display: block;
+  background: #101a24;
+  visibility: hidden;
+}
+
+.stair-curtain-block.is-covered {
+  visibility: visible;
+}
+
+/* ------------------------------ 全完成画面 ------------------------------ */
+
+.stair-complete {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #101a24;
+}
+
+.stair-complete[hidden],
+.stair-curtain[hidden],
+.stair-webgl-error[hidden] {
+  display: none;
+}
+
+.stair-complete-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 36px;
+  background: var(--stair-panel);
+  border: 2px solid var(--stair-line);
+  text-align: center;
+}
+
+.stair-complete-chapter {
+  color: var(--stair-chapter);
+  font-size: 26px;
+  border: 2px solid var(--stair-chapter);
+  padding: 2px 8px;
+}
+
+.stair-complete-card b {
+  font-size: 18px;
+  color: var(--stair-ink);
+}
+
+.stair-complete-card p {
+  margin: 0;
+  color: var(--stair-ink-dim);
+  font-size: 13px;
+}
+
+.stair-complete-card .stair-pixel-button {
+  min-width: 240px;
+  min-height: 120px;
+  font-size: 16px;
+}
+
+/* ------------------------------ WebGL 错误卡（§11） ------------------------------ */
+
+.stair-webgl-error {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #101a24;
+}
+
+.stair-webgl-error-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 30px;
+  background: var(--stair-panel);
+  border: 2px solid var(--stair-warn);
+  text-align: center;
+}
+
+.stair-webgl-error-card b {
+  color: var(--stair-warn);
+  font-size: 16px;
+}
+
+.stair-webgl-error-card p {
+  margin: 0;
+  color: var(--stair-ink);
+  font-size: 13px;
+}
+
+/* ------------------------------ 窄屏 / 触屏 ------------------------------ */
+
+@media (max-width: 720px) {
+  .stair-shell {
+    justify-content: flex-start;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .stair-topbar {
+    padding: 4px 8px;
+  }
+
+  .stair-chapter {
+    font-size: 18px;
+  }
+
+  .stair-level-name {
+    font-size: 14px;
+  }
+
+  .stair-objective {
+    font-size: 11px;
+  }
+
+  .stair-mid {
+    gap: 6px;
+  }
+
+  .stair-views {
+    gap: 6px;
+  }
+
+  /* 触屏命中框 ≥44×44 CSS px；三个按钮纵向不互相覆盖。 */
+  .stair-view-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .stair-bottombar {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .stair-status {
+    flex-basis: 100%;
+    font-size: 12px;
+  }
+
+  .stair-mech {
+    flex-wrap: wrap;
+  }
+
+  .stair-pixel-button {
+    min-height: 44px;
+  }
+
+  .stair-reset {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-denied {
+    animation: none;
+  }
+}

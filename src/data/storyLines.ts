@@ -3,6 +3,7 @@ import actOneContent from "./act-one-bootstrap.content.json";
 import bikeContent from "./bike-arcade.content.json";
 import legacyDialogue from "./dialogue.lines.json";
 import { CHAPTER_THREE_STORY_LINES } from "./chapterThreeStory";
+import { CHAPTER_FOUR_PROLOGUE_STORY_LINES } from "./chapter4PrologueStory";
 import { LIBRARY_STORY_SEQUENCES, libraryStoryLineKey } from "./libraryFinalsStory";
 
 const MALE_DIALOGUE_KEYS = new Set([
@@ -95,6 +96,10 @@ for (const [key, subtitleZh] of Object.entries(bikeContent.subtitles)) {
 }
 
 for (const [key, line] of CHAPTER_THREE_STORY_LINES) {
+  lines[key] = line;
+}
+
+for (const [key, line] of CHAPTER_FOUR_PROLOGUE_STORY_LINES) {
   lines[key] = line;
 }
 

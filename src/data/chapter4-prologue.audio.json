@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "events": {
+    "chapter4_prologue_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_ch4_prologue_night_pursuit",
+          "action": "play",
+          "volume": 0.16,
+          "loop": true
+        }
+      ]
+    },
+    "chapter4_prologue_magnet_tension": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_magnet_tension",
+          "volume": 0.62
+        }
+      ]
+    },
+    "chapter4_prologue_magnet_snap": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_magnet_snap",
+          "volume": 0.72
+        }
+      ]
+    },
+    "chapter4_prologue_line_recoil": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_line_recoil",
+          "volume": 0.6
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_ch4_prologue_player_01",
+          "subtitleKey": "ch4_prologue_player_01",
+          "subtitleSurface": "scene",
+          "offsetMs": 350,
+          "durationMs": 547,
+          "duckMusicTo": 0.08,
+          "volume": 0.96
+        }
+      ]
+    },
+    "chapter4_prologue_water_ripple": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_water_ripple",
+          "volume": 0.5
+        }
+      ]
+    },
+    "chapter4_prologue_lake_exit": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_paper_water_slide",
+          "volume": 0.55
+        }
+      ]
+    },
+    "chapter4_prologue_railing_hit": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_railing_hit",
+          "volume": 0.6
+        }
+      ]
+    },
+    "chapter4_prologue_paper_flip": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_paper_flip",
+          "volume": 0.6
+        }
+      ]
+    },
+    "chapter4_prologue_stone_land": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_stone_land",
+          "volume": 0.6
+        }
+      ]
+    },
+    "chapter4_prologue_gust_skim": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_gust_skim",
+          "volume": 0.6
+        }
+      ]
+    },
+    "chapter4_prologue_arcade": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_ch4_prologue_narrator_01",
+          "subtitleKey": "ch4_prologue_narrator_01",
+          "subtitleSurface": "scene",
+          "durationMs": 6042,
+          "duckMusicTo": 0.08,
+          "volume": 0.96
+        },
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_arcade_crosswind",
+          "offsetMs": 700,
+          "volume": 0.5
+        }
+      ]
+    },
+    "chapter4_prologue_step_fold": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_step_fold",
+          "volume": 0.58
+        }
+      ]
+    },
+    "chapter4_prologue_arcade_push": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_arcade_crosswind",
+          "playbackRate": 1.12,
+          "volume": 0.55
+        }
+      ]
+    },
+    "chapter4_prologue_glass_door": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_glass_door_open",
+          "volume": 0.62
+        }
+      ]
+    },
+    "chapter4_prologue_pressure_suction": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_pressure_suction",
+          "volume": 0.6
+        }
+      ]
+    },
+    "chapter4_prologue_clock_chime": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_clock_chime",
+          "volume": 0.56
+        }
+      ]
+    },
+    "chapter4_prologue_wet_floor": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_wet_floor_slide",
+          "volume": 0.56
+        }
+      ]
+    },
+    "chapter4_prologue_cleaner_line": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_ch4_prologue_cleaner_01",
+          "subtitleKey": "ch4_prologue_cleaner_01",
+          "subtitleSurface": "scene",
+          "durationMs": 6211,
+          "duckMusicTo": 0.08,
+          "volume": 0.96
+        }
+      ]
+    },
+    "chapter4_prologue_broadcast_static": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_broadcast_static",
+          "volume": 0.62
+        }
+      ]
+    },
+    "chapter4_prologue_guard_line": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_ch4_prologue_guard_01",
+          "subtitleKey": "ch4_prologue_guard_01",
+          "subtitleSurface": "scene",
+          "durationMs": 4805,
+          "duckMusicTo": 0.08,
+          "volume": 0.96
+        }
+      ]
+    },
+    "chapter4_prologue_lights_out": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_lights_powerdown",
+          "volume": 0.6
+        }
+      ]
+    },
+    "chapter4_prologue_task_card": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_phone_task_notify",
+          "volume": 0.68
+        }
+      ]
+    },
+    "chapter4_prologue_skip": {
+      "cues": []
+    },
+    "chapter4_prologue_finished": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        }
+      ]
+    },
+    "chapter4_prologue_closed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        }
+      ]
+    }
+  }
+}

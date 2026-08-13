@@ -62,6 +62,8 @@ export function App() {
   const phonePaneRef = useRef<HTMLElement>(null);
   const Scene = getPhoneScene(state.currentScene);
   const access = selectFeatureAccess(state);
+  // 第四章校时：桌面 RPG 模式下打开手机时钟页时，左右两栏真分屏并排
+  const clockSplit = access.clockCalibration && state.currentScene === "clock";
   const showChapterTwoIntro = access.chapter !== "chapter_one"
     && !state.ui.seenChapterIntros.includes("chapter_two");
   const libraryStoryVisible = libraryStorySequence !== null && !showChapterTwoIntro;
@@ -292,8 +294,9 @@ export function App() {
           <main
             className={`desktop-gameplay-shell ${state.rpgScene === "qizhen_lake" ? "is-qizhen-lake" : ""}`.trim()}
             data-active-surface={activeSurface}
+            data-split={clockSplit ? "clock" : undefined}
           >
-            {activeSurface === "rpg" ? (
+            {activeSurface === "rpg" && state.rpgScene !== "duan_yongping_temporal_maze" ? (
               <QuestTaskBar
                 state={state}
                 events={eventBus}

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "chapterId": "chapter-4-prologue-music-audio",
+  "model": "music-2.6",
+  "music": [
+    {
+      "cue": "chapter4.prologue.night_pursuit",
+      "asset": "music_ch4_prologue_night_pursuit",
+      "path": "chapter4/prologue/music_ch4_prologue_night_pursuit.mp3",
+      "durationSeconds": 68,
+      "prompt": "Nighttime university campus underscore bed for a pixel-art mystery game cutscene. A wet paper note skims across a dark lake, slides along stone paths, rides gusts of wind through arched corridors, and slips into a still-lit teaching building. Weightless fluttering forward motion over a low, watchful suspense undercurrent; sparse night air, soft distant electrical hum, water droplet afterglow. After the two-thirds point, a faint uneasy tightening as a loudspeaker announces the building closing and lights shut off in sections, ending in a quiet unresolved hush. Instrumental only, no drums, no strong beat, generous space left under English narration, dialogue, and foley.",
+      "genre": "minimal ambient mystery game soundtrack",
+      "mood": "nocturnal, weightless, quietly suspenseful, faintly uneasy at the end",
+      "instruments": "felt piano, soft celesta, airy synth pad, muted pizzicato strings, low sub drone, delicate paper-like high textures",
+      "bpm": 72,
+      "structure": "one continuous slow arc: immediate weightless drift, gentle forward motion, faint uneasy tightening after the two-thirds point, quiet unresolved ending",
+      "avoid": "vocals, voices, choir, drums, strong beat, percussion loop, heroic brass, trailer hits, EDM drops, long silent intro, long outro",
+      "useCase": "underscore bed for a 55-second pixel mystery game cutscene, mixed under English narration, dialogue, and sound effects"
+    }
+  ]
+}

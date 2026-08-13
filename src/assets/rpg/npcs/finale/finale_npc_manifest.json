@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "source-derived",
+  "logicalFrame": {
+    "width": 96,
+    "height": 128
+  },
+  "sourceView": "top_down_front_pixel",
+  "sources": {
+    "student": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_student_source_grid.png",
+      "columns": 4,
+      "rows": 3,
+      "sha256": "0999eda1a82ebfa4ca91f83fb709a921b4c1849b3d8158b1bed5460fe41b2982"
+    },
+    "cleaner": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_cleaner_source_grid.png",
+      "columns": 4,
+      "rows": 4,
+      "sha256": "057e7f7322701d7c22cc59cc8dff7f4cbfad735bf0820c46da5de93859590710"
+    },
+    "guard": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_guard_source_grid.png",
+      "columns": 4,
+      "rows": 3,
+      "sha256": "9096550096f128f07e35675a1a04739b13fcbc83c04a8e2950985e54710be881"
+    }
+  },
+  "animations": [
+    {
+      "id": "student_walk",
+      "file": "src/assets/rpg/npcs/finale/student_walk_4frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 4,
+      "fps": 9,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "cc2fc2f86d3c5b6b35b24663330dbbee04500709b441e7b552c953f4c9f97994"
+    },
+    {
+      "id": "student_phone_glance",
+      "file": "src/assets/rpg/npcs/finale/student_phone_glance_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 3,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "dc524938928cb97b4afa456a23be07c031f61d389f637e6e8b565d4b7378608e"
+    },
+    {
+      "id": "student_adjust_bag",
+      "file": "src/assets/rpg/npcs/finale/student_adjust_bag_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 4,
+      "loop": false,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "5fe8fe028087ef067ad051fa7963fabdcc8f89ce7e5ec90ae46cf04e04cbef4e"
+    },
+    {
+      "id": "student_push_door",
+      "file": "src/assets/rpg/npcs/finale/student_push_door_3frame.png",
+      "frameWidth": 112,
+      "frameHeight": 128,
+      "frameCount": 3,
+      "fps": 6,
+      "loop": false,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "c37409dcc433452b8b8945fcaa8c01e4fab0b6225eeb7f9b4cdca9ef58e8e637"
+    },
+    {
+      "id": "student_idle",
+      "file": "src/assets/rpg/npcs/finale/student_idle_1frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 1,
+      "fps": 1,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "403087f0dbf1e2f0ecac30cfd5f49e41a6e3e562d8a1f4f1c155d5b1a047d61a"
+    },
+    {
+      "id": "cleaner_push_cart",
+      "file": "src/assets/rpg/npcs/finale/cleaner_push_cart_4frame.png",
+      "frameWidth": 192,
+      "frameHeight": 128,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "d7a6bdd88ec69d38accacfc4fdf478dd2e746e98060e94f407748943b4e2bd18"
+    },
+    {
+      "id": "cleaner_mop",
+      "file": "src/assets/rpg/npcs/finale/cleaner_mop_3frame.png",
+      "frameWidth": 144,
+      "frameHeight": 128,
+      "frameCount": 3,
+      "fps": 6,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "39f4e7ce0e814c58434434f7617d858654798a3735b3a7dd9e892c1917cb02c1"
+    },
+    {
+      "id": "cleaning_cart",
+      "file": "src/assets/rpg/npcs/finale/cleaning_cart_1frame.png",
+      "frameWidth": 144,
+      "frameHeight": 128,
+      "frameCount": 1,
+      "fps": 1,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "9a0035f92d5be1e57068a7c9349b29e169e6cb679ec0987c78924a345b954332"
+    },
+    {
+      "id": "cleaner_place_sign",
+      "file": "src/assets/rpg/npcs/finale/cleaner_place_sign_2frame.png",
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 4,
+      "loop": false,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "26453951ee158f218ae13b46d55c55f096120c32e643833b6951e76955d6014f"
+    },
+    {
+      "id": "cleaner_toggle_lights",
+      "file": "src/assets/rpg/npcs/finale/cleaner_toggle_lights_2frame.png",
+      "frameWidth": 112,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 4,
+      "loop": false,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "3978760c5b25abafeb075d207d77510a9092f18ca5a8c17fe39122e862be059f"
+    },
+    {
+      "id": "cleaner_rest",
+      "file": "src/assets/rpg/npcs/finale/cleaner_rest_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 2,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "48b9edf459c7ab691297a6e189cca3c22b7d7cee86a054c1bba138fdd92bc75e"
+    },
+    {
+      "id": "cleaner_idle",
+      "file": "src/assets/rpg/npcs/finale/cleaner_idle_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 2,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "e22dd28f9fcd13fdea398c61aa98f684f14cc789c4066cb371ded75c7a15a3d1"
+    },
+    {
+      "id": "guard_walk",
+      "file": "src/assets/rpg/npcs/finale/guard_walk_4frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 4,
+      "fps": 8,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "71faaa4ecf73e7ada33b581f0e1744ebd243d5fcef2ef722158fecace727f879"
+    },
+    {
+      "id": "guard_check_list",
+      "file": "src/assets/rpg/npcs/finale/guard_check_list_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 3,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "cb7482aacf3ea0d733494d026a8b6f095c88067db192ead2718332d08376b62c"
+    },
+    {
+      "id": "guard_check_watch",
+      "file": "src/assets/rpg/npcs/finale/guard_check_watch_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 3,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "e64b530285f93a2c3c650cdb7af1214bb543fd168e4c6580fe856f60b6c0abf4"
+    },
+    {
+      "id": "guard_flashlight_down",
+      "file": "src/assets/rpg/npcs/finale/guard_flashlight_down_2frame.png",
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 4,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "3e8a89fced86200fe85f43b57a335cf6a527deb8f7904132355039e499c413e3"
+    },
+    {
+      "id": "guard_radio",
+      "file": "src/assets/rpg/npcs/finale/guard_radio_2frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 2,
+      "fps": 3,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "40ca64f5701d9303891251772a4aff93b42631b754e3eec5222fdc0d5431dd29"
+    }
+  ]
+}

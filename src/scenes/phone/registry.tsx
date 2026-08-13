@@ -15,6 +15,7 @@ import { ZjudingScene } from "./P15_Zjuding";
 import { BikeArcadeScene } from "./P16_BikeArcade";
 import { ChapterTransitionScene } from "./P17_ChapterTransition";
 import { PhotosScene } from "./P18_Photos";
+import { ClockScene } from "./P19_Clock";
 
 const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   alarm: {
@@ -76,6 +77,10 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   ending: {
     label: "P12 序章结算",
     contract: "移动错误框拦截三次旁白路径，完成长按锁定和系统对话后返回手机主页。"
+  },
+  clock: {
+    label: "P19 时钟",
+    contract: "第四章校时：拖动环形刻度/表冠/数字或滚轮、Q/E 键，把被篡改冻结的 07:55:23 校准对齐。"
   }
 };
 
@@ -94,7 +99,8 @@ const REAL_SCENES: Partial<Record<SceneId, (props: SceneComponentProps) => JSX.E
   chapter_transition: ChapterTransitionScene,
   checkin: CheckinScene,
   bonsai: BonsaiScene,
-  ending: EndingScene
+  ending: EndingScene,
+  clock: ClockScene
 };
 
 export function getPhoneScene(sceneId: SceneId) {

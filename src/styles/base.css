@@ -180,6 +180,36 @@ img {
   background: #050607;
 }
 
+/* 第四章校时分屏：手机时钟页与 RPG 画布真正并排两列。
+   两列同时可见可交互；data-active-surface 仍只管理键盘焦点与任务条归属。 */
+.desktop-gameplay-shell[data-split="clock"] {
+  align-items: stretch;
+  display: flex;
+}
+
+.desktop-gameplay-shell[data-split="clock"] .desktop-phone-pane,
+.desktop-gameplay-shell[data-split="clock"] .desktop-rpg-pane {
+  inset: auto;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* 左列静态定位，宽度按手机 1:2 比例随高度自适应；
+   PhoneShell 的 430×860 缩放逻辑保持不动。 */
+.desktop-gameplay-shell[data-split="clock"] .desktop-phone-pane {
+  aspect-ratio: 1 / 2;
+  flex: 0 0 auto;
+  height: 100%;
+  position: static;
+}
+
+.desktop-gameplay-shell[data-split="clock"] .desktop-rpg-pane {
+  flex: 1 1 0;
+  height: 100%;
+  position: relative;
+}
+
 .desktop-gameplay-shell > .quest-task-bar--desktop {
   left: 14px;
   position: absolute;

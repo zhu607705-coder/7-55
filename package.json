@@ -48,7 +48,9 @@
     "audio:chapter3:verify": "node scripts/verify-chapter3-audio-contract.mjs && node scripts/generate-chapter3-audio.mjs --verify-only",
     "audio:chapter3:status": "node scripts/verify-chapter3-audio-contract.mjs --report-only",
     "audio:chapter3:qizhen:checkpoint": "node scripts/generate-chapter3-qizhen-sfx-audio.mjs --checkpoint-existing",
-    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only"
+    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only",
+    "chapter4:validate-topology": "node scripts/verify-chapter4-temporal-maze.mjs",
+    "chapter4:validate-stair-materials": "node scripts/verify-chapter4-stair-materials.mjs"
   },
   "dependencies": {
     "@fontsource/fusion-pixel-12px-proportional-sc": "^5.2.5",
@@ -56,7 +58,8 @@
     "phaser": "^3.87.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
@@ -64,6 +67,7 @@
     "@types/react-dom": "^18.3.5",
     "typescript": "^5.7.3",
     "vite": "^6.4.3",
-    "vite-plugin-singlefile": "^2.3.3"
+    "vite-plugin-singlefile": "^2.3.3",
+    "@types/three": "^0.185.4"
   }
 }

@@ -1,0 +1,89 @@
+{
+  "chapterId": "chapter-4-clock",
+  "pageTitle": "校时终端",
+  "tamperedNotice": "本机时间冻结在 07:55:23。B2-04 的签到终端只接受经三路设备共同确认的 08:00:00。",
+  "stages": [
+    { "id": "target_selection", "label": "档案" },
+    { "id": "coarse_time", "label": "机芯" },
+    { "id": "seconds_trim", "label": "漂移" },
+    { "id": "phase_lock", "label": "放行" }
+  ],
+  "targetSelection": {
+    "title": "重建签到档案",
+    "source": "B2-04 异常记录",
+    "body": "先从六条混杂记录中选出互相支持的三条证据，再据此选择目标时刻。缺少证据或选错时刻都会被终端拒绝。",
+    "clues": [
+      { "id": "room_b2_04", "stamp": "22:45", "title": "门厅残影", "body": "纸条最后进入 B2-04，门牌没有发生位移。", "valid": true },
+      { "id": "schedule_0800", "stamp": "07:58", "title": "课程调整", "body": "临时教室开放时间提前到 08:00。", "valid": true },
+      { "id": "attendance_open", "stamp": "08:00", "title": "签到日志", "body": "B2-04 终端在整点首次接受学生签到。", "valid": true },
+      { "id": "library_close", "stamp": "22:45", "title": "闭馆广播", "body": "该记录来自基础图书馆，与本楼终端无关。", "valid": false },
+      { "id": "theater_release", "stamp": "08:32", "title": "剧场放票", "body": "手机缓存中的剧场票务时间。", "valid": false },
+      { "id": "canteen_pickup", "stamp": "07:55", "title": "食堂取餐", "body": "0755 是窗口暗号，无法作为教学楼时间。", "valid": false }
+    ],
+    "options": [
+      { "seconds": 28500, "time": "07:55", "period": "冻结", "title": "手机异常", "note": "当前停留", "visual": "freeze" },
+      { "seconds": 28800, "time": "08:00", "period": "早间", "title": "B2-04", "note": "签到开放", "visual": "morning" },
+      { "seconds": 30720, "time": "08:32", "period": "剧场", "title": "票务缓存", "note": "外部记录", "visual": "evening" },
+      { "seconds": 81900, "time": "22:45", "period": "闭楼", "title": "门厅残影", "note": "进入时刻", "visual": "night" }
+    ]
+  },
+  "coarseTime": {
+    "title": "锁定双机芯",
+    "body": "小时轮与分钟轮拥有独立锁扣。先把对应数字调到目标值，再分别锁定；已经锁定的机芯不能继续旋转。"
+  },
+  "secondsTrim": {
+    "title": "消除三路设备漂移",
+    "body": "校门、电梯和教室终端记录了不同方向的秒差。逐条选择反向修正值，三路归零后才能形成 08:00:00。",
+    "channels": [
+      { "id": "gate", "label": "校门闸机", "drift": 7, "display": "+07", "expectedCorrection": -7 },
+      { "id": "elevator", "label": "主电梯", "drift": -4, "display": "-04", "expectedCorrection": 4 },
+      { "id": "room", "label": "B2-04", "drift": 23, "display": "+23", "expectedCorrection": -23 }
+    ],
+    "corrections": [-23, -7, -4, 4, 7, 23]
+  },
+  "phaseLock": {
+    "title": "通过三种放行协议",
+    "body": "三轮拥有不同速度与有效窗口：校门宽窗、主梯窄窗、教室反向扫描。每轮只需命中一次，失败会回到第一轮。",
+    "rounds": [
+      { "label": "校门", "protocol": "宽窗 / 常速", "targetMin": 0.36, "targetMax": 0.64, "cycleMs": 1900, "reverse": false },
+      { "label": "主梯", "protocol": "窄窗 / 加速", "targetMin": 0.46, "targetMax": 0.54, "cycleMs": 1280, "reverse": false },
+      { "label": "B2-04", "protocol": "偏置窗 / 反扫", "targetMin": 0.18, "targetMax": 0.32, "cycleMs": 1540, "reverse": true }
+    ]
+  },
+  "complete": {
+    "title": "07:55 冻结已解除",
+    "body": "三路设备同时写入 08:00:00，B2-04 签到终端恢复。"
+  },
+  "locked": {
+    "title": "校时权限尚未开放",
+    "body": "先完成教学楼内的十二个时间节点，再回到手机处理 B2-04。"
+  },
+  "feedback": {
+    "wrongTarget": "档案证据不足，或所选时刻与三条有效记录不一致。",
+    "wrongTime": "当前机芯或漂移修正仍未满足这一关的条件。",
+    "missedLock": "本轮放行失败，协议进度已回到校门。",
+    "locked": "该操作当前不可用，检查本关已经锁定的部分。",
+    "alreadyComplete": "校时已经完成。",
+    "targetAccepted": "三条档案证据成立，08:00 已设为校准目标。",
+    "coarseAccepted": "双机芯锁定，开始核对三路设备漂移。",
+    "precisionAccepted": "三路漂移全部归零，进入最终放行。",
+    "complete": "三种协议均已通过，冻结解除。"
+  },
+  "toastReleaseReady": "系统：三路设备已归零。等待三种协议放行。",
+  "alignedDialogue": [
+    "玩家：三路记录同时变成了 08:00。",
+    "系统：校时确认。B2-04 签到终端恢复。",
+    "玩家：07:55 的冻结解除了。"
+  ],
+  "toastAligned": "系统：校时完成。07:55 的冻结已解除。",
+  "quest": {
+    "label": "完成四关校时",
+    "hints": {
+      "target_selection": "筛选三条有效档案，再选择对应时刻。",
+      "coarse_time": "分别校准并锁定小时、分钟两组机芯。",
+      "seconds_trim": "为校门、电梯和 B2-04 选择反向漂移修正。",
+      "phase_lock": "依次通过三种速度与窗口不同的放行协议。",
+      "complete": "校时已完成。"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { eventBus } from "../core/EventBus";
+import type { StoryLine } from "../core/types";
 import voMap from "../data/vo.map.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
 import { textFeedbackDuration } from "./AudioDirector";
@@ -83,7 +84,7 @@ function urlFor(key: VoKey): string | null {
   return entry?.[1] ?? null;
 }
 
-export function voiceRoleForVoKey(key: VoKey): "male_narrator" | "female_system" | null {
+export function voiceRoleForVoKey(key: VoKey): StoryLine["voiceRole"] | null {
   return storyLineForKey(key)?.voiceRole ?? null;
 }
 
