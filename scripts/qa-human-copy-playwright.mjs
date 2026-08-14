@@ -44,7 +44,9 @@ for (const [browserName, browserType] of browsers) {
           if (message.type() === "error") errors.push(`console.error: ${message.text()}`);
         });
 
-        const url = `${baseUrl}/?devCheckpoint=${encodeURIComponent(checkpoint)}`;
+        // devCheckpoint applies the requested state before React renders. dev=0 keeps the
+        // developer navigation panel hidden so screenshots capture the actual gameplay UI.
+        const url = `${baseUrl}/?devCheckpoint=${encodeURIComponent(checkpoint)}&dev=0`;
         let state = null;
         let layout = null;
         try {
