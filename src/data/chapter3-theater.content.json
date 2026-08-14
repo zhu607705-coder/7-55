@@ -13,31 +13,31 @@
     "玩家：我在追一张纸，让我进去。",
     "检票员：纸有票吗？",
     "玩家：它从门缝进去的。",
-    "检票员：那它脸皮至少比你薄。"
+    "检票员：那它比你省事。"
   ],
   "cc98TicketCommission": {
     "id": "theater-755-ticket-commission",
     "author": "紫金港学生剧社",
     "rank": "03",
     "board": "校园生活",
-    "title": "【求助】学生剧《7:55》临时退票，求现场帮抢",
+    "title": "【求助】《7:55》临时退了一张票，有人在大讲堂吗",
     "replies": "1",
     "views": "832",
     "time": "刚刚",
-    "body": "学生剧《7:55》临时释放一张现场测试票。请在本帖的手机票务页面完成两波抢票；放票时间需要先从求是大讲堂大厅的残留记录中确认。校园网参加第一波会因响应过慢失败，第二波需要移动数据。抢票成功后会生成取票码，再到大厅自助取票机打印票根并完成闸机核验。",
-    "initialReply": "大厅取票机的普通界面不显示放票时间，深色观察里应该还留着一组四位数字。",
+    "body": "刚临时退出来一张现场测试票，我这边走不开。有人在求是大讲堂的话能不能帮忙抢一下？大厅机器里能查到放票时间，抢到后会给取票码，再去自助机打印。第一波校园网可能会卡，第二波最好提前开移动数据。",
+    "initialReply": "大厅那台机器普通界面看不到放票时间，深色观察里还能看到一组四位数。我刚试过。",
     "acceptLabel": "接下现场帮抢",
-    "postedStatus": "委托待接：前往剧院前台也无法直接取票，需要先在这里接单。",
-    "timeRequiredStatus": "先到剧院大厅用深色观察确认 08:32，确认后回到本页参加第一波。",
-    "acceptedStatus": "08:32 已确认。第一波将在本手机页面提交；可先打开控制中心切换到移动数据。",
-    "firstWaveStatus": "第一波已结束：系统判定响应速度过慢。打开手机控制中心，切换到移动数据后参加第二波。",
-    "secondWaveCountdownStatus": "第一波请求已结束，手机票务页正在等待第二波：",
-    "cellularReadyStatus": "移动数据已开启，第二波已可在本手机页面提交。",
-    "cellularRequiredStatus": "第二波仅接受移动数据。打开手机控制中心切换网络后再提交。",
-    "deliveredFirstWaveStatus": "第一波抢票成功。你的运气很好，但是钱包就没那么好了。",
-    "deliveredStatus": "第二波抢票成功。手机已收到 0832 取票码。",
+    "postedStatus": "委托还没人接。先在本帖接单，再去大厅确认放票时间。",
+    "timeRequiredStatus": "先到剧院大厅用深色观察确认 08:32，再回本页参加第一波。",
+    "acceptedStatus": "08:32 已确认。第一波会在本页开放；可以先去控制中心准备移动数据。",
+    "firstWaveStatus": "第一波请求超时。切到移动数据后等第二波。",
+    "secondWaveCountdownStatus": "第一波结束，第二波还有：",
+    "cellularReadyStatus": "移动数据已开启，可以参加第二波。",
+    "cellularRequiredStatus": "第二波需要移动数据。去控制中心切换网络后再提交。",
+    "deliveredFirstWaveStatus": "第一波抢到了。流量也确实扣了。",
+    "deliveredStatus": "第二波抢票成功。取票码 0832 已收到。",
     "secondWaveSuccessStatus": "第二波抢票成功，取票码 0832 已写入手机回执。",
-    "firstWaveCellularComment": "你的运气很好，但是钱包就没那么好了。",
+    "firstWaveCellularComment": "第一波居然抢到了。流量也确实扣了。",
     "phonePortalLabel": "手机票务 H5",
     "networkCampusWifi": "校园网",
     "networkCellular": "移动数据",
@@ -51,37 +51,37 @@
     "secondWaveOpenLabel": "第二波已开放",
     "pickupCodeLabel": "剧院取票码",
     "pickupInstruction": "去求是大讲堂大厅，在自助取票机输入 0832，打印半张票根 B。",
-    "acceptedReply": "我已经在大厅，接下这次帮抢。",
-    "firstWaveReply": "系统提示：第一波请求响应超时。第二波开始前请切换到移动数据。",
-    "deliveredFirstWaveReply": "手机票务回执：第一波抢票成功。你的运气很好，但是钱包就没那么好了。取票码 0832。",
-    "deliveredReply": "手机票务回执：第二波抢票成功，取票码 0832 已生成。请到大厅取票机打印票根。"
+    "acceptedReply": "我在大厅，帮你试一下。",
+    "firstWaveReply": "第一波超时了。我切移动数据等第二波。",
+    "deliveredFirstWaveReply": "第一波抢到了，取票码 0832。我去大厅打印。",
+    "deliveredReply": "第二波抢到了，码是 0832。我去取票机。"
   },
   "ticket": {
-    "gateDenied": "检票员：没有票不能进。",
-    "posterGlare": "玻璃反光严重，你只能看见一个很需要睡觉的人。",
-    "posterCleaned": "方法很脏，但有效。海报栏交出了它藏着的半张票。",
-    "codePrompt": "请输入取票码。它坚信你记得自己没买过的票。",
+    "gateDenied": "检票员：没票不能进。",
+    "posterGlare": "玻璃反光太重，只照出你自己的脸。",
+    "posterCleaned": "油一抹，反光压下去了。半张票露出来了。",
+    "codePrompt": "请输入取票码。",
     "codeVisible": "0832 号，两波释放，当前未取票。",
-    "codeWrong": "取票机：查无此票。你的观演资格仍停留在想象中。",
+    "codeWrong": "取票机：查无此票。",
     "commissionRequired": "取票机：当前没有已确认的代取委托。先在手机 CC98 接单。",
-    "phoneReleaseRequired": "取票机：手机票务页尚未抢到票。请先回到 CC98 帖子完成放票。",
-    "ticketPrinted": "取票机：取票码核验通过，半张票根 B 已打印并进入物品栏。",
+    "phoneReleaseRequired": "取票机：手机票务页还没抢到票。先回 CC98 完成抢票。",
+    "ticketPrinted": "取票机：0832 核验通过。半张票根 B 已打印。",
     "admissionDialogue": [
-      "检票员：这张票为什么有两种字体？",
-      "玩家：艺术效果。",
-      "检票员：好的，剧院接受艺术效果。"
+      "检票员：这张票怎么两种字体？",
+      "玩家：拼的。",
+      "检票员：……行，进去吧。别弄丢。"
     ]
   },
   "program": {
     "task": "取得节目单残页，确认节目顺序。",
     "consolePrompt": "灯控台：请输入节目顺序。",
     "consoleState": "当前状态：追光灯锁定。",
-    "ordinary": "普通节目单，看起来很会假装正式。",
-    "darkOrder": "三张分别背面浮出残影顺序：追光 -> 开场 -> 谢幕。",
-    "darkIncomplete": "残影读不出顺序：先在浅色模式找齐三张节目单残页。",
+    "ordinary": "普通节目单，正面看不出异常。",
+    "darkOrder": "三张节目单背面浮出残影顺序：追光 -> 开场 -> 谢幕。",
+    "darkIncomplete": "顺序还读不全。先在浅色模式找齐三张节目单残页。",
     "wrongDialogue": [
-      "灯控台：节目逻辑不成立。",
-      "系统：这场演出本来也没什么逻辑。"
+      "灯控台：节目顺序错误。",
+      "系统：再看一眼背面的残影。"
     ],
     "unlocked": "追光灯解锁。",
     "labels": {
@@ -92,12 +92,12 @@
   },
   "prop": {
     "task": "让纸条留下能够被追光灯识别的痕迹。",
-    "locked": "锁住了。它看起来非常相信流程。",
-    "opened": "道具箱已经空了，荧光粉刷等着去后台通风口。",
-    "ghost": "箱内有荧光粉刷的残影，但你摸不到 7:55 的东西。",
+    "locked": "道具箱锁着。",
+    "opened": "道具箱开了，里面只剩一把荧光粉刷。",
+    "ghost": "深色模式里能看到荧光粉刷的残影，浅色里箱子还是锁的。",
     "managerHint": "会谢幕的道具才能出箱。",
-    "scannerAccepted": "验票口沉默片刻，承认了这张票的艺术性。",
-    "ventComplete": "粉末被风吹上舞台。现在连借口都会发光。"
+    "scannerAccepted": "验票口响了一声，放行。",
+    "ventComplete": "荧光粉被风吹到舞台上。纸条经过时会沾上。"
   },
   "spotlight": {
     "task": "根据深色模式中的路径残影，用追光灯连续照中纸条三次。",
@@ -107,27 +107,27 @@
     "choose": "浅色模式：预置追光灯，等纸条进入光圈后持续照射。",
     "controlHint": "拖动滑轨或按左右键移动追光灯；按住照射键或空格完成锁定。",
     "wrongHint": "检查灯位、开启时机和连续照射时间。",
-    "timeoutHint": "纸条已离开舞台，本轮没有完成锁定。",
+    "timeoutHint": "纸条已经离开舞台，本轮重新开始。",
     "lockLabel": "连续锁定",
     "fireLabel": "按住照射",
     "assistHint": "辅助已开启：残影延长，命中范围扩大。",
     "failureHints": {
-      "wrong_lane": "灯位不符。重新观察纸条最后进入的灯区。",
-      "beam_not_activated": "没有开启追光灯。纸条进入灯区时按住照射。",
-      "early": "照射开启过早，纸条在进入灯区前改变了路线。",
-      "late": "照射开启过晚，纸条已经离开灯区。",
-      "interrupted": "照射中断。需要保持光圈与纸条连续重合。",
+      "wrong_lane": "灯位不对。再看一次纸条最后进入的灯区。",
+      "beam_not_activated": "追光灯没开。纸条进灯区时按住照射。",
+      "early": "开早了，纸条进灯区前换了路线。",
+      "late": "开晚了，纸条已经离开灯区。",
+      "interrupted": "照射断了。需要让光圈一直压住纸条。",
       "timeout": "纸条已经离开舞台，本轮重新开始。"
     },
-    "miss": "它避开了追光灯。当前轮次重新开始。",
-    "hit": "追光命中。",
-    "reversal": "它把被抓也写进了流程。",
+    "miss": "没照住。重新来一轮。",
+    "hit": "照中了。",
+    "reversal": "纸条脱开了。刚才抓到的是替身。",
     "endingDialogue": [
       "玩家：抓到了！",
-      "系统：whooooo！",
-      "玩家：......",
-      "玩家：它还会替身？",
-      "系统：哦，可能纸类之间有一些我们不懂的关系。"
+      "系统：抓住了！",
+      "玩家：……等等。",
+      "玩家：这个怎么是假的？",
+      "系统：它还有替身？"
     ]
   },
   "completionTask": {
@@ -143,9 +143,9 @@
     "lightConfirm": "已切换到浅色操作：可以拖放道具、清洁玻璃和操作设备。"
   },
   "feedback": {
-    "inactiveTarget": "这里暂时没有要处理的事。",
-    "standRequired": "先走到设备前的可站立位置再操作。",
-    "moveCloser": "先走近一点再操作。"
+    "inactiveTarget": "这里现在没什么可处理的。",
+    "standRequired": "先走到设备前面再操作。",
+    "moveCloser": "再靠近一点。"
   },
   "phaseUpdates": {
     "program_search": "任务更新：找齐三张节目单残页，确认节目顺序。",
