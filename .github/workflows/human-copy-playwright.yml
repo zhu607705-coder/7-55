@@ -1,0 +1,63 @@
+name: Human Copy Playwright QA
+
+on:
+  pull_request:
+    paths:
+      - "src/data/**"
+      - "scripts/qa-human-copy-playwright.mjs"
+      - "docs/human-writing-copy-policy.md"
+      - "docs/chapter-3-qizhen-cc98-rowing-record.md"
+      - ".github/workflows/human-copy-playwright.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playwright-copy-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Playwright for QA
+        run: |
+          npm install --no-save --package-lock=false playwright@1.54.2
+          npx playwright install --with-deps chromium firefox webkit
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start preview server
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/755-vite-preview.log 2>&1 &
+          echo $! > /tmp/755-vite-preview.pid
+          for i in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/755-vite-preview.log
+          exit 1
+
+      - name: Run dynamic and visual QA
+        run: node scripts/qa-human-copy-playwright.mjs
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: human-copy-playwright
+          path: artifacts/human-copy-playwright
+          if-no-files-found: warn

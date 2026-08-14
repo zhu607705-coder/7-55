@@ -1,8 +1,14 @@
 [
-  { "id": "late-printer", "nickname": "晚八点打印机", "avatar": "printer", "signature": "先看时间戳，再决定要不要相信系统。" },
-  { "id": "yuquan-wind", "nickname": "玉泉风很大", "avatar": "wind", "signature": "负责带图路过，以及提供抽象支援。" },
-  { "id": "socket-observer", "nickname": "二南插座观察员", "avatar": "socket", "signature": "对座位、插座和遗留物保持长期观察。" },
-  { "id": "qiushi-rider", "nickname": "求是潮逆行者", "avatar": "cyclist", "signature": "熟悉车流，也熟悉如何在车流里失去方向。" },
-  { "id": "six-cent-rich", "nickname": "六分钱富豪", "avatar": "coin", "signature": "持有 0.06 元流动资产和充分发言欲。" },
-  { "id": "wild-auditor", "nickname": "紫金港野生审核员", "avatar": "auditor", "signature": "没有审核权限，但习惯检查证据链。" }
+  { "id": "late-printer", "nickname": "晚八点打印机", "avatar": "printer", "signature": "打印店关门前十分钟常驻。回复通常比较急。" },
+  { "id": "yuquan-wind", "nickname": "玉泉风很大", "avatar": "wind", "signature": "路过会拍图，偶尔图比文字有用。" },
+  { "id": "socket-observer", "nickname": "二南插座观察员", "avatar": "socket", "signature": "二南常驻。座位和插座消息相对可信。" },
+  { "id": "qiushi-rider", "nickname": "求是潮逆行者", "avatar": "cyclist", "signature": "每天都说下课点不骑求是潮，第二天继续骑。" },
+  { "id": "six-cent-rich", "nickname": "六分钱富豪", "avatar": "coin", "signature": "校园卡余额长期个位数。" },
+  { "id": "wild-auditor", "nickname": "紫金港野生审核员", "avatar": "auditor", "signature": "喜欢翻前楼和时间戳，偶尔较真。" },
+  { "id": "seat-neighbor", "nickname": "二南靠窗", "avatar": "socket", "signature": "常在二层南区自习，临时离座踩过几次坑。" },
+  { "id": "course-folder", "nickname": "课件文件夹", "avatar": "printer", "signature": "课程资料主要按年份和教师整理。" },
+  { "id": "campus-card-helper", "nickname": "校园卡先别拍", "avatar": "coin", "signature": "碰到校园卡问题会补一下实测结果。" },
+  { "id": "walking-route", "nickname": "求是潮慢慢走", "avatar": "wind", "signature": "大多数时候步行，习惯看下课点路况。" },
+  { "id": "freshman-user", "nickname": "刚来紫金港", "avatar": "coin", "signature": "25级，很多校园系统还在摸索。" },
+  { "id": "finals-night", "nickname": "期末周没睡醒", "avatar": "printer", "signature": "期末周在线时间比较随机。" }
 ]
