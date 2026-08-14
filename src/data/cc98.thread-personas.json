@@ -1,8 +1,8 @@
 [
-  { "id": "late-printer", "nickname": "晚八点打印机", "avatar": "printer", "signature": "先看时间戳，再决定要不要相信系统。" },
-  { "id": "yuquan-wind", "nickname": "玉泉风很大", "avatar": "wind", "signature": "负责带图路过，以及提供抽象支援。" },
-  { "id": "socket-observer", "nickname": "二南插座观察员", "avatar": "socket", "signature": "对座位、插座和遗留物保持长期观察。" },
-  { "id": "qiushi-rider", "nickname": "求是潮逆行者", "avatar": "cyclist", "signature": "熟悉车流，也熟悉如何在车流里失去方向。" },
-  { "id": "six-cent-rich", "nickname": "六分钱富豪", "avatar": "coin", "signature": "持有 0.06 元流动资产和充分发言欲。" },
-  { "id": "wild-auditor", "nickname": "紫金港野生审核员", "avatar": "auditor", "signature": "没有审核权限，但习惯检查证据链。" }
+  { "id": "late-printer", "nickname": "晚八点打印机", "avatar": "printer", "signature": "打印店关门前十分钟常驻。回复通常比较急。" },
+  { "id": "yuquan-wind", "nickname": "玉泉风很大", "avatar": "wind", "signature": "路过会拍图，偶尔图比文字有用。" },
+  { "id": "socket-observer", "nickname": "二南插座观察员", "avatar": "socket", "signature": "二南常驻。座位和插座消息相对可信。" },
+  { "id": "qiushi-rider", "nickname": "求是潮逆行者", "avatar": "cyclist", "signature": "每天都说下课点不骑求是潮，第二天继续骑。" },
+  { "id": "six-cent-rich", "nickname": "六分钱富豪", "avatar": "coin", "signature": "校园卡余额长期个位数。" },
+  { "id": "wild-auditor", "nickname": "紫金港野生审核员", "avatar": "auditor", "signature": "喜欢翻前楼和时间戳，偶尔较真。" }
 ]
