@@ -89,13 +89,13 @@
     },
     "act1_required_item_collected": {
       "text": "Cartridge acquired. Keep walking. Apparently all four areas require your personal attendance.",
-      "subtitleZh": "卡带拿到了。地图还剩四个区域，继续走。",
+      "subtitleZh": "卡带拿到了。地图上四个区域都得本人去一趟，继续走。",
       "tone": "xiaoying",
       "delivery": "brisk instruction followed by resigned administrative annoyance"
     },
     "act1_map_completed": {
       "text": "Map complete. The menu is open, and the system has formally recorded your ability to walk. A historic day.",
-      "subtitleZh": "地图走完了。菜单开了。",
+      "subtitleZh": "地图走完了。菜单开了，系统也正式记住你会走路了。终于。",
       "tone": "xiaoying",
       "delivery": "deadpan completion notice; let the final sentence land as exhausted mock celebration"
     },
@@ -150,7 +150,7 @@
     },
     "act2_system_inventory_missing": {
       "text": "Wait. Where is your inventory? You cannot expect me to work empty-handed!",
-      "subtitleZh": "等等，你道具栏呢？没有我怎么帮你？",
+      "subtitleZh": "等等，你道具栏呢？没有道具栏我怎么帮你？",
       "tone": "xiaoying",
       "delivery": "incredulous escalation, quick second sentence, sharp final stress"
     },
@@ -174,7 +174,7 @@
     },
     "act2_system_friend": {
       "text": "But I have a friend who might.",
-      "subtitleZh": "但我认识一个可能有的人。",
+      "subtitleZh": "但我认识一个可能有权限的人。",
       "tone": "xiaoying",
       "delivery": "quiet confidence, hint of secrecy, soft ending"
     },
@@ -204,7 +204,7 @@
     },
     "act2_exercise_started": {
       "text": "Exercise record synced. Check the new Direction Calibration notice on the phone home screen.",
-      "subtitleZh": "锻炼记录同步了。回手机主页看看新通知。",
+      "subtitleZh": "锻炼记录同步了。回手机主页看看新的方向校准通知。",
       "tone": "task",
       "delivery": "clear progression cue with emphasis on the newly available home-screen notice"
     },
@@ -222,19 +222,19 @@
     },
     "act2_mentor_line_stuck": {
       "text": "That vertical line is stuck. Apparently, even your advisor's avatar has formatting requirements.",
-      "subtitleZh": "那条竖线粘住了。先想办法弄下来。",
+      "subtitleZh": "那条竖线粘住了。看来你导师头像也有自己的排版要求。",
       "tone": "xiaoying",
       "delivery": "dry annoyance, emphasize apparently and formatting requirements"
     },
     "act2_right_arrow_assembled": {
       "text": "A triangle plus a vertical line. You now have an arrow that can move things to the right.",
-      "subtitleZh": "三角形加竖线。现在是一支向右箭头。",
+      "subtitleZh": "三角形加竖线。现在是一支能把东西往右移的箭头。",
       "tone": "xiaoying",
       "delivery": "precise assembly report, confident confirmation"
     },
     "act2_balance_shifted": {
       "text": "The decimal point moved two places right. Six cents has temporarily acquired the dignity of six yuan.",
-      "subtitleZh": "小数点往右两位。现在是 6 块。",
+      "subtitleZh": "小数点往右两位。六分钱暂时有了六块钱的体面。",
       "tone": "xiaoying",
       "delivery": "mock triumph, restrained delight on six yuan"
     },
