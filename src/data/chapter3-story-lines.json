@@ -44,7 +44,7 @@
       "key": "c3_canteen_breakfast_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：就一份早饭。很正常。",
+      "subtitleZh": "系统：不，就一份很普通的早饭。",
       "voiceTextEn": "No. It is merely a disappointingly real breakfast.",
       "speed": 1.03,
       "pitch": -1
@@ -71,7 +71,7 @@
       "key": "c3_canteen_cold_clue_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：就是粥。没线索。",
+      "subtitleZh": "系统：粥是热的，线索一点没有。",
       "voiceTextEn": "The congee is hot. The clue is cold.",
       "speed": 1.04,
       "pitch": -1
@@ -80,7 +80,7 @@
       "key": "c3_canteen_worldview_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：你先别想这个。",
+      "subtitleZh": "系统：先别扩展世界观了。",
       "voiceTextEn": "Please do not expand the worldbuilding.",
       "speed": 1.08,
       "pitch": -1
@@ -107,7 +107,7 @@
       "key": "c3_canteen_self_service_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：它自己打包自己？行。",
+      "subtitleZh": "系统：自助都做到这一步了？我有点害怕。",
       "voiceTextEn": "Self-service has advanced too far. I am mildly concerned.",
       "speed": 1.01,
       "pitch": -1
@@ -125,7 +125,7 @@
       "key": "c3_bike_human_speed_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：照你现在这个速度追不上。",
+      "subtitleZh": "系统：你现在这个速度，很像没吃早饭。",
       "voiceTextEn": "You are moving at the speed of a human who skipped breakfast.",
       "speed": 1.04,
       "pitch": -1
@@ -134,7 +134,7 @@
       "key": "c3_bike_gpa_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：它又不用停下来喘气。",
+      "subtitleZh": "系统：它身上可没有绩点要背。",
       "voiceTextEn": "It carries no grade-point burden.",
       "speed": 1.04,
       "pitch": -1
@@ -143,7 +143,7 @@
       "key": "c3_bike_no_money_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：我知道。先想办法弄两块。",
+      "subtitleZh": "系统：这句话你今天已经说过很多次了。",
       "voiceTextEn": "That sentence occurs far too often in this game.",
       "speed": 1.04,
       "pitch": -1
@@ -152,7 +152,7 @@
       "key": "c3_theater_failure_narrator",
       "speaker": "narrator",
       "voiceRole": "male_narrator",
-      "subtitleZh": "旁白：这一下失败得挺彻底。",
+      "subtitleZh": "旁白：这次失败一点没留手。",
       "voiceTextEn": "A remarkably generous failure.",
       "speed": 0.94,
       "pitch": -4
@@ -161,7 +161,7 @@
       "key": "c3_theater_logic_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：顺序错了，再看一眼节目单。",
+      "subtitleZh": "系统：这场演出本来也没多少逻辑。",
       "voiceTextEn": "This performance never had much logic to begin with.",
       "speed": 1.03,
       "pitch": -1
@@ -170,7 +170,7 @@
       "key": "c3_theater_celebrate_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：抓到了！",
+      "subtitleZh": "系统：喔——！",
       "voiceTextEn": "Whooooo!",
       "speed": 1.08,
       "pitch": 1
@@ -179,7 +179,7 @@
       "key": "c3_theater_substitute_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：……它还会找替身？",
+      "subtitleZh": "系统：可能纸类之间真有点我们不知道的事。",
       "voiceTextEn": "Perhaps paper has relationships we do not understand.",
       "speed": 0.98,
       "pitch": -1
@@ -215,7 +215,7 @@
       "key": "c3_qizhen_catalog_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：意思是它现在只在倒影里能看见。",
+      "subtitleZh": "系统：意思是它现在比我们更懂艺术。",
       "voiceTextEn": "It means the paper is currently more artistic than we are.",
       "speed": 1.02,
       "pitch": -1
@@ -224,7 +224,7 @@
       "key": "c3_qizhen_map_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：行，位置总算定下来了。",
+      "subtitleZh": "系统：恭喜，校园谜语解完了。",
       "voiceTextEn": "Congratulations. You have completed a campus-scale guessing game.",
       "speed": 1.04,
       "pitch": 0
@@ -278,7 +278,7 @@
       "key": "c3_qizhen_display_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：把假的挂出去，看看它会不会出来。",
+      "subtitleZh": "系统：把它挂出去，让大家都看看。",
       "voiceTextEn": "Hang it somewhere public. Let everyone see it.",
       "speed": 1.07,
       "pitch": 1
@@ -296,7 +296,7 @@
       "key": "c3_qizhen_ego_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：它八成会追出来。试试。",
+      "subtitleZh": "系统：它大概受不了别人替它跑。",
       "voiceTextEn": "Because it cannot tolerate someone else escaping in its place.",
       "speed": 1.02,
       "pitch": -1
@@ -305,7 +305,7 @@
       "key": "c3_qizhen_atmosphere_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：没用，只多了点雾。",
+      "subtitleZh": "系统：你只是给湖里加了点气氛。",
       "voiceTextEn": "You have only made the lake more atmospheric.",
       "speed": 1.01,
       "pitch": -1
@@ -314,7 +314,7 @@
       "key": "c3_qizhen_taunt_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：还没出来。再想想。",
+      "subtitleZh": "系统：它还在嘲笑你的倒影。",
       "voiceTextEn": "It is still mocking your reflection.",
       "speed": 1.02,
       "pitch": -1
@@ -332,7 +332,7 @@
       "key": "c3_qizhen_now_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：现在！它回来了！",
+      "subtitleZh": "系统：现在！它回浅色这边了！",
       "voiceTextEn": "Now! It is back in the light layer!",
       "speed": 1.1,
       "pitch": 1
