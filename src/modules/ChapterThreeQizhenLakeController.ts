@@ -3,13 +3,28 @@ import type {
   GameStore,
   ItemId,
   QizhenFishingSpotId,
+  QizhenJournalDraft,
+  QizhenJournalState,
   QizhenLakeMode,
   QizhenLakeZone,
   QizhenMapClueId,
   QizhenPaddleDirection,
   QizhenPaddleSide,
+  QizhenPhotoRecipe,
+  QizhenPhotoRecord,
+  QizhenPhotoSpotId,
   RpgCheckpointId
 } from "../core/types";
+import {
+  applyDraft,
+  canCaptureSpot,
+  clearPendingDraft,
+  derivePhotoTags,
+  draftIdFor,
+  markSpotPublished,
+  photoIdFor,
+  upsertPhoto
+} from "./QizhenJournalModel";
 
 export type QizhenMapClueResult = "added" | "already_added" | "location_solved" | "wrong_item" | "inactive";
 export type QizhenActionResult =
@@ -23,6 +38,69 @@ export type QizhenActionResult =
   | "already_complete";
 
 export type QizhenDockOutfitPart = "kayak" | "left_paddle" | "right_paddle";
+
+/** 拍照/草稿事务的拒绝原因码。host 按原因码选择用户可见反馈。 */
+export type QizhenPhotoCaptureRejection =
+  | "inactive"
+  | "swan_chase"
+  | "journal_locked"
+  | "journal_archived"
+  | "unknown_spot";
+
+export type QizhenPhotoPrecheckResult =
+  | { accepted: true; spotId: QizhenPhotoSpotId }
+  | { accepted: false; reason: QizhenPhotoCaptureRejection };
+
+/** 场景冻结帧透传给 capturePhoto 的输入。capturedAtSeconds 取湖区会话单调秒数。 */
+export interface QizhenCapturePhotoInput {
+  spotId: QizhenPhotoSpotId;
+  recipe: QizhenPhotoRecipe;
+  speed: number;
+  roll: number;
+  kind: "main" | "spot";
+  capturedAtSeconds?: number;
+}
+
+export type QizhenCapturePhotoResult =
+  | { accepted: true; photo: QizhenPhotoRecord; draft: QizhenJournalDraft; duplicate: boolean }
+  | { accepted: false; reason: QizhenPhotoCaptureRejection };
+
+export type QizhenJournalDraftRejection =
+  | QizhenPhotoCaptureRejection
+  | "orphan_photo"
+  | "draft_mismatch"
+  | "incomplete_draft";
+
+export type QizhenJournalDraftSaveResult =
+  | { accepted: true; draft: QizhenJournalDraft; duplicate: boolean }
+  | { accepted: false; reason: QizhenJournalDraftRejection };
+
+export interface QizhenJournalDraftDiscardResult {
+  accepted: true;
+  /** 是否真的丢弃了未提交内容(无存草稿或无 pendingDraft 时为 false)。 */
+  discarded: boolean;
+}
+
+/**
+ * 发布事务的拒绝原因码(主帖与补拍回复共用并集;各方法只产出自己的子集)。
+ * 主帖发布:journal_locked / no_draft / incomplete_draft / offline / swan_chase /
+ * already_published / archived。补拍回复另产出 not_open / no_photo。
+ * 重复调用命中幂等键时返回 { accepted: true, duplicate: true },不走拒绝码。
+ */
+export type QizhenJournalPublishRejection =
+  | "journal_locked"
+  | "no_draft"
+  | "incomplete_draft"
+  | "offline"
+  | "swan_chase"
+  | "already_published"
+  | "archived"
+  | "not_open"
+  | "no_photo";
+
+export type QizhenJournalPublishResult =
+  | { accepted: true; duplicate?: boolean }
+  | { accepted: false; reason: QizhenJournalPublishRejection };
 
 const MAP_CLUE_ITEMS: Readonly<Record<QizhenMapClueId, ItemId>> = {
   bridge: "bridgeKeyword",
@@ -307,12 +385,13 @@ export class ChapterThreeQizhenLakeController {
     if (state.qizhenLake.vehicle !== "kayak") return "inactive";
     const inTutorial = state.qizhenLake.phase === "boarding_tutorial";
     const inChase = state.qizhenLake.phase === "swan_chase";
+    const nextCapsizeCount = state.qizhenLake.capsizeCount + 1;
     this.store.setState((current) => ({
       ...current,
       rpgCheckpoint: inTutorial ? "qizhen_dock" : checkpointForCurrentLakeState(current),
       qizhenLake: {
         ...current.qizhenLake,
-        capsizeCount: current.qizhenLake.capsizeCount + 1,
+        capsizeCount: nextCapsizeCount,
         chaseDistance: inChase ? 0 : current.qizhenLake.chaseDistance,
         chaseAttempts: inChase
           ? current.qizhenLake.chaseAttempts + 1
@@ -325,8 +404,13 @@ export class ChapterThreeQizhenLakeController {
     this.events.emit("qizhen_capsize_recovered", {
       reason,
       zone: state.qizhenLake.zone,
-      count: state.qizhenLake.capsizeCount + 1
+      count: nextCapsizeCount
     });
+    if (nextCapsizeCount === 6) {
+      this.events.emit("qizhen_capsize_loss_subtitle_unlocked", {
+        count: nextCapsizeCount
+      });
+    }
     return "accepted";
   }
 
@@ -634,6 +718,348 @@ export class ChapterThreeQizhenLakeController {
   }
 
   /**
+   * 拍照会话的只读预检：与 precheckCast 同一合同(零 setState、零事件、零存档写入)。
+   * 拒绝情形:追逐阶段、帖子已归档、journal locked 且上船教学未完成、未知拍摄点。
+   * 上船教学完成后 locked 不再拦截;locked → capture_ready 的推进由 capturePhoto
+   * 在首次通过的会话里随写事务完成(controller 拥有的事实)。
+   */
+  precheckPhotoCapture(spotId: QizhenPhotoSpotId): QizhenPhotoPrecheckResult {
+    return this.validatePhotoCapture(spotId);
+  }
+
+  capturePhoto(input: QizhenCapturePhotoInput): QizhenCapturePhotoResult {
+    const precheck = this.validatePhotoCapture(input.spotId);
+    if (!precheck.accepted) {
+      this.events.emit("qizhen_photo_capture_rejected", { spotId: input.spotId, reason: precheck.reason });
+      return { accepted: false, reason: precheck.reason };
+    }
+    const state = this.store.getState();
+    const journal = state.qizhenLake.journal;
+    const tags = derivePhotoTags({ recipe: input.recipe, speed: input.speed, roll: input.roll });
+    // kind 由 controller 按 journal 事实派生:lake_center 且主帖未发布 → "main",
+    // 其余一律 "spot"。input.kind 只是场景透传的提示,不作为依据。
+    const kind = journalCaptureKind(journal, input.spotId);
+    const capturedAtSeconds = capturedAtSecondsFor(input.capturedAtSeconds, journal);
+    const photoId = photoIdFor(input.spotId, capturedAtSeconds);
+    const existing = photoForSpot(journal, input.spotId);
+    if (existing && existing.id === photoId && journal.pendingDraft?.photo.id === photoId) {
+      // 同一会话内的重复快门/重试得到同一幂等 id:直接返回既有结果,不重复写。
+      return { accepted: true, photo: existing, draft: journal.pendingDraft, duplicate: true };
+    }
+    const photo: QizhenPhotoRecord = {
+      id: photoId,
+      spotId: input.spotId,
+      capturedAtSeconds,
+      tags,
+      recipe: input.recipe
+    };
+    // 主帖草稿沿用上次保存的标题/状态选择,重拍不丢选择。
+    const draft: QizhenJournalDraft = {
+      id: draftIdFor(photoId),
+      kind,
+      photo,
+      titleId: kind === "main" ? journal.mainTitleId : null,
+      statusId: kind === "main" ? journal.mainStatusId : null,
+      captionId: null
+    };
+    this.store.setState((current) => {
+      const currentJournal = current.qizhenLake.journal;
+      const unlocked: QizhenJournalState = currentJournal.status === "locked"
+        ? { ...currentJournal, status: "capture_ready" }
+        : currentJournal;
+      return {
+        ...current,
+        qizhenLake: {
+          ...current.qizhenLake,
+          journal: applyDraft(upsertPhoto(unlocked, photo), draft)
+        }
+      };
+    });
+    this.emitJournalStatusChanged(journal.status);
+    this.events.emit("qizhen_photo_captured", {
+      photoId,
+      spotId: input.spotId,
+      kind,
+      capturedAtSeconds,
+      tags,
+      duplicate: false
+    });
+    return { accepted: true, photo, draft, duplicate: false };
+  }
+
+  saveJournalDraft(draft: QizhenJournalDraft): QizhenJournalDraftSaveResult {
+    const state = this.store.getState();
+    const journal = state.qizhenLake.journal;
+    if (!state.qizhenLake.active || state.qizhenLake.phase === "inactive") {
+      return { accepted: false, reason: "inactive" };
+    }
+    if (state.qizhenLake.phase === "swan_chase") return { accepted: false, reason: "swan_chase" };
+    if (journal.status === "archived") return { accepted: false, reason: "journal_archived" };
+    if (journal.status === "locked" && !state.qizhenLake.boardingTutorialCompleted) {
+      return { accepted: false, reason: "journal_locked" };
+    }
+    if (draft.id !== draftIdFor(draft.photo.id)) return { accepted: false, reason: "draft_mismatch" };
+    const stored = photoForSpot(journal, draft.photo.spotId);
+    if (!stored || stored.id !== draft.photo.id) return { accepted: false, reason: "orphan_photo" };
+    if (draft.kind === "main" && (!draft.titleId || !draft.statusId)) {
+      return { accepted: false, reason: "incomplete_draft" };
+    }
+    if (draft.kind === "spot" && !draft.captionId) return { accepted: false, reason: "incomplete_draft" };
+    const pending = journal.pendingDraft;
+    if (pending && journalDraftsEqual(pending, draft)) {
+      // 重复保存同一草稿:返回既有结果,不重复写、不重复发事件。
+      return { accepted: true, draft: pending, duplicate: true };
+    }
+    // 只落已知字段;照片引用以存档中的记录为准,防止宿主塞入不一致数据。
+    const sanitized: QizhenJournalDraft = {
+      id: draft.id,
+      kind: draft.kind,
+      photo: stored,
+      titleId: draft.kind === "main" ? draft.titleId : null,
+      statusId: draft.kind === "main" ? draft.statusId : null,
+      captionId: draft.kind === "spot" ? draft.captionId : null
+    };
+    this.store.setState((current) => {
+      const currentJournal = current.qizhenLake.journal;
+      const unlocked: QizhenJournalState = currentJournal.status === "locked"
+        ? { ...currentJournal, status: "capture_ready" }
+        : currentJournal;
+      return {
+        ...current,
+        qizhenLake: { ...current.qizhenLake, journal: applyDraft(unlocked, sanitized) }
+      };
+    });
+    this.emitJournalStatusChanged(journal.status);
+    this.events.emit("qizhen_journal_draft_saved", {
+      draftId: sanitized.id,
+      photoId: stored.id,
+      kind: sanitized.kind,
+      duplicate: false
+    });
+    return { accepted: true, draft: sanitized, duplicate: false };
+  }
+
+  /**
+   * 丢弃挂起草稿。reason "close"(关闭会话)时已存草稿保留;未存草稿与显式
+   * "retake"(重拍)回滚草稿及其未发布照片,避免存档留下无草稿的孤儿照片。
+   * 已发布地点的照片属于帖子楼层事实,不回滚。
+   */
+  discardJournalDraft(reason: "retake" | "close" = "close"): QizhenJournalDraftDiscardResult {
+    const state = this.store.getState();
+    const draft = state.qizhenLake.journal.pendingDraft;
+    if (!draft) return { accepted: true, discarded: false };
+    const draftSaved = draft.kind === "main"
+      ? Boolean(draft.titleId && draft.statusId)
+      : Boolean(draft.captionId);
+    if (reason === "close" && draftSaved) return { accepted: true, discarded: false };
+    const published = state.qizhenLake.journal.publishedSpotIds.includes(draft.photo.spotId);
+    this.store.setState((current) => {
+      let next = clearPendingDraft(current.qizhenLake.journal);
+      if (!published) {
+        if (draft.kind === "main") {
+          if (next.mainPhoto?.id === draft.photo.id) {
+            next = {
+              ...next,
+              mainPhoto: null,
+              status: next.status === "main_draft" ? "capture_ready" : next.status
+            };
+          }
+        } else {
+          const spotId = draft.photo.spotId as "dock" | "reflection" | "swan_cove";
+          if (next.optionalPhotos[spotId]?.id === draft.photo.id) {
+            const optionalPhotos = { ...next.optionalPhotos };
+            delete optionalPhotos[spotId];
+            next = { ...next, optionalPhotos };
+          }
+        }
+      }
+      return { ...current, qizhenLake: { ...current.qizhenLake, journal: next } };
+    });
+    this.emitJournalStatusChanged(state.qizhenLake.journal.status);
+    this.events.emit("qizhen_journal_draft_discarded", {
+      draftId: draft.id,
+      photoId: draft.photo.id,
+      spotId: draft.photo.spotId,
+      reason
+    });
+    return { accepted: true, discarded: true };
+  }
+
+  /**
+   * 主帖发布的只读预检:与 publishMainPost 共享 validateMainPublish,零 setState、
+   * 零事件、零存档写入。返回 duplicate 表示主帖已发布、本次是幂等重试。
+   */
+  precheckJournalPublish(): QizhenJournalPublishResult {
+    return this.validateMainPublish();
+  }
+
+  /**
+   * 发布唯一主帖。幂等键为 threadId + draftId:threadId/threadSeed 在首次成功发布时
+   * 生成并持久化;之后重复调用(同一 draftId、或无新 main 草稿的重试)直接返回
+   * { accepted: true, duplicate: true },零写入零事件。duplicate 判定先于网络闸门,
+   * 因为幂等命中不执行写操作,断网重试已成功的发布仍得到既有结果。
+   * 成功时以草稿为准写入 mainTitleId/mainStatusId、status 推进为 "open"、把
+   * "lake_center" 记入 publishedSpotIds(与 journalCaptureKind/场景侧判定一致),
+   * 并清掉 pendingDraft(草稿选择已镜像入档)。
+   */
+  publishMainPost(): QizhenJournalPublishResult {
+    const check = this.validateMainPublish();
+    if (!check.accepted || check.duplicate) return check;
+    const state = this.store.getState();
+    const journal = state.qizhenLake.journal;
+    const draft = journal.pendingDraft?.kind === "main" ? journal.pendingDraft : null;
+    const titleId = draft?.titleId ?? null;
+    const statusId = draft?.statusId ?? null;
+    if (!draft || !titleId || !statusId) {
+      // 防御分支:validateMainPublish 已保证 main_draft + 齐全草稿,正常不可达。
+      return { accepted: false, reason: "incomplete_draft" };
+    }
+    const draftId = draft.id;
+    // 一次性随机源生成 ≥1 的 32 位整数 seed;已有持久值(数据修复/异常补档)则复用。
+    const seed = journal.threadSeed >= 1 ? journal.threadSeed : newThreadSeed();
+    const threadId = journal.threadId.length > 0 ? journal.threadId : `qizhen-journal-${seed}`;
+    this.store.setState((current) => {
+      const journalWithSpot = markSpotPublished(current.qizhenLake.journal, "lake_center");
+      return {
+        ...current,
+        qizhenLake: {
+          ...current.qizhenLake,
+          journal: {
+            ...clearPendingDraft(journalWithSpot),
+            status: "open",
+            threadId,
+            threadSeed: seed,
+            mainTitleId: titleId,
+            mainStatusId: statusId
+          }
+        }
+      };
+    });
+    this.emitJournalStatusChanged(journal.status);
+    this.events.emit("qizhen_journal_main_published", { threadId, draftId, titleId, statusId });
+    return { accepted: true };
+  }
+
+  /**
+   * 补拍回复发布的只读预检:与 publishPhotoReply 共享 validatePhotoReply,
+   * 零 setState、零事件、零存档写入。
+   */
+  precheckJournalReply(spotId: QizhenPhotoSpotId): QizhenJournalPublishResult {
+    return this.validatePhotoReply(spotId);
+  }
+
+  /**
+   * 把某拍摄点的照片追加为同一帖内的楼主回复。每地点只追加一条:重复调用命中
+   * publishedSpotIds 时返回 { accepted: true, duplicate: true },零写入零事件,
+   * 网络重试/重复点击不会产生重复楼层。
+   * captionId 固化:现有类型没有 per-spot caption 存储字段,回复投影
+   * (projectJournalThread)直接读挂起的 pendingDraft,因此发布只标记楼层、
+   * 不动 pendingDraft;发布事件顺带透出该地点挂起草稿的 captionId(无则 null)。
+   */
+  publishPhotoReply(spotId: QizhenPhotoSpotId): QizhenJournalPublishResult {
+    const check = this.validatePhotoReply(spotId);
+    if (!check.accepted || check.duplicate) return check;
+    const pending = this.store.getState().qizhenLake.journal.pendingDraft;
+    const captionId = pending?.kind === "spot" && pending.photo.spotId === spotId
+      ? pending.captionId
+      : null;
+    this.store.setState((current) => ({
+      ...current,
+      qizhenLake: {
+        ...current.qizhenLake,
+        journal: markSpotPublished(current.qizhenLake.journal, spotId)
+      }
+    }));
+    this.events.emit("qizhen_journal_reply_published", {
+      spotId,
+      publishedSpotIds: [...this.store.getState().qizhenLake.journal.publishedSpotIds],
+      captionId
+    });
+    return { accepted: true };
+  }
+
+  /**
+   * publishMainPost 的纯验证段:零 setState、零事件。追逐闸门最先(该阶段一律拒绝);
+   * 已发布时同一 draftId(或无新 main 草稿)的重试命中幂等键返回 duplicate,
+   * 出现另一份 main 草稿才拒绝 already_published;网络闸门最后,只拦真正的写发布。
+   */
+  private validateMainPublish(): QizhenJournalPublishResult {
+    const state = this.store.getState();
+    const journal = state.qizhenLake.journal;
+    if (state.qizhenLake.phase === "swan_chase") return { accepted: false, reason: "swan_chase" };
+    if (journal.status === "archived") return { accepted: false, reason: "archived" };
+    if (journal.status === "open" || journal.status === "summary_ready") {
+      const draft = journal.pendingDraft;
+      const isRetryOfPublished = !draft
+        || draft.kind !== "main"
+        || (journal.mainPhoto !== null && draft.id === draftIdFor(journal.mainPhoto.id));
+      return isRetryOfPublished
+        ? { accepted: true, duplicate: true }
+        : { accepted: false, reason: "already_published" };
+    }
+    if (journal.status === "locked") return { accepted: false, reason: "journal_locked" };
+    if (journal.status === "capture_ready") return { accepted: false, reason: "no_draft" };
+    // status === "main_draft":发布以挂起的 main 草稿为准。
+    const draft = journal.pendingDraft;
+    if (!draft || draft.kind !== "main") return { accepted: false, reason: "no_draft" };
+    if (!draft.titleId || !draft.statusId) return { accepted: false, reason: "incomplete_draft" };
+    if (state.networkMode !== "campus_wifi") return { accepted: false, reason: "offline" };
+    return { accepted: true };
+  }
+
+  /**
+   * publishPhotoReply 的纯验证段:零 setState、零事件。主帖未开(not_open)含
+   * capture_ready/main_draft 两种草稿期;open 与 summary_ready(追逐后整理)都允许补发。
+   */
+  private validatePhotoReply(spotId: QizhenPhotoSpotId): QizhenJournalPublishResult {
+    const state = this.store.getState();
+    const journal = state.qizhenLake.journal;
+    if (state.qizhenLake.phase === "swan_chase") return { accepted: false, reason: "swan_chase" };
+    if (journal.status === "archived") return { accepted: false, reason: "archived" };
+    if (journal.status === "locked") return { accepted: false, reason: "journal_locked" };
+    if (journal.status === "capture_ready" || journal.status === "main_draft") {
+      return { accepted: false, reason: "not_open" };
+    }
+    // status === "open" | "summary_ready":幂等命中先于照片与网络检查。
+    if (journal.publishedSpotIds.includes(spotId)) return { accepted: true, duplicate: true };
+    const photo = spotId === "lake_center" ? null : journal.optionalPhotos[spotId];
+    if (!photo) return { accepted: false, reason: "no_photo" };
+    if (state.networkMode !== "campus_wifi") return { accepted: false, reason: "offline" };
+    return { accepted: true };
+  }
+
+  /** capturePhoto/saveJournalDraft/discardJournalDraft 的公共只读验证段。 */
+  private validatePhotoCapture(spotId: QizhenPhotoSpotId): QizhenPhotoPrecheckResult {
+    const state = this.store.getState();
+    if (!state.qizhenLake.active || state.qizhenLake.phase === "inactive") {
+      return { accepted: false, reason: "inactive" };
+    }
+    if (state.qizhenLake.phase === "swan_chase") return { accepted: false, reason: "swan_chase" };
+    const spotCheck = canCaptureSpot(state.qizhenLake.journal, spotId);
+    if (!spotCheck.ok) {
+      if (spotCheck.reason === "journal_locked" && state.qizhenLake.boardingTutorialCompleted) {
+        // 上船教学完成后 locked 视为可拍;状态推进由写事务完成。
+        return { accepted: true, spotId };
+      }
+      const reason: QizhenPhotoCaptureRejection = spotCheck.reason === "journal_archived"
+        ? "journal_archived"
+        : spotCheck.reason === "unknown_spot"
+          ? "unknown_spot"
+          : "journal_locked";
+      return { accepted: false, reason };
+    }
+    return { accepted: true, spotId };
+  }
+
+  /** 写事务后对比一次状态,有推进才发一次净变化事件。 */
+  private emitJournalStatusChanged(previous: QizhenJournalState["status"]): void {
+    const current = this.store.getState().qizhenLake.journal.status;
+    if (current !== previous) {
+      this.events.emit("qizhen_journal_status_changed", { from: previous, to: current });
+    }
+  }
+
+  /**
    * castAt 的纯验证段：零 setState、零事件、零计数器。
    * 直抛纸条分支只返回 "direct_paper_failure"，其计数与事件副作用留在 castAt。
    */
@@ -754,6 +1180,48 @@ function spotFromTarget(targetId: string): QizhenFishingSpotId | null {
   if (targetId.includes("fish")) return "fish";
   if (targetId.includes("paper") || targetId.includes("reflection")) return "paper";
   return null;
+}
+
+function photoForSpot(journal: QizhenJournalState, spotId: QizhenPhotoSpotId): QizhenPhotoRecord | null {
+  return spotId === "lake_center" ? journal.mainPhoto : journal.optionalPhotos[spotId] ?? null;
+}
+
+/** lake_center 在主帖发布前一律是 "main";发布后(含归档)不再产生主帖草稿。 */
+function journalCaptureKind(journal: QizhenJournalState, spotId: QizhenPhotoSpotId): "main" | "spot" {
+  if (spotId !== "lake_center") return "spot";
+  const mainPublished = journal.publishedSpotIds.includes("lake_center")
+    || journal.status === "open"
+    || journal.status === "summary_ready"
+    || journal.status === "archived";
+  return mainPublished ? "spot" : "main";
+}
+
+/**
+ * 捕获时刻:优先用场景会话的单调秒数;缺失或非法时退化为存档内最大
+ * capturedAtSeconds + 1,保证幂等 id 单调且确定。
+ */
+function capturedAtSecondsFor(input: number | undefined, journal: QizhenJournalState): number {
+  if (typeof input === "number" && Number.isInteger(input) && input >= 0) return input;
+  let max = 0;
+  if (journal.mainPhoto) max = Math.max(max, journal.mainPhoto.capturedAtSeconds);
+  for (const photo of Object.values(journal.optionalPhotos)) {
+    if (photo) max = Math.max(max, photo.capturedAtSeconds);
+  }
+  return max + 1;
+}
+
+function journalDraftsEqual(a: QizhenJournalDraft, b: QizhenJournalDraft): boolean {
+  return a.id === b.id
+    && a.kind === b.kind
+    && a.photo.id === b.photo.id
+    && a.titleId === b.titleId
+    && a.statusId === b.statusId
+    && a.captionId === b.captionId;
+}
+
+/** 一次性随机源:返回 [1, 2^31-1] 的 32 位整数,作为主帖 threadSeed/threadId 的种子。 */
+function newThreadSeed(): number {
+  return 1 + Math.floor(Math.random() * 0x7fffffff);
 }
 
 function checkpointForCurrentLakeState(state: ReturnType<GameStore["getState"]>): RpgCheckpointId {

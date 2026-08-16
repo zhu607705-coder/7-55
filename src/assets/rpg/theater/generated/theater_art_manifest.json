@@ -1,0 +1,542 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "deterministic",
+  "chromaKeyRule": "adaptive green removal; actor and fluorescent assets preserve authored green details",
+  "sources": {
+    "characters": {
+      "file": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "sha256": "79afb377aa6b51d85a8ef0b610edeaa8647c0aa11b3919334b845228f2f9bb1f"
+    },
+    "facilities": {
+      "file": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "sha256": "147b03d21a28855f4d5fbfdf091b0baaf7be1d48832da6fe25029107f8e93008"
+    },
+    "effects": {
+      "file": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "sha256": "2ac87e494fd4ac3c8d4b29916f009e8944d779a090b7384ab74a25bb986461f5"
+    },
+    "portraits": {
+      "file": "src/assets/rpg/theater/source/theater_portraits_source.png",
+      "sha256": "73b45dc7e1c6e42b7a268285ecefb261752b9477fa2ff167a78fee6c2b40c6c1"
+    }
+  },
+  "assets": [
+    {
+      "id": "ticket_inspector_idle_front",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "160x300+58+44",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/ticket_inspector_idle_front.png",
+      "bytes": 14173,
+      "sha256": "0dd7a303ddca9e3eb396968c58e01131757d6f44b695c3abb0a5a1f8e341d586"
+    },
+    {
+      "id": "ticket_inspector_idle_left",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "165x305+316+41",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/ticket_inspector_idle_left.png",
+      "bytes": 11139,
+      "sha256": "612edafce10e841f421dad3864649d02ce3a64a5324214c57e3be381ffee4f3b"
+    },
+    {
+      "id": "ticket_inspector_idle_right",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "165x305+549+41",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/ticket_inspector_idle_right.png",
+      "bytes": 11213,
+      "sha256": "46ae2728bd4fe1a4a86bd53a148849d166e3737fc38bc7587a0dca085bf80644"
+    },
+    {
+      "id": "ticket_inspector_idle_back",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "158x307+820+41",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/ticket_inspector_idle_back.png",
+      "bytes": 12106,
+      "sha256": "73797069506909d5e7f03047576a2a0c2a609eaf06ee323a5385ee4847300262"
+    },
+    {
+      "id": "ticket_inspector_scan_front",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "188x303+1028+48",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/ticket_inspector_scan_front.png",
+      "bytes": 14967,
+      "sha256": "0342dfedddd3311a956f939b0f2a98281d29310ecd9b40979ff7b61af90c58c2"
+    },
+    {
+      "id": "ticket_inspector_scan_side",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "217x306+1285+45",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/ticket_inspector_scan_side.png",
+      "bytes": 12189,
+      "sha256": "d3faea52ee610397c2c5de870a2affdab9d82aa35a16e1fbf633e89da5bf6d3d"
+    },
+    {
+      "id": "stage_manager_ghost_idle",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "183x303+149+372",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/stage_manager_ghost_idle.png",
+      "bytes": 15844,
+      "sha256": "2a8ce7c2e16284e5877af569fcb21d970dee72ce6a37f1094bcfef653f6a5ba7"
+    },
+    {
+      "id": "stage_manager_ghost_point",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "260x302+454+373",
+      "fit": "94x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/stage_manager_ghost_point.png",
+      "bytes": 14941,
+      "sha256": "6f1f4ec53e7fe382ecdeaef3d40abe7f177d18239feb2e3970ab359c3d075ab0"
+    },
+    {
+      "id": "stage_manager_ghost_warn",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "210x299+761+376",
+      "fit": "88x120",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/stage_manager_ghost_warn.png",
+      "bytes": 16904,
+      "sha256": "f84551020a2fbb33a4d1b521bb4644af0590c61fb2c3052925d970e2fdd7787b"
+    },
+    {
+      "id": "stage_manager_ghost_fade",
+      "group": "actors",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "273x291+1074+378",
+      "fit": "94x116",
+      "canvas": "96x128",
+      "output": "src/assets/rpg/theater/generated/actors/stage_manager_ghost_fade.png",
+      "bytes": 13264,
+      "sha256": "0203e44300213cb7f5ba22c77c4422b94f6ec9ab7cafb6e17da98a9e6a2b7f8f"
+    },
+    {
+      "id": "paper_flight_0",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "93x110+31+716",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_flight_0.png",
+      "bytes": 6386,
+      "sha256": "bffbfe118f3b2383dcef99037c0c2d260105013b9357413ec21f8a97fe411b93"
+    },
+    {
+      "id": "paper_flight_1",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "96x112+148+716",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_flight_1.png",
+      "bytes": 6018,
+      "sha256": "a7a65b1b682ac9ad22bd97f6476c488027f55fc78e21fbf75f2572282c8271d8"
+    },
+    {
+      "id": "paper_flight_2",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "97x113+277+714",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_flight_2.png",
+      "bytes": 4958,
+      "sha256": "bb006bbff0978ab40d205a7a9a338ccfa6cf5e3cf27b781810c122ec7f378f5a"
+    },
+    {
+      "id": "paper_flight_3",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "106x114+384+709",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_flight_3.png",
+      "bytes": 6041,
+      "sha256": "5eaba412d350415aff3dfec744517b5ef7889b474ee41440ed7d8fb939424970"
+    },
+    {
+      "id": "paper_flight_4",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "91x116+521+713",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_flight_4.png",
+      "bytes": 5421,
+      "sha256": "0f4c0f8913ab364d53782e50393825073a515b950a8bb0328b0eb1fb16f9b5bb"
+    },
+    {
+      "id": "paper_residual",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "124x121+768+715",
+      "fit": "60x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_residual.png",
+      "bytes": 6578,
+      "sha256": "55d68a3a101e99393195272ac69a32f67cd7b964caeb14be352ccf5c7d022e80"
+    },
+    {
+      "id": "paper_fluorescent",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "127x122+1024+712",
+      "fit": "58x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_fluorescent.png",
+      "bytes": 5874,
+      "sha256": "ec725e9e552b50082c86bfb0d8f6b18e5aa5ecc77de941ed482abe7616089650"
+    },
+    {
+      "id": "paper_locked",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "113x125+1155+715",
+      "fit": "56x58",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_locked.png",
+      "bytes": 6873,
+      "sha256": "d2b8759db669134446e20b9a387a15468ffdc0613798d6b2e399f4045993f8df"
+    },
+    {
+      "id": "paper_reverse",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "118x97+76+883",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_reverse.png",
+      "bytes": 5744,
+      "sha256": "67952eeed37d9a325ad7740ff58b873c6473e4d904a5be0aacf5b684094ec548"
+    },
+    {
+      "id": "paper_cracked",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "112x102+281+876",
+      "fit": "56x56",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_cracked.png",
+      "bytes": 6587,
+      "sha256": "a7095bc571df5cbe1969197559d81c7ad7ed8dd757246536bcd6ed95a42dbe1c"
+    },
+    {
+      "id": "paper_escape",
+      "group": "paper",
+      "source": "src/assets/rpg/theater/source/theater_characters_paper_source.png",
+      "crop": "172x96+1302+884",
+      "fit": "62x48",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/paper/paper_escape.png",
+      "bytes": 3253,
+      "sha256": "9db00056b93239d7403fa814ebac0d0611663f63ce0f58a12876cd9fc5dcbb66"
+    },
+    {
+      "id": "item_theater_ticket_half_a",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "88x105+36+793",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_theater_ticket_half_a.png",
+      "bytes": 5999,
+      "sha256": "85c0a8a7291f987b19840a109b6316cf2cc63985e93c25d0fc294241b6d0abae"
+    },
+    {
+      "id": "item_theater_ticket_half_b",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "90x105+136+793",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_theater_ticket_half_b.png",
+      "bytes": 5958,
+      "sha256": "603c1a0a72a75d8de104f8b4292e23072c86f91df0427649c8544010a5fc353c"
+    },
+    {
+      "id": "item_temporary_theater_ticket",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "191x103+256+795",
+      "fit": "58x42",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_temporary_theater_ticket.png",
+      "bytes": 4545,
+      "sha256": "4bd185faad04f78371ba0b9c0afa67125d97d7ae5298e069db09edcc84f9f36c"
+    },
+    {
+      "id": "item_theater_program_opening",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "105x154+482+771",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_theater_program_opening.png",
+      "bytes": 4606,
+      "sha256": "76fe0bf8c6331b76bdca7c62e93262a20a8391428f54e985dd4f44b15f63f22b"
+    },
+    {
+      "id": "item_theater_program_spotlight",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "80x155+611+770",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_theater_program_spotlight.png",
+      "bytes": 3380,
+      "sha256": "ded2111f0fe165fecb4715abaf8d02da25b0e57ca54f2c95f385078bb00e1ed4"
+    },
+    {
+      "id": "item_theater_program_finale",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "133x157+701+771",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_theater_program_finale.png",
+      "bytes": 5398,
+      "sha256": "5ee873e1dfe036464c6ed80ca194c04f5a5f5db216edb920e43a0a52f4c943c1"
+    },
+    {
+      "id": "item_spotlight_remote",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "95x153+845+772",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_spotlight_remote.png",
+      "bytes": 3738,
+      "sha256": "503dedfad1ef5ee804fa0580c414272663e267f3f0224ce16c31765ea5bdeeb9"
+    },
+    {
+      "id": "item_fluorescent_brush",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "118x141+961+766",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_fluorescent_brush.png",
+      "bytes": 3298,
+      "sha256": "0a14e657ed72fd8f0ee68e2f6bea79871203e7183142f72208be4b3928112966"
+    },
+    {
+      "id": "item_decoy_paper",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "118x152+1092+774",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_decoy_paper.png",
+      "bytes": 5138,
+      "sha256": "0a1ec0c27f0115307870f864675b529f0525e90ce3d53526290f74a4feb197d7"
+    },
+    {
+      "id": "item_wet_program",
+      "group": "icons",
+      "source": "src/assets/rpg/theater/source/theater_facilities_props_source.png",
+      "crop": "136x160+1221+770",
+      "fit": "54x54",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/icons/item_wet_program.png",
+      "bytes": 5165,
+      "sha256": "9d6a126d6feffa6c220bdfd47709c4da89c4004241ea0e644374b6f3b8850bb8"
+    },
+    {
+      "id": "clue_ticket_hidden_mark",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "179x148+42+122",
+      "fit": "112x90",
+      "canvas": "128x96",
+      "output": "src/assets/rpg/theater/generated/effects/clue_ticket_hidden_mark.png",
+      "bytes": 12942,
+      "sha256": "bd5321a64945dcff1f1c1b604e80f5ecf8870b84e32fc401f3d4190172cf738d"
+    },
+    {
+      "id": "clue_ticket_code_0832",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "150x115+250+144",
+      "fit": "128x78",
+      "canvas": "144x96",
+      "output": "src/assets/rpg/theater/generated/effects/clue_ticket_code_0832.png",
+      "bytes": 9472,
+      "sha256": "9d3e5c0c83aacead241d8e731f3288a6ca50f503d68e3a7b81759e6e373d4e6d"
+    },
+    {
+      "id": "clue_program_back_1",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "146x186+551+97",
+      "fit": "70x90",
+      "canvas": "80x96",
+      "output": "src/assets/rpg/theater/generated/effects/clue_program_back_1.png",
+      "bytes": 5652,
+      "sha256": "05f585e4232c13b56f4c43a90b37ae3dda8e30746a9b023ce8335f927745376d"
+    },
+    {
+      "id": "clue_program_back_2",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "153x186+711+97",
+      "fit": "74x90",
+      "canvas": "80x96",
+      "output": "src/assets/rpg/theater/generated/effects/clue_program_back_2.png",
+      "bytes": 6300,
+      "sha256": "fb28ee9a52c94f5b147e166411216a0da8fde99fe46f5260b3c23feeb6771936"
+    },
+    {
+      "id": "clue_program_back_3",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "142x186+870+97",
+      "fit": "70x90",
+      "canvas": "80x96",
+      "output": "src/assets/rpg/theater/generated/effects/clue_program_back_3.png",
+      "bytes": 6063,
+      "sha256": "986c51d95c63a0cf5f1e5c6fcce6e4e25f6ad3486ce828532a188f67f2e49c69"
+    },
+    {
+      "id": "clue_prop_box_ghost",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "223x159+1025+123",
+      "fit": "122x84",
+      "canvas": "128x96",
+      "output": "src/assets/rpg/theater/generated/effects/clue_prop_box_ghost.png",
+      "bytes": 19420,
+      "sha256": "c453abb10ab4dd8e7c6a07838cdcdc686907119056e88bee5e4f7d0e22944b35"
+    },
+    {
+      "id": "clue_paper_future_path",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "250x180+1260+115",
+      "fit": "154x104",
+      "canvas": "160x112",
+      "output": "src/assets/rpg/theater/generated/effects/clue_paper_future_path.png",
+      "bytes": 7307,
+      "sha256": "85b982ebe0c91de20e01e7bd5a7b241a2ebc3ef365dd93968ceb97a6cc046bf8"
+    },
+    {
+      "id": "spotlight_beam",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "180x240+210+380",
+      "fit": "148x220",
+      "canvas": "160x224",
+      "output": "src/assets/rpg/theater/generated/effects/spotlight_beam.png",
+      "bytes": 24978,
+      "sha256": "9e742cf161b423d1a4286977d8c7a21bd92d8aeae1848a5096b786cd6eed8261"
+    },
+    {
+      "id": "spotlight_hit_ring",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "230x220+690+390",
+      "fit": "142x136",
+      "canvas": "160x144",
+      "output": "src/assets/rpg/theater/generated/effects/spotlight_hit_ring.png",
+      "bytes": 3526,
+      "sha256": "f598c19e2335616d2e3d9e0884bd0e3207887ae0d489420f385c4c10de4d4a96"
+    },
+    {
+      "id": "spotlight_sparks",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "220x270+1030+360",
+      "fit": "132x164",
+      "canvas": "144x176",
+      "output": "src/assets/rpg/theater/generated/effects/spotlight_sparks.png",
+      "bytes": 4431,
+      "sha256": "50315ce718b4ad71920a4f501e1305960e684fbd8d63d6401b638560f16fc71f"
+    },
+    {
+      "id": "spotlight_fault_strip",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "270x150+1230+420",
+      "fit": "210x112",
+      "canvas": "224x128",
+      "output": "src/assets/rpg/theater/generated/effects/spotlight_fault_strip.png",
+      "bytes": 11511,
+      "sha256": "796f9317499b28a600175bbf378c58e2ef1c59ab076f756ae0ab06104414a0d6"
+    },
+    {
+      "id": "paper_reversal_locked",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "160x170+400+730",
+      "fit": "58x60",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/effects/paper_reversal_locked.png",
+      "bytes": 5166,
+      "sha256": "4c6c285d0cf1c8136641d5707b5c669f581945d18e28477ddf5a15a2376d18d0"
+    },
+    {
+      "id": "paper_reversal_cracked",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "160x160+780+740",
+      "fit": "58x58",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/effects/paper_reversal_cracked.png",
+      "bytes": 7725,
+      "sha256": "f6cdaef00c4fdaa8f39623da13a5bb2b17caa17bd2b8d91082b1b9dca83811ff"
+    },
+    {
+      "id": "paper_reversal_fragments",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "200x190+940+720",
+      "fit": "74x62",
+      "canvas": "80x72",
+      "output": "src/assets/rpg/theater/generated/effects/paper_reversal_fragments.png",
+      "bytes": 5679,
+      "sha256": "8f5e5a00a4c5c33bdab58597aa77bd04a5b34fe34e4eb12c4441d69983f83876"
+    },
+    {
+      "id": "paper_reversal_escape",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "210x170+1120+730",
+      "fit": "72x58",
+      "canvas": "80x64",
+      "output": "src/assets/rpg/theater/generated/effects/paper_reversal_escape.png",
+      "bytes": 6712,
+      "sha256": "e32352c72c465c01e5b02133e6a74ea36b4bba9d161f867368c6674d38e45b6a"
+    },
+    {
+      "id": "paper_reversal_decoy",
+      "group": "effects",
+      "source": "src/assets/rpg/theater/source/theater_dark_spotlight_source.png",
+      "crop": "160x170+1340+740",
+      "fit": "58x58",
+      "canvas": "64x64",
+      "output": "src/assets/rpg/theater/generated/effects/paper_reversal_decoy.png",
+      "bytes": 3967,
+      "sha256": "1979a6e9901ae498c25908f10919725bc7154213596c91754b29888731df7550"
+    }
+  ]
+}

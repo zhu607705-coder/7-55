@@ -133,49 +133,49 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   cafeteriaWages: {
     category: "餐盘回收费 2.00 元",
     source: "餐盘回收",
-    intro: "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。"
+    intro: "收回三只目标餐盘得到的两元钱，可支付一次扫码骑车。"
   },
   greaseTissue: {
     category: "油渍纸巾",
     source: "食堂桌面",
-    intro: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。"
+    intro: "收餐口阿姨给的油渍纸巾，可擦掉车锁和海报玻璃上的反光。"
   },
   sparklingWater: {
     category: "调配原料 · 蓝色",
     source: "食堂饮料区",
-    intro: "看起来很清爽，实际上是队伍秩序的原材料。"
+    intro: "蓝色饮料原料。与黑咖啡、柠檬茶按货架顺序调配。"
   },
   lemonTea: {
     category: "调配原料 · 白色",
     source: "食堂饮料区",
-    intro: "瓶罐架残字写着它的颜色。请结合暗色观察确认配方位置。"
+    intro: "白色饮料原料。查看货架颜色顺序后放进混合台。"
   },
   blackCoffee: {
     category: "调配原料 · 黑色",
     source: "食堂饮料区",
-    intro: "早八指定燃料。喝了也不一定清醒。"
+    intro: "黑色饮料原料。按货架顺序放进混合台。"
   },
   badDrink: {
     category: "失败饮品",
     source: "食堂混合台",
-    intro: "不建议喝。喝完之后会理解早八，但不能推进剧情。",
+    intro: "混错顺序得到的饮料。可以喝掉，不能推进任务。",
     useHint: "在食堂 RPG 中拖到自己身上可以喝掉。"
   },
   dailySpecialSparklingWater: {
     category: "今日新品",
     source: "食堂混合台",
-    intro: "它让队伍承认你存在，也能在守出口时制造两秒气泡。",
+    intro: "拖到第三窗口宣传板的空杯位。守出口时可在地面留两秒减速气泡。",
     useHint: "先拖到第三个餐口宣传板空杯位；守出口时可再拖进食堂地面减速纸条。"
   },
   pickupTicket0755: {
     category: "0755 取餐号",
     source: "点餐机",
-    intro: "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。"
+    intro: "点餐机打印的取餐小票。切到深色模式，交给 3 号窗口残影阿姨。"
   },
-  canteenRealBun: { category: "食堂彩蛋", source: "1号取餐窗口", intro: "比较真实的包子。" },
-  canteenCluelessSoyMilk: { category: "食堂彩蛋", source: "2号取餐窗口", intro: "没什么线索的豆浆。" },
-  canteenEdgeEgg: { category: "食堂彩蛋", source: "4号取餐窗口", intro: "世界观边缘的鸡蛋。" },
-  canteenUselessCongee: { category: "食堂彩蛋", source: "5号取餐窗口", intro: "很热但很没用的白粥。" },
+  canteenRealBun: { category: "食堂彩蛋", source: "1号取餐窗口", intro: "从窗口领到的包子。正常，且没有纸条线索。" },
+  canteenCluelessSoyMilk: { category: "食堂彩蛋", source: "2号取餐窗口", intro: "从窗口领到的豆浆。此时没有其他用途。" },
+  canteenEdgeEgg: { category: "食堂彩蛋", source: "4号取餐窗口", intro: "从窗口领到的鸡蛋。此时没有其他用途。" },
+  canteenUselessCongee: { category: "食堂彩蛋", source: "5号取餐窗口", intro: "从窗口领到的白粥。烫手，且没有其他用途。" },
   theaterTicketHalfA: {
     category: "半张剧院票根 A",
     source: "剧院海报栏",

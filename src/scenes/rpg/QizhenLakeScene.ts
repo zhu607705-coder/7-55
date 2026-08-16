@@ -6,7 +6,14 @@ import qizhenOpenWaterUrl from "../../assets/rpg/interiors/qizhen_lake_open_wate
 import qizhenSwanCoveUrl from "../../assets/rpg/interiors/qizhen_lake_swan_cove.png";
 import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
-import type { GameState, ItemId, QizhenLakeMode, QizhenPaddleDirection } from "../../core/types";
+import type {
+  GameState,
+  ItemId,
+  QizhenLakeMode,
+  QizhenPaddleDirection,
+  QizhenPhotoRecipe,
+  QizhenPhotoSpotId
+} from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
@@ -32,9 +39,12 @@ import {
   QIZHEN_LAKE_TARGETS,
   QIZHEN_LAKE_WORLD,
   QIZHEN_LAKE_ZONES,
+  buildQizhenPhotoRecipe,
   clampKayakToWater,
   findNearestQizhenTarget,
+  nearestQizhenPhotoSpot,
   qizhenTargetAcceptsItem,
+  resolveQizhenPhotoSpot,
   targetsForQizhenZone,
   type QizhenLakeInteractionTarget,
   type QizhenLakeOcclusionRect,
@@ -48,7 +58,7 @@ import {
   type QizhenBlackSwanVisual,
   type QizhenPaddleSide
 } from "./QizhenKayakTextures";
-import { getAudioContextConstructor } from "../../core/ClientCompatibility";
+import { detectInputProfile, getAudioContextConstructor } from "../../core/ClientCompatibility";
 import { DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY } from "../../core/StorageKeys";
 import {
   QIZHEN_FISHING_TIMING,
@@ -95,6 +105,10 @@ const FEEDBACK_MS = 2700;
 const LOCKED_PORTAL_HINT_REPEAT_MS = 6000;
 const SAME_SIDE_HINT_COOLDOWN_MS = 2600;
 const BOUNDARY_BLOCKED_HINT_COOLDOWN_MS = 2400;
+/** 相机打开期间瞬时速度的指数衰减率(每秒),让船速缓慢归零而不是突停。 */
+const PHOTO_SESSION_SPEED_DAMPING_PER_SECOND = 2.4;
+/** 黑天鹅静态视觉锚点(源像素),与 createZoneSwan 的站位一致。 */
+const SWAN_COVE_SWAN_ANCHOR = { x: 1160, y: 400 } as const;
 
 const CHAIN_ITEMS = {
   fishingRod: "fishingRod",
@@ -220,7 +234,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private statusText!: Phaser.GameObjects.Text;
   private zoneText!: Phaser.GameObjects.Text;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
+  private keys!: Record<"W" | "A" | "S" | "D" | "C" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
 
   private currentZone: QizhenLakeZoneId = "dock";
   private currentVehicle: QizhenLakeVehicle = "on_foot";
@@ -274,6 +288,18 @@ export class QizhenLakeScene extends Phaser.Scene {
   private boundaryHeadingAtBlock = 0;
   private boundaryRollAtBlock = 0;
   private reflectionDialoguePlayed = false;
+
+  private photoSessionOpen = false;
+  private photoSessionSpotId: QizhenPhotoSpotId | null = null;
+  private lastPhotoSessionRequest: {
+    spotId: QizhenPhotoSpotId;
+    recipe: QizhenPhotoRecipe;
+    speed: number;
+    roll: number;
+    kind: "main" | "spot";
+    capturedAtSeconds: number;
+  } | null = null;
+  private photoCameraButton: Phaser.GameObjects.Container | null = null;
 
   private fishingPendingAttempt: QizhenFishingAttempt | null = null;
   private fishingActiveAttempt: QizhenFishingAttempt | null = null;
@@ -349,8 +375,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.kayak = new QizhenKayakVisual(this);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
-    this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT,TAB") as Record<
-      "W" | "A" | "S" | "D" | "SHIFT" | "TAB",
+    this.keys = this.input.keyboard!.addKeys("W,A,S,D,C,SHIFT,TAB") as Record<
+      "W" | "A" | "S" | "D" | "C" | "SHIFT" | "TAB",
       Phaser.Input.Keyboard.Key
     >;
     this.input.keyboard!.addCapture([
@@ -402,6 +428,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       align: "center"
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(5200).setVisible(false);
 
+    this.createPhotoCameraButton();
     this.rebuildZone(this.currentZone, this.currentVehicle, null, false);
     this.applyVehicle(this.currentVehicle, false);
 
@@ -472,7 +499,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.dialogueLocked && !this.zoneTransitioning) {
+    if (
+      Phaser.Input.Keyboard.JustDown(this.keys.TAB)
+      && !this.dialogueLocked
+      && !this.zoneTransitioning
+      && !this.photoSessionOpen
+    ) {
       if (runtime.phase === "swan_chase" || runtime.phase === "complete") {
         this.showFeedback(qizhenContent.mist.modeLocked, "system");
       } else {
@@ -480,6 +512,10 @@ export class QizhenLakeScene extends Phaser.Scene {
           mode: runtime.mode === "dark" ? "light" : "dark"
         });
       }
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.keys.C)) {
+      this.requestPhotoSession();
     }
 
     if (this.currentVehicle === "kayak") {
@@ -495,6 +531,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.updateTargetVisuals(targets, nearest, state, runtime);
     this.updatePrompt(nearest, runtime);
     this.updateStatus(runtime);
+    this.syncPhotoCameraButton();
     this.updateLockedPortalHint(targets, runtime);
     this.publishDebugState(nearest, targets, runtime);
 
@@ -504,6 +541,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       && !this.dialogueLocked
       && !this.zoneTransitioning
       && !this.capsizing
+      && !this.photoSessionOpen
       && (keyboardInteract || this.interactRequested)
     ) {
       if (this.isFacingTarget(nearest)) {
@@ -524,7 +562,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardX + this.virtualDirection.x, -1, 1),
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
-    if (state.actOne.movementEnabled && !this.dialogueLocked && !this.zoneTransitioning && vector.lengthSq() > 0) {
+    if (state.actOne.movementEnabled && !this.dialogueLocked && !this.zoneTransitioning && !this.photoSessionOpen && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
       vector.set(0, 0);
@@ -535,7 +573,7 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private updateKayakInput(runtime: QizhenRuntimeProjection): void {
     this.reverseInputHeld = this.cursors.down.isDown || this.keys.S.isDown || this.virtualReverseHeld;
-    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
+    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing || this.photoSessionOpen) return;
     const direction: QizhenPaddleDirection = this.reverseInputHeld ? "reverse" : "forward";
     if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keys.A)) {
       this.performPaddleStroke("left", direction, runtime);
@@ -564,6 +602,9 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.boundaryBlockCount = 0;
     this.boundaryHeadingAtBlock = this.kayakHeading;
     this.boundaryRollAtBlock = 0;
+    this.photoSessionOpen = false;
+    this.photoSessionSpotId = null;
+    this.lastPhotoSessionRequest = null;
   }
 
   private performPaddleStroke(
@@ -634,6 +675,23 @@ export class QizhenLakeScene extends Phaser.Scene {
   private updateKayakMotion(deltaSeconds: number, runtime: QizhenRuntimeProjection): void {
     if (this.capsizing || this.zoneTransitioning) {
       this.player.setVelocity(0, 0);
+      return;
+    }
+    if (this.photoSessionOpen) {
+      // 相机打开期间:冻结位置与碰撞推进,瞬时速度与侧倾缓慢归零,
+      // 关闭相机返回时船体不会突跳。
+      this.kayakSpeed *= Math.exp(-PHOTO_SESSION_SPEED_DAMPING_PER_SECOND * deltaSeconds);
+      if (Math.abs(this.kayakSpeed) < 1) this.kayakSpeed = 0;
+      this.kayakRoll *= Math.exp(-KAYAK_ROLL_DECAY_PER_SECOND * deltaSeconds);
+      this.player.setVelocity(0, 0).setDepth(this.player.y + 120);
+      this.kayak.setPose({
+        x: this.player.x,
+        y: this.player.y,
+        heading: this.kayakHeading,
+        roll: this.kayakRoll,
+        speed: 0,
+        chasing: false
+      });
       return;
     }
     this.kayakSpeed *= Math.exp(-KAYAK_DRAG_PER_SECOND * deltaSeconds);
@@ -1633,6 +1691,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.zoneText?.setVisible(false);
     this.statusText?.setVisible(false);
     this.promptText?.setVisible(false);
+    this.photoCameraButton?.setVisible(false);
     this.targetVisuals.forEach((visual) => visual.root.setVisible(false));
     this.dropGuides.forEach((guide) => guide.targetOutline.setVisible(false));
   }
@@ -1652,6 +1711,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.fishingClockNow = () => performance.now() / 1000;
     this.zoneText?.setVisible(true);
     this.statusText?.setVisible(true);
+    this.syncPhotoCameraButton();
     if (this.cameras?.main && this.player) {
       this.cameras.main
         .startFollow(this.player, true, 0.13, 0.13, 0, 18)
@@ -1771,7 +1831,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private triggerPointerTarget(target: QizhenLakeInteractionTarget): void {
-    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing) return;
+    if (this.dialogueLocked || this.zoneTransitioning || this.capsizing || this.photoSessionOpen) return;
     const state = this.bridge.getState();
     const runtime = readQizhenRuntime(state);
     if (!this.getActiveTargets(state, runtime).some((candidate) => candidate.id === target.id)) {
@@ -1947,6 +2007,22 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "qizhen_fishing_cancelled") return;
+
+    if (name === "qizhen_photo_session_opened") {
+      this.handlePhotoSessionOpened(payload);
+      return;
+    }
+    if (name === "qizhen_photo_session_closed") {
+      this.handlePhotoSessionClosed();
+      return;
+    }
+    if (this.photoSessionOpen && (
+      name === "rpg_direction_changed"
+      || name === "rpg_interact"
+      || name === "rpg_qizhen_paddle_input"
+      || name === "rpg_qizhen_reverse_changed"
+      || name === "rpg_inventory_drop_requested"
+    )) return;
 
     if (this.fishingPendingAttempt || this.fishingActiveAttempt) {
       if (
@@ -2218,7 +2294,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private updatePrompt(target: QizhenLakeInteractionTarget | null, runtime: QizhenRuntimeProjection): void {
-    if (!target || this.dialogueLocked || this.zoneTransitioning || this.capsizing) {
+    if (!target || this.dialogueLocked || this.zoneTransitioning || this.capsizing || this.photoSessionOpen) {
       this.promptText.setVisible(false);
       return;
     }
@@ -2301,6 +2377,143 @@ export class QizhenLakeScene extends Phaser.Scene {
     } else {
       this.statusText.setText(qizhenContent.dock.boardPrompt).setColor("#fff2b6");
     }
+  }
+
+  /** 触控端 HUD 相机按钮:仅在 coarse/hybrid 指针下创建,放在底部右侧安全区。 */
+  private createPhotoCameraButton(): void {
+    const profile = detectInputProfile();
+    if (profile !== "coarse" && profile !== "hybrid") return;
+    const background = this.add.rectangle(0, 0, 128, 44, 0x09212d, 0.92)
+      .setStrokeStyle(3, 0x7de8ff, 0.9);
+    const label = this.add.text(0, 0, "相机", {
+      color: "#e9ffff",
+      fontFamily: "monospace",
+      fontSize: "16px"
+    }).setOrigin(0.5);
+    const button = this.add.container(864, 496, [background, label])
+      .setScrollFactor(0)
+      .setDepth(5200)
+      .setSize(128, 44)
+      .setInteractive({ useHandCursor: true });
+    button.on("pointerdown", () => {
+      background.setFillStyle(0x14495c, 0.96);
+      this.requestPhotoSession();
+    });
+    button.on("pointerup", () => background.setFillStyle(0x09212d, 0.92));
+    button.on("pointerout", () => background.setFillStyle(0x09212d, 0.92));
+    this.photoCameraButton = button;
+    this.syncPhotoCameraButton();
+  }
+
+  private syncPhotoCameraButton(): void {
+    this.photoCameraButton?.setVisible(
+      !this.photoSessionOpen
+      && !this.zoneTransitioning
+      && !this.fishingPendingAttempt
+      && !this.fishingActiveAttempt
+    );
+  }
+
+  private requestPhotoSession(): void {
+    if (this.photoSessionOpen) return;
+    if (this.fishingPendingAttempt || this.fishingActiveAttempt) {
+      this.showFeedback("正在节奏钓取,收竿后再拍。", "system");
+      return;
+    }
+    const state = this.bridge.getState();
+    const runtime = readQizhenRuntime(state);
+    if (runtime.phase === "swan_chase") {
+      this.showFeedback("黑天鹅正追着船尾,顾不上拍照。", "system");
+      return;
+    }
+    if (this.currentVehicle !== "kayak" && this.currentZone !== "dock") {
+      this.showFeedback("这里要上船后才能取景。", "system");
+      return;
+    }
+    if (this.capsizing || this.zoneTransitioning) {
+      this.showFeedback("船还没停稳,等一下再拍。", "system");
+      return;
+    }
+    if (this.dialogueLocked) {
+      this.showFeedback("先听完这段话,再打开相机。", "system");
+      return;
+    }
+    const spotId = resolveQizhenPhotoSpot(this.currentZone, this.player.x, this.player.y);
+    if (!spotId) {
+      const nearest = nearestQizhenPhotoSpot(this.currentZone, this.player.x, this.player.y);
+      this.showFeedback(
+        nearest
+          ? `这里构不成画面,再往${nearest.label}靠一靠。`
+          : "河道里取景太窄,去大湖面或黑天鹅围栏旁再拍。",
+        "system"
+      );
+      return;
+    }
+    // kind 与 controller 的 journalCaptureKind 保持一致:lake_center 在主帖发布前
+    // 一律是主帖拍摄(允许草稿期内重拍);发布后(含归档)才降为普通补拍。
+    const journal = state.qizhenLake.journal;
+    const mainPublished = journal.publishedSpotIds.includes("lake_center")
+      || journal.status === "open"
+      || journal.status === "summary_ready"
+      || journal.status === "archived";
+    const kind: "main" | "spot" = spotId === "lake_center" && !mainPublished ? "main" : "spot";
+    const recipe = buildQizhenPhotoRecipe(spotId, {
+      kayakX: this.player.x,
+      kayakY: this.player.y,
+      heading: this.kayakHeading,
+      swanDistance: spotId === "swan_cove"
+        ? runtime.swanReleased
+          ? "gone"
+          : Math.hypot(
+            this.player.x - SWAN_COVE_SWAN_ANCHOR.x,
+            this.player.y - SWAN_COVE_SWAN_ANCHOR.y
+          )
+        : undefined,
+      rippleVisible: spotId === "reflection"
+        ? Phaser.Math.Clamp(
+          1 - Math.abs(this.kayakSpeed) / 240 - Math.abs(this.kayakRoll) / 1.2,
+          0,
+          1
+        )
+        : undefined
+    });
+    const speed = Math.round(this.kayakSpeed);
+    const roll = Number(this.kayakRoll.toFixed(3));
+    // 捕获时刻取湖区会话的单调秒数(Phaser 游戏时钟),保证重复请求幂等。
+    const capturedAtSeconds = Math.max(0, Math.floor(this.time.now / 1000));
+    this.lastPhotoSessionRequest = { spotId, recipe, speed, roll, kind, capturedAtSeconds };
+    this.emitDomain("qizhen_photo_session_requested", { spotId, recipe, speed, roll, kind, capturedAtSeconds });
+  }
+
+  private handlePhotoSessionOpened(payload?: Record<string, unknown>): void {
+    this.photoSessionOpen = true;
+    const spotId = payload?.spotId;
+    this.photoSessionSpotId = typeof spotId === "string" ? (spotId as QizhenPhotoSpotId) : null;
+    this.interactRequested = false;
+    this.virtualDirection = { x: 0, y: 0 };
+    this.lastVirtualPaddleX = 0;
+    this.virtualReverseHeld = false;
+    this.reverseInputHeld = false;
+    this.promptText.setVisible(false);
+    this.syncPhotoCameraButton();
+  }
+
+  private handlePhotoSessionClosed(): void {
+    if (!this.photoSessionOpen) return;
+    this.photoSessionOpen = false;
+    this.photoSessionSpotId = null;
+    this.interactRequested = false;
+    this.virtualDirection = { x: 0, y: 0 };
+    this.lastVirtualPaddleX = 0;
+    this.virtualReverseHeld = false;
+    this.reverseInputHeld = false;
+    this.kayakSpeed = 0;
+    if (this.player) this.player.setVelocity(0, 0);
+    // 相机覆盖层可能吞掉 keyup,重置按键状态避免关闭后按键粘连。
+    this.input.keyboard?.resetKeys();
+    this.syncPhotoCameraButton();
+    // host 侧拥有正式焦点管理;这里做一次兜底,保证 canvas 恢复键盘焦点。
+    this.game?.canvas?.focus();
   }
 
   private updateOcclusion(): void {
@@ -2464,6 +2677,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     runtime: QizhenRuntimeProjection
   ): void {
     const definition = QIZHEN_LAKE_ZONES[this.currentZone];
+    const photoSpotId = resolveQizhenPhotoSpot(this.currentZone, this.player.x, this.player.y);
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: QIZHEN_LAKE_WORLD,
@@ -2573,6 +2787,15 @@ export class QizhenLakeScene extends Phaser.Scene {
           speedRule: "far_faster_near_slower",
           swanX: Math.round(this.chaseSwanX),
           swanY: Math.round(this.chaseSwanY)
+        },
+        photoCamera: {
+          resolvedSpotId: photoSpotId,
+          standAreaHit: photoSpotId !== null,
+          speed: Math.round(this.kayakSpeed),
+          roll: Number(this.kayakRoll.toFixed(3)),
+          sessionOpen: this.photoSessionOpen,
+          sessionSpotId: this.photoSessionSpotId,
+          lastSessionRequest: this.lastPhotoSessionRequest
         },
         activeOcclusionIds: this.activeOcclusionIds,
         softenedOcclusionIds: this.softenedOcclusionIds

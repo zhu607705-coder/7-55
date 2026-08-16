@@ -310,7 +310,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   function saveStudentRoute() {
     showChapterFourResult(
       kit.chapterFour.saveWechatStudentRoute(),
-      "路线讨论已保存。消息存在矛盾，需要回二楼现场核验。",
+      "路线讨论已保存。",
       "先阅读公众号通知，并抵达二楼清楼阶段。"
     );
   }

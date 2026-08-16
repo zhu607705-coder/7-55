@@ -93,140 +93,140 @@
   {
     "id": "occupancyNote",
     "name": "占座纸条",
-    "desc": "022 座位旁留下的一张纸条。它声称主人只离开三分钟，但纸张老化程度不支持这个说法。",
+    "desc": "022 座位旁的纸条，写着“主人马上回来”。拖到 CC98 搜索栏查找同类记录。",
     "sourceScene": "phone_home",
     "target": "cc98_search"
   },
   {
     "id": "callNumber755",
     "name": "索书号 755",
-    "desc": "一串看起来属于书架、实际上更像咒语的编号。图书馆用它证明“你找不到”也是一种服务。",
+    "desc": "书架定位编号。拖到 755 号书架，查找旧版离座规则。",
     "sourceScene": "zjuding",
     "target": "library_shelf_755"
   },
   {
     "id": "archivedLeaveRule",
     "name": "旧版离座规则",
-    "desc": "一份已经过期但仍然有效的规定。它最大的优点是没人敢确认它无效。",
+    "desc": "书架背面找到的旧版离座规定。上传到 CC98 作为证据。",
     "sourceScene": "phone_home",
     "target": "cc98_evidence_upload"
   },
   {
     "id": "itemRecognitionReport",
     "name": "物品识别报告",
-    "desc": "一份关于书包的严肃报告。结论是：它很沉重，但不是法律意义上的同学。",
+    "desc": "照片调暗后生成的书包识别报告。带到图书馆前台核验盖章。",
     "sourceScene": "photos",
     "target": "library_front_desk_staff"
   },
   {
     "id": "bagNonPersonProof",
     "name": "书包非本人证明",
-    "desc": "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。",
+    "desc": "前台盖章后的书包非本人证明。上传到 CC98 作为证据。",
     "sourceScene": "phone_home",
     "target": "library_recovery_upload"
   },
   {
     "id": "seat022Receipt",
     "name": "022 座位小票",
-    "desc": "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。",
+    "desc": "从 022 桌下夹缝取到的小票。上传到 CC98 作为证据。",
     "sourceScene": "phone_home",
     "target": "library_recovery_upload"
   },
   {
     "id": "libraryPresenceProof",
     "name": "本人来过证明",
-    "desc": "一张证明你来过的证明。它没有证明你为什么要来。",
+    "desc": "体艺补录得到的到馆证明。上传到 CC98 作为证据。",
     "sourceScene": "tiyi",
     "target": "library_recovery_upload"
   },
   {
     "id": "seatReleasePass",
     "name": "解除占座 PASS",
-    "desc": "仅对非本人书包有效。如书包已进化为本人，请联系下一章。",
+    "desc": "三项材料换来的清退凭证。拖到 022 书包使用。",
     "sourceScene": "zjuding",
     "target": "seat_022_backpack"
   },
   {
     "id": "cafeteriaWages",
     "name": "餐盘回收费 2.00 元",
-    "desc": "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。",
+    "desc": "收回三只目标餐盘得到的两元钱，可支付一次扫码骑车。",
     "sourceScene": "canteen_interior",
     "target": "canteen_bike"
   },
   {
     "id": "greaseTissue",
     "name": "油渍纸巾",
-    "desc": "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。",
+    "desc": "收餐口阿姨给的油渍纸巾，可擦掉车锁和海报玻璃上的反光。",
     "sourceScene": "canteen_interior",
     "target": "canteen_bike_lock|theater_poster_glass"
   },
   {
     "id": "sparklingWater",
     "name": "气泡水",
-    "desc": "看起来很清爽，实际上是队伍秩序的原材料。",
+    "desc": "蓝色饮料原料。与黑咖啡、柠檬茶按货架顺序调配。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "lemonTea",
     "name": "柠檬茶",
-    "desc": "瓶罐架残字写着它的颜色。请结合暗色观察确认配方位置。",
+    "desc": "白色饮料原料。查看货架颜色顺序后放进混合台。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "blackCoffee",
     "name": "黑咖啡",
-    "desc": "早八指定燃料。喝了也不一定清醒。",
+    "desc": "黑色饮料原料。按货架顺序放进混合台。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "badDrink",
     "name": "难喝饮料",
-    "desc": "不建议喝。喝完之后会理解早八，但不能推进剧情。",
+    "desc": "混错顺序得到的饮料。可以喝掉，不能推进任务。",
     "sourceScene": "canteen_interior",
     "target": "rpg_player"
   },
   {
     "id": "dailySpecialSparklingWater",
     "name": "今日新品气泡水",
-    "desc": "它让队伍承认你存在，也能在守出口时制造两秒气泡。",
+    "desc": "拖到第三窗口宣传板的空杯位。守出口时可在地面留两秒减速气泡。",
     "sourceScene": "canteen_interior",
     "target": "canteen_promo_board|canteen_defense_floor"
   },
   {
     "id": "pickupTicket0755",
     "name": "0755 取餐号",
-    "desc": "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。",
+    "desc": "点餐机打印的取餐小票。切到深色模式，交给 3 号窗口残影阿姨。",
     "sourceScene": "canteen_interior",
     "target": "canteen_pickup_window_3"
   },
   {
     "id": "canteenRealBun",
     "name": "比较真实的包子",
-    "desc": "一份真的包子。过于真实，因此没有线索价值。",
+    "desc": "从窗口领到的包子。正常，且没有纸条线索。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "canteenCluelessSoyMilk",
     "name": "没什么线索的豆浆",
-    "desc": "温度正常，味道正常，剧情价值也很稳定地接近零。",
+    "desc": "从窗口领到的豆浆。此时没有其他用途。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "canteenEdgeEgg",
     "name": "世界观边缘的鸡蛋",
-    "desc": "不要追问它和纸条之间的关系。",
+    "desc": "从窗口领到的鸡蛋。此时没有其他用途。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "canteenUselessCongee",
     "name": "很热但很没用的白粥",
-    "desc": "很热，但没有用。至少描述非常诚实。",
+    "desc": "从窗口领到的白粥。烫手，且没有其他用途。",
     "sourceScene": "canteen_interior",
     "target": ""
   },

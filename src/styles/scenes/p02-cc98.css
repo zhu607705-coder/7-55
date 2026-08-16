@@ -2302,3 +2302,253 @@
     transform: none;
   }
 }
+
+
+/* ===== 启真湖记录单帖(cc98-journal-*) =====
+   复用 cc98-thread-* 骨架;网格多一行底部「返回湖面」条,滚动区不变。 */
+
+.cc98-journal-thread {
+  grid-template-rows: 64px minmax(0, 1fr) auto;
+}
+
+/* 标题草稿角标 / 待追加草稿卡徽标 */
+.cc98-journal-draft-badge {
+  background: #f2c14e;
+  border: 2px solid #8a6420;
+  color: #2c230d;
+  display: inline-block;
+  font-size: var(--fs-caption);
+  font-style: normal;
+  font-weight: 800;
+  margin-left: 6px;
+  padding: 2px 5px;
+  vertical-align: middle;
+}
+
+/* 主帖照片:配方重建全图,不存图 */
+.cc98-journal-photo {
+  border: 2px solid #111820;
+  margin: 0 0 12px;
+}
+
+.cc98-journal-photo .qizhen-recipe-frame {
+  display: block;
+}
+
+/* 主帖状态行 */
+.cc98-journal-status {
+  border-top: 2px dashed #d1d6dc;
+  color: #4d535a;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+/* 只看楼主 / 全部楼层 筛选(纯显示过滤,不改楼层号与顺序) */
+.cc98-journal-filter {
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cc98-journal-filter button {
+  background: #fff;
+  border: 2px solid #bfc4ca;
+  color: #111820;
+  font-size: var(--fs-label);
+  min-height: 32px;
+  padding: 3px 10px;
+}
+
+.cc98-journal-filter button:hover,
+.cc98-journal-filter button:focus-visible {
+  outline: 2px solid #1975dc;
+  outline-offset: 2px;
+}
+
+.cc98-journal-filter button.is-active {
+  background: #e64e39;
+  border-color: #a5301f;
+  color: #fff;
+  font-weight: 800;
+}
+
+/* 楼层照片缩略图(可点开详情浮层) */
+.cc98-journal-photo-thumb {
+  border: 2px solid #111820;
+  cursor: pointer;
+  display: block;
+  margin: 0 0 10px;
+  max-width: 240px;
+  min-height: 32px;
+  padding: 0;
+  width: 100%;
+}
+
+.cc98-journal-photo-thumb:hover,
+.cc98-journal-photo-thumb:focus-visible {
+  outline: 2px solid #1975dc;
+  outline-offset: 2px;
+}
+
+/* 草稿待追加卡(status open 时的补拍入口) */
+.cc98-journal-pending-card {
+  border-style: dashed;
+  display: grid;
+  gap: 8px;
+}
+
+.cc98-journal-pending-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.cc98-journal-pending-head .cc98-journal-draft-badge {
+  margin-left: 0;
+}
+
+.cc98-journal-pending-head strong {
+  font-size: var(--fs-label);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc98-journal-pending-photo {
+  border: 2px solid #111820;
+  max-width: 240px;
+}
+
+/* 发布 / 继续补充动作区 */
+.cc98-journal-actions {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.cc98-journal-primary {
+  background: #1975dc;
+  border: 3px solid #0d4f9e;
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: 800;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.cc98-journal-primary:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.cc98-journal-secondary {
+  background: #fff;
+  border: 3px solid #bfc4ca;
+  color: #111820;
+  font-size: var(--fs-label);
+  font-weight: 800;
+  min-height: 40px;
+  padding: 6px 12px;
+}
+
+.cc98-journal-primary:not(:disabled):hover,
+.cc98-journal-primary:not(:disabled):focus-visible,
+.cc98-journal-secondary:hover,
+.cc98-journal-secondary:focus-visible {
+  outline: 2px solid #1975dc;
+  outline-offset: 2px;
+}
+
+/* 底部「返回湖面」条(固定在滚动区外,归档只读时仍可用) */
+.cc98-journal-footer-bar {
+  background: #fff;
+  border-top: 2px solid #bfc4ca;
+  display: grid;
+  padding: 8px 10px;
+}
+
+/* 照片详情浮层:同一 recipe 以 full 变体重建,不替换楼层内容 */
+.cc98-journal-lightbox {
+  background: rgba(10, 12, 16, 0.78);
+  display: grid;
+  inset: 0;
+  padding: 16px;
+  place-items: center;
+  position: absolute;
+  z-index: 6;
+}
+
+.cc98-journal-lightbox-dialog {
+  background: #fff;
+  border: 3px solid #111820;
+  display: grid;
+  gap: 8px;
+  max-width: 396px;
+  padding: 10px;
+  width: 100%;
+}
+
+.cc98-journal-lightbox-close {
+  background: #111820;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  justify-self: end;
+  line-height: 1;
+  min-height: 32px;
+  min-width: 44px;
+}
+
+.cc98-journal-lightbox-close:hover,
+.cc98-journal-lightbox-close:focus-visible {
+  outline: 2px solid #1975dc;
+  outline-offset: 2px;
+}
+
+/* 网络错误模态(发布被离线拒绝后由外部置位) */
+.cc98-journal-network {
+  background: rgba(10, 12, 16, 0.82);
+  display: grid;
+  inset: 0;
+  padding: 16px;
+  place-items: center;
+  position: absolute;
+  z-index: 8;
+}
+
+.cc98-journal-network-dialog {
+  background: #fff;
+  border: 3px solid var(--red);
+  box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.28);
+  display: grid;
+  gap: 10px;
+  max-width: 360px;
+  padding: 14px;
+}
+
+.cc98-journal-network-dialog h3 {
+  color: #9b2f35;
+  font-size: var(--fs-title);
+  margin: 0;
+}
+
+.cc98-journal-network-dialog p {
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.cc98-journal-network-actions {
+  display: grid;
+  gap: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc98-journal-thread,
+  .cc98-journal-thread * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

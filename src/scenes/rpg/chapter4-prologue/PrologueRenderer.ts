@@ -1367,14 +1367,14 @@ export class PrologueRenderer {
     ctx.fillRect(66, 86, 138, 98);
     ctx.fillStyle = COLORS.wallPanel;
     ctx.fillRect(60, 80, 150, 8);
-    // 麦斯威方向牌
+    // 迈斯威方向牌
     ctx.fillStyle = COLORS.signYellow;
     ctx.fillRect(420, 120, 130, 34);
     ctx.fillStyle = COLORS.cautionInk;
     ctx.font = "19px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("麦斯威 →", 485, 138);
+    ctx.fillText("迈斯威 →", 485, 138);
     ctx.textAlign = "left";
     // 小心地滑警示牌
     ctx.fillStyle = COLORS.signYellow;

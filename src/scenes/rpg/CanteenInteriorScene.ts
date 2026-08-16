@@ -32,6 +32,7 @@ import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   formatRpgModeRequirement,
   getRpgDropBounds,
+  isPlayerFacingRpgTarget,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
 import {
@@ -575,7 +576,16 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.publishDebugState(nearest, state);
 
     if (nearest && !this.dialogueLocked && !this.hasModalPanel() && !this.paperBusy && !this.cartPushBusy && (keyboardInteract || this.interactRequested)) {
-      this.triggerTarget(nearest, state);
+      if (isPlayerFacingRpgTarget(
+        nearest,
+        this.player.x,
+        this.player.y,
+        this.playerAnimator.cardinalFacing
+      )) {
+        this.triggerTarget(nearest, state);
+      } else {
+        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task", 1500);
+      }
     }
     this.interactRequested = false;
   }
@@ -835,7 +845,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
       x: counterX,
       y: CANTEEN_COUNTER_NPC_Y,
       stand: { x: counterX, y: 265 },
-      proximity: 48,
+      width: 64,
+      height: 80,
+      proximity: 56,
+      requiredFacing: "up",
       kind: "npc",
       dialogue: CANTEEN_COUNTER_NPC_DIALOGUE
     };
@@ -847,7 +860,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
       y: CANTEEN_RETURN_NPC_POSITION.y,
       // This is the clear strip immediately beside the visible return worker.
       stand: { x: 1466, y: 608 },
+      width: 46,
+      height: 70,
       proximity: 64,
+      requiredFacing: "right",
       kind: "npc"
     };
 
@@ -1217,7 +1233,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
         x: position.x,
         y: position.y,
         stand: position.stand,
-        proximity: 58,
+        width: 20,
+        height: 28,
+        proximity: 54,
+        requiredFacing: position.stand.x < position.x ? "right" : "left",
         kind: "tray",
         value: tray.id
       };
@@ -1847,10 +1866,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private createPrompt(): void {
     this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
-      backgroundColor: "#10231fee",
       fontFamily: "monospace",
       fontSize: "13px",
-      padding: { x: 9, y: 5 }
+      stroke: "#07111c",
+      strokeThickness: 4,
+      align: "center"
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(5200).setVisible(false);
   }
 
@@ -2220,6 +2240,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
     ) return;
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
     if (!findNearestCanteenTarget(this.player.x, this.player.y, [target])) return;
+    if (!isPlayerFacingRpgTarget(
+      target,
+      this.player.x,
+      this.player.y,
+      this.playerAnimator.cardinalFacing
+    )) {
+      this.showFeedback(`面向「${target.label}」后再操作。`, "task", 1500);
+      return;
+    }
     this.triggerTarget(target, state);
   }
 
@@ -2297,6 +2326,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
         detail: result.target.kind === "promo"
           ? "落点正确；人物还没有靠近宣传板。"
           : "落点正确；靠近设施后再操作。"
+      });
+      return;
+    }
+    if (result.kind === "wrong_facing") {
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "wrong_facing",
+        targetLabel: result.target.label,
+        detail: `靠近并面向「${result.target.label}」后再操作。`
       });
       return;
     }
@@ -2514,7 +2552,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       label = state.canteenHunt.mode === "dark"
         ? "确认蓝色轨迹指向"
         : state.canteenHunt.identifiedExitIds.includes(String(nearest.value) as CanteenExitId)
-          ? "站在餐盘车后方推动"
+          ? "靠近餐盘车把手并面向它"
           : "先切深色模式确认这辆餐车";
     } else if (nearest.kind === "exit") {
       label = "靠近东南门离开食堂";
@@ -3799,6 +3837,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         x: Math.round(this.player.x),
         y: Math.round(this.player.y),
         facing: this.playerAnimator.facing,
+        cardinalFacing: this.playerAnimator.cardinalFacing,
         texture: this.playerAnimator.textureKey,
         turning: this.playerAnimator.isTurning,
         walkFps: RPG_PLAYER_WALK_FPS,
@@ -3826,7 +3865,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
           stand: target.stand,
           proximity: target.proximity,
           acceptedItem: target.acceptedItem,
-          requiredMode: target.requiredMode
+          requiredMode: target.requiredMode,
+          requiredFacing: target.requiredFacing
         };
       }),
       canteen: {
@@ -3843,11 +3883,15 @@ export class CanteenInteriorScene extends Phaser.Scene {
           id: window.id,
           window: window.value,
           anchor: { x: window.x, y: window.y },
-          stand: window.stand!,
+          objectBounds: {
+            width: window.width ?? getRpgDropBounds(window).width,
+            height: window.height ?? getRpgDropBounds(window).height
+          },
           proximity: window.proximity,
           dropBounds: getRpgDropBounds(window),
           acceptedItem: window.acceptedItem,
-          requiredMode: window.requiredMode
+          requiredMode: window.requiredMode,
+          requiredFacing: window.requiredFacing
         })),
         menuOpen: this.menuPanel !== null,
         dialogueLocked: this.dialogueLocked,

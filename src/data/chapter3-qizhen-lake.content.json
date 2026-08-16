@@ -6,8 +6,7 @@
       "label": "剧场外 · 湖畔方向",
       "paperLeadMs": 420,
       "trailFadeAtMs": 2700,
-      "dialogueAtMs": [700, 2800, 5700, 8000],
-      "completeAtMs": 10300,
+      "completeAtMs": 20800,
       "visualBeats": [
         "湿纸从剧场门边飞出，贴着路面向东移动。",
         "路边只留下几段不连续的水迹。",
@@ -281,6 +280,115 @@
         "label": "用磁性钓鱼竿吸住纸条本体",
         "hints": ["深色观察确认纸条坐标后，切回浅色操作。", "把磁性钓鱼竿拖到黑天鹅围栏外的纸条水纹，完成最终八小节节奏钓取。"]
       }
+    }
+  },
+  "journal": {
+    "titles": [
+      { "id": "title_makeshift_boat", "text": "【记录】启真湖首航：船是捡的，桨是凑的，人是活的" },
+      { "id": "title_no_capsize", "text": "启真湖划船一圈没翻，特此发帖留念" },
+      { "id": "title_wind_at_center", "text": "在湖心漂了一下午，风比课表还满" }
+    ],
+    "statuses": [
+      { "id": "status_still_afloat", "text": "人还在湖上，船还浮着" },
+      { "id": "status_arms_gone", "text": "两条胳膊已报废，但不亏" },
+      { "id": "status_claim_floor", "text": "上岸再整理，先占个楼" }
+    ],
+    "spotCaptions": {
+      "dock": [
+        { "id": "caption_dock_depart", "text": "出发位打卡。两支桨都是在这附近凑齐的，一支是树枝，一支是旧三角牌。" },
+        { "id": "caption_dock_return", "text": "回码头补一张。能完整地划回来，我自己都没想到。" },
+        { "id": "caption_dock_gear", "text": "器材架空了一半，这艘皮划艇暂时归我保管。" }
+      ],
+      "reflection": [
+        { "id": "caption_reflection_mirror", "text": "水面静下来的时候，倒影比实景还清楚，船都不敢动。" },
+        { "id": "caption_reflection_ripple", "text": "刚按快门就来一圈水纹，倒影当场断开，凑合看。" },
+        { "id": "caption_reflection_wait", "text": "为了等水静下来，在湖心多漂了十分钟，值。" }
+      ],
+      "swan_cove": [
+        { "id": "caption_swan_stare", "text": "黑天鹅隔着围栏盯着我看了很久，没敢再靠近。" },
+        { "id": "caption_swan_turn", "text": "按下快门那一下它正好转头，气场很足。" },
+        { "id": "caption_swan_gone", "text": "围栏空了，水面只剩一圈还没散的水痕。" }
+      ]
+    },
+    "tagLabels": {
+      "composition_ok": "构图在线",
+      "tilted": "拍歪了",
+      "high_speed": "速度太快",
+      "ripple_clear": "水纹清楚",
+      "ripple_broken": "水纹断了",
+      "swan_near": "黑天鹅贴脸",
+      "swan_far": "黑天鹅在远处",
+      "swan_aftermath": "鹅去栏空"
+    },
+    "spotNames": {
+      "lake_center": "湖心",
+      "dock": "小码头",
+      "reflection": "湖心倒影",
+      "swan_cove": "黑天鹅围栏"
+    },
+    "camera": {
+      "title": "启真湖记录相机",
+      "shutter": "拍摄",
+      "close": "收起相机",
+      "retake": "重拍",
+      "draftMainTitle": "选择主帖标题",
+      "draftMainStatus": "选择主帖状态",
+      "draftSpotCaption": "选择补拍说明",
+      "saveDraft": "存为草稿",
+      "draftSaved": "草稿已保存,可前往 CC98 发布。",
+      "speedLabel": "速度",
+      "rollLabel": "侧倾",
+      "hint": "船速和侧倾都会写进照片标签。想拍干净点，先把船稳下来再按快门。"
+    },
+    "thread": {
+      "board": "校园生活",
+      "authorRole": "楼主",
+      "draftBadge": "草稿",
+      "publishMain": "发布主帖",
+      "publishing": "发布中…",
+      "publishReply": "追加到帖子",
+      "ownerOnly": "只看楼主",
+      "showAll": "查看全部",
+      "continueSupplement": "继续补充",
+      "returnToLake": "返回湖面",
+      "archivedNotice": "帖子已归档,仅供查看。",
+      "mainPhotoAlt": "湖心主图",
+      "replyPhotoAlt": "补拍照片",
+      "networkError": {
+        "title": "发布失败：不在校园网",
+        "body": "CC98 仅在校园网（ZJUWLAN）下可以发帖。照片、标题和说明都已保留，网络恢复后请手动重试，不会自动补发。",
+        "openControlCenter": "打开控制中心",
+        "returnToLake": "返回湖面",
+        "keepEditing": "继续编辑"
+      }
+    },
+    "replyPools": {
+      "main": [
+        { "id": "reply_main_bd_queue", "personaId": "late-printer", "text": "bd。楼主发帖时间已记录，比我昨晚的打印队列靠前。", "likes": "46" },
+        { "id": "reply_main_wind_pass", "personaId": "yuquan-wind", "text": "下午路过启真湖看见这艘船了，湖心风不小，照片倒是拍得挺稳。", "likes": "38" },
+        { "id": "reply_main_sign_paddle", "personaId": "socket-observer", "text": "右边那支桨看着眼熟，像是器材架旁边立了很久的旧牌子。", "likes": "27" },
+        { "id": "reply_main_rider_follow", "personaId": "qiushi-rider", "text": "每天骑车绕湖一圈，头回见有人划这个。先收藏，翻了记得回来更新。", "likes": "52" },
+        { "id": "reply_main_budget_tour", "personaId": "six-cent-rich", "text": "余额 0.06 元，租船押金都付不起，看楼主发帖就当自己划过。", "likes": "63" },
+        { "id": "reply_main_audit_hold", "personaId": "wild-auditor", "text": "无审核权限，仅存档湖心主图一张。船的来源建议楼主自行补充说明。", "likes": "31" }
+      ],
+      "dock": [
+        { "id": "reply_dock_shelf_gap", "personaId": "qiushi-rider", "text": "这个码头我天天推车经过，器材架今天确实空了一格，原来在你这。", "likes": "18" },
+        { "id": "reply_dock_borrowed", "personaId": "socket-observer", "text": "架空位 +1，东西记得还。上次有人借桨借了半个学期。", "likes": "22" },
+        { "id": "reply_dock_planks", "personaId": "six-cent-rich", "text": "码头木板数过了，翘起来三块，踩中间那块最稳，不用谢。", "likes": "15" },
+        { "id": "reply_dock_closed_loop", "personaId": "wild-auditor", "text": "出发位与回位经比对为同一码头，行程闭环，予以存档。", "likes": "12" }
+      ],
+      "reflection": [
+        { "id": "reply_reflection_opposite_shore", "personaId": "yuquan-wind", "text": "这张倒影我在对岸目击过拍摄过程，水面确实静了一阵，就一阵。", "likes": "41" },
+        { "id": "reply_reflection_wait_water", "personaId": "late-printer", "text": "等水静下来要多久？我在岸边计时到五分钟就放弃了，楼主有耐心。", "likes": "19" },
+        { "id": "reply_reflection_old_hand", "personaId": "qiushi-rider", "text": "湖心倒影，老港人都知道这个机位。下班绕过去看一眼，血压能低点。", "likes": "26" },
+        { "id": "reply_reflection_no_edit", "personaId": "wild-auditor", "text": "倒影中船身与人物比例一致，未发现修图痕迹，通过。", "likes": "33" }
+      ],
+      "swan_cove": [
+        { "id": "reply_swan_stare_contest", "personaId": "socket-observer", "text": "黑天鹅盯人是常规项目，建议不要长时间对视，赢不了。", "likes": "44" },
+        { "id": "reply_swan_head_turn", "personaId": "yuquan-wind", "text": "它转头那下我正好路过，连风都停了半秒，气场确实足。", "likes": "37" },
+        { "id": "reply_swan_budget", "personaId": "six-cent-rich", "text": "这鹅一天的伙食费超过我的余额，楼主别跟它比气场，比不过。", "likes": "58" },
+        { "id": "reply_swan_watermark", "personaId": "wild-auditor", "text": "空围栏这张亦已存档。水痕未散，后续动向保持观察。", "likes": "21" }
+      ]
     }
   }
 }

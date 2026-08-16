@@ -9,5 +9,4 @@
 - 字体文件 SHA-256：`a6122b69f7ba5d0951a259954fcac8bf8dcb03779bccfeabada457f945b3ae08`
 - 许可证：SIL Open Font License 1.1；原始许可文本保存在 `licenses/`
 
-Godot 同步脚本把该原始字体复制到 `godot/assets/rpg/fonts/`。生成副本和 Web
-导出文件禁止手工修改。
+网页运行时直接使用该原始字体。任何衍生字体副本都需记录来源哈希，且不得反向覆盖原始文件。

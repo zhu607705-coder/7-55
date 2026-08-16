@@ -13,10 +13,14 @@ import type {
   LibraryLocationId,
   QuestViewModel,
   QizhenFishingSpotId,
+  QizhenJournalDraft,
   QizhenLakeMode,
   QizhenLakeZone,
   QizhenPaddleDirection,
   QizhenPaddleSide,
+  QizhenPhotoRecipe,
+  QizhenPhotoRecord,
+  QizhenPhotoSpotId,
   RpgCheckpointId,
   RpgSceneId,
   TheaterMode,
@@ -25,6 +29,7 @@ import type {
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import { chapterThreeStoryLineKeyForSubtitle } from "../../data/chapterThreeStory";
 import chapterFourContent from "../../data/chapter4-temporal-maze.content.json";
+import qizhenLakeContent from "../../data/chapter3-qizhen-lake.content.json";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
@@ -36,7 +41,9 @@ import {
 import { ChapterThreeTheaterController } from "../../modules/ChapterThreeTheaterController";
 import {
   ChapterThreeQizhenLakeController,
-  type QizhenActionResult
+  type QizhenActionResult,
+  type QizhenJournalDraftRejection,
+  type QizhenPhotoCaptureRejection
 } from "../../modules/ChapterThreeQizhenLakeController";
 import { ChapterFourPrologueController } from "../../modules/ChapterFourPrologueController";
 import {
@@ -75,6 +82,7 @@ import { RpgInventoryDock } from "./RpgInventoryDock";
 import { QuestTaskBar } from "../../components/QuestClueStrip";
 import { RpgSubtitleLayer } from "../../components/RpgSubtitleLayer";
 import { RpgClockCrownOverlay } from "../../components/RpgClockCrownOverlay";
+import { QizhenJournalCamera, type QizhenJournalCameraSession } from "../../components/QizhenJournalCamera";
 import { ElevatorTrackSyncGame } from "../../components/temporal-maze/ElevatorTrackSyncGame";
 import { WayfindingBoardGame } from "../../components/temporal-maze/WayfindingBoardGame";
 import { useMediaQuery } from "../../components/useMediaQuery";
@@ -139,6 +147,25 @@ const QIZHEN_FISHING_SPOT_FEEDBACK: Record<QizhenFishingSpotId, { itemId: ItemId
   fish: { itemId: "fishFeedPellets", targetLabel: "鱼群水纹" },
   paper: { itemId: "magneticFishingRod", targetLabel: "纸条本体水纹" }
 };
+const QIZHEN_PHOTO_SESSION_FEEDBACK: Record<QizhenPhotoCaptureRejection | QizhenJournalDraftRejection, string> = {
+  inactive: "启真湖的行程还没开始,现在拍不了。",
+  swan_chase: "黑天鹅正追着船尾,顾不上拍照。",
+  journal_locked: "先完成上船教学,稳住船之后再打开相机。",
+  journal_archived: "启真湖的帖子已经归档,不能再补拍了。",
+  unknown_spot: "这里构不成画面,换个位置再试。",
+  orphan_photo: "这张照片已经不在记录里了,重新拍一张。",
+  draft_mismatch: "草稿和照片对不上,请重新拍摄。",
+  incomplete_draft: "先把该选的都选好,再存草稿。"
+};
+const QIZHEN_CAMERA_TITLE = qizhenLakeContent.journal.camera.title;
+
+/** 相机会话的宿主局部态:会话输入来自场景冻结帧,照片与草稿由 controller 回灌。 */
+interface QizhenPhotoSessionState {
+  session: QizhenJournalCameraSession;
+  capturedAtSeconds?: number;
+  photo: QizhenPhotoRecord | null;
+  draft: QizhenJournalDraft | null;
+}
 const CHAPTER_FOUR_MAZE_UI_PHASES = new Set<GameState["chapter4"]["phase"]>([
   "arrival",
   "airflow_overlay",
@@ -321,6 +348,9 @@ export function RpgGameHost({
   const [chapter4ElevatorPanelOpen, setChapter4ElevatorPanelOpen] = useState(false);
   const [chapter4WayfindingPanelOpen, setChapter4WayfindingPanelOpen] = useState(false);
   const [fishingSession, setFishingSession] = useState<QizhenFishingSessionSnapshot | null>(null);
+  const [photoSession, setPhotoSession] = useState<QizhenPhotoSessionState | null>(null);
+  const photoSessionRef = useRef<QizhenPhotoSessionState | null>(null);
+  const photoSessionOpen = photoSession !== null;
   const shellRef = useRef<HTMLElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const phaserHostRef = useRef<HTMLDivElement | null>(null);
@@ -361,8 +391,8 @@ export function RpgGameHost({
     && (state.chapter4.floor === "A1" || state.chapter4.floor === "A2" || state.chapter4.floor === "A3")
     && CHAPTER_FOUR_MAZE_UI_PHASES.has(state.chapter4.phase);
   const chapter4InteractionBlocked = chapter4ElevatorPanelOpen || chapter4WayfindingPanelOpen;
-  inputBlockedRef.current = inputBlocked || itemInspectOpen || chaseActive || prologueActive || chapter4InteractionBlocked;
-  keyboardBlockedRef.current = keyboardBlocked || chaseActive || prologueActive || chapter4InteractionBlocked;
+  inputBlockedRef.current = inputBlocked || itemInspectOpen || chaseActive || prologueActive || chapter4InteractionBlocked || photoSessionOpen;
+  keyboardBlockedRef.current = keyboardBlocked || chaseActive || prologueActive || chapter4InteractionBlocked || photoSessionOpen;
 
   useEffect(() => {
     if (inspectedMapItem && !state.items[inspectedMapItem]) {
@@ -663,7 +693,7 @@ export function RpgGameHost({
     if (!game) {
       return undefined;
     }
-    if (inputBlocked || itemInspectOpen || chaseActive || chapter4InteractionBlocked || chapter4Stair3dActive) {
+    if (inputBlocked || itemInspectOpen || chaseActive || chapter4InteractionBlocked || chapter4Stair3dActive || photoSessionOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
@@ -681,7 +711,7 @@ export function RpgGameHost({
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [chapter4InteractionBlocked, chapter4Stair3dActive, chaseActive, events, inputBlocked, itemInspectOpen, keyboardBlocked]);
+  }, [chapter4InteractionBlocked, chapter4Stair3dActive, chaseActive, events, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -836,7 +866,7 @@ export function RpgGameHost({
           const text = result === "wrong_mode"
             ? "切到深色观察后再读取轿厢、门体和进入窗口三条历史轨道。"
             : !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead)
-              ? "先打开微信，查看紫金港楼宇服务公众号发布的夜间运行通知。"
+              ? "先打开微信，查看校园后勤服务发布的夜间运行通知。"
               : "先完成一楼气流路径，再检查主电梯。";
           events.emit("rpg_subtitle", { text, tone: "system", durationMs: 3000 });
         }
@@ -888,7 +918,7 @@ export function RpgGameHost({
           : "locked";
       const feedback = action === "observe_airflow"
         ? {
-            accepted: "已记录气流轨迹。切回浅色操作，前往麦斯威卷帘门。",
+            accepted: "已记录气流轨迹。切回浅色操作，前往迈斯威卷帘门。",
             already_complete: "这条气流轨迹已经记录。",
             wrong_mode: "切到深色观察后再读取断续水迹。",
             misaligned: "当前轨道没有对齐。",
@@ -899,7 +929,7 @@ export function RpgGameHost({
           ? {
               accepted: "暖风重新接上水迹，湿纸进入主电梯厅。",
               already_complete: "纸条已经进入主电梯厅。",
-              wrong_mode: "切回浅色操作后再调整麦斯威暖风。",
+              wrong_mode: "切回浅色操作后再调整迈斯威暖风。",
               misaligned: "当前轨道没有对齐。",
               locked: "先在深色观察中记录门厅的完整气流轨迹。",
               inactive: "第四章教学楼流程尚未开始。"
@@ -1322,6 +1352,127 @@ export function RpgGameHost({
     });
   }, [canteenController, events, qizhenController, store, theaterController]);
 
+  const updatePhotoSession = useCallback((next: QizhenPhotoSessionState | null) => {
+    photoSessionRef.current = next;
+    setPhotoSession(next);
+  }, []);
+
+  const emitPhotoSessionFeedback = useCallback((reason: QizhenPhotoCaptureRejection | QizhenJournalDraftRejection) => {
+    // 用 toast 而不是 rpg_subtitle:会话打开期间字幕层被遮蔽,toast 在两种布局下都可见。
+    events.emit("toast", { text: QIZHEN_PHOTO_SESSION_FEEDBACK[reason], tone: "system", durationMs: 3200 });
+  }, [events]);
+
+  // 相机桥:场景冻结帧请求 → controller 只读预检 → 挂载覆盖层并回发 opened。
+  // 拒绝时经既有 toast 反馈原因;会话期间场景自锁,host 侧再闸住 Phaser 输入。
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "qizhen_photo_session_requested") return;
+      const payload = event.payload;
+      const spotId = String(payload?.spotId ?? "") as QizhenPhotoSpotId;
+      const recipe = payload?.recipe;
+      if (!recipe || typeof recipe !== "object") return;
+      const precheck = qizhenController.precheckPhotoCapture(spotId);
+      if (!precheck.accepted) {
+        emitPhotoSessionFeedback(precheck.reason);
+        return;
+      }
+      kayakPaddleGesturesRef.current.clear();
+      setKayakPaddleSwipeState({});
+      const capturedAtSeconds = Number(payload?.capturedAtSeconds);
+      updatePhotoSession({
+        session: {
+          spotId: precheck.spotId,
+          recipe: recipe as QizhenPhotoRecipe,
+          speed: Number(payload?.speed ?? 0),
+          roll: Number(payload?.roll ?? 0),
+          kind: String(payload?.kind ?? "spot") === "main" ? "main" : "spot"
+        },
+        capturedAtSeconds: Number.isInteger(capturedAtSeconds) && capturedAtSeconds >= 0
+          ? capturedAtSeconds
+          : undefined,
+        photo: null,
+        draft: null
+      });
+      events.emit("qizhen_photo_session_opened", { spotId: precheck.spotId });
+    });
+  }, [emitPhotoSessionFeedback, events, qizhenController, updatePhotoSession]);
+
+  const handlePhotoShutter = useCallback(() => {
+    const current = photoSessionRef.current;
+    if (!current) return;
+    const result = qizhenController.capturePhoto({
+      ...current.session,
+      capturedAtSeconds: current.capturedAtSeconds
+    });
+    if (!result.accepted) {
+      emitPhotoSessionFeedback(result.reason);
+      return;
+    }
+    updatePhotoSession({ ...current, photo: result.photo, draft: result.draft });
+  }, [emitPhotoSessionFeedback, qizhenController, updatePhotoSession]);
+
+  const handlePhotoDraftUpdate = useCallback((
+    patch: Partial<Pick<QizhenJournalDraft, "titleId" | "statusId" | "captionId">>
+  ) => {
+    const current = photoSessionRef.current;
+    if (!current?.draft) return;
+    updatePhotoSession({ ...current, draft: { ...current.draft, ...patch } });
+  }, [updatePhotoSession]);
+
+  const handlePhotoDraftSave = useCallback(() => {
+    const current = photoSessionRef.current;
+    if (!current?.draft) return;
+    const result = qizhenController.saveJournalDraft(current.draft);
+    if (!result.accepted) {
+      emitPhotoSessionFeedback(result.reason);
+      return;
+    }
+    updatePhotoSession({ ...current, draft: result.draft });
+  }, [emitPhotoSessionFeedback, qizhenController, updatePhotoSession]);
+
+  const handlePhotoRetake = useCallback(() => {
+    const current = photoSessionRef.current;
+    if (!current) return;
+    // 重拍丢弃当前未提交的照片与草稿,回到取景;存档不保留孤儿照片。
+    qizhenController.discardJournalDraft("retake");
+    updatePhotoSession({ ...current, photo: null, draft: null });
+  }, [qizhenController, updatePhotoSession]);
+
+  const closePhotoSession = useCallback(() => {
+    const current = photoSessionRef.current;
+    if (!current) return;
+    // 关闭会话:丢弃未存草稿(已存草稿保留,供 CC98 发布),通知场景恢复输入。
+    qizhenController.discardJournalDraft("close");
+    updatePhotoSession(null);
+    events.emit("qizhen_photo_session_closed", { spotId: current.session.spotId });
+    window.requestAnimationFrame(() => gameRef.current?.canvas.focus());
+  }, [events, qizhenController, updatePhotoSession]);
+
+  // 方案三.2/四 Task 4:页面隐藏视同关闭会话;离开湖区场景同理。
+  useEffect(() => {
+    if (!photoSessionOpen) return undefined;
+    const handleVisibility = () => {
+      if (document.hidden) closePhotoSession();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [closePhotoSession, photoSessionOpen]);
+
+  useEffect(() => {
+    if (photoSessionOpen && runtimeScene !== "qizhen_lake") closePhotoSession();
+  }, [closePhotoSession, photoSessionOpen, runtimeScene]);
+
+  // 宿主卸载(如切回手机模式)视同关闭:未存草稿不残留,已存草稿保留。
+  useEffect(() => {
+    return () => {
+      if (photoSessionRef.current) {
+        qizhenController.discardJournalDraft("close");
+        events.emit("qizhen_photo_session_closed", { spotId: photoSessionRef.current.session.spotId });
+        photoSessionRef.current = null;
+      }
+    };
+  }, [events, qizhenController]);
+
   useEffect(() => {
     if (state.ui.libraryFinalsPuzzle.lostFoundStage !== "scanning") {
       return undefined;
@@ -1408,13 +1559,13 @@ export function RpgGameHost({
 
   useEffect(() => {
     const handleFullscreenKey = (event: KeyboardEvent) => {
-      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4InteractionBlocked && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4InteractionBlocked && !photoSessionOpen && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         toggleRpgFullscreen();
       }
     };
     window.addEventListener("keydown", handleFullscreenKey);
     return () => window.removeEventListener("keydown", handleFullscreenKey);
-  }, [chapter4InteractionBlocked, inputBlocked, itemInspectOpen, keyboardBlocked]);
+  }, [chapter4InteractionBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
 
   function direction(event: React.PointerEvent<HTMLButtonElement>, x: number, y: number) {
     if (directionStopTimerRef.current !== null) {
@@ -1584,8 +1735,8 @@ export function RpgGameHost({
     <main
       className={`rpg-stage ${runtimeScene === "campus_bootstrap" || runtimeScene === "campus_qizhen_loop" ? "is-campus-map" : ""} ${runtimeScene === "campus_qizhen_loop" ? "is-qizhen-approach" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "duan_yongping_temporal_maze" ? "is-chapter-four-temporal-maze" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
-      data-input-blocked={inputBlocked || itemInspectOpen || chapter4InteractionBlocked ? "true" : "false"}
-      data-keyboard-blocked={keyboardBlocked || chapter4InteractionBlocked ? "true" : "false"}
+      data-input-blocked={inputBlocked || itemInspectOpen || chapter4InteractionBlocked || photoSessionOpen ? "true" : "false"}
+      data-keyboard-blocked={keyboardBlocked || chapter4InteractionBlocked || photoSessionOpen ? "true" : "false"}
       data-rpg-engine={chapter4Stair3dActive ? "three" : "phaser"}
       data-rpg-engine-reason={chapter4Stair3dActive ? "chapter4_spatial_stair" : "web_runtime_only"}
     >
@@ -1664,7 +1815,22 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {showTaskBar && !chaseActive && !prologueActive && !chapter4InteractionBlocked && (!chapter4MazeActive || chapter4MazeUiActive) ? (
+        {photoSession ? (
+          <div className="qizhen-journal-camera-overlay" role="dialog" aria-modal="true" aria-label={QIZHEN_CAMERA_TITLE}>
+            <QizhenJournalCamera
+              session={photoSession.session}
+              photo={photoSession.photo}
+              draft={photoSession.draft}
+              onShutter={handlePhotoShutter}
+              onUpdateDraft={handlePhotoDraftUpdate}
+              onSaveDraft={handlePhotoDraftSave}
+              onRetake={handlePhotoRetake}
+              onClose={closePhotoSession}
+            />
+          </div>
+        ) : null}
+
+        {showTaskBar && !chaseActive && !prologueActive && !chapter4InteractionBlocked && !photoSessionOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
           <QuestTaskBar
             state={state}
             events={events}
@@ -1675,10 +1841,12 @@ export function RpgGameHost({
           />
         ) : null}
 
-        <div className="rpg-system-actions">
-          <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
-          <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
-        </div>
+        {photoSessionOpen ? null : (
+          <div className="rpg-system-actions">
+            <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
+            <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
+          </div>
+        )}
 
         {runtimeScene === "campus_bootstrap" && !chaseActive ? (
           <nav className="rpg-camera-actions" aria-label="地图视角">
@@ -1714,7 +1882,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "qizhen_lake" && !fishingSession && ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
+        {runtimeScene === "qizhen_lake" && !fishingSession && !photoSessionOpen && ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
           <RpgRealityModeToggle
             className="rpg-qizhen-mode-toggle"
             mode={state.qizhenLake.mode}
@@ -1773,7 +1941,7 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {!prologueActive && !chapter4InteractionBlocked && !fishingSession && (runtimeScene === "library_interior"
+        {!prologueActive && !chapter4InteractionBlocked && !fishingSession && !photoSessionOpen && (runtimeScene === "library_interior"
           || runtimeScene === "dorm_hub"
           || runtimeScene === "canteen_interior"
           || (runtimeScene === "theater_interior" && !["spotlight_hunt", "reversal"].includes(state.theaterHunt.phase))
@@ -1794,10 +1962,10 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || chaseActive || prologueActive || chapter4InteractionBlocked || Boolean(fishingSession)}
+          blocked={inputBlocked || itemInspectOpen || chaseActive || prologueActive || chapter4InteractionBlocked || Boolean(fishingSession) || photoSessionOpen}
         />
 
-        {state.actOne.controlsInstalled && touchControls && !chaseActive && !prologueActive && !chapter4InteractionBlocked && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
+        {state.actOne.controlsInstalled && touchControls && !chaseActive && !prologueActive && !chapter4InteractionBlocked && !photoSessionOpen && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
             <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼 A 左收线、S 提竿、D 右收线按钮">
               <button

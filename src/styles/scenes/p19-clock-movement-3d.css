@@ -1,0 +1,409 @@
+/* ===== P19 · 锁定双机芯 3D 爆炸图 ===== */
+/* 纯 CSS 3D 变换 + SVG 齿轮;所有类名以 clock-movement-3d 为前缀。 */
+
+.clock-movement-3d {
+  --clock-black: #090b0f;
+  --clock-panel: #111721;
+  --clock-panel-2: #1a2230;
+  --clock-paper: #f2eee0;
+  --clock-yellow: #f5d53d;
+  --clock-red: #ff4f69;
+  --clock-cyan: #83d9ef;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 25%, transparent 25% 75%, rgba(255, 255, 255, 0.035) 75%),
+    var(--clock-panel);
+  background-size: 12px 12px;
+  border: 1px solid #344050;
+  box-shadow: 5px 5px 0 #06080b;
+  box-sizing: border-box;
+  color: var(--clock-paper);
+  display: grid;
+  gap: 6px;
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  height: 372px;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 10px;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+  width: 100%;
+}
+
+.clock-movement-3d *,
+.clock-movement-3d *::before,
+.clock-movement-3d *::after { box-sizing: border-box; }
+
+.clock-movement-3d::before {
+  background: var(--clock-yellow);
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 74px;
+}
+
+/* ---- 3D 视口 ---- */
+
+.clock-movement-3d-viewport {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(circle at 50% 46%, #151e2b 0 34%, #0a0d13 78%);
+  background-size: 8px 8px, 8px 8px, auto;
+  border: 1px solid #303b4b;
+  cursor: grab;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+}
+
+.clock-movement-3d-viewport.is-orbiting { cursor: grabbing; }
+
+.clock-movement-3d-lens {
+  inset: 0;
+  perspective: 1200px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.clock-movement-3d-scene {
+  height: 216px;
+  left: 50%;
+  margin: -108px 0 0 -108px;
+  position: absolute;
+  top: 50%;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out;
+  width: 216px;
+}
+
+.clock-movement-3d-viewport.is-orbiting .clock-movement-3d-scene { transition: none; }
+
+.clock-movement-3d-layer {
+  display: grid;
+  inset: 0;
+  place-items: center;
+  pointer-events: none;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: transform 0.16s ease-out;
+}
+
+/* 装配轴光柱,随爆炸程度拉长 */
+.clock-movement-3d-axis {
+  background: linear-gradient(180deg, transparent, rgba(131, 217, 239, 0.85) 18%, rgba(131, 217, 239, 0.85) 82%, transparent);
+  box-shadow: 0 0 8px rgba(131, 217, 239, 0.5);
+  left: 50%;
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%) rotateX(90deg);
+  transition: height 0.16s ease-out;
+  width: 3px;
+}
+
+/* ---- 主夹板 ---- */
+
+.clock-movement-3d-plate {
+  background: radial-gradient(circle at 38% 32%, #273242 0 26%, #1b2431 58%, #11161f 100%);
+  border: 2px solid #3c4a5c;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 7px rgba(255, 255, 255, 0.025), inset 0 0 26px rgba(0, 0, 0, 0.6);
+  height: 196px;
+  position: relative;
+  width: 196px;
+}
+
+.clock-movement-3d-plate::before {
+  border: 1px dashed rgba(73, 90, 110, 0.6);
+  border-radius: 50%;
+  content: "";
+  inset: 26px;
+  position: absolute;
+}
+
+.clock-movement-3d-screw {
+  background: #54657c;
+  border: 1px solid #0c0f14;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  height: 9px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 9px;
+}
+
+.clock-movement-3d-screw::after {
+  background: #141a23;
+  content: "";
+  height: 1.5px;
+  left: 1px;
+  margin-top: -0.75px;
+  position: absolute;
+  right: 1px;
+  top: 50%;
+  transform: rotate(35deg);
+}
+
+/* ---- 齿轮 ---- */
+
+.clock-movement-3d-gear {
+  pointer-events: auto;
+  position: relative;
+  touch-action: none;
+}
+
+.clock-movement-3d-gear-hour { cursor: ns-resize; height: 190px; width: 190px; }
+.clock-movement-3d-gear-minute { cursor: ns-resize; height: 158px; width: 158px; }
+.clock-movement-3d-gear.is-locked { cursor: default; }
+
+.clock-movement-3d-rotor {
+  height: 100%;
+  transition: transform 0.12s linear;
+  width: 100%;
+  will-change: transform;
+}
+
+.clock-movement-3d-gear-svg { display: block; height: 100%; overflow: visible; width: 100%; }
+
+.clock-movement-3d-gear-teeth { fill: #2b3648; stroke: #5a6d85; stroke-linejoin: miter; stroke-width: 2; }
+.clock-movement-3d-gear-spokes { fill: none; stroke: #45566e; stroke-width: 7; }
+.clock-movement-3d-gear-hub { fill: #1c2531; stroke: #5a6d85; stroke-width: 2; }
+.clock-movement-3d-gear-axle { fill: #0b0e13; stroke: #39485c; stroke-width: 1.5; }
+
+.clock-movement-3d-gear-svg-mid .clock-movement-3d-gear-teeth { fill: #263242; stroke: #4b5d75; }
+.clock-movement-3d-gear-svg-mid .clock-movement-3d-gear-spokes { stroke: #3c4c62; stroke-width: 5; }
+
+.clock-movement-3d-hand line { stroke-linecap: square; }
+.clock-movement-3d-hand-hour line,
+.clock-movement-3d-hand-hour circle { fill: var(--clock-yellow); stroke: var(--clock-yellow); }
+.clock-movement-3d-hand-minute line,
+.clock-movement-3d-hand-minute circle { fill: var(--clock-paper); stroke: var(--clock-paper); }
+
+/* 对准目标值:琥珀描边 + 发光 */
+.clock-movement-3d-gear.is-target .clock-movement-3d-gear-teeth { stroke: var(--clock-yellow); }
+.clock-movement-3d-gear.is-target .clock-movement-3d-gear-svg { filter: drop-shadow(0 0 5px rgba(245, 213, 61, 0.65)); }
+
+/* 锁定:齿轮变暗,锁扣销插入 */
+.clock-movement-3d-gear.is-locked .clock-movement-3d-gear-svg { filter: brightness(0.5) saturate(0.75); }
+.clock-movement-3d-gear.is-locked.is-target .clock-movement-3d-gear-svg { filter: brightness(0.62) saturate(0.8) drop-shadow(0 0 4px rgba(245, 213, 61, 0.4)); }
+
+.clock-movement-3d-lockpin {
+  background: linear-gradient(180deg, #ffe887, var(--clock-yellow) 55%, #8f7a1c);
+  border: 1px solid #14100a;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+  height: 30px;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: -2px;
+  transform: translate(-50%, -22px);
+  transition: transform 0.18s ease-out, opacity 0.18s ease-out;
+  width: 10px;
+}
+
+.clock-movement-3d-gear.is-locked .clock-movement-3d-lockpin { opacity: 1; transform: translate(-50%, 4px); }
+
+/* ---- 传动介轮 ---- */
+
+.clock-movement-3d-midgear { left: 50%; pointer-events: none; position: absolute; top: 50%; }
+.clock-movement-3d-midgear-a { height: 64px; left: calc(50% + 18px); top: calc(50% - 82px); width: 64px; }
+.clock-movement-3d-midgear-b { height: 54px; left: calc(50% - 78px); top: calc(50% + 22px); width: 54px; }
+
+/* ---- 表盘环 ---- */
+
+.clock-movement-3d-dial {
+  background: radial-gradient(circle, transparent 0 62%, rgba(131, 217, 239, 0.05) 78%, rgba(131, 217, 239, 0.09) 100%);
+  border: 2px solid #465366;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 14px rgba(0, 0, 0, 0.35);
+  height: 200px;
+  position: relative;
+  width: 200px;
+}
+
+.clock-movement-3d-tick {
+  background: #54657a;
+  height: 9px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 3px;
+}
+
+.clock-movement-3d-tick.is-major { background: #8fa0b4; height: 13px; width: 4px; }
+
+.clock-movement-3d-tick.is-target {
+  background: var(--clock-yellow);
+  box-shadow: 0 0 8px rgba(245, 213, 61, 0.8);
+  height: 15px;
+  width: 5px;
+}
+
+.clock-movement-3d-target-marker {
+  background: var(--clock-yellow);
+  box-shadow: 0 0 8px rgba(245, 213, 61, 0.7);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  height: 9px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 12px;
+}
+
+/* ---- 视口角标读数 ---- */
+
+.clock-movement-3d-chip {
+  background: rgba(8, 10, 14, 0.82);
+  border: 1px solid #3b4757;
+  color: var(--clock-paper);
+  font-family: monospace;
+  font-size: 9px;
+  padding: 2px 5px;
+  pointer-events: none;
+  position: absolute;
+  top: 6px;
+  z-index: 2;
+}
+
+.clock-movement-3d-chip-hour { left: 6px; }
+.clock-movement-3d-chip-minute { right: 6px; }
+.clock-movement-3d-chip.is-target { border-color: var(--clock-yellow); color: var(--clock-yellow); }
+.clock-movement-3d-chip.is-locked { background: rgba(20, 16, 8, 0.85); border-color: #6b5d17; color: #8d99a8; }
+
+/* ---- 工具栏:爆炸 / 装配 / 复位 ---- */
+
+.clock-movement-3d-toolbar {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+
+.clock-movement-3d-view-btn {
+  background: #202a38;
+  border: 1px solid #455368;
+  color: var(--clock-paper);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  min-height: 28px;
+  padding: 0 8px;
+}
+
+.clock-movement-3d-view-btn[aria-pressed="true"] {
+  background: var(--clock-yellow);
+  border-color: #9d8525;
+  color: var(--clock-black);
+}
+
+.clock-movement-3d-explode-range {
+  accent-color: var(--clock-yellow);
+  cursor: ew-resize;
+  height: 28px;
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ---- 机芯控制面板 ---- */
+
+.clock-movement-3d-units { display: grid; gap: 6px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+.clock-movement-3d-unit {
+  background: #0c1118;
+  border: 1px solid #3b4757;
+  display: grid;
+  gap: 5px;
+  padding: 6px;
+}
+
+.clock-movement-3d-unit.is-target { border-color: var(--clock-yellow); box-shadow: inset 0 0 0 1px rgba(245, 213, 61, 0.25); }
+.clock-movement-3d-unit.is-locked { background: #12100a; border-color: #6b5d17; }
+
+.clock-movement-3d-unit-head { align-items: baseline; display: flex; gap: 4px; justify-content: space-between; }
+.clock-movement-3d-unit-head > span { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
+.clock-movement-3d-unit-head > small { color: #7f8b9b; font-family: monospace; font-size: 8px; }
+.clock-movement-3d-unit.is-target .clock-movement-3d-unit-head > small { color: var(--clock-yellow); }
+
+.clock-movement-3d-unit-main { align-items: center; display: grid; gap: 5px; grid-template-columns: 32px minmax(0, 1fr) 32px; }
+
+.clock-movement-3d-step {
+  align-items: center;
+  background: #202a38;
+  border: 1px solid #455368;
+  color: var(--clock-yellow);
+  display: flex;
+  font-family: monospace;
+  font-size: 15px;
+  height: 32px;
+  justify-content: center;
+  padding: 0;
+  width: 32px;
+}
+
+.clock-movement-3d-step:disabled { cursor: default; opacity: 0.32; }
+
+.clock-movement-3d-readout {
+  background: var(--clock-paper);
+  color: var(--clock-black);
+  font-family: monospace;
+  font-size: 22px;
+  line-height: 1;
+  padding: 5px 0 4px;
+  text-align: center;
+}
+
+.clock-movement-3d-unit.is-target .clock-movement-3d-readout { background: var(--clock-yellow); }
+
+.clock-movement-3d-lock {
+  background: #242d39;
+  border: 1px solid #536174;
+  color: var(--clock-paper);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  min-height: 28px;
+  padding: 0 6px;
+}
+
+.clock-movement-3d-lock:disabled {
+  background: var(--clock-yellow);
+  border-color: #9d8525;
+  color: var(--clock-black);
+  cursor: default;
+}
+
+/* ---- 底部提示 ---- */
+
+.clock-movement-3d-hint {
+  color: #8d99a8;
+  font-size: 9px;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
+/* ---- 焦点与动效 ---- */
+
+.clock-movement-3d-view-btn:focus-visible,
+.clock-movement-3d-step:focus-visible,
+.clock-movement-3d-lock:focus-visible,
+.clock-movement-3d-explode-range:focus-visible,
+.clock-movement-3d-gear:focus-visible {
+  outline: 3px solid var(--clock-cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clock-movement-3d *,
+  .clock-movement-3d *::before,
+  .clock-movement-3d *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

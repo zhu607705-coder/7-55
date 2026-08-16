@@ -14,7 +14,7 @@
     { "id": "a3_b3_skybridge", "kind": "skybridge", "nodes": ["A3", "B3"], "boardAllowed": true }
   ],
   "rooms": [
-    { "id": "a1_lobby", "floor": "A1", "label": "一楼门厅与麦斯威" },
+    { "id": "a1_lobby", "floor": "A1", "label": "一楼门厅与迈斯威" },
     { "id": "a1_main_elevator", "floor": "A1", "label": "主电梯厅" },
     { "id": "a2_corridor", "floor": "A2", "label": "阶梯大教室侧廊" },
     { "id": "a3_skybridge", "floor": "A3", "label": "三楼连廊" },

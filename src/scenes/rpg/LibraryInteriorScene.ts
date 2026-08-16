@@ -20,6 +20,8 @@ import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   getRpgDropBounds,
+  isPlayerFacingRpgTarget,
+  isPlayerReadyForRpgTarget,
   isPlayerWithinRpgTarget,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
@@ -95,10 +97,7 @@ interface MarkerParts {
 
 interface LibraryDropGuideParts {
   target: LibraryInteractionTarget;
-  dropFrame: Phaser.GameObjects.Rectangle;
-  dropLabel: Phaser.GameObjects.Text;
-  standRing: Phaser.GameObjects.Arc;
-  standLabel: Phaser.GameObjects.Text;
+  targetOutline: Phaser.GameObjects.Rectangle;
 }
 
 type EntranceDoorMotion = "closed" | "opening" | "open" | "closing";
@@ -225,7 +224,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
       .startFollow(this.player, true, 0.12, 0.12, 0, 24)
       .setDeadzone(250, 150);
 
-    this.createMarkers();
+    // The authored furniture and devices are the interaction affordances.
+    // Floating target badges stay disabled to keep the source image readable.
     this.createDropGuides();
     this.createHud();
     this.syncWorldFromState();
@@ -278,8 +278,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.promptText.setVisible(false);
       this.markers.forEach((marker) => marker.container.setVisible(false));
       this.dropGuides.forEach((guide) => {
-        [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel]
-          .forEach((object) => object.setVisible(false));
+        guide.targetOutline.setVisible(false);
       });
       const confirmRequested = keyboardInteract
         || Phaser.Input.Keyboard.JustDown(this.enterKey)
@@ -298,7 +297,16 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.updateFrontDeskStampStatus(state);
 
     if (nearest && (keyboardInteract || this.interactRequested)) {
-      this.triggerInteraction(nearest, state);
+      if (isPlayerFacingRpgTarget(
+        nearest,
+        this.player.x,
+        this.player.y,
+        this.playerAnimator.cardinalFacing
+      )) {
+        this.triggerInteraction(nearest, state);
+      } else {
+        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task");
+      }
     }
     this.interactRequested = false;
 
@@ -418,7 +426,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.bridge.emit("rpg_item_use_feedback", {
         itemId,
         reason: "missed_target",
-        detail: "松手点落在所有可用目标范围之外。拖动时请对准场景中的高亮框。"
+        detail: "把道具拖到画面中对应的真实物体。"
       });
       return;
     }
@@ -447,6 +455,20 @@ export class LibraryInteriorScene extends Phaser.Scene {
         itemId,
         reason: "too_far",
         targetLabel: target.label
+      });
+      return;
+    }
+    if (result.kind === "wrong_facing") {
+      this.bridge.emit("library_rpg_interaction_failed", {
+        itemId,
+        targetId: target.id,
+        reason: "wrong_facing"
+      });
+      this.bridge.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "wrong_facing",
+        targetLabel: target.label,
+        detail: `靠近并面向「${target.label}」后再操作。`
       });
       return;
     }
@@ -610,26 +632,15 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const activeIds = new Set(activeTargets.map((target) => target.id));
     this.dropGuides.forEach((guide) => {
       const visible = selectedItem === guide.target.acceptedItem && activeIds.has(guide.target.id);
-      [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel]
-        .forEach((object) => object.setVisible(visible));
+      guide.targetOutline.setVisible(visible);
       if (!visible) return;
-      const inPosition = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y);
-      const accent = inPosition ? 0x63e58b : 0x72dcff;
-      const fill = inPosition ? 0x235d3a : 0x2a9fd6;
-      guide.dropFrame
-        .setFillStyle(fill, 0.14)
-        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
-      guide.standRing
-        .setFillStyle(fill, inPosition ? 0.22 : 0.12)
-        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
-      guide.dropLabel
-        .setText(inPosition
-          ? `站位正确 · 道具拖进${guide.target.label}松手`
-          : `目标 · ${guide.target.label}`)
-        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
-      guide.standLabel
-        .setText(inPosition ? "站位已满足" : "先让人物站到这里")
-        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
+      const ready = isPlayerReadyForRpgTarget(
+        guide.target,
+        this.player.x,
+        this.player.y,
+        this.playerAnimator.cardinalFacing
+      );
+      guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
     });
   }
 
@@ -708,6 +719,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
         x: this.player.x,
         y: this.player.y,
         facing: this.playerAnimator.facing,
+        cardinalFacing: this.playerAnimator.cardinalFacing,
         texture: this.playerAnimator.textureKey,
         turning: this.playerAnimator.isTurning,
         walkFps: RPG_PLAYER_WALK_FPS,
@@ -742,7 +754,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
         proximity: target.proximity,
         ...(target.dropWidth ? { dropWidth: target.dropWidth } : {}),
         ...(target.dropHeight ? { dropHeight: target.dropHeight } : {}),
-        ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {})
+        ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {}),
+        requiredFacing: target.requiredFacing
       })),
       collisionRects: LIBRARY_STATIC_COLLISION_RECTS.map((rect) => rect.id === "north_display_shelf"
         ? {
@@ -811,6 +824,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
       ? "这个道具和目标的证据类型对不上。"
       : reason === "too_far"
         ? `先走到${targetLabel ? `「${targetLabel}」` : "目标"}的可操作边缘，再使用道具。`
+      : reason === "wrong_facing"
+        ? `面向${targetLabel ? `「${targetLabel}」` : "目标"}后再使用道具。`
       : reason === "no_target"
         ? "道具没有落在可交互目标上。"
         : "条件还不完整，目标暂时不接受这个操作。";
@@ -821,7 +836,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }
   }
 
-  private showFeedback(text: string, tone: "system" | "success" | "error" | "broadcast" | "chapter"): void {
+  private showFeedback(text: string, tone: "system" | "success" | "error" | "broadcast" | "chapter" | "task"): void {
     this.bridge.emit("rpg_subtitle", {
       text,
       tone: tone === "chapter" ? "task" : tone,
@@ -1590,58 +1605,31 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private createDropGuides(): void {
     LIBRARY_INTERACTION_TARGETS
-      .filter((target) => target.acceptedItem && target.stand)
+      .filter((target) => target.acceptedItem)
       .forEach((target) => {
         const bounds = getRpgDropBounds(target);
-        const dropFrame = this.add.rectangle(
+        const targetOutline = this.add.rectangle(
           target.x,
           target.y,
           bounds.width,
           bounds.height,
-          0x2a9fd6,
-          0.13
-        ).setStrokeStyle(4, 0x72dcff, 0.98)
+          0x000000,
+          0
+        ).setStrokeStyle(2, 0x72dcff, 0.92)
           .setDepth(4960)
           .setVisible(false);
-        const dropLabel = this.add.text(
-          target.x,
-          target.y - bounds.height / 2 - 7,
-          `目标 · ${target.label}`,
-          {
-            color: "#d9f8ff",
-            backgroundColor: "#102332ee",
-            fontFamily: "monospace",
-            fontSize: "12px",
-            padding: { x: 7, y: 4 }
-          }
-        ).setOrigin(0.5, 1)
-          .setDepth(4962)
-          .setVisible(false);
-        const stand = target.stand!;
-        const standRing = this.add.circle(stand.x, stand.y, 27, 0x2a9fd6, 0.12)
-          .setStrokeStyle(4, 0x72dcff, 0.96)
-          .setDepth(4960)
-          .setVisible(false);
-        const standLabel = this.add.text(stand.x, stand.y + 37, "先让人物站到这里", {
-          color: "#d9f8ff",
-          backgroundColor: "#102332ee",
-          fontFamily: "monospace",
-          fontSize: "11px",
-          padding: { x: 6, y: 4 }
-        }).setOrigin(0.5, 0)
-          .setDepth(4962)
-          .setVisible(false);
-        this.dropGuides.set(target.id, { target, dropFrame, dropLabel, standRing, standLabel });
+        this.dropGuides.set(target.id, { target, targetOutline });
       });
   }
 
   private createHud(): void {
     this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
-      backgroundColor: "#10201deb",
       fontFamily: "monospace",
       fontSize: "12px",
-      padding: { x: 13, y: 6 }
+      stroke: "#07111c",
+      strokeThickness: 4,
+      align: "center"
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(10000).setVisible(false);
 
     this.createEntranceRecordPanel();
@@ -1855,8 +1843,16 @@ export class LibraryInteriorScene extends Phaser.Scene {
         if (!this.player || this.entranceRecordPanel.visible) {
           return;
         }
-        const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
-        if (distance <= target.proximity + 24) {
+        if (isPlayerWithinRpgTarget(target, this.player.x, this.player.y)) {
+          if (!isPlayerFacingRpgTarget(
+            target,
+            this.player.x,
+            this.player.y,
+            this.playerAnimator.cardinalFacing
+          )) {
+            this.showFeedback("面向入馆记录设备后再操作。", "system");
+            return;
+          }
           this.bridge.setCheckpoint("library_entrance");
           this.openEntranceRecordPanel();
           return;
@@ -2155,9 +2151,17 @@ export class LibraryInteriorScene extends Phaser.Scene {
     ]).setDepth(742);
 
     const interactWithFrontDesk = () => {
-      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, target.x, target.y);
-      if (distance > target.proximity + 24) {
-        this.showFeedback("先走到信息台柜台前。", "system");
+      if (!isPlayerWithinRpgTarget(target, this.player.x, this.player.y)) {
+        this.showFeedback("请靠近信息台柜台。", "system");
+        return;
+      }
+      if (!isPlayerFacingRpgTarget(
+        target,
+        this.player.x,
+        this.player.y,
+        this.playerAnimator.cardinalFacing
+      )) {
+        this.showFeedback("面向前台工作人员后再操作。", "system");
         return;
       }
       this.bridge.setCheckpoint("library_front_desk");
@@ -2226,11 +2230,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private drawCatalogArea(): void {
     this.add.text(760, 408, "馆藏检索 / 打印", {
       color: "#f2e5c6",
-      backgroundColor: "#23332fee",
       fontFamily: "monospace",
       fontSize: "13px",
       fontStyle: "bold",
-      padding: { x: 8, y: 4 }
+      stroke: "#172520",
+      strokeThickness: 4
     }).setOrigin(0.5).setDepth(680);
     this.catalogIndicator = this.add.circle(687, 512, 5, 0xd2aa54, 1)
       .setStrokeStyle(2, 0x1b2926, 1)
@@ -2243,10 +2247,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private drawShelves(): void {
     this.add.text(500, 92, "文学 / 社科书架", {
       color: "#eadfca",
-      backgroundColor: "#24342fee",
       fontFamily: "monospace",
       fontSize: "13px",
-      padding: { x: 8, y: 4 }
+      stroke: "#172520",
+      strokeThickness: 4
     }).setOrigin(0.5).setDepth(120);
 
     const mapTexture = this.textures.get(LIBRARY_INTERIOR_MAP_KEY);
@@ -2317,10 +2321,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private drawSeatingArea(): void {
     this.add.text(1140, 105, "二层南区 · 安静阅览", {
       color: "#e9dfc7",
-      backgroundColor: "#24342fee",
       fontFamily: "monospace",
       fontSize: "14px",
-      padding: { x: 8, y: 4 }
+      stroke: "#172520",
+      strokeThickness: 4
     }).setOrigin(0.5).setDepth(120);
 
     this.seatStatusDot = this.add.circle(1252, 322, 6, 0xe65c57, 1)

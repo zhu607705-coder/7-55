@@ -1,0 +1,86 @@
+/* ===== 启真湖配方照片重建帧(共享) =====
+   从 QizhenJournalCamera 抽出的配方渲染层:同一 QizhenPhotoRecipe 投影公式
+   服务相机取景/回放、CC98 帖子主图、楼层缩略图与详情浮层。 */
+
+.qizhen-recipe-frame {
+  aspect-ratio: 1672 / 941;
+  background: #05070a;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* 相机宿主容器(取景框 / 回放框)自带宽高比、边框与阴影;
+   帧体直接填满宿主,保证抽取前后相机画面像素一致。 */
+.qizhen-journal-camera-viewfinder > .qizhen-recipe-frame,
+.qizhen-journal-camera-review-frame > .qizhen-recipe-frame {
+  aspect-ratio: auto;
+  background: transparent;
+  inset: 0;
+  position: absolute;
+  width: auto;
+}
+
+.qizhen-recipe-frame-layer {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.qizhen-recipe-frame-ripple {
+  background: repeating-radial-gradient(
+    circle at 50% 64%,
+    rgba(168, 214, 235, 0.5) 0 2px,
+    transparent 2px 16px
+  );
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.qizhen-recipe-frame-ripple--clear { opacity: 0.55; }
+.qizhen-recipe-frame-ripple--partial { opacity: 0.22; }
+
+.qizhen-recipe-frame-swan {
+  aspect-ratio: 5 / 3;
+  background: #0d1017;
+  bottom: 18%;
+  clip-path: polygon(
+    2% 78%, 10% 62%, 7% 38%, 10% 16%, 18% 6%, 27% 9%, 29% 20%, 23% 33%,
+    20% 50%, 26% 60%, 45% 62%, 68% 55%, 88% 60%, 100% 72%, 94% 88%,
+    70% 96%, 38% 96%, 12% 90%
+  );
+  left: 58%;
+  pointer-events: none;
+  position: absolute;
+}
+
+.qizhen-recipe-frame-swan--near { opacity: 0.92; width: 34%; }
+.qizhen-recipe-frame-swan--mid { opacity: 0.75; width: 22%; }
+.qizhen-recipe-frame-swan--far { opacity: 0.58; width: 14%; }
+
+.qizhen-recipe-frame-kayak {
+  image-rendering: pixelated;
+  pointer-events: none;
+  position: absolute;
+  transform-origin: 50% 50%;
+}
+
+/* ---- thumb 变体:投影公式不变,收敛装饰层细节 ----
+   缩略图物理尺寸小,细水纹糊成噪点:环距拉宽、partial 直接省略;
+   黑天鹅剪影按比例略收,保持档位可辨。 */
+.qizhen-recipe-frame--thumb .qizhen-recipe-frame-ripple {
+  background: repeating-radial-gradient(
+    circle at 50% 64%,
+    rgba(168, 214, 235, 0.5) 0 3px,
+    transparent 3px 22px
+  );
+}
+
+.qizhen-recipe-frame--thumb .qizhen-recipe-frame-ripple--clear { opacity: 0.4; }
+.qizhen-recipe-frame--thumb .qizhen-recipe-frame-ripple--partial { display: none; }
+
+.qizhen-recipe-frame--thumb .qizhen-recipe-frame-swan--near { width: 30%; }
+.qizhen-recipe-frame--thumb .qizhen-recipe-frame-swan--mid { width: 19%; }
+.qizhen-recipe-frame--thumb .qizhen-recipe-frame-swan--far { width: 12%; }

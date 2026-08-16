@@ -19,17 +19,24 @@ import type {
   LibraryRecoveryEvidenceId,
   QizhenDecoyTargetId,
   QizhenFishingSpotId,
+  QizhenJournalDraft,
+  QizhenJournalStatus,
   QizhenLakePhase,
   QizhenMapClueId,
+  QizhenPhotoRecipe,
+  QizhenPhotoRecord,
+  QizhenPhotoSpotId,
+  QizhenPhotoTag,
   WalletState
 } from "./types";
+import { draftIdFor } from "../modules/QizhenJournalModel";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 21;
+const SAVE_VERSION = 22;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, SAVE_VERSION]);
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
@@ -128,6 +135,17 @@ const VALID_QIZHEN_PADDLE_SIDES = new Set<NonNullable<GameState["qizhenLake"]["b
 const VALID_QIZHEN_FISHING_SPOTS = new Set<QizhenFishingSpotId>(["locker_key", "net_frame", "paper", "fish"]);
 const VALID_QIZHEN_MAP_CLUES = new Set<QizhenMapClueId>(["bridge", "reflection", "lake"]);
 const VALID_QIZHEN_DECOY_TARGETS = new Set<QizhenDecoyTargetId>(["notice", "bridge", "lamp"]);
+const VALID_QIZHEN_JOURNAL_STATUSES = new Set<QizhenJournalStatus>([
+  "locked", "capture_ready", "main_draft", "open", "summary_ready", "archived"
+]);
+const VALID_QIZHEN_PHOTO_SPOTS = new Set<QizhenPhotoSpotId>(["lake_center", "dock", "reflection", "swan_cove"]);
+const VALID_QIZHEN_PHOTO_TAGS = new Set<QizhenPhotoTag>([
+  "composition_ok", "tilted", "high_speed", "ripple_clear",
+  "ripple_broken", "swan_near", "swan_far", "swan_aftermath"
+]);
+const VALID_QIZHEN_SWAN_BUCKETS = new Set(["near", "mid", "far", "gone"]);
+const VALID_QIZHEN_RIPPLE_BUCKETS = new Set(["clear", "partial", "lost"]);
+const VALID_QIZHEN_SUMMARY_CHOICES = new Set<NonNullable<GameState["qizhenLake"]["journal"]["summaryChoice"]>>(["safe_return", "details_withheld"]);
 const VALID_CHAPTER_FOUR_PHASES = new Set<GameState["chapter4"]["phase"]>([
   "inactive", "arrival", "airflow_overlay", "elevator_track_sync", "npc_schedule_route",
   "corridor_bay_reconstruction", "wayfinding_fragment_board", "bridge_floor_discrimination",
@@ -800,6 +818,10 @@ function normalizeQizhenLake(
     ),
     magneticAttachmentBroken: completed || booleanOr(saved.magneticAttachmentBroken, initial.magneticAttachmentBroken),
     transitionReady: completed || booleanOr(saved.transitionReady, initial.transitionReady),
+    // v22:拍照记录。旧档缺 journal 字段;已完成启真湖的旧档直接迁为兼容归档。
+    journal: normalizeQizhenJournal(saved.journal, initial.journal, completed),
+    dockCollisionCount: nonNegativeIntegerOr(saved.dockCollisionCount, initial.dockCollisionCount),
+    swanAlertLevel: nonNegativeIntegerOr(saved.swanAlertLevel, initial.swanAlertLevel),
     reflectionRound: rangedIntegerOr(saved.reflectionRound, 0, 3, initial.reflectionRound),
     reflectionMistakes: nonNegativeIntegerOr(saved.reflectionMistakes, initial.reflectionMistakes),
     signRotations,
@@ -811,6 +833,129 @@ function normalizeQizhenLake(
     paperReleased: booleanOr(saved.paperReleased, initial.paperReleased)
   };
   return { state, migratedLegacyInterior, migratedLegacyChase };
+}
+
+/**
+ * v22 拍照记录的水合。旧档(v21 及更早)没有 journal 字段:未完成启真湖的档
+ * 补默认值;已完成启真湖的旧档(legacyCompleted)直接迁为兼容归档——status
+ * "archived"、照片与楼层保持空的只读占位,不能回退到拍照任务。
+ * 已有 journal 的存档逐字段 sanitize:照片记录显式重建,只保留合同字段,
+ * 任何 Base64/canvas/截图数据都在重建时被丢弃(照片只存 recipe)。
+ */
+function normalizeQizhenJournal(
+  value: unknown,
+  initial: GameState["qizhenLake"]["journal"],
+  legacyCompleted: boolean
+): GameState["qizhenLake"]["journal"] {
+  if (!isRecord(value)) {
+    return legacyCompleted
+      ? { ...initial, status: "archived", summaryPublished: true }
+      : { ...initial };
+  }
+  const savedMain = normalizeQizhenPhotoRecord(value.mainPhoto);
+  const mainPhoto = savedMain?.spotId === "lake_center" ? savedMain : null;
+  const optionalPhotos: GameState["qizhenLake"]["journal"]["optionalPhotos"] = {};
+  const savedOptional = asRecord(value.optionalPhotos);
+  (["dock", "reflection", "swan_cove"] as const).forEach((spotId) => {
+    const photo = normalizeQizhenPhotoRecord(savedOptional[spotId]);
+    if (photo && photo.spotId === spotId) optionalPhotos[spotId] = photo;
+  });
+  const pendingDraft = normalizeQizhenJournalDraft(value.pendingDraft, mainPhoto, optionalPhotos);
+  return {
+    status: enumOr(value.status, VALID_QIZHEN_JOURNAL_STATUSES, initial.status),
+    threadId: typeof value.threadId === "string" ? value.threadId : initial.threadId,
+    threadSeed: nonNegativeSafeIntegerOr(value.threadSeed, initial.threadSeed),
+    mainPhoto,
+    optionalPhotos,
+    mainTitleId: nullableStringOr(value.mainTitleId, initial.mainTitleId),
+    mainStatusId: nullableStringOr(value.mainStatusId, initial.mainStatusId),
+    publishedSpotIds: filteredStringArrayFromSet(value.publishedSpotIds, VALID_QIZHEN_PHOTO_SPOTS, initial.publishedSpotIds),
+    pendingDraft,
+    summaryChoice: nullableEnumOr(value.summaryChoice, VALID_QIZHEN_SUMMARY_CHOICES, initial.summaryChoice),
+    summaryPublished: booleanOr(value.summaryPublished, initial.summaryPublished),
+    fishingAssistUnlocked: booleanOr(value.fishingAssistUnlocked, initial.fishingAssistUnlocked),
+    fishingAssistConsumed: booleanOr(value.fishingAssistConsumed, initial.fishingAssistConsumed),
+    memoryCardUnlocked: booleanOr(value.memoryCardUnlocked, initial.memoryCardUnlocked)
+  };
+}
+
+function normalizeQizhenPhotoRecord(value: unknown): QizhenPhotoRecord | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.id !== "string" || value.id.length === 0) return null;
+  if (typeof value.spotId !== "string" || !VALID_QIZHEN_PHOTO_SPOTS.has(value.spotId as QizhenPhotoSpotId)) {
+    return null;
+  }
+  const capturedAtSeconds = nonNegativeIntegerOr(value.capturedAtSeconds, -1);
+  if (capturedAtSeconds < 0) return null;
+  const recipe = normalizeQizhenPhotoRecipe(value.recipe);
+  if (!recipe) return null;
+  return {
+    id: value.id,
+    spotId: value.spotId as QizhenPhotoSpotId,
+    capturedAtSeconds,
+    tags: filteredStringArrayFromSet(value.tags, VALID_QIZHEN_PHOTO_TAGS, []),
+    recipe
+  };
+}
+
+function normalizeQizhenPhotoRecipe(value: unknown): QizhenPhotoRecipe | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.zone !== "string" || !VALID_QIZHEN_ZONES.has(value.zone as GameState["qizhenLake"]["zone"])) {
+    return null;
+  }
+  const cropCenterX = rangedNumberOr(value.cropCenterX, 0, 1672, Number.NaN);
+  const cropCenterY = rangedNumberOr(value.cropCenterY, 0, 941, Number.NaN);
+  const kayakX = rangedNumberOr(value.kayakX, 0, 1672, Number.NaN);
+  const kayakY = rangedNumberOr(value.kayakY, 0, 941, Number.NaN);
+  const zoomStep = rangedIntegerOr(value.zoomStep, 0, 2, Number.NaN);
+  const headingBucket = rangedIntegerOr(value.headingBucket, 0, 7, Number.NaN);
+  if ([cropCenterX, cropCenterY, kayakX, kayakY, zoomStep, headingBucket].some((entry) => Number.isNaN(entry))) {
+    return null;
+  }
+  const recipe: QizhenPhotoRecipe = {
+    zone: value.zone as QizhenPhotoRecipe["zone"],
+    cropCenterX,
+    cropCenterY,
+    zoomStep: zoomStep as QizhenPhotoRecipe["zoomStep"],
+    kayakX,
+    kayakY,
+    headingBucket: headingBucket as QizhenPhotoRecipe["headingBucket"]
+  };
+  if (typeof value.swanDistanceBucket === "string" && VALID_QIZHEN_SWAN_BUCKETS.has(value.swanDistanceBucket)) {
+    recipe.swanDistanceBucket = value.swanDistanceBucket as QizhenPhotoRecipe["swanDistanceBucket"];
+  }
+  if (typeof value.rippleClarityBucket === "string" && VALID_QIZHEN_RIPPLE_BUCKETS.has(value.rippleClarityBucket)) {
+    recipe.rippleClarityBucket = value.rippleClarityBucket as QizhenPhotoRecipe["rippleClarityBucket"];
+  }
+  return recipe;
+}
+
+/** 草稿必须挂在 sanitize 后仍存在的照片上,且 id 与幂等键格式一致,否则丢弃。 */
+function normalizeQizhenJournalDraft(
+  value: unknown,
+  mainPhoto: QizhenPhotoRecord | null,
+  optionalPhotos: GameState["qizhenLake"]["journal"]["optionalPhotos"]
+): QizhenJournalDraft | null {
+  if (!isRecord(value)) return null;
+  const kind = value.kind === "main" ? "main" : value.kind === "spot" ? "spot" : null;
+  if (!kind) return null;
+  const savedPhoto = asRecord(value.photo);
+  const photoId = typeof savedPhoto.id === "string" ? savedPhoto.id : "";
+  const stored = mainPhoto?.id === photoId
+    ? mainPhoto
+    : Object.values(optionalPhotos).find((photo) => photo.id === photoId) ?? null;
+  if (!stored) return null;
+  if (kind === "main" && stored.spotId !== "lake_center") return null;
+  if (kind === "spot" && stored.spotId === "lake_center") return null;
+  if (value.id !== draftIdFor(photoId)) return null;
+  return {
+    id: value.id,
+    kind,
+    photo: stored,
+    titleId: nullableStringOr(value.titleId, null),
+    statusId: nullableStringOr(value.statusId, null),
+    captionId: nullableStringOr(value.captionId, null)
+  };
 }
 
 function safeSpawnMatchesZone(

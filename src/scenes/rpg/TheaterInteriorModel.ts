@@ -111,8 +111,8 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     stand: { x: 1080, y: 750 },
     width: 92,
     height: 146,
-    proximity: 56,
-    requiredFacing: "right",
+    proximity: 72,
+    requiredFacing: "toward_target",
     kind: "kiosk"
   },
   {
@@ -122,8 +122,8 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     y: 690,
     stand: { x: 907, y: 770 },
     width: 90,
-    height: 100,
-    proximity: 56,
+    height: 148,
+    proximity: 88,
     dropWidth: 90,
     dropHeight: 100,
     kind: "gate",
@@ -186,7 +186,10 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
   { id: "theater_exit", label: "剧院出口", x: 836, y: 842, proximity: 90, requiredFacing: "down", kind: "exit" }
 ] as const;
 
-export const THEATER_LOBBY_SPAWN = { x: 836, y: 842 } as const;
+// Spawn above the south-wall collision line so the route to the kiosk reads as
+// one continuous lobby aisle instead of asking the player to first sidestep an
+// invisible wall edge.
+export const THEATER_LOBBY_SPAWN = { x: 836, y: 820 } as const;
 export const THEATER_AUDITORIUM_SPAWN = { x: 1080, y: 590 } as const;
 // Keep the player's foot box above the stage-front collision at y = 258.
 export const THEATER_STAGE_SPAWN = { x: 420, y: 200 } as const;

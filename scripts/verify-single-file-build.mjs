@@ -3,7 +3,11 @@ import { resolve } from "node:path";
 
 const outputDirectory = resolve(process.cwd(), "demo");
 const requestedArtifact = process.argv[2] ?? "index.html";
-const allowedArtifacts = new Set(["index.html", "campus-map-demo.html"]);
+const allowedArtifacts = new Set([
+  "index.html",
+  "campus-map-demo.html",
+  "chapter4-monument-stair-demo.html"
+]);
 
 if (!allowedArtifacts.has(requestedArtifact)) {
   throw new Error(`Unknown single-file artifact: ${requestedArtifact}`);

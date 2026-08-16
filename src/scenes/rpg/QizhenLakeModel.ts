@@ -1,4 +1,4 @@
-import type { ItemId } from "../../core/types";
+import type { ItemId, QizhenPhotoRecipe, QizhenPhotoSpotId } from "../../core/types";
 import {
   distanceFromPlayerToRpgTarget,
   isPlayerWithinRpgTarget,
@@ -339,4 +339,189 @@ export function clampKayakToWater(
     if (distance < closest.distance) closest = { x: clampedX, y: clampedY, distance };
   });
   return { x: closest.x, y: closest.y, contained: false };
+}
+
+/**
+ * 拍照取景站位区域(源像素)。每块区域都对着本区已有碰撞/水域数据
+ * 校过:kayak 区域落在水域内且不压任何船体碰撞;on_foot 区域落在
+ * 码头可步行陆地上。
+ */
+export interface QizhenLakePhotoSpotRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+export interface QizhenLakePhotoSpot {
+  id: QizhenPhotoSpotId;
+  zone: QizhenLakeZoneId;
+  /** 拍摄点名称,用于场景内提示文案。 */
+  label: string;
+  /** 建议站位区域;dock 点含 kayak 与 on_foot 两块,两类站位不会互相到达。 */
+  standAreas: readonly QizhenLakePhotoSpotRect[];
+  /** 取景裁切中心建议(源像素)。 */
+  cropCenter: { x: number; y: number };
+  /** 默认缩放档位;dock 视野更宽,取 0。 */
+  defaultZoomStep: 0 | 1 | 2;
+  /** 主体可见范围说明。 */
+  subjectFramingNote: string;
+}
+
+export const QIZHEN_LAKE_PHOTO_SPOTS: Readonly<Record<QizhenPhotoSpotId, QizhenLakePhotoSpot>> = {
+  lake_center: {
+    id: "lake_center",
+    zone: "open_water",
+    label: "湖心",
+    // 大湖面中部开阔水带:西北柳岛(右界 575)、北河道岸(底界 180)、
+    // 东南浮筒桩(左界 1020)、南岸(顶界 810)都不压;在 open_basin 水域内。
+    standAreas: [{ left: 700, top: 380, right: 980, bottom: 560 }],
+    cropCenter: { x: 836, y: 430 },
+    defaultZoomStep: 1,
+    subjectFramingNote: "湖心全景:朝北取景时西北柳岛与整片开阔水面入镜,船体落在画面下缘。"
+  },
+  dock: {
+    id: "dock",
+    zone: "dock",
+    label: "小码头",
+    standAreas: [
+      // kayak:码头北侧水面,dock_walkway(顶界 430)与 west_land(右界 610)之外,
+      // 在 dock_basin 水域内。
+      { left: 660, top: 150, right: 1080, bottom: 380 },
+      // on_foot:栈道步行段,shore_water(底界 555)、pier_east_water(左界 790)、
+      // south_planter(顶界 795)之间,与登船边站位相邻。
+      { left: 632, top: 560, right: 788, bottom: 700 }
+    ],
+    cropCenter: { x: 704, y: 540 },
+    defaultZoomStep: 0,
+    subjectFramingNote: "小码头:木栈道、器材架与登船边入镜;徒步或乘艇都可取景。"
+  },
+  reflection: {
+    id: "reflection",
+    zone: "open_water",
+    label: "倒影水面",
+    // 大湖面东侧倒影水带,与 lake_center 站位不重叠:北河道岸(右界 980)以东、
+    // 浮筒桩(顶界 520)以北;靠近纸条倒影目标 (1320, 330)。
+    standAreas: [{ left: 1150, top: 250, right: 1420, bottom: 460 }],
+    cropCenter: { x: 1290, y: 350 },
+    defaultZoomStep: 1,
+    subjectFramingNote: "倒影水面:东侧倒影区入镜;水面平静时倒影完整,船速与侧倾大时水纹断开。"
+  },
+  swan_cove: {
+    id: "swan_cove",
+    zone: "swan_cove",
+    label: "黑天鹅围栏",
+    // 围栏外侧水域(西侧):swan_fence_west_upper(底界 383)以南、
+    // swan_fence_west_curve_2(左界 970)以西、south_bank(顶界 760)以北,
+    // 与喂鹅站位 (890, 505) 相邻;在 swan_basin 水域内。
+    standAreas: [{ left: 700, top: 420, right: 900, bottom: 560 }],
+    cropCenter: { x: 1165, y: 430 },
+    defaultZoomStep: 1,
+    subjectFramingNote: "黑天鹅围栏:从围栏外水域取景,黑天鹅在围栏内游动;鹅离开后只剩空围栏与水痕。"
+  }
+} as const;
+
+export function qizhenPhotoSpotsForZone(zone: QizhenLakeZoneId): QizhenLakePhotoSpot[] {
+  return Object.values(QIZHEN_LAKE_PHOTO_SPOTS).filter((spot) => spot.zone === zone);
+}
+
+/**
+ * 站位解析:位置落在某拍摄点任一站位区域内即返回该点;open_water 内
+ * lake_center 与 reflection 用两块不相交子区域区分。
+ */
+export function resolveQizhenPhotoSpot(
+  zone: QizhenLakeZoneId,
+  kayakX: number,
+  kayakY: number
+): QizhenPhotoSpotId | null {
+  const spots = qizhenPhotoSpotsForZone(zone);
+  for (const spot of spots) {
+    const hit = spot.standAreas.some((area) => (
+      kayakX >= area.left && kayakX <= area.right && kayakY >= area.top && kayakY <= area.bottom
+    ));
+    if (hit) return spot.id;
+  }
+  return null;
+}
+
+/** 距当前位置最近的拍摄点(按站位区域中心),用于"去最近拍摄点"提示。 */
+export function nearestQizhenPhotoSpot(
+  zone: QizhenLakeZoneId,
+  x: number,
+  y: number
+): QizhenLakePhotoSpot | null {
+  let nearest: QizhenLakePhotoSpot | null = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  qizhenPhotoSpotsForZone(zone).forEach((spot) => {
+    spot.standAreas.forEach((area) => {
+      const centerX = (area.left + area.right) / 2;
+      const centerY = (area.top + area.bottom) / 2;
+      const distance = Math.hypot(x - centerX, y - centerY);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        nearest = spot;
+      }
+    });
+  });
+  return nearest;
+}
+
+export interface QizhenPhotoRecipeInput {
+  kayakX: number;
+  kayakY: number;
+  /** 船头朝向(弧度,y 向下)。 */
+  heading: number;
+  /** 船到黑天鹅的真实距离(源像素);"gone" 表示黑天鹅已离开。 */
+  swanDistance?: number | "gone";
+  /** 水面可读性:boolean 或 0–1 的清晰度(1 平静清晰,0 完全打散)。 */
+  rippleVisible?: boolean | number;
+}
+
+/** 朝向量化到八方位:0 = 东(+x),2 = 南(+y),4 = 西,6 = 北。 */
+export function quantizeQizhenPhotoHeading(heading: number): QizhenPhotoRecipe["headingBucket"] {
+  const bucket = ((Math.round(heading / (Math.PI / 4)) % 8) + 8) % 8;
+  return bucket as QizhenPhotoRecipe["headingBucket"];
+}
+
+export function bucketQizhenSwanDistance(
+  swanDistance: QizhenPhotoRecipeInput["swanDistance"]
+): QizhenPhotoRecipe["swanDistanceBucket"] | undefined {
+  if (swanDistance === undefined) return undefined;
+  if (swanDistance === "gone" || !Number.isFinite(swanDistance)) return "gone";
+  // swan_cove 站位区 (700,420)–(900,560) 到天鹅锚点 (1160,400) 的可达距离带约
+  // 261–487 源像素:阈值必须落在带内,near/far 标签才真实可达。
+  if (swanDistance < 330) return "near";
+  if (swanDistance < 430) return "mid";
+  return "far";
+}
+
+export function bucketQizhenRippleClarity(
+  rippleVisible: QizhenPhotoRecipeInput["rippleVisible"]
+): QizhenPhotoRecipe["rippleClarityBucket"] | undefined {
+  if (rippleVisible === undefined) return undefined;
+  const clarity = typeof rippleVisible === "boolean" ? (rippleVisible ? 1 : 0) : rippleVisible;
+  if (clarity >= 0.66) return "clear";
+  if (clarity >= 0.33) return "partial";
+  return "lost";
+}
+
+export function buildQizhenPhotoRecipe(
+  spotId: QizhenPhotoSpotId,
+  input: QizhenPhotoRecipeInput
+): QizhenPhotoRecipe {
+  const spot = QIZHEN_LAKE_PHOTO_SPOTS[spotId];
+  const recipe: QizhenPhotoRecipe = {
+    zone: spot.zone,
+    cropCenterX: spot.cropCenter.x,
+    cropCenterY: spot.cropCenter.y,
+    zoomStep: spot.defaultZoomStep,
+    kayakX: Math.round(input.kayakX),
+    kayakY: Math.round(input.kayakY),
+    headingBucket: quantizeQizhenPhotoHeading(input.heading)
+  };
+  const swanDistanceBucket = bucketQizhenSwanDistance(input.swanDistance);
+  if (swanDistanceBucket) recipe.swanDistanceBucket = swanDistanceBucket;
+  const rippleClarityBucket = bucketQizhenRippleClarity(input.rippleVisible);
+  if (rippleClarityBucket) recipe.rippleClarityBucket = rippleClarityBucket;
+  return recipe;
 }

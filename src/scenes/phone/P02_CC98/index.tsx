@@ -17,35 +17,8 @@ import { ControlExchangePuzzle } from "./ControlExchangePuzzle";
 import { Cc98ThreadPage } from "./ThreadPage";
 import { TheaterTicketCommission } from "./TheaterTicketCommission";
 import { TopTenRisePuzzle } from "./TopTenRisePuzzle";
+import type { AvatarVariant, Cc98Post } from "./cc98Types";
 import "../../../styles/library-v2-phone.css";
-
-type AvatarVariant = "warrior" | "blonde" | "anonymous";
-
-interface Cc98Post {
-  id: string;
-  author: string;
-  avatar: AvatarVariant;
-  rank: string;
-  board: string;
-  title: string;
-  replies: string;
-  views: string;
-  time: string;
-  body: string;
-  threadOperation?: { user: string; action: string; reason: string };
-  threadMetrics?: { favorites: string; likes: string; dislikes: string };
-  threadReplies?: Array<{
-    personaId: string;
-    time: string;
-    floor: string;
-    role?: string;
-    text: string;
-    image?: "cc98_forum_treasure";
-    caption?: string;
-    likes: string;
-    dislikes: string;
-  }>;
-}
 
 type EditablePostKey = "author" | "rank" | "board" | "title" | "replies" | "views" | "time" | "body";
 

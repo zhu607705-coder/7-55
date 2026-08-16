@@ -4,7 +4,7 @@
 
 - 构建目标固定为 Chrome / Edge 90+、Firefox 91+、Safari / iOS Safari 15+。
 - 运行时覆盖 Blink、Gecko、WebKit。浏览器识别只用于调试输出；功能分支必须使用能力检测。
-- 单文件 `demo/index.html` 与 Vite 开发版使用同一套适配层。迁移期离线文件保留 Phaser RPG 回退；完整 Godot Web RPG 通过本地 HTTP 或部署地址加载，不能把 `file://` 空白画布当作可接受降级。
+- 单文件 `demo/index.html` 与 Vite 开发版使用同一套 React + Phaser 适配层。HTTP(S)、本地 HTTP 和离线单文件使用同一个 RPG 运行时。
 
 ## 设备布局
 
@@ -17,17 +17,17 @@
 | 平板或二合一设备 | 按实际视口等比缩放 | 同时存在粗、细指针时保留触控键；满足桌面分栏条件时可分栏 | 使用 `any-pointer` 判断可用输入，不能只读取主指针 |
 | 页面缩放、地址栏伸缩、软键盘出现 | 读取 `VisualViewport` 后更新尺寸变量 | 同步更新 RPG 壳层 | 页面缩放不得被手机框反向抵消 |
 
-手机场景始终由 `PhoneShell` 持有 `430 × 860` 逻辑尺寸。RPG 始终由 `RpgGameHost` 持有 `960 × 540` 逻辑画布；迁移期可挂载 Phaser 回退或 Godot Web 画布，同一时间只允许一个。任何设备适配都只能调整外层缩放、分区和安全区，不能改变这两个逻辑坐标系。
+手机场景始终由 `PhoneShell` 持有 `430 × 860` 逻辑尺寸。RPG 始终由 `RpgGameHost` 持有一个 `960 × 540` Phaser 逻辑画布。任何设备适配都只能调整外层缩放、分区和安全区，不能改变这两个逻辑坐标系。
 
-Godot Web 导出使用 `html/canvas_resize_policy=2`。iframe 与内部 canvas 跟随宿主的实际 `16:9` CSS 尺寸，Godot 继续保留 `960 × 540` 逻辑坐标；React 道具栏把指针位置换算到该逻辑坐标后提交投放意图。禁止把内部 canvas 固定在 `960 × 540` 的左上角，因为宿主放大后会造成可见目标与投放坐标分离。
+Phaser canvas 跟随宿主的实际 `16:9` CSS 尺寸，内部保留 `960 × 540` 逻辑坐标。React 道具栏把指针位置换算到该逻辑坐标后提交投放意图。宿主放大后，可见目标与投放坐标仍需保持重合。
 
 ## 共享适配入口
 
 - `src/core/ClientCompatibility.ts` 负责浏览器引擎、平台、输入类型、可视视口和能力快照。
 - `src/components/useMediaQuery.ts` 负责 React 媒体查询订阅，并兼容旧 WebKit 的 `MediaQueryList.addListener`。
-- `src/integrations/godot/` 负责 Godot Web 导出加载、能力检测、生命周期、焦点、输入转发、错误降级和销毁。
-- 每个 Godot RPG 场景通过版本化运行时端口读取 TypeScript 状态并提交领域意图；不能自行维护 UA 判断、存档或任务状态。
-- 剧院迁移预览用 `?rpgEngine=godot` 显式开启；`auto` 在完整关卡验收前继续选择 Phaser，`?rpgEngine=phaser` 可用于定向回退检查。
+- `src/scenes/rpg/RpgGameHost.tsx` 负责 Phaser 生命周期、焦点、输入转发、错误收口和销毁。
+- 每个 Phaser RPG 场景通过版本化或共享运行时端口读取 TypeScript 状态并提交领域意图；不能自行维护 UA 判断、存档或任务状态。
+- `rpgEngine` URL 参数不再切换引擎；所有值都保持 Phaser 运行时。
 - `src/main.tsx` 在 React 首次渲染前安装适配层，并向根节点写入：
   - `data-browser-engine`
   - `data-client-platform`
@@ -54,12 +54,11 @@ Godot Web 导出使用 `html/canvas_resize_policy=2`。iframe 与内部 canvas �
 | 可序列化快照克隆 | `structuredClone` | JSON 深拷贝；只用于纯数据调试快照 |
 | Pointer Capture | `setPointerCapture` / `releasePointerCapture` | `window` 级 `pointerup`、`pointercancel`、`blur`、`pagehide` 收口 |
 | 安全区 | `env(safe-area-inset-*, 0px)` | `0px` |
-| Godot Web 图形 | WebGL 2 + WebAssembly | 保留已验收 Phaser 场景，并显示可理解的兼容提示 |
-| Godot Web 资源加载 | HTTP(S) 同源导出资源 | `file://` 使用 Phaser 回退；不显示空白画布 |
+| Canvas2D | Phaser Canvas 渲染 | 显示可理解的启动错误，不显示空白画布 |
 
 ## 输入契约
 
-- React 壳层中的鼠标、触摸和手写笔统一走 Pointer Events，并由 Godot 适配器转换为固定 `960 × 540` 逻辑坐标；所有主流程仍需保留键盘等价操作。
+- React 壳层中的鼠标、触摸和手写笔统一走 Pointer Events，并转换为固定 `960 × 540` Phaser 逻辑坐标；所有主流程仍需保留键盘等价操作。
 - RPG 桌面移动使用 `WASD`，交互使用 `Space`。触控端使用四方向键与标为 `空格` 的交互键。
 - 方向键长按持续移动，释放后停止。短于一个渲染帧的触控点按通过 `96ms` 最小脉冲保证可见位移。
 - 亮度滑杆按 `pointerId` 追踪活动指针，Pointer Capture 不可用时仍可完成点按、拖动与释放。
@@ -83,9 +82,9 @@ Godot Web 导出使用 `html/canvas_resize_policy=2`。iframe 与内部 canvas �
 - 控制中心可用鼠标、触摸和方向键调整亮度。
 - RPG 桌面 `D` 键与移动端右方向键均能改变玩家世界坐标。
 - 页面错误和控制台错误为 `0`，画布包含非空像素采样。
-- 已迁移的 Godot 场景必须验证运行时契约版本、WebAssembly/WebGL 加载、进入/离开、保存恢复和卸载后无残留输入；尚未迁移的场景验证 Phaser 回退。
+- 每个 Phaser RPG 场景必须验证运行时契约、进入/离开、保存恢复和卸载后无残留输入。
 - 共享网页游戏客户端完成一次实际点击，并检查 `render_game_to_text()`。
-- `npm run typecheck`、`npm run build:single` 与最终 `file://` 回退冒烟均通过；Godot 工作区落地后还要通过仓库定义的 Godot 校验和 Web 导出命令。
+- `npm run typecheck`、`npm run build:single` 与最终单文件冒烟均通过。
 
 ## 已知内核差异
 
@@ -94,15 +93,13 @@ Godot Web 导出使用 `html/canvas_resize_policy=2`。iframe 与内部 canvas �
 - WebKit 对剧场→启真湖专用的 `13668 × 1084` 侧视底图进行 Canvas2D 线性缩小时，会比 Blink、Gecko 更柔和；坐标、碰撞和非空像素保持一致。普通校园使用 IonicJian 的 `4516 × 3420` 俯视源图。两种投影都保持各自源图 `1:1` 契约，不能为单一内核改写世界坐标。
 - Web Audio 可能因自动播放策略处于 suspended 状态。首次用户操作后恢复；音频失败不得阻塞剧情状态。
 - `image-rendering` 同时声明 WebKit、Gecko 与标准路径。像素画面的空间尺寸不能依赖某一内核的锐化结果。
-- Godot Web 导出不能依赖 `file://` 加载 `.wasm` 和 `.pck`。完整 RPG 预览使用本地 HTTP；离线单文件继续挂载已验收 Phaser 回退。
-- Godot Web 内部 canvas 必须与 iframe 的渲染矩形同步缩放。验收时同时读取 iframe、canvas 的 `getBoundingClientRect()`，并用一次可见目标拖放确认逻辑坐标换算。
-- CI 运行 `npm run godot:check` 核对同步资产、运行时配置和已提交 Web 导出的构建哈希。改动 Godot 源码时，提交者先用固定版本编辑器运行 `npm run godot:export:web`。
+- Phaser canvas 必须与宿主的渲染矩形同步缩放。验收时读取 canvas 的 `getBoundingClientRect()`，并用一次可见目标拖放确认逻辑坐标换算。
 
 ## 变更检查清单
 
-1. 先确认改动是否触及共享壳层、视口、输入、全屏、音频、Phaser 回退或 Godot Web 画布。
+1. 先确认改动是否触及共享壳层、视口、输入、全屏、音频或 Phaser 画布。
 2. 优先扩展 `ClientCompatibility` 或 `useMediaQuery`，避免在场景内建立第二套判断。
 3. 为新 CSS 能力提供基线浏览器可执行的前置声明，再使用 `@supports` 增强。
-4. 运行三内核桌面/移动矩阵并记录交互结果；Godot 场景同时记录契约版本和资源加载状态。
+4. 运行三内核桌面/移动矩阵并记录交互结果；Phaser 场景同时记录契约版本和资源加载状态。
 5. 检查截图中的遮挡、触控目标、安全区、留黑和比例。
 6. 删除临时截图与脚本，再更新 `progress.md`。

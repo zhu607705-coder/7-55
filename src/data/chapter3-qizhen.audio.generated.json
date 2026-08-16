@@ -2,7 +2,7 @@
   "version": 1,
   "chapterId": "chapter-3-qizhen-audio",
   "model": "music-2.6",
-  "generatedAt": "2026-07-26T23:33:51.824Z",
+  "generatedAt": "2026-08-16T16:12:00.000+08:00",
   "assets": {
     "music_qizhen_lakeside": {
       "path": "chapter3-qizhen/music/music_qizhen_lakeside.mp3",
@@ -30,6 +30,15 @@
       "channels": 2,
       "sha256": "8df45560d6aa14b1f5e69bbb5e602cfe87d1a0b28acb031d172440c2ac0e6796",
       "sourceConfigHash": "3146f8779dd42da1d269ca4803394e6c88994da96b2b14a388083e77939608f5"
+    },
+    "music_qizhen_fishing": {
+      "path": "chapter3-qizhen/music/music_qizhen_fishing.mp3",
+      "durationMs": 20000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "9cdbd42eef10c39d3b393b335a8458f29226aa1d74c0388adb026c31124de352",
+      "sourceConfigHash": "b1fee753fcf34cda0eab6da4795b9c13c6838a61a169c12e48b098ce0d98934e"
     }
   }
 }
