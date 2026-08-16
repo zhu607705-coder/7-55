@@ -6,15 +6,17 @@ import {
   type ChaseObstacleKind,
   type ChasePedestrianKind
 } from "./ChaseGeometry";
+import campusAvenuePlateUrl from "../../../assets/rpg/canteen_chase/campus_avenue_plate.png";
+import campusAvenueDistanceAtlasUrl from "../../../assets/rpg/canteen_chase/campus_avenue_distance_atlas_273f.png";
+import riderCycleUrl from "../../../assets/rpg/canteen_chase/rider_cycle_6f.png";
+import roadsideActorAtlasUrl from "../../../assets/rpg/canteen_chase/roadside_actor_atlas_8f.png";
+import runnerCrowdCycleUrl from "../../../assets/rpg/canteen_chase/runner_crowd_cycle_4f.png";
+import frontWalkerCycleUrl from "../../../assets/rpg/canteen_chase/front_walker_cycle_4f.png";
+import riderTurnCycleUrl from "../../../assets/rpg/canteen_chase/rider_turn_cycle_12f.png";
+import { ChaseThreeRenderer } from "./ChaseThreeRenderer";
+import type { ChaseRenderState, ChaseRendererBackend } from "./ChaseRenderContract";
 
-export interface ChaseRenderState {
-  runState: "running" | "won" | "lost";
-  distance: number;
-  lane: number;
-  invulnerableMs: number;
-  collisions: number;
-  paused: boolean;
-}
+export type { ChaseRenderState } from "./ChaseRenderContract";
 
 const LOGICAL_WIDTH = 960;
 const LOGICAL_HEIGHT = 540;
@@ -22,6 +24,66 @@ const HORIZON_Y = 136;
 const BUFFER_MIN_WIDTH = 480;
 const BUFFER_MAX_WIDTH = 960;
 const GOAL_DISTANCE = 755;
+const DISTANCE_KEYFRAMES = [
+  0, 47, 95, 143, 190, 238, 285, 331, 377, 424, 470, 518, 566, 600, 635, 668, 700, 755
+] as const;
+const DISTANCE_ATLAS_COLUMNS = 16;
+const DISTANCE_FRAMES_PER_INTERVAL = 16;
+const DISTANCE_FRAME_WIDTH = 320;
+const DISTANCE_FRAME_HEIGHT = 180;
+
+interface SpriteCrop {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const RIDER_CROPS: readonly SpriteCrop[] = [
+  { x: 65, y: 189, width: 167, height: 456 },
+  { x: 373, y: 189, width: 168, height: 456 },
+  { x: 687, y: 189, width: 168, height: 456 },
+  { x: 991, y: 189, width: 169, height: 456 },
+  { x: 1304, y: 189, width: 168, height: 456 },
+  { x: 1613, y: 189, width: 168, height: 456 }
+] as const;
+
+const RIDER_TURN_CELL_WIDTH = 256;
+const RIDER_TURN_CELL_HEIGHT = 384;
+
+function riderTurnCrop(row: 0 | 1 | 2, column: 0 | 1 | 2 | 3): SpriteCrop {
+  return {
+    x: column * RIDER_TURN_CELL_WIDTH + 32,
+    y: row * RIDER_TURN_CELL_HEIGHT + 12,
+    width: 192,
+    height: 358
+  };
+}
+
+const ACTOR_CROPS = {
+  phoneA: { x: 91, y: 177, width: 170, height: 392 },
+  phoneB: { x: 346, y: 178, width: 169, height: 388 },
+  soyMilkA: { x: 608, y: 182, width: 169, height: 384 },
+  soyMilkB: { x: 853, y: 182, width: 233, height: 384 },
+  cone: { x: 1086, y: 357, width: 272, height: 209 },
+  barrier: { x: 1358, y: 378, width: 271, height: 185 },
+  bicycle: { x: 1629, y: 330, width: 271, height: 239 },
+  car: { x: 1900, y: 265, width: 224, height: 299 }
+} as const satisfies Record<string, SpriteCrop>;
+
+const FRONT_WALKER_CROPS = {
+  phoneA: { x: 132, y: 85, width: 264, height: 690 },
+  phoneB: { x: 538, y: 85, width: 270, height: 690 },
+  soyMilkA: { x: 936, y: 85, width: 275, height: 690 },
+  soyMilkB: { x: 1344, y: 85, width: 276, height: 690 }
+} as const satisfies Record<string, SpriteCrop>;
+
+const ROAD_HAZARD_CROPS = {
+  runnerA: { x: 172, y: 238, width: 222, height: 328 },
+  runnerB: { x: 612, y: 238, width: 235, height: 337 },
+  crowdA: { x: 1053, y: 227, width: 356, height: 361 },
+  crowdB: { x: 1578, y: 214, width: 363, height: 374 }
+} as const satisfies Record<string, SpriteCrop>;
 
 // Warm morning palette: low sun from the upper right, gold-lit greens, and
 // long shadows falling left across the scene.
@@ -154,10 +216,11 @@ function strokePixelEllipse(
   }
 }
 
-export class ChaseRenderer {
+export class ChaseCanvasRenderer implements ChaseRendererBackend {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly background: HTMLCanvasElement;
+  private readonly pixelBackground: HTMLCanvasElement;
   private readonly observer: ResizeObserver;
   private scale = 0.5;
   private reduceMotion = false;
@@ -165,6 +228,14 @@ export class ChaseRenderer {
   private lastNow = 0;
   private lastCollisions = 0;
   private flashStart = -1000;
+  private animationMs = 0;
+  private readonly campusAvenuePlate: HTMLImageElement;
+  private readonly campusAvenueDistanceAtlas: HTMLImageElement;
+  private readonly riderCycle: HTMLImageElement;
+  private readonly actorAtlas: HTMLImageElement;
+  private readonly runnerCrowdCycle: HTMLImageElement;
+  private readonly frontWalkerCycle: HTMLImageElement;
+  private readonly riderTurnCycle: HTMLImageElement;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -172,6 +243,16 @@ export class ChaseRenderer {
     if (!ctx) throw new Error("ChaseRenderer requires a 2D canvas context");
     this.ctx = ctx;
     this.background = document.createElement("canvas");
+    this.pixelBackground = document.createElement("canvas");
+    this.pixelBackground.width = DISTANCE_FRAME_WIDTH;
+    this.pixelBackground.height = DISTANCE_FRAME_HEIGHT;
+    this.campusAvenuePlate = this.loadImage(campusAvenuePlateUrl, () => this.buildBackground());
+    this.campusAvenueDistanceAtlas = this.loadImage(campusAvenueDistanceAtlasUrl);
+    this.riderCycle = this.loadImage(riderCycleUrl);
+    this.actorAtlas = this.loadImage(roadsideActorAtlasUrl);
+    this.runnerCrowdCycle = this.loadImage(runnerCrowdCycleUrl);
+    this.frontWalkerCycle = this.loadImage(frontWalkerCycleUrl);
+    this.riderTurnCycle = this.loadImage(riderTurnCycleUrl);
     this.observer = new ResizeObserver(() => this.handleResize());
     this.observer.observe(canvas);
     this.handleResize();
@@ -189,14 +270,23 @@ export class ChaseRenderer {
     const now = performance.now();
     const deltaMs = this.lastNow === 0 ? 16 : Math.min(100, Math.max(0, now - this.lastNow));
     this.lastNow = now;
+    if (state.runState === "running" && !state.paused && !this.reduceMotion) {
+      this.animationMs += deltaMs;
+    }
     const ctx = this.ctx;
     ctx.imageSmoothingEnabled = false;
     ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
     ctx.globalAlpha = 1;
-    ctx.drawImage(this.background, 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-    this.drawClouds(ctx, state.distance);
-    this.drawRoadMotion(ctx, state.distance);
-    this.drawRoadside(ctx, state.distance);
+    const generatedPlateReady = this.isReady(this.campusAvenueDistanceAtlas);
+    if (generatedPlateReady) {
+      this.drawGeneratedBackground(ctx, state.distance);
+      this.drawRoadSurfaceFlow(ctx, state.distance);
+    } else {
+      ctx.drawImage(this.background, 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      this.drawClouds(ctx, state.distance);
+      this.drawRoadMotion(ctx, state.distance);
+      this.drawRoadside(ctx, state.distance);
+    }
     this.drawPedestrians(ctx, state.distance);
     this.drawPaper(ctx, state.distance);
     this.drawObstacles(ctx, state);
@@ -207,6 +297,121 @@ export class ChaseRenderer {
     }
     this.drawCollisionFlash(ctx, state, now);
     ctx.globalAlpha = 1;
+  }
+
+  private loadImage(source: string, onLoad?: () => void): HTMLImageElement {
+    const image = new Image();
+    image.decoding = "async";
+    if (onLoad) image.addEventListener("load", onLoad, { once: true });
+    image.src = source;
+    return image;
+  }
+
+  private isReady(image: HTMLImageElement): boolean {
+    return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+  }
+
+  private drawGeneratedBackground(ctx: CanvasRenderingContext2D, distance: number): void {
+    // The atlas contains 16 calibrated camera poses between every adjacent
+    // generated plate, including the new 755 m terminal plate. Runtime draws
+    // one opaque pixel frame, so no alpha ghosting or dissolve texture remains.
+    const pixelCtx = this.pixelBackground.getContext("2d");
+    if (!pixelCtx || !this.isReady(this.campusAvenueDistanceAtlas)) return;
+
+    const clampedDistance = Math.max(0, Math.min(GOAL_DISTANCE, distance));
+    let lowerIndex = 0;
+    for (let index = 1; index < DISTANCE_KEYFRAMES.length; index += 1) {
+      if (DISTANCE_KEYFRAMES[index] > clampedDistance) break;
+      lowerIndex = index;
+    }
+    const upperIndex = Math.min(lowerIndex + 1, DISTANCE_KEYFRAMES.length - 1);
+    const lowerDistance = DISTANCE_KEYFRAMES[lowerIndex];
+    const upperDistance = DISTANCE_KEYFRAMES[upperIndex];
+    const intervalProgress = upperIndex === lowerIndex
+      ? 1
+      : clamp01((clampedDistance - lowerDistance) / (upperDistance - lowerDistance));
+    const lastFrameIndex = (DISTANCE_KEYFRAMES.length - 1) * DISTANCE_FRAMES_PER_INTERVAL;
+    const framePosition = lowerIndex === DISTANCE_KEYFRAMES.length - 1
+      ? lastFrameIndex
+      : lowerIndex * DISTANCE_FRAMES_PER_INTERVAL
+        + intervalProgress * DISTANCE_FRAMES_PER_INTERVAL;
+    const frameIndex = Math.min(lastFrameIndex, Math.floor(framePosition));
+    const sourceX = (frameIndex % DISTANCE_ATLAS_COLUMNS) * DISTANCE_FRAME_WIDTH;
+    const sourceY = Math.floor(frameIndex / DISTANCE_ATLAS_COLUMNS) * DISTANCE_FRAME_HEIGHT;
+
+    pixelCtx.setTransform(1, 0, 0, 1, 0, 0);
+    pixelCtx.clearRect(0, 0, DISTANCE_FRAME_WIDTH, DISTANCE_FRAME_HEIGHT);
+    pixelCtx.imageSmoothingEnabled = false;
+    pixelCtx.drawImage(
+      this.campusAvenueDistanceAtlas,
+      sourceX,
+      sourceY,
+      DISTANCE_FRAME_WIDTH,
+      DISTANCE_FRAME_HEIGHT,
+      0,
+      0,
+      DISTANCE_FRAME_WIDTH,
+      DISTANCE_FRAME_HEIGHT
+    );
+
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(this.pixelBackground, 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    ctx.restore();
+  }
+
+  private drawRoadSurfaceFlow(ctx: CanvasRenderingContext2D, distance: number): void {
+    // The source plate already owns every lane marking. Only low-contrast road
+    // texture flecks move toward the rider, adding speed without drawing a
+    // second set of divider lines over the authored image.
+    const travel = distance * 1.7;
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    for (let index = 0; index < 18; index += 1) {
+      const seed = index * 47 + 19;
+      const ahead = ((seed - travel) % 430 + 430) % 430;
+      const depth = clamp01(1 - ahead / 430);
+      const perspective = depth * depth;
+      const y = HORIZON_Y + perspective * (LOGICAL_HEIGHT - HORIZON_Y);
+      const halfRoad = 42 + perspective * 315;
+      const lateral = ((((seed * 73) % 100) / 100) * 2 - 1) * halfRoad * 0.82;
+      const width = Math.max(1, Math.round(1 + perspective * 8));
+      const height = Math.max(1, Math.round(1 + perspective * 3));
+      ctx.fillStyle = index % 2 === 0 ? "#f1e4c5" : "#17202b";
+      ctx.fillRect(Math.round(480 + lateral), Math.round(y), width, height);
+    }
+    ctx.restore();
+  }
+
+  private drawSprite(
+    ctx: CanvasRenderingContext2D,
+    image: HTMLImageElement,
+    crop: SpriteCrop,
+    x: number,
+    bottomY: number,
+    targetHeight: number,
+    alpha = 1,
+    flipX = false
+  ): void {
+    const targetWidth = targetHeight * (crop.width / crop.height);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    if (flipX) {
+      ctx.translate(Math.round(x * 2), 0);
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(
+      image,
+      crop.x,
+      crop.y,
+      crop.width,
+      crop.height,
+      Math.round(x - targetWidth / 2),
+      Math.round(bottomY - targetHeight),
+      Math.round(targetWidth),
+      Math.round(targetHeight)
+    );
+    ctx.restore();
   }
 
   private handleResize(): void {
@@ -236,6 +441,12 @@ export class ChaseRenderer {
     if (!ctx) return;
     ctx.imageSmoothingEnabled = false;
     ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+
+    if (this.isReady(this.campusAvenuePlate)) {
+      ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      ctx.drawImage(this.campusAvenuePlate, 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      return;
+    }
 
     // Banded morning sky: cool blue up top warming into gold at the horizon.
     for (let y = 0; y < HORIZON_Y; y += 2) {
@@ -553,12 +764,19 @@ export class ChaseRenderer {
 
   private drawPedestrians(ctx: CanvasRenderingContext2D, distance: number): void {
     const pedestrians = visiblePedestrians(distance).slice(-4);
-    const phase = this.reduceMotion ? 0 : Math.floor(distance * 0.12) % 2;
+    const phase = this.reduceMotion ? 0 : Math.floor(this.animationMs / 180) % 2;
     pedestrians.forEach((pedestrian) => {
       const ahead = pedestrian.distance - distance;
       const depth = clamp01(1 - ahead / VISIBLE_DISTANCE);
       const perspective = depth * depth;
-      const x = 480 + pedestrian.side * (96 + perspective * 335 + (pedestrian.laneOffset - 0.5) * 18);
+      // Anchor walkers to the centre line of each authored sidewalk. Their
+      // lateral separation grows with depth, matching the plate's vanishing
+      // point instead of drifting across the road.
+      const sidewalkHalfSpan = 106 + perspective * 270;
+      const sidewalkWidth = 10 + perspective * 36;
+      const x = 480 + pedestrian.side * (
+        sidewalkHalfSpan + (pedestrian.laneOffset - 0.5) * sidewalkWidth
+      );
       const y = HORIZON_Y + perspective * 350;
       const scale = 0.2 + perspective * 0.85;
       this.drawPedestrian(ctx, pedestrian.kind, x, y, scale, pedestrian.side, (phase + pedestrian.phase) % 2);
@@ -574,6 +792,30 @@ export class ChaseRenderer {
     side: -1 | 1,
     frame: number
   ): void {
+    if (this.isReady(this.runnerCrowdCycle) && kind === "chattingPair") {
+      const crop = frame === 0 ? ROAD_HAZARD_CROPS.crowdA : ROAD_HAZARD_CROPS.crowdB;
+      fillPixelEllipse(ctx, x, y - scale, 20 * scale, 4 * scale, "rgba(35,31,24,0.3)");
+      this.drawSprite(ctx, this.runnerCrowdCycle, crop, x, y, 62 * scale, 0.94);
+      return;
+    }
+    if (this.isReady(this.actorAtlas) && this.isReady(this.frontWalkerCycle) && kind === "bikePusher") {
+      const walker = frame === 0 ? FRONT_WALKER_CROPS.phoneA : FRONT_WALKER_CROPS.phoneB;
+      fillPixelEllipse(ctx, x, y - scale, 18 * scale, 4 * scale, "rgba(35,31,24,0.3)");
+      this.drawSprite(ctx, this.actorAtlas, ACTOR_CROPS.bicycle, x + side * 10 * scale, y, 48 * scale, 0.92, side > 0);
+      this.drawSprite(ctx, this.frontWalkerCycle, walker, x - side * 7 * scale, y, 60 * scale, 0.94, side > 0);
+      return;
+    }
+    if (this.isReady(this.frontWalkerCycle) && (kind === "phoneWalker" || kind === "soyMilk")) {
+      const crop = kind === "phoneWalker"
+        ? (frame === 0 ? FRONT_WALKER_CROPS.phoneA : FRONT_WALKER_CROPS.phoneB)
+        : (frame === 0 ? FRONT_WALKER_CROPS.soyMilkA : FRONT_WALKER_CROPS.soyMilkB);
+      fillPixelEllipse(ctx, x, y - scale, 14 * scale, 3.5 * scale, "rgba(35,31,24,0.32)");
+      // These walkers move down-screen as the rider closes in, so they use a
+      // front three-quarter cycle. This keeps the gait consistent with their
+      // apparent travel direction instead of showing rear sprites sliding feet-first.
+      this.drawSprite(ctx, this.frontWalkerCycle, crop, x, y, 64 * scale, 0.94, side > 0);
+      return;
+    }
     const pair = kind === "chattingPair" ? 2 : 1;
     fillPixelEllipse(ctx, x, y - scale, 14 * scale, 3.5 * scale, "rgba(46,42,30,0.4)");
     for (let person = 0; person < pair; person += 1) {
@@ -676,6 +918,28 @@ export class ChaseRenderer {
     frame: number,
     side: -1 | 1
   ): void {
+    if (this.isReady(this.runnerCrowdCycle) && (kind === "crowd" || kind === "runner")) {
+      const crop = kind === "runner"
+        ? (frame === 0 ? ROAD_HAZARD_CROPS.runnerA : ROAD_HAZARD_CROPS.runnerB)
+        : (frame === 0 ? ROAD_HAZARD_CROPS.crowdA : ROAD_HAZARD_CROPS.crowdB);
+      const targetHeight = (kind === "runner" ? 86 : 78) * Math.max(0.25, scale);
+      fillPixelEllipse(ctx, x, y - scale, (kind === "crowd" ? 38 : 24) * scale, 7 * scale, "rgba(35,31,24,0.34)");
+      this.drawSprite(ctx, this.runnerCrowdCycle, crop, x, y, targetHeight, alpha, kind === "runner" && side < 0);
+      return;
+    }
+    if (this.isReady(this.actorAtlas) && kind !== "crowd" && kind !== "runner") {
+      const crop = kind === "barrier"
+        ? ACTOR_CROPS.barrier
+        : kind === "cone"
+          ? ACTOR_CROPS.cone
+          : kind === "bicycle"
+            ? ACTOR_CROPS.bicycle
+            : ACTOR_CROPS.car;
+      const targetHeight = kind === "car" ? 104 : kind === "bicycle" ? 82 : kind === "barrier" ? 66 : 72;
+      fillPixelEllipse(ctx, x, y - scale, (kind === "car" ? 44 : 34) * scale, 7 * scale, "rgba(35,31,24,0.34)");
+      this.drawSprite(ctx, this.actorAtlas, crop, x, y, targetHeight * Math.max(0.25, scale), alpha);
+      return;
+    }
     ctx.save();
     ctx.translate(Math.round(x), Math.round(y));
     ctx.scale(Math.max(0.25, scale), Math.max(0.25, scale));
@@ -862,13 +1126,48 @@ export class ChaseRenderer {
 
   private drawRider(ctx: CanvasRenderingContext2D, state: ChaseRenderState, deltaMs: number): void {
     const targetX = 480 + (state.lane - 1) * 238;
-    this.riderX += (targetX - this.riderX) * Math.min(1, deltaMs / 105);
-    const frame = state.runState === "running" ? Math.floor(state.distance * 5) % 4 : 1;
-    const lean = Math.max(-6, Math.min(6, (targetX - this.riderX) * 0.045));
+    this.riderX += (targetX - this.riderX) * Math.min(1, deltaMs / 180);
+    const frame = state.runState === "running" && !this.reduceMotion
+      ? Math.floor(this.animationMs / 72) % (RIDER_CROPS.length + 4)
+      : 1;
+    const remainingTurn = targetX - this.riderX;
+    const turnDistance = Math.abs(remainingTurn);
+    const turning = turnDistance > 8 && this.isReady(this.riderTurnCycle);
+    const lean = turning ? 0 : Math.max(-4, Math.min(4, remainingTurn * 0.03));
     const sway = state.runState === "running" && !this.reduceMotion ? Math.sin(frame * Math.PI * 0.5) * 1.4 : 0;
     const pedal = Math.sin(frame * Math.PI * 0.5);
     const x = Math.round(this.riderX);
     const y = 506;
+    if (this.isReady(this.riderCycle)) {
+      const alpha = state.invulnerableMs > 0
+        ? (this.reduceMotion || Math.floor(state.invulnerableMs / 110) % 2 === 0 ? 0.48 : 0.82)
+        : 1;
+      fillPixelEllipse(ctx, x, y - 2, 38, 7, "rgba(22,17,10,0.44)");
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(((lean + sway) * Math.PI) / 180);
+      if (turning) {
+        // The generated sheet is authored from the rider's rear view. Screen-
+        // left steering therefore consumes its visually right-facing row, and
+        // screen-right consumes the visually left-facing row.
+        const row: 0 | 2 = remainingTurn < 0 ? 2 : 0;
+        const column: 0 | 1 | 2 | 3 = turnDistance > 150
+          ? 0
+          : turnDistance > 85
+            ? 1
+            : turnDistance > 30
+              ? 2
+              : 3;
+        this.drawSprite(ctx, this.riderTurnCycle, riderTurnCrop(row, column), 0, 0, 183, alpha);
+      } else if (frame < RIDER_CROPS.length) {
+        this.drawSprite(ctx, this.riderCycle, RIDER_CROPS[frame], 0, 0, 174, alpha);
+      } else {
+        const column = (frame - RIDER_CROPS.length) as 0 | 1 | 2 | 3;
+        this.drawSprite(ctx, this.riderTurnCycle, riderTurnCrop(1, column), 0, 0, 183, alpha);
+      }
+      ctx.restore();
+      return;
+    }
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(((lean + sway) * Math.PI) / 180);
@@ -1035,5 +1334,35 @@ export class ChaseRenderer {
     ctx.fillStyle = COLORS.red;
     ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
     ctx.globalAlpha = 1;
+  }
+}
+
+/**
+ * Runtime selector: the authored 3D world is primary. The previous canvas
+ * renderer remains a capability fallback for browsers without WebGL.
+ */
+export class ChaseRenderer implements ChaseRendererBackend {
+  private readonly backend: ChaseRendererBackend;
+
+  constructor(canvas: HTMLCanvasElement) {
+    try {
+      this.backend = new ChaseThreeRenderer(canvas);
+      canvas.dataset.chaseRenderer = "three";
+    } catch {
+      this.backend = new ChaseCanvasRenderer(canvas);
+      canvas.dataset.chaseRenderer = "canvas-fallback";
+    }
+  }
+
+  destroy(): void {
+    this.backend.destroy();
+  }
+
+  setReducedMotion(reduced: boolean): void {
+    this.backend.setReducedMotion(reduced);
+  }
+
+  render(state: ChaseRenderState): void {
+    this.backend.render(state);
   }
 }

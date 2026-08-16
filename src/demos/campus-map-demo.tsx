@@ -9,7 +9,7 @@ import {
 } from "react";
 import { createRoot } from "react-dom/client";
 import Phaser from "phaser";
-import "@fontsource/fusion-pixel-12px-proportional-sc";
+import "../styles/pixel-font.css";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "../core/ClientCompatibility";
 import { EventBus } from "../core/EventBus";
 import { createGameStore, createInitialGameState } from "../core/GameState";

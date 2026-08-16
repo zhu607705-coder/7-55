@@ -109,7 +109,7 @@ function replaceValidatedFile(source, destination) {
 function generate(definition) {
   const raw = join(tempDir, `${definition.asset}.raw.mp3`);
   const normalized = join(tempDir, `${definition.asset}.normalized.mp3`);
-  run(findMmx(), [
+  const generationArgs = [
     "music", "generate",
     "--model", content.model,
     "--prompt", definition.prompt,
@@ -117,9 +117,9 @@ function generate(definition) {
     "--mood", definition.mood,
     "--instruments", definition.instruments,
     "--bpm", String(definition.bpm),
-    "--avoid", "vocals, orchestral trailer, heavy bass, long intro, long outro, continuous sound effects",
-    "--use-case", "looping background music for a top-down pixel RPG lake investigation",
-    "--structure", "immediate start, compact loop, small variations, clean ending",
+    "--avoid", definition.avoid ?? "vocals, orchestral trailer, heavy bass, long intro, long outro, continuous sound effects",
+    "--use-case", definition.useCase ?? "looping background music for a top-down pixel RPG lake investigation",
+    "--structure", definition.structure ?? "immediate start, compact loop, small variations, clean ending",
     "--instrumental",
     "--format", "mp3",
     "--sample-rate", "44100",
@@ -128,12 +128,24 @@ function generate(definition) {
     "--timeout", "180",
     "--non-interactive",
     "--quiet"
-  ], `MiniMax music ${definition.cue}`);
-  const fadeOutStart = Math.max(0, definition.durationSeconds - 0.2);
+  ];
+  if (definition.key) generationArgs.push("--key", definition.key);
+  if (definition.extra) generationArgs.push("--extra", definition.extra);
+  run(findMmx(), generationArgs, `MiniMax music ${definition.cue}`);
+
+  const audioFilters = [];
+  if (definition.trimLeadingSilence) {
+    audioFilters.push("silenceremove=start_periods=1:start_duration=0:start_threshold=-48dB:start_silence=0");
+  }
+  audioFilters.push("loudnorm=I=-23:TP=-1.5:LRA=8");
+  if (!definition.noFade) {
+    const fadeOutStart = Math.max(0, definition.durationSeconds - 0.2);
+    audioFilters.push("afade=t=in:st=0:d=0.06", `afade=t=out:st=${fadeOutStart}:d=0.2`);
+  }
   run("ffmpeg", [
     "-y", "-hide_banner", "-loglevel", "error", "-stream_loop", "-1", "-i", raw,
     "-t", String(definition.durationSeconds),
-    "-af", `loudnorm=I=-23:TP=-1.5:LRA=8,afade=t=in:st=0:d=0.06,afade=t=out:st=${fadeOutStart}:d=0.2`,
+    "-af", audioFilters.join(","),
     "-ar", "44100", "-ac", "2", "-b:a", "192k", normalized
   ], `Normalize ${definition.asset}`);
   probeAudio(normalized, definition.durationSeconds);
@@ -156,8 +168,8 @@ function validateContent() {
   if (content.chapterId !== "chapter-3-qizhen-audio" || content.model !== "music-2.6") {
     throw new Error("Unexpected Qizhen audio content metadata");
   }
-  if (!Array.isArray(content.music) || content.music.length !== 3) {
-    throw new Error("Qizhen audio requires exactly three music beds");
+  if (!Array.isArray(content.music) || content.music.length !== 4) {
+    throw new Error("Qizhen audio requires exactly four music beds");
   }
   for (const key of ["cue", "asset", "path"]) {
     const values = content.music.map((definition) => definition[key]);

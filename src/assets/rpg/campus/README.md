@@ -30,8 +30,8 @@
 4. 运行 `npm run map:zijingang` 同时验证 IonicJian 源图哈希、普通校园连通性、2.5D 图像哈希、启真湖脚盒与衔接站位。
 5. 运行 `npm run typecheck`、`npm run build:single`、`npm run verify:single`，再从真实浏览器完成宿舍→图书馆→食堂→剧场的俯视移动，以及剧场→启真湖的侧视过场、退出与重进。
 
-## Godot 迁移边界
+## 网页运行边界
 
-- TypeScript `GameState`、控制器、存档和任务仍是唯一进度权威。
-- Godot 校园场景接入前必须分别复现普通瓦片校园与剧场→启真湖侧视衔接的图像比例、世界坐标、碰撞网格和状态流程。
-- 当前 Phaser 图是迁移验收基线；Godot 通过资产、碰撞、输入、存档恢复和 Blink/Gecko/WebKit 全流程验收后再替换。
+- TypeScript `GameState`、控制器、存档和任务是唯一进度权威。
+- Phaser 校园场景分别保留普通俯视校园与剧场→启真湖侧视衔接的图像比例、世界坐标、碰撞网格和状态流程。
+- Vite 开发版和离线单文件均使用同一 Phaser 场景，不存在引擎切换分支。

@@ -12,6 +12,7 @@ import type {
 import type { ClockCalibrationResult } from "../../../modules/ClockCalibrationController";
 import clockContent from "../../../data/chapter4-clock.content.json";
 import { kit } from "../../../modules/GameKit";
+import { ClockMovement3D } from "./ClockMovement3D";
 
 const PLAYABLE_STEPS: readonly ClockCalibrationStep[] = ["target_selection", "coarse_time", "seconds_trim", "phase_lock"];
 
@@ -29,8 +30,6 @@ function parseDialogueLine(line: string): { speaker: string; tone: GameSubtitleT
   const tones: Record<string, GameSubtitleTone> = { 系统: "system", 旁白: "narrator", 任务: "task", 玩家: "player", 我: "player" };
   return { speaker: match[1] === "玩家" ? "我" : match[1], tone: tones[match[1]] ?? "system", text: match[2].trim() };
 }
-function wrap(value: number, size: number) { return ((value % size) + size) % size; }
-function pad(value: number) { return String(value).padStart(2, "0"); }
 function resultFeedback(result: ClockCalibrationResult, successText: string): ClockFeedback {
   if (result === "accepted") return { tone: "success", text: successText };
   if (result === "wrong_target") return { tone: "error", text: clockContent.feedback.wrongTarget };
@@ -193,7 +192,15 @@ export function ClockScene({ state, router }: SceneComponentProps) {
         {playable && clock.step === "coarse_time" ? <section className="clock-play-panel clock-coarse-panel">
           <header className="clock-panel-heading"><div><p className="clock-panel-code">02 / DUAL MOVEMENT</p><h2>{clockContent.coarseTime.title}</h2></div><span>{clock.coarseLockIds.length}/2 LOCKED</span></header>
           <p className="clock-panel-copy">{clockContent.coarseTime.body}</p>
-          <div className="clock-reel-pair"><ClockReel label="HOUR" value={Number(hh)} size={24} locked={clock.coarseLockIds.includes("hour")} onDecrease={() => adjustCoarse("hour", -1)} onIncrease={() => adjustCoarse("hour", 1)} onLock={() => lockCoarse("hour")} /><i className="clock-reel-colon">:</i><ClockReel label="MINUTE" value={Number(mm)} size={60} locked={clock.coarseLockIds.includes("minute")} onDecrease={() => adjustCoarse("minute", -1)} onIncrease={() => adjustCoarse("minute", 1)} onLock={() => lockCoarse("minute")} /></div>
+          <ClockMovement3D
+            hours={Number(hh)}
+            minutes={Number(mm)}
+            hourLocked={clock.coarseLockIds.includes("hour")}
+            minuteLocked={clock.coarseLockIds.includes("minute")}
+            onAdjust={adjustCoarse}
+            onLock={lockCoarse}
+            strings={clockContent.coarseTime.movement3d}
+          />
           <div className="clock-lock-ledger"><span className={clock.coarseLockIds.includes("hour") ? "is-done" : ""}>08 时机芯</span><span className={clock.coarseLockIds.includes("minute") ? "is-done" : ""}>00 分机芯</span><span>23 秒暂存</span></div>
           <button className="clock-main-action" type="button" disabled={!coarseReady} onClick={confirmCoarse}>进入漂移核对</button>
         </section> : null}
@@ -222,8 +229,4 @@ export function ClockScene({ state, router }: SceneComponentProps) {
       </main>
     </section>
   );
-}
-
-function ClockReel({ label, value, size, locked, onDecrease, onIncrease, onLock }: { label: string; value: number; size: number; locked: boolean; onDecrease: () => void; onIncrease: () => void; onLock: () => void; }) {
-  return <div className={`clock-number-reel ${locked ? "is-locked" : ""}`}><small>{label}</small><button type="button" disabled={locked} onClick={onIncrease}>▲</button><span>{pad(wrap(value + 1, size))}</span><strong role="spinbutton" aria-valuemin={0} aria-valuemax={size - 1} aria-valuenow={value}>{pad(value)}</strong><span>{pad(wrap(value - 1, size))}</span><button type="button" disabled={locked} onClick={onDecrease}>▼</button><button className="clock-reel-lock" type="button" onClick={onLock}>{locked ? "LOCKED" : "锁定"}</button></div>;
 }

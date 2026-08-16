@@ -1,0 +1,405 @@
+/* ===== 启真湖记录相机 · 取景 / 拍摄 / 草稿编辑 =====
+   与 p19-clock 同一套像素终端色板;桌面分屏手机侧与窄屏覆盖层共用。 */
+
+.qizhen-journal-camera {
+  --qjc-black: #090b0f;
+  --qjc-panel: #111721;
+  --qjc-panel-2: #1a2230;
+  --qjc-paper: #f2eee0;
+  --qjc-yellow: #f5d53d;
+  --qjc-red: #ff4f69;
+  --qjc-cyan: #83d9ef;
+  --qjc-green: #78c995;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(155deg, #202c3d 0 23%, #0b0e13 23% 100%);
+  background-size: 8px 8px, 8px 8px, auto;
+  color: var(--qjc-paper);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.qizhen-journal-camera button:focus-visible {
+  outline: 3px solid var(--qjc-cyan);
+  outline-offset: 2px;
+}
+
+/* ---- 顶栏 ---- */
+
+.qizhen-journal-camera-header {
+  align-items: center;
+  background: rgba(8, 10, 14, 0.96);
+  border-bottom: 3px solid var(--qjc-yellow);
+  display: flex;
+  flex: 0 0 56px;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 0 10px 0 14px;
+}
+
+.qizhen-journal-camera-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.qizhen-journal-camera-heading small {
+  color: #8490a0;
+  font-family: monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qizhen-journal-camera-heading h2 {
+  font-size: 16px;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qizhen-journal-camera-close {
+  background: var(--qjc-panel-2);
+  border: 1px solid #485568;
+  color: var(--qjc-paper);
+  flex: 0 0 auto;
+  font-size: 12px;
+  min-height: 36px;
+  min-width: 44px;
+  padding: 0 12px;
+}
+
+/* ---- 取景框与配方重建层 ---- */
+
+.qizhen-journal-camera-viewfinder {
+  aspect-ratio: 1672 / 941;
+  background: #05070a;
+  border: 1px solid #344050;
+  box-shadow: 5px 5px 0 #06080b;
+  flex: 0 0 auto;
+  margin: 12px 12px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.qizhen-journal-camera-frame {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.qizhen-journal-camera-ripple {
+  background: repeating-radial-gradient(
+    circle at 50% 64%,
+    rgba(168, 214, 235, 0.5) 0 2px,
+    transparent 2px 16px
+  );
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.qizhen-journal-camera-ripple--clear { opacity: 0.55; }
+.qizhen-journal-camera-ripple--partial { opacity: 0.22; }
+
+.qizhen-journal-camera-swan {
+  aspect-ratio: 5 / 3;
+  background: #0d1017;
+  bottom: 18%;
+  clip-path: polygon(
+    2% 78%, 10% 62%, 7% 38%, 10% 16%, 18% 6%, 27% 9%, 29% 20%, 23% 33%,
+    20% 50%, 26% 60%, 45% 62%, 68% 55%, 88% 60%, 100% 72%, 94% 88%,
+    70% 96%, 38% 96%, 12% 90%
+  );
+  left: 58%;
+  pointer-events: none;
+  position: absolute;
+}
+
+.qizhen-journal-camera-swan--near { opacity: 0.92; width: 34%; }
+.qizhen-journal-camera-swan--mid { opacity: 0.75; width: 22%; }
+.qizhen-journal-camera-swan--far { opacity: 0.58; width: 14%; }
+
+.qizhen-journal-camera-kayak {
+  image-rendering: pixelated;
+  pointer-events: none;
+  position: absolute;
+  transform-origin: 50% 50%;
+}
+
+/* ---- 取景 HUD ---- */
+
+.qizhen-journal-camera-hud {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.qizhen-journal-camera-hud-frame {
+  border: 2px solid rgba(242, 238, 224, 0.35);
+  inset: 8px;
+  position: absolute;
+}
+
+.qizhen-journal-camera-hud-frame::before,
+.qizhen-journal-camera-hud-frame::after {
+  background: rgba(242, 238, 224, 0.5);
+  content: "";
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.qizhen-journal-camera-hud-frame::before { height: 14px; width: 2px; }
+.qizhen-journal-camera-hud-frame::after { height: 2px; width: 14px; }
+
+.qizhen-journal-camera-hud-level {
+  background: rgba(131, 217, 239, 0.65);
+  height: 1px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 50%;
+}
+
+.qizhen-journal-camera-hud-roll {
+  background: var(--qjc-yellow);
+  box-shadow: 0 0 6px rgba(245, 213, 61, 0.5);
+  height: 3px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  width: 42%;
+}
+
+.qizhen-journal-camera-flash {
+  background: #ffffff;
+  inset: 0;
+  opacity: 0.85;
+  pointer-events: none;
+  position: absolute;
+  z-index: 6;
+}
+
+/* ---- 读数 / 提示 / 快门 ---- */
+
+.qizhen-journal-camera-readouts {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 6px;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 8px 12px 0;
+}
+
+.qizhen-journal-camera-readouts span {
+  background: #0a0d12;
+  border: 1px solid #394454;
+  color: var(--qjc-cyan);
+  font-family: monospace;
+  font-size: 10px;
+  overflow: hidden;
+  padding: 6px 8px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qizhen-journal-camera-hint {
+  color: #8d99a8;
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 8px 14px 0;
+  text-align: center;
+}
+
+.qizhen-journal-camera-shutter-row {
+  flex: 0 0 auto;
+  margin-top: auto;
+  padding: 10px 14px 14px;
+}
+
+.qizhen-journal-camera-shutter {
+  background: var(--qjc-yellow);
+  border-bottom: 4px solid #9d8525;
+  color: var(--qjc-black);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  min-height: 56px;
+  transition: transform var(--dur-press) var(--ease-press);
+  width: 100%;
+}
+
+.qizhen-journal-camera-shutter:active {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
+/* ---- 草稿编辑 ---- */
+
+.qizhen-journal-camera-review {
+  flex: 0 0 auto;
+  margin: 12px 12px 0;
+}
+
+.qizhen-journal-camera-review-frame {
+  aspect-ratio: 1672 / 941;
+  background: #05070a;
+  border: 1px solid #344050;
+  box-shadow: 5px 5px 0 #06080b;
+  overflow: hidden;
+  position: relative;
+}
+
+.qizhen-journal-camera-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.qizhen-journal-camera-tags li {
+  border: 1px solid var(--qjc-cyan);
+  color: var(--qjc-cyan);
+  font-family: monospace;
+  font-size: 10px;
+  padding: 3px 7px;
+}
+
+.qizhen-journal-camera-draft-form {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 10px;
+  margin: 10px 12px 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 4px;
+}
+
+.qizhen-journal-camera-option-group {
+  background: var(--qjc-panel);
+  border: 1px solid #344050;
+  margin: 0;
+  padding: 10px;
+}
+
+.qizhen-journal-camera-option-group legend {
+  color: var(--qjc-yellow);
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 0 4px;
+}
+
+.qizhen-journal-camera-options {
+  display: grid;
+  gap: 6px;
+}
+
+.qizhen-journal-camera-option {
+  background: #0c1118;
+  border: 1px solid #3b4757;
+  color: var(--qjc-paper);
+  font-size: 12px;
+  line-height: 1.45;
+  min-height: 44px;
+  padding: 8px 10px;
+  text-align: left;
+  transition: background-color var(--dur-fast) var(--ease-press);
+}
+
+.qizhen-journal-camera-option.is-selected {
+  background: var(--qjc-paper);
+  border-color: var(--qjc-yellow);
+  box-shadow: inset 5px 0 0 var(--qjc-yellow);
+  color: var(--qjc-black);
+}
+
+.qizhen-journal-camera-saved {
+  background: #151b24;
+  border-left: 4px solid var(--qjc-green);
+  color: #aee4bd;
+  flex: 0 0 auto;
+  font-size: 11px;
+  margin: 8px 14px 0;
+  padding: 8px 10px;
+}
+
+.qizhen-journal-camera-actions {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 8px;
+  grid-template-columns: 1fr 1.4fr;
+  padding: 10px 14px 14px;
+}
+
+.qizhen-journal-camera-retake {
+  background: #242d39;
+  border: 1px solid #536174;
+  color: var(--qjc-paper);
+  font-size: 13px;
+  min-height: 48px;
+}
+
+.qizhen-journal-camera-save {
+  background: var(--qjc-paper);
+  border-bottom: 4px solid #8f927d;
+  color: var(--qjc-black);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  min-height: 48px;
+}
+
+.qizhen-journal-camera-save:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+/* ---- 紧凑高度与动效收敛 ---- */
+
+@media (max-height: 760px) {
+  .qizhen-journal-camera-header { flex-basis: 48px; }
+  .qizhen-journal-camera-viewfinder,
+  .qizhen-journal-camera-review { margin-top: 8px; }
+  .qizhen-journal-camera-hint { font-size: 10px; margin-top: 6px; }
+  .qizhen-journal-camera-shutter { min-height: 48px; }
+  .qizhen-journal-camera-shutter-row,
+  .qizhen-journal-camera-actions { padding-bottom: 10px; padding-top: 8px; }
+  .qizhen-journal-camera-option { min-height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qizhen-journal-camera,
+  .qizhen-journal-camera * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---- 宿主覆盖层:统一覆盖 rpg-shell(桌面分屏与窄屏触控同一挂载路径)----
+   z-index 84:高于字幕层(28)、道具栏(40)、全局 toast(70)与桌面分屏任务条
+   (触发器 76 / 抽屉 77 / 桌面条 80),保证会话打开期间覆盖层之下没有可点的
+   壳层控件;host 会同时收起任务栏、道具栏、模式开关、系统按钮与划桨按钮,
+   见 RpgGameHost。 */
+.qizhen-journal-camera-overlay {
+  background: rgba(5, 7, 10, 0.72);
+  inset: 0;
+  position: absolute;
+  z-index: 84;
+}

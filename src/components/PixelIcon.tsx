@@ -1,4 +1,14 @@
 import type { ItemId } from "../core/types";
+import decoyPaperIconUrl from "../assets/rpg/theater/generated/icons/item_decoy_paper.png";
+import fluorescentBrushIconUrl from "../assets/rpg/theater/generated/icons/item_fluorescent_brush.png";
+import spotlightRemoteIconUrl from "../assets/rpg/theater/generated/icons/item_spotlight_remote.png";
+import temporaryTheaterTicketIconUrl from "../assets/rpg/theater/generated/icons/item_temporary_theater_ticket.png";
+import theaterProgramFinaleIconUrl from "../assets/rpg/theater/generated/icons/item_theater_program_finale.png";
+import theaterProgramOpeningIconUrl from "../assets/rpg/theater/generated/icons/item_theater_program_opening.png";
+import theaterProgramSpotlightIconUrl from "../assets/rpg/theater/generated/icons/item_theater_program_spotlight.png";
+import theaterTicketHalfAIconUrl from "../assets/rpg/theater/generated/icons/item_theater_ticket_half_a.png";
+import theaterTicketHalfBIconUrl from "../assets/rpg/theater/generated/icons/item_theater_ticket_half_b.png";
+import wetProgramIconUrl from "../assets/rpg/theater/generated/icons/item_wet_program.png";
 
 /**
  * 字符画 → SVG 像素图标。
@@ -712,7 +722,35 @@ interface PixelIconProps {
   className?: string;
 }
 
+const THEATER_RASTER_ICONS: Partial<Record<ItemId, string>> = {
+  theaterTicketHalfA: theaterTicketHalfAIconUrl,
+  theaterTicketHalfB: theaterTicketHalfBIconUrl,
+  temporaryTheaterTicket: temporaryTheaterTicketIconUrl,
+  theaterProgramOpening: theaterProgramOpeningIconUrl,
+  theaterProgramSpotlight: theaterProgramSpotlightIconUrl,
+  theaterProgramFinale: theaterProgramFinaleIconUrl,
+  spotlightRemote: spotlightRemoteIconUrl,
+  fluorescentBrush: fluorescentBrushIconUrl,
+  decoyPaper: decoyPaperIconUrl,
+  wetProgram: wetProgramIconUrl
+};
+
 export function PixelIcon({ name, size = 36, className }: PixelIconProps) {
+  const rasterIcon = THEATER_RASTER_ICONS[name as ItemId];
+  if (rasterIcon) {
+    return (
+      <img
+        className={className}
+        src={rasterIcon}
+        width={size}
+        height={size}
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        style={{ imageRendering: "pixelated", objectFit: "contain" }}
+      />
+    );
+  }
   const icon = ICONS[name];
   if (!icon) {
     return null;
@@ -761,26 +799,26 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   mentorLine: { name: "竖线", desc: "从导师头像上滑落的一条竖线。它看起来很严肃，像一句还没发完的消息。" },
   rightArrow: { name: "右移箭头", desc: "能把什么东西往右移。它不解决问题，只负责让问题换个位置。" },
   gamepad: { name: "游戏手柄", desc: "CC98 二手市场六块钱成交。它让你终于可以操作自己，听起来很悲伤。" },
-  occupancyNote: { name: "占座纸条", desc: "022 座位旁留下的一张纸条。它声称主人只离开三分钟，但纸张老化程度不支持这个说法。" },
-  callNumber755: { name: "索书号 755", desc: "一串看起来属于书架、实际上更像咒语的编号。图书馆用它证明“你找不到”也是一种服务。" },
-  archivedLeaveRule: { name: "旧离座规定", desc: "一份已经过期但仍然有效的规定。它最大的优点是没人敢确认它无效。" },
-  itemRecognitionReport: { name: "物品识别报告", desc: "一份关于书包的严肃报告。结论是：它很沉重，但不是法律意义上的同学。" },
-  bagNonPersonProof: { name: "书包非本人证明", desc: "一份郑重证明。它没有姓名，没有学号，但有很强的占用欲。" },
-  seat022Receipt: { name: "022 座位小票", desc: "从桌下夹缝里推出的凭据。它皱得像经历过一次完整的期末周。" },
-  libraryPresenceProof: { name: "本人来过证明", desc: "一张证明你来过的证明。它没有证明你为什么要来。" },
-  seatReleasePass: { name: "离座清退 PASS", desc: "仅对非本人书包有效。如书包已进化为本人，请联系下一章。" },
-  cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "你通过劳动获得的两块钱。听起来像人生开始出问题的地方。" },
-  greaseTissue: { name: "油渍纸巾", desc: "擦过食堂桌面的纸巾。它现在拥有轻微的反光治理能力。" },
-  sparklingWater: { name: "气泡水", desc: "看起来很清爽，实际上是队伍秩序的原材料。" },
-  lemonTea: { name: "柠檬茶", desc: "瓶罐架残字写着它的颜色。请结合暗色观察确认配方位置。" },
-  blackCoffee: { name: "黑咖啡", desc: "早八指定燃料。喝了也不一定清醒。" },
-  badDrink: { name: "难喝饮料", desc: "不建议喝。喝完之后会理解早八，但不能推进剧情。" },
-  dailySpecialSparklingWater: { name: "今日新品气泡水", desc: "它让队伍承认你存在，也能在守出口时制造两秒气泡。" },
-  pickupTicket0755: { name: "0755 取餐号", desc: "一张从点餐机吐出来的小票。它证明你认真排过队，也认真被骗进流程。" },
-  canteenRealBun: { name: "比较真实的包子", desc: "一份真的包子。过于真实，因此没有线索价值。" },
-  canteenCluelessSoyMilk: { name: "没什么线索的豆浆", desc: "温度正常，味道正常，剧情价值也很稳定地接近零。" },
-  canteenEdgeEgg: { name: "世界观边缘的鸡蛋", desc: "不要追问它和纸条之间的关系。" },
-  canteenUselessCongee: { name: "很热但很没用的白粥", desc: "很热，但没有用。至少描述非常诚实。" },
+  occupancyNote: { name: "占座纸条", desc: "022 座位旁的纸条，写着“主人马上回来”。拖到 CC98 搜索栏查找同类记录。" },
+  callNumber755: { name: "索书号 755", desc: "书架定位编号。拖到 755 号书架，查找旧版离座规则。" },
+  archivedLeaveRule: { name: "旧离座规定", desc: "书架背面找到的旧版离座规定。上传到 CC98 作为证据。" },
+  itemRecognitionReport: { name: "物品识别报告", desc: "照片调暗后生成的书包识别报告。带到图书馆前台核验盖章。" },
+  bagNonPersonProof: { name: "书包非本人证明", desc: "前台盖章后的书包非本人证明。上传到 CC98 作为证据。" },
+  seat022Receipt: { name: "022 座位小票", desc: "从 022 桌下夹缝取到的小票。上传到 CC98 作为证据。" },
+  libraryPresenceProof: { name: "本人来过证明", desc: "体艺补录得到的到馆证明。上传到 CC98 作为证据。" },
+  seatReleasePass: { name: "离座清退 PASS", desc: "三项材料换来的清退凭证。拖到 022 书包使用。" },
+  cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "收回三只目标餐盘得到的两元钱，可支付一次扫码骑车。" },
+  greaseTissue: { name: "油渍纸巾", desc: "收餐口阿姨给的油渍纸巾，可擦掉车锁和海报玻璃上的反光。" },
+  sparklingWater: { name: "气泡水", desc: "蓝色饮料原料。与黑咖啡、柠檬茶按货架顺序调配。" },
+  lemonTea: { name: "柠檬茶", desc: "白色饮料原料。查看货架颜色顺序后放进混合台。" },
+  blackCoffee: { name: "黑咖啡", desc: "黑色饮料原料。按货架顺序放进混合台。" },
+  badDrink: { name: "难喝饮料", desc: "混错顺序得到的饮料。可以喝掉，不能推进任务。" },
+  dailySpecialSparklingWater: { name: "今日新品气泡水", desc: "拖到第三窗口宣传板的空杯位。守出口时可在地面留两秒减速气泡。" },
+  pickupTicket0755: { name: "0755 取餐号", desc: "点餐机打印的取餐小票。切到深色模式，交给 3 号窗口残影阿姨。" },
+  canteenRealBun: { name: "比较真实的包子", desc: "从窗口领到的包子。正常，且没有纸条线索。" },
+  canteenCluelessSoyMilk: { name: "没什么线索的豆浆", desc: "从窗口领到的豆浆。此时没有其他用途。" },
+  canteenEdgeEgg: { name: "世界观边缘的鸡蛋", desc: "从窗口领到的鸡蛋。此时没有其他用途。" },
+  canteenUselessCongee: { name: "很热但很没用的白粥", desc: "从窗口领到的白粥。烫手，且没有其他用途。" },
   theaterTicketHalfA: { name: "半张剧院票根 A", desc: "它证明你的一半可以进场，另一半还在流程里。" },
   theaterTicketHalfB: { name: "半张剧院票根 B", desc: "来自一台失败的取票机。它至少努力过。" },
   temporaryTheaterTicket: { name: "临时观演票", desc: "两张半真半假的票根拼出来的票。剧院看了都沉默了一秒。" },

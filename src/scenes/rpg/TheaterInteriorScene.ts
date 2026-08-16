@@ -1,5 +1,25 @@
 import Phaser from "phaser";
 import theaterInteriorMapUrl from "../../assets/rpg/interiors/theater_interior.png";
+import ticketInspectorIdleUrl from "../../assets/rpg/theater/generated/actors/ticket_inspector_idle_front.png";
+import ticketInspectorScanUrl from "../../assets/rpg/theater/generated/actors/ticket_inspector_scan_front.png";
+import stageManagerGhostIdleUrl from "../../assets/rpg/theater/generated/actors/stage_manager_ghost_idle.png";
+import stageManagerGhostPointUrl from "../../assets/rpg/theater/generated/actors/stage_manager_ghost_point.png";
+import propBoxGhostUrl from "../../assets/rpg/theater/generated/effects/clue_prop_box_ghost.png";
+import paperFuturePathUrl from "../../assets/rpg/theater/generated/effects/clue_paper_future_path.png";
+import spotlightBeamArtUrl from "../../assets/rpg/theater/generated/effects/spotlight_beam.png";
+import spotlightFaultStripUrl from "../../assets/rpg/theater/generated/effects/spotlight_fault_strip.png";
+import spotlightHitRingUrl from "../../assets/rpg/theater/generated/effects/spotlight_hit_ring.png";
+import spotlightSparksUrl from "../../assets/rpg/theater/generated/effects/spotlight_sparks.png";
+import programOpeningUrl from "../../assets/rpg/theater/generated/icons/item_theater_program_opening.png";
+import programSpotlightUrl from "../../assets/rpg/theater/generated/icons/item_theater_program_spotlight.png";
+import programFinaleUrl from "../../assets/rpg/theater/generated/icons/item_theater_program_finale.png";
+import paperFlightUrl from "../../assets/rpg/theater/generated/paper/paper_flight_0.png";
+import paperResidualUrl from "../../assets/rpg/theater/generated/paper/paper_residual.png";
+import paperFluorescentUrl from "../../assets/rpg/theater/generated/paper/paper_fluorescent.png";
+import paperLockedUrl from "../../assets/rpg/theater/generated/effects/paper_reversal_locked.png";
+import paperCrackedUrl from "../../assets/rpg/theater/generated/effects/paper_reversal_cracked.png";
+import paperEscapeUrl from "../../assets/rpg/theater/generated/effects/paper_reversal_escape.png";
+import paperFragmentsUrl from "../../assets/rpg/theater/generated/effects/paper_reversal_fragments.png";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import type { GameState, ItemId, TheaterMode, TheaterProgramId } from "../../core/types";
 import theaterContent from "../../data/chapter3-theater.content.json";
@@ -7,6 +27,8 @@ import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   formatRpgModeRequirement,
+  isPlayerFacingRpgTarget,
+  isPlayerReadyForRpgTarget,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
 import {
@@ -44,10 +66,42 @@ import {
 
 const THEATER_MAP_KEY = "chapter-3-theater-interior-map";
 const THEATER_PAPER_KEY = "chapter-3-theater-paper";
-const THEATER_PROGRAM_KEY = "chapter-3-theater-program";
+const THEATER_PAPER_RESIDUAL_KEY = "chapter-3-theater-paper-residual";
+const THEATER_PAPER_FLUORESCENT_KEY = "chapter-3-theater-paper-fluorescent";
+const THEATER_PAPER_LOCKED_KEY = "chapter-3-theater-paper-locked";
+const THEATER_PAPER_CRACKED_KEY = "chapter-3-theater-paper-cracked";
+const THEATER_PAPER_ESCAPE_KEY = "chapter-3-theater-paper-escape";
+const THEATER_PAPER_FRAGMENTS_KEY = "chapter-3-theater-paper-fragments";
+const THEATER_INSPECTOR_IDLE_KEY = "chapter-3-theater-inspector-idle";
+const THEATER_INSPECTOR_SCAN_KEY = "chapter-3-theater-inspector-scan";
+const THEATER_MANAGER_GHOST_IDLE_KEY = "chapter-3-theater-manager-ghost-idle";
+const THEATER_MANAGER_GHOST_POINT_KEY = "chapter-3-theater-manager-ghost-point";
+const THEATER_PROP_GHOST_KEY = "chapter-3-theater-prop-ghost";
+const THEATER_PAPER_PATH_KEY = "chapter-3-theater-paper-path";
+const THEATER_SPOTLIGHT_BEAM_ART_KEY = "chapter-3-theater-spotlight-beam-art";
+const THEATER_SPOTLIGHT_HIT_RING_KEY = "chapter-3-theater-spotlight-hit-ring";
+const THEATER_SPOTLIGHT_SPARKS_KEY = "chapter-3-theater-spotlight-sparks";
+const THEATER_SPOTLIGHT_FAULT_KEY = "chapter-3-theater-spotlight-fault";
+const THEATER_PROGRAM_KEYS: Record<TheaterProgramId, string> = {
+  opening: "chapter-3-theater-program-opening",
+  spotlight: "chapter-3-theater-program-spotlight",
+  finale: "chapter-3-theater-program-finale"
+};
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
+// Feedback subtitle tiers: instant result, confirmation, guidance, clue, task update.
+const FEEDBACK_INSTANT_MS = 1400;
+const FEEDBACK_CONFIRM_MS = 1800;
+const FEEDBACK_GUIDANCE_MS = 2400;
+const FEEDBACK_CLUE_MS = 3000;
+const FEEDBACK_TASK_UPDATE_MS = 4200;
+// Phase-update subtitles wait at least this long so the triggering result
+// feedback (and its animation) is readable first.
+const PHASE_UPDATE_MIN_DELAY_MS = 700;
+// Lines opening with one of these prefixes keep the narrator/system tone but get
+// their own speaker label on the shared subtitle frame.
+const THEATER_DIALOGUE_SPEAKERS = ["检票员", "取票机", "灯控台", "手机系统"] as const;
 const THEATER_TICKET_FIXTURE_COLLISION_RECTS = [
   {
     id: "ticket_inspector_fixture",
@@ -87,11 +141,21 @@ interface PanelButtonHitArea {
 
 interface TicketDropGuideVisual {
   target: TheaterInteractionTarget;
-  dropFrame: Phaser.GameObjects.Rectangle;
-  dropLabel: Phaser.GameObjects.Text;
-  standRing: Phaser.GameObjects.Arc;
-  standLabel: Phaser.GameObjects.Text;
-  link: Phaser.GameObjects.Graphics;
+  targetOutline: Phaser.GameObjects.Rectangle;
+}
+
+interface TheaterTargetMarker {
+  target: TheaterInteractionTarget;
+  container: Phaser.GameObjects.Container;
+  ring: Phaser.GameObjects.Arc;
+  glyph: Phaser.GameObjects.Text;
+}
+
+interface PendingFeedback {
+  text: string;
+  tone: GameSubtitleTone;
+  durationMs: number;
+  speaker?: string;
 }
 
 type SpotlightStage = "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
@@ -127,6 +191,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private reducedMotion = false;
   private dialogueLocked = false;
   private paperBusy = false;
+  private ticketCombinePending = false;
   private occlusionVisuals: OcclusionVisual[] = [];
   private activeOcclusionIds: string[] = [];
   private softenedOcclusionIds: string[] = [];
@@ -138,7 +203,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private panel: Phaser.GameObjects.Container | null = null;
   private panelKind: "code" | "program" | null = null;
   private panelButtons: PanelButtonHitArea[] = [];
-  private panelInputReadyAtMs = 0;
+  private panelOpeningPointerDownTime = -1;
   private codeInput = "";
   private codeDisplay: Phaser.GameObjects.Text | null = null;
   private spotlightPanel: Phaser.GameObjects.Container | null = null;
@@ -149,6 +214,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private spotlightConsoleGuide: Phaser.GameObjects.Container | null = null;
   private spotlightPathPreview: Phaser.GameObjects.Graphics | null = null;
   private spotlightBeam: Phaser.GameObjects.Graphics | null = null;
+  private spotlightBeamArt: Phaser.GameObjects.Image | null = null;
   private spotlightAimRing: Phaser.GameObjects.Arc | null = null;
   private spotlightAimMarker: Phaser.GameObjects.Arc | null = null;
   private spotlightFireButton: Phaser.GameObjects.Rectangle | null = null;
@@ -176,10 +242,17 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private spotlightDelayTimers: Phaser.Time.TimerEvent[] = [];
   private spotlightChoiceOpen = false;
   private ticketInspector: Phaser.GameObjects.Container | null = null;
+  private ticketInspectorSprite: Phaser.GameObjects.Image | null = null;
   private ticketInspectorArm: Phaser.GameObjects.Rectangle | null = null;
   private ticketReader: Phaser.GameObjects.Container | null = null;
   private ticketReaderLight: Phaser.GameObjects.Rectangle | null = null;
   private ticketDropGuides = new Map<string, TicketDropGuideVisual>();
+  private targetMarkers = new Map<string, TheaterTargetMarker>();
+  private pendingFeedback: PendingFeedback[] = [];
+  private lastFeedbackUntilMs = 0;
+  private stageManagerGhost: Phaser.GameObjects.Image | null = null;
+  private propBoxGhostSprite: Phaser.GameObjects.Image | null = null;
+  private paperFuturePathSprite: Phaser.GameObjects.Image | null = null;
 
   constructor() {
     super("theater-interior");
@@ -189,6 +262,31 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (!this.textures.exists(THEATER_MAP_KEY)) {
       this.load.image(THEATER_MAP_KEY, theaterInteriorMapUrl);
     }
+    const art: Array<[string, string]> = [
+      [THEATER_PAPER_KEY, paperFlightUrl],
+      [THEATER_PAPER_RESIDUAL_KEY, paperResidualUrl],
+      [THEATER_PAPER_FLUORESCENT_KEY, paperFluorescentUrl],
+      [THEATER_PAPER_LOCKED_KEY, paperLockedUrl],
+      [THEATER_PAPER_CRACKED_KEY, paperCrackedUrl],
+      [THEATER_PAPER_ESCAPE_KEY, paperEscapeUrl],
+      [THEATER_PAPER_FRAGMENTS_KEY, paperFragmentsUrl],
+      [THEATER_INSPECTOR_IDLE_KEY, ticketInspectorIdleUrl],
+      [THEATER_INSPECTOR_SCAN_KEY, ticketInspectorScanUrl],
+      [THEATER_MANAGER_GHOST_IDLE_KEY, stageManagerGhostIdleUrl],
+      [THEATER_MANAGER_GHOST_POINT_KEY, stageManagerGhostPointUrl],
+      [THEATER_PROP_GHOST_KEY, propBoxGhostUrl],
+      [THEATER_PAPER_PATH_KEY, paperFuturePathUrl],
+      [THEATER_SPOTLIGHT_BEAM_ART_KEY, spotlightBeamArtUrl],
+      [THEATER_SPOTLIGHT_HIT_RING_KEY, spotlightHitRingUrl],
+      [THEATER_SPOTLIGHT_SPARKS_KEY, spotlightSparksUrl],
+      [THEATER_SPOTLIGHT_FAULT_KEY, spotlightFaultStripUrl],
+      [THEATER_PROGRAM_KEYS.opening, programOpeningUrl],
+      [THEATER_PROGRAM_KEYS.spotlight, programSpotlightUrl],
+      [THEATER_PROGRAM_KEYS.finale, programFinaleUrl]
+    ];
+    art.forEach(([key, url]) => {
+      if (!this.textures.exists(key)) this.load.image(key, url);
+    });
     preloadRpgPlayerTextures(this);
   }
 
@@ -246,6 +344,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.createTicketDropGuides();
     this.syncTicketInspectionPoint(state);
     this.createWorldHotspots();
+    // Interactions attach to the visible fixtures; no floating world markers.
     this.createModeLayer();
     this.createPrompt();
     this.createPaper();
@@ -265,8 +364,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.runtime.emit("theater_interior_opened");
 
     if (this.currentPhase === "entry_ticket" && !state.theaterHunt.posterCleaned && !state.theaterHunt.ticketCodeRead) {
+      this.showFeedback(theaterContent.locationTitle, "task", FEEDBACK_CLUE_MS);
       this.dialogueLocked = true;
-      this.showFeedback(theaterContent.locationTitle, "task");
       this.time.delayedCall(this.reducedMotion ? 160 : 1100, () => {
         this.queueDialogue(theaterContent.entryDialogue, () => { this.dialogueLocked = false; });
       });
@@ -315,7 +414,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.publishDebugState(nearest, state);
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearest && !this.dialogueLocked && !this.paperBusy && !this.panel && !this.spotlightPanel && (keyboardInteract || this.interactRequested)) {
-      this.triggerTarget(nearest, state);
+      if (isPlayerFacingRpgTarget(
+        nearest,
+        this.player.x,
+        this.player.y,
+        this.playerAnimator.cardinalFacing
+      )) {
+        this.triggerTarget(nearest, state);
+      } else {
+        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task", FEEDBACK_GUIDANCE_MS);
+      }
     }
     this.interactRequested = false;
   }
@@ -413,14 +521,15 @@ export class TheaterInteriorScene extends Phaser.Scene {
       g.generateTexture(THEATER_PAPER_KEY, 36, 34);
       g.destroy();
     }
-    if (!this.textures.exists(THEATER_PROGRAM_KEY)) {
+    Object.values(THEATER_PROGRAM_KEYS).forEach((key) => {
+      if (this.textures.exists(key)) return;
       const g = this.add.graphics();
       g.fillStyle(0xf3ead4).fillRect(2, 2, 30, 24);
       g.lineStyle(2, 0x6e2f33).strokeRect(2, 2, 30, 24);
       g.lineStyle(2, 0x8e6b55).lineBetween(8, 9, 26, 9).lineBetween(8, 14, 24, 14).lineBetween(8, 19, 20, 19);
-      g.generateTexture(THEATER_PROGRAM_KEY, 34, 28);
+      g.generateTexture(key, 34, 28);
       g.destroy();
-    }
+    });
   }
 
   private createProgramFragments(): void {
@@ -428,16 +537,19 @@ export class TheaterInteriorScene extends Phaser.Scene {
       const programId = target.programId!;
       const glow = this.add.circle(0, 0, 26, 0x2aaeff, 0.16)
         .setStrokeStyle(4, 0x83e4ff, 0.94);
-      const image = this.add.image(0, 0, THEATER_PROGRAM_KEY);
-      const label = this.add.text(0, 0, theaterContent.program.labels[programId], {
-        color: "#4a2525",
-        fontFamily: "monospace",
-        fontSize: "9px"
-      }).setOrigin(0.5);
-      const container = this.add.container(target.x, target.y, [glow, image, label])
+      const image = this.add.image(0, 0, THEATER_PROGRAM_KEYS[programId]).setDisplaySize(48, 48);
+      const container = this.add.container(target.x, target.y, [glow, image])
         .setDepth(target.y + 40)
         .setSize(58, 50)
         .setInteractive({ useHandCursor: true })
+        .on("pointerover", () => {
+          image.setScale(1.14);
+          glow.setStrokeStyle(4, 0xbef4ff, 1);
+        })
+        .on("pointerout", () => {
+          image.setScale(1);
+          glow.setStrokeStyle(4, 0x83e4ff, 0.94);
+        })
         .on("pointerdown", () => this.triggerPointerTarget(target));
       this.tweens.add({
         targets: glow,
@@ -456,48 +568,20 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const gateTarget = THEATER_INTERACTION_TARGETS.find((target) => target.kind === "gate");
     if (!gateTarget) return;
 
-    const inspectorShadow = this.add.ellipse(0, 31, 38, 12, 0x09080c, 0.48);
-    const leftLeg = this.add.rectangle(-7, 20, 9, 24, 0x17202b).setStrokeStyle(2, 0x090d13, 0.9);
-    const rightLeg = this.add.rectangle(7, 20, 9, 24, 0x17202b).setStrokeStyle(2, 0x090d13, 0.9);
-    const body = this.add.rectangle(0, -1, 32, 36, 0x27384b).setStrokeStyle(3, 0x101820, 0.95);
-    const collarLeft = this.add.rectangle(-6, -12, 8, 7, 0xe3d6be).setAngle(26);
-    const collarRight = this.add.rectangle(6, -12, 8, 7, 0xe3d6be).setAngle(-26);
-    const badge = this.add.rectangle(-9, 1, 7, 9, 0xe1b84a).setStrokeStyle(1, 0x5d4611, 0.95);
-    const head = this.add.rectangle(0, -30, 22, 20, 0xd8a36e).setStrokeStyle(2, 0x5b3325, 0.95);
-    const hair = this.add.rectangle(0, -38, 22, 5, 0x291b1b);
-    const cap = this.add.rectangle(0, -43, 28, 8, 0x202f42).setStrokeStyle(2, 0x0e1722, 0.95);
-    const capBand = this.add.rectangle(0, -39, 31, 4, 0xe0b946);
-    const eyes = [
-      this.add.rectangle(-5, -29, 3, 3, 0x271d1b),
-      this.add.rectangle(5, -29, 3, 3, 0x271d1b)
-    ];
-    this.ticketInspectorArm = this.add.rectangle(20, 2, 18, 7, 0x27384b)
-      .setStrokeStyle(2, 0x101820, 0.95)
-      .setAngle(18);
-    const handScanner = this.add.rectangle(29, 6, 9, 15, 0x162431)
-      .setStrokeStyle(2, 0x071016, 0.95)
-      .setAngle(18);
-    const scannerGlow = this.add.rectangle(31, 2, 5, 4, 0x6be6ff, 0.95).setAngle(18);
+    const inspectorShadow = this.add.ellipse(0, 31, 42, 12, 0x09080c, 0.48);
+    this.ticketInspectorSprite = this.add.image(0, -16, THEATER_INSPECTOR_IDLE_KEY)
+      .setScale(0.75)
+      .setOrigin(0.5);
+    this.ticketInspectorArm = null;
     this.ticketInspector = this.add.container(753, 681, [
       inspectorShadow,
-      leftLeg,
-      rightLeg,
-      body,
-      collarLeft,
-      collarRight,
-      badge,
-      this.ticketInspectorArm,
-      handScanner,
-      scannerGlow,
-      head,
-      hair,
-      cap,
-      capBand,
-      ...eyes
+      this.ticketInspectorSprite
     ])
       .setDepth(832)
       .setSize(66, 86)
       .setInteractive({ useHandCursor: true })
+      .on("pointerover", () => this.ticketInspector?.setScale(1.06))
+      .on("pointerout", () => this.ticketInspector?.setScale(1))
       .on("pointerdown", () => this.triggerPointerTarget(gateTarget));
 
     const readerShadow = this.add.ellipse(0, 29, 35, 11, 0x09080c, 0.5);
@@ -522,6 +606,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
       .setDepth(839)
       .setSize(48, 72)
       .setInteractive({ useHandCursor: true })
+      .on("pointerover", () => this.ticketReader?.setScale(1.06))
+      .on("pointerout", () => this.ticketReader?.setScale(1))
       .on("pointerdown", () => this.triggerPointerTarget(gateTarget));
 
     const collisionVisible = import.meta.env.DEV
@@ -575,65 +661,24 @@ export class TheaterInteriorScene extends Phaser.Scene {
     THEATER_INTERACTION_TARGETS
       .filter((target) => (
         target.acceptedItem
-        && target.stand
         && target.dropWidth
         && target.dropHeight
       ))
       .forEach((target) => {
         const dropWidth = target.dropWidth!;
         const dropHeight = target.dropHeight!;
-        const dropFrame = this.add.rectangle(
+        const targetOutline = this.add.rectangle(
           target.x,
           target.y,
           dropWidth,
           dropHeight,
-          0x2a9fd6,
-          0.13
+          0x000000,
+          0
         )
-          .setStrokeStyle(4, 0x72dcff, 0.98)
+          .setStrokeStyle(2, 0x72dcff, 0.9)
           .setDepth(2240)
           .setVisible(false);
-        const dropLabel = this.add.text(
-          target.x,
-          target.y - dropHeight / 2 - 7,
-          `松手区 · ${target.label}`,
-          {
-            color: "#d9f8ff",
-            backgroundColor: "#102332ee",
-            fontFamily: "monospace",
-            fontSize: "12px",
-            padding: { x: 7, y: 4 }
-          }
-        )
-          .setOrigin(0.5, 1)
-          .setDepth(2242)
-          .setVisible(false);
-        const standRing = this.add.circle(target.stand!.x, target.stand!.y, 27, 0x2a9fd6, 0.12)
-          .setStrokeStyle(4, 0x72dcff, 0.96)
-          .setDepth(2240)
-          .setVisible(false);
-        const standLabel = this.add.text(target.stand!.x, target.stand!.y + 37, "先让人物站到这里", {
-          color: "#d9f8ff",
-          backgroundColor: "#102332ee",
-          fontFamily: "monospace",
-          fontSize: "11px",
-          padding: { x: 6, y: 4 }
-        })
-          .setOrigin(0.5, 0)
-          .setDepth(2242)
-          .setVisible(false);
-        const link = this.add.graphics().setDepth(2239).setVisible(false);
-        this.ticketDropGuides.set(target.id, { target, dropFrame, dropLabel, standRing, standLabel, link });
-        if (!this.reducedMotion) {
-          this.tweens.add({
-            targets: [dropFrame, standRing],
-            alpha: { from: 0.62, to: 1 },
-            duration: 720,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut"
-          });
-        }
+        this.ticketDropGuides.set(target.id, { target, targetOutline });
       });
   }
 
@@ -660,36 +705,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
       const visible = state.ui.selectedItem === guide.target.acceptedItem
         && state.theaterHunt.mode === guide.target.requiredMode
         && phaseReady;
-      const objects = [guide.dropFrame, guide.dropLabel, guide.standRing, guide.standLabel, guide.link];
-      objects.forEach((object) => object.setVisible(visible));
+      guide.targetOutline.setVisible(visible);
       if (!visible) return;
 
-      const inPosition = Boolean(findNearestTheaterTarget(this.player.x, this.player.y, [guide.target]));
-      const accent = inPosition ? 0x63e58b : 0x72dcff;
-      const fill = inPosition ? 0x235d3a : 0x2a9fd6;
-      guide.dropFrame
-        .setFillStyle(fill, 0.14)
-        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
-      guide.standRing
-        .setFillStyle(fill, inPosition ? 0.22 : 0.12)
-        .setStrokeStyle(inPosition ? 5 : 4, accent, 0.98);
-      guide.dropLabel
-        .setText(inPosition
-          ? `站位正确 · 道具拖进${guide.target.label}松手`
-          : `目标 · ${guide.target.label}`)
-        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
-      guide.standLabel
-        .setText(inPosition ? "站位已满足" : "先让人物站到这里")
-        .setColor(inPosition ? "#dfffe9" : "#d9f8ff");
-      guide.link
-        .clear()
-        .lineStyle(inPosition ? 4 : 3, accent, inPosition ? 0.94 : 0.78)
-        .lineBetween(
-          guide.target.stand!.x,
-          guide.target.stand!.y - 28,
-          guide.target.x,
-          guide.target.y + (guide.target.dropHeight ?? 0) / 2
-        );
+      const ready = isPlayerReadyForRpgTarget(
+        guide.target,
+        this.player.x,
+        this.player.y,
+        this.playerAnimator.cardinalFacing
+      );
+      guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
     });
   }
 
@@ -697,7 +722,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const bounds: Record<string, { x: number; y: number; width: number; height: number }> = {
       theater_poster: { x: 278, y: 755, width: 365, height: 160 },
       theater_ticket_kiosk: { x: 1146, y: 755, width: 100, height: 150 },
-      theater_ticket_gate: { x: 907, y: 690, width: 90, height: 100 },
+      theater_ticket_gate: { x: 907, y: 690, width: 112, height: 126 },
       theater_light_console: { x: 1140, y: 500, width: 130, height: 110 },
       theater_prop_box: { x: 292, y: 166, width: 100, height: 100 },
       theater_prop_scanner: { x: 364, y: 170, width: 76, height: 94 },
@@ -707,10 +732,63 @@ export class TheaterInteriorScene extends Phaser.Scene {
     Object.entries(bounds).forEach(([id, rect]) => {
       const target = THEATER_INTERACTION_TARGETS.find((candidate) => candidate.id === id);
       if (!target) return;
+      const hoverFrame = this.add.rectangle(rect.x, rect.y, rect.width, rect.height, 0x7bd8ff, 0.07)
+        .setStrokeStyle(3, 0x9fe8ff, 0.9)
+        .setDepth(rect.y + 1)
+        .setVisible(false);
       this.add.zone(rect.x, rect.y, rect.width, rect.height)
         .setDepth(rect.y + 2)
         .setInteractive({ useHandCursor: true })
+        .on("pointerover", () => {
+          if (this.panel || this.spotlightPanel) return;
+          const state = this.runtime.getState();
+          if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
+          hoverFrame.setVisible(true);
+        })
+        .on("pointerout", () => hoverFrame.setVisible(false))
         .on("pointerdown", () => this.triggerPointerTarget(target));
+    });
+  }
+
+  private createTargetMarkers(): void {
+    THEATER_INTERACTION_TARGETS.forEach((target, index) => {
+      const isDrop = Boolean(target.acceptedItem);
+      const isExit = target.kind === "exit";
+      const ring = this.add.circle(0, 0, 10, 0x173331, 0.72).setStrokeStyle(3, 0xe8d46c, 0.95);
+      const glyph = this.add.text(0, -1, isDrop ? "↧" : isExit ? "↙" : "·", {
+        color: isDrop ? "#8fd7ff" : "#fff6c7",
+        fontFamily: "monospace",
+        fontSize: isDrop ? "11px" : isExit ? "14px" : "18px",
+        fontStyle: "bold"
+      }).setOrigin(0.5);
+      const lift = (target.dropHeight ?? 72) / 2 + 18;
+      const container = this.add.container(target.x, target.y - lift, [ring, glyph])
+        .setDepth(2260 + index)
+        .setVisible(false);
+      if (!this.reducedMotion) {
+        this.tweens.add({
+          targets: container,
+          y: container.y - 3,
+          duration: 720 + index * 18,
+          yoyo: true,
+          repeat: -1,
+          ease: "Stepped"
+        });
+      }
+      this.targetMarkers.set(target.id, { target, container, ring, glyph });
+    });
+  }
+
+  private syncTargetMarkers(state: GameState): void {
+    const activeIds = new Set(this.getActiveTargets(state).map((target) => target.id));
+    const selectedItem = state.ui.selectedItem;
+    this.targetMarkers.forEach((marker, targetId) => {
+      const visible = activeIds.has(targetId);
+      marker.container.setVisible(visible);
+      if (!visible) return;
+      const itemMatch = selectedItem !== null && marker.target.acceptedItem === selectedItem;
+      marker.ring.setStrokeStyle(itemMatch ? 4 : 3, itemMatch ? 0x7bd8ff : 0xe8d46c, 0.95);
+      marker.glyph.setColor(itemMatch ? "#b9ecff" : marker.target.acceptedItem ? "#8fd7ff" : "#fff6c7");
     });
   }
 
@@ -752,6 +830,40 @@ export class TheaterInteriorScene extends Phaser.Scene {
       wordWrap: { width: 280 },
       padding: { x: 8, y: 5 }
     }).setOrigin(0.5).setDepth(1603);
+    this.propBoxGhostSprite = this.add.image(294, 165, THEATER_PROP_GHOST_KEY)
+      .setScale(0.78)
+      .setDepth(1603)
+      .setVisible(false);
+    this.stageManagerGhost = this.add.image(500, 166, THEATER_MANAGER_GHOST_IDLE_KEY)
+      .setScale(0.7)
+      .setDepth(1604)
+      .setVisible(false);
+    this.paperFuturePathSprite = this.add.image(835, 180, THEATER_PAPER_PATH_KEY)
+      .setScale(0.78)
+      .setDepth(2101)
+      .setVisible(false);
+    if (!this.reducedMotion) {
+      this.tweens.add({
+        targets: [this.propBoxGhostSprite, this.stageManagerGhost],
+        alpha: { from: 0.58, to: 0.9 },
+        duration: 760,
+        yoyo: true,
+        repeat: -1,
+        ease: "Stepped"
+      });
+      this.time.addEvent({
+        delay: 720,
+        loop: true,
+        callback: () => {
+          if (!this.stageManagerGhost?.visible) return;
+          this.stageManagerGhost.setTexture(
+            this.stageManagerGhost.texture.key === THEATER_MANAGER_GHOST_IDLE_KEY
+              ? THEATER_MANAGER_GHOST_POINT_KEY
+              : THEATER_MANAGER_GHOST_IDLE_KEY
+          );
+        }
+      });
+    }
     this.darkClues = [posterTicket, posterLabel, kioskCode, this.programOrderClue, this.propGhostClue];
     this.darkClues.forEach((clue) => clue.setVisible(false));
   }
@@ -759,15 +871,22 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private createPrompt(): void {
     this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
-      backgroundColor: "#21141bee",
       fontFamily: "monospace",
       fontSize: "13px",
-      padding: { x: 9, y: 5 }
+      stroke: "#07111c",
+      strokeThickness: 4,
+      align: "center"
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(5200).setVisible(false);
   }
 
   private createPaper(): void {
-    this.paper = this.add.image(835, 180, THEATER_PAPER_KEY)
+    const state = this.runtime.getState();
+    const paperKey = state.theaterHunt.mode === "dark"
+      ? THEATER_PAPER_RESIDUAL_KEY
+      : state.theaterHunt.paperDusted
+        ? THEATER_PAPER_FLUORESCENT_KEY
+        : THEATER_PAPER_KEY;
+    this.paper = this.add.image(835, 180, paperKey)
       .setDepth(2100)
       .setVisible(["spotlight_ready", "spotlight_hunt", "reversal"].includes(this.currentPhase));
     this.tweens.add({
@@ -833,7 +952,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_ticket_code_read") {
-      this.showFeedback(theaterContent.ticket.codeVisible, "system");
+      this.showFeedback(theaterContent.ticket.codeVisible, "system", FEEDBACK_CLUE_MS);
       return;
     }
     if (name === "theater_ticket_code_panel_opened") {
@@ -841,12 +960,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_ticket_code_wrong") {
-      this.showFeedback(theaterContent.ticket.codeWrong, "system");
+      this.showFeedback(theaterContent.ticket.codeWrong, "system", FEEDBACK_CONFIRM_MS);
+      return;
+    }
+    if (name === "theater_ticket_commission_required") {
+      this.showFeedback(theaterContent.ticket.commissionRequired, "system", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_ticket_phone_release_required") {
       this.closePanel();
-      this.showFeedback(theaterContent.ticket.phoneReleaseRequired, "system");
+      this.showFeedback(theaterContent.ticket.phoneReleaseRequired, "system", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_ticket_printed") {
@@ -856,12 +979,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     if (name === "theater_ticket_already_delivered") {
       this.closePanel();
-      this.showFeedback(theaterContent.ticket.ticketPrinted, "system");
-      return;
-    }
-    if (name === "theater_ticket_print_failed") {
-      this.closePanel();
-      this.showFeedback(theaterContent.ticket.phoneReleaseRequired, "system");
+      this.showFeedback("实体票根 B 已经打印，无需重复取票。", "system", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_poster_cleaned") {
@@ -869,11 +987,12 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_ticket_halves_ready") {
+      this.ticketCombinePending = true;
       this.animateTicketCombine();
       return;
     }
     if (name === "theater_ticket_combined") {
-      this.showFeedback("临时观演票", "success");
+      this.showFeedback("临时观演票", "success", FEEDBACK_INSTANT_MS);
       return;
     }
     if (name === "theater_ticket_admitted") {
@@ -885,7 +1004,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_program_order_read") {
-      this.showFeedback(theaterContent.program.darkOrder, "system");
+      this.showFeedback(theaterContent.program.darkOrder, "system", FEEDBACK_CLUE_MS);
       return;
     }
     if (name === "theater_program_order_changed") {
@@ -899,7 +1018,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     if (name === "theater_program_order_solved") {
       this.closePanel();
-      this.showFeedback(theaterContent.program.unlocked, "success");
+      this.showFeedback(theaterContent.program.unlocked, "success", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_prop_ghost_read") {
@@ -907,7 +1026,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_prop_box_locked") {
-      this.showFeedback(theaterContent.prop.locked, "system");
+      this.showFeedback(theaterContent.prop.locked, "system", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_prop_box_opened") {
@@ -962,6 +1081,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
       ease: "Sine.easeInOut"
     });
     this.syncDarkClues(this.runtime.getState());
+    this.showFeedback(
+      mode === "dark" ? theaterContent.mode.darkConfirm : theaterContent.mode.lightConfirm,
+      "system",
+      FEEDBACK_GUIDANCE_MS
+    );
     this.runtime.emit(mode === "dark" ? "theater_dark_mode_enabled" : "theater_light_mode_enabled");
   }
 
@@ -975,7 +1099,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.programOrderClue?.setVisible(
       dark && state.theaterHunt.phase === "program_search" && state.theaterHunt.collectedProgramIds.length === 3
     );
-    this.propGhostClue?.setVisible(dark && state.theaterHunt.phase === "prop_setup" && !state.theaterHunt.propBoxOpened);
+    const propGhostVisible = dark && state.theaterHunt.phase === "prop_setup" && !state.theaterHunt.propBoxOpened;
+    this.propGhostClue?.setVisible(propGhostVisible);
+    this.propBoxGhostSprite?.setVisible(propGhostVisible);
+    this.stageManagerGhost?.setVisible(propGhostVisible);
+    this.paperFuturePathSprite?.setVisible(dark && state.theaterHunt.phase === "spotlight_ready");
   }
 
   private getActiveTargets(state: GameState): TheaterInteractionTarget[] {
@@ -1008,15 +1136,19 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "poster") {
-      this.showFeedback(theaterContent.ticket.posterGlare, "system");
+      this.showFeedback(theaterContent.ticket.posterGlare, "system", FEEDBACK_GUIDANCE_MS);
       return;
     }
     if (target.kind === "kiosk") {
+      if (state.theaterHunt.cc98TicketCommissionPhase === "delivered") {
+        this.showFeedback("取票已完成，票根已经进入道具栏。", "system", FEEDBACK_CONFIRM_MS);
+        return;
+      }
       this.runtime.emit("rpg_theater_ticket_kiosk_requested");
       return;
     }
     if (target.kind === "gate") {
-      this.showFeedback(theaterContent.ticket.gateDenied, "narrator");
+      this.showFeedback(theaterContent.ticket.gateDenied, "narrator", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (target.kind === "program" && target.programId) {
@@ -1024,40 +1156,72 @@ export class TheaterInteriorScene extends Phaser.Scene {
         this.runtime.emit("rpg_theater_program_collect_requested", { programId: target.programId });
       } else if (state.theaterHunt.collectedProgramIds.length === 3) {
         this.runtime.emit("rpg_theater_program_order_read_requested");
+      } else {
+        this.showFeedback(theaterContent.program.darkIncomplete, "system", FEEDBACK_GUIDANCE_MS);
       }
       return;
     }
     if (target.kind === "console") {
       if (state.theaterHunt.phase === "program_search") {
         if (state.theaterHunt.mode === "dark") {
-          this.runtime.emit("rpg_theater_program_order_read_requested");
+          if (state.theaterHunt.collectedProgramIds.length === 3) {
+            this.runtime.emit("rpg_theater_program_order_read_requested");
+          } else {
+            this.showFeedback(theaterContent.program.darkIncomplete, "system", FEEDBACK_GUIDANCE_MS);
+          }
         } else if (state.theaterHunt.collectedProgramIds.length === 3) {
           this.openProgramPanel();
         } else {
           this.queueDialogue([theaterContent.program.consolePrompt, theaterContent.program.consoleState]);
         }
+      } else if (state.theaterHunt.phase === "spotlight_ready") {
+        this.showFeedback(theaterContent.spotlight.consoleHint, "task", FEEDBACK_GUIDANCE_MS);
       }
       return;
     }
     if (target.kind === "prop") {
+      if (state.theaterHunt.propBoxOpened) {
+        this.showFeedback(theaterContent.prop.opened, "system", FEEDBACK_GUIDANCE_MS);
+        return;
+      }
       this.runtime.emit("rpg_theater_prop_inspect_requested");
       return;
     }
     if (target.kind === "scanner") {
-      this.showFeedback(state.theaterHunt.mode === "dark" ? theaterContent.prop.managerHint : theaterContent.prop.locked, "system");
+      this.showFeedback(
+        state.theaterHunt.mode === "dark" ? theaterContent.prop.managerHint : theaterContent.prop.locked,
+        "system",
+        state.theaterHunt.mode === "dark" ? FEEDBACK_CLUE_MS : FEEDBACK_CONFIRM_MS
+      );
       return;
     }
     if (target.kind === "vent") {
-      this.showFeedback(theaterContent.prop.task, "task");
+      this.showFeedback(theaterContent.prop.task, "task", FEEDBACK_CLUE_MS);
     }
   }
 
   private triggerPointerTarget(target: TheaterInteractionTarget): void {
     const state = this.runtime.getState();
     if (this.dialogueLocked || this.paperBusy || this.panel || this.spotlightPanel) return;
-    if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
+    if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) {
+      this.showFeedback(theaterContent.feedback.inactiveTarget, "system", FEEDBACK_INSTANT_MS);
+      return;
+    }
     if (!findNearestTheaterTarget(this.player.x, this.player.y, [target])) {
-      if (target.stand) this.showFeedback("先走到设备前的可站立位置再操作。", "system");
+      this.showFeedback(
+        theaterContent.feedback.moveCloser,
+        "system",
+        FEEDBACK_GUIDANCE_MS
+      );
+      return;
+    }
+    if (!isPlayerFacingRpgTarget(
+      target,
+      this.player.x,
+      this.player.y,
+      this.playerAnimator.cardinalFacing
+    )) {
+      this.showFeedback(`面向「${target.label}」后再操作。`, "system", FEEDBACK_GUIDANCE_MS);
       return;
     }
     this.triggerTarget(target, state);
@@ -1104,18 +1268,52 @@ export class TheaterInteriorScene extends Phaser.Scene {
         this.playModeTransition(state.theaterHunt.mode);
       }
     }
-    this.currentPhase = state.theaterHunt.phase;
+    if (state.theaterHunt.phase !== this.currentPhase) {
+      if (!immediate) this.announcePhaseUpdate(state.theaterHunt.phase);
+      this.currentPhase = state.theaterHunt.phase;
+    }
     this.syncDarkClues(state);
     this.programVisuals.forEach((visual, programId) => {
       const collected = state.theaterHunt.collectedProgramIds.includes(programId);
-      visual.container.setVisible(state.theaterHunt.phase === "program_search" && !collected);
+      const available = state.theaterHunt.phase === "program_search" && !collected;
+      visual.container.setVisible(available);
+      if (visual.container.input) visual.container.input.enabled = available;
       visual.glow.setVisible(state.theaterHunt.mode === "dark" && !collected);
     });
     this.paper?.setVisible(["spotlight_ready", "spotlight_hunt", "reversal"].includes(state.theaterHunt.phase));
+    this.paper?.setTexture(
+      state.theaterHunt.mode === "dark"
+        ? THEATER_PAPER_RESIDUAL_KEY
+        : state.theaterHunt.paperDusted
+          ? THEATER_PAPER_FLUORESCENT_KEY
+          : THEATER_PAPER_KEY
+    );
     this.spotlightConsoleGuide?.setVisible(state.theaterHunt.phase === "spotlight_ready");
     if (state.theaterHunt.admitted && this.gateBlocker) this.removeGateBlocker();
     this.syncTicketInspectionPoint(state);
     this.syncTicketDropGuides(state);
+    this.syncTargetMarkers(state);
+  }
+
+  private announcePhaseUpdate(phase: GameState["theaterHunt"]["phase"]): void {
+    const text = (theaterContent.phaseUpdates as Partial<Record<GameState["theaterHunt"]["phase"], string>>)[phase];
+    if (!text) return;
+    // Yield to result feedback and unlock animations that land right after the
+    // phase change; the task update only fires once the subtitle line is free.
+    const schedule = () => {
+      this.time.delayedCall(PHASE_UPDATE_MIN_DELAY_MS, () => {
+        if (this.dialogueLocked) {
+          this.showFeedback(text, "task", FEEDBACK_TASK_UPDATE_MS);
+          return;
+        }
+        if (this.lastFeedbackUntilMs - this.time.now > 120) {
+          schedule();
+          return;
+        }
+        this.emitSubtitle(text, "task", FEEDBACK_TASK_UPDATE_MS);
+      });
+    };
+    schedule();
   }
 
   private removeGateBlocker(): void {
@@ -1152,7 +1350,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
           : state.theaterHunt.phase === "prop_setup"
             ? "票已退回：请拖到道具箱旁发蓝光的票据扫描口框内。"
             : "票已退回：当前阶段没有临时观演票的使用点。"
-        : "松手点没有进入当前阶段的高亮目标。";
+        : "道具没有放到当前阶段对应的真实物体。";
       this.runtime.emit("rpg_item_use_feedback", {
         itemId,
         reason: "missed_target",
@@ -1185,9 +1383,18 @@ export class TheaterInteriorScene extends Phaser.Scene {
         targetLabel,
         detail: itemId === "temporaryTheaterTicket"
           ? result.target.kind === "gate"
-            ? "落点正确；人物还没有站进读票器前的蓝色站位。票已退回。"
-            : "落点正确；人物还没有站进扫描器前的蓝色站位。票已退回。"
+            ? "票已退回；请靠近读票器。"
+            : "票已退回；请靠近扫描器。"
           : undefined
+      });
+      return;
+    }
+    if (result.kind === "wrong_facing") {
+      this.runtime.emit("rpg_item_use_feedback", {
+        itemId,
+        reason: "wrong_facing",
+        targetLabel,
+        detail: `靠近并面向「${targetLabel}」后再操作。`
       });
       return;
     }
@@ -1202,6 +1409,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private openCodePanel(): void {
     if (this.panel) return;
+    this.runtime.emit("rpg_subtitle_clear");
     this.codeInput = "";
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(6200);
     const shade = this.add.rectangle(0, 0, 560, 360, 0x0a0b12, 0.98).setStrokeStyle(4, 0xb18b4b, 0.96);
@@ -1230,7 +1438,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.addPanelButton(panel, 150, 132, 120, 42, "关闭", () => this.closePanel());
     this.panel = panel;
     this.panelKind = "code";
-    this.panelInputReadyAtMs = this.time.now + 90;
+    this.panelOpeningPointerDownTime = this.input.activePointer.isDown
+      ? this.input.activePointer.downTime
+      : -1;
   }
 
   private updateCodeDisplay(): void {
@@ -1240,6 +1450,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private openProgramPanel(): void {
     if (this.panel) return;
+    this.runtime.emit("rpg_subtitle_clear");
     const state = this.runtime.getState();
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(6200);
     const shade = this.add.rectangle(0, 0, 620, 390, 0x0b0b12, 0.98).setStrokeStyle(4, 0xb18b4b, 0.96);
@@ -1273,7 +1484,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.addPanelButton(panel, 205, 92, 120, 42, "关闭", () => this.closePanel());
     this.panel = panel;
     this.panelKind = "program";
-    this.panelInputReadyAtMs = this.time.now + 90;
+    this.panelOpeningPointerDownTime = this.input.activePointer.isDown
+      ? this.input.activePointer.downTime
+      : -1;
   }
 
   private refreshProgramPanel(): void {
@@ -1302,14 +1515,17 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.panel = null;
     this.panelKind = null;
     this.panelButtons = [];
-    this.panelInputReadyAtMs = 0;
+    this.panelOpeningPointerDownTime = -1;
     this.codeDisplay = null;
   }
 
   private handlePanelPointer(pointer: Phaser.Input.Pointer): void {
     const logical = this.getLogicalPointerPosition(pointer);
     if (this.panel) {
-      if (this.time.now < this.panelInputReadyAtMs) return;
+      if (this.panelOpeningPointerDownTime >= 0 && pointer.downTime === this.panelOpeningPointerDownTime) {
+        this.panelOpeningPointerDownTime = -1;
+        return;
+      }
       const localX = logical.x - 480;
       const localY = logical.y - 270;
       const button = [...this.panelButtons].reverse().find((candidate) => (
@@ -1390,13 +1606,15 @@ export class TheaterInteriorScene extends Phaser.Scene {
       onComplete: () => {
         wipe.destroy();
         this.paperBusy = false;
-        this.showFeedback(theaterContent.ticket.posterCleaned, "success");
+        this.showFeedback(theaterContent.ticket.posterCleaned, "success", FEEDBACK_CONFIRM_MS);
+        this.animateTicketCombine();
       }
     });
   }
 
   private animateTicketCombine(): void {
-    if (this.paperBusy) return;
+    if (!this.ticketCombinePending || this.paperBusy) return;
+    this.ticketCombinePending = false;
     this.paperBusy = true;
     const left = this.add.rectangle(430, 270, 80, 52, 0xe7d5a6, 1).setScrollFactor(0).setDepth(6500).setStrokeStyle(3, 0x5f2c32);
     const right = this.add.rectangle(530, 270, 80, 52, 0xdce7ee, 1).setScrollFactor(0).setDepth(6500).setStrokeStyle(3, 0x244d6d);
@@ -1424,15 +1642,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.ticketReaderLight?.setFillStyle(0x64e58d, 1).setStrokeStyle(1, 0xd5ffe0, 1);
     this.ticketInspector?.disableInteractive();
     this.ticketReader?.disableInteractive();
-    if (this.ticketInspectorArm) {
-      this.tweens.add({
-        targets: this.ticketInspectorArm,
-        angle: -16,
-        duration: this.reducedMotion ? 80 : 220,
-        yoyo: true,
-        ease: "Cubic.easeInOut"
-      });
-    }
+    this.ticketInspectorSprite?.setTexture(THEATER_INSPECTOR_SCAN_KEY);
+    this.time.delayedCall(this.reducedMotion ? 160 : 900, () => {
+      this.ticketInspectorSprite?.setTexture(THEATER_INSPECTOR_IDLE_KEY);
+    });
     this.removeGateBlocker();
     this.dialogueLocked = true;
     this.queueDialogue(theaterContent.ticket.admissionDialogue, () => {
@@ -1442,6 +1655,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         this.player.setPosition(THEATER_AUDITORIUM_SPAWN.x, THEATER_AUDITORIUM_SPAWN.y);
         this.cameras.main.centerOn(this.player.x, this.player.y).fadeIn(transitionMs, 8, 6, 10);
         this.dialogueLocked = false;
+        this.flushPendingFeedback();
       });
     });
   }
@@ -1450,7 +1664,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const visual = this.programVisuals.get(programId);
     if (!visual) return;
     this.paperBusy = true;
-    this.showFeedback(theaterContent.program.ordinary, "system");
+    this.showFeedback(theaterContent.program.ordinary, "system", FEEDBACK_CONFIRM_MS);
     this.tweens.add({
       targets: visual.container,
       y: visual.container.y - 30,
@@ -1467,7 +1681,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private animatePropBoxOpened(): void {
     this.paperBusy = true;
-    this.showFeedback(theaterContent.prop.scannerAccepted, "success");
+    this.showFeedback(theaterContent.prop.scannerAccepted, "success", FEEDBACK_CONFIRM_MS);
     const glow = this.add.circle(292, 170, 58, 0x8df0ff, 0.28).setDepth(2100).setStrokeStyle(4, 0xbaf8ff, 0.92);
     this.tweens.add({
       targets: glow,
@@ -1502,7 +1716,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     });
     this.time.delayedCall(this.reducedMotion ? 140 : 650, () => {
       this.paperBusy = false;
-      this.showFeedback(theaterContent.prop.ventComplete, "success");
+      this.showFeedback(theaterContent.prop.ventComplete, "success", FEEDBACK_CONFIRM_MS);
     });
   }
 
@@ -1510,6 +1724,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.destroySpotlightPanel();
     const state = this.runtime.getState();
     if (state.theaterHunt.phase !== "spotlight_hunt") return;
+    this.runtime.emit("rpg_subtitle_clear");
     const round = state.theaterHunt.spotlightRound;
     const config = THEATER_SPOTLIGHT_ROUNDS[round];
     if (!config) return;
@@ -1665,9 +1880,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return dot;
     });
     const start = path.getPoint(0);
-    this.spotlightPaper = this.add.image(start.x, start.y, THEATER_PAPER_KEY)
-      .setTint(0x90efff)
-      .setAlpha(0.88);
+    this.spotlightPaper = this.add.image(start.x, start.y, THEATER_PAPER_RESIDUAL_KEY)
+      .setAlpha(0.94);
     panel.add(this.spotlightPaper);
     if (!this.reducedMotion) {
       this.spotlightVisualTweens.push(this.tweens.add({
@@ -1683,17 +1897,20 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (config.decoyPathPoints) {
       const decoyPath = this.createSpotlightSpline(config.decoyPathPoints);
       const decoyStart = decoyPath.getPoint(0);
-      this.spotlightDecoyPaper = this.add.image(decoyStart.x, decoyStart.y, THEATER_PAPER_KEY)
-        .setTint(0x6c8290)
+      this.spotlightDecoyPaper = this.add.image(decoyStart.x, decoyStart.y, THEATER_PAPER_ESCAPE_KEY)
         .setAlpha(0.42);
       panel.add(this.spotlightDecoyPaper);
     }
     this.spotlightBeam = this.add.graphics();
+    this.spotlightBeamArt = this.add.image(0, -22, THEATER_SPOTLIGHT_BEAM_ART_KEY)
+      .setScale(0.78)
+      .setAlpha(0.2)
+      .setVisible(false);
     this.spotlightAimRing = this.add.circle(0, 90, config.beamRadius, 0xffdf73, 0.06)
       .setStrokeStyle(4, 0xffe999, 0.58)
       .setVisible(false);
     this.spotlightAimMarker = this.add.circle(0, 90, 5, 0xfff2aa, 0.94).setVisible(false);
-    panel.add(this.spotlightBeam);
+    panel.add([this.spotlightBeam, this.spotlightBeamArt]);
     panel.add([this.spotlightAimRing, this.spotlightAimMarker]);
     trailDots.forEach((dot) => panel.bringToTop(dot));
     panel.bringToTop(this.spotlightPaper);
@@ -1741,7 +1958,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 预置`);
     this.spotlightStatus?.setText("预置追光灯").setColor("#ffe49a");
     this.spotlightControlHint?.setText("拖动下方滑轨，或按 ← / → 移动。").setColor("#fff3bd");
-    this.spotlightPaper?.setVisible(false);
+    this.spotlightPaper?.setTexture(THEATER_PAPER_FLUORESCENT_KEY).setVisible(false).clearTint();
     this.spotlightDecoyPaper?.setVisible(false);
     this.spotlightPathPreview?.setVisible(false);
     this.spotlightAimRing?.setVisible(true);
@@ -1769,7 +1986,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightBeamActivated = false;
     this.spotlightStatus?.setText(theaterContent.spotlight.choose).setColor("#ffe49a");
     this.spotlightControlHint?.setText(theaterContent.spotlight.controlHint).setColor("#fff3bd");
-    this.spotlightPaper?.setVisible(true);
+    this.spotlightPaper?.setTexture(THEATER_PAPER_FLUORESCENT_KEY).setVisible(true).clearTint();
     this.spotlightDecoyPaper?.setVisible(Boolean(THEATER_SPOTLIGHT_ROUNDS[round]?.decoyPathPoints));
   }
 
@@ -1897,6 +2114,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightBeam?.clear();
     if (!this.spotlightBeam) return;
     const activeAlpha = this.spotlightBeamActive ? 0.3 : 0.06;
+    this.spotlightBeamArt
+      ?.setPosition(this.spotlightAimX, -22)
+      .setVisible(["ready", "tracking"].includes(this.spotlightStage))
+      .setAlpha(this.spotlightBeamActive ? 0.84 : 0.18);
     this.spotlightBeam
       .fillStyle(0xffe89a, activeAlpha)
       .fillTriangle(this.spotlightAimX - 15, -105, this.spotlightAimX + 15, -105, this.spotlightAimX + radius, 90)
@@ -1911,6 +2132,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private resetSpotlightBeamVisual(): void {
     this.spotlightBeam?.clear();
+    this.spotlightBeamArt?.setVisible(false);
     this.spotlightAimRing
       ?.setFillStyle(0xffdf73, 0.06)
       .setStrokeStyle(3, 0xffeb9c, 0.58);
@@ -1960,6 +2182,26 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (this.spotlightPanel) {
       const originX = this.spotlightPaper?.x ?? this.spotlightAimX;
       const originY = this.spotlightPaper?.y ?? 90;
+      this.spotlightPaper?.setTexture(THEATER_PAPER_LOCKED_KEY).clearTint();
+      const hitRingArt = this.add.image(originX, originY, THEATER_SPOTLIGHT_HIT_RING_KEY).setScale(0.42);
+      const sparkArt = this.add.image(originX, originY, THEATER_SPOTLIGHT_SPARKS_KEY).setScale(0.4);
+      this.spotlightPanel.add([hitRingArt, sparkArt]);
+      this.spotlightVisualTweens.push(this.tweens.add({
+        targets: hitRingArt,
+        scale: 0.92,
+        alpha: 0,
+        duration: this.reducedMotion ? 100 : 460,
+        ease: "Cubic.easeOut",
+        onComplete: () => hitRingArt.destroy()
+      }));
+      this.spotlightVisualTweens.push(this.tweens.add({
+        targets: sparkArt,
+        scale: 0.68,
+        alpha: 0,
+        duration: this.reducedMotion ? 100 : 540,
+        ease: "Cubic.easeOut",
+        onComplete: () => sparkArt.destroy()
+      }));
       for (let index = 0; index < 3; index += 1) {
         const ring = this.add.circle(originX, originY, 18 + index * 8, 0xffe68a, 0)
           .setStrokeStyle(4 - index, index === 0 ? 0xffffff : 0xffdf73, 0.92);
@@ -2011,6 +2253,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightStatus?.setText(`${theaterContent.spotlight.miss}\n${failureHint}`).setColor("#ff9f9f");
     this.spotlightControlHint?.setText("保持已完成轮次，重新观察本轮。").setColor("#bcefff");
     if (this.spotlightPanel) {
+      const faultArt = this.add.image(0, 60, THEATER_SPOTLIGHT_FAULT_KEY).setScale(0.72);
+      this.spotlightPanel.add(faultArt);
+      this.spotlightVisualTweens.push(this.tweens.add({
+        targets: faultArt,
+        x: 48,
+        alpha: 0,
+        duration: this.reducedMotion ? 90 : 620,
+        ease: "Cubic.easeOut",
+        onComplete: () => faultArt.destroy()
+      }));
       for (let index = 0; index < 5; index += 1) {
         const strip = this.add.rectangle(-300 + index * 150, -80 + index * 37, 96, 8, index % 2 === 0 ? 0xe65867 : 0x65dbe8, 0.72);
         this.spotlightPanel.add(strip);
@@ -2045,7 +2297,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.spotlightStatus = this.add.text(0, -150, theaterContent.spotlight.reversal, {
         color: "#ffadb5", fontFamily: "monospace", fontSize: "19px"
       }).setOrigin(0.5);
-      this.spotlightPaper = this.add.image(0, 20, THEATER_PAPER_KEY).setScale(1.65).setTint(0xffe8d0);
+      this.spotlightPaper = this.add.image(0, 20, THEATER_PAPER_LOCKED_KEY).setScale(1.65);
       panel.add([this.spotlightStatus, this.spotlightPaper]);
       this.spotlightPanel = panel;
     }
@@ -2061,10 +2313,22 @@ export class TheaterInteriorScene extends Phaser.Scene {
       .lineBetween(480, 287, 498, 280)
       .lineBetween(482, 301, 500, 311);
     if (paper) {
-      paper.setVisible(true).setTint(0xffe8d0).setScale(1.65).setAlpha(1).setPosition(0, 20);
+      paper.setTexture(THEATER_PAPER_LOCKED_KEY).setVisible(true).clearTint().setScale(1.65).setAlpha(1).setPosition(0, 20);
+      this.scheduleSpotlight(220, () => paper.setTexture(THEATER_PAPER_CRACKED_KEY));
       this.scheduleSpotlight(370, () => {
         cracks.destroy();
         paper.setVisible(false);
+        const fragmentsArt = this.add.image(480, 290, THEATER_PAPER_FRAGMENTS_KEY)
+          .setScrollFactor(0)
+          .setDepth(7100)
+          .setScale(1.4);
+        this.tweens.add({
+          targets: fragmentsArt,
+          scale: 2,
+          alpha: 0,
+          duration: this.reducedMotion ? 120 : 420,
+          onComplete: () => fragmentsArt.destroy()
+        });
         for (let index = 0; index < 8; index += 1) {
           const shard = this.add.rectangle(480, 290, 12 + index % 3 * 4, 8, 0xe7dbc8, 1)
             .setScrollFactor(0)
@@ -2083,10 +2347,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
       });
     }
     this.scheduleSpotlight(770, () => {
-      const shadow = this.add.image(390, 310, THEATER_PAPER_KEY)
+      const shadow = this.add.image(390, 310, THEATER_PAPER_ESCAPE_KEY)
         .setScrollFactor(0)
         .setDepth(7050)
-        .setTint(0x243344)
         .setAlpha(0.74);
       this.tweens.add({
         targets: shadow,
@@ -2120,6 +2383,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightDecoyPaper = null;
     this.spotlightPathPreview = null;
     this.spotlightBeam = null;
+    this.spotlightBeamArt = null;
     this.spotlightAimRing = null;
     this.spotlightAimMarker = null;
     this.spotlightFireButton = null;
@@ -2141,30 +2405,61 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private queueDialogue(lines: readonly string[], onComplete?: () => void): void {
     this.dialogueLocked = true;
     lines.forEach((text, index) => {
-      this.time.delayedCall(index * DIALOGUE_STEP_MS, () => this.showFeedback(text, this.dialogueToneFor(text)));
+      this.time.delayedCall(index * DIALOGUE_STEP_MS, () => {
+        this.emitSubtitle(text, this.dialogueToneFor(text), DIALOGUE_STEP_MS - 120, this.dialogueSpeakerFor(text));
+      });
     });
     this.time.delayedCall(lines.length * DIALOGUE_STEP_MS, () => {
       this.dialogueLocked = false;
       onComplete?.();
+      this.flushPendingFeedback();
     });
   }
 
   private dialogueToneFor(text: string): GameSubtitleTone {
     if (text.startsWith("玩家：")) return "player";
-    if (text.startsWith("系统：")) return "system";
+    if (text.startsWith("系统：") || text.startsWith("手机系统：")) return "system";
     if (text.startsWith("任务：")) return "task";
     return "narrator";
   }
 
-  private showFeedback(text: string, tone: GameSubtitleTone): void {
-    this.runtime.emit("rpg_subtitle", { text, tone, durationMs: DIALOGUE_STEP_MS - 120 });
+  private dialogueSpeakerFor(text: string): string | undefined {
+    return THEATER_DIALOGUE_SPEAKERS.find((name) => text.startsWith(`${name}：`));
+  }
+
+  private showFeedback(text: string, tone: GameSubtitleTone, durationMs = FEEDBACK_GUIDANCE_MS): void {
+    // Feedback arriving while a queued dialogue plays is held back so it cannot
+    // overwrite the current line; it is flushed once the dialogue finishes.
+    if (this.dialogueLocked) {
+      this.pendingFeedback.push({ text, tone, durationMs, speaker: this.dialogueSpeakerFor(text) });
+      return;
+    }
+    this.emitSubtitle(text, tone, durationMs, this.dialogueSpeakerFor(text));
+  }
+
+  private emitSubtitle(text: string, tone: GameSubtitleTone, durationMs: number, speaker?: string): void {
+    this.lastFeedbackUntilMs = this.time.now + durationMs;
+    const visibleText = speaker && text.startsWith(`${speaker}：`)
+      ? text.slice(speaker.length + 1).trimStart()
+      : text;
+    this.runtime.emit("rpg_subtitle", { text: visibleText, tone, durationMs, ...(speaker ? { speaker } : {}) });
+  }
+
+  private flushPendingFeedback(): void {
+    if (this.dialogueLocked || this.pendingFeedback.length === 0) return;
+    const pending = this.pendingFeedback.splice(0);
+    let offsetMs = 0;
+    pending.forEach((entry) => {
+      this.time.delayedCall(offsetMs, () => this.emitSubtitle(entry.text, entry.tone, entry.durationMs, entry.speaker));
+      offsetMs += entry.durationMs;
+    });
   }
 
   private publishDebugState(target: TheaterInteractionTarget | null, state: GameState): void {
     const spotlightConfig = THEATER_SPOTLIGHT_ROUNDS[state.theaterHunt.spotlightRound];
     const spotlightAssist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
     const activeTicketGuide = Array.from(this.ticketDropGuides.values())
-      .find((guide) => guide.dropFrame.visible);
+      .find((guide) => guide.targetOutline.visible);
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: THEATER_INTERIOR_WORLD,
@@ -2172,6 +2467,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         x: Math.round(this.player.x),
         y: Math.round(this.player.y),
         facing: this.playerAnimator.facing,
+        cardinalFacing: this.playerAnimator.cardinalFacing,
         texture: this.playerAnimator.textureKey,
         turning: this.playerAnimator.isTurning,
         walkFps: RPG_PLAYER_WALK_FPS,
@@ -2198,7 +2494,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
         stand: candidate.stand,
         proximity: candidate.proximity,
         acceptedItem: candidate.acceptedItem,
-        requiredMode: candidate.requiredMode
+        requiredMode: candidate.requiredMode,
+        requiredFacing: candidate.requiredFacing
       })),
       collisionRects: [
         ...THEATER_STATIC_COLLISION_RECTS,
@@ -2211,15 +2508,19 @@ export class TheaterInteriorScene extends Phaser.Scene {
         activeTarget: target?.id ?? null,
         panel: this.panelKind,
         spotlightChoiceOpen: this.spotlightChoiceOpen,
-        ticketDropGuide: activeTicketGuide && activeTicketGuide.target.stand
+        ticketDropGuide: activeTicketGuide
           ? {
               targetId: activeTicketGuide.target.id,
               targetLabel: theaterDropTargetLabel(activeTicketGuide.target.kind),
               visible: true,
-              playerInPosition: Boolean(
-                findNearestTheaterTarget(this.player.x, this.player.y, [activeTicketGuide.target])
+              playerReady: isPlayerReadyForRpgTarget(
+                activeTicketGuide.target,
+                this.player.x,
+                this.player.y,
+                this.playerAnimator.cardinalFacing
               ),
-              stand: activeTicketGuide.target.stand,
+              maxDistance: activeTicketGuide.target.proximity,
+              requiredFacing: activeTicketGuide.target.requiredFacing ?? "toward_target",
               dropBounds: {
                 x: activeTicketGuide.target.x,
                 y: activeTicketGuide.target.y,

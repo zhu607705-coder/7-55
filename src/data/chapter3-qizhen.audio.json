@@ -68,6 +68,37 @@
         { "channel": "sfx", "asset": "fx_qizhen_paper_release", "offsetMs": 180, "playbackRate": 1.08, "volume": 0.72 }
       ]
     },
+    "qizhen_fishing_started": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "music", "asset": "music_qizhen_mist", "action": "play", "offsetMs": 10, "volume": 0.2, "loop": false }
+      ]
+    },
+    "qizhen_fishing_warning": {
+      "cues": [
+        { "channel": "sfx", "asset": "fx_qizhen_mist_wrong", "playbackRate": 0.92, "volume": 0.34 }
+      ]
+    },
+    "qizhen_fishing_completed": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "sfx", "asset": "fx_qizhen_reflection_shimmer", "playbackRate": 1.12, "volume": 0.5 },
+        { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "offsetMs": 40, "volume": 0.17, "loop": true }
+      ]
+    },
+    "qizhen_fishing_failed": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "sfx", "asset": "fx_qizhen_reflection_miss", "playbackRate": 0.9, "volume": 0.44 },
+        { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "offsetMs": 40, "volume": 0.17, "loop": true }
+      ]
+    },
+    "qizhen_fishing_cancelled": {
+      "cues": [
+        { "channel": "music", "action": "stop" },
+        { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "offsetMs": 40, "volume": 0.17, "loop": true }
+      ]
+    },
     "qizhen_lake_left": {
       "cues": [
         { "channel": "music", "action": "stop" },

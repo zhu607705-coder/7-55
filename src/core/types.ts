@@ -339,6 +339,11 @@ export interface QizhenLakeState {
   chaseAttempts: number;
   magneticAttachmentBroken: boolean;
   transitionReady: boolean;
+  // Photo-journal record for the CC98 rowing thread. Kayak speed, roll, and
+  // camera-open state stay runtime-only; only the journal facts below persist.
+  journal: QizhenJournalState;
+  dockCollisionCount: number;
+  swanAlertLevel: number;
   // v13 compatibility fields. SaveStore reads them once when upgrading old
   // lake saves; the kayak runtime does not use them as progression authority.
   reflectionRound: number;
@@ -350,6 +355,61 @@ export interface QizhenLakeState {
   mistRhythmRead: boolean;
   mistAttempts: number;
   paperReleased: boolean;
+}
+
+export type QizhenJournalStatus = "locked" | "capture_ready" | "main_draft" | "open" | "summary_ready" | "archived";
+export type QizhenPhotoSpotId = "lake_center" | "dock" | "reflection" | "swan_cove";
+// Photo tags recorded at capture time. "swan_aftermath" is the empty-enclosure
+// shot after the swan has left; "composition_ok" only applies when both speed
+// and roll are inside the thresholds in QizhenJournalModel.
+export type QizhenPhotoTag =
+  | "composition_ok"
+  | "tilted"
+  | "high_speed"
+  | "ripple_clear"
+  | "ripple_broken"
+  | "swan_near"
+  | "swan_far"
+  | "swan_aftermath";
+export interface QizhenPhotoRecipe {
+  zone: QizhenLakeZone;
+  cropCenterX: number; cropCenterY: number;
+  zoomStep: 0 | 1 | 2;
+  kayakX: number; kayakY: number;
+  headingBucket: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  swanDistanceBucket?: "near" | "mid" | "far" | "gone";
+  rippleClarityBucket?: "clear" | "partial" | "lost";
+}
+export interface QizhenPhotoRecord {
+  id: string;
+  spotId: QizhenPhotoSpotId;
+  capturedAtSeconds: number;
+  tags: QizhenPhotoTag[];
+  recipe: QizhenPhotoRecipe;
+}
+export interface QizhenJournalDraft {
+  id: string;
+  kind: "main" | "spot";
+  photo: QizhenPhotoRecord;
+  titleId: string | null;   // main 用
+  statusId: string | null;  // main 用
+  captionId: string | null; // spot 用
+}
+export interface QizhenJournalState {
+  status: QizhenJournalStatus;
+  threadId: string;
+  threadSeed: number;
+  mainPhoto: QizhenPhotoRecord | null;
+  optionalPhotos: Partial<Record<"dock" | "reflection" | "swan_cove", QizhenPhotoRecord>>;
+  mainTitleId: string | null;
+  mainStatusId: string | null;
+  publishedSpotIds: QizhenPhotoSpotId[];
+  pendingDraft: QizhenJournalDraft | null;
+  summaryChoice: "safe_return" | "details_withheld" | null;
+  summaryPublished: boolean;
+  fishingAssistUnlocked: boolean;
+  fishingAssistConsumed: boolean;
+  memoryCardUnlocked: boolean;
 }
 
 export type ClockCalibrationPhase = "tampered" | "calibrating" | "release_ready" | "aligned";

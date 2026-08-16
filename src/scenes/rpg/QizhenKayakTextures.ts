@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import type { QizhenPaddleDirection } from "../../core/types";
 import kayakFrameAUrl from "../../assets/rpg/qizhen/kayak_overhead_frame_a.png";
 import kayakFrameBUrl from "../../assets/rpg/qizhen/kayak_overhead_frame_b.png";
+import { preloadRpgImages } from "./RpgAssetLoader";
 
 export type QizhenPaddleSide = "left" | "right";
 
@@ -18,13 +19,13 @@ const KAYAK_FRAME_A_KEY = "qizhen-kayak-overhead-a";
 const KAYAK_FRAME_B_KEY = "qizhen-kayak-overhead-b";
 const KAYAK_DISPLAY_SCALE = 0.52;
 
+const KAYAK_TEXTURE_ASSETS = Object.freeze([
+  [KAYAK_FRAME_A_KEY, kayakFrameAUrl],
+  [KAYAK_FRAME_B_KEY, kayakFrameBUrl]
+] as const);
+
 export function preloadQizhenKayakTextures(scene: Phaser.Scene): void {
-  if (!scene.textures.exists(KAYAK_FRAME_A_KEY)) {
-    scene.load.image(KAYAK_FRAME_A_KEY, kayakFrameAUrl);
-  }
-  if (!scene.textures.exists(KAYAK_FRAME_B_KEY)) {
-    scene.load.image(KAYAK_FRAME_B_KEY, kayakFrameBUrl);
-  }
+  preloadRpgImages(scene, KAYAK_TEXTURE_ASSETS);
 }
 
 /**

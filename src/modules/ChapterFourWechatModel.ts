@@ -74,8 +74,8 @@ export function selectChapterFourWechatObjective(
     if (!projection.officialNoticeRead) {
       return {
         id: "official_notice",
-        label: "查看紫金港楼宇服务的夜间运行通知",
-        hint: "打开微信中的“紫金港楼宇服务”公众号，保存段永平教学楼夜间运行提醒。"
+        label: "查看校园后勤服务的夜间运行通知",
+        hint: "打开微信中的“校园后勤服务”公众号，保存段永平教学楼夜间运行提醒。"
       };
     }
     if (state.elevatorHistoryObserved && !projection.elevatorAudioArchived) {

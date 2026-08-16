@@ -32,7 +32,7 @@
     },
     {
       "id": "finale_1f_lobby_maxwell",
-      "title": "一楼门厅与麦斯威",
+      "title": "一楼门厅与迈斯威",
       "file": "finale_1f_lobby_maxwell.png",
       "projection": "top_down_orthographic",
       "temporalCellId": "cell_floor1_maxwell",
@@ -158,11 +158,11 @@
     },
     {
       "id": "teaching_building_floor_1",
-      "title": "教学楼 1F · 麦斯威与校友廊",
+      "title": "教学楼 1F · 麦思威与校友廊",
       "file": "teaching_building_floor_1.png",
       "projection": "top_down_orthographic",
       "temporalCellId": "cell_teaching_floor_1",
-      "purpose": "作为三层拼接教学楼的一楼底图，承载主入口、麦斯威面包坊餐厅、104/105 教室门厅和校友头像长廊。",
+      "purpose": "作为三层拼接教学楼的一楼底图，承载主入口、麦思威面包坊餐厅、104/105 教室门厅和校友头像长廊。",
       "dynamicLayers": [
         "player",
         "elevator_selection",

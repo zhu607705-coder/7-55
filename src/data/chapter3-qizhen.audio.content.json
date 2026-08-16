@@ -35,6 +35,24 @@
       "mood": "tense, precise, playful",
       "instruments": "soft electronic pulse, muted percussion, airy synth, tiny bell accents",
       "bpm": 96
+    },
+    {
+      "cue": "qizhen.fishing",
+      "asset": "music_qizhen_fishing",
+      "path": "chapter3-qizhen/music/music_qizhen_fishing.mp3",
+      "durationSeconds": 20,
+      "prompt": "Immediate-start modular rhythm-fishing cue for a top-down pixel RPG at a university lake, exactly 20.0 seconds, strict 96 BPM, 4/4, eight bars, D Dorian. A clear quarter-note pulse begins immediately. Clean musical landing points at exactly 10.0 seconds, 15.0 seconds, and 20.0 seconds. Bars 1 to 4 are calm and instructional, bars 5 to 6 add tighter reeling tension, bars 7 to 8 build toward a magnetic paper catch and end cleanly. Use a hidden 7-note, 5-note, 5-note melodic phrase structure without disrupting the clear 4/4 pulse.",
+      "genre": "minimal rhythm fishing pixel game soundtrack",
+      "mood": "calm, precise, lightly tense, playful",
+      "instruments": "dry wooden fishing reel clicks, muted marimba, glass droplets, soft plucked strings, low sine bass, restrained airy synth",
+      "bpm": 96,
+      "key": "D Dorian",
+      "avoid": "vocals, rubato, tempo drift, pickup, fade-in, fade-out, cinematic drums, dense lead melody, long reverb tail",
+      "useCase": "strictly timed in-scene rhythm fishing for a top-down pixel RPG lake sequence",
+      "structure": "exactly eight bars in 4/4 at 96 BPM, immediate quarter-note pulse, clean harmonic landings at bars 4, 6 and 8, hard clean ending at 20 seconds",
+      "extra": "The first audio sample must contain the pulse. Keep the tempo grid rigid and leave space for procedural input feedback.",
+      "trimLeadingSilence": true,
+      "noFade": true
     }
   ],
   "sfx": [

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type { GameState } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
@@ -35,6 +36,16 @@ const MAX_RENDER_SCALE = 3;
 const CORRIDOR_LEFT = QIZHEN_LOOP_RUNTIME.theater.approach.x - 260;
 const CORRIDOR_RIGHT = QIZHEN_LOOP_RUNTIME.qizhen.gate.x + 250;
 const PATH_DOT_RADIUS = 7;
+// 过渡字幕时长分档(对齐食堂 queueDialogue):叙述短句 2400、对白句 2800、任务/指引类 4200,逐句间隔 120ms。
+const TRANSITION_NARRATOR_MS = 2400;
+const TRANSITION_DIALOGUE_MS = 2800;
+const TRANSITION_GUIDANCE_MS = 4200;
+const TRANSITION_SUBTITLE_GAP_MS = 120;
+// 启真湖入口文案:本场景不设独立 content.json,措辞沿用 chapter3-qizhen-lake locationSearch 的对话与任务提示。
+const GATE_ENTRY_LABEL = "启真湖入口";
+const GATE_LOCKED_PROMPT_LABEL = "查看入口";
+const GATE_LOCKED_FEEDBACK = "系统：还没确认湿纸指向的地点。先核对论坛、馆藏记录和地图线索。";
+const GATE_UNLOCKED_NOTICE = "任务更新：沿湖岸向东，前往启真湖入口。";
 
 export class QizhenLoopScene extends Phaser.Scene {
   private bridge!: RpgBridge;
@@ -58,6 +69,7 @@ export class QizhenLoopScene extends Phaser.Scene {
   private transitionTrail: Phaser.GameObjects.Ellipse[] = [];
   private gateMarker!: Phaser.GameObjects.Arc;
   private gatePrompt!: Phaser.GameObjects.Text;
+  private gateUnlockedAnnounced = false;
 
   constructor() {
     super("campus-qizhen-loop");
@@ -127,6 +139,7 @@ export class QizhenLoopScene extends Phaser.Scene {
     this.cameraController.onWorldTap = (worldX, worldY) => this.handleWorldTap(worldX, worldY);
 
     this.createQizhenGate();
+    this.gateUnlockedAnnounced = false;
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
       if (event.name === "rpg_direction_changed") {
         this.virtualDirection = { x: Number(event.payload?.x) || 0, y: Number(event.payload?.y) || 0 };
@@ -193,7 +206,7 @@ export class QizhenLoopScene extends Phaser.Scene {
     this.gatePrompt = this.add.text(
       gate.x,
       gate.y - 56,
-      `启真湖入口  ·  ${formatRpgInteractionHint("进入启真湖")}`,
+      `${GATE_ENTRY_LABEL}  ·  ${formatRpgInteractionHint("进入启真湖")}`,
       {
         color: "#effff8",
         backgroundColor: "#0d2930ee",
@@ -215,14 +228,35 @@ export class QizhenLoopScene extends Phaser.Scene {
   }
 
   private updateQizhenGate(state: GameState): void {
-    const available = state.qizhenLake.active && !["inactive", "location_search"].includes(state.qizhenLake.phase);
+    const phase = state.qizhenLake.phase;
+    const active = state.qizhenLake.active && phase !== "inactive";
+    const available = active && phase !== "location_search";
     const gate = QIZHEN_LOOP_RUNTIME.qizhen.gate;
-    const nearby = available && Phaser.Math.Distance.Between(this.player.x, this.player.y, gate.x, gate.y) <= gate.radius;
-    this.gateMarker.setVisible(available);
+    const nearby = active && Phaser.Math.Distance.Between(this.player.x, this.player.y, gate.x, gate.y) <= gate.radius;
+    if (available && !this.gateUnlockedAnnounced) {
+      this.gateUnlockedAnnounced = true;
+      if (phase === "lake_unlocked") {
+        this.showFeedback(GATE_UNLOCKED_NOTICE, "task", TRANSITION_GUIDANCE_MS);
+      }
+    }
+    // 地点确认期间 marker 常显但压暗:既给出「去启真湖」的方向,又表明入口暂未开放。
+    this.gateMarker
+      .setVisible(active)
+      .setFillStyle(0x1c8297, available ? 0.24 : 0.1)
+      .setStrokeStyle(5, available ? 0xa5e6d5 : 0x5f8f86, available ? 0.96 : 0.62);
     this.gatePrompt.setVisible(nearby);
+    if (nearby) {
+      this.gatePrompt.setText(available
+        ? `${GATE_ENTRY_LABEL}  ·  ${formatRpgInteractionHint("进入启真湖")}`
+        : `${GATE_ENTRY_LABEL}  ·  ${formatRpgInteractionHint(GATE_LOCKED_PROMPT_LABEL)}`);
+    }
     if (nearby && (Phaser.Input.Keyboard.JustDown(this.cursors.space) || this.interactRequested)) {
-      this.bridge.setCheckpoint("campus_qizhen_gate");
-      this.bridge.emit("rpg_qizhen_entry_requested");
+      if (available) {
+        this.bridge.setCheckpoint("campus_qizhen_gate");
+        this.bridge.emit("rpg_qizhen_entry_requested");
+      } else {
+        this.showFeedback(GATE_LOCKED_FEEDBACK, this.dialogueToneFor(GATE_LOCKED_FEEDBACK), TRANSITION_GUIDANCE_MS);
+      }
     }
   }
 
@@ -295,23 +329,43 @@ export class QizhenLoopScene extends Phaser.Scene {
     });
     this.movePlayerThroughTransition(0);
 
-    content.visualBeats.forEach((text, index) => {
-      this.time.delayedCall([0, 2250, 5000][index] ?? index * 1800, () => {
-        this.bridge.emit("rpg_subtitle", { text, tone: "narrator", durationMs: index === 2 ? 1800 : 1500 });
-      });
-    });
-    content.dialogueAtMs.forEach((atMs, index) => {
-      const text = qizhenContent.locationSearch.dialogue[index];
-      if (!text) return;
-      this.time.delayedCall(atMs, () => {
-        this.bridge.emit("rpg_subtitle", {
-          text,
-          tone: text.startsWith("玩家：") ? "player" : "system",
-          durationMs: 1980
-        });
-      });
-    });
+    this.queueTransitionSubtitles(content.visualBeats, qizhenContent.locationSearch.dialogue);
     this.time.delayedCall(content.completeAtMs, () => this.finishApproachTransition());
+  }
+
+  // 剧场→启真湖过渡字幕:queueDialogue 式逐句步进,前一句展示完整时长后再出下一句。
+  private queueTransitionSubtitles(
+    visualBeats: readonly string[],
+    dialogue: readonly string[]
+  ): void {
+    const lines: Array<{ text: string; durationMs: number }> = [];
+    visualBeats.forEach((text, index) => {
+      lines.push({ text, durationMs: TRANSITION_NARRATOR_MS });
+      const reply = dialogue[index];
+      if (reply) lines.push({ text: reply, durationMs: TRANSITION_DIALOGUE_MS });
+    });
+    // 末尾多出的对白是下一步行动指引,按任务/线索类时长展示。
+    dialogue.slice(visualBeats.length).forEach((text) => {
+      lines.push({ text, durationMs: TRANSITION_GUIDANCE_MS });
+    });
+    let atMs = 0;
+    lines.forEach((line) => {
+      this.time.delayedCall(atMs, () => {
+        this.showFeedback(line.text, this.dialogueToneFor(line.text), line.durationMs);
+      });
+      atMs += line.durationMs + TRANSITION_SUBTITLE_GAP_MS;
+    });
+  }
+
+  private dialogueToneFor(text: string): GameSubtitleTone {
+    if (text.startsWith("玩家：")) return "player";
+    if (text.startsWith("系统：")) return "system";
+    if (text.startsWith("任务：")) return "task";
+    return "narrator";
+  }
+
+  private showFeedback(text: string, tone: GameSubtitleTone, durationMs: number): void {
+    this.bridge.emit("rpg_subtitle", { text, tone, durationMs });
   }
 
   private movePlayerThroughTransition(index: number): void {

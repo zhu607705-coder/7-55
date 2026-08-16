@@ -50,10 +50,13 @@ export default defineConfig(({ mode }) => {
   const isSingleFileDemo = isDemo || isCampusMapDemo;
 
   return {
+    // The active browser build owns every shipped asset through explicit imports.
+    // `public/` only contains the retired Godot web export, so copying it into a
+    // normal Vite build adds roughly 58 MB without an active runtime consumer.
+    publicDir: false,
     ...(isSingleFileDemo
       ? {
           base: "./",
-          publicDir: false,
           plugins: [react(), viteSingleFile({ removeViteModuleLoader: true }), moveSingleFileRuntimeAfterShell()],
           build: {
             outDir: "demo",

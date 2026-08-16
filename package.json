@@ -12,10 +12,7 @@
     "verify:single": "node scripts/verify-single-file-build.mjs",
     "dev:library-shelf": "vite --host 0.0.0.0 --open library-shelf-debug.html",
     "dev:canteen-chase": "vite --host 0.0.0.0 --open canteen-chase-debug.html",
-    "godot:sync": "node scripts/sync-godot-rpg-assets.mjs",
-    "godot:check": "npm run godot:sync && node scripts/verify-godot-project.mjs",
-    "godot:import": "\"${GODOT_BIN:-$HOME/Downloads/Godot.app/Contents/MacOS/Godot}\" --headless --path godot --import",
-    "godot:export:web": "npm run godot:sync && \"${GODOT_BIN:-$HOME/Downloads/Godot.app/Contents/MacOS/Godot}\" --headless --path godot --export-release Web ../public/godot/theater/index.html && node scripts/record-godot-web-export.mjs && node scripts/verify-godot-project.mjs",
+    "art:theater": "node scripts/build-theater-art-assets.mjs",
     "build:campus-map-demo": "tsc --noEmit && vite build --mode campus-demo",
     "verify:campus-map-demo": "node scripts/verify-single-file-build.mjs campus-map-demo.html",
     "map:zijingang": "node scripts/verify-zijingang-topdown-campus.mjs && node scripts/verify-zijingang-campus-panorama.mjs && npm run verify:rpg-player",
@@ -32,7 +29,13 @@
     "map:zijingang:split": "python3 scripts/split-zijingang-campus-sectors.py",
     "map:zijingang:stitch": "python3 scripts/stitch-zijingang-campus-sectors.py",
     "verify:rpg-player": "node scripts/verify-rpg-player-frames.mjs",
+    "chapter4:validate-topology": "node scripts/verify-chapter4-temporal-maze.mjs",
+    "chapter4:validate-stair-materials": "node scripts/verify-chapter4-stair-materials.mjs",
+    "qizhen:validate-journal": "node scripts/verify-qizhen-journal.mjs",
     "art:canteen-push-cart": "python3 scripts/build-canteen-push-cart-frames.py",
+    "art:finale-npcs": "node scripts/build-finale-npc-atlases.mjs",
+    "art:finale-environments": "node scripts/build-finale-environment-manifest.mjs",
+    "art:chapter4-prologue": "node scripts/build-chapter4-prologue-pixel-plates.mjs",
     "art:zijingang": "npm run art:zijingang:landmarks && npm run art:zijingang:environment && npm run art:zijingang:bridge && npm run art:zijingang:terrain",
     "art:zijingang:landmarks": "node scripts/process-zijingang-landmarks.mjs",
     "art:zijingang:environment": "node scripts/process-zijingang-environment-atlas.mjs",
@@ -44,13 +47,14 @@
     "audio:chapter3-canteen": "node scripts/generate-chapter3-canteen-audio.mjs",
     "audio:chapter3-theater": "node scripts/generate-chapter3-theater-audio.mjs",
     "audio:chapter3-qizhen": "node scripts/generate-chapter3-qizhen-audio.mjs",
+    "audio:chapter4-prologue-music": "node scripts/generate-chapter4-prologue-music-audio.mjs",
     "audio:chapter3": "node scripts/generate-chapter3-audio.mjs",
     "audio:chapter3:verify": "node scripts/verify-chapter3-audio-contract.mjs && node scripts/generate-chapter3-audio.mjs --verify-only",
     "audio:chapter3:status": "node scripts/verify-chapter3-audio-contract.mjs --report-only",
     "audio:chapter3:qizhen:checkpoint": "node scripts/generate-chapter3-qizhen-sfx-audio.mjs --checkpoint-existing",
-    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only",
-    "chapter4:validate-topology": "node scripts/verify-chapter4-temporal-maze.mjs",
-    "chapter4:validate-stair-materials": "node scripts/verify-chapter4-stair-materials.mjs"
+    "audio:chapter4-prologue-sfx": "node scripts/generate-chapter4-prologue-sfx-audio.mjs",
+    "audio:chapter4-prologue-voice": "node scripts/generate-chapter4-prologue-voice-audio.mjs",
+    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-bike-arcade-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only"
   },
   "dependencies": {
     "@fontsource/fusion-pixel-12px-proportional-sc": "^5.2.5",
@@ -58,16 +62,16 @@
     "phaser": "^3.87.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^5.0.3",
-    "three": "^0.185.1"
+    "three": "^0.185.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@types/three": "^0.185.4",
     "typescript": "^5.7.3",
     "vite": "^6.4.3",
-    "vite-plugin-singlefile": "^2.3.3",
-    "@types/three": "^0.185.4"
+    "vite-plugin-singlefile": "^2.3.3"
   }
 }

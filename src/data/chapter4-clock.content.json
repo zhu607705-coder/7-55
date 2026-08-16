@@ -29,7 +29,18 @@
   },
   "coarseTime": {
     "title": "锁定双机芯",
-    "body": "小时轮与分钟轮拥有独立锁扣。先把对应数字调到目标值，再分别锁定；已经锁定的机芯不能继续旋转。"
+    "body": "小时轮与分钟轮拥有独立锁扣。先把对应数字调到目标值，再分别锁定；已经锁定的机芯不能继续旋转。",
+    "movement3d": {
+      "hourMovement": "小时机芯",
+      "minuteMovement": "分钟机芯",
+      "lock": "锁定机芯",
+      "locked": "已锁定",
+      "explode": "爆炸视图",
+      "assemble": "装配视图",
+      "resetView": "复位视角",
+      "adjustHint": "上下拖动机芯齿轮、滚轮或点按 ± 调节读数,对准 08:00 后锁定对应机芯。",
+      "targetLabel": "目标 08:00"
+    }
   },
   "secondsTrim": {
     "title": "消除三路设备漂移",

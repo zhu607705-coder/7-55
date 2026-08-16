@@ -1,4 +1,14 @@
 import { cloneSerializable } from "../../core/ClientCompatibility";
+import type { QizhenPhotoRecipe, QizhenPhotoSpotId } from "../../core/types";
+
+export interface QizhenPhotoSessionDebugRequest {
+  spotId: QizhenPhotoSpotId;
+  recipe: QizhenPhotoRecipe;
+  speed: number;
+  roll: number;
+  kind: "main" | "spot";
+  capturedAtSeconds?: number;
+}
 
 export interface RpgRuntimeDebugState {
   engine?: "phaser";
@@ -103,8 +113,7 @@ export interface RpgRuntimeDebugState {
       id: string;
       window: string;
       anchor: { x: number; y: number };
-      objectBounds?: { width: number; height: number };
-      stand?: { x: number; y: number };
+      objectBounds: { width: number; height: number };
       proximity: number;
       dropBounds?: { left: number; top: number; right: number; bottom: number; width: number; height: number };
       acceptedItem?: string;
@@ -129,11 +138,9 @@ export interface RpgRuntimeDebugState {
       targetId: string;
       targetLabel: string;
       visible: boolean;
-      playerReady?: boolean;
-      playerInPosition?: boolean;
-      stand?: { x: number; y: number };
-      maxDistance?: number;
-      requiredFacing?: string | readonly string[];
+      playerReady: boolean;
+      maxDistance: number;
+      requiredFacing: string | readonly string[];
       dropBounds: { x: number; y: number; width: number; height: number };
     } | null;
 	    spotlight?: {
@@ -166,6 +173,15 @@ export interface RpgRuntimeDebugState {
     decoyPlacedAt: string | null;
     mistRhythmRead: boolean;
     mistPhase: number;
+    photoCamera?: {
+      resolvedSpotId: QizhenPhotoSpotId | null;
+      standAreaHit: boolean;
+      speed: number;
+      roll: number;
+      sessionOpen: boolean;
+      sessionSpotId: QizhenPhotoSpotId | null;
+      lastSessionRequest: QizhenPhotoSessionDebugRequest | null;
+    };
     activeOcclusionIds?: string[];
     softenedOcclusionIds?: string[];
   };

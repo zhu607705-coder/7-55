@@ -46,7 +46,7 @@
         { "id": "turnstile_east", "left": 900, "top": 774, "right": 924, "bottom": 852 }
       ],
       "anchors": [
-        { "id": "maxwell_bakery", "label": "麦斯威面包坊餐厅", "bounds": { "left": 36, "top": 226, "right": 548, "bottom": 800 } },
+        { "id": "maxwell_bakery", "label": "麦思威面包坊餐厅", "bounds": { "left": 36, "top": 226, "right": 548, "bottom": 800 } },
         { "id": "alumni_gallery_1", "label": "一楼校友头像长廊", "bounds": { "left": 330, "top": 34, "right": 1342, "bottom": 174 } },
         { "id": "classroom_104_entry", "label": "104 教室门厅", "bounds": { "left": 1134, "top": 226, "right": 1270, "bottom": 348 } },
         { "id": "classroom_105_entry", "label": "105 教室门厅", "bounds": { "left": 1134, "top": 536, "right": 1270, "bottom": 676 } },

@@ -1,7 +1,7 @@
 import type { GameEvent, GameState, RpgCheckpointId } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 
-export const THEATER_RUNTIME_CONTRACT_VERSION = "1.0.0" as const;
+export const THEATER_RUNTIME_CONTRACT_VERSION = "1.1.0" as const;
 export const THEATER_RUNTIME_LOGICAL_VIEWPORT = { width: 960, height: 540 } as const;
 export type TheaterRuntimeSpawnZone = "lobby" | "auditorium" | "stage";
 
@@ -19,6 +19,7 @@ export type TheaterRuntimeIntentName =
   | "rpg_booted"
   | "rpg_item_use_feedback"
   | "rpg_subtitle"
+  | "rpg_subtitle_clear"
   | "rpg_theater_admission_requested"
   | "rpg_theater_exit_requested"
   | "rpg_theater_mode_requested"

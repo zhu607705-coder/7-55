@@ -15,6 +15,7 @@ interface ActiveRpgSubtitle {
   text: string;
   tone: GameSubtitleTone;
   durationMs: number;
+  speaker?: string;
 }
 
 const RPG_SUBTITLE_TONES = new Set<GameSubtitleTone>([
@@ -52,8 +53,10 @@ export function RpgSubtitleLayer({ events, state, blocked = false }: RpgSubtitle
       const durationMs = Number.isFinite(requestedDuration) && requestedDuration > 0
         ? requestedDuration
         : tone === "task" ? 4200 : 3000;
+      const requestedSpeaker = String(event.payload?.speaker ?? "").trim();
+      const speaker = requestedSpeaker || undefined;
       if (timer !== null) window.clearTimeout(timer);
-      const subtitle = { id: nextId.current++, text, tone, durationMs };
+      const subtitle = { id: nextId.current++, text, tone, durationMs, speaker };
       setActive(subtitle);
       timer = window.setTimeout(() => {
         timer = null;
@@ -85,6 +88,7 @@ export function RpgSubtitleLayer({ events, state, blocked = false }: RpgSubtitle
         text={active.text}
         tone={active.tone}
         state={state}
+        speaker={active.speaker}
         durationMs={active.durationMs}
       />
     </div>

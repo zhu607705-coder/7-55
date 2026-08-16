@@ -2,31 +2,7 @@ import type { ReactNode } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import forumTreasureUrl from "../../../assets/ui/cc98_forum_treasure.png";
 import personaData from "../../../data/cc98.thread-personas.json";
-
-interface ThreadReply {
-  personaId: string;
-  time: string;
-  floor: string;
-  role?: string;
-  text: string;
-  image?: string;
-  caption?: string;
-  likes: string;
-  dislikes: string;
-}
-
-interface ThreadPost {
-  author: string;
-  title: string;
-  body: string;
-  board: string;
-  time: string;
-  avatar?: string;
-  views?: string;
-  threadOperation?: { user: string; action: string; reason: string };
-  threadMetrics?: { favorites: string; likes: string; dislikes: string };
-  threadReplies?: ThreadReply[];
-}
+import type { ThreadPost, ThreadReply } from "./cc98Types";
 
 interface Cc98ThreadPageProps {
   post: ThreadPost;

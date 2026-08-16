@@ -2,6 +2,8 @@
 @import "./styles/base.css";
 @import "./styles/shell.css";
 @import "./styles/scenes.css";
+@import "./styles/qizhen-journal-camera.css";
+@import "./styles/qizhen-recipe-frame.css";
 @import "./styles/developer.css";
 @import "./styles/rpg.css";
 @import "./styles/library-v2-zjuding.css";
