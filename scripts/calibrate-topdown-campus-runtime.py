@@ -35,6 +35,13 @@ CANTEEN = {
     "approach": {"x": 3120, "y": 650},
     "bike": {"x": 3220, "y": 650},
 }
+THEATER = {
+    # The Little Theater sits immediately south of Crescent Building. Keep the
+    # marker on its north entrance while the safe checkpoint remains on the
+    # connected east-west campus road.
+    "gate": {"x": 3300, "y": 1445, "radius": 105},
+    "approach": {"x": 3300, "y": 1360},
+}
 
 # Manual collision authority. Only the verified Basic Library forecourt remains
 # special-cased; Zijun Bifeng and East Canteen use the road alpha layer alone.
@@ -207,6 +214,13 @@ def main() -> None:
         "Canteen bike",
         CANTEEN["bike"],
     )
+    require_walkable(
+        grid,
+        grid_width,
+        grid_height,
+        "Theater approach",
+        THEATER["approach"],
+    )
 
     grid_pixels = bytearray(255 if value else 0 for value in grid)
     mask_image = Image.frombytes("L", grid_size, bytes(grid_pixels)).resize(
@@ -243,6 +257,7 @@ def main() -> None:
     runtime["spawn"] = SPAWN
     runtime["libraryGate"] = LIBRARY_GATE
     runtime["canteen"] = CANTEEN
+    runtime["theater"] = THEATER
     runtime["bridges"] = []
     runtime["landmarks"] = [
         {

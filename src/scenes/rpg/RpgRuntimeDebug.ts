@@ -108,6 +108,23 @@ export interface RpgRuntimeDebugState {
     defenseDrinkUsed?: boolean;
     identifiedExitIds: string[];
     blockHits: number;
+    queueGapOpened?: boolean;
+    queueColumnThreeYs?: number[];
+    orderingKiosk?: {
+      x: number;
+      y: number;
+      stand?: { x: number; y: number };
+      width?: number;
+      height?: number;
+      proximity: number;
+    };
+    defense?: {
+      startElapsedMs: number;
+      elapsedMs: number;
+      remainingMs: number;
+      currentExit: "northwest" | "south_gap" | "southeast";
+      paused: boolean;
+    };
     activeTarget: string | null;
     pickupTargets?: Array<{
       id: string;
@@ -119,6 +136,7 @@ export interface RpgRuntimeDebugState {
       acceptedItem?: string;
       requiredMode?: "light" | "dark";
       requiredFacing?: string | readonly string[];
+      facingToleranceDegrees?: number;
     }>;
     menuOpen: boolean;
     dialogueLocked: boolean;
@@ -140,6 +158,7 @@ export interface RpgRuntimeDebugState {
       visible: boolean;
       playerReady: boolean;
       maxDistance: number;
+      dropRequiresFacing: boolean;
       requiredFacing: string | readonly string[];
       dropBounds: { x: number; y: number; width: number; height: number };
     } | null;
@@ -230,6 +249,7 @@ export interface RpgRuntimeDebugState {
       proximity: number;
       requiredMode: "light" | "dark";
       requiredFacing: string | readonly string[];
+      facingToleranceDegrees?: number;
     }>;
     pendingAction?: {
       requestId: string;
@@ -315,6 +335,8 @@ export interface RpgRuntimeDebugState {
     acceptedItem?: string;
     requiredMode?: "light" | "dark";
     requiredFacing?: string | readonly string[];
+    dropRequiresFacing?: boolean;
+    facingToleranceDegrees?: number;
   }>;
   collisionRects?: ReadonlyArray<{
     id: string;

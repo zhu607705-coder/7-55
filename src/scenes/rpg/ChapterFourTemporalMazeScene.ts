@@ -22,7 +22,9 @@ import {
 } from "./FinaleNpcTextures";
 import {
   distanceFromPlayerToRpgTarget,
+  findNearestRpgInteractionTarget,
   isPlayerFacingRpgTarget,
+  RPG_LOOSE_FACING,
   type RpgRealityMode,
   type RpgSpatialInteractionTarget
 } from "./RpgInteractionContract";
@@ -250,7 +252,8 @@ interface ForegroundOcclusionVisual {
 
 interface TravelZone extends RpgSpatialInteractionTarget {
   id: TravelZoneId;
-  requiredFacing: "up";
+  requiredFacing: "toward_target";
+  facingToleranceDegrees: 90;
   targetStoryFloor?: StoryFloor;
   landingId?: string;
 }
@@ -296,6 +299,7 @@ interface MazeInteractionTarget extends RpgSpatialInteractionTarget {
   stand: { x: number; y: number };
   requiredMode: RpgRealityMode;
   requiredFacing: "toward_target";
+  facingToleranceDegrees: 90;
   action: MazeTargetAction;
   visualKind: "observation" | "fragment" | "board" | "window" | "airflow" | "paper" | "elevator";
 }
@@ -306,6 +310,7 @@ interface MazePartitionTarget extends RpgSpatialInteractionTarget {
   stand: { x: number; y: number };
   requiredMode: "light";
   requiredFacing: "toward_target";
+  facingToleranceDegrees: 90;
 }
 
 interface MazeTargetConfig {
@@ -430,7 +435,7 @@ const MAZE_INTERACTION_TARGETS: readonly MazeInteractionTarget[] = STORY_ANCHORS
     stand: config.stand,
     proximity: config.proximity,
     requiredMode: config.requiredMode,
-    requiredFacing: "toward_target",
+    ...RPG_LOOSE_FACING,
     action: config.action,
     visualKind: config.visualKind
   }];
@@ -592,7 +597,7 @@ function createTravelZones(floor: FloorDefinition): TravelZone[] {
     width: 144,
     height: 107,
     proximity: 54,
-    requiredFacing: "up"
+    ...RPG_LOOSE_FACING
   };
   const stairs = floor.stairLandings.map((landing): TravelZone => ({
     id: landing.direction === "up" ? "stair_up" : "stair_down",
@@ -602,7 +607,7 @@ function createTravelZones(floor: FloorDefinition): TravelZone[] {
     width: landing.bounds.right - landing.bounds.left,
     height: landing.bounds.bottom - landing.bounds.top,
     proximity: 54,
-    requiredFacing: landing.requiredFacing,
+    ...RPG_LOOSE_FACING,
     targetStoryFloor: landing.targetStoryFloor,
     landingId: landing.id
   }));
@@ -1234,7 +1239,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         stand: { x: centerX, y: bounds.bottom + 28 },
         proximity: 64,
         requiredMode: "dark",
-        requiredFacing: "toward_target",
+        ...RPG_LOOSE_FACING,
         action: "observe_airflow",
         visualKind: "airflow"
       }];
@@ -1263,7 +1268,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         stand: { x: (bounds.left + bounds.right) / 2, y: bounds.bottom + 30 },
         proximity: 72,
         requiredMode: "light",
-        requiredFacing: "toward_target",
+        ...RPG_LOOSE_FACING,
         action: "guide_paper",
         visualKind: "paper"
       }];
@@ -1295,7 +1300,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       stand: { x: floor.elevatorStand.x, y: floor.elevatorStand.y },
       proximity: 54,
       requiredMode: boardReady || replayReady ? "light" : "dark",
-      requiredFacing: "toward_target",
+      ...RPG_LOOSE_FACING,
       action: boardReady ? "board_elevator" : "inspect_elevator",
       visualKind: "elevator"
     }];
@@ -1412,7 +1417,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       stand: { x: centerX, y: gate.bounds.bottom + 44 },
       proximity: 64,
       requiredMode: "light",
-      requiredFacing: "toward_target"
+      ...RPG_LOOSE_FACING
     };
   }
 
@@ -1639,29 +1644,26 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const floor = getFloor(this.currentFloor);
     const localPoint = { x: this.player.x - floor.offsetX, y: this.player.y };
     const state = this.bridge.getState().chapter4;
-    this.nearbyTravelZone = createTravelZones(floor)
-      .map((zone) => ({
-        zone,
-        distance: distanceFromPlayerToRpgTarget(zone, localPoint.x, localPoint.y)
-      }))
-      .filter((candidate) => candidate.distance <= 54)
-      .sort((a, b) => a.distance - b.distance)[0]?.zone ?? null;
-    this.nearbyTarget = this.getActiveInteractionTargets()
-      .filter((target) => target.floor === this.currentFloor)
-      .map((target) => ({
-        target,
-        distance: distanceFromPlayerToRpgTarget(target, localPoint.x, localPoint.y)
-      }))
-      .filter((candidate) => candidate.distance <= candidate.target.proximity)
-      .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
-    this.nearbyPartitionId = this.getVisiblePartitionTargets()
-      .filter((target) => target.floor === this.currentFloor)
-      .map((target) => ({
-        target,
-        distance: distanceFromPlayerToRpgTarget(target, localPoint.x, localPoint.y)
-      }))
-      .filter((candidate) => candidate.distance <= candidate.target.proximity)
-      .sort((a, b) => a.distance - b.distance)[0]?.target.id ?? null;
+    this.nearbyTarget = findNearestRpgInteractionTarget(
+      localPoint.x,
+      localPoint.y,
+      this.getActiveInteractionTargets().filter((target) => target.floor === this.currentFloor)
+    );
+    const selectedPartition = this.nearbyTarget
+      ? null
+      : findNearestRpgInteractionTarget(
+        localPoint.x,
+        localPoint.y,
+        this.getVisiblePartitionTargets().filter((target) => target.floor === this.currentFloor)
+      );
+    this.nearbyPartitionId = selectedPartition?.id ?? null;
+    this.nearbyTravelZone = this.nearbyTarget || selectedPartition
+      ? null
+      : findNearestRpgInteractionTarget(
+        localPoint.x,
+        localPoint.y,
+        createTravelZones(floor)
+      );
     this.nearbyAnchor = STORY_ANCHORS
       .filter((anchor) => anchor.floor === this.currentFloor)
       .map((anchor) => ({ anchor, distance: distanceToBounds(localPoint, anchor.bounds) }))
@@ -2650,7 +2652,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           },
           proximity: target.proximity,
           requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing
+          requiredFacing: target.requiredFacing,
+          facingToleranceDegrees: target.facingToleranceDegrees
         };
       }),
       ...partitionTargets.map((target) => {
@@ -2668,7 +2671,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           },
           proximity: target.proximity,
           requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing
+          requiredFacing: target.requiredFacing,
+          facingToleranceDegrees: target.facingToleranceDegrees
         };
       })
     ];
@@ -2692,7 +2696,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           },
           proximity: target.proximity,
           requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing
+          requiredFacing: target.requiredFacing,
+          facingToleranceDegrees: target.facingToleranceDegrees
         };
       }),
       ...partitionTargets.map((target) => {
@@ -2714,7 +2719,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           },
           proximity: target.proximity,
           requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing
+          requiredFacing: target.requiredFacing,
+          facingToleranceDegrees: target.facingToleranceDegrees
         };
       })
     ];

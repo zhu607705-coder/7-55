@@ -25,6 +25,15 @@ export type RpgCardinalFacing = "up" | "down" | "left" | "right";
 
 export type RpgFacingRequirement = RpgCardinalFacing | "toward_target";
 
+export const RPG_LOOSE_FACING = {
+  requiredFacing: "toward_target",
+  // A diagonal approach accepts either adjacent cardinal direction while a
+  // direction pointing away from the visible target remains invalid.
+  facingToleranceDegrees: 90
+} as const;
+
+export const RPG_ANY_FACING = ["up", "down", "left", "right"] as const;
+
 export interface RpgSpatialInteractionTarget {
   id: string;
   label: string;
@@ -52,6 +61,8 @@ export interface RpgSpatialInteractionTarget {
    * to toward_target, keeping facing part of the global interaction contract.
   */
   requiredFacing?: RpgFacingRequirement | readonly RpgCardinalFacing[];
+  /** Item drops may opt out of facing while Space/pointer interaction keeps it. */
+  dropRequiresFacing?: boolean;
   /** Forward cone used by toward_target checks. Defaults to 60 degrees. */
   facingToleranceDegrees?: number;
 }
@@ -172,9 +183,25 @@ export function isFacingVectorTowardRpgTarget(
   }
   const targetDistance = Math.hypot(dx, dy);
   if (targetDistance < 0.001) return true;
-  return (
+  const forwardDot = (
     dx * normalizedFacing.x + dy * normalizedFacing.y
-  ) / targetDistance >= forwardThreshold;
+  ) / targetDistance;
+  if (forwardDot >= forwardThreshold) return true;
+
+  // A 90-degree scene tolerance treats the adjacent cardinal direction as a
+  // deliberate loose-facing choice. When the nearest-edge vector is exactly
+  // perpendicular, use the target center only to choose the correct quadrant:
+  // lower-right accepts up/left, but still rejects down/right.
+  if ((target.facingToleranceDegrees ?? 60) < 90 || Math.abs(forwardDot) > 0.0001) {
+    return false;
+  }
+  const centerDx = target.x - playerX;
+  const centerDy = target.y - playerY;
+  const centerDistance = Math.hypot(centerDx, centerDy);
+  if (centerDistance < 0.001) return true;
+  return (
+    centerDx * normalizedFacing.x + centerDy * normalizedFacing.y
+  ) / centerDistance > 0.0001;
 }
 
 /**
@@ -204,6 +231,30 @@ export function isPlayerWithinRpgTarget(
   return distanceFromPlayerToRpgTarget(target, playerX, playerY) <= target.proximity;
 }
 
+/**
+ * Assign an overlapping set of broad interaction ranges to exactly one target.
+ * Visible-edge distance is authoritative; center distance and id only make an
+ * exact seam deterministic, so adjacent fixtures never alternate by array order.
+ */
+export function findNearestRpgInteractionTarget<TTarget extends RpgSpatialInteractionTarget>(
+  playerX: number,
+  playerY: number,
+  targets: readonly TTarget[]
+): TTarget | null {
+  return targets
+    .map((target) => ({
+      target,
+      edgeDistance: distanceFromPlayerToRpgTarget(target, playerX, playerY),
+      centerDistance: Math.hypot(target.x - playerX, target.y - playerY)
+    }))
+    .filter((candidate) => candidate.edgeDistance <= candidate.target.proximity)
+    .sort((a, b) => (
+      a.edgeDistance - b.edgeDistance
+      || a.centerDistance - b.centerDistance
+      || a.target.id.localeCompare(b.target.id)
+    ))[0]?.target ?? null;
+}
+
 export function isPlayerReadyForRpgTarget(
   target: RpgSpatialInteractionTarget,
   playerX: number,
@@ -212,6 +263,17 @@ export function isPlayerReadyForRpgTarget(
 ): boolean {
   return isPlayerWithinRpgTarget(target, playerX, playerY)
     && isPlayerFacingRpgTarget(target, playerX, playerY, playerFacing);
+}
+
+export function isPlayerReadyForRpgItemDrop(
+  target: RpgSpatialInteractionTarget,
+  playerX: number,
+  playerY: number,
+  playerFacing: RpgCardinalFacing
+): boolean {
+  return isPlayerWithinRpgTarget(target, playerX, playerY)
+    && (target.dropRequiresFacing === false
+      || isPlayerFacingRpgTarget(target, playerX, playerY, playerFacing));
 }
 
 function targetPriority<TTarget extends RpgSpatialInteractionTarget>(
@@ -243,7 +305,10 @@ export function resolveRpgItemDrop<TTarget extends RpgSpatialInteractionTarget>(
       const bPriority = targetPriority(b, options.itemId);
       return aPriority[0] - bPriority[0]
         || aPriority[1] - bPriority[1]
-        || aPriority[2] - bPriority[2];
+        || aPriority[2] - bPriority[2]
+        || Math.hypot(a.x - options.dropX, a.y - options.dropY)
+          - Math.hypot(b.x - options.dropX, b.y - options.dropY)
+        || a.id.localeCompare(b.id);
     })[0] ?? null;
 
   if (!target) return { kind: "missed_target", target: null };
@@ -258,7 +323,7 @@ export function resolveRpgItemDrop<TTarget extends RpgSpatialInteractionTarget>(
   if (!isPlayerWithinRpgTarget(target, options.playerX, options.playerY)) {
     return { kind: "too_far", target };
   }
-  if (!isPlayerFacingRpgTarget(
+  if (target.dropRequiresFacing !== false && !isPlayerFacingRpgTarget(
     target,
     options.playerX,
     options.playerY,

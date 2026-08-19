@@ -755,7 +755,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
         ...(target.dropWidth ? { dropWidth: target.dropWidth } : {}),
         ...(target.dropHeight ? { dropHeight: target.dropHeight } : {}),
         ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {}),
-        requiredFacing: target.requiredFacing
+        requiredFacing: target.requiredFacing,
+        facingToleranceDegrees: target.facingToleranceDegrees
       })),
       collisionRects: LIBRARY_STATIC_COLLISION_RECTS.map((rect) => rect.id === "north_display_shelf"
         ? {

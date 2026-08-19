@@ -2678,7 +2678,8 @@ export class QizhenLakeScene extends Phaser.Scene {
         proximity: candidate.proximity,
         acceptedItem: candidate.acceptedItem,
         requiredMode: candidate.requiredMode,
-        requiredFacing: candidate.requiredFacing
+        requiredFacing: candidate.requiredFacing,
+        facingToleranceDegrees: candidate.facingToleranceDegrees
       })),
       collisionRects: this.getActiveCollisionRects(this.currentVehicle),
       qizhenLake: {

@@ -162,7 +162,7 @@ export function selectRpgItemUseGuidance(
       if (theater.posterCleaned) return passive("海报玻璃已经擦净。");
       if (theater.phase !== "entry_ticket") return locked("擦拭海报只在剧院入口取票阶段开放。", "入口海报");
       if (theater.mode !== "light") return locked("切回浅色模式后擦拭海报玻璃。", "入口海报");
-      return ready("入口海报玻璃", "从海报右侧靠近并面向左，把油渍纸巾拖到玻璃污渍上。");
+      return ready("入口海报玻璃", "靠近并面向海报玻璃，把油渍纸巾拖到玻璃污渍上。");
     }
     if (itemId === "temporaryTheaterTicket") {
       if (theater.phase === "entry_ticket" && !theater.admitted) {
