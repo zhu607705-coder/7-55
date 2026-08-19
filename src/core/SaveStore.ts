@@ -29,14 +29,18 @@ import type {
   QizhenPhotoTag,
   WalletState
 } from "./types";
+import {
+  normalizeHiddenPhoneHomeAppIds,
+  normalizePhoneHomeAppOrder
+} from "./PhoneHomeApps";
 import { draftIdFor } from "../modules/QizhenJournalModel";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 22;
+const SAVE_VERSION = 24;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, SAVE_VERSION]);
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
@@ -87,8 +91,9 @@ const VALID_ACT_ONE_PHASES = new Set<ActOneBootstrapPhase>([
 ]);
 const VALID_ACT_ONE_AREA_IDS = new Set(["north_gate", "bridge", "library", "game_kiosk"]);
 const VALID_SCENES = new Set<GameState["currentScene"]>([
-  "alarm", "desktop", "phone_home", "wechat", "cc98", "zjuding", "tiyi", "weather",
-  "photos", "campus_card", "bike_arcade", "chapter_transition", "checkin", "bonsai", "clock", "ending"
+  "alarm", "desktop", "phone_home", "settings", "wechat", "cc98", "zjuding", "tiyi", "weather",
+  "photos", "timeline_recovery", "voice_memos", "campus_card", "bike_arcade", "chapter_transition",
+  "checkin", "bonsai", "clock", "ending"
 ]);
 const VALID_NETWORK_MODES = new Set<GameState["networkMode"]>(["campus_wifi", "cellular", "offline"]);
 const VALID_THEME_MODES = new Set<GameState["themeMode"]>(["normal", "dark", "backside"]);
@@ -128,6 +133,22 @@ const LEGACY_QIZHEN_INTERIOR_PHASES = new Set([
 const VALID_QIZHEN_MODES = new Set<GameState["qizhenLake"]["mode"]>(["light", "dark"]);
 const VALID_QIZHEN_ZONES = new Set<GameState["qizhenLake"]["zone"]>(["dock", "open_water", "channel", "swan_cove"]);
 const VALID_QIZHEN_VEHICLES = new Set<GameState["qizhenLake"]["vehicle"]>(["on_foot", "kayak"]);
+const VALID_CHAPTER_THREE_INTERLUDE_PHASES = new Set<GameState["chapterThreeInterlude"]["phase"]>([
+  "inactive", "reboot", "journal_closeout", "evidence_collection", "timeline_assembly",
+  "destination_verified", "replay_ready", "complete"
+]);
+const VALID_CHAPTER_THREE_INTERLUDE_PHOTOS = new Set<GameState["chapterThreeInterlude"]["photoFrameIds"][number]>([
+  "paper_left", "paper_middle", "paper_right"
+]);
+const VALID_CHAPTER_THREE_INTERLUDE_VOICES = new Set<GameState["chapterThreeInterlude"]["voiceClipOrder"][number]>([
+  "lake", "stone", "lobby", "broadcast"
+]);
+const VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE = new Set<GameState["chapterThreeInterlude"]["evidenceIds"][number]>([
+  "journal_start", "photo_direction", "network_destination", "broadcast_end"
+]);
+const VALID_CHAPTER_THREE_INTERLUDE_DECOYS = new Set<GameState["chapterThreeInterlude"]["rejectedDecoyIds"][number]>([
+  "canteen_0755", "theater_0832", "status_clock_075523"
+]);
 const VALID_QIZHEN_SAFE_SPAWNS = new Set<GameState["qizhenLake"]["safeSpawnId"]>([
   "dock_entry", "dock_kayak", "open_water_entry", "channel_entry", "swan_cove_entry", "channel_chase"
 ]);
@@ -533,6 +554,12 @@ export class SaveStore {
       const qizhenLake = qizhenNormalization.state;
       const clockCalibration = normalizeClockCalibration(saved.clockCalibration, initial.clockCalibration);
       const chapter4 = normalizeChapterFour(saved.chapter4, initial.chapter4);
+      const chapterThreeInterlude = normalizeChapterThreeInterlude(
+        saved.chapterThreeInterlude,
+        initial.chapterThreeInterlude,
+        qizhenLake,
+        chapter4
+      );
       if ((theaterHunt.phase === "complete" || items.wetProgram) && qizhenLake.phase === "inactive") {
         qizhenLake.active = true;
         qizhenLake.phase = "location_search";
@@ -579,6 +606,7 @@ export class SaveStore {
         canteenHunt,
         theaterHunt,
         qizhenLake,
+        chapterThreeInterlude,
         clockCalibration,
         chapter4,
         ui
@@ -1247,6 +1275,74 @@ function normalizeChapterFour(
   };
 }
 
+function normalizeChapterThreeInterlude(
+  value: unknown,
+  initial: GameState["chapterThreeInterlude"],
+  qizhenLake: GameState["qizhenLake"],
+  chapter4: GameState["chapter4"]
+): GameState["chapterThreeInterlude"] {
+  const saved = asRecord(value);
+  const chapterFourStarted = chapter4.prologueSeen || chapter4.phase !== "inactive" || chapter4.completed;
+  const migratedPhase: GameState["chapterThreeInterlude"]["phase"] = chapterFourStarted
+    ? "complete"
+    : qizhenLake.phase === "complete"
+      ? "reboot"
+      : "inactive";
+  const phase = enumOr(saved.phase, VALID_CHAPTER_THREE_INTERLUDE_PHASES, migratedPhase);
+  const completed = chapterFourStarted || booleanOr(saved.completed, phase === "complete");
+  const replayUnlocked = chapterFourStarted || completed || booleanOr(saved.replayUnlocked, initial.replayUnlocked);
+  const destinationId = saved.destinationId === "duan_yongping_a1"
+    ? "duan_yongping_a1"
+    : chapterFourStarted
+      ? "duan_yongping_a1"
+      : null;
+  return {
+    phase: completed ? "complete" : phase,
+    rebootSeen: booleanOr(saved.rebootSeen, chapterFourStarted),
+    recoveryOpened: booleanOr(saved.recoveryOpened, chapterFourStarted),
+    photoFrameIds: filteredStringArrayFromSet(
+      saved.photoFrameIds,
+      VALID_CHAPTER_THREE_INTERLUDE_PHOTOS,
+      chapterFourStarted ? ["paper_left", "paper_middle", "paper_right"] : initial.photoFrameIds
+    ),
+    photoSequenceSolved: booleanOr(saved.photoSequenceSolved, chapterFourStarted),
+    voiceClipOrder: filteredStringArrayFromSet(
+      saved.voiceClipOrder,
+      VALID_CHAPTER_THREE_INTERLUDE_VOICES,
+      chapterFourStarted ? ["lake", "stone", "lobby", "broadcast"] : initial.voiceClipOrder
+    ),
+    voiceSequenceSolved: booleanOr(saved.voiceSequenceSolved, chapterFourStarted),
+    officialNoticeSaved: booleanOr(saved.officialNoticeSaved, chapterFourStarted),
+    routeScreenshotSaved: booleanOr(saved.routeScreenshotSaved, chapterFourStarted),
+    networkRecordRead: booleanOr(saved.networkRecordRead, chapterFourStarted),
+    evidenceIds: filteredStringArrayFromSet(
+      saved.evidenceIds,
+      VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE,
+      chapterFourStarted
+        ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"]
+        : initial.evidenceIds
+    ),
+    timelineOrder: filteredStringArrayFromSet(
+      saved.timelineOrder,
+      VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE,
+      chapterFourStarted
+        ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"]
+        : initial.timelineOrder
+    ),
+    rejectedDecoyIds: filteredStringArrayFromSet(
+      saved.rejectedDecoyIds,
+      VALID_CHAPTER_THREE_INTERLUDE_DECOYS,
+      chapterFourStarted ? ["canteen_0755", "theater_0832", "status_clock_075523"] : initial.rejectedDecoyIds
+    ),
+    statusClockMarkedUntrusted: booleanOr(saved.statusClockMarkedUntrusted, chapterFourStarted),
+    destinationId,
+    windowStartSeconds: rangedIntegerOr(saved.windowStartSeconds, 0, 86399, initial.windowStartSeconds),
+    windowEndSeconds: rangedIntegerOr(saved.windowEndSeconds, 0, 86399, initial.windowEndSeconds),
+    replayUnlocked,
+    completed
+  };
+}
+
 function normalizeChapterFourLocation(
   savedFloor: GameState["chapter4"]["floor"] | null,
   savedRoomId: string | null,
@@ -1456,12 +1552,16 @@ function normalizeUi(
     }
   }
 
+  const normalizedStateForRemoval = { actOne, ui: { libraryFinalsPuzzle: puzzle } };
+
   return {
     controlCenterOpen: booleanOr(saved.controlCenterOpen, initial.controlCenterOpen),
     autoRotate: booleanOr(saved.autoRotate, initial.autoRotate),
     musicPlaying: booleanOr(saved.musicPlaying, initial.musicPlaying),
     musicMuted: booleanOr(saved.musicMuted, initial.musicMuted),
     brightness: rangedNumberOr(saved.brightness, 0, 100, initial.brightness),
+    homeAppOrder: normalizePhoneHomeAppOrder(saved.homeAppOrder),
+    hiddenHomeAppIds: normalizeHiddenPhoneHomeAppIds(saved.hiddenHomeAppIds, normalizedStateForRemoval),
     inventoryOpen: booleanOr(saved.inventoryOpen, initial.inventoryOpen),
     selectedItem: nullableEnumOr(saved.selectedItem, VALID_ITEM_IDS, initial.selectedItem),
     zjudingPage: enumOr(saved.zjudingPage, VALID_ZJUDING_PAGES, initial.zjudingPage),

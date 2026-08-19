@@ -10,6 +10,7 @@ import { LibraryFinalsController } from "./LibraryFinalsController";
 import { NetworkController } from "./NetworkController";
 import { PlantController } from "./PlantController";
 import { ChapterThreeQizhenLakeController } from "./ChapterThreeQizhenLakeController";
+import { ChapterThreePhoneInterludeController } from "./ChapterThreePhoneInterludeController";
 import { ChapterThreeTheaterController } from "./ChapterThreeTheaterController";
 import { ClockCalibrationController } from "./ClockCalibrationController";
 import { ChapterFourTemporalMazeController } from "./ChapterFourTemporalMazeController";
@@ -27,6 +28,7 @@ export const kit = {
   libraryFinals: new LibraryFinalsController(gameStore, eventBus),
   theater: new ChapterThreeTheaterController(gameStore, eventBus),
   qizhenLake: new ChapterThreeQizhenLakeController(gameStore, eventBus),
+  chapterThreeInterlude: new ChapterThreePhoneInterludeController(gameStore, eventBus),
   clock: new ClockCalibrationController(gameStore, eventBus),
   chapterFour: new ChapterFourTemporalMazeController(gameStore, eventBus),
   digits: new DigitCollector(gameStore, eventBus),

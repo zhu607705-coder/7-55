@@ -17,6 +17,8 @@ export interface FeatureAccess {
   cc98Bd: boolean;
   libraryRecovery: boolean;
   bikeArcade: boolean;
+  timelineRecovery: boolean;
+  voiceMemos: boolean;
   clockCalibration: boolean;
 }
 
@@ -412,6 +414,66 @@ export interface QizhenJournalState {
   memoryCardUnlocked: boolean;
 }
 
+export type ChapterThreeInterludePhase =
+  | "inactive"
+  | "reboot"
+  | "journal_closeout"
+  | "evidence_collection"
+  | "timeline_assembly"
+  | "destination_verified"
+  | "replay_ready"
+  | "complete";
+
+export type ChapterThreeInterludeEvidenceId =
+  | "journal_start"
+  | "photo_direction"
+  | "network_destination"
+  | "broadcast_end";
+
+export type ChapterThreeInterludeDecoyId =
+  | "canteen_0755"
+  | "theater_0832"
+  | "status_clock_075523";
+
+export type ChapterThreeInterludePhotoFrameId =
+  | "paper_left"
+  | "paper_middle"
+  | "paper_right";
+
+export type ChapterThreeInterludeVoiceClipId =
+  | "lake"
+  | "stone"
+  | "lobby"
+  | "broadcast";
+
+export type ChapterThreeInterludeDestinationId = "duan_yongping_a1";
+
+/**
+ * 第三章半「未同步的七分五十五秒」。它不占用 ChapterId，只保存启真湖
+ * 与第四章之间的手机取证事实；页面选中态、拖动位置和播放进度保持运行时状态。
+ */
+export interface ChapterThreeInterludeState {
+  phase: ChapterThreeInterludePhase;
+  rebootSeen: boolean;
+  recoveryOpened: boolean;
+  photoFrameIds: ChapterThreeInterludePhotoFrameId[];
+  photoSequenceSolved: boolean;
+  voiceClipOrder: ChapterThreeInterludeVoiceClipId[];
+  voiceSequenceSolved: boolean;
+  officialNoticeSaved: boolean;
+  routeScreenshotSaved: boolean;
+  networkRecordRead: boolean;
+  evidenceIds: ChapterThreeInterludeEvidenceId[];
+  timelineOrder: ChapterThreeInterludeEvidenceId[];
+  rejectedDecoyIds: ChapterThreeInterludeDecoyId[];
+  statusClockMarkedUntrusted: boolean;
+  destinationId: ChapterThreeInterludeDestinationId | null;
+  windowStartSeconds: number;
+  windowEndSeconds: number;
+  replayUnlocked: boolean;
+  completed: boolean;
+}
+
 export type ClockCalibrationPhase = "tampered" | "calibrating" | "release_ready" | "aligned";
 
 /**
@@ -698,12 +760,15 @@ export type SceneId =
   | "alarm"
   | "desktop"
   | "phone_home"
+  | "settings"
   | "wechat"
   | "cc98"
   | "zjuding"
   | "tiyi"
   | "weather"
   | "photos"
+  | "timeline_recovery"
+  | "voice_memos"
   | "campus_card"
   | "bike_arcade"
   | "chapter_transition"
@@ -711,6 +776,19 @@ export type SceneId =
   | "bonsai"
   | "clock"
   | "ending";
+
+export type PhoneHomeAppId =
+  | "wechat"
+  | "tiyi"
+  | "zjuding"
+  | "settings"
+  | "photos"
+  | "timeline_recovery"
+  | "voice_memos"
+  | "cc98"
+  | "bike_arcade"
+  | "control_center"
+  | "clock";
 
 export interface GameFlags {
   /** 小影已散码，任务"找回四位签到码"开始，物品栏解锁 */
@@ -759,6 +837,10 @@ export interface UiState {
   musicMuted: boolean;
   /** 0-100 */
   brightness: number;
+  /** 手机桌面图标顺序。读取旧存档时会补齐新应用并过滤未知 id。 */
+  homeAppOrder: PhoneHomeAppId[];
+  /** 仅记录玩家从桌面删除的可选应用。剧情应用不会进入此列表。 */
+  hiddenHomeAppIds: PhoneHomeAppId[];
   /** 物品栏是否展开 */
   inventoryOpen: boolean;
   /** 物品栏中当前选中的道具（用于对场景目标使用） */
@@ -793,6 +875,7 @@ export interface GameState {
   canteenHunt: CanteenHuntState;
   theaterHunt: TheaterHuntState;
   qizhenLake: QizhenLakeState;
+  chapterThreeInterlude: ChapterThreeInterludeState;
   clockCalibration: ClockCalibrationState;
   chapter4: ChapterFourState;
   ui: UiState;

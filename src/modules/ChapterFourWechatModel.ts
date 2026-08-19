@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types";
+import { CHAPTER_FOUR_CC98_CLUES } from "./ChapterFourCc98Model";
 
 export const CHAPTER_FOUR_WECHAT_CLUES = Object.freeze({
   officialNoticeRead: "wechat_official_notice_read",
@@ -25,7 +26,7 @@ export interface ChapterFourWechatProjection {
 }
 
 export interface ChapterFourWechatObjective {
-  id: "official_notice" | "elevator_audio" | "student_route" | "wayfinding_photos" | "wayfinding_compare";
+  id: "official_notice" | "elevator_audio" | "study_index" | "student_route" | "wayfinding_photos" | "wayfinding_compare";
   label: string;
   hint: string;
 }
@@ -48,6 +49,7 @@ export function selectChapterFourWechatProjection(
       || state.solvedPuzzleIds.includes("elevator_track_sync"),
     elevatorAudioArchived,
     studentRouteAvailable: officialNoticeRead
+      && clues.has(CHAPTER_FOUR_CC98_CLUES.studyIndexImported)
       && state.floor === "A2"
       && state.phase === "npc_schedule_route",
     studentRouteSaved,
@@ -88,6 +90,13 @@ export function selectChapterFourWechatObjective(
   }
 
   if (state.phase === "npc_schedule_route" && !projection.studentRouteSaved) {
+    if (cluesRequireCc98Import(state)) {
+      return {
+        id: "study_index",
+        label: "从 CC98 导入学习天地资料索引",
+        hint: "打开 CC98 的学习天地资料索引帖，选出课程年份、旧讨论和现场核验三项，再导入自习群。"
+      };
+    }
     return {
       id: "student_route",
       label: "保存麦斯威夜间自习群的路线讨论",
@@ -113,4 +122,8 @@ export function selectChapterFourWechatObjective(
   }
 
   return null;
+}
+
+function cluesRequireCc98Import(state: GameState["chapter4"]): boolean {
+  return !state.clueIds.includes(CHAPTER_FOUR_CC98_CLUES.studyIndexImported);
 }

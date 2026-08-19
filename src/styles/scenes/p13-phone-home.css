@@ -378,8 +378,9 @@
   bottom: 238px;
   cursor: pointer;
   height: 58px;
-  left: 30px;
+  left: auto;
   position: absolute;
+  right: 22px;
   width: 50px;
   z-index: 10;
 }
@@ -397,6 +398,52 @@
   position: absolute;
   top: 0;
   width: 40px;
+}
+
+.bonsai-pot.is-bloomed .pot-plant {
+  filter: saturate(1.08);
+}
+
+.pot-flower {
+  display: none;
+}
+
+.bonsai-pot.is-bloomed .pot-flower {
+  background: #f5c542;
+  box-shadow: 2px 2px 0 rgba(37, 49, 44, 0.45);
+  display: block;
+  height: 8px;
+  left: 21px;
+  position: absolute;
+  top: 7px;
+  transform-origin: 50% 50%;
+  width: 8px;
+  z-index: 2;
+  animation: bonsai-flower-open 420ms steps(4, end) both;
+}
+
+.bonsai-pot.is-bloomed .pot-flower::before {
+  background: #e88a9f;
+  box-shadow: 14px 0 #7fb0e8, 0 14px #e8a05f, -14px 14px #8fce7c;
+  content: "";
+  height: 8px;
+  left: -7px;
+  position: absolute;
+  top: -7px;
+  width: 8px;
+  z-index: -1;
+}
+
+@keyframes bonsai-flower-open {
+  from {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .pot-body {
@@ -530,6 +577,83 @@
   z-index: 8;
 }
 
+.phone .home-app-slot {
+  height: 84px;
+  position: relative;
+  touch-action: manipulation;
+  user-select: none;
+  width: 56px;
+}
+
+.phone .home-app-slot.is-editing {
+  animation: home-app-edit-wiggle 0.32s steps(2, end) infinite alternate;
+  cursor: grab;
+  touch-action: none;
+}
+
+.phone .home-app-slot.is-dragging {
+  animation: none;
+  cursor: grabbing;
+  filter: drop-shadow(0 6px 0 rgba(24, 34, 38, 0.28));
+  transform: scale(1.08) translateY(-3px);
+  z-index: 5;
+}
+
+@keyframes home-app-edit-wiggle {
+  from { transform: rotate(-1deg); }
+  to { transform: rotate(1deg); }
+}
+
+.phone .home-app-remove {
+  align-items: center;
+  background: #111820;
+  border: 2px solid #f7f3e7;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  font: 900 15px/1 monospace;
+  height: 22px;
+  justify-content: center;
+  left: -8px;
+  padding: 0 0 2px;
+  position: absolute;
+  top: -8px;
+  width: 22px;
+  z-index: 8;
+}
+
+.phone .phone-home-edit-bar {
+  align-items: center;
+  background: rgba(21, 32, 39, 0.94);
+  border: 2px solid #f0d87e;
+  color: #fff7d0;
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+  left: 20px;
+  min-height: 34px;
+  padding: 5px 6px 5px 10px;
+  position: absolute;
+  top: 252px;
+  width: 268px;
+  z-index: 15;
+}
+
+.phone .phone-home-edit-bar button {
+  background: #f0d87e;
+  border: 2px solid #111820;
+  color: #111820;
+  font-size: 12px;
+  min-height: 24px;
+  padding: 1px 10px;
+}
+
+.phone.is-home-editing .notifications,
+.phone.is-home-editing .page-dots,
+.phone.is-home-editing .phone-top-notice {
+  display: none;
+}
+
 .phone .app {
   align-content: start;
   display: grid;
@@ -553,6 +677,24 @@
 }
 
 .phone .chapter-four-wechat-app.is-pending .app-icon::after {
+  align-items: center;
+  background: #d72e32;
+  border: 2px solid #fff;
+  color: #fff;
+  content: "1";
+  display: flex;
+  font-size: 11px;
+  font-weight: 900;
+  height: 19px;
+  justify-content: center;
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  width: 19px;
+  z-index: 2;
+}
+
+.phone .chapter-four-cc98-app.is-pending .app-icon::after {
   align-items: center;
   background: #d72e32;
   border: 2px solid #fff;

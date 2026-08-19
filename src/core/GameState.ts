@@ -2,6 +2,7 @@ import { createStore } from "zustand/vanilla";
 import { SaveStore } from "./SaveStore";
 import type { GameState, GameStore } from "./types";
 import { DEVELOPER_ACTIVE_KEY } from "./StorageKeys";
+import { DEFAULT_PHONE_HOME_APP_ORDER } from "./PhoneHomeApps";
 
 export function createInitialGameState(): GameState {
   return {
@@ -253,6 +254,27 @@ export function createInitialGameState(): GameState {
       mistAttempts: 0,
       paperReleased: false
     },
+    chapterThreeInterlude: {
+      phase: "inactive",
+      rebootSeen: false,
+      recoveryOpened: false,
+      photoFrameIds: [],
+      photoSequenceSolved: false,
+      voiceClipOrder: [],
+      voiceSequenceSolved: false,
+      officialNoticeSaved: false,
+      routeScreenshotSaved: false,
+      networkRecordRead: false,
+      evidenceIds: [],
+      timelineOrder: [],
+      rejectedDecoyIds: [],
+      statusClockMarkedUntrusted: false,
+      destinationId: null,
+      windowStartSeconds: 81425,
+      windowEndSeconds: 81900,
+      replayUnlocked: false,
+      completed: false
+    },
     // 第四章「校时」：07:55:23 被篡改冻结，目标 08:00:00。
     clockCalibration: {
       phase: "tampered",
@@ -302,6 +324,8 @@ export function createInitialGameState(): GameState {
       musicPlaying: false,
       musicMuted: false,
       brightness: 33,
+      homeAppOrder: [...DEFAULT_PHONE_HOME_APP_ORDER],
+      hiddenHomeAppIds: [],
       inventoryOpen: false,
       selectedItem: null,
       zjudingPage: "hub",

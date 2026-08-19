@@ -58,6 +58,8 @@ export type DeveloperCheckpointId =
   | "c3-qizhen-rhythm-key" | "c3-qizhen-rhythm-net" | "c3-qizhen-rhythm-fish" | "c3-qizhen-rhythm-paper"
   | "c3-qizhen-tool-chain" | "c3-qizhen-swan" | "c3-qizhen-paper"
   | "c3-qizhen-chase" | "c3-qizhen-complete"
+  | "c3-interlude-reboot" | "c3-interlude-journal" | "c3-interlude-photos"
+  | "c3-interlude-voice" | "c3-interlude-network" | "c3-interlude-timeline" | "c3-interlude-replay"
   | Chapter4PrologueDeveloperCheckpointId
   | "c4-prologue-done" | "c4-arrival" | "c4-airflow" | "c4-main-elevator"
   | "c4-wechat-notice" | "c4-wechat-elevator-audio" | "c4-elevator-aligned"
@@ -77,6 +79,7 @@ type LibraryDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c2-${string}
 type CanteenDeveloperCheckpointId = Extract<DeveloperCheckpointId, "canteen-hunt" | `c3-canteen-${string}`>;
 type TheaterDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-theater-${string}`>;
 type QizhenDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-qizhen-${string}`>;
+type ChapterThreeInterludeDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-interlude-${string}`>;
 
 export interface DeveloperCheckpoint {
   id: DeveloperCheckpointId;
@@ -166,6 +169,13 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-qizhen-paper", chapter: "第三章", label: "磁性钓竿", detail: "道具 7 与钓竿待组合" },
   { id: "c3-qizhen-chase", chapter: "第三章", label: "直河道追逐", detail: "黑天鹅追逐并返回码头" },
   { id: "c3-qizhen-complete", chapter: "第三章", label: "启真湖结束", detail: "磁性扣损坏，纸条逃离" },
+  { id: "c3-interlude-reboot", chapter: "第三章", label: "3.5·恢复通知", detail: "手机检测到 7 分 55 秒未同步记录" },
+  { id: "c3-interlude-journal", chapter: "第三章", label: "3.5·CC98 收尾", detail: "保存 22:37:05 离湖回复" },
+  { id: "c3-interlude-photos", chapter: "第三章", label: "3.5·恢复照片", detail: "按左、中、右整理三张方向帧" },
+  { id: "c3-interlude-voice", chapter: "第三章", label: "3.5·录音排序", detail: "按湖面、石岸、大厅、广播排序" },
+  { id: "c3-interlude-network", chapter: "第三章", label: "3.5·网络证据", detail: "保存公众号、群聊和 A1 接入点记录" },
+  { id: "c3-interlude-timeline", chapter: "第三章", label: "3.5·时间线", detail: "排除旧时间并排列四项证据" },
+  { id: "c3-interlude-replay", chapter: "第三章", label: "3.5·恢复回放", detail: "目的地已确认，等待播放恢复回放" },
   { id: "c4-prologue", chapter: "第四章", label: "序幕·磁扣断裂", detail: "从启真湖磁性附件断裂开始" },
   { id: "c4-prologue-lake-exit", chapter: "第四章", label: "序幕·离开启真湖", detail: "纸条滑水、撞栏杆并落上石板" },
   { id: "c4-prologue-arcade", chapter: "第四章", label: "序幕·夜间拱廊", detail: "纸条沿拱廊向教学楼移动" },
@@ -961,6 +971,99 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
   };
 }
 
+function createChapterThreeInterludeCheckpointState(id: ChapterThreeInterludeDeveloperCheckpointId): GameState {
+  const base = createQizhenCheckpointState("c3-qizhen-complete");
+  const journalReady = id !== "c3-interlude-reboot" && id !== "c3-interlude-journal";
+  const photosReady = [
+    "c3-interlude-voice", "c3-interlude-network", "c3-interlude-timeline", "c3-interlude-replay"
+  ].includes(id);
+  const voiceReady = ["c3-interlude-network", "c3-interlude-timeline", "c3-interlude-replay"].includes(id);
+  const networkReady = ["c3-interlude-timeline", "c3-interlude-replay"].includes(id);
+  const replayReady = id === "c3-interlude-replay";
+  const currentScene: SceneId = id === "c3-interlude-reboot"
+    ? "phone_home"
+    : id === "c3-interlude-journal"
+      ? "cc98"
+      : id === "c3-interlude-photos"
+        ? "photos"
+        : id === "c3-interlude-voice"
+          ? "voice_memos"
+          : "timeline_recovery";
+  const evidenceIds: GameState["chapterThreeInterlude"]["evidenceIds"] = [
+    ...(journalReady ? ["journal_start" as const] : []),
+    ...(photosReady ? ["photo_direction" as const] : []),
+    ...(networkReady ? ["network_destination" as const] : []),
+    ...(voiceReady ? ["broadcast_end" as const] : [])
+  ];
+  return {
+    ...base,
+    runtimeMode: "phone",
+    currentScene,
+    chapterThreeInterlude: {
+      ...base.chapterThreeInterlude,
+      phase: replayReady
+        ? "destination_verified"
+        : networkReady
+          ? "timeline_assembly"
+          : id === "c3-interlude-reboot"
+            ? "reboot"
+            : id === "c3-interlude-journal"
+              ? "journal_closeout"
+              : "evidence_collection",
+      rebootSeen: id !== "c3-interlude-reboot",
+      recoveryOpened: id !== "c3-interlude-reboot",
+      photoFrameIds: photosReady ? ["paper_left", "paper_middle", "paper_right"] : [],
+      photoSequenceSolved: photosReady,
+      voiceClipOrder: voiceReady ? ["lake", "stone", "lobby", "broadcast"] : [],
+      voiceSequenceSolved: voiceReady,
+      officialNoticeSaved: networkReady,
+      routeScreenshotSaved: networkReady,
+      networkRecordRead: networkReady,
+      evidenceIds,
+      timelineOrder: replayReady ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"] : [],
+      rejectedDecoyIds: replayReady ? ["canteen_0755", "theater_0832", "status_clock_075523"] : [],
+      statusClockMarkedUntrusted: replayReady,
+      destinationId: replayReady ? "duan_yongping_a1" : null,
+      replayUnlocked: false,
+      completed: false
+    },
+    qizhenLake: {
+      ...base.qizhenLake,
+      journal: journalReady
+        ? { ...base.qizhenLake.journal, status: "archived", summaryChoice: "details_withheld", summaryPublished: true }
+        : base.qizhenLake.journal
+    },
+    ui: { ...base.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+  };
+}
+
+function createChapterFourBaseState(prologueSeen: boolean): GameState {
+  const base = createQizhenCheckpointState("c3-qizhen-complete");
+  return {
+    ...base,
+    chapterThreeInterlude: {
+      ...base.chapterThreeInterlude,
+      phase: prologueSeen ? "complete" : "replay_ready",
+      rebootSeen: true,
+      recoveryOpened: true,
+      photoFrameIds: ["paper_left", "paper_middle", "paper_right"],
+      photoSequenceSolved: true,
+      voiceClipOrder: ["lake", "stone", "lobby", "broadcast"],
+      voiceSequenceSolved: true,
+      officialNoticeSaved: true,
+      routeScreenshotSaved: true,
+      networkRecordRead: true,
+      evidenceIds: ["journal_start", "photo_direction", "network_destination", "broadcast_end"],
+      timelineOrder: ["journal_start", "photo_direction", "network_destination", "broadcast_end"],
+      rejectedDecoyIds: ["canteen_0755", "theater_0832", "status_clock_075523"],
+      statusClockMarkedUntrusted: true,
+      destinationId: "duan_yongping_a1",
+      replayUnlocked: true,
+      completed: prologueSeen
+    }
+  };
+}
+
 export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointRequestId): GameState {
   const id = resolveCheckpointId(requestedId) ?? "c1-alarm";
   const initial = createInitialGameState();
@@ -1063,13 +1166,16 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   if (id.startsWith("c3-qizhen-")) {
     return createQizhenCheckpointState(id as QizhenDeveloperCheckpointId);
   }
+  if (id.startsWith("c3-interlude-")) {
+    return createChapterThreeInterludeCheckpointState(id as ChapterThreeInterludeDeveloperCheckpointId);
+  }
   if (isChapter4PrologueDeveloperCheckpoint(id)) {
-    // 启真湖完成态 + 序幕未看：进入湖区画布即播放第四章序幕过场。
-    return createQizhenCheckpointState("c3-qizhen-complete");
+    // DEV 可直接预览已由第三章半解锁的恢复回放。
+    return createChapterFourBaseState(false);
   }
   if (id === "c4-prologue-done") {
     // 过场后第四章起点：序幕已看，进入 A1 门厅。
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     return {
       ...base,
       runtimeMode: "rpg",
@@ -1090,7 +1196,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     || id === "c4-wechat-notice"
     || id === "c4-wechat-elevator-audio"
   ) {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     const airflowObserved = id !== "c4-arrival";
     const paperGuidedToElevator = ["c4-main-elevator", "c4-wechat-notice", "c4-wechat-elevator-audio"].includes(id);
     const elevatorHistoryObserved = id === "c4-wechat-elevator-audio";
@@ -1125,7 +1231,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     };
   }
   if (id === "c4-elevator-aligned") {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     return {
       ...base,
       runtimeMode: "rpg",
@@ -1159,7 +1265,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     };
   }
   if (id === "c4-a2-arrival" || id === "c4-wechat-student-route") {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     const phoneCheckpoint = id === "c4-wechat-student-route";
     return {
       ...base,
@@ -1196,7 +1302,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     };
   }
   if (id === "c4-a2-schedule-observed") {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     return {
       ...base,
       runtimeMode: "rpg",
@@ -1233,7 +1339,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     };
   }
   if (id === "c4-a3-wayfinding" || id === "c4-wechat-wayfinding") {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     const phoneCheckpoint = id === "c4-wechat-wayfinding";
     return {
       ...base,
@@ -1282,7 +1388,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     };
   }
   if (id === "c4-a2-return-window") {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     return {
       ...base,
       runtimeMode: "rpg",
@@ -1331,7 +1437,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
     };
   }
   if (id === "c4-stair-echo") {
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     return {
       ...base,
       runtimeMode: "rpg",
@@ -1362,7 +1468,7 @@ export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointR
   }
   if (id === "c4-clock-intro" || id === "c4-clock-coarse" || id === "c4-clock-precision" || id === "c4-clock-release") {
     // 第三章完成态 + 第四章 clockCalibration 分阶段快照，直接进入时钟页检查四段流程。
-    const base = createQizhenCheckpointState("c3-qizhen-complete");
+    const base = createChapterFourBaseState(true);
     const seededClock = { ...createInitialGameState().clockCalibration };
     if (id === "c4-clock-coarse") {
       seededClock.phase = "calibrating";

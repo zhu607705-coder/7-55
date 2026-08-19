@@ -298,8 +298,21 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
 
 function chapterThreeQuest(state: GameState): QuestViewModel {
   if (state.qizhenLake.active) {
+    const mapCluesReady = (["bridge", "reflection", "lake"] as const)
+      .every((clueId) => state.qizhenLake.mapClueIds.includes(clueId));
     const task: TaskDefinition = state.qizhenLake.phase === "location_search"
-      ? {
+      ? mapCluesReady
+        ? {
+            id: "chapter_three_qizhen_location_confirm",
+            label: "在校园地图核对地点交点",
+            hints: [
+              "三条地点记录已接入。",
+              "打开浙大钉的校园地图，完成最后核对。"
+            ],
+            targetSurface: "phone",
+            recommendedScene: "zjuding"
+          }
+        : {
           id: "chapter_three_qizhen_location",
           label: theaterContent.completionTask.label,
           hints: theaterContent.completionTask.hints,
@@ -525,6 +538,79 @@ export function isQuestTaskBarVisible(state: GameState): boolean {
   ].includes(state.actOne.phase);
 }
 
+function chapterThreeInterludeQuest(state: GameState): QuestViewModel {
+  const interlude = state.chapterThreeInterlude;
+  let task: TaskDefinition;
+
+  if (!interlude.recoveryOpened || interlude.phase === "reboot") {
+    task = {
+      id: "chapter_three_interlude_reboot",
+      label: "打开未同步记录",
+      hints: ["手机刚收到一条 7 分 55 秒记录恢复通知。"],
+      targetSurface: "phone",
+      recommendedScene: "timeline_recovery"
+    };
+  } else if (!interlude.evidenceIds.includes("journal_start")) {
+    task = {
+      id: "chapter_three_interlude_journal",
+      label: "在 CC98 确认离湖时间",
+      hints: ["打开划船记录帖，保存最后一条离湖回复。"],
+      targetSurface: "phone",
+      recommendedScene: "cc98"
+    };
+  } else if (!interlude.photoSequenceSolved) {
+    task = {
+      id: "chapter_three_interlude_photos",
+      label: "按方向整理三张恢复照片",
+      hints: ["在照片中依次选择纸条位于左侧、中间、右侧的画面。"],
+      targetSurface: "phone",
+      recommendedScene: "photos"
+    };
+  } else if (!interlude.voiceSequenceSolved) {
+    task = {
+      id: "chapter_three_interlude_voice",
+      label: "整理四段夜间录音",
+      hints: ["按湖面、石岸、大厅、闭楼广播的顺序排列。"],
+      targetSurface: "phone",
+      recommendedScene: "voice_memos"
+    };
+  } else if (!interlude.officialNoticeSaved || !interlude.routeScreenshotSaved) {
+    task = {
+      id: "chapter_three_interlude_wechat",
+      label: "保存闭楼通知和入口截图",
+      hints: ["微信中有一条楼宇公众号通知和一张群聊路线截图。"],
+      targetSurface: "phone",
+      recommendedScene: "wechat"
+    };
+  } else if (!interlude.networkRecordRead) {
+    task = {
+      id: "chapter_three_interlude_network",
+      label: "核对教学楼接入点记录",
+      hints: ["在浙大钉中筛出缺口末段、未知设备和三秒短会话。"],
+      targetSurface: "phone",
+      recommendedScene: "zjuding"
+    };
+  } else if (interlude.destinationId !== "duan_yongping_a1") {
+    task = {
+      id: "chapter_three_interlude_timeline",
+      label: "排除旧时间并恢复完整路线",
+      hints: ["回到记录恢复，先排除三条旧时间，再按发生顺序放入四项证据。"],
+      targetSurface: "phone",
+      recommendedScene: "timeline_recovery"
+    };
+  } else {
+    task = {
+      id: "chapter_three_interlude_replay",
+      label: "播放恢复回放",
+      hints: ["已确认目的地为段永平教学楼 A 楼一层。"],
+      targetSurface: "phone",
+      recommendedScene: "timeline_recovery"
+    };
+  }
+
+  return buildQuest("chapter_three", "未同步的七分五十五秒", [task], 0);
+}
+
 function chapterFourQuest(state: GameState): QuestViewModel {
   const chapter = state.chapter4;
   const wechatObjective = selectChapterFourWechatObjective(chapter);
@@ -548,7 +634,13 @@ function chapterFourQuest(state: GameState): QuestViewModel {
     }],
     hints: wechatObjective ? [wechatObjective.hint] : selectChapterFourHints(state),
     targetSurface: clockPhase || wechatObjective ? "phone" : "rpg",
-    recommendedScene: clockPhase ? "clock" : wechatObjective ? "wechat" : undefined
+    recommendedScene: clockPhase
+      ? "clock"
+      : wechatObjective?.id === "study_index"
+        ? "cc98"
+        : wechatObjective
+          ? "wechat"
+          : undefined
   };
 }
 
@@ -611,6 +703,9 @@ function selectChapterFourHints(state: GameState): string[] {
 export function selectQuestViewModel(state: GameState): QuestViewModel {
   const access = selectFeatureAccess(state);
   if (access.chapter === "chapter_one") return chapterOneQuest(state);
+  if (state.qizhenLake.phase === "complete" && !state.chapterThreeInterlude.completed) {
+    return chapterThreeInterludeQuest(state);
+  }
   if (access.chapter === "chapter_four") return chapterFourQuest(state);
   if (access.chapter === "chapter_three") return chapterThreeQuest(state);
   if ([

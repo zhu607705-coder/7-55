@@ -1,11 +1,33 @@
 {
   "version": 1,
   "events": {
+    "chapter35_recovery_opened": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_ch35_qizhen_reflection",
+          "action": "play",
+          "volume": 0.15,
+          "loop": true
+        }
+      ]
+    },
+    "chapter35_recovered_replay_requested": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_ch35_night_wind_building",
+          "action": "play",
+          "volume": 0.16,
+          "loop": true
+        }
+      ]
+    },
     "chapter4_prologue_started": {
       "cues": [
         {
           "channel": "music",
-          "asset": "music_ch4_prologue_night_pursuit",
+          "asset": "music_ch35_night_wind_building",
           "action": "play",
           "volume": 0.16,
           "loop": true
@@ -246,6 +268,49 @@
         {
           "channel": "music",
           "action": "stop"
+        }
+      ]
+    },
+    "chapter35_voice_audition_lake": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_water_ripple",
+          "volume": 0.52
+        }
+      ]
+    },
+    "chapter35_voice_audition_stone": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_stone_land",
+          "playbackRate": 0.86,
+          "volume": 0.5
+        }
+      ]
+    },
+    "chapter35_voice_audition_lobby": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_glass_door_open",
+          "volume": 0.5
+        },
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_pressure_suction",
+          "offsetMs": 280,
+          "volume": 0.32
+        }
+      ]
+    },
+    "chapter35_voice_audition_broadcast": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_broadcast_static",
+          "volume": 0.54
         }
       ]
     }

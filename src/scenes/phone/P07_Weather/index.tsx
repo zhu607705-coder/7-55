@@ -49,8 +49,8 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
           onClick={collectWater}
         >
           <i aria-hidden="true" />
-          <strong>{collected ? "水滴已收集" : waterAvailable ? "接住一滴水" : "先开始课外锻炼"}</strong>
-          <span>{collected ? "它正在道具栏里等着被使用" : waterAvailable ? "这滴水看起来比天气预报更有用" : "锻炼记录同步后，这里的雨滴会变得可取"}</span>
+          <strong>{collected ? "水滴已收集" : waterAvailable ? "接住一滴水" : "还没有开始外出打卡"}</strong>
+          <span>{collected ? "它正在道具栏里等着被使用" : waterAvailable ? "这滴水看起来比天气预报更有用" : "你都还没有开始外出打卡，一滴雨都不会落到你身上。"}</span>
         </button>
       </main>
     </section>
