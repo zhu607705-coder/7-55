@@ -2,17 +2,19 @@ import type { EventBus } from "../core/EventBus";
 import type { GameStore } from "../core/types";
 
 /**
- * 第四章序幕「纸条进入段永平教学楼」控制器。
- * 过场本身是纯表现层；这里只负责在过场结束（播完或跳过后收下任务卡）时
- * 记录已看事实、发领域事件，并以已验证的 GameState 进入教学楼时间迷宫。
+ * 第四章恢复回放控制器。画面只会在第三章半完成四项手机证据、确认目的地
+ * 并主动播放后出现；启真湖结算不能直接越过取证流程。
  */
 export class ChapterFourPrologueController {
   constructor(private readonly store: GameStore, private readonly events: EventBus) {}
 
-  /** 序幕是否应在启真湖 RPG 画布上播放。 */
+  /** 恢复回放是否已由第三章半正式解锁。 */
   shouldPlayPrologue(): boolean {
     const state = this.store.getState();
-    return state.qizhenLake.phase === "complete" && !state.chapter4.prologueSeen;
+    return state.qizhenLake.phase === "complete"
+      && state.chapterThreeInterlude.phase === "replay_ready"
+      && state.chapterThreeInterlude.replayUnlocked
+      && !state.chapter4.prologueSeen;
   }
 
   /**
@@ -21,13 +23,23 @@ export class ChapterFourPrologueController {
    */
   completePrologue(): boolean {
     const state = this.store.getState();
-    if (state.qizhenLake.phase !== "complete" || state.chapter4.prologueSeen) return false;
+    if (
+      state.qizhenLake.phase !== "complete"
+      || state.chapterThreeInterlude.phase !== "replay_ready"
+      || !state.chapterThreeInterlude.replayUnlocked
+      || state.chapter4.prologueSeen
+    ) return false;
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "rpg",
       rpgScene: "duan_yongping_temporal_maze",
       rpgCheckpoint: "c4_a1_lobby",
       ui: { ...current.ui, inventoryOpen: false, selectedItem: null },
+      chapterThreeInterlude: {
+        ...current.chapterThreeInterlude,
+        phase: "complete",
+        completed: true
+      },
       chapter4: {
         ...current.chapter4,
         prologueSeen: true,

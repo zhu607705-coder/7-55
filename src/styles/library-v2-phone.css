@@ -996,6 +996,17 @@
   transition: filter var(--dur-fast) var(--ease-pixel), box-shadow var(--dur-med) var(--ease-pixel);
 }
 
+.photo-evidence-illustration {
+  height: 100%;
+  image-rendering: pixelated;
+  inset: 0;
+  object-fit: cover;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+
 .photo-library-desk {
   background: #866544;
   border-top: 8px solid #4f3928;

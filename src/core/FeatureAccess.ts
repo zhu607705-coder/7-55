@@ -26,13 +26,16 @@ const RECOVERY_VISIBLE_PHASES = new Set<GameState["ui"]["libraryFinalsPhase"]>([
 
 export function selectFeatureAccess(state: GameState): FeatureAccess {
   const puzzle = state.ui.libraryFinalsPuzzle;
+  const interludeActive = state.qizhenLake.phase === "complete"
+    && !state.chapterThreeInterlude.completed;
   const chapterThreeActive = puzzle.nextQuestId === "chapter_three_canteen_hunt"
     || state.ui.libraryFinalsPhase === "friend_contacted"
     || state.canteenHunt.active
     || state.theaterHunt.active
     || state.qizhenLake.active;
-  // 第四章「校时」：启真湖流程完成后开放，优先级高于第三章。
-  const chapterFourActive = state.qizhenLake.phase === "complete";
+  // 第四章只能由第三章半恢复回放解锁；旧档迁移会补齐该事实。
+  const chapterFourActive = state.chapterThreeInterlude.completed
+    && state.chapterThreeInterlude.replayUnlocked;
   const chapter = chapterFourActive
     ? "chapter_four"
     : chapterThreeActive
@@ -58,8 +61,8 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
   return {
     chapter,
     checkin: chapter === "chapter_one",
-    cc98: chapterTwoOpen,
-    photos: librarySceneAccess && puzzle.backpackInspected && puzzle.investigationOpened,
+    cc98: chapterTwoOpen || interludeActive,
+    photos: interludeActive || (librarySceneAccess && puzzle.backpackInspected && puzzle.investigationOpened),
     departmentDirectory: chapterTwoOpen,
     weather: chapterTwoOpen,
     fullCampusMap: chapterTwoOpen && state.actOne.dormHubUnlocked,
@@ -70,6 +73,8 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     cc98Bd,
     libraryRecovery,
     bikeArcade,
+    timelineRecovery: interludeActive,
+    voiceMemos: interludeActive,
     clockCalibration: chapter === "chapter_four"
   };
 }
@@ -79,6 +84,8 @@ export function canEnterScene(state: GameState, scene: SceneId): boolean {
   if (scene === "checkin") return access.checkin;
   if (scene === "cc98") return access.cc98;
   if (scene === "photos") return access.photos;
+  if (scene === "timeline_recovery") return access.timelineRecovery;
+  if (scene === "voice_memos") return access.voiceMemos;
   if (scene === "weather") return access.weather;
   if (scene === "bike_arcade") return access.bikeArcade;
   if (scene === "chapter_transition") return access.chapter !== "chapter_one";

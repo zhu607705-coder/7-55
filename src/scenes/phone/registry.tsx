@@ -6,6 +6,7 @@ import { CampusCardScene } from "./P04_CampusCard";
 import { Cc98Scene } from "./P02_CC98";
 import { TiyiScene } from "./P06_Tiyi";
 import { WeatherScene } from "./P07_Weather";
+import { SettingsScene } from "./P08_Settings";
 import { BonsaiScene } from "./P10_Bonsai";
 import { CheckinScene } from "./P11_Checkin";
 import { EndingScene } from "./P12_Ending";
@@ -16,6 +17,8 @@ import { BikeArcadeScene } from "./P16_BikeArcade";
 import { ChapterTransitionScene } from "./P17_ChapterTransition";
 import { PhotosScene } from "./P18_Photos";
 import { ClockScene } from "./P19_Clock";
+import { TimelineRecoveryScene } from "./P20_TimelineRecovery";
+import { VoiceMemosScene } from "./P21_VoiceMemos";
 
 const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   alarm: {
@@ -29,6 +32,10 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   phone_home: {
     label: "P13 手机主界面",
     contract: "主屏：设置齿轮/塔楼钥匙孔/天气水滴/盆栽入口/微信弹窗。"
+  },
+  settings: {
+    label: "P08 设置",
+    contract: "真实系统设置、桌面编排、可选应用恢复与第四章后台活动取证。"
   },
   wechat: {
     label: "P14 微信",
@@ -53,6 +60,14 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   photos: {
     label: "P18 照片",
     contract: "IMG_0755.JPG 亮度识别；亮度不高于 20% 时生成物品识别报告。"
+  },
+  timeline_recovery: {
+    label: "P20 记录恢复",
+    contract: "第三章半：汇总 CC98、照片、微信、网络和录音证据，恢复 22:37:05—22:45:00 路径。"
+  },
+  voice_memos: {
+    label: "P21 语音备忘录",
+    contract: "第三章半：按湖面、石岸、大厅、闭楼广播顺序整理四段录音。"
   },
   campus_card: {
     label: "P04 校园卡余额",
@@ -88,12 +103,15 @@ const REAL_SCENES: Partial<Record<SceneId, (props: SceneComponentProps) => JSX.E
   alarm: AlarmScene,
   desktop: WakeScene,
   phone_home: PhoneHomeScene,
+  settings: SettingsScene,
   wechat: WechatScene,
   cc98: Cc98Scene,
   zjuding: ZjudingScene,
   tiyi: TiyiScene,
   weather: WeatherScene,
   photos: PhotosScene,
+  timeline_recovery: TimelineRecoveryScene,
+  voice_memos: VoiceMemosScene,
   campus_card: CampusCardScene,
   bike_arcade: BikeArcadeScene,
   chapter_transition: ChapterTransitionScene,

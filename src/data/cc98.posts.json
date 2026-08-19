@@ -108,5 +108,115 @@
       { "personaId": "six-cent-rich", "time": "今天 17:39", "floor": "6楼", "role": "收益", "text": "步数进账了，目的地没到。体艺记录和我今天的路线各算各的。", "likes": "61", "dislikes": "0" },
       { "personaId": "wild-auditor", "time": "今天 17:42", "floor": "7楼", "role": "凑整", "text": "记录有效。位移反复发生，终点未到。这条路线该单列。", "likes": "101", "dislikes": "1" }
     ]
+  },
+  {
+    "id": "p06",
+    "author": "西区打印排队中",
+    "avatar": "printer",
+    "rank": "07",
+    "board": "打印服务",
+    "title": "西区打印店早上哪台机快一点",
+    "replies": "28",
+    "views": "1542",
+    "time": "26-07-10 17:24",
+    "body": "今天 08:10 到西区打印店，前面有六个人。双面黑白先空出来，彩打那台一直在换纸。赶早课的可以先打黑白。",
+    "threadOperation": { "user": "打印店排队记录员", "action": "补充机器状态", "reason": "楼主记录了到店时间和两台机器的使用情况" },
+    "threadMetrics": { "favorites": "14", "likes": "64", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:26", "floor": "2楼", "role": "现场", "text": "08:13 我在左边那台打完 18 页，自动双面没有卡纸。", "likes": "32", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:28", "floor": "3楼", "role": "提醒", "text": "门口的取件架今天挪到右手边，拿完别站在入口数页码。", "likes": "27", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:30", "floor": "4楼", "role": "细节", "text": "装订机旁边那台需要先在屏幕上选纸型，直接塞纸会退回。", "likes": "41", "dislikes": "1" },
+      { "personaId": "qiushi-rider", "time": "今天 17:32", "floor": "5楼", "role": "路线", "text": "从西区食堂后门过去，08:20 还不用排到台阶上。", "likes": "38", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 17:34", "floor": "6楼", "role": "付款", "text": "校园卡余额不够时可以先用手机付，机器会保留刚才选的份数。", "likes": "45", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:36", "floor": "7楼", "role": "记录", "text": "把到店时间、机器编号和纸张规格写在订单上，之后找文件方便。", "likes": "52", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p07",
+    "author": "闭馆后找座位",
+    "avatar": "anonymous",
+    "rank": "08",
+    "board": "自习室",
+    "title": "基础图书馆闭馆后还有安静的位置吗",
+    "replies": "33",
+    "views": "1764",
+    "time": "26-07-10 17:21",
+    "body": "昨晚 19:35 从基础图书馆二楼出来，雨衣没带，就去麦斯威靠窗那排坐到 20:10。插座在桌脚边，带长线会好用一点。",
+    "threadOperation": { "user": "夜间自习信息台", "action": "加入自习地点索引", "reason": "帖子提供了闭馆后的实际座位和插座位置" },
+    "threadMetrics": { "favorites": "22", "likes": "78", "dislikes": "2" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:23", "floor": "2楼", "role": "补充", "text": "麦斯威二楼 19:50 还有空桌，靠窗的位置灯比较亮。", "likes": "36", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:25", "floor": "3楼", "role": "雨天", "text": "昨晚雨大，门口地垫湿了。伞先套袋再进座位区。", "likes": "29", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:27", "floor": "4楼", "role": "插座", "text": "靠墙第三张桌的插座松，手机充电会断，电脑最好接靠柱子的那排。", "likes": "49", "dislikes": "1" },
+      { "personaId": "qiushi-rider", "time": "今天 17:29", "floor": "5楼", "role": "到店", "text": "我 20:05 从东门进，店里有人开线上会议，想安静写题记得带耳塞。", "likes": "34", "dislikes": "1" },
+      { "personaId": "six-cent-rich", "time": "今天 17:31", "floor": "6楼", "role": "消费", "text": "热水要在一楼吧台旁接，带杯子比临时买饮料省时间。", "likes": "31", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:33", "floor": "7楼", "role": "提醒", "text": "离开前看一下桌面和插座，闭馆后的座位没有统一失物招领提醒。", "likes": "56", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p08",
+    "author": "三楼最后一勺",
+    "avatar": "coin",
+    "rank": "09",
+    "board": "食堂",
+    "title": "东二食堂三楼炒饭晚上几点收窗口",
+    "replies": "25",
+    "views": "1398",
+    "time": "26-07-10 17:18",
+    "body": "昨晚 18:50 去东二食堂三楼，炒饭窗口还接单，19:05 只剩蛋炒饭。想加青菜的要早点去，打包盒在窗口右边自己拿。",
+    "threadOperation": { "user": "东二饭点记录", "action": "补充窗口时间", "reason": "楼主给出了到店时间和当天剩余餐品" },
+    "threadMetrics": { "favorites": "11", "likes": "59", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:20", "floor": "2楼", "role": "饭点", "text": "18:40 去还有青菜炒饭，取餐区右侧的勺子需要自己拿。", "likes": "28", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:22", "floor": "3楼", "role": "排队", "text": "下雨天大家都从南门进，18:45 后南门那条队会拐到柱子后面。", "likes": "33", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:24", "floor": "4楼", "role": "座位", "text": "三楼靠窗两排桌子先被占满，端着餐盘上去前先看一眼空位。", "likes": "22", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 17:26", "floor": "5楼", "role": "到达", "text": "我从东门骑过去，18:55 才停好车，窗口已经开始收配菜。", "likes": "26", "dislikes": "1" },
+      { "personaId": "six-cent-rich", "time": "今天 17:28", "floor": "6楼", "role": "支付", "text": "打包盒不收钱，筷子在取餐台下层。刚才找了三分钟。", "likes": "39", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:30", "floor": "7楼", "role": "核对", "text": "窗口时间会按当天备菜量变，想稳妥就按 18:40 到店安排。", "likes": "47", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p09",
+    "author": "雨天伞套管理员",
+    "avatar": "wind",
+    "rank": "10",
+    "board": "校园生活",
+    "title": "教学楼门口的伞套机今天放哪边了",
+    "replies": "31",
+    "views": "1655",
+    "time": "26-07-10 17:15",
+    "body": "今天 16:20 到东教学楼，伞套机从门左边移到了门卫桌旁。机器没纸时可以先去旁边的小篮子拿，别把湿伞直接带进走廊。",
+    "threadOperation": { "user": "雨天通行提醒", "action": "补充入口位置", "reason": "伞套机和备用伞套的位置都已说明" },
+    "threadMetrics": { "favorites": "18", "likes": "71", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:17", "floor": "2楼", "role": "实测", "text": "16:25 备用篮还有一半，拿完要把伞尖朝下放。", "likes": "30", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:19", "floor": "3楼", "role": "天气", "text": "雨水会顺着门槛流进去，进门后先在地垫上停两步。", "likes": "41", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:21", "floor": "4楼", "role": "摆放", "text": "伞架右侧那一格空着，长柄伞别横放，会挡住旁边的人。", "likes": "35", "dislikes": "1" },
+      { "personaId": "qiushi-rider", "time": "今天 17:23", "floor": "5楼", "role": "通行", "text": "骑车到门口后先推到屋檐下，直接停在入口会挡住送货车。", "likes": "37", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 17:25", "floor": "6楼", "role": "提醒", "text": "备用伞套不用刷卡，旁边的饮水机才需要校园卡。", "likes": "45", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:27", "floor": "7楼", "role": "记录", "text": "入口改过位置后，最好把门左和门右都看一遍，免得回头找。", "likes": "52", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p10",
+    "author": "晚课后抄题人",
+    "avatar": "anonymous",
+    "rank": "11",
+    "board": "学习天地",
+    "title": "线代课后题有人用同一版空白答题纸吗",
+    "replies": "22",
+    "views": "1206",
+    "time": "26-07-10 17:12",
+    "body": "周三 21:10 在西区教学楼打印室找空白答题纸，最后在靠窗的文件架第二层看到一叠。纸张右上角有课程简称，拿之前先数清页数。",
+    "threadOperation": { "user": "学习资料互助台", "action": "补充取用位置", "reason": "楼主说明了寻找时间、房间和文件架层数" },
+    "threadMetrics": { "favorites": "9", "likes": "48", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:14", "floor": "2楼", "role": "资料", "text": "我拿到的是六页版，最后一页有老师留的空白演算区。", "likes": "24", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:16", "floor": "3楼", "role": "现场", "text": "文件架旁边的窗没关，纸角有点卷，带夹子会好拿。", "likes": "18", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:18", "floor": "4楼", "role": "核对", "text": "同一层还有一叠概率论的纸，课程简称只差一个字，别拿错。", "likes": "31", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 17:20", "floor": "5楼", "role": "路线", "text": "从西区教学楼南门进，沿走廊到头再右转，打印室就在饮水机旁。", "likes": "35", "dislikes": "1" },
+      { "personaId": "six-cent-rich", "time": "今天 17:22", "floor": "6楼", "role": "复印", "text": "只要空白纸的话，复印机不用开机，先看文件架的标签。", "likes": "29", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:24", "floor": "7楼", "role": "整理", "text": "拿走后在帖子里写一下版本和页数，后来的人就不用逐叠翻。", "likes": "39", "dislikes": "0" }
+    ]
   }
 ]

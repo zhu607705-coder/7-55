@@ -35,6 +35,7 @@ function getCheckpointLane(checkpoint: DeveloperCheckpoint): string {
   if (checkpoint.id === "canteen-hunt" || checkpoint.id.startsWith("c3-canteen-")) return "食堂";
   if (checkpoint.id.startsWith("c3-theater-")) return "剧场";
   if (checkpoint.id.startsWith("c3-qizhen-")) return "启真湖";
+  if (checkpoint.id.startsWith("c3-interlude-")) return "未同步记录";
   if (checkpoint.chapter === "第四章") {
     if (checkpoint.id.startsWith("c4-prologue")) return "序幕演出";
     if ([

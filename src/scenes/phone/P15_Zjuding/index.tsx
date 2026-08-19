@@ -21,6 +21,7 @@ import actOneContent from "../../../data/act-one-bootstrap.content.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
 import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
 import { kit } from "../../../modules/GameKit";
+import type { ChapterThreeInterludeNetworkRecordId } from "../../../modules/ChapterThreePhoneInterludeController";
 import { isCatalogClueQuery, normalizeCatalogQuery } from "../../../modules/library-finals/puzzleRules";
 import { playSfx } from "../../../modules/Sfx";
 
@@ -359,6 +360,111 @@ function ActionSheet({ title, onClose, children }: { title: string; onClose: () 
         {children}
       </section>
     </div>
+  );
+}
+
+function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "state" | "router">) {
+  const [feedback, setFeedback] = useState("");
+  const [timeFilter, setTimeFilter] = useState<"all" | "missing_475" | "last_minute">("all");
+  const [sessionFilter, setSessionFilter] = useState<"all" | "unknown_short" | "authenticated">("all");
+  const [areaFilter, setAreaFilter] = useState<"all" | "dyp" | "other">("all");
+  const interlude = state.chapterThreeInterlude;
+  const filtersReady = timeFilter === "missing_475"
+    && sessionFilter === "unknown_short"
+    && areaFilter === "dyp";
+
+  const records: ReadonlyArray<{
+    id: ChapterThreeInterludeNetworkRecordId;
+    time: string;
+    accessPoint: string;
+    location: string;
+    duration: string;
+    device: string;
+  }> = filtersReady
+    ? [{
+        id: "record_0755",
+        time: "22:44:57",
+        accessPoint: "AP-DYP-A1-03",
+        location: "段永平教学楼 A 楼一层大厅",
+        duration: "3 秒",
+        device: "未知设备 · 不是林星宇的手机"
+      }]
+    : [
+        { id: "record_qizhen_dock", time: "22:39:18", accessPoint: "AP-QZL-DOCK-02", location: "启真湖小码头", duration: "2 分 41 秒", device: "林星宇的手机" },
+        { id: "record_theater_hall", time: "22:41:32", accessPoint: "AP-THEATER-HALL-01", location: "剧场大厅", duration: "18 秒", device: "已认证设备" },
+        { id: "record_library_south", time: "22:43:11", accessPoint: "AP-LIB-SOUTH-05", location: "基础图书馆南区", duration: "1 分 06 秒", device: "已认证设备" }
+      ];
+
+  function saveNetworkRecord(recordId: ChapterThreeInterludeNetworkRecordId) {
+    const result = kit.chapterThreeInterlude.readNetworkRecord(recordId);
+    setFeedback(result === "accepted" || result === "already_complete"
+      ? "22:44:57 的三秒接入记录已加入恢复证据。"
+      : result === "incorrect"
+        ? "这条记录的时间、地点或会话长度与缺口对不上。"
+        : "先在记录恢复中确认划船帖的离湖时间。"
+    );
+  }
+
+  return (
+    <section className="interlude-network-page app-screen" aria-label="浙大钉校园网络记录">
+      <header className="interlude-app-header">
+        <PhoneNavButton kind="exit" label="退出浙大钉，返回手机主页" onClick={() => router.goTo("phone_home")} />
+        <div><small>浙大钉 · 网络服务</small><h1>设备接入记录</h1></div>
+        <span aria-hidden="true">5G</span>
+      </header>
+      <main className="interlude-scroll">
+        <section className="interlude-network-summary">
+          <small>查询范围</small>
+          <strong>22:37:05 — 22:45:00</strong>
+          <span>日志内有一段 7 分 55 秒的未同步缺口</span>
+        </section>
+        <section className="interlude-network-filters" aria-label="网络记录筛选">
+          <fieldset>
+            <legend>时间</legend>
+            <button type="button" className={timeFilter === "all" ? "is-selected" : ""} onClick={() => setTimeFilter("all")}>全部</button>
+            <button type="button" className={timeFilter === "missing_475" ? "is-selected" : ""} onClick={() => setTimeFilter("missing_475")}>缺失时段末段</button>
+            <button type="button" className={timeFilter === "last_minute" ? "is-selected" : ""} onClick={() => setTimeFilter("last_minute")}>最后 1 分钟</button>
+          </fieldset>
+          <fieldset>
+            <legend>会话</legend>
+            <button type="button" className={sessionFilter === "all" ? "is-selected" : ""} onClick={() => setSessionFilter("all")}>全部</button>
+            <button type="button" className={sessionFilter === "unknown_short" ? "is-selected" : ""} onClick={() => setSessionFilter("unknown_short")}>未知设备 · 短会话</button>
+            <button type="button" className={sessionFilter === "authenticated" ? "is-selected" : ""} onClick={() => setSessionFilter("authenticated")}>已认证设备</button>
+          </fieldset>
+          <fieldset>
+            <legend>区域</legend>
+            <button type="button" className={areaFilter === "all" ? "is-selected" : ""} onClick={() => setAreaFilter("all")}>全校</button>
+            <button type="button" className={areaFilter === "dyp" ? "is-selected" : ""} onClick={() => setAreaFilter("dyp")}>段永平教学楼</button>
+            <button type="button" className={areaFilter === "other" ? "is-selected" : ""} onClick={() => setAreaFilter("other")}>其他楼宇</button>
+          </fieldset>
+        </section>
+        <section className="interlude-network-results" aria-label="接入记录结果">
+          <header><strong>查询结果</strong><span>{records.length} 条</span></header>
+          {records.map((record) => (
+            <article key={record.id} className={`interlude-network-card ${record.id === "record_0755" ? "is-target" : ""}`.trim()}>
+              <header><span>{record.time}</span><b>{record.duration}</b></header>
+              <dl>
+                <div><dt>接入点</dt><dd>{record.accessPoint}</dd></div>
+                <div><dt>位置</dt><dd>{record.location}</dd></div>
+                <div><dt>设备</dt><dd>{record.device}</dd></div>
+              </dl>
+              <button type="button" onClick={() => saveNetworkRecord(record.id)}>
+                {interlude.networkRecordRead && record.id === "record_0755" ? "记录已保存" : "保存这条记录"}
+              </button>
+            </article>
+          ))}
+        </section>
+        <p className="interlude-network-note">找到缺口结束前的未知短会话，再用接入点缩小地点。</p>
+        {interlude.networkRecordRead ? (
+          <section className="interlude-network-dialogue" aria-label="记录核验结果">
+            <p><b>林星宇</b>这不是我的手机。</p>
+            <p><b>系统</b>设备名也不是你的。它借用了你的校园身份，在段永平教学楼一楼留下了三秒会话。</p>
+          </section>
+        ) : null}
+        {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
+        <button type="button" className="interlude-return-recovery" onClick={() => router.goTo("timeline_recovery")}>返回记录恢复</button>
+      </main>
+    </section>
   );
 }
 
@@ -929,14 +1035,26 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       setQizhenMapFeedback("当前没有需要合并的地点线索。");
       return;
     }
+    if (result === "already_added") {
+      setQizhenMapFeedback("这条记录已经参与检索。");
+      return;
+    }
     const count = kit.qizhenLake.getMapClueCount();
     setQizhenMapFeedback(
       count >= 3
-        ? qizhenContent.locationSearch.map.three
+        ? qizhenContent.locationSearch.map.ready
         : count === 2
           ? qizhenContent.locationSearch.map.two
           : qizhenContent.locationSearch.map.one
     );
+  }
+
+  function confirmQizhenMapLocation() {
+    if (!kit.qizhenLake.confirmMapLocation()) {
+      setQizhenMapFeedback("三条记录还没有全部对齐。");
+      return;
+    }
+    setQizhenMapFeedback(qizhenContent.locationSearch.map.three);
   }
 
   function enterQizhenCampusApproach() {
@@ -1026,6 +1144,14 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </button>
       </section>
     );
+  }
+
+  if (
+    state.qizhenLake.phase === "complete"
+    && !state.chapterThreeInterlude.completed
+    && state.chapterThreeInterlude.recoveryOpened
+  ) {
+    return <InterludeNetworkRecord state={state} router={router} />;
   }
 
   let page: JSX.Element;
@@ -1171,62 +1297,81 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       </section>
     );
   } else if (currentPage === "campus_map") {
-    const clueLabels: Record<QizhenMapClueId, string> = { bridge: "桥边", reflection: "倒影", lake: "湖" };
-    const clueItems: Record<QizhenMapClueId, ItemId> = {
-      bridge: "bridgeKeyword",
-      reflection: "reflectionKeyword",
-      lake: "lakeKeyword"
-    };
-    const availableClues: Array<{ id: ItemId; clue: QizhenMapClueId; label: string }> = [
-      { id: "bridgeKeyword", clue: "bridge", label: "桥边" },
-      { id: "reflectionKeyword", clue: "reflection", label: "倒影" },
-      { id: "lakeKeyword", clue: "lake", label: "湖" }
+    const availableClues: Array<{
+      id: ItemId;
+      clue: QizhenMapClueId;
+      label: string;
+      source: string;
+      excerpt: string;
+    }> = [
+      { id: "bridgeKeyword", clue: "bridge", label: "桥边", source: "CC98 目击帖", excerpt: "方向靠近桥" },
+      { id: "reflectionKeyword", clue: "reflection", label: "倒影", source: "馆藏异常记录", excerpt: "页码只出现在倒影中" },
+      { id: "lakeKeyword", clue: "lake", label: "湖面", source: "微信聊天", excerpt: "湖面出现逆风水纹" }
     ];
     const solved = state.qizhenLake.phase !== "location_search" && state.qizhenLake.phase !== "inactive";
+    const addedCount = state.qizhenLake.mapClueIds.length;
+    const readyToConfirm = !solved && addedCount === availableClues.length;
+    const defaultFeedback = solved
+      ? qizhenContent.locationSearch.map.three
+      : readyToConfirm
+        ? qizhenContent.locationSearch.map.ready
+        : addedCount === 2
+          ? qizhenContent.locationSearch.map.two
+          : addedCount === 1
+            ? qizhenContent.locationSearch.map.one
+            : "三条记录来自不同应用。先取得地点词，再在这里逐条接入。";
     page = (
       <section className="app-screen zju-native-page zju-qizhen-map-page" aria-label="校园地图地点检索">
         <NativeHeader title="校园地图" onBack={goBack} />
         <main className="zju-qizhen-map-content">
           <header>
             <span aria-hidden="true">位</span>
-            <div><strong>地点特征检索</strong><small>将不同来源的关键词放入同一地点查询</small></div>
+            <div><strong>交叉检索台</strong><small>保留原始来源，核对三条地点记录</small></div>
           </header>
-          <section className="zju-qizhen-map-board" data-drop-target="qizhen_map_search" aria-label="地点关键词槽位">
-            {[0, 1, 2].map((slot) => {
-              const clueId = state.qizhenLake.mapClueIds[slot];
-              return (
-                <span key={slot} className={clueId ? "is-filled" : "is-empty"}>
-                  {clueId ? (
-                    <>
-                      <span className="zju-qizhen-clue-texture" aria-hidden="true">
-                        <PixelIcon name={clueItems[clueId]} size={62} />
-                      </span>
-                      <b>{clueLabels[clueId]}</b>
-                    </>
-                  ) : (
-                    <small>拖入关键词</small>
-                  )}
-                </span>
-              );
-            })}
-          </section>
-          <section className="zju-qizhen-clue-cards" aria-label="可用地点关键词">
+          <section
+            className={`zju-qizhen-crosscheck ${solved ? "is-solved" : readyToConfirm ? "is-ready" : ""}`.trim()}
+            data-drop-target="qizhen_map_search"
+            aria-label="三源地点记录"
+          >
+            <header>
+              <div><small>已接入</small><strong>{addedCount} / {availableClues.length}</strong></div>
+              <span>{solved ? "入口已标记" : readyToConfirm ? "待核对" : "收集中"}</span>
+            </header>
+            <div className="zju-qizhen-source-list">
             {availableClues.map((clue) => {
               const owned = state.items[clue.id];
               const added = state.qizhenLake.mapClueIds.includes(clue.clue);
               return (
-                <button key={clue.id} type="button" disabled={!owned || added} onClick={() => addQizhenMapClue(clue.id)}>
-                  <span className="zju-qizhen-clue-texture is-card" aria-hidden="true">
-                    <PixelIcon name={clue.id} size={58} />
+                <article key={clue.id} className={added ? "is-added" : owned ? "is-owned" : "is-missing"}>
+                  <span className="zju-qizhen-clue-texture is-source" aria-hidden="true">
+                    <PixelIcon name={clue.id} size={44} />
                   </span>
-                  <b>{clue.label}</b>
-                  <small>{added ? "已加入" : owned ? "加入地图" : "尚未取得"}</small>
-                </button>
+                  <div>
+                    <small>{clue.source}</small>
+                    <strong>{clue.excerpt}</strong>
+                    <span>提取词：<b>{clue.label}</b></span>
+                  </div>
+                  {added ? (
+                    <em>已接入</em>
+                  ) : owned ? (
+                    <button type="button" onClick={() => addQizhenMapClue(clue.id)} aria-label={`导入${clue.source}的地点词${clue.label}`}>导入</button>
+                  ) : (
+                    <em>未取得</em>
+                  )}
+                </article>
               );
             })}
+            </div>
+            {readyToConfirm ? (
+              <section className="zju-qizhen-confirmation" aria-label="核对地点交点">
+                <div aria-hidden="true"><i /><i /><i /><b /></div>
+                <p>{qizhenContent.locationSearch.map.reason}</p>
+                <button type="button" onClick={confirmQizhenMapLocation}>{qizhenContent.locationSearch.map.confirm}</button>
+              </section>
+            ) : null}
           </section>
           <p className="zju-qizhen-map-feedback" aria-live="polite">
-            {qizhenMapFeedback || (solved ? qizhenContent.locationSearch.map.three : "三个来源可以按任意顺序收集。")}
+            {qizhenMapFeedback || defaultFeedback}
           </p>
           {solved ? (
             <section className="zju-qizhen-map-result">

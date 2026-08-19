@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
+import chapterFourCc98Content from "../../../data/chapter4-cc98.content.json";
 import theaterContent from "../../../data/chapter3-theater.content.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
 import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
@@ -12,6 +13,10 @@ import { getActiveDeveloperCheckpoint, getDeveloperCc98Mode } from "../../../mod
 import { kit } from "../../../modules/GameKit";
 import { consumeCc98ThreadIntent } from "../../../modules/NavIntent";
 import { playSfx } from "../../../modules/Sfx";
+import {
+  CHAPTER_FOUR_CC98_FACT_IDS,
+  selectChapterFourCc98Projection
+} from "../../../modules/ChapterFourCc98Model";
 import { Ac01FilterPuzzle } from "./Ac01FilterPuzzle";
 import { ControlExchangePuzzle } from "./ControlExchangePuzzle";
 import { Cc98ThreadPage } from "./ThreadPage";
@@ -24,6 +29,7 @@ type EditablePostKey = "author" | "rank" | "board" | "title" | "replies" | "view
 
 const STORAGE_KEY = "seven-fifty-five.cc98-posts.v2";
 const QUEST_STORAGE_KEY = "seven-fifty-five.cc98-quest-post-overrides.v1";
+const CHAPTER_FOUR_STUDY_LEGACY_POST_ID = "p03";
 const NETWORK_LOAD_DELAY_MS = 700;
 const NETWORK_REJECT_DELAY_MS = 1600;
 const NETWORK_CRASH_DELAY_MS = 620;
@@ -60,6 +66,35 @@ const QIZHEN_WITNESS_POST: Cc98Post = {
     floor: `${[3, 8, 14][index]}楼`,
     text: reply.replace(/^\d+楼：/, ""),
     likes: String([7, 4, 14][index]),
+    dislikes: "0"
+  }))
+};
+const chapterFourStudyPostContent = chapterFourCc98Content.mainPost;
+const CHAPTER_FOUR_STUDY_POST: Cc98Post = {
+  id: chapterFourStudyPostContent.id,
+  author: chapterFourStudyPostContent.author,
+  avatar: chapterFourStudyPostContent.avatar as AvatarVariant,
+  rank: chapterFourStudyPostContent.rank,
+  board: chapterFourCc98Content.board,
+  title: chapterFourStudyPostContent.title,
+  replies: String(chapterFourCc98Content.replies.length),
+  views: "2908",
+  time: chapterFourStudyPostContent.time,
+  body: chapterFourStudyPostContent.body,
+  threadReplies: chapterFourCc98Content.replies.map((reply, index) => ({
+    personaId: [
+      "socket-observer",
+      "late-printer",
+      "socket-observer",
+      "wild-auditor",
+      "qiushi-rider",
+      "yuquan-wind"
+    ][index] ?? "socket-observer",
+    time: `今天 ${reply.time}`,
+    floor: reply.floor,
+    role: reply.role,
+    text: reply.text,
+    likes: String([18, 11, 23, 16, 27, 31][index] ?? 8),
     dislikes: "0"
   }))
 };
@@ -138,6 +173,7 @@ const QUEST_POST_IDS = new Set([
   ACT_ONE_EXCHANGE_POST.id,
   INVESTIGATION_POST.id,
   QIZHEN_WITNESS_POST.id,
+  CHAPTER_FOUR_STUDY_POST.id,
   theaterTicketCommissionContent.id
 ]);
 const TOP_TABS = ["今日", "发现", "本周", "本月", "往年今日", "活动"];
@@ -166,21 +202,123 @@ function loadPosts() {
     if (!Array.isArray(parsed) || !parsed.length) {
       return cloneDefaults();
     }
-    const defaultsById = new Map(DEFAULT_POSTS.map((post) => [post.id, post]));
-    return (parsed as Cc98Post[])
-      .filter((post) => !QUEST_POST_IDS.has(post.id))
-      .map((post) => {
-        const defaults = defaultsById.get(post.id);
-        return {
-          ...defaults,
-          ...post,
-          // Replies are authored game content, while the post body remains player-editable.
-          threadReplies: defaults?.threadReplies ?? post.threadReplies
-        };
-      });
+    const savedPosts = (parsed as Cc98Post[]).filter((post) => !QUEST_POST_IDS.has(post.id));
+    const savedById = new Map(savedPosts.map((post) => [post.id, post]));
+    const mergedDefaults = cloneDefaults().map((defaults) => {
+      const savedPost = savedById.get(defaults.id);
+      return savedPost ? {
+        ...defaults,
+        ...savedPost,
+        // Replies are authored game content, while the post body remains player-editable.
+        threadReplies: defaults.threadReplies ?? savedPost.threadReplies
+      } : defaults;
+    });
+    const defaultIds = new Set(DEFAULT_POSTS.map((post) => post.id));
+    return [
+      ...mergedDefaults,
+      ...savedPosts.filter((post) => !defaultIds.has(post.id))
+    ];
   } catch {
     return cloneDefaults();
   }
+}
+
+const CHAPTER_FOUR_STUDY_FACTS = [
+  {
+    id: CHAPTER_FOUR_CC98_FACT_IDS.courseYearIndex,
+    title: "课程与年份入口",
+    detail: "先选课程，再按年份进入资料目录。"
+  },
+  {
+    id: CHAPTER_FOUR_CC98_FACT_IDS.archivedDiscussion,
+    title: "旧自习讨论",
+    detail: "旧帖能核对座位与插座记录，但日期可能已经过期。"
+  },
+  {
+    id: CHAPTER_FOUR_CC98_FACT_IDS.fieldCheckRequired,
+    title: "今晚仍要现场核验",
+    detail: "A2 的门牌、房间和通道以今晚实际情况为准。"
+  },
+  {
+    id: "homepage_recommendation",
+    title: "首页推荐顺序",
+    detail: "推荐位会变化，无法作为资料目录。"
+  },
+  {
+    id: "copy_old_route",
+    title: "直接照抄旧路线",
+    detail: "旧路线没有记录今晚的封闭入口。"
+  }
+] as const;
+
+function ChapterFourStudyIndexImport({ imported }: { imported: boolean }) {
+  const [selectedFactIds, setSelectedFactIds] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState(imported ? chapterFourCc98Content.import.duplicate : "");
+
+  function toggleFact(id: string) {
+    if (imported) return;
+    setSelectedFactIds((current) => current.includes(id)
+      ? current.filter((factId) => factId !== id)
+      : current.length >= 3
+        ? [current[1], current[2], id]
+        : [...current, id]
+    );
+    setFeedback("");
+  }
+
+  function importStudyIndex() {
+    const result = kit.chapterFour.importCc98StudyIndex(selectedFactIds);
+    setFeedback(result === "accepted"
+      ? chapterFourCc98Content.import.success
+      : result === "already_complete"
+        ? chapterFourCc98Content.import.duplicate
+        : result === "incorrect"
+          ? "这三项里混进了今晚无法使用的信息。再看一遍帖子和回复。"
+          : result === "locked"
+            ? chapterFourCc98Content.import.notAtChapter
+            : chapterFourCc98Content.import.locked
+    );
+    if (result === "accepted") {
+      playSfx("07_");
+      kit.flags.toast("学习天地资料索引已导入自习群。", "task");
+    }
+  }
+
+  return (
+    <section className="cc98-study-import" aria-label="筛选并导入学习天地资料">
+      <header>
+        <small>导入前核对</small>
+        <strong>选出今晚还能使用的三项信息</strong>
+      </header>
+      <div className="cc98-study-facts">
+        {CHAPTER_FOUR_STUDY_FACTS.map((fact) => {
+          const selected = selectedFactIds.includes(fact.id);
+          return (
+            <button
+              key={fact.id}
+              type="button"
+              className={selected ? "is-selected" : ""}
+              aria-pressed={selected}
+              disabled={imported}
+              onClick={() => toggleFact(fact.id)}
+            >
+              <span aria-hidden="true">{selected ? "■" : "□"}</span>
+              <span><b>{fact.title}</b><small>{fact.detail}</small></span>
+            </button>
+          );
+        })}
+      </div>
+      <button
+        type="button"
+        className="cc98-study-import-action"
+        disabled={imported || selectedFactIds.length !== 3}
+        onClick={importStudyIndex}
+      >
+        {imported ? "已导入麦斯威夜间自习群" : chapterFourCc98Content.import.buttonLabel}
+      </button>
+      {feedback ? <p role="status">{feedback}</p> : null}
+    </section>
+  );
 }
 
 function loadQuestPostOverrides(): Record<string, Partial<Cc98Post>> {
@@ -224,6 +362,74 @@ function EditableText({
   );
 }
 
+function InterludeJournalCloseout({
+  router
+}: Pick<SceneComponentProps, "router">) {
+  const [feedback, setFeedback] = useState("");
+  const [summaryChoice, setSummaryChoice] = useState<"safe_return" | "details_withheld">("details_withheld");
+
+  function closeThread() {
+    const result = kit.chapterThreeInterlude.completeJournalCloseout(summaryChoice);
+    if (result === "accepted" || result === "already_complete") {
+      router.goTo("timeline_recovery");
+      return;
+    }
+    setFeedback("恢复工具尚未建立这条记录。");
+  }
+
+  return (
+    <section className="cc98-scene interlude-journal-closeout" aria-label="启真湖划船记录收尾">
+      <header className="cc98-header">
+        <PhoneNavButton
+          kind="exit"
+          className="cc98-back"
+          label="退出帖子，返回记录恢复"
+          onClick={() => router.goTo("timeline_recovery")}
+        />
+        <h1>CC98小程序</h1>
+        <span className="cc98-header-placeholder" aria-hidden="true">•••</span>
+      </header>
+      <main className="interlude-journal-thread">
+        <article>
+          <header><span className="interlude-journal-avatar" aria-hidden="true">舟</span><div><strong>林星宇</strong><small>楼主 · 22:37</small></div></header>
+          <h2>启真湖划船记录｜风景很好，返程提前了</h2>
+          <p>从小码头下水。湖面比岸边安静，风从剧场方向过来。最后一张照片没同步上来，我先回岸上整理。</p>
+          <figure><div className="interlude-journal-lake" aria-hidden="true"><i /><i /><i /></div><figcaption>启真湖 · 22:37:05</figcaption></figure>
+        </article>
+        <section className="interlude-journal-replies">
+          <p><b>2楼</b> 晚上水面反光挺亮，靠岸别太快。</p>
+          <p><b>3楼</b> 最后一张图像是朝东边拍的。</p>
+        </section>
+        <fieldset className="interlude-journal-choice">
+          <legend>本次记录准备结束，选择楼主的最后一条回复。</legend>
+          <label className={summaryChoice === "safe_return" ? "is-selected" : ""}>
+            <input
+              type="radio"
+              name="qizhen-summary"
+              checked={summaryChoice === "safe_return"}
+              onChange={() => setSummaryChoice("safe_return")}
+            />
+            <strong>安全返航</strong>
+            <span>船和人都回来了。湖上的事先记到这里，剩下的等我整理。</span>
+          </label>
+          <label className={summaryChoice === "details_withheld" ? "is-selected" : ""}>
+            <input
+              type="radio"
+              name="qizhen-summary"
+              checked={summaryChoice === "details_withheld"}
+              onChange={() => setSummaryChoice("details_withheld")}
+            />
+            <strong>细节暂不公开</strong>
+            <span>最后一段发生了点不适合写进划船记录的事。人已上岸，其他细节暂时保留。</span>
+          </label>
+        </fieldset>
+        <button type="button" className="interlude-primary-action" onClick={closeThread}>发布收尾并保存时间</button>
+        {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
+      </main>
+    </section>
+  );
+}
+
 export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const [requestedThreadId] = useState(() => consumeCc98ThreadIntent());
   const ticketPortalCellularAccess = state.networkMode === "cellular"
@@ -262,6 +468,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const theaterTicketCommissionPhase = state.theaterHunt.cc98TicketCommissionPhase;
   const theaterTicketClaimedWave = state.theaterHunt.cc98TicketClaimedWave;
   const theaterTicketCommissionVisible = theaterTicketCommissionPhase !== "locked";
+  const chapterFourCc98 = selectChapterFourCc98Projection(state);
   const ownedEvidenceIds = useMemo(() => {
     const owned: LibraryEvidenceId[] = [];
     if (state.items.archivedLeaveRule) owned.push("archived_leave_rule");
@@ -312,8 +519,11 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
     if (qizhenSearchVisible && (qizhenSearchReady || state.qizhenLake.bridgeClueFound)) {
       next.push(withOverride(QIZHEN_WITNESS_POST));
     }
+    if (chapterFourCc98.visible) {
+      next.push(withOverride(CHAPTER_FOUR_STUDY_POST));
+    }
     return next;
-  }, [exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, qizhenSearchReady, qizhenSearchVisible, questPostOverrides, state.qizhenLake.bridgeClueFound, theaterTicketClaimedWave, theaterTicketCommissionPhase, theaterTicketCommissionVisible]);
+  }, [chapterFourCc98.visible, exchangeVisible, finalsPuzzle.bdCount, finalsPuzzle.preBdBriefingSeen, investigationVisible, qizhenSearchReady, qizhenSearchVisible, questPostOverrides, state.qizhenLake.bridgeClueFound, theaterTicketClaimedWave, theaterTicketCommissionPhase, theaterTicketCommissionVisible]);
   const openPost = useMemo(
     () => questPosts.find((post) => post.id === openPostId) ?? posts.find((post) => post.id === openPostId) ?? null,
     [openPostId, posts, questPosts]
@@ -322,6 +532,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const openPostIsExchange = openPost?.id === ACT_ONE_EXCHANGE_POST.id;
   const openPostIsQizhen = openPost?.id === QIZHEN_WITNESS_POST.id;
   const openPostIsTheaterTicket = openPost?.id === theaterTicketCommissionContent.id;
+  const openPostIsChapterFourStudy = openPost?.id === CHAPTER_FOUR_STUDY_POST.id;
   const visiblePosts = useMemo(() => {
     return [...questPosts, ...posts];
   }, [posts, questPosts]);
@@ -363,6 +574,13 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
         <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>退出</button>
       </section>
     );
+  }
+
+  if (
+    state.chapterThreeInterlude.recoveryOpened
+    && !state.chapterThreeInterlude.evidenceIds.includes("journal_start")
+  ) {
+    return <InterludeJournalCloseout router={router} />;
   }
 
   function searchWithOccupancyNote() {
@@ -434,7 +652,11 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   }
 
   function openPostDetails(id: string) {
-    setOpenPostId(id);
+    setOpenPostId(
+      id === CHAPTER_FOUR_STUDY_LEGACY_POST_ID && chapterFourCc98.visible
+        ? CHAPTER_FOUR_STUDY_POST.id
+        : id
+    );
   }
 
   function resetPosts() {
@@ -481,7 +703,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
 
       <nav className="cc98-top-tabs" aria-label="热门话题时间筛选">
         <span className="is-active" aria-current="page">今日</span>
-        {TOP_TABS.slice(1).map((tab) => <span key={tab} className="cc98-static-xxx">xxx</span>)}
+        {TOP_TABS.slice(1).map((tab) => <span key={tab}>{tab}</span>)}
       </nav>
 
       {noteSearchVisible ? (
@@ -540,11 +762,12 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
       <main className={`cc98-feed ${editing ? "is-editing" : ""}`} aria-label="CC98帖子列表">
         {visiblePosts.map((post) => {
           const isQuestPost = QUEST_POST_IDS.has(post.id);
+          const linksToChapterFourStudy = chapterFourCc98.visible && post.id === CHAPTER_FOUR_STUDY_LEGACY_POST_ID;
           const isEditablePost = editing;
           return (
           <article
             key={post.id}
-            className={`cc98-post ${isQuestPost ? "is-quest-post" : ""}`.trim()}
+            className={`cc98-post ${isQuestPost ? "is-quest-post" : ""} ${linksToChapterFourStudy ? "is-study-entry" : ""}`.trim()}
             role={isEditablePost ? undefined : "button"}
             tabIndex={isEditablePost ? undefined : 0}
             onClick={() => !editing && openPostDetails(post.id)}
@@ -566,6 +789,11 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
               <EditableText value={post.board} editing={isEditablePost} className="cc98-board" onCommit={(value) => updatePost(post.id, "board", value)} />
             </div>
             <EditableText value={post.title} editing={isEditablePost} className="cc98-title" onCommit={(value) => updatePost(post.id, "title", value)} />
+            {linksToChapterFourStudy && !isEditablePost ? (
+              <span className="cc98-study-entry-badge">
+                {chapterFourCc98.imported ? "已导入自习群" : "可导入自习群"}
+              </span>
+            ) : null}
             <div className="cc98-meta">
               <span>
                 <EditableText value={post.replies} editing={isEditablePost} className="cc98-meta-value" onCommit={(value) => updatePost(post.id, "replies", value)} /> 回复 ·{" "}
@@ -636,6 +864,8 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
               claimedWave={theaterTicketClaimedWave}
               ticketCodeRead={state.theaterHunt.ticketCodeRead}
             />
+          ) : openPostIsChapterFourStudy ? (
+            <ChapterFourStudyIndexImport imported={chapterFourCc98.imported} />
           ) : undefined}
           afterRepliesContent={openPostIsQizhen ? (
             <section className="cc98-qizhen-keyword" aria-label="提取目击关键词">

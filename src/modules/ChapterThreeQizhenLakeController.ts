@@ -26,7 +26,7 @@ import {
   upsertPhoto
 } from "./QizhenJournalModel";
 
-export type QizhenMapClueResult = "added" | "already_added" | "location_solved" | "wrong_item" | "inactive";
+export type QizhenMapClueResult = "added" | "already_added" | "ready_to_confirm" | "wrong_item" | "inactive";
 export type QizhenActionResult =
   | "accepted"
   | "inactive"
@@ -169,27 +169,45 @@ export class ChapterThreeQizhenLakeController {
     if (!clueId || !state.items[itemId]) return "wrong_item";
     if (state.qizhenLake.mapClueIds.includes(clueId)) return "already_added";
     const mapClueIds = [...state.qizhenLake.mapClueIds, clueId];
-    const solved = mapClueIds.length === 3;
+    const readyToConfirm = mapClueIds.length === 3;
     this.store.setState((current) => ({
       ...current,
       items: { ...current.items, [itemId]: false },
       ui: current.ui.selectedItem === itemId ? { ...current.ui, selectedItem: null } : current.ui,
       qizhenLake: {
         ...current.qizhenLake,
-        mapClueIds,
-        phase: solved ? "lake_unlocked" : current.qizhenLake.phase
+        mapClueIds
       }
     }));
     this.events.emit("use_item", { itemId, targetId: "qizhen_map_search", result: "consume" });
-    this.events.emit(solved ? "qizhen_location_solved" : "qizhen_map_clue_added", {
+    this.events.emit(readyToConfirm ? "qizhen_map_clues_ready" : "qizhen_map_clue_added", {
       clueId,
       count: mapClueIds.length
     });
-    return solved ? "location_solved" : "added";
+    return readyToConfirm ? "ready_to_confirm" : "added";
   }
 
   getMapClueCount(): number {
     return this.store.getState().qizhenLake.mapClueIds.length;
+  }
+
+  confirmMapLocation(): boolean {
+    const state = this.store.getState();
+    if (!state.qizhenLake.active || state.qizhenLake.phase !== "location_search") return false;
+    const clueIds = new Set(state.qizhenLake.mapClueIds);
+    if (!(["bridge", "reflection", "lake"] as const).every((clueId) => clueIds.has(clueId))) return false;
+    this.store.setState((current) => ({
+      ...current,
+      qizhenLake: {
+        ...current.qizhenLake,
+        phase: "lake_unlocked"
+      }
+    }));
+    this.events.emit("qizhen_location_solved", {
+      locationId: "qizhen_lake",
+      clueIds: [...state.qizhenLake.mapClueIds]
+    });
+    return true;
   }
 
   enterLake(): boolean {
@@ -694,8 +712,15 @@ export class ChapterThreeQizhenLakeController {
     if (state.qizhenLake.phase !== "swan_chase") return "inactive";
     this.store.setState((current) => ({
       ...current,
+      runtimeMode: "phone",
+      currentScene: "phone_home",
       items: { ...current.items, magneticFishingRod: false },
-      ui: current.ui.selectedItem === "magneticFishingRod" ? { ...current.ui, selectedItem: null } : current.ui,
+      ui: {
+        ...current.ui,
+        controlCenterOpen: false,
+        inventoryOpen: false,
+        selectedItem: null
+      },
       rpgCheckpoint: "qizhen_complete",
       qizhenLake: {
         ...current.qizhenLake,
@@ -707,12 +732,33 @@ export class ChapterThreeQizhenLakeController {
         chaseBestDistance: Math.max(current.qizhenLake.chaseBestDistance, 1000),
         magneticAttachmentBroken: true,
         transitionReady: true
+      },
+      chapterThreeInterlude: {
+        ...current.chapterThreeInterlude,
+        phase: "reboot",
+        rebootSeen: false,
+        recoveryOpened: false,
+        photoFrameIds: [],
+        photoSequenceSolved: false,
+        voiceClipOrder: [],
+        voiceSequenceSolved: false,
+        officialNoticeSaved: false,
+        routeScreenshotSaved: false,
+        networkRecordRead: false,
+        evidenceIds: [],
+        timelineOrder: [],
+        rejectedDecoyIds: [],
+        statusClockMarkedUntrusted: false,
+        destinationId: null,
+        replayUnlocked: false,
+        completed: false
       }
     }));
     this.events.emit("use_item", { itemId: "magneticFishingRod", targetId: "qizhen_paper", result: "consume" });
     this.events.emit("qizhen_escape_completed");
-    this.events.emit("qizhen_chapter_transition_requested", {
-      reason: "paper_escaped_after_swan_chase"
+    this.events.emit("chapter35_recovery_requested", {
+      reason: "qizhen_escape_completed",
+      scene: "phone_home"
     });
     return "accepted";
   }

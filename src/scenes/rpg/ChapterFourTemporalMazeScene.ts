@@ -67,6 +67,10 @@ interface MapCollisionRect extends MapRect {
   id: string;
 }
 
+interface LayoutForegroundOcclusion extends MapRect {
+  id: string;
+}
+
 interface LayoutAnchor {
   id: string;
   label: string;
@@ -102,6 +106,7 @@ interface LayoutFloor {
   roomId: "a1_lobby" | "a2_corridor" | "a3_wayfinding";
   assetId: FloorAssetId;
   staticCollisions: MapCollisionRect[];
+  foregroundOcclusions?: LayoutForegroundOcclusion[];
   anchors: LayoutAnchor[];
   stairLandings: LayoutStairLanding[];
   elevatorStand: LayoutPoint;
@@ -146,6 +151,7 @@ const WORLD = {
 const PLAYER_SPEED = 176;
 const ELEVATOR_DOORS_TEXTURE = "teaching-building-elevator-doors";
 const ELEVATOR_DOOR_FRAME_COUNT = 6;
+const ELEVATOR_DOOR_FRAME_HEIGHT = 96;
 
 type ElevatorRuntimePhase =
   | "idle"
@@ -173,6 +179,8 @@ const MAIN_ELEVATOR = LAYOUT.transportCore.elevators[0];
 const MAIN_STAIR = LAYOUT.transportCore.stairs[0];
 const ELEVATOR_LOCAL_CENTER_X = MAIN_ELEVATOR.centerX;
 const ELEVATOR_DOOR_CENTER_Y = 111;
+const ELEVATOR_DOOR_DEPTH = 4000 + ELEVATOR_DOOR_CENTER_Y + ELEVATOR_DOOR_FRAME_HEIGHT / 2;
+const ELEVATOR_FRONT_ACTOR_DEPTH = ELEVATOR_DOOR_DEPTH + 1;
 const ELEVATOR_INSIDE_Y = 142;
 const ELEVATOR_WAIT_STEP_MS = 620;
 const ELEVATOR_ARRIVAL_MS = 420;
@@ -191,6 +199,7 @@ interface FloorDefinition {
   shortTitle: string;
   checkpoint: RpgCheckpointId;
   staticCollisions: readonly MapCollisionRect[];
+  foregroundOcclusions: readonly LayoutForegroundOcclusion[];
   anchors: readonly LayoutAnchor[];
   stairLandings: readonly LayoutStairLanding[];
   elevatorStand: LayoutPoint;
@@ -204,7 +213,7 @@ const FLOOR_ASSET_URLS: Readonly<Record<FloorAssetId, string>> = {
 };
 
 const FLOOR_TITLES: Readonly<Record<DisplayFloor, string>> = {
-  1: "1F · 麦斯威面包坊餐厅",
+  1: "1F · 麦思威面包坊餐厅",
   2: "2F · 教室与开放学习区",
   3: "3F · 校友荣誉门厅"
 };
@@ -219,6 +228,7 @@ const FLOORS: readonly FloorDefinition[] = LAYOUT.floors.map((floor) => ({
   shortTitle: FLOOR_TITLES[floor.displayFloor],
   checkpoint: floor.checkpoint,
   staticCollisions: floor.staticCollisions,
+  foregroundOcclusions: floor.foregroundOcclusions ?? [],
   anchors: floor.anchors,
   stairLandings: floor.stairLandings,
   elevatorStand: floor.elevatorStand,
@@ -230,6 +240,12 @@ interface StoryAnchor {
   label: string;
   floor: DisplayFloor;
   bounds: MapRect;
+}
+
+interface ForegroundOcclusionVisual {
+  id: string;
+  bounds: Phaser.Geom.Rectangle;
+  image: Phaser.GameObjects.Image;
 }
 
 interface TravelZone extends RpgSpatialInteractionTarget {
@@ -598,6 +614,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private staticObstacles!: Phaser.Physics.Arcade.StaticGroup;
   private dynamicObstacles!: Phaser.Physics.Arcade.StaticGroup;
+  private foregroundOcclusionVisuals: ForegroundOcclusionVisual[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
   private interactKey!: Phaser.Input.Keyboard.Key;
@@ -685,6 +702,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height);
     this.createCollisionGroups();
+    this.createForegroundOcclusions();
     this.createElevatorVisuals();
     ensureFinaleNpcAnimations(this);
     this.createNpcVisuals();
@@ -701,6 +719,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     ).setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
     this.player.setScale(0.75);
+    this.player.setDepth(initialSpawn.y + 4000);
     this.animator = new RpgPlayerAnimator(this.player, initialSpawn.facing);
     this.physics.add.collider(this.player, this.staticObstacles);
     this.physics.add.collider(this.player, this.dynamicObstacles);
@@ -856,6 +875,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorRide();
       if (this.interactionRequested) this.requestElevatorDestination(this.floorPanelSelection);
       this.interactionRequested = false;
+      this.updateForegroundOcclusions();
       this.publishDebug();
       return;
     }
@@ -869,6 +889,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           : new Phaser.Math.Vector2();
       this.animator.update(elevatorMotion, this.time.now);
       this.interactionRequested = false;
+      this.updateForegroundOcclusions();
       this.publishDebug();
       return;
     }
@@ -937,6 +958,40 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       );
       this.physics.add.existing(obstacle, true);
       this.staticObstacles.add(obstacle);
+    }
+  }
+
+  private createForegroundOcclusions(): void {
+    this.foregroundOcclusionVisuals = FLOORS.flatMap((floor) =>
+      floor.foregroundOcclusions.map((definition) => {
+        const width = definition.right - definition.left;
+        const height = definition.bottom - definition.top;
+        return {
+          id: `floor_${floor.floor}_${definition.id}`,
+          bounds: new Phaser.Geom.Rectangle(
+            floor.offsetX + definition.left,
+            definition.top,
+            width,
+            height
+          ),
+          image: this.add.image(floor.offsetX, 0, floor.id)
+            .setOrigin(0)
+            .setCrop(definition.left, definition.top, width, height)
+            .setDepth(-1)
+            .setVisible(false)
+        };
+      })
+    );
+  }
+
+  private updateForegroundOcclusions(): void {
+    if (!this.player?.active) return;
+    const playerBounds = this.player.getBounds();
+    for (const visual of this.foregroundOcclusionVisuals) {
+      const coversPlayer = Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, visual.bounds);
+      visual.image
+        .setVisible(coversPlayer)
+        .setDepth(coversPlayer ? this.player.depth + 2 : -1);
     }
   }
 
@@ -1487,7 +1542,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.player.setPosition(
       floor.offsetX + spawn.x,
       spawn.y
-    ).setVelocity(0, 0);
+    ).setVelocity(0, 0).setDepth(spawn.y + 4000);
     this.animator.setFacing(spawn.facing);
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.reset(this.player.x, this.player.y);
@@ -1508,19 +1563,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         ELEVATOR_DOOR_CENTER_Y,
         ELEVATOR_DOORS_TEXTURE,
         0
-      ).setDepth(5002);
+      ).setDepth(ELEVATOR_DOOR_DEPTH);
       const indicatorBack = this.add.rectangle(centerX, 45, 48, 21, 0x071018, 0.94)
         .setStrokeStyle(2, 0xb88f48, 1)
-        .setDepth(5004);
+        .setDepth(ELEVATOR_FRONT_ACTOR_DEPTH);
       const indicatorText = this.add.text(centerX, 45, `${this.currentFloor}F`, {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "13px",
         color: "#ffd56f",
         align: "center"
-      }).setOrigin(0.5).setDepth(5005);
+      }).setOrigin(0.5).setDepth(ELEVATOR_FRONT_ACTOR_DEPTH);
       const callLamp = this.add.circle(centerX + 50, 111, 5, 0x55d9ff, 1)
         .setStrokeStyle(2, 0xd9f7ff, 1)
-        .setDepth(5005)
+        .setDepth(ELEVATOR_FRONT_ACTOR_DEPTH)
         .setVisible(false);
       this.elevatorVisuals.set(floor.floor, {
         floor: floor.floor,
@@ -1580,6 +1635,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private refreshProximityState(): void {
+    this.updateForegroundOcclusions();
     const floor = getFloor(this.currentFloor);
     const localPoint = { x: this.player.x - floor.offsetX, y: this.player.y };
     const state = this.bridge.getState().chapter4;
@@ -2071,7 +2127,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.enable = false;
     this.animator.setFacing("up");
-    this.player.setDepth(5001);
+    this.player.setDepth(ELEVATOR_FRONT_ACTOR_DEPTH + 1);
     this.tweens.add({
       targets: this.player,
       x: floor.offsetX + floor.elevatorStand.x,
@@ -2289,7 +2345,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.enable = false;
     this.animator.setFacing("up");
-    this.player.setDepth(5001);
+    this.player.setDepth(ELEVATOR_FRONT_ACTOR_DEPTH + 1);
     this.tweens.add({
       targets: this.player,
       x: floor.offsetX + floor.elevatorStand.x,
@@ -2431,7 +2487,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private beginElevatorExit(): void {
     this.elevatorPhase = "exiting";
     const floor = getFloor(this.currentFloor);
-    this.player.setVisible(true).setDepth(5001);
+    this.player.setVisible(true).setDepth(ELEVATOR_FRONT_ACTOR_DEPTH + 1);
     this.animator.setFacing("down");
     this.tweens.add({
       targets: this.player,
@@ -2541,7 +2597,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       (landing) => landing.targetStoryFloor === sourceFloor.storyFloor
     );
     const arrival = targetLanding?.arrivalPosition ?? floor.safeSpawn;
-    this.player.setPosition(floor.offsetX + arrival.x, arrival.y).setVelocity(0, 0);
+    this.player.setPosition(floor.offsetX + arrival.x, arrival.y)
+      .setVelocity(0, 0)
+      .setDepth(arrival.y + 4000);
     this.animator.setFacing("down");
     this.configureCameraForFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);

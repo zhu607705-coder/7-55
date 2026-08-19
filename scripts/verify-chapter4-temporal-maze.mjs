@@ -40,6 +40,10 @@ const expectedTargetAnchorIds = [
   "a3_bridge_history",
   "a2_return_window"
 ];
+const expectedA1ForegroundOcclusionIds = [
+  "bakery_divider_front",
+  "classroom_105_west_wall_front"
+];
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -287,12 +291,16 @@ if (layout) {
   for (const [floorIndex, floor] of floors.entries()) {
     const label = `floors[${floorIndex}]`;
     const staticCollisions = Array.isArray(floor.staticCollisions) ? floor.staticCollisions : [];
+    const foregroundOcclusions = Array.isArray(floor.foregroundOcclusions)
+      ? floor.foregroundOcclusions
+      : [];
     const anchors = Array.isArray(floor.anchors) ? floor.anchors : [];
     const stairLandings = Array.isArray(floor.stairLandings) ? floor.stairLandings : [];
     if (!staticCollisions.length) errors.push(`${label}.staticCollisions must not be empty`);
     if (!anchors.length) errors.push(`${label}.anchors must not be empty`);
     if (!stairLandings.length) errors.push(`${label}.stairLandings must not be empty`);
     pushDuplicateIdErrors(staticCollisions, `${label}.staticCollisions`);
+    pushDuplicateIdErrors(foregroundOcclusions, `${label}.foregroundOcclusions`);
     pushDuplicateIdErrors(anchors, `${label}.anchors`);
     pushDuplicateIdErrors(stairLandings, `${label}.stairLandings`);
 
@@ -303,6 +311,26 @@ if (layout) {
       for (const route of safeRoutesByFloor.get(floor.displayFloor) ?? []) {
         if (isRecord(collision) && rectsOverlap(collision, route)) {
           errors.push(`${label}.staticCollisions.${collision.id} overlaps safe route ${route.id}`);
+        }
+      }
+    }
+    for (const [occlusionIndex, occlusion] of foregroundOcclusions.entries()) {
+      if (isRecord(worldSize)) {
+        validateRect(occlusion, `${label}.foregroundOcclusions[${occlusionIndex}]`, worldSize);
+      }
+      if (staticCollisions.some((collision) => collision?.id === occlusion?.id)) {
+        errors.push(`${label}.foregroundOcclusions.${occlusion?.id} duplicates a static collision id`);
+      }
+    }
+    if (floor.storyFloor === "A1") {
+      const occlusionIds = foregroundOcclusions.map((occlusion) => occlusion?.id);
+      if (JSON.stringify(occlusionIds) !== JSON.stringify(expectedA1ForegroundOcclusionIds)) {
+        errors.push(`A1 foregroundOcclusions must be ${expectedA1ForegroundOcclusionIds.join(", ")}`);
+      }
+      const collisionIds = new Set(staticCollisions.map((collision) => collision?.id));
+      for (const obsoleteCollision of ["bakery_divider", "classroom_105_west_wall"]) {
+        if (collisionIds.has(obsoleteCollision)) {
+          errors.push(`A1 ${obsoleteCollision} must be rendered as foreground occlusion, not static collision`);
         }
       }
     }

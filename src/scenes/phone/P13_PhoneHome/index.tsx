@@ -1,12 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import zjudingUrl from "../../../assets/ui/zjuding.png";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { kit } from "../../../modules/GameKit";
 import { requestCc98Thread, requestFriendChat } from "../../../modules/NavIntent";
 import theaterContent from "../../../data/chapter3-theater.content.json";
+import chapterFourCc98Content from "../../../data/chapter4-cc98.content.json";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
 import { selectFeatureAccess } from "../../../core/FeatureAccess";
+import { canRemovePhoneHomeApp } from "../../../core/PhoneHomeApps";
+import type { PhoneHomeAppId } from "../../../core/types";
 import { selectChapterFourWechatObjective } from "../../../modules/ChapterFourWechatModel";
 
 /**
@@ -17,17 +20,25 @@ import { selectChapterFourWechatObjective } from "../../../modules/ChapterFourWe
 export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const [noticeStep, setNoticeStep] = useState(0);
   const [gearSpinning, setGearSpinning] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [homeEditing, setHomeEditing] = useState(false);
+  const [draggingAppId, setDraggingAppId] = useState<PhoneHomeAppId | null>(null);
   const [towerPhase, setTowerPhase] = useState<"idle" | "inserting" | "rotating">("idle");
+  const homeHoldTimerRef = useRef<number | null>(null);
+  const homePointerRef = useRef<{ appId: PhoneHomeAppId; pointerId: number; x: number; y: number } | null>(null);
+  const suppressHomeClickRef = useRef(false);
+  const lastHomeSwapRef = useRef<PhoneHomeAppId | null>(null);
   const towerTimersRef = useRef<number[]>([]);
   const towerInFlightRef = useRef(false);
   const { flags, ui } = state;
+  // 旧存档与开发节点可能只保留了已取走花中数字；该事实同样表示盆栽已开花。
+  const bonsaiBloomed = flags.flowerBloomed || flags.flowerEightTaken;
   const access = selectFeatureAccess(state);
   const friendFollowupPending = state.actOne.phase === "friend_message_required";
   const chapterServicesOpen = state.actOne.phase !== "prologue";
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
   const bikeArcadeUnlocked = state.bikeArcade.unlocked;
   const chapterFourWechatObjective = selectChapterFourWechatObjective(state.chapter4);
+  const interludeActive = state.qizhenLake.phase === "complete" && !state.chapterThreeInterlude.completed;
 
   // 微信弹窗：1s 出第一条，2.4s 出第二条（散码前）
   useEffect(() => {
@@ -123,14 +134,9 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     };
   }, [events]);
 
-  useEffect(() => {
-    if (!settingsOpen) return undefined;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSettingsOpen(false);
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [settingsOpen]);
+  useEffect(() => () => {
+    if (homeHoldTimerRef.current !== null) window.clearTimeout(homeHoldTimerRef.current);
+  }, []);
 
   function enterWechat(openFriendChat = false) {
     playSfx("02_");
@@ -161,6 +167,11 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     requestCc98Thread(theaterContent.cc98TicketCommission.id);
+    openApp("cc98");
+  }
+
+  function openChapterFourStudyIndex() {
+    requestCc98Thread(chapterFourCc98Content.mainPost.id);
     openApp("cc98");
   }
 
@@ -209,14 +220,82 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       clickGearIcon();
       return;
     }
-    setSettingsOpen(true);
+    router.goTo("settings");
   }
 
-  function toggleBackgroundMusic() {
-    playSfx("02_", { volume: 0.5 });
-    const nextMuted = !ui.musicMuted;
-    kit.flags.setUi("musicMuted", nextMuted);
-    kit.flags.toast(nextMuted ? "背景音乐已关闭。语音和操作音效保留。" : "背景音乐已开启。");
+  function clearHomeHoldTimer() {
+    if (homeHoldTimerRef.current === null) return;
+    window.clearTimeout(homeHoldTimerRef.current);
+    homeHoldTimerRef.current = null;
+  }
+
+  function beginHomePointer(event: React.PointerEvent<HTMLElement>, appId: PhoneHomeAppId, available: boolean) {
+    if (!available || access.chapter === "chapter_one") return;
+    clearHomeHoldTimer();
+    homePointerRef.current = {
+      appId,
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY
+    };
+    if (homeEditing) {
+      setDraggingAppId(appId);
+      lastHomeSwapRef.current = appId;
+      return;
+    }
+    homeHoldTimerRef.current = window.setTimeout(() => {
+      suppressHomeClickRef.current = true;
+      setHomeEditing(true);
+      setDraggingAppId(appId);
+      lastHomeSwapRef.current = appId;
+      playSfx("02_", { volume: 0.38 });
+    }, 460);
+  }
+
+  function moveHomePointer(event: React.PointerEvent<HTMLElement>) {
+    const pointer = homePointerRef.current;
+    if (!pointer || pointer.pointerId !== event.pointerId) return;
+    if (!homeEditing && Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 10) {
+      clearHomeHoldTimer();
+      return;
+    }
+    if (!homeEditing || !draggingAppId) return;
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-home-app-id]");
+    const targetId = target?.dataset.homeAppId as PhoneHomeAppId | undefined;
+    if (!targetId || targetId === draggingAppId || targetId === lastHomeSwapRef.current) return;
+    const order = [...state.ui.homeAppOrder];
+    const sourceIndex = order.indexOf(draggingAppId);
+    const targetIndex = order.indexOf(targetId);
+    if (sourceIndex < 0 || targetIndex < 0) return;
+    [order[sourceIndex], order[targetIndex]] = [order[targetIndex], order[sourceIndex]];
+    lastHomeSwapRef.current = targetId;
+    kit.flags.setUi("homeAppOrder", order);
+  }
+
+  function endHomePointer(event: React.PointerEvent<HTMLElement>) {
+    if (homePointerRef.current?.pointerId !== event.pointerId) return;
+    clearHomeHoldTimer();
+    homePointerRef.current = null;
+    lastHomeSwapRef.current = null;
+    setDraggingAppId(null);
+  }
+
+  function removeHomeApp(appId: PhoneHomeAppId) {
+    if (!canRemovePhoneHomeApp(state, appId)) {
+      kit.flags.toast("这个应用参与剧情，只能移动位置。", "system");
+      return;
+    }
+    kit.flags.setUi("hiddenHomeAppIds", [...state.ui.hiddenHomeAppIds, appId]);
+    kit.flags.toast(`${appId === "tiyi" ? "浙大体艺" : "求是潮 755"}已从桌面移除，可在设置中恢复。`, "system");
+  }
+
+  function moveHomeAppByStep(appId: PhoneHomeAppId, offset: number) {
+    const order = [...state.ui.homeAppOrder];
+    const sourceIndex = order.indexOf(appId);
+    const targetIndex = sourceIndex + offset;
+    if (sourceIndex < 0 || targetIndex < 0 || targetIndex >= order.length) return;
+    [order[sourceIndex], order[targetIndex]] = [order[targetIndex], order[sourceIndex]];
+    kit.flags.setUi("homeAppOrder", order);
   }
 
   function collectGearNine() {
@@ -272,6 +351,16 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     router.goTo("clock");
   }
 
+  function openTimelineRecovery() {
+    playSfx("02_");
+    router.goTo("timeline_recovery");
+  }
+
+  function openVoiceMemos() {
+    playSfx("02_");
+    router.goTo("voice_memos");
+  }
+
   const gearClass = flags.gearNineTaken
     ? "is-gone"
     : gearSpinning
@@ -282,8 +371,177 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           ? "is-restless"
           : "";
 
+  const cc98ObjectivePending = chapterFourWechatObjective?.id === "study_index";
+
+  function renderHomeApp(appId: PhoneHomeAppId): ReactNode {
+    const definitions: Record<PhoneHomeAppId, {
+      label: string;
+      available: boolean;
+      className?: string;
+      ariaLabel?: string;
+      activate: () => void;
+      icon: ReactNode;
+    }> = {
+      wechat: {
+        label: "微信",
+        available: true,
+        className: `chapter-four-wechat-app ${chapterFourWechatObjective && !cc98ObjectivePending ? "is-pending" : ""}`.trim(),
+        ariaLabel: chapterFourWechatObjective && !cc98ObjectivePending ? `微信，待处理：${chapterFourWechatObjective.label}` : "微信",
+        activate: () => enterWechat(false),
+        icon: <div className="app-icon b-green"><div className="wechat-icon"><i className="bubble one" /><i className="bubble two" /><i className="eye e1" /><i className="eye e2" /><i className="eye e3" /><i className="eye e4" /></div></div>
+      },
+      tiyi: {
+        label: "浙大体艺",
+        available: true,
+        activate: () => openApp("tiyi"),
+        icon: <div className="app-icon b-orange"><div className="runner"><i className="body" /><i className="arm1" /><i className="arm2" /><i className="leg1" /><i className="leg2" /></div></div>
+      },
+      zjuding: {
+        label: "浙大钉",
+        available: true,
+        className: chapterServicesOpen ? "is-chapter-open" : "",
+        activate: () => openApp("zjuding"),
+        icon: <div className="app-icon b-light"><img className="zjuding-img" alt="" src={zjudingUrl} /></div>
+      },
+      settings: {
+        label: "设置",
+        available: true,
+        activate: openSettings,
+        icon: <div className="app-icon b-gray gear-slot"><span className={`gear-sprite ${gearClass}`} aria-hidden="true">✱</span></div>
+      },
+      photos: {
+        label: "照片",
+        available: access.photos,
+        className: access.photos ? "is-chapter-open" : "",
+        activate: openPhotos,
+        icon: <div className="app-icon b-light"><i className="photo-flower" /></div>
+      },
+      timeline_recovery: {
+        label: "记录恢复",
+        available: access.timelineRecovery,
+        className: "is-chapter-open interlude-recovery-app",
+        activate: openTimelineRecovery,
+        icon: (
+          <div className="app-icon interlude-recovery-icon" aria-hidden="true">
+            <span className="recovery-document"><i /><i /></span>
+            <span className="recovery-clock"><i /></span>
+          </div>
+        )
+      },
+      voice_memos: {
+        label: "录音",
+        available: access.voiceMemos,
+        className: "is-chapter-open interlude-voice-app",
+        activate: openVoiceMemos,
+        icon: (
+          <div className="app-icon interlude-voice-icon" aria-hidden="true">
+            <span className="voice-microphone"><i /></span>
+            <span className="voice-wave"><i /><i /><i /></span>
+          </div>
+        )
+      },
+      cc98: {
+        label: "CC98",
+        available: access.cc98,
+        className: `chapter-four-cc98-app ${access.cc98 ? "is-chapter-open" : ""} ${cc98ObjectivePending ? "is-pending" : ""}`.trim(),
+        ariaLabel: cc98ObjectivePending ? `CC98，待处理：${chapterFourWechatObjective?.label ?? "学习天地资料索引"}` : "CC98",
+        activate: () => openApp("cc98"),
+        icon: <div className="app-icon b-blue"><b className="cc98-text">CC98</b></div>
+      },
+      bike_arcade: {
+        label: "游戏",
+        available: bikeArcadeUnlocked && access.bikeArcade,
+        className: `bike-game-app ${state.bikeArcade.completed ? "is-complete" : "is-new"}`,
+        activate: openBikeArcade,
+        icon: <div className="app-icon game-app-icon"><span aria-hidden="true">7:55</span><i aria-hidden="true" />{bikeArcadeUnlocked && access.bikeArcade ? <b className="game-app-badge" aria-hidden="true">{state.bikeArcade.completed ? "✓" : "1"}</b> : null}</div>
+      },
+      control_center: {
+        label: "控制中心",
+        available: true,
+        activate: () => {
+          playSfx("02_");
+          kit.flags.setUi("controlCenterOpen", true);
+        },
+        icon: <div className="app-icon b-purple"><i className="control" /></div>
+      },
+      clock: {
+        label: "时钟",
+        available: access.clockCalibration,
+        className: `${access.clockCalibration ? "is-chapter-open" : ""} clock-app ${state.clockCalibration.phase === "aligned" ? "is-aligned" : ""}`,
+        activate: openClock,
+        icon: <div className="app-icon clock-app-icon"><i className="clock-app-face" /></div>
+      }
+    };
+    const definition = definitions[appId];
+    const removable = definition.available && canRemovePhoneHomeApp(state, appId);
+    const activate = () => {
+      if (suppressHomeClickRef.current) {
+        suppressHomeClickRef.current = false;
+        return;
+      }
+      if (homeEditing) return;
+      definition.activate();
+    };
+    const slotClass = `home-app-slot ${homeEditing && definition.available ? "is-editing" : ""} ${draggingAppId === appId ? "is-dragging" : ""}`.trim();
+    return (
+      <div
+        key={appId}
+        className={slotClass}
+        data-home-app-id={appId}
+        onPointerDown={(event) => beginHomePointer(event, appId, definition.available)}
+        onPointerMove={moveHomePointer}
+        onPointerUp={endHomePointer}
+        onPointerCancel={endHomePointer}
+      >
+        {definition.available ? (
+          <button
+            type="button"
+            className={`app ${definition.className ?? ""}`.trim()}
+            aria-label={definition.ariaLabel ?? definition.label}
+            onClick={activate}
+            onKeyDown={(event) => {
+              if (!homeEditing) return;
+              const offset = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : event.key === "ArrowUp" ? -4 : event.key === "ArrowDown" ? 4 : 0;
+              if (offset) {
+                event.preventDefault();
+                moveHomeAppByStep(appId, offset);
+              } else if (event.key === "Delete" || event.key === "Backspace") {
+                event.preventDefault();
+                removeHomeApp(appId);
+              } else if (event.key === "Escape") {
+                setHomeEditing(false);
+              }
+            }}
+          >
+            {definition.icon}
+            <span className="label">{definition.label}</span>
+          </button>
+        ) : (
+          <div className={`app app-locked ${definition.className ?? ""}`.trim()} data-locked-app={definition.label} aria-hidden="true">
+            {definition.icon}
+            <span className="label">{definition.label}</span>
+          </div>
+        )}
+        {homeEditing && removable ? (
+          <button
+            type="button"
+            className="home-app-remove"
+            aria-label={`从桌面移除${definition.label}`}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              event.stopPropagation();
+              removeHomeApp(appId);
+            }}
+          >
+            −
+          </button>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <main className="phone" aria-label="像素风浙大首页">
+    <main className={`phone ${homeEditing ? "is-home-editing" : ""}`.trim()} aria-label="像素风浙大首页">
       <div className="background" aria-hidden="true">
         <div className="cloud c1" />
         <div className="cloud c2" />
@@ -331,8 +589,14 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         ) : null}
       </button>
 
-      <button type="button" className="bonsai-pot" aria-label="湖边盆栽" onClick={enterBonsai}>
+      <button
+        type="button"
+        className={`bonsai-pot${bonsaiBloomed ? " is-bloomed" : ""}`}
+        aria-label={bonsaiBloomed ? "湖边盆栽，已开花" : "湖边盆栽"}
+        onClick={enterBonsai}
+      >
         <i className="pot-plant" />
+        <i className="pot-flower" aria-hidden="true" />
         <i className="pot-body" />
       </button>
 
@@ -365,163 +629,17 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         </div>
       </section>
 
-      <section className="apps" aria-label="应用">
-        <button
-          type="button"
-          className={`app chapter-four-wechat-app ${chapterFourWechatObjective ? "is-pending" : ""}`.trim()}
-          aria-label={chapterFourWechatObjective ? `微信，待处理：${chapterFourWechatObjective.label}` : "微信"}
-          onClick={() => enterWechat(false)}
-        >
-          <div className="app-icon b-green">
-            <div className="wechat-icon">
-              <i className="bubble one" />
-              <i className="bubble two" />
-              <i className="eye e1" />
-              <i className="eye e2" />
-              <i className="eye e3" />
-              <i className="eye e4" />
-            </div>
-          </div>
-          <span className="label">微信</span>
-        </button>
-        <button type="button" className="app" aria-label="浙大体艺" onClick={() => openApp("tiyi")}>
-          <div className="app-icon b-orange">
-            <div className="runner">
-              <i className="body" />
-              <i className="arm1" />
-              <i className="arm2" />
-              <i className="leg1" />
-              <i className="leg2" />
-            </div>
-          </div>
-          <span className="label">浙大体艺</span>
-        </button>
-        <button type="button" className={`app ${chapterServicesOpen ? "is-chapter-open" : ""}`} aria-label="浙大钉" onClick={() => openApp("zjuding")}>
-          <div className="app-icon b-light">
-            <img className="zjuding-img" alt="" src={zjudingUrl} />
-          </div>
-          <span className="label">浙大钉</span>
-        </button>
-        <button type="button" className="app" aria-label="设置" onClick={openSettings}>
-          <div className="app-icon b-gray gear-slot">
-            <span className={`gear-sprite ${gearClass}`} aria-hidden="true">
-              ✱
-            </span>
-          </div>
-          <span className="label">设置</span>
-        </button>
-        {access.photos ? (
-          <button type="button" className="app is-chapter-open" aria-label="照片" onClick={openPhotos}>
-            <div className="app-icon b-light"><i className="photo-flower" /></div>
-            <span className="label">照片</span>
-          </button>
-        ) : (
-          <div className="app app-locked" data-locked-app="照片" aria-hidden="true">
-            <div className="app-icon b-light"><i className="photo-flower" /></div>
-            <span className="label">照片</span>
-          </div>
-        )}
-        {access.cc98 ? (
-          <button type="button" className="app is-chapter-open" aria-label="CC98" onClick={() => openApp("cc98")}>
-            <div className="app-icon b-blue"><b className="cc98-text">CC98</b></div>
-            <span className="label">CC98</span>
-          </button>
-        ) : (
-          <div className="app app-locked" data-locked-app="CC98" aria-hidden="true">
-            <div className="app-icon b-blue"><b className="cc98-text">CC98</b></div>
-            <span className="label">CC98</span>
-          </div>
-        )}
-        {bikeArcadeUnlocked && access.bikeArcade ? (
-          <button
-            type="button"
-            className={`app bike-game-app ${state.bikeArcade.completed ? "is-complete" : "is-new"}`}
-            aria-label="游戏"
-            onClick={openBikeArcade}
-          >
-            <div className="app-icon game-app-icon">
-              <span aria-hidden="true">7:55</span>
-              <i aria-hidden="true" />
-              <b className="game-app-badge" aria-hidden="true">
-                {state.bikeArcade.completed ? "✓" : "1"}
-              </b>
-            </div>
-            <span className="label">游戏</span>
-          </button>
-        ) : (
-          <div className="app app-locked" data-locked-app="游戏" aria-hidden="true">
-            <div className="app-icon game-app-icon">
-              <span aria-hidden="true">7:55</span>
-              <i aria-hidden="true" />
-            </div>
-            <span className="label">游戏</span>
-          </div>
-        )}
-        <button
-          type="button"
-          className="app"
-          aria-label="控制中心"
-          onClick={() => {
-            playSfx("02_");
-            kit.flags.setUi("controlCenterOpen", true);
-          }}
-        >
-          <div className="app-icon b-purple">
-            <i className="control" />
-          </div>
-          <span className="label">控制中心</span>
-        </button>
-        {access.clockCalibration ? (
-          <button
-            type="button"
-            className={`app is-chapter-open clock-app ${state.clockCalibration.phase === "aligned" ? "is-aligned" : ""}`}
-            aria-label="时钟"
-            onClick={openClock}
-          >
-            <div className="app-icon clock-app-icon"><i className="clock-app-face" /></div>
-            <span className="label">时钟</span>
-          </button>
-        ) : (
-          <div className="app app-locked" data-locked-app="时钟" aria-hidden="true">
-            <div className="app-icon clock-app-icon"><i className="clock-app-face" /></div>
-            <span className="label">时钟</span>
-          </div>
-        )}
-      </section>
-
-      {settingsOpen ? (
-        <section className="phone-settings-backdrop" role="presentation" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) setSettingsOpen(false);
-        }}>
-          <section className="phone-settings-panel" role="dialog" aria-modal="true" aria-labelledby="phone-settings-title">
-            <header>
-              <div>
-                <small>PHONE SETTINGS</small>
-                <h2 id="phone-settings-title">设置</h2>
-              </div>
-              <button type="button" className="phone-settings-close" aria-label="关闭设置" onClick={() => setSettingsOpen(false)}>×</button>
-            </header>
-            <div className="phone-settings-row">
-              <span className="phone-settings-music-icon" aria-hidden="true">♪</span>
-              <span className="phone-settings-copy">
-                <strong>背景音乐</strong>
-                <small>语音和操作音效不会关闭</small>
-              </span>
-              <button
-                type="button"
-                className={`phone-settings-switch ${ui.musicMuted ? "is-off" : "is-on"}`}
-                aria-label={ui.musicMuted ? "开启背景音乐" : "关闭背景音乐"}
-                aria-pressed={!ui.musicMuted}
-                onClick={toggleBackgroundMusic}
-              >
-                <span aria-hidden="true" />
-                <b>{ui.musicMuted ? "关闭" : "开启"}</b>
-              </button>
-            </div>
-            <p className="phone-settings-note">音乐设置会自动保存。</p>
-          </section>
-        </section>
+      {homeEditing ? (
+        <div className="phone-home-edit-bar" role="status">
+          <span>拖动图标调整位置</span>
+          <button type="button" onClick={() => setHomeEditing(false)}>完成</button>
+        </div>
       ) : null}
+      <section className={`apps ${homeEditing ? "is-editing" : ""}`.trim()} aria-label="应用">
+        {state.ui.homeAppOrder
+          .filter((appId) => !state.ui.hiddenHomeAppIds.includes(appId))
+          .map(renderHomeApp)}
+      </section>
 
       {flags.gearFallen && !flags.gearNineTaken ? (
         <button type="button" className="fallen-gear" aria-label="掉落的齿轮，背面刻着 9" onClick={collectGearNine}>
@@ -531,7 +649,27 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       ) : null}
 
       <section className="notifications" aria-label="通知列表">
-        {access.chapter === "chapter_three" ? (
+        {interludeActive ? (
+          <>
+            <button type="button" className="note interlude-recovery-note" onClick={openTimelineRecovery}>
+              <div className="mini interlude-recovery-mini" aria-hidden="true"><i /><i /><i /></div>
+              <div>
+                <div className="note-title">记录恢复</div>
+                <div className="note-msg">
+                  {state.chapterThreeInterlude.recoveryOpened
+                    ? "7 分 55 秒记录仍缺少时间线和目的地。"
+                    : "检测到 7 分 55 秒未同步记录。"}
+                </div>
+              </div>
+              <time className="note-time">22:45</time>
+            </button>
+            <article className="note">
+              <div className="mini b-green" aria-hidden="true"><span className="interlude-signal-dot" /></div>
+              <div><div className="note-title">校园网络</div><div className="note-msg">发现一条未归档的夜间接入记录。</div></div>
+              <time className="note-time">22:42</time>
+            </article>
+          </>
+        ) : access.chapter === "chapter_three" ? (
           <>
             {state.theaterHunt.cc98TicketCommissionPhase !== "locked" ? (
               <button
@@ -582,6 +720,32 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               <div className="mini b-light" aria-hidden="true"><i className="photo-flower" /></div>
               <div><div className="note-title">照片</div><div className="note-msg">新增照片「看不清的书脊」</div></div>
               <time className="note-time">08:23</time>
+            </article>
+          </>
+        ) : access.chapter === "chapter_four" ? (
+          <>
+            {cc98ObjectivePending ? (
+              <button
+                type="button"
+                className="note chapter-four-study-note"
+                onClick={openChapterFourStudyIndex}
+                aria-label="打开 CC98 学习天地资料索引帖"
+              >
+                <div className="mini b-blue" aria-hidden="true"><b className="cc98-text">98</b></div>
+                <div><div className="note-title">CC98 · 学习天地</div><div className="note-msg">课程年份入口与旧自习讨论待导入</div></div>
+                <time className="note-time">22:38</time>
+              </button>
+            ) : chapterFourWechatObjective ? (
+              <button type="button" className="note chapter-four-wechat-note" onClick={() => enterWechat(false)}>
+                <div className="mini b-green" aria-hidden="true"><span className="interlude-signal-dot" /></div>
+                <div><div className="note-title">微信</div><div className="note-msg">{chapterFourWechatObjective.label}</div></div>
+                <time className="note-time">22:47</time>
+              </button>
+            ) : null}
+            <article className="note">
+              <div className="mini b-light" aria-hidden="true"><i className="photo-flower" /></div>
+              <div><div className="note-title">照片</div><div className="note-msg">IMG_0755 的识别结果仍需现场核验</div></div>
+              <time className="note-time">22:46</time>
             </article>
           </>
         ) : (
@@ -648,7 +812,13 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         <button type="button" className="dot" aria-label="第 3 页" />
       </nav>
 
-      {friendFollowupPending && noticeStep >= 3 ? (
+      {interludeActive ? (
+        <button type="button" className="phone-top-notice interlude-top-notice" onClick={openTimelineRecovery} aria-label="记录恢复：检测到未同步记录">
+          <span className="notice-app-icon interlude-recovery-mini" aria-hidden="true"><i /><i /><i /></span>
+          <span className="notice-copy"><strong>记录恢复</strong><span>检测到 7 分 55 秒未同步记录</span></span>
+          <time>现在</time>
+        </button>
+      ) : friendFollowupPending && noticeStep >= 3 ? (
         <button type="button" className="phone-top-notice is-followup" onClick={() => enterWechat(true)} aria-label="朋友：成功了吗">
           <span className="notice-app-icon">
             <span className="wechat-icon mini-wechat">

@@ -1,0 +1,134 @@
+.settings-page {
+  --settings-ink: #17202a;
+  --settings-paper: #e9edf0;
+  --settings-blue: #1e6f9b;
+  background:
+    linear-gradient(rgba(23, 32, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 32, 42, 0.035) 1px, transparent 1px),
+    #d9e0e3;
+  background-size: 4px 4px;
+  color: var(--settings-ink);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 40px;
+}
+
+.settings-header {
+  align-items: center;
+  background: #f2f0e6;
+  border-bottom: 3px solid var(--settings-ink);
+  display: grid;
+  flex: 0 0 64px;
+  grid-template-columns: 42px 1fr auto;
+  padding: 0 12px 0 8px;
+}
+
+.settings-header > div { display: grid; gap: 2px; }
+.settings-header small { color: #63707a; font: 9px/1 monospace; letter-spacing: .12em; }
+.settings-header h1 { font-size: 17px; line-height: 1; margin: 0; }
+.settings-header > span { font: 12px/1 monospace; }
+
+.settings-root,
+.settings-detail {
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+
+.settings-search {
+  align-items: center;
+  background: #f4f5f2;
+  border: 2px solid #9ca8ad;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  min-height: 42px;
+  padding: 0 10px;
+}
+
+.settings-search span { font-size: 24px; }
+.settings-search input { background: transparent; border: 0; color: inherit; font: inherit; min-width: 0; outline: 0; }
+
+.settings-section-list {
+  border: 2px solid var(--settings-ink);
+  box-shadow: 4px 4px 0 rgba(23, 32, 42, .25);
+  display: grid;
+  margin-top: 12px;
+}
+
+.settings-section-list > button {
+  align-items: center;
+  background: var(--settings-paper);
+  border: 0;
+  border-bottom: 1px solid #9ca8ad;
+  color: inherit;
+  display: grid;
+  font: inherit;
+  grid-template-columns: 38px 1fr 20px;
+  min-height: 62px;
+  padding: 7px 8px;
+  text-align: left;
+}
+
+.settings-section-list > button:last-child { border-bottom: 0; }
+.settings-section-list i { align-items: center; background: var(--settings-blue); color: white; display: flex; font-style: normal; height: 30px; justify-content: center; width: 30px; }
+.settings-section-list span { display: grid; gap: 3px; }
+.settings-section-list b { font-size: 14px; }
+.settings-section-list small { color: #68747b; font-size: 10px; }
+.settings-section-list em { font-size: 24px; font-style: normal; }
+
+.settings-detail-card { display: grid; gap: 12px; }
+.settings-detail-card h2 { font-size: 19px; margin: 0; }
+.settings-detail-card > p { color: #505b61; font-size: 12px; line-height: 1.55; margin: 0; }
+.settings-detail-card > button,
+.settings-hidden-apps button,
+.settings-app-order button {
+  background: #f2f0e6;
+  border: 2px solid var(--settings-ink);
+  color: inherit;
+  font: inherit;
+  min-height: 38px;
+  padding: 7px 10px;
+}
+
+.settings-detail-card dl { border: 2px solid var(--settings-ink); margin: 0; }
+.settings-detail-card dl div { align-items: center; background: var(--settings-paper); border-bottom: 1px solid #a7b0b4; display: flex; justify-content: space-between; min-height: 46px; padding: 8px 10px; }
+.settings-detail-card dl div:last-child { border-bottom: 0; }
+.settings-detail-card dt { font-size: 13px; }
+.settings-detail-card dd { color: #58666d; font-size: 11px; margin: 0; }
+
+.settings-toggle-row { align-items: center; display: flex; justify-content: space-between; text-align: left; }
+.settings-toggle-row span { display: grid; gap: 2px; }
+.settings-toggle-row small { color: #657178; font-size: 10px; }
+.settings-toggle-row em { background: var(--settings-blue); color: white; font-style: normal; padding: 5px 8px; }
+
+.settings-range { background: var(--settings-paper); border: 2px solid var(--settings-ink); display: grid; gap: 10px; padding: 12px; }
+.settings-range span { display: flex; justify-content: space-between; }
+.settings-range input { accent-color: var(--settings-blue); width: 100%; }
+
+.settings-layout-reference { background: #18242d; color: #e9edf0; display: grid; gap: 5px; padding: 12px; }
+.settings-layout-reference small { color: #8dc4df; }
+.settings-app-order,
+.settings-hidden-apps { border: 2px solid var(--settings-ink); display: grid; list-style: none; margin: 0; padding: 0; }
+.settings-app-order li,
+.settings-hidden-apps li { align-items: center; background: var(--settings-paper); border-bottom: 1px solid #a7b0b4; display: flex; justify-content: space-between; min-height: 44px; padding: 5px 8px; }
+.settings-app-order li:last-child,
+.settings-hidden-apps li:last-child { border-bottom: 0; }
+.settings-app-order li > span:last-child { display: flex; gap: 4px; }
+.settings-app-order button { min-height: 30px; padding: 2px 10px; }
+
+.settings-record-list { border: 2px solid var(--settings-ink); display: grid; }
+.settings-record-list > button { align-items: center; background: var(--settings-paper); border: 0; border-bottom: 1px solid #a7b0b4; color: inherit; display: grid; font: inherit; grid-template-columns: 48px 1fr 32px; min-height: 58px; padding: 6px 8px; text-align: left; }
+.settings-record-list > button:last-child { border-bottom: 0; }
+.settings-record-list > button.is-selected { background: #c5e4ed; box-shadow: inset 4px 0 var(--settings-blue); }
+.settings-record-list time { font: 11px/1 monospace; }
+.settings-record-list span { display: grid; gap: 3px; }
+.settings-record-list small { color: #5b676d; font-size: 10px; }
+.settings-record-list em { font: 11px/1 monospace; font-style: normal; text-align: right; }
+
+.settings-feedback { background: #17202a; border-top: 3px solid #6cc7e5; bottom: 0; color: #f2f0e6; flex: 0 0 auto; font-size: 11px; line-height: 1.45; margin: 0; padding: 9px 12px; }
+
+@media (pointer: coarse) {
+  .settings-section-list > button,
+  .settings-detail-card > button { min-height: 48px; }
+}

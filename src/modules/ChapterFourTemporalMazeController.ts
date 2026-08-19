@@ -18,10 +18,19 @@ import {
   CHAPTER_FOUR_WAYFINDING_ORDER
 } from "./ChapterFourMazeProjection";
 import { CHAPTER_FOUR_WECHAT_CLUES } from "./ChapterFourWechatModel";
+import {
+  CHAPTER_FOUR_CC98_CLUES,
+  REQUIRED_CHAPTER_FOUR_CC98_FACT_IDS
+} from "./ChapterFourCc98Model";
+import {
+  CHAPTER_FOUR_SETTINGS_CLUES,
+  REQUIRED_BACKGROUND_RECORD_IDS
+} from "./ChapterFourSettingsModel";
 
 export type ChapterFourActionResult =
   | "accepted"
   | "already_complete"
+  | "incorrect"
   | "misaligned"
   | "wrong_mode"
   | "locked"
@@ -53,6 +62,50 @@ const THREE_FLOOR_DESTINATIONS = {
 
 export class ChapterFourTemporalMazeController {
   constructor(private readonly store: GameStore, private readonly events: EventBus) {}
+
+  verifyBackgroundActivity(recordIds: readonly string[]): ChapterFourActionResult {
+    const chapter = this.store.getState().chapter4;
+    if (!chapter.prologueSeen || chapter.phase === "inactive") return "inactive";
+    if (chapter.clueIds.includes(CHAPTER_FOUR_SETTINGS_CLUES.backgroundActivityVerified)) {
+      return "already_complete";
+    }
+    if (!sameStringSet(recordIds, REQUIRED_BACKGROUND_RECORD_IDS)) return "incorrect";
+    this.appendWechatClue(
+      CHAPTER_FOUR_SETTINGS_CLUES.backgroundActivityVerified,
+      "chapter4_settings_background_activity_verified"
+    );
+    return "accepted";
+  }
+
+  restoreDesktopLayout(appOrder: readonly string[]): ChapterFourActionResult {
+    const chapter = this.store.getState().chapter4;
+    if (!chapter.prologueSeen || chapter.phase === "inactive") return "inactive";
+    if (chapter.clueIds.includes(CHAPTER_FOUR_SETTINGS_CLUES.desktopLayoutRestored)) {
+      return "already_complete";
+    }
+    const requiredPrefix = ["wechat", "zjuding", "photos", "cc98"];
+    if (!requiredPrefix.every((id, index) => appOrder[index] === id)) return "incorrect";
+    this.appendWechatClue(
+      CHAPTER_FOUR_SETTINGS_CLUES.desktopLayoutRestored,
+      "chapter4_settings_desktop_layout_restored"
+    );
+    return "accepted";
+  }
+
+  importCc98StudyIndex(factIds: readonly string[]): ChapterFourActionResult {
+    const chapter = this.store.getState().chapter4;
+    if (!chapter.prologueSeen || chapter.phase === "inactive") return "inactive";
+    if (chapter.clueIds.includes(CHAPTER_FOUR_CC98_CLUES.studyIndexImported)) {
+      return "already_complete";
+    }
+    if (chapter.floor !== "A2" || chapter.phase !== "npc_schedule_route") return "locked";
+    if (!sameStringSet(factIds, REQUIRED_CHAPTER_FOUR_CC98_FACT_IDS)) return "incorrect";
+    this.appendWechatClue(
+      CHAPTER_FOUR_CC98_CLUES.studyIndexImported,
+      "chapter4_cc98_study_index_imported"
+    );
+    return "accepted";
+  }
 
   readWechatOfficialNotice(): ChapterFourActionResult {
     const chapter = this.store.getState().chapter4;
@@ -91,6 +144,7 @@ export class ChapterFourTemporalMazeController {
     }
     if (
       !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead)
+      || !chapter.clueIds.includes(CHAPTER_FOUR_CC98_CLUES.studyIndexImported)
       || chapter.floor !== "A2"
       || chapter.phase !== "npc_schedule_route"
     ) {
@@ -625,6 +679,12 @@ export class ChapterFourTemporalMazeController {
     }));
     this.events.emit(eventName, { clueId });
   }
+}
+
+function sameStringSet(actual: readonly string[], required: readonly string[]): boolean {
+  if (actual.length !== required.length) return false;
+  const actualSet = new Set(actual);
+  return required.every((id) => actualSet.has(id));
 }
 
 function appendUnique<T>(values: readonly T[], value: T): T[] {

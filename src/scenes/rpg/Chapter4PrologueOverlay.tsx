@@ -78,7 +78,7 @@ function createInitialFiredBeats(initialElapsedMs: number): Set<string> {
 }
 
 /**
- * 第四章序幕「纸条进入段永平教学楼」过场。
+ * 第三章半恢复出的现场回放。
  * 纯表现层：按共享时间线播放像素演出、发领域事件驱动音频 cue 与中文字幕；
  * 剧情事实只通过 onComplete 交给 ChapterFourPrologueController 写入。
  */
@@ -256,9 +256,14 @@ export function Chapter4PrologueOverlay({ events, onComplete, initialElapsedMs }
         aria-label="夜色中，湿纸条从启真湖升到高处，越过拱廊并被追入仍亮着灯的段永平教学楼"
       />
 
+      <div className="chapter4-prologue-recovery-mark" aria-label="由四项手机证据恢复的现场回放">
+        <strong>RECOVERED TIMELINE</strong>
+        <span>SOURCE 4 / 4</span>
+      </div>
+
       {!cardShown ? (
         <button type="button" className="chapter4-prologue-skip" onClick={skipToCard}>
-          跳过过场
+          跳过恢复回放
         </button>
       ) : null}
 
@@ -285,7 +290,7 @@ export function Chapter4PrologueOverlay({ events, onComplete, initialElapsedMs }
 
       {cardShown ? (
         <aside className="chapter4-prologue-task-card" role="dialog" aria-modal="true" aria-labelledby="chapter4-prologue-task-title">
-          <small>新任务</small>
+          <small>CHAPTER 03.5 · COMPLETE</small>
           <h2 id="chapter4-prologue-task-title">第四章：时间迷宫</h2>
           <dl>
             <div>

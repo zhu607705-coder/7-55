@@ -367,9 +367,11 @@ export function RpgGameHost({
   const itemInspectOpen = inspectedMapItem !== null;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const chaseActive = state.canteenHunt.phase === "chasing";
-  // 第四章序幕：启真湖逃脱完成且过场未看时，首次停留在湖区即播放过场。
+  // 第四章序幕：第三章半完成四项手机取证后，才把旧画面作为恢复回放播放。
   const prologueActive = state.rpgScene === "qizhen_lake"
     && state.qizhenLake.phase === "complete"
+    && state.chapterThreeInterlude.phase === "replay_ready"
+    && state.chapterThreeInterlude.replayUnlocked
     && !state.chapter4.prologueSeen;
   const prologueInitialElapsedMs = prologueActive ? getDeveloperChapter4PrologueOffset() : 0;
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
@@ -921,6 +923,7 @@ export function RpgGameHost({
             accepted: "已记录气流轨迹。切回浅色操作，前往迈斯威卷帘门。",
             already_complete: "这条气流轨迹已经记录。",
             wrong_mode: "切到深色观察后再读取断续水迹。",
+            incorrect: "选择的记录仍有冲突，重新核对后再提交。",
             misaligned: "当前轨道没有对齐。",
             locked: "当前阶段还不能记录这条轨迹。",
             inactive: "第四章教学楼流程尚未开始。"
@@ -930,6 +933,7 @@ export function RpgGameHost({
               accepted: "暖风重新接上水迹，湿纸进入主电梯厅。",
               already_complete: "纸条已经进入主电梯厅。",
               wrong_mode: "切回浅色操作后再调整迈斯威暖风。",
+              incorrect: "选择的记录仍有冲突，重新核对后再提交。",
               misaligned: "当前轨道没有对齐。",
               locked: "先在深色观察中记录门厅的完整气流轨迹。",
               inactive: "第四章教学楼流程尚未开始。"
@@ -939,6 +943,7 @@ export function RpgGameHost({
                 accepted: "已记录下层空调低频。切回浅色操作，旋转折返楼梯。",
                 already_complete: "下层回声已经记录。",
                 wrong_mode: "切到深色观察后再分辨三处回声。",
+                incorrect: "选择的记录仍有冲突，重新核对后再提交。",
                 misaligned: "当前轨道没有对齐。",
                 locked: "当前阶段还不能记录楼梯回声。",
                 inactive: "第四章教学楼流程尚未开始。"
@@ -948,6 +953,7 @@ export function RpgGameHost({
                   accepted: "楼梯转动了九十度。",
                   already_complete: "B2 通路已经接通。",
                   wrong_mode: "切回浅色操作后再转动楼梯。",
+                  incorrect: "选择的记录仍有冲突，重新核对后再提交。",
                   misaligned: "当前轨道没有对齐。",
                   locked: "先在深色观察中记录下层回声。",
                   inactive: "第四章教学楼流程尚未开始。"
@@ -957,6 +963,7 @@ export function RpgGameHost({
                     accepted: "端点接通，已沿折返楼梯到达 B2。",
                     already_complete: "B2 通路已经接通。",
                     wrong_mode: "切回浅色操作后再通过楼梯。",
+                    incorrect: "选择的记录仍有冲突，重新核对后再提交。",
                     misaligned: "当前轨道没有对齐。",
                     locked: "两端仍未对齐。继续旋转中央楼梯段。",
                     inactive: "第四章教学楼流程尚未开始。"

@@ -27,7 +27,6 @@
         { "id": "bakery_table_south_west", "left": 109, "top": 670, "right": 190, "bottom": 756 },
         { "id": "bakery_table_south_center", "left": 252, "top": 686, "right": 330, "bottom": 766 },
         { "id": "bakery_table_south_east", "left": 396, "top": 670, "right": 470, "bottom": 756 },
-        { "id": "bakery_divider", "left": 505, "top": 224, "right": 548, "bottom": 772 },
         { "id": "reception_counter", "left": 720, "top": 550, "right": 986, "bottom": 646 },
         { "id": "reception_planter_west", "left": 668, "top": 527, "right": 720, "bottom": 648 },
         { "id": "reception_planter_east", "left": 970, "top": 526, "right": 1020, "bottom": 648 },
@@ -36,7 +35,6 @@
         { "id": "classroom_104_south_wall", "left": 1136, "top": 490, "right": 1640, "bottom": 526 },
         { "id": "classroom_104_desk_block", "left": 1268, "top": 335, "right": 1588, "bottom": 478 },
         { "id": "classroom_105_north_wall", "left": 1136, "top": 536, "right": 1640, "bottom": 568 },
-        { "id": "classroom_105_west_wall", "left": 1136, "top": 536, "right": 1164, "bottom": 808 },
         { "id": "classroom_105_south_wall", "left": 1136, "top": 792, "right": 1640, "bottom": 826 },
         { "id": "classroom_105_desk_block", "left": 1268, "top": 648, "right": 1588, "bottom": 786 },
         { "id": "entrance_glass_west", "left": 636, "top": 744, "right": 758, "bottom": 792 },
@@ -44,6 +42,10 @@
         { "id": "turnstile_west", "left": 762, "top": 774, "right": 786, "bottom": 852 },
         { "id": "turnstile_center", "left": 830, "top": 774, "right": 854, "bottom": 852 },
         { "id": "turnstile_east", "left": 900, "top": 774, "right": 924, "bottom": 852 }
+      ],
+      "foregroundOcclusions": [
+        { "id": "bakery_divider_front", "left": 505, "top": 224, "right": 548, "bottom": 772 },
+        { "id": "classroom_105_west_wall_front", "left": 1136, "top": 536, "right": 1164, "bottom": 808 }
       ],
       "anchors": [
         { "id": "maxwell_bakery", "label": "麦思威面包坊餐厅", "bounds": { "left": 36, "top": 226, "right": 548, "bottom": 800 } },

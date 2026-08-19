@@ -7,9 +7,9 @@
   },
   "airflow": {
     "objective": "恢复纸条进入主电梯厅的风路",
-    "observePrompt": "深色观察：地面水迹从玻璃门延伸到麦斯威卷帘门。",
-    "lightPrompt": "浅色操作：到麦斯威卷帘门前，借助暖风把纸条送向主电梯。",
-    "observed": "已记录气流轨迹。切回浅色操作，前往麦斯威卷帘门。",
+    "observePrompt": "深色观察：地面水迹从玻璃门延伸到迈斯威卷帘门。",
+    "lightPrompt": "浅色操作：到迈斯威卷帘门前，借助暖风把纸条送向主电梯。",
+    "observed": "已记录气流轨迹。切回浅色操作，前往迈斯威卷帘门。",
     "guided": "暖风重新接上水迹，湿纸进入主电梯厅。"
   },
   "elevator": {
@@ -107,7 +107,7 @@
     "multicam_video_edit": "剪合多机位监控记录",
     "echo_action_record": "录制可在复位后重放的动作回声",
     "dual_lift_logistics": "用两部电梯运输大型签到板",
-    "warm_air_balance": "在麦斯威暖风中控制纸条含水量",
+    "warm_air_balance": "在迈斯威暖风中控制纸条含水量",
     "first_cycle_reset": "从 23:30 复位点恢复第二循环",
     "route_schedule": "安排第二循环的逆向运输路线",
     "clock_phase_lock": "校准 07:55 相位并打开 B2-04",

@@ -20,8 +20,6 @@ import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   formatRpgModeRequirement,
   getRpgDropBounds,
-  isFacingVectorTowardRpgTarget,
-  isPlayerFacingRpgTarget,
   isPlayerWithinRpgTarget,
   isRpgDropPointWithin,
   RPG_REALITY_MODE_CONTRACT
@@ -473,11 +471,16 @@ export class QizhenLakeScene extends Phaser.Scene {
       vehicle: this.currentVehicle,
       projection: "top-down-water"
     });
-    this.emitDomain("qizhen_lake_opened", {
-      phase: this.currentPhase,
-      zone: this.currentZone,
-      vehicle: this.currentVehicle
-    });
+    const prologueReplayActive = state.chapterThreeInterlude.phase === "replay_ready"
+      && state.chapterThreeInterlude.replayUnlocked
+      && !state.chapter4.prologueSeen;
+    if (!prologueReplayActive) {
+      this.emitDomain("qizhen_lake_opened", {
+        phase: this.currentPhase,
+        zone: this.currentZone,
+        vehicle: this.currentVehicle
+      });
+    }
     if (!runtime.introSeen && runtime.phase === "dock_outfitting") {
       this.queueDialogue([
         ...qizhenContent.dock.intro,
@@ -544,11 +547,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       && !this.photoSessionOpen
       && (keyboardInteract || this.interactRequested)
     ) {
-      if (this.isFacingTarget(nearest)) {
-        this.triggerTarget(nearest, state, runtime);
-      } else {
-        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task");
-      }
+      this.triggerTarget(nearest, state, runtime);
     }
     this.interactRequested = false;
   }
@@ -1843,31 +1842,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.showFeedback(qizhenContent.drop.tooFarGeneric, "system");
       return;
     }
-    if (!this.isFacingTarget(target)) {
-      this.showFeedback(`面向「${target.label}」后再操作。`, "system");
-      return;
-    }
     this.triggerTarget(target, state, runtime);
-  }
-
-  private isFacingTarget(target: QizhenLakeInteractionTarget): boolean {
-    if (target.kind === "fishing_spot" || target.kind === "paper") {
-      return true;
-    }
-    if (this.currentVehicle === "kayak") {
-      return isFacingVectorTowardRpgTarget(
-        target,
-        this.player.x,
-        this.player.y,
-        { x: Math.cos(this.kayakHeading), y: Math.sin(this.kayakHeading) }
-      );
-    }
-    return isPlayerFacingRpgTarget(
-      target,
-      this.player.x,
-      this.player.y,
-      this.playerAnimator.cardinalFacing
-    );
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
@@ -1898,16 +1873,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.emitDropFailure(itemId, "too_far", target.label, qizhenContent.drop.tooFar);
       return;
     }
-    if (!this.isFacingTarget(target)) {
-      this.emitDropFailure(
-        itemId,
-        "wrong_facing",
-        target.label,
-        `靠近并面向「${target.label}」后再操作。`
-      );
-      return;
-    }
-
     if (target.value === "paper_reflection") {
       if (itemId === CHAIN_ITEMS.decoy && !runtime.decoyBaitAttached) {
         this.emitDomain("rpg_qizhen_bait_requested", { itemId, targetId: target.id });
@@ -2237,8 +2202,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       guide.targetOutline.setVisible(visible);
       if (!visible) return;
       guide.targetOutline.setPosition(activeTarget.x, activeTarget.y);
-      const ready = isPlayerWithinRpgTarget(activeTarget, this.player.x, this.player.y)
-        && this.isFacingTarget(activeTarget);
+      const ready = isPlayerWithinRpgTarget(activeTarget, this.player.x, this.player.y);
       guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
     });
   }
@@ -2652,7 +2616,7 @@ export class QizhenLakeScene extends Phaser.Scene {
 
   private emitDropFailure(
     itemId: ItemId,
-    reason: "missed_target" | "wrong_item" | "too_far" | "wrong_facing" | "wrong_mode" | "locked",
+    reason: "missed_target" | "wrong_item" | "too_far" | "wrong_mode" | "locked",
     targetLabel?: string,
     detail?: string
   ): void {
