@@ -205,7 +205,6 @@ interface TrayVisual {
   cleanImage: Phaser.GameObjects.Image;
   dirtyImage: Phaser.GameObjects.Image;
   sparkles: Phaser.GameObjects.Arc[];
-  debugRange: Phaser.GameObjects.Container | null;
 }
 
 interface OcclusionVisual {
@@ -246,7 +245,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private promptText!: Phaser.GameObjects.Text;
   private darkOverlay!: Phaser.GameObjects.Rectangle;
   private modeFibers: Phaser.GameObjects.Arc[] = [];
-  private trayRangeDebugEnabled = false;
   private trayVisuals = new Map<string, TrayVisual>();
   private trayInteractionTargets = new Map<string, CanteenInteractionTarget>();
   private carriedTrayVisual!: Phaser.GameObjects.Image;
@@ -374,10 +372,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-    const query = new URLSearchParams(window.location.search);
-    const trayRangeDebug = query.get("rpgTrayRanges");
-    this.trayRangeDebugEnabled = trayRangeDebug === "1"
-      || (import.meta.env.DEV && trayRangeDebug !== "0");
     this.currentMode = this.bridge.getState().canteenHunt.mode;
     this.currentPhase = this.bridge.getState().canteenHunt.phase;
     this.entryPaperPending = this.bridge.getState().canteenHunt.active
@@ -1266,53 +1260,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
         proximity: 54,
         ...RPG_LOOSE_FACING,
         kind: "tray",
-        value: tray.id,
-        tableId: position.tableId
+        value: tray.id
       };
-      const debugRange = this.createTrayRangeDebug(target, position.tableId, tray.target);
       container.on("pointerdown", () => {
         this.triggerPointerTarget(target);
       });
       this.trayInteractionTargets.set(tray.id, target);
-      this.trayVisuals.set(tray.id, { container, cleanImage, dirtyImage, sparkles, debugRange });
+      this.trayVisuals.set(tray.id, { container, cleanImage, dirtyImage, sparkles });
     });
-  }
-
-  private createTrayRangeDebug(
-    target: CanteenInteractionTarget,
-    tableId: string,
-    storyTarget: boolean
-  ): Phaser.GameObjects.Container | null {
-    if (!this.trayRangeDebugEnabled) return null;
-    const width = target.width ?? 0;
-    const height = target.height ?? 0;
-    const proximity = target.proximity;
-    const graphics = this.add.graphics();
-    // Cyan is the exact Space interaction envelope: the target rectangle
-    // expanded by proximity with rounded Euclidean-distance corners.
-    graphics.lineStyle(2, 0x44edff, 0.96).strokeRoundedRect(
-      -width / 2 - proximity,
-      -height / 2 - proximity,
-      width + proximity * 2,
-      height + proximity * 2,
-      proximity
-    );
-    // Yellow is the object rectangle used by the distance calculation.
-    graphics.lineStyle(2, 0xffe56b, 1).strokeRect(-width / 2, -height / 2, width, height);
-    // Magenta is the actual pointer hit area owned by the Phaser container.
-    graphics.lineStyle(2, 0xff66dc, 1).strokeRect(-15, -12, 30, 24);
-    graphics.lineStyle(1, 0xffffff, 0.95)
-      .lineBetween(-5, 0, 5, 0)
-      .lineBetween(0, -5, 0, 5);
-    const shortId = target.id.replace("tray_", "").replace("plain_", "P").replace("blue_", "B");
-    const label = this.add.text(0, -height / 2 - proximity - 4, `${shortId} · ${tableId}`, {
-      color: storyTarget ? "#75ecff" : "#fff0a8",
-      backgroundColor: "#071016e8",
-      fontFamily: "monospace",
-      fontSize: "9px",
-      padding: { x: 3, y: 2 }
-    }).setOrigin(0.5, 1);
-    return this.add.container(target.x, target.y, [graphics, label]).setDepth(6090);
   }
 
   private applyPlayerCollisionBody(): void {
@@ -2698,7 +2653,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       visual.container
         .setVisible(visible)
         .setDepth(dirtyVisible ? 1605 : visual.container.y + 110);
-      visual.debugRange?.setVisible(visible);
       visual.cleanImage.setVisible(visible && !dirtyVisible);
       visual.dirtyImage.setVisible(dirtyVisible);
       visual.sparkles.forEach((sparkle) => sparkle.setVisible(dirtyVisible));
@@ -2738,7 +2692,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       CANTEEN_TRAY_KEY
     ).setScale(0.75).setDepth(2300);
     visual.container.setVisible(false);
-    visual.debugRange?.setVisible(false);
     this.bridge.emit("canteen_tray_slide_started", { trayId });
     this.tweens.add({
       targets: pickupVisual,

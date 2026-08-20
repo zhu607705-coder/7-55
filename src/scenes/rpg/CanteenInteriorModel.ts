@@ -177,7 +177,6 @@ export interface CanteenInteractionTarget extends RpgSpatialInteractionTarget {
     | "promo"
     | "queue_gap";
   value?: string;
-  tableId?: string;
   dialogue?: string;
 }
 
