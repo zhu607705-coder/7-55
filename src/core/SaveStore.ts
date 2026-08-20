@@ -406,6 +406,7 @@ export class SaveStore {
       const legacyChaseCompleted = savedCanteenPhase === "theater_reached";
       const chaseCompleted = booleanOr(savedCanteenHunt.chaseCompleted, legacyChaseCompleted);
       const savedBlockHits = rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits);
+      const trayPreviouslyCompleted = ["drink_mix", "menu_order", "pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const drinkPreviouslyCompleted = ["menu_order", "pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const menuPreviouslyCompleted = ["pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const pickupPreviouslyCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
@@ -415,13 +416,15 @@ export class SaveStore {
         mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
         entryPaperEscaped: booleanOr(
           savedCanteenHunt.entryPaperEscaped,
-          savedCanteenPhase !== "tray_search"
+          savedCanteenPhase === "entered"
+          || trayPreviouslyCompleted
           || booleanOr(savedCanteenHunt.trayTaskStarted, false)
           || (Array.isArray(savedCanteenHunt.returnedTrayIds) && savedCanteenHunt.returnedTrayIds.length > 0)
         ),
         trayTaskStarted: booleanOr(
           savedCanteenHunt.trayTaskStarted,
-          savedCanteenPhase !== "tray_search"
+          savedCanteenPhase === "entered"
+          || trayPreviouslyCompleted
           || (Array.isArray(savedCanteenHunt.identifiedTrayIds) && savedCanteenHunt.identifiedTrayIds.length > 0)
           || (Array.isArray(savedCanteenHunt.returnedTrayIds) && savedCanteenHunt.returnedTrayIds.length > 0)
         ),

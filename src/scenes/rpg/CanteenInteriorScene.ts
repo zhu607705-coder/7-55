@@ -26,6 +26,7 @@ import type {
 } from "../../core/types";
 import canteenContent from "../../data/chapter3-canteen.content.json";
 import { CANTEEN_EXIT_SEQUENCE } from "../../modules/ChapterThreeCanteenController";
+import { getDeveloperCanteenDefenseStart } from "../../modules/DeveloperChannel";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
@@ -33,6 +34,7 @@ import {
   formatRpgModeRequirement,
   getRpgDropBounds,
   isPlayerFacingRpgTarget,
+  RPG_LOOSE_FACING,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
 import {
@@ -60,6 +62,7 @@ import {
   CANTEEN_INTERIOR_WORLD,
   CANTEEN_OCCLUSION_RECTS,
   CANTEEN_MIX_STATION,
+  CANTEEN_ORDERING_KIOSK,
   CANTEEN_PHASE_SPAWNS,
   CANTEEN_PICKUP_WINDOWS,
   CANTEEN_SPAWN,
@@ -189,7 +192,10 @@ const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
 const ENTRY_DIALOGUE_STEP_MS = 1600;
 const ENTRY_CAMERA_ZOOM = 1.18;
-const ENTRY_PAPER_TRIGGER_RADIUS = 360;
+// Trigger while the player is still in the southeast entrance aisle. The tray
+// station blocks a straight approach at roughly 472 px from the queued paper,
+// so the old 360 px radius made the cutscene depend on finding a narrow detour.
+const ENTRY_PAPER_TRIGGER_RADIUS = 540;
 const CART_APPROACH_SPEED = 175;
 const CART_MIN_ROLL_DURATION_MS = 520;
 const CART_ROLL_FRAME_MS = 82;
@@ -496,6 +502,18 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const state = this.bridge.getState();
     this.syncWorldFromState(state);
     this.updateCarriedTrayVisual(state);
+    const requestedDefenseStartMs = getDeveloperCanteenDefenseStart();
+    if (
+      state.canteenHunt.phase === "exit_blocking"
+      && this.defenseRuntime
+      && this.defenseRuntime.getDebugSnapshot().startElapsedMs !== requestedDefenseStartMs
+    ) {
+      // DEV checkpoints can move between start, middle, and final validation
+      // while this same Phaser scene remains active. Recreate only the transient
+      // defense simulation so the requested clock and speed take effect.
+      this.finishDefense();
+      this.startDefense();
+    }
     if (
       state.canteenHunt.phase === "exit_blocking"
       && !this.defenseRuntime
@@ -820,6 +838,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         x: position.x,
         y: position.y,
         proximity: 48,
+        ...RPG_LOOSE_FACING,
         kind: "npc" as const,
         dialogue
       };
@@ -831,9 +850,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
         label: "交谈",
         x: position.x,
         y: position.y - 30,
-        width: 72,
-        height: 88,
-        proximity: 54,
+        // Seated students sit beside otherwise interactive tables. Use a compact
+        // body-centered range so their dialogue does not cover nearby plates.
+        width: 32,
+        height: 44,
+        proximity: 38,
+        ...RPG_LOOSE_FACING,
         kind: "npc" as const,
         dialogue
       };
@@ -848,7 +870,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       width: 64,
       height: 80,
       proximity: 56,
-      requiredFacing: "up",
+      ...RPG_LOOSE_FACING,
       kind: "npc",
       dialogue: CANTEEN_COUNTER_NPC_DIALOGUE
     };
@@ -863,7 +885,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       width: 46,
       height: 70,
       proximity: 64,
-      requiredFacing: "right",
+      ...RPG_LOOSE_FACING,
       kind: "npc"
     };
 
@@ -1236,7 +1258,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         width: 20,
         height: 28,
         proximity: 54,
-        requiredFacing: position.stand.x < position.x ? "right" : "left",
+        ...RPG_LOOSE_FACING,
         kind: "tray",
         value: tray.id
       };
@@ -1692,7 +1714,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private createWorldHotspots(): void {
     const hotspotBounds: Record<string, { x: number; y: number; width: number; height: number }> = {
-      ordering_kiosk: { x: 790, y: 238, width: 150, height: 92 },
+      ordering_kiosk: {
+        x: CANTEEN_ORDERING_KIOSK.x,
+        y: CANTEEN_ORDERING_KIOSK.y,
+        width: CANTEEN_ORDERING_KIOSK.width!,
+        height: CANTEEN_ORDERING_KIOSK.height!
+      },
       ...Object.fromEntries(CANTEEN_PICKUP_WINDOWS.map((window) => [
         window.id,
         {
@@ -3667,7 +3694,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
           this.flashDefenseRoute(route);
           this.cameras.main.shake(this.reducedMotion ? 0 : 75, 0.0025);
         }
-      }
+      },
+      getDeveloperCanteenDefenseStart()
     );
     this.showFeedback("守住三个出口。空格键冲刺，纸条回头时会自动闪出路线。", "task", 2600);
   }
@@ -3852,21 +3880,21 @@ export class CanteenInteriorScene extends Phaser.Scene {
       },
       scene: "canteen_interior",
       activeTargets: this.getActiveTargets(state).map((target) => {
-        const bounds = getRpgDropBounds(target);
         return {
           id: target.id,
           label: target.label,
           x: target.x,
           y: target.y,
-          width: bounds.width,
-          height: bounds.height,
+          width: target.width ?? target.proximity * 2,
+          height: target.height ?? target.proximity * 2,
           dropWidth: target.dropWidth,
           dropHeight: target.dropHeight,
           stand: target.stand,
           proximity: target.proximity,
           acceptedItem: target.acceptedItem,
           requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing
+          requiredFacing: target.requiredFacing,
+          facingToleranceDegrees: target.facingToleranceDegrees
         };
       }),
       canteen: {
@@ -3878,6 +3906,17 @@ export class CanteenInteriorScene extends Phaser.Scene {
         pickupDarkClueRead: state.canteenHunt.pickupDarkClueRead,
         identifiedExitIds: state.canteenHunt.identifiedExitIds,
         blockHits: state.canteenHunt.blockHits,
+        queueGapOpened: state.canteenHunt.queueGapOpened,
+        queueColumnThreeYs: this.thirdColumnQueue.map((entry) => Math.round(entry.sprite.y)),
+        orderingKiosk: {
+          x: CANTEEN_ORDERING_KIOSK.x,
+          y: CANTEEN_ORDERING_KIOSK.y,
+          stand: CANTEEN_ORDERING_KIOSK.stand,
+          width: CANTEEN_ORDERING_KIOSK.width,
+          height: CANTEEN_ORDERING_KIOSK.height,
+          proximity: CANTEEN_ORDERING_KIOSK.proximity
+        },
+        defense: this.defenseRuntime?.getDebugSnapshot(),
         activeTarget: nearest?.id ?? null,
         pickupTargets: CANTEEN_PICKUP_WINDOWS.map((window) => ({
           id: window.id,
@@ -3891,7 +3930,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
           dropBounds: getRpgDropBounds(window),
           acceptedItem: window.acceptedItem,
           requiredMode: window.requiredMode,
-          requiredFacing: window.requiredFacing
+          requiredFacing: window.requiredFacing,
+          facingToleranceDegrees: window.facingToleranceDegrees
         })),
         menuOpen: this.menuPanel !== null,
         dialogueLocked: this.dialogueLocked,

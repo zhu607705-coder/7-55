@@ -179,7 +179,7 @@ export class BootScene extends Phaser.Scene {
     );
     this.theaterGate = this.createGateVisual(
       THEATER_GATE,
-      `求是大讲堂入口  ·  ${formatRpgInteractionHint("进入剧场")}`,
+      `剧院  ·  ${formatRpgInteractionHint("进入剧院")}`,
       0x8d3244
     );
     this.ensureCanteenTextures();
@@ -220,7 +220,7 @@ export class BootScene extends Phaser.Scene {
         this.cameraController.recenter(true);
         this.syncCanteenPresentation(this.bridge.getState(), true);
         this.bridge.emit("rpg_subtitle", {
-          text: "已回到校园。沿路前往求是大讲堂入口。",
+          text: "已回到校园。沿路前往剧院。",
           tone: "task",
           durationMs: 3200
         });

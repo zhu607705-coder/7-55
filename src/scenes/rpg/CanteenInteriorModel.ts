@@ -1,7 +1,7 @@
 import type { CanteenExitId } from "../../core/types";
 import {
-  distanceFromPlayerToRpgTarget,
-  isPlayerWithinRpgTarget,
+  findNearestRpgInteractionTarget,
+  RPG_LOOSE_FACING,
   type RpgSpatialInteractionTarget
 } from "./RpgInteractionContract";
 
@@ -106,7 +106,7 @@ export interface CanteenTraySlot {
 }
 
 // These are the fourteen tables without seated NPCs. Every table contributes four
-// tabletop-corner slots, so one table can naturally hold up to four abandoned plates.
+// independent tabletop-corner slots, matching the original random distribution.
 const CANTEEN_EMPTY_TABLES = [
   { id: "table_1_1", x: 227, y: 350 },
   { id: "table_1_3", x: 525, y: 350 },
@@ -146,7 +146,8 @@ export const CANTEEN_TRAY_SLOTS: readonly CanteenTraySlot[] = CANTEEN_EMPTY_TABL
 ));
 
 // Runtime placement randomly assigns these twelve ids to twelve distinct corner
-// slots. The target ids therefore remain invisible in light mode.
+// slots. One table may therefore receive up to four trays, as in the original
+// implementation. The target ids remain invisible in light mode.
 export const CANTEEN_TRAYS: readonly CanteenTrayDefinition[] = [
   { id: "tray_blue_01", target: true },
   { id: "tray_plain_01", target: false },
@@ -189,7 +190,7 @@ export const CANTEEN_DRINK_MACHINES: readonly CanteenInteractionTarget[] = [
     width: 42,
     height: 82,
     proximity: 56,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "drink_machine",
     value: "sparklingWater"
   },
@@ -202,7 +203,7 @@ export const CANTEEN_DRINK_MACHINES: readonly CanteenInteractionTarget[] = [
     width: 42,
     height: 82,
     proximity: 56,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "drink_machine",
     value: "lemonTea"
   },
@@ -215,7 +216,7 @@ export const CANTEEN_DRINK_MACHINES: readonly CanteenInteractionTarget[] = [
     width: 42,
     height: 82,
     proximity: 56,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "drink_machine",
     value: "blackCoffee"
   }
@@ -230,7 +231,7 @@ export const CANTEEN_DRINK_SHELF: CanteenInteractionTarget = {
   width: 210,
   height: 96,
   proximity: 60,
-  requiredFacing: "up",
+  ...RPG_LOOSE_FACING,
   kind: "drink_shelf"
 };
 
@@ -243,7 +244,7 @@ export const CANTEEN_MIX_STATION: CanteenInteractionTarget = {
   width: 144,
   height: 80,
   proximity: 76,
-  requiredFacing: "up",
+  ...RPG_LOOSE_FACING,
   kind: "mixer"
 };
 
@@ -260,7 +261,7 @@ export const CANTEEN_PROMO_BOARD: CanteenInteractionTarget = {
   dropHeight: 100,
   acceptedItem: "dailySpecialSparklingWater",
   requiredMode: "light",
-  requiredFacing: "up",
+  ...RPG_LOOSE_FACING,
   kind: "promo"
 };
 
@@ -273,7 +274,7 @@ export const CANTEEN_QUEUE_COLUMN_THREE: CanteenInteractionTarget = {
   width: 36,
   height: 54,
   proximity: 56,
-  requiredFacing: "toward_target",
+  ...RPG_LOOSE_FACING,
   kind: "queue_gap"
 };
 
@@ -322,7 +323,7 @@ export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = 
     proximity: 58,
     dropWidth: 140,
     dropHeight: 74,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "pickup",
     value: "1"
   },
@@ -337,7 +338,7 @@ export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = 
     proximity: 58,
     dropWidth: 140,
     dropHeight: 74,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "pickup",
     value: "2"
   },
@@ -352,7 +353,7 @@ export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = 
     proximity: 58,
     dropWidth: 140,
     dropHeight: 74,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "pickup",
     value: "3"
   },
@@ -367,7 +368,7 @@ export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = 
     proximity: 58,
     dropWidth: 140,
     dropHeight: 74,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "pickup",
     value: "4"
   },
@@ -382,7 +383,7 @@ export const CANTEEN_PICKUP_WINDOWS: readonly CanteenPickupWindowDefinition[] = 
     proximity: 58,
     dropWidth: 140,
     dropHeight: 74,
-    requiredFacing: "up",
+    ...RPG_LOOSE_FACING,
     kind: "pickup",
     value: "5"
   }
@@ -452,21 +453,24 @@ export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition
   }
 };
 
+// The story point-of-order machine belongs to the third-window auntie column.
+// Keep its original x alignment and lift the center into the window fixture;
+// the old y=218 anchor sat too low on the customer-side counter edge.
+export const CANTEEN_ORDERING_KIOSK: CanteenInteractionTarget = {
+  id: "ordering_kiosk",
+  label: "第三窗口点餐机",
+  x: 790,
+  y: 190,
+  stand: { x: 735, y: 270 },
+  width: 112,
+  height: 72,
+  proximity: 52,
+  ...RPG_LOOSE_FACING,
+  kind: "kiosk"
+};
+
 export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = [
-  // The queue makes room directly in front of the third service window. That
-  // window is the point-of-order machine as well as the later pickup route.
-  {
-    id: "ordering_kiosk",
-    label: "第三窗口点餐机",
-    x: 790,
-    y: 218,
-    stand: { x: 790, y: 260 },
-    width: 112,
-    height: 72,
-    proximity: 52,
-    requiredFacing: "up",
-    kind: "kiosk"
-  },
+  CANTEEN_ORDERING_KIOSK,
   ...CANTEEN_PICKUP_WINDOWS,
   ...Object.values(CANTEEN_CARTS).map((cart) => ({
     id: `cart_${cart.exitId}`,
@@ -475,11 +479,7 @@ export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = 
     y: cart.y,
     stand: { x: cart.standX, y: cart.standY },
     proximity: 56,
-    requiredFacing: cart.exitId === "west"
-      ? "left" as const
-      : cart.exitId === "southeast"
-        ? "right" as const
-        : "down" as const,
+    ...RPG_LOOSE_FACING,
     kind: "cart" as const,
     value: cart.exitId
   })),
@@ -490,7 +490,7 @@ export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = 
     y: 835,
     stand: { x: 1380, y: 835 },
     proximity: 80,
-    requiredFacing: "down",
+    ...RPG_LOOSE_FACING,
     kind: "exit"
   }
 ] as const;
@@ -507,7 +507,7 @@ export const CANTEEN_SPAWN = { x: 1194, y: 834 } as const;
 export const CANTEEN_PHASE_SPAWNS = {
   tray_search: CANTEEN_SPAWN,
   drink_mix: { x: 1473, y: 208 },
-  menu_order: { x: 790, y: 260 },
+  menu_order: CANTEEN_ORDERING_KIOSK.stand!,
   pickup_search: {
     x: CANTEEN_PICKUP_WINDOWS[2].stand!.x,
     y: CANTEEN_PICKUP_WINDOWS[2].stand!.y
@@ -526,16 +526,9 @@ export function findNearestCanteenTarget(
   y: number,
   targets: readonly CanteenInteractionTarget[]
 ): CanteenInteractionTarget | null {
-  let nearest: CanteenInteractionTarget | null = null;
-  let nearestDistance = Number.POSITIVE_INFINITY;
-  targets.forEach((target) => {
-    const distance = distanceFromPlayerToRpgTarget(target, x, y);
-    if (isPlayerWithinRpgTarget(target, x, y) && distance < nearestDistance) {
-      nearest = target;
-      nearestDistance = distance;
-    }
-  });
-  return nearest;
+  // Select one target from every in-range candidate by visible-edge distance.
+  // Facing is intentionally checked only after this selection in the scene.
+  return findNearestRpgInteractionTarget(x, y, targets);
 }
 
 export function isCanteenPointBlocked(x: number, y: number): boolean {

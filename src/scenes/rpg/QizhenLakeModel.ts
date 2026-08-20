@@ -1,7 +1,7 @@
 import type { ItemId, QizhenPhotoRecipe, QizhenPhotoSpotId } from "../../core/types";
 import {
-  distanceFromPlayerToRpgTarget,
-  isPlayerWithinRpgTarget,
+  findNearestRpgInteractionTarget,
+  RPG_ANY_FACING,
   type RpgSpatialInteractionTarget
 } from "./RpgInteractionContract";
 
@@ -247,13 +247,11 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
   }
 } as const;
 
-const QIZHEN_ANY_FACING = ["up", "down", "left", "right"] as const;
-
 const target = (
   definition: Omit<QizhenLakeInteractionTarget, "proximity"> & { proximity?: number }
 ): QizhenLakeInteractionTarget => ({
   proximity: 128,
-  requiredFacing: QIZHEN_ANY_FACING,
+  requiredFacing: RPG_ANY_FACING,
   ...definition
 });
 
@@ -311,16 +309,7 @@ export function findNearestQizhenTarget(
   y: number,
   targets: readonly QizhenLakeInteractionTarget[]
 ): QizhenLakeInteractionTarget | null {
-  let nearest: QizhenLakeInteractionTarget | null = null;
-  let bestDistance = Number.POSITIVE_INFINITY;
-  targets.forEach((candidate) => {
-    const distance = distanceFromPlayerToRpgTarget(candidate, x, y);
-    if (isPlayerWithinRpgTarget(candidate, x, y) && distance < bestDistance) {
-      nearest = candidate;
-      bestDistance = distance;
-    }
-  });
-  return nearest;
+  return findNearestRpgInteractionTarget(x, y, targets);
 }
 
 export function clampKayakToWater(

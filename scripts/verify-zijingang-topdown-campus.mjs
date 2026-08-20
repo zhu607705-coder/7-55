@@ -16,8 +16,8 @@ const EXPECTED = {
     bike: { x: 3220, y: 650 }
   },
   theater: {
-    gate: { x: 4100, y: 1350, radius: 100 },
-    approach: { x: 4100, y: 1350 }
+    gate: { x: 3300, y: 1445, radius: 105 },
+    approach: { x: 3300, y: 1360 }
   }
 };
 

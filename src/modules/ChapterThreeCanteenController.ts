@@ -98,6 +98,8 @@ export class ChapterThreeCanteenController {
     if (state.canteenHunt.active && !CANTEEN_ENTRY_PHASES.includes(state.canteenHunt.phase)) {
       return false;
     }
+    const firstStoryEntry = state.canteenHunt.active
+      && ["tracking", "canteen_reached", "entered"].includes(state.canteenHunt.phase);
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "rpg",
@@ -109,7 +111,10 @@ export class ChapterThreeCanteenController {
             phase: CANTEEN_SIDE_GAME_PHASES.includes(current.canteenHunt.phase)
               ? current.canteenHunt.phase
               : "tray_search",
-            mode: "light"
+            mode: "light",
+            // A pre-entry checkpoint cannot have completed the interior escape
+            // beat. Repair older saves that inferred this one-shot flag too early.
+            entryPaperEscaped: firstStoryEntry ? false : current.canteenHunt.entryPaperEscaped
           }
         : current.canteenHunt
     }));

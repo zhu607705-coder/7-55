@@ -111,13 +111,17 @@ export class CanteenDefenseRuntime {
   private routeIndex = 0;
   private paused = false;
   private completed = false;
+  private destroyed = false;
+  private readonly attemptStartElapsedMs: number;
 
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly player: Phaser.Physics.Arcade.Sprite,
     private readonly paper: Phaser.GameObjects.Image,
-    private readonly callbacks: CanteenDefenseCallbacks
+    private readonly callbacks: CanteenDefenseCallbacks,
+    startElapsedMs = 0
   ) {
+    this.attemptStartElapsedMs = Phaser.Math.Clamp(startElapsedMs, 0, DEFENSE_DURATION_MS - 10_000);
     this.scene.textures.get(PUSH_CART_SHEET_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.player.setVisible(false);
     this.pushSprite = scene.add.sprite(PLAYER_START.x, PLAYER_START.y, PUSH_CART_SHEET_KEY, 8)
@@ -196,7 +200,7 @@ export class CanteenDefenseRuntime {
   restartAttempt(): void {
     this.paused = false;
     this.completed = false;
-    this.elapsedMs = 0;
+    this.elapsedMs = this.attemptStartElapsedMs;
     this.dashRemainingMs = 0;
     this.dashCooldownMs = 0;
     this.paperHitCooldownMs = 500;
@@ -222,12 +226,34 @@ export class CanteenDefenseRuntime {
   }
 
   destroy(): void {
-    this.player.setVelocity(0, 0);
-    this.player.setVisible(true);
-    this.paper.setTexture(PAPER_IDLE_KEY).setFlipX(false).setAngle(0).setScale(1);
-    this.pushSprite.destroy();
-    this.timerText.destroy();
-    this.dashText.destroy();
+    if (this.destroyed) return;
+    this.destroyed = true;
+    // Phaser releases Arcade bodies before all scene shutdown listeners have
+    // necessarily run. Avoid Sprite.setVelocity(), which dereferences a body
+    // that may already be gone during a DEV scene switch.
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | null | undefined;
+    playerBody?.setVelocity(0, 0);
+    if (this.player.active) this.player.setVisible(true);
+    if (this.paper.active) this.paper.setTexture(PAPER_IDLE_KEY).setFlipX(false).setAngle(0).setScale(1);
+    if (this.pushSprite.active) this.pushSprite.destroy();
+    if (this.timerText.active) this.timerText.destroy();
+    if (this.dashText.active) this.dashText.destroy();
+  }
+
+  getDebugSnapshot(): {
+    startElapsedMs: number;
+    elapsedMs: number;
+    remainingMs: number;
+    currentExit: CanteenDefenseExitId;
+    paused: boolean;
+  } {
+    return {
+      startElapsedMs: this.attemptStartElapsedMs,
+      elapsedMs: Math.round(this.elapsedMs),
+      remainingMs: Math.max(0, Math.round(DEFENSE_DURATION_MS - this.elapsedMs)),
+      currentExit: this.currentExit,
+      paused: this.paused
+    };
   }
 
   private updatePushSprite(deltaMs: number, moving: boolean): void {
