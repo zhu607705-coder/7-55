@@ -1,0 +1,1195 @@
+{
+  "schemaVersion": 1,
+  "contractId": "chapter4-755",
+  "chapterId": "chapter_four",
+  "title": "把时间拨回 7:55",
+  "orderedPhases": [
+    "opening_handoff",
+    "opening_paper_caught",
+    "hall_clock_inspection",
+    "bakery_hour_hand",
+    "room204_restore",
+    "maintenance_repair",
+    "blackout_light_grid",
+    "final_chase",
+    "final_minute_recovery",
+    "return_to_clock",
+    "morning_checkin",
+    "exterior_closure",
+    "complete"
+  ],
+  "time": {
+    "authorities": [
+      "external_evidence",
+      "hall_clock"
+    ],
+    "stateOrder": [
+      "2245_opening",
+      "1225_bakery",
+      "1850_evening",
+      "2245_maintenance",
+      "0754_blackout",
+      "0755_morning"
+    ],
+    "states": [
+      {
+        "id": "2245_opening",
+        "worldTimeSeconds": 81900,
+        "phoneStatusTimeSeconds": 28523,
+        "phoneStatusTimeTrusted": false,
+        "plateIds": [
+          "a1_2245_opening"
+        ]
+      },
+      {
+        "id": "1225_bakery",
+        "worldTimeSeconds": 44700,
+        "phoneStatusTimeSeconds": 44700,
+        "phoneStatusTimeTrusted": true,
+        "plateIds": [
+          "a1_1225_bakery"
+        ]
+      },
+      {
+        "id": "1850_evening",
+        "worldTimeSeconds": 67800,
+        "phoneStatusTimeSeconds": 67800,
+        "phoneStatusTimeTrusted": true,
+        "plateIds": [
+          "a2_1850_evening",
+          "a3_1850_reference"
+        ]
+      },
+      {
+        "id": "2245_maintenance",
+        "worldTimeSeconds": 81900,
+        "phoneStatusTimeSeconds": 81900,
+        "phoneStatusTimeTrusted": true,
+        "plateIds": [
+          "a1_2245_maintenance"
+        ]
+      },
+      {
+        "id": "0754_blackout",
+        "worldTimeSeconds": 28440,
+        "phoneStatusTimeSeconds": 28440,
+        "phoneStatusTimeTrusted": true,
+        "plateIds": [
+          "a1_0754_blackout",
+          "a2_0754_chase",
+          "a2_202_final_minute"
+        ]
+      },
+      {
+        "id": "0755_morning",
+        "worldTimeSeconds": 28500,
+        "phoneStatusTimeSeconds": 28500,
+        "phoneStatusTimeTrusted": true,
+        "plateIds": [
+          "a1_0755_morning"
+        ]
+      }
+    ],
+    "opening": {
+      "authority": "external_evidence",
+      "timeState": "2245_opening",
+      "externalEvidenceSeconds": 81900,
+      "frozenPhoneStatusSeconds": 28523,
+      "phoneStatusTimeTrusted": false
+    },
+    "firstHallClockPull": {
+      "fromAuthority": "external_evidence",
+      "toAuthority": "hall_clock",
+      "fromTimeState": "2245_opening",
+      "toTimeState": "1225_bakery",
+      "trigger": "pull_hall_clock",
+      "atomic": true
+    },
+    "atomicTransitionFields": [
+      "phase",
+      "timeAuthority",
+      "timeState",
+      "worldTimeSeconds",
+      "phoneStatusTimeSeconds",
+      "phoneStatusTimeTrusted",
+      "activePlateId",
+      "availableTargetIds",
+      "rpgCheckpoint"
+    ],
+    "completion": {
+      "authority": "hall_clock",
+      "timeState": "0755_morning",
+      "worldTimeSeconds": 28500,
+      "phoneStatusTimeSeconds": 28500,
+      "phoneStatusTimeTrusted": true
+    }
+  },
+  "openingHandshake": {
+    "intentOrder": [
+      "complete_prologue_handoff",
+      "complete_opening_paper_flight",
+      "catch_attendance_paper",
+      "resolve_external_time_rejection",
+      "inspect_hall_clock",
+      "resolve_hall_clock_inspection",
+      "pull_hall_clock"
+    ],
+    "paper": {
+      "frame": "chapter4_story_items/sign_in_record_paper",
+      "startDistanceMeters": 4,
+      "noticeboardDistanceMeters": 6,
+      "settledFact": "opening_paper_at_noticeboard",
+      "caughtFact": "opening_paper_caught"
+    },
+    "externalTimeRejection": {
+      "externalSeconds": 81900,
+      "frozenPhoneSeconds": 28523,
+      "phoneStatusTimeTrusted": false,
+      "resolvedFact": "external_time_rejected"
+    },
+    "hallClockInspection": {
+      "requiredMode": "light",
+      "missingHandFrame": "chapter4_clock_states/2245_missing_hour_hand",
+      "gearFrame": "chapter4_clock_states/gear_stuttering",
+      "resolvedFact": "hall_clock_inspected"
+    },
+    "firstPullFrames": [
+      "chapter4_clock_states/gear_stuttering",
+      "chapter4_clock_states/1225_missing_hour_hand"
+    ]
+  },
+  "bakeryHandshake": {
+    "intentOrder": [
+      "inspect_bakery_conveyor_lamp",
+      "complete_bakery_conveyor_stop",
+      "collect_hour_hand",
+      "install_hour_hand"
+    ],
+    "preLampConveyorCorrection": "先点亮烤箱旁的检修灯，让传送带停一下。",
+    "targetIds": {
+      "lamp": "a1_bakery_inspection_lamp",
+      "conveyorEdge": "a1_bakery_conveyor_edge",
+      "hourHandPickup": "a1_bakery_hour_hand_pickup",
+      "hourHandSocket": "a1_hall_clock_hour_hand_socket"
+    },
+    "factOrder": [
+      "bakery_conveyor_lamp_inspected",
+      "bakery_hour_hand_exposed",
+      "bakery_hour_hand_collected",
+      "hour_hand_installed"
+    ],
+    "timeline": [
+      { "atMs": 0, "event": "lamp_on_and_stop_cue" },
+      { "atMs": 120, "event": "conveyor_slowdown" },
+      { "atMs": 360, "event": "conveyor_stopped_and_nearby_npcs_paused" },
+      { "atMs": 520, "event": "hour_hand_revealed" },
+      { "atMs": 700, "event": "complete_bakery_conveyor_stop" }
+    ],
+    "refreshMatrix": [
+      {
+        "id": "lamp_uninspected",
+        "requiredFacts": [],
+        "conveyor": "moving",
+        "pickup": "hidden",
+        "resume": "none"
+      },
+      {
+        "id": "lamp_inspected_stop_incomplete",
+        "requiredFacts": ["bakery_conveyor_lamp_inspected"],
+        "forbiddenFacts": ["bakery_hour_hand_exposed"],
+        "conveyor": "replay_stop_sequence",
+        "pickup": "hidden_until_520ms",
+        "resume": "replay"
+      },
+      {
+        "id": "hour_hand_exposed",
+        "requiredFacts": ["bakery_hour_hand_exposed"],
+        "forbiddenFacts": ["bakery_hour_hand_collected"],
+        "conveyor": "stopped",
+        "pickup": "visible",
+        "resume": "static"
+      },
+      {
+        "id": "hour_hand_collected",
+        "requiredFacts": ["bakery_hour_hand_collected"],
+        "conveyor": "stopped",
+        "pickup": "hidden",
+        "resume": "static"
+      },
+      {
+        "id": "hour_hand_installed",
+        "requiredFacts": ["hour_hand_installed"],
+        "conveyor": "inactive",
+        "pickup": "hidden",
+        "resume": "1850_evening"
+      }
+    ],
+    "domainCues": [
+      "chapter4_bakery_approach",
+      "chapter4_bakery_conveyor_stop",
+      "chapter4_bakery_hour_hand_revealed"
+    ]
+  },
+  "phaseContracts": [
+    {
+      "id": "opening_handoff",
+      "timeAuthority": "external_evidence",
+      "timeState": "2245_opening",
+      "floorPlateIds": [
+        "a1_2245_opening"
+      ],
+      "taskKeys": [
+        "catch_opening_paper"
+      ],
+      "dialogueIds": [
+        "opening.paper_flight"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "opening_paper_caught",
+      "timeAuthority": "external_evidence",
+      "timeState": "2245_opening",
+      "floorPlateIds": [
+        "a1_2245_opening"
+      ],
+      "taskKeys": [
+        "inspect_hall_clock"
+      ],
+      "dialogueIds": [
+        "opening.paper_caught",
+        "opening.external_time_rejected"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "hall_clock_inspection",
+      "timeAuthority": "external_evidence",
+      "timeState": "2245_opening",
+      "floorPlateIds": [
+        "a1_2245_opening"
+      ],
+      "taskKeys": [
+        "pull_hall_clock"
+      ],
+      "dialogueIds": [
+        "hall_clock.first_inspection",
+        "hall_clock.first_pull"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "bakery_hour_hand",
+      "timeAuthority": "hall_clock",
+      "timeState": "1225_bakery",
+      "floorPlateIds": [
+        "a1_1225_bakery"
+      ],
+      "taskKeys": [
+        "explore_bakery",
+        "collect_hour_hand",
+        "install_hour_hand"
+      ],
+      "dialogueIds": [
+        "bakery.hour_hand_collected"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "room204_restore",
+      "timeAuthority": "hall_clock",
+      "timeState": "1850_evening",
+      "floorPlateIds": [
+        "a2_1850_evening",
+        "a3_1850_reference"
+      ],
+      "taskKeys": [
+        "observe_a3_reference",
+        "observe_room204_residual",
+        "restore_room204",
+        "watch_room204_projection",
+        "collect_positioning_plate",
+        "install_positioning_plate"
+      ],
+      "dialogueIds": [
+        "room204.restored"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "maintenance_repair",
+      "timeAuthority": "hall_clock",
+      "timeState": "2245_maintenance",
+      "floorPlateIds": [
+        "a1_2245_maintenance"
+      ],
+      "taskKeys": [
+        "inspect_cart_wheel",
+        "collect_short_pry_bar",
+        "open_cart_wheel_cover",
+        "collect_lubricating_oil",
+        "lubricate_cart_wheel",
+        "lubricate_clock_gear",
+        "turn_clock_to_0755"
+      ],
+      "dialogueIds": [
+        "maintenance.cleaner"
+      ],
+      "guardMode": "patrol"
+    },
+    {
+      "id": "blackout_light_grid",
+      "timeAuthority": "hall_clock",
+      "timeState": "0754_blackout",
+      "floorPlateIds": [
+        "a1_0754_blackout"
+      ],
+      "taskKeys": [
+        "solve_light_grid"
+      ],
+      "dialogueIds": [
+        "blackout.minute_stolen"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "final_chase",
+      "timeAuthority": "hall_clock",
+      "timeState": "0754_blackout",
+      "floorPlateIds": [
+        "a1_0754_blackout",
+        "a2_0754_chase"
+      ],
+      "taskKeys": [
+        "reach_lecture_202"
+      ],
+      "dialogueIds": [
+        "chase.started",
+        "chase.failed",
+        "chase.arrived"
+      ],
+      "guardMode": "chase"
+    },
+    {
+      "id": "final_minute_recovery",
+      "timeAuthority": "hall_clock",
+      "timeState": "0754_blackout",
+      "floorPlateIds": [
+        "a2_202_final_minute"
+      ],
+      "taskKeys": [
+        "collect_final_minute"
+      ],
+      "dialogueIds": [
+        "lecture.final_minute_recovered"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "return_to_clock",
+      "timeAuthority": "hall_clock",
+      "timeState": "0754_blackout",
+      "floorPlateIds": [
+        "a1_0754_blackout",
+        "a2_0754_chase"
+      ],
+      "taskKeys": [
+        "return_via_main_stair",
+        "install_final_minute"
+      ],
+      "dialogueIds": [],
+      "guardMode": "absent"
+    },
+    {
+      "id": "morning_checkin",
+      "timeAuthority": "hall_clock",
+      "timeState": "0755_morning",
+      "floorPlateIds": [
+        "a1_0755_morning"
+      ],
+      "taskKeys": [
+        "complete_checkin",
+        "read_campus_card",
+        "submit_attendance_paper"
+      ],
+      "dialogueIds": [
+        "morning.checkin_success"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "exterior_closure",
+      "timeAuthority": "hall_clock",
+      "timeState": "0755_morning",
+      "floorPlateIds": [
+        "a1_0755_morning"
+      ],
+      "taskKeys": [
+        "acknowledge_exterior_closure"
+      ],
+      "dialogueIds": [
+        "exterior.closure"
+      ],
+      "guardMode": "absent"
+    },
+    {
+      "id": "complete",
+      "timeAuthority": "hall_clock",
+      "timeState": "0755_morning",
+      "floorPlateIds": [
+        "a1_0755_morning"
+      ],
+      "taskKeys": [
+        "chapter_complete"
+      ],
+      "dialogueIds": [],
+      "guardMode": "absent"
+    }
+  ],
+  "tasks": {
+    "catch_opening_paper": {
+      "label": "等纸条落到公告栏前再抓住它",
+      "hint": null
+    },
+    "inspect_hall_clock": {
+      "label": "查看大厅旧钟",
+      "hint": null
+    },
+    "pull_hall_clock": {
+      "label": "拉动大厅旧钟，让它第一次转动",
+      "hint": null
+    },
+    "explore_bakery": {
+      "label": "前往面包坊检查检修灯和传送带",
+      "hint": null
+    },
+    "collect_hour_hand": {
+      "label": "传送带停下后取走金属时针",
+      "hint": null
+    },
+    "install_hour_hand": {
+      "label": "回大厅装回旧时针",
+      "hint": null
+    },
+    "observe_a3_reference": {
+      "label": "前往三楼观察 303 的晨间布置",
+      "hint": null
+    },
+    "observe_room204_residual": {
+      "label": "回到二楼，在深色观察中确认 204 残影",
+      "hint": "暗色模式里，椅子记得自己原来朝哪边。"
+    },
+    "restore_room204": {
+      "label": "把教室恢复成早晨的样子",
+      "hint": null
+    },
+    "watch_room204_projection": {
+      "label": "查看 204 投影幕上的时间",
+      "hint": null
+    },
+    "collect_positioning_plate": {
+      "label": "从 204 讲台抽屉取出钟面定位片",
+      "hint": null
+    },
+    "install_positioning_plate": {
+      "label": "把钟面定位片装回大厅旧钟",
+      "hint": null
+    },
+    "inspect_cart_wheel": {
+      "label": "检查保洁车卡住的车轮",
+      "hint": "锈掉的东西，先别急着讲道理。"
+    },
+    "collect_short_pry_bar": {
+      "label": "去面包店后场取短撬棍",
+      "hint": null
+    },
+    "open_cart_wheel_cover": {
+      "label": "用短撬棍打开保洁车轮罩",
+      "hint": null
+    },
+    "collect_lubricating_oil": {
+      "label": "取出轮罩内的通用润滑油",
+      "hint": null
+    },
+    "lubricate_cart_wheel": {
+      "label": "先用润滑油修好保洁车轮",
+      "hint": null
+    },
+    "lubricate_clock_gear": {
+      "label": "用剩下的润滑油修复旧钟齿轮",
+      "hint": null
+    },
+    "turn_clock_to_0755": {
+      "label": "把旧钟拨向 07:55",
+      "hint": null
+    },
+    "solve_light_grid": {
+      "label": "让必要路线亮起",
+      "hint": "不用全亮，能走就行。"
+    },
+    "reach_lecture_202": {
+      "label": "前往 202",
+      "hint": null
+    },
+    "collect_final_minute": {
+      "label": "取回最后一分钟",
+      "hint": null
+    },
+    "return_via_main_stair": {
+      "label": "沿主楼梯回到一楼旧钟",
+      "hint": null
+    },
+    "install_final_minute": {
+      "label": "把最后一分钟装回旧钟",
+      "hint": null
+    },
+    "complete_checkin": {
+      "label": "完成刷卡与纸条签到",
+      "hint": null
+    },
+    "read_campus_card": {
+      "label": "使用校园卡完成刷卡",
+      "hint": null
+    },
+    "submit_attendance_paper": {
+      "label": "提交签到记录纸条",
+      "hint": null
+    },
+    "acknowledge_exterior_closure": {
+      "label": "观看并完成楼外正式收束",
+      "hint": null
+    },
+    "chapter_complete": {
+      "label": "本人来过",
+      "hint": null
+    }
+  },
+  "dialogues": {
+    "opening.paper_flight": [
+      {
+        "speaker": "system",
+        "text": "现场画面已同步。异常签到纸正在飞向公告栏。"
+      }
+    ],
+    "opening.paper_caught": [
+      {
+        "speaker": "player",
+        "text": "抓到了。"
+      },
+      {
+        "speaker": "system",
+        "text": "正在提交签到记录……"
+      }
+    ],
+    "opening.external_time_rejected": [
+      {
+        "speaker": "system",
+        "text": "提交失败。外部时间：22:45。"
+      },
+      {
+        "speaker": "system",
+        "text": "签到截止时间：07:55。"
+      },
+      {
+        "speaker": "player",
+        "text": "手机上还写着 07:55:23。"
+      },
+      {
+        "speaker": "system",
+        "text": "它已经被四个外部来源否定了。"
+      },
+      {
+        "speaker": "system",
+        "text": "记录回来了，你没有回到记录发生的时候。"
+      }
+    ],
+    "hall_clock.first_inspection": [
+      {
+        "speaker": "system",
+        "text": "旧钟能被拨动，但指针不会按你的动作走。"
+      },
+      {
+        "speaker": "player",
+        "text": "这是好消息？"
+      },
+      {
+        "speaker": "system",
+        "text": "它还在出错。"
+      }
+    ],
+    "hall_clock.first_pull": [
+      {
+        "speaker": "system",
+        "text": "时间源已切换：大厅旧钟。"
+      }
+    ],
+    "bakery.hour_hand_collected": [
+      {
+        "speaker": "baker",
+        "text": "你拿走那个？我还以为它是新品配料。"
+      },
+      {
+        "speaker": "player",
+        "text": "它本来是时针。"
+      },
+      {
+        "speaker": "baker",
+        "text": "那它总算找到对口味了。"
+      }
+    ],
+    "room204.restored": [
+      {
+        "speaker": "projection",
+        "text": "07:55 / 早到的人还没有开始后悔。"
+      }
+    ],
+    "maintenance.cleaner": [
+      {
+        "speaker": "cleaner",
+        "text": "它没坏，只是不肯走。"
+      },
+      {
+        "speaker": "player",
+        "text": "我有办法让它走。"
+      },
+      {
+        "speaker": "cleaner",
+        "text": "那你先让它别叫。"
+      }
+    ],
+    "blackout.minute_stolen": [
+      {
+        "speaker": "system",
+        "text": "时间校准至 07:54。"
+      },
+      {
+        "speaker": "player",
+        "text": "差一分钟。"
+      },
+      {
+        "speaker": "system",
+        "text": "纸条把最后一分钟带走了。定位结果：阶梯教室。"
+      }
+    ],
+    "chase.started": [
+      {
+        "speaker": "guard",
+        "text": "同学，站住。"
+      },
+      {
+        "speaker": "system",
+        "text": "清楼流程启动。"
+      }
+    ],
+    "chase.failed": [
+      {
+        "speaker": "guard",
+        "text": "出去。"
+      },
+      {
+        "speaker": "system",
+        "text": "你被清楼流程退回了上一分钟。"
+      }
+    ],
+    "chase.arrived": [
+      {
+        "speaker": "system",
+        "text": "阶梯教室门已关闭。"
+      }
+    ],
+    "lecture.final_minute_recovered": [
+      {
+        "speaker": "player",
+        "text": "不跑了？"
+      },
+      {
+        "speaker": "paper",
+        "text": "本人马上回来。"
+      },
+      {
+        "speaker": "system",
+        "text": "它回来了。"
+      }
+    ],
+    "morning.checkin_success": [
+      {
+        "speaker": "system",
+        "text": "签到成功。时间：07:55。地点：段永平教学楼 A1。状态：本人来过。"
+      },
+      {
+        "speaker": "player",
+        "text": "现在算准时吗？"
+      },
+      {
+        "speaker": "system",
+        "text": "从时间角度，算。"
+      }
+    ],
+    "exterior.closure": [
+      {
+        "speaker": "system",
+        "text": "外面亮了一下。"
+      },
+      {
+        "speaker": "player",
+        "text": "这次真的结束了？"
+      },
+      {
+        "speaker": "system",
+        "text": "这次是。时间同意了。"
+      }
+    ]
+  },
+  "room204": {
+    "referenceTargetId": "a3_reference_classroom_layout",
+    "residualGroupTargetId": "a2_room204_residual_group",
+    "requiredReferenceFact": "a3_reference_observed",
+    "requiredResidualFact": "room204_residual_observed",
+    "pieceIds": [
+      "desk_pair_01",
+      "desk_pair_02",
+      "desk_pair_03",
+      "desk_pair_04",
+      "desk_pair_05",
+      "desk_pair_06",
+      "desk_pair_07",
+      "desk_pair_08",
+      "desk_pair_09",
+      "desk_pair_10",
+      "desk_pair_11",
+      "desk_pair_12"
+    ],
+    "slotIds": [
+      "morning_slot_01",
+      "morning_slot_02",
+      "morning_slot_03",
+      "morning_slot_04",
+      "morning_slot_05",
+      "morning_slot_06",
+      "morning_slot_07",
+      "morning_slot_08",
+      "morning_slot_09",
+      "morning_slot_10",
+      "morning_slot_11",
+      "morning_slot_12"
+    ],
+    "canonicalCompletePlacements": [
+      {
+        "pieceId": "desk_pair_01",
+        "slotId": "morning_slot_01",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_02",
+        "slotId": "morning_slot_02",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_03",
+        "slotId": "morning_slot_03",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_04",
+        "slotId": "morning_slot_04",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_05",
+        "slotId": "morning_slot_05",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_06",
+        "slotId": "morning_slot_06",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_07",
+        "slotId": "morning_slot_07",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_08",
+        "slotId": "morning_slot_08",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_09",
+        "slotId": "morning_slot_09",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_10",
+        "slotId": "morning_slot_10",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_11",
+        "slotId": "morning_slot_11",
+        "orientation": "up"
+      },
+      {
+        "pieceId": "desk_pair_12",
+        "slotId": "morning_slot_12",
+        "orientation": "up"
+      }
+    ],
+    "canonicalUse": "save_recovery_only",
+    "gameplayRule": "any_unique_piece_to_any_unique_empty_slot_orientation_up"
+  },
+  "lightGrid": {
+    "initialMask": 6,
+    "targetMask": 13,
+    "allOnMask": 31,
+    "zones": [
+      {
+        "id": "hall",
+        "label": "大厅",
+        "bit": 0,
+        "adjacentZoneIds": [
+          "west_corridor",
+          "east_corridor"
+        ],
+        "toggleMask": 7
+      },
+      {
+        "id": "west_corridor",
+        "label": "西走廊",
+        "bit": 1,
+        "adjacentZoneIds": [
+          "hall",
+          "bakery_back_area"
+        ],
+        "toggleMask": 19
+      },
+      {
+        "id": "east_corridor",
+        "label": "东走廊",
+        "bit": 2,
+        "adjacentZoneIds": [
+          "hall",
+          "classroom_zone"
+        ],
+        "toggleMask": 13
+      },
+      {
+        "id": "classroom_zone",
+        "label": "教室区",
+        "bit": 3,
+        "adjacentZoneIds": [
+          "east_corridor",
+          "bakery_back_area"
+        ],
+        "toggleMask": 28
+      },
+      {
+        "id": "bakery_back_area",
+        "label": "面包店后场",
+        "bit": 4,
+        "adjacentZoneIds": [
+          "west_corridor",
+          "classroom_zone"
+        ],
+        "toggleMask": 26
+      }
+    ],
+    "requiredOnZoneIds": [
+      "hall",
+      "east_corridor",
+      "classroom_zone"
+    ],
+    "requiredOffZoneIds": [
+      "west_corridor",
+      "bakery_back_area"
+    ],
+    "verifiedSolutionZoneIds": [
+      "east_corridor",
+      "classroom_zone",
+      "bakery_back_area"
+    ],
+    "successLocks": true
+  },
+  "maintenance": {
+    "orderedActions": [
+      "inspect_cart_wheel",
+      "collect_short_pry_bar",
+      "open_cart_wheel_cover",
+      "collect_lubricating_oil",
+      "lubricate_cart_wheel",
+      "lubricate_clock_gear"
+    ],
+    "inspectionFact": "cart_wheel_inspected",
+    "pryBarFinalUse": "open_cart_wheel_cover",
+    "oilUses": [
+      {
+        "targetId": "a1_cleaning_cart_wheel",
+        "inventoryEffect": "retain",
+        "factId": "cart_wheel_repaired"
+      },
+      {
+        "targetId": "a1_hall_clock_gear",
+        "inventoryEffect": "consume",
+        "factId": "clock_gear_repaired"
+      }
+    ],
+    "gearRepairKeepsPhase": "maintenance_repair",
+    "nextTask": "把旧钟拨向 07:55"
+  },
+  "guard": {
+    "modes": [
+      "absent",
+      "patrol",
+      "chase"
+    ],
+    "patrol": {
+      "mode": "patrol",
+      "restartPolicy": "maintenance_safe_checkpoint",
+      "canDisengageAfterSightLoss": true,
+      "preserveStoryItems": true,
+      "states": [
+        "patrol",
+        "confirming",
+        "pursuit",
+        "returning"
+      ],
+      "confirmationMs": 400,
+      "sightLossMs": 900,
+      "coneRange": 220,
+      "coneHalfAngleDegrees": 36,
+      "closeRadius": 56,
+      "patrolSpeed": 84,
+      "pursuitSpeed": 140,
+      "returnSpeed": 96,
+      "pauseRangeMs": [
+        1000,
+        2000
+      ],
+      "maxStepMs": 50,
+      "captureIntent": "recover_from_maintenance_patrol"
+    },
+    "finalChase": {
+      "mode": "chase",
+      "runtimeModel": "ChapterFourFinalChaseModel",
+      "states": [
+        "arming",
+        "running",
+        "portal_transfer",
+        "finish_pending",
+        "failure_pending",
+        "complete"
+      ],
+      "armingCommittedFrames": 4,
+      "playerSpeed": 208,
+      "guardSpeed": 196,
+      "maxStepMs": 50,
+      "transportId": "main_stair",
+      "finishPriority": "finish_before_contact_same_frame",
+      "attemptToken": "expectedAttempt",
+      "restartPolicy": "chase_only",
+      "restartCheckpoint": "c4_a1_lobby",
+      "canDisengageAfterSightLoss": false,
+      "preserveStatePaths": [
+        "lightGrid.mask",
+        "lightGrid.locked",
+        "factIds",
+        "items"
+      ]
+    }
+  },
+  "itemSequence": [
+    {
+    "id": "catch_attendance_paper",
+      "phase": "opening_handoff",
+      "itemId": "attendanceRecordPaper",
+      "targetId": "a1_noticeboard_paper",
+    "inventoryEffect": "grant",
+    "requiresFacts": [
+      "opening_paper_at_noticeboard"
+    ],
+      "stateResult": "opening_paper_caught"
+    },
+    {
+      "id": "reject_external_submission",
+      "phase": "opening_paper_caught",
+      "itemId": "attendanceRecordPaper",
+      "targetId": "external_submission_diagnostic",
+      "inventoryEffect": "retain",
+      "stateResult": "external_time_rejected"
+    },
+    {
+      "id": "collect_hour_hand",
+      "phase": "bakery_hour_hand",
+      "itemId": "oldClockHourHand",
+      "targetId": "a1_bakery_hour_hand_pickup",
+      "inventoryEffect": "grant",
+      "requiresFacts": [
+        "bakery_conveyor_lamp_inspected",
+        "bakery_hour_hand_exposed"
+      ],
+      "stateResult": "hour_hand_collected"
+    },
+    {
+      "id": "install_hour_hand",
+      "phase": "bakery_hour_hand",
+      "itemId": "oldClockHourHand",
+      "targetId": "a1_hall_clock_hour_hand_socket",
+      "inventoryEffect": "consume",
+      "stateResult": "hour_hand_installed"
+    },
+    {
+      "id": "collect_positioning_plate",
+      "phase": "room204_restore",
+      "itemId": "clockPositioningPlate",
+      "targetId": "a2_room204_podium_drawer",
+      "inventoryEffect": "grant",
+      "requiresFacts": [
+        "a3_reference_observed",
+        "room204_residual_observed",
+        "room204_restored",
+        "room204_projection_completed"
+      ],
+      "stateResult": "positioning_plate_collected"
+    },
+    {
+      "id": "install_positioning_plate",
+      "phase": "room204_restore",
+      "itemId": "clockPositioningPlate",
+      "targetId": "a1_hall_clock_positioning_plate_slot",
+      "inventoryEffect": "consume",
+      "stateResult": "positioning_plate_installed"
+    },
+    {
+      "id": "collect_short_pry_bar",
+      "phase": "maintenance_repair",
+      "itemId": "shortPryBar",
+      "targetId": "a1_bakery_back_pry_bar",
+      "inventoryEffect": "grant",
+      "stateResult": "short_pry_bar_collected"
+    },
+    {
+      "id": "open_cart_wheel_cover",
+      "phase": "maintenance_repair",
+      "itemId": "shortPryBar",
+      "targetId": "a1_cleaning_cart_wheel_cover",
+      "inventoryEffect": "consume",
+      "stateResult": "cart_wheel_cover_opened"
+    },
+    {
+      "id": "collect_lubricating_oil",
+      "phase": "maintenance_repair",
+      "itemId": "universalLubricatingOil",
+      "targetId": "a1_cleaning_cart_oil_bottle",
+      "inventoryEffect": "grant",
+      "requiresFacts": [
+        "cart_wheel_cover_opened"
+      ],
+      "stateResult": "lubricating_oil_collected"
+    },
+    {
+      "id": "lubricate_cart_wheel",
+      "phase": "maintenance_repair",
+      "itemId": "universalLubricatingOil",
+      "targetId": "a1_cleaning_cart_wheel",
+      "inventoryEffect": "retain",
+      "stateResult": "cart_wheel_repaired"
+    },
+    {
+      "id": "lubricate_clock_gear",
+      "phase": "maintenance_repair",
+      "itemId": "universalLubricatingOil",
+      "targetId": "a1_hall_clock_gear",
+      "inventoryEffect": "consume",
+      "requiresFacts": [
+        "cart_wheel_repaired"
+      ],
+      "stateResult": "clock_gear_repaired"
+    },
+    {
+      "id": "minute_theft",
+      "phase": "blackout_light_grid",
+      "itemId": "attendanceRecordPaper",
+      "targetId": "a1_hall_clock_minute_endpoint",
+      "inventoryEffect": "consume",
+      "stateResult": "paper_temporarily_out_of_inventory"
+    },
+    {
+      "id": "collect_final_minute",
+      "phase": "final_minute_recovery",
+      "itemId": "finalMinute",
+      "targetId": "a2_202_projection",
+      "inventoryEffect": "grant",
+      "stateResult": "final_minute_recovered"
+    },
+    {
+      "id": "restore_attendance_paper",
+      "phase": "final_minute_recovery",
+      "itemId": "attendanceRecordPaper",
+      "targetId": "a2_202_projection",
+      "inventoryEffect": "grant",
+      "stateResult": "attendance_paper_restored"
+    },
+    {
+      "id": "install_final_minute",
+      "phase": "return_to_clock",
+      "itemId": "finalMinute",
+      "targetId": "a1_hall_clock_minute_endpoint",
+      "inventoryEffect": "consume",
+      "stateResult": "final_minute_installed"
+    },
+    {
+      "id": "read_campus_card",
+      "phase": "morning_checkin",
+      "itemId": "campusCard",
+      "targetId": "a1_campus_card_reader",
+      "inventoryEffect": "retain",
+      "stateResult": "checkin_card_accepted"
+    },
+    {
+      "id": "submit_attendance_paper",
+      "phase": "morning_checkin",
+      "itemId": "attendanceRecordPaper",
+      "targetId": "a1_attendance_paper_slot",
+      "inventoryEffect": "retain",
+      "stateResult": "checkin_paper_accepted_and_signed"
+    }
+  ],
+  "checkin": {
+    "acceptedTargets": [
+      {
+        "targetId": "a1_campus_card_reader",
+        "itemId": "campusCard",
+        "inventoryEffect": "retain",
+        "acceptedFact": "checkin_card_accepted"
+      },
+      {
+        "targetId": "a1_attendance_paper_slot",
+        "itemId": "attendanceRecordPaper",
+        "inventoryEffect": "retain",
+        "acceptedFact": "checkin_paper_accepted"
+      }
+    ],
+    "orderIndependent": true,
+    "completionRequiresBoth": true
+  },
+  "completionInvariants": {
+    "phase": "complete",
+    "completed": true,
+    "timeAuthority": "hall_clock",
+    "timeState": "0755_morning",
+    "worldTimeSeconds": 28500,
+    "phoneStatusTimeSeconds": 28500,
+    "phoneStatusTimeTrusted": true,
+    "guardMode": "absent",
+    "lightGridLocked": true,
+    "chapterThreeInterludeCompleted": true,
+    "requiredFactIds": [
+      "final_minute_installed",
+      "checkin_card_accepted",
+      "checkin_paper_accepted",
+      "exterior_closure_acknowledged"
+    ],
+    "campusCardInventoryEffect": "retain",
+    "attendanceRecordPaperInventoryEffect": "retain"
+  }
+}

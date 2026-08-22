@@ -33,8 +33,6 @@ import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   formatRpgModeRequirement,
   getRpgDropBounds,
-  isPlayerFacingRpgTarget,
-  RPG_LOOSE_FACING,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
 import {
@@ -192,9 +190,8 @@ const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
 const ENTRY_DIALOGUE_STEP_MS = 1600;
 const ENTRY_CAMERA_ZOOM = 1.18;
-// Trigger while the player is still in the southeast entrance aisle. The tray
-// station blocks a straight approach at roughly 472 px from the queued paper,
-// so the old 360 px radius made the cutscene depend on finding a narrow detour.
+// Trigger in the southeast entrance aisle before the tray station blocks a
+// direct line to the queued paper.
 const ENTRY_PAPER_TRIGGER_RADIUS = 540;
 const CART_APPROACH_SPEED = 175;
 const CART_MIN_ROLL_DURATION_MS = 520;
@@ -508,9 +505,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       && this.defenseRuntime
       && this.defenseRuntime.getDebugSnapshot().startElapsedMs !== requestedDefenseStartMs
     ) {
-      // DEV checkpoints can move between start, middle, and final validation
-      // while this same Phaser scene remains active. Recreate only the transient
-      // defense simulation so the requested clock and speed take effect.
       this.finishDefense();
       this.startDefense();
     }
@@ -594,16 +588,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.publishDebugState(nearest, state);
 
     if (nearest && !this.dialogueLocked && !this.hasModalPanel() && !this.paperBusy && !this.cartPushBusy && (keyboardInteract || this.interactRequested)) {
-      if (isPlayerFacingRpgTarget(
-        nearest,
-        this.player.x,
-        this.player.y,
-        this.playerAnimator.cardinalFacing
-      )) {
-        this.triggerTarget(nearest, state);
-      } else {
-        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task", 1500);
-      }
+      this.triggerTarget(nearest, state);
     }
     this.interactRequested = false;
   }
@@ -838,7 +823,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         x: position.x,
         y: position.y,
         proximity: 48,
-        ...RPG_LOOSE_FACING,
         kind: "npc" as const,
         dialogue
       };
@@ -850,12 +834,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
         label: "交谈",
         x: position.x,
         y: position.y - 30,
-        // Seated students sit beside otherwise interactive tables. Use a compact
-        // body-centered range so their dialogue does not cover nearby plates.
-        width: 32,
-        height: 44,
-        proximity: 38,
-        ...RPG_LOOSE_FACING,
+        width: 72,
+        height: 88,
+        proximity: 54,
         kind: "npc" as const,
         dialogue
       };
@@ -870,7 +851,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       width: 64,
       height: 80,
       proximity: 56,
-      ...RPG_LOOSE_FACING,
       kind: "npc",
       dialogue: CANTEEN_COUNTER_NPC_DIALOGUE
     };
@@ -885,7 +865,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       width: 46,
       height: 70,
       proximity: 64,
-      ...RPG_LOOSE_FACING,
       kind: "npc"
     };
 
@@ -1258,7 +1237,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         width: 20,
         height: 28,
         proximity: 54,
-        ...RPG_LOOSE_FACING,
         kind: "tray",
         value: tray.id
       };
@@ -1924,15 +1902,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_tray_task_started") {
-      this.showFeedback(canteenContent.tray.taskStarted, "task", 2600);
       return;
     }
     if (name === "canteen_tray_collect_wrong_mode") {
-      this.showFeedback(canteenContent.tray.collectWrongMode, "task");
+      this.showFeedback(canteenContent.tray.collectWrongMode, "system");
       return;
     }
     if (name === "canteen_tray_hands_full") {
-      this.showFeedback(canteenContent.tray.handsFull, "task");
+      this.showFeedback(canteenContent.tray.handsFull, "system");
       return;
     }
     if (name === "canteen_tray_empty_handed") {
@@ -1961,37 +1938,32 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_drink_collected") {
-      const itemId = String(payload?.itemId ?? "") as CanteenDrinkIngredientId;
-      this.showFeedback(canteenContent.drinks.collected[itemId], "task");
       return;
     }
     if (name === "canteen_drink_already_owned") {
-      this.showFeedback(canteenContent.drinks.alreadyOwned, "task");
+      this.showFeedback(canteenContent.drinks.alreadyOwned, "system");
       return;
     }
     if (name === "canteen_drink_shelf_read") {
-      this.showFeedback(`${canteenContent.drinks.shelfPrompt}\n${canteenContent.drinks.shelfOrder}`, "task", 3000);
+      this.showFeedback(`${canteenContent.drinks.shelfPrompt}\n${canteenContent.drinks.shelfOrder}`, "system", 3000);
       return;
     }
     if (name === "canteen_mix_ingredient_added") {
       this.refreshMixerPanel();
-      if (payload?.completeAttempt !== true) {
-        this.showFeedback(canteenContent.drinks.ingredientAdded, "task", 1600);
-      }
       return;
     }
     if (name === "canteen_mix_failed") {
       this.closeMixerPanel();
-      this.showFeedback(canteenContent.drinks.wrongMix, "task", 2600);
+      this.showFeedback(canteenContent.drinks.wrongMix, "system", 2600);
       return;
     }
     if (name === "canteen_mix_solved") {
       this.closeMixerPanel();
-      this.showFeedback(canteenContent.drinks.correctMix, "task", 2600);
+      this.showFeedback(canteenContent.drinks.correctMix, "success", 2600);
       return;
     }
     if (name === "canteen_mix_missing_drink") {
-      this.showFeedback(canteenContent.drinks.ingredientMissing, "task");
+      this.showFeedback(canteenContent.drinks.ingredientMissing, "system");
       return;
     }
     if (name === "canteen_bad_drink_consumed") {
@@ -2004,15 +1976,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (name === "canteen_queue_gap_opened") return;
     if (name === "canteen_menu_dark_clue_read") {
-      this.showFeedback(canteenContent.menu.darkClueRead, "task");
       return;
     }
     if (name === "canteen_menu_order_locked") {
-      this.showFeedback(canteenContent.menu.orderLocked, "task");
+      this.showFeedback(canteenContent.menu.orderLocked, "system");
       return;
     }
     if (name === "canteen_order_already_active") {
-      this.showFeedback(canteenContent.menu.alreadyActive, "task");
+      this.showFeedback(canteenContent.menu.alreadyActive, "system");
       return;
     }
     if (name === "canteen_order_wrong") {
@@ -2038,7 +2009,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_pickup_order_locked") {
-      this.showFeedback(canteenContent.pickup.orderLocked, "task");
+      this.showFeedback(canteenContent.pickup.orderLocked, "system");
       return;
     }
     if (name === "canteen_pickup_wrong_window") {
@@ -2068,7 +2039,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_exit_dark_clue_read") {
-      this.showFeedback(canteenContent.blocking.darkClueRead, "task");
       return;
     }
     if (name === "canteen_exit_dark_clue_missed") {
@@ -2076,7 +2046,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "canteen_exit_block_unidentified") {
-      this.showFeedback(canteenContent.blocking.orderLocked, "task");
+      this.showFeedback(canteenContent.blocking.orderLocked, "system");
       this.finishCartMotion(String(payload?.exitId ?? "west") as CanteenExitId);
       return;
     }
@@ -2222,7 +2192,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "promo") {
-      this.showFeedback(canteenContent.drinks.promoDropHint, "task");
+      this.showFeedback(canteenContent.drinks.promoDropHint, "system");
       return;
     }
     if (target.kind === "tray") {
@@ -2267,15 +2237,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     ) return;
     if (!this.getActiveTargets(state).some((candidate) => candidate.id === target.id)) return;
     if (!findNearestCanteenTarget(this.player.x, this.player.y, [target])) return;
-    if (!isPlayerFacingRpgTarget(
-      target,
-      this.player.x,
-      this.player.y,
-      this.playerAnimator.cardinalFacing
-    )) {
-      this.showFeedback(`面向「${target.label}」后再操作。`, "task", 1500);
-      return;
-    }
     this.triggerTarget(target, state);
   }
 
@@ -2315,7 +2276,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       dropY: worldPoint.y,
       playerX: this.player.x,
       playerY: this.player.y,
-      playerFacing: this.playerAnimator.cardinalFacing,
       mode: state.canteenHunt.mode
     });
     if (!result.target) {
@@ -2353,15 +2313,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         detail: result.target.kind === "promo"
           ? "落点正确；人物还没有靠近宣传板。"
           : "落点正确；靠近设施后再操作。"
-      });
-      return;
-    }
-    if (result.kind === "wrong_facing") {
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "wrong_facing",
-        targetLabel: result.target.label,
-        detail: `靠近并面向「${result.target.label}」后再操作。`
       });
       return;
     }
@@ -2704,7 +2655,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         pickupVisual.destroy();
         this.dialogueLocked = false;
         this.bridge.emit("canteen_tray_slide_completed", { trayId });
-        this.showFeedback(canteenContent.tray.collected, "task", 2200);
       }
     });
   }
@@ -2865,8 +2815,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         ease: "Sine.easeOut",
         onComplete: () => glow.destroy()
       });
-      this.showFeedback(canteenContent.drinks.promoCopy, "task", 3000);
-
       const queueFocusMs = promoBeatMs(100, 280);
       this.time.delayedCall(promoBeatMs(120, 430), () => {
         camera.pan(
@@ -3186,7 +3134,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const candidate = candidates.find((entry) => Math.abs(localX - entry.x) <= 88);
     if (!candidate) return;
     if (!this.bridge.getState().items[candidate.id]) {
-      this.showFeedback(canteenContent.drinks.ingredientMissing, "task");
+      this.showFeedback(canteenContent.drinks.ingredientMissing, "system");
       return;
     }
     this.bridge.emit("rpg_canteen_mix_ingredient_requested", { itemId: candidate.id });
@@ -3246,7 +3194,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       fontSize: "13px"
     }).setOrigin(0.5));
     this.menuPanel = panel;
-    this.showFeedback(state.canteenHunt.mode === "dark" ? canteenContent.menu.darkIntro : canteenContent.menu.lightIntro, "system");
     if (state.canteenHunt.mode === "dark") {
       this.bridge.emit("rpg_canteen_menu_clue_requested");
     }
@@ -3262,7 +3209,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     const state = this.bridge.getState();
     if (state.canteenHunt.mode !== "light") {
-      this.showFeedback(canteenContent.menu.orderLocked, "task");
+      this.showFeedback(canteenContent.menu.orderLocked, "system");
       return;
     }
     if (Math.abs(localX) > 215) return;
@@ -3697,7 +3644,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       },
       getDeveloperCanteenDefenseStart()
     );
-    this.showFeedback("守住三个出口。空格键冲刺，纸条回头时会自动闪出路线。", "task", 2600);
   }
 
   private finishDefense(): void {
@@ -3880,21 +3826,20 @@ export class CanteenInteriorScene extends Phaser.Scene {
       },
       scene: "canteen_interior",
       activeTargets: this.getActiveTargets(state).map((target) => {
+        const bounds = getRpgDropBounds(target);
         return {
           id: target.id,
           label: target.label,
           x: target.x,
           y: target.y,
-          width: target.width ?? target.proximity * 2,
-          height: target.height ?? target.proximity * 2,
+          width: bounds.width,
+          height: bounds.height,
           dropWidth: target.dropWidth,
           dropHeight: target.dropHeight,
           stand: target.stand,
           proximity: target.proximity,
           acceptedItem: target.acceptedItem,
-          requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing,
-          facingToleranceDegrees: target.facingToleranceDegrees
+          requiredMode: target.requiredMode
         };
       }),
       canteen: {
@@ -3929,9 +3874,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
           proximity: window.proximity,
           dropBounds: getRpgDropBounds(window),
           acceptedItem: window.acceptedItem,
-          requiredMode: window.requiredMode,
-          requiredFacing: window.requiredFacing,
-          facingToleranceDegrees: window.facingToleranceDegrees
+          requiredMode: window.requiredMode
         })),
         menuOpen: this.menuPanel !== null,
         dialogueLocked: this.dialogueLocked,

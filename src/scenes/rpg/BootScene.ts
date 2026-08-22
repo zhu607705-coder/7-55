@@ -50,7 +50,6 @@ const CANTEEN_DARK_OVERLAY_COLOR = 0x050b1d;
 const CANTEEN_DARK_OVERLAY_ALPHA = 0.7;
 const CANTEEN_PLAYER_LIGHT_ALPHA = 0.78;
 const CANTEEN_PLAYER_LIGHT_SCALE = 0.62;
-const CANTEEN_NARRATION_RADIUS = 280;
 const FOOTPRINT_SPACING = 42;
 const FOOTPRINT_MESSY_RATIO = 0.82;
 const PATH_DOT_RADIUS = 6;
@@ -91,7 +90,6 @@ export class BootScene extends Phaser.Scene {
   private canteenBikeHint: Phaser.GameObjects.Text | null = null;
   private canteenBikeCodeGlow: Phaser.GameObjects.Arc | null = null;
   private canteenBikeGlare: Phaser.GameObjects.Rectangle | null = null;
-  private canteenMessyNarrationShown = false;
 
   constructor() {
     super("campus-bootstrap");
@@ -179,7 +177,7 @@ export class BootScene extends Phaser.Scene {
     );
     this.theaterGate = this.createGateVisual(
       THEATER_GATE,
-      `剧院  ·  ${formatRpgInteractionHint("进入剧院")}`,
+      `求是大讲堂入口  ·  ${formatRpgInteractionHint("进入剧场")}`,
       0x8d3244
     );
     this.ensureCanteenTextures();
@@ -208,22 +206,17 @@ export class BootScene extends Phaser.Scene {
       } else if (event.name === "canteen_bike_dark_payment_rejected") {
         this.showCanteenFeedback(canteenContent.bike.darkPaymentRejected, "system");
       } else if (event.name === "canteen_bike_scan_rule") {
-        this.showCanteenFeedback(canteenContent.bike.scanRule, "task");
+        return;
       } else if (event.name === "canteen_bike_lock_cleaned") {
         this.animateCanteenBikeCleaned();
       } else if (event.name === "canteen_bike_payment_ready") {
-        this.showCanteenFeedback(canteenContent.bike.unlock, "task");
+        return;
       } else if (event.name === "canteen_chase_completed") {
         this.player.setPosition(CANTEEN_THEATER_JUNCTION.x, CANTEEN_THEATER_JUNCTION.y);
         this.player.body?.reset(CANTEEN_THEATER_JUNCTION.x, CANTEEN_THEATER_JUNCTION.y);
         this.movement.clearPath();
         this.cameraController.recenter(true);
         this.syncCanteenPresentation(this.bridge.getState(), true);
-        this.bridge.emit("rpg_subtitle", {
-          text: "已回到校园。沿路前往剧院。",
-          tone: "task",
-          durationMs: 3200
-        });
       }
     }, clearRpgRuntimeDebugState);
 
@@ -375,11 +368,6 @@ export class BootScene extends Phaser.Scene {
     if (["tracking", "canteen_reached"].includes(phase)) {
       this.createCanteenDarkness();
       this.createCanteenFootprintTrail();
-      this.bridge.emit("rpg_subtitle", {
-        text: canteenContent.hints[0],
-        tone: "task",
-        durationMs: 4200
-      });
     } else if (phase === "chase_ready") {
       this.createCanteenBike();
       this.createCanteenBikeModeLayer(state);
@@ -401,7 +389,6 @@ export class BootScene extends Phaser.Scene {
     this.canteenBikeCodeGlow = null;
     this.canteenBikeGlare = null;
     this.canteenFootprints = [];
-    this.canteenMessyNarrationShown = false;
   }
 
   private ensureCanteenTextures(): void {
@@ -553,17 +540,6 @@ export class BootScene extends Phaser.Scene {
 
   private updateCanteenEffects(state: GameState): void {
     this.canteenPlayerLight?.setPosition(this.player.x, this.player.y);
-    if (["tracking", "canteen_reached"].includes(state.canteenHunt.phase)) {
-      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, CANTEEN_GATE.x, CANTEEN_GATE.y);
-      if (!this.canteenMessyNarrationShown && distance <= CANTEEN_NARRATION_RADIUS) {
-        this.canteenMessyNarrationShown = true;
-        this.bridge.emit("rpg_subtitle", {
-          text: "脚印在食堂门前变得杂乱，入口就在前方。",
-          tone: "task",
-          durationMs: 2600
-        });
-      }
-    }
     if (state.canteenHunt.phase === "chase_ready" && this.canteenBikeHint) {
       const nearby = Phaser.Math.Distance.Between(this.player.x, this.player.y, CANTEEN_BIKE.x, CANTEEN_BIKE.y) <= CANTEEN_BIKE_RADIUS;
       this.canteenBikeHint.setText(this.getCanteenBikeWalletHint()).setVisible(nearby);
@@ -655,7 +631,7 @@ export class BootScene extends Phaser.Scene {
     }
   }
 
-  private showCanteenFeedback(text: string, tone: "system" | "task" | "success"): void {
+  private showCanteenFeedback(text: string, tone: "system" | "success"): void {
     this.bridge.emit("rpg_subtitle", { text, tone, durationMs: 3200 });
   }
 

@@ -38,7 +38,7 @@ const ELSEWHERE_HINTS: Partial<Record<ItemId, string>> = {
   reflectionCoordinate: "坐标会在启真湖布置假纸条时自动核验"
 };
 
-const ready = (targetLabel: string, detail = "靠近并面向目标，把道具拖到物体本身后松手。"): RpgItemUseGuidance => ({
+const ready = (targetLabel: string, detail = "靠近目标，把道具拖到物体本身后松手。"): RpgItemUseGuidance => ({
   status: "ready",
   title: "当前可以使用",
   detail,
@@ -69,6 +69,62 @@ export function selectRpgItemUseGuidance(
   runtimeScene: RpgSceneId,
   itemId: ItemId
 ): RpgItemUseGuidance {
+  if (runtimeScene === "duan_yongping_temporal_maze") {
+    const chapter = state.chapter4;
+    if (itemId === "campusCard") {
+      if (chapter.phase === "morning_checkin" && !chapter.checkinCardAccepted) {
+        return ready("签到校园卡读卡器");
+      }
+      return elsewhere(itemId);
+    }
+    if (itemId === "attendanceRecordPaper") {
+      if (chapter.phase === "morning_checkin" && !chapter.checkinPaperAccepted) {
+        return ready("签到记录纸槽");
+      }
+      if (chapter.phase === "return_to_clock" && !chapter.factIds.includes("final_minute_installed")) {
+        return locked("先把最后一分钟归还到旧钟，再去签到口。", "旧钟分针端点");
+      }
+      if (chapter.phase === "blackout_light_grid" && !chapter.factIds.includes("paper_temporarily_out_of_inventory")) {
+        return passive("旧钟接近 07:55 时，这张纸会被剧情自动带走。");
+      }
+      return elsewhere(itemId);
+    }
+    if (itemId === "oldClockHourHand") {
+      return chapter.phase === "bakery_hour_hand" && !chapter.factIds.includes("hour_hand_installed")
+        ? ready("旧钟时针插槽")
+        : elsewhere(itemId);
+    }
+    if (itemId === "clockPositioningPlate") {
+      return chapter.phase === "room204_restore" && !chapter.factIds.includes("positioning_plate_installed")
+        ? ready("旧钟定位盘插槽")
+        : elsewhere(itemId);
+    }
+    if (itemId === "shortPryBar") {
+      if (chapter.phase !== "maintenance_repair") return elsewhere(itemId);
+      if (!chapter.factIds.includes("cart_wheel_inspected")) {
+        return locked("先靠近保洁车检查卡住的车轮。", "清洁车车轮");
+      }
+      return !chapter.factIds.includes("cart_wheel_cover_opened")
+        ? ready("清洁车轮罩")
+        : elsewhere(itemId);
+    }
+    if (itemId === "universalLubricatingOil") {
+      if (chapter.phase !== "maintenance_repair") return elsewhere(itemId);
+      if (!chapter.factIds.includes("cart_wheel_repaired")) {
+        return ready("清洁车车轮", "先把润滑油拖到清洁车车轮，修好后仍会保留半瓶。");
+      }
+      if (!chapter.factIds.includes("clock_gear_repaired")) {
+        return ready("旧钟齿轮", "把剩下的半瓶润滑油拖到旧钟齿轮。");
+      }
+      return passive("润滑油的剧情用途已经完成。");
+    }
+    if (itemId === "finalMinute") {
+      return chapter.phase === "return_to_clock" && !chapter.factIds.includes("final_minute_installed")
+        ? ready("旧钟分针端点")
+        : elsewhere(itemId);
+    }
+  }
+
   if (runtimeScene === "dorm_hub" && itemId === "gamepad") {
     if (state.actOne.movementEnabled) return passive("手柄已经连接，使用方向键完成第一次手动移动。");
     if (!state.actOne.characterNamed) return locked("先在部门黄页完成角色命名。", "角色");
@@ -162,7 +218,7 @@ export function selectRpgItemUseGuidance(
       if (theater.posterCleaned) return passive("海报玻璃已经擦净。");
       if (theater.phase !== "entry_ticket") return locked("擦拭海报只在剧院入口取票阶段开放。", "入口海报");
       if (theater.mode !== "light") return locked("切回浅色模式后擦拭海报玻璃。", "入口海报");
-      return ready("入口海报玻璃", "靠近并面向海报玻璃，把油渍纸巾拖到玻璃污渍上。");
+      return ready("入口海报玻璃", "从海报右侧靠近并面向左，把油渍纸巾拖到玻璃污渍上。");
     }
     if (itemId === "temporaryTheaterTicket") {
       if (theater.phase === "entry_ticket" && !theater.admitted) {

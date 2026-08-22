@@ -24,6 +24,33 @@ const RECOVERY_VISIBLE_PHASES = new Set<GameState["ui"]["libraryFinalsPhase"]>([
   "friend_contacted"
 ]);
 
+const LEGACY_CHAPTER_FOUR_PHONE_GATE_PHASES = new Set<string>([
+  "arrival",
+  "airflow_overlay",
+  "elevator_track_sync",
+  "npc_schedule_route",
+  "corridor_bay_reconstruction",
+  "wayfinding_fragment_board",
+  "bridge_floor_discrimination",
+  "stair_echo_direction",
+  "multicam_video_edit",
+  "echo_action_record",
+  "dual_lift_logistics",
+  "warm_air_balance",
+  "route_schedule",
+  "clock_phase_lock",
+  "first_cycle_reset"
+]);
+
+/**
+ * Read-only migration compatibility for the retired phone-gated Chapter 4
+ * path. The current 13-phase 7:55 path never returns true here, so Settings,
+ * CC98 and WeChat cannot become a second progression surface.
+ */
+export function isLegacyChapterFourPhoneGatePhase(phase: unknown): boolean {
+  return typeof phase === "string" && LEGACY_CHAPTER_FOUR_PHONE_GATE_PHASES.has(phase);
+}
+
 export function selectFeatureAccess(state: GameState): FeatureAccess {
   const puzzle = state.ui.libraryFinalsPuzzle;
   const interludeActive = state.qizhenLake.phase === "complete"
@@ -33,7 +60,8 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     || state.canteenHunt.active
     || state.theaterHunt.active
     || state.qizhenLake.active;
-  // 第四章只能由第三章半恢复回放解锁；旧档迁移会补齐该事实。
+  // 第四章只影响章节标识；Settings、微信和 CC98 保持普通入口规则。
+  // 旧校时页已退出 07:55 主线，不再由 chapter_four 自动开放。
   const chapterFourActive = state.chapterThreeInterlude.completed
     && state.chapterThreeInterlude.replayUnlocked;
   const chapter = chapterFourActive
@@ -75,7 +103,7 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     bikeArcade,
     timelineRecovery: interludeActive,
     voiceMemos: interludeActive,
-    clockCalibration: chapter === "chapter_four"
+    clockCalibration: false
   };
 }
 

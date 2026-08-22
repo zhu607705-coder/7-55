@@ -75,7 +75,13 @@ export function createInitialGameState(): GameState {
       fishFeedPellets: false,
       smallCarp: false,
       swanMagnet: false,
-      magneticFishingRod: false
+      magneticFishingRod: false,
+      attendanceRecordPaper: false,
+      oldClockHourHand: false,
+      clockPositioningPlate: false,
+      shortPryBar: false,
+      universalLubricatingOil: false,
+      finalMinute: false
     },
     flags: {
       codeScattered: false,
@@ -275,7 +281,7 @@ export function createInitialGameState(): GameState {
       replayUnlocked: false,
       completed: false
     },
-    // 第四章「校时」：07:55:23 被篡改冻结，目标 08:00:00。
+    // Task 5 删除的旧校时控制器兼容状态；新 7:55 主线不读取该字段。
     clockCalibration: {
       phase: "tampered",
       step: "target_selection",
@@ -290,15 +296,34 @@ export function createInitialGameState(): GameState {
       phaseLockAttempts: 0,
       adjustCount: 0
     },
-    // 第四章：序幕完成后进入段永平教学楼 A1，22:45 起始。
+    // 第四章：外部证据给出 22:45，手机仍冻结在不可信的 07:55:23。
     chapter4: {
       prologueSeen: false,
-      phase: "inactive",
-      cycle: 1,
+      phase: "opening_handoff",
       mode: "light",
       building: "A",
       floor: "A1",
       roomId: "a1_lobby",
+      timeAuthority: "external_evidence",
+      timeState: "2245_opening",
+      worldTimeSeconds: 81900,
+      phoneStatusTimeSeconds: 28523,
+      phoneStatusTimeTrusted: false,
+      factIds: [],
+      room204Placements: [],
+      lightGrid: {
+        mask: 6,
+        locked: false
+      },
+      guardMode: "absent",
+      chaseAttempt: 0,
+      chaseRestartCheckpoint: null,
+      checkinCardAccepted: false,
+      checkinPaperAccepted: false,
+      exteriorClosureAcknowledged: false,
+      completed: false,
+      // Task 5 删除以下旧控制器兼容字段；v25 存档不会恢复旧谜题事实。
+      cycle: 1,
       buildingTimeSeconds: 81900,
       airflowObserved: false,
       paperGuidedToElevator: false,
@@ -315,8 +340,7 @@ export function createInitialGameState(): GameState {
       anchor: null,
       echoRecorded: false,
       resetCount: 0,
-      finalCode: null,
-      completed: false
+      finalCode: null
     },
     ui: {
       controlCenterOpen: false,

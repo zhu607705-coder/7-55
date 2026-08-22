@@ -43,6 +43,9 @@ const tempDir = mkdtempSync(join(tmpdir(), "seven-fifty-five-chapter4-prologue-v
 const MODEL = "speech-2.8-hd";
 const REQUEST_GAP_MS = 2200;
 const LINE_KEY_PATTERN = /^ch4_prologue_(player|narrator|cleaner|guard)_\d{2}$/;
+const SCENE_IDS = new Set(["snap", "arcade", "lobby", "closing"]);
+const EMOTIONS = new Set(["happy", "sad", "angry", "fearful", "disgusted", "surprised", "calm", "fluent", "whisper"]);
+const NORMALIZATION_PROFILES = new Set(["short_dialogue_consistent_v2"]);
 
 function hash(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -128,13 +131,27 @@ function probeAudio(path) {
   return { durationMs, codec: stream.codec_name, sampleRate, channels };
 }
 
-function normalizeVoice(input, output) {
+function normalizeVoice(input, output, normalizationProfile) {
+  const dynamics = normalizationProfile === "short_dialogue_consistent_v2"
+    ? "acompressor=threshold=-18dB:ratio=2.2:attack=5:release=100:makeup=2,loudnorm=I=-16:TP=-1.5:LRA=7"
+    : "loudnorm=I=-16:TP=-1.5:LRA=7";
   run("ffmpeg", [
     "-y", "-hide_banner", "-loglevel", "error", "-i", input,
     "-af",
-    "silenceremove=start_periods=1:start_duration=0.04:start_threshold=-48dB,areverse,silenceremove=start_periods=1:start_duration=0.08:start_threshold=-48dB,areverse,loudnorm=I=-16:TP=-1.5:LRA=7",
+    `silenceremove=start_periods=1:start_duration=0.04:start_threshold=-48dB,areverse,silenceremove=start_periods=1:start_duration=0.08:start_threshold=-48dB,areverse,${dynamics}`,
     "-ar", "32000", "-ac", "1", "-b:a", "128k", output
   ], `Normalize ${output}`);
+}
+
+function probeLineAudio(line, path) {
+  const metadata = probeAudio(path);
+  if (metadata.durationMs > line.maxDurationMs) {
+    throw new Error(
+      `Chapter 4 prologue voice exceeds ${line.sceneId} scene budget: ${line.key} `
+      + `${metadata.durationMs}ms > ${line.maxDurationMs}ms`
+    );
+  }
+  return metadata;
 }
 
 function replaceValidatedFile(source, destination) {
@@ -180,6 +197,17 @@ function validateContent() {
       || typeof line.subtitleZh !== "string"
       || typeof line.voiceTextEn !== "string"
       || line.subtitleSurface !== "scene"
+      || !SCENE_IDS.has(line.sceneId)
+      || !Number.isInteger(line.cueAtMs)
+      || line.cueAtMs < 0
+      || line.cueAtMs >= 43834
+      || !Number.isInteger(line.maxDurationMs)
+      || line.maxDurationMs < 250
+      || line.cueAtMs + line.maxDurationMs > 43834
+      || typeof line.deliveryPromptZh !== "string"
+      || line.deliveryPromptZh.trim().length < 12
+      || (line.emotion !== undefined && !EMOTIONS.has(line.emotion))
+      || (line.normalizationProfile !== undefined && !NORMALIZATION_PROFILES.has(line.normalizationProfile))
       || typeof content.voices?.[line.voiceRole] !== "object"
     ) {
       throw new Error(`Invalid Chapter 4 prologue voice line: ${JSON.stringify(line)}`);
@@ -210,7 +238,9 @@ function sourceConfig(line) {
     sampleRate: 32000,
     bitrate: 128000,
     channels: 1,
-    voiceTextEn: line.voiceTextEn
+    voiceTextEn: line.voiceTextEn,
+    ...(line.emotion ? { emotion: line.emotion } : {}),
+    ...(line.normalizationProfile ? { normalizationProfile: line.normalizationProfile } : {})
   };
 }
 
@@ -230,6 +260,7 @@ function generateVoice(line, output) {
   const voice = content.voices[line.voiceRole];
   const raw = join(tempDir, `${line.key}.raw.mp3`);
   const normalized = join(tempDir, `${line.key}.normalized.mp3`);
+  const emotionArgs = line.emotion ? ["--emotion", line.emotion] : [];
   runMmx([
     "speech", "synthesize",
     "--model", MODEL,
@@ -241,11 +272,12 @@ function generateVoice(line, output) {
     "--sample-rate", "32000",
     "--bitrate", "128000",
     "--channels", "1",
+    ...emotionArgs,
     "--text", line.voiceTextEn,
     "--out", raw
   ], `MiniMax Chapter 4 prologue voice ${line.key}`);
-  normalizeVoice(raw, normalized);
-  probeAudio(normalized);
+  normalizeVoice(raw, normalized, line.normalizationProfile);
+  probeLineAudio(line, normalized);
   replaceValidatedFile(normalized, output);
 }
 
@@ -269,7 +301,7 @@ function main() {
       && cached?.sha256 === hash(readFileSync(output));
     if (!reusable) continue;
     try {
-      const metadata = probeAudio(output);
+      const metadata = probeLineAudio(line, output);
       const sha256 = hash(readFileSync(output));
       if (seenHashes.has(sha256)) continue;
       seenHashes.set(sha256, asset);
@@ -296,7 +328,7 @@ function main() {
     if (verifyOnly) throw new Error(`Chapter 4 prologue voice requires regeneration: ${asset}`);
     generateVoice(line, output);
     generated.push(asset);
-    const metadata = probeAudio(output);
+    const metadata = probeLineAudio(line, output);
     const sha256 = hash(readFileSync(output));
     const duplicate = seenHashes.get(sha256);
     if (duplicate) throw new Error(`Duplicate Chapter 4 prologue voice bytes for ${asset} and ${duplicate}`);

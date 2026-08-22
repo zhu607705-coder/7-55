@@ -1,16 +1,17 @@
 # 《7:55》当前版本完整游戏攻略与人工调试手册
 
-> 核对日期：2026-07-19
+> 核对日期：2026-08-22
 > 核对范围：当前 `src/` 源码、章节开发文档、开发者断点和单文件运行入口。
 > 用途：人工完整通关、分段调试、判断流程阻塞位置。本文包含完整谜底。
 
 ## 0. 先看结论
 
-当前源码包含三段可调试内容：
+当前源码包含四段可调试内容：
 
 1. 第一章：找回签到码 `0798`，完成签到，并抓住准备离场的旁白圆圈。
 2. 第二章：按系统要求在寝室取得校园卡并恢复道具栏，随后恢复移动能力，进入 RPG 图书馆处理 `022` 占座书包。
 3. 第三章：`求是潮 755` 三车道骑行小游戏。
+4. 第四章：教学楼 `7:55` 时间迷宫，已有 11 个稳定 DEV 检查点可分段验证。正式外景素材引用仍为空，所以双项签到后保持在“外景收束等待正式素材”状态，不标记章节完成。
 
 当前正式流程在完成 `022` 对话后会同一次写入 `friend_contacted`、第三章任务和 `bikeArcade.unlocked = true`。旧存档若已经完成对话但仍处于锁定状态，载入时会自动迁移修复。
 
@@ -331,18 +332,29 @@
 
 失败后可以 `再骑一次`，最佳距离与尝试次数会保存。
 
-## 6. 开发者通道
+## 6. 第四章：教学楼 7:55 时间迷宫
 
-### 6.1 打开方式
+第四章使用深浅两种现实模式。任务抽屉只显示当前一个目标，进度只会是 `0/1` 或 `1/1`。允许显示的提示固定为三条：
+
+- `暗色模式里，椅子记得自己原来朝哪边。`
+- `锈掉的东西，先别急着讲道理。`
+- `不用全亮，能走就行。`
+
+人工调试时建议使用下方 11 个稳定检查点逐段检查。每个检查点都同时设置剧情阶段、时间态、深浅模式、楼层、房间、checkpoint、任务、道具和运行时闭包。
+
+## 7. 开发者通道
+
+### 7.1 打开方式
 
 - 页面内按 `Ctrl + Shift + D` 打开或关闭开发者面板。
 - 也可以在 URL 后添加：`?devCheckpoint=<断点 ID>`。
 - 示例：`http://127.0.0.1:5173/?devCheckpoint=c2-catalog`。
 - 单文件也支持该参数。
+- `?dev=0` 会同时禁用面板、快捷键和 URL 检查点。未知 `devCheckpoint` 会明确拒绝，不跳到其他场景。
 
 第一次跳转开发者断点时，会把当前正式存档备份在当前会话中。调试完点击开发面板里的恢复操作，可返回跳转前状态。开发者断点不会覆盖正式存档。
 
-### 6.2 可用断点
+### 7.2 可用断点
 
 | 断点 ID | 直接进入的玩法状态 |
 | --- | --- |
@@ -388,10 +400,21 @@
 | `c3-congestion` | 第三章 377 米 |
 | `c3-sprint` | 第三章 566 米 |
 | `c3-result` | 第三章完成结算 |
+| `c4-755-opening` | 第四章入楼交接 |
+| `c4-755-hall-clock` | A1 大厅旧钟检查 |
+| `c4-755-bakery-1225` | `12:25` 面包坊传送带与旧时针 |
+| `c4-755-room204-1850` | `18:50` 204 教室复原 |
+| `c4-755-maintenance-2245` | `22:45` 清洁车、齿轮与普通巡逻 |
+| `c4-755-blackout-0754` | `07:54` 停电后 A1 大厅 |
+| `c4-755-light-grid` | 五区灯阵面板会话 |
+| `c4-755-chase` | 从 A1 经主楼梯前往 202 的最终追逐 |
+| `c4-755-final-minute` | A2 202 取回最后一分钟 |
+| `c4-755-checkin` | `07:55` 校园卡与签到纸条双项签到 |
+| `c4-755-complete` | 双项签到已完成，外景收束等待正式素材；`completed=false` |
 
 旧 ID `c2-movement`、`c2-seat-022`、`c2-evidence`、`c2-top-ten`、`c2-recovery`、`c2-pass` 仍可使用，进入时会映射到对应的新节点。
 
-## 7. 调试时如何判断卡在哪里
+## 8. 调试时如何判断卡在哪里
 
 浏览器控制台执行：
 
@@ -410,6 +433,13 @@ JSON.parse(window.render_game_to_text())
 - `ui.libraryFinalsPhase`：图书馆主流程阶段。
 - `ui.libraryFinalsPuzzle`：四项证据、bd、PASS、座位恢复的细粒度状态。
 - `bikeArcadeChapter`：第三章解锁、尝试次数、最佳距离和完成状态。
+- `chapterFour.committed / applied`：Controller 已提交与 Scene 已应用的 phase、timeState、plate signature 和 target IDs。
+- `chapterFour.runtimeEntities`：当前实体的 `targetId / entityId / source / exact bounds`。
+- `chapterFour.ordinaryGuard / finalChase`：普通巡逻状态以及追逐的 floor、attempt、portal、distance、finish、contact。
+- `chapterFour.lightGrid / room202Door`：灯阵 mask、锁定、面板会话和 202 门障碍状态。
+- `chapterFour.spatialAttestation`：Host 在调用 Controller 前请求的单次 Scene 空间证明。
+- `chapterFour.contract.failures / lastFailure`：结构化合同失败与最近一次失败。
+- `chapterFour.developerCheckpoint`：当前 DEV 检查点 ID 及 `panel / url` 来源。
 
 ### 常见卡点对照
 
@@ -427,7 +457,7 @@ JSON.parse(window.render_game_to_text())
 | PASS 拖不上书包 | 运行模式与道具栏 | 回横屏图书馆，用 RPG 道具栏拖拽 |
 | 第二章完成后第三章未开放 | 存档版本与 `bikeArcade.unlocked` | 重新载入一次触发 V3 迁移；仍异常时在控制中心重置后复测 |
 
-## 8. 推荐人工回归顺序
+## 9. 推荐人工回归顺序
 
 每轮代码变更不必从闹钟完整重玩。按以下顺序分段检查：
 
@@ -441,4 +471,5 @@ JSON.parse(window.render_game_to_text())
 8. `c2-cc98-upload`、`c2-bd-rise`、`c2-recovery-form`：检查公示、排名和恢复申请。
 9. `c2-pass-apply`、`c2-seat-sit`、`c2-seat-dialogue`、`c2-chapter-exit`：检查清退、坐下、对话和解锁。
 10. `c3-intro`、`c3-congestion`、`c3-sprint`：分别检查三个骑行难度阶段。
-11. 最后重置存档，从 `c1-alarm` 完整通关一次，确认跨章节状态和存档恢复。
+11. 按表格顺序跑完 11 个 `c4-755-*` 检查点；`c4-755-complete` 必须停在外景等待态。
+12. 最后重置存档，从 `c1-alarm` 完整通关一次，确认跨章节状态和存档恢复。

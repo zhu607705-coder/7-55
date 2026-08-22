@@ -4,6 +4,7 @@ import canteenContent from "../data/chapter3-canteen.content.json";
 import theaterContent from "../data/chapter3-theater.content.json";
 import qizhenContent from "../data/chapter3-qizhen-lake.content.json";
 import clockContent from "../data/chapter4-clock.content.json";
+import chapterFour755Content from "../data/chapter4-755.content.json";
 import chapterFourContent from "../data/chapter4-temporal-maze.content.json";
 import { selectChapterFourWechatObjective } from "../modules/ChapterFourWechatModel";
 
@@ -296,6 +297,68 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
   return task(lake.phase, qizhenContent.quest.lake, qizhenContent.quest.lakeHints);
 }
 
+function canteenInteriorTask(state: GameState): TaskDefinition {
+  const hunt = state.canteenHunt;
+  const task = (id: string, label: string, hints: readonly string[] = []): TaskDefinition => ({
+    id: `chapter_three_canteen_${id}`,
+    label,
+    hints,
+    targetSurface: "rpg"
+  });
+  const returnedTargetTrays = hunt.returnedTrayIds.filter((id) => id.startsWith("tray_blue_")).length;
+
+  if (!hunt.entryPaperEscaped) {
+    return task("paper_entry", "靠近食堂里的异常纸条", ["纸条停在入口附近，靠近后会继续移动。"]);
+  }
+  if (!hunt.trayTaskStarted) {
+    return task("tray_start", "与收餐口阿姨交谈", ["先完成餐盘回收，取得后续行动需要的零钱和纸巾。"]);
+  }
+  if (returnedTargetTrays < 3) {
+    return task(
+      "tray_return",
+      `找出并交回带污渍的餐盘（${returnedTargetTrays}/3）`,
+      ["深色观察确认带蓝光和油渍的餐盘，浅色操作拿起后交给收餐口阿姨。", "一次只能搬一个餐盘。"]
+    );
+  }
+  if (!hunt.queueGapOpened) {
+    if (!hunt.queueChallengeSeen) {
+      return task("queue", "查看第三列队伍和新品宣传板", ["与排队学生交谈，确认怎样让第三列队伍移动。"]);
+    }
+    if (!hunt.drinkShelfRead) {
+      return task("drink_shelf", "查看饮料货架的颜色顺序", ["货架从左到右的颜色决定调配顺序。"]);
+    }
+    if (!state.items.dailySpecialSparklingWater && !hunt.promoDrinkPlaced) {
+      return task(
+        "drink_mix",
+        `按货架顺序调配今日新品（${hunt.drinkMixSequence.length}/3）`,
+        ["从饮料机取得三种饮料，再到调配台按黑色、蓝色、白色依次倒入。"]
+      );
+    }
+    if (!hunt.promoDrinkPlaced) {
+      return task("promo_drop", "把今日新品气泡水放入宣传板空杯位", ["目标位在第三窗口宣传板下方。"]);
+    }
+    return task("queue_shift", "等待第三列队伍让出位置");
+  }
+  if (hunt.phase === "menu_order") {
+    return hunt.menuDarkClueRead
+      ? task("menu_order", "切回浅色操作，在点餐机选择纸包鸡", ["点餐后会取得 0755 取餐号。"])
+      : task("menu_clue", "用深色观察读取点餐机菜单", ["确认暗色菜单中的异常文字后再切回浅色操作。"]);
+  }
+  if (hunt.phase === "pickup_search") {
+    return hunt.pickupDarkClueRead
+      ? task("pickup", "把 0755 取餐号交给 3 号窗口", ["保持深色观察，与 3 号窗口的残影阿姨交互。"])
+      : task("pickup_clue", "用深色观察确认 3 号窗口", ["先与 3 号窗口的残影阿姨交互，再使用取餐号。"]);
+  }
+  if (hunt.phase === "exit_blocking") {
+    return task(
+      "exit_blocking",
+      `守住纸条可能逃离的出口（${hunt.blockHits}/3）`,
+      ["深色观察确认蓝色轨迹指向的餐盘车，切回浅色操作后推动它。", "空格键可以冲刺；纸条回头时路线会再次出现。"]
+    );
+  }
+  return task("unlock_bike", canteenContent.bike.task.replace(/^任务：/, ""), canteenContent.bike.hints);
+}
+
 function chapterThreeQuest(state: GameState): QuestViewModel {
   if (state.qizhenLake.active) {
     const mapCluesReady = (["bridge", "reflection", "lake"] as const)
@@ -439,7 +502,7 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
       : state.theaterHunt.phase === "program_search"
         ? {
             id: "chapter_three_theater_program",
-            label: theaterContent.program.task,
+            label: theaterContent.program.task.replace(/[。！？]$/, ""),
             hints: [theaterContent.program.consolePrompt, theaterContent.program.consoleState],
             targetSurface: "rpg"
           }
@@ -493,12 +556,7 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
           targetSurface: "rpg"
         }
       : ["canteen_reached", "tray_search", "drink_mix", "menu_order", "pickup_search", "exit_blocking", "entered"].includes(state.canteenHunt.phase)
-        ? {
-            id: "chapter_three_canteen_intercept",
-            label: canteenContent.task.replace(/^任务：/, ""),
-            hints: canteenContent.hints,
-            targetSurface: "rpg"
-          }
+        ? canteenInteriorTask(state)
         : state.canteenHunt.phase === "theater_reached"
           ? {
               id: "chapter_three_theater_reached",
@@ -611,14 +669,121 @@ function chapterThreeInterludeQuest(state: GameState): QuestViewModel {
   return buildQuest("chapter_three", "未同步的七分五十五秒", [task], 0);
 }
 
-function chapterFourQuest(state: GameState): QuestViewModel {
+interface ChapterFour755PhaseTaskContract {
+  id: string;
+  taskKeys: readonly string[];
+}
+
+interface ChapterFour755TaskCopy {
+  label: string;
+  hint: string | null;
+}
+
+const CHAPTER_FOUR_755_PHASE_TASK_CONTRACTS =
+  chapterFour755Content.phaseContracts as readonly ChapterFour755PhaseTaskContract[];
+const CHAPTER_FOUR_755_TASKS =
+  chapterFour755Content.tasks as Readonly<Record<string, ChapterFour755TaskCopy>>;
+
+function selectChapterFour755TaskKey(
+  state: GameState,
+  contract: ChapterFour755PhaseTaskContract
+): string {
+  const facts = new Set(state.chapter4.factIds);
+  let preferredTaskKey = contract.taskKeys[0];
+  if (contract.id === "bakery_hour_hand") {
+    preferredTaskKey = state.items.oldClockHourHand
+      || facts.has("bakery_hour_hand_collected")
+      || facts.has("hour_hand_installed")
+      ? "install_hour_hand"
+      : facts.has("bakery_hour_hand_exposed")
+        ? "collect_hour_hand"
+        : "explore_bakery";
+  } else if (contract.id === "room204_restore") {
+    preferredTaskKey = !facts.has("a3_reference_observed")
+      ? "observe_a3_reference"
+      : !facts.has("room204_residual_observed")
+        ? "observe_room204_residual"
+        : !facts.has("room204_restored")
+          ? "restore_room204"
+          : !facts.has("room204_projection_completed")
+            ? "watch_room204_projection"
+            : !facts.has("positioning_plate_collected")
+              ? "collect_positioning_plate"
+              : "install_positioning_plate";
+  } else if (contract.id === "maintenance_repair") {
+    preferredTaskKey = !facts.has("cart_wheel_inspected")
+      ? "inspect_cart_wheel"
+      : !state.items.shortPryBar && !facts.has("cart_wheel_cover_opened")
+        ? "collect_short_pry_bar"
+        : !facts.has("cart_wheel_cover_opened")
+          ? "open_cart_wheel_cover"
+          : !state.items.universalLubricatingOil && !facts.has("cart_wheel_repaired")
+            ? "collect_lubricating_oil"
+            : !facts.has("cart_wheel_repaired")
+              ? "lubricate_cart_wheel"
+              : !facts.has("clock_gear_repaired")
+              ? "lubricate_clock_gear"
+                : "turn_clock_to_0755";
+  } else if (contract.id === "return_to_clock") {
+    preferredTaskKey = state.chapter4.floor === "A1"
+      ? "install_final_minute"
+      : "return_via_main_stair";
+  } else if (contract.id === "morning_checkin") {
+    const cardAccepted = state.chapter4.checkinCardAccepted
+      && facts.has("checkin_card_accepted");
+    const paperAccepted = state.chapter4.checkinPaperAccepted
+      && facts.has("checkin_paper_accepted");
+    preferredTaskKey = cardAccepted && !paperAccepted
+      ? "submit_attendance_paper"
+      : paperAccepted && !cardAccepted
+        ? "read_campus_card"
+        : "complete_checkin";
+  }
+  return contract.taskKeys.includes(preferredTaskKey)
+    ? preferredTaskKey
+    : contract.taskKeys[0];
+}
+
+function chapterFour755Quest(
+  state: GameState,
+  contract: ChapterFour755PhaseTaskContract
+): QuestViewModel {
+  const phase = String(state.chapter4.phase);
+  const taskKey = selectChapterFour755TaskKey(state, contract);
+  const task = CHAPTER_FOUR_755_TASKS[taskKey];
+  const completed = state.chapter4.completed || phase === "complete";
+  const label = task?.label ?? taskKey;
+  return {
+    id: "chapter_four_temporal_maze",
+    chapter: "chapter_four",
+    title: chapterFour755Content.title,
+    objective: label,
+    // Chapter 4 deliberately exposes one current action only. The internal
+    // phase table remains controller data and must never leak its length into
+    // the player-facing drawer.
+    completed: completed ? 1 : 0,
+    total: 1,
+    // The drawer exposes only the current next objective. Future taskKeys stay
+    // in the content contract and are selected only after facts/items advance.
+    steps: [{
+      id: `chapter_four_${taskKey}`,
+      label,
+      status: completed ? "completed" : "active"
+    }],
+    hints: task?.hint ? [task.hint] : [],
+    targetSurface: "rpg"
+  };
+}
+
+function chapterFourLegacyQuest(state: GameState): QuestViewModel {
   const chapter = state.chapter4;
   const wechatObjective = selectChapterFourWechatObjective(chapter);
-  const phaseObjectives = chapterFourContent.phaseObjectives as Record<GameState["chapter4"]["phase"], string>;
-  const clockPhase = chapter.phase === "clock_phase_lock";
-  const completed = chapter.completed || chapter.phase === "complete";
+  const phase = String(chapter.phase);
+  const phaseObjectives = chapterFourContent.phaseObjectives as Record<string, string>;
+  const clockPhase = phase === "clock_phase_lock";
+  const completed = chapter.completed || phase === "complete";
   const label = wechatObjective?.label
-    ?? phaseObjectives[chapter.phase]
+    ?? phaseObjectives[phase]
     ?? chapterFourContent.arrival.objective;
   return {
     id: "chapter_four_temporal_maze",
@@ -628,11 +793,11 @@ function chapterFourQuest(state: GameState): QuestViewModel {
     completed: completed ? 13 : chapter.solvedPuzzleIds.length,
     total: 13,
     steps: [{
-      id: `chapter_four_${chapter.phase}`,
+      id: `chapter_four_${phase}`,
       label,
       status: completed ? "completed" : "active"
     }],
-    hints: wechatObjective ? [wechatObjective.hint] : selectChapterFourHints(state),
+    hints: wechatObjective ? [wechatObjective.hint] : selectLegacyChapterFourHints(state),
     targetSurface: clockPhase || wechatObjective ? "phone" : "rpg",
     recommendedScene: clockPhase
       ? "clock"
@@ -644,14 +809,21 @@ function chapterFourQuest(state: GameState): QuestViewModel {
   };
 }
 
-function selectChapterFourHints(state: GameState): string[] {
+function chapterFourQuest(state: GameState): QuestViewModel {
+  const phase = String(state.chapter4.phase);
+  const contract = CHAPTER_FOUR_755_PHASE_TASK_CONTRACTS.find((candidate) => candidate.id === phase);
+  return contract ? chapterFour755Quest(state, contract) : chapterFourLegacyQuest(state);
+}
+
+function selectLegacyChapterFourHints(state: GameState): string[] {
   const chapter = state.chapter4;
-  if (chapter.completed || chapter.phase === "complete") return [];
-  if (chapter.phase === "clock_phase_lock") {
+  const phase = String(chapter.phase);
+  if (chapter.completed || phase === "complete") return [];
+  if (phase === "clock_phase_lock") {
     const clock = state.clockCalibration;
     return [clockContent.quest.hints[clock.step]];
   }
-  if (chapter.phase === "elevator_track_sync") {
+  if (phase === "elevator_track_sync") {
     return [
       !chapter.elevatorHistoryObserved
         ? chapterFourContent.elevator.observePrompt
@@ -660,19 +832,19 @@ function selectChapterFourHints(state: GameState): string[] {
           : chapterFourContent.elevator.operatePrompt
     ];
   }
-  if (chapter.airflowObserved && chapter.phase === "airflow_overlay") {
+  if (chapter.airflowObserved && phase === "airflow_overlay") {
     return [chapterFourContent.airflow.lightPrompt];
   }
-  if (chapter.phase === "arrival" || chapter.phase === "airflow_overlay") {
+  if (phase === "arrival" || phase === "airflow_overlay") {
     return [chapterFourContent.arrival.hint];
   }
-  if (chapter.phase === "npc_schedule_route") {
+  if (phase === "npc_schedule_route") {
     return [chapterFourContent.threeFloorMaze.schedule.observePrompt];
   }
-  if (chapter.phase === "corridor_bay_reconstruction") {
+  if (phase === "corridor_bay_reconstruction") {
     return [chapterFourContent.threeFloorMaze.corridor.operatePrompt];
   }
-  if (chapter.phase === "wayfinding_fragment_board") {
+  if (phase === "wayfinding_fragment_board") {
     const fragmentsCollected = ["a2_fragment_west_collected", "a2_fragment_east_collected"]
       .every((clueId) => chapter.clueIds.includes(clueId));
     if (!fragmentsCollected) {
@@ -686,7 +858,7 @@ function selectChapterFourHints(state: GameState): string[] {
     }
     return [chapterFourContent.threeFloorMaze.wayfinding.alignPrompt];
   }
-  if (chapter.phase === "bridge_floor_discrimination") {
+  if (phase === "bridge_floor_discrimination") {
     if (chapter.floor === "A2") {
       return [chapter.clueIds.includes("a2_return_window_open")
         ? chapterFourContent.threeFloorMaze.returnWindow.opened

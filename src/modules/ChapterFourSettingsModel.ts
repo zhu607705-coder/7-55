@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types";
+import { isLegacyChapterFourPhoneGatePhase } from "../core/FeatureAccess";
 
 export const CHAPTER_FOUR_SETTINGS_CLUES = Object.freeze({
   backgroundActivityVerified: "settings_background_activity_verified",
@@ -16,7 +17,8 @@ export const REQUIRED_BACKGROUND_RECORD_IDS = Object.freeze(
 );
 
 export function selectChapterFourSettingsProjection(state: GameState) {
-  const active = state.chapter4.prologueSeen && state.chapter4.phase !== "inactive";
+  const active = state.chapter4.prologueSeen
+    && isLegacyChapterFourPhoneGatePhase(state.chapter4.phase);
   const clueIds = new Set(state.chapter4.clueIds);
   return {
     active,

@@ -7,9 +7,8 @@ import { PROLOGUE_PHASES, prologuePhaseAt, type ProloguePhaseId } from "./Prolog
 
 /**
  * 第四章序幕「纸条进入段永平教学楼」的 canvas 像素渲染器。
- * 纯表现层：按过场毫秒数绘制六个分镜，不读写任何剧情状态。
- * 分镜：0–4.2s 磁扣断裂；4.2–12.4s 离开湖面；12.4–24.4s 拱廊穿行；
- * 24.4–32.4s 学生推门；32.4–44.2s 门厅湿地；44.2s– 清楼关灯。
+ * 纯表现层：H3 视频不可用或用户要求减少动态效果时，按同一时间合同绘制六个分镜。
+ * 该回退层不读写剧情状态；播放、跳过和初始恢复统一在 43.834s 停止。
  */
 
 const LOGICAL_WIDTH = 960;
@@ -118,16 +117,21 @@ interface PaperPose {
   airborne?: number;
 }
 
+interface PrologueRendererOptions {
+  useVisualAssets?: boolean;
+}
+
 export class PrologueRenderer {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly observer: ResizeObserver;
   private scale = 0.5;
   private reducedMotion = false;
-  private readonly visualAssets = new PrologueVisualAssets();
+  private readonly visualAssets: PrologueVisualAssets | null;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, options: PrologueRendererOptions = {}) {
     this.canvas = canvas;
+    this.visualAssets = options.useVisualAssets === false ? null : new PrologueVisualAssets();
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("PrologueRenderer requires a 2D canvas context");
     this.ctx = ctx;
@@ -157,12 +161,12 @@ export class PrologueRenderer {
   }
 
   private drawScenePlate(ctx: CanvasRenderingContext2D, id: ProloguePhaseId, localMs: number): boolean {
-    const current = this.visualAssets.getFrame(id, false);
+    const current = this.visualAssets?.getFrame(id, false);
     if (!current) return false;
 
     const phaseIndex = PROLOGUE_PHASES.findIndex((phase) => phase.id === id);
     const previousId = phaseIndex > 0 ? PROLOGUE_PHASES[phaseIndex - 1].id : null;
-    const previous = previousId ? this.visualAssets.getFrame(previousId, false) : null;
+    const previous = previousId ? this.visualAssets?.getFrame(previousId, false) ?? null : null;
     const transitionProgress = clamp01(localMs / SCENE_TRANSITION_MS);
     if (!previous || transitionProgress >= 1 || this.reducedMotion) {
       this.drawImageCover(ctx, current);
@@ -170,7 +174,7 @@ export class PrologueRenderer {
       this.drawSceneTransition(ctx, previous, current, id, easeInOut(transitionProgress));
     }
 
-    const alternate = this.visualAssets.getFrame(id, true);
+    const alternate = this.visualAssets?.getFrame(id, true);
     if (alternate && !this.reducedMotion && transitionProgress >= 1) {
       const cycle = (localMs - SCENE_TRANSITION_MS) / ENVIRONMENT_FRAME_MS;
       const blend = 0.08 + (Math.sin(cycle * Math.PI * 2 - Math.PI / 2) + 1) * 0.08;
@@ -271,22 +275,6 @@ export class PrologueRenderer {
       return;
     }
 
-    if (id === "lobby") {
-      this.drawImageCover(ctx, current);
-      const opening = easeOut(progress) * (LOGICAL_WIDTH / 2 + 16);
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, 0, Math.max(0, LOGICAL_WIDTH / 2 - opening), LOGICAL_HEIGHT);
-      ctx.rect(LOGICAL_WIDTH / 2 + opening, 0, Math.max(0, LOGICAL_WIDTH / 2 - opening), LOGICAL_HEIGHT);
-      ctx.clip();
-      this.drawImageCover(ctx, previous);
-      ctx.restore();
-      const leftDoorX = LOGICAL_WIDTH / 2 - opening;
-      const rightDoorX = LOGICAL_WIDTH / 2 + opening;
-      this.drawSlidingGlassDoor(ctx, leftDoorX, rightDoorX, 1 - progress);
-      return;
-    }
-
     this.drawImageCover(ctx, current);
     const wallX = lerp(LOGICAL_WIDTH + 160, -160, easeInOut(progress));
     ctx.save();
@@ -344,7 +332,7 @@ export class PrologueRenderer {
     else if (id === "arcade") this.drawArcade(ctx, localMs);
     else if (id === "entrance") this.drawEntrance(ctx, localMs);
     else if (id === "lobby") this.drawLobby(ctx, localMs);
-    else this.drawClosing(ctx, localMs, durationMs);
+    else if (id === "closing") this.drawClosing(ctx, localMs, durationMs);
   }
 
   private drawPlateForeground(
@@ -358,7 +346,7 @@ export class PrologueRenderer {
     else if (id === "arcade") this.drawPlateArcade(ctx, localMs, durationMs);
     else if (id === "entrance") this.drawPlateEntrance(ctx, localMs, durationMs);
     else if (id === "lobby") this.drawPlateLobby(ctx, localMs, durationMs);
-    else this.drawPlateClosing(ctx, localMs, durationMs);
+    else if (id === "closing") this.drawPlateClosing(ctx, localMs, durationMs);
   }
 
   private drawPlateSnap(ctx: CanvasRenderingContext2D, t: number): void {
@@ -679,7 +667,7 @@ export class PrologueRenderer {
     const frame = this.reducedMotion
       ? 0
       : Math.floor(timeMs / 145 + clamp01(pose.foldEmphasis) * 3) % 5;
-    const paperFrame = this.visualAssets.getPaperFrame(frame);
+    const paperFrame = this.visualAssets?.getPaperFrame(frame) ?? null;
     const shadowY = pose.groundY ?? pose.y + 18 + airborne * 38;
     ctx.save();
     ctx.translate(Math.round(pose.x), Math.round(shadowY));
@@ -793,7 +781,7 @@ export class PrologueRenderer {
     opacity = 1
   ): boolean {
     const asset = FINALE_NPC_ANIMATIONS[id];
-    const image = this.visualAssets.getImage(asset.url);
+    const image = this.visualAssets?.getImage(asset.url) ?? null;
     if (!image) return false;
     const frameDurationMs = 1000 / Math.max(1, asset.fps);
     const rawFrame = Math.floor(Math.max(0, animationMs) / frameDurationMs);

@@ -37,19 +37,7 @@ function getCheckpointLane(checkpoint: DeveloperCheckpoint): string {
   if (checkpoint.id.startsWith("c3-qizhen-")) return "启真湖";
   if (checkpoint.id.startsWith("c3-interlude-")) return "未同步记录";
   if (checkpoint.chapter === "第四章") {
-    if (checkpoint.id.startsWith("c4-prologue")) return "序幕演出";
-    if ([
-      "c4-arrival",
-      "c4-airflow",
-      "c4-main-elevator",
-      "c4-elevator-aligned",
-      "c4-a2-arrival",
-      "c4-a2-schedule-observed",
-      "c4-a3-wayfinding",
-      "c4-a2-return-window",
-      "c4-stair-echo"
-    ].includes(checkpoint.id)) return "时间迷宫";
-    return "时间校准";
+    return "7:55 时间迷宫";
   }
   return "第三章";
 }
@@ -76,6 +64,7 @@ function getInitialDeveloperSelection(active: DeveloperCheckpointId | null): {
 
 export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannelProps) {
   const params = new URLSearchParams(window.location.search);
+  const explicitlyDisabled = params.get("dev") === "0";
   const explicitlyRequested = params.get("dev") === "1" || params.has("devCheckpoint");
   const [available, setAvailable] = useState(() => isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV));
   const [open, setOpen] = useState(() => explicitlyRequested && isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV));
@@ -98,6 +87,7 @@ export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannel
     onVisibilityChange?.(open);
   }, [onVisibilityChange, open]);
   useEffect(() => {
+    if (explicitlyDisabled) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "d") {
         event.preventDefault();
@@ -107,7 +97,7 @@ export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannel
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [explicitlyDisabled]);
   const stopPointerPropagation = (event: React.SyntheticEvent) => event.stopPropagation();
   if (!available) return null;
   if (!open) return <button type="button" className="developer-channel-trigger" aria-label="打开开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={(event) => { stopPointerPropagation(event); setOpen(true); }}>DEV</button>;

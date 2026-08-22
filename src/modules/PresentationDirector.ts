@@ -7,6 +7,7 @@ import chapterThreeTheaterTimelineData from "../data/chapter3-theater.audio.json
 import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
+import chapterFour755TimelineData from "../data/chapter4-755.audio.json";
 import libraryFinalsTimelineData from "../data/library-finals.audio.json";
 import { PRESENTATION_VISUAL_CUE_IDS } from "../data/presentation-cues";
 
@@ -30,6 +31,7 @@ const TIMELINE_CUE_IDS = new Set([
   ...Object.keys((chapterThreeQizhenTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeStoryTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterFourPrologueTimelineData as AudioTimelineShape).events),
+  ...Object.keys((chapterFour755TimelineData as AudioTimelineShape).events),
   ...PRESENTATION_VISUAL_CUE_IDS
 ]);
 
@@ -96,6 +98,29 @@ export class PresentationDirector {
         cues.push(entryCue);
       }
     }
+    const previousInChapterFour755 = isChapterFour755RpgState(previous);
+    const nextInChapterFour755 = isChapterFour755RpgState(next);
+    if (previousInChapterFour755 && !nextInChapterFour755) {
+      cues.push({ cueId: "chapter4_755_scene_closed" });
+    }
+    if (nextInChapterFour755
+      && (!previousInChapterFour755 || previous.chapter4.phase !== "final_chase")
+      && next.chapter4.phase === "final_chase") {
+      cues.push({ cueId: "final_chase_started" });
+    }
+    if (previousInChapterFour755
+      && nextInChapterFour755
+      && previous.chapter4.phase === "final_chase"
+      && next.chapter4.phase === "final_chase"
+      && next.chapter4.chaseAttempt > previous.chapter4.chaseAttempt) {
+      cues.push({ cueId: "final_chase_failed" });
+      cues.push({ cueId: "final_chase_started" });
+    }
+    if (previousInChapterFour755
+      && previous.chapter4.phase === "final_chase"
+      && next.chapter4.phase === "final_minute_recovery") {
+      cues.push({ cueId: "final_chase_succeeded" });
+    }
 
     return cues;
   }
@@ -116,6 +141,9 @@ export class PresentationDirector {
 }
 
 function sceneEntryCue(state: GameState): PendingCue | null {
+  if (isChapterFour755RpgState(state) && state.chapter4.phase === "final_chase") {
+    return { cueId: "final_chase_started" };
+  }
   if (state.currentScene === "bike_arcade") {
     return { cueId: "bike_arcade_opened" };
   }
@@ -123,6 +151,11 @@ function sceneEntryCue(state: GameState): PendingCue | null {
     return { cueId: "chapter_transition_opened" };
   }
   return null;
+}
+
+function isChapterFour755RpgState(state: GameState): boolean {
+  return state.runtimeMode === "rpg"
+    && state.rpgScene === "duan_yongping_temporal_maze";
 }
 
 function cueToken(cueId: string, payload?: Record<string, unknown>): string {

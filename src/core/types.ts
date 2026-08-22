@@ -105,6 +105,7 @@ export type RpgCheckpointId =
   | "c4_a1_lobby"
   | "c4_a1_main_elevator"
   | "c4_a2_corridor"
+  | "c4_a2_room202"
   | "c4_a3_wayfinding"
   | "c4_a3_skybridge"
   | "c4_b3_landing"
@@ -496,6 +497,7 @@ export type ClockDriftChannelId = "gate" | "elevator" | "room";
  * 秒数按一天 86400 环绕计量；displayedSeconds 为当前显示，targetSeconds
  * 为校时目标 08:00:00，adjustCount 记录玩家调整次数。
  */
+/** @deprecated Task 5 removes the legacy 08:00/B2-04 calibration controller state. */
 export interface ClockCalibrationState {
   phase: ClockCalibrationPhase;
   step: ClockCalibrationStep;
@@ -517,12 +519,133 @@ export interface ClockCalibrationState {
  */
 export type ChapterFourRealityMode = "light" | "dark";
 
-export type ChapterFourBuildingId = "A" | "B";
-export type ChapterFourFloorId = "A1" | "A2" | "A3" | "A4" | "B2" | "B3";
-export type ChapterFourCycle = 1 | 2;
-export type ChapterFourStairRotation = 0 | 1 | 2 | 3;
+export type ChapterFourTimeAuthority = "external_evidence" | "hall_clock";
+export type ChapterFourTimeState =
+  | "2245_opening"
+  | "1225_bakery"
+  | "1850_evening"
+  | "2245_maintenance"
+  | "0754_blackout"
+  | "0755_morning";
+export type ChapterFourGuardMode = "absent" | "patrol" | "chase";
+export type ChapterFour755BuildingId = "A";
+export type ChapterFour755FloorId = "A1" | "A2" | "A3";
+export type ChapterFourLightZoneId =
+  | "hall"
+  | "west_corridor"
+  | "east_corridor"
+  | "classroom_zone"
+  | "bakery_back_area";
+export type ChapterFourRoom204Orientation = "up" | "right" | "down" | "left";
+export type ChapterFourRoom204PieceId =
+  | "desk_pair_01"
+  | "desk_pair_02"
+  | "desk_pair_03"
+  | "desk_pair_04"
+  | "desk_pair_05"
+  | "desk_pair_06"
+  | "desk_pair_07"
+  | "desk_pair_08"
+  | "desk_pair_09"
+  | "desk_pair_10"
+  | "desk_pair_11"
+  | "desk_pair_12";
+export type ChapterFourRoom204SlotId =
+  | "morning_slot_01"
+  | "morning_slot_02"
+  | "morning_slot_03"
+  | "morning_slot_04"
+  | "morning_slot_05"
+  | "morning_slot_06"
+  | "morning_slot_07"
+  | "morning_slot_08"
+  | "morning_slot_09"
+  | "morning_slot_10"
+  | "morning_slot_11"
+  | "morning_slot_12";
 
-export type ChapterFourPuzzleId =
+export interface ChapterFourLightGridState {
+  mask: number;
+  locked: boolean;
+}
+
+export interface ChapterFourRoom204Placement {
+  pieceId: ChapterFourRoom204PieceId;
+  slotId: ChapterFourRoom204SlotId;
+  orientation: ChapterFourRoom204Orientation;
+}
+
+export type ChapterFourFactId =
+  | "opening_paper_at_noticeboard"
+  | "opening_paper_caught"
+  | "external_time_rejected"
+  | "hall_clock_inspected"
+  | "bakery_conveyor_lamp_inspected"
+  | "bakery_hour_hand_exposed"
+  | "bakery_hour_hand_collected"
+  | "hour_hand_installed"
+  | "a3_reference_observed"
+  | "room204_residual_observed"
+  | "room204_restored"
+  | "room204_projection_completed"
+  | "positioning_plate_collected"
+  | "positioning_plate_installed"
+  | "cart_wheel_inspected"
+  | "cart_wheel_cover_opened"
+  | "cart_wheel_repaired"
+  | "clock_gear_repaired"
+  | "paper_temporarily_out_of_inventory"
+  | "light_grid_locked"
+  | "final_minute_recovered"
+  | "final_minute_installed"
+  | "checkin_card_accepted"
+  | "checkin_paper_accepted"
+  | "exterior_closure_acknowledged";
+
+export type ChapterFourPhase =
+  | "opening_handoff"
+  | "opening_paper_caught"
+  | "hall_clock_inspection"
+  | "bakery_hour_hand"
+  | "room204_restore"
+  | "maintenance_repair"
+  | "blackout_light_grid"
+  | "final_chase"
+  | "final_minute_recovery"
+  | "return_to_clock"
+  | "morning_checkin"
+  | "exterior_closure"
+  | "complete";
+
+export interface ChapterFourState {
+  prologueSeen: boolean;
+  phase: ChapterFourPhase;
+  mode: ChapterFourRealityMode;
+  building: ChapterFour755BuildingId;
+  floor: ChapterFour755FloorId;
+  roomId: string;
+  timeAuthority: ChapterFourTimeAuthority;
+  timeState: ChapterFourTimeState;
+  worldTimeSeconds: number;
+  phoneStatusTimeSeconds: number;
+  phoneStatusTimeTrusted: boolean;
+  factIds: ChapterFourFactId[];
+  room204Placements: ChapterFourRoom204Placement[];
+  lightGrid: ChapterFourLightGridState;
+  guardMode: ChapterFourGuardMode;
+  chaseAttempt: number;
+  chaseRestartCheckpoint: RpgCheckpointId | null;
+  checkinCardAccepted: boolean;
+  checkinPaperAccepted: boolean;
+  exteriorClosureAcknowledged: boolean;
+  completed: boolean;
+}
+
+/**
+ * v24 及更早存档、旧控制器和旧 DEV 节点使用的阶段。它们不属于当前
+ * ChapterFourPhase，也不能由 v25 SaveStore 恢复为活动剧情。
+ */
+export type LegacyChapterFourPuzzleId =
   | "airflow_overlay"
   | "elevator_track_sync"
   | "npc_schedule_route"
@@ -537,12 +660,23 @@ export type ChapterFourPuzzleId =
   | "route_schedule"
   | "clock_phase_lock";
 
-export type ChapterFourPhase =
+export type LegacyChapterFourPhase =
   | "inactive"
   | "arrival"
-  | ChapterFourPuzzleId
+  | LegacyChapterFourPuzzleId
   | "first_cycle_reset"
   | "complete";
+
+export type LegacyChapterFourFloorId = "A4" | "B2" | "B3";
+
+/** @deprecated Task 5 removes imports of this compatibility floor alias. */
+export type ChapterFourFloorId = ChapterFour755FloorId | LegacyChapterFourFloorId;
+/** @deprecated Task 5 removes the B-building controller path. */
+export type ChapterFourBuildingId = ChapterFour755BuildingId | "B";
+/** @deprecated Task 5 removes the old two-cycle route. */
+export type ChapterFourCycle = 1 | 2;
+/** @deprecated Task 5 removes the required stair-alignment route. */
+export type ChapterFourStairRotation = 0 | 1 | 2 | 3;
 
 export interface ChapterFourTemporalAnchor {
   floor: ChapterFourFloorId;
@@ -551,17 +685,11 @@ export interface ChapterFourTemporalAnchor {
 }
 
 /**
- * 第四章「段永平教学楼时间迷宫」的控制器事实。场景运行时只读取这些事实并
- * 提交领域意图；移动速度、动画帧、局部特效和临时输入不进入存档。
+ * 仅为 Task 5 尚未改写的控制器保留。SaveStore v25 会把这些字段清空，
+ * 新鲜状态和迁移状态都只使用 ChapterFourState 的 7:55 主线字段。
  */
-export interface ChapterFourState {
-  prologueSeen: boolean;
-  phase: ChapterFourPhase;
+export interface LegacyChapterFourControllerFields {
   cycle: ChapterFourCycle;
-  mode: ChapterFourRealityMode;
-  building: ChapterFourBuildingId;
-  floor: ChapterFourFloorId;
-  roomId: string;
   buildingTimeSeconds: number;
   airflowObserved: boolean;
   paperGuidedToElevator: boolean;
@@ -573,14 +701,27 @@ export interface ChapterFourState {
   stairEchoObserved: boolean;
   stairRotationQuarterTurns: ChapterFourStairRotation;
   stairAlignmentSolved: boolean;
-  solvedPuzzleIds: ChapterFourPuzzleId[];
+  solvedPuzzleIds: LegacyChapterFourPuzzleId[];
   clueIds: string[];
   anchor: ChapterFourTemporalAnchor | null;
   echoRecorded: boolean;
   resetCount: number;
   finalCode: string | null;
-  completed: boolean;
 }
+
+/**
+ * 临时编译边界：Task 5 改写旧控制器后，GameState.chapter4 应直接恢复为
+ * ChapterFourState，并删除这个类型。运行时初始化和 v25 水合均不会产生
+ * LegacyChapterFourPhase、B 楼或旧谜题事实。
+ */
+export type ChapterFourRuntimeCompatibilityState =
+  & Omit<ChapterFourState, "phase" | "building" | "floor">
+  & {
+    phase: ChapterFourPhase | LegacyChapterFourPhase;
+    building: ChapterFourBuildingId;
+    floor: ChapterFourFloorId;
+  }
+  & LegacyChapterFourControllerFields;
 
 export type NetworkMode = "campus_wifi" | "cellular" | "offline";
 
@@ -754,7 +895,23 @@ export type ItemId =
   | "fishFeedPellets"
   | "smallCarp"
   | "swanMagnet"
-  | "magneticFishingRod";
+  | "magneticFishingRod"
+  | "attendanceRecordPaper"
+  | "oldClockHourHand"
+  | "clockPositioningPlate"
+  | "shortPryBar"
+  | "universalLubricatingOil"
+  | "finalMinute";
+
+export type ChapterFourItemId =
+  | "attendanceRecordPaper"
+  | "oldClockHourHand"
+  | "clockPositioningPlate"
+  | "shortPryBar"
+  | "universalLubricatingOil"
+  | "finalMinute";
+
+export type InventoryItemId = ItemId | ChapterFourItemId;
 
 export type SceneId =
   | "alarm"
@@ -867,7 +1024,7 @@ export interface GameState {
   networkMode: NetworkMode;
   themeMode: ThemeMode;
   digits: Record<DigitIndex, DigitValue | null>;
-  items: Record<ItemId, boolean>;
+  items: Record<InventoryItemId, boolean>;
   flags: GameFlags;
   actOne: ActOneBootstrapState;
   wallet: WalletState;
@@ -876,8 +1033,10 @@ export interface GameState {
   theaterHunt: TheaterHuntState;
   qizhenLake: QizhenLakeState;
   chapterThreeInterlude: ChapterThreeInterludeState;
+  /** Legacy controller compatibility only; the active Chapter 4 contract lives in chapter4. */
   clockCalibration: ClockCalibrationState;
-  chapter4: ChapterFourState;
+  /** Temporary Task 5 compatibility boundary; persisted v25 data is ChapterFourState-shaped. */
+  chapter4: ChapterFourRuntimeCompatibilityState;
   ui: UiState;
 }
 

@@ -312,6 +312,42 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     source: "钓竿 + 天鹅磁铁",
     intro: "磁吸附件可接近金属夹具，同时保留钓竿的距离优势。",
     useHint: "用于捕获被夹住的纸张；返航完成后附件会损坏"
+  },
+  attendanceRecordPaper: {
+    category: "签到材料",
+    source: "教学楼公告栏前",
+    intro: "这张纸先把你引回了楼里，最后也得由你把它送回签到口。",
+    useHint: "晨间签到阶段拖向签到纸槽"
+  },
+  oldClockHourHand: {
+    category: "钟表部件",
+    source: "面包店传送带边缘",
+    intro: "真正能推进时间的不是灯光，而是停带后露出来的这根旧钟时针。",
+    useHint: "返回一楼旧钟，将它拖向时针插槽"
+  },
+  clockPositioningPlate: {
+    category: "钟表部件",
+    source: "204 讲台抽屉",
+    intro: "它不是普通零件，而是让旧钟重新对准正确结构的定位盘。",
+    useHint: "返回一楼旧钟，将它拖向定位盘插槽"
+  },
+  shortPryBar: {
+    category: "维修工具",
+    source: "面包店后场",
+    intro: "长度不大，刚好适合翘开清洁车轮罩。",
+    useHint: "拖向清洁车轮罩"
+  },
+  universalLubricatingOil: {
+    category: "维修材料",
+    source: "清洁车内侧",
+    intro: "先用它让清洁车恢复，再把剩下的半瓶交给旧钟齿轮。",
+    useHint: "先拖向清洁车轮，再拖向旧钟齿轮"
+  },
+  finalMinute: {
+    category: "时间碎片",
+    source: "202 阶梯教室投影",
+    intro: "这是一段被偷走的最后一分钟。它只能回到旧钟分针端点。",
+    useHint: "拖向旧钟分针端点，恢复 07:55"
   }
 };
 

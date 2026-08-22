@@ -639,6 +639,48 @@ const ICONS: Record<string, PixelMap> = {
     ],
     palette: { k: "#755234", r: "#c64f4d", b: "#487db5" }
   },
+  attendanceRecordPaper: {
+    rows: [
+      ".kkkkkkk.", ".kwwwwwk.", ".kwgggwk.", ".kwwwwwk.", ".kwgggwk.",
+      ".kwwwwwk.", ".kwg..wk.", ".kwwwwwk.", ".kkkkkkk.", "........."
+    ],
+    palette: { k: "#4b5054", w: "#e7dfcf", g: "#87928c" }
+  },
+  oldClockHourHand: {
+    rows: [
+      "....yy...", "...yyyy..", "..yykyyy.", ".yykkkkyy", "....kk...",
+      "....kk...", "....kk...", "....kk...", "...kkkk..", "........."
+    ],
+    palette: { y: "#d8b45a", k: "#515860" }
+  },
+  clockPositioningPlate: {
+    rows: [
+      "..kkkkk..", ".kkyyykk.", "kkykkkykk", "kyk...kyk", "kyk.k.kyk",
+      "kyk...kyk", "kkykkkykk", ".kkyyykk.", "..kkkkk..", "........."
+    ],
+    palette: { k: "#4b5054", y: "#ccb15b" }
+  },
+  shortPryBar: {
+    rows: [
+      ".........", ".......kk", "......kk.", ".....kk..", "..kkkk...", ".kkk.....",
+      ".kk......", ".kk......", ".kk......", "........."
+    ],
+    palette: { k: "#6d737b" }
+  },
+  universalLubricatingOil: {
+    rows: [
+      "...kkk...", "..kgggk..", ".kgggggk.", ".kgwwwgk.", ".kgwwwgk.",
+      ".kgggggk.", "..kgggk..", "...k.k...", "...k.k...", "........."
+    ],
+    palette: { k: "#4d5158", g: "#7c9b5f", w: "#d8d2bd" }
+  },
+  finalMinute: {
+    rows: [
+      ".kkkkkkk.", ".kwwwwwk.", ".kwyyywk.", ".kwwwwwk.", ".kyyywwk.",
+      ".kwwwwwk.", ".kwyyywk.", ".kwwwwwk.", ".kkkkkkk.", "........."
+    ],
+    palette: { k: "#4b5054", w: "#ece5d8", y: "#e0c770" }
+  },
   backpack: {
     rows: [
       "..kkkk...",
@@ -842,5 +884,11 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   fishFeedPellets: { name: "鱼食颗粒", desc: "密封罐中的鱼食，可用于吸引小型鱼群靠近。" },
   smallCarp: { name: "小鲤鱼", desc: "用鱼食引到钓点的小鲤鱼，暂时保持活性。" },
   swanMagnet: { name: "天鹅磁铁", desc: "黑天鹅带回的小型磁铁，可固定到钓竿末端。" },
-  magneticFishingRod: { name: "磁吸钓竿", desc: "安装磁吸附件的钓竿，可接近夹在金属结构上的纸张。" }
+  magneticFishingRod: { name: "磁吸钓竿", desc: "安装磁吸附件的钓竿，可接近夹在金属结构上的纸张。" },
+  attendanceRecordPaper: { name: "签到记录纸", desc: "第四章开场追到的签到纸。最后还得把它送回正式签到口。" },
+  oldClockHourHand: { name: "旧钟时针", desc: "从面包店传送带上取下来的旧钟时针。先停带，再拿它。" },
+  clockPositioningPlate: { name: "定位盘", desc: "204 复位完成后得到的旧钟定位盘。它负责让时间回到正确轨道。" },
+  shortPryBar: { name: "短撬棍", desc: "面包店后场找到的短撬棍。适合掀开清洁车轮罩。" },
+  universalLubricatingOil: { name: "通用润滑油", desc: "修好清洁车后取到的半瓶润滑油。先修车轮，再上旧钟齿轮。" },
+  finalMinute: { name: "最后一分钟", desc: "从 202 投影中追回的一分钟。它必须回到旧钟分针端点。" }
 };

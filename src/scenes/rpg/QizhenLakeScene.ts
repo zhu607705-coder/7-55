@@ -135,6 +135,12 @@ const QIZHEN_FISHING_SPOT_LABELS: Readonly<Record<QizhenFishingChartId, string>>
   fish: "小鲤鱼",
   paper: "纸条本体"
 };
+
+function isQizhenWaterRippleTarget(target: QizhenLakeInteractionTarget): boolean {
+  return target.kind === "reflection"
+    || target.kind === "paper"
+    || (target.kind === "fishing_spot" && target.value !== "fishing_rod");
+}
 /** 宿主预检回包超时兜底（正常为同一事件轮回包）。 */
 const FISHING_PRECHECK_TIMEOUT_MS = 2000;
 
@@ -204,6 +210,8 @@ interface TargetVisual {
   pulse: Phaser.GameObjects.Shape;
   color: number;
   sparkles: Phaser.GameObjects.Arc[];
+  rippleBands: Phaser.GameObjects.Ellipse[];
+  rippleCenter: Phaser.GameObjects.Arc | null;
 }
 
 interface DropGuideVisual {
@@ -482,10 +490,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       });
     }
     if (!runtime.introSeen && runtime.phase === "dock_outfitting") {
-      this.queueDialogue([
-        ...qizhenContent.dock.intro,
-        qizhenContent.dock.outfitPrompt
-      ], () => this.emitDomain("rpg_qizhen_intro_seen_requested"));
+      this.queueDialogue(
+        qizhenContent.dock.intro.slice(0, 2),
+        () => this.emitDomain("rpg_qizhen_intro_seen_requested")
+      );
     } else {
       this.maybePlayReflectionDialogue();
     }
@@ -749,7 +757,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (this.time.now - this.boundaryBlockedHintAt >= BOUNDARY_BLOCKED_HINT_COOLDOWN_MS) {
       this.boundaryBlockedHintAt = this.time.now;
-      this.showFeedback(qizhenContent.boarding.boundaryBlocked, "task", 2200);
+      this.showFeedback(qizhenContent.boarding.boundaryBlocked, "system", 2200);
     }
   }
 
@@ -824,7 +832,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.chaseCompleting = true;
       this.kayakSpeed = 0;
       this.player.setVelocity(0, 0);
-      this.showFeedback(qizhenContent.chase.finishReached, "success");
       this.emitDomain("rpg_qizhen_escape_completed_requested", {
         zone: "dock",
         distance: Math.max(runtime.chaseDistance, Math.round(this.chaseStartX - this.player.x)),
@@ -863,7 +870,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.cameras.main.shake(260, 0.009);
       this.cameras.main.flash(150, 224, 246, 255, false);
     }
-    this.showFeedback(qizhenContent.chase.caught, "system", 3000);
+    this.showFeedback(`${qizhenContent.chase.caught}${qizhenContent.chase.failed}`, "system", 3000);
     this.emitDomain("rpg_qizhen_chase_failed", {
       reason: "swan_caught",
       zone: this.currentZone,
@@ -884,7 +891,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.resetChaseSwan();
       this.capsizing = false;
       this.chaseFailing = false;
-      this.showFeedback(qizhenContent.chase.failed, "task", 2200);
     });
   }
 
@@ -929,7 +935,6 @@ export class QizhenLakeScene extends Phaser.Scene {
         this.chaseAnnounced = true;
         this.emitDomain("rpg_qizhen_chase_started", { zone: runtime.zone });
         this.showFeedback(qizhenContent.swan.gateRelease, "system");
-        this.time.delayedCall(1500, () => this.showFeedback(qizhenContent.chase.instruction, "task"));
       }
       if (runtime.phase !== "swan_chase") this.chaseAnnounced = false;
     }
@@ -1107,18 +1112,30 @@ export class QizhenLakeScene extends Phaser.Scene {
   private createTargetVisuals(): void {
     QIZHEN_LAKE_TARGETS.filter((target) => target.zone === this.currentZone).forEach((target) => {
       const isOutfit = target.kind === "outfit";
+      const isWaterRipple = isQizhenWaterRippleTarget(target);
       const color = target.kind === "zone_portal" || target.kind === "escape"
         ? 0xffe36d
-        : target.kind === "reflection" || target.kind === "paper"
+        : target.kind === "reflection"
           ? 0x7de8ff
-          : target.kind === "swan"
-            ? 0xffd1a4
-            : 0xb8ffd7;
+          : isWaterRipple
+            ? 0xffdf6b
+            : target.kind === "swan"
+              ? 0xffd1a4
+              : 0xb8ffd7;
       const pulse = target.kind === "zone_portal" || target.kind === "escape"
         ? this.add.triangle(0, 0, -22, -18, 24, 0, -22, 18, color, 0.25).setStrokeStyle(3, color, 0.88)
         : isOutfit
           ? this.add.ellipse(0, 0, 64, 30, color, 0.1).setStrokeStyle(3, color, 0.9)
-          : this.add.ellipse(0, 0, 72, 34, color, 0.08).setStrokeStyle(3, color, 0.82);
+          : isWaterRipple
+            ? this.add.ellipse(
+                0,
+                0,
+                target.width ?? 156,
+                target.height ?? 72,
+                0x07111c,
+                0.28
+              ).setStrokeStyle(4, color, 1)
+            : this.add.ellipse(0, 0, 72, 34, color, 0.08).setStrokeStyle(3, color, 0.82);
       pulse.setVisible(false);
       const label = this.add.text(0, -34, target.label, {
         color: "#f4ffff",
@@ -1147,10 +1164,47 @@ export class QizhenLakeScene extends Phaser.Scene {
           }
         });
       }
+      const rippleBands: Phaser.GameObjects.Ellipse[] = [];
+      let rippleCenter: Phaser.GameObjects.Arc | null = null;
+      if (isWaterRipple) {
+        const rippleWidth = target.width ?? 156;
+        const rippleHeight = target.height ?? 72;
+        [0.66, 1.28].forEach((scale, bandIndex) => {
+          const band = this.add.ellipse(
+            0,
+            0,
+            rippleWidth * scale,
+            rippleHeight * scale,
+            0x000000,
+            0
+          ).setStrokeStyle(
+            bandIndex === 0 ? 3 : 2,
+            bandIndex === 0 ? 0xf8ffff : color,
+            bandIndex === 0 ? 0.96 : 0.7
+          ).setVisible(false);
+          rippleBands.push(band);
+          if (!this.reducedMotion) {
+            band.setScale(bandIndex === 0 ? 0.94 : 0.9);
+            this.tweens.add({
+              targets: band,
+              scaleX: bandIndex === 0 ? 1.06 : 1.1,
+              scaleY: bandIndex === 0 ? 1.06 : 1.1,
+              duration: 760 + bandIndex * 230,
+              delay: bandIndex * 170,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.easeInOut"
+            });
+          }
+        });
+        rippleCenter = this.add.circle(0, 0, 5, 0xf8ffff, 1)
+          .setStrokeStyle(2, 0x07111c, 0.95)
+          .setVisible(false);
+      }
       const prop = this.createDockOutfitProp(target);
       const rootChildren: Phaser.GameObjects.GameObject[] = prop
-        ? [prop, pulse, label, ...sparkles]
-        : [pulse, label, ...sparkles];
+        ? [prop, ...rippleBands, pulse, ...(rippleCenter ? [rippleCenter] : []), label, ...sparkles]
+        : [...rippleBands, pulse, ...(rippleCenter ? [rippleCenter] : []), label, ...sparkles];
       const root = this.add.container(target.x, target.y, rootChildren)
         .setDepth(target.y + 48)
         .setSize(Math.max(88, target.dropWidth ?? 88), Math.max(64, target.dropHeight ?? 64))
@@ -1159,7 +1213,16 @@ export class QizhenLakeScene extends Phaser.Scene {
         .setName("qizhenTarget");
       root.setData("targetId", target.id);
       root.on("pointerdown", () => this.triggerPointerTarget(target));
-      this.targetVisuals.push({ target, root, label, pulse, color, sparkles });
+      this.targetVisuals.push({
+        target,
+        root,
+        label,
+        pulse,
+        color,
+        sparkles,
+        rippleBands,
+        rippleCenter
+      });
     });
     this.createDropGuides();
   }
@@ -1240,10 +1303,12 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private destroyZoneVisuals(): void {
-    this.targetVisuals.forEach(({ root, pulse, sparkles }) => {
+    this.targetVisuals.forEach(({ root, pulse, sparkles, rippleBands, rippleCenter }) => {
       this.tweens.killTweensOf(root);
       this.tweens.killTweensOf(pulse);
       sparkles.forEach((sparkle) => this.tweens.killTweensOf(sparkle));
+      rippleBands.forEach((band) => this.tweens.killTweensOf(band));
+      if (rippleCenter) this.tweens.killTweensOf(rippleCenter);
       root.destroy(true);
     });
     this.targetVisuals = [];
@@ -2033,38 +2098,17 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "qizhen_mode_changed") {
-      this.playModeTransition(
-        String(payload?.mode) === "dark" ? "dark" : "light",
-        typeof payload?.reason === "string" ? payload.reason : undefined
-      );
+      this.playModeTransition(String(payload?.mode) === "dark" ? "dark" : "light");
       return;
     }
     if (name === "qizhen_outfit_part_collected") {
-      const part = String(payload?.part ?? "kayak");
-      const complete = payload?.complete === true;
-      const message = complete
-        ? qizhenContent.dock.outfitComplete
-        : part === "kayak"
-          ? qizhenContent.dock.kayakCollected
-          : part === "left_paddle"
-            ? qizhenContent.dock.leftPaddleCollected
-            : qizhenContent.dock.rightPaddleCollected;
-      this.showFeedback(message, "success");
       return;
     }
     if (name === "qizhen_kayak_boarded") {
-      this.showFeedback(qizhenContent.boarding.start, "task");
       return;
     }
     if (name === "qizhen_boarding_stroke_recorded") {
-      const count = Number(payload?.count) || 0;
-      if (String(payload?.direction ?? "forward") === "reverse") {
-        this.showFeedback(qizhenContent.boarding.reverseTutorial, "task", 1800);
-      } else if (payload?.alternating === true && count >= 1) {
-        const strokes = qizhenContent.boarding.strokes;
-        const line = strokes[Math.min(count, strokes.length) - 1];
-        this.showFeedback(line, this.dialogueToneFor(line), 1500);
-      } else if (payload?.alternating !== true && this.time.now - this.sameSideHintAt > SAME_SIDE_HINT_COOLDOWN_MS) {
+      if (payload?.alternating !== true && this.time.now - this.sameSideHintAt > SAME_SIDE_HINT_COOLDOWN_MS) {
         this.sameSideHintAt = this.time.now;
         this.showFeedback(qizhenContent.boarding.sameSide, "system", 1800);
       }
@@ -2080,18 +2124,18 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (name === "qizhen_reflection_observed") {
       if (String(payload?.spotId ?? "") === "paper") {
-        this.playSubtitleSequence(qizhenContent.reflection.afterPaper);
+        this.showFeedback(qizhenContent.reflection.afterPaper[0], "system");
       } else {
         this.showFeedback(qizhenContent.reflection.correct, "success");
       }
       return;
     }
     if (name === "qizhen_fishing_rod_found") {
-      this.queueDialogue([qizhenContent.lake.rodFound, ...qizhenContent.decoy.dialogue]);
+      this.queueDialogue([qizhenContent.lake.rodFound]);
       return;
     }
     if (name === "qizhen_decoy_bait_attached") {
-      this.playSubtitleSequence([qizhenContent.decoy.correct, qizhenContent.lake.baitNext]);
+      this.showFeedback(qizhenContent.decoy.correct, "success");
       return;
     }
     if (name === "qizhen_direct_paper_cast_failed") {
@@ -2127,7 +2171,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "qizhen_swan_fed") {
-      this.queueDialogue([qizhenContent.swan.reward, qizhenContent.swan.combineHint]);
+      this.queueDialogue([qizhenContent.swan.reward]);
       return;
     }
     if (name === "qizhen_magnetic_rod_combined") {
@@ -2162,8 +2206,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (activeTarget) visual.root.setPosition(activeTarget.x, activeTarget.y);
       const vehicleMatches = !visual.target.vehicle || visual.target.vehicle === this.currentVehicle;
       const lockedPortal = !active && vehicleMatches && this.lockedPortalHintFor(visual.target, runtime) !== null;
+      const isWaterRipple = isQizhenWaterRippleTarget(visual.target);
       visual.root.setVisible(active || lockedPortal);
       visual.sparkles.forEach((sparkle) => sparkle.setVisible(active));
+      visual.pulse.setVisible(active && (isWaterRipple || visual.target.value === "fishing_rod"));
+      visual.rippleBands.forEach((band) => band.setVisible(active && isWaterRipple));
+      visual.rippleCenter?.setVisible(active && isWaterRipple);
       if (!active) {
         if (lockedPortal) {
           visual.root.setAlpha(0.35).setScale(1);
@@ -2174,10 +2222,14 @@ export class QizhenLakeScene extends Phaser.Scene {
       }
       const isNearest = nearest?.id === visual.target.id;
       const matchesSelectedItem = selectedItem !== null && qizhenTargetAcceptsItem(visual.target, selectedItem);
-      visual.label.setVisible(false);
+      visual.label.setVisible(isWaterRipple && (isNearest || matchesSelectedItem));
       visual.pulse
-        .setAlpha(isNearest || matchesSelectedItem ? 0.96 : 0.5)
-        .setStrokeStyle(3, matchesSelectedItem ? 0x63e58b : visual.color, matchesSelectedItem ? 1 : 0.88);
+        .setAlpha(isNearest || matchesSelectedItem ? 1 : isWaterRipple ? 0.82 : 0.5)
+        .setStrokeStyle(
+          isWaterRipple ? 4 : 3,
+          matchesSelectedItem ? 0x63e58b : visual.color,
+          matchesSelectedItem ? 1 : 0.88
+        );
       visual.root.setScale(isNearest ? 1.08 : 1);
       let alpha = 1;
       if ((visual.target.kind === "reflection" || visual.target.value === "paper_reflection") && runtime.mode !== "dark") {
@@ -2504,8 +2556,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.softenedOcclusionIds = softened;
   }
 
-  private playModeTransition(mode: QizhenLakeMode, reason?: string): void {
-    const changed = mode !== this.currentMode;
+  private playModeTransition(mode: QizhenLakeMode): void {
     this.currentMode = mode;
     this.tweens.killTweensOf(this.darkOverlay);
     this.tweens.add({
@@ -2514,13 +2565,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       duration: this.reducedMotion ? 60 : 260,
       ease: "Cubic.easeInOut"
     });
-    if (!changed) return;
-    const text = reason === "dock_return"
-      ? qizhenContent.mist.lightPrompt
-      : mode === "dark"
-        ? qizhenContent.lake.darkPrompt
-        : qizhenContent.lake.lightPrompt;
-    this.showFeedback(text, "system", 2200);
   }
 
   private animateFishingCast(
@@ -2592,14 +2636,6 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.time.delayedCall(lines.length * stepMs, () => {
       this.dialogueLocked = false;
       onComplete?.();
-    });
-  }
-
-  private playSubtitleSequence(lines: readonly string[], stepMs = 1500): void {
-    lines.forEach((text, index) => {
-      this.time.delayedCall(index * stepMs, () => {
-        this.showFeedback(text, this.dialogueToneFor(text), stepMs - 120);
-      });
     });
   }
 
@@ -2677,9 +2713,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         stand: candidate.stand,
         proximity: candidate.proximity,
         acceptedItem: candidate.acceptedItem,
-        requiredMode: candidate.requiredMode,
-        requiredFacing: candidate.requiredFacing,
-        facingToleranceDegrees: candidate.facingToleranceDegrees
+        requiredMode: candidate.requiredMode
       })),
       collisionRects: this.getActiveCollisionRects(this.currentVehicle),
       qizhenLake: {

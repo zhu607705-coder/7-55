@@ -4,7 +4,7 @@
 
 剧院流程的存档、剧情、任务、钱包和道具状态由 React/TypeScript 主应用管理。Phaser 承接剧院画面、碰撞、动画和输入，并通过版本化契约读取状态和提交意图。
 
-当前场景契约入口是 `src/scenes/rpg/TheaterRuntimeContract.ts`，版本为 `1.1.0`。该版本包含真实物体边界距离与朝向字段。`RpgGameHost` 只挂载 Phaser canvas；`rpgEngine` URL 参数不再切换引擎。
+当前场景契约入口是 `src/scenes/rpg/TheaterRuntimeContract.ts`，版本为 `1.1.0`。交互使用真实物体边界距离，不包含朝向门禁。`RpgGameHost` 只挂载 Phaser canvas；`rpgEngine` URL 参数不再切换引擎。
 
 ## 固定边界
 
@@ -35,8 +35,8 @@
 ## 交互与失败规则
 
 - 人物脚点到真实可见物体边界的最近距离是交互距离权威。
-- 墙面设备可使用固定朝向，多侧接近物体使用 `toward_target`。
-- 拖放反馈覆盖 `accepted`、`missed_target`、`wrong_item`、`too_far`、`wrong_facing`、`wrong_mode` 和控制器拒绝。
+- 墙面设备和多侧接近物体都只检查真实边界距离，不检查人物朝向。
+- 拖放反馈覆盖 `accepted`、`missed_target`、`wrong_item`、`too_far`、`wrong_mode` 和控制器拒绝。
 - 契约版本不匹配时中止场景交互并报告可读错误。
 - 缺少音频或动画时仍要提交已经完成的领域意图，表现层不得阻断剧情。
 - Pointer Events 是鼠标、触摸和笔的统一输入协议；键盘交互只显示真实可用的按键。

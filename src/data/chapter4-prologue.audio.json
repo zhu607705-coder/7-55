@@ -12,25 +12,14 @@
         }
       ]
     },
-    "chapter35_recovered_replay_requested": {
-      "cues": [
-        {
-          "channel": "music",
-          "asset": "music_ch35_night_wind_building",
-          "action": "play",
-          "volume": 0.16,
-          "loop": true
-        }
-      ]
-    },
     "chapter4_prologue_started": {
       "cues": [
         {
           "channel": "music",
-          "asset": "music_ch35_night_wind_building",
+          "asset": "music_ch4_prologue_h3_44s",
           "action": "play",
           "volume": 0.16,
-          "loop": true
+          "loop": false
         }
       ]
     },
@@ -206,7 +195,7 @@
           "asset": "vo_ch4_prologue_cleaner_01",
           "subtitleKey": "ch4_prologue_cleaner_01",
           "subtitleSurface": "scene",
-          "durationMs": 6211,
+          "durationMs": 2841,
           "duckMusicTo": 0.08,
           "volume": 0.96
         }
@@ -228,7 +217,7 @@
           "asset": "vo_ch4_prologue_guard_01",
           "subtitleKey": "ch4_prologue_guard_01",
           "subtitleSurface": "scene",
-          "durationMs": 4805,
+          "durationMs": 2413,
           "duckMusicTo": 0.08,
           "volume": 0.96
         }

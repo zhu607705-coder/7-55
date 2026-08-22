@@ -44,8 +44,11 @@ export function isQuestCluePhase(): boolean {
 
 export function QuestTaskBar({
   state,
+  events,
+  router,
   variant = "phone",
-  portalRoot
+  portalRoot,
+  onNavigate
 }: QuestTaskBarProps) {
   const quest = useMemo(() => selectQuestViewModel(state), [state]);
   const visible = isQuestTaskBarVisible(state);
@@ -56,7 +59,8 @@ export function QuestTaskBar({
 
   useEffect(() => {
     setHintCount(0);
-  }, [quest.id]);
+    setOpen(false);
+  }, [quest.id, quest.objective]);
 
   useEffect(() => {
     const previous = previousQuestRef.current;
@@ -84,6 +88,26 @@ export function QuestTaskBar({
   const digitHintAria = `已找到的签到数字：${digitSlots
     .map((digit, index) => `第${index + 1}位${digit ?? "未找到"}`)
     .join("，")}`;
+  const questIncomplete = quest.completed < quest.total;
+  const hasNavigationHandler = Boolean(onNavigate || (router && quest.recommendedScene));
+  const redundantRpgNavigation = variant !== "phone" && quest.targetSurface === "rpg";
+  const showNavigation = questIncomplete && hasNavigationHandler && !redundantRpgNavigation;
+  const navigationLabel = quest.targetSurface === "rpg" ? "返回任务现场" : "前往相关界面";
+
+  function navigateToQuest() {
+    events.emit("quest_navigation_requested", {
+      questId: quest.id,
+      targetSurface: quest.targetSurface,
+      recommendedScene: quest.recommendedScene
+    });
+    if (onNavigate) {
+      onNavigate(quest);
+    } else if (router && quest.recommendedScene) {
+      router.goTo(quest.recommendedScene);
+    }
+    setOpen(false);
+  }
+
   return (
     <aside
       className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${showDigitHint ? "has-digits" : ""}`.trim()}
@@ -170,6 +194,12 @@ export function QuestTaskBar({
                 </button>
               ) : null}
             </section>
+
+            {showNavigation ? (
+              <button type="button" className="quest-task-navigate" onClick={navigateToQuest}>
+                {navigationLabel}
+              </button>
+            ) : null}
           </section>
         </QuestDrawerLayer>
       ) : null}

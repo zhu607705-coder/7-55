@@ -1,6 +1,6 @@
 /**
- * Qizhen Lake rhythm-fishing Phaser visual: bobber ripple rings, action icons,
- * hold arcs, tension line and the narrow top status strip.
+ * Qizhen Lake rhythm-fishing Phaser visual: a fixed timing rail and judgment
+ * line, supporting bobber ripples, hold progress, tension line and status HUD.
  *
  * Contract: docs/chapter-3-qizhen-fishing-rhythm.md §7 and §9.2.
  * Self-contained: vector Graphics + Text only, no texture assets, no scene
@@ -43,6 +43,15 @@ const HOLD_ARC_RADIUS = 24;
 const REDUCED_RING_STEPS = [72, 48, 32, 14] as const;
 const STATUS_BAR_X = 480;
 const STATUS_BAR_Y = 112;
+const TIMING_RAIL_LEFT = 170;
+const TIMING_RAIL_RIGHT = 790;
+const TIMING_RAIL_Y = 326;
+const TIMING_RAIL_HEIGHT = 62;
+const TIMING_RAIL_NOTE_Y = TIMING_RAIL_Y + 8;
+const TIMING_RAIL_SPAWN_X = TIMING_RAIL_RIGHT - 30;
+const TIMING_RAIL_JUDGMENT_X = TIMING_RAIL_LEFT + 118;
+const TIMING_RAIL_LATE_X = TIMING_RAIL_JUDGMENT_X - 72;
+const TIMING_RAIL_HOLD_WIDTH = 154;
 
 const RING_COLORS: Record<QizhenFishingAction, number> = {
   left: 0x86d98a,
@@ -65,22 +74,22 @@ const ACTION_CSS: Record<QizhenFishingAction, string> = {
   hook: "#a8ddff",
 };
 const JUDGMENT_WORDS: Record<QizhenFishingJudgment, string> = {
-  perfect: "Perfect",
-  great: "Great",
-  good: "Good",
-  miss: "Miss",
+  perfect: "精准",
+  great: "良好",
+  good: "命中",
+  miss: "错过",
 };
 const JUDGMENT_CSS: Record<QizhenFishingJudgment, string> = {
   perfect: "#ffd75e",
   great: "#8affc1",
   good: "#9fd8ff",
-  miss: "#c08a8a",
+  miss: "#ff8a7a",
 };
 const JUDGMENT_COLORS: Record<QizhenFishingJudgment, number> = {
   perfect: 0xffd75e,
   great: 0x8affc1,
   good: 0x9fd8ff,
-  miss: 0x9aa4ad,
+  miss: 0xff8a7a,
 };
 const GRADE_CSS: Record<QizhenFishingGrade, string> = {
   S: "#ffd75e",
@@ -123,6 +132,13 @@ export class QizhenFishingRhythmVisual {
   private readonly lineLowMarker: Phaser.GameObjects.Text;
   private readonly lineHighMarker: Phaser.GameObjects.Text;
 
+  private readonly timingRail: Phaser.GameObjects.Container;
+  private readonly timingRailBg: Phaser.GameObjects.Graphics;
+  private readonly judgmentLineGraphics: Phaser.GameObjects.Graphics;
+  private readonly judgmentLineLabel: Phaser.GameObjects.Text;
+  private judgmentFlashUntil = 0;
+  private judgmentFlashColor = 0xf4fbff;
+
   private readonly statusBar: Phaser.GameObjects.Container;
   private readonly statusBg: Phaser.GameObjects.Graphics;
   private readonly labelText: Phaser.GameObjects.Text;
@@ -161,6 +177,40 @@ export class QizhenFishingRhythmVisual {
       }).setOrigin(0.5).setDepth(this.depth + 1).setVisible(false),
     );
 
+    this.timingRailBg = this.scene.add.graphics();
+    this.judgmentLineGraphics = this.scene.add.graphics();
+    this.judgmentLineLabel = this.scene.add.text(
+      TIMING_RAIL_JUDGMENT_X,
+      TIMING_RAIL_Y - TIMING_RAIL_HEIGHT / 2 - 7,
+      "判定线",
+      {
+        ...HUD_TEXT_STYLE,
+        fontSize: "12px",
+        fontStyle: "bold",
+        color: "#ffffff",
+      },
+    ).setOrigin(0.5, 1);
+    const timingRailHint = this.scene.add.text(
+      TIMING_RAIL_RIGHT - 12,
+      TIMING_RAIL_Y - TIMING_RAIL_HEIGHT / 2 - 7,
+      "彩色音符向左移动",
+      {
+        ...HUD_TEXT_STYLE,
+        fontSize: "11px",
+        color: "#d9eef4",
+      },
+    ).setOrigin(1, 1);
+    this.timingRail = this.track(
+      this.scene.add.container(0, 0, [
+        this.timingRailBg,
+        this.judgmentLineGraphics,
+        this.judgmentLineLabel,
+        timingRailHint,
+      ]).setScrollFactor(0).setDepth(this.depth + 3),
+    );
+    this.drawTimingRailBackground();
+    this.refreshJudgmentLine(true);
+
     // Narrow status strip: fixed to the canvas, below the shared React task bar.
     this.statusBar = this.track(
       this.scene.add.container(STATUS_BAR_X, STATUS_BAR_Y).setScrollFactor(0).setDepth(this.depth + 4),
@@ -175,7 +225,7 @@ export class QizhenFishingRhythmVisual {
     this.controlsText = this.scene.add.text(
       0,
       20,
-      "绿色 A 左收线  ·  蓝色 S 提竿  ·  黄色 D 右收线  ·  圆环收紧时输入",
+      "彩色音符碰到白色判定线时按键  ·  A 左收线  ·  S 提竿  ·  D 右收线",
       { ...HUD_TEXT_STYLE, fontSize: "12px", color: "#f4f1d4" }
     ).setOrigin(0.5, 0.5);
     this.statusBar.add([this.statusBg, this.labelText, this.tensionText, this.comboText, this.controlsText]);
@@ -185,6 +235,7 @@ export class QizhenFishingRhythmVisual {
   update(): void {
     if (this.destroyed) return;
     this.refreshStatusBar();
+    this.refreshJudgmentLine();
     this.updateLine();
     if (!this.reducedMotion) {
       this.bobber.setY(this.anchor.y + Math.sin(this.scene.time.now / 260) * 1.5);
@@ -218,7 +269,7 @@ export class QizhenFishingRhythmVisual {
   notifyJudgment(
     note: QizhenFishingNote,
     judgment: QizhenFishingJudgment,
-    _errorMs: number,
+    errorMs: number,
   ): void {
     if (this.destroyed) return;
     const visual = this.noteVisuals.get(note.index);
@@ -227,25 +278,23 @@ export class QizhenFishingRhythmVisual {
     if (visual) {
       radius = visual.lastRadius;
       if (holding) {
-        // Hold notes are judged on press but keep playing: drop the ring and
-        // icon, keep the entry alive for the closing hold arc.
+        // Hold notes lock their marker to the judgment line until the player
+        // has held it for the authored duration.
         if (visual.ring) {
           this.release(visual.ring);
           visual.ring = null;
         }
-        if (visual.icon) {
-          this.release(visual.icon);
-          visual.icon = null;
-        }
+        visual.icon?.setPosition(TIMING_RAIL_JUDGMENT_X, TIMING_RAIL_NOTE_Y);
       } else {
         this.removeNoteVisual(visual);
         this.noteVisuals.delete(note.index);
       }
     }
-    this.flashJudgmentText(judgment);
+    this.flashJudgmentText(judgment, errorMs);
+    this.flashJudgmentLine(judgment);
     if (!this.reducedMotion) {
       const muted = judgment === "miss";
-      this.spawnBurst(muted ? 0x9aa4ad : JUDGMENT_COLORS[judgment], radius, muted);
+      this.spawnBurst(JUDGMENT_COLORS[judgment], radius, muted);
     }
   }
 
@@ -256,6 +305,7 @@ export class QizhenFishingRhythmVisual {
       this.removeNoteVisual(visual);
       this.noteVisuals.delete(note.index);
     }
+    this.flashJudgmentLine("miss");
     const flash = this.scene.add.graphics().setDepth(this.depth + 2);
     flash.lineStyle(3, 0xff5a4e, 1);
     const r = 14;
@@ -482,6 +532,111 @@ export class QizhenFishingRhythmVisual {
     }
   }
 
+  private drawTimingRailBackground(): void {
+    const g = this.timingRailBg;
+    const top = TIMING_RAIL_Y - TIMING_RAIL_HEIGHT / 2;
+    const width = TIMING_RAIL_RIGHT - TIMING_RAIL_LEFT;
+    g.clear();
+    g.fillStyle(0x07111c, 0.8);
+    g.fillRect(TIMING_RAIL_LEFT, top, width, TIMING_RAIL_HEIGHT);
+    g.fillStyle(0x552b32, 0.28);
+    g.fillRect(
+      TIMING_RAIL_LEFT,
+      top + 3,
+      TIMING_RAIL_JUDGMENT_X - TIMING_RAIL_LEFT,
+      TIMING_RAIL_HEIGHT - 6,
+    );
+    g.lineStyle(2, 0xa8e8f2, 0.72);
+    g.strokeRect(TIMING_RAIL_LEFT, top, width, TIMING_RAIL_HEIGHT);
+    g.lineStyle(5, 0x07111c, 0.92);
+    g.lineBetween(
+      TIMING_RAIL_LEFT + 18,
+      TIMING_RAIL_NOTE_Y,
+      TIMING_RAIL_RIGHT - 18,
+      TIMING_RAIL_NOTE_Y,
+    );
+    g.lineStyle(2, 0x9fd8ff, 0.42);
+    g.lineBetween(
+      TIMING_RAIL_LEFT + 18,
+      TIMING_RAIL_NOTE_Y,
+      TIMING_RAIL_RIGHT - 18,
+      TIMING_RAIL_NOTE_Y,
+    );
+
+    // Two beat-spaced guide ticks make the fixed 2-beat lead readable.
+    const beatTravel =
+      (TIMING_RAIL_SPAWN_X - TIMING_RAIL_JUDGMENT_X)
+      * (QIZHEN_FISHING_TIMING.beatSec / QIZHEN_FISHING_TIMING.leadSec);
+    for (let beat = 1; beat <= 2; beat += 1) {
+      const x = TIMING_RAIL_JUDGMENT_X + beatTravel * beat;
+      g.lineStyle(1.5, 0xd9eef4, beat === 1 ? 0.38 : 0.24);
+      g.lineBetween(x, TIMING_RAIL_NOTE_Y - 19, x, TIMING_RAIL_NOTE_Y + 19);
+    }
+
+    // Direction chevrons reinforce that notes travel right-to-left.
+    for (const x of [706, 628, 550]) {
+      g.fillStyle(0xd9eef4, 0.35);
+      g.fillTriangle(x - 8, TIMING_RAIL_NOTE_Y, x + 2, TIMING_RAIL_NOTE_Y - 5, x + 2, TIMING_RAIL_NOTE_Y + 5);
+    }
+  }
+
+  private refreshJudgmentLine(force = false): void {
+    this.timingRail.setAlpha(this.model.phase === "cancelled" ? 0 : 1);
+    const now = this.scene.time.now;
+    const windowSec = (
+      this.model.assist
+        ? QIZHEN_FISHING_TIMING.assistGoodMs
+        : QIZHEN_FISHING_TIMING.goodMs
+    ) / 1000;
+    const elapsed = this.model.elapsedSec;
+    const noteInsideWindow = this.model.phase === "running" && this.model.notes.some((note) => (
+      note.judgment === null
+      && elapsed >= note.spawnSec
+      && Math.abs(note.timeSec - elapsed) <= windowSec
+    ));
+    const feedbackActive = now < this.judgmentFlashUntil;
+    const color = feedbackActive
+      ? this.judgmentFlashColor
+      : noteInsideWindow
+        ? 0xffe27a
+        : 0xf4fbff;
+    const pulse = noteInsideWindow && !this.reducedMotion
+      ? 0.78 + Math.abs(Math.sin(now / 90)) * 0.22
+      : 1;
+    const g = this.judgmentLineGraphics;
+    g.clear();
+    const top = TIMING_RAIL_Y - TIMING_RAIL_HEIGHT / 2 + 4;
+    const bottom = TIMING_RAIL_Y + TIMING_RAIL_HEIGHT / 2 - 4;
+    g.lineStyle(9, 0x07111c, 0.95);
+    g.lineBetween(TIMING_RAIL_JUDGMENT_X, top, TIMING_RAIL_JUDGMENT_X, bottom);
+    g.lineStyle(force ? 4.5 : 4, color, pulse);
+    g.lineBetween(TIMING_RAIL_JUDGMENT_X, top, TIMING_RAIL_JUDGMENT_X, bottom);
+    g.fillStyle(color, pulse);
+    g.fillTriangle(
+      TIMING_RAIL_JUDGMENT_X,
+      top + 7,
+      TIMING_RAIL_JUDGMENT_X - 9,
+      top - 2,
+      TIMING_RAIL_JUDGMENT_X + 9,
+      top - 2,
+    );
+    g.fillTriangle(
+      TIMING_RAIL_JUDGMENT_X,
+      bottom - 7,
+      TIMING_RAIL_JUDGMENT_X - 9,
+      bottom + 2,
+      TIMING_RAIL_JUDGMENT_X + 9,
+      bottom + 2,
+    );
+    this.judgmentLineLabel.setColor(Phaser.Display.Color.IntegerToColor(color).rgba);
+  }
+
+  private flashJudgmentLine(judgment: QizhenFishingJudgment): void {
+    this.judgmentFlashColor = JUDGMENT_COLORS[judgment];
+    this.judgmentFlashUntil = this.scene.time.now + (judgment === "miss" ? 320 : 240);
+    this.refreshJudgmentLine(true);
+  }
+
   private updateLine(): void {
     const from = this.options.lineFrom?.();
     if (!from) {
@@ -550,30 +705,50 @@ export class QizhenFishingRhythmVisual {
   private createNoteVisual(note: QizhenFishingNote): NoteVisual {
     const ring = this.track(this.scene.add.graphics().setDepth(this.depth - 1));
     const icon = this.track(
-      this.scene.add.container(this.anchor.x, this.anchor.y).setDepth(this.depth + 1),
+      this.scene.add.container(TIMING_RAIL_SPAWN_X, TIMING_RAIL_NOTE_Y)
+        .setScrollFactor(0)
+        .setDepth(this.depth + 5),
     );
+    const markerColor = (this.model.assist ? RING_COLORS_ASSIST : RING_COLORS)[note.action];
+    const markerBg = this.scene.add.graphics();
+    markerBg.fillStyle(0x07111c, 0.96);
+    markerBg.fillRect(-21, -21, 42, 42);
+    markerBg.lineStyle(this.model.assist ? 4 : 3, markerColor, 1);
+    markerBg.strokeRect(-21, -21, 42, 42);
     const iconGraphics = this.scene.add.graphics();
     this.drawActionIcon(iconGraphics, note.action);
-    const arrow = this.scene.add.text(0, 9, ACTION_ARROWS[note.action], {
+    iconGraphics.setPosition(0, -4);
+    const arrow = this.scene.add.text(0, 7, ACTION_ARROWS[note.action], {
       ...HUD_TEXT_STYLE,
+      fontSize: "15px",
       fontStyle: "bold",
       color: ACTION_CSS[note.action],
     }).setOrigin(0.5, 0);
-    icon.add([iconGraphics, arrow]);
+    icon.add([markerBg, iconGraphics, arrow]);
     if (note.cue) {
       icon.add(
-        this.scene.add.text(0, 25, note.cue === "left_intro" ? "左收线" : "右收线", {
+        this.scene.add.text(0, -27, note.cue === "left_intro" ? "左收线" : "右收线", {
           ...HUD_TEXT_STYLE,
           fontSize: "11px",
           color: "#eaffff",
+        }).setOrigin(0.5, 1),
+      );
+    }
+    if (note.holdBeats > 0) {
+      icon.add(
+        this.scene.add.text(0, 23, "按住", {
+          ...HUD_TEXT_STYLE,
+          fontSize: "10px",
+          fontStyle: "bold",
+          color: "#ffffff",
         }).setOrigin(0.5, 0),
       );
     }
     let countdown: Phaser.GameObjects.Text | null = null;
     if (this.reducedMotion) {
-      countdown = this.scene.add.text(20, -12, "", {
+      countdown = this.scene.add.text(25, -18, "", {
         ...HUD_TEXT_STYLE,
-        fontSize: "14px",
+        fontSize: "12px",
         fontStyle: "bold",
         color: "#ffffff",
       }).setOrigin(0.5);
@@ -604,10 +779,10 @@ export class QizhenFishingRhythmVisual {
       const assist = this.model.assist;
       const color = (assist ? RING_COLORS_ASSIST : RING_COLORS)[note.action];
       ring.clear();
-      ring.lineStyle(assist ? 4 : 2.5, color, assist ? 1 : 0.8);
+      ring.lineStyle(assist ? 3 : 2, color, assist ? 0.7 : 0.38);
       ring.strokeCircle(this.anchor.x, this.anchor.y, radius);
       if (!this.reducedMotion) {
-        ring.lineStyle(1, color, assist ? 0.5 : 0.3);
+        ring.lineStyle(1, color, assist ? 0.3 : 0.14);
         ring.strokeCircle(this.anchor.x, this.anchor.y, radius + 6);
       }
       if (note.holdBeats > 0) {
@@ -625,7 +800,33 @@ export class QizhenFishingRhythmVisual {
         ring.strokePath();
       }
     }
-    visual.icon?.setPosition(this.anchor.x, this.anchor.y - Math.max(radius - 11, 2));
+    const goodWindowSec = (
+      this.model.assist
+        ? QIZHEN_FISHING_TIMING.assistGoodMs
+        : QIZHEN_FISHING_TIMING.goodMs
+    ) / 1000;
+    let railX: number;
+    if (elapsed <= note.timeSec) {
+      const visualProgress = this.reducedMotion
+        ? Math.floor(progress * 8) / 8
+        : progress;
+      railX = Phaser.Math.Linear(
+        TIMING_RAIL_SPAWN_X,
+        TIMING_RAIL_JUDGMENT_X,
+        visualProgress,
+      );
+    } else {
+      const lateProgress = Phaser.Math.Clamp((elapsed - note.timeSec) / goodWindowSec, 0, 1);
+      const visualProgress = this.reducedMotion
+        ? Math.floor(lateProgress * 4) / 4
+        : lateProgress;
+      railX = Phaser.Math.Linear(
+        TIMING_RAIL_JUDGMENT_X,
+        TIMING_RAIL_LATE_X,
+        visualProgress,
+      );
+    }
+    visual.icon?.setPosition(railX, TIMING_RAIL_NOTE_Y);
     if (visual.countdown) {
       const beatsLeft = Math.max(
         0,
@@ -649,27 +850,34 @@ export class QizhenFishingRhythmVisual {
       this.noteVisuals.set(note.index, visual);
     }
     visual.wasHolding = true;
+    visual.icon?.setPosition(TIMING_RAIL_JUDGMENT_X, TIMING_RAIL_NOTE_Y);
     if (!visual.holdArc) {
-      visual.holdArc = this.track(this.scene.add.graphics().setDepth(this.depth + 1));
+      visual.holdArc = this.track(
+        this.scene.add.graphics().setScrollFactor(0).setDepth(this.depth + 4),
+      );
     }
-    // The arc closes toward a full circle as the remaining hold time runs out.
+    // A horizontal fill directly after the judgment line makes the required
+    // hold duration readable without another radial animation.
     const progress = Phaser.Math.Clamp(
       (elapsed - note.timeSec) / Math.max(note.holdSec, 0.001),
       0,
       1,
     );
+    const color = (this.model.assist ? RING_COLORS_ASSIST : RING_COLORS)[note.action];
+    const startX = TIMING_RAIL_JUDGMENT_X + 28;
+    const top = TIMING_RAIL_NOTE_Y - 7;
     visual.holdArc.clear();
-    visual.holdArc.lineStyle(3.5, 0xffffff, 0.95);
-    visual.holdArc.beginPath();
-    visual.holdArc.arc(
-      this.anchor.x,
-      this.anchor.y,
-      HOLD_ARC_RADIUS,
-      -Math.PI / 2,
-      -Math.PI / 2 + progress * Math.PI * 2,
-      false,
+    visual.holdArc.fillStyle(0x07111c, 0.94);
+    visual.holdArc.fillRect(startX, top, TIMING_RAIL_HOLD_WIDTH, 14);
+    visual.holdArc.lineStyle(2, 0xffffff, 0.78);
+    visual.holdArc.strokeRect(startX, top, TIMING_RAIL_HOLD_WIDTH, 14);
+    visual.holdArc.fillStyle(color, 0.96);
+    visual.holdArc.fillRect(
+      startX + 3,
+      top + 3,
+      (TIMING_RAIL_HOLD_WIDTH - 6) * progress,
+      8,
     );
-    visual.holdArc.strokePath();
   }
 
   private discreteRadius(progress: number): number {
@@ -726,16 +934,29 @@ export class QizhenFishingRhythmVisual {
     g.fillTriangle(-4, 4, -1, 2, -4, 1);
   }
 
-  private flashJudgmentText(judgment: QizhenFishingJudgment): void {
+  private flashJudgmentText(
+    judgment: QizhenFishingJudgment,
+    errorMs: number,
+  ): void {
+    const direction = judgment === "great" || judgment === "good"
+      ? errorMs < 0
+        ? " · 稍早"
+        : " · 稍晚"
+      : "";
     const text = this.track(
-      this.scene.add.text(this.anchor.x, this.anchor.y - 42, JUDGMENT_WORDS[judgment], {
+      this.scene.add.text(
+        this.anchor.x,
+        this.anchor.y - 42,
+        `${JUDGMENT_WORDS[judgment]}${direction}`,
+        {
         fontFamily: "monospace",
-        fontSize: "17px",
+        fontSize: "19px",
         fontStyle: "bold",
         color: JUDGMENT_CSS[judgment],
         stroke: "#07111c",
         strokeThickness: 4,
-      }).setOrigin(0.5).setDepth(this.depth + 2),
+        },
+      ).setOrigin(0.5).setDepth(this.depth + 2),
     );
     if (this.reducedMotion) {
       this.delay(420, () => this.release(text));

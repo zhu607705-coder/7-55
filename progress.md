@@ -1,26 +1,79 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
-## 2026-08-19 第三章剧院取票机修复
+## 2026-08-22 全章节无朝向互动与第四章边界单文件打包
 
-- 根因：`TheaterInteriorScene` 把 `cc98TicketCommissionPhase: "delivered"`（手机抢票回执已送达）误判为实体票已经打印，在取票机交互提交给 `ChapterThreeTheaterController` 前直接显示“取票已完成”，导致取票码面板无法打开、`theaterTicketHalfB` 不会入库。
-- 修复：取票机交互统一提交 `rpg_theater_ticket_kiosk_requested`，由控制器按现实模式、手机抢票阶段和真实票券物品状态决定打开输入面板或提示已打印；手机抢票成功且尚无实体票时，场景提示改为“输入取票码”。
-- 真实浏览器链路：Blink `1280×720` 从 `c3-theater-code` 检查点进入，初始确认手机回执为 `delivered` 且票根 B/临时票均不存在；角色按真实碰撞走到取票机后成功打开 `code` 面板，提交 `0832` 后单次打印，票根 A/B 自动合成为 `temporaryTheaterTicket`，面板关闭，console error 为 `0`。
-- 朝向判定：剧院海报、取票机、右侧读票器、节目单、灯控台、后台道具箱、票据扫描器、通风口和出口统一使用最近可见边缘与 `90°` 宽松朝向；正下方朝上、正右方朝左，处于右下等斜向区域时两个相邻的朝向都接受。最近边缘恰好形成垂直边界时，仅用目标中心区分正确象限，避免把背向操作一并放行。
-- 票据扫描口：扫描器可操作距离从 `56` 放宽到 `72`；Blink 从 `c3-theater-prop` 进入后，在实际出生点验证朝上/朝左有效、朝下/朝右无效。临时观演票投放成功后被消费，道具箱写入已开启并发放荧光粉刷，console error 为 `0`。
-- 节目单顺序：删除深色剧院场景中直接显示“追光 → 开场 → 谢幕”的整条残影答案。深色模式点灯控台时只会引导玩家打开道具栏；三张节目单在道具详情的“简介”栏分别以荧光字显示 `顺序：1 / 2 / 3`，浅色模式不显示编号。
-- 节目单浏览器验收：Blink `1280×720` 从 `c3-theater-program` 进入，浅色查看追光节目单时无编号；切到深色后逐张打开追光、开场、谢幕，分别读到 `顺序：1`、`顺序：2`、`顺序：3`，发光文字样式生效，旧完整答案不在 DOM 中，console error 为 `0`。截图目检后连同临时浏览器配置和脚本一并清理。
-- 后台空格判定：后台道具箱补齐与源图一致的 `96×95` 可见边界，不再退化为中心点距离；扫描器保留 `42×78` 可见边界和 `72` 距离。宽松范围相接时由共享唯一最近目标选择器按“可见边缘距离 → 中心距离 → 稳定 id”分界，候选数组顺序不会改变归属；站在扫描器出生点归属扫描器，移动到箱体正面后稳定归属道具箱，两处按空格均触发各自反馈。
-- 出口与节目单：剧院出口交互框改为完整 `244×99` 门洞，从 `y=842` 覆盖到世界最下边 `y=941`，底边左、中、右均可离场。开场、追光、谢幕三张节目单改为四向均可拾取，不再执行朝向门槛。
-- 全局空间交互：图书馆、食堂与第四章教学楼的活动目标统一采用最近可见边缘和 `90°` 宽松朝向；启真湖继续保持四向均可。剧院、图书馆、食堂、启真湖的空格目标统一走同一个稳定唯一选择器；教学楼在可能相接时按剧情目标、隔断、通行口三类顺序只占用一个交互类别。道具落点重叠时也增加目标中心距离与稳定 id 决胜，避免相同优先级随数组顺序漂移。
-- 范围浏览器验收：Blink `1280×720` 实际完成后台扫描器空格反馈、移动到箱体右下方朝左触发道具箱、节目单无朝向拾取；出口底边左/中/右、后台目标正面归属及分界顺序独立检查通过。图书馆 `7`、食堂 `18`、启真湖 `2`、教学楼 `1` 个当前活动目标的实时合同分别确认宽松朝向或四向合同，教学楼无交互类别重叠；console error 与非预期 warning 均为 `0`。
-- 静态与构建验证：`npm run typecheck`、`npm run qizhen:validate-journal`、`npm run chapter4:validate-topology`、`npm run build:single` 与 `npm run verify:single` 均通过；单文件为 `192930530 bytes`、`2` 个内联脚本和 `1` 个内联样式，临时 Chrome 配置、截图与 QA 脚本已清理。
+- 正式构建：按用户最新要求运行 `npm run build:single`。该命令先执行 `tsc --noEmit`，随后用 Vite Demo 模式内联资源；共转换 `606` 个模块并成功重建 `demo/index.html`。
+- 单文件产物：`246582539 bytes`，修改时间 `2026-08-22 16:28:03 CST`，SHA-256 `259583dcb1d4142d590426c12b0667d8ce313e6389b5d54bbda5cae079d27f9f`。
+- 结构验证：`npm run verify:single` 通过，产物包含 `2` 个内联脚本与 `1` 个内联样式，并验证 `campus-map-demo.html`、`chapter4-monument-stair-demo.html` 和 `index.html` 三个入口。
+- 合同回归：全章节无朝向互动检查通过 `256` 个活动文件且 `forbiddenMatches=0`；第四章拓扑、运行时与 Task 14 分别通过 `2495 / 1125 / 220` 项断言。
+- 浏览器验证：Chromium 通过本地 HTTP 打开新单文件的 `c4-755-room204-1850` 检查点，页面标题为 `7:55`，React 根节点数为 `1`，Phaser canvas 数为 `1`，场景为 `duan_yongping_temporal_maze`，A3 活动物理边界为 `{x:3728,y:0,width:1672,height:941}`，`contractFailures=[]`。控制台为 `0 error / 0 warning`，网络记录只有 `index.html` 一个 `200 OK` 请求。
+- 直接文件验证边界：Playwright CLI 明确阻止 `file:` 协议，因此没有取得新的自动化 `file://` 运行证据；单文件结构验证和 HTTP 零外部资源运行均已通过。用户可直接打开新产物进行人工核对。
+- 交付边界：本轮只重建正式 Demo 和普通构建目录，没有创建 ZIP，也没有执行 Git 暂存、提交、合并或上传。
 
-## 2026-08-19 GitHub 交付验证
+## 2026-08-22 全章节互动取消朝向门槛与第四章逐层地图硬边界
 
-- 交付方式：从最新 `origin/main` 创建隔离 worktree 和 `codex/20260819-phone-evidence-settings` 分支，保留原始开发目录的未提交状态。
-- 静态与构建验证：`npm run typecheck`、`npm run chapter4:validate-topology`、`npm run audio:chapter3:verify`、`npm run build:single`、`npm run verify:single` 和 `git diff --check` 通过；单文件产物为 `192930557 bytes`，第三章启真湖音频合同为 `77/77` 就绪。
-- 真实浏览器链路：在重建后的 `demo/index.html` 中完成第 3.5 章恢复工具、CC98 发帖时间、照片证据组合，以及第四章设置后台记录、CC98 三项资料导入、微信群文件和路线讨论保存。任务正确推进到“根据夜间人员动线重建纸条路线”，最终 console error 为 `0`。
-- 视口与产物边界：在 `1280×720` 和 `390×844` 检查手机界面与横屏 RPG 切换。本轮不提交 `.playwright-mcp`、`output/web-game`、`godot/`、`public/godot/`、Godot 同步与导出脚本、重复项目报告和忽略的 `demo/index.html`；远程启真湖钓鱼音频及其生成清单保持不变。
+- 全局规则：人物朝向只服务移动输入、步行动画、角色绘制以及皮划艇运动、追逐和尾流表现。观察、拾取、对话、门与设备使用、物品拖放、楼梯和电梯等所有剧情互动不读取人物朝向。
+- 共享契约：`RpgInteractionContract.ts` 删除 `requiredFacing`、`facingToleranceDegrees`、`wrong_facing` 和面向目标辅助函数；空间核验只保留目标、模式、道具、真实可见边缘距离与拖放命中区域。`RpgGameHost` 的第四章空间证明同步删除 `cardinalFacing`。
+- 场景覆盖：第二章图书馆、第三章食堂、剧院和启真湖、第四章教学楼的互动目标与提示全部移除朝向门槛。启真湖的连续船头角仍用于划桨运动和追逐计算，不进入抛竿、拾取、开柜、喂天鹅或其他剧情互动判定。
+- 第四章边界：Phaser 物理世界与摄像机在每次楼层切换、恢复输入前同时锁定到当前楼层的 `1672×941` 源像素范围。世界坐标分别为 A1 `x=0..1672`、A2 `x=1864..3536`、A3 `x=3728..5400`、三层均为 `y=0..941`；两段 `192px` 楼层间隙不可进入。
+- 回归机制：新增 `scripts/verify-rpg-facing-agnostic.mjs`，扫描活动 `src` 中的旧朝向字段、拒绝结果、辅助函数和面向提示；接入 `package.json` 与 `.github/workflows/web-ci.yml`。该机制创建后已立即执行，扫描 `256` 个活动文件，`forbiddenMatches=0`。
+- 静态验证：`npm run chapter4:validate-topology` 通过 `2495` 项断言，`npm run chapter4:validate-runtime` 通过 `1125` 项断言，`npm run chapter4:validate-task14` 通过 `220` 项断言；`npm run verify:rpg-facing-agnostic`、`npm run typecheck` 与普通生产构建 `npm run build` 全部通过。Vite 仅保留仓库既有的大 chunk 提示。
+- 边界实机验证：Chromium `1280×720` 对 A1、A2、A3 分别执行左、右、上、下四次持续向外移动，共 `12/12` 次都精确停在当前楼层物理边界；没有进入层间空白，也没有出现 console/page error。
+- 无朝向实机验证：图书馆入口记录在人物朝下时可打开；剧院售票机在人物朝左且目标位于右侧时可触发；A3 教室参照目标在人物背向目标时可写入 `a3_reference_observed`。三次互动后人物视觉朝向均保持原值，console/page error 为 `0`。
+- 交付边界：按用户当前要求，本轮没有运行单文件打包，没有改写 `demo/index.html`，也没有执行 Git 暂存、提交、合并或上传。
+
+## 2026-08-22 启真湖可抛竿水纹、船位容错与固定判定线
+
+- 问题定位：旧视觉把多枚收缩水纹环叠在同一浮标上，玩家缺少固定的时机参照，连续音符和长按音符的读取负担较高。
+- 水纹根因：场景创建了目标 `pulse`，但初始设为不可见后没有在活动目标更新中重新显示；浅色操作下的钥匙、网框、鱼群和纸条抛竿点因此缺少可读轮廓。
+- 水纹重构：四个可抛竿目标改为金色主轮廓、白色内环、金色外环和白色中心点，深色观察水纹保持青色区分。最近或当前手持道具可接受的水纹显示一个准确目标名称，其余不显示常驻文字。
+- 船位容错：可抛竿水纹的真实可见边界固定为 `180×84`，皮划艇到最近边缘的允许距离放宽到 `220px`，对应目标中心水平约 `310px`、垂直约 `262px`；道具拖放框为 `360×240`。深色观察水纹为 `156×72 + 190px` 距离容错。船头朝向继续不参与钓鱼抛竿判定。
+- 视觉重构：`QizhenFishingRhythmVisual` 新增画面中下部的固定节奏轨道、白色高对比「判定线」、右向左移动的 `A / S / D` 彩色音符、节拍刻度和方向箭头。音符进入可命中窗口时判定线变为金色，命中后按结果颜色闪示，反馈文案改为「精准 / 良好·稍早或稍晚 / 命中·稍早或稍晚 / 错过」。
+- 长按与降动效：长按音符命中后锁在判定线，右侧水平进度条显示剩余持续时间。`prefers-reduced-motion` 使用离散音符位置和整数拍倒计时。浮标水纹保留为低透明度场景反馈。
+- 规则边界：谱面、`96 BPM`、`70 / 130 / 190 ms` 判定窗口、辅助模式 `230 ms`、张力模型、道具结算和存档均未改动；固定轨道与原判定引擎读取同一个单调时钟。权威契约已同步到 `docs/chapter-3-qizhen-fishing-rhythm.md` §7。
+- 浏览器验证：Blink `1280×720` 实景中检查了音符接近、精准命中和长按进度三种画面；精确同时钟输入得到 `perfect / tension=50`，长按进度画面为 `judged=8 / tension=50`。Blink `390×844` 粗指针视口中三枚触控键与节奏轨道无重叠，通过共享 `rpg_qizhen_fishing_input` 通道点按「S 提竿」得到 `perfect / judged=1 / tension=50`。Blink、Firefox、WebKit 均复验最终金色三层可抛竿水纹；手机视口中水纹与底部控制区无重叠。真实物品栏拖放在船与目标中心相距 `280px` 时成功启动 `locker_key`，相距 `340px` 时仍被距离门禁拒绝。最终 Blink、WebKit 和手机会话为 `0 error / 0 warning`；Firefox 为 `0 error / 3 warning`，分别来自兼容性探针主动释放 WebGL context 与无用户手势时 Web Audio 自动启动受限，不影响本轮交互。
+- 静态与交付边界：`npm run typecheck` 与普通生产构建 `npm run build` 通过，Vite 仅报告仓库既有的大 chunk 提示。按用户要求，本轮没有运行单文件打包，没有改写 `demo/index.html`，也没有执行 Git 提交或上传。
+
+## 2026-08-22 第三、四章字幕与任务提示单一归属
+
+- 归属规则：共享任务栏只显示当前目标与按需展开的提示；RPG 字幕只保留剧情对白、旁白、线索结果、失败、操作纠错和关键阶段结果；道具拖放的接受或拒绝只由物品栏反馈呈现。场景不再为同一次状态变化重复播报任务更新。
+- 第四章：`RpgGameHost` 停止把每次 7:55 intent 的接受结果和协议错误自动转成玩家字幕，技术拒绝写入调试输出；保留场景/覆盖层独占展示清单作为运行时契约元数据。教学楼场景删除楼层到达、重复拾取、重复放置和重复成功字幕，并消除道具栏与场景同时报错；任务动作改写进当前任务标题，仍只保留三条既定按需提示。错位楼梯首次进入只播报空间异常，不再附带操作步骤。
+- 第三章：食堂新增按餐盘、队伍、调饮、点餐、取餐和出口防守事实切换的细粒度任务；校园、食堂、剧院和启真湖删除地点标题、模式切换、阶段更新、逐步划桨、拾取确认、前往下一目标和抵达确认等任务型字幕。启真湖道具链完成文案只陈述本次结果，下一步继续由任务栏负责；锁定航道只在玩家实际撞到未开放入口时给出一次纠错。
+- 配音保护：剧情对白队列未删除，第三章语音合同仍登记 `37` 条台词，`unrecorded=0 / stale=0 / errors=0`。完整音频门禁保持既有 `76/77` 状态，唯一缺项仍为 `music_qizhen_fishing.mp3`；运行时继续复用现有 `96 BPM` 音乐和程序节拍降级，本次未伪造专用音乐产物。
+- 静态与契约验证：第三章五个活动场景的主动 `task` 字幕发射扫描为 `0`；JSON 解析、目标文件空白检查和 `npm run typecheck` 通过。`npm run chapter4:validate-story`、`npm run chapter4:validate-runtime`（`1171` assertions）与 `npm run chapter4:validate-task14`（`215` assertions）通过。
+- 浏览器抽查：重建后的单文件分别从 `c3-canteen-entry`、`c3-theater-program`、`c3-qizhen-open-water` 和 `c4-755-bakery-1225` 进入。四处均由共享任务栏显示唯一当前目标，关闭 DEV 后没有并行任务字幕；食堂提示按需从 `0/1` 展开到 `1/1`，面包坊为既定 `0/0`。抽查还修正了剧院任务无障碍名称的双句号，启真湖与第四章页面 console error/warning 均为 `0`。
+- Demo：`npm run build:single` 与 `npm run verify:single` 通过；`demo/index.html` 为 `246584150 bytes`，SHA-256 为 `20f6da4c881620188afe444894907010306d5be9ab43eea391d15e11b6e8d719`。按用户要求，本轮没有执行三层浏览器碰撞与遮挡校验。
+
+## 2026-08-22 MiniMax H3 食堂上车、755 米骑行与剧院抵达衔接
+
+- 范围纠偏：按当前控制器和运行时规格，链路固定为“东区大食堂外支付并上车 → 真实 0–755 米 Three.js 骑行 → 求是大讲堂外 `campus_theater_junction`”。剧院大厅仍需入口交互后由 `ChapterThreeTheaterController.enterTheater()` 开启。
+- 实机母帧：从 `c3-canteen-bike`、`c3-canteen-theater` 和追逐调试页 `0m / 377m / 700m / 755m` 截取 6 张无 HUD 母帧；生成 6 张 `1920×1080` 场景锚点，覆盖上车起点、骑行首帧、沿途核对、755 米终点和剧院外部回接。
+- 主体锚点：从仓库当前精灵生成玩家、蓝色自行车、骑行动作、纸条飞行动作、白衣 NPC、绿衣 NPC 共 6 张独立主体图；全部为 8-bit sRGB、无 Alpha，最大画布 `2048×2048`，低于用户确认的 `5760×5760` 上限。多帧图仅代表同一主体的连续动作。
+- 分镜：新增两张缺失的中间关键帧和两张三联分镜。Clip 01 为 6 秒“俯视食堂上车 → 后视骑行 0m”；Clip 02 为 7 秒“755m 终点 → 刹停下车 → 北向剧院入口”。两段分别使用蓝色外套和白色弧顶的全画面遮挡完成一次隐藏硬切，禁止交叉溶解。
+- 提示词：`docs/plans/2026-08-22-minimax-h3-canteen-755-theater-cutscene.md` 提供两段可直接粘贴的 H3 全参考六段式英文提示词、逐秒镜头、上传标签映射、返工顺序、模型验收和未来媒体 `ended` 握手边界；资产目录包含 README 和机器可读 manifest。
+- 交付边界：755 米距离、三车道、障碍、碰撞、三次机会、完成判定和存档继续由 TypeScript 控制器负责。当前 `900ms` 终点等待尚未修改，正式接入 7 秒视频时需要改为媒体结束握手。本轮没有修改运行时代码，没有重建单文件。H3 实际生成与播放验证次数为 `0`。
+
+## 2026-08-21 MiniMax H3 第三章半至第四章锚点与衔接设计（历史生成基线）
+
+> 本节记录视频生成前的 `32.40s` 方案。`2026-08-22` 已按三份实际成片改为 `43.833333s` 六阶段运行时；当前事实见后文“第三章半至第四章 H3 衔接视频拼接与接入”。
+
+- 正式与扩展双轨：按当前 Task 7 记录，正式回放保持 `snap / lake_exit / arcade / entrance`，总长 `32.40s`，使用成片 01–03；保洁员门厅和保安清楼保留为可选扩展成片 04–05，只有显式恢复 `lobby / closing`、资源加载、音频字幕节点和 `51600ms` 任务卡后才可接入。旧 DEV 偏移仍显示后两段，不作为活动时间轴证据。
+- 上传锚点：新增 `docs/assets/minimax-h3-chapter3-4/anchors/transition/`，包含 10 张成片首尾锚点与 1 张 A1 回接锚点。全部为 `1672×941`、8-bit sRGB、无 Alpha，低于 H3 `5760×5760` 上限；四张关键首尾图固定了钓线/纸条或 NPC 收束构图，其余七张保持源环境 RGB 像素不变。
+- 主体锚点：继续使用 3 张 `1024×1024` 纸条锚点和 7 张 NPC 身份/动作锚点；NPC 最大画布为 `3584×1024`。多帧动作图仍明确表示同一角色的连续动作，禁止生成多名人物或多套道具。
+- 提示词：完整五段提示词保留 H3 全参考六段结构。正式版先生成 01–03；扩展版只在重新启用时间轴后生成 04–05。上传表已改用统一的高分辨率衔接锚点，A1 回接图不占用 H3 图片槽。
+- 接缝：定义游戏到成片 01 的像素块接入、01→02 与 02→03 的出右入左动作匹配、正式版 03→任务卡→A1 的 ready 握手回接；扩展版另有 03→04、04→05、05→任务卡→A1。主体跨镜接缝禁止交叉溶解，避免纸条或 NPC 双影。
+- 真实流程检查：本地 Vite 中从 `c4-prologue` 播放到当前 `32.4s` 任务卡，点击“收下任务，进入第四章”后序幕层解除并进入 A1；浏览器 console error 为 `0`。现有 Host 仍在 `a1_2245_opening + contractReady` 后延迟 `80ms` 释放，计划中的 `240ms` 六步像素揭幕尚未实现。
+- 验证：11 张衔接锚点的数量、尺寸、8-bit sRGB、无 Alpha、文档路径全部通过；五段提示词的六段结构计数为 `5×6`，静默字段为 `10` 个 `N/A`；七张未合成环境锚点与源图逐像素 `AE=0`。本轮只修改文档和外部生成锚点，没有修改运行时代码，因此未运行 typecheck 或单文件构建。H3 实际视频尚未生成，模型输出一致性验证次数为 `0`。
+
+## 2026-08-20 第四章教学楼地图提示词与首轮素材候选
+
+- 生成范围：基于第四章剧情和三层时间迷宫玩法规格，完成 A1/A2/A3 母图、22:45/12:25/18:50/07:54/07:55 时间态、202 最后一分钟状态，以及旧钟、配电箱、204 家具与残影、剧情道具、移动隔断/203 门/导视碎片等透明精灵候选。
+- 来源边界：本轮没有把当前运行时地图、截图或精灵作为图像输入；A1 从空白提示生成，部分 A2/A3 候选只使用本轮新生成 A1 维持新素材集内部结构。
+- 交付位置：`artifacts/chapter4-map-assets-20260820/` 保存 20 张 PNG、资产清单和规则精灵表元数据；完整提示词保存在 `docs/plans/2026-08-20-chapter4-topdown-pixel-map-generation-prompts.md`。
+- 验证：逐文件检查像素尺寸和 Alpha；6 张精灵表均具有真实 Alpha，清单记录了 1671px 宽度偏差、时间态仍为无 Alpha 完整场景、楼层结构漂移、精灵锚点未校准等限制。当前素材只作为候选视觉稿，未接入运行时，也未修改碰撞和存档逻辑。
+- 范围纠偏：项目已有正式“灿若星辰”素材。本轮生成的星灯状态表和室外收束候选已从交付目录移至 macOS 废纸篓，可恢复；提示词文档已标记该部分不进入生成队列。
+- 碰撞与遮挡提示词：逐张识别现有 20 张候选图，新增一个统一入口和三个分册，共提供 20 段可直接复制的识图提示词。母图分册记录固定空气墙、真实门洞、走廊、物品名称、交互锚点与前景基线；时间态分册区分动态实体与纯光照；精灵分册记录 cell、Alpha 边界、pivot、脚部碰撞盒和深度规则。
+- 坐标验证：母图目测坐标保留 `approximate=true`；规则精灵表 cell 与 5% Alpha 边界单独标为实测。检查确认 5 张母图、9 张时间态和 6 张精灵表均有独立提示词，20 个文件名全部覆盖。当前只形成标注规格，没有写入运行时碰撞数据。
 
 ## 2026-08-18 设置桌面、CC98 学习天地与第四章自习群
 
@@ -270,6 +323,25 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 索引：新增 `docs/chapter-development-report-index.md`，统一第一关、第二章和第三章的文档入口与衔接关系。
 - 验证：第二章与第三章相关 8 个测试文件共 59 项通过；`npm run typecheck` 通过。
 - 范围：本轮只修改开发文档和进度记录，没有修改运行时代码或重新构建单文件。
+
+## 2026-08-21 第四章 Task5 集成修补（面包房顺序合同 + 第四章库存接线）
+
+- 目标：继续推进第四章 `7:55` 主线执行面，先修掉两个直接影响流程的缺口：`12:25` 面包房里“看灯→停带→取时针”的顺序合同，以及第四章六个新道具未进入通用 RPG 物品栏/图标/检查弹窗/拖拽提示体系的问题。
+- 控制器与交互合同：`src/modules/ChapterFourTemporalMazeController.ts` 新增 `inspect_bakery_conveyor_lamp` intent；`src/core/types.ts` 增加事实 `bakery_conveyor_lamp_inspected`；`src/scenes/rpg/RpgInteractionContract.ts` 改为先激活传送带灯，记录该事实后才开放时针拾取，时针未亮相前直接取不会再被合同放行。
+- 场景与 Host：`src/scenes/rpg/ChapterFourTemporalMazeScene.ts` 把传送带灯映射到新 intent；`src/scenes/rpg/RpgGameHost.tsx` 给 Chapter 4 requestId 去重集合补了生命周期清理，离开教学楼或集合过大时清空，避免长会话中无界累积。
+- 通用库存接线：把 `attendanceRecordPaper / oldClockHourHand / clockPositioningPlate / shortPryBar / universalLubricatingOil / finalMinute` 接入 `ItemId` 主集合，并同步补齐：
+  - `src/data/itemCatalog.ts` 的 inspect/use 合同；
+  - `src/components/InventoryBar.tsx` 与 `src/scenes/rpg/RpgInventoryDock.tsx` 的排序；
+  - `src/components/PixelIcon.tsx` 的像素图标与 `ITEM_META`；
+  - `src/components/ItemInspectDialog.tsx` 的检查文案；
+  - `src/scenes/rpg/RpgItemUseGuidance.ts` 的第四章拖拽提示。
+- 当前影响：第四章新道具现在可以在手机与 RPG 两侧统一显示、打开详情、给出场景内使用提示；面包房流程不再让灯和时针同时开放。
+- 静态验证：
+  - `npm run chapter4:validate-story` 通过；
+  - `npm run chapter4:validate-topology` 通过；
+  - `npm run typecheck` 通过；
+  - 定向 `git diff --check` 通过。
+- 未完成：Task6 的场景遗留逻辑还在，尤其是 `ChapterFourTemporalMazeScene.ts` 内旧电梯/旧导视死代码、Chapter 4 精灵显式 trim 消费、以及更完整的动态实体可视边界接线仍待继续收口；三层浏览器碰撞校验按用户要求不做。
 
 ## 2026-07-11 第二、三章 V1.0 并行开发收口
 
@@ -2177,61 +2249,282 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 公众号文案：六篇可选文章覆盖雨伞暂存、晚自习收尾、餐盘回收、共享单车、水鸟观察和失物招领，并按 `human-writing` 完成口语化审校。页面删除开发说明口吻，只显示正常的文章数量、日期和阅读信息。
 - 浏览器验收：Blink `1200×638` 和触屏 `390×844` 均实际跑通“微信列表 → 公众号主页 → 往期列表 → 可选正文 → 返回主页”；手机框尺寸稳定，文档无横纵溢出，页面错误与警告均为 `0`。按开发阶段约束未运行 `build:single`，未重建 `demo/index.html`。
 
-## 2026-08-19 推荐范围直接合并交付
+## 2026-08-20 MiniMax H3 第三章至第四章纸条锚点修正
 
-- 集成范围：以 GitHub `main` 为底稿，保留其食堂实现，合入剧场手机抢票、启真湖、第三章半手机取证、第四章教学楼、设置与桌面编排、照片相册、CC98、微信公众号及其主动世界观阅读内容。退休 Godot 目录、临时浏览器产物与测试输出均未纳入交付。
-- 合同验证：`npm run typecheck`、`npm run qizhen:validate-journal`、`npm run chapter4:validate-topology`、`npm run chapter4:validate-stair-materials`、`npm run map:zijingang`、`npm run audio:chapter3:verify`、`npm run build:chapter4-stairs3d`、`npm run build:single` 与 `npm run verify:single` 全部通过。
-- 单文件：离线 `demo/index.html` 构建成功，包含 `2` 个内联脚本和 `1` 个内联样式，不依赖外部 HTTP 资源。
-- 浏览器验收：Blink 桌面 `1280×720` 与手机 `390×844` 检查启真湖 Phaser 场景、第四章楼层运行时、剧场抢票、设置、微信公众号与 CC98；文档无横纵溢出，手机保持 `1:2`，RPG 画布保持 `16:9`，页面和控制台错误为 `0`。
+- 锚点：停止直接上传 `64×64` 纸条精灵，新增三张 `1024×1024` H3 专用主体锚点，分别来自运行时 `paper_flight_0`、`paper_flight_2` 和 `paper_flight_4`。原始画布以最近邻算法放大到 `768×768`，居中合成到统一的 `#273142` 无纹理背景。
+- 素材边界：移除未参与第四章序幕运行时的荧光纸条参考，纸条身份固定为暖米白纸体、棕褐磨损与右上暗红八角星形印记；青蓝风痕继续作为独立场景效果。
+- 提示词：更新五段 H3 上传表、主体定义、保留分析与动作描述；关灯段改用低照度纸条锚点，其余段按正面和弯折锚点控制形态。
+- 验证：三张派生图均为 `1024×1024`、8-bit sRGB、无透明通道；逐张下采样后的 RGB SHA-256 与相应原始精灵合成结果完全一致。未修改运行时代码，因此未运行 TypeScript 和单文件构建。
+- NPC 锚点：新增学生、保洁员、清洁车、保安与灯控动作共七张 H3 专用锚点。身份图使用 `1024×1024`，动作图使用 `1536×1024`、`2048×1024` 或 `3584×1024`，统一采用 `#667386` 无纹理蓝灰背景并保持整数倍最近邻放大。
+- NPC 源图清理：`guard_check_watch_2frame.png` 与 `cleaner_toggle_lights_2frame.png` 底部存在断开的头部残片；派生锚点仅排除 `y=116–127` 残片区域，完整人物、脚底阴影、道具和动作帧均保留。
+- NPC 提示词：三段人物场景明确声明动作表中的重复人形为同一角色的连续动作阶段，目标画面只渲染一名对应角色和一套道具，纯色参考背景不进入成片。
 
-## 2026-08-19 食堂入场动画触发修复
+## 2026-08-20 第四章 7:55 主线实施基线
 
-- 触发范围：纸条入场过场改为玩家仍在东南入口通道时触发，不再要求绕过回收台后钻入第三排桌边窄道。
-- 存档兼容：尚处于追踪或抵达食堂阶段的旧存档不再被误判为已经播放过入场动画；完成过场后的正常重进仍保持一次性播放。
-- 验证：Blink 从 `c3-canteen-entry` 正式入口状态实走东南门路径，人物在入口通道 `y=804` 自动进入过场；播放期间移动与交互锁定，结束后 `entryPaperEscaped=true`、锁定解除并恢复全部后续目标。另以缺失新字段的旧版 `tracking` 存档检查迁移，结果为 `entryPaperEscaped=false`、`trayTaskStarted=false`。`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过；离线产物含 2 个内联脚本和 1 个内联样式。
+- Git 基线：当前分支为 `codex/bike-rush-visual-redesign`，HEAD 为 `c667bab 食堂动画`。`git status --short` 显示大量既有已修改和未跟踪文件，工作区很脏；当前任务按已批准的共享工作区计划冻结现状，不创建会与并行编辑脱节的 worktree，也未执行 stage、commit、push、clean、restore 或 reset。
+- 本轮并行实施分工：asset lane 负责 `src/assets/rpg/interiors/finale/chapter4-755/**`、`finale_environment_manifest.json` 和资产脚本；state lane 负责 `src/core/**`、`src/modules/ChapterFour*`、第四章内容 JSON 与存档迁移；scene lane 负责 `ChapterFourTemporalMazeScene.ts`、`RpgGameHost.tsx`、第四章组件与样式；integration lane 负责 Quest、DEV、debug、CI、文档和生成的 `demo/index.html`。该分工仅用于本次 7:55 实施切分，不改变仓库长期文件所有权。
+- `npm run chapter4:validate-topology`：退出码 `0`，输出 `Chapter 4 topology valid: 6 legacy floors, 5 connectors, 3 runtime floors, 13 puzzles.`。该结果只验证旧版六层、五连接器和 `13 puzzles` 合同，不能证明新的 7:55 剧情、资产、碰撞或追逐流程已实现或验证。
+- `npm run typecheck`：退出码 `0`，`tsc --noEmit` 通过。
+- `npm run verify:single`：退出码 `0`；现有 `demo/index.html` 为 `192116388 bytes`，含 `2` 个内联脚本、`1` 个内联样式，白名单入口为 `campus-map-demo.html`、`chapter4-monument-stair-demo.html`、`index.html`。该结果只证明 `demo/` 中现存历史产物满足离线封装结构检查，不证明它与当前脏工作区源码同步，也不构成新 7:55 主线的已验证产物。本基线未运行 `npm run build:single`，未重写单文件产物。
 
-## 2026-08-19 食堂餐盘与点餐机判定校准
+## 2026-08-20 第四章 7:55 三层结构母图资产门阻塞
 
-- 餐盘：保留每张空桌最多两只餐盘。同桌两只固定落在同一排的左右位置，最近可见边缘以桌面中线平分判定；餐盘仍在自己的有效区内优先于食客交谈，离开餐盘区后对话恢复。
-- 点餐机：剧情点餐机保留在北侧第三窗口阿姨所在的原横坐标 `x=790`，不再误认西南侧自助机柜。原 `y=218` 中心向上校准到窗口内侧，站位仍在窗口前方可达地面；键盘范围与点击热区读取同一组坐标。
-- 浏览器验收：Blink 的 `c3-canteen-menu` 确认点餐机为 `(790, 190)`，窗口前站位空格可打开菜单。一次随机布局的 12 只餐盘分布在 8 张桌上，单桌最大为 2；4 张双盘桌均为同排左右布局，中线两侧分别命中对应餐盘。对餐盘与交谈范围按 `4px` 网格抽样，2861 个交集样本中交谈抢占为 0。`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过，离线产物含 2 个内联脚本和 1 个内联样式。
+- 全图 `precise-object-edit` 试验输出保留在 `/Users/zhuhangcheng/.codex/generated_images/01a01efd-db9b-7d32-bc34-a49ec2d97dbd/exec-799d9b98-22b3-4054-b908-f8d5d07244df.png`，尺寸为 `1671×941`。门洞中心约为 `x=782`，相对合同 `x=836` 误差约 `-54px`；楼梯约为 `x=933..1043, y=81..219`，未满足 `932,145,138,107`；A1 指定门洞位置错误，且头像、家具等非指定区域被重绘，因此未接入。
+- 确定性临时原型已删除，仅保留以下量化结论：仅局部电梯 `72×96 @ (800,63)`、楼梯 `138×107 @ (932,145)` 和门洞裁片的逐像素校验为 `AE=0`。整图原始尺寸与 `960×540` contain 目检均因中央地砖填补边界的明显拼贴缝和 A1 门洞浅色块判定为 FAIL，局部 `AE=0` 不能视为视觉合格。全图变化为 `98,646` 像素，占 `6.2698%`，声明允许区外变化为 `0`；临时原型、差异图和视口评审图已在记录结论后删除。
+- 第二次仅针对 `390×252` 中央核裁片的局部 `imagegen` 调用因长时间没有返回结果，由主代理终止；该调用没有形成可验收输出，也未作为资产结果。
+- 正式 `src/assets/rpg/interiors/finale/chapter4-755/base/a1.png`、`a2.png`、`a3.png`、同目录 `README.md` 和 `scripts/normalize-chapter4-755-assets.mjs` 均未创建。三个 `artifacts/chapter4-map-assets-20260820/base/` 候选原图保持不变；本轮没有 Godot 修改、Git 状态变更命令或 `build:single`。
+- 最小解阻条件：提供三张人工校正母图，或提供支持 mask 与源像素坐标锁定的局部编辑能力；三层必须同时满足主电梯中心 `x=836`、有效门片 `72×96`、楼梯边界 `{x:932,y:145,width:138,height:107}`，A1 还需真实可见且净宽至少 `62px` 的面包坊门洞。正式解阻以创建 `src/assets/rpg/interiors/finale/chapter4-755/base/a1.png|a2.png|a3.png` 并满足量化与视觉合同为准；九张状态图修订能力必须可复用到同结构资产。质量门不得通过降低坐标、边界连续性或视口观感要求来绕过。
 
-## 2026-08-19 食堂 DEV 点餐过场与深色坐标同步
+## 2026-08-20 第四章 7:55 剧情合同与 v25 存档迁移
 
-- DEV 点餐节点不再预先写入“队伍已后退”，而是以宣传饮料已放置、队伍未移动的状态进入食堂，由正式场景补播同学后退并通过控制器写入完成事实。
-- 点餐机的浅色提示、深色观察、空格目标、点击热区和调试输出统一读取 `CANTEEN_ORDERING_KIOSK`，避免模式切换后回到旧坐标。
-- 浏览器验收：Blink 从 `c3-canteen-menu` 直跳后确认 `queueGapOpened=false`，第三列同学初始纵坐标为 `[246, 266, 286]`；过场后整体后退到 `[282, 302, 322]` 并写入完成事实。切换深色模式后，当前目标仍为 `(790, 190)` 的第三窗口点餐机，空格正常打开菜单并记录深色观察线索。`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过，离线产物含 2 个内联脚本和 1 个内联样式。
+- 内容合同：新增 `chapter4-755.content.json`，固定 13 个有序阶段、6 个时间态、首次拨钟的原子时间源切换、A2/A3 教室复原、5 区灯控、保安状态、17 项物品事务、校园卡与纸条两个签到目标和 07:55 完成不变量。活动合同不包含旧 `08:00` 或 `B2-04` 终局。
+- 状态与物品：新增新主线时间权威、世界/手机时间、204 教室摆放、灯控、追逐、签到与完成状态，以及签到记录纸条、旧时针、钟面定位片、短撬棍、通用润滑油、最后一分钟六项物品。旧控制器字段保留在显式 Task 5 兼容边界内，v25 水合会清空旧谜题事实。
+- 存档迁移：版本由 `24` 升至 `25`。v24 未开始存档进入新开场；进行中存档恢复到 A1 开场检查点并清除第四章不兼容事实；已完成存档迁移到可信 `07:55` 完成态。迁移探针同时确认主存档损坏时使用上一份快照，以及保存时关闭控制中心、物品栏和选中物品。
+- 验证：`npm run chapter4:validate-story` 与 `npm run typecheck` 通过；旧 `08:00/B2-04`、错误完成秒数、`campusCard` 被消耗三个临时负例均被 validator 拒绝。拥有路径 `git diff --check` 和新增文件行尾空白检查通过；临时夹具已删除。按任务约束未运行 `build:single`，未修改 `demo/index.html`。
 
-## 2026-08-19 食堂 DEV 守出口与自行车切换修复
+## 2026-08-20 第四章 7:55 合同与水合质量修补
 
-- 节点同步：删除已经脱离正式玩法的“气泡减速验收”和“暗色提示验收”文案与伪进度，保留稳定节点 id 并改为正式 60 秒实时守出口的开始、中段、末段。三个节点分别从 `0 / 30 / 50` 秒启动真实模拟，纸条速度、剩余时间、冲刺冷却和折返路线闪现继续读取同一运行时。
-- 切换崩溃：修复守出口场景关闭时 Phaser 已释放玩家 Arcade Body、运行时仍调用 `Sprite.setVelocity()` 的卸载竞态。清理方法改为幂等并直接检查 Body；从食堂切换校园地图不再触发 `Cannot read properties of undefined (reading 'setVelocity')`。
-- 自行车节点：`c3-canteen-bike` 继续从正式 `chase_ready` 状态进入食堂门外，保留三只目标餐盘已回收、2 元工资和油渍纸巾，节点说明明确为“深色读码 → 浅色擦锁 → 支付 2 元”。
-- 浏览器验收：Blink 在同一 DEV 会话依次切换守出口开始、中段、末段，运行时分别显示约 `59 / 29 / 9` 秒，三段均为真实 `exit_blocking` 且旧推车命中数为 `0`。随后点击“解锁自行车”，活动 Phaser 场景从 `canteen-interior` 正常切换为 `campus-bootstrap`，页面无运行错误；继续完成读码、擦锁和付款后进入 `chasing`，工资被消费并挂载 755 米追逐界面。`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过，离线产物为 `192932587 bytes`、2 个内联脚本和 1 个内联样式。
+- 母图合同：validator 现要求每个 `phaseContracts[*].floorPlateIds` 为非空、无重复的字符串数组，并要求每个 ID 属于该阶段引用的 `timeState.plateIds`。该子集规则允许共享 `0754_blackout` 时间态的阶段按所在楼层选用母图。`exterior_closure` 已补为 `a1_0755_morning`。
+- v25 水合：六项第四章物品统一由规范化后的 `phase`、`factIds` 和 `completed` 收敛。完成态会保留签到纸条并清除已消费组件；`return_to_clock` 会恢复缺失的 `finalMinute`；清洁车修复后会清除短撬棍并保留待用于钟齿轮的润滑油。越过 `opening_handoff` 的阶段会强制 `prologueSeen = true`，全局 `campusCard` 不受该规则修改。
+- 负例与探针：空 `floorPlateIds` 和跨时间态母图 ID 两个负例均以退出码 `1` 被拒绝。v25 异常水合探针确认完成态旧时针为 `false`、其余已消费组件清除、签到纸条与校园卡保留、返回旧钟阶段 `finalMinute = true`、进阶阶段序幕标记为 `true`，以及维护阶段撬棍/润滑油状态收敛。
+- 最终验证：`npm run chapter4:validate-story`、`npm run typecheck` 与目标文件 `git diff --check` 均通过；新增 validator 无行尾空白，全部临时负例和探针文件已删除。按任务约束未运行 `build:single`，未修改 `demo/index.html`。
 
-## 2026-08-19 小剧场入口与验票交互校准
+## 2026-08-20 第四章 7:55 控制器、投影与单一 Host 写入口
 
-- 校园入口：将第三章剧院入口从校园东侧旧坐标迁到月牙楼正南方的小剧场，入口标记为 `(3300, 1445)`、主路安全站位为 `(3300, 1360)`；名称统一为“剧院”，入场动作和追逐结束后的任务提示不再使用“求是大讲堂/剧场”。校准脚本与运行时清单共同保存新坐标，地图验证确认站位仍连接校园主道路网。
-- 剧院设施：按当前主角 `128 × 0.65` 的实际显示高度，将检票员、验票机、互动中心、热点和拖放框向下移动半个角色高度（取整 `42px`）。依照后续要求，两组设施碰撞保持原来的 `633–786` 与 `650–786`，不随画面下移。
-- 道具拖放：剧院五个物品目标（海报玻璃、验票机、灯控台、后台扫描口、通风口）显式声明拖放不检查朝向；落点范围、玩家距离、道具、现实模式和剧情阶段仍照常校验。空格和场景点击继续使用原有宽松朝向规则。
-- 浏览器验收：Blink `1280×720` 从 `c3-canteen-theater` 在新站位看到“剧院 · 空格键 进入剧院”并正常进入；运行时确认检票员/验票机显示中心约为 `y=723 / 732`，碰撞仍为旧坐标。随后在 `c3-theater-prop` 将主角放在扫描口右下方并故意朝右，临时观演票仍被扫描口接受、消耗并打开道具箱，页面与控制台错误为 `0`。`npm run map:zijingang:topdown`、`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过；离线产物为 `192932928 bytes`、2 个内联脚本和 1 个内联样式。
+- 状态事务：`ChapterFourTemporalMazeController.resolve755Intent()` 成为新 7:55 路径的唯一剧情写入口。入口交接、现实模式、阶段白名单移动、纸条、旧钟、时针、204 教室 12 项复原、定位盘、撬棍、轮罩、润滑油、灯控、追逐、最后一分钟、双目标签到和室外收束均在控制器中校验当前阶段、位置、模式、事实、物品与重复调用。拒绝结果不写入状态；阶段转换一次性更新时间权威、时间态、世界时间、手机时间、可信位、保安状态、楼层、房间和 RPG checkpoint。
+- 正常入口：`complete_prologue_handoff` 在通用序幕闸门前处理，只接受第三章半恢复回放已解锁且第四章仍为 `opening_handoff` 的状态；成功后写入 `prologueSeen`、A1 大厅和开场 `81900 / 28523 / untrusted` 合同。`move_to_location` 与 `record_checkpoint` 仅接受阶段白名单内的 A1/A2/A3 安全位置。
+- 物品与水合缺口：Task 5 执行时补齐 Task 4 漏掉的 `cart_wheel_cover_opened` 和 `paper_temporarily_out_of_inventory` 事实。开轮罩会消耗短撬棍；偷分钟前的 `blackout_light_grid` v25 水合保留签到纸条，偷纸事实存在时清除纸条，`final_chase` 继续保持纸条离开物品栏，202 投影回收最后一分钟时恢复纸条。校园卡不受第四章物品收敛影响。
+- 投影：`selectChapterFourMazeProjection()` 从新状态输出时间态、活动时间整图、当前底图、可用目标、动态碰撞、遮挡、NPC、保安、门状态和安全 checkpoint。合法 A1/A2/A3 位置找不到同层时间整图时分别回退到稳定结构底图 `a1_base / a2_base / a3_base`；`activePlateIds` 仍保留内容合同列出的时间态整图。Task 3 资产 manifest 必须沿用这三个稳定 ID。
+- 交互合同：新增 typed `CHAPTER_FOUR_755_INTERACTION_TARGETS`。已知矩形全部标记 `approximate=true`、`contractPending=true`、`collision=false` 并记录文档来源；204 的 12 个半开槽位逐一记录对应 `acceptedPieceId`。撬棍、清洁车轮罩/油瓶/车轮、读卡器和纸槽没有可辩护坐标，使用 `bounds:null + activation:contract_pending`，并从活动投影排除。旧钟重叠插槽由阶段投影保证一次只开放一个。共享落点命中统一为右/下边界不包含的半开矩形。
+- Host 与功能入口：`RpgGameHost` 只订阅 `rpg_chapter4_755_intent_requested` 作为新第四章剧情写请求；非空 `requestId`、会话内重复请求和 intent payload 会在调用控制器前校验，统一发布 resolved/feedback。序幕结束与现实模式切换也走该事件。旧校时页面在 `FeatureAccess` 中保持不可达，Settings、微信和 CC98 的普通入口不受第四章阻塞；`StatusBar` 在新第四章活动时只读 `phoneStatusTimeSeconds` 和可信位。
+- 验证：`npm run chapter4:validate-story` 通过，输出 `13 phases, 6 time states, 5 light zones, 17 item operations`；`npm run chapter4:validate-topology` 通过，输出仍为旧拓扑校验器的 `6 legacy floors, 5 connectors, 3 runtime floors, 13 puzzles`；`npm run typecheck` 通过。纯 Node/内存探针跑通正常序幕入口、越序拒绝无写、完整主线、首次拉钟原子切换、两种签到顺序、追逐失败只恢复 checkpoint、v25 轮罩/偷纸双分支水合、A1/A2/A3 底图选择、临时坐标标记和半开边界语义。
+- 后续兼容债务：Task 6/7/8/10/13 仍需把 `ChapterFourTemporalMazeScene` 改为提交新 intent、向投影传完整 `GameState`、消费新 plate/target/dynamic-layer 字段，并为六个无坐标目标按可见精灵落位；当前旧 scene、Quest、DEV 和 phone consumer 仍依赖只读/无写的 deprecated 字段或 controller no-op 签名。该兼容层不能作为新主线权威，后续迁移完成后应删除。
+- 开发约束：本轮没有运行 `build:single`，没有修改 `demo/index.html`、package、Quest、DEV、phone page 或 ChapterFourTemporalMazeScene，也没有执行 stage、commit、push、merge、rebase、clean、restore 或 reset。
 
-## 2026-08-19 餐盘原始分布与临时范围调试
+## 2026-08-21 第四章 7:55 结构母图阻塞复核
 
-- 分布恢复：餐盘重新从 14 张空桌提供的 56 个独立桌角位中直接洗牌抽取 12 个，不再先按每桌两个容量抽桌、也不再强制双盘位于同一排；因此恢复最初允许同桌随机出现 1–4 只的分布。
-- 平分规则：同桌多个餐盘继续按可见边缘最近距离分配交互所有权。两只的公共边界位于正中，四只分成四个象限，三只按缺角方向形成两条半线和一条对角线；同一列上下相邻且范围重叠的两张桌，额外按两桌中心之间的水平中线平分，左右相邻桌不应用跨桌分区。餐盘优先级仍高于重叠的食客交谈范围。
-- 临时调试：Vite 开发环境默认显示餐盘范围，`?rpgTrayRanges=0` 可关闭；离线/生产构建使用 `?rpgTrayRanges=1` 开启。青框为实际空格距离范围，黄框为距离计算实体，紫框为鼠标点击区，绿线为同桌或上下相邻桌的平分边界，每只餐盘同时标出 id 与桌号。
-- 验证：Blink `1280×720` 随机得到 12 个互不重复桌角位，其中一张桌出现 3 只餐盘；12 组范围框和桌号标签均可见。另一次随机布局中，`table_2_5` 与 `table_3_5` 同列相邻，分界 `y=513.5` 上方命中上桌餐盘、下方命中下桌餐盘；页面及控制台错误为 `0`。`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过；离线产物为 `192935736 bytes`、2 个内联脚本和 1 个内联样式。
+- 局部生成复核：A1 中央 `390×252` 裁片的唯一新 `imagegen` 输出保留在 `/Users/zhuhangcheng/.codex/generated_images/01a01e9c-f95f-78a1-a337-24004156f07d/exec-72287c73-f48a-4a37-b125-52e9f1c7394c.png`，原始尺寸为 `1560×1008`，即目标裁片的整数四倍。使用最近邻缩回 `390×252` 后再次目检，电梯仍约位于局部 `x=52` 中心而非目标 `x=116`，旧钟和楼梯的位置、宽高也未满足三个目标矩形；墙面、地砖和边缘发生整体重绘，因此未合成到 A1，临时复验图已删除。
+- 确定性路径：对仅使用 A1 v01、A2 v02、A3 v01 候选像素的无缝重构再做一次受限可行性审查，仍未形成可同时通过 `1:1`、`960×540`、坐标和接缝门槛的 A1 原型。子任务只留下的 `/tmp/a1.png`、`/tmp/e72.png`、`/tmp/s138.png` 输入副本已逐一删除；没有正式资产或脚本写入。
+- 源文件检索：排除 `.git`、`node_modules`、`dist` 和 `demo` 后检查了当前树的 `451` 个 PNG，并检查常见分层格式与 Git 图像路径历史。没有 PSD、Krita、Aseprite、XCF、ORA、TMX 等分层源，也没有隐藏的校正版。旧运行时三层图确有精确 `x=836` 电梯门片和既有楼梯合同，但计划限定 Task 1 只使用新候选，且旧 A1 仍没有可见面包坊门洞，因此没有拿旧底图替换新素材。
+- 依赖结论：Task 2 必须复用 Task 1 的同一交通核与门洞修正，Task 3 必须从校正母图重标碰撞/遮挡；Task 6 又明确要求 Task 3 与 Task 5 同时通过。Task 1 当前回到待资产输入状态，Task 2–3 与 Task 6–16 不提前写入。最小解阻输入仍为三张人工校正母图，或一次能锁定 mask、源像素坐标与输出尺寸的编辑结果。
+- 结尾素材预检：当前仓库无法唯一定位用户已完成的“灿若星辰”正式资产或 consumer。`closing_a/b` 属于室内序幕，`finale_arrival_arcade` 属于入楼环境，校园总底图也没有结尾灯交互；三者均未冒充正式来源。Task 13 到达该接线点前仍需要唯一文件路径、`assetId` 或 `sequenceId`，且不会生成替代素材。
+- 开发约束：本次复核未运行 `build:single`，未修改 `demo/index.html`，未创建 Task 1 正式资产，未开始 Task 6，也未执行 stage、commit、push、merge、rebase、clean、restore 或 reset。
 
-## 2026-08-19 食堂最近目标与宽松朝向恢复
+## 2026-08-21 第四章结构母图人工标注台
 
-- 目标选择：删除同桌和上下相邻桌的专用分区规则，恢复为所有当前有效目标按可见边缘距离选取最近者；不引入桌级焦点、切换迟滞或餐盘类型优先级。
-- 朝向顺序：空格先确定唯一最近目标，再使用共享 `90°` 宽松朝向锥判断是否执行；人物位于目标斜向时，两条相邻的基本朝向均可接受。
-- NPC 范围：坐着的学生改用贴近人物身体的 `32×44` 目标框和 `38px` 外扩距离，避免原有大范围覆盖相邻空桌餐盘。餐盘的青色空格范围、黄色距离实体和紫色点击区调试框继续保留，绿色平分线删除。
-- 验证：`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 通过；单文件产物成功生成并确认包含 `2` 个内联脚本和 `1` 个内联样式。
+- 标注入口：在忽略的候选素材包中新增 `artifacts/chapter4-map-assets-20260820/chapter4-structure-annotation.html`，直接加载 A1 v01、A2 v02、A3 v01 三张 `1672×941` 原图。网页只叠加 SVG 标注层，不裁切、拉伸、重编码或写回 PNG；素材包 README 已补充离线使用与导出流程。
+- 交互：支持三层切换、矩形与点位、物体名称、旁注、空气墙、前景遮挡、可通行区、保持不变区等分类、合同参考框、缩放、选中编辑、删除、撤销、当前图二次确认清空、浏览器本地草稿、摘要复制以及 JSON 下载/导入。
+- 坐标合同：所有显示缩放均反算到源像素；点导出整数 `{x,y}`，矩形统一为半开 `{x,y,width,height}`，拖框低边界向下取整、高边界向上取整。只读合同框固定为电梯门洞 `{x:800,y:63,width:72,height:96}` 与楼梯 `{x:932,y:145,width:138,height:107}`。
+- 数据边界：JSON 固定为 `chapter4-map-annotations/v1`，包含三个候选的仓库相对路径、尺寸与 SHA-256，不包含绝对路径或图片像素。导入前校验 schema、坐标空间、三图 ID、文件名、尺寸、SHA、坐标范围、总数上限与每图上限；文本只通过 `textContent` 渲染，页面没有外部字体、CDN、脚本、遥测或上传请求。
+- 浏览器验收：本地 HTTP 下实测 A1 拖框、A2 点标、A3 切换、选中编辑入口、撤销、刷新恢复、摘要复制、JSON 下载和重新导入；控制台错误与警告均为 `0`。桌面 `1440×900` 与移动 `390×844` 完成目检，移动文档宽度等于视口宽度 `390px`，原图天然尺寸仍为 `1672×941`。
+- 清理与运行：桌面/移动 QA 截图、Playwright 快照、日志和测试 JSON 已在目检后删除，重复的 `4175` 测试服务器已停止。当前人工复核入口由 `127.0.0.1:4174` 提供；本轮未修改游戏运行时、正式资产、`demo/index.html` 或 Git 状态，也未运行 `build:single`。
 
-## 2026-08-20 食堂餐盘临时范围框清理
+## 2026-08-21 第四章三层人工几何标注首轮收件
 
-- 删除餐盘青色空格范围、黄色距离实体、紫色点击区和 id/桌号标签，不再在 Vite 开发环境默认显示调试图层。
-- 删除 `rpgTrayRanges` URL 开关和餐盘交互目标中的调试桌号字段；最近目标、宽松朝向和餐盘实际交互范围保持不变。
-- 验证：Blink `1280×720` 从 `c3-canteen-drinks` 进入食堂，餐盘本体正常显示且不再出现青/黄/紫范围框、十字或 id/桌号标签。`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 均通过；离线产物为 `192932400 bytes`、2 个内联脚本和 1 个内联样式。
+- 用户已通过结构标注台提交 A1/A2/A3 三层共 `78` 个源像素半开矩形：A1 `26`、A2 `30`、A3 `22`。原始结果保存为 `artifacts/chapter4-map-assets-20260820/chapter4-structure-annotations-user-v01.json`，可重新导入标注台；文件同时记录三张候选图的 SHA-256，未改写任何 PNG。
+- 分类统计：空气墙 `42`、前景遮挡 `15`、必须可通行 `17`、电梯可见范围 `3`、A1 面包坊门洞 `1`。所有矩形均为整数、正尺寸并位于 `1672×941` 范围内，ID 无重复，图片哈希匹配；本轮内存校验输出 `CALIBRATION_DATA_PASS`。
+- 门洞纠偏：A1 `{x:490,y:514,width:41,height:263}` 穿过竖向隔墙，`41px` 表示墙体厚度，沿墙方向的可通行净跨度为 `263px`，满足此前 `62px` 最小净开口；不能把矩形 `width` 误读为玩家通过方向的净宽。
+- 遮挡复核：为全部 `15` 个前景遮挡补充对象名称、`baselineY` 与 `full_crop / baseline_only` 建议。遮挡矩形只定义重绘范围，碰撞仍由独立空气墙负责。
+- 自动冲突：A2 存在 `4` 处空气墙与必须可通行区的边缘交叠，面积分别为 `18 / 232 / 32 / 24px²`；运行时必须以可通行区优先，裁掉重叠边缘后再生成 Arcade static bodies。A3 `a3-ann-017` 仅 `5px` 厚、`a3-ann-018` 仅 `1px` 宽，正式碰撞前需扩到可见墙帽或立柱范围。
+- 激活阻断：三层可见电梯中心为 A1 `772.5`、A2 `791`、A3 `787.5`，与当前项目共享 `x=836` 交通核和 `72×96` 门片合同不一致；候选图也尚未替换 Scene 当前加载的旧 `teaching_building_floor_1/2/3.png`。在明确“修图保持共享交通核”或“改为每层独立电梯锚点”前，标注合同保持 `runtimeActivation: blocked`，不会把新坐标错误套到旧底图。
+- 交付边界：未修改正式运行时碰撞、正式底图、`demo/index.html` 或 Git 状态，未运行 `build:single`。
+
+## 2026-08-21 第四章 7:55 三层结构母图正式接入
+
+- 决策解阻：用户确认采用每层独立电梯锚点。A1/A2/A3 的可见门洞中心分别固定为 `772.5 / 791 / 787.5`；A1 第 25、26 区域定义为可通行的墙后区域，并由肖像墙前景裁片按脚点基线遮挡人物。该决定已同步到 `AGENTS.md`、三层迷宫设计文档、地图生成提示词和项目开发报告，取代旧共享 `x=836` 约束。
+- 资产晋升：将人工标注对应的三张 `1672×941` 候选母图逐字节复制为 `src/assets/rpg/interiors/finale/chapter4-755/base/a1.png|a2.png|a3.png`。三图 SHA-256 分别为 `0df950f0…85e3`、`b1d09d66…fb04`、`3077b3f6…02e`；`finale_environment_manifest.json` 新增 `a1_base / a2_base / a3_base` 三个 Phaser consumer。九张时间态整图本轮保持未注册。
+- 布局合同：`chapter4-three-floor-maze.layout.json` 升为 schema v2，矩形统一为半开 `{x,y,width,height}`。接入 `42` 条空气墙、`17` 条必须通行区、`1` 个面包坊门洞、`17` 个前景遮挡和三层独立电梯的 `visibleBounds / doorCenter / standPosition / arrivalPosition / travelBounds`。A2 四处墙体交叠按通行区优先裁边；A3 两条过薄碰撞分别扩到 `10px` 高和 `8px` 宽，修正原因保存在数据中。
+- Phaser 消费：`ChapterFourTemporalMazeScene` 已直接加载三张新母图，移除共享电梯中心常量；电梯门、站位、交互范围、移动落点和到站位置均从当前楼层合同读取。前景 crop 常驻，深度为 `4000 + baselineY`；人物按脚点 `4000 + y` 排深度，遮挡裁片不进入碰撞组。调试状态新增三层电梯、前景遮挡和可通行区数据。
+- 接近判定修补：集成检查发现电梯虽然生成了各层 `69 / 80 / 74px` 接近范围，筛选仍固定使用旧 `54px`。现已改为读取 `candidate.zone.proximity`，三层合同站位均能进入电梯交互范围，同时保留其他 RPG 场景旧矩形调试结构的兼容 union。
+- 合同验证：已执行 `npm run art:finale-environments`、`npm run chapter4:validate-assets`、`npm run chapter4:validate-topology` 和 `npm run typecheck`，均通过；资产校验器锁定三图尺寸、哈希、manifest consumer、楼层资产 ID 与三层电梯矩形。按用户最新要求，随后停止继续进行三层浏览器碰撞与校验；开发服务器已停止，临时浏览器截图、快照和日志已移入废纸篓。
+- 交付边界：未运行 `build:single`，未修改 `demo/index.html`，未执行 stage、commit、push、merge、rebase、clean、restore 或 reset。
+
+## 2026-08-21 第四章 7:55 Task 6 Phaser 场景合同
+
+- 精灵注册：五张活动 sheet 继续按整图加载，在 Scene `create` 阶段由 schema 3 manifest 注册显式 Phaser frame。清单共 `62` 条，其中 `61` 条非空 frame 使用绝对 `sourceTrim`，`setTrim` 的目标偏移相对 `sourceCell`（无 cell 时使用 `sourceRect`），pivot 归一化；唯一 `empty` frame 跳过。缺 sheet、尺寸、重复 ID、空 trim、越界、pivot 越界和已有 frame 几何不一致均进入 `contractFailures`。
+- 原子母图组：每次投影变化先形成 A1/A2/A3 三张完整 plate group，并检查 `1672×941` 纹理、全部前景 crop 和 `physicalDeltas`。校验通过后在同一同步段切换三层背景、替换同 plate 前景、重建 plate collider；失败保留上一完整组，且不修改人物、相机和 zoom。午间排队栏杆和 A3 参照教室家具使用 source-pixel collider；204 动态家具、保安和灯控屏障没有实体边界时只报告 pending/failure，不出现在 applied collision ID 中。
+- 场景收敛：删除旧 A2 排班/NPC/自习桌 crop、移动隔断、导视碎片、旧历史电梯重放与旧 action/move 事件口。三层仍以拼接世界运行，静态碰撞、人物脚点深度、A1 墙后可通行遮挡、楼梯和普通电梯保留；电梯门、站位和落点读取三层独立中心 `772.5 / 791 / 787.5`，未恢复共享常量。
+- 单一写入口：场景只发布 `rpg_chapter4_755_intent_requested` 并只消费对应 resolved；`move_to_location` 未获 controller 接受时不启动楼层转移动画。Task 6 的剧情 actionable allowlist 固定为空，纸条、旧钟、传送带、204、维护、灯阵、追逐和签到只投影/渲染几何，等待 Task 7–13 逐项开放；含 `acceptedItem` 的目标不会产生 `Space` 提示。
+- Host 与 debug：正式 `duan_yongping_temporal_maze` 活动时挂载共享 `RpgInventoryDock`。Debug 分开记录 projected/applied plate、collision、occlusion、target ID，另含 5 灯区、safe checkpoint、frame 注册结果和 contract failure；旧 cycle、route、partition、historical 字段删除。碰撞使用无视觉 Zone，collider/occlusion/target 边界可视叠层仅在 `import.meta.env.DEV` 且对应 URL flag 打开时创建。
+- 验证：`npm run chapter4:validate-story`、`npm run chapter4:validate-assets`、`npm run chapter4:validate-topology`、`npm run typecheck` 和目标 diff-check 通过。一次 `/tmp` 合同探针确认 `62/61/1` frame 合同、9 张状态 plate、13 个三层组、3 项 physical delta、唯一新写入口、Task 7–13 零 actionable、C4 dock、projected/applied debug 分离和三层电梯中心；探针、备份和 diff 临时文件已删除。按用户要求未执行三层浏览器碰撞专项，也未运行 `build:single` 或改写 `demo/index.html`。
+- 两阶段提交复核：新前景先以隐藏状态完整创建，新 plate static group、source-pixel bodies 与 player collider 先完整创建和校验，且新 collider 在提交前保持 inactive；旧前景、旧 group 和旧 collider 全程保留。三层 background 保存 texture/frame 快照后依次 `setTexture`，任一步失败会恢复三层快照并销毁 stage。三层成功后才在同一同步段显示新前景、激活新 collider、停用并隐藏旧组，再逐对象安全清理旧资源；清理异常只写入 `contractFailures`，不会停用或销毁新组。开发态 registry fault injector 与一次性 `/tmp` 探针覆盖前景 staging、碰撞 staging、第二层 `setTexture` 和旧资源 cleanup 四类故障；前三类均保持旧三层背景、前景和碰撞完整，成功及 cleanup 异常路径均只让新 collider 参与碰撞。
+- 投影重试与异常物品收口：`projection`、完整 projection signature、target visuals 以及 phase/mode/light debug 快照只在原子 plate apply 返回成功后提交。失败保持上一 applied projection、三层资源、target 容器和 signature，并以 `120 / 240 / 480 / 960 / 1920ms` 上限退避持续重试；候选 signature 改变会立即清零退避。Scene 投放入口使用 `GameState.items` own-property guard，Dock feedback 使用 `GameState.items + ITEM_META` 双 own-property guard，不再将任意字符串断言成 `ItemId`；异常 ID 在 Scene 显示安全失败，Dock 忽略异常回执。专项 AST/状态机探针确认同 signature 首次失败后旧背景、前景、collider、targets、signature 均保持，解除故障后自动成功，同时拒绝 8 类异常值并接受全部 6 个第四章道具 ID。
+- Active delivery 排除：未跟踪的 `src/scenes/rpg/ChapterFourStairAlignmentScene.ts` 当前没有 consumer，本轮不纳入活动交付；文件未删除、未还原，也没有继续修改。
+
+## 2026-08-21 第四章 7:55 Task 7 开场纸条与首次拨钟
+
+- 序幕截止：活动时间线固定在 `32400ms` 的教学楼玻璃门任务卡，`advance` 与跳过均收敛到该时刻。活动 phase 只保留 `snap / lake_exit / arcade / entrance`，不再加载保洁员或保安对话立绘，Renderer 的活动 dispatch 不含门厅清楼、追逐或关灯分支；任务确认到纸条现场之间没有第二条路线选择。
+- 无黑帧交接：Host 在提交 `complete_prologue_handoff` 后继续保留序幕覆盖层。只有 Phaser Scene 已提交应用 `a1_2245_opening`、三层 plate group、前景、碰撞和投影目标集合，并发出 `contractReady` live-ready 后，Host 才释放覆盖层。入口拒绝与 `5s` 超时均显示失败，按钮以新 `requestId` 重试；超时在同步 emit 前启动，避免同步 ready 覆盖定时器。
+- 开场事实与顺序：新增 `opening_paper_at_noticeboard`、`external_time_rejected`，以及 `complete_opening_paper_flight / resolve_external_time_rejection / resolve_hall_clock_inspection` 三个严格无多余字段 intent。Controller 只在对应演出结算后写事实；SaveStore v25 按纸条落定、捕获、外部时间拒绝、旧钟检查建立因果闭包，同时保留 `opening_paper_caught` 和 `hall_clock_inspection` 两个可重播的未结算刷新状态，阶段总数仍为 `13`。
+- 纸条与空间合同：Scene 从共享人物 Arcade 脚部 body center 计算距离与面向，纸条从脚点前方 `4m` 飞到约 `6m` 外的公告栏真实锚点。落定关键帧提交 controller 后才投影捕获目标，使用正式 `chapter4_story_items/sign_in_record_paper` frame；成功捕获只授予一次 `attendanceRecordPaper`。Task 7 actionable allowlist 只有纸条和旧钟，开场三阶段在接近判定、电梯入口和移动请求三层拒绝楼梯/电梯路线。
+- 时间拒绝与旧钟：捕获接受后锁定移动和剧情输入，显示固定视口 close-up，明确并列外部 `22:45`、手机冻结 `07:55:23` 与“不可信”，完整演出结束才结算外部时间事实。旧钟只在该事实成立后以浅色操作开放；接受检查先进入 `hall_clock_inspection`，依次显示 `2245_missing_hour_hand / gear_stuttering`，演出完成才写 `hall_clock_inspected`。刷新发生在两段演出中间时会从 controller 状态安全重播。
+- 首次拨钟：只有 `hall_clock_inspected` 后允许拉钟。Controller 一次事务切换到 `bakery_hour_hand / hall_clock / 1225_bakery / 44700 / trusted=true`，投影同时选择 `a1_1225_bakery`。Scene 只在 accepted 且已提交状态完整时播放 `gear_stuttering → 1225_missing_hour_hand`、四次短闪与齿轮音效；视觉或音频失败不回滚或阻塞已提交剧情。Host 对七个开场演出 intent 不叠加“当前操作已记录”字幕，拒绝反馈继续可见。
+- 请求与清理：纸条、旧钟及三个演出结算请求均含 pending、唯一 `requestId` 和超时恢复；重复输入不会重复提交。Scene shutdown/destroy 通过共享 lifecycle helper 解绑 bridge，并清理移动请求、剧情请求、演出 timer 和外部时间 close-up。
+- 验证：`chapter4:validate-story`、`chapter4:validate-assets`、`chapter4:validate-topology`、`typecheck` 与 `git diff --check` 均通过。Vite SSR 内存探针确认越序请求零写、纸条 settled gate、捕获一次、外部时间 gate、检查握手、首次拨钟原子时钟/底图、两段 reload resume 和同一 `requestId` 仅执行一次；静态探针确认 `32400ms` 截止、live-ready 后释放、超时重试、脚部几何、Task 7 两目标白名单和 shutdown/destroy 清理。主实现验证未安排 `build:single`，也未执行用户豁免的三层浏览器碰撞专项或 Git 写操作；随后发生的越界构建另记如下，不计入 Task 7 验收。
+
+## 2026-08-21 第四章 7:55 Task 7 越界构建记录
+
+- 事实记录：只读复核子代理违反本任务边界，误执行了一次 `npm run build:single`，并重建 ignored 的 `demo/index.html`。该产物没有来源备份，当前视为陈旧输出；本轮不修改或还原它，等待 Task 15 按正式流程重建。
+- 验收边界：这次越界构建不计入 Task 7 或 Task 15 的验证结果。Task 7 只采用 story/assets/topology/typecheck、Vite SSR 状态探针、静态源码探针与 `git diff --check` 结果。
+- 复核结果：重新执行剧情 validator 与 Vite SSR 内存探针，主链路最终进入 `bakery_hour_hand / hall_clock / 1225_bakery / 44700 / trusted=true`；两段中途刷新保持未结算并可重播，同一 `requestId` 只执行一次。本轮仍未执行三层浏览器碰撞专项，也未执行 Git 写操作。
+
+## 2026-08-21 第四章 7:55 Task 7 独立复核修补
+
+- 任务投影：`QuestModel` 的活动 7:55 路径改读 `chapter4-755.content.json`，从当前 `phaseContracts.taskKeys` 中按事实与物品选择一个下一目标。开场依次显示纸条、旧钟检查、首次拨钟；首次拨钟后立即显示“前往面包坊检查传送带”，取得旧时针后切换为“回大厅装回旧时针”。任务抽屉每次只返回一个 step；旧 `chapter4-temporal-maze` 内容保留为运行时迁移兼容 fallback。
+- 开场位置：`complete_prologue_handoff` 原子收敛到 `A1 / a1_lobby / c4_a1_lobby`，该阶段不再接受移动到 `a1_hall_clock`；SaveStore 同样把 `opening_handoff` 水合到大厅。公告栏目标暂时兼容旧进程中的 `a1_hall_clock` 大厅别名，避免未刷新进程在纸条落定后失去目标。
+- 首次检查文本：Scene 字幕和 `hall_clock.first_inspection` 只说明旧钟可以拨动但响应方向、幅度错误，不再提前说明时针缺失或时针轴为空。缺时针 atlas 仍作为环境视觉使用，不参与该段文字揭示。
+- 验证：story/assets/topology/typecheck、`git diff --check` 均通过。定向 Vite SSR 探针确认 controller 与 SaveStore 都将开场位置收敛到 A1 大厅、旧 hall alias 仍可投影纸条、五个开场/面包坊任务目标每次只显示一个、旧任务模型 fallback 可用。本次修补未运行 `build`、`build:single`、Git 写或三层浏览器碰撞专项，也未修改或还原此前标记为陈旧的 `demo/index.html`。
+
+## 2026-08-21 第四章 7:55 Task 8 12:25 面包坊旧时针
+
+- 独立实体合同：`a1_bakery_inspection_lamp`、`a1_bakery_conveyor_edge`和 `a1_bakery_hour_hand_pickup` 全部使用 `runtime_entity`；删除面包坊灯/传送带共用的大范围布局锚点。Scene 从活动 Phaser GameObject 的 `getBounds()` 向外取整，生成现有 `runtimeTarget` envelope；三个验收矩形分别为 `[354,313,393,343)`、`[286,332,303,361)` 和 `[288,312,322,351)`。时针视觉只复用 `chapter4_story_items/old_clock_hour_hand`，pivot `(294,345)`、uniform scale `0.10`，没有写入底图或新增图像。
+- 控制器与恢复：新增 `bakery_hour_hand_exposed`、`bakery_hour_hand_collected` 与 `complete_bakery_conveyor_stop`，并将 `bakery_conveyor_lamp_inspected` 纳入 SaveStore 有效事实。保存/恢复按 `installed → collected → exposed → lamp` 补齐因果；旧时针只在 collected 成立时恢复为持有。传送带在用灯前仍投影且可尝试，越序只返回“先点亮烤箱旁的检修灯，让传送带停一下。”并保持零写。
+- 停带演出：灯被 controller 接受后 Scene 锁输入；`0 / 120 / 360 / 520 / 700ms` 依次执行点灯与停带 cue、减速、停带并暂停近处 NPC、显示时针/glint、提交 completion intent。Controller 写入 exposed 后解锁；无灯、灯已查但未 exposed、已 exposed、已 collected/持有、已 installed 五种刷新状态均有明确恢复分支。
+- 一次性道具与任务：拾取在同一事务写 collected 并授予 `oldClockHourHand`；重复拾取零写。Quest 每次只投影一个下一目标：先检查灯/传送带，exposed 后取时针，collected/持有后回大厅安装。旧钟 socket 只显示道具拖放提示；浅色、可见边界、距离与朝向同时通过才消耗道具，并原子进入 `room204_restore / 1850_evening / 67800 / trusted=true / A2+A3 plate group`。Task 9 以后目标仍不在 Scene actionable allowlist 中。
+- NPC 与路线：面包师复用 `counter_aunties_2frame.png` frames `6–7`，origin `0.5,1`、scale `0.65`、position `(365,340)`、无碰撞，由 `a1_foreground_018` 柜台前景遮住下半身。三名学生复用 finale student atlas 与玩家脚部 body 合同，路线、速度与端点停顿按布局数据执行；phase/plate 变化及 shutdown/destroy 会清理 collider、tween、timer、entity 和 bridge listener。两条 mapper waypoint 从门洞东侧经 `y=560` 或 `y=748`，共用东端净空中心 `x=477`，最终连到 `(374,386)` 与 `(294,386)` 站位。
+- 声音边界：Task 8 只发出 `chapter4_bakery_approach`、`chapter4_bakery_conveyor_stop`、`chapter4_bakery_hour_hand_revealed` 三个 domain cue，元数据包含 source/player world x 与 distance；未声称当前 AudioDirector 支持 pan，未复用其他章节音频充当正式素材。
+- 复审收口：三个 runtime target 的 `targetId + entityId + bounds` 现在必须与 `layout.bakeryRuntime.targetEntities[].installationBounds` 精确相等；合法世界内 `1×1` 或平移 `1px` 的伪造边界都返回 `null`，controller 保持零写。`complete_bakery_conveyor_stop` 超时、拒绝、或 accepted 但 committed exposed fact 缺失时，Scene 统一按当前已提交 state 保持灯亮、恢复传送带/人流、隐藏时针和 glint，延迟后自动重试。
+- 验证：`npm run chapter4:validate-assets`、`npm run chapter4:validate-story`、`npm run chapter4:validate-topology`、`npm run chapter4:validate-runtime` 与 `npm run typecheck` 全部退出码 `0`。runtime validator 执行 `150` 项断言，新增三目标正常/伪造边界、controller 零写和 committed-runtime 回滚矩阵；topology validator 以 `2px` 采样检查 fixed + queue + 三名 NPC 全路程 swept-foot collider，NPC 边界精确从 Scene 的 origin `0.5,1`、display scale `0.65`、source foot-box offset 与 bottom inset 推导。该结论仅属纯数据 Arcade 数学合同验证，不作为实机浏览器碰撞证据。定向与新文件 diff-check 通过，`/tmp` 无 Task 8 残留。本轮未运行 `build`、`build:single`、Git 写或用户豁免的三层浏览器碰撞专项。
+
+## 2026-08-21 第四章 7:55 Task 9 18:50 教室复原与定位盘
+
+- 纯模型：新增 `ChapterFourRoom204Model.ts`，统一读取 layout 中的 `12` 件桌椅组合、`12` 个 `20×20` 槽位、桌椅偏移、四张组合桌、讲台和投影节拍。任意唯一 piece 可放入任意唯一空 slot，仅接受 `orientation=up`；纯函数区分 unknown piece/slot、non-up、duplicate piece、occupied slot 和 already placed。canonical 对应关系只用于后续阶段存档修复，不参与正常解题。
+- 场景与交互：A3 标准教室只在浅色操作观察一次，A2 的 `12` 张残影只在深色观察显示并一次登记。A2 浅色操作下靠近未归位椅子可搬起一组，靠近任意空槽位可放置；深色模式、未搬起家具和未就绪边界都有可见的下一步反馈。家具视觉使用已注册的 `12` 张单人桌、`12` 把椅子、`4` 张组合桌和讲台；碰撞从 manifest 每帧 `collisionBounds` 经 `0.25` 统一缩放和 pivot 转换成实际 static body。残影保持 floor decal，不建立碰撞。
+- 运行时边界：A2 残影组、`12` 个槽位和讲台抽屉均为 `runtime_entity`。Scene 按 layout 创建 Phaser Zone，再从 `getBounds()` 向外取整；Controller 仅接受与 layout 中 `targetId + entityId + bounds` 完全一致的 envelope。平移 `1px`、伪造 entity、缺少 runtime bounds 或静态伪坐标均零写拒绝。
+- 事实与握手：第 `12` 件合法入槽且两次观察成立时，Controller 写入 `room204_restored`。Scene 立即锁输入，播放短 `07:55` 偏移到稳定投影，再提交 `complete_room204_projection`；Controller 重新校验完整 placements 与两次观察后才写 `room204_projection_completed`。超时、拒绝或接受但缺失已提交事实时，演出回到已完成布局并延迟重试。
+- 一次性道具：投影握手完成后才开放讲台抽屉。拾取在同一事务写入 `positioning_plate_collected` 并授予 `clockPositioningPlate`；拖到旧钟可见插槽后消耗一次，写入 `positioning_plate_installed`，并原子切换到 `maintenance_repair / 2245_maintenance / A1 / a1_hall_clock / c4_a1_lobby`。Task 10 及更后目标在 Room204 阶段保持关闭。
+- 存档与任务：SaveStore 复用纯模型清除未知、重复和 non-up 数据，按“两次观察 → 完整复原 → 投影完成 → 定位盘收集 → 安装”建立因果闭包。Room204 中途存档保留合法部分进度；后续 phase 缺 placements 时才补 canonical 完整布局。Quest 依次只显示参照、残影、复原、看投影、取定位盘、安装中的当前一项。
+- 纯数据几何：topology validator 从 manifest 的家具脚部碰撞、layout 的统一缩放/偏移和 `19.5×14.625` 玩家脚部框推导完成态障碍。`2px` 与 `4px` 采样均保持 x=`132.5 / 230 / 327.5` 三条纵向走道和 y=`623` 横向连接；覆盖 `12×12=144` 种 piece→slot 候选包络。该结论只是纯数据几何合同，不作为浏览器实机碰撞证据。
+- 验证：`chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`typecheck` 均退出码 `0`。runtime validator 执行 `406` 项断言；topology validator 执行 `2164` 项断言，其中 Room204 为 `1009` 项。`git diff --check` 与新文件 whitespace 检查通过。按用户要求未运行三层浏览器碰撞专项；按实施边界未运行 `build`、`build:single`、未改写 `demo/index.html`、未执行 Git 写操作。
+
+## 2026-08-21 第四章 7:55 Task 10 22:45 维护链与普通巡逻保安
+
+- 维护链：新增 `cart_wheel_inspected`，并固定“检查车轮 → 取短撬棍 → 消耗撬棍开轮罩 → 取通用润滑油 → 修车轮保留半瓶油 → 修旧钟齿轮消耗油”六步事务。撬棍可提前拾取，Quest 仍优先显示检查车轮；齿轮修好后保持 `maintenance_repair / 2245_maintenance / patrol`，下一目标为“把旧钟拨向 07:55”，Task 11 后续目标仍关闭。
+- 坐标与资源：`maintenanceRuntime` 成为短撬棍、清洁车、清洁员、轮罩/车轮、润滑油、旧钟齿轮和保安巡逻的唯一布局来源。Scene 为 6 个目标创建实际 GameObject，将 `getBounds()` 向外取整后与 layout 精确匹配；轮罩明确使用清洁车局部区域加程序化开盖状态。修轮后清洁员使用 layout 声明的 `cleaner_push_cart` 推车 `900ms`，旧 collider/body 立即停用。
+- 普通巡逻：新增纯 `ChapterFourGuardModel`，状态为 `patrol / confirming / pursuit / returning`；连续可见 `400ms` 转追击，连续失视 `900ms` 返回巡逻；视野参数为 `220px / 36° / 56px`，近距离仍受墙体 LOS 阻挡；速度为 `84 / 140 / 96px/s`，停留 `1–2s`，最大分片 `50ms`，seed 可复现。Scene 只给保安本体配置静态墙 collider 和人物 overlap，视锥、确认 `!` 和红色追击表现无碰撞。捕获只在 pursuit 与半开脚框相交时发出 `recover_from_maintenance_patrol`。
+- 捕获恢复与存档：Controller 仅在 maintenance + patrol 接受普通巡逻恢复，原样保留 items、facts、`chaseAttempt`、深浅模式、灯阵和时间，只写入 A1 大厅安全位置并关闭道具栏/拖放选中。Scene 接受后放置人物于 `(836,716)`，保安从 `west_north` 走向 `stair_north`。SaveStore 修复 gear→wheel→cover→inspect 因果闭包；未开轮罩会清除伪造油瓶，修轮未修钟会恢复半瓶油，修钟后强制油瓶不持有；非法 maintenance room/floor 回收到 `A1 / a1_lobby / c4_a1_lobby`。
+- 验证：`chapter4:validate-runtime` 执行 `771` 项断言，覆盖 6 目标全类零写拒绝、grant/consume once、6 态 save、捕获深比较、`399/400ms`、`899/900ms`、LOS 墙阻挡、重见清零、last-visible、return、seed 和脚框接触。topology 执行 `2221` 项断言，5 条保安路径用 `20×16` 脚框和 `2px` 步长对 A1 静态墙做纯数据采样，全部通过。assets 校验 4 个 NPC PNG/manifest/hash/RGBA 合同与 4 个维护帧绑定。story、runtime、topology、assets 与 typecheck 均 fresh 通过；定向 diff-check 通过。本轮未运行 `build`、`build:single`、Git 写或用户豁免的三层浏览器碰撞专项。
+
+## 2026-08-21 第四章 7:55 Task 10 质量复审修补
+
+- Task 11 边界：分针端点在 Task 10 基线只允许 `return_to_clock` 兼容安装；维护阶段不再投影或响应该端点。`trigger_minute_theft` 保留请求类型兼容，但 Controller 固定返回 `locked` 且零写，Scene 不再发出该意图。
+- 保安物理权威：纯模型每步显式接收 Arcade guard body 的实际脚框中心并返回 `desiredVelocity`。Scene 仅在创建和捕获恢复时定位保安；普通帧从已解算 body 回灌位置，只设置速度，墙体 collider 的分离结果不会在下一帧被模型坐标覆盖。捕获也读取实际 guard/player body。
+- 目标边界溯源：撬棍和润滑油从当前可见 sprite 对应的 manifest source interaction、pivot 与统一缩放派生；轮罩检查、程序化轮罩和车轮从 `cleaning_cart` 的 `144×128` frame-local `{88,91,28,37}` 区域与实际 sprite transform 派生；齿轮从当前可见 clock frame 的 A1 manifest interaction 派生。六项均先生成 Zone，再以实际 `getBounds()` 向外取整与 layout installation 精确比较，不再由 installation 自身生成校验对象。
+- 单推车表现：修轮时先销毁独立 `cleaning_cart` 及旧 body/collider，再把清洁员切到已含推车的 `cleaner_push_cart`；Tween 只移动该组合 sprite，并以 active Tween guard 防止每帧重启，结束后场上保持单一推车视觉。
+- 复审验证：`chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`typecheck` 与定向 `git diff --check` 全部退出码 `0`。runtime 为 `774` 项，topology 为 `2224` 项；资产门新增 `4` 组 source-derivation 断言，剧情门新增 Task 11 锁定、物理回灌、禁止逐帧 teleport 与单推车清理断言。纯数据与静态合同仍不构成浏览器碰撞证据；本轮按用户豁免未运行该专项，也未运行 `build`、`build:single` 或 Git 写操作。
+
+## 2026-08-21 第四章 7:55 Task 11 偷分钟、停电与五灯配电箱
+
+- 最终拨钟：齿轮修好后仍处于 `maintenance_repair / 2245_maintenance / patrol`，旧 `trigger_minute_theft` 保持锁定。Scene 使用 `gear_running` 可见钟面和程序化分针端点，端点 Zone 从实际 `getBounds()` 向外取整并绑定唯一 layout installation；浅色操作、A1 大厅/旧钟位置、距离、朝向和纸条条件全部通过后，`begin_final_clock_drag` 只建立运行时握手且零写。指针拖动与 `Space / Enter` 使用同一宽松完成动作，没有精度、计时或失败惩罚。
+- 偷分钟与停电事务：运行时按 `0 / 240 / 680 / 1040 / 1160ms` 锁定移动、交互、背包和楼层切换，依次完成分针移动、纸条飞向端点、`complete_minute_theft` 提交与反馈。Controller 仅在最终提交点一次写入 `blackout_light_grid / 0754_blackout / 28440 / trusted`、保安离场、纸条暂离物品栏、灯阵 `mask=6` 未锁定以及 A1 大厅安全点；拒绝或超时按已提交状态恢复钟面和纸条并允许重试。
+- 五灯纯模型与面板：新增无 React、Store、Phaser 依赖的 `ChapterFourLightGridModel`，固定五区 XOR mask `7 / 19 / 13 / 28 / 26`、初始 `6`、目标 `13` 和全亮 `31`。32 态枚举只存在一组点击向量 `28`，全亮判定失败。A1 配电箱交互绑定精确 installation `{493,528,67,124}` 和可见箱 `{505,540,43,100}`；React 面板提供五灯状态、方向键、`Enter / Space`、未锁定时 `Escape`、pending 防并发和可见错误，最后一次 toggle 先持久化 `mask=13`，状态同步后自动锁定并进入 `final_chase`。
+- 视觉与生命周期：五个光区全部标记 `visualOnly / nonColliding / approximate`，区域互不重叠，mask 变化只更新遮暗覆盖层。配电箱使用 `closed / open_powered / open_partial / open_restored` 四帧作装饰，32 种灯态由 React/CSS 绘制。面板会话缓存 target/spatial/runtime envelope，所有 toggle/lock 均通过统一第四章 intent handler 和唯一 requestId；关闭、锁定、phase 变化与 Scene/Host shutdown 会清理会话、timer、pointer 和 overlay。
+- 存档与任务：SaveStore 对停电及后续阶段补齐齿轮修复和纸条暂离事实，停电阶段保留合法 `0..31` mask、非法值回退为 `6`；`final_chase` 及以后强制 `mask=13`、`locked=true` 和锁定事实，并修复旧 `a2_lecture_202` 到 `a2_room_202` 的位置迁移。任务抽屉每次只显示一个目标：拨向 `07:55`、让必要路线亮起、前往 `202`；Scene 的 Task 11 allowlist 明确排除 Task 12 目标。
+- 验证：最终 fresh `chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`typecheck` 均退出码 `0`；runtime 为 `907` 项断言，topology 为 `2258` 项断言。定向 `git diff --check` 和新文件行尾空白检查通过。资产、拓扑与运行时输出明确标记 `no_browser_evidence`；按用户要求未运行三层浏览器碰撞专项，按实施边界未运行 `build`、`build:single` 或任何 Git 写操作。
+
+## 2026-08-22 第四章 7:55 Task 11 第二路复审修补
+
+- 拨钟会话锁：`finalClockDragActive` 现在属于 Scene 故事输入锁，从 begin accepted 到分针拖拽、`1040ms` 提交和演出回滚期间持续向 Host 发布锁状态。Host 隐藏任务栏、系统按钮、模式开关和道具 Dock，关闭 Phaser 键盘；仅在实际指针拖拽阶段保留 Scene Pointer，进入偷分钟演出后立即取消该例外。Controller 在 `complete_minute_theft` 再验证浅色操作，模式被外部改变时返回 `wrong_mode`、清除握手并保持 GameState 零写，Scene 恢复钟面和纸条后可重新开始。
+- 配电锁定重试：目标 mask 的首次自动 `lock_light_grid` 失败后，面板在同一 mask 下显示可聚焦的“重试锁定”按钮。按钮继续调用原 canonical handler；Host 的 pending request ref 和唯一 requestId 仍阻止并发与重复写入，无需破坏已解出的灯态。
+- 生命周期：只读审计确认 Phaser Scene shutdown 可能复用同一实例，而 chase guard 字段此前可能保留已销毁对象引用；shutdown 现在显式调用 `destroyChaseRuntime()`，同时清理 guard overlap 并置空字段。没有开放或实现 Task 12 交互。
+- 取消与验证：分针拖拽监听 `pointerupoutside`，触控取消通过 Phaser `Pointer.wasCanceled` 回滚；`30s` 隐式安全 timer 只负责恢复并允许重试，不显示倒计时、不改变剧情或道具。阶段变化销毁 Task11 runtime，shutdown 强制发布解锁。修补后 fresh assets、story、topology、runtime、typecheck 全部退出码 `0`；runtime 为 `912` 项断言，topology 为 `2258` 项断言。未运行 build、Git 写或浏览器专项。
+
+## 2026-08-22 第四章 7:55 Task 11 pointercancel 复验修补
+
+- DOM 取消监听：最终拨钟 runtime 在当前 `this.game.canvas` 上以 capture 模式记录原生 `pointerdown.pointerId`；Phaser 端点接收同次按下后把该 ID 绑定到当前拖拽。begin accepted 只为非空活动 ID 安装 final-clock 专用 `pointercancel`，事件仅在 `finalClockDragActive` 且 `event.pointerId` 精确匹配时立即调用统一回滚，未复用 Host 方向键、虚拟摇杆或皮划艇取消路径。
+- 清理闭包：正常释放进入演出、取消回滚、安全超时、phase change、Scene shutdown 和 runtime destroy 均调用同一监听移除逻辑；destroy 同时移除 canvas 的 final-clock `pointerdown` 记录器并清空 canvas、pending ID 和 active ID，避免 Phaser Scene 实例复用时遗留 DOM listener。
+- 验证：fresh story、runtime、typecheck 均退出码 `0`，runtime 保持 `912` 项断言；story 静态门新增当前 canvas、活动原生 pointerId 精确匹配、即时统一回滚以及 end/rollback/destroy 移除监听断言。定向 diff-check 与行尾空白检查通过；未运行 build、Git 写或浏览器专项。
+
+## 2026-08-22 第四章 7:55 Task 12 最终追逐、202 取回与主楼梯返程
+
+- 纯追逐模型：新增 `ChapterFourFinalChaseModel.ts`，固定 `arming / running / portal_transfer / finish_pending / failure_pending / complete` 六态、连续 `4` 个 committed/applied frame 后启动、`50ms` 最大分片、人物 `208px/s`、保安 `196px/s`。同帧同时进入 202 门槛与发生接触时先结算到达；finish/failure 均通过一次性 pending 请求和 `expectedAttempt` 防止旧回调写入。
+- 路线与交通：正式路线固定为 A1 `(590,612)` 起点、`(590,724)` 保安、`(836,540)`、`(836,228)`、`(1001,214)` 主楼梯、A2 `(966,214)`、`(1100,232)`、`(1100,400)`、`(1353,400)` 至 `(1353,356.5)` 门槛。面包坊与 203 保留为不推进的死路；追逐 A1→A2 与取回后 A2→A1 只接受 `main_stair`，电梯在两阶段均锁定。返程保安离场，Task 12 终点保持 `return_to_clock`，最后一分钟安装、签到与外景收束仍由 Task 13 开放。
+- 202 门与最后一分钟：门状态矩阵为追逐开放且无 collider、取回阶段关闭并启用 `{x:1298,y:341,width:110,height:29}` 屏障、返程重新开放且无 collider。当前没有正式关门 sprite，只使用程序化状态提示和碰撞。`chapter4_story_items/final_minute_shard` 在 `(1353,320)` 生成，Scene 从可见 sprite `getBounds()` 向外取整后创建 Zone，必须浅色、距离、朝向和精确 `targetId + entityId + bounds` 同时通过；成功仅一次授予 `finalMinute`、恢复签到纸条并记录 `final_minute_recovered`。
+- 状态、存档与任务：Controller 对到达、失败和主楼梯穿越校验当前 attempt；失败只增加 attempt 并返回 `A1 / a1_lobby / c4_a1_lobby`，保留灯阵、纸条状态、道具、事实、模式和 `07:54`。SaveStore 将 `a2_lecture_202` 迁移为 `a2_room_202`，追逐刷新回 A1，取回刷新回 A2-202，返程可在已提交的 A2 或 A1 安全侧恢复；运行时 guard/portal/door 字段不持久化。Quest 在追逐、取回和返程各只显示一个当前目标。
+- 验证：fresh `chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`typecheck` 全部退出码 `0`。runtime 执行 `1036` 项断言，覆盖六态纯模型、4-frame 启动、delta 分片、finish-first、attempt 防旧写、失败保留、三态门、运行时目标防伪、一次授予、存档矩阵、单目标与 Task 13 关闭；topology 执行 `2466` 项断言，A1/A2 去程与返程均以 `2px` 和 `4px` 纯数据网格校验。这些结果属于资源、静态源码和纯数据合同，不构成浏览器碰撞证据；按用户要求未运行三层浏览器碰撞专项，也未运行 `build`、`build:single`或 Git 写操作。
+
+## 2026-08-22 第四章 7:55 Task 13 部分实施：最后一分钟、双项签到与正式外景阻塞边界
+
+- 安装与时间事务：玩家在 `return_to_clock` 通过 `main_stair` 从 A2 返回 A1 后，可将浅色模式下的 `finalMinute` 拖到可见程序化分针端点。端点以当前 Phaser 实体 `getBounds()` 实算的 `{x:971,y:52,width:16,height:16}` 为权威矩形，经 Zone 精确绑定 layout，`approximate=false`，未使用整个旧钟大框或估算常量。成功仅一次消耗 `finalMinute`，原子进入 `morning_checkin / 0755_morning / 28500 / trusted / guard absent / A1 a1_checkin / c4_a1_lobby`，签到纸条与校园卡保留。
+- 双项签到：读卡器与纸槽使用可见程序化 fixture，各自从 `getBounds()` 导出 Zone，分别精确绑定 `{756,608,34,24}` 与 `{835,606,40,26}`；站位为 `(773,662)` / `(855,662)`，均为 `56px + up`。`campusCard` 与 `attendanceRecordPaper` 可任意顺序、各接受一次、重复零写且均不消耗；两项完成后只转到 `exterior_closure / A1 / a1_exterior`，时间仍为可信 `07:55`，未自动写入章节完成。Scene 的 phase change、shutdown 和 destroy 会清理分钟端点、签到 fixture/Zone/文字、反馈与 listener；视觉对象不拥有进度。
+- 存档与任务闭包：SaveStore 在返程恢复 `finalMinute + attendanceRecordPaper + campusCard`，在早晨签到只保留 boolean 与 fact 同时合法的单项进度，两项齐全自动规范到楼外等待态；早期阶段的恶意签到/收束事实、boolean 和道具位会被清理。在没有正式 consumer proof 的情况下，旧 `complete`、bare acknowledged 或 closure fact 均降级到 `exterior_closure`，`completed=false / exteriorClosureAcknowledged=false`。Quest 每次只显示一个下一目标：A2 返主楼梯、A1 装回一分钟、双项签到或已完成一项后的唯一剩余项、楼外正式收束；未泄露 Task 14+ 步骤。
+- 正式外景阻塞：新增严格 `ChapterFourClosureAssetReference / ChapterFourClosureSessionProof / ChapterFourClosureSessionVerifier` 合同，但 `CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE` 明确为 `null`。全仓只读检索未找到可唯一确认的“灿若星辰”路径、`assetId`、`sequenceId` 和实际 consumer；`zjuding_home.png`、`closing_a/b`、`finale_arrival_arcade` 和校园总图均未被冒用。Scene 已移除每帧 bare acknowledge；当前任何无 proof、伪 proof 或无正式 reference 的收束请求都固定 `locked + zero-write`，也没有生成、复制或注册替代素材。manifest 继续保持 `generatedStarMaterial=false / generatedExteriorClosure=false`。
+- 验证与状态：fresh `chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`typecheck` 全部退出码 `0`。runtime 执行 `1141` 项断言，覆盖一次安装、原子时间、两种签到顺序、重复零写、错道具/模式/距离/朝向、runtime envelope 防伪、Save 矩阵、单任务与 bare closure 锁定；topology 执行 `2497` 项纯数据断言，包含两个签到站位、目标分离与 A1 空气墙非重叠。按用户要求未运行三层浏览器碰撞专项，也未运行 `build`、`build:single` 或 Git 写操作。
+- 当前结论：`Task 13 = partial / blocked_on_official_asset_reference`，不宣称完成。最小解阻输入是用户提供已有正式“灿若星辰”的唯一仓库路径或已注册 `assetId`，以及对应 `sequenceId` 和实际 consumer 模块/完成回调。这些信息到位前，楼外收束始终停在等待态。
+
+## 2026-08-22 第四章 7:55 Task 14 任务反馈、音频路由、DEV 检查点与空间重验
+
+- 任务反馈：第四章 Quest 固定只显示当前一个目标，进度只输出 `0/1` 或 `1/1`。任务 ID 或 objective 变化时，`QuestClueStrip` 同时收起抽屉并清空本地提示计数。内容合同只保留残影、车轮和灯阵三条指定提示，大厅旧钟的第四条提示和未使用的 `repair_hall_clock` 已移除。
+- 音频路由：新增 `chapter4-755.audio.json`，由 `AudioDirector` 与 `PresentationDirector` 共同消费。时间切换、面包坊停带、204 抽屉、清洁车、齿轮修复、停电、灯阵、最终追逐、失败/成功、最后一分钟、刷卡、纸条与签到完成均只映射仓库已有 MP3。Scene 已移除同次齿轮直播，巡逻警告只发 domain event，没有为它绑定语义不符的音频。外景收束 cue 数保持为 `0`。
+- DEV 检查点：第四章面板恰好显示 11 个稳定 ID，从 `c4-755-opening` 到 `c4-755-complete`；旧 C4 ID 通过显式 alias 迁移。每个 seed 同时设置 phase、timeState、mode、facts、items、floor、room、checkpoint、runtime 与关闭的 UI。未知 ID 显式拒绝，`?dev=0` 关闭 panel、URL seed 和快捷键；DEV 会话不写入正式存档。`c4-755-complete` 只种入双项签到完成的 `exterior_closure` 等待态，保持 `completed=false / exteriorClosureAcknowledged=false`。
+- 空间重验：Host 对每个有 target 的第四章 intent 生成唯一 attestation ID，通过 EventBus 同步请求当前 active Scene 回传真实人物脚点、四向朝向、scene key、target/entity 和精确边界。Host 只接受恰好一个 nonce、scene、projection、target、entity、bounds 都匹配的响应，再用共享距离/朝向函数重算空间结果。零响应、多 producer、错 nonce/scene/target/bounds、非有限坐标和伪造布尔值均零写拒绝；临时 listener 在 `finally` 中解绑。
+- 结构化 debug：运行时输出 committed/applied phase、timeState、plate signature、target IDs，实体精确边界和来源，普通保安、最终追逐、灯阵会话、202 门、结构化合同失败、最近失败以及 DEV checkpoint ID/source。其他 scene 仍可读旧的矩形 union。
+- 验证：`chapter4:validate-task14` 执行 `197` 项断言并通过，包含 Quest 三提示、音频 schema/文件存在性/零外景 cue、11 DEV seed/alias/URL/`dev=0`/会话存档、debug schema 和 attestation 动态拒绝矩阵。fresh `chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`typecheck` 全部退出码 `0`；topology 为 `2497` 项，runtime 为 `1141` 项。按任务分工未运行 `build`、`build:single`、CI 或三层浏览器碰撞专项，未执行 Git 写操作。
+- 剩余边界：`CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE` 仍为 `null`，正式外景 consumer proof 缺失；Task 14 按合同保持等待态。Task 15 负责 build/CI，后续任务负责用户调试与最终交付。
+
+## 2026-08-22 第四章 7:55 Task 15 CI、构建与多浏览器验收矩阵
+
+- CI 与静态交付门：`.github/workflows/web-ci.yml` 已在 `typecheck` 前顺序运行 `chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`chapter4:validate-task14`。最终 fresh 结果为 assets `0`、story `0`、topology `0 / 2497`、runtime `0 / 1171`、Task14 `0 / 215`、typecheck `0`、build `0`、build:single `0`、verify:single `0`、`git diff --check` `0`。资产验证同时实际通过本地完整 provenance 模式和 clean-checkout tracked-contract 模式；缺失单个 provenance 输入的部分模式按预期退出 `1`。
+- Blink 桌面与移动端：`11/11` DEV checkpoint 在 `1280×720` 通过，`1280×800` letterbox、任务栏、模式控件和道具栏无越界；`390×844` 保持单 canvas、`16:9`、coarse-pointer 五个触控控件和零 document overflow。真实交互覆盖 Room204 键盘移动、配电箱三次点击并把 mask 从 `6` 锁为 `13`、校园卡与签到纸条两种拖放、追逐连续失败两次后经主楼梯成功、返回手机主页后通过当前任务返回同一现场。已验路径均为 `contractFailures=[]`、`pageerror=0`、`console.error=0`、`requestfailed=0`。
+- 状态恢复与迁移：移除 session-only DEV 标记后，真实完成校园卡拖放，正式 localStorage 写入 `11008` bytes；刷新后恢复 `morning_checkin`、校园卡已签到、纸条未签到、同一 RPG scene/checkpoint，且 DEV checkpoint 为空。永久 runtime validator 另覆盖并通过四类存档：v24 第四章前、v24 中途、v24 已完成但无正式外景 proof 时降级到 `exterior_closure` 等待态、主存档损坏且 v24 备份有效时恢复并修复主存档。
+- Gecko、WebKit 与单文件：Firefox 和 WebKit 各自完成 `11/11` 个 `1280×720` checkpoint 烟测，追逐态均确认 `finalChase.active=true` 和有限正 `guardBounds`。最终 `demo/index.html` 通过 HTTP 与 `file://` 的 opening、room204、chase、complete smoke；直接文件刷新仍保持 `exterior_closure / completed=false / acknowledged=false`。最终文件为 `236019677` bytes，SHA-256 `7a011c99f78a22c54e7a2b0e9888f93bfef02967cdf8aec28215d1d765479478`，内含 `2` 个 inline script 与 `1` 个 inline style；该 ignored 产物只作为本地验证结果，不默认进入 Git 交付范围。
+- 边界与清理：按用户要求未执行三层浏览器碰撞与遮挡专项。Task 15 没有伪造“灿若星辰”正式 consumer proof，完整自然流程只能到 `exterior_closure` 等待态；其余已解锁交互与关键路径已用真实操作或多浏览器 checkpoint 验证。所有本轮 Playwright 截图、临时 QA 目录和浏览器会话均已清理，剩余截图为 `0`。
+
+## 2026-08-22 第三章半至第四章 H3 衔接视频拼接与接入
+
+- 源片复核：逐段读取三份用户提供视频的编码、尺寸、帧率、时长和音轨，并用接触表、镜头切点及首尾接缝检查确认顺序为“磁扣断裂与纸条离湖 → 夜间拱廊与玻璃入口 → 门厅、教学楼外景与熄灯走廊”。三份原文件均保留原位，未覆盖或改写。
+- 正式资产：三段按原顺序与原速度拼接为 `chapter35_to_chapter4_h3_transition.mp4`，统一为 fragmented MP4、`960×540 / 24 FPS / H.264 High / yuv420p`，共 `1052` 帧、`43.833333s`、`8282814` bytes，且只有视频流。SHA-256 为 `d5cb9e9a91ef778337f5eeef74fad59643ca1f393607f993d7e5fc8196678aff`；相对压缩前规范化成片的全帧 SSIM 为 `0.988282`。`chapter4-prologue-h3.asset.json` 锁定三源哈希、顺序、切点、fragmented 容器与本地音频权威。
+- 音频与单文件载入：新增从现有第四章序幕音乐派生的 `music_ch4_prologue_h3_44s.mp3`，原音乐不变。新文件为 `44.000000s / 353687 bytes / 64306 bit/s / 44.1kHz stereo`，SHA-256 `0b8e5a0eb47f431af5d96f13b9bbff07580419b1641de9e6637fa59d7c4685c6`。常规 Vite 使用 H3 URL；单文件把 Base64 切成 `256 KiB` 片段，在 Worker 解码后经 `MediaSource / SourceBuffer` 顺序追加，解决 WebKit 同时启动大视频与大音乐时的冻结。
+- 运行时接入：`Chapter4PrologueRuntimeGate` 提升到 App 根级，成为任务卡确认、controller 提交、`requestId`、20 秒超时、刷新恢复、A1 live-ready 与 `80ms` 释放的唯一 owner。等待期间下层 Phaser 保持挂载，DOM `inert / aria-hidden / pointer-events` 与 Host 输入/键盘 block 同时生效。`RpgGameHost` 删除重复 Overlay 和 handoff owner，并显式拒绝通用事件路径中的 `complete_prologue_handoff`。`Chapter4PrologueOverlay` 保持 H3 主画面、六阶段 Canvas 回退、静音视频与 `43834ms` 任务卡。
+- 合同验证：`chapter4:validate-story` 同步验证 App 根级唯一 owner、常驻 runtime、刷新任务卡偏移、requestId 回环、内部 retry、20 秒失败不卸载、Host 禁止重复提交、MSE 初始化、MP4/音乐实际哈希。fresh assets、story、topology `2497`、runtime `1171`、Task14 `215`、typecheck、production build、build:single、verify:single 与定向 diff-check 全部退出码 `0`。
+- 浏览器验收：Chromium、Firefox、WebKit 的 HTTP 单文件均以 `data-h3-source=blob / data-h3-video=ready` 实际播放，`currentTime` 连续前进，解码尺寸 `960×540`，media error 为 `null`，console error 为 `0`。Chromium 与 WebKit 完成任务卡确认后的自动 A1 交接，最终为 `opening_handoff / A1 / a1_2245_opening / c4_a1_lobby`，一个 Phaser canvas，输入恢复，`contractFailures=[]`；WebKit 的 retry、live-ready、release 使用同一 requestId，未要求用户点击重试。Vite URL 分支以 `data-h3-source=url` 播放并通过；减少动态效果模式进入 `fallback`、暂停隐藏视频并保留 Canvas，console error 为 `0`。
+- 刷新与 DEV 边界：旧 `c4-prologue-task-card` ID 按 Task14 的兼容规则迁移到 canonical `c4-755-opening`，重载会自动完成 A1 安全恢复，不作为可停留的独立任务卡节点。已提交的正式 `opening_handoff` 仍以 `43834ms` 初始化序幕层，并在 A1 ready 后自动释放。该行为与当前 11 个第四章正式 DEV 节点合同一致。
+- 单文件与 Git：最终 ignored `demo/index.html` 为 `246712370` bytes，SHA-256 `3c8ecf5963200ba6da727199e1fc71d391ea2de5536542d516e229ffc4a8609a`，含 `2` 个 inline script、`1` 个 inline style，外部 script/stylesheet 标签均为 `0`。Playwright CLI 阻止新的 `file://` 导航，当前通过 HTTP MSE 播放与单文件结构校验。按用户要求未执行三层碰撞/遮挡专项。Task16 只读 fetch 确认当前 checkout 比 `origin/main` 少 `17` 个提交；清理 H3 临时快照后，工作树有 `104` 个 modified tracked files 与 `586` 个 untracked files；未执行 stage、commit、push、merge、rebase 或 reset。
+
+## 2026-08-22 《7:55》MiniMax H3 宣传 PV 锚点、分镜与节奏预演
+
+- 剧情范围：基于当前实机和 DEV 检查点，确定 `35s` 宣传链路为“07:55 闹钟 → 首页数字调查 → 0798 签到 → 图书馆 022 → 755 米骑行 → 剧院聚光灯 → 启真湖皮划艇 → 22:45 A1 → 202 最后一分钟 → 早晨双签到 → 07:55 片名”。正式外景资产仍缺少确认，本版不展示该段。
+- 实机锚点：通过浏览器逐一进入当前章节检查点，保留 `10` 张 `1920×1080` Picture 锚点；新增玩家、纸条、自行车、骑行动作、皮划艇、白衣 NPC、绿衣 NPC 共 `7` 张 Subject 锚点。全部上传图为 PNG、8-bit sRGB、无 Alpha，最大 `2048×2048`，低于 `5760×5760`。
+- H3 方案：`docs/plans/2026-08-22-minimax-h3-game-promo-pv.md` 提供三段全参考六段式英文提示词、逐秒分镜、逐片上传映射、UI 保真限制、NPC 数量限制、返工顺序、后期字幕、配音稿、音乐音效表和验收清单。三个静音片段为 `11s + 12s + 12s`；H3 实际生成与播放次数仍为 `0`。
+- 可视交付：资产包位于 `docs/assets/minimax-h3-promo-pv-20260822/`，包含 Picture/Subject 锚点、原始截图副本、三张片段分镜、总览、片尾卡、CSV 剪辑时间线与 manifest。`seven_fifty_five_promo_pv_animatic_35s.mp4` 使用当前游戏音乐和八个节点音效完成截图硬切预演。
+- 验证：manifest 通过 JSON 解析；六个 H3 提示字段各出现 `3` 次；17 张上传锚点均通过尺寸、8-bit sRGB 与三通道检查。预演视频为 `1920×1080 / 24 FPS / H.264 / yuv420p`，音频为 `AAC / 44.1kHz / stereo`，时长 `35.000000s`，文件大小 `4565816` bytes；关键帧接触表经人工检查后已删除。本轮没有修改游戏运行时代码，没有执行 build、Git 写或 H3 在线生成。
+
+## 2026-08-22 MiniMax CLI 与 Hailuo 2.3 实际生成
+
+- CLI 与额度：按用户更正改用 `MiniMax-Hailuo-2.3`，安装并立即验证官方 `mmx-cli 1.0.22`；`mmx auth status` 使用本机 `config.json` 中已保存的 API Key，输出只显示遮罩值。生成前视频额度为 `5/5`，生成后本周期使用 `5/5`、周额度使用 `5/35`。当前 CLI 的 Hailuo 2.3 路径只接受单张首帧，`--duration / --ratio / --reference-image / --last-frame` 属于 H3 或其他模型路径，因此五段均采用服务默认 6 秒 I2V。
+- 五段原始输出：食堂上车、剧院抵达、图书馆 022、启真湖皮划艇、202 最后一分钟均通过一条直接阻塞的 `mmx video generate --model MiniMax-Hailuo-2.3 --image ... --download ...` 命令生成。五段统一为 `1364×768 / 24 FPS / 141 帧 / 5.875s / H.264 / yuv420p / 无音轨`，对应 MiniMax file ID 已写入 `docs/assets/minimax-hailuo23-generation-20260822/task-results.json`。启真湖首次提交遇到 `HTTP 502`；额度仍为 `3` 且无文件，确认未扣次数后只重试一次并成功。
+- 画面验收：食堂段完成俯视地图、近景上车和后视骑行，但尾段远景路人增多且纸条靠近车轮；剧院段完成抵达与减速，但未完整下车或到达北向俯视尾帧。两段列为审片素材。图书馆保持单玩家、022 桌和 HUD；启真湖保持单艇、单人、北向投影与交替划桨；202 保持单玩家、单时间碎片并以青光结束，三段列为宣传可用。五段首/中/尾接触表已作为正式交付保留。
+- 拼接交付：`canteen_755_theater_hailuo23_review_13_75s.mp4` 为 `1920×1080 / 24 FPS / 330 帧 / 13.75s / H.264 + AAC`，中间 2 秒实机画面表示真实可玩 755 米阶段；SHA-256 为 `fcea25d58b7687c3ffbd87e950d3f9bb5b682ea92a31a9d0193fc4576c3c75dc`。`seven_fifty_five_hailuo23_promo_mv_35s.mp4` 为 `1920×1080 / 24 FPS / 840 帧 / 35.00s / H.264 + AAC`，组合五段 Hailuo 画面、实机截图、片尾卡和当前游戏音乐音效；SHA-256 为 `82e6fa143e6fdb49baddb5ab0287b56d50459d593ce091a257e21d5be9cc24a8`。
+- 边界：本轮实际调用 MiniMax 并耗用五次视频额度，没有修改游戏运行时代码，没有把视频接入章节控制器，没有运行 build 或 Git 写操作。运行时仍保持“生成上车片段 → 真实 755 米玩法 → 生成抵达片段”，后续接入前需要对两段衔接视频做用户视觉选择，并决定是否在新额度周期重生成两处偏差。
+
+## 2026-08-22 Hailuo 2.3 衔接与宣传 MV 用户拒绝记录
+
+- 验收结论：用户明确反馈两份成片均不可用。`canteen_755_theater_hailuo23_review_13_75s.mp4` 与 `seven_fifty_five_hailuo23_promo_mv_35s.mp4` 已在 `task-results.json` 标记为 `user_acceptance=rejected / integration_allowed=false`；两条衔接原片同步标记为 `rejected_by_user`，三条宣传原片改为待逐条复验。此前“可审片”“宣传可用”结论由本记录废止。
+- 失败根因：食堂段在单个 6 秒任务中跨越北向俯视、人物近景和后视 3D，导致人物比例、自行车结构、NPC 数量和纸条位置漂移；剧院段同时要求后视接近、停车、下车和北向俯视交接，导致建筑几何与横向物体变形。当前 Hailuo 2.3 CLI 只有一张首帧，无法锁定精确尾帧或多锚点一致性。
+- 重做约束：新增 `docs/plans/2026-08-22-hailuo23-transition-promo-redesign-after-rejection.md` 与 `docs/assets/minimax-hailuo23-generation-20260822/prompts/hailuo23-retry-prompts.md`。每个生成任务只允许一个投影视角和一个动作；食堂俯视、后视骑行与剧院俯视之间由实机定帧、短遮挡和硬切交接。
+- 下一步门禁：`mmx quota` 复核视频周期为 `5/5`，恢复时间 `2026-08-23 00:00 CST`，周额度为 `5/35`。恢复后只提交 A1 后视骑行起步 6 秒验证片，抽取 `0 / 36 / 72 / 108 / 140` 帧并制作接触表；用户未明确通过时停止第二条和宣传 MV 的付费生成。
+
+## 2026-08-22 第四章 H3 MiniMax 场景配音修复与接入
+
+- 缺陷定位：逐段检查 `43.833333s` H3 画面、现有四角色语音目录、字幕时间线和单文件载入结果。玩家 `English_Diligent_Man` 与旁白 `English_expressive_narrator` 已与现有片头时间窗匹配，继续复用原文件；保洁员旧句长 `6211ms`，超过门厅可用窗口，保安旧句长 `4805ms` 且时间线没有触发，因此只重做两段 NPC 台词。`lake_exit` 与 `entrance` 保留画面和现场音，不新增旁白，避免同一信息重复说明。
+- 场景提示词：新增 `docs/plans/2026-08-22-chapter4-h3-scene-voice-prompts.md`，记录六阶段镜头语义、角色声线、英文合成文本、中文字幕、语速、情绪、响度规范、触发点和最长时长。保洁员继续使用 `Chinese (Mandarin)_Kind-hearted_Antie`，保安继续使用 `English_Trustworthy_Man`；声线 ID 与之前配音一致。
+- MiniMax 实际生成：通过本机已认证的 `mmx 1.0.15` 执行 `speech synthesize` 并进行一次短句节奏修订。最终保洁员为 `Careful, I just mopped. That paper went inside.`，字幕“保洁员｜小心，刚拖过。那张纸往里去了。”；成品 `2841ms / 47796 bytes / 32kHz mono MP3`，SHA-256 `3a7d8182c146d98e326e3fef26ff05873b5a95b305bec17c20b27e374439c465`。最终保安为 `The North Teaching Building is closing. Please pack up.`，字幕“保安｜同学，北教要清楼了，请收好东西。”；成品 `2413ms / 41460 bytes / 32kHz mono MP3`，SHA-256 `b49d31593914e24bf459b4f36670afffbe6abf7efd1d96e5da33e53dd4c408b4`。
+- 一致性处理：生成器新增场景、触发点、时长预算、情绪和 `short_dialogue_consistent_v2` 校验；两段短对话统一经过轻压缩和双通道响度归一。最终保洁员为 `-17.2 LUFS / -1.9 dBFS true peak`，保安为 `-17.8 LUFS / -1.9 dBFS true peak`；既有玩家和旁白分别为 `-16.4 / -16.7 LUFS`。当前四段自动测量差值处于约 `1.4 LU` 范围，主观音色和表演接受仍需用户试听确认。
+- 时间线接入：保洁员在 `29450ms` 进入，`32291ms` 结束，距门厅阶段结束保留 `1126ms`；保安在 `36000ms` 进入，`38413ms` 结束，距广播静电提示保留 `2629ms`。`PrologueTimeline.ts`、运行时音频表、内容清单和生成清单已同步，故事验证器要求两个正式 beat 存在，同时继续禁止备用肖像分支抢占 H3 画面。
+- 验证：最终 `generate-chapter4-prologue-voice-audio --verify-only`、`chapter4:validate-story`、`typecheck`、`build:single`、`verify:single` 与定向 `git diff --check` 全部退出码 `0`。Chromium 从正式存档进入单文件，实测在视频 `29.543299s` 和 `36.126699s` 分别出现两条字幕并载入对应内嵌音频，console error/warning 均为 `0`。最终 `demo/index.html` 为 `246590721` bytes，SHA-256 `a1ac086d94ad0de439a903fd3f8b8a72521ff8ae6c9a3401e078b13843c3dd70`。
+- 边界与清理：本轮未生成“灿若星辰”，未运行三层浏览器碰撞与遮挡专项，未执行 Git stage、commit、push、merge、rebase 或 reset。浏览器会话和本轮临时帧、响度文件、Playwright 页面快照已关闭并移至 macOS 废纸篓，可恢复。
+
+## 2026-08-22 第四章 H3 配音版 Demo 单文件打包
+
+- 构建：使用仓库正式入口 `npm run build:single` 重新执行 TypeScript 检查与 Vite demo 构建，`606` 个模块完成转换，脚本和样式均内嵌到 `demo/index.html`，构建退出码为 `0`。
+- 单文件验证：`npm run verify:single` 通过；最终文件包含 `2` 个内嵌 script、`1` 个内嵌 style，无需额外部署资源。文件大小为 `246590721` bytes，修改时间为 `2026-08-22 13:32:09 CST`，SHA-256 为 `a1ac086d94ad0de439a903fd3f8b8a72521ff8ae6c9a3401e078b13843c3dd70`。
+- 配音封装：对最终 HTML 的实际内容进行 Base64 全字节匹配。保洁员 MP3 `embedded=true / 63728` 个 Base64 字符，保安 MP3 `embedded=true / 55280` 个 Base64 字符；四角色语音生成清单再次通过 `--verify-only`，没有重新生成文件。
+- 交付边界：当前可交付入口为 `demo/index.html`。本轮未创建重复 ZIP，避免为一个单文件增加第二份约 `235MiB` 副本；未执行 Git stage、commit、push、merge、rebase 或 reset。
+
+## 2026-08-22 方案 A GitHub main 交付预检
+
+- 交付范围：从当前工作区提取用户批准的 `432` 个 active/browser/docs 路径，并在最新 `origin/main` 上完成三方合并；相同文件自动消除后，正式提交差异为 `126` 个路径。交付继续排除 `docs/assets/**` 生成过程素材、`godot/**`、`public/godot/**`、三项退役 Godot 脚本、`.playwright-mcp/**`、`output/**` 与 ignored `demo/index.html`。
+- 合并保留：保留全章节无朝向交互、字幕精简、第四章边界和 H3 接入，同时补回远端 main 独有的食堂入口半径、点餐机锚点、开发检查点时钟、旧存档迁移、剧院实体位置、校园地图与 Chapter 3 修复。食堂餐盘范围调试层保持删除。
+- 安全与体积：暂存源码密钥模式扫描通过，`git diff --check` 通过；正式提交最大文件为 `8282814` bytes，未发现超过 `90 MiB` 的文件。
+- fresh 验证：Chapter 3 音频合同 `77/77`、紫金港双地图合同、RPG player、全章节无朝向守卫、Chapter 4 assets/story/topology/runtime/Task14、TypeScript、production build、single-file build 与 single-file verifier 均退出码 `0`。topology 为 `2495` 项断言，runtime 为 `1125` 项断言，Task14 为 `220` 项断言。
+- 本轮生成的 ignored `demo/index.html` 为 `247228662` bytes，含 `2` 个 inline scripts 与 `1` 个 inline style，仅用于构建验收，不进入方案 A 的普通 Git 提交。按用户批准边界未重复运行三层浏览器碰撞与遮挡专项。

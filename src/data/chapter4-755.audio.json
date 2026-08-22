@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "events": {
+    "chapter4_time_swap_committed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "17_p08_settings_gear_drop_flip",
+          "volume": 0.46,
+          "playbackRate": 0.72
+        },
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_clock_chime",
+          "offsetMs": 260,
+          "volume": 0.42
+        }
+      ]
+    },
+    "chapter4_bakery_conveyor_stop": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_canteen_tray_return",
+          "volume": 0.56
+        }
+      ]
+    },
+    "room204_drawer_opened": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_shelf_slide_v2",
+          "volume": 0.56
+        }
+      ]
+    },
+    "maintenance_cart_roll_started": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_canteen_cart_roll",
+          "volume": 0.56
+        }
+      ]
+    },
+    "clock_gear_repaired": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "17_p08_settings_gear_drop_flip",
+          "volume": 0.52
+        }
+      ]
+    },
+    "blackout_committed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_lights_powerdown",
+          "volume": 0.62
+        }
+      ]
+    },
+    "power_zone_toggled": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_theater_mode_switch",
+          "volume": 0.48
+        }
+      ]
+    },
+    "final_chase_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_ch4_prologue_night_pursuit",
+          "action": "play",
+          "volume": 0.2,
+          "loop": true
+        }
+      ]
+    },
+    "final_chase_failed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_failure",
+          "volume": 0.72
+        }
+      ]
+    },
+    "final_chase_succeeded": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_success",
+          "volume": 0.75
+        }
+      ]
+    },
+    "final_minute_installed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_clock_chime",
+          "volume": 0.58
+        }
+      ]
+    },
+    "morning_checkin_card_accepted": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_library_gate_scan_v2",
+          "volume": 0.62
+        }
+      ]
+    },
+    "morning_checkin_paper_accepted": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_receipt_slide_v2",
+          "volume": 0.66
+        }
+      ]
+    },
+    "morning_checkin_completed": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "27_p11_checkin_submit_button_press",
+          "offsetMs": 900,
+          "volume": 0.64
+        }
+      ]
+    },
+    "chapter4_755_scene_closed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        }
+      ]
+    }
+  }
+}

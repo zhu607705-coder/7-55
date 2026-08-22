@@ -204,7 +204,41 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   magneticFishingRod: object([
     { target: "qizhen-clipped-paper", result: "retain" },
     { target: "qizhen-chase-finish", result: "consume" }
-  ])
+  ]),
+  attendanceRecordPaper: paper({
+    heading: "签到记录纸",
+    fields: [
+      { label: "状态", value: "待补全" },
+      { label: "用途", value: "教学楼签到" }
+    ],
+    body: [
+      "纸面记录停在 07:55 前后，签字栏还空着。",
+      "它会暂时离开你的道具栏，但最后仍需要回到签到口。"
+    ],
+    footer: "边缘有多次折返留下的旧压痕。"
+  }, [
+    { target: "chapter4-noticeboard-paper", result: "retain" },
+    { target: "chapter4-attendance-slot", result: "consume" }
+  ]),
+  oldClockHourHand: object([{ target: "chapter4-hall-clock-hour-hand-socket", result: "consume" }]),
+  clockPositioningPlate: object([{ target: "chapter4-hall-clock-positioning-slot", result: "consume" }]),
+  shortPryBar: object([{ target: "chapter4-cleaning-cart-wheel-cover", result: "consume" }]),
+  universalLubricatingOil: object([
+    { target: "chapter4-cleaning-cart-wheel", result: "retain" },
+    { target: "chapter4-hall-clock-gear", result: "consume" }
+  ]),
+  finalMinute: paper({
+    heading: "最后一分钟",
+    fields: [
+      { label: "来源", value: "202 阶梯教室投影" },
+      { label: "状态", value: "待归位" }
+    ],
+    body: [
+      "它是被偷走的最后一分钟，需要回到旧钟分针端点。",
+      "归位后，手机与世界时间会重新对齐。"
+    ],
+    footer: "纸面的光影像一截被掰下来的时间。"
+  }, [{ target: "chapter4-hall-clock-minute-endpoint", result: "consume" }])
 };
 
 export function isPaperItem(itemId: ItemId): boolean {

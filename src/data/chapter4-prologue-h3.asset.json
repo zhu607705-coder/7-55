@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "assetId": "chapter35_to_chapter4_h3_transition",
+  "sourcePath": "src/assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4",
+  "width": 960,
+  "height": 540,
+  "frameRate": 24,
+  "frameCount": 1052,
+  "durationMs": 43833.333,
+  "taskCardAtMs": 43834,
+  "videoCodec": "h264",
+  "pixelFormat": "yuv420p",
+  "audioTracks": 0,
+  "containerMode": "fragmented_mp4",
+  "mediaSourceType": "video/mp4; codecs=\"avc1.640028\"",
+  "sha256": "d5cb9e9a91ef778337f5eeef74fad59643ca1f393607f993d7e5fc8196678aff",
+  "inputs": [
+    {
+      "order": 1,
+      "fileName": "img2video-31233a69-f533-4741-afe6-7ccfdf06ba25.mp4",
+      "durationMs": 13666.667,
+      "sha256": "3bc8b7b37f36fc34054e818a4dd2e62fc84f26147596e72c9dd6a31de7fbeb0e"
+    },
+    {
+      "order": 2,
+      "fileName": "flying-paper-arcade.mp4",
+      "durationMs": 15083.333,
+      "sha256": "1a0432d4e4eaa8748e86c6560987ac1283adb2b87a6711026d2e13afc9361c89"
+    },
+    {
+      "order": 3,
+      "fileName": "09532bd73d59913e21df487ca7ee1629_raw.mp4",
+      "durationMs": 15083.333,
+      "sha256": "c80bfa3da25109673f0f1965e243719e18f6a35c3778687ffda0e060eb05043e"
+    }
+  ],
+  "sceneCutsMs": [0, 6708, 13667, 23542, 28750, 33417, 41042, 43834],
+  "runtimeAudioAuthority": "src/data/chapter4-prologue.audio.json",
+  "runtimeMusicPath": "src/assets/audio/chapter4/prologue/music_ch4_prologue_h3_44s.mp3",
+  "runtimeMusicDurationMs": 44000,
+  "runtimeMusicBitRate": 64306,
+  "runtimeMusicSha256": "0b8e5a0eb47f431af5d96f13b9bbff07580419b1641de9e6637fa59d7c4685c6"
+}

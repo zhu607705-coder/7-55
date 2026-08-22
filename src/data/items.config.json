@@ -397,5 +397,47 @@
     "desc": "安装磁吸附件的钓竿，可接近夹在金属结构上的纸张。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_clipped_paper|qizhen_chase_finish"
+  },
+  {
+    "id": "attendanceRecordPaper",
+    "name": "签到记录纸条",
+    "desc": "它跑得比证明快。签到时需要和校园卡一起使用。",
+    "sourceScene": "duan_yongping_temporal_maze",
+    "target": "a1_attendance_paper_slot"
+  },
+  {
+    "id": "oldClockHourHand",
+    "name": "旧时针",
+    "desc": "它绕了半栋楼，最后混进了刚出炉的面包。",
+    "sourceScene": "duan_yongping_temporal_maze",
+    "target": "a1_hall_clock_hour_hand_socket"
+  },
+  {
+    "id": "clockPositioningPlate",
+    "name": "钟面定位片",
+    "desc": "透明塑料片，边缘有两条短刻度。它知道 7 和 55 本来该站在哪里。",
+    "sourceScene": "duan_yongping_temporal_maze",
+    "target": "a1_hall_clock_positioning_plate_slot"
+  },
+  {
+    "id": "shortPryBar",
+    "name": "短撬棍",
+    "desc": "够短，刚好能撬开别人不想让你看的缝。",
+    "sourceScene": "duan_yongping_temporal_maze",
+    "target": "a1_cleaning_cart_wheel_cover"
+  },
+  {
+    "id": "universalLubricatingOil",
+    "name": "通用润滑油",
+    "desc": "它解决不了人生问题，但能让卡死的东西承认自己还会转。",
+    "sourceScene": "duan_yongping_temporal_maze",
+    "target": "a1_cleaning_cart_wheel|a1_hall_clock_gear"
+  },
+  {
+    "id": "finalMinute",
+    "name": "最后一分钟",
+    "desc": "一分钟。不多，但足够签到。",
+    "sourceScene": "duan_yongping_temporal_maze",
+    "target": "a1_hall_clock_minute_endpoint"
   }
 ]

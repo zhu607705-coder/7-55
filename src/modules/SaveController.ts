@@ -5,7 +5,8 @@ import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
   DEVELOPER_BIKE_START_KEY,
-  DEVELOPER_CANTEEN_DEFENSE_START_KEY
+  DEVELOPER_CANTEEN_DEFENSE_START_KEY,
+  DEVELOPER_SOURCE_KEY
 } from "../core/StorageKeys";
 import type { GameStore } from "../core/types";
 
@@ -18,6 +19,10 @@ export class SaveController {
   ) {}
 
   saveNow(): boolean {
+    if (this.sessionStorage.getItem(DEVELOPER_ACTIVE_KEY)) {
+      this.events.emit("game_save_failed", { reason: "developer_checkpoint_session" });
+      return false;
+    }
     const saveStore = new SaveStore(this.storage);
     const state = this.store.getState();
     const saved = saveStore.save(state) && saveStore.saveBikeArcade(state);
@@ -28,6 +33,7 @@ export class SaveController {
   resetProgress(): void {
     new SaveStore(this.storage).clear();
     this.sessionStorage.removeItem(DEVELOPER_ACTIVE_KEY);
+    this.sessionStorage.removeItem(DEVELOPER_SOURCE_KEY);
     this.sessionStorage.removeItem(DEVELOPER_BACKUP_KEY);
     this.sessionStorage.removeItem(DEVELOPER_BIKE_START_KEY);
     this.sessionStorage.removeItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY);

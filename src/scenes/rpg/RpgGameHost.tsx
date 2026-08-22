@@ -3,13 +3,11 @@ import Phaser from "phaser";
 import type { EventBus } from "../../core/EventBus";
 import type { SceneRouter } from "../../core/SceneRouter";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
-import { selectFeatureAccess } from "../../core/FeatureAccess";
-import { selectClockTint } from "../../core/ClockTime";
 import type {
   GameState,
   GameStore,
+  ChapterFourLightZoneId,
   ItemId,
-  ChapterFourRealityMode,
   LibraryLocationId,
   QuestViewModel,
   QizhenFishingSpotId,
@@ -28,7 +26,6 @@ import type {
 } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import { chapterThreeStoryLineKeyForSubtitle } from "../../data/chapterThreeStory";
-import chapterFourContent from "../../data/chapter4-temporal-maze.content.json";
 import qizhenLakeContent from "../../data/chapter3-qizhen-lake.content.json";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
@@ -45,21 +42,16 @@ import {
   type QizhenJournalDraftRejection,
   type QizhenPhotoCaptureRejection
 } from "../../modules/ChapterThreeQizhenLakeController";
-import { ChapterFourPrologueController } from "../../modules/ChapterFourPrologueController";
 import {
   ChapterFourTemporalMazeController,
-  type ChapterFourActionResult,
-  type ChapterFourCorridorPartitionId,
-  type ChapterFourMazeMoveIntent,
-  type ChapterFourWayfindingFragmentId
+  resolveChapterFour755SessionRequest,
+  validateChapterFour755IntentRequest,
+  type ChapterFour755Intent,
+  type ChapterFour755IntentResult
 } from "../../modules/ChapterFourTemporalMazeController";
-import {
-  CHAPTER_FOUR_MAZE_CLUES,
-  CHAPTER_FOUR_MAZE_IDS,
-  selectChapterFourMazeProjection
-} from "../../modules/ChapterFourMazeProjection";
-import { CHAPTER_FOUR_WECHAT_CLUES } from "../../modules/ChapterFourWechatModel";
-import { getDeveloperChapter4PrologueOffset } from "../../modules/DeveloperChannel";
+import { ChapterFourPowerPanelGame } from "../../components/temporal-maze/ChapterFourPowerPanelGame";
+import { useChapter4PrologueGateBlocked } from "../../components/Chapter4PrologueRuntimeGate";
+import { selectChapterFourMazeProjection } from "../../modules/ChapterFourMazeProjection";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
 import { QizhenLoopScene } from "./QizhenLoopScene";
@@ -72,8 +64,6 @@ import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpo
 import { QizhenLakeScene } from "./QizhenLakeScene";
 import type { QizhenFishingAction, QizhenFishingResult } from "./QizhenFishingRhythmModel";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
-import { Chapter4PrologueOverlay } from "./Chapter4PrologueOverlay";
-import { ChapterFourStairAlignmentScene } from "./ChapterFourStairAlignmentScene";
 import { ChapterFourTemporalMazeScene } from "./ChapterFourTemporalMazeScene";
 import { RpgRealityModeToggle } from "./RpgRealityModeToggle";
 import { createRpgBridge } from "./RpgBridge";
@@ -81,11 +71,16 @@ import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
 import { QuestTaskBar } from "../../components/QuestClueStrip";
 import { RpgSubtitleLayer } from "../../components/RpgSubtitleLayer";
-import { RpgClockCrownOverlay } from "../../components/RpgClockCrownOverlay";
 import { QizhenJournalCamera, type QizhenJournalCameraSession } from "../../components/QizhenJournalCamera";
-import { ElevatorTrackSyncGame } from "../../components/temporal-maze/ElevatorTrackSyncGame";
-import { WayfindingBoardGame } from "../../components/temporal-maze/WayfindingBoardGame";
 import { useMediaQuery } from "../../components/useMediaQuery";
+import {
+  CHAPTER_FOUR_755_SCENE_KEY,
+  revalidateChapterFour755SpatialAttestation,
+  resolveChapterFour755SpatialAttestationTarget,
+  type ChapterFour755RuntimeTargetContext,
+  type ChapterFour755SpatialAttestationFailure,
+  type ChapterFour755SpatialAttestationRequest
+} from "./RpgInteractionContract";
 
 interface RpgGameHostProps {
   store: GameStore;
@@ -166,41 +161,49 @@ interface QizhenPhotoSessionState {
   photo: QizhenPhotoRecord | null;
   draft: QizhenJournalDraft | null;
 }
-const CHAPTER_FOUR_MAZE_UI_PHASES = new Set<GameState["chapter4"]["phase"]>([
-  "arrival",
-  "airflow_overlay",
-  "elevator_track_sync",
-  "npc_schedule_route",
-  "corridor_bay_reconstruction",
-  "wayfinding_fragment_board",
-  "bridge_floor_discrimination"
-]);
-type ChapterFourMazeActionName =
-  | "observe_npc_schedule"
-  | "reconfigure_corridor_bay"
-  | "collect_wayfinding_fragment"
-  | "observe_old_signage"
-  | "observe_bridge_history"
-  | "align_wayfinding_board"
-  | "open_second_floor_return_window";
-
-interface ChapterFourMazeActionRequest {
-  requestId: string;
-  action: ChapterFourMazeActionName;
-  targetId?: string;
-  partitionId?: string;
-  fragmentId?: string;
-  order?: string[];
+interface ChapterFourPowerPanelSession {
+  openRequestId: string;
+  targetId: "a1_power_panel";
+  spatial: { distance: "within_range" };
+  runtimeTarget: ChapterFour755RuntimeTargetContext;
 }
-
-const CHAPTER_FOUR_MAZE_ACTIONS = new Set<ChapterFourMazeActionName>([
-  "observe_npc_schedule",
-  "reconfigure_corridor_bay",
-  "collect_wayfinding_fragment",
-  "observe_old_signage",
-  "observe_bridge_history",
-  "align_wayfinding_board",
-  "open_second_floor_return_window"
+const CHAPTER_FOUR_755_ACTIVE_PHASES = new Set<GameState["chapter4"]["phase"]>([
+  "opening_handoff",
+  "opening_paper_caught",
+  "hall_clock_inspection",
+  "bakery_hour_hand",
+  "room204_restore",
+  "maintenance_repair",
+  "blackout_light_grid",
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure"
+]);
+// These intents already own their visual or subtitle presentation inside the
+// Phaser scene or React overlay. The Host keeps the ownership list as contract
+// metadata and never opens a second player-facing subtitle surface for them.
+const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
+  "complete_opening_paper_flight",
+  "catch_attendance_paper",
+  "resolve_external_time_rejection",
+  "inspect_hall_clock",
+  "resolve_hall_clock_inspection",
+  "pull_hall_clock",
+  "inspect_bakery_conveyor_lamp",
+  "complete_bakery_conveyor_stop",
+  "observe_a3_reference",
+  "observe_room204_residual",
+  "place_room204_piece",
+  "complete_room204_projection",
+  "collect_positioning_plate",
+  "install_positioning_plate",
+  "begin_final_clock_drag",
+  "complete_minute_theft",
+  "open_power_panel",
+  "toggle_light_zone",
+  "lock_light_grid"
 ]);
 const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; itemId: ItemId | "" }>> = {
   readEntranceRecord: { targetId: "entrance_record", itemId: "" },
@@ -255,58 +258,21 @@ function emitQizhenItemFeedback(
   });
 }
 
-function isChapterFourMazeAction(value: string): value is ChapterFourMazeActionName {
-  return CHAPTER_FOUR_MAZE_ACTIONS.has(value as ChapterFourMazeActionName);
-}
-
-function chapterFourMazeActionFeedback(
-  action: ChapterFourMazeActionName,
-  result: ChapterFourActionResult,
-  chapter: GameState["chapter4"]
+function chapterFour755Feedback(
+  result: ChapterFour755IntentResult,
+  intentType?: string
 ): string {
-  if (result === "inactive") return "第四章教学楼流程尚未开始。";
-  if (result === "wrong_mode") {
-    return action === "observe_npc_schedule"
-      || action === "observe_old_signage"
-      || action === "observe_bridge_history"
-      ? "切到深色观察后再读取当前历史痕迹。"
-      : "切回浅色操作后再执行当前动作。";
+  if (intentType === "inspect_bakery_conveyor_edge" && result.reason === "locked") {
+    return "先点亮烤箱旁的检修灯，让传送带停一下。";
   }
-  if (result === "misaligned") return chapterFourContent.threeFloorMaze.wayfinding.misaligned;
-  if (result === "locked") {
-    if (
-      action === "observe_npc_schedule"
-      && !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.studentRouteSaved)
-    ) {
-      return "先打开微信，保存麦斯威夜间自习群的路线讨论，再核对二楼人员行程。";
-    }
-    if (
-      action === "align_wayfinding_board"
-      && !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.wayfindingCompared)
-    ) {
-      return "先在微信中归档新旧导视板照片，并请朋友完成对照。";
-    }
-    if (action === "reconfigure_corridor_bay") return chapterFourContent.threeFloorMaze.corridor.locked;
-    if (action === "open_second_floor_return_window") return chapterFourContent.threeFloorMaze.returnWindow.locked;
-    return chapterFourContent.threeFloorMaze.movementFeedback.missingEvidence;
-  }
-  if (result === "already_complete") return "当前证据或操作已经记录。";
-
-  if (action === "observe_npc_schedule") return chapterFourContent.threeFloorMaze.schedule.observed;
-  if (action === "reconfigure_corridor_bay") {
-    return chapter.solvedPuzzleIds.includes("corridor_bay_reconstruction")
-      ? chapterFourContent.threeFloorMaze.corridor.completed
-      : "一组可见隔断已经移开，主环路保持开放。";
-  }
-  if (action === "collect_wayfinding_fragment") {
-    const bothCollected = chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentWestCollected)
-      && chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentEastCollected);
-    return bothCollected ? "两块导视碎片均已取得。" : "已取得一块导视碎片。";
-  }
-  if (action === "observe_old_signage") return chapterFourContent.threeFloorMaze.wayfinding.oldSignageObserved;
-  if (action === "observe_bridge_history") return chapterFourContent.threeFloorMaze.bridge.observed;
-  if (action === "align_wayfinding_board") return chapterFourContent.threeFloorMaze.wayfinding.aligned;
-  return chapterFourContent.threeFloorMaze.returnWindow.opened;
+  if (result.reason === "accepted") return "当前操作已记录。";
+  if (result.reason === "already_complete") return "当前操作已经完成。";
+  if (result.reason === "wrong_mode") return "切换到目标要求的现实模式后重试。";
+  if (result.reason === "wrong_item") return "当前目标需要另一件道具。";
+  if (result.reason === "too_far") return "距离目标太远，请靠近可见交互区域。";
+  if (result.reason === "incorrect") return "当前组合与已记录的线索不一致。";
+  if (result.reason === "inactive") return "第四章教学楼流程尚未开始。";
+  return "当前剧情条件尚未满足。";
 }
 
 function setRpgInputEnabled(game: Phaser.Game, enabled: boolean): void {
@@ -335,18 +301,19 @@ export function RpgGameHost({
   store,
   router,
   events,
-  inputBlocked = false,
-  keyboardBlocked = false,
+  inputBlocked: inputBlockedProp = false,
+  keyboardBlocked: keyboardBlockedProp = false,
   embedded = false,
   showTaskBar = true,
   desktopSplit = false,
   onFocusPhone,
   onTaskNavigate
 }: RpgGameHostProps) {
+  const prologueGateBlocked = useChapter4PrologueGateBlocked();
+  const inputBlocked = inputBlockedProp || prologueGateBlocked;
+  const keyboardBlocked = keyboardBlockedProp || prologueGateBlocked;
   const [inspectedMapItem, setInspectedMapItem] = useState<ItemId | null>(null);
   const [shellRoot, setShellRoot] = useState<HTMLElement | null>(null);
-  const [chapter4ElevatorPanelOpen, setChapter4ElevatorPanelOpen] = useState(false);
-  const [chapter4WayfindingPanelOpen, setChapter4WayfindingPanelOpen] = useState(false);
   const [fishingSession, setFishingSession] = useState<QizhenFishingSessionSnapshot | null>(null);
   const [photoSession, setPhotoSession] = useState<QizhenPhotoSessionState | null>(null);
   const photoSessionRef = useRef<QizhenPhotoSessionState | null>(null);
@@ -354,32 +321,31 @@ export function RpgGameHost({
   const shellRef = useRef<HTMLElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const phaserHostRef = useRef<HTMLDivElement | null>(null);
-  const stair3dHostRef = useRef<HTMLDivElement | null>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const inputBlockedRef = useRef(inputBlocked);
   const keyboardBlockedRef = useRef(keyboardBlocked);
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
   const activeDirectionPointerRef = useRef<{ pointerId: number; startedAt: number } | null>(null);
   const directionStopTimerRef = useRef<number | null>(null);
-  const chapter4WayfindingRequestSerialRef = useRef(0);
+  const chapter4IntentRequestSerialRef = useRef(0);
+  const chapter4ResolvedRequestIdsRef = useRef<Set<string>>(new Set());
+  const chapter4PowerPanelPendingRequestRef = useRef<string | null>(null);
+  const [chapter4InteractionBlocked, setChapter4InteractionBlocked] = useState(false);
+  const [chapter4ScenePointerAllowed, setChapter4ScenePointerAllowed] = useState(false);
+  const [chapter4PowerPanelSession, setChapter4PowerPanelSession] =
+    useState<ChapterFourPowerPanelSession | null>(null);
+  const [chapter4PowerPanelPending, setChapter4PowerPanelPending] = useState(false);
+  const [chapter4PowerPanelFeedback, setChapter4PowerPanelFeedback] = useState<string | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
   const pendingFishingRef = useRef<{ sessionId: string; spotId: QizhenFishingSpotId } | null>(null);
   const itemInspectOpen = inspectedMapItem !== null;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
   const chaseActive = state.canteenHunt.phase === "chasing";
-  // 第四章序幕：第三章半完成四项手机取证后，才把旧画面作为恢复回放播放。
-  const prologueActive = state.rpgScene === "qizhen_lake"
-    && state.qizhenLake.phase === "complete"
-    && state.chapterThreeInterlude.phase === "replay_ready"
-    && state.chapterThreeInterlude.replayUnlocked
-    && !state.chapter4.prologueSeen;
-  const prologueInitialElapsedMs = prologueActive ? getDeveloperChapter4PrologueOffset() : 0;
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
   const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
   const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
-  const chapter4PrologueController = useMemo(() => new ChapterFourPrologueController(store, events), [events, store]);
   const chapter4Controller = useMemo(() => new ChapterFourTemporalMazeController(store, events), [events, store]);
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const theaterRuntimePort = useMemo(() => createTheaterRuntimePort(bridge), [bridge]);
@@ -387,14 +353,58 @@ export function RpgGameHost({
   const kayakPaddleGesturesRef = useRef<Map<number, KayakPaddleGesture>>(new Map());
   const [kayakPaddleSwipeState, setKayakPaddleSwipeState] = useState<Partial<Record<QizhenPaddleSide, KayakPaddleSwipePhase>>>({});
   const chapter4MazeActive = runtimeScene === "duan_yongping_temporal_maze";
-  const chapter4Stair3dActive = resolveRuntimeSceneKey(state) === "chapter-four-stair-alignment";
   const chapter4MazeUiActive = chapter4MazeActive
     && state.chapter4.prologueSeen
     && (state.chapter4.floor === "A1" || state.chapter4.floor === "A2" || state.chapter4.floor === "A3")
-    && CHAPTER_FOUR_MAZE_UI_PHASES.has(state.chapter4.phase);
-  const chapter4InteractionBlocked = chapter4ElevatorPanelOpen || chapter4WayfindingPanelOpen;
-  inputBlockedRef.current = inputBlocked || itemInspectOpen || chaseActive || prologueActive || chapter4InteractionBlocked || photoSessionOpen;
-  keyboardBlockedRef.current = keyboardBlocked || chaseActive || prologueActive || chapter4InteractionBlocked || photoSessionOpen;
+    && CHAPTER_FOUR_755_ACTIVE_PHASES.has(state.chapter4.phase);
+  const chapter4PowerPanelOpen = chapter4PowerPanelSession !== null;
+  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen;
+  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen
+    || (chapter4InteractionBlocked && !chapter4ScenePointerAllowed);
+  inputBlockedRef.current = inputBlocked || itemInspectOpen || chaseActive || chapter4PhaserInputBlocked || photoSessionOpen;
+  keyboardBlockedRef.current = keyboardBlocked || chaseActive || chapter4OverlayBlocked || photoSessionOpen;
+
+  useEffect(() => {
+    if (!chapter4MazeActive) {
+      chapter4ResolvedRequestIdsRef.current.clear();
+      setChapter4InteractionBlocked(false);
+      chapter4PowerPanelPendingRequestRef.current = null;
+      setChapter4PowerPanelSession(null);
+      setChapter4PowerPanelPending(false);
+      setChapter4PowerPanelFeedback(null);
+    }
+  }, [chapter4MazeActive]);
+
+  useEffect(() => {
+    if (state.chapter4.phase === "blackout_light_grid"
+      && !state.chapter4.lightGrid.locked) return;
+    chapter4PowerPanelPendingRequestRef.current = null;
+    setChapter4PowerPanelSession(null);
+    setChapter4PowerPanelPending(false);
+    setChapter4PowerPanelFeedback(null);
+  }, [state.chapter4.lightGrid.locked, state.chapter4.phase]);
+
+  useEffect(() => {
+    events.emit("rpg_chapter4_power_panel_open_state_changed", {
+      open: chapter4PowerPanelOpen,
+      openRequestId: chapter4PowerPanelSession?.openRequestId ?? null,
+      targetId: chapter4PowerPanelSession?.targetId ?? null
+    });
+    return () => {
+      if (chapter4PowerPanelOpen) {
+        events.emit("rpg_chapter4_power_panel_open_state_changed", { open: false });
+      }
+    };
+  }, [chapter4PowerPanelOpen, chapter4PowerPanelSession, events]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_story_input_lock_changed") return;
+      const locked = event.payload?.locked === true;
+      setChapter4InteractionBlocked(locked);
+      setChapter4ScenePointerAllowed(locked && event.payload?.allowScenePointer === true);
+    });
+  }, [events]);
 
   useEffect(() => {
     if (inspectedMapItem && !state.items[inspectedMapItem]) {
@@ -404,16 +414,6 @@ export function RpgGameHost({
   const coarsePointer = useMediaQuery(RPG_TOUCH_CONTROLS_QUERY);
   const touchControls = coarsePointer
     || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
-  // 第四章校时：时间染色层与移动端表冠都由共享 state 直接驱动
-  const clockCalibrationAccess = selectFeatureAccess(state).clockCalibration;
-  const clockPhaseActive = state.chapter4.phase === "clock_phase_lock";
-  const clockTint = clockCalibrationAccess && clockPhaseActive
-    ? selectClockTint(state.clockCalibration.displayedSeconds, state.clockCalibration.phase)
-    : null;
-  const clockCrownVisible = clockCalibrationAccess
-    && clockPhaseActive
-    && state.clockCalibration.step === "seconds_trim"
-    && coarsePointer;
   const bindShellRef = useCallback((node: HTMLElement | null) => {
     shellRef.current = node;
     setShellRoot((current) => current === node ? current : node);
@@ -423,150 +423,6 @@ export function RpgGameHost({
       ? current
       : { ...current, ui: { ...current.ui, selectedItem: itemId } });
   }, [store]);
-
-  const closeChapter4WayfindingPanel = useCallback((reason: "cancelled" | "accepted" | "state_changed") => {
-    setChapter4WayfindingPanelOpen(false);
-    events.emit("chapter4_wayfinding_panel_closed", { reason });
-    window.requestAnimationFrame(() => gameRef.current?.canvas.focus());
-  }, [events]);
-
-  const resolveChapterFourMazeAction = useCallback((request: ChapterFourMazeActionRequest): ChapterFourActionResult => {
-    const targetId = request.targetId ?? "";
-    const partitionId = request.partitionId ?? "";
-    const fragmentId = request.fragmentId ?? "";
-    let result: ChapterFourActionResult = "locked";
-
-    if (request.action === "observe_npc_schedule" && targetId === CHAPTER_FOUR_MAZE_IDS.scheduleTarget) {
-      result = chapter4Controller.observeNpcSchedule();
-    } else if (
-      request.action === "reconfigure_corridor_bay"
-      && (CHAPTER_FOUR_MAZE_IDS.partitions as readonly string[]).includes(partitionId)
-      && (!targetId || targetId === partitionId)
-    ) {
-      result = chapter4Controller.reconfigureCorridorBay(partitionId as ChapterFourCorridorPartitionId);
-    } else if (
-      request.action === "collect_wayfinding_fragment"
-      && (CHAPTER_FOUR_MAZE_IDS.fragments as readonly string[]).includes(fragmentId)
-      && (!targetId || targetId === fragmentId)
-    ) {
-      result = chapter4Controller.collectWayfindingFragment(fragmentId as ChapterFourWayfindingFragmentId);
-    } else if (
-      request.action === "observe_old_signage"
-      && targetId === CHAPTER_FOUR_MAZE_IDS.oldSignageTarget
-    ) {
-      result = chapter4Controller.observeOldSignage();
-    } else if (
-      request.action === "observe_bridge_history"
-      && targetId === CHAPTER_FOUR_MAZE_IDS.bridgeHistoryTarget
-    ) {
-      result = chapter4Controller.observeBridgeHistory();
-    } else if (
-      request.action === "align_wayfinding_board"
-      && targetId === CHAPTER_FOUR_MAZE_IDS.wayfindingBoardTarget
-      && Array.isArray(request.order)
-    ) {
-      result = chapter4Controller.alignWayfindingBoard(request.order);
-    } else if (
-      request.action === "open_second_floor_return_window"
-      && targetId === CHAPTER_FOUR_MAZE_IDS.returnWindowTarget
-    ) {
-      result = chapter4Controller.openSecondFloorReturnWindow();
-    }
-
-    const updatedChapter = store.getState().chapter4;
-    const projection = selectChapterFourMazeProjection(updatedChapter);
-    const feedback = chapterFourMazeActionFeedback(request.action, result, updatedChapter);
-    const response: Record<string, unknown> = {
-      requestId: request.requestId,
-      action: request.action,
-      result,
-      projection,
-      feedback
-    };
-    if (request.targetId !== undefined) response.targetId = request.targetId;
-    if (request.partitionId !== undefined) response.partitionId = request.partitionId;
-    if (request.fragmentId !== undefined) response.fragmentId = request.fragmentId;
-    if (request.order !== undefined) response.order = [...request.order];
-    events.emit("chapter4_maze_action_resolved", response);
-    events.emit("rpg_subtitle", {
-      text: feedback,
-      tone: result === "accepted" ? "success" : "system",
-      durationMs: result === "accepted" ? 3600 : 3000
-    });
-    return result;
-  }, [chapter4Controller, events, store]);
-
-  const requestChapter4WayfindingPanel = useCallback((requestId: string, targetId: string) => {
-    const chapter = store.getState().chapter4;
-    const hasBothFragments = chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentWestCollected)
-      && chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentEastCollected);
-    const alreadySolved = chapter.solvedPuzzleIds.includes("wayfinding_fragment_board");
-    let result: ChapterFourActionResult = "locked";
-    let open = false;
-
-    if (targetId !== CHAPTER_FOUR_MAZE_IDS.wayfindingBoardTarget) {
-      result = "locked";
-    } else if (alreadySolved) {
-      result = "already_complete";
-    } else if (chapter.mode !== "light") {
-      result = "wrong_mode";
-    } else if (
-      chapter.floor !== "A3"
-      || chapter.phase !== "wayfinding_fragment_board"
-      || !hasBothFragments
-      || !chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.oldSignageObserved)
-      || !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.wayfindingCompared)
-    ) {
-      result = "locked";
-    } else {
-      result = chapter4WayfindingPanelOpen ? "already_complete" : "accepted";
-      open = true;
-      events.emit("rpg_subtitle_clear");
-      setChapter4WayfindingPanelOpen(true);
-    }
-
-    const feedback = result === "wrong_mode"
-      ? "切回浅色操作后再调整导视板。"
-      : result === "locked"
-        ? !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.wayfindingCompared)
-          ? "先在微信中归档新旧导视板照片，并请朋友完成对照。"
-          : chapterFourContent.threeFloorMaze.movementFeedback.missingEvidence
-        : result === "already_complete" && !open
-          ? "这一段导视记录已经恢复。"
-          : chapterFourContent.threeFloorMaze.wayfinding.alignPrompt;
-    events.emit("chapter4_wayfinding_panel_resolved", {
-      requestId,
-      targetId,
-      result,
-      open,
-      projection: selectChapterFourMazeProjection(store.getState().chapter4),
-      feedback
-    });
-    if (!open) {
-      events.emit("rpg_subtitle", { text: feedback, tone: "system", durationMs: 3000 });
-    }
-  }, [chapter4WayfindingPanelOpen, events, store]);
-
-  useEffect(() => {
-    if (!chapter4MazeUiActive || state.chapter4.phase !== "elevator_track_sync") {
-      setChapter4ElevatorPanelOpen(false);
-    }
-  }, [chapter4MazeUiActive, state.chapter4.phase]);
-
-  useEffect(() => {
-    if (
-      chapter4WayfindingPanelOpen
-      && (!chapter4MazeUiActive || state.chapter4.floor !== "A3" || state.chapter4.phase !== "wayfinding_fragment_board")
-    ) {
-      closeChapter4WayfindingPanel("state_changed");
-    }
-  }, [
-    chapter4MazeUiActive,
-    chapter4WayfindingPanelOpen,
-    closeChapter4WayfindingPanel,
-    state.chapter4.floor,
-    state.chapter4.phase
-  ]);
 
   useEffect(() => {
     const host = phaserHostRef.current;
@@ -579,8 +435,7 @@ export function RpgGameHost({
       SCENE_CLASSES[initialScene],
       ...Object.entries(SCENE_CLASSES)
         .filter(([sceneId]) => sceneId !== initialScene)
-        .map(([, SceneClass]) => SceneClass),
-      ChapterFourStairAlignmentScene
+        .map(([, SceneClass]) => SceneClass)
     ];
     const game = new Phaser.Game({
       type: Phaser.CANVAS,
@@ -636,84 +491,31 @@ export function RpgGameHost({
   }, [bridge, store, theaterRuntimePort]);
 
   useEffect(() => {
-    if (!chapter4Stair3dActive) return undefined;
-    const host = stair3dHostRef.current;
-    if (!host) return undefined;
-    const game = gameRef.current;
-    if (game) setRpgInputEnabled(game, false);
-    let cancelled = false;
-    let dispose: (() => void) | undefined;
-    void import("../../tools/ChapterFourMonumentStairDemo").then(({ mountChapterFourMonumentStairDemo }) => {
-      if (cancelled) return;
-      dispose = mountChapterFourMonumentStairDemo(host, {
-        subscribeDirection: (listener) => events.subscribe((event) => {
-          if (event.name !== "rpg_direction_changed") return;
-          const x = event.payload?.x;
-          const y = event.payload?.y;
-          if (typeof x !== "number" || typeof y !== "number") return;
-          if (Math.abs(x) + Math.abs(y) !== 1) return;
-          listener({ x, y });
-        }),
-        onComplete: () => {
-          let chapter = store.getState().chapter4;
-          if (!chapter.stairEchoObserved) {
-            if (chapter.mode !== "dark") chapter4Controller.setMode("dark");
-            chapter4Controller.observeStairEcho();
-          }
-          chapter = store.getState().chapter4;
-          if (chapter.mode !== "light") chapter4Controller.setMode("light");
-          for (
-            let turn = 0;
-            turn < 4 && store.getState().chapter4.stairRotationQuarterTurns !== 1;
-            turn += 1
-          ) {
-            chapter4Controller.rotateStair("right");
-          }
-          const result = chapter4Controller.traverseAlignedStair();
-          const completed = result === "accepted" || result === "already_complete";
-          events.emit("rpg_subtitle", {
-            text: completed
-              ? "两处错位楼梯已连通，B2 通路开放。"
-              : "楼梯通关状态未能写入，请重新完成当前关卡。",
-            tone: completed ? "success" : "system",
-            durationMs: 4200
-          });
-        }
-      });
-    }).catch((error: unknown) => {
-      if (cancelled) return;
-      host.textContent = `三维楼梯加载失败：${error instanceof Error ? error.message : String(error)}`;
-    });
-    return () => {
-      cancelled = true;
-      dispose?.();
-    };
-  }, [chapter4Controller, chapter4Stair3dActive, events, store]);
-
-  useEffect(() => {
     const game = gameRef.current;
     if (!game) {
       return undefined;
     }
-    if (inputBlocked || itemInspectOpen || chaseActive || chapter4InteractionBlocked || chapter4Stair3dActive || photoSessionOpen) {
+    if (inputBlocked || itemInspectOpen || chaseActive || chapter4PhaserInputBlocked || photoSessionOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
     }
 
     setRpgInputEnabled(game, true);
-    setRpgKeyboardEnabled(game, !keyboardBlocked);
-    if (keyboardBlocked) events.emit("rpg_direction_changed", { x: 0, y: 0 });
+    setRpgKeyboardEnabled(game, !keyboardBlocked && !chapter4OverlayBlocked);
+    if (keyboardBlocked || chapter4OverlayBlocked) {
+      events.emit("rpg_direction_changed", { x: 0, y: 0 });
+    }
     const frame = window.requestAnimationFrame(() => {
       if (gameRef.current) {
         setRpgInputEnabled(gameRef.current, true);
-        setRpgKeyboardEnabled(gameRef.current, !keyboardBlocked);
+        setRpgKeyboardEnabled(gameRef.current, !keyboardBlocked && !chapter4OverlayBlocked);
       }
     });
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [chapter4InteractionBlocked, chapter4Stair3dActive, chaseActive, events, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
+  }, [chapter4OverlayBlocked, chapter4PhaserInputBlocked, chaseActive, events, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -782,217 +584,239 @@ export function RpgGameHost({
 
   useEffect(() => {
     return events.subscribe((event) => {
-      if (event.name === "chapter4_maze_action_requested") {
-        const requestId = String(event.payload?.requestId ?? "");
-        const rawAction = String(event.payload?.action ?? "");
-        if (!isChapterFourMazeAction(rawAction)) {
-          const feedback = "当前教学楼交互请求无效。";
-          events.emit("chapter4_maze_action_resolved", {
-            requestId,
-            action: rawAction,
-            targetId: String(event.payload?.targetId ?? ""),
-            result: "locked",
-            projection: selectChapterFourMazeProjection(store.getState().chapter4),
-            feedback
-          });
-          events.emit("rpg_subtitle", { text: feedback, tone: "system", durationMs: 3000 });
-          return;
-        }
-        const request: ChapterFourMazeActionRequest = { requestId, action: rawAction };
-        if (event.payload?.targetId !== undefined) request.targetId = String(event.payload.targetId);
-        if (event.payload?.partitionId !== undefined) request.partitionId = String(event.payload.partitionId);
-        if (event.payload?.fragmentId !== undefined) request.fragmentId = String(event.payload.fragmentId);
-        if (Array.isArray(event.payload?.order)) request.order = event.payload.order.map((entry) => String(entry));
-        resolveChapterFourMazeAction(request);
-        return;
-      }
-      if (event.name === "chapter4_wayfinding_panel_requested") {
-        requestChapter4WayfindingPanel(
-          String(event.payload?.requestId ?? ""),
-          String(event.payload?.targetId ?? "")
+      if (event.name !== "rpg_chapter4_755_intent_requested") return;
+      const validation = validateChapterFour755IntentRequest(event.payload);
+      const rejectRequest = (
+        reason: "invalid_request" | "duplicate_request" | "invalid_intent" | "system_failure",
+        feedback: string
+      ) => {
+        console.debug(`[chapter4-755] ${reason}: ${feedback}`);
+        const requestId = validation.valid ? validation.request.requestId : validation.requestId;
+        const playerFeedback = "交互失败，请重新靠近目标后重试。";
+        const result = {
+          accepted: false,
+          changed: false,
+          reason,
+          intentType: "invalid",
+          previousPhase: null,
+          phase: null
+        };
+        events.emit("rpg_chapter4_755_intent_resolved", {
+          requestId,
+          result,
+          projection: selectChapterFourMazeProjection(store.getState()),
+          feedback: playerFeedback
+        });
+        events.emit("rpg_chapter4_755_intent_feedback", {
+          requestId,
+          reason,
+          feedback: playerFeedback
+        });
+      };
+      if (!validation.valid) {
+        rejectRequest(
+          validation.reason,
+          validation.reason === "invalid_request"
+            ? "教学楼交互请求缺少有效编号或包含多余字段。请重试。"
+            : "当前教学楼交互请求无效。"
         );
         return;
       }
-      if (event.name === "chapter4_maze_move_requested") {
-        const requestId = String(event.payload?.requestId ?? "");
-        const requestedFloor = String(event.payload?.floor ?? "");
-        const roomId = String(event.payload?.roomId ?? "");
-        const checkpoint = String(event.payload?.checkpoint ?? "");
-        const requestedRoute = String(event.payload?.route ?? "");
-        const intent = (
-          (requestedFloor === "A1" || requestedFloor === "A2" || requestedFloor === "A3")
-          && (requestedRoute === "walk" || requestedRoute === "elevator" || requestedRoute === "stair")
-        )
-          ? {
-              floor: requestedFloor,
-              roomId,
-              checkpoint: checkpoint as ChapterFourMazeMoveIntent["checkpoint"],
-              route: requestedRoute
-            } satisfies ChapterFourMazeMoveIntent
-          : null;
-        const result = intent ? chapter4Controller.moveWithinMaze(intent) : "locked";
-        events.emit("chapter4_maze_move_resolved", {
-          requestId,
-          result,
-          floor: requestedFloor,
-          roomId,
-          checkpoint,
-          route: requestedRoute
-        });
+      const { requestId, intent, runtimeTarget } = validation.request;
+      if (chapter4ResolvedRequestIdsRef.current.has(requestId)) {
+        rejectRequest("duplicate_request", "这次教学楼交互已经处理，未重复写入。");
         return;
       }
-      if (event.name === "rpg_chapter4_mode_requested") {
-        chapter4Controller.setMode(String(event.payload?.mode ?? "light") as ChapterFourRealityMode);
+      if (intent.type === "complete_prologue_handoff") {
+        chapter4ResolvedRequestIdsRef.current.add(requestId);
+        rejectRequest(
+          "invalid_intent",
+          "第四章序幕交接仅由 App gate 提交。"
+        );
         return;
       }
-      if (event.name !== "rpg_chapter4_action_requested") return;
-      const action = String(event.payload?.action ?? "");
-      if (action === "inspect_elevator") {
-        const chapter = store.getState().chapter4;
-        const result = chapter.elevatorHistoryObserved
-          ? "accepted"
-          : chapter4Controller.observeElevatorHistory();
-        if (result === "accepted" || result === "already_complete") {
-          const updatedChapter = store.getState().chapter4;
-          if (!updatedChapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.elevatorAudioArchived)) {
-            events.emit("rpg_subtitle", {
-              text: "已记录主电梯历史提示音。打开微信的文件传输助手完成归档。",
-              tone: "task",
-              durationMs: 4200
+      let trustedIntent: ChapterFour755Intent = intent;
+      if ("targetId" in intent) {
+        const prepared = resolveChapterFour755SpatialAttestationTarget(
+          intent.targetId,
+          runtimeTarget
+        );
+        const attestationId = `host-spatial-${++chapter4IntentRequestSerialRef.current}`;
+        const emitAttestationFailure = (
+          reason: ChapterFour755SpatialAttestationFailure | "target_context_invalid"
+        ) => {
+          try {
+            events.emit("rpg_chapter4_755_spatial_attestation_failed", {
+              requestId,
+              attestationId,
+              targetId: intent.targetId,
+              reason
             });
-          } else {
-            events.emit("rpg_subtitle_clear");
-            setChapter4ElevatorPanelOpen(true);
+          } catch {
+            // Debug reporting cannot change the zero-write rejection.
           }
-        } else {
-          const text = result === "wrong_mode"
-            ? "切到深色观察后再读取轿厢、门体和进入窗口三条历史轨道。"
-            : !chapter.clueIds.includes(CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead)
-              ? "先打开微信，查看校园后勤服务发布的夜间运行通知。"
-              : "先完成一楼气流路径，再检查主电梯。";
-          events.emit("rpg_subtitle", { text, tone: "system", durationMs: 3000 });
+          chapter4ResolvedRequestIdsRef.current.add(requestId);
+          rejectRequest(
+            "invalid_request",
+            "当前交互位置无法由活动场景重新确认，请靠近可见目标后重试。"
+          );
+        };
+        if (!prepared) {
+          emitAttestationFailure("target_context_invalid");
+          return;
         }
-        return;
-      }
-      if (action === "board_elevator") {
-        const result = chapter4Controller.boardHistoricalElevator();
-        events.emit("rpg_subtitle", {
-          text: result === "accepted"
-            ? "已进入轿厢。门体开始关闭。"
-            : result === "already_complete"
-              ? "已经站在轿厢内。"
-              : "等待门体完全打开后再进入。",
-          tone: result === "accepted" ? "success" : "system",
-          durationMs: 2400
+        const request: ChapterFour755SpatialAttestationRequest = {
+          requestId,
+          attestationId,
+          sceneKey: CHAPTER_FOUR_755_SCENE_KEY,
+          committedPhase: store.getState().chapter4.phase as ChapterFour755SpatialAttestationRequest["committedPhase"],
+          targetId: prepared.context.targetId,
+          entityId: prepared.context.entityId,
+          bounds: { ...prepared.context.bounds }
+        };
+        const responses: unknown[] = [];
+        const unsubscribeAttestation = events.subscribe((attestationEvent) => {
+          if (attestationEvent.name === "rpg_chapter4_755_spatial_attestation_response") {
+            responses.push(attestationEvent.payload);
+          }
         });
-        return;
-      }
-      if (action === "elevator_replay_missed") {
-        chapter4Controller.markElevatorReplayMissed();
-        events.emit("rpg_subtitle", {
-          text: "六秒进入窗口已经结束。到主电梯前再次启动历史重放。",
-          tone: "system",
-          durationMs: 3000
+        try {
+          events.emit("rpg_chapter4_755_spatial_attestation_requested", { ...request });
+        } catch {
+          // The result below becomes no_response. The listener is still
+          // removed in finally, so a failed producer cannot leak responders.
+        } finally {
+          unsubscribeAttestation();
+        }
+        const revalidation = revalidateChapterFour755SpatialAttestation({
+          request,
+          responses,
+          target: prepared.contract,
+          claimedSpatial: intent.spatial
         });
+        if (!revalidation.accepted) {
+          emitAttestationFailure(revalidation.reason);
+          return;
+        }
+        trustedIntent = { ...intent, spatial: revalidation.spatial } as ChapterFour755Intent;
+      } else if (runtimeTarget !== undefined) {
+        chapter4ResolvedRequestIdsRef.current.add(requestId);
+        rejectRequest("invalid_request", "无目标交互不得携带运行时几何。");
         return;
       }
-      if (action === "complete_elevator_ride") {
-        const result = chapter4Controller.completeElevatorRide();
-        if (result !== "accepted") {
-          events.emit("rpg_subtitle", {
-            text: "轿厢历史尚未完整执行。",
-            tone: "system",
-            durationMs: 2400
+      const sessionResolution = resolveChapterFour755SessionRequest(
+        chapter4ResolvedRequestIdsRef.current,
+        requestId,
+        () => chapter4Controller.resolve755Intent(trustedIntent, runtimeTarget)
+      );
+      if (sessionResolution.status === "duplicate") {
+        rejectRequest("duplicate_request", "这次教学楼交互已经处理，未重复写入。");
+        return;
+      }
+      if (sessionResolution.status === "failed") {
+        rejectRequest("system_failure", "教学楼交互处理失败，请重试。");
+        return;
+      }
+      const result = sessionResolution.result;
+      const feedback = chapterFour755Feedback(result, trustedIntent.type);
+      const presentationOwner = CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS.has(trustedIntent.type)
+        ? "scene_or_overlay"
+        : "controller_feedback";
+      const projection = selectChapterFourMazeProjection(store.getState());
+      if (trustedIntent.type === "open_power_panel"
+        && result.accepted
+        && runtimeTarget
+        && runtimeTarget.targetId === "a1_power_panel"
+        && trustedIntent.spatial.distance === "within_range") {
+        setChapter4PowerPanelFeedback(null);
+        setChapter4PowerPanelSession({
+          openRequestId: requestId,
+          targetId: "a1_power_panel",
+          spatial: { distance: "within_range" },
+          runtimeTarget
+        });
+        try {
+          events.emit("power_panel_opened", {
+            requestId,
+            targetId: "a1_power_panel",
+            bounds: runtimeTarget.bounds
           });
+        } catch {
+          // Presentation/audio listeners cannot block the accepted panel session.
         }
-        return;
       }
-      const result = action === "observe_airflow"
-        ? chapter4Controller.observeAirflow()
-        : action === "guide_paper"
-          ? chapter4Controller.guidePaperToElevator()
-          : action === "observe_stair_echo"
-            ? chapter4Controller.observeStairEcho()
-            : action === "rotate_stair"
-              ? chapter4Controller.rotateStair(String(event.payload?.direction) === "left" ? "left" : "right")
-              : action === "traverse_stair"
-                ? chapter4Controller.traverseAlignedStair()
-          : "locked";
-      const feedback = action === "observe_airflow"
-        ? {
-            accepted: "已记录气流轨迹。切回浅色操作，前往迈斯威卷帘门。",
-            already_complete: "这条气流轨迹已经记录。",
-            wrong_mode: "切到深色观察后再读取断续水迹。",
-            incorrect: "选择的记录仍有冲突，重新核对后再提交。",
-            misaligned: "当前轨道没有对齐。",
-            locked: "当前阶段还不能记录这条轨迹。",
-            inactive: "第四章教学楼流程尚未开始。"
-          }[result]
-        : action === "guide_paper"
-          ? {
-              accepted: "暖风重新接上水迹，湿纸进入主电梯厅。",
-              already_complete: "纸条已经进入主电梯厅。",
-              wrong_mode: "切回浅色操作后再调整迈斯威暖风。",
-              incorrect: "选择的记录仍有冲突，重新核对后再提交。",
-              misaligned: "当前轨道没有对齐。",
-              locked: "先在深色观察中记录门厅的完整气流轨迹。",
-              inactive: "第四章教学楼流程尚未开始。"
-          }[result]
-          : action === "observe_stair_echo"
-            ? {
-                accepted: "已记录下层空调低频。切回浅色操作，旋转折返楼梯。",
-                already_complete: "下层回声已经记录。",
-                wrong_mode: "切到深色观察后再分辨三处回声。",
-                incorrect: "选择的记录仍有冲突，重新核对后再提交。",
-                misaligned: "当前轨道没有对齐。",
-                locked: "当前阶段还不能记录楼梯回声。",
-                inactive: "第四章教学楼流程尚未开始。"
-              }[result]
-            : action === "rotate_stair"
-              ? {
-                  accepted: "楼梯转动了九十度。",
-                  already_complete: "B2 通路已经接通。",
-                  wrong_mode: "切回浅色操作后再转动楼梯。",
-                  incorrect: "选择的记录仍有冲突，重新核对后再提交。",
-                  misaligned: "当前轨道没有对齐。",
-                  locked: "先在深色观察中记录下层回声。",
-                  inactive: "第四章教学楼流程尚未开始。"
-                }[result]
-              : action === "traverse_stair"
-                ? {
-                    accepted: "端点接通，已沿折返楼梯到达 B2。",
-                    already_complete: "B2 通路已经接通。",
-                    wrong_mode: "切回浅色操作后再通过楼梯。",
-                    incorrect: "选择的记录仍有冲突，重新核对后再提交。",
-                    misaligned: "当前轨道没有对齐。",
-                    locked: "两端仍未对齐。继续旋转中央楼梯段。",
-                    inactive: "第四章教学楼流程尚未开始。"
-                  }[result]
-                : "当前交互尚未开放。";
-      events.emit("rpg_subtitle", {
-        text: feedback,
-        tone: result === "accepted" ? "success" : "system",
-        durationMs: result === "accepted" ? 4200 : 3000
+      events.emit("rpg_chapter4_755_intent_resolved", {
+        requestId,
+        intentType: trustedIntent.type,
+        result,
+        projection,
+        feedback,
+        presentationOwner
+      });
+      events.emit("rpg_chapter4_755_intent_feedback", {
+        requestId,
+        intentType: trustedIntent.type,
+        reason: result.reason,
+        feedback,
+        presentationOwner
       });
     });
-  }, [
-    chapter4Controller,
-    events,
-    requestChapter4WayfindingPanel,
-    resolveChapterFourMazeAction,
-    store
-  ]);
+  }, [chapter4Controller, events, store]);
 
-  // 第四章校时：对齐成功后在 RPG 侧发成功字幕（文案取事件 payload.text）；
-  // clock_time_adjusted 无需订阅，染色层由 state.clockCalibration 直接驱动。
   useEffect(() => {
     return events.subscribe((event) => {
-      if (event.name !== "clock_calibration_aligned") return;
-      const text = String(event.payload?.text ?? "").trim();
-      if (!text) return;
-      events.emit("rpg_subtitle", { text, tone: "success", durationMs: 4200 });
+      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
+      const requestId = String(event.payload?.requestId ?? "");
+      if (!requestId || requestId !== chapter4PowerPanelPendingRequestRef.current) return;
+      chapter4PowerPanelPendingRequestRef.current = null;
+      setChapter4PowerPanelPending(false);
+      const result = event.payload?.result;
+      const accepted = typeof result === "object"
+        && result !== null
+        && (result as { accepted?: unknown }).accepted === true;
+      const intentType = String(event.payload?.intentType ?? "");
+      if (!accepted) {
+        setChapter4PowerPanelFeedback(
+          String(event.payload?.feedback ?? "配电请求未被接受，请重试。")
+        );
+        return;
+      }
+      if (intentType === "lock_light_grid") {
+        setChapter4PowerPanelFeedback("配电结果已锁定。");
+        setChapter4PowerPanelSession(null);
+        return;
+      }
+      setChapter4PowerPanelFeedback("区域供电状态已同步。");
     });
   }, [events]);
+
+  const submitChapterFourPowerPanelIntent = useCallback((
+    intent: { type: "toggle_light_zone"; zoneId: ChapterFourLightZoneId }
+      | { type: "lock_light_grid" }
+  ) => {
+    const session = chapter4PowerPanelSession;
+    if (!session || chapter4PowerPanelPendingRequestRef.current !== null) return;
+    const requestId = `host-power-panel-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4PowerPanelPendingRequestRef.current = requestId;
+    setChapter4PowerPanelPending(true);
+    setChapter4PowerPanelFeedback(null);
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: {
+        ...intent,
+        targetId: session.targetId,
+        spatial: session.spatial
+      },
+      runtimeTarget: session.runtimeTarget
+    });
+  }, [chapter4PowerPanelSession, events]);
+
+  const closeChapterFourPowerPanel = useCallback(() => {
+    if (chapter4PowerPanelPendingRequestRef.current !== null
+      || store.getState().chapter4.lightGrid.locked) return;
+    setChapter4PowerPanelSession(null);
+    setChapter4PowerPanelFeedback(null);
+  }, [store]);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -1566,13 +1390,13 @@ export function RpgGameHost({
 
   useEffect(() => {
     const handleFullscreenKey = (event: KeyboardEvent) => {
-      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4InteractionBlocked && !photoSessionOpen && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4OverlayBlocked && !photoSessionOpen && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         toggleRpgFullscreen();
       }
     };
     window.addEventListener("keydown", handleFullscreenKey);
     return () => window.removeEventListener("keydown", handleFullscreenKey);
-  }, [chapter4InteractionBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
+  }, [chapter4OverlayBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
 
   function direction(event: React.PointerEvent<HTMLButtonElement>, x: number, y: number) {
     if (directionStopTimerRef.current !== null) {
@@ -1742,32 +1566,15 @@ export function RpgGameHost({
     <main
       className={`rpg-stage ${runtimeScene === "campus_bootstrap" || runtimeScene === "campus_qizhen_loop" ? "is-campus-map" : ""} ${runtimeScene === "campus_qizhen_loop" ? "is-qizhen-approach" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "duan_yongping_temporal_maze" ? "is-chapter-four-temporal-maze" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
-      data-input-blocked={inputBlocked || itemInspectOpen || chapter4InteractionBlocked || photoSessionOpen ? "true" : "false"}
-      data-keyboard-blocked={keyboardBlocked || chapter4InteractionBlocked || photoSessionOpen ? "true" : "false"}
-      data-rpg-engine={chapter4Stair3dActive ? "three" : "phaser"}
-      data-rpg-engine-reason={chapter4Stair3dActive ? "chapter4_spatial_stair" : "web_runtime_only"}
+      data-input-blocked={inputBlocked || itemInspectOpen || chapter4OverlayBlocked || photoSessionOpen ? "true" : "false"}
+      data-keyboard-blocked={keyboardBlocked || chapter4OverlayBlocked || photoSessionOpen ? "true" : "false"}
+      data-rpg-engine="phaser"
+      data-rpg-engine-reason="web_runtime_only"
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
         <div ref={hostRef} className="rpg-canvas-host">
-          <div ref={phaserHostRef} className="rpg-phaser-host" hidden={chapter4Stair3dActive} />
-          <div
-            id="stair-demo"
-            ref={stair3dHostRef}
-            className="rpg-stair3d-host"
-            hidden={!chapter4Stair3dActive}
-            aria-label="第四章错位楼梯三维空间解谜"
-          />
+          <div ref={phaserHostRef} className="rpg-phaser-host" />
         </div>
-
-        {clockTint ? (
-          <div
-            className="rpg-time-tint"
-            aria-hidden="true"
-            style={{ background: clockTint.color, opacity: clockTint.alpha }}
-          />
-        ) : null}
-
-        {clockCrownVisible && !prologueActive ? <RpgClockCrownOverlay /> : null}
 
         {chaseActive ? (
           <CanteenChaseOverlay
@@ -1779,48 +1586,21 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {prologueActive ? (
-          <Chapter4PrologueOverlay
-            key={`chapter4-prologue-${prologueInitialElapsedMs}`}
-            events={events}
-            initialElapsedMs={prologueInitialElapsedMs}
-            onComplete={() => { chapter4PrologueController.completePrologue(); }}
+        {chapter4PowerPanelSession ? (
+          <ChapterFourPowerPanelGame
+            mask={state.chapter4.lightGrid.mask}
+            locked={state.chapter4.lightGrid.locked}
+            pending={chapter4PowerPanelPending}
+            feedback={chapter4PowerPanelFeedback}
+            onToggle={(zoneId) => submitChapterFourPowerPanelIntent({
+              type: "toggle_light_zone",
+              zoneId
+            })}
+            onLock={() => submitChapterFourPowerPanelIntent({ type: "lock_light_grid" })}
+            onClose={closeChapterFourPowerPanel}
           />
         ) : null}
 
-        {chapter4ElevatorPanelOpen && chapter4MazeUiActive ? (
-          <ElevatorTrackSyncGame
-            mode={state.chapter4.mode}
-            observed={state.chapter4.elevatorHistoryObserved}
-            initialStartSeconds={state.chapter4.elevatorSelectedStartSeconds}
-            attempts={state.chapter4.elevatorReplayAttempts}
-            onSwitchToLight={() => { chapter4Controller.setMode("light"); }}
-            onConfirm={(startSeconds) => {
-              const result = chapter4Controller.startElevatorReplay(startSeconds);
-              if (result === "accepted") setChapter4ElevatorPanelOpen(false);
-              return result;
-            }}
-            onClose={() => setChapter4ElevatorPanelOpen(false)}
-          />
-        ) : null}
-
-        {chapter4WayfindingPanelOpen && chapter4MazeUiActive ? (
-          <WayfindingBoardGame
-            onConfirm={(order) => {
-              const result = resolveChapterFourMazeAction({
-                requestId: `wayfinding-ui-${++chapter4WayfindingRequestSerialRef.current}`,
-                action: "align_wayfinding_board",
-                targetId: CHAPTER_FOUR_MAZE_IDS.wayfindingBoardTarget,
-                order: [...order]
-              });
-              if (result === "accepted" || result === "already_complete") {
-                closeChapter4WayfindingPanel("accepted");
-              }
-              return result;
-            }}
-            onCancel={() => closeChapter4WayfindingPanel("cancelled")}
-          />
-        ) : null}
 
         {photoSession ? (
           <div className="qizhen-journal-camera-overlay" role="dialog" aria-modal="true" aria-label={QIZHEN_CAMERA_TITLE}>
@@ -1837,7 +1617,7 @@ export function RpgGameHost({
           </div>
         ) : null}
 
-        {showTaskBar && !chaseActive && !prologueActive && !chapter4InteractionBlocked && !photoSessionOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
+        {showTaskBar && !chaseActive && !chapter4OverlayBlocked && !photoSessionOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
           <QuestTaskBar
             state={state}
             events={events}
@@ -1848,7 +1628,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {photoSessionOpen ? null : (
+        {photoSessionOpen || chapter4OverlayBlocked ? null : (
           <div className="rpg-system-actions">
             <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
             <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
@@ -1899,10 +1679,16 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {chapter4MazeUiActive && !chapter4InteractionBlocked ? (
+        {chapter4MazeUiActive && !chapter4OverlayBlocked ? (
           <RpgRealityModeToggle
             mode={state.chapter4.mode}
-            onToggle={() => chapter4Controller.setMode(state.chapter4.mode === "dark" ? "light" : "dark")}
+            onToggle={() => events.emit("rpg_chapter4_755_intent_requested", {
+              requestId: `host-mode-${++chapter4IntentRequestSerialRef.current}`,
+              intent: {
+                type: "set_mode",
+                mode: state.chapter4.mode === "dark" ? "light" : "dark"
+              }
+            })}
           />
         ) : null}
 
@@ -1948,11 +1734,12 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {!prologueActive && !chapter4InteractionBlocked && !fishingSession && !photoSessionOpen && (runtimeScene === "library_interior"
+        {!chapter4OverlayBlocked && !fishingSession && !photoSessionOpen && (runtimeScene === "library_interior"
           || runtimeScene === "dorm_hub"
           || runtimeScene === "canteen_interior"
           || (runtimeScene === "theater_interior" && !["spotlight_hunt", "reversal"].includes(state.theaterHunt.phase))
           || runtimeScene === "qizhen_lake"
+          || (runtimeScene === "duan_yongping_temporal_maze" && chapter4MazeUiActive)
           || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
           <RpgInventoryDock
             state={state}
@@ -1969,10 +1756,10 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || chaseActive || prologueActive || chapter4InteractionBlocked || Boolean(fishingSession) || photoSessionOpen}
+          blocked={inputBlocked || itemInspectOpen || chaseActive || chapter4PowerPanelOpen || Boolean(fishingSession) || photoSessionOpen}
         />
 
-        {state.actOne.controlsInstalled && touchControls && !chaseActive && !prologueActive && !chapter4InteractionBlocked && !photoSessionOpen && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
+        {state.actOne.controlsInstalled && touchControls && !chaseActive && !chapter4OverlayBlocked && !photoSessionOpen && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
             <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼 A 左收线、S 提竿、D 右收线按钮">
               <button
@@ -2048,7 +1835,7 @@ export function RpgGameHost({
               <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
             </nav>
           )
-        ) : state.actOne.controlsInstalled && touchControls && !chaseActive && !prologueActive && !chapter4InteractionBlocked ? (
+        ) : state.actOne.controlsInstalled && touchControls && !chaseActive && !chapter4OverlayBlocked ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"
@@ -2173,12 +1960,5 @@ function resolveRuntimeScene(state: GameState): RpgSceneId {
 }
 
 function resolveRuntimeSceneKey(state: GameState): string {
-  const scene = resolveRuntimeScene(state);
-  if (
-    scene === "duan_yongping_temporal_maze"
-    && (state.rpgCheckpoint === "c4_b3_landing" || state.rpgCheckpoint === "c4_b2_activity")
-  ) {
-    return "chapter-four-stair-alignment";
-  }
-  return SCENE_KEYS[scene];
+  return SCENE_KEYS[resolveRuntimeScene(state)];
 }

@@ -1,242 +1,2077 @@
 {
-  "schemaVersion": 1,
-  "worldSize": { "width": 1672, "height": 941 },
+  "schemaVersion": 2,
+  "coordinateSystem": {
+    "origin": "top_left",
+    "unit": "source_pixel",
+    "rectangleSemantics": "half_open"
+  },
+  "sourceAnnotationContract": {
+    "schema": "chapter4-map-annotations/v1",
+    "documentId": "chapter4-755-base-manual-review",
+    "reviewStatus": "approved_for_integration",
+    "file": "artifacts/chapter4-map-assets-20260820/chapter4-structure-annotations-user-v01.json"
+  },
+  "worldSize": {
+    "width": 1672,
+    "height": 941
+  },
+  "transportCore": {
+    "elevators": [
+      {
+        "id": "main_elevator",
+        "storyFloors": [
+          "A1",
+          "A2",
+          "A3"
+        ],
+        "floorEntryIds": [
+          "a1_main_elevator",
+          "a2_main_elevator",
+          "a3_main_elevator"
+        ]
+      }
+    ],
+    "stairs": [
+      {
+        "id": "main_stair",
+        "bounds": {
+          "x": 932,
+          "y": 145,
+          "width": 138,
+          "height": 107
+        },
+        "storyFloors": [
+          "A1",
+          "A2",
+          "A3"
+        ]
+      }
+    ]
+  },
+  "playerFootBoxContract": {
+    "sourceFile": "src/scenes/rpg/RpgPlayerTextures.ts",
+    "frameSize": {
+      "width": 96,
+      "height": 128
+    },
+    "displayScale": 0.65,
+    "sourceFootBox": {
+      "x": 33,
+      "y": 101.5,
+      "width": 30,
+      "height": 22.5
+    },
+    "worldFootBox": {
+      "width": 19.5,
+      "height": 14.625
+    }
+  },
+  "safeRoutes": {
+    "a1LobbyBakery": {
+      "displayFloor": 1,
+      "x": 490,
+      "y": 514,
+      "width": 420,
+      "height": 277
+    },
+    "a2TransportCorridor": {
+      "displayFloor": 2,
+      "x": 545,
+      "y": 136,
+      "width": 614,
+      "height": 716
+    },
+    "a2RoomPortalBand": {
+      "displayFloor": 2,
+      "x": 267,
+      "y": 328,
+      "width": 1151,
+      "height": 240
+    },
+    "a3ReferenceRoute": {
+      "displayFloor": 3,
+      "x": 711,
+      "y": 147,
+      "width": 762,
+      "height": 669
+    }
+  },
+  "bakeryRuntime": {
+    "storyFloor": "A1",
+    "statePlateId": "a1_1225_bakery",
+    "targetEntities": [
+      {
+        "targetId": "a1_bakery_inspection_lamp",
+        "entityId": "chapter4-bakery-inspection-lamp",
+        "installationBounds": { "x": 354, "y": 313, "width": 39, "height": 30 },
+        "standPosition": { "x": 374, "y": 386 },
+        "proximity": 56
+      },
+      {
+        "targetId": "a1_bakery_conveyor_edge",
+        "entityId": "chapter4-bakery-conveyor-edge",
+        "installationBounds": { "x": 286, "y": 332, "width": 17, "height": 29 },
+        "standPosition": { "x": 294, "y": 386 },
+        "proximity": 48
+      },
+      {
+        "targetId": "a1_bakery_hour_hand_pickup",
+        "entityId": "chapter4-bakery-hour-hand-pickup",
+        "installationBounds": { "x": 288, "y": 312, "width": 34, "height": 39 },
+        "standPosition": { "x": 294, "y": 386 },
+        "proximity": 48,
+        "visual": {
+          "texture": "chapter4_story_items",
+          "frame": "old_clock_hour_hand",
+          "pivot": { "x": 294, "y": 345 },
+          "uniformScale": 0.1,
+          "sourceInteractionBounds": { "x": 402, "y": 92, "width": 330, "height": 379 },
+          "sourceCell": { "x": 384, "y": 0, "width": 384, "height": 512 },
+          "sourcePivot": { "x": 460, "y": 415 }
+        }
+      }
+    ],
+    "baker": {
+      "textureFile": "src/assets/rpg/npcs/canteen/counter_aunties_2frame.png",
+      "framePair": 3,
+      "frames": [6, 7],
+      "origin": { "x": 0.5, "y": 1 },
+      "uniformScale": 0.65,
+      "position": { "x": 365, "y": 340 },
+      "collision": false,
+      "foregroundOcclusionId": "a1_foreground_018"
+    },
+    "crowd": {
+      "texture": "student_walk",
+      "collisionProfile": "playerFootBoxContract.worldFootBox",
+      "origin": { "x": 0.5, "y": 1 },
+      "displayScale": 0.65,
+      "routes": [
+        { "id": "bakery_student_01", "from": { "x": 548, "y": 620 }, "to": { "x": 610, "y": 620 }, "speed": 32, "endpointPauseMs": 360 },
+        { "id": "bakery_student_02", "from": { "x": 610, "y": 656 }, "to": { "x": 548, "y": 656 }, "speed": 28, "endpointPauseMs": 420 },
+        { "id": "bakery_student_03", "from": { "x": 548, "y": 692 }, "to": { "x": 610, "y": 692 }, "speed": 34, "endpointPauseMs": 300 }
+      ]
+    },
+    "walkabilityRoutes": [
+      {
+        "id": "bakery_direct_y560",
+        "waypoints": [
+          { "x": 620, "y": 560 },
+          { "x": 560, "y": 560 },
+          { "x": 510.5, "y": 560 },
+          { "x": 477, "y": 560 },
+          { "x": 477, "y": 470 },
+          { "x": 477, "y": 386 },
+          { "x": 374, "y": 386 },
+          { "x": 294, "y": 386 }
+        ]
+      },
+      {
+        "id": "bakery_alternate_y748",
+        "waypoints": [
+          { "x": 620, "y": 748 },
+          { "x": 560, "y": 748 },
+          { "x": 510.5, "y": 748 },
+          { "x": 477, "y": 748 },
+          { "x": 477, "y": 730 },
+          { "x": 477, "y": 470 },
+          { "x": 477, "y": 386 },
+          { "x": 374, "y": 386 },
+          { "x": 294, "y": 386 }
+        ]
+      }
+    ]
+  },
+  "room204Runtime": {
+    "storyFloor": "A2",
+    "statePlateId": "a2_1850_evening",
+    "roomBounds": { "x": 32, "y": 544, "width": 396, "height": 270 },
+    "residualGroupBounds": { "x": 44, "y": 556, "width": 372, "height": 246 },
+    "uniformScale": 0.25,
+    "approximate": true,
+    "transform": "uniform_scale_only",
+    "pairOffsets": {
+      "desk": { "x": 0, "y": -28 },
+      "chair": { "x": 0, "y": 0 }
+    },
+    "slotTargets": [
+      { "slotId": "morning_slot_01", "center": { "x": 94, "y": 609 }, "bounds": { "x": 84, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_02", "center": { "x": 171, "y": 609 }, "bounds": { "x": 161, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_03", "center": { "x": 289, "y": 609 }, "bounds": { "x": 279, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_04", "center": { "x": 366, "y": 609 }, "bounds": { "x": 356, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_05", "center": { "x": 94, "y": 686 }, "bounds": { "x": 84, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_06", "center": { "x": 171, "y": 686 }, "bounds": { "x": 161, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_07", "center": { "x": 289, "y": 686 }, "bounds": { "x": 279, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_08", "center": { "x": 366, "y": 686 }, "bounds": { "x": 356, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_09", "center": { "x": 94, "y": 757 }, "bounds": { "x": 84, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_10", "center": { "x": 171, "y": 757 }, "bounds": { "x": 161, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_11", "center": { "x": 289, "y": 757 }, "bounds": { "x": 279, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_12", "center": { "x": 366, "y": 757 }, "bounds": { "x": 356, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true }
+    ],
+    "initialPiecePairs": [
+      { "pieceId": "desk_pair_01", "chairFrame": "chair_r1c1", "deskFrame": "desk_r1c1", "residualFrame": "residual_r1c1", "position": { "x": 72, "y": 609 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
+      { "pieceId": "desk_pair_02", "chairFrame": "chair_r1c2", "deskFrame": "desk_r1c2", "residualFrame": "residual_r1c2", "position": { "x": 72, "y": 686 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
+      { "pieceId": "desk_pair_03", "chairFrame": "chair_r1c3", "deskFrame": "desk_r1c3", "residualFrame": "residual_r1c3", "position": { "x": 72, "y": 757 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
+      { "pieceId": "desk_pair_04", "chairFrame": "chair_r1c4", "deskFrame": "desk_r1c4", "residualFrame": "residual_r1c4", "position": { "x": 188, "y": 609 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
+      { "pieceId": "desk_pair_05", "chairFrame": "chair_r1c5", "deskFrame": "desk_r2c1", "residualFrame": "residual_r2c1", "position": { "x": 188, "y": 686 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
+      { "pieceId": "desk_pair_06", "chairFrame": "chair_r1c6", "deskFrame": "desk_r2c2", "residualFrame": "residual_r2c2", "position": { "x": 188, "y": 757 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
+      { "pieceId": "desk_pair_07", "chairFrame": "chair_r2c1", "deskFrame": "desk_r2c3", "residualFrame": "residual_r2c3", "position": { "x": 272, "y": 609 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
+      { "pieceId": "desk_pair_08", "chairFrame": "chair_r2c2", "deskFrame": "desk_r2c4", "residualFrame": "residual_r2c4", "position": { "x": 272, "y": 686 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
+      { "pieceId": "desk_pair_09", "chairFrame": "chair_r2c3", "deskFrame": "desk_r3c1", "residualFrame": "residual_r3c1", "position": { "x": 272, "y": 757 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
+      { "pieceId": "desk_pair_10", "chairFrame": "chair_r2c4", "deskFrame": "desk_r3c2", "residualFrame": "residual_r3c2", "position": { "x": 388, "y": 609 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
+      { "pieceId": "desk_pair_11", "chairFrame": "chair_r2c5", "deskFrame": "desk_r3c3", "residualFrame": "residual_r3c3", "position": { "x": 388, "y": 686 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
+      { "pieceId": "desk_pair_12", "chairFrame": "chair_r2c6", "deskFrame": "desk_r3c4", "residualFrame": "residual_r3c4", "position": { "x": 388, "y": 757 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true }
+    ],
+    "discussionTables": [
+      { "id": "group_table_1", "frame": "group_table_1", "position": { "x": 72, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_01", "desk_pair_02", "desk_pair_03"], "approximate": true },
+      { "id": "group_table_2", "frame": "group_table_2", "position": { "x": 188, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_04", "desk_pair_05", "desk_pair_06"], "approximate": true },
+      { "id": "group_table_3", "frame": "group_table_3", "position": { "x": 272, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_07", "desk_pair_08", "desk_pair_09"], "approximate": true },
+      { "id": "group_table_4", "frame": "group_table_4", "position": { "x": 388, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_10", "desk_pair_11", "desk_pair_12"], "approximate": true }
+    ],
+    "podium": {
+      "frame": "podium",
+      "position": { "x": 199.5, "y": 601 },
+      "drawerBounds": { "x": 179, "y": 549, "width": 41, "height": 52 },
+      "fixedAxisReference": true,
+      "approximate": true
+    },
+    "walkability": {
+      "sampleSteps": [2, 4],
+      "verticalAisleCenters": [132.5, 230, 327.5],
+      "verticalRange": { "fromY": 600, "toY": 792 },
+      "horizontalConnector": { "y": 623, "fromX": 132.5, "toX": 327.5 },
+      "playerFootBox": { "width": 19.5, "height": 14.625 }
+    },
+    "projectionHandshake": {
+      "screenBounds": { "x": 245, "y": 519, "width": 110, "height": 56 },
+      "misalignedAtMs": 120,
+      "stableAtMs": 360,
+      "commitAtMs": 900,
+      "stableText": "07:55 / 早到的人还没有开始后悔。"
+    }
+  },
+  "maintenanceRuntime": {
+    "storyFloor": "A1",
+    "statePlateId": "a1_2245_maintenance",
+    "approximate": true,
+    "pryBar": {
+      "frame": "short_pry_tool_candidate",
+      "pivot": { "x": 458, "y": 710 },
+      "uniformScale": 0.1,
+      "approximate": true
+    },
+    "cleaningCart": {
+      "texture": "cleaning_cart",
+      "position": { "x": 1115, "y": 716 },
+      "uniformScale": 0.65,
+      "visibleBounds": { "x": 1088, "y": 648, "width": 53, "height": 68 },
+      "footBounds": { "x": 1089, "y": 700, "width": 51, "height": 16 },
+      "wheelRegion": {
+        "coordinateSpace": "cleaning_cart_frame_local",
+        "sourceFrameSize": { "width": 144, "height": 128 },
+        "origin": { "x": 0.5, "y": 1 },
+        "bounds": { "x": 88, "y": 91, "width": 28, "height": 37 },
+        "visualRole": "programmatic_wheel_cover_and_wheel_interaction"
+      },
+      "approximate": true
+    },
+    "cleaner": {
+      "animationId": "cleaner_idle",
+      "position": { "x": 1160, "y": 716 },
+      "uniformScale": 0.65,
+      "footBounds": { "x": 1150, "y": 708, "width": 20, "height": 16 },
+      "approximate": true
+    },
+    "guard": {
+      "animationId": "guard_walk",
+      "position": { "x": 1105, "y": 560 },
+      "uniformScale": 0.65,
+      "footBox": { "width": 20, "height": 16 },
+      "initialPreviousWaypointId": "east_south",
+      "initialTargetWaypointId": "west_south",
+      "patrolSpeed": 84,
+      "pursuitSpeed": 140,
+      "returnSpeed": 96,
+      "confirmationMs": 400,
+      "sightLossMs": 900,
+      "coneRange": 220,
+      "coneHalfAngleDegrees": 36,
+      "closeRadius": 56,
+      "pauseRangeMs": [1000, 2000],
+      "maxStepMs": 50,
+      "patrolWaypoints": [
+        { "id": "stair_north", "x": 1001, "y": 214, "neighborIds": ["west_north", "east_north"] },
+        { "id": "west_north", "x": 588, "y": 220, "neighborIds": ["stair_north", "west_south"] },
+        { "id": "east_north", "x": 1105, "y": 220, "neighborIds": ["stair_north", "east_south"] },
+        { "id": "east_south", "x": 1105, "y": 560, "neighborIds": ["east_north", "west_south"] },
+        { "id": "west_south", "x": 588, "y": 560, "neighborIds": ["east_south", "west_north"] }
+      ],
+      "approximate": false
+    },
+    "repairedPush": {
+      "animationId": "cleaner_push_cart",
+      "from": { "x": 1138, "y": 716 },
+      "to": { "x": 1138, "y": 650 },
+      "durationMs": 900,
+      "approximate": true
+    },
+    "targetEntities": [
+      {
+        "targetId": "a1_cleaning_cart_wheel_inspection",
+        "entityId": "chapter4_cleaning_cart_wheel_inspection",
+        "installationBounds": { "x": 1125, "y": 691, "width": 19, "height": 25 },
+        "standPosition": { "x": 1060, "y": 716 },
+        "proximity": 72,
+        "boundsDerivation": {
+          "kind": "visible_cleaning_cart_frame_local_region",
+          "source": "maintenanceRuntime.cleaningCart.wheelRegion"
+        },
+        "approximate": true
+      },
+      {
+        "targetId": "a1_bakery_back_pry_bar",
+        "entityId": "chapter4_pry_bar_pickup",
+        "installationBounds": { "x": 442, "y": 691, "width": 32, "height": 38 },
+        "standPosition": { "x": 458, "y": 758 },
+        "proximity": 52,
+        "frame": "short_pry_tool_candidate",
+        "uniformScale": 0.1,
+        "boundsDerivation": {
+          "kind": "visible_story_item_manifest_interaction",
+          "spritesheetId": "chapter4_story_items",
+          "interactionId": "short_pry_tool_candidate_source_trigger"
+        },
+        "approximate": true
+      },
+      {
+        "targetId": "a1_cleaning_cart_wheel_cover",
+        "entityId": "chapter4_cleaning_cart_wheel_cover",
+        "installationBounds": { "x": 1125, "y": 691, "width": 19, "height": 25 },
+        "standPosition": { "x": 1060, "y": 716 },
+        "proximity": 72,
+        "boundsDerivation": {
+          "kind": "visible_cleaning_cart_frame_local_region",
+          "source": "maintenanceRuntime.cleaningCart.wheelRegion",
+          "visualState": "programmatic_open_cover"
+        },
+        "approximate": true
+      },
+      {
+        "targetId": "a1_cleaning_cart_oil_bottle",
+        "entityId": "chapter4_cleaning_cart_oil_bottle",
+        "installationBounds": { "x": 1091, "y": 647, "width": 22, "height": 31 },
+        "standPosition": { "x": 1060, "y": 716 },
+        "proximity": 72,
+        "frame": "lubricating_oil",
+        "pivot": { "x": 1102, "y": 677 },
+        "uniformScale": 0.08,
+        "boundsDerivation": {
+          "kind": "visible_story_item_manifest_interaction",
+          "spritesheetId": "chapter4_story_items",
+          "interactionId": "lubricating_oil_source_trigger"
+        },
+        "approximate": true
+      },
+      {
+        "targetId": "a1_cleaning_cart_wheel",
+        "entityId": "chapter4_cleaning_cart_wheel",
+        "installationBounds": { "x": 1125, "y": 691, "width": 19, "height": 25 },
+        "standPosition": { "x": 1060, "y": 716 },
+        "proximity": 72,
+        "boundsDerivation": {
+          "kind": "visible_cleaning_cart_frame_local_region",
+          "source": "maintenanceRuntime.cleaningCart.wheelRegion"
+        },
+        "approximate": true
+      },
+      {
+        "targetId": "a1_hall_clock_gear",
+        "entityId": "chapter4_hall_clock_gear",
+        "installationBounds": { "x": 940, "y": 30, "width": 122, "height": 120 },
+        "standPosition": { "x": 1001, "y": 214 },
+        "proximity": 86,
+        "frameBefore": "gear_stuttering",
+        "frameAfter": "gear_running",
+        "boundsDerivation": {
+          "kind": "visible_clock_frame_manifest_world_interaction",
+          "spritesheetId": "chapter4_clock_states",
+          "interactionId": "a1_world_trigger",
+          "floor": "A1"
+        },
+        "approximate": false
+      }
+    ]
+  },
+  "finalClockRuntime": {
+    "storyFloor": "A1",
+    "statePlateId": "a1_2245_maintenance",
+    "clockFrame": "gear_running",
+    "clockCenter": { "x": 1001, "y": 90 },
+    "minuteHandRadius": 36,
+    "initialAngleDegrees": 234,
+    "targetAngleDegrees": 240,
+    "releaseToleranceDegrees": 45,
+    "endpoint": {
+      "targetId": "a1_hall_clock_minute_endpoint",
+      "entityId": "chapter4_hall_clock_minute_endpoint",
+      "installationBounds": { "x": 971, "y": 52, "width": 16, "height": 16 },
+      "standPosition": { "x": 1001, "y": 214 },
+      "proximity": 148,
+      "boundsDerivation": {
+        "kind": "visible_programmatic_minute_endpoint_get_bounds",
+        "clockFrame": "gear_running",
+        "source": "finalClockRuntime.clockCenter+minuteHandRadius+initialAngleDegrees"
+      },
+      "approximate": false
+    },
+    "presentation": {
+      "lockAtMs": 0,
+      "minuteHandAtMs": 240,
+      "paperFlightAtMs": 680,
+      "commitAtMs": 1040,
+      "feedbackAtMs": 1160
+    },
+    "approximate": false
+  },
+  "lightGridRuntime": {
+    "storyFloor": "A1",
+    "statePlateId": "a1_0754_blackout",
+    "panel": {
+      "targetId": "a1_power_panel",
+      "entityId": "chapter4_power_panel",
+      "installationBounds": { "x": 493, "y": 528, "width": 67, "height": 124 },
+      "visibleBoxBounds": { "x": 505, "y": 540, "width": 43, "height": 100 },
+      "standPosition": { "x": 590, "y": 590 },
+      "proximity": 72,
+      "frames": ["closed", "open_powered", "open_partial", "open_restored"],
+      "boundsDerivation": {
+        "kind": "visible_a1_wall_panel_extended_get_bounds",
+        "spritesheetId": "chapter4_power_panel_states",
+        "interactionId": "a1_world_trigger"
+      },
+      "approximate": true
+    },
+    "visualRegions": [
+      { "id": "hall", "bounds": { "x": 548, "y": 151, "width": 626, "height": 649 }, "nonColliding": true, "visualOnly": true, "approximate": true },
+      { "id": "west_corridor", "bounds": { "x": 36, "y": 486, "width": 512, "height": 314 }, "nonColliding": true, "visualOnly": true, "approximate": true },
+      { "id": "east_corridor", "bounds": { "x": 1174, "y": 151, "width": 462, "height": 335 }, "nonColliding": true, "visualOnly": true, "approximate": true },
+      { "id": "classroom_zone", "bounds": { "x": 1174, "y": 486, "width": 462, "height": 314 }, "nonColliding": true, "visualOnly": true, "approximate": true },
+      { "id": "bakery_back_area", "bounds": { "x": 36, "y": 151, "width": 512, "height": 335 }, "nonColliding": true, "visualOnly": true, "approximate": true }
+    ],
+    "visualCalibrationNote": "Five broad authored lighting regions are approximate visual overlays only; they do not claim pixel-precise room boundaries and never participate in collision.",
+    "approximate": true
+  },
+  "finalChaseRuntime": {
+    "storyTimeSeconds": 28440,
+    "playerSpeed": 208,
+    "guardSpeed": 196,
+    "stableCommittedFramesToArm": 4,
+    "maxStepMs": 50,
+    "transportId": "main_stair",
+    "restartCheckpoint": "c4_a1_lobby",
+    "playerStart": { "storyFloor": "A1", "x": 590, "y": 612 },
+    "guardSpawn": { "storyFloor": "A1", "x": 590, "y": 724 },
+    "waypoints": [
+      { "id": "a1_lower_hall", "storyFloor": "A1", "x": 836, "y": 540, "role": "route" },
+      { "id": "a1_central", "storyFloor": "A1", "x": 836, "y": 228, "role": "route" },
+      { "id": "a1_main_stair", "storyFloor": "A1", "x": 1001, "y": 214, "role": "portal" },
+      { "id": "a2_main_stair_arrival", "storyFloor": "A2", "x": 966, "y": 214, "role": "portal" },
+      { "id": "a2_core_east", "storyFloor": "A2", "x": 1100, "y": 232, "role": "route" },
+      { "id": "a2_east_south", "storyFloor": "A2", "x": 1100, "y": 400, "role": "route" },
+      { "id": "a2_room202_outer", "storyFloor": "A2", "x": 1353, "y": 400, "role": "route" }
+    ],
+    "decoyBranches": [
+      { "id": "a1_bakery_dead_end", "storyFloor": "A1", "x": 318, "y": 648, "canAdvance": false },
+      { "id": "a2_room203_dead_end", "storyFloor": "A2", "x": 1353, "y": 524, "canAdvance": false }
+    ],
+    "finishThreshold": {
+      "targetId": "a2_202_threshold",
+      "point": { "x": 1353, "y": 356.5 },
+      "bounds": { "x": 1299, "y": 334, "width": 108, "height": 45 },
+      "priority": "finish_before_contact_same_frame"
+    },
+    "room202Door": {
+      "id": "a2_room202_door",
+      "barrierBounds": { "x": 1298, "y": 341, "width": 110, "height": 29 },
+      "states": {
+        "final_chase": { "state": "open", "collider": false },
+        "final_minute_recovery": { "state": "closed", "collider": true },
+        "return_to_clock": { "state": "open", "collider": false }
+      },
+      "visual": "procedural_status_only",
+      "officialClosedDoorSprite": false
+    }
+  },
+  "finalMinuteRuntime": {
+    "storyFloor": "A2",
+    "statePlateId": "a2_202_final_minute",
+    "targetId": "a2_202_projection",
+    "entityId": "chapter4_final_minute_shard",
+    "texture": "chapter4_story_items",
+    "frame": "final_minute_shard",
+    "pivot": { "x": 1353, "y": 320 },
+    "uniformScale": 0.18,
+    "installationBounds": { "x": 1320, "y": 250, "width": 70, "height": 93 },
+    "boundsDerivation": {
+      "kind": "visible_sprite_get_bounds",
+      "sourceCell": { "x": 384, "y": 512, "width": 384, "height": 512 },
+      "sourcePivot": { "x": 566, "y": 900 },
+      "zoneSource": "sprite.getBounds"
+    },
+    "standPosition": { "x": 1453, "y": 306 },
+    "recoveryPlayerSpawn": { "x": 1453, "y": 306 },
+    "proximity": 112,
+    "requiredMode": "light",
+    "collision": false
+  },
+  "morningCheckinRuntime": {
+    "storyFloor": "A1",
+    "statePlateId": "a1_0755_morning",
+    "approximate": false,
+    "deskCenter": { "x": 819, "y": 646 },
+    "targetEntities": [
+      {
+        "targetId": "a1_campus_card_reader",
+        "entityId": "chapter4_checkin_card_reader",
+        "installationBounds": { "x": 756, "y": 608, "width": 34, "height": 24 },
+        "standPosition": { "x": 773, "y": 662 },
+        "proximity": 56,
+        "boundsDerivation": {
+          "kind": "visible_programmatic_card_reader_get_bounds",
+          "zoneSource": "visibleFixture.getBounds"
+        },
+        "approximate": false
+      },
+      {
+        "targetId": "a1_attendance_paper_slot",
+        "entityId": "chapter4_checkin_attendance_paper_slot",
+        "installationBounds": { "x": 835, "y": 606, "width": 40, "height": 26 },
+        "standPosition": { "x": 855, "y": 662 },
+        "proximity": 56,
+        "boundsDerivation": {
+          "kind": "visible_programmatic_paper_slot_get_bounds",
+          "zoneSource": "visibleFixture.getBounds"
+        },
+        "approximate": false
+      }
+    ]
+  },
+  "dynamicGates": [
+    {
+      "id": "a2_room202_recovery_barrier",
+      "storyFloor": "A2",
+      "bounds": { "x": 1298, "y": 341, "width": 110, "height": 29 },
+      "activePhases": ["final_minute_recovery"],
+      "collision": true,
+      "visual": "procedural_status_only",
+      "officialClosedDoorSprite": false
+    }
+  ],
+  "collisionProfiles": [
+    {
+      "id": "a1_static_v1",
+      "storyFloor": "A1",
+      "source": "floors.A1.staticCollisions"
+    },
+    {
+      "id": "a2_static_v1",
+      "storyFloor": "A2",
+      "source": "floors.A2.staticCollisions"
+    },
+    {
+      "id": "a3_static_v1",
+      "storyFloor": "A3",
+      "source": "floors.A3.staticCollisions"
+    }
+  ],
+  "physicalDeltas": [
+    {
+      "id": "a1_midday_queue_rails",
+      "storyFloor": "A1",
+      "statePlateIds": [
+        "a1_1225_bakery"
+      ],
+      "activation": "plate_active",
+      "collisionBounds": [
+        {
+          "id": "a1_midday_queue_rope",
+          "x": 129,
+          "y": 398,
+          "width": 325,
+          "height": 10
+        },
+        {
+          "id": "a1_midday_queue_base_01",
+          "x": 123,
+          "y": 431,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "id": "a1_midday_queue_base_02",
+          "x": 187,
+          "y": 431,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "id": "a1_midday_queue_base_03",
+          "x": 251,
+          "y": 431,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "id": "a1_midday_queue_base_04",
+          "x": 316,
+          "y": 431,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "id": "a1_midday_queue_base_05",
+          "x": 380,
+          "y": 431,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "id": "a1_midday_queue_base_06",
+          "x": 444,
+          "y": 431,
+          "width": 18,
+          "height": 18
+        }
+      ],
+      "occlusionBounds": [
+        {
+          "id": "a1_midday_queue_front",
+          "maskBounds": {
+            "x": 120,
+            "y": 389,
+            "width": 343,
+            "height": 60
+          },
+          "baselineY": 449,
+          "renderMode": "foot_behind_baseline"
+        }
+      ],
+      "approximate": true
+    },
+    {
+      "id": "a2_room204_disordered_furniture",
+      "storyFloor": "A2",
+      "statePlateIds": [
+        "a2_1850_evening"
+      ],
+      "activation": "runtime_furniture_visible",
+      "collisionSource": "chapter4_room204_furniture.frames[*].collisionBounds",
+      "worldRoomBounds": {
+        "x": 32,
+        "y": 544,
+        "width": 396,
+        "height": 270
+      },
+      "transform": "uniform_scale_only",
+      "approximate": true
+    },
+    {
+      "id": "a2_room202_recovery_barrier",
+      "storyFloor": "A2",
+      "statePlateIds": [
+        "a2_202_final_minute"
+      ],
+      "activation": "runtime_furniture_visible",
+      "collisionSource": "finalChaseRuntime.room202Door.barrierBounds",
+      "worldRoomBounds": {
+        "x": 1298,
+        "y": 341,
+        "width": 110,
+        "height": 29
+      },
+      "approximate": false
+    },
+    {
+      "id": "a3_reference_classroom_furniture",
+      "storyFloor": "A3",
+      "statePlateIds": [
+        "a3_1850_reference"
+      ],
+      "activation": "plate_active",
+      "collisionBounds": [
+        { "id": "a3_reference_row1_c1", "x": 1214, "y": 635, "width": 48, "height": 22 },
+        { "id": "a3_reference_row1_c2", "x": 1278, "y": 635, "width": 48, "height": 22 },
+        { "id": "a3_reference_row1_c3", "x": 1342, "y": 635, "width": 48, "height": 22 },
+        { "id": "a3_reference_row1_c4", "x": 1406, "y": 635, "width": 48, "height": 22 },
+        { "id": "a3_reference_row1_c5", "x": 1470, "y": 635, "width": 48, "height": 22 },
+        { "id": "a3_reference_row1_c6", "x": 1534, "y": 635, "width": 48, "height": 22 },
+        { "id": "a3_reference_row2_c1", "x": 1214, "y": 696, "width": 48, "height": 22 },
+        { "id": "a3_reference_row2_c2", "x": 1278, "y": 696, "width": 48, "height": 22 },
+        { "id": "a3_reference_row2_c3", "x": 1342, "y": 696, "width": 48, "height": 22 },
+        { "id": "a3_reference_row2_c4", "x": 1406, "y": 696, "width": 48, "height": 22 },
+        { "id": "a3_reference_row2_c5", "x": 1470, "y": 696, "width": 48, "height": 22 },
+        { "id": "a3_reference_row2_c6", "x": 1534, "y": 696, "width": 48, "height": 22 },
+        { "id": "a3_reference_row3_c1", "x": 1214, "y": 757, "width": 48, "height": 22 },
+        { "id": "a3_reference_row3_c2", "x": 1278, "y": 757, "width": 48, "height": 22 },
+        { "id": "a3_reference_row3_c3", "x": 1342, "y": 757, "width": 48, "height": 22 },
+        { "id": "a3_reference_row3_c4", "x": 1406, "y": 757, "width": 48, "height": 22 },
+        { "id": "a3_reference_row3_c5", "x": 1470, "y": 757, "width": 48, "height": 22 },
+        { "id": "a3_reference_row3_c6", "x": 1534, "y": 757, "width": 48, "height": 22 },
+        { "id": "a3_reference_row4_c1", "x": 1214, "y": 807, "width": 48, "height": 22 },
+        { "id": "a3_reference_row4_c2", "x": 1278, "y": 807, "width": 48, "height": 22 },
+        { "id": "a3_reference_row4_c3", "x": 1342, "y": 807, "width": 48, "height": 22 },
+        { "id": "a3_reference_row4_c4", "x": 1406, "y": 807, "width": 48, "height": 22 },
+        { "id": "a3_reference_row4_c5", "x": 1470, "y": 807, "width": 48, "height": 22 },
+        { "id": "a3_reference_row4_c6", "x": 1534, "y": 807, "width": 48, "height": 22 }
+      ],
+      "approximate": true
+    }
+  ],
   "floors": [
     {
-      "displayFloor": 1,
       "storyFloor": "A1",
+      "displayFloor": 1,
       "checkpoint": "c4_a1_lobby",
       "roomId": "a1_lobby",
-      "assetId": "teaching-building-floor-1",
+      "assetId": "a1_base",
+      "safeSpawn": {
+        "id": "a1_lobby_safe",
+        "x": 836,
+        "y": 716,
+        "facing": "up"
+      },
+      "elevator": {
+        "id": "a1_main_elevator",
+        "sourceAnnotationId": "a1-ann-001",
+        "visibleBounds": {
+          "x": 742,
+          "y": 64,
+          "width": 61,
+          "height": 83
+        },
+        "doorCenter": {
+          "x": 772.5,
+          "y": 105.5
+        },
+        "standPosition": {
+          "id": "a1_elevator_stand",
+          "x": 772.5,
+          "y": 204,
+          "facing": "up"
+        },
+        "arrivalPosition": {
+          "x": 772.5,
+          "y": 204,
+          "facing": "down"
+        },
+        "travelBounds": {
+          "x": 742,
+          "y": 64,
+          "width": 61,
+          "height": 83
+        }
+      },
       "staticCollisions": [
-        { "id": "north_facade", "left": 0, "top": 0, "right": 1672, "bottom": 145 },
-        { "id": "west_boundary", "left": 0, "top": 0, "right": 34, "bottom": 941 },
-        { "id": "east_boundary", "left": 1638, "top": 0, "right": 1672, "bottom": 941 },
-        { "id": "portrait_case_west", "left": 338, "top": 112, "right": 620, "bottom": 158 },
-        { "id": "portrait_case_east", "left": 1050, "top": 112, "right": 1338, "bottom": 158 },
-        { "id": "lobby_planter_west", "left": 648, "top": 246, "right": 768, "bottom": 424 },
-        { "id": "lobby_planter_east", "left": 904, "top": 246, "right": 1024, "bottom": 424 },
-        { "id": "south_west_boundary", "left": 0, "top": 808, "right": 636, "bottom": 941 },
-        { "id": "south_east_boundary", "left": 1036, "top": 808, "right": 1672, "bottom": 941 },
-        { "id": "bakery_north_wall", "left": 36, "top": 226, "right": 512, "bottom": 258 },
-        { "id": "bakery_counter", "left": 118, "top": 392, "right": 500, "bottom": 536 },
-        { "id": "bakery_west_service", "left": 36, "top": 338, "right": 112, "bottom": 548 },
-        { "id": "bakery_table_north_west", "left": 105, "top": 567, "right": 188, "bottom": 654 },
-        { "id": "bakery_table_north_center", "left": 258, "top": 593, "right": 333, "bottom": 671 },
-        { "id": "bakery_table_north_east", "left": 396, "top": 564, "right": 468, "bottom": 650 },
-        { "id": "bakery_table_south_west", "left": 109, "top": 670, "right": 190, "bottom": 756 },
-        { "id": "bakery_table_south_center", "left": 252, "top": 686, "right": 330, "bottom": 766 },
-        { "id": "bakery_table_south_east", "left": 396, "top": 670, "right": 470, "bottom": 756 },
-        { "id": "reception_counter", "left": 720, "top": 550, "right": 986, "bottom": 646 },
-        { "id": "reception_planter_west", "left": 668, "top": 527, "right": 720, "bottom": 648 },
-        { "id": "reception_planter_east", "left": 970, "top": 526, "right": 1020, "bottom": 648 },
-        { "id": "classroom_104_north_wall", "left": 1136, "top": 225, "right": 1640, "bottom": 255 },
-        { "id": "classroom_104_west_wall", "left": 1136, "top": 225, "right": 1164, "bottom": 520 },
-        { "id": "classroom_104_south_wall", "left": 1136, "top": 490, "right": 1640, "bottom": 526 },
-        { "id": "classroom_104_desk_block", "left": 1268, "top": 335, "right": 1588, "bottom": 478 },
-        { "id": "classroom_105_north_wall", "left": 1136, "top": 536, "right": 1640, "bottom": 568 },
-        { "id": "classroom_105_south_wall", "left": 1136, "top": 792, "right": 1640, "bottom": 826 },
-        { "id": "classroom_105_desk_block", "left": 1268, "top": 648, "right": 1588, "bottom": 786 },
-        { "id": "entrance_glass_west", "left": 636, "top": 744, "right": 758, "bottom": 792 },
-        { "id": "entrance_glass_east", "left": 930, "top": 744, "right": 1036, "bottom": 792 },
-        { "id": "turnstile_west", "left": 762, "top": 774, "right": 786, "bottom": 852 },
-        { "id": "turnstile_center", "left": 830, "top": 774, "right": 854, "bottom": 852 },
-        { "id": "turnstile_east", "left": 900, "top": 774, "right": 924, "bottom": 852 }
+        {
+          "id": "a1_air_wall_003",
+          "sourceAnnotationId": "a1-ann-003",
+          "label": "空气墙",
+          "x": 1177,
+          "y": 141,
+          "width": 44,
+          "height": 187
+        },
+        {
+          "id": "a1_air_wall_004",
+          "sourceAnnotationId": "a1-ann-004",
+          "label": "空气墙",
+          "x": 1185,
+          "y": 467,
+          "width": 32,
+          "height": 182
+        },
+        {
+          "id": "a1_air_wall_005",
+          "sourceAnnotationId": "a1-ann-005",
+          "label": "空气墙",
+          "x": 1226,
+          "y": 473,
+          "width": 381,
+          "height": 18
+        },
+        {
+          "id": "a1_air_wall_006",
+          "sourceAnnotationId": "a1-ann-006",
+          "label": "空气墙",
+          "x": 632,
+          "y": 248,
+          "width": 127,
+          "height": 258
+        },
+        {
+          "id": "a1_air_wall_007",
+          "sourceAnnotationId": "a1-ann-007",
+          "label": "空气墙",
+          "x": 918,
+          "y": 253,
+          "width": 117,
+          "height": 260
+        },
+        {
+          "id": "a1_air_wall_008",
+          "sourceAnnotationId": "a1-ann-008",
+          "label": "空气墙",
+          "x": 507,
+          "y": 139,
+          "width": 24,
+          "height": 211
+        },
+        {
+          "id": "a1_air_wall_009",
+          "sourceAnnotationId": "a1-ann-009",
+          "label": "空气墙",
+          "x": 38,
+          "y": 491,
+          "width": 29,
+          "height": 328
+        },
+        {
+          "id": "a1_air_wall_010",
+          "sourceAnnotationId": "a1-ann-010",
+          "label": "空气墙",
+          "x": 74,
+          "y": 786,
+          "width": 459,
+          "height": 35
+        },
+        {
+          "id": "a1_air_wall_011",
+          "sourceAnnotationId": "a1-ann-011",
+          "label": "空气墙",
+          "x": 1189,
+          "y": 796,
+          "width": 436,
+          "height": 28
+        },
+        {
+          "id": "a1_air_wall_012",
+          "sourceAnnotationId": "a1-ann-012",
+          "label": "空气墙",
+          "x": 1616,
+          "y": 485,
+          "width": 12,
+          "height": 315
+        },
+        {
+          "id": "a1_air_wall_013",
+          "sourceAnnotationId": "a1-ann-013",
+          "label": "空气墙",
+          "x": 1598,
+          "y": 132,
+          "width": 35,
+          "height": 345
+        }
+      ],
+      "walkableRegions": [
+        {
+          "id": "a1_bakery_doorway_02",
+          "sourceAnnotationId": "a1-ann-002",
+          "label": "面包坊门洞",
+          "regionKind": "doorway",
+          "x": 490,
+          "y": 514,
+          "width": 41,
+          "height": 263
+        },
+        {
+          "id": "a1_walkable_021",
+          "sourceAnnotationId": "a1-ann-021",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 916,
+          "y": 227,
+          "width": 184,
+          "height": 26
+        },
+        {
+          "id": "a1_walkable_022",
+          "sourceAnnotationId": "a1-ann-022",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1180,
+          "y": 333,
+          "width": 29,
+          "height": 132
+        },
+        {
+          "id": "a1_walkable_023",
+          "sourceAnnotationId": "a1-ann-023",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1183,
+          "y": 669,
+          "width": 19,
+          "height": 121
+        },
+        {
+          "id": "a1_walkable_024",
+          "sourceAnnotationId": "a1-ann-024",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 735,
+          "y": 153,
+          "width": 200,
+          "height": 78
+        },
+        {
+          "id": "a1_walkable_025",
+          "sourceAnnotationId": "a1-ann-025",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 50,
+          "y": 47,
+          "width": 630,
+          "height": 87
+        },
+        {
+          "id": "a1_walkable_026",
+          "sourceAnnotationId": "a1-ann-026",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1141,
+          "y": 51,
+          "width": 448,
+          "height": 79
+        }
       ],
       "foregroundOcclusions": [
-        { "id": "bakery_divider_front", "left": 505, "top": 224, "right": 548, "bottom": 772 },
-        { "id": "classroom_105_west_wall_front", "left": 1136, "top": 536, "right": 1164, "bottom": 808 }
+        {
+          "id": "a1_foreground_014",
+          "sourceAnnotationId": "a1-ann-014",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 43,
+            "y": 134,
+            "width": 496,
+            "height": 17
+          },
+          "baselineY": 151,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_foreground_015",
+          "sourceAnnotationId": "a1-ann-015",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1201,
+            "y": 134,
+            "width": 408,
+            "height": 20
+          },
+          "baselineY": 154,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_foreground_016",
+          "sourceAnnotationId": "a1-ann-016",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 758,
+            "y": 625,
+            "width": 179,
+            "height": 34
+          },
+          "baselineY": 659,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_foreground_017",
+          "sourceAnnotationId": "a1-ann-017",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 649,
+            "y": 737,
+            "width": 375,
+            "height": 144
+          },
+          "baselineY": 881,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_foreground_018",
+          "sourceAnnotationId": "a1-ann-018",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 80,
+            "y": 292,
+            "width": 397,
+            "height": 95
+          },
+          "baselineY": 387,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_foreground_019",
+          "sourceAnnotationId": "a1-ann-019",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1381,
+            "y": 568,
+            "width": 55,
+            "height": 49
+          },
+          "baselineY": 617,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_foreground_020",
+          "sourceAnnotationId": "a1-ann-020",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1388,
+            "y": 237,
+            "width": 51,
+            "height": 49
+          },
+          "baselineY": 286,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_north_portrait_wall_west_front",
+          "sourceAnnotationId": "a1-ann-025",
+          "label": "北侧西段肖像墙前景",
+          "maskBounds": {
+            "x": 50,
+            "y": 47,
+            "width": 630,
+            "height": 87
+          },
+          "baselineY": 134,
+          "renderMode": "foot_behind_baseline",
+          "coversWalkableRegionId": "a1_walkable_025"
+        },
+        {
+          "id": "a1_north_portrait_wall_east_front",
+          "sourceAnnotationId": "a1-ann-026",
+          "label": "北侧东段肖像墙前景",
+          "maskBounds": {
+            "x": 1141,
+            "y": 51,
+            "width": 448,
+            "height": 79
+          },
+          "baselineY": 130,
+          "renderMode": "foot_behind_baseline",
+          "coversWalkableRegionId": "a1_walkable_026"
+        }
       ],
       "anchors": [
-        { "id": "maxwell_bakery", "label": "麦思威面包坊餐厅", "bounds": { "left": 36, "top": 226, "right": 548, "bottom": 800 } },
-        { "id": "alumni_gallery_1", "label": "一楼校友头像长廊", "bounds": { "left": 330, "top": 34, "right": 1342, "bottom": 174 } },
-        { "id": "classroom_104_entry", "label": "104 教室门厅", "bounds": { "left": 1134, "top": 226, "right": 1270, "bottom": 348 } },
-        { "id": "classroom_105_entry", "label": "105 教室门厅", "bounds": { "left": 1134, "top": 536, "right": 1270, "bottom": 676 } },
-        { "id": "main_entrance", "label": "教学楼主入口", "bounds": { "left": 626, "top": 736, "right": 1050, "bottom": 941 } }
+        {
+          "id": "maxwell_bakery",
+          "label": "麦思威面包坊餐厅",
+          "bounds": {
+            "x": 36,
+            "y": 226,
+            "width": 512,
+            "height": 574
+          }
+        },
+        {
+          "id": "alumni_gallery_1",
+          "label": "一楼校友头像长廊",
+          "bounds": {
+            "x": 330,
+            "y": 34,
+            "width": 1012,
+            "height": 140
+          }
+        },
+        {
+          "id": "classroom_104_entry",
+          "label": "104 教室门厅",
+          "bounds": {
+            "x": 1134,
+            "y": 226,
+            "width": 136,
+            "height": 122
+          }
+        },
+        {
+          "id": "classroom_105_entry",
+          "label": "105 教室门厅",
+          "bounds": {
+            "x": 1134,
+            "y": 536,
+            "width": 136,
+            "height": 140
+          }
+        },
+        {
+          "id": "main_entrance",
+          "label": "教学楼主入口",
+          "bounds": {
+            "x": 626,
+            "y": 736,
+            "width": 424,
+            "height": 205
+          }
+        },
+        {
+          "id": "a1_noticeboard_paper",
+          "label": "公告栏前的签到记录纸条",
+          "bounds": {
+            "x": 1094,
+            "y": 590,
+            "width": 42,
+            "height": 110
+          }
+        },
+        {
+          "id": "a1_hall_clock",
+          "label": "一楼旧钟",
+          "bounds": {
+            "x": 940,
+            "y": 30,
+            "width": 122,
+            "height": 120
+          }
+        },
+        {
+          "id": "a1_hall_clock_hour_hand_socket",
+          "label": "旧钟时针插槽",
+          "bounds": {
+            "x": 940,
+            "y": 30,
+            "width": 122,
+            "height": 120
+          }
+        },
+        {
+          "id": "a1_hall_clock_positioning_plate_slot",
+          "label": "旧钟定位盘插槽",
+          "bounds": {
+            "x": 940,
+            "y": 30,
+            "width": 122,
+            "height": 120
+          }
+        },
+        {
+          "id": "a1_hall_clock_gear",
+          "label": "旧钟齿轮",
+          "bounds": {
+            "x": 940,
+            "y": 30,
+            "width": 122,
+            "height": 120
+          }
+        },
+        {
+          "id": "a1_hall_clock_minute_endpoint",
+          "label": "旧钟分针端点",
+          "bounds": {
+            "x": 957,
+            "y": 82,
+            "width": 16,
+            "height": 16
+          }
+        },
+        {
+          "id": "a1_power_panel",
+          "label": "一楼配电面板",
+          "bounds": {
+            "x": 493,
+            "y": 528,
+            "width": 67,
+            "height": 124
+          }
+        }
       ],
       "stairLandings": [
         {
           "id": "a1_stair_up",
           "direction": "up",
           "targetStoryFloor": "A2",
-          "bounds": { "left": 932, "top": 145, "right": 1070, "bottom": 252 },
-          "standPosition": { "x": 1001, "y": 214 },
-          "arrivalPosition": { "x": 1001, "y": 214 },
-          "requiredFacing": "up"
+          "bounds": {
+            "x": 932,
+            "y": 145,
+            "width": 138,
+            "height": 107
+          },
+          "standPosition": {
+            "x": 1001,
+            "y": 214
+          },
+          "arrivalPosition": {
+            "x": 1001,
+            "y": 214
+          }
         }
-      ],
-      "elevatorStand": { "id": "a1_elevator_stand", "x": 836, "y": 204, "facing": "up" },
-      "safeSpawn": { "id": "a1_lobby_safe", "x": 836, "y": 716, "facing": "up" }
+      ]
     },
     {
-      "displayFloor": 2,
       "storyFloor": "A2",
+      "displayFloor": 2,
       "checkpoint": "c4_a2_corridor",
       "roomId": "a2_corridor",
-      "assetId": "teaching-building-floor-2",
+      "assetId": "a2_base",
+      "safeSpawn": {
+        "id": "a2_corridor_safe",
+        "x": 791,
+        "y": 204,
+        "facing": "down"
+      },
+      "elevator": {
+        "id": "a2_main_elevator",
+        "sourceAnnotationId": "a2-ann-001",
+        "visibleBounds": {
+          "x": 758,
+          "y": 67,
+          "width": 66,
+          "height": 69
+        },
+        "doorCenter": {
+          "x": 791,
+          "y": 101.5
+        },
+        "standPosition": {
+          "id": "a2_elevator_stand",
+          "x": 791,
+          "y": 204,
+          "facing": "up"
+        },
+        "arrivalPosition": {
+          "x": 791,
+          "y": 204,
+          "facing": "down"
+        },
+        "travelBounds": {
+          "x": 758,
+          "y": 67,
+          "width": 66,
+          "height": 69
+        }
+      },
       "staticCollisions": [
-        { "id": "north_facade", "left": 0, "top": 0, "right": 1672, "bottom": 145 },
-        { "id": "west_boundary", "left": 0, "top": 0, "right": 34, "bottom": 941 },
-        { "id": "east_boundary", "left": 1638, "top": 0, "right": 1672, "bottom": 941 },
-        { "id": "portrait_case_west", "left": 338, "top": 112, "right": 620, "bottom": 158 },
-        { "id": "portrait_case_east", "left": 1050, "top": 112, "right": 1338, "bottom": 158 },
-        { "id": "lobby_planter_west", "left": 648, "top": 246, "right": 768, "bottom": 424 },
-        { "id": "lobby_planter_east", "left": 904, "top": 246, "right": 1024, "bottom": 424 },
-        { "id": "south_boundary", "left": 0, "top": 814, "right": 1672, "bottom": 941 },
-        { "id": "maker_north_wall", "left": 32, "top": 224, "right": 536, "bottom": 252 },
-        { "id": "maker_east_wall", "left": 400, "top": 224, "right": 428, "bottom": 546 },
-        { "id": "maker_workbench_north", "left": 72, "top": 336, "right": 370, "bottom": 422 },
-        { "id": "maker_workbench_south", "left": 72, "top": 448, "right": 370, "bottom": 526 },
-        { "id": "seminar_north_wall", "left": 32, "top": 544, "right": 400, "bottom": 572 },
-        { "id": "seminar_east_wall", "left": 400, "top": 544, "right": 428, "bottom": 814 },
-        { "id": "seminar_east_portrait_planter", "left": 536, "top": 526, "right": 580, "bottom": 690 },
-        { "id": "seminar_table_block", "left": 74, "top": 590, "right": 370, "bottom": 782 },
-        { "id": "lecture_north_wall", "left": 1134, "top": 224, "right": 1640, "bottom": 252 },
-        { "id": "lecture_west_wall", "left": 1134, "top": 224, "right": 1162, "bottom": 546 },
-        { "id": "lecture_desk_block", "left": 1272, "top": 342, "right": 1596, "bottom": 520 },
-        { "id": "computer_north_wall", "left": 1134, "top": 544, "right": 1640, "bottom": 572 },
-        { "id": "computer_west_wall_north", "left": 1134, "top": 544, "right": 1162, "bottom": 610 },
-        { "id": "computer_west_wall_south", "left": 1134, "top": 690, "right": 1162, "bottom": 814 },
-        { "id": "computer_west_portrait_planter", "left": 1072, "top": 526, "right": 1134, "bottom": 690 },
-        { "id": "computer_desk_block", "left": 1280, "top": 648, "right": 1595, "bottom": 798 },
-        { "id": "study_bookshelf", "left": 648, "top": 526, "right": 1006, "bottom": 598 },
-        { "id": "study_seating_island_west", "left": 674, "top": 622, "right": 804, "bottom": 686 },
-        { "id": "study_seating_island_east", "left": 862, "top": 622, "right": 994, "bottom": 686 }
+        {
+          "id": "a2_air_wall_002",
+          "sourceAnnotationId": "a2-ann-002",
+          "label": "空气墙",
+          "x": 388,
+          "y": 505,
+          "width": 145,
+          "height": 17
+        },
+        {
+          "id": "a2_air_wall_003",
+          "sourceAnnotationId": "a2-ann-003",
+          "label": "空气墙",
+          "x": 518,
+          "y": 535,
+          "width": 22,
+          "height": 322
+        },
+        {
+          "id": "a2_air_wall_004",
+          "sourceAnnotationId": "a2-ann-004",
+          "label": "空气墙",
+          "x": 57,
+          "y": 511,
+          "width": 210,
+          "height": 9,
+          "adjustment": {
+            "kind": "walkable_priority_clip",
+            "edge": "right",
+            "pixels": 2,
+            "walkableSourceAnnotationId": "a2-ann-026"
+          }
+        },
+        {
+          "id": "a2_air_wall_005",
+          "sourceAnnotationId": "a2-ann-005",
+          "label": "空气墙",
+          "x": 44,
+          "y": 540,
+          "width": 30,
+          "height": 307
+        },
+        {
+          "id": "a2_air_wall_006",
+          "sourceAnnotationId": "a2-ann-006",
+          "label": "空气墙",
+          "x": 56,
+          "y": 346,
+          "width": 213,
+          "height": 23
+        },
+        {
+          "id": "a2_air_wall_007",
+          "sourceAnnotationId": "a2-ann-007",
+          "label": "空气墙",
+          "x": 389,
+          "y": 350,
+          "width": 148,
+          "height": 21
+        },
+        {
+          "id": "a2_air_wall_008",
+          "sourceAnnotationId": "a2-ann-008",
+          "label": "空气墙",
+          "x": 520,
+          "y": 40,
+          "width": 25,
+          "height": 326
+        },
+        {
+          "id": "a2_air_wall_009",
+          "sourceAnnotationId": "a2-ann-009",
+          "label": "空气墙",
+          "x": 1159,
+          "y": 67,
+          "width": 7,
+          "height": 302
+        },
+        {
+          "id": "a2_air_wall_010",
+          "sourceAnnotationId": "a2-ann-010",
+          "label": "空气墙",
+          "x": 1175,
+          "y": 341,
+          "width": 123,
+          "height": 29,
+          "adjustment": {
+            "kind": "walkable_priority_clip",
+            "edge": "right",
+            "pixels": 8,
+            "walkableSourceAnnotationId": "a2-ann-029"
+          }
+        },
+        {
+          "id": "a2_air_wall_011",
+          "sourceAnnotationId": "a2-ann-011",
+          "label": "空气墙",
+          "x": 1408,
+          "y": 348,
+          "width": 214,
+          "height": 17
+        },
+        {
+          "id": "a2_air_wall_012",
+          "sourceAnnotationId": "a2-ann-012",
+          "label": "空气墙",
+          "x": 1598,
+          "y": 107,
+          "width": 29,
+          "height": 229
+        },
+        {
+          "id": "a2_air_wall_013",
+          "sourceAnnotationId": "a2-ann-013",
+          "label": "空气墙",
+          "x": 1160,
+          "y": 504,
+          "width": 131,
+          "height": 16,
+          "adjustment": {
+            "kind": "walkable_priority_clip",
+            "edge": "right",
+            "pixels": 2,
+            "walkableSourceAnnotationId": "a2-ann-030"
+          }
+        },
+        {
+          "id": "a2_air_wall_014",
+          "sourceAnnotationId": "a2-ann-014",
+          "label": "空气墙",
+          "x": 1418,
+          "y": 507,
+          "width": 209,
+          "height": 12,
+          "adjustment": {
+            "kind": "walkable_priority_clip",
+            "edge": "left",
+            "pixels": 2,
+            "walkableSourceAnnotationId": "a2-ann-030"
+          }
+        },
+        {
+          "id": "a2_air_wall_015",
+          "sourceAnnotationId": "a2-ann-015",
+          "label": "空气墙",
+          "x": 1157,
+          "y": 532,
+          "width": 6,
+          "height": 321
+        },
+        {
+          "id": "a2_air_wall_016",
+          "sourceAnnotationId": "a2-ann-016",
+          "label": "空气墙",
+          "x": 1170,
+          "y": 853,
+          "width": 457,
+          "height": 12
+        },
+        {
+          "id": "a2_air_wall_017",
+          "sourceAnnotationId": "a2-ann-017",
+          "label": "空气墙",
+          "x": 1614,
+          "y": 525,
+          "width": 13,
+          "height": 339
+        },
+        {
+          "id": "a2_air_wall_018",
+          "sourceAnnotationId": "a2-ann-018",
+          "label": "空气墙",
+          "x": 644,
+          "y": 261,
+          "width": 67,
+          "height": 189
+        },
+        {
+          "id": "a2_air_wall_019",
+          "sourceAnnotationId": "a2-ann-019",
+          "label": "空气墙",
+          "x": 954,
+          "y": 265,
+          "width": 67,
+          "height": 186
+        }
+      ],
+      "walkableRegions": [
+        {
+          "id": "a2_walkable_026",
+          "sourceAnnotationId": "a2-ann-026",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 267,
+          "y": 497,
+          "width": 116,
+          "height": 38
+        },
+        {
+          "id": "a2_walkable_027",
+          "sourceAnnotationId": "a2-ann-027",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 269,
+          "y": 339,
+          "width": 112,
+          "height": 50
+        },
+        {
+          "id": "a2_walkable_028",
+          "sourceAnnotationId": "a2-ann-028",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 676,
+          "y": 136,
+          "width": 387,
+          "height": 112
+        },
+        {
+          "id": "a2_walkable_029",
+          "sourceAnnotationId": "a2-ann-029",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1298,
+          "y": 328,
+          "width": 103,
+          "height": 69
+        },
+        {
+          "id": "a2_walkable_030",
+          "sourceAnnotationId": "a2-ann-030",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1291,
+          "y": 480,
+          "width": 127,
+          "height": 88
+        }
+      ],
+      "foregroundOcclusions": [
+        {
+          "id": "a2_foreground_020",
+          "sourceAnnotationId": "a2-ann-020",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 641,
+            "y": 549,
+            "width": 403,
+            "height": 60
+          },
+          "baselineY": 609,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a2_foreground_021",
+          "sourceAnnotationId": "a2-ann-021",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 182,
+            "y": 178,
+            "width": 252,
+            "height": 45
+          },
+          "baselineY": 223,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a2_foreground_022",
+          "sourceAnnotationId": "a2-ann-022",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1231,
+            "y": 216,
+            "width": 314,
+            "height": 38
+          },
+          "baselineY": 254,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a2_foreground_023",
+          "sourceAnnotationId": "a2-ann-023",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1225,
+            "y": 592,
+            "width": 339,
+            "height": 42
+          },
+          "baselineY": 634,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a2_foreground_024",
+          "sourceAnnotationId": "a2-ann-024",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1228,
+            "y": 692,
+            "width": 338,
+            "height": 40
+          },
+          "baselineY": 732,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a2_foreground_025",
+          "sourceAnnotationId": "a2-ann-025",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 1224,
+            "y": 779,
+            "width": 341,
+            "height": 43
+          },
+          "baselineY": 822,
+          "renderMode": "foot_behind_baseline"
+        }
       ],
       "anchors": [
-        { "id": "maker_workshop_201", "label": "201 创客工坊", "bounds": { "left": 32, "top": 224, "right": 428, "bottom": 546 } },
-        { "id": "seminar_room_204", "label": "204 研讨教室", "bounds": { "left": 32, "top": 544, "right": 428, "bottom": 814 } },
-        { "id": "lecture_room_202", "label": "202 阶梯教室", "bounds": { "left": 1134, "top": 224, "right": 1640, "bottom": 546 } },
-        { "id": "computer_room_203", "label": "203 计算机教室", "bounds": { "left": 1134, "top": 544, "right": 1640, "bottom": 814 } },
-        { "id": "open_study", "label": "二楼开放学习区", "bounds": { "left": 612, "top": 520, "right": 1060, "bottom": 814 } },
-        { "id": "alumni_gallery_2", "label": "二楼校友纪念长廊", "bounds": { "left": 326, "top": 34, "right": 1342, "bottom": 174 } },
-        { "id": "a2_schedule_observation", "label": "二楼人员动线观察区", "bounds": { "left": 648, "top": 258, "right": 1024, "bottom": 424 } },
-        { "id": "a2_fragment_west", "label": "西侧导视碎片", "bounds": { "left": 580, "top": 598, "right": 648, "bottom": 680 } },
-        { "id": "a2_fragment_east", "label": "东侧导视碎片", "bounds": { "left": 1006, "top": 598, "right": 1074, "bottom": 680 } },
-        { "id": "a2_return_window", "label": "203 返程取证窗口", "bounds": { "left": 1110, "top": 590, "right": 1248, "bottom": 720 } }
+        {
+          "id": "maker_workshop_201",
+          "label": "201 创客工坊",
+          "bounds": {
+            "x": 32,
+            "y": 224,
+            "width": 396,
+            "height": 322
+          }
+        },
+        {
+          "id": "seminar_room_204",
+          "label": "204 研讨教室",
+          "bounds": {
+            "x": 32,
+            "y": 544,
+            "width": 396,
+            "height": 270
+          }
+        },
+        {
+          "id": "lecture_room_202",
+          "label": "202 阶梯教室",
+          "bounds": {
+            "x": 1134,
+            "y": 224,
+            "width": 506,
+            "height": 322
+          }
+        },
+        {
+          "id": "computer_room_203",
+          "label": "203 计算机教室",
+          "bounds": {
+            "x": 1134,
+            "y": 544,
+            "width": 506,
+            "height": 270
+          }
+        },
+        {
+          "id": "open_study",
+          "label": "二楼开放学习区",
+          "bounds": {
+            "x": 612,
+            "y": 520,
+            "width": 448,
+            "height": 294
+          }
+        },
+        {
+          "id": "alumni_gallery_2",
+          "label": "二楼校友纪念长廊",
+          "bounds": {
+            "x": 326,
+            "y": 34,
+            "width": 1016,
+            "height": 140
+          }
+        },
+        {
+          "id": "a2_room204_residual_group",
+          "label": "204 教室残影组",
+          "bounds": {
+            "x": 44,
+            "y": 556,
+            "width": 372,
+            "height": 246
+          }
+        },
+        {
+          "id": "a2_room204_podium_drawer",
+          "label": "204 讲台抽屉里的定位盘",
+          "bounds": {
+            "x": 179,
+            "y": 549,
+            "width": 41,
+            "height": 52
+          }
+        },
+        {
+          "id": "a2_202_threshold",
+          "label": "202 阶梯教室门槛",
+          "bounds": {
+            "x": 1299,
+            "y": 334,
+            "width": 108,
+            "height": 45
+          }
+        },
+        {
+          "id": "a2_202_projection",
+          "label": "202 投影中的最后一分钟",
+          "bounds": {
+            "x": 1372,
+            "y": 56,
+            "width": 142,
+            "height": 64
+          }
+        }
       ],
       "stairLandings": [
         {
           "id": "a2_stair_down",
           "direction": "down",
           "targetStoryFloor": "A1",
-          "bounds": { "left": 932, "top": 145, "right": 1001, "bottom": 252 },
-          "standPosition": { "x": 966, "y": 214 },
-          "arrivalPosition": { "x": 966, "y": 214 },
-          "requiredFacing": "up"
+          "bounds": {
+            "x": 932,
+            "y": 145,
+            "width": 69,
+            "height": 107
+          },
+          "standPosition": {
+            "x": 966,
+            "y": 214
+          },
+          "arrivalPosition": {
+            "x": 966,
+            "y": 214
+          }
         },
         {
           "id": "a2_stair_up",
           "direction": "up",
           "targetStoryFloor": "A3",
-          "bounds": { "left": 1001, "top": 145, "right": 1070, "bottom": 252 },
-          "standPosition": { "x": 1036, "y": 214 },
-          "arrivalPosition": { "x": 1036, "y": 214 },
-          "requiredFacing": "up"
+          "bounds": {
+            "x": 1001,
+            "y": 145,
+            "width": 69,
+            "height": 107
+          },
+          "standPosition": {
+            "x": 1036,
+            "y": 214
+          },
+          "arrivalPosition": {
+            "x": 1036,
+            "y": 214
+          }
         }
-      ],
-      "elevatorStand": { "id": "a2_elevator_stand", "x": 836, "y": 204, "facing": "up" },
-      "safeSpawn": { "id": "a2_corridor_safe", "x": 836, "y": 204, "facing": "down" }
+      ]
     },
     {
-      "displayFloor": 3,
       "storyFloor": "A3",
+      "displayFloor": 3,
       "checkpoint": "c4_a3_wayfinding",
       "roomId": "a3_wayfinding",
-      "assetId": "teaching-building-floor-3",
+      "assetId": "a3_base",
+      "safeSpawn": {
+        "id": "a3_wayfinding_safe",
+        "x": 787.5,
+        "y": 204,
+        "facing": "down"
+      },
+      "elevator": {
+        "id": "a3_main_elevator",
+        "sourceAnnotationId": "a3-ann-021",
+        "visibleBounds": {
+          "x": 747,
+          "y": 47,
+          "width": 81,
+          "height": 95
+        },
+        "doorCenter": {
+          "x": 787.5,
+          "y": 94.5
+        },
+        "standPosition": {
+          "id": "a3_elevator_stand",
+          "x": 787.5,
+          "y": 204,
+          "facing": "up"
+        },
+        "arrivalPosition": {
+          "x": 787.5,
+          "y": 204,
+          "facing": "down"
+        },
+        "travelBounds": {
+          "x": 747,
+          "y": 47,
+          "width": 81,
+          "height": 95
+        }
+      },
       "staticCollisions": [
-        { "id": "north_facade", "left": 0, "top": 0, "right": 1672, "bottom": 145 },
-        { "id": "west_boundary", "left": 0, "top": 0, "right": 34, "bottom": 941 },
-        { "id": "east_boundary", "left": 1638, "top": 0, "right": 1672, "bottom": 941 },
-        { "id": "portrait_case_west", "left": 338, "top": 112, "right": 620, "bottom": 158 },
-        { "id": "portrait_case_east", "left": 1050, "top": 112, "right": 1338, "bottom": 158 },
-        { "id": "lobby_planter_west", "left": 648, "top": 246, "right": 768, "bottom": 424 },
-        { "id": "lobby_planter_east", "left": 904, "top": 246, "right": 1024, "bottom": 424 },
-        { "id": "south_boundary", "left": 0, "top": 814, "right": 1672, "bottom": 941 },
-        { "id": "archive_north_wall", "left": 32, "top": 224, "right": 536, "bottom": 252 },
-        { "id": "archive_east_wall", "left": 402, "top": 224, "right": 430, "bottom": 516 },
-        { "id": "archive_case_north", "left": 54, "top": 252, "right": 376, "bottom": 340 },
-        { "id": "archive_case_center", "left": 88, "top": 374, "right": 336, "bottom": 444 },
-        { "id": "archive_case_south", "left": 88, "top": 466, "right": 338, "bottom": 510 },
-        { "id": "media_north_wall", "left": 32, "top": 516, "right": 536, "bottom": 548 },
-        { "id": "media_east_wall", "left": 402, "top": 516, "right": 430, "bottom": 814 },
-        { "id": "media_equipment_north", "left": 68, "top": 558, "right": 366, "bottom": 648 },
-        { "id": "media_console_south", "left": 72, "top": 668, "right": 372, "bottom": 798 },
-        { "id": "hall_north_wall", "left": 1134, "top": 224, "right": 1640, "bottom": 252 },
-        { "id": "hall_west_wall", "left": 1134, "top": 224, "right": 1162, "bottom": 516 },
-        { "id": "hall_seating", "left": 1270, "top": 330, "right": 1598, "bottom": 496 },
-        { "id": "smart_room_north_wall", "left": 1134, "top": 516, "right": 1640, "bottom": 548 },
-        { "id": "smart_room_west_wall", "left": 1134, "top": 516, "right": 1162, "bottom": 814 },
-        { "id": "smart_room_console", "left": 1320, "top": 616, "right": 1542, "bottom": 684 },
-        { "id": "smart_room_desks", "left": 1282, "top": 708, "right": 1594, "bottom": 798 },
-        { "id": "honor_portraits", "left": 620, "top": 548, "right": 1050, "bottom": 642 },
-        { "id": "honor_cases", "left": 632, "top": 660, "right": 1038, "bottom": 740 },
-        { "id": "honor_planter_west", "left": 600, "top": 640, "right": 652, "bottom": 790 },
-        { "id": "honor_planter_east", "left": 1018, "top": 640, "right": 1070, "bottom": 790 }
+        {
+          "id": "a3_air_wall_006",
+          "sourceAnnotationId": "a3-ann-006",
+          "label": "空气墙",
+          "x": 49,
+          "y": 472,
+          "width": 187,
+          "height": 23
+        },
+        {
+          "id": "a3_air_wall_007",
+          "sourceAnnotationId": "a3-ann-007",
+          "label": "空气墙",
+          "x": 335,
+          "y": 473,
+          "width": 192,
+          "height": 20
+        },
+        {
+          "id": "a3_air_wall_008",
+          "sourceAnnotationId": "a3-ann-008",
+          "label": "空气墙",
+          "x": 498,
+          "y": 504,
+          "width": 18,
+          "height": 327
+        },
+        {
+          "id": "a3_air_wall_009",
+          "sourceAnnotationId": "a3-ann-009",
+          "label": "空气墙",
+          "x": 51,
+          "y": 381,
+          "width": 182,
+          "height": 16
+        },
+        {
+          "id": "a3_air_wall_010",
+          "sourceAnnotationId": "a3-ann-010",
+          "label": "空气墙",
+          "x": 338,
+          "y": 385,
+          "width": 169,
+          "height": 13
+        },
+        {
+          "id": "a3_air_wall_011",
+          "sourceAnnotationId": "a3-ann-011",
+          "label": "空气墙",
+          "x": 491,
+          "y": 57,
+          "width": 13,
+          "height": 317
+        },
+        {
+          "id": "a3_air_wall_012",
+          "sourceAnnotationId": "a3-ann-012",
+          "label": "空气墙",
+          "x": 44,
+          "y": 57,
+          "width": 11,
+          "height": 329
+        },
+        {
+          "id": "a3_air_wall_013",
+          "sourceAnnotationId": "a3-ann-013",
+          "label": "空气墙",
+          "x": 634,
+          "y": 247,
+          "width": 60,
+          "height": 221
+        },
+        {
+          "id": "a3_air_wall_014",
+          "sourceAnnotationId": "a3-ann-014",
+          "label": "空气墙",
+          "x": 908,
+          "y": 258,
+          "width": 51,
+          "height": 204
+        },
+        {
+          "id": "a3_air_wall_015",
+          "sourceAnnotationId": "a3-ann-015",
+          "label": "空气墙",
+          "x": 604,
+          "y": 550,
+          "width": 108,
+          "height": 15
+        },
+        {
+          "id": "a3_air_wall_016",
+          "sourceAnnotationId": "a3-ann-016",
+          "label": "空气墙",
+          "x": 619,
+          "y": 570,
+          "width": 8,
+          "height": 240
+        },
+        {
+          "id": "a3_air_wall_017",
+          "sourceAnnotationId": "a3-ann-017",
+          "label": "空气墙",
+          "x": 961,
+          "y": 552,
+          "width": 106,
+          "height": 10,
+          "adjustment": {
+            "kind": "minimum_runtime_thickness",
+            "axis": "height",
+            "sourcePixels": 5,
+            "runtimePixels": 10
+          }
+        },
+        {
+          "id": "a3_air_wall_018",
+          "sourceAnnotationId": "a3-ann-018",
+          "label": "空气墙",
+          "x": 1062,
+          "y": 574,
+          "width": 8,
+          "height": 242,
+          "adjustment": {
+            "kind": "minimum_runtime_thickness",
+            "axis": "width",
+            "sourcePixels": 1,
+            "runtimePixels": 8
+          }
+        }
+      ],
+      "walkableRegions": [
+        {
+          "id": "a3_walkable_001",
+          "sourceAnnotationId": "a3-ann-001",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 244,
+          "y": 469,
+          "width": 82,
+          "height": 34
+        },
+        {
+          "id": "a3_walkable_002",
+          "sourceAnnotationId": "a3-ann-002",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 242,
+          "y": 371,
+          "width": 84,
+          "height": 34
+        },
+        {
+          "id": "a3_walkable_003",
+          "sourceAnnotationId": "a3-ann-003",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 711,
+          "y": 147,
+          "width": 332,
+          "height": 108
+        },
+        {
+          "id": "a3_walkable_004",
+          "sourceAnnotationId": "a3-ann-004",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1339,
+          "y": 363,
+          "width": 93,
+          "height": 41
+        },
+        {
+          "id": "a3_walkable_005",
+          "sourceAnnotationId": "a3-ann-005",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 1318,
+          "y": 473,
+          "width": 155,
+          "height": 30
+        },
+        {
+          "id": "a3_walkable_022",
+          "sourceAnnotationId": "a3-ann-022",
+          "label": "必须可通行",
+          "regionKind": "required_passage",
+          "x": 717,
+          "y": 548,
+          "width": 235,
+          "height": 16
+        }
+      ],
+      "foregroundOcclusions": [
+        {
+          "id": "a3_foreground_019",
+          "sourceAnnotationId": "a3-ann-019",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 629,
+            "y": 795,
+            "width": 430,
+            "height": 21
+          },
+          "baselineY": 816,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a3_foreground_020",
+          "sourceAnnotationId": "a3-ann-020",
+          "label": "前景遮挡",
+          "maskBounds": {
+            "x": 148,
+            "y": 751,
+            "width": 283,
+            "height": 58
+          },
+          "baselineY": 809,
+          "renderMode": "foot_behind_baseline"
+        }
       ],
       "anchors": [
-        { "id": "archive_exhibition_301", "label": "301 校史档案展", "bounds": { "left": 32, "top": 224, "right": 430, "bottom": 516 } },
-        { "id": "media_studio_302", "label": "302 媒体工作室", "bounds": { "left": 32, "top": 516, "right": 430, "bottom": 814 } },
-        { "id": "report_hall_304", "label": "304 报告厅", "bounds": { "left": 1134, "top": 224, "right": 1640, "bottom": 516 } },
-        { "id": "smart_classroom_303", "label": "303 智慧教室", "bounds": { "left": 1134, "top": 516, "right": 1640, "bottom": 814 } },
-        { "id": "alumni_honor_vestibule", "label": "三楼校友荣誉门厅", "bounds": { "left": 590, "top": 530, "right": 1080, "bottom": 794 } },
-        { "id": "alumni_gallery_3", "label": "三楼校友头像长廊", "bounds": { "left": 326, "top": 34, "right": 1342, "bottom": 174 } },
-        { "id": "a3_old_signage", "label": "旧导视残影", "bounds": { "left": 430, "top": 158, "right": 620, "bottom": 238 } },
-        { "id": "a3_wayfinding_board", "label": "三楼导视板", "bounds": { "left": 600, "top": 500, "right": 790, "bottom": 650 } },
-        { "id": "a3_bridge_history", "label": "连廊历史入口", "bounds": { "left": 1070, "top": 252, "right": 1188, "bottom": 390 } }
+        {
+          "id": "archive_exhibition_301",
+          "label": "301 校史档案展",
+          "bounds": {
+            "x": 32,
+            "y": 224,
+            "width": 398,
+            "height": 292
+          }
+        },
+        {
+          "id": "media_studio_302",
+          "label": "302 媒体工作室",
+          "bounds": {
+            "x": 32,
+            "y": 516,
+            "width": 398,
+            "height": 298
+          }
+        },
+        {
+          "id": "report_hall_304",
+          "label": "304 报告厅",
+          "bounds": {
+            "x": 1134,
+            "y": 224,
+            "width": 506,
+            "height": 292
+          }
+        },
+        {
+          "id": "smart_classroom_303",
+          "label": "303 智慧教室",
+          "bounds": {
+            "x": 1134,
+            "y": 516,
+            "width": 506,
+            "height": 298
+          }
+        },
+        {
+          "id": "alumni_honor_vestibule",
+          "label": "三楼校友荣誉门厅",
+          "bounds": {
+            "x": 590,
+            "y": 530,
+            "width": 490,
+            "height": 264
+          }
+        },
+        {
+          "id": "alumni_gallery_3",
+          "label": "三楼校友头像长廊",
+          "bounds": {
+            "x": 326,
+            "y": 34,
+            "width": 1016,
+            "height": 140
+          }
+        },
+        {
+          "id": "a3_reference_classroom_layout",
+          "label": "三楼晨间教室布置参照",
+          "bounds": {
+            "x": 1206,
+            "y": 602,
+            "width": 384,
+            "height": 227
+          }
+        }
       ],
       "stairLandings": [
         {
           "id": "a3_stair_down",
           "direction": "down",
           "targetStoryFloor": "A2",
-          "bounds": { "left": 932, "top": 145, "right": 1070, "bottom": 252 },
-          "standPosition": { "x": 1001, "y": 214 },
-          "arrivalPosition": { "x": 1001, "y": 214 },
-          "requiredFacing": "up"
+          "bounds": {
+            "x": 932,
+            "y": 145,
+            "width": 138,
+            "height": 107
+          },
+          "standPosition": {
+            "x": 1001,
+            "y": 214
+          },
+          "arrivalPosition": {
+            "x": 1001,
+            "y": 214
+          }
         }
-      ],
-      "elevatorStand": { "id": "a3_elevator_stand", "x": 836, "y": 204, "facing": "up" },
-      "safeSpawn": { "id": "a3_wayfinding_safe", "x": 836, "y": 204, "facing": "down" }
-    }
-  ],
-  "transportCore": {
-    "elevators": [
-      { "id": "main_elevator", "centerX": 836, "storyFloors": ["A1", "A2", "A3"] }
-    ],
-    "stairs": [
-      { "id": "main_stair", "left": 932, "top": 145, "right": 1070, "bottom": 252, "storyFloors": ["A1", "A2", "A3"] }
-    ]
-  },
-  "safeRoutes": {
-    "floor2West": { "displayFloor": 2, "left": 428, "top": 526, "right": 536, "bottom": 814, "width": 108, "height": 288 },
-    "floor2East": { "displayFloor": 2, "left": 1006, "top": 526, "right": 1072, "bottom": 814, "width": 66, "height": 288 },
-    "floor2South": { "displayFloor": 2, "left": 428, "top": 700, "right": 1134, "bottom": 814, "width": 706, "height": 114 }
-  },
-  "dynamicGates": [
-    {
-      "id": "a2_partition_west",
-      "collisionId": "a2_partition_west",
-      "displayFloor": 2,
-      "kind": "partition",
-      "bounds": { "left": 536, "top": 478, "right": 648, "bottom": 506 },
-      "closedRouteStates": ["baseline", "schedule_observed"]
-    },
-    {
-      "id": "a2_partition_east",
-      "collisionId": "a2_partition_east",
-      "displayFloor": 2,
-      "kind": "partition",
-      "bounds": { "left": 1028, "top": 478, "right": 1134, "bottom": 506 },
-      "closedRouteStates": ["baseline", "schedule_observed"]
-    },
-    {
-      "id": "a2_room_203_return_door",
-      "collisionId": "a2_room_203_return_door",
-      "displayFloor": 2,
-      "kind": "door",
-      "bounds": { "left": 1134, "top": 610, "right": 1162, "bottom": 690 },
-      "closedRouteStates": ["baseline", "schedule_observed", "corridor_reconfigured", "wayfinding_aligned"]
+      ]
     }
   ]
 }

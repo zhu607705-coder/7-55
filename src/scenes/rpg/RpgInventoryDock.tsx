@@ -85,11 +85,28 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "fishFeedPellets",
   "smallCarp",
   "swanMagnet",
-  "magneticFishingRod"
+  "magneticFishingRod",
+  "attendanceRecordPaper",
+  "oldClockHourHand",
+  "clockPositioningPlate",
+  "shortPryBar",
+  "universalLubricatingOil",
+  "finalMinute"
 ];
 
-function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
-  const itemId = String(payload.itemId ?? "campusCard") as ItemId;
+export function isRpgInventoryFeedbackItemId(
+  items: GameState["items"],
+  value: unknown
+): value is ItemId {
+  return typeof value === "string"
+    && Object.prototype.hasOwnProperty.call(items, value)
+    && Object.prototype.hasOwnProperty.call(ITEM_META, value);
+}
+
+function feedbackFromPayload(
+  payload: Record<string, unknown>,
+  itemId: ItemId
+): DropFeedback {
   const reason = String(payload.reason ?? "locked");
   const targetLabel = String(payload.targetLabel ?? "目标");
   const customDetail = String(payload.detail ?? "");
@@ -107,14 +124,6 @@ function feedbackFromPayload(payload: Record<string, unknown>): DropFeedback {
       tone: "warning",
       title: "目标命中，人物距离不足",
       detail: customDetail || `靠近「${targetLabel}」后再拖入道具。`
-    };
-  }
-  if (reason === "wrong_facing") {
-    return {
-      itemId,
-      tone: "warning",
-      title: "需要面向目标",
-      detail: customDetail || `面向「${targetLabel}」后再拖入道具。`
     };
   }
   if (reason === "wrong_item") {
@@ -222,15 +231,16 @@ export function RpgInventoryDock({
 
   useEffect(() => {
     return events.subscribe((event) => {
-      if (event.name !== "rpg_item_use_feedback" || !event.payload?.itemId) return;
+      if (event.name !== "rpg_item_use_feedback"
+        || !isRpgInventoryFeedbackItemId(state.items, event.payload?.itemId)) return;
       if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
-      setDropFeedback(feedbackFromPayload(event.payload));
+      setDropFeedback(feedbackFromPayload(event.payload, event.payload.itemId));
       feedbackTimer.current = window.setTimeout(() => {
         setDropFeedback(null);
         feedbackTimer.current = null;
       }, DROP_FEEDBACK_MS);
     });
-  }, [events]);
+  }, [events, state.items]);
 
   useEffect(() => () => {
     if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);

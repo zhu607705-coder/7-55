@@ -1,9 +1,53 @@
 import react from "@vitejs/plugin-react";
 import { viteSingleFile } from "vite-plugin-singlefile";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, normalizePath, type Plugin } from "vite";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const BROWSER_BUILD_TARGET = ["chrome90", "edge90", "firefox91", "safari15"];
+const CHAPTER4_H3_EMBEDDED_QUERY = "chapter4-h3-embedded";
+const CHAPTER4_H3_BASE64_CHUNK_SIZE = 256 * 1024;
+const CHAPTER4_H3_SOURCE_PATH = normalizePath(resolve(
+  import.meta.dirname,
+  "src/assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4"
+));
+
+function embedChapter4H3AsChunks(): Plugin {
+  return {
+    name: "embed-chapter4-h3-as-chunks",
+    apply: "build",
+    enforce: "pre",
+    load(id) {
+      const queryIndex = id.indexOf("?");
+      if (queryIndex < 0) return null;
+      const filePath = normalizePath(id.slice(0, queryIndex));
+      const query = new URLSearchParams(id.slice(queryIndex + 1));
+      if (!query.has(CHAPTER4_H3_EMBEDDED_QUERY)) return null;
+      if (filePath !== CHAPTER4_H3_SOURCE_PATH) {
+        this.error(`Unexpected Chapter 4 H3 embedded source: ${filePath}`);
+      }
+      this.addWatchFile(filePath);
+
+      const base64 = readFileSync(filePath).toString("base64");
+      const chunks: string[] = [];
+      for (let offset = 0; offset < base64.length; offset += CHAPTER4_H3_BASE64_CHUNK_SIZE) {
+        chunks.push(base64.slice(offset, offset + CHAPTER4_H3_BASE64_CHUNK_SIZE));
+      }
+      if (chunks.length === 0) {
+        this.error(`Chapter 4 H3 source is empty: ${filePath}`);
+      }
+      return {
+        code: `export default ${JSON.stringify({
+          kind: "embedded_chunks",
+          mimeType: "video/mp4; codecs=\"avc1.640028\"",
+          chunks
+        })};`,
+        map: null,
+        moduleSideEffects: false
+      };
+    }
+  };
+}
 
 function moveSingleFileRuntimeAfterShell(): Plugin {
   return {
@@ -57,7 +101,12 @@ export default defineConfig(({ mode }) => {
     ...(isSingleFileDemo
       ? {
           base: "./",
-          plugins: [react(), viteSingleFile({ removeViteModuleLoader: true }), moveSingleFileRuntimeAfterShell()],
+          plugins: [
+            embedChapter4H3AsChunks(),
+            react(),
+            viteSingleFile({ removeViteModuleLoader: true }),
+            moveSingleFileRuntimeAfterShell()
+          ],
           build: {
             outDir: "demo",
             // Keep the formal game and the map-only demo side by side. Both artifacts are self-contained.

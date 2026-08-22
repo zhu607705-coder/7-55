@@ -1,33 +1,90 @@
 import Phaser from "phaser";
-import type { RpgCheckpointId } from "../../core/types";
-import teachingBuildingFloor1Url from "../../assets/rpg/interiors/finale/teaching_building_floor_1.png";
-import teachingBuildingFloor2Url from "../../assets/rpg/interiors/finale/teaching_building_floor_2.png";
-import teachingBuildingFloor3Url from "../../assets/rpg/interiors/finale/teaching_building_floor_3.png";
+import type {
+  ChapterFourFactId,
+  ChapterFourLightZoneId,
+  ChapterFourRoom204PieceId,
+  ChapterFourRoom204SlotId,
+  GameState,
+  ItemId,
+  RpgCheckpointId
+} from "../../core/types";
+import { DEVELOPER_ACTIVE_KEY, DEVELOPER_SOURCE_KEY } from "../../core/StorageKeys";
 import teachingBuildingElevatorDoorsUrl from "../../assets/rpg/interiors/finale/teaching_building_elevator_doors.png";
-import mazeContent from "../../data/chapter4-temporal-maze.content.json";
+import canteenCounterAuntiesSheetUrl from "../../assets/rpg/npcs/canteen/counter_aunties_2frame.png";
+import chapterFourContent from "../../data/chapter4-755.content.json";
 import mazeLayout from "../../data/chapter4-three-floor-maze.layout.json";
 import {
-  CHAPTER_FOUR_MAZE_CLUES,
-  CHAPTER_FOUR_MAZE_IDS,
   selectChapterFourMazeProjection,
-  type ChapterFourMazeProjection,
-  type ChapterFourMazeRouteState
+  type ChapterFourMazeProjection
 } from "../../modules/ChapterFourMazeProjection";
+import {
+  CHAPTER_FOUR_MAINTENANCE_GUARD_RULES,
+  chapterFourGuardFootContact,
+  createChapterFourMaintenanceGuardRecoveryState,
+  createChapterFourMaintenanceGuardState,
+  stepChapterFourMaintenanceGuard,
+  type ChapterFourMaintenanceGuardState
+} from "../../modules/ChapterFourGuardModel";
+import {
+  CHAPTER_FOUR_FINAL_CHASE_POINTS,
+  CHAPTER_FOUR_FINAL_CHASE_RULES,
+  chapterFourFinalChaseFootContact,
+  createChapterFourFinalChaseState,
+  resolveChapterFourFinalChaseFailure,
+  resolveChapterFourFinalChaseFinish,
+  resolveChapterFourFinalChasePortal,
+  stepChapterFourFinalChase,
+  type ChapterFourFinalChaseState,
+  type ChapterFourFinalChaseStepResult
+} from "../../modules/ChapterFourFinalChaseModel";
+import type { ChapterFour755Intent } from "../../modules/ChapterFourTemporalMazeController";
 import type { RpgBridge } from "./RpgBridge";
 import {
+  CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT,
+  CHAPTER_FOUR_755_PLATES,
+  getChapterFour755ManifestFrame,
+  preloadFinaleEnvironmentTextures,
+  registerChapterFour755ManifestFrames,
+  type ChapterFour755FrameRegistrationReport,
+  type ChapterFour755PlateId
+} from "./FinaleEnvironmentTextures";
+import {
   ensureFinaleNpcAnimations,
-  FINALE_NPC_ANIMATIONS,
-  preloadFinaleNpcTextures,
-  type FinaleNpcAnimationId
+  preloadFinaleNpcTextures
 } from "./FinaleNpcTextures";
 import {
-  distanceFromPlayerToRpgTarget,
-  findNearestRpgInteractionTarget,
-  isPlayerFacingRpgTarget,
-  RPG_LOOSE_FACING,
-  type RpgRealityMode,
-  type RpgSpatialInteractionTarget
+  CHAPTER_FOUR_755_INTERACTION_TARGETS,
+  CHAPTER_FOUR_755_SCENE_KEY,
+  getChapterFour755RuntimeTargetInstallation,
+  isChapterFour755TargetStateActive,
+  isChapterFour755SpatialAttestationRequest,
+  selectChapterFour755BakeryCommittedRuntimeState,
+  selectChapterFour755AcceptedItem,
+  selectChapterFour755RequiredMode,
+  type ChapterFour755InteractionTargetContract,
+  type ChapterFour755RuntimeTargetContext,
+  type RpgHalfOpenWorldRect
 } from "./RpgInteractionContract";
+import {
+  ROOM204_DISCUSSION_TABLES,
+  ROOM204_FURNITURE_SCALE,
+  ROOM204_INITIAL_PIECE_LAYOUTS,
+  ROOM204_INITIAL_PIECE_POSITIONS,
+  ROOM204_PAIR_OFFSETS,
+  ROOM204_PIECE_FRAME_BINDINGS,
+  ROOM204_PIECE_ORDER,
+  ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
+  ROOM204_PODIUM_LAYOUT,
+  ROOM204_PROJECTION_HANDSHAKE,
+  ROOM204_RESIDUAL_GROUP_BOUNDS,
+  ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID,
+  ROOM204_SLOT_CENTERS,
+  ROOM204_SLOT_LAYOUTS,
+  ROOM204_SLOT_ORDER,
+  findRoom204PlacementForPiece,
+  isRoom204PlacementSetComplete,
+  room204SlotRuntimeEntityId
+} from "../rpg/ChapterFourRoom204Model";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -39,53 +96,37 @@ import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 
 type DisplayFloor = 1 | 2 | 3;
 type StoryFloor = "A1" | "A2" | "A3";
-type TravelZoneId = "elevator" | "stair_up" | "stair_down";
-type MazeMoveRoute = "elevator" | "stair";
-type MazeMoveResult = "accepted" | "already_complete" | "misaligned" | "wrong_mode" | "locked" | "inactive";
-type MazeAction =
-  | "observe_npc_schedule"
-  | "reconfigure_corridor_bay"
-  | "collect_wayfinding_fragment"
-  | "observe_old_signage"
-  | "observe_bridge_history"
-  | "open_second_floor_return_window";
-type A1TargetAction =
-  | "observe_airflow"
-  | "guide_paper"
-  | "inspect_elevator"
-  | "board_elevator";
-type A1Action = A1TargetAction
-  | "elevator_replay_missed"
-  | "complete_elevator_ride";
+type TravelRoute = "elevator" | "stair";
+type ElevatorPhase =
+  | "idle"
+  | "opening"
+  | "boarding"
+  | "selecting"
+  | "closing"
+  | "traveling"
+  | "destination_opening"
+  | "exiting"
+  | "destination_closing";
 
-interface MapRect {
-  left: number;
-  top: number;
-  right: number;
-  bottom: number;
-}
-
-interface MapCollisionRect extends MapRect {
+interface MapRect extends RpgHalfOpenWorldRect {}
+interface CollisionRect extends MapRect { id: string; sourceAnnotationId?: string }
+interface ForegroundDefinition {
   id: string;
+  sourceAnnotationId?: string;
+  maskBounds: MapRect;
+  baselineY: number;
+  renderMode: "foot_behind_baseline";
 }
-
-interface LayoutForegroundOcclusion extends MapRect {
+interface LayoutPoint { id?: string; x: number; y: number; facing?: "up" | "down" }
+interface LayoutElevator {
   id: string;
+  sourceAnnotationId?: string;
+  visibleBounds: MapRect;
+  doorCenter: { x: number; y: number };
+  standPosition: LayoutPoint;
+  arrivalPosition: LayoutPoint;
+  travelBounds: MapRect;
 }
-
-interface LayoutAnchor {
-  id: string;
-  label: string;
-  bounds: MapRect;
-}
-
-interface LayoutPoint {
-  id: string;
-  x: number;
-  y: number;
-  facing: "up" | "down";
-}
-
 interface LayoutStairLanding {
   id: string;
   direction: "up" | "down";
@@ -93,643 +134,951 @@ interface LayoutStairLanding {
   bounds: MapRect;
   standPosition: { x: number; y: number };
   arrivalPosition: { x: number; y: number };
-  requiredFacing: "up";
 }
-
-type FloorAssetId =
-  | "teaching-building-floor-1"
-  | "teaching-building-floor-2"
-  | "teaching-building-floor-3";
-
+interface LayoutAnchor { id: string; label: string; bounds: MapRect }
 interface LayoutFloor {
   displayFloor: DisplayFloor;
   storyFloor: StoryFloor;
+  roomId: string;
   checkpoint: RpgCheckpointId;
-  roomId: "a1_lobby" | "a2_corridor" | "a3_wayfinding";
-  assetId: FloorAssetId;
-  staticCollisions: MapCollisionRect[];
-  foregroundOcclusions?: LayoutForegroundOcclusion[];
+  assetId: "a1_base" | "a2_base" | "a3_base";
+  staticCollisions: CollisionRect[];
+  walkableRegions?: CollisionRect[];
+  foregroundOcclusions: ForegroundDefinition[];
   anchors: LayoutAnchor[];
   stairLandings: LayoutStairLanding[];
-  elevatorStand: LayoutPoint;
+  elevator: LayoutElevator;
   safeSpawn: LayoutPoint;
 }
-
-interface LayoutSafeRoute extends MapRect {
-  displayFloor: DisplayFloor;
-  width: number;
-  height: number;
-}
-
-interface LayoutDynamicGate {
+interface PlatePhysicalDelta {
   id: string;
-  collisionId: string;
-  displayFloor: DisplayFloor;
-  kind: "door" | "partition";
-  bounds: MapRect;
-  closedRouteStates: ChapterFourMazeRouteState[];
+  storyFloor: StoryFloor;
+  statePlateIds: string[];
+  activation: "plate_active" | "runtime_furniture_visible";
+  collisionBounds?: CollisionRect[];
+  occlusionBounds?: ForegroundDefinition[];
+  collisionSource?: string;
+  worldRoomBounds?: MapRect;
 }
-
 interface ChapterFourMazeLayout {
-  schemaVersion: 1;
+  schemaVersion: 2;
   worldSize: { width: number; height: number };
-  floors: LayoutFloor[];
-  transportCore: {
-    elevators: Array<{ id: string; centerX: number; storyFloors: StoryFloor[] }>;
-    stairs: Array<MapRect & { id: string; storyFloors: StoryFloor[] }>;
+  playerFootBoxContract: {
+    sourceFootBox: MapRect;
+    worldFootBox: { width: number; height: number };
   };
-  safeRoutes: Record<string, LayoutSafeRoute>;
-  dynamicGates: LayoutDynamicGate[];
+  bakeryRuntime: BakeryRuntimeContract;
+  maintenanceRuntime: MaintenanceRuntimeContract;
+  finalClockRuntime: FinalClockRuntimeContract;
+  lightGridRuntime: LightGridRuntimeContract;
+  finalChaseRuntime: FinalChaseRuntimeContract;
+  finalMinuteRuntime: FinalMinuteRuntimeContract;
+  morningCheckinRuntime: MorningCheckinRuntimeContract;
+  floors: LayoutFloor[];
+  physicalDeltas: PlatePhysicalDelta[];
+  transportCore: {
+    elevators: Array<{ id: string; storyFloors: StoryFloor[] }>;
+    stairs: Array<{ id: string; bounds: MapRect; storyFloors: StoryFloor[] }>;
+  };
 }
+interface FinalChaseRuntimeContract {
+  storyTimeSeconds: 28440;
+  playerSpeed: 208;
+  guardSpeed: 196;
+  stableCommittedFramesToArm: 4;
+  maxStepMs: 50;
+  transportId: "main_stair";
+  restartCheckpoint: "c4_a1_lobby";
+  playerStart: { storyFloor: "A1"; x: number; y: number };
+  guardSpawn: { storyFloor: "A1"; x: number; y: number };
+  waypoints: Array<{ id: string; storyFloor: "A1" | "A2"; x: number; y: number; role: string }>;
+  decoyBranches: Array<{ id: string; storyFloor: "A1" | "A2"; x: number; y: number; canAdvance: false }>;
+  finishThreshold: {
+    targetId: "a2_202_threshold";
+    point: { x: number; y: number };
+    bounds: MapRect;
+    priority: "finish_before_contact_same_frame";
+  };
+  room202Door: {
+    id: "a2_room202_door";
+    barrierBounds: MapRect;
+    states: Readonly<Record<"final_chase" | "final_minute_recovery" | "return_to_clock", {
+      state: "open" | "closed";
+      collider: boolean;
+    }>>;
+    visual: "procedural_status_only";
+    officialClosedDoorSprite: false;
+  };
+}
+interface FinalMinuteRuntimeContract {
+  storyFloor: "A2";
+  statePlateId: "a2_202_final_minute";
+  targetId: "a2_202_projection";
+  entityId: string;
+  texture: "chapter4_story_items";
+  frame: "final_minute_shard";
+  pivot: { x: number; y: number };
+  uniformScale: number;
+  installationBounds: MapRect;
+  standPosition: { x: number; y: number };
+  recoveryPlayerSpawn: { x: number; y: number };
+  proximity: number;
+  requiredMode: "light";
+  collision: false;
+}
+interface MorningCheckinRuntimeTargetContract {
+  targetId: "a1_campus_card_reader" | "a1_attendance_paper_slot";
+  entityId: string;
+  installationBounds: MapRect;
+  standPosition: { x: number; y: number };
+  proximity: number;
+  boundsDerivation: {
+    kind: string;
+    zoneSource: "visibleFixture.getBounds";
+  };
+  approximate: false;
+}
+interface MorningCheckinRuntimeContract {
+  storyFloor: "A1";
+  statePlateId: "a1_0755_morning";
+  approximate: false;
+  deskCenter: { x: number; y: number };
+  targetEntities: MorningCheckinRuntimeTargetContract[];
+}
+interface FinalClockRuntimeContract {
+  storyFloor: "A1";
+  statePlateId: "a1_2245_maintenance";
+  clockFrame: "gear_running";
+  clockCenter: { x: number; y: number };
+  minuteHandRadius: number;
+  initialAngleDegrees: number;
+  targetAngleDegrees: number;
+  releaseToleranceDegrees: number;
+  endpoint: {
+    targetId: "a1_hall_clock_minute_endpoint";
+    entityId: string;
+    installationBounds: MapRect;
+    standPosition: { x: number; y: number };
+    proximity: number;
+    approximate: boolean;
+  };
+  presentation: {
+    lockAtMs: number;
+    minuteHandAtMs: number;
+    paperFlightAtMs: number;
+    commitAtMs: number;
+    feedbackAtMs: number;
+  };
+  approximate: boolean;
+}
+interface LightGridRuntimeContract {
+  storyFloor: "A1";
+  statePlateId: "a1_0754_blackout";
+  panel: {
+    targetId: "a1_power_panel";
+    entityId: string;
+    installationBounds: MapRect;
+    visibleBoxBounds: MapRect;
+    standPosition: { x: number; y: number };
+    proximity: number;
+    frames: ReadonlyArray<"closed" | "open_powered" | "open_partial" | "open_restored">;
+    approximate: true;
+  };
+  visualRegions: Array<{
+    id: ChapterFourLightZoneId;
+    bounds: MapRect;
+    nonColliding: true;
+    visualOnly: true;
+    approximate: true;
+  }>;
+  approximate: true;
+}
+interface MaintenanceRuntimeTargetDefinition {
+  targetId:
+    | "a1_cleaning_cart_wheel_inspection"
+    | "a1_bakery_back_pry_bar"
+    | "a1_cleaning_cart_wheel_cover"
+    | "a1_cleaning_cart_oil_bottle"
+    | "a1_cleaning_cart_wheel"
+    | "a1_hall_clock_gear";
+  entityId: string;
+  installationBounds: MapRect;
+  standPosition: { x: number; y: number };
+  proximity: number;
+  frame?: "short_pry_tool_candidate" | "lubricating_oil";
+  pivot?: { x: number; y: number };
+  uniformScale?: number;
+  frameBefore?: "gear_stuttering";
+  frameAfter?: "gear_running";
+  boundsDerivation:
+    | {
+        kind: "visible_story_item_manifest_interaction";
+        spritesheetId: "chapter4_story_items";
+        interactionId: string;
+      }
+    | {
+        kind: "visible_cleaning_cart_frame_local_region";
+        source: "maintenanceRuntime.cleaningCart.wheelRegion";
+        visualState?: "programmatic_open_cover";
+      }
+    | {
+        kind: "visible_clock_frame_manifest_world_interaction";
+        spritesheetId: "chapter4_clock_states";
+        interactionId: "a1_world_trigger";
+        floor: "A1";
+      };
+}
+interface MaintenanceRuntimeContract {
+  storyFloor: "A1";
+  statePlateId: "a1_2245_maintenance";
+  pryBar: {
+    frame: "short_pry_tool_candidate";
+    pivot: { x: number; y: number };
+    uniformScale: number;
+  };
+  cleaningCart: {
+    texture: "cleaning_cart";
+    position: { x: number; y: number };
+    uniformScale: number;
+    visibleBounds: MapRect;
+    footBounds: MapRect;
+    wheelRegion: {
+      coordinateSpace: "cleaning_cart_frame_local";
+      sourceFrameSize: { width: 144; height: 128 };
+      origin: { x: 0.5; y: 1 };
+      bounds: MapRect;
+      visualRole: "programmatic_wheel_cover_and_wheel_interaction";
+    };
+  };
+  cleaner: {
+    animationId: "cleaner_idle";
+    position: { x: number; y: number };
+    uniformScale: number;
+    footBounds: MapRect;
+  };
+  guard: {
+    animationId: "guard_walk";
+    position: { x: number; y: number };
+    uniformScale: number;
+    footBox: { width: number; height: number };
+  };
+  repairedPush: {
+    animationId: "cleaner_push_cart";
+    from: { x: number; y: number };
+    to: { x: number; y: number };
+    durationMs: number;
+  };
+  targetEntities: MaintenanceRuntimeTargetDefinition[];
+}
+interface BakeryRuntimeTargetDefinition {
+  targetId:
+    | "a1_bakery_inspection_lamp"
+    | "a1_bakery_conveyor_edge"
+    | "a1_bakery_hour_hand_pickup";
+  entityId: string;
+  installationBounds: MapRect;
+  standPosition: { x: number; y: number };
+  proximity: number;
+  visual?: {
+    texture: "chapter4_story_items";
+    frame: "old_clock_hour_hand";
+    pivot: { x: number; y: number };
+    uniformScale: number;
+    sourceInteractionBounds: MapRect;
+    sourceCell: MapRect;
+    sourcePivot: { x: number; y: number };
+  };
+}
+interface BakeryRuntimeContract {
+  storyFloor: "A1";
+  statePlateId: "a1_1225_bakery";
+  targetEntities: BakeryRuntimeTargetDefinition[];
+  baker: {
+    framePair: number;
+    frames: number[];
+    origin: { x: 0.5; y: 1 };
+    uniformScale: number;
+    position: { x: number; y: number };
+    collision: false;
+    foregroundOcclusionId: string;
+  };
+  crowd: {
+    texture: "student_walk";
+    collisionProfile: "playerFootBoxContract.worldFootBox";
+    origin: { x: 0.5; y: 1 };
+    displayScale: number;
+    routes: Array<{
+      id: string;
+      from: { x: number; y: number };
+      to: { x: number; y: number };
+      speed: number;
+      endpointPauseMs: number;
+    }>;
+  };
+  walkabilityRoutes: Array<{
+    id: string;
+    waypoints: Array<{ x: number; y: number }>;
+  }>;
+}
+interface FloorDefinition extends LayoutFloor { offsetX: number; title: string }
+interface TravelTarget {
+  id: "elevator" | "stair_up" | "stair_down";
+  label: string;
+  bounds: MapRect;
+  targetFloor?: DisplayFloor;
+  route: TravelRoute;
+}
+interface PendingMove {
+  requestId: string;
+  fromFloor: DisplayFloor;
+  targetFloor: DisplayFloor;
+  route: TravelRoute;
+}
+interface PendingStoryRequest {
+  requestId: string;
+  intentType: ChapterFour755Intent["type"];
+  targetId?: string;
+  timer: Phaser.Time.TimerEvent;
+}
+type StoryPresentation =
+  | "idle"
+  | "paper_flight"
+  | "external_time_rejection"
+  | "hall_clock_inspection"
+  | "first_clock_pull"
+  | "bakery_conveyor_stop"
+  | "room204_projection"
+  | "minute_theft";
+interface ElevatorVisual {
+  floor: DisplayFloor;
+  door: Phaser.GameObjects.Sprite;
+  indicator: Phaser.GameObjects.Text;
+  lamp: Phaser.GameObjects.Arc;
+}
+interface AppliedForeground {
+  id: string;
+  floor: DisplayFloor;
+  sourceAnnotationId?: string;
+  maskBounds: MapRect;
+  baselineY: number;
+  renderMode: "foot_behind_baseline";
+  image: Phaser.GameObjects.Image;
+}
+interface ProjectedTarget {
+  contract: ChapterFour755InteractionTargetContract;
+  floor: DisplayFloor;
+  bounds: Readonly<MapRect>;
+  acceptedItem: ItemId | null | undefined;
+}
+interface PreparedForeground {
+  id: string;
+  floor: DisplayFloor;
+  sourceAnnotationId?: string;
+  worldBounds: MapRect;
+  localBounds: MapRect;
+  baselineY: number;
+  plateId: ChapterFour755PlateId;
+}
+interface PreparedPlateGroup {
+  signature: string;
+  plateIds: Readonly<Record<StoryFloor, ChapterFour755PlateId>>;
+  colliders: CollisionRect[];
+  foregrounds: PreparedForeground[];
+  deferredFailures: string[];
+}
+interface StagedPlateApplication {
+  foregrounds: AppliedForeground[];
+  obstacles: Phaser.Physics.Arcade.StaticGroup;
+  playerCollider: Phaser.Physics.Arcade.Collider;
+  colliderDebugObjects: Phaser.GameObjects.Rectangle[];
+}
+interface BackgroundTextureSnapshot {
+  floor: DisplayFloor;
+  image: Phaser.GameObjects.Image;
+  textureKey: string;
+  frameName: string | number;
+}
+type BakeryBoundsObject = Phaser.GameObjects.Rectangle | Phaser.GameObjects.Sprite;
+interface BakeryRuntimeTargetBinding {
+  targetId: BakeryRuntimeTargetDefinition["targetId"];
+  entityId: string;
+  boundsObject: BakeryBoundsObject;
+}
+interface BakeryCrowdActor {
+  sprite: Phaser.Physics.Arcade.Sprite;
+  tween: Phaser.Tweens.Tween;
+}
+interface Room204RuntimePiece {
+  pieceId: ChapterFourRoom204PieceId;
+  deskSprite: Phaser.GameObjects.Sprite;
+  chairSprite: Phaser.GameObjects.Sprite;
+  deskObstacle: Phaser.GameObjects.Zone;
+  chairObstacle: Phaser.GameObjects.Zone;
+}
+interface Room204DiscussionTableRuntime {
+  id: string;
+  pieceIds: readonly ChapterFourRoom204PieceId[];
+  sprite: Phaser.GameObjects.Sprite;
+  obstacle: Phaser.GameObjects.Zone;
+}
+interface Room204RuntimeTargetBinding {
+  targetId: string;
+  entityId: string;
+  boundsObject: Phaser.GameObjects.Zone;
+}
+interface PhaseRuntimeTargetBinding {
+  targetId: string;
+  entityId: string;
+  floor: DisplayFloor;
+  boundsObject: Phaser.GameObjects.Rectangle | Phaser.GameObjects.Zone;
+}
+export type ChapterFourPlateTransactionFaultPoint =
+  | "foreground_stage"
+  | "collision_stage"
+  | "background_set_texture"
+  | "activation";
+export interface ChapterFourPlateTransactionFaultContext {
+  point: ChapterFourPlateTransactionFaultPoint;
+  index?: number;
+  floor?: DisplayFloor;
+  id?: string;
+  step?: "body" | "player_collider" | "activate_new" | "deactivate_old";
+}
+export const CHAPTER_FOUR_PLATE_TRANSACTION_FAULT_INJECTOR_KEY =
+  "chapterFourPlateTransactionFaultInjector";
 
 const LAYOUT = mazeLayout as ChapterFourMazeLayout;
 const FLOOR_SIZE = LAYOUT.worldSize;
 const FLOOR_GAP = 192;
 const FLOOR_STRIDE = FLOOR_SIZE.width + FLOOR_GAP;
-const WORLD = {
+const WORLD = Object.freeze({
   width: FLOOR_SIZE.width * LAYOUT.floors.length + FLOOR_GAP * (LAYOUT.floors.length - 1),
   height: FLOOR_SIZE.height
-} as const;
+});
 const PLAYER_SPEED = 176;
-const ELEVATOR_DOORS_TEXTURE = "teaching-building-elevator-doors";
-const ELEVATOR_DOOR_FRAME_COUNT = 6;
-const ELEVATOR_DOOR_FRAME_HEIGHT = 96;
-
-type ElevatorRuntimePhase =
-  | "idle"
-  | "waiting"
-  | "arriving"
-  | "doors_opening"
-  | "boarding"
-  | "selecting"
-  | "doors_closing"
-  | "traveling"
-  | "destination_opening"
-  | "exiting"
-  | "destination_closing";
-
-interface ElevatorFloorVisual {
-  floor: DisplayFloor;
-  centerX: number;
-  door: Phaser.GameObjects.Sprite;
-  indicatorBack: Phaser.GameObjects.Rectangle;
-  indicatorText: Phaser.GameObjects.Text;
-  callLamp: Phaser.GameObjects.Arc;
-}
-
-const MAIN_ELEVATOR = LAYOUT.transportCore.elevators[0];
-const MAIN_STAIR = LAYOUT.transportCore.stairs[0];
-const ELEVATOR_LOCAL_CENTER_X = MAIN_ELEVATOR.centerX;
-const ELEVATOR_DOOR_CENTER_Y = 111;
-const ELEVATOR_DOOR_DEPTH = 4000 + ELEVATOR_DOOR_CENTER_Y + ELEVATOR_DOOR_FRAME_HEIGHT / 2;
-const ELEVATOR_FRONT_ACTOR_DEPTH = ELEVATOR_DOOR_DEPTH + 1;
-const ELEVATOR_INSIDE_Y = 142;
-const ELEVATOR_WAIT_STEP_MS = 620;
-const ELEVATOR_ARRIVAL_MS = 420;
-const ELEVATOR_DOOR_MS = 620;
-const ELEVATOR_BOARD_MS = 560;
-const ELEVATOR_TRAVEL_STEP_MS = 720;
-const HISTORICAL_ELEVATOR_RIDE_MS = mazeContent.elevator.timeline.rideDurationMs;
-
-interface FloorDefinition {
-  floor: DisplayFloor;
-  storyFloor: StoryFloor;
-  roomId: LayoutFloor["roomId"];
-  id: FloorAssetId;
-  url: string;
-  offsetX: number;
-  shortTitle: string;
-  checkpoint: RpgCheckpointId;
-  staticCollisions: readonly MapCollisionRect[];
-  foregroundOcclusions: readonly LayoutForegroundOcclusion[];
-  anchors: readonly LayoutAnchor[];
-  stairLandings: readonly LayoutStairLanding[];
-  elevatorStand: LayoutPoint;
-  safeSpawn: LayoutPoint;
-}
-
-const FLOOR_ASSET_URLS: Readonly<Record<FloorAssetId, string>> = {
-  "teaching-building-floor-1": teachingBuildingFloor1Url,
-  "teaching-building-floor-2": teachingBuildingFloor2Url,
-  "teaching-building-floor-3": teachingBuildingFloor3Url
-};
-
-const FLOOR_TITLES: Readonly<Record<DisplayFloor, string>> = {
-  1: "1F · 麦思威面包坊餐厅",
-  2: "2F · 教室与开放学习区",
-  3: "3F · 校友荣誉门厅"
-};
-
+const PLAYER_DEPTH_BASE = 4000;
+const ELEVATOR_TEXTURE = "teaching-building-elevator-doors";
+const BAKERY_COUNTER_BAKER_TEXTURE = "chapter-four-bakery-counter-auntie";
+const BAKERY_COUNTER_BAKER_ANIMATION = "chapter-four-bakery-counter-auntie-pair-3";
+const ELEVATOR_FRAME_COUNT = 6;
+const ELEVATOR_FRAME_WIDTH = 72;
+const ELEVATOR_FRAME_HEIGHT = 96;
+const ELEVATOR_DOOR_MS = 440;
+const ELEVATOR_BOARD_MS = 420;
+const ELEVATOR_TRAVEL_PER_FLOOR_MS = 620;
+const REQUEST_TIMEOUT_MS = 1800;
+const STORY_REQUEST_TIMEOUT_MS = 2600;
+const FINAL_CLOCK_DRAG_SAFETY_TIMEOUT_MS = 30000;
+const STORY_RETRY_DELAY_MS = 900;
+const CHAPTER_FOUR_WORLD_PIXELS_PER_METER = 48;
+const PLATE_RETRY_BASE_MS = 120;
+const PLATE_RETRY_MAX_MS = 1920;
+const EXPECTED_MANIFEST_ENTRY_COUNT = 62;
+const EXPECTED_EMPTY_FRAME_COUNT = 1;
+const RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS: ReadonlySet<string> = new Set([
+  "a1_guard_chase_body",
+  "a2_guard_chase_body"
+]);
+const FLOOR_TITLES: Readonly<Record<DisplayFloor, string>> = Object.freeze({
+  1: "A1 · 麦思威面包坊与门厅",
+  2: "A2 · 教室与开放学习区",
+  3: "A3 · 校友荣誉门厅"
+});
 const FLOORS: readonly FloorDefinition[] = LAYOUT.floors.map((floor) => ({
-  floor: floor.displayFloor,
-  storyFloor: floor.storyFloor,
-  roomId: floor.roomId,
-  id: floor.assetId,
-  url: FLOOR_ASSET_URLS[floor.assetId],
+  ...floor,
   offsetX: (floor.displayFloor - 1) * FLOOR_STRIDE,
-  shortTitle: FLOOR_TITLES[floor.displayFloor],
-  checkpoint: floor.checkpoint,
-  staticCollisions: floor.staticCollisions,
-  foregroundOcclusions: floor.foregroundOcclusions ?? [],
-  anchors: floor.anchors,
-  stairLandings: floor.stairLandings,
-  elevatorStand: floor.elevatorStand,
-  safeSpawn: floor.safeSpawn
+  title: FLOOR_TITLES[floor.displayFloor]
 }));
-
-interface StoryAnchor {
-  id: string;
+const LIGHT_ZONES = chapterFourContent.lightGrid.zones as readonly {
+  id: ChapterFourLightZoneId;
   label: string;
-  floor: DisplayFloor;
-  bounds: MapRect;
-}
-
-interface ForegroundOcclusionVisual {
-  id: string;
-  bounds: Phaser.Geom.Rectangle;
-  image: Phaser.GameObjects.Image;
-}
-
-interface TravelZone extends RpgSpatialInteractionTarget {
-  id: TravelZoneId;
-  requiredFacing: "toward_target";
-  facingToleranceDegrees: 90;
-  targetStoryFloor?: StoryFloor;
-  landingId?: string;
-}
-
-const STORY_ANCHORS: readonly StoryAnchor[] = FLOORS.flatMap((floor) =>
-  floor.anchors.map((anchor) => ({ ...anchor, floor: floor.floor }))
-);
-
-const WORLD_STATIC_COLLISIONS: readonly MapCollisionRect[] = FLOORS.flatMap((floor) =>
-  floor.staticCollisions.map((rect) => ({
-    ...rect,
-    id: `floor_${floor.floor}_${rect.id}`,
-    left: rect.left + floor.offsetX,
-    right: rect.right + floor.offsetX
-  }))
-);
-
-const SAFE_ROUTE_RECTS = Object.entries(LAYOUT.safeRoutes).map(([id, route]) => {
-  const floor = getFloor(route.displayFloor);
-  return {
-    id,
-    floor: route.displayFloor,
-    left: route.left + floor.offsetX,
-    top: route.top,
-    right: route.right + floor.offsetX,
-    bottom: route.bottom
-  };
-});
-
-interface PendingMazeMove {
-  requestId: string;
-  fromFloor: DisplayFloor;
-  targetFloor: DisplayFloor;
-  route: MazeMoveRoute;
-}
-
-type MazeTargetAction = MazeAction | A1TargetAction | "open_wayfinding_board";
-type PendingActionName = MazeTargetAction | A1Action;
-
-interface MazeInteractionTarget extends RpgSpatialInteractionTarget {
-  floor: DisplayFloor;
-  bounds: MapRect;
-  stand: { x: number; y: number };
-  requiredMode: RpgRealityMode;
-  requiredFacing: "toward_target";
-  facingToleranceDegrees: 90;
-  action: MazeTargetAction;
-  visualKind: "observation" | "fragment" | "board" | "window" | "airflow" | "paper" | "elevator";
-}
-
-interface MazePartitionTarget extends RpgSpatialInteractionTarget {
-  floor: DisplayFloor;
-  bounds: MapRect;
-  stand: { x: number; y: number };
-  requiredMode: "light";
-  requiredFacing: "toward_target";
-  facingToleranceDegrees: 90;
-}
-
-interface MazeTargetConfig {
-  stand: { x: number; y: number };
-  proximity: number;
-  requiredMode: RpgRealityMode;
-  action: MazeTargetAction;
-  visualKind: MazeInteractionTarget["visualKind"];
-}
-
-interface PendingMazeAction {
-  requestId: string;
-  action: PendingActionName;
-  targetId: string;
-  partitionId?: string;
-  fragmentId?: string;
-  order?: readonly string[];
-}
-
-interface NpcRouteDefinition {
-  id: string;
-  residualId: string;
-  texture: FinaleNpcAnimationId;
-  start: { x: number; y: number };
-  end: { x: number; y: number };
-  scale: number;
-  durationMs: number;
-  phaseOffsetMs: number;
-  forwardFlipX?: boolean;
-}
-
-interface NpcRouteVisual {
-  definition: NpcRouteDefinition;
-  normal: Phaser.GameObjects.Sprite;
-  residual: Phaser.GameObjects.Sprite;
-  route: Phaser.GameObjects.Graphics;
-  frame: number;
-  residualFrame: number;
-}
-
-interface StudyNpcDefinition {
-  id: string;
-  residualId: string;
-  texture: "student_phone_glance" | "student_adjust_bag";
-  x: number;
-  y: number;
-  scale: number;
-  phaseOffsetMs: number;
-  flipX?: boolean;
-}
-
-interface StudyNpcVisual {
-  definition: StudyNpcDefinition;
-  normal: Phaser.GameObjects.Sprite;
-  residual: Phaser.GameObjects.Sprite;
-}
-
-const TARGET_CONFIGS: Readonly<Record<string, MazeTargetConfig>> = {
-  [CHAPTER_FOUR_MAZE_IDS.scheduleTarget]: {
-    stand: { x: 836, y: 470 },
-    proximity: 64,
-    requiredMode: "dark",
-    action: "observe_npc_schedule",
-    visualKind: "observation"
-  },
-  [CHAPTER_FOUR_MAZE_IDS.fragments[0]]: {
-    stand: { x: 600, y: 639 },
-    proximity: 72,
-    requiredMode: "light",
-    action: "collect_wayfinding_fragment",
-    visualKind: "fragment"
-  },
-  [CHAPTER_FOUR_MAZE_IDS.fragments[1]]: {
-    stand: { x: 1040, y: 639 },
-    proximity: 72,
-    requiredMode: "light",
-    action: "collect_wayfinding_fragment",
-    visualKind: "fragment"
-  },
-  [CHAPTER_FOUR_MAZE_IDS.returnWindowTarget]: {
-    stand: { x: 1100, y: 720 },
-    proximity: 64,
-    requiredMode: "light",
-    action: "open_second_floor_return_window",
-    visualKind: "window"
-  },
-  [CHAPTER_FOUR_MAZE_IDS.oldSignageTarget]: {
-    stand: { x: 600, y: 300 },
-    proximity: 72,
-    requiredMode: "dark",
-    action: "observe_old_signage",
-    visualKind: "observation"
-  },
-  [CHAPTER_FOUR_MAZE_IDS.wayfindingBoardTarget]: {
-    stand: { x: 600, y: 575 },
-    proximity: 72,
-    requiredMode: "light",
-    action: "open_wayfinding_board",
-    visualKind: "board"
-  },
-  [CHAPTER_FOUR_MAZE_IDS.bridgeHistoryTarget]: {
-    stand: { x: 1060, y: 320 },
-    proximity: 72,
-    requiredMode: "dark",
-    action: "observe_bridge_history",
-    visualKind: "observation"
-  }
-};
-
-const MAZE_INTERACTION_TARGETS: readonly MazeInteractionTarget[] = STORY_ANCHORS.flatMap((anchor) => {
-  const config = TARGET_CONFIGS[anchor.id];
-  if (!config) return [];
-  return [{
-    id: anchor.id,
-    label: anchor.label,
-    floor: anchor.floor,
-    bounds: anchor.bounds,
-    x: (anchor.bounds.left + anchor.bounds.right) / 2,
-    y: (anchor.bounds.top + anchor.bounds.bottom) / 2,
-    width: anchor.bounds.right - anchor.bounds.left,
-    height: anchor.bounds.bottom - anchor.bounds.top,
-    stand: config.stand,
-    proximity: config.proximity,
-    requiredMode: config.requiredMode,
-    ...RPG_LOOSE_FACING,
-    action: config.action,
-    visualKind: config.visualKind
-  }];
-});
-
-const A2_NPC_ROUTES: readonly NpcRouteDefinition[] = [
-  {
-    id: "a2_discussion_group",
-    residualId: "a2_discussion_group_residual",
-    texture: "student_walk",
-    start: { x: 920, y: 458 },
-    end: { x: 708, y: 458 },
-    scale: 0.56,
-    durationMs: 6200,
-    phaseOffsetMs: 0
-  },
-  {
-    id: "a2_headphone_student",
-    residualId: "a2_headphone_student_residual",
-    texture: "student_walk",
-    start: { x: 760, y: 516 },
-    end: { x: 982, y: 516 },
-    scale: 0.56,
-    durationMs: 6800,
-    phaseOffsetMs: 2100,
-    forwardFlipX: true
-  },
-  {
-    id: "a2_clearance_staff",
-    residualId: "a2_clearance_staff_residual",
-    texture: "cleaner_push_cart",
-    start: { x: 574, y: 206 },
-    end: { x: 1098, y: 206 },
-    scale: 0.52,
-    durationMs: 9200,
-    phaseOffsetMs: 900
-  },
-  {
-    id: "a2_security_patrol",
-    residualId: "a2_security_patrol_residual",
-    texture: "guard_walk",
-    start: { x: 1090, y: 274 },
-    end: { x: 1090, y: 520 },
-    scale: 0.54,
-    durationMs: 7800,
-    phaseOffsetMs: 3200
-  },
-  {
-    id: "a2_upper_corridor_student",
-    residualId: "a2_upper_corridor_student_residual",
-    texture: "student_walk",
-    start: { x: 1090, y: 196 },
-    end: { x: 660, y: 196 },
-    scale: 0.54,
-    durationMs: 9800,
-    phaseOffsetMs: 4700
-  },
-  {
-    id: "a2_returning_student",
-    residualId: "a2_returning_student_residual",
-    texture: "student_walk",
-    start: { x: 610, y: 546 },
-    end: { x: 1040, y: 546 },
-    scale: 0.55,
-    durationMs: 10400,
-    phaseOffsetMs: 1600,
-    forwardFlipX: true
-  }
-];
-
-const A2_STUDY_NPCS: readonly StudyNpcDefinition[] = [
-  {
-    id: "a2_study_student_201_west",
-    residualId: "a2_study_student_201_west_residual",
-    texture: "student_phone_glance",
-    x: 122,
-    y: 418,
-    scale: 0.52,
-    phaseOffsetMs: 0
-  },
-  {
-    id: "a2_study_student_201_east",
-    residualId: "a2_study_student_201_east_residual",
-    texture: "student_adjust_bag",
-    x: 316,
-    y: 418,
-    scale: 0.52,
-    phaseOffsetMs: 740,
-    flipX: true
-  },
-  {
-    id: "a2_study_student_204_west",
-    residualId: "a2_study_student_204_west_residual",
-    texture: "student_adjust_bag",
-    x: 143,
-    y: 674,
-    scale: 0.51,
-    phaseOffsetMs: 1320
-  },
-  {
-    id: "a2_study_student_204_east",
-    residualId: "a2_study_student_204_east_residual",
-    texture: "student_phone_glance",
-    x: 310,
-    y: 674,
-    scale: 0.51,
-    phaseOffsetMs: 1980,
-    flipX: true
-  }
-];
-
-const A2_STUDY_TABLE_CROPS = [
-  { id: "201-west", left: 77, top: 388, right: 194, bottom: 426 },
-  { id: "201-east", left: 232, top: 388, right: 382, bottom: 426 },
-  { id: "204-west", left: 83, top: 639, right: 198, bottom: 676 },
-  { id: "204-east", left: 211, top: 639, right: 373, bottom: 676 }
-] as const;
-
-const A1_TARGET_IDS = Object.freeze({
-  airflow: "a1_airflow_trace",
-  paperGuide: "a1_maxwell_warm_air",
-  elevatorInspect: "a1_main_elevator_history",
-  elevatorBoard: "a1_main_elevator_boarding"
-});
-const A1_TARGET_ACTIONS = new Set<A1TargetAction>([
-  "observe_airflow",
-  "guide_paper",
-  "inspect_elevator",
-  "board_elevator"
+  bit: number;
+}[];
+const OPENING_HANDSHAKE = chapterFourContent.openingHandshake;
+const OPENING_PHASES: ReadonlySet<GameState["chapter4"]["phase"]> = new Set([
+  "opening_handoff",
+  "opening_paper_caught",
+  "hall_clock_inspection"
+]);
+const BAKERY_RUNTIME = LAYOUT.bakeryRuntime;
+const MAINTENANCE_RUNTIME = LAYOUT.maintenanceRuntime;
+const FINAL_CLOCK_RUNTIME = LAYOUT.finalClockRuntime;
+const LIGHT_GRID_RUNTIME = LAYOUT.lightGridRuntime;
+const FINAL_CHASE_RUNTIME = LAYOUT.finalChaseRuntime;
+const FINAL_MINUTE_RUNTIME = LAYOUT.finalMinuteRuntime;
+const MORNING_CHECKIN_RUNTIME = LAYOUT.morningCheckinRuntime;
+const TASK7_LIVE_READY_TARGET_IDS: ReadonlySet<string> = new Set([
+  "a1_noticeboard_paper",
+  "a1_hall_clock"
 ]);
 
-function isA1TargetAction(action: PendingActionName): action is A1TargetAction {
-  return A1_TARGET_ACTIONS.has(action as A1TargetAction);
+/** Task 9 extends the playable chain through the A3 reference, A2 residuals, and the positioning plate. */
+export const TASK9_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
+  "a1_noticeboard_paper",
+  "a1_hall_clock",
+  "a1_bakery_inspection_lamp",
+  "a1_bakery_conveyor_edge",
+  "a1_bakery_hour_hand_pickup",
+  "a1_hall_clock_hour_hand_socket",
+  "a3_reference_classroom_layout",
+  "a2_room204_residual_group",
+  "a2_room204_podium_drawer",
+  "a1_hall_clock_positioning_plate_slot",
+  ...Object.keys(CHAPTER_FOUR_755_INTERACTION_TARGETS).filter((targetId) => (
+    targetId.startsWith("a2_room204_slot_")
+  ))
+]);
+export const TASK10_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
+  ...TASK9_ACTIONABLE_TARGET_IDS,
+  "a1_cleaning_cart_wheel_inspection",
+  "a1_bakery_back_pry_bar",
+  "a1_cleaning_cart_wheel_cover",
+  "a1_cleaning_cart_oil_bottle",
+  "a1_cleaning_cart_wheel",
+  "a1_hall_clock_gear"
+]);
+export const TASK11_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
+  ...TASK10_ACTIONABLE_TARGET_IDS,
+  "a1_hall_clock_minute_endpoint",
+  "a1_power_panel"
+]);
+export const TASK12_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
+  ...TASK11_ACTIONABLE_TARGET_IDS,
+  "a2_202_projection"
+]);
+export const TASK13_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
+  ...TASK12_ACTIONABLE_TARGET_IDS,
+  "a1_campus_card_reader",
+  "a1_attendance_paper_slot"
+]);
+const MAINTENANCE_RUNTIME_TARGET_IDS = Object.freeze([
+  "a1_cleaning_cart_wheel_inspection",
+  "a1_bakery_back_pry_bar",
+  "a1_cleaning_cart_wheel_cover",
+  "a1_cleaning_cart_oil_bottle",
+  "a1_cleaning_cart_wheel",
+  "a1_hall_clock_gear"
+] as const);
+const FINAL_CLOCK_RUNTIME_TARGET_IDS = Object.freeze([
+  "a1_hall_clock_minute_endpoint"
+] as const);
+const LIGHT_GRID_RUNTIME_TARGET_IDS = Object.freeze([
+  "a1_power_panel"
+] as const);
+const MORNING_CHECKIN_RUNTIME_TARGET_IDS = Object.freeze([
+  "a1_campus_card_reader",
+  "a1_attendance_paper_slot"
+] as const);
+const PHASE_TRAVEL_ROOM_OVERRIDES: Readonly<Partial<Record<
+  GameState["chapter4"]["phase"],
+  Partial<Record<DisplayFloor, { roomId: string; checkpoint: RpgCheckpointId }>>
+>>> = Object.freeze({
+  room204_restore: Object.freeze({
+    1: { roomId: "a1_hall_clock", checkpoint: "c4_a1_lobby" as RpgCheckpointId },
+    2: { roomId: "a2_corridor", checkpoint: "c4_a2_corridor" as RpgCheckpointId },
+    3: { roomId: "a3_wayfinding", checkpoint: "c4_a3_wayfinding" as RpgCheckpointId }
+  }),
+  final_chase: Object.freeze({
+    1: { roomId: "a1_lobby", checkpoint: "c4_a1_lobby" as RpgCheckpointId },
+    2: { roomId: "a2_corridor", checkpoint: "c4_a2_corridor" as RpgCheckpointId }
+  }),
+  return_to_clock: Object.freeze({
+    1: { roomId: "a1_lobby", checkpoint: "c4_a1_lobby" as RpgCheckpointId },
+    2: { roomId: "a2_corridor", checkpoint: "c4_a2_corridor" as RpgCheckpointId }
+  }),
+  morning_checkin: Object.freeze({
+    1: { roomId: "a1_checkin", checkpoint: "c4_a1_lobby" as RpgCheckpointId }
+  }),
+  exterior_closure: Object.freeze({
+    1: { roomId: "a1_exterior", checkpoint: "c4_a1_lobby" as RpgCheckpointId }
+  }),
+  complete: Object.freeze({
+    1: { roomId: "a1_exterior", checkpoint: "c4_a1_lobby" as RpgCheckpointId }
+  })
+});
+
+function isRoom204SlotTargetId(targetId: string): targetId is `a2_room204_slot_${ChapterFourRoom204SlotId}` {
+  return targetId.startsWith("a2_room204_slot_");
 }
 
 function getFloor(displayFloor: DisplayFloor): FloorDefinition {
-  return FLOORS.find((floor) => floor.floor === displayFloor) ?? FLOORS[0];
+  const floor = FLOORS.find((candidate) => candidate.displayFloor === displayFloor);
+  if (!floor) throw new Error(`Missing Chapter 4 display floor: ${displayFloor}`);
+  return floor;
 }
-
-function getDisplayFloor(storyFloor: string): DisplayFloor | null {
-  return FLOORS.find((floor) => floor.storyFloor === storyFloor)?.floor ?? null;
+function displayFloorFor(storyFloor: string): DisplayFloor | null {
+  return FLOORS.find((floor) => floor.storyFloor === storyFloor)?.displayFloor ?? null;
 }
-
-function distanceToBounds(
-  point: { x: number; y: number },
-  bounds: MapRect
-): number {
-  const dx = Math.max(bounds.left - point.x, 0, point.x - bounds.right);
-  const dy = Math.max(bounds.top - point.y, 0, point.y - bounds.bottom);
+function rectRight(rect: Readonly<MapRect>): number { return rect.x + rect.width }
+function rectBottom(rect: Readonly<MapRect>): number { return rect.y + rect.height }
+function rectCenterX(rect: Readonly<MapRect>): number { return rect.x + rect.width / 2 }
+function rectCenterY(rect: Readonly<MapRect>): number { return rect.y + rect.height / 2 }
+function rectEquals(a: Readonly<MapRect>, b: Readonly<MapRect>): boolean {
+  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+}
+function pointInsideRect(point: Readonly<{ x: number; y: number }>, rect: Readonly<MapRect>): boolean {
+  return point.x >= rect.x && point.x < rect.x + rect.width
+    && point.y >= rect.y && point.y < rect.y + rect.height;
+}
+function shortestAngleDistance(a: number, b: number): number {
+  return Math.abs(((a - b + 540) % 360) - 180);
+}
+function lightZoneBit(zoneId: ChapterFourLightZoneId): number {
+  const zone = LIGHT_ZONES.find((candidate) => candidate.id === zoneId);
+  if (!zone) throw new Error(`chapter4_light_zone_missing:${zoneId}`);
+  return zone.bit;
+}
+function offsetRect(rect: Readonly<MapRect>, offsetX: number): MapRect {
+  return { x: rect.x + offsetX, y: rect.y, width: rect.width, height: rect.height };
+}
+function structuredContractFailure(
+  source: "runtime" | "plate" | "spatial_attestation",
+  raw: string
+): {
+  source: "runtime" | "plate" | "spatial_attestation";
+  code: string;
+  detail: string | null;
+  raw: string;
+} {
+  const separator = raw.indexOf(":");
+  return {
+    source,
+    code: separator < 0 ? raw : raw.slice(0, separator),
+    detail: separator < 0 ? null : raw.slice(separator + 1),
+    raw
+  };
+}
+function rectIsValid(rect: Readonly<MapRect>): boolean {
+  return Number.isFinite(rect.x) && Number.isFinite(rect.y)
+    && Number.isFinite(rect.width) && Number.isFinite(rect.height)
+    && rect.width > 0 && rect.height > 0;
+}
+function rectInsideFloor(rect: Readonly<MapRect>): boolean {
+  return rectIsValid(rect) && rect.x >= 0 && rect.y >= 0
+    && rectRight(rect) <= FLOOR_SIZE.width && rectBottom(rect) <= FLOOR_SIZE.height;
+}
+function pointDistanceToRect(point: { x: number; y: number }, rect: Readonly<MapRect>): number {
+  const dx = Math.max(rect.x - point.x, 0, point.x - rectRight(rect));
+  const dy = Math.max(rect.y - point.y, 0, point.y - rectBottom(rect));
   return Math.hypot(dx, dy);
 }
-
-function createTravelZones(floor: FloorDefinition): TravelZone[] {
-  const elevator: TravelZone = {
+function basePlateFor(storyFloor: StoryFloor): ChapterFour755PlateId {
+  return `${storyFloor.toLowerCase()}_base` as ChapterFour755PlateId;
+}
+function plateForFloor(
+  projection: ChapterFourMazeProjection,
+  storyFloor: StoryFloor
+): ChapterFour755PlateId {
+  const prefix = `${storyFloor.toLowerCase()}_`;
+  return (projection.activePlateIds.find((id) => id.startsWith(prefix))
+    ?? basePlateFor(storyFloor)) as ChapterFour755PlateId;
+}
+function desiredPlateGroup(
+  projection: ChapterFourMazeProjection
+): Readonly<Record<StoryFloor, ChapterFour755PlateId>> {
+  return Object.freeze({
+    A1: plateForFloor(projection, "A1"),
+    A2: plateForFloor(projection, "A2"),
+    A3: plateForFloor(projection, "A3")
+  });
+}
+function createBaseAppliedProjection(
+  projection: ChapterFourMazeProjection,
+  storyFloor: StoryFloor
+): ChapterFourMazeProjection {
+  const activePlateIds = FLOORS.map((floor) => basePlateFor(floor.storyFloor));
+  return {
+    ...projection,
+    activePlateIds,
+    plateId: basePlateFor(storyFloor),
+    availableTargetIds: [],
+    dynamicCollisionIds: [],
+    occlusionIds: [],
+    npcIds: [],
+    guardMode: "absent",
+    doorStates: {},
+    visibleNpcIds: [],
+    residualNpcIds: [],
+    activeDoorIds: [],
+    activePartitionIds: [],
+    activeCollisionIds: [],
+    activeTargetIds: []
+  };
+}
+export function chapterFourPlateRetryDelayMs(failedAttempts: number): number {
+  const normalizedAttempts = Number.isFinite(failedAttempts)
+    ? Math.max(1, Math.floor(failedAttempts))
+    : 1;
+  const exponent = Math.max(0, Math.min(4, normalizedAttempts - 1));
+  return Math.min(PLATE_RETRY_MAX_MS, PLATE_RETRY_BASE_MS * (2 ** exponent));
+}
+function hasOwnInventoryItem(
+  items: GameState["items"],
+  value: unknown
+): value is ItemId {
+  return typeof value === "string"
+    && Object.prototype.hasOwnProperty.call(items, value);
+}
+function createTravelTargets(floor: FloorDefinition): TravelTarget[] {
+  const targets: TravelTarget[] = [{
     id: "elevator",
     label: "主电梯",
-    x: floor.elevatorStand.x,
-    y: floor.elevatorStand.y - 6,
-    width: 144,
-    height: 107,
-    proximity: 54,
-    ...RPG_LOOSE_FACING
-  };
-  const stairs = floor.stairLandings.map((landing): TravelZone => ({
-    id: landing.direction === "up" ? "stair_up" : "stair_down",
-    label: landing.direction === "up" ? "相邻楼梯上行口" : "相邻楼梯下行口",
-    x: (landing.bounds.left + landing.bounds.right) / 2,
-    y: (landing.bounds.top + landing.bounds.bottom) / 2,
-    width: landing.bounds.right - landing.bounds.left,
-    height: landing.bounds.bottom - landing.bounds.top,
-    proximity: 54,
-    ...RPG_LOOSE_FACING,
-    targetStoryFloor: landing.targetStoryFloor,
-    landingId: landing.id
-  }));
-  return [elevator, ...stairs];
+    bounds: floor.elevator.travelBounds,
+    route: "elevator"
+  }];
+  for (const landing of floor.stairLandings) {
+    const targetFloor = displayFloorFor(landing.targetStoryFloor);
+    if (!targetFloor) continue;
+    targets.push({
+      id: landing.direction === "up" ? "stair_up" : "stair_down",
+      label: landing.direction === "up" ? "楼梯上行口" : "楼梯下行口",
+      bounds: landing.bounds,
+      targetFloor,
+      route: "stair"
+    });
+  }
+  return targets;
+}
+function resultReason(payload?: Record<string, unknown>): string {
+  const result = payload?.result;
+  return typeof result === "object" && result !== null && "reason" in result
+    ? String((result as { reason?: unknown }).reason ?? "locked")
+    : "locked";
+}
+function resultAccepted(payload?: Record<string, unknown>): boolean {
+  const result = payload?.result;
+  return typeof result === "object" && result !== null
+    && (result as { accepted?: unknown }).accepted === true;
+}
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+function hasChapterFourFact(state: GameState, factId: ChapterFourFactId): boolean {
+  return state.chapter4.factIds.includes(factId);
 }
 
 export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
+  private animator!: RpgPlayerAnimator;
   private staticObstacles!: Phaser.Physics.Arcade.StaticGroup;
-  private dynamicObstacles!: Phaser.Physics.Arcade.StaticGroup;
-  private foregroundOcclusionVisuals: ForegroundOcclusionVisual[] = [];
+  private plateObstacles!: Phaser.Physics.Arcade.StaticGroup;
+  private platePlayerCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private backgrounds = new Map<DisplayFloor, Phaser.GameObjects.Image>();
+  private elevatorVisuals = new Map<DisplayFloor, ElevatorVisual>();
+  private appliedForegrounds: AppliedForeground[] = [];
+  private targetVisuals = new Map<string, Phaser.GameObjects.Container>();
+  private debugOverlayObjects: Phaser.GameObjects.GameObject[] = [];
+  private plateColliderDebugObjects: Phaser.GameObjects.Rectangle[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
   private interactKey!: Phaser.Input.Keyboard.Key;
   private confirmKey!: Phaser.Input.Keyboard.Key;
   private escapeKey!: Phaser.Input.Keyboard.Key;
   private floorKeys!: Record<DisplayFloor, Phaser.Input.Keyboard.Key>;
-  private animator!: RpgPlayerAnimator;
+  private currentFloor: DisplayFloor = 1;
   private virtualDirection = { x: 0, y: 0 };
   private interactionRequested = false;
-  private currentFloor: DisplayFloor = 1;
-  private nearbyTravelZone: TravelZone | null = null;
-  private nearbyTarget: MazeInteractionTarget | null = null;
-  private nearbyPartitionId: string | null = null;
-  private nearbyAnchor: StoryAnchor | null = null;
+  private nearbyTravelTarget: TravelTarget | null = null;
+  private nearbyStoryTarget: ProjectedTarget | null = null;
+  private nearbyLandmark: LayoutAnchor | null = null;
   private floorPanel: Phaser.GameObjects.Container | null = null;
   private floorPanelSelection: DisplayFloor = 1;
   private floorPanelButtons: Array<{
     floor: DisplayFloor;
-    button: Phaser.GameObjects.Rectangle;
+    background: Phaser.GameObjects.Rectangle;
     label: Phaser.GameObjects.Text;
   }> = [];
+  private elevatorPhase: ElevatorPhase = "idle";
+  private elevatorTargetFloor: DisplayFloor | null = null;
+  private elevatorDoorProgress = 0;
+  private pendingMove: PendingMove | null = null;
+  private pendingMoveTimer: Phaser.Time.TimerEvent | null = null;
+  private pendingStoryRequest: PendingStoryRequest | null = null;
+  private storyPresentation: StoryPresentation = "idle";
+  private storyPresentationTimers: Phaser.Time.TimerEvent[] = [];
+  private storyRetryNotBeforeMs = 0;
+  private lastPublishedStoryInputLock = false;
+  private lastPublishedStoryPointerAllowed = false;
+  private handoffReleased = false;
+  private liveReadySignature = "";
+  private openingPaperSprite: Phaser.GameObjects.Sprite | null = null;
+  private hallClockStateSprite: Phaser.GameObjects.Sprite | null = null;
+  private externalTimeOverlay: Phaser.GameObjects.Container | null = null;
+  private bakeryRuntimeSignature = "";
+  private bakeryRuntimeTargets = new Map<string, BakeryRuntimeTargetBinding>();
+  private bakeryRuntimeObjects: Phaser.GameObjects.GameObject[] = [];
+  private bakeryBaker: Phaser.GameObjects.Sprite | null = null;
+  private bakeryCrowdActors: BakeryCrowdActor[] = [];
+  private bakeryCrowdCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private bakeryConveyorGlint: Phaser.GameObjects.Rectangle | null = null;
+  private bakeryConveyorTween: Phaser.Tweens.Tween | null = null;
+  private bakeryHourHandSprite: Phaser.GameObjects.Sprite | null = null;
+  private bakeryHourHandGlint: Phaser.GameObjects.Arc | null = null;
+  private bakeryHourHandGlintTween: Phaser.Tweens.Tween | null = null;
+  private bakeryApproachCueSignature = "";
+  private phaseRuntimeTargets = new Map<string, PhaseRuntimeTargetBinding>();
+  private phaseRuntimeObjects: Phaser.GameObjects.GameObject[] = [];
+  private maintenanceSignature = "";
+  private maintenanceCart: Phaser.Physics.Arcade.Sprite | null = null;
+  private maintenanceCleaner: Phaser.Physics.Arcade.Sprite | null = null;
+  private maintenancePryBar: Phaser.GameObjects.Sprite | null = null;
+  private maintenanceOilBottle: Phaser.GameObjects.Sprite | null = null;
+  private maintenanceCoverVisual: Phaser.GameObjects.Rectangle | null = null;
+  private maintenanceObstacleGroup: Phaser.Physics.Arcade.StaticGroup | null = null;
+  private maintenanceObstacleCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private maintenancePushTween: Phaser.Tweens.Tween | null = null;
+  private maintenancePushCompleted = false;
+  private maintenanceGuardState: ChapterFourMaintenanceGuardState | null = null;
+  private maintenanceGuard: Phaser.Physics.Arcade.Sprite | null = null;
+  private maintenanceGuardWallCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private maintenanceGuardPlayerOverlap: Phaser.Physics.Arcade.Collider | null = null;
+  private maintenanceGuardVision: Phaser.GameObjects.Graphics | null = null;
+  private maintenanceGuardAlert: Phaser.GameObjects.Text | null = null;
+  private finalClockMinuteLine: Phaser.GameObjects.Line | null = null;
+  private finalClockEndpointHandle: Phaser.GameObjects.Arc | null = null;
+  private finalClockEndpointZone: Phaser.GameObjects.Zone | null = null;
+  private finalClockDragActive = false;
+  private finalClockDragPointerId: number | null = null;
+  private finalClockDragDomPointerId: number | null = null;
+  private finalClockPendingDomPointerId: number | null = null;
+  private finalClockDomCanvas: HTMLCanvasElement | null = null;
+  private finalClockDomCancelListening = false;
+  private finalClockDragAutoCommit = false;
+  private finalClockMinuteAngle = 180;
+  private finalClockDragSafetyTimer: Phaser.Time.TimerEvent | null = null;
+  private finalClockTween: Phaser.Tweens.Tween | null = null;
+  private minuteTheftPaperSprite: Phaser.GameObjects.Sprite | null = null;
+  private minuteTheftPaperTween: Phaser.Tweens.Tween | null = null;
+  private lightGridPanelSprite: Phaser.GameObjects.Sprite | null = null;
+  private lightGridOverlays = new Map<ChapterFourLightZoneId, Phaser.GameObjects.Rectangle>();
+  private hostPowerPanelOpen = false;
+  private hostPowerPanelSession: { openRequestId: string; targetId: string } | null = null;
+  private finalChaseState: ChapterFourFinalChaseState | null = null;
+  private finalChaseStep: ChapterFourFinalChaseStepResult | null = null;
+  private finalChaseInsideFinish = false;
+  private finalChaseContact = false;
+  private chaseGuard: Phaser.Physics.Arcade.Sprite | null = null;
+  private chaseGuardStaticCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private chaseGuardPlateCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private finalMinuteSprite: Phaser.GameObjects.Sprite | null = null;
+  private finalMinuteTargetZone: Phaser.GameObjects.Zone | null = null;
+  private morningCheckinVisuals = new Map<string, {
+    fixture: Phaser.GameObjects.Rectangle;
+    label: Phaser.GameObjects.Text;
+  }>();
+  private room202DoorBarrier: Phaser.GameObjects.Zone | null = null;
+  private room202DoorCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private room202DoorVisual: Phaser.GameObjects.Rectangle | null = null;
+  private room202DoorLabel: Phaser.GameObjects.Text | null = null;
+  private lastPhaseSignature = "";
+  private room204RuntimePieces = new Map<ChapterFourRoom204PieceId, Room204RuntimePiece>();
+  private room204DiscussionTables: Room204DiscussionTableRuntime[] = [];
+  private room204ResidualSprites: Phaser.GameObjects.Sprite[] = [];
+  private room204SlotBoundsObjects = new Map<ChapterFourRoom204SlotId, Phaser.GameObjects.Zone>();
+  private room204RuntimeTargets = new Map<string, Room204RuntimeTargetBinding>();
+  private room204PodiumSprite: Phaser.GameObjects.Sprite | null = null;
+  private room204PodiumObstacle: Phaser.GameObjects.Zone | null = null;
+  private room204ProjectionOverlay: Phaser.GameObjects.Container | null = null;
+  private room204ObstacleGroup: Phaser.Physics.Arcade.StaticGroup | null = null;
+  private room204ObstacleCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private room204SelectedPieceId: ChapterFourRoom204PieceId | null = null;
+  private room204CarryGhost: Phaser.GameObjects.Sprite | null = null;
+  private nearbyRoom204PieceId: ChapterFourRoom204PieceId | null = null;
+  private requestSerial = 0;
   private floorCaption!: Phaser.GameObjects.Text;
   private interactionHint!: Phaser.GameObjects.Text;
   private feedbackText!: Phaser.GameObjects.Text;
   private feedbackTimer: Phaser.Time.TimerEvent | null = null;
-  private elevatorVisuals = new Map<DisplayFloor, ElevatorFloorVisual>();
-  private elevatorPhase: ElevatorRuntimePhase = "idle";
-  private elevatorTargetFloor: DisplayFloor | null = null;
-  private elevatorDisplayFloor: DisplayFloor = 1;
-  private elevatorDoorProgress = 0;
-  private elevatorWaitEndsAt = 0;
-  private elevatorRideFromFloor: DisplayFloor = 1;
   private projection!: ChapterFourMazeProjection;
   private projectionSignature = "";
-  private dynamicGateRevision = 0;
-  private dynamicGateVisuals = new Map<string, Phaser.GameObjects.Rectangle>();
-  private targetVisuals = new Map<string, Phaser.GameObjects.Container>();
-  private npcVisuals = new Map<string, NpcRouteVisual>();
-  private studyNpcVisuals = new Map<string, StudyNpcVisual>();
-  private activeDynamicCollisionRects: MapCollisionRect[] = [];
-  private pendingMazeMove: PendingMazeMove | null = null;
-  private pendingMazeMoveTimer: Phaser.Time.TimerEvent | null = null;
-  private mazeMoveRequestSerial = 0;
-  private pendingMazeAction: PendingMazeAction | null = null;
-  private pendingMazeActionTimer: Phaser.Time.TimerEvent | null = null;
-  private mazeActionRequestSerial = 0;
-  private historicalDoorOpen = false;
-  private historicalEntryWindowEndsAt = 0;
-  private historicalEntryTimer: Phaser.Time.TimerEvent | null = null;
-  private historicalRideInProgress = false;
-  private lastAppliedCheckpoint: RpgCheckpointId | null = null;
-  private lastAppliedLocationSignature = "";
+  private pendingProjectionSignature = "";
+  private projectionRetryFailures = 0;
+  private projectionRetryNotBeforeMs = 0;
+  private appliedChapterMode: GameState["chapter4"]["mode"] = "light";
+  private appliedLightMask = 0;
+  private appliedLightLocked = false;
+  private appliedPlateSignature = "";
+  private appliedPlateIds: Readonly<Record<StoryFloor, ChapterFour755PlateId>> = Object.freeze({
+    A1: "a1_base", A2: "a2_base", A3: "a3_base"
+  });
+  private appliedCollisionIds: string[] = [];
+  private appliedCollisionRects: CollisionRect[] = [];
+  private appliedOcclusionIds: string[] = [];
+  private renderedTargetIds: string[] = [];
+  private persistentContractFailures = new Set<string>();
+  private plateContractFailures = new Set<string>();
+  private spatialAttestationLast: {
+    requestId: string;
+    attestationId: string;
+    targetId: string;
+    result: "responded" | "rejected";
+    reason: string | null;
+  } | null = null;
+  private frameRegistration!: ChapterFour755FrameRegistrationReport;
 
-  constructor() {
-    super("chapter-four-temporal-maze");
-  }
+  constructor() { super("chapter-four-temporal-maze") }
 
   preload(): void {
-    for (const floor of FLOORS) {
-      if (!this.textures.exists(floor.id)) this.load.image(floor.id, floor.url);
+    preloadFinaleEnvironmentTextures(this);
+    preloadFinaleNpcTextures(this);
+    if (!this.textures.exists(BAKERY_COUNTER_BAKER_TEXTURE)) {
+      this.load.spritesheet(BAKERY_COUNTER_BAKER_TEXTURE, canteenCounterAuntiesSheetUrl, {
+        frameWidth: 96,
+        frameHeight: 128
+      });
     }
-    if (!this.textures.exists(ELEVATOR_DOORS_TEXTURE)) {
-      this.load.spritesheet(ELEVATOR_DOORS_TEXTURE, teachingBuildingElevatorDoorsUrl, {
-        frameWidth: 72,
-        frameHeight: 96
+    if (!this.textures.exists(ELEVATOR_TEXTURE)) {
+      this.load.spritesheet(ELEVATOR_TEXTURE, teachingBuildingElevatorDoorsUrl, {
+        frameWidth: ELEVATOR_FRAME_WIDTH,
+        frameHeight: ELEVATOR_FRAME_HEIGHT
       });
     }
     preloadRpgPlayerTextures(this);
-    preloadFinaleNpcTextures(this);
   }
 
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     const state = this.bridge.getState();
-    this.projection = selectChapterFourMazeProjection(state.chapter4);
-    this.currentFloor = getDisplayFloor(state.chapter4.floor) ?? 1;
-    const checkpoint = state.rpgCheckpoint.startsWith("c4_")
-      ? state.rpgCheckpoint
-      : this.projection.safeCheckpoint;
-
+    this.handoffReleased = state.chapter4.prologueSeen
+      && state.chapter4.phase !== "opening_handoff";
+    this.currentFloor = displayFloorFor(state.chapter4.floor) ?? 1;
+    this.projection = createBaseAppliedProjection(
+      selectChapterFourMazeProjection(state),
+      getFloor(this.currentFloor).storyFloor
+    );
+    this.appliedChapterMode = state.chapter4.mode;
+    this.appliedLightMask = state.chapter4.lightGrid.mask;
+    this.appliedLightLocked = state.chapter4.lightGrid.locked;
+    this.frameRegistration = registerChapterFour755ManifestFrames(this);
+    this.validateFrameRegistrationReport(this.frameRegistration);
+    ensureFinaleNpcAnimations(this);
+    this.ensureBakeryBakerAnimation();
     this.cameras.main.setBackgroundColor(0x07111d).setRoundPixels(true);
-    for (const floor of FLOORS) {
-      this.add.image(floor.offsetX, 0, floor.id).setOrigin(0).setDepth(0);
-      this.textures.get(floor.id).setFilter(Phaser.Textures.FilterMode.NEAREST);
-    }
+    this.createBaseBackgrounds();
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height);
     this.createCollisionGroups();
-    this.createForegroundOcclusions();
     this.createElevatorVisuals();
-    ensureFinaleNpcAnimations(this);
-    this.createNpcVisuals();
 
     ensureRpgPlayerTextures(this);
     const initialFloor = getFloor(this.currentFloor);
-    const initialSpawn = checkpoint === "c4_a1_main_elevator"
-      ? initialFloor.elevatorStand
-      : initialFloor.safeSpawn;
+    const initialSpawn = state.chapter4.phase === "final_chase"
+      ? { ...FINAL_CHASE_RUNTIME.playerStart, facing: "down" as const }
+      : state.rpgCheckpoint === "c4_a2_room202"
+        ? { ...FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn, facing: "up" as const }
+        : state.rpgCheckpoint === "c4_a1_main_elevator"
+          ? initialFloor.elevator.standPosition
+          : initialFloor.safeSpawn;
     this.player = this.physics.add.sprite(
       initialFloor.offsetX + initialSpawn.x,
       initialSpawn.y,
-      `act1-player-${initialSpawn.facing}-0`
+      `act1-player-${initialSpawn.facing ?? "down"}-0`
     ).setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
-    this.player.setScale(0.75);
-    this.player.setDepth(initialSpawn.y + 4000);
-    this.animator = new RpgPlayerAnimator(this.player, initialSpawn.facing);
+    this.player.setDepth(PLAYER_DEPTH_BASE + initialSpawn.y);
+    this.animator = new RpgPlayerAnimator(this.player, initialSpawn.facing ?? "down");
     this.physics.add.collider(this.player, this.staticObstacles);
-    this.physics.add.collider(this.player, this.dynamicObstacles);
-    this.lastAppliedCheckpoint = checkpoint;
-    this.lastAppliedLocationSignature = this.createLocationSignature(state);
+    this.platePlayerCollider = this.physics.add.collider(this.player, this.plateObstacles);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D") as Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
@@ -742,2014 +1091,5263 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       3: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)
     };
     this.createHud();
-    this.configureCameraForFloor();
+    this.configureCameraForCurrentFloor();
     this.syncProjection(true);
-
-    subscribeRpgSceneBridge(
-      this.events,
-      this.bridge,
-      (event) => {
-        if (event.name === "chapter4_airflow_completed") {
-          this.time.delayedCall(0, () => {
-            this.syncProjection(true);
-            this.syncCurrentFloorFromState();
-          });
-          return;
-        }
-        if (
-          event.name === "chapter4_airflow_observed"
-          || event.name === "chapter4_elevator_history_observed"
-        ) {
-          this.time.delayedCall(0, () => this.syncProjection(true));
-          return;
-        }
-        if (event.name === "chapter4_elevator_replay_started") {
-          this.time.delayedCall(0, () => {
-            this.beginHistoricalElevatorEntryWindow(Number(event.payload?.entryWindowSeconds) || 6);
-          });
-          return;
-        }
-        if (event.name === "chapter4_elevator_player_boarded") {
-          this.time.delayedCall(0, () => this.beginHistoricalElevatorBoarding());
-          return;
-        }
-        if (event.name === "chapter4_elevator_ride_completed") {
-          this.time.delayedCall(0, () => this.finishHistoricalElevatorTravel());
-          return;
-        }
-        if (event.name === "chapter4_maze_action_resolved") {
-          this.handleMazeActionResolved(event.payload);
-          return;
-        }
-        if (event.name === "chapter4_wayfinding_panel_resolved") {
-          this.handleWayfindingPanelResolved(event.payload);
-          return;
-        }
-        if (event.name === "chapter4_maze_move_resolved") {
-          this.handleMazeMoveResolved(event.payload);
-          return;
-        }
-        if (event.name === "rpg_direction_changed") {
-          const x = Number(event.payload?.x) || 0;
-          const y = Number(event.payload?.y) || 0;
-          if (this.elevatorPhase === "selecting" && this.floorPanel) {
-            if (x !== 0 || y !== 0) {
-              const delta = x > 0 || y > 0 ? 1 : -1;
-              this.setFloorPanelSelection(
-                Phaser.Math.Clamp(this.floorPanelSelection + delta, 1, 3) as DisplayFloor
-              );
-            }
-            this.virtualDirection = { x: 0, y: 0 };
-            return;
-          }
-          if (this.elevatorPhase !== "idle") {
-            this.virtualDirection = { x: 0, y: 0 };
-            return;
-          }
-          this.virtualDirection = { x, y };
-          return;
-        }
-        if (event.name === "rpg_interact") {
-          if (this.elevatorPhase === "selecting" && this.floorPanel) {
-            this.requestElevatorDestination(this.floorPanelSelection);
-          } else {
-            this.interactionRequested = true;
-          }
-        }
-      },
-      clearRpgRuntimeDebugState
-    );
-
+    this.refreshProximity();
+    this.bindBridgeEvents();
+    const checkpoint = state.rpgCheckpoint.startsWith("c4_")
+      ? state.rpgCheckpoint
+      : this.projection.safeCheckpoint;
     this.bridge.setRpgLocation("duan_yongping_temporal_maze", checkpoint);
     this.bridge.emit("rpg_booted", {
       scene: "duan_yongping_temporal_maze",
       checkpoint,
-      stitchedFloors: LAYOUT.floors.length,
+      stitchedFloors: FLOORS.length,
       layoutSchemaVersion: LAYOUT.schemaVersion
     });
-    this.refreshProximityState();
     this.publishDebug();
-    if (
-      state.chapter4.phase === "elevator_track_sync"
-      && state.chapter4.elevatorPlayerBoarded
-      && this.currentFloor === 1
-    ) {
-      this.historicalDoorOpen = true;
-      this.setElevatorDoorProgress(1, 1);
-      this.time.delayedCall(0, () => this.beginHistoricalElevatorBoarding());
-    } else if (
-      state.chapter4.phase === "elevator_track_sync"
-      && state.chapter4.elevatorTrackAligned
-      && state.chapter4.elevatorHistoryObserved
-      && this.currentFloor === 1
-    ) {
-      this.time.delayedCall(
-        0,
-        () => this.beginHistoricalElevatorEntryWindow(
-          mazeContent.elevator.timeline.entryWindowMs / 1000
-        )
-      );
-    }
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
     this.syncProjection();
-    this.syncCurrentFloorFromState();
-    this.updateNpcVisuals(this.time.now);
+    this.syncExternalFloorWhenIdle();
+    this.syncPhaseSideEffects();
+    this.syncOpeningPresentation();
+    this.syncBakeryPresentation();
+    this.syncRoom204ProjectionPresentation();
+    this.maybeEmitBakeryApproachCue();
+    this.updateMaintenanceGuard(delta);
+    this.updateFinalChaseRuntime(delta);
+    this.syncStoryInputLock();
+    if (this.isStoryInputLocked()) {
+      this.player.setVelocity(0, 0);
+      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
+      this.updateRoom204CarryGhost();
+      this.interactionRequested = false;
+      this.publishDebug();
+      return;
+    }
+    if (this.hostPowerPanelOpen || this.finalClockDragActive) {
+      this.player.setVelocity(0, 0);
+      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
+      this.updateRoom204CarryGhost();
+      this.interactionRequested = false;
+      this.publishDebug();
+      return;
+    }
     if (this.floorPanel) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.left)) {
-        this.setFloorPanelSelection(Math.max(1, this.floorPanelSelection - 1) as DisplayFloor);
-      }
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.right)) {
-        this.setFloorPanelSelection(Math.min(3, this.floorPanelSelection + 1) as DisplayFloor);
-      }
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
-        this.setFloorPanelSelection(Math.max(1, this.floorPanelSelection - 1) as DisplayFloor);
-      }
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.down)) {
-        this.setFloorPanelSelection(Math.min(3, this.floorPanelSelection + 1) as DisplayFloor);
-      }
-      if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) {
-        this.requestElevatorDestination(this.floorPanelSelection);
-      }
-      if (Phaser.Input.Keyboard.JustDown(this.floorKeys[1])) this.requestElevatorDestination(1);
-      if (Phaser.Input.Keyboard.JustDown(this.floorKeys[2])) this.requestElevatorDestination(2);
-      if (Phaser.Input.Keyboard.JustDown(this.floorKeys[3])) this.requestElevatorDestination(3);
-      if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorRide();
-      if (this.interactionRequested) this.requestElevatorDestination(this.floorPanelSelection);
+      this.updateRoom204CarryGhost();
+      this.updateFloorPanelKeyboard();
       this.interactionRequested = false;
-      this.updateForegroundOcclusions();
       this.publishDebug();
       return;
     }
-
     if (this.elevatorPhase !== "idle") {
       this.player.setVelocity(0, 0);
-      const elevatorMotion = this.elevatorPhase === "boarding"
-        ? new Phaser.Math.Vector2(0, -PLAYER_SPEED)
-        : this.elevatorPhase === "exiting"
-          ? new Phaser.Math.Vector2(0, PLAYER_SPEED)
-          : new Phaser.Math.Vector2();
-      this.animator.update(elevatorMotion, this.time.now);
+      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
+      this.updateRoom204CarryGhost();
       this.interactionRequested = false;
-      this.updateForegroundOcclusions();
       this.publishDebug();
       return;
     }
-
-    const vector = new Phaser.Math.Vector2(
-      Number(this.cursors.right.isDown || this.keys.D.isDown) - Number(this.cursors.left.isDown || this.keys.A.isDown) + this.virtualDirection.x,
-      Number(this.cursors.down.isDown || this.keys.S.isDown) - Number(this.cursors.up.isDown || this.keys.W.isDown) + this.virtualDirection.y
+    const movement = new Phaser.Math.Vector2(
+      Number(this.cursors.right.isDown || this.keys.D.isDown)
+        - Number(this.cursors.left.isDown || this.keys.A.isDown) + this.virtualDirection.x,
+      Number(this.cursors.down.isDown || this.keys.S.isDown)
+        - Number(this.cursors.up.isDown || this.keys.W.isDown) + this.virtualDirection.y
     );
-    if (vector.lengthSq() > 0) vector.normalize().scale(PLAYER_SPEED);
-    this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 4000);
-    this.animator.update(vector, this.time.now);
-    this.refreshProximityState();
-
+    const movementSpeed = this.bridge.getState().chapter4.phase === "final_chase"
+      ? CHAPTER_FOUR_FINAL_CHASE_RULES.playerSpeed
+      : PLAYER_SPEED;
+    if (movement.lengthSq() > 0) movement.normalize().scale(movementSpeed);
+    this.player.setVelocity(movement.x, movement.y).setDepth(PLAYER_DEPTH_BASE + this.player.y);
+    this.animator.update(movement, this.time.now);
+    this.updateRoom204CarryGhost();
+    this.refreshProximity();
     if (Phaser.Input.Keyboard.JustDown(this.interactKey) || this.interactionRequested) {
-      this.handleInteraction();
+      this.handleStoryOrTravelInteraction();
     }
     this.interactionRequested = false;
     this.publishDebug();
   }
 
-  private createHud(): void {
-    const baseStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-      color: "#f7f1dc",
-      fontSize: "18px",
-      stroke: "#07111d",
-      strokeThickness: 5,
-      shadow: { color: "#07111d", blur: 0, offsetX: 2, offsetY: 2, fill: true }
-    };
-    this.floorCaption = this.add.text(24, 58, "", baseStyle)
-      .setScrollFactor(0)
-      .setDepth(10000);
-    this.interactionHint = this.add.text(480, 494, "", {
-      ...baseStyle,
-      fontSize: "16px",
-      align: "center"
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(10000).setVisible(false);
-    this.feedbackText = this.add.text(480, 454, "", {
-      ...baseStyle,
-      fontSize: "16px",
-      color: "#8fe8ff",
-      align: "center"
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(10000).setVisible(false);
+  private bindBridgeEvents(): void {
+    subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
+      if (event.name === "rpg_chapter4_755_intent_resolved") {
+        this.handleIntentResolved(event.payload);
+      } else if (event.name === "rpg_chapter4_755_handoff_released") {
+        this.handoffReleased = true;
+        this.syncOpeningPresentation();
+      } else if (event.name === "rpg_chapter4_755_live_ready_retry_requested") {
+        const requestId = typeof event.payload?.requestId === "string"
+          ? event.payload.requestId
+          : undefined;
+        this.publishLiveReady(true, requestId);
+      } else if (event.name === "rpg_inventory_drop_requested") {
+        this.handleInventoryDrop(event.payload);
+      } else if (event.name === "rpg_chapter4_power_panel_open_state_changed") {
+        this.hostPowerPanelOpen = event.payload?.open === true;
+        this.hostPowerPanelSession = this.hostPowerPanelOpen
+          && typeof event.payload?.openRequestId === "string"
+          && typeof event.payload?.targetId === "string"
+          ? {
+              openRequestId: event.payload.openRequestId,
+              targetId: event.payload.targetId
+            }
+          : null;
+        if (this.hostPowerPanelOpen) {
+          this.player.setVelocity(0, 0);
+          this.virtualDirection = { x: 0, y: 0 };
+        }
+      } else if (event.name === "rpg_chapter4_755_spatial_attestation_requested") {
+        this.handleSpatialAttestationRequest(event.payload);
+      } else if (event.name === "rpg_chapter4_755_spatial_attestation_failed") {
+        this.spatialAttestationLast = {
+          requestId: String(event.payload?.requestId ?? ""),
+          attestationId: String(event.payload?.attestationId ?? ""),
+          targetId: String(event.payload?.targetId ?? ""),
+          result: "rejected",
+          reason: String(event.payload?.reason ?? "unknown")
+        };
+      } else if (event.name === "rpg_direction_changed") {
+        const x = Number(event.payload?.x) || 0;
+        const y = Number(event.payload?.y) || 0;
+        if (this.floorPanel) {
+          if (x !== 0 || y !== 0) this.shiftFloorPanelSelection(x > 0 || y > 0 ? 1 : -1);
+          this.virtualDirection = { x: 0, y: 0 };
+        } else {
+          this.virtualDirection = this.elevatorPhase === "idle"
+            && !this.isStoryInputLocked()
+            && !this.hostPowerPanelOpen
+              ? { x, y }
+              : { x: 0, y: 0 };
+        }
+      } else if (event.name === "rpg_interact") {
+        if (this.floorPanel) this.requestElevatorDestination(this.floorPanelSelection);
+        else if (!this.isStoryInputLocked() && !this.hostPowerPanelOpen) this.interactionRequested = true;
+      }
+    }, () => {
+      this.pendingMoveTimer?.remove(false);
+      this.pendingStoryRequest?.timer.remove(false);
+      this.pendingStoryRequest = null;
+      this.clearStoryPresentationTimers();
+      this.destroyBakeryRuntime("scene_shutdown");
+      this.destroyRoom204Runtime("scene_shutdown");
+      this.destroyPhaseRuntime("scene_shutdown");
+      this.destroyTask11Runtime("scene_shutdown");
+      this.destroyTask12Runtime("scene_shutdown");
+      this.destroyExternalTimeOverlay();
+      this.hostPowerPanelOpen = false;
+      this.hostPowerPanelSession = null;
+      this.storyPresentation = "idle";
+      this.syncStoryInputLock(true);
+      this.feedbackTimer?.remove(false);
+      clearRpgRuntimeDebugState();
+    });
   }
 
-  private configureCameraForFloor(): void {
-    const floor = getFloor(this.currentFloor);
-    this.cameras.main
-      .setBounds(floor.offsetX, 0, FLOOR_SIZE.width, FLOOR_SIZE.height)
-      .setZoom(1)
-      .startFollow(this.player, true, 0.12, 0.12);
+  private validateFrameRegistrationReport(report: ChapterFour755FrameRegistrationReport): void {
+    for (const failure of report.contractFailures) this.persistentContractFailures.add(failure);
+    if (CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT !== EXPECTED_MANIFEST_ENTRY_COUNT
+      || report.manifestFrameCount !== EXPECTED_MANIFEST_ENTRY_COUNT) {
+      this.persistentContractFailures.add(
+        `manifest_frame_count:${report.manifestFrameCount}/${EXPECTED_MANIFEST_ENTRY_COUNT}`
+      );
+    }
+    if (report.skippedEmptyFrameCount !== EXPECTED_EMPTY_FRAME_COUNT) {
+      this.persistentContractFailures.add(
+        `manifest_empty_frame_count:${report.skippedEmptyFrameCount}/${EXPECTED_EMPTY_FRAME_COUNT}`
+      );
+    }
+    if (report.registeredFrameCount + report.reusedFrameCount + report.skippedEmptyFrameCount
+      !== report.manifestFrameCount) {
+      this.persistentContractFailures.add("manifest_frame_registration_incomplete");
+    }
+  }
+
+  private createBaseBackgrounds(): void {
+    for (const floor of FLOORS) {
+      const plateId = basePlateFor(floor.storyFloor);
+      this.backgrounds.set(
+        floor.displayFloor,
+        this.add.image(floor.offsetX, 0, plateId).setOrigin(0).setDepth(0)
+      );
+      this.textures.get(plateId).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
   }
 
   private createCollisionGroups(): void {
-    const showDebug = new URLSearchParams(window.location.search).get("debugColliders") === "1";
     this.staticObstacles = this.physics.add.staticGroup();
-    this.dynamicObstacles = this.physics.add.staticGroup();
-    for (const rect of WORLD_STATIC_COLLISIONS) {
-      const obstacle = this.add.rectangle(
-        (rect.left + rect.right) / 2,
-        (rect.top + rect.bottom) / 2,
-        rect.right - rect.left,
-        rect.bottom - rect.top,
-        showDebug ? 0xff315b : 0x000000,
-        showDebug ? 0.22 : 0
-      );
-      this.physics.add.existing(obstacle, true);
-      this.staticObstacles.add(obstacle);
-    }
-  }
-
-  private createForegroundOcclusions(): void {
-    this.foregroundOcclusionVisuals = FLOORS.flatMap((floor) =>
-      floor.foregroundOcclusions.map((definition) => {
-        const width = definition.right - definition.left;
-        const height = definition.bottom - definition.top;
-        return {
-          id: `floor_${floor.floor}_${definition.id}`,
-          bounds: new Phaser.Geom.Rectangle(
-            floor.offsetX + definition.left,
-            definition.top,
-            width,
-            height
-          ),
-          image: this.add.image(floor.offsetX, 0, floor.id)
-            .setOrigin(0)
-            .setCrop(definition.left, definition.top, width, height)
-            .setDepth(-1)
-            .setVisible(false)
+    this.plateObstacles = this.physics.add.staticGroup();
+    const staticRects: CollisionRect[] = [];
+    for (const floor of FLOORS) {
+      for (const local of floor.staticCollisions) {
+        const rect = {
+          ...offsetRect(local, floor.offsetX),
+          id: `floor_${floor.displayFloor}_${local.id}`,
+          sourceAnnotationId: local.sourceAnnotationId
         };
-      })
+        staticRects.push(rect);
+        this.addPhysicsRect(this.staticObstacles, rect, "static");
+      }
+    }
+    this.appliedCollisionRects = staticRects;
+    this.appliedCollisionIds = staticRects.map((rect) => rect.id);
+  }
+
+  private addPhysicsRect(
+    group: Phaser.Physics.Arcade.StaticGroup,
+    rect: CollisionRect,
+    kind: "static" | "plate",
+    plateDebugObjects: Phaser.GameObjects.Rectangle[] = this.plateColliderDebugObjects,
+    debugVisible = true
+  ): void {
+    const showDebug = import.meta.env.DEV
+      && new URLSearchParams(window.location.search).get("debugColliders") === "1";
+    const obstacle = this.add.zone(
+      rectCenterX(rect), rectCenterY(rect), rect.width, rect.height
     );
-  }
-
-  private updateForegroundOcclusions(): void {
-    if (!this.player?.active) return;
-    const playerBounds = this.player.getBounds();
-    for (const visual of this.foregroundOcclusionVisuals) {
-      const coversPlayer = Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, visual.bounds);
-      visual.image
-        .setVisible(coversPlayer)
-        .setDepth(coversPlayer ? this.player.depth + 2 : -1);
-    }
-  }
-
-  private createNpcVisuals(): void {
-    const floor = getFloor(2);
-    for (const definition of A2_NPC_ROUTES) {
-      const asset = FINALE_NPC_ANIMATIONS[definition.texture];
-      const normal = this.add.sprite(
-        floor.offsetX + definition.start.x,
-        definition.start.y,
-        definition.texture,
-        0
-      ).setOrigin(asset.footAnchor.x, asset.footAnchor.y)
-        .setScale(definition.scale)
-        .setFlipX(Boolean(definition.forwardFlipX))
-        .setVisible(false);
-      normal.play(definition.texture, true);
-      const residual = this.add.sprite(
-        floor.offsetX + definition.start.x,
-        definition.start.y,
-        definition.texture,
-        Math.min(1, asset.frameCount - 1)
-      ).setOrigin(asset.footAnchor.x, asset.footAnchor.y)
-        .setScale(definition.scale)
-        .setFlipX(Boolean(definition.forwardFlipX))
-        .setTint(0x79e6ff)
-        .setBlendMode(Phaser.BlendModes.ADD)
-        .setVisible(false);
-      const route = this.add.graphics().setDepth(3380).setVisible(false);
-      route.lineStyle(3, 0x79e6ff, 0.34);
-      route.lineBetween(
-        floor.offsetX + definition.start.x,
-        definition.start.y,
-        floor.offsetX + definition.end.x,
-        definition.end.y
-      );
-      for (let step = 0; step <= 4; step += 1) {
-        const progress = step / 4;
-        route.fillStyle(0xb3f3ff, 0.5 - step * 0.055);
-        route.fillCircle(
-          floor.offsetX + Phaser.Math.Linear(definition.start.x, definition.end.x, progress),
-          Phaser.Math.Linear(definition.start.y, definition.end.y, progress),
-          3
-        );
+    try {
+      this.physics.add.existing(obstacle, true);
+      group.add(obstacle);
+      if (showDebug) {
+        const overlay = this.add.rectangle(
+          rectCenterX(rect), rectCenterY(rect), rect.width, rect.height,
+          kind === "static" ? 0xff315b : 0xffb347, 0.2
+        ).setDepth(9997).setVisible(debugVisible);
+        if (kind === "plate") plateDebugObjects.push(overlay);
       }
-      this.npcVisuals.set(definition.id, {
-        definition,
-        normal,
-        residual,
-        route,
-        frame: 0,
-        residualFrame: Math.min(1, asset.frameCount - 1)
-      });
-    }
-
-    for (const definition of A2_STUDY_NPCS) {
-      const asset = FINALE_NPC_ANIMATIONS[definition.texture];
-      const studyAnimationKey = `a2-study-${definition.texture}`;
-      if (!this.anims.exists(studyAnimationKey)) {
-        this.anims.create({
-          key: studyAnimationKey,
-          frames: this.anims.generateFrameNumbers(definition.texture, {
-            start: 0,
-            end: asset.frameCount - 1
-          }),
-          frameRate: asset.fps,
-          repeat: -1,
-          yoyo: true,
-          repeatDelay: 680
-        });
-      }
-      const normal = this.add.sprite(
-        floor.offsetX + definition.x,
-        definition.y,
-        definition.texture,
-        0
-      ).setOrigin(asset.footAnchor.x, asset.footAnchor.y)
-        .setScale(definition.scale)
-        .setFlipX(Boolean(definition.flipX))
-        .setDepth(definition.y + 3900)
-        .setVisible(false);
-      normal.play(studyAnimationKey, true);
-      normal.anims.setProgress(
-        (definition.phaseOffsetMs % Math.max(1, 1000 / asset.fps * asset.frameCount))
-        / Math.max(1, 1000 / asset.fps * asset.frameCount)
-      );
-      const residual = this.add.sprite(
-        floor.offsetX + definition.x,
-        definition.y - 2,
-        definition.texture,
-        Math.min(1, asset.frameCount - 1)
-      ).setOrigin(asset.footAnchor.x, asset.footAnchor.y)
-        .setScale(definition.scale)
-        .setFlipX(Boolean(definition.flipX))
-        .setTint(0x79e6ff)
-        .setBlendMode(Phaser.BlendModes.ADD)
-        .setAlpha(0.42)
-        .setDepth(definition.y + 3890)
-        .setVisible(false);
-      this.studyNpcVisuals.set(definition.id, { definition, normal, residual });
-    }
-
-    // Match the canteen seating treatment: redraw the source table fronts over
-    // the students so their upper bodies stay readable and their legs tuck
-    // behind the authored desks instead of floating above the furniture.
-    const floorTexture = this.textures.get(floor.id);
-    for (const crop of A2_STUDY_TABLE_CROPS) {
-      const frameName = `a2-study-table-${crop.id}`;
-      if (!floorTexture.has(frameName)) {
-        floorTexture.add(
-          frameName,
-          0,
-          crop.left,
-          crop.top,
-          crop.right - crop.left,
-          crop.bottom - crop.top
-        );
-      }
-      this.add.image(
-        floor.offsetX + crop.left,
-        crop.top,
-        floor.id,
-        frameName
-      ).setOrigin(0)
-        .setDepth(crop.bottom + 3900);
+    } catch (error) {
+      obstacle.destroy();
+      throw error;
     }
   }
 
-  private updateNpcVisuals(now: number): void {
-    const state = this.bridge.getState().chapter4;
-    const normalIds = new Set(this.projection.visibleNpcIds);
-    const residualIds = new Set(this.projection.residualNpcIds);
-    const onSecondFloor = this.currentFloor === 2;
-    const floor = getFloor(2);
-    for (const visual of this.npcVisuals.values()) {
-      const definition = visual.definition;
-      const asset = FINALE_NPC_ANIMATIONS[definition.texture];
-      const cycleProgress = ((now + definition.phaseOffsetMs) % definition.durationMs) / definition.durationMs;
-      const movingForward = cycleProgress < 0.5;
-      const movementProgress = movingForward
-        ? cycleProgress * 2
-        : (1 - cycleProgress) * 2;
-      const x = floor.offsetX + Phaser.Math.Linear(
-        definition.start.x,
-        definition.end.x,
-        movementProgress
-      );
-      const y = Phaser.Math.Linear(definition.start.y, definition.end.y, movementProgress);
-      const residualFrame = Math.min(
-        Math.floor(movementProgress * asset.frameCount),
-        asset.frameCount - 1
-      );
-      visual.frame = visual.normal.anims.currentFrame?.index ?? 0;
-      visual.residualFrame = residualFrame;
-      visual.normal
-        .setPosition(x, y)
-        .setFlipX(
-          Math.abs(definition.end.x - definition.start.x) < 1
-            ? Boolean(definition.forwardFlipX)
-            : movingForward
-              ? Boolean(definition.forwardFlipX)
-              : !Boolean(definition.forwardFlipX)
-        )
-        .setAlpha(1)
-        .setDepth(y + 3900)
-        .setVisible(onSecondFloor && state.mode === "light" && normalIds.has(definition.id));
-      visual.residual
-        .setFrame(residualFrame)
-        .setPosition(x, y - 2)
-        .setFlipX(
-          Math.abs(definition.end.x - definition.start.x) < 1
-            ? Boolean(definition.forwardFlipX)
-            : movingForward
-              ? Boolean(definition.forwardFlipX)
-              : !Boolean(definition.forwardFlipX)
-        )
-        .setAlpha(0.42)
-        .setDepth(y + 3890)
-        .setVisible(
-          onSecondFloor
-          && state.mode === "dark"
-          && residualIds.has(definition.residualId)
-        );
-      visual.route.setVisible(
-        onSecondFloor
-        && state.mode === "dark"
-        && residualIds.has(definition.residualId)
-      );
-    }
-
-    for (const visual of this.studyNpcVisuals.values()) {
-      const { definition } = visual;
-      visual.normal.setVisible(
-        onSecondFloor
-        && state.mode === "light"
-        && normalIds.has(definition.id)
-      );
-      visual.residual.setVisible(
-        onSecondFloor
-        && state.mode === "dark"
-        && residualIds.has(definition.residualId)
-      );
-    }
-  }
-
-  private getActiveA1Targets(): MazeInteractionTarget[] {
-    const state = this.bridge.getState().chapter4;
-    if (
-      this.currentFloor !== 1
-      || state.floor !== "A1"
-      || this.elevatorPhase !== "idle"
-    ) {
-      return [];
-    }
-    const floor = getFloor(1);
-    const mainEntrance = floor.anchors.find((anchor) => anchor.id === "main_entrance");
-    const maxwell = floor.anchors.find((anchor) => anchor.id === "maxwell_bakery");
-    if (!mainEntrance || !maxwell) return [];
-
-    if (
-      (state.phase === "arrival" || state.phase === "airflow_overlay")
-      && !state.airflowObserved
-    ) {
-      const centerX = (mainEntrance.bounds.left + mainEntrance.bounds.right) / 2;
-      const bounds = {
-        left: centerX - 52,
-        top: mainEntrance.bounds.top - 76,
-        right: centerX + 52,
-        bottom: mainEntrance.bounds.top - 22
-      };
-      return [{
-        id: A1_TARGET_IDS.airflow,
-        label: "门厅中央水迹",
-        floor: 1,
-        bounds,
-        x: centerX,
-        y: (bounds.top + bounds.bottom) / 2,
-        width: bounds.right - bounds.left,
-        height: bounds.bottom - bounds.top,
-        stand: { x: centerX, y: bounds.bottom + 28 },
-        proximity: 64,
-        requiredMode: "dark",
-        ...RPG_LOOSE_FACING,
-        action: "observe_airflow",
-        visualKind: "airflow"
-      }];
-    }
-
-    if (
-      state.phase === "airflow_overlay"
-      && state.airflowObserved
-      && !state.paperGuidedToElevator
-    ) {
-      const bounds = {
-        left: maxwell.bounds.left + 100,
-        top: maxwell.bounds.top + 118,
-        right: maxwell.bounds.right - 110,
-        bottom: maxwell.bounds.top + 310
-      };
-      return [{
-        id: A1_TARGET_IDS.paperGuide,
-        label: "Maxwell 暖风与卷帘门",
-        floor: 1,
-        bounds,
-        x: (bounds.left + bounds.right) / 2,
-        y: (bounds.top + bounds.bottom) / 2,
-        width: bounds.right - bounds.left,
-        height: bounds.bottom - bounds.top,
-        stand: { x: (bounds.left + bounds.right) / 2, y: bounds.bottom + 30 },
-        proximity: 72,
-        requiredMode: "light",
-        ...RPG_LOOSE_FACING,
-        action: "guide_paper",
-        visualKind: "paper"
-      }];
-    }
-
-    if (state.phase !== "elevator_track_sync" || !state.paperGuidedToElevator) return [];
-    if (state.elevatorPlayerBoarded) return [];
-    const bounds = {
-      left: floor.elevatorStand.x - 42,
-      top: 62,
-      right: floor.elevatorStand.x + 42,
-      bottom: 158
+  private createHud(): void {
+    const style: Phaser.Types.GameObjects.Text.TextStyle = {
+      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
+      color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 5,
+      shadow: { color: "#07111d", blur: 0, offsetX: 2, offsetY: 2, fill: true }
     };
-    const boardReady = state.elevatorTrackAligned && this.historicalDoorOpen;
-    const replayReady = state.elevatorHistoryObserved && !boardReady;
-    return [{
-      id: boardReady ? A1_TARGET_IDS.elevatorBoard : A1_TARGET_IDS.elevatorInspect,
-      label: boardReady
-        ? "已对齐的历史电梯"
-        : replayReady
-          ? "主电梯历史重放"
-          : "主电梯历史轨道",
-      floor: 1,
-      bounds,
-      x: floor.elevatorStand.x,
-      y: (bounds.top + bounds.bottom) / 2,
-      width: bounds.right - bounds.left,
-      height: bounds.bottom - bounds.top,
-      stand: { x: floor.elevatorStand.x, y: floor.elevatorStand.y },
-      proximity: 54,
-      requiredMode: boardReady || replayReady ? "light" : "dark",
-      ...RPG_LOOSE_FACING,
-      action: boardReady ? "board_elevator" : "inspect_elevator",
-      visualKind: "elevator"
-    }];
-  }
-
-  private getActiveInteractionTargets(): MazeInteractionTarget[] {
-    const activeMazeTargetIds = new Set(this.projection.activeTargetIds);
-    return [
-      ...this.getActiveA1Targets(),
-      ...MAZE_INTERACTION_TARGETS.filter((target) => activeMazeTargetIds.has(target.id))
-    ];
+    this.floorCaption = this.add.text(24, 58, "", style).setScrollFactor(0).setDepth(10000);
+    this.interactionHint = this.add.text(480, 500, "", {
+      ...style, fontSize: "16px", align: "center"
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(10000).setVisible(false);
+    this.feedbackText = this.add.text(480, 458, "", {
+      ...style, color: "#8fe8ff", fontSize: "16px", align: "center"
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(10000).setVisible(false);
   }
 
   private syncProjection(force = false): void {
-    const chapter = this.bridge.getState().chapter4;
-    const next = selectChapterFourMazeProjection(chapter);
+    const state = this.bridge.getState();
+    const next = selectChapterFourMazeProjection(state);
     const signature = JSON.stringify({
-      phase: chapter.phase,
-      floor: chapter.floor,
-      airflowObserved: chapter.airflowObserved,
-      paperGuidedToElevator: chapter.paperGuidedToElevator,
-      elevatorHistoryObserved: chapter.elevatorHistoryObserved,
-      elevatorTrackAligned: chapter.elevatorTrackAligned,
-      elevatorPlayerBoarded: chapter.elevatorPlayerBoarded,
-      historicalDoorOpen: this.historicalDoorOpen,
-      elevatorPhase: this.elevatorPhase,
-      routeState: next.routeState,
-      visibleNpcIds: next.visibleNpcIds,
-      residualNpcIds: next.residualNpcIds,
-      activeDoorIds: next.activeDoorIds,
-      activePartitionIds: next.activePartitionIds,
-      activeCollisionIds: next.activeCollisionIds,
-      activeTargetIds: next.activeTargetIds,
-      safeCheckpoint: next.safeCheckpoint
+      phase: next.phase,
+      timeState: next.timeState,
+      activePlateIds: next.activePlateIds,
+      availableTargetIds: next.availableTargetIds,
+      dynamicCollisionIds: next.dynamicCollisionIds,
+      occlusionIds: next.occlusionIds,
+      safeCheckpoint: next.safeCheckpoint,
+      mode: state.chapter4.mode,
+      lightMask: state.chapter4.lightGrid.mask,
+      lightLocked: state.chapter4.lightGrid.locked
     });
+    if (signature !== this.pendingProjectionSignature) {
+      this.pendingProjectionSignature = signature;
+      this.projectionRetryFailures = 0;
+      this.projectionRetryNotBeforeMs = 0;
+    }
+    if (!force && signature === this.projectionSignature) {
+      this.syncBakeryRuntime(state, next);
+      this.syncRoom204Runtime(state);
+      this.syncPhaseRuntime(state);
+      return;
+    }
+    if (!force && this.time.now < this.projectionRetryNotBeforeMs) return;
+
+    const applied = this.applyAtomicPlateGroup(next);
+    if (!applied) {
+      this.projectionRetryFailures = Math.min(this.projectionRetryFailures + 1, 32);
+      this.projectionRetryNotBeforeMs = this.time.now
+        + chapterFourPlateRetryDelayMs(this.projectionRetryFailures);
+      return;
+    }
+
     this.projection = next;
-    if (!force && signature === this.projectionSignature) return;
     this.projectionSignature = signature;
-    this.refreshDynamicGates();
-    this.refreshTargetVisuals();
+    this.appliedChapterMode = state.chapter4.mode;
+    this.appliedLightMask = state.chapter4.lightGrid.mask;
+    this.appliedLightLocked = state.chapter4.lightGrid.locked;
+    this.projectionRetryFailures = 0;
+    this.projectionRetryNotBeforeMs = 0;
+    this.syncBakeryRuntime(state, next);
+    this.syncRoom204Runtime(state);
+    this.syncPhaseRuntime(state);
+    this.refreshProjectedTargetVisuals();
+    this.refreshProximity();
+    this.publishLiveReady();
   }
 
-  private refreshTargetVisuals(): void {
-    for (const visual of this.targetVisuals.values()) {
-      this.tweens.killTweensOf(visual);
-      visual.destroy(true);
-    }
-    this.targetVisuals.clear();
-    for (const target of this.getActiveInteractionTargets()) {
-      const floor = getFloor(target.floor);
-      const color = target.requiredMode === "dark" ? 0x67ddff : 0xffd36f;
-      const width = target.width ?? 40;
-      const height = target.height ?? 40;
-      const container = this.add.container(
-        floor.offsetX + target.x,
-        target.y
-      ).setDepth(3550);
-      const outline = this.add.rectangle(0, 0, width, height, color, 0.055)
-        .setStrokeStyle(2, color, 0.72)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerup", () => this.tryTargetInteraction(target));
-      const markerSize = target.visualKind === "fragment" ? 18 : 12;
-      const marker = this.add.rectangle(0, 0, markerSize, markerSize, color, 0.9)
-        .setAngle(target.visualKind === "fragment" ? 45 : 0)
-        .setStrokeStyle(2, 0xf7f1dc, 0.86);
-      const decoration = this.add.graphics();
-      if (target.visualKind === "airflow") {
-        decoration.lineStyle(3, color, 0.62);
-        decoration.beginPath();
-        decoration.moveTo(-width * 0.4, height * 0.24);
-        decoration.lineTo(-width * 0.12, -height * 0.18);
-        decoration.lineTo(width * 0.12, height * 0.08);
-        decoration.lineTo(width * 0.4, -height * 0.28);
-        decoration.strokePath();
-        for (const point of [-0.4, -0.12, 0.12, 0.4]) {
-          decoration.fillStyle(0xb6f3ff, 0.72);
-          decoration.fillCircle(width * point, point % 0.2 === 0 ? -height * 0.28 : height * 0.08, 3);
-        }
-      } else if (target.visualKind === "paper") {
-        decoration.lineStyle(3, color, 0.58);
-        for (let row = -1; row <= 1; row += 1) {
-          decoration.lineBetween(-width * 0.4, row * 13, width * 0.28, row * 13 - 8);
-          decoration.lineBetween(width * 0.28, row * 13 - 8, width * 0.4, row * 13 - 2);
-        }
-      } else if (target.visualKind === "elevator") {
-        decoration.lineStyle(2, color, 0.62);
-        decoration.lineBetween(-width * 0.18, -height * 0.42, -width * 0.18, height * 0.42);
-        decoration.lineBetween(width * 0.18, -height * 0.42, width * 0.18, height * 0.42);
-      }
-      container.add([outline, decoration, marker]);
-      this.tweens.add({
-        targets: marker,
-        alpha: { from: 0.48, to: 0.96 },
-        duration: 760,
-        yoyo: true,
-        repeat: -1
-      });
-      this.targetVisuals.set(target.id, container);
-    }
-  }
-
-  private createPartitionTarget(gate: LayoutDynamicGate): MazePartitionTarget {
-    const centerX = (gate.bounds.left + gate.bounds.right) / 2;
-    const centerY = (gate.bounds.top + gate.bounds.bottom) / 2;
-    return {
-      id: gate.id,
-      label: gate.id === CHAPTER_FOUR_MAZE_IDS.partitions[0] ? "西侧可见隔断" : "东侧可见隔断",
-      floor: gate.displayFloor,
-      bounds: gate.bounds,
-      x: centerX,
-      y: centerY,
-      width: gate.bounds.right - gate.bounds.left,
-      height: gate.bounds.bottom - gate.bounds.top,
-      stand: { x: centerX, y: gate.bounds.bottom + 44 },
-      proximity: 64,
-      requiredMode: "light",
-      ...RPG_LOOSE_FACING
-    };
-  }
-
-  private getVisiblePartitionTargets(): MazePartitionTarget[] {
-    const visibleIds = new Set(this.projection.activePartitionIds);
-    return LAYOUT.dynamicGates
-      .filter((gate) => gate.kind === "partition" && visibleIds.has(gate.id))
-      .map((gate) => this.createPartitionTarget(gate));
-  }
-
-  private refreshDynamicGates(): void {
-    const revision = ++this.dynamicGateRevision;
-    this.dynamicObstacles.clear(true, true);
-    this.activeDynamicCollisionRects = [];
-    for (const visual of this.dynamicGateVisuals.values()) {
-      this.tweens.killTweensOf(visual);
-      visual.destroy();
-    }
-    this.dynamicGateVisuals.clear();
-
-    const visibleIds = new Set([
-      ...this.projection.activeDoorIds,
-      ...this.projection.activePartitionIds
-    ]);
-    const collisionIds = new Set(this.projection.activeCollisionIds);
-    for (const gate of LAYOUT.dynamicGates) {
-      if (!visibleIds.has(gate.id)) continue;
-      const floor = getFloor(gate.displayFloor);
-      const rect = {
-        id: gate.collisionId,
-        left: gate.bounds.left + floor.offsetX,
-        top: gate.bounds.top,
-        right: gate.bounds.right + floor.offsetX,
-        bottom: gate.bounds.bottom
-      };
-      const visual = this.add.rectangle(
-        (rect.left + rect.right) / 2,
-        (rect.top + rect.bottom) / 2,
-        rect.right - rect.left,
-        rect.bottom - rect.top,
-        gate.kind === "door" ? 0x8a725f : 0x5f8291,
-        0.82
-      ).setStrokeStyle(2, gate.kind === "door" ? 0xd6b88f : 0x9fd8e8, 0.96)
-        .setDepth(3600);
-      if (gate.kind === "partition") {
-        visual
-          .setInteractive({ useHandCursor: true })
-          .on("pointerup", () => this.tryPartitionInteraction(this.createPartitionTarget(gate)));
-      }
-      this.dynamicGateVisuals.set(gate.id, visual);
-
-      const closed = collisionIds.has(gate.collisionId)
-        && gate.closedRouteStates.includes(this.projection.routeState);
-      const closedScale = gate.kind === "door" ? { x: 1, y: 1 } : { x: 1, y: 1 };
-      const openScale = gate.kind === "door" ? { x: 1, y: 0.12 } : { x: 0.12, y: 1 };
-      if (!closed) {
-        visual.setScale(openScale.x, openScale.y).setAlpha(0.34);
-        continue;
-      }
-
-      visual.setScale(openScale.x, openScale.y).setAlpha(0.42);
-      this.tweens.add({
-        targets: visual,
-        scaleX: closedScale.x,
-        scaleY: closedScale.y,
-        alpha: 0.82,
-        duration: 180,
-        ease: "Sine.Out",
-        onComplete: () => {
-          if (
-            revision !== this.dynamicGateRevision
-            || !this.projection.activeCollisionIds.includes(gate.collisionId)
-          ) {
-            return;
-          }
-          this.addDynamicCollision(rect);
-        }
-      });
-    }
-  }
-
-  private addDynamicCollision(rect: MapCollisionRect): void {
-    const showDebug = new URLSearchParams(window.location.search).get("debugColliders") === "1";
-    const obstacle = this.add.rectangle(
-      (rect.left + rect.right) / 2,
-      (rect.top + rect.bottom) / 2,
-      rect.right - rect.left,
-      rect.bottom - rect.top,
-      showDebug ? 0xffb52e : 0x000000,
-      showDebug ? 0.28 : 0
-    );
-    this.physics.add.existing(obstacle, true);
-    this.dynamicObstacles.add(obstacle);
-    this.activeDynamicCollisionRects.push(rect);
-  }
-
-  private createLocationSignature(state: ReturnType<RpgBridge["getState"]>): string {
-    return `${state.chapter4.floor}:${state.chapter4.roomId}:${state.rpgCheckpoint}`;
-  }
-
-  private markCurrentLocationApplied(): void {
+  private publishLiveReady(force = false, requestId?: string): void {
     const state = this.bridge.getState();
-    this.lastAppliedCheckpoint = state.rpgCheckpoint;
-    this.lastAppliedLocationSignature = this.createLocationSignature(state);
-  }
-
-  private getCheckpointSpawn(
-    floor: FloorDefinition,
-    checkpoint: RpgCheckpointId
-  ): LayoutPoint {
-    if (checkpoint === "c4_a1_main_elevator" && floor.floor === 1) {
-      return floor.elevatorStand;
-    }
-    return floor.safeSpawn;
-  }
-
-  private syncCurrentFloorFromState(): void {
-    if (this.elevatorPhase !== "idle" || this.pendingMazeMove) return;
-    const state = this.bridge.getState();
-    const target = getDisplayFloor(state.chapter4.floor);
-    if (!target) return;
-    const signature = this.createLocationSignature(state);
-    if (target === this.currentFloor && signature === this.lastAppliedLocationSignature) return;
-    this.currentFloor = target;
-    const floor = getFloor(target);
-    const spawn = this.getCheckpointSpawn(floor, state.rpgCheckpoint);
-    this.player.setPosition(
-      floor.offsetX + spawn.x,
-      spawn.y
-    ).setVelocity(0, 0).setDepth(spawn.y + 4000);
-    this.animator.setFacing(spawn.facing);
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.reset(this.player.x, this.player.y);
-    this.lastAppliedCheckpoint = state.rpgCheckpoint;
-    this.lastAppliedLocationSignature = signature;
-    this.configureCameraForFloor();
-    this.cameras.main.centerOn(this.player.x, this.player.y);
-    this.syncProjection(true);
-    this.refreshProximityState();
-  }
-
-  private createElevatorVisuals(): void {
-    this.textures.get(ELEVATOR_DOORS_TEXTURE).setFilter(Phaser.Textures.FilterMode.NEAREST);
-    for (const floor of FLOORS) {
-      const centerX = floor.offsetX + ELEVATOR_LOCAL_CENTER_X;
-      const door = this.add.sprite(
-        centerX,
-        ELEVATOR_DOOR_CENTER_Y,
-        ELEVATOR_DOORS_TEXTURE,
-        0
-      ).setDepth(ELEVATOR_DOOR_DEPTH);
-      const indicatorBack = this.add.rectangle(centerX, 45, 48, 21, 0x071018, 0.94)
-        .setStrokeStyle(2, 0xb88f48, 1)
-        .setDepth(ELEVATOR_FRONT_ACTOR_DEPTH);
-      const indicatorText = this.add.text(centerX, 45, `${this.currentFloor}F`, {
-        fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-        fontSize: "13px",
-        color: "#ffd56f",
-        align: "center"
-      }).setOrigin(0.5).setDepth(ELEVATOR_FRONT_ACTOR_DEPTH);
-      const callLamp = this.add.circle(centerX + 50, 111, 5, 0x55d9ff, 1)
-        .setStrokeStyle(2, 0xd9f7ff, 1)
-        .setDepth(ELEVATOR_FRONT_ACTOR_DEPTH)
-        .setVisible(false);
-      this.elevatorVisuals.set(floor.floor, {
-        floor: floor.floor,
-        centerX,
-        door,
-        indicatorBack,
-        indicatorText,
-        callLamp
-      });
-    }
-    this.elevatorDisplayFloor = this.currentFloor;
-    this.setElevatorIndicator(this.currentFloor, "idle");
-  }
-
-  private setElevatorIndicator(
-    floor: DisplayFloor,
-    direction: "up" | "down" | "idle"
-  ): void {
-    this.elevatorDisplayFloor = floor;
-    const prefix = direction === "up" ? "▲" : direction === "down" ? "▼" : "";
-    for (const visual of this.elevatorVisuals.values()) {
-      visual.indicatorText.setText(`${prefix}${floor}F`);
-      visual.indicatorBack.setStrokeStyle(2, direction === "idle" ? 0xb88f48 : 0x55d9ff, 1);
-    }
-  }
-
-  private showElevatorDoors(floor: DisplayFloor, visible: boolean): void {
-    const visual = this.elevatorVisuals.get(floor);
-    if (!visual) return;
-    visual.door.setVisible(visible);
-    if (!visible) visual.callLamp.setVisible(false);
-  }
-
-  private setElevatorDoorProgress(floor: DisplayFloor, progress: number): void {
-    const visual = this.elevatorVisuals.get(floor);
-    if (!visual) return;
-    const clamped = Phaser.Math.Clamp(progress, 0, 1);
-    this.elevatorDoorProgress = clamped;
-    visual.door.setFrame(Math.round(clamped * (ELEVATOR_DOOR_FRAME_COUNT - 1)));
-  }
-
-  private tweenElevatorDoors(
-    floor: DisplayFloor,
-    from: number,
-    to: number,
-    onComplete: () => void
-  ): void {
-    this.setElevatorDoorProgress(floor, from);
-    this.tweens.addCounter({
-      from,
-      to,
-      duration: ELEVATOR_DOOR_MS,
-      ease: "Sine.InOut",
-      onUpdate: (tween) => this.setElevatorDoorProgress(floor, tween.getValue() ?? to),
-      onComplete
+    if (!state.chapter4.prologueSeen || this.projection.phase !== "opening_handoff") return;
+    const projectedTargetIds = this.resolveProjectedTargets().map((target) => target.contract.id).sort();
+    const renderedTargetIds = [...this.renderedTargetIds].sort();
+    const desired = desiredPlateGroup(this.projection);
+    const task7TargetContractIds = [...TASK7_LIVE_READY_TARGET_IDS].sort();
+    const task7TargetsReady = task7TargetContractIds.every((targetId) => {
+      const target = CHAPTER_FOUR_755_INTERACTION_TARGETS[
+        targetId as keyof typeof CHAPTER_FOUR_755_INTERACTION_TARGETS
+      ];
+      return Boolean(target?.bounds && rectInsideFloor(target.bounds));
+    });
+    const contractReady = this.appliedPlateSignature.length > 0
+      && this.appliedPlateIds.A1 === "a1_2245_opening"
+      && (Object.keys(desired) as StoryFloor[]).every((floor) => (
+        desired[floor] === this.appliedPlateIds[floor]
+      ))
+      && JSON.stringify(projectedTargetIds) === JSON.stringify(renderedTargetIds)
+      && this.appliedCollisionIds.length > 0
+      && this.appliedOcclusionIds.length > 0
+      && task7TargetsReady;
+    if (!contractReady) return;
+    const signature = JSON.stringify({
+      phase: this.projection.phase,
+      appliedPlateSignature: this.appliedPlateSignature,
+      projectedTargetIds,
+      renderedTargetIds
+    });
+    if (!force && signature === this.liveReadySignature) return;
+    this.liveReadySignature = signature;
+    this.bridge.emit("rpg_chapter4_755_live_ready", {
+      phase: this.projection.phase,
+      appliedPlateId: this.appliedPlateIds.A1,
+      appliedPlateSignature: this.appliedPlateSignature,
+      projectedTargetIds,
+      renderedTargetIds,
+      task7TargetContractIds,
+      contractReady,
+      ...(requestId ? { requestId } : {})
     });
   }
 
-  private refreshProximityState(): void {
-    this.updateForegroundOcclusions();
-    const floor = getFloor(this.currentFloor);
-    const localPoint = { x: this.player.x - floor.offsetX, y: this.player.y };
-    const state = this.bridge.getState().chapter4;
-    this.nearbyTarget = findNearestRpgInteractionTarget(
-      localPoint.x,
-      localPoint.y,
-      this.getActiveInteractionTargets().filter((target) => target.floor === this.currentFloor)
-    );
-    const selectedPartition = this.nearbyTarget
-      ? null
-      : findNearestRpgInteractionTarget(
-        localPoint.x,
-        localPoint.y,
-        this.getVisiblePartitionTargets().filter((target) => target.floor === this.currentFloor)
+  private applyAtomicPlateGroup(projection: ChapterFourMazeProjection): boolean {
+    const desired = desiredPlateGroup(projection);
+    const attemptSignature = JSON.stringify({ desired, dynamicCollisionIds: projection.dynamicCollisionIds });
+    this.plateContractFailures.clear();
+    const prepared = this.preparePlateGroup(desired, projection, attemptSignature);
+    if (!prepared) return false;
+
+    let stagedForegrounds: AppliedForeground[];
+    try {
+      stagedForegrounds = this.stagePlateForegrounds(prepared.foregrounds);
+    } catch (error) {
+      this.plateContractFailures.add(
+        `plate_group_foreground_stage_failed:${errorMessage(error)}`
       );
-    this.nearbyPartitionId = selectedPartition?.id ?? null;
-    this.nearbyTravelZone = this.nearbyTarget || selectedPartition
-      ? null
-      : findNearestRpgInteractionTarget(
-        localPoint.x,
-        localPoint.y,
-        createTravelZones(floor)
-      );
-    this.nearbyAnchor = STORY_ANCHORS
-      .filter((anchor) => anchor.floor === this.currentFloor)
-      .map((anchor) => ({ anchor, distance: distanceToBounds(localPoint, anchor.bounds) }))
-      .filter((candidate) => candidate.distance <= 72)
-      .sort((a, b) => a.distance - b.distance)[0]?.anchor ?? null;
-
-    const floorLabel = floor.shortTitle;
-    this.floorCaption.setText(this.nearbyAnchor ? `${floorLabel} · ${this.nearbyAnchor.label}` : floorLabel);
-    if (this.nearbyTarget) {
-      const target = this.nearbyTarget;
-      const storyReady = this.isTargetStoryReady(target);
-      const modeReady = state.mode === target.requiredMode;
-      const facingReady = isPlayerFacingRpgTarget(
-        target,
-        localPoint.x,
-        localPoint.y,
-        this.animator.cardinalFacing
-      );
-      const hint = this.pendingMazeAction
-        ? `正在确认 · ${target.label}`
-        : !storyReady
-          ? `当前步骤尚未开放 · ${target.label}`
-          : !modeReady
-            ? `切到${target.requiredMode === "dark" ? "深色观察" : "浅色操作"} · ${target.label}`
-            : !facingReady
-              ? `面向${target.label}后再交互`
-              : `Space / 交互 · ${this.getTargetActionLabel(target)}`;
-      this.interactionHint.setText(hint).setVisible(true);
-      return;
-    }
-
-    const nearbyPartition = this.nearbyPartitionId
-      ? this.getVisiblePartitionTargets().find((target) => target.id === this.nearbyPartitionId) ?? null
-      : null;
-    if (nearbyPartition) {
-      const storyReady = this.isPartitionStoryReady(nearbyPartition);
-      const modeReady = state.mode === nearbyPartition.requiredMode;
-      const facingReady = isPlayerFacingRpgTarget(
-        nearbyPartition,
-        localPoint.x,
-        localPoint.y,
-        this.animator.cardinalFacing
-      );
-      const hint = this.pendingMazeAction
-        ? `正在确认 · ${nearbyPartition.label}`
-        : !this.projection.activeCollisionIds.includes(nearbyPartition.id)
-          ? `${nearbyPartition.label}已移开`
-          : !storyReady
-            ? `先记录人员残影 · ${nearbyPartition.label}`
-            : !modeReady
-              ? `切到浅色操作 · ${nearbyPartition.label}`
-              : !facingReady
-                ? `面向${nearbyPartition.label}后再交互`
-                : `Space / 交互 · 移动${nearbyPartition.label}`;
-      this.interactionHint.setText(hint).setVisible(true);
-      return;
-    }
-
-    if (!this.nearbyTravelZone) {
-      this.interactionHint.setVisible(false);
-      return;
-    }
-    const facingCorrect = isPlayerFacingRpgTarget(
-      this.nearbyTravelZone,
-      localPoint.x,
-      localPoint.y,
-      this.animator.cardinalFacing
-    );
-    const travelReady = this.isTravelZoneStoryReady(this.nearbyTravelZone);
-    const action = this.nearbyTravelZone.id === "elevator"
-      ? "呼叫"
-      : this.nearbyTravelZone.id === "stair_up"
-        ? "上楼"
-        : "下楼";
-    this.interactionHint
-      .setText(this.pendingMazeAction || this.pendingMazeMove
-        ? "交互状态正在确认"
-        : !travelReady
-          ? `当前楼层通道尚未开放 · ${this.nearbyTravelZone.label}`
-          : facingCorrect
-            ? `Space / 交互 · ${this.nearbyTravelZone.label}${action}`
-            : `面向${this.nearbyTravelZone.label}后再交互`)
-      .setVisible(true);
-  }
-
-  private getTargetActionLabel(target: MazeInteractionTarget): string {
-    if (target.action === "observe_airflow") return "读取断续水迹";
-    if (target.action === "guide_paper") return "接续暖风路径";
-    if (target.action === "inspect_elevator") {
-      return target.requiredMode === "light" ? "打开历史重放" : "读取历史轨道";
-    }
-    if (target.action === "board_elevator") return "进入已对齐电梯";
-    if (target.action === "observe_npc_schedule") return "记录人员时刻";
-    if (target.action === "collect_wayfinding_fragment") return "拾取导视碎片";
-    if (target.action === "observe_old_signage") return "读取旧导视残影";
-    if (target.action === "open_wayfinding_board") return "打开导视板";
-    if (target.action === "observe_bridge_history") return "读取连廊历史";
-    if (target.action === "open_second_floor_return_window") return "检查返程取证窗口";
-    return target.label;
-  }
-
-  private isTargetStoryReady(target: MazeInteractionTarget): boolean {
-    const state = this.bridge.getState().chapter4;
-    const active = this.getActiveInteractionTargets().some((candidate) => candidate.id === target.id);
-    if (!active) return false;
-    if (getDisplayFloor(state.floor) !== target.floor) return false;
-    if (target.action === "observe_airflow") {
-      return (state.phase === "arrival" || state.phase === "airflow_overlay")
-        && !state.airflowObserved;
-    }
-    if (target.action === "guide_paper") {
-      return state.phase === "airflow_overlay"
-        && state.airflowObserved
-        && !state.paperGuidedToElevator;
-    }
-    if (target.action === "inspect_elevator") {
-      return state.phase === "elevator_track_sync"
-        && state.paperGuidedToElevator
-        && !state.elevatorPlayerBoarded;
-    }
-    if (target.action === "board_elevator") {
-      return state.phase === "elevator_track_sync"
-        && state.elevatorTrackAligned
-        && !state.elevatorPlayerBoarded
-        && this.historicalDoorOpen;
-    }
-    if (target.action === "observe_npc_schedule") return state.phase === "npc_schedule_route";
-    if (target.action === "collect_wayfinding_fragment") {
-      return state.phase === "wayfinding_fragment_board"
-        && state.solvedPuzzleIds.includes("corridor_bay_reconstruction");
-    }
-    if (target.action === "observe_old_signage") {
-      return state.phase === "wayfinding_fragment_board"
-        && state.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentWestCollected)
-        && state.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentEastCollected);
-    }
-    if (target.action === "open_wayfinding_board") {
-      return state.phase === "wayfinding_fragment_board"
-        && state.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.oldSignageObserved);
-    }
-    if (target.action === "observe_bridge_history") {
-      return state.phase === "bridge_floor_discrimination"
-        && state.solvedPuzzleIds.includes("wayfinding_fragment_board");
-    }
-    if (target.action === "open_second_floor_return_window") {
-      return state.phase === "bridge_floor_discrimination"
-        && state.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.bridgeHistoryObserved);
-    }
-    return false;
-  }
-
-  private isPartitionStoryReady(target: MazePartitionTarget): boolean {
-    const state = this.bridge.getState().chapter4;
-    return getDisplayFloor(state.floor) === target.floor
-      && state.phase === "corridor_bay_reconstruction"
-      && (
-        state.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.scheduleObserved)
-        || state.solvedPuzzleIds.includes("npc_schedule_route")
-      )
-      && this.projection.activeCollisionIds.includes(target.id);
-  }
-
-  private isTravelZoneStoryReady(zone: TravelZone): boolean {
-    if (zone.id === "elevator") {
-      return FLOORS.some((floor) => (
-        floor.floor !== this.currentFloor
-        && this.isMazeTravelAllowed(floor.storyFloor, "elevator")
-      ));
-    }
-    return zone.targetStoryFloor
-      ? this.isMazeTravelAllowed(zone.targetStoryFloor, "stair")
-      : false;
-  }
-
-  private isMazeTravelAllowed(targetFloor: StoryFloor, route: MazeMoveRoute): boolean {
-    const chapter = this.bridge.getState().chapter4;
-    const currentFloor = chapter.floor;
-    if (currentFloor !== "A1" && currentFloor !== "A2" && currentFloor !== "A3") return false;
-    if (targetFloor === currentFloor) return false;
-    if (!chapter.solvedPuzzleIds.includes("elevator_track_sync")) return false;
-    const targetNumber = Number(targetFloor.slice(1));
-    const currentNumber = Number(currentFloor.slice(1));
-    if (route === "stair" && Math.abs(targetNumber - currentNumber) !== 1) return false;
-
-    const crossesUpperPair = (
-      (currentFloor === "A2" && targetFloor === "A3")
-      || (currentFloor === "A3" && targetFloor === "A2")
-    );
-    const returnWindowOpen = chapter.clueIds.includes(
-      CHAPTER_FOUR_MAZE_CLUES.secondFloorReturnWindowOpen
-    ) || chapter.solvedPuzzleIds.includes("bridge_floor_discrimination");
-    if (crossesUpperPair && !returnWindowOpen && route !== "stair") return false;
-    const hasBothFragments = chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentWestCollected)
-      && chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.fragmentEastCollected);
-    if (
-      targetFloor === "A3"
-      && !hasBothFragments
-      && !chapter.solvedPuzzleIds.includes("wayfinding_fragment_board")
-    ) {
       return false;
     }
-    if (
-      currentFloor === "A3"
-      && targetFloor === "A2"
-      && !chapter.clueIds.includes(CHAPTER_FOUR_MAZE_CLUES.bridgeHistoryObserved)
-    ) {
+
+    let stagedCollision: Omit<StagedPlateApplication, "foregrounds">;
+    try {
+      stagedCollision = this.stagePlateCollision(prepared.colliders);
+    } catch (error) {
+      this.destroyForegrounds(stagedForegrounds, "collision_stage_rollback");
+      this.plateContractFailures.add(
+        `plate_group_collision_stage_failed:${errorMessage(error)}`
+      );
       return false;
     }
-    if (
-      (currentFloor === "A1" && targetFloor === "A3")
-      || (currentFloor === "A3" && targetFloor === "A1")
-    ) {
-      return route === "elevator" && returnWindowOpen;
+
+    const staged: StagedPlateApplication = {
+      foregrounds: stagedForegrounds,
+      ...stagedCollision
+    };
+    let backgroundSnapshots: BackgroundTextureSnapshot[];
+    try {
+      backgroundSnapshots = this.snapshotBackgroundTextures();
+    } catch (error) {
+      this.disposeStagedPlateApplication(staged, "background_snapshot_rollback");
+      this.plateContractFailures.add(
+        `plate_group_background_snapshot_failed:${errorMessage(error)}`
+      );
+      return false;
+    }
+
+    try {
+      FLOORS.forEach((floor, index) => {
+        const plateId = prepared.plateIds[floor.storyFloor];
+        this.injectPlateTransactionFault({
+          point: "background_set_texture",
+          index,
+          floor: floor.displayFloor,
+          id: plateId
+        });
+        const background = this.backgrounds.get(floor.displayFloor);
+        if (!background) throw new Error(`background_missing:${floor.displayFloor}`);
+        background.setTexture(plateId);
+        this.textures.get(plateId).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      });
+    } catch (error) {
+      this.restoreBackgroundTextures(backgroundSnapshots, "background_commit_rollback");
+      this.disposeStagedPlateApplication(staged, "background_commit_rollback");
+      this.plateContractFailures.add(
+        `plate_group_background_commit_failed:${errorMessage(error)}`
+      );
+      return false;
+    }
+
+    const previous = {
+      foregrounds: this.appliedForegrounds,
+      obstacles: this.plateObstacles,
+      playerCollider: this.platePlayerCollider,
+      colliderDebugObjects: this.plateColliderDebugObjects
+    };
+    try {
+      this.injectPlateTransactionFault({ point: "activation", step: "activate_new" });
+      for (const visual of staged.foregrounds) visual.image.setVisible(true);
+      for (const object of staged.colliderDebugObjects) object.setVisible(true);
+      staged.playerCollider.active = true;
+      this.injectPlateTransactionFault({ point: "activation", step: "deactivate_old" });
+      if (previous.playerCollider) previous.playerCollider.active = false;
+      for (const visual of previous.foregrounds) visual.image.setVisible(false);
+      for (const object of previous.colliderDebugObjects) object.setVisible(false);
+    } catch (error) {
+      this.attemptPlateRollback("old_collider_active", () => {
+        if (previous.playerCollider) previous.playerCollider.active = true;
+      });
+      previous.foregrounds.forEach((visual) => {
+        this.attemptPlateRollback(`old_foreground_visible:${visual.id}`, () => {
+          visual.image.setVisible(true);
+        });
+      });
+      previous.colliderDebugObjects.forEach((object, index) => {
+        this.attemptPlateRollback(`old_collider_debug_visible:${index}`, () => {
+          object.setVisible(true);
+        });
+      });
+      this.attemptPlateRollback("new_collider_inactive", () => {
+        staged.playerCollider.active = false;
+      });
+      staged.foregrounds.forEach((visual) => {
+        this.attemptPlateRollback(`new_foreground_hidden:${visual.id}`, () => {
+          visual.image.setVisible(false);
+        });
+      });
+      staged.colliderDebugObjects.forEach((object, index) => {
+        this.attemptPlateRollback(`new_collider_debug_hidden:${index}`, () => {
+          object.setVisible(false);
+        });
+      });
+      this.restoreBackgroundTextures(backgroundSnapshots, "activation_rollback");
+      this.disposeStagedPlateApplication(staged, "activation_rollback");
+      this.plateContractFailures.add(
+        `plate_group_activation_failed:${errorMessage(error)}`
+      );
+      return false;
+    }
+
+    // No render or physics step can occur inside this synchronous switch. New
+    // resources now own the scene; cleanup failures are isolated below.
+    this.appliedForegrounds = staged.foregrounds;
+    this.plateObstacles = staged.obstacles;
+    this.platePlayerCollider = staged.playerCollider;
+    this.plateColliderDebugObjects = staged.colliderDebugObjects;
+    if (this.chaseGuard?.active) {
+      this.chaseGuardPlateCollider?.destroy();
+      this.chaseGuardPlateCollider = this.physics.add.collider(this.chaseGuard, this.plateObstacles);
+    }
+
+    const staticRects = FLOORS.flatMap((floor) => floor.staticCollisions.map((local) => ({
+      ...offsetRect(local, floor.offsetX),
+      id: `floor_${floor.displayFloor}_${local.id}`,
+      sourceAnnotationId: local.sourceAnnotationId
+    })));
+    this.appliedPlateSignature = prepared.signature;
+    this.appliedPlateIds = prepared.plateIds;
+    this.appliedCollisionRects = [...staticRects, ...prepared.colliders];
+    this.appliedCollisionIds = this.appliedCollisionRects.map((rect) => rect.id);
+    this.appliedOcclusionIds = staged.foregrounds.map((visual) => visual.id);
+    for (const failure of prepared.deferredFailures) this.plateContractFailures.add(failure);
+    this.disposePreviousPlateApplication(previous);
+    try {
+      this.rebuildDevelopmentOverlays();
+    } catch (error) {
+      this.plateContractFailures.add(`plate_group_debug_rebuild_failed:${errorMessage(error)}`);
     }
     return true;
   }
 
-  private handleInteraction(): void {
-    if (this.pendingMazeAction) {
-      this.emitInteractionFeedback("当前交互正在确认。");
+  private stagePlateForegrounds(definitions: readonly PreparedForeground[]): AppliedForeground[] {
+    const staged: AppliedForeground[] = [];
+    try {
+      definitions.forEach((definition, index) => {
+        this.injectPlateTransactionFault({
+          point: "foreground_stage",
+          index,
+          floor: definition.floor,
+          id: definition.id
+        });
+        const image = this.add.image(
+          getFloor(definition.floor).offsetX, 0, definition.plateId
+        );
+        const visual: AppliedForeground = {
+          id: definition.id,
+          floor: definition.floor,
+          sourceAnnotationId: definition.sourceAnnotationId,
+          maskBounds: definition.worldBounds,
+          baselineY: definition.baselineY,
+          renderMode: "foot_behind_baseline",
+          image
+        };
+        staged.push(visual);
+        image.setOrigin(0)
+          .setCrop(
+            definition.localBounds.x, definition.localBounds.y,
+            definition.localBounds.width, definition.localBounds.height
+          )
+          .setDepth(PLAYER_DEPTH_BASE + definition.baselineY)
+          .setVisible(false);
+      });
+      if (staged.length !== definitions.length) {
+        throw new Error(`foreground_stage_count:${staged.length}/${definitions.length}`);
+      }
+      staged.forEach((visual, index) => {
+        const definition = definitions[index];
+        if (visual.image.visible
+          || !visual.image.isCropped
+          || visual.image.texture.key !== definition.plateId
+          || visual.image.depth !== PLAYER_DEPTH_BASE + definition.baselineY) {
+          throw new Error(`foreground_stage_invalid:${definition.id}`);
+        }
+      });
+      return staged;
+    } catch (error) {
+      this.destroyForegrounds(staged, "foreground_stage_rollback");
+      throw error;
+    }
+  }
+
+  private stagePlateCollision(
+    colliders: readonly CollisionRect[]
+  ): Omit<StagedPlateApplication, "foregrounds"> {
+    let obstacles: Phaser.Physics.Arcade.StaticGroup | null = null;
+    let playerCollider: Phaser.Physics.Arcade.Collider | null = null;
+    const colliderDebugObjects: Phaser.GameObjects.Rectangle[] = [];
+    try {
+      obstacles = this.physics.add.staticGroup();
+      colliders.forEach((rect, index) => {
+        this.injectPlateTransactionFault({
+          point: "collision_stage",
+          step: "body",
+          index,
+          id: rect.id
+        });
+        this.addPhysicsRect(obstacles!, rect, "plate", colliderDebugObjects, false);
+      });
+      this.injectPlateTransactionFault({
+        point: "collision_stage",
+        step: "player_collider"
+      });
+      playerCollider = this.physics.add.collider(this.player, obstacles);
+      playerCollider.active = false;
+      const children = obstacles.getChildren();
+      if (children.length !== colliders.length || playerCollider.active) {
+        throw new Error(`collision_stage_count:${children.length}/${colliders.length}`);
+      }
+      children.forEach((child, index) => {
+        const zone = child as Phaser.GameObjects.Zone & {
+          body: Phaser.Physics.Arcade.StaticBody | null;
+        };
+        const expected = colliders[index];
+        if (!zone.body
+          || zone.x !== rectCenterX(expected)
+          || zone.y !== rectCenterY(expected)
+          || zone.body.width !== expected.width
+          || zone.body.height !== expected.height) {
+          throw new Error(`collision_stage_invalid:${expected.id}`);
+        }
+      });
+      return { obstacles, playerCollider, colliderDebugObjects };
+    } catch (error) {
+      if (playerCollider) this.destroyCollider(playerCollider, "collision_stage_rollback");
+      if (obstacles) this.destroyObstacleGroup(obstacles, "collision_stage_rollback");
+      this.destroyGameObjects(colliderDebugObjects, "collision_stage_rollback_debug");
+      throw error;
+    }
+  }
+
+  private snapshotBackgroundTextures(): BackgroundTextureSnapshot[] {
+    return FLOORS.map((floor) => {
+      const image = this.backgrounds.get(floor.displayFloor);
+      if (!image) throw new Error(`background_missing:${floor.displayFloor}`);
+      return {
+        floor: floor.displayFloor,
+        image,
+        textureKey: image.texture.key,
+        frameName: image.frame.name
+      };
+    });
+  }
+
+  private restoreBackgroundTextures(
+    snapshots: readonly BackgroundTextureSnapshot[],
+    phase: string
+  ): void {
+    for (const snapshot of [...snapshots].reverse()) {
+      try {
+        snapshot.image.setTexture(snapshot.textureKey, snapshot.frameName);
+      } catch (error) {
+        this.plateContractFailures.add(
+          `plate_group_rollback_failed:${phase}:floor_${snapshot.floor}:${errorMessage(error)}`
+        );
+      }
+    }
+  }
+
+  private attemptPlateRollback(label: string, action: () => void): void {
+    try {
+      action();
+    } catch (error) {
+      this.plateContractFailures.add(
+        `plate_group_rollback_failed:${label}:${errorMessage(error)}`
+      );
+    }
+  }
+
+  private disposeStagedPlateApplication(stage: StagedPlateApplication, phase: string): void {
+    stage.playerCollider.active = false;
+    this.destroyCollider(stage.playerCollider, phase);
+    this.destroyObstacleGroup(stage.obstacles, phase);
+    this.destroyForegrounds(stage.foregrounds, phase);
+    this.destroyGameObjects(stage.colliderDebugObjects, `${phase}_debug`);
+  }
+
+  private disposePreviousPlateApplication(previous: {
+    foregrounds: readonly AppliedForeground[];
+    obstacles: Phaser.Physics.Arcade.StaticGroup;
+    playerCollider: Phaser.Physics.Arcade.Collider | null;
+    colliderDebugObjects: readonly Phaser.GameObjects.Rectangle[];
+  }): void {
+    if (previous.playerCollider) this.destroyCollider(previous.playerCollider, "previous_commit_cleanup");
+    this.destroyObstacleGroup(previous.obstacles, "previous_commit_cleanup");
+    this.destroyForegrounds(previous.foregrounds, "previous_commit_cleanup");
+    this.destroyGameObjects(previous.colliderDebugObjects, "previous_commit_cleanup_debug");
+  }
+
+  private destroyCollider(collider: Phaser.Physics.Arcade.Collider, phase: string): void {
+    try {
+      collider.active = false;
+      collider.destroy();
+    } catch (error) {
+      this.plateContractFailures.add(
+        `plate_group_cleanup_failed:${phase}:collider:${errorMessage(error)}`
+      );
+    }
+  }
+
+  private destroyObstacleGroup(
+    group: Phaser.Physics.Arcade.StaticGroup,
+    phase: string
+  ): void {
+    try {
+      group.destroy(true, true);
+    } catch (error) {
+      this.plateContractFailures.add(
+        `plate_group_cleanup_failed:${phase}:obstacles:${errorMessage(error)}`
+      );
+    }
+  }
+
+  private destroyForegrounds(foregrounds: readonly AppliedForeground[], phase: string): void {
+    for (const visual of foregrounds) {
+      try {
+        visual.image.destroy();
+      } catch (error) {
+        this.plateContractFailures.add(
+          `plate_group_cleanup_failed:${phase}:foreground:${visual.id}:${errorMessage(error)}`
+        );
+      }
+    }
+  }
+
+  private destroyGameObjects(
+    objects: readonly Phaser.GameObjects.GameObject[],
+    phase: string
+  ): void {
+    for (const object of objects) {
+      try {
+        object.destroy();
+      } catch (error) {
+        this.plateContractFailures.add(
+          `plate_group_cleanup_failed:${phase}:debug:${errorMessage(error)}`
+        );
+      }
+    }
+  }
+
+  private injectPlateTransactionFault(context: ChapterFourPlateTransactionFaultContext): void {
+    if (!import.meta.env.DEV) return;
+    const injector = this.registry.get(CHAPTER_FOUR_PLATE_TRANSACTION_FAULT_INJECTOR_KEY);
+    if (typeof injector === "function") {
+      (injector as (value: ChapterFourPlateTransactionFaultContext) => void)(context);
+    }
+  }
+
+  private preparePlateGroup(
+    plateIds: Readonly<Record<StoryFloor, ChapterFour755PlateId>>,
+    projection: ChapterFourMazeProjection,
+    signature: string
+  ): PreparedPlateGroup | null {
+    const fatal: string[] = [];
+    const deferredFailures: string[] = [];
+    const colliders: CollisionRect[] = [];
+    const foregrounds: PreparedForeground[] = [];
+    for (const floor of FLOORS) {
+      const plateId = plateIds[floor.storyFloor];
+      const asset = CHAPTER_FOUR_755_PLATES[plateId];
+      if (!asset || !this.textures.exists(plateId)) {
+        fatal.push(`plate_missing:${floor.storyFloor}:${plateId}`);
+        continue;
+      }
+      const source = this.textures.get(plateId).getSourceImage() as { width?: number; height?: number };
+      if (asset.sourceSize.width !== FLOOR_SIZE.width || asset.sourceSize.height !== FLOOR_SIZE.height
+        || source.width !== FLOOR_SIZE.width || source.height !== FLOOR_SIZE.height) {
+        fatal.push(`plate_size:${plateId}:${String(source.width)}x${String(source.height)}`);
+        continue;
+      }
+      for (const definition of floor.foregroundOcclusions) {
+        if (!rectInsideFloor(definition.maskBounds)
+          || !Number.isFinite(definition.baselineY)
+          || definition.renderMode !== "foot_behind_baseline") {
+          fatal.push(`foreground_geometry:${definition.id}`);
+          continue;
+        }
+        foregrounds.push({
+          id: `floor_${floor.displayFloor}_${definition.id}`,
+          floor: floor.displayFloor,
+          sourceAnnotationId: definition.sourceAnnotationId,
+          worldBounds: offsetRect(definition.maskBounds, floor.offsetX),
+          localBounds: { ...definition.maskBounds },
+          baselineY: definition.baselineY,
+          plateId
+        });
+      }
+    }
+
+    for (const delta of LAYOUT.physicalDeltas) {
+      const displayFloor = displayFloorFor(delta.storyFloor);
+      if (!displayFloor) {
+        fatal.push(`physical_delta_floor:${delta.id}`);
+        continue;
+      }
+      const floor = getFloor(displayFloor);
+      if (!delta.statePlateIds.includes(plateIds[delta.storyFloor])) continue;
+      if (delta.activation === "runtime_furniture_visible") {
+        if (projection.dynamicCollisionIds.includes(delta.id)
+          && delta.id !== "a2_room202_recovery_barrier") {
+          deferredFailures.push(`dynamic_collision_pending:${delta.id}`);
+        }
+        if (!delta.collisionSource || !delta.worldRoomBounds || !rectInsideFloor(delta.worldRoomBounds)) {
+          fatal.push(`physical_delta_runtime_contract:${delta.id}`);
+        }
+        continue;
+      }
+      if (delta.activation !== "plate_active") {
+        fatal.push(`physical_delta_activation:${delta.id}`);
+        continue;
+      }
+      for (const local of delta.collisionBounds ?? []) {
+        if (!rectInsideFloor(local)) {
+          fatal.push(`physical_delta_collision:${delta.id}:${local.id}`);
+          continue;
+        }
+        colliders.push({
+          ...offsetRect(local, floor.offsetX),
+          id: `floor_${displayFloor}_${local.id}`,
+          sourceAnnotationId: local.sourceAnnotationId
+        });
+      }
+      for (const definition of delta.occlusionBounds ?? []) {
+        if (!rectInsideFloor(definition.maskBounds)
+          || !Number.isFinite(definition.baselineY)
+          || definition.renderMode !== "foot_behind_baseline") {
+          fatal.push(`physical_delta_occlusion:${delta.id}:${definition.id}`);
+          continue;
+        }
+        foregrounds.push({
+          id: `floor_${displayFloor}_${definition.id}`,
+          floor: displayFloor,
+          sourceAnnotationId: definition.sourceAnnotationId,
+          worldBounds: offsetRect(definition.maskBounds, floor.offsetX),
+          localBounds: { ...definition.maskBounds },
+          baselineY: definition.baselineY,
+          plateId: plateIds[delta.storyFloor]
+        });
+      }
+    }
+
+    const physicalDeltaIds = new Set(LAYOUT.physicalDeltas.map((delta) => delta.id));
+    for (const projectedId of projection.dynamicCollisionIds) {
+      if (!physicalDeltaIds.has(projectedId)
+        && !RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS.has(projectedId)) {
+        deferredFailures.push(`dynamic_collision_unresolved:${projectedId}`);
+      }
+    }
+    if (fatal.length > 0) {
+      for (const failure of fatal) this.plateContractFailures.add(failure);
+      this.plateContractFailures.add(`plate_group_rejected:${signature}`);
+      return null;
+    }
+    return { signature, plateIds, colliders, foregrounds, deferredFailures };
+  }
+
+  private rebuildDevelopmentOverlays(): void {
+    for (const object of this.debugOverlayObjects) object.destroy();
+    this.debugOverlayObjects = [];
+    const showOcclusions = import.meta.env.DEV
+      && new URLSearchParams(window.location.search).get("debugOcclusions") === "1";
+    if (!showOcclusions) return;
+    for (const visual of this.appliedForegrounds) {
+      const graphics = this.add.graphics().setDepth(9998);
+      graphics.fillStyle(0x39f2d0, 0.08).fillRect(
+        visual.maskBounds.x, visual.maskBounds.y,
+        visual.maskBounds.width, visual.maskBounds.height
+      );
+      graphics.lineStyle(2, 0x39f2d0, 0.9).strokeRect(
+        visual.maskBounds.x, visual.maskBounds.y,
+        visual.maskBounds.width, visual.maskBounds.height
+      );
+      graphics.lineStyle(3, 0xffcc5c, 0.96).lineBetween(
+        visual.maskBounds.x, visual.baselineY,
+        visual.maskBounds.x + visual.maskBounds.width, visual.baselineY
+      );
+      this.debugOverlayObjects.push(graphics);
+    }
+  }
+
+  private ensureBakeryBakerAnimation(): void {
+    if (this.anims.exists(BAKERY_COUNTER_BAKER_ANIMATION)) return;
+    this.anims.create({
+      key: BAKERY_COUNTER_BAKER_ANIMATION,
+      frames: BAKERY_RUNTIME.baker.frames.map((frame) => ({
+        key: BAKERY_COUNTER_BAKER_TEXTURE,
+        frame
+      })),
+      frameRate: 1.8,
+      repeat: -1,
+      repeatDelay: 260
+    });
+  }
+
+  private syncBakeryRuntime(
+    state: GameState,
+    projection: ChapterFourMazeProjection
+  ): void {
+    const active = state.chapter4.phase === "bakery_hour_hand"
+      && state.chapter4.timeState === "1225_bakery"
+      && projection.activePlateIds.includes(BAKERY_RUNTIME.statePlateId);
+    if (!active) {
+      if (this.bakeryRuntimeSignature) this.destroyBakeryRuntime("plate_or_phase_change");
       return;
     }
-    if (this.nearbyTarget) {
-      this.tryTargetInteraction(this.nearbyTarget);
+    if (!this.bakeryRuntimeSignature) this.createBakeryRuntime();
+
+    const lampInspected = hasChapterFourFact(state, "bakery_conveyor_lamp_inspected");
+    const exposed = hasChapterFourFact(state, "bakery_hour_hand_exposed");
+    const collected = hasChapterFourFact(state, "bakery_hour_hand_collected")
+      || state.items.oldClockHourHand;
+    this.paintBakeryInspectionLamp(lampInspected);
+    if (exposed) {
+      this.pauseBakeryActivity();
+      this.revealBakeryHourHand(!collected);
+    } else if (!lampInspected) {
+      this.resumeBakeryActivity();
+      this.revealBakeryHourHand(false);
+    }
+  }
+
+  private createBakeryRuntime(): void {
+    this.destroyBakeryRuntime("runtime_recreate");
+    const floor = getFloor(1);
+    const targetById = new Map(BAKERY_RUNTIME.targetEntities.map((entry) => [entry.targetId, entry]));
+    const lampDefinition = targetById.get("a1_bakery_inspection_lamp");
+    const conveyorDefinition = targetById.get("a1_bakery_conveyor_edge");
+    const hourDefinition = targetById.get("a1_bakery_hour_hand_pickup");
+    if (!lampDefinition || !conveyorDefinition || !hourDefinition?.visual) {
+      this.persistentContractFailures.add("bakery_runtime_definition_missing");
       return;
     }
-    if (this.nearbyPartitionId) {
-      const partition = this.getVisiblePartitionTargets()
-        .find((target) => target.id === this.nearbyPartitionId);
-      if (partition) {
-        this.tryPartitionInteraction(partition);
+
+    const createTargetRectangle = (
+      definition: BakeryRuntimeTargetDefinition,
+      fillColor: number,
+      fillAlpha: number
+    ) => {
+      const bounds = definition.installationBounds;
+      const rectangle = this.add.rectangle(
+        floor.offsetX + rectCenterX(bounds),
+        rectCenterY(bounds),
+        bounds.width,
+        bounds.height,
+        fillColor,
+        fillAlpha
+      ).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) - 1)
+        .setStrokeStyle(1, fillColor, 0.72);
+      this.bakeryRuntimeTargets.set(definition.targetId, {
+        targetId: definition.targetId,
+        entityId: definition.entityId,
+        boundsObject: rectangle
+      });
+      this.bakeryRuntimeObjects.push(rectangle);
+      return rectangle;
+    };
+
+    createTargetRectangle(lampDefinition, 0x907b53, 0.34);
+    createTargetRectangle(conveyorDefinition, 0xaab8c6, 0.16);
+
+    const visual = hourDefinition.visual;
+    const hourSprite = this.add.sprite(
+      floor.offsetX + visual.pivot.x,
+      visual.pivot.y,
+      visual.texture,
+      visual.frame
+    ).setOrigin(
+      (visual.sourcePivot.x - visual.sourceCell.x) / visual.sourceCell.width,
+      (visual.sourcePivot.y - visual.sourceCell.y) / visual.sourceCell.height
+    ).setScale(visual.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + visual.pivot.y + 2)
+      .setVisible(false);
+    this.bakeryHourHandSprite = hourSprite;
+    this.bakeryRuntimeObjects.push(hourSprite);
+
+    const triggerLeft = visual.pivot.x
+      + (visual.sourceInteractionBounds.x - visual.sourcePivot.x) * visual.uniformScale;
+    const triggerTop = visual.pivot.y
+      + (visual.sourceInteractionBounds.y - visual.sourcePivot.y) * visual.uniformScale;
+    const triggerWidth = visual.sourceInteractionBounds.width * visual.uniformScale;
+    const triggerHeight = visual.sourceInteractionBounds.height * visual.uniformScale;
+    const hourTrigger = this.add.rectangle(
+      floor.offsetX + triggerLeft + triggerWidth / 2,
+      triggerTop + triggerHeight / 2,
+      triggerWidth,
+      triggerHeight,
+      0xffffff,
+      0.001
+    ).setDepth(PLAYER_DEPTH_BASE + visual.pivot.y + 3).setVisible(false);
+    this.bakeryRuntimeTargets.set(hourDefinition.targetId, {
+      targetId: hourDefinition.targetId,
+      entityId: hourDefinition.entityId,
+      boundsObject: hourTrigger
+    });
+    this.bakeryRuntimeObjects.push(hourTrigger);
+
+    this.bakeryHourHandGlint = this.add.circle(
+      floor.offsetX + rectCenterX(hourDefinition.installationBounds),
+      rectCenterY(hourDefinition.installationBounds),
+      9,
+      0xfff3a8,
+      0.2
+    ).setStrokeStyle(2, 0xfff3a8, 0.9)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(hourDefinition.installationBounds) + 3)
+      .setVisible(false);
+    this.bakeryRuntimeObjects.push(this.bakeryHourHandGlint);
+    this.bakeryHourHandGlintTween = this.tweens.add({
+      targets: this.bakeryHourHandGlint,
+      alpha: { from: 0.18, to: 0.92 },
+      scale: { from: 0.82, to: 1.22 },
+      duration: 520,
+      yoyo: true,
+      repeat: -1,
+      paused: true,
+      ease: "Sine.InOut"
+    });
+
+    this.bakeryConveyorGlint = this.add.rectangle(
+      floor.offsetX + conveyorDefinition.installationBounds.x + 2,
+      rectCenterY(conveyorDefinition.installationBounds),
+      3,
+      Math.max(5, conveyorDefinition.installationBounds.height - 4),
+      0xeaf7ff,
+      0.78
+    ).setDepth(PLAYER_DEPTH_BASE + rectBottom(conveyorDefinition.installationBounds));
+    this.bakeryRuntimeObjects.push(this.bakeryConveyorGlint);
+    this.bakeryConveyorTween = this.tweens.add({
+      targets: this.bakeryConveyorGlint,
+      x: floor.offsetX + rectRight(conveyorDefinition.installationBounds) - 2,
+      duration: 430,
+      repeat: -1,
+      ease: "Linear"
+    });
+
+    const baker = BAKERY_RUNTIME.baker;
+    this.bakeryBaker = this.add.sprite(
+      floor.offsetX + baker.position.x,
+      baker.position.y,
+      BAKERY_COUNTER_BAKER_TEXTURE,
+      baker.frames[0]
+    ).setOrigin(baker.origin.x, baker.origin.y)
+      .setScale(baker.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + baker.position.y);
+    this.bakeryBaker.play(BAKERY_COUNTER_BAKER_ANIMATION, true);
+    this.bakeryRuntimeObjects.push(this.bakeryBaker);
+
+    const crowdSprites: Phaser.Physics.Arcade.Sprite[] = [];
+    for (const route of BAKERY_RUNTIME.crowd.routes) {
+      const sprite = this.physics.add.sprite(
+        floor.offsetX + route.from.x,
+        route.from.y,
+        BAKERY_RUNTIME.crowd.texture,
+        0
+      ).setOrigin(
+        BAKERY_RUNTIME.crowd.origin.x,
+        BAKERY_RUNTIME.crowd.origin.y
+      ).setScale(BAKERY_RUNTIME.crowd.displayScale)
+        .setDepth(PLAYER_DEPTH_BASE + route.from.y);
+      const body = sprite.body as Phaser.Physics.Arcade.Body;
+      body.setAllowGravity(false).setImmovable(true);
+      body.pushable = false;
+      body.setSize(
+        LAYOUT.playerFootBoxContract.sourceFootBox.width,
+        LAYOUT.playerFootBoxContract.sourceFootBox.height
+      ).setOffset(
+        LAYOUT.playerFootBoxContract.sourceFootBox.x,
+        LAYOUT.playerFootBoxContract.sourceFootBox.y
+      );
+      sprite.setFlipX(route.to.x < route.from.x).play("student_walk", true);
+      const duration = Math.round(
+        Phaser.Math.Distance.Between(route.from.x, route.from.y, route.to.x, route.to.y)
+        / route.speed * 1000
+      );
+      const tween = this.tweens.add({
+        targets: sprite,
+        x: floor.offsetX + route.to.x,
+        y: route.to.y,
+        duration,
+        yoyo: true,
+        repeat: -1,
+        hold: route.endpointPauseMs,
+        repeatDelay: route.endpointPauseMs,
+        ease: "Linear",
+        onYoyo: () => sprite.setFlipX(!sprite.flipX),
+        onRepeat: () => sprite.setFlipX(!sprite.flipX),
+        onUpdate: () => sprite.setDepth(PLAYER_DEPTH_BASE + sprite.y)
+      });
+      this.bakeryCrowdActors.push({ sprite, tween });
+      this.bakeryRuntimeObjects.push(sprite);
+      crowdSprites.push(sprite);
+    }
+    this.bakeryCrowdCollider = this.physics.add.collider(this.player, crowdSprites);
+    this.bakeryRuntimeSignature = `${BAKERY_RUNTIME.storyFloor}:${BAKERY_RUNTIME.statePlateId}`;
+    this.validateBakeryRuntimeBounds();
+  }
+
+  private validateBakeryRuntimeBounds(): void {
+    for (const definition of BAKERY_RUNTIME.targetEntities) {
+      const binding = this.bakeryRuntimeTargets.get(definition.targetId);
+      const bounds = binding ? this.outwardBakeryRuntimeBounds(binding) : null;
+      if (!bounds
+        || bounds.x !== definition.installationBounds.x
+        || bounds.y !== definition.installationBounds.y
+        || bounds.width !== definition.installationBounds.width
+        || bounds.height !== definition.installationBounds.height) {
+        this.persistentContractFailures.add(
+          `bakery_runtime_bounds:${definition.targetId}:${JSON.stringify(bounds)}`
+        );
+      }
+    }
+  }
+
+  private outwardBakeryRuntimeBounds(binding: BakeryRuntimeTargetBinding): MapRect | null {
+    if (!binding.boundsObject.active) return null;
+    const floor = getFloor(1);
+    const bounds = binding.boundsObject.getBounds();
+    const left = Math.floor(bounds.left - floor.offsetX);
+    const top = Math.floor(bounds.top);
+    const right = Math.ceil(bounds.right - floor.offsetX);
+    const bottom = Math.ceil(bounds.bottom);
+    const result = { x: left, y: top, width: right - left, height: bottom - top };
+    return rectInsideFloor(result) ? result : null;
+  }
+
+  private paintBakeryInspectionLamp(lit: boolean): void {
+    const lamp = this.bakeryRuntimeTargets.get("a1_bakery_inspection_lamp")?.boundsObject;
+    if (!(lamp instanceof Phaser.GameObjects.Rectangle)) return;
+    lamp.setFillStyle(lit ? 0xffd66b : 0x4d4330, lit ? 0.72 : 0.34)
+      .setStrokeStyle(2, lit ? 0xfff1a8 : 0x907b53, 0.92);
+  }
+
+  private pauseBakeryActivity(): void {
+    this.bakeryConveyorTween?.pause();
+    this.bakeryConveyorGlint?.setVisible(false);
+    this.bakeryBaker?.anims.pause();
+    for (const actor of this.bakeryCrowdActors) {
+      actor.tween.pause();
+      actor.sprite.anims.pause();
+      actor.sprite.setVelocity(0, 0);
+    }
+  }
+
+  private resumeBakeryActivity(): void {
+    if (this.bakeryConveyorTween) {
+      this.bakeryConveyorTween.timeScale = 1;
+      this.bakeryConveyorTween.resume();
+    }
+    this.bakeryConveyorGlint?.setVisible(true);
+    this.bakeryBaker?.anims.resume();
+    for (const actor of this.bakeryCrowdActors) {
+      actor.tween.resume();
+      actor.sprite.anims.resume();
+    }
+  }
+
+  private revealBakeryHourHand(visible: boolean): void {
+    this.bakeryHourHandSprite?.setVisible(visible);
+    const trigger = this.bakeryRuntimeTargets.get("a1_bakery_hour_hand_pickup")?.boundsObject;
+    trigger?.setVisible(visible);
+    this.bakeryHourHandGlint?.setVisible(visible);
+    if (visible) this.bakeryHourHandGlintTween?.resume();
+    else this.bakeryHourHandGlintTween?.pause();
+  }
+
+  private rollbackBakeryConveyorStopToCommittedState(
+    feedback: string,
+    scheduleRetry = true
+  ): void {
+    this.clearStoryPresentationTimers();
+    const committed = selectChapterFour755BakeryCommittedRuntimeState(this.bridge.getState());
+    this.paintBakeryInspectionLamp(committed.lampLit);
+    if (committed.conveyorStopped || committed.crowdPaused) this.pauseBakeryActivity();
+    else this.resumeBakeryActivity();
+    this.revealBakeryHourHand(committed.hourHandVisible && committed.glintVisible);
+    this.storyPresentation = "idle";
+    this.storyRetryNotBeforeMs = scheduleRetry && committed.retryStopHandshake
+      ? this.time.now + STORY_RETRY_DELAY_MS
+      : 0;
+    if (feedback) {
+      this.persistentContractFailures.add(`bakery_recovery:${feedback}`);
+      this.showFeedback("进度已恢复，请重试当前操作。");
+    }
+    this.syncStoryInputLock();
+  }
+
+  private destroyBakeryRuntime(reason: string): void {
+    this.bakeryCrowdCollider?.destroy();
+    this.bakeryCrowdCollider = null;
+    this.bakeryConveyorTween?.remove();
+    this.bakeryConveyorTween = null;
+    this.bakeryHourHandGlintTween?.remove();
+    this.bakeryHourHandGlintTween = null;
+    for (const actor of this.bakeryCrowdActors) actor.tween.remove();
+    this.bakeryCrowdActors = [];
+    for (const object of this.bakeryRuntimeObjects) {
+      if (object.active) object.destroy();
+    }
+    this.bakeryRuntimeObjects = [];
+    this.bakeryRuntimeTargets.clear();
+    this.bakeryBaker = null;
+    this.bakeryConveyorGlint = null;
+    this.bakeryHourHandSprite = null;
+    this.bakeryHourHandGlint = null;
+    this.bakeryRuntimeSignature = "";
+    this.bakeryApproachCueSignature = "";
+    if (reason === "plate_or_phase_change" && this.storyPresentation === "bakery_conveyor_stop") {
+      this.clearStoryPresentationTimers();
+      this.storyPresentation = "idle";
+      this.syncStoryInputLock();
+    }
+  }
+
+  private createRoom204Runtime(): void {
+    this.destroyRoom204Runtime("runtime_recreate");
+    const floor = getFloor(2);
+    this.room204ObstacleGroup = this.physics.add.staticGroup();
+    this.room204ObstacleCollider = this.physics.add.collider(this.player, this.room204ObstacleGroup);
+    for (const pieceId of ROOM204_PIECE_ORDER) {
+      const binding = ROOM204_PIECE_FRAME_BINDINGS[pieceId];
+      const desk = this.createRoom204FurnitureEntity(binding.deskFrame);
+      const chair = this.createRoom204FurnitureEntity(binding.chairFrame);
+      if (!desk || !chair) {
+        this.persistentContractFailures.add(`room204_piece_frame_missing:${pieceId}`);
+        continue;
+      }
+      this.room204RuntimePieces.set(pieceId, {
+        pieceId,
+        deskSprite: desk.sprite,
+        chairSprite: chair.sprite,
+        deskObstacle: desk.obstacle,
+        chairObstacle: chair.obstacle
+      });
+    }
+    for (const tableLayout of ROOM204_DISCUSSION_TABLES) {
+      const table = this.createRoom204FurnitureEntity(tableLayout.frame);
+      if (!table) {
+        this.persistentContractFailures.add(`room204_group_table_frame_missing:${tableLayout.id}`);
+        continue;
+      }
+      this.layoutRoom204FurnitureEntity(
+        table.sprite,
+        table.obstacle,
+        tableLayout.frame,
+        tableLayout.position,
+        tableLayout.angle,
+        true
+      );
+      this.room204DiscussionTables.push({
+        id: tableLayout.id,
+        pieceIds: tableLayout.pieceIds,
+        sprite: table.sprite,
+        obstacle: table.obstacle
+      });
+    }
+    const podium = this.createRoom204FurnitureEntity(ROOM204_PODIUM_LAYOUT.frame);
+    if (podium) {
+      this.layoutRoom204FurnitureEntity(
+        podium.sprite,
+        podium.obstacle,
+        ROOM204_PODIUM_LAYOUT.frame,
+        ROOM204_PODIUM_LAYOUT.position,
+        0,
+        true
+      );
+      this.room204PodiumSprite = podium.sprite;
+      this.room204PodiumObstacle = podium.obstacle;
+    } else {
+      this.persistentContractFailures.add("room204_podium_frame_missing");
+    }
+    for (const [index, pieceId] of ROOM204_PIECE_ORDER.entries()) {
+      const binding = ROOM204_PIECE_FRAME_BINDINGS[pieceId];
+      const residualFrame = getChapterFour755ManifestFrame(
+        "chapter4_room204_residual",
+        binding.residualFrame
+      );
+      if (!residualFrame?.pivot) {
+        this.persistentContractFailures.add(`room204_residual_frame_missing:${pieceId}`);
+        continue;
+      }
+      const slotId = ROOM204_SLOT_ORDER[index] as ChapterFourRoom204SlotId;
+      const slot = ROOM204_SLOT_CENTERS[slotId];
+      const residual = this.add.sprite(
+        floor.offsetX + slot.x,
+        slot.y,
+        "chapter4_room204_residual",
+        binding.residualFrame
+      ).setOrigin(
+        (residualFrame.pivot.x - residualFrame.sourceRect.x) / residualFrame.sourceRect.width,
+        (residualFrame.pivot.y - residualFrame.sourceRect.y) / residualFrame.sourceRect.height
+      ).setScale(ROOM204_FURNITURE_SCALE)
+        .setAlpha(0.88)
+        .setTint(0x78dfff)
+        .setDepth(PLAYER_DEPTH_BASE - 200)
+        .setVisible(false);
+      this.room204ResidualSprites.push(residual);
+    }
+    for (const slotId of ROOM204_SLOT_ORDER) {
+      const bounds = ROOM204_SLOT_LAYOUTS[slotId].bounds;
+      const zone = this.createRoom204RuntimeTargetZone(
+        `a2_room204_slot_${slotId}`,
+        room204SlotRuntimeEntityId(slotId),
+        bounds
+      );
+      this.room204SlotBoundsObjects.set(slotId, zone);
+    }
+    this.createRoom204RuntimeTargetZone(
+      "a2_room204_residual_group",
+      ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID,
+      ROOM204_RESIDUAL_GROUP_BOUNDS
+    );
+    this.createRoom204RuntimeTargetZone(
+      "a2_room204_podium_drawer",
+      ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
+      ROOM204_PODIUM_LAYOUT.drawerBounds
+    );
+  }
+
+  private createRoom204RuntimeTargetZone(
+    targetId: string,
+    entityId: string,
+    bounds: Readonly<MapRect>
+  ): Phaser.GameObjects.Zone {
+    const floor = getFloor(2);
+    const zone = this.add.zone(
+      floor.offsetX + rectCenterX(bounds),
+      rectCenterY(bounds),
+      bounds.width,
+      bounds.height
+    ).setVisible(true);
+    this.room204RuntimeTargets.set(targetId, { targetId, entityId, boundsObject: zone });
+    const measured = this.outwardRoom204Bounds(zone);
+    if (!measured
+      || measured.x !== bounds.x
+      || measured.y !== bounds.y
+      || measured.width !== bounds.width
+      || measured.height !== bounds.height) {
+      this.persistentContractFailures.add(
+        `room204_runtime_bounds:${targetId}:${JSON.stringify(measured)}`
+      );
+    }
+    return zone;
+  }
+
+  private createRoom204FurnitureEntity(frameId: string): {
+    sprite: Phaser.GameObjects.Sprite;
+    obstacle: Phaser.GameObjects.Zone;
+  } | null {
+    const frame = getChapterFour755ManifestFrame("chapter4_room204_furniture", frameId);
+    if (!frame?.pivot || !frame.collisionBounds?.[0]?.bounds) return null;
+    const sprite = this.add.sprite(0, 0, "chapter4_room204_furniture", frameId)
+      .setOrigin(
+        (frame.pivot.x - frame.sourceRect.x) / frame.sourceRect.width,
+        (frame.pivot.y - frame.sourceRect.y) / frame.sourceRect.height
+      )
+      .setScale(ROOM204_FURNITURE_SCALE)
+      .setVisible(false);
+    const obstacle = this.add.zone(0, 0, 1, 1).setVisible(false).setActive(false);
+    this.physics.add.existing(obstacle, true);
+    this.room204ObstacleGroup?.add(obstacle);
+    return { sprite, obstacle };
+  }
+
+  private layoutRoom204FurnitureEntity(
+    sprite: Phaser.GameObjects.Sprite,
+    obstacle: Phaser.GameObjects.Zone,
+    frameId: string,
+    point: Readonly<{ x: number; y: number }>,
+    angle: number,
+    visible: boolean
+  ): void {
+    const floor = getFloor(2);
+    const frame = getChapterFour755ManifestFrame("chapter4_room204_furniture", frameId);
+    const collision = frame?.collisionBounds?.[0]?.bounds;
+    if (!frame?.pivot || !collision) {
+      this.persistentContractFailures.add(`room204_collision_frame_missing:${frameId}`);
+      this.setRoom204ObstacleEnabled(obstacle, false);
+      sprite.setVisible(false);
+      return;
+    }
+    sprite
+      .setPosition(floor.offsetX + point.x, point.y)
+      .setAngle(angle)
+      .setDepth(PLAYER_DEPTH_BASE + point.y + 1)
+      .setVisible(visible);
+    const radians = Phaser.Math.DegToRad(angle);
+    const localCenterX = (collision.x + collision.width / 2 - frame.pivot.x)
+      * ROOM204_FURNITURE_SCALE;
+    const localCenterY = (collision.y + collision.height / 2 - frame.pivot.y)
+      * ROOM204_FURNITURE_SCALE;
+    const cos = Math.cos(radians);
+    const sin = Math.sin(radians);
+    const rotatedCenterX = localCenterX * cos - localCenterY * sin;
+    const rotatedCenterY = localCenterX * sin + localCenterY * cos;
+    const sourceWidth = collision.width * ROOM204_FURNITURE_SCALE;
+    const sourceHeight = collision.height * ROOM204_FURNITURE_SCALE;
+    const width = Math.abs(sourceWidth * cos) + Math.abs(sourceHeight * sin);
+    const height = Math.abs(sourceWidth * sin) + Math.abs(sourceHeight * cos);
+    obstacle.setPosition(
+      floor.offsetX + point.x + rotatedCenterX,
+      point.y + rotatedCenterY
+    ).setSize(width, height);
+    const body = obstacle.body as Phaser.Physics.Arcade.StaticBody | undefined;
+    if (body) {
+      body.setSize(width, height);
+      body.enable = visible;
+      body.updateFromGameObject();
+    }
+    obstacle.setActive(visible);
+  }
+
+  private setRoom204ObstacleEnabled(obstacle: Phaser.GameObjects.Zone, enabled: boolean): void {
+    const body = obstacle.body as Phaser.Physics.Arcade.StaticBody | undefined;
+    if (body) {
+      body.enable = enabled;
+      body.updateFromGameObject();
+    }
+    obstacle.setActive(enabled);
+  }
+
+  private outwardRoom204Bounds(object: Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.GetBounds): MapRect | null {
+    if (!object.active) return null;
+    const floor = getFloor(2);
+    const bounds = object.getBounds();
+    const left = Math.floor(bounds.left - floor.offsetX);
+    const top = Math.floor(bounds.top);
+    const right = Math.ceil(bounds.right - floor.offsetX);
+    const bottom = Math.ceil(bounds.bottom);
+    const result = { x: left, y: top, width: right - left, height: bottom - top };
+    return rectInsideFloor(result) ? result : null;
+  }
+
+  private syncRoom204Runtime(state: GameState): void {
+    if (state.chapter4.phase !== "room204_restore") {
+      if (this.room204RuntimePieces.size > 0
+        || this.room204ResidualSprites.length > 0
+        || this.room204RuntimeTargets.size > 0) {
+        this.destroyRoom204Runtime("phase_change");
+      }
+      return;
+    }
+    if (this.room204RuntimePieces.size === 0) this.createRoom204Runtime();
+    if (this.currentFloor !== 2) this.room204SelectedPieceId = null;
+    if (this.room204SelectedPieceId
+      && findRoom204PlacementForPiece(state.chapter4.room204Placements, this.room204SelectedPieceId)) {
+      this.room204SelectedPieceId = null;
+    }
+    const pieceVisible = this.currentFloor === 2;
+    const residualVisible = pieceVisible
+      && (state.chapter4.mode === "dark" || this.storyPresentation === "room204_projection")
+      && hasChapterFourFact(state, "a3_reference_observed");
+    this.room204ResidualSprites.forEach((sprite) => sprite.setVisible(residualVisible));
+    for (const pieceId of ROOM204_PIECE_ORDER) {
+      const runtimePiece = this.room204RuntimePieces.get(pieceId);
+      if (!runtimePiece) continue;
+      const placement = findRoom204PlacementForPiece(state.chapter4.room204Placements, pieceId);
+      const point = placement ? ROOM204_SLOT_CENTERS[placement.slotId] : ROOM204_INITIAL_PIECE_POSITIONS[pieceId];
+      this.layoutRoom204Piece(
+        runtimePiece,
+        point,
+        pieceVisible && this.room204SelectedPieceId !== pieceId,
+        placement !== null
+      );
+    }
+    for (const table of this.room204DiscussionTables) {
+      const tableLayout = ROOM204_DISCUSSION_TABLES.find((entry) => entry.id === table.id);
+      if (!tableLayout) continue;
+      const visible = pieceVisible && table.pieceIds.some((pieceId) => (
+        !findRoom204PlacementForPiece(state.chapter4.room204Placements, pieceId)
+      ));
+      this.layoutRoom204FurnitureEntity(
+        table.sprite,
+        table.obstacle,
+        tableLayout.frame,
+        tableLayout.position,
+        tableLayout.angle,
+        visible
+      );
+    }
+    if (this.room204PodiumSprite && this.room204PodiumObstacle) {
+      this.layoutRoom204FurnitureEntity(
+        this.room204PodiumSprite,
+        this.room204PodiumObstacle,
+        ROOM204_PODIUM_LAYOUT.frame,
+        ROOM204_PODIUM_LAYOUT.position,
+        0,
+        pieceVisible
+      );
+    }
+    this.updateRoom204CarryGhost();
+  }
+
+  private layoutRoom204Piece(
+    runtimePiece: Room204RuntimePiece,
+    point: { x: number; y: number },
+    visible: boolean,
+    placed: boolean
+  ): void {
+    const binding = ROOM204_PIECE_FRAME_BINDINGS[runtimePiece.pieceId];
+    const initial = ROOM204_INITIAL_PIECE_LAYOUTS[runtimePiece.pieceId];
+    this.layoutRoom204FurnitureEntity(
+      runtimePiece.deskSprite,
+      runtimePiece.deskObstacle,
+      binding.deskFrame,
+      { x: point.x + ROOM204_PAIR_OFFSETS.desk.x, y: point.y + ROOM204_PAIR_OFFSETS.desk.y },
+      placed ? 0 : initial.angle,
+      visible && placed
+    );
+    this.layoutRoom204FurnitureEntity(
+      runtimePiece.chairSprite,
+      runtimePiece.chairObstacle,
+      binding.chairFrame,
+      { x: point.x + ROOM204_PAIR_OFFSETS.chair.x, y: point.y + ROOM204_PAIR_OFFSETS.chair.y },
+      placed ? 0 : initial.angle,
+      visible
+    );
+  }
+
+  private updateRoom204CarryGhost(): void {
+    if (!this.room204SelectedPieceId || this.currentFloor !== 2) {
+      this.room204CarryGhost?.setVisible(false);
+      return;
+    }
+    const binding = ROOM204_PIECE_FRAME_BINDINGS[this.room204SelectedPieceId];
+    if (!this.room204CarryGhost || this.room204CarryGhost.frame.name !== binding.deskFrame) {
+      this.room204CarryGhost?.destroy();
+      this.room204CarryGhost = this.add.sprite(
+        this.player.x,
+        this.player.y - 20,
+        "chapter4_room204_furniture",
+        binding.deskFrame
+      ).setOrigin(0.5, 1)
+        .setScale(ROOM204_FURNITURE_SCALE * 0.86)
+        .setAlpha(0.86);
+    }
+    this.room204CarryGhost
+      .setPosition(this.player.x, this.player.y - 18)
+      .setDepth(PLAYER_DEPTH_BASE + this.player.y + 28)
+      .setVisible(true);
+  }
+
+  private resolveNearbyRoom204PieceId(): ChapterFourRoom204PieceId | null {
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "room204_restore"
+      || this.currentFloor !== 2
+      || this.room204SelectedPieceId) return null;
+    const floor = getFloor(2);
+    const foot = this.playerFootPoint(floor);
+    const localPlayer = { x: foot.x, y: foot.y };
+    let best: { pieceId: ChapterFourRoom204PieceId; distance: number } | null = null;
+    for (const pieceId of ROOM204_PIECE_ORDER) {
+      if (findRoom204PlacementForPiece(state.chapter4.room204Placements, pieceId)) continue;
+      const runtimePiece = this.room204RuntimePieces.get(pieceId);
+      if (!runtimePiece?.chairSprite.visible) continue;
+      const measured = this.outwardRoom204Bounds(runtimePiece.chairSprite);
+      if (!measured) continue;
+      const rect = measured;
+      const distance = pointDistanceToRect(localPlayer, rect);
+      if (distance > 56) continue;
+      if (!best || distance < best.distance) best = { pieceId, distance };
+    }
+    return best?.pieceId ?? null;
+  }
+
+  private selectRoom204Piece(pieceId: ChapterFourRoom204PieceId): void {
+    this.room204SelectedPieceId = pieceId;
+    this.updateRoom204CarryGhost();
+  }
+
+  private destroyRoom204Runtime(reason: string): void {
+    this.room204SelectedPieceId = null;
+    this.nearbyRoom204PieceId = null;
+    this.room204CarryGhost?.destroy();
+    this.room204CarryGhost = null;
+    this.room204ObstacleCollider?.destroy();
+    this.room204ObstacleCollider = null;
+    if (this.room204ObstacleGroup) {
+      this.destroyObstacleGroup(this.room204ObstacleGroup, `room204_${reason}`);
+      this.room204ObstacleGroup = null;
+    }
+    for (const runtimePiece of this.room204RuntimePieces.values()) {
+      runtimePiece.deskSprite.destroy();
+      runtimePiece.chairSprite.destroy();
+    }
+    this.room204RuntimePieces.clear();
+    for (const table of this.room204DiscussionTables) table.sprite.destroy();
+    this.room204DiscussionTables = [];
+    this.room204PodiumSprite?.destroy();
+    this.room204PodiumSprite = null;
+    this.room204PodiumObstacle = null;
+    for (const zone of new Set(
+      [...this.room204RuntimeTargets.values()].map((binding) => binding.boundsObject)
+    )) zone.destroy();
+    this.room204RuntimeTargets.clear();
+    this.room204SlotBoundsObjects.clear();
+    for (const sprite of this.room204ResidualSprites) sprite.destroy();
+    this.room204ResidualSprites = [];
+    this.destroyRoom204ProjectionOverlay();
+  }
+
+  private syncPhaseRuntime(state: GameState): void {
+    if (state.chapter4.phase === "maintenance_repair") {
+      this.ensureMaintenanceRuntime(state);
+    }
+    else if (this.hasPhaseRuntimeTargets(MAINTENANCE_RUNTIME_TARGET_IDS)) {
+      this.destroyPhaseRuntime("maintenance_phase_change");
+    }
+
+    const finalClockAvailable = (
+      state.chapter4.phase === "maintenance_repair"
+        && hasChapterFourFact(state, "clock_gear_repaired")
+    ) || (
+      state.chapter4.phase === "return_to_clock"
+        && state.chapter4.floor === "A1"
+        && hasChapterFourFact(state, "final_minute_recovered")
+        && !hasChapterFourFact(state, "final_minute_installed")
+        && state.items.finalMinute
+    );
+    if (finalClockAvailable) this.ensureFinalClockRuntime(state);
+    else this.destroyFinalClockRuntime("final_clock_unavailable");
+
+    if (state.chapter4.phase === "blackout_light_grid" || state.chapter4.phase === "final_chase") {
+      this.ensureLightGridRuntime(state);
+    } else {
+      this.destroyLightGridRuntime("phase_change");
+    }
+
+    if (state.chapter4.phase === "morning_checkin") this.ensureMorningCheckinRuntime(state);
+    else if (this.hasPhaseRuntimeTargets(MORNING_CHECKIN_RUNTIME_TARGET_IDS)) {
+      this.destroyPhaseRuntime("checkin_phase_change");
+    }
+
+    this.ensureFinalChaseRuntime(state);
+    if (state.chapter4.phase === "final_minute_recovery") {
+      this.ensureRoom202RecoveryBarrier();
+      this.ensureFinalMinuteRuntime(state);
+    } else {
+      this.destroyRoom202RecoveryBarrier("phase_change");
+      this.destroyFinalMinuteRuntime("phase_change");
+    }
+  }
+
+  private hasPhaseRuntimeTargets(targetIds: readonly string[]): boolean {
+    return targetIds.some((targetId) => this.phaseRuntimeTargets.has(targetId));
+  }
+
+  private ensureMaintenanceRuntime(state: GameState): void {
+    const created = !this.hasPhaseRuntimeTargets(MAINTENANCE_RUNTIME_TARGET_IDS);
+    if (created) {
+      this.createMaintenanceRuntime();
+    }
+    const wheelInspected = hasChapterFourFact(state, "cart_wheel_inspected");
+    const coverOpened = hasChapterFourFact(state, "cart_wheel_cover_opened");
+    const wheelRepaired = hasChapterFourFact(state, "cart_wheel_repaired");
+    const gearRepaired = hasChapterFourFact(state, "clock_gear_repaired");
+    this.setPhaseRuntimeTargetVisible(
+      "a1_cleaning_cart_wheel_inspection",
+      !wheelInspected && !coverOpened && !wheelRepaired && !gearRepaired
+    );
+    this.setPhaseRuntimeTargetVisible(
+      "a1_bakery_back_pry_bar",
+      !state.items.shortPryBar && !coverOpened
+    );
+    this.setPhaseRuntimeTargetVisible(
+      "a1_cleaning_cart_wheel_cover",
+      wheelInspected && !coverOpened
+    );
+    this.setPhaseRuntimeTargetVisible(
+      "a1_cleaning_cart_oil_bottle",
+      coverOpened
+        && !state.items.universalLubricatingOil
+        && !gearRepaired
+    );
+    this.setPhaseRuntimeTargetVisible(
+      "a1_cleaning_cart_wheel",
+      coverOpened && !wheelRepaired
+    );
+    this.setPhaseRuntimeTargetVisible(
+      "a1_hall_clock_gear",
+      wheelRepaired && !gearRepaired
+    );
+    this.maintenancePryBar?.setVisible(!state.items.shortPryBar && !coverOpened);
+    this.maintenanceOilBottle?.setVisible(
+      coverOpened && !state.items.universalLubricatingOil && !gearRepaired
+    );
+    if (this.maintenanceCoverVisual) {
+      this.maintenanceCoverVisual
+        .setVisible(!wheelRepaired)
+        .setAngle(coverOpened ? -42 : 0)
+        .setFillStyle(coverOpened ? 0x8295a8 : 0x44505c, coverOpened ? 0.54 : 0.82);
+    }
+    try {
+      this.ensureHallClockStateSprite(gearRepaired ? "gear_running" : "gear_stuttering");
+    } catch (error) {
+      this.persistentContractFailures.add(`maintenance_clock_gear_visual:${errorMessage(error)}`);
+    }
+    if (wheelRepaired) this.startOrRestoreMaintenancePush(!created);
+  }
+
+  private createMaintenanceRuntime(): void {
+    this.destroyPhaseRuntime("maintenance_runtime_recreate");
+    const floor = getFloor(1);
+    const targetById = new Map(
+      MAINTENANCE_RUNTIME.targetEntities.map((entry) => [entry.targetId, entry])
+    );
+    const pryDefinition = targetById.get("a1_bakery_back_pry_bar");
+    const oilDefinition = targetById.get("a1_cleaning_cart_oil_bottle");
+    const inspectionDefinition = targetById.get("a1_cleaning_cart_wheel_inspection");
+    const coverDefinition = targetById.get("a1_cleaning_cart_wheel_cover");
+    const wheelDefinition = targetById.get("a1_cleaning_cart_wheel");
+    const gearDefinition = targetById.get("a1_hall_clock_gear");
+    if (!pryDefinition || !oilDefinition || !inspectionDefinition
+      || !coverDefinition || !wheelDefinition || !gearDefinition) {
+      this.persistentContractFailures.add("maintenance_runtime_definition_missing");
+      return;
+    }
+
+    const pry = MAINTENANCE_RUNTIME.pryBar;
+    this.maintenancePryBar = this.add.sprite(
+      floor.offsetX + pry.pivot.x,
+      pry.pivot.y,
+      "chapter4_story_items",
+      pry.frame
+    ).setScale(pry.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + pry.pivot.y + 3);
+    this.phaseRuntimeObjects.push(this.maintenancePryBar);
+    const pryBounds = this.deriveStoryItemManifestInteractionBounds(
+      this.maintenancePryBar,
+      pryDefinition
+    );
+    if (pryBounds) this.createMaintenanceTargetZone(pryDefinition, pryBounds);
+
+    if (oilDefinition?.pivot && oilDefinition.frame && oilDefinition.uniformScale) {
+      this.maintenanceOilBottle = this.add.sprite(
+        floor.offsetX + oilDefinition.pivot.x,
+        oilDefinition.pivot.y,
+        "chapter4_story_items",
+        oilDefinition.frame
+      ).setScale(oilDefinition.uniformScale)
+        .setDepth(PLAYER_DEPTH_BASE + oilDefinition.pivot.y + 5)
+        .setVisible(true);
+      this.phaseRuntimeObjects.push(this.maintenanceOilBottle);
+      const oilBounds = this.deriveStoryItemManifestInteractionBounds(
+        this.maintenanceOilBottle,
+        oilDefinition
+      );
+      if (oilBounds) this.createMaintenanceTargetZone(oilDefinition, oilBounds);
+    } else {
+      this.persistentContractFailures.add("maintenance_oil_visual_definition_missing");
+    }
+
+    const cart = MAINTENANCE_RUNTIME.cleaningCart;
+    this.maintenanceCart = this.physics.add.sprite(
+      floor.offsetX + cart.position.x,
+      cart.position.y,
+      cart.texture,
+      0
+    ).setOrigin(0.5, 1)
+      .setScale(cart.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + cart.position.y);
+    this.configureMaintenanceFootBody(
+      this.maintenanceCart,
+      cart.position,
+      cart.footBounds,
+      cart.uniformScale,
+      144,
+      128
+    );
+    this.phaseRuntimeObjects.push(this.maintenanceCart);
+    const wheelBounds = this.deriveVisibleFrameLocalBounds(
+      this.maintenanceCart,
+      cart.wheelRegion.sourceFrameSize,
+      cart.wheelRegion.bounds
+    );
+    for (const definition of [inspectionDefinition, coverDefinition, wheelDefinition]) {
+      if (definition.boundsDerivation.kind !== "visible_cleaning_cart_frame_local_region") {
+        this.persistentContractFailures.add(
+          `maintenance_cart_derivation_kind:${definition.targetId}`
+        );
+        continue;
+      }
+      if (wheelBounds) this.createMaintenanceTargetZone(definition, wheelBounds);
+    }
+
+    const cleaner = MAINTENANCE_RUNTIME.cleaner;
+    this.maintenanceCleaner = this.physics.add.sprite(
+      floor.offsetX + cleaner.position.x,
+      cleaner.position.y,
+      cleaner.animationId,
+      0
+    ).setOrigin(0.5, 1)
+      .setScale(cleaner.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + cleaner.position.y);
+    this.maintenanceCleaner.play(cleaner.animationId, true);
+    this.configureMaintenanceFootBody(
+      this.maintenanceCleaner,
+      cleaner.position,
+      cleaner.footBounds,
+      cleaner.uniformScale,
+      96,
+      128
+    );
+    this.phaseRuntimeObjects.push(this.maintenanceCleaner);
+    this.maintenanceObstacleCollider = this.physics.add.collider(
+      this.player,
+      [this.maintenanceCart, this.maintenanceCleaner]
+    );
+
+    if (wheelBounds) {
+      this.maintenanceCoverVisual = this.add.rectangle(
+        floor.offsetX + wheelBounds.x,
+        wheelBounds.y + wheelBounds.height / 2,
+        wheelBounds.width,
+        Math.max(5, wheelBounds.height * 0.42),
+        0x44505c,
+        0.82
+      ).setOrigin(0.08, 0.5)
+        .setDepth(PLAYER_DEPTH_BASE + wheelBounds.y + wheelBounds.height + 6)
+        .setStrokeStyle(1, 0xb9c4cf, 0.76);
+      this.phaseRuntimeObjects.push(this.maintenanceCoverVisual);
+    }
+
+    try {
+      this.ensureHallClockStateSprite(gearDefinition.frameBefore ?? "gear_stuttering");
+      const gearBounds = this.deriveClockManifestInteractionBounds(
+        this.hallClockStateSprite,
+        gearDefinition
+      );
+      if (gearBounds) this.createMaintenanceTargetZone(gearDefinition, gearBounds);
+    } catch (error) {
+      this.persistentContractFailures.add(`maintenance_gear_target:${errorMessage(error)}`);
+    }
+
+    this.createMaintenanceGuardRuntime();
+    this.maintenanceSignature = `${MAINTENANCE_RUNTIME.storyFloor}:${MAINTENANCE_RUNTIME.statePlateId}`;
+    this.validateMaintenanceRuntimeBounds();
+  }
+
+  private createMaintenanceTargetZone(
+    definition: MaintenanceRuntimeTargetDefinition,
+    derivedBounds: MapRect
+  ): Phaser.GameObjects.Zone {
+    const floor = getFloor(1);
+    const zone = this.add.zone(
+      floor.offsetX + derivedBounds.x + derivedBounds.width / 2,
+      derivedBounds.y + derivedBounds.height / 2,
+      derivedBounds.width,
+      derivedBounds.height
+    ).setDepth(PLAYER_DEPTH_BASE + derivedBounds.y + derivedBounds.height + 4);
+    this.phaseRuntimeTargets.set(definition.targetId, {
+      targetId: definition.targetId,
+      entityId: definition.entityId,
+      floor: 1,
+      boundsObject: zone
+    });
+    this.phaseRuntimeObjects.push(zone);
+    return zone;
+  }
+
+  private deriveStoryItemManifestInteractionBounds(
+    sprite: Phaser.GameObjects.Sprite,
+    definition: MaintenanceRuntimeTargetDefinition
+  ): MapRect | null {
+    const derivation = definition.boundsDerivation;
+    if (derivation.kind !== "visible_story_item_manifest_interaction"
+      || !definition.frame
+      || sprite.texture.key !== derivation.spritesheetId
+      || String(sprite.frame.name) !== definition.frame
+      || Math.abs(sprite.scaleX - sprite.scaleY) > 0.000001
+      || sprite.scaleX <= 0) {
+      this.persistentContractFailures.add(
+        `maintenance_story_item_derivation:${definition.targetId}`
+      );
+      return null;
+    }
+    const frame = getChapterFour755ManifestFrame(derivation.spritesheetId, definition.frame);
+    const interaction = frame?.interactionBounds?.find((candidate) => (
+      candidate.id === derivation.interactionId
+      && candidate.coordinateSpace === "source_sheet"
+    ));
+    if (!frame?.pivot || !interaction) {
+      this.persistentContractFailures.add(
+        `maintenance_story_item_manifest_interaction:${definition.targetId}`
+      );
+      return null;
+    }
+    const floor = getFloor(1);
+    return {
+      x: sprite.x - floor.offsetX
+        + (interaction.bounds.x - frame.pivot.x) * sprite.scaleX,
+      y: sprite.y + (interaction.bounds.y - frame.pivot.y) * sprite.scaleY,
+      width: interaction.bounds.width * sprite.scaleX,
+      height: interaction.bounds.height * sprite.scaleY
+    };
+  }
+
+  private deriveVisibleFrameLocalBounds(
+    sprite: Phaser.GameObjects.Sprite,
+    sourceFrameSize: { width: number; height: number },
+    sourceLocalBounds: MapRect
+  ): MapRect | null {
+    if (Math.abs(sprite.scaleX - sprite.scaleY) > 0.000001
+      || sprite.scaleX <= 0
+      || sprite.frame.realWidth !== sourceFrameSize.width
+      || sprite.frame.realHeight !== sourceFrameSize.height) {
+      this.persistentContractFailures.add("maintenance_cart_frame_local_transform");
+      return null;
+    }
+    const floor = getFloor(1);
+    return {
+      x: sprite.x - floor.offsetX
+        + (sourceLocalBounds.x - sourceFrameSize.width * sprite.originX) * sprite.scaleX,
+      y: sprite.y
+        + (sourceLocalBounds.y - sourceFrameSize.height * sprite.originY) * sprite.scaleY,
+      width: sourceLocalBounds.width * sprite.scaleX,
+      height: sourceLocalBounds.height * sprite.scaleY
+    };
+  }
+
+  private deriveClockManifestInteractionBounds(
+    sprite: Phaser.GameObjects.Sprite | null,
+    definition: MaintenanceRuntimeTargetDefinition
+  ): MapRect | null {
+    const derivation = definition.boundsDerivation;
+    if (!sprite
+      || derivation.kind !== "visible_clock_frame_manifest_world_interaction"
+      || sprite.texture.key !== derivation.spritesheetId) {
+      this.persistentContractFailures.add("maintenance_clock_visible_frame_missing");
+      return null;
+    }
+    const frameName = String(sprite.frame.name);
+    if (frameName !== definition.frameBefore && frameName !== definition.frameAfter) {
+      this.persistentContractFailures.add(`maintenance_clock_visible_frame:${frameName}`);
+      return null;
+    }
+    const frame = getChapterFour755ManifestFrame(derivation.spritesheetId, frameName);
+    const interactions = frame?.interactionBounds as ReadonlyArray<{
+      id: string;
+      floor?: StoryFloor;
+      coordinateSpace: "source_sheet" | "world";
+      bounds: MapRect;
+    }> | undefined;
+    const interaction = interactions?.find((candidate) => (
+      candidate.id === derivation.interactionId
+      && candidate.floor === derivation.floor
+      && candidate.coordinateSpace === "world"
+    ));
+    if (!interaction) {
+      this.persistentContractFailures.add(`maintenance_clock_manifest_interaction:${frameName}`);
+      return null;
+    }
+    return { ...interaction.bounds };
+  }
+
+  private configureMaintenanceFootBody(
+    sprite: Phaser.Physics.Arcade.Sprite,
+    localPosition: { x: number; y: number },
+    localFootBounds: MapRect,
+    scale: number,
+    sourceWidth: number,
+    sourceHeight: number
+  ): void {
+    const body = sprite.body as Phaser.Physics.Arcade.Body;
+    const sourceLeft = localPosition.x - sourceWidth * scale / 2;
+    const sourceTop = localPosition.y - sourceHeight * scale;
+    body.setAllowGravity(false).setImmovable(true);
+    body.pushable = false;
+    body.setSize(localFootBounds.width / scale, localFootBounds.height / scale)
+      .setOffset(
+        (localFootBounds.x - sourceLeft) / scale,
+        (localFootBounds.y - sourceTop) / scale
+      );
+  }
+
+  private validateMaintenanceRuntimeBounds(): void {
+    for (const definition of MAINTENANCE_RUNTIME.targetEntities) {
+      const binding = this.phaseRuntimeTargets.get(definition.targetId);
+      const bounds = binding ? this.outwardPhaseRuntimeBounds(binding) : null;
+      if (!bounds
+        || bounds.x !== definition.installationBounds.x
+        || bounds.y !== definition.installationBounds.y
+        || bounds.width !== definition.installationBounds.width
+        || bounds.height !== definition.installationBounds.height) {
+        this.persistentContractFailures.add(
+          `maintenance_runtime_bounds:${definition.targetId}:${JSON.stringify(bounds)}`
+        );
+      }
+    }
+  }
+
+  private startOrRestoreMaintenancePush(animate: boolean): void {
+    if (!this.maintenanceCleaner || this.maintenancePushCompleted || this.maintenancePushTween) return;
+    this.maintenanceObstacleCollider?.destroy();
+    this.maintenanceObstacleCollider = null;
+    if (this.maintenanceCart) {
+      this.maintenanceCart.disableBody(false, true);
+      this.maintenanceCart.destroy();
+      this.maintenanceCart = null;
+    }
+    this.maintenanceCleaner.disableBody(false, false);
+    this.maintenanceCleaner
+      .setTexture(MAINTENANCE_RUNTIME.repairedPush.animationId, 0)
+      .setPosition(
+        getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.from.x,
+        MAINTENANCE_RUNTIME.repairedPush.from.y
+      )
+      .setVisible(true);
+    if (!animate) {
+      this.maintenanceCleaner
+        .setPosition(
+          getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.to.x,
+          MAINTENANCE_RUNTIME.repairedPush.to.y
+        )
+        .setDepth(PLAYER_DEPTH_BASE + MAINTENANCE_RUNTIME.repairedPush.to.y)
+        .stop();
+      this.maintenancePushCompleted = true;
+      return;
+    }
+    this.maintenanceCleaner.play(MAINTENANCE_RUNTIME.repairedPush.animationId, true);
+    this.safeBridgeEmit("maintenance_cart_roll_started", {
+      phase: "maintenance_repair",
+      durationMs: MAINTENANCE_RUNTIME.repairedPush.durationMs
+    });
+    this.maintenancePushTween = this.tweens.add({
+      targets: this.maintenanceCleaner,
+      x: getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.to.x,
+      y: MAINTENANCE_RUNTIME.repairedPush.to.y,
+      duration: MAINTENANCE_RUNTIME.repairedPush.durationMs,
+      ease: "Sine.InOut",
+      onUpdate: () => {
+        this.maintenanceCleaner?.setDepth(PLAYER_DEPTH_BASE + (this.maintenanceCleaner?.y ?? 0));
+      },
+      onComplete: () => {
+        this.maintenancePushTween = null;
+        this.maintenancePushCompleted = true;
+        this.maintenanceCleaner?.stop();
+      }
+    });
+  }
+
+  private createMaintenanceGuardRuntime(): void {
+    const floor = getFloor(1);
+    const guard = MAINTENANCE_RUNTIME.guard;
+    this.maintenanceGuardState = createChapterFourMaintenanceGuardState();
+    this.maintenanceGuard = this.physics.add.sprite(
+      floor.offsetX + guard.position.x,
+      guard.position.y,
+      guard.animationId,
+      0
+    ).setOrigin(0.5, 1)
+      .setScale(guard.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + guard.position.y);
+    this.maintenanceGuard.play(guard.animationId, true);
+    const body = this.maintenanceGuard.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(false).setImmovable(false);
+    body.pushable = false;
+    const sourceWidth = 96;
+    const sourceHeight = 128;
+    const sourceFootWidth = guard.footBox.width / guard.uniformScale;
+    const sourceFootHeight = guard.footBox.height / guard.uniformScale;
+    body.setSize(sourceFootWidth, sourceFootHeight).setOffset(
+      (sourceWidth - sourceFootWidth) / 2,
+      sourceHeight - sourceFootHeight
+    );
+    this.positionMaintenanceGuardFoot(guard.position);
+    this.maintenanceGuardWallCollider = this.physics.add.collider(
+      this.maintenanceGuard,
+      this.staticObstacles
+    );
+    this.maintenanceGuardPlayerOverlap = this.physics.add.overlap(
+      this.player,
+      this.maintenanceGuard,
+      () => this.tryMaintenancePatrolCapture()
+    );
+    this.maintenanceGuardVision = this.add.graphics().setDepth(PLAYER_DEPTH_BASE - 240);
+    this.maintenanceGuardAlert = this.add.text(
+      this.maintenanceGuard.x,
+      this.maintenanceGuard.y - 92,
+      "!",
+      {
+        fontFamily: "'Fusion Pixel', monospace",
+        fontSize: "24px",
+        color: "#ffef8a",
+        stroke: "#5b1b1b",
+        strokeThickness: 4
+      }
+    ).setOrigin(0.5).setDepth(PLAYER_DEPTH_BASE + guard.position.y + 90).setVisible(false);
+    this.phaseRuntimeObjects.push(
+      this.maintenanceGuard,
+      this.maintenanceGuardVision,
+      this.maintenanceGuardAlert
+    );
+  }
+
+  private updateMaintenanceGuard(deltaMs: number): void {
+    const state = this.bridge?.getState();
+    if (!state
+      || state.chapter4.phase !== "maintenance_repair"
+      || state.chapter4.guardMode !== "patrol"
+      || !this.maintenanceGuard
+      || !this.maintenanceGuardState) return;
+    const visible = this.currentFloor === 1;
+    this.maintenanceGuard.setVisible(visible);
+    this.maintenanceGuardVision?.setVisible(visible);
+    this.maintenanceGuardAlert?.setVisible(
+      visible && this.maintenanceGuardState.mode === "confirming"
+    );
+    if (!visible || this.pendingStoryRequest?.intentType === "recover_from_maintenance_patrol") {
+      this.maintenanceGuard.setVelocity(0, 0);
+      return;
+    }
+    const floor = getFloor(1);
+    const playerFoot = this.playerFootPoint(floor);
+    const guardFoot = this.maintenanceGuardFootPoint(floor);
+    if (!guardFoot) {
+      this.maintenanceGuard.setVelocity(0, 0);
+      return;
+    }
+    const next = stepChapterFourMaintenanceGuard(this.maintenanceGuardState, {
+      deltaMs,
+      guardPosition: { x: guardFoot.x, y: guardFoot.y },
+      playerPosition: { x: playerFoot.x, y: playerFoot.y },
+      walls: getFloor(1).staticCollisions
+    });
+    this.maintenanceGuardState = {
+      ...next.state,
+      position: { x: guardFoot.x, y: guardFoot.y }
+    };
+    if (next.enteredPursuit) {
+      this.safeBridgeEmit("maintenance_patrol_warning", {
+        phase: state.chapter4.phase,
+        floor: "A1",
+        guardMode: next.state.mode
+      });
+    }
+    this.maintenanceGuard
+      .setVelocity(next.desiredVelocity.x, next.desiredVelocity.y)
+      .setFlipX(next.state.heading.x < 0)
+      .setDepth(PLAYER_DEPTH_BASE + guardFoot.y + 2);
+    if (Math.hypot(next.desiredVelocity.x, next.desiredVelocity.y) > 0.001) {
+      this.maintenanceGuard.play("guard_walk", true);
+    } else {
+      this.maintenanceGuard.stop();
+    }
+    this.paintMaintenanceGuardVision(next.playerVisible);
+    this.maintenanceGuardAlert
+      ?.setPosition(this.maintenanceGuard.x, this.maintenanceGuard.y - 92)
+      .setDepth(PLAYER_DEPTH_BASE + this.maintenanceGuard.y + 90)
+      .setVisible(next.state.mode === "confirming");
+    this.tryMaintenancePatrolCapture();
+  }
+
+  private paintMaintenanceGuardVision(playerVisible: boolean): void {
+    const graphics = this.maintenanceGuardVision;
+    const state = this.maintenanceGuardState;
+    if (!graphics || !state) return;
+    const floor = getFloor(1);
+    const x = floor.offsetX + state.position.x;
+    const y = state.position.y;
+    const headingAngle = Math.atan2(state.heading.y, state.heading.x);
+    const halfAngle = CHAPTER_FOUR_MAINTENANCE_GUARD_RULES.coneHalfAngleDegrees * Math.PI / 180;
+    const color = state.mode === "pursuit"
+      ? 0xff3e4d
+      : state.mode === "confirming"
+        ? 0xff8d52
+        : 0xffc857;
+    graphics.clear();
+    graphics.fillStyle(color, state.mode === "pursuit" ? 0.24 : 0.16);
+    graphics.beginPath();
+    graphics.moveTo(x, y);
+    graphics.arc(
+      x,
+      y,
+      CHAPTER_FOUR_MAINTENANCE_GUARD_RULES.coneRange,
+      headingAngle - halfAngle,
+      headingAngle + halfAngle,
+      false
+    );
+    graphics.closePath();
+    graphics.fillPath();
+    graphics.fillStyle(color, playerVisible ? 0.26 : 0.14);
+    graphics.fillCircle(x, y, CHAPTER_FOUR_MAINTENANCE_GUARD_RULES.closeRadius);
+  }
+
+  private tryMaintenancePatrolCapture(): void {
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "maintenance_repair"
+      || state.chapter4.guardMode !== "patrol"
+      || this.maintenanceGuardState?.mode !== "pursuit"
+      || this.pendingStoryRequest
+      || this.time.now < this.storyRetryNotBeforeMs
+      || !this.maintenanceGuard) return;
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const guardBody = this.maintenanceGuard.body as Phaser.Physics.Arcade.Body | undefined;
+    if (!playerBody || !guardBody) return;
+    const floor = getFloor(1);
+    if (!chapterFourGuardFootContact({
+      x: guardBody.center.x - floor.offsetX,
+      y: guardBody.center.y
+    }, {
+      x: playerBody.left - floor.offsetX,
+      y: playerBody.top,
+      width: playerBody.width,
+      height: playerBody.height
+    })) return;
+    this.requestStoryIntent({ type: "recover_from_maintenance_patrol" });
+  }
+
+  private resetMaintenanceGuardAfterRecovery(): void {
+    const floor = getFloor(1);
+    this.maintenanceGuardState = createChapterFourMaintenanceGuardRecoveryState();
+    this.positionMaintenanceGuardFoot(this.maintenanceGuardState.position);
+    this.maintenanceGuard?.setVelocity(0, 0).setFlipX(false);
+    this.maintenanceGuardAlert?.setVisible(false);
+    this.player.setPosition(floor.offsetX + 836, 716)
+      .setVelocity(0, 0)
+      .setDepth(PLAYER_DEPTH_BASE + 716);
+    this.animator.setFacing("up");
+    this.cameras.main.centerOn(this.player.x, this.player.y);
+    this.paintMaintenanceGuardVision(false);
+  }
+
+  private maintenanceGuardFootPoint(
+    floor: FloorDefinition
+  ): { x: number; y: number; worldX: number } | null {
+    const body = this.maintenanceGuard?.body as Phaser.Physics.Arcade.Body | undefined;
+    if (!body) return null;
+    return {
+      x: body.center.x - floor.offsetX,
+      y: body.center.y,
+      worldX: body.center.x
+    };
+  }
+
+  /** Spawn/recovery-only placement; ordinary updates are owned by Arcade velocity and collision. */
+  private positionMaintenanceGuardFoot(position: { x: number; y: number }): void {
+    if (!this.maintenanceGuard) return;
+    const floor = getFloor(1);
+    this.maintenanceGuard.setPosition(
+      floor.offsetX + position.x,
+      position.y + MAINTENANCE_RUNTIME.guard.footBox.height / 2
+    );
+    (this.maintenanceGuard.body as Phaser.Physics.Arcade.Body | undefined)
+      ?.updateFromGameObject();
+  }
+
+  private ensureMorningCheckinRuntime(state: GameState): void {
+    if (!this.hasPhaseRuntimeTargets(MORNING_CHECKIN_RUNTIME_TARGET_IDS)) {
+      this.destroyPhaseRuntime("checkin_runtime_recreate");
+      this.createMorningCheckinRuntimeTarget(
+        "a1_campus_card_reader",
+        0x16394a,
+        0x7ce9ff,
+        "校园卡"
+      );
+      this.createMorningCheckinRuntimeTarget(
+        "a1_attendance_paper_slot",
+        0x493917,
+        0xffd36f,
+        "纸条"
+      );
+    }
+    const cardAccepted = state.chapter4.checkinCardAccepted
+      || hasChapterFourFact(state, "checkin_card_accepted");
+    const paperAccepted = state.chapter4.checkinPaperAccepted
+      || hasChapterFourFact(state, "checkin_paper_accepted");
+    this.setPhaseRuntimeTargetVisible("a1_campus_card_reader", !cardAccepted);
+    this.setPhaseRuntimeTargetVisible("a1_attendance_paper_slot", !paperAccepted);
+    const cardVisual = this.morningCheckinVisuals.get("a1_campus_card_reader");
+    cardVisual?.fixture.setFillStyle(cardAccepted ? 0x294037 : 0x16394a, 0.96);
+    cardVisual?.label.setText(cardAccepted ? "已刷卡" : "校园卡");
+    const paperVisual = this.morningCheckinVisuals.get("a1_attendance_paper_slot");
+    paperVisual?.fixture.setFillStyle(paperAccepted ? 0x403929 : 0x493917, 0.96);
+    paperVisual?.label.setText(paperAccepted ? "已签到" : "纸条");
+  }
+
+  private createMorningCheckinRuntimeTarget(
+    targetId: string,
+    fillColor: number,
+    strokeColor: number,
+    labelText: string
+  ): Phaser.GameObjects.Zone | null {
+    const installation = getChapterFour755RuntimeTargetInstallation(
+      targetId as keyof typeof CHAPTER_FOUR_755_INTERACTION_TARGETS
+    );
+    const target = CHAPTER_FOUR_755_INTERACTION_TARGETS[
+      targetId as keyof typeof CHAPTER_FOUR_755_INTERACTION_TARGETS
+    ];
+    const layoutTarget = MORNING_CHECKIN_RUNTIME.targetEntities.find(
+      (entry) => entry.targetId === targetId
+    );
+    const floor = installation ? displayFloorFor(target?.boundsSource.floor ?? "") : null;
+    if (!installation
+      || !layoutTarget
+      || installation.entityId !== layoutTarget.entityId
+      || !rectEquals(installation.bounds, layoutTarget.installationBounds)
+      || !floor) {
+      this.persistentContractFailures.add(`phase_runtime_installation_missing:${targetId}`);
+      return null;
+    }
+    const bounds = installation.bounds;
+    const fixture = this.add.rectangle(
+      getFloor(floor).offsetX + rectCenterX(bounds),
+      rectCenterY(bounds),
+      bounds.width,
+      bounds.height,
+      fillColor,
+      0.96
+    ).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 6)
+      .setStrokeStyle(2, strokeColor, 0.96)
+      .setVisible(true);
+    const measured = fixture.getBounds();
+    const derived = {
+      x: Math.floor(measured.left - getFloor(floor).offsetX),
+      y: Math.floor(measured.top),
+      width: Math.ceil(measured.right - getFloor(floor).offsetX)
+        - Math.floor(measured.left - getFloor(floor).offsetX),
+      height: Math.ceil(measured.bottom) - Math.floor(measured.top)
+    };
+    if (!rectEquals(derived, bounds)) {
+      fixture.destroy();
+      this.persistentContractFailures.add(
+        `morning_checkin_visible_bounds:${targetId}:${JSON.stringify(derived)}`
+      );
+      return null;
+    }
+    const label = this.add.text(
+      getFloor(floor).offsetX + rectCenterX(derived),
+      derived.y - 8,
+      labelText,
+      {
+        fontFamily: "'Fusion Pixel', monospace",
+        fontSize: "8px",
+        color: "#f7f1dc",
+        backgroundColor: "#07111dcc",
+        padding: { x: 2, y: 1 }
+      }
+    ).setOrigin(0.5, 1)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 7);
+    const zone = this.add.zone(
+      getFloor(floor).offsetX + rectCenterX(derived),
+      rectCenterY(derived),
+      derived.width,
+      derived.height
+    );
+    const zoneBounds = zone.getBounds();
+    const measuredZone = {
+      x: Math.floor(zoneBounds.left - getFloor(floor).offsetX),
+      y: Math.floor(zoneBounds.top),
+      width: Math.ceil(zoneBounds.right - getFloor(floor).offsetX)
+        - Math.floor(zoneBounds.left - getFloor(floor).offsetX),
+      height: Math.ceil(zoneBounds.bottom) - Math.floor(zoneBounds.top)
+    };
+    if (!rectEquals(measuredZone, bounds)) {
+      fixture.destroy();
+      label.destroy();
+      zone.destroy();
+      this.persistentContractFailures.add(
+        `morning_checkin_zone_bounds:${targetId}:${JSON.stringify(measuredZone)}`
+      );
+      return null;
+    }
+    this.phaseRuntimeTargets.set(targetId, {
+      targetId,
+      entityId: installation.entityId,
+      floor,
+      boundsObject: zone
+    });
+    this.phaseRuntimeObjects.push(fixture, label, zone);
+    this.morningCheckinVisuals.set(targetId, { fixture, label });
+    return zone;
+  }
+
+  private createPhaseDecorationRect(
+    floorNumber: DisplayFloor,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    fillColor: number,
+    fillAlpha: number,
+    strokeColor: number
+  ): void {
+    const floor = getFloor(floorNumber);
+    const rectangle = this.add.rectangle(
+      floor.offsetX + x + width / 2,
+      y + height / 2,
+      width,
+      height,
+      fillColor,
+      fillAlpha
+    ).setDepth(PLAYER_DEPTH_BASE + y + height + 2)
+      .setStrokeStyle(1, strokeColor, 0.76);
+    this.phaseRuntimeObjects.push(rectangle);
+  }
+
+  private setPhaseRuntimeTargetVisible(targetId: string, visible: boolean): void {
+    this.phaseRuntimeTargets.get(targetId)?.boundsObject.setVisible(visible);
+  }
+
+  private outwardPhaseRuntimeBounds(binding: PhaseRuntimeTargetBinding): MapRect | null {
+    if (!binding.boundsObject.active || !binding.boundsObject.visible) return null;
+    const floor = getFloor(binding.floor);
+    const bounds = binding.boundsObject.getBounds();
+    const left = Math.floor(bounds.left - floor.offsetX);
+    const top = Math.floor(bounds.top);
+    const right = Math.ceil(bounds.right - floor.offsetX);
+    const bottom = Math.ceil(bounds.bottom);
+    const result = { x: left, y: top, width: right - left, height: bottom - top };
+    return rectInsideFloor(result) ? result : null;
+  }
+
+  private destroyPhaseRuntime(reason: string): void {
+    this.destroyTask11Runtime(reason);
+    this.maintenancePushTween?.stop();
+    this.maintenancePushTween = null;
+    this.maintenanceObstacleCollider?.destroy();
+    this.maintenanceObstacleCollider = null;
+    this.maintenanceGuardWallCollider?.destroy();
+    this.maintenanceGuardWallCollider = null;
+    this.maintenanceGuardPlayerOverlap?.destroy();
+    this.maintenanceGuardPlayerOverlap = null;
+    for (const object of this.phaseRuntimeObjects) {
+      if (object.active) object.destroy();
+    }
+    this.phaseRuntimeObjects = [];
+    this.phaseRuntimeTargets.clear();
+    this.morningCheckinVisuals.clear();
+    this.maintenanceSignature = "";
+    this.maintenanceCart = null;
+    this.maintenanceCleaner = null;
+    this.maintenancePryBar = null;
+    this.maintenanceOilBottle = null;
+    this.maintenanceCoverVisual = null;
+    this.maintenanceObstacleGroup = null;
+    this.maintenancePushCompleted = false;
+    this.maintenanceGuardState = null;
+    this.maintenanceGuard = null;
+    this.maintenanceGuardVision = null;
+    this.maintenanceGuardAlert = null;
+    this.persistentContractFailures.delete(`phase_runtime_cleanup:${reason}`);
+  }
+
+  private ensureFinalChaseRuntime(state: GameState): void {
+    if (state.chapter4.phase !== "final_chase") {
+      this.destroyChaseRuntime();
+      return;
+    }
+    if (this.finalChaseState?.attempt === state.chapter4.chaseAttempt && this.chaseGuard?.active) {
+      return;
+    }
+    // A new runtime is created only from committed persistent state. Failed
+    // or stale intent responses therefore cannot move either actor.
+    this.destroyChaseRuntime();
+    this.finalChaseState = createChapterFourFinalChaseState(state.chapter4.chaseAttempt);
+    const floor = getFloor(1);
+    this.currentFloor = 1;
+    this.player.setPosition(
+      floor.offsetX + FINAL_CHASE_RUNTIME.playerStart.x,
+      FINAL_CHASE_RUNTIME.playerStart.y
+    ).setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + FINAL_CHASE_RUNTIME.playerStart.y);
+    this.animator.setFacing("up");
+    this.configureCameraForCurrentFloor();
+    this.cameras.main.centerOn(this.player.x, this.player.y);
+
+    this.chaseGuard = this.physics.add.sprite(
+      floor.offsetX + FINAL_CHASE_RUNTIME.guardSpawn.x,
+      FINAL_CHASE_RUNTIME.guardSpawn.y,
+      "guard_walk",
+      0
+    ).setOrigin(0.5, 1)
+      .setScale(0.68)
+      .setDepth(PLAYER_DEPTH_BASE + FINAL_CHASE_RUNTIME.guardSpawn.y + 2)
+      .setVisible(false);
+    this.chaseGuard.play("guard_walk", true);
+    const body = this.chaseGuard.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(false).setImmovable(false);
+    body.pushable = false;
+    body.setSize(
+      LAYOUT.playerFootBoxContract.sourceFootBox.width,
+      LAYOUT.playerFootBoxContract.sourceFootBox.height
+    ).setOffset(
+      LAYOUT.playerFootBoxContract.sourceFootBox.x,
+      LAYOUT.playerFootBoxContract.sourceFootBox.y
+    );
+    this.chaseGuardStaticCollider = this.physics.add.collider(this.chaseGuard, this.staticObstacles);
+    this.chaseGuardPlateCollider = this.physics.add.collider(this.chaseGuard, this.plateObstacles);
+  }
+
+  private updateFinalChaseRuntime(deltaMs: number): void {
+    const committed = this.bridge?.getState();
+    const runtime = this.finalChaseState;
+    const guard = this.chaseGuard;
+    if (!committed || committed.chapter4.phase !== "final_chase" || !runtime || !guard) return;
+    const playerFloorNumber = this.currentFloor === 2 ? 2 : 1;
+    const playerFloor = getFloor(playerFloorNumber);
+    const guardFloorNumber: DisplayFloor = runtime.guardFloor === "A2" ? 2 : 1;
+    const guardFloor = getFloor(guardFloorNumber);
+    const playerFoot = this.playerFootPoint(playerFloor);
+    const guardBody = guard.body as Phaser.Physics.Arcade.Body;
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+    const sameFloor = playerFloorNumber === guardFloorNumber;
+    const guardContact = sameFloor && chapterFourFinalChaseFootContact(
+      {
+        x: guardBody.center.x - guardFloor.offsetX,
+        y: guardBody.center.y
+      },
+      {
+        x: playerBody.x - playerFloor.offsetX,
+        y: playerBody.y,
+        width: playerBody.width,
+        height: playerBody.height
+      }
+    );
+    const playerInsideFinish = playerFloorNumber === 2
+      && pointInsideRect({ x: playerFoot.x, y: playerFoot.y }, FINAL_CHASE_RUNTIME.finishThreshold.bounds);
+    this.finalChaseInsideFinish = playerInsideFinish;
+    this.finalChaseContact = guardContact;
+    const a1Stair = getFloor(1).stairLandings.find((landing) => landing.targetStoryFloor === "A2");
+    const playerEnteredMainStair = playerFloorNumber === 1
+      && Boolean(a1Stair && pointInsideRect({ x: playerFoot.x, y: playerFoot.y }, a1Stair.bounds));
+    const committedStoryFloor: StoryFloor = committed.chapter4.floor === "A2" ? "A2" : "A1";
+    const expectedPlate = committedStoryFloor === "A2" ? "a2_0754_chase" : "a1_0754_blackout";
+    const committedAndApplied = this.projection.phase === "final_chase"
+      && this.projectionSignature === this.pendingProjectionSignature
+      && displayFloorFor(committed.chapter4.floor) === this.currentFloor
+      && this.appliedPlateIds[committedStoryFloor] === expectedPlate;
+    const step = stepChapterFourFinalChase(runtime, {
+      deltaMs,
+      committedAndApplied,
+      floor: playerFloorNumber === 2 ? "A2" : "A1",
+      playerPosition: { x: playerFoot.x, y: playerFoot.y },
+      guardPosition: {
+        x: guardBody.center.x - guardFloor.offsetX,
+        y: guardBody.center.y
+      },
+      playerInsideFinish,
+      playerEnteredMainStair,
+      guardContact
+    });
+    this.finalChaseState = step.state;
+    this.finalChaseStep = step;
+    if (step.guardPortalArrival) {
+      const arrivalFloor = getFloor(2);
+      guard.setPosition(
+        arrivalFloor.offsetX + FINAL_CHASE_RUNTIME.waypoints.find(
+          (entry) => entry.id === "a2_main_stair_arrival"
+        )!.x,
+        CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.y
+      );
+    }
+    const activeGuardFloor: DisplayFloor = step.state.guardFloor === "A2" ? 2 : 1;
+    const visible = step.guardVisible && this.currentFloor === activeGuardFloor;
+    guard.setVisible(visible);
+    if (visible) {
+      guard.setVelocity(step.desiredGuardVelocity.x, step.desiredGuardVelocity.y)
+        .setFlipX(step.desiredGuardVelocity.x < 0)
+        .setDepth(PLAYER_DEPTH_BASE + guard.y + 2);
+    } else {
+      guard.setVelocity(0, 0);
+    }
+
+    if (step.portalRequested && !this.pendingMove && !this.pendingStoryRequest) {
+      this.requestMove(2, "stair");
+      return;
+    }
+    if (step.finishRequested && !this.pendingStoryRequest) {
+      this.requestStoryIntent({
+        type: "reach_202_threshold",
+        targetId: FINAL_CHASE_RUNTIME.finishThreshold.targetId,
+        expectedAttempt: committed.chapter4.chaseAttempt,
+        spatial: { distance: "within_range" }
+      }, FINAL_CHASE_RUNTIME.finishThreshold.targetId);
+      return;
+    }
+    if (step.failureRequested && !this.pendingStoryRequest) {
+      this.requestStoryIntent({
+        type: "fail_chase",
+        expectedAttempt: committed.chapter4.chaseAttempt
+      });
+    }
+  }
+
+  private ensureRoom202RecoveryBarrier(): void {
+    if (this.room202DoorBarrier?.active) return;
+    const floor = getFloor(2);
+    const bounds = FINAL_CHASE_RUNTIME.room202Door.barrierBounds;
+    const zone = this.add.zone(
+      floor.offsetX + rectCenterX(bounds),
+      rectCenterY(bounds),
+      bounds.width,
+      bounds.height
+    );
+    this.physics.add.existing(zone, true);
+    this.room202DoorBarrier = zone;
+    this.room202DoorCollider = this.physics.add.collider(this.player, zone);
+    this.room202DoorVisual = this.add.rectangle(
+      floor.offsetX + rectCenterX(bounds),
+      rectCenterY(bounds),
+      bounds.width,
+      bounds.height,
+      0x17202b,
+      0.94
+    ).setStrokeStyle(2, 0x82a9bd, 0.9)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 3);
+    this.room202DoorLabel = this.add.text(
+      floor.offsetX + rectCenterX(bounds),
+      bounds.y - 8,
+      "202 门已关闭",
+      {
+        fontFamily: "'Fusion Pixel', monospace",
+        fontSize: "12px",
+        color: "#d9edf2",
+        stroke: "#07111d",
+        strokeThickness: 3
+      }
+    ).setOrigin(0.5, 1).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 4);
+  }
+
+  private ensureFinalMinuteRuntime(state: GameState): void {
+    if (hasChapterFourFact(state, "final_minute_recovered") || state.items.finalMinute) {
+      this.destroyFinalMinuteRuntime("already_recovered");
+      return;
+    }
+    if (this.finalMinuteSprite?.active && this.finalMinuteTargetZone?.active) return;
+    this.destroyFinalMinuteRuntime("recreate");
+    const floor = getFloor(2);
+    const sprite = this.add.sprite(
+      floor.offsetX + FINAL_MINUTE_RUNTIME.pivot.x,
+      FINAL_MINUTE_RUNTIME.pivot.y,
+      FINAL_MINUTE_RUNTIME.texture,
+      FINAL_MINUTE_RUNTIME.frame
+    ).setScale(FINAL_MINUTE_RUNTIME.uniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + FINAL_MINUTE_RUNTIME.pivot.y + 6);
+    this.finalMinuteSprite = sprite;
+    const measured = sprite.getBounds();
+    const derived = {
+      x: Math.floor(measured.left - floor.offsetX),
+      y: Math.floor(measured.top),
+      width: Math.ceil(measured.right - floor.offsetX) - Math.floor(measured.left - floor.offsetX),
+      height: Math.ceil(measured.bottom) - Math.floor(measured.top)
+    };
+    if (!rectEquals(derived, FINAL_MINUTE_RUNTIME.installationBounds)) {
+      this.persistentContractFailures.add(`final_minute_get_bounds:${JSON.stringify(derived)}`);
+      sprite.destroy();
+      this.finalMinuteSprite = null;
+      return;
+    }
+    const zone = this.add.zone(
+      floor.offsetX + rectCenterX(derived),
+      rectCenterY(derived),
+      derived.width,
+      derived.height
+    ).setDepth(PLAYER_DEPTH_BASE + rectBottom(derived) + 7);
+    this.finalMinuteTargetZone = zone;
+    this.phaseRuntimeTargets.set(FINAL_MINUTE_RUNTIME.targetId, {
+      targetId: FINAL_MINUTE_RUNTIME.targetId,
+      entityId: FINAL_MINUTE_RUNTIME.entityId,
+      floor: 2,
+      boundsObject: zone
+    });
+  }
+
+  private destroyFinalMinuteRuntime(_reason: string): void {
+    this.phaseRuntimeTargets.delete(FINAL_MINUTE_RUNTIME.targetId);
+    this.finalMinuteTargetZone?.destroy();
+    this.finalMinuteTargetZone = null;
+    this.finalMinuteSprite?.destroy();
+    this.finalMinuteSprite = null;
+  }
+
+  private destroyRoom202RecoveryBarrier(_reason: string): void {
+    this.room202DoorCollider?.destroy();
+    this.room202DoorCollider = null;
+    this.room202DoorBarrier?.destroy();
+    this.room202DoorBarrier = null;
+    this.room202DoorVisual?.destroy();
+    this.room202DoorVisual = null;
+    this.room202DoorLabel?.destroy();
+    this.room202DoorLabel = null;
+  }
+
+  private destroyChaseRuntime(): void {
+    this.chaseGuardStaticCollider?.destroy();
+    this.chaseGuardStaticCollider = null;
+    this.chaseGuardPlateCollider?.destroy();
+    this.chaseGuardPlateCollider = null;
+    this.chaseGuard?.destroy();
+    this.chaseGuard = null;
+    this.finalChaseState = null;
+    this.finalChaseStep = null;
+    this.finalChaseInsideFinish = false;
+    this.finalChaseContact = false;
+  }
+
+  private destroyTask12Runtime(reason: string): void {
+    this.destroyChaseRuntime();
+    this.destroyFinalMinuteRuntime(reason);
+    this.destroyRoom202RecoveryBarrier(reason);
+  }
+
+  private syncPhaseSideEffects(): void {
+    if (this.storyPresentation === "minute_theft") return;
+    const state = this.bridge.getState();
+    const signature = [
+      state.chapter4.phase,
+      state.chapter4.timeState,
+      state.chapter4.floor,
+      state.chapter4.checkinCardAccepted ? 1 : 0,
+      state.chapter4.checkinPaperAccepted ? 1 : 0
+    ].join(":");
+    if (signature === this.lastPhaseSignature) return;
+    this.lastPhaseSignature = signature;
+    switch (state.chapter4.phase) {
+      case "maintenance_repair":
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "它没坏，只是不肯走。",
+          tone: "system",
+          durationMs: 2600
+        });
+        break;
+      case "blackout_light_grid":
+        if (hasChapterFourFact(state, "paper_temporarily_out_of_inventory")) {
+          this.safeBridgeEmit("rpg_subtitle", {
+            text: "走廊只剩能走的那几盏。",
+            tone: "system",
+            durationMs: 2600
+          });
+        }
+        break;
+      case "final_chase":
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "同学，站住。清楼流程启动。",
+          tone: "system",
+          speaker: "保安",
+          durationMs: 2200
+        });
+        break;
+      case "final_minute_recovery":
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "阶梯教室门已经关上，最后一分钟留在投影里。",
+          tone: "system",
+          durationMs: 2400
+        });
+        break;
+      case "morning_checkin":
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "07:55 已经回到门厅。",
+          tone: "system",
+          durationMs: 2400
+        });
+        break;
+      case "exterior_closure":
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "外面亮了一下。",
+          tone: "system",
+          durationMs: 2200
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  private syncRoom204ProjectionPresentation(): void {
+    const state = this.bridge.getState();
+    if (hasChapterFourFact(state, "room204_projection_completed")) {
+      if (this.storyPresentation !== "room204_projection") {
+        this.destroyRoom204ProjectionOverlay();
+      }
+      return;
+    }
+    if (this.pendingStoryRequest
+      || this.storyPresentation !== "idle"
+      || this.time.now < this.storyRetryNotBeforeMs
+      || state.chapter4.phase !== "room204_restore"
+      || this.currentFloor !== 2
+      || !hasChapterFourFact(state, "a3_reference_observed")
+      || !hasChapterFourFact(state, "room204_residual_observed")
+      || !hasChapterFourFact(state, "room204_restored")
+      || !isRoom204PlacementSetComplete(state.chapter4.room204Placements)) return;
+    this.beginRoom204ProjectionPresentation();
+  }
+
+  private beginRoom204ProjectionPresentation(): void {
+    if (this.storyPresentation !== "idle" || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "room204_restore"
+      || this.currentFloor !== 2
+      || !hasChapterFourFact(state, "a3_reference_observed")
+      || !hasChapterFourFact(state, "room204_residual_observed")
+      || !hasChapterFourFact(state, "room204_restored")
+      || hasChapterFourFact(state, "room204_projection_completed")
+      || !isRoom204PlacementSetComplete(state.chapter4.room204Placements)) return;
+
+    this.storyPresentation = "room204_projection";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    this.destroyRoom204ProjectionOverlay();
+
+    const floor = getFloor(2);
+    const bounds = ROOM204_PROJECTION_HANDSHAKE.screenBounds;
+    const centerX = floor.offsetX + rectCenterX(bounds);
+    const centerY = rectCenterY(bounds);
+    const overlay = this.add.container(centerX, centerY)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) - 100);
+    const glow = this.add.rectangle(0, 0, bounds.width + 16, bounds.height + 12, 0x4edcff, 0.14);
+    const screen = this.add.rectangle(0, 0, bounds.width, bounds.height, 0x071827, 0.94)
+      .setStrokeStyle(2, 0x7ce9ff, 0.92);
+    const title = this.add.text(0, -12, "07:55 残影投影", {
+      fontFamily: "'Fusion Pixel', monospace",
+      fontSize: "10px",
+      color: "#8fe8ff",
+      align: "center"
+    }).setOrigin(0.5);
+    const status = this.add.text(0, 8, "校准中……", {
+      fontFamily: "'Fusion Pixel', monospace",
+      fontSize: "9px",
+      color: "#f7f1dc",
+      align: "center"
+    }).setOrigin(0.5);
+    overlay.add([glow, screen, title, status]);
+    this.room204ProjectionOverlay = overlay;
+
+    this.scheduleStoryPresentation(ROOM204_PROJECTION_HANDSHAKE.misalignedAtMs, () => {
+      if (!overlay.active) return;
+      overlay.setX(centerX + 3);
+      screen.setStrokeStyle(2, 0xff8d82, 0.92);
+      status.setText("偏移·3px");
+    });
+    this.scheduleStoryPresentation(ROOM204_PROJECTION_HANDSHAKE.stableAtMs, () => {
+      if (!overlay.active) return;
+      overlay.setX(centerX);
+      screen.setStrokeStyle(2, 0x7ce9ff, 0.96);
+      status.setText(ROOM204_PROJECTION_HANDSHAKE.stableText);
+    });
+    this.scheduleStoryPresentation(ROOM204_PROJECTION_HANDSHAKE.commitAtMs, () => {
+      if (this.storyPresentation !== "room204_projection") return;
+      this.requestStoryIntent({ type: "complete_room204_projection" });
+    });
+  }
+
+  private rollbackRoom204ProjectionToCommittedState(feedback: string): void {
+    this.clearStoryPresentationTimers();
+    this.destroyRoom204ProjectionOverlay();
+    this.storyPresentation = "idle";
+    this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
+    if (feedback) {
+      this.persistentContractFailures.add(`room204_recovery:${feedback}`);
+      this.showFeedback("进度已恢复，请重试当前操作。");
+    }
+    this.syncStoryInputLock();
+  }
+
+  private destroyRoom204ProjectionOverlay(): void {
+    this.room204ProjectionOverlay?.destroy(true);
+    this.room204ProjectionOverlay = null;
+  }
+
+  private resolveProjectedTargets(): ProjectedTarget[] {
+    const phase = this.projection.phase;
+    if (!phase) return [];
+    return this.projection.availableTargetIds.flatMap((targetId) => {
+      if (!TASK13_ACTIONABLE_TARGET_IDS.has(targetId)) return [];
+      const contract = CHAPTER_FOUR_755_INTERACTION_TARGETS[
+        targetId as keyof typeof CHAPTER_FOUR_755_INTERACTION_TARGETS
+      ];
+      if (!contract) return [];
+      if (contract.boundsSource.kind === "runtime_entity") {
+        const bakeryBinding = this.bakeryRuntimeTargets.get(contract.id);
+        const room204Binding = this.room204RuntimeTargets.get(contract.id);
+        const phaseBinding = this.phaseRuntimeTargets.get(contract.id);
+        const binding = bakeryBinding ?? room204Binding ?? phaseBinding;
+        const bounds = bakeryBinding
+          ? this.outwardBakeryRuntimeBounds(bakeryBinding)
+          : room204Binding
+            ? this.outwardRoom204Bounds(room204Binding.boundsObject)
+            : phaseBinding
+              ? this.outwardPhaseRuntimeBounds(phaseBinding)
+            : null;
+        const floor = displayFloorFor(contract.boundsSource.floor);
+        if (!binding
+          || binding.entityId !== contract.boundsSource.entityId
+          || !bounds
+          || !binding.boundsObject.visible
+          || !floor) return [];
+        return [{
+          contract,
+          floor,
+          bounds,
+          acceptedItem: selectChapterFour755AcceptedItem(contract, phase) as ItemId | null | undefined
+        }];
+      }
+      if (!contract.bounds) return [];
+      const floor = displayFloorFor(contract.boundsSource.floor);
+      if (!floor) return [];
+      return [{
+        contract,
+        floor,
+        bounds: contract.bounds,
+        acceptedItem: selectChapterFour755AcceptedItem(contract, phase) as ItemId | null | undefined
+      }];
+    });
+  }
+
+  private resolveActionableTargets(): ProjectedTarget[] {
+    return this.resolveProjectedTargets().filter((target) => (
+      TASK13_ACTIONABLE_TARGET_IDS.has(target.contract.id)
+    ));
+  }
+
+  /** Uses only outward-rounded bounds measured from the active Phaser entity. */
+  private resolveRuntimeTargetContext(
+    target: ChapterFour755InteractionTargetContract,
+    bounds: Readonly<MapRect>
+  ): ChapterFour755RuntimeTargetContext | null {
+    if (target.boundsSource.kind !== "runtime_entity") return null;
+    return { targetId: target.id, entityId: target.boundsSource.entityId, bounds: { ...bounds } };
+  }
+
+  private handleSpatialAttestationRequest(payload?: Record<string, unknown>): void {
+    if (!isChapterFour755SpatialAttestationRequest(payload)
+      || payload.sceneKey !== CHAPTER_FOUR_755_SCENE_KEY
+      || !this.sys.isActive()) return;
+    const state = this.bridge.getState();
+    if (state.rpgScene !== "duan_yongping_temporal_maze"
+      || state.chapter4.phase !== payload.committedPhase
+      || this.projection.phase !== payload.committedPhase
+      || this.appliedPlateSignature.length === 0) return;
+    const actionableTarget = this.resolveActionableTargets().find((candidate) => (
+      candidate.contract.id === payload.targetId
+      && candidate.floor === this.currentFloor
+    ));
+    const thresholdContract = CHAPTER_FOUR_755_INTERACTION_TARGETS.a2_202_threshold;
+    const automaticThresholdTarget: ProjectedTarget | null = payload.targetId === thresholdContract.id
+      && state.chapter4.phase === "final_chase"
+      && this.currentFloor === 2
+      && this.finalChaseInsideFinish
+      && this.finalChaseState?.phase === "finish_pending"
+      && isChapterFour755TargetStateActive(state, thresholdContract)
+      && thresholdContract.bounds
+      ? {
+          contract: thresholdContract,
+          floor: 2,
+          bounds: thresholdContract.bounds,
+          acceptedItem: null
+        }
+      : null;
+    const target = actionableTarget ?? automaticThresholdTarget;
+    if (!target || (!automaticThresholdTarget
+      && !this.renderedTargetIds.includes(target.contract.id))) return;
+    const context = target.contract.boundsSource.kind === "runtime_entity"
+      ? this.resolveRuntimeTargetContext(target.contract, target.bounds)
+      : {
+          targetId: target.contract.id,
+          entityId: target.contract.boundsSource.anchorId,
+          bounds: { ...target.bounds }
+        };
+    if (!context
+      || context.targetId !== payload.targetId
+      || context.entityId !== payload.entityId
+      || !rectEquals(context.bounds, payload.bounds)) return;
+    const floor = getFloor(target.floor);
+    const foot = this.playerFootPoint(floor);
+    if (!Number.isFinite(foot.x) || !Number.isFinite(foot.y)) return;
+    this.spatialAttestationLast = {
+      requestId: payload.requestId,
+      attestationId: payload.attestationId,
+      targetId: payload.targetId,
+      result: "responded",
+      reason: null
+    };
+    this.safeBridgeEmit("rpg_chapter4_755_spatial_attestation_response", {
+      requestId: payload.requestId,
+      attestationId: payload.attestationId,
+      sceneKey: CHAPTER_FOUR_755_SCENE_KEY,
+      committedPhase: payload.committedPhase,
+      targetId: payload.targetId,
+      entityId: context.entityId,
+      bounds: { ...context.bounds },
+      appliedPhase: this.projection.phase,
+      appliedPlateSignature: this.appliedPlateSignature,
+      playerFootPoint: { x: foot.x, y: foot.y }
+    });
+  }
+
+  private refreshProjectedTargetVisuals(): void {
+    for (const visual of this.targetVisuals.values()) visual.destroy(true);
+    this.targetVisuals.clear();
+    const targets = this.resolveProjectedTargets();
+    const showBounds = import.meta.env.DEV
+      && new URLSearchParams(window.location.search).get("debugTargets") === "1";
+    for (const target of targets) {
+      const floor = getFloor(target.floor);
+      const mode = this.projection.phase
+        ? selectChapterFour755RequiredMode(target.contract, this.projection.phase)
+        : undefined;
+      const color = mode === "dark" ? 0x67ddff : 0xffd36f;
+      const container = this.add.container(
+        floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds)
+      ).setDepth(3560);
+      container.add(this.add.circle(0, 0, 5, color, 0.78).setStrokeStyle(1, 0xf7f1dc, 0.72));
+      if (showBounds) {
+        container.add(this.add.rectangle(
+          0, 0, target.bounds.width, target.bounds.height, color, 0.04
+        ).setStrokeStyle(2, color, 0.72));
+      }
+      this.targetVisuals.set(target.contract.id, container);
+    }
+    this.renderedTargetIds = targets.map((target) => target.contract.id);
+  }
+
+  private createElevatorVisuals(): void {
+    for (const floor of FLOORS) {
+      const aperture = floor.elevator.visibleBounds;
+      const uniformScale = Math.min(
+        aperture.width / ELEVATOR_FRAME_WIDTH,
+        aperture.height / ELEVATOR_FRAME_HEIGHT
+      );
+      const door = this.add.sprite(
+        floor.offsetX + floor.elevator.doorCenter.x,
+        floor.elevator.doorCenter.y,
+        ELEVATOR_TEXTURE,
+        0
+      ).setScale(uniformScale)
+        .setDepth(PLAYER_DEPTH_BASE + rectBottom(aperture));
+      const indicator = this.add.text(
+        floor.offsetX + floor.elevator.doorCenter.x,
+        Math.max(18, aperture.y - 13),
+        `${floor.displayFloor}F`,
+        {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "13px",
+          color: "#ffe493", backgroundColor: "#111827", padding: { x: 4, y: 2 }
+        }
+      ).setOrigin(0.5).setDepth(PLAYER_DEPTH_BASE + rectBottom(aperture) + 1);
+      const lamp = this.add.circle(
+        floor.offsetX + aperture.x + aperture.width + 8,
+        floor.elevator.doorCenter.y,
+        3, 0xffd36f, 0.95
+      ).setDepth(PLAYER_DEPTH_BASE + rectBottom(aperture) + 1).setVisible(false);
+      this.elevatorVisuals.set(floor.displayFloor, { floor: floor.displayFloor, door, indicator, lamp });
+    }
+  }
+
+  private setElevatorDoorProgress(floor: DisplayFloor, progress: number): void {
+    const value = Phaser.Math.Clamp(progress, 0, 1);
+    this.elevatorVisuals.get(floor)?.door.setFrame(Math.round(value * (ELEVATOR_FRAME_COUNT - 1)));
+    this.elevatorDoorProgress = value;
+  }
+  private tweenElevatorDoor(floor: DisplayFloor, from: number, to: number, done: () => void): void {
+    const state = { progress: from };
+    this.setElevatorDoorProgress(floor, from);
+    this.tweens.add({
+      targets: state, progress: to, duration: ELEVATOR_DOOR_MS, ease: "Sine.InOut",
+      onUpdate: () => this.setElevatorDoorProgress(floor, state.progress),
+      onComplete: done
+    });
+  }
+  private configureCameraForCurrentFloor(): void {
+    const floor = getFloor(this.currentFloor);
+    this.physics.world.setBounds(
+      floor.offsetX,
+      0,
+      FLOOR_SIZE.width,
+      FLOOR_SIZE.height,
+      true,
+      true,
+      true,
+      true
+    );
+    this.cameras.main.setBounds(floor.offsetX, 0, FLOOR_SIZE.width, FLOOR_SIZE.height)
+      .setZoom(1).startFollow(this.player, true, 0.12, 0.12);
+  }
+
+  /** All story distance checks use the shared player's authored foot body. */
+  private playerFootPoint(floor: FloorDefinition): { x: number; y: number; worldX: number } {
+    const body = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const worldX = body?.center.x ?? this.player.x;
+    const y = body?.center.y ?? this.player.y;
+    return { x: worldX - floor.offsetX, y, worldX };
+  }
+
+  private refreshProximity(): void {
+    const floor = getFloor(this.currentFloor);
+    const foot = this.playerFootPoint(floor);
+    const localPlayer = { x: foot.x, y: foot.y };
+    this.nearbyRoom204PieceId = this.resolveNearbyRoom204PieceId();
+    this.nearbyStoryTarget = this.resolveActionableTargets()
+      .filter((target) => target.floor === this.currentFloor)
+      .map((target) => ({
+        target,
+        distance: pointDistanceToRect(localPlayer, target.bounds)
+      }))
+      .filter(({ target, distance }) => distance <= target.contract.proximity)
+      .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
+    this.nearbyTravelTarget = this.projection.phase && OPENING_PHASES.has(this.projection.phase)
+      ? null
+      : createTravelTargets(floor)
+          .map((target) => ({ target, distance: pointDistanceToRect(localPlayer, target.bounds) }))
+          .filter(({ distance }) => distance <= 76)
+          .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
+    this.nearbyLandmark = floor.anchors
+      .map((anchor) => ({ anchor, distance: pointDistanceToRect(localPlayer, anchor.bounds) }))
+      .filter(({ distance }) => distance <= 44)
+      .sort((a, b) => a.distance - b.distance)[0]?.anchor ?? null;
+    this.floorCaption.setText(
+      this.nearbyLandmark ? `${floor.title} · ${this.nearbyLandmark.label}` : floor.title
+    );
+    if (this.currentFloor === 2 && this.bridge.getState().chapter4.phase === "room204_restore") {
+      if (this.room204SelectedPieceId
+        && this.nearbyStoryTarget
+        && isRoom204SlotTargetId(this.nearbyStoryTarget.contract.id)) {
+        this.interactionHint.setText("Space · 把已搬起的桌椅放到残影槽位")
+          .setVisible(true);
+        return;
+      }
+      if (!this.room204SelectedPieceId && this.nearbyRoom204PieceId) {
+        this.interactionHint.setText(
+          this.bridge.getState().chapter4.mode === "light"
+            ? "Space · 搬动一组桌椅"
+            : "切到浅色操作后再搬动桌椅"
+        ).setVisible(true);
+        return;
+      }
+      if (!this.room204SelectedPieceId
+        && this.nearbyStoryTarget
+        && isRoom204SlotTargetId(this.nearbyStoryTarget.contract.id)) {
+        this.interactionHint.setText(
+          this.bridge.getState().chapter4.mode === "light"
+            ? "先搬一组桌椅，再放到残影槽位。"
+            : "先切到浅色操作，再搬动桌椅。"
+        ).setVisible(true);
+        return;
+      }
+    }
+    if (this.nearbyStoryTarget && !this.pendingStoryRequest) {
+      if (this.nearbyStoryTarget.acceptedItem !== undefined
+        && this.nearbyStoryTarget.acceptedItem !== null) {
+        this.interactionHint.setText(
+          `把对应道具拖到${this.nearbyStoryTarget.contract.label}`
+        ).setVisible(true);
+        return;
+      }
+      this.interactionHint.setText(`Space · ${this.nearbyStoryTarget.contract.label}`)
+        .setVisible(true);
+      return;
+    }
+    if (!this.nearbyTravelTarget || this.pendingMove || this.pendingStoryRequest) {
+      this.interactionHint.setVisible(false);
+      return;
+    }
+    this.interactionHint.setText(`Space · ${this.nearbyTravelTarget.label}`).setVisible(true);
+  }
+
+  private isStoryInputLocked(): boolean {
+    return this.storyPresentation !== "idle"
+      || this.pendingStoryRequest !== null
+      || this.pendingMove !== null
+      || this.finalClockDragActive;
+  }
+
+  private syncStoryInputLock(force = false): void {
+    const locked = this.isStoryInputLocked();
+    const allowScenePointer = locked
+      && this.finalClockDragActive
+      && this.storyPresentation === "idle"
+      && this.pendingStoryRequest === null;
+    if (!force
+      && locked === this.lastPublishedStoryInputLock
+      && allowScenePointer === this.lastPublishedStoryPointerAllowed) return;
+    this.lastPublishedStoryInputLock = locked;
+    this.lastPublishedStoryPointerAllowed = allowScenePointer;
+    this.safeBridgeEmit("rpg_chapter4_story_input_lock_changed", {
+      locked,
+      allowScenePointer,
+      presentation: this.storyPresentation,
+      pendingIntent: this.pendingStoryRequest?.intentType ?? null
+    });
+  }
+
+  private storySpatialResult(target: ProjectedTarget): {
+    distance: "within_range" | "too_far";
+  } {
+    const floor = getFloor(target.floor);
+    const foot = this.playerFootPoint(floor);
+    const localPlayer = { x: foot.x, y: foot.y };
+    return {
+      distance: pointDistanceToRect(localPlayer, target.bounds) <= target.contract.proximity
+        ? "within_range"
+        : "too_far"
+    };
+  }
+
+  private handleStoryOrTravelInteraction(): void {
+    const storyTarget = this.nearbyStoryTarget;
+    const state = this.bridge.getState();
+    if (state.chapter4.phase === "room204_restore"
+      && this.currentFloor === 2
+      && !this.room204SelectedPieceId
+      && this.nearbyRoom204PieceId
+      && !storyTarget) {
+      if (state.chapter4.mode !== "light") {
+        this.showFeedback("切到浅色操作后再搬动桌椅。");
+        return;
+      }
+      this.selectRoom204Piece(this.nearbyRoom204PieceId);
+      this.refreshProximity();
+      return;
+    }
+    if (storyTarget) {
+      const spatial = this.storySpatialResult(storyTarget);
+      if (state.chapter4.phase === "room204_restore" && this.currentFloor === 2) {
+        if (this.room204SelectedPieceId && isRoom204SlotTargetId(storyTarget.contract.id)) {
+          const runtimeTarget = this.resolveRuntimeTargetContext(
+            storyTarget.contract,
+            storyTarget.bounds
+          );
+          if (!runtimeTarget) {
+            this.showRuntimeInteractionFailure("room204_slot_runtime_bounds_missing");
+            return;
+          }
+          this.requestStoryIntent({
+            type: "place_room204_piece",
+            pieceId: this.room204SelectedPieceId,
+            slotId: storyTarget.contract.id.replace("a2_room204_slot_", "") as ChapterFourRoom204SlotId,
+            orientation: "up",
+            targetId: storyTarget.contract.id,
+            spatial
+          }, storyTarget.contract.id, runtimeTarget);
+          return;
+        }
+        if (!this.room204SelectedPieceId && this.nearbyRoom204PieceId) {
+          if (state.chapter4.mode !== "light") {
+            this.showFeedback("切到浅色操作后再搬动桌椅。");
+            return;
+          }
+          this.selectRoom204Piece(this.nearbyRoom204PieceId);
+          this.refreshProximity();
+          return;
+        }
+        if (!this.room204SelectedPieceId && isRoom204SlotTargetId(storyTarget.contract.id)) {
+          this.showFeedback("先搬一组桌椅，再放到对应残影位置。");
+          return;
+        }
+      }
+      if (storyTarget.contract.id === "a1_noticeboard_paper") {
+        this.requestStoryIntent({
+          type: "catch_attendance_paper",
+          targetId: "a1_noticeboard_paper",
+          spatial
+        }, storyTarget.contract.id);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_hall_clock") {
+        const intent: ChapterFour755Intent = state.chapter4.phase === "opening_paper_caught"
+          ? { type: "inspect_hall_clock", targetId: "a1_hall_clock", spatial }
+          : { type: "pull_hall_clock", targetId: "a1_hall_clock", spatial };
+        this.requestStoryIntent(intent, storyTarget.contract.id);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_bakery_inspection_lamp") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("bakery_lamp_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "inspect_bakery_conveyor_lamp",
+          targetId: "a1_bakery_inspection_lamp",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_bakery_conveyor_edge") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("bakery_conveyor_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "inspect_bakery_conveyor_edge",
+          targetId: "a1_bakery_conveyor_edge",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_bakery_hour_hand_pickup") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("hour_hand_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "collect_hour_hand",
+          targetId: "a1_bakery_hour_hand_pickup",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a3_reference_classroom_layout") {
+        this.requestStoryIntent({
+          type: "observe_a3_reference",
+          targetId: "a3_reference_classroom_layout",
+          spatial
+        }, storyTarget.contract.id);
+        return;
+      }
+      if (storyTarget.contract.id === "a2_room204_residual_group") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("room204_residual_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "observe_room204_residual",
+          targetId: "a2_room204_residual_group",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a2_room204_podium_drawer") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("room204_drawer_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "collect_positioning_plate",
+          targetId: "a2_room204_podium_drawer",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_cleaning_cart_wheel_inspection") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("cart_wheel_inspection_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "inspect_cart_wheel",
+          targetId: "a1_cleaning_cart_wheel_inspection",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_bakery_back_pry_bar") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("pry_bar_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "collect_short_pry_bar",
+          targetId: "a1_bakery_back_pry_bar",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_cleaning_cart_oil_bottle") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("lubricating_oil_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "collect_lubricating_oil",
+          targetId: "a1_cleaning_cart_oil_bottle",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_hall_clock_minute_endpoint"
+        && state.chapter4.phase === "maintenance_repair") {
+        this.requestFinalClockDrag(true, null);
+        return;
+      }
+      if (storyTarget.contract.id === "a1_power_panel") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("power_panel_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "open_power_panel",
+          targetId: "a1_power_panel",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.contract.id === "a2_202_threshold") {
+        this.requestStoryIntent({
+          type: "reach_202_threshold",
+          targetId: "a2_202_threshold",
+          expectedAttempt: this.bridge.getState().chapter4.chaseAttempt,
+          spatial
+        }, storyTarget.contract.id);
+        return;
+      }
+      if (storyTarget.contract.id === "a2_202_projection") {
+        const runtimeTarget = this.resolveRuntimeTargetContext(
+          storyTarget.contract,
+          storyTarget.bounds
+        );
+        if (!runtimeTarget) {
+          this.showRuntimeInteractionFailure("final_minute_runtime_bounds_missing");
+          return;
+        }
+        this.requestStoryIntent({
+          type: "collect_final_minute",
+          targetId: "a2_202_projection",
+          spatial
+        }, storyTarget.contract.id, runtimeTarget);
+        return;
+      }
+      if (storyTarget.acceptedItem !== undefined && storyTarget.acceptedItem !== null) {
+        this.showFeedback(`请从道具栏拖动道具到${storyTarget.contract.label}。`);
         return;
       }
     }
     this.handleTravelInteraction();
   }
 
-  private tryTargetInteraction(target: MazeInteractionTarget): void {
-    const activeTarget = this.getActiveInteractionTargets()
-      .some((candidate) => candidate.id === target.id);
-    if (
-      target.floor !== this.currentFloor
-      || !activeTarget
-    ) {
-      this.emitInteractionFeedback("该交互点当前未开放。");
-      return;
-    }
-    const floor = getFloor(this.currentFloor);
-    const localX = this.player.x - floor.offsetX;
-    const localY = this.player.y;
-    if (distanceFromPlayerToRpgTarget(target, localX, localY) > target.proximity) {
-      this.emitInteractionFeedback(`距离${target.label}太远，请靠近可见目标。`);
-      return;
-    }
-    if (
-      isA1TargetAction(target.action)
-      && this.bridge.getState().chapter4.mode !== target.requiredMode
-    ) {
-      this.emitInteractionFeedback(
-        `切到${target.requiredMode === "dark" ? "深色观察" : "浅色操作"}后再操作${target.label}。`
-      );
-      return;
-    }
-    if (!isPlayerFacingRpgTarget(target, localX, localY, this.animator.cardinalFacing)) {
-      this.emitInteractionFeedback(`请先面向${target.label}。`);
-      return;
-    }
-    if (target.action === "open_wayfinding_board") {
-      this.requestWayfindingPanel(target);
-      return;
-    }
-    if (isA1TargetAction(target.action)) {
-      this.requestChapterFourAction(target.action, target.id);
-      return;
-    }
-    const extras = target.action === "collect_wayfinding_fragment"
-      ? { fragmentId: target.id }
-      : undefined;
-    this.requestMazeAction(target.action, target.id, extras);
-  }
-
-  private tryPartitionInteraction(target: MazePartitionTarget): void {
-    if (
-      target.floor !== this.currentFloor
-      || !this.projection.activePartitionIds.includes(target.id)
-    ) {
-      this.emitInteractionFeedback("该隔断当前未开放。");
-      return;
-    }
-    const floor = getFloor(this.currentFloor);
-    const localX = this.player.x - floor.offsetX;
-    const localY = this.player.y;
-    if (distanceFromPlayerToRpgTarget(target, localX, localY) > target.proximity) {
-      this.emitInteractionFeedback(`距离${target.label}太远，请靠近隔断边缘。`);
-      return;
-    }
-    if (!isPlayerFacingRpgTarget(target, localX, localY, this.animator.cardinalFacing)) {
-      this.emitInteractionFeedback(`请先面向${target.label}。`);
-      return;
-    }
-    this.requestMazeAction(
-      "reconfigure_corridor_bay",
-      target.id,
-      { partitionId: target.id }
-    );
-  }
-
-  private requestWayfindingPanel(target: MazeInteractionTarget): void {
-    if (this.pendingMazeAction) return;
-    const requestId = `c4-panel-${++this.mazeActionRequestSerial}`;
-    this.pendingMazeAction = {
-      requestId,
-      action: "open_wayfinding_board",
-      targetId: target.id
-    };
-    this.armMazeActionTimeout(requestId);
-    this.bridge.emit("chapter4_wayfinding_panel_requested", {
-      requestId,
-      action: "open_wayfinding_board",
-      targetId: target.id
-    });
-  }
-
-  private requestMazeAction(
-    action: MazeAction,
-    targetId: string,
-    extras: { partitionId?: string; fragmentId?: string; order?: readonly string[] } = {}
-  ): void {
-    if (this.pendingMazeAction) return;
-    const requestId = `c4-action-${++this.mazeActionRequestSerial}`;
-    this.pendingMazeAction = { requestId, action, targetId, ...extras };
-    this.armMazeActionTimeout(requestId);
-    this.bridge.emit("chapter4_maze_action_requested", {
-      requestId,
-      action,
-      targetId,
-      ...extras,
-      ...(extras.order ? { order: [...extras.order] } : {})
-    });
-  }
-
-  private requestChapterFourAction(action: A1Action, targetId: string): void {
-    if (this.pendingMazeAction) return;
-    const requestId = `c4-a1-${++this.mazeActionRequestSerial}`;
-    this.pendingMazeAction = { requestId, action, targetId };
-    this.pendingMazeActionTimer?.remove(false);
-    if (this.elevatorPhase === "idle") this.refreshProximityState();
-    this.bridge.emit("rpg_chapter4_action_requested", {
-      requestId,
-      action,
-      targetId
-    });
-    this.pendingMazeActionTimer = this.time.delayedCall(0, () => {
-      if (this.pendingMazeAction?.requestId !== requestId) return;
-      this.pendingMazeAction = null;
-      this.pendingMazeActionTimer = null;
-      this.syncProjection(true);
-      this.syncCurrentFloorFromState();
-      if (this.elevatorPhase === "idle") this.refreshProximityState();
-    });
-  }
-
-  private beginHistoricalElevatorEntryWindow(entryWindowSeconds: number): void {
-    const state = this.bridge.getState().chapter4;
-    if (
-      state.floor !== "A1"
-      || state.phase !== "elevator_track_sync"
-      || !state.elevatorTrackAligned
-      || state.elevatorPlayerBoarded
-      || this.historicalRideInProgress
-    ) {
-      return;
-    }
-    this.historicalEntryTimer?.remove(false);
-    this.historicalEntryTimer = null;
-    this.historicalEntryWindowEndsAt = 0;
-    this.historicalDoorOpen = false;
-    this.elevatorPhase = "doors_opening";
-    this.player.setVelocity(0, 0);
-    this.virtualDirection = { x: 0, y: 0 };
-    this.nearbyTarget = null;
-    this.interactionHint.setVisible(false);
-    this.showElevatorDoors(1, true);
-    this.syncProjection(true);
-    this.tweenElevatorDoors(1, 0, 1, () => {
-      const current = this.bridge.getState().chapter4;
-      if (
-        current.floor !== "A1"
-        || current.phase !== "elevator_track_sync"
-        || !current.elevatorTrackAligned
-        || current.elevatorPlayerBoarded
-      ) {
-        this.elevatorPhase = "idle";
-        this.historicalDoorOpen = false;
-        this.setElevatorDoorProgress(1, 0);
-        this.syncCurrentFloorFromState();
+  private handleTravelInteraction(): void {
+    if (this.projection.phase && OPENING_PHASES.has(this.projection.phase)) return;
+    const target = this.nearbyTravelTarget;
+    if (!target || this.pendingMove) return;
+    if (target.route === "elevator") {
+      const phase = this.bridge.getState().chapter4.phase;
+      if (phase === "final_chase" || phase === "return_to_clock") {
+        this.showFeedback(phase === "final_chase"
+          ? "追逐中电梯已锁，请进入主楼梯。"
+          : "返程只能沿主楼梯回到一楼旧钟。");
         return;
       }
-      this.elevatorPhase = "idle";
-      this.historicalDoorOpen = true;
-      const windowMs = Math.max(1, entryWindowSeconds) * 1000;
-      this.historicalEntryWindowEndsAt = this.time.now + windowMs;
-      this.historicalEntryTimer = this.time.delayedCall(windowMs, () => {
-        this.expireHistoricalElevatorEntryWindow();
-      });
-      this.syncProjection(true);
-      this.refreshProximityState();
-    });
+      this.openElevatorForSelection();
+    }
+    else if (target.targetFloor) this.requestMove(target.targetFloor, "stair");
   }
 
-  private expireHistoricalElevatorEntryWindow(): void {
-    this.historicalEntryTimer = null;
-    this.historicalEntryWindowEndsAt = 0;
-    const state = this.bridge.getState().chapter4;
-    if (
-      !this.historicalDoorOpen
-      || this.historicalRideInProgress
-      || state.floor !== "A1"
-      || state.phase !== "elevator_track_sync"
-      || state.elevatorPlayerBoarded
-    ) {
-      return;
-    }
-    this.historicalDoorOpen = false;
-    this.elevatorPhase = "doors_closing";
-    this.nearbyTarget = null;
-    this.interactionHint.setVisible(false);
-    this.syncProjection(true);
-    this.requestChapterFourAction("elevator_replay_missed", A1_TARGET_IDS.elevatorInspect);
-    this.tweenElevatorDoors(1, 1, 0, () => {
-      this.elevatorPhase = "idle";
-      this.syncProjection(true);
-      this.refreshProximityState();
-    });
-  }
-
-  private beginHistoricalElevatorBoarding(): void {
-    const state = this.bridge.getState().chapter4;
-    if (
-      this.historicalRideInProgress
-      || !this.historicalDoorOpen
-      || state.floor !== "A1"
-      || state.phase !== "elevator_track_sync"
-      || !state.elevatorTrackAligned
-      || !state.elevatorPlayerBoarded
-    ) {
-      return;
-    }
-    this.historicalRideInProgress = true;
-    this.historicalDoorOpen = false;
-    this.historicalEntryTimer?.remove(false);
-    this.historicalEntryTimer = null;
-    this.historicalEntryWindowEndsAt = 0;
-    this.elevatorRideFromFloor = 1;
-    this.elevatorTargetFloor = 2;
-    this.elevatorPhase = "boarding";
+  private openElevatorForSelection(): void {
+    const phase = this.bridge.getState().chapter4.phase;
+    if (this.elevatorPhase !== "idle"
+      || OPENING_PHASES.has(phase)
+      || phase === "final_chase"
+      || phase === "return_to_clock") return;
+    this.elevatorPhase = "opening";
+    this.elevatorVisuals.get(this.currentFloor)?.lamp.setVisible(true);
     this.player.setVelocity(0, 0);
-    this.virtualDirection = { x: 0, y: 0 };
-    this.interactionHint.setVisible(false);
-    this.syncProjection(true);
-
-    const floor = getFloor(1);
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.enable = false;
-    this.animator.setFacing("up");
-    this.player.setDepth(ELEVATOR_FRONT_ACTOR_DEPTH + 1);
-    this.tweens.add({
-      targets: this.player,
-      x: floor.offsetX + floor.elevatorStand.x,
-      y: ELEVATOR_INSIDE_Y,
-      duration: ELEVATOR_BOARD_MS,
-      ease: "Sine.InOut",
-      onComplete: () => {
-        this.elevatorPhase = "doors_closing";
-        this.tweenElevatorDoors(1, 1, 0, () => this.beginHistoricalElevatorTravel());
-      }
-    });
-  }
-
-  private beginHistoricalElevatorTravel(): void {
-    if (!this.historicalRideInProgress) return;
-    this.elevatorPhase = "traveling";
-    this.player.setVisible(false);
-    this.setElevatorIndicator(1, "up");
-    this.elevatorWaitEndsAt = this.time.now + HISTORICAL_ELEVATOR_RIDE_MS;
-    this.time.delayedCall(Math.floor(HISTORICAL_ELEVATOR_RIDE_MS / 2), () => {
-      if (this.historicalRideInProgress) this.setElevatorIndicator(2, "up");
-    });
-    this.time.delayedCall(HISTORICAL_ELEVATOR_RIDE_MS, () => {
-      if (!this.historicalRideInProgress) return;
-      this.requestChapterFourAction("complete_elevator_ride", A1_TARGET_IDS.elevatorBoard);
-      this.time.delayedCall(0, () => {
-        const state = this.bridge.getState().chapter4;
-        if (state.floor === "A2" && state.phase === "npc_schedule_route") return;
-        this.recoverHistoricalElevatorAtA1();
-      });
-    });
-  }
-
-  private finishHistoricalElevatorTravel(): void {
-    const state = this.bridge.getState().chapter4;
-    if (
-      !this.historicalRideInProgress
-      || state.floor !== "A2"
-      || state.phase !== "npc_schedule_route"
-      || this.currentFloor !== 1
-    ) {
-      return;
-    }
-    this.historicalRideInProgress = false;
-    this.historicalDoorOpen = false;
-    this.historicalEntryWindowEndsAt = 0;
-    this.elevatorWaitEndsAt = 0;
-    this.arriveAtElevatorDestination(1, 2);
-  }
-
-  private recoverHistoricalElevatorAtA1(): void {
-    if (!this.historicalRideInProgress) return;
-    this.historicalRideInProgress = false;
-    this.historicalDoorOpen = false;
-    this.historicalEntryWindowEndsAt = 0;
-    this.elevatorWaitEndsAt = 0;
-    this.elevatorTargetFloor = null;
-    this.elevatorPhase = "idle";
-    this.player.setVisible(true);
-    const floor = getFloor(1);
-    this.player.setPosition(floor.offsetX + floor.elevatorStand.x, floor.elevatorStand.y);
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.enable = true;
-    body.reset(this.player.x, this.player.y);
-    this.animator.setFacing("up");
-    this.setElevatorDoorProgress(1, 0);
-    this.syncProjection(true);
-    this.refreshProximityState();
-  }
-
-  private armMazeActionTimeout(requestId: string): void {
-    this.pendingMazeActionTimer?.remove(false);
-    this.pendingMazeActionTimer = this.time.delayedCall(1600, () => {
-      if (this.pendingMazeAction?.requestId !== requestId) return;
-      this.pendingMazeAction = null;
-      this.pendingMazeActionTimer = null;
-      this.emitInteractionFeedback("交互状态未确认，请重试。");
-      this.refreshProximityState();
-    });
-  }
-
-  private clearPendingMazeAction(requestId: string): boolean {
-    if (this.pendingMazeAction?.requestId !== requestId) return false;
-    this.pendingMazeActionTimer?.remove(false);
-    this.pendingMazeActionTimer = null;
-    this.pendingMazeAction = null;
-    return true;
-  }
-
-  private handleMazeActionResolved(payload?: Record<string, unknown>): void {
-    const requestId = String(payload?.requestId ?? "");
-    if (!this.clearPendingMazeAction(requestId)) return;
-    this.syncProjection(true);
-    this.refreshProximityState();
-  }
-
-  private handleWayfindingPanelResolved(payload?: Record<string, unknown>): void {
-    const requestId = String(payload?.requestId ?? "");
-    if (!this.clearPendingMazeAction(requestId)) return;
-    this.syncProjection(true);
-    this.refreshProximityState();
-  }
-
-  private emitInteractionFeedback(message: string): void {
-    this.bridge.emit("rpg_subtitle", {
-      text: message,
-      tone: "system",
-      durationMs: 3000
-    });
-  }
-
-  private handleTravelInteraction(): void {
-    if (this.pendingMazeMove) {
-      this.showFeedback("楼层状态正在确认");
-      return;
-    }
-    if (!this.nearbyTravelZone) {
-      this.showFeedback("附近没有可用的楼层通道");
-      return;
-    }
-    if (!this.isTravelZoneStoryReady(this.nearbyTravelZone)) {
-      this.showFeedback("当前证据尚未开放这条楼层通道");
-      return;
-    }
-    const floor = getFloor(this.currentFloor);
-    const localPoint = { x: this.player.x - floor.offsetX, y: this.player.y };
-    if (!isPlayerFacingRpgTarget(
-      this.nearbyTravelZone,
-      localPoint.x,
-      localPoint.y,
-      this.animator.cardinalFacing
-    )) {
-      this.showFeedback(`请先面向${this.nearbyTravelZone.label}`);
-      return;
-    }
-    if (this.nearbyTravelZone.id === "elevator") {
-      this.callElevator();
-      return;
-    }
-    const targetFloor = this.nearbyTravelZone.targetStoryFloor
-      ? getDisplayFloor(this.nearbyTravelZone.targetStoryFloor)
-      : null;
-    if (!targetFloor) {
-      this.showFeedback("该楼梯落点未通过布局校验");
-      return;
-    }
-    this.requestMazeMove(targetFloor, "stair");
-  }
-
-  private callElevator(): void {
-    if (this.elevatorPhase !== "idle") return;
-    this.elevatorPhase = "waiting";
-    this.elevatorTargetFloor = null;
-    this.elevatorRideFromFloor = this.currentFloor;
-    this.elevatorDoorProgress = 0;
-    this.virtualDirection = { x: 0, y: 0 };
-    this.player.setVelocity(0, 0);
-    this.interactionHint.setVisible(false);
-
-    const visual = this.elevatorVisuals.get(this.currentFloor);
-    visual?.callLamp.setFillStyle(0x55d9ff, 1).setVisible(true);
-    const startFloor: DisplayFloor = this.currentFloor === 1 ? 3 : 1;
-    const floors = this.getElevatorFloorPath(startFloor, this.currentFloor);
-    const direction = startFloor < this.currentFloor ? "up" : "down";
-    this.elevatorWaitEndsAt = this.time.now + Math.max(1, floors.length) * ELEVATOR_WAIT_STEP_MS + ELEVATOR_ARRIVAL_MS;
-    this.setElevatorIndicator(floors[0], direction);
-    floors.slice(1).forEach((floor, index) => {
-      this.time.delayedCall((index + 1) * ELEVATOR_WAIT_STEP_MS, () => {
-        this.setElevatorIndicator(floor, direction);
-      });
-    });
-    this.time.delayedCall(floors.length * ELEVATOR_WAIT_STEP_MS, () => {
-      this.beginElevatorArrival();
-    });
-  }
-
-  private getElevatorFloorPath(from: DisplayFloor, to: DisplayFloor): DisplayFloor[] {
-    const step = from < to ? 1 : -1;
-    const path: DisplayFloor[] = [from];
-    for (let floor = from + step; step > 0 ? floor <= to : floor >= to; floor += step) {
-      path.push(floor as DisplayFloor);
-    }
-    return path;
-  }
-
-  private beginElevatorArrival(): void {
-    this.elevatorPhase = "arriving";
-    this.elevatorWaitEndsAt = this.time.now + ELEVATOR_ARRIVAL_MS;
-    this.setElevatorIndicator(this.currentFloor, "idle");
-    const visual = this.elevatorVisuals.get(this.currentFloor);
-    visual?.callLamp.setFillStyle(0x8dffb0, 1);
-    if (visual) {
+    this.tweenElevatorDoor(this.currentFloor, 0, 1, () => {
+      this.elevatorPhase = "boarding";
+      const floor = getFloor(this.currentFloor);
+      (this.player.body as Phaser.Physics.Arcade.Body).enable = false;
       this.tweens.add({
-        targets: [visual.indicatorBack, visual.callLamp],
-        alpha: 0.35,
-        duration: 105,
-        yoyo: true,
-        repeat: 1
+        targets: this.player,
+        x: floor.offsetX + floor.elevator.doorCenter.x,
+        y: floor.elevator.doorCenter.y,
+        duration: ELEVATOR_BOARD_MS,
+        ease: "Sine.InOut",
+        onComplete: () => this.openFloorPanel()
       });
-    }
-    this.cameras.main.shake(90, 0.0015);
-    this.time.delayedCall(ELEVATOR_ARRIVAL_MS, () => this.openElevatorForBoarding());
-  }
-
-  private openElevatorForBoarding(): void {
-    this.elevatorPhase = "doors_opening";
-    this.elevatorWaitEndsAt = 0;
-    this.showElevatorDoors(this.currentFloor, true);
-    this.tweenElevatorDoors(this.currentFloor, 0, 1, () => this.boardElevator());
-  }
-
-  private boardElevator(): void {
-    this.elevatorPhase = "boarding";
-    const floor = getFloor(this.currentFloor);
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.enable = false;
-    this.animator.setFacing("up");
-    this.player.setDepth(ELEVATOR_FRONT_ACTOR_DEPTH + 1);
-    this.tweens.add({
-      targets: this.player,
-      x: floor.offsetX + floor.elevatorStand.x,
-      y: ELEVATOR_INSIDE_Y,
-      duration: ELEVATOR_BOARD_MS,
-      ease: "Sine.InOut",
-      onComplete: () => {
-        this.elevatorPhase = "selecting";
-        this.openFloorPanel();
-      }
     });
   }
 
   private openFloorPanel(): void {
-    if (this.floorPanel) return;
+    this.elevatorPhase = "selecting";
     this.floorPanelSelection = this.currentFloor;
+    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    panel.add([
+      this.add.rectangle(0, 0, 390, 228, 0x07111d, 0.96).setStrokeStyle(3, 0xffd36f, 0.94),
+      this.add.text(0, -78, "选择楼层", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "22px", color: "#f7f1dc"
+      }).setOrigin(0.5)
+    ]);
     this.floorPanelButtons = [];
-    const panel = this.add.container(874, 270).setScrollFactor(0).setDepth(12000);
-    const background = this.add.rectangle(0, 0, 132, 260, 0x27343a, 0.98)
-      .setStrokeStyle(3, 0xaebdc1, 1);
-    const title = this.add.text(0, -106, "轿厢", {
-      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-      fontSize: "17px",
-      color: "#f7f1dc"
-    }).setOrigin(0.5);
-    const display = this.add.text(0, -76, `${this.currentFloor}F`, {
-      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-      fontSize: "18px",
-      color: "#ffd56f",
-      backgroundColor: "#071018",
-      padding: { x: 18, y: 5 }
-    }).setOrigin(0.5);
-    panel.add([background, title, display]);
-
-    ([1, 2, 3] as const).forEach((floor, index) => {
-      const y = -25 + index * 55;
-      const button = this.add.rectangle(0, y, 82, 42, 0x18364a, 1)
-        .setStrokeStyle(2, 0x5f9bb1, 1)
-        .setInteractive({ useHandCursor: true })
-        .on("pointerup", () => {
-          this.setFloorPanelSelection(floor);
-          this.requestElevatorDestination(floor);
-        });
-      const label = this.add.text(0, y, `${floor}F`, {
-        fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-        fontSize: "20px",
-        color: "#f7f1dc"
+    for (const floor of FLOORS) {
+      const x = (floor.displayFloor - 2) * 105;
+      const background = this.add.rectangle(x, 12, 78, 70, 0x17263a, 1)
+        .setStrokeStyle(2, 0x7f93aa, 1).setInteractive({ useHandCursor: true })
+        .on("pointerup", () => this.requestElevatorDestination(floor.displayFloor));
+      const label = this.add.text(x, 12, `${floor.displayFloor}F`, {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "20px", color: "#f7f1dc"
       }).setOrigin(0.5);
-      this.floorPanelButtons.push({ floor, button, label });
-      panel.add([button, label]);
-    });
-    const controls = this.add.text(0, 112, "↑ ↓  Enter", {
-      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-      fontSize: "11px",
-      color: "#c8d5d8"
-    }).setOrigin(0.5);
-    panel.add(controls);
+      panel.add([background, label]);
+      this.floorPanelButtons.push({ floor: floor.displayFloor, background, label });
+    }
+    panel.add(this.add.text(0, 82, "方向键选择 · Enter 确认 · Esc 返回", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#9bb0c7"
+    }).setOrigin(0.5));
     this.floorPanel = panel;
-    this.setFloorPanelSelection(this.floorPanelSelection);
-    this.interactionHint.setVisible(false);
+    this.paintFloorPanelSelection();
   }
 
-  private setFloorPanelSelection(floor: DisplayFloor): void {
-    this.floorPanelSelection = floor;
+  private updateFloorPanelKeyboard(): void {
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.up)) this.shiftFloorPanelSelection(-1);
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.right)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftFloorPanelSelection(1);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[1])) this.requestElevatorDestination(1);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[2])) this.requestElevatorDestination(2);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[3])) this.requestElevatorDestination(3);
+    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) {
+      this.requestElevatorDestination(this.floorPanelSelection);
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorSelection();
+  }
+  private shiftFloorPanelSelection(delta: number): void {
+    this.floorPanelSelection = Phaser.Math.Clamp(this.floorPanelSelection + delta, 1, 3) as DisplayFloor;
+    this.paintFloorPanelSelection();
+  }
+  private paintFloorPanelSelection(): void {
     for (const entry of this.floorPanelButtons) {
-      const selected = entry.floor === floor;
-      const current = entry.floor === this.currentFloor;
-      entry.button
-        .setFillStyle(selected ? 0xb38a42 : current ? 0x314047 : 0x18364a, 1)
-        .setStrokeStyle(2, selected ? 0xffe6a6 : current ? 0x71858c : 0x5f9bb1, 1);
-      entry.label.setColor(selected ? "#20170b" : current ? "#9fb0b5" : "#f7f1dc");
+      const selected = entry.floor === this.floorPanelSelection;
+      entry.background.setFillStyle(selected ? 0x315d78 : 0x17263a, 1)
+        .setStrokeStyle(2, selected ? 0xffd36f : 0x7f93aa, 1);
+      entry.label.setColor(selected ? "#ffe493" : "#f7f1dc");
     }
   }
-
   private closeFloorPanel(): void {
     this.floorPanel?.destroy(true);
     this.floorPanel = null;
     this.floorPanelButtons = [];
-    if (this.elevatorPhase === "idle") this.refreshProximityState();
   }
-
-  private requestElevatorDestination(target: DisplayFloor): void {
-    if (this.elevatorPhase !== "selecting" || !this.floorPanel) return;
-    if (this.pendingMazeMove) return;
-    if (target === this.currentFloor) {
-      this.setFloorPanelSelection(target);
-      this.showFeedback(`当前已在 ${target}F`);
+  private requestElevatorDestination(targetFloor: DisplayFloor): void {
+    if (this.elevatorPhase !== "selecting"
+      || this.pendingMove
+      || OPENING_PHASES.has(this.bridge.getState().chapter4.phase)) return;
+    if (targetFloor === this.currentFloor) {
+      this.showFeedback(`当前已在 ${targetFloor}F`);
       return;
     }
-    this.elevatorTargetFloor = target;
-    this.requestMazeMove(target, "elevator");
+    this.requestMove(targetFloor, "elevator");
   }
-
-  private cancelElevatorRide(): void {
-    if (this.elevatorPhase !== "selecting" || this.pendingMazeMove) return;
+  private cancelElevatorSelection(): void {
+    if (this.elevatorPhase !== "selecting" || this.pendingMove) return;
     this.closeFloorPanel();
-    this.elevatorTargetFloor = null;
-    this.beginElevatorExit();
+    this.beginElevatorExit(this.currentFloor);
   }
 
-  private beginElevatorTravel(target: DisplayFloor): void {
-    const fromFloor = this.currentFloor;
-    this.elevatorPhase = "traveling";
-    this.player.setVisible(false);
-    const floors = this.getElevatorFloorPath(fromFloor, target);
-    const direction = fromFloor < target ? "up" : "down";
-    const travelFloors = floors.slice(1);
-    this.setElevatorIndicator(fromFloor, direction);
-    const duration = Math.max(1, travelFloors.length) * ELEVATOR_TRAVEL_STEP_MS;
-    this.elevatorWaitEndsAt = this.time.now + duration;
-    travelFloors.forEach((floor, index) => {
-      this.time.delayedCall((index + 1) * ELEVATOR_TRAVEL_STEP_MS, () => {
-        this.setElevatorIndicator(floor, direction);
+  private ensureFinalClockRuntime(state: GameState = this.bridge.getState()): void {
+    if (this.finalClockEndpointZone?.active
+      && this.phaseRuntimeTargets.has(FINAL_CLOCK_RUNTIME.endpoint.targetId)) return;
+    this.destroyFinalClockRuntime("recreate");
+    try {
+      this.ensureHallClockStateSprite(
+        state.chapter4.phase === "return_to_clock"
+          ? "0754_calibrated"
+          : FINAL_CLOCK_RUNTIME.clockFrame
+      );
+    } catch (error) {
+      this.persistentContractFailures.add(`final_clock_visible_frame:${errorMessage(error)}`);
+      return;
+    }
+    const floor = getFloor(1);
+    const endpoint = this.finalClockPointForAngle(FINAL_CLOCK_RUNTIME.initialAngleDegrees);
+    this.finalClockMinuteAngle = FINAL_CLOCK_RUNTIME.initialAngleDegrees;
+    this.finalClockMinuteLine = this.add.line(
+      0,
+      0,
+      floor.offsetX + FINAL_CLOCK_RUNTIME.clockCenter.x,
+      FINAL_CLOCK_RUNTIME.clockCenter.y,
+      floor.offsetX + endpoint.x,
+      endpoint.y,
+      0xd8edf0,
+      0.96
+    ).setOrigin(0, 0)
+      .setLineWidth(3, 2)
+      .setDepth(PLAYER_DEPTH_BASE + 160);
+    this.finalClockEndpointHandle = this.add.circle(
+      floor.offsetX + endpoint.x,
+      endpoint.y,
+      FINAL_CLOCK_RUNTIME.endpoint.installationBounds.width / 2,
+      0xf2d47b,
+      0.92
+    ).setStrokeStyle(2, 0xf7f1dc, 0.98)
+      .setDepth(PLAYER_DEPTH_BASE + 162);
+    const visibleBounds = this.finalClockEndpointHandle.getBounds();
+    const derived = {
+      x: Math.floor(visibleBounds.left - floor.offsetX),
+      y: Math.floor(visibleBounds.top),
+      width: Math.ceil(visibleBounds.right - floor.offsetX) - Math.floor(visibleBounds.left - floor.offsetX),
+      height: Math.ceil(visibleBounds.bottom) - Math.floor(visibleBounds.top)
+    };
+    if (!rectEquals(derived, FINAL_CLOCK_RUNTIME.endpoint.installationBounds)) {
+      this.persistentContractFailures.add(`final_clock_endpoint_bounds:${JSON.stringify(derived)}`);
+      this.destroyFinalClockRuntime("invalid_bounds");
+      return;
+    }
+    this.finalClockEndpointZone = this.add.zone(
+      floor.offsetX + rectCenterX(derived),
+      rectCenterY(derived),
+      derived.width,
+      derived.height
+    );
+    this.phaseRuntimeTargets.set(FINAL_CLOCK_RUNTIME.endpoint.targetId, {
+      targetId: FINAL_CLOCK_RUNTIME.endpoint.targetId,
+      entityId: FINAL_CLOCK_RUNTIME.endpoint.entityId,
+      floor: 1,
+      boundsObject: this.finalClockEndpointZone
+    });
+    if (state.chapter4.phase === "maintenance_repair") {
+      this.finalClockEndpointHandle.setInteractive({ useHandCursor: true });
+      this.finalClockEndpointHandle.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        const domPointerId = this.finalClockPendingDomPointerId;
+        this.finalClockPendingDomPointerId = null;
+        this.requestFinalClockDrag(false, pointer.id, domPointerId);
+      });
+      this.input.on("pointermove", this.handleFinalClockPointerMove, this);
+      this.input.on("pointerup", this.handleFinalClockPointerUp, this);
+      this.input.on("pointerupoutside", this.handleFinalClockPointerUp, this);
+      this.finalClockDomCanvas = this.game.canvas;
+      this.finalClockDomCanvas.addEventListener(
+        "pointerdown",
+        this.handleFinalClockDomPointerDown,
+        { capture: true, passive: true }
+      );
+    }
+  }
+
+  private requestFinalClockDrag(
+    autoCommit: boolean,
+    pointerId: number | null,
+    domPointerId: number | null = null
+  ): void {
+    if (this.pendingStoryRequest || this.storyPresentation !== "idle") return;
+    const target = this.resolveActionableTargets().find(
+      (candidate) => candidate.contract.id === FINAL_CLOCK_RUNTIME.endpoint.targetId
+    );
+    if (!target) {
+      this.showRuntimeInteractionFailure("minute_endpoint_missing");
+      return;
+    }
+    const runtimeTarget = this.resolveRuntimeTargetContext(target.contract, target.bounds);
+    if (!runtimeTarget) {
+      this.showRuntimeInteractionFailure("minute_endpoint_runtime_bounds_missing");
+      return;
+    }
+    this.finalClockDragAutoCommit = autoCommit;
+    this.finalClockDragPointerId = pointerId;
+    this.finalClockDragDomPointerId = domPointerId;
+    this.requestStoryIntent({
+      type: "begin_final_clock_drag",
+      targetId: FINAL_CLOCK_RUNTIME.endpoint.targetId,
+      spatial: this.storySpatialResult(target)
+    }, target.contract.id, runtimeTarget);
+  }
+
+  private beginAcceptedFinalClockDrag(): void {
+    this.finalClockDragActive = true;
+    this.installFinalClockDomCancelListener();
+    this.storyPresentation = "idle";
+    this.syncStoryInputLock();
+    this.finalClockDragSafetyTimer?.remove(false);
+    this.finalClockDragSafetyTimer = this.time.delayedCall(
+      FINAL_CLOCK_DRAG_SAFETY_TIMEOUT_MS,
+      () => {
+        this.finalClockDragSafetyTimer = null;
+        if (!this.finalClockDragActive) return;
+        this.rollbackMinuteTheftToCommittedState("拨钟操作已取消，旧钟和纸条均已恢复，可重试。");
+      }
+    );
+    const binding = this.phaseRuntimeTargets.get(FINAL_CLOCK_RUNTIME.endpoint.targetId);
+    const bounds = binding ? this.outwardPhaseRuntimeBounds(binding) : null;
+    this.safeBridgeEmit("final_clock_drag_started", {
+      targetId: FINAL_CLOCK_RUNTIME.endpoint.targetId,
+      bounds,
+      approximate: FINAL_CLOCK_RUNTIME.endpoint.approximate,
+      input: this.finalClockDragAutoCommit ? "keyboard" : "pointer"
+    });
+    if (this.finalClockDragAutoCommit) this.finishFinalClockDrag();
+  }
+
+  private handleFinalClockPointerMove(pointer: Phaser.Input.Pointer): void {
+    if (!this.finalClockDragActive || this.finalClockDragPointerId !== pointer.id) return;
+    const floor = getFloor(1);
+    const world = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    const localX = world.x - floor.offsetX;
+    const angle = Phaser.Math.RadToDeg(Math.atan2(
+      world.y - FINAL_CLOCK_RUNTIME.clockCenter.y,
+      localX - FINAL_CLOCK_RUNTIME.clockCenter.x
+    ));
+    this.setFinalClockMinuteAngle(angle);
+    if (shortestAngleDistance(angle, FINAL_CLOCK_RUNTIME.targetAngleDegrees)
+      <= FINAL_CLOCK_RUNTIME.releaseToleranceDegrees) {
+      this.finishFinalClockDrag();
+    }
+  }
+
+  private handleFinalClockPointerUp(pointer: Phaser.Input.Pointer): void {
+    if (!this.finalClockDragActive || this.finalClockDragPointerId !== pointer.id) return;
+    if (pointer.wasCanceled) {
+      this.rollbackMinuteTheftToCommittedState("拨钟操作已取消，旧钟和纸条均已恢复，可重试。");
+      return;
+    }
+    this.finishFinalClockDrag();
+  }
+
+  private readonly handleFinalClockDomPointerDown = (event: PointerEvent): void => {
+    this.finalClockPendingDomPointerId = event.pointerId;
+  };
+
+  private readonly handleFinalClockDomPointerCancel = (event: PointerEvent): void => {
+    if (!this.finalClockDragActive
+      || this.finalClockDragDomPointerId === null
+      || event.pointerId !== this.finalClockDragDomPointerId) return;
+    this.rollbackMinuteTheftToCommittedState(
+      "拨钟操作已取消，旧钟和纸条均已恢复，可重试。"
+    );
+  };
+
+  private installFinalClockDomCancelListener(): void {
+    if (!this.finalClockDomCanvas
+      || this.finalClockDragDomPointerId === null
+      || this.finalClockDomCancelListening) return;
+    this.finalClockDomCanvas.addEventListener(
+      "pointercancel",
+      this.handleFinalClockDomPointerCancel,
+      true
+    );
+    this.finalClockDomCancelListening = true;
+  }
+
+  private removeFinalClockDomCancelListener(): void {
+    if (this.finalClockDomCanvas && this.finalClockDomCancelListening) {
+      this.finalClockDomCanvas.removeEventListener(
+        "pointercancel",
+        this.handleFinalClockDomPointerCancel,
+        true
+      );
+    }
+    this.finalClockDomCancelListening = false;
+    this.finalClockDragDomPointerId = null;
+  }
+
+  private finishFinalClockDrag(): void {
+    if (!this.finalClockDragActive) return;
+    this.removeFinalClockDomCancelListener();
+    this.finalClockDragSafetyTimer?.remove(false);
+    this.finalClockDragSafetyTimer = null;
+    this.finalClockDragActive = false;
+    this.finalClockDragPointerId = null;
+    this.beginMinuteTheftPresentation();
+  }
+
+  private beginMinuteTheftPresentation(): void {
+    const state = this.bridge.getState();
+    if (this.storyPresentation !== "idle"
+      || this.pendingStoryRequest
+      || state.chapter4.phase !== "maintenance_repair"
+      || !hasChapterFourFact(state, "clock_gear_repaired")
+      || !state.items.attendanceRecordPaper) {
+      this.rollbackMinuteTheftToCommittedState("最终拨钟条件尚未满足，可重试。");
+      return;
+    }
+    this.storyPresentation = "minute_theft";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    this.phaseRuntimeTargets.get(FINAL_CLOCK_RUNTIME.endpoint.targetId)?.boundsObject.setVisible(false);
+    const tweenState = { angle: this.finalClockMinuteAngle };
+    this.finalClockTween?.stop();
+    this.finalClockTween = this.tweens.add({
+      targets: tweenState,
+      angle: FINAL_CLOCK_RUNTIME.targetAngleDegrees,
+      duration: FINAL_CLOCK_RUNTIME.presentation.minuteHandAtMs,
+      ease: "Sine.Out",
+      onUpdate: () => this.setFinalClockMinuteAngle(tweenState.angle),
+      onComplete: () => {
+        this.finalClockTween = null;
+        this.setFinalClockMinuteAngle(FINAL_CLOCK_RUNTIME.targetAngleDegrees);
+      }
+    });
+    this.scheduleStoryPresentation(FINAL_CLOCK_RUNTIME.presentation.paperFlightAtMs, () => {
+      this.startMinuteTheftPaperFlight();
+    });
+    this.scheduleStoryPresentation(FINAL_CLOCK_RUNTIME.presentation.commitAtMs, () => {
+      this.requestStoryIntent({ type: "complete_minute_theft" });
+    });
+    this.scheduleStoryPresentation(FINAL_CLOCK_RUNTIME.presentation.feedbackAtMs, () => {
+      const committed = this.bridge.getState();
+      if (committed.chapter4.phase !== "blackout_light_grid"
+        || committed.chapter4.timeState !== "0754_blackout"
+        || committed.chapter4.worldTimeSeconds !== 28440
+        || committed.chapter4.phoneStatusTimeSeconds !== 28440
+        || !committed.chapter4.phoneStatusTimeTrusted
+        || committed.items.attendanceRecordPaper
+        || !hasChapterFourFact(committed, "paper_temporarily_out_of_inventory")) return;
+      try {
+        this.ensureHallClockStateSprite("0754_calibrated");
+      } catch (error) {
+        this.persistentContractFailures.add(`minute_theft_0754_visual:${errorMessage(error)}`);
+      }
+      this.minuteTheftPaperSprite?.destroy();
+      this.minuteTheftPaperSprite = null;
+      this.storyPresentation = "idle";
+      this.syncStoryInputLock();
+      this.safeBridgeEmit("rpg_subtitle", {
+        text: "时间校准至 07:54。纸条带走了最后一分钟。",
+        tone: "system",
+        durationMs: 2600
       });
     });
-    this.time.delayedCall(duration + 180, () => this.arriveAtElevatorDestination(fromFloor, target));
   }
 
-  private arriveAtElevatorDestination(fromFloor: DisplayFloor, target: DisplayFloor): void {
-    const previousVisual = this.elevatorVisuals.get(fromFloor);
-    previousVisual?.callLamp.setVisible(false);
-    this.showElevatorDoors(fromFloor, false);
-    this.currentFloor = target;
-    this.markCurrentLocationApplied();
-    const floor = getFloor(target);
-    this.player.setPosition(floor.offsetX + floor.elevatorStand.x, ELEVATOR_INSIDE_Y);
-    this.configureCameraForFloor();
-    this.cameras.main.centerOn(this.player.x, this.player.y);
-    this.setElevatorIndicator(target, "idle");
-    this.elevatorWaitEndsAt = 0;
-    this.showElevatorDoors(target, true);
-    this.setElevatorDoorProgress(target, 0);
-    const destinationVisual = this.elevatorVisuals.get(target);
-    destinationVisual?.callLamp.setFillStyle(0x8dffb0, 1).setVisible(true);
-    this.elevatorPhase = "destination_opening";
-    this.tweenElevatorDoors(target, 0, 1, () => this.beginElevatorExit());
+  private startMinuteTheftPaperFlight(): void {
+    const floor = getFloor(1);
+    const endpoint = this.finalClockPointForAngle(FINAL_CLOCK_RUNTIME.targetAngleDegrees);
+    const foot = this.playerFootPoint(floor);
+    this.minuteTheftPaperSprite?.destroy();
+    this.minuteTheftPaperSprite = this.add.sprite(
+      foot.worldX,
+      foot.y - 34,
+      "chapter4_story_items",
+      "sign_in_record_paper"
+    ).setScale(0.15)
+      .setDepth(PLAYER_DEPTH_BASE + 220)
+      .setAngle(-12);
+    this.safeBridgeEmit("minute_theft_paper_flight", {
+      from: { x: foot.worldX, y: foot.y - 34 },
+      to: { x: floor.offsetX + endpoint.x, y: endpoint.y },
+      targetId: FINAL_CLOCK_RUNTIME.endpoint.targetId
+    });
+    this.minuteTheftPaperTween?.stop();
+    this.minuteTheftPaperTween = this.tweens.add({
+      targets: this.minuteTheftPaperSprite,
+      x: floor.offsetX + endpoint.x,
+      y: endpoint.y,
+      angle: 28,
+      duration: Math.max(120, FINAL_CLOCK_RUNTIME.presentation.commitAtMs
+        - FINAL_CLOCK_RUNTIME.presentation.paperFlightAtMs - 40),
+      ease: "Sine.InOut",
+      onComplete: () => { this.minuteTheftPaperTween = null; }
+    });
   }
 
-  private beginElevatorExit(): void {
-    this.elevatorPhase = "exiting";
+  private setFinalClockMinuteAngle(angle: number): void {
+    this.finalClockMinuteAngle = angle;
+    const floor = getFloor(1);
+    const endpoint = this.finalClockPointForAngle(angle);
+    this.finalClockEndpointHandle?.setPosition(floor.offsetX + endpoint.x, endpoint.y);
+    this.finalClockMinuteLine?.setTo(
+      floor.offsetX + FINAL_CLOCK_RUNTIME.clockCenter.x,
+      FINAL_CLOCK_RUNTIME.clockCenter.y,
+      floor.offsetX + endpoint.x,
+      endpoint.y
+    );
+  }
+
+  private finalClockPointForAngle(angleDegrees: number): { x: number; y: number } {
+    const radians = Phaser.Math.DegToRad(angleDegrees);
+    return {
+      x: Math.round(
+        FINAL_CLOCK_RUNTIME.clockCenter.x
+          + Math.cos(radians) * FINAL_CLOCK_RUNTIME.minuteHandRadius
+      ),
+      y: Math.round(
+        FINAL_CLOCK_RUNTIME.clockCenter.y
+          + Math.sin(radians) * FINAL_CLOCK_RUNTIME.minuteHandRadius
+      )
+    };
+  }
+
+  private rollbackMinuteTheftToCommittedState(feedback: string): void {
+    this.clearStoryPresentationTimers();
+    this.removeFinalClockDomCancelListener();
+    this.finalClockDragSafetyTimer?.remove(false);
+    this.finalClockDragSafetyTimer = null;
+    this.finalClockTween?.stop();
+    this.finalClockTween = null;
+    this.minuteTheftPaperTween?.stop();
+    this.minuteTheftPaperTween = null;
+    this.minuteTheftPaperSprite?.destroy();
+    this.minuteTheftPaperSprite = null;
+    this.finalClockDragActive = false;
+    this.finalClockDragPointerId = null;
+    this.finalClockDragAutoCommit = false;
+    const committed = this.bridge.getState();
+    const retryable = committed.chapter4.phase === "maintenance_repair"
+      && committed.chapter4.mode === "light"
+      && hasChapterFourFact(committed, "clock_gear_repaired")
+      && committed.items.attendanceRecordPaper
+      && !hasChapterFourFact(committed, "paper_temporarily_out_of_inventory");
+    if (retryable) {
+      this.setFinalClockMinuteAngle(FINAL_CLOCK_RUNTIME.initialAngleDegrees);
+      this.phaseRuntimeTargets.get(FINAL_CLOCK_RUNTIME.endpoint.targetId)?.boundsObject.setVisible(true);
+      try {
+        this.ensureHallClockStateSprite("gear_running");
+      } catch (error) {
+        this.persistentContractFailures.add(`minute_theft_rollback_clock:${errorMessage(error)}`);
+      }
+    } else {
+      this.destroyFinalClockRuntime("minute_theft_not_retryable");
+    }
+    this.storyPresentation = "idle";
+    this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
+    if (feedback) {
+      this.persistentContractFailures.add(`minute_theft_recovery:${feedback}`);
+      this.showFeedback("进度已恢复，请重试当前操作。");
+    }
+    this.syncStoryInputLock();
+  }
+
+  private ensureLightGridRuntime(state: GameState): void {
+    if (!this.phaseRuntimeTargets.has(LIGHT_GRID_RUNTIME.panel.targetId)) {
+      this.createLightGridRuntime();
+    }
+    const targetVisible = state.chapter4.phase === "blackout_light_grid"
+      && !state.chapter4.lightGrid.locked
+      && !hasChapterFourFact(state, "light_grid_locked");
+    this.phaseRuntimeTargets.get(LIGHT_GRID_RUNTIME.panel.targetId)?.boundsObject.setVisible(targetVisible);
+    for (const region of LIGHT_GRID_RUNTIME.visualRegions) {
+      const on = (state.chapter4.lightGrid.mask & (1 << lightZoneBit(region.id))) !== 0;
+      this.lightGridOverlays.get(region.id)?.setFillStyle(0x020711, on ? 0.08 : 0.7);
+    }
+    const panelFrame = state.chapter4.lightGrid.locked
+      ? "open_restored"
+      : this.hostPowerPanelOpen
+        ? state.chapter4.lightGrid.mask === chapterFourContent.lightGrid.initialMask
+          ? "open_powered"
+          : "open_partial"
+        : "closed";
+    if (this.lightGridPanelSprite?.active
+      && this.lightGridPanelSprite.frame.name !== panelFrame) {
+      this.lightGridPanelSprite.setFrame(panelFrame);
+    }
+  }
+
+  private createLightGridRuntime(): void {
+    this.destroyLightGridRuntime("recreate");
+    const floor = getFloor(1);
+    const bounds = LIGHT_GRID_RUNTIME.panel.installationBounds;
+    const zone = this.add.zone(
+      floor.offsetX + rectCenterX(bounds),
+      rectCenterY(bounds),
+      bounds.width,
+      bounds.height
+    );
+    const outward = zone.getBounds();
+    const derived = {
+      x: Math.floor(outward.left - floor.offsetX),
+      y: Math.floor(outward.top),
+      width: Math.ceil(outward.right - floor.offsetX) - Math.floor(outward.left - floor.offsetX),
+      height: Math.ceil(outward.bottom) - Math.floor(outward.top)
+    };
+    if (!rectEquals(derived, bounds)) {
+      zone.destroy();
+      this.persistentContractFailures.add(`light_grid_panel_bounds:${JSON.stringify(derived)}`);
+      return;
+    }
+    this.phaseRuntimeTargets.set(LIGHT_GRID_RUNTIME.panel.targetId, {
+      targetId: LIGHT_GRID_RUNTIME.panel.targetId,
+      entityId: LIGHT_GRID_RUNTIME.panel.entityId,
+      floor: 1,
+      boundsObject: zone
+    });
+    this.lightGridPanelSprite = this.add.sprite(
+      floor.offsetX + rectRight(LIGHT_GRID_RUNTIME.panel.visibleBoxBounds),
+      LIGHT_GRID_RUNTIME.panel.visibleBoxBounds.y,
+      "chapter4_power_panel_states",
+      "closed"
+    ).setOrigin(1, 0)
+      .setScale(0.11)
+      .setDepth(PLAYER_DEPTH_BASE + LIGHT_GRID_RUNTIME.panel.visibleBoxBounds.y + 4);
+    for (const region of LIGHT_GRID_RUNTIME.visualRegions) {
+      const overlay = this.add.rectangle(
+        floor.offsetX + rectCenterX(region.bounds),
+        rectCenterY(region.bounds),
+        region.bounds.width,
+        region.bounds.height,
+        0x020711,
+        0.7
+      ).setDepth(PLAYER_DEPTH_BASE - 180);
+      this.lightGridOverlays.set(region.id, overlay);
+    }
+  }
+
+  private destroyFinalClockRuntime(_reason: string): void {
+    this.input?.off("pointermove", this.handleFinalClockPointerMove, this);
+    this.input?.off("pointerup", this.handleFinalClockPointerUp, this);
+    this.input?.off("pointerupoutside", this.handleFinalClockPointerUp, this);
+    this.removeFinalClockDomCancelListener();
+    if (this.finalClockDomCanvas) {
+      this.finalClockDomCanvas.removeEventListener(
+        "pointerdown",
+        this.handleFinalClockDomPointerDown,
+        true
+      );
+    }
+    this.finalClockDomCanvas = null;
+    this.finalClockPendingDomPointerId = null;
+    this.finalClockDragSafetyTimer?.remove(false);
+    this.finalClockDragSafetyTimer = null;
+    this.finalClockTween?.stop();
+    this.finalClockTween = null;
+    this.minuteTheftPaperTween?.stop();
+    this.minuteTheftPaperTween = null;
+    this.finalClockMinuteLine?.destroy();
+    this.finalClockMinuteLine = null;
+    this.finalClockEndpointHandle?.destroy();
+    this.finalClockEndpointHandle = null;
+    this.finalClockEndpointZone?.destroy();
+    this.finalClockEndpointZone = null;
+    this.minuteTheftPaperSprite?.destroy();
+    this.minuteTheftPaperSprite = null;
+    this.phaseRuntimeTargets.delete(FINAL_CLOCK_RUNTIME.endpoint.targetId);
+    this.finalClockDragActive = false;
+    this.finalClockDragPointerId = null;
+    this.finalClockDragAutoCommit = false;
+    this.finalClockMinuteAngle = FINAL_CLOCK_RUNTIME.initialAngleDegrees;
+  }
+
+  private destroyLightGridRuntime(_reason: string): void {
+    this.phaseRuntimeTargets.get(LIGHT_GRID_RUNTIME.panel.targetId)?.boundsObject.destroy();
+    this.phaseRuntimeTargets.delete(LIGHT_GRID_RUNTIME.panel.targetId);
+    this.lightGridPanelSprite?.destroy();
+    this.lightGridPanelSprite = null;
+    for (const overlay of this.lightGridOverlays.values()) overlay.destroy();
+    this.lightGridOverlays.clear();
+    this.hostPowerPanelOpen = false;
+  }
+
+  private destroyTask11Runtime(reason: string): void {
+    this.destroyFinalClockRuntime(reason);
+    this.destroyLightGridRuntime(reason);
+  }
+
+  private preferredDestinationForFloor(targetFloor: DisplayFloor): {
+    roomId: string;
+    checkpoint: RpgCheckpointId;
+  } {
+    const state = this.bridge.getState();
+    const override = PHASE_TRAVEL_ROOM_OVERRIDES[state.chapter4.phase]?.[targetFloor];
+    if (override) return override;
+    const floor = getFloor(targetFloor);
+    return { roomId: floor.roomId, checkpoint: floor.checkpoint };
+  }
+
+  private requestMove(targetFloor: DisplayFloor, route: TravelRoute): void {
+    if (this.pendingMove
+      || targetFloor === this.currentFloor
+      || OPENING_PHASES.has(this.bridge.getState().chapter4.phase)) return;
+    const destinationFloor = getFloor(targetFloor);
+    const destination = this.preferredDestinationForFloor(targetFloor);
+    const requestId = `c4-755-scene-${++this.requestSerial}`;
+    this.pendingMove = { requestId, fromFloor: this.currentFloor, targetFloor, route };
+    this.pendingMoveTimer?.remove(false);
+    this.pendingMoveTimer = this.time.delayedCall(REQUEST_TIMEOUT_MS, () => {
+      if (this.pendingMove?.requestId !== requestId) return;
+      if (this.pendingMove.route === "stair" && this.finalChaseState?.phase === "portal_transfer") {
+        this.finalChaseState = resolveChapterFourFinalChasePortal(this.finalChaseState, false);
+      }
+      this.pendingMove = null;
+      this.pendingMoveTimer = null;
+      this.showRuntimeInteractionFailure("floor_request_timeout");
+    });
+    const state = this.bridge.getState();
+    const authoredStairTransfer = route === "stair"
+      && ((state.chapter4.phase === "final_chase" && this.currentFloor === 1 && targetFloor === 2)
+        || (state.chapter4.phase === "return_to_clock" && this.currentFloor === 2 && targetFloor === 1));
+    if (authoredStairTransfer) {
+      this.request755Intent({
+        type: "traverse_main_stair",
+        fromFloor: getFloor(this.currentFloor).storyFloor as "A1" | "A2",
+        toFloor: destinationFloor.storyFloor as "A1" | "A2",
+        expectedAttempt: state.chapter4.chaseAttempt
+      }, requestId);
+      return;
+    }
+    this.request755Intent({
+      type: "move_to_location",
+      floor: destinationFloor.storyFloor,
+      roomId: destination.roomId,
+      checkpoint: destination.checkpoint
+    }, requestId);
+  }
+
+  private requestStoryIntent(
+    intent: ChapterFour755Intent,
+    targetId?: string,
+    runtimeTarget?: ChapterFour755RuntimeTargetContext
+  ): void {
+    if (this.pendingStoryRequest) return;
+    const requestId = `c4-755-story-${++this.requestSerial}`;
+    const timer = this.time.delayedCall(STORY_REQUEST_TIMEOUT_MS, () => {
+      if (this.pendingStoryRequest?.requestId !== requestId) return;
+      const timedOutIntentType = this.pendingStoryRequest.intentType;
+      this.pendingStoryRequest = null;
+      if (timedOutIntentType === "complete_bakery_conveyor_stop") {
+        this.rollbackBakeryConveyorStopToCommittedState(
+          "传送带停机确认超时，已恢复到当前进度，将自动重试。"
+        );
+        return;
+      }
+      if (timedOutIntentType === "complete_room204_projection") {
+        this.rollbackRoom204ProjectionToCommittedState(
+          "07:55 残影投影确认超时，已回到已完成的教室布局，将自动重试。"
+        );
+        return;
+      }
+      if (timedOutIntentType === "begin_final_clock_drag"
+        || timedOutIntentType === "complete_minute_theft") {
+        this.rollbackMinuteTheftToCommittedState(
+          "最终拨钟确认超时，已恢复转动的旧钟和签到纸条，可重试。"
+        );
+        return;
+      }
+      if (timedOutIntentType === "reach_202_threshold"
+        && this.finalChaseState?.phase === "finish_pending") {
+        this.finalChaseState = resolveChapterFourFinalChaseFinish(this.finalChaseState, false);
+      }
+      if (timedOutIntentType === "fail_chase"
+        && this.finalChaseState?.phase === "failure_pending") {
+        this.finalChaseState = resolveChapterFourFinalChaseFailure(this.finalChaseState, false);
+      }
+      this.storyPresentation = "idle";
+      this.destroyExternalTimeOverlay();
+      this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
+      this.showRuntimeInteractionFailure(`story_intent_timeout:${timedOutIntentType}`);
+      this.syncStoryInputLock();
+    });
+    this.pendingStoryRequest = { requestId, intentType: intent.type, targetId, timer };
+    this.syncStoryInputLock();
+    this.request755Intent(intent, requestId, runtimeTarget);
+  }
+
+  private request755Intent(
+    intent: ChapterFour755Intent,
+    requestId = `c4-755-scene-${++this.requestSerial}`,
+    runtimeTarget?: ChapterFour755RuntimeTargetContext
+  ): void {
+    this.bridge.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent,
+      ...(runtimeTarget ? { runtimeTarget } : {})
+    });
+  }
+
+  private handleIntentResolved(payload?: Record<string, unknown>): void {
+    if (this.pendingStoryRequest
+      && String(payload?.requestId ?? "") === this.pendingStoryRequest.requestId) {
+      this.handleStoryIntentResolved(payload);
+      return;
+    }
+    const pending = this.pendingMove;
+    if (!pending || String(payload?.requestId ?? "") !== pending.requestId) return;
+    this.pendingMoveTimer?.remove(false);
+    this.pendingMoveTimer = null;
+    this.pendingMove = null;
+    if (!resultAccepted(payload)) {
+      if (pending.route === "stair" && this.finalChaseState?.phase === "portal_transfer") {
+        this.finalChaseState = resolveChapterFourFinalChasePortal(this.finalChaseState, false);
+      }
+      const reason = resultReason(payload);
+      const feedback: Readonly<Record<string, string>> = {
+        already_complete: "当前楼层状态已经同步。",
+        wrong_mode: "请切回浅色操作后再移动。",
+        locked: "当前剧情阶段没有开放这条楼层通道。",
+        inactive: "当前无法前往该楼层。"
+      };
+      if (["invalid_request", "duplicate_request", "system_failure"].includes(reason)) {
+        this.showRuntimeInteractionFailure(`floor_request_rejected:${reason}`);
+      } else {
+        this.showFeedback(feedback[reason] ?? "当前无法前往该楼层。");
+      }
+      return;
+    }
+    if (pending.route === "stair" && this.finalChaseState?.phase === "portal_transfer") {
+      this.finalChaseState = resolveChapterFourFinalChasePortal(this.finalChaseState, true);
+    }
+    // Transfer animation starts only after the controller accepts the authored
+    // move or main-stair transaction.
+    if (pending.route === "elevator") this.beginAcceptedElevatorTravel(pending);
+    else this.beginAcceptedStairTransfer(pending);
+  }
+
+  private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
+    const pending = this.pendingStoryRequest;
+    if (!pending) return;
+    pending.timer.remove(false);
+    this.pendingStoryRequest = null;
+    if (!resultAccepted(payload)) {
+      const detail = String(payload?.feedback ?? "当前剧情条件尚未满足。");
+      if (pending.intentType === "reach_202_threshold"
+        && this.finalChaseState?.phase === "finish_pending") {
+        this.finalChaseState = resolveChapterFourFinalChaseFinish(this.finalChaseState, false);
+      }
+      if (pending.intentType === "fail_chase"
+        && this.finalChaseState?.phase === "failure_pending") {
+        this.finalChaseState = resolveChapterFourFinalChaseFailure(this.finalChaseState, false);
+      }
+      if (pending.intentType === "complete_bakery_conveyor_stop") {
+        this.rollbackBakeryConveyorStopToCommittedState(
+          `${detail}已恢复到当前进度，将自动重试。`
+        );
+        return;
+      }
+      if (pending.intentType === "complete_room204_projection") {
+        this.rollbackRoom204ProjectionToCommittedState(
+          `${detail}已回到已完成的教室布局，将自动重试。`
+        );
+        return;
+      }
+      if (pending.intentType === "begin_final_clock_drag"
+        || pending.intentType === "complete_minute_theft") {
+        this.rollbackMinuteTheftToCommittedState(
+          `${detail}已恢复转动的旧钟和签到纸条，可重试。`
+        );
+        return;
+      }
+      this.storyPresentation = "idle";
+      this.destroyExternalTimeOverlay();
+      this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
+      let inventoryFeedbackEmitted = false;
+      if (pending.intentType === "install_hour_hand") {
+        this.emitDropFeedback("oldClockHourHand", resultReason(payload), detail);
+        inventoryFeedbackEmitted = true;
+      }
+      if (pending.intentType === "install_final_minute") {
+        this.emitDropFeedback("finalMinute", resultReason(payload), detail);
+        inventoryFeedbackEmitted = true;
+      }
+      if (pending.intentType === "read_campus_card") {
+        this.emitDropFeedback("campusCard", resultReason(payload), detail);
+        inventoryFeedbackEmitted = true;
+      }
+      if (pending.intentType === "submit_attendance_paper") {
+        this.emitDropFeedback("attendanceRecordPaper", resultReason(payload), detail);
+        inventoryFeedbackEmitted = true;
+      }
+      if (pending.intentType === "open_cart_wheel_cover") {
+        this.emitDropFeedback("shortPryBar", resultReason(payload), detail);
+        inventoryFeedbackEmitted = true;
+      }
+      if (pending.intentType === "lubricate_cart_wheel"
+        || pending.intentType === "lubricate_clock_gear") {
+        this.emitDropFeedback("universalLubricatingOil", resultReason(payload), detail);
+        inventoryFeedbackEmitted = true;
+      }
+      if (!inventoryFeedbackEmitted) this.showFeedback(detail);
+      this.syncStoryInputLock();
+      return;
+    }
+    switch (pending.intentType) {
+      case "complete_opening_paper_flight":
+        this.storyPresentation = "idle";
+        this.ensureOpeningPaperAtNoticeboard();
+        break;
+      case "catch_attendance_paper":
+        this.openingPaperSprite?.destroy();
+        this.openingPaperSprite = null;
+        this.storyPresentation = "idle";
+        this.beginExternalTimeRejection();
+        break;
+      case "resolve_external_time_rejection":
+        this.destroyExternalTimeOverlay();
+        this.storyPresentation = "idle";
+        break;
+      case "resolve_hall_clock_inspection":
+        this.storyPresentation = "idle";
+        break;
+      case "inspect_hall_clock":
+        this.storyPresentation = "idle";
+        this.beginHallClockInspection();
+        break;
+      case "pull_hall_clock":
+        this.storyPresentation = "idle";
+        this.beginFirstHallClockPullPresentation();
+        break;
+      case "inspect_bakery_conveyor_lamp":
+        this.storyPresentation = "idle";
+        this.beginBakeryConveyorStopPresentation();
+        break;
+      case "complete_bakery_conveyor_stop": {
+        const state = this.bridge.getState();
+        if (!hasChapterFourFact(state, "bakery_hour_hand_exposed")) {
+          this.rollbackBakeryConveyorStopToCommittedState(
+            "传送带停机结果缺少已提交记录，已恢复到当前进度，将自动重试。"
+          );
+          break;
+        }
+        this.pauseBakeryActivity();
+        this.revealBakeryHourHand(true);
+        this.storyPresentation = "idle";
+        break;
+      }
+      case "collect_hour_hand":
+        this.revealBakeryHourHand(false);
+        this.storyPresentation = "idle";
+        break;
+      case "install_hour_hand":
+        this.emitDropFeedback(
+          "oldClockHourHand",
+          "accepted",
+          "金属时针已装回旧钟，时间已切换到 18:50。"
+        );
+        this.storyPresentation = "idle";
+        break;
+      case "observe_a3_reference":
+        this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "三楼教室保留了 07:55 之前的整齐朝向。",
+          tone: "system",
+          durationMs: 2200
+        });
+        break;
+      case "observe_room204_residual":
+        this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "残影把每组桌椅原来的位置都记下来了。",
+          tone: "system",
+          durationMs: 2200
+        });
+        break;
+      case "place_room204_piece":
+        this.room204SelectedPieceId = null;
+        this.updateRoom204CarryGhost();
+        this.storyPresentation = "idle";
+        break;
+      case "complete_room204_projection": {
+        const state = this.bridge.getState();
+        if (!hasChapterFourFact(state, "room204_projection_completed")) {
+          this.rollbackRoom204ProjectionToCommittedState(
+            "07:55 投影结果缺少已提交记录，将自动重试。"
+          );
+          break;
+        }
+        this.clearStoryPresentationTimers();
+        this.destroyRoom204ProjectionOverlay();
+        this.storyPresentation = "idle";
+        break;
+      }
+      case "collect_positioning_plate":
+        this.storyPresentation = "idle";
+        break;
+      case "install_positioning_plate":
+        this.emitDropFeedback(
+          "clockPositioningPlate",
+          "accepted",
+          "定位盘已装回旧钟，现在线索转入 22:45 维护时段。"
+        );
+        this.storyPresentation = "idle";
+        break;
+      case "inspect_cart_wheel":
+        this.storyPresentation = "idle";
+        break;
+      case "collect_short_pry_bar":
+        this.storyPresentation = "idle";
+        break;
+      case "open_cart_wheel_cover":
+        this.emitDropFeedback("shortPryBar", "accepted", "轮罩已打开，短撬棍完成了最后一次用途。");
+        this.storyPresentation = "idle";
+        break;
+      case "collect_lubricating_oil":
+        this.storyPresentation = "idle";
+        break;
+      case "lubricate_cart_wheel":
+        this.emitDropFeedback(
+          "universalLubricatingOil",
+          "accepted",
+          "保洁车轮已修好，瓶里还剩一半润滑油。"
+        );
+        this.storyPresentation = "idle";
+        break;
+      case "lubricate_clock_gear":
+        this.emitDropFeedback(
+          "universalLubricatingOil",
+          "accepted",
+          "旧钟齿轮已恢复转动。"
+        );
+        try {
+          this.ensureHallClockStateSprite("gear_running");
+        } catch (error) {
+          this.persistentContractFailures.add(`maintenance_clock_running:${errorMessage(error)}`);
+        }
+        this.storyPresentation = "idle";
+        break;
+      case "recover_from_maintenance_patrol":
+        this.resetMaintenanceGuardAfterRecovery();
+        this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "已回到大厅安全点。维修进度和道具均已保留。",
+          tone: "system",
+          durationMs: 2200
+        });
+        break;
+      case "begin_final_clock_drag":
+        this.beginAcceptedFinalClockDrag();
+        break;
+      case "complete_minute_theft": {
+        const committed = this.bridge.getState();
+        if (committed.chapter4.phase !== "blackout_light_grid"
+          || committed.chapter4.timeState !== "0754_blackout"
+          || committed.chapter4.guardMode !== "absent"
+          || committed.chapter4.lightGrid.mask !== chapterFourContent.lightGrid.initialMask
+          || committed.chapter4.lightGrid.locked
+          || committed.items.attendanceRecordPaper
+          || !hasChapterFourFact(committed, "paper_temporarily_out_of_inventory")) {
+          this.rollbackMinuteTheftToCommittedState(
+            "偷走最后一分钟的提交不完整，已恢复旧钟和纸条，可重试。"
+          );
+          break;
+        }
+        this.safeBridgeEmit("minute_theft_committed", {
+          phase: committed.chapter4.phase,
+          timeState: committed.chapter4.timeState,
+          worldTimeSeconds: committed.chapter4.worldTimeSeconds,
+          phoneStatusTimeSeconds: committed.chapter4.phoneStatusTimeSeconds
+        });
+        break;
+      }
+      case "open_power_panel":
+        this.storyPresentation = "idle";
+        break;
+      case "trigger_minute_theft":
+        this.storyPresentation = "idle";
+        break;
+      case "lock_light_grid":
+        this.storyPresentation = "idle";
+        break;
+      case "reach_202_threshold":
+        if (this.finalChaseState?.phase === "finish_pending") {
+          this.finalChaseState = resolveChapterFourFinalChaseFinish(this.finalChaseState, true);
+        }
+        this.destroyChaseRuntime();
+        this.currentFloor = 2;
+        this.player.setPosition(
+          getFloor(2).offsetX + FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.x,
+          FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.y
+        ).setVelocity(0, 0)
+          .setDepth(PLAYER_DEPTH_BASE + FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.y);
+        this.animator.setFacing("up");
+        this.configureCameraForCurrentFloor();
+        this.cameras.main.centerOn(this.player.x, this.player.y);
+        this.storyPresentation = "idle";
+        break;
+      case "fail_chase":
+        if (this.finalChaseState?.phase === "failure_pending") {
+          this.finalChaseState = resolveChapterFourFinalChaseFailure(this.finalChaseState, true);
+        }
+        this.destroyChaseRuntime();
+        this.ensureFinalChaseRuntime(this.bridge.getState());
+        this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "被清楼保安拦下了，已回到一楼大厅重来。",
+          tone: "system",
+          durationMs: 2200
+        });
+        break;
+      case "collect_final_minute":
+        this.destroyFinalMinuteRuntime("collected");
+        this.destroyRoom202RecoveryBarrier("collected");
+        this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "最后一分钟和签到纸条都回来了。",
+          tone: "success",
+          durationMs: 2400
+        });
+        break;
+      case "install_final_minute":
+        this.destroyFinalClockRuntime("final_minute_installed");
+        try {
+          this.ensureHallClockStateSprite("0755_complete");
+        } catch (error) {
+          this.persistentContractFailures.add(`final_clock_0755:${errorMessage(error)}`);
+        }
+        this.emitDropFeedback(
+          "finalMinute",
+          "accepted",
+          "最后一分钟已装回旧钟。时间已恢复到 07:55。"
+        );
+        this.storyPresentation = "idle";
+        break;
+      case "read_campus_card":
+        this.emitDropFeedback(
+          "campusCard",
+          "accepted",
+          "校园卡已通过签到校验。"
+        );
+        this.storyPresentation = "idle";
+        break;
+      case "submit_attendance_paper":
+        this.emitDropFeedback(
+          "attendanceRecordPaper",
+          "accepted",
+          "签到记录已提交。"
+        );
+        this.storyPresentation = "idle";
+        break;
+      case "acknowledge_exterior_closure":
+        this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "外面的灯已经全部亮起。07:55 这一次被保留下来了。",
+          tone: "success",
+          durationMs: 2600
+        });
+        break;
+      default:
+        this.storyPresentation = "idle";
+        break;
+    }
+    this.syncStoryInputLock();
+  }
+
+  private syncOpeningPresentation(): void {
+    if (!this.handoffReleased
+      || this.pendingStoryRequest
+      || this.storyPresentation !== "idle"
+      || this.time.now < this.storyRetryNotBeforeMs) return;
+    const state = this.bridge.getState();
+    if (state.chapter4.phase === "opening_handoff") {
+      if (hasChapterFourFact(state, "opening_paper_at_noticeboard")) {
+        if (!hasChapterFourFact(state, "opening_paper_caught")) {
+          this.ensureOpeningPaperAtNoticeboard();
+        }
+      } else {
+        this.beginOpeningPaperFlight();
+      }
+      return;
+    }
+    if (state.chapter4.phase === "opening_paper_caught"
+      && !hasChapterFourFact(state, "external_time_rejected")) {
+      this.beginExternalTimeRejection();
+      return;
+    }
+    if (state.chapter4.phase === "hall_clock_inspection"
+      && !hasChapterFourFact(state, "hall_clock_inspected")) {
+      this.beginHallClockInspection();
+    }
+  }
+
+  private syncBakeryPresentation(): void {
+    if (this.pendingStoryRequest
+      || this.storyPresentation !== "idle"
+      || this.time.now < this.storyRetryNotBeforeMs) return;
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "bakery_hour_hand") return;
+    if (hasChapterFourFact(state, "bakery_conveyor_lamp_inspected")
+      && !hasChapterFourFact(state, "bakery_hour_hand_exposed")
+      && !hasChapterFourFact(state, "bakery_hour_hand_collected")
+      && !hasChapterFourFact(state, "hour_hand_installed")) {
+      this.beginBakeryConveyorStopPresentation();
+    }
+  }
+
+  private beginBakeryConveyorStopPresentation(): void {
+    if (this.storyPresentation !== "idle" || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "bakery_hour_hand"
+      || !hasChapterFourFact(state, "bakery_conveyor_lamp_inspected")
+      || hasChapterFourFact(state, "bakery_hour_hand_exposed")) return;
+    const source = BAKERY_RUNTIME.targetEntities.find(
+      (entry) => entry.targetId === "a1_bakery_conveyor_edge"
+    )!.installationBounds;
+    const floor = getFloor(1);
+    const foot = this.playerFootPoint(floor);
+    this.storyPresentation = "bakery_conveyor_stop";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    this.paintBakeryInspectionLamp(true);
+    this.safeBridgeEmit("chapter4_bakery_conveyor_stop", {
+      sourceWorldX: floor.offsetX + rectCenterX(source),
+      playerWorldX: foot.worldX,
+      distance: pointDistanceToRect({ x: foot.x, y: foot.y }, source),
+      phase: "lamp_accepted"
+    });
+    this.scheduleStoryPresentation(120, () => {
+      if (this.bakeryConveyorTween) this.bakeryConveyorTween.timeScale = 0.45;
+    });
+    this.scheduleStoryPresentation(360, () => this.pauseBakeryActivity());
+    this.scheduleStoryPresentation(520, () => {
+      this.revealBakeryHourHand(true);
+      this.safeBridgeEmit("chapter4_bakery_hour_hand_revealed", {
+        sourceWorldX: floor.offsetX + rectCenterX(source),
+        playerWorldX: foot.worldX,
+        distance: pointDistanceToRect({ x: foot.x, y: foot.y }, source),
+        committed: false
+      });
+    });
+    this.scheduleStoryPresentation(700, () => {
+      this.requestStoryIntent({ type: "complete_bakery_conveyor_stop" });
+    });
+  }
+
+  private maybeEmitBakeryApproachCue(): void {
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "bakery_hour_hand" || this.currentFloor !== 1) return;
+    const source = BAKERY_RUNTIME.targetEntities.find(
+      (entry) => entry.targetId === "a1_bakery_conveyor_edge"
+    )!.installationBounds;
+    const floor = getFloor(1);
+    const foot = this.playerFootPoint(floor);
+    const distance = pointDistanceToRect({ x: foot.x, y: foot.y }, source);
+    if (distance > 320) return;
+    const signature = `${state.chapter4.phase}:${state.chapter4.timeState}`;
+    if (signature === this.bakeryApproachCueSignature) return;
+    this.bakeryApproachCueSignature = signature;
+    this.safeBridgeEmit("chapter4_bakery_approach", {
+      sourceWorldX: floor.offsetX + rectCenterX(source),
+      playerWorldX: foot.worldX,
+      distance
+    });
+  }
+
+  private beginOpeningPaperFlight(): void {
+    if (this.storyPresentation !== "idle" || this.pendingStoryRequest) return;
+    this.storyPresentation = "paper_flight";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    this.openingPaperSprite?.destroy();
+    const target = CHAPTER_FOUR_755_INTERACTION_TARGETS.a1_noticeboard_paper;
+    if (!target.bounds) {
+      this.storyPresentation = "idle";
+      this.syncStoryInputLock();
+      this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
+      this.showRuntimeInteractionFailure("noticeboard_paper_runtime_bounds_missing");
+      return;
+    }
+    const vectors = {
+      up: { x: 0, y: -1 }, down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 }, right: { x: 1, y: 0 }
+    } as const;
+    const vector = vectors[this.animator.cardinalFacing];
     const floor = getFloor(this.currentFloor);
-    this.player.setVisible(true).setDepth(ELEVATOR_FRONT_ACTOR_DEPTH + 1);
+    const foot = this.playerFootPoint(floor);
+    const startDistance = OPENING_HANDSHAKE.paper.startDistanceMeters
+      * CHAPTER_FOUR_WORLD_PIXELS_PER_METER;
+    const startX = Phaser.Math.Clamp(foot.worldX + vector.x * startDistance, 24, FLOOR_SIZE.width - 24);
+    const startY = Phaser.Math.Clamp(foot.y + vector.y * startDistance, 44, FLOOR_SIZE.height - 24);
+    const endX = rectCenterX(target.bounds);
+    const endY = rectBottom(target.bounds);
+    const paper = this.add.sprite(
+      startX,
+      startY,
+      "chapter4_story_items",
+      "sign_in_record_paper"
+    ).setScale(0.18).setDepth(PLAYER_DEPTH_BASE + startY + 4).setAlpha(0.96);
+    this.openingPaperSprite = paper;
+    try {
+      this.tweens.add({
+        targets: paper,
+        x: endX,
+        y: endY,
+        angle: 18,
+        duration: 1900,
+        ease: "Sine.InOut",
+        onUpdate: () => paper.setDepth(PLAYER_DEPTH_BASE + paper.y + 4),
+        onComplete: () => {
+          paper.setPosition(endX, endY).setAngle(0).setDepth(PLAYER_DEPTH_BASE + endY + 4);
+          this.requestStoryIntent({ type: "complete_opening_paper_flight" });
+        }
+      });
+    } catch {
+      paper.setPosition(endX, endY).setAngle(0).setDepth(PLAYER_DEPTH_BASE + endY + 4);
+      this.requestStoryIntent({ type: "complete_opening_paper_flight" });
+    }
+  }
+
+  private ensureOpeningPaperAtNoticeboard(): void {
+    const target = CHAPTER_FOUR_755_INTERACTION_TARGETS.a1_noticeboard_paper;
+    if (!target.bounds) return;
+    if (!this.openingPaperSprite?.active) {
+      this.openingPaperSprite = this.add.sprite(
+        rectCenterX(target.bounds),
+        rectBottom(target.bounds),
+        "chapter4_story_items",
+        "sign_in_record_paper"
+      ).setScale(0.18);
+    }
+    this.openingPaperSprite
+      .setPosition(rectCenterX(target.bounds), rectBottom(target.bounds))
+      .setAngle(0)
+      .setVisible(true)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(target.bounds) + 4);
+  }
+
+  private beginExternalTimeRejection(): void {
+    if (this.storyPresentation !== "idle" || this.pendingStoryRequest) return;
+    this.storyPresentation = "external_time_rejection";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    try {
+      this.createExternalTimeOverlay();
+    } catch (error) {
+      this.persistentContractFailures.add(`external_time_overlay:${errorMessage(error)}`);
+    }
+    this.scheduleStoryPresentation(5600, () => this.safeBridgeEmit("rpg_subtitle", {
+      text: "记录回来了，你没有回到记录发生的时候。",
+      tone: "system",
+      durationMs: 2400
+    }));
+    this.scheduleStoryPresentation(7000, () => {
+      this.requestStoryIntent({ type: "resolve_external_time_rejection" });
+    });
+  }
+
+  private createExternalTimeOverlay(): void {
+    this.destroyExternalTimeOverlay();
+    const labelStyle: Phaser.Types.GameObjects.Text.TextStyle = {
+      fontFamily: "'Fusion Pixel', monospace",
+      color: "#f7f1dc",
+      fontSize: "18px",
+      align: "center"
+    };
+    const overlay = this.add.container(480, 270).setScrollFactor(0).setDepth(12500);
+    const shade = this.add.rectangle(0, 0, 960, 540, 0x02060d, 0.84);
+    const panel = this.add.rectangle(0, 0, 660, 360, 0x0b1726, 0.98)
+      .setStrokeStyle(3, 0x8fe8ff, 0.9);
+    const externalTitle = this.add.text(-205, -125, "外部现场", {
+      ...labelStyle, color: "#9bb0c7", fontSize: "16px"
+    }).setOrigin(0.5);
+    const externalTime = this.add.text(-205, -60, "22:45", {
+      ...labelStyle, color: "#ffd36f", fontSize: "48px"
+    }).setOrigin(0.5);
+    const divider = this.add.rectangle(0, 0, 2, 238, 0x52708f, 0.76);
+    const phone = this.add.rectangle(205, 4, 230, 286, 0x111827, 1)
+      .setStrokeStyle(4, 0xd8e5f2, 0.9);
+    const phoneSpeaker = this.add.rectangle(205, -114, 54, 5, 0x61738a, 0.92);
+    const phoneTitle = this.add.text(205, -82, "手机状态栏 · 冻结", {
+      ...labelStyle, color: "#9bb0c7", fontSize: "14px"
+    }).setOrigin(0.5);
+    const phoneTime = this.add.text(205, -24, "07:55:23", {
+      ...labelStyle, color: "#f7f1dc", fontSize: "31px"
+    }).setOrigin(0.5);
+    const trust = this.add.text(205, 46, "不可信", {
+      ...labelStyle, color: "#ff786f", fontSize: "24px"
+    }).setOrigin(0.5);
+    const detail = this.add.text(0, 142, "外部时间与手机冻结时间冲突 · 签到提交已拒绝", {
+      ...labelStyle, color: "#8fe8ff", fontSize: "16px"
+    }).setOrigin(0.5);
+    overlay.add([
+      shade, panel, externalTitle, externalTime, divider,
+      phone, phoneSpeaker, phoneTitle, phoneTime, trust, detail
+    ]);
+    this.externalTimeOverlay = overlay;
+  }
+
+  private destroyExternalTimeOverlay(): void {
+    this.externalTimeOverlay?.destroy(true);
+    this.externalTimeOverlay = null;
+  }
+
+  private beginHallClockInspection(): void {
+    if (this.storyPresentation !== "idle" || this.pendingStoryRequest) return;
+    this.storyPresentation = "hall_clock_inspection";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    try {
+      this.ensureHallClockStateSprite("2245_missing_hour_hand");
+    } catch (error) {
+      this.persistentContractFailures.add(`opening_clock_visual:${errorMessage(error)}`);
+    }
+    this.safeBridgeEmit("rpg_subtitle", {
+      text: "旧钟停在 22:45。表盘能被拨动，但响应方向和幅度都不对。",
+      tone: "system",
+      durationMs: 2600
+    });
+    this.scheduleStoryPresentation(1700, () => {
+      try {
+        this.ensureHallClockStateSprite("gear_stuttering");
+      } catch (error) {
+        this.persistentContractFailures.add(`opening_clock_gear_visual:${errorMessage(error)}`);
+      }
+      this.safeBridgeEmit("rpg_chapter4_clock_cue", {
+        cue: "gear_stuttering",
+        committed: false
+      });
+    });
+    this.scheduleStoryPresentation(3200, () => {
+      try {
+        this.ensureHallClockStateSprite("2245_missing_hour_hand");
+      } catch (error) {
+        this.persistentContractFailures.add(`opening_clock_missing_hand_visual:${errorMessage(error)}`);
+      }
+    });
+    this.scheduleStoryPresentation(4700, () => {
+      this.requestStoryIntent({ type: "resolve_hall_clock_inspection" });
+    });
+  }
+
+  private beginFirstHallClockPullPresentation(): void {
+    if (this.storyPresentation !== "idle" || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    const projection = selectChapterFourMazeProjection(state);
+    const committed = state.chapter4.phase === "bakery_hour_hand"
+      && state.chapter4.timeAuthority === "hall_clock"
+      && state.chapter4.timeState === "1225_bakery"
+      && state.chapter4.worldTimeSeconds === 44700
+      && state.chapter4.phoneStatusTimeSeconds === 44700
+      && state.chapter4.phoneStatusTimeTrusted
+      && projection.activePlateIds.includes("a1_1225_bakery");
+    if (!committed) {
+      this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
+      this.showRuntimeInteractionFailure("first_clock_pull_commit_incomplete");
+      return;
+    }
+
+    this.storyPresentation = "first_clock_pull";
+    this.syncStoryInputLock();
+    this.clearStoryPresentationTimers();
+    try {
+      this.ensureHallClockStateSprite("gear_stuttering");
+    } catch (error) {
+      this.persistentContractFailures.add(`first_clock_pull_visual:${errorMessage(error)}`);
+    }
+    this.safeBridgeEmit("rpg_chapter4_clock_cue", {
+      cue: "gear_stuttering",
+      committed: true,
+      timeState: state.chapter4.timeState
+    });
+    for (const delayMs of [0, 110, 230, 360]) {
+      this.scheduleStoryPresentation(delayMs, () => {
+        try {
+          this.cameras.main.flash(68, 255, 244, 198, false);
+        } catch (error) {
+          this.persistentContractFailures.add(`first_clock_pull_flash:${errorMessage(error)}`);
+        }
+      });
+    }
+    this.scheduleStoryPresentation(430, () => {
+      try {
+        this.ensureHallClockStateSprite("1225_missing_hour_hand");
+      } catch (error) {
+        this.persistentContractFailures.add(`first_clock_pull_1225_visual:${errorMessage(error)}`);
+      }
+      this.safeBridgeEmit("rpg_chapter4_clock_cue", {
+        cue: "1225_missing_hour_hand",
+        committed: true,
+        timeState: "1225_bakery"
+      });
+    });
+    this.scheduleStoryPresentation(950, () => {
+      this.storyPresentation = "idle";
+      this.syncStoryInputLock();
+      this.safeBridgeEmit("rpg_subtitle", {
+        text: "旧钟停在 12:25。",
+        tone: "system",
+        durationMs: 2600
+      });
+    });
+  }
+
+  private ensureHallClockStateSprite(frameName: string): void {
+    const target = CHAPTER_FOUR_755_INTERACTION_TARGETS.a1_hall_clock;
+    if (!target.bounds) throw new Error("a1_hall_clock_bounds_missing");
+    if (!this.textures.exists("chapter4_clock_states")
+      || !this.textures.get("chapter4_clock_states").has(frameName)) {
+      throw new Error(`chapter4_clock_states_frame_missing:${frameName}`);
+    }
+    const floor = getFloor(1);
+    if (!this.hallClockStateSprite?.active) {
+      this.hallClockStateSprite = this.add.sprite(
+        floor.offsetX + rectCenterX(target.bounds),
+        rectCenterY(target.bounds),
+        "chapter4_clock_states",
+        frameName
+      );
+    } else {
+      this.hallClockStateSprite.setTexture("chapter4_clock_states", frameName);
+    }
+    const frame = this.hallClockStateSprite.frame;
+    const uniformScale = Math.min(
+      target.bounds.width / frame.realWidth,
+      target.bounds.height / frame.realHeight
+    );
+    this.hallClockStateSprite
+      .setPosition(floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds))
+      .setScale(uniformScale)
+      .setVisible(true)
+      .setDepth(PLAYER_DEPTH_BASE - 180);
+  }
+
+  private scheduleStoryPresentation(delayMs: number, callback: () => void): void {
+    let timer: Phaser.Time.TimerEvent;
+    timer = this.time.delayedCall(delayMs, () => {
+      this.storyPresentationTimers = this.storyPresentationTimers.filter((entry) => entry !== timer);
+      try {
+        callback();
+      } catch (error) {
+        this.persistentContractFailures.add(`story_presentation_callback:${errorMessage(error)}`);
+      }
+    });
+    this.storyPresentationTimers.push(timer);
+  }
+
+  private clearStoryPresentationTimers(): void {
+    for (const timer of this.storyPresentationTimers) timer.remove(false);
+    this.storyPresentationTimers = [];
+  }
+
+  private safeBridgeEmit(name: string, payload?: Record<string, unknown>): void {
+    try {
+      this.bridge.emit(name, payload);
+    } catch (error) {
+      this.persistentContractFailures.add(`story_bridge_emit:${name}:${errorMessage(error)}`);
+    }
+  }
+
+  private beginAcceptedElevatorTravel(pending: PendingMove): void {
+    this.closeFloorPanel();
+    this.elevatorTargetFloor = pending.targetFloor;
+    this.elevatorPhase = "closing";
+    this.tweenElevatorDoor(pending.fromFloor, 1, 0, () => {
+      this.elevatorPhase = "traveling";
+      this.player.setVisible(false);
+      const path = this.floorPath(pending.fromFloor, pending.targetFloor);
+      const direction = pending.targetFloor > pending.fromFloor ? "↑" : "↓";
+      path.forEach((floor, index) => {
+        this.time.delayedCall((index + 1) * ELEVATOR_TRAVEL_PER_FLOOR_MS, () => {
+          this.elevatorVisuals.get(floor)?.indicator.setText(`${floor}F ${direction}`);
+        });
+      });
+      this.time.delayedCall(
+        Math.max(1, path.length) * ELEVATOR_TRAVEL_PER_FLOOR_MS + 120,
+        () => this.arriveAcceptedElevator(pending)
+      );
+    });
+  }
+  private floorPath(from: DisplayFloor, to: DisplayFloor): DisplayFloor[] {
+    const step = from < to ? 1 : -1;
+    const path: DisplayFloor[] = [];
+    for (let value = from + step; step > 0 ? value <= to : value >= to; value += step) {
+      path.push(value as DisplayFloor);
+    }
+    return path;
+  }
+  private arriveAcceptedElevator(pending: PendingMove): void {
+    this.currentFloor = pending.targetFloor;
+    const floor = getFloor(this.currentFloor);
+    this.player.setPosition(
+      floor.offsetX + floor.elevator.doorCenter.x,
+      floor.elevator.doorCenter.y
+    );
+    this.configureCameraForCurrentFloor();
+    this.cameras.main.centerOn(this.player.x, this.player.y);
+    this.elevatorPhase = "destination_opening";
+    this.elevatorVisuals.get(this.currentFloor)?.lamp.setVisible(true);
+    this.setElevatorDoorProgress(this.currentFloor, 0);
+    this.tweenElevatorDoor(this.currentFloor, 0, 1, () => {
+      this.beginElevatorExit(this.currentFloor);
+    });
+  }
+  private beginElevatorExit(floorNumber: DisplayFloor): void {
+    this.elevatorPhase = "exiting";
+    const floor = getFloor(floorNumber);
+    this.player.setVisible(true).setDepth(PLAYER_DEPTH_BASE + floor.elevator.doorCenter.y + 2);
     this.animator.setFacing("down");
     this.tweens.add({
       targets: this.player,
-      x: floor.offsetX + floor.elevatorStand.x,
-      y: floor.elevatorStand.y,
+      x: floor.offsetX + floor.elevator.arrivalPosition.x,
+      y: floor.elevator.arrivalPosition.y,
       duration: ELEVATOR_BOARD_MS,
       ease: "Sine.InOut",
-      onComplete: () => this.finishElevatorExit()
+      onComplete: () => {
+        const body = this.player.body as Phaser.Physics.Arcade.Body;
+        body.enable = true;
+        body.reset(this.player.x, this.player.y);
+        this.player.setDepth(PLAYER_DEPTH_BASE + this.player.y);
+        this.elevatorPhase = "destination_closing";
+        this.tweenElevatorDoor(floorNumber, 1, 0, () => {
+          this.elevatorVisuals.get(floorNumber)?.lamp.setVisible(false);
+          this.elevatorVisuals.get(floorNumber)?.indicator.setText(`${floorNumber}F`);
+          this.elevatorPhase = "idle";
+          this.elevatorTargetFloor = null;
+          this.refreshProximity();
+        });
+      }
     });
   }
-
-  private finishElevatorExit(): void {
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.enable = true;
-    body.reset(this.player.x, this.player.y);
-    this.player.setDepth(this.player.y + 4000);
-    this.elevatorPhase = "destination_closing";
-    const changedFloor = this.currentFloor !== this.elevatorRideFromFloor;
-    if (changedFloor) {
-      this.showFeedback(`电梯已到 ${this.currentFloor}F`);
-    }
-    this.tweenElevatorDoors(this.currentFloor, 1, 0, () => {
-      this.showElevatorDoors(this.currentFloor, true);
-      const visual = this.elevatorVisuals.get(this.currentFloor);
-      visual?.callLamp.setVisible(false);
-      this.elevatorPhase = "idle";
-      this.elevatorTargetFloor = null;
-      this.elevatorDoorProgress = 0;
-      this.elevatorWaitEndsAt = 0;
-      this.refreshProximityState();
-    });
-  }
-
-  private requestMazeMove(target: DisplayFloor, route: MazeMoveRoute): void {
-    if (target === this.currentFloor) {
-      this.showFeedback(`当前已在 ${target}F`);
-      return;
-    }
-    if (this.pendingMazeMove) return;
-    const floor = getFloor(target);
-    const requestId = `c4-maze-${++this.mazeMoveRequestSerial}`;
-    this.pendingMazeMove = {
-      requestId,
-      fromFloor: this.currentFloor,
-      targetFloor: target,
-      route
-    };
-    this.pendingMazeMoveTimer?.remove(false);
-    this.pendingMazeMoveTimer = this.time.delayedCall(1600, () => {
-      if (this.pendingMazeMove?.requestId !== requestId) return;
-      this.pendingMazeMove = null;
-      this.pendingMazeMoveTimer = null;
-      if (route === "elevator") this.elevatorTargetFloor = null;
-      this.showFeedback("楼层状态未确认，请重试");
-    });
-    this.bridge.emit("chapter4_maze_move_requested", {
-      requestId,
-      floor: floor.storyFloor,
-      roomId: floor.roomId,
-      checkpoint: floor.checkpoint,
-      route
-    });
-  }
-
-  private handleMazeMoveResolved(payload?: Record<string, unknown>): void {
-    const pending = this.pendingMazeMove;
-    if (!pending || String(payload?.requestId ?? "") !== pending.requestId) return;
-    const result = String(payload?.result ?? "locked") as MazeMoveResult;
-    this.pendingMazeMoveTimer?.remove(false);
-    this.pendingMazeMoveTimer = null;
-    this.pendingMazeMove = null;
-
-    if (result !== "accepted" && result !== "already_complete") {
-      if (pending.route === "elevator") this.elevatorTargetFloor = null;
-      const feedback: Record<MazeMoveResult, string> = {
-        accepted: "楼层状态已确认。",
-        already_complete: "楼层状态已同步。",
-        misaligned: "楼层时间轨道未对齐。",
-        wrong_mode: "切回浅色操作后再移动。",
-        locked: "当前证据尚未开放这条楼层通道。",
-        inactive: "第四章教学楼流程尚未开始。"
-      };
-      this.showFeedback(feedback[result] ?? feedback.locked);
-      return;
-    }
-
-    if (pending.route === "elevator") {
-      this.closeFloorPanel();
-      this.elevatorPhase = "doors_closing";
-      this.tweenElevatorDoors(
-        pending.fromFloor,
-        1,
-        0,
-        () => this.beginElevatorTravel(pending.targetFloor)
-      );
-      return;
-    }
-    this.commitStairTransfer(pending.fromFloor, pending.targetFloor);
-  }
-
-  private commitStairTransfer(fromFloor: DisplayFloor, target: DisplayFloor): void {
-    this.currentFloor = target;
-    this.markCurrentLocationApplied();
-    const sourceFloor = getFloor(fromFloor);
-    const floor = getFloor(target);
-    const targetLanding = floor.stairLandings.find(
-      (landing) => landing.targetStoryFloor === sourceFloor.storyFloor
-    );
-    const arrival = targetLanding?.arrivalPosition ?? floor.safeSpawn;
-    this.player.setPosition(floor.offsetX + arrival.x, arrival.y)
-      .setVelocity(0, 0)
-      .setDepth(arrival.y + 4000);
+  private beginAcceptedStairTransfer(pending: PendingMove): void {
+    const source = getFloor(pending.fromFloor);
+    const destination = getFloor(pending.targetFloor);
+    const arrival = destination.stairLandings.find(
+      (landing) => landing.targetStoryFloor === source.storyFloor
+    )?.arrivalPosition ?? destination.safeSpawn;
+    this.currentFloor = pending.targetFloor;
+    this.player.setPosition(destination.offsetX + arrival.x, arrival.y)
+      .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + arrival.y);
     this.animator.setFacing("down");
-    this.configureCameraForFloor();
+    this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
-    this.showFeedback(`楼梯已到 ${target}F`);
-    this.syncProjection(true);
-    this.refreshProximityState();
+    this.refreshProximity();
   }
 
+  private syncExternalFloorWhenIdle(): void {
+    if (this.pendingMove || this.elevatorPhase !== "idle") return;
+    const stateFloor = displayFloorFor(this.bridge.getState().chapter4.floor);
+    if (!stateFloor || stateFloor === this.currentFloor) return;
+    this.currentFloor = stateFloor;
+    const floor = getFloor(stateFloor);
+    const spawn = floor.safeSpawn;
+    this.player.setPosition(floor.offsetX + spawn.x, spawn.y)
+      .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + spawn.y);
+    this.animator.setFacing(spawn.facing ?? "down");
+    this.configureCameraForCurrentFloor();
+    this.cameras.main.centerOn(this.player.x, this.player.y);
+    this.refreshProximity();
+  }
+
+  private handleInventoryDrop(payload?: Record<string, unknown>): void {
+    const rawItemId = payload?.itemId;
+    const items = this.bridge.getState().items;
+    if (!hasOwnInventoryItem(items, rawItemId)) {
+      this.persistentContractFailures.add(`invalid_drop_item:${rawItemId}`);
+      const detail = "无法使用该道具。";
+      this.bridge.emit("rpg_item_use_feedback", { reason: "invalid_item", detail });
+      return;
+    }
+    const itemId = rawItemId;
+    const canvasX = Number(payload?.canvasX);
+    const canvasY = Number(payload?.canvasY);
+    if (!Number.isFinite(canvasX) || !Number.isFinite(canvasY)) {
+      this.emitDropFeedback(itemId, "missed_target", "未命中有效目标。");
+      return;
+    }
+    const floor = getFloor(this.currentFloor);
+    const world = this.cameras.main.getWorldPoint(canvasX, canvasY);
+    const local = { x: world.x - floor.offsetX, y: world.y };
+    const candidates = this.resolveActionableTargets().filter((target) => (
+      target.floor === this.currentFloor
+      && target.acceptedItem !== undefined && target.acceptedItem !== null
+      && local.x >= target.bounds.x && local.x < target.bounds.x + target.bounds.width
+      && local.y >= target.bounds.y && local.y < target.bounds.y + target.bounds.height
+    ));
+    if (candidates.length === 0) {
+      this.emitDropFeedback(itemId, "missed_target", "未命中当前阶段的可见道具目标。");
+      return;
+    }
+    const target = candidates[0];
+    if (itemId !== target.acceptedItem) {
+      this.emitDropFeedback(itemId, "wrong_item", `${target.contract.label}需要另一件道具。`);
+      return;
+    }
+    if (target.contract.id === "a1_hall_clock_hour_hand_socket"
+      && itemId === "oldClockHourHand") {
+      this.requestStoryIntent({
+        type: "install_hour_hand",
+        itemId,
+        targetId: "a1_hall_clock_hour_hand_socket",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id);
+      return;
+    }
+    if (target.contract.id === "a1_hall_clock_positioning_plate_slot"
+      && itemId === "clockPositioningPlate") {
+      this.requestStoryIntent({
+        type: "install_positioning_plate",
+        itemId,
+        targetId: "a1_hall_clock_positioning_plate_slot",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id);
+      return;
+    }
+    if (target.contract.id === "a1_hall_clock_minute_endpoint"
+      && itemId === "finalMinute") {
+      const runtimeTarget = this.resolveRuntimeTargetContext(target.contract, target.bounds);
+      if (!runtimeTarget) {
+        this.emitDropRuntimeFailure(itemId, "final_clock_minute_runtime_bounds_missing");
+        return;
+      }
+      this.requestStoryIntent({
+        type: "install_final_minute",
+        itemId,
+        targetId: "a1_hall_clock_minute_endpoint",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id, runtimeTarget);
+      return;
+    }
+    if (target.contract.id === "a1_campus_card_reader"
+      && itemId === "campusCard") {
+      const runtimeTarget = this.resolveRuntimeTargetContext(target.contract, target.bounds);
+      if (!runtimeTarget) {
+        this.emitDropRuntimeFailure(itemId, "campus_card_reader_runtime_bounds_missing");
+        return;
+      }
+      this.requestStoryIntent({
+        type: "read_campus_card",
+        itemId,
+        targetId: "a1_campus_card_reader",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id, runtimeTarget);
+      return;
+    }
+    if (target.contract.id === "a1_attendance_paper_slot"
+      && itemId === "attendanceRecordPaper") {
+      const runtimeTarget = this.resolveRuntimeTargetContext(target.contract, target.bounds);
+      if (!runtimeTarget) {
+        this.emitDropRuntimeFailure(itemId, "attendance_slot_runtime_bounds_missing");
+        return;
+      }
+      this.requestStoryIntent({
+        type: "submit_attendance_paper",
+        itemId,
+        targetId: "a1_attendance_paper_slot",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id, runtimeTarget);
+      return;
+    }
+    const runtimeTarget = this.resolveRuntimeTargetContext(target.contract, target.bounds);
+    if (target.contract.id === "a1_cleaning_cart_wheel_cover" && itemId === "shortPryBar") {
+      if (!runtimeTarget) {
+        this.emitDropRuntimeFailure(itemId, "cart_wheel_cover_runtime_bounds_missing");
+        return;
+      }
+      this.requestStoryIntent({
+        type: "open_cart_wheel_cover",
+        itemId,
+        targetId: "a1_cleaning_cart_wheel_cover",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id, runtimeTarget);
+      return;
+    }
+    if (target.contract.id === "a1_cleaning_cart_wheel"
+      && itemId === "universalLubricatingOil") {
+      if (!runtimeTarget) {
+        this.emitDropRuntimeFailure(itemId, "cart_wheel_runtime_bounds_missing");
+        return;
+      }
+      this.requestStoryIntent({
+        type: "lubricate_cart_wheel",
+        itemId,
+        targetId: "a1_cleaning_cart_wheel",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id, runtimeTarget);
+      return;
+    }
+    if (target.contract.id === "a1_hall_clock_gear"
+      && itemId === "universalLubricatingOil") {
+      if (!runtimeTarget) {
+        this.emitDropRuntimeFailure(itemId, "clock_gear_runtime_bounds_missing");
+        return;
+      }
+      this.requestStoryIntent({
+        type: "lubricate_clock_gear",
+        itemId,
+        targetId: "a1_hall_clock_gear",
+        spatial: this.storySpatialResult(target)
+      }, target.contract.id, runtimeTarget);
+      return;
+    }
+    this.emitDropRuntimeFailure(itemId, `drop_target_unwired:${target.contract.id}`);
+  }
+  private emitDropFeedback(itemId: ItemId, reason: string, detail: string): void {
+    this.bridge.emit("rpg_item_use_feedback", { itemId, reason, detail });
+  }
+  private emitDropRuntimeFailure(itemId: ItemId, code: string): void {
+    this.persistentContractFailures.add(code);
+    this.emitDropFeedback(itemId, "locked", "交互失败，请重新靠近目标后重试。");
+  }
+  private showRuntimeInteractionFailure(code: string): void {
+    this.persistentContractFailures.add(code);
+    this.showFeedback("交互失败，请重新靠近目标后重试。");
+  }
   private showFeedback(message: string): void {
     this.feedbackTimer?.remove(false);
     this.feedbackText.setText(message).setVisible(true);
-    this.feedbackTimer = this.time.delayedCall(1800, () => {
+    this.feedbackTimer = this.time.delayedCall(1900, () => {
       this.feedbackText.setVisible(false);
       this.feedbackTimer = null;
     });
   }
 
   private publishDebug(): void {
-    const state = this.bridge.getState().chapter4;
-    const body = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const state = this.bridge.getState();
     const floor = getFloor(this.currentFloor);
-    const anchorDebug = STORY_ANCHORS.map((anchor) => ({
-      id: anchor.id,
-      label: anchor.label,
-      floor: anchor.floor,
-      bounds: {
-        left: anchor.bounds.left + getFloor(anchor.floor).offsetX,
-        top: anchor.bounds.top,
-        right: anchor.bounds.right + getFloor(anchor.floor).offsetX,
-        bottom: anchor.bounds.bottom
-      }
+    const body = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const projectedTargets = this.resolveProjectedTargets();
+    const actionableTargets = this.resolveActionableTargets();
+    const projectedPlateIds = desiredPlateGroup(this.projection);
+    const projectedPhysicalIds = LAYOUT.physicalDeltas.flatMap((delta) => {
+      if (!delta.statePlateIds.includes(projectedPlateIds[delta.storyFloor])) return [];
+      const displayFloor = displayFloorFor(delta.storyFloor);
+      if (!displayFloor) return [];
+      return (delta.collisionBounds ?? []).map((rect) => `floor_${displayFloor}_${rect.id}`);
+    });
+    const projectedCollisionIds = [
+      ...FLOORS.flatMap((entry) => entry.staticCollisions.map((rect) => (
+        `floor_${entry.displayFloor}_${rect.id}`
+      ))),
+      ...projectedPhysicalIds,
+      ...this.projection.dynamicCollisionIds
+    ];
+    const targetDebug = projectedTargets.map((target) => ({
+      id: target.contract.id,
+      label: target.contract.label,
+      x: getFloor(target.floor).offsetX + target.bounds.x,
+      y: target.bounds.y,
+      width: target.bounds.width,
+      height: target.bounds.height,
+      acceptedItem: target.acceptedItem ?? undefined,
+      requiredMode: this.projection.phase
+        ? selectChapterFour755RequiredMode(target.contract, this.projection.phase)
+        : undefined,
+      proximity: target.contract.proximity
     }));
-    const activeInteractionTargets = this.getActiveInteractionTargets();
-    const partitionTargets = this.getVisiblePartitionTargets();
-    const activeTargetDebug = [
-      ...activeInteractionTargets.map((target) => {
-        const targetFloor = getFloor(target.floor);
-        return {
-          id: target.id,
-          label: target.label,
-          x: targetFloor.offsetX + target.x,
-          y: target.y,
-          width: target.width ?? 0,
-          height: target.height ?? 0,
-          stand: {
-            x: targetFloor.offsetX + target.stand.x,
-            y: target.stand.y
-          },
-          proximity: target.proximity,
-          requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing,
-          facingToleranceDegrees: target.facingToleranceDegrees
-        };
-      }),
-      ...partitionTargets.map((target) => {
-        const targetFloor = getFloor(target.floor);
-        return {
-          id: target.id,
-          label: target.label,
-          x: targetFloor.offsetX + target.x,
-          y: target.y,
-          width: target.width ?? 0,
-          height: target.height ?? 0,
-          stand: {
-            x: targetFloor.offsetX + target.stand.x,
-            y: target.stand.y
-          },
-          proximity: target.proximity,
-          requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing,
-          facingToleranceDegrees: target.facingToleranceDegrees
-        };
-      })
+    const contractFailures = [...new Set([
+      ...this.persistentContractFailures,
+      ...this.plateContractFailures
+    ])];
+    const runtimeEntities = projectedTargets.flatMap((target) => {
+      const source = target.contract.boundsSource;
+      if (source.kind !== "runtime_entity") return [];
+      const targetFloor = getFloor(target.floor);
+      return [{
+        targetId: target.contract.id,
+        entityId: source.entityId,
+        displayFloor: target.floor,
+        storyFloor: targetFloor.storyFloor,
+        source: {
+          kind: "runtime_entity" as const,
+          floor: source.floor,
+          entityId: source.entityId
+        },
+        bounds: { ...target.bounds },
+        worldBounds: offsetRect(target.bounds, targetFloor.offsetX),
+        rendered: this.renderedTargetIds.includes(target.contract.id)
+      }];
+    });
+    const maintenanceGuardBody = this.maintenanceGuard?.body as Phaser.Physics.Arcade.Body | undefined;
+    const ordinaryGuardEntityBounds = maintenanceGuardBody
+      ? {
+          x: maintenanceGuardBody.left - getFloor(1).offsetX,
+          y: maintenanceGuardBody.top,
+          width: maintenanceGuardBody.width,
+          height: maintenanceGuardBody.height
+        }
+      : null;
+    const chaseGuardBody = this.chaseGuard?.body as Phaser.Physics.Arcade.Body | undefined;
+    const chaseGuardFloor = this.finalChaseState?.guardFloor === "A2" ? getFloor(2) : getFloor(1);
+    const chaseGuardBounds = chaseGuardBody
+      ? {
+          x: chaseGuardBody.left - chaseGuardFloor.offsetX,
+          y: chaseGuardBody.top,
+          width: chaseGuardBody.width,
+          height: chaseGuardBody.height
+        }
+      : null;
+    const doorPhase = state.chapter4.phase === "final_chase"
+      || state.chapter4.phase === "final_minute_recovery"
+      || state.chapter4.phase === "return_to_clock"
+      ? state.chapter4.phase
+      : null;
+    const doorContract = doorPhase ? FINAL_CHASE_RUNTIME.room202Door.states[doorPhase] : null;
+    const appliedDoorWorldBounds = this.room202DoorBarrier?.active
+      ? this.room202DoorBarrier.getBounds()
+      : null;
+    const appliedDoorBounds = appliedDoorWorldBounds
+      ? {
+          x: Math.floor(appliedDoorWorldBounds.left - getFloor(2).offsetX),
+          y: Math.floor(appliedDoorWorldBounds.top),
+          width: Math.ceil(appliedDoorWorldBounds.right - getFloor(2).offsetX)
+            - Math.floor(appliedDoorWorldBounds.left - getFloor(2).offsetX),
+          height: Math.ceil(appliedDoorWorldBounds.bottom) - Math.floor(appliedDoorWorldBounds.top)
+        }
+      : null;
+    const structuredFailures = [
+      ...[...this.persistentContractFailures].map((raw) => structuredContractFailure("runtime", raw)),
+      ...[...this.plateContractFailures].map((raw) => structuredContractFailure("plate", raw)),
+      ...(this.spatialAttestationLast?.result === "rejected"
+        ? [structuredContractFailure(
+            "spatial_attestation",
+            `${this.spatialAttestationLast.reason ?? "unknown"}:${this.spatialAttestationLast.targetId}`
+          )]
+        : [])
     ];
-    const targetBounds = [
-      ...activeInteractionTargets.map((target) => {
-        const targetFloor = getFloor(target.floor);
-        return {
-          id: target.id,
-          label: target.label,
-          floor: target.floor,
-          kind: "anchor" as const,
-          bounds: {
-            left: target.bounds.left + targetFloor.offsetX,
-            top: target.bounds.top,
-            right: target.bounds.right + targetFloor.offsetX,
-            bottom: target.bounds.bottom
-          },
-          stand: {
-            x: target.stand.x + targetFloor.offsetX,
-            y: target.stand.y
-          },
-          proximity: target.proximity,
-          requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing,
-          facingToleranceDegrees: target.facingToleranceDegrees
-        };
-      }),
-      ...partitionTargets.map((target) => {
-        const targetFloor = getFloor(target.floor);
-        return {
-          id: target.id,
-          label: target.label,
-          floor: target.floor,
-          kind: "partition" as const,
-          bounds: {
-            left: target.bounds.left + targetFloor.offsetX,
-            top: target.bounds.top,
-            right: target.bounds.right + targetFloor.offsetX,
-            bottom: target.bounds.bottom
-          },
-          stand: {
-            x: target.stand.x + targetFloor.offsetX,
-            y: target.stand.y
-          },
-          proximity: target.proximity,
-          requiredMode: target.requiredMode,
-          requiredFacing: target.requiredFacing,
-          facingToleranceDegrees: target.facingToleranceDegrees
-        };
-      })
-    ];
-    const npcFrames = [
-      ...[...this.npcVisuals.values()].map((visual) => ({
-        id: visual.definition.id,
-        residualId: visual.definition.residualId,
-        animationId: visual.definition.texture,
-        frame: visual.frame,
-        residualFrame: visual.residualFrame,
-        normalVisible: visual.normal.visible,
-        residualVisible: visual.residual.visible,
-        routeVisible: visual.route.visible,
-        x: visual.normal.x,
-        y: visual.normal.y
-      })),
-      ...[...this.studyNpcVisuals.values()].map((visual) => ({
-        id: visual.definition.id,
-        residualId: visual.definition.residualId,
-        animationId: visual.definition.texture,
-        frame: visual.normal.anims.currentFrame?.index ?? 0,
-        residualFrame: Number(visual.residual.frame.name) || 0,
-        normalVisible: visual.normal.visible,
-        residualVisible: visual.residual.visible,
-        routeVisible: false,
-        x: visual.normal.x,
-        y: visual.normal.y
-      }))
-    ];
+    let developerCheckpointId: string | null = null;
+    let developerCheckpointSource: "panel" | "url" | null = null;
+    try {
+      developerCheckpointId = window.sessionStorage.getItem(DEVELOPER_ACTIVE_KEY);
+      const source = window.sessionStorage.getItem(DEVELOPER_SOURCE_KEY);
+      developerCheckpointSource = source === "panel" || source === "url" ? source : null;
+    } catch {
+      // Debug metadata remains optional when sessionStorage is unavailable.
+    }
+
     setRpgRuntimeDebugState({
       engine: "phaser",
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
@@ -2767,11 +6365,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         sceneEnabled: this.input.enabled,
         keyboardEnabled: this.input.keyboard?.enabled ?? false,
         keys: {
-          up: this.cursors?.up.isDown ?? false,
-          down: this.cursors?.down.isDown ?? false,
-          left: this.cursors?.left.isDown ?? false,
-          right: this.cursors?.right.isDown ?? false,
-          interact: this.interactKey?.isDown ?? false
+          up: this.cursors.up.isDown,
+          down: this.cursors.down.isDown,
+          left: this.cursors.left.isDown,
+          right: this.cursors.right.isDown,
+          interact: this.interactKey.isDown
         }
       },
       camera: {
@@ -2781,87 +6379,175 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         mode: "follow"
       },
       scene: "duan_yongping_temporal_maze",
-      checkpoint: this.bridge.getState().rpgCheckpoint,
-      activeTargets: activeTargetDebug,
-      collisionRects: [...WORLD_STATIC_COLLISIONS, ...this.activeDynamicCollisionRects],
+      checkpoint: state.rpgCheckpoint,
+      activeTargets: targetDebug,
+      collisionRects: this.appliedCollisionRects,
       chapterFour: {
-        phase: state.phase,
-        mode: state.mode,
-        cycle: state.cycle,
-        airflowObserved: state.airflowObserved,
-        paperGuidedToElevator: state.paperGuidedToElevator,
-        mapAssetId: floor.id,
-        mapAssetIds: FLOORS.map((entry) => entry.id),
-        stitchedWorld: true,
-        currentFloor: this.currentFloor,
-        floorOffsetX: floor.offsetX,
-        elevatorPanelOpen: this.floorPanel !== null,
-        elevatorRuntimePhase: this.elevatorPhase,
-        elevatorDoorProgress: this.elevatorDoorProgress,
-        elevatorTargetFloor: this.elevatorTargetFloor,
-        elevatorDisplayFloor: this.elevatorDisplayFloor,
-        elevatorWaitRemainingMs: Math.max(0, Math.round(this.elevatorWaitEndsAt - this.time.now)),
-        historicalElevatorDoorOpen: this.historicalDoorOpen,
-        historicalElevatorEntryRemainingMs: Math.max(
-          0,
-          Math.round(this.historicalEntryWindowEndsAt - this.time.now)
-        ),
-        historicalElevatorRideInProgress: this.historicalRideInProgress,
-        lastAppliedCheckpoint: this.lastAppliedCheckpoint,
-        nearbyTravelZone: this.nearbyTravelZone?.id ?? null,
-        nearbyTargetId: this.nearbyTarget?.id ?? this.nearbyPartitionId,
-        nearbyPartitionId: this.nearbyPartitionId,
-        a1NearbyTargetId: this.currentFloor === 1 ? this.nearbyTarget?.id ?? null : null,
-        a1PendingAction: this.pendingMazeAction && (
-          isA1TargetAction(this.pendingMazeAction.action)
-          || this.pendingMazeAction.action === "elevator_replay_missed"
-          || this.pendingMazeAction.action === "complete_elevator_ride"
-        )
-          ? {
-              requestId: this.pendingMazeAction.requestId,
-              action: this.pendingMazeAction.action,
-              targetId: this.pendingMazeAction.targetId
-            }
-          : null,
-        currentLandmark: this.nearbyAnchor?.id ?? null,
-        npcFrames,
-        targetBounds,
-        pendingAction: this.pendingMazeAction
-          ? {
-              ...this.pendingMazeAction,
-              ...(this.pendingMazeAction.order
-                ? { order: [...this.pendingMazeAction.order] }
-                : {})
-            }
-          : null,
-        storyAnchors: anchorDebug,
-        gameplayTargetsActive: activeInteractionTargets.length,
-        routeState: this.projection.routeState,
-        activeCollisionIds: [...this.projection.activeCollisionIds],
-        activeTargetIds: activeInteractionTargets.map((target) => target.id),
-        visibleNpcIds: [...this.projection.visibleNpcIds],
-        residualNpcIds: [...this.projection.residualNpcIds],
-        activeDoorIds: [...this.projection.activeDoorIds],
-        activePartitionIds: [...this.projection.activePartitionIds],
-        safeRouteRects: SAFE_ROUTE_RECTS,
-        transportCore: {
-          coordinateSpace: "floor-local",
-          elevator: {
-            id: MAIN_ELEVATOR.id,
-            centerX: MAIN_ELEVATOR.centerX,
-            storyFloors: [...MAIN_ELEVATOR.storyFloors]
-          },
-          stair: {
-            id: MAIN_STAIR.id,
-            left: MAIN_STAIR.left,
-            top: MAIN_STAIR.top,
-            right: MAIN_STAIR.right,
-            bottom: MAIN_STAIR.bottom,
-            storyFloors: [...MAIN_STAIR.storyFloors]
+        phase: this.projection.phase ?? "inactive",
+        mode: this.appliedChapterMode,
+        committed: {
+          phase: state.chapter4.phase,
+          timeState: state.chapter4.timeState,
+          timeAuthority: state.chapter4.timeAuthority,
+          worldTimeSeconds: state.chapter4.worldTimeSeconds,
+          phoneStatusTimeSeconds: state.chapter4.phoneStatusTimeSeconds,
+          phoneStatusTimeTrusted: state.chapter4.phoneStatusTimeTrusted,
+          floor: state.chapter4.floor,
+          roomId: state.chapter4.roomId,
+          checkpoint: state.rpgCheckpoint,
+          plateSignature: this.pendingProjectionSignature,
+          plateIds: projectedPlateIds,
+          targetIds: projectedTargets.map((target) => target.contract.id)
+        },
+        applied: {
+          phase: this.projection.phase ?? "inactive",
+          timeState: this.projection.timeState,
+          mode: this.appliedChapterMode,
+          storyFloor: floor.storyFloor,
+          displayFloor: this.currentFloor,
+          plateSignature: this.appliedPlateSignature,
+          plateIds: this.appliedPlateIds,
+          targetIds: [...this.renderedTargetIds]
+        },
+        activeFloorBounds: {
+          x: floor.offsetX,
+          y: 0,
+          width: FLOOR_SIZE.width,
+          height: FLOOR_SIZE.height
+        },
+        runtimeEntities,
+        ordinaryGuard: {
+          active: state.chapter4.phase === "maintenance_repair"
+            && state.chapter4.guardMode === "patrol"
+            && this.maintenanceGuardState !== null,
+          mode: this.maintenanceGuardState?.mode ?? null,
+          position: this.maintenanceGuardState
+            ? { ...this.maintenanceGuardState.position }
+            : null,
+          heading: this.maintenanceGuardState
+            ? { ...this.maintenanceGuardState.heading }
+            : null,
+          previousWaypointId: this.maintenanceGuardState?.previousWaypointId ?? null,
+          targetWaypointId: this.maintenanceGuardState?.targetWaypointId ?? null,
+          pauseRemainingMs: this.maintenanceGuardState?.pauseRemainingMs ?? 0,
+          visibleForMs: this.maintenanceGuardState?.visibleForMs ?? 0,
+          sightLostForMs: this.maintenanceGuardState?.sightLostForMs ?? 0,
+          lastVisiblePosition: this.maintenanceGuardState?.lastVisiblePosition
+            ? { ...this.maintenanceGuardState.lastVisiblePosition }
+            : null,
+          entityBounds: ordinaryGuardEntityBounds
+        },
+        finalChase: {
+          active: state.chapter4.phase === "final_chase" && this.finalChaseState !== null,
+          phase: this.finalChaseState?.phase ?? null,
+          floor: this.finalChaseState?.floor ?? null,
+          guardFloor: this.finalChaseState?.guardFloor ?? null,
+          attempt: this.finalChaseState?.attempt ?? state.chapter4.chaseAttempt,
+          targetWaypointId: this.finalChaseState?.guardTargetWaypointId ?? null,
+          portalApplied: this.finalChaseState?.portalApplied ?? false,
+          portalRequested: this.finalChaseStep?.portalRequested ?? false,
+          portalRemainingDistance: this.finalChaseState?.portalRemainingDistance ?? 0,
+          remainingRouteDistance: this.finalChaseStep?.remainingRouteDistance ?? null,
+          finishInside: this.finalChaseInsideFinish,
+          finishRequested: this.finalChaseStep?.finishRequested ?? false,
+          contact: this.finalChaseContact,
+          failureRequested: this.finalChaseStep?.failureRequested ?? false,
+          guardBounds: chaseGuardBounds
+        },
+        lightGrid: {
+          mask: this.appliedLightMask,
+          locked: this.appliedLightLocked,
+          panelSession: {
+            open: this.hostPowerPanelOpen,
+            openRequestId: this.hostPowerPanelSession?.openRequestId ?? null,
+            targetId: this.hostPowerPanelSession?.targetId ?? null
           }
         },
+        room202Door: {
+          state: doorContract?.state ?? "inactive",
+          colliderRequired: doorContract?.collider ?? false,
+          colliderActive: this.room202DoorCollider?.active === true,
+          sourceBounds: { ...FINAL_CHASE_RUNTIME.room202Door.barrierBounds },
+          appliedBounds: appliedDoorBounds
+        },
+        spatialAttestation: this.spatialAttestationLast
+          ? { ...this.spatialAttestationLast }
+          : null,
+        contract: {
+          failures: structuredFailures,
+          lastFailure: structuredFailures.length > 0
+            ? structuredFailures[structuredFailures.length - 1]
+            : null
+        },
+        developerCheckpoint: {
+          id: developerCheckpointId,
+          source: developerCheckpointSource
+        },
+        currentFloor: this.currentFloor,
         currentStoryFloor: floor.storyFloor,
-        currentSafeCheckpoint: this.projection.safeCheckpoint
+        floorOffsetX: floor.offsetX,
+        projectedPlateIds,
+        appliedPlateIds: this.appliedPlateIds,
+        appliedPlateSignature: this.appliedPlateSignature,
+        projectedCollisionIds,
+        appliedCollisionIds: [...this.appliedCollisionIds],
+        projectedOcclusionIds: [...this.projection.occlusionIds],
+        appliedOcclusionIds: [...this.appliedOcclusionIds],
+        projectedTargetIds: projectedTargets.map((target) => target.contract.id),
+        renderedTargetIds: [...this.renderedTargetIds],
+        actionableTargetIds: actionableTargets.map((target) => target.contract.id),
+        safeCheckpoint: this.projection.safeCheckpoint,
+        contractFailures,
+        frameRegistration: {
+          manifestEntries: this.frameRegistration.manifestFrameCount,
+          registered: this.frameRegistration.registeredFrameCount,
+          reused: this.frameRegistration.reusedFrameCount,
+          skippedEmpty: this.frameRegistration.skippedEmptyFrameCount,
+          registeredKeys: [...this.frameRegistration.frameKeys]
+        },
+        lightZones: LIGHT_ZONES.map((zone) => ({
+          id: zone.id,
+          label: zone.label,
+          on: (this.appliedLightMask & (1 << zone.bit)) !== 0
+        })),
+        lightGridLocked: this.appliedLightLocked,
+        elevator: {
+          phase: this.elevatorPhase,
+          targetFloor: this.elevatorTargetFloor,
+          doorProgress: this.elevatorDoorProgress,
+          panelOpen: this.floorPanel !== null,
+          nearbyTravelZone: this.nearbyTravelTarget?.id ?? null
+        },
+        floorElevators: FLOORS.map((entry) => ({
+          floor: entry.displayFloor,
+          id: entry.elevator.id,
+          visibleBounds: offsetRect(entry.elevator.visibleBounds, entry.offsetX),
+          doorCenter: {
+            x: entry.offsetX + entry.elevator.doorCenter.x,
+            y: entry.elevator.doorCenter.y
+          },
+          standPosition: {
+            x: entry.offsetX + entry.elevator.standPosition.x,
+            y: entry.elevator.standPosition.y,
+            facing: entry.elevator.standPosition.facing ?? "up"
+          },
+          arrivalPosition: {
+            x: entry.offsetX + entry.elevator.arrivalPosition.x,
+            y: entry.elevator.arrivalPosition.y,
+            facing: entry.elevator.arrivalPosition.facing ?? "down"
+          },
+          travelBounds: offsetRect(entry.elevator.travelBounds, entry.offsetX)
+        })),
+        foregroundOcclusions: this.appliedForegrounds.map((visual) => ({
+          id: visual.id,
+          floor: visual.floor,
+          sourceAnnotationId: visual.sourceAnnotationId,
+          maskBounds: visual.maskBounds,
+          baselineY: visual.baselineY,
+          renderMode: visual.renderMode,
+          depth: visual.image.depth,
+          visible: visual.image.visible
+        }))
       }
     });
   }

@@ -14,6 +14,7 @@ import chapterThreeQizhenSfxGeneratedAudioData from "../data/chapter3-qizhen-sfx
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterThreeStoryGeneratedAudioData from "../data/chapter3-story.audio.generated.json";
 import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
+import chapterFour755TimelineData from "../data/chapter4-755.audio.json";
 import audioTimelineData from "../data/library-finals.audio.json";
 import generatedAudioData from "../data/library-finals.audio.generated.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
@@ -55,9 +56,13 @@ const audioTimeline: AudioTimeline = {
     ...(chapterThreeTheaterTimelineData as AudioTimeline).events,
     ...(chapterThreeQizhenTimelineData as AudioTimeline).events,
     ...(chapterThreeStoryTimelineData as AudioTimeline).events,
-    ...(chapterFourPrologueTimelineData as AudioTimeline).events
+    ...(chapterFourPrologueTimelineData as AudioTimeline).events,
+    ...(chapterFour755TimelineData as AudioTimeline).events
   }
 };
+const chapterFour755CueIds = new Set(
+  Object.keys((chapterFour755TimelineData as AudioTimeline).events)
+);
 const generatedAssets = {
   ...(actOneGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(generatedAudioData.assets as Record<string, GeneratedAsset>),
@@ -163,6 +168,10 @@ export class AudioDirector {
       this.cancelScheduled("chapter4_prologue_");
       this.stopVoice();
     }
+    if (cueId === "chapter4_755_scene_closed") {
+      this.cancelScheduledCueIds(chapterFour755CueIds);
+      this.stopVoice();
+    }
     const beat = audioTimeline.events[cueId];
     if (!beat) {
       return;
@@ -200,6 +209,14 @@ export class AudioDirector {
       if (!eventName.startsWith(eventPrefix)) {
         return;
       }
+      window.clearTimeout(timer);
+      this.scheduled.delete(timer);
+    });
+  }
+
+  private cancelScheduledCueIds(cueIds: ReadonlySet<string>): void {
+    this.scheduled.forEach((eventName, timer) => {
+      if (!cueIds.has(eventName)) return;
       window.clearTimeout(timer);
       this.scheduled.delete(timer);
     });

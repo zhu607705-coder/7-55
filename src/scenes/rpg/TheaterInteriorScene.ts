@@ -27,8 +27,7 @@ import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   formatRpgModeRequirement,
-  isPlayerFacingRpgTarget,
-  isPlayerReadyForRpgItemDrop,
+  isPlayerWithinRpgTarget,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
 import {
@@ -96,10 +95,6 @@ const FEEDBACK_INSTANT_MS = 1400;
 const FEEDBACK_CONFIRM_MS = 1800;
 const FEEDBACK_GUIDANCE_MS = 2400;
 const FEEDBACK_CLUE_MS = 3000;
-const FEEDBACK_TASK_UPDATE_MS = 4200;
-// Phase-update subtitles wait at least this long so the triggering result
-// feedback (and its animation) is readable first.
-const PHASE_UPDATE_MIN_DELAY_MS = 700;
 // Lines opening with one of these prefixes keep the narrator/system tone but get
 // their own speaker label on the shared subtitle frame.
 const THEATER_DIALOGUE_SPEAKERS = ["检票员", "取票机", "灯控台", "手机系统"] as const;
@@ -198,6 +193,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private softenedOcclusionIds: string[] = [];
   private programVisuals = new Map<TheaterProgramId, ProgramVisual>();
   private darkClues: Array<Phaser.GameObjects.Rectangle | Phaser.GameObjects.Text> = [];
+  private programOrderClue!: Phaser.GameObjects.Text;
   private propGhostClue!: Phaser.GameObjects.Text;
   private paper!: Phaser.GameObjects.Image;
   private panel: Phaser.GameObjects.Container | null = null;
@@ -364,7 +360,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.runtime.emit("theater_interior_opened");
 
     if (this.currentPhase === "entry_ticket" && !state.theaterHunt.posterCleaned && !state.theaterHunt.ticketCodeRead) {
-      this.showFeedback(theaterContent.locationTitle, "task", FEEDBACK_CLUE_MS);
       this.dialogueLocked = true;
       this.time.delayedCall(this.reducedMotion ? 160 : 1100, () => {
         this.queueDialogue(theaterContent.entryDialogue, () => { this.dialogueLocked = false; });
@@ -414,16 +409,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.publishDebugState(nearest, state);
     const keyboardInteract = Phaser.Input.Keyboard.JustDown(this.cursors.space);
     if (nearest && !this.dialogueLocked && !this.paperBusy && !this.panel && !this.spotlightPanel && (keyboardInteract || this.interactRequested)) {
-      if (isPlayerFacingRpgTarget(
-        nearest,
-        this.player.x,
-        this.player.y,
-        this.playerAnimator.cardinalFacing
-      )) {
-        this.triggerTarget(nearest, state);
-      } else {
-        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task", FEEDBACK_GUIDANCE_MS);
-      }
+      this.triggerTarget(nearest, state);
     }
     this.interactRequested = false;
   }
@@ -708,12 +694,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       guide.targetOutline.setVisible(visible);
       if (!visible) return;
 
-      const ready = isPlayerReadyForRpgItemDrop(
-        guide.target,
-        this.player.x,
-        this.player.y,
-        this.playerAnimator.cardinalFacing
-      );
+      const ready = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y);
       guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
     });
   }
@@ -819,6 +800,13 @@ export class TheaterInteriorScene extends Phaser.Scene {
       fontSize: "13px",
       padding: { x: 7, y: 4 }
     }).setOrigin(0.5).setDepth(1603);
+    this.programOrderClue = this.add.text(836, 286, theaterContent.program.darkOrder, {
+      color: "#98e9ff",
+      backgroundColor: "#091126dd",
+      fontFamily: "monospace",
+      fontSize: "15px",
+      padding: { x: 9, y: 5 }
+    }).setOrigin(0.5).setDepth(1603);
     this.propGhostClue = this.add.text(310, 108, `${theaterContent.prop.ghost}\n${theaterContent.prop.managerHint}`, {
       color: "#9eeaff",
       backgroundColor: "#091126dd",
@@ -862,7 +850,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         }
       });
     }
-    this.darkClues = [posterTicket, posterLabel, kioskCode, this.propGhostClue];
+    this.darkClues = [posterTicket, posterLabel, kioskCode, this.programOrderClue, this.propGhostClue];
     this.darkClues.forEach((clue) => clue.setVisible(false));
   }
 
@@ -977,7 +965,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     if (name === "theater_ticket_already_delivered") {
       this.closePanel();
-      this.showFeedback("实体票根 B 已经打印，无需重复取票。", "system", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_poster_cleaned") {
@@ -990,7 +977,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_ticket_combined") {
-      this.showFeedback("临时观演票", "success", FEEDBACK_INSTANT_MS);
       return;
     }
     if (name === "theater_ticket_admitted") {
@@ -1002,7 +988,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_program_order_read") {
-      this.showFeedback(theaterContent.program.darkInspectHint, "system", FEEDBACK_CLUE_MS);
+      this.showFeedback(theaterContent.program.darkOrder, "system", FEEDBACK_CLUE_MS);
       return;
     }
     if (name === "theater_program_order_changed") {
@@ -1016,7 +1002,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
     if (name === "theater_program_order_solved") {
       this.closePanel();
-      this.showFeedback(theaterContent.program.unlocked, "success", FEEDBACK_CONFIRM_MS);
       return;
     }
     if (name === "theater_prop_ghost_read") {
@@ -1079,11 +1064,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       ease: "Sine.easeInOut"
     });
     this.syncDarkClues(this.runtime.getState());
-    this.showFeedback(
-      mode === "dark" ? theaterContent.mode.darkConfirm : theaterContent.mode.lightConfirm,
-      "system",
-      FEEDBACK_GUIDANCE_MS
-    );
     this.runtime.emit(mode === "dark" ? "theater_dark_mode_enabled" : "theater_light_mode_enabled");
   }
 
@@ -1094,6 +1074,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.darkClues[0]?.setVisible(posterVisible);
     this.darkClues[1]?.setVisible(posterVisible);
     this.darkClues[2]?.setVisible(kioskVisible);
+    this.programOrderClue?.setVisible(
+      dark && state.theaterHunt.phase === "program_search" && state.theaterHunt.collectedProgramIds.length === 3
+    );
     const propGhostVisible = dark && state.theaterHunt.phase === "prop_setup" && !state.theaterHunt.propBoxOpened;
     this.propGhostClue?.setVisible(propGhostVisible);
     this.propBoxGhostSprite?.setVisible(propGhostVisible);
@@ -1135,6 +1118,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "kiosk") {
+      if (state.theaterHunt.cc98TicketCommissionPhase === "delivered") {
+        return;
+      }
       this.runtime.emit("rpg_theater_ticket_kiosk_requested");
       return;
     }
@@ -1166,7 +1152,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
           this.queueDialogue([theaterContent.program.consolePrompt, theaterContent.program.consoleState]);
         }
       } else if (state.theaterHunt.phase === "spotlight_ready") {
-        this.showFeedback(theaterContent.spotlight.consoleHint, "task", FEEDBACK_GUIDANCE_MS);
+        return;
       }
       return;
     }
@@ -1187,7 +1173,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "vent") {
-      this.showFeedback(theaterContent.prop.task, "task", FEEDBACK_CLUE_MS);
+      return;
     }
   }
 
@@ -1206,15 +1192,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       );
       return;
     }
-    if (!isPlayerFacingRpgTarget(
-      target,
-      this.player.x,
-      this.player.y,
-      this.playerAnimator.cardinalFacing
-    )) {
-      this.showFeedback(`面向「${target.label}」后再操作。`, "system", FEEDBACK_GUIDANCE_MS);
-      return;
-    }
     this.triggerTarget(target, state);
   }
 
@@ -1231,11 +1208,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const label = target.kind === "poster"
       ? dragOnly ? "油渍纸巾 → 入口海报" : "查看海报栏"
       : target.kind === "kiosk"
-        ? state.items.theaterTicketHalfB || state.items.temporaryTheaterTicket
-          ? "查看取票机"
-          : state.theaterHunt.cc98TicketCommissionPhase === "delivered"
-            ? "输入取票码"
-            : "查看取票机"
+        ? "查看取票机"
         : target.kind === "gate"
           ? dragOnly ? "临时观演票 → 右侧验票槽" : "与检票员对话"
           : target.kind === "program"
@@ -1264,7 +1237,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       }
     }
     if (state.theaterHunt.phase !== this.currentPhase) {
-      if (!immediate) this.announcePhaseUpdate(state.theaterHunt.phase);
       this.currentPhase = state.theaterHunt.phase;
     }
     this.syncDarkClues(state);
@@ -1288,27 +1260,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.syncTicketInspectionPoint(state);
     this.syncTicketDropGuides(state);
     this.syncTargetMarkers(state);
-  }
-
-  private announcePhaseUpdate(phase: GameState["theaterHunt"]["phase"]): void {
-    const text = (theaterContent.phaseUpdates as Partial<Record<GameState["theaterHunt"]["phase"], string>>)[phase];
-    if (!text) return;
-    // Yield to result feedback and unlock animations that land right after the
-    // phase change; the task update only fires once the subtitle line is free.
-    const schedule = () => {
-      this.time.delayedCall(PHASE_UPDATE_MIN_DELAY_MS, () => {
-        if (this.dialogueLocked) {
-          this.showFeedback(text, "task", FEEDBACK_TASK_UPDATE_MS);
-          return;
-        }
-        if (this.lastFeedbackUntilMs - this.time.now > 120) {
-          schedule();
-          return;
-        }
-        this.emitSubtitle(text, "task", FEEDBACK_TASK_UPDATE_MS);
-      });
-    };
-    schedule();
   }
 
   private removeGateBlocker(): void {
@@ -1335,7 +1286,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       dropY: world.y,
       playerX: this.player.x,
       playerY: this.player.y,
-      playerFacing: this.playerAnimator.cardinalFacing,
       mode: state.theaterHunt.mode
     });
     if (!result.target) {
@@ -1381,15 +1331,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
             ? "票已退回；请靠近读票器。"
             : "票已退回；请靠近扫描器。"
           : undefined
-      });
-      return;
-    }
-    if (result.kind === "wrong_facing") {
-      this.runtime.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "wrong_facing",
-        targetLabel,
-        detail: `靠近并面向「${targetLabel}」后再操作。`
       });
       return;
     }
@@ -2482,17 +2423,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
         label: candidate.label,
         x: candidate.x,
         y: candidate.y,
-        width: candidate.width ?? candidate.proximity * 2,
-        height: candidate.height ?? candidate.proximity * 2,
+        width: candidate.dropWidth ?? candidate.proximity * 2,
+        height: candidate.dropHeight ?? candidate.proximity * 2,
         dropWidth: candidate.dropWidth,
         dropHeight: candidate.dropHeight,
         stand: candidate.stand,
         proximity: candidate.proximity,
         acceptedItem: candidate.acceptedItem,
-        requiredMode: candidate.requiredMode,
-        requiredFacing: candidate.requiredFacing,
-        dropRequiresFacing: candidate.dropRequiresFacing,
-        facingToleranceDegrees: candidate.facingToleranceDegrees
+        requiredMode: candidate.requiredMode
       })),
       collisionRects: [
         ...THEATER_STATIC_COLLISION_RECTS,
@@ -2510,15 +2448,12 @@ export class TheaterInteriorScene extends Phaser.Scene {
               targetId: activeTicketGuide.target.id,
               targetLabel: theaterDropTargetLabel(activeTicketGuide.target.kind),
               visible: true,
-              playerReady: isPlayerReadyForRpgItemDrop(
+              playerReady: isPlayerWithinRpgTarget(
                 activeTicketGuide.target,
                 this.player.x,
-                this.player.y,
-                this.playerAnimator.cardinalFacing
+                this.player.y
               ),
               maxDistance: activeTicketGuide.target.proximity,
-              dropRequiresFacing: activeTicketGuide.target.dropRequiresFacing !== false,
-              requiredFacing: activeTicketGuide.target.requiredFacing ?? "toward_target",
               dropBounds: {
                 x: activeTicketGuide.target.x,
                 y: activeTicketGuide.target.y,

@@ -20,8 +20,6 @@ import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
   getRpgDropBounds,
-  isPlayerFacingRpgTarget,
-  isPlayerReadyForRpgTarget,
   isPlayerWithinRpgTarget,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
@@ -297,16 +295,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.updateFrontDeskStampStatus(state);
 
     if (nearest && (keyboardInteract || this.interactRequested)) {
-      if (isPlayerFacingRpgTarget(
-        nearest,
-        this.player.x,
-        this.player.y,
-        this.playerAnimator.cardinalFacing
-      )) {
-        this.triggerInteraction(nearest, state);
-      } else {
-        this.showFeedback(`面向「${nearest.label}」后再操作。`, "task");
-      }
+      this.triggerInteraction(nearest, state);
     }
     this.interactRequested = false;
 
@@ -418,8 +407,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       dropX: worldPoint.x,
       dropY: worldPoint.y,
       playerX: this.player.x,
-      playerY: this.player.y,
-      playerFacing: this.playerAnimator.cardinalFacing
+      playerY: this.player.y
     });
     if (!result.target) {
       this.bridge.emit("library_rpg_interaction_failed", { itemId, reason: "no_target" });
@@ -455,20 +443,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
         itemId,
         reason: "too_far",
         targetLabel: target.label
-      });
-      return;
-    }
-    if (result.kind === "wrong_facing") {
-      this.bridge.emit("library_rpg_interaction_failed", {
-        itemId,
-        targetId: target.id,
-        reason: "wrong_facing"
-      });
-      this.bridge.emit("rpg_item_use_feedback", {
-        itemId,
-        reason: "wrong_facing",
-        targetLabel: target.label,
-        detail: `靠近并面向「${target.label}」后再操作。`
       });
       return;
     }
@@ -634,12 +608,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       const visible = selectedItem === guide.target.acceptedItem && activeIds.has(guide.target.id);
       guide.targetOutline.setVisible(visible);
       if (!visible) return;
-      const ready = isPlayerReadyForRpgTarget(
-        guide.target,
-        this.player.x,
-        this.player.y,
-        this.playerAnimator.cardinalFacing
-      );
+      const ready = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y);
       guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
     });
   }
@@ -754,9 +723,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
         proximity: target.proximity,
         ...(target.dropWidth ? { dropWidth: target.dropWidth } : {}),
         ...(target.dropHeight ? { dropHeight: target.dropHeight } : {}),
-        ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {}),
-        requiredFacing: target.requiredFacing,
-        facingToleranceDegrees: target.facingToleranceDegrees
+        ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {})
       })),
       collisionRects: LIBRARY_STATIC_COLLISION_RECTS.map((rect) => rect.id === "north_display_shelf"
         ? {
@@ -825,8 +792,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       ? "这个道具和目标的证据类型对不上。"
       : reason === "too_far"
         ? `先走到${targetLabel ? `「${targetLabel}」` : "目标"}的可操作边缘，再使用道具。`
-      : reason === "wrong_facing"
-        ? `面向${targetLabel ? `「${targetLabel}」` : "目标"}后再使用道具。`
       : reason === "no_target"
         ? "道具没有落在可交互目标上。"
         : "条件还不完整，目标暂时不接受这个操作。";
@@ -1845,15 +1810,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
           return;
         }
         if (isPlayerWithinRpgTarget(target, this.player.x, this.player.y)) {
-          if (!isPlayerFacingRpgTarget(
-            target,
-            this.player.x,
-            this.player.y,
-            this.playerAnimator.cardinalFacing
-          )) {
-            this.showFeedback("面向入馆记录设备后再操作。", "system");
-            return;
-          }
           this.bridge.setCheckpoint("library_entrance");
           this.openEntranceRecordPanel();
           return;
@@ -2154,15 +2110,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     const interactWithFrontDesk = () => {
       if (!isPlayerWithinRpgTarget(target, this.player.x, this.player.y)) {
         this.showFeedback("请靠近信息台柜台。", "system");
-        return;
-      }
-      if (!isPlayerFacingRpgTarget(
-        target,
-        this.player.x,
-        this.player.y,
-        this.playerAnimator.cardinalFacing
-      )) {
-        this.showFeedback("面向前台工作人员后再操作。", "system");
         return;
       }
       this.bridge.setCheckpoint("library_front_desk");

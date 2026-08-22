@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import type {
@@ -7,6 +7,7 @@ import type {
 } from "../../../core/types";
 import { kit } from "../../../modules/GameKit";
 import type { ChapterThreeInterludeDecoyReasonId } from "../../../modules/ChapterThreePhoneInterludeController";
+import { preloadRpgGameHost } from "../../rpg/RpgRuntimePreload";
 
 const EVIDENCE: ReadonlyArray<{
   id: ChapterThreeInterludeEvidenceId;
@@ -38,6 +39,21 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
     () => interlude.timelineOrder
   );
   const [feedback, setFeedback] = useState("");
+  const [rpgRuntimeStatus, setRpgRuntimeStatus] = useState<"loading" | "ready" | "failed">("loading");
+
+  const prepareRpgRuntime = useCallback(() => {
+    setRpgRuntimeStatus("loading");
+    void preloadRpgGameHost()
+      .then(() => setRpgRuntimeStatus("ready"))
+      .catch(() => {
+        setRpgRuntimeStatus("failed");
+        setFeedback("横屏回放资源准备失败。请重试。");
+      });
+  }, []);
+
+  useEffect(() => {
+    prepareRpgRuntime();
+  }, [prepareRpgRuntime]);
 
   function openRecovery() {
     const result = kit.chapterThreeInterlude.beginRecovery();
@@ -69,6 +85,11 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
   }
 
   function startReplay() {
+    if (rpgRuntimeStatus !== "ready") {
+      if (rpgRuntimeStatus === "failed") prepareRpgRuntime();
+      else setFeedback("横屏回放资源仍在准备，请稍候。");
+      return;
+    }
     const result = kit.chapterThreeInterlude.startRecoveredReplay();
     if (result !== "accepted") setFeedback("恢复回放尚未解锁。");
   }
@@ -226,7 +247,18 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                 <span>RECOVERED</span>
                 <h2>路径记录已恢复</h2>
                 <p>回放会从启真湖最后一帧开始，并在段永平教学楼 A 楼一层结束。</p>
-                <button type="button" onClick={startReplay}>播放恢复回放</button>
+                <button
+                  type="button"
+                  data-rpg-runtime={rpgRuntimeStatus}
+                  disabled={rpgRuntimeStatus === "loading"}
+                  onClick={startReplay}
+                >
+                  {rpgRuntimeStatus === "ready"
+                    ? "播放恢复回放"
+                    : rpgRuntimeStatus === "failed"
+                      ? "重试准备恢复回放"
+                      : "正在准备恢复回放"}
+                </button>
               </section>
             ) : null}
           </>

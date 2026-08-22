@@ -106,7 +106,13 @@ const ITEM_ORDER: ItemId[] = [
   "fishFeedPellets",
   "smallCarp",
   "swanMagnet",
-  "magneticFishingRod"
+  "magneticFishingRod",
+  "attendanceRecordPaper",
+  "oldClockHourHand",
+  "clockPositioningPlate",
+  "shortPryBar",
+  "universalLubricatingOil",
+  "finalMinute"
 ];
 const INVENTORY_TOP_DEFAULT = 240;
 const INVENTORY_TOP_MIN = 108;

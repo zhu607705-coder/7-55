@@ -1,7 +1,7 @@
 import type { ItemId, QizhenPhotoRecipe, QizhenPhotoSpotId } from "../../core/types";
 import {
-  findNearestRpgInteractionTarget,
-  RPG_ANY_FACING,
+  distanceFromPlayerToRpgTarget,
+  isPlayerWithinRpgTarget,
   type RpgSpatialInteractionTarget
 } from "./RpgInteractionContract";
 
@@ -247,11 +247,29 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
   }
 } as const;
 
+
+/**
+ * Water targets expose their actual visible ripple bounds and a separate
+ * approach radius. This keeps casting forgiving without turning the entire
+ * lake into one item-drop target.
+ */
+const QIZHEN_REFLECTION_RIPPLE_BOUNDS = {
+  width: 156,
+  height: 72,
+  proximity: 190
+} as const;
+const QIZHEN_CAST_RIPPLE_BOUNDS = {
+  width: 180,
+  height: 84,
+  proximity: 220,
+  dropWidth: 360,
+  dropHeight: 240
+} as const;
+
 const target = (
   definition: Omit<QizhenLakeInteractionTarget, "proximity"> & { proximity?: number }
 ): QizhenLakeInteractionTarget => ({
   proximity: 128,
-  requiredFacing: RPG_ANY_FACING,
   ...definition
 });
 
@@ -267,22 +285,22 @@ export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
   target({ id: "qizhen_open_to_dock", label: "返回小码头", x: 560, y: 820, kind: "zone_portal", zone: "open_water", targetZone: "dock", vehicle: "kayak", proximity: 138 }),
   target({ id: "qizhen_open_to_swan", label: "前往黑天鹅围栏", x: 1510, y: 500, kind: "zone_portal", zone: "open_water", targetZone: "swan_cove", vehicle: "kayak", proximity: 150 }),
   target({ id: "qizhen_open_to_channel", label: "进入浮排河道", x: 620, y: 110, kind: "zone_portal", zone: "open_water", targetZone: "channel", vehicle: "kayak", proximity: 135 }),
-  target({ id: "qizhen_reflection_paper", label: "纸条倒影位置", x: 1320, y: 330, kind: "reflection", zone: "open_water", vehicle: "kayak", proximity: 170, value: "paper" }),
-  target({ id: "qizhen_reflection_item_1", label: "钥匙倒影位置", x: 1040, y: 620, kind: "reflection", zone: "open_water", vehicle: "kayak", proximity: 165, value: "locker_key" }),
-  target({ id: "qizhen_reflection_item_3", label: "网框倒影位置", x: 910, y: 360, kind: "reflection", zone: "open_water", vehicle: "kayak", proximity: 165, value: "net_frame" }),
-  target({ id: "qizhen_reflection_fish", label: "鱼群倒影位置", x: 705, y: 585, kind: "reflection", zone: "open_water", vehicle: "kayak", proximity: 170, value: "fish" }),
+  target({ id: "qizhen_reflection_paper", label: "纸条倒影位置", x: 1320, y: 330, kind: "reflection", zone: "open_water", vehicle: "kayak", ...QIZHEN_REFLECTION_RIPPLE_BOUNDS, value: "paper" }),
+  target({ id: "qizhen_reflection_item_1", label: "钥匙倒影位置", x: 1040, y: 620, kind: "reflection", zone: "open_water", vehicle: "kayak", ...QIZHEN_REFLECTION_RIPPLE_BOUNDS, value: "locker_key" }),
+  target({ id: "qizhen_reflection_item_3", label: "网框倒影位置", x: 910, y: 360, kind: "reflection", zone: "open_water", vehicle: "kayak", ...QIZHEN_REFLECTION_RIPPLE_BOUNDS, value: "net_frame" }),
+  target({ id: "qizhen_reflection_fish", label: "鱼群倒影位置", x: 705, y: 585, kind: "reflection", zone: "open_water", vehicle: "kayak", ...QIZHEN_REFLECTION_RIPPLE_BOUNDS, value: "fish" }),
   target({ id: "qizhen_fishing_rod", label: "漂浮的钓鱼竿", x: 620, y: 520, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 160, value: "fishing_rod" }),
-  target({ id: "qizhen_paper_reflection", label: "纸条倒影", x: 1320, y: 330, kind: "paper", zone: "open_water", vehicle: "kayak", proximity: 160, value: "paper_reflection", acceptedItem: "decoyPaper" }),
-  target({ id: "qizhen_fishing_item_1", label: "倒影对应点一", x: 1040, y: 620, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 155, value: "item_1", acceptedItem: "fishingRod" }),
-  target({ id: "qizhen_fishing_item_3", label: "旧木桩倒影", x: 910, y: 360, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 165, value: "item_3", acceptedItem: "fishingRod" }),
+  target({ id: "qizhen_paper_reflection", label: "纸条倒影水纹", x: 1320, y: 330, kind: "paper", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "paper_reflection", acceptedItem: "decoyPaper" }),
+  target({ id: "qizhen_fishing_item_1", label: "钥匙水纹", x: 1040, y: 620, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "item_1", acceptedItem: "fishingRod" }),
+  target({ id: "qizhen_fishing_item_3", label: "网框水纹", x: 910, y: 360, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "item_3", acceptedItem: "fishingRod" }),
   target({ id: "qizhen_open_workbench", label: "浮标组合位", x: 840, y: 430, stand: { x: 840, y: 580 }, kind: "item_use", zone: "open_water", vehicle: "kayak", proximity: 165, value: "combine_net", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItems: ["nylonCord", "brokenNetFrame"] }),
-  target({ id: "qizhen_fishing_fish", label: "鱼群水纹", x: 705, y: 585, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 170, value: "fish", acceptedItem: "fishFeedPellets" }),
+  target({ id: "qizhen_fishing_fish", label: "鱼群水纹", x: 705, y: 585, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "fish", acceptedItem: "fishFeedPellets" }),
 
   target({ id: "qizhen_swan_to_open", label: "返回大湖", x: 165, y: 510, kind: "zone_portal", zone: "swan_cove", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
   target({ id: "qizhen_swan_to_channel", label: "进入返航河道", x: 405, y: 840, kind: "zone_portal", zone: "swan_cove", targetZone: "channel", vehicle: "kayak", proximity: 150 }),
   target({ id: "qizhen_black_swan", label: "围栏里的黑天鹅", x: 1165, y: 470, width: 470, height: 220, stand: { x: 890, y: 505 }, kind: "swan", zone: "swan_cove", vehicle: "kayak", proximity: 180, value: "black_swan", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItem: "smallCarp" }),
   target({ id: "qizhen_swan_workbench", label: "船头磁吸组合位", x: 760, y: 520, stand: { x: 760, y: 660 }, kind: "item_use", zone: "swan_cove", vehicle: "kayak", proximity: 165, value: "combine_magnetic_rod", dropWidth: 96, dropHeight: 64, requiredMode: "light", acceptedItems: ["swanMagnet", "fishingRod"] }),
-  target({ id: "qizhen_final_paper_cast", label: "纸条本体水纹", x: 760, y: 450, kind: "paper", zone: "swan_cove", vehicle: "kayak", proximity: 175, value: "paper_body", acceptedItem: "magneticFishingRod" }),
+  target({ id: "qizhen_final_paper_cast", label: "纸条本体水纹", x: 760, y: 450, kind: "paper", zone: "swan_cove", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "paper_body", acceptedItem: "magneticFishingRod" }),
 
   target({ id: "qizhen_channel_from_swan", label: "黑天鹅追逐起点", x: 1515, y: 510, kind: "zone_portal", zone: "channel", targetZone: "swan_cove", vehicle: "kayak", proximity: 150 }),
   target({ id: "qizhen_channel_to_open", label: "返回大湖", x: 840, y: 735, kind: "zone_portal", zone: "channel", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
@@ -309,7 +327,16 @@ export function findNearestQizhenTarget(
   y: number,
   targets: readonly QizhenLakeInteractionTarget[]
 ): QizhenLakeInteractionTarget | null {
-  return findNearestRpgInteractionTarget(x, y, targets);
+  let nearest: QizhenLakeInteractionTarget | null = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+  targets.forEach((candidate) => {
+    const distance = distanceFromPlayerToRpgTarget(candidate, x, y);
+    if (isPlayerWithinRpgTarget(candidate, x, y) && distance < bestDistance) {
+      nearest = candidate;
+      bestDistance = distance;
+    }
+  });
+  return nearest;
 }
 
 export function clampKayakToWater(

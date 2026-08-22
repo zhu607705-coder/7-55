@@ -294,18 +294,19 @@ export class ChapterThreePhoneInterludeController {
     if (state.chapterThreeInterlude.completed) return "already_complete";
     this.store.setState((current) => ({
       ...current,
-      runtimeMode: "rpg",
-      rpgScene: "qizhen_lake",
-      rpgCheckpoint: "qizhen_complete",
-      currentScene: "phone_home",
       chapterThreeInterlude: {
         ...current.chapterThreeInterlude,
         phase: "replay_ready",
         replayUnlocked: true
       },
-      ui: { ...current.ui, controlCenterOpen: false, inventoryOpen: false, selectedItem: null }
+      ui: {
+        ...current.ui,
+        controlCenterOpen: false,
+        inventoryOpen: false,
+        selectedItem: null
+      }
     }));
-    this.events.emit("chapter35_recovered_replay_requested", {
+    this.events.emit("chapter35_recovered_replay_gate_requested", {
       destinationId: "duan_yongping_a1"
     });
     return "accepted";

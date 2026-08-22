@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types";
+import { isLegacyChapterFourPhoneGatePhase } from "../core/FeatureAccess";
 import { CHAPTER_FOUR_CC98_CLUES } from "./ChapterFourCc98Model";
 
 export const CHAPTER_FOUR_WECHAT_CLUES = Object.freeze({
@@ -35,7 +36,7 @@ export function selectChapterFourWechatProjection(
   state: GameState["chapter4"]
 ): ChapterFourWechatProjection {
   const clues = new Set(state.clueIds);
-  const active = state.prologueSeen && state.phase !== "inactive";
+  const active = state.prologueSeen && isLegacyChapterFourPhoneGatePhase(state.phase);
   const officialNoticeRead = clues.has(CHAPTER_FOUR_WECHAT_CLUES.officialNoticeRead);
   const elevatorAudioArchived = clues.has(CHAPTER_FOUR_WECHAT_CLUES.elevatorAudioArchived);
   const studentRouteSaved = clues.has(CHAPTER_FOUR_WECHAT_CLUES.studentRouteSaved);

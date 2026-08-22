@@ -18,10 +18,12 @@ import { presentationDirector } from "./modules/PresentationDirector";
 import { getPhoneScene } from "./scenes/phone/registry";
 import { LIBRARY_STORY_SEQUENCES } from "./data/libraryFinalsStory";
 import { requestCc98Thread } from "./modules/NavIntent";
+import { preloadRpgGameHost } from "./scenes/rpg/RpgRuntimePreload";
+import { Chapter4PrologueRuntimeGate } from "./components/Chapter4PrologueRuntimeGate";
 
 const router = new SceneRouter(gameStore, eventBus);
 const RpgGameHost = lazy(() =>
-  import("./scenes/rpg/RpgGameHost").then((module) => ({ default: module.RpgGameHost }))
+  preloadRpgGameHost().then((module) => ({ default: module.RpgGameHost }))
 );
 
 const LIBRARY_STORY_SEQUENCE_BY_EVENT: Readonly<Record<string, string>> = {
@@ -290,7 +292,7 @@ export function App() {
   if (state.runtimeMode === "rpg") {
     if (desktopGameplay) {
       return (
-        <>
+        <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
           <main
             className={`desktop-gameplay-shell ${state.rpgScene === "qizhen_lake" ? "is-qizhen-lake" : ""}`.trim()}
             data-active-surface={activeSurface}
@@ -339,7 +341,7 @@ export function App() {
                   inputBlocked={developerChannelOpen || libraryStoryVisible}
                   keyboardBlocked={activeSurface !== "rpg"}
                   embedded
-                  showTaskBar={false}
+                  showTaskBar={state.rpgScene === "duan_yongping_temporal_maze"}
                   desktopSplit
                   onFocusPhone={() => setActiveSurface("phone")}
                   onTaskNavigate={navigateFromTask}
@@ -352,11 +354,11 @@ export function App() {
             {libraryStoryLayer}
           </main>
           <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
-        </>
+        </Chapter4PrologueRuntimeGate>
       );
     }
     return (
-      <>
+      <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
         <Suspense fallback={<main className="rpg-stage">Loading RPG runtime</main>}>
           <RpgGameHost
             store={gameStore}
@@ -371,18 +373,18 @@ export function App() {
         {chapterIntro}
         {libraryStoryLayer}
         <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
-      </>
+      </Chapter4PrologueRuntimeGate>
     );
   }
 
   return (
-    <>
+    <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
       <PhoneShell state={state} router={router} events={eventBus} onTaskNavigate={navigateFromTask}>
         <Scene state={state} router={router} events={eventBus} />
       </PhoneShell>
       {chapterIntro}
       {libraryStoryLayer}
       <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
-    </>
+    </Chapter4PrologueRuntimeGate>
   );
 }

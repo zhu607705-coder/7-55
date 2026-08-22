@@ -82,13 +82,13 @@ export class ChapterFourStairAlignmentScene extends Phaser.Scene {
       completed ? "c4_b2_activity" : "c4_b3_landing"
     );
     this.bridge.emit("rpg_booted", { scene: "duan_yongping_temporal_maze" });
-    this.bridge.emit("rpg_subtitle", {
-      text: completed
-        ? "折返楼梯已经接通 B2。"
-        : "楼梯的空间关系发生错位。先用深色观察确认下层回声。",
-      tone: "narrator",
-      durationMs: 4200
-    });
+    if (!completed) {
+      this.bridge.emit("rpg_subtitle", {
+        text: "楼梯的空间关系发生错位。",
+        tone: "narrator",
+        durationMs: 2600
+      });
+    }
     this.syncVisuals(true);
     this.publishDebug();
   }
@@ -278,12 +278,11 @@ export class ChapterFourStairAlignmentScene extends Phaser.Scene {
       chapterFour: {
         phase: state.phase,
         mode: state.mode,
-        cycle: state.cycle,
-        airflowObserved: state.airflowObserved,
-        paperGuidedToElevator: state.paperGuidedToElevator,
-        stairEchoObserved: state.stairEchoObserved,
-        stairRotationQuarterTurns: state.stairRotationQuarterTurns,
-        stairAlignmentSolved: state.stairAlignmentSolved
+        stairAlignment: {
+          echoObserved: state.stairEchoObserved,
+          rotationQuarterTurns: state.stairRotationQuarterTurns,
+          solved: state.stairAlignmentSolved
+        }
       }
     });
   }

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-08-08T05:24:12.633Z",
+  "generatedAt": "2026-08-22T05:21:19.023Z",
   "assets": {
     "vo_ch4_prologue_player_01": {
       "path": "chapter4/prologue/vo_ch4_prologue_player_01.mp3",
@@ -26,24 +26,24 @@
     },
     "vo_ch4_prologue_cleaner_01": {
       "path": "chapter4/prologue/vo_ch4_prologue_cleaner_01.mp3",
-      "durationMs": 6211,
+      "durationMs": 2841,
       "codec": "mp3",
       "sampleRate": 32000,
       "channels": 1,
-      "sha256": "bce6830496f09c42ca7e62b9cd9de722ecb3d43f2a4a07c15aa08798b1895513",
-      "sourceTextHash": "c8f4988e7ded4623794a53ba7671221b72a274dd098e6b141651ac58e7d05d83",
-      "sourceConfigHash": "fe2a67adc25640b223bb47d0af1de260645119ff81883e99b7da252397803df3",
+      "sha256": "3a7d8182c146d98e326e3fef26ff05873b5a95b305bec17c20b27e374439c465",
+      "sourceTextHash": "0dc354210fb6798b301a34f5c680c6820a470c4b60ca6b0dbb3a413309ab5d0f",
+      "sourceConfigHash": "94524aa3ec1637922e4855066f322772cf2a1d7b2d8448686f2e9c6fa1883c46",
       "source": "MiniMax speech-2.8-hd Chinese (Mandarin)_Kind-hearted_Antie"
     },
     "vo_ch4_prologue_guard_01": {
       "path": "chapter4/prologue/vo_ch4_prologue_guard_01.mp3",
-      "durationMs": 4805,
+      "durationMs": 2413,
       "codec": "mp3",
       "sampleRate": 32000,
       "channels": 1,
-      "sha256": "1ddd20acf3e350c94f94f9d0d28faffd2253a6004173ef285eb7ffed57b45c25",
-      "sourceTextHash": "5dbba0757dbf9bcc6243e863f95f800a915a922e43991189cb880fd1981247c8",
-      "sourceConfigHash": "a19a7701357b75e0a0399d2d272e9598facd7633961b4662047b1d27eb9a6503",
+      "sha256": "b49d31593914e24bf459b4f36670afffbe6abf7efd1d96e5da33e53dd4c408b4",
+      "sourceTextHash": "861b93a84e4f4bade8435aae51379751fe1322400ebb4cdc38157559e529b8ec",
+      "sourceConfigHash": "814514addc06acd01b28aaca3cd48100f0e9632051578160646d4e60841fb9b2",
       "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
     }
   }

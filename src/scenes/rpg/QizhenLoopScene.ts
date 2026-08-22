@@ -45,7 +45,6 @@ const TRANSITION_SUBTITLE_GAP_MS = 120;
 const GATE_ENTRY_LABEL = "启真湖入口";
 const GATE_LOCKED_PROMPT_LABEL = "查看入口";
 const GATE_LOCKED_FEEDBACK = "系统：还没确认湿纸指向的地点。先核对论坛、馆藏记录和地图线索。";
-const GATE_UNLOCKED_NOTICE = "任务更新：沿湖岸向东，前往启真湖入口。";
 
 export class QizhenLoopScene extends Phaser.Scene {
   private bridge!: RpgBridge;
@@ -69,7 +68,6 @@ export class QizhenLoopScene extends Phaser.Scene {
   private transitionTrail: Phaser.GameObjects.Ellipse[] = [];
   private gateMarker!: Phaser.GameObjects.Arc;
   private gatePrompt!: Phaser.GameObjects.Text;
-  private gateUnlockedAnnounced = false;
 
   constructor() {
     super("campus-qizhen-loop");
@@ -139,7 +137,6 @@ export class QizhenLoopScene extends Phaser.Scene {
     this.cameraController.onWorldTap = (worldX, worldY) => this.handleWorldTap(worldX, worldY);
 
     this.createQizhenGate();
-    this.gateUnlockedAnnounced = false;
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
       if (event.name === "rpg_direction_changed") {
         this.virtualDirection = { x: Number(event.payload?.x) || 0, y: Number(event.payload?.y) || 0 };
@@ -233,12 +230,6 @@ export class QizhenLoopScene extends Phaser.Scene {
     const available = active && phase !== "location_search";
     const gate = QIZHEN_LOOP_RUNTIME.qizhen.gate;
     const nearby = active && Phaser.Math.Distance.Between(this.player.x, this.player.y, gate.x, gate.y) <= gate.radius;
-    if (available && !this.gateUnlockedAnnounced) {
-      this.gateUnlockedAnnounced = true;
-      if (phase === "lake_unlocked") {
-        this.showFeedback(GATE_UNLOCKED_NOTICE, "task", TRANSITION_GUIDANCE_MS);
-      }
-    }
     // 地点确认期间 marker 常显但压暗:既给出「去启真湖」的方向,又表明入口暂未开放。
     this.gateMarker
       .setVisible(active)

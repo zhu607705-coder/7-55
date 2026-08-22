@@ -1,0 +1,191 @@
+.chapter4-power-panel-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 140;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  color: #edf8f2;
+  background: rgb(2 7 13 / 78%);
+  pointer-events: auto;
+}
+
+.chapter4-power-panel {
+  position: relative;
+  width: min(560px, 88%);
+  min-height: 390px;
+  overflow: hidden;
+  padding: 28px 30px 24px 174px;
+  border: 3px solid #6d8991;
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgb(27 40 43 / 98%), rgb(9 18 21 / 98%)),
+    repeating-linear-gradient(90deg, transparent 0 9px, rgb(255 255 255 / 2%) 9px 10px);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 64%), inset 0 0 0 2px #17272b;
+  font-family: "Fusion Pixel", monospace;
+}
+
+.chapter4-power-panel__frame {
+  position: absolute;
+  left: 18px;
+  top: 70px;
+  width: 142px;
+  height: 130px;
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 8px 9px rgb(0 0 0 / 52%));
+  pointer-events: none;
+}
+
+.chapter4-power-panel__frame.is-open_partial {
+  background-position: 0 100%;
+}
+
+.chapter4-power-panel__frame.is-open_powered {
+  background-position: 100% 0;
+}
+
+.chapter4-power-panel__frame.is-open_restored {
+  background-position: 100% 100%;
+}
+
+.chapter4-power-panel header p {
+  margin: 0 0 4px;
+  color: #7fa9b1;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+
+.chapter4-power-panel header h2 {
+  margin: 0 0 18px;
+  color: #f4f0d9;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.chapter4-power-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.chapter4-power-panel__grid button {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 2px solid #52676f;
+  border-radius: 3px;
+  color: #c4d3d5;
+  background: #121d21;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chapter4-power-panel__grid button:focus-visible {
+  outline: 3px solid #f0c96b;
+  outline-offset: 2px;
+}
+
+.chapter4-power-panel__grid button.is-on {
+  border-color: #8ccdb2;
+  color: #efffe9;
+  background: #23463e;
+}
+
+.chapter4-power-panel__grid button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.chapter4-power-panel__lamp {
+  width: 13px;
+  height: 13px;
+  border: 2px solid #617078;
+  border-radius: 2px;
+  background: #11171a;
+}
+
+.chapter4-power-panel__grid button.is-on .chapter4-power-panel__lamp {
+  border-color: #c6f5c8;
+  background: #8fe89f;
+  box-shadow: 0 0 9px rgb(143 232 159 / 70%);
+}
+
+.chapter4-power-panel__grid small {
+  color: #829398;
+}
+
+.chapter4-power-panel__grid button.is-on small {
+  color: #bce7c8;
+}
+
+.chapter4-power-panel__status {
+  min-height: 22px;
+  margin: 16px 0 4px;
+  color: #d9e7e8;
+  font-size: 13px;
+}
+
+.chapter4-power-panel__controls {
+  margin: 0;
+  color: #7f969c;
+  font-size: 11px;
+}
+
+.chapter4-power-panel__close {
+  margin-top: 14px;
+  min-width: 112px;
+  min-height: 34px;
+  border: 1px solid #74888e;
+  border-radius: 3px;
+  color: #d9e7e8;
+  background: #1b2a2e;
+  font: inherit;
+}
+
+.chapter4-power-panel__retry {
+  min-width: 132px;
+  min-height: 38px;
+  border: 1px solid rgba(255, 213, 109, 0.88);
+  border-radius: 6px;
+  color: #fff3c4;
+  background: rgba(94, 54, 16, 0.92);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chapter4-power-panel__retry:focus-visible {
+  outline: 3px solid #fff1a6;
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .chapter4-power-panel-overlay {
+    padding: 14px;
+  }
+
+  .chapter4-power-panel {
+    width: 92%;
+    min-height: 370px;
+    padding: 22px;
+  }
+
+  .chapter4-power-panel__frame {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter4-power-panel-overlay *,
+  .chapter4-power-panel-overlay *::before,
+  .chapter4-power-panel-overlay *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

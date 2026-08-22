@@ -7,21 +7,38 @@ interface StatusBarProps {
 }
 
 /**
- * 全局统一状态栏：时间恒为 07:55，网络指示随 networkMode 变化，点击右侧打开控制中心。
- * 第四章（启真湖完成，与 FeatureAccess 的 chapterFourActive 同一事实来源）时间仍被
- * 冻结在 07:55；校时完成（clockCalibration.phase === "aligned"）后恢复显示当前
- * 校时结果的 hh:mm。
+ * 全局统一状态栏。第四章从 ChapterFourState 只读时间：首次拉旧钟前显示冻结的
+ * 07:55:23 且标记为不可信，拉钟后与世界时间共用同一个 timeState。其他章节继续显示
+ * 既有的 07:55。
  */
 export function StatusBar({ state }: StatusBarProps) {
   const network = state.networkMode;
-  const chapterFourActive = state.qizhenLake.phase === "complete";
-  const aligned = chapterFourActive && state.clockCalibration.phase === "aligned";
-  const clock = formatClockSeconds(state.clockCalibration.displayedSeconds);
-  const timeText = aligned ? `${clock.hh}:${clock.mm}` : "07:55";
+  const chapterFourActive = state.chapterThreeInterlude.completed
+    && (state.chapter4.prologueSeen
+      || state.chapter4.completed
+      || state.rpgScene === "duan_yongping_temporal_maze");
+  const clock = formatClockSeconds(
+    chapterFourActive ? state.chapter4.phoneStatusTimeSeconds : 28_500
+  );
+  const timeText = chapterFourActive
+    ? `${clock.hh}:${clock.mm}:${clock.ss}`
+    : `${clock.hh}:${clock.mm}`;
+  const timeTrusted = !chapterFourActive || state.chapter4.phoneStatusTimeTrusted;
 
   return (
     <header className="status-bar-global" aria-label="状态栏">
-      <span className="sb-time">{timeText}</span>
+      <span
+        className="sb-time"
+        data-time-trusted={timeTrusted ? "true" : "false"}
+        title={timeTrusted ? undefined : "状态时间已冻结，等待旧钟成为时间来源"}
+      >
+        {timeText}
+        {!timeTrusted ? (
+          <span className="sb-time-untrusted" role="status" aria-label="时间不可信">
+            {" "}不可信
+          </span>
+        ) : null}
+      </span>
       <button
         type="button"
         className="sb-right"

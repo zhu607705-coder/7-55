@@ -1,45 +1,317 @@
 {
-  "schemaVersion": 1,
-  "logicalViewport": { "width": 960, "height": 540 },
-  "buildings": {
-    "A": { "floors": ["A1", "A2", "A3", "A4"] },
-    "B": { "floors": ["B2", "B3"] }
+  "schemaVersion": 2,
+  "runtimeStatus": "active_three_floor_755",
+  "logicalViewport": {
+    "width": 960,
+    "height": 540
   },
-  "nodes": ["A1", "A2", "A3", "A4", "B2", "B3"],
-  "connectors": [
-    { "id": "a_main_elevator", "kind": "elevator", "nodes": ["A1", "A2", "A3", "A4"], "boardAllowed": true },
-    { "id": "a_stair", "kind": "stair", "nodes": ["A1", "A2", "A3", "A4"], "boardAllowed": false, "landingEntry": "side_fire_door", "flightEnds": "open_vertical_continuation" },
-    { "id": "b_service_elevator", "kind": "elevator", "nodes": ["B2", "B3"], "boardAllowed": true },
-    { "id": "b_stair", "kind": "stair", "nodes": ["B2", "B3"], "boardAllowed": false, "landingEntry": "side_fire_door", "flightEnds": "open_vertical_continuation", "temporalAlignmentPuzzle": "stair_echo_direction" },
-    { "id": "a3_b3_skybridge", "kind": "skybridge", "nodes": ["A3", "B3"], "boardAllowed": true }
+  "worldSize": {
+    "width": 1672,
+    "height": 941
+  },
+  "coordinateSystem": {
+    "origin": "top_left",
+    "unit": "source_pixel",
+    "rectangleSemantics": "half_open"
+  },
+  "layoutContract": "src/data/chapter4-three-floor-maze.layout.json",
+  "floors": [
+    {
+      "id": "A1",
+      "displayFloor": 1,
+      "basePlateId": "a1_base",
+      "safeSpawnId": "a1_lobby_safe",
+      "roomIds": [
+        "a1_lobby",
+        "maxwell_bakery",
+        "classroom_104_entry",
+        "classroom_105_entry"
+      ]
+    },
+    {
+      "id": "A2",
+      "displayFloor": 2,
+      "basePlateId": "a2_base",
+      "safeSpawnId": "a2_corridor_safe",
+      "roomIds": [
+        "maker_workshop_201",
+        "seminar_room_204",
+        "lecture_room_202",
+        "computer_room_203",
+        "open_study"
+      ]
+    },
+    {
+      "id": "A3",
+      "displayFloor": 3,
+      "basePlateId": "a3_base",
+      "safeSpawnId": "a3_wayfinding_safe",
+      "roomIds": [
+        "archive_exhibition_301",
+        "media_studio_302",
+        "report_hall_304",
+        "smart_classroom_303",
+        "alumni_honor_vestibule"
+      ]
+    }
   ],
-  "rooms": [
-    { "id": "a1_lobby", "floor": "A1", "label": "一楼门厅与迈斯威" },
-    { "id": "a1_main_elevator", "floor": "A1", "label": "主电梯厅" },
-    { "id": "a2_corridor", "floor": "A2", "label": "阶梯大教室侧廊" },
-    { "id": "a3_skybridge", "floor": "A3", "label": "三楼连廊" },
-    { "id": "a4_dead_end", "floor": "A4", "label": "四楼尽端走廊" },
-    { "id": "b3_landing", "floor": "B3", "label": "B 楼三层平台" },
-    { "id": "b2_activity", "floor": "B2", "label": "B 楼二层活动区" },
-    { "id": "b2_04", "floor": "B2", "label": "B2-04" }
+  "transport": {
+    "elevator": {
+      "id": "main_elevator",
+      "controllerOwned": true,
+      "floorEntryIds": [
+        "a1_main_elevator",
+        "a2_main_elevator",
+        "a3_main_elevator"
+      ],
+      "storyFloors": [
+        "A1",
+        "A2",
+        "A3"
+      ]
+    },
+    "stair": {
+      "id": "main_stair",
+      "controllerOwned": true,
+      "landingIds": [
+        "a1_stair_up",
+        "a2_stair_down",
+        "a2_stair_up",
+        "a3_stair_down"
+      ],
+      "storyFloors": [
+        "A1",
+        "A2",
+        "A3"
+      ]
+    }
+  },
+  "navigationNetworks": [
+    {
+      "id": "a1_public_network",
+      "storyFloor": "A1",
+      "bounds": {
+        "x": 68,
+        "y": 153,
+        "width": 1548,
+        "height": 638
+      },
+      "clearancePixels": 8,
+      "nodeIds": [
+        "a1_lobby_spawn",
+        "a1_chase_start",
+        "a1_guard_spawn",
+        "a1_chase_lower_hall",
+        "a1_chase_central",
+        "a1_bakery_chase_dead_end",
+        "a1_bakery_doorway",
+        "a1_clock_stand",
+        "a1_elevator_stand",
+        "a1_stair_stand"
+      ]
+    },
+    {
+      "id": "a2_room_network",
+      "storyFloor": "A2",
+      "bounds": {
+        "x": 74,
+        "y": 136,
+        "width": 1540,
+        "height": 717
+      },
+      "clearancePixels": 8,
+      "nodeIds": [
+        "a2_elevator_stand",
+        "a2_stair_stand",
+        "a2_chase_core_east",
+        "a2_chase_east_south",
+        "a2_chase_room202_outer",
+        "a2_room203_chase_dead_end",
+        "a2_room201_portal",
+        "a2_room204_portal",
+        "a2_room202_portal",
+        "a2_room203_portal",
+        "a2_open_study",
+        "a2_202_chase_finish_point"
+      ]
+    },
+    {
+      "id": "a3_reference_network",
+      "storyFloor": "A3",
+      "bounds": {
+        "x": 55,
+        "y": 147,
+        "width": 1559,
+        "height": 669
+      },
+      "clearancePixels": 8,
+      "nodeIds": [
+        "a3_elevator_stand",
+        "a3_stair_stand",
+        "a3_reference_portal"
+      ]
+    }
   ],
-  "puzzleOrder": [
-    "airflow_overlay",
-    "elevator_track_sync",
-    "npc_schedule_route",
-    "corridor_bay_reconstruction",
-    "wayfinding_fragment_board",
-    "bridge_floor_discrimination",
-    "stair_echo_direction",
-    "multicam_video_edit",
-    "echo_action_record",
-    "dual_lift_logistics",
-    "warm_air_balance",
-    "route_schedule",
-    "clock_phase_lock"
+  "navigationNodes": [
+    { "id": "a1_lobby_spawn", "storyFloor": "A1", "role": "safe_spawn", "point": { "x": 836, "y": 716 } },
+    { "id": "a1_chase_start", "storyFloor": "A1", "role": "chase_start", "point": { "x": 590, "y": 612 } },
+    { "id": "a1_guard_spawn", "storyFloor": "A1", "role": "guard_spawn", "point": { "x": 590, "y": 724 } },
+    { "id": "a1_chase_lower_hall", "storyFloor": "A1", "role": "chase_waypoint", "point": { "x": 836, "y": 540 } },
+    { "id": "a1_chase_central", "storyFloor": "A1", "role": "chase_waypoint", "point": { "x": 836, "y": 228 } },
+    { "id": "a1_bakery_chase_dead_end", "storyFloor": "A1", "role": "chase_decoy", "point": { "x": 318, "y": 648 } },
+    { "id": "a1_bakery_doorway", "storyFloor": "A1", "role": "required_passage", "point": { "x": 510.5, "y": 645.5 } },
+    { "id": "a1_clock_stand", "storyFloor": "A1", "role": "interaction_stand", "point": { "x": 1001, "y": 192 } },
+    { "id": "a1_elevator_stand", "storyFloor": "A1", "role": "transport_stand", "point": { "x": 772.5, "y": 204 } },
+    { "id": "a1_stair_stand", "storyFloor": "A1", "role": "transport_stand", "point": { "x": 1001, "y": 214 } },
+
+    { "id": "a2_elevator_stand", "storyFloor": "A2", "role": "transport_stand", "point": { "x": 791, "y": 204 } },
+    { "id": "a2_stair_stand", "storyFloor": "A2", "role": "transport_stand", "point": { "x": 966, "y": 214 } },
+    { "id": "a2_chase_core_east", "storyFloor": "A2", "role": "chase_waypoint", "point": { "x": 1100, "y": 232 } },
+    { "id": "a2_chase_east_south", "storyFloor": "A2", "role": "chase_waypoint", "point": { "x": 1100, "y": 400 } },
+    { "id": "a2_chase_room202_outer", "storyFloor": "A2", "role": "chase_waypoint", "point": { "x": 1353, "y": 400 } },
+    { "id": "a2_room203_chase_dead_end", "storyFloor": "A2", "role": "chase_decoy", "point": { "x": 1353, "y": 524 } },
+    { "id": "a2_room201_portal", "storyFloor": "A2", "role": "room_portal", "point": { "x": 325, "y": 364 } },
+    { "id": "a2_room204_portal", "storyFloor": "A2", "role": "room_portal", "point": { "x": 325, "y": 516 } },
+    { "id": "a2_room202_portal", "storyFloor": "A2", "role": "room_portal", "point": { "x": 1349.5, "y": 362.5 } },
+    { "id": "a2_room203_portal", "storyFloor": "A2", "role": "room_portal", "point": { "x": 1354.5, "y": 524 } },
+    { "id": "a2_open_study", "storyFloor": "A2", "role": "corridor", "point": { "x": 836, "y": 700 } },
+    { "id": "a2_202_chase_finish_point", "storyFloor": "A2", "role": "chase_finish", "point": { "x": 1353, "y": 356.5 } },
+
+    { "id": "a3_elevator_stand", "storyFloor": "A3", "role": "transport_stand", "point": { "x": 787.5, "y": 204 } },
+    { "id": "a3_stair_stand", "storyFloor": "A3", "role": "transport_stand", "point": { "x": 1001, "y": 214 } },
+    { "id": "a3_reference_portal", "storyFloor": "A3", "role": "room_portal", "point": { "x": 1395.5, "y": 488 } },
+    { "id": "a3_reference_target", "storyFloor": "A3", "role": "observation_target", "point": { "x": 1398, "y": 715 } }
   ],
-  "cycleRoutes": {
-    "first": ["B2", "B3", "A3", "A1"],
-    "second": ["A1", "A3", "B3", "B2", "B2-04"]
+  "routeAssertions": [
+    {
+      "id": "a1_lobby_connects_bakery",
+      "networkId": "a1_public_network",
+      "fromNodeId": "a1_lobby_spawn",
+      "toNodeId": "a1_bakery_doorway"
+    },
+    {
+      "id": "a1_clock_connects_transport",
+      "networkId": "a1_public_network",
+      "fromNodeId": "a1_clock_stand",
+      "toNodeId": "a1_stair_stand"
+    },
+    {
+      "id": "a1_final_chase_connects_stair",
+      "networkId": "a1_public_network",
+      "fromNodeId": "a1_chase_start",
+      "toNodeId": "a1_stair_stand"
+    },
+    {
+      "id": "a2_201_connects_core",
+      "networkId": "a2_room_network",
+      "fromNodeId": "a2_elevator_stand",
+      "toNodeId": "a2_room201_portal"
+    },
+    {
+      "id": "a2_204_connects_core",
+      "networkId": "a2_room_network",
+      "fromNodeId": "a2_elevator_stand",
+      "toNodeId": "a2_room204_portal"
+    },
+    {
+      "id": "a2_202_connects_core",
+      "networkId": "a2_room_network",
+      "fromNodeId": "a2_stair_stand",
+      "toNodeId": "a2_room202_portal"
+    },
+    {
+      "id": "a2_203_connects_core",
+      "networkId": "a2_room_network",
+      "fromNodeId": "a2_elevator_stand",
+      "toNodeId": "a2_room203_portal"
+    },
+    {
+      "id": "a2_open_study_connects_core",
+      "networkId": "a2_room_network",
+      "fromNodeId": "a2_elevator_stand",
+      "toNodeId": "a2_open_study"
+    },
+    {
+      "id": "a3_reference_classroom_reachable",
+      "networkId": "a3_reference_network",
+      "fromNodeId": "a3_elevator_stand",
+      "toNodeId": "a3_reference_portal"
+    }
+  ],
+  "interfloorRouteAssertions": [
+    {
+      "id": "a1_to_a2_to_202_chase",
+      "segments": [
+        {
+          "kind": "floor_navigation",
+          "networkId": "a1_public_network",
+          "fromNodeId": "a1_chase_start",
+          "toNodeId": "a1_stair_stand"
+        },
+        {
+          "kind": "transport",
+          "transportId": "main_stair",
+          "fromStoryFloor": "A1",
+          "toStoryFloor": "A2"
+        },
+        {
+          "kind": "floor_navigation",
+          "networkId": "a2_room_network",
+          "fromNodeId": "a2_stair_stand",
+          "toNodeId": "a2_202_chase_finish_point"
+        }
+      ]
+    },
+    {
+      "id": "a2_202_to_a1_clock_return",
+      "segments": [
+        {
+          "kind": "floor_navigation",
+          "networkId": "a2_room_network",
+          "fromNodeId": "a2_202_chase_finish_point",
+          "toNodeId": "a2_stair_stand"
+        },
+        {
+          "kind": "transport",
+          "transportId": "main_stair",
+          "fromStoryFloor": "A2",
+          "toStoryFloor": "A1"
+        },
+        {
+          "kind": "floor_navigation",
+          "networkId": "a1_public_network",
+          "fromNodeId": "a1_stair_stand",
+          "toNodeId": "a1_clock_stand"
+        }
+      ]
+    }
+  ],
+  "phaseOrder": [
+    "opening_handoff",
+    "opening_paper_caught",
+    "hall_clock_inspection",
+    "bakery_hour_hand",
+    "room204_restore",
+    "maintenance_repair",
+    "blackout_light_grid",
+    "final_chase",
+    "final_minute_recovery",
+    "return_to_clock",
+    "morning_checkin",
+    "exterior_closure",
+    "complete"
+  ],
+  "supersedes": {
+    "schemaVersion": 1,
+    "removedRuntimeFloors": [
+      "A4",
+      "B2",
+      "B3"
+    ],
+    "removedRuntimeMechanics": [
+      "a2_partitions",
+      "guide_fragments",
+      "a3_wayfinding_board"
+    ]
   }
 }

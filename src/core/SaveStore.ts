@@ -4,6 +4,11 @@ import type {
   BikeArcadeChapterState,
   CanteenDrinkIngredientId,
   CanteenMenuOptionId,
+  ChapterFour755FloorId,
+  ChapterFourFactId,
+  ChapterFourPhase,
+  ChapterFourRoom204Placement,
+  ChapterFourTimeState,
   ClockArchiveClueId,
   ClockCalibrationPhase,
   ClockCoarseLockId,
@@ -34,13 +39,18 @@ import {
   normalizePhoneHomeAppOrder
 } from "./PhoneHomeApps";
 import { draftIdFor } from "../modules/QizhenJournalModel";
+import {
+  createCanonicalCompleteRoom204Placements,
+  isRoom204PlacementSetComplete,
+  normalizeRoom204Placements
+} from "../scenes/rpg/ChapterFourRoom204Model";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 
-const SAVE_VERSION = 24;
+const SAVE_VERSION = 25;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, SAVE_VERSION]);
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, SAVE_VERSION]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
@@ -76,6 +86,7 @@ const VALID_RPG_CHECKPOINTS = new Set<GameState["rpgCheckpoint"]>([
   "c4_a1_lobby",
   "c4_a1_main_elevator",
   "c4_a2_corridor",
+  "c4_a2_room202",
   "c4_a3_wayfinding",
   "c4_a3_skybridge",
   "c4_b3_landing",
@@ -167,20 +178,36 @@ const VALID_QIZHEN_PHOTO_TAGS = new Set<QizhenPhotoTag>([
 const VALID_QIZHEN_SWAN_BUCKETS = new Set(["near", "mid", "far", "gone"]);
 const VALID_QIZHEN_RIPPLE_BUCKETS = new Set(["clear", "partial", "lost"]);
 const VALID_QIZHEN_SUMMARY_CHOICES = new Set<NonNullable<GameState["qizhenLake"]["journal"]["summaryChoice"]>>(["safe_return", "details_withheld"]);
-const VALID_CHAPTER_FOUR_PHASES = new Set<GameState["chapter4"]["phase"]>([
+const VALID_CHAPTER_FOUR_PHASES = new Set<ChapterFourPhase>([
+  "opening_handoff", "opening_paper_caught", "hall_clock_inspection", "bakery_hour_hand",
+  "room204_restore", "maintenance_repair", "blackout_light_grid", "final_chase",
+  "final_minute_recovery", "return_to_clock", "morning_checkin", "exterior_closure", "complete"
+]);
+const LEGACY_CHAPTER_FOUR_PHASES = new Set([
   "inactive", "arrival", "airflow_overlay", "elevator_track_sync", "npc_schedule_route",
   "corridor_bay_reconstruction", "wayfinding_fragment_board", "bridge_floor_discrimination",
   "stair_echo_direction", "multicam_video_edit", "echo_action_record", "dual_lift_logistics",
   "warm_air_balance", "first_cycle_reset", "route_schedule", "clock_phase_lock", "complete"
 ]);
-const VALID_CHAPTER_FOUR_PUZZLE_IDS = new Set<GameState["chapter4"]["solvedPuzzleIds"][number]>([
+const LEGACY_CHAPTER_FOUR_PUZZLE_IDS = new Set<GameState["chapter4"]["solvedPuzzleIds"][number]>([
   "airflow_overlay", "elevator_track_sync", "npc_schedule_route", "corridor_bay_reconstruction",
   "wayfinding_fragment_board", "bridge_floor_discrimination", "stair_echo_direction",
   "multicam_video_edit", "echo_action_record", "dual_lift_logistics", "warm_air_balance",
   "route_schedule", "clock_phase_lock"
 ]);
+const VALID_CHAPTER_FOUR_FACT_IDS = new Set<ChapterFourFactId>([
+  "opening_paper_at_noticeboard", "opening_paper_caught", "external_time_rejected",
+  "hall_clock_inspected", "bakery_conveyor_lamp_inspected", "bakery_hour_hand_exposed",
+  "bakery_hour_hand_collected", "hour_hand_installed", "a3_reference_observed",
+  "room204_residual_observed", "room204_restored", "room204_projection_completed",
+  "positioning_plate_collected", "positioning_plate_installed",
+  "cart_wheel_inspected", "cart_wheel_cover_opened", "cart_wheel_repaired", "clock_gear_repaired",
+  "paper_temporarily_out_of_inventory", "light_grid_locked", "final_minute_recovered",
+  "final_minute_installed", "checkin_card_accepted", "checkin_paper_accepted",
+  "exterior_closure_acknowledged"
+]);
 const VALID_CHAPTER_FOUR_MODES = new Set<GameState["chapter4"]["mode"]>(["light", "dark"]);
-const VALID_CHAPTER_FOUR_FLOORS = new Set<GameState["chapter4"]["floor"]>(["A1", "A2", "A3", "A4", "B2", "B3"]);
+const VALID_CHAPTER_FOUR_FLOORS = new Set<ChapterFour755FloorId>(["A1", "A2", "A3"]);
 const VALID_DIGIT_VALUES = new Set<NonNullable<GameState["digits"]["d1"]>>(["0", "7", "9", "8"]);
 const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "waterDrop", "headphone", "wateredHeadphone", "reverseGear", "slashLine", "towerKey",
@@ -556,7 +583,12 @@ export class SaveStore {
       );
       const qizhenLake = qizhenNormalization.state;
       const clockCalibration = normalizeClockCalibration(saved.clockCalibration, initial.clockCalibration);
-      const chapter4 = normalizeChapterFour(saved.chapter4, initial.chapter4);
+      const chapter4Normalization = normalizeChapterFour(
+        saved.chapter4,
+        initial.chapter4,
+        envelopeVersion
+      );
+      const chapter4 = chapter4Normalization.state;
       const chapterThreeInterlude = normalizeChapterThreeInterlude(
         saved.chapterThreeInterlude,
         initial.chapterThreeInterlude,
@@ -582,6 +614,7 @@ export class SaveStore {
 
       normalizeConsumedItems(items, ui, flags, theaterHunt, qizhenLake);
       normalizeQizhenItems(items, qizhenLake, qizhenNormalization);
+      normalizeChapterFourItems(items, chapter4, chapter4Normalization.migrationKind);
       const wallet = normalizeWallet(
         saved.wallet,
         initial.wallet,
@@ -631,6 +664,22 @@ export class SaveStore {
         hydrated.rpgScene = "campus_bootstrap";
         hydrated.rpgCheckpoint = "campus_spawn";
         hydrated.currentScene = "phone_home";
+      }
+      if (chapter4Normalization.migrationKind === "legacy_in_progress") {
+        hydrated.runtimeMode = "rpg";
+        hydrated.rpgScene = "duan_yongping_temporal_maze";
+        hydrated.rpgCheckpoint = "c4_a1_lobby";
+        hydrated.currentScene = "phone_home";
+      }
+      if (chapter4Normalization.migrationKind === "legacy_complete") {
+        hydrated.clockCalibration = {
+          ...hydrated.clockCalibration,
+          phase: "aligned",
+          step: "complete",
+          displayedSeconds: 28500,
+          targetSeconds: 28500,
+          selectedTargetSeconds: 28500
+        };
       }
       if (hydrated.rpgScene === "duan_yongping_temporal_maze") {
         hydrated.rpgCheckpoint = normalizeChapterFourCheckpoint(
@@ -1205,76 +1254,731 @@ function normalizeClockCalibration(
   };
 }
 
+type ChapterFourMigrationKind =
+  | "none"
+  | "legacy_not_started"
+  | "legacy_in_progress"
+  | "legacy_complete";
+
+interface ChapterFourNormalizationResult {
+  state: GameState["chapter4"];
+  migrationKind: ChapterFourMigrationKind;
+}
+
+interface ChapterFourTimeContract {
+  timeState: ChapterFourTimeState;
+  worldTimeSeconds: number;
+  phoneStatusTimeSeconds: number;
+  phoneStatusTimeTrusted: boolean;
+}
+
+const CHAPTER_FOUR_TIME_BY_PHASE: Record<ChapterFourPhase, ChapterFourTimeContract> = {
+  opening_handoff: {
+    timeState: "2245_opening",
+    worldTimeSeconds: 81900,
+    phoneStatusTimeSeconds: 28523,
+    phoneStatusTimeTrusted: false
+  },
+  opening_paper_caught: {
+    timeState: "2245_opening",
+    worldTimeSeconds: 81900,
+    phoneStatusTimeSeconds: 28523,
+    phoneStatusTimeTrusted: false
+  },
+  hall_clock_inspection: {
+    timeState: "2245_opening",
+    worldTimeSeconds: 81900,
+    phoneStatusTimeSeconds: 28523,
+    phoneStatusTimeTrusted: false
+  },
+  bakery_hour_hand: {
+    timeState: "1225_bakery",
+    worldTimeSeconds: 44700,
+    phoneStatusTimeSeconds: 44700,
+    phoneStatusTimeTrusted: true
+  },
+  room204_restore: {
+    timeState: "1850_evening",
+    worldTimeSeconds: 67800,
+    phoneStatusTimeSeconds: 67800,
+    phoneStatusTimeTrusted: true
+  },
+  maintenance_repair: {
+    timeState: "2245_maintenance",
+    worldTimeSeconds: 81900,
+    phoneStatusTimeSeconds: 81900,
+    phoneStatusTimeTrusted: true
+  },
+  blackout_light_grid: {
+    timeState: "0754_blackout",
+    worldTimeSeconds: 28440,
+    phoneStatusTimeSeconds: 28440,
+    phoneStatusTimeTrusted: true
+  },
+  final_chase: {
+    timeState: "0754_blackout",
+    worldTimeSeconds: 28440,
+    phoneStatusTimeSeconds: 28440,
+    phoneStatusTimeTrusted: true
+  },
+  final_minute_recovery: {
+    timeState: "0754_blackout",
+    worldTimeSeconds: 28440,
+    phoneStatusTimeSeconds: 28440,
+    phoneStatusTimeTrusted: true
+  },
+  return_to_clock: {
+    timeState: "0754_blackout",
+    worldTimeSeconds: 28440,
+    phoneStatusTimeSeconds: 28440,
+    phoneStatusTimeTrusted: true
+  },
+  morning_checkin: {
+    timeState: "0755_morning",
+    worldTimeSeconds: 28500,
+    phoneStatusTimeSeconds: 28500,
+    phoneStatusTimeTrusted: true
+  },
+  exterior_closure: {
+    timeState: "0755_morning",
+    worldTimeSeconds: 28500,
+    phoneStatusTimeSeconds: 28500,
+    phoneStatusTimeTrusted: true
+  },
+  complete: {
+    timeState: "0755_morning",
+    worldTimeSeconds: 28500,
+    phoneStatusTimeSeconds: 28500,
+    phoneStatusTimeTrusted: true
+  }
+};
+
+const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
+  "opening_paper_at_noticeboard",
+  "opening_paper_caught",
+  "external_time_rejected",
+  "hall_clock_inspected",
+  "bakery_conveyor_lamp_inspected",
+  "bakery_hour_hand_exposed",
+  "bakery_hour_hand_collected",
+  "hour_hand_installed",
+  "a3_reference_observed",
+  "room204_residual_observed",
+  "room204_restored",
+  "room204_projection_completed",
+  "positioning_plate_collected",
+  "positioning_plate_installed",
+  "cart_wheel_inspected",
+  "cart_wheel_cover_opened",
+  "cart_wheel_repaired",
+  "clock_gear_repaired",
+  "paper_temporarily_out_of_inventory",
+  "light_grid_locked",
+  "final_minute_recovered",
+  "final_minute_installed",
+  "checkin_card_accepted",
+  "checkin_paper_accepted"
+];
+
+const CHAPTER_FOUR_OPENING_FACT_ORDER = [
+  "opening_paper_at_noticeboard",
+  "opening_paper_caught",
+  "external_time_rejected",
+  "hall_clock_inspected"
+] as const satisfies readonly ChapterFourFactId[];
+const CHAPTER_FOUR_BAKERY_FACT_ORDER = [
+  "bakery_conveyor_lamp_inspected",
+  "bakery_hour_hand_exposed",
+  "bakery_hour_hand_collected",
+  "hour_hand_installed"
+] as const satisfies readonly ChapterFourFactId[];
+const CHAPTER_FOUR_POST_BAKERY_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
+  "room204_restore",
+  "maintenance_repair",
+  "blackout_light_grid",
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure",
+  "complete"
+]);
+const CHAPTER_FOUR_ROOM204_FACT_ORDER = [
+  "a3_reference_observed",
+  "room204_residual_observed",
+  "room204_restored",
+  "room204_projection_completed",
+  "positioning_plate_collected",
+  "positioning_plate_installed"
+] as const satisfies readonly ChapterFourFactId[];
+const CHAPTER_FOUR_POST_ROOM204_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
+  "maintenance_repair",
+  "blackout_light_grid",
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure",
+  "complete"
+]);
+const CHAPTER_FOUR_MAINTENANCE_FACT_ORDER = [
+  "cart_wheel_inspected",
+  "cart_wheel_cover_opened",
+  "cart_wheel_repaired",
+  "clock_gear_repaired"
+] as const satisfies readonly ChapterFourFactId[];
+const CHAPTER_FOUR_POST_MAINTENANCE_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
+  "blackout_light_grid",
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure",
+  "complete"
+]);
+const CHAPTER_FOUR_POST_MINUTE_THEFT_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
+  "blackout_light_grid",
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure",
+  "complete"
+]);
+const CHAPTER_FOUR_POST_LIGHT_GRID_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure",
+  "complete"
+]);
+
+/**
+ * Restores the authored opening handshakes without inventing a second phase.
+ * A later phase implies its completed prerequisites, while the two resumable
+ * presentation phases deliberately keep their final fact optional.
+ */
+function normalizeChapterFourFactClosure(
+  phase: ChapterFourPhase,
+  savedFactIds: readonly ChapterFourFactId[]
+): ChapterFourFactId[] {
+  const facts = new Set(savedFactIds);
+  if (facts.has("hall_clock_inspected")) facts.add("external_time_rejected");
+  if (facts.has("external_time_rejected")) facts.add("opening_paper_caught");
+  if (facts.has("opening_paper_caught")) facts.add("opening_paper_at_noticeboard");
+  if (facts.has("hour_hand_installed")) facts.add("bakery_hour_hand_collected");
+  if (facts.has("bakery_hour_hand_collected")) facts.add("bakery_hour_hand_exposed");
+  if (facts.has("bakery_hour_hand_exposed")) facts.add("bakery_conveyor_lamp_inspected");
+
+  if (phase === "opening_handoff") {
+    facts.delete("opening_paper_caught");
+    facts.delete("external_time_rejected");
+    facts.delete("hall_clock_inspected");
+  } else if (phase === "opening_paper_caught") {
+    facts.add("opening_paper_at_noticeboard");
+    facts.add("opening_paper_caught");
+    facts.delete("hall_clock_inspected");
+  } else if (phase === "hall_clock_inspection") {
+    facts.add("opening_paper_at_noticeboard");
+    facts.add("opening_paper_caught");
+    facts.add("external_time_rejected");
+  } else {
+    for (const factId of CHAPTER_FOUR_OPENING_FACT_ORDER) facts.add(factId);
+  }
+
+  if (["opening_handoff", "opening_paper_caught", "hall_clock_inspection"].includes(phase)) {
+    for (const factId of CHAPTER_FOUR_BAKERY_FACT_ORDER) facts.delete(factId);
+  } else if (CHAPTER_FOUR_POST_BAKERY_PHASES.has(phase)) {
+    for (const factId of CHAPTER_FOUR_BAKERY_FACT_ORDER) facts.add(factId);
+  } else if (phase === "bakery_hour_hand") {
+    // A partially completed stop beat is a valid resumable save. Only causal
+    // prerequisites are synthesized; the next handshake result remains open.
+    facts.delete("hour_hand_installed");
+    if (!facts.has("bakery_conveyor_lamp_inspected")) {
+      facts.delete("bakery_hour_hand_exposed");
+      facts.delete("bakery_hour_hand_collected");
+      facts.delete("hour_hand_installed");
+    }
+  }
+
+  return [
+    ...CHAPTER_FOUR_OPENING_FACT_ORDER.filter((factId) => facts.delete(factId)),
+    ...CHAPTER_FOUR_BAKERY_FACT_ORDER.filter((factId) => facts.delete(factId)),
+    ...savedFactIds.filter((factId) => facts.delete(factId)),
+    ...facts
+  ];
+}
+
 function normalizeChapterFour(
   value: unknown,
+  initial: GameState["chapter4"],
+  envelopeVersion: number
+): ChapterFourNormalizationResult {
+  const saved = asRecord(value);
+  if (envelopeVersion < SAVE_VERSION) {
+    const savedPhase = typeof saved.phase === "string" ? saved.phase : "inactive";
+    const completed = saved.completed === true || savedPhase === "complete";
+    const started = completed
+      || saved.prologueSeen === true
+      || (LEGACY_CHAPTER_FOUR_PHASES.has(savedPhase) && savedPhase !== "inactive")
+      || (Array.isArray(saved.solvedPuzzleIds)
+        && saved.solvedPuzzleIds.some((puzzleId) => LEGACY_CHAPTER_FOUR_PUZZLE_IDS.has(
+          puzzleId as GameState["chapter4"]["solvedPuzzleIds"][number]
+        )))
+      || (Array.isArray(saved.clueIds) && saved.clueIds.length > 0);
+    if (completed) {
+      return {
+        state: createExteriorClosureWaitingChapterFourState(initial),
+        migrationKind: "legacy_complete"
+      };
+    }
+    return {
+      state: createOpeningChapterFourState(initial, started),
+      migrationKind: started ? "legacy_in_progress" : "legacy_not_started"
+    };
+  }
+
+  const savedFactIds = filteredStringArrayFromSet(
+    saved.factIds,
+    VALID_CHAPTER_FOUR_FACT_IDS,
+    []
+  );
+  const savedCardAccepted = saved.checkinCardAccepted === true
+    && savedFactIds.includes("checkin_card_accepted");
+  const savedPaperAccepted = saved.checkinPaperAccepted === true
+    && savedFactIds.includes("checkin_paper_accepted");
+  const savedCompleted = saved.completed === true || saved.phase === "complete";
+  const savedPhase = enumOr(saved.phase, VALID_CHAPTER_FOUR_PHASES, "opening_handoff");
+  let phase: ChapterFourPhase = savedCompleted
+    || savedPhase === "complete"
+    || (savedPhase === "exterior_closure" && saved.exteriorClosureAcknowledged === true)
+      ? "exterior_closure"
+      : savedPhase;
+  if (phase === "morning_checkin" && savedCardAccepted && savedPaperAccepted) {
+    phase = "exterior_closure";
+  }
+  // A formal exterior consumer reference and completed runtime session are not
+  // persisted yet. Bare phase/boolean/fact fields therefore cannot hydrate a
+  // completed Chapter 4 state.
+  const completed = false;
+  const time = CHAPTER_FOUR_TIME_BY_PHASE[phase];
+  const timeAuthority = [
+    "opening_handoff",
+    "opening_paper_caught",
+    "hall_clock_inspection"
+  ].includes(phase) ? "external_evidence" : "hall_clock";
+  const location = normalizeChapterFour755Location(
+    phase,
+    nullableEnumOr(saved.floor, VALID_CHAPTER_FOUR_FLOORS, null),
+    typeof saved.roomId === "string"
+      ? migrateChapterFourRoomId(saved.roomId.trim())
+      : ""
+  );
+  let factIds = normalizeChapterFourFactClosure(phase, savedFactIds);
+  let room204Placements = normalizeChapterFourRoom204Placements(saved.room204Placements);
+  const room204Closure = normalizeChapterFourRoom204Closure(
+    phase,
+    factIds,
+    room204Placements
+  );
+  factIds = room204Closure.factIds;
+  room204Placements = room204Closure.placements;
+  factIds = normalizeChapterFourMaintenanceClosure(phase, factIds);
+  factIds = normalizeChapterFourMinuteTheftClosure(phase, factIds);
+  factIds = normalizeChapterFourFinalMinuteClosure(phase, factIds);
+  const checkinClosure = normalizeChapterFourCheckinClosure(
+    phase,
+    factIds,
+    savedCardAccepted,
+    savedPaperAccepted
+  );
+  factIds = checkinClosure.factIds;
+  const lightGridSaved = asRecord(saved.lightGrid);
+  const lightGridMustBeLocked = [
+    "final_chase",
+    "final_minute_recovery",
+    "return_to_clock",
+    "morning_checkin",
+    "exterior_closure",
+    "complete"
+  ].includes(phase);
+  const lightGridMask = lightGridMustBeLocked
+    ? 13
+    : phase === "blackout_light_grid"
+      ? rangedIntegerOr(lightGridSaved.mask, 0, 31, 6)
+      : 6;
+  const checkinCardAccepted = checkinClosure.checkinCardAccepted;
+  const checkinPaperAccepted = checkinClosure.checkinPaperAccepted;
+  const prologueSeen = phase === "opening_handoff"
+    ? booleanOr(saved.prologueSeen, initial.prologueSeen)
+    : true;
+
+  return {
+    state: {
+      prologueSeen,
+      phase,
+      mode: enumOr(saved.mode, VALID_CHAPTER_FOUR_MODES, initial.mode),
+      building: "A",
+      floor: location.floor,
+      roomId: location.roomId,
+      timeAuthority,
+      timeState: time.timeState,
+      worldTimeSeconds: time.worldTimeSeconds,
+      phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
+      phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
+      factIds,
+      room204Placements,
+      lightGrid: {
+        mask: lightGridMask,
+        locked: lightGridMustBeLocked
+      },
+      guardMode: phase === "maintenance_repair" ? "patrol" : phase === "final_chase" ? "chase" : "absent",
+      chaseAttempt: nonNegativeSafeIntegerOr(saved.chaseAttempt, initial.chaseAttempt),
+      chaseRestartCheckpoint: phase === "final_chase" ? "c4_a1_lobby" : null,
+      checkinCardAccepted,
+      checkinPaperAccepted,
+      exteriorClosureAcknowledged: false,
+      completed,
+      ...createEmptyLegacyChapterFourControllerFields(time.worldTimeSeconds)
+    },
+    migrationKind: "none"
+  };
+}
+
+function createOpeningChapterFourState(
+  initial: GameState["chapter4"],
+  prologueSeen: boolean
+): GameState["chapter4"] {
+  return {
+    ...initial,
+    prologueSeen,
+    phase: "opening_handoff",
+    mode: "light",
+    building: "A",
+    floor: "A1",
+    roomId: "a1_lobby",
+    timeAuthority: "external_evidence",
+    timeState: "2245_opening",
+    worldTimeSeconds: 81900,
+    phoneStatusTimeSeconds: 28523,
+    phoneStatusTimeTrusted: false,
+    factIds: [],
+    room204Placements: [],
+    lightGrid: { mask: 6, locked: false },
+    guardMode: "absent",
+    chaseAttempt: 0,
+    chaseRestartCheckpoint: null,
+    checkinCardAccepted: false,
+    checkinPaperAccepted: false,
+    exteriorClosureAcknowledged: false,
+    completed: false,
+    ...createEmptyLegacyChapterFourControllerFields(81900)
+  };
+}
+
+function createExteriorClosureWaitingChapterFourState(
   initial: GameState["chapter4"]
 ): GameState["chapter4"] {
-  const saved = asRecord(value);
-  const prologueSeen = booleanOr(saved.prologueSeen, initial.prologueSeen);
-  const phase = enumOr(saved.phase, VALID_CHAPTER_FOUR_PHASES, prologueSeen ? "arrival" : initial.phase);
-  const solvedPuzzleIds = normalizeChapterFourSolvedPuzzles(
-    stringArrayFromSet(
-      saved.solvedPuzzleIds,
-      VALID_CHAPTER_FOUR_PUZZLE_IDS,
-      initial.solvedPuzzleIds
-    ),
-    phase
-  );
-  const clueIds = normalizeChapterFourClues(
-    isStringArray(saved.clueIds) ? [...new Set(saved.clueIds)] : [...initial.clueIds],
-    solvedPuzzleIds
-  );
-  const savedFloor = nullableEnumOr(saved.floor, VALID_CHAPTER_FOUR_FLOORS, null);
-  const savedRoomId = typeof saved.roomId === "string" && saved.roomId.trim()
-    ? saved.roomId.trim()
-    : null;
-  const location = normalizeChapterFourLocation(savedFloor, savedRoomId, phase, solvedPuzzleIds, clueIds);
-  const savedAnchor = asRecord(saved.anchor);
-  const anchorFloor = nullableEnumOr(savedAnchor.floor, VALID_CHAPTER_FOUR_FLOORS, null);
-  const anchorRoomId = typeof savedAnchor.roomId === "string" ? savedAnchor.roomId.trim() : "";
-  const anchorTimeSeconds = rangedIntegerOr(savedAnchor.timeSeconds, 0, 86399, initial.buildingTimeSeconds);
-  const airflowCompleted = solvedPuzzleIds.includes("airflow_overlay");
-  const elevatorCompleted = solvedPuzzleIds.includes("elevator_track_sync");
   return {
-    prologueSeen,
-    phase,
-    cycle: saved.cycle === 2 ? 2 : 1,
-    mode: enumOr(saved.mode, VALID_CHAPTER_FOUR_MODES, initial.mode),
-    building: location.floor.startsWith("B") ? "B" : "A",
-    floor: location.floor,
-    roomId: location.roomId,
-    buildingTimeSeconds: rangedIntegerOr(saved.buildingTimeSeconds, 0, 86399, initial.buildingTimeSeconds),
-    airflowObserved: airflowCompleted || booleanOr(saved.airflowObserved, initial.airflowObserved),
-    paperGuidedToElevator: airflowCompleted || booleanOr(saved.paperGuidedToElevator, initial.paperGuidedToElevator),
-    elevatorHistoryObserved: elevatorCompleted || booleanOr(saved.elevatorHistoryObserved, initial.elevatorHistoryObserved),
-    elevatorSelectedStartSeconds: elevatorCompleted
-      ? 81811
-      : typeof saved.elevatorSelectedStartSeconds === "number"
-      ? rangedIntegerOr(saved.elevatorSelectedStartSeconds, 0, 86399, initial.elevatorSelectedStartSeconds ?? 81814)
-      : null,
-    elevatorTrackAligned: elevatorCompleted || booleanOr(saved.elevatorTrackAligned, initial.elevatorTrackAligned),
-    elevatorReplayAttempts: Math.max(
-      elevatorCompleted ? 1 : 0,
-      nonNegativeIntegerOr(saved.elevatorReplayAttempts, initial.elevatorReplayAttempts)
-    ),
-    elevatorPlayerBoarded: elevatorCompleted || booleanOr(saved.elevatorPlayerBoarded, initial.elevatorPlayerBoarded),
-    stairEchoObserved: booleanOr(saved.stairEchoObserved, initial.stairEchoObserved),
-    stairRotationQuarterTurns: rangedIntegerOr(
-      saved.stairRotationQuarterTurns,
-      0,
-      3,
-      initial.stairRotationQuarterTurns
-    ) as GameState["chapter4"]["stairRotationQuarterTurns"],
-    stairAlignmentSolved: booleanOr(saved.stairAlignmentSolved, initial.stairAlignmentSolved),
-    solvedPuzzleIds,
-    clueIds,
-    anchor: anchorFloor && anchorRoomId
-      ? { floor: anchorFloor, roomId: anchorRoomId, timeSeconds: anchorTimeSeconds }
-      : null,
-    echoRecorded: booleanOr(saved.echoRecorded, initial.echoRecorded),
-    resetCount: nonNegativeIntegerOr(saved.resetCount, initial.resetCount),
-    finalCode: typeof saved.finalCode === "string" ? saved.finalCode : initial.finalCode,
-    completed: booleanOr(saved.completed, initial.completed)
+    ...initial,
+    prologueSeen: true,
+    phase: "exterior_closure",
+    mode: "light",
+    building: "A",
+    floor: "A1",
+    roomId: "a1_exterior",
+    timeAuthority: "hall_clock",
+    timeState: "0755_morning",
+    worldTimeSeconds: 28500,
+    phoneStatusTimeSeconds: 28500,
+    phoneStatusTimeTrusted: true,
+    factIds: [...CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS],
+    room204Placements: createCanonicalCompleteRoom204Placements(),
+    lightGrid: { mask: 13, locked: true },
+    guardMode: "absent",
+    chaseAttempt: 0,
+    chaseRestartCheckpoint: null,
+    checkinCardAccepted: true,
+    checkinPaperAccepted: true,
+    exteriorClosureAcknowledged: false,
+    completed: false,
+    ...createEmptyLegacyChapterFourControllerFields(28500)
+  };
+}
+
+function createEmptyLegacyChapterFourControllerFields(
+  buildingTimeSeconds: number
+): Pick<
+  GameState["chapter4"],
+  | "cycle"
+  | "buildingTimeSeconds"
+  | "airflowObserved"
+  | "paperGuidedToElevator"
+  | "elevatorHistoryObserved"
+  | "elevatorSelectedStartSeconds"
+  | "elevatorTrackAligned"
+  | "elevatorReplayAttempts"
+  | "elevatorPlayerBoarded"
+  | "stairEchoObserved"
+  | "stairRotationQuarterTurns"
+  | "stairAlignmentSolved"
+  | "solvedPuzzleIds"
+  | "clueIds"
+  | "anchor"
+  | "echoRecorded"
+  | "resetCount"
+  | "finalCode"
+> {
+  return {
+    cycle: 1,
+    buildingTimeSeconds,
+    airflowObserved: false,
+    paperGuidedToElevator: false,
+    elevatorHistoryObserved: false,
+    elevatorSelectedStartSeconds: null,
+    elevatorTrackAligned: false,
+    elevatorReplayAttempts: 0,
+    elevatorPlayerBoarded: false,
+    stairEchoObserved: false,
+    stairRotationQuarterTurns: 0,
+    stairAlignmentSolved: false,
+    solvedPuzzleIds: [],
+    clueIds: [],
+    anchor: null,
+    echoRecorded: false,
+    resetCount: 0,
+    finalCode: null
+  };
+}
+
+function normalizeChapterFour755Location(
+  phase: ChapterFourPhase,
+  savedFloor: ChapterFour755FloorId | null,
+  savedRoomId: string
+): { floor: ChapterFour755FloorId; roomId: string } {
+  if (phase === "opening_handoff") {
+    return { floor: "A1", roomId: "a1_lobby" };
+  }
+  if (phase === "room204_restore") {
+    const floor = savedFloor === "A3" ? "A3" : "A2";
+    const roomIds = floor === "A3"
+      ? new Set(["a3_reference_classroom", "a3_wayfinding"])
+      : new Set(["a2_corridor", "a2_room204", "a2_room_204"]);
+    return {
+      floor,
+      roomId: roomIds.has(savedRoomId)
+        ? savedRoomId
+        : floor === "A3" ? "a3_wayfinding" : "a2_corridor"
+    };
+  }
+  if (phase === "maintenance_repair") {
+    const roomIds = new Set([
+      "a1_lobby",
+      "a1_hall_clock",
+      "a1_bakery",
+      "a1_cleaning_cart"
+    ]);
+    return {
+      floor: "A1",
+      roomId: roomIds.has(savedRoomId) ? savedRoomId : "a1_lobby"
+    };
+  }
+  if (phase === "final_chase") {
+    // A save never resumes inside a half-applied inter-floor chase. Runtime
+    // guard/portal state is intentionally discarded and the chase restarts at
+    // its authored A1 safe point with the same persistent attempt counter.
+    return { floor: "A1", roomId: "a1_lobby" };
+  }
+  if (phase === "final_minute_recovery") {
+    return { floor: "A2", roomId: "a2_room_202" };
+  }
+  if (phase === "return_to_clock") {
+    if (savedFloor === "A2") {
+      return {
+        floor: "A2",
+        roomId: savedRoomId === "a2_corridor" ? "a2_corridor" : "a2_room_202"
+      };
+    }
+    return {
+      floor: "A1",
+      roomId: savedRoomId === "a1_hall_clock" ? "a1_hall_clock" : "a1_lobby"
+    };
+  }
+  if (phase === "morning_checkin") {
+    return { floor: "A1", roomId: "a1_checkin" };
+  }
+  if (phase === "exterior_closure" || phase === "complete") {
+    return { floor: "A1", roomId: "a1_exterior" };
+  }
+  return { floor: "A1", roomId: savedRoomId || "a1_lobby" };
+}
+
+function migrateChapterFourRoomId(roomId: string): string {
+  return roomId === "a2_lecture_202" ? "a2_room_202" : roomId;
+}
+
+function normalizeChapterFourRoom204Placements(value: unknown): ChapterFourRoom204Placement[] {
+  return normalizeRoom204Placements(value);
+}
+
+function normalizeChapterFourRoom204Closure(
+  phase: ChapterFourPhase,
+  savedFactIds: readonly ChapterFourFactId[],
+  savedPlacements: readonly ChapterFourRoom204Placement[]
+): { factIds: ChapterFourFactId[]; placements: ChapterFourRoom204Placement[] } {
+  const facts = new Set(savedFactIds);
+  let placements = normalizeRoom204Placements(savedPlacements);
+  const room204Started = phase === "room204_restore";
+  const postRoom204 = CHAPTER_FOUR_POST_ROOM204_PHASES.has(phase);
+
+  if (!room204Started && !postRoom204) {
+    for (const factId of CHAPTER_FOUR_ROOM204_FACT_ORDER) facts.delete(factId);
+    placements = [];
+  } else if (postRoom204) {
+    if (!isRoom204PlacementSetComplete(placements)) {
+      placements = createCanonicalCompleteRoom204Placements();
+    }
+    for (const factId of CHAPTER_FOUR_ROOM204_FACT_ORDER) facts.add(factId);
+  } else {
+    const hasBothObservations = facts.has("a3_reference_observed")
+      && facts.has("room204_residual_observed");
+    const complete = isRoom204PlacementSetComplete(placements);
+    if (complete && hasBothObservations) facts.add("room204_restored");
+    else facts.delete("room204_restored");
+
+    if (!facts.has("room204_restored")) facts.delete("room204_projection_completed");
+    if (!facts.has("room204_projection_completed")) facts.delete("positioning_plate_collected");
+    // Installing the positioning plate always performs the atomic transition
+    // to maintenance_repair, so this fact cannot remain inside room204_restore.
+    facts.delete("positioning_plate_installed");
+  }
+
+  return {
+    factIds: [
+      ...savedFactIds.filter((factId) => !CHAPTER_FOUR_ROOM204_FACT_ORDER.includes(
+        factId as (typeof CHAPTER_FOUR_ROOM204_FACT_ORDER)[number]
+      ) && facts.delete(factId)),
+      ...CHAPTER_FOUR_ROOM204_FACT_ORDER.filter((factId) => facts.delete(factId)),
+      ...facts
+    ],
+    placements
+  };
+}
+
+function normalizeChapterFourMaintenanceClosure(
+  phase: ChapterFourPhase,
+  savedFactIds: readonly ChapterFourFactId[]
+): ChapterFourFactId[] {
+  const facts = new Set(savedFactIds);
+  if (phase === "maintenance_repair") {
+    if (facts.has("clock_gear_repaired")) facts.add("cart_wheel_repaired");
+    if (facts.has("cart_wheel_repaired")) facts.add("cart_wheel_cover_opened");
+    if (facts.has("cart_wheel_cover_opened")) facts.add("cart_wheel_inspected");
+  } else if (CHAPTER_FOUR_POST_MAINTENANCE_PHASES.has(phase)) {
+    for (const factId of CHAPTER_FOUR_MAINTENANCE_FACT_ORDER) facts.add(factId);
+  } else {
+    for (const factId of CHAPTER_FOUR_MAINTENANCE_FACT_ORDER) facts.delete(factId);
+  }
+  return [
+    ...savedFactIds.filter((factId) => !CHAPTER_FOUR_MAINTENANCE_FACT_ORDER.includes(
+      factId as (typeof CHAPTER_FOUR_MAINTENANCE_FACT_ORDER)[number]
+    ) && facts.delete(factId)),
+    ...CHAPTER_FOUR_MAINTENANCE_FACT_ORDER.filter((factId) => facts.delete(factId)),
+    ...facts
+  ];
+}
+
+function normalizeChapterFourMinuteTheftClosure(
+  phase: ChapterFourPhase,
+  savedFactIds: readonly ChapterFourFactId[]
+): ChapterFourFactId[] {
+  const facts = new Set(savedFactIds);
+  if (CHAPTER_FOUR_POST_MINUTE_THEFT_PHASES.has(phase)) {
+    facts.add("paper_temporarily_out_of_inventory");
+  } else {
+    facts.delete("paper_temporarily_out_of_inventory");
+  }
+  if (CHAPTER_FOUR_POST_LIGHT_GRID_PHASES.has(phase)) {
+    facts.add("light_grid_locked");
+  } else {
+    facts.delete("light_grid_locked");
+  }
+  const normalizedFactOrder = [
+    "paper_temporarily_out_of_inventory",
+    "light_grid_locked"
+  ] as const satisfies readonly ChapterFourFactId[];
+  return [
+    ...savedFactIds.filter((factId) => !normalizedFactOrder.includes(
+      factId as (typeof normalizedFactOrder)[number]
+    ) && facts.delete(factId)),
+    ...normalizedFactOrder.filter((factId) => facts.delete(factId)),
+    ...facts
+  ];
+}
+
+function normalizeChapterFourFinalMinuteClosure(
+  phase: ChapterFourPhase,
+  savedFactIds: readonly ChapterFourFactId[]
+): ChapterFourFactId[] {
+  const facts = new Set(savedFactIds);
+  if (phase === "return_to_clock") {
+    facts.add("final_minute_recovered");
+    facts.delete("final_minute_installed");
+  } else if (["morning_checkin", "exterior_closure", "complete"].includes(phase)) {
+    facts.add("final_minute_recovered");
+    facts.add("final_minute_installed");
+  } else {
+    facts.delete("final_minute_recovered");
+    facts.delete("final_minute_installed");
+  }
+  const normalizedFactOrder = [
+    "final_minute_recovered",
+    "final_minute_installed"
+  ] as const satisfies readonly ChapterFourFactId[];
+  return [
+    ...savedFactIds.filter((factId) => !normalizedFactOrder.includes(
+      factId as (typeof normalizedFactOrder)[number]
+    ) && facts.delete(factId)),
+    ...normalizedFactOrder.filter((factId) => facts.delete(factId)),
+    ...facts
+  ];
+}
+
+function normalizeChapterFourCheckinClosure(
+  phase: ChapterFourPhase,
+  savedFactIds: readonly ChapterFourFactId[],
+  savedCardAccepted: boolean,
+  savedPaperAccepted: boolean
+): {
+  factIds: ChapterFourFactId[];
+  checkinCardAccepted: boolean;
+  checkinPaperAccepted: boolean;
+} {
+  const facts = new Set(savedFactIds);
+  const checkinFinished = phase === "exterior_closure" || phase === "complete";
+  const checkinAvailable = phase === "morning_checkin";
+  const checkinCardAccepted = checkinFinished || (checkinAvailable && savedCardAccepted);
+  const checkinPaperAccepted = checkinFinished || (checkinAvailable && savedPaperAccepted);
+  facts.delete("checkin_card_accepted");
+  facts.delete("checkin_paper_accepted");
+  facts.delete("exterior_closure_acknowledged");
+  if (checkinCardAccepted) facts.add("checkin_card_accepted");
+  if (checkinPaperAccepted) facts.add("checkin_paper_accepted");
+  const normalizedFactOrder = [
+    "checkin_card_accepted",
+    "checkin_paper_accepted"
+  ] as const satisfies readonly ChapterFourFactId[];
+  return {
+    factIds: [
+      ...savedFactIds.filter((factId) => !normalizedFactOrder.includes(
+        factId as (typeof normalizedFactOrder)[number]
+      ) && factId !== "exterior_closure_acknowledged" && facts.delete(factId)),
+      ...normalizedFactOrder.filter((factId) => facts.delete(factId)),
+      ...facts
+    ],
+    checkinCardAccepted,
+    checkinPaperAccepted
   };
 }
 
@@ -1285,7 +1989,7 @@ function normalizeChapterThreeInterlude(
   chapter4: GameState["chapter4"]
 ): GameState["chapterThreeInterlude"] {
   const saved = asRecord(value);
-  const chapterFourStarted = chapter4.prologueSeen || chapter4.phase !== "inactive" || chapter4.completed;
+  const chapterFourStarted = chapter4.prologueSeen || chapter4.completed;
   const migratedPhase: GameState["chapterThreeInterlude"]["phase"] = chapterFourStarted
     ? "complete"
     : qizhenLake.phase === "complete"
@@ -1346,115 +2050,21 @@ function normalizeChapterThreeInterlude(
   };
 }
 
-function normalizeChapterFourLocation(
-  savedFloor: GameState["chapter4"]["floor"] | null,
-  savedRoomId: string | null,
-  phase: GameState["chapter4"]["phase"],
-  solvedPuzzleIds: readonly GameState["chapter4"]["solvedPuzzleIds"][number][],
-  clueIds: readonly string[]
-): Pick<GameState["chapter4"], "floor" | "roomId"> {
-  const floor = savedFloor ?? inferChapterFourFloor(phase, solvedPuzzleIds, clueIds);
-  if (floor === "A1") {
-    return {
-      floor,
-      roomId: savedRoomId === "a1_main_elevator" ? "a1_main_elevator" : "a1_lobby"
-    };
-  }
-  if (floor === "A2") return { floor, roomId: "a2_corridor" };
-  if (floor === "A3") return { floor, roomId: "a3_wayfinding" };
-  if (floor === "A4") return { floor, roomId: savedRoomId ?? "a4_dead_end" };
-  if (floor === "B3") return { floor, roomId: savedRoomId ?? "b3_landing" };
-  return { floor, roomId: savedRoomId === "b2_04" ? "b2_04" : "b2_activity" };
-}
-
-function normalizeChapterFourSolvedPuzzles(
-  savedPuzzleIds: readonly GameState["chapter4"]["solvedPuzzleIds"][number][],
-  phase: GameState["chapter4"]["phase"]
-): GameState["chapter4"]["solvedPuzzleIds"] {
-  const puzzleOrder = [...VALID_CHAPTER_FOUR_PUZZLE_IDS];
-  const phaseIndex = puzzleOrder.indexOf(phase as GameState["chapter4"]["solvedPuzzleIds"][number]);
-  const requiredCount = phase === "complete"
-    ? puzzleOrder.length
-    : phase === "first_cycle_reset"
-      ? puzzleOrder.indexOf("route_schedule")
-      : Math.max(0, phaseIndex);
-  return puzzleOrder.filter((puzzleId, index) => (
-    index < requiredCount || savedPuzzleIds.includes(puzzleId)
-  ));
-}
-
-function normalizeChapterFourClues(
-  savedClueIds: readonly string[],
-  solvedPuzzleIds: readonly GameState["chapter4"]["solvedPuzzleIds"][number][]
-): string[] {
-  const clueIds = [...new Set(savedClueIds)];
-  const append = (clueId: string) => {
-    if (!clueIds.includes(clueId)) clueIds.push(clueId);
-  };
-  if (solvedPuzzleIds.includes("airflow_overlay")) append("a1_airflow_trace");
-  if (solvedPuzzleIds.includes("elevator_track_sync")) {
-    append("a1_elevator_history_tracks");
-    append("A2_ELEVATOR");
-  }
-  if (solvedPuzzleIds.includes("npc_schedule_route")) append("a2_npc_schedule_observed");
-  if (solvedPuzzleIds.includes("corridor_bay_reconstruction")) {
-    append("a2_partition_west_reconfigured");
-    append("a2_partition_east_reconfigured");
-  }
-  if (solvedPuzzleIds.includes("wayfinding_fragment_board")) {
-    append("a2_fragment_west_collected");
-    append("a2_fragment_east_collected");
-    append("a3_old_signage_observed");
-    append("a3_wayfinding_aligned");
-  }
-  if (solvedPuzzleIds.includes("bridge_floor_discrimination")) {
-    append("a3_bridge_history_observed");
-    append("a2_return_window_open");
-  }
-  return clueIds;
-}
-
-function inferChapterFourFloor(
-  phase: GameState["chapter4"]["phase"],
-  solvedPuzzleIds: readonly GameState["chapter4"]["solvedPuzzleIds"][number][],
-  clueIds: readonly string[]
-): GameState["chapter4"]["floor"] {
-  if (phase === "inactive" || phase === "arrival" || phase === "airflow_overlay" || phase === "elevator_track_sync") {
-    return "A1";
-  }
-  if (phase === "npc_schedule_route" || phase === "corridor_bay_reconstruction") return "A2";
-  if (phase === "wayfinding_fragment_board") {
-    const fragmentsCollected = clueIds.includes("a2_fragment_west_collected")
-      && clueIds.includes("a2_fragment_east_collected");
-    return fragmentsCollected || solvedPuzzleIds.includes("wayfinding_fragment_board") ? "A3" : "A2";
-  }
-  if (phase === "bridge_floor_discrimination") {
-    return clueIds.includes("a2_return_window_open")
-      || solvedPuzzleIds.includes("bridge_floor_discrimination")
-      ? "A2"
-      : "A3";
-  }
-  if (phase === "stair_echo_direction") return "B3";
-  return "B2";
-}
-
 function normalizeChapterFourCheckpoint(
   checkpoint: GameState["rpgCheckpoint"],
   chapter: GameState["chapter4"]
 ): GameState["rpgCheckpoint"] {
+  if (chapter.phase === "final_chase") return "c4_a1_lobby";
+  if (chapter.phase === "final_minute_recovery") return "c4_a2_room202";
+  if (chapter.phase === "return_to_clock" && chapter.floor === "A2") {
+    const expected = chapter.roomId === "a2_room_202" ? "c4_a2_room202" : "c4_a2_corridor";
+    return checkpoint === expected ? checkpoint : expected;
+  }
   const expected = chapter.floor === "A1"
-    ? chapter.roomId === "a1_main_elevator" ? "c4_a1_main_elevator" : "c4_a1_lobby"
+    ? "c4_a1_lobby"
     : chapter.floor === "A2"
       ? "c4_a2_corridor"
-      : chapter.floor === "A3"
-        ? "c4_a3_wayfinding"
-        : chapter.floor === "A4"
-          ? "c4_a3_skybridge"
-          : chapter.floor === "B3"
-            ? "c4_b3_landing"
-            : chapter.roomId === "b2_04"
-              ? "c4_b2_final_room"
-              : "c4_b2_activity";
+      : "c4_a3_wayfinding";
   return checkpoint === expected ? checkpoint : expected;
 }
 
@@ -1708,6 +2318,92 @@ function normalizeQizhenItems(
     items.magneticFishingRod = !qizhenLake.magneticAttachmentBroken;
   }
   if (qizhenLake.magneticAttachmentBroken) items.magneticFishingRod = false;
+}
+
+function normalizeChapterFourItems(
+  items: GameState["items"],
+  chapter4: GameState["chapter4"],
+  migrationKind: ChapterFourMigrationKind
+): void {
+  const chapterFourItemIds = [
+    "attendanceRecordPaper",
+    "oldClockHourHand",
+    "clockPositioningPlate",
+    "shortPryBar",
+    "universalLubricatingOil",
+    "finalMinute"
+  ] as const;
+  const savedItems = Object.fromEntries(
+    chapterFourItemIds.map((itemId) => [itemId, items[itemId]])
+  ) as Record<(typeof chapterFourItemIds)[number], boolean>;
+  for (const itemId of chapterFourItemIds) items[itemId] = false;
+
+  if (migrationKind === "legacy_complete") {
+    items.attendanceRecordPaper = true;
+    items.campusCard = true;
+    return;
+  }
+  if (migrationKind !== "none") return;
+
+  const phase = chapter4.phase as ChapterFourPhase;
+  if (!VALID_CHAPTER_FOUR_PHASES.has(phase)) return;
+  const factIds = new Set(chapter4.factIds);
+  const hasFact = (factId: ChapterFourFactId) => factIds.has(factId);
+  const finalMinuteRecovered = hasFact("final_minute_recovered")
+    || hasFact("final_minute_installed");
+
+  if ([
+    "opening_paper_caught",
+    "hall_clock_inspection",
+    "bakery_hour_hand",
+    "room204_restore",
+    "maintenance_repair"
+  ].includes(phase)) {
+    items.attendanceRecordPaper = true;
+  } else if (phase === "opening_handoff") {
+    items.attendanceRecordPaper = hasFact("opening_paper_caught");
+  } else if (phase === "blackout_light_grid") {
+    items.attendanceRecordPaper = false;
+  } else if (phase === "final_chase") {
+    items.attendanceRecordPaper = false;
+  } else if (phase === "final_minute_recovery") {
+    items.attendanceRecordPaper = finalMinuteRecovered;
+  } else if (["return_to_clock", "morning_checkin", "exterior_closure", "complete"].includes(phase)) {
+    items.attendanceRecordPaper = true;
+  }
+  if (["return_to_clock", "morning_checkin", "exterior_closure", "complete"].includes(phase)) {
+    items.campusCard = true;
+  }
+
+  if (phase === "bakery_hour_hand" && !hasFact("hour_hand_installed")) {
+    // The item and its controller-owned collection fact are one persisted
+    // transaction. A stale item bit without the fact is discarded; a valid
+    // collected fact restores the held item after reload.
+    items.oldClockHourHand = hasFact("bakery_hour_hand_collected");
+  }
+  if (phase === "room204_restore" && !hasFact("positioning_plate_installed")) {
+    // The grant fact and held item are one controller transaction. Restore a
+    // missing item bit from the fact and discard a stale item without it.
+    items.clockPositioningPlate = hasFact("positioning_plate_collected");
+  }
+  if (phase === "maintenance_repair") {
+    const cartWheelCoverOpened = hasFact("cart_wheel_cover_opened")
+      || hasFact("cart_wheel_repaired")
+      || hasFact("clock_gear_repaired");
+    const cartWheelRepaired = hasFact("cart_wheel_repaired")
+      || hasFact("clock_gear_repaired");
+    items.shortPryBar = savedItems.shortPryBar
+      && !cartWheelCoverOpened;
+    items.universalLubricatingOil = cartWheelCoverOpened
+      && !hasFact("clock_gear_repaired")
+      && (savedItems.universalLubricatingOil || cartWheelRepaired);
+  }
+  if (phase === "final_minute_recovery" && !hasFact("final_minute_installed")) {
+    items.finalMinute = finalMinuteRecovered;
+  }
+  if (phase === "return_to_clock" && !hasFact("final_minute_installed")) {
+    items.finalMinute = true;
+  }
 }
 
 function normalizeLibraryFinalsPuzzle(value: unknown, initial: LibraryFinalsPuzzleState): LibraryFinalsPuzzleState {
