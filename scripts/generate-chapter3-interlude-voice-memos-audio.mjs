@@ -675,8 +675,80 @@ function makeRecordingManifestEntry(recording, output, sourceConfigHash, compone
   };
 }
 
-function manifestAssetsMatch(expected) {
-  return JSON.stringify(previousManifest.assets ?? {}) === JSON.stringify(expected);
+function stableJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map((entry) => stableJson(entry)).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => `${JSON.stringify(key)}:${stableJson(entry)}`);
+    return `{${entries.join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function reportManifestMismatch(reason) {
+  process.stderr.write(`Chapter 3.5 manifest mismatch: ${reason}\n`);
+  return false;
+}
+
+function manifestAssetsMatch(actualAssets) {
+  const manifestAssets = previousManifest.assets ?? {};
+  const manifestNames = Object.keys(manifestAssets).sort();
+  const actualNames = Object.keys(actualAssets).sort();
+  if (stableJson(manifestNames) !== stableJson(actualNames)) {
+    return reportManifestMismatch("asset names differ");
+  }
+
+  for (const asset of actualNames) {
+    const manifestEntry = manifestAssets[asset];
+    const actualEntry = actualAssets[asset];
+    if (!manifestEntry || !actualEntry) {
+      return reportManifestMismatch(`${asset} is missing`);
+    }
+
+    if (Math.abs(manifestEntry.durationMs - actualEntry.durationMs) > 40) {
+      return reportManifestMismatch(`${asset} duration differs by more than 40ms`);
+    }
+    if (
+      Number.isFinite(manifestEntry.bitrate)
+      && Number.isFinite(actualEntry.bitrate)
+      && Math.abs(manifestEntry.bitrate - actualEntry.bitrate) > 2000
+    ) {
+      return reportManifestMismatch(`${asset} bitrate differs by more than 2kbps`);
+    }
+
+    const manifestWaveform = manifestEntry.waveformBins;
+    const actualWaveform = actualEntry.waveformBins;
+    if (Boolean(manifestWaveform) !== Boolean(actualWaveform)) {
+      return reportManifestMismatch(`${asset} waveform presence differs`);
+    }
+    if (manifestWaveform) {
+      if (manifestWaveform.length !== actualWaveform.length) {
+        return reportManifestMismatch(`${asset} waveform bin count differs`);
+      }
+      if (manifestWaveform.some((value, index) => (
+        Math.abs(value - actualWaveform[index]) > 0.01
+      ))) {
+        return reportManifestMismatch(`${asset} waveform differs by more than 0.01`);
+      }
+    }
+
+    const omitPlatformProbeValues = ({
+      durationMs: _durationMs,
+      bitrate: _bitrate,
+      waveformBins: _waveformBins,
+      ...stableEntry
+    }) => stableEntry;
+    if (
+      stableJson(omitPlatformProbeValues(manifestEntry))
+      !== stableJson(omitPlatformProbeValues(actualEntry))
+    ) {
+      return reportManifestMismatch(`${asset} stable fields differ`);
+    }
+  }
+  return true;
 }
 
 function assertCompleteAndUnique(assets) {
