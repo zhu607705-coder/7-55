@@ -192,12 +192,18 @@ for (const assetName of expectedManifestAssets) {
   const actualHash = hashFile(assetPath);
   if (entry.sha256 !== actualHash) fail(`hash mismatch for ${assetName}`);
   const metadata = probeAudio(assetPath);
-  if (entry.durationMs !== metadata.durationMs || entry.sampleRate !== 32000 || entry.channels !== 1) {
+  if (
+    !Number.isFinite(entry.durationMs)
+    || entry.durationMs <= 0
+    || entry.sampleRate !== 32000
+    || entry.channels !== 1
+  ) {
     fail(`manifest metadata mismatch for ${assetName}`);
   }
   if (recordingAssets.includes(assetName)) {
     const recording = content.recordings.find(({ asset }) => asset === assetName);
     if (Math.abs(metadata.durationMs - 5200) > 80) fail(`${assetName} duration must be 5200ms ±80ms`);
+    if (Math.abs(entry.durationMs - 5200) > 80) fail(`${assetName} manifest duration must be 5200ms ±80ms`);
     if (entry.kind !== "correct" && entry.kind !== "decoy") fail(`${assetName} needs a recording kind`);
     if (!entry.componentAssetHashes || Object.keys(entry.componentAssetHashes).length < 2) {
       fail(`${assetName} needs component hashes`);
@@ -219,6 +225,11 @@ for (const assetName of expectedManifestAssets) {
     }
     if (entry.soundEvents.some(({ startMs, endMs }) => startMs < 0 || endMs <= startMs || endMs > metadata.durationMs)) {
       fail(`${assetName} has a sound event outside the final MP3 duration`);
+    }
+  } else {
+    const speech = content.speech.find(({ asset }) => asset === assetName);
+    if (!speech || metadata.durationMs > speech.maxDurationMs || entry.durationMs > speech.maxDurationMs) {
+      fail(`${assetName} exceeds its authored speech duration budget`);
     }
   }
 }

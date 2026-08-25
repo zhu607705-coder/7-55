@@ -2782,3 +2782,4 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 最终浏览器复验：HTTP 与直接 `file://` 的挑战中心截图 SHA-256 完全相同，均可见三种模式且无 error 文件；HTTP 自行车第二圈为 `phase=running / progress=899 / tier=2 / phaserCanvasCount=1`。检查截图、状态 JSON 和 HTTP 服务已清理。
 - 发布命名：实现目录 `upload-20260825`，上传目录 `7-55-upload-20260825`，Release tag `demo-20260825`，HTML `7-55-demo-20260825.html`，校验文件 `7-55-demo-20260825.html.sha256`；README 和 `ASSETS.md` 使用同一日期与下载链接。
 - 首次远端 CI 在 Ubuntu 的 Chapter 3.5 录音清单校验停止。文件哈希和本地验证均通过，失败来自生成器对 FFmpeg 探测得到的时长、码率和 RMS 波形执行整份 JSON 字节级比较。生成器现对文件哈希、配置哈希、声音事件、组件哈希与其他结构字段保持严格比较；实际时长继续由每段语音的上限或成品录音的目标时长合同直接校验，不再与平台相关的 manifest 探测值比较；码率使用 `2kbps`、归一化波形使用 `0.01` 的跨平台容差，并输出具体不匹配类别。`CI=true npm run audio:chapter3-interlude-voice-memos:verify` 与 `npm run typecheck` 本地复验通过。
+- 独立 Chapter 3.5 验证器同步采用同一时长合同：实际 MP3 与 manifest 中的记录值都必须为正，四段语音都不得超过各自 `maxDurationMs`，七段成品的实际值与 manifest 值都必须落在 `5200ms ±80ms`；它不再要求不同 FFprobe 版本对同一 MP3 给出完全一致的毫秒值。
