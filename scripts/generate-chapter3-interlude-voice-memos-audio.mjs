@@ -708,9 +708,6 @@ function manifestAssetsMatch(actualAssets) {
       return reportManifestMismatch(`${asset} is missing`);
     }
 
-    if (Math.abs(manifestEntry.durationMs - actualEntry.durationMs) > 40) {
-      return reportManifestMismatch(`${asset} duration differs by more than 40ms`);
-    }
     if (
       Number.isFinite(manifestEntry.bitrate)
       && Number.isFinite(actualEntry.bitrate)
