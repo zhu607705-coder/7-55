@@ -52,15 +52,28 @@ export function QuestTaskBar({
 }: QuestTaskBarProps) {
   const quest = useMemo(() => selectQuestViewModel(state), [state]);
   const visible = isQuestTaskBarVisible(state);
+  const chapterFourPresentation = quest.chapterFourPresentation;
   const [open, setOpen] = useState(false);
   const [hintCount, setHintCount] = useState(0);
   const [updated, setUpdated] = useState(false);
+  const [progressUpdated, setProgressUpdated] = useState(false);
   const previousQuestRef = useRef({ id: quest.id, objective: quest.objective });
+  const previousProgressRef = useRef(chapterFourPresentation?.localProgress ?? "");
 
   useEffect(() => {
     setHintCount(0);
     setOpen(false);
   }, [quest.id, quest.objective]);
+
+  useEffect(() => {
+    const progress = chapterFourPresentation?.localProgress ?? "";
+    const previous = previousProgressRef.current;
+    previousProgressRef.current = progress;
+    if (!progress || progress === previous) return undefined;
+    setProgressUpdated(true);
+    const timer = window.setTimeout(() => setProgressUpdated(false), 1050);
+    return () => window.clearTimeout(timer);
+  }, [chapterFourPresentation?.localProgress]);
 
   useEffect(() => {
     const previous = previousQuestRef.current;
@@ -93,6 +106,12 @@ export function QuestTaskBar({
   const redundantRpgNavigation = variant !== "phone" && quest.targetSurface === "rpg";
   const showNavigation = questIncomplete && hasNavigationHandler && !redundantRpgNavigation;
   const navigationLabel = quest.targetSurface === "rpg" ? "返回任务现场" : "前往相关界面";
+  const triggerObjective = chapterFourPresentation
+    ? `${chapterFourPresentation.timeStateLabel} · ${chapterFourPresentation.floor} · ${quest.objective}`
+    : quest.objective;
+  const chapterFourAria = chapterFourPresentation
+    ? `。${chapterFourPresentation.stageLabel}。${chapterFourPresentation.timeStateLabel}。${chapterFourPresentation.floor}。${chapterFourPresentation.localProgress}`
+    : "";
 
   function navigateToQuest() {
     events.emit("quest_navigation_requested", {
@@ -110,7 +129,7 @@ export function QuestTaskBar({
 
   return (
     <aside
-      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${showDigitHint ? "has-digits" : ""}`.trim()}
+      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${progressUpdated ? "has-progress-update" : ""} ${showDigitHint ? "has-digits" : ""} ${chapterFourPresentation ? "has-chapter-four-context" : ""}`.trim()}
       role="region"
       aria-label="当前任务"
       data-quest-id={quest.id}
@@ -119,7 +138,7 @@ export function QuestTaskBar({
       <button
         type="button"
         className="quest-task-trigger"
-        aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${quest.objective}${showDigitHint ? `。${digitHintAria}` : ""}。点击查看任务提示`}
+        aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${quest.objective}${chapterFourAria}${showDigitHint ? `。${digitHintAria}` : ""}。点击查看任务提示`}
         aria-expanded={open}
         aria-controls={`quest-drawer-${variant}`}
         title="点击查看当前任务和提示"
@@ -132,7 +151,10 @@ export function QuestTaskBar({
       >
         {variant === "phone" ? null : <span>{CHAPTER_LABEL[quest.chapter]}</span>}
         <strong className="quest-task-trigger-copy">
-          <span>{variant === "phone" ? (open ? "收起任务" : "任务") : quest.objective}</span>
+          <span>{variant === "phone" ? (open ? "收起任务" : "任务") : triggerObjective}</span>
+          {variant !== "phone" && chapterFourPresentation ? (
+            <b className="quest-task-local-progress">{chapterFourPresentation.localProgress}</b>
+          ) : null}
           {showDigitHint ? <em className="quest-task-digit-hint" aria-hidden="true">签到码 {digitHintText}</em> : null}
         </strong>
       </button>
@@ -146,7 +168,7 @@ export function QuestTaskBar({
           >
             <header>
               <div>
-                <small>{CHAPTER_LABEL[quest.chapter]} · {quest.title}</small>
+                <small>{CHAPTER_LABEL[quest.chapter]} · {chapterFourPresentation?.stageLabel ?? quest.title}</small>
                 <h2>任务栏</h2>
               </div>
               <button type="button" aria-label="关闭任务详情" onClick={() => setOpen(false)}>×</button>
@@ -156,6 +178,54 @@ export function QuestTaskBar({
               <span>当前任务</span>
               <strong>{quest.objective}</strong>
             </section>
+
+            {chapterFourPresentation ? (
+              <>
+                <section className="quest-task-overview is-chapter-four" aria-label="第四章当前阶段概览">
+                  <section>
+                    <span>当前阶段</span>
+                    <strong>{chapterFourPresentation.stageLabel}</strong>
+                  </section>
+                  <section>
+                    <span>时间状态</span>
+                    <strong>{chapterFourPresentation.timeStateLabel}</strong>
+                  </section>
+                  <section>
+                    <span>所在楼层</span>
+                    <strong>{chapterFourPresentation.floor}</strong>
+                  </section>
+                  <section>
+                    <span>当前进度</span>
+                    <strong>{chapterFourPresentation.localProgress}</strong>
+                  </section>
+                </section>
+
+                <section className="quest-chapter-four-context" aria-label="第四章阶段差分">
+                  <div className="quest-chapter-four-difference">
+                    <span>当前差分</span>
+                    <p>{chapterFourPresentation.currentDifference}</p>
+                  </div>
+                  <dl>
+                    <div>
+                      <dt>时间来源</dt>
+                      <dd>{chapterFourPresentation.timeSource}</dd>
+                    </div>
+                    <div>
+                      <dt>手机状态</dt>
+                      <dd>{chapterFourPresentation.phoneTime} · {chapterFourPresentation.trustState}</dd>
+                    </div>
+                  </dl>
+                  <div className="quest-chapter-four-facts">
+                    <strong>已确认事实</strong>
+                    {chapterFourPresentation.confirmedFacts.length > 0 ? (
+                      <ul>
+                        {chapterFourPresentation.confirmedFacts.map((fact) => <li key={fact}>{fact}</li>)}
+                      </ul>
+                    ) : <p>当前阶段尚无已确认事实。</p>}
+                  </div>
+                </section>
+              </>
+            ) : null}
 
             {showDigitHint ? (
               <section className="quest-task-digits" aria-label={digitHintAria}>

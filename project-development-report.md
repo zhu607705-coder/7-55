@@ -1,5 +1,896 @@
 # 7:55 Project Development Report
 
+# Chapter 3 Canteen Bike Transition Option A Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL — use superpowers:executing-plans to implement task-by-task.
+
+**Goal:** Implement the approved full mount, playable 0–755m ride, full brake and dismount, and theater-junction handoff while limiting Hailuo 2.3 to two optional fixed macro inserts.
+
+**Architecture:** Existing canteen facts form a start presentation gate and a finish presentation gate, so no new story phase or save version is required. One extracted Three.js rider rig renders the live chase, full-body transitions, exact anchor frames and native macro fallbacks. Hailuo media is presentation-only and can never write payment, distance, lives, completion, checkpoint or save state.
+
+**Tech Stack:** React, TypeScript, Three.js, Phaser host integration, EventBus, AudioDirector, Vite single-file embedding, MiniMax CLI mmx 1.0.22, Hailuo 2.3, FFmpeg and browser QA.
+
+---
+
+## Preconditions and stop conditions
+
+- Read docs/plans/2026-08-23-canteen-bike-transition-option-a-design.md and docs/assets/minimax-h3-canteen-755-theater/manifest.json before editing runtime code.
+- Preserve all unrelated changes in the current dirty checkout.
+- Do not use picture_05_chase_755m_1920x1080.png, either rejected transition raw clip, or the rejected review and promotional videos.
+- Do not create a formal handoff at 700 meters.
+- Do not submit M2 until the user explicitly accepts the M1 contact sheet and preview.
+- Do not stage, commit, merge, rebase or push. Before any later Git mutation, fetch and present the three required local/relative/remote views for user scope selection.
+
+## Task 1: Build a read-only transition contract verifier
+
+**Files:**
+
+- Create: scripts/verify-canteen-bike-transition.mjs
+- Modify: package.json
+
+**Step 1: Encode the authority boundary**
+
+The verifier must fail when:
+
+- payForBike() writes phase: chasing directly.
+- CanteenChaseOverlay contains the old 900ms theater continuation.
+- RpgGameHost lacks mutually exclusive start, ride and finish selectors.
+- a 700-meter value appears in a presentation handoff condition.
+- picture_05_chase_755m_1920x1080.png appears in an active media import or generation command.
+- generated media calls GameStore, SaveStore, resolveChaseAttempt() or completeChase() directly.
+
+**Step 2: Encode the timing and anchor contract**
+
+Validate:
+
+- Start gate has 91 frames at 24 FPS.
+- Finish gate has 133 frames at 24 FPS.
+- Hailuo M1 and M2 each select frames 0–29.
+- A8 and A11 are the only Hailuo upload anchors.
+- every declared anchor width and height is at most 5760.
+- rejected media has integration_allowed=false.
+
+**Step 3: Add the package command**
+
+Add:
+
+~~~json
+"verify:canteen-bike-transition": "node scripts/verify-canteen-bike-transition.mjs"
+~~~
+
+**Step 4: Run the verifier before implementation**
+
+Run:
+
+~~~bash
+npm run verify:canteen-bike-transition
+~~~
+
+Expected: fail on missing runtime selectors and missing shared-rig files. Record this as the expected red run.
+
+## Task 2: Separate payment from the 0-meter start
+
+**Files:**
+
+- Modify: src/modules/ChapterThreeCanteenController.ts
+
+**Step 1: Make payForBike() idempotent**
+
+When phase is chase_ready and bikePaid is already true, return paid without deducting cash, consuming cafeteriaWages or repeating use_item.
+
+On first payment:
+
+- retain all existing mode, QR, cleaning, item and balance checks;
+- consume cafeteriaWages once;
+- deduct CANTEEN_BIKE_FARE_CENTS once;
+- write bikePaid: true;
+- keep phase: chase_ready;
+- emit use_item;
+- emit canteen_bike_paid with fareCents;
+- do not emit canteen_chase_started.
+
+**Step 2: Add startChase()**
+
+Add a public method:
+
+~~~ts
+startChase(): boolean
+~~~
+
+Initial success guard:
+
+~~~ts
+state.canteenHunt.phase === "chase_ready"
+  && state.canteenHunt.bikePaid
+  && !state.canteenHunt.chaseCompleted
+~~~
+
+On first success:
+
+- write phase: chasing;
+- emit canteen_chase_started;
+- return true.
+
+Idempotent replay:
+
+- phase=chasing and chaseCompleted=false returns true;
+- it must not emit the event or write state again.
+
+All other combinations return false.
+
+**Step 3: Preserve the existing finish authority**
+
+Do not weaken resolveChaseAttempt(). Story victory remains:
+
+~~~ts
+attempt.mode === "story" && distance === 755 && lives > 0
+~~~
+
+completeChase() remains the only method that writes theater_reached and campus_theater_junction.
+
+**Step 4: Run focused static checks**
+
+Run:
+
+~~~bash
+npm run typecheck
+npm run verify:canteen-bike-transition
+~~~
+
+Expected: TypeScript passes; the transition verifier still fails only on later unimplemented files or selectors.
+
+## Task 3: Extract one shared Three.js rider and bicycle rig
+
+**Files:**
+
+- Create: src/scenes/rpg/canteen-chase/ChaseRiderRig.ts
+- Modify: src/scenes/rpg/canteen-chase/ChaseThreeRenderer.ts
+- Modify: src/scenes/rpg/canteen-chase/ChasePrimitives.ts if shared primitive exports are required
+
+**Step 1: Move the current rider construction**
+
+Move buildRider() and RiderModel from ChaseThreeRenderer.ts into ChaseRiderRig.ts. Preserve:
+
+- group name;
+- scalar display scale 1.28;
+- wheel radius and positions;
+- torso, backpack, head, hair and limb colors;
+- front assembly pivot;
+- chase camera relationship;
+- collision and steering calculations.
+
+**Step 2: Split the hierarchy for mount and dismount**
+
+Expose one model with explicit roots and pivots:
+
+~~~ts
+interface ChaseRiderRig {
+  root: THREE.Group;
+  bicycleRoot: THREE.Group;
+  riderRoot: THREE.Group;
+  frontAssembly: THREE.Group;
+  wheels: readonly THREE.Mesh[];
+  leftArm: THREE.Group;
+  rightArm: THREE.Group;
+  leftLeg: THREE.Group;
+  rightLeg: THREE.Group;
+  rightHand: THREE.Object3D;
+  rightFoot: THREE.Object3D;
+  rightGrip: THREE.Object3D;
+  rightBrakeLever: THREE.Object3D;
+  crank: THREE.Object3D;
+  rightPedal: THREE.Object3D;
+  chain: THREE.Object3D;
+}
+~~~
+
+Add deterministic pose functions for:
+
+- ride;
+- stand_left;
+- grip;
+- leg_over;
+- seated_balance;
+- pedal_press;
+- brake;
+- left_foot_down;
+- dismount_leg_over;
+- stand_with_bike;
+- push_bike.
+
+**Step 3: Fix the canonical bicycle identity**
+
+Use one blue frame palette across the campus anchor, chase renderer and transition renderer. Add the minimal visible geometry required by the close-ups:
+
+- natural bare hands;
+- right brake lever;
+- crank;
+- left and right pedals;
+- short chain segment;
+- small front basket;
+- black tires and saddle;
+- metal-gray wheel and control parts.
+
+Do not change the chase player foot box, steering pivot, world scale or gameplay collision.
+
+**Step 4: Reconnect ChaseThreeRenderer**
+
+Replace local rider construction and pose math with createChaseRiderRig() and the shared ride pose. Keep existing lane movement, obstacle collision, wheel spin, camera and debug datasets.
+
+**Step 5: Verify visual regression**
+
+Run:
+
+~~~bash
+npm run typecheck
+npm run verify:canteen-bike-transition
+~~~
+
+Open the canteen chase debug page at 0, 377 and 755 meters. Confirm:
+
+- player center, scale and camera extent are stable;
+- steering and wheel spin still update;
+- lane changes and collision geometry remain unchanged;
+- frame and bicycle identity are consistently blue.
+
+Keep only requested formal anchors. Delete temporary before/after screenshots after inspection.
+
+## Task 4: Implement the deterministic transition timeline and renderer
+
+**Files:**
+
+- Create: src/scenes/rpg/canteen-chase/CanteenBikeTransitionTimeline.ts
+- Create: src/scenes/rpg/canteen-chase/CanteenBikeTransitionRenderer.ts
+- Create: src/scenes/rpg/CanteenBikeTransitionOverlay.tsx
+- Modify: src/styles/rpg.css
+
+**Step 1: Encode the exact frame timeline**
+
+CanteenBikeTransitionTimeline.ts exports:
+
+- TRANSITION_FPS=24;
+- start segments O1–O4 with frame ranges 0–90;
+- finish segments E1–E5 with frame ranges 0–132;
+- a pure frame-to-pose function;
+- a pure frame-to-camera function;
+- a pure frame-to-event function;
+- the Hailuo segment ranges 41–70 and 10–39;
+- the reduced-motion endpoints.
+
+Frame counts must match manifest.json.
+
+**Step 2: Build the native renderer**
+
+CanteenBikeTransitionRenderer uses the shared rig and supports:
+
+- stage=start or finish;
+- wide mount camera;
+- grip and pedal macro camera;
+- clean 755-meter wide camera with the invalid foreground step removed;
+- brake and front-wheel macro camera;
+- full-body stop and dismount camera;
+- parking movement;
+- deterministic theater-door occlusion.
+
+The single paper and all visible NPCs remain native objects. Neither appears in either macro camera.
+
+**Step 3: Build one presentation-only React overlay**
+
+The overlay accepts:
+
+~~~ts
+interface CanteenBikeTransitionOverlayProps {
+  stage: "start" | "finish";
+  events: EventBus;
+  onComplete: (reason: CanteenBikeTransitionCompletionReason) => void;
+}
+~~~
+
+Completion reasons:
+
+- ended;
+- timeout;
+- media_error;
+- play_rejected;
+- reduced_motion;
+- native_only.
+
+Implement finishOnce() with a completedRef. It clears timers, pauses and disposes optional video, emits canteen_chase_presentation_finished and invokes onComplete exactly once.
+
+**Step 4: Pause on hidden pages**
+
+When document.visibilityState is hidden:
+
+- pause Three.js timeline time;
+- pause optional video;
+- pause watchdog remaining time.
+
+When visible:
+
+- continue from the same frame;
+- retry video.play();
+- switch to native macro if play() fails.
+
+Hidden pages must not cross O4 F090 or E5 F132.
+
+**Step 5: Add the overlay layout**
+
+Use the 960×540 logical RPG bounds, object-fit: contain for optional media, an opaque poster or native canvas before canplay, pointer-events: auto, touch-action: none and a z-index above all RPG controls.
+
+At 390×844, constrain the layer to the existing mobile RPG canvas height.
+
+**Step 6: Run the static gates**
+
+Run:
+
+~~~bash
+npm run typecheck
+npm run verify:canteen-bike-transition
+~~~
+
+Expected: both pass after the overlay and timeline are complete.
+
+## Task 5: Insert the start, ride and finish gates in RpgGameHost
+
+**Files:**
+
+- Modify: src/scenes/rpg/RpgGameHost.tsx
+- Modify: src/scenes/rpg/CanteenChaseOverlay.tsx
+
+**Step 1: Replace chaseActive with mutually exclusive selectors**
+
+Add:
+
+~~~ts
+const canteenStartTransitionActive =
+  state.canteenHunt.phase === "chase_ready"
+  && state.canteenHunt.bikePaid;
+
+const canteenChaseRunActive =
+  state.canteenHunt.phase === "chasing"
+  && !state.canteenHunt.chaseCompleted;
+
+const canteenFinishTransitionActive =
+  state.canteenHunt.phase === "chasing"
+  && state.canteenHunt.chaseCompleted
+  && state.canteenHunt.chaseBestDistance >= 755;
+~~~
+
+Their OR becomes canteenExclusiveActive.
+
+**Step 2: Render exactly one layer**
+
+- Start gate completion calls canteenController.startChase().
+- Ride attempt calls canteenController.resolveChaseAttempt().
+- Finish gate completion calls canteenController.completeChase().
+
+Add:
+
+~~~tsx
+data-canteen-handoff="start|ride|finish|none"
+~~~
+
+**Step 3: Block every input path**
+
+Apply canteenExclusiveActive to:
+
+- Phaser input;
+- keyboard input;
+- direction-stop event;
+- task trigger and drawer;
+- system and camera actions;
+- reality mode;
+- inventory drag;
+- virtual direction controls;
+- kayak touch controls;
+- return-to-phone action.
+
+**Step 4: Remove the old 900ms theater timer**
+
+From CanteenChaseOverlay remove:
+
+- onContinue;
+- onContinueRef;
+- theaterTransitionedRef;
+- theaterTransitionTimerRef;
+- enterTheater();
+- scheduleTheaterEntry();
+- the won-path 900ms continuation.
+
+On a win:
+
+- clamp distance to 755;
+- emit canteen_chase_finish;
+- submit the attempt once;
+- publish the terminal snapshot;
+- return.
+
+Keep the lost-run 900ms restart and reset to distance 0, lives 3 and lane 1.
+
+**Step 5: Emit the exact run-start payload**
+
+On every story-run creation, including safe reload and failure restart, emit:
+
+~~~ts
+{
+  mode: "story",
+  distance: 0,
+  goal: 755,
+  lives: 3,
+  lane: 1
+}
+~~~
+
+**Step 6: Verify**
+
+Run:
+
+~~~bash
+npm run typecheck
+npm run verify:canteen-bike-transition
+~~~
+
+Expected: both pass.
+
+## Task 6: Add audio events and fix the lost-run victory sound
+
+**Files:**
+
+- Modify: src/data/chapter3-canteen.audio.json
+- Modify: src/modules/AudioDirector.ts only if the current event payload routing needs stage filtering
+- Modify: src/scenes/rpg/CanteenBikeTransitionOverlay.tsx
+
+**Step 1: Add presentation events**
+
+Add or emit:
+
+- canteen_bike_paid;
+- canteen_chase_start_transition_started;
+- canteen_chase_mount_detail;
+- canteen_chase_brake_detail;
+- canteen_chase_dismount;
+- canteen_chase_paper_door;
+- canteen_chase_presentation_finished.
+
+**Step 2: Preserve music authority**
+
+- Start transition does not start chase music.
+- canteen_chase_started starts the current chase music.
+- a reloaded real ride emits canteen_chase_run_started so music resumes.
+- Finish transition keeps chase music until canteen_chase_completed.
+- canteen_chase_completed stops chase music.
+
+**Step 3: Move the paper burst**
+
+Remove victory paper burst from a generic event that also fires on lost runs. Attach it to the successful finish transition event.
+
+**Step 4: Verify**
+
+Run:
+
+~~~bash
+npm run audio:chapter3:verify
+npm run typecheck
+~~~
+
+Expected: both pass and the lost-run path has no victory burst mapping.
+
+## Task 7: Add developer checkpoints and complete the verifier
+
+**Files:**
+
+- Modify: src/modules/DeveloperChannel.ts
+- Modify: scripts/verify-canteen-bike-transition.mjs
+- Modify: docs/gameplay-debug-walkthrough.md if checkpoint documentation is maintained there
+
+**Step 1: Add c3-canteen-start-transition**
+
+Seed:
+
+- phase=chase_ready;
+- bikeCodeRead=true;
+- bikeLockCleaned=true;
+- bikePaid=true;
+- cafeteriaWages=false;
+- cashCents=0;
+- chaseCompleted=false;
+- chaseBestDistance=0;
+- rpgCheckpoint=campus_canteen_gate.
+
+**Step 2: Keep c3-canteen-chase as the real 0-meter run**
+
+Seed phase=chasing, bikePaid=true, chaseCompleted=false and chaseBestDistance=0.
+
+**Step 3: Add c3-canteen-finish-transition**
+
+Seed:
+
+- phase=chasing;
+- bikePaid=true;
+- chaseCompleted=true;
+- chaseAttemptCount=1;
+- chaseBestDistance=755;
+- chaseBestLives=2;
+- chaseCollisions=1;
+- rpgCheckpoint=campus_canteen_gate.
+
+**Step 4: Keep c3-canteen-theater as the exterior checkpoint**
+
+It remains phase=theater_reached and rpgCheckpoint=campus_theater_junction.
+
+**Step 5: Run the completed verifier**
+
+Run:
+
+~~~bash
+npm run verify:canteen-bike-transition
+~~~
+
+Expected: exit code 0 with explicit counts for selectors, checkpoints, timeline frames, forbidden 700-meter handoffs, disabled rejected media and anchor dimensions.
+
+This first passing run is validation 1, so the mechanism remains a validated project-specific contract and is not yet a generalized rule.
+
+## Task 8: Capture A7–A14 from the native renderer
+
+**Files:**
+
+- Create: src/tools/CanteenBikeTransitionDebug.tsx
+- Modify: src/main.tsx or the existing debug-route switch
+- Modify: docs/assets/minimax-h3-canteen-755-theater/manifest.json
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/picture_07_mount_wide_start_1920x1080.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/picture_08_mount_grip_pedal_macro_1920x1080.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/picture_09_chase_000m_final_1920x1080.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/picture_10_finish_clean_755m_1920x1080.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/picture_11_brake_lever_wheel_macro_1920x1080.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/picture_12_dismount_wide_1920x1080.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/subject_02_bicycle_canonical_2048x2048.png
+- Add: docs/assets/minimax-h3-canteen-755-theater/anchors/subject_03_rider_action_canonical_2048x1024.png
+
+**Step 1: Build deterministic debug controls**
+
+Support query parameters:
+
+- stage=start|finish;
+- frame=integer;
+- camera=wide|macro;
+- sheet=bicycle|rider_action;
+- hud=0;
+- seed=fixed.
+
+Freeze the renderer on the exact requested frame and expose data-ready=true only after the second rendered frame.
+
+**Step 2: Capture exact frames**
+
+Capture A7–A12 at 1920×1080 with no browser chrome, UI, alpha or scaling.
+
+Render A13 and A14 directly from the shared rig, with a solid neutral background and exact equal cells. Do not use image generation for these sheets.
+
+**Step 3: Validate every file**
+
+Run ImageMagick identify and a small read-only validator to confirm:
+
+- exact dimensions;
+- PNG;
+- 8-bit sRGB;
+- no alpha;
+- width and height at most 5760;
+- manifest path exists;
+- no forbidden old 755 anchor is marked active.
+
+**Step 4: Inspect visually**
+
+Inspect:
+
+- player clothing and proportions;
+- blue bicycle identity;
+- one hand, one shoe, one pedal and one crank in A8;
+- one hand, one brake lever, one fork and one wheel in A11;
+- clean road in A10;
+- no paper or NPC in A8 and A11;
+- one paper and native NPCs only in wide views.
+
+Temporary browser QA screenshots must be deleted. A7–A14 are requested deliverables and remain.
+
+**Step 5: Update manifest statuses**
+
+Change A7–A14 from capture_pending to captured_and_validated, recording dimensions, SHA-256, source frame and validation count.
+
+## Task 9: Generate and review only Hailuo M1
+
+**Files:**
+
+- Create: docs/assets/minimax-h3-canteen-755-theater/prompts/m1-mount-grip-pedal.txt
+- Create: docs/assets/minimax-h3-canteen-755-theater/generation/m1/raw/
+- Create: docs/assets/minimax-h3-canteen-755-theater/generation/m1/review/
+- Modify: docs/assets/minimax-h3-canteen-755-theater/manifest.json
+
+**Step 1: Copy the approved M1 prompt exactly**
+
+Copy only the M1 prompt body from prompts/hailuo23-option-a-macro-prompts.md into m1-mount-grip-pedal.txt.
+
+**Step 2: Check authentication and quota**
+
+Run:
+
+~~~bash
+mmx auth status
+mmx quota
+~~~
+
+Do not expose the full key. If quota is unavailable, stop with anchor and prompt work intact.
+
+**Step 3: Submit one paid task**
+
+Run:
+
+~~~bash
+mount_prompt="$(<docs/assets/minimax-h3-canteen-755-theater/prompts/m1-mount-grip-pedal.txt)"
+mmx video generate \
+  --model MiniMax-Hailuo-2.3 \
+  --image docs/assets/minimax-h3-canteen-755-theater/anchors/picture_08_mount_grip_pedal_macro_1920x1080.png \
+  --prompt "$mount_prompt" \
+  --download docs/assets/minimax-h3-canteen-755-theater/generation/m1/raw/m1_mount_grip_pedal_raw.mp4
+~~~
+
+Do not add duration, ratio, reference-image or last-frame flags to this Hailuo 2.3 path.
+
+**Step 4: Validate the raw file**
+
+Run:
+
+~~~bash
+ffprobe -v error \
+  -show_entries stream=codec_name,pix_fmt,width,height,r_frame_rate,nb_frames \
+  -show_entries format=duration \
+  -of json \
+  docs/assets/minimax-h3-canteen-755-theater/generation/m1/raw/m1_mount_grip_pedal_raw.mp4
+~~~
+
+Confirm H.264, yuv420p, 24 FPS, no audio and the actual returned dimensions, frame count and duration.
+
+**Step 5: Review every frame**
+
+Use the video-frames workflow to extract all frames to a temporary directory. Run entity-count and geometry measurements, then inspect the complete frame set. Produce:
+
+- a five-frame join contact sheet;
+- a full-sequence contact sheet;
+- a machine-readable review JSON;
+- a short preview using exactly frames 0–29.
+
+Delete temporary extracted frames after review. Keep the requested contact sheets, review JSON and preview.
+
+**Step 6: Stop for user acceptance**
+
+Set one of:
+
+- user_acceptance=pending and integration_allowed=false;
+- user_acceptance=rejected and integration_allowed=false;
+- user_acceptance=approved and integration_allowed still false until runtime derivation passes.
+
+Do not submit M2 during this task.
+
+## Task 10: Generate Hailuo M2 only after explicit M1 approval
+
+**Files:**
+
+- Create: docs/assets/minimax-h3-canteen-755-theater/prompts/m2-brake-lever-wheel.txt
+- Create: docs/assets/minimax-h3-canteen-755-theater/generation/m2/raw/
+- Create: docs/assets/minimax-h3-canteen-755-theater/generation/m2/review/
+- Modify: docs/assets/minimax-h3-canteen-755-theater/manifest.json
+
+Repeat Task 9 with:
+
+- A11 as the only input image;
+- the M2 prompt;
+- output m2_brake_lever_wheel_raw.mp4;
+- frames 0–29 as the proposed runtime interval.
+
+The same full-frame rejection rule applies. Stop for explicit M2 visual acceptance before media integration.
+
+## Task 11: Derive approved runtime media and embed it in the single file
+
+**Files:**
+
+- Add only after approval: src/assets/rpg/cinematics/chapter3-canteen/canteen_mount_grip_pedal.mp4
+- Add only after approval: src/assets/rpg/cinematics/chapter3-canteen/canteen_brake_lever_wheel.mp4
+- Create: src/scenes/rpg/canteen-chase/CanteenBikeTransitionMedia.ts
+- Modify: src/scenes/rpg/CanteenBikeTransitionOverlay.tsx
+- Modify: vite.config.ts
+- Modify: src/vite-env.d.ts
+- Modify: scripts/verify-canteen-bike-transition.mjs
+
+**Step 1: Derive exactly 30 frames**
+
+For each approved raw clip:
+
+- select frames 0–29 only;
+- scale to 960×540;
+- preserve 24 FPS;
+- encode H.264 yuv420p;
+- remove all audio;
+- use fragmented MP4 flags compatible with the existing MediaSource path.
+
+**Step 2: Add an exact-path Vite query**
+
+Add a chapter3-canteen-transition-embedded query that accepts only the two approved runtime MP4 paths. Do not rename or broaden the existing chapter4-h3-embedded contract.
+
+**Step 3: Add native fallback selection**
+
+CanteenBikeTransitionMedia.ts must expose approved status and exact asset metadata. When approval is false, import fails, MediaSource is unavailable, playback errors, or reduced motion is active, the overlay renders the native macro camera with identical frame timing.
+
+**Step 4: Extend the verifier**
+
+Validate runtime MP4:
+
+- exact paths;
+- 960×540;
+- 24 FPS;
+- 30 frames;
+- H.264;
+- yuv420p;
+- no audio;
+- expected SHA-256;
+- active approval in manifest;
+- no reference to rejected media.
+
+**Step 5: Regress the Chapter 4 embed**
+
+Run:
+
+~~~bash
+npm run chapter4:validate-story
+npm run verify:canteen-bike-transition
+~~~
+
+The Chapter 4 command may still report the two previously recorded unrelated Task 7 and Task 10 failures. Confirm no new H3 embed failure is added.
+
+## Task 12: Full browser and packaging validation
+
+**Files:**
+
+- Modify after successful verification: progress.md
+- Modify after successful verification: project-development-report.md
+- Modify after successful verification: docs/assets/minimax-h3-canteen-755-theater/README.md
+- Modify after successful verification: docs/assets/minimax-h3-canteen-755-theater/manifest.json
+
+**Step 1: Run static and packaging gates**
+
+Run:
+
+~~~bash
+npm run verify:canteen-bike-transition
+npm run audio:chapter3:verify
+npm run typecheck
+npm run build:single
+npm run verify:single
+git diff --check -- \
+  src/modules/ChapterThreeCanteenController.ts \
+  src/scenes/rpg/CanteenChaseOverlay.tsx \
+  src/scenes/rpg/CanteenBikeTransitionOverlay.tsx \
+  src/scenes/rpg/canteen-chase \
+  src/scenes/rpg/RpgGameHost.tsx \
+  src/data/chapter3-canteen.audio.json \
+  src/modules/DeveloperChannel.ts \
+  scripts/verify-canteen-bike-transition.mjs \
+  docs/assets/minimax-h3-canteen-755-theater \
+  docs/plans/2026-08-23-canteen-bike-transition-option-a-design.md
+~~~
+
+Expected: all task-scoped checks pass. Record unrelated pre-existing failures separately.
+
+**Step 2: Validate the Start gate**
+
+Use devCheckpoint=c3-canteen-start-transition in Blink, Gecko and WebKit.
+
+Confirm:
+
+- data-canteen-handoff=start;
+- full mount action is visible;
+- optional M1 or native fallback keeps the same timing;
+- every input surface is blocked;
+- ended and timeout each call startChase() once;
+- refresh does not re-charge payment;
+- first interactive payload is distance 0, goal 755, lives 3, lane 1.
+
+**Step 3: Validate the real ride**
+
+Use devCheckpoint=c3-canteen-chase.
+
+Confirm:
+
+- 0-meter start;
+- 188, 377 and 566 nodes;
+- no transition at 700;
+- successful 755-meter finish;
+- lost run restarts from 0;
+- no console or page errors.
+
+**Step 4: Validate the Finish gate**
+
+Use devCheckpoint=c3-canteen-finish-transition.
+
+Confirm:
+
+- data-canteen-handoff=finish;
+- no CanteenChaseOverlay mount;
+- clean 755-meter wide frame;
+- full brake, left-foot-down, leg-over, stand and bike-parking action;
+- one native paper enters the door;
+- M2 or native fallback keeps the same timing;
+- ended and timeout each call completeChase() once;
+- final state is theater_reached and campus_theater_junction;
+- player still performs the existing theater entrance interaction.
+
+**Step 5: Validate refresh and failure recovery**
+
+Refresh during:
+
+1. Start gate;
+2. real ride;
+3. Finish gate.
+
+Expected:
+
+1. Start gate replays without a second charge;
+2. real ride safely restarts at 0;
+3. Finish gate replays and never returns to 0.
+
+Also force:
+
+- media 404;
+- decode error;
+- play() rejection;
+- MediaSource absence;
+- prefers-reduced-motion.
+
+Every case must reach the same controller-owned endpoint through the native fallback.
+
+**Step 6: Validate viewports**
+
+Run at:
+
+- 1280×720;
+- one non-16:9 desktop viewport;
+- 390×844.
+
+Pass conditions:
+
+- stable 16:9 RPG bounds;
+- no document overflow;
+- no input leakage;
+- no transparent frame revealing the underlying campus scene;
+- zero new console and page errors.
+
+**Step 7: Record evidence and clean temporary artifacts**
+
+Update progress.md and this report with:
+
+- exact commands and exit codes;
+- browser matrix;
+- media hashes and approvals;
+- final single-file size and SHA-256;
+- known unrelated failures;
+- validation count.
+
+Delete temporary screenshots, extracted frames, browser snapshots and local servers. Keep A7–A14, approved media, requested contact sheets and review JSON.
+
+## Execution handoff
+
+The design, prompt contract and implementation plan are complete. Runtime implementation begins with Task 1 and must stop after Task 9 for the user to judge M1 before any M2 paid generation.
+
+## Completed slice: diverse transparent RPG character poses
+
+- The Chapter 4 bakery crowd now uses an eight-frame student walk strip with per-NPC start offsets `0 / 3 / 6`, removing the synchronized repeated pose visible in the previous demo.
+- MiniMax CLI `mmx 1.0.15` was exercised first. The `2048×2048` request timed out at the service and the successful `1024×1024` candidate failed the required grid, transparency, pixel-art, and prop constraints. The approved fallback produced four native-alpha source grids, stored as versioned `_v2` assets while preserving the previous sources.
+- The protagonist now has three eight-frame direction groups; Phaser mirrors the side group for left movement. The Chapter 4 Three.js stair exception consumes the same 24 frames. Security-guard patrol animation expands to eight frames, and the cleaner set covers cart pushing, mopping, sign placement, light switching, rest, and idle motion.
+- A follow-up visual defect was traced to the generated sheets crossing mathematical equal-cell boundaries. The previous builders cut off adjacent heads or feet and then scaled each partial silhouette to fill its target, causing visible size jumps. The protagonist source also contained eight down, seven up, and nine side components, so the old equal-cell direction mapping consumed one side pose as an up pose.
+- Both builders now discover complete silhouettes over the whole source alpha plane, order them by spatial row and column, and apply one fixed uniform scale per direction group or role. Every output keeps at least two pixels of transparent head and foot padding. The eighth up frame is deterministically recovered by mirroring the fifth up source pose; eight of the nine side candidates form the side cycle. Runtime collision foot boxes, controller authority, and saves remain unchanged.
+- `scripts/verify-rpg-character-sprite-integrity.py` is an executable regression gate for all four roles. It checks source component counts, head/foot padding, source/output silhouette overlap, aspect ratio, per-animation scale stability, and the recovered protagonist mapping.
+- Static gates pass: `npm run verify:rpg-player`, `npm run verify:rpg-character-sprites`, `npm run chapter4:validate-assets`, `npm run typecheck`, `npm run build:single`, and `npm run verify:single`.
+- Validation count: one rebuilt-single-file Chromium bakery run inspected two animation times; one rebuilt-single-file maintenance run inspected the complete protagonist, moving guard, cleaner, and cart; one contact-sheet review covered all current player directions and active NPC strips. Both browser checkpoints reported zero console errors and warnings.
+- The rebuilt single-file artifact is `demo/index.html`, `247123278 bytes`, SHA-256 `b93366659343e7df98b842397075db587b5aaf84d43215976051c583b1622409`. It was loaded over local HTTP at the bakery and maintenance checkpoints. Direct `file:` automation remains outside Playwright CLI capability and is left for manual refresh confirmation.
+- Reusable generation prompts, pose ordering, source paths, alpha-cleaning rules, and frame-rate contracts are recorded in `docs/plans/2026-08-22-diverse-transparent-rpg-character-sprites.md`.
+
 ## Completed implementation: Settings, desktop editing, and Chapter 4 CC98 study import
 
 > **For Claude:** REQUIRED SUB-SKILL: Use the repository execution workflow task-by-task.
@@ -2750,9 +3641,1750 @@ Total estimate: `8.5–11.5` developer days. Implementation validation count is 
 - Playwright CLI blocked navigation to the `file:` protocol before page load, so this run does not claim a fresh automated direct-file execution. The structural single-file verifier and HTTP zero-external-request runtime both passed; direct-file visual acceptance remains available through the desktop browser.
 - No ZIP, Git staging, commit, push, merge, rebase, or reset was performed.
 
-## 14. 2026-08-22 Approved GitHub main delivery preflight
+## 14. 2026-08-23 Chapter 3.5 voice-memo selection, MiniMax synthesis, and runtime QA
 
-- Built the approved delivery from `432` current active/browser/docs paths in an isolated worktree and reconciled it with the latest `origin/main`. Identical paths collapsed automatically, leaving `126` final repository changes. Generated process assets, retired Godot delivery paths, browser QA artifacts, output captures, and the ignored standalone Demo remain outside the commit.
-- Preserved the later global facing-agnostic interaction contract, subtitle reductions, Chapter 4 floor bounds, and H3 runtime. Reapplied the latest main-only Canteen checkpoint timing, entry radius, ordering-kiosk geometry, save migration, Theater fixture geometry, campus calibration, and Chapter 3 fixes. The removed tray-range debug overlay remains absent.
-- Passed the staged secret-pattern scan, large-file gate, whitespace gate, Chapter 3 audio and campus contracts, facing-agnostic guard, all five Chapter 4 validators, TypeScript, production build, standalone build, and standalone structure verification.
-- The locally regenerated ignored standalone artifact is `247228662` bytes with two inline scripts and one inline style. It is rebuild evidence for source delivery and is not part of the approved ordinary Git payload.
+### Puzzle and state contract
+
+- The voice-memo page now presents seven recovered files, requires the player to audition and retain four, then moves to a separate ordering stage. The three decoys use canteen, theater, and library sound fields. The four authoritative evidence IDs and their stored order remain `lake → stone → lobby → broadcast`.
+- Candidate-only decoy IDs stay outside `ChapterThreeInterludeState` and `SaveStore v25`. `submitVoiceSequence()` validates the complete seven-ID candidate domain and writes the canonical four-ID order only after an exact match. A decoy can no longer disappear during normalization and permit a false success.
+- Quest, scene registry, and DEV checkpoint copy now describe seven-to-four selection without revealing the answer order. Wrong selection, wrong order, and accepted results use separate page feedback.
+
+### Prompt and audio production
+
+- Added `docs/plans/2026-08-23-chapter35-voice-memo-prompts.md` and `src/data/chapter3-interlude-voice-memos.audio.content.json`. The prompt contract preserves `English_Diligent_Man` for the player, `English_Graceful_Lady` for campus system announcements, and reuses the existing cleaner and guard takes where those characters appear.
+- The authenticated `mmx 1.0.22` client generated four `speech-2.8-hd` dry voices. Final measured durations are `1997ms`, `4138ms`, `4310ms`, and `4485ms`. The first execution stopped safely on two narrow duration-budget misses; the checkpoint retained validated work, and only missing assets were requested after each budget correction.
+- `scripts/generate-chapter3-interlude-voice-memos-audio.mjs` performs incremental synthesis, local FFmpeg mixing, MP3 decoding checks, configuration and component hashing, atomic replacement, checkpoint recovery, and a zero-network `--verify-only` path. It produced seven unique final recordings at `5200ms / 32000Hz / mono / 128kbps`.
+- Final integrated loudness spans `-21.3` to `-19.0 LUFS`; true peak spans `-4.9` to `-2.4 dBFS`. Automatic encoding and level checks passed. Voice acting, pronunciation, and mix preference still require user audition before subjective approval.
+
+### Runtime and verification
+
+- `AudioDirector` accepts explicit asset-backed voice previews without story subtitles. A dedicated stop cue cancels scheduled Chapter 3.5 previews and pauses the current recording. Starting another clip, clicking the active clip, hiding the page, leaving the scene, or unmounting now stops the previous preview. P21 reads each real duration from the generated manifest.
+- The first validator execution failed at the expected missing-manifest boundary. After generation, `audio:chapter3-interlude-voice-memos:verify` passed for `7` recordings, `4` correct clips, `3` decoys, `4` MiniMax dry voices, and `11` generated assets. A second generator verification reported `networkUsed=false`.
+- `npm run typecheck`, `npm run build:single`, and `npm run verify:single` passed. The seven final MP3 byte streams are present as Base64 payloads in the single file. `demo/index.html` is `248256518` bytes with SHA-256 `b00c9d4454e6c20c5793e70099a1e2a7b1f96f9df5c9caebe0c455c6084c28b6`, two inline scripts, and one inline style.
+- Chromium at `1280×720` confirmed mutually exclusive playback, exit-time pause, decoy-set rejection, correct-set wrong-order rejection, correct-order acceptance, and the resulting quest transition. At `390×844`, document dimensions matched the viewport and horizontal overflow was false. Console errors and warnings were zero; the only network entries were the three deliberate reloads of the self-contained `index.html`.
+- The full `chapter4:validate-story` command currently fails on two unrelated existing Chapter 4 checks: Task 7 real player-foot/target geometry derivation and Task 10 `Space` interaction scope. This task did not modify those behaviors and does not claim that full gate as passing.
+- Browser and HTTP sessions were closed. Five newly created Playwright artifacts were moved to `/Users/zhuhangcheng/.Trash/codex-ch35-qa-20260823-1949/`; older shared logs were preserved. No Git staging, commit, push, merge, rebase, reset, or upload was performed.
+
+# Chapter 3.5 Evidence Recovery And Chapter 4 7:55 Unified Modification Plan
+
+**Status:** The base repair path and optional details `A1 + A2 + A3 + B1 + B3 + C2` are approved for implementation.
+
+**Goal:** Turn Chapter 3.5 and Chapter 4 into one coherent deduction and execution chain: evidence is gathered without early answer leakage, audio comparison is deterministic and accessible, Chapter 4 always explains its current time source and phase difference, and recurring instructions move from subtitles into the task system.
+
+**Architecture:** React pages collect evidence and render presentation state. TypeScript controllers remain the only progression authority. New read-only selectors derive view models from existing state. MiniMax and audio-analysis scripts operate only in the asset pipeline. Phaser renders Chapter 4 and submits engine-neutral intents. The existing H3 gate remains the Chapter 3.5-to-4 handoff owner.
+
+## Scope locks
+
+- Preserve the existing Chapter 3.5 formal save fields, including `voiceClipOrder`, `timelineOrder`, `destinationId`, and the Chapter 4 entry contract.
+- Keep unfinished recording selections in a versioned session draft store; do not add them to `GameState` or `SaveStore`.
+- Keep every interaction facing-agnostic across all chapters.
+- Do not add a new engine, runtime AI inference, or a second progression model.
+- Do not generate a replacement for “灿若星辰”. Task 12 may only integrate the already-approved asset after its unique path or consumer ID is confirmed.
+- Do not restore A1/A2/A3 collision, air-wall, walkability, or foreground-occlusion browser validation. Existing structural validators may continue to protect authored contracts.
+- Generate `demo/index.html` only through `npm run build:single`; never edit it by hand.
+- Optional detail scope is fixed to `A1 + A2 + A3 + B1 + B3 + C2`; unselected ideas remain out of scope.
+
+## Acceptance baseline
+
+- Chapter 3.5 starts with an unresolved time window and never displays the destination before the player earns the final choice.
+- The final page auto-assembles recovered evidence and asks for one real location judgment; it does not repeat the A-D ordering exercise.
+- Seven voice memos remain four true plus three decoys. Runtime grading uses exact authored IDs and order; waveform and event descriptions reflect the actual final MP3 files.
+- Leaving and reopening the voice page in the same browser session restores audition, shortlist, and ordering work without changing the formal save schema.
+- Chapter 4 derives one presentation object for all 13 phases and all 6 time states. The two `22:45` states always show different sources and trust states.
+- Room 204 reports `n/12`, uses fixed slot occupancy, and exposes no direction or rotation rule.
+- Repeated guidance appears in the task drawer. Local actions, item rejection, and authored dialogue keep separate output channels.
+- The existing H3 playback and `requestId` handoff contract continue to work in the single-file build.
+
+## Task 0: Freeze the live contracts before implementation
+
+**Read:**
+
+- `src/core/types.ts`
+- `src/core/GameState.ts`
+- `src/core/SaveStore.ts`
+- `src/modules/ChapterThreePhoneInterludeController.ts`
+- `src/modules/ChapterFourPrologueController.ts`
+- `src/components/Chapter4PrologueRuntimeGate.tsx`
+- `src/modules/ChapterFourTemporalMazeController.ts`
+- `src/modules/ChapterFourClosureContract.ts`
+- `src/modules/DeveloperChannel.ts`
+
+**Actions:**
+
+- Record the current Chapter 3.5 field contract, H3 event sequence, 13 phases, 6 time states, and closure gate.
+- Resolve the unique repository path or official consumer ID for the existing “灿若星辰” asset. If it cannot be uniquely identified, Tasks 1-11 may proceed and Task 12 remains blocked.
+- Preserve the currently validated `chapter35_recovered_replay_gate_requested -> requestId -> live_ready -> handoff_released` sequence.
+
+## Task 1: Create one Chapter 3.5 content entry and one read-only selector
+
+**Files:**
+
+- Create: `src/data/chapter3InterludeContent.ts`
+- Create: `src/modules/ChapterThreeInterludeModel.ts`
+- Modify: `src/core/QuestModel.ts`
+- Modify: `src/scenes/phone/P13_PhoneHome/index.tsx`
+
+**Actions:**
+
+- Import the existing voice content JSON and unify public evidence copy, validation IDs, destination candidates, decoy reasons, task copy, and hint levels behind one entry.
+- Separate `publicContent`, `validationContract`, and `presentationCopy` so UI code cannot accidentally display solution-only fields.
+- Add `selectChapterThreeInterludeViewModel(state)` with unresolved/resolved time window, evidence progress, network `n/3`, source summaries, auto timeline rows, destination eligibility, current objective, and hints.
+- Derive the time window progressively: no start evidence shows `待恢复 — 待恢复`; CC98 restores the left boundary; the broadcast evidence restores the right boundary.
+- Keep selectors read-only and leave all progression writes in `ChapterThreePhoneInterludeController`.
+
+**Verification:**
+
+- The phone home notification, quest drawer, and recovery page read the same derived time state.
+- No public view model contains canonical destination or answer-order fields before eligibility.
+
+## Task 2: Replace decorative recording data with an authored audio evidence model
+
+**Files:**
+
+- Modify: `src/data/chapter3-interlude-voice-memos.audio.content.json`
+- Modify: `scripts/generate-chapter3-interlude-voice-memos-audio.mjs`
+- Modify: `scripts/verify-chapter3-interlude-voice-memos.mjs`
+- Modify: `docs/plans/2026-08-23-chapter35-voice-memo-prompts.md`
+
+**Actions:**
+
+- Keep seven clips, four canonical clips, three decoys, and the existing exact-order answer.
+- Give every clip two to four authored `soundEvents` with start/end milliseconds, category, short Chinese label, and near/mid/far distance.
+- Describe audible facts only. Do not expose `correct`, `decoy`, canonical rank, or the intended destination.
+- Extract 32 RMS waveform bins from each final MP3 during generation and write them into the generated manifest. Remove the hard-coded eight-bar waveform from the page.
+- Extend prompt data with event emphasis, distance, speech density, and decoy overlap while keeping MiniMax generation asset-side only.
+- Treat a clip as heard after natural completion or at least 80% playback; clicking play alone does not unlock its event list.
+
+**Verification:**
+
+- `npm run audio:chapter3-interlude-voice-memos:verify`
+- The validator checks seven unique final MP3 files, duration, waveform-bin count/range, event time bounds, four canonical IDs, and three decoy IDs.
+- Human audition remains required to confirm that each authored event is actually audible.
+
+## Task 3: Add session-level voice memo draft recovery
+
+**Files:**
+
+- Create: `src/modules/ChapterThreeInterludeDraftStore.ts`
+- Modify: `src/scenes/phone/P21_VoiceMemos/index.tsx`
+- Modify: `src/modules/ChapterThreePhoneInterludeController.ts`
+- Modify: `src/styles/chapter-three-interlude.css`
+
+**Actions:**
+
+- Store only `stage`, `heardIds`, `selectedIds`, and `orderedIds` in versioned `sessionStorage`.
+- Validate every restored ID against the current seven-candidate manifest, remove duplicates, and discard drafts when the manifest version changes.
+- Keep playback time, currently playing clip, and feedback text runtime-only.
+- Preserve the draft after wrong-set and wrong-order submissions. Clear it after a correct submission, story reset, or completed interlude.
+- Keep formal `voiceClipOrder` unchanged and commit its four IDs only after successful controller validation.
+- After a clip is heard, show event chips and allow short replay around an event marker without replaying the full 5.2-second clip.
+
+**Verification:**
+
+- Hear three clips, shortlist two, leave the page, and return: all three draft dimensions restore.
+- Reload the same tab during ordering: order restores and no audio starts automatically.
+- An old or malformed draft cannot inject unknown IDs or bypass validation.
+
+## Task 4: Reduce answer leakage in photos, WeChat, and network evidence
+
+**Files:**
+
+- Modify: `src/scenes/phone/P18_Photos/index.tsx`
+- Modify: `src/scenes/phone/P14_Wechat/index.tsx`
+- Modify: `src/scenes/phone/P15_Zjuding/index.tsx`
+- Modify: `src/core/QuestModel.ts`
+- Modify: `src/styles/chapter-three-interlude.css`
+
+**Actions:**
+
+- Replace the photo task's explicit left/middle/right answer with three optional levels: discontinuity, fixed-reference comparison, then continuous horizontal movement.
+- Make WeChat list previews neutral; reveal entrance direction and timing only after the player opens and saves the relevant messages.
+- Build network filtering from an actual record collection. Each valid dimension narrows the current result set and updates `0/3`, `1/3`, `2/3`, or `3/3`.
+- Derive network progress from the existing `officialNoticeSaved`, `routeScreenshotSaved`, and `networkRecordRead` facts.
+- Hide the human-readable building resolution until final destination eligibility. AP identifiers may remain technical evidence only if they do not spell out the answer in visible copy.
+
+**Verification:**
+
+- A first-time player can state the next action but cannot quote the destination from a task hint, list preview, or initial record result.
+- Every network filter has an observable effect before all three are correct.
+
+## Task 5: Rebuild the Chapter 3.5 recovery and final deduction page
+
+**Files:**
+
+- Modify: `src/scenes/phone/P20_TimelineRecovery/index.tsx`
+- Modify: `src/modules/ChapterThreePhoneInterludeController.ts`
+- Modify: `src/styles/chapter-three-interlude.css`
+- Modify: `src/modules/DeveloperChannel.ts`
+
+**Actions:**
+
+- Remove `timelineDraft`, A-D slots, and player-entered repetition of the evidence order.
+- After all required facts and old-time exclusions are complete, have the controller write the canonical order into the existing `timelineOrder` and render a read-only four-row timeline.
+- Keep the three old-time exclusions as the active reasoning task; they are not replaced by the auto timeline.
+- Present four real candidates: Qizhen Lake dock, theater lobby, Basic Library south area, and Duan Yongping Building A1. Wrong candidates stay UI-local and never overwrite `destinationId`.
+- Return one evidence conflict for each wrong location. Only the correct candidate writes the existing `destinationId: "duan_yongping_a1"`.
+- Default completed evidence sections to a one-line summary with an explicit reopen control.
+- Add one derived reasoning line that changes only when evidence meaning changes, such as unresolved time range, excessive candidate count, or one remaining conflict. Do not implement it as a subtitle.
+- Update DEV checkpoints so intermediate evidence and final-choice states still seed real facts rather than a route-only page.
+
+**Verification:**
+
+- The destination does not appear in the heading before selection.
+- The player performs one final location judgment and receives specific conflict feedback for all three wrong candidates.
+- The current actionable block remains visible in the `430 x 860` phone viewport after completed sections collapse.
+
+## Task 6: Delay RPG preload and preserve the H3 handoff
+
+**Files:**
+
+- Modify: `src/scenes/phone/P20_TimelineRecovery/index.tsx`
+- Modify: `src/components/Chapter4PrologueRuntimeGate.tsx`
+- Modify: `src/modules/DeveloperChannel.ts`
+- Modify: `scripts/verify-chapter4-755-story.mjs`
+
+**Actions:**
+
+- Remove page-mount `preloadRpgGameHost()` from P20.
+- Start preload only after the correct destination is confirmed and the player requests the recovered replay; keep the gate as the owner of loading, timeout, retry, and release.
+- Preserve the current H3 source selection, task-card timing, request ID correlation, and A1 live-ready handshake.
+- Give `c4-prologue-task-card` real reload semantics: an unconfirmed task card reloads to the task card; a confirmed task card resumes the A1 handoff. Do not silently normalize the unconfirmed checkpoint to `c4-755-opening`.
+
+**Verification:**
+
+- Opening P20 before final confirmation does not evaluate the RPG host.
+- Chromium, Firefox, and WebKit keep H3 playback and automatic A1 handoff.
+- Reload at the task card preserves the pending confirmation state; reload after confirmation safely restores A1.
+
+## Task 7: Add one Chapter 4 stage-presentation selector
+
+**Files:**
+
+- Create: `src/modules/ChapterFourStagePresentation.ts`
+- Modify: `src/data/chapter4-755.content.json`
+- Modify: `src/data/chapter4-temporal-maze.content.json`
+- Modify: `src/modules/ChapterFourTemporalMazeController.ts`
+- Modify: `src/core/QuestModel.ts`
+
+**Actions:**
+
+- Derive stage label, time-state label, phone time, time source, trust state, floor, current difference, local progress, and confirmed facts from existing state.
+- Cover all 13 phases and all 6 time states without adding a second phase graph.
+- Distinguish the two `22:45` states in every consumer:
+  - `现场 22:45 · 手机 07:55:23 未同步`;
+  - `旧钟 22:45 · 维修时段 · 手机已同步`.
+- Derive Room 204 progress from normalized placement count, light-grid progress from required zones only, and double-check-in progress from the two existing acceptance facts.
+- Fix the controller event value `1850_room204` to the canonical `1850_evening`.
+
+**Verification:**
+
+- A selector-level validator proves unique presentation for 13 phases and 6 time states.
+- The two `22:45` states differ by source, trust, and stage copy.
+
+## Task 8: Move Chapter 4 guidance into the existing task drawer
+
+**Files:**
+
+- Modify: `src/data/chapter4-755.content.json`
+- Modify: `src/core/types.ts`
+- Modify: `src/core/QuestModel.ts`
+- Modify: `src/components/QuestClueStrip.tsx`
+- Modify: `src/styles/shell.css`
+
+**Actions:**
+
+- Replace each task's nullable single `hint` with `hints[]`; give each of the 28 active tasks three levels and leave the completed task without an action hint.
+- Extend `QuestViewModel` with optional Chapter 4 presentation context only; do not add a persisted field.
+- Keep the top bar compact: chapter, time state, floor, current objective, and local progress.
+- Put current difference, confirmed facts, trust/source context, and the three reveal-on-request hints in the drawer.
+- Reuse `QuestClueStrip`'s current progressive hint interaction and existing `.quest-task-overview` layout.
+- Level 1 identifies the observation area, level 2 explains the rule, and level 3 states the exact accepted action. Future puzzle steps stay absent.
+
+**Verification:**
+
+- The drawer remains scrollable within the `960 x 540` RPG bounds at desktop and mobile scale.
+- No locked future task label appears.
+- Reopening the drawer does not repeat the hint as a subtitle.
+
+## Task 9: Fix Room 204 progress and add specific failure details
+
+**Files:**
+
+- Modify: `src/scenes/rpg/ChapterFourRoom204Model.ts`
+- Modify: `src/modules/ChapterFourTemporalMazeController.ts`
+- Modify: `src/scenes/rpg/RpgInteractionContract.ts`
+- Modify: `src/scenes/rpg/RpgGameHost.tsx`
+- Modify: `src/data/chapter4-755.content.json`
+
+**Actions:**
+
+- Keep the existing 12 unique pieces, 12 unique slots, and fixed `up` compatibility metadata. Remove all player-facing direction and rotation wording.
+- Display `复原 204：n/12` and derive it from the normalized placement collection. No new Room 204 save field is required.
+- Preserve the existing coarse `reason` contract and add optional `detailCode` for locked prerequisites, occupied slots, already placed pieces, invalid routes, missing repairs, check-in requirements, and closure failures.
+- Require every `locked` result to carry a detail code. Map details to one corrective action in content data; Host performs lookup only.
+- Keep `wrong_mode`, `wrong_item`, `too_far`, `missed_target`, and `accepted` semantics unchanged.
+
+**Verification:**
+
+- Placement counts 0, 1, 6, 11, and 12 render correctly.
+- Room 204 can be solved without reading or changing orientation.
+- Every rejected item or interaction attempt produces one visible reason and one next action.
+
+## Task 10: Assign each information channel one responsibility
+
+**Files:**
+
+- Modify: `src/scenes/rpg/ChapterFourTemporalMazeScene.ts`
+- Modify: `src/scenes/rpg/RpgGameHost.tsx`
+- Modify: `src/modules/PresentationDirector.ts`
+- Modify: `src/data/chapter4-755.content.json`
+- Modify: `src/data/chapter4-temporal-maze.content.json`
+
+**Actions:**
+
+- Top bar: stage, time, floor, objective, progress.
+- Task drawer: difference, confirmed facts, optional hints.
+- Phaser interaction hint: one nearby action accepted now.
+- Inventory feedback: accepted or rejected item use and correction.
+- Subtitle layer: dialogue, one-time transition, and major story result only.
+- Remove repeated task titles, control tutorials, and route reminders from subtitles.
+- Change A3 reference copy from direction language to `303 的 12 组参照位置已经记录`.
+- Keep guard chase dialogue, time-transition results, final-minute recovery, and official exterior-closure result.
+
+**Verification:**
+
+- No instruction is simultaneously visible in task bar, subtitle, and item feedback.
+- A critical failure never ends without a correction path.
+
+## Task 11: Normalize Chapter 4 DEV checkpoints
+
+**Files:**
+
+- Modify: `src/modules/DeveloperChannel.ts`
+- Modify: `scripts/verify-chapter4-755-story.mjs`
+- Modify: `scripts/verify-chapter4-755-runtime.mjs`
+
+**Actions:**
+
+- Merge the duplicate blackout and light-grid seeds under canonical `c4-755-blackout-0754`; retain `c4-755-light-grid` as a compatibility alias.
+- Add canonical `c4-755-return-clock` for `return_to_clock` with the final minute, attendance paper, and campus card.
+- Rename the pre-consumer ending checkpoint to `c4-755-closure` and reserve `c4-755-result` for a verified completed state.
+- Keep DEV seeds session-only and prevent them from writing the formal save.
+
+**Verification:**
+
+- Every canonical node seeds a real gameplay checkpoint with matching phase, floor, room, items, and facts.
+- Legacy URLs resolve without changing their former gameplay meaning.
+
+## Task 12: Integrate the existing “灿若星辰” consumer and persist verified completion
+
+**Files:**
+
+- Modify: `src/modules/ChapterFourClosureContract.ts`
+- Create: `src/modules/ChapterFourClosureSessionRegistry.ts`
+- Modify: `src/modules/ChapterFourTemporalMazeController.ts`
+- Modify: `src/scenes/rpg/RpgGameHost.tsx`
+- Modify: the confirmed official “灿若星辰” consumer
+- Modify: `src/core/SaveStore.ts`
+
+**Actions:**
+
+- Use only the confirmed official asset reference and consumer. Do not accept an old Godot asset, placeholder, or generated substitute.
+- Start a runtime closure session, accept one completion event from the official consumer, validate the proof once, and then write the existing `complete`, `completed`, `exteriorClosureAcknowledged`, and closure fact fields atomically.
+- Keep session IDs and proof runtime-only. Add no new `GameState` field.
+- If the current save sanitizer still downgrades every completed Chapter 4 state, bump the save envelope version while preserving v25 in-progress phases. Only a complete state with all existing closure facts may survive reload.
+- Treat missing reference, wrong reference, incomplete session, and reused proof as zero-write failures with specific detail codes.
+
+**Verification:**
+
+- The official consumer completes once, refreshes to the result state, and cannot be replayed to duplicate completion.
+- v24 legacy completion remains safely downgraded; v25 in-progress Chapter 4 saves remain intact; the new verified completion survives reload.
+
+## Task 13: Apply the approved optional interaction details
+
+**Files:**
+
+- Modify: `src/scenes/phone/P20_TimelineRecovery/index.tsx`
+- Modify: `src/scenes/phone/P21_VoiceMemos/index.tsx`
+- Modify: `src/data/chapter3-interlude-voice-memos.audio.content.json`
+- Modify: `src/data/chapter4-755.content.json`
+- Modify: `src/data/chapter4-temporal-maze.content.json`
+- Modify: `src/scenes/rpg/ChapterFourTemporalMazeScene.ts`
+- Modify: `src/scenes/rpg/FinaleNpcTextures.ts` only if the existing cleaner atlas needs an additional fixed-frame animation mapping.
+
+**Actions:**
+
+- `A1`: unlock short replay around authored voice-event markers after a clip reaches the heard threshold.
+- `A2`: return one specific contradiction for an incorrect voice set or destination candidate.
+- `A3`: restore the time-window digits independently as the start and end evidence becomes valid.
+- `B1`: on each authored Chapter 4 return visit, change at least one already-known door, notice, NPC placement, or evidence state through the phase presentation data.
+- `B3`: change the cleaner cart from a blocked-wheel sound to a short free-roll sound after repair, and change the hall clock from an unstable tick to a stable tick after gear repair.
+- `C2`: show the cleaner attempting and failing to move the cart before repair, then moving it a short authored distance after repair.
+- Keep each detail independent of base progression, formal save migration, and required collision geometry.
+- Do not create generic feature flags for unselected ideas.
+
+**Verification:**
+
+- Disabling or removing one optional detail leaves the base puzzle solvable and state-compatible.
+
+## Task 14: Update deterministic validators
+
+**Files:**
+
+- Modify: `scripts/verify-chapter3-interlude-voice-memos.mjs`
+- Modify: `scripts/verify-chapter4-755-story.mjs`
+- Modify: `scripts/verify-chapter4-755-runtime.mjs`
+- Modify: `scripts/verify-chapter4-755-task14.mjs`
+- Modify: `src/scenes/rpg/RpgRuntimeDebug.ts`
+
+**Actions:**
+
+- Validate Chapter 3.5 public/solution separation, waveform/event metadata, draft sanitization, automatic timeline, and location write rules.
+- Validate 13 Chapter 4 phase presentations, 6 time-state labels, two distinct `22:45` contexts, 28 three-level hint arrays, 204 progress, locked detail codes, DEV aliases, and closure proof behavior.
+- Add negative checks for direction gates, duplicate subtitle ownership, early destination copy, and page-mount RPG preload.
+- Keep A1/A2/A3 collision and foreground-occlusion browser checks outside this task.
+
+**Verification:**
+
+- `npm run typecheck`
+- `npm run audio:chapter3-interlude-voice-memos:verify`
+- `npm run chapter4:validate-topology`
+- `npm run chapter4:validate-runtime`
+- `npm run chapter4:validate-story`
+- `npm run chapter4:validate-task14`
+
+## Task 15: Run the integrated browser path
+
+**Checks:**
+
+- Chapter 3.5: photo, seven recordings, WeChat, progressive network filtering, old-time exclusions, automatic timeline, four location candidates, and draft reload.
+- Transition: recovered replay, H3 natural end, H3 skip, pending task-card reload, confirmed task-card reload, and automatic A1 release.
+- Chapter 4: six time-state presentations, both `22:45` labels, 204 `n/12`, progressive hints, representative prerequisite failures, final-minute return, double check-in, official closure, and result reload.
+- Viewports: `1280 x 720`, one non-16:9 desktop viewport, and `390 x 844`.
+- Engines: Blink, Gecko, and WebKit according to the project compatibility baseline.
+- Pass criteria: no document overflow, stable phone/RPG ratios, no page or console errors, no duplicate guidance channels, and no route blocked by removal of a subtitle.
+
+**Explicit exclusion:**
+
+- Do not run three-floor collision, air-wall, walkability, source-coordinate, or foreground-occlusion browser validation.
+
+## Task 16: Build and record the demo only after the path passes
+
+**Files:**
+
+- Modify: `progress.md`
+- Generated: `demo/index.html`
+
+**Actions:**
+
+- Record implemented scope, selected optional detail IDs, validators, browser paths, exclusions, and any remaining visual-approval boundary in `progress.md`.
+- Run `npm run build:single` and `npm run verify:single` only after Tasks 14 and 15 pass.
+- Report final file size and SHA-256.
+- Do not stage, commit, merge, or push in this task; Git delivery requires the separate fetch-and-scope procedure in the project rules.
+
+## Optional detail decision
+
+- Approved: `A1 + A2 + A3 + B1 + B3 + C2`.
+- Excluded from this implementation: `A4`, `A5`, `B2`, `B4`, `C1`, `C3`, and `C4`.
+
+# 全通关后“7:55 挑战”无尽小游戏中心实施计划
+
+> 计划日期：2026-08-24
+>
+> 当前状态：Task 0–13 已实施；自动合同、三模式等效 30 分钟长测、Blink/Gecko/WebKit 真实浏览器验收、生产构建、离线单文件构建及 HTTP/`file://` 单文件复验均已完成。Git 上传仍受 fetch 后精确范围确认门约束。
+>
+> 用户目标：主线正式通关后，保留手机桌面现有 `7:55` 图标，以一个统一入口提供节奏钓鱼、灯光追逐、755 米自行车三种无尽挑战。
+
+## 1. 结论与产品边界
+
+采用以下产品形态：
+
+- 手机桌面继续使用现有 `bike_arcade` 槽位、`7:55` 图标、`游戏` 名称和原网格位置。
+- 打开后进入 `7:55 挑战` 中心，不再直接进入旧版固定 755 米骑行。
+- 三个模式均采用“持续提高难度，失败后结算”的单局结构。
+- “无尽”表示关卡层级和分数可以持续增长，单局仍然具有明确失败、结算、重试和退出。
+- 生产环境仅在经过第四章正式收束验证并写入持久通关回执后开放。
+- 开发环境通过 session-only 检查点验证玩法，不写正式存档，也不代替生产解锁。
+- 第一版仅保存本地个人最佳成绩，不增加账号、联网排行榜、每日任务、货币、奖励和剧情分支。
+- 第一版复用现有美术、音频、交互规则和 Phaser；不增加新引擎，不生成新角色或视频。
+- 旧 `bikeArcade` 第三章存档保留兼容用途，不能继续充当通关权限或新模式成绩权威。
+
+推荐的用户可见结构：
+
+```text
+手机桌面
+└── 7:55 图标（名称继续显示“游戏”）
+    └── 7:55 挑战
+        ├── 节奏钓鱼
+        ├── 灯光追逐
+        └── 755 米骑行
+```
+
+## 2. 当前代码证据与复用决定
+
+### 2.1 现有入口可以直接升级
+
+- `src/core/types.ts` 已包含 `SceneId = "bike_arcade"` 和 `PhoneHomeAppId = "bike_arcade"`。
+- `src/core/PhoneHomeApps.ts` 已把 `bike_arcade` 放入默认桌面顺序。
+- `src/scenes/phone/P13_PhoneHome/index.tsx` 已显示 `7:55` 图标，并在开放时进入 `bike_arcade`。
+- `src/core/SceneRouter.ts` 和 `src/core/FeatureAccess.ts` 已对该场景执行二次权限检查。
+- `src/scenes/phone/registry.tsx` 已登记 P16 场景。
+- `src/scenes/phone/P16_BikeArcade/index.tsx` 已具备竖屏 Phaser 加载、启动失败提示和销毁路径。
+
+因此，第一版不新增应用 ID、场景 ID、桌面排序项和单文件加载入口。内部名称 `bike_arcade` 作为兼容标识保留，用户界面统一使用 `7:55 挑战`。
+
+### 2.2 三种玩法已有可靠基础
+
+节奏钓鱼：
+
+- `src/scenes/rpg/QizhenFishingRhythmModel.ts` 已提供单调时钟、判定窗、长按、连击、张力和失败持续时间。
+- `src/data/chapter3-qizhen-fishing.charts.json` 已有四组可用节奏母题。
+- `src/scenes/rpg/QizhenLakeScene.ts` 已处理 AudioContext 时钟、节拍预调度、输入释放、页面隐藏和场景清理。
+- 原 960×540 世界坐标视觉不可直接塞入手机页，需要建立 390×650 竖屏视觉层。
+
+灯光追逐：
+
+- `src/scenes/rpg/TheaterSpotlightModel.ts` 已提供目标路径、预览时间、光束半径、锁定时间、干扰目标和辅助参数。
+- `src/scenes/rpg/TheaterInteriorScene.ts` 已实现路径预览、目标和干扰目标移动、光束覆盖、连续锁定以及提前、延后、中断反馈。
+- `src/modules/ChapterThreeTheaterController.ts` 中的判定需要提取为可复用纯函数，并保留原剧情关卡回归结果。
+- 第四章灯阵和楼梯追逐不属于本模式来源，不能混入此模式规则。
+
+755 米骑行：
+
+- `src/scenes/phone/P16_BikeArcade/BikeArcadeRules.ts` 已提供三车道、可解波次、速度和难度计算。
+- `src/scenes/phone/P16_BikeArcade/BikeArcadeRuntime.ts` 已提供暂停原因、恢复首帧丢弃和 delta 上限。
+- `src/scenes/phone/P16_BikeArcade/BikeRushScene.ts` 已适配 390×650、键盘、触屏、碰撞、无敌时间和 Phaser 生命周期。
+- 原控制器以 755 米作为剧情终点；无尽模式需要把每 755 米改为一圈，并继续下一圈。
+
+### 2.3 现有通关状态无法直接持久开放入口
+
+当前第四章正式结束事务会在验证成功后写入：
+
+```text
+chapter4.phase = complete
+chapter4.completed = true
+chapter4.exteriorClosureAcknowledged = true
+factIds += exterior_closure_acknowledged
+```
+
+但 `SaveStore` 为防止伪造 consumer proof，会在重新加载时把裸 `complete` 状态降回 `exterior_closure`。如果权限直接读取 `chapter4.completed`，当前会话中图标开放，刷新后会再次锁定。
+
+同时，现有 `bikeArcade.unlocked` 曾用于第三章旧小游戏和 022 座位迁移。使用它会让部分旧存档提前开放通关内容。
+
+本计划新增“正式结局回执”。它只在第四章 controller 已完成素材引用和 consumer session 双重验证后写入，可独立持久恢复。
+
+## 3. 范围锁定
+
+### 3.1 第一版必须完成
+
+- 正式通关回执与持久解锁。
+- 桌面固定 7:55 图标和统一挑战中心。
+- 三种可完整游玩的无尽模式。
+- 键盘与触屏输入。
+- 暂停、显式恢复、失败结算、立即重试、返回中心、返回手机主页。
+- 三模式独立个人最佳记录。
+- 旧存档迁移与原剧情玩法回归保护。
+- 开发检查点、文本快照、确定性种子和浏览器验证。
+- Vite、直接打开的单文件、桌面和移动视口行为一致。
+
+### 3.2 第一版明确排除
+
+- 在线排行榜、好友排行和账号系统。
+- 每日挑战、赛季、体力、货币、奖励商店和成就系统。
+- 新剧情、通关奖励物品和主线状态回写。
+- 新联网请求、遥测和云存档。
+- 新美术批量生成、新语音和新视频。
+- Three.js、Godot 或其他新运行时。
+- 把一局进行中的障碍、音符、目标位置和按键状态写入存档。
+- 为三个模式各自建立一套手机外框或全局导航。
+
+### 3.3 前置依赖
+
+生产解锁依赖第四章正式收束合同真实接通：
+
+- `CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE` 必须登记已制作的“灿若星辰”正式素材与 consumer。
+- 实际播放 consumer 必须生成一次性完成证明。
+- 处理最终 intent 的 controller 必须持有真实 verifier。
+- 只有 verifier 成功的事务可写 `chapter4_closure_v1` 回执。
+
+无尽挑战主体可以先通过开发检查点实现和验证。正式入口在上述依赖完成前维持静态锁定槽位。
+
+## 4. 目标架构
+
+### 4.1 数据流
+
+```text
+第四章正式 consumer 播放完成
+  │
+  ├─ 素材引用匹配
+  └─ session verifier 通过
+       │
+       ▼
+ChapterFourTemporalMazeController
+  ├─ 写 chapter4 完成事实
+  ├─ 写 postgame.completionReceipt
+  └─ 返回 phone_home
+       │
+       ▼
+selectMainStoryCompleted
+       │
+       ▼
+FeatureAccess.endlessChallenge
+       │
+       ▼
+手机桌面 7:55 固定槽位
+       │
+       ▼
+P16 “7:55 挑战”中心
+       │
+       ▼
+EndlessArcadeGameHost（一次只挂载一个 Phaser 实例）
+  ├─ EndlessFishingScene
+  ├─ EndlessSpotlightScene
+  └─ BikeRushScene(mode = endless)
+       │
+       ▼
+EndlessArcadeController.settleAttempt(runId, summary)
+       │
+       ▼
+GameState.endlessArcade.records
+       │
+       ▼
+SaveStore
+```
+
+### 4.2 页面状态机
+
+```text
+locked
+  └─ 通关回执生效 → hub
+
+hub
+  └─ 选择模式 → loading → intro → running
+
+running
+  ├─ 页面隐藏 / 失焦 / 控制中心打开 → paused
+  ├─ 主动退出 → confirm_exit → cancelled → hub
+  └─ 失败 → game_over
+
+paused
+  ├─ 玩家点击继续 → running
+  └─ 退出 → cancelled → hub
+
+game_over
+  ├─ 再来一局 → intro → running
+  ├─ 返回挑战中心 → hub
+  └─ 返回手机主页 → phone_home
+```
+
+### 4.3 分层职责
+
+`FeatureAccess`：
+
+- 只回答正式通关内容是否可进入。
+- 不读取旧 `bikeArcade.unlocked`。
+- `SceneRouter`、首页卡片和 P16 内部防护使用同一 selector。
+
+`P16_BikeArcade`：
+
+- 管理挑战中心、模式说明、最佳记录、加载态、错误态和结算面板。
+- 使用共享 Phone UI 组件，不改变 430×860 外框。
+- 不直接修改全局剧情字段。
+
+`EndlessArcadeGameHost`：
+
+- 在一个 390×650 逻辑区域挂载一个 Phaser canvas。
+- 懒加载 Phaser 和当前模式 scene。
+- 统一 pause、resume、blur、visibilitychange、Pointer Events、启动超时、错误恢复和 teardown。
+- 切换模式前销毁旧实例，不保留第二个活动 canvas。
+
+三种 scene：
+
+- 只维护当前局运行态。
+- 通过结构化 summary 报告结算。
+- 不访问 `GameStore`，不写存档，不发送剧情完成事件。
+
+`EndlessArcadeController`：
+
+- 生成 run ID 和确定性种子。
+- 每次开局只增加一次 attempt count。
+- 每个 run ID 只接受一次结算。
+- 校验 mode、分数、进度、连击、层级和时长。
+- 只更新对应模式最佳记录。
+
+## 5. 状态、存档与迁移合同
+
+### 5.1 新状态
+
+在 `src/core/types.ts` 增加：
+
+```ts
+export type MainStoryCompletionReceipt = "chapter4_closure_v1" | null;
+
+export type EndlessChallengeModeId =
+  | "fishing"
+  | "spotlight"
+  | "bike";
+
+export interface EndlessChallengeRecord {
+  attemptCount: number;
+  bestScore: number;
+  bestProgress: number;
+  bestTier: number;
+  bestCombo: number;
+  bestDurationMs: number;
+}
+
+export interface PostgameState {
+  completionReceipt: MainStoryCompletionReceipt;
+}
+
+export interface EndlessArcadeState {
+  records: Record<EndlessChallengeModeId, EndlessChallengeRecord>;
+}
+```
+
+`bestProgress` 的单位由模式注册表解释：
+
+- `fishing`：成功收线次数。
+- `spotlight`：完成轮数。
+- `bike`：累计米数。
+
+`bestTier` 用于三个模式统一显示难度层级。所有数值归一化为安全、非负、有限整数，并设置实现常量上限，防止异常存档或超长运行溢出。
+
+### 5.2 正式解锁 selector
+
+建议新增：
+
+```ts
+export function selectMainStoryCompleted(state: GameState): boolean {
+  return state.postgame.completionReceipt === "chapter4_closure_v1";
+}
+```
+
+`selectFeatureAccess()` 增加：
+
+```ts
+endlessChallenge: selectMainStoryCompleted(state)
+```
+
+`canEnterScene("bike_arcade")`、P13 可用状态和 P16 内部防护统一读取 `endlessChallenge`。
+
+禁止从以下字段推导正式回执：
+
+- `chapter4.phase`
+- `chapter4.completed`
+- `chapter4.exteriorClosureAcknowledged`
+- `chapter4.factIds`
+- `bikeArcade.unlocked`
+- `bikeArcade.completed`
+- `flags.checkinDone`
+- `currentScene === "ending"`
+
+### 5.3 回执写入事务
+
+`ChapterFourTemporalMazeController` 只有在以下两项均通过后写回执：
+
+```text
+closureProofMatchesReference(...)
+closureSessionVerifier.verifyCompletedSession(...)
+```
+
+同一个 store transaction 写入：
+
+```text
+chapter4.phase = complete
+chapter4.completed = true
+chapter4.exteriorClosureAcknowledged = true
+chapter4.factIds += exterior_closure_acknowledged
+postgame.completionReceipt = chapter4_closure_v1
+runtimeMode = phone
+currentScene = phone_home
+ui.controlCenterOpen = false
+ui.inventoryOpen = false
+ui.selectedItem = null
+```
+
+该事务发生在最终 consumer 播放完成并提交 acknowledgement 之后，避免提前返回手机主页。
+
+### 5.4 SaveStore 版本与迁移
+
+实施时建议把整体 `SAVE_VERSION` 从 25 提升到 26，同时固定已有第四章迁移阈值：
+
+```ts
+const CHAPTER_FOUR_755_SAVE_VERSION = 25;
+const POSTGAME_ENDLESS_SAVE_VERSION = 26;
+```
+
+必须先把 `normalizeChapterFour()` 中跟随当前 `SAVE_VERSION` 的旧架构判断改为固定阈值，再提升整体版本。否则全部 v25 第四章进行中存档会被再次判旧并重置。
+
+`isLegacyChapterThreeState()` 当前仅凭 `currentScene === "bike_arcade"` 就会触发旧第三章修复。该判断需要受旧版本阈值约束，或改为检查旧结构特征。否则新 postgame 页面刷新时可能改写第三章图书馆状态。
+
+迁移规则：
+
+- v25 及更早存档默认 `postgame.completionReceipt = null`。
+- 旧字段不能自动生成正式回执。
+- 新回执存在时，恢复 canonical Chapter 4 complete 状态和手机主页或 `bike_arcade`。
+- 非法回执值归一化为 `null`。
+- 新 `endlessArcade` 缺失时生成三个零值记录。
+- 仅当新 `endlessArcade` 整体缺失时，可把旧自行车数据作为“历史成绩种子”：
+  - `bike.attemptCount = legacy attemptCount`
+  - `bike.bestProgress = legacy bestDistance`
+  - `bike.bestScore = legacy bestDistance`
+  - 其他值为 0
+- 上述成绩迁移不产生正式解锁。
+- 正式入口改为不可从桌面删除；归一化时从 `hiddenHomeAppIds` 移除 `bike_arcade`。
+
+### 5.5 当前局保持运行时状态
+
+以下内容不写存档：
+
+- run ID、随机种子、当前分数、当前层级和当前生命。
+- 音符、障碍、目标、干扰目标、粒子和计时器。
+- 当前按键、触点、拖动、光束和暂停原因。
+- 结局 consumer 的 session ID 与 completion event ID。
+
+刷新活动局时返回挑战中心。未结算的局不更新最佳记录；attempt count 保留已经开始这一事实。
+
+## 6. 统一挑战中心与交互合同
+
+### 6.1 挑战中心
+
+使用 `PhoneAppScaffold`、`PhoneAppHeader`、`PhoneStateView` 和现有手机 token，提供：
+
+- 标题：`7:55 挑战`。
+- 一行说明：`选择一个玩法，坚持到失误为止。`。
+- 三张模式卡：名称、短规则、控制方式、最佳成绩和开始按钮。
+- 本地成绩说明：`成绩仅保存在本机。`。
+- 返回手机主页按钮。
+
+视觉统一延续现有图标：
+
+- 页头保留分段数字形式的 `07:55`，它只作为品牌标识，不伪装成系统当前时间。
+- 三张卡使用同一排版和状态结构，通过节奏轨道、圆形光束、三车道线三种简化底纹区分玩法。
+- 分数、层级和个人最佳统一采用数字表盘字形；正文、按钮和错误反馈继续使用全局 Phone UI 字体与 token。
+- 新纪录只在本次结算面板显示一次短动画；降低动态效果时改成静态高亮。
+- 挑战中心不加入装饰性横幅、自动轮播和第二套底部导航。
+
+模式卡保持相同层级：
+
+```text
+节奏钓鱼
+跟准节拍，控制张力
+最佳：12 次收线 · 38,420 分
+
+灯光追逐
+预判路线，持续锁定目标
+最佳：18 轮 · 46,700 分
+
+755 米骑行
+每 755 米进入下一圈
+最佳：3,284 米 · 52,100 分
+```
+
+### 6.2 游戏内固定结构
+
+每个模式都提供：
+
+- 顶部：模式名、分数、进度或层级。
+- 中部：Phaser 游戏区。
+- 底部：触屏控制区；细指针桌面不显示虚拟按键。
+- 首次进入：一屏内完成的简短玩法说明和开始按钮。
+- 暂停：清楚显示暂停原因和“继续”。
+- 结算：分数、进度、最高连击、新纪录状态、重试、返回中心、返回主页。
+
+进入活动局后隐藏全局剧情任务抽屉和物品栏，保留共享状态栏。挑战中心可使用控制中心；活动局打开控制中心时先暂停，关闭后等待玩家显式恢复。
+
+### 6.3 退出与恢复
+
+- 活动局点击返回时显示行内确认：`退出本局？本局成绩不会结算。`
+- `visibilitychange`、窗口失焦、控制中心打开和系统中断均暂停。
+- 所有活动输入在暂停时清空。
+- 页面重新可见后不自动继续，避免后台时间造成误判。
+- pointer capture 丢失、`pointercancel` 和键盘 `keyup` 都必须释放对应输入。
+
+## 7. 模式一：节奏钓鱼
+
+### 7.1 核心循环
+
+```text
+4 小节倒计时
+  → 音符进入判定线
+  → 玩家按 J / K / L 或三个触屏按钮
+  → 判定 Perfect / Good / Miss
+  → 更新连击、分数和张力
+  → 完成一个段落并成功收线
+  → 难度提高并生成下一段
+  → 张力越界持续达到失败阈值后结算
+```
+
+### 7.2 规则复用
+
+- 把 `QizhenFishingRhythmModel.ts` 中与故事 chart ID 解耦的判定、长按、张力和评分提取到 `src/modules/RhythmFishingEngine.ts`。
+- 原剧情 model 保持现有公开 API，通过适配层调用共享 engine。
+- 新 `EndlessFishingRules.ts` 负责确定性段落生成、难度层级和计分。
+- 原四张剧情谱面的相同输入必须产生完全相同的判定结果，作为回归门槛。
+
+### 7.3 难度曲线
+
+- 起始 BPM：96。
+- BPM 逐层提高，第一版上限建议 144。
+- 初期使用较少音符和短 hold；后续增加密度、交替型、连续同轨和长按组合。
+- 判定窗沿用 70/130/190ms 基线，可在高层级有限收紧；最小窗保留可操作下限。
+- 前两层使用宽松张力变化，先让玩家理解按键与判定线。
+- 每完成一个完整段落记一次“收线成功”，作为 `bestProgress`。
+- 张力达到边界后保留短暂修正时间，持续超限才失败。
+
+### 7.4 计分
+
+```text
+基础判定分
+× 连击系数
+× 当前层级系数
++ 完整段落奖励
++ 无 Miss 段落奖励
+```
+
+分数、连击和层级均采用饱和安全整数。分数计算只使用单调游戏时钟，不读取 `Date.now()`。
+
+### 7.5 输入与视觉
+
+- 桌面：`A`、`S`、`D` 三轨。
+- 触屏：底部三个大按钮，按下、保持、释放均可见。
+- 竖屏画面使用固定判定线，音符向判定线移动，张力条始终可见。
+- `prefers-reduced-motion` 降低镜头、粒子和缩放动画，不改变音符时间和判定。
+- 音频不可用时继续使用可见节拍闪烁和倒计时，玩法仍可完成。
+
+### 7.6 长局资源限制
+
+- 仅保留当前段、下一段和短历史窗口。
+- 已结束音符及时删除，不积累整局 chart。
+- 同时活动音符数量设置上限。
+- 粒子池建议不超过 64。
+
+## 8. 模式二：灯光追逐
+
+### 8.1 核心循环
+
+```text
+显示目标路线预览
+  → 预览消失
+  → 目标与干扰目标移动
+  → 玩家左右瞄准
+  → 按住照射键持续覆盖真实目标
+  → 达到锁定时间后完成一轮
+  → 提高难度并开始下一轮
+  → 提前照射、照错目标或锁定中断消耗电量
+  → 电量耗尽后结算
+```
+
+### 8.2 规则复用
+
+- 从 `TheaterSpotlightModel.ts` 和 `ChapterThreeTheaterController.ts` 提取纯判定器。
+- 原剧院关卡继续调用该判定器，并通过固定用例证明结果未变。
+- `EndlessSpotlightRules.ts` 负责基于 seed 生成目标路径、干扰路径、预览时长、光束半径和锁定时间。
+- 事件名使用 `endless_spotlight_*`，避免触发第三章剧情监听器。
+
+### 8.3 难度曲线
+
+- 初始 3 格电量。
+- 前两轮只有一个真实目标，不生成干扰目标。
+- 随层级缩短预览和操作时间、减小光束半径、增加锁定时间、提高目标速度。
+- 中层级开始加入一个干扰目标；高层级可提高到两个，但保持路径可读。
+- 所有参数设置可解上限，不允许预览时间、光束半径或锁定窗口降到输入基线以下。
+- 每完成一轮增加 `bestProgress`；连续无损完成形成 combo。
+
+### 8.4 输入与视觉
+
+- 桌面：`A/D` 或左右方向键移动光束，`Space` 按住照射。
+- 触屏：底部横向滑轨控制光束位置，一个大按钮控制照射。
+- 路线预览、行动阶段、已锁定比例和剩余电量分区显示。
+- 真实目标和干扰目标使用现有剧院资产与颜色规则，不能依靠文字直接标答案。
+- 照错目标时给出短反馈并消耗电量，不把完整路线重新展示。
+
+### 8.5 长局资源限制
+
+- 每轮只保留本轮路径点、目标和最多两个干扰目标。
+- 轮次结束立即销毁 tween、timer、pointer listener 和显示对象。
+- 路径点数量与 spline 采样数设置上限。
+
+## 9. 模式三：755 米骑行
+
+### 9.1 核心循环
+
+```text
+三车道骑行
+  → 左右换道避开障碍
+  → 近距离避让获得加分
+  → 每前进 755 米完成一圈
+  → 提高速度和波次难度
+  → 继续下一圈
+  → 生命耗尽后结算
+```
+
+### 9.2 规则复用
+
+- `BikeArcadeRules.ts` 增加配置对象和确定性 seed，默认配置继续保持原剧情 755 米结果。
+- `BikeRushScene.ts` 接受 `mode: "story" | "endless"`。
+- `story` 模式仍在 755 米结束，并继续使用旧 controller 合同。
+- `endless` 模式每 755 米只增加圈数和难度，不发出剧情胜利事件。
+- `BikeArcadeRuntime.ts` 的暂停、delta 限制和恢复首帧处理继续复用。
+
+### 9.3 难度曲线
+
+- 第 1 圈接近原剧情关卡中段难度。
+- 每圈提高基础速度、障碍密度和组合复杂度。
+- 波次生成器始终保留至少一条可通过车道。
+- 速度、生成间隔和并行障碍数设置安全上限。
+- 难度达到上限后通过波次组合和分数倍率继续增长，不再压缩到不可解输入窗口。
+
+### 9.4 计分与进度
+
+- `bestProgress` 记录全局累计米数，不在 755 截断。
+- 圈数显示为 `floor(distance / 755)`，当前圈进度显示余数。
+- 计分包含距离、圈数、近距离避让、连续无碰撞和层级倍率。
+- 碰撞扣生命并进入短暂无敌；生命耗尽结算。
+
+### 9.5 输入与资源限制
+
+- 桌面：`A/D` 或左右方向键。
+- 触屏：左、右两个按钮；细指针桌面不渲染虚拟按钮。
+- 同时活动障碍建议不超过 18。
+- 离屏障碍立即回收；粒子、提示和近失记录使用固定上限。
+- scene 在 `shutdown` 与 `destroy` 两条路径都清理 bridge、键盘和 pointer 订阅。
+
+## 10. 确定性、结算与调试合同
+
+### 10.1 开局
+
+`EndlessArcadeController.startAttempt(mode)`：
+
+- 校验正式权限或 session-only 开发权限。
+- 增加该模式 `attemptCount`。
+- 生成 runtime-only `runId`。
+- 用 `mode + attemptCount + 固定版本盐` 派生 seed。
+- 返回 `{runId, mode, seed}`。
+
+### 10.2 结算
+
+`settleAttempt(runId, summary)`：
+
+- 只接受仍活动且未结算的 run ID。
+- 校验 summary 的 mode 与开局 mode 一致。
+- 拒绝 NaN、Infinity、负数、越界数值和未知字段。
+- 对数值取整并执行模式上限检查。
+- 更新最佳分数、进度、层级、连击和时长。
+- 同一个 run ID 的重复回调无副作用。
+
+`cancelAttempt(runId)`：
+
+- 清除活动 run。
+- 不更新最佳成绩。
+- 不回滚已经增加的 attempt count。
+
+### 10.3 文本调试快照
+
+`render_game_to_text()` 在挑战中心和活动局至少暴露：
+
+```json
+{
+  "scene": "bike_arcade",
+  "endlessArcade": {
+    "access": true,
+    "completionReceipt": "chapter4_closure_v1",
+    "view": "running",
+    "mode": "fishing",
+    "runId": "runtime-only",
+    "seed": 123456,
+    "score": 7200,
+    "progress": 4,
+    "tier": 3,
+    "combo": 18,
+    "paused": false,
+    "failureReason": null
+  }
+}
+```
+
+生产保存数据不包含 `runId` 和 `seed`。文本快照只供验证使用。
+
+### 10.4 开发检查点
+
+新增 session-only 检查点：
+
+- `postgame-arcade-locked`：第四章外景等待，图标保持锁定。
+- `postgame-arcade-hub`：正式回执已注入，打开挑战中心。
+- `postgame-arcade-fishing`：节奏钓鱼第 1 层。
+- `postgame-arcade-fishing-high`：高层级、张力接近边界。
+- `postgame-arcade-spotlight`：灯光追逐第 1 轮。
+- `postgame-arcade-spotlight-high`：高层级、剩余 1 格电量。
+- `postgame-arcade-bike`：骑行第 1 圈。
+- `postgame-arcade-bike-lap3`：骑行第 3 圈中段。
+
+`verify-chapter4-755-task14.mjs` 当前把第四章 gameplay checkpoint 统一要求为 RPG。postgame 检查点需要独立 `POSTGAME_IDS` 分组，避免套用 temporal maze 的 stage presentation 条件。
+
+## 11. 详细执行任务
+
+### Task 0：冻结基线并建立验证入口
+
+**读取：**
+
+- `project-development-report.md`
+- `progress.md`
+- `package.json`
+- `.github/workflows/web-ci.yml`
+- 当前相关 validator
+
+**新增：**
+
+- `scripts/verify-endless-arcade.mjs`
+
+**修改：**
+
+- `package.json`
+
+**动作：**
+
+- 登记 `npm run endless:validate`。
+- 先写失败断言，覆盖状态默认值、通关回执、旧存档不误解锁、三模式注册、确定性 seed、重复结算和资源上限常量。
+- 记录当前原剧情 validator 的通过基线。
+
+**通过条件：**
+
+- 新 validator 在实现前按预期失败。
+- 现有相关 validator 的基线结果已记录。
+
+### Task 1：正式通关回执与 SaveStore 迁移
+
+**修改：**
+
+- `src/core/types.ts`
+- `src/core/GameState.ts`
+- `src/core/SaveStore.ts`
+- `src/core/FeatureAccess.ts`
+- `src/modules/ChapterFourTemporalMazeController.ts`
+
+**动作：**
+
+- 增加 `PostgameState`、`EndlessArcadeState` 和默认值。
+- 增加 `selectMainStoryCompleted()` 与 `FeatureAccess.endlessChallenge`。
+- 固定 Chapter 4 迁移阈值，再提升存档版本。
+- 限定 `bike_arcade` 的旧第三章 scene 推断版本。
+- verifier 成功事务中原子写正式回执。
+- 新回执恢复 canonical complete；旧字段不生成回执。
+
+**验证：**
+
+- 默认新游戏锁定。
+- v25 第四章进行中存档不重置。
+- 伪造的裸 complete 仍不能解锁。
+- 合法回执刷新后继续解锁。
+- 旧 `bikeArcade.unlocked` 不解锁 postgame。
+
+### Task 2：固定桌面入口和三层权限防护
+
+**修改：**
+
+- `src/core/PhoneHomeApps.ts`
+- `src/scenes/phone/P13_PhoneHome/index.tsx`
+- `src/scenes/phone/P16_BikeArcade/index.tsx`
+- `src/core/SceneRouter.ts`（仅在现有映射无法复用时修改）
+
+**动作：**
+
+- 让 `bike_arcade` 槽位不可删除。
+- 归一化旧 `hiddenHomeAppIds` 时移除该 ID。
+- 首页、router 和 P16 使用同一 `endlessChallenge` 权限。
+- 保留 `7:55` 图标、`游戏` 名称、网格位置和锁定时的静态语义。
+- 删除 P16 中“022 座位后开放”“第三章完成”“继续下一章”等旧文案和路由。
+
+**验证：**
+
+- 锁定时无 button、焦点、click 和 toast。
+- 解锁时原槽位转为可操作入口。
+- URL 或直接 scene 写入无法绕过权限。
+- 旧隐藏状态不会让正式通关入口消失。
+
+### Task 3：挑战中心、统一宿主和模式注册表
+
+**新增：**
+
+- `src/scenes/phone/P16_BikeArcade/EndlessArcadeGameHost.tsx`
+- `src/scenes/phone/P16_BikeArcade/EndlessChallengeRegistry.ts`
+- `src/scenes/phone/P16_BikeArcade/EndlessArcadeRuntime.ts`
+- `src/data/endless-arcade.content.json`
+
+**修改：**
+
+- `src/scenes/phone/P16_BikeArcade/index.tsx`
+- `src/styles/scenes/p16-bike-arcade.css`
+- `src/components/PhoneShell.tsx`
+- `scripts/verify-endless-arcade.mjs`（仅同步显式懒加载合同）
+
+**动作：**
+
+- 建立 hub/loading/intro/running/paused/game_over 状态。
+- 建立一个 Phaser 实例、一个 canvas、一个活动模式的宿主。
+- 模式注册表提供 ID、标题、规则、输入说明、progress 单位、scene loader 和成绩格式器。
+- 注册表使用一个显式 `import.meta.glob` 模块表保持真正的按需加载；Task 6/8 的 Scene 文件尚未创建时，对应 loader 返回结构化 `runtime_unavailable`，不得留下无法解析的静态 import、类型忽略或临时替代玩法。
+- 活动局隐藏剧情任务和物品栏。
+- 统一退出确认、错误恢复和返回主页。
+
+**验证：**
+
+- 手机外框在 430×860 和 390×844 缩放视口不改变。
+- 三模式懒加载；进入一个模式时不加载另两个 scene。
+- 模式切换后只有一个 canvas 和一组输入 listener。
+- boot error 有重试和返回中心。
+
+### Task 4：控制器与持久成绩
+
+**新增：**
+
+- `src/modules/EndlessArcadeController.ts`
+
+**修改：**
+
+- `src/modules/GameKit.ts`
+- `src/core/SaveStore.ts`
+- `src/scenes/phone/P16_BikeArcade/index.tsx`
+- `src/scenes/phone/P16_BikeArcade/EndlessArcadeGameHost.tsx`
+- `src/scenes/phone/P16_BikeArcade/EndlessArcadeRuntime.ts`
+- `scripts/verify-endless-arcade.mjs`
+
+**动作：**
+
+- 实现 `startAttempt`、`settleAttempt`、`cancelAttempt`。
+- 增加确定性 seed、run ID 一次结算和数值 sanitize。
+- 保存三模式最佳记录。
+- 仅在新成绩结构缺失时迁移旧自行车历史成绩。
+- P16 只把 controller 返回的 run ticket 交给宿主；宿主将 ticket 的 `runId` 与 seed 交给场景，并把结算请求回传给 controller。
+
+**验证：**
+
+- 重复 settle 只写一次。
+- cancel 不更新最佳记录。
+- 非法、跨模式和过期 run summary 被拒绝。
+- 三模式成绩互不覆盖。
+- 开发模式不写正式存档。
+
+### Task 5：提取钓鱼纯规则并保护剧情关卡
+
+**新增：**
+
+- `src/modules/RhythmFishingEngine.ts`
+- `src/scenes/phone/P16_BikeArcade/EndlessFishingRules.ts`
+
+**修改：**
+
+- `src/scenes/rpg/QizhenFishingRhythmModel.ts`
+- `scripts/verify-endless-arcade.mjs`
+- `scripts/verify-qizhen-fishing-rhythm.mjs`
+
+**动作：**
+
+- 提取单调时钟判定、hold、combo、张力和 rating。
+- 原剧情 model 通过适配层继续接受固定 chart ID。
+- 新规则基于 seed 生成滚动段落。
+- 加入有限难度曲线和资源窗口常量。
+
+**验证：**
+
+- 原四张 chart 的固定输入输出逐项一致。
+- 同 seed 生成相同段落。
+- 不同 seed 产生有效差异。
+- 长局模拟中活动音符和历史数组均不增长过界。
+
+### Task 6：实现竖屏节奏钓鱼
+
+**新增：**
+
+- `src/scenes/phone/P16_BikeArcade/EndlessFishingScene.ts`
+
+**修改：**
+
+- `EndlessChallengeRegistry.ts`
+- `EndlessArcadeGameHost.tsx`
+- `src/styles/scenes/p16-bike-arcade.css`
+
+**动作：**
+
+- 实现 390×650 三轨判定线、张力条、层级、连击和触屏按钮。
+- 复用音频时钟与节拍调度策略。
+- 实现视觉节拍 fallback、页面隐藏暂停和输入清空。
+- 失败后生成结构化 summary。
+
+**浏览器验收：**
+
+- 键盘和触屏各完成至少两次成功收线。
+- hold 按下与释放正确。
+- 后台停留后不会产生集中 Miss。
+- 失败、重试、返回中心完整。
+
+### Task 7：提取灯光判定并保护剧院关卡
+
+**新增：**
+
+- `src/scenes/phone/P16_BikeArcade/EndlessSpotlightRules.ts`
+
+**修改：**
+
+- `src/scenes/rpg/TheaterSpotlightModel.ts`
+- `src/modules/ChapterThreeTheaterController.ts`
+- 现有剧院 validator
+- `scripts/verify-endless-arcade.mjs`
+
+**动作：**
+
+- 导出纯判定器。
+- 原剧院 controller 改为调用共享判定器。
+- 建立 seeded 路径、干扰目标和有限难度生成。
+- 使用 `endless_spotlight_*` 事件命名。
+
+**验证：**
+
+- 原剧情三组配置结果一致。
+- 每个生成轮次可在输入基线内完成。
+- 高层级仍满足最小预览、最大锁定和最小光束半径限制。
+
+### Task 8：实现竖屏灯光追逐
+
+**新增：**
+
+- `src/scenes/phone/P16_BikeArcade/EndlessSpotlightScene.ts`
+
+**修改：**
+
+- `EndlessChallengeRegistry.ts`
+- `EndlessArcadeGameHost.tsx`
+
+**动作：**
+
+- 实现预览、行动、锁定、失误、电量和轮次切换。
+- 实现键盘瞄准与触屏滑轨。
+- 每轮销毁路径、timer、tween 和对象。
+- 电量归零后提交 summary。
+
+**浏览器验收：**
+
+- 真实目标可完成连续锁定。
+- 照错干扰目标、提前照射和锁定中断反馈各自清楚。
+- 指针滑出、取消和重新进入不会留下持续照射。
+- 高层级检查点仍可操作。
+
+**实施结果（2026-08-24）：**
+
+- 已实现 `preview → action → transition`、动态 `previewMs`、跨轮三格电量、四类离散扣电、连续锁定和结构化 summary；路径、Graphics、监听器与检查 hook 均按场景生命周期回收。
+- 触屏采用真实横向滑轨和独立照射键，显式 pointer capture 覆盖外部松手、取消、丢失捕获与离开；普通三键同步采用同一释放合同。
+- 原第三章剧院三轮 parity、seeded wave 边界、TypeScript 和 diff 检查通过。Chromium `390×844` 已验证单 canvas、0.6 比例、滑轨移动、提前扣电、行动路线隐藏、外部松手释放、暂停恢复与零 console/page error。
+- 真实截图发现并修复 `PresentationDirector` 对 postgame P16 误发旧 `bike_arcade_opened` 旁白的问题。当前静态规格与代码质量审查均为 PASS；高层级 DEV 检查点留在 Task 10。
+
+### Task 9：把骑行扩展为可配置剧情与无尽模式
+
+**修改：**
+
+- `src/scenes/phone/P16_BikeArcade/BikeArcadeRules.ts`
+- `src/scenes/phone/P16_BikeArcade/BikeArcadeRuntime.ts`
+- `src/scenes/phone/P16_BikeArcade/BikeRushScene.ts`
+- `EndlessChallengeRegistry.ts`
+- 原自行车 validator
+- `scripts/verify-endless-arcade.mjs`
+
+**动作：**
+
+- 增加 seed 和 `story/endless` 配置。
+- 剧情模式保留固定 755 米终点。
+- 无尽模式每 755 米进入下一圈。
+- 增加圈数、近失连击、有限难度和对象池上限。
+- 无尽事件使用独立命名，不写第三章完成状态。
+
+**浏览器验收：**
+
+- 剧情模式仍在 755 米按原合同完成。
+- 无尽模式经过 755 米后继续运行并显示第 2 圈。
+- 每个波次保留可通过车道。
+- 暂停恢复不产生大 delta 碰撞。
+
+### Task 10：开发通道、音频方向与诊断
+
+**新增：**
+
+- `src/data/endless-arcade.audio.json`（仅登记现有可复用音频）
+
+**修改：**
+
+- `src/modules/DeveloperChannel.ts`
+- `src/main.tsx`
+- `src/modules/AudioDirector.ts`
+- `src/modules/PresentationDirector.ts`（仅在事件路由需要时修改）
+- `scripts/verify-chapter4-755-task14.mjs`
+- `scripts/verify-endless-arcade.mjs`
+
+**动作：**
+
+- 增加八个 postgame 检查点。
+- 文本快照暴露挑战访问权、模式和活动局关键数值。
+- 页面隐藏、scene close 和模式切换时停止该局音频。
+- 未解锁检查点验证生产 gate 保持关闭。
+
+**验证：**
+
+- `?devCheckpoint=<id>` 在 Vite 和单文件中工作。
+- postgame 检查点不触发 RPG-only 断言。
+- 音频关闭、AudioContext 拒绝和页面隐藏都有可玩 fallback。
+
+**2026-08-24 实施结果：**
+
+- 已新增八个 `寻人篇 → 7:55 挑战` session-only 检查点，并通过 `DeveloperChannel` 写入无尽模式 runtime seed。
+- `render_game_to_text` 现暴露 `endlessArcadeRuntime` 调试快照，包含 access、phase、selectedMode、activeRunId、attempt、snapshot 和 summary。
+- Chromium Vite 定向验证已通过：hub seed 正常进入挑战中心；`postgame-bike-lap2` 修复后实际进入第 2 圈；`postgame-fishing-fail` 修复后能显示完整结算卡片。
+- 实测中发现并修复两项真实问题：自行车跨圈 seed 未被 Host 注入、synthetic `game_over` seed 的结果页被 `runTicket` 条件挡住。
+
+### Task 11：自动验证、CI 与性能长测
+
+**修改：**
+
+- `.github/workflows/web-ci.yml`
+- `package.json`
+- `scripts/verify-endless-arcade.mjs`
+
+**动作：**
+
+- 把 `npm run endless:validate` 加入 CI。
+- 覆盖通关回执、旧存档、状态 sanitize、确定性、原剧情 parity、资源上限和重复结算。
+- 为三个模式分别执行 30 分钟确定性模拟。
+- 记录最大活动对象、listener 数、timer 数和内存趋势。
+
+**通过条件：**
+
+- 数组、对象池、timer 和 listener 没有随总运行时间持续增长。
+- 分数和进度保持有限安全整数。
+- 单次失败或退出后活动 Phaser 实例为 0。
+- 新代码不引入网络请求和新外部依赖。
+
+**2026-08-24 实施结果：**
+
+- `.github/workflows/web-ci.yml` 已在 `typecheck` 前加入 `npm run endless:validate`。
+- `scripts/verify-endless-arcade-long-run.mjs` 已接入 `scripts/verify-endless-arcade.mjs`；fresh `npm run endless:validate` 为 `172/172 PASS`。
+- 三模式分别完成等效 `1,800,000ms` 离线确定性模拟：节奏钓鱼完成 `146` 段、灯光追逐完成 `648` 轮、自行车达到 `107,353m`；同 seed 全量结果一致，异 seed 指纹不同。
+- controller 长测覆盖非法 summary 拒绝、一次取消、一次结算、三模式记录隔离和统一 score ceiling；失败与退出后的 active runtime、对象、timer 均归零。
+- 资源趋势字段属于纯规则计数模型，明确记录 `scope=pure_rules_resource_counts_only` 与 `browserHeapMeasured=false`，不将其表述为浏览器堆内存实测。
+- `npm run typecheck`、`npm run bike:validate`（`21/21`）、`npm run qizhen:validate-fishing`、`npm run theater:validate-spotlight` 与 `npm run chapter4:validate-task14`（`337` 项）均 fresh 通过。
+- Firefox/WebKit 和多视口真实交互验收已在 Task 12 完成；Task 13 单文件构建与 `demo/index.html` 验收按用户要求暂缓。
+
+### Task 12：真实浏览器验收
+
+使用现有 Web 游戏浏览器客户端：
+
+```bash
+node /Users/zhuhangcheng/.codex/skills/develop-web-game/scripts/web_game_playwright_client.js --help
+```
+
+按项目实际启动命令运行 Vite，然后验证：
+
+**浏览器：**
+
+- Chromium/Blink
+- Firefox/Gecko
+- WebKit
+
+**视口：**
+
+- `1280×720`
+- 一个非 16:9 桌面视口
+- `390×844`
+
+**路径：**
+
+```text
+锁定手机桌面
+  → 7:55 静态槽位
+
+postgame 开发检查点
+  → 手机桌面
+  → 7:55 挑战中心
+  → 节奏钓鱼开始 / 暂停 / 失败 / 重试 / 返回
+  → 灯光追逐开始 / 暂停 / 失败 / 重试 / 返回
+  → 755 米骑行跨圈 / 失败 / 重试 / 返回
+  → 刷新
+  → 回执与最佳成绩保持
+  → 返回手机主页
+```
+
+**输入：**
+
+- 桌面真实键盘事件。
+- 移动端 Pointer Events。
+- `pointercancel`、失焦、页面隐藏和控制中心打开。
+
+**通过条件：**
+
+- 430×860 手机框稳定，无 document overflow。
+- 桌面不显示虚拟按键；粗指针显示触屏控制。
+- 页面和控制台无错误。
+- 只有一个 Phaser canvas。
+- 任务抽屉和物品栏不覆盖活动局。
+- 所有截图在结论记录后删除。
+
+**2026-08-24 实施结果：**
+
+- React StrictMode 生命周期改用 epoch 判定；探测式 cleanup 不再提前取消首局 ticket，真实卸载仍以原 `runId` 执行一次取消。
+- Host 在暂停、失焦、页面隐藏、控制中心打开、退出确认和销毁前统一执行中性输入释放；scene cleanup 同时覆盖 `SHUTDOWN` 与 `DESTROY`。
+- 灯光追逐已修复 `ArrowLeft + Space → blur → paused → resume` 后持续移动或持续照射的问题；恢复后光束位置保持，`beam.on=false`、`lockMs=0`。
+- 节奏钓鱼使用无惩罚的 held-input 生命周期释放；正常提前松手仍只结算一次，不会出现 soft lock。
+- 自行车粗指针控制精简为“左车道 / 右车道”；三模式触控区仅在 `phase === running` 时渲染，暂停、确认退出和结算态均为零。
+- pointer capture 具备能力检测与异常 fallback；window `pointerup`、`pointercancel`、`blur`、`pagehide` 和 document `visibilitychange` 均能清理活动指针。
+- 灯光追逐使用独立 `window.render_endless_spotlight_to_text`；主应用 `window.render_game_to_text` 保持原调试所有权，退出后专用 hook 与 `advanceTime` 均清理。
+- 真实浏览器基础矩阵为 `45/45 PASS`：Blink、Gecko、WebKit × `1280×720`、`1280×800`、`390×844` × 锁定入口、挑战中心和三个运行态。
+- 状态与生命周期工作流为 `19/19 PASS`：三个模式的失焦暂停、恢复、控制中心暂停、退出确认、失败、重试、返回中心，以及三引擎移动端无 pointer capture fallback 全部通过；Blink 额外验证自然结算后最佳成绩在刷新后保持。
+- 全矩阵 `documentOverflowX/Y=0`，手机框比例保持 `0.5`，运行态 canvas 固定 `390×650` 且数量为 `1`；hub、game over 和确认退出后的最终 hub canvas 数量为 `0`，任务栏与物品栏未覆盖活动画布，浏览器 diagnostics 为 `0`。
+- 视觉抽查覆盖 Blink 的桌面挑战中心、非 16:9 灯光运行态和 `390×844` 自行车触控态；临时截图在记录结论后删除。Task 13 单文件构建本轮未执行。
+
+### Task 13：构建、单文件与记录
+
+**修改：**
+
+- `progress.md`
+- `project-development-report.md`
+
+**生成：**
+
+- `demo/index.html`
+
+**命令：**
+
+```bash
+npm run endless:validate
+npm run typecheck
+npm run build:single
+npm run verify:single
+git diff --check
+```
+
+并运行受影响的现有剧情 validator：
+
+- 启真湖节奏和音频合同。
+- 第三章剧院灯光合同。
+- 原固定 755 米自行车合同。
+- 第四章 7:55 runtime、story 和 developer checkpoint 合同。
+
+**记录：**
+
+- 修改范围。
+- 三模式规则版本。
+- validator 与浏览器结果。
+- 单文件字节数与 SHA-256。
+- 未解决问题和正式结局素材接线状态。
+
+**Git 边界：**
+
+- 本任务不自动 stage、commit、merge 或 push。
+- 用户提出上传后，先 fetch，并分别列出工作区改动、本地领先提交、远端领先提交和未跟踪文件，再由用户确认精确提交范围。
+
+**2026-08-25 实施结果：**
+
+- Fresh 自动门全部通过：`chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`chapter4:validate-task14`、`endless:validate`（`172/172`）、`bike:validate`（`21/21`）、`qizhen:validate-fishing`、`theater:validate-spotlight` 与 `typecheck`。
+- Chapter 3 音频总门首次报告缺少 `music_qizhen_fishing.mp3`；从已验证交付快照恢复同一二进制，并按原 manifest 哈希补回生成记录。复验结果为 `expected=77 / ready=77`，文件 SHA-256 为 `9cdbd42eef10c39d3b393b335a8458f29226aa1d74c0388adb026c31124de352`。本次没有发起模型生成请求。
+- 初始工作区的 `npm run build`、`npm run build:single` 和 `npm run verify:single` 全部退出码 `0`。随后按方案 A 在 fresh `origin/main` 隔离工作区移入活动源码、删除 Godot/Playwright 退役内容并重新构建；最终 `demo/index.html` 为 `249850310` bytes，SHA-256 为 `1a68b0a6a9460959904d132ec5c28c1b7c90d7f4de304d6cbe6ed2c322bbf7ff`，包含 `2` 个内联脚本、`1` 个内联样式，验证器确认最终允许入口为 `index.html`。
+- 标准网页游戏客户端对新单文件分别从 HTTP 与直接 `file://` 进入 `postgame-endless-hub`，两条路径画面一致、挑战中心三模式完整、无 console/page error。HTTP 单文件继续验证节奏钓鱼、灯光追逐与 755 米骑行运行态均只有 `1` 个 Phaser canvas；钓鱼正常进入失败结算，灯光保持运行态，骑行从第二圈检查点运行到 `progress=984 / lap=2 / tier=2`。
+- Task 11–12 的跨引擎与多视口证据继续作为同一源码的浏览器兼容基线：`45/45` 基础矩阵与 `19/19` 生命周期工作流已覆盖 Blink、Gecko、WebKit 及 `1280×720`、`1280×800`、`390×844`。本次 Task 13 只新增生成物结构、HTTP 和直接文件打开复验，没有重复运行三层碰撞与遮挡专项。
+- 单文件仍受 `.gitignore` 的 `demo/` 规则约束，不会因普通 `git add` 自动进入提交。上传前必须在 fetch 后明确选择源码交付、强制纳入单文件，或采用日期化发布目录；不得把这一选择隐式处理。
+- 用户已选择日期化 GitHub Release：源码直接进入 `main`，HTML 与 SHA-256 以 `demo-20260825` Release 附件发布。实现、上传目录、资产文件、README 与 `ASSETS.md` 均使用 `20260825`。
+
+## 12. 自审结果
+
+### 12.1 范围挑战
+
+已找到现成入口、宿主、三套规则基础、手机 UI、存档、开发通道和单文件管线。无需新增第二个应用入口、第二个手机框、新引擎、新服务或新媒体管线。
+
+该功能必然超过 8 个文件，原因来自三种完整模式、持久状态、存档迁移、剧情回归保护和跨浏览器验收。删减任一玩法会偏离用户明确范围。执行时按 Task 1–13 分段，每段保持单一责任和独立验证，避免一次性横跨全部模块。
+
+最低新增长期抽象只有两项：
+
+- `EndlessArcadeController`：开局与结算权威。
+- `EndlessArcadeGameHost`：竖屏 Phaser 生命周期权威。
+
+模式注册表和纯规则模块属于静态数据与计算层，不建立额外服务。
+
+### 12.2 架构审查
+
+通过项：
+
+- 继续由 React/TypeScript 管理状态、路由、保存和 UI。
+- Phaser 只管理当前局呈现和输入。
+- 一个页面只存在一个 Phaser 实例。
+- 通关权限、挑战成绩和旧剧情自行车状态分离。
+- 生产 gate 使用 controller 验证后的回执，不依赖可伪造旧字段。
+- 复用稳定 scene ID，降低桌面排序和旧存档迁移范围。
+
+需要在实现阶段重点复核：
+
+- `SAVE_VERSION` 提升前必须固定 Chapter 4 迁移阈值。
+- `currentScene === "bike_arcade"` 的旧第三章推断必须加版本边界。
+- 合法回执恢复 complete 状态与当前防伪降级逻辑需要明确优先级。
+- `PhoneShell` 的任务/物品栏抑制只作用于活动局，不影响挑战中心和其他章节。
+
+### 12.3 代码质量审查
+
+必须坚持：
+
+- 共享判定器先以原剧情固定用例证明 parity，再接无尽模式。
+- scene 不直接读写 `GameStore`。
+- 所有随机内容来自显式 seed。
+- 所有 event 使用 `endless_*` 命名空间。
+- 所有分数、进度、层级和时长经过有限整数校验。
+- 每个 scene 同时监听 `shutdown` 与 `destroy`，统一清理。
+- 活动对象和历史集合均有明确上限。
+
+拒绝的捷径：
+
+- 直接把原三个完整剧情 scene 嵌入手机页面。
+- 把 `bikeArcade.unlocked` 改成通关标志。
+- 把 `chapter4.completed` 直接持久化后跳过 consumer proof。
+- 在每个模式各写一套暂停、错误、退出和存档逻辑。
+- 使用 `Math.random()` 生成无法复现的难度波次。
+- 在 755 米后继续累积旧剧情 `bestDistance` 字段。
+
+### 12.4 验证审查
+
+验证层级：
+
+```text
+纯规则 validator
+  ├─ 原剧情 parity
+  ├─ endless 难度与确定性
+  └─ 长局资源上限
+       │
+       ▼
+controller / SaveStore validator
+  ├─ receipt
+  ├─ migration
+  ├─ exactly-once settlement
+  └─ malformed data
+       │
+       ▼
+React 路由与挑战中心浏览器检查
+       │
+       ▼
+三模式真实键盘与触屏操作
+       │
+       ▼
+Blink / Gecko / WebKit 与多视口
+       │
+       ▼
+offline single-file
+```
+
+没有新增测试框架。项目当前明确排除测试依赖，第一版使用确定性 Node validator、现有回归脚本和真实浏览器 QA。
+
+### 12.5 性能审查
+
+- Phaser 和 mode scene 懒加载。
+- 挑战中心不预加载 RPG 地图、Three.js 或另外两个模式。
+- 单次只挂载一个 canvas。
+- 音符、障碍、路径点、粒子、timer 和 listener 使用上限或池。
+- 长局以滚动窗口生成内容，不构建完整无限谱面或波次数组。
+- 第一版不增加新媒体，单文件体积增长目标控制在约 1 MiB 以内；超过后需要定位 bundle 组成并重新评估。
+
+### 12.6 安全与数据审查
+
+- 本地功能不新增网络、账号和用户输入发布。
+- 存档值全部 sanitize。
+- 开发检查点继续使用 session-only 标记，不能覆盖正式存档。
+- URL 检查点 ID 必须在白名单内解析。
+- `render_game_to_text()` 不输出本地路径、完整存档或个人信息。
+
+### 12.7 故障处理矩阵
+
+| 故障 | 预期处理 | 禁止结果 |
+|---|---|---|
+| 第四章收束未验证 | 7:55 槽位静态锁定 | 使用旧骑行状态提前开放 |
+| 旧存档含 `bikeArcade.unlocked` | 迁移历史成绩，可用权仍关闭 | 生成正式回执 |
+| 合法回执后刷新 | 回执、complete 和入口保持 | 降回外景等待 |
+| 非法回执 | 清为 null 并锁定 | 容错成任意真值 |
+| Phaser 动态导入失败 | 显示重试和返回中心 | 空白页或无限 loading |
+| 页面隐藏或失焦 | 暂停、清输入、显式恢复 | 后台继续判定或碰撞 |
+| pointer capture 丢失 | 释放输入 | 按键永久按住 |
+| 活动局刷新 | 取消当前局并返回中心 | 保存半局障碍和计时器 |
+| 重复结算回调 | 忽略第二次 | 重复增加记录 |
+| summary 含 NaN/Infinity | 拒绝并记录开发错误 | 污染存档 |
+| 音频不可用 | 使用视觉节拍和倒计时 | 禁止进入钓鱼 |
+| 30 分钟长局 | 集合与对象数量有界 | 内存随总时间持续增长 |
+| 单文件直接打开 | 三模式正常启动 | 依赖 HTTP 媒体或外链脚本 |
+
+### 12.8 TODO 审查
+
+- 当前仓库无 `TODOS.md`。
+- 未发现需要为第一版额外绑定的既有 TODO。
+- 第四章正式收束素材与 verifier 接线属于生产解锁前置依赖，在现有第四章 Task 12 范围内完成；无尽挑战不得自行伪造该完成事实。
+
+## 13. 验收清单
+
+### 权限与存档
+
+- [x] 新游戏和未正式通关存档中，7:55 图标保留原位置且无交互语义。
+- [x] 旧 `bikeArcade.unlocked`、P12 ending 和裸 Chapter 4 complete 均不开放入口。
+- [x] 正式 verifier 成功后，同一事务写回执并返回手机主页。
+- [x] 合法回执与最佳成绩在 Vite/HTTP 刷新后保持。
+- [ ] Task 13：合法回执和最佳成绩在生成的离线单文件中保持。
+- [x] v25 第四章进行中存档不被 v26 迁移重置。
+- [x] 旧隐藏桌面配置不会移除 7:55 入口。
+
+### 挑战中心
+
+- [x] 现有 7:55 图标和 `游戏` 名称保持。
+- [x] Hub 显示三个模式、规则、控制和各自最佳成绩。
+- [x] hub、loading、intro、paused、game over 和 boot error 均有明确下一步。
+- [x] 活动局退出需要行内确认。
+
+### 节奏钓鱼
+
+- [x] J/K/L 和触屏三轨工作。
+- [x] Perfect/Good/Miss、hold、combo 和 tension 可见且一致。
+- [x] 随层级持续生成有界段落。
+- [x] 张力持续越界才失败。
+- [x] 原启真湖四张剧情 chart 回归通过。
+
+### 灯光追逐
+
+- [x] 预览、瞄准、持续锁定、干扰目标和电量完整。
+- [x] 键盘和触屏滑轨均进入同一动作合同并正确释放。
+- [x] 高层级参数保持可操作下限。
+- [x] 原第三章剧院灯光判定回归通过。
+
+### 755 米骑行
+
+- [x] 每 755 米进入下一圈，不触发剧情胜利。
+- [x] 距离、圈数、近失、生命和难度显示正确。
+- [x] 波次始终保留可通过车道。
+- [x] 原剧情模式仍在 755 米按现有合同结束。
+
+### 运行时与交付
+
+- [x] 一次只有一个 Phaser canvas。
+- [x] 退出后无残留 timer、listener、AudioContext 调度和 bridge 订阅。
+- [x] 30 分钟确定性长测集合数量有界。
+- [x] Blink、Gecko、WebKit 和三个目标视口通过。
+- [x] `npm run endless:validate`、受影响的剧情 validator 与 `npm run typecheck` 全部通过。
+- [ ] Task 13：`npm run build:single` 与 `npm run verify:single` 全部通过。
+- [ ] Task 13：`demo/index.html` 可直接打开并进入三个模式。
+- [x] QA 临时截图已删除。
+
+## 14. 执行准备结论
+
+计划已通过范围、架构、状态迁移、代码复用、性能、故障和交付自审。执行顺序固定为：
+
+```text
+Task 0 基线验证
+  → Task 1–2 通关回执与入口
+  → Task 3–4 统一宿主与控制器
+  → Task 5–6 节奏钓鱼
+  → Task 7–8 灯光追逐
+  → Task 9 755 米骑行
+  → Task 10 调试与音频
+  → Task 11 自动验证和长测
+  → Task 12 真实浏览器
+  → Task 13 单文件交付
+```
+
+开始执行时先完成 Task 0，不直接改 `demo/index.html`，不把第四章未验证完成状态写入正式存档，不进行 Git 提交或上传。

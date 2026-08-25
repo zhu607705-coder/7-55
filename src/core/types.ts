@@ -17,6 +17,7 @@ export interface FeatureAccess {
   cc98Bd: boolean;
   libraryRecovery: boolean;
   bikeArcade: boolean;
+  endlessChallenge: boolean;
   timelineRecovery: boolean;
   voiceMemos: boolean;
   clockCalibration: boolean;
@@ -31,6 +32,22 @@ export interface QuestStep {
   itemId?: ItemId;
 }
 
+/**
+ * 第四章任务栏的只读展示上下文。字段全部由现有 ChapterFourState 派生，
+ * 不参与存档，也不拥有章节推进规则。
+ */
+export interface ChapterFourQuestPresentationContext {
+  stageLabel: string;
+  timeStateLabel: string;
+  phoneTime: string;
+  timeSource: string;
+  trustState: string;
+  floor: string;
+  currentDifference: string;
+  localProgress: string;
+  confirmedFacts: readonly string[];
+}
+
 export interface QuestViewModel {
   id: string;
   chapter: ChapterId;
@@ -42,6 +59,7 @@ export interface QuestViewModel {
   hints: readonly string[];
   targetSurface: "phone" | "rpg";
   recommendedScene?: SceneId;
+  chapterFourPresentation?: ChapterFourQuestPresentationContext;
 }
 
 export interface StoryLine {
@@ -162,6 +180,27 @@ export interface BikeArcadeChapterState {
   attemptCount: number;
   bestDistance: number;
   bestLives: number;
+}
+
+export type MainStoryCompletionReceipt = "chapter4_closure_v1" | null;
+
+export type EndlessChallengeModeId = "fishing" | "spotlight" | "bike";
+
+export interface EndlessChallengeRecord {
+  attemptCount: number;
+  bestScore: number;
+  bestProgress: number;
+  bestTier: number;
+  bestCombo: number;
+  bestDurationMs: number;
+}
+
+export interface PostgameState {
+  completionReceipt: MainStoryCompletionReceipt;
+}
+
+export interface EndlessArcadeState {
+  records: Record<EndlessChallengeModeId, EndlessChallengeRecord>;
 }
 
 /**
@@ -1029,6 +1068,8 @@ export interface GameState {
   actOne: ActOneBootstrapState;
   wallet: WalletState;
   bikeArcade: BikeArcadeChapterState;
+  postgame: PostgameState;
+  endlessArcade: EndlessArcadeState;
   canteenHunt: CanteenHuntState;
   theaterHunt: TheaterHuntState;
   qizhenLake: QizhenLakeState;

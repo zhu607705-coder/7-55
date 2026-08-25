@@ -27,6 +27,7 @@ import type {
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import { chapterThreeStoryLineKeyForSubtitle } from "../../data/chapterThreeStory";
 import qizhenLakeContent from "../../data/chapter3-qizhen-lake.content.json";
+import chapterFour755Content from "../../data/chapter4-755.content.json";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
@@ -43,10 +44,12 @@ import {
   type QizhenPhotoCaptureRejection
 } from "../../modules/ChapterThreeQizhenLakeController";
 import {
+  CHAPTER_FOUR_755_INTENT_DETAIL_CODES,
   ChapterFourTemporalMazeController,
   resolveChapterFour755SessionRequest,
   validateChapterFour755IntentRequest,
   type ChapterFour755Intent,
+  type ChapterFour755IntentDetailCode,
   type ChapterFour755IntentResult
 } from "../../modules/ChapterFourTemporalMazeController";
 import { ChapterFourPowerPanelGame } from "../../components/temporal-maze/ChapterFourPowerPanelGame";
@@ -260,10 +263,11 @@ function emitQizhenItemFeedback(
 
 function chapterFour755Feedback(
   result: ChapterFour755IntentResult,
-  intentType?: string
+  _intentType?: string
 ): string {
-  if (intentType === "inspect_bakery_conveyor_edge" && result.reason === "locked") {
-    return "先点亮烤箱旁的检修灯，让传送带停一下。";
+  if (result.detailCode) {
+    const detail = CHAPTER_FOUR_755_INTENT_DETAILS[result.detailCode];
+    if (detail) return `${detail.reason} ${detail.nextAction}`;
   }
   if (result.reason === "accepted") return "当前操作已记录。";
   if (result.reason === "already_complete") return "当前操作已经完成。";
@@ -273,6 +277,18 @@ function chapterFour755Feedback(
   if (result.reason === "incorrect") return "当前组合与已记录的线索不一致。";
   if (result.reason === "inactive") return "第四章教学楼流程尚未开始。";
   return "当前剧情条件尚未满足。";
+}
+
+const CHAPTER_FOUR_755_INTENT_DETAILS = chapterFour755Content.intentFeedback.details as Readonly<
+  Record<ChapterFour755IntentDetailCode, { reason: string; nextAction: string }>
+>;
+const chapterFour755DetailKeys = Object.keys(CHAPTER_FOUR_755_INTENT_DETAILS);
+if (chapterFour755DetailKeys.length !== CHAPTER_FOUR_755_INTENT_DETAIL_CODES.length
+  || CHAPTER_FOUR_755_INTENT_DETAIL_CODES.some((code) => {
+    const copy = CHAPTER_FOUR_755_INTENT_DETAILS[code];
+    return !copy || copy.reason.trim().length === 0 || copy.nextAction.trim().length === 0;
+  })) {
+  throw new Error("chapter4_755_intent_detail_copy_contract_invalid");
 }
 
 function setRpgInputEnabled(game: Phaser.Game, enabled: boolean): void {
@@ -757,6 +773,7 @@ export function RpgGameHost({
         requestId,
         intentType: trustedIntent.type,
         reason: result.reason,
+        ...(result.detailCode ? { detailCode: result.detailCode } : {}),
         feedback,
         presentationOwner
       });

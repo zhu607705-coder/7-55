@@ -96,6 +96,7 @@ export function PhoneShell({
   onTaskNavigate
 }: PhoneShellProps) {
   const [shake, setShake] = useState<"" | "shake" | "shake-strong">("");
+  const [endlessArcadeActivityActive, setEndlessArcadeActivityActive] = useState(false);
   const [phoneScale, setPhoneScale] = useState(() => getPhoneScale(null, embedded));
   const [frameElement, setFrameElement] = useState<HTMLElement | null>(null);
   const stageRef = useRef<HTMLElement>(null);
@@ -106,6 +107,10 @@ export function PhoneShell({
 
   useEffect(() => {
     return events.subscribe((event) => {
+      if (event.name === "endless_arcade_shell_suppression_changed") {
+        setEndlessArcadeActivityActive(event.payload?.active === true);
+        return;
+      }
       if (event.name !== "screen_shake") {
         return;
       }
@@ -113,6 +118,10 @@ export function PhoneShell({
       window.setTimeout(() => setShake(""), 700);
     });
   }, [events]);
+
+  useEffect(() => {
+    if (state.currentScene !== "bike_arcade") setEndlessArcadeActivityActive(false);
+  }, [state.currentScene]);
 
   useEffect(() => {
     const updateScale = () => setPhoneScale(getPhoneScale(stageRef.current, embedded));
@@ -147,7 +156,7 @@ export function PhoneShell({
           <section ref={setFrameElement} className={`phone-frame ${shake}`} role="application" aria-label="7:55 phone runtime">
             <section className="scene-surface">{children}</section>
             {!bare ? <StatusBar state={state} /> : null}
-            {!bare && showTaskBar ? (
+            {!bare && !endlessArcadeActivityActive && showTaskBar ? (
               <QuestTaskBar
                 state={state}
                 router={router}
@@ -157,7 +166,7 @@ export function PhoneShell({
                 onNavigate={onTaskNavigate}
               />
             ) : null}
-            {!bare && !inventorySuppressed ? <InventoryBar state={state} /> : null}
+            {!bare && !endlessArcadeActivityActive && !inventorySuppressed ? <InventoryBar state={state} /> : null}
             <div className="brightness-veil" style={{ opacity: veilOpacity }} aria-hidden="true" />
             <ControlCenter state={state} />
             {showGlobalLayers ? <PresentationLayer events={events} /> : null}

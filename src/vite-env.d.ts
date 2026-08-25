@@ -11,6 +11,7 @@ declare module "*?chapter4-h3-embedded" {
 
 interface Window {
   render_game_to_text: () => string;
+  render_endless_spotlight_to_text?: () => string;
   advanceTime?: (ms: number) => void | Promise<void>;
   __vt_pending?: Set<unknown>;
 }

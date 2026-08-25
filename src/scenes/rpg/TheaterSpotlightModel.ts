@@ -156,3 +156,48 @@ export function getRequiredTheaterSpotlightLockMs(
   const assist = getTheaterSpotlightAssist(mistakes);
   return round.requiredLockMs * assist.lockScale;
 }
+
+/**
+ * Pure validation shared by the story controller and the endless extractor.
+ * It has no store, scene or timer dependency, so story progression retains
+ * controller ownership while matching the measured scene payload exactly.
+ */
+export function validateTheaterSpotlightAttempt(
+  attempt: TheaterSpotlightAttempt,
+  round: TheaterSpotlightRoundConfig,
+  requiredLockMs: number
+): TheaterSpotlightFailureReason | null {
+  if (!Number.isInteger(attempt.round) || attempt.round !== round.round) {
+    return "round_mismatch";
+  }
+  if (
+    !Number.isFinite(attempt.maxContinuousLockMs)
+    || attempt.maxContinuousLockMs < 0
+    || !Number.isFinite(attempt.actionMs)
+    || attempt.actionMs <= 0
+    || attempt.actionMs !== round.actionMs
+    || !Number.isFinite(attempt.submittedAtMs)
+    || attempt.submittedAtMs < 0
+  ) {
+    return "invalid_attempt";
+  }
+  if (!attempt.beamActivated || attempt.firstBeamAtMs === null) {
+    return "beam_not_activated";
+  }
+  if (attempt.lane !== round.lane) return "wrong_lane";
+  if (!Number.isFinite(attempt.firstBeamAtMs)) return "invalid_attempt";
+  if (attempt.firstBeamAtMs < 0) return "early";
+  if (
+    attempt.firstBeamAtMs > attempt.submittedAtMs
+    || attempt.firstBeamAtMs >= round.actionMs
+    || attempt.submittedAtMs > round.actionMs
+  ) {
+    return "late";
+  }
+  if (attempt.maxContinuousLockMs < requiredLockMs) {
+    if (attempt.firstBeamAtMs <= round.actionMs * 0.1) return "early";
+    if (attempt.firstBeamAtMs + requiredLockMs > round.actionMs) return "late";
+    return "interrupted";
+  }
+  return null;
+}

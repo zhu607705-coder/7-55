@@ -4,6 +4,7 @@ import {
   getRequiredTheaterSpotlightLockMs,
   getTheaterSpotlightAssist,
   getTheaterSpotlightRound,
+  validateTheaterSpotlightAttempt,
   THEATER_SPOTLIGHT_ROUNDS,
   THEATER_SPOTLIGHT_SEQUENCE
 } from "../scenes/rpg/TheaterSpotlightModel";
@@ -467,7 +468,7 @@ export class ChapterThreeTheaterController {
       round,
       state.theaterHunt.spotlightMistakes
     );
-    const failureReason = this.validateSpotlightAttempt(attempt, round, requiredLockMs);
+    const failureReason = validateTheaterSpotlightAttempt(attempt, round, requiredLockMs);
     if (failureReason) {
       return this.rejectSpotlightAttempt(attempt, round, requiredLockMs, failureReason);
     }
@@ -574,46 +575,6 @@ export class ChapterThreeTheaterController {
     }));
     this.events.emit("theater_left_for_location_search");
     return true;
-  }
-
-  private validateSpotlightAttempt(
-    attempt: TheaterSpotlightAttempt,
-    round: TheaterSpotlightRoundConfig,
-    requiredLockMs: number
-  ): TheaterSpotlightFailureReason | null {
-    if (!Number.isInteger(attempt.round) || attempt.round !== round.round) {
-      return "round_mismatch";
-    }
-    if (
-      !Number.isFinite(attempt.maxContinuousLockMs)
-      || attempt.maxContinuousLockMs < 0
-      || !Number.isFinite(attempt.actionMs)
-      || attempt.actionMs <= 0
-      || attempt.actionMs !== round.actionMs
-      || !Number.isFinite(attempt.submittedAtMs)
-      || attempt.submittedAtMs < 0
-    ) {
-      return "invalid_attempt";
-    }
-    if (!attempt.beamActivated || attempt.firstBeamAtMs === null) {
-      return "beam_not_activated";
-    }
-    if (attempt.lane !== round.lane) return "wrong_lane";
-    if (!Number.isFinite(attempt.firstBeamAtMs)) return "invalid_attempt";
-    if (attempt.firstBeamAtMs < 0) return "early";
-    if (
-      attempt.firstBeamAtMs > attempt.submittedAtMs
-      || attempt.firstBeamAtMs >= round.actionMs
-      || attempt.submittedAtMs > round.actionMs
-    ) {
-      return "late";
-    }
-    if (attempt.maxContinuousLockMs < requiredLockMs) {
-      if (attempt.firstBeamAtMs <= round.actionMs * 0.1) return "early";
-      if (attempt.firstBeamAtMs + requiredLockMs > round.actionMs) return "late";
-      return "interrupted";
-    }
-    return null;
   }
 
   private rejectSpotlightAttempt(

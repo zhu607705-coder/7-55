@@ -94,6 +94,27 @@
     "light": "浅色操作",
     "dark": "深色观察"
   },
+  "presentationContext": {
+    "timeSources": {
+      "external_evidence": "四项外部记录",
+      "hall_clock": "大厅旧钟"
+    },
+    "trustStates": {
+      "trusted": "手机已同步",
+      "untrusted": "手机未同步，当前读数不可信"
+    },
+    "fieldLabels": {
+      "stage": "当前阶段",
+      "time": "时间状态",
+      "floor": "所在楼层",
+      "progress": "当前进度",
+      "difference": "当前差分",
+      "source": "时间来源",
+      "trust": "手机状态",
+      "confirmedFacts": "已确认事实"
+    },
+    "emptyConfirmedFacts": "当前阶段尚无已确认事实。"
+  },
   "phaseObjectives": {
     "inactive": "完成启真湖逃脱并进入教学楼",
     "arrival": "进入一楼门厅，确认湿纸留下的气流轨迹",

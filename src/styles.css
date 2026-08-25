@@ -1,6 +1,7 @@
 /* 7:55 —— 全局样式入口。像素基座 / 系统壳层 / 场景 分层维护。 */
 @import "./styles/base.css";
 @import "./styles/shell.css";
+@import "./styles/phone-app-ui.css";
 @import "./styles/scenes.css";
 @import "./styles/qizhen-journal-camera.css";
 @import "./styles/qizhen-recipe-frame.css";

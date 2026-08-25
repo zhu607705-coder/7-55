@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "events": {
+    "endless_arcade_mode_selected": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_button",
+          "offsetMs": 0,
+          "volume": 0.46
+        }
+      ]
+    },
+    "endless_arcade_runtime_requested": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_run_a",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.18,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_button",
+          "offsetMs": 0,
+          "volume": 0.52
+        }
+      ]
+    },
+    "endless_arcade_runtime_paused": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_run_a",
+          "action": "stop",
+          "offsetMs": 0
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_pause",
+          "offsetMs": 0,
+          "volume": 0.54
+        }
+      ]
+    },
+    "endless_arcade_runtime_resumed": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_run_a",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.18,
+          "loop": true
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_bike_755_resume",
+          "offsetMs": 0,
+          "volume": 0.54
+        }
+      ]
+    },
+    "endless_arcade_runtime_finished": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_result",
+          "action": "play",
+          "offsetMs": 0,
+          "volume": 0.18,
+          "loop": false
+        }
+      ]
+    },
+    "endless_arcade_hub_returned": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_result",
+          "action": "stop",
+          "offsetMs": 0
+        }
+      ]
+    },
+    "endless_arcade_closed": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_bike_755_result",
+          "action": "stop",
+          "offsetMs": 0
+        }
+      ]
+    }
+  }
+}

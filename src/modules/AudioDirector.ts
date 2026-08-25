@@ -11,16 +11,18 @@ import chapterThreeTheaterGeneratedAudioData from "../data/chapter3-theater.audi
 import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import chapterThreeQizhenGeneratedAudioData from "../data/chapter3-qizhen.audio.generated.json";
 import chapterThreeQizhenSfxGeneratedAudioData from "../data/chapter3-qizhen-sfx.audio.generated.json";
+import chapter3InterludeVoiceMemosGeneratedAudioData from "../data/chapter3-interlude-voice-memos.audio.generated.json";
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterThreeStoryGeneratedAudioData from "../data/chapter3-story.audio.generated.json";
 import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
 import chapterFour755TimelineData from "../data/chapter4-755.audio.json";
+import endlessArcadeTimelineData from "../data/endless-arcade.audio.json";
 import audioTimelineData from "../data/library-finals.audio.json";
 import generatedAudioData from "../data/library-finals.audio.generated.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
 import { PRESENTATION_CUE_EVENT } from "./PresentationDirector";
 
-type AudioChannel = "music" | "sfx" | "voice" | "text";
+type AudioChannel = "music" | "ambient" | "sfx" | "voice" | "text";
 type MusicAction = "play" | "update" | "stop";
 
 interface AudioCue {
@@ -33,6 +35,7 @@ interface AudioCue {
   volume?: number;
   loop?: boolean;
   playbackRate?: number;
+  owner?: string;
   subtitleKey?: string;
   subtitleSurface?: "toast" | "scene";
   duckMusicTo?: number;
@@ -52,6 +55,7 @@ const audioTimeline: AudioTimeline = {
     ...(actOneTimelineData as AudioTimeline).events,
     ...(audioTimelineData as AudioTimeline).events,
     ...(bikeArcadeTimelineData as AudioTimeline).events,
+    ...(endlessArcadeTimelineData as AudioTimeline).events,
     ...(chapterThreeCanteenTimelineData as AudioTimeline).events,
     ...(chapterThreeTheaterTimelineData as AudioTimeline).events,
     ...(chapterThreeQizhenTimelineData as AudioTimeline).events,
@@ -63,6 +67,9 @@ const audioTimeline: AudioTimeline = {
 const chapterFour755CueIds = new Set(
   Object.keys((chapterFour755TimelineData as AudioTimeline).events)
 );
+const endlessArcadeCueIds = new Set(
+  Object.keys((endlessArcadeTimelineData as AudioTimeline).events)
+);
 const generatedAssets = {
   ...(actOneGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(generatedAudioData.assets as Record<string, GeneratedAsset>),
@@ -71,6 +78,7 @@ const generatedAssets = {
   ...(chapterThreeTheaterGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapterThreeQizhenGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapterThreeQizhenSfxGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(chapter3InterludeVoiceMemosGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapterThreeStoryGeneratedAudioData.assets as Record<string, GeneratedAsset>)
 };
 const audioUrls = import.meta.glob("../assets/audio/**/*.mp3", {
@@ -122,6 +130,7 @@ export class AudioDirector {
   private musicAsset: string | null = null;
   private musicTargetVolume = 0.2;
   private musicMuted = false;
+  private readonly ambients = new Map<string, { asset: string; audio: HTMLAudioElement }>();
   private readonly scheduled = new Map<number, string>();
   private readonly playedOnce = new Set<string>();
   private voiceRestoreTimer: number | null = null;
@@ -133,6 +142,7 @@ export class AudioDirector {
       this.scheduled.forEach((_eventName, timer) => window.clearTimeout(timer));
       this.scheduled.clear();
       this.stopVoice();
+      this.stopAmbients();
       this.music?.pause();
       this.music = null;
       this.musicAsset = null;
@@ -158,6 +168,10 @@ export class AudioDirector {
       this.cancelScheduled("bike_arcade_");
       this.stopVoice();
     }
+    if (cueId === "endless_arcade_closed" || cueId === "endless_arcade_hub_returned") {
+      this.cancelScheduledCueIds(endlessArcadeCueIds);
+      this.stopVoice();
+    }
     // 第四章序幕：跳过、完成或中途离开时取消未播音效并停止人声；音乐由
     // chapter4_prologue_finished / chapter4_prologue_closed 的 music stop 接管。
     if (
@@ -171,6 +185,12 @@ export class AudioDirector {
     if (cueId === "chapter4_755_scene_closed") {
       this.cancelScheduledCueIds(chapterFour755CueIds);
       this.stopVoice();
+      this.stopAmbients("chapter4_");
+    }
+    if (cueId === "chapter35_voice_audition_stop") {
+      this.cancelScheduled("chapter35_voice_audition_");
+      this.stopVoice();
+      return;
     }
     const beat = audioTimeline.events[cueId];
     if (!beat) {
@@ -179,12 +199,24 @@ export class AudioDirector {
     const dynamicSubtitleKey = typeof event.payload?.subtitleKey === "string"
       ? event.payload.subtitleKey
       : null;
+    const eventPreview = cueId.startsWith("chapter35_voice_audition_")
+      && event.payload?.previewKind === "event";
+    const eventStartMs = eventPreview && typeof event.payload?.startMs === "number"
+      && Number.isFinite(event.payload.startMs)
+      ? Math.max(0, event.payload.startMs)
+      : null;
+    const eventDurationMs = eventPreview && typeof event.payload?.durationMs === "number"
+      && Number.isFinite(event.payload.durationMs)
+      ? Math.max(120, Math.min(10_000, event.payload.durationMs))
+      : null;
     const cues = beat.cues.map((cue) => {
       const subtitleKey = dynamicSubtitleKey ?? cue.subtitleKey;
       const storyLine = storyLineForKey(subtitleKey);
       return {
         ...cue,
         subtitleKey,
+        ...(eventStartMs === null ? {} : { startMs: eventStartMs }),
+        ...(eventDurationMs === null ? {} : { durationMs: eventDurationMs }),
         asset: cue.asset ?? (cue.channel === "voice" ? storyLine?.voiceAsset : undefined)
       };
     });
@@ -231,7 +263,15 @@ export class AudioDirector {
       this.updateMusic(cue);
       return;
     }
+    if (cue.channel === "ambient") {
+      this.updateAmbient(cue);
+      return;
+    }
     if (cue.channel === "voice") {
+      if (cue.asset && !cue.subtitleKey) {
+        this.playVoice(events, cue);
+        return;
+      }
       const storyLine = storyLineForKey(cue.subtitleKey);
       if (!isVoicedDialogue(storyLine)) {
         this.playText(events, cue);
@@ -289,6 +329,45 @@ export class AudioDirector {
     }
   }
 
+  private updateAmbient(cue: AudioCue): void {
+    try {
+      if (typeof Audio === "undefined") return;
+      const owner = cue.owner ?? cue.asset ?? "ambient_default";
+      const current = this.ambients.get(owner);
+      if (cue.action === "stop") {
+        current?.audio.pause();
+        this.ambients.delete(owner);
+        return;
+      }
+      if (!cue.asset) return;
+      const url = urlForAsset(cue.asset);
+      if (!url) return;
+      let audio: HTMLAudioElement;
+      if (!current || current.asset !== cue.asset) {
+        current?.audio.pause();
+        audio = new Audio(url);
+        this.ambients.set(owner, { asset: cue.asset, audio });
+      } else {
+        audio = current.audio;
+      }
+      audio.volume = cue.volume ?? 0.18;
+      audio.loop = cue.loop ?? true;
+      audio.playbackRate = cue.playbackRate ?? 1;
+      const result = audio.play();
+      result?.catch(() => undefined);
+    } catch {
+      /* Ambient audio is optional for gameplay. */
+    }
+  }
+
+  private stopAmbients(ownerPrefix?: string): void {
+    this.ambients.forEach(({ audio }, owner) => {
+      if (ownerPrefix && !owner.startsWith(ownerPrefix)) return;
+      audio.pause();
+      this.ambients.delete(owner);
+    });
+  }
+
   private playVoice(events: EventBus, cue: AudioCue): void {
     if (!cue.asset) return;
     const generatedDuration = generatedAssets[cue.asset]?.durationMs;
@@ -320,17 +399,37 @@ export class AudioDirector {
       const audio = new Audio(url);
       this.currentVoice = audio;
       audio.volume = cue.volume ?? 1;
+      const startAtSeconds = Math.max(0, cue.startMs ?? 0) / 1000;
+      if (startAtSeconds > 0) {
+        const applySeek = () => {
+          try {
+            audio.currentTime = startAtSeconds;
+          } catch {
+            // A failed optional seek falls back to the beginning of the clip.
+          }
+        };
+        if (audio.readyState >= 1) applySeek();
+        else audio.addEventListener("loadedmetadata", applySeek, { once: true });
+      }
       if (this.music && cue.duckMusicTo !== undefined) {
         this.music.volume = cue.duckMusicTo;
       }
-      audio.addEventListener("ended", restoreMusic, { once: true });
-      audio.addEventListener("error", restoreMusic, { once: true });
-      this.voiceRestoreTimer = window.setTimeout(() => {
-        this.voiceRestoreTimer = null;
+      const finishVoice = () => {
+        if (this.currentVoice === audio) this.currentVoice = null;
+        if (this.voiceRestoreTimer !== null) {
+          window.clearTimeout(this.voiceRestoreTimer);
+          this.voiceRestoreTimer = null;
+        }
         restoreMusic();
-      }, durationMs + 800);
+      };
+      audio.addEventListener("ended", finishVoice, { once: true });
+      audio.addEventListener("error", finishVoice, { once: true });
+      this.voiceRestoreTimer = window.setTimeout(() => {
+        if (this.currentVoice === audio) audio.pause();
+        finishVoice();
+      }, durationMs);
       const result = audio.play();
-      result?.catch(restoreMusic);
+      result?.catch(finishVoice);
     } catch {
       restoreMusic();
     }

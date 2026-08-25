@@ -11,6 +11,7 @@ import { selectFeatureAccess } from "../../../core/FeatureAccess";
 import { canRemovePhoneHomeApp } from "../../../core/PhoneHomeApps";
 import type { PhoneHomeAppId } from "../../../core/types";
 import { selectChapterFourWechatObjective } from "../../../modules/ChapterFourWechatModel";
+import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
 
 /**
  * P13 手机主界面：像素浙大校园壁纸。
@@ -36,9 +37,9 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const friendFollowupPending = state.actOne.phase === "friend_message_required";
   const chapterServicesOpen = state.actOne.phase !== "prologue";
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
-  const bikeArcadeUnlocked = state.bikeArcade.unlocked;
   const chapterFourWechatObjective = selectChapterFourWechatObjective(state.chapter4);
   const interludeActive = state.qizhenLake.phase === "complete" && !state.chapterThreeInterlude.completed;
+  const interludeViewModel = selectChapterThreeInterludeViewModel(state);
 
   // 微信弹窗：1s 出第一条，2.4s 出第二条（散码前）
   useEffect(() => {
@@ -134,8 +135,13 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     };
   }, [events]);
 
-  useEffect(() => () => {
-    if (homeHoldTimerRef.current !== null) window.clearTimeout(homeHoldTimerRef.current);
+  useEffect(() => {
+    const clearOnWindowBlur = () => clearHomePointerInteraction(true, true);
+    window.addEventListener("blur", clearOnWindowBlur);
+    return () => {
+      window.removeEventListener("blur", clearOnWindowBlur);
+      clearHomePointerInteraction(false, true);
+    };
   }, []);
 
   function enterWechat(openFriendChat = false) {
@@ -229,9 +235,18 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     homeHoldTimerRef.current = null;
   }
 
-  function beginHomePointer(event: React.PointerEvent<HTMLElement>, appId: PhoneHomeAppId, available: boolean) {
-    if (!available || access.chapter === "chapter_one") return;
+  function clearHomePointerInteraction(updateVisualState = true, resetSuppressedClick = false) {
     clearHomeHoldTimer();
+    homePointerRef.current = null;
+    lastHomeSwapRef.current = null;
+    if (resetSuppressedClick) suppressHomeClickRef.current = false;
+    if (updateVisualState) setDraggingAppId(null);
+  }
+
+  function beginHomePointer(event: React.PointerEvent<HTMLElement>, appId: PhoneHomeAppId) {
+    if (access.chapter === "chapter_one") return;
+    clearHomeHoldTimer();
+    event.currentTarget.setPointerCapture(event.pointerId);
     homePointerRef.current = {
       appId,
       pointerId: event.pointerId,
@@ -263,6 +278,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLElement>("[data-home-app-id]");
     const targetId = target?.dataset.homeAppId as PhoneHomeAppId | undefined;
     if (!targetId || targetId === draggingAppId || targetId === lastHomeSwapRef.current) return;
+    if (!homeAppDefinitions[draggingAppId].available || !homeAppDefinitions[targetId].available) return;
     const order = [...state.ui.homeAppOrder];
     const sourceIndex = order.indexOf(draggingAppId);
     const targetIndex = order.indexOf(targetId);
@@ -274,10 +290,19 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
 
   function endHomePointer(event: React.PointerEvent<HTMLElement>) {
     if (homePointerRef.current?.pointerId !== event.pointerId) return;
-    clearHomeHoldTimer();
-    homePointerRef.current = null;
-    lastHomeSwapRef.current = null;
-    setDraggingAppId(null);
+    const captured = event.currentTarget.hasPointerCapture(event.pointerId);
+    clearHomePointerInteraction(true, event.type === "pointercancel");
+    if (captured) event.currentTarget.releasePointerCapture(event.pointerId);
+  }
+
+  function loseHomePointerCapture(event: React.PointerEvent<HTMLElement>) {
+    if (homePointerRef.current?.pointerId !== event.pointerId) return;
+    clearHomePointerInteraction(true, true);
+  }
+
+  function finishHomeEditing() {
+    setHomeEditing(false);
+    clearHomePointerInteraction();
   }
 
   function removeHomeApp(appId: PhoneHomeAppId) {
@@ -294,6 +319,8 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     const sourceIndex = order.indexOf(appId);
     const targetIndex = sourceIndex + offset;
     if (sourceIndex < 0 || targetIndex < 0 || targetIndex >= order.length) return;
+    const targetId = order[targetIndex];
+    if (!homeAppDefinitions[appId].available || !homeAppDefinitions[targetId].available) return;
     [order[sourceIndex], order[targetIndex]] = [order[targetIndex], order[sourceIndex]];
     kit.flags.setUi("homeAppOrder", order);
   }
@@ -373,15 +400,14 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
 
   const cc98ObjectivePending = chapterFourWechatObjective?.id === "study_index";
 
-  function renderHomeApp(appId: PhoneHomeAppId): ReactNode {
-    const definitions: Record<PhoneHomeAppId, {
-      label: string;
-      available: boolean;
-      className?: string;
-      ariaLabel?: string;
-      activate: () => void;
-      icon: ReactNode;
-    }> = {
+  const homeAppDefinitions: Record<PhoneHomeAppId, {
+    label: string;
+    available: boolean;
+    className?: string;
+    ariaLabel?: string;
+    activate: () => void;
+    icon: ReactNode;
+  }> = {
       wechat: {
         label: "微信",
         available: true,
@@ -450,10 +476,10 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       },
       bike_arcade: {
         label: "游戏",
-        available: bikeArcadeUnlocked && access.bikeArcade,
-        className: `bike-game-app ${state.bikeArcade.completed ? "is-complete" : "is-new"}`,
+        available: access.endlessChallenge,
+        className: `bike-game-app ${access.endlessChallenge ? "is-chapter-open" : ""}`.trim(),
         activate: openBikeArcade,
-        icon: <div className="app-icon game-app-icon"><span aria-hidden="true">7:55</span><i aria-hidden="true" />{bikeArcadeUnlocked && access.bikeArcade ? <b className="game-app-badge" aria-hidden="true">{state.bikeArcade.completed ? "✓" : "1"}</b> : null}</div>
+        icon: <div className="app-icon game-app-icon"><span aria-hidden="true">7:55</span><i aria-hidden="true" /></div>
       },
       control_center: {
         label: "控制中心",
@@ -472,8 +498,19 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         icon: <div className="app-icon clock-app-icon"><i className="clock-app-face" /></div>
       }
     };
-    const definition = definitions[appId];
+
+  function renderHomeApp(appId: PhoneHomeAppId): ReactNode {
+    const definition = homeAppDefinitions[appId];
     const removable = definition.available && canRemovePhoneHomeApp(state, appId);
+    const pointerHandlers = definition.available
+      ? {
+          onPointerDown: (event: React.PointerEvent<HTMLElement>) => beginHomePointer(event, appId),
+          onPointerMove: moveHomePointer,
+          onPointerUp: endHomePointer,
+          onPointerCancel: endHomePointer,
+          onLostPointerCapture: loseHomePointerCapture
+        }
+      : {};
     const activate = () => {
       if (suppressHomeClickRef.current) {
         suppressHomeClickRef.current = false;
@@ -488,18 +525,24 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         key={appId}
         className={slotClass}
         data-home-app-id={appId}
-        onPointerDown={(event) => beginHomePointer(event, appId, definition.available)}
-        onPointerMove={moveHomePointer}
-        onPointerUp={endHomePointer}
-        onPointerCancel={endHomePointer}
+        {...pointerHandlers}
       >
         {definition.available ? (
           <button
             type="button"
             className={`app ${definition.className ?? ""}`.trim()}
-            aria-label={definition.ariaLabel ?? definition.label}
+            aria-label={`${definition.ariaLabel ?? definition.label}${access.chapter === "chapter_one" ? "" : "，按 F2 编辑桌面"}`}
+            aria-keyshortcuts={access.chapter === "chapter_one" ? undefined : "F2"}
             onClick={activate}
             onKeyDown={(event) => {
+              if (event.key === "F2") {
+                event.preventDefault();
+                if (access.chapter === "chapter_one") return;
+                setHomeEditing(true);
+                setDraggingAppId(null);
+                lastHomeSwapRef.current = null;
+                return;
+              }
               if (!homeEditing) return;
               const offset = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : event.key === "ArrowUp" ? -4 : event.key === "ArrowDown" ? 4 : 0;
               if (offset) {
@@ -509,7 +552,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
                 event.preventDefault();
                 removeHomeApp(appId);
               } else if (event.key === "Escape") {
-                setHomeEditing(false);
+                finishHomeEditing();
               }
             }}
           >
@@ -517,7 +560,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
             <span className="label">{definition.label}</span>
           </button>
         ) : (
-          <div className={`app app-locked ${definition.className ?? ""}`.trim()} data-locked-app={definition.label} aria-hidden="true">
+          <div className={`app app-locked ${definition.className ?? ""}`.trim()} data-locked-app={definition.label}>
             {definition.icon}
             <span className="label">{definition.label}</span>
           </div>
@@ -632,7 +675,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       {homeEditing ? (
         <div className="phone-home-edit-bar" role="status">
           <span>拖动图标调整位置</span>
-          <button type="button" onClick={() => setHomeEditing(false)}>完成</button>
+          <button type="button" onClick={finishHomeEditing}>完成</button>
         </div>
       ) : null}
       <section className={`apps ${homeEditing ? "is-editing" : ""}`.trim()} aria-label="应用">
@@ -655,13 +698,9 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               <div className="mini interlude-recovery-mini" aria-hidden="true"><i /><i /><i /></div>
               <div>
                 <div className="note-title">记录恢复</div>
-                <div className="note-msg">
-                  {state.chapterThreeInterlude.recoveryOpened
-                    ? "7 分 55 秒记录仍缺少时间线和目的地。"
-                    : "检测到 7 分 55 秒未同步记录。"}
-                </div>
+                <div className="note-msg">{interludeViewModel.notificationMessage}</div>
               </div>
-              <time className="note-time">22:45</time>
+              <time className="note-time">{interludeViewModel.notificationTimeLabel}</time>
             </button>
             <article className="note">
               <div className="mini b-green" aria-hidden="true"><span className="interlude-signal-dot" /></div>
@@ -750,13 +789,6 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
           </>
         ) : (
           <>
-            {bikeArcadeUnlocked && !state.bikeArcade.completed ? (
-              <article className="note bike-arcade-task-note">
-                <div className="mini game-app-icon" aria-hidden="true"><span>755</span></div>
-                <div><div className="note-title">求是潮 755</div><div className="note-msg">穿过求是潮，距离 755 米。</div></div>
-                <time className="note-time">07:55</time>
-              </article>
-            ) : null}
             <button
               type="button"
               className={`note act2-triangle-note ${state.actOne.pushTriangleTaken ? "is-collected" : ""}`}

@@ -3,10 +3,11 @@ import { readFile } from "node:fs/promises";
 
 const root = new URL("../src/assets/rpg/player/", import.meta.url);
 const directions = ["down", "up", "side"];
+const frameCount = 8;
 const hashes = new Set();
 
 for (const direction of directions) {
-  for (let phase = 0; phase < 4; phase += 1) {
+  for (let phase = 0; phase < frameCount; phase += 1) {
     const name = `player_${direction}_${phase}.png`;
     const bytes = await readFile(new URL(name, root));
     if (bytes.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a") {
@@ -24,8 +25,8 @@ for (const direction of directions) {
   }
 }
 
-if (hashes.size !== directions.length * 4) {
-  throw new Error("The four-phase player cycle contains duplicate runtime frames");
+if (hashes.size !== directions.length * frameCount) {
+  throw new Error("The eight-phase player cycle contains duplicate runtime frames");
 }
 
-console.log("verified 12 unique high-resolution RPG player frames at 96x128");
+console.log("verified 24 unique high-resolution RPG player frames at 96x128");

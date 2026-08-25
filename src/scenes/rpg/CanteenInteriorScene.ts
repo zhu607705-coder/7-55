@@ -26,7 +26,6 @@ import type {
 } from "../../core/types";
 import canteenContent from "../../data/chapter3-canteen.content.json";
 import { CANTEEN_EXIT_SEQUENCE } from "../../modules/ChapterThreeCanteenController";
-import { getDeveloperCanteenDefenseStart } from "../../modules/DeveloperChannel";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
@@ -60,7 +59,6 @@ import {
   CANTEEN_INTERIOR_WORLD,
   CANTEEN_OCCLUSION_RECTS,
   CANTEEN_MIX_STATION,
-  CANTEEN_ORDERING_KIOSK,
   CANTEEN_PHASE_SPAWNS,
   CANTEEN_PICKUP_WINDOWS,
   CANTEEN_SPAWN,
@@ -190,9 +188,7 @@ const RUN_SPEED = 228;
 const DIALOGUE_STEP_MS = 2500;
 const ENTRY_DIALOGUE_STEP_MS = 1600;
 const ENTRY_CAMERA_ZOOM = 1.18;
-// Trigger in the southeast entrance aisle before the tray station blocks a
-// direct line to the queued paper.
-const ENTRY_PAPER_TRIGGER_RADIUS = 540;
+const ENTRY_PAPER_TRIGGER_RADIUS = 360;
 const CART_APPROACH_SPEED = 175;
 const CART_MIN_ROLL_DURATION_MS = 520;
 const CART_ROLL_FRAME_MS = 82;
@@ -499,15 +495,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const state = this.bridge.getState();
     this.syncWorldFromState(state);
     this.updateCarriedTrayVisual(state);
-    const requestedDefenseStartMs = getDeveloperCanteenDefenseStart();
-    if (
-      state.canteenHunt.phase === "exit_blocking"
-      && this.defenseRuntime
-      && this.defenseRuntime.getDebugSnapshot().startElapsedMs !== requestedDefenseStartMs
-    ) {
-      this.finishDefense();
-      this.startDefense();
-    }
     if (
       state.canteenHunt.phase === "exit_blocking"
       && !this.defenseRuntime
@@ -1692,12 +1679,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private createWorldHotspots(): void {
     const hotspotBounds: Record<string, { x: number; y: number; width: number; height: number }> = {
-      ordering_kiosk: {
-        x: CANTEEN_ORDERING_KIOSK.x,
-        y: CANTEEN_ORDERING_KIOSK.y,
-        width: CANTEEN_ORDERING_KIOSK.width!,
-        height: CANTEEN_ORDERING_KIOSK.height!
-      },
+      ordering_kiosk: { x: 790, y: 238, width: 150, height: 92 },
       ...Object.fromEntries(CANTEEN_PICKUP_WINDOWS.map((window) => [
         window.id,
         {
@@ -2530,7 +2512,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       label = state.canteenHunt.mode === "dark"
         ? "确认蓝色轨迹指向"
         : state.canteenHunt.identifiedExitIds.includes(String(nearest.value) as CanteenExitId)
-          ? "靠近餐盘车把手并面向它"
+          ? "靠近餐盘车把手"
           : "先切深色模式确认这辆餐车";
     } else if (nearest.kind === "exit") {
       label = "靠近东南门离开食堂";
@@ -3641,8 +3623,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
           this.flashDefenseRoute(route);
           this.cameras.main.shake(this.reducedMotion ? 0 : 75, 0.0025);
         }
-      },
-      getDeveloperCanteenDefenseStart()
+      }
     );
   }
 
@@ -3851,17 +3832,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         pickupDarkClueRead: state.canteenHunt.pickupDarkClueRead,
         identifiedExitIds: state.canteenHunt.identifiedExitIds,
         blockHits: state.canteenHunt.blockHits,
-        queueGapOpened: state.canteenHunt.queueGapOpened,
-        queueColumnThreeYs: this.thirdColumnQueue.map((entry) => Math.round(entry.sprite.y)),
-        orderingKiosk: {
-          x: CANTEEN_ORDERING_KIOSK.x,
-          y: CANTEEN_ORDERING_KIOSK.y,
-          stand: CANTEEN_ORDERING_KIOSK.stand,
-          width: CANTEEN_ORDERING_KIOSK.width,
-          height: CANTEEN_ORDERING_KIOSK.height,
-          proximity: CANTEEN_ORDERING_KIOSK.proximity
-        },
-        defense: this.defenseRuntime?.getDebugSnapshot(),
         activeTarget: nearest?.id ?? null,
         pickupTargets: CANTEEN_PICKUP_WINDOWS.map((window) => ({
           id: window.id,

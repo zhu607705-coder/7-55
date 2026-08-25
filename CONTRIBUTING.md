@@ -19,20 +19,20 @@ git config core.hooksPath .githooks
 
 ```bash
 npm run map:zijingang
-npm run godot:check
+npm run audio:chapter3:verify
+npm run audio:chapter3-interlude-voice-memos:verify
+npm run chapter4:validate-runtime
+npm run endless:validate
 npm run typecheck
 npm run build
 npm run build:single
 npm run verify:single
 ```
 
-若改动 `godot/`、Godot 同步资产或运行时导出，先安装 Godot `4.7.1` 与同版本导出
-模板，再运行 `npm run godot:export:web`，并把 Godot 源码、
-`public/godot/theater/` 和 `build-manifest.json` 放在同一个 PR 中。生成的 Web 文件
-不得手工编辑。
+退役的 Godot 源码、导出、兼容层和同步脚本已经删除，提交不得重新引入这些模块。
 
-仓库的 pre-push hook 会自动执行以上检查。当前项目尚无自动测试套件；新增测试框架后，
-应把测试命令加入这里和 pre-push hook。
+仓库的 pre-push hook 和 GitHub Actions 会执行当前登记的检查；新增验证器后，应同步加入
+`package.json`、本文档和 `.github/workflows/web-ci.yml`。
 
 提交信息采用：
 

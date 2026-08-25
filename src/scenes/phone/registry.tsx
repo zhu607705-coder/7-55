@@ -67,7 +67,7 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   voice_memos: {
     label: "P21 语音备忘录",
-    contract: "第三章半：按湖面、石岸、大厅、闭楼广播顺序整理四段录音。"
+    contract: "第三章半：从七段恢复录音中筛选四段，再按声场变化排列。"
   },
   campus_card: {
     label: "P04 校园卡余额",

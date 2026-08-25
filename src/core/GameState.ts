@@ -4,6 +4,17 @@ import type { GameState, GameStore } from "./types";
 import { DEVELOPER_ACTIVE_KEY } from "./StorageKeys";
 import { DEFAULT_PHONE_HOME_APP_ORDER } from "./PhoneHomeApps";
 
+function createEmptyEndlessChallengeRecord() {
+  return {
+    attemptCount: 0,
+    bestScore: 0,
+    bestProgress: 0,
+    bestTier: 0,
+    bestCombo: 0,
+    bestDurationMs: 0
+  };
+}
+
 export function createInitialGameState(): GameState {
   return {
     runtimeMode: "phone",
@@ -138,6 +149,16 @@ export function createInitialGameState(): GameState {
       attemptCount: 0,
       bestDistance: 0,
       bestLives: 0
+    },
+    postgame: {
+      completionReceipt: null
+    },
+    endlessArcade: {
+      records: {
+        fishing: createEmptyEndlessChallengeRecord(),
+        spotlight: createEmptyEndlessChallengeRecord(),
+        bike: createEmptyEndlessChallengeRecord()
+      }
     },
     canteenHunt: {
       active: false,

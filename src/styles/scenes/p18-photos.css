@@ -157,6 +157,10 @@
   margin-top: 17px;
 }
 
+.photo-roll-filter {
+  margin-top: 17px;
+}
+
 .photo-joke-grid > button {
   aspect-ratio: 1;
   background: #d9dde0;
@@ -202,65 +206,18 @@
   text-align: center;
 }
 
-.photo-roll-preview {
-  background: #f7f8fb;
-  border: 3px solid #1b3852;
-  bottom: 14px;
-  box-shadow: 0 0 0 999px rgba(6, 13, 18, 0.36), 5px 5px 0 rgba(27, 56, 82, 0.24);
-  left: 12px;
-  overflow-y: auto;
-  padding: 9px;
-  position: absolute;
-  right: 12px;
-  top: 72px;
-  z-index: 8;
-}
-
-.photo-roll-preview.is-clue {
+.photo-roll-sheet.is-clue {
   border-color: #866b24;
 }
 
-.photo-roll-preview > header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.photo-roll-preview > header div,
-.photo-roll-preview > header strong,
-.photo-roll-preview > header span {
-  display: block;
-}
-
-.photo-roll-preview > header strong {
-  font-size: var(--fs-label);
-}
-
-.photo-roll-preview > header span {
-  color: #66717a;
-  font-size: var(--fs-caption);
-  margin-top: 2px;
-}
-
-.photo-roll-preview > header button {
-  background: #edf0f2;
-  border: 2px solid #67737e;
-  color: #18242e;
-  font: inherit;
-  font-size: 18px;
-  height: 30px;
-  width: 30px;
-}
-
-.photo-roll-preview > img {
+.photo-roll-sheet__image {
   border: 2px solid #263b46;
   display: block;
   image-rendering: pixelated;
   width: 100%;
 }
 
-.photo-roll-preview > p {
+.photo-roll-sheet__detail {
   color: #3f4d57;
   font-size: var(--fs-caption);
   line-height: 1.5;

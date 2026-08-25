@@ -148,7 +148,7 @@ export function selectRpgItemUseGuidance(
         && puzzle.itemReportGenerated
         && puzzle.lostFoundStage === "ready"
         && !puzzle.nonPersonProofStamped
-        ? ready("前台工作人员", "靠近并面向前台，把物品识别报告拖到工作人员与盖章台之间。")
+        ? ready("前台工作人员", "靠近前台，把物品识别报告拖到工作人员与盖章台之间。")
         : locked("先在照片页面生成物品识别报告。", "前台工作人员");
     }
     if (itemId === "rightArrow") {
@@ -218,7 +218,7 @@ export function selectRpgItemUseGuidance(
       if (theater.posterCleaned) return passive("海报玻璃已经擦净。");
       if (theater.phase !== "entry_ticket") return locked("擦拭海报只在剧院入口取票阶段开放。", "入口海报");
       if (theater.mode !== "light") return locked("切回浅色模式后擦拭海报玻璃。", "入口海报");
-      return ready("入口海报玻璃", "从海报右侧靠近并面向左，把油渍纸巾拖到玻璃污渍上。");
+      return ready("入口海报玻璃", "从海报右侧靠近，把油渍纸巾拖到玻璃污渍上。");
     }
     if (itemId === "temporaryTheaterTicket") {
       if (theater.phase === "entry_ticket" && !theater.admitted) {
@@ -227,7 +227,7 @@ export function selectRpgItemUseGuidance(
         }
         return ready(
           "检票闸机右侧读票器",
-          "靠近并面向读票器，把票拖到右侧验票槽内松手。"
+          "靠近读票器，把票拖到右侧验票槽内松手。"
         );
       }
       if (theater.phase === "prop_setup") {
@@ -240,7 +240,7 @@ export function selectRpgItemUseGuidance(
         }
         return ready(
           "道具箱旁票据扫描器",
-          "靠近并面向道具箱旁的扫描器，把票拖到扫描口内松手。"
+          "靠近道具箱旁的扫描器，把票拖到扫描口内松手。"
         );
       }
       if (theater.admitted && ["program_search"].includes(theater.phase)) {
@@ -256,7 +256,7 @@ export function selectRpgItemUseGuidance(
       if (theater.mode !== "light") {
         return locked("切回浅色操作后，把荧光粉刷拖入通风口。", "后台通风口");
       }
-      return ready("后台通风口", "靠近并面向通风口，把荧光粉刷拖到栅格上。");
+      return ready("后台通风口", "靠近通风口，把荧光粉刷拖到栅格上。");
     }
     if (itemId === "spotlightRemote") {
       if (theater.phase !== "spotlight_ready" || !theater.paperDusted) {
@@ -265,7 +265,7 @@ export function selectRpgItemUseGuidance(
       if (theater.mode !== "light") {
         return locked("深色模式只观察追光残影；切回浅色操作后启动灯光控制台。", "灯光控制台");
       }
-      return ready("灯光控制台", "从下方靠近并面向控制台，把追光灯遥控器拖到控制面板上。");
+      return ready("灯光控制台", "从下方靠近控制台，把追光灯遥控器拖到控制面板上。");
     }
     if (["theaterProgramOpening", "theaterProgramSpotlight", "theaterProgramFinale"].includes(itemId)) {
       return passive("靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。");
@@ -317,7 +317,7 @@ export function selectRpgItemUseGuidance(
         : lake.zone !== "dock"
           ? locked("返回小码头，储物柜锁孔只在码头区域开放。", "码头储物柜")
         : requireLight("码头储物柜")
-          ?? ready("码头储物柜", "返回小码头，靠近并面向柜门，把钥匙拖到锁孔。");
+          ?? ready("码头储物柜", "返回小码头，靠近柜门，把钥匙拖到锁孔。");
     }
 
     if (itemId === "nylonCord" || itemId === "brokenNetFrame") {

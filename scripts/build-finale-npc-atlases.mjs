@@ -8,43 +8,49 @@ import { fileURLToPath } from "node:url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const assetRoot = resolve(repoRoot, "src/assets/rpg/npcs/finale");
 const sourceRoot = resolve(assetRoot, "source");
+const alphaThreshold = "4%";
+const minimumComponentArea = 500;
+const bottomPadding = 2;
 
 const sourceGrids = {
   student: {
-    path: resolve(sourceRoot, "finale_student_source_grid.png"),
+    path: resolve(sourceRoot, "finale_student_source_grid_v2.png"),
     columns: 4,
-    rows: 3
+    rows: 4,
+    canonicalHeight: 112
   },
   cleaner: {
-    path: resolve(sourceRoot, "finale_cleaner_source_grid.png"),
+    path: resolve(sourceRoot, "finale_cleaner_source_grid_v2.png"),
     columns: 4,
-    rows: 4
+    rows: 4,
+    canonicalHeight: 112
   },
   guard: {
-    path: resolve(sourceRoot, "finale_guard_source_grid.png"),
+    path: resolve(sourceRoot, "finale_guard_source_grid_v2.png"),
     columns: 4,
-    rows: 3
+    rows: 4,
+    canonicalHeight: 112
   }
 };
 
 const animations = [
-  { id: "student_walk", source: "student", frames: [0, 1, 2, 3], frameWidth: 96, frameHeight: 128, maxWidth: 82, maxHeight: 112, fps: 9, loop: true },
-  { id: "student_phone_glance", source: "student", frames: [4, 5], frameWidth: 96, frameHeight: 128, maxWidth: 82, maxHeight: 112, fps: 3, loop: true },
-  { id: "student_adjust_bag", source: "student", frames: [6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 4, loop: false },
-  { id: "student_push_door", source: "student", frames: [8, 9, 10], frameWidth: 112, frameHeight: 128, maxWidth: 102, maxHeight: 112, fps: 6, loop: false },
-  { id: "student_idle", source: "student", frames: [11], frameWidth: 96, frameHeight: 128, maxWidth: 82, maxHeight: 112, fps: 1, loop: true },
+  { id: "student_walk", source: "student", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 8, loop: true },
+  { id: "student_phone_glance", source: "student", frames: [8, 9], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
+  { id: "student_adjust_bag", source: "student", frames: [10, 11], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 4, loop: false },
+  { id: "student_push_door", source: "student", frames: [12, 13, 14], frameWidth: 112, frameHeight: 128, maxWidth: 104, maxHeight: 112, fps: 6, loop: false },
+  { id: "student_idle", source: "student", frames: [15], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 1, loop: true },
   { id: "cleaner_push_cart", source: "cleaner", frames: [0, 1, 2, 3], frameWidth: 192, frameHeight: 128, maxWidth: 180, maxHeight: 112, fps: 8, loop: true },
-  { id: "cleaner_mop", source: "cleaner", frames: [4, 5, 6], frameWidth: 144, frameHeight: 128, maxWidth: 132, maxHeight: 112, fps: 6, loop: true },
-  { id: "cleaning_cart", source: "cleaner", frames: [7], frameWidth: 144, frameHeight: 128, maxWidth: 132, maxHeight: 104, fps: 1, loop: true },
-  { id: "cleaner_place_sign", source: "cleaner", frames: [8, 9], frameWidth: 128, frameHeight: 128, maxWidth: 116, maxHeight: 112, fps: 4, loop: false },
-  { id: "cleaner_toggle_lights", source: "cleaner", frames: [10, 11], frameWidth: 112, frameHeight: 128, maxWidth: 100, maxHeight: 112, fps: 4, loop: false },
-  { id: "cleaner_rest", source: "cleaner", frames: [12, 13], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 2, loop: true },
+  { id: "cleaner_mop", source: "cleaner", frames: [4, 5, 6, 7], frameWidth: 144, frameHeight: 128, maxWidth: 134, maxHeight: 112, fps: 6, loop: true },
+  { id: "cleaning_cart", source: "cleaner", frames: [8], frameWidth: 144, frameHeight: 128, maxWidth: 134, maxHeight: 104, fps: 1, loop: true },
+  { id: "cleaner_place_sign", source: "cleaner", frames: [9, 10], frameWidth: 128, frameHeight: 128, maxWidth: 118, maxHeight: 112, fps: 4, loop: false },
+  { id: "cleaner_toggle_lights", source: "cleaner", frames: [11, 12], frameWidth: 112, frameHeight: 128, maxWidth: 102, maxHeight: 112, fps: 4, loop: false },
+  { id: "cleaner_rest", source: "cleaner", frames: [13], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 1, loop: true },
   { id: "cleaner_idle", source: "cleaner", frames: [14, 15], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 2, loop: true },
-  { id: "guard_walk", source: "guard", frames: [0, 1, 2, 3], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 8, loop: true },
-  { id: "guard_check_list", source: "guard", frames: [4, 5], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 3, loop: true },
-  { id: "guard_check_watch", source: "guard", frames: [6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 3, loop: true },
-  { id: "guard_flashlight_down", source: "guard", frames: [8, 9], frameWidth: 128, frameHeight: 128, maxWidth: 116, maxHeight: 112, fps: 4, loop: true },
-  { id: "guard_radio", source: "guard", frames: [10, 11], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 3, loop: true }
+  { id: "guard_walk", source: "guard", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 8, loop: true },
+  { id: "guard_check_list", source: "guard", frames: [8, 9], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
+  { id: "guard_check_watch", source: "guard", frames: [10, 11], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
+  { id: "guard_flashlight_down", source: "guard", frames: [12, 13], frameWidth: 128, frameHeight: 128, maxWidth: 118, maxHeight: 112, fps: 4, loop: true },
+  { id: "guard_radio", source: "guard", frames: [14, 15], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true }
 ];
 
 function ensureMagick() {
@@ -58,48 +64,111 @@ function runMagick(args) {
   execFileSync("magick", args, { stdio: "inherit" });
 }
 
+function inspectConnectedComponents(path) {
+  const output = execFileSync("magick", [
+    path,
+    "-alpha", "extract",
+    "-threshold", alphaThreshold,
+    "-define", "connected-components:verbose=true",
+    "-connected-components", "8",
+    "null:"
+  ], { encoding: "utf8" });
+  return output
+    .split("\n")
+    .map((line) => line.match(
+      /^\s+\d+:\s+(\d+)x(\d+)\+(\d+)\+(\d+)\s+([0-9.]+),([0-9.]+)\s+([0-9.eE+-]+)\s+(.+)$/
+    ))
+    .filter(Boolean)
+    .map((match) => ({
+      width: Number(match[1]),
+      height: Number(match[2]),
+      x: Number(match[3]),
+      y: Number(match[4]),
+      centerX: Number(match[5]),
+      centerY: Number(match[6]),
+      area: Number(match[7]),
+      meanColor: match[8]
+    }))
+    .filter((component) => (
+      component.area >= minimumComponentArea
+      && component.meanColor.includes("255")
+    ));
+}
+
 function sha256(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
 
-async function normalizeGrid(source, workRoot) {
-  const normalized = resolve(workRoot, `${source}-transparent.png`);
+async function extractComponentPoses(source, workRoot) {
   const config = sourceGrids[source];
-  runMagick([
-    config.path,
-    "-alpha", "on",
-    "-bordercolor", "white",
-    "-border", "1",
-    "-fuzz", "10%",
-    "-fill", "none",
-    "-draw", "alpha 0,0 floodfill",
-    "-shave", "1x1",
-    normalized
-  ]);
-  const cellPattern = resolve(workRoot, `${source}-cell-%02d.png`);
-  runMagick([
-    normalized,
-    "-crop", `${config.columns}x${config.rows}@`,
-    "+repage",
-    cellPattern
-  ]);
+  const components = inspectConnectedComponents(config.path);
+  const expected = config.columns * config.rows;
+  if (components.length !== expected) {
+    throw new Error(
+      `NPC source ${source} expected ${expected} complete silhouettes, found ${components.length}.`
+    );
+  }
+  components.sort((left, right) => left.centerY - right.centerY);
+  const orderedComponents = [];
+  for (let row = 0; row < config.rows; row += 1) {
+    const rowComponents = components
+      .slice(row * config.columns, (row + 1) * config.columns)
+      .sort((left, right) => left.centerX - right.centerX);
+    orderedComponents.push(...rowComponents);
+  }
+  for (const [frame, component] of orderedComponents.entries()) {
+    runMagick([
+      config.path,
+      "-crop", `${component.width}x${component.height}+${component.x}+${component.y}`,
+      "+repage",
+      cellPath(workRoot, source, frame)
+    ]);
+  }
+  return orderedComponents;
 }
 
 function cellPath(workRoot, source, frame) {
   return resolve(workRoot, `${source}-cell-${String(frame).padStart(2, "0")}.png`);
 }
 
-async function buildAnimation(animation, workRoot) {
+async function buildAnimation(animation, workRoot, sourceComponents, sourceScale) {
   const normalizedFrames = [];
   for (const [sequenceIndex, sourceFrame] of animation.frames.entries()) {
+    const sourceComponent = sourceComponents[sourceFrame];
+    const expectedWidth = Math.round(sourceComponent.width * sourceScale);
+    const expectedHeight = Math.round(sourceComponent.height * sourceScale);
+    if (expectedWidth > animation.maxWidth || expectedHeight > animation.maxHeight) {
+      throw new Error(
+        `${animation.id} frame ${sourceFrame} exceeds its runtime content box after fixed scaling: `
+        + `${expectedWidth}x${expectedHeight} > ${animation.maxWidth}x${animation.maxHeight}`
+      );
+    }
+    const mask = resolve(workRoot, `${animation.id}-${String(sequenceIndex).padStart(2, "0")}-mask.png`);
+    const cleaned = resolve(workRoot, `${animation.id}-${String(sequenceIndex).padStart(2, "0")}-cleaned.png`);
     const target = resolve(workRoot, `${animation.id}-${String(sequenceIndex).padStart(2, "0")}.png`);
     runMagick([
       cellPath(workRoot, animation.source, sourceFrame),
+      "-alpha", "extract",
+      "-threshold", alphaThreshold,
+      mask
+    ]);
+    runMagick([
+      cellPath(workRoot, animation.source, sourceFrame),
+      mask,
+      "-alpha", "off",
+      "-compose", "CopyOpacity",
+      "-composite",
+      cleaned
+    ]);
+    runMagick([
+      cleaned,
       "-trim", "+repage",
-      "-filter", "point",
-      "-resize", `${animation.maxWidth}x${animation.maxHeight}>`,
+      "-filter", "Lanczos",
+      "-resize", `${sourceScale * 100}%`,
       "-gravity", "south",
       "-background", "none",
+      "-extent", `${animation.frameWidth}x${animation.frameHeight - bottomPadding}`,
+      "-gravity", "north",
       "-extent", `${animation.frameWidth}x${animation.frameHeight}`,
       target
     ]);
@@ -127,10 +196,26 @@ await mkdir(assetRoot, { recursive: true });
 const workRoot = await mkdtemp(resolve(tmpdir(), "seven-fifty-five-finale-npcs-"));
 
 try {
-  await Promise.all(Object.keys(sourceGrids).map((source) => normalizeGrid(source, workRoot)));
+  const sourceComponents = Object.fromEntries(await Promise.all(
+    Object.keys(sourceGrids).map(async (source) => [
+      source,
+      await extractComponentPoses(source, workRoot)
+    ])
+  ));
+  const sourceScales = Object.fromEntries(Object.entries(sourceGrids).map(([source, config]) => [
+    source,
+    config.canonicalHeight / Math.max(
+      ...sourceComponents[source].map((component) => component.height)
+    )
+  ]));
   const builtAnimations = [];
   for (const animation of animations) {
-    builtAnimations.push(await buildAnimation(animation, workRoot));
+    builtAnimations.push(await buildAnimation(
+      animation,
+      workRoot,
+      sourceComponents[animation.source],
+      sourceScales[animation.source]
+    ));
   }
 
   const sources = {};
@@ -139,15 +224,24 @@ try {
       file: `src/assets/rpg/npcs/finale/source/${config.path.split("/").at(-1)}`,
       columns: config.columns,
       rows: config.rows,
+      extraction: "ordered_alpha_components",
+      componentAreaThreshold: minimumComponentArea,
+      fixedUniformScale: sourceScales[id],
       sha256: sha256(await readFile(config.path))
     };
   }
 
   const manifest = {
     schemaVersion: 1,
-    generatedAt: "source-derived",
+    generatedAt: "imagegen-derived-2026-08-22",
     logicalFrame: { width: 96, height: 128 },
     sourceView: "top_down_front_pixel",
+    generation: {
+      requestedProvider: "MiniMax CLI image-01",
+      rejectedMiniMaxReason: "layout_style_and_background_contract_failed",
+      selectedProvider: "OpenAI image_gen",
+      alphaRole: "native_transparent_cutout"
+    },
     sources,
     animations: builtAnimations
   };

@@ -7,8 +7,7 @@
 - `src/assets/ui/`: bundled visual references used by scenes.
 - `src/core/`: shared game state, routing, and types.
 - `src/styles/`: shared tokens, shell layout, and scene-specific styling.
-- `godot/`: archived implementation reference from the retired Godot migration; active builds, runtime selection, CI, and new feature work must not depend on it.
-- `src/integrations/godot/`: archived compatibility code only; active application code must not import or mount its frame, loader, or scene-specific panels.
+- The retired `godot/`, `public/godot/`, and `src/integrations/godot/` trees were removed on 2026-08-25 after explicit user approval. Do not restore their sources, exports, loaders, panels, synchronization scripts, or CI checks.
 - `demo/index.html`: generated standalone game build; do not edit it by hand.
 
 ## Runtime Engine Decision
@@ -18,7 +17,7 @@
 - `RpgGameHost` mounts one active game surface. Phaser remains mounted for normal RPG scenes; while the Chapter 4 misaligned-stair puzzle is active, Phaser is paused and hidden and one Three.js canvas takes over the same `960 × 540` logical viewport. HTTP, deployed, offline single-file, desktop split, and mobile layouts use the same controller state and viewport contract.
 - TypeScript `GameState`, controllers, `SaveStore`, `selectFeatureAccess`, and `selectQuestViewModel` remain the only progression authority. Phaser scenes render state and submit engine-neutral domain events; they must not own a second save, wallet, inventory, quest graph, or story controller.
 - Shared runtime ports remain valid scene boundaries for state reads, intent writes, event subscriptions, viewport data, and checkpoints. They serve the Phaser scenes directly and must not introduce a second engine-specific gameplay path.
-- No new Godot scene, export, synchronization step, CI check, runtime loader, iframe, compatibility panel, or migration task may be added. Existing Godot files remain historical reference material until an explicit cleanup request removes them.
+- No Godot scene, export, synchronization step, CI check, runtime loader, iframe, compatibility panel, or migration task may be added. Historical design notes may mention the retired migration, but executable Godot code and assets must stay absent.
 - `demo/index.html` is the canonical distributable game and must exercise the same Phaser runtime as the Vite development build.
 
 ## Naming
@@ -106,7 +105,7 @@
 - `RpgGameHost` owns Phaser lifecycle, focus, visibility pause, responsive placement, Pointer Events forwarding, keyboard focus, audio unlock, fullscreen, error handling, and teardown. One RPG canvas may be mounted at a time.
 - Phaser scenes submit engine-neutral intents such as inspect, interact, inventory drop, movement checkpoint, dialogue continue, and scene exit. TypeScript controllers validate each intent and publish the resulting state and presentation events through the shared port.
 - Inventory drag feedback remains owned by the shared React dock. Phaser scenes report exact world-space drop bounds, accepted item ids, distance rules, mode rules, and rejection reasons so the dock can display accepted, missed target, wrong item, too far, wrong mode, and locked states consistently. `requiredFacing`, facing tolerances, and `wrong_facing` are prohibited interaction fields and outcomes.
-- One checked-in web asset remains the source of truth for each visual. Derived files must have an explicit active browser consumer; retired Godot copies do not participate in asset validation.
+- One checked-in web asset remains the source of truth for each visual. Derived files must have an explicit active browser consumer; removed Godot copies must not be recreated as duplicate assets.
 - Every landscape scene requires browser validation in Blink, Gecko, and WebKit at `1280×720`, one non-16:9 desktop viewport, and `390×844`, including keyboard, touch, inventory drag, save/reload, and entry/exit flow.
 
 ## RPG Reality Modes And Spatial Item Use
@@ -138,7 +137,7 @@
 - Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
 - Run `npm run typecheck` and `npm run build:single` after React, shared-state, controller, bridge, or Phaser behavior changes.
-- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the complete Chapter 3 audio contract, campus map contract, TypeScript, production build, and offline single-file runtime for every PR and push to `main`. Retired Godot sources and exports are outside the active delivery gate.
+- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the complete Chapter 3 audio contract, campus map contract, TypeScript, production build, and offline single-file runtime for every PR and push to `main`. Godot sources, exports, and verification steps must remain absent.
 - Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.

@@ -5,9 +5,6 @@ import { fileURLToPath } from "node:url";
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourceRoot = path.join(repositoryRoot, "src");
 const supportedExtensions = new Set([".ts", ".tsx", ".json"]);
-const ignoredDirectories = new Set([
-  path.join(sourceRoot, "integrations", "godot")
-]);
 const forbiddenPatterns = [
   { label: "requiredFacing field", pattern: /\brequiredFacing\b/g },
   { label: "facing tolerance field", pattern: /\bfacingToleranceDegrees\b/g },
@@ -22,7 +19,6 @@ const forbiddenPatterns = [
 ];
 
 async function collectFiles(directory) {
-  if (ignoredDirectories.has(directory)) return [];
   const entries = await readdir(directory, { withFileTypes: true });
   const nested = await Promise.all(entries.map(async (entry) => {
     const fullPath = path.join(directory, entry.name);

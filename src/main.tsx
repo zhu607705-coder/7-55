@@ -11,6 +11,7 @@ import { applyDeveloperCheckpointFromUrl } from "./modules/DeveloperChannel";
 import { getPresentationRuntimeSnapshot } from "./modules/PresentationRuntime";
 import { getEndingRuntimeSnapshot } from "./scenes/phone/P12_Ending/EndingRuntime";
 import { getBikeArcadeSnapshot } from "./scenes/phone/P16_BikeArcade/BikeArcadeRuntime";
+import { getEndlessArcadeDebugSnapshot } from "./scenes/phone/P16_BikeArcade/EndlessArcadeRuntime";
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
@@ -69,6 +70,7 @@ function summarizeGameState(state: GameState) {
     presentation: getPresentationRuntimeSnapshot(),
     chapterThreeOpening: getChapterThreeOpeningRuntimeSnapshot(),
     endingGame: getEndingRuntimeSnapshot(),
+    endlessArcadeRuntime: getEndlessArcadeDebugSnapshot(),
     rpgRuntime: getRpgRuntimeDebugState(),
     bikeArcade: getBikeArcadeSnapshot(),
     canteenChase: getCanteenChaseSnapshot(),

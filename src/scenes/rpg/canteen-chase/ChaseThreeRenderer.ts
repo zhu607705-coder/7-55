@@ -10,6 +10,13 @@ import {
   type ChasePedestrianKind
 } from "./ChaseGeometry";
 import type { ChaseRenderState, ChaseRendererBackend } from "./ChaseRenderContract";
+import {
+  applyChaseRiderPose,
+  createChaseRiderRig,
+  measureChaseRiderContactError,
+  measureChaseRiderRigComplexity,
+  type ChaseRiderRig
+} from "./ChaseRiderRig";
 import { ThreePrimitiveCache, type ThreeFlatMaterial } from "../ThreePrimitiveCache";
 
 const LOGICAL_WIDTH = 960;
@@ -22,6 +29,7 @@ const PLAYER_CAMERA_GAP = 8.45;
 const PLAYER_LOOK_AHEAD = 12.8;
 const PLAYER_BASE_Y = 0.08;
 const DESTINATION_Z = -GOAL_DISTANCE * WORLD_PER_METER - 8;
+const DEFAULT_TONE_MAPPING_EXPOSURE = 1.02;
 
 const PALETTE = {
   sky: 0x89bcdc,
@@ -44,8 +52,8 @@ const PALETTE = {
   red: 0xd95b4e,
   orange: 0xe87938,
   white: 0xf1ead7,
-  skin: 0xd7a36b,
-  hair: 0x20272d,
+  skin: 0xf6bd86,
+  hair: 0x293038,
   brick: 0xa95740,
   brickDark: 0x794033,
   cream: 0xdccdae,
@@ -67,16 +75,6 @@ const CHASE_PRIMITIVES = new ThreePrimitiveCache();
 
 type VoxelMaterial = ThreeFlatMaterial;
 
-interface RiderModel {
-  group: THREE.Group;
-  frontAssembly: THREE.Group;
-  wheels: THREE.Mesh[];
-  leftLeg: THREE.Group;
-  rightLeg: THREE.Group;
-  leftArm: THREE.Group;
-  rightArm: THREE.Group;
-}
-
 interface PedestrianModel {
   group: THREE.Group;
   leftLeg: THREE.Group;
@@ -88,6 +86,16 @@ interface PedestrianModel {
 
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.max(minimum, Math.min(maximum, value));
+}
+
+function safeMatchMedia(query: string): boolean {
+  return typeof window !== "undefined"
+    && typeof window.matchMedia === "function"
+    && window.matchMedia(query).matches;
+}
+
+function defaultPixelRatioCap(): number {
+  return safeMatchMedia("(any-pointer: coarse)") || safeMatchMedia("(max-width: 900px)") ? 1.25 : 1.5;
 }
 
 function smoothstep(value: number): number {
@@ -188,82 +196,8 @@ function blobShadow(width: number, depth: number): THREE.Mesh {
   );
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.018;
+  shadow.name = "canteen-chase-blob-shadow";
   return shadow;
-}
-
-function buildRider(): RiderModel {
-  const group = new THREE.Group();
-  group.name = "canteen-chase-player";
-  group.add(blobShadow(1.45, 2.2));
-
-  const rearWheel = pixelWheel(0.5);
-  rearWheel.position.set(0, 0.52, 0.72);
-  const frontAssembly = new THREE.Group();
-  frontAssembly.position.set(0, 0, -0.72);
-  const frontWheel = pixelWheel(0.5);
-  frontWheel.position.set(0, 0.52, 0);
-  const leftFork = box(0.09, 0.76, 0.1, PALETTE.yellow, -0.13, 0.84, 0.02);
-  const rightFork = box(0.09, 0.76, 0.1, PALETTE.yellow, 0.13, 0.84, 0.02);
-  leftFork.rotation.x = -0.14;
-  rightFork.rotation.x = -0.14;
-  const handlebar = box(1.22, 0.12, 0.12, PALETTE.outline, 0, 1.22, -0.04);
-  const stem = box(0.12, 0.48, 0.12, PALETTE.metal, 0, 1.02, 0.03);
-  const leftGrip = box(0.22, 0.17, 0.18, PALETTE.cyan, -0.64, 1.22, -0.04, true);
-  const rightGrip = box(0.22, 0.17, 0.18, PALETTE.cyan, 0.64, 1.22, -0.04, true);
-  const headLamp = box(0.3, 0.24, 0.18, PALETTE.white, 0, 1.15, -0.18, true);
-  frontAssembly.add(frontWheel, leftFork, rightFork, stem, handlebar, leftGrip, rightGrip, headLamp);
-  group.add(rearWheel, frontAssembly);
-
-  const frame = new THREE.Group();
-  frame.add(
-    box(0.14, 0.14, 1.25, PALETTE.yellow, 0, 0.72, 0),
-    box(0.14, 0.76, 0.14, PALETTE.yellow, 0, 0.92, 0.42),
-    box(0.58, 0.12, 0.32, PALETTE.outline, 0, 1.28, 0.44),
-    box(0.72, 0.12, 0.12, PALETTE.yellow, 0, 0.94, 0.08)
-  );
-  group.add(frame);
-
-  const torso = box(0.82, 0.9, 0.42, PALETTE.blue, 0, 1.78, 0.18);
-  torso.rotation.x = -0.12;
-  const backpack = box(0.58, 0.66, 0.24, PALETTE.blueDark, 0, 1.82, 0.43);
-  const reflectiveBand = box(0.86, 0.1, 0.45, PALETTE.cyan, 0, 1.6, 0.18, true);
-  const neck = box(0.24, 0.18, 0.24, PALETTE.skin, 0, 2.3, 0.08);
-  const head = box(0.52, 0.52, 0.5, PALETTE.skin, 0, 2.58, 0.02);
-  const hair = box(0.58, 0.22, 0.54, PALETTE.hair, 0, 2.82, 0.02);
-  group.add(torso, backpack, reflectiveBand, neck, head, hair);
-
-  const leftArm = new THREE.Group();
-  const rightArm = new THREE.Group();
-  leftArm.position.set(-0.48, 2.02, 0.02);
-  rightArm.position.set(0.48, 2.02, 0.02);
-  leftArm.add(box(0.18, 0.72, 0.18, PALETTE.blue, 0, -0.3, -0.12));
-  rightArm.add(box(0.18, 0.72, 0.18, PALETTE.blue, 0, -0.3, -0.12));
-  leftArm.rotation.x = -0.72;
-  rightArm.rotation.x = -0.72;
-  leftArm.rotation.z = -0.2;
-  rightArm.rotation.z = 0.2;
-  group.add(leftArm, rightArm);
-
-  const leftLeg = new THREE.Group();
-  const rightLeg = new THREE.Group();
-  leftLeg.position.set(-0.22, 1.44, 0.25);
-  rightLeg.position.set(0.22, 1.44, 0.25);
-  leftLeg.add(box(0.22, 0.76, 0.24, PALETTE.outline, 0, -0.34, 0));
-  rightLeg.add(box(0.22, 0.76, 0.24, PALETTE.outline, 0, -0.34, 0));
-  leftLeg.add(box(0.28, 0.14, 0.4, PALETTE.white, 0, -0.74, -0.08));
-  rightLeg.add(box(0.28, 0.14, 0.4, PALETTE.white, 0, -0.74, -0.08));
-  group.add(leftLeg, rightLeg);
-
-  group.scale.setScalar(1.28);
-  return {
-    group,
-    frontAssembly,
-    wheels: [rearWheel, frontWheel],
-    leftLeg,
-    rightLeg,
-    leftArm,
-    rightArm
-  };
 }
 
 function buildPerson(kind: ChasePedestrianKind, seed: number): PedestrianModel {
@@ -389,7 +323,7 @@ function buildTree(seed: number): THREE.Group {
   const foliageColors = [PALETTE.tree, PALETTE.treeLight, 0x3f7440] as const;
   for (let index = 0; index < 4; index += 1) {
     const crown = new THREE.Mesh(
-      CHASE_PRIMITIVES.icosahedron(0.82 + ((seed + index) % 3) * 0.12, 0),
+      CHASE_PRIMITIVES.icosahedron(0.82 + ((seed + index) % 3) * 0.12, 1),
       material(foliageColors[(seed + index) % foliageColors.length])
     );
     crown.position.set((index - 1.5) * 0.38, 2.75 + (index % 2) * 0.45, ((seed + index) % 2) * 0.28);
@@ -613,10 +547,13 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera(55, 16 / 9, 0.1, 420);
   private readonly observer: ResizeObserver;
-  private readonly rider: RiderModel;
+  private readonly rider: ChaseRiderRig;
   private readonly paper = new THREE.Group();
   private readonly obstacleModels = new Map<string, THREE.Group>();
   private readonly pedestrianModels = new Map<string, PedestrianModel>();
+  private readonly sun = new THREE.DirectionalLight(0xffedbd, 1.3);
+  private readonly sunTarget = new THREE.Object3D();
+  private readonly enableLiveShadows = safeMatchMedia("(pointer: fine)") && !safeMatchMedia("(any-pointer: coarse)");
   private reducedMotion = false;
   private lastTime = performance.now();
   private animationSeconds = 0;
@@ -632,30 +569,40 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.canvas = canvas;
     const context = canvas.getContext("webgl2", {
       alpha: false,
-      antialias: false,
+      antialias: true,
       depth: true,
       powerPreference: "high-performance",
       preserveDrawingBuffer: false,
       stencil: false
     });
     if (!context) throw new Error("WebGL2 unavailable for the 3D chase renderer.");
-    this.renderer = new THREE.WebGLRenderer({ canvas, context, antialias: false, alpha: false, powerPreference: "high-performance" });
-    this.renderer.setPixelRatio(1);
+    this.renderer = new THREE.WebGLRenderer({ canvas, context, antialias: true, alpha: false, powerPreference: "high-performance" });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.shadowMap.enabled = false;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = DEFAULT_TONE_MAPPING_EXPOSURE;
+    this.renderer.shadowMap.enabled = this.enableLiveShadows;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.scene.background = new THREE.Color(PALETTE.sky);
     this.scene.fog = new THREE.Fog(PALETTE.fog, 38, 126);
-    this.scene.add(new THREE.HemisphereLight(0xf2ecd8, 0x4f6747, 1.25));
-    const sun = new THREE.DirectionalLight(0xffedbd, 1.5);
-    sun.position.set(7, 15, 6);
-    this.scene.add(sun);
+    this.scene.add(new THREE.HemisphereLight(0xf2ecd8, 0x4f6747, this.enableLiveShadows ? 1.38 : 1.25));
+    this.sun.position.set(7, 15, 6);
+    this.sun.target = this.sunTarget;
+    this.scene.add(this.sunTarget, this.sun);
     const fill = new THREE.DirectionalLight(0xa7d2e4, 0.38);
     fill.position.set(-8, 7, -8);
-    this.scene.add(fill);
+    const portraitFill = new THREE.DirectionalLight(0xffd7ba, 0.28);
+    portraitFill.position.set(0, 4.5, -8);
+    this.scene.add(fill, portraitFill);
+    this.configureLiveShadows();
     this.buildWorld();
-    this.rider = buildRider();
+    this.rider = createChaseRiderRig(CHASE_PRIMITIVES, PALETTE);
     this.rider.group.position.set(0, PLAYER_BASE_Y, 0);
     this.scene.add(this.rider.group);
+    this.configureHeroShadowState();
+    const riderComplexity = measureChaseRiderRigComplexity(this.rider);
+    this.canvas.dataset.chaseRiderMeshes = String(riderComplexity.meshes);
+    this.canvas.dataset.chaseRiderTriangles = String(riderComplexity.triangles);
+    this.canvas.dataset.chaseRiderMaterials = String(riderComplexity.materials);
     this.buildPaper();
     this.scene.add(this.paper);
     this.observer = new ResizeObserver(() => this.handleResize());
@@ -693,22 +640,24 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.previousRiderX = this.rider.group.position.x;
     const bodySteer = clamp(-laneVelocity * 0.055, -0.42, 0.42);
     const handlebarSteer = bodySteer * 1.32;
-    this.rider.frontAssembly.rotation.y += (handlebarSteer - this.rider.frontAssembly.rotation.y) * Math.min(1, deltaSeconds * 16);
+    const resolvedHandlebarSteer = this.rider.frontAssembly.rotation.y
+      + (handlebarSteer - this.rider.frontAssembly.rotation.y) * Math.min(1, deltaSeconds * 16);
     this.rider.group.rotation.z += (bodySteer * 0.45 - this.rider.group.rotation.z) * Math.min(1, deltaSeconds * 12);
     this.rider.group.position.y = PLAYER_BASE_Y + (this.reducedMotion ? 0 : Math.abs(Math.sin(this.animationSeconds * 9)) * 0.035);
     const distanceDelta = Math.max(0, state.distance - this.previousDistance);
     this.previousDistance = state.distance;
     const wheelSpin = distanceDelta * WORLD_PER_METER / 0.5;
-    this.rider.wheels.forEach((wheel) => { wheel.rotation.z -= wheelSpin; });
-    const pedal = this.reducedMotion ? 0 : Math.sin(this.animationSeconds * 10.5);
-    this.rider.leftLeg.rotation.x = pedal * 0.48;
-    this.rider.rightLeg.rotation.x = -pedal * 0.48;
-    this.rider.leftArm.rotation.y = handlebarSteer * 0.42;
-    this.rider.rightArm.rotation.y = handlebarSteer * 0.42;
+    const pedalPhase = this.reducedMotion ? 0 : this.animationSeconds * 10.5;
+    applyChaseRiderPose(this.rider, "ride", {
+      pedalPhaseRadians: pedalPhase,
+      steeringRadians: resolvedHandlebarSteer
+    });
+    this.rider.wheels.forEach((wheel) => { wheel.rotation.x -= wheelSpin; });
 
     this.updateObstacles(state.distance);
     this.updatePedestrians(state.distance);
     this.updatePaper(state.distance);
+    this.updateShadowRig(playerZ);
     this.updateCamera(playerZ, laneVelocity, deltaSeconds, state);
     const steeringPivot = this.rider.frontAssembly.localToWorld(this.steeringPivot.set(0, 0, 0)).project(this.camera);
     const steeringTip = this.rider.frontAssembly.localToWorld(this.steeringTip.set(0, 0, -1)).project(this.camera);
@@ -727,6 +676,11 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
       this.canvas.dataset.chaseTextures = String(this.renderer.info.memory.textures);
       this.canvas.dataset.chasePrimitiveGeometries = String(CHASE_PRIMITIVES.geometryCount);
       this.canvas.dataset.chasePrimitiveMaterials = String(CHASE_PRIMITIVES.materialCount);
+      const contactError = measureChaseRiderContactError(this.rider);
+      this.canvas.dataset.chaseLeftHandContactError = contactError.leftHandToGripWorldUnits.toFixed(6);
+      this.canvas.dataset.chaseRightHandContactError = contactError.rightHandToGripWorldUnits.toFixed(6);
+      this.canvas.dataset.chaseLeftFootContactError = contactError.leftFootToPedalWorldUnits.toFixed(6);
+      this.canvas.dataset.chaseRightFootContactError = contactError.rightFootToPedalWorldUnits.toFixed(6);
     }
   }
 
@@ -735,9 +689,41 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     const cssHeight = this.canvas.clientHeight || LOGICAL_HEIGHT;
     const width = Math.max(480, Math.min(LOGICAL_WIDTH, Math.round(cssWidth)));
     const height = Math.max(270, Math.min(LOGICAL_HEIGHT, Math.round(cssHeight)));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, defaultPixelRatioCap()));
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+  }
+
+  private configureLiveShadows(): void {
+    if (!this.enableLiveShadows) return;
+    this.sun.castShadow = true;
+    this.sun.shadow.mapSize.set(1024, 1024);
+    this.sun.shadow.camera.near = 0.5;
+    this.sun.shadow.camera.far = 42;
+    this.sun.shadow.camera.left = -9.5;
+    this.sun.shadow.camera.right = 9.5;
+    this.sun.shadow.camera.top = 12;
+    this.sun.shadow.camera.bottom = -4.5;
+    this.sun.shadow.bias = -0.00016;
+    this.sun.shadow.normalBias = 0.018;
+    this.sun.shadow.radius = 2.2;
+  }
+
+  private configureHeroShadowState(): void {
+    this.rider.group.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+      object.castShadow = this.enableLiveShadows;
+      object.receiveShadow = false;
+      if (object.name === "canteen-chase-rider-shadow") object.visible = !this.enableLiveShadows;
+    });
+  }
+
+  private updateShadowRig(playerZ: number): void {
+    if (!this.enableLiveShadows) return;
+    this.sun.position.z = playerZ + 8;
+    this.sunTarget.position.set(this.rider.group.position.x * 0.18, 1.15, playerZ - 10);
+    this.sun.target.updateMatrixWorld();
   }
 
   private buildWorld(): void {
@@ -851,6 +837,13 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     destination.position.set(0, 0, DESTINATION_Z);
     staticWorld.add(destination);
     mergeStaticWorldMeshes(staticWorld);
+    if (this.enableLiveShadows) {
+      staticWorld.traverse((object) => {
+        if (!(object instanceof THREE.Mesh)) return;
+        object.castShadow = false;
+        object.receiveShadow = true;
+      });
+    }
     this.scene.add(staticWorld);
   }
 

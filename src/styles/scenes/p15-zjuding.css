@@ -2255,3 +2255,506 @@
 .tab-ico.mine {
   border-radius: 50% 50% 0 0;
 }
+
+/* ---------- 浙大钉统一应用目录与工具面板 ---------- */
+
+.zju-native-header.phone-app-header { padding: 0; }
+
+.zju-native-header .phone-app-header__nav-slot,
+.zju-native-header .phone-app-header__end { height: 100%; }
+
+.zju-native-header .phone-app-header__title { min-width: 0; }
+.zju-native-header .phone-app-header__title h1 { line-height: 1.15; }
+
+.zju-native-header .phone-nav-button,
+.zju-native-header .zju-native-more {
+  height: 100%;
+  width: 100%;
+}
+
+.zju-native-bottom-nav.phone-app-bottom-nav { padding: 0; }
+
+.zju-native-bottom-nav .phone-app-bottom-nav__icon {
+  display: flex;
+  font-size: 22px;
+  height: 27px;
+}
+
+.zju-native-bottom-nav .phone-app-bottom-nav__label {
+  display: block;
+  font-size: var(--fs-caption);
+  height: auto;
+  line-height: 1.15;
+}
+
+.zju-hub-search-pill:not(.zju-locked-control-icon),
+.zju-baishitong-search:not(.zju-locked-control-icon) {
+  color: #174d9d;
+  cursor: pointer;
+}
+
+.zju-hub-search-pill:not(.zju-locked-control-icon):hover,
+.zju-hub-search-pill:not(.zju-locked-control-icon):focus-visible,
+.zju-baishitong-search:not(.zju-locked-control-icon):hover,
+.zju-baishitong-search:not(.zju-locked-control-icon):focus-visible {
+  background: #e7f0ff;
+  border-color: #174d9d;
+  outline: 3px solid #f5c542;
+  outline-offset: -3px;
+}
+
+.zju-hub-search-pill small {
+  font-size: var(--fs-caption);
+  font-weight: 800;
+}
+
+.zju-baishitong-search.zju-locked-control-icon { display: grid; }
+
+.zju-sheet.phone-app-sheet { padding: 0; }
+
+.zju-sheet .phone-app-sheet__body {
+  display: grid;
+  gap: 12px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.zju-sheet .zju-sheet-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.zju-sheet .zju-sheet-actions > button,
+.zju-search-locked-result {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 46px minmax(0, 1fr);
+  min-height: 56px;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.zju-sheet .zju-sheet-actions > button > span:last-child,
+.zju-search-locked-result > span:last-child {
+  font-size: var(--fs-label);
+  font-weight: 800;
+}
+
+.zju-search-locked-result {
+  background: #eef0f2;
+  border: 2px solid #c4c9ce;
+  color: #777f86;
+  opacity: 0.66;
+  pointer-events: none;
+  user-select: none;
+}
+
+.zju-seat-toolbar p small {
+  color: #68717c;
+  display: block;
+  font-size: var(--fs-micro);
+  margin-top: 2px;
+}
+
+.zju-utility-page {
+  background:
+    linear-gradient(rgba(25, 91, 117, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25, 91, 117, 0.055) 1px, transparent 1px),
+    #f2f6fa;
+  background-size: 16px 16px;
+}
+
+.zju-utility-content {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+  height: calc(100% - 128px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 14px 24px;
+  scrollbar-color: #1b5aa2 #dfe6ed;
+  scrollbar-width: thin;
+}
+
+.zju-utility-summary,
+.zju-utility-profile-card,
+.zju-utility-empty,
+.zju-utility-preview,
+.zju-utility-form,
+.zju-utility-app-section {
+  background: #fff;
+  border: 2px solid #93a6b8;
+  box-shadow: 4px 4px 0 rgba(38, 72, 103, 0.13);
+  padding: 13px;
+}
+
+.zju-utility-summary { border-left: 7px solid #1c5ca7; }
+.zju-utility-summary.is-network { border-left-color: #2b8b76; }
+
+.zju-utility-summary small,
+.zju-utility-summary strong,
+.zju-utility-summary p,
+.zju-utility-profile-card small,
+.zju-utility-profile-card strong,
+.zju-utility-profile-card p {
+  display: block;
+  margin: 0;
+}
+
+.zju-utility-summary > small,
+.zju-utility-profile-card small {
+  color: #587083;
+  font-size: var(--fs-caption);
+}
+
+.zju-utility-summary > strong,
+.zju-utility-profile-card strong {
+  color: #173f74;
+  font-size: var(--fs-title);
+  margin-top: 4px;
+}
+
+.zju-utility-summary > p,
+.zju-utility-profile-card p {
+  color: #4e5f6d;
+  line-height: 1.5;
+  margin-top: 7px;
+}
+
+.zju-utility-list,
+.zju-utility-service-list,
+.zju-utility-contact-list,
+.zju-utility-message-list {
+  display: grid;
+  gap: 9px;
+}
+
+.zju-utility-list > article,
+.zju-utility-service-list > article,
+.zju-utility-contact-list > article {
+  align-items: center;
+  background: #fff;
+  border: 2px solid #aab7c3;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 68px;
+  padding: 10px;
+}
+
+.zju-utility-list > article.is-selected {
+  border-color: #1c5ca7;
+  box-shadow: inset 5px 0 0 #1c5ca7;
+}
+
+.zju-utility-list article > div > small,
+.zju-utility-list article > div > strong,
+.zju-utility-list article > div > span,
+.zju-utility-service-list article > div > strong,
+.zju-utility-service-list article > div > span { display: block; }
+
+.zju-utility-list article > div > small,
+.zju-utility-list article > div > span,
+.zju-utility-service-list article > div > span {
+  color: #61717e;
+  font-size: var(--fs-caption);
+}
+
+.zju-utility-list article > div > strong,
+.zju-utility-service-list article > div > strong {
+  font-size: var(--fs-label);
+  margin: 3px 0;
+}
+
+.zju-utility-list article > p {
+  border-top: 1px solid #cad3dc;
+  color: #425363;
+  grid-column: 1 / -1;
+  line-height: 1.45;
+  margin: 0;
+  padding-top: 8px;
+}
+
+.zju-utility-list article > button,
+.zju-utility-service-list article > button,
+.zju-utility-primary {
+  background: #e7f0ff;
+  border: 2px solid #174d9d;
+  color: #174d9d;
+  font-size: var(--fs-caption);
+  font-weight: 900;
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
+.zju-utility-service-list article > em {
+  color: #7b858d;
+  font-size: var(--fs-caption);
+  font-style: normal;
+}
+
+.zju-utility-card-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.zju-utility-card-grid article {
+  background: #fff;
+  border: 2px solid #9db1bf;
+  min-height: 130px;
+  padding: 12px;
+}
+
+.zju-utility-card-grid small,
+.zju-utility-card-grid strong,
+.zju-utility-card-grid span { display: block; }
+
+.zju-utility-card-grid small,
+.zju-utility-card-grid span {
+  color: #62717b;
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+}
+
+.zju-utility-card-grid strong {
+  color: #175a91;
+  font-size: var(--fs-title);
+  margin: 7px 0;
+}
+
+.zju-utility-primary {
+  justify-self: stretch;
+  min-height: 44px;
+}
+
+.zju-utility-feedback.phone-app-feedback { margin: 0; }
+
+.zju-utility-empty {
+  min-height: 150px;
+  text-align: center;
+}
+
+.zju-utility-empty strong {
+  color: #3d5263;
+  display: block;
+  font-size: var(--fs-title);
+  margin-top: 26px;
+}
+
+.zju-utility-empty p {
+  color: #677887;
+  line-height: 1.5;
+}
+
+.zju-utility-form {
+  display: grid;
+  gap: 11px;
+}
+
+.zju-utility-form label {
+  display: grid;
+  gap: 5px;
+}
+
+.zju-utility-form label > span,
+.zju-utility-form label > small {
+  color: #5c6c78;
+  font-size: var(--fs-caption);
+}
+
+.zju-utility-form input,
+.zju-utility-form select,
+.zju-utility-form textarea {
+  background: #f8fbfd;
+  border: 2px solid #879aaa;
+  border-radius: 0;
+  color: #17232d;
+  font: inherit;
+  min-height: 42px;
+  padding: 8px 9px;
+  width: 100%;
+}
+
+.zju-utility-form textarea {
+  min-height: 138px;
+  resize: vertical;
+}
+
+.zju-utility-form-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 2fr;
+}
+
+.zju-utility-form-actions button {
+  border: 2px solid #7a8996;
+  min-height: 42px;
+  padding: 7px;
+}
+
+.zju-utility-form-actions button.primary {
+  background: #174d9d;
+  border-color: #0f386f;
+  color: #fff;
+}
+
+.zju-utility-preview {
+  border-color: #397a62;
+  box-shadow: inset 6px 0 0 #397a62;
+}
+
+.zju-utility-preview small,
+.zju-utility-preview strong,
+.zju-utility-preview p {
+  display: block;
+  margin: 0;
+}
+
+.zju-utility-preview small { color: #4c6d61; font-size: var(--fs-caption); }
+.zju-utility-preview strong { font-size: var(--fs-title); margin-top: 5px; }
+.zju-utility-preview p { margin-top: 5px; }
+
+.zju-language-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.zju-language-grid button {
+  background: #fff;
+  border: 3px solid #7184a7;
+  display: grid;
+  min-height: 118px;
+  padding: 13px;
+  text-align: left;
+}
+
+.zju-language-grid button.is-revealed {
+  background: #e8f1ff;
+  border-color: #174d9d;
+}
+
+.zju-language-grid small,
+.zju-language-grid strong,
+.zju-language-grid span { display: block; }
+
+.zju-language-grid small,
+.zju-language-grid span {
+  color: #5b6f81;
+  font-size: var(--fs-caption);
+}
+
+.zju-language-grid strong {
+  color: #173f74;
+  font-size: var(--fs-display);
+  margin: 7px 0;
+}
+
+.zju-utility-app-section h2 {
+  color: #42586a;
+  font-size: var(--fs-label);
+  margin: 0 0 10px;
+}
+
+.zju-utility-app-grid {
+  display: grid;
+  gap: 8px 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.zju-utility-app-grid > button,
+.zju-utility-app-grid > .zju-static-app {
+  align-content: start;
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  min-height: 74px;
+  padding: 4px 1px;
+}
+
+.zju-utility-app-grid > button > span:last-child,
+.zju-utility-app-grid .zju-locked-label {
+  font-size: var(--fs-micro);
+  line-height: 1.2;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.zju-utility-contact-list > article {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.zju-utility-contact-list > article > span {
+  color: #174d9d;
+  font-size: var(--fs-display);
+}
+
+.zju-utility-contact-list strong,
+.zju-utility-contact-list small { display: block; }
+
+.zju-utility-contact-list small {
+  color: #60717e;
+  margin-top: 4px;
+}
+
+.zju-utility-message-list .phone-list-row,
+.zju-utility-message-static {
+  background: #fff;
+  border-color: #9eb0bf;
+  margin: 0;
+  width: 100%;
+}
+
+.zju-utility-message-static {
+  align-items: center;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: 3px 3px 0 rgba(28, 39, 48, 0.12);
+  display: grid;
+  gap: 9px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 58px;
+  padding: 8px 10px;
+}
+
+.zju-utility-message-list .phone-list-row__trailing,
+.zju-utility-message-static .phone-list-row__trailing {
+  background: transparent;
+  border: 0;
+  color: #174d9d;
+  font-size: var(--fs-caption);
+  font-weight: 900;
+  min-height: 0;
+  padding: 0;
+}
+
+.zju-utility-profile-card {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+
+.zju-utility-profile-card > span {
+  align-items: center;
+  background: #174d9d;
+  border: 4px solid #0e376f;
+  color: #fff;
+  display: flex;
+  font-size: var(--fs-title);
+  font-weight: 900;
+  height: 70px;
+  justify-content: center;
+  width: 70px;
+}
+
+@media (max-width: 420px) {
+  .zju-utility-card-grid { grid-template-columns: 1fr; }
+  .zju-utility-app-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

@@ -197,6 +197,21 @@
   font: 800 var(--fs-micro)/1 monospace;
 }
 
+.quest-task-local-progress {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quest-task-bar.has-chapter-four-context .quest-task-trigger-copy {
+  gap: 2px;
+}
+
+.quest-task-bar.has-chapter-four-context .quest-task-trigger-copy > span {
+  line-height: 1.15;
+}
+
 @keyframes quest-task-update-lock {
   0%, 100% { border-color: #f2e7c9; transform: translateX(0); }
   12% { border-color: #f0d54e; transform: translateX(-2px); }
@@ -425,6 +440,101 @@
 .quest-task-overview > section:last-child strong {
   color: #f0d54e;
   font: 900 var(--fs-label)/1.2 monospace;
+}
+
+.quest-task-overview.is-chapter-four {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quest-task-overview.is-chapter-four > section {
+  min-height: 64px;
+}
+
+.quest-task-overview.is-chapter-four > section:last-child strong {
+  color: #f0d54e;
+}
+
+.quest-chapter-four-context {
+  background: #171d23;
+  border: 2px solid #81909c;
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+}
+
+.quest-chapter-four-difference {
+  border-bottom: 1px solid #66737e;
+  display: grid;
+  gap: 5px;
+  padding-bottom: 9px;
+}
+
+.quest-chapter-four-difference > span,
+.quest-chapter-four-facts > strong,
+.quest-chapter-four-context dt {
+  color: #9fd3ff;
+  font-size: var(--fs-caption);
+  font-weight: 900;
+}
+
+.quest-chapter-four-difference p,
+.quest-chapter-four-facts p {
+  color: #fff5dc;
+  font-size: var(--fs-label);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.quest-chapter-four-context dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.quest-chapter-four-context dl > div {
+  background: #20272f;
+  border: 1px solid #66737e;
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+}
+
+.quest-chapter-four-context dd {
+  color: #f7f2df;
+  font-size: var(--fs-caption);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.quest-chapter-four-facts {
+  display: grid;
+  gap: 7px;
+}
+
+.quest-chapter-four-facts ul {
+  display: grid;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.quest-chapter-four-facts li {
+  color: #f7f2df;
+  font-size: var(--fs-caption);
+  line-height: 1.35;
+  padding-left: 14px;
+  position: relative;
+}
+
+.quest-chapter-four-facts li::before {
+  color: #f0d54e;
+  content: "■";
+  font-size: 7px;
+  left: 0;
+  position: absolute;
+  top: 4px;
 }
 
 .quest-task-digits {
@@ -1975,18 +2085,6 @@
   font-size: var(--fs-body);
   line-height: 1.45;
   margin: 0;
-}
-
-.item-inspect-fluorescent-order {
-  color: #9dfff2;
-  display: block;
-  font: 900 var(--fs-body)/1.25 var(--font-pixel);
-  letter-spacing: 0.08em;
-  margin-top: 7px;
-  text-shadow:
-    0 0 3px rgba(157, 255, 242, 0.95),
-    0 0 9px rgba(59, 231, 255, 0.84),
-    0 0 16px rgba(59, 231, 255, 0.58);
 }
 
 .item-document {

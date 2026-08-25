@@ -4,26 +4,40 @@ import playerDown0Url from "../../assets/rpg/player/player_down_0.png";
 import playerDown1Url from "../../assets/rpg/player/player_down_1.png";
 import playerDown2Url from "../../assets/rpg/player/player_down_2.png";
 import playerDown3Url from "../../assets/rpg/player/player_down_3.png";
+import playerDown4Url from "../../assets/rpg/player/player_down_4.png";
+import playerDown5Url from "../../assets/rpg/player/player_down_5.png";
+import playerDown6Url from "../../assets/rpg/player/player_down_6.png";
+import playerDown7Url from "../../assets/rpg/player/player_down_7.png";
 import playerSide0Url from "../../assets/rpg/player/player_side_0.png";
 import playerSide1Url from "../../assets/rpg/player/player_side_1.png";
 import playerSide2Url from "../../assets/rpg/player/player_side_2.png";
 import playerSide3Url from "../../assets/rpg/player/player_side_3.png";
+import playerSide4Url from "../../assets/rpg/player/player_side_4.png";
+import playerSide5Url from "../../assets/rpg/player/player_side_5.png";
+import playerSide6Url from "../../assets/rpg/player/player_side_6.png";
+import playerSide7Url from "../../assets/rpg/player/player_side_7.png";
 import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
 import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
 import playerUp3Url from "../../assets/rpg/player/player_up_3.png";
+import playerUp4Url from "../../assets/rpg/player/player_up_4.png";
+import playerUp5Url from "../../assets/rpg/player/player_up_5.png";
+import playerUp6Url from "../../assets/rpg/player/player_up_6.png";
+import playerUp7Url from "../../assets/rpg/player/player_up_7.png";
 import { preloadRpgImages } from "./RpgAssetLoader";
 import type { RpgCardinalFacing } from "./RpgInteractionContract";
 
 export type RpgPlayerFacing = "down" | "up" | "side";
+export type RpgPlayerWalkFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export const RPG_PLAYER_FRAME_WIDTH = 96;
 export const RPG_PLAYER_FRAME_HEIGHT = 128;
 export const RPG_PLAYER_DISPLAY_SCALE = 0.65;
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
 export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = campusRuntimeData.perspective.baseMultiplier;
-export const RPG_PLAYER_WALK_FRAME_MS = 90;
+export const RPG_PLAYER_WALK_FRAME_MS = 110;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
+export const RPG_PLAYER_WALK_FRAME_COUNT = 8;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 30,
   height: 22.5,
@@ -62,14 +76,26 @@ const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-down-1": playerDown1Url,
   "act1-player-down-2": playerDown2Url,
   "act1-player-down-3": playerDown3Url,
+  "act1-player-down-4": playerDown4Url,
+  "act1-player-down-5": playerDown5Url,
+  "act1-player-down-6": playerDown6Url,
+  "act1-player-down-7": playerDown7Url,
   "act1-player-up-0": playerUp0Url,
   "act1-player-up-1": playerUp1Url,
   "act1-player-up-2": playerUp2Url,
   "act1-player-up-3": playerUp3Url,
+  "act1-player-up-4": playerUp4Url,
+  "act1-player-up-5": playerUp5Url,
+  "act1-player-up-6": playerUp6Url,
+  "act1-player-up-7": playerUp7Url,
   "act1-player-side-0": playerSide0Url,
   "act1-player-side-1": playerSide1Url,
   "act1-player-side-2": playerSide2Url,
-  "act1-player-side-3": playerSide3Url
+  "act1-player-side-3": playerSide3Url,
+  "act1-player-side-4": playerSide4Url,
+  "act1-player-side-5": playerSide5Url,
+  "act1-player-side-6": playerSide6Url,
+  "act1-player-side-7": playerSide7Url
 } as const;
 
 export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
@@ -77,15 +103,16 @@ export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
 }
 
 export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
-  const drawPlayer = (texture: string, facing: RpgPlayerFacing, frame: 0 | 1 | 2 | 3) => {
+  const drawPlayer = (texture: string, facing: RpgPlayerFacing, frame: RpgPlayerWalkFrame) => {
     if (scene.textures.exists(texture)) {
       return;
     }
     const graphics = scene.make.graphics({ x: 0, y: 0 });
     graphics.scaleCanvas(RPG_PLAYER_FRAME_WIDTH / 28, RPG_PLAYER_FRAME_HEIGHT / 43);
     graphics.fillStyle(0x172028, 0.42).fillEllipse(14, 39, 24, 7);
-    const stepping = frame === 1 || frame === 3;
-    const alternateStep = frame === 3;
+    const fallbackPhase = frame % 4;
+    const stepping = fallbackPhase === 1 || fallbackPhase === 3;
+    const alternateStep = fallbackPhase === 3;
     const leftStep = stepping ? (alternateStep ? 17 : 2) : 5;
     const rightStep = stepping ? (alternateStep ? 2 : 17) : 15;
     graphics.fillStyle(0x26313b).fillRect(leftStep, 32, 8, 7).fillRect(rightStep, stepping ? 30 : 32, 8, 7);
@@ -123,7 +150,7 @@ export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
   };
 
   (["down", "up", "side"] as const).forEach((direction) => {
-    ([0, 1, 2, 3] as const).forEach((frame) => {
+    ([0, 1, 2, 3, 4, 5, 6, 7] as const).forEach((frame) => {
       drawPlayer(`act1-player-${direction}-${frame}`, direction, frame);
     });
   });
@@ -222,7 +249,7 @@ function turnDuration(
 export class RpgPlayerAnimator {
   private targetFacing: RpgPlayerFacing;
   private targetFlipX: boolean;
-  private walkingFrame = 0;
+  private walkingFrame: RpgPlayerWalkFrame = 0;
   private turn: TurnState | null = null;
 
   constructor(
@@ -317,7 +344,9 @@ export class RpgPlayerAnimator {
       return;
     }
 
-    const nextFrame = (Math.floor(now / RPG_PLAYER_WALK_FRAME_MS) % 4) as 0 | 1 | 2 | 3;
+    const nextFrame = (
+      Math.floor(now / RPG_PLAYER_WALK_FRAME_MS) % RPG_PLAYER_WALK_FRAME_COUNT
+    ) as RpgPlayerWalkFrame;
     if (
       nextFrame !== this.walkingFrame
       || this.player.texture.key !== `act1-player-${this.targetFacing}-${nextFrame}`
@@ -330,7 +359,7 @@ export class RpgPlayerAnimator {
 
   private applyPose(
     facing: RpgPlayerFacing,
-    frame: 0 | 1 | 2 | 3,
+    frame: RpgPlayerWalkFrame,
     flipX: boolean,
     angle = 0
   ): void {

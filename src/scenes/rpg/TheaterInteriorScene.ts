@@ -59,7 +59,6 @@ import {
   THEATER_OCCLUSION_RECTS,
   THEATER_STAGE_SPAWN,
   THEATER_STATIC_COLLISION_RECTS,
-  THEATER_TICKET_FIXTURE_OFFSET_Y,
   findNearestTheaterTarget,
   type TheaterInteractionTarget
 } from "./TheaterInteriorModel";
@@ -559,11 +558,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
       .setScale(0.75)
       .setOrigin(0.5);
     this.ticketInspectorArm = null;
-    this.ticketInspector = this.add.container(753, 681 + THEATER_TICKET_FIXTURE_OFFSET_Y, [
+    this.ticketInspector = this.add.container(753, 681, [
       inspectorShadow,
       this.ticketInspectorSprite
     ])
-      .setDepth(832 + THEATER_TICKET_FIXTURE_OFFSET_Y)
+      .setDepth(832)
       .setSize(66, 86)
       .setInteractive({ useHandCursor: true })
       .on("pointerover", () => this.ticketInspector?.setScale(1.06))
@@ -581,7 +580,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       fontFamily: "monospace",
       fontSize: "9px"
     }).setOrigin(0.5);
-    this.ticketReader = this.add.container(907, 690 + THEATER_TICKET_FIXTURE_OFFSET_Y, [
+    this.ticketReader = this.add.container(907, 690, [
       readerShadow,
       readerStem,
       readerHead,
@@ -589,7 +588,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       readerSlot,
       readerLabel
     ])
-      .setDepth(839 + THEATER_TICKET_FIXTURE_OFFSET_Y)
+      .setDepth(839)
       .setSize(48, 72)
       .setInteractive({ useHandCursor: true })
       .on("pointerover", () => this.ticketReader?.setScale(1.06))
@@ -614,7 +613,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (!this.reducedMotion) {
       this.tweens.add({
         targets: this.ticketInspector,
-        y: 680 + THEATER_TICKET_FIXTURE_OFFSET_Y,
+        y: 680,
         duration: 1350,
         yoyo: true,
         repeat: -1,
@@ -703,17 +702,12 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const bounds: Record<string, { x: number; y: number; width: number; height: number }> = {
       theater_poster: { x: 278, y: 755, width: 365, height: 160 },
       theater_ticket_kiosk: { x: 1146, y: 755, width: 100, height: 150 },
-      theater_ticket_gate: {
-        x: 907,
-        y: 690 + THEATER_TICKET_FIXTURE_OFFSET_Y,
-        width: 112,
-        height: 126
-      },
+      theater_ticket_gate: { x: 907, y: 690, width: 112, height: 126 },
       theater_light_console: { x: 1140, y: 500, width: 130, height: 110 },
-      theater_prop_box: { x: 294, y: 165, width: 96, height: 95 },
+      theater_prop_box: { x: 292, y: 166, width: 100, height: 100 },
       theater_prop_scanner: { x: 364, y: 170, width: 76, height: 94 },
       theater_backstage_vent: { x: 936, y: 95, width: 78, height: 55 },
-      theater_exit: { x: 836, y: 891.5, width: 244, height: 99 }
+      theater_exit: { x: 836, y: 842, width: 156, height: 92 }
     };
     Object.entries(bounds).forEach(([id, rect]) => {
       const target = THEATER_INTERACTION_TARGETS.find((candidate) => candidate.id === id);

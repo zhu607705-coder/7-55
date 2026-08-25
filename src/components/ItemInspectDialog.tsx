@@ -16,12 +16,6 @@ interface ItemInspectEntry {
   useHint?: string;
 }
 
-const THEATER_PROGRAM_FLUORESCENT_ORDER: Partial<Record<ItemId, 1 | 2 | 3>> = {
-  theaterProgramSpotlight: 1,
-  theaterProgramOpening: 2,
-  theaterProgramFinale: 3
-};
-
 export interface ItemInspectDialogProps {
   open: boolean;
   itemId: ItemId | null;
@@ -368,18 +362,9 @@ function ItemInspectDialogBody({
   const entry = ITEM_INSPECT_META[itemId];
   const item = ITEM_META[itemId];
   const itemDocument = ITEM_CATALOG[itemId].document;
-  const state = gameStore.getState();
-  const identityReadable = selectIdentityReadable(state);
+  const identityReadable = selectIdentityReadable(gameStore.getState());
   const campusCardHolder = itemId === "campusCard" && identityReadable
     ? `${actOneContent.studentName} · ${actOneContent.studentId}`
-    : null;
-  const fluorescentOrder = variant === "rpg"
-    && state.runtimeMode === "rpg"
-    && state.rpgScene === "theater_interior"
-    && state.theaterHunt.active
-    && state.theaterHunt.phase === "program_search"
-    && state.theaterHunt.mode === "dark"
-    ? THEATER_PROGRAM_FLUORESCENT_ORDER[itemId] ?? null
     : null;
 
   useEffect(() => {
@@ -479,12 +464,7 @@ function ItemInspectDialogBody({
             ) : null}
             <div className="item-inspect-row">
               <dt>简介</dt>
-              <dd id={descId}>
-                {item.desc}
-                {fluorescentOrder ? (
-                  <span className="item-inspect-fluorescent-order">顺序：{fluorescentOrder}</span>
-                ) : null}
-              </dd>
+              <dd id={descId}>{item.desc}</dd>
             </div>
             {entry.useHint ? (
               <div className="item-inspect-row">

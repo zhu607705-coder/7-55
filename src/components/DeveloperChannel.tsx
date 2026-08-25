@@ -16,7 +16,7 @@ interface DeveloperChannelProps {
 
 type DeveloperChapter = DeveloperCheckpoint["chapter"];
 
-const DEVELOPER_CHAPTERS: readonly DeveloperChapter[] = ["第一章", "第二章", "第三章", "第四章"];
+const DEVELOPER_CHAPTERS: readonly DeveloperChapter[] = ["第一章", "第二章", "第三章", "第四章", "寻人篇"];
 
 function getCheckpointLane(checkpoint: DeveloperCheckpoint): string {
   if (checkpoint.chapter === "第一章") return "签到失控";
@@ -36,8 +36,12 @@ function getCheckpointLane(checkpoint: DeveloperCheckpoint): string {
   if (checkpoint.id.startsWith("c3-theater-")) return "剧场";
   if (checkpoint.id.startsWith("c3-qizhen-")) return "启真湖";
   if (checkpoint.id.startsWith("c3-interlude-")) return "未同步记录";
+  if (checkpoint.id.startsWith("postgame-")) return "7:55 挑战";
   if (checkpoint.chapter === "第四章") {
     return "7:55 时间迷宫";
+  }
+  if (checkpoint.chapter === "寻人篇") {
+    return "7:55 挑战";
   }
   return "第三章";
 }

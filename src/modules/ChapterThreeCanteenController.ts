@@ -98,8 +98,6 @@ export class ChapterThreeCanteenController {
     if (state.canteenHunt.active && !CANTEEN_ENTRY_PHASES.includes(state.canteenHunt.phase)) {
       return false;
     }
-    const firstStoryEntry = state.canteenHunt.active
-      && ["tracking", "canteen_reached", "entered"].includes(state.canteenHunt.phase);
     this.store.setState((current) => ({
       ...current,
       runtimeMode: "rpg",
@@ -111,10 +109,7 @@ export class ChapterThreeCanteenController {
             phase: CANTEEN_SIDE_GAME_PHASES.includes(current.canteenHunt.phase)
               ? current.canteenHunt.phase
               : "tray_search",
-            mode: "light",
-            // A pre-entry checkpoint cannot have completed the interior escape
-            // beat. Repair older saves that inferred this one-shot flag too early.
-            entryPaperEscaped: firstStoryEntry ? false : current.canteenHunt.entryPaperEscaped
+            mode: "light"
           }
         : current.canteenHunt
     }));
@@ -657,9 +652,10 @@ export class ChapterThreeCanteenController {
 
   payForBike(): CanteenBikeResult {
     const state = this.store.getState();
+    if (state.canteenHunt.phase !== "chase_ready") return "inactive";
+    if (state.canteenHunt.bikePaid) return "paid";
     if (
-      state.canteenHunt.phase !== "chase_ready"
-      || !state.items.cafeteriaWages
+      !state.items.cafeteriaWages
       || state.wallet.cashCents < CANTEEN_BIKE_FARE_CENTS
     ) return "inactive";
     if (state.canteenHunt.mode !== "light" || !state.canteenHunt.bikeCodeRead || !state.canteenHunt.bikeLockCleaned) {
@@ -675,13 +671,33 @@ export class ChapterThreeCanteenController {
       },
       canteenHunt: {
         ...current.canteenHunt,
-        phase: "chasing",
         bikePaid: true
       }
     }));
     this.events.emit("use_item", { itemId: "cafeteriaWages", targetId: "canteen_bike" });
-    this.events.emit("canteen_chase_started");
+    this.events.emit("canteen_bike_paid", { fareCents: CANTEEN_BIKE_FARE_CENTS });
     return "paid";
+  }
+
+  startChase(): boolean {
+    const state = this.store.getState();
+    if (state.canteenHunt.phase === "chasing" && !state.canteenHunt.chaseCompleted) {
+      return true;
+    }
+    if (
+      state.canteenHunt.phase !== "chase_ready"
+      || !state.canteenHunt.bikePaid
+      || state.canteenHunt.chaseCompleted
+    ) return false;
+    this.store.setState((current) => ({
+      ...current,
+      canteenHunt: {
+        ...current.canteenHunt,
+        phase: "chasing"
+      }
+    }));
+    this.events.emit("canteen_chase_started");
+    return true;
   }
 
   resolveChaseAttempt(attempt: CanteenChaseAttempt): CanteenChaseAttemptResult {

@@ -1,19 +1,19 @@
 import type Phaser from "phaser";
 import manifest from "../../assets/rpg/npcs/finale/finale_npc_manifest.json";
 
-import studentWalkUrl from "../../assets/rpg/npcs/finale/student_walk_4frame.png";
+import studentWalkUrl from "../../assets/rpg/npcs/finale/student_walk_8frame.png";
 import studentPhoneUrl from "../../assets/rpg/npcs/finale/student_phone_glance_2frame.png";
 import studentAdjustBagUrl from "../../assets/rpg/npcs/finale/student_adjust_bag_2frame.png";
 import studentPushDoorUrl from "../../assets/rpg/npcs/finale/student_push_door_3frame.png";
 import studentIdleUrl from "../../assets/rpg/npcs/finale/student_idle_1frame.png";
 import cleanerPushCartUrl from "../../assets/rpg/npcs/finale/cleaner_push_cart_4frame.png";
-import cleanerMopUrl from "../../assets/rpg/npcs/finale/cleaner_mop_3frame.png";
+import cleanerMopUrl from "../../assets/rpg/npcs/finale/cleaner_mop_4frame.png";
 import cleaningCartUrl from "../../assets/rpg/npcs/finale/cleaning_cart_1frame.png";
 import cleanerPlaceSignUrl from "../../assets/rpg/npcs/finale/cleaner_place_sign_2frame.png";
 import cleanerToggleLightsUrl from "../../assets/rpg/npcs/finale/cleaner_toggle_lights_2frame.png";
-import cleanerRestUrl from "../../assets/rpg/npcs/finale/cleaner_rest_2frame.png";
+import cleanerRestUrl from "../../assets/rpg/npcs/finale/cleaner_rest_1frame.png";
 import cleanerIdleUrl from "../../assets/rpg/npcs/finale/cleaner_idle_2frame.png";
-import guardWalkUrl from "../../assets/rpg/npcs/finale/guard_walk_4frame.png";
+import guardWalkUrl from "../../assets/rpg/npcs/finale/guard_walk_8frame.png";
 import guardCheckListUrl from "../../assets/rpg/npcs/finale/guard_check_list_2frame.png";
 import guardCheckWatchUrl from "../../assets/rpg/npcs/finale/guard_check_watch_2frame.png";
 import guardFlashlightUrl from "../../assets/rpg/npcs/finale/guard_flashlight_down_2frame.png";

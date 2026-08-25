@@ -86,7 +86,7 @@ const expectedTask10NpcAssets = [
     fps: 1,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "9a0035f92d5be1e57068a7c9349b29e169e6cb679ec0987c78924a345b954332"
+    sha256: "8fd6a4ab5b600449ed80b2eb91b71f2a0a8c46937e00845d1b44809edf42b57c"
   },
   {
     id: "cleaner_idle",
@@ -97,7 +97,7 @@ const expectedTask10NpcAssets = [
     fps: 2,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "e22dd28f9fcd13fdea398c61aa98f684f14cc789c4066cb371ded75c7a15a3d1"
+    sha256: "2119caa68acc8a88e52ab766e68d37ea77ee1b3ad3a41acce45b0b1de0a982cc"
   },
   {
     id: "cleaner_push_cart",
@@ -108,18 +108,18 @@ const expectedTask10NpcAssets = [
     fps: 8,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "d7a6bdd88ec69d38accacfc4fdf478dd2e746e98060e94f407748943b4e2bd18"
+    sha256: "35a7e47cc4fa9f448f3f04c9c4fb87a0595344f72478223961fd29157d2e81f8"
   },
   {
     id: "guard_walk",
-    file: "src/assets/rpg/npcs/finale/guard_walk_4frame.png",
+    file: "src/assets/rpg/npcs/finale/guard_walk_8frame.png",
     frameWidth: 96,
     frameHeight: 128,
-    frameCount: 4,
+    frameCount: 8,
     fps: 8,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "71faaa4ecf73e7ada33b581f0e1744ebd243d5fcef2ef722158fecace727f879"
+    sha256: "8653429dc4a6896d545b95053dc250c6fc61a9627ca7d026a79d7ca52c14eaf3"
   }
 ];
 

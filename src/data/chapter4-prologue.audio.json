@@ -263,45 +263,82 @@
     "chapter35_voice_audition_lake": {
       "cues": [
         {
-          "channel": "sfx",
-          "asset": "sfx_ch4_water_ripple",
-          "volume": 0.52
+          "channel": "voice",
+          "asset": "voice_memo_ch35_lake",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
         }
       ]
     },
     "chapter35_voice_audition_stone": {
       "cues": [
         {
-          "channel": "sfx",
-          "asset": "sfx_ch4_stone_land",
-          "playbackRate": 0.86,
-          "volume": 0.5
+          "channel": "voice",
+          "asset": "voice_memo_ch35_stone",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
         }
       ]
     },
     "chapter35_voice_audition_lobby": {
       "cues": [
         {
-          "channel": "sfx",
-          "asset": "sfx_ch4_glass_door_open",
-          "volume": 0.5
-        },
-        {
-          "channel": "sfx",
-          "asset": "sfx_ch4_pressure_suction",
-          "offsetMs": 280,
-          "volume": 0.32
+          "channel": "voice",
+          "asset": "voice_memo_ch35_lobby",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
         }
       ]
     },
     "chapter35_voice_audition_broadcast": {
       "cues": [
         {
-          "channel": "sfx",
-          "asset": "sfx_ch4_broadcast_static",
-          "volume": 0.54
+          "channel": "voice",
+          "asset": "voice_memo_ch35_broadcast",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
         }
       ]
+    },
+    "chapter35_voice_audition_decoy_canteen": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "voice_memo_ch35_decoy_canteen",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
+        }
+      ]
+    },
+    "chapter35_voice_audition_decoy_theater": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "voice_memo_ch35_decoy_theater",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
+        }
+      ]
+    },
+    "chapter35_voice_audition_decoy_library": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "voice_memo_ch35_decoy_library",
+          "durationMs": 5200,
+          "volume": 0.94,
+          "duckMusicTo": 0.04
+        }
+      ]
+    },
+    "chapter35_voice_audition_stop": {
+      "cues": []
     }
   }
 }

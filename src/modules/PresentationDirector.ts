@@ -8,6 +8,7 @@ import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
 import chapterFour755TimelineData from "../data/chapter4-755.audio.json";
+import endlessArcadeTimelineData from "../data/endless-arcade.audio.json";
 import libraryFinalsTimelineData from "../data/library-finals.audio.json";
 import { PRESENTATION_VISUAL_CUE_IDS } from "../data/presentation-cues";
 
@@ -26,6 +27,7 @@ const TIMELINE_CUE_IDS = new Set([
   ...Object.keys((actOneTimelineData as AudioTimelineShape).events),
   ...Object.keys((libraryFinalsTimelineData as AudioTimelineShape).events),
   ...Object.keys((bikeArcadeTimelineData as AudioTimelineShape).events),
+  ...Object.keys((endlessArcadeTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeCanteenTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeTheaterTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeQizhenTimelineData as AudioTimelineShape).events),
@@ -108,6 +110,21 @@ export class PresentationDirector {
       && next.chapter4.phase === "final_chase") {
       cues.push({ cueId: "final_chase_started" });
     }
+    if (nextInChapterFour755
+      && next.chapter4.phase === "maintenance_repair"
+      && (!previousInChapterFour755 || previous.chapter4.phase !== "maintenance_repair")) {
+      cues.push({
+        cueId: next.chapter4.factIds.includes("clock_gear_repaired")
+          ? "clock_stable_started"
+          : "clock_stutter_started"
+      });
+    }
+    if (previousInChapterFour755
+      && nextInChapterFour755
+      && !previous.chapter4.factIds.includes("clock_gear_repaired")
+      && next.chapter4.factIds.includes("clock_gear_repaired")) {
+      cues.push({ cueId: "clock_stable_started" });
+    }
     if (previousInChapterFour755
       && nextInChapterFour755
       && previous.chapter4.phase === "final_chase"
@@ -141,12 +158,17 @@ export class PresentationDirector {
 }
 
 function sceneEntryCue(state: GameState): PendingCue | null {
+  if (isChapterFour755RpgState(state) && state.chapter4.phase === "maintenance_repair") {
+    return {
+      cueId: state.chapter4.factIds.includes("clock_gear_repaired")
+        ? "clock_stable_started"
+        : "clock_stutter_started"
+    };
+  }
   if (isChapterFour755RpgState(state) && state.chapter4.phase === "final_chase") {
     return { cueId: "final_chase_started" };
   }
-  if (state.currentScene === "bike_arcade") {
-    return { cueId: "bike_arcade_opened" };
-  }
+  // P16 is the postgame challenge hub; legacy bike cues come from BikeArcadeChapterController events.
   if (state.currentScene === "chapter_transition") {
     return { cueId: "chapter_transition_opened" };
   }

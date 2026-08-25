@@ -12,7 +12,10 @@ import {
 import type { EventBus } from "../core/EventBus";
 import type { GameState, GameStore } from "../core/types";
 import { ChapterFourTemporalMazeController } from "../modules/ChapterFourTemporalMazeController";
-import { getDeveloperChapter4PrologueOffset } from "../modules/DeveloperChannel";
+import {
+  getDeveloperChapter4PrologueOffset,
+  markDeveloperChapter4PrologueTaskCardConfirmed
+} from "../modules/DeveloperChannel";
 import { Chapter4PrologueOverlay } from "../scenes/rpg/Chapter4PrologueOverlay";
 import { PROLOGUE_TASK_CARD_AT } from "../scenes/rpg/chapter4-prologue/PrologueTimeline";
 import { preloadRpgGameHost } from "../scenes/rpg/RpgRuntimePreload";
@@ -217,6 +220,7 @@ export function Chapter4PrologueRuntimeGate({
         setFeedback("第四章入口被拒绝。可重试。");
         return;
       }
+      markDeveloperChapter4PrologueTaskCardConfirmed();
     } catch {
       requestIdRef.current = null;
       setStatus("failed");

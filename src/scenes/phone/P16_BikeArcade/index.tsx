@@ -1,352 +1,731 @@
-import { useEffect, useRef, useState } from "react";
-import type Phaser from "phaser";
-import { PhoneNavButton } from "../../../components/PhoneNavButton";
-import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
-import { kit } from "../../../modules/GameKit";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from "react";
 import {
-  BIKE_ARCADE_GOAL,
-  BIKE_ARCADE_MAX_LIVES,
-  type BikeArcadeMilestone
-} from "./BikeArcadeRules";
-import { clearBikeArcadeSnapshot, type BikeArcadePhase } from "./BikeArcadeRuntime";
-import { getDeveloperBikeStart } from "../../../modules/DeveloperChannel";
-import type { BikeArcadeBridge, BikeRushScene } from "./BikeRushScene";
+  PhoneActionSheet,
+  PhoneAppHeader,
+  PhoneAppScaffold,
+  PhoneStateView
+} from "../../../components/PhoneAppUi";
+import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
+import { selectFeatureAccess } from "../../../core/FeatureAccess";
+import type { EndlessChallengeModeId } from "../../../core/types";
+import content from "../../../data/endless-arcade.content.json";
+import { readEndlessArcadeDeveloperSeed } from "../../../modules/DeveloperChannel";
+import { kit } from "../../../modules/GameKit";
+import type { EndlessArcadeRunTicket } from "../../../modules/EndlessArcadeController";
+import { EndlessArcadeGameHost, type EndlessArcadeGameHostHandle } from "./EndlessArcadeGameHost";
+import {
+  ENDLESS_CHALLENGE_MODE_IDS,
+  getEndlessChallengeDefinition
+} from "./EndlessChallengeRegistry";
+import {
+  createEndlessArcadeClosedEmitter,
+  consumePendingEndlessArcadeResume,
+  emitEndlessArcadeConfirmExitPause,
+  emitEndlessArcadePauseEvent,
+  emitEndlessArcadeRuntimeErrorPause
+} from "./EndlessArcadeSceneEvents";
+import {
+  beginEndlessArcadeLifecycleEpoch,
+  EndlessArcadeRuntimeError,
+  clearEndlessArcadeDebugSnapshot,
+  isCurrentEndlessArcadeLifecycleEpoch,
+  setEndlessArcadeDebugSnapshot
+} from "./EndlessArcadeRuntime";
+import type {
+  EndlessArcadeHostStatus,
+  EndlessArcadeRunSnapshot,
+  EndlessArcadeRunSummary,
+  EndlessArcadeControlAction,
+  EndlessArcadeViewPhase
+} from "./EndlessArcadeRuntime";
 
-type BikeArcadeLoadState = "idle" | "loading" | "ready" | "error";
+function initialSnapshot(mode: EndlessChallengeModeId): EndlessArcadeRunSnapshot {
+  return { mode, score: 0, progress: 0, tier: 1, combo: 0 };
+}
 
-const LOAD_TIMEOUT_MS = 3000;
-const RESUME_NOTICE_MS = 1000;
+function createInitialViewState() {
+  const developerSeed = readEndlessArcadeDeveloperSeed();
+  if (!developerSeed) {
+    return {
+      developerSeed,
+      phase: "hub" as EndlessArcadeViewPhase,
+      selectedMode: null as EndlessChallengeModeId | null,
+      snapshot: null as EndlessArcadeRunSnapshot | null,
+      summary: null as EndlessArcadeRunSummary | null
+    };
+  }
+  if (developerSeed.mode === null || developerSeed.boot === "hub") {
+    return {
+      developerSeed,
+      phase: "hub" as EndlessArcadeViewPhase,
+      selectedMode: null as EndlessChallengeModeId | null,
+      snapshot: null as EndlessArcadeRunSnapshot | null,
+      summary: null as EndlessArcadeRunSummary | null
+    };
+  }
+  if (developerSeed.boot === "game_over" && developerSeed.summary) {
+    return {
+      developerSeed,
+      phase: "game_over" as EndlessArcadeViewPhase,
+      selectedMode: developerSeed.mode,
+      snapshot: developerSeed.summary,
+      summary: developerSeed.summary
+    };
+  }
+  return {
+    developerSeed,
+    phase: "intro" as EndlessArcadeViewPhase,
+    selectedMode: developerSeed.mode,
+    snapshot: initialSnapshot(developerSeed.mode),
+    summary: null as EndlessArcadeRunSummary | null
+  };
+}
 
-function paddedDistance(distance: number): string {
-  return String(Math.min(BIKE_ARCADE_GOAL, Math.max(0, Math.floor(distance)))).padStart(3, "0");
+function formatRuntimeError(error: EndlessArcadeRuntimeError | null): string {
+  if (!error) return content.states.errorDescription;
+  if (error.code === "runtime_unavailable") return content.states.unavailableDescription;
+  if (error.code === "boot_timeout") return "玩法启动超时，请重新加载当前模式。";
+  return content.states.errorDescription;
 }
 
 export function BikeArcadeScene({ state, router, events }: SceneComponentProps) {
-  const developerStartDistance = getDeveloperBikeStart();
-  const hostRef = useRef<HTMLDivElement | null>(null);
-  const gameRef = useRef<Phaser.Game | null>(null);
-  const sceneRef = useRef<BikeRushScene | null>(null);
-  const distanceRef = useRef(developerStartDistance);
-  const livesRef = useRef(BIKE_ARCADE_MAX_LIVES);
-  const lastLifeAnnouncedRef = useRef(false);
-  const resumeTimerRef = useRef<number | null>(null);
-  const [phase, setPhase] = useState<BikeArcadePhase>("intro");
-  const [distance, setDistance] = useState(developerStartDistance);
-  const [lives, setLives] = useState(BIKE_ARCADE_MAX_LIVES);
-  const [runId, setRunId] = useState(0);
-  const [loadState, setLoadState] = useState<BikeArcadeLoadState>("idle");
-  const [paused, setPaused] = useState(false);
-  const [resumeNotice, setResumeNotice] = useState(false);
-  const [milestone, setMilestone] = useState<BikeArcadeMilestone | null>(null);
-  const unlocked = state.bikeArcade.unlocked;
+  const initialViewStateRef = useRef(createInitialViewState());
+  const developerSeedRef = useRef(initialViewStateRef.current.developerSeed);
+  const autoStartedDeveloperSeedRef = useRef(false);
+  const access = selectFeatureAccess(state);
+  const hostRef = useRef<EndlessArcadeGameHostHandle>(null);
+  const activeTouchControlsRef = useRef(new Map<number, "left" | "primary" | "right">());
+  const activeSpotlightAimPointerRef = useRef<number | null>(null);
+  const phaseBeforeConfirmRef = useRef<EndlessArcadeViewPhase>("running");
+  const confirmingExitRef = useRef(false);
+  const resumeAfterConfirmRef = useRef(false);
+  const pausedReasonRef = useRef<string | null>(null);
+  const emitClosedOnceRef = useRef(createEndlessArcadeClosedEmitter(events));
+  const lifecycleEpochRef = useRef(0);
+  const [phase, setPhase] = useState<EndlessArcadeViewPhase>(initialViewStateRef.current.phase);
+  const [selectedMode, setSelectedMode] = useState<EndlessChallengeModeId | null>(initialViewStateRef.current.selectedMode);
+  const [spotlightAim, setSpotlightAim] = useState(0.5);
+  const [runKey, setRunKey] = useState(0);
+  const activeRunRef = useRef<EndlessArcadeRunTicket | null>(null);
+  const [runTicket, setRunTicket] = useState<EndlessArcadeRunTicket | null>(null);
+  const [snapshot, setSnapshot] = useState<EndlessArcadeRunSnapshot | null>(initialViewStateRef.current.snapshot);
+  const [summary, setSummary] = useState<EndlessArcadeRunSummary | null>(initialViewStateRef.current.summary);
+  const [runtimeError, setRuntimeError] = useState<EndlessArcadeRuntimeError | null>(null);
+  const unlocked = access.endlessChallenge;
+  const suppressSharedBars = ["loading", "running", "paused", "confirm_exit"].includes(phase);
 
   useEffect(() => {
-    if (!unlocked) {
-      return undefined;
-    }
-    kit.bikeArcade.syncUnlock();
+    events.emit("endless_arcade_shell_suppression_changed", { active: suppressSharedBars });
     return () => {
-      if (resumeTimerRef.current !== null) {
-        window.clearTimeout(resumeTimerRef.current);
-      }
-      if (kit.bikeArcade.cancelAttempt()) {
-        events.emit("bike_arcade_closed");
-      }
+      events.emit("endless_arcade_shell_suppression_changed", { active: false });
     };
-  }, [events, unlocked]);
+  }, [events, suppressSharedBars]);
 
   useEffect(() => {
-    if (!unlocked || runId === 0 || !hostRef.current) {
-      return undefined;
-    }
-
-    let cancelled = false;
-    let booted = false;
-    const loadTimer = window.setTimeout(() => {
-      if (!booted && !cancelled) {
-        setLoadState("error");
-      }
-    }, LOAD_TIMEOUT_MS);
-    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-    const bridge: BikeArcadeBridge = {
-      reducedMotion,
-      onDistance: (nextDistance) => {
-        distanceRef.current = nextDistance;
-        setDistance(nextDistance);
-        if (nextDistance > 0 && nextDistance % 25 === 0) {
-          kit.bikeArcade.recordProgress(nextDistance, livesRef.current);
-        }
-      },
-      onLives: (nextLives) => {
-        livesRef.current = nextLives;
-        setLives(nextLives);
-      },
-      onLaneChanged: ({ from, to }) => {
-        events.emit("bike_arcade_lane_changed", { from, to });
-      },
-      onNearMiss: ({ obstacleType, lane }) => {
-        events.emit("bike_arcade_near_miss", { obstacleType, lane });
-      },
-      onCollision: (collision) => {
-        livesRef.current = collision.lives;
-        setLives(collision.lives);
-        kit.bikeArcade.recordProgress(distanceRef.current, collision.lives);
-        events.emit("bike_arcade_collision", { ...collision });
-        if (collision.lives === 1 && !lastLifeAnnouncedRef.current) {
-          lastLifeAnnouncedRef.current = true;
-          events.emit("bike_arcade_last_life");
-        }
-        if (!reducedMotion) {
-          events.emit("screen_shake");
-        }
-      },
-      onMilestone: (nextMilestone) => {
-        setMilestone(nextMilestone);
-        events.emit("bike_arcade_milestone", { distance: nextMilestone });
-        if (nextMilestone === 377) {
-          events.emit("bike_arcade_congestion_started", { distance: nextMilestone });
-        }
-        if (nextMilestone === 566) {
-          events.emit("bike_arcade_sprint_started", { distance: nextMilestone });
-        }
-        window.setTimeout(() => setMilestone((current) => current === nextMilestone ? null : current), 900);
-      },
-      onPauseChange: (isPaused) => {
-        setPaused(isPaused);
-        if (isPaused) {
-          setResumeNotice(false);
-          events.emit("bike_arcade_paused");
-          return;
-        }
-        setResumeNotice(true);
-        events.emit("bike_arcade_resumed");
-        if (resumeTimerRef.current !== null) {
-          window.clearTimeout(resumeTimerRef.current);
-        }
-        resumeTimerRef.current = window.setTimeout(() => setResumeNotice(false), RESUME_NOTICE_MS);
-      },
-      onFinish: (result, summary) => {
-        distanceRef.current = summary.distance;
-        livesRef.current = summary.lives;
-        setDistance(summary.distance);
-        setLives(summary.lives);
-        kit.bikeArcade.recordProgress(summary.distance, summary.lives);
-        if (result === "won") {
-          kit.bikeArcade.completeAttempt(summary.lives);
-        } else {
-          kit.bikeArcade.failAttempt(summary.distance);
-        }
-        setPaused(false);
-        setPhase(result);
-      }
-    };
-
-    void Promise.all([import("phaser"), import("./BikeRushScene")])
-      .then(([phaserModule, sceneModule]) => {
-        if (cancelled || !hostRef.current) {
-          return;
-        }
-        const PhaserRuntime = phaserModule.default;
-        const game = new PhaserRuntime.Game({
-          type: PhaserRuntime.CANVAS,
-          parent: hostRef.current,
-          width: 390,
-          height: 650,
-          backgroundColor: "#73945f",
-          pixelArt: true,
-          roundPixels: true,
-          physics: { default: "arcade", arcade: { debug: false } },
-          scale: { mode: PhaserRuntime.Scale.FIT, autoCenter: PhaserRuntime.Scale.CENTER_BOTH },
-          scene: [sceneModule.BikeRushScene],
-          callbacks: {
-            preBoot: (phaserGame) => {
-              phaserGame.registry.set("bikeArcadeBridge", bridge);
-              phaserGame.registry.set("bikeArcadeReducedMotion", reducedMotion);
-              phaserGame.registry.set("bikeArcadeStartDistance", getDeveloperBikeStart());
-            },
-            postBoot: (phaserGame) => {
-              booted = true;
-              window.clearTimeout(loadTimer);
-              sceneRef.current = phaserGame.scene.getScene("bike-rush") as BikeRushScene;
-              setLoadState("ready");
-            }
-          }
-        });
-        gameRef.current = game;
-      })
-      .catch(() => {
-        if (!cancelled) {
-          window.clearTimeout(loadTimer);
-          setLoadState("error");
-        }
+    const epoch = beginEndlessArcadeLifecycleEpoch(lifecycleEpochRef);
+    return () => {
+      queueMicrotask(() => {
+        if (!isCurrentEndlessArcadeLifecycleEpoch(lifecycleEpochRef, epoch)) return;
+        emitClosedOnceRef.current();
+        const activeRun = activeRunRef.current;
+        if (activeRun) kit.endlessArcade.cancelAttempt(activeRun.runId);
       });
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(loadTimer);
-      sceneRef.current = null;
-      clearBikeArcadeSnapshot();
-      gameRef.current?.destroy(true);
-      gameRef.current = null;
     };
-  }, [events, runId, unlocked]);
+  }, []);
 
-  function startRun() {
-    if (!unlocked) {
+  useEffect(() => {
+    const handlePointerUp = (event: PointerEvent) => {
+      releaseTouchPointer(event.pointerId);
+      if (activeSpotlightAimPointerRef.current === event.pointerId) {
+        activeSpotlightAimPointerRef.current = null;
+      }
+    };
+    const handlePointerCancel = () => releaseAllTouchInputsNeutral();
+    const handleLifecycleRelease = () => releaseAllTouchInputsNeutral();
+    const handleVisibilityChange = () => {
+      if (document.hidden) releaseAllTouchInputsNeutral();
+    };
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerCancel);
+    window.addEventListener("blur", handleLifecycleRelease);
+    window.addEventListener("pagehide", handleLifecycleRelease);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerCancel);
+      window.removeEventListener("blur", handleLifecycleRelease);
+      window.removeEventListener("pagehide", handleLifecycleRelease);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      releaseAllTouchInputsNeutral();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!unlocked) return;
+    const developerSeed = developerSeedRef.current;
+    if (
+      !developerSeed
+      || developerSeed.boot !== "running"
+      || developerSeed.mode === null
+      || autoStartedDeveloperSeedRef.current
+      || selectedMode !== developerSeed.mode
+      || phase !== "intro"
+    ) {
       return;
     }
-    if (runId > 0) {
-      kit.bikeArcade.cancelAttempt();
-      events.emit("bike_arcade_restarted");
-    }
-    if (!kit.bikeArcade.startAttempt()) {
-      return;
-    }
-    const startDistance = getDeveloperBikeStart();
-    distanceRef.current = startDistance;
-    livesRef.current = BIKE_ARCADE_MAX_LIVES;
-    lastLifeAnnouncedRef.current = false;
-    setDistance(startDistance);
-    setLives(BIKE_ARCADE_MAX_LIVES);
-    setMilestone(null);
-    setPaused(false);
-    setResumeNotice(false);
-    setLoadState("loading");
-    setPhase("playing");
-    setRunId((current) => current + 1);
-  }
+    autoStartedDeveloperSeedRef.current = true;
+    startSelectedMode();
+  }, [phase, selectedMode, unlocked]);
 
-  function closeChapter() {
-    kit.bikeArcade.cancelAttempt();
-    events.emit("bike_arcade_closed");
-    events.emit("bike_arcade_button_pressed");
+  useEffect(() => {
+    if (!selectedMode) return;
+    if (phase === "paused") {
+      emitEndlessArcadePauseEvent(events, selectedMode, pausedReasonRef.current ?? "runtime_paused");
+    }
+  }, [events, phase, selectedMode]);
+
+  useEffect(() => {
+    setEndlessArcadeDebugSnapshot({
+      unlocked,
+      phase,
+      selectedMode,
+      activeRunId: activeRunRef.current?.runId ?? null,
+      activeAttempt: activeRunRef.current?.attempt ?? null,
+      snapshot,
+      summary
+    });
+    return () => {
+      clearEndlessArcadeDebugSnapshot();
+    };
+  }, [phase, selectedMode, snapshot, summary, unlocked]);
+
+  const returnPhoneHome = useCallback(() => {
+    emitClosedOnceRef.current();
     router.goTo("phone_home");
+  }, [router]);
+
+  function returnHub(): void {
+    releaseAllTouchInputsNeutral();
+    const activeRun = activeRunRef.current;
+    if (activeRun) kit.endlessArcade.cancelAttempt(activeRun.runId);
+    activeRunRef.current = null;
+    hostRef.current?.destroy();
+    confirmingExitRef.current = false;
+    resumeAfterConfirmRef.current = false;
+    setSelectedMode(null);
+    setRunTicket(null);
+    setSnapshot(null);
+    setSummary(null);
+    setRuntimeError(null);
+    setPhase("hub");
+    events.emit("endless_arcade_hub_returned");
   }
 
-  function continueChapter() {
-    events.emit("bike_arcade_button_pressed");
-    events.emit("bike_arcade_next_chapter_requested", { chapter: 4 });
-    events.emit("bike_arcade_closed");
-    router.goTo("chapter_transition");
+  function chooseMode(mode: EndlessChallengeModeId): void {
+    setSelectedMode(mode);
+    setSpotlightAim(0.5);
+    setSnapshot(initialSnapshot(mode));
+    setSummary(null);
+    setRuntimeError(null);
+    setPhase("intro");
+    events.emit("endless_arcade_mode_selected", { mode });
+  }
+
+  function startSelectedMode(): void {
+    if (!selectedMode || !unlocked) return;
+    releaseAllTouchInputsNeutral();
+    const priorRun = activeRunRef.current;
+    if (priorRun) kit.endlessArcade.cancelAttempt(priorRun.runId);
+    const ticket = kit.endlessArcade.startAttempt(selectedMode);
+    if (!ticket) {
+      enterRuntimeError(
+        selectedMode,
+        new EndlessArcadeRuntimeError("boot_failed", selectedMode, "无法启动当前挑战记录")
+      );
+      return;
+    }
+    activeRunRef.current = ticket;
+    if (selectedMode === "spotlight") setSpotlightAim(0.5);
+    setRunTicket(ticket);
+    confirmingExitRef.current = false;
+    resumeAfterConfirmRef.current = false;
+    setSnapshot(initialSnapshot(selectedMode));
+    setSummary(null);
+    setRuntimeError(null);
+    setPhase("loading");
+    setRunKey((current) => current + 1);
+    events.emit("endless_arcade_runtime_requested", { mode: selectedMode });
+  }
+
+  function requestActiveExit(): void {
+    if (phase === "loading") {
+      returnHub();
+      return;
+    }
+    if (["running", "paused"].includes(phase)) {
+      releaseAllTouchInputsNeutral();
+      phaseBeforeConfirmRef.current = phase;
+      confirmingExitRef.current = true;
+      if (emitEndlessArcadeConfirmExitPause(events, phase, selectedMode)) {
+        pausedReasonRef.current = "player";
+      }
+      hostRef.current?.pause("player");
+      setPhase("confirm_exit");
+      return;
+    }
+    returnHub();
+  }
+
+  function keepPlaying(): void {
+    const previous = phaseBeforeConfirmRef.current;
+    confirmingExitRef.current = false;
+    if (previous === "running" || previous === "paused") {
+      resumeAfterConfirmRef.current = true;
+      hostRef.current?.resume();
+      return;
+    }
+    setPhase(previous);
+  }
+
+  function confirmExit(): void {
+    confirmingExitRef.current = false;
+    resumeAfterConfirmRef.current = false;
+    returnHub();
+  }
+
+  const enterRuntimeError = useCallback((mode: EndlessChallengeModeId, error: EndlessArcadeRuntimeError) => {
+    resumeAfterConfirmRef.current = false;
+    emitEndlessArcadeRuntimeErrorPause(events, mode);
+    setRuntimeError(error);
+    setPhase("error");
+  }, [events]);
+
+  const handleHostStatus = useCallback((status: EndlessArcadeHostStatus) => {
+    if (confirmingExitRef.current) return;
+    if (status.kind === "loading") {
+      setPhase("loading");
+      return;
+    }
+    if (status.kind === "running") {
+      const pendingResume = resumeAfterConfirmRef.current;
+      const resumeTransition = consumePendingEndlessArcadeResume(pendingResume, status.kind);
+      resumeAfterConfirmRef.current = resumeTransition.pending;
+      pausedReasonRef.current = null;
+      if (selectedMode && (phase === "paused" || resumeTransition.shouldEmit)) {
+        events.emit("endless_arcade_runtime_resumed", { mode: selectedMode });
+      }
+      setPhase("running");
+      return;
+    }
+    if (status.kind === "paused") {
+      releaseAllTouchInputsNeutral();
+      const resumeTransition = consumePendingEndlessArcadeResume(resumeAfterConfirmRef.current, status.kind);
+      resumeAfterConfirmRef.current = resumeTransition.pending;
+      pausedReasonRef.current = status.reason;
+      setPhase("paused");
+      return;
+    }
+    if (status.kind === "game_over") {
+      releaseAllTouchInputsNeutral();
+      const ticket = activeRunRef.current;
+      if (!ticket) {
+        enterRuntimeError(
+          status.summary.mode,
+          new EndlessArcadeRuntimeError("boot_failed", status.summary.mode, "挑战结算票据已失效")
+        );
+        return;
+      }
+      const settled = kit.endlessArcade.settleAttempt({
+        runId: ticket.runId,
+        mode: status.summary.mode,
+        score: status.summary.score,
+        progress: status.summary.progress,
+        tier: status.summary.tier,
+        combo: status.summary.combo,
+        durationMs: status.summary.durationMs
+      });
+      if (!settled) {
+        enterRuntimeError(
+          status.summary.mode,
+          new EndlessArcadeRuntimeError("boot_failed", status.summary.mode, "挑战结算数据无效")
+        );
+        return;
+      }
+      resumeAfterConfirmRef.current = false;
+      activeRunRef.current = null;
+      setSummary(status.summary);
+      setSnapshot(status.summary);
+      setPhase("game_over");
+      events.emit("endless_arcade_runtime_finished", {
+        mode: status.summary.mode,
+        score: status.summary.score,
+        progress: status.summary.progress,
+        tier: status.summary.tier,
+        combo: status.summary.combo,
+        durationMs: status.summary.durationMs
+      });
+      return;
+    }
+    enterRuntimeError(selectedMode ?? status.error.mode, status.error);
+  }, [enterRuntimeError, events, phase, selectedMode]);
+
+  function resumeRun(): void {
+    hostRef.current?.resume();
+  }
+
+  function sendTouchControl(action: EndlessArcadeControlAction): void {
+    hostRef.current?.sendControl(action);
+  }
+
+  function releaseTouchControl(action: "left" | "primary" | "right"): void {
+    const releaseAction: Record<typeof action, EndlessArcadeControlAction> = {
+      left: "release_left",
+      primary: "release_primary",
+      right: "release_right",
+    };
+    hostRef.current?.sendControl(releaseAction[action]);
+  }
+
+  function trySetPointerCapture(target: HTMLElement, pointerId: number): void {
+    try {
+      if (typeof target.setPointerCapture === "function") target.setPointerCapture(pointerId);
+    } catch {
+      // Pointer capture is an enhancement; global pointer listeners retain the release contract.
+    }
+  }
+
+  function tryReleasePointerCapture(target: HTMLElement, pointerId: number): void {
+    try {
+      if (
+        typeof target.hasPointerCapture === "function"
+        && typeof target.releasePointerCapture === "function"
+        && target.hasPointerCapture(pointerId)
+      ) {
+        target.releasePointerCapture(pointerId);
+      }
+    } catch {
+      // A detached or cancelled pointer may already have released capture.
+    }
+  }
+
+  function releaseTouchPointer(pointerId: number): void {
+    const action = activeTouchControlsRef.current.get(pointerId);
+    if (!action) return;
+    activeTouchControlsRef.current.delete(pointerId);
+    const actionStillHeld = [...activeTouchControlsRef.current.values()].includes(action);
+    if (!actionStillHeld) releaseTouchControl(action);
+  }
+
+  function releaseAllTouchInputsNeutral(): void {
+    activeTouchControlsRef.current.clear();
+    activeSpotlightAimPointerRef.current = null;
+    hostRef.current?.releaseControls();
+  }
+
+  function beginTouchControl(
+    action: "left" | "primary" | "right",
+    event: ReactPointerEvent<HTMLButtonElement>,
+  ): void {
+    const alreadyHeld = [...activeTouchControlsRef.current.values()].includes(action);
+    activeTouchControlsRef.current.set(event.pointerId, action);
+    trySetPointerCapture(event.currentTarget, event.pointerId);
+    if (!alreadyHeld) sendTouchControl(action);
+  }
+
+  function endTouchControl(
+    action: "left" | "primary" | "right",
+    event: ReactPointerEvent<HTMLButtonElement>,
+  ): void {
+    if (activeTouchControlsRef.current.get(event.pointerId) === action) {
+      releaseTouchPointer(event.pointerId);
+    }
+    tryReleasePointerCapture(event.currentTarget, event.pointerId);
+  }
+
+  function cancelTouchControl(event: ReactPointerEvent<HTMLButtonElement>): void {
+    activeTouchControlsRef.current.delete(event.pointerId);
+    tryReleasePointerCapture(event.currentTarget, event.pointerId);
+    releaseAllTouchInputsNeutral();
+  }
+
+  function getFishingTouchControlLabel(action: "left" | "primary" | "right"): string {
+    return action === "left" ? "左收 J" : action === "primary" ? "起钩 K" : "右收 L";
+  }
+
+  function applySpotlightAim(nextAim: number): void {
+    const clampedAim = Math.min(1, Math.max(0, nextAim));
+    setSpotlightAim(clampedAim);
+    hostRef.current?.setAim(clampedAim);
+  }
+
+  function updateSpotlightAimFromPointer(event: ReactPointerEvent<HTMLDivElement>): void {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    if (bounds.width <= 0) return;
+    applySpotlightAim((event.clientX - bounds.left) / bounds.width);
+  }
+
+  function beginSpotlightAim(event: ReactPointerEvent<HTMLDivElement>): void {
+    activeSpotlightAimPointerRef.current = event.pointerId;
+    trySetPointerCapture(event.currentTarget, event.pointerId);
+    updateSpotlightAimFromPointer(event);
+  }
+
+  function moveSpotlightAim(event: ReactPointerEvent<HTMLDivElement>): void {
+    if (activeSpotlightAimPointerRef.current !== event.pointerId) return;
+    updateSpotlightAimFromPointer(event);
+  }
+
+  function endSpotlightAim(event: ReactPointerEvent<HTMLDivElement>): void {
+    if (activeSpotlightAimPointerRef.current === event.pointerId) {
+      activeSpotlightAimPointerRef.current = null;
+    }
+    tryReleasePointerCapture(event.currentTarget, event.pointerId);
+  }
+
+  function handleSpotlightAimKey(event: ReactKeyboardEvent<HTMLDivElement>): void {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    if (event.key === "Home") applySpotlightAim(0);
+    else if (event.key === "End") applySpotlightAim(1);
+    else applySpotlightAim(spotlightAim + (event.key === "ArrowLeft" ? -0.05 : 0.05));
   }
 
   if (!unlocked) {
     return (
-      <section className="bike-arcade-screen is-locked" aria-label="求是潮755未解锁">
-        <main className="bike-arcade-locked">
-          <span>LOCKED</span>
-          <h1>求是潮 755</h1>
-          <p>恢复图书馆 022 座位后开放。</p>
-          <button type="button" onClick={closeChapter}>返回手机桌面</button>
-        </main>
-      </section>
+      <PhoneAppScaffold
+        className="endless-arcade-app is-locked"
+        contentMode="fixed"
+        label={content.lockedTitle}
+        header={(
+          <PhoneAppHeader
+            eyebrow={content.brand}
+            title={content.title}
+            navigation={{ kind: "exit", label: content.actions.backHome, onClick: returnPhoneHome }}
+          />
+        )}
+      >
+        <PhoneStateView
+          kind="empty"
+          icon={<span className="endless-arcade-lock-icon">7:55</span>}
+          title={content.lockedTitle}
+          description={content.lockedDescription}
+          primaryAction={<button type="button" onClick={returnPhoneHome}>{content.actions.backHome}</button>}
+        />
+      </PhoneAppScaffold>
     );
   }
 
-  const statusLabel = paused
-    ? "PAUSE"
-    : loadState === "loading"
-      ? "LOAD"
-      : phase === "playing"
-        ? "RUN"
-        : phase === "won"
-          ? "CLEAR"
-          : phase === "lost"
-            ? "STOP"
-            : "READY";
-  const controlsDisabled = phase !== "playing" || loadState !== "ready" || paused;
+  const definition = selectedMode ? getEndlessChallengeDefinition(selectedMode) : null;
+  const runtimeShellVisible = selectedMode !== null && [
+    "loading",
+    "running",
+    "paused",
+    "confirm_exit",
+    "game_over",
+    "error"
+  ].includes(phase);
+  const hostMounted = runtimeShellVisible && runTicket !== null;
+  const headerBack = phase === "hub" ? returnPhoneHome : requestActiveExit;
+  const headerBackLabel = phase === "hub" ? content.actions.backHome : content.actions.backHub;
 
   return (
-    <section
-      className={`bike-arcade-screen phase-${phase} load-${loadState}${paused ? " is-paused" : ""}`}
-      aria-label="求是潮755"
+    <PhoneAppScaffold
+      className={`endless-arcade-app phase-${phase}`}
+      contentClassName="endless-arcade-content"
+      contentMode={phase === "hub" ? "scroll" : "fixed"}
+      label={content.title}
+      header={(
+        <PhoneAppHeader
+          eyebrow={content.brand}
+          title={phase === "hub" ? content.title : definition?.title ?? content.title}
+          navigation={{ kind: phase === "hub" ? "exit" : "back", label: headerBackLabel, onClick: headerBack }}
+          end={<span className="endless-arcade-phase-label">{phase.replace("_", " ").toUpperCase()}</span>}
+        />
+      )}
     >
-      <header className="bike-arcade-header">
-        <PhoneNavButton kind="exit" label="退出求是潮 755，返回手机桌面" onClick={closeChapter} />
-        <div>
-          <span>GAME 07:55</span>
-          <h1>求是潮 755</h1>
-        </div>
-        <b key={`${statusLabel}-${runId}`}>{statusLabel}</b>
-      </header>
-
-      <section className="bike-arcade-hud">
-        <div><span>距离</span><strong className="bike-distance-value">{paddedDistance(distance)} / {BIKE_ARCADE_GOAL}m</strong></div>
-        <div><span>机会</span><strong key={lives} className="bike-lives-value">{"■".repeat(lives)}{"□".repeat(BIKE_ARCADE_MAX_LIVES - lives)}</strong></div>
-        <output className="sr-only" aria-live="polite">
-          {milestone ? `已到达 ${milestone} 米` : phase === "won" ? "已通过" : phase === "lost" ? "机会耗尽" : ""}
-        </output>
-      </section>
-
-      <main className="bike-arcade-arena" aria-busy={loadState === "loading"}>
-        <div ref={hostRef} className="bike-arcade-canvas-host" aria-label="三车道骑行区域" />
-        {phase === "playing" && loadState === "ready" ? (
-          <div className="bike-arcade-speed-lines" aria-hidden="true">
-            <i /><i /><i /><i /><i /><i />
+      {phase === "hub" ? (
+        <section className="endless-arcade-hub" data-endless-view="hub">
+          <header className="endless-arcade-hub-intro">
+            <span aria-hidden="true">07:55</span>
+            <p>{content.tagline}</p>
+          </header>
+          <div className="endless-arcade-mode-list">
+            {ENDLESS_CHALLENGE_MODE_IDS.map((mode) => {
+              const modeDefinition = getEndlessChallengeDefinition(mode);
+              const record = state.endlessArcade.records[mode];
+              return (
+                <article key={mode} className={`endless-arcade-mode-card is-${modeDefinition.accent}`}>
+                  <span className="endless-arcade-mode-mark" aria-hidden="true"><i /><i /><i /></span>
+                  <div>
+                    <h2>{modeDefinition.title}</h2>
+                    <p>{modeDefinition.shortRule}</p>
+                    <small>{modeDefinition.input}</small>
+                  </div>
+                  <strong>{modeDefinition.formatRecord(record)}</strong>
+                  <button type="button" onClick={() => chooseMode(mode)}>查看玩法</button>
+                </article>
+              );
+            })}
           </div>
-        ) : null}
+          <p className="endless-arcade-local-note">{content.localRecordNotice}</p>
+        </section>
+      ) : null}
 
-        {phase === "intro" ? (
-          <section className="bike-arcade-intro">
-            <div className="bike-arcade-road-preview" aria-hidden="true">
-              <i /><i /><i />
-              <span className="bike-preview-rider">骑</span>
-              <span className="bike-preview-block">堵</span>
-              <b className="bike-preview-sign">755m</b>
-            </div>
-            <p>骑过 755 米。三次机会，左右换道。</p>
-            <small>
-              最佳 {paddedDistance(state.bikeArcade.bestDistance)}m · 尝试 {state.bikeArcade.attemptCount} 次
-            </small>
-            <button type="button" aria-label="开始骑行" onClick={startRun}>开始骑行</button>
-          </section>
-        ) : null}
+      {phase === "intro" && definition && selectedMode ? (
+        <section className={`endless-arcade-intro is-${definition.accent}`} data-endless-view="intro">
+          <span className="endless-arcade-intro-clock">07:55</span>
+          <div className="endless-arcade-intro-pattern" aria-hidden="true"><i /><i /><i /><i /></div>
+          <h2>{definition.title}</h2>
+          <p>{definition.shortRule}</p>
+          <small>{definition.input}</small>
+          <strong>最佳：{definition.formatRecord(state.endlessArcade.records[selectedMode])}</strong>
+          <button type="button" onClick={startSelectedMode}>{content.actions.start}</button>
+          <button type="button" className="is-secondary" onClick={returnHub}>{content.actions.backHub}</button>
+        </section>
+      ) : null}
 
-        {loadState === "loading" ? (
-          <section className="bike-arcade-loading" role="status">
-            <span>LOADING</span>
-            <i /><i /><i />
-          </section>
-        ) : null}
-
-        {loadState === "error" ? (
-          <section className="bike-arcade-load-error" role="alert">
-            <strong>赛道加载失败</strong>
-            <button type="button" onClick={startRun}>重新加载游戏</button>
-            <button type="button" className="secondary" onClick={closeChapter}>返回桌面</button>
-          </section>
-        ) : null}
-
-        {milestone && milestone < BIKE_ARCADE_GOAL ? (
-          <div className="bike-arcade-milestone" role="status">
-            <span>{milestone}m</span>
-            <small>{milestone === 188 ? "节奏提升" : milestone === 377 ? "拥堵升级" : "最后冲刺"}</small>
+      {runtimeShellVisible && selectedMode && definition ? (
+        <section className="endless-arcade-runtime" data-endless-view={phase}>
+          <header className="endless-arcade-runtime-hud">
+            <span><small>分数</small><strong>{snapshot?.score.toLocaleString("zh-CN") ?? "0"}</strong></span>
+            <span><small>{definition.progressUnit}</small><strong>{snapshot?.progress.toLocaleString("zh-CN") ?? "0"}</strong></span>
+            <span><small>层级</small><strong>{snapshot?.tier ?? 1}</strong></span>
+            <span><small>连击</small><strong>{snapshot?.combo ?? 0}</strong></span>
+          </header>
+          <div className="endless-arcade-runtime-stage" aria-busy={phase === "loading"}>
+            {hostMounted ? (
+              <EndlessArcadeGameHost
+                ref={hostRef}
+                mode={selectedMode}
+                run={runTicket}
+                runKey={runKey}
+                externalPause={state.ui.controlCenterOpen}
+                onStatusChange={handleHostStatus}
+                onSnapshot={setSnapshot}
+              />
+            ) : null}
+            {phase === "loading" ? (
+              <PhoneStateView
+                kind="loading"
+                className="endless-arcade-overlay"
+                title={content.states.loadingTitle}
+                description={content.states.loadingDescription}
+              />
+            ) : null}
+            {phase === "paused" ? (
+              <PhoneStateView
+                kind="empty"
+                className="endless-arcade-overlay"
+                title={content.states.pausedTitle}
+                description={content.states.pausedDescription}
+                primaryAction={<button type="button" onClick={resumeRun}>{content.actions.resume}</button>}
+                secondaryAction={<button type="button" onClick={requestActiveExit}>{content.actions.exitRun}</button>}
+              />
+            ) : null}
+            {phase === "error" ? (
+              <PhoneStateView
+                kind="error"
+                className="endless-arcade-overlay"
+                title={content.states.errorTitle}
+                description={formatRuntimeError(runtimeError)}
+                primaryAction={<button type="button" onClick={startSelectedMode}>{content.actions.retryLoad}</button>}
+                secondaryAction={<button type="button" onClick={returnHub}>{content.actions.backHub}</button>}
+              />
+            ) : null}
+            {phase === "game_over" && summary ? (
+              <section className="endless-arcade-result" role="dialog" aria-modal="true" aria-label={content.states.gameOverTitle}>
+                <span>{content.states.gameOverTitle}</span>
+                <h2>{summary.score.toLocaleString("zh-CN")} 分</h2>
+                <p>{summary.progress.toLocaleString("zh-CN")} {definition.progressUnit} · 层级 {summary.tier} · 连击 {summary.combo}</p>
+                <small>{content.states.gameOverDescription}</small>
+                <button type="button" onClick={startSelectedMode}>{content.actions.retry}</button>
+                <button type="button" className="is-secondary" onClick={returnHub}>{content.actions.backHub}</button>
+                <button type="button" className="is-secondary" onClick={returnPhoneHome}>{content.actions.backHome}</button>
+              </section>
+            ) : null}
           </div>
-        ) : null}
+          {phase === "running" && selectedMode === "spotlight" ? (
+            <nav className="endless-arcade-touch-controls endless-arcade-spotlight-controls" aria-label="灯光追逐触屏操作">
+              <div className="endless-arcade-aim-control">
+                <span>光束位置</span>
+                <div
+                  className="endless-arcade-aim-track"
+                  role="slider"
+                  tabIndex={0}
+                  aria-label="光束横向位置"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(spotlightAim * 100)}
+                  onKeyDown={handleSpotlightAimKey}
+                  onPointerDown={beginSpotlightAim}
+                  onPointerMove={moveSpotlightAim}
+                  onPointerUp={endSpotlightAim}
+                  onPointerCancel={endSpotlightAim}
+                  onLostPointerCapture={endSpotlightAim}
+                >
+                  <i style={{ left: `${spotlightAim * 100}%` }} />
+                </div>
+              </div>
+              <button
+                type="button"
+                className="endless-arcade-beam-button"
+                onPointerDown={(event) => beginTouchControl("primary", event)}
+                onPointerUp={(event) => endTouchControl("primary", event)}
+                onPointerCancel={cancelTouchControl}
+                onLostPointerCapture={cancelTouchControl}
+                onPointerLeave={(event) => endTouchControl("primary", event)}
+              >按住照射</button>
+            </nav>
+          ) : phase === "running" && selectedMode === "bike" ? (
+          <nav className="endless-arcade-touch-controls is-bike" aria-label="755 米骑行触屏操作">
+            <button
+              type="button"
+              onPointerDown={(event) => beginTouchControl("left", event)}
+              onPointerUp={(event) => endTouchControl("left", event)}
+              onPointerCancel={cancelTouchControl}
+              onLostPointerCapture={cancelTouchControl}
+              onPointerLeave={(event) => endTouchControl("left", event)}
+            >左车道</button>
+            <button
+              type="button"
+              onPointerDown={(event) => beginTouchControl("right", event)}
+              onPointerUp={(event) => endTouchControl("right", event)}
+              onPointerCancel={cancelTouchControl}
+              onLostPointerCapture={cancelTouchControl}
+              onPointerLeave={(event) => endTouchControl("right", event)}
+            >右车道</button>
+          </nav>
+          ) : phase === "running" && selectedMode === "fishing" ? (
+            <nav className="endless-arcade-touch-controls" aria-label={`${definition.title}触屏操作`}>
+              {(["left", "primary", "right"] as const).map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  onPointerDown={(event) => beginTouchControl(action, event)}
+                  onPointerUp={(event) => endTouchControl(action, event)}
+                  onPointerCancel={cancelTouchControl}
+                  onLostPointerCapture={cancelTouchControl}
+                  onPointerLeave={(event) => endTouchControl(action, event)}
+                >{getFishingTouchControlLabel(action)}</button>
+              ))}
+            </nav>
+          ) : null}
+        </section>
+      ) : null}
 
-        {paused || resumeNotice ? (
-          <div className={`bike-arcade-pause ${resumeNotice ? "is-resuming" : ""}`} role="status">
-            {resumeNotice ? "继续骑行" : "已暂停"}
+      {phase === "confirm_exit" ? (
+        <PhoneActionSheet
+          title={content.states.exitTitle}
+          description={content.states.exitDescription}
+          onClose={keepPlaying}
+        >
+          <div className="endless-arcade-exit-actions">
+            <button type="button" data-phone-autofocus onClick={keepPlaying}>{content.actions.keepPlaying}</button>
+            <button type="button" className="is-danger" onClick={confirmExit}>{content.actions.confirmExit}</button>
           </div>
-        ) : null}
-
-        {phase === "won" || phase === "lost" ? (
-          <section className={`bike-arcade-result is-${phase}`} role="dialog" aria-modal="true" aria-label={phase === "won" ? "骑行完成" : "骑行失败"}>
-            <span>{phase === "won" ? "07:55:00" : "07:55:01"}</span>
-            <h2>{phase === "won" ? "已通过" : "原地结算"}</h2>
-            <p>{phase === "won" ? "已抵达 755 米，第三章完成记录已保存。" : `本次抵达 ${paddedDistance(distance)} 米，最高记录已保存。`}</p>
-            {phase === "won" ? <button type="button" onClick={continueChapter}>继续下一章</button> : null}
-            <button type="button" onClick={startRun}>再骑一次</button>
-            <button type="button" className="secondary" onClick={closeChapter}>返回桌面</button>
-          </section>
-        ) : null}
-      </main>
-
-      <nav className="bike-arcade-controls" aria-label="骑行操作">
-        <button type="button" aria-label="向左换道" disabled={controlsDisabled} onClick={() => sceneRef.current?.moveLane(-1)}>←</button>
-        <div aria-hidden="true"><span>A</span><span>D</span></div>
-        <button type="button" aria-label="向右换道" disabled={controlsDisabled} onClick={() => sceneRef.current?.moveLane(1)}>→</button>
-      </nav>
-    </section>
+        </PhoneActionSheet>
+      ) : null}
+    </PhoneAppScaffold>
   );
 }

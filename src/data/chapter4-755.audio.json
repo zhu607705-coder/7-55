@@ -35,12 +35,54 @@
         }
       ]
     },
+    "maintenance_cart_wheel_stuck": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_cart_wheel_stuck",
+          "volume": 0.58
+        }
+      ]
+    },
+    "maintenance_cart_wheel_repaired": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "sfx_ch4_cart_wheel_repaired",
+          "volume": 0.5
+        }
+      ]
+    },
     "maintenance_cart_roll_started": {
       "cues": [
         {
           "channel": "sfx",
           "asset": "fx_canteen_cart_roll",
           "volume": 0.56
+        }
+      ]
+    },
+    "clock_stutter_started": {
+      "cues": [
+        {
+          "channel": "ambient",
+          "owner": "chapter4_clock",
+          "asset": "sfx_ch4_clock_stutter_loop",
+          "action": "play",
+          "volume": 0.13,
+          "loop": true
+        }
+      ]
+    },
+    "clock_stable_started": {
+      "cues": [
+        {
+          "channel": "ambient",
+          "owner": "chapter4_clock",
+          "asset": "sfx_ch4_clock_tick_loop",
+          "action": "play",
+          "volume": 0.11,
+          "loop": true
         }
       ]
     },
@@ -149,6 +191,11 @@
       "cues": [
         {
           "channel": "music",
+          "action": "stop"
+        },
+        {
+          "channel": "ambient",
+          "owner": "chapter4_clock",
           "action": "stop"
         }
       ]

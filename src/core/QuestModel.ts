@@ -7,6 +7,8 @@ import clockContent from "../data/chapter4-clock.content.json";
 import chapterFour755Content from "../data/chapter4-755.content.json";
 import chapterFourContent from "../data/chapter4-temporal-maze.content.json";
 import { selectChapterFourWechatObjective } from "../modules/ChapterFourWechatModel";
+import { selectChapterThreeInterludeViewModel } from "../modules/ChapterThreeInterludeModel";
+import { selectChapterFourStagePresentation } from "../modules/ChapterFourStagePresentation";
 
 interface TaskDefinition {
   id: string;
@@ -455,7 +457,7 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
                   id: "chapter_three_theater_admission",
                   label: "把临时观演票交给检票闸机",
                   hints: [
-                    "靠近闸机右侧读票器并面向它。",
+                    "靠近闸机右侧的读票器。",
                     "把道具栏里的临时观演票拖到读票器的发光框内。"
                   ],
                   targetSurface: "rpg"
@@ -482,7 +484,7 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
                       id: "chapter_three_theater_find_half_a",
                       label: "从入口海报栏取得半张票根 A",
                       hints: [
-                        "靠近大厅左侧海报栏并面向玻璃。",
+                        "靠近大厅左侧的海报玻璃。",
                         "把去油纸巾拖到海报玻璃的发光区域。"
                       ],
                       targetSurface: "rpg"
@@ -597,76 +599,8 @@ export function isQuestTaskBarVisible(state: GameState): boolean {
 }
 
 function chapterThreeInterludeQuest(state: GameState): QuestViewModel {
-  const interlude = state.chapterThreeInterlude;
-  let task: TaskDefinition;
-
-  if (!interlude.recoveryOpened || interlude.phase === "reboot") {
-    task = {
-      id: "chapter_three_interlude_reboot",
-      label: "打开未同步记录",
-      hints: ["手机刚收到一条 7 分 55 秒记录恢复通知。"],
-      targetSurface: "phone",
-      recommendedScene: "timeline_recovery"
-    };
-  } else if (!interlude.evidenceIds.includes("journal_start")) {
-    task = {
-      id: "chapter_three_interlude_journal",
-      label: "在 CC98 确认离湖时间",
-      hints: ["打开划船记录帖，保存最后一条离湖回复。"],
-      targetSurface: "phone",
-      recommendedScene: "cc98"
-    };
-  } else if (!interlude.photoSequenceSolved) {
-    task = {
-      id: "chapter_three_interlude_photos",
-      label: "按方向整理三张恢复照片",
-      hints: ["在照片中依次选择纸条位于左侧、中间、右侧的画面。"],
-      targetSurface: "phone",
-      recommendedScene: "photos"
-    };
-  } else if (!interlude.voiceSequenceSolved) {
-    task = {
-      id: "chapter_three_interlude_voice",
-      label: "整理四段夜间录音",
-      hints: ["按湖面、石岸、大厅、闭楼广播的顺序排列。"],
-      targetSurface: "phone",
-      recommendedScene: "voice_memos"
-    };
-  } else if (!interlude.officialNoticeSaved || !interlude.routeScreenshotSaved) {
-    task = {
-      id: "chapter_three_interlude_wechat",
-      label: "保存闭楼通知和入口截图",
-      hints: ["微信中有一条楼宇公众号通知和一张群聊路线截图。"],
-      targetSurface: "phone",
-      recommendedScene: "wechat"
-    };
-  } else if (!interlude.networkRecordRead) {
-    task = {
-      id: "chapter_three_interlude_network",
-      label: "核对教学楼接入点记录",
-      hints: ["在浙大钉中筛出缺口末段、未知设备和三秒短会话。"],
-      targetSurface: "phone",
-      recommendedScene: "zjuding"
-    };
-  } else if (interlude.destinationId !== "duan_yongping_a1") {
-    task = {
-      id: "chapter_three_interlude_timeline",
-      label: "排除旧时间并恢复完整路线",
-      hints: ["回到记录恢复，先排除三条旧时间，再按发生顺序放入四项证据。"],
-      targetSurface: "phone",
-      recommendedScene: "timeline_recovery"
-    };
-  } else {
-    task = {
-      id: "chapter_three_interlude_replay",
-      label: "播放恢复回放",
-      hints: ["已确认目的地为段永平教学楼 A 楼一层。"],
-      targetSurface: "phone",
-      recommendedScene: "timeline_recovery"
-    };
-  }
-
-  return buildQuest("chapter_three", "未同步的七分五十五秒", [task], 0);
+  const viewModel = selectChapterThreeInterludeViewModel(state);
+  return buildQuest("chapter_three", viewModel.title, [viewModel.currentObjective], 0);
 }
 
 interface ChapterFour755PhaseTaskContract {
@@ -676,7 +610,7 @@ interface ChapterFour755PhaseTaskContract {
 
 interface ChapterFour755TaskCopy {
   label: string;
-  hint: string | null;
+  hints: readonly string[];
 }
 
 const CHAPTER_FOUR_755_PHASE_TASK_CONTRACTS =
@@ -753,6 +687,7 @@ function chapterFour755Quest(
   const task = CHAPTER_FOUR_755_TASKS[taskKey];
   const completed = state.chapter4.completed || phase === "complete";
   const label = task?.label ?? taskKey;
+  const presentation = selectChapterFourStagePresentation(state);
   return {
     id: "chapter_four_temporal_maze",
     chapter: "chapter_four",
@@ -770,8 +705,9 @@ function chapterFour755Quest(
       label,
       status: completed ? "completed" : "active"
     }],
-    hints: task?.hint ? [task.hint] : [],
-    targetSurface: "rpg"
+    hints: task?.hints ?? [],
+    targetSurface: "rpg",
+    ...(presentation ? { chapterFourPresentation: presentation } : {})
   };
 }
 

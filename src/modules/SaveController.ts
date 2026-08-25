@@ -5,10 +5,13 @@ import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
   DEVELOPER_BIKE_START_KEY,
-  DEVELOPER_CANTEEN_DEFENSE_START_KEY,
+  DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY,
+  DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY,
+  DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY,
   DEVELOPER_SOURCE_KEY
 } from "../core/StorageKeys";
 import type { GameStore } from "../core/types";
+import { clearChapterThreeInterludeVoiceDraft } from "./ChapterThreeInterludeDraftStore";
 
 export class SaveController {
   constructor(
@@ -36,7 +39,10 @@ export class SaveController {
     this.sessionStorage.removeItem(DEVELOPER_SOURCE_KEY);
     this.sessionStorage.removeItem(DEVELOPER_BACKUP_KEY);
     this.sessionStorage.removeItem(DEVELOPER_BIKE_START_KEY);
-    this.sessionStorage.removeItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY);
+    this.sessionStorage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
+    this.sessionStorage.removeItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY);
+    this.sessionStorage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);
+    clearChapterThreeInterludeVoiceDraft(this.sessionStorage);
     this.store.setState(() => createInitialGameState());
     this.events.emit("game_progress_reset");
   }

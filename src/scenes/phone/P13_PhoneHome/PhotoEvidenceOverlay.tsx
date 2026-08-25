@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import library022ReflectionUrl from "../../../assets/ui/photo-evidence/library_022_reflection.webp";
-import takeoutSoyUrl from "../../../assets/ui/photo-evidence/library-roll/library_roll_01_takeout_soy.webp";
-import dormMealUrl from "../../../assets/ui/photo-evidence/library-roll/library_roll_02_dorm_meal.webp";
-import rainyBreakfastUrl from "../../../assets/ui/photo-evidence/library-roll/library_roll_03_rainy_breakfast.webp";
-import librarySnackUrl from "../../../assets/ui/photo-evidence/library-roll/library_roll_04_library_snack.webp";
-import canteenTakeoutUrl from "../../../assets/ui/photo-evidence/library-roll/library_roll_05_canteen_takeout.webp";
-import seat022ClueUrl from "../../../assets/ui/photo-evidence/library-roll/library_roll_06_seat_022_clue.webp";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
+import { PhoneActionSheet, PhoneSegmentedControl } from "../../../components/PhoneAppUi";
+import {
+  LIBRARY_CLUE_PHOTO_ID,
+  selectLibraryRollPhotos
+} from "../../../data/phonePhotoCatalog";
 import "../../../styles/library-v2-phone.css";
 
 interface PhotoEvidenceOverlayProps {
@@ -20,16 +19,7 @@ interface PhotoEvidenceOverlayProps {
   onClose: () => void;
 }
 
-const CLUE_PHOTO_ID = "seat_022_clue";
-
-const LIBRARY_ROLL_PHOTOS = [
-  { id: "takeout_soy", title: "窗边豆浆", file: "IMG_0033.JPG", imageUrl: takeoutSoyUrl, detail: "高数草稿还摊在桌上，豆浆已经冷了。" },
-  { id: "dorm_meal", title: "寝室晚饭", file: "IMG_0034.JPG", imageUrl: dormMealUrl, detail: "校园卡压着充电线，桌面没有收拾。" },
-  { id: "rainy_breakfast", title: "雨后早餐", file: "IMG_0035.JPG", imageUrl: rainyBreakfastUrl, detail: "长椅还有水迹，纸袋放在靠内侧。" },
-  { id: "library_snack", title: "自习间隙", file: "IMG_0036.JPG", imageUrl: librarySnackUrl, detail: "面包包装拆了一半，保温杯放在右边。" },
-  { id: "canteen_takeout", title: "食堂打包", file: "IMG_0037.JPG", imageUrl: canteenTakeoutUrl, detail: "餐巾纸折在盒饭旁边，桌面很干净。" },
-  { id: CLUE_PHOTO_ID, title: "022 旧照", file: "IMG_0038.JPG", imageUrl: seat022ClueUrl, detail: "同一只 022 书包。侧袋里的半包纸，在 07:55 时已经存在。" }
-] as const;
+const LIBRARY_ROLL_PHOTOS = selectLibraryRollPhotos();
 
 /** IMG_0755.JPG 只展示识别状态；亮度与报告进度由共享状态持有。 */
 export function PhotoEvidenceOverlay({
@@ -48,9 +38,14 @@ export function PhotoEvidenceOverlay({
   const [revealAnimating, setRevealAnimating] = useState(false);
   const [shutterAnimating, setShutterAnimating] = useState(false);
   const [selectedRollPhotoId, setSelectedRollPhotoId] = useState<string | null>(null);
+  const selectedRollPhotoTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const [rollFilter, setRollFilter] = useState<"recent" | "campus_life">("recent");
   const shutterTimerRef = useRef<number | null>(null);
   const readable = available && captured && brightness <= 20 && dimmed;
   const selectedRollPhoto = LIBRARY_ROLL_PHOTOS.find((photo) => photo.id === selectedRollPhotoId) ?? null;
+  const visibleRollPhotos = rollFilter === "campus_life"
+    ? LIBRARY_ROLL_PHOTOS.filter((photo) => photo.albumId === "campus_life")
+    : LIBRARY_ROLL_PHOTOS;
   const revealProgress = available ? Math.max(0, Math.min(1, (72 - brightness) / 52)) : 0;
   const exposurePhase = !available
     ? "is-unavailable"
@@ -207,48 +202,76 @@ export function PhotoEvidenceOverlay({
           <section className={`photo-recognition-result ${reportGenerated ? "is-generated" : ""}`}>
             <strong>{reportGenerated ? "物品识别报告已生成" : "旧相册里还有一张同场景照片"}</strong>
             {!reportGenerated ? <p>找到同一只 022 书包的旧照，核对半包纸出现的时间。</p> : null}
-            <button type="button" disabled={reportGenerated} onClick={() => setSelectedRollPhotoId(CLUE_PHOTO_ID)}>
+            <button type="button" disabled={reportGenerated} onClick={(event) => {
+              selectedRollPhotoTriggerRef.current = event.currentTarget;
+              setRollFilter("recent");
+              setSelectedRollPhotoId(LIBRARY_CLUE_PHOTO_ID);
+            }}>
               {reportGenerated ? "已写入报告" : "查看 022 旧照"}
             </button>
           </section>
         ) : null}
 
-        {captured && !shutterAnimating ? <section className="photo-joke-grid" aria-label="最近照片">
-          {LIBRARY_ROLL_PHOTOS.map((photo) => (
+        {captured && !shutterAnimating ? <PhoneSegmentedControl
+          className="photo-roll-filter"
+          label="照片筛选"
+          value={rollFilter}
+          options={[
+            { value: "recent", label: `最近 ${LIBRARY_ROLL_PHOTOS.length} 张` },
+            { value: "campus_life", label: "校园与日常" }
+          ]}
+          onChange={(value) => {
+            setRollFilter(value);
+            setSelectedRollPhotoId(null);
+          }}
+        /> : null}
+
+        {captured && !shutterAnimating ? <section className="photo-joke-grid" aria-label={rollFilter === "campus_life" ? "校园与日常照片" : "最近照片"}>
+          {visibleRollPhotos.map((photo) => (
             <button
               key={photo.id}
               type="button"
               className={selectedRollPhotoId === photo.id ? "is-selected" : ""}
               aria-label={`预览 ${photo.title}`}
               aria-pressed={selectedRollPhotoId === photo.id}
-              onClick={() => setSelectedRollPhotoId(photo.id)}
+              onClick={(event) => {
+                selectedRollPhotoTriggerRef.current = event.currentTarget;
+                setSelectedRollPhotoId(photo.id);
+              }}
             >
               <img src={photo.imageUrl} alt="" aria-hidden="true" />
               <span>{photo.file.slice(4, 8)}</span>
             </button>
           ))}
         </section> : null}
-        {captured && !shutterAnimating ? <p className="photo-joke-caption">最近 6 张旧照片。点开可以查看细节。</p> : null}
-
-        {selectedRollPhoto ? (
-          <section className={`photo-roll-preview ${selectedRollPhoto.id === CLUE_PHOTO_ID ? "is-clue" : ""}`} aria-label={`${selectedRollPhoto.title} 照片预览`}>
-            <header>
-              <div><strong>{selectedRollPhoto.file}</strong><span>{selectedRollPhoto.title}</span></div>
-              <button type="button" aria-label="关闭照片预览" onClick={() => setSelectedRollPhotoId(null)}>×</button>
-            </header>
-            <img src={selectedRollPhoto.imageUrl} alt={`${selectedRollPhoto.title}，${selectedRollPhoto.detail}`} />
-            <p>{selectedRollPhoto.detail}</p>
-            {selectedRollPhoto.id === CLUE_PHOTO_ID ? (
-              <div className="photo-roll-clue-action">
-                <span>{readable ? "旧照与刚拍下的标签内容一致。" : "先把刚拍下的主照片亮度降到 20% 以下。"}</span>
-                <button type="button" disabled={!readable || reportGenerated} onClick={onGenerate}>
-                  {reportGenerated ? "已写入物品报告" : "用旧照补全物品报告"}
-                </button>
-              </div>
-            ) : null}
-          </section>
+        {captured && !shutterAnimating ? (
+          <p className="photo-joke-caption">
+            {rollFilter === "campus_life"
+              ? "6 张校园与日常照片。它们只用于补足相册内容，不参与证据判定。"
+              : `${LIBRARY_ROLL_PHOTOS.length} 张最近照片。点开可以查看细节。`}
+          </p>
         ) : null}
       </main>
+      {selectedRollPhoto ? (
+        <PhoneActionSheet
+          title={selectedRollPhoto.title}
+          description={`${selectedRollPhoto.file} · ${selectedRollPhoto.location}`}
+          className={`photo-roll-sheet ${selectedRollPhoto.storyRole === "library_clue" ? "is-clue" : ""}`}
+          onClose={() => setSelectedRollPhotoId(null)}
+          returnFocusElement={selectedRollPhotoTriggerRef.current}
+        >
+          <img className="photo-roll-sheet__image" src={selectedRollPhoto.imageUrl} alt={`${selectedRollPhoto.title}，${selectedRollPhoto.detail}`} />
+          <p className="photo-roll-sheet__detail">{selectedRollPhoto.capturedAt} · {selectedRollPhoto.detail}</p>
+          {selectedRollPhoto.storyRole === "library_clue" ? (
+            <div className="photo-roll-clue-action">
+              <span>{readable ? "旧照与刚拍下的标签内容一致。" : "先把刚拍下的主照片亮度降到 20% 以下。"}</span>
+              <button type="button" disabled={!readable || reportGenerated} onClick={onGenerate}>
+                {reportGenerated ? "已写入物品报告" : "用旧照补全物品报告"}
+              </button>
+            </div>
+          ) : null}
+        </PhoneActionSheet>
+      ) : null}
     </section>
   );
 }

@@ -578,7 +578,7 @@ export function InventoryBar({ state }: InventoryBarProps) {
             <p className={`inv-tip ${dropFeedback ? "is-feedback" : ""}`} role="status" aria-live="polite">
               {dropFeedback
                 ?? (ghost?.moved
-                  ? "拖到真实物件；松手后会校验距离、朝向和剧情条件"
+                  ? "拖到真实物件；松手后会校验距离、目标和剧情条件"
                   : state.ui.selectedItem
                     ? `${ITEM_META[state.ui.selectedItem].name} · 双击查看`
                     : "可拖动 · 双击查看")}

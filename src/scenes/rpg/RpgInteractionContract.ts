@@ -387,7 +387,7 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
     const id = `a2_room204_slot_${slotId}` as ChapterFour755Room204SlotTargetId;
     return [id, defineChapterFourTarget({
       id,
-      label: `204 教室复位槽位 ${slotId.slice(-2)}`,
+      label: "204 教室空槽位",
       bounds: null,
       activation: "runtime_entity",
       activePhases: ["room204_restore"],

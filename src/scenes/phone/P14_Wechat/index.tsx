@@ -13,6 +13,7 @@ import {
   selectChapterFourWechatProjection
 } from "../../../modules/ChapterFourWechatModel";
 import type { ChapterThreeInterludeRouteMessageId } from "../../../modules/ChapterThreePhoneInterludeController";
+import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
 
 type ChapterFourChatView = "official" | "group" | "archive" | "friend" | null;
 
@@ -38,6 +39,8 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
   const [feedback, setFeedback] = useState("");
   const [selectedRouteMessages, setSelectedRouteMessages] = useState<ChapterThreeInterludeRouteMessageId[]>([]);
   const interlude = state.chapterThreeInterlude;
+  const interludeViewModel = selectChapterThreeInterludeViewModel(state);
+  const destinationCopyUnlocked = interludeViewModel.destinationSelectionUnlocked || interlude.destinationId !== null;
 
   function saveOfficialNotice() {
     const result = kit.chapterThreeInterlude.saveOfficialNotice();
@@ -80,8 +83,8 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
           <article className="interlude-official-notice">
             <small>校园楼宇运行通知</small>
             <h2>夜间闭楼与入口调整</h2>
-            <div className="interlude-building-plate" aria-hidden="true"><b>A1</b><i /><i /><i /></div>
-            <p>22:45 起，段永平教学楼进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。</p>
+            <div className="interlude-building-plate" aria-hidden="true"><b>{destinationCopyUnlocked ? "A1" : "A?"}</b><i /><i /><i /></div>
+            <p>22:45 起，{destinationCopyUnlocked ? "段永平教学楼" : "北教学区一处楼宇"}进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。</p>
             <p>主电梯保留运行，楼层开放情况以现场提示为准。</p>
             <button type="button" onClick={saveOfficialNotice}>
               {interlude.officialNoticeSaved ? "通知已保存" : "保存通知"}
@@ -151,13 +154,13 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
       <main className="interlude-chat-list">
         <button type="button" onClick={() => setView("official")}>
           <span className="interlude-chat-avatar is-official" aria-hidden="true">楼</span>
-          <span><strong>紫金港楼宇服务</strong><small>夜间闭楼与入口调整</small></span>
+          <span><strong>紫金港楼宇服务</strong><small>有一条未归档的运行通知</small></span>
           <time>22:40</time>
           {interlude.officialNoticeSaved ? <em>已存</em> : null}
         </button>
         <button type="button" onClick={() => setView("group")}>
           <span className="interlude-chat-avatar is-group" aria-hidden="true">18</span>
-          <span><strong>麦斯威夜间自习群</strong><small>东边入口关了，我从大厅绕进去。</small></span>
+          <span><strong>麦斯威夜间自习群</strong><small>有两条消息可组成路线截图</small></span>
           <time>22:42</time>
           {interlude.routeScreenshotSaved ? <em>已存</em> : null}
         </button>

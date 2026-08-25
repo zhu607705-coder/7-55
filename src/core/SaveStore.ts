@@ -13,6 +13,8 @@ import type {
   ClockCalibrationPhase,
   ClockCoarseLockId,
   ClockDriftChannelId,
+  EndlessArcadeState,
+  EndlessChallengeModeId,
   GameState,
   LibraryEvidenceId,
   LibraryFinalsBdPostId,
@@ -32,6 +34,7 @@ import type {
   QizhenPhotoRecord,
   QizhenPhotoSpotId,
   QizhenPhotoTag,
+  PostgameState,
   WalletState
 } from "./types";
 import {
@@ -46,11 +49,18 @@ import {
 } from "../scenes/rpg/ChapterFourRoom204Model";
 import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
+import { ENDLESS_ARCADE_SCORE_LIMIT } from "./EndlessArcadeLimits";
 
-const SAVE_VERSION = 25;
+const CHAPTER_FOUR_755_SAVE_VERSION = 25;
+const POSTGAME_ENDLESS_SAVE_VERSION = 26;
+const SAVE_VERSION = POSTGAME_ENDLESS_SAVE_VERSION;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
-const SUPPORTED_ENVELOPE_VERSIONS = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, SAVE_VERSION]);
+const SUPPORTED_ENVELOPE_VERSIONS = new Set([
+  2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+  CHAPTER_FOUR_755_SAVE_VERSION,
+  SAVE_VERSION
+]);
 
 const VALID_RUNTIME_MODES = new Set<GameState["runtimeMode"]>(["phone", "rpg"]);
 const VALID_RPG_SCENES = new Set<GameState["rpgScene"]>([
@@ -270,6 +280,18 @@ const VALID_CLOCK_ARCHIVE_CLUE_IDS = new Set<ClockArchiveClueId>([
 ]);
 const VALID_CLOCK_COARSE_LOCK_IDS = new Set<ClockCoarseLockId>(["hour", "minute"]);
 const VALID_CLOCK_DRIFT_CHANNEL_IDS = new Set<ClockDriftChannelId>(["gate", "elevator", "room"]);
+const VALID_MAIN_STORY_RECEIPTS = new Set<NonNullable<PostgameState["completionReceipt"]>>([
+  "chapter4_closure_v1"
+]);
+const ENDLESS_CHALLENGE_MODE_IDS: readonly EndlessChallengeModeId[] = ["fishing", "spotlight", "bike"];
+export const ENDLESS_RECORD_LIMITS = Object.freeze({
+  attemptCount: 999_999,
+  bestScore: ENDLESS_ARCADE_SCORE_LIMIT,
+  bestProgress: 9_999_999,
+  bestTier: 9_999,
+  bestCombo: 9_999,
+  bestDurationMs: 86_400_000
+});
 
 interface SaveEnvelope {
   version: typeof SAVE_VERSION;
@@ -433,7 +455,6 @@ export class SaveStore {
       const legacyChaseCompleted = savedCanteenPhase === "theater_reached";
       const chaseCompleted = booleanOr(savedCanteenHunt.chaseCompleted, legacyChaseCompleted);
       const savedBlockHits = rangedIntegerOr(savedCanteenHunt.blockHits, 0, 3, initial.canteenHunt.blockHits);
-      const trayPreviouslyCompleted = ["drink_mix", "menu_order", "pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const drinkPreviouslyCompleted = ["menu_order", "pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const menuPreviouslyCompleted = ["pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const pickupPreviouslyCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
@@ -443,15 +464,13 @@ export class SaveStore {
         mode: enumOr(savedCanteenHunt.mode, VALID_CANTEEN_MODES, initial.canteenHunt.mode),
         entryPaperEscaped: booleanOr(
           savedCanteenHunt.entryPaperEscaped,
-          savedCanteenPhase === "entered"
-          || trayPreviouslyCompleted
+          savedCanteenPhase !== "tray_search"
           || booleanOr(savedCanteenHunt.trayTaskStarted, false)
           || (Array.isArray(savedCanteenHunt.returnedTrayIds) && savedCanteenHunt.returnedTrayIds.length > 0)
         ),
         trayTaskStarted: booleanOr(
           savedCanteenHunt.trayTaskStarted,
-          savedCanteenPhase === "entered"
-          || trayPreviouslyCompleted
+          savedCanteenPhase !== "tray_search"
           || (Array.isArray(savedCanteenHunt.identifiedTrayIds) && savedCanteenHunt.identifiedTrayIds.length > 0)
           || (Array.isArray(savedCanteenHunt.returnedTrayIds) && savedCanteenHunt.returnedTrayIds.length > 0)
         ),
@@ -588,7 +607,11 @@ export class SaveStore {
         initial.chapter4,
         envelopeVersion
       );
-      const chapter4 = chapter4Normalization.state;
+      const postgame = normalizePostgame(saved.postgame, initial.postgame, chapter4Normalization.state);
+      const chapter4 = postgame.completionReceipt === "chapter4_closure_v1"
+        ? createCompletedChapterFourState(initial.chapter4)
+        : chapter4Normalization.state;
+      const endlessArcade = normalizeEndlessArcade(saved.endlessArcade, saved.bikeArcade, initial.endlessArcade);
       const chapterThreeInterlude = normalizeChapterThreeInterlude(
         saved.chapterThreeInterlude,
         initial.chapterThreeInterlude,
@@ -599,7 +622,7 @@ export class SaveStore {
         qizhenLake.active = true;
         qizhenLake.phase = "location_search";
       }
-      const requiresCanteenMigration = isLegacyChapterThreeState(saved, ui);
+      const requiresCanteenMigration = isLegacyChapterThreeState(saved, ui, envelopeVersion);
       const chapterThreeAlreadyProgressed = hasChapterThreeProgress(canteenHunt, theaterHunt, qizhenLake);
       if (requiresCanteenMigration) {
         ui.libraryFinalsPhase = "friend_contacted";
@@ -639,6 +662,8 @@ export class SaveStore {
         actOne,
         wallet,
         bikeArcade,
+        postgame,
+        endlessArcade,
         canteenHunt,
         theaterHunt,
         qizhenLake,
@@ -1058,13 +1083,17 @@ function defaultSafeSpawnFor(
   return "swan_cove_entry";
 }
 
-function isLegacyChapterThreeState(saved: Record<string, unknown>, ui: GameState["ui"]): boolean {
+function isLegacyChapterThreeState(
+  saved: Record<string, unknown>,
+  ui: GameState["ui"],
+  envelopeVersion: number
+): boolean {
   const savedUi = asRecord(saved.ui);
   const savedPuzzle = asRecord(savedUi.libraryFinalsPuzzle);
   return ui.libraryFinalsPhase === "friend_contacted"
     || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_canteen_hunt"
     || savedPuzzle.nextQuestId === "chapter_three_book_hunt"
-    || saved.currentScene === "bike_arcade"
+    || (envelopeVersion < POSTGAME_ENDLESS_SAVE_VERSION && saved.currentScene === "bike_arcade")
     || saved.currentScene === "chapter_transition";
 }
 
@@ -1516,7 +1545,7 @@ function normalizeChapterFour(
   envelopeVersion: number
 ): ChapterFourNormalizationResult {
   const saved = asRecord(value);
-  if (envelopeVersion < SAVE_VERSION) {
+  if (envelopeVersion < CHAPTER_FOUR_755_SAVE_VERSION) {
     const savedPhase = typeof saved.phase === "string" ? saved.phase : "inactive";
     const completed = saved.completed === true || savedPhase === "complete";
     const started = completed
@@ -2080,6 +2109,124 @@ function normalizeBikeArcade(
     attemptCount: nonNegativeSafeIntegerOr(saved.attemptCount, initial.attemptCount),
     bestDistance: rangedNumberOr(saved.bestDistance, 0, 755, initial.bestDistance),
     bestLives: rangedIntegerOr(saved.bestLives, 0, 3, initial.bestLives)
+  };
+}
+
+function createEmptyEndlessRecord(): EndlessArcadeState["records"][EndlessChallengeModeId] {
+  return {
+    attemptCount: 0,
+    bestScore: 0,
+    bestProgress: 0,
+    bestTier: 0,
+    bestCombo: 0,
+    bestDurationMs: 0
+  };
+}
+
+function normalizePostgame(
+  value: unknown,
+  initial: PostgameState,
+  chapter4: GameState["chapter4"]
+): PostgameState {
+  const saved = asRecord(value);
+  const completionReceipt = typeof saved.completionReceipt === "string"
+    && VALID_MAIN_STORY_RECEIPTS.has(saved.completionReceipt as NonNullable<PostgameState["completionReceipt"]>)
+    ? saved.completionReceipt as NonNullable<PostgameState["completionReceipt"]>
+    : null;
+  if (completionReceipt === "chapter4_closure_v1") {
+    return { completionReceipt };
+  }
+  if (chapter4.phase === "complete" && chapter4.exteriorClosureAcknowledged && chapter4.completed) {
+    return { completionReceipt: null };
+  }
+  return { completionReceipt: null };
+}
+
+function normalizeEndlessRecord(
+  value: unknown,
+  initial: EndlessArcadeState["records"][EndlessChallengeModeId]
+): EndlessArcadeState["records"][EndlessChallengeModeId] {
+  const saved = asRecord(value);
+  return {
+    attemptCount: rangedIntegerOr(saved.attemptCount, 0, ENDLESS_RECORD_LIMITS.attemptCount, initial.attemptCount),
+    bestScore: rangedIntegerOr(saved.bestScore, 0, ENDLESS_RECORD_LIMITS.bestScore, initial.bestScore),
+    bestProgress: rangedIntegerOr(saved.bestProgress, 0, ENDLESS_RECORD_LIMITS.bestProgress, initial.bestProgress),
+    bestTier: rangedIntegerOr(saved.bestTier, 0, ENDLESS_RECORD_LIMITS.bestTier, initial.bestTier),
+    bestCombo: rangedIntegerOr(saved.bestCombo, 0, ENDLESS_RECORD_LIMITS.bestCombo, initial.bestCombo),
+    bestDurationMs: rangedIntegerOr(saved.bestDurationMs, 0, ENDLESS_RECORD_LIMITS.bestDurationMs, initial.bestDurationMs)
+  };
+}
+
+function normalizeEndlessArcade(
+  value: unknown,
+  legacyBikeArcade: unknown,
+  initial: EndlessArcadeState
+): EndlessArcadeState {
+  const saved = asRecord(value);
+  const records = asRecord(saved.records);
+  const normalizedRecords = {
+    fishing: normalizeEndlessRecord(records.fishing, initial.records.fishing),
+    spotlight: normalizeEndlessRecord(records.spotlight, initial.records.spotlight),
+    bike: normalizeEndlessRecord(records.bike, initial.records.bike)
+  };
+  if (!isRecord(value)) {
+    const legacyBike = asRecord(legacyBikeArcade);
+    normalizedRecords.bike = {
+      attemptCount: rangedIntegerOr(
+        legacyBike.attemptCount,
+        0,
+        ENDLESS_RECORD_LIMITS.attemptCount,
+        normalizedRecords.bike.attemptCount
+      ),
+      bestScore: rangedIntegerOr(
+        legacyBike.bestDistance,
+        0,
+        ENDLESS_RECORD_LIMITS.bestScore,
+        normalizedRecords.bike.bestScore
+      ),
+      bestProgress: rangedIntegerOr(
+        legacyBike.bestDistance,
+        0,
+        ENDLESS_RECORD_LIMITS.bestProgress,
+        normalizedRecords.bike.bestProgress
+      ),
+      bestTier: normalizedRecords.bike.bestTier,
+      bestCombo: normalizedRecords.bike.bestCombo,
+      bestDurationMs: normalizedRecords.bike.bestDurationMs
+    };
+  }
+  return {
+    records: normalizedRecords
+  };
+}
+
+function createCompletedChapterFourState(
+  initial: GameState["chapter4"]
+): GameState["chapter4"] {
+  return {
+    ...initial,
+    prologueSeen: true,
+    phase: "complete",
+    mode: "light",
+    building: "A",
+    floor: "A1",
+    roomId: "a1_exterior",
+    timeAuthority: "hall_clock",
+    timeState: "0755_morning",
+    worldTimeSeconds: 28500,
+    phoneStatusTimeSeconds: 28500,
+    phoneStatusTimeTrusted: true,
+    factIds: [...CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS, "exterior_closure_acknowledged"],
+    room204Placements: createCanonicalCompleteRoom204Placements(),
+    lightGrid: { mask: 13, locked: true },
+    guardMode: "absent",
+    chaseAttempt: 0,
+    chaseRestartCheckpoint: null,
+    checkinCardAccepted: true,
+    checkinPaperAccepted: true,
+    exteriorClosureAcknowledged: true,
+    completed: true,
+    ...createEmptyLegacyChapterFourControllerFields(28500)
   };
 }
 

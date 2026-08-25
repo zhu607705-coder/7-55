@@ -8,6 +8,22 @@ import type {
   GameState,
   GameStore
 } from "../core/types";
+import {
+  chapterThreeInterludeValidationContract,
+  type ChapterThreeInterludeDecoyReasonId,
+  type ChapterThreeInterludeDestinationCandidateId,
+  type ChapterThreeInterludeNetworkRecordId,
+  type ChapterThreeInterludeRouteMessageId,
+  type ChapterThreeInterludeVoiceCandidateId
+} from "../data/chapter3InterludeContent";
+
+export type {
+  ChapterThreeInterludeDecoyReasonId,
+  ChapterThreeInterludeDestinationCandidateId,
+  ChapterThreeInterludeNetworkRecordId,
+  ChapterThreeInterludeRouteMessageId,
+  ChapterThreeInterludeVoiceCandidateId
+} from "../data/chapter3InterludeContent";
 
 export type ChapterThreeInterludeResult =
   | "accepted"
@@ -16,53 +32,12 @@ export type ChapterThreeInterludeResult =
   | "incorrect"
   | "already_complete";
 
-export type ChapterThreeInterludeDecoyReasonId =
-  | "number_not_time"
-  | "earlier_independent_event"
-  | "frozen_local_clock";
-
-export type ChapterThreeInterludeRouteMessageId =
-  | "computer_left_on"
-  | "guard_east"
-  | "east_closed"
-  | "west_cleaner"
-  | "withdrawn";
-
-export type ChapterThreeInterludeNetworkRecordId =
-  | "record_qizhen_dock"
-  | "record_theater_hall"
-  | "record_library_south"
-  | "record_0755";
-
-const PHOTO_ORDER: readonly ChapterThreeInterludePhotoFrameId[] = [
-  "paper_left",
-  "paper_middle",
-  "paper_right"
-];
-const VOICE_ORDER: readonly ChapterThreeInterludeVoiceClipId[] = [
-  "lake",
-  "stone",
-  "lobby",
-  "broadcast"
-];
-const EVIDENCE_ORDER: readonly ChapterThreeInterludeEvidenceId[] = [
-  "journal_start",
-  "photo_direction",
-  "network_destination",
-  "broadcast_end"
-];
-const ROUTE_MESSAGE_ORDER: readonly ChapterThreeInterludeRouteMessageId[] = [
-  "east_closed",
-  "west_cleaner"
-];
-const DECOY_REASON_BY_ID: Readonly<Record<
-  ChapterThreeInterludeDecoyId,
-  ChapterThreeInterludeDecoyReasonId
->> = {
-  canteen_0755: "number_not_time",
-  theater_0832: "earlier_independent_event",
-  status_clock_075523: "frozen_local_clock"
-};
+const PHOTO_ORDER = chapterThreeInterludeValidationContract.photoOrder;
+const VOICE_ORDER = chapterThreeInterludeValidationContract.voiceOrder;
+const VOICE_CANDIDATES = chapterThreeInterludeValidationContract.voiceCandidateIds;
+const EVIDENCE_ORDER = chapterThreeInterludeValidationContract.evidenceOrder;
+const ROUTE_MESSAGE_ORDER = chapterThreeInterludeValidationContract.routeMessageOrder;
+const DECOY_REASON_BY_ID = chapterThreeInterludeValidationContract.decoyReasonById;
 
 function sameOrder<T extends string>(actual: readonly T[], expected: readonly T[]): boolean {
   return actual.length === expected.length && actual.every((value, index) => value === expected[index]);
@@ -164,22 +139,28 @@ export class ChapterThreePhoneInterludeController {
     return solved ? "accepted" : "incorrect";
   }
 
-  submitVoiceSequence(order: readonly ChapterThreeInterludeVoiceClipId[]): ChapterThreeInterludeResult {
+  submitVoiceSequence(order: readonly ChapterThreeInterludeVoiceCandidateId[]): ChapterThreeInterludeResult {
     const state = this.store.getState();
     if (!state.chapterThreeInterlude.evidenceIds.includes("journal_start")) return "locked";
-    const normalized = [...new Set(order)].filter((id): id is ChapterThreeInterludeVoiceClipId => VOICE_ORDER.includes(id));
+    if (state.chapterThreeInterlude.voiceSequenceSolved) return "already_complete";
+    const normalized = [...new Set(order)].filter((id): id is ChapterThreeInterludeVoiceCandidateId =>
+      VOICE_CANDIDATES.includes(id)
+    );
     const solved = sameOrder(normalized, VOICE_ORDER);
     this.store.setState((current) => ({
       ...current,
       chapterThreeInterlude: {
         ...withCollectedEvidence(current, solved ? "broadcast_end" : undefined),
-        voiceClipOrder: normalized,
+        voiceClipOrder: solved ? [...VOICE_ORDER] : current.chapterThreeInterlude.voiceClipOrder,
         voiceSequenceSolved: solved
       }
     }));
     this.events.emit(solved ? "chapter35_evidence_collected" : "chapter35_sequence_rejected", {
       evidenceId: "broadcast_end",
-      order: normalized
+      order: normalized,
+      stage: normalized.every((id) => VOICE_ORDER.includes(id as ChapterThreeInterludeVoiceClipId))
+        ? "ordering"
+        : "selection"
     });
     return solved ? "accepted" : "incorrect";
   }
@@ -221,45 +202,56 @@ export class ChapterThreePhoneInterludeController {
       this.events.emit("chapter35_decoy_reason_rejected", { decoyId, reasonId });
       return "incorrect";
     }
-    this.store.setState((current) => ({
-      ...current,
-      chapterThreeInterlude: {
-        ...current.chapterThreeInterlude,
-        rejectedDecoyIds: addUnique(current.chapterThreeInterlude.rejectedDecoyIds, decoyId),
-        statusClockMarkedUntrusted: current.chapterThreeInterlude.statusClockMarkedUntrusted
-          || decoyId === "status_clock_075523"
-      }
-    }));
+    this.store.setState((current) => {
+      const rejectedDecoyIds = addUnique(current.chapterThreeInterlude.rejectedDecoyIds, decoyId);
+      const statusClockMarkedUntrusted = current.chapterThreeInterlude.statusClockMarkedUntrusted
+        || decoyId === "status_clock_075523";
+      const timelineReady = EVIDENCE_ORDER.every((id) => current.chapterThreeInterlude.evidenceIds.includes(id))
+        && (Object.keys(DECOY_REASON_BY_ID) as ChapterThreeInterludeDecoyId[])
+          .every((id) => rejectedDecoyIds.includes(id))
+        && statusClockMarkedUntrusted;
+      return {
+        ...current,
+        chapterThreeInterlude: {
+          ...current.chapterThreeInterlude,
+          rejectedDecoyIds,
+          statusClockMarkedUntrusted,
+          timelineOrder: timelineReady ? [...EVIDENCE_ORDER] : current.chapterThreeInterlude.timelineOrder
+        }
+      };
+    });
     this.events.emit("chapter35_decoy_rejected", { decoyId });
+    if (sameOrder(this.store.getState().chapterThreeInterlude.timelineOrder, EVIDENCE_ORDER)) {
+      this.events.emit("chapter35_timeline_assembled", { order: [...EVIDENCE_ORDER], automatic: true });
+    }
     return "accepted";
   }
 
-  assembleTimeline(order: readonly ChapterThreeInterludeEvidenceId[]): ChapterThreeInterludeResult {
+  assembleTimeline(): ChapterThreeInterludeResult {
     const state = this.store.getState();
     const interlude = state.chapterThreeInterlude;
     if (!EVIDENCE_ORDER.every((id) => interlude.evidenceIds.includes(id))) return "locked";
-    const normalized = [...new Set(order)].filter((id): id is ChapterThreeInterludeEvidenceId => EVIDENCE_ORDER.includes(id));
     const allDecoysRejected = (["canteen_0755", "theater_0832", "status_clock_075523"] as const)
       .every((id) => interlude.rejectedDecoyIds.includes(id));
-    const solved = sameOrder(normalized, EVIDENCE_ORDER) && allDecoysRejected && interlude.statusClockMarkedUntrusted;
+    const solved = allDecoysRejected && interlude.statusClockMarkedUntrusted;
+    if (!solved) return "locked";
     this.store.setState((current) => ({
       ...current,
       chapterThreeInterlude: {
         ...current.chapterThreeInterlude,
-        timelineOrder: normalized
+        timelineOrder: [...EVIDENCE_ORDER]
       }
     }));
-    this.events.emit(solved ? "chapter35_timeline_assembled" : "chapter35_sequence_rejected", {
+    this.events.emit("chapter35_timeline_assembled", {
       evidenceId: "timeline",
-      order: normalized,
-      decoysReady: allDecoysRejected
+      order: [...EVIDENCE_ORDER],
+      automatic: true
     });
-    return solved ? "accepted" : "incorrect";
+    return "accepted";
   }
 
   verifyDestination(
-    destinationId: ChapterThreeInterludeDestinationId,
-    explanationId: "a" | "b" | "c"
+    destinationId: ChapterThreeInterludeDestinationCandidateId
   ): ChapterThreeInterludeResult {
     const state = this.store.getState();
     const interlude = state.chapterThreeInterlude;
@@ -272,8 +264,11 @@ export class ChapterThreePhoneInterludeController {
       || !interlude.statusClockMarkedUntrusted
       || !sameOrder(interlude.timelineOrder, EVIDENCE_ORDER)
     ) return "locked";
-    if (destinationId !== "duan_yongping_a1" || explanationId !== "c") {
-      this.events.emit("chapter35_destination_rejected", { destinationId, explanationId });
+    if (destinationId !== chapterThreeInterludeValidationContract.destinationId) {
+      this.events.emit("chapter35_destination_rejected", {
+        destinationId,
+        conflictCode: chapterThreeInterludeValidationContract.destinationConflictById[destinationId]
+      });
       return "incorrect";
     }
     this.store.setState((current) => ({
@@ -281,7 +276,7 @@ export class ChapterThreePhoneInterludeController {
       chapterThreeInterlude: {
         ...current.chapterThreeInterlude,
         phase: "destination_verified",
-        destinationId
+        destinationId: destinationId as ChapterThreeInterludeDestinationId
       }
     }));
     this.events.emit("chapter35_destination_verified", { destinationId });

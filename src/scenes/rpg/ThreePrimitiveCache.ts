@@ -1,14 +1,21 @@
 import * as THREE from "three";
 
-export type ThreeFlatMaterial = THREE.MeshLambertMaterial | THREE.MeshBasicMaterial;
+export type ThreeFlatMaterial =
+  | THREE.MeshLambertMaterial
+  | THREE.MeshBasicMaterial
+  | THREE.MeshStandardMaterial;
 
 interface FlatMaterialOptions {
   unlit?: boolean;
   opacity?: number;
   depthWrite?: boolean;
+  shading?: "lambert" | "standard";
+  roughness?: number;
+  metalness?: number;
+  flatShading?: boolean;
 }
 
-function cacheKey(values: readonly (number | boolean)[]): string {
+function cacheKey(values: readonly (string | number | boolean)[]): string {
   return values.join(":");
 }
 
@@ -30,12 +37,42 @@ export class ThreePrimitiveCache {
     const unlit = options.unlit ?? false;
     const opacity = options.opacity ?? 1;
     const depthWrite = options.depthWrite ?? true;
-    const key = cacheKey([color, unlit, opacity, depthWrite]);
+    const shading = options.shading ?? "lambert";
+    const roughness = options.roughness ?? 0.85;
+    const metalness = options.metalness ?? 0;
+    const flatShading = options.flatShading ?? (shading !== "standard");
+    const key = cacheKey([
+      color,
+      unlit,
+      opacity,
+      depthWrite,
+      shading,
+      roughness,
+      metalness,
+      flatShading
+    ]);
     const cached = this.materials.get(key);
     if (cached) return cached;
+    const transparent = opacity < 1;
     const material = unlit
-      ? new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity, depthWrite })
-      : new THREE.MeshLambertMaterial({ color, flatShading: true, transparent: opacity < 1, opacity, depthWrite });
+      ? new THREE.MeshBasicMaterial({ color, transparent, opacity, depthWrite })
+      : shading === "standard"
+        ? new THREE.MeshStandardMaterial({
+          color,
+          transparent,
+          opacity,
+          depthWrite,
+          roughness,
+          metalness,
+          flatShading
+        })
+        : new THREE.MeshLambertMaterial({
+          color,
+          transparent,
+          opacity,
+          depthWrite,
+          flatShading
+        });
     this.materials.set(key, material);
     this.ownedMaterials.add(material);
     return material;
@@ -49,10 +86,16 @@ export class ThreePrimitiveCache {
     return this.geometry(`plane:${cacheKey([width, height])}`, () => new THREE.PlaneGeometry(width, height));
   }
 
-  torus(radius: number, tube: number, radialSegments: number, tubularSegments: number): THREE.TorusGeometry {
+  torus(
+    radius: number,
+    tube: number,
+    radialSegments: number,
+    tubularSegments: number,
+    arc = Math.PI * 2
+  ): THREE.TorusGeometry {
     return this.geometry(
-      `torus:${cacheKey([radius, tube, radialSegments, tubularSegments])}`,
-      () => new THREE.TorusGeometry(radius, tube, radialSegments, tubularSegments)
+      `torus:${cacheKey([radius, tube, radialSegments, tubularSegments, arc])}`,
+      () => new THREE.TorusGeometry(radius, tube, radialSegments, tubularSegments, arc)
     );
   }
 
@@ -74,6 +117,25 @@ export class ThreePrimitiveCache {
     return this.geometry(
       `cone:${cacheKey([radius, height, radialSegments])}`,
       () => new THREE.ConeGeometry(radius, height, radialSegments)
+    );
+  }
+
+  sphere(radius: number, widthSegments: number, heightSegments: number): THREE.SphereGeometry {
+    return this.geometry(
+      `sphere:${cacheKey([radius, widthSegments, heightSegments])}`,
+      () => new THREE.SphereGeometry(radius, widthSegments, heightSegments)
+    );
+  }
+
+  capsule(
+    radius: number,
+    length: number,
+    capSegments: number,
+    radialSegments: number
+  ): THREE.CapsuleGeometry {
+    return this.geometry(
+      `capsule:${cacheKey([radius, length, capSegments, radialSegments])}`,
+      () => new THREE.CapsuleGeometry(radius, length, capSegments, radialSegments)
     );
   }
 

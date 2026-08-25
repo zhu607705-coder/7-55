@@ -255,6 +255,10 @@ const task7RuntimeSourcePaths = Object.freeze({
     "../src/modules/ChapterFourTemporalMazeController.ts",
     import.meta.url
   )),
+  stagePresentation: fileURLToPath(new URL(
+    "../src/modules/ChapterFourStagePresentation.ts",
+    import.meta.url
+  )),
   closureContract: fileURLToPath(new URL(
     "../src/modules/ChapterFourClosureContract.ts",
     import.meta.url
@@ -513,6 +517,7 @@ function validateTask7RuntimeSources(errors) {
   const scene = sources.scene ?? "";
   const quest = sources.quest ?? "";
   const controller = sources.controller ?? "";
+  const stagePresentation = sources.stagePresentation ?? "";
   const closureContract = sources.closureContract ?? "";
   const saveStore = sources.saveStore ?? "";
   const interaction = sources.interaction ?? "";
@@ -522,6 +527,12 @@ function validateTask7RuntimeSources(errors) {
   const finalChaseModel = sources.finalChaseModel ?? "";
   const powerPanel = sources.powerPanel ?? "";
   const types = sources.types ?? "";
+  const controllerResolverStart = controller.indexOf("  resolve755Intent(");
+  const controllerResolverEnd = controller.indexOf("\n  /**\n   * Applies the phase", controllerResolverStart);
+  const controllerIntentResolver = controllerResolverStart >= 0
+    && controllerResolverEnd > controllerResolverStart
+    ? controller.slice(controllerResolverStart, controllerResolverEnd)
+    : "";
 
   const taskCardMatch = timeline.match(/export const PROLOGUE_TASK_CARD_AT\s*=\s*(\d+)\s*;/);
   if (Number(taskCardMatch?.[1]) !== 43834) {
@@ -602,24 +613,15 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 7 App lazy boundary must reuse preloadRpgGameHost instead of creating a second RpgGameHost import Promise");
   }
 
-  const prepareRpgRuntimeStart = timelineRecovery.indexOf("  const prepareRpgRuntime = useCallback(");
-  const prepareRpgRuntimeEnd = timelineRecovery.indexOf("\n\n  useEffect", prepareRpgRuntimeStart);
-  const prepareRpgRuntimeBlock = prepareRpgRuntimeStart >= 0 && prepareRpgRuntimeEnd > prepareRpgRuntimeStart
-    ? timelineRecovery.slice(prepareRpgRuntimeStart, prepareRpgRuntimeEnd)
-    : "";
   const startReplayStart = timelineRecovery.indexOf("  function startReplay()");
   const startReplayEnd = timelineRecovery.indexOf("\n\n  function rejectDecoy", startReplayStart);
   const startReplayBlock = startReplayStart >= 0 && startReplayEnd > startReplayStart
     ? timelineRecovery.slice(startReplayStart, startReplayEnd)
     : "";
-  const replayReadyGuardIndex = startReplayBlock.indexOf('if (rpgRuntimeStatus !== "ready")');
-  const replayGuardReturnIndex = startReplayBlock.indexOf("return;", replayReadyGuardIndex);
-  const replayMutationIndex = startReplayBlock.indexOf("kit.chapterThreeInterlude.startRecoveredReplay()", replayReadyGuardIndex);
-  const runtimeButtonDataIndex = timelineRecovery.indexOf("data-rpg-runtime={rpgRuntimeStatus}");
-  const runtimeButtonStart = timelineRecovery.lastIndexOf("<button", runtimeButtonDataIndex);
-  const runtimeButtonEnd = timelineRecovery.indexOf("</button>", runtimeButtonDataIndex);
-  const runtimeButtonBlock = runtimeButtonStart >= 0 && runtimeButtonEnd > runtimeButtonStart
-    ? timelineRecovery.slice(runtimeButtonStart, runtimeButtonEnd + "</button>".length)
+  const destinationReplayStart = timelineRecovery.indexOf("{destinationVerified ? (");
+  const destinationReplayEnd = timelineRecovery.indexOf("        {feedback ?", destinationReplayStart);
+  const destinationReplayBlock = destinationReplayStart >= 0 && destinationReplayEnd > destinationReplayStart
+    ? timelineRecovery.slice(destinationReplayStart, destinationReplayEnd)
     : "";
   const recoveredReplayMutationStart = interludeController.indexOf("  startRecoveredReplay():");
   const recoveredReplayMutationEnd = interludeController.indexOf("\n\n  private recordNetworkFact", recoveredReplayMutationStart);
@@ -631,27 +633,19 @@ function validateTask7RuntimeSources(errors) {
   const recoveredReplayGateEventIndex = recoveredReplayMutation.indexOf(
     'this.events.emit("chapter35_recovered_replay_gate_requested"'
   );
-  if (!/import\s*\{\s*preloadRpgGameHost\s*\}\s*from\s*["']\.\.\/\.\.\/rpg\/RpgRuntimePreload["']\s*;/.test(timelineRecovery)
-    || !/useState<\s*["']loading["']\s*\|\s*["']ready["']\s*\|\s*["']failed["']\s*>\(["']loading["']\)/.test(timelineRecovery)
-    || !/setRpgRuntimeStatus\(["']loading["']\)[\s\S]*?void\s+preloadRpgGameHost\(\)[\s\S]*?\.then\(\(\)\s*=>\s*setRpgRuntimeStatus\(["']ready["']\)\)[\s\S]*?\.catch\(\(\)\s*=>\s*\{[\s\S]*?setRpgRuntimeStatus\(["']failed["']\)/.test(prepareRpgRuntimeBlock)
-    || !/useEffect\(\(\)\s*=>\s*\{\s*prepareRpgRuntime\(\)\s*;\s*\},\s*\[prepareRpgRuntime\]\)\s*;/.test(timelineRecovery)
-    || replayReadyGuardIndex < 0
-    || replayGuardReturnIndex <= replayReadyGuardIndex
-    || replayMutationIndex <= replayGuardReturnIndex
-    || !/rpgRuntimeStatus\s*===\s*["']failed["']\)\s*prepareRpgRuntime\(\)/.test(startReplayBlock)
+  if (/preloadRpgGameHost|RpgRuntimePreload|rpgRuntimeStatus|prepareRpgRuntime/.test(timelineRecovery)
+    || !/kit\.chapterThreeInterlude\.startRecoveredReplay\(\)/.test(startReplayBlock)
     || (timelineRecovery.match(/kit\.chapterThreeInterlude\.startRecoveredReplay\(\)/g) ?? []).length !== 1
     || /runtimeMode\s*:/.test(timelineRecovery)
-    || !/data-rpg-runtime=\{rpgRuntimeStatus\}/.test(runtimeButtonBlock)
-    || !/disabled=\{rpgRuntimeStatus\s*===\s*["']loading["']\}/.test(runtimeButtonBlock)
-    || !/onClick=\{startReplay\}/.test(runtimeButtonBlock)
-    || !/rpgRuntimeStatus\s*===\s*["']ready["']/.test(runtimeButtonBlock)
-    || !/rpgRuntimeStatus\s*===\s*["']failed["']/.test(runtimeButtonBlock)
+    || !/destinationVerified\s*\?/.test(destinationReplayBlock)
+    || !/onClick=\{startReplay\}/.test(destinationReplayBlock)
     || recoveredReplayStateWriteIndex < 0
     || recoveredReplayGateEventIndex <= recoveredReplayStateWriteIndex
     || !/chapterThreeInterlude:\s*\{[\s\S]*?phase:\s*["']replay_ready["'][\s\S]*?replayUnlocked:\s*true/.test(recoveredReplayMutation)
     || !/this\.events\.emit\(["']chapter35_recovered_replay_gate_requested["'],\s*\{\s*destinationId:\s*["']duan_yongping_a1["']\s*\}\s*\)/.test(recoveredReplayMutation)
-    || /runtimeMode\s*:|chapter35_recovered_replay_requested|\b(?:audio|music)\b/i.test(recoveredReplayMutation)) {
-    errors.push("Task 7 P20 replay entry must preload on mount, expose loading/ready/failed state, and let the controller commit replay_ready before emitting the silent App-gate request");
+    || /preloadRpgGameHost|runtimeMode\s*:|chapter35_recovered_replay_requested|\b(?:audio|music)\b/i.test(recoveredReplayMutation)
+    || !/chapter35_recovered_replay_gate_requested[\s\S]*?void\s+preloadRpgGameHost\(\)/.test(prologueGate)) {
+    errors.push("Task 7 P20 must avoid mount-time preload, expose replay only after the correct destination, and let the controller commit replay_ready before the App gate starts preload");
   }
 
   if (!/const\s+H3_TRANSITION_IS_EMBEDDED\s*=\s*typeof\s+h3TransitionSource\s*!==\s*["']string["']\s*;/.test(overlay)
@@ -948,7 +942,8 @@ function validateTask7RuntimeSources(errors) {
   const storyTargetInteractionBlock = scene.match(
     /private storySpatialResult[\s\S]*?private handleTravelInteraction/
   )?.[0] ?? "";
-  if (!/playerFootPoint[\s\S]*body\?\.center\.x[\s\S]*body\?\.center\.y/.test(scene)
+  if (!/private playerFootPoint[\s\S]*?body\?\.center\.x[\s\S]*?body\?\.center\.y/.test(scene)
+    || !/private storySpatialResult[\s\S]*?playerFootPoint\(floor\)[\s\S]*?pointDistanceToRect\(localPlayer, target\.bounds\)[\s\S]*?target\.contract\.proximity/.test(storyTargetInteractionBlock)
     || !/const spatial\s*=\s*this\.storySpatialResult\(storyTarget\)/.test(storyTargetInteractionBlock)
     || /spatial\s*:\s*\{\s*distance\s*:\s*"within_range"/.test(storyTargetInteractionBlock)) {
     errors.push("Task 7 Scene spatial checks must derive from the real player foot body and target geometry");
@@ -1049,9 +1044,39 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 9 runtime target bounds must be sourced from chapter4-three-floor-maze.layout.json through the pure Room204 model");
   }
 
-  if (!host.includes("先点亮烤箱旁的检修灯，让传送带停一下。")
-    || !/intentType\s*===\s*"inspect_bakery_conveyor_edge"[\s\S]*?result\.reason\s*===\s*"locked"/.test(host)) {
-    errors.push("Task 8 Host must expose the one approved pre-lamp conveyor correction");
+  if (!/result\.detailCode[\s\S]*?CHAPTER_FOUR_755_INTENT_DETAILS\[result\.detailCode\]/.test(host)
+    || !/chapterFour755DetailKeys\.length !== CHAPTER_FOUR_755_INTENT_DETAIL_CODES\.length/.test(host)
+    || !/bakery_lamp_required/.test(controller)
+    || !/"bakery_lamp_required"[\s\S]*?"reason"[\s\S]*?"nextAction"/.test(JSON.stringify(content.intentFeedback?.details ?? {}))) {
+    errors.push("Task 8/9 Host must resolve controller detailCode through the complete content-owned feedback table");
+  }
+  const detailCodeDeclaration = controller.match(
+    /CHAPTER_FOUR_755_INTENT_DETAIL_CODES\s*=\s*Object\.freeze\(\[([\s\S]*?)\]\s*as const\)/
+  )?.[1] ?? "";
+  const declaredDetailCodes = [...detailCodeDeclaration.matchAll(/"([^"]+)"/g)]
+    .map((match) => match[1]);
+  const feedbackDetails = isRecord(content.intentFeedback?.details)
+    ? content.intentFeedback.details
+    : {};
+  if (declaredDetailCodes.length === 0
+    || !setEquals(new Set(declaredDetailCodes), new Set(Object.keys(feedbackDetails)))
+    || Object.values(feedbackDetails).some((detail) => (
+      !isRecord(detail) || !nonEmptyString(detail.reason) || !nonEmptyString(detail.nextAction)
+    ))) {
+    errors.push("Task 9 intent feedback must cover every declared detailCode with a non-empty reason and next action");
+  }
+  if (!/reason === "locked"[\s\S]*?detailCode:\s*detailCode \?\? \(chapter[\s\S]*?lockedDetailForIntent\(state, chapter, intent\)/.test(controllerIntentResolver)
+    || !/const byIssue:\s*Record<typeof issue, ChapterFour755IntentDetailCode>\s*=\s*\{[\s\S]*?unknown_piece:\s*"room204_unknown_piece"[\s\S]*?unknown_slot:\s*"room204_unknown_slot"[\s\S]*?invalid_orientation:\s*"room204_invalid_orientation"[\s\S]*?duplicate_piece:\s*"room204_duplicate_piece"[\s\S]*?occupied_slot:\s*"room204_slot_occupied"[\s\S]*?already_placed:\s*"room204_piece_already_placed"/.test(controller)) {
+    errors.push("Task 9 every locked result must receive an automatic detailCode and every Room204 issue must have an explicit mapping");
+  }
+  if (!/phaseCount:\s*13/.test(stagePresentation)
+    || !/timeStateCount:\s*6/.test(stagePresentation)
+    || !/assertExactUniqueIds\(PHASE_IDS, Object\.keys\(PHASE_COPY\), 13/.test(stagePresentation)
+    || !/assertExactUniqueIds\(TIME_STATE_IDS, Object\.keys\(TIME_STATE_COPY\), 6/.test(stagePresentation)
+    || !/现场 22:45 · 手机 07:55:23 未同步/.test(stagePresentation)
+    || !/旧钟 22:45 · 维修时段 · 手机已同步/.test(stagePresentation)
+    || !/selectChapterFourStagePresentation/.test(stagePresentation)) {
+    errors.push("Task 7-13 stage selector must cover 13 phases, 6 time states and distinguish both 22:45 contexts");
   }
   for (const factId of EXPECTED_BAKERY_FACTS.slice(0, 3)) {
     if (!controller.includes(`"${factId}"`)) {
@@ -1261,7 +1286,7 @@ function validateTask7RuntimeSources(errors) {
     if (!controller.includes(`"${factId}"`)) errors.push(`Task 10 controller is missing fact ${factId}`);
     if (!saveStore.includes(`"${factId}"`)) errors.push(`Task 10 SaveStore is missing persisted fact ${factId}`);
   }
-  const maintenanceControllerBlock = controller.match(
+  const maintenanceControllerBlock = controllerIntentResolver.match(
     /case "inspect_cart_wheel"[\s\S]*?case "trigger_minute_theft"/
   )?.[0] ?? "";
   if (!/case "inspect_cart_wheel"[\s\S]*?guardMode\s*!==\s*"patrol"[\s\S]*?appendFact\(chapter, "cart_wheel_inspected"\)/.test(maintenanceControllerBlock)
@@ -1289,7 +1314,7 @@ function validateTask7RuntimeSources(errors) {
     || /fail_chase|chaseAttempt\s*:/.test(patrolRecoveryBlock)) {
     errors.push("Task 10 ordinary patrol capture must use its independent progress-preserving recovery intent");
   }
-  const minuteTheftControllerBlock = controller.match(
+  const minuteTheftControllerBlock = controllerIntentResolver.match(
     /case "trigger_minute_theft"[\s\S]*?case "begin_final_clock_drag"/
   )?.[0] ?? "";
   if (!/return reject\("locked"\)/.test(minuteTheftControllerBlock)
@@ -1421,7 +1446,7 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 10 Scene teardown must destroy the maintenance tween, colliders and overlap");
   }
 
-  const finalClockControllerBlock = controller.match(
+  const finalClockControllerBlock = controllerIntentResolver.match(
     /case "begin_final_clock_drag"[\s\S]*?case "open_power_panel"/
   )?.[0] ?? "";
   if (!/case "begin_final_clock_drag"[\s\S]*?clock_gear_repaired[\s\S]*?attendanceRecordPaper[\s\S]*?return acceptReadOnly\(\)/.test(finalClockControllerBlock)
@@ -1429,7 +1454,7 @@ function validateTask7RuntimeSources(errors) {
     || !/case "complete_minute_theft"[\s\S]*?transition\(state, "blackout_light_grid"[\s\S]*?paper_temporarily_out_of_inventory[\s\S]*?attendanceRecordPaper", false[\s\S]*?CHAPTER_FOUR_LIGHT_GRID\.initialMask[\s\S]*?roomId:\s*"a1_lobby"[\s\S]*?checkpoint:\s*"c4_a1_lobby"/.test(finalClockControllerBlock)) {
     errors.push("Task 11 controller must separate a strict zero-write final-clock begin from the light-mode-revalidated atomic 07:54 blackout completion transaction");
   }
-  const powerControllerBlock = controller.match(
+  const powerControllerBlock = controllerIntentResolver.match(
     /case "open_power_panel"[\s\S]*?case "reach_202_threshold"/
   )?.[0] ?? "";
   if (!/case "open_power_panel"[\s\S]*?paper_temporarily_out_of_inventory[\s\S]*?return acceptReadOnly\(\)/.test(powerControllerBlock)
@@ -1549,7 +1574,7 @@ function validateTask7RuntimeSources(errors) {
     || !/if \(input\.floor === "A2" && input\.playerInsideFinish[^)]*\)[\s\S]*?if \(input\.guardContact[^)]*\)/.test(finalChaseModel)) {
     errors.push("Task 12 pure final-chase model must encode the six phases, four-frame arming, exact speeds/points, main-stair portal and finish-before-contact ordering");
   }
-  const task12ControllerBlock = controller.match(
+  const task12ControllerBlock = controllerIntentResolver.match(
     /case "traverse_main_stair"[\s\S]*?case "read_campus_card"/
   )?.[0] ?? "";
   if (!/case "traverse_main_stair"[\s\S]*?intent\.expectedAttempt !== chapter\.chaseAttempt[\s\S]*?chapter\.phase === "final_chase"[\s\S]*?fromFloor === "A1"[\s\S]*?toFloor === "A2"[\s\S]*?chapter\.phase === "return_to_clock"[\s\S]*?fromFloor === "A2"[\s\S]*?toFloor === "A1"/.test(task12ControllerBlock)
@@ -1617,7 +1642,7 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 12 timeout paths must release pending finish/failure handshakes, and Task13 must submit the finalMinute drop through the visible minute endpoint");
   }
 
-  const task13ControllerBlock = controller.match(
+  const task13ControllerBlock = controllerIntentResolver.match(
     /case "install_final_minute"[\s\S]*?case "acknowledge_exterior_closure"[\s\S]*?\n\s*\}/
   )?.[0] ?? "";
   if (!/case "install_final_minute"[\s\S]*?chapter\.phase !== "return_to_clock"[\s\S]*?chapter\.floor !== "A1"[\s\S]*?final_minute_recovered[\s\S]*?finalMinute[\s\S]*?attendanceRecordPaper[\s\S]*?campusCard[\s\S]*?transition\(state, "morning_checkin"[\s\S]*?final_minute_installed[\s\S]*?"finalMinute", false[\s\S]*?roomId:\s*"a1_checkin"/.test(task13ControllerBlock)
@@ -1869,13 +1894,35 @@ function validate(content) {
   if (!tasks) {
     errors.push("tasks must be an object");
   } else {
+    const activeTaskEntries = Object.entries(tasks).filter(([taskKey]) => taskKey !== "chapter_complete");
+    if (Object.keys(tasks).length !== 29 || activeTaskEntries.length !== 28) {
+      errors.push("tasks must contain 28 active tasks plus chapter_complete");
+    }
     for (const [taskKey, task] of Object.entries(tasks)) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
         errors.push(`tasks.${taskKey}.label must be a non-empty string`);
       }
-      if (isRecord(task) && task.hint !== null && !nonEmptyString(task.hint)) {
-        errors.push(`tasks.${taskKey}.hint must be null or a non-empty string`);
+      const expectedHintCount = taskKey === "chapter_complete" ? 0 : 3;
+      if (isRecord(task)
+        && (!Array.isArray(task.hints)
+          || task.hints.length !== expectedHintCount
+          || task.hints.some((hint) => !nonEmptyString(hint)))) {
+        errors.push(`tasks.${taskKey}.hints must contain exactly ${expectedHintCount} non-empty hints`);
       }
+    }
+    const activeHintCount = activeTaskEntries.reduce(
+      (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
+      0
+    );
+    if (activeHintCount !== 84) {
+      errors.push("tasks must expose the full 84-hint active contract");
+    }
+    const room204PlayerCopy = [
+      tasks.restore_room204?.label,
+      ...(Array.isArray(tasks.restore_room204?.hints) ? tasks.restore_room204.hints : [])
+    ].filter(nonEmptyString).join("\n");
+    if (/(?:家具|桌椅).{0,8}(?:朝向|旋转|转向|朝上|朝下|向左|向右)|(?:朝向|旋转|转向).{0,8}(?:家具|桌椅)/.test(room204PlayerCopy)) {
+      errors.push("tasks.restore_room204 must not expose player-facing direction or rotation requirements");
     }
     if (!isRecord(tasks.explore_bakery) || !/面包坊/.test(tasks.explore_bakery.label)) {
       errors.push("tasks.explore_bakery must direct the first-pull objective to the bakery");

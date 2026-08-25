@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "chapterId": "chapter-3-interlude-voice-memos",
+  "model": "speech-2.8-hd",
+  "mixProfile": "phone_memo_field_recording_v1",
+  "voices": {
+    "male_player": {
+      "id": "English_Diligent_Man",
+      "language": "English",
+      "basePitch": 0
+    },
+    "female_system": {
+      "id": "English_Graceful_Lady",
+      "language": "English",
+      "basePitch": 0
+    }
+  },
+  "speech": [
+    {
+      "id": "lake_player",
+      "asset": "vo_ch35_lake_player",
+      "clipId": "lake",
+      "voiceRole": "male_player",
+      "deliveryPromptZh": "主角刚结束一段费力划行，声音离手机很近，气息略重，语气平静。他只判断风变大并决定回去，不解释剧情，不喊叫。",
+      "subtitleZh": "风大起来了，我该回去了。",
+      "voiceTextEn": "The wind's picking up. I should head back.",
+      "speed": 1.02,
+      "pitch": 0,
+      "emotion": "calm",
+      "maxDurationMs": 3200
+    },
+    {
+      "id": "canteen_announcement",
+      "asset": "vo_ch35_decoy_canteen",
+      "clipId": "decoy_canteen",
+      "voiceRole": "female_system",
+      "deliveryPromptZh": "校园公共广播女声，措辞简短清楚，语气礼貌，像食堂关门前的例行提醒。不要带戏剧感，不读录音编号。",
+      "subtitleZh": "东区食堂即将关闭，请带好随身物品。",
+      "voiceTextEn": "East Canteen is closing. Please collect your belongings.",
+      "speed": 1.01,
+      "pitch": 0,
+      "emotion": "calm",
+      "maxDurationMs": 4700
+    },
+    {
+      "id": "theater_announcement",
+      "asset": "vo_ch35_decoy_theater",
+      "clipId": "decoy_theater",
+      "voiceRole": "female_system",
+      "deliveryPromptZh": "剧场散场广播女声，声音来自较远的扩声器，语气平稳，句末自然收住。不要加入掌声、音乐或混响，环境声由后期混入。",
+      "subtitleZh": "今晚的演出已经结束，请从东侧前厅离场。",
+      "voiceTextEn": "The evening performance has ended. Please leave through the east foyer.",
+      "speed": 1.03,
+      "pitch": 0,
+      "emotion": "calm",
+      "maxDurationMs": 4700
+    },
+    {
+      "id": "library_announcement",
+      "asset": "vo_ch35_decoy_library",
+      "clipId": "decoy_library",
+      "voiceRole": "female_system",
+      "deliveryPromptZh": "图书馆闭馆前的系统女声，音量稳定，字音清楚，保留克制的公共空间语气。不要加入提示音或背景噪声。",
+      "subtitleZh": "阅览室将在十分钟后关闭，请检查随身物品。",
+      "voiceTextEn": "The reading rooms will close in ten minutes. Please check your belongings.",
+      "speed": 1.0,
+      "pitch": 0,
+      "emotion": "calm",
+      "maxDurationMs": 4700
+    }
+  ],
+  "recordings": [
+    {
+      "id": "lake",
+      "asset": "voice_memo_ch35_lake",
+      "code": "CLIP D7",
+      "correct": true,
+      "time": "22:37:05",
+      "revealZh": "近处水声、交替桨声，男声说风大，要回去。",
+      "productionPrompt": {
+        "eventEmphasisZh": "保留近水、交替拨水、近场男声与后段风声四个可辨层次。",
+        "distanceZh": "水声与男声在近场，风声从中场逐渐增强。",
+        "speechDensity": "sparse",
+        "decoyOverlapZh": "与其他校园夜间录音共享低动态范围和手机带宽，依靠水体与拨水声保持可辨性。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 900, "category": "water", "labelZh": "近处连续水声", "distance": "near" },
+        { "startMs": 260, "endMs": 1660, "category": "paddle", "labelZh": "交替拨水声", "distance": "near" },
+        { "startMs": 620, "endMs": 2620, "category": "voice", "labelZh": "近处男声", "distance": "near" },
+        { "startMs": 2380, "endMs": 4580, "category": "wind", "labelZh": "风声逐渐增强", "distance": "mid" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "chapter3-qizhen/sfx/fx_qizhen_lake_exit.mp3", "startMs": 0, "volume": 0.34 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_water_ripple.mp3", "startMs": 260, "volume": 0.28 },
+        { "kind": "speech", "asset": "vo_ch35_lake_player", "startMs": 620, "volume": 0.96 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_gust_skim.mp3", "startMs": 2380, "volume": 0.24 }
+      ]
+    },
+    {
+      "id": "stone",
+      "asset": "voice_memo_ch35_stone",
+      "code": "CLIP 91",
+      "correct": true,
+      "time": "--:--:--",
+      "revealZh": "船底短促擦过硬岸，随后近水声减弱。",
+      "productionPrompt": {
+        "eventEmphasisZh": "先保留近水底噪，再让硬面擦碰和短促金属碰响清楚露出。",
+        "distanceZh": "水声和擦碰都位于近场，后段水声稍远且减弱。",
+        "speechDensity": "none",
+        "decoyOverlapZh": "与其他户外录音共享环境底噪，短促的硬面擦碰保留独立特征。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 900, "category": "water", "labelZh": "近处水声", "distance": "near" },
+        { "startMs": 1020, "endMs": 1820, "category": "impact", "labelZh": "硬面短促擦碰", "distance": "near" },
+        { "startMs": 1260, "endMs": 1860, "category": "metal", "labelZh": "轻微金属碰响", "distance": "near" },
+        { "startMs": 2140, "endMs": 3540, "category": "water", "labelZh": "稀疏水声", "distance": "mid" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "chapter3-qizhen/sfx/fx_qizhen_lake_exit.mp3", "startMs": 0, "volume": 0.22 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_stone_land.mp3", "startMs": 1020, "volume": 0.92 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_railing_hit.mp3", "startMs": 1260, "volume": 0.18 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_water_ripple.mp3", "startMs": 2140, "volume": 0.18 }
+      ]
+    },
+    {
+      "id": "lobby",
+      "asset": "voice_memo_ch35_lobby",
+      "code": "CLIP 4C",
+      "correct": true,
+      "time": "--:--:--",
+      "revealZh": "玻璃门开合，近处女声提醒地面刚拖过。",
+      "productionPrompt": {
+        "eventEmphasisZh": "玻璃门机械声先出现，近场女声保持清楚，后段补充低音量清洁声。",
+        "distanceZh": "门声在中近场，女声和清洁声靠近手机。",
+        "speechDensity": "moderate",
+        "decoyOverlapZh": "与其他室内录音共享公共空间声学，玻璃门和清洁器具声提供区分。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 1500, "category": "door", "labelZh": "玻璃门开合", "distance": "mid" },
+        { "startMs": 520, "endMs": 3360, "category": "voice", "labelZh": "近处女声", "distance": "near" },
+        { "startMs": 2230, "endMs": 3430, "category": "cleaning", "labelZh": "清洁设备吸水声", "distance": "near" },
+        { "startMs": 3320, "endMs": 5200, "category": "cleaning", "labelZh": "拖布滑过湿地", "distance": "near" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_glass_door_open.mp3", "startMs": 0, "volume": 0.54 },
+        { "kind": "file", "path": "chapter4/prologue/vo_ch4_prologue_cleaner_01.mp3", "startMs": 520, "volume": 0.94 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_pressure_suction.mp3", "startMs": 2230, "volume": 0.2 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_wet_floor_slide.mp3", "startMs": 3320, "volume": 0.16 }
+      ]
+    },
+    {
+      "id": "broadcast",
+      "asset": "voice_memo_ch35_broadcast",
+      "code": "CLIP 3A",
+      "correct": true,
+      "time": "22:45:00",
+      "revealZh": "远处男声通知北教清楼，广播静电后传来断电声。",
+      "productionPrompt": {
+        "eventEmphasisZh": "以广播静电开场，让远处男声保持可懂度，句尾后显示电力停止声。",
+        "distanceZh": "男声经过远场扩声器，静电和断电声位于中场。",
+        "speechDensity": "moderate",
+        "decoyOverlapZh": "与其他公共广播录音共享远场人声，静电与电力停止声保留差异。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 800, "category": "broadcast", "labelZh": "广播静电", "distance": "mid" },
+        { "startMs": 430, "endMs": 2844, "category": "voice", "labelZh": "远处男声广播", "distance": "far" },
+        { "startMs": 3280, "endMs": 4280, "category": "power", "labelZh": "电力停止声", "distance": "mid" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_broadcast_static.mp3", "startMs": 0, "volume": 0.62 },
+        { "kind": "file", "path": "chapter4/prologue/vo_ch4_prologue_guard_01.mp3", "startMs": 430, "volume": 0.94 },
+        { "kind": "file", "path": "chapter4/prologue/sfx_ch4_lights_powerdown.mp3", "startMs": 3280, "volume": 0.34 }
+      ]
+    },
+    {
+      "id": "decoy_canteen",
+      "asset": "voice_memo_ch35_decoy_canteen",
+      "code": "CLIP B4",
+      "correct": false,
+      "time": "--:--:--",
+      "revealZh": "托盘连续滑动，女声提示东区食堂关闭。",
+      "productionPrompt": {
+        "eventEmphasisZh": "托盘滑动和轻碰作为开场，公共女声覆盖中段，后段保留车轮和电子短音。",
+        "distanceZh": "托盘在近场，女声来自中远场扩声器，车轮横向经过中场。",
+        "speechDensity": "moderate",
+        "decoyOverlapZh": "保留与其他关闭提示相近的语气和带宽，托盘与车轮声维持可辨差异。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 1000, "category": "service", "labelZh": "托盘滑动与轻碰", "distance": "near" },
+        { "startMs": 440, "endMs": 4579, "category": "voice", "labelZh": "公共女声提醒", "distance": "far" },
+        { "startMs": 2470, "endMs": 3670, "category": "wheel", "labelZh": "小车轮滚动", "distance": "mid" },
+        { "startMs": 3860, "endMs": 4660, "category": "device", "labelZh": "电子确认短音", "distance": "mid" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "chapter3-canteen/sfx/fx_canteen_tray_return.mp3", "startMs": 0, "volume": 0.52 },
+        { "kind": "speech", "asset": "vo_ch35_decoy_canteen", "startMs": 440, "volume": 0.9 },
+        { "kind": "file", "path": "chapter3-canteen/sfx/fx_canteen_cart_roll.mp3", "startMs": 2470, "volume": 0.26 },
+        { "kind": "file", "path": "chapter3-canteen/sfx/fx_canteen_order_confirm.mp3", "startMs": 3860, "volume": 0.18 }
+      ]
+    },
+    {
+      "id": "decoy_theater",
+      "asset": "voice_memo_ch35_decoy_theater",
+      "code": "CLIP E2",
+      "correct": false,
+      "time": "--:--:--",
+      "revealZh": "检票器连续短响，女声提示演出结束。",
+      "productionPrompt": {
+        "eventEmphasisZh": "检票器连续短音先出现，公共女声保持平稳，后段加入设备轻响和纸张摩擦。",
+        "distanceZh": "检票器在近场，女声来自远场扩声器，后段器物声在中近场。",
+        "speechDensity": "moderate",
+        "decoyOverlapZh": "保留与其他散场提示相近的女声质感，检票短音和纸张摩擦提供区分。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 1000, "category": "device", "labelZh": "检票器连续短响", "distance": "near" },
+        { "startMs": 460, "endMs": 4770, "category": "voice", "labelZh": "公共女声提醒", "distance": "far" },
+        { "startMs": 3310, "endMs": 4110, "category": "device", "labelZh": "设备轻响", "distance": "mid" },
+        { "startMs": 4100, "endMs": 4900, "category": "paper", "labelZh": "纸张取放声", "distance": "near" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "chapter3-theater/sfx/fx_theater_gate_scan.mp3", "startMs": 0, "volume": 0.5 },
+        { "kind": "speech", "asset": "vo_ch35_decoy_theater", "startMs": 460, "volume": 0.9 },
+        { "kind": "file", "path": "chapter3-theater/sfx/fx_theater_spotlight_hit.mp3", "startMs": 3310, "volume": 0.18 },
+        { "kind": "file", "path": "chapter3-theater/sfx/fx_theater_program_pickup.mp3", "startMs": 4100, "volume": 0.16 }
+      ]
+    },
+    {
+      "id": "decoy_library",
+      "asset": "voice_memo_ch35_decoy_library",
+      "code": "CLIP 6F",
+      "correct": false,
+      "time": "--:--:--",
+      "revealZh": "门禁单响，女声提示阅览室十分钟后关闭。",
+      "productionPrompt": {
+        "eventEmphasisZh": "门禁单次短音先出现，公共女声覆盖中段，后段保留键按响应与纸条滑出声。",
+        "distanceZh": "门禁和纸条在近场，女声来自远场扩声器，键按声位于中场。",
+        "speechDensity": "moderate",
+        "decoyOverlapZh": "保留与其他闭馆提示相近的女声节奏，门禁和纸条声维持可辨差异。"
+      },
+      "soundEvents": [
+        { "startMs": 0, "endMs": 900, "category": "device", "labelZh": "门禁单次短响", "distance": "near" },
+        { "startMs": 420, "endMs": 4906, "category": "voice", "labelZh": "公共女声提醒", "distance": "far" },
+        { "startMs": 3020, "endMs": 4020, "category": "device", "labelZh": "键按与检索响应", "distance": "mid" },
+        { "startMs": 4130, "endMs": 5200, "category": "paper", "labelZh": "纸条滑出声", "distance": "near" }
+      ],
+      "targetDurationMs": 5200,
+      "layers": [
+        { "kind": "file", "path": "library-finals/sfx/fx_library_gate_scan_v2.mp3", "startMs": 0, "volume": 0.48 },
+        { "kind": "speech", "asset": "vo_ch35_decoy_library", "startMs": 420, "volume": 0.9 },
+        { "kind": "file", "path": "library-finals/sfx/fx_catalog_search_v2.mp3", "startMs": 3020, "volume": 0.2 },
+        { "kind": "file", "path": "library-finals/sfx/fx_receipt_slide_v2.mp3", "startMs": 4130, "volume": 0.16 }
+      ]
+    }
+  ]
+}

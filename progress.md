@@ -1,5 +1,126 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-08-24 Task10 质量返修：音频停机事件与 postgame seed 容错
+
+- 范围限制：仅修 Task10 质量审查的两项问题，不扩展其他玩法。修改文件为 `src/scenes/phone/P16_BikeArcade/index.tsx`、新增 `src/scenes/phone/P16_BikeArcade/EndlessArcadeSceneEvents.ts`、`src/modules/DeveloperChannel.ts`、`scripts/verify-endless-arcade.mjs`。
+- 音频生命周期：P16 将 `confirm_exit` 从 `running` 进入时显式发 `endless_arcade_runtime_paused`，原因固定为 `player`；Host `error` 进入错误态前发同一停机 cue，原因固定为 `runtime_error`；页面 cleanup 与返回手机主页统一走幂等的 `endless_arcade_closed` 发射器，重复清理不会重复发事件。
+- 恢复规则：`keepPlaying()` 没有手工发 resumed，仍只依赖 Host 真正回到 `running` 后由既有 phase 迁移发 `endless_arcade_runtime_resumed`，避免 `externalPause` 下误播恢复。
+- postgame seed 解析：`readEndlessArcadeDeveloperSeed()` 现在先取当前 checkpoint 的 `createPostgameDeveloperSeed()` 作为 fallback。`boot/mode/summary` 任一关键字段坏掉、缺字段、字符串冒充数字或旧 JSON 不符合合同，都会回退到当前 checkpoint 的正式 seed。`game_over.summary` 在有限数校验后再走 `normalizeEndlessRunSummary()`；`bikeStartDistance` 需要是 finite number，合法值会取整并夹到安全范围，非法值回退到 checkpoint 约定值。
+- validator：`scripts/verify-endless-arcade.mjs` 新增可执行 runtime 检查，覆盖 `{}` fallback、字符串/缺字段 fallback、bike 起跑距离 fallback、合法大数 normalize、confirm-exit stop cue、runtime-error stop cue、cleanup close 幂等。验证器总检查数现为 `108`。
+- 验证：`npm run typecheck` 通过；`npm run endless:validate` 通过（`108/108 PASS`）；`npm run chapter4:validate-task14` 通过（`assertions=337`）；`git diff --check` 通过。
+
+## 2026-08-24 755 米骑车角色身份重做与物理代理复验
+
+- 用户于 2026-08-24 回复“任务通过”，已作为三张人物视觉候选的正式外观批准记录。后续 A8、A13 和 A14 已完成；M1 生成后因完整输出的手指脱把和重复脚踏被技术拒绝，manifest 当前状态为 `m1_rejected_full_output_m2_blocked`。
+- 正式锚点审计确认两个帧位差异：Start F40 还是宽镜，F41 才是握把与脚踏局部；Finish F9 还是宽镜，F10 才是刹车把与前轮局部。原生局部当前只服务物理接触审核，不作为最终人物质量证据。
+- 新增并完成三张正式视觉锚点：A8 `picture_08_mount_grip_pedal_macro_1920x1080.png`（`1920×1080`）、A13 `subject_02_bicycle_canonical_2048x2048.png`（`2048×2048`）、A14 `subject_03_rider_action_canonical_2048x1024.png`（`2048×1024`）。三图均已实际检查为 8-bit sRGB、RGB 无 Alpha，且完成人工目视检查。
+- A8 采用已批准的高质量视觉局部首帧，A13 和 A14 约束人物和自行车身份；原生 F41 只校验手—握把、鞋—脚踏、曲柄—链条关系。当前没有与这些高质量 PNG 对应的可编辑高精度网格工程，因此不记录成高精度三维建模已完成。
+- 新增 M1 独立提示词 `docs/assets/minimax-h3-canteen-755-theater/prompts/m1-mount-grip-pedal.txt`；模型锁定 `MiniMax-Hailuo-2.3`，输入锁定 A8，帧选取合同仍为 `0–29 @ 24 FPS`。截至本记录尚未调用 `mmx video generate`，M2 继续锁定。
+- 原生 F41 局部参考已实际打开并检查：`stage=start`、`segment=O3`、`camera=grip_pedal_macro`、`pose=pedal_press`；单只右手与蓝色袖口、单只右鞋、单个脚踏、曲柄、短链条与局部车架均可见，脸、躯干、其他肢体和调试方块均未出现；手和脚的对应接触误差均为 `0`。该结论的视觉验证次数为 `1`，当前等级为“可用物理参考假说”。
+- 通过显式 `mmx 1.0.22` 调用 `MiniMax-Hailuo-2.3` 生成 M1 一次；任务 ID `434107226964380`，文件 ID `434080431296955`，原片位于 `docs/assets/minimax-h3-canteen-755-theater/generation/m1/raw/m1_mount_grip_pedal_raw.mp4`。额度从区间 `0/5`、每周 `0/35` 变为区间 `1/5`、每周 `1/35`；本轮没有发起第二次生成。
+- `ffprobe` 实测原片为 `1364×768`、`24 FPS`、`141` 帧、`5.875s`、H.264、yuv420p、无音轨；SHA-256 为 `2b1603bacf4bee1f1b35eaa04a7f60ee2d38eaa6601f198d67d2e1dcddb25bb3`。
+- 全部 `141` 帧已抽取并逐段目视检查，另完成一次独立视觉复核。`0–29` 局部审片窗在当前可见约束下通过；零基第 `39` 帧（抽帧 `frame_040.png`）首次明确出现食指和中指脱把，零基第 `120` 帧（抽帧 `frame_121.png`）首次明确出现第二脚踏，后段鞋—脚踏关系继续恶化。完整 M1 判定为 `rejected_full_output`，`integration_allowed=false`。
+- 审片产物已写入 `generation/m1/review/`：`0–29` 的 `30` 帧、`1.25s` 预览 MP4，完整 `0–140` 接触表，`6` 张全帧细节表，关键失败帧表与 `m1_review.json`。这些文件只服务审片和追溯，当前禁止运行时派生。
+- M2 未生成，本轮也没有裁切原片来替换完整任务判定。用户若后续要求重试，需要先修改锚点构图或将握把和脚踏拆成更小的单部件任务。
+- 原生宏镜头改动后的交付验证已完成：`npm run typecheck` 通过；首次 `build:single` 遇到正在变化的无关 `P13_PhoneHome/index.tsx` 中间状态并失败，本轮未修改该文件，其内容完整写入后重跑 `typecheck` 与 `build:single` 均通过。Vite 处理 `650` 个模块，`demo/index.html` 为 `249152262 bytes`，SHA-256 `4960ce0686ba8f19a85813c5e6df0249dab6ccf0bbce853405b8026d8a2d8efe`；`npm run verify:single` 通过。`npm run verify:canteen-bike-transition` 仍为 `79 checks / 72 passed / 7 failed`，失败范围仍为过场 overlay、旧 continuation 清理和 Host 三层接线。
+- 本轮临时锚点截图、浏览器宏镜头截图、M1 全帧抽取目录和 `video-frames` 临时关键帧已删除；需要交付的原片与审片证据仍保留在 `docs/assets/minimax-h3-canteen-755-theater/generation/m1/`。
+- 用户已否决 2026-08-23 第三轮 v8/v9 人物观感。`hero-front-v9.png`、`hero-close-v8.png`、`start-f033-v8.png`、`finish-f082-v9.png`、`finish-f107-v8.png` 已从正式预览目录清除，旧章节中的人物外观判断随本节废止。
+- 身份基准固定为 `docs/assets/minimax-h3-canteen-755-theater/anchors/subject_01_player_identity_2048x2048.png`：偏分层次短黑发、清晰眉眼、蓝色开襟外套、浅色内搭、深灰长裤、灰白运动鞋、无背包。旧 `subject_03_rider_action_2048x1024.png` 不再拥有脸、发型、服装和全身比例的覆盖权。
+- 三张角色视觉候选为 `character-development/subject_01_player_3d_turnaround_v01.png`（`1681×935`）、`subject_03_rider_action_hq_v01.png`（`1672×941`）、`subject_03_rider_action_sequence_v02.png`（`1682×935`）。三图均为 8-bit sRGB、无 Alpha、低于 `5760×5760`，已于 2026-08-24 由用户批准；`formalAnchor=false`与 `hailuoUpload=false` 继续保持。
+- 四动作候选锁定同一人物的低跨梁上车、稳定骑行、左脚落地和车左侧推车构图。它只承担身份、材质和静态动作方向；连续跨步轨迹、重心、手脚接触和车轮运动继续由原生 Three.js rig 与逐帧检查承担。
+- 原生 rig 的定位收敛为物理与 IK 代理。当前为 `58 meshes / 58030 triangles / 44 materials`，仓库内仍没有与高质量转面图对应的可编辑网格、拓扑、骨骼权重、UV 和完整 PBR 材质工程文件，因此不能把新 PNG 记录成高精度三维模型已完成。
+- 浏览器关键帧复验已实际运行：start F33 双手握把误差 `0 / 0`；start F40 双手与双脚接触均为 `0`；finish F66 左右手握把误差 `0 / 0.003742`，右脚踏板误差 `0`；finish F82 和 F107 的右手到近侧握把误差均为 `0`。选定帧目视覆盖低跨梁上车、坐稳、左脚落地、下车落地、推车和松手走向剧院。
+- 物理结论的验证次数为 `1`，当前等级为“可接受假说”。这些数据未完整证明连续运动中的惯性、抓地、脚步滑移、重心转移和所有中间帧。
+- 本轮已调用本地图像锚点生成流程，并完成一次 M1 MiniMax/Hailuo 生成。M1 完整输出已技术拒绝；M2 继续锁定。
+- 验证：`npm run typecheck` 通过；`npm run build:single` 通过，Vite 处理 `650` 个模块并重建 `demo/index.html`；`npm run verify:canteen-bike-transition` 仍为 `79 checks / 72 passed / 7 failed`。七项缺口继续是 `CanteenBikeTransitionOverlay.tsx`、旧 continuation 符号清理，以及 `RpgGameHost` 的 start/ride/finish selector、互斥层和 controller endpoint 接线。当前不能声称过场已经正式接入。
+
+## 2026-08-23 755 米骑车人物模板第三轮收紧与可视化演示
+
+> 本节人物外观判断已被 2026-08-24 用户否决记录废止；保留其余历史数据用于追溯。
+
+- 本轮继续只收 `src/scenes/rpg/canteen-chase/ChaseRiderRig.ts` 与 `CanteenBikeTransitionRenderer.ts`，目标是把用户指出的三类问题拆开处理：`1` 正脸与发型离 `subject_01_player_identity_2048x2048.png` 太远；`2` 骑乘臀座、刹车接触和推车姿态让人物显得假；`3` inspection 背景里还混着调试方块，影响人像判断。
+- 已落实的人物外观修正：手臂、前臂和手掌半径再次收细；眼白恢复为窄白眼裂，保留深色瞳孔和黑眉；新增鼻线，嘴线缩短；耳朵缩小；发顶体块压扁并改成偏分碎发，刘海锥体减少为 6 束，左右侧发和顶发重新做了不对称起伏。inspection 视图只保留中性地面，不再显示宏拍调试方块。
+- 已落实的接触与姿态修正：左右握把 contact 从单纯 `z=0.09` 改成带横向和纵向补偿的真实手握点，因此 `ride / brake` 双手残差从固定 `0.0278187683` 直接降到 `5e-16` 量级；骑行、踏下和刹车姿态统一加入 `SEATED_RIDER_OFFSET_Y=-0.08` 与 `SEATED_RIDER_OFFSET_Z=0.04`，让骨盆真正落到座位上；`push_bike` 根节点与右肩重新布位，推车最终帧目视已回到“人站在车左后侧单手扶把”的状态。
+- 量化回测只覆盖当前真正约束的 pose。`ride` 左右手/脚都在 `1e-15` 量级；`brake` 也在 `1e-15` 量级。残余问题还在 `grip` 右手 `0.03928`，以及 `dismount_leg_over` 左手 `0.06032`、右手 `0.30354`。这些数值的验证次数仍是 `1`，当前只能算假说，不能误报成正式通过。
+- 新的人像与关键帧预览已保留到正式预览目录：
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/hero-front-v9.png`
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/hero-close-v8.png`
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/start-f033-v8.png`
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/finish-f082-v9.png`
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/finish-f107-v8.png`
+- 当前结论：人物观感已经明显好于上一轮，骑乘与刹车的硬伤已经去掉，推车段也能看。但“帅气模板”还没有完全收口，下车跨腿仍偏僵，`grip` 与 `dismount_leg_over` 的手把残差还没收干净，因此本轮仍不允许调用 MiniMax/Hailuo 正式生成，也不能把这批图误报成最终视频。
+- 静态验证边界没有变化：`npm run typecheck` 于本轮再次通过；`npm run verify:canteen-bike-transition` 仍是 `79 checks / 72 passed / 7 failed`，失败项继续只在 `CanteenBikeTransitionOverlay.tsx` 缺失和 `RpgGameHost` 的 start/ride/finish selector、互斥 layer、controller endpoint 未接线。正式集成状态没有前进。
+
+## 2026-08-23 755 米骑行人物模板第二轮收紧与锚点复验
+
+- 本轮目标是把 `anchors/subject_01_player_identity_2048x2048.png` 对应的“帅气模板”重新拉回当前 Three.js 骑手，同时保留上一轮已经稳定的车架、挡泥板和骑行 IK。
+- 已落实的角色修正集中在 `src/scenes/rpg/canteen-chase/ChaseRiderRig.ts`：皮肤色保持 `0xeab17d`，头颈缩短，头部整体下移，面部五官整体下移，发顶与侧发重新压缩，刘海长度上收，肩点从大圆球改为短连接管 + 小球，开襟外套门襟继续收窄，挡泥板改为真实上半弧曲线。当前自行车外观比上一轮更接近锚点图中的蓝色校园车。
+- 为了补足“脸太空、太丑”的问题，新增了一个不依赖 DOM 的 `DataTexture` 面部贴图层，直接叠到头部前侧。它现在至少提供了可读的眼睛、高光、鼻影和嘴部信息，避免检查图继续退化成无五官圆头。
+- 检查镜头同步收紧：`CanteenBikeTransitionRenderer.ts` 现在支持 `hero / hero_front / hero_side / hero_back / bicycle` 五类 inspection 角度，默认 hero 角度后退并抬高 look target，避免旧版那种直接裁掉头顶的误判。
+- 浏览器新截图已实际生成并人工查看。保留为正式预览的三张图是：
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/hero-front-v4.png`
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/start-f033-model-v2.png`
+  - `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/finish-f082-model-v2.png`
+- 当前量化结果：直接构建 rig 后测得复杂度 `50 meshes / 30976 triangles / 39 materials`。`ride` 姿态下脚踏接触误差仍在 `6.59e-16` 量级，但右手到右握把残差升到 `0.01768` 世界单位，说明人物外形改动已经反推到接触链，仍需下一轮继续回收。
+- 正式合同边界没有变化。`npm run verify:canteen-bike-transition` 仍是 `79 checks / 72 passed / 7 failed`，失败项仍集中在 `CanteenBikeTransitionOverlay.tsx` 缺失和 `RpgGameHost` 的 start/ride/finish selector、互斥 layer、controller endpoint 未接线。当前仍不能声称已经正式集成。
+- 本轮 `npm run typecheck` 没有通过，但失败点出在电话端既有文件 `src/scenes/phone/P15_Zjuding/index.tsx`、`ZjudingAppRegistry.ts`、`ZjudingUtilityPanel.tsx` 的 `badge` 类型问题，不在本轮骑行建模改动路径里。这个结论的验证次数是 `1`，当前只能算假说。
+
+## 2026-08-23 755 米骑行 IK 物理修复与关键帧复验
+
+- 物理边界：本批只处理 `src/scenes/rpg/canteen-chase/ChaseRiderRig.ts` 的双骨 IK、肩点和接触启用规则；未进入外观身份建模，也未接 `RpgGameHost` 的 start/ride/finish 过场层。
+- 数学修复：删除旧 `setEndEffectorToTarget()` 与 `alignContactPoint()` 末端平移吸附。`solveTwoBoneIK()` 现改为固定骨长解析式求解：目标向量统一放在 `rootPivot.parent` 局部坐标系求解，上骨长度取 `midPivot.position.length()`，下段接触长度取 `midPivot.worldToLocal(endContact.world)`，肘膝弯折平面由 world-space bend hint 投影得到。`endEffector.position` 不再被改写，手掌和鞋底局部端点保持常量。
+- 肩点重配：修公式后量得旧肩点到左握把的世界距离约 `1.3677`，超出旧手臂可达长度，主因是肩点过后过高，不是公式本身。现为所有握把姿态增加前移下沉肩点；典型骑行姿态改为 `x=±0.44, y=1.78, z=-0.26`，`grip / leg_over / dismount_leg_over / push_bike` 再按进度单独调整 `riderRoot.position.x` 与右肩。
+- 定量验证：用 `npx tsx` 直接导入 rig 后复算接触误差。`ride / pedal_press / brake` 的手握把与脚踏板误差已降到 `1e-15` 量级；`left_foot_down` 保留右脚接触为 `5.24e-16`，左脚故意离踏板，属于设计动作。`leg_over` 右手误差降到 `6.20e-4`。残余弱点仍在 `grip` 右手 `4.69e-2`、`dismount_leg_over` 双手 `1.03e-1 ~ 1.70e-1`、`push_bike` 右手 `2.02e-1`，这些还没有达到正式成片标准。
+- 浏览器复验：`npm run typecheck` 通过；`npm run verify:canteen-bike-transition` 仍为既有 `79 checks / 72 passed / 7 failed`，失败项全部集中在 `CanteenBikeTransitionOverlay.tsx` 缺失和 `RpgGameHost` 的 start/ride/finish selector、互斥 layer、controller endpoint 未接线，没有新增合同回退。
+- 出图证据：新图已写到 `docs/assets/minimax-h3-canteen-755-theater/previews/option-a-hd-model-preview/start-f033-ik-pass/shot-0.png`、`finish-f082-ik-pass/shot-0.png`，并抓取了 `start-f055-ik-pass`、`finish-f025-ik-pass` 近景对照。目视确认起步跨车和终点下车不再出现上一轮那种明显的手臂断开。另有 `option-a-native-preview/chase-377m-ik-pass.png` 作为实时路线状态参考。
+- 当前结论：主骑行物理链已从“错误机制”提升到“可接受假说”，验证次数 `1`。用户后续要求的身份外观对齐 `anchors/subject_01_player_identity_2048x2048.png`、去背包/圆顶发片、提升光影和材质精细度，仍未完成，不能把这批 IK 修复误报成最终可交付视频。
+
+## 2026-08-23 第四章统一扩展与修复收束
+
+- 已按用户确认的组合执行第四章本轮统一扩展与修复：`A1 + A2 + A3 + B1 + B3 + C2`。本批收口覆盖 3.5 未同步记录、3.5→4 H3 入口、第四章 `7:55` 阶段提示/差分/三提示、Task 9 detailCode 反馈、Task 10 字幕归属、Task 11 DEV 节点、Task 13 场景细节和 B3 细节音效。
+- 3.5 记录恢复：`P20_TimelineRecovery` 维持“待恢复时间窗 → 四证据 → 三旧时间排除 → 自动时间线 → 四地点判断 → 回放入口”的正式链；目的地不会在未满足条件时提前泄露；录音试听草稿、事件型预览和回放准备态已纳入控制器与存档清理。
+- 第四章任务表达：`ChapterFourStagePresentation` 和 `chapter4-755.content.json` 已固化 `13` 个阶段、`6` 个时间态、`28` 个活动任务和 `84` 条三段式提示；共享任务栏读取阶段名、时间状态、楼层、局部进度、当前差分、时间来源、手机可信度和已确认事实。章节完成态保留空 hints。
+- 第四章反馈契约：`ChapterFourTemporalMazeController` 的锁定态细分为 `33` 个 detailCode；`RpgGameHost` 只从 `chapter4-755.content.json.intentFeedback.details` 取原因与下一步，不再让粗粒度 `locked` 淹没具体纠错。
+- 第四章字幕归属：Host 不再把所有 7:55 交互结果自动转成玩家字幕；剧情对白、关键结果和失败仍由场景/覆盖层独占。阶段副作用签名已收敛到 `phase + timeState`，楼层切换与签到局部进度不会重复播报。
+- DEV 与恢复入口：`c4-prologue-task-card` 保持“未确认时刷新仍回任务卡，确认后进入 A1 开场同步”；`c4-755-return-clock` 与 `c4-755-closure` 作为稳定正式节点保留；旧 `c4-755-light-grid` 与 `c4-755-complete` 继续只做别名，不再提供旧错误结果节点。
+- 场景细节：面包坊三名学生加入端点看手机/调包小动作；保洁阿姨在修前做短推车失败尝试、修后改为短程推车并落到静置车状态；维修保安按巡逻/清单/看表/确认/追逐的不同动作切换；签到阶段新增三名不带碰撞的早八学生。Chapter 4 细节音效新增 `clock_stutter_started / clock_stable_started / maintenance_cart_wheel_stuck / maintenance_cart_wheel_repaired`，并通过 ambient owner 生命周期控制。
+- 新一轮静态验证已实际执行并通过：`npm run typecheck`、`npm run chapter4:validate-assets`、`npm run chapter4:validate-story`、`npm run chapter4:validate-topology`、`npm run chapter4:validate-runtime`、`npm run chapter4:validate-task14`、`npm run verify:rpg-facing-agnostic`、`npm run verify:rpg-character-sprites`、`npm run audio:chapter3-interlude-voice-memos:verify`。
+- 正式单文件已重建并验证：`npm run build:single`、`npm run verify:single` 通过；当前 `demo/index.html` 大小 `248256518 bytes`，修改时间 `2026-08-23 19:39:31 CST`，SHA-256 `b00c9d4454e6c20c5793e70099a1e2a7b1f96f9df5c9caebe0c455c6084c28b6`。
+- 浏览器验证边界：Chromium 成功通过本地 HTTP 打开 `c4-755-opening` 与 `c4-prologue-task-card`，确认第四章打开态已进入 `duan_yongping_temporal_maze / c4_a1_lobby`，开发者任务卡确认后 `seven-fifty-five.developer-chapter4-task-card-confirmed.v1=1`，刷新后仍恢复到已确认入口链。Firefox 在放宽到 `90s` 超时后也成功打开同一第四章检查点，标题为 `7:55` 且无 pageerror。Firefox/WebKit 在 `15s` 快速超时下均无法完成这个超大单文件首开，因此当前跨内核结论仅能证明“可打开”，不能把首开性能判为合格。
+- 保留边界：第四章正式收束 consumer 仍缺用户已确认的“灿若星辰”唯一正式素材路径或等价 proof，因此 `c4-755-closure` 继续维持 `completed=false` 的外景等待态；本轮没有伪造 `c4-755-result` 或最终收束消费者。
+
+## 2026-08-23 食堂上车与剧院下车衔接 A 方案首批实现检查点
+
+- 本批完成 Task 1–3：新增 `npm run verify:canteen-bike-transition` 合同验证器；`ChapterThreeCanteenController` 将付款与真正开骑拆分为两个门；`ChaseThreeRenderer` 已切换到共享 `ChaseRiderRig`，保留原 chase 的 root 名、`1.28` 缩放、`frontAssembly` 位置与现有逐帧更新顺序。
+- `payForBike()` 现在只在 `chase_ready` 阶段扣除 `cafeteriaWages` 与现金，并写入 `bikePaid=true`，发出 `canteen_bike_paid`；新增 `startChase()` 只在 `chase_ready + bikePaid + !chaseCompleted` 时把 phase 推进到 `chasing`，重复调用在未完成 chase 期间保持幂等。
+- 新共享 rig 位于 `src/scenes/rpg/canteen-chase/ChaseRiderRig.ts`，由现有 `ThreePrimitiveCache` 注入 geometry/material cache，没有创建第二套 primitive cache。骑手与蓝色自行车拆出 `bicycleRoot`、`riderRoot`、`frontAssembly`、`rightBrakeLever`、`crank`、`left/rightPedal`、`chain`、`basket`、`left/rightHand`、`left/rightFoot`，并提供 `applyChaseRiderPose()` 供后续过场渲染与锚点导出复用。审查发现 A8 所需的右手—握把、右鞋—踏板原先只有独立节点，未形成接触约束；现已增加四个不可见表面端点与 `enforce / measure / assert` 接触 API，数学断言覆盖 `6` 种双接触姿态、每种 `5` 个进度采样，共 `30` 个样本，最大误差分别为 `2.00e-15` 与 `1.09e-15` 世界单位，低于 `1e-5` 阈值。
+- 验证已立即执行：`npm run typecheck` 通过。`npm run verify:canteen-bike-transition` 从首轮 `failed=14` 降到当前 `failed=9`；当前剩余失败全部集中在后续 Task 4–7：缺少 `CanteenBikeTransitionTimeline.ts`、`CanteenBikeTransitionRenderer.ts`、`CanteenBikeTransitionOverlay.tsx`，以及 `RpgGameHost` 仍保留旧 `755m` continuation 链路、未声明 start/ride/finish 三层 selector、未做互斥 handoff layer 和 controller endpoint 接线。
+- 本批验证次数：控制器行为验证 `1` 次，共享 rig 静态变换与更新顺序验证 `1` 次，接触数学约束执行 `1` 次，当前结论仍属于假说；TypeScript 在 Task 3 完成后与最终并发状态下共通过 `2` 次。共享 rig 已在真实 Vite + Blink 会话中检查 `0m / 377m / 755m` 三个状态，人物中心、比例、相机范围稳定，控制台 `0 error / 0 warning`；本次 `web_game_playwright_client` 的 canvas 抓图返回黑帧，Playwright 整页截图画面正常，因此暂将差异判断为抓图链路问题，该判断仍属于一次验证的假说。临时 QA 截图均已移入系统废纸篓。完整 A 方案浏览器链仍为 `0` 次；手掌—袖口、鞋—裤腿的视觉连续性和 A7–A14 正式锚点仍需在 Task 4 与 Task 8 检查。
+
+## 2026-08-23 食堂上车与剧院下车衔接 A 方案设计确认
+
+- 用户选择 A：完整展示上车、起步、755 米胜利后的刹停、下车和移车。正式链路保留完整 0–755 米真实玩法。
+- 新设计把 Hailuo 2.3 限制为两个固定 1.25 秒近景插镜：右手握把加右脚踏，以及右手刹车把加前轮减速。玩家全身、蓝色自行车、纸条、NPC、道路和剧院继续由原生运行时渲染。
+- 权威状态复用现有事实组合：chase_ready+bikePaid 为上车门，chasing+!chaseCompleted 为真实骑行，chasing+chaseCompleted+bestDistance>=755 为下车门，theater_reached 为剧院外检查点。设计不新增剧情 phase 或存档版本。
+- 已明确废止 700 米正式交接、picture_05 的错误 755 米生成首帧、旧跨投影中间分镜和两条已拒绝视频。旧视频继续保持 rejected_by_user 与 integration_allowed=false。
+- 正式分镜为 Start gate 91 帧、3.792 秒；Finish gate 133 帧、5.542 秒。新锚点 A7–A14 全部由共享 Three.js 骑手模型截图或直接渲染，场景图 1920×1080，主体图最大 2048×2048，均低于 5760×5760。
+- 完整设计、两个可直接粘贴的英文提示词、资产清单和逐文件实施计划已写入 docs/plans/2026-08-23-canteen-bike-transition-option-a-design.md、docs/assets/minimax-h3-canteen-755-theater/ 与 project-development-report.md。
+- 当前验证边界：设计与代码路径审阅 1 次，仍属于假说；新骑手模型、A7–A14、Hailuo M1/M2 和浏览器链均为 0 次。未调用 MiniMax、未生成新视频、未修改运行时代码、未执行 Git 写操作。
+
+## 2026-08-22 第四章学生、主人公、保安与保洁阿姨多姿势透明角色更新
+
+- 问题修复：面包坊三名学生由四帧同相动作升级为八帧步行，并分别从第 `0 / 3 / 6` 帧开始播放；现场不再出现三人同一时刻使用同一姿势的情况。
+- 后续裁切修正：用户实机发现角色帧间忽大忽小且部分头脚缺失。根因是四张生成源图只在视觉上接近网格，人物轮廓实际跨越等分线；旧构建器先按等分格截断人物，再把每个残缺帧分别放大到目标高度。主人公源图还实际包含 `8` 个朝下、`7` 个朝上和 `9` 个侧向轮廓，旧方向映射把第一个侧向姿势当成第八个朝上姿势。
+- 生成路径：调用 `mmx 1.0.15` 的 `image-01`。`2048×2048` 请求发生服务端 `rpc timeout`；`1024×1024` 候选虽然成功返回，但没有遵守 `4×4` 网格、透明背景和像素风约束，已拒绝接入。按用户允许的备用路径生成四张原生 RGBA 源图，并以 `_v2` 文件名保留旧素材。
+- 角色动作：学生包含八帧步行、看手机、调背包、推门和站立；主人公包含朝下、朝上和侧向三组八帧步行，朝左由水平镜像；保安包含八帧巡逻、清单、手表、手电和对讲机；保洁阿姨包含推车、拖地、警示牌、照明开关、休息和站立。
+- 图集处理：两个构建器改为从整张源图提取完整 Alpha 轮廓，再按行列中心排序；每个方向组或角色只使用一个固定统一缩放比例，并保留至少 `2px` 的头顶和脚底安全留白。朝上第八帧由第五个朝上源姿势水平镜像补齐，侧向组选用九个候选中的前八个。运行帧的透明掩膜直接取自原图 Alpha，避免二次连通区域标签排序产生黑色背景。
+- 回归门禁：新增 `npm run verify:rpg-character-sprites`，验证四类角色的源图轮廓数量、头脚留白、源图/运行帧轮廓重合度、宽高比、同动画缩放稳定性和主人公补帧映射；当前四类角色全部通过，同一动画测得的最大/最小缩放比低于 `1.03`。
+- 运行时接入：Phaser 主角循环更新为单帧 `110ms` 的八帧动画；第四章 Three.js 错位楼梯同步消费同一组 `24` 帧。学生与保安为 `8 FPS`；保洁推车为 `8 FPS`、拖地为 `6 FPS`。角色碰撞脚框和存档逻辑未改变。
+- 浏览器验证：Chromium `1280×720` 在重建单文件的 `c4-755-bakery-1225` 连续检查两帧，三名学生头脚完整、透明背景正确且帧间人物比例稳定；`c4-755-maintenance-2245` 检查了完整显示的主人公、保安、保洁阿姨和清洁车。经过前景墙或前台时保留基于脚点深度的遮挡；离开遮挡区后完整轮廓恢复。两处控制台均为 `0 error / 0 warning`。
+- 单文件交付：`npm run build:single` 与 `npm run verify:single` 通过，生成 `demo/index.html`，大小 `247123278 bytes`，SHA-256 `b93366659343e7df98b842397075db587b5aaf84d43215976051c583b1622409`。Playwright CLI 阻止 `file:` 协议自动化，因此直接文件打开保留为人工刷新确认边界。
+- 复用文档：`docs/plans/2026-08-22-diverse-transparent-rpg-character-sprites.md` 记录 MiniMax 失败样本判定、四角色最终提示词、整图轮廓提取、固定缩放、透明背景要求和运行时帧率。
+- Git 边界：本轮没有执行暂存、提交、合并或上传。
+
 ## 2026-08-22 全章节无朝向互动与第四章边界单文件打包
 
 - 正式构建：按用户最新要求运行 `npm run build:single`。该命令先执行 `tsc --noEmit`，随后用 Vite Demo 模式内联资源；共转换 `606` 个模块并成功重建 `demo/index.html`。
@@ -2514,6 +2635,19 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 验证：最终 `generate-chapter4-prologue-voice-audio --verify-only`、`chapter4:validate-story`、`typecheck`、`build:single`、`verify:single` 与定向 `git diff --check` 全部退出码 `0`。Chromium 从正式存档进入单文件，实测在视频 `29.543299s` 和 `36.126699s` 分别出现两条字幕并载入对应内嵌音频，console error/warning 均为 `0`。最终 `demo/index.html` 为 `246590721` bytes，SHA-256 `a1ac086d94ad0de439a903fd3f8b8a72521ff8ae6c9a3401e078b13843c3dd70`。
 - 边界与清理：本轮未生成“灿若星辰”，未运行三层浏览器碰撞与遮挡专项，未执行 Git stage、commit、push、merge、rebase 或 reset。浏览器会话和本轮临时帧、响度文件、Playwright 页面快照已关闭并移至 macOS 废纸篓，可恢复。
 
+## 2026-08-23 第三章半七选四录音取证与 MiniMax 正式素材
+
+- 玩法：语音备忘录由四段直接排序改为七段试听、筛选四段、再排列顺序。三段混淆录音来自东区食堂、剧场和图书馆；页面试听前只显示 `CLIP` 编号，试听后展示可核对的环境声记录。选中任意混淆项会整组拒绝，四段正确但错序会单独提示声场不连续，正确顺序仍为 `lake → stone → lobby → broadcast`。
+- 状态边界：`ChapterThreeInterludeVoiceClipId`、`GameState`、`SaveStore v25` 和四段正式证据存档保持原合同。三个混淆 ID 只存在于候选模型和 P21 页面运行时。控制器校验完整七候选集合，失败不把混淆项写入存档，也不会通过过滤混淆项得到成功结果。
+- 提示词：新增 `docs/plans/2026-08-23-chapter35-voice-memo-prompts.md` 和结构化内容清单。提示词沿用主角 `English_Diligent_Man`、系统女声 `English_Graceful_Lady`、既有保洁员和保安声线。`human-writing` 检查结果为翻案句、同构排比、名词化、黑话、硬停词和模型路标各 `0`。
+- MiniMax 与混音：本机已认证 `mmx 1.0.22` 实际生成四段 `speech-2.8-hd` 干声，时长为 `1997 / 4138 / 4310 / 4485ms`。FFmpeg 复用现有环境声、保洁员和保安配音，生成七段 `5200ms / 32kHz / mono / 128kbps MP3`。七段最终哈希均不同，综合响度为 `-21.3` 至 `-19.0 LUFS`，true peak 为 `-4.9` 至 `-2.4 dBFS`。
+- 音频运行时：七段最终录音以受控 `voice` 预览播放；连续试听会暂停上一段，重复点击会停止当前段，页面隐藏、退出和卸载都会发出停止事件。UI 播放时长来自生成清单，当前录音不再沿用 `1200ms` 固定图标时长。
+- 自动验证：首次专项验证按预期在缺失生成清单处失败。生成后 `audio:chapter3-interlude-voice-memos:verify` 通过，确认 `7` 段录音、`4` 段正确、`3` 段混淆、`4` 段 MiniMax 干声和 `11` 个生成资产；二次 `--verify-only` 显示 `networkUsed=false`。`typecheck`、`build:single`、`verify:single` 均通过，七段最终 MP3 均完成 Base64 全字节内嵌。
+- 浏览器：Chromium `1280×720` 验证快速切换得到 `3` 次播放、`2` 次旧音频暂停和唯一活动停止按钮，退出后暂停数增加到 `3`。含剧场混淆项的组合保持在当前任务；正确四段错序被拒绝；正确顺序通过后任务进入“保存闭楼通知和入口截图”。`390×844` 文档尺寸为 `390×844`、横向溢出为 `false`；console error/warning 均为 `0`，网络记录只有重新载入的内嵌 `index.html`。
+- 单文件：`demo/index.html` 为 `248256518` bytes，SHA-256 `b00c9d4454e6c20c5793e70099a1e2a7b1f96f9df5c9caebe0c455c6084c28b6`，包含 `2` 个内嵌 script 与 `1` 个内嵌 style。
+- 已知全仓门：`chapter4:validate-story` 当前仍报告两项与本轮录音无关的既有错误，分别涉及 Task 7 真实脚框/目标几何来源和 Task 10 `Space` 交互范围。本轮未修改这两条第四章玩法。
+- 清理与交付：本轮浏览器会话和本地 HTTP 服务已关闭；五个新建 Playwright 截图/快照移入 `/Users/zhuhangcheng/.Trash/codex-ch35-qa-20260823-1949/`，旧日志保留。未执行 Git stage、commit、push、merge、rebase 或 reset。
+
 ## 2026-08-22 第四章 H3 配音版 Demo 单文件打包
 
 - 构建：使用仓库正式入口 `npm run build:single` 重新执行 TypeScript 检查与 Vite demo 构建，`606` 个模块完成转换，脚本和样式均内嵌到 `demo/index.html`，构建退出码为 `0`。
@@ -2521,10 +2655,129 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 配音封装：对最终 HTML 的实际内容进行 Base64 全字节匹配。保洁员 MP3 `embedded=true / 63728` 个 Base64 字符，保安 MP3 `embedded=true / 55280` 个 Base64 字符；四角色语音生成清单再次通过 `--verify-only`，没有重新生成文件。
 - 交付边界：当前可交付入口为 `demo/index.html`。本轮未创建重复 ZIP，避免为一个单文件增加第二份约 `235MiB` 副本；未执行 Git stage、commit、push、merge、rebase 或 reset。
 
-## 2026-08-22 方案 A GitHub main 交付预检
+## 2026-08-23 第三章半与第四章统一拓展修复启动
 
-- 交付范围：从当前工作区提取用户批准的 `432` 个 active/browser/docs 路径，并在最新 `origin/main` 上完成三方合并；相同文件自动消除后，正式提交差异为 `126` 个路径。交付继续排除 `docs/assets/**` 生成过程素材、`godot/**`、`public/godot/**`、三项退役 Godot 脚本、`.playwright-mcp/**`、`output/**` 与 ignored `demo/index.html`。
-- 合并保留：保留全章节无朝向交互、字幕精简、第四章边界和 H3 接入，同时补回远端 main 独有的食堂入口半径、点餐机锚点、开发检查点时钟、旧存档迁移、剧院实体位置、校园地图与 Chapter 3 修复。食堂餐盘范围调试层保持删除。
-- 安全与体积：暂存源码密钥模式扫描通过，`git diff --check` 通过；正式提交最大文件为 `8282814` bytes，未发现超过 `90 MiB` 的文件。
-- fresh 验证：Chapter 3 音频合同 `77/77`、紫金港双地图合同、RPG player、全章节无朝向守卫、Chapter 4 assets/story/topology/runtime/Task14、TypeScript、production build、single-file build 与 single-file verifier 均退出码 `0`。topology 为 `2495` 项断言，runtime 为 `1125` 项断言，Task14 为 `220` 项断言。
-- 本轮生成的 ignored `demo/index.html` 为 `247228662` bytes，含 `2` 个 inline scripts 与 `1` 个 inline style，仅用于构建验收，不进入方案 A 的普通 Git 提交。按用户批准边界未重复运行三层浏览器碰撞与遮挡专项。
+- 用户已批准统一 Task 0–16，并确认可选细节范围为 `A1 + A2 + A3 + B1 + B3 + C2`；其余 `A4/A5/B2/B4/C1/C3/C4` 不进入本轮实现。
+- 执行边界：保留第 3.5 章正式字段与 H3 入口合同；录音未完成草稿使用版本化 `sessionStorage`；所有章节交互继续不读取人物朝向；不生成新的“灿若星辰”；不执行 A1/A2/A3 碰撞、空气墙或前景遮挡浏览器专项。
+- 工作区边界：当前分支为 `codex/bike-rush-visual-redesign` 且包含大量既有修改和未跟踪依赖。为保留当前真实基线，本轮不创建 worktree，不执行 Git stage、commit、push、merge、rebase 或 reset；按文件所有权协作并保留其他改动。
+- 启动验证：实施前 `npm run typecheck` 退出码 `0`。
+
+## 2026-08-23 第三章半与第四章统一拓展修复收口
+
+- 已落地范围：按用户确认组合完成 `A1 + A2 + A3 + B1 + B3 + C2`，并把 `Task 1–14` 的核心实现收口到正式运行时代码。第 3.5 章完成统一内容入口、七选四录音模型、录音草稿恢复、照片/微信/网络泄露压缩、自动时间线与四候选终判、H3 前置预加载延后。第四章完成 `13` 段阶段差分、`6` 个时间态、任务栏三级提示、`204` 进度 `n/12`、`locked.detailCode` 细化、字幕/任务栏/道具反馈分层、DEV 检查点归一，以及批准细节 `B1/B3/C2` 的场景变化与音效切换。
+- 明确阻塞边界：`Task 12` 仍保持阻塞。当前只保留“灿若星辰”正式 consumer 的等待位，不生成替代资产，不创建 `c4-755-result`，也不把外景收束误记为已完成。故事与运行时验证继续要求“缺正式 reference 时零写入”。
+- 确定性验证：`npm run audio:chapter3-interlude-voice-memos:verify`、`npm run chapter4:validate-topology`、`npm run chapter4:validate-story`、`npm run chapter4:validate-runtime`、`npm run chapter4:validate-task14`、`npm run verify:rpg-facing-agnostic`、`npm run typecheck` 全部通过。过程中顺手修复了两处全仓类型阻塞：`src/scenes/rpg/canteen-chase/ChaseRiderRig.ts` 的接触点对齐辅助函数与双侧误差统计，以及 `src/scenes/rpg/ThreePrimitiveCache.ts` 的缓存键类型过窄。
+- 浏览器路径：Chromium 已验证 `c3-interlude-timeline` 未提前泄露最终地点、`c4-prologue-task-card` 的“未确认刷新仍停任务卡 / 确认后刷新恢复 A1”语义、`c4-755-opening` 的 A1 释放、以及多个第四章 DEV 检查点的正文文案与无控制台错误。跨引擎抽样中，Firefox 代表检查点可起页；WebKit 仍在 RPG 资源解码阶段报大量 `*.png due to access control checks`，当前属于唯一未收敛浏览器残项，尚不满足“WebKit 零 pageerror”目标。
+- 显式排除：本轮未执行 A1/A2/A3 的三层碰撞、空气墙、可通行区、前景遮挡浏览器专项；未做 Git 提交、合并或上传；未生成新的“灿若星辰”外景素材。
+- 单文件产物：重新执行 `npm run build:single` 与构建后 `npm run verify:single`，最新 `demo/index.html` 为 `248416003 bytes`，SHA-256 为 `1c157d667ab51abd849810b6368c3aa394874056a97445a1a8424bd8717fc127`，结构验证结果为 `inlineScripts=2`、`inlineStyles=1`。
+
+## 2026-08-23 第三章半与第四章统一拓展修复最终产物级复验
+
+- 记录优先级：本条以当前源码重新构建并直接验收最终单文件，取代上一条“WebKit 仍有资源解码残项”和旧哈希结论。Vite 快速切换时曾出现被取消的动态导入错误，但正式交付的 HTTP 单文件在 WebKit 中没有复现；该开发态现象不再列为单文件交付阻塞。
+- 实施范围：用户批准的 `A1 + A2 + A3 + B1 + B3 + C2` 已进入正式运行时。第 3.5 章的内容分层、七选四录音、试听草稿恢复、自动时间线、四地点终判和提示收敛，以及第四章的阶段差分、三级提示、204 复原进度、细化反馈、字幕分层、DEV/reload 合同、NPC 姿态和细节音效均已接通。全章节交互继续不读取人物朝向。
+- 确定性验证：`chapter4:validate-story` 通过 `13` 个阶段、`6` 个时间态和 `17` 个道具操作；`chapter4:validate-runtime` 通过 `1125` 项断言；`chapter4:validate-task14` 通过 `337` 项断言并确认 `28` 个活动任务共 `84` 条提示；`chapter4:validate-topology` 通过 `2495` 项纯数据断言；`audio:chapter3-interlude-voice-memos:verify` 确认 `7` 段录音、`4` 段正式证据、`3` 段混淆项和每段 `32` 个 RMS 波形 bin，二次验证未联网。资产、人物帧、全仓朝向禁用、TypeScript 和单文件结构验证均通过。
+- 最终单文件浏览器矩阵：Chromium `1280×720`、Firefox `1366×768`、WebKit `390×844` 均完成真实 HTTP 加载，三者均为 `consoleErrors=0 / pageErrors=0 / requestFailures=0`，文档无横向或纵向溢出，任务抽屉可滚动且只保留一个 Phaser canvas。Chromium 验证未确认任务卡刷新仍停留、确认后进入并恢复 `opening_handoff / A1 / c4_a1_lobby`，且 `contractFailures=[]`、键盘输入恢复；Firefox 验证阶段 6、维修 `0/6` 和三级提示；WebKit 验证阶段 11、签到 `0/2`、三级提示和同一任务卡刷新合同。
+- H3 当前产物复验：三内核均从内嵌单文件创建 `blob:` 视频源，`data-h3-video=ready`、`readyState=4`、解码尺寸 `960×540`、媒体错误为 `null`，连续采样均前进约 `2.51s`。Chromium 自然播放到 `43.64/43.92s` 后显示“第四章：时间迷宫”任务卡；Firefox 与 WebKit 在确认实际播放后点击“跳过恢复回放”，同样显示任务卡。三条路径均为零控制台错误、零页面错误、零请求失败。
+- 最终产物：重新执行 `npm run typecheck`、`npm run build:single` 与 `npm run verify:single`，`demo/index.html` 为 `248422234 bytes`，修改时间 `2026-08-23 22:51:00 CST`，SHA-256 为 `b9479da111a6a232402f581a1f51643b7edd3f1a1f9d556f669874f3ad79e62e`；结构为 `inlineScripts=2 / inlineStyles=1`。构建后确认没有活动源码文件晚于该产物。
+- 保留边界：Task 12 继续等待用户提供唯一、已批准的“灿若星辰”仓库路径或 `assetId`、对应 `sequenceId` 和真实 consumer 完成回调；在此之前保持 `c4-755-closure`，不伪造 `c4-755-result`。本轮按用户要求没有执行 A1/A2/A3 碰撞、空气墙、必须可通行区和前景遮挡浏览器专项。音频的可解码、时长、波形和响度合同已经自动验证，主观音色与表演仍需用户试听决定。
+- 清理与交付：最终浏览器会话均已关闭；本轮临时 QA 脚本与截图在记录证据后删除。本轮未执行 Git stage、commit、push、merge、rebase、reset 或上传。
+
+## 2026-08-23 手机应用 UI 系统、浙大钉功能与校园生活相簿
+
+- 全局 UI：新增 `PhoneAppUi.tsx` 与 `phone-app-ui.css`，统一手机应用内部的状态栏避让、64px 页头、64px 底栏、列表行、分段控件、状态反馈和操作面板。操作面板统一实现 Escape 关闭、Tab 焦点循环、显式初始焦点、关闭后返回真实触发控件；针对 Safari 指针点击不设置活动元素的行为，页面会记录指针或键盘触发控件并显式恢复焦点。`docs/phone-ui-system.md` 固定了外壳、应用主题、锁定槽位、反馈和状态写入边界。
+- 浙大钉：新增 `ZjudingAppRegistry.ts` 与 `ZjudingUtilityPanel.tsx`。首页、百事通搜索和工作台共用 11 项稳定应用定义与同一 `FeatureAccess` 判定；身份未读取时只保留“首页”按钮，其余四个底栏槽位和十个受限应用均为无按钮、无焦点、无点击的静态槽位。身份恢复后开放智云课堂、网络账户、后勤服务、失物档案、访客预览、慧学外语、意见草稿、全部应用、通讯录、消息和个人页。新页面只读取正式状态；访客与意见仅写两个版本化 `sessionStorage` 草稿键，界面明确显示“未提交”或“本机草稿”。
+- 照片内容：新增 `phonePhotoCatalog.ts`，集中管理原有 6 张图书馆相册照片和 6 张校园生活照片。只有稳定条目 `seat_022_clue` 可调用既有物品报告流程；新增校园、学习空间、宿舍和食堂照片全部为 `decorative`，点开、筛选和关闭均不写剧情、物品、任务或存档。图书馆相册由 6 张扩展到 12 张，并可切换“最近 12 张 / 校园与日常”；第三章半照片应用增加独立“校园与日常”相簿。两处预览均复用共享操作面板。
+- 素材来源边界：校门、月牙楼、启真湖浮桥和天鹅等场景特征只依据浙江大学官方公开页面核对。网页图片没有进入游戏包，也未被声明为可再分发素材。六张正式 WebP 由新构图提示生成，统一为 `512×512`，无水印、无可读标志、无 `07:55`、纸条、022 或其他剧情线索；来源与约束记录在 `docs/photo-library-source-notes.md`。
+- 浏览器验证：先使用 `develop-web-game` 的正式 Playwright 客户端读取 `render_game_to_text`，再运行集成点击链。Chromium、Firefox、WebKit 均完成浙大钉课程页、百事通首焦点、Escape、焦点恢复、访客草稿和校园相簿；三类引擎均为 `consoleErrors=0 / pageErrors=0`。身份未读取检查得到 `1` 个可用应用、`10` 个静态应用槽位、`1` 个可用底栏按钮、`4` 个静态底栏槽位和 `0` 个可聚焦锁定槽位。`1280×900` 与 `390×844` 均无文档横向或纵向溢出；缩放视口的状态栏底边和应用骨架顶边精确重合。六张新增图片在三类引擎中均完成解码，实际尺寸均为 `512×512`。访客草稿与普通照片点击前后的领域状态摘要完全一致。
+- 离线单文件：`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 全部退出码 `0`。直接通过 `file://` 打开构建后的 `demo/index.html`，Chromium 成功进入智云课堂和校园生活相簿，六张图片全部解码，控制台和页面错误均为 `0`。最终文件为 `249126873 bytes`，修改时间 `2026-08-23 23:51:30 CST`，SHA-256 为 `9551e0d750400c736b83ab3bd02e67f8289d1c45fba6f53212bf97ee91b68e48`，结构为 `inlineScripts=2 / inlineStyles=1`。
+- 范围与交付：本轮只迁移浙大钉、第三章半照片相簿和图书馆照片层；微信、CC98、设置、天气等应用仍可分批迁入同一套 primitives。未新增 `GameState`、`SaveStore` 或正式业务字段，未执行 Git stage、commit、push、merge、rebase、reset 或上传。
+
+## 2026-08-24 全通关后“7:55 挑战”无尽小游戏中心计划与自审
+
+- 计划结论：保留手机桌面现有 `bike_arcade` 内部 ID、`7:55` 图标、`游戏` 名称和固定槽位，把 P16 升级为统一的 `7:55 挑战` 中心；首版包含节奏钓鱼、灯光追逐和 755 米骑行三种持续提难、失败结算的单局挑战。
+- 状态审查：旧 `bikeArcade.unlocked` 属于第三章历史合同，不能作为通关权限；裸 `chapter4.completed` 会被当前 SaveStore 防伪迁移降级，刷新后也不能稳定开放入口。计划新增仅在第四章正式素材引用和 consumer session verifier 均通过后写入的 `chapter4_closure_v1` 持久回执，并将通关权限、三模式成绩和旧骑行状态分离。
+- 迁移风险：执行时先固定 Chapter 4 v25 迁移阈值，再把整体 SaveStore 提升到 v26；同时限制 `currentScene === "bike_arcade"` 的旧第三章推断版本，避免 postgame 页面刷新时改写图书馆进度。正式入口改为不可从桌面删除，旧隐藏配置会在归一化时移除该 ID。
+- 玩法复用：节奏钓鱼复用启真湖单调时钟、判定窗、hold、combo 和 tension；灯光追逐复用第三章剧院路径、光束覆盖和连续锁定；骑行复用 P16 的 390×650 Phaser scene、可解三车道波次和暂停生命周期。共享规则提取必须先通过原剧情固定用例 parity，再接入无尽规则。
+- 运行时边界：新增一个 `EndlessArcadeController` 和一个 `EndlessArcadeGameHost`；一次只挂载一个 Phaser canvas。当前局的 seed、音符、障碍、目标、按键和计时器不写存档；三模式只提交经过校验且每个 run ID 只结算一次的 summary。
+- 自审与执行：`project-development-report.md` 已增加完整 Task 0–13，覆盖正式回执、挑战中心、三模式、开发检查点、确定性验证、30 分钟资源长测、Blink/Gecko/WebKit、多视口和离线单文件。正式第四章收束仍依赖既有 Task 12 的真实“灿若星辰”reference、consumer 和 verifier；开发检查点可以先验证玩法，但不生成生产通关事实。
+- 本轮边界：仅完成计划、代码证据审查和实施自审；未修改运行时代码、存档版本、`demo/index.html` 或 Git 状态，未执行构建和上传。
+
+## 2026-08-24 全通关后“7:55 挑战”首批 Task 0–2 实施
+
+- Task 0 验证入口：新增 `scripts/verify-endless-arcade.mjs`，并在 `package.json` 登记 `npm run endless:validate`。验证器固定为 84 项合同，覆盖正式回执、存档迁移、入口权限、三模式注册、单局控制器、确定性规则、剧情兼容和交付接线；命名函数提取改用 TypeScript AST，并通过对象返回类型、注释、字符串和模板字符串花括号的自检。
+- Task 1 正式回执与迁移：`GameState` 新增 `postgame.mainStoryCompletionReceipt` 与三模式 `endlessArcade.records`；`selectMainStoryCompleted()` 只接受 `chapter4_closure_v1`，`FeatureAccess.endlessChallenge` 成为统一权限。SaveStore 固定第四章迁移阈值 `25`、整体版本提升到 `26`，对裸完成态、无效回执和旧骑行成绩执行受限归一化；经 verifier 接受的第四章正式收束在一次 controller 事务内写入回执、章节完成、手机主页路由与瞬态 UI 清理。
+- Task 2 固定入口：保留 `bike_arcade` 内部 ID、`7:55` 图标、`游戏` 名称和原桌面顺序；该入口不可删除，旧隐藏列表会移除其 ID。P13、SceneRouter 和 P16 统一读取 `endlessChallenge`。锁定态为静态无焦点元素；解锁后同一槽位变为按钮。桌面编辑同时禁止锁定图标成为指针或键盘交换的源与目标，F2 可进入键盘编辑态，pointer capture、lost capture、window blur 与卸载均清理拖拽状态。
+- 规格与质量复核：Task 0、Task 1、Task 2 的规格审查均通过；Task 0 与 Task 1 最终质量复核通过。Task 2 首轮发现锁定图标换位、键盘无法进入编辑态和跨槽位释放清理三个问题，修正后原审查者返回 `QUALITY APPROVED`。
+- Fresh 验证：`npm run typecheck`、`npm run chapter4:validate-story`、`npm run chapter4:validate-runtime`（1125 项）与 `npm run chapter4:validate-task14`（337 项）均退出码 `0`。`npm run endless:validate` 按计划退出码 `1`，84 项通过 56 项、剩余 28 项；当前 Task 0–2 对应的状态、回执、SaveStore、手机入口和剧情兼容分组全部通过，失败只指向 Task 3 以后尚未创建的 registry、controller、三模式规则与 CI 接线。
+- 生产边界：正式“灿若星辰” reference/consumer verifier 仍未接入，生产入口继续锁定；本批没有生成替代素材，没有修改 `demo/index.html`，没有运行 `build:single`，也没有执行 Git stage、commit、push、merge、rebase 或 reset。
+
+## 2026-08-24 全通关后“7:55 挑战”Task 3–5 实施
+
+- Task 3 挑战中心与宿主：P16 已重构为统一的“7:55 挑战”中心，包含节奏钓鱼、灯光追逐和 755 米骑行三张入口卡、玩法说明、最佳成绩、加载、暂停、退出确认、结算、错误恢复和返回手机主页。`EndlessChallengeRegistry` 通过显式 `import.meta.glob` 只懒加载选中的 scene；尚未进入 Task 6/8 的场景稳定返回结构化 `runtime_unavailable`，没有预置临时代码。`EndlessArcadeGameHost` 只维护一份 Phaser 实例和一个 canvas，boot timeout 会作废当前启动 session，页面隐藏、失焦和控制中心在 loading 或 running 时都进入显式暂停，结算会停止 scene，迟到的动态导入不能复活已失败局。
+- 壳层边界：任务栏和物品栏只在 `loading/running/paused/confirm_exit` 四种活动局相位隐藏；锁定、中心、玩法说明、错误和结算页恢复正常。canvas 交给 Phaser `FIT` 计算并只施加最大边界，浏览器实测画布比例为 `390:650 = 0.6`。
+- Task 4 控制器：新增 `EndlessArcadeController`，只写 `state.endlessArcade` 的对应模式记录。启动返回 `runId / mode / seed / attempt / sessionOnly` ticket；seed 使用固定 salt 的 deterministic hash，不调用随机数。一个 controller 只有一个 runtime-only active run；跨模式并发、过期或重复 ticket、非有限或越界 summary 都拒绝。结算更新独立模式的六项最佳字段，取消仅清除 runtime ticket。`SaveStore` 导出统一成绩上限，P16 与宿主以 ticket 串联启动和一次结算。
+- Task 5 节奏复用：新增通用 `RhythmFishingEngine`；启真湖 `QizhenFishingRhythmModel` 保留原构造器、四个 chart ID、公开字段和常量，仅改为适配该引擎。新增 `EndlessFishingRules`，同一 `seed + segmentIndex` 必得相同谱面，首尾均为 hook，音符、层级、分数、缓存段和历史长度均受常量约束。`qizhen:validate-fishing` 校验四张谱面的 hash、正常/辅助音符数、全 Perfect、时间原点、70/130/190ms 边界、错误动作、hold 断开顺序、两种张力持续窗、取消和等距命中；全部通过。
+- 验证：`EndlessArcadeController` 临时打包运行矩阵通过，覆盖并发拒绝、过期 summary、一次结算、取消和记录隔离。`npm run qizhen:validate-fishing`、`npm run typecheck`、定向 `git diff --check` 均为 0。`npm run endless:validate` 现为 87 项通过 77 项，剩余 10 项只指向未来 Task 7/9/13：灯光规则、无尽骑行规则和 CI 接线。Chromium Vite 实测以正式通关回执进入中心：hub 三模式可见；骑行运行态只存在 1 个 canvas、任务栏/物品栏隐藏、比例 0.6；结算写入 bike 记录；继续本局回到 running；确认退出回 hub 且不改变最佳成绩。390×844 下手机框保持 1:2 且文档无横向溢出。控制台 error 为 0。
+- 交付边界：未修改生成的 `demo/index.html`，未运行单文件构建，也未执行 Git stage、commit、push、merge、rebase、reset 或上传。Playwright 自动页面快照目录仅为本轮临时检查内容，后续已清理。
+
+## 2026-08-24 全通关后“7:55 挑战”Task 6–8 实施
+
+- Task 6 节奏钓鱼场景：新增 `EndlessFishingScene`，以 `390×650` 三轨画布呈现明显判定线、张力、层级、连击和可见节拍 fallback；`J/K/L` 与三枚触屏键共享 press/release 合同。场景只消费 controller ticket 的 seed，段落完成后延续张力与连击，失败提交结构化 summary，不写剧情状态。
+- Task 7 灯光规则复用：`TheaterSpotlightModel` 导出纯判定器，第三章剧院 controller 改为调用同一实现；新增 seeded 灯光路径、干扰路径、动态预览时长、操作时间、光束半径和锁定时长。专项验证覆盖原三轮成功与错灯位、提前、超时、中断，并检查 seed 复现、路径点上限和历史上限。
+- Task 8 竖屏灯光追逐：实现 `preview → action → transition` 状态机、跨轮三格电量、连续锁定、提前照射/路线判断错误/锁定中断/行动超时四类扣电、400ms 可读反馈、动态难度和一次结算。行动阶段清除路线，两张纸使用完全一致的静态外观，目标身份只来自预览路线。
+- 触屏与宿主：灯光模式使用横向 `role=slider` 滑轨与独立按住照射键，真实指针坐标经 React → Host → Phaser 归一化传递；滑轨、灯光键、钓鱼和自行车三键均显式 pointer capture，外部松手、取消、丢失捕获和离开统一释放且去重。暂停恢复后的页面相位只听 Host 状态，不再乐观显示 running。
+- 视觉修补：真实浏览器发现挑战中心仍收到 legacy `bike_arcade_opened` 的“三条车道”旁白与旧骑行入口音乐；`PresentationDirector` 已停止按 `currentScene === bike_arcade` 自动发该 cue，旧剧情控制器事件和新的 `endless_arcade_*` 事件边界保持分离。
+- 审查与验证：Task 8 经规格审查三轮收敛后 PASS，并经代码质量复审关闭触屏持续按下与暂停 UI/Host 状态分叉后 PASS。`npm run typecheck`、`npm run theater:validate-spotlight`、`git diff --check` 均通过；`npm run endless:validate` 为 `82/87`，剩余五项只属于 Task 9 自行车确定性规则和 CI 接线。
+- 浏览器证据：Chromium 移动触屏 `390×844` 实测 `canvasCount=1`、canvas 比例 `0.6`、滑轨可见且能把光束移到左侧、行动期按住照射为 true、按钮外松手后为 false、预览期提前照射把电量从 3 扣到 2、进入行动后路线隐藏、退出确认后恢复 running；console/page error 均为 0。最新预览与行动截图已人工检查，旧骑行字幕修复后消失。
+- 边界与清理：遵照当前要求未运行 `build:single`，未编辑 `demo/index.html`，未执行 Git stage、commit、push、merge、rebase 或 reset。本轮 Playwright 截图、状态、脚本和日志已移入 `/Users/zhuhangcheng/.Trash/codex-task8-qa-20260824/`，可恢复；开发服务器将在本批结束时关闭。
+
+## 2026-08-24 全通关后“7:55 挑战”Task 9–11 收口
+
+- Task 9 自行车双模式收口：`BikeRushScene` 现严格区分 `story/endless`，宿主在 endless 模式下强制写入 `bikeArcadeRunConfig={ mode: "endless", seed }`，Scene 对 bridge、mode 和 seed 不匹配直接抛错，不再静默回落剧情桥。剧情旧回调改为统一经过 `BikeArcadeStoryBridgeDispatcher`，`scripts/verify-bike-arcade.mjs` 新增有序 payload spy 断言，确认旧 755 米链路事件顺序和一次性 finish 未退化。
+- Task 10 postgame 开发通道：新增 `寻人篇 → 7:55 挑战` 八个 session-only 检查点，覆盖通关后手机主页、挑战中心、节奏钓鱼开始/结算、灯光追逐开始/结算、755 米骑行跨圈/结算。`DeveloperChannel` 为这些节点附带 sessionStorage runtime seed；P16 在 `readEndlessArcadeDeveloperSeed()` 基础上可直接进入 hub、自动开跑或直达结算，不写正式存档。`render_game_to_text` 新增 `endlessArcadeRuntime` 调试快照，暴露 access、phase、selectedMode、activeRunId、attempt、snapshot 和 summary。
+- 浏览器修补：Vite Playwright 实测先后发现并修正两个真实问题。其一，`postgame-bike-lap2` 没有读取开发起跑距离，导致仍从 0 米开跑；修复为 `EndlessArcadeGameHost` 读取 `getDeveloperBikeStart()` 并写入 registry，复测后状态变为 `progress=823`、`lap=2`。其二，synthetic `game_over` seed 因结果页渲染条件绑定 `runTicket` 而出现空白；拆分 runtime shell 与 host 挂载后，`postgame-fishing-fail` 复测已显示完整结算卡片和三按钮。
+- Task 10 音频方向：新增 `src/data/endless-arcade.audio.json`，只复用现有 `bike_arcade` 音乐/音效资源，为 `mode_selected`、`runtime_requested`、`runtime_paused`、`runtime_resumed`、`runtime_finished`、`hub_returned`、`closed` 建立统一 cue。`AudioDirector`/`PresentationDirector` 已接入该时间线；页面隐藏、控制中心暂停、返回 hub 和关闭场景都会停止当前局音频，人声与排队 cue 也同步清空。
+- Task 11 自动验证与 CI：`.github/workflows/web-ci.yml` 已在 `typecheck` 前加入 `npm run endless:validate`。`scripts/verify-endless-arcade.mjs` 扩展到 `98` 项，新增 postgame 检查点、runtime 调试快照、audio timeline 和 CI 接线断言；当前 fresh 结果为 `98/98 PASS`。受影响的 `chapter4:validate-task14` 保持 `337` 项通过，未把 postgame 节点误判进第四章 canonical DEV 列表。
+- 浏览器证据：Chromium/Blink Vite 本轮完成三条定向路径。`?devCheckpoint=postgame-endless-hub` 显示 challenge hub，`render_game_to_text.endlessArcadeRuntime.phase === "hub"` 且 `selectedMode === null`。`?devCheckpoint=postgame-bike-lap2` 进入 running，`phaserCanvasCount === 1`、`progress === 823`、`lap === 2`、`tier === 2`。`?devCheckpoint=postgame-fishing-fail` 进入 `game_over`，结果页显示 `9240 分 / 6 次收线 / 层级 4 / 连击 19`，并保留“再来一局 / 返回挑战中心 / 返回手机主页”三按钮。
+- 当前边界：尚未执行 Task 11 计划中的三模式 `30` 分钟长测，也未做 Firefox/WebKit、多视口和单文件 `?devCheckpoint` 验收；这些仍留给后续 Task 11/12。按当前要求，未运行 `build:single`，未编辑 `demo/index.html`，未执行 Git stage、commit、push、merge、rebase 或 reset。
+
+## 2026-08-24 全通关后“7:55 挑战”Task 11 长测完成与 Task 12 浏览器修补
+
+- Task 11 长测现已实际落地：`scripts/verify-endless-arcade-long-run.mjs` 被 `scripts/verify-endless-arcade.mjs` 调用，fresh `npm run endless:validate` 输出 `152/152 PASS`。三模式都完成等效 `30` 分钟离线跑测，同 seed 全量重放一致、异 seed 指纹不同，资源采样覆盖 start/mid/end/after_exit，controller 的 invalid summary、一次 cancel、一次 settle、三模式独立落库和 score ceiling 全部通过。`npm run bike:validate`、`npm run chapter4:validate-task14` 与 `npm run typecheck` 本轮也均为 `0`。
+- Task 12 浏览器修补根因：真实浏览器下 `?devCheckpoint=postgame-fishing-start` 会先进入运行态，再在首局失败结算时落入错误页。根因不是钓鱼规则本身，而是 React 开发态严格模式会先执行一次 effect cleanup；P16 旧代码在 cleanup 中立即 `cancelAttempt(runId)`，把 controller runtime ticket 提前清掉，随后真实 `game_over` 到来时 `settleAttempt()` 返回 `null`，页面被误导向 `error`。
+- 实施修复：`src/scenes/phone/P16_BikeArcade/index.tsx` 新增 `lifecycleEpochRef`，把页面关闭事件和 `cancelAttempt()` 放入 microtask，并要求 epoch 未变化才执行。这样 React 开发态的探测式 cleanup 不再吞掉当前局 ticket，真实离开场景时仍会按原合同清理。
+- 修复后浏览器证据：Blink 正式客户端重新跑 `postgame-fishing-start`，页面不再出现 `玩法载入失败`，而是约 `5.2s` 后进入正常 `game_over`，`render_game_to_text.endlessArcadeRuntime.phase === "game_over"`，summary 为 `0 分 / 0 次收线 / 层级 1 / 连击 0 / durationMs≈5240`，记录成功落库到 `bestDurationMs`。Blink 下 hub、结算返回 hub、bike 第二圈运行态继续通过；bike 运行态保持 `phaserCanvasCount === 1`、`lap === 2`、`lane === 2`。
+- 跨引擎补验：Firefox 与 WebKit 均成功打开 `?devCheckpoint=postgame-endless-hub`，读取到 `phase === "hub"`。两者都能运行 `postgame-bike-lap2`，得到 `phase === "running"`、`canvases === 1`、`lap === 2`、`lane === 2`。两者也都能把 `postgame-fishing-start` 自动推进到正常结算，`phase === "game_over"`，不再落入错误页。
+- 清理与边界：本轮只修了 P16 生命周期，不改 `demo/index.html`，不执行 `build:single`，不做 Git stage、commit、push、merge、rebase 或 reset。浏览器截图与状态 JSON 在人工核对后已删除，只保留 `progress.md` 里的文字证据。
+
+## 2026-08-24 全通关后“7:55 挑战”Task 11–12 最终验收
+
+- 最新自动基线取代上方阶段性 `152/152` 记录：fresh `npm run endless:validate` 为 `172/172 PASS`。三模式分别完成等效 `1,800,000ms` 离线确定性模拟；同 seed 重放一致、异 seed 指纹不同。节奏钓鱼结果为 `97,960,166 分 / 146 段 / T13 / 最大连击 3808`，灯光追逐为 `267,311,772 分 / 648 轮 / T13 / 最大连击 648`，自行车为 `9,839,249 分 / 107,353m / T18 / 最大连击 1952`。
+- 资源验证边界已明确：`modeledMemory` 仅为 `pure_rules_resource_counts_only` 的确定性驻留单位模型，`browserHeapMeasured=false`；三模式 start/mid/end 采样保持预算内，`after_exit` 的 runtime、objects、entries、history 和 timers 均为 `0`。本条不宣称完成真实浏览器 heap 测量。
+- Task 12 生命周期修复完成：React StrictMode probe cleanup 由 lifecycle epoch 拦截；Host 在暂停和销毁前执行中性输入释放；灯光场景清除左右移动、照射、锁定与诱饵覆盖；钓鱼清除 held input 且不产生额外惩罚；三种 scene cleanup 同时覆盖 `SHUTDOWN` 与 `DESTROY`。
+- 粗指针合同已统一：触控区仅在 `phase === running` 渲染；节奏钓鱼显示“左收 J / 起钩 K / 右收 L”，灯光追逐显示滑轨与“按住照射”，自行车只显示“左车道 / 右车道”。pointer capture 不可用或抛错时，window `pointerup`、`pointercancel`、`blur`、`pagehide` 与 document `visibilitychange` 仍会释放输入。
+- 灯光追逐调试所有权已隔离：场景只挂载 `window.render_endless_spotlight_to_text` 和受控 `advanceTime`，不覆盖主应用 `window.render_game_to_text`；返回挑战中心后专用 hook、时间推进器和 Phaser canvas 均清理。
+- 真实浏览器基础矩阵 `45/45 PASS`：Blink、Gecko、WebKit × `1280×720`、`1280×800`、`390×844`，逐一验证锁定桌面、挑战中心、节奏钓鱼运行态、灯光追逐运行态和自行车运行态。所有用例 `documentOverflowX/Y=0`，手机框比例为 `0.5`，运行态 canvas 为唯一 `390×650` 实例，任务栏和物品栏不覆盖画布，浏览器 diagnostics 为 `0`。
+- 状态与生命周期工作流 `19/19 PASS`：三引擎均验证三个模式的失焦暂停、继续、控制中心暂停、退出确认、失败、重试和返回中心；三引擎移动端均验证无 pointer capture 能力时的 `pointercancel/pagehide` fallback。Blink 另以自然灯光失败完成一次 controller 结算，移除 session-only 开发检查点后写入正式临时浏览器存档，刷新后仍停留挑战中心且最佳成绩文本保持一致。
+- 视觉抽查已覆盖 Blink 桌面挑战中心、`1280×800` 灯光运行态和 `390×844` 自行车触控态。检查完成后，本轮 `/private/tmp/codex-task12-matrix.*` 截图、JSON 和脚本均已删除；共享 Playwright MCP 仍在运行，其项目级 console 文件不计入本轮截图交付物，也未终止该共享进程。
+- Fresh 专项验证均为 `0`：`npm run typecheck`、`npm run bike:validate`（`21/21`）、`npm run qizhen:validate-fishing`、`npm run theater:validate-spotlight`、`npm run chapter4:validate-task14`（`337` 项）。`project-development-report.md` 已把无尽节奏钓鱼键位从错误的 `A/S/D` 修正为 `J/K/L`；启真湖原剧情的 `A/S/D` 合同保持不变。
+- 交付边界：Task 13 仍暂缓；本轮未运行 `build:single` 或 `verify:single`，未编辑 `demo/index.html`，未执行 Git stage、commit、push、merge、rebase、reset 或上传。
+
+## 2026-08-25 全通关后“7:55 挑战”Task 13 单文件构建与上传前验收
+
+- Fresh 自动验证：`chapter4:validate-assets`、`chapter4:validate-story`、`chapter4:validate-topology`、`chapter4:validate-runtime`、`chapter4:validate-task14`、`endless:validate`（`172/172`）、`bike:validate`（`21/21`）、`qizhen:validate-fishing`、`theater:validate-spotlight`、`verify:rpg-facing-agnostic` 与 `typecheck` 全部退出码 `0`。校园地图校验确认 `4516×3420` 正射底图、`13668×1084` 启真湖侧视走廊和 `24` 张玩家帧有效。
+- Chapter 3 音频门首次以 `76/77` 报告 `music_qizhen_fishing.mp3` 缺失。已从已验证交付快照恢复相同二进制，并补回 `chapter3-qizhen.audio.generated.json` 的原哈希记录；复验为 `expected=77 / ready=77`。恢复文件为 `482628 bytes / 20.000s / 44.1kHz stereo`，SHA-256 `9cdbd42eef10c39d3b393b335a8458f29226aa1d74c0388adb026c31124de352`，本轮没有调用 MiniMax 或其他生成服务。
+- 构建结果：`npm run build`、`npm run build:single` 与 `npm run verify:single` 全部通过。离线产物 `demo/index.html` 为 `249852086 bytes`，生成时间 `2026-08-25 22:34:14 +0800`，SHA-256 `cf935fd1fbc21e49f2b9903596d77d0f33743e84d89ef881e6b6216bf29aca5d`；结构包含 `2` 个内联脚本、`1` 个内联样式，未引用外部脚本、样式或 HTTP 资源。
+- 单文件实际运行：标准网页游戏客户端从 `http://127.0.0.1:4178/index.html?devCheckpoint=postgame-endless-hub` 与直接 `file://.../demo/index.html?devCheckpoint=postgame-endless-hub` 分别进入挑战中心，两条路径截图像素结果一致、状态 JSON 完整且无 error 文件。HTTP 路径继续覆盖节奏钓鱼运行态与失败结算、灯光追逐运行态、骑行第二圈运行态；三个活动局的 `phaserCanvasCount` 均为 `1`，骑行为 `progress=984 / lap=2 / tier=2`。
+- 浏览器范围：本次生成物复验使用 Blink；同一源码在前一 Task 11–12 fresh 基线中已通过 Blink/Gecko/WebKit 的 `45/45` 基础矩阵与 `19/19` 生命周期工作流。按用户明确要求，三层碰撞、空气墙、可通行区与前景遮挡浏览器专项继续排除。
+- 上传边界：`demo/` 当前被 `.gitignore` 排除，普通暂存不会包含 `demo/index.html`。本轮到此仍未 stage、commit、merge、rebase、push 或 reset；下一步先 fetch，再分别展示工作区、本地领先、远端领先和未跟踪内容，由用户确认精确提交范围及是否强制纳入单文件。
+
+## 2026-08-25 方案 A：最新 main 隔离整合、退役模块删除与 Release 准备
+
+- 用户确认方案 A：活动 React/TypeScript/Phaser/Three.js 运行时直接交付 `main`，离线 HTML 使用 `demo-20260825` GitHub Release；Godot 归档与 Playwright 临时模块明确删除。
+- 集成方式：从 fresh `origin/main@d1621b7` 创建 `/Users/zhuhangcheng/.codex/worktrees/7-55/upload-20260825`，只移入活动源码、被运行时消费的资产、验证器、CI 和文档。`.playwright-mcp/`、`output/web-game/`、四个未跟踪根目录调试页和未完成的 CanteenBikeTransition 实验没有进入交付。
+- 删除范围：`godot/`、`public/godot/`、`src/integrations/godot/`、`scripts/record-godot-web-export.mjs`、`scripts/sync-godot-rpg-assets.mjs`、`scripts/verify-godot-project.mjs` 及无消费者的 Godot CSS 已删除；`AGENTS.md`、`CLAUDE.md`、`README.md`、`CONTRIBUTING.md` 与剧院运行时合同同步固定为浏览器原生单运行时。
+- Fresh 验证：Chapter 3 音频 `77/77`、Chapter 3.5 录音、校园地图、无朝向交互、第四章五组 validator、无尽挑战 `172/172`、自行车 `21/21`、启真湖钓鱼、剧院追光、四类人物透明精灵和 TypeScript 全部通过。额外的 CanteenBikeTransition 验证器首次运行暴露缺少从未实现的 Overlay，确认该实验没有生产入口后连同三份孤立 Transition 文件与 npm 命令排除；正式 `ChaseRiderRig` 仍由 `ChaseThreeRenderer` 使用并通过构建。
+- 最终构建：`npm run build`、`npm run build:single` 与 `npm run verify:single` 通过。最终 `demo/index.html` 为 `249850310 bytes`，生成时间 `2026-08-25 22:56:36 +0800`，SHA-256 `1a68b0a6a9460959904d132ec5c28c1b7c90d7f4de304d6cbe6ed2c322bbf7ff`，结构为 `2` 个内联脚本和 `1` 个内联样式。
+- 最终浏览器复验：HTTP 与直接 `file://` 的挑战中心截图 SHA-256 完全相同，均可见三种模式且无 error 文件；HTTP 自行车第二圈为 `phase=running / progress=899 / tier=2 / phaserCanvasCount=1`。检查截图、状态 JSON 和 HTTP 服务已清理。
+- 发布命名：实现目录 `upload-20260825`，上传目录 `7-55-upload-20260825`，Release tag `demo-20260825`，HTML `7-55-demo-20260825.html`，校验文件 `7-55-demo-20260825.html.sha256`；README 和 `ASSETS.md` 使用同一日期与下载链接。

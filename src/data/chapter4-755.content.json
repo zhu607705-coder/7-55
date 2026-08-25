@@ -124,6 +124,245 @@
       "phoneStatusTimeTrusted": true
     }
   },
+  "presentation": {
+    "phaseCopy": {
+      "opening_handoff": {
+        "stageLabel": "阶段 1 · 接住签到纸",
+        "currentDifference": "外部记录指向现场 22:45，手机仍停在 07:55:23，当前读数尚未同步。"
+      },
+      "opening_paper_caught": {
+        "stageLabel": "阶段 2 · 核对异常时间",
+        "currentDifference": "现场 22:45 与手机 07:55:23 冲突，需要确认手机时间不可作为当前依据。"
+      },
+      "hall_clock_inspection": {
+        "stageLabel": "阶段 3 · 接管大厅旧钟",
+        "currentDifference": "手机时间已被外部记录否定，大厅旧钟缺少时针，尚未成为可用时间源。"
+      },
+      "bakery_hour_hand": {
+        "stageLabel": "阶段 4 · 找回旧时针",
+        "currentDifference": "大厅旧钟停在 12:25，时针落入面包坊传送带，需要取回并装回。"
+      },
+      "room204_restore": {
+        "stageLabel": "阶段 5 · 恢复 204",
+        "currentDifference": "二楼 204 保留 18:50 布置，三楼 303 提供晨间参照，需要按参照恢复教室。"
+      },
+      "maintenance_repair": {
+        "stageLabel": "阶段 6 · 完成维修",
+        "currentDifference": "旧钟进入 22:45 维修时段且手机已同步，保洁车轮与钟内齿轮仍影响校时。"
+      },
+      "blackout_light_grid": {
+        "stageLabel": "阶段 7 · 接通必要照明",
+        "currentDifference": "旧钟已到 07:54，最后一分钟被纸条带走，只需恢复通往目标区域的必要灯区。"
+      },
+      "final_chase": {
+        "stageLabel": "阶段 8 · 追向 202",
+        "currentDifference": "旧钟仍停在 07:54，最后一分钟正在向二楼 202 移动。"
+      },
+      "final_minute_recovery": {
+        "stageLabel": "阶段 9 · 取回最后一分钟",
+        "currentDifference": "202 投影保留最后一分钟，旧钟仍缺少这一分钟。"
+      },
+      "return_to_clock": {
+        "stageLabel": "阶段 10 · 返回大厅旧钟",
+        "currentDifference": "最后一分钟已经取回，需要通过主楼梯送回一楼旧钟。"
+      },
+      "morning_checkin": {
+        "stageLabel": "阶段 11 · 完成双重签到",
+        "currentDifference": "旧钟与手机均为 07:55，校园卡与签到记录纸仍需分别通过验证。"
+      },
+      "exterior_closure": {
+        "stageLabel": "阶段 12 · 完成楼外收束",
+        "currentDifference": "楼内校时和双重签到已经完成，仍需确认楼外正式收束结果。"
+      },
+      "complete": {
+        "stageLabel": "阶段 13 · 本人来过",
+        "currentDifference": "旧钟、手机与签到记录均已对齐到 07:55。"
+      }
+    },
+    "timeStateCopy": {
+      "2245_opening": {
+        "timeStateLabel": "现场 22:45 · 手机 07:55:23 未同步"
+      },
+      "1225_bakery": {
+        "timeStateLabel": "旧钟 12:25 · 面包坊时段 · 手机已同步"
+      },
+      "1850_evening": {
+        "timeStateLabel": "旧钟 18:50 · 晚间教室 · 手机已同步"
+      },
+      "2245_maintenance": {
+        "timeStateLabel": "旧钟 22:45 · 维修时段 · 手机已同步"
+      },
+      "0754_blackout": {
+        "timeStateLabel": "旧钟 07:54 · 停电时段 · 手机已同步"
+      },
+      "0755_morning": {
+        "timeStateLabel": "旧钟 07:55 · 清晨签到 · 手机已同步"
+      }
+    },
+    "factLabels": {
+      "opening_paper_at_noticeboard": "签到纸已落到公告栏前",
+      "opening_paper_caught": "签到记录纸已接住",
+      "external_time_rejected": "手机 07:55:23 已被外部记录否定",
+      "hall_clock_inspected": "大厅旧钟缺件状态已确认",
+      "bakery_conveyor_lamp_inspected": "面包坊检修灯已确认",
+      "bakery_hour_hand_exposed": "旧时针已从传送带露出",
+      "bakery_hour_hand_collected": "旧时针已取得",
+      "hour_hand_installed": "旧时针已装回",
+      "a3_reference_observed": "三楼 303 晨间参照已记录",
+      "room204_residual_observed": "二楼 204 残影已记录",
+      "room204_restored": "二楼 204 已恢复",
+      "room204_projection_completed": "204 投影记录已完成",
+      "positioning_plate_collected": "钟面定位片已取得",
+      "positioning_plate_installed": "钟面定位片已装回",
+      "cart_wheel_inspected": "保洁车轮卡滞已确认",
+      "cart_wheel_cover_opened": "保洁车轮罩已打开",
+      "cart_wheel_repaired": "保洁车轮已修复",
+      "clock_gear_repaired": "旧钟齿轮已修复",
+      "paper_temporarily_out_of_inventory": "签到纸暂时带走最后一分钟",
+      "light_grid_locked": "必要照明路线已锁定",
+      "final_minute_recovered": "最后一分钟已取回",
+      "final_minute_installed": "最后一分钟已装回旧钟",
+      "checkin_card_accepted": "校园卡验证已通过",
+      "checkin_paper_accepted": "签到记录纸验证已通过",
+      "exterior_closure_acknowledged": "楼外正式收束已确认"
+    }
+  },
+  "intentFeedback": {
+    "details": {
+      "prologue_requirements_unmet": {
+        "reason": "第四章交接条件尚未齐全。",
+        "nextAction": "先完成恢复回放并在任务卡确认进入。"
+      },
+      "current_phase_mismatch": {
+        "reason": "该操作不属于当前阶段。",
+        "nextAction": "打开任务栏，按当前目标继续。"
+      },
+      "target_unavailable": {
+        "reason": "当前目标尚未开放。",
+        "nextAction": "先完成任务栏中显示的当前前置操作。"
+      },
+      "route_not_available": {
+        "reason": "当前阶段不能进入这一区域。",
+        "nextAction": "返回当前楼层已开放的任务目标。"
+      },
+      "stair_route_not_available": {
+        "reason": "这次楼梯通行条件不成立。",
+        "nextAction": "按任务栏目标从当前楼层的主楼梯继续。"
+      },
+      "bakery_lamp_required": {
+        "reason": "传送带仍在运行。",
+        "nextAction": "先检查并点亮烤箱旁的检修灯。"
+      },
+      "bakery_stop_pending": {
+        "reason": "传送带正在执行停机过程。",
+        "nextAction": "等待停稳后再取露出的旧时针。"
+      },
+      "hour_hand_required": {
+        "reason": "旧时针流程尚未完成。",
+        "nextAction": "先让传送带停稳，取得旧时针后拖到大厅旧钟。"
+      },
+      "room204_observations_required": {
+        "reason": "204 复原缺少参照记录。",
+        "nextAction": "记录 303 的 12 组参照位置，并在深色观察中记录 204 残影。"
+      },
+      "room204_layout_incomplete": {
+        "reason": "204 仍有家具未复原。",
+        "nextAction": "把剩余家具放入空槽位，直到进度达到 12/12。"
+      },
+      "room204_unknown_piece": {
+        "reason": "该家具未被当前场景识别。",
+        "nextAction": "重新选取 204 内可见且尚未复原的家具。"
+      },
+      "room204_unknown_slot": {
+        "reason": "该位置不属于 204 的复原槽位。",
+        "nextAction": "靠近教室内清晰显示的空槽位后重试。"
+      },
+      "room204_invalid_orientation": {
+        "reason": "该家具状态无法写入复原记录。",
+        "nextAction": "放下后重新选取家具，再放入任一空槽位。"
+      },
+      "room204_duplicate_piece": {
+        "reason": "这组家具已经写入另一个槽位。",
+        "nextAction": "改选一组尚未复原的家具。"
+      },
+      "room204_slot_occupied": {
+        "reason": "这个槽位已经有一组家具。",
+        "nextAction": "把当前家具放入另一个空槽位。"
+      },
+      "room204_piece_already_placed": {
+        "reason": "这组家具已经完成复原。",
+        "nextAction": "继续选择一组尚未复原的家具。"
+      },
+      "room204_projection_required": {
+        "reason": "讲台抽屉尚未解锁。",
+        "nextAction": "先完成 12/12 复原并确认 07:55 投影。"
+      },
+      "positioning_plate_required": {
+        "reason": "大厅旧钟仍缺少钟面定位片。",
+        "nextAction": "从 204 讲台抽屉取得定位片，再拖到旧钟插槽。"
+      },
+      "cart_wheel_inspection_required": {
+        "reason": "保洁车轮的卡滞点尚未确认。",
+        "nextAction": "先检查卡住的车轮，再使用短撬棒打开轮罩。"
+      },
+      "cart_wheel_cover_required": {
+        "reason": "润滑位置仍被轮罩挡住。",
+        "nextAction": "先用短撬棒打开轮罩，再取得润滑油。"
+      },
+      "cart_wheel_repair_required": {
+        "reason": "旧钟齿轮维修仍受保洁车阻挡。",
+        "nextAction": "先给保洁车轮上油并让车移动，再处理旧钟齿轮。"
+      },
+      "clock_gear_repair_required": {
+        "reason": "旧钟齿轮仍处于断续状态。",
+        "nextAction": "先完成车轮维修，再给旧钟齿轮上油。"
+      },
+      "final_clock_drag_not_armed": {
+        "reason": "最后一分钟的拖拽过程尚未就绪。",
+        "nextAction": "完成旧钟维修后，在浅色操作中重新开始拖动分针。"
+      },
+      "blackout_not_started": {
+        "reason": "配电流程尚未开放或已经锁定。",
+        "nextAction": "先完成分针拖拽；若已锁定照明，继续前往 202。"
+      },
+      "chase_attempt_stale": {
+        "reason": "这次追逐请求已失效。",
+        "nextAction": "从当前追逐检查点重新开始。"
+      },
+      "final_minute_not_recovered": {
+        "reason": "最后一分钟尚未安全取回。",
+        "nextAction": "抵达 202 并收取投影中的最后一分钟。"
+      },
+      "return_route_incomplete": {
+        "reason": "当前还不能把最后一分钟装回旧钟。",
+        "nextAction": "携带最后一分钟、校园卡和签到纸，经主楼梯返回一楼大厅。"
+      },
+      "interlude_completion_required": {
+        "reason": "第三章半的证据恢复尚未闭合。",
+        "nextAction": "返回手机完成时间线与地点确认，再继续第四章。"
+      },
+      "checkin_requirements_incomplete": {
+        "reason": "当前签到条件尚未齐全。",
+        "nextAction": "确认已到 07:55，并把对应的校园卡或签到纸拖到各自设备。"
+      },
+      "checkin_card_already_accepted": {
+        "reason": "校园卡验证已经通过。",
+        "nextAction": "继续提交签到记录纸。"
+      },
+      "checkin_paper_already_accepted": {
+        "reason": "签到记录纸验证已经通过。",
+        "nextAction": "继续读取校园卡。"
+      },
+      "closure_prerequisites_incomplete": {
+        "reason": "楼外收束的前置记录尚未齐全。",
+        "nextAction": "先完成校园卡与签到纸的双重签到。"
+      },
+      "closure_session_unverified": {
+        "reason": "正式收束播放尚未得到验证。",
+        "nextAction": "完整播放已批准的收束内容后再确认结果。"
+      }
+    }
+  },
   "openingHandshake": {
     "intentOrder": [
       "complete_prologue_handoff",
@@ -449,119 +688,231 @@
   "tasks": {
     "catch_opening_paper": {
       "label": "等纸条落到公告栏前再抓住它",
-      "hint": null
+      "hints": [
+        "观察一楼门厅公告栏前的纸条落点。",
+        "纸条停稳后才会进入可抓取状态。",
+        "纸条落到公告栏前时靠近纸条并执行交互。"
+      ]
     },
     "inspect_hall_clock": {
       "label": "查看大厅旧钟",
-      "hint": null
+      "hints": [
+        "观察一楼大厅中央的旧钟。",
+        "先确认缺失指针和卡滞齿轮，才能继续拨动旧钟。",
+        "在浅色操作中靠近大厅旧钟并执行交互。"
+      ]
     },
     "pull_hall_clock": {
       "label": "拉动大厅旧钟，让它第一次转动",
-      "hint": null
+      "hints": [
+        "继续检查大厅旧钟的可操作部位。",
+        "完成旧钟检查后，第一次拨动会切换时间来源。",
+        "在浅色操作中靠近大厅旧钟并执行拨动交互。"
+      ]
     },
     "explore_bakery": {
       "label": "前往面包坊检查检修灯和传送带",
-      "hint": null
+      "hints": [
+        "观察一楼面包坊烤箱旁的检修灯和传送带边缘。",
+        "检修灯亮起后，传送带才会进入停机流程。",
+        "在浅色操作中靠近检修灯并交互，等待传送带完全停下。"
+      ]
     },
     "collect_hour_hand": {
       "label": "传送带停下后取走金属时针",
-      "hint": null
+      "hints": [
+        "查看停止的传送带上新露出的金属部件。",
+        "只有停机流程完成后，旧时针才可被取走。",
+        "在浅色操作中靠近传送带上的旧时针并执行拾取。"
+      ]
     },
     "install_hour_hand": {
       "label": "回大厅装回旧时针",
-      "hint": null
+      "hints": [
+        "返回一楼大厅旧钟的时针缺口。",
+        "旧时针只能装入旧钟对应的时针接口。",
+        "在浅色操作中把道具栏里的旧时针拖到旧钟时针接口。"
+      ]
     },
     "observe_a3_reference": {
       "label": "前往三楼观察 303 的晨间布置",
-      "hint": null
+      "hints": [
+        "前往三楼 303 参照教室。",
+        "晨间布置需要先在深色观察中记录，之后才能用于复原 204。",
+        "切到深色观察，靠近 303 晨间参照区域并执行观察。"
+      ]
     },
     "observe_room204_residual": {
       "label": "回到二楼，在深色观察中确认 204 残影",
-      "hint": "暗色模式里，椅子记得自己原来朝哪边。"
+      "hints": [
+        "返回二楼 204，查看教室中的成组家具残影。",
+        "204 的复原需要同时具备 303 参照和 204 残影记录。",
+        "切到深色观察，靠近 204 残影区域并执行观察。"
+      ]
     },
     "restore_room204": {
       "label": "把教室恢复成早晨的样子",
-      "hint": null
+      "hints": [
+        "观察 204 内的家具组和地面空槽。",
+        "每组家具只占一个空槽，每个空槽只接受一组家具，共需放置 12 组。",
+        "在浅色操作中依次把未放置的家具组拖入任一空槽，直到显示复原 204：12/12。"
+      ]
     },
     "watch_room204_projection": {
       "label": "查看 204 投影幕上的时间",
-      "hint": null
+      "hints": [
+        "完成复原后查看 204 前方的投影幕。",
+        "12 组家具全部就位后，投影记录才会稳定。",
+        "留在 204 内完成投影播放，并在稳定画面出现后执行确认。"
+      ]
     },
     "collect_positioning_plate": {
       "label": "从 204 讲台抽屉取出钟面定位片",
-      "hint": null
+      "hints": [
+        "查看 204 讲台的抽屉。",
+        "投影记录完成后，讲台抽屉才会开放。",
+        "在浅色操作中靠近讲台抽屉并执行拾取，取得钟面定位片。"
+      ]
     },
     "install_positioning_plate": {
       "label": "把钟面定位片装回大厅旧钟",
-      "hint": null
+      "hints": [
+        "返回一楼大厅旧钟的定位片接口。",
+        "钟面定位片只接受从 204 讲台取得的对应道具。",
+        "在浅色操作中把钟面定位片拖到旧钟定位片接口。"
+      ]
     },
     "inspect_cart_wheel": {
       "label": "检查保洁车卡住的车轮",
-      "hint": "锈掉的东西，先别急着讲道理。"
+      "hints": [
+        "观察一楼维修时段中的保洁车车轮。",
+        "先确认轮罩卡滞，后续工具和润滑油才会形成有效维修链。",
+        "在浅色操作中靠近保洁车轮检查点并执行交互。"
+      ]
     },
     "collect_short_pry_bar": {
       "label": "去面包店后场取短撬棍",
-      "hint": null
+      "hints": [
+        "前往一楼面包坊后场查找可用工具。",
+        "轮罩需要短撬棍打开，其他道具不会被接受。",
+        "在浅色操作中靠近面包坊后场的短撬棍并执行拾取。"
+      ]
     },
     "open_cart_wheel_cover": {
       "label": "用短撬棍打开保洁车轮罩",
-      "hint": null
+      "hints": [
+        "返回保洁车的车轮罩。",
+        "车轮检查完成后，短撬棍才可用于轮罩，并会在本次使用后消耗。",
+        "在浅色操作中把短撬棍拖到保洁车轮罩。"
+      ]
     },
     "collect_lubricating_oil": {
       "label": "取出轮罩内的通用润滑油",
-      "hint": null
+      "hints": [
+        "查看已经打开的保洁车轮罩内部。",
+        "轮罩打开后，通用润滑油才会出现为可拾取道具。",
+        "在浅色操作中靠近轮罩内的润滑油并执行拾取。"
+      ]
     },
     "lubricate_cart_wheel": {
       "label": "先用润滑油修好保洁车轮",
-      "hint": null
+      "hints": [
+        "观察保洁车已打开轮罩的车轮。",
+        "润滑油必须先用于车轮，本次使用后仍会保留。",
+        "在浅色操作中把通用润滑油拖到保洁车轮。"
+      ]
     },
     "lubricate_clock_gear": {
       "label": "用剩下的润滑油修复旧钟齿轮",
-      "hint": null
+      "hints": [
+        "返回一楼大厅旧钟的齿轮位置。",
+        "车轮修复完成后，剩余润滑油才可用于旧钟齿轮，并会在使用后消耗。",
+        "在浅色操作中把通用润滑油拖到大厅旧钟齿轮。"
+      ]
     },
     "turn_clock_to_0755": {
       "label": "把旧钟拨向 07:55",
-      "hint": null
+      "hints": [
+        "查看维修完成后的大厅旧钟表盘。",
+        "车轮与钟内齿轮均修复后，旧钟才接受最终校时。",
+        "在浅色操作中拖动旧钟分针到 07:55 刻度并松开。"
+      ]
     },
     "solve_light_grid": {
       "label": "让必要路线亮起",
-      "hint": "不用全亮，能走就行。"
+      "hints": [
+        "查看一楼停电状态下的配电面板和五个灯区。",
+        "只校验必要路线：大厅、东走廊和教室区亮起，西走廊和面包店后场保持关闭。",
+        "在浅色操作中切换对应灯区，满足五个必要条件后点击锁定。"
+      ]
     },
     "reach_lecture_202": {
       "label": "前往 202",
-      "hint": null
+      "hints": [
+        "观察最后一分钟经过的主楼梯和二楼走廊。",
+        "追逐阶段只保存当前追逐检查点，失败会从该段重新开始。",
+        "沿一楼主楼梯进入二楼，继续移动到 202 门口的到达区域。"
+      ]
     },
     "collect_final_minute": {
       "label": "取回最后一分钟",
-      "hint": null
+      "hints": [
+        "查看二楼 202 内的投影区域。",
+        "到达 202 后，最后一分钟与签到记录纸会在同一记录点恢复。",
+        "在浅色操作中靠近 202 投影并执行拾取。"
+      ]
     },
     "return_via_main_stair": {
       "label": "沿主楼梯回到一楼旧钟",
-      "hint": null
+      "hints": [
+        "从二楼 202 返回二楼主楼梯入口。",
+        "携带最后一分钟时，跨层返回只接受主楼梯路线。",
+        "进入二楼主楼梯通行区，沿主楼梯回到一楼大厅。"
+      ]
     },
     "install_final_minute": {
       "label": "把最后一分钟装回旧钟",
-      "hint": null
+      "hints": [
+        "查看一楼大厅旧钟的分针端点。",
+        "最后一分钟只能装回大厅旧钟的分钟接口。",
+        "在浅色操作中把道具栏里的最后一分钟拖到旧钟分钟接口。"
+      ]
     },
     "complete_checkin": {
       "label": "完成刷卡与纸条签到",
-      "hint": null
+      "hints": [
+        "观察一楼签到区的校园卡读卡器和签到记录纸插槽。",
+        "两项验证互不依赖，任意顺序完成，进度只按两个已接受事实计算。",
+        "在浅色操作中把校园卡拖到读卡器，并把签到记录纸拖到纸条插槽。"
+      ]
     },
     "read_campus_card": {
       "label": "使用校园卡完成刷卡",
-      "hint": null
+      "hints": [
+        "查看一楼签到区的校园卡读卡器。",
+        "读卡器只接受校园卡，已完成的纸条验证不会被清除。",
+        "在浅色操作中把校园卡拖到校园卡读卡器。"
+      ]
     },
     "submit_attendance_paper": {
       "label": "提交签到记录纸条",
-      "hint": null
+      "hints": [
+        "查看一楼签到区的签到记录纸插槽。",
+        "纸条插槽只接受已恢复的签到记录纸，已完成的刷卡验证不会被清除。",
+        "在浅色操作中把签到记录纸拖到纸条插槽。"
+      ]
     },
     "acknowledge_exterior_closure": {
       "label": "观看并完成楼外正式收束",
-      "hint": null
+      "hints": [
+        "完成双重签到后，查看教学楼外的正式收束画面。",
+        "楼外画面完整播放并通过会话校验后，章节完成确认才会开放。",
+        "等待正式收束播放结束，再点击完成确认。"
+      ]
     },
     "chapter_complete": {
       "label": "本人来过",
-      "hint": null
+      "hints": []
     }
   },
   "dialogues": {
@@ -643,6 +994,18 @@
         "text": "07:55 / 早到的人还没有开始后悔。"
       }
     ],
+    "room204.a3_reference_recorded": [
+      {
+        "speaker": "system",
+        "text": "303 的 12 组参照位置已经记录。"
+      }
+    ],
+    "room204.residual_recorded": [
+      {
+        "speaker": "system",
+        "text": "残影把每组桌椅原来的位置都记下来了。"
+      }
+    ],
     "maintenance.cleaner": [
       {
         "speaker": "cleaner",
@@ -691,6 +1054,12 @@
         "text": "你被清楼流程退回了上一分钟。"
       }
     ],
+    "chase.retry": [
+      {
+        "speaker": "system",
+        "text": "被清楼保安拦下了，已回到一楼大厅重来。"
+      }
+    ],
     "chase.arrived": [
       {
         "speaker": "system",
@@ -709,6 +1078,18 @@
       {
         "speaker": "system",
         "text": "它回来了。"
+      }
+    ],
+    "lecture.recovered_result": [
+      {
+        "speaker": "system",
+        "text": "最后一分钟和签到纸条都回来了。"
+      }
+    ],
+    "morning.entry": [
+      {
+        "speaker": "system",
+        "text": "07:55 已经回到门厅。"
       }
     ],
     "morning.checkin_success": [

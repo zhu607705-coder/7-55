@@ -15,6 +15,7 @@ import { ChapterThreeTheaterController } from "./ChapterThreeTheaterController";
 import { ClockCalibrationController } from "./ClockCalibrationController";
 import { ChapterFourTemporalMazeController } from "./ChapterFourTemporalMazeController";
 import { SaveController } from "./SaveController";
+import { EndlessArcadeController } from "./EndlessArcadeController";
 
 /**
  * 绑定在全局单例 store / eventBus 上的控制器束。
@@ -22,6 +23,7 @@ import { SaveController } from "./SaveController";
  */
 export const kit = {
   actOne: new ActOneBootstrapController(gameStore, eventBus),
+  endlessArcade: new EndlessArcadeController(gameStore, eventBus),
   bikeArcade: new BikeArcadeChapterController(gameStore, eventBus),
   flags: new FlagController(gameStore, eventBus),
   inventory: new InventoryController(gameStore, eventBus),

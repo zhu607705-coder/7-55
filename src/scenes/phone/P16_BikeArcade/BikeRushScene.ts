@@ -1,57 +1,84 @@
 import Phaser from "phaser";
 import {
   advanceBikeDistance,
+  appendBikeWaveHistory,
   BIKE_ARCADE_GOAL,
+  BIKE_ARCADE_MAX_COMBO,
+  BIKE_ARCADE_MAX_DISTANCE,
   BIKE_ARCADE_MAX_LIVES,
+  BIKE_ARCADE_MAX_SCORE,
+  BIKE_ARCADE_STORY_SEED,
   bikeObstacleSpeed,
+  createBikeArcadeRunResetState,
   emitCrossedBikeMilestones,
+  getBikeArcadeLap,
+  getBikeArcadeTier,
   loseBikeLife,
+  MAX_BIKE_ARCADE_IMPACT_PARTICLES,
+  MAX_BIKE_ARCADE_OBSTACLES,
   moveBikeLane,
-  planBikeObstacleWave,
+  normalizeBikeArcadeSeed,
+  planSeededBikeObstacleWave,
+  scoreBikeNearMiss,
+  shouldFinishBikeArcadeRun,
   type BikeArcadeLane,
   type BikeArcadeMilestone,
-  type BikeObstacleScheduleEntropy,
+  type BikeArcadeRunConfig,
   type BikeObstacleWavePlan
 } from "./BikeArcadeRules";
 import {
   BikeArcadeLifecycle,
+  BikeArcadeStoryBridgeDispatcher,
   clearBikeArcadeSnapshot,
   resolveBikeArcadeReducedMotion,
   setBikeArcadeSnapshot,
-  type BikeArcadeCollisionEvent,
-  type BikeArcadeLaneChangeEvent,
-  type BikeArcadeNearMissEvent,
+  type BikeArcadeBridge,
   type BikeArcadeObstacleType,
   type BikeArcadePauseReason,
-  type BikeArcadePhase,
-  type BikeArcadeRunSummary
+  type BikeArcadePhase
 } from "./BikeArcadeRuntime";
+import type {
+  EndlessArcadeControlAction,
+  EndlessArcadeRunSummary,
+  EndlessArcadeSceneBridge
+} from "./EndlessArcadeRuntime";
 
-export interface BikeArcadeBridge {
-  onDistance: (distance: number) => void;
-  onLives: (lives: number) => void;
-  onFinish: (result: "won" | "lost", summary: BikeArcadeRunSummary) => void;
-  onCollision: (event: BikeArcadeCollisionEvent) => void;
-  onMilestone?: (milestone: BikeArcadeMilestone) => void;
-  onLaneChanged?: (event: BikeArcadeLaneChangeEvent) => void;
-  onNearMiss?: (event: BikeArcadeNearMissEvent) => void;
-  onPauseChange?: (paused: boolean) => void;
-  reducedMotion?: boolean;
-}
+export type { BikeArcadeBridge } from "./BikeArcadeRuntime";
 
 const LANE_X = [88, 195, 302] as const;
 const BIKE_ARCADE_INVULNERABLE_MS = 900;
 const BIKE_ARCADE_INITIAL_SPAWN_DELAY_MS = 720;
 const BIKE_CANVAS_PIXEL_FONT = '"Fusion Pixel 12px Proportional SC", "Fusion Pixel", "PingFang SC", sans-serif';
 
+const NOOP_STORY_BRIDGE: BikeArcadeBridge = {
+  onDistance: () => undefined,
+  onLives: () => undefined,
+  onFinish: () => undefined,
+  onCollision: () => undefined
+};
+
 export class BikeRushScene extends Phaser.Scene {
-  private bridge!: BikeArcadeBridge;
+  private storyBridge: BikeArcadeBridge = NOOP_STORY_BRIDGE;
+  private storyDispatcher = new BikeArcadeStoryBridgeDispatcher(NOOP_STORY_BRIDGE);
+  private endlessBridge: EndlessArcadeSceneBridge | null = null;
+  private runConfig: BikeArcadeRunConfig = {
+    mode: "story",
+    seed: BIKE_ARCADE_STORY_SEED
+  };
   private player!: Phaser.Physics.Arcade.Sprite;
   private obstacles!: Phaser.Physics.Arcade.Group;
   private roadMarks: Phaser.GameObjects.Rectangle[] = [];
+  private readonly impactShards = new Set<Phaser.GameObjects.Rectangle>();
   private lane: BikeArcadeLane = 1;
   private safeLane: BikeArcadeLane = 1;
   private distance = 0;
+  private scoreBonus = 0;
+  private combo = 0;
+  private maxCombo = 0;
+  private lap = 1;
+  private elapsedMs = 0;
+  private waveIndex = 0;
+  private waveHistory: number[] = [];
   private lives = BIKE_ARCADE_MAX_LIVES;
   private invulnerable = false;
   private finished = false;
@@ -60,7 +87,14 @@ export class BikeRushScene extends Phaser.Scene {
   private lastMilestone: BikeArcadeMilestone | null = null;
   private reducedMotion = false;
   private simulationPaused = false;
+  private cleanupComplete = false;
+  private invulnerabilityTimer: Phaser.Time.TimerEvent | null = null;
   private readonly lifecycle = new BikeArcadeLifecycle();
+  private readonly handleKeyLeft = () => this.moveLane(-1);
+  private readonly handleKeyRight = () => this.moveLane(1);
+  private readonly handlePointerDown = (pointer: Phaser.Input.Pointer) => {
+    this.moveLane(pointer.x < 195 ? -1 : 1);
+  };
   private readonly handleVisibilityChange = () => {
     this.setPauseReason("document-hidden", document.hidden);
   };
@@ -76,14 +110,73 @@ export class BikeRushScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.bridge = this.registry.get("bikeArcadeBridge") as BikeArcadeBridge;
+    this.cleanupComplete = false;
+    const registeredEndlessBridge = this.registry.get("endlessArcadeBridge") as EndlessArcadeSceneBridge | undefined;
+    const registeredMode = this.registry.get("endlessArcadeMode");
+    const registeredConfig = this.registry.get("bikeArcadeRunConfig") as Partial<BikeArcadeRunConfig> | undefined;
+    const endlessRequested = registeredMode === "bike"
+      || registeredEndlessBridge !== undefined
+      || registeredConfig?.mode === "endless";
+    if (endlessRequested) {
+      if (
+        registeredMode !== "bike"
+        || registeredEndlessBridge?.mode !== "bike"
+        || registeredConfig?.mode !== "endless"
+        || !Number.isFinite(registeredConfig.seed)
+        || normalizeBikeArcadeSeed(Number(registeredConfig.seed)) !== normalizeBikeArcadeSeed(registeredEndlessBridge.seed)
+      ) {
+        throw new Error("Endless bike runtime requires a matching endless bridge and bikeArcadeRunConfig");
+      }
+      this.runConfig = {
+        mode: "endless",
+        seed: normalizeBikeArcadeSeed(Number(registeredConfig.seed))
+      };
+      this.endlessBridge = registeredEndlessBridge;
+    } else {
+      if (registeredConfig?.mode !== undefined && registeredConfig.mode !== "story") {
+        throw new Error("Story bike runtime rejected a non-story bikeArcadeRunConfig");
+      }
+      this.runConfig = {
+        mode: "story",
+        seed: normalizeBikeArcadeSeed(Number(registeredConfig?.seed ?? BIKE_ARCADE_STORY_SEED))
+      };
+      this.endlessBridge = null;
+    }
+    this.storyBridge = this.runConfig.mode === "story"
+      ? (this.registry.get("bikeArcadeBridge") as BikeArcadeBridge | undefined) ?? NOOP_STORY_BRIDGE
+      : NOOP_STORY_BRIDGE;
+    this.storyDispatcher = new BikeArcadeStoryBridgeDispatcher(this.storyBridge);
     const developerStartDistance = Number(this.registry.get("bikeArcadeStartDistance") ?? 0);
-    this.distance = Number.isFinite(developerStartDistance) ? Math.min(BIKE_ARCADE_GOAL - 1, Math.max(0, developerStartDistance)) : 0;
+    this.distance = Number.isFinite(developerStartDistance)
+      ? Math.min(
+          this.runConfig.mode === "story" ? BIKE_ARCADE_GOAL - 1 : BIKE_ARCADE_MAX_DISTANCE,
+          Math.max(0, developerStartDistance)
+        )
+      : 0;
+    this.scoreBonus = 0;
+    this.combo = 0;
+    this.maxCombo = 0;
+    this.lap = getBikeArcadeLap(this.distance);
+    this.elapsedMs = 0;
+    const runResetState = createBikeArcadeRunResetState();
+    this.lane = 1;
+    this.safeLane = 1;
+    this.waveIndex = runResetState.waveIndex;
+    this.waveHistory = runResetState.waveHistory;
+    this.lives = BIKE_ARCADE_MAX_LIVES;
+    this.invulnerable = false;
+    this.finished = false;
+    this.simulationPaused = false;
+    this.spawnDelayRemainingMs = BIKE_ARCADE_INITIAL_SPAWN_DELAY_MS;
+    this.lastMilestone = null;
+    this.lifecycle.reset();
     this.lastPublishedDistance = Math.floor(this.distance) - 1;
     const mediaPreference = typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     const registryFlag = this.registry.get("bikeArcadeReducedMotion");
-    const explicitFlag = this.bridge.reducedMotion ??
+    const explicitFlag = (this.runConfig.mode === "endless"
+      ? this.endlessBridge?.reducedMotion
+      : this.storyBridge.reducedMotion) ??
       (typeof registryFlag === "boolean" ? registryFlag : undefined);
     this.reducedMotion = resolveBikeArcadeReducedMotion(explicitFlag, mediaPreference);
     this.physics.world.setBounds(0, 0, 390, 650);
@@ -110,14 +203,22 @@ export class BikeRushScene extends Phaser.Scene {
       this.handleCollision(obstacle as Phaser.Physics.Arcade.Sprite);
     });
 
-    this.input.keyboard?.on("keydown-LEFT", () => this.moveLane(-1));
-    this.input.keyboard?.on("keydown-A", () => this.moveLane(-1));
-    this.input.keyboard?.on("keydown-RIGHT", () => this.moveLane(1));
-    this.input.keyboard?.on("keydown-D", () => this.moveLane(1));
-    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => this.moveLane(pointer.x < 195 ? -1 : 1));
+    this.input.keyboard?.on("keydown-LEFT", this.handleKeyLeft);
+    this.input.keyboard?.on("keydown-A", this.handleKeyLeft);
+    this.input.keyboard?.on("keydown-RIGHT", this.handleKeyRight);
+    this.input.keyboard?.on("keydown-D", this.handleKeyRight);
+    this.input.on("pointerdown", this.handlePointerDown);
     this.installLifecycleListeners();
     this.publishSnapshot("playing");
+    if (this.runConfig.mode === "endless") {
+      this.publishEndlessSnapshot("endless_bike_started");
+      this.game.events.emit("endless_bike_started", {
+        runId: this.endlessBridge?.runId,
+        seed: this.runConfig.seed
+      });
+    }
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
+    this.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown, this);
   }
 
   update(time: number, delta: number): void {
@@ -133,14 +234,19 @@ export class BikeRushScene extends Phaser.Scene {
       return;
     }
 
+    this.elapsedMs = Math.min(86_400_000, this.elapsedMs + frame.deltaMs);
     const previousDistance = this.distance;
-    this.distance = advanceBikeDistance(this.distance, frame.deltaMs);
-    emitCrossedBikeMilestones(previousDistance, this.distance, (milestone) => {
-      this.lastMilestone = milestone;
-      this.spawnMilestoneBoard(milestone);
-      this.bridge.onMilestone?.(milestone);
-    });
-    const speed = bikeObstacleSpeed(this.distance);
+    this.distance = advanceBikeDistance(this.distance, frame.deltaMs, this.runConfig.mode);
+    if (this.runConfig.mode === "story") {
+      emitCrossedBikeMilestones(previousDistance, this.distance, (milestone) => {
+        this.lastMilestone = milestone;
+        this.spawnMilestoneBoard(milestone);
+        this.storyDispatcher.dispatch({ type: "milestone", milestone });
+      });
+    } else {
+      this.handleEndlessLapProgress(previousDistance, this.distance);
+    }
+    const speed = bikeObstacleSpeed(this.distance, this.runConfig.mode);
     this.scrollRoad(frame.deltaMs, speed);
     this.updateObstacles(speed);
     if (!this.reducedMotion && !this.invulnerable) {
@@ -149,24 +255,42 @@ export class BikeRushScene extends Phaser.Scene {
 
     this.spawnDelayRemainingMs -= frame.deltaMs;
     if (this.spawnDelayRemainingMs <= 0) {
-      const plan = planBikeObstacleWave({
+      const currentWaveIndex = this.waveIndex;
+      const plan = planSeededBikeObstacleWave({
         distance: this.distance,
         previousSafeLane: this.safeLane,
-        entropy: this.createObstacleEntropy()
+        mode: this.runConfig.mode,
+        seed: this.runConfig.seed,
+        waveIndex: currentWaveIndex
       });
       this.spawnObstacleWave(plan);
       this.safeLane = plan.safeLane;
       this.spawnDelayRemainingMs = plan.spawnDelayMs;
+      this.waveIndex = Math.min(BIKE_ARCADE_MAX_DISTANCE, currentWaveIndex + 1);
+      this.waveHistory = appendBikeWaveHistory(this.waveHistory, currentWaveIndex);
     }
 
     const roundedDistance = Math.floor(this.distance);
     if (roundedDistance !== this.lastPublishedDistance) {
       this.lastPublishedDistance = roundedDistance;
-      this.bridge.onDistance(roundedDistance);
+      if (this.runConfig.mode === "story") {
+        this.storyDispatcher.dispatch({ type: "distance", distance: roundedDistance });
+      } else {
+        this.publishEndlessSnapshot("endless_bike_riding");
+        this.game.events.emit("endless_bike_progress", {
+          distance: roundedDistance,
+          lap: this.lap,
+          tier: getBikeArcadeTier(this.distance),
+          combo: this.combo
+        });
+      }
       this.publishSnapshot("playing");
     }
 
-    if (this.distance >= BIKE_ARCADE_GOAL) {
+    const result = shouldFinishBikeArcadeRun(this.runConfig.mode, this.distance, this.lives);
+    if (result) {
+      this.finish(result);
+    } else if (this.runConfig.mode === "endless" && this.distance >= BIKE_ARCADE_MAX_DISTANCE) {
       this.finish("won");
     }
   }
@@ -195,18 +319,20 @@ export class BikeRushScene extends Phaser.Scene {
         this.tweens.add({ targets: this.player, angle: 0, duration: 90, ease: "Sine.easeIn" });
       }
     });
-    this.bridge.onLaneChanged?.({ from: previousLane, to: this.lane });
+    if (this.runConfig.mode === "story") {
+      this.storyDispatcher.dispatch({
+        type: "lane_changed",
+        event: { from: previousLane, to: this.lane }
+      });
+    } else {
+      this.game.events.emit("endless_bike_lane_changed", { from: previousLane, to: this.lane });
+    }
     this.publishSnapshot("playing");
   }
 
-  private createObstacleEntropy(): BikeObstacleScheduleEntropy {
-    return {
-      safeLane: Phaser.Math.RND.frac(),
-      density: Phaser.Math.RND.frac(),
-      blockedLane: Phaser.Math.RND.frac(),
-      interval: Phaser.Math.RND.frac(),
-      obstacleTypes: [Phaser.Math.RND.frac(), Phaser.Math.RND.frac()]
-    };
+  handleEndlessControl(action: EndlessArcadeControlAction): void {
+    if (action === "left") this.moveLane(-1);
+    if (action === "right") this.moveLane(1);
   }
 
   private drawRoad(): void {
@@ -263,20 +389,38 @@ export class BikeRushScene extends Phaser.Scene {
         const lane = Number(obstacle.getData("lane")) as BikeArcadeLane;
         if (Math.abs(lane - this.lane) === 1) {
           this.showNearMiss();
-          this.bridge.onNearMiss?.({
-            obstacleType: obstacle.getData("type") as BikeArcadeObstacleType,
-            lane
-          });
+          const obstacleType = obstacle.getData("type") as BikeArcadeObstacleType;
+          if (this.runConfig.mode === "story") {
+            this.storyDispatcher.dispatch({ type: "near_miss", event: { obstacleType, lane } });
+          } else {
+            this.combo = Math.min(BIKE_ARCADE_MAX_COMBO, this.combo + 1);
+            this.maxCombo = Math.max(this.maxCombo, this.combo);
+            const points = scoreBikeNearMiss(this.combo, getBikeArcadeTier(this.distance));
+            this.scoreBonus = Math.min(BIKE_ARCADE_MAX_DISTANCE, this.scoreBonus + points);
+            this.publishEndlessSnapshot("endless_bike_near_miss");
+            this.game.events.emit("endless_bike_near_miss", {
+              obstacleType,
+              lane,
+              combo: this.combo,
+              points
+            });
+          }
         }
       }
       if (obstacle.y > 720) {
-        obstacle.destroy();
+        this.destroyObstacle(obstacle);
       }
     });
   }
 
   private spawnObstacleWave(plan: BikeObstacleWavePlan): void {
-    plan.obstacles.forEach((obstacle) => this.spawnObstacle(obstacle.lane, obstacle.type));
+    const availableSlots = Math.max(
+      0,
+      MAX_BIKE_ARCADE_OBSTACLES - this.obstacles.countActive(true)
+    );
+    plan.obstacles
+      .slice(0, availableSlots)
+      .forEach((obstacle) => this.spawnObstacle(obstacle.lane, obstacle.type));
   }
 
   private spawnObstacle(lane: BikeArcadeLane, type: BikeArcadeObstacleType): void {
@@ -321,21 +465,36 @@ export class BikeRushScene extends Phaser.Scene {
       return;
     }
     const obstacleType = obstacle.getData("type") as BikeArcadeObstacleType;
-    obstacle.destroy();
+    this.destroyObstacle(obstacle);
     this.lives = loseBikeLife(this.lives);
+    this.combo = 0;
     this.invulnerable = true;
-    this.bridge.onLives(this.lives);
-    this.bridge.onCollision({
-      obstacleType,
-      lives: this.lives,
-      invulnerableMs: BIKE_ARCADE_INVULNERABLE_MS
-    });
+    if (this.runConfig.mode === "story") {
+      this.storyDispatcher.dispatch({ type: "lives", lives: this.lives });
+      this.storyDispatcher.dispatch({
+        type: "collision",
+        event: {
+          obstacleType,
+          lives: this.lives,
+          invulnerableMs: BIKE_ARCADE_INVULNERABLE_MS
+        }
+      });
+    } else {
+      this.publishEndlessSnapshot("endless_bike_collision");
+      this.game.events.emit("endless_bike_collision", {
+        obstacleType,
+        lives: this.lives,
+        distance: Math.floor(this.distance)
+      });
+    }
     if (!this.reducedMotion) {
       this.cameras.main.shake(170, 0.012);
       this.spawnImpactBurst(this.player.x, this.player.y - 12);
     }
     this.player.setTint(0xe97b70).setAlpha(this.reducedMotion ? 0.82 : 0.48);
-    this.time.delayedCall(BIKE_ARCADE_INVULNERABLE_MS, () => {
+    this.invulnerabilityTimer?.remove(false);
+    this.invulnerabilityTimer = this.time.delayedCall(BIKE_ARCADE_INVULNERABLE_MS, () => {
+      this.invulnerabilityTimer = null;
       if (!this.player?.active || this.finished) {
         return;
       }
@@ -347,6 +506,11 @@ export class BikeRushScene extends Phaser.Scene {
     if (this.lives === 0) {
       this.finish("lost");
     }
+  }
+
+  private destroyObstacle(obstacle: Phaser.Physics.Arcade.Sprite): void {
+    this.tweens.killTweensOf(obstacle);
+    obstacle.destroy();
   }
 
   private finish(result: "won" | "lost"): void {
@@ -379,11 +543,23 @@ export class BikeRushScene extends Phaser.Scene {
       }
     }
     this.publishSnapshot(result);
-    this.bridge.onFinish(result, {
-      distance: Math.floor(this.distance),
-      lives: this.lives,
-      lastMilestone: this.lastMilestone
-    });
+    if (this.runConfig.mode === "story") {
+      this.storyDispatcher.dispatch({
+        type: "finish",
+        result,
+        summary: {
+          distance: Math.floor(this.distance),
+          lives: this.lives,
+          lastMilestone: this.lastMilestone
+        }
+      });
+      return;
+    }
+    const summary = this.createEndlessSummary(
+      result === "lost" ? "endless_bike_lives_exhausted" : "endless_bike_distance_cap"
+    );
+    this.game.events.emit("endless_bike_finished", summary);
+    this.endlessBridge?.finish(summary);
   }
 
   private installLifecycleListeners(): void {
@@ -412,7 +588,11 @@ export class BikeRushScene extends Phaser.Scene {
     this.physics.pause();
     this.time.paused = true;
     this.tweens.pauseAll();
-    this.bridge.onPauseChange?.(true);
+    if (this.runConfig.mode === "story") {
+      this.storyDispatcher.dispatch({ type: "pause_changed", paused: true });
+    } else {
+      this.game.events.emit("endless_bike_paused", { reason });
+    }
     this.publishSnapshot("playing");
   }
 
@@ -421,11 +601,20 @@ export class BikeRushScene extends Phaser.Scene {
     this.time.paused = false;
     this.physics.resume();
     this.tweens.resumeAll();
-    this.bridge.onPauseChange?.(false);
+    if (this.runConfig.mode === "story") {
+      this.storyDispatcher.dispatch({ type: "pause_changed", paused: false });
+    } else {
+      this.game.events.emit("endless_bike_resumed");
+      this.publishEndlessSnapshot("endless_bike_riding");
+    }
     this.publishSnapshot("playing");
   }
 
   private handleShutdown(): void {
+    if (this.cleanupComplete) {
+      return;
+    }
+    this.cleanupComplete = true;
     if (typeof document !== "undefined") {
       document.removeEventListener("visibilitychange", this.handleVisibilityChange);
     }
@@ -433,7 +622,96 @@ export class BikeRushScene extends Phaser.Scene {
       window.removeEventListener("blur", this.handleWindowBlur);
       window.removeEventListener("focus", this.handleWindowFocus);
     }
+    this.input.keyboard?.off("keydown-LEFT", this.handleKeyLeft);
+    this.input.keyboard?.off("keydown-A", this.handleKeyLeft);
+    this.input.keyboard?.off("keydown-RIGHT", this.handleKeyRight);
+    this.input.keyboard?.off("keydown-D", this.handleKeyRight);
+    this.input.off("pointerdown", this.handlePointerDown);
+    this.invulnerabilityTimer?.remove(false);
+    this.invulnerabilityTimer = null;
+    this.time.removeAllEvents();
+    this.tweens.killAll();
+    this.obstacles?.clear(true, true);
+    this.impactShards.forEach((shard) => shard.destroy());
+    this.impactShards.clear();
+    this.roadMarks = [];
+    this.waveHistory = [];
+    this.lifecycle.reset();
+    this.endlessBridge = null;
+    this.storyBridge = NOOP_STORY_BRIDGE;
+    this.storyDispatcher = new BikeArcadeStoryBridgeDispatcher(NOOP_STORY_BRIDGE);
     clearBikeArcadeSnapshot();
+  }
+
+  private handleEndlessLapProgress(previousDistance: number, nextDistance: number): void {
+    const previousCompletedLaps = Math.floor(Math.max(0, previousDistance) / BIKE_ARCADE_GOAL);
+    const nextCompletedLaps = Math.floor(Math.max(0, nextDistance) / BIKE_ARCADE_GOAL);
+    if (nextCompletedLaps <= previousCompletedLaps) {
+      this.lap = getBikeArcadeLap(nextDistance);
+      return;
+    }
+    for (let completedLap = previousCompletedLaps + 1; completedLap <= nextCompletedLaps; completedLap += 1) {
+      this.lap = completedLap + 1;
+      this.spawnLapBoard(completedLap);
+      this.game.events.emit("endless_bike_lap_completed", {
+        lap: completedLap,
+        nextLap: this.lap,
+        distance: Math.floor(nextDistance)
+      });
+    }
+    this.publishEndlessSnapshot("endless_bike_lap_completed");
+  }
+
+  private currentEndlessScore(): number {
+    return Math.min(BIKE_ARCADE_MAX_SCORE, Math.floor(this.distance) + this.scoreBonus);
+  }
+
+  private publishEndlessSnapshot(status: string): void {
+    if (!this.endlessBridge || this.runConfig.mode !== "endless") {
+      return;
+    }
+    this.endlessBridge.publishSnapshot({
+      mode: "bike",
+      score: this.currentEndlessScore(),
+      progress: Math.floor(this.distance),
+      tier: getBikeArcadeTier(this.distance),
+      combo: this.combo,
+      lives: this.lives,
+      status
+    });
+  }
+
+  private createEndlessSummary(status: string): EndlessArcadeRunSummary {
+    return {
+      mode: "bike",
+      score: this.currentEndlessScore(),
+      progress: Math.floor(this.distance),
+      tier: getBikeArcadeTier(this.distance),
+      combo: this.maxCombo,
+      lives: this.lives,
+      status,
+      durationMs: Math.round(this.elapsedMs)
+    };
+  }
+
+  private spawnLapBoard(completedLap: number): void {
+    const panel = this.add.rectangle(0, 0, 116, 34, 0x20272f, 0.94)
+      .setStrokeStyle(3, 0xf0d54e);
+    const label = this.add.text(0, 0, `第 ${completedLap} 圈完成`, {
+      color: "#f2e3a2",
+      fontFamily: BIKE_CANVAS_PIXEL_FONT,
+      fontSize: "12px"
+    }).setOrigin(0.5);
+    const sign = this.add.container(195, 102, [panel, label]).setDepth(70);
+    this.tweens.add({
+      targets: sign,
+      y: 70,
+      alpha: 0,
+      duration: this.reducedMotion ? 360 : 900,
+      hold: this.reducedMotion ? 120 : 360,
+      ease: "Sine.easeOut",
+      onComplete: () => sign.destroy(true)
+    });
   }
 
   private spawnMilestoneBoard(milestone: BikeArcadeMilestone): void {
@@ -487,8 +765,10 @@ export class BikeRushScene extends Phaser.Scene {
 
   private spawnImpactBurst(x: number, y: number): void {
     const colors = [0xf0d54e, 0xe97b70, 0xe7e2d4];
-    for (let index = 0; index < 8; index += 1) {
+    const shardCount = Math.min(8, MAX_BIKE_ARCADE_IMPACT_PARTICLES - this.impactShards.size);
+    for (let index = 0; index < shardCount; index += 1) {
       const shard = this.add.rectangle(x, y, 7, 7, colors[index % colors.length]).setDepth(60);
+      this.impactShards.add(shard);
       const angle = (Math.PI * 2 * index) / 8;
       this.tweens.add({
         targets: shard,
@@ -499,7 +779,10 @@ export class BikeRushScene extends Phaser.Scene {
         scaleY: 0.35,
         duration: 320,
         ease: "Quad.easeOut",
-        onComplete: () => shard.destroy()
+        onComplete: () => {
+          this.impactShards.delete(shard);
+          shard.destroy();
+        }
       });
     }
   }
@@ -521,8 +804,13 @@ export class BikeRushScene extends Phaser.Scene {
     setBikeArcadeSnapshot({
       coordinateSystem: "390x650 canvas, origin at top-left, x right, y down",
       phase,
+      mode: this.runConfig.mode,
       distance: Math.floor(this.distance),
       goal: BIKE_ARCADE_GOAL,
+      score: this.runConfig.mode === "endless" ? this.currentEndlessScore() : Math.floor(this.distance),
+      combo: this.combo,
+      lap: this.lap,
+      tier: this.runConfig.mode === "endless" ? getBikeArcadeTier(this.distance) : 1,
       lives: this.lives,
       lane: this.lane,
       invulnerable: this.invulnerable,

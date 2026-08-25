@@ -31,7 +31,7 @@ export function normalizePhoneHomeAppOrder(value: unknown): PhoneHomeAppId[] {
 }
 
 export function canRemovePhoneHomeApp(state: PhoneHomeRemovalContext, appId: PhoneHomeAppId): boolean {
-  if (appId === "bike_arcade") return true;
+  if (appId === "bike_arcade") return false;
   if (appId === "tiyi") {
     return state.actOne.exerciseStarted && state.ui.libraryFinalsPuzzle.presenceProofCollected;
   }

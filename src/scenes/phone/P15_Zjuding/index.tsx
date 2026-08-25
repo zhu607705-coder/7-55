@@ -10,6 +10,7 @@ import threeMinuteRiseBoundariesUrl from "../../../assets/phone/library-search/r
 import threeMinuteEmptySeatUrl from "../../../assets/phone/library-search/runtime/three_minute_empty_seat.webp";
 import zjudingHomeUrl from "../../../assets/ui/zjuding_home.png";
 import zjudingLoadingUrl from "../../../assets/ui/zjuding_loading.png";
+import { PhoneActionSheet, PhoneAppBottomNav, PhoneAppHeader } from "../../../components/PhoneAppUi";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import { ItemInspectDialog } from "../../../components/ItemInspectDialog";
 import { PixelIcon } from "../../../components/PixelIcon";
@@ -22,8 +23,18 @@ import libraryFinalsContent from "../../../data/library-finals.content.json";
 import qizhenContent from "../../../data/chapter3-qizhen-lake.content.json";
 import { kit } from "../../../modules/GameKit";
 import type { ChapterThreeInterludeNetworkRecordId } from "../../../modules/ChapterThreePhoneInterludeController";
+import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
 import { isCatalogClueQuery, normalizeCatalogQuery } from "../../../modules/library-finals/puzzleRules";
 import { playSfx } from "../../../modules/Sfx";
+import {
+  ZJUDING_APP_REGISTRY,
+  isZjudingAppAvailable,
+  matchesZjudingAppQuery,
+  type ZjudingAppAccessContext,
+  type ZjudingAppId,
+  type ZjudingUtilityPanelId
+} from "./ZjudingAppRegistry";
+import { ZjudingUtilityPanel, type ZjudingBottomTabId } from "./ZjudingUtilityPanel";
 
 const LOAD_DELAY_MS = 1500;
 const STUCK_HINT_MS = 3000;
@@ -85,14 +96,6 @@ const SYSTEM_DIALOGUES: Record<SystemDialogueKind, SystemDialogueLine[]> = {
   ]
 };
 
-interface HubApp {
-  label: string;
-  icon: string;
-  tone: string;
-  page?: ZjudingPage;
-  badge?: string;
-}
-
 interface LibraryApp {
   label: string;
   icon: string;
@@ -119,20 +122,6 @@ interface RoomData {
   available: number;
   imageUrl: string;
 }
-
-const HUB_APPS: HubApp[] = [
-  { label: "学在浙大", icon: "学", tone: "paper", page: "learn" },
-  { label: "智云课堂", icon: "云", tone: "violet" },
-  { label: "校园地图", icon: "位", tone: "sky", page: "campus_map" },
-  { label: "网络缴费", icon: "¥", tone: "aqua" },
-  { label: "后勤服务", icon: "勤", tone: "orange" },
-  { label: "失物招领", icon: "寻", tone: "green" },
-  { label: "访客预约", icon: "访", tone: "cyan" },
-  { label: "图书馆", icon: "图", tone: "navy", page: "library" },
-  { label: "慧学外语", icon: "F", tone: "silver" },
-  { label: "意见箱", icon: "信", tone: "blue", badge: "新" },
-  { label: "全部", icon: "▦", tone: "grid" }
-];
 
 const LIBRARY_APPS: LibraryApp[] = [
   { label: "馆藏检索", icon: "⌕", page: "library_catalog" },
@@ -256,15 +245,16 @@ function PixelAppIcon({ symbol, tone, badge }: { symbol: string; tone: string; b
 
 function NativeHeader({ title, onBack, onMore }: { title: string; onBack: () => void; onMore?: () => void }) {
   return (
-    <header className="zju-native-header" data-ui-part="app-header">
-      <PhoneNavButton kind="back" className="zju-native-back" label={`返回，离开${title}`} onClick={onBack} />
-      <h1>{title}</h1>
-      {onMore ? (
+    <PhoneAppHeader
+      className="zju-native-header"
+      title={title}
+      navigation={{ kind: "back", label: `返回，离开${title}`, onClick: onBack }}
+      end={onMore ? (
         <button type="button" className="zju-native-more" aria-label={`${title}更多菜单`} onClick={onMore}>
           <span aria-hidden="true">•••</span>
         </button>
       ) : <span className="zju-native-more zju-locked-control-icon" aria-hidden="true">•••</span>}
-    </header>
+    />
   );
 }
 
@@ -273,93 +263,46 @@ function BottomNav({
   active,
   onSelect
 }: {
-  items: Array<{ label: string; icon: string }>;
+  items: ReadonlyArray<{ label: string; icon: string; locked?: boolean }>;
   active: string;
   onSelect: (label: string) => void;
 }) {
   return (
-    <nav className="zju-native-bottom-nav" aria-label="页面导航" data-ui-part="bottom-navigation">
-      {items.map((item) => (
-        <button
-          key={item.label}
-          type="button"
-          className={item.label === active ? "is-active" : ""}
-          aria-current={item.label === active ? "page" : undefined}
-          onClick={() => onSelect(item.label)}
-        >
-          <span aria-hidden="true">{item.icon}</span>
-          {item.label}
-        </button>
-      ))}
-    </nav>
+    <PhoneAppBottomNav
+      className="zju-native-bottom-nav"
+      label="页面导航"
+      items={items.map((item) => ({
+        id: item.label,
+        label: item.label,
+        icon: item.icon,
+        locked: item.locked
+      }))}
+      activeId={active}
+      onSelect={onSelect}
+    />
   );
 }
 
-function ActionSheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
-  const dialogRef = useRef<HTMLElement>(null);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
-
-  useEffect(() => {
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const dialog = dialogRef.current;
-    const focusableSelector = "button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex='-1'])";
-    const autofocusTarget = dialog?.querySelector<HTMLElement>("[autofocus]");
-    const firstFocusable = dialog?.querySelector<HTMLElement>(focusableSelector);
-    (autofocusTarget ?? firstFocusable ?? dialog)?.focus();
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onCloseRef.current();
-        return;
-      }
-      if (event.key !== "Tab" || !dialog) {
-        return;
-      }
-      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelector));
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (!first || !last) {
-        event.preventDefault();
-        return;
-      }
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      previouslyFocused?.focus();
-    };
-  }, []);
-
+function ActionSheet({
+  title,
+  onClose,
+  children,
+  returnFocusElement
+}: {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+  returnFocusElement?: HTMLElement | null;
+}) {
   return (
-    <div className="zju-sheet-layer" role="presentation" onPointerDown={onClose}>
-      <section
-        ref={dialogRef}
-        className="zju-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        tabIndex={-1}
-        onPointerDown={(event) => event.stopPropagation()}
-      >
-        <header>
-          <h2>{title}</h2>
-          <button type="button" aria-label={`关闭${title}`} onClick={onClose}>
-            ×
-          </button>
-        </header>
-        {children}
-      </section>
-    </div>
+    <PhoneActionSheet
+      title={title}
+      onClose={onClose}
+      className="zju-sheet"
+      returnFocusElement={returnFocusElement}
+    >
+      {children}
+    </PhoneActionSheet>
   );
 }
 
@@ -367,33 +310,80 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
   const [feedback, setFeedback] = useState("");
   const [timeFilter, setTimeFilter] = useState<"all" | "missing_475" | "last_minute">("all");
   const [sessionFilter, setSessionFilter] = useState<"all" | "unknown_short" | "authenticated">("all");
-  const [areaFilter, setAreaFilter] = useState<"all" | "dyp" | "other">("all");
+  const [areaFilter, setAreaFilter] = useState<"all" | "north_a" | "other">("all");
   const interlude = state.chapterThreeInterlude;
+  const interludeViewModel = selectChapterThreeInterludeViewModel(state);
   const filtersReady = timeFilter === "missing_475"
     && sessionFilter === "unknown_short"
-    && areaFilter === "dyp";
+    && areaFilter === "north_a";
+  const filterProgress = [
+    timeFilter === "missing_475",
+    sessionFilter === "unknown_short",
+    areaFilter === "north_a"
+  ].filter(Boolean).length;
+  const destinationCopyUnlocked = interludeViewModel.destinationSelectionUnlocked || interlude.destinationId !== null;
 
-  const records: ReadonlyArray<{
+  const allRecords: ReadonlyArray<{
     id: ChapterThreeInterludeNetworkRecordId;
     time: string;
     accessPoint: string;
     location: string;
     duration: string;
     device: string;
-  }> = filtersReady
-    ? [{
-        id: "record_0755",
-        time: "22:44:57",
-        accessPoint: "AP-DYP-A1-03",
-        location: "段永平教学楼 A 楼一层大厅",
-        duration: "3 秒",
-        device: "未知设备 · 不是林星宇的手机"
-      }]
-    : [
-        { id: "record_qizhen_dock", time: "22:39:18", accessPoint: "AP-QZL-DOCK-02", location: "启真湖小码头", duration: "2 分 41 秒", device: "林星宇的手机" },
-        { id: "record_theater_hall", time: "22:41:32", accessPoint: "AP-THEATER-HALL-01", location: "剧场大厅", duration: "18 秒", device: "已认证设备" },
-        { id: "record_library_south", time: "22:43:11", accessPoint: "AP-LIB-SOUTH-05", location: "基础图书馆南区", duration: "1 分 06 秒", device: "已认证设备" }
-      ];
+    timeGroup: "missing_475" | "last_minute";
+    sessionGroup: "unknown_short" | "authenticated";
+    areaGroup: "north_a" | "other";
+  }> = [
+    {
+      id: "record_0755",
+      time: "22:44:57",
+      accessPoint: "AP-DYP-A1-03",
+      location: destinationCopyUnlocked ? "段永平教学楼 A 楼一层大厅" : "北教学区 A 区 · 楼宇名待核验",
+      duration: "3 秒",
+      device: "未知设备 · 身份来源待核验",
+      timeGroup: "missing_475",
+      sessionGroup: "unknown_short",
+      areaGroup: "north_a"
+    },
+    {
+      id: "record_theater_hall",
+      time: "22:44:31",
+      accessPoint: "AP-THEATER-HALL-01",
+      location: "剧场前厅",
+      duration: "18 秒",
+      device: "已认证设备",
+      timeGroup: "missing_475",
+      sessionGroup: "authenticated",
+      areaGroup: "north_a"
+    },
+    {
+      id: "record_library_south",
+      time: "22:43:11",
+      accessPoint: "AP-LIB-SOUTH-05",
+      location: "基础图书馆南侧",
+      duration: "3 秒",
+      device: "未知设备",
+      timeGroup: "missing_475",
+      sessionGroup: "unknown_short",
+      areaGroup: "other"
+    },
+    {
+      id: "record_qizhen_dock",
+      time: "22:44:12",
+      accessPoint: "AP-QZL-DOCK-02",
+      location: "启真湖小码头",
+      duration: "3 秒",
+      device: "未知设备",
+      timeGroup: "last_minute",
+      sessionGroup: "unknown_short",
+      areaGroup: "north_a"
+    }
+  ];
+  const records = allRecords.filter((record) => (
+    (timeFilter === "all" || record.timeGroup === timeFilter)
+    && (sessionFilter === "all" || record.sessionGroup === sessionFilter)
+    && (areaFilter === "all" || record.areaGroup === areaFilter)
+  ));
 
   function saveNetworkRecord(recordId: ChapterThreeInterludeNetworkRecordId) {
     const result = kit.chapterThreeInterlude.readNetworkRecord(recordId);
@@ -414,9 +404,9 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
       </header>
       <main className="interlude-scroll">
         <section className="interlude-network-summary">
-          <small>查询范围</small>
-          <strong>22:37:05 — 22:45:00</strong>
-          <span>日志内有一段 7 分 55 秒的未同步缺口</span>
+          <small>查询范围 · 来源进度 {interludeViewModel.networkProgress.completed}/3</small>
+          <strong>{interludeViewModel.timeWindow.label}</strong>
+          <span>有效筛选维度 {filterProgress}/3；每项条件会立即更新结果</span>
         </section>
         <section className="interlude-network-filters" aria-label="网络记录筛选">
           <fieldset>
@@ -434,31 +424,39 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
           <fieldset>
             <legend>区域</legend>
             <button type="button" className={areaFilter === "all" ? "is-selected" : ""} onClick={() => setAreaFilter("all")}>全校</button>
-            <button type="button" className={areaFilter === "dyp" ? "is-selected" : ""} onClick={() => setAreaFilter("dyp")}>段永平教学楼</button>
+            <button type="button" className={areaFilter === "north_a" ? "is-selected" : ""} onClick={() => setAreaFilter("north_a")}>北教学区 A 区</button>
             <button type="button" className={areaFilter === "other" ? "is-selected" : ""} onClick={() => setAreaFilter("other")}>其他楼宇</button>
           </fieldset>
         </section>
         <section className="interlude-network-results" aria-label="接入记录结果">
           <header><strong>查询结果</strong><span>{records.length} 条</span></header>
           {records.map((record) => (
-            <article key={record.id} className={`interlude-network-card ${record.id === "record_0755" ? "is-target" : ""}`.trim()}>
+            <article key={record.id} className={`interlude-network-card ${filtersReady && record.id === "record_0755" ? "is-target" : ""}`.trim()}>
               <header><span>{record.time}</span><b>{record.duration}</b></header>
               <dl>
                 <div><dt>接入点</dt><dd>{record.accessPoint}</dd></div>
                 <div><dt>位置</dt><dd>{record.location}</dd></div>
                 <div><dt>设备</dt><dd>{record.device}</dd></div>
               </dl>
-              <button type="button" onClick={() => saveNetworkRecord(record.id)}>
-                {interlude.networkRecordRead && record.id === "record_0755" ? "记录已保存" : "保存这条记录"}
+              <button
+                type="button"
+                disabled={!filtersReady || record.id !== "record_0755"}
+                onClick={() => saveNetworkRecord(record.id)}
+              >
+                {interlude.networkRecordRead && record.id === "record_0755"
+                  ? "记录已保存"
+                  : filtersReady && record.id === "record_0755"
+                    ? "保存这条记录"
+                    : "继续筛选"}
               </button>
             </article>
           ))}
         </section>
-        <p className="interlude-network-note">找到缺口结束前的未知短会话，再用接入点缩小地点。</p>
+        <p className="interlude-network-note">先按时间段、设备会话和已知入口区域逐项筛选；结果数量会从 4 条降至 1 条。</p>
         {interlude.networkRecordRead ? (
           <section className="interlude-network-dialogue" aria-label="记录核验结果">
             <p><b>林星宇</b>这不是我的手机。</p>
-            <p><b>系统</b>设备名也不是你的。它借用了你的校园身份，在段永平教学楼一楼留下了三秒会话。</p>
+            <p><b>系统</b>设备名也不是你的。它借用了你的校园身份，在{destinationCopyUnlocked ? "段永平教学楼一楼" : "北教学区 A 区的一处大厅"}留下了三秒会话。</p>
           </section>
         ) : null}
         {feedback ? <p className="interlude-feedback" role="status">{feedback}</p> : null}
@@ -560,12 +558,15 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const [entryOnCampusWifi] = useState(() => kit.network.canOpenZjuding());
   const [stuckHint, setStuckHint] = useState(false);
   const [overlay, setOverlay] = useState<OverlayState>(null);
+  const sheetTriggerRef = useRef<HTMLElement | null>(null);
+  const [utilityPanel, setUtilityPanel] = useState<ZjudingUtilityPanelId | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLibrary, setSelectedLibrary] = useState("请选择馆舍");
   const [selectedRoom, setSelectedRoom] = useState("二层南");
   const [selectedDate, setSelectedDate] = useState("07月10日 · 今天");
   const [selectedTime, setSelectedTime] = useState("00:01 - 23:59");
   const [seatView, setSeatView] = useState<"map" | "list">("map");
+  const [seatFilter, setSeatFilter] = useState("全部座位");
   const [spaceMode, setSpaceMode] = useState<"list" | "quick">("list");
   const [railCollapsed, setRailCollapsed] = useState(false);
   const [directoryName, setDirectoryName] = useState(() => selectIdentityReadable(state) && state.actOne.characterNamed ? actOneContent.studentName : "");
@@ -605,6 +606,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const visibleDirectoryName = directoryDisplayAllowed ? directoryName : "";
   const visibleDirectoryStudentId = directoryDisplayAllowed ? directoryStudentId : "";
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(actOnePhase);
+  const appAccessContext: ZjudingAppAccessContext = {
+    identityReadable,
+    fullCampusMap: access.fullCampusMap,
+    library: access.library
+  };
   const visibleCatalogResults = useMemo(() => {
     if (catalogSubmitted) {
       return findCatalogResults(catalogSubmittedQuery);
@@ -755,9 +761,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const searchResults = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) {
-      return HUB_APPS.slice(0, 6);
+      return ZJUDING_APP_REGISTRY.slice(0, 6);
     }
-    return HUB_APPS.filter((app) => app.label.includes(query));
+    return ZJUDING_APP_REGISTRY.filter((app) => matchesZjudingAppQuery(app, query));
   }, [searchQuery]);
 
   function announce(text: string) {
@@ -765,9 +771,55 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     kit.flags.toast(text, "system");
   }
 
+  function handleActionSheetAction(action: string) {
+    setOverlay(null);
+    if (action === "退出浙大钉") {
+      router.goTo("phone_home");
+      return;
+    }
+    if (action === "个人资料" || action === "账号与安全") {
+      setUtilityPanel("profile");
+      return;
+    }
+    if (action === "最近通话" || action === "收藏号码") {
+      setUtilityPanel("contacts");
+      return;
+    }
+    if (action === "我的预约") {
+      if (state.ui.librarySeatReserved || access.libraryReservation) {
+        goPage("library_seat");
+      } else {
+        announce("当前没有已确认的图书馆预约。");
+      }
+      return;
+    }
+    if (action === "刷新空位" || action === "刷新座位") {
+      announce(`已重新读取本机座位状态：${selectedRoom}空闲 ${ROOMS.find((room) => room.label === selectedRoom)?.available ?? 0} 席。`);
+      return;
+    }
+    if (action === "预约规则") {
+      announce("预约页只接受当前剧情已开放的馆舍、区域和座位。");
+      return;
+    }
+    if (action === "取消预约") {
+      announce("本 Demo 不执行正式取消操作，已确认预约保持不变。");
+      return;
+    }
+    if (action === "找回账号") {
+      announce("当前可通过电子校园卡重新读取本机身份，不会发送真实找回请求。");
+      return;
+    }
+    if (action === "安全提示") {
+      announce("本 Demo 不上传校园账号、密码或访客草稿。");
+      return;
+    }
+    announce("该菜单当前只提供本地状态说明。");
+  }
+
   function goPage(page: ZjudingPage) {
     playSfx("02_");
     setOverlay(null);
+    setUtilityPanel(null);
     kit.flags.setUi("zjudingPage", sanitizeZjudingPage(state, page));
   }
 
@@ -791,16 +843,51 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     router.goTo("phone_home");
   }
 
-  function openApp(label: string, page?: ZjudingPage) {
-    if (label === "校园地图") {
+  function openApp(appId: ZjudingAppId) {
+    const app = ZJUDING_APP_REGISTRY.find((entry) => entry.id === appId);
+    if (!app || !isZjudingAppAvailable(app, appAccessContext)) {
+      return;
+    }
+    setOverlay(null);
+    if (app.target.kind === "campus_map") {
       openCampusMap();
       return;
     }
-    if (page) {
-      goPage(page);
+    if (app.target.kind === "page") {
+      goPage(app.target.page);
       return;
     }
-    return;
+    playSfx("02_");
+    setUtilityPanel(app.target.panel);
+  }
+
+  function navigateBottomTab(tab: ZjudingBottomTabId) {
+    playSfx("02_");
+    setOverlay(null);
+    if (tab === "home") {
+      setUtilityPanel(null);
+      kit.flags.setUi("zjudingPage", "hub");
+      return;
+    }
+    const panel: Record<Exclude<ZjudingBottomTabId, "home">, ZjudingUtilityPanelId> = {
+      contacts: "contacts",
+      workbench: "all_apps",
+      messages: "messages",
+      profile: "profile"
+    };
+    setUtilityPanel(panel[tab]);
+  }
+
+  function navigateBottomLabel(label: string) {
+    const tabByLabel: Record<string, ZjudingBottomTabId> = {
+      "首页": "home",
+      "通讯录": "contacts",
+      "工作台": "workbench",
+      "消息": "messages",
+      "我的": "profile",
+      "我的中心": "profile"
+    };
+    navigateBottomTab(tabByLabel[label] ?? "home");
   }
 
   function openCampusMap() {
@@ -1156,7 +1243,26 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
 
   let page: JSX.Element;
 
-  if (currentPage === "login") {
+  if (utilityPanel) {
+    page = (
+      <ZjudingUtilityPanel
+        panel={utilityPanel}
+        state={state}
+        access={access}
+        identityReadable={identityReadable}
+        studentName={actOneContent.studentName}
+        studentId={actOneContent.studentId}
+        departments={actOneContent.departments}
+        onBack={() => setUtilityPanel(null)}
+        onBottomNavigate={navigateBottomTab}
+        onOpenApp={openApp}
+        onOpenPage={goPage}
+        onOpenCampusMap={openCampusMap}
+        onOpenCampusCard={openCampusCard}
+        onInspectItem={setSubmittedDocument}
+      />
+    );
+  } else if (currentPage === "login") {
     page = (
       <section className="app-screen zju-native-page zju-login-page" aria-label="浙江大学统一身份认证">
         <NativeHeader
@@ -1504,7 +1610,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         />
         <main className="zju-catalog-content">
           <nav className="zju-catalog-databases" aria-label="文献库选择">
-            <button type="button" className="is-active">中文文献库</button>
+            <button type="button" className="is-active" onClick={() => announce("当前正在使用中文文献库。")}>中文文献库</button>
             <span className="zju-static-xxx">xxx</span>
           </nav>
 
@@ -1523,8 +1629,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             <button type="button" className="zju-catalog-submit" onClick={submitCatalogSearch}>搜索</button>
             </div>
             <div className="zju-catalog-filter-row" aria-label="检索范围">
-              <button type="button" className="zju-catalog-field"><small>检索字段</small><strong>书名</strong><span aria-hidden="true">▾</span></button>
-              <button type="button" className="zju-catalog-scope"><small>馆藏范围</small><strong>全部馆藏</strong><span aria-hidden="true">▾</span></button>
+              <button type="button" className="zju-catalog-field" onClick={() => announce("当前检索字段固定为书名，高级检索可查看其他条件。")}><small>检索字段</small><strong>书名</strong><span aria-hidden="true">▾</span></button>
+              <button type="button" className="zju-catalog-scope" onClick={() => announce("当前馆藏范围为全部馆藏。")}><small>馆藏范围</small><strong>全部馆藏</strong><span aria-hidden="true">▾</span></button>
             </div>
           </section>
 
@@ -1734,7 +1840,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <BottomNav
           items={[{ label: "首页", icon: "⌂" }, { label: "我的中心", icon: "♙" }]}
           active="首页"
-          onSelect={(label) => announce(label === "首页" ? "当前位于空间预约列表。" : "我的预约已打开。")}
+          onSelect={(label) => label === "首页" ? announce("当前位于空间预约列表。") : navigateBottomLabel(label)}
         />
       </section>
     );
@@ -1774,8 +1880,8 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             <div>
               <h2>主馆 · 二层 · {selectedRoom}</h2>
               <p>
-                <button type="button" onClick={() => announce("平面图已打开。")}>查看平面图 ›</button>
-                <button type="button" onClick={() => announce(`${selectedRoom}房间详情已打开。`) }>查看房间详情 ›</button>
+                <button type="button" onClick={() => { setSeatView("map"); announce("已切换到下方平面图。"); }}>查看平面图 ›</button>
+                <button type="button" onClick={() => announce(`${selectedRoom}：座位 ${ROOMS.find((room) => room.label === selectedRoom)?.seats ?? 0}，当前空闲 ${ROOMS.find((room) => room.label === selectedRoom)?.available ?? 0}。`) }>查看房间详情 ›</button>
               </p>
             </div>
             <button type="button" className="zju-seat-available" onClick={() => announce("当前空余 32 个座位。")}>空余 32</button>
@@ -1811,7 +1917,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </div>
 
           <div className="zju-seat-toolbar">
-            <p>已选座位号：<strong>{state.ui.librarySelectedSeat ?? "-"}</strong></p>
+            <p>已选：<strong>{state.ui.librarySelectedSeat ?? "-"}</strong><small>筛选：{seatFilter}</small></p>
             <button type="button" onClick={() => setOverlay({ kind: "filter" })}><span aria-hidden="true">▽≡</span>筛选</button>
           </div>
 
@@ -1867,7 +1973,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             <div className="zju-hub-name">
               <strong>{identityReadable ? actOneContent.studentName : "身份未读取"}</strong><small>浙江大学</small>
             </div>
-            <span className="zju-hub-search-pill zju-locked-control-icon" data-locked-icon="hub-search" aria-hidden="true">⌕</span>
+            {identityReadable ? (
+              <button type="button" className="zju-hub-search-pill" aria-label="打开浙大百事通搜索" onClick={() => setOverlay({ kind: "search" })}>
+                <span aria-hidden="true">⌕</span><small>百事通</small>
+              </button>
+            ) : (
+              <span className="zju-hub-search-pill zju-locked-control-icon" data-locked-icon="hub-search" aria-hidden="true"><span>⌕</span><small>百事通</small></span>
+            )}
           </section>
 
           <section className="zju-identity-card" data-ui-part="identity-card">
@@ -1920,23 +2032,27 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             </div>
           </section>
 
-          <div className="zju-baishitong-search zju-locked-control-icon" data-locked-icon="campus-search" aria-hidden="true"><span>⌕</span></div>
+          {identityReadable ? (
+            <button type="button" className="zju-baishitong-search" aria-label="搜索浙大钉应用与服务" onClick={() => setOverlay({ kind: "search" })}>
+              <span aria-hidden="true">⌕</span><em>搜索应用与服务</em><i aria-hidden="true" /><strong>搜索</strong>
+            </button>
+          ) : (
+            <span className="zju-baishitong-search zju-locked-control-icon" data-locked-icon="campus-search" aria-hidden="true"><span>⌕</span><em>浙大百事通</em><i /><strong>搜索</strong></span>
+          )}
 
           <section className="zju-hub-app-panel" aria-label="浙大钉应用" data-ui-part="application-grid">
-            {HUB_APPS.map((app) => {
-              const enabled = app.label === "学在浙大"
-                || (app.label === "校园地图" && access.fullCampusMap)
-                || (app.label === "图书馆" && access.library);
+            {ZJUDING_APP_REGISTRY.map((app) => {
+              const enabled = isZjudingAppAvailable(app, appAccessContext);
               return enabled ? (
-                <button key={app.label} type="button" data-app-id={app.label} onClick={() => openApp(app.label, app.page)}>
+                <button key={app.id} type="button" data-app-id={app.id} onClick={() => openApp(app.id)}>
                   <PixelAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} />
                   <span>{app.label}</span>
                 </button>
               ) : (
                 <span
-                  key={app.label}
+                  key={app.id}
                   className="zju-static-app zju-locked-icon-slot"
-                  data-locked-app={app.label}
+                  data-locked-app={app.id}
                   aria-hidden="true"
                 >
                   <PixelAppIcon symbol={app.icon} tone={app.tone} />
@@ -1946,20 +2062,30 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
             })}
           </section>
         </main>
-        <nav className="zju-native-bottom-nav zju-bottom-static" aria-label="页面导航">
-          {HUB_BOTTOM_ITEMS.map((item, index) => (
-            <span key={item.label} data-locked-icon={`hub-nav-${index + 1}`} aria-hidden="true">
-              <i>{item.icon}</i><small>{item.label}</small>
-            </span>
-          ))}
-        </nav>
+        <BottomNav
+          items={HUB_BOTTOM_ITEMS.map((item) => ({
+            ...item,
+            locked: item.label !== "首页" && !identityReadable
+          }))}
+          active="首页"
+          onSelect={navigateBottomLabel}
+        />
       </section>
     );
   }
 
   const renderedPage = cloneElement(page, {
     key: currentPage,
-    className: `${page.props.className ?? ""} zju-page-enter`.trim()
+    className: `${page.props.className ?? ""} zju-page-enter`.trim(),
+    onPointerDownCapture: (event: React.PointerEvent<HTMLElement>) => {
+      const target = event.target instanceof Element
+        ? event.target.closest<HTMLElement>("button, [role='button'], input, select, textarea, [tabindex]")
+        : null;
+      if (target) sheetTriggerRef.current = target;
+    },
+    onFocusCapture: (event: React.FocusEvent<HTMLElement>) => {
+      if (event.target instanceof HTMLElement) sheetTriggerRef.current = event.target;
+    }
   });
 
   return (
@@ -1986,18 +2112,33 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </div>
       ) : null}
       {overlay?.kind === "search" ? (
-        <ActionSheet title="浙大百事通" onClose={() => setOverlay(null)}>
+        <ActionSheet title="浙大百事通" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <label className="zju-search-field">
             <span>搜索应用</span>
-            <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="输入应用名称" />
+            <input
+              autoFocus
+              data-phone-autofocus
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="输入应用名称"
+            />
           </label>
           <div className="zju-sheet-actions">
             {searchResults.length ? (
-              searchResults.map((app) => (
-                <button key={app.label} type="button" onClick={() => openApp(app.label, app.page)}>
-                  {app.label}
-                </button>
-              ))
+              searchResults.map((app) => {
+                const available = isZjudingAppAvailable(app, appAccessContext);
+                return available ? (
+                  <button key={app.id} type="button" onClick={() => openApp(app.id)}>
+                    <PixelAppIcon symbol={app.icon} tone={app.tone} badge={app.badge} />
+                    <span>{app.label}</span>
+                  </button>
+                ) : (
+                  <span key={app.id} className="zju-search-locked-result" aria-hidden="true">
+                    <PixelAppIcon symbol={app.icon} tone={app.tone} />
+                    <span>{app.label}</span>
+                  </span>
+                );
+              })
             ) : (
               <p>没有匹配的应用</p>
             )}
@@ -2005,16 +2146,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </ActionSheet>
       ) : null}
       {overlay?.kind === "actions" ? (
-        <ActionSheet title={overlay.title} onClose={() => setOverlay(null)}>
+        <ActionSheet title={overlay.title} onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {overlay.actions.map((action) => (
               <button
                 key={action}
                 type="button"
-                onClick={() => {
-                  setOverlay(null);
-                  action === "退出浙大钉" ? router.goTo("phone_home") : announce(`${action}已执行。`);
-                }}
+                onClick={() => handleActionSheetAction(action)}
               >
                 {action}
               </button>
@@ -2023,7 +2161,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </ActionSheet>
       ) : null}
       {overlay?.kind === "libraries" ? (
-        <ActionSheet title="选择馆舍" onClose={() => setOverlay(null)}>
+        <ActionSheet title="选择馆舍" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["主馆", "基础馆", "农医馆", "紫金港西区馆"].map((library) => (
               <button
@@ -2042,7 +2180,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </ActionSheet>
       ) : null}
       {overlay?.kind === "date" ? (
-        <ActionSheet title="预约日期" onClose={() => setOverlay(null)}>
+        <ActionSheet title="预约日期" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["07月10日 · 今天", "07月11日 · 明天", "07月12日 · 后天"].map((date) => (
               <button key={date} type="button" onClick={() => { setSelectedDate(date); setOverlay(null); }}>
@@ -2053,7 +2191,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </ActionSheet>
       ) : null}
       {overlay?.kind === "time" ? (
-        <ActionSheet title="预约时段" onClose={() => setOverlay(null)}>
+        <ActionSheet title="预约时段" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["08:00 - 12:00", "13:00 - 17:00", "18:00 - 22:00", "00:01 - 23:59"].map((time) => (
               <button key={time} type="button" onClick={() => { setSelectedTime(time); setOverlay(null); }}>
@@ -2064,10 +2202,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </ActionSheet>
       ) : null}
       {overlay?.kind === "filter" ? (
-        <ActionSheet title="筛选座位" onClose={() => setOverlay(null)}>
+        <ActionSheet title="筛选座位" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <div className="zju-sheet-actions">
             {["靠窗", "有电源", "安静区", "全部座位"].map((filter) => (
-              <button key={filter} type="button" onClick={() => { setOverlay(null); announce(`已应用筛选：${filter}。`); }}>
+              <button key={filter} type="button" onClick={() => { setSeatFilter(filter); setOverlay(null); announce(`当前座位筛选已切换为：${filter}。`); }}>
                 {filter}
               </button>
             ))}
@@ -2075,7 +2213,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         </ActionSheet>
       ) : null}
       {overlay?.kind === "confirm" ? (
-        <ActionSheet title="确认预约" onClose={() => setOverlay(null)}>
+        <ActionSheet title="确认预约" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
           <p className="reservation-summary">
             {selectedLibrary} · {selectedRoom} · {state.ui.librarySelectedSeat} 号座位
             <br />

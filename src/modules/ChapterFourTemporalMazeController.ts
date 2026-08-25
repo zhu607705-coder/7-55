@@ -274,10 +274,50 @@ export type ChapterFour755IntentResultReason =
   | "locked"
   | "inactive";
 
+export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
+  "prologue_requirements_unmet",
+  "current_phase_mismatch",
+  "target_unavailable",
+  "route_not_available",
+  "stair_route_not_available",
+  "bakery_lamp_required",
+  "bakery_stop_pending",
+  "hour_hand_required",
+  "room204_observations_required",
+  "room204_layout_incomplete",
+  "room204_unknown_piece",
+  "room204_unknown_slot",
+  "room204_invalid_orientation",
+  "room204_duplicate_piece",
+  "room204_slot_occupied",
+  "room204_piece_already_placed",
+  "room204_projection_required",
+  "positioning_plate_required",
+  "cart_wheel_inspection_required",
+  "cart_wheel_cover_required",
+  "cart_wheel_repair_required",
+  "clock_gear_repair_required",
+  "final_clock_drag_not_armed",
+  "blackout_not_started",
+  "chase_attempt_stale",
+  "final_minute_not_recovered",
+  "return_route_incomplete",
+  "interlude_completion_required",
+  "checkin_requirements_incomplete",
+  "checkin_card_already_accepted",
+  "checkin_paper_already_accepted",
+  "closure_prerequisites_incomplete",
+  "closure_session_unverified"
+] as const);
+
+export type ChapterFour755IntentDetailCode =
+  (typeof CHAPTER_FOUR_755_INTENT_DETAIL_CODES)[number];
+
 export interface ChapterFour755IntentResult {
   accepted: boolean;
   changed: boolean;
   reason: ChapterFour755IntentResultReason;
+  detailCode?: ChapterFour755IntentDetailCode;
   intentType: ChapterFour755Intent["type"];
   previousPhase: ChapterFourPhase | null;
   phase: ChapterFourPhase | null;
@@ -413,6 +453,116 @@ const ALLOWED_LOCATIONS_BY_PHASE: Readonly<Record<ChapterFourPhase, readonly All
   complete: []
 };
 
+function lockedDetailForIntent(
+  state: GameState,
+  chapter: ChapterFourState,
+  intent: ChapterFour755Intent
+): ChapterFour755IntentDetailCode {
+  switch (intent.type) {
+    case "complete_prologue_handoff":
+      return "prologue_requirements_unmet";
+    case "move_to_location":
+    case "record_checkpoint":
+      return "route_not_available";
+    case "traverse_main_stair":
+      return "stair_route_not_available";
+    case "inspect_bakery_conveyor_edge":
+      return hasFact(chapter, "bakery_conveyor_lamp_inspected")
+        ? "bakery_stop_pending"
+        : "bakery_lamp_required";
+    case "complete_bakery_conveyor_stop":
+      return hasFact(chapter, "bakery_conveyor_lamp_inspected")
+        ? "bakery_stop_pending"
+        : "bakery_lamp_required";
+    case "collect_hour_hand":
+    case "install_hour_hand":
+      return "hour_hand_required";
+    case "place_room204_piece": {
+      if (chapter.room204Placements.some((placement) => placement.pieceId === intent.pieceId)) {
+        return "room204_piece_already_placed";
+      }
+      if (chapter.room204Placements.some((placement) => placement.slotId === intent.slotId)) {
+        return "room204_slot_occupied";
+      }
+      if (!hasFact(chapter, "a3_reference_observed")
+        || !hasFact(chapter, "room204_residual_observed")) {
+        return "room204_observations_required";
+      }
+      return "target_unavailable";
+    }
+    case "complete_room204_projection":
+      if (!hasFact(chapter, "a3_reference_observed")
+        || !hasFact(chapter, "room204_residual_observed")) {
+        return "room204_observations_required";
+      }
+      return "room204_layout_incomplete";
+    case "collect_positioning_plate":
+      return "room204_projection_required";
+    case "install_positioning_plate":
+      return "positioning_plate_required";
+    case "open_cart_wheel_cover":
+      return "cart_wheel_inspection_required";
+    case "collect_lubricating_oil":
+    case "lubricate_cart_wheel":
+      return "cart_wheel_cover_required";
+    case "lubricate_clock_gear":
+      return "cart_wheel_repair_required";
+    case "begin_final_clock_drag":
+      return hasFact(chapter, "clock_gear_repaired")
+        ? "final_clock_drag_not_armed"
+        : "clock_gear_repair_required";
+    case "complete_minute_theft":
+    case "trigger_minute_theft":
+      return "final_clock_drag_not_armed";
+    case "open_power_panel":
+    case "toggle_light_zone":
+    case "lock_light_grid":
+      return "blackout_not_started";
+    case "reach_202_threshold":
+    case "fail_chase":
+      return "chase_attempt_stale";
+    case "collect_final_minute":
+      return "final_minute_not_recovered";
+    case "install_final_minute":
+      if (!state.chapterThreeInterlude.completed
+        || state.chapterThreeInterlude.phase !== "complete") {
+        return "interlude_completion_required";
+      }
+      if (!hasFact(chapter, "final_minute_recovered") || !state.items.finalMinute) {
+        return "final_minute_not_recovered";
+      }
+      return "return_route_incomplete";
+    case "read_campus_card":
+      if (chapter.checkinCardAccepted || hasFact(chapter, "checkin_card_accepted")) {
+        return "checkin_card_already_accepted";
+      }
+      return "checkin_requirements_incomplete";
+    case "submit_attendance_paper":
+      if (chapter.checkinPaperAccepted || hasFact(chapter, "checkin_paper_accepted")) {
+        return "checkin_paper_already_accepted";
+      }
+      return "checkin_requirements_incomplete";
+    case "acknowledge_exterior_closure":
+      return "closure_prerequisites_incomplete";
+    default:
+      return "current_phase_mismatch";
+  }
+}
+
+function room204IssueDetailCode(
+  issue: "unknown_piece" | "unknown_slot" | "invalid_orientation" | "duplicate_piece" | "occupied_slot" | "already_placed"
+): ChapterFour755IntentDetailCode {
+  const byIssue: Record<typeof issue, ChapterFour755IntentDetailCode> = {
+    unknown_piece: "room204_unknown_piece",
+    unknown_slot: "room204_unknown_slot",
+    invalid_orientation: "room204_invalid_orientation",
+    duplicate_piece: "room204_duplicate_piece",
+    occupied_slot: "room204_slot_occupied",
+    already_placed: "room204_piece_already_placed"
+  };
+  return byIssue[issue];
+}
+
 export class ChapterFourTemporalMazeController {
   private finalClockDragArmed = false;
 
@@ -430,10 +580,22 @@ export class ChapterFourTemporalMazeController {
     const state = this.store.getState();
     const chapter = activeChapterFour(state);
     const previousPhase = chapter?.phase ?? null;
-    const reject = (reason: Exclude<ChapterFour755IntentResultReason, "accepted">): ChapterFour755IntentResult => ({
+    const reject = (
+      reason: Exclude<ChapterFour755IntentResultReason, "accepted">,
+      detailCode?: ChapterFour755IntentDetailCode
+    ): ChapterFour755IntentResult => ({
       accepted: false,
       changed: false,
       reason,
+      ...(reason === "locked"
+        ? {
+            detailCode: detailCode ?? (chapter
+              ? lockedDetailForIntent(state, chapter, intent)
+              : "current_phase_mismatch")
+          }
+        : detailCode
+          ? { detailCode }
+          : {}),
       intentType: intent.type,
       previousPhase,
       phase: previousPhase
@@ -671,7 +833,7 @@ export class ChapterFourTemporalMazeController {
         this.emitChapterFourCue("chapter4_time_swap_committed", {
           previousPhase,
           phase: "room204_restore",
-          timeState: "1850_room204"
+          timeState: "1850_evening"
         });
         return result;
       }
@@ -696,7 +858,10 @@ export class ChapterFourTemporalMazeController {
           orientation: intent.orientation
         });
         if (!resolution.accepted) {
-          return reject(resolution.issue === "already_placed" ? "already_complete" : "incorrect");
+          return reject(
+            resolution.issue === "already_placed" ? "already_complete" : "incorrect",
+            room204IssueDetailCode(resolution.issue)
+          );
         }
         const restored = resolution.complete
           && hasFact(chapter, "a3_reference_observed")
@@ -760,9 +925,14 @@ export class ChapterFourTemporalMazeController {
           || hasFact(chapter, "cart_wheel_repaired")
           || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
         if (hasFact(chapter, "cart_wheel_inspected")) return reject("already_complete");
-        return accept(this.patchChapter(state, {
+        const result = accept(this.patchChapter(state, {
           factIds: appendFact(chapter, "cart_wheel_inspected")
         }));
+        this.emitChapterFourCue("maintenance_cart_wheel_stuck", {
+          phase: chapter.phase,
+          targetId: intent.targetId
+        });
+        return result;
       }
 
       case "collect_short_pry_bar": {
@@ -795,9 +965,14 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "cart_wheel_cover_opened")
           || !state.items.universalLubricatingOil
           || hasFact(chapter, "cart_wheel_repaired")) return reject("locked");
-        return accept(this.patchChapter(state, {
+        const result = accept(this.patchChapter(state, {
           factIds: appendFact(chapter, "cart_wheel_repaired")
         }));
+        this.emitChapterFourCue("maintenance_cart_wheel_repaired", {
+          phase: chapter.phase,
+          targetId: intent.targetId
+        });
+        return result;
       }
 
       case "lubricate_clock_gear": {
@@ -1095,14 +1270,28 @@ export class ChapterFourTemporalMazeController {
         if (!reference
           || !closureProofMatchesReference(intent.proof, reference)
           || !this.closureSessionVerifier.verifyCompletedSession(intent.proof)) {
-          return reject("locked");
+          return reject("locked", "closure_session_unverified");
         }
-        return accept(this.transition(state, "complete", {
+        const completedState = this.transition(state, "complete", {
           factIds: appendFact(chapter, "exterior_closure_acknowledged"),
           exteriorClosureAcknowledged: true,
           completed: true,
           chaseRestartCheckpoint: null
-        }));
+        });
+        return accept({
+          ...completedState,
+          runtimeMode: "phone",
+          currentScene: "phone_home",
+          postgame: {
+            completionReceipt: "chapter4_closure_v1"
+          },
+          ui: {
+            ...completedState.ui,
+            controlCenterOpen: false,
+            inventoryOpen: false,
+            selectedItem: null
+          }
+        });
       }
     }
   }

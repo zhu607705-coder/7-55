@@ -51,6 +51,10 @@ export function isLegacyChapterFourPhoneGatePhase(phase: unknown): boolean {
   return typeof phase === "string" && LEGACY_CHAPTER_FOUR_PHONE_GATE_PHASES.has(phase);
 }
 
+export function selectMainStoryCompleted(state: GameState): boolean {
+  return state.postgame.completionReceipt === "chapter4_closure_v1";
+}
+
 export function selectFeatureAccess(state: GameState): FeatureAccess {
   const puzzle = state.ui.libraryFinalsPuzzle;
   const interludeActive = state.qizhenLake.phase === "complete"
@@ -82,9 +86,10 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     && ["top_ten_rising", "top_ten_reached", "recovery_application", "pass_ready", "backpack_removed", "seat_recovered", "friend_contacted"]
       .includes(state.ui.libraryFinalsPhase);
   const libraryRecovery = RECOVERY_VISIBLE_PHASES.has(state.ui.libraryFinalsPhase);
+  const endlessChallenge = selectMainStoryCompleted(state);
   // The portrait runner remains a retained mini-game implementation, but it
   // no longer participates in the formal chapter-three unlock path.
-  const bikeArcade = false;
+  const bikeArcade = endlessChallenge;
 
   return {
     chapter,
@@ -101,6 +106,7 @@ export function selectFeatureAccess(state: GameState): FeatureAccess {
     cc98Bd,
     libraryRecovery,
     bikeArcade,
+    endlessChallenge,
     timelineRecovery: interludeActive,
     voiceMemos: interludeActive,
     clockCalibration: false
@@ -115,7 +121,7 @@ export function canEnterScene(state: GameState, scene: SceneId): boolean {
   if (scene === "timeline_recovery") return access.timelineRecovery;
   if (scene === "voice_memos") return access.voiceMemos;
   if (scene === "weather") return access.weather;
-  if (scene === "bike_arcade") return access.bikeArcade;
+  if (scene === "bike_arcade") return access.endlessChallenge;
   if (scene === "chapter_transition") return access.chapter !== "chapter_one";
   if (scene === "clock") return access.clockCalibration;
   return true;

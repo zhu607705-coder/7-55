@@ -13,6 +13,7 @@ export function preloadRpgImage(
   url: string
 ): void {
   if (!scene.textures.exists(key)) {
+    scene.load.setCORS("anonymous");
     scene.load.image(key, url);
   }
 }
@@ -33,6 +34,7 @@ export function preloadRpgSpriteSheet(
   frameConfig: Phaser.Types.Loader.FileTypes.ImageFrameConfig
 ): void {
   if (!scene.textures.exists(key)) {
+    scene.load.setCORS("anonymous");
     scene.load.spritesheet(key, url, frameConfig);
   }
 }

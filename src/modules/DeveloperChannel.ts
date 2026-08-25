@@ -1,5 +1,6 @@
 import { createInitialGameState } from "../core/GameState";
 import type {
+  EndlessChallengeModeId,
   GameState,
   GameStore,
   LibraryFinalsPhase,
@@ -10,8 +11,9 @@ import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
   DEVELOPER_BIKE_START_KEY,
-  DEVELOPER_CANTEEN_DEFENSE_START_KEY,
+  DEVELOPER_ENDLESS_ARCADE_SEED_KEY,
   DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY,
+  DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY,
   DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY,
   DEVELOPER_SOURCE_KEY
 } from "../core/StorageKeys";
@@ -25,6 +27,10 @@ import {
   ROOM204_PIECE_ORDER,
   ROOM204_SLOT_ORDER
 } from "../scenes/rpg/ChapterFourRoom204Model";
+import {
+  normalizeEndlessRunSummary,
+  normalizeEndlessRuntimeInteger
+} from "../scenes/phone/P16_BikeArcade/EndlessArcadeRuntime";
 
 const CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS = {
   "c4-prologue": 0,
@@ -65,11 +71,15 @@ export type DeveloperCheckpointId =
   | "c3-qizhen-tool-chain" | "c3-qizhen-swan" | "c3-qizhen-paper"
   | "c3-qizhen-chase" | "c3-qizhen-complete"
   | "c3-interlude-reboot" | "c3-interlude-journal" | "c3-interlude-photos"
-  | "c3-interlude-voice" | "c3-interlude-network" | "c3-interlude-timeline" | "c3-interlude-replay"
+  | "c3-interlude-voice" | "c3-interlude-network" | "c3-interlude-timeline" | "c3-interlude-destination" | "c3-interlude-replay"
   | "c4-755-opening" | "c4-755-hall-clock" | "c4-755-bakery-1225"
   | "c4-755-room204-1850" | "c4-755-maintenance-2245"
-  | "c4-755-blackout-0754" | "c4-755-light-grid" | "c4-755-chase"
-  | "c4-755-final-minute" | "c4-755-checkin" | "c4-755-complete"
+  | "c4-755-blackout-0754" | "c4-755-chase" | "c4-755-final-minute"
+  | "c4-755-return-clock" | "c4-755-checkin" | "c4-755-closure"
+  | "postgame-phone-home" | "postgame-endless-hub"
+  | "postgame-fishing-start" | "postgame-fishing-fail"
+  | "postgame-spotlight-start" | "postgame-spotlight-fail"
+  | "postgame-bike-lap2" | "postgame-bike-fail"
   | Chapter4PrologueDeveloperCheckpointId
   | "c4-prologue-done" | "c4-arrival" | "c4-airflow" | "c4-main-elevator"
   | "c4-wechat-notice" | "c4-wechat-elevator-audio" | "c4-elevator-aligned"
@@ -83,13 +93,13 @@ type LegacyDeveloperCheckpointId =
   | "c3-intro" | "c3-congestion" | "c3-sprint" | "c3-result"
   | "c3-qizhen-reflection" | "c3-qizhen-signs" | "c3-qizhen-decoy"
   | "c3-qizhen-mist" | "c3-qizhen-release" | "c4-clock-calibration"
+  | "c4-755-light-grid" | "c4-755-complete"
   | "c4-prologue-done" | "c4-arrival" | "c4-airflow" | "c4-main-elevator"
   | "c4-wechat-notice" | "c4-wechat-elevator-audio" | "c4-elevator-aligned"
   | "c4-a2-arrival" | "c4-wechat-student-route" | "c4-a2-schedule-observed"
   | "c4-a3-wayfinding" | "c4-wechat-wayfinding" | "c4-a2-return-window"
   | "c4-stair-echo" | "c4-clock-intro" | "c4-clock-coarse"
-  | "c4-clock-precision" | "c4-clock-release"
-  | Chapter4PrologueDeveloperCheckpointId;
+  | "c4-clock-precision" | "c4-clock-release";
 
 type DeveloperCheckpointRequestId = DeveloperCheckpointId | LegacyDeveloperCheckpointId;
 type LibraryDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c2-${string}`>;
@@ -98,6 +108,25 @@ type TheaterDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-theater-$
 type QizhenDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-qizhen-${string}`>;
 type ChapterThreeInterludeDeveloperCheckpointId = Extract<DeveloperCheckpointId, `c3-interlude-${string}`>;
 type ChapterFour755DeveloperCheckpointId = Extract<DeveloperCheckpointId, `c4-755-${string}`>;
+type PostgameDeveloperCheckpointId = Extract<DeveloperCheckpointId, `postgame-${string}`>;
+
+type EndlessArcadeDeveloperBoot = "hub" | "intro" | "running" | "game_over";
+type PostgameDeveloperSummary = {
+  mode: EndlessChallengeModeId;
+  score: number;
+  progress: number;
+  tier: number;
+  combo: number;
+  durationMs: number;
+  status?: string;
+};
+
+export interface EndlessArcadeDeveloperSeed {
+  mode: EndlessChallengeModeId | null;
+  boot: EndlessArcadeDeveloperBoot;
+  bikeStartDistance?: number;
+  summary?: PostgameDeveloperSummary | null;
+}
 
 export interface DeveloperCheckpoint {
   id: DeveloperCheckpointId;
@@ -153,10 +182,10 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-canteen-drinks", chapter: "第三章", label: "调配今日新品", detail: "三种饮料与插队合法化" },
   { id: "c3-canteen-menu", chapter: "第三章", label: "点餐机", detail: "浅色与深色菜单" },
   { id: "c3-canteen-pickup", chapter: "第三章", label: "0755 取餐", detail: "按暗号选择窗口" },
-  { id: "c3-canteen-block", chapter: "第三章", label: "守出口·开始", detail: "完整 60 秒实时拦截" },
-  { id: "c3-canteen-block-2", chapter: "第三章", label: "守出口·中段", detail: "剩余 30 秒，纸条已经加速" },
-  { id: "c3-canteen-block-3", chapter: "第三章", label: "守出口·末段", detail: "剩余 10 秒，折返时自动闪路线" },
-  { id: "c3-canteen-bike", chapter: "第三章", label: "解锁自行车", detail: "深色读码、擦锁并支付 2 元" },
+  { id: "c3-canteen-block", chapter: "第三章", label: "推车守出口", detail: "60 秒全地图餐盘车追逐" },
+  { id: "c3-canteen-block-2", chapter: "第三章", label: "气泡减速验收", detail: "拖入今日新品减速纸条" },
+  { id: "c3-canteen-block-3", chapter: "第三章", label: "暗色提示验收", detail: "闪现一秒下一个出口" },
+  { id: "c3-canteen-bike", chapter: "第三章", label: "解锁自行车", detail: "使用餐盘回收费" },
   { id: "c3-canteen-chase", chapter: "第三章", label: "755 米 3D 追逐", detail: "A / D 三车道骑行" },
   { id: "c3-canteen-theater", chapter: "第三章", label: "抵达剧院", detail: "纸条钻进剧院" },
   { id: "c3-theater-entry", chapter: "第三章", label: "剧院检票", detail: "海报栏与取票机" },
@@ -189,22 +218,38 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-qizhen-complete", chapter: "第三章", label: "启真湖结束", detail: "磁性扣损坏，纸条逃离" },
   { id: "c3-interlude-reboot", chapter: "第三章", label: "3.5·恢复通知", detail: "手机检测到 7 分 55 秒未同步记录" },
   { id: "c3-interlude-journal", chapter: "第三章", label: "3.5·CC98 收尾", detail: "保存 22:37:05 离湖回复" },
-  { id: "c3-interlude-photos", chapter: "第三章", label: "3.5·恢复照片", detail: "按左、中、右整理三张方向帧" },
-  { id: "c3-interlude-voice", chapter: "第三章", label: "3.5·录音排序", detail: "按湖面、石岸、大厅、广播排序" },
-  { id: "c3-interlude-network", chapter: "第三章", label: "3.5·网络证据", detail: "保存公众号、群聊和 A1 接入点记录" },
-  { id: "c3-interlude-timeline", chapter: "第三章", label: "3.5·时间线", detail: "排除旧时间并排列四项证据" },
+  { id: "c3-interlude-photos", chapter: "第三章", label: "3.5·恢复照片", detail: "从七帧中恢复一次连续水平移动" },
+  { id: "c3-interlude-voice", chapter: "第三章", label: "3.5·录音筛选与排序", detail: "从七段恢复录音中筛选四段，再按声场变化排列" },
+  { id: "c3-interlude-network", chapter: "第三章", label: "3.5·网络证据", detail: "保存通知、路线截图并完成三维筛选" },
+  { id: "c3-interlude-timeline", chapter: "第三章", label: "3.5·旧时间排除", detail: "四项证据齐全，逐条排除三项旧时间" },
+  { id: "c3-interlude-destination", chapter: "第三章", label: "3.5·地点判断", detail: "自动时间线已汇总，从四个地点中判断最终去向" },
   { id: "c3-interlude-replay", chapter: "第三章", label: "3.5·恢复回放", detail: "目的地已确认，等待播放恢复回放" },
+  { id: "c4-prologue", chapter: "第四章", label: "3.5→4·完整回放", detail: "从启真湖离开画面开始播放 H3" },
+  { id: "c4-prologue-lake-exit", chapter: "第四章", label: "3.5→4·离湖", detail: "从离湖段落继续 H3" },
+  { id: "c4-prologue-arcade", chapter: "第四章", label: "3.5→4·街机衔接", detail: "从中段衔接画面继续 H3" },
+  { id: "c4-prologue-entrance", chapter: "第四章", label: "3.5→4·教学楼外", detail: "从教学楼入口段继续 H3" },
+  { id: "c4-prologue-lobby", chapter: "第四章", label: "3.5→4·进入大厅", detail: "从大厅段继续 H3" },
+  { id: "c4-prologue-closing", chapter: "第四章", label: "3.5→4·收尾", detail: "从回放收尾段继续 H3" },
+  { id: "c4-prologue-task-card", chapter: "第四章", label: "3.5→4·任务卡", detail: "未确认时刷新仍停在任务卡，确认后恢复 A1" },
   { id: "c4-755-opening", chapter: "第四章", label: "入楼与纸条", detail: "22:45 开场，等纸条落到公告栏" },
   { id: "c4-755-hall-clock", chapter: "第四章", label: "大厅旧钟", detail: "外部时间已驳回，可第一次拉动旧钟" },
   { id: "c4-755-bakery-1225", chapter: "第四章", label: "12:25 面包坊", detail: "检查灯与传送带，取回时针" },
   { id: "c4-755-room204-1850", chapter: "第四章", label: "18:50 教室复原", detail: "从 A3 参照开始恢复 204" },
   { id: "c4-755-maintenance-2245", chapter: "第四章", label: "22:45 维修链", detail: "检查保洁车车轮并修复旧钟" },
-  { id: "c4-755-blackout-0754", chapter: "第四章", label: "07:54 停电", detail: "最后一分钟被带走，配电箱已开放" },
-  { id: "c4-755-light-grid", chapter: "第四章", label: "五灯配电", detail: "初始 mask=6，解出通往楼梯的灯路" },
+  { id: "c4-755-blackout-0754", chapter: "第四章", label: "07:54 停电与配电", detail: "最后一分钟被带走，从配电箱初始状态解出灯路" },
   { id: "c4-755-chase", chapter: "第四章", label: "最终追逐", detail: "灯阵已锁定，从 A1 经主楼梯前往 202" },
   { id: "c4-755-final-minute", chapter: "第四章", label: "最后一分钟", detail: "202 门已关，取回投影中的分钟碎片" },
+  { id: "c4-755-return-clock", chapter: "第四章", label: "送回最后一分钟", detail: "从 A2 的 202 安全点出发，带齐三项材料返回旧钟" },
   { id: "c4-755-checkin", chapter: "第四章", label: "07:55 签到", detail: "时间已恢复，刷卡与纸条可任意顺序提交" },
-  { id: "c4-755-complete", chapter: "第四章", label: "外景收束等待正式素材", detail: "双签到已完成，completed=false，等待“灿若星辰” consumer proof" }
+  { id: "c4-755-closure", chapter: "第四章", label: "外景收束等待正式素材", detail: "双签到已完成，completed=false，等待“灿若星辰” consumer proof" },
+  { id: "postgame-phone-home", chapter: "寻人篇", label: "通关后手机主页", detail: "7:55 图标已解锁，保留正式回执" },
+  { id: "postgame-endless-hub", chapter: "寻人篇", label: "挑战中心", detail: "三模式入口与本机最佳成绩" },
+  { id: "postgame-fishing-start", chapter: "寻人篇", label: "节奏钓鱼开始", detail: "直接进入无尽节奏钓鱼运行态" },
+  { id: "postgame-fishing-fail", chapter: "寻人篇", label: "节奏钓鱼结算", detail: "直达失败结算，可立即重试或返回" },
+  { id: "postgame-spotlight-start", chapter: "寻人篇", label: "灯光追逐开始", detail: "直接进入无尽追光运行态" },
+  { id: "postgame-spotlight-fail", chapter: "寻人篇", label: "灯光追逐结算", detail: "直达失败结算，可立即重试或返回" },
+  { id: "postgame-bike-lap2", chapter: "寻人篇", label: "755 米骑行跨圈", detail: "从第二圈附近开始，验证跨圈与暂停恢复" },
+  { id: "postgame-bike-fail", chapter: "寻人篇", label: "755 米骑行结算", detail: "直达失败结算，可立即重试或返回" }
 ];
 
 const CHECKPOINT_IDS = new Set(DEVELOPER_CHECKPOINTS.map((checkpoint) => checkpoint.id));
@@ -225,13 +270,8 @@ const LEGACY_CHECKPOINT_ALIASES: Record<LegacyDeveloperCheckpointId, DeveloperCh
   "c3-qizhen-mist": "c3-qizhen-paper",
   "c3-qizhen-release": "c3-qizhen-chase",
   "c4-clock-calibration": "c4-755-opening",
-  "c4-prologue": "c4-755-opening",
-  "c4-prologue-lake-exit": "c4-755-opening",
-  "c4-prologue-arcade": "c4-755-opening",
-  "c4-prologue-entrance": "c4-755-opening",
-  "c4-prologue-lobby": "c4-755-opening",
-  "c4-prologue-closing": "c4-755-opening",
-  "c4-prologue-task-card": "c4-755-opening",
+  "c4-755-light-grid": "c4-755-blackout-0754",
+  "c4-755-complete": "c4-755-closure",
   "c4-prologue-done": "c4-755-opening",
   "c4-arrival": "c4-755-opening",
   "c4-airflow": "c4-755-opening",
@@ -710,16 +750,22 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       drinkMixAttemptCount: afterDrinkStage ? 1 : 0,
       queueChallengeSeen: afterDrinkStage,
       promoDrinkPlaced: afterDrinkStage,
-      queueGapOpened: id === "c3-canteen-menu" ? false : afterDrinkStage,
+      queueGapOpened: afterDrinkStage,
       menuDarkClueRead: afterMenuStage,
       pickupTimeErrorSeen: false,
       pickupDarkClueRead: afterPickupStage,
       defenseDrinkUsed: false,
       orderedMenuOption: afterMenuStage && !afterPickupStage ? "D" : null,
-      identifiedExitIds: afterBlockingStage ? ["southeast", "steam", "west"] : [],
+      identifiedExitIds: afterBlockingStage
+        ? ["southeast", "steam", "west"]
+        : id === "c3-canteen-block-3"
+          ? ["southeast", "steam"]
+          : id === "c3-canteen-block-2"
+            ? ["southeast"]
+            : [],
       orderAttemptCount: afterMenuStage ? 1 : 0,
       pickupAttemptCount: afterPickupStage ? 1 : 0,
-      blockHits: afterBlockingStage ? 3 : 0,
+      blockHits: afterBlockingStage ? 3 : id === "c3-canteen-block-3" ? 2 : id === "c3-canteen-block-2" ? 1 : 0,
       bikeCodeRead: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       bikeLockCleaned: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       bikePaid: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
@@ -998,10 +1044,11 @@ function createChapterThreeInterludeCheckpointState(id: ChapterThreeInterludeDev
   const base = createQizhenCheckpointState("c3-qizhen-complete");
   const journalReady = id !== "c3-interlude-reboot" && id !== "c3-interlude-journal";
   const photosReady = [
-    "c3-interlude-voice", "c3-interlude-network", "c3-interlude-timeline", "c3-interlude-replay"
+    "c3-interlude-voice", "c3-interlude-network", "c3-interlude-timeline", "c3-interlude-destination", "c3-interlude-replay"
   ].includes(id);
-  const voiceReady = ["c3-interlude-network", "c3-interlude-timeline", "c3-interlude-replay"].includes(id);
-  const networkReady = ["c3-interlude-timeline", "c3-interlude-replay"].includes(id);
+  const voiceReady = ["c3-interlude-network", "c3-interlude-timeline", "c3-interlude-destination", "c3-interlude-replay"].includes(id);
+  const networkReady = ["c3-interlude-timeline", "c3-interlude-destination", "c3-interlude-replay"].includes(id);
+  const destinationChoiceReady = id === "c3-interlude-destination" || id === "c3-interlude-replay";
   const replayReady = id === "c3-interlude-replay";
   const currentScene: SceneId = id === "c3-interlude-reboot"
     ? "phone_home"
@@ -1043,9 +1090,9 @@ function createChapterThreeInterludeCheckpointState(id: ChapterThreeInterludeDev
       routeScreenshotSaved: networkReady,
       networkRecordRead: networkReady,
       evidenceIds,
-      timelineOrder: replayReady ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"] : [],
-      rejectedDecoyIds: replayReady ? ["canteen_0755", "theater_0832", "status_clock_075523"] : [],
-      statusClockMarkedUntrusted: replayReady,
+      timelineOrder: destinationChoiceReady ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"] : [],
+      rejectedDecoyIds: destinationChoiceReady ? ["canteen_0755", "theater_0832", "status_clock_075523"] : [],
+      statusClockMarkedUntrusted: destinationChoiceReady,
       destinationId: replayReady ? "duan_yongping_a1" : null,
       replayUnlocked: false,
       completed: false
@@ -1130,9 +1177,13 @@ const CHAPTER_FOUR_755_CHASE_FACTS = [
   "light_grid_locked"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
-const CHAPTER_FOUR_755_CHECKIN_FACTS = [
+const CHAPTER_FOUR_755_RETURN_CLOCK_FACTS = [
   ...CHAPTER_FOUR_755_CHASE_FACTS,
-  "final_minute_recovered",
+  "final_minute_recovered"
+] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
+
+const CHAPTER_FOUR_755_CHECKIN_FACTS = [
+  ...CHAPTER_FOUR_755_RETURN_CLOCK_FACTS,
   "final_minute_installed"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
@@ -1263,10 +1314,10 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       guardMode: "patrol"
     }, { attendanceRecordPaper: true });
   }
-  if (id === "c4-755-blackout-0754" || id === "c4-755-light-grid") {
+  if (id === "c4-755-blackout-0754") {
     return withChapter({
       phase: "blackout_light_grid",
-      roomId: id === "c4-755-light-grid" ? "a1_power_panel" : "a1_lobby",
+      roomId: "a1_power_panel",
       timeAuthority: "hall_clock",
       timeState: "0754_blackout",
       worldTimeSeconds: 28440,
@@ -1314,6 +1365,27 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       chaseRestartCheckpoint: "c4_a1_lobby"
     }, {}, "c4_a2_room202");
   }
+  if (id === "c4-755-return-clock") {
+    return withChapter({
+      phase: "return_to_clock",
+      floor: "A2",
+      roomId: "a2_room_202",
+      timeAuthority: "hall_clock",
+      timeState: "0754_blackout",
+      worldTimeSeconds: 28440,
+      phoneStatusTimeSeconds: 28440,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 28440,
+      factIds: [...CHAPTER_FOUR_755_RETURN_CLOCK_FACTS],
+      room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
+      lightGrid: { mask: 13, locked: true },
+      guardMode: "absent",
+      chaseRestartCheckpoint: "c4_a1_lobby"
+    }, {
+      attendanceRecordPaper: true,
+      finalMinute: true
+    }, "c4_a2_room202");
+  }
   if (id === "c4-755-checkin") {
     return withChapter({
       phase: "morning_checkin",
@@ -1330,30 +1402,163 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       guardMode: "absent"
     }, { attendanceRecordPaper: true });
   }
-  return withChapter({
-    phase: "exterior_closure",
-    roomId: "a1_exterior",
-    timeAuthority: "hall_clock",
-    timeState: "0755_morning",
-    worldTimeSeconds: 28500,
-    phoneStatusTimeSeconds: 28500,
-    phoneStatusTimeTrusted: true,
-    buildingTimeSeconds: 28500,
-    factIds: [...CHAPTER_FOUR_755_COMPLETE_WAIT_FACTS],
-    room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
-    lightGrid: { mask: 13, locked: true },
-    guardMode: "absent",
-    checkinCardAccepted: true,
-    checkinPaperAccepted: true,
-    exteriorClosureAcknowledged: false,
-    completed: false
-  }, { attendanceRecordPaper: true });
+  if (id === "c4-755-closure") {
+    return withChapter({
+      phase: "exterior_closure",
+      roomId: "a1_exterior",
+      timeAuthority: "hall_clock",
+      timeState: "0755_morning",
+      worldTimeSeconds: 28500,
+      phoneStatusTimeSeconds: 28500,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 28500,
+      factIds: [...CHAPTER_FOUR_755_COMPLETE_WAIT_FACTS],
+      room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
+      lightGrid: { mask: 13, locked: true },
+      guardMode: "absent",
+      checkinCardAccepted: true,
+      checkinPaperAccepted: true,
+      exteriorClosureAcknowledged: false,
+      completed: false
+    }, { attendanceRecordPaper: true });
+  }
+  throw new Error(`unhandled_chapter4_755_checkpoint:${id}`);
+}
+
+function createPostgameDeveloperState(currentScene: SceneId): GameState {
+  const initial = createInitialGameState();
+  return {
+    ...initial,
+    currentScene,
+    postgame: {
+      completionReceipt: "chapter4_closure_v1"
+    },
+    chapterThreeInterlude: {
+      ...initial.chapterThreeInterlude,
+      completed: true,
+      replayUnlocked: true
+    },
+    ui: {
+      ...initial.ui,
+      seenChapterIntros: ["chapter_one", "chapter_two", "chapter_three", "chapter_four"],
+      controlCenterOpen: false,
+      inventoryOpen: false,
+      selectedItem: null
+    }
+  };
+}
+
+function createPostgameDeveloperSummary(
+  mode: EndlessChallengeModeId,
+  score: number,
+  progress: number,
+  tier: number,
+  combo: number,
+  durationMs: number,
+  status: string
+): PostgameDeveloperSummary {
+  return { mode, score, progress, tier, combo, durationMs, status };
+}
+
+function createPostgameDeveloperSeed(
+  id: PostgameDeveloperCheckpointId
+): EndlessArcadeDeveloperSeed | null {
+  switch (id) {
+    case "postgame-phone-home":
+      return null;
+    case "postgame-endless-hub":
+      return { mode: null, boot: "hub" };
+    case "postgame-fishing-start":
+      return { mode: "fishing", boot: "running" };
+    case "postgame-fishing-fail":
+      return {
+        mode: "fishing",
+        boot: "game_over",
+        summary: createPostgameDeveloperSummary("fishing", 9_240, 6, 4, 19, 61_200, "line_snapped")
+      };
+    case "postgame-spotlight-start":
+      return { mode: "spotlight", boot: "running" };
+    case "postgame-spotlight-fail":
+      return {
+        mode: "spotlight",
+        boot: "game_over",
+        summary: createPostgameDeveloperSummary("spotlight", 12_880, 5, 5, 7, 42_400, "endless_spotlight_battery_empty")
+      };
+    case "postgame-bike-lap2":
+      return { mode: "bike", boot: "running", bikeStartDistance: 790 };
+    case "postgame-bike-fail":
+      return {
+        mode: "bike",
+        boot: "game_over",
+        summary: createPostgameDeveloperSummary("bike", 2_188, 1_244, 2, 6, 37_900, "endless_bike_lives_exhausted")
+      };
+  }
+}
+
+function createPostgameDeveloperCheckpointState(id: PostgameDeveloperCheckpointId): GameState {
+  return createPostgameDeveloperState(id === "postgame-phone-home" ? "phone_home" : "bike_arcade");
+}
+
+function encodeEndlessArcadeDeveloperSeed(seed: EndlessArcadeDeveloperSeed | null): string | null {
+  if (!seed) return null;
+  return JSON.stringify(seed);
+}
+
+export function readEndlessArcadeDeveloperSeed(
+  storage: Storage = window.sessionStorage
+): EndlessArcadeDeveloperSeed | null {
+  const checkpoint = getActiveDeveloperCheckpoint(storage);
+  if (!checkpoint?.startsWith("postgame-")) return null;
+  const fallback = createPostgameDeveloperSeed(checkpoint as PostgameDeveloperCheckpointId);
+  const raw = storage.getItem(DEVELOPER_ENDLESS_ARCADE_SEED_KEY);
+  if (!raw) return fallback;
+  try {
+    const parsed = JSON.parse(raw) as Partial<EndlessArcadeDeveloperSeed>;
+    if (parsed.boot !== "hub" && parsed.boot !== "intro" && parsed.boot !== "running" && parsed.boot !== "game_over") {
+      return fallback;
+    }
+    const mode = parsed.mode === "fishing" || parsed.mode === "spotlight" || parsed.mode === "bike"
+      ? parsed.mode
+      : null;
+    if (parsed.boot !== "hub" && mode === null) return fallback;
+    let summary: PostgameDeveloperSummary | null = null;
+    if (parsed.boot === "game_over") {
+      const candidate = parsed.summary;
+      const hasFiniteSummary = typeof candidate === "object"
+        && candidate !== null
+        && (candidate.mode === "fishing" || candidate.mode === "spotlight" || candidate.mode === "bike")
+        && Number.isFinite(candidate.score)
+        && Number.isFinite(candidate.progress)
+        && Number.isFinite(candidate.tier)
+        && Number.isFinite(candidate.combo)
+        && Number.isFinite(candidate.durationMs);
+      if (!hasFiniteSummary || candidate.mode !== mode) return fallback;
+      summary = {
+        ...normalizeEndlessRunSummary(mode, candidate),
+        status: typeof candidate.status === "string" ? candidate.status.slice(0, 48) : undefined
+      };
+    }
+    const bikeStartDistance = parsed.bikeStartDistance;
+    return {
+      mode: parsed.boot === "hub" ? null : mode,
+      boot: parsed.boot,
+      bikeStartDistance: typeof bikeStartDistance === "number" && Number.isFinite(bikeStartDistance)
+        ? normalizeEndlessRuntimeInteger(Math.trunc(bikeStartDistance))
+        : fallback?.bikeStartDistance,
+      summary
+    };
+  } catch {
+    return fallback;
+  }
 }
 
 export function createDeveloperCheckpointState(requestedId: DeveloperCheckpointRequestId): GameState {
   const id = resolveCheckpointId(requestedId);
   if (!id) {
     throw new Error(`unknown_developer_checkpoint:${requestedId}`);
+  }
+  if (id.startsWith("postgame-")) {
+    return createPostgameDeveloperCheckpointState(id as PostgameDeveloperCheckpointId);
   }
   const initial = createInitialGameState();
   if (id === "c1-alarm") return initial;
@@ -1821,22 +2026,21 @@ export function applyDeveloperCheckpoint(
   store: GameStore,
   requestedId: DeveloperCheckpointRequestId,
   storage: Storage = window.sessionStorage,
-  source: "panel" | "url" = "panel"
+  source: "panel" | "url" = "panel",
+  restoreActiveSession = false
 ): void {
   const id = resolveCheckpointId(requestedId);
   if (!id) return;
+  const resumeConfirmedTaskCard = id === "c4-prologue-task-card"
+    && restoreActiveSession
+    && storage.getItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY) === "1";
   if (!storage.getItem(DEVELOPER_BACKUP_KEY)) {
     storage.setItem(DEVELOPER_BACKUP_KEY, JSON.stringify(store.getState()));
   }
   storage.setItem(DEVELOPER_ACTIVE_KEY, id);
   storage.setItem(DEVELOPER_SOURCE_KEY, source);
   storage.setItem(DEVELOPER_BIKE_START_KEY, "0");
-  const defenseStartMs = id === "c3-canteen-block-2"
-    ? 30_000
-    : id === "c3-canteen-block-3"
-      ? 50_000
-      : 0;
-  storage.setItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY, String(defenseStartMs));
+  storage.removeItem(DEVELOPER_ENDLESS_ARCADE_SEED_KEY);
   if (id.startsWith("c3-qizhen-rhythm-")) {
     storage.setItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY, id.slice("c3-qizhen-rhythm-".length));
   } else {
@@ -1847,7 +2051,23 @@ export function applyDeveloperCheckpoint(
   } else {
     storage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
   }
-  store.setState(() => createDeveloperCheckpointState(id));
+  if (id !== "c4-prologue-task-card" || !resumeConfirmedTaskCard) {
+    storage.removeItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY);
+  }
+  if (id.startsWith("postgame-")) {
+    const endlessSeed = encodeEndlessArcadeDeveloperSeed(
+      createPostgameDeveloperSeed(id as PostgameDeveloperCheckpointId)
+    );
+    if (endlessSeed) {
+      storage.setItem(DEVELOPER_ENDLESS_ARCADE_SEED_KEY, endlessSeed);
+    }
+    if (id === "postgame-bike-lap2") {
+      storage.setItem(DEVELOPER_BIKE_START_KEY, "790");
+    }
+  }
+  store.setState(() => resumeConfirmedTaskCard
+    ? createChapterFour755CheckpointState("c4-755-opening")
+    : createDeveloperCheckpointState(id));
 }
 
 export function restoreDeveloperBackup(store: GameStore, storage: Storage = window.sessionStorage): boolean {
@@ -1862,19 +2082,15 @@ export function restoreDeveloperBackup(store: GameStore, storage: Storage = wind
   storage.removeItem(DEVELOPER_ACTIVE_KEY);
   storage.removeItem(DEVELOPER_SOURCE_KEY);
   storage.removeItem(DEVELOPER_BIKE_START_KEY);
-  storage.removeItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY);
+  storage.removeItem(DEVELOPER_ENDLESS_ARCADE_SEED_KEY);
   storage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
+  storage.removeItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY);
   storage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);
   return true;
 }
 
 export function getDeveloperBikeStart(storage: Storage = window.sessionStorage): number {
   return Number(storage.getItem(DEVELOPER_BIKE_START_KEY) ?? 0) || 0;
-}
-
-export function getDeveloperCanteenDefenseStart(storage: Storage = window.sessionStorage): number {
-  const stored = Number(storage.getItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY) ?? 0);
-  return Number.isFinite(stored) ? Math.max(0, Math.min(50_000, stored)) : 0;
 }
 
 export function getDeveloperChapter4PrologueOffset(storage: Storage = window.sessionStorage): number {
@@ -1886,6 +2102,13 @@ export function getDeveloperChapter4PrologueOffset(storage: Storage = window.ses
   return Number.isFinite(stored) && stored >= 0
     ? stored
     : CHAPTER4_PROLOGUE_DEVELOPER_OFFSETS[checkpoint];
+}
+
+export function markDeveloperChapter4PrologueTaskCardConfirmed(
+  storage: Storage = window.sessionStorage
+): void {
+  if (getActiveDeveloperCheckpoint(storage) !== "c4-prologue-task-card") return;
+  storage.setItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY, "1");
 }
 
 export function getActiveDeveloperCheckpoint(storage: Storage = window.sessionStorage): DeveloperCheckpointId | null {
@@ -1948,18 +2171,20 @@ export function applyDeveloperCheckpointFromUrl(
   if (explicitCheckpoint !== null) {
     const requested = resolveCheckpointId(explicitCheckpoint);
     if (!requested) return null;
-    applyDeveloperCheckpoint(store, requested, storage, "url");
+    const restoreActiveSession = getActiveDeveloperCheckpoint(storage) === requested;
+    applyDeveloperCheckpoint(store, requested, storage, "url", restoreActiveSession);
     return requested;
   }
   const requested = checkpointFromLegacyParams(params);
   if (requested) {
-    applyDeveloperCheckpoint(store, requested, storage, "url");
+    const restoreActiveSession = getActiveDeveloperCheckpoint(storage) === requested;
+    applyDeveloperCheckpoint(store, requested, storage, "url", restoreActiveSession);
     return requested;
   }
   const active = getActiveDeveloperCheckpoint(storage);
   if (active) {
     const source = storage.getItem(DEVELOPER_SOURCE_KEY);
-    applyDeveloperCheckpoint(store, active, storage, source === "url" ? "url" : "panel");
+    applyDeveloperCheckpoint(store, active, storage, source === "url" ? "url" : "panel", true);
   }
   return requested;
 }

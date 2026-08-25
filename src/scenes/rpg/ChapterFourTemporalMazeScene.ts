@@ -49,8 +49,10 @@ import {
   type ChapterFour755PlateId
 } from "./FinaleEnvironmentTextures";
 import {
+  FINALE_NPC_ANIMATIONS,
   ensureFinaleNpcAnimations,
-  preloadFinaleNpcTextures
+  preloadFinaleNpcTextures,
+  type FinaleNpcAnimationId
 } from "./FinaleNpcTextures";
 import {
   CHAPTER_FOUR_755_INTERACTION_TARGETS,
@@ -83,6 +85,7 @@ import {
   ROOM204_SLOT_ORDER,
   findRoom204PlacementForPiece,
   isRoom204PlacementSetComplete,
+  normalizeRoom204Placements,
   room204SlotRuntimeEntityId
 } from "../rpg/ChapterFourRoom204Model";
 import {
@@ -507,6 +510,11 @@ interface BakeryRuntimeTargetBinding {
 interface BakeryCrowdActor {
   sprite: Phaser.Physics.Arcade.Sprite;
   tween: Phaser.Tweens.Tween;
+  routeIndex: number;
+  route: BakeryRuntimeContract["crowd"]["routes"][number];
+  hasLeftInitialEndpoint: boolean;
+  activeEndpoint: "from" | "to" | null;
+  endpointTimer: Phaser.Time.TimerEvent | null;
 }
 interface Room204RuntimePiece {
   pieceId: ChapterFourRoom204PieceId;
@@ -595,6 +603,17 @@ const LIGHT_ZONES = chapterFourContent.lightGrid.zones as readonly {
   bit: number;
 }[];
 const OPENING_HANDSHAKE = chapterFourContent.openingHandshake;
+const CHAPTER_FOUR_DIALOGUES = chapterFourContent.dialogues as Readonly<
+  Record<string, ReadonlyArray<{ speaker: string; text: string }>>
+>;
+
+function chapterFourDialogueText(key: string, entryIndex = 0): string {
+  return CHAPTER_FOUR_DIALOGUES[key]?.[entryIndex]?.text ?? "";
+}
+
+function chapterFourDialogueSequence(key: string): string {
+  return CHAPTER_FOUR_DIALOGUES[key]?.map((entry) => entry.text).join(" ") ?? "";
+}
 const OPENING_PHASES: ReadonlySet<GameState["chapter4"]["phase"]> = new Set([
   "opening_handoff",
   "opening_paper_caught",
@@ -917,6 +936,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private bakeryHourHandGlint: Phaser.GameObjects.Arc | null = null;
   private bakeryHourHandGlintTween: Phaser.Tweens.Tween | null = null;
   private bakeryApproachCueSignature = "";
+  private bakeryActivityPaused = false;
   private phaseRuntimeTargets = new Map<string, PhaseRuntimeTargetBinding>();
   private phaseRuntimeObjects: Phaser.GameObjects.GameObject[] = [];
   private maintenanceSignature = "";
@@ -928,6 +948,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private maintenanceObstacleGroup: Phaser.Physics.Arcade.StaticGroup | null = null;
   private maintenanceObstacleCollider: Phaser.Physics.Arcade.Collider | null = null;
   private maintenancePushTween: Phaser.Tweens.Tween | null = null;
+  private maintenanceSettledCart: Phaser.GameObjects.Sprite | null = null;
+  private maintenanceAttemptSprite: Phaser.GameObjects.Sprite | null = null;
+  private maintenanceAttemptTween: Phaser.Tweens.Tween | null = null;
+  private maintenanceAttemptTimer: Phaser.Time.TimerEvent | null = null;
   private maintenancePushCompleted = false;
   private maintenanceGuardState: ChapterFourMaintenanceGuardState | null = null;
   private maintenanceGuard: Phaser.Physics.Arcade.Sprite | null = null;
@@ -935,6 +959,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private maintenanceGuardPlayerOverlap: Phaser.Physics.Arcade.Collider | null = null;
   private maintenanceGuardVision: Phaser.GameObjects.Graphics | null = null;
   private maintenanceGuardAlert: Phaser.GameObjects.Text | null = null;
+  private maintenanceGuardVisualId: FinaleNpcAnimationId | null = null;
+  private maintenanceGuardRadioUntilMs = 0;
   private finalClockMinuteLine: Phaser.GameObjects.Line | null = null;
   private finalClockEndpointHandle: Phaser.GameObjects.Arc | null = null;
   private finalClockEndpointZone: Phaser.GameObjects.Zone | null = null;
@@ -967,6 +993,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     fixture: Phaser.GameObjects.Rectangle;
     label: Phaser.GameObjects.Text;
   }>();
+  private morningCheckinStudents: Phaser.GameObjects.Sprite[] = [];
   private room202DoorBarrier: Phaser.GameObjects.Zone | null = null;
   private room202DoorCollider: Phaser.Physics.Arcade.Collider | null = null;
   private room202DoorVisual: Phaser.GameObjects.Rectangle | null = null;
@@ -1114,6 +1141,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.syncPhaseSideEffects();
     this.syncOpeningPresentation();
     this.syncBakeryPresentation();
+    this.updateBakeryCrowdEndpointActions();
     this.syncRoom204ProjectionPresentation();
     this.maybeEmitBakeryApproachCue();
     this.updateMaintenanceGuard(delta);
@@ -2096,7 +2124,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.bakeryRuntimeObjects.push(this.bakeryBaker);
 
     const crowdSprites: Phaser.Physics.Arcade.Sprite[] = [];
-    for (const route of BAKERY_RUNTIME.crowd.routes) {
+    for (const [routeIndex, route] of BAKERY_RUNTIME.crowd.routes.entries()) {
       const sprite = this.physics.add.sprite(
         floor.offsetX + route.from.x,
         route.from.y,
@@ -2117,7 +2145,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         LAYOUT.playerFootBoxContract.sourceFootBox.x,
         LAYOUT.playerFootBoxContract.sourceFootBox.y
       );
-      sprite.setFlipX(route.to.x < route.from.x).play("student_walk", true);
+      sprite.setFlipX(route.to.x < route.from.x).play({
+        key: "student_walk",
+        startFrame: (routeIndex * 3) % FINALE_NPC_ANIMATIONS.student_walk.frameCount
+      }, true);
       const duration = Math.round(
         Phaser.Math.Distance.Between(route.from.x, route.from.y, route.to.x, route.to.y)
         / route.speed * 1000
@@ -2136,7 +2167,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         onRepeat: () => sprite.setFlipX(!sprite.flipX),
         onUpdate: () => sprite.setDepth(PLAYER_DEPTH_BASE + sprite.y)
       });
-      this.bakeryCrowdActors.push({ sprite, tween });
+      this.bakeryCrowdActors.push({
+        sprite,
+        tween,
+        routeIndex,
+        route,
+        hasLeftInitialEndpoint: false,
+        activeEndpoint: null,
+        endpointTimer: null
+      });
       this.bakeryRuntimeObjects.push(sprite);
       crowdSprites.push(sprite);
     }
@@ -2181,17 +2220,20 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private pauseBakeryActivity(): void {
+    this.bakeryActivityPaused = true;
     this.bakeryConveyorTween?.pause();
     this.bakeryConveyorGlint?.setVisible(false);
     this.bakeryBaker?.anims.pause();
     for (const actor of this.bakeryCrowdActors) {
       actor.tween.pause();
+      if (actor.endpointTimer) actor.endpointTimer.paused = true;
       actor.sprite.anims.pause();
       actor.sprite.setVelocity(0, 0);
     }
   }
 
   private resumeBakeryActivity(): void {
+    this.bakeryActivityPaused = false;
     if (this.bakeryConveyorTween) {
       this.bakeryConveyorTween.timeScale = 1;
       this.bakeryConveyorTween.resume();
@@ -2200,7 +2242,62 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.bakeryBaker?.anims.resume();
     for (const actor of this.bakeryCrowdActors) {
       actor.tween.resume();
+      if (actor.endpointTimer) actor.endpointTimer.paused = false;
       actor.sprite.anims.resume();
+    }
+  }
+
+  private updateBakeryCrowdEndpointActions(): void {
+    if (this.bakeryActivityPaused || !this.bakeryRuntimeSignature) return;
+    const floor = getFloor(1);
+    for (const actor of this.bakeryCrowdActors) {
+      if (!actor.sprite.active) continue;
+      const local = { x: actor.sprite.x - floor.offsetX, y: actor.sprite.y };
+      const distanceFrom = Phaser.Math.Distance.Between(
+        local.x,
+        local.y,
+        actor.route.from.x,
+        actor.route.from.y
+      );
+      const distanceTo = Phaser.Math.Distance.Between(
+        local.x,
+        local.y,
+        actor.route.to.x,
+        actor.route.to.y
+      );
+      if (!actor.hasLeftInitialEndpoint) {
+        if (distanceFrom > 3) actor.hasLeftInitialEndpoint = true;
+        continue;
+      }
+      const endpoint = distanceFrom <= 0.75
+        ? "from"
+        : distanceTo <= 0.75
+          ? "to"
+          : null;
+      if (!endpoint) {
+        actor.activeEndpoint = null;
+        continue;
+      }
+      if (actor.activeEndpoint === endpoint) continue;
+      actor.activeEndpoint = endpoint;
+      actor.endpointTimer?.remove(false);
+      const actionId: FinaleNpcAnimationId = (
+        actor.routeIndex + (endpoint === "to" ? 1 : 0)
+      ) % 2 === 0
+        ? "student_phone_glance"
+        : "student_adjust_bag";
+      actor.sprite.play(actionId, true);
+      actor.endpointTimer = this.time.delayedCall(
+        Math.max(180, Math.min(360, actor.route.endpointPauseMs - 40)),
+        () => {
+          actor.endpointTimer = null;
+          if (!actor.sprite.active || this.bakeryActivityPaused) return;
+          actor.sprite.play({
+            key: "student_walk",
+            startFrame: (actor.routeIndex * 3) % FINALE_NPC_ANIMATIONS.student_walk.frameCount
+          }, true);
+        }
+      );
     }
   }
 
@@ -2241,7 +2338,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.bakeryConveyorTween = null;
     this.bakeryHourHandGlintTween?.remove();
     this.bakeryHourHandGlintTween = null;
-    for (const actor of this.bakeryCrowdActors) actor.tween.remove();
+    for (const actor of this.bakeryCrowdActors) {
+      actor.endpointTimer?.remove(false);
+      actor.tween.remove();
+    }
     this.bakeryCrowdActors = [];
     for (const object of this.bakeryRuntimeObjects) {
       if (object.active) object.destroy();
@@ -2254,6 +2354,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.bakeryHourHandGlint = null;
     this.bakeryRuntimeSignature = "";
     this.bakeryApproachCueSignature = "";
+    this.bakeryActivityPaused = false;
     if (reason === "plate_or_phase_change" && this.storyPresentation === "bakery_conveyor_stop") {
       this.clearStoryPresentationTimers();
       this.storyPresentation = "idle";
@@ -2744,7 +2845,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     } catch (error) {
       this.persistentContractFailures.add(`maintenance_clock_gear_visual:${errorMessage(error)}`);
     }
-    if (wheelRepaired) this.startOrRestoreMaintenancePush(!created);
+    if (wheelRepaired) {
+      this.cancelMaintenanceFailedPushAttempt();
+      this.startOrRestoreMaintenancePush(!created);
+    } else {
+      this.scheduleMaintenanceFailedPushAttempt();
+    }
   }
 
   private createMaintenanceRuntime(): void {
@@ -3040,6 +3146,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private startOrRestoreMaintenancePush(animate: boolean): void {
     if (!this.maintenanceCleaner || this.maintenancePushCompleted || this.maintenancePushTween) return;
+    this.cancelMaintenanceFailedPushAttempt();
     this.maintenanceObstacleCollider?.destroy();
     this.maintenanceObstacleCollider = null;
     if (this.maintenanceCart) {
@@ -3061,8 +3168,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.to.x,
           MAINTENANCE_RUNTIME.repairedPush.to.y
         )
-        .setDepth(PLAYER_DEPTH_BASE + MAINTENANCE_RUNTIME.repairedPush.to.y)
-        .stop();
+        .setDepth(PLAYER_DEPTH_BASE + MAINTENANCE_RUNTIME.repairedPush.to.y);
+      this.settleMaintenanceCleanerAfterPush();
       this.maintenancePushCompleted = true;
       return;
     }
@@ -3083,9 +3190,125 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       onComplete: () => {
         this.maintenancePushTween = null;
         this.maintenancePushCompleted = true;
-        this.maintenanceCleaner?.stop();
+        this.settleMaintenanceCleanerAfterPush();
       }
     });
+  }
+
+  private scheduleMaintenanceFailedPushAttempt(delayMs = 1100): void {
+    if (this.maintenanceAttemptTimer
+      || this.maintenanceAttemptTween
+      || this.maintenancePushTween
+      || this.maintenancePushCompleted) return;
+    this.maintenanceAttemptTimer = this.time.delayedCall(delayMs, () => {
+      this.maintenanceAttemptTimer = null;
+      this.playMaintenanceFailedPushAttempt();
+    });
+  }
+
+  private playMaintenanceFailedPushAttempt(): void {
+    const state = this.bridge.getState();
+    if (state.chapter4.phase !== "maintenance_repair"
+      || hasChapterFourFact(state, "cart_wheel_repaired")
+      || !this.maintenanceCart
+      || !this.maintenanceCleaner
+      || this.maintenanceAttemptTween) return;
+    const floor = getFloor(1);
+    if (!this.maintenanceAttemptSprite?.active) {
+      this.maintenanceAttemptSprite = this.add.sprite(
+        floor.offsetX + MAINTENANCE_RUNTIME.repairedPush.from.x,
+        MAINTENANCE_RUNTIME.repairedPush.from.y,
+        MAINTENANCE_RUNTIME.repairedPush.animationId,
+        0
+      ).setOrigin(0.5, 1)
+        .setScale(MAINTENANCE_RUNTIME.cleaner.uniformScale)
+        .setDepth(PLAYER_DEPTH_BASE + MAINTENANCE_RUNTIME.repairedPush.from.y + 2)
+        .setVisible(false);
+      this.phaseRuntimeObjects.push(this.maintenanceAttemptSprite);
+    }
+    this.maintenanceCart.setVisible(false);
+    this.maintenanceCleaner.setVisible(false);
+    this.maintenanceAttemptSprite
+      .setPosition(
+        floor.offsetX + MAINTENANCE_RUNTIME.repairedPush.from.x,
+        MAINTENANCE_RUNTIME.repairedPush.from.y
+      )
+      .setVisible(true)
+      .play(MAINTENANCE_RUNTIME.repairedPush.animationId, true);
+    this.maintenanceAttemptTween = this.tweens.add({
+      targets: this.maintenanceAttemptSprite,
+      y: MAINTENANCE_RUNTIME.repairedPush.from.y - 5,
+      duration: 240,
+      hold: 80,
+      yoyo: true,
+      ease: "Sine.InOut",
+      onUpdate: () => {
+        this.maintenanceAttemptSprite?.setDepth(
+          PLAYER_DEPTH_BASE + (this.maintenanceAttemptSprite?.y ?? 0) + 2
+        );
+      },
+      onComplete: () => {
+        this.maintenanceAttemptTween = null;
+        this.maintenanceAttemptSprite?.stop().setVisible(false);
+        this.maintenanceCart?.setVisible(true);
+        this.maintenanceCleaner?.setVisible(true).play(
+          MAINTENANCE_RUNTIME.cleaner.animationId,
+          true
+        );
+        this.scheduleMaintenanceFailedPushAttempt(2800);
+      }
+    });
+  }
+
+  private cancelMaintenanceFailedPushAttempt(): void {
+    this.maintenanceAttemptTimer?.remove(false);
+    this.maintenanceAttemptTimer = null;
+    this.maintenanceAttemptTween?.remove();
+    this.maintenanceAttemptTween = null;
+    this.maintenanceAttemptSprite?.stop().setVisible(false);
+    this.maintenanceCart?.setVisible(true);
+    if (this.maintenanceCleaner?.active && !this.maintenancePushCompleted) {
+      this.maintenanceCleaner.setVisible(true).play(
+        MAINTENANCE_RUNTIME.cleaner.animationId,
+        true
+      );
+    }
+  }
+
+  private settleMaintenanceCleanerAfterPush(): void {
+    const cleaner = this.maintenanceCleaner;
+    if (!cleaner?.active) return;
+    const floor = getFloor(1);
+    const finalCartPosition = {
+      x: MAINTENANCE_RUNTIME.repairedPush.to.x
+        + MAINTENANCE_RUNTIME.cleaningCart.position.x
+        - MAINTENANCE_RUNTIME.repairedPush.from.x,
+      y: MAINTENANCE_RUNTIME.repairedPush.to.y
+    };
+    const finalCleanerPosition = {
+      x: MAINTENANCE_RUNTIME.repairedPush.to.x
+        + MAINTENANCE_RUNTIME.cleaner.position.x
+        - MAINTENANCE_RUNTIME.repairedPush.from.x,
+      y: MAINTENANCE_RUNTIME.repairedPush.to.y
+    };
+    if (!this.maintenanceSettledCart?.active) {
+      this.maintenanceSettledCart = this.add.sprite(
+        floor.offsetX + finalCartPosition.x,
+        finalCartPosition.y,
+        MAINTENANCE_RUNTIME.cleaningCart.texture,
+        0
+      ).setOrigin(0.5, 1)
+        .setScale(MAINTENANCE_RUNTIME.cleaningCart.uniformScale)
+        .setDepth(PLAYER_DEPTH_BASE + finalCartPosition.y);
+      this.phaseRuntimeObjects.push(this.maintenanceSettledCart);
+    }
+    cleaner.stop()
+      .setTexture("cleaner_rest", 0)
+      .setOrigin(0.5, 1)
+      .setScale(MAINTENANCE_RUNTIME.cleaner.uniformScale)
+      .setPosition(floor.offsetX + finalCleanerPosition.x, finalCleanerPosition.y)
+      .setDepth(PLAYER_DEPTH_BASE + finalCleanerPosition.y + 1)
+      .setVisible(true);
   }
 
   private createMaintenanceGuardRuntime(): void {
@@ -3101,6 +3324,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       .setScale(guard.uniformScale)
       .setDepth(PLAYER_DEPTH_BASE + guard.position.y);
     this.maintenanceGuard.play(guard.animationId, true);
+    this.maintenanceGuardVisualId = guard.animationId;
     const body = this.maintenanceGuard.body as Phaser.Physics.Arcade.Body;
     body.setAllowGravity(false).setImmovable(false);
     body.pushable = false;
@@ -3177,6 +3401,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       position: { x: guardFoot.x, y: guardFoot.y }
     };
     if (next.enteredPursuit) {
+      this.maintenanceGuardRadioUntilMs = this.time.now + 620;
       this.safeBridgeEmit("maintenance_patrol_warning", {
         phase: state.chapter4.phase,
         floor: "A1",
@@ -3187,17 +3412,48 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       .setVelocity(next.desiredVelocity.x, next.desiredVelocity.y)
       .setFlipX(next.state.heading.x < 0)
       .setDepth(PLAYER_DEPTH_BASE + guardFoot.y + 2);
-    if (Math.hypot(next.desiredVelocity.x, next.desiredVelocity.y) > 0.001) {
-      this.maintenanceGuard.play("guard_walk", true);
-    } else {
-      this.maintenanceGuard.stop();
-    }
+    const isMoving = Math.hypot(next.desiredVelocity.x, next.desiredVelocity.y) > 0.001;
+    const patrolPauseAnimation: FinaleNpcAnimationId = [
+      "west_north",
+      "east_south"
+    ].includes(next.state.previousWaypointId ?? "")
+      ? "guard_check_watch"
+      : "guard_check_list";
+    const animationId: FinaleNpcAnimationId = next.state.mode === "confirming"
+      ? "guard_flashlight_down"
+      : next.state.mode === "pursuit" && this.time.now < this.maintenanceGuardRadioUntilMs
+        ? "guard_radio"
+        : isMoving
+          ? "guard_walk"
+          : next.state.mode === "patrol" && next.state.pauseRemainingMs > 0
+            ? patrolPauseAnimation
+            : "guard_check_list";
+    this.playMaintenanceGuardAnimation(animationId);
     this.paintMaintenanceGuardVision(next.playerVisible);
     this.maintenanceGuardAlert
       ?.setPosition(this.maintenanceGuard.x, this.maintenanceGuard.y - 92)
       .setDepth(PLAYER_DEPTH_BASE + this.maintenanceGuard.y + 90)
       .setVisible(next.state.mode === "confirming");
     this.tryMaintenancePatrolCapture();
+  }
+
+  private playMaintenanceGuardAnimation(animationId: FinaleNpcAnimationId): void {
+    const guard = this.maintenanceGuard;
+    if (!guard?.active || this.maintenanceGuardVisualId === animationId) return;
+    const floor = getFloor(1);
+    const foot = this.maintenanceGuardFootPoint(floor);
+    const asset = FINALE_NPC_ANIMATIONS[animationId];
+    const scale = MAINTENANCE_RUNTIME.guard.uniformScale;
+    const sourceFootWidth = MAINTENANCE_RUNTIME.guard.footBox.width / scale;
+    const sourceFootHeight = MAINTENANCE_RUNTIME.guard.footBox.height / scale;
+    guard.play(animationId, true);
+    const body = guard.body as Phaser.Physics.Arcade.Body;
+    body.setSize(sourceFootWidth, sourceFootHeight).setOffset(
+      (asset.frameWidth - sourceFootWidth) / 2,
+      asset.frameHeight - sourceFootHeight
+    );
+    if (foot) this.positionMaintenanceGuardFoot(foot);
+    this.maintenanceGuardVisualId = animationId;
   }
 
   private paintMaintenanceGuardVision(playerVisible: boolean): void {
@@ -3261,6 +3517,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.maintenanceGuardState = createChapterFourMaintenanceGuardRecoveryState();
     this.positionMaintenanceGuardFoot(this.maintenanceGuardState.position);
     this.maintenanceGuard?.setVelocity(0, 0).setFlipX(false);
+    this.maintenanceGuardVisualId = null;
+    this.maintenanceGuardRadioUntilMs = 0;
+    this.playMaintenanceGuardAnimation("guard_walk");
     this.maintenanceGuardAlert?.setVisible(false);
     this.player.setPosition(floor.offsetX + 836, 716)
       .setVelocity(0, 0)
@@ -3310,6 +3569,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         "纸条"
       );
     }
+    this.ensureMorningCheckinStudents();
     const cardAccepted = state.chapter4.checkinCardAccepted
       || hasChapterFourFact(state, "checkin_card_accepted");
     const paperAccepted = state.chapter4.checkinPaperAccepted
@@ -3322,6 +3582,36 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const paperVisual = this.morningCheckinVisuals.get("a1_attendance_paper_slot");
     paperVisual?.fixture.setFillStyle(paperAccepted ? 0x403929 : 0x493917, 0.96);
     paperVisual?.label.setText(paperAccepted ? "已签到" : "纸条");
+  }
+
+  private ensureMorningCheckinStudents(): void {
+    if (this.morningCheckinStudents.some((student) => student.active)) return;
+    const floor = getFloor(1);
+    const students: ReadonlyArray<{
+      x: number;
+      y: number;
+      animationId: FinaleNpcAnimationId;
+      flipX: boolean;
+    }> = Object.freeze([
+      { x: 582, y: 700, animationId: "student_phone_glance", flipX: false },
+      { x: 1078, y: 704, animationId: "student_adjust_bag", flipX: true },
+      { x: 1110, y: 570, animationId: "student_idle", flipX: true }
+    ]);
+    this.morningCheckinStudents = students.map((entry) => {
+      const asset = FINALE_NPC_ANIMATIONS[entry.animationId];
+      const student = this.add.sprite(
+        floor.offsetX + entry.x,
+        entry.y,
+        entry.animationId,
+        0
+      ).setOrigin(asset.footAnchor.x, asset.footAnchor.y)
+        .setScale(BAKERY_RUNTIME.crowd.displayScale)
+        .setFlipX(entry.flipX)
+        .setDepth(PLAYER_DEPTH_BASE + entry.y);
+      if (asset.frameCount > 1) student.play(entry.animationId, true);
+      this.phaseRuntimeObjects.push(student);
+      return student;
+    });
   }
 
   private createMorningCheckinRuntimeTarget(
@@ -3462,7 +3752,13 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private destroyPhaseRuntime(reason: string): void {
     this.destroyTask11Runtime(reason);
+    this.maintenanceAttemptTimer?.remove(false);
+    this.maintenanceAttemptTimer = null;
+    this.maintenanceAttemptTween?.stop();
+    this.maintenanceAttemptTween?.remove();
+    this.maintenanceAttemptTween = null;
     this.maintenancePushTween?.stop();
+    this.maintenancePushTween?.remove();
     this.maintenancePushTween = null;
     this.maintenanceObstacleCollider?.destroy();
     this.maintenanceObstacleCollider = null;
@@ -3482,12 +3778,17 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.maintenancePryBar = null;
     this.maintenanceOilBottle = null;
     this.maintenanceCoverVisual = null;
+    this.maintenanceSettledCart = null;
+    this.maintenanceAttemptSprite = null;
     this.maintenanceObstacleGroup = null;
     this.maintenancePushCompleted = false;
     this.maintenanceGuardState = null;
     this.maintenanceGuard = null;
     this.maintenanceGuardVision = null;
     this.maintenanceGuardAlert = null;
+    this.maintenanceGuardVisualId = null;
+    this.maintenanceGuardRadioUntilMs = 0;
+    this.morningCheckinStudents = [];
     this.persistentContractFailures.delete(`phase_runtime_cleanup:${reason}`);
   }
 
@@ -3754,55 +4055,36 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const state = this.bridge.getState();
     const signature = [
       state.chapter4.phase,
-      state.chapter4.timeState,
-      state.chapter4.floor,
-      state.chapter4.checkinCardAccepted ? 1 : 0,
-      state.chapter4.checkinPaperAccepted ? 1 : 0
+      state.chapter4.timeState
     ].join(":");
     if (signature === this.lastPhaseSignature) return;
     this.lastPhaseSignature = signature;
     switch (state.chapter4.phase) {
       case "maintenance_repair":
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "它没坏，只是不肯走。",
+          text: chapterFourDialogueText("maintenance.cleaner"),
           tone: "system",
           durationMs: 2600
         });
         break;
-      case "blackout_light_grid":
-        if (hasChapterFourFact(state, "paper_temporarily_out_of_inventory")) {
-          this.safeBridgeEmit("rpg_subtitle", {
-            text: "走廊只剩能走的那几盏。",
-            tone: "system",
-            durationMs: 2600
-          });
-        }
-        break;
       case "final_chase":
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "同学，站住。清楼流程启动。",
+          text: chapterFourDialogueSequence("chase.started"),
           tone: "system",
           speaker: "保安",
           durationMs: 2200
         });
         break;
-      case "final_minute_recovery":
-        this.safeBridgeEmit("rpg_subtitle", {
-          text: "阶梯教室门已经关上，最后一分钟留在投影里。",
-          tone: "system",
-          durationMs: 2400
-        });
-        break;
       case "morning_checkin":
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "07:55 已经回到门厅。",
+          text: chapterFourDialogueText("morning.entry"),
           tone: "system",
           durationMs: 2400
         });
         break;
       case "exterior_closure":
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "外面亮了一下。",
+          text: chapterFourDialogueText("exterior.closure"),
           tone: "system",
           durationMs: 2200
         });
@@ -5374,7 +5656,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       case "observe_a3_reference":
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "三楼教室保留了 07:55 之前的整齐朝向。",
+          text: chapterFourDialogueText("room204.a3_reference_recorded"),
           tone: "system",
           durationMs: 2200
         });
@@ -5382,7 +5664,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       case "observe_room204_residual":
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "残影把每组桌椅原来的位置都记下来了。",
+          text: chapterFourDialogueText("room204.residual_recorded"),
           tone: "system",
           durationMs: 2200
         });
@@ -5390,6 +5672,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       case "place_room204_piece":
         this.room204SelectedPieceId = null;
         this.updateRoom204CarryGhost();
+        this.showFeedback(
+          `已复原 ${normalizeRoom204Placements(
+            this.bridge.getState().chapter4.room204Placements
+          ).length}/${ROOM204_SLOT_ORDER.length}`
+        );
         this.storyPresentation = "idle";
         break;
       case "complete_room204_projection": {
@@ -5517,7 +5804,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.ensureFinalChaseRuntime(this.bridge.getState());
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "被清楼保安拦下了，已回到一楼大厅重来。",
+          text: chapterFourDialogueText("chase.retry"),
           tone: "system",
           durationMs: 2200
         });
@@ -5527,7 +5814,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.destroyRoom202RecoveryBarrier("collected");
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "最后一分钟和签到纸条都回来了。",
+          text: chapterFourDialogueText("lecture.recovered_result"),
           tone: "success",
           durationMs: 2400
         });
@@ -5565,9 +5852,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       case "acknowledge_exterior_closure":
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "外面的灯已经全部亮起。07:55 这一次被保留下来了。",
+          text: chapterFourDialogueSequence("exterior.closure"),
           tone: "success",
-          durationMs: 2600
+          durationMs: 4200
         });
         break;
       default:

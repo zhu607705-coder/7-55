@@ -108,23 +108,6 @@ export interface RpgRuntimeDebugState {
     defenseDrinkUsed?: boolean;
     identifiedExitIds: string[];
     blockHits: number;
-    queueGapOpened?: boolean;
-    queueColumnThreeYs?: number[];
-    orderingKiosk?: {
-      x: number;
-      y: number;
-      stand?: { x: number; y: number };
-      width?: number;
-      height?: number;
-      proximity: number;
-    };
-    defense?: {
-      startElapsedMs: number;
-      elapsedMs: number;
-      remainingMs: number;
-      currentExit: "northwest" | "south_gap" | "southeast";
-      paused: boolean;
-    };
     activeTarget: string | null;
     pickupTargets?: Array<{
       id: string;

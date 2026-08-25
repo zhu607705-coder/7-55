@@ -440,20 +440,20 @@ export const CANTEEN_CARTS: Readonly<Record<CanteenExitId, CanteenCartDefinition
   }
 };
 
-export const CANTEEN_ORDERING_KIOSK: CanteenInteractionTarget = {
-  id: "ordering_kiosk",
-  label: "第三窗口点餐机",
-  x: 790,
-  y: 190,
-  stand: { x: 735, y: 270 },
-  width: 112,
-  height: 72,
-  proximity: 52,
-  kind: "kiosk"
-};
-
 export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = [
-  CANTEEN_ORDERING_KIOSK,
+  // The queue makes room directly in front of the third service window. That
+  // window is the point-of-order machine as well as the later pickup route.
+  {
+    id: "ordering_kiosk",
+    label: "第三窗口点餐机",
+    x: 790,
+    y: 218,
+    stand: { x: 790, y: 260 },
+    width: 112,
+    height: 72,
+    proximity: 52,
+    kind: "kiosk"
+  },
   ...CANTEEN_PICKUP_WINDOWS,
   ...Object.values(CANTEEN_CARTS).map((cart) => ({
     id: `cart_${cart.exitId}`,
@@ -488,7 +488,7 @@ export const CANTEEN_SPAWN = { x: 1194, y: 834 } as const;
 export const CANTEEN_PHASE_SPAWNS = {
   tray_search: CANTEEN_SPAWN,
   drink_mix: { x: 1473, y: 208 },
-  menu_order: CANTEEN_ORDERING_KIOSK.stand!,
+  menu_order: { x: 790, y: 260 },
   pickup_search: {
     x: CANTEEN_PICKUP_WINDOWS[2].stand!.x,
     y: CANTEEN_PICKUP_WINDOWS[2].stand!.y

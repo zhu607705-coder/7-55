@@ -1,0 +1,416 @@
+/* Shared phone application interaction layer. App scenes own their palette; this file owns geometry and behavior. */
+.phone-frame {
+  --phone-app-bg: #f4efe3;
+  --phone-app-surface: #fffaf0;
+  --phone-app-ink: #1c2730;
+  --phone-app-muted: #64717a;
+  --phone-app-line: #1c2730;
+  --phone-app-action: #176fb6;
+  --phone-app-accent: #f1c84a;
+  --phone-app-danger: #b8463f;
+  --phone-app-shadow: 4px 4px 0 rgba(28, 39, 48, 0.17);
+  --phone-app-header-height: 64px;
+  --phone-app-bottom-nav-height: 64px;
+}
+
+.phone-app-scaffold {
+  background: var(--phone-app-bg);
+  color: var(--phone-app-ink);
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - var(--phone-statusbar-h));
+  left: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: var(--phone-statusbar-h);
+}
+
+.phone-app-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+.phone-app-content.is-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.phone-app-content.is-fixed { overflow: hidden; }
+
+.phone-app-header {
+  align-items: center;
+  background:
+    linear-gradient(90deg, rgba(28, 39, 48, 0.055) 1px, transparent 1px) 0 0 / 8px 8px,
+    var(--phone-app-surface);
+  border-bottom: 3px solid var(--phone-app-line);
+  color: var(--phone-app-ink);
+  display: grid;
+  flex: 0 0 var(--phone-app-header-height);
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  height: var(--phone-app-header-height);
+  padding: 0 4px;
+  position: relative;
+  z-index: 8;
+}
+
+.phone-app-header__nav-slot,
+.phone-app-header__end {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.phone-app-header__title {
+  display: block;
+  min-width: 0;
+  text-align: center;
+}
+
+.phone-app-header__title small {
+  color: var(--phone-app-action);
+  display: block;
+  font: 800 9px/1.1 ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  margin-bottom: 3px;
+}
+
+.phone-app-header__title h1 {
+  font-size: 17px;
+  line-height: 1;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-app-header .phone-nav-glyph {
+  font-size: 31px;
+}
+
+.phone-app-bottom-nav {
+  align-items: stretch;
+  background: var(--phone-app-surface);
+  border-top: 3px solid var(--phone-app-line);
+  display: grid;
+  flex: 0 0 var(--phone-app-bottom-nav-height);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  height: var(--phone-app-bottom-nav-height);
+  overflow: hidden;
+  position: relative;
+  z-index: 7;
+}
+
+.phone-app-bottom-nav > button,
+.phone-app-bottom-nav__locked {
+  align-items: center;
+  color: var(--phone-app-muted);
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 3px;
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+}
+
+.phone-app-bottom-nav > button::before {
+  background: transparent;
+  content: "";
+  height: 4px;
+  left: 14px;
+  position: absolute;
+  right: 14px;
+  top: 0;
+}
+
+.phone-app-bottom-nav > button.is-active {
+  color: var(--phone-app-action);
+}
+
+.phone-app-bottom-nav > button.is-active::before {
+  background: var(--phone-app-accent);
+  border-left: 2px solid var(--phone-app-line);
+  border-right: 2px solid var(--phone-app-line);
+}
+
+.phone-app-bottom-nav > button:focus-visible,
+.phone-app-bottom-nav > button:hover {
+  background: color-mix(in srgb, var(--phone-app-action) 9%, transparent);
+  outline: 0;
+}
+
+.phone-app-bottom-nav__locked {
+  opacity: 0.42;
+}
+
+.phone-app-bottom-nav__icon {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.phone-app-bottom-nav__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.phone-app-bottom-nav__badge {
+  background: var(--phone-app-danger);
+  border: 2px solid var(--phone-app-surface);
+  color: #fff;
+  font: 800 8px/1 monospace;
+  min-width: 15px;
+  padding: 2px 3px;
+  position: absolute;
+  right: 14px;
+  text-align: center;
+  top: 7px;
+}
+
+.phone-app-sheet-layer {
+  align-items: flex-end;
+  background: rgba(12, 18, 24, 0.68);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 12px;
+  position: absolute;
+  z-index: 120;
+}
+
+.phone-app-sheet {
+  animation: phone-app-sheet-enter var(--dur-med) var(--ease-in-pixel) both;
+  background: var(--phone-app-bg);
+  border: 3px solid var(--phone-app-line);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.28);
+  color: var(--phone-app-ink);
+  max-height: min(680px, calc(100% - 20px));
+  overflow: hidden;
+  width: 100%;
+}
+
+.phone-app-sheet__header {
+  align-items: center;
+  background: var(--phone-app-surface);
+  border-bottom: 3px solid var(--phone-app-line);
+  display: flex;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 8px 10px 8px 14px;
+}
+
+.phone-app-sheet__header small {
+  color: var(--phone-app-action);
+  display: block;
+  font: 800 9px/1.1 ui-monospace, monospace;
+  letter-spacing: 0.1em;
+}
+
+.phone-app-sheet__header h2 {
+  font-size: 17px;
+  line-height: 1.2;
+  margin: 2px 0 0;
+}
+
+.phone-app-sheet__header button {
+  align-items: center;
+  border: 2px solid var(--phone-app-line);
+  display: flex;
+  font-size: 26px;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  width: 38px;
+}
+
+.phone-app-sheet__header button:focus-visible,
+.phone-app-sheet__header button:hover {
+  background: var(--phone-app-accent);
+  outline: 0;
+}
+
+.phone-app-sheet__description {
+  border-bottom: 2px solid color-mix(in srgb, var(--phone-app-line) 24%, transparent);
+  color: var(--phone-app-muted);
+  line-height: 1.45;
+  margin: 0;
+  padding: 10px 14px;
+}
+
+.phone-app-sheet__body {
+  max-height: min(570px, calc(100vh - 190px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  scrollbar-gutter: stable;
+}
+
+.phone-app-feedback {
+  background: color-mix(in srgb, var(--phone-app-action) 10%, var(--phone-app-surface));
+  border: 2px solid var(--phone-app-line);
+  border-left: 7px solid var(--phone-app-action);
+  color: var(--phone-app-ink);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 10px 0 0;
+  padding: 9px 10px;
+}
+
+.phone-app-feedback.is-success { border-left-color: #2e8b61; }
+.phone-app-feedback.is-warning { border-left-color: #d18a24; }
+.phone-app-feedback.is-error { border-left-color: var(--phone-app-danger); }
+
+.phone-state-view {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.phone-state-view__icon {
+  align-items: center;
+  background: var(--phone-app-accent);
+  border: 3px solid var(--phone-app-line);
+  box-shadow: var(--phone-app-shadow);
+  display: flex;
+  font-size: 28px;
+  height: 64px;
+  justify-content: center;
+  margin-bottom: 18px;
+  width: 64px;
+}
+
+.phone-state-view h2 { font-size: 18px; margin: 0; }
+.phone-state-view p {
+  color: var(--phone-app-muted);
+  line-height: 1.55;
+  margin: 10px 0 0;
+  max-width: 310px;
+}
+
+.phone-state-view__actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  min-width: min(280px, 100%);
+}
+
+.phone-state-view__actions button,
+.phone-app-sheet__body > button {
+  background: var(--phone-app-surface);
+  border: 2px solid var(--phone-app-line);
+  box-shadow: 3px 3px 0 rgba(28, 39, 48, 0.15);
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.phone-state-view__actions button:first-child {
+  background: var(--phone-app-action);
+  color: #fff;
+}
+
+.phone-list-row {
+  align-items: center;
+  background: var(--phone-app-surface);
+  border: 2px solid var(--phone-app-line);
+  box-shadow: 3px 3px 0 rgba(28, 39, 48, 0.12);
+  display: grid;
+  gap: 9px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 58px;
+  padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.phone-list-row + .phone-list-row { margin-top: 8px; }
+
+button.phone-list-row:hover,
+button.phone-list-row:focus-visible {
+  background: color-mix(in srgb, var(--phone-app-action) 9%, var(--phone-app-surface));
+  box-shadow: 1px 1px 0 rgba(28, 39, 48, 0.2);
+  outline: 3px solid color-mix(in srgb, var(--phone-app-action) 60%, #fff);
+  outline-offset: 1px;
+  transform: translate(2px, 2px);
+}
+
+.phone-list-row.is-locked { opacity: 0.42; }
+
+.phone-list-row__leading {
+  align-items: center;
+  background: var(--phone-app-accent);
+  border: 2px solid var(--phone-app-line);
+  display: flex;
+  font-size: 17px;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.phone-list-row__copy { min-width: 0; }
+.phone-list-row__copy strong,
+.phone-list-row__copy small { display: block; }
+.phone-list-row__copy strong { font-size: 13px; }
+.phone-list-row__copy small {
+  color: var(--phone-app-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  margin-top: 3px;
+}
+.phone-list-row__trailing { color: var(--phone-app-action); font-size: 19px; font-weight: 900; }
+
+.phone-segmented-control {
+  background: color-mix(in srgb, var(--phone-app-line) 8%, transparent);
+  border: 2px solid var(--phone-app-line);
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  padding: 3px;
+}
+
+.phone-segmented-control button {
+  color: var(--phone-app-muted);
+  font-size: 11px;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 5px 8px;
+}
+
+.phone-segmented-control button.is-selected {
+  background: var(--phone-app-surface);
+  box-shadow: inset 0 -3px 0 var(--phone-app-accent);
+  color: var(--phone-app-ink);
+}
+
+.phone-segmented-control button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--phone-app-action) 60%, #fff);
+  outline-offset: -1px;
+}
+
+@keyframes phone-app-sheet-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-app-sheet { animation: none; }
+}
+
+@supports not (color: color-mix(in srgb, #000 50%, #fff)) {
+  .phone-app-bottom-nav > button:focus-visible,
+  .phone-app-bottom-nav > button:hover,
+  button.phone-list-row:hover,
+  button.phone-list-row:focus-visible { background: #e8f1f8; }
+  .phone-app-feedback { background: #e8f1f8; }
+}
