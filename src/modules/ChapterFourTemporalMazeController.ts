@@ -12,6 +12,8 @@ import type {
   ChapterFourState,
   ChapterFourTimeAuthority,
   ChapterFourTimeState,
+  ChapterFourZhuPersonAnswerId,
+  ChapterFourZhuPurposeAnswerId,
   GameState,
   GameStore,
   InventoryItemId,
@@ -35,6 +37,10 @@ import {
   type ChapterFourClosureSessionProof,
   type ChapterFourClosureSessionVerifier
 } from "./ChapterFourClosureContract";
+import {
+  isChapterFourElevatorStartSelectable,
+  isChapterFourElevatorTrackAligned
+} from "./ChapterFourElevatorModel";
 import {
   getChapterFour755TargetContract,
   resolveChapterFour755RuntimeEntityTarget,
@@ -80,6 +86,17 @@ export const CHAPTER_FOUR_755_TARGET_IDS = Object.freeze({
   bakeryConveyorEdge: "a1_bakery_conveyor_edge",
   bakeryHourHandPickup: "a1_bakery_hour_hand_pickup",
   hourHandSocket: "a1_hall_clock_hour_hand_socket",
+  frontDeskAttendant: "a1_front_desk_attendant",
+  a2ElevatorAttendant: "a2_elevator_attendant",
+  a3ReferenceTeacher: "a3_reference_teacher",
+  alumniSuBuqing: "a3_alumni_su_buqing",
+  alumniZhuKezhen: "a3_alumni_zhu_kezhen",
+  alumniLuYongxiang: "a3_alumni_lu_yongxiang",
+  alumniChenJiangong: "a3_alumni_chen_jiangong",
+  alumniTanJiazhen: "a3_alumni_tan_jiazhen",
+  alumniChengKaijia: "a3_alumni_cheng_kaijia",
+  classroom104BlackboardResidual: "a1_classroom_104_blackboard_residual",
+  classroom105LecternTerminal: "a1_classroom_105_lectern_terminal",
   a3Reference: "a3_reference_classroom_layout",
   room204Residual: "a2_room204_residual_group",
   positioningPlatePickup: "a2_room204_podium_drawer",
@@ -128,6 +145,9 @@ export type ChapterFour755Intent =
       toFloor: "A1" | "A2";
       expectedAttempt: number;
     }
+  | { type: "observe_elevator_history" }
+  | { type: "calibrate_elevator_history"; startSeconds: number }
+  | { type: "complete_misaligned_stair" }
   | ChapterFour755TargetIntent<{ type: "catch_attendance_paper"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.attendancePaper }>
   | ChapterFour755TargetIntent<{ type: "inspect_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
   | ChapterFour755TargetIntent<{ type: "pull_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
@@ -148,6 +168,40 @@ export type ChapterFour755Intent =
       type: "install_hour_hand";
       itemId: InventoryItemId;
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hourHandSocket;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "talk_to_a1_front_desk_attendant";
+      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.frontDeskAttendant;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "talk_to_chapter_four_support_npc";
+      targetId:
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.a2ElevatorAttendant
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.a3ReferenceTeacher;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "inspect_alumni_figure";
+      targetId:
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniSuBuqing
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniLuYongxiang
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniChenJiangong
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniTanJiazhen
+        | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniChengKaijia;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "complete_zhu_two_questions";
+      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen;
+      purposeAnswer: ChapterFourZhuPurposeAnswerId;
+      personAnswer: ChapterFourZhuPersonAnswerId;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "observe_classroom_104_chalk_residual";
+      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.classroom104BlackboardResidual;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "check_classroom_105_terminal_replay";
+      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.classroom105LecternTerminal;
     }>
   | ChapterFour755TargetIntent<{ type: "observe_a3_reference"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.a3Reference }>
   | ChapterFour755TargetIntent<{ type: "observe_room204_residual"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.room204Residual }>
@@ -283,6 +337,11 @@ export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "bakery_lamp_required",
   "bakery_stop_pending",
   "hour_hand_required",
+  "classroom_checks_required",
+  "elevator_history_required",
+  "elevator_calibration_required",
+  "zhu_two_questions_required",
+  "misaligned_stair_required",
   "room204_observations_required",
   "room204_layout_incomplete",
   "room204_unknown_piece",
@@ -388,6 +447,16 @@ const ROOM204_SLOTS = new Set<ChapterFourRoom204SlotId>(
 );
 const ROOM204_ORIENTATIONS = new Set<ChapterFourRoom204Orientation>(["up"]);
 const LIGHT_ZONE_IDS = new Set<ChapterFourLightZoneId>(LIGHT_GRID_ZONES.map((zone) => zone.id));
+const ZHU_PURPOSE_ANSWER_IDS = new Set<ChapterFourZhuPurposeAnswerId>([
+  "seek_truth",
+  "solve_real_problems",
+  "serve_public"
+]);
+const ZHU_PERSON_ANSWER_IDS = new Set<ChapterFourZhuPersonAnswerId>([
+  "responsible",
+  "clear_minded",
+  "public_service"
+]);
 
 type AllowedLocation = {
   floor: ChapterFour755FloorId;
@@ -466,6 +535,16 @@ function lockedDetailForIntent(
       return "route_not_available";
     case "traverse_main_stair":
       return "stair_route_not_available";
+    case "observe_elevator_history":
+      return "elevator_history_required";
+    case "calibrate_elevator_history":
+      return "elevator_calibration_required";
+    case "complete_misaligned_stair":
+      return hasFact(chapter, "zhu_two_questions_answered")
+        ? "misaligned_stair_required"
+        : "zhu_two_questions_required";
+    case "complete_zhu_two_questions":
+      return "zhu_two_questions_required";
     case "inspect_bakery_conveyor_edge":
       return hasFact(chapter, "bakery_conveyor_lamp_inspected")
         ? "bakery_stop_pending"
@@ -717,10 +796,83 @@ export class ChapterFourTemporalMazeController {
         return accept(this.patchChapter(state, { mode: intent.mode }));
       }
 
+      case "observe_elevator_history": {
+        if (chapter.phase !== "room204_restore"
+          || chapter.floor !== "A1"
+          || !hasFact(chapter, "classroom_104_chalk_residual_observed")
+          || !hasFact(chapter, "classroom_105_terminal_replay_checked")) {
+          return reject("locked", "classroom_checks_required");
+        }
+        if (chapter.mode !== "dark") return reject("wrong_mode");
+        if (hasFact(chapter, "elevator_history_observed")) return reject("already_complete");
+        return accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "elevator_history_observed")
+        }));
+      }
+
+      case "calibrate_elevator_history": {
+        if (chapter.phase !== "room204_restore"
+          || chapter.floor !== "A1"
+          || !hasFact(chapter, "elevator_history_observed")) {
+          return reject("locked", "elevator_history_required");
+        }
+        if (chapter.mode !== "light") return reject("wrong_mode");
+        if (hasFact(chapter, "elevator_history_calibrated")) return reject("already_complete");
+        if (!isChapterFourElevatorStartSelectable(intent.startSeconds)
+          || !isChapterFourElevatorTrackAligned(intent.startSeconds)) {
+          return reject("incorrect");
+        }
+        return accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "elevator_history_calibrated")
+        }));
+      }
+
+      case "complete_misaligned_stair": {
+        if (chapter.phase !== "room204_restore"
+          || chapter.floor !== "A3"
+          || !hasFact(chapter, "a3_reference_observed")) {
+          return reject("locked", "misaligned_stair_required");
+        }
+        if (!hasFact(chapter, "zhu_two_questions_answered")) {
+          return reject("locked", "zhu_two_questions_required");
+        }
+        if (hasFact(chapter, "misaligned_stair_solved")) return reject("already_complete");
+        const withSolvedStair = this.patchChapter(state, {
+          factIds: appendFact(chapter, "misaligned_stair_solved")
+        });
+        return accept(this.relocate(withSolvedStair, {
+          floor: "A2",
+          roomId: "a2_corridor",
+          checkpoint: "c4_a2_corridor"
+        }));
+      }
+
       case "move_to_location":
       case "record_checkpoint": {
         if ((chapter.phase === "final_chase" || chapter.phase === "return_to_clock")
           && chapter.floor !== intent.floor) return reject("locked");
+        if (chapter.phase === "room204_restore"
+          && intent.floor !== "A1"
+          && (!hasFact(chapter, "classroom_104_chalk_residual_observed")
+            || !hasFact(chapter, "classroom_105_terminal_replay_checked"))) {
+          return reject("locked", "classroom_checks_required");
+        }
+        if (chapter.phase === "room204_restore"
+          && intent.floor === "A3"
+          && !hasFact(chapter, "elevator_history_calibrated")) {
+          return reject("locked", "elevator_calibration_required");
+        }
+        if (chapter.phase === "room204_restore"
+          && intent.floor === "A2"
+          && !hasFact(chapter, "misaligned_stair_solved")) {
+          return reject("locked", "misaligned_stair_required");
+        }
+        if (chapter.phase === "room204_restore"
+          && chapter.floor === "A3"
+          && intent.floor === "A1"
+          && !hasFact(chapter, "misaligned_stair_solved")) {
+          return reject("locked", "misaligned_stair_required");
+        }
         if (!isAllowedLocation(chapter.phase, intent)) return reject("locked");
         if (chapter.floor === intent.floor
           && chapter.roomId === intent.roomId
@@ -836,6 +988,54 @@ export class ChapterFourTemporalMazeController {
           timeState: "1850_evening"
         });
         return result;
+      }
+
+      case "talk_to_a1_front_desk_attendant":
+      case "talk_to_chapter_four_support_npc":
+      case "inspect_alumni_figure":
+        return acceptReadOnly();
+
+      case "complete_zhu_two_questions": {
+        if (chapter.phase !== "room204_restore"
+          || chapter.floor !== "A3"
+          || intent.targetId !== CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen
+          || !hasFact(chapter, "a3_reference_observed")) {
+          return reject("locked", "zhu_two_questions_required");
+        }
+        if (hasFact(chapter, "zhu_two_questions_answered")) return reject("already_complete");
+        if (!ZHU_PURPOSE_ANSWER_IDS.has(intent.purposeAnswer)
+          || !ZHU_PERSON_ANSWER_IDS.has(intent.personAnswer)) return reject("incorrect");
+        const result = accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "zhu_two_questions_answered"),
+          zhuQuestionAnswers: {
+            purpose: intent.purposeAnswer,
+            person: intent.personAnswer
+          }
+        }));
+        this.emitChapterFourCue("zhu_two_questions_answered", {
+          purposeAnswer: intent.purposeAnswer,
+          personAnswer: intent.personAnswer,
+          nextConsumer: "canruo_star_lamp"
+        });
+        return result;
+      }
+
+      case "observe_classroom_104_chalk_residual": {
+        if (hasFact(chapter, "classroom_104_chalk_residual_observed")) {
+          return acceptReadOnly();
+        }
+        return accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "classroom_104_chalk_residual_observed")
+        }));
+      }
+
+      case "check_classroom_105_terminal_replay": {
+        if (hasFact(chapter, "classroom_105_terminal_replay_checked")) {
+          return acceptReadOnly();
+        }
+        return accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "classroom_105_terminal_replay_checked")
+        }));
       }
 
       case "observe_a3_reference": {
@@ -1098,8 +1298,16 @@ export class ChapterFourTemporalMazeController {
           || chapter.lightGrid.locked) return reject("locked");
         if (!isChapterFourLightGridSolved(chapter.lightGrid.mask)
           || chapter.lightGrid.mask !== CHAPTER_FOUR_LIGHT_GRID.targetMask) return reject("incorrect");
+        if (!hasFact(chapter, "zhu_two_questions_answered")) {
+          return reject("locked", "zhu_two_questions_required");
+        }
+        const lightGridFacts = appendFact(chapter, "light_grid_locked");
+        const primedFacts = appendFact(
+          { ...chapter, factIds: lightGridFacts },
+          "canruo_star_lamp_primed"
+        );
         const result = accept(this.transition(state, "final_chase", {
-          factIds: appendFact(chapter, "light_grid_locked"),
+          factIds: primedFacts,
           lightGrid: { mask: CHAPTER_FOUR_LIGHT_GRID.targetMask, locked: true },
           chaseRestartCheckpoint: "c4_a1_lobby",
           floor: "A1",
@@ -1108,7 +1316,9 @@ export class ChapterFourTemporalMazeController {
         }));
         this.emitChapterFourCue("power_grid_locked", {
           mask: CHAPTER_FOUR_LIGHT_GRID.targetMask,
-          phase: "final_chase"
+          phase: "final_chase",
+          canruoStarLampPrimed: true,
+          zhuQuestionAnswers: chapter.zhuQuestionAnswers
         });
         return result;
       }
@@ -1282,9 +1492,6 @@ export class ChapterFourTemporalMazeController {
           ...completedState,
           runtimeMode: "phone",
           currentScene: "phone_home",
-          postgame: {
-            completionReceipt: "chapter4_closure_v1"
-          },
           ui: {
             ...completedState.ui,
             controlCenterOpen: false,
@@ -1456,7 +1663,12 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "complete_bakery_conveyor_stop":
     case "complete_room204_projection":
     case "complete_minute_theft":
+    case "observe_elevator_history":
+    case "complete_misaligned_stair":
       return hasExactKeys(value, ["type"]);
+    case "calibrate_elevator_history":
+      return hasExactKeys(value, ["type", "startSeconds"])
+        && isChapterFourElevatorStartSelectable(value.startSeconds as number);
     case "set_mode":
       return hasExactKeys(value, ["type", "mode"])
         && (value.mode === "light" || value.mode === "dark");
@@ -1488,6 +1700,31 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "install_hour_hand":
       return value.itemId === "oldClockHourHand"
         && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hourHandSocket, ["itemId"]);
+    case "talk_to_a1_front_desk_attendant":
+      return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.frontDeskAttendant);
+    case "talk_to_chapter_four_support_npc":
+      return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a2ElevatorAttendant)
+        || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a3ReferenceTeacher);
+    case "inspect_alumni_figure":
+      return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniSuBuqing)
+        || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen)
+        || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniLuYongxiang)
+        || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniChenJiangong)
+        || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniTanJiazhen)
+        || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniChengKaijia);
+    case "complete_zhu_two_questions":
+      return typeof value.purposeAnswer === "string"
+        && ZHU_PURPOSE_ANSWER_IDS.has(value.purposeAnswer as ChapterFourZhuPurposeAnswerId)
+        && typeof value.personAnswer === "string"
+        && ZHU_PERSON_ANSWER_IDS.has(value.personAnswer as ChapterFourZhuPersonAnswerId)
+        && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen, [
+          "purposeAnswer",
+          "personAnswer"
+        ]);
+    case "observe_classroom_104_chalk_residual":
+      return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.classroom104BlackboardResidual);
+    case "check_classroom_105_terminal_replay":
+      return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.classroom105LecternTerminal);
     case "observe_a3_reference":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a3Reference);
     case "observe_room204_residual":

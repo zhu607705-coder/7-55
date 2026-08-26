@@ -144,7 +144,7 @@
       },
       "room204_restore": {
         "stageLabel": "阶段 5 · 恢复 204",
-        "currentDifference": "二楼 204 保留 18:50 布置，三楼 303 提供晨间参照，需要按参照恢复教室。"
+        "currentDifference": "电梯保留 18:50 历史轨道，三楼与二楼之间的楼梯发生投影错位；接通交通后再按 303 参照恢复 204。"
       },
       "maintenance_repair": {
         "stageLabel": "阶段 6 · 完成维修",
@@ -208,7 +208,13 @@
       "bakery_hour_hand_exposed": "旧时针已从传送带露出",
       "bakery_hour_hand_collected": "旧时针已取得",
       "hour_hand_installed": "旧时针已装回",
+      "classroom_104_chalk_residual_observed": "104 黑板的延迟擦痕已记录",
+      "classroom_105_terminal_replay_checked": "105 讲台的本地回放延迟已确认",
+      "elevator_history_observed": "主电梯三条历史轨道已读取",
+      "elevator_history_calibrated": "主电梯 18:50 重放窗口已校准",
       "a3_reference_observed": "三楼 303 晨间参照已记录",
+      "zhu_two_questions_answered": "竺老两问已回答",
+      "misaligned_stair_solved": "三楼至二楼的错位楼梯已接通",
       "room204_residual_observed": "二楼 204 残影已记录",
       "room204_restored": "二楼 204 已恢复",
       "room204_projection_completed": "204 投影记录已完成",
@@ -220,6 +226,7 @@
       "clock_gear_repaired": "旧钟齿轮已修复",
       "paper_temporarily_out_of_inventory": "签到纸暂时带走最后一分钟",
       "light_grid_locked": "必要照明路线已锁定",
+      "canruo_star_lamp_primed": "灿若星辰灯光收束准备信号已记录",
       "final_minute_recovered": "最后一分钟已取回",
       "final_minute_installed": "最后一分钟已装回旧钟",
       "checkin_card_accepted": "校园卡验证已通过",
@@ -261,6 +268,26 @@
         "reason": "旧时针流程尚未完成。",
         "nextAction": "先让传送带停稳，取得旧时针后拖到大厅旧钟。"
       },
+    "classroom_checks_required": {
+      "reason": "A1 的时间差校验尚未完成。",
+      "nextAction": "先观察 104 黑板擦痕，再检查 105 讲台回放。"
+    },
+    "elevator_history_required": {
+      "reason": "主电梯的历史轨道尚未记录。",
+      "nextAction": "完成 104 与 105 校验后，在一楼电梯门前切到深色观察并交互。"
+    },
+    "elevator_calibration_required": {
+      "reason": "主电梯重放窗口尚未校准。",
+      "nextAction": "切回浅色操作进入轿厢，让门体开放区间覆盖六秒进入窗口。"
+    },
+    "zhu_two_questions_required": {
+      "reason": "竺老两问尚未完成。",
+      "nextAction": "回到三楼校史人物荣誉门厅，靠近竺可桢画像按 Space 并提交两项回答。"
+    },
+    "misaligned_stair_required": {
+      "reason": "三楼与二楼之间的楼梯仍处于投影错位状态。",
+      "nextAction": "记录 303 参照后，从三楼主楼梯下行口进入空间对齐关卡。"
+    },
       "room204_observations_required": {
         "reason": "204 复原缺少参照记录。",
         "nextAction": "记录 303 的 12 组参照位置，并在深色观察中记录 204 残影。"
@@ -543,7 +570,12 @@
         "a3_1850_reference"
       ],
       "taskKeys": [
+        "verify_a1_classrooms",
+        "observe_elevator_history",
+        "calibrate_elevator_history",
         "observe_a3_reference",
+        "answer_zhu_two_questions",
+        "solve_misaligned_stair",
         "observe_room204_residual",
         "restore_room204",
         "watch_room204_projection",
@@ -740,6 +772,46 @@
         "前往三楼 303 参照教室。",
         "晨间布置需要先在深色观察中记录，之后才能用于复原 204。",
         "切到深色观察，靠近 303 晨间参照区域并执行观察。"
+      ]
+    },
+    "verify_a1_classrooms": {
+      "label": "完成 104 与 105 的时间差校验",
+      "hints": [
+        "104 与 105 各保留了一种时间延迟记录，两项都确认后才能使用楼层通道。",
+        "在 104 切到深色观察，靠近黑板读取擦痕残留。",
+        "在 105 切回浅色操作，靠近讲台检查本地回放。"
+      ]
+    },
+    "observe_elevator_history": {
+      "label": "在深色观察中读取主电梯历史轨道",
+      "hints": [
+        "104 与 105 的两项校验完成后，主电梯会留下轿厢、门体和进入窗口三条轨道。",
+        "切到深色观察，站在一楼主电梯门前执行交互。",
+        "记录完成后切回浅色操作，再进入轿厢校准重放起点。"
+      ]
+    },
+    "calibrate_elevator_history": {
+      "label": "校准主电梯的 18:50 重放窗口",
+      "hints": [
+        "在浅色操作中进入一楼主电梯轿厢。",
+        "调整重放起点，让门体开放区间完整覆盖人物的六秒进入窗口。",
+        "校准成功后乘电梯直达三楼，二楼按钮会暂时锁定。"
+      ]
+    },
+    "answer_zhu_two_questions": {
+      "label": "在校史人物荣誉墙回答竺老两问",
+      "hints": [
+        "前往三楼校史人物荣誉门厅，中间画像为竺可桢老校长。",
+        "靠近竺可桢画像并按 Space，先阅读生平，再依次回答两个问题。",
+        "每个选项都会保留你的回答；提交后才能进入错位楼梯。"
+      ]
+    },
+    "solve_misaligned_stair": {
+      "label": "接通三楼通往二楼的错位楼梯",
+      "hints": [
+        "记录 303 晨间参照后，前往三楼主楼梯下行口。",
+        "在三个固定视角中调节横移台、旋转梯和升降台，让投影端点形成连续通路。",
+        "完成两段楼梯间后会从二楼交通核心恢复行动。"
       ]
     },
     "observe_room204_residual": {
@@ -986,6 +1058,98 @@
       {
         "speaker": "baker",
         "text": "那它总算找到对口味了。"
+      }
+    ],
+    "classroom104.chalk_residual": [
+      {
+        "speaker": "system",
+        "text": "黑板已经擦净，残留笔画仍按书写顺序逐段出现。首尾相差 7 分 55 秒。"
+      },
+      {
+        "speaker": "player",
+        "text": "房间空了，板书还在补完上一节课。"
+      }
+    ],
+    "classroom105.terminal_replay": [
+      {
+        "speaker": "system",
+        "text": "讲台回放停在 07:47:05，教室记录显示 07:55:00。本地画面延迟 7 分 55 秒。"
+      },
+      {
+        "speaker": "system",
+        "text": "该终端只能证明回放延迟，不能用于校准现场时间。"
+      }
+    ],
+    "frontDesk.bakery": [
+      {
+        "speaker": "值班助理",
+        "text": "面包坊那边的传送带刚停过一次。旧钟缺少的部件可能在那里。"
+      }
+    ],
+    "frontDesk.classrooms_none": [
+      {
+        "speaker": "值班助理",
+        "text": "104 要观察黑板残留，105 要检查讲台本地回放。两项都登记后，楼层通行才会恢复。"
+      }
+    ],
+    "frontDesk.classroom_104_done": [
+      {
+        "speaker": "值班助理",
+        "text": "104 已登记。105 讲台回放还没有检查。"
+      }
+    ],
+    "frontDesk.classroom_105_done": [
+      {
+        "speaker": "值班助理",
+        "text": "105 已登记。104 黑板残留还没有观察。"
+      }
+    ],
+    "frontDesk.classrooms_done": [
+      {
+        "speaker": "值班助理",
+        "text": "两项时间差记录都已登记。现在可以继续核对二楼和三楼。"
+      }
+    ],
+    "frontDesk.morning_checkin": [
+      {
+        "speaker": "值班助理",
+        "text": "现在是 07:55。校园卡放到左侧读卡器，签到纸放入右侧纸槽。"
+      }
+    ],
+    "frontDesk.exterior_closure": [
+      {
+        "speaker": "值班助理",
+        "text": "大厅旧钟、签到记录和外部时间已经一致。今天的记录可以归档。"
+      }
+    ],
+    "supportNpc.a2_checks_required": [
+      {
+        "speaker": "安全员",
+        "text": "二楼电梯口暂不放行。先把一楼 104 黑板残留和 105 讲台回放都登记完。"
+      }
+    ],
+    "supportNpc.a2_reference_required": [
+      {
+        "speaker": "安全员",
+        "text": "一楼两项记录已到。先去三楼参照教室核对标准布局，再回 204。"
+      }
+    ],
+    "supportNpc.a2_room204": [
+      {
+        "speaker": "安全员",
+        "text": "三楼参照已登记。现在可以进 204，按残影恢复讲台和桌椅位置。"
+      }
+    ],
+    "supportNpc.a3_reference": [
+      {
+        "speaker": "教师",
+        "text": "这间教室保留标准布局。用浅色操作记录讲台和十二组桌椅，完成后回二楼 204。"
+      }
+    ],
+    "supportNpc.a3_recorded": [
+      {
+        "speaker": "教师",
+        "text": "标准布局已经记录。二楼 204 需要的是这份参照。"
       }
     ],
     "room204.restored": [

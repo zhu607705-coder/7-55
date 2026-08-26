@@ -30,7 +30,7 @@
     "postedStatus": "委托待接：前往剧院前台也无法直接取票，需要先在这里接单。",
     "timeRequiredStatus": "先到剧院大厅用深色观察确认 08:32，确认后回到本页参加第一波。",
     "acceptedStatus": "08:32 已确认。第一波将在本手机页面提交；可先打开控制中心切换到移动数据。",
-    "firstWaveStatus": "第一波已结束：系统判定响应速度过慢。打开手机控制中心，切换到移动数据后参加第二波。",
+    "firstWaveStatus": "第一波已结束：系统判定响应速度过慢。",
     "secondWaveCountdownStatus": "第一波请求已结束，手机票务页正在等待第二波：",
     "cellularReadyStatus": "移动数据已开启，第二波已可在本手机页面提交。",
     "cellularRequiredStatus": "第二波仅接受移动数据。打开手机控制中心切换网络后再提交。",

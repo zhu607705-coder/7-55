@@ -4,7 +4,7 @@
 
 《7:55》的可玩版本与技术框架。当前项目使用 Vite、TypeScript、React、Zustand、
 Phaser 和 Three.js。React / TypeScript 负责手机端、共享状态、控制器、存档、任务、
-道具和表现层；Phaser 负责校园地图、横屏 RPG 内景与竖屏小游戏；第四章错位楼梯是
+道具和表现层；Phaser 负责校园地图与横屏 RPG 内景；第四章错位楼梯是
 唯一经过批准的 Three.js 场景。
 
 ## 开始开发
@@ -29,7 +29,6 @@ HTTP、部署环境和直接打开 `demo/index.html` 均使用同一浏览器原
 ```bash
 npm run map:zijingang
 npm run audio:chapter3:verify
-npm run endless:validate
 npm run typecheck
 npm run build
 npm run build:single
@@ -45,7 +44,7 @@ npm run build:demo
 输出位于 `demo/index.html`。`demo/` 和 `dist/` 是可重建产物，不提交到普通 Git；
 需要交付离线演示时，以完成日期命名并作为 GitHub Release 附件发布。
 
-当前离线版本：[7-55-demo-20260825.html](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260825/7-55-demo-20260825.html)。文件大小、SHA-256 与验证范围见 [ASSETS.md](ASSETS.md)。
+当前离线版本：[7-55-demo-20260826.html](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260826/7-55-demo-20260826.html)。对应实现归档与文件校验信息见 [ASSETS.md](ASSETS.md)。
 
 ### 独立校园大地图 Demo
 
@@ -58,7 +57,7 @@ npm run verify:campus-map-demo
 需要交付离线演示时，请作为 Release 附件发布。
 
 GitHub Actions 会对每个 PR 和每次推送到 `main` 执行第三章音频、校园地图、
-第四章 7:55、无尽挑战、类型检查、生产构建和离线单文件验证。
+第四章 7:55、类型检查、生产构建和离线单文件验证。
 
 ## 目录
 

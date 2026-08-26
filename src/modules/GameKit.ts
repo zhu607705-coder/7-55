@@ -2,7 +2,6 @@ import { eventBus } from "../core/EventBus";
 import { gameStore } from "../core/GameState";
 import { CheckinController } from "./CheckinController";
 import { ActOneBootstrapController } from "./ActOneBootstrapController";
-import { BikeArcadeChapterController } from "./BikeArcadeChapterController";
 import { DigitCollector } from "./DigitCollector";
 import { FlagController } from "./FlagController";
 import { InventoryController } from "./InventoryController";
@@ -15,7 +14,6 @@ import { ChapterThreeTheaterController } from "./ChapterThreeTheaterController";
 import { ClockCalibrationController } from "./ClockCalibrationController";
 import { ChapterFourTemporalMazeController } from "./ChapterFourTemporalMazeController";
 import { SaveController } from "./SaveController";
-import { EndlessArcadeController } from "./EndlessArcadeController";
 
 /**
  * 绑定在全局单例 store / eventBus 上的控制器束。
@@ -23,8 +21,6 @@ import { EndlessArcadeController } from "./EndlessArcadeController";
  */
 export const kit = {
   actOne: new ActOneBootstrapController(gameStore, eventBus),
-  endlessArcade: new EndlessArcadeController(gameStore, eventBus),
-  bikeArcade: new BikeArcadeChapterController(gameStore, eventBus),
   flags: new FlagController(gameStore, eventBus),
   inventory: new InventoryController(gameStore, eventBus),
   libraryFinals: new LibraryFinalsController(gameStore, eventBus),

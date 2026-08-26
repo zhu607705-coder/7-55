@@ -29,6 +29,10 @@ const content = JSON.parse(await readFile(
   resolve(repoRoot, "src/data/chapter4-755.content.json"),
   "utf8"
 ));
+const alumniModule = await readFile(
+  resolve(repoRoot, "src/data/ChapterFourAlumniHonorWall.ts"),
+  "utf8"
+);
 
 const expectedNormalizedHashes = {
   a1_2245_opening: "722c89e62b8b3efdd83deacf7ca90d9950f387c3b05dd813f24ad02f8551d47e",
@@ -86,29 +90,51 @@ const expectedTask10NpcAssets = [
     fps: 1,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "8fd6a4ab5b600449ed80b2eb91b71f2a0a8c46937e00845d1b44809edf42b57c"
+    sha256: "13521f3e15df3f73cec566c71fdb43042664db7898bea982e20f6837212f08fb"
   },
   {
     id: "cleaner_idle",
-    file: "src/assets/rpg/npcs/finale/cleaner_idle_2frame.png",
+    file: "src/assets/rpg/npcs/finale/cleaner_idle_8frame.png",
     frameWidth: 96,
     frameHeight: 128,
-    frameCount: 2,
-    fps: 2,
+    frameCount: 8,
+    fps: 6,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "2119caa68acc8a88e52ab766e68d37ea77ee1b3ad3a41acce45b0b1de0a982cc"
+    sha256: "391f5288aa8acdfa2d6b96efcdf49fbc07d60b2b7b76cf31bb4ea362d45ca203"
   },
   {
     id: "cleaner_push_cart",
-    file: "src/assets/rpg/npcs/finale/cleaner_push_cart_4frame.png",
+    file: "src/assets/rpg/npcs/finale/cleaner_push_cart_8frame.png",
     frameWidth: 192,
     frameHeight: 128,
-    frameCount: 4,
-    fps: 8,
+    frameCount: 8,
+    fps: 9,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "35a7e47cc4fa9f448f3f04c9c4fb87a0595344f72478223961fd29157d2e81f8"
+    sha256: "b3149e79622fd89da7eec97c4f9f1aa0bf6fdda4838d93f15ff64b636ab5d4d4"
+  },
+  {
+    id: "cleaner_push_cart_down",
+    file: "src/assets/rpg/npcs/finale/cleaner_push_cart_down_8frame.png",
+    frameWidth: 192,
+    frameHeight: 128,
+    frameCount: 8,
+    fps: 9,
+    loop: true,
+    footAnchor: { x: 0.5, y: 1 },
+    sha256: "56b17d565581ca697864482cd4cebe1b55d71dd6153c9e6d7197d16b017e1bfb"
+  },
+  {
+    id: "cleaner_push_cart_up",
+    file: "src/assets/rpg/npcs/finale/cleaner_push_cart_up_8frame.png",
+    frameWidth: 192,
+    frameHeight: 128,
+    frameCount: 8,
+    fps: 9,
+    loop: true,
+    footAnchor: { x: 0.5, y: 1 },
+    sha256: "4ad404ac81f54c121f250ffbaf606f98955106df51796508623e5f350cb262bc"
   },
   {
     id: "guard_walk",
@@ -116,11 +142,41 @@ const expectedTask10NpcAssets = [
     frameWidth: 96,
     frameHeight: 128,
     frameCount: 8,
-    fps: 8,
+    fps: 9,
     loop: true,
     footAnchor: { x: 0.5, y: 1 },
-    sha256: "8653429dc4a6896d545b95053dc250c6fc61a9627ca7d026a79d7ca52c14eaf3"
+    sha256: "21a66a9887295dd6d00bbce8acf18b637cf4b0364248b7cb83994e8de7c84da2"
+  },
+  {
+    id: "guard_walk_down",
+    file: "src/assets/rpg/npcs/finale/guard_walk_down_8frame.png",
+    frameWidth: 96,
+    frameHeight: 128,
+    frameCount: 8,
+    fps: 9,
+    loop: true,
+    footAnchor: { x: 0.5, y: 1 },
+    sha256: "f27adc541f0b73f669163d1e4e2e15dec4349a1b07f10069e6cfa875dabe0dc1"
+  },
+  {
+    id: "guard_walk_up",
+    file: "src/assets/rpg/npcs/finale/guard_walk_up_8frame.png",
+    frameWidth: 96,
+    frameHeight: 128,
+    frameCount: 8,
+    fps: 9,
+    loop: true,
+    footAnchor: { x: 0.5, y: 1 },
+    sha256: "2649d5abba5a7b8c34fad580c8f1148f858b9cdebd639dea2c44c460273bc423"
   }
+];
+const expectedAlumniPortraits = [
+  { id: "chen_jiangong", targetId: "a3_alumni_chen_jiangong", file: "chen_jiangong_v01.png", width: 250 },
+  { id: "cheng_kaijia", targetId: "a3_alumni_cheng_kaijia", file: "cheng_kaijia_v01.png", width: 250 },
+  { id: "lu_yongxiang", targetId: "a3_alumni_lu_yongxiang", file: "lu_yongxiang_v01.png", width: 256 },
+  { id: "su_buqing", targetId: "a3_alumni_su_buqing", file: "su_buqing_v01.png", width: 256 },
+  { id: "tan_jiazhen", targetId: "a3_alumni_tan_jiazhen", file: "tan_jiazhen_v01.png", width: 250 },
+  { id: "zhu_kezhen", targetId: "a3_alumni_zhu_kezhen", file: "zhu_kezhen_v01.png", width: 256 }
 ];
 
 assert(manifest.schemaVersion === 3, "finale manifest must use schemaVersion 3");
@@ -366,6 +422,36 @@ for (const expected of expectedTask10NpcAssets) {
   );
 }
 
+for (const expected of expectedAlumniPortraits) {
+  const assetPath = resolve(
+    repoRoot,
+    "src/assets/rpg/portraits/chapter4/alumni",
+    expected.file
+  );
+  const bytes = await readFile(assetPath);
+  assert(bytes.length < 200_000, `${expected.file} must remain below 200 KB for silent RPG preload`);
+  const decoded = decodePng(bytes, expected.file);
+  assertPng(decoded, expected.width, 384, 4, expected.file);
+  const measured = alphaBounds(
+    decoded,
+    { x: 0, y: 0, width: decoded.width, height: decoded.height },
+    1
+  );
+  assert(measured !== null, `${expected.file} must contain a visible portrait`);
+  let transparentPixelCount = 0;
+  for (let alphaIndex = 3; alphaIndex < decoded.pixels.length; alphaIndex += 4) {
+    if (decoded.pixels[alphaIndex] === 0) transparentPixelCount += 1;
+  }
+  assert(
+    transparentPixelCount >= decoded.width * decoded.height * 0.1,
+    `${expected.file} must retain at least 10% fully transparent background pixels`
+  );
+  assert(decoded.pixels[3] === 0, `${expected.file} top-left corner must remain transparent`);
+  assert(alumniModule.includes(`id: "${expected.id}"`), `${expected.id} is missing from the alumni data table`);
+  assert(alumniModule.includes(`targetId: "${expected.targetId}"`), `${expected.targetId} is missing from the alumni data table`);
+  assert(alumniModule.includes(expected.file), `${expected.file} is not referenced by the alumni data table`);
+}
+
 const maintenanceRuntime = layout.maintenanceRuntime;
 assertJsonEqual([
   maintenanceRuntime?.cleaningCart?.texture,
@@ -375,7 +461,7 @@ assertJsonEqual([
 ], [
   "cleaning_cart",
   "cleaner_idle",
-  "cleaner_push_cart",
+  "cleaner_push_cart_up",
   "guard_walk"
 ], "Task10 layout/NPC animation bindings");
 const pryTarget = maintenanceRuntime?.targetEntities?.find(
@@ -552,7 +638,7 @@ assert(manifest.exclusions?.generatedStarMaterial === false, "manifest must not 
 assert(manifest.exclusions?.generatedExteriorClosure === false, "manifest must not generate a replacement exterior closure");
 
 console.log(
-  `chapter4 7:55 assets PASS schema=3 bases=${manifest.basePlates.length} states=${manifest.statePlates.length} activeSheets=${activeSheets.length} frames=${activeSheets.reduce((sum, sheet) => sum + sheet.frames.length, 0)} normalizedPixelProofs=3 provenanceSourceMode=${provenanceSourceMode} task10NpcAssets=4 task10FrameBindings=4 task10SourceDerivations=4 task11ClockFrames=1 task11PowerFrames=4 task11AssetEvidence=file_manifest_contract(no_browser_evidence) task12FinalMinute=approved_frame+visible_getBounds_contract(no_browser_evidence)`
+  `chapter4 7:55 assets PASS schema=3 bases=${manifest.basePlates.length} states=${manifest.statePlates.length} activeSheets=${activeSheets.length} frames=${activeSheets.reduce((sum, sheet) => sum + sheet.frames.length, 0)} normalizedPixelProofs=3 provenanceSourceMode=${provenanceSourceMode} task10NpcAssets=${expectedTask10NpcAssets.length} task10FrameBindings=4 task10SourceDerivations=4 task11ClockFrames=1 task11PowerFrames=4 task11AssetEvidence=file_manifest_contract(no_browser_evidence) task12FinalMinute=approved_frame+visible_getBounds_contract(no_browser_evidence) alumniPortraits=${expectedAlumniPortraits.length}+transparent+referenced`
 );
 
 function validateFrame(sheet, frame, decoded) {

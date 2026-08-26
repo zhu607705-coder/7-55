@@ -4,6 +4,7 @@ import { ThreePrimitiveCache, type ThreeFlatMaterial } from "../ThreePrimitiveCa
 
 export const CHASE_RIDER_DISPLAY_SCALE = 1.28;
 export const CHASE_RIDER_WHEEL_RADIUS = 0.5;
+export const CHASE_RIDER_GEAR_RATIO = 2.6;
 export const CHASE_RIDER_CONTACT_EPSILON = 0.00001;
 
 const LEFT_HAND_BASE_POSITION = Object.freeze({ x: 0, y: -0.31, z: -0.04 });
@@ -123,6 +124,13 @@ export interface ChaseRiderContactError {
   rightHandToNearGripWorldUnits: number;
   leftFootToPedalWorldUnits: number;
   rightFootToPedalWorldUnits: number;
+}
+
+export interface ChaseRiderFootOrientationError {
+  leftSoleTiltRadians: number;
+  rightSoleTiltRadians: number;
+  leftToeDirectionRadians: number;
+  rightToeDirectionRadians: number;
 }
 
 export interface ChaseRiderContactSelection {
@@ -544,6 +552,35 @@ function solveTwoBoneIK(
   const upperInverse = rootRotation.clone().invert();
   const lowerDirectionLocal = lowerDirection.clone().applyQuaternion(upperInverse);
   midPivot.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(lowerAxis, lowerDirectionLocal));
+  root.updateWorldMatrix(true, true);
+}
+
+/**
+ * Keeps a pedal-bound shoe level with the bicycle instead of inheriting the
+ * shin's terminal rotation. Repositioning the foot after the quaternion update
+ * preserves the authored sole-to-pedal contact point exactly.
+ */
+function alignPedalFootOrientation(
+  root: THREE.Object3D,
+  foot: THREE.Object3D,
+  footContact: THREE.Object3D,
+  pedalContact: THREE.Object3D,
+  bicycleRoot: THREE.Object3D
+): void {
+  const parent = foot.parent;
+  if (!parent) throw new Error(`${foot.name || "foot"} must have a parent before ankle alignment.`);
+
+  root.updateWorldMatrix(true, true);
+  const pedalWorld = pedalContact.getWorldPosition(new THREE.Vector3());
+  const bicycleWorldQuaternion = bicycleRoot.getWorldQuaternion(new THREE.Quaternion());
+  const parentWorldQuaternion = parent.getWorldQuaternion(new THREE.Quaternion());
+  foot.quaternion.copy(parentWorldQuaternion.invert().multiply(bicycleWorldQuaternion));
+
+  root.updateWorldMatrix(true, true);
+  const currentContactWorld = footContact.getWorldPosition(new THREE.Vector3());
+  const pedalInParent = parent.worldToLocal(pedalWorld.clone());
+  const currentContactInParent = parent.worldToLocal(currentContactWorld.clone());
+  foot.position.add(pedalInParent.sub(currentContactInParent));
   root.updateWorldMatrix(true, true);
 }
 
@@ -1611,6 +1648,8 @@ export function resetChaseRiderRigPose(rig: ChaseRiderRig): void {
     RIGHT_FOOT_BASE_POSITION.y,
     RIGHT_FOOT_BASE_POSITION.z
   );
+  rig.leftFoot.rotation.set(0, 0, 0);
+  rig.rightFoot.rotation.set(0, 0, 0);
   rig.crank.rotation.set(0, 0, 0);
   rig.rightBrakeLever.rotation.set(0, 0, -0.38);
 }
@@ -1655,6 +1694,13 @@ export function enforceChaseRiderContactConstraints(
       rig.leftFootContact,
       rig.leftLeg.localToWorld(new THREE.Vector3(-0.16, -0.08, -0.62))
     );
+    alignPedalFootOrientation(
+      rig.root,
+      rig.leftFoot,
+      rig.leftFootContact,
+      rig.leftPedalContact,
+      rig.bicycleRoot
+    );
   }
   if (selection.rightFootToPedal ?? selection.footToPedal ?? true) {
     solveTwoBoneIK(
@@ -1665,6 +1711,13 @@ export function enforceChaseRiderContactConstraints(
       rig.rightPedalContact,
       rig.rightFootContact,
       rig.rightLeg.localToWorld(new THREE.Vector3(0.16, -0.08, -0.62))
+    );
+    alignPedalFootOrientation(
+      rig.root,
+      rig.rightFoot,
+      rig.rightFootContact,
+      rig.rightPedalContact,
+      rig.bicycleRoot
     );
   }
 }
@@ -1708,6 +1761,27 @@ export function measureChaseRiderContactError(rig: ChaseRiderRig): ChaseRiderCon
   };
 }
 
+export function measureChaseRiderFootOrientationError(
+  rig: ChaseRiderRig
+): ChaseRiderFootOrientationError {
+  rig.root.updateWorldMatrix(true, true);
+  const bicycleWorldQuaternion = rig.bicycleRoot.getWorldQuaternion(new THREE.Quaternion());
+  const bicycleUp = new THREE.Vector3(0, 1, 0).applyQuaternion(bicycleWorldQuaternion).normalize();
+  const bicycleForward = new THREE.Vector3(0, 0, -1).applyQuaternion(bicycleWorldQuaternion).normalize();
+  const leftFootQuaternion = rig.leftFoot.getWorldQuaternion(new THREE.Quaternion());
+  const rightFootQuaternion = rig.rightFoot.getWorldQuaternion(new THREE.Quaternion());
+  const leftUp = new THREE.Vector3(0, 1, 0).applyQuaternion(leftFootQuaternion).normalize();
+  const rightUp = new THREE.Vector3(0, 1, 0).applyQuaternion(rightFootQuaternion).normalize();
+  const leftForward = new THREE.Vector3(0, 0, -1).applyQuaternion(leftFootQuaternion).normalize();
+  const rightForward = new THREE.Vector3(0, 0, -1).applyQuaternion(rightFootQuaternion).normalize();
+  return {
+    leftSoleTiltRadians: leftUp.angleTo(bicycleUp),
+    rightSoleTiltRadians: rightUp.angleTo(bicycleUp),
+    leftToeDirectionRadians: leftForward.angleTo(bicycleForward),
+    rightToeDirectionRadians: rightForward.angleTo(bicycleForward)
+  };
+}
+
 export function assertChaseRiderContactConstraints(
   rig: ChaseRiderRig,
   epsilon = CHASE_RIDER_CONTACT_EPSILON
@@ -1745,9 +1819,8 @@ export function applyChaseRiderPose(
     rig.leftArm.rotation.y = steering * 0.42;
     rig.rightArm.rotation.y = steering * 0.42;
     rig.crank.rotation.x = pedalPhase;
-    const pedal = Math.sin(pedalPhase);
-    rig.leftLeg.rotation.x = pedal * 0.48;
-    rig.rightLeg.rotation.x = -pedal * 0.48;
+    // The crank contacts and two-bone IK own the complete hip-knee-foot chain.
+    // Adding a second leg-root swing here produces a conflicting gait.
     enforceChaseRiderContactConstraints(rig);
     return;
   }

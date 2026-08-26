@@ -1,5 +1,121 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-08-26 DEV 章节与关卡分层
+
+- 用户要求最终基于 DEV 划分关卡和章节。现有“章节 → 玩法段落 → 节点”改为正式的“章节 → 编号关卡 → 直达节点”三级导航。
+- 六个章节组共划分 28 个关卡：第一章 2 关、第二章 6 关、第三章 6 关、3.5章 2 关、第四章 8 关、寻人篇 4 关；每个既有开发检查点保留原 ID、seed、备份和恢复行为。
+- DEV 顶部同时显示章节数、关卡数和节点数；关卡按钮显示编号、名称和节点数量，支持查看本章全部关卡。
+- 自动验证：新增 `npm run verify:developer-levels`，验证 `120` 个现有检查点均且仅归入一个关卡、关卡和章节对应、关卡 ID 唯一、章节关卡数固定，结果通过 `550` 项断言；`npm run typecheck`、`npm run build` 与 `git diff --check` 均通过，普通构建处理 `690` 个模块。
+- 浏览器验证：按 `develop-web-game` 标准客户端读取真实游戏状态，并在 Blink `1280×720` 与 `390×844` 完成“第四章 4-4 → 4-6 → 本章全部 → 第三章 3-1 → 3-4 → 天气调控节点”的点按链路；共检查 `30` 项，节点数量分别为 `1 / 2 / 13 / 11 / 5`，节点跳转后激活态正确，恢复入口保留，两个视口均无文档溢出，DEV 面板完整位于视口内，console/page error 为 `0`。两张页面截图已目视确认，临时 QA 资产在结论记录后删除。
+- 交付边界：未运行 `build:single`，未重建 `demo/index.html`，未执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-26 A1 前台柜台空气墙
+
+- 用户在第四章 A1 前台柜台区域指出需要空气墙。
+- 复用人工标注 `a1-ann-016`，在柜台前景矩形内新增源像素碰撞 `{x:758,y:633,width:179,height:26}`。碰撞覆盖柜台下方实体立面并终止于 `a1_foreground_016` 的遮挡基线；上方 8px 留给 07:55 阶段的读卡器和签到纸槽，避免可拖放目标与空气墙重叠。
+- NPC 继续保持无碰撞，柜台前方的交互位置和大厅通道不变。
+- 验证完成：`chapter4:validate-topology` 通过 `2551` 项断言，`chapter4:validate-runtime` 通过 `1191` 项断言，`chapter4:validate-assets`、`typecheck`、`build` 与 `git diff --check` 均通过。
+- Blink 实际移动：角色从大厅入口持续向上后停在柜台碰撞下沿，调试状态显示角色 `y=634.625`、脚部碰撞体中心位于柜台下方，未穿越空气墙；随后向下可以正常离开至 `y=813.558...`，没有粘墙或合同错误。浏览器截图和状态文件仅用于检查，结论记录后删除。
+- 交付边界：未运行 `build:single`，未重建 `demo/index.html`，未执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-26 CC98 首次统一身份认证解谜
+
+- 入口与身份：首次进入 CC98 时先显示剧情内统一身份认证页，后续帖子、二手交易与章节入口沿用认证结果，不重复拦截。学号使用既有校园卡身份 `3250100755`，玩家需点击“查看随身校园卡”读取并填入；没有校园卡时控制器拒绝读取。
+- 象征密码：三段提示按固定顺序展开，分别为浙江大学英文缩写 `ZJU`、求是书院创办年份 `1897` 和认证公告末尾感叹号 `!`，唯一答案为 `ZJU1897!`。大小写与片段顺序均在提示中明确。
+- 失败累计：前三次提交可立即尝试；第 3 次失败后锁定 30 秒，第 4 次失败后锁定 60 秒，之后每次增加 30 秒。锁定以绝对截止时间保存，刷新页面不会清零，锁定期间提交不会增加失败次数，正确凭据也必须等截止时间后再提交。
+- 进度权威：`ActOneBootstrapController` 统一处理学号读取、提示展开、凭据核验、失败记录与认证完成。`GameState` 和 `SaveStore` 保存认证事实，存档版本升至 `28`；版本 `27` 及更早且已经取得游戏手柄的旧存档自动迁移为已认证，避免后续章节倒退。
+- 任务与开发入口：未认证时共享任务栏只显示“完成 CC98 首次身份认证”，认证后恢复“去 CC98 购买游戏手柄”。新增 `c2-cc98-login` 未认证检查点；既有 `c2-gamepad-market` 与后续检查点固定为已认证。
+- 配色修订：根据用户复核，删除线索区白底蓝灰配色；页面统一为明亮湖景蓝背景、半透明炭灰认证与线索面板、橙金校徽和提示强调、标准登录蓝按钮，与参考图主色关系一致。
+- 自动验证：`npm run verify:cc98-login` 通过 `18` 项断言，覆盖学号一致性、唯一密码、三次即时机会、`30/60/90s` 累计锁定、锁定零写入、认证任务交接、版本 `27` 迁移、正式保存恢复和两个开发检查点。`npm run verify:task-guidance` 检查 `205` 个源文件通过，`npm run typecheck` 与 `npm run build` 通过，Vite 处理 `690` 个模块。
+- 浏览器验证：先按 `develop-web-game` 标准网页游戏客户端在桌面检查点读取 `render_game_to_text` 并目视检查页面；再在 Blink `430×860` 完成“读校园卡 → 展开三段提示 → 连续三次失败 → 显示 30 秒锁定 → 测试解除截止时间 → 输入 `ZJU1897!` → 进入原 CC98 二手交易帖子”的完整链路。最终任务为 `chapter_two_direction_purchase_gamepad`，console/page error 为 `0`。
+- 交付边界：按用户此前要求未运行 `build:single`，未重建 `demo/index.html`，未执行 Git fetch、stage、commit、merge、push 或上传。浏览器 QA 截图只用于本轮检查，记录结论后删除。
+
+## 2026-08-26 启真湖雨后水坑与脚点证据反馈
+
+- 天气调控完成后，小码头由持续雨线切换为四处雨后浅水坑；水坑使用 `1672×941` 原图坐标，分别位于西侧步道、器材区空地、南侧通道和入口通道。四个包围框均通过可行走区域检查，不与水域、器材屋、器材架、花坛或世界边界碰撞相交。
+- 水坑属于视觉与环境叙事层，不参与物理碰撞和剧情进度。玩家保持步行状态时以角色脚点命中椭圆区域；首次踩入每一个水坑发布玩家字幕“这是下过雨的证明”。离开后再次踩入同一水坑不会重复刷字幕，切换到皮划艇不会触发。
+- `render_game_to_text` 新增 `afterRainPuddles` 调试状态，包含是否可见、当前踩中的水坑、已经触发的水坑和四个源像素定义，便于自动回归天气差分与脚点命中。
+- `qizhen:validate-rain-safety` 扩展到 `19` 项，新增四水坑数量、世界边界、步行碰撞分离、椭圆脚点和精确反馈文案合同。`qizhen:validate-fishing`、`typecheck`、`build` 与 `git diff --check` 同时通过。
+- Blink 真实运行：雨天节点保持雨线且 `visible=false`；多云节点显示四个水坑。角色从 `(330,830)` 走到入口水坑后，脚点命中 `entry_path`，页面字幕显示“这是下过雨的证明”，console/page error 为 `0`。离开、等待字幕结束、再次踩入后没有第二条字幕，`enteredIds` 仍只有 `entry_path`。
+- 当前边界：按用户此前要求没有运行 `build:single`，没有重建 `demo/index.html`，没有执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。临时 QA 截图与状态文件在记录结论后删除。
+
+## 2026-08-26 第三章启真湖雨天到多云天气调控流程
+
+- 正式流程：启真湖小码头保持初始小雨和禁航。三件器材收齐后，安全员只完成器材核对并提交天气调控申请；玩家返回手机打开天气应用，执行“启真湖小码头天气调控”后，天气才切换为多云并解除登船门禁。绕过安全员直接操作天气应用会被控制器拒绝。
+- 任务引导：`boarding_tutorial` 现在依次给出“向湖边安全员申请天气调控”“在天气应用将启真湖调为多云”“交替划左右桨完成上船”三个单一下一目标。天气页只显示当前调控状态和操作结果，跨页面路线继续由共享任务栏负责。
+- 状态与存档：`QizhenLakeState` 新增 `weatherAdjustmentRequested`；`rainSafetyCleared` 只在天气应用操作成功后写入。存档版本升至 `27`，版本 `26` 及更早且已经到达上船阶段的存档会迁移为已完成天气调控，避免旧进度被重新锁住。
+- 开发者节点：第三章启真湖段新增“雨天安全禁令”“天气调控”“多云开放登船”三个节点，分别固定为器材齐全但仍下雨、申请已提交且天气应用可操作、调控完成并返回码头。节点总数和第三章分组计数由现有开发通道自动更新。
+- 视觉同步：天气应用、手机主页天气卡、天气通知和启真湖码头共用 `selectCampusWeather()`。调控前显示“小雨 / 18°C / 湿度 88% / 正在降水”和码头雨线；调控后显示“多云 / 19°C / 湿度 76% / 降水停止”，主页同步去除雨滴，码头同步去除雨线。
+- 自动验证：`npm run typecheck`、`npm run qizhen:validate-rain-safety`和`npm run build`通过；雨天安全验证共 `14` 项断言，覆盖禁航、申请事务、天气应用门禁、调控结果和三个开发检查点。Vite 构建处理 `684` 个模块。
+- 浏览器验证：按 `develop-web-game` 回归流程运行网页游戏客户端并目视检查调控前天气页。Blink 实际完成“小雨天气页 → 点击调控 → 多云天气页 → 返回主页天气卡”的点按链路，并分别打开雨天码头和多云码头检查雨线差分；console/page error 为 `0`。Blink、Gecko、WebKit 在 `390×844` 触屏视口均完成调控，文档横纵溢出为 `0`。
+- 交付边界：遵循用户要求，未运行 `build:single`，未重建 `demo/index.html`，未执行 Git 暂存、提交或上传。浏览器 QA 截图检查完成后已移入废纸篓。
+
+## 2026-08-26 755 米骑行脚踝外翻修复
+
+- 问题定位：两段腿部 IK 能将脚底接触点放到踏板上，但脚掌此前保持局部单位旋转，因此继续继承小腿末端的俯仰和侧倾；踏板进入高低位时，鞋底和鞋头会向身体外侧翻。
+- 姿态修复：新增独立脚踝约束。髋—膝—脚链仍由踏板接触点驱动；IK 完成后，左右鞋的世界朝向改为与自行车车架一致，鞋底保持稳定、鞋头沿自行车前进方向。朝向更新后再以父节点局部坐标补偿脚的位置，因此不会牺牲脚底—踏板接触。
+- 状态复位：每次重新应用姿势时显式清零左右脚局部旋转，避免骑行姿势留下的脚踝四元数污染站立、下车或推车姿势。
+- 可观测性：Three.js 画布新增左右鞋底倾斜、鞋头方向偏差四项调试数据，并保留左右脚接触误差。`verify:canteen-bike-transition` 新增脚踝约束静态合同检查，该项通过；总结果为 `82 checks / 75 passed / 7 failed`，七项仍是既有 overlay、旧 continuation 与 Host 接线缺口。
+- 浏览器验证：在 Three.js 骑行调试页以四个相隔约四分之一圈的曲柄相位检查。四相位中左右脚接触误差、鞋底倾斜和鞋头方向偏差均为 `0.000000`，console/page error 为 `0`；四张全景与四张脚部放大截图均已目视确认，鞋子在高位、低位和前后位保持朝前，无外翻。
+- 构建验证：`npm run typecheck` 与 `npm run build` 通过，Vite 处理 `684` 个模块。遵循用户要求，未运行 `build:single`，未重建 `demo/index.html`。
+
+## 2026-08-26 755 米骑行腿部踩踏运动修复
+
+- 问题定位：3D 主骑行原先使用 `animationSeconds * 10.5` 固定推进曲柄，同时在腿根叠加 `±sin(phase) * 0.48` 手动摆动。行驶速度变化时踏频不会变化，腿根旋转与脚踏 IK 还会同时修改同一条髋—膝—脚链，导致实际画面中的腿部运动不符合踩踏关系。
+- 3D 运动关系：车轮转角继续由实际行驶距离和 `0.5` 世界单位轮径计算；曲柄改为通过共享 `2.6` 齿比从车轮转角推导，踏频随游戏速度变化并限制在 `110 RPM` 以内。腿部姿态只由曲柄接触点和两段 IK 求解，删除第二层腿根摆动。坐姿上下位移从固定时间驱动的最大 `0.035` 收敛为曲柄双周期驱动的最大 `0.008`。
+- 后备渲染：2D Canvas 后备路径改用同一轮径、齿比和行驶距离计算踩踏相位；直行帧只使用六张正式骑行帧，移除额外四帧和 `±1.4°` 左右摇摆。转向倾斜继续仅由真实换道位移决定。
+- 自动检查：现有 `verify:canteen-bike-transition` 新增“共享齿比 + 曲柄接触 IK 单一控制”和“距离驱动曲柄”两项检查，均通过。该总验证器仍有 `7` 项既有失败，范围为已缺失的过渡 overlay、旧 continuation 和 Host start/ride/finish 接线，本轮没有修改这些模块。
+- 构建验证：`npm run typecheck` 与 `npm run build` 通过，Vite 正常处理 `684` 个模块。未运行 `build:single`，未重建 `demo/index.html`。
+- 浏览器验证：按 `develop-web-game` 回归流程运行网页游戏客户端，并对 `c3-canteen-chase` 定向检查。Three.js 主路径连续采样四个相位，踏频约 `45.1–51.4 RPM`，齿比输出 `2.6`，左右脚—踏板及左右手—握把误差均为 `0.000000`，console/page error 为 `0`。强制关闭 WebGL2 后，Canvas 后备路径在 `960×540` 下连续四帧正常，帧序随距离推进且无整个人物左右摆动，console/page error 为 `0`。两条渲染路径截图均已目视检查。
+- 验证计数：Three.js 主路径 `1` 次多相位实机回归，Canvas 后备路径 `1` 次多相位实机回归；当前跨两条渲染路径的运动关系结论仍按一次改动批次记录。
+
+## 2026-08-26 第四章 A1 一楼前台值班助理 NPC
+
+- 角色接入：在 A1 大厅前台增加“一楼前台值班助理”，复用已入库的透明像素职员两帧素材 `front_desk_staff_2frame.png`，帧尺寸 `96×128`、统一缩放 `0.72`，源坐标为 `x=819,y=652`。柜台前景 `a1_foreground_016` 继续遮住下半身，角色尺寸、投影、光照与现有食堂/图书馆 NPC 保持一致。
+- 交互可达性：交谈热区绑定柜台前沿真实矩形 `{x:758,y:625,width:179,height:34}`，有效站立距离为 `104px`。从 `c4-755-classrooms-1850` 默认检查点无需走入柜台，站在外侧即可按 `Space` 完成交谈，交互不读取人物朝向也不限制现实模式。
+- 阶段信息：值班助理会根据 `bakery_hour_hand`、`room204_restore`、`morning_checkin`和 `exterior_closure` 回答当前可执行的内容。教室阶段会分别识别 104/105 未完成、只完成一间和两间全部完成，只保留当前信息，不透露后续解谜链。
+- 进度边界：交谈 intent 由 `ChapterFourTemporalMazeController` 验证，结果固定为 accepted read-only。它不写入 fact、道具、检查点或楼层状态，不取代 104/105 的必做门禁，不增加第三个通关条件。
+- 自动验证：`npm run typecheck`、`npm run chapter4:validate-runtime`和 `npm run chapter4:validate-story` 通过。运行时验证为 `1154` 个断言，覆盖布局锚点、投影 NPC 列表、近距离接受、过远拒绝和交谈零写入。JSON 解析与 `git diff --check` 通过。
+- 浏览器验证：Blink `1280×720` 实机检查中，默认检查点的玩家位置为 `x=836,y=716`，目标矩形与 `104px` 交谈距离均正确输出；原地按 `Space` 成功显示“104 要观察黑板残留，105 要检查讲台本地回放”的底部字幕。`contractFailures=[]`，console/page error 为 `0`。
+- 交付边界：遵循用户要求，未运行 `build:single`，`demo/index.html` 与当前 Git 基线无差异。
+
+## 2026-08-26 第四章 A1 教室主线门禁与实机交互
+
+- 进程限制：将 104“黑板擦痕延迟残留”与 105“讲台终端本地回放”改为 `room204_restore` 的必做前置。少完成任意一项时，从 A1 请求前往 A2/A3 会以 `classroom_checks_required` 拒绝，不写入楼层、检查点或剧情状态。
+- 玩法分工：104 仅在“深色观察”登记黑板书写残留；105 仅在“浅色操作”检查讲台回放。两项分别写入 `classroom_104_chalk_residual_observed` 与 `classroom_105_terminal_replay_checked`，再将任务栏单一下一目标推进到 A3 参照教室。
+- 空间实现：两个交互点都使用 A1 `1672×941` 原图坐标。104 绑定东北教室黑板区，105 绑定东南教室讲台区；目标可达、可重复查看，重复交互不重复写状态。
+- 自动校验：`npm run typecheck`、`npm run chapter4:validate-runtime` 和 `npm run chapter4:validate-story` 通过。运行时验证为 `1146` 个断言，覆盖错误模式零写入、单教室仍锁楼层、两教室完成后解锁、重复查看只读和任务栏进阶。
+- 浏览器验证：新增 `c4-755-classrooms-1850` 开发检查点，从 A1 大厅实际行走到两间教室。104 在深色模式成功写入事实，最终位置 `x=1396.27,y=276.00`；105 在浅色模式成功写入事实，最终位置 `x=1372.80,y=633.87`。两次 `contractFailures=[]`，教室门洞、课桌间通道与交互距离均可用。
+- 已知独立失败：`npm run chapter4:validate-topology` 仍有既有 Task11 分钟端点外界差异（期望 `x=967,y=26`，当前 `x=966,y=25`）。本轮没有修改 Task11 端点几何。
+- 交付边界：遵循用户要求，未运行 `build:single`，未重建 `demo/index.html`。
+
+## 2026-08-26 共享 RPG 行走相位连续性修复
+
+- 问题定位：第四章与其他 RPG 场景共用的 `RpgPlayerAnimator` 原先依据 Phaser 场景的绝对运行时间选取行走帧。角色从静止开始移动、持续按键转向或完成转身时，首个可见帧会落入八相位循环中段；中性支撑相位因而被跳过，侧向移动看起来会像单腿迈步。
+- 修复：在 `src/scenes/rpg/RpgPlayerTextures.ts` 中增加 `walkCycleStartedAt` 与 `getRpgPlayerWalkFrameAt()`。每一次静止后重新走动、显式设定朝向或转身完成，都会从第 `0` 帧开始连续播放 `0 → 7`；转身落定保留一帧目标朝向的中性姿势，再进入循环。共享帧尺寸、统一缩放、脚部碰撞盒、地图坐标和八张已审核素材均未改动。
+- 验证：`npm run typecheck`、`npm run verify:rpg-player`、`npm run verify:rpg-character-sprites`、`npm run chapter4:validate-runtime` 均通过。开发环境的 `c4-755-bakery-1225` 检查点以网页游戏回归客户端完成 `ArrowRight` 连续 `72` 帧与松键 `12` 帧；运行态保持一个 Phaser canvas，玩家最终为 `facing=side`、`cardinalFacing=right`，截图已目视检查，新增 console/page error 为 `0`。
+- 已知独立失败：`npm run chapter4:validate-topology` 仍报既有的 Task11 分钟端点外界差异（期望 `x=967,y=26`，实际 `x=966,y=25`）。本轮没有修改地图、旧钟或端点数据，该失败未由本次动画改动产生。
+- 交付边界：按用户本轮要求，未生成新的单文件 `demo/index.html`。
+
+## 2026-08-26 CC98 电话卡汇总与开怀一笑版面扩充
+
+- 来源边界：浏览 `https://www.cc98.org/boardList` 确认当前公开版面列表包含“开怀一笑”（`/board/135`）及学习、信息、兴趣、交易、情感、生活等分组；进入该内容页时当前受控会话返回 `401`，因此没有读取、导出或复用任何真实主题或回复文本。
+- 用户指定标题：将用户提供的“【移动/联通/电信】2026年校园电话卡信息汇总帖　详情请戳”原样作为本地 `p19` 标题，归入新增“手机服务”版面；正文与四条回复均为本地原创，并明确套餐期限、实测地点与注销条件等可比较信息。
+- 内容扩充：新增 `p19` 至 `p28` 共 10 条本地帖子、31 条原创回复。新覆盖“手机服务”1 帖、“开怀一笑”3 帖、“二手市场”1 帖，以及校园生活、校园卡、自习室、失物招领、食堂各 1 帖。开怀一笑只采用轻松校园小事的讨论结构，未复写真实帖的标题、正文、用户名、时间戳或楼层。
+- 版面目录：目录由 9 个扩展为 12 个，新增“手机服务”“二手市场”“开怀一笑”；“开怀一笑”加入默认关注，进入目录后可显示 `3 帖`，手机服务显示 `1 帖`，两者均支持打开、阅读和返回。
+- 浏览器验证：Blink 在桌面下完成 `版面 → 开怀一笑 → 三帖列表 → 全部版面 → 手机服务 → 电话卡汇总帖详情` 的点按链路；`390×844` 下文档横纵溢出均为 `0`。详情页截图经目视检查，电话卡标题、版面名、正文、互动信息与回复均处于电话框内可读区域。网页游戏回归客户端成功输出 CC98 状态与截图；截图只作本次检查，随后移至废纸篓。
+- 待完成：若已登录的 Chrome 会话后续能向受控浏览器暴露具体标签页，可按低频、少页方式补做真实“开怀一笑”讨论节奏观察；在此之前继续维持原创内容边界。
+
+## 2026-08-26 CC98 版面导航与本地帖子扩充
+
+- 问题定位：`P02_CC98` 底部五个入口此前使用 `cc98-bottom-static`，该层设置了 `pointer-events: none`，所有图标都只有视觉效果。
+- 交互实现：底部导航已替换为真实按钮。热门显示综合帖子，新帖按发布时间排序，关注按已关注版面筛选，版面提供可点按的板块目录和关注切换，我的页面保留本次会话的实际浏览记录。版面内点击帖子仍进入原有线程页，剧情线程和既有控制器没有改动。
+- 内容扩充：`cc98.posts.json` 新增 `p11` 至 `p18` 共 8 条本地虚构主题和 27 条回复，覆盖校园生活、食堂、失物招领、交通出行、学习天地、打印服务、图书馆和校园卡。文案只参考公开可证的校园论坛讨论范围与项目内既有版面结构，没有复制真实用户内容。
+- 文案检查：新增主题、正文和回复的禁用表达扫描结果为 `forbiddenHits=[]`，JSON 解析通过。
+- 浏览器验证：Blink 在 `430×860` 下完成版面目录、交通出行筛选、进帖、返回、我的浏览、新帖与关注页的完整点按流程，console/page error 为 `0`；Firefox 和 WebKit 均完成版面目录到交通出行筛选，console/page error 为 `0`；Blink `390×844` 粗指针下完成关注切换，横纵文档溢出为 `0`。
+- 单文件验证：`demo/index.html` 直接以 `file://` 打开后完成版面目录、筛选、进帖、返回和浏览记录流程，`boardCount=9`、`historyCount=1`、横纵文档溢出为 `0`、console/page error 为 `0`。`npm run typecheck`、`npm run build:single`、`npm run verify:single` 和定向 `git diff --check` 均通过。
+- 开发检查点说明：带 `devCheckpoint` 参数时开发者通道按设计会以全屏层展开并阻挡下层点按。浏览器回归在加载检查点后先用 `Ctrl+Shift+D` 关闭该层，再测试玩家界面；正式 `file://` 页面中的折叠 `DEV` 触发器不覆盖底部导航。
+
 ## 2026-08-24 Task10 质量返修：音频停机事件与 postgame seed 容错
 
 - 范围限制：仅修 Task10 质量审查的两项问题，不扩展其他玩法。修改文件为 `src/scenes/phone/P16_BikeArcade/index.tsx`、新增 `src/scenes/phone/P16_BikeArcade/EndlessArcadeSceneEvents.ts`、`src/modules/DeveloperChannel.ts`、`scripts/verify-endless-arcade.mjs`。
@@ -2772,14 +2888,126 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 浏览器范围：本次生成物复验使用 Blink；同一源码在前一 Task 11–12 fresh 基线中已通过 Blink/Gecko/WebKit 的 `45/45` 基础矩阵与 `19/19` 生命周期工作流。按用户明确要求，三层碰撞、空气墙、可通行区与前景遮挡浏览器专项继续排除。
 - 上传边界：`demo/` 当前被 `.gitignore` 排除，普通暂存不会包含 `demo/index.html`。本轮到此仍未 stage、commit、merge、rebase、push 或 reset；下一步先 fetch，再分别展示工作区、本地领先、远端领先和未跟踪内容，由用户确认精确提交范围及是否强制纳入单文件。
 
-## 2026-08-25 方案 A：最新 main 隔离整合、退役模块删除与 Release 准备
+## 2026-08-26 手机主页应用点按与物品栏遮挡修复
 
-- 用户确认方案 A：活动 React/TypeScript/Phaser/Three.js 运行时直接交付 `main`，离线 HTML 使用 `demo-20260825` GitHub Release；Godot 归档与 Playwright 临时模块明确删除。
-- 集成方式：从 fresh `origin/main@d1621b7` 创建 `/Users/zhuhangcheng/.codex/worktrees/7-55/upload-20260825`，只移入活动源码、被运行时消费的资产、验证器、CI 和文档。`.playwright-mcp/`、`output/web-game/`、四个未跟踪根目录调试页和未完成的 CanteenBikeTransition 实验没有进入交付。
-- 删除范围：`godot/`、`public/godot/`、`src/integrations/godot/`、`scripts/record-godot-web-export.mjs`、`scripts/sync-godot-rpg-assets.mjs`、`scripts/verify-godot-project.mjs` 及无消费者的 Godot CSS 已删除；`AGENTS.md`、`CLAUDE.md`、`README.md`、`CONTRIBUTING.md` 与剧院运行时合同同步固定为浏览器原生单运行时。
-- Fresh 验证：Chapter 3 音频 `77/77`、Chapter 3.5 录音、校园地图、无朝向交互、第四章五组 validator、无尽挑战 `172/172`、自行车 `21/21`、启真湖钓鱼、剧院追光、四类人物透明精灵和 TypeScript 全部通过。额外的 CanteenBikeTransition 验证器首次运行暴露缺少从未实现的 Overlay，确认该实验没有生产入口后连同三份孤立 Transition 文件与 npm 命令排除；正式 `ChaseRiderRig` 仍由 `ChaseThreeRenderer` 使用并通过构建。
-- 最终构建：`npm run build`、`npm run build:single` 与 `npm run verify:single` 通过。最终 `demo/index.html` 为 `249850310 bytes`，生成时间 `2026-08-25 22:56:36 +0800`，SHA-256 `1a68b0a6a9460959904d132ec5c28c1b7c90d7f4de304d6cbe6ed2c322bbf7ff`，结构为 `2` 个内联脚本和 `1` 个内联样式。
-- 最终浏览器复验：HTTP 与直接 `file://` 的挑战中心截图 SHA-256 完全相同，均可见三种模式且无 error 文件；HTTP 自行车第二圈为 `phase=running / progress=899 / tier=2 / phaserCanvasCount=1`。检查截图、状态 JSON 和 HTTP 服务已清理。
-- 发布命名：实现目录 `upload-20260825`，上传目录 `7-55-upload-20260825`，Release tag `demo-20260825`，HTML `7-55-demo-20260825.html`，校验文件 `7-55-demo-20260825.html.sha256`；README 和 `ASSETS.md` 使用同一日期与下载链接。
-- 首次远端 CI 在 Ubuntu 的 Chapter 3.5 录音清单校验停止。文件哈希和本地验证均通过，失败来自生成器对 FFmpeg 探测得到的时长、码率和 RMS 波形执行整份 JSON 字节级比较。生成器现对文件哈希、配置哈希、声音事件、组件哈希与其他结构字段保持严格比较；实际时长继续由每段语音的上限或成品录音的目标时长合同直接校验，不再与平台相关的 manifest 探测值比较；码率使用 `2kbps`、归一化波形使用 `0.01` 的跨平台容差，并输出具体不匹配类别。`CI=true npm run audio:chapter3-interlude-voice-memos:verify` 与 `npm run typecheck` 本地复验通过。
-- 独立 Chapter 3.5 验证器同步采用同一时长合同：实际 MP3 与 manifest 中的记录值都必须为正，四段语音都不得超过各自 `maxDurationMs`，七段成品的实际值与 manifest 值都必须落在 `5200ms ±80ms`；它不再要求不同 FFprobe 版本对同一 MP3 给出完全一致的毫秒值。
+- 根因一：第二章及以后主页应用在 `pointerdown` 时立即把指针捕获给外层应用槽，普通点按的完整点击序列可能无法交给内部按钮；长按编辑仍能生效，因此表现为“长按可编辑、点按进不了应用”。修复后普通点按不捕获指针，只有长按达到 `460ms` 或已处于桌面编辑态时才捕获；窗口失焦、取消、丢失捕获和卸载仍清理交互状态。
+- 根因二：物品栏在道具合成后保持展开，并跨手机场景保留，左侧应用与后续页面控件会被实际面板遮住。所有成功合成现在统一收起物品栏并清空选中项；`SceneRouter.goTo()` 与 `back()` 在成功切换场景时执行同样的瞬态 UI 清理。
+- 真实鼠标回归：逐项完成“合成右移箭头 → 点按应用”，微信、浙大体艺、浙大钉、设置、CC98、控制中心共 `6/6` 通过；长按仍进入编辑态且不打开应用；未先合成时从主页进入浙大钉也会自动收起物品栏。浏览器 console/page error 为 `0`。
+- 构建与离线验证：`npm run typecheck`、`npm run build:single`、`npm run verify:single` 全部退出码 `0`。生成的 `demo/index.html` 为 `249852378 bytes`；直接 `file://` 运行重新完成右移箭头合成并点按进入微信，`rightArrow=true`、`inventoryOpen=false`、`selectedItem=null`、`currentScene=wechat`，错误为 `0`。
+- 当前边界：用户要求此项先不继续；本轮未执行 Git stage、commit、merge、rebase、push 或上传。
+
+## 2026-08-26 紫金港动态天气与启真湖停航美术基准
+
+- 新增 `docs/art-prompts/zijingang_dynamic_weather_v01.md`，将时间、天气、地表、风、水面和能见度拆为独立状态，并定义固定底图、时间调色、云影、地表响应、水面响应、天气粒子、动态对象、前景遮挡和 HUD 的层级合同。
+- 使用正式紫金港底图生成晴朗清晨、无降水阴天、小雨清晨和雨后转晴四张美术定调图；使用正式启真湖码头底图生成雨天停航参考图。五张图均保存在 `src/assets/rpg/**/weather/`，原始正式底图未改动。
+- 玩法分流已固定：晴朗与低风无降水阴天允许通过码头检查后下水；小雨禁止下水并切换为岸线湿纸、漂移方向和停航记录调查；雨后转晴需要通过风、水面和能见度检查并等待天气过渡完成后开放下水。
+- 安全条件统一为无降水、无阵风、水面非短浪、能见度合格且天气过渡完成。拒绝结果包含结构化原因和下一行动，禁止静默拦截。
+- 生成整图只承担风格与颜色参考。正式地图、坐标、碰撞、入口和任务物品仍使用原资源与 TypeScript controller；后续实现应从原图提取固定掩模并组合可调天气图层。
+- 本轮仅增加美术参考图、提示词和实现合同；未修改运行时代码、`demo/index.html` 或 Git 状态，未执行构建、暂存、提交或上传。
+
+## 2026-08-26 全游戏任务提示所有权清理
+
+- 浙大体艺绿色状态卡在锻炼开始后只保留“课外锻炼进行中”，移除三角形和天气水滴的持续路线提示。
+- `movementQuest()` 将方向控制阶段拆成八个任务栏目标：收集两项素材、补三角形、补天气水滴、处理导师头像、组合右箭头、调整余额、购买手柄、安装并校验手动移动。三角形与水滴继续支持任意取得顺序。
+- 全游戏搜索并清理页面、成功 Toast、道具详情和 RPG 成功字幕中的重复跨页面路线，覆盖图书馆恢复材料、CC98 手柄交易与十大、公演接单、时间线恢复、第四章微信、电梯与导视板、寝室出口、剧院第一波和启真湖装备/河道状态。
+- 交互失败纠正、当前小游戏操作、锁定原因、持有道具的当前用途和任务栏自身的“显示下一条提示”继续保留。
+- 新增 `npm run verify:task-guidance`，扫描 `src/scenes`、`src/components` 和 `src/data`，阻止页面重新出现“下一步：”或“接下来”式全局路线提示；共享 `QuestClueStrip` 为唯一豁免所有者。
+- `AGENTS.md` 已写入任务提示所有权规则；剧情与提示文本总表同步更新本轮变更的道具详情和交易成功文案。
+- Fresh 验证：`npm run verify:task-guidance` 检查 `202` 个源文件并通过；`npm run typecheck`、`npm run build:single`、`npm run verify:single` 全部退出码 `0`。离线单文件为 `249853441 bytes`，包含 `2` 个内联脚本和 `1` 个内联样式。
+- 任务选择器状态矩阵通过 `9/9`：均未取得、水滴先取得、三角形先取得、两者齐全、竖线取得、箭头合成、余额调整、手柄购买和手柄安装分别指向正确任务与场景。最终单文件确认旧浙大体艺提示、旧手柄交易路线和旧盛水耳机路线均不存在，新任务目标已内联。
+- 可视验证边界：应用内浏览器安全策略拒绝直接导航到本地 `file://` 单文件，因此本轮没有可视化通过结论，也没有绕过限制；创建失败后的空白临时标签页已经关闭。
+- Git 边界：本轮未执行 fetch、stage、commit、merge、rebase、push、reset 或上传。
+
+## 2026-08-26 DEV 导航独立 3.5 章
+
+- 开发者通道新增独立 `3.5章` 页签，将原来分散在第三章的八个“未同步记录”节点和第四章的七个 H3 教学楼衔接节点统一迁入；总节点数保持 `114`，各章计数更新为第一章 `6`、第二章 `35`、第三章 `39`、3.5 章 `15`、第四章 `11`、寻人篇 `8`。
+- 3.5 章内部按“未同步记录”和“教学楼过渡”分段；节点标题移除重复的 `3.5·` 与 `3.5→4·` 前缀。第四章现在从 `c4-755-opening / 入楼与纸条` 开始，DEV 章节边界与真实玩法边界一致。
+- 所有 checkpoint ID、H3 时间偏移、session-only seed、刷新恢复和第四章 controller 入口保持原合同；专项校验新增 3.5 章完整顺序断言，并要求第四章只包含十一项正式时间迷宫节点。
+- Fresh 验证：`npm run chapter4:validate-task14` 为 `338` 项通过，`npm run verify:task-guidance` 检查 `202` 个源文件通过，`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均退出码 `0`。
+- Blink 真实运行验证：从 `c3-interlude-reboot` 打开 DEV 后，`3.5章 / 15` 默认进入“未同步记录”，实点“教学楼过渡”后显示 `7` 个 H3 节点；实点“第四章”后显示 `11` 个节点且首项为“入楼与纸条”。两个场景均未生成 console/page error 记录，截图经目视检查后移入废纸篓。
+- 离线单文件 `demo/index.html` 为 `249853351 bytes`，SHA-256 `cee1abaa5ae89f793cb135d1a9cb7dfe67f4f44c69fc9542ce6b3cdee09ba16c`；产物包含 `3.5章`、`未同步记录`、`教学楼过渡`，且不再包含旧标题 `3.5→4·完整回放`。
+- 当前边界：本轮未执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传；浏览器截图只用于临时 QA，没有加入交付物。
+
+## 2026-08-26 第四章顶部任务状态栏统一
+
+- 根因确认：第四章将时间状态、楼层、当前目标和局部进度同时写入共享任务栏的折叠按钮，并额外挂载 `has-chapter-four-context` 与第二行 `quest-task-local-progress`，使原本全章节统一的单行任务状态栏变成拥挤的第四章专属布局。
+- 折叠状态现统一为“章节标签 + 当前任务”，与此前任务接取后的状态栏使用相同 DOM 和 CSS；第四章示例为“第 4 章 · 拉动大厅旧钟，让它第一次转动”。时间、楼层、可信度、阶段差分、局部进度和已确认事实继续保留在展开后的任务详情中。
+- 清理 `triggerObjective`、`quest-task-local-progress` 和 `has-chapter-four-context` 专属分支，并在 Task 14 校验器中增加静态合同，阻止第四章再次把时间差分塞回折叠任务栏。
+- Fresh 验证：`npm run chapter4:validate-task14` 为 `339` 项通过；`npm run verify:task-guidance` 检查 `202` 个源文件通过；`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均退出码 `0`。
+- Blink 真实运行验证：`1280×720` 下折叠栏为 `44px` 单行且无局部进度节点；展开任务栏后仍显示“现场 22:45 · 手机 07:55:23 未同步”“07:55:23 · 手机未同步，当前读数不可信”和当前目标。接近用户截图的 `842×837` 视口无文档溢出、无 console/page error。
+- 离线单文件已用直接 `file://` 路径复验同一状态栏，未出现旧的时间拼接布局。`demo/index.html` 为 `249852899 bytes`，SHA-256 `0d4e520d5a68a520e2102a6dcc6841a53ee6e55873d1af81f1684479a1981fd4`。
+- 当前边界：本轮未执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传；临时浏览器截图仅用于目视 QA，不加入交付物。
+
+## 2026-08-26 第四章旧钟配准与 RPG 静默预热
+
+- 旧钟错位根因：`ensureHallClockStateSprite()` 先前用大厅旧钟的交互矩形除以未裁边的 `frame.realWidth / realHeight`，把透明留白算入缩放，同时将贴图放在交互框中心 `(1001,90)`。对 A1 原画、22:45 开场图、22:45 维修图和钟表帧做径向边缘测量后，原画钟轴为 `(996,63)`、表盘半径为 `37px`，贴图表盘半径为 `108px`。
+- 视觉合同：`finalClockRuntime.visualRegistration` 现在固定原画钟轴、`37/108 = 0.3425925926` 的统一缩放、`clock_axis` 帧锚点和测量来源；贴图不再读取交互矩形尺寸。分针运行时共用同一钟轴，程序化端点 `getBounds()` 已实测更新为 `{x:967,y:26,width:16,height:16}`。
+- 真实 A1 复核：修复前贴图白色表盘明显缩在原画金色外壳内部并向下偏移；修复后贴图外圈、钟轴和楼梯上方原画边缘重合。开启 `clock_gear_repaired` 后，分针端点作为正式运行时 target 出现，bounds 与布局一致，`chapterFour.contractFailures=[]`，浏览器 console/page error 为 `0`。
+- 静默加载机制：`RpgRuntimePreload` 继续复用唯一 `RpgGameHost` 动态导入 Promise，并新增 scene-aware 空闲预热。每个 Phaser Scene 显式导出其正式 `preload()` URL 清单；Host 合并共享 `24` 张玩家帧并去重。普通手机流程用 `requestIdleCallback`，Safari 15 用 `180ms setTimeout` 回退；省流量或 `2g` 连接只预热模块并标记 degraded。
+- 3.5→4 边界：时间线恢复页在目的地确认前保持 `rpgWarmup.status=idle / moduleReady=false / assetCount=0`；玩家请求恢复回放后，Gate 在 H3 播放期间立即预热教学楼。实测第四章为 `69/69` 张正式资源就绪，未扫描美术源目录，也未提前泄露地点结果。
+- 进入体验：预热完成后同步发布已解析的 Host 组件，App 直接挂载它；Suspense 只保留为过快进入和失败兜底。Chromium 与 WebKit 的普通手机流程均为 `25/25` 资源就绪，进入 `campus_bootstrap` 分别约 `338ms / 314ms` 完成 Phaser 挂载，MutationObserver 均确认 `Loading RPG runtime` 从未出现，错误为 `0`。
+- 单文件约束修正：首版通配 `import.meta.glob` 会把未使用的 RPG 源图纳入 Rollup，构建以 `Invalid string length` 失败；该实现已删除并由显式场景清单取代。修正后的 `build:single` 与 `verify:single` 通过，离线 HTML 结构保持两个内联脚本、一个内联样式；HTTP 单文件实测 `25/25` 预热完成且错误为 `0`。
+- 当前边界：本轮没有执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。所有钟表和预热截图、JSON 仅作为临时 QA，结论记录后删除或移入废纸篓。
+
+## 2026-08-26 第四章支援 NPC、电梯深度与启真湖雨天安全闭环
+
+- 第四章新增两个布局锺定的非碰撞 NPC：A2 电梯口值班安全员和 A3 参照教室教师。两者只在 `room204_restore` 阶段激活，提供一楼 104/105 校验、A3 参照登记和返回 204 复原的当前状态反馈，不创建第二份进度权威。
+- 电梯门、指示器和楼层灯改为固定背景深度 `3980/3981/3981`；玩家从 `4000 + worldY` 起排序。A1/A2/A3 的门心、等待点和到达点共 `9` 个锺点均断言玩家位于电梯前方。
+- 启真湖小码头新增湖边安全员和可见雨层。安全员经两轮真实截图调整到码头铺装区 `(650,700)`，缩放为 `0.52`，避开水域、花坛和器材架实体。
+- 新增持久事实 `qizhenLake.rainSafetyCleared` 和共享天气选择器。小雨且未放行时，`boardKayak()` 在 controller 内拒绝登船并发布可见原因；三件器材齐全后与安全员交谈，天气投影转为阴天并允许登船。旧存档和已进入上船阶段的 DEV 检查点自动补齐放行事实，不会倒退。
+- 新增 `npm run qizhen:validate-rain-safety`，已实际运行 `7` 项 controller 断言：雨天拒绝、拒绝反馈、器材不足继续拦截、器材齐全放行、天气切换、放行后登船和载具状态写入均通过。
+- Fresh 校验：`npm run typecheck`、`npm run chapter4:validate-runtime`（`1165` 项）、`npm run chapter4:validate-story`、`npm run qizhen:validate-rain-safety`、`npm run qizhen:validate-fishing`、`npm run qizhen:validate-journal` 和 `git diff --check` 均退出码 `0`。
+- Blink `1280×720` 真实运行覆盖 `c3-qizhen-dock`、`c3-qizhen-boarding` 和 `c4-755-room204-1850`；安全员、雨层、放行后无雨状态、A3 教师 target 与第四章电梯深度调试状态均已实际呈现，console/page error 为 `0`。
+- 当前边界：按用户要求未构建新的单文件，未编辑 `demo/index.html`；未执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。本轮浏览器截图与 JSON 只用于临时 QA，结论记录后删除。
+
+## 2026-08-26 第四章电梯历史校准与双层错视楼梯回归
+
+- 根因确认：第四章现行重写仍保留通用楼层选择框，但把旧电梯回放与错视楼梯字段降为兼容存档，原有 `ChapterFourMonumentStairDemo` 也没有正式的 `RpgGameHost` 入口，因此剧情中看不到电梯试错过程，双层楼梯玩法也无法进入。
+- 正式流程改为：完成 104 粉笔残留与 105 终端回放后，在深色观察中读取 A1 电梯开门历史；切换浅色操作，把六秒人物轨迹对齐到八秒开门窗口；A2 暂时锁定，只允许先到 A3；登记 303 参照后，从三楼下行楼梯进入双层错视关；通关后自动落到 A2 走廊并继续 204 残影复原。
+- 电梯校准面板使用现场时间轴：蓝色为 `22:43:27–22:43:35` 开门窗口，黄色为六秒人物轨迹，白线为上升沿；正确起点为 `22:43:31`。错误提交保留当前状态并显示下一次调整方向，不消耗剧情物品。
+- `RpgGameHost` 现在在楼梯开始时暂停并隐藏 Phaser，在同一 `960×540` 宿主中挂载唯一 Three.js 画布；完成或退出后恢复 Phaser。Three.js 只提交 `complete_misaligned_stair` 领域意图，楼层、事实、检查点和存档仍由 TypeScript controller 写入。
+- `AGENTS.md` 已固化这条因果路线：通用楼层选择器不得绕过电梯历史校准、A3 参照登记和双层错视楼梯，也不得再次取代这些正式进度门。
+- 双层错视关沿用原有两关：第一关为横移台、中央旋转梯和出口升降台；第二关为下层旋转梯、中层升降台、上层旋转梯和出口横移台。机关、视角、投影接缝与两关素材均复用已存在的正式实现。
+- DEV 增加 `c4-755-elevator-history`，可直接验证电梯轨迹校准；`c4-755-room204-1850` 现在从 A3 错视楼梯前开始，便于直接检查两层楼梯与 A2 回落。
+- 自动验证已通过：`npm run typecheck`、`chapter4:validate-task14`（`364` 项）、`chapter4:validate-story`、`chapter4:validate-runtime`（`1176` 项）、`chapter4:validate-stair-materials`、`chapter4:validate-assets`、`verify-chapter4-stair-engine`（`51` 项）、`verify-chapter4-stair-levels`（`143` 项）和 `chapter4:validate-topology`（`2505` 项）。
+- Blink 真实运行验证：电梯校准成功后楼层面板显示 `2F ×` 与可选 `3F`；A3 楼梯入口可进入 Three.js。Blink、Gecko、WebKit 均实际完成两层楼梯，最终状态一致为 `floor=A2`、`checkpoint=c4_a2_corridor`、`misaligned_stair_solved=true`、`data-rpg-engine=phaser`，console/page error 均为 `0`；Blink 的任务同时推进到“回到二楼，在深色观察中确认 204 残影”。
+- 当前边界：按用户要求没有构建新的单文件，也没有编辑 `demo/index.html`；没有执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。浏览器截图只用于临时目视 QA，记录结论后删除。
+
+## 2026-08-26 第四章校史人物荣誉门厅与竺老两问
+
+- A3 校友墙从三位扩展为六位真实人物：苏步青、竺可桢、路甬祥、陈建功、谈家桢、程开甲。三位保留在中央荣誉墙，新增三位布置在北侧展板；竺可桢保持中央叙事位。每位人物都有独立 source-pixel 画框、近距离 `Space` 交互、生平弹窗和浙江大学官方资料入口。
+- 新增六张透明背景像素人物像，运行时尺寸统一为 `384px` 高、文件为 `119–138KB`。`chapter4:validate-assets` 现在检查六张图的 RGBA 格式、尺寸、至少 `10%` 全透明背景、透明角点、`200KB` 上限及数据表引用，避免资源漂移和静默预热回退。
+- 竺可桢生平页接入“竺老两问”。玩家完成两项选择后，controller 原子写入 `zhu_two_questions_answered` 与回答字段，任务栏切换到错位楼梯；未完成时，无论场景交互还是 Host 入口都拒绝进入楼梯。存档恢复会保持“事实与回答同时存在”，旧存档不会出现半完成状态。
+- “灿若星辰灯”只新增 `canruo_star_lamp_primed` 准备信号，仍由现有正式灯光收束内容消费；本轮没有生成替代灯光素材，也没有绕过官方收束引用缺失时的关闭门。
+- 修复人物弹窗的指针命中：屏幕固定按钮此前仍按滚动后的世界坐标测试，导致键盘可用但鼠标点击无效。背景、关闭按钮、行动按钮、选项与确认按钮现均显式使用 `scrollFactor=0`，与屏幕坐标一致。
+- Blink `1280×720` 真实运行以鼠标完成“查看竺可桢生平 → 进入两问 → 选择第三项与第二项 → 两次确认”。最终状态为 `purpose=serve_public`、`person=clear_minded`、`zhu_two_questions_answered=true`，任务目标为“接通三楼通往二楼的错位楼梯”，console/page error 为 `0`；画面确认中央三幅人物像、相框、灯光、角色遮挡和交互提示位置正常。
+- Fresh 校验：`npm run typecheck`、`npm run chapter4:validate-assets`、`chapter4:validate-runtime`（`1191` 项）、`chapter4:validate-story`、`chapter4:validate-task14`（`365` 项）、`npm run build` 与 `git diff --check` 均退出码 `0`。普通 Vite 构建确认六张人物像均保持 `119–138KB`，没有重新生成单文件。
+- 当前边界：按用户要求没有运行 `build:single` 或编辑 `demo/index.html`；没有执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。浏览器截图与状态 JSON 只用于临时 QA，结论记录后删除。
+
+## 2026-08-26 3.5 章设备接入记录纵向滚动修复
+
+- 根因：`.interlude-scroll` 虽然声明了 `overflow-y: auto`，但 `interlude-network-page` 没有建立纵向 flex 高度约束，主内容按 `1521px` 完整高度向下增长后被 `430×860` 手机外框裁掉；内部元素不存在可用的滚动视口，因此列表第二、第三条记录和底部返回按钮无法通过滚轮或触屏到达。
+- 修复：设备接入记录页改为 `display:flex / flex-direction:column / min-height:0 / overflow:hidden`；页头固定为非伸缩区域，主内容获得 `flex:1 1 auto`、独立纵向滚动、横向裁切、`overscroll-behavior-y:contain`、`touch-action:pan-y` 和 WebKit 惯性滚动。
+- Blink `842×837` 桌面实测：内容区 `clientHeight=772`、`scrollHeight=1521`、最大滚动距离 `749px`；真实滚轮将 `scrollTop` 从 `0` 推进到 `720`，第三条启真湖记录、筛选说明和“返回记录恢复”按钮均进入可视区域，console/page error 为 `0`。
+- Blink `390×844` 粗指针实测：通过连续触摸上划将 `scrollTop` 推进到 `749`，`touchAction=pan-y`，文档横向和纵向外溢均为 `0`。移动端底部内容完整可见，页头、任务按钮和 DEV 触发器未覆盖结果区。
+- Fresh 校验：网页游戏回归客户端已运行并检查状态与截图；`npm run typecheck`、`npm run build` 和 `git diff --check` 均退出码 `0`。
+- 当前边界：按用户此前要求没有运行 `build:single`，没有编辑 `demo/index.html`，也没有执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。临时 QA 截图、指标 JSON 与状态文件在记录结论后删除。
+
+## 2026-08-26 第四章保安、保洁阿姨方向帧与自习学生动线修复
+
+- 内置生图功能按统一像素角色合同生成保安和保洁阿姨的新素材。保安拥有下行、上行、右行各 `8` 帧，左行由右行等比镜像；保洁阿姨拥有推车下行、上行、右行各 `8` 帧和原地待机 `8` 帧。每帧固定人物尺度、头脚完整、脚底基线一致，推车动作保持双手与把手连接。
+- 生图服务直接透明通道未稳定生效：首次保安稿把棋盘格写入 RGB，深色背景修订也没有可用 alpha。正式流程改用纯色中间底并自动生成 alpha、清理紫色边缘；七张 v3 source grid 与七张方向/待机运行时图均实测为 `srgba 4.0 / opaque=False`，可直接作为透明 PNG 使用。
+- `build-finale-npc-atlases.mjs`、`FinaleNpcTextures.ts` 和正式 manifest 已接入新方向表。保安根据实际速度的主轴选择上、下或侧行动画；横向向左时镜像，低速及停顿保持上一朝向，避免两个花坛间原地左右翻头。维修完成后的保洁推车使用上行动画。
+- 面包坊三名自习学生改为左上、右上、左下三条互不重叠的水平路线；修正源图原生朝左的镜像判定，往右才镜像，往左使用原图。运行时 debug 记录每名学生的位置、路线、镜像与动画，也记录普通保安的当前动画、方向和镜像。
+- Blink 真实运行：`c4-755-maintenance-2245` 连续采样确认保安从 `guard_walk / side` 切换到 `guard_walk_up / up`，无 console/page error；`c4-755-bakery-1225` 三次采样确认三人分散，左右两向 `flipX` 与路线一致，且没有重叠或持续后退。
+- Fresh 校验：`npm run typecheck`、`npm run chapter4:validate-assets`、`npm run verify:rpg-character-sprites`、`npm run chapter4:validate-runtime`（`1191` 项）、`npm run chapter4:validate-topology`（`2517` 项）和 `npm run build` 均退出码 `0`。本轮没有运行 `build:single`，没有编辑 `demo/index.html`，没有执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传。
+
+## 2026-08-26 三种通关后无尽挑战完整退役
+
+- 按用户最终范围决定，删除通关后“无尽节奏钓鱼”“无尽灯光追逐”“无尽 755 米骑行”及其统一挑战中心；第三章剧情节奏钓鱼、剧院剧情追光和食堂剧情 755 米骑行继续保留。
+- 删除 `P16_BikeArcade`、`P17_ChapterTransition`、`EndlessArcadeController`、独立骑行 controller、挑战内容表、挑战音频与样式；同步清理 `GameState`、`SaveStore`、功能门、手机首页入口、DEV checkpoint、CI、校验脚本、文档与剧情提示表中的正式引用。
+- 静态扫描覆盖 `package.json`、CI、README、ASSETS、AGENTS、CONTRIBUTING、`src`、`scripts`、`docs` 与剧情文本总表，未检出 `endless`、`postgame`、挑战中心、已删除模块名或三种无尽玩法文案。
+- Fresh 专项验证通过：DEV 为 `5` 章、`24` 关、`112` 个 checkpoint；CC98 登录、任务提示、全局无朝向交互、启真湖四张剧情谱面、雨天安全、剧院剧情追光、食堂剧情骑行、第四章素材/剧情/拓扑/运行时/Task 14/楼梯素材均通过。
+- Fresh 构建验证：`npm run typecheck`、`npm run build`、`npm run build:single` 与 `npm run verify:single` 均退出码 `0`；新单文件为 `252290377 bytes`，包含两个内联脚本和一个内联样式。
+- 真实浏览器验证覆盖 Vite 桌面、`390×844` 移动视口和 `file://` 单文件直开。三个环境均无退役玩法文案；直开结果为 `currentScene=phone_home`、`canvasCount=1`、退役 render hook 为 `undefined`，DEV 摘要为 `5 章 · 24 关 · 112 节点`。
+- 临时 Chrome profile、Playwright 输出和浏览器 QA 截图已从工作区移出；正式交付不包含运行时截图或测试缓存。

@@ -53,7 +53,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
 
   function openRecovery() {
     const result = kit.chapterThreeInterlude.beginRecovery();
-    setFeedback(result === "accepted" ? "恢复工具已打开。先核对带来源的记录。" : "当前无法恢复这段记录。");
+    setFeedback(result === "accepted" ? "恢复工具已打开。" : "当前无法恢复这段记录。");
   }
 
   function openEvidenceSource(id: ChapterThreeInterludeEvidenceId) {

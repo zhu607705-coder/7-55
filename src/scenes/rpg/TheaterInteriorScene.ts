@@ -64,6 +64,29 @@ import {
 } from "./TheaterInteriorModel";
 
 const THEATER_MAP_KEY = "chapter-3-theater-interior-map";
+export const THEATER_INTERIOR_WARM_ASSET_URLS = Object.freeze([
+  theaterInteriorMapUrl,
+  ticketInspectorIdleUrl,
+  ticketInspectorScanUrl,
+  stageManagerGhostIdleUrl,
+  stageManagerGhostPointUrl,
+  propBoxGhostUrl,
+  paperFuturePathUrl,
+  spotlightBeamArtUrl,
+  spotlightFaultStripUrl,
+  spotlightHitRingUrl,
+  spotlightSparksUrl,
+  programOpeningUrl,
+  programSpotlightUrl,
+  programFinaleUrl,
+  paperFlightUrl,
+  paperResidualUrl,
+  paperFluorescentUrl,
+  paperLockedUrl,
+  paperCrackedUrl,
+  paperEscapeUrl,
+  paperFragmentsUrl
+]);
 const THEATER_PAPER_KEY = "chapter-3-theater-paper";
 const THEATER_PAPER_RESIDUAL_KEY = "chapter-3-theater-paper-residual";
 const THEATER_PAPER_FLUORESCENT_KEY = "chapter-3-theater-paper-fluorescent";

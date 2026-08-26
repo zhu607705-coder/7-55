@@ -44,4 +44,4 @@
 
 ## 退役边界
 
-退役的 `godot/`、`public/godot/` 和 `src/integrations/godot/` 已于 2026-08-25 删除。后续剧院行为只修改 Phaser 场景和共享 TypeScript 控制器，禁止恢复旧导出、加载器、协议桥或验证脚本。
+`godot/`、`public/godot/` 和 `src/integrations/godot/` 中的现有内容只作历史参考。主运行时不加载这些产物，CI 不校验其导出哈希，后续剧院行为只修改 Phaser 场景和共享 TypeScript 控制器。

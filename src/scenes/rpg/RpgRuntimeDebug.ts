@@ -30,6 +30,7 @@ export interface RpgRuntimeDebugState {
     displayHeight?: number;
     collisionWidth?: number;
     collisionHeight?: number;
+    depth?: number;
   };
   input?: {
     gameEnabled: boolean;
@@ -242,8 +243,19 @@ export interface RpgRuntimeDebugState {
       visibleForMs: number;
       sightLostForMs: number;
       lastVisiblePosition: { x: number; y: number } | null;
+      animationId: string | null;
+      travelDirection: "down" | "up" | "side";
+      flipX: boolean | null;
       entityBounds: { x: number; y: number; width: number; height: number } | null;
     };
+    bakeryCrowd?: ReadonlyArray<{
+      routeIndex: number;
+      position: { x: number; y: number };
+      from: { x: number; y: number };
+      to: { x: number; y: number };
+      flipX: boolean;
+      animationId: string | null;
+    }>;
     finalChase?: {
       active: boolean;
       phase: string | null;
@@ -302,6 +314,13 @@ export interface RpgRuntimeDebugState {
       id: string | null;
       source: "panel" | "url" | null;
     };
+    elevatorVisualDepths?: ReadonlyArray<{
+      floor: 1 | 2 | 3;
+      door: number;
+      indicator: number;
+      lamp: number;
+      playerInFront: boolean;
+    }>;
     currentFloor?: 1 | 2 | 3;
     currentStoryFloor?: "A1" | "A2" | "A3";
     floorOffsetX?: number;

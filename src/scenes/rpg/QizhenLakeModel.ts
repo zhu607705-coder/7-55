@@ -7,6 +7,38 @@ import {
 
 export const QIZHEN_LAKE_WORLD = { width: 1672, height: 941 } as const;
 
+export interface QizhenAfterRainPuddle {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * 雨停后留在小码头铺装上的浅水坑。坐标来自 1672×941 码头原图，
+ * 只承担环境叙事与脚点命中，不参与碰撞或剧情进度。
+ */
+export const QIZHEN_DOCK_AFTER_RAIN_PUDDLES: readonly QizhenAfterRainPuddle[] = Object.freeze([
+  { id: "west_promenade", x: 260, y: 610, width: 102, height: 28 },
+  { id: "equipment_yard", x: 610, y: 742, width: 116, height: 34 },
+  { id: "south_path", x: 605, y: 858, width: 94, height: 28 },
+  { id: "entry_path", x: 410, y: 860, width: 70, height: 24 }
+]);
+
+export function isQizhenAfterRainPuddleFootHit(
+  puddle: QizhenAfterRainPuddle,
+  footX: number,
+  footY: number
+): boolean {
+  const radiusX = puddle.width / 2;
+  const radiusY = puddle.height / 2;
+  if (radiusX <= 0 || radiusY <= 0) return false;
+  const normalizedX = (footX - puddle.x) / radiusX;
+  const normalizedY = (footY - puddle.y) / radiusY;
+  return normalizedX * normalizedX + normalizedY * normalizedY <= 1;
+}
+
 export type QizhenLakeZoneId = "dock" | "open_water" | "channel" | "swan_cove";
 export type QizhenLakeVehicle = "on_foot" | "kayak";
 
@@ -34,6 +66,7 @@ export type QizhenLakeTargetKind =
   | "exit"
   | "outfit"
   | "board"
+  | "safety_officer"
   | "zone_portal"
   | "reflection"
   | "fishing_spot"
@@ -279,6 +312,7 @@ export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
   target({ id: "qizhen_dock_left_paddle", label: "花坛边的柳树枝", x: 245, y: 570, width: 70, height: 30, stand: { x: 260, y: 635 }, kind: "outfit", value: "left_paddle", zone: "dock", vehicle: "on_foot", proximity: 52 }),
   target({ id: "qizhen_dock_right_paddle", label: "可拆的旧三角牌", x: 585, y: 780, width: 70, height: 70, stand: { x: 645, y: 805 }, kind: "outfit", value: "right_paddle", zone: "dock", vehicle: "on_foot", proximity: 52 }),
   target({ id: "qizhen_dock_board", label: "小码头登船边", x: 710, y: 650, width: 80, height: 120, stand: { x: 610, y: 650 }, kind: "board", zone: "dock", vehicle: "on_foot", proximity: 64 }),
+  target({ id: "qizhen_dock_safety_officer", label: "湖边安全员", x: 650, y: 700, width: 68, height: 92, kind: "safety_officer", zone: "dock", vehicle: "on_foot", proximity: 96 }),
   target({ id: "qizhen_use_item_1", label: "码头储物柜", x: 390, y: 750, width: 92, height: 100, stand: { x: 430, y: 835 }, kind: "item_use", zone: "dock", vehicle: "on_foot", proximity: 56, value: "item_1_to_2", dropWidth: 92, dropHeight: 100, requiredMode: "light", acceptedItem: "rustedLockerKey" }),
   target({ id: "qizhen_dock_to_open", label: "划向大湖", x: 1430, y: 390, kind: "zone_portal", zone: "dock", targetZone: "open_water", vehicle: "kayak", proximity: 155 }),
 

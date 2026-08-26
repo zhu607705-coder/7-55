@@ -241,19 +241,29 @@ function selectOcclusions(
 function selectNpcs(state: ChapterFourState): string[] {
   switch (state.phase) {
     case "bakery_hour_hand":
-      return state.floor === "A1" ? ["a1_bakery_clerk", "a1_bakery_lunch_crowd"] : [];
+      return state.floor === "A1"
+        ? ["a1_bakery_clerk", "a1_bakery_lunch_crowd", "a1_front_desk_attendant"]
+        : [];
     case "room204_restore":
       return state.floor === "A3"
-        ? ["a3_reference_students"]
+        ? ["a3_reference_students", "a3_reference_teacher"]
         : state.floor === "A2" && state.mode === "dark"
-          ? ["a2_evening_residual_group"]
-          : [];
+          ? ["a2_evening_residual_group", "a2_elevator_attendant"]
+          : state.floor === "A2"
+            ? ["a2_elevator_attendant"]
+          : state.floor === "A1"
+            ? ["a1_front_desk_attendant"]
+            : [];
     case "maintenance_repair":
       return state.floor === "A1" ? ["a1_cleaner", "a1_security_guard"] : [];
     case "final_chase":
       return [state.floor === "A2" ? "a2_security_guard" : "a1_security_guard"];
     case "morning_checkin":
-      return state.floor === "A1" ? ["a1_morning_students"] : [];
+      return state.floor === "A1"
+        ? ["a1_morning_students", "a1_front_desk_attendant"]
+        : [];
+    case "exterior_closure":
+      return state.floor === "A1" ? ["a1_front_desk_attendant"] : [];
     default:
       return [];
   }

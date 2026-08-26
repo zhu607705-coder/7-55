@@ -4,17 +4,6 @@ import type { GameState, GameStore } from "./types";
 import { DEVELOPER_ACTIVE_KEY } from "./StorageKeys";
 import { DEFAULT_PHONE_HOME_APP_ORDER } from "./PhoneHomeApps";
 
-function createEmptyEndlessChallengeRecord() {
-  return {
-    attemptCount: 0,
-    bestScore: 0,
-    bestProgress: 0,
-    bestTier: 0,
-    bestCombo: 0,
-    bestDurationMs: 0
-  };
-}
-
 export function createInitialGameState(): GameState {
   return {
     runtimeMode: "phone",
@@ -137,28 +126,18 @@ export function createInitialGameState(): GameState {
       requiredItemCollected: false,
       visitedAreaIds: [],
       gameMenuUnlocked: false,
-      dormHubUnlocked: false
+      dormHubUnlocked: false,
+      cc98Login: {
+        studentIdDiscovered: false,
+        revealedHintCount: 0,
+        failureCount: 0,
+        lockUntilMs: null,
+        authenticated: false
+      }
     },
     wallet: {
       campusCardCents: 6,
       cashCents: 0
-    },
-    bikeArcade: {
-      unlocked: false,
-      completed: false,
-      attemptCount: 0,
-      bestDistance: 0,
-      bestLives: 0
-    },
-    postgame: {
-      completionReceipt: null
-    },
-    endlessArcade: {
-      records: {
-        fishing: createEmptyEndlessChallengeRecord(),
-        spotlight: createEmptyEndlessChallengeRecord(),
-        bike: createEmptyEndlessChallengeRecord()
-      }
     },
     canteenHunt: {
       active: false,
@@ -230,6 +209,8 @@ export function createInitialGameState(): GameState {
       kayakEquipped: false,
       leftPaddleEquipped: false,
       rightPaddleEquipped: false,
+      weatherAdjustmentRequested: false,
+      rainSafetyCleared: false,
       boardingStrokeCount: 0,
       boardingLastSide: null,
       boardingTutorialCompleted: false,
@@ -331,6 +312,10 @@ export function createInitialGameState(): GameState {
       phoneStatusTimeSeconds: 28523,
       phoneStatusTimeTrusted: false,
       factIds: [],
+      zhuQuestionAnswers: {
+        purpose: null,
+        person: null
+      },
       room204Placements: [],
       lightGrid: {
         mask: 6,
@@ -440,19 +425,12 @@ export function createPersistentGameStore(storage?: Storage): GameStore {
 
   const saveStore = new SaveStore(resolvedStorage);
   const persistedGame = saveStore.load(initial);
-  const persistedBike = persistedGame ? null : saveStore.loadBikeArcade(initial);
-  const hydrated: GameState = persistedGame ?? (persistedBike
-    ? {
-        ...initial,
-        bikeArcade: persistedBike.bikeArcade
-      }
-    : initial);
+  const hydrated: GameState = persistedGame ?? initial;
   const store = createGameStore(hydrated);
   let lastSnapshot = JSON.stringify(hydrated);
 
-  if (persistedGame || persistedBike) {
+  if (persistedGame) {
     saveStore.save(hydrated);
-    saveStore.saveBikeArcade(hydrated);
   }
   store.subscribe(() => {
     const state = store.getState();
@@ -465,7 +443,6 @@ export function createPersistentGameStore(storage?: Storage): GameStore {
       return;
     }
     saveStore.save(state);
-    saveStore.saveBikeArcade(state);
   });
 
   return store;

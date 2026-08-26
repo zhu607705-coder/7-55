@@ -24,6 +24,10 @@ const KAYAK_TEXTURE_ASSETS = Object.freeze([
   [KAYAK_FRAME_B_KEY, kayakFrameBUrl]
 ] as const);
 
+export const QIZHEN_KAYAK_TEXTURE_ASSET_URLS = Object.freeze(
+  KAYAK_TEXTURE_ASSETS.map(([, url]) => url)
+);
+
 export function preloadQizhenKayakTextures(scene: Phaser.Scene): void {
   preloadRpgImages(scene, KAYAK_TEXTURE_ASSETS);
 }

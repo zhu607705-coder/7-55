@@ -31,6 +31,7 @@ import {
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 
 const DORM_HUB_MAP_KEY = "dorm-hub-user-topdown-map";
+export const DORM_HUB_WARM_ASSET_URLS = Object.freeze([dormHubMapUrl]);
 const DORM_CAMERA_ZOOM = 960 / DORM_HUB_WORLD.width;
 
 const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
@@ -503,7 +504,7 @@ export class DormHubScene extends Phaser.Scene {
     if (this.exitTriggered) return;
     if (this.bridge.getState().actOne.canLeaveDorm) {
       this.exitTriggered = true;
-      this.showFeedback("门开了。前往校园地图。");
+      this.showFeedback("寝室门已打开。");
       this.animateDoorOpening();
       this.time.delayedCall(520, () => this.bridge.emit("rpg_dorm_exit"));
       return;

@@ -19,16 +19,58 @@ const sourceGrids = {
     rows: 4,
     canonicalHeight: 112
   },
-  cleaner: {
+  cleanerAction: {
     path: resolve(sourceRoot, "finale_cleaner_source_grid_v2.png"),
     columns: 4,
     rows: 4,
     canonicalHeight: 112
   },
-  guard: {
+  cleanerIdle: {
+    path: resolve(sourceRoot, "finale_cleaner_idle_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
+    canonicalHeight: 112
+  },
+  cleanerPushDown: {
+    path: resolve(sourceRoot, "finale_cleaner_push_down_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
+    canonicalHeight: 112
+  },
+  cleanerPushUp: {
+    path: resolve(sourceRoot, "finale_cleaner_push_up_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
+    canonicalHeight: 112
+  },
+  cleanerPushSide: {
+    path: resolve(sourceRoot, "finale_cleaner_push_side_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
+    canonicalHeight: 112
+  },
+  guardAction: {
     path: resolve(sourceRoot, "finale_guard_source_grid_v2.png"),
     columns: 4,
     rows: 4,
+    canonicalHeight: 112
+  },
+  guardWalkDown: {
+    path: resolve(sourceRoot, "finale_guard_walk_down_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
+    canonicalHeight: 112
+  },
+  guardWalkUp: {
+    path: resolve(sourceRoot, "finale_guard_walk_up_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
+    canonicalHeight: 112
+  },
+  guardWalkSide: {
+    path: resolve(sourceRoot, "finale_guard_walk_side_source_grid_v3.png"),
+    columns: 4,
+    rows: 2,
     canonicalHeight: 112
   }
 };
@@ -39,18 +81,22 @@ const animations = [
   { id: "student_adjust_bag", source: "student", frames: [10, 11], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 4, loop: false },
   { id: "student_push_door", source: "student", frames: [12, 13, 14], frameWidth: 112, frameHeight: 128, maxWidth: 104, maxHeight: 112, fps: 6, loop: false },
   { id: "student_idle", source: "student", frames: [15], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 1, loop: true },
-  { id: "cleaner_push_cart", source: "cleaner", frames: [0, 1, 2, 3], frameWidth: 192, frameHeight: 128, maxWidth: 180, maxHeight: 112, fps: 8, loop: true },
-  { id: "cleaner_mop", source: "cleaner", frames: [4, 5, 6, 7], frameWidth: 144, frameHeight: 128, maxWidth: 134, maxHeight: 112, fps: 6, loop: true },
-  { id: "cleaning_cart", source: "cleaner", frames: [8], frameWidth: 144, frameHeight: 128, maxWidth: 134, maxHeight: 104, fps: 1, loop: true },
-  { id: "cleaner_place_sign", source: "cleaner", frames: [9, 10], frameWidth: 128, frameHeight: 128, maxWidth: 118, maxHeight: 112, fps: 4, loop: false },
-  { id: "cleaner_toggle_lights", source: "cleaner", frames: [11, 12], frameWidth: 112, frameHeight: 128, maxWidth: 102, maxHeight: 112, fps: 4, loop: false },
-  { id: "cleaner_rest", source: "cleaner", frames: [13], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 1, loop: true },
-  { id: "cleaner_idle", source: "cleaner", frames: [14, 15], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 2, loop: true },
-  { id: "guard_walk", source: "guard", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 8, loop: true },
-  { id: "guard_check_list", source: "guard", frames: [8, 9], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
-  { id: "guard_check_watch", source: "guard", frames: [10, 11], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
-  { id: "guard_flashlight_down", source: "guard", frames: [12, 13], frameWidth: 128, frameHeight: 128, maxWidth: 118, maxHeight: 112, fps: 4, loop: true },
-  { id: "guard_radio", source: "guard", frames: [14, 15], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true }
+  { id: "cleaner_push_cart", source: "cleanerPushSide", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 192, frameHeight: 128, maxWidth: 180, maxHeight: 112, fps: 9, loop: true },
+  { id: "cleaner_push_cart_down", source: "cleanerPushDown", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 192, frameHeight: 128, maxWidth: 180, maxHeight: 112, fps: 9, loop: true },
+  { id: "cleaner_push_cart_up", source: "cleanerPushUp", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 192, frameHeight: 128, maxWidth: 180, maxHeight: 112, fps: 9, loop: true },
+  { id: "cleaner_mop", source: "cleanerAction", frames: [4, 5, 6, 7], frameWidth: 144, frameHeight: 128, maxWidth: 134, maxHeight: 112, fps: 6, loop: true },
+  { id: "cleaning_cart", source: "cleanerAction", frames: [8], frameWidth: 144, frameHeight: 128, maxWidth: 134, maxHeight: 104, fps: 1, loop: true },
+  { id: "cleaner_place_sign", source: "cleanerAction", frames: [9, 10], frameWidth: 128, frameHeight: 128, maxWidth: 118, maxHeight: 112, fps: 4, loop: false },
+  { id: "cleaner_toggle_lights", source: "cleanerAction", frames: [11, 12], frameWidth: 112, frameHeight: 128, maxWidth: 102, maxHeight: 112, fps: 4, loop: false },
+  { id: "cleaner_rest", source: "cleanerAction", frames: [13], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 1, loop: true },
+  { id: "cleaner_idle", source: "cleanerIdle", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 84, maxHeight: 112, fps: 6, loop: true },
+  { id: "guard_walk", source: "guardWalkSide", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 9, loop: true },
+  { id: "guard_walk_down", source: "guardWalkDown", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 9, loop: true },
+  { id: "guard_walk_up", source: "guardWalkUp", frames: [0, 1, 2, 3, 4, 5, 6, 7], frameWidth: 96, frameHeight: 128, maxWidth: 90, maxHeight: 112, fps: 9, loop: true },
+  { id: "guard_check_list", source: "guardAction", frames: [8, 9], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
+  { id: "guard_check_watch", source: "guardAction", frames: [10, 11], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true },
+  { id: "guard_flashlight_down", source: "guardAction", frames: [12, 13], frameWidth: 128, frameHeight: 128, maxWidth: 118, maxHeight: 112, fps: 4, loop: true },
+  { id: "guard_radio", source: "guardAction", frames: [14, 15], frameWidth: 96, frameHeight: 128, maxWidth: 86, maxHeight: 112, fps: 3, loop: true }
 ];
 
 function ensureMagick() {
@@ -176,7 +222,7 @@ async function buildAnimation(animation, workRoot, sourceComponents, sourceScale
   }
 
   const output = resolve(assetRoot, `${animation.id}_${animation.frames.length}frame.png`);
-  runMagick([...normalizedFrames, "+append", output]);
+  runMagick([...normalizedFrames, "+append", "-strip", output]);
   const bytes = await readFile(output);
   return {
     id: animation.id,
@@ -233,14 +279,14 @@ try {
 
   const manifest = {
     schemaVersion: 1,
-    generatedAt: "imagegen-derived-2026-08-22",
+    generatedAt: "imagegen-derived-2026-08-26",
     logicalFrame: { width: 96, height: 128 },
     sourceView: "top_down_front_pixel",
     generation: {
-      requestedProvider: "MiniMax CLI image-01",
-      rejectedMiniMaxReason: "layout_style_and_background_contract_failed",
+      requestedProvider: "built-in image_gen",
+      rejectedMiniMaxReason: "retained historical source metadata only",
       selectedProvider: "OpenAI image_gen",
-      alphaRole: "native_transparent_cutout"
+      alphaRole: "chroma_key_postprocessed_transparent_cutout"
     },
     sources,
     animations: builtAnimations

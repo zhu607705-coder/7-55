@@ -6,14 +6,12 @@
 | --- | --- | --- | --- |
 | 第一关 | 用户提供的《7-55 第一关策划书.pdf》与既有实施计划 | 已实现 | 现实小房间、校园 RPG |
 | 第二章 | `chapter-2-library-finals-development-report.md` | V2.0 已实现并完成单文件构建 | `chapter_three_book_hunt` |
-| 第三章 | `chapter-3-qiushi-bike-755-development-report.md` | V1.0 已实现并完成章节出口 | `chapter_transition` |
 
 ## 阅读顺序
 
 1. `chapter-2-library-story.md`：剧情与对白真源
 2. `chapter-2-library-development-spec.md`：开发要点与验收真源
 3. `chapter-2-library-finals-development-report.md`：V2.0 真实实现、音画、测试与交付记录
-4. `chapter-3-qiushi-bike-755-development-report.md`
 
 ## 章节衔接
 
@@ -23,9 +21,9 @@
 → 第二章前半：找到移动办法
 → 第二章：022 的占座书包
 → 恢复 022，解锁借走签到记录的书
-→ 第三章
-→ 完成 755 米骑行
-→ P17 下一章节过渡
+→ 第三章：食堂、剧场与启真湖
+→ 3.5 章：未同步记录与教学楼过渡
+→ 第四章：7:55 时间迷宫
 ```
 
 ## 文档规则

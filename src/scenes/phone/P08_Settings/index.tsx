@@ -33,7 +33,6 @@ const APP_LABELS: Record<PhoneHomeAppId, string> = {
   timeline_recovery: "记录恢复",
   voice_memos: "录音",
   cc98: "CC98",
-  bike_arcade: "求是潮 755",
   control_center: "控制中心",
   clock: "时钟"
 };

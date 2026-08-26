@@ -132,7 +132,7 @@
         },
         {
           "channel": "sfx",
-          "asset": "fx_bike_755_failure",
+          "asset": "sfx_ch4_railing_hit",
           "volume": 0.72
         }
       ]
@@ -145,7 +145,7 @@
         },
         {
           "channel": "sfx",
-          "asset": "fx_bike_755_success",
+          "asset": "sfx_ch4_clock_chime",
           "volume": 0.75
         }
       ]

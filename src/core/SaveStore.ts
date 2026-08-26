@@ -1,7 +1,6 @@
 import type {
   ActOneBootstrapPhase,
   ActOneBootstrapState,
-  BikeArcadeChapterState,
   CanteenDrinkIngredientId,
   CanteenMenuOptionId,
   ChapterFour755FloorId,
@@ -9,12 +8,12 @@ import type {
   ChapterFourPhase,
   ChapterFourRoom204Placement,
   ChapterFourTimeState,
+  ChapterFourZhuPersonAnswerId,
+  ChapterFourZhuPurposeAnswerId,
   ClockArchiveClueId,
   ClockCalibrationPhase,
   ClockCoarseLockId,
   ClockDriftChannelId,
-  EndlessArcadeState,
-  EndlessChallengeModeId,
   GameState,
   LibraryEvidenceId,
   LibraryFinalsBdPostId,
@@ -34,7 +33,6 @@ import type {
   QizhenPhotoRecord,
   QizhenPhotoSpotId,
   QizhenPhotoTag,
-  PostgameState,
   WalletState
 } from "./types";
 import {
@@ -47,18 +45,20 @@ import {
   isRoom204PlacementSetComplete,
   normalizeRoom204Placements
 } from "../scenes/rpg/ChapterFourRoom204Model";
-import { BIKE_SAVE_KEY, GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
+import { GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
-import { ENDLESS_ARCADE_SCORE_LIMIT } from "./EndlessArcadeLimits";
 
 const CHAPTER_FOUR_755_SAVE_VERSION = 25;
-const POSTGAME_ENDLESS_SAVE_VERSION = 26;
-const SAVE_VERSION = POSTGAME_ENDLESS_SAVE_VERSION;
+const QIZHEN_WEATHER_CONTROL_SAVE_VERSION = 27;
+const CC98_UNIFIED_LOGIN_SAVE_VERSION = 28;
+const SAVE_VERSION = CC98_UNIFIED_LOGIN_SAVE_VERSION;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
 const SUPPORTED_ENVELOPE_VERSIONS = new Set([
   2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
   CHAPTER_FOUR_755_SAVE_VERSION,
+  26,
+  QIZHEN_WEATHER_CONTROL_SAVE_VERSION,
   SAVE_VERSION
 ]);
 
@@ -113,7 +113,7 @@ const VALID_ACT_ONE_PHASES = new Set<ActOneBootstrapPhase>([
 const VALID_ACT_ONE_AREA_IDS = new Set(["north_gate", "bridge", "library", "game_kiosk"]);
 const VALID_SCENES = new Set<GameState["currentScene"]>([
   "alarm", "desktop", "phone_home", "settings", "wechat", "cc98", "zjuding", "tiyi", "weather",
-  "photos", "timeline_recovery", "voice_memos", "campus_card", "bike_arcade", "chapter_transition",
+  "photos", "timeline_recovery", "voice_memos", "campus_card",
   "checkin", "bonsai", "clock", "ending"
 ]);
 const VALID_NETWORK_MODES = new Set<GameState["networkMode"]>(["campus_wifi", "cellular", "offline"]);
@@ -208,16 +208,25 @@ const LEGACY_CHAPTER_FOUR_PUZZLE_IDS = new Set<GameState["chapter4"]["solvedPuzz
 const VALID_CHAPTER_FOUR_FACT_IDS = new Set<ChapterFourFactId>([
   "opening_paper_at_noticeboard", "opening_paper_caught", "external_time_rejected",
   "hall_clock_inspected", "bakery_conveyor_lamp_inspected", "bakery_hour_hand_exposed",
-  "bakery_hour_hand_collected", "hour_hand_installed", "a3_reference_observed",
+  "bakery_hour_hand_collected", "hour_hand_installed",
+  "classroom_104_chalk_residual_observed", "classroom_105_terminal_replay_checked",
+  "elevator_history_observed", "elevator_history_calibrated", "a3_reference_observed",
+  "zhu_two_questions_answered", "misaligned_stair_solved",
   "room204_residual_observed", "room204_restored", "room204_projection_completed",
   "positioning_plate_collected", "positioning_plate_installed",
   "cart_wheel_inspected", "cart_wheel_cover_opened", "cart_wheel_repaired", "clock_gear_repaired",
-  "paper_temporarily_out_of_inventory", "light_grid_locked", "final_minute_recovered",
+  "paper_temporarily_out_of_inventory", "light_grid_locked", "canruo_star_lamp_primed", "final_minute_recovered",
   "final_minute_installed", "checkin_card_accepted", "checkin_paper_accepted",
   "exterior_closure_acknowledged"
 ]);
 const VALID_CHAPTER_FOUR_MODES = new Set<GameState["chapter4"]["mode"]>(["light", "dark"]);
 const VALID_CHAPTER_FOUR_FLOORS = new Set<ChapterFour755FloorId>(["A1", "A2", "A3"]);
+const VALID_CHAPTER_FOUR_ZHU_PURPOSE_ANSWERS = new Set<ChapterFourZhuPurposeAnswerId>([
+  "seek_truth", "solve_real_problems", "serve_public"
+]);
+const VALID_CHAPTER_FOUR_ZHU_PERSON_ANSWERS = new Set<ChapterFourZhuPersonAnswerId>([
+  "responsible", "clear_minded", "public_service"
+]);
 const VALID_DIGIT_VALUES = new Set<NonNullable<GameState["digits"]["d1"]>>(["0", "7", "9", "8"]);
 const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "waterDrop", "headphone", "wateredHeadphone", "reverseGear", "slashLine", "towerKey",
@@ -280,19 +289,6 @@ const VALID_CLOCK_ARCHIVE_CLUE_IDS = new Set<ClockArchiveClueId>([
 ]);
 const VALID_CLOCK_COARSE_LOCK_IDS = new Set<ClockCoarseLockId>(["hour", "minute"]);
 const VALID_CLOCK_DRIFT_CHANNEL_IDS = new Set<ClockDriftChannelId>(["gate", "elevator", "room"]);
-const VALID_MAIN_STORY_RECEIPTS = new Set<NonNullable<PostgameState["completionReceipt"]>>([
-  "chapter4_closure_v1"
-]);
-const ENDLESS_CHALLENGE_MODE_IDS: readonly EndlessChallengeModeId[] = ["fishing", "spotlight", "bike"];
-export const ENDLESS_RECORD_LIMITS = Object.freeze({
-  attemptCount: 999_999,
-  bestScore: ENDLESS_ARCADE_SCORE_LIMIT,
-  bestProgress: 9_999_999,
-  bestTier: 9_999,
-  bestCombo: 9_999,
-  bestDurationMs: 86_400_000
-});
-
 interface SaveEnvelope {
   version: typeof SAVE_VERSION;
   state: GameState;
@@ -449,7 +445,6 @@ export class SaveStore {
         };
       }
 
-      const bikeArcade = normalizeBikeArcade(saved.bikeArcade, initial.bikeArcade);
       const savedCanteenHunt = isRecord(saved.canteenHunt) ? saved.canteenHunt : {};
       const savedCanteenPhase = enumOr(savedCanteenHunt.phase, VALID_CANTEEN_HUNT_PHASES, initial.canteenHunt.phase);
       const legacyChaseCompleted = savedCanteenPhase === "theater_reached";
@@ -598,7 +593,8 @@ export class SaveStore {
       const qizhenNormalization = normalizeQizhenLake(
         saved.qizhenLake,
         initial.qizhenLake,
-        envelopeVersion < QIZHEN_KAYAK_SAVE_VERSION
+        envelopeVersion < QIZHEN_KAYAK_SAVE_VERSION,
+        envelopeVersion < QIZHEN_WEATHER_CONTROL_SAVE_VERSION
       );
       const qizhenLake = qizhenNormalization.state;
       const clockCalibration = normalizeClockCalibration(saved.clockCalibration, initial.clockCalibration);
@@ -607,11 +603,7 @@ export class SaveStore {
         initial.chapter4,
         envelopeVersion
       );
-      const postgame = normalizePostgame(saved.postgame, initial.postgame, chapter4Normalization.state);
-      const chapter4 = postgame.completionReceipt === "chapter4_closure_v1"
-        ? createCompletedChapterFourState(initial.chapter4)
-        : chapter4Normalization.state;
-      const endlessArcade = normalizeEndlessArcade(saved.endlessArcade, saved.bikeArcade, initial.endlessArcade);
+      const chapter4 = chapter4Normalization.state;
       const chapterThreeInterlude = normalizeChapterThreeInterlude(
         saved.chapterThreeInterlude,
         initial.chapterThreeInterlude,
@@ -622,7 +614,7 @@ export class SaveStore {
         qizhenLake.active = true;
         qizhenLake.phase = "location_search";
       }
-      const requiresCanteenMigration = isLegacyChapterThreeState(saved, ui, envelopeVersion);
+      const requiresCanteenMigration = isLegacyChapterThreeState(saved, ui);
       const chapterThreeAlreadyProgressed = hasChapterThreeProgress(canteenHunt, theaterHunt, qizhenLake);
       if (requiresCanteenMigration) {
         ui.libraryFinalsPhase = "friend_contacted";
@@ -661,9 +653,6 @@ export class SaveStore {
         flags,
         actOne,
         wallet,
-        bikeArcade,
-        postgame,
-        endlessArcade,
         canteenHunt,
         theaterHunt,
         qizhenLake,
@@ -720,37 +709,9 @@ export class SaveStore {
     }
   }
 
-  saveBikeArcade(state: GameState): boolean {
-    try {
-      this.storage.setItem(BIKE_SAVE_KEY, JSON.stringify({ version: SAVE_VERSION, bikeArcade: state.bikeArcade }));
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  loadBikeArcade(initial: GameState): BikeArcadePersistence | null {
-    try {
-      const value = this.storage.getItem(BIKE_SAVE_KEY);
-      if (value) {
-        const saved = JSON.parse(value) as unknown;
-        if (isRecord(saved)) {
-          const legacyUnlocked = saved.version === 1 && saved.libraryFinalsPhase === "seat_recovered";
-          return { bikeArcade: normalizeBikeArcade(saved.bikeArcade, initial.bikeArcade, legacyUnlocked) };
-        }
-      }
-    } catch {
-      // Fall through to the validated full save.
-    }
-
-    const full = this.load(initial);
-    return full ? { bikeArcade: full.bikeArcade } : null;
-  }
-
   clear(): void {
     this.storage.removeItem(GAME_SAVE_KEY);
     this.storage.removeItem(GAME_SAVE_BACKUP_KEY);
-    this.storage.removeItem(BIKE_SAVE_KEY);
   }
 }
 
@@ -763,7 +724,8 @@ interface QizhenNormalizationResult {
 function normalizeQizhenLake(
   value: unknown,
   initial: GameState["qizhenLake"],
-  migrateLegacyPaperRelease: boolean
+  migrateLegacyPaperRelease: boolean,
+  migrateLegacyWeatherControl: boolean
 ): QizhenNormalizationResult {
   const saved = asRecord(value);
   const signRotations = Array.isArray(saved.signRotations)
@@ -869,6 +831,12 @@ function normalizeQizhenLake(
     chaseDistance,
     rangedIntegerOr(saved.chaseBestDistance, 0, 1000, initial.chaseBestDistance)
   );
+  const rainSafetyCleared = reachedExploration
+    || migratedLegacyChase
+    || (migrateLegacyWeatherControl && reachedBoarding)
+    || booleanOr(saved.rainSafetyCleared, initial.rainSafetyCleared);
+  const weatherAdjustmentRequested = rainSafetyCleared
+    || booleanOr(saved.weatherAdjustmentRequested, initial.weatherAdjustmentRequested);
   const state: GameState["qizhenLake"] = {
     active: phase !== "inactive" || booleanOr(saved.active, initial.active),
     phase,
@@ -885,6 +853,8 @@ function normalizeQizhenLake(
     kayakEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.kayakEquipped, initial.kayakEquipped),
     leftPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.leftPaddleEquipped, initial.leftPaddleEquipped),
     rightPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.rightPaddleEquipped, initial.rightPaddleEquipped),
+    weatherAdjustmentRequested,
+    rainSafetyCleared,
     boardingStrokeCount: Math.max(
       migratedLegacyChase ? 4 : 0,
       nonNegativeIntegerOr(saved.boardingStrokeCount, initial.boardingStrokeCount)
@@ -1085,16 +1055,13 @@ function defaultSafeSpawnFor(
 
 function isLegacyChapterThreeState(
   saved: Record<string, unknown>,
-  ui: GameState["ui"],
-  envelopeVersion: number
+  ui: GameState["ui"]
 ): boolean {
   const savedUi = asRecord(saved.ui);
   const savedPuzzle = asRecord(savedUi.libraryFinalsPuzzle);
   return ui.libraryFinalsPhase === "friend_contacted"
     || ui.libraryFinalsPuzzle.nextQuestId === "chapter_three_canteen_hunt"
-    || savedPuzzle.nextQuestId === "chapter_three_book_hunt"
-    || (envelopeVersion < POSTGAME_ENDLESS_SAVE_VERSION && saved.currentScene === "bike_arcade")
-    || saved.currentScene === "chapter_transition";
+    || savedPuzzle.nextQuestId === "chapter_three_book_hunt";
 }
 
 function hasChapterThreeProgress(
@@ -1205,10 +1172,6 @@ function isPotentiallyLoadableSave(value: string): boolean {
   } catch {
     return false;
   }
-}
-
-export interface BikeArcadePersistence {
-  bikeArcade: BikeArcadeChapterState;
 }
 
 function normalizeClockCalibration(
@@ -1392,6 +1355,7 @@ const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
   "bakery_hour_hand_collected",
   "hour_hand_installed",
   "a3_reference_observed",
+  "zhu_two_questions_answered",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
@@ -1403,6 +1367,7 @@ const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
   "clock_gear_repaired",
   "paper_temporarily_out_of_inventory",
   "light_grid_locked",
+  "canruo_star_lamp_primed",
   "final_minute_recovered",
   "final_minute_installed",
   "checkin_card_accepted",
@@ -1433,7 +1398,13 @@ const CHAPTER_FOUR_POST_BAKERY_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
   "complete"
 ]);
 const CHAPTER_FOUR_ROOM204_FACT_ORDER = [
+  "classroom_104_chalk_residual_observed",
+  "classroom_105_terminal_replay_checked",
+  "elevator_history_observed",
+  "elevator_history_calibrated",
   "a3_reference_observed",
+  "zhu_two_questions_answered",
+  "misaligned_stair_solved",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
@@ -1642,6 +1613,22 @@ function normalizeChapterFour(
   const prologueSeen = phase === "opening_handoff"
     ? booleanOr(saved.prologueSeen, initial.prologueSeen)
     : true;
+  const savedZhuAnswers = asRecord(saved.zhuQuestionAnswers);
+  const zhuQuestionsAnswered = factIds.includes("zhu_two_questions_answered");
+  const zhuQuestionAnswers = zhuQuestionsAnswered
+    ? {
+        purpose: enumOr(
+          savedZhuAnswers.purpose,
+          VALID_CHAPTER_FOUR_ZHU_PURPOSE_ANSWERS,
+          "seek_truth"
+        ),
+        person: enumOr(
+          savedZhuAnswers.person,
+          VALID_CHAPTER_FOUR_ZHU_PERSON_ANSWERS,
+          "responsible"
+        )
+      }
+    : { purpose: null, person: null };
 
   return {
     state: {
@@ -1657,6 +1644,7 @@ function normalizeChapterFour(
       phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
       phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
       factIds,
+      zhuQuestionAnswers,
       room204Placements,
       lightGrid: {
         mask: lightGridMask,
@@ -1693,6 +1681,7 @@ function createOpeningChapterFourState(
     phoneStatusTimeSeconds: 28523,
     phoneStatusTimeTrusted: false,
     factIds: [],
+    zhuQuestionAnswers: { purpose: null, person: null },
     room204Placements: [],
     lightGrid: { mask: 6, locked: false },
     guardMode: "absent",
@@ -1723,6 +1712,7 @@ function createExteriorClosureWaitingChapterFourState(
     phoneStatusTimeSeconds: 28500,
     phoneStatusTimeTrusted: true,
     factIds: [...CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS],
+    zhuQuestionAnswers: { purpose: "seek_truth", person: "responsible" },
     room204Placements: createCanonicalCompleteRoom204Placements(),
     lightGrid: { mask: 13, locked: true },
     guardMode: "absent",
@@ -1870,6 +1860,17 @@ function normalizeChapterFourRoom204Closure(
     }
     for (const factId of CHAPTER_FOUR_ROOM204_FACT_ORDER) facts.add(factId);
   } else {
+    const progressedBeyondHonorWall = [
+      "misaligned_stair_solved",
+      "room204_residual_observed",
+      "room204_restored",
+      "room204_projection_completed",
+      "positioning_plate_collected"
+    ].some((factId) => facts.has(factId as ChapterFourFactId));
+    if (progressedBeyondHonorWall && facts.has("a3_reference_observed")) {
+      facts.add("zhu_two_questions_answered");
+    }
+    if (!facts.has("a3_reference_observed")) facts.delete("zhu_two_questions_answered");
     const hasBothObservations = facts.has("a3_reference_observed")
       && facts.has("room204_residual_observed");
     const complete = isRoom204PlacementSetComplete(placements);
@@ -1930,12 +1931,15 @@ function normalizeChapterFourMinuteTheftClosure(
   }
   if (CHAPTER_FOUR_POST_LIGHT_GRID_PHASES.has(phase)) {
     facts.add("light_grid_locked");
+    facts.add("canruo_star_lamp_primed");
   } else {
     facts.delete("light_grid_locked");
+    facts.delete("canruo_star_lamp_primed");
   }
   const normalizedFactOrder = [
     "paper_temporarily_out_of_inventory",
-    "light_grid_locked"
+    "light_grid_locked",
+    "canruo_star_lamp_primed"
   ] as const satisfies readonly ChapterFourFactId[];
   return [
     ...savedFactIds.filter((factId) => !normalizedFactOrder.includes(
@@ -2097,139 +2101,6 @@ function normalizeChapterFourCheckpoint(
   return checkpoint === expected ? checkpoint : expected;
 }
 
-function normalizeBikeArcade(
-  value: unknown,
-  initial: BikeArcadeChapterState,
-  legacyUnlocked = false
-): BikeArcadeChapterState {
-  const saved = asRecord(value);
-  return {
-    unlocked: booleanOr(saved.unlocked, legacyUnlocked || initial.unlocked),
-    completed: booleanOr(saved.completed, initial.completed),
-    attemptCount: nonNegativeSafeIntegerOr(saved.attemptCount, initial.attemptCount),
-    bestDistance: rangedNumberOr(saved.bestDistance, 0, 755, initial.bestDistance),
-    bestLives: rangedIntegerOr(saved.bestLives, 0, 3, initial.bestLives)
-  };
-}
-
-function createEmptyEndlessRecord(): EndlessArcadeState["records"][EndlessChallengeModeId] {
-  return {
-    attemptCount: 0,
-    bestScore: 0,
-    bestProgress: 0,
-    bestTier: 0,
-    bestCombo: 0,
-    bestDurationMs: 0
-  };
-}
-
-function normalizePostgame(
-  value: unknown,
-  initial: PostgameState,
-  chapter4: GameState["chapter4"]
-): PostgameState {
-  const saved = asRecord(value);
-  const completionReceipt = typeof saved.completionReceipt === "string"
-    && VALID_MAIN_STORY_RECEIPTS.has(saved.completionReceipt as NonNullable<PostgameState["completionReceipt"]>)
-    ? saved.completionReceipt as NonNullable<PostgameState["completionReceipt"]>
-    : null;
-  if (completionReceipt === "chapter4_closure_v1") {
-    return { completionReceipt };
-  }
-  if (chapter4.phase === "complete" && chapter4.exteriorClosureAcknowledged && chapter4.completed) {
-    return { completionReceipt: null };
-  }
-  return { completionReceipt: null };
-}
-
-function normalizeEndlessRecord(
-  value: unknown,
-  initial: EndlessArcadeState["records"][EndlessChallengeModeId]
-): EndlessArcadeState["records"][EndlessChallengeModeId] {
-  const saved = asRecord(value);
-  return {
-    attemptCount: rangedIntegerOr(saved.attemptCount, 0, ENDLESS_RECORD_LIMITS.attemptCount, initial.attemptCount),
-    bestScore: rangedIntegerOr(saved.bestScore, 0, ENDLESS_RECORD_LIMITS.bestScore, initial.bestScore),
-    bestProgress: rangedIntegerOr(saved.bestProgress, 0, ENDLESS_RECORD_LIMITS.bestProgress, initial.bestProgress),
-    bestTier: rangedIntegerOr(saved.bestTier, 0, ENDLESS_RECORD_LIMITS.bestTier, initial.bestTier),
-    bestCombo: rangedIntegerOr(saved.bestCombo, 0, ENDLESS_RECORD_LIMITS.bestCombo, initial.bestCombo),
-    bestDurationMs: rangedIntegerOr(saved.bestDurationMs, 0, ENDLESS_RECORD_LIMITS.bestDurationMs, initial.bestDurationMs)
-  };
-}
-
-function normalizeEndlessArcade(
-  value: unknown,
-  legacyBikeArcade: unknown,
-  initial: EndlessArcadeState
-): EndlessArcadeState {
-  const saved = asRecord(value);
-  const records = asRecord(saved.records);
-  const normalizedRecords = {
-    fishing: normalizeEndlessRecord(records.fishing, initial.records.fishing),
-    spotlight: normalizeEndlessRecord(records.spotlight, initial.records.spotlight),
-    bike: normalizeEndlessRecord(records.bike, initial.records.bike)
-  };
-  if (!isRecord(value)) {
-    const legacyBike = asRecord(legacyBikeArcade);
-    normalizedRecords.bike = {
-      attemptCount: rangedIntegerOr(
-        legacyBike.attemptCount,
-        0,
-        ENDLESS_RECORD_LIMITS.attemptCount,
-        normalizedRecords.bike.attemptCount
-      ),
-      bestScore: rangedIntegerOr(
-        legacyBike.bestDistance,
-        0,
-        ENDLESS_RECORD_LIMITS.bestScore,
-        normalizedRecords.bike.bestScore
-      ),
-      bestProgress: rangedIntegerOr(
-        legacyBike.bestDistance,
-        0,
-        ENDLESS_RECORD_LIMITS.bestProgress,
-        normalizedRecords.bike.bestProgress
-      ),
-      bestTier: normalizedRecords.bike.bestTier,
-      bestCombo: normalizedRecords.bike.bestCombo,
-      bestDurationMs: normalizedRecords.bike.bestDurationMs
-    };
-  }
-  return {
-    records: normalizedRecords
-  };
-}
-
-function createCompletedChapterFourState(
-  initial: GameState["chapter4"]
-): GameState["chapter4"] {
-  return {
-    ...initial,
-    prologueSeen: true,
-    phase: "complete",
-    mode: "light",
-    building: "A",
-    floor: "A1",
-    roomId: "a1_exterior",
-    timeAuthority: "hall_clock",
-    timeState: "0755_morning",
-    worldTimeSeconds: 28500,
-    phoneStatusTimeSeconds: 28500,
-    phoneStatusTimeTrusted: true,
-    factIds: [...CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS, "exterior_closure_acknowledged"],
-    room204Placements: createCanonicalCompleteRoom204Placements(),
-    lightGrid: { mask: 13, locked: true },
-    guardMode: "absent",
-    chaseAttempt: 0,
-    chaseRestartCheckpoint: null,
-    checkinCardAccepted: true,
-    checkinPaperAccepted: true,
-    exteriorClosureAcknowledged: true,
-    completed: true,
-    ...createEmptyLegacyChapterFourControllerFields(28500)
-  };
-}
-
 function normalizeWallet(
   value: unknown,
   initial: WalletState,
@@ -2264,6 +2135,8 @@ function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyCo
   const gamepadPurchased = booleanOr(saved.gamepadPurchased, false);
   const exerciseStarted = booleanOr(saved.exerciseStarted, false);
   const controlsInstalled = booleanOr(saved.controlsInstalled, legacyControlsCoupled && gamepadPurchased);
+  const savedCc98Login = asRecord(saved.cc98Login);
+  const cc98Authenticated = booleanOr(savedCc98Login.authenticated, gamepadPurchased);
   return {
     phase,
     identityVerified: characterNamed,
@@ -2287,7 +2160,22 @@ function normalizeActOne(value: unknown, initial: ActOneBootstrapState, legacyCo
     visitedAreaIds: isStringArrayInSet(saved.visitedAreaIds, VALID_ACT_ONE_AREA_IDS)
       ? [...new Set(saved.visitedAreaIds)] : [...initial.visitedAreaIds],
     gameMenuUnlocked: booleanOr(saved.gameMenuUnlocked, initial.gameMenuUnlocked),
-    dormHubUnlocked: booleanOr(saved.dormHubUnlocked, initial.dormHubUnlocked)
+    dormHubUnlocked: booleanOr(saved.dormHubUnlocked, initial.dormHubUnlocked),
+    cc98Login: {
+      studentIdDiscovered: cc98Authenticated
+        || booleanOr(savedCc98Login.studentIdDiscovered, initial.cc98Login.studentIdDiscovered),
+      revealedHintCount: rangedIntegerOr(
+        savedCc98Login.revealedHintCount,
+        0,
+        3,
+        cc98Authenticated ? 3 : initial.cc98Login.revealedHintCount
+      ),
+      failureCount: rangedIntegerOr(savedCc98Login.failureCount, 0, 999, initial.cc98Login.failureCount),
+      lockUntilMs: cc98Authenticated
+        ? null
+        : nullableNonNegativeSafeIntegerOr(savedCc98Login.lockUntilMs, initial.cc98Login.lockUntilMs),
+      authenticated: cc98Authenticated
+    }
   };
 }
 
@@ -2719,6 +2607,9 @@ function rangedIntegerOr(value: unknown, min: number, max: number, fallback: num
 }
 function nonNegativeIntegerOr(value: unknown, fallback: number): number { return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : fallback; }
 function nonNegativeSafeIntegerOr(value: unknown, fallback: number): number { return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : fallback; }
+function nullableNonNegativeSafeIntegerOr(value: unknown, fallback: number | null): number | null {
+  return value === null ? null : typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : fallback;
+}
 function bdCountOr(value: unknown, fallback: LibraryFinalsPuzzleState["bdCount"]): LibraryFinalsPuzzleState["bdCount"] {
   return value === 0 || value === 1 || value === 2 || value === 3 ? value : fallback;
 }

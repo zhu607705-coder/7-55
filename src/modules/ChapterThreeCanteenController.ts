@@ -60,7 +60,7 @@ function hasCompletedTrayTask(state: ReturnType<GameStore["getState"]>): boolean
 }
 
 export interface CanteenChaseAttempt {
-  mode: "story" | "endless";
+  mode: "story";
   distance: number;
   lives: number;
   collisions: number;

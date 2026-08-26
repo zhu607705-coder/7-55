@@ -222,21 +222,39 @@ def npc_groups(role: str) -> dict[str, list[RuntimeFrame]]:
             ("door", "student_push_door_3frame.png", 112, [12, 13, 14]),
             ("idle", "student_idle_1frame.png", 96, [15]),
         ],
-        "guard": [
-            ("walk", "guard_walk_8frame.png", 96, list(range(0, 8))),
+        "guard_action": [
             ("list", "guard_check_list_2frame.png", 96, [8, 9]),
             ("watch", "guard_check_watch_2frame.png", 96, [10, 11]),
             ("flashlight", "guard_flashlight_down_2frame.png", 128, [12, 13]),
             ("radio", "guard_radio_2frame.png", 96, [14, 15]),
         ],
-        "cleaner": [
-            ("push", "cleaner_push_cart_4frame.png", 192, [0, 1, 2, 3]),
+        "guard_walk_side": [
+            ("walk_side", "guard_walk_8frame.png", 96, list(range(0, 8))),
+        ],
+        "guard_walk_down": [
+            ("walk_down", "guard_walk_down_8frame.png", 96, list(range(0, 8))),
+        ],
+        "guard_walk_up": [
+            ("walk_up", "guard_walk_up_8frame.png", 96, list(range(0, 8))),
+        ],
+        "cleaner_action": [
             ("mop", "cleaner_mop_4frame.png", 144, [4, 5, 6, 7]),
             ("cart", "cleaning_cart_1frame.png", 144, [8]),
             ("sign", "cleaner_place_sign_2frame.png", 128, [9, 10]),
             ("lights", "cleaner_toggle_lights_2frame.png", 112, [11, 12]),
             ("rest", "cleaner_rest_1frame.png", 96, [13]),
-            ("idle", "cleaner_idle_2frame.png", 96, [14, 15]),
+        ],
+        "cleaner_idle": [
+            ("idle", "cleaner_idle_8frame.png", 96, list(range(0, 8))),
+        ],
+        "cleaner_push_side": [
+            ("push_side", "cleaner_push_cart_8frame.png", 192, list(range(0, 8))),
+        ],
+        "cleaner_push_down": [
+            ("push_down", "cleaner_push_cart_down_8frame.png", 192, list(range(0, 8))),
+        ],
+        "cleaner_push_up": [
+            ("push_up", "cleaner_push_cart_up_8frame.png", 192, list(range(0, 8))),
         ],
     }
     groups: dict[str, list[RuntimeFrame]] = {}
@@ -262,15 +280,27 @@ def main() -> None:
         player_groups(),
     )
     npc_source_root = ROOT / "src/assets/rpg/npcs/finale/source"
-    for role in ("student", "guard", "cleaner"):
+    source_roles = (
+        ("student", "finale_student_source_grid_v2.png", 4, 4),
+        ("guard_action", "finale_guard_source_grid_v2.png", 4, 4),
+        ("guard_walk_side", "finale_guard_walk_side_source_grid_v3.png", 4, 2),
+        ("guard_walk_down", "finale_guard_walk_down_source_grid_v3.png", 4, 2),
+        ("guard_walk_up", "finale_guard_walk_up_source_grid_v3.png", 4, 2),
+        ("cleaner_action", "finale_cleaner_source_grid_v2.png", 4, 4),
+        ("cleaner_idle", "finale_cleaner_idle_source_grid_v3.png", 4, 2),
+        ("cleaner_push_side", "finale_cleaner_push_side_source_grid_v3.png", 4, 2),
+        ("cleaner_push_down", "finale_cleaner_push_down_source_grid_v3.png", 4, 2),
+        ("cleaner_push_up", "finale_cleaner_push_up_source_grid_v3.png", 4, 2),
+    )
+    for role, source_file, columns, rows in source_roles:
         verify_role(
             role,
-            npc_source_root / f"finale_{role}_source_grid_v2.png",
-            4,
-            4,
+            npc_source_root / source_file,
+            columns,
+            rows,
             npc_groups(role),
         )
-    print("verified complete, padded and scale-stable runtime silhouettes for 4 RPG roles")
+    print("verified complete, padded and scale-stable runtime silhouettes for directional RPG roles")
 
 
 if __name__ == "__main__":

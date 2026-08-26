@@ -99,9 +99,11 @@ export class InventoryController {
       actOne: recipe.result === "rightArrow"
         ? { ...state.actOne, rightArrowAssembled: true }
         : state.actOne,
-      ui: state.ui.selectedItem === dragged || state.ui.selectedItem === target
-        ? { ...state.ui, selectedItem: null }
-        : state.ui
+      ui: {
+        ...state.ui,
+        inventoryOpen: false,
+        selectedItem: null
+      }
     }));
     this.events.emit("get_item", { itemId: recipe.result, sourceScene });
     if (recipe.result === "rightArrow") {

@@ -100,7 +100,8 @@
 
 .rpg-canvas-host,
 .rpg-canvas-host canvas,
-.rpg-phaser-host {
+.rpg-phaser-host,
+.godot-rpg-frame {
   display: block;
   height: 100% !important;
   width: 100% !important;
@@ -110,7 +111,8 @@
   position: relative;
 }
 
-.rpg-phaser-host {
+.rpg-phaser-host,
+.godot-rpg-frame {
   border: 0;
   inset: 0;
   position: absolute;
@@ -131,10 +133,214 @@
   display: none !important;
 }
 
+.rpg-phaser-host.is-suspended {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.rpg-stair3d-status,
+.rpg-stair3d-error,
+.rpg-stair3d-feedback {
+  background: #07111df2;
+  border: 2px solid #e7d9b9;
+  color: #f7f1dc;
+  font-family: "Fusion Pixel", monospace;
+  left: 50%;
+  margin: 0;
+  padding: 10px 16px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 8;
+}
+
+.rpg-stair3d-error {
+  display: grid;
+  gap: 6px;
+}
+
+.rpg-stair3d-feedback {
+  border-color: #f5c542;
+  top: auto;
+  bottom: 12px;
+  transform: translateX(-50%);
+}
+
+.rpg-stair3d-exit {
+  background: #17252d;
+  border: 2px solid #e7d9b9;
+  color: #f7f1dc;
+  cursor: pointer;
+  font-family: "Fusion Pixel", monospace;
+  font-size: 13px;
+  padding: 7px 12px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 9;
+}
+
+.rpg-stair3d-exit:focus-visible,
+.rpg-stair3d-exit:hover {
+  border-color: #f5c542;
+  color: #ffe493;
+}
+
 .rpg-canvas-host canvas {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   image-rendering: pixelated;
+}
+
+.godot-rpg-frame {
+  background: #080a0c;
+}
+
+.godot-rpg-loading {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(9, 13, 18, 0.98), rgba(19, 26, 34, 0.98));
+  color: #f3edcf;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  z-index: 3;
+}
+
+.godot-rpg-loading strong {
+  color: #f0d54e;
+  font-size: var(--fs-heading);
+}
+
+.godot-rpg-loading span {
+  color: #aebac4;
+  font-size: var(--fs-caption);
+  max-width: 70%;
+}
+
+.godot-rpg-interaction-hint {
+  background: rgba(9, 13, 18, 0.94);
+  border: 2px solid #d8c96b;
+  bottom: 132px;
+  color: #f4f2df;
+  font-family: var(--font-pixel);
+  font-size: var(--fs-caption);
+  left: 50%;
+  max-width: min(520px, calc(100% - 260px));
+  padding: 6px 16px;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.godot-theater-panel-scrim {
+  align-items: center;
+  background: rgba(2, 5, 9, 0.72);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 56px 110px 72px;
+  position: absolute;
+  z-index: 36;
+}
+
+.godot-theater-panel {
+  background: rgba(9, 13, 20, 0.98);
+  border: 4px solid #b18b4b;
+  color: #fff2d8;
+  display: grid;
+  gap: 16px;
+  max-width: 620px;
+  padding: 22px;
+  width: 100%;
+}
+
+.godot-theater-panel header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.godot-theater-panel header strong {
+  color: #ffe9b5;
+  font-size: var(--fs-heading);
+}
+
+.godot-theater-panel header button {
+  min-height: 34px;
+  min-width: 34px;
+}
+
+.godot-theater-panel p {
+  color: #cbd7dd;
+  margin: 0;
+}
+
+.godot-theater-panel form {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 160px;
+}
+
+.godot-theater-panel input {
+  background: #07131d;
+  border: 3px solid #7094a8;
+  color: #8fe8ff;
+  font: inherit;
+  font-size: var(--fs-title);
+  letter-spacing: 0.35em;
+  min-width: 0;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.godot-theater-panel button {
+  background: #26313e;
+  border: 2px solid #8aa0ad;
+  color: #fff5df;
+  font: inherit;
+  min-height: 40px;
+  padding: 7px 13px;
+}
+
+.godot-theater-panel button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.godot-theater-order,
+.godot-theater-program-buttons,
+.godot-theater-panel-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.godot-theater-order span {
+  background: #07131d;
+  border: 2px solid #4d6675;
+  color: #8fe8ff;
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+}
+
+.godot-theater-program-buttons button,
+.godot-theater-panel-actions button {
+  flex: 1;
+}
+
+.godot-theater-panel-feedback {
+  border-left: 3px solid #f0d54e;
+  color: #ffe9a8 !important;
+  padding-left: 10px;
 }
 
 .rpg-stage.is-campus-map .rpg-canvas-host canvas {
@@ -316,6 +522,25 @@
   position: absolute;
   touch-action: none;
   z-index: 18;
+}
+
+.canteen-bike-transition-overlay {
+  background: #7cb6d9;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  touch-action: none;
+  z-index: 19;
+}
+
+.canteen-bike-transition-canvas {
+  background: #7cb6d9;
+  display: block;
+  height: 100%;
+  inset: 0;
+  object-fit: contain;
+  position: absolute;
+  width: 100%;
 }
 
 .canteen-bike-canvas {
@@ -1482,7 +1707,8 @@
     width: 100% !important;
   }
 
-  .rpg-canvas-host canvas {
+  .rpg-canvas-host canvas,
+  .godot-rpg-frame {
     touch-action: none;
   }
 

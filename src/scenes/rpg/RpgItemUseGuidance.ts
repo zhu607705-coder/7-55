@@ -126,7 +126,7 @@ export function selectRpgItemUseGuidance(
   }
 
   if (runtimeScene === "dorm_hub" && itemId === "gamepad") {
-    if (state.actOne.movementEnabled) return passive("手柄已经连接，使用方向键完成第一次手动移动。");
+    if (state.actOne.movementEnabled) return passive("手柄已经连接并等待方向输入校验。");
     if (!state.actOne.characterNamed) return locked("先在部门黄页完成角色命名。", "角色");
     if (!state.actOne.exerciseStarted) return locked("先在浙大体艺开始课外锻炼。", "角色");
     if (!state.actOne.gamepadPurchased) return locked("先在 CC98 完成手柄购买。", "角色");
@@ -198,7 +198,7 @@ export function selectRpgItemUseGuidance(
 
   if (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready") {
     if (itemId === "greaseTissue") {
-      if (state.canteenHunt.bikeLockCleaned) return passive("车锁已经擦净，接下来使用 2 元现金付款。");
+      if (state.canteenHunt.bikeLockCleaned) return passive("车锁已经擦净，2 元现金可以用于付款。");
       if (state.canteenHunt.mode === "dark") return locked("切回浅色模式后再清洁车锁。", "共享单车车锁");
       if (!state.canteenHunt.bikeCodeRead) return locked("先在深色模式检查车锁二维码，再切回浅色模式。", "共享单车车锁");
       return ready("共享单车车锁");

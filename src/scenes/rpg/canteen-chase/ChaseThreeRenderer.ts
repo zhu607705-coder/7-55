@@ -12,8 +12,11 @@ import {
 import type { ChaseRenderState, ChaseRendererBackend } from "./ChaseRenderContract";
 import {
   applyChaseRiderPose,
+  CHASE_RIDER_GEAR_RATIO,
+  CHASE_RIDER_WHEEL_RADIUS,
   createChaseRiderRig,
   measureChaseRiderContactError,
+  measureChaseRiderFootOrientationError,
   measureChaseRiderRigComplexity,
   type ChaseRiderRig
 } from "./ChaseRiderRig";
@@ -30,6 +33,10 @@ const PLAYER_LOOK_AHEAD = 12.8;
 const PLAYER_BASE_Y = 0.08;
 const DESTINATION_Z = -GOAL_DISTANCE * WORLD_PER_METER - 8;
 const DEFAULT_TONE_MAPPING_EXPOSURE = 1.02;
+const MAX_PEDAL_CADENCE_RPM = 110;
+const PEDAL_CADENCE_RESPONSE = 10;
+const SEATED_PEDAL_BOB_AMPLITUDE = 0.008;
+const TWO_PI = Math.PI * 2;
 
 const PALETTE = {
   sky: 0x89bcdc,
@@ -558,6 +565,8 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
   private lastTime = performance.now();
   private animationSeconds = 0;
   private previousDistance = 0;
+  private pedalPhaseRadians = 0;
+  private pedalCadenceRpm = 0;
   private previousRiderX = 0;
   private lastCollisions = 0;
   private collisionFlashSeconds = 0;
@@ -643,11 +652,30 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     const resolvedHandlebarSteer = this.rider.frontAssembly.rotation.y
       + (handlebarSteer - this.rider.frontAssembly.rotation.y) * Math.min(1, deltaSeconds * 16);
     this.rider.group.rotation.z += (bodySteer * 0.45 - this.rider.group.rotation.z) * Math.min(1, deltaSeconds * 12);
-    this.rider.group.position.y = PLAYER_BASE_Y + (this.reducedMotion ? 0 : Math.abs(Math.sin(this.animationSeconds * 9)) * 0.035);
+    const distanceReset = state.distance + Number.EPSILON < this.previousDistance;
+    if (distanceReset) {
+      this.pedalPhaseRadians = 0;
+      this.pedalCadenceRpm = 0;
+      this.rider.wheels.forEach((wheel) => { wheel.rotation.x = 0; });
+    }
     const distanceDelta = Math.max(0, state.distance - this.previousDistance);
     this.previousDistance = state.distance;
-    const wheelSpin = distanceDelta * WORLD_PER_METER / 0.5;
-    const pedalPhase = this.reducedMotion ? 0 : this.animationSeconds * 10.5;
+    const wheelSpin = distanceDelta * WORLD_PER_METER / CHASE_RIDER_WHEEL_RADIUS;
+    const crankDelta = wheelSpin / CHASE_RIDER_GEAR_RATIO;
+    const pedalsCanAdvance = !state.paused && !this.reducedMotion && distanceDelta > 0;
+    if (pedalsCanAdvance) {
+      this.pedalPhaseRadians = (this.pedalPhaseRadians + crankDelta) % TWO_PI;
+    }
+    const targetCadenceRpm = pedalsCanAdvance && deltaSeconds > 0
+      ? clamp((crankDelta / deltaSeconds) * (60 / TWO_PI), 0, MAX_PEDAL_CADENCE_RPM)
+      : 0;
+    this.pedalCadenceRpm += (targetCadenceRpm - this.pedalCadenceRpm)
+      * Math.min(1, deltaSeconds * PEDAL_CADENCE_RESPONSE);
+    const pedalPhase = this.reducedMotion ? 0 : this.pedalPhaseRadians;
+    const seatedPedalBob = this.reducedMotion
+      ? 0
+      : SEATED_PEDAL_BOB_AMPLITUDE * (0.5 - Math.cos(pedalPhase * 2) * 0.5);
+    this.rider.group.position.y = PLAYER_BASE_Y + seatedPedalBob;
     applyChaseRiderPose(this.rider, "ride", {
       pedalPhaseRadians: pedalPhase,
       steeringRadians: resolvedHandlebarSteer
@@ -677,10 +705,19 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
       this.canvas.dataset.chasePrimitiveGeometries = String(CHASE_PRIMITIVES.geometryCount);
       this.canvas.dataset.chasePrimitiveMaterials = String(CHASE_PRIMITIVES.materialCount);
       const contactError = measureChaseRiderContactError(this.rider);
+      const footOrientationError = measureChaseRiderFootOrientationError(this.rider);
       this.canvas.dataset.chaseLeftHandContactError = contactError.leftHandToGripWorldUnits.toFixed(6);
       this.canvas.dataset.chaseRightHandContactError = contactError.rightHandToGripWorldUnits.toFixed(6);
       this.canvas.dataset.chaseLeftFootContactError = contactError.leftFootToPedalWorldUnits.toFixed(6);
       this.canvas.dataset.chaseRightFootContactError = contactError.rightFootToPedalWorldUnits.toFixed(6);
+      this.canvas.dataset.chaseLeftFootSoleTilt = footOrientationError.leftSoleTiltRadians.toFixed(6);
+      this.canvas.dataset.chaseRightFootSoleTilt = footOrientationError.rightSoleTiltRadians.toFixed(6);
+      this.canvas.dataset.chaseLeftToeDirectionError = footOrientationError.leftToeDirectionRadians.toFixed(6);
+      this.canvas.dataset.chaseRightToeDirectionError = footOrientationError.rightToeDirectionRadians.toFixed(6);
+      this.canvas.dataset.chasePedalPhase = pedalPhase.toFixed(4);
+      this.canvas.dataset.chasePedalCadenceRpm = this.pedalCadenceRpm.toFixed(1);
+      this.canvas.dataset.chasePedalGearRatio = CHASE_RIDER_GEAR_RATIO.toFixed(1);
+      this.canvas.dataset.chaseSeatedPedalBob = seatedPedalBob.toFixed(4);
     }
   }
 

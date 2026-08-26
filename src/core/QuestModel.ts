@@ -83,6 +83,96 @@ function chapterOneQuest(state: GameState): QuestViewModel {
 
 function movementQuest(state: GameState): QuestViewModel {
   const inventoryTaskActive = ["inventory_required", "system_return_required"].includes(state.actOne.phase);
+  const directionTask: TaskDefinition = !state.actOne.pushTriangleTaken && !state.actOne.weatherWaterTaken
+    ? {
+        id: "chapter_two_direction_collect_materials",
+        label: "收集三角形与天气水滴",
+        hints: [
+          "主页的「方向校准」与天气页面各有一项变化，两边可以分别检查。",
+          "取得顺序不影响后续组合。"
+        ],
+        targetSurface: "phone",
+        recommendedScene: "phone_home"
+      }
+    : !state.actOne.pushTriangleTaken
+      ? {
+          id: "chapter_two_direction_collect_triangle",
+          label: "查看主页的「方向校准」推送",
+          hints: ["连续检查推送头像边缘，取下松动的三角形。"],
+          targetSurface: "phone",
+          recommendedScene: "phone_home"
+        }
+      : !state.actOne.weatherWaterTaken
+        ? {
+            id: "chapter_two_direction_collect_weather_water",
+            label: "从天气页面取得天气水滴",
+            hints: ["打开天气页面，收集已经出现的水滴。"],
+            targetSurface: "phone",
+            recommendedScene: "weather"
+          }
+        : !state.actOne.mentorLineReleased
+          ? {
+              id: "chapter_two_direction_release_mentor_line",
+              label: "用天气水滴处理导师头像",
+              hints: ["打开微信，把天气水滴拖到导师头像边缘的黏着竖线。"],
+              targetSurface: "phone",
+              recommendedScene: "wechat"
+            }
+          : !state.actOne.rightArrowAssembled
+            ? {
+                id: "chapter_two_direction_assemble_arrow",
+                label: "组合三角形与竖线",
+                hints: ["在道具栏中将主页三角形与导师头像掉落的竖线组合。"],
+                targetSurface: "phone",
+                recommendedScene: "phone_home"
+              }
+            : !state.actOne.balanceShifted
+              ? {
+                  id: "chapter_two_direction_shift_balance",
+                  label: "用右移箭头调整校园卡余额",
+                  hints: ["把右移箭头拖到电子校园卡的余额数字上。"],
+                  targetSurface: "phone",
+                  recommendedScene: "campus_card"
+                }
+              : !state.actOne.cc98Login.authenticated
+                ? {
+                    id: "chapter_two_cc98_unified_login",
+                    label: "完成 CC98 首次身份认证",
+                    hints: [
+                      "先从随身校园卡读取 10 位学号。",
+                      "密码按校名缩写、建校年份、结尾标点三段拼接。"
+                    ],
+                    targetSurface: "phone",
+                    recommendedScene: "cc98"
+                  }
+                : !state.actOne.gamepadPurchased
+                ? {
+                    id: "chapter_two_direction_purchase_gamepad",
+                    label: "去 CC98 购买游戏手柄",
+                    hints: ["打开 CC98 二手交易，用调整后的校园卡余额付款。"],
+                    targetSurface: "phone",
+                    recommendedScene: "cc98"
+                  }
+                : !state.actOne.controlsInstalled
+                  ? {
+                      id: "chapter_two_direction_install_gamepad",
+                      label: "把游戏手柄安装到寝室角色",
+                      hints: ["返回寝室，把道具栏里的游戏手柄拖到角色身上。"],
+                      targetSurface: "rpg"
+                    }
+                  : !state.actOne.manualControlTested
+                    ? {
+                        id: "chapter_two_direction_test_controls",
+                        label: "完成第一次手动移动",
+                        hints: ["使用方向键移动一次，确认手柄已经生效。"],
+                        targetSurface: "rpg"
+                      }
+                    : {
+                        id: "chapter_two_direction_confirmed",
+                        label: "确认方向控制已经生效",
+                        hints: [],
+                        targetSurface: "rpg"
+                      };
   const tasks: readonly TaskDefinition[] = [
     {
       id: "chapter_two_character_response",
@@ -104,17 +194,7 @@ function movementQuest(state: GameState): QuestViewModel {
       targetSurface: "phone",
       recommendedScene: "tiyi"
     },
-    {
-      id: "chapter_two_direction_control",
-      label: "找到控制方向的方法",
-      hints: [
-        "论坛里可能有人卖很便宜的控制设备。",
-        "去 CC98 二手交易，用处理过的校园卡余额买手柄。",
-        "组合成箭头放在校园卡余额上，小数点右移两位。"
-      ],
-      targetSurface: "phone",
-      recommendedScene: "cc98"
-    },
+    directionTask,
     {
       id: "chapter_two_reserve_022",
       label: "预约 022",
@@ -243,6 +323,22 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     return task("dock_outfitting", qizhenContent.quest.dock, [hint, stripPrefix(qizhenContent.dock.outfitPrompt)]);
   }
   if (lake.phase === "boarding_tutorial") {
+    if (!lake.rainSafetyCleared && !lake.weatherAdjustmentRequested) {
+      return task("weather_request", "向湖边安全员申请天气调控", [
+        "确认皮划艇、左桨和右桨已经收齐。",
+        "在小码头靠近安全员并按空格交互。"
+      ]);
+    }
+    if (!lake.rainSafetyCleared) {
+      return {
+        ...task("weather_adjustment", "在天气应用将启真湖调为多云", [
+          "返回手机主页并打开天气应用。",
+          "执行启真湖小码头天气调控，再返回码头。"
+        ]),
+        targetSurface: "phone",
+        recommendedScene: "weather"
+      };
+    }
     return task("boarding", qizhenContent.quest.boarding, [
       qizhenContent.boarding.instruction,
       qizhenContent.boarding.sameSide
@@ -633,8 +729,19 @@ function selectChapterFour755TaskKey(
         ? "collect_hour_hand"
         : "explore_bakery";
   } else if (contract.id === "room204_restore") {
-    preferredTaskKey = !facts.has("a3_reference_observed")
+    preferredTaskKey = !facts.has("classroom_104_chalk_residual_observed")
+      || !facts.has("classroom_105_terminal_replay_checked")
+      ? "verify_a1_classrooms"
+      : !facts.has("elevator_history_observed")
+        ? "observe_elevator_history"
+      : !facts.has("elevator_history_calibrated")
+        ? "calibrate_elevator_history"
+      : !facts.has("a3_reference_observed")
       ? "observe_a3_reference"
+      : !facts.has("zhu_two_questions_answered")
+        ? "answer_zhu_two_questions"
+      : !facts.has("misaligned_stair_solved")
+        ? "solve_misaligned_stair"
       : !facts.has("room204_residual_observed")
         ? "observe_room204_residual"
         : !facts.has("room204_restored")

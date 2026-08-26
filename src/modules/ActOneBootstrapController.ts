@@ -1,12 +1,18 @@
 import type { EventBus } from "../core/EventBus";
 import type { ActOneBootstrapState, GameStore, RpgCheckpointId, RpgSceneId } from "../core/types";
 import content from "../data/act-one-bootstrap.content.json";
+import {
+  CC98_LOGIN_HINTS,
+  evaluateCc98LoginAttempt,
+  type Cc98LoginAttemptResult
+} from "./Cc98UnifiedLoginModel";
 
 export type GamepadPurchaseResult = "purchased" | "already_owned" | "insufficient_balance" | "inactive";
 export type GamepadUseResult = "active" | "identity_required" | "exercise_required" | "not_owned" | "inactive";
 export type IdentifyCharacterResult = "connected" | "busy" | "identity_mismatch";
 export type SeatReservationResult = "reserved" | "wrong_library" | "wrong_room" | "wrong_seat" | "inactive";
 export type PushTriangleTapResult = "hint_one" | "hint_two" | "collected" | "already_owned" | "inactive";
+export type DiscoverCc98StudentIdResult = "discovered" | "already_discovered" | "campus_card_required";
 
 export interface NarratorInterventionResult {
   interceptedCount: number;
@@ -318,6 +324,89 @@ export class ActOneBootstrapController {
     this.events.emit("use_item", { itemId: "rightArrow", targetId: "campus_card_balance" });
     this.events.emit("act2_balance_shifted", { from: "0.06", to: "6.00" });
     return true;
+  }
+
+  discoverCc98StudentId(): DiscoverCc98StudentIdResult {
+    const state = this.store.getState();
+    if (state.actOne.cc98Login.studentIdDiscovered) return "already_discovered";
+    if (!state.actOne.inventoryRecovered || !state.items.campusCard) {
+      this.events.emit("cc98_login_student_id_rejected", { reason: "campus_card_required" });
+      return "campus_card_required";
+    }
+    this.store.setState((current) => ({
+      ...current,
+      actOne: {
+        ...current.actOne,
+        cc98Login: {
+          ...current.actOne.cc98Login,
+          studentIdDiscovered: true
+        }
+      }
+    }));
+    this.events.emit("cc98_login_student_id_discovered", { source: "campusCard" });
+    return "discovered";
+  }
+
+  revealCc98LoginHint(): number {
+    const currentCount = this.store.getState().actOne.cc98Login.revealedHintCount;
+    const nextCount = Math.min(CC98_LOGIN_HINTS.length, currentCount + 1);
+    if (nextCount === currentCount) return currentCount;
+    this.store.setState((current) => ({
+      ...current,
+      actOne: {
+        ...current.actOne,
+        cc98Login: {
+          ...current.actOne.cc98Login,
+          revealedHintCount: nextCount
+        }
+      }
+    }));
+    this.events.emit("cc98_login_hint_revealed", { hintIndex: nextCount - 1 });
+    return nextCount;
+  }
+
+  submitCc98Login(studentId: string, password: string, nowMs: number = Date.now()): Cc98LoginAttemptResult {
+    const state = this.store.getState();
+    const result = evaluateCc98LoginAttempt(state.actOne.cc98Login, studentId, password, nowMs);
+    if (result.status === "authenticated") {
+      this.store.setState((current) => ({
+        ...current,
+        actOne: {
+          ...current.actOne,
+          cc98Login: {
+            ...current.actOne.cc98Login,
+            authenticated: true,
+            studentIdDiscovered: true,
+            lockUntilMs: null
+          }
+        }
+      }));
+      this.events.emit("cc98_login_authenticated", { accountType: "student" });
+      return result;
+    }
+    if (result.status === "rejected") {
+      this.store.setState((current) => ({
+        ...current,
+        actOne: {
+          ...current.actOne,
+          cc98Login: {
+            ...current.actOne.cc98Login,
+            failureCount: result.failureCount,
+            lockUntilMs: result.lockUntilMs
+          }
+        }
+      }));
+      this.events.emit("cc98_login_attempt_rejected", {
+        reason: result.reason,
+        failureCount: result.failureCount,
+        lockDurationMs: result.lockDurationMs
+      });
+      return result;
+    }
+    if (result.status === "locked") {
+      this.events.emit("cc98_login_attempt_locked", { remainingMs: result.remainingMs });
+    }
+    return result;
   }
 
   purchaseGamepad(): GamepadPurchaseResult {

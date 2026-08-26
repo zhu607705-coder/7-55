@@ -432,7 +432,6 @@ JSON.parse(window.render_game_to_text())
 - `actOne.phase`：第二章移动前置阶段。
 - `ui.libraryFinalsPhase`：图书馆主流程阶段。
 - `ui.libraryFinalsPuzzle`：四项证据、bd、PASS、座位恢复的细粒度状态。
-- `bikeArcadeChapter`：第三章解锁、尝试次数、最佳距离和完成状态。
 - `chapterFour.committed / applied`：Controller 已提交与 Scene 已应用的 phase、timeState、plate signature 和 target IDs。
 - `chapterFour.runtimeEntities`：当前实体的 `targetId / entityId / source / exact bounds`。
 - `chapterFour.ordinaryGuard / finalChase`：普通巡逻状态以及追逐的 floor、attempt、portal、distance、finish、contact。

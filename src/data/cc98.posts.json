@@ -218,5 +218,351 @@
       { "personaId": "six-cent-rich", "time": "今天 17:22", "floor": "6楼", "role": "复印", "text": "只要空白纸的话，复印机不用开机，先看文件架的标签。", "likes": "29", "dislikes": "0" },
       { "personaId": "wild-auditor", "time": "今天 17:24", "floor": "7楼", "role": "整理", "text": "拿走后在帖子里写一下版本和页数，后来的人就不用逐叠翻。", "likes": "39", "dislikes": "0" }
     ]
+  },
+  {
+    "id": "p11",
+    "author": "雨天走南门",
+    "avatar": "wind",
+    "rank": "12",
+    "board": "校园生活",
+    "title": "雨还没停，东教学楼哪扇门口不积水",
+    "replies": "19",
+    "views": "1086",
+    "time": "26-07-10 17:08",
+    "body": "刚从东教学楼出来，西侧玻璃门前的地垫已经湿透。南边侧门的地面还干一点，手里有纸和电脑的可以从那边进。",
+    "threadOperation": { "user": "校园生活值班员", "action": "保留雨天通行记录", "reason": "楼主说明了两处门口的地面情况" },
+    "threadMetrics": { "favorites": "7", "likes": "43", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:10", "floor": "2楼", "role": "资料", "text": "西侧那块地垫已经软了，早八带纸质资料的还是绕南边。", "likes": "21", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:12", "floor": "3楼", "role": "路过", "text": "我从南侧门进，门口有一串伞套，走进去还算干。", "likes": "18", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:14", "floor": "4楼", "role": "提醒", "text": "侧门的扶手有水，进门时别一边看手机一边跨门槛。", "likes": "26", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:16", "floor": "5楼", "role": "更新", "text": "二十分钟前路过，南边那块地还没积水。", "likes": "30", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p12",
+    "author": "端盘找座位",
+    "avatar": "blonde",
+    "rank": "13",
+    "board": "食堂",
+    "title": "东二晚高峰的空座是在二楼还是三楼",
+    "replies": "24",
+    "views": "1327",
+    "time": "26-07-10 17:05",
+    "body": "傍晚六点二十到东二时二楼靠门的桌子已经满了，三楼最里面还有两张四人桌。想先放包再去排队的，记得别把通道边的空椅子当座位。",
+    "threadOperation": { "user": "东二饭点记录", "action": "补充座位信息", "reason": "楼主记录了到店时间和可用桌位" },
+    "threadMetrics": { "favorites": "10", "likes": "51", "dislikes": "2" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 17:07", "floor": "2楼", "role": "晚到", "text": "我六点三十五才上三楼，里面那两张桌已经有人坐下了。", "likes": "19", "dislikes": "1" },
+      { "personaId": "six-cent-rich", "time": "今天 17:09", "floor": "3楼", "role": "观察", "text": "二楼饮水机旁的两把椅子在等人，别端着盘子站过去。", "likes": "25", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 17:11", "floor": "4楼", "role": "排队", "text": "三楼窗口排得慢一点，座位倒是比二楼松。", "likes": "22", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:13", "floor": "5楼", "role": "结论", "text": "想快点吃就二楼排队，想坐下就先上三楼看一圈。", "likes": "37", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p13",
+    "author": "门口捡眼镜",
+    "avatar": "anonymous",
+    "rank": "14",
+    "board": "失物招领",
+    "title": "东区食堂门口捡到一副黑框眼镜",
+    "replies": "12",
+    "views": "764",
+    "time": "26-07-10 17:02",
+    "body": "傍晚在东区食堂南门台阶边捡到一副黑框眼镜，镜腿内侧有一小段白色贴纸。我交到一楼服务台了，失主去问时带一下能核对的信息。",
+    "threadOperation": { "user": "失物招领版面", "action": "标记服务台已接收", "reason": "物品去向和辨认特征已经写明" },
+    "threadMetrics": { "favorites": "3", "likes": "33", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 17:04", "floor": "2楼", "role": "问询", "text": "贴纸上有没有课程名，我室友下午刚丢了一副。", "likes": "11", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:06", "floor": "3楼", "role": "建议", "text": "先别把镜片度数写出来，服务台核对时再说。", "likes": "24", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 17:08", "floor": "4楼", "role": "补充", "text": "南门台阶晚上人多，走的时候最好把东西放包里。", "likes": "14", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p14",
+    "author": "剧场外等雨小组",
+    "avatar": "cyclist",
+    "rank": "15",
+    "board": "交通出行",
+    "title": "从剧场走去湖边，雨后哪段路灯更亮",
+    "replies": "27",
+    "views": "1458",
+    "time": "26-07-10 16:58",
+    "body": "演出散场后往湖边走，靠外侧的树下那段光比较暗，石板也有水。绕到主路再下去会多走几分钟，路面和灯都好一点。",
+    "threadOperation": { "user": "夜间步行信息台", "action": "加入雨后步行提醒", "reason": "楼主写清了两条路线的差别" },
+    "threadMetrics": { "favorites": "16", "likes": "66", "dislikes": "2" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 17:00", "floor": "2楼", "role": "骑行", "text": "主路有积水反光，骑车也别压着边沿走。", "likes": "29", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:02", "floor": "3楼", "role": "风向", "text": "湖边风比剧场外大，伞撑不住时先收起来。", "likes": "31", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 17:04", "floor": "4楼", "role": "时间", "text": "我多走了三分钟，鞋底没沾上泥，值。", "likes": "36", "dislikes": "1" },
+      { "personaId": "wild-auditor", "time": "今天 17:06", "floor": "5楼", "role": "记录", "text": "夜里走主路，别沿着树影那边抄近道。", "likes": "42", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p15",
+    "author": "页码强迫症",
+    "avatar": "printer",
+    "rank": "16",
+    "board": "学习天地",
+    "title": "化工原理旧卷的页码有人补齐了吗",
+    "replies": "18",
+    "views": "938",
+    "time": "26-07-10 16:54",
+    "body": "资料夹里有两份同年份旧卷，一份从第六页直接跳到第八页。我把缺页题号记下来了，想问有没有人留着完整扫描版，能顺手核对一下。",
+    "threadOperation": { "user": "资料版值班员", "action": "保留缺页标记", "reason": "楼主指出了具体版本和缺失位置" },
+    "threadMetrics": { "favorites": "12", "likes": "45", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 16:56", "floor": "2楼", "role": "文件", "text": "我手里的版本是八页，周末回寝室再找一下原件。", "likes": "17", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 16:58", "floor": "3楼", "role": "核对", "text": "第七页是传热那道图题，只有题干没有答案。", "likes": "28", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 17:00", "floor": "4楼", "role": "下载", "text": "不要把缺页版覆盖原文件，后面的人还要比对来源。", "likes": "34", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p16",
+    "author": "胶圈带少了",
+    "avatar": "printer",
+    "rank": "17",
+    "board": "打印服务",
+    "title": "打印室的装订机还需要自己带胶圈吗",
+    "replies": "16",
+    "views": "812",
+    "time": "26-07-10 16:50",
+    "body": "西区教学楼打印室的装订机能用，桌上只剩小号胶圈。报告超过四十页的，最好自己带一包，临时等补货容易赶不上上课。",
+    "threadOperation": { "user": "打印店排队记录员", "action": "补充耗材状态", "reason": "楼主说明了机器和胶圈的现状" },
+    "threadMetrics": { "favorites": "6", "likes": "37", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 16:52", "floor": "2楼", "role": "排队", "text": "刚才有人拿五十页去装，店员让他分两本。", "likes": "16", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 16:54", "floor": "3楼", "role": "提醒", "text": "透明封面在最下面一层抽屉，第一次去很容易漏看。", "likes": "18", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:56", "floor": "4楼", "role": "经验", "text": "页数多就分两册，翻起来也省事。", "likes": "25", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p17",
+    "author": "二楼靠窗充电中",
+    "avatar": "socket",
+    "rank": "18",
+    "board": "图书馆",
+    "title": "基础图书馆二楼靠窗的插座这两天还稳吗",
+    "replies": "21",
+    "views": "1024",
+    "time": "26-07-10 16:46",
+    "body": "昨天靠窗第三张桌的插座断过两次，换到靠柱子那排后正常。今天要带电脑写作业的，先别把座位选在窗边最里面。",
+    "threadOperation": { "user": "图书馆设备记录", "action": "补充插座状态", "reason": "楼主给出了异常位置和替代位置" },
+    "threadMetrics": { "favorites": "11", "likes": "48", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 16:48", "floor": "2楼", "role": "复测", "text": "我下午试了两次，靠窗第三张桌还是会松。", "likes": "22", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:50", "floor": "3楼", "role": "替代", "text": "靠柱子那排有两个空口，插头比较紧。", "likes": "20", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 16:52", "floor": "4楼", "role": "提醒", "text": "别把插线板横在过道，借书车会从那里过。", "likes": "30", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p18",
+    "author": "补办卡排队中",
+    "avatar": "coin",
+    "rank": "19",
+    "board": "校园卡",
+    "title": "校园卡补办当天能进图书馆吗",
+    "replies": "15",
+    "views": "886",
+    "time": "26-07-10 16:42",
+    "body": "今天上午卡丢了，补办后先在机器上做了一次身份核验，下午进基础图书馆没有被拦。旧卡已经停用，带着旧卡去刷只会多排一次队。",
+    "threadOperation": { "user": "校园卡民间客服", "action": "标记为当日记录", "reason": "楼主说明了补办后的验证和入馆结果" },
+    "threadMetrics": { "favorites": "8", "likes": "41", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 16:44", "floor": "2楼", "role": "核对", "text": "补办后先看卡面编号，机器读取到新号才算完成。", "likes": "19", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 16:46", "floor": "3楼", "role": "时间", "text": "中午人少一点，柜台和机器都不用等太久。", "likes": "17", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:48", "floor": "4楼", "role": "提醒", "text": "丢卡先停用，补办当天把新卡做一次验证。", "likes": "28", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p19",
+    "author": "信号格满了",
+    "avatar": "warrior",
+    "rank": "20",
+    "board": "手机服务",
+    "title": "【移动/联通/电信】2026年校园电话卡信息汇总帖　详情请戳",
+    "replies": "34",
+    "views": "2846",
+    "time": "26-07-10 16:38",
+    "body": "准备开学换号的可以先把套餐、校园区域覆盖和注销条件写在同一层回复里。只放海报截图很难比较，最好补充自己实测的宿舍、教学楼和地铁口信号。",
+    "threadOperation": { "user": "校园通信互助台", "action": "整理为信息汇总", "reason": "讨论包含不同运营商的使用场景和办理提醒" },
+    "threadMetrics": { "favorites": "27", "likes": "108", "dislikes": "3" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 16:40", "floor": "2楼", "role": "实测", "text": "教学楼里先看自己常待的那一侧，办卡点的信号格不能代表上课的位置。", "likes": "42", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 16:42", "floor": "3楼", "role": "提醒", "text": "套餐写清楚是月租还是校园期，别把首月优惠当成长期价格。", "likes": "58", "dislikes": "1" },
+      { "personaId": "late-printer", "time": "今天 16:44", "floor": "4楼", "role": "补充", "text": "想保留旧号码的先问转网和注销流程，开学那周柜台排队会很长。", "likes": "37", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:46", "floor": "5楼", "role": "整理", "text": "楼里只保留可核对的套餐名称、适用期限和实测位置，广告图不单独计入结论。", "likes": "64", "dislikes": "1" }
+    ]
+  },
+  {
+    "id": "p20",
+    "author": "图书馆门口的雨",
+    "avatar": "blonde",
+    "rank": "21",
+    "board": "开怀一笑",
+    "title": "雨伞在一楼，人在三楼，雨还在外面",
+    "replies": "29",
+    "views": "1963",
+    "time": "26-07-10 16:34",
+    "body": "本来只是下楼拿外卖，发现伞架里那把蓝伞很像我的。等我把伞带到三楼，才想起自己的伞还在寝室。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留轻松讨论", "reason": "回复围绕雨天小失误展开，没有涉及失物认领" },
+    "threadMetrics": { "favorites": "18", "likes": "91", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 16:36", "floor": "2楼", "role": "同款", "text": "我有一次带着空伞套走回寝室，雨伞在门口，套子在手里。", "likes": "44", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 16:38", "floor": "3楼", "role": "确认", "text": "至少你把伞带到了需要它的楼层，进度已经过半。", "likes": "53", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:40", "floor": "4楼", "role": "补图", "text": "下雨天的记忆会自动把所有蓝伞归到自己名下。", "likes": "39", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p21",
+    "author": "晚八还在找耳机",
+    "avatar": "anonymous",
+    "rank": "22",
+    "board": "开怀一笑",
+    "title": "耳机连上了隔壁桌，我听完了半节陌生人的网课",
+    "replies": "22",
+    "views": "1488",
+    "time": "26-07-10 16:30",
+    "body": "戴上耳机后发现讲课内容完全听不懂，还以为自己选错了章节。直到隔壁同学抬头问谁连到了他的设备，我才发现耳机名字还叫“默认设备”。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入设备小事", "reason": "帖子包含清楚的误连原因和轻松回复" },
+    "threadMetrics": { "favorites": "13", "likes": "76", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 16:32", "floor": "2楼", "role": "建议", "text": "设备名改成自己看得懂的，图书馆里“默认设备”永远不止一个。", "likes": "40", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 16:34", "floor": "3楼", "role": "经历", "text": "我连过一段白噪音，找了五分钟才知道声音来自隔壁的平板。", "likes": "31", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:36", "floor": "4楼", "role": "结论", "text": "陌生课程听不懂先别怀疑自己，先看蓝牙名称。", "likes": "46", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p22",
+    "author": "搬寝室清库存",
+    "avatar": "warrior",
+    "rank": "23",
+    "board": "二手市场",
+    "title": "出一盏可调光台灯，限校内当面自取",
+    "replies": "17",
+    "views": "916",
+    "time": "26-07-10 16:26",
+    "body": "台灯用了两学期，触控和调光都正常，电源线在。只约公共区域当面试亮，想要的带上能确认时间的人再联系。",
+    "threadOperation": { "user": "二手市场提醒员", "action": "补充交易边界", "reason": "楼主提供了物品状态、交接方式和试用条件" },
+    "threadMetrics": { "favorites": "5", "likes": "32", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 16:28", "floor": "2楼", "role": "询问", "text": "能拍一下最低档亮度吗，晚上看屏幕怕太刺眼。", "likes": "12", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 16:30", "floor": "3楼", "role": "提醒", "text": "当面先试灯和接口，转账后再发现少线会很麻烦。", "likes": "24", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:32", "floor": "4楼", "role": "规范", "text": "物品状态、地点和时间写清楚，楼里就不用反复问同一件事。", "likes": "28", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p23",
+    "author": "实验服忘带了",
+    "avatar": "blonde",
+    "rank": "24",
+    "board": "校园生活",
+    "title": "实验课前十分钟才想起实验服还晾在阳台",
+    "replies": "26",
+    "views": "1721",
+    "time": "26-07-10 16:22",
+    "body": "一路跑到楼下才发现雨把衣服晾得很有弹性，赶到实验楼时正好听见老师点名。今天的经验是：把实验服放进包里，不要相信早上临出门的自己。",
+    "threadOperation": { "user": "校园生活值班员", "action": "收录课前小事", "reason": "内容为个人经历和防漏清单，没有课程资料需求" },
+    "threadMetrics": { "favorites": "16", "likes": "83", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 16:24", "floor": "2楼", "role": "补充", "text": "我把实验鞋带成了拖鞋，进楼前才发现鞋底不对。", "likes": "37", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 16:26", "floor": "3楼", "role": "清单", "text": "实验服、护目镜、笔，前一晚放门边最省心。", "likes": "49", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 16:28", "floor": "4楼", "role": "现场", "text": "跑到门口才想起来实验服在包里的人，今天也不少。", "likes": "28", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p24",
+    "author": "取件码忘带",
+    "avatar": "anonymous",
+    "rank": "25",
+    "board": "校园卡",
+    "title": "校园卡绑定旧手机后，门禁旁边怎么重新核验",
+    "replies": "20",
+    "views": "1108",
+    "time": "26-07-10 16:18",
+    "body": "换手机后旧设备还留着绑定信息，今天在门禁旁的机器上重新核验才恢复正常。先确认新手机能打开校园卡页面，再去现场操作会少跑一趟。",
+    "threadOperation": { "user": "校园卡民间客服", "action": "标记设备换绑记录", "reason": "楼主给出了换机后的现场验证步骤" },
+    "threadMetrics": { "favorites": "9", "likes": "45", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 16:20", "floor": "2楼", "role": "补充", "text": "旧手机还在时先退出绑定，之后换新机更容易确认。", "likes": "23", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:22", "floor": "3楼", "role": "经历", "text": "我先去图书馆门口试了一次，失败后再去机器核验就通过了。", "likes": "19", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:24", "floor": "4楼", "role": "提醒", "text": "换机当天留下新设备的验证结果，进楼前先试一次。", "likes": "30", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p25",
+    "author": "窗边那排空着",
+    "avatar": "blonde",
+    "rank": "26",
+    "board": "自习室",
+    "title": "晚课结束后有人愿意一起占四人桌写作业吗",
+    "replies": "14",
+    "views": "743",
+    "time": "26-07-10 16:14",
+    "body": "想找两三个人在麦斯威把作业写完，各做各的，不开外放。九点前如果位置满了就散，带电脑的优先坐有插座那侧。",
+    "threadOperation": { "user": "夜间自习信息台", "action": "保留临时约伴帖", "reason": "时间、地点和自习规则已经写明" },
+    "threadMetrics": { "favorites": "4", "likes": "26", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 16:16", "floor": "2楼", "role": "报名", "text": "我带耳机和插线板，七点四十左右到。", "likes": "11", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 16:18", "floor": "3楼", "role": "确认", "text": "能保证不讨论题目吗，我有一份报告要赶。", "likes": "14", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:20", "floor": "4楼", "role": "提示", "text": "第一次见面选公共区域，离开前把桌面收好。", "likes": "20", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p26",
+    "author": "西门等外卖",
+    "avatar": "warrior",
+    "rank": "27",
+    "board": "开怀一笑",
+    "title": "我给外卖备注“蓝色外套”，结果门口站了七个蓝色外套",
+    "replies": "31",
+    "views": "2204",
+    "time": "26-07-10 16:10",
+    "body": "骑手问谁是蓝色外套，我举手后旁边也举起六只手。最后靠备注里的饮料口味找到了自己的那一袋。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入校园小场面", "reason": "主题来自公共取餐区的日常误会" },
+    "threadMetrics": { "favorites": "21", "likes": "102", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 16:12", "floor": "2楼", "role": "建议", "text": "下次备注鞋子颜色，蓝色外套在雨天没有辨识度。", "likes": "56", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:14", "floor": "3楼", "role": "经历", "text": "我写过“背电脑包”，门口每个人都背着。", "likes": "42", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 16:16", "floor": "4楼", "role": "结论", "text": "饮料口味和取餐码比穿什么可靠。", "likes": "47", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p27",
+    "author": "卡套夹住了",
+    "avatar": "anonymous",
+    "rank": "28",
+    "board": "失物招领",
+    "title": "教学楼一楼窗台上有一张校园卡，卡套是深绿色的",
+    "replies": "11",
+    "views": "652",
+    "time": "26-07-10 16:06",
+    "body": "卡放在一楼饮水机旁的窗台上，深绿色卡套边缘有磨损。我没有移动，失主到场后先核对姓名和卡面照片再拿。",
+    "threadOperation": { "user": "失物招领版面", "action": "保留现场位置", "reason": "物品特征、所在位置和核对方式完整" },
+    "threadMetrics": { "favorites": "4", "likes": "29", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 16:08", "floor": "2楼", "role": "提醒", "text": "别把卡号完整发出来，能让失主自己说明卡套细节更稳妥。", "likes": "22", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:10", "floor": "3楼", "role": "补充", "text": "饮水机旁人来人往，没找到失主就交到门卫处。", "likes": "15", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:12", "floor": "4楼", "role": "核对", "text": "现场物品只写辨识特征，不公开完整个人信息。", "likes": "25", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "p28",
+    "author": "三号窗口观察员",
+    "avatar": "blonde",
+    "rank": "29",
+    "board": "食堂",
+    "title": "东二三号窗口今天的队伍为什么总会停一下",
+    "replies": "18",
+    "views": "1027",
+    "time": "26-07-10 16:02",
+    "body": "排队时看见前面的人都会在付款页找半天，原来是当天的套餐入口换了位置。点餐前先看屏幕底部一行，队伍会走得快一点。",
+    "threadOperation": { "user": "东二饭点记录", "action": "补充点餐界面变化", "reason": "帖子说明了排队变慢的具体原因" },
+    "threadMetrics": { "favorites": "7", "likes": "39", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 16:04", "floor": "2楼", "role": "现场", "text": "我刚去过，先选套餐再选饭，顺序和昨天不一样。", "likes": "19", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 16:06", "floor": "3楼", "role": "提醒", "text": "屏幕前别临时问朋友吃什么，后面的人会一起停住。", "likes": "26", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:08", "floor": "4楼", "role": "结论", "text": "入口变化时把步骤写清楚，下一位就少等一会儿。", "likes": "31", "dislikes": "0" }
+    ]
   }
 ]

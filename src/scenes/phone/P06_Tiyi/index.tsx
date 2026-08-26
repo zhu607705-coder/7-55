@@ -26,13 +26,6 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
   const actOnePhase = state.actOne.phase;
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(actOnePhase);
   const finalsAuditActive = finalsPhase === "evidence_gathering" && finalsPuzzle.investigationOpened;
-  const exerciseFollowup = state.actOne.pushTriangleTaken && state.actOne.weatherWaterTaken
-    ? "主页图形与天气水滴均已取得"
-    : state.actOne.pushTriangleTaken
-      ? "下一步：打开天气接住雨滴"
-      : state.actOne.weatherWaterTaken
-        ? "下一步：回到主页查看「方向校准」"
-        : "下一步：主页方向校准与天气水滴均可先找";
 
   useEffect(() => {
     let exitTimer: number | null = null;
@@ -132,11 +125,11 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
           onClick={startActOneExercise}
         >
           <strong>{state.actOne.exerciseStarted ? "课外锻炼进行中" : "开始课外锻炼"}</strong>
-          <span aria-live="polite">{state.actOne.exerciseStarted
-            ? exerciseFollowup
-            : state.actOne.characterNamed
+          {!state.actOne.exerciseStarted ? (
+            <span aria-live="polite">{state.actOne.characterNamed
               ? "参加者已确认"
               : "请先在部门黄页确认参加者"}</span>
+          ) : null}
         </button>
       ) : null}
       <PhoneNavButton kind="exit" className="app-back px-btn paper" onClick={() => router.goTo("phone_home")} label="退出浙大体艺，返回手机主页" />

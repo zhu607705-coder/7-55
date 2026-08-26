@@ -189,28 +189,24 @@ const RECOVERY_EVIDENCE: Array<{
   label: string;
   item: "bagNonPersonProof" | "seat022Receipt" | "libraryPresenceProof";
   source: string;
-  nextStep: string;
 }> = [
   {
     id: "bag_non_person_proof",
     label: "书包非本人证明",
     item: "bagNonPersonProof",
-    source: "失物招领 · 前台工作人员",
-    nextStep: "先生成物品识别报告，再交给馆内前台工作人员核验盖章"
+    source: "失物招领 · 前台工作人员"
   },
   {
     id: "seat_022_receipt",
     label: "022 座位小票",
     item: "seat022Receipt",
-    source: "二层南区 · 022 桌面夹缝",
-    nextStep: "回到 022，检查桌面与座椅之间的夹缝"
+    source: "二层南区 · 022 桌面夹缝"
   },
   {
     id: "library_presence_proof",
     label: "本人来过证明",
     item: "libraryPresenceProof",
-    source: "浙大体艺 · 到馆记录补录",
-    nextStep: "用三份来源记录完成体艺补录"
+    source: "浙大体艺 · 到馆记录补录"
   }
 ];
 
@@ -1754,7 +1750,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                   <div>
                     <header><strong>{evidence.label}</strong><b>{status}</b></header>
                     <small>来源：{evidence.source}</small>
-                    <em>{uploaded ? "材料已锁定到本次申请" : owned ? "道具栏已识别，可提交校验" : evidence.nextStep}</em>
+                    {uploaded ? <em>材料已锁定到本次申请</em> : owned ? <em>道具栏已识别，可提交校验</em> : null}
                   </div>
                   <button
                     type="button"

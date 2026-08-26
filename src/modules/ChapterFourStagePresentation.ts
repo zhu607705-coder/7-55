@@ -154,7 +154,16 @@ function selectLocalProgress(
         "hour_hand_installed"
       ])}/4`;
     case "room204_restore":
-      return `复原 204：${normalizeRoom204Placements(state.chapter4.room204Placements).length}/12`;
+      return `交通与参照 ${countFacts(facts, [
+        "classroom_104_chalk_residual_observed",
+        "classroom_105_terminal_replay_checked",
+        "elevator_history_observed",
+        "elevator_history_calibrated",
+        "a3_reference_observed",
+        "zhu_two_questions_answered",
+        "misaligned_stair_solved",
+        "room204_residual_observed"
+      ])}/8 · 复原 ${normalizeRoom204Placements(state.chapter4.room204Placements).length}/12`;
     case "maintenance_repair":
       return `维修流程 ${countMaintenanceMilestones(state, facts)}/6`;
     case "blackout_light_grid": {

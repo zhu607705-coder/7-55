@@ -72,7 +72,14 @@
     "kayakCollected": "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。",
     "leftPaddleCollected": "柳树枝长度合适，已作为左桨。还要找另一侧的桨。",
     "rightPaddleCollected": "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。",
-    "outfitComplete": "皮划艇和两支临时桨都已收齐。去码头前端上船。"
+    "outfitComplete": "皮划艇和两支临时桨都已收齐。"
+    ,"safetyRainBlock": "安全员：现在还在下雨，禁止登船。先找齐器材，再来做下水前检查。"
+    ,"safetyWeatherRequest": "安全员：器材检查通过。雨势仍不适合下水，打开手机天气应用，执行启真湖小码头天气调控。"
+    ,"safetyWeatherPending": "安全员：天气调控申请已经提交。去手机天气应用确认执行。"
+    ,"safetyCleared": "安全员：天气调控完成，当前为多云。可以从小码头上船。"
+    ,"safetyAlreadyCleared": "安全员：当前为多云，已经允许下水。"
+    ,"afterRainProof": "这是下过雨的证明"
+    ,"boardRainRejected": "雨天安全禁令仍在生效。先让湖边安全员提交天气调控申请。"
   },
   "boarding": {
     "title": "上船平衡",
@@ -218,7 +225,7 @@
     "lockedDockToOpen": "完成上船平衡后才能划向大湖。",
     "lockedOpenToSwan": "钓到小鲤鱼后才能前往黑天鹅围栏。",
     "lockedOpenToChannelNet": "尼龙绳和破损网框尚未组合成临时抄网。",
-    "lockedOpenToChannelDone": "浮排河道已经处理完，可以回鱼群水纹钓小鲤鱼。",
+    "lockedOpenToChannelDone": "浮排河道已经处理完。",
     "lockedSwanToChannel": "围栏机关尚未触发，需要先用磁性钓鱼竿取出纸条。",
     "lockedChannelToOpen": "密封饲料盒还没捞起并打开。"
   },

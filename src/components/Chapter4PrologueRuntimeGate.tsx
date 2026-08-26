@@ -19,6 +19,7 @@ import {
 import { Chapter4PrologueOverlay } from "../scenes/rpg/Chapter4PrologueOverlay";
 import { PROLOGUE_TASK_CARD_AT } from "../scenes/rpg/chapter4-prologue/PrologueTimeline";
 import { preloadRpgGameHost } from "../scenes/rpg/RpgRuntimePreload";
+import { warmRpgRuntime } from "../scenes/rpg/RpgRuntimePreload";
 
 type HandoffStatus = "idle" | "pending" | "waiting_ready" | "failed" | "ready";
 
@@ -106,6 +107,7 @@ export function Chapter4PrologueRuntimeGate({
     setStatus("idle");
     setFeedback(null);
     void preloadRpgGameHost();
+    void warmRpgRuntime("duan_yongping_temporal_maze");
   }, [createRequestId, eligible, resumeOpeningHandoff]);
 
   useEffect(() => {
@@ -117,6 +119,7 @@ export function Chapter4PrologueRuntimeGate({
     setFeedback("正在恢复 A1 现场……");
     armTimeoutGuard(requestId);
     void preloadRpgGameHost();
+    void warmRpgRuntime("duan_yongping_temporal_maze");
   }, [armTimeoutGuard, createRequestId, resumeOpeningHandoff]);
 
   useEffect(() => events.subscribe((event) => {
@@ -128,6 +131,7 @@ export function Chapter4PrologueRuntimeGate({
     setStatus("idle");
     setFeedback(null);
     void preloadRpgGameHost();
+    void warmRpgRuntime("duan_yongping_temporal_maze");
   }), [createRequestId, events]);
 
   useEffect(() => events.subscribe((event) => {

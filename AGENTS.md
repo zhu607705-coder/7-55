@@ -7,7 +7,8 @@
 - `src/assets/ui/`: bundled visual references used by scenes.
 - `src/core/`: shared game state, routing, and types.
 - `src/styles/`: shared tokens, shell layout, and scene-specific styling.
-- The retired `godot/`, `public/godot/`, and `src/integrations/godot/` trees were removed on 2026-08-25 after explicit user approval. Do not restore their sources, exports, loaders, panels, synchronization scripts, or CI checks.
+- `godot/`: archived implementation reference from the retired Godot migration; active builds, runtime selection, CI, and new feature work must not depend on it.
+- `src/integrations/godot/`: archived compatibility code only; active application code must not import or mount its frame, loader, or scene-specific panels.
 - `demo/index.html`: generated standalone game build; do not edit it by hand.
 
 ## Runtime Engine Decision
@@ -17,7 +18,7 @@
 - `RpgGameHost` mounts one active game surface. Phaser remains mounted for normal RPG scenes; while the Chapter 4 misaligned-stair puzzle is active, Phaser is paused and hidden and one Three.js canvas takes over the same `960 × 540` logical viewport. HTTP, deployed, offline single-file, desktop split, and mobile layouts use the same controller state and viewport contract.
 - TypeScript `GameState`, controllers, `SaveStore`, `selectFeatureAccess`, and `selectQuestViewModel` remain the only progression authority. Phaser scenes render state and submit engine-neutral domain events; they must not own a second save, wallet, inventory, quest graph, or story controller.
 - Shared runtime ports remain valid scene boundaries for state reads, intent writes, event subscriptions, viewport data, and checkpoints. They serve the Phaser scenes directly and must not introduce a second engine-specific gameplay path.
-- No Godot scene, export, synchronization step, CI check, runtime loader, iframe, compatibility panel, or migration task may be added. Historical design notes may mention the retired migration, but executable Godot code and assets must stay absent.
+- No new Godot scene, export, synchronization step, CI check, runtime loader, iframe, compatibility panel, or migration task may be added. Existing Godot files remain historical reference material until an explicit cleanup request removes them.
 - `demo/index.html` is the canonical distributable game and must exercise the same Phaser runtime as the Vite development build.
 
 ## Naming
@@ -53,6 +54,8 @@
 - Every RPG implementation uses one logical canvas: `960px × 540px`. Keep the rendered shell at `16:9`; fill the available desktop viewport and letterbox non-16:9 windows without stretching. Phaser camera scaling preserves the same visible world extent and does not change collision coordinates.
 - `src/scenes/rpg/RpgPlayerTextures.ts` is the player visual and collision reference. Runtime frames are `96px × 128px`; its display scale, campus depth curve, fixed world-space foot box, four-phase walk cycle, and name-label offset remain the only shared player values. Individual scenes must not define competing values.
 - The active Chapter 4 `7:55` teaching-building plates keep one logical elevator with floor-specific visible apertures and interaction anchors authored in source pixels. The approved A1/A2/A3 visible elevator centers are `772.5`, `791`, and `787.5`; Phaser positions the door visual, stand point, travel zone, and arrival point from the active floor layout entry instead of a shared `x=836` constant. Elevator progression remains one controller-owned transport state.
+- The formal Chapter 4 room-204 route requires the elevator and the approved Three.js stair puzzle as causal progression gates. After the A1 classroom comparisons, the player records the elevator history in dark observation, aligns the six-second passenger trace to the eight-second door interval in light operation, travels to A3 while A2 remains locked, records the A3 classroom reference, and completes both misaligned-stair levels before the controller relocates the player to the A2 corridor. A generic floor selector must never bypass or replace these gates.
+- The A3 school-history honor wall uses verified real Zhejiang University figures with official university source URLs. Every portrait remains a proximity `Space` biography interaction. Zhu Kezhen stays the centered narrative portrait; completing both Zhu questions is controller-owned and gates the approved misaligned-stair entry. Later light-grid completion may write only the `canruo_star_lamp_primed` handoff fact for the already approved “灿若星辰灯” consumer; do not generate, replace, or impersonate that existing lamp asset.
 - The Chapter 4 teaching-building player is confined to the active floor's exact `1672 × 941` source rectangle. Camera bounds are presentation-only; the Arcade Physics world bounds must switch to `[floorOffsetX, floorOffsetX + 1672] × [0, 941]` whenever the active floor changes, before player control resumes. The player must never enter the `192px` inter-floor storage gaps or any coordinate outside the visible floor plate.
 - A1 contains two walkable passages behind the north portrait wall. Their marked walkable bounds remain collision-free, while matching foreground crops use authored `baselineY` depth so the wall covers the player only while the player's foot point is behind it. A walkable-behind-foreground region must never become a wall collider.
 - Phone app scenes remain portrait-only. Entering the RPG changes to the horizontal runtime; it must not rotate or resize the shared `430px × 860px` phone shell.
@@ -105,7 +108,7 @@
 - `RpgGameHost` owns Phaser lifecycle, focus, visibility pause, responsive placement, Pointer Events forwarding, keyboard focus, audio unlock, fullscreen, error handling, and teardown. One RPG canvas may be mounted at a time.
 - Phaser scenes submit engine-neutral intents such as inspect, interact, inventory drop, movement checkpoint, dialogue continue, and scene exit. TypeScript controllers validate each intent and publish the resulting state and presentation events through the shared port.
 - Inventory drag feedback remains owned by the shared React dock. Phaser scenes report exact world-space drop bounds, accepted item ids, distance rules, mode rules, and rejection reasons so the dock can display accepted, missed target, wrong item, too far, wrong mode, and locked states consistently. `requiredFacing`, facing tolerances, and `wrong_facing` are prohibited interaction fields and outcomes.
-- One checked-in web asset remains the source of truth for each visual. Derived files must have an explicit active browser consumer; removed Godot copies must not be recreated as duplicate assets.
+- One checked-in web asset remains the source of truth for each visual. Derived files must have an explicit active browser consumer; retired Godot copies do not participate in asset validation.
 - Every landscape scene requires browser validation in Blink, Gecko, and WebKit at `1280×720`, one non-16:9 desktop viewport, and `390×844`, including keyboard, touch, inventory drag, save/reload, and entry/exit flow.
 
 ## RPG Reality Modes And Spatial Item Use
@@ -137,7 +140,7 @@
 - Name every GitHub delivery from its actual `Asia/Shanghai` upload completion date. After push and merge finish, apply the final `YYYYMMDD` consistently to the upload directory, implementation directory, archive filename, `README.md` links, and `ASSETS.md`; crossing midnight uses the new completion date, and delivery is incomplete until the remote `main` paths are verified.
 - Chapter completion must preserve the validated `GameState` and continue through a controller-owned entry method. `createInitialGameState()` is reserved for an explicit new-game action and must never be the default action on a chapter ending screen.
 - Run `npm run typecheck` and `npm run build:single` after React, shared-state, controller, bridge, or Phaser behavior changes.
-- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the complete Chapter 3 audio contract, campus map contract, TypeScript, production build, and offline single-file runtime for every PR and push to `main`. Godot sources, exports, and verification steps must remain absent.
+- `.github/workflows/web-ci.yml` is the canonical repository CI. It verifies the complete Chapter 3 audio contract, campus map contract, TypeScript, production build, and offline single-file runtime for every PR and push to `main`. Retired Godot sources and exports are outside the active delivery gate.
 - Automated tests and test-only dependencies are intentionally excluded from this workspace unless the user explicitly asks to restore them.
 - Validate new interactions in a real browser, including the complete navigation chain.
 - Keep temporary screenshots and browser QA artifacts outside the deliverable and delete them after inspection.
@@ -165,6 +168,7 @@
 
 ## Quest And Inventory Feedback
 
+- 持续显示的全局目标、后续路线与跨页面行动只由共享任务栏呈现。手机页面、RPG 页面、道具详情和成功反馈只报告本地状态或操作结果，不重复“下一步：”或“接下来”的全局路线；当前小游戏操作、交互失败纠正和持有道具的当前用途仍可在原位置显示。
 - The shared task trigger must accept pointer, Enter, and Space input on phone, RPG, and split-screen layouts. Its drawer always labels `当前任务`, `当前进度`, and the next objective explicitly.
 - The task drawer reveals only the current next objective. Locked future step labels must not be rendered, because even disabled checklist rows disclose the remaining puzzle chain. Completed paper documents may remain available only inside a collapsed acquired-material archive derived from completed facts.
 - Chapter-one digit discoveries remain visible only in the shared task trigger/drawer as four ordered slots. Unknown slots stay masked and acquired digits keep their original positions. The inventory bar must not repeat the digit strip or compact digit string; the task UI reads `state.digits` directly and remains the sole visual owner.

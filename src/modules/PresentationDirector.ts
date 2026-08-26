@@ -1,14 +1,12 @@
 import type { EventBus } from "../core/EventBus";
 import type { GameState, GameStore } from "../core/types";
 import actOneTimelineData from "../data/act-one.audio.json";
-import bikeArcadeTimelineData from "../data/bike-arcade.audio.json";
 import chapterThreeCanteenTimelineData from "../data/chapter3-canteen.audio.json";
 import chapterThreeTheaterTimelineData from "../data/chapter3-theater.audio.json";
 import chapterThreeQizhenTimelineData from "../data/chapter3-qizhen.audio.json";
 import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
 import chapterFour755TimelineData from "../data/chapter4-755.audio.json";
-import endlessArcadeTimelineData from "../data/endless-arcade.audio.json";
 import libraryFinalsTimelineData from "../data/library-finals.audio.json";
 import { PRESENTATION_VISUAL_CUE_IDS } from "../data/presentation-cues";
 
@@ -26,8 +24,6 @@ export const PRESENTATION_CUE_EVENT = "presentation_cue";
 const TIMELINE_CUE_IDS = new Set([
   ...Object.keys((actOneTimelineData as AudioTimelineShape).events),
   ...Object.keys((libraryFinalsTimelineData as AudioTimelineShape).events),
-  ...Object.keys((bikeArcadeTimelineData as AudioTimelineShape).events),
-  ...Object.keys((endlessArcadeTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeCanteenTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeTheaterTimelineData as AudioTimelineShape).events),
   ...Object.keys((chapterThreeQizhenTimelineData as AudioTimelineShape).events),
@@ -81,19 +77,6 @@ export class PresentationDirector {
   private deriveStateCues(previous: GameState, next: GameState): PendingCue[] {
     const cues: PendingCue[] = [];
 
-    if (!previous.bikeArcade.unlocked && next.bikeArcade.unlocked) {
-      cues.push({ cueId: "bike_arcade_unlocked" });
-    }
-    if (!previous.bikeArcade.completed && next.bikeArcade.completed) {
-      cues.push({
-        cueId: "bike_arcade_won",
-        payload: {
-          attempt: next.bikeArcade.attemptCount,
-          lives: next.bikeArcade.bestLives
-        }
-      });
-      cues.push({ cueId: "bike_arcade_completed" });
-    }
     if (previous.currentScene !== next.currentScene) {
       const entryCue = sceneEntryCue(next);
       if (entryCue) {
@@ -167,10 +150,6 @@ function sceneEntryCue(state: GameState): PendingCue | null {
   }
   if (isChapterFour755RpgState(state) && state.chapter4.phase === "final_chase") {
     return { cueId: "final_chase_started" };
-  }
-  // P16 is the postgame challenge hub; legacy bike cues come from BikeArcadeChapterController events.
-  if (state.currentScene === "chapter_transition") {
-    return { cueId: "chapter_transition_opened" };
   }
   return null;
 }

@@ -11,7 +11,6 @@ import { ChaseRenderer } from "./canteen-chase/ChaseRenderer";
 interface CanteenChaseOverlayProps {
   events: EventBus;
   onAttempt: (attempt: CanteenChaseAttempt) => void;
-  onContinue: () => void;
 }
 
 type ChaseRunState = "running" | "won" | "lost";
@@ -81,17 +80,13 @@ function paceAt(distance: number): number {
 
 export function CanteenChaseOverlay({
   events,
-  onAttempt,
-  onContinue
+  onAttempt
 }: CanteenChaseOverlayProps) {
   const hasCoarsePointer = useMediaQuery("(any-pointer: coarse)");
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const runtimeRef = useRef<ChaseRuntime>(createInitialRuntime());
   const eventsRef = useRef(events);
   const onAttemptRef = useRef(onAttempt);
-  const onContinueRef = useRef(onContinue);
-  const theaterTransitionedRef = useRef(false);
-  const theaterTransitionTimerRef = useRef<number | null>(null);
   const retryTimerRef = useRef<number | null>(null);
   const startedRef = useRef(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -102,7 +97,6 @@ export function CanteenChaseOverlay({
   } as CSSProperties;
   eventsRef.current = events;
   onAttemptRef.current = onAttempt;
-  onContinueRef.current = onContinue;
 
   const publish = useCallback((force = false) => {
     const runtime = runtimeRef.current;
@@ -123,23 +117,6 @@ export function CanteenChaseOverlay({
     runtime.narrationMs = NARRATION_DURATION_MS;
   }, []);
 
-  const enterTheater = useCallback(() => {
-    if (theaterTransitionedRef.current) return;
-    theaterTransitionedRef.current = true;
-    if (theaterTransitionTimerRef.current !== null) {
-      window.clearTimeout(theaterTransitionTimerRef.current);
-      theaterTransitionTimerRef.current = null;
-    }
-    onContinueRef.current();
-  }, []);
-
-  const scheduleTheaterEntry = useCallback(() => {
-    if (theaterTransitionTimerRef.current !== null) {
-      window.clearTimeout(theaterTransitionTimerRef.current);
-    }
-    theaterTransitionTimerRef.current = window.setTimeout(enterTheater, 900);
-  }, [enterTheater]);
-
   const restartStoryRun = useCallback(() => {
     const runtime = runtimeRef.current;
     runtime.runState = "running";
@@ -153,7 +130,6 @@ export function CanteenChaseOverlay({
     runtime.hitObstacleIds.clear();
     runtime.reachedMilestones.clear();
     runtime.lastPublishedDistance = -1;
-    theaterTransitionedRef.current = false;
     if (retryTimerRef.current !== null) {
       window.clearTimeout(retryTimerRef.current);
       retryTimerRef.current = null;
@@ -185,12 +161,9 @@ export function CanteenChaseOverlay({
       collisions: runtime.collisions
     });
     publish(true);
-    if (result === "won") {
-      scheduleTheaterEntry();
-      return;
-    }
+    if (result === "won") return;
     retryTimerRef.current = window.setTimeout(restartStoryRun, 900);
-  }, [publish, restartStoryRun, scheduleTheaterEntry]);
+  }, [publish, restartStoryRun]);
 
   const advanceSimulation = useCallback((milliseconds: number) => {
     const runtime = runtimeRef.current;
@@ -264,9 +237,6 @@ export function CanteenChaseOverlay({
   }, [publish]);
 
   useEffect(() => () => {
-    if (theaterTransitionTimerRef.current !== null) {
-      window.clearTimeout(theaterTransitionTimerRef.current);
-    }
     if (retryTimerRef.current !== null) {
       window.clearTimeout(retryTimerRef.current);
     }

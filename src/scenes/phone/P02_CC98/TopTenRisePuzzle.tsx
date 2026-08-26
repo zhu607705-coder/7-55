@@ -274,7 +274,7 @@ export function TopTenRisePuzzle({
       </div> : null}
 
       {showBd && preBdBriefingSeen && solved ? (
-        <p className="cc98-top-ten-complete">排名更新为 01。查看图书管理员的回复。</p>
+        <p className="cc98-top-ten-complete">公示排名已更新为 01。</p>
       ) : null}
       {feedback ? <p className="cc98-bd-feedback" aria-live="polite">{feedback}</p> : null}
     </section>

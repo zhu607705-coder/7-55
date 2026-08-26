@@ -22,6 +22,7 @@ import { ControlExchangePuzzle } from "./ControlExchangePuzzle";
 import { Cc98ThreadPage } from "./ThreadPage";
 import { TheaterTicketCommission } from "./TheaterTicketCommission";
 import { TopTenRisePuzzle } from "./TopTenRisePuzzle";
+import { UnifiedIdentityLogin } from "./UnifiedIdentityLogin";
 import type { AvatarVariant, Cc98Post } from "./cc98Types";
 import "../../../styles/library-v2-phone.css";
 
@@ -178,12 +179,50 @@ const QUEST_POST_IDS = new Set([
 ]);
 const TOP_TABS = ["今日", "发现", "本周", "本月", "往年今日", "活动"];
 const BOTTOM_TABS = [
-  { label: "热门", icon: "◉" },
-  { label: "新帖", icon: "✿" },
-  { label: "关注", icon: "♡" },
-  { label: "版面", icon: "▦" },
-  { label: "我", icon: "◎" }
+  { id: "hot", label: "热门", icon: "◉" },
+  { id: "new", label: "新帖", icon: "✿" },
+  { id: "followed", label: "关注", icon: "♡" },
+  { id: "boards", label: "版面", icon: "▦" },
+  { id: "profile", label: "我", icon: "◎" }
+] as const;
+type Cc98BottomTabId = typeof BOTTOM_TABS[number]["id"];
+
+const DEFAULT_FOLLOWED_BOARDS = ["校园生活", "学习天地", "交通出行", "开怀一笑"];
+const PREFERRED_BOARD_ORDER = [
+  "校园生活",
+  "交通出行",
+  "学习天地",
+  "手机服务",
+  "图书馆",
+  "自习室",
+  "食堂",
+  "打印服务",
+  "校园卡",
+  "失物招领",
+  "二手市场",
+  "开怀一笑"
 ];
+const BOARD_DESCRIPTIONS: Record<string, string> = {
+  "校园生活": "校内日常、天气和临时消息",
+  "交通出行": "步行、骑行和校内出行",
+  "学习天地": "资料、课程和复习讨论",
+  "手机服务": "电话卡、网络和通讯服务",
+  "图书馆": "馆内规则、座位和设备",
+  "自习室": "自习地点与安静程度",
+  "食堂": "窗口、排队和座位",
+  "打印服务": "打印、复印和取件",
+  "校园卡": "校园卡使用和服务记录",
+  "失物招领": "遗失物和失物信息",
+  "二手市场": "闲置物品与当面交易提醒",
+  "开怀一笑": "轻松话题和校园小事"
+};
+
+function postFreshness(post: Cc98Post) {
+  if (post.time === "刚刚") return Number.MAX_SAFE_INTEGER;
+  const match = post.time.match(/(\d{1,2}):(\d{2})/);
+  if (!match) return 0;
+  return Number(match[1]) * 60 + Number(match[2]);
+}
 
 function cloneDefaults() {
   return DEFAULT_POSTS.filter((post) => !QUEST_POST_IDS.has(post.id)).map((post) => ({ ...post }));
@@ -445,6 +484,10 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const [questPostOverrides, setQuestPostOverrides] = useState<Record<string, Partial<Cc98Post>>>(loadQuestPostOverrides);
   const [editing, setEditing] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeBottomTab, setActiveBottomTab] = useState<Cc98BottomTabId>("hot");
+  const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
+  const [followedBoards, setFollowedBoards] = useState<string[]>(DEFAULT_FOLLOWED_BOARDS);
+  const [readPostIds, setReadPostIds] = useState<string[]>([]);
   const [openPostId, setOpenPostId] = useState<string | null>(() => {
     if (requestedThreadId) return requestedThreadId;
     if (ticketPortalCellularAccess) return theaterTicketCommissionContent.id;
@@ -536,6 +579,43 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   const visiblePosts = useMemo(() => {
     return [...questPosts, ...posts];
   }, [posts, questPosts]);
+  const boardEntries = useMemo(() => {
+    const postCounts = new Map<string, number>();
+    visiblePosts.forEach((post) => postCounts.set(post.board, (postCounts.get(post.board) ?? 0) + 1));
+    return [...postCounts.entries()]
+      .sort(([left], [right]) => {
+        const leftOrder = PREFERRED_BOARD_ORDER.indexOf(left);
+        const rightOrder = PREFERRED_BOARD_ORDER.indexOf(right);
+        const normalizedLeft = leftOrder === -1 ? PREFERRED_BOARD_ORDER.length : leftOrder;
+        const normalizedRight = rightOrder === -1 ? PREFERRED_BOARD_ORDER.length : rightOrder;
+        return normalizedLeft - normalizedRight || left.localeCompare(right, "zh-CN");
+      })
+      .map(([board, postCount]) => ({
+        board,
+        postCount,
+        description: BOARD_DESCRIPTIONS[board] ?? "校内讨论和临时信息"
+      }));
+  }, [visiblePosts]);
+  const activeNavigationTab: Cc98BottomTabId = selectedBoard ? "boards" : activeBottomTab;
+  const feedPosts = useMemo(() => {
+    const boardFiltered = selectedBoard
+      ? visiblePosts.filter((post) => post.board === selectedBoard)
+      : visiblePosts;
+    if (activeNavigationTab === "new") {
+      return [...boardFiltered].sort((left, right) => postFreshness(right) - postFreshness(left));
+    }
+    if (activeNavigationTab === "followed") {
+      return boardFiltered.filter((post) => followedBoards.includes(post.board));
+    }
+    return boardFiltered;
+  }, [activeNavigationTab, followedBoards, selectedBoard, visiblePosts]);
+  const recentPosts = useMemo(() => {
+    const postsById = new Map(visiblePosts.map((post) => [post.id, post]));
+    return readPostIds.flatMap((postId) => {
+      const post = postsById.get(postId);
+      return post ? [post] : [];
+    });
+  }, [readPostIds, visiblePosts]);
 
   useEffect(() => {
     let exitTimer: number | null = null;
@@ -574,6 +654,10 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
         <button type="button" className="app-exit px-btn paper" onClick={() => router.goTo("phone_home")}>退出</button>
       </section>
     );
+  }
+
+  if (!state.actOne.cc98Login.authenticated) {
+    return <UnifiedIdentityLogin state={state} onExit={() => router.goTo("phone_home")} />;
   }
 
   if (
@@ -652,10 +736,37 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   }
 
   function openPostDetails(id: string) {
-    setOpenPostId(
+    const resolvedPostId =
       id === CHAPTER_FOUR_STUDY_LEGACY_POST_ID && chapterFourCc98.visible
         ? CHAPTER_FOUR_STUDY_POST.id
-        : id
+        : id;
+    setReadPostIds((current) => [
+      resolvedPostId,
+      ...current.filter((postId) => postId !== resolvedPostId)
+    ].slice(0, 8));
+    setOpenPostId(resolvedPostId);
+  }
+
+  function selectBottomTab(tabId: Cc98BottomTabId) {
+    setActiveBottomTab(tabId);
+    setSelectedBoard(null);
+    setOpenPostId(null);
+    setMenuOpen(false);
+    setEditing(false);
+  }
+
+  function openBoard(board: string) {
+    setActiveBottomTab("boards");
+    setSelectedBoard(board);
+    setOpenPostId(null);
+    setMenuOpen(false);
+    setEditing(false);
+  }
+
+  function toggleFollowedBoard(board: string) {
+    setFollowedBoards((current) => current.includes(board)
+      ? current.filter((entry) => entry !== board)
+      : [...current, board]
     );
   }
 
@@ -759,70 +870,154 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
         </section>
       ) : null}
 
-      <main className={`cc98-feed ${editing ? "is-editing" : ""}`} aria-label="CC98帖子列表">
-        {visiblePosts.map((post) => {
-          const isQuestPost = QUEST_POST_IDS.has(post.id);
-          const linksToChapterFourStudy = chapterFourCc98.visible && post.id === CHAPTER_FOUR_STUDY_LEGACY_POST_ID;
-          const isEditablePost = editing;
-          return (
-          <article
-            key={post.id}
-            className={`cc98-post ${isQuestPost ? "is-quest-post" : ""} ${linksToChapterFourStudy ? "is-study-entry" : ""}`.trim()}
-            role={isEditablePost ? undefined : "button"}
-            tabIndex={isEditablePost ? undefined : 0}
-            onClick={() => !editing && openPostDetails(post.id)}
-            onKeyDown={(event) => {
-              if (!editing && (event.key === "Enter" || event.key === " ")) {
-                if (event.key === " ") {
-                  event.preventDefault();
+      {activeNavigationTab === "boards" && !selectedBoard ? (
+        <section className="cc98-board-directory" aria-label="CC98版面目录">
+          <header className="cc98-directory-heading">
+            <div>
+              <strong>全部版面</strong>
+              <span>选择一个版面查看帖子</span>
+            </div>
+            <b>{boardEntries.length} 个</b>
+          </header>
+          <div className="cc98-board-grid">
+            {boardEntries.map(({ board, postCount, description }) => {
+              const followed = followedBoards.includes(board);
+              return (
+                <article className="cc98-board-card" key={board}>
+                  <button
+                    type="button"
+                    className="cc98-board-open"
+                    aria-label={`进入${board}版面，共${postCount}帖`}
+                    onClick={() => openBoard(board)}
+                  >
+                    <span aria-hidden="true">▦</span>
+                    <strong>{board}</strong>
+                    <small>{description}</small>
+                    <em>{postCount} 帖</em>
+                  </button>
+                  <button
+                    type="button"
+                    className={`cc98-board-follow ${followed ? "is-followed" : ""}`.trim()}
+                    aria-pressed={followed}
+                    aria-label={followed ? `取消关注${board}` : `关注${board}`}
+                    onClick={() => toggleFollowedBoard(board)}
+                  >
+                    {followed ? "已关注" : "关注"}
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ) : activeNavigationTab === "profile" ? (
+        <section className="cc98-profile" aria-label="CC98我的页面">
+          <header className="cc98-directory-heading">
+            <div>
+              <strong>我的浏览</strong>
+              <span>本次打开过的帖子会留在这里</span>
+            </div>
+            <b>{recentPosts.length} 条</b>
+          </header>
+          <dl className="cc98-profile-summary">
+            <div><dt>关注版面</dt><dd>{followedBoards.length} 个</dd></div>
+            <div><dt>浏览记录</dt><dd>{recentPosts.length} 条</dd></div>
+          </dl>
+          {recentPosts.length ? (
+            <div className="cc98-recent-posts" aria-label="最近浏览">
+              {recentPosts.map((post) => (
+                <button type="button" key={post.id} onClick={() => openPostDetails(post.id)}>
+                  <span>{post.board}</span>
+                  <strong>{post.title}</strong>
+                  <small>{post.author} · {post.time}</small>
+                </button>
+              ))}
+            </div>
+          ) : <p className="cc98-empty">还没有浏览记录。打开一篇帖子后会出现在这里。</p>}
+        </section>
+      ) : (
+        <main className={`cc98-feed ${editing ? "is-editing" : ""}`} aria-label="CC98帖子列表">
+          {selectedBoard || activeNavigationTab === "new" || activeNavigationTab === "followed" ? (
+            <header className="cc98-feed-heading">
+              {selectedBoard ? (
+                <button type="button" onClick={() => setSelectedBoard(null)}>‹ 全部版面</button>
+              ) : null}
+              <div>
+                <strong>{selectedBoard ?? (activeNavigationTab === "new" ? "新帖" : "关注的版面")}</strong>
+                <span>{selectedBoard ? "本版面当前可见帖子" : activeNavigationTab === "new" ? "按发布时间排列" : "可在版面页调整关注"}</span>
+              </div>
+              <b>{feedPosts.length} 帖</b>
+            </header>
+          ) : null}
+          {feedPosts.length ? feedPosts.map((post) => {
+            const isQuestPost = QUEST_POST_IDS.has(post.id);
+            const linksToChapterFourStudy = chapterFourCc98.visible && post.id === CHAPTER_FOUR_STUDY_LEGACY_POST_ID;
+            const isEditablePost = editing;
+            return (
+            <article
+              key={post.id}
+              className={`cc98-post ${isQuestPost ? "is-quest-post" : ""} ${linksToChapterFourStudy ? "is-study-entry" : ""}`.trim()}
+              role={isEditablePost ? undefined : "button"}
+              tabIndex={isEditablePost ? undefined : 0}
+              onClick={() => !editing && openPostDetails(post.id)}
+              onKeyDown={(event) => {
+                if (!editing && (event.key === "Enter" || event.key === " ")) {
+                  if (event.key === " ") {
+                    event.preventDefault();
+                  }
+                  openPostDetails(post.id);
                 }
-                openPostDetails(post.id);
-              }
-            }}
-          >
-            <div className="cc98-post-top">
-              <span className={`cc98-avatar ${post.avatar}`} aria-hidden="true">
-                <i />
-              </span>
-              <EditableText value={post.author} editing={isEditablePost} className="cc98-author" onCommit={(value) => updatePost(post.id, "author", value)} />
-              <span className={`cc98-rank rank-${post.rank}`}>{post.rank}</span>
-              <EditableText value={post.board} editing={isEditablePost} className="cc98-board" onCommit={(value) => updatePost(post.id, "board", value)} />
-            </div>
-            <EditableText value={post.title} editing={isEditablePost} className="cc98-title" onCommit={(value) => updatePost(post.id, "title", value)} />
-            {linksToChapterFourStudy && !isEditablePost ? (
-              <span className="cc98-study-entry-badge">
-                {chapterFourCc98.imported ? "已导入自习群" : "可导入自习群"}
-              </span>
-            ) : null}
-            <div className="cc98-meta">
-              <span>
-                <EditableText value={post.replies} editing={isEditablePost} className="cc98-meta-value" onCommit={(value) => updatePost(post.id, "replies", value)} /> 回复 ·{" "}
-                <EditableText value={post.views} editing={isEditablePost} className="cc98-meta-value" onCommit={(value) => updatePost(post.id, "views", value)} /> 浏览
-              </span>
-              <EditableText value={post.time} editing={isEditablePost} className="cc98-time" onCommit={(value) => updatePost(post.id, "time", value)} />
-            </div>
-            {isEditablePost ? (
-              <button
-                type="button"
-                className="cc98-edit-body"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setOpenPostId(post.id);
-                }}
-              >
-                正文
-              </button>
-            ) : null}
-          </article>
-          );
-        })}
-      </main>
+              }}
+            >
+              <div className="cc98-post-top">
+                <span className={`cc98-avatar ${post.avatar}`} aria-hidden="true">
+                  <i />
+                </span>
+                <EditableText value={post.author} editing={isEditablePost} className="cc98-author" onCommit={(value) => updatePost(post.id, "author", value)} />
+                <span className={`cc98-rank rank-${post.rank}`}>{post.rank}</span>
+                <EditableText value={post.board} editing={isEditablePost} className="cc98-board" onCommit={(value) => updatePost(post.id, "board", value)} />
+              </div>
+              <EditableText value={post.title} editing={isEditablePost} className="cc98-title" onCommit={(value) => updatePost(post.id, "title", value)} />
+              {linksToChapterFourStudy && !isEditablePost ? (
+                <span className="cc98-study-entry-badge">
+                  {chapterFourCc98.imported ? "已导入自习群" : "可导入自习群"}
+                </span>
+              ) : null}
+              <div className="cc98-meta">
+                <span>
+                  <EditableText value={post.replies} editing={isEditablePost} className="cc98-meta-value" onCommit={(value) => updatePost(post.id, "replies", value)} /> 回复 ·{" "}
+                  <EditableText value={post.views} editing={isEditablePost} className="cc98-meta-value" onCommit={(value) => updatePost(post.id, "views", value)} /> 浏览
+                </span>
+                <EditableText value={post.time} editing={isEditablePost} className="cc98-time" onCommit={(value) => updatePost(post.id, "time", value)} />
+              </div>
+              {isEditablePost ? (
+                <button
+                  type="button"
+                  className="cc98-edit-body"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setOpenPostId(post.id);
+                  }}
+                >
+                  正文
+                </button>
+              ) : null}
+            </article>
+            );
+          }) : <p className="cc98-empty">这个版面暂时没有可显示的帖子。</p>}
+        </main>
+      )}
 
-      <nav className="cc98-bottom-nav cc98-bottom-static" aria-label="CC98主导航">
+      <nav className="cc98-bottom-nav" aria-label="CC98主导航">
         {BOTTOM_TABS.map((tab) => (
-          <span key={tab.label} data-locked-icon={tab.label} aria-hidden="true">
-            <i>{tab.icon}</i><b>{tab.label}</b>
-          </span>
+          <button
+            type="button"
+            key={tab.id}
+            className={activeNavigationTab === tab.id ? "is-active" : ""}
+            aria-current={activeNavigationTab === tab.id ? "page" : undefined}
+            onClick={() => selectBottomTab(tab.id)}
+          >
+            <i aria-hidden="true">{tab.icon}</i><b>{tab.label}</b>
+          </button>
         ))}
       </nav>
 

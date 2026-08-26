@@ -12,6 +12,7 @@ import { canRemovePhoneHomeApp } from "../../../core/PhoneHomeApps";
 import type { PhoneHomeAppId } from "../../../core/types";
 import { selectChapterFourWechatObjective } from "../../../modules/ChapterFourWechatModel";
 import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
+import { selectCampusWeather } from "../../../modules/CampusWeatherModel";
 
 /**
  * P13 手机主界面：像素浙大校园壁纸。
@@ -25,7 +26,13 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const [draggingAppId, setDraggingAppId] = useState<PhoneHomeAppId | null>(null);
   const [towerPhase, setTowerPhase] = useState<"idle" | "inserting" | "rotating">("idle");
   const homeHoldTimerRef = useRef<number | null>(null);
-  const homePointerRef = useRef<{ appId: PhoneHomeAppId; pointerId: number; x: number; y: number } | null>(null);
+  const homePointerRef = useRef<{
+    appId: PhoneHomeAppId;
+    pointerId: number;
+    x: number;
+    y: number;
+    captureTarget: HTMLElement;
+  } | null>(null);
   const suppressHomeClickRef = useRef(false);
   const lastHomeSwapRef = useRef<PhoneHomeAppId | null>(null);
   const towerTimersRef = useRef<number[]>([]);
@@ -40,6 +47,11 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   const chapterFourWechatObjective = selectChapterFourWechatObjective(state.chapter4);
   const interludeActive = state.qizhenLake.phase === "complete" && !state.chapterThreeInterlude.completed;
   const interludeViewModel = selectChapterThreeInterludeViewModel(state);
+  const campusWeather = selectCampusWeather(state);
+  const weatherTemperature = campusWeather.condition === "light_rain" ? 18 : 19;
+  const weatherNotification = campusWeather.condition === "light_rain"
+    ? "小雨。局部黏着物可能松动。"
+    : "多云。启真湖小码头降水已经停止。";
 
   // 微信弹窗：1s 出第一条，2.4s 出第二条（散码前）
   useEffect(() => {
@@ -202,11 +214,6 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     kit.flags.toast(feedback, "system");
   }
 
-  function openBikeArcade() {
-    playSfx("02_");
-    router.goTo("bike_arcade");
-  }
-
   function clickGearIcon() {
     if (flags.gearNineTaken) {
       kit.flags.toast("设置图标只剩一个空位，风从里面吹过。");
@@ -237,7 +244,15 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
 
   function clearHomePointerInteraction(updateVisualState = true, resetSuppressedClick = false) {
     clearHomeHoldTimer();
+    const pointer = homePointerRef.current;
     homePointerRef.current = null;
+    try {
+      if (pointer?.captureTarget.hasPointerCapture(pointer.pointerId)) {
+        pointer.captureTarget.releasePointerCapture(pointer.pointerId);
+      }
+    } catch {
+      // Pointer capture may already have been released by the browser.
+    }
     lastHomeSwapRef.current = null;
     if (resetSuppressedClick) suppressHomeClickRef.current = false;
     if (updateVisualState) setDraggingAppId(null);
@@ -246,19 +261,33 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   function beginHomePointer(event: React.PointerEvent<HTMLElement>, appId: PhoneHomeAppId) {
     if (access.chapter === "chapter_one") return;
     clearHomeHoldTimer();
-    event.currentTarget.setPointerCapture(event.pointerId);
+    const captureTarget = (event.target as HTMLElement).closest<HTMLElement>("button.app") ?? event.currentTarget;
     homePointerRef.current = {
       appId,
       pointerId: event.pointerId,
       x: event.clientX,
-      y: event.clientY
+      y: event.clientY,
+      captureTarget
     };
     if (homeEditing) {
+      try {
+        captureTarget.setPointerCapture(event.pointerId);
+      } catch {
+        // Editing still works without capture through the pointer-cancel fallbacks.
+      }
       setDraggingAppId(appId);
       lastHomeSwapRef.current = appId;
       return;
     }
+    const pointerId = event.pointerId;
     homeHoldTimerRef.current = window.setTimeout(() => {
+      const pointer = homePointerRef.current;
+      if (!pointer || pointer.pointerId !== pointerId) return;
+      try {
+        pointer.captureTarget.setPointerCapture(pointer.pointerId);
+      } catch {
+        // Keep the long-press editor usable on browsers without active capture.
+      }
       suppressHomeClickRef.current = true;
       setHomeEditing(true);
       setDraggingAppId(appId);
@@ -290,9 +319,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
 
   function endHomePointer(event: React.PointerEvent<HTMLElement>) {
     if (homePointerRef.current?.pointerId !== event.pointerId) return;
-    const captured = event.currentTarget.hasPointerCapture(event.pointerId);
     clearHomePointerInteraction(true, event.type === "pointercancel");
-    if (captured) event.currentTarget.releasePointerCapture(event.pointerId);
   }
 
   function loseHomePointerCapture(event: React.PointerEvent<HTMLElement>) {
@@ -474,13 +501,6 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         activate: () => openApp("cc98"),
         icon: <div className="app-icon b-blue"><b className="cc98-text">CC98</b></div>
       },
-      bike_arcade: {
-        label: "游戏",
-        available: access.endlessChallenge,
-        className: `bike-game-app ${access.endlessChallenge ? "is-chapter-open" : ""}`.trim(),
-        activate: openBikeArcade,
-        icon: <div className="app-icon game-app-icon"><span aria-hidden="true">7:55</span><i aria-hidden="true" /></div>
-      },
       control_center: {
         label: "控制中心",
         available: true,
@@ -643,31 +663,29 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         <i className="pot-body" />
       </button>
 
-      <section className="weather-card" aria-label="天气：小雨，18 摄氏度">
+      <section className="weather-card" aria-label={`天气：${campusWeather.label}，${weatherTemperature} 摄氏度`}>
         {access.weather ? (
           <button type="button" className="weather-card-open" aria-label="打开天气" onClick={openWeather} />
         ) : null}
         <div className="weather-top">
           <div className="rain-icon pixelated">
             <div className="cloud-pixel" />
-            <i className="drop d1" />
-            <i className="drop d2" />
-            <i className="drop d3" />
-            {flags.codeScattered && !flags.waterDropTaken ? (
+            {campusWeather.condition === "light_rain" ? <><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></> : null}
+            {campusWeather.condition === "light_rain" && flags.codeScattered && !flags.waterDropTaken ? (
               <button type="button" className="drop drop-live" aria-label="收集水滴" onClick={collectWaterDrop} />
             ) : null}
           </div>
           <div className="temp-title">
-            <div className="cond">小雨</div>
+            <div className="cond">{campusWeather.label}</div>
             <div className="temp">
-              18<small>°C</small>
+              {weatherTemperature}<small>°C</small>
             </div>
           </div>
         </div>
         <div className="weather-range">最高 20°C / 最低 15°C</div>
         <div className="divider" />
         <div className="weather-meta">
-          <span>空气湿度 88%</span>
+          <span>空气湿度 {campusWeather.condition === "light_rain" ? "88%" : "76%"}</span>
           <span>西南风 2级</span>
         </div>
       </section>
@@ -820,17 +838,17 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
               <button
                 type="button"
                 className="note weather-notification"
-                aria-label="天气：小雨，局部黏着物可能松动"
+                aria-label={`天气：${weatherNotification}`}
                 onClick={openWeather}
               >
-                <div className="mini mini-rain"><div className="rain-icon mini-rain-icon"><div className="cloud-pixel" /><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></div></div>
-                <div><div className="note-title">天气</div><div className="note-msg">小雨。局部黏着物可能松动。</div></div>
+                <div className="mini mini-rain"><div className="rain-icon mini-rain-icon"><div className="cloud-pixel" />{campusWeather.condition === "light_rain" ? <><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></> : null}</div></div>
+                <div><div className="note-title">天气</div><div className="note-msg">{weatherNotification}</div></div>
                 <time className="note-time">07:35</time>
               </button>
             ) : (
-              <article className="note" aria-label="天气：小雨，局部黏着物可能松动">
-                <div className="mini mini-rain"><div className="rain-icon mini-rain-icon"><div className="cloud-pixel" /><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></div></div>
-                <div><div className="note-title">天气</div><div className="note-msg">小雨。局部黏着物可能松动。</div></div>
+              <article className="note" aria-label={`天气：${weatherNotification}`}>
+                <div className="mini mini-rain"><div className="rain-icon mini-rain-icon"><div className="cloud-pixel" />{campusWeather.condition === "light_rain" ? <><i className="drop d1" /><i className="drop d2" /><i className="drop d3" /></> : null}</div></div>
+                <div><div className="note-title">天气</div><div className="note-msg">{weatherNotification}</div></div>
                 <time className="note-time">07:35</time>
               </article>
             )}

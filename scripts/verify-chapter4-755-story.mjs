@@ -126,7 +126,12 @@ const EXPECTED_BAKERY_CUES = [
   "chapter4_bakery_hour_hand_revealed"
 ];
 const EXPECTED_ROOM204_TASK_KEYS = [
+  "verify_a1_classrooms",
+  "observe_elevator_history",
+  "calibrate_elevator_history",
   "observe_a3_reference",
+  "answer_zhu_two_questions",
+  "solve_misaligned_stair",
   "observe_room204_residual",
   "restore_room204",
   "watch_room204_projection",
@@ -134,7 +139,13 @@ const EXPECTED_ROOM204_TASK_KEYS = [
   "install_positioning_plate"
 ];
 const EXPECTED_ROOM204_FACTS = [
+  "classroom_104_chalk_residual_observed",
+  "classroom_105_terminal_replay_checked",
+  "elevator_history_observed",
+  "elevator_history_calibrated",
   "a3_reference_observed",
+  "zhu_two_questions_answered",
+  "misaligned_stair_solved",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
@@ -750,7 +761,7 @@ function validateTask7RuntimeSources(errors) {
   if (!/import\s*\{\s*Chapter4PrologueRuntimeGate\s*\}\s*from\s*["']\.\/components\/Chapter4PrologueRuntimeGate["']\s*;/.test(app)
     || appGateOpenCount !== 3
     || appGateCloseCount !== 3
-    || !/if\s*\(state\.runtimeMode\s*===\s*["']rpg["']\)[\s\S]*?if\s*\(desktopGameplay\)[\s\S]*?<Chapter4PrologueRuntimeGate[\s\S]*?<RpgGameHost/.test(app)
+    || !/if\s*\(state\.runtimeMode\s*===\s*["']rpg["']\)[\s\S]*?if\s*\(desktopGameplay\)[\s\S]*?<Chapter4PrologueRuntimeGate[\s\S]*?<(?:RpgGameHost|ActiveRpgGameHost)/.test(app)
     || (app.match(/<Chapter4PrologueRuntimeGate\s+store=\{gameStore\}\s+events=\{eventBus\}>/g) ?? []).length !== 3
     || /Chapter4PrologueOverlay|complete_prologue_handoff/.test(app)) {
     errors.push("Task 7 App must make Chapter4PrologueRuntimeGate the root owner across desktop RPG, single-surface RPG and phone branches");
@@ -862,7 +873,16 @@ function validateTask7RuntimeSources(errors) {
     ...EXPECTED_OPENING_INTENTS.filter((intent) => intent !== "complete_prologue_handoff"),
     "inspect_bakery_conveyor_lamp",
     "complete_bakery_conveyor_stop",
+    "talk_to_a1_front_desk_attendant",
+    "talk_to_chapter_four_support_npc",
+    "inspect_alumni_figure",
+    "complete_zhu_two_questions",
+    "observe_classroom_104_chalk_residual",
+    "check_classroom_105_terminal_replay",
+    "observe_elevator_history",
+    "calibrate_elevator_history",
     "observe_a3_reference",
+    "complete_misaligned_stair",
     "observe_room204_residual",
     "place_room204_piece",
     "complete_room204_projection",
@@ -890,12 +910,23 @@ function validateTask7RuntimeSources(errors) {
     "a1_noticeboard_paper",
     "a1_hall_clock",
     ...EXPECTED_BAKERY_TARGET_IDS,
+    "a1_front_desk_attendant",
+    "a2_elevator_attendant",
+    "a3_reference_teacher",
+    "a3_alumni_su_buqing",
+    "a3_alumni_zhu_kezhen",
+    "a3_alumni_lu_yongxiang",
+    "a3_alumni_chen_jiangong",
+    "a3_alumni_tan_jiazhen",
+    "a3_alumni_cheng_kaijia",
+    "a1_classroom_104_blackboard_residual",
+    "a1_classroom_105_lectern_terminal",
     "a3_reference_classroom_layout",
     "a2_room204_residual_group",
     "a2_room204_podium_drawer",
     "a1_hall_clock_positioning_plate_slot"
   ]) || !/startsWith\("a2_room204_slot_"\)/.test(task9ActionableBlock)) {
-    errors.push("Task 9 Scene actionable target allowlist must extend the bakery chain with A3 reference, A2 residual, positioning plate, and all 12 Room204 slot targets");
+    errors.push("Task 9 Scene actionable target allowlist must include the front desk, A2 safety officer, A3 teacher, both classroom gates, A3 reference, A2 residual, positioning plate, and all 12 Room204 slot targets");
   }
   const task10ActionableBlock = scene.match(
     /export const TASK10_ACTIONABLE_TARGET_IDS[\s\S]*?export const TASK11_ACTIONABLE_TARGET_IDS/
@@ -1459,7 +1490,7 @@ function validateTask7RuntimeSources(errors) {
   )?.[0] ?? "";
   if (!/case "open_power_panel"[\s\S]*?paper_temporarily_out_of_inventory[\s\S]*?return acceptReadOnly\(\)/.test(powerControllerBlock)
     || !/case "toggle_light_zone"[\s\S]*?toggleChapterFourLightZone\(previousMask, intent\.zoneId\)[\s\S]*?power_zone_toggled/.test(powerControllerBlock)
-    || !/case "lock_light_grid"[\s\S]*?isChapterFourLightGridSolved[\s\S]*?targetMask[\s\S]*?transition\(state, "final_chase"[\s\S]*?light_grid_locked[\s\S]*?locked:\s*true[\s\S]*?power_grid_locked/.test(powerControllerBlock)) {
+    || !/case "lock_light_grid"[\s\S]*?isChapterFourLightGridSolved[\s\S]*?targetMask[\s\S]*?zhu_two_questions_answered[\s\S]*?light_grid_locked[\s\S]*?canruo_star_lamp_primed[\s\S]*?transition\(state, "final_chase"[\s\S]*?locked:\s*true[\s\S]*?power_grid_locked/.test(powerControllerBlock)) {
     errors.push("Task 11 controller must use the shared pure grid model for open, toggle, unique-target lock and final-chase commit");
   }
 
@@ -1505,13 +1536,21 @@ function validateTask7RuntimeSources(errors) {
     || !/allowScenePointer[\s\S]*?finalClockDragActive[\s\S]*?storyPresentation === "idle"[\s\S]*?pendingStoryRequest === null/.test(scene)
     || !/chapter4OverlayBlocked\s*=\s*chapter4InteractionBlocked\s*\|\|\s*chapter4PowerPanelOpen/.test(host)
     || !/chapter4PhaserInputBlocked[\s\S]*?chapter4InteractionBlocked && !chapter4ScenePointerAllowed/.test(host)
+    || !/chapter4PhaserKeyboardBlocked[\s\S]*?chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed/.test(host)
     || !/setChapter4ScenePointerAllowed\(locked && event\.payload\?\.allowScenePointer === true\)/.test(host)
-    || !/setRpgKeyboardEnabled\(game, !keyboardBlocked && !chapter4OverlayBlocked\)/.test(host)
+    || !/setChapter4SceneKeyboardAllowed\(locked && event\.payload\?\.allowSceneKeyboard === true\)/.test(host)
+    || !/setRpgKeyboardEnabled\(game, !keyboardBlocked && !chapter4PhaserKeyboardBlocked\)/.test(host)
     || !/showTaskBar[\s\S]*?!chapter4OverlayBlocked/.test(host)
     || !/photoSessionOpen \|\| chapter4OverlayBlocked \? null/.test(host)
     || !/chapter4MazeUiActive && !chapter4OverlayBlocked/.test(host)
     || !/!chapter4OverlayBlocked\s*&&\s*!fishingSession\s*&&\s*!photoSessionOpen[\s\S]*?<RpgInventoryDock/.test(host)) {
     errors.push("Task 11 final-clock drag and minute-theft presentation must keep Scene movement plus Host task, system, mode and inventory controls locked");
+  }
+  if (!/allowScenePointer[\s\S]*?this\.alumniPanel !== null/.test(scene)
+    || !/allowSceneKeyboard\s*=\s*locked && this\.alumniPanel !== null/.test(scene)
+    || !/actionButton[\s\S]*?setInteractive[\s\S]*?advanceAlumniPanel/.test(scene)
+    || !/confirmButton[\s\S]*?setInteractive[\s\S]*?advanceAlumniPanel/.test(scene)) {
+    errors.push("A3 alumni modal must keep Scene pointer/keyboard input available and provide explicit pointer confirmation controls");
   }
   const lifecycleCleanupBlock = scene.match(
     /this\.pendingMoveTimer\?\.remove\(false\)[\s\S]*?clearRpgRuntimeDebugState\(\)/
@@ -1895,8 +1934,8 @@ function validate(content) {
     errors.push("tasks must be an object");
   } else {
     const activeTaskEntries = Object.entries(tasks).filter(([taskKey]) => taskKey !== "chapter_complete");
-    if (Object.keys(tasks).length !== 29 || activeTaskEntries.length !== 28) {
-      errors.push("tasks must contain 28 active tasks plus chapter_complete");
+    if (Object.keys(tasks).length !== 34 || activeTaskEntries.length !== 33) {
+      errors.push("tasks must contain 33 active tasks plus chapter_complete");
     }
     for (const [taskKey, task] of Object.entries(tasks)) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
@@ -1914,8 +1953,8 @@ function validate(content) {
       (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
       0
     );
-    if (activeHintCount !== 84) {
-      errors.push("tasks must expose the full 84-hint active contract");
+    if (activeHintCount !== 99) {
+      errors.push("tasks must expose the full 99-hint active contract");
     }
     const room204PlayerCopy = [
       tasks.restore_room204?.label,

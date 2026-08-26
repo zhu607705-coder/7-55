@@ -13,7 +13,6 @@ export const PHONE_HOME_APP_IDS = Object.freeze([
   "timeline_recovery",
   "voice_memos",
   "cc98",
-  "bike_arcade",
   "control_center",
   "clock"
 ] as const satisfies readonly PhoneHomeAppId[]);
@@ -31,7 +30,6 @@ export function normalizePhoneHomeAppOrder(value: unknown): PhoneHomeAppId[] {
 }
 
 export function canRemovePhoneHomeApp(state: PhoneHomeRemovalContext, appId: PhoneHomeAppId): boolean {
-  if (appId === "bike_arcade") return false;
   if (appId === "tiyi") {
     return state.actOne.exerciseStarted && state.ui.libraryFinalsPuzzle.presenceProofCollected;
   }

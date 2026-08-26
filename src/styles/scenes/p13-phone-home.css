@@ -765,13 +765,8 @@
   opacity: 0.58;
 }
 
-.phone .app-locked .cc98-text,
-.phone .app-locked .game-app-icon {
+.phone .app-locked .cc98-text {
   color: #d6d9dd;
-}
-
-.phone .app-locked .game-app-icon i {
-  border-color: #d6d9dd;
 }
 
 .phone .app-locked::after {
@@ -901,72 +896,4 @@
   display: block;
   height: 38px;
   width: 38px;
-}
-
-.phone .game-app-icon {
-  background: #20272f;
-  color: #f0d54e;
-  overflow: hidden;
-}
-
-.phone .bike-game-app .game-app-icon {
-  overflow: visible;
-}
-
-.phone .game-app-badge {
-  align-items: center;
-  background: #c95349;
-  border: 2px solid #20272f;
-  color: #fff;
-  display: flex;
-  font-family: monospace;
-  font-size: var(--fs-micro);
-  height: 18px;
-  justify-content: center;
-  position: absolute;
-  right: -7px;
-  top: -7px;
-  width: 18px;
-  z-index: 4;
-}
-
-.phone .bike-game-app.is-complete .game-app-badge {
-  background: #4e8f61;
-}
-
-.phone .bike-game-app.is-unlock-pulse .app-icon {
-  animation: bike-app-unlock var(--dur-scene) var(--ease-pixel) 1;
-}
-
-.phone .bike-arcade-task-note {
-  border-color: #b48d24;
-}
-
-.phone .bike-arcade-task-note .mini.game-app-icon {
-  align-items: center;
-  display: flex;
-  font-family: monospace;
-  font-size: var(--fs-micro);
-  justify-content: center;
-}
-
-@keyframes bike-app-unlock {
-  0%, 100% { box-shadow: 0 3px 0 var(--shadow-warm), 0 0 0 0 #f0d54e; }
-  50% { box-shadow: 0 3px 0 var(--shadow-warm), 0 0 0 5px #f0d54e; }
-}
-
-.phone .game-app-icon span {
-  font-size: var(--fs-body);
-  font-weight: 900;
-  position: relative;
-  z-index: 2;
-}
-
-.phone .game-app-icon i {
-  border: 2px solid #f0d54e;
-  bottom: 5px;
-  height: 13px;
-  left: 7px;
-  position: absolute;
-  right: 7px;
 }

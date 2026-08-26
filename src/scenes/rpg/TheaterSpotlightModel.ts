@@ -158,9 +158,9 @@ export function getRequiredTheaterSpotlightLockMs(
 }
 
 /**
- * Pure validation shared by the story controller and the endless extractor.
- * It has no store, scene or timer dependency, so story progression retains
- * controller ownership while matching the measured scene payload exactly.
+ * Pure story validation with no store, scene or timer dependency. The chapter
+ * controller retains progression ownership while matching the measured scene
+ * payload exactly.
  */
 export function validateTheaterSpotlightAttempt(
   attempt: TheaterSpotlightAttempt,

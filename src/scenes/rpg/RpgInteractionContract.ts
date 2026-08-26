@@ -69,6 +69,17 @@ export type ChapterFour755InteractionTargetId =
   | "a1_bakery_conveyor_edge"
   | "a1_bakery_hour_hand_pickup"
   | "a1_hall_clock_hour_hand_socket"
+  | "a1_front_desk_attendant"
+  | "a2_elevator_attendant"
+  | "a3_reference_teacher"
+  | "a3_alumni_su_buqing"
+  | "a3_alumni_zhu_kezhen"
+  | "a3_alumni_lu_yongxiang"
+  | "a3_alumni_chen_jiangong"
+  | "a3_alumni_tan_jiazhen"
+  | "a3_alumni_cheng_kaijia"
+  | "a1_classroom_104_blackboard_residual"
+  | "a1_classroom_105_lectern_terminal"
   | "a3_reference_classroom_layout"
   | "a2_room204_residual_group"
   | ChapterFour755Room204SlotTargetId
@@ -94,6 +105,11 @@ export type ChapterFour755TargetConditionId =
   | "bakery_conveyor_available"
   | "hour_hand_pickup_available"
   | "hour_hand_install_available"
+  | "front_desk_attendant_available"
+  | "support_npc_available"
+  | "alumni_honor_wall_available"
+  | "classroom_104_content_available"
+  | "classroom_105_content_available"
   | "a3_reference_available"
   | "room204_residual_available"
   | "room204_slot_available"
@@ -519,6 +535,133 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
       && !hasChapterFourFact(state, "hour_hand_installed")
     ))
   ),
+  a1_front_desk_attendant: defineChapterFourTarget({
+    id: "a1_front_desk_attendant",
+    label: "与一楼前台值班助理交谈",
+    ...layoutAnchorTarget("A1", "a1_front_desk_attendant"),
+    activation: "phase_exclusive",
+    activePhases: [
+      "bakery_hour_hand",
+      "room204_restore",
+      "morning_checkin",
+      "exterior_closure"
+    ],
+    roomIds: ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_checkin"],
+    activationCondition: targetCondition("front_desk_attendant_available", () => true),
+    proximity: 104
+  }),
+  a2_elevator_attendant: defineChapterFourTarget({
+    id: "a2_elevator_attendant",
+    label: "与二楼电梯口值班安全员交谈",
+    ...layoutAnchorTarget("A2", "a2_elevator_attendant"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a2_corridor", "a2_room204"],
+    activationCondition: targetCondition("support_npc_available", () => true),
+    proximity: 92
+  }),
+  a3_reference_teacher: defineChapterFourTarget({
+    id: "a3_reference_teacher",
+    label: "与三楼参照教室教师交谈",
+    ...layoutAnchorTarget("A3", "a3_reference_teacher"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_reference_classroom", "a3_wayfinding"],
+    activationCondition: targetCondition("support_npc_available", () => true),
+    proximity: 92
+  }),
+  a3_alumni_su_buqing: defineChapterFourTarget({
+    id: "a3_alumni_su_buqing",
+    label: "查看苏步青生平",
+    ...layoutAnchorTarget("A3", "a3_alumni_su_buqing"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_wayfinding", "a3_reference_classroom"],
+    activationCondition: targetCondition("alumni_honor_wall_available", () => true),
+    proximity: 72
+  }),
+  a3_alumni_zhu_kezhen: defineChapterFourTarget({
+    id: "a3_alumni_zhu_kezhen",
+    label: "查看竺可桢生平与竺老两问",
+    ...layoutAnchorTarget("A3", "a3_alumni_zhu_kezhen"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_wayfinding", "a3_reference_classroom"],
+    activationCondition: targetCondition("alumni_honor_wall_available", () => true),
+    proximity: 72
+  }),
+  a3_alumni_lu_yongxiang: defineChapterFourTarget({
+    id: "a3_alumni_lu_yongxiang",
+    label: "查看路甬祥生平",
+    ...layoutAnchorTarget("A3", "a3_alumni_lu_yongxiang"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_wayfinding", "a3_reference_classroom"],
+    activationCondition: targetCondition("alumni_honor_wall_available", () => true),
+    proximity: 72
+  }),
+  a3_alumni_chen_jiangong: defineChapterFourTarget({
+    id: "a3_alumni_chen_jiangong",
+    label: "查看陈建功生平",
+    ...layoutAnchorTarget("A3", "a3_alumni_chen_jiangong"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_wayfinding", "a3_reference_classroom"],
+    activationCondition: targetCondition("alumni_honor_wall_available", () => true),
+    proximity: 72
+  }),
+  a3_alumni_tan_jiazhen: defineChapterFourTarget({
+    id: "a3_alumni_tan_jiazhen",
+    label: "查看谈家桢生平",
+    ...layoutAnchorTarget("A3", "a3_alumni_tan_jiazhen"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_wayfinding", "a3_reference_classroom"],
+    activationCondition: targetCondition("alumni_honor_wall_available", () => true),
+    proximity: 72
+  }),
+  a3_alumni_cheng_kaijia: defineChapterFourTarget({
+    id: "a3_alumni_cheng_kaijia",
+    label: "查看程开甲生平",
+    ...layoutAnchorTarget("A3", "a3_alumni_cheng_kaijia"),
+    activation: "phase_exclusive",
+    activePhases: ["room204_restore"],
+    roomIds: ["a3_wayfinding", "a3_reference_classroom"],
+    activationCondition: targetCondition("alumni_honor_wall_available", () => true),
+    proximity: 72
+  }),
+  a1_classroom_104_blackboard_residual: defineChapterFourTarget({
+    id: "a1_classroom_104_blackboard_residual",
+    label: "观察 104 黑板擦痕",
+    ...layoutAnchorTarget("A1", "a1_classroom_104_blackboard_residual"),
+    activation: "phase_exclusive",
+    activePhases: [
+      "room204_restore",
+      "maintenance_repair",
+      "blackout_light_grid",
+      "return_to_clock"
+    ],
+    roomIds: ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
+    activationCondition: targetCondition("classroom_104_content_available", () => true),
+    proximity: 96,
+    requiredMode: "dark"
+  }),
+  a1_classroom_105_lectern_terminal: defineChapterFourTarget({
+    id: "a1_classroom_105_lectern_terminal",
+    label: "检查 105 讲台回放",
+    ...layoutAnchorTarget("A1", "a1_classroom_105_lectern_terminal"),
+    activation: "phase_exclusive",
+    activePhases: [
+      "room204_restore",
+      "maintenance_repair",
+      "blackout_light_grid",
+      "return_to_clock"
+    ],
+    roomIds: ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
+    activationCondition: targetCondition("classroom_105_content_available", () => true),
+    proximity: 76,
+    requiredMode: "light"
+  }),
   a3_reference_classroom_layout: defineChapterFourTarget({
     id: "a3_reference_classroom_layout",
     label: "三楼晨间教室布置参照",

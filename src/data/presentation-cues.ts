@@ -221,79 +221,6 @@ export const PRESENTATION_CUES: Record<string, PresentationCueDefinition> = {
     durationMs: 2400,
     priority: 3,
     visual: false
-  },
-  bike_arcade_unlocked: {
-    kind: "chapter",
-    title: "新任务已开放",
-    detail: "求是潮 755",
-    mark: "755",
-    durationMs: 1700,
-    priority: 2
-  },
-  bike_arcade_opened: {
-    kind: "chapter",
-    title: "求是潮 755",
-    detail: "三车道 · 三次机会",
-    mark: "07:55",
-    durationMs: 1500,
-    priority: 2
-  },
-  bike_arcade_run_started: {
-    kind: "countdown",
-    title: "开始骑行",
-    detail: "保持车道",
-    mark: "3·2·1",
-    durationMs: 950,
-    priority: 2
-  },
-  bike_arcade_milestone: {
-    kind: "milestone",
-    title: "里程节点",
-    detail: "继续前进",
-    mark: "188m",
-    durationMs: 1050,
-    priority: 2
-  },
-  bike_arcade_collision: {
-    kind: "impact",
-    title: "发生碰撞",
-    detail: "短暂无敌已启动",
-    mark: "×",
-    durationMs: 520,
-    priority: 3
-  },
-  bike_arcade_last_life: {
-    kind: "alert",
-    title: "剩余一次机会",
-    detail: "下一次碰撞将结束本轮",
-    mark: "1",
-    durationMs: 1500,
-    priority: 3
-  },
-  bike_arcade_won: {
-    kind: "success",
-    title: "已抵达 755 米",
-    detail: "第三章完成记录已保存",
-    mark: "CLEAR",
-    durationMs: 2300,
-    priority: 3
-  },
-  bike_arcade_lost: {
-    kind: "result",
-    title: "本轮结束",
-    detail: "最高距离已保存",
-    mark: "STOP",
-    durationMs: 1800,
-    priority: 3
-  },
-  chapter_transition_opened: {
-    kind: "result",
-    title: "CHAPTER 03 CLEAR",
-    detail: "下一任务已开放",
-    mark: "755",
-    durationMs: 1800,
-    priority: 3,
-    visual: false
   }
 };
 
@@ -310,34 +237,6 @@ export function resolvePresentationCue(
   const definition = PRESENTATION_CUES[cueId];
   if (!definition || definition.visual === false) {
     return null;
-  }
-
-  if (cueId === "bike_arcade_milestone") {
-    const distance = Number(payload.distance);
-    const milestone = distance === 188 || distance === 377 || distance === 566 || distance === 755
-      ? distance
-      : 188;
-    return {
-      ...definition,
-      id: cueId,
-      mark: `${milestone}m`,
-      detail: milestone === 188
-        ? "节奏提升"
-        : milestone === 377
-          ? "拥堵升级"
-          : milestone === 566
-            ? "最后冲刺"
-            : "目标抵达"
-    };
-  }
-
-  if (cueId === "bike_arcade_collision") {
-    const lives = Number(payload.lives);
-    return {
-      ...definition,
-      id: cueId,
-      detail: Number.isFinite(lives) ? `剩余机会 ${Math.max(0, lives)}` : definition.detail
-    };
   }
 
   return { ...definition, id: cueId };

@@ -71,7 +71,7 @@ export interface RpgPlayerPerspectiveMetrics {
   nameOffsetY: number;
 }
 
-const RPG_PLAYER_TEXTURE_ASSETS = {
+export const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-down-0": playerDown0Url,
   "act1-player-down-1": playerDown1Url,
   "act1-player-down-2": playerDown2Url,
@@ -181,6 +181,18 @@ export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): 
   applyRpgPlayerVisualScale(player, RPG_PLAYER_DISPLAY_SCALE);
 }
 
+/**
+ * Convert elapsed movement time into the shared eight-phase walk sequence.
+ * The elapsed value is local to one continuous walk, so a fresh walk cannot
+ * enter halfway through a stride because of a scene's absolute game clock.
+ */
+export function getRpgPlayerWalkFrameAt(elapsedMs: number): RpgPlayerWalkFrame {
+  return (
+    Math.floor(Math.max(0, elapsedMs) / RPG_PLAYER_WALK_FRAME_MS)
+    % RPG_PLAYER_WALK_FRAME_COUNT
+  ) as RpgPlayerWalkFrame;
+}
+
 export function applyCampusRpgPlayerPerspectiveScale(
   player: Phaser.Physics.Arcade.Sprite,
   worldY: number
@@ -250,6 +262,7 @@ export class RpgPlayerAnimator {
   private targetFacing: RpgPlayerFacing;
   private targetFlipX: boolean;
   private walkingFrame: RpgPlayerWalkFrame = 0;
+  private walkCycleStartedAt: number | null = null;
   private turn: TurnState | null = null;
 
   constructor(
@@ -285,6 +298,7 @@ export class RpgPlayerAnimator {
     this.targetFacing = facing;
     this.targetFlipX = flipX;
     this.walkingFrame = 0;
+    this.walkCycleStartedAt = null;
     this.turn = null;
     this.applyPose(facing, 0, flipX);
   }
@@ -305,6 +319,7 @@ export class RpgPlayerAnimator {
         this.targetFacing = desired.facing;
         this.targetFlipX = desired.flipX;
         this.walkingFrame = 0;
+        this.walkCycleStartedAt = null;
       }
     }
 
@@ -336,17 +351,25 @@ export class RpgPlayerAnimator {
         return;
       }
       this.turn = null;
+      this.walkingFrame = 0;
+      this.walkCycleStartedAt = now;
+      // Keep the target's neutral pose visible for one render before the
+      // eight-phase loop advances. This preserves the missing support beat
+      // when the player changes direction while holding movement input.
+      return;
     }
 
     if (!moving) {
       this.walkingFrame = 0;
+      this.walkCycleStartedAt = null;
       this.applyPose(this.targetFacing, 0, this.targetFlipX);
       return;
     }
 
-    const nextFrame = (
-      Math.floor(now / RPG_PLAYER_WALK_FRAME_MS) % RPG_PLAYER_WALK_FRAME_COUNT
-    ) as RpgPlayerWalkFrame;
+    if (this.walkCycleStartedAt === null || now < this.walkCycleStartedAt) {
+      this.walkCycleStartedAt = now;
+    }
+    const nextFrame = getRpgPlayerWalkFrameAt(now - this.walkCycleStartedAt);
     if (
       nextFrame !== this.walkingFrame
       || this.player.texture.key !== `act1-player-${this.targetFacing}-${nextFrame}`

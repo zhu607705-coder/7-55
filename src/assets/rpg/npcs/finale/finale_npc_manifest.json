@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "imagegen-derived-2026-08-22",
+  "generatedAt": "imagegen-derived-2026-08-26",
   "logicalFrame": {
     "width": 96,
     "height": 128
   },
   "sourceView": "top_down_front_pixel",
   "generation": {
-    "requestedProvider": "MiniMax CLI image-01",
-    "rejectedMiniMaxReason": "layout_style_and_background_contract_failed",
+    "requestedProvider": "built-in image_gen",
+    "rejectedMiniMaxReason": "retained historical source metadata only",
     "selectedProvider": "OpenAI image_gen",
-    "alphaRole": "native_transparent_cutout"
+    "alphaRole": "chroma_key_postprocessed_transparent_cutout"
   },
   "sources": {
     "student": {
@@ -22,7 +22,7 @@
       "fixedUniformScale": 0.39436619718309857,
       "sha256": "e134515b1d842a12f20c139df23a19dbba6365ddda598c10f50137fb56c1d927"
     },
-    "cleaner": {
+    "cleanerAction": {
       "file": "src/assets/rpg/npcs/finale/source/finale_cleaner_source_grid_v2.png",
       "columns": 4,
       "rows": 4,
@@ -31,7 +31,43 @@
       "fixedUniformScale": 0.3971631205673759,
       "sha256": "6557cdc0a33dbc90dfee3c4b057fd1034dec4463fa1511335433a058780b9431"
     },
-    "guard": {
+    "cleanerIdle": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_cleaner_idle_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.2731707317073171,
+      "sha256": "7fa25df28e6883ae876616d3026e4976b44f368565a3206d08fd041df04b6a8e"
+    },
+    "cleanerPushDown": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_cleaner_push_down_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.24347826086956523,
+      "sha256": "cb5e2e9231177ce49705d2b7e58970c1e9e201f583850d0154b248756cf2d286"
+    },
+    "cleanerPushUp": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_cleaner_push_up_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.2692307692307692,
+      "sha256": "055d65f71b8e1df393f761a206b39efa564e05a2f5a10cfe9f96bac935d0de4b"
+    },
+    "cleanerPushSide": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_cleaner_push_side_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.34890965732087226,
+      "sha256": "210c157aa5ddb1f47a1af38b34d1aec2e819512c6ef4ee15fc02b001f66f304d"
+    },
+    "guardAction": {
       "file": "src/assets/rpg/npcs/finale/source/finale_guard_source_grid_v2.png",
       "columns": 4,
       "rows": 4,
@@ -39,6 +75,33 @@
       "componentAreaThreshold": 500,
       "fixedUniformScale": 0.4163568773234201,
       "sha256": "f2ad7d29e005acba8b105d092aba4c70e69182ccd79bedb1b61b19af16be05cf"
+    },
+    "guardWalkDown": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_guard_walk_down_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.4933920704845815,
+      "sha256": "fbc26f392564b59e3dc814610e80f707684d6e977d2d9003e973284bdbac83ef"
+    },
+    "guardWalkUp": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_guard_walk_up_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.2924281984334204,
+      "sha256": "d5a88030dba36097a3d1b8d56b6c52e9928a41e6436e1f185db40b2ae11ba936"
+    },
+    "guardWalkSide": {
+      "file": "src/assets/rpg/npcs/finale/source/finale_guard_walk_side_source_grid_v3.png",
+      "columns": 4,
+      "rows": 2,
+      "extraction": "ordered_alpha_components",
+      "componentAreaThreshold": 500,
+      "fixedUniformScale": 0.5209302325581395,
+      "sha256": "2313d308eb478490898d6ba9e0cacf178ff31f49cc7d898cb86a2a20e0f03d4a"
     }
   },
   "animations": [
@@ -54,7 +117,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "2b100b6fa98160b438f7f902840aa90eb4a2b08e0a65abb5da4ec5d586af086b"
+      "sha256": "f3b256e7a7350d624f406bacef08ae666d8afa118432ab224e1a4a2fedd4fe2e"
     },
     {
       "id": "student_phone_glance",
@@ -68,7 +131,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "0010ed68e4b95eb1aa043e6087cb1b91fada7d3b25160899af65d84ad7fdfd1c"
+      "sha256": "f2813f220d47c73d0880b95ba056881c09886f901a9fce7371fcacd2321c29b0"
     },
     {
       "id": "student_adjust_bag",
@@ -82,7 +145,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "92df4196081fe197ee1f8a2790b5c1731db7214d372405097e787a1e7b3dae54"
+      "sha256": "780bc736d7e20857508898ee6af3243e395b057c78a4a8534c21f9f317119e59"
     },
     {
       "id": "student_push_door",
@@ -96,7 +159,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "8e661e29277eebb642e0ebee82641e5285838938d252352671ef280888d72f43"
+      "sha256": "9dcda9aa6534ef93976b5f69b6c0cb7afbf58091991a2157ae0b71b82ee6f637"
     },
     {
       "id": "student_idle",
@@ -110,21 +173,49 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "da378248112d53006c0c19253a632d41dd56a7f75e5ebcfb8664301f0551b15c"
+      "sha256": "88871c8c1100ee72ba9cebb84de3602e466c6bf5747972d529db79dbf9c8f22f"
     },
     {
       "id": "cleaner_push_cart",
-      "file": "src/assets/rpg/npcs/finale/cleaner_push_cart_4frame.png",
+      "file": "src/assets/rpg/npcs/finale/cleaner_push_cart_8frame.png",
       "frameWidth": 192,
       "frameHeight": 128,
-      "frameCount": 4,
-      "fps": 8,
+      "frameCount": 8,
+      "fps": 9,
       "loop": true,
       "footAnchor": {
         "x": 0.5,
         "y": 1
       },
-      "sha256": "35a7e47cc4fa9f448f3f04c9c4fb87a0595344f72478223961fd29157d2e81f8"
+      "sha256": "b3149e79622fd89da7eec97c4f9f1aa0bf6fdda4838d93f15ff64b636ab5d4d4"
+    },
+    {
+      "id": "cleaner_push_cart_down",
+      "file": "src/assets/rpg/npcs/finale/cleaner_push_cart_down_8frame.png",
+      "frameWidth": 192,
+      "frameHeight": 128,
+      "frameCount": 8,
+      "fps": 9,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "56b17d565581ca697864482cd4cebe1b55d71dd6153c9e6d7197d16b017e1bfb"
+    },
+    {
+      "id": "cleaner_push_cart_up",
+      "file": "src/assets/rpg/npcs/finale/cleaner_push_cart_up_8frame.png",
+      "frameWidth": 192,
+      "frameHeight": 128,
+      "frameCount": 8,
+      "fps": 9,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "4ad404ac81f54c121f250ffbaf606f98955106df51796508623e5f350cb262bc"
     },
     {
       "id": "cleaner_mop",
@@ -138,7 +229,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "286dcd355e1efad0957157dd07160fa1602f1918dd2dd0d2cecffef4e5eb244d"
+      "sha256": "996fd7c0521d49c633d9033db1e0eae2de5a9a003861b013452d882e70ca57ba"
     },
     {
       "id": "cleaning_cart",
@@ -152,7 +243,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "8fd6a4ab5b600449ed80b2eb91b71f2a0a8c46937e00845d1b44809edf42b57c"
+      "sha256": "13521f3e15df3f73cec566c71fdb43042664db7898bea982e20f6837212f08fb"
     },
     {
       "id": "cleaner_place_sign",
@@ -166,7 +257,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "1e6af1785caa5d641a15d895bafed3247bf99a4f9f9794212f3474f153a733cf"
+      "sha256": "31c6a29ee7262a32a475438320e9cbbb962b7a91a03d2b044c0b9ec51ad0f6a9"
     },
     {
       "id": "cleaner_toggle_lights",
@@ -180,7 +271,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "396dec749565b131db7e03472c49b813a5cbc7a654ee32c55b1a2ce6964fbc03"
+      "sha256": "46f33382f833e040f06b505f27625fb6cd3ec0894e6448f5a18a4993ff77af8e"
     },
     {
       "id": "cleaner_rest",
@@ -194,21 +285,21 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "4c329bad7bb21d9adf9898238b430195295bac1e77c75396b8626da8d6ae17e7"
+      "sha256": "a2301b101d0baabd9912e511f51bc3e78c4f1fd19a0ae04ca8144654b0b18edc"
     },
     {
       "id": "cleaner_idle",
-      "file": "src/assets/rpg/npcs/finale/cleaner_idle_2frame.png",
+      "file": "src/assets/rpg/npcs/finale/cleaner_idle_8frame.png",
       "frameWidth": 96,
       "frameHeight": 128,
-      "frameCount": 2,
-      "fps": 2,
+      "frameCount": 8,
+      "fps": 6,
       "loop": true,
       "footAnchor": {
         "x": 0.5,
         "y": 1
       },
-      "sha256": "2119caa68acc8a88e52ab766e68d37ea77ee1b3ad3a41acce45b0b1de0a982cc"
+      "sha256": "391f5288aa8acdfa2d6b96efcdf49fbc07d60b2b7b76cf31bb4ea362d45ca203"
     },
     {
       "id": "guard_walk",
@@ -216,13 +307,41 @@
       "frameWidth": 96,
       "frameHeight": 128,
       "frameCount": 8,
-      "fps": 8,
+      "fps": 9,
       "loop": true,
       "footAnchor": {
         "x": 0.5,
         "y": 1
       },
-      "sha256": "8653429dc4a6896d545b95053dc250c6fc61a9627ca7d026a79d7ca52c14eaf3"
+      "sha256": "21a66a9887295dd6d00bbce8acf18b637cf4b0364248b7cb83994e8de7c84da2"
+    },
+    {
+      "id": "guard_walk_down",
+      "file": "src/assets/rpg/npcs/finale/guard_walk_down_8frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 8,
+      "fps": 9,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "f27adc541f0b73f669163d1e4e2e15dec4349a1b07f10069e6cfa875dabe0dc1"
+    },
+    {
+      "id": "guard_walk_up",
+      "file": "src/assets/rpg/npcs/finale/guard_walk_up_8frame.png",
+      "frameWidth": 96,
+      "frameHeight": 128,
+      "frameCount": 8,
+      "fps": 9,
+      "loop": true,
+      "footAnchor": {
+        "x": 0.5,
+        "y": 1
+      },
+      "sha256": "2649d5abba5a7b8c34fad580c8f1148f858b9cdebd639dea2c44c460273bc423"
     },
     {
       "id": "guard_check_list",
@@ -236,7 +355,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "d0f470c15dd7939032b76dee887acec42ecdfe7d03f9dd1d19de4d87e3e91950"
+      "sha256": "246823ed7ac726efbcc13f822826949e32cd19aa9685f6272293b139f9e3e797"
     },
     {
       "id": "guard_check_watch",
@@ -250,7 +369,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "31ccf7dc703cf6dafdf28c2bd7910cc1245ba0c306693d354fc394a13b0b5b22"
+      "sha256": "183820b808dc7ea801cb878687aa6537c34225910569b37a421ed4755d5d346e"
     },
     {
       "id": "guard_flashlight_down",
@@ -264,7 +383,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "20e9d8f21c82e430f29979d47553322e82f9993667500ad659d3f2a46c31bb77"
+      "sha256": "4205c8b97bcf132f1e0ec04d76b07e5a59e675a21f8f0d1ef1123cd481fd8395"
     },
     {
       "id": "guard_radio",
@@ -278,7 +397,7 @@
         "x": 0.5,
         "y": 1
       },
-      "sha256": "ba228dd7cd3192564478bbfe84434794792273d1f5e10cbacb952842007173fb"
+      "sha256": "edd060f3a462ebd7a1e0150c587c4112f0abeb67f06848a420dba4b077bab1de"
     }
   ]
 }

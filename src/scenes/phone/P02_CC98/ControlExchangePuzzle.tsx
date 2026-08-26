@@ -30,7 +30,7 @@ export function ControlExchangePuzzle({ router, campusCardCents, purchased }: Co
       kit.flags.toast("手柄已经在道具栏里。", "system");
       return;
     }
-    kit.flags.toast("支付成功：游戏手柄已放入道具栏。回寝室拖到小人身上安装。", "task");
+    kit.flags.toast("支付成功：游戏手柄已放入道具栏。", "task");
   }
 
   function returnToDorm() {

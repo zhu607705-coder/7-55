@@ -30,7 +30,7 @@ const expectedFloors = ["A1", "A2", "A3"];
 const expectedAssets = ["a1_base", "a2_base", "a3_base"];
 const expectedCheckpoints = ["c4_a1_lobby", "c4_a2_corridor", "c4_a3_wayfinding"];
 const expectedFloorCounts = {
-  A1: { collisions: 11, walkable: 7, occlusions: 9 },
+  A1: { collisions: 12, walkable: 7, occlusions: 9 },
   A2: { collisions: 18, walkable: 5, occlusions: 6 },
   A3: { collisions: 13, walkable: 6, occlusions: 2 }
 };
@@ -213,9 +213,9 @@ const expectedMorningCheckinRuntimeTargets = [
   }
 ];
 const expectedBakeryCrowdRoutes = [
-  ["bakery_student_01", 548, 620, 610, 620, 32, 360],
-  ["bakery_student_02", 610, 656, 548, 656, 28, 420],
-  ["bakery_student_03", 548, 692, 610, 692, 34, 300]
+  ["bakery_student_01", 540, 600, 670, 600, 32, 360],
+  ["bakery_student_02", 1120, 600, 990, 600, 28, 420],
+  ["bakery_student_03", 540, 710, 660, 710, 34, 300]
 ];
 const expectedRoom204PieceIds = Array.from(
   { length: 12 },
@@ -368,6 +368,40 @@ assertJsonEqual(
   { x: 490, y: 514, width: 41, height: 263 },
   "A1 bakery doorway"
 );
+const frontDeskCounterCollision = a1?.staticCollisions?.find(
+  (entry) => entry.id === "a1_air_wall_front_desk_counter"
+);
+const frontDeskCounterOcclusion = a1?.foregroundOcclusions?.find(
+  (entry) => entry.id === "a1_foreground_016"
+);
+const frontDeskAnchor = a1?.anchors?.find(
+  (entry) => entry.id === "a1_front_desk_attendant"
+);
+assert(
+  frontDeskCounterCollision?.sourceAnnotationId === "a1-ann-016",
+  "A1 front desk counter collision must retain annotation 016 provenance"
+);
+assertJsonEqual(
+  rectOnly(frontDeskCounterCollision),
+  { x: 758, y: 633, width: 179, height: 26 },
+  "A1 front desk counter collision"
+);
+assert(
+  frontDeskCounterCollision.x === frontDeskCounterOcclusion?.maskBounds?.x
+    && frontDeskCounterCollision.width === frontDeskCounterOcclusion?.maskBounds?.width
+    && frontDeskCounterCollision.y >= frontDeskCounterOcclusion?.maskBounds?.y
+    && frontDeskCounterCollision.y + frontDeskCounterCollision.height
+      === frontDeskCounterOcclusion?.baselineY,
+  "A1 front desk collision must cover the annotated counter facade through its occlusion baseline"
+);
+assert(
+  frontDeskCounterCollision.x === frontDeskAnchor?.bounds?.x
+    && frontDeskCounterCollision.width === frontDeskAnchor?.bounds?.width
+    && frontDeskCounterCollision.y >= frontDeskAnchor?.bounds?.y
+    && frontDeskCounterCollision.y + frontDeskCounterCollision.height
+      === frontDeskAnchor?.bounds?.y + frontDeskAnchor?.bounds?.height,
+  "A1 front desk collision must remain inside the interaction anchor and end at its lower edge"
+);
 
 const bakeryRuntime = layout.bakeryRuntime;
 assert(bakeryRuntime?.storyFloor === "A1", "bakery runtime must use A1 source coordinates");
@@ -464,7 +498,7 @@ assertJsonEqual(
     framePair: 3,
     frames: [6, 7],
     origin: { x: 0.5, y: 1 },
-    uniformScale: 0.65,
+    uniformScale: 0.52,
     position: { x: 365, y: 340 },
     collision: false,
     foregroundOcclusionId: "a1_foreground_018"
@@ -908,7 +942,7 @@ assertJsonEqual(maintenanceRuntime?.cleaner, {
   approximate: true
 }, "maintenance cleaner runtime");
 assertJsonEqual(maintenanceRuntime?.repairedPush, {
-  animationId: "cleaner_push_cart",
+  animationId: "cleaner_push_cart_up",
   from: { x: 1138, y: 716 },
   to: { x: 1138, y: 650 },
   durationMs: 900,
@@ -1050,8 +1084,8 @@ const initialEndpointCenter = {
     + Math.sin(finalClockRuntime.initialAngleDegrees * Math.PI / 180) * finalClockRuntime.minuteHandRadius
 };
 assertJsonEqual({
-  x: Math.floor(initialEndpointCenter.x - finalClockRuntime.endpoint.installationBounds.width / 2),
-  y: Math.floor(initialEndpointCenter.y - finalClockRuntime.endpoint.installationBounds.height / 2),
+  x: Math.round(initialEndpointCenter.x - finalClockRuntime.endpoint.installationBounds.width / 2),
+  y: Math.round(initialEndpointCenter.y - finalClockRuntime.endpoint.installationBounds.height / 2),
   width: finalClockRuntime.endpoint.installationBounds.width,
   height: finalClockRuntime.endpoint.installationBounds.height
 }, finalClockRuntime.endpoint.installationBounds, "Task11 programmatic minute endpoint outward bounds");

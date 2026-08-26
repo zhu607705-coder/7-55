@@ -17,7 +17,15 @@ export class SceneRouter {
     }
     const previousScene = this.store.getState().currentScene;
     this.history.push(previousScene);
-    this.store.setState((state) => ({ ...state, currentScene: sceneId }));
+    this.store.setState((state) => ({
+      ...state,
+      currentScene: sceneId,
+      ui: {
+        ...state.ui,
+        inventoryOpen: false,
+        selectedItem: null
+      }
+    }));
     this.events.emit("enter_scene", { sceneId });
     return true;
   }
@@ -30,7 +38,15 @@ export class SceneRouter {
       this.events.emit("feature_access_denied", { sceneId: previousScene });
       return;
     }
-    this.store.setState((state) => ({ ...state, currentScene: previousScene }));
+    this.store.setState((state) => ({
+      ...state,
+      currentScene: previousScene,
+      ui: {
+        ...state.ui,
+        inventoryOpen: false,
+        selectedItem: null
+      }
+    }));
     this.events.emit("enter_scene", { sceneId: previousScene });
   }
 

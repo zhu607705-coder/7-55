@@ -13,8 +13,6 @@ import { EndingScene } from "./P12_Ending";
 import { PhoneHomeScene } from "./P13_PhoneHome";
 import { WechatScene } from "./P14_Wechat";
 import { ZjudingScene } from "./P15_Zjuding";
-import { BikeArcadeScene } from "./P16_BikeArcade";
-import { ChapterTransitionScene } from "./P17_ChapterTransition";
 import { PhotosScene } from "./P18_Photos";
 import { ClockScene } from "./P19_Clock";
 import { TimelineRecoveryScene } from "./P20_TimelineRecovery";
@@ -73,14 +71,6 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
     label: "P04 校园卡余额",
     contract: "第二章取得校园卡后显示余额，并接受右移箭头。"
   },
-  bike_arcade: {
-    label: "P16 求是潮 755",
-    contract: "独立竖屏三车道骑行小游戏；躲避拥堵，抵达 755 米。"
-  },
-  chapter_transition: {
-    label: "P17 章节过渡",
-    contract: "第三章完成后的稳定出口；显示完成记录并承接下一章。"
-  },
   checkin: {
     label: "P11 校务签到",
     contract: "校园网输入 0798 → 短暂成功 → 经度与纬度错误 → 红闪和七秒黑屏。"
@@ -113,8 +103,6 @@ const REAL_SCENES: Partial<Record<SceneId, (props: SceneComponentProps) => JSX.E
   timeline_recovery: TimelineRecoveryScene,
   voice_memos: VoiceMemosScene,
   campus_card: CampusCardScene,
-  bike_arcade: BikeArcadeScene,
-  chapter_transition: ChapterTransitionScene,
   checkin: CheckinScene,
   bonsai: BonsaiScene,
   ending: EndingScene,

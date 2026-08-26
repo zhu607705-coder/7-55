@@ -53,21 +53,29 @@ import {
   type ChapterFour755IntentResult
 } from "../../modules/ChapterFourTemporalMazeController";
 import { ChapterFourPowerPanelGame } from "../../components/temporal-maze/ChapterFourPowerPanelGame";
+import { ChapterFourStairPuzzleOverlay } from "../../components/temporal-maze/ChapterFourStairPuzzleOverlay";
 import { useChapter4PrologueGateBlocked } from "../../components/Chapter4PrologueRuntimeGate";
 import { selectChapterFourMazeProjection } from "../../modules/ChapterFourMazeProjection";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
 import { QizhenLoopScene } from "./QizhenLoopScene";
-import { DormHubScene } from "./DormHubScene";
-import { LibraryInteriorScene } from "./LibraryInteriorScene";
-import { CanteenInteriorScene } from "./CanteenInteriorScene";
-import { TheaterInteriorScene } from "./TheaterInteriorScene";
+import { DORM_HUB_WARM_ASSET_URLS, DormHubScene } from "./DormHubScene";
+import { LIBRARY_INTERIOR_WARM_ASSET_URLS, LibraryInteriorScene } from "./LibraryInteriorScene";
+import { CANTEEN_INTERIOR_WARM_ASSET_URLS, CanteenInteriorScene } from "./CanteenInteriorScene";
+import { THEATER_INTERIOR_WARM_ASSET_URLS, TheaterInteriorScene } from "./TheaterInteriorScene";
 import { createTheaterRuntimePort } from "./TheaterRuntimeContract";
 import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
-import { QizhenLakeScene } from "./QizhenLakeScene";
+import { QIZHEN_LAKE_WARM_ASSET_URLS, QizhenLakeScene } from "./QizhenLakeScene";
 import type { QizhenFishingAction, QizhenFishingResult } from "./QizhenFishingRhythmModel";
+import { CanteenBikeTransitionOverlay } from "./CanteenBikeTransitionOverlay";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
-import { ChapterFourTemporalMazeScene } from "./ChapterFourTemporalMazeScene";
+import {
+  CHAPTER_FOUR_TEMPORAL_MAZE_WARM_ASSET_URLS,
+  ChapterFourTemporalMazeScene
+} from "./ChapterFourTemporalMazeScene";
+import { RPG_PLAYER_TEXTURE_ASSETS } from "./RpgPlayerTextures";
+import { ZIJINGANG_CAMPUS_PLATE_URL } from "./ZijingangLandmarkAssets";
+import { QIZHEN_LOOP_PANORAMA_URL } from "./QizhenLoopWorld";
 import { RpgRealityModeToggle } from "./RpgRealityModeToggle";
 import { createRpgBridge } from "./RpgBridge";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
@@ -119,6 +127,25 @@ const SCENE_CLASSES = {
   qizhen_lake: QizhenLakeScene,
   duan_yongping_temporal_maze: ChapterFourTemporalMazeScene
 } as const;
+
+const RPG_SCENE_WARM_ASSET_URLS: Readonly<Record<RpgSceneId, readonly string[]>> = {
+  campus_bootstrap: [ZIJINGANG_CAMPUS_PLATE_URL],
+  campus_qizhen_loop: [QIZHEN_LOOP_PANORAMA_URL],
+  dorm_hub: DORM_HUB_WARM_ASSET_URLS,
+  library_interior: LIBRARY_INTERIOR_WARM_ASSET_URLS,
+  canteen_interior: CANTEEN_INTERIOR_WARM_ASSET_URLS,
+  theater_interior: THEATER_INTERIOR_WARM_ASSET_URLS,
+  qizhen_lake: QIZHEN_LAKE_WARM_ASSET_URLS,
+  duan_yongping_temporal_maze: CHAPTER_FOUR_TEMPORAL_MAZE_WARM_ASSET_URLS
+};
+
+/** 与各 Phaser Scene 的 preload() 使用同一批 URL，不扫描素材源目录。 */
+export function getRpgSceneWarmAssetUrls(sceneId: RpgSceneId): readonly string[] {
+  return [...new Set([
+    ...Object.values(RPG_PLAYER_TEXTURE_ASSETS),
+    ...RPG_SCENE_WARM_ASSET_URLS[sceneId]
+  ])];
+}
 
 const DOUBLE_TAP_WINDOW_MS = 380;
 const MIN_TOUCH_DIRECTION_PULSE_MS = 96;
@@ -196,7 +223,16 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "pull_hall_clock",
   "inspect_bakery_conveyor_lamp",
   "complete_bakery_conveyor_stop",
+  "talk_to_a1_front_desk_attendant",
+  "talk_to_chapter_four_support_npc",
+  "inspect_alumni_figure",
+  "complete_zhu_two_questions",
+  "observe_classroom_104_chalk_residual",
+  "check_classroom_105_terminal_replay",
+  "observe_elevator_history",
+  "calibrate_elevator_history",
   "observe_a3_reference",
+  "complete_misaligned_stair",
   "observe_room204_residual",
   "place_room204_piece",
   "complete_room204_projection",
@@ -346,17 +382,33 @@ export function RpgGameHost({
   const chapter4IntentRequestSerialRef = useRef(0);
   const chapter4ResolvedRequestIdsRef = useRef<Set<string>>(new Set());
   const chapter4PowerPanelPendingRequestRef = useRef<string | null>(null);
+  const chapter4StairPendingRequestRef = useRef<string | null>(null);
+  const chapter4StairPausedSceneKeysRef = useRef<Set<string>>(new Set());
   const [chapter4InteractionBlocked, setChapter4InteractionBlocked] = useState(false);
   const [chapter4ScenePointerAllowed, setChapter4ScenePointerAllowed] = useState(false);
+  const [chapter4SceneKeyboardAllowed, setChapter4SceneKeyboardAllowed] = useState(false);
   const [chapter4PowerPanelSession, setChapter4PowerPanelSession] =
     useState<ChapterFourPowerPanelSession | null>(null);
   const [chapter4PowerPanelPending, setChapter4PowerPanelPending] = useState(false);
   const [chapter4PowerPanelFeedback, setChapter4PowerPanelFeedback] = useState<string | null>(null);
+  const [chapter4StairActive, setChapter4StairActive] = useState(false);
+  const [chapter4StairFeedback, setChapter4StairFeedback] = useState<string | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
   const pendingFishingRef = useRef<{ sessionId: string; spotId: QizhenFishingSpotId } | null>(null);
   const itemInspectOpen = inspectedMapItem !== null;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
-  const chaseActive = state.canteenHunt.phase === "chasing";
+  const canteenStartTransitionActive = state.canteenHunt.phase === "chase_ready"
+    && state.canteenHunt.bikePaid
+    && !state.canteenHunt.chaseCompleted;
+  const canteenChaseRunActive = state.canteenHunt.phase === "chasing"
+    && !state.canteenHunt.chaseCompleted;
+  const canteenFinishTransitionActive = state.canteenHunt.phase === "chasing"
+    && state.canteenHunt.chaseCompleted
+    && state.canteenHunt.chaseBestDistance >= 755;
+  const canteenExclusiveActive = canteenStartTransitionActive
+    || canteenChaseRunActive
+    || canteenFinishTransitionActive;
+  const chaseActive = canteenChaseRunActive;
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
@@ -374,22 +426,112 @@ export function RpgGameHost({
     && (state.chapter4.floor === "A1" || state.chapter4.floor === "A2" || state.chapter4.floor === "A3")
     && CHAPTER_FOUR_755_ACTIVE_PHASES.has(state.chapter4.phase);
   const chapter4PowerPanelOpen = chapter4PowerPanelSession !== null;
-  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen;
-  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen
+  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen || chapter4StairActive;
+  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4StairActive
     || (chapter4InteractionBlocked && !chapter4ScenePointerAllowed);
-  inputBlockedRef.current = inputBlocked || itemInspectOpen || chaseActive || chapter4PhaserInputBlocked || photoSessionOpen;
-  keyboardBlockedRef.current = keyboardBlocked || chaseActive || chapter4OverlayBlocked || photoSessionOpen;
+  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4StairActive
+    || (chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed);
+  inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked || photoSessionOpen;
+  keyboardBlockedRef.current = keyboardBlocked || canteenExclusiveActive || chapter4PhaserKeyboardBlocked || photoSessionOpen;
 
   useEffect(() => {
     if (!chapter4MazeActive) {
       chapter4ResolvedRequestIdsRef.current.clear();
       setChapter4InteractionBlocked(false);
+      setChapter4ScenePointerAllowed(false);
+      setChapter4SceneKeyboardAllowed(false);
       chapter4PowerPanelPendingRequestRef.current = null;
       setChapter4PowerPanelSession(null);
       setChapter4PowerPanelPending(false);
       setChapter4PowerPanelFeedback(null);
+      chapter4StairPendingRequestRef.current = null;
+      setChapter4StairActive(false);
+      setChapter4StairFeedback(null);
     }
   }, [chapter4MazeActive]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_stair_alignment_requested") return;
+      const current = store.getState().chapter4;
+      const allowed = runtimeScene === "duan_yongping_temporal_maze"
+        && current.phase === "room204_restore"
+        && current.floor === "A3"
+        && current.factIds.includes("a3_reference_observed")
+        && current.factIds.includes("zhu_two_questions_answered")
+        && !current.factIds.includes("misaligned_stair_solved");
+      if (!allowed) {
+        events.emit("rpg_subtitle", {
+          text: current.factIds.includes("a3_reference_observed")
+            ? "先到三楼校史人物荣誉墙阅读竺可桢生平并回答竺老两问。"
+            : "先在三楼记录 303 门口的参照，再从楼梯口进入空间校准。",
+          tone: "system",
+          durationMs: 2800
+        });
+        return;
+      }
+      setChapter4StairFeedback(null);
+      setChapter4StairActive(true);
+    });
+  }, [events, runtimeScene, store]);
+
+  useEffect(() => {
+    const game = gameRef.current;
+    if (!game?.isBooted) return;
+    if (chapter4StairActive) {
+      const pausedKeys = chapter4StairPausedSceneKeysRef.current;
+      pausedKeys.clear();
+      for (const scene of game.scene.getScenes(true)) {
+        const sceneKey = scene.sys.settings.key;
+        if (!game.scene.isPaused(sceneKey)) {
+          pausedKeys.add(sceneKey);
+          game.scene.pause(sceneKey);
+        }
+      }
+      setRpgInputEnabled(game, false);
+      events.emit("rpg_direction_changed", { x: 0, y: 0 });
+      return;
+    }
+    for (const sceneKey of chapter4StairPausedSceneKeysRef.current) {
+      if (game.scene.isPaused(sceneKey)) game.scene.resume(sceneKey);
+    }
+    chapter4StairPausedSceneKeysRef.current.clear();
+  }, [chapter4StairActive, events]);
+
+  const completeChapterFourStair = useCallback(() => {
+    if (chapter4StairPendingRequestRef.current) return;
+    const requestId = `host-stair-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4StairPendingRequestRef.current = requestId;
+    setChapter4StairFeedback("正在写入二楼到达记录…");
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: { type: "complete_misaligned_stair" }
+    });
+  }, [events]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
+      const requestId = String(event.payload?.requestId ?? "");
+      if (!requestId || requestId !== chapter4StairPendingRequestRef.current) return;
+      chapter4StairPendingRequestRef.current = null;
+      const result = event.payload?.result;
+      const accepted = typeof result === "object"
+        && result !== null
+        && (result as { accepted?: unknown }).accepted === true;
+      if (!accepted) {
+        setChapter4StairFeedback(String(event.payload?.feedback ?? "楼梯校准结果未能写入，请重试。"));
+        return;
+      }
+      setChapter4StairFeedback(null);
+      setChapter4StairActive(false);
+      events.emit("rpg_subtitle", {
+        text: "两层错位楼梯已连通。已从三楼抵达二楼，204 教室恢复流程开放。",
+        tone: "system",
+        durationMs: 3600
+      });
+    });
+  }, [events]);
 
   useEffect(() => {
     if (state.chapter4.phase === "blackout_light_grid"
@@ -419,6 +561,7 @@ export function RpgGameHost({
       const locked = event.payload?.locked === true;
       setChapter4InteractionBlocked(locked);
       setChapter4ScenePointerAllowed(locked && event.payload?.allowScenePointer === true);
+      setChapter4SceneKeyboardAllowed(locked && event.payload?.allowSceneKeyboard === true);
     });
   }, [events]);
 
@@ -511,27 +654,27 @@ export function RpgGameHost({
     if (!game) {
       return undefined;
     }
-    if (inputBlocked || itemInspectOpen || chaseActive || chapter4PhaserInputBlocked || photoSessionOpen) {
+    if (inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked || photoSessionOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
     }
 
     setRpgInputEnabled(game, true);
-    setRpgKeyboardEnabled(game, !keyboardBlocked && !chapter4OverlayBlocked);
-    if (keyboardBlocked || chapter4OverlayBlocked) {
+    setRpgKeyboardEnabled(game, !keyboardBlocked && !chapter4PhaserKeyboardBlocked);
+    if (keyboardBlocked || chapter4PhaserKeyboardBlocked) {
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
     }
     const frame = window.requestAnimationFrame(() => {
       if (gameRef.current) {
         setRpgInputEnabled(gameRef.current, true);
-        setRpgKeyboardEnabled(gameRef.current, !keyboardBlocked && !chapter4OverlayBlocked);
+        setRpgKeyboardEnabled(gameRef.current, !keyboardBlocked && !chapter4PhaserKeyboardBlocked);
       }
     });
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [chapter4OverlayBlocked, chapter4PhaserInputBlocked, chaseActive, events, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
+  }, [canteenExclusiveActive, chapter4PhaserInputBlocked, chapter4PhaserKeyboardBlocked, events, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -1094,6 +1237,8 @@ export function RpgGameHost({
         }
       } else if (event.name === "rpg_qizhen_board_requested") {
         qizhenController.boardKayak();
+      } else if (event.name === "rpg_qizhen_safety_officer_requested") {
+        qizhenController.requestDockSafetyClearance();
       } else if (event.name === "rpg_qizhen_paddle_requested") {
         qizhenController.recordPaddleStroke(
           String(event.payload?.side ?? "left") as QizhenPaddleSide,
@@ -1585,21 +1730,47 @@ export function RpgGameHost({
       aria-label="7:55 RPG runtime"
       data-input-blocked={inputBlocked || itemInspectOpen || chapter4OverlayBlocked || photoSessionOpen ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked || chapter4OverlayBlocked || photoSessionOpen ? "true" : "false"}
-      data-rpg-engine="phaser"
-      data-rpg-engine-reason="web_runtime_only"
+      data-rpg-engine={chapter4StairActive ? "three" : "phaser"}
+      data-rpg-engine-reason={chapter4StairActive ? "chapter4_misaligned_stair" : "web_runtime_only"}
+      data-canteen-handoff={canteenStartTransitionActive
+        ? "start"
+        : canteenChaseRunActive
+          ? "ride"
+          : canteenFinishTransitionActive
+            ? "finish"
+            : "none"}
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
         <div ref={hostRef} className="rpg-canvas-host">
-          <div ref={phaserHostRef} className="rpg-phaser-host" />
+          <div ref={phaserHostRef} className={`rpg-phaser-host${chapter4StairActive ? " is-suspended" : ""}`} />
+          {chapter4StairActive ? (
+            <ChapterFourStairPuzzleOverlay
+              events={events}
+              feedback={chapter4StairFeedback}
+              onComplete={completeChapterFourStair}
+              onExit={() => {
+                if (chapter4StairPendingRequestRef.current) return;
+                setChapter4StairFeedback(null);
+                setChapter4StairActive(false);
+              }}
+            />
+          ) : null}
         </div>
 
-        {chaseActive ? (
+        {canteenStartTransitionActive ? (
+          <CanteenBikeTransitionOverlay
+            stage="start"
+            onComplete={() => { canteenController.startChase(); }}
+          />
+        ) : canteenChaseRunActive ? (
           <CanteenChaseOverlay
             events={events}
             onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
-            onContinue={() => {
-              canteenController.completeChase();
-            }}
+          />
+        ) : canteenFinishTransitionActive ? (
+          <CanteenBikeTransitionOverlay
+            stage="finish"
+            onComplete={() => { canteenController.completeChase(); }}
           />
         ) : null}
 
@@ -1634,7 +1805,7 @@ export function RpgGameHost({
           </div>
         ) : null}
 
-        {showTaskBar && !chaseActive && !chapter4OverlayBlocked && !photoSessionOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
+        {showTaskBar && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
           <QuestTaskBar
             state={state}
             events={events}
@@ -1652,7 +1823,7 @@ export function RpgGameHost({
           </div>
         )}
 
-        {runtimeScene === "campus_bootstrap" && !chaseActive ? (
+        {runtimeScene === "campus_bootstrap" && !canteenExclusiveActive ? (
           <nav className="rpg-camera-actions" aria-label="地图视角">
             <button type="button" aria-label="定位人物" title="定位人物" onClick={(event) => { events.emit("rpg_camera_recenter"); event.currentTarget.blur(); }}>⌖</button>
             <button type="button" aria-label="放大地图" title="放大地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: 0.1 }); event.currentTarget.blur(); }}>+</button>
@@ -1709,7 +1880,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" && !chaseActive ? (
+        {((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" && !canteenExclusiveActive ? (
           <aside className="rpg-temp-inventory" aria-label="地图物品栏">
             <strong>物品栏</strong>
             <div className="rpg-temp-items">
@@ -1773,10 +1944,10 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || chaseActive || chapter4PowerPanelOpen || Boolean(fishingSession) || photoSessionOpen}
+          blocked={inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4OverlayBlocked || Boolean(fishingSession) || photoSessionOpen}
         />
 
-        {state.actOne.controlsInstalled && touchControls && !chaseActive && !chapter4OverlayBlocked && !photoSessionOpen && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
+        {state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
             <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼 A 左收线、S 提竿、D 右收线按钮">
               <button
@@ -1852,7 +2023,7 @@ export function RpgGameHost({
               <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
             </nav>
           )
-        ) : state.actOne.controlsInstalled && touchControls && !chaseActive && !chapter4OverlayBlocked ? (
+        ) : state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"

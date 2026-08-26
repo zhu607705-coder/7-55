@@ -55,6 +55,7 @@ try {
     lightGridModule,
     finalChaseModule,
     itemUseGuidanceModule,
+    elevatorDepthModule,
     storageKeysModule
   ] = await Promise.all([
     server.ssrLoadModule("/src/core/GameState.ts"),
@@ -69,6 +70,7 @@ try {
     server.ssrLoadModule("/src/modules/ChapterFourLightGridModel.ts"),
     server.ssrLoadModule("/src/modules/ChapterFourFinalChaseModel.ts"),
     server.ssrLoadModule("/src/scenes/rpg/RpgItemUseGuidance.ts"),
+    server.ssrLoadModule("/src/modules/ChapterFourElevatorDepthModel.ts"),
     server.ssrLoadModule("/src/core/StorageKeys.ts")
   ]);
 
@@ -131,6 +133,11 @@ try {
     stepChapterFourFinalChase
   } = finalChaseModule;
   const { selectRpgItemUseGuidance } = itemUseGuidanceModule;
+  const {
+    CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH,
+    chapterFourPlayerDepth,
+    isChapterFourPlayerInFrontOfElevator
+  } = elevatorDepthModule;
   const { GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } = storageKeysModule;
 
   const openingFacts = [
@@ -178,6 +185,27 @@ try {
     !JSON.stringify(chapterFourLayout).includes('"requiredFacing"'),
     "the Chapter 4 layout must omit interaction-facing requirements"
   );
+  for (const floor of chapterFourLayout.floors) {
+    const elevator = floor.elevator;
+    for (const point of [elevator.doorCenter, elevator.arrivalPosition, elevator.standPosition]) {
+      const playerDepth = chapterFourPlayerDepth(point.y);
+      assert(
+        isChapterFourPlayerInFrontOfElevator(playerDepth, CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH.door)
+          && isChapterFourPlayerInFrontOfElevator(playerDepth, CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH.indicator)
+          && isChapterFourPlayerInFrontOfElevator(playerDepth, CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH.lamp),
+        `${floor.storyFloor} player must render in front of every elevator visual at authored elevator anchors`
+      );
+    }
+  }
+  for (const targetId of ["a2_elevator_attendant", "a3_reference_teacher"]) {
+    const target = getChapterFour755TargetContract(targetId);
+    assert(
+      target?.collision === false
+        && target.activation === "phase_exclusive"
+        && target.activePhases.includes("room204_restore"),
+      `${targetId} must be a non-colliding, layout-backed Room 204 support NPC target`
+    );
+  }
 
   function makeState({
     facts = [],
@@ -229,6 +257,189 @@ try {
     assert(result.reason === expectedReason, `${label} reason must be ${expectedReason}, got ${result.reason}`);
     assert(snapshot(store.getState()) === before, `${label} must be a zero-write rejection`);
   }
+
+  const frontDeskTarget = CHAPTER_FOUR_755_INTERACTION_TARGETS.a1_front_desk_attendant;
+  const classroom104Target = CHAPTER_FOUR_755_INTERACTION_TARGETS.a1_classroom_104_blackboard_residual;
+  const classroom105Target = CHAPTER_FOUR_755_INTERACTION_TARGETS.a1_classroom_105_lectern_terminal;
+  assert(
+    frontDeskTarget.boundsSource.kind === "layout_anchor"
+      && frontDeskTarget.boundsSource.anchorId === "a1_front_desk_attendant"
+      && frontDeskTarget.requiredMode === undefined,
+    "A1 front-desk attendant must use the measured visible NPC anchor without a reality-mode gate"
+  );
+  const frontDeskState = makeState({
+    roomId: "a1_lobby",
+    phase: "room204_restore",
+    facts: ["hour_hand_installed"]
+  });
+  const frontDeskStore = createGameStore(frontDeskState);
+  const frontDeskController = new ChapterFourTemporalMazeController(frontDeskStore, new EventBus());
+  const frontDeskBefore = snapshot(frontDeskStore.getState());
+  const frontDeskTalk = frontDeskController.resolve755Intent({
+    type: "talk_to_a1_front_desk_attendant",
+    targetId: frontDeskTarget.id,
+    spatial: validSpatial
+  });
+  assert(frontDeskTalk.accepted && !frontDeskTalk.changed, "front-desk conversation must be accepted read-only");
+  assert(snapshot(frontDeskStore.getState()) === frontDeskBefore, "front-desk conversation must not mutate progression");
+  assertZeroWriteRejection(
+    frontDeskState,
+    {
+      type: "talk_to_a1_front_desk_attendant",
+      targetId: frontDeskTarget.id,
+      spatial: { distance: "too_far" }
+    },
+    "too_far",
+    undefined,
+    "front-desk conversation outside proximity"
+  );
+  const frontDeskProjection = selectChapterFourMazeProjection(frontDeskState);
+  assert(
+    frontDeskProjection.availableTargetIds.includes(frontDeskTarget.id)
+      && frontDeskProjection.npcIds.includes("a1_front_desk_attendant"),
+    "front-desk target and visible NPC must project together on A1"
+  );
+  assert(
+    classroom104Target.boundsSource.kind === "layout_anchor"
+      && classroom104Target.boundsSource.anchorId === "a1_classroom_104_blackboard_residual"
+      && classroom104Target.requiredMode === "dark",
+    "104 classroom content must use the measured blackboard anchor and dark observation"
+  );
+  assert(
+    classroom105Target.boundsSource.kind === "layout_anchor"
+      && classroom105Target.boundsSource.anchorId === "a1_classroom_105_lectern_terminal"
+      && classroom105Target.requiredMode === "light",
+    "105 classroom content must use the measured lectern anchor and light operation"
+  );
+  assertZeroWriteRejection(
+    makeState({ mode: "light", roomId: "a1_lobby", phase: "room204_restore", facts: ["hour_hand_installed"] }),
+    {
+      type: "observe_classroom_104_chalk_residual",
+      targetId: classroom104Target.id,
+      spatial: validSpatial
+    },
+    "wrong_mode",
+    undefined,
+    "104 classroom observation in light mode"
+  );
+  assertZeroWriteRejection(
+    makeState({ mode: "dark", roomId: "a1_lobby", phase: "room204_restore", facts: ["hour_hand_installed"] }),
+    {
+      type: "check_classroom_105_terminal_replay",
+      targetId: classroom105Target.id,
+      spatial: validSpatial
+    },
+    "wrong_mode",
+    undefined,
+    "105 classroom terminal in dark mode"
+  );
+  const classroomStore = createGameStore(makeState({
+    mode: "dark",
+    roomId: "a1_lobby",
+    phase: "room204_restore",
+    facts: ["hour_hand_installed"]
+  }));
+  const classroomController = new ChapterFourTemporalMazeController(classroomStore, new EventBus());
+  assert(
+    selectQuestViewModel(classroomStore.getState()).objective === "完成 104 与 105 的时间差校验",
+    "task drawer must require both A1 classrooms before exposing the A3 objective"
+  );
+  const blockedBeforeChecks = classroomController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_wayfinding",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(
+    !blockedBeforeChecks.accepted
+      && blockedBeforeChecks.reason === "locked"
+      && blockedBeforeChecks.detailCode === "classroom_checks_required",
+    "room204 route must stay on A1 before both classroom checks"
+  );
+  const classroom104First = classroomController.resolve755Intent({
+    type: "observe_classroom_104_chalk_residual",
+    targetId: classroom104Target.id,
+    spatial: validSpatial
+  });
+  assert(classroom104First.accepted && classroom104First.changed, "104 classroom first observation must commit");
+  assert(
+    classroomStore.getState().chapter4.factIds.includes("classroom_104_chalk_residual_observed"),
+    "104 classroom observation fact must persist in controller state"
+  );
+  const classroom104Repeat = classroomController.resolve755Intent({
+    type: "observe_classroom_104_chalk_residual",
+    targetId: classroom104Target.id,
+    spatial: validSpatial
+  });
+  assert(classroom104Repeat.accepted && !classroom104Repeat.changed, "104 classroom repeat must be read-only");
+  const blockedAfter104 = classroomController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_wayfinding",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(
+    !blockedAfter104.accepted && blockedAfter104.detailCode === "classroom_checks_required",
+    "one classroom check must not unlock the floor route"
+  );
+  classroomController.resolve755Intent({ type: "set_mode", mode: "light" });
+  const classroom105First = classroomController.resolve755Intent({
+    type: "check_classroom_105_terminal_replay",
+    targetId: classroom105Target.id,
+    spatial: validSpatial
+  });
+  assert(classroom105First.accepted && classroom105First.changed, "105 classroom first check must commit");
+  assert(
+    classroomStore.getState().chapter4.factIds.includes("classroom_105_terminal_replay_checked"),
+    "105 classroom terminal fact must persist in controller state"
+  );
+  const classroomQuest = selectQuestViewModel(classroomStore.getState());
+  assert(
+    classroomQuest.objective === "在深色观察中读取主电梯历史轨道",
+    "task drawer must advance to the elevator history after both classroom checks"
+  );
+  const classroomProjection = selectChapterFourMazeProjection(classroomStore.getState());
+  assert(
+    classroomProjection.availableTargetIds.includes(classroom104Target.id)
+      && classroomProjection.availableTargetIds.includes(classroom105Target.id),
+    "both classroom targets must remain available for repeat viewing"
+  );
+  const blockedBeforeElevatorCalibration = classroomController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_wayfinding",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(
+    !blockedBeforeElevatorCalibration.accepted
+      && blockedBeforeElevatorCalibration.detailCode === "elevator_calibration_required",
+    "classroom checks alone must keep the A3 route behind elevator history calibration"
+  );
+  classroomController.resolve755Intent({ type: "set_mode", mode: "dark" });
+  const elevatorObserved = classroomController.resolve755Intent({ type: "observe_elevator_history" });
+  assert(elevatorObserved.accepted && elevatorObserved.changed, "dark observation must record elevator history once");
+  assert(
+    selectQuestViewModel(classroomStore.getState()).objective === "校准主电梯的 18:50 重放窗口",
+    "recorded elevator history must advance the drawer to replay calibration"
+  );
+  classroomController.resolve755Intent({ type: "set_mode", mode: "light" });
+  const wrongElevatorReplay = classroomController.resolve755Intent({
+    type: "calibrate_elevator_history",
+    startSeconds: 81807
+  });
+  assert(!wrongElevatorReplay.accepted && wrongElevatorReplay.reason === "incorrect", "misaligned elevator replay must be rejected");
+  const elevatorCalibrated = classroomController.resolve755Intent({
+    type: "calibrate_elevator_history",
+    startSeconds: 81811
+  });
+  assert(elevatorCalibrated.accepted && elevatorCalibrated.changed, "aligned elevator replay must commit once");
+  const unlockedAfterCalibration = classroomController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_wayfinding",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(unlockedAfterCalibration.accepted, "elevator calibration must unlock the authored A3 route");
 
   function runtimeTargetIntentFixture(target) {
     if (target.targetId === runtimeTargets.lamp.targetId) {
@@ -370,7 +581,14 @@ try {
   const initialBakeryState = makeState();
   const initialProjection = selectChapterFourMazeProjection(initialBakeryState);
   assert(initialProjection.activePlateIds.includes("a1_1225_bakery"), "12:25 bakery plate must be active");
-  assert(sameJson(initialProjection.npcIds, ["a1_bakery_clerk", "a1_bakery_lunch_crowd"]), "bakery baker and crowd must project together");
+  assert(
+    sameJson(initialProjection.npcIds, [
+      "a1_bakery_clerk",
+      "a1_bakery_lunch_crowd",
+      "a1_front_desk_attendant"
+    ]),
+    "bakery baker, crowd, and front-desk attendant must project together"
+  );
   assert(initialProjection.availableTargetIds.includes(runtimeTargets.lamp.targetId), "lamp must project before inspection");
   assert(initialProjection.availableTargetIds.includes(runtimeTargets.conveyor.targetId), "conveyor edge must project before inspection");
   assert(!initialProjection.availableTargetIds.includes(runtimeTargets.pickup.targetId), "hour-hand pickup must stay hidden before exposure");
@@ -665,7 +883,13 @@ try {
     room204RuntimeTargets.drawer,
     ...Object.values(room204RuntimeTargets.slots)
   ];
-  const task9FactPrerequisites = [...bakeryFactOrder];
+  const task9FactPrerequisites = [
+    ...bakeryFactOrder,
+    "classroom_104_chalk_residual_observed",
+    "classroom_105_terminal_replay_checked",
+    "elevator_history_observed",
+    "elevator_history_calibrated"
+  ];
 
   function makeRoom204State({
     facts = [],
@@ -674,10 +898,17 @@ try {
     floor = "A2",
     roomId = floor === "A3" ? "a3_reference_classroom" : "a2_room204",
     clockPositioningPlate = false,
-    phase = "room204_restore"
+    phase = "room204_restore",
+    stairSolved = true
   } = {}) {
     const state = makeState({
-      facts: [...task9FactPrerequisites, ...facts],
+      facts: [
+        ...task9FactPrerequisites,
+        ...(stairSolved
+          ? ["a3_reference_observed", "zhu_two_questions_answered", "misaligned_stair_solved"]
+          : []),
+        ...facts
+      ],
       mode,
       roomId,
       phase
@@ -783,14 +1014,14 @@ try {
   );
 
   assertZeroWriteRejection(
-    makeRoom204State({ floor: "A3", roomId: "a3_reference_classroom", mode: "dark" }),
+    makeRoom204State({ floor: "A3", roomId: "a3_reference_classroom", mode: "dark", stairSolved: false }),
     { type: "observe_a3_reference", targetId: "a3_reference_classroom_layout", spatial: validSpatial },
     "wrong_mode",
     undefined,
     "A3 reference in dark mode"
   );
   assertZeroWriteRejection(
-    makeRoom204State({ floor: "A2", roomId: "a2_room204" }),
+    makeRoom204State({ floor: "A2", roomId: "a2_room204", stairSolved: false }),
     { type: "observe_a3_reference", targetId: "a3_reference_classroom_layout", spatial: validSpatial },
     "locked",
     undefined,
@@ -841,7 +1072,8 @@ try {
 
   const roomSequenceStore = createGameStore(makeRoom204State({
     floor: "A3",
-    roomId: "a3_reference_classroom"
+    roomId: "a3_reference_classroom",
+    stairSolved: false
   }));
   const roomSequenceController = new ChapterFourTemporalMazeController(roomSequenceStore, new EventBus());
   const referenceResult = roomSequenceController.resolve755Intent({
@@ -851,13 +1083,40 @@ try {
   });
   assert(referenceResult.accepted && referenceResult.changed, "A3 light reference must commit once");
   assert(roomSequenceStore.getState().chapter4.factIds.includes("a3_reference_observed"), "A3 reference fact must commit");
+  const blockedDirectA2 = roomSequenceController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A2",
+    roomId: "a2_room204",
+    checkpoint: "c4_a2_corridor"
+  });
+  assert(!blockedDirectA2.accepted && blockedDirectA2.detailCode === "misaligned_stair_required", "A3 reference alone must keep A2 behind the stair puzzle");
+  const blockedStairBeforeQuestions = roomSequenceController.resolve755Intent({ type: "complete_misaligned_stair" });
+  assert(
+    !blockedStairBeforeQuestions.accepted && blockedStairBeforeQuestions.detailCode === "zhu_two_questions_required",
+    "misaligned stair must remain locked until Zhu's two questions are answered"
+  );
+  const zhuQuestionsResult = roomSequenceController.resolve755Intent({
+    type: "complete_zhu_two_questions",
+    targetId: "a3_alumni_zhu_kezhen",
+    purposeAnswer: "seek_truth",
+    personAnswer: "responsible",
+    spatial: validSpatial
+  });
+  assert(zhuQuestionsResult.accepted && zhuQuestionsResult.changed, "Zhu's two questions must commit once");
+  assert(
+    roomSequenceStore.getState().chapter4.factIds.includes("zhu_two_questions_answered"),
+    "Zhu's two questions must persist their completion fact"
+  );
+  const stairResult = roomSequenceController.resolve755Intent({ type: "complete_misaligned_stair" });
+  assert(stairResult.accepted && stairResult.changed, "two-level stair completion must commit once");
+  assert(roomSequenceStore.getState().chapter4.floor === "A2", "stair completion must relocate to A2");
   const moveToA2 = roomSequenceController.resolve755Intent({
     type: "move_to_location",
     floor: "A2",
     roomId: "a2_room204",
     checkpoint: "c4_a2_corridor"
   });
-  assert(moveToA2.accepted, "room sequence must accept A3 to A2 room alias travel");
+  assert(moveToA2.accepted, "room sequence must accept the A2 room alias after stair arrival");
   const darkResult = roomSequenceController.resolve755Intent({ type: "set_mode", mode: "dark" });
   assert(darkResult.accepted, "room sequence must enter dark observation mode");
   const darkProjection = selectChapterFourMazeProjection(roomSequenceStore.getState());
@@ -964,21 +1223,63 @@ try {
   ];
   const completePlacements = arbitraryModelPlacements.map((placement) => ({ ...placement }));
   const roomQuestCases = [
-    ["reference", [], [], "chapter_four_observe_a3_reference"],
-    ["residual", ["a3_reference_observed"], [], "chapter_four_observe_room204_residual"],
-    ["restore", ["a3_reference_observed", "room204_residual_observed"], [], "chapter_four_restore_room204"],
-    ["projection", ["a3_reference_observed", "room204_residual_observed", "room204_restored"], completePlacements, "chapter_four_watch_room204_projection"],
-    ["collect", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed"], completePlacements, "chapter_four_collect_positioning_plate"],
-    ["install", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed", "positioning_plate_collected"], completePlacements, "chapter_four_install_positioning_plate"]
+    ["reference", [], [], "chapter_four_observe_a3_reference", false],
+    ["zhu questions", ["a3_reference_observed"], [], "chapter_four_answer_zhu_two_questions", false],
+    ["stair", ["a3_reference_observed", "zhu_two_questions_answered"], [], "chapter_four_solve_misaligned_stair", false],
+    ["residual", ["a3_reference_observed"], [], "chapter_four_observe_room204_residual", true],
+    ["restore", ["a3_reference_observed", "room204_residual_observed"], [], "chapter_four_restore_room204", true],
+    ["projection", ["a3_reference_observed", "room204_residual_observed", "room204_restored"], completePlacements, "chapter_four_watch_room204_projection", true],
+    ["collect", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed"], completePlacements, "chapter_four_collect_positioning_plate", true],
+    ["install", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed", "positioning_plate_collected"], completePlacements, "chapter_four_install_positioning_plate", true]
   ];
-  for (const [label, facts, placements, expectedTaskId] of roomQuestCases) {
-    const state = makeRoom204State({ facts, placements, clockPositioningPlate: label === "install" });
+  for (const [label, facts, placements, expectedTaskId, stairSolved] of roomQuestCases) {
+    const state = makeRoom204State({ facts, placements, clockPositioningPlate: label === "install", stairSolved });
     const quest = selectQuestViewModel(state);
     assert(quest.steps.length === 1, `${label} Room204 quest must reveal exactly one step`);
     assert(quest.steps[0]?.id === expectedTaskId, `${label} Room204 quest must select ${expectedTaskId}`);
     const targetIds = selectChapterFourMazeProjection(state).availableTargetIds;
     assert(task10AndLaterTargets.every((targetId) => !targetIds.includes(targetId)), `${label} Room204 projection must keep Task10+ targets closed`);
   }
+
+  const preservedZhuAnswers = hydrate({
+    ...makeRoom204State(),
+    chapter4: {
+      ...makeRoom204State().chapter4,
+      zhuQuestionAnswers: { purpose: "serve_public", person: "clear_minded" }
+    }
+  });
+  assert(
+    sameJson(preservedZhuAnswers.chapter4.zhuQuestionAnswers, {
+      purpose: "serve_public",
+      person: "clear_minded"
+    }),
+    "valid Zhu answers must survive save hydration"
+  );
+  const repairedZhuAnswers = hydrate({
+    ...makeRoom204State(),
+    chapter4: {
+      ...makeRoom204State().chapter4,
+      zhuQuestionAnswers: { purpose: null, person: null }
+    }
+  });
+  assert(
+    sameJson(repairedZhuAnswers.chapter4.zhuQuestionAnswers, {
+      purpose: "seek_truth",
+      person: "responsible"
+    }),
+    "answered Zhu fact with missing answers must hydrate to safe defaults"
+  );
+  const clearedUncommittedZhuAnswers = hydrate({
+    ...makeRoom204State({ stairSolved: false }),
+    chapter4: {
+      ...makeRoom204State({ stairSolved: false }).chapter4,
+      zhuQuestionAnswers: { purpose: "serve_public", person: "clear_minded" }
+    }
+  });
+  assert(
+    sameJson(clearedUncommittedZhuAnswers.chapter4.zhuQuestionAnswers, { purpose: null, person: null }),
+    "Zhu answers without the committed fact must be removed during hydration"
+  );
 
   const maliciousLoaded = hydrate(makeRoom204State({
     facts: [

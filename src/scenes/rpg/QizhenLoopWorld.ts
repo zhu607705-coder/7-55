@@ -3,6 +3,7 @@ import loopPanoramaUrl from "../../assets/rpg/campus/zijingang_campus_loop_panor
 import loopRuntime from "../../data/maps/zijingang-campus-loop-runtime.json";
 
 export const QIZHEN_LOOP_PANORAMA_KEY = "qizhen-loop-panorama";
+export const QIZHEN_LOOP_PANORAMA_URL = loopPanoramaUrl;
 export const QIZHEN_LOOP_RUNTIME = loopRuntime;
 
 interface CollisionRect {
@@ -18,7 +19,7 @@ interface QizhenLoopWorldOptions {
 
 export function preloadQizhenLoopWorld(scene: Phaser.Scene): void {
   if (!scene.textures.exists(QIZHEN_LOOP_PANORAMA_KEY)) {
-    scene.load.image(QIZHEN_LOOP_PANORAMA_KEY, loopPanoramaUrl);
+    scene.load.image(QIZHEN_LOOP_PANORAMA_KEY, QIZHEN_LOOP_PANORAMA_URL);
   }
 }
 

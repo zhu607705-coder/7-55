@@ -25,6 +25,7 @@ import {
   photoIdFor,
   upsertPhoto
 } from "./QizhenJournalModel";
+import { selectCampusWeather } from "./CampusWeatherModel";
 
 export type QizhenMapClueResult = "added" | "already_added" | "ready_to_confirm" | "wrong_item" | "inactive";
 export type QizhenActionResult =
@@ -330,6 +331,62 @@ export class ChapterThreeQizhenLakeController {
     return "accepted";
   }
 
+  requestDockSafetyClearance(): QizhenActionResult {
+    const state = this.store.getState();
+    if (!state.qizhenLake.active
+      || state.qizhenLake.zone !== "dock"
+      || state.qizhenLake.vehicle !== "on_foot") return "inactive";
+    if (state.qizhenLake.rainSafetyCleared) {
+      this.events.emit("qizhen_dock_safety_checked", { weather: "overcast" });
+      return "already_complete";
+    }
+    const outfitComplete = state.qizhenLake.kayakEquipped
+      && state.qizhenLake.leftPaddleEquipped
+      && state.qizhenLake.rightPaddleEquipped;
+    if (!outfitComplete) {
+      this.events.emit("qizhen_dock_safety_blocked", { reason: "rain_and_equipment" });
+      return "locked";
+    }
+    if (state.qizhenLake.weatherAdjustmentRequested) {
+      this.events.emit("qizhen_dock_weather_adjustment_pending", { weather: "light_rain" });
+      return "already_complete";
+    }
+    this.store.setState((current) => ({
+      ...current,
+      qizhenLake: { ...current.qizhenLake, weatherAdjustmentRequested: true }
+    }));
+    this.events.emit("qizhen_dock_weather_adjustment_requested", { weather: "light_rain" });
+    return "accepted";
+  }
+
+  applyDockWeatherAdjustment(): QizhenActionResult {
+    const state = this.store.getState();
+    if (!state.qizhenLake.active
+      || state.qizhenLake.phase !== "boarding_tutorial"
+      || state.qizhenLake.zone !== "dock"
+      || state.qizhenLake.vehicle !== "on_foot") return "inactive";
+    if (state.qizhenLake.rainSafetyCleared) {
+      this.events.emit("qizhen_dock_weather_already_adjusted", { weather: "overcast", source: "weather_app" });
+      return "already_complete";
+    }
+    const outfitComplete = state.qizhenLake.kayakEquipped
+      && state.qizhenLake.leftPaddleEquipped
+      && state.qizhenLake.rightPaddleEquipped;
+    if (!outfitComplete || !state.qizhenLake.weatherAdjustmentRequested) {
+      this.events.emit("qizhen_dock_weather_adjustment_blocked", {
+        reason: outfitComplete ? "safety_request_required" : "equipment_required"
+      });
+      return "locked";
+    }
+    if (state.runtimeMode !== "phone" || state.currentScene !== "weather") return "inactive";
+    this.store.setState((current) => ({
+      ...current,
+      qizhenLake: { ...current.qizhenLake, rainSafetyCleared: true }
+    }));
+    this.events.emit("qizhen_dock_weather_adjusted", { weather: "overcast", source: "weather_app" });
+    return "accepted";
+  }
+
   boardKayak(): QizhenActionResult {
     const state = this.store.getState();
     if (state.qizhenLake.zone !== "dock" || state.qizhenLake.vehicle !== "on_foot") return "inactive";
@@ -338,6 +395,10 @@ export class ChapterThreeQizhenLakeController {
     }
     if (state.qizhenLake.mode !== "light") return "wrong_mode";
     if (!state.qizhenLake.kayakEquipped || !state.qizhenLake.leftPaddleEquipped || !state.qizhenLake.rightPaddleEquipped) {
+      return "locked";
+    }
+    if (!selectCampusWeather(state).boatingAllowed) {
+      this.events.emit("qizhen_kayak_board_rejected", { reason: "rain_safety_hold" });
       return "locked";
     }
     this.store.setState((current) => ({

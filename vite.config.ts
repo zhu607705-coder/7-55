@@ -95,8 +95,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     // The active browser build owns every shipped asset through explicit imports.
-    // Disable implicit public-directory copying so generated or unrelated files
-    // cannot enter the production or offline build without an active consumer.
+    // `public/` only contains the retired Godot web export, so copying it into a
+    // normal Vite build adds roughly 58 MB without an active runtime consumer.
     publicDir: false,
     ...(isSingleFileDemo
       ? {

@@ -22,7 +22,6 @@ npm run map:zijingang
 npm run audio:chapter3:verify
 npm run audio:chapter3-interlude-voice-memos:verify
 npm run chapter4:validate-runtime
-npm run endless:validate
 npm run typecheck
 npm run build
 npm run build:single

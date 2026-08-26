@@ -38,6 +38,10 @@ import {
 } from "./LibraryShelfRevealMotion";
 
 const LIBRARY_INTERIOR_MAP_KEY = "library-interior-gpt-image-map";
+export const LIBRARY_INTERIOR_WARM_ASSET_URLS = Object.freeze([
+  libraryInteriorMapUrl,
+  libraryFrontDeskStaffSheetUrl
+]);
 const LIBRARY_FRONT_DESK_STAFF_SHEET_KEY = "library-front-desk-staff-2frame";
 const LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY = "library-front-desk-staff-idle";
 const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME = "library-front-desk-counter-foreground";

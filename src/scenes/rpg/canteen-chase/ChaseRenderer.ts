@@ -14,6 +14,7 @@ import runnerCrowdCycleUrl from "../../../assets/rpg/canteen_chase/runner_crowd_
 import frontWalkerCycleUrl from "../../../assets/rpg/canteen_chase/front_walker_cycle_4f.png";
 import riderTurnCycleUrl from "../../../assets/rpg/canteen_chase/rider_turn_cycle_12f.png";
 import { ChaseThreeRenderer } from "./ChaseThreeRenderer";
+import { CHASE_RIDER_GEAR_RATIO, CHASE_RIDER_WHEEL_RADIUS } from "./ChaseRiderRig";
 import type { ChaseRenderState, ChaseRendererBackend } from "./ChaseRenderContract";
 
 export type { ChaseRenderState } from "./ChaseRenderContract";
@@ -24,6 +25,8 @@ const HORIZON_Y = 136;
 const BUFFER_MIN_WIDTH = 480;
 const BUFFER_MAX_WIDTH = 960;
 const GOAL_DISTANCE = 755;
+const CHASE_WORLD_PER_METER = 0.22;
+const TWO_PI = Math.PI * 2;
 const DISTANCE_KEYFRAMES = [
   0, 47, 95, 143, 190, 238, 285, 331, 377, 424, 470, 518, 566, 600, 635, 668, 700, 755
 ] as const;
@@ -1127,15 +1130,17 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
   private drawRider(ctx: CanvasRenderingContext2D, state: ChaseRenderState, deltaMs: number): void {
     const targetX = 480 + (state.lane - 1) * 238;
     this.riderX += (targetX - this.riderX) * Math.min(1, deltaMs / 180);
+    const pedalPhase = this.reduceMotion
+      ? 0
+      : (state.distance * CHASE_WORLD_PER_METER / CHASE_RIDER_WHEEL_RADIUS / CHASE_RIDER_GEAR_RATIO) % TWO_PI;
     const frame = state.runState === "running" && !this.reduceMotion
-      ? Math.floor(this.animationMs / 72) % (RIDER_CROPS.length + 4)
+      ? Math.floor((pedalPhase / TWO_PI) * RIDER_CROPS.length) % RIDER_CROPS.length
       : 1;
     const remainingTurn = targetX - this.riderX;
     const turnDistance = Math.abs(remainingTurn);
     const turning = turnDistance > 8 && this.isReady(this.riderTurnCycle);
     const lean = turning ? 0 : Math.max(-4, Math.min(4, remainingTurn * 0.03));
-    const sway = state.runState === "running" && !this.reduceMotion ? Math.sin(frame * Math.PI * 0.5) * 1.4 : 0;
-    const pedal = Math.sin(frame * Math.PI * 0.5);
+    const pedal = Math.sin(pedalPhase);
     const x = Math.round(this.riderX);
     const y = 506;
     if (this.isReady(this.riderCycle)) {
@@ -1145,7 +1150,7 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
       fillPixelEllipse(ctx, x, y - 2, 38, 7, "rgba(22,17,10,0.44)");
       ctx.save();
       ctx.translate(x, y);
-      ctx.rotate(((lean + sway) * Math.PI) / 180);
+      ctx.rotate((lean * Math.PI) / 180);
       if (turning) {
         // The generated sheet is authored from the rider's rear view. Screen-
         // left steering therefore consumes its visually right-facing row, and
@@ -1170,7 +1175,7 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
     }
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(((lean + sway) * Math.PI) / 180);
+    ctx.rotate((lean * Math.PI) / 180);
     ctx.scale(0.8, 0.8);
     ctx.globalAlpha = state.invulnerableMs > 0
       ? (this.reduceMotion || Math.floor(state.invulnerableMs / 110) % 2 === 0 ? 0.48 : 0.82)
@@ -1225,7 +1230,7 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
     // Pedals and pumping legs: feet ride the crank circle.
     const leftLift = Math.round(pedal * 9);
     const rightLift = -leftLift;
-    const stride = frame % 2 === 0 ? 2 : -2;
+    const stride = Math.cos(pedalPhase) >= 0 ? 2 : -2;
     ctx.fillStyle = COLORS.ink;
     ctx.fillRect(-13 + stride, -38 + leftLift, 12, 5);
     ctx.fillRect(1 - stride, -38 + rightLift, 12, 5);

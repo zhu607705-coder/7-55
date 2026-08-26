@@ -6,14 +6,18 @@ import studentPhoneUrl from "../../assets/rpg/npcs/finale/student_phone_glance_2
 import studentAdjustBagUrl from "../../assets/rpg/npcs/finale/student_adjust_bag_2frame.png";
 import studentPushDoorUrl from "../../assets/rpg/npcs/finale/student_push_door_3frame.png";
 import studentIdleUrl from "../../assets/rpg/npcs/finale/student_idle_1frame.png";
-import cleanerPushCartUrl from "../../assets/rpg/npcs/finale/cleaner_push_cart_4frame.png";
+import cleanerPushCartUrl from "../../assets/rpg/npcs/finale/cleaner_push_cart_8frame.png";
+import cleanerPushCartDownUrl from "../../assets/rpg/npcs/finale/cleaner_push_cart_down_8frame.png";
+import cleanerPushCartUpUrl from "../../assets/rpg/npcs/finale/cleaner_push_cart_up_8frame.png";
 import cleanerMopUrl from "../../assets/rpg/npcs/finale/cleaner_mop_4frame.png";
 import cleaningCartUrl from "../../assets/rpg/npcs/finale/cleaning_cart_1frame.png";
 import cleanerPlaceSignUrl from "../../assets/rpg/npcs/finale/cleaner_place_sign_2frame.png";
 import cleanerToggleLightsUrl from "../../assets/rpg/npcs/finale/cleaner_toggle_lights_2frame.png";
 import cleanerRestUrl from "../../assets/rpg/npcs/finale/cleaner_rest_1frame.png";
-import cleanerIdleUrl from "../../assets/rpg/npcs/finale/cleaner_idle_2frame.png";
+import cleanerIdleUrl from "../../assets/rpg/npcs/finale/cleaner_idle_8frame.png";
 import guardWalkUrl from "../../assets/rpg/npcs/finale/guard_walk_8frame.png";
+import guardWalkDownUrl from "../../assets/rpg/npcs/finale/guard_walk_down_8frame.png";
+import guardWalkUpUrl from "../../assets/rpg/npcs/finale/guard_walk_up_8frame.png";
 import guardCheckListUrl from "../../assets/rpg/npcs/finale/guard_check_list_2frame.png";
 import guardCheckWatchUrl from "../../assets/rpg/npcs/finale/guard_check_watch_2frame.png";
 import guardFlashlightUrl from "../../assets/rpg/npcs/finale/guard_flashlight_down_2frame.png";
@@ -40,6 +44,8 @@ const urls: Record<FinaleNpcAnimationId, string> = {
   student_push_door: studentPushDoorUrl,
   student_idle: studentIdleUrl,
   cleaner_push_cart: cleanerPushCartUrl,
+  cleaner_push_cart_down: cleanerPushCartDownUrl,
+  cleaner_push_cart_up: cleanerPushCartUpUrl,
   cleaner_mop: cleanerMopUrl,
   cleaning_cart: cleaningCartUrl,
   cleaner_place_sign: cleanerPlaceSignUrl,
@@ -47,6 +53,8 @@ const urls: Record<FinaleNpcAnimationId, string> = {
   cleaner_rest: cleanerRestUrl,
   cleaner_idle: cleanerIdleUrl,
   guard_walk: guardWalkUrl,
+  guard_walk_down: guardWalkDownUrl,
+  guard_walk_up: guardWalkUpUrl,
   guard_check_list: guardCheckListUrl,
   guard_check_watch: guardCheckWatchUrl,
   guard_flashlight_down: guardFlashlightUrl,

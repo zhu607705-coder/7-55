@@ -1,4 +1,14 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ComponentProps,
+  type ComponentType
+} from "react";
 import { eventBus } from "./core/EventBus";
 import { gameStore } from "./core/GameState";
 import { SceneRouter } from "./core/SceneRouter";
@@ -19,6 +29,11 @@ import { getPhoneScene } from "./scenes/phone/registry";
 import { LIBRARY_STORY_SEQUENCES } from "./data/libraryFinalsStory";
 import { requestCc98Thread } from "./modules/NavIntent";
 import { preloadRpgGameHost } from "./scenes/rpg/RpgRuntimePreload";
+import { scheduleRpgRuntimeWarmup } from "./scenes/rpg/RpgRuntimePreload";
+import {
+  getPreloadedRpgGameHostModule,
+  subscribePreloadedRpgGameHostModule
+} from "./scenes/rpg/RpgRuntimePreload";
 import { Chapter4PrologueRuntimeGate } from "./components/Chapter4PrologueRuntimeGate";
 
 const router = new SceneRouter(gameStore, eventBus);
@@ -60,6 +75,9 @@ export function App() {
   const libraryStorySequenceRef = useRef<string | null>(null);
   const libraryStoryQueueRef = useRef<string[]>([]);
   const [activeSurface, setActiveSurface] = useState<"phone" | "rpg">("rpg");
+  const [resolvedRpgGameHost, setResolvedRpgGameHost] = useState<
+    ComponentType<ComponentProps<typeof RpgGameHost>> | null
+  >(() => getPreloadedRpgGameHostModule()?.RpgGameHost ?? null);
   const desktopGameplay = useMediaQuery(DESKTOP_GAMEPLAY_QUERY);
   const phonePaneRef = useRef<HTMLElement>(null);
   const Scene = getPhoneScene(state.currentScene);
@@ -69,6 +87,19 @@ export function App() {
   const showChapterTwoIntro = access.chapter !== "chapter_one"
     && !state.ui.seenChapterIntros.includes("chapter_two");
   const libraryStoryVisible = libraryStorySequence !== null && !showChapterTwoIntro;
+  const ActiveRpgGameHost = resolvedRpgGameHost ?? RpgGameHost;
+
+  useEffect(() => subscribePreloadedRpgGameHostModule((module) => {
+    setResolvedRpgGameHost(() => module.RpgGameHost);
+  }), []);
+
+  useEffect(() => {
+    if (state.runtimeMode !== "phone") return undefined;
+    // 3.5 章在玩家确认目的地前不求值第四章 RPG；确认回放后由过渡 Gate
+    // 立即预热 A1。其他手机流程则在当前交互的空闲片段预取下一张 RPG 场景。
+    if (state.currentScene === "timeline_recovery") return undefined;
+    return scheduleRpgRuntimeWarmup(state.rpgScene);
+  }, [state.currentScene, state.rpgScene, state.runtimeMode]);
 
   const startLibraryStory = useCallback((sequenceId: string) => {
     if (!Object.prototype.hasOwnProperty.call(LIBRARY_STORY_SEQUENCES, sequenceId)) {
@@ -334,7 +365,7 @@ export function App() {
               onFocusCapture={focusRpg}
             >
               <Suspense fallback={<main className="rpg-stage is-embedded">Loading RPG runtime</main>}>
-                <RpgGameHost
+                <ActiveRpgGameHost
                   store={gameStore}
                   router={router}
                   events={eventBus}
@@ -360,7 +391,7 @@ export function App() {
     return (
       <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
         <Suspense fallback={<main className="rpg-stage">Loading RPG runtime</main>}>
-          <RpgGameHost
+          <ActiveRpgGameHost
             store={gameStore}
             router={router}
             events={eventBus}

@@ -106,9 +106,6 @@ export function QuestTaskBar({
   const redundantRpgNavigation = variant !== "phone" && quest.targetSurface === "rpg";
   const showNavigation = questIncomplete && hasNavigationHandler && !redundantRpgNavigation;
   const navigationLabel = quest.targetSurface === "rpg" ? "返回任务现场" : "前往相关界面";
-  const triggerObjective = chapterFourPresentation
-    ? `${chapterFourPresentation.timeStateLabel} · ${chapterFourPresentation.floor} · ${quest.objective}`
-    : quest.objective;
   const chapterFourAria = chapterFourPresentation
     ? `。${chapterFourPresentation.stageLabel}。${chapterFourPresentation.timeStateLabel}。${chapterFourPresentation.floor}。${chapterFourPresentation.localProgress}`
     : "";
@@ -129,7 +126,7 @@ export function QuestTaskBar({
 
   return (
     <aside
-      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${progressUpdated ? "has-progress-update" : ""} ${showDigitHint ? "has-digits" : ""} ${chapterFourPresentation ? "has-chapter-four-context" : ""}`.trim()}
+      className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${progressUpdated ? "has-progress-update" : ""} ${showDigitHint ? "has-digits" : ""}`.trim()}
       role="region"
       aria-label="当前任务"
       data-quest-id={quest.id}
@@ -151,10 +148,7 @@ export function QuestTaskBar({
       >
         {variant === "phone" ? null : <span>{CHAPTER_LABEL[quest.chapter]}</span>}
         <strong className="quest-task-trigger-copy">
-          <span>{variant === "phone" ? (open ? "收起任务" : "任务") : triggerObjective}</span>
-          {variant !== "phone" && chapterFourPresentation ? (
-            <b className="quest-task-local-progress">{chapterFourPresentation.localProgress}</b>
-          ) : null}
+          <span>{variant === "phone" ? (open ? "收起任务" : "任务") : quest.objective}</span>
           {showDigitHint ? <em className="quest-task-digit-hint" aria-hidden="true">签到码 {digitHintText}</em> : null}
         </strong>
       </button>

@@ -10,9 +10,8 @@ import type { GameState } from "./core/types";
 import { applyDeveloperCheckpointFromUrl } from "./modules/DeveloperChannel";
 import { getPresentationRuntimeSnapshot } from "./modules/PresentationRuntime";
 import { getEndingRuntimeSnapshot } from "./scenes/phone/P12_Ending/EndingRuntime";
-import { getBikeArcadeSnapshot } from "./scenes/phone/P16_BikeArcade/BikeArcadeRuntime";
-import { getEndlessArcadeDebugSnapshot } from "./scenes/phone/P16_BikeArcade/EndlessArcadeRuntime";
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
+import { getRpgRuntimeWarmupSnapshot } from "./scenes/rpg/RpgRuntimePreload";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
 import { getChapterThreeOpeningRuntimeSnapshot } from "./components/ChapterThreeOpeningRuntime";
@@ -61,7 +60,6 @@ function summarizeGameState(state: GameState) {
       checkinDone: state.flags.checkinDone
     },
     actOne: state.actOne,
-    bikeArcadeChapter: state.bikeArcade,
     canteenHunt: state.canteenHunt,
     theaterHunt: state.theaterHunt,
     qizhenLake: state.qizhenLake,
@@ -70,9 +68,8 @@ function summarizeGameState(state: GameState) {
     presentation: getPresentationRuntimeSnapshot(),
     chapterThreeOpening: getChapterThreeOpeningRuntimeSnapshot(),
     endingGame: getEndingRuntimeSnapshot(),
-    endlessArcadeRuntime: getEndlessArcadeDebugSnapshot(),
     rpgRuntime: getRpgRuntimeDebugState(),
-    bikeArcade: getBikeArcadeSnapshot(),
+    rpgWarmup: getRpgRuntimeWarmupSnapshot(),
     canteenChase: getCanteenChaseSnapshot(),
     ui: {
       inventoryOpen: state.ui.inventoryOpen,

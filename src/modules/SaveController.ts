@@ -4,7 +4,6 @@ import { SaveStore } from "../core/SaveStore";
 import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
-  DEVELOPER_BIKE_START_KEY,
   DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY,
   DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY,
   DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY,
@@ -28,7 +27,7 @@ export class SaveController {
     }
     const saveStore = new SaveStore(this.storage);
     const state = this.store.getState();
-    const saved = saveStore.save(state) && saveStore.saveBikeArcade(state);
+    const saved = saveStore.save(state);
     this.events.emit(saved ? "game_saved" : "game_save_failed");
     return saved;
   }
@@ -38,7 +37,6 @@ export class SaveController {
     this.sessionStorage.removeItem(DEVELOPER_ACTIVE_KEY);
     this.sessionStorage.removeItem(DEVELOPER_SOURCE_KEY);
     this.sessionStorage.removeItem(DEVELOPER_BACKUP_KEY);
-    this.sessionStorage.removeItem(DEVELOPER_BIKE_START_KEY);
     this.sessionStorage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
     this.sessionStorage.removeItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY);
     this.sessionStorage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);

@@ -4,6 +4,7 @@ import qizhenDockUrl from "../../assets/rpg/interiors/qizhen_lake_dock.png";
 import qizhenDockNoSignUrl from "../../assets/rpg/interiors/qizhen_lake_dock_no_sign.png";
 import qizhenOpenWaterUrl from "../../assets/rpg/interiors/qizhen_lake_open_water.png";
 import qizhenSwanCoveUrl from "../../assets/rpg/interiors/qizhen_lake_swan_cove.png";
+import safetyOfficerSheetUrl from "../../assets/rpg/npcs/finale/guard_check_watch_2frame.png";
 import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
 import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import type {
@@ -34,12 +35,14 @@ import {
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
+  QIZHEN_DOCK_AFTER_RAIN_PUDDLES,
   QIZHEN_LAKE_TARGETS,
   QIZHEN_LAKE_WORLD,
   QIZHEN_LAKE_ZONES,
   buildQizhenPhotoRecipe,
   clampKayakToWater,
   findNearestQizhenTarget,
+  isQizhenAfterRainPuddleFootHit,
   nearestQizhenPhotoSpot,
   qizhenTargetAcceptsItem,
   resolveQizhenPhotoSpot,
@@ -52,6 +55,7 @@ import {
 import {
   createQizhenBlackSwanVisual,
   preloadQizhenKayakTextures,
+  QIZHEN_KAYAK_TEXTURE_ASSET_URLS,
   QizhenKayakVisual,
   type QizhenBlackSwanVisual,
   type QizhenPaddleSide
@@ -74,7 +78,18 @@ const ZONE_TEXTURE_KEYS: Readonly<Record<QizhenLakeZoneId, string>> = {
   channel: "chapter-3-qizhen-channel",
   swan_cove: "chapter-3-qizhen-swan-cove"
 };
+export const QIZHEN_LAKE_WARM_ASSET_URLS = Object.freeze([
+  qizhenChannelUrl,
+  qizhenDockUrl,
+  qizhenDockNoSignUrl,
+  qizhenOpenWaterUrl,
+  qizhenSwanCoveUrl,
+  ...QIZHEN_KAYAK_TEXTURE_ASSET_URLS
+  ,safetyOfficerSheetUrl
+]);
 const DOCK_NO_SIGN_TEXTURE_KEY = "chapter-3-qizhen-dock-no-sign";
+const SAFETY_OFFICER_TEXTURE_KEY = "chapter-3-qizhen-safety-officer";
+const SAFETY_OFFICER_ANIMATION_KEY = "chapter-3-qizhen-safety-officer-idle";
 
 const WALK_SPEED = 165;
 const RUN_SPEED = 228;
@@ -171,6 +186,7 @@ interface QizhenRuntimeProjection {
   kayakEquipped: boolean;
   leftPaddleEquipped: boolean;
   rightPaddleEquipped: boolean;
+  rainSafetyCleared: boolean;
   boardingStrokeCount: number;
   boardingLastSide: QizhenPaddleSide | null;
   boardingTutorialCompleted: boolean;
@@ -247,6 +263,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private currentPhase: QizhenRuntimePhase = "dock_outfitting";
   private currentMode: QizhenLakeMode = "light";
   private currentDockSignRemoved = false;
+  private currentRainSafetyCleared = false;
   private virtualDirection = { x: 0, y: 0 };
   private lastVirtualPaddleX = 0;
   private virtualReverseHeld = false;
@@ -294,6 +311,8 @@ export class QizhenLakeScene extends Phaser.Scene {
   private boundaryHeadingAtBlock = 0;
   private boundaryRollAtBlock = 0;
   private reflectionDialoguePlayed = false;
+  private enteredAfterRainPuddleIds = new Set<string>();
+  private activeAfterRainPuddleId: string | null = null;
 
   private photoSessionOpen = false;
   private photoSessionSpotId: QizhenPhotoSpotId | null = null;
@@ -347,6 +366,12 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (!this.textures.exists(DOCK_NO_SIGN_TEXTURE_KEY)) {
       this.load.image(DOCK_NO_SIGN_TEXTURE_KEY, qizhenDockNoSignUrl);
     }
+    if (!this.textures.exists(SAFETY_OFFICER_TEXTURE_KEY)) {
+      this.load.spritesheet(SAFETY_OFFICER_TEXTURE_KEY, safetyOfficerSheetUrl, {
+        frameWidth: 96,
+        frameHeight: 128
+      });
+    }
     preloadQizhenKayakTextures(this);
     preloadRpgPlayerTextures(this);
   }
@@ -361,6 +386,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.currentPhase = runtime.phase;
     this.currentMode = runtime.mode;
     this.currentDockSignRemoved = runtime.rightPaddleEquipped;
+    this.currentRainSafetyCleared = runtime.rainSafetyCleared;
     this.strokeIndex = runtime.boardingStrokeCount;
     this.lastStrokeSide = runtime.boardingLastSide;
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
@@ -371,6 +397,14 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.mapImage = this.add.image(0, 0, this.getZoneTextureKey(this.currentZone)).setOrigin(0).setDepth(-1000);
 
     ensureRpgPlayerTextures(this);
+    if (!this.anims.exists(SAFETY_OFFICER_ANIMATION_KEY)) {
+      this.anims.create({
+        key: SAFETY_OFFICER_ANIMATION_KEY,
+        frames: this.anims.generateFrameNumbers(SAFETY_OFFICER_TEXTURE_KEY, { start: 0, end: 1 }),
+        frameRate: 2,
+        repeat: -1
+      });
+    }
     const spawn = this.getInitialSpawn(runtime);
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0");
     if ("heading" in spawn) this.kayakHeading = spawn.heading;
@@ -535,6 +569,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     } else {
       this.updateOnFootMovement(state);
     }
+    this.updateAfterRainPuddleEvidence();
 
     this.updateOcclusion();
     const targets = this.getActiveTargets(state, runtime);
@@ -612,6 +647,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.photoSessionOpen = false;
     this.photoSessionSpotId = null;
     this.lastPhotoSessionRequest = null;
+    this.enteredAfterRainPuddleIds.clear();
+    this.activeAfterRainPuddleId = null;
   }
 
   private performPaddleStroke(
@@ -950,6 +987,10 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (runtime.rightPaddleEquipped !== this.currentDockSignRemoved) {
       this.applyDockSignVariant(runtime.rightPaddleEquipped);
     }
+    if (runtime.rainSafetyCleared !== this.currentRainSafetyCleared) {
+      this.currentRainSafetyCleared = runtime.rainSafetyCleared;
+      if (this.currentZone === "dock") this.rebuildZone(this.currentZone, this.currentVehicle, null, false);
+    }
     if (runtime.mode !== this.currentMode) this.playModeTransition(runtime.mode);
   }
 
@@ -1080,6 +1121,66 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private createAmbientVisuals(): void {
+    if (this.currentZone === "dock" && !this.currentRainSafetyCleared) {
+      const rainTint = this.add.rectangle(
+        QIZHEN_LAKE_WORLD.width / 2,
+        QIZHEN_LAKE_WORLD.height / 2,
+        QIZHEN_LAKE_WORLD.width,
+        QIZHEN_LAKE_WORLD.height,
+        0x436a86,
+        0.18
+      ).setDepth(-850);
+      this.ambientVisuals.push(rainTint);
+      for (let index = 0; index < 34; index += 1) {
+        const x = (index * 149 + 53) % QIZHEN_LAKE_WORLD.width;
+        const y = (index * 83 + 31) % QIZHEN_LAKE_WORLD.height;
+        const streak = this.add.line(x, y, 0, 0, -7, 30, 0xa9d8f5, 0.48)
+          .setOrigin(0.5)
+          .setDepth(4400);
+        this.ambientVisuals.push(streak);
+        if (!this.reducedMotion) {
+          this.tweens.add({
+            targets: streak,
+            x: x - 30,
+            y: y + 150,
+            duration: 820,
+            delay: index * 37,
+            repeat: -1
+          });
+        }
+      }
+    }
+    if (this.currentZone === "dock" && this.currentRainSafetyCleared) {
+      QIZHEN_DOCK_AFTER_RAIN_PUDDLES.forEach((puddle, index) => {
+        const surface = this.add.ellipse(
+          puddle.x,
+          puddle.y,
+          puddle.width,
+          puddle.height,
+          0x39758c,
+          0.32
+        ).setStrokeStyle(2, 0x9fd6df, 0.42).setDepth(-820);
+        const reflection = this.add.ellipse(
+          puddle.x - puddle.width * 0.14,
+          puddle.y - puddle.height * 0.12,
+          puddle.width * 0.34,
+          Math.max(3, puddle.height * 0.16),
+          0xe1f7f8,
+          0.38
+        ).setDepth(-819);
+        this.ambientVisuals.push(surface, reflection);
+        if (!this.reducedMotion) {
+          this.tweens.add({
+            targets: reflection,
+            alpha: { from: 0.18, to: 0.48 },
+            duration: 1250 + index * 170,
+            yoyo: true,
+            repeat: -1,
+            ease: "Sine.easeInOut"
+          });
+        }
+      });
+    }
     const bands: ReadonlyArray<readonly [number, number, number]> = this.currentZone === "channel"
       ? [[330, 340, 110], [930, 600, 150], [1320, 390, 94]]
       : this.currentZone === "swan_cove"
@@ -1250,6 +1351,12 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private createDockOutfitProp(target: QizhenLakeInteractionTarget): Phaser.GameObjects.GameObject | null {
+    if (target.kind === "safety_officer") {
+      return this.add.sprite(0, 46, SAFETY_OFFICER_TEXTURE_KEY, 0)
+        .setOrigin(0.5, 1)
+        .setScale(0.52)
+        .play(SAFETY_OFFICER_ANIMATION_KEY);
+    }
     if (target.kind !== "outfit") return null;
     const graphics = this.add.graphics();
     if (target.value === "left_paddle") {
@@ -1823,6 +1930,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.emitDomain("rpg_qizhen_board_requested", { targetId: target.id });
       return;
     }
+    if (target.kind === "safety_officer") {
+      this.emitDomain("rpg_qizhen_safety_officer_requested", { targetId: target.id });
+      return;
+    }
     if (target.kind === "zone_portal" && target.targetZone) {
       this.emitDomain("rpg_qizhen_zone_requested", {
         zone: target.targetZone,
@@ -2105,6 +2216,30 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "qizhen_kayak_boarded") {
+      return;
+    }
+    if (name === "qizhen_dock_safety_blocked") {
+      this.showFeedback(qizhenContent.dock.safetyRainBlock, "system", 4200);
+      return;
+    }
+    if (name === "qizhen_dock_weather_adjustment_requested") {
+      this.showFeedback(qizhenContent.dock.safetyWeatherRequest, "task", 5200);
+      return;
+    }
+    if (name === "qizhen_dock_weather_adjustment_pending") {
+      this.showFeedback(qizhenContent.dock.safetyWeatherPending, "system", 3600);
+      return;
+    }
+    if (name === "qizhen_dock_safety_cleared" || name === "qizhen_dock_weather_adjusted") {
+      this.showFeedback(qizhenContent.dock.safetyCleared, "success", 4200);
+      return;
+    }
+    if (name === "qizhen_dock_safety_checked") {
+      this.showFeedback(qizhenContent.dock.safetyAlreadyCleared, "system", 3000);
+      return;
+    }
+    if (name === "qizhen_kayak_board_rejected") {
+      this.showFeedback(qizhenContent.dock.boardRainRejected, "system", 3600);
       return;
     }
     if (name === "qizhen_boarding_stroke_recorded") {
@@ -2393,6 +2528,30 @@ export class QizhenLakeScene extends Phaser.Scene {
     } else {
       this.statusText.setText(qizhenContent.dock.boardPrompt).setColor("#fff2b6");
     }
+  }
+
+  private updateAfterRainPuddleEvidence(): void {
+    if (
+      this.currentZone !== "dock"
+      || !this.currentRainSafetyCleared
+      || this.currentVehicle !== "on_foot"
+      || this.dialogueLocked
+      || this.zoneTransitioning
+      || this.capsizing
+    ) {
+      this.activeAfterRainPuddleId = null;
+      return;
+    }
+    const body = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const footX = body?.center.x ?? this.player.x;
+    const footY = body?.bottom ?? this.player.y;
+    const puddle = QIZHEN_DOCK_AFTER_RAIN_PUDDLES.find((candidate) => (
+      isQizhenAfterRainPuddleFootHit(candidate, footX, footY)
+    ));
+    this.activeAfterRainPuddleId = puddle?.id ?? null;
+    if (!puddle || this.enteredAfterRainPuddleIds.has(puddle.id)) return;
+    this.enteredAfterRainPuddleIds.add(puddle.id);
+    this.showFeedback(qizhenContent.dock.afterRainProof, "player", 2600);
   }
 
   /** 触控端 HUD 相机按钮:仅在 coarse/hybrid 指针下创建,放在底部右侧安全区。 */
@@ -2723,6 +2882,12 @@ export class QizhenLakeScene extends Phaser.Scene {
         zone: this.currentZone,
         vehicle: this.currentVehicle,
         dockSignRemoved: this.currentDockSignRemoved,
+        afterRainPuddles: {
+          visible: this.currentZone === "dock" && this.currentRainSafetyCleared,
+          activeId: this.activeAfterRainPuddleId,
+          enteredIds: [...this.enteredAfterRainPuddleIds],
+          definitions: QIZHEN_DOCK_AFTER_RAIN_PUDDLES.map((puddle) => ({ ...puddle }))
+        },
         activeTarget: target?.id ?? null,
         kayak: {
           heading: Number(this.kayakHeading.toFixed(3)),
@@ -2861,6 +3026,7 @@ function readQizhenRuntime(state: GameState): QizhenRuntimeProjection {
     kayakEquipped: source.kayakEquipped === true,
     leftPaddleEquipped: source.leftPaddleEquipped === true,
     rightPaddleEquipped: source.rightPaddleEquipped === true,
+    rainSafetyCleared: source.rainSafetyCleared === true,
     boardingStrokeCount: finiteCount(source.boardingStrokeCount),
     boardingLastSide: source.boardingLastSide === "left" || source.boardingLastSide === "right"
       ? source.boardingLastSide

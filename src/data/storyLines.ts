@@ -1,6 +1,5 @@
 import type { StoryLine } from "../core/types";
 import actOneContent from "./act-one-bootstrap.content.json";
-import bikeContent from "./bike-arcade.content.json";
 import legacyDialogue from "./dialogue.lines.json";
 import { CHAPTER_THREE_STORY_LINES } from "./chapterThreeStory";
 import { CHAPTER_FOUR_PROLOGUE_STORY_LINES } from "./chapter4PrologueStory";
@@ -89,10 +88,6 @@ for (const [sequenceId, sequence] of Object.entries(LIBRARY_STORY_SEQUENCES)) {
   sequence.forEach((line, index) => {
     lines[libraryStoryLineKey(sequenceId, index)] = libraryDialogueLine(line.speaker, line.text);
   });
-}
-
-for (const [key, subtitleZh] of Object.entries(bikeContent.subtitles)) {
-  lines[key] = textLine("taunt", subtitleZh);
 }
 
 for (const [key, line] of CHAPTER_THREE_STORY_LINES) {

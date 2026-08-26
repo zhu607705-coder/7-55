@@ -38,7 +38,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   wateredHeadphone: {
     category: "合成道具",
     source: "耳机 + 水滴",
-    intro: "液体和容器已经齐了。接下来找一株始终没开花的植物。"
+    intro: "耳机背面的空腔里留着一小份水，液体没有继续渗出。"
   },
   reverseGear: {
     category: "机械素材",
@@ -128,7 +128,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   seatReleasePass: {
     category: "执行凭证",
     source: "022 恢复申请签发",
-    intro: "材料已经换成临时处置权限。回到那件长期占着位置、现场却找不到主人的物品旁。"
+    intro: "三份材料已经换成临时处置权限，凭证对应基础馆二层南区 022。"
   },
   cafeteriaWages: {
     category: "餐盘回收费 2.00 元",

@@ -136,7 +136,7 @@
       "framePair": 3,
       "frames": [6, 7],
       "origin": { "x": 0.5, "y": 1 },
-      "uniformScale": 0.65,
+      "uniformScale": 0.52,
       "position": { "x": 365, "y": 340 },
       "collision": false,
       "foregroundOcclusionId": "a1_foreground_018"
@@ -147,9 +147,9 @@
       "origin": { "x": 0.5, "y": 1 },
       "displayScale": 0.65,
       "routes": [
-        { "id": "bakery_student_01", "from": { "x": 548, "y": 620 }, "to": { "x": 610, "y": 620 }, "speed": 32, "endpointPauseMs": 360 },
-        { "id": "bakery_student_02", "from": { "x": 610, "y": 656 }, "to": { "x": 548, "y": 656 }, "speed": 28, "endpointPauseMs": 420 },
-        { "id": "bakery_student_03", "from": { "x": 548, "y": 692 }, "to": { "x": 610, "y": 692 }, "speed": 34, "endpointPauseMs": 300 }
+        { "id": "bakery_student_01", "from": { "x": 540, "y": 600 }, "to": { "x": 670, "y": 600 }, "speed": 32, "endpointPauseMs": 360 },
+        { "id": "bakery_student_02", "from": { "x": 1120, "y": 600 }, "to": { "x": 990, "y": 600 }, "speed": 28, "endpointPauseMs": 420 },
+        { "id": "bakery_student_03", "from": { "x": 540, "y": 710 }, "to": { "x": 660, "y": 710 }, "speed": 34, "endpointPauseMs": 300 }
       ]
     },
     "walkabilityRoutes": [
@@ -309,7 +309,7 @@
       "approximate": false
     },
     "repairedPush": {
-      "animationId": "cleaner_push_cart",
+      "animationId": "cleaner_push_cart_up",
       "from": { "x": 1138, "y": 716 },
       "to": { "x": 1138, "y": 650 },
       "durationMs": 900,
@@ -406,7 +406,16 @@
     "storyFloor": "A1",
     "statePlateId": "a1_2245_maintenance",
     "clockFrame": "gear_running",
-    "clockCenter": { "x": 1001, "y": 90 },
+    "clockCenter": { "x": 996, "y": 63 },
+    "visualRegistration": {
+      "axis": { "x": 996, "y": 63 },
+      "sourceFrameFaceRadius": 108,
+      "statePlateFaceRadius": 37,
+      "uniformScale": 0.3425925926,
+      "framePivotRole": "clock_axis",
+      "authority": "a1_state_plate_radial_edge_measurement",
+      "approximate": false
+    },
     "minuteHandRadius": 36,
     "initialAngleDegrees": 234,
     "targetAngleDegrees": 240,
@@ -414,7 +423,7 @@
     "endpoint": {
       "targetId": "a1_hall_clock_minute_endpoint",
       "entityId": "chapter4_hall_clock_minute_endpoint",
-      "installationBounds": { "x": 971, "y": 52, "width": 16, "height": 16 },
+      "installationBounds": { "x": 967, "y": 26, "width": 16, "height": 16 },
       "standPosition": { "x": 1001, "y": 214 },
       "proximity": 148,
       "boundsDerivation": {
@@ -524,6 +533,52 @@
     "requiredMode": "light",
     "collision": false
   },
+  "frontDeskRuntime": {
+    "storyFloor": "A1",
+    "npcId": "a1_front_desk_attendant",
+    "texture": "chapter-four-front-desk-staff",
+    "animation": "chapter-four-front-desk-staff-idle",
+    "frames": [0, 1],
+    "frameRate": 2,
+    "origin": { "x": 0.5, "y": 1 },
+    "uniformScale": 0.72,
+    "position": { "x": 819, "y": 652 },
+    "interactionAnchorId": "a1_front_desk_attendant",
+    "counterForegroundOcclusionId": "a1_foreground_016",
+    "activePhases": [
+      "bakery_hour_hand",
+      "room204_restore",
+      "morning_checkin",
+      "exterior_closure"
+    ],
+    "collision": false
+  },
+  "supportNpcRuntimes": [
+    {
+      "storyFloor": "A2",
+      "npcId": "a2_elevator_attendant",
+      "visualSource": "finale_npc",
+      "animation": "guard_check_watch",
+      "origin": { "x": 0.5, "y": 1 },
+      "uniformScale": 0.65,
+      "position": { "x": 700, "y": 224 },
+      "interactionAnchorId": "a2_elevator_attendant",
+      "activePhases": ["room204_restore"],
+      "collision": false
+    },
+    {
+      "storyFloor": "A3",
+      "npcId": "a3_reference_teacher",
+      "visualSource": "front_desk_staff",
+      "animation": "chapter-four-front-desk-staff-idle",
+      "origin": { "x": 0.5, "y": 1 },
+      "uniformScale": 0.72,
+      "position": { "x": 1372, "y": 598 },
+      "interactionAnchorId": "a3_reference_teacher",
+      "activePhases": ["room204_restore"],
+      "collision": false
+    }
+  ],
   "morningCheckinRuntime": {
     "storyFloor": "A1",
     "statePlateId": "a1_0755_morning",
@@ -870,6 +925,15 @@
           "y": 132,
           "width": 35,
           "height": 345
+        },
+        {
+          "id": "a1_air_wall_front_desk_counter",
+          "sourceAnnotationId": "a1-ann-016",
+          "label": "前台柜台空气墙",
+          "x": 758,
+          "y": 633,
+          "width": 179,
+          "height": 26
         }
       ],
       "walkableRegions": [
@@ -1104,6 +1168,36 @@
             "y": 536,
             "width": 136,
             "height": 140
+          }
+        },
+        {
+          "id": "a1_classroom_104_blackboard_residual",
+          "label": "104 黑板擦痕残留",
+          "bounds": {
+            "x": 1330,
+            "y": 165,
+            "width": 158,
+            "height": 54
+          }
+        },
+        {
+          "id": "a1_classroom_105_lectern_terminal",
+          "label": "105 讲台回放终端",
+          "bounds": {
+            "x": 1380,
+            "y": 558,
+            "width": 62,
+            "height": 56
+          }
+        },
+        {
+          "id": "a1_front_desk_attendant",
+          "label": "一楼前台值班助理",
+          "bounds": {
+            "x": 758,
+            "y": 625,
+            "width": 179,
+            "height": 34
           }
         },
         {
@@ -1634,6 +1728,16 @@
           }
         },
         {
+          "id": "a2_elevator_attendant",
+          "label": "二楼电梯口值班安全员",
+          "bounds": {
+            "x": 664,
+            "y": 150,
+            "width": 72,
+            "height": 74
+          }
+        },
+        {
           "id": "a2_room204_residual_group",
           "label": "204 教室残影组",
           "bounds": {
@@ -2022,13 +2126,58 @@
         },
         {
           "id": "alumni_honor_vestibule",
-          "label": "三楼校友荣誉门厅",
+          "label": "三楼校史人物荣誉门厅",
           "bounds": {
             "x": 590,
             "y": 530,
             "width": 490,
             "height": 264
           }
+        },
+        {
+          "id": "a3_alumni_su_buqing",
+          "label": "校史人物·苏步青",
+          "bounds": {
+            "x": 748,
+            "y": 583,
+            "width": 43,
+            "height": 62
+          }
+        },
+        {
+          "id": "a3_alumni_zhu_kezhen",
+          "label": "校史人物·竺可桢",
+          "bounds": {
+            "x": 812,
+            "y": 583,
+            "width": 43,
+            "height": 62
+          }
+        },
+        {
+          "id": "a3_alumni_lu_yongxiang",
+          "label": "校史人物·路甬祥",
+          "bounds": {
+            "x": 877,
+            "y": 583,
+            "width": 43,
+            "height": 62
+          }
+        },
+        {
+          "id": "a3_alumni_chen_jiangong",
+          "label": "校史人物·陈建功",
+          "bounds": { "x": 574, "y": 108, "width": 38, "height": 60 }
+        },
+        {
+          "id": "a3_alumni_tan_jiazhen",
+          "label": "校史人物·谈家桢",
+          "bounds": { "x": 616, "y": 108, "width": 38, "height": 60 }
+        },
+        {
+          "id": "a3_alumni_cheng_kaijia",
+          "label": "校史人物·程开甲",
+          "bounds": { "x": 658, "y": 108, "width": 38, "height": 60 }
         },
         {
           "id": "alumni_gallery_3",
@@ -2038,6 +2187,16 @@
             "y": 34,
             "width": 1016,
             "height": 140
+          }
+        },
+        {
+          "id": "a3_reference_teacher",
+          "label": "三楼参照教室教师",
+          "bounds": {
+            "x": 1334,
+            "y": 520,
+            "width": 76,
+            "height": 78
           }
         },
         {

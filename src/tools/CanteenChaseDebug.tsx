@@ -91,7 +91,7 @@ function mountOverlay(): void {
   const root = createRoot(shell);
   root.render(
     <React.StrictMode>
-      <CanteenChaseOverlay events={events} onAttempt={() => undefined} onContinue={() => undefined} />
+      <CanteenChaseOverlay events={events} onAttempt={() => undefined} />
     </React.StrictMode>
   );
 }

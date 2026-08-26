@@ -36,6 +36,17 @@ const PROLOGUE_IDS = [
   "c4-prologue-task-card"
 ];
 
+const INTERLUDE_IDS = [
+  "c3-interlude-reboot",
+  "c3-interlude-journal",
+  "c3-interlude-photos",
+  "c3-interlude-voice",
+  "c3-interlude-network",
+  "c3-interlude-timeline",
+  "c3-interlude-destination",
+  "c3-interlude-replay"
+];
+
 const PROLOGUE_OFFSETS = {
   "c4-prologue": 0,
   "c4-prologue-lake-exit": 6708,
@@ -50,6 +61,8 @@ const GAMEPLAY_IDS = [
   "c4-755-opening",
   "c4-755-hall-clock",
   "c4-755-bakery-1225",
+  "c4-755-classrooms-1850",
+  "c4-755-elevator-history",
   "c4-755-room204-1850",
   "c4-755-maintenance-2245",
   "c4-755-blackout-0754",
@@ -60,12 +73,12 @@ const GAMEPLAY_IDS = [
   "c4-755-closure"
 ];
 
-const STABLE_IDS = [...PROLOGUE_IDS, ...GAMEPLAY_IDS];
-
 const EXPECTED_SEEDS = {
   "c4-755-opening": ["opening_handoff", "2245_opening", "A1", "a1_lobby"],
   "c4-755-hall-clock": ["hall_clock_inspection", "2245_opening", "A1", "a1_hall_clock"],
   "c4-755-bakery-1225": ["bakery_hour_hand", "1225_bakery", "A1", "a1_bakery"],
+  "c4-755-classrooms-1850": ["room204_restore", "1850_evening", "A1", "a1_hall_clock"],
+  "c4-755-elevator-history": ["room204_restore", "1850_evening", "A1", "a1_main_elevator"],
   "c4-755-room204-1850": ["room204_restore", "1850_evening", "A3", "a3_reference_classroom"],
   "c4-755-maintenance-2245": ["maintenance_repair", "2245_maintenance", "A1", "a1_lobby"],
   "c4-755-blackout-0754": ["blackout_light_grid", "0754_blackout", "A1", "a1_power_panel"],
@@ -104,6 +117,10 @@ const content = JSON.parse(fs.readFileSync(
   new URL("../src/data/chapter4-755.content.json", import.meta.url),
   "utf8"
 ));
+const layout = JSON.parse(fs.readFileSync(
+  new URL("../src/data/chapter4-three-floor-maze.layout.json", import.meta.url),
+  "utf8"
+));
 const audio = JSON.parse(fs.readFileSync(
   new URL("../src/data/chapter4-755.audio.json", import.meta.url),
   "utf8"
@@ -112,6 +129,8 @@ const source = (relative) => fs.readFileSync(new URL(relative, import.meta.url),
 const questStripSource = source("../src/components/QuestClueStrip.tsx");
 const appSource = source("../src/App.tsx");
 const hostSource = source("../src/scenes/rpg/RpgGameHost.tsx");
+const rpgPreloadSource = source("../src/scenes/rpg/RpgRuntimePreload.ts");
+const prologueGateSource = source("../src/components/Chapter4PrologueRuntimeGate.tsx");
 const sceneSource = source("../src/scenes/rpg/ChapterFourTemporalMazeScene.ts");
 const debugSource = source("../src/scenes/rpg/RpgRuntimeDebug.ts");
 const audioDirectorSource = source("../src/modules/AudioDirector.ts");
@@ -119,6 +138,57 @@ const presentationDirectorSource = source("../src/modules/PresentationDirector.t
 const controllerSource = source("../src/modules/ChapterFourTemporalMazeController.ts");
 const stagePresentationSource = source("../src/modules/ChapterFourStagePresentation.ts");
 const room204ModelSource = source("../src/scenes/rpg/ChapterFourRoom204Model.ts");
+
+const clockRegistration = layout.finalClockRuntime?.visualRegistration;
+assert(
+  sameJson(layout.finalClockRuntime?.clockCenter, { x: 996, y: 63 })
+    && sameJson(clockRegistration?.axis, { x: 996, y: 63 }),
+  "hall-clock mechanics and sprite pivot must share the measured A1 state-plate axis"
+);
+assert(
+  clockRegistration?.sourceFrameFaceRadius === 108
+    && clockRegistration?.statePlateFaceRadius === 37
+    && Math.abs(clockRegistration?.uniformScale - (37 / 108)) < 1e-9
+    && clockRegistration?.framePivotRole === "clock_axis"
+    && clockRegistration?.approximate === false,
+  "hall-clock visual scale must be derived from the measured sprite and state-plate face radii"
+);
+assert(
+  /const registration = FINAL_CLOCK_RUNTIME\.visualRegistration/.test(sceneSource)
+    && /setPosition\(floor\.offsetX \+ registration\.axis\.x, registration\.axis\.y\)/.test(sceneSource)
+    && /setScale\(registration\.uniformScale\)/.test(sceneSource)
+    && !/target\.bounds\.width \/ frame\.realWidth/.test(sceneSource),
+  "hall-clock sprite must use its visual registration instead of fitting the interaction rectangle"
+);
+assert(
+  /getRpgSceneWarmAssetUrls\(sceneId: RpgSceneId\)/.test(hostSource)
+    && /RPG_SCENE_WARM_ASSET_URLS:[\s\S]*?campus_bootstrap:[\s\S]*?duan_yongping_temporal_maze:/.test(hostSource)
+    && /module\.getRpgSceneWarmAssetUrls\(sceneId\)/.test(rpgPreloadSource)
+    && !/import\.meta\.glob/.test(rpgPreloadSource)
+    && /export function warmRpgRuntime\(/.test(rpgPreloadSource)
+    && /export function scheduleRpgRuntimeWarmup\(/.test(rpgPreloadSource),
+  "RPG warmup must reuse one explicit Scene preload asset registry plus immediate and idle entry points"
+);
+assert(
+  /publishPreloadedRpgGameHostModule\(module\)/.test(rpgPreloadSource)
+    && /subscribePreloadedRpgGameHostModule/.test(appSource)
+    && /const ActiveRpgGameHost = resolvedRpgGameHost \?\? RpgGameHost/.test(appSource)
+    && (appSource.match(/<ActiveRpgGameHost/g) ?? []).length === 2,
+  "a completed warmup must publish the resolved Host so entering RPG avoids the first React.lazy Suspense flash"
+);
+assert(
+  /state\.currentScene === "timeline_recovery"/.test(appSource)
+    && /scheduleRpgRuntimeWarmup\(state\.rpgScene\)/.test(appSource)
+    && /chapter35_recovered_replay_gate_requested[\s\S]*?warmRpgRuntime\("duan_yongping_temporal_maze"\)/.test(prologueGateSource),
+  "phone play must idle-warm its pending RPG while the 3.5 destination gate keeps Chapter 4 warmup behind replay confirmation"
+);
+assert(
+  /connection\?\.saveData === true/.test(rpgPreloadSource)
+    && /effectiveType === "slow-2g"/.test(rpgPreloadSource)
+    && /requestIdleCallback/.test(rpgPreloadSource)
+    && /window\.setTimeout\(start, 180\)/.test(rpgPreloadSource),
+  "RPG warmup must preserve save-data and Safari-compatible idle fallbacks"
+);
 const closureSource = source("../src/modules/ChapterFourClosureContract.ts");
 const mazeProjectionSource = source("../src/modules/ChapterFourMazeProjection.ts");
 const runtimeValidatorSource = source("./verify-chapter4-755-runtime.mjs");
@@ -128,7 +198,7 @@ const ciSource = source("../.github/workflows/web-ci.yml");
 const taskEntries = Object.entries(content.tasks ?? {});
 const activeTaskEntries = taskEntries.filter(([taskId]) => taskId !== "chapter_complete");
 const activeHints = activeTaskEntries.flatMap(([, task]) => Array.isArray(task?.hints) ? task.hints : []);
-assert(taskEntries.length === 29 && activeTaskEntries.length === 28, "Task 14 must define 28 active tasks plus chapter_complete");
+assert(taskEntries.length === 34 && activeTaskEntries.length === 33, "Task 14 must define 33 active tasks plus chapter_complete");
 for (const [taskId, task] of activeTaskEntries) {
   assert(
     Array.isArray(task?.hints)
@@ -137,7 +207,7 @@ for (const [taskId, task] of activeTaskEntries) {
     `${taskId} must expose exactly three non-empty progressive hints`
   );
 }
-assert(activeHints.length === 84, "Task 14 must expose the complete 84-hint contract");
+assert(activeHints.length === 99, "Task 14 must expose the complete 99-hint contract");
 assert(
   Array.isArray(content.tasks?.chapter_complete?.hints)
     && content.tasks.chapter_complete.hints.length === 0,
@@ -177,6 +247,11 @@ assert(
   "quest navigation must distinguish returning to the RPG from opening a phone destination"
 );
 assert(!/quest\.steps/.test(questStripSource), "QuestClueStrip must not read or reveal future quest steps");
+assert(
+  !/triggerObjective|quest-task-local-progress|has-chapter-four-context/.test(questStripSource)
+    && /variant === "phone" \? \(open \? "收起任务" : "任务"\) : quest\.objective/.test(questStripSource),
+  "collapsed Chapter 4 task bar must use the same objective-only status layout as every other chapter"
+);
 assert(
   /showTaskBar=\{state\.rpgScene\s*===\s*"duan_yongping_temporal_maze"\}/.test(appSource),
   "desktop Chapter 4 must mount the shared RPG task bar through its Host without duplicating other scenes"
@@ -429,10 +504,17 @@ try {
     "stage presentation runtime validation must cover 13 phases and 6 time states"
   );
 
+  const visibleChapterThreeHalfIds = DEVELOPER_CHECKPOINTS
+    .filter((entry) => entry.chapter === "3.5章")
+    .map((entry) => entry.id);
+  assert(
+    sameJson(visibleChapterThreeHalfIds, [...INTERLUDE_IDS, ...PROLOGUE_IDS]),
+    "visible Chapter 3.5 DEV entries must contain the recovery interlude followed by the H3 teaching-building transition"
+  );
   const visibleC4Ids = DEVELOPER_CHECKPOINTS
     .filter((entry) => entry.chapter === "第四章")
     .map((entry) => entry.id);
-  assert(sameJson(visibleC4Ids, STABLE_IDS), "visible Chapter 4 DEV entries must match the independent prologue and canonical gameplay IDs");
+  assert(sameJson(visibleC4Ids, GAMEPLAY_IDS), "visible Chapter 4 DEV entries must contain only the canonical gameplay IDs");
   for (const id of GAMEPLAY_IDS) {
     const state = createDeveloperCheckpointState(id);
     const [phase, timeState, floor, roomId] = EXPECTED_SEEDS[id];
@@ -651,4 +733,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=11+aliases+url+session-only quest=single-objective+84-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);
+console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=13+aliases+url+session-only quest=single-objective+99-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);

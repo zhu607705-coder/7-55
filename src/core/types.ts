@@ -16,8 +16,6 @@ export interface FeatureAccess {
   cc98OwnerUpload: boolean;
   cc98Bd: boolean;
   libraryRecovery: boolean;
-  bikeArcade: boolean;
-  endlessChallenge: boolean;
   timelineRecovery: boolean;
   voiceMemos: boolean;
   clockCalibration: boolean;
@@ -172,35 +170,15 @@ export interface ActOneBootstrapState {
   visitedAreaIds: string[];
   gameMenuUnlocked: boolean;
   dormHubUnlocked: boolean;
+  cc98Login: Cc98UnifiedLoginState;
 }
 
-export interface BikeArcadeChapterState {
-  unlocked: boolean;
-  completed: boolean;
-  attemptCount: number;
-  bestDistance: number;
-  bestLives: number;
-}
-
-export type MainStoryCompletionReceipt = "chapter4_closure_v1" | null;
-
-export type EndlessChallengeModeId = "fishing" | "spotlight" | "bike";
-
-export interface EndlessChallengeRecord {
-  attemptCount: number;
-  bestScore: number;
-  bestProgress: number;
-  bestTier: number;
-  bestCombo: number;
-  bestDurationMs: number;
-}
-
-export interface PostgameState {
-  completionReceipt: MainStoryCompletionReceipt;
-}
-
-export interface EndlessArcadeState {
-  records: Record<EndlessChallengeModeId, EndlessChallengeRecord>;
+export interface Cc98UnifiedLoginState {
+  studentIdDiscovered: boolean;
+  revealedHintCount: number;
+  failureCount: number;
+  lockUntilMs: number | null;
+  authenticated: boolean;
 }
 
 /**
@@ -358,6 +336,10 @@ export interface QizhenLakeState {
   kayakEquipped: boolean;
   leftPaddleEquipped: boolean;
   rightPaddleEquipped: boolean;
+  /** 湖边安全员已核对器材并提交天气调控申请。 */
+  weatherAdjustmentRequested: boolean;
+  /** 天气应用完成调控后才允许登船。 */
+  rainSafetyCleared: boolean;
   boardingStrokeCount: number;
   boardingLastSide: QizhenPaddleSide | null;
   boardingTutorialCompleted: boolean;
@@ -623,7 +605,13 @@ export type ChapterFourFactId =
   | "bakery_hour_hand_exposed"
   | "bakery_hour_hand_collected"
   | "hour_hand_installed"
+  | "classroom_104_chalk_residual_observed"
+  | "classroom_105_terminal_replay_checked"
+  | "elevator_history_observed"
+  | "elevator_history_calibrated"
   | "a3_reference_observed"
+  | "zhu_two_questions_answered"
+  | "misaligned_stair_solved"
   | "room204_residual_observed"
   | "room204_restored"
   | "room204_projection_completed"
@@ -635,11 +623,27 @@ export type ChapterFourFactId =
   | "clock_gear_repaired"
   | "paper_temporarily_out_of_inventory"
   | "light_grid_locked"
+  | "canruo_star_lamp_primed"
   | "final_minute_recovered"
   | "final_minute_installed"
   | "checkin_card_accepted"
   | "checkin_paper_accepted"
   | "exterior_closure_acknowledged";
+
+export type ChapterFourZhuPurposeAnswerId =
+  | "seek_truth"
+  | "solve_real_problems"
+  | "serve_public";
+
+export type ChapterFourZhuPersonAnswerId =
+  | "responsible"
+  | "clear_minded"
+  | "public_service";
+
+export interface ChapterFourZhuQuestionAnswers {
+  purpose: ChapterFourZhuPurposeAnswerId | null;
+  person: ChapterFourZhuPersonAnswerId | null;
+}
 
 export type ChapterFourPhase =
   | "opening_handoff"
@@ -669,6 +673,7 @@ export interface ChapterFourState {
   phoneStatusTimeSeconds: number;
   phoneStatusTimeTrusted: boolean;
   factIds: ChapterFourFactId[];
+  zhuQuestionAnswers: ChapterFourZhuQuestionAnswers;
   room204Placements: ChapterFourRoom204Placement[];
   lightGrid: ChapterFourLightGridState;
   guardMode: ChapterFourGuardMode;
@@ -966,8 +971,6 @@ export type SceneId =
   | "timeline_recovery"
   | "voice_memos"
   | "campus_card"
-  | "bike_arcade"
-  | "chapter_transition"
   | "checkin"
   | "bonsai"
   | "clock"
@@ -982,7 +985,6 @@ export type PhoneHomeAppId =
   | "timeline_recovery"
   | "voice_memos"
   | "cc98"
-  | "bike_arcade"
   | "control_center"
   | "clock";
 
@@ -1067,9 +1069,6 @@ export interface GameState {
   flags: GameFlags;
   actOne: ActOneBootstrapState;
   wallet: WalletState;
-  bikeArcade: BikeArcadeChapterState;
-  postgame: PostgameState;
-  endlessArcade: EndlessArcadeState;
   canteenHunt: CanteenHuntState;
   theaterHunt: TheaterHuntState;
   qizhenLake: QizhenLakeState;

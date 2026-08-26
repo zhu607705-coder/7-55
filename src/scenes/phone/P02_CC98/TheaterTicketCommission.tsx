@@ -68,7 +68,7 @@ export function TheaterTicketCommission({
       return;
     }
     playSfx("07_", { volume: 0.65 });
-    kit.flags.toast("已接单。先到剧院大厅确认 08:32 放票时间。", "task");
+    kit.flags.toast("学生剧现场帮抢委托已接取。", "task");
   }
 
   function openControlCenter() {

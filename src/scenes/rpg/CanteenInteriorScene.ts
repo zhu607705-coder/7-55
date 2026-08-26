@@ -73,6 +73,24 @@ import {
 } from "./CanteenInteriorModel";
 
 const CANTEEN_MAP_KEY = "chapter-3-canteen-interior-map";
+export const CANTEEN_INTERIOR_WARM_ASSET_URLS = Object.freeze([
+  canteenInteriorMapUrl,
+  canteenCounterAuntiesSheetUrl,
+  canteenQueueStudentsSheetUrl,
+  canteenReturnAuntieSheetUrl,
+  canteenSeatedStudentsExtraSheetUrl,
+  canteenSeatedStudentsSheetUrl,
+  canteenShadowAuntieSheetUrl,
+  canteenPromoBoardActiveUrl,
+  canteenPromoBoardEmptyUrl,
+  canteenPromoDrinkInsertSheetUrl,
+  canteenPromoFxSheetUrl,
+  canteenQueueStudentTurnUrl,
+  canteenPaperChickenBurstSheetUrl,
+  canteenPaperChickenShakeSheetUrl,
+  canteenShadowAuntiePushSheetUrl,
+  playerPushCartSheetUrl
+]);
 const CANTEEN_PUSH_CART_SHEET_KEY = "chapter-3-canteen-player-push-cart";
 const CANTEEN_QUEUE_NPC_SHEET_KEY = "chapter-3-canteen-queue-npcs";
 const CANTEEN_COUNTER_NPC_SHEET_KEY = "chapter-3-canteen-counter-npcs";

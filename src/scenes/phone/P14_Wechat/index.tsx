@@ -453,7 +453,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   function readOfficialNotice() {
     showChapterFourResult(
       kit.chapterFour.readWechatOfficialNotice(),
-      "已保存夜间运行通知。回到一楼核对电梯历史状态。",
+      "夜间运行通知已保存。",
       "第四章开始后才能查看这条运行通知。"
     );
   }
@@ -461,7 +461,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   function archiveElevatorAudio() {
     showChapterFourResult(
       kit.chapterFour.archiveWechatElevatorAudio(),
-      "已归档主电梯提示音。可以返回电梯进行时间对齐。",
+      "主电梯提示音已归档。",
       "先回到一楼，在深色观察中记录电梯历史提示音。"
     );
   }
@@ -479,7 +479,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   function archiveWayfindingPhotos() {
     showChapterFourResult(
       kit.chapterFour.archiveWechatWayfindingPhotos(),
-      "新旧导视板照片已归档，可以发给朋友对照。",
+      "新旧导视板照片已归档。",
       "先在三楼深色观察中找到旧导视板残影。"
     );
   }
@@ -487,7 +487,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
   function compareWayfindingPhotos() {
     showChapterFourResult(
       kit.chapterFour.compareWechatWayfindingPhotos(),
-      "照片对照完成。回三楼按旧编号校准导视板。",
+      "照片对照完成。",
       "先把三楼新旧导视板照片保存到文件传输助手。"
     );
   }

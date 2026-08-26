@@ -16,8 +16,6 @@
 | P13_PhoneHome | `phone_home` | 主屏：齿轮 d3 / 塔楼钥匙 / 水滴 / 盆栽入口 |
 | P14_Wechat | `wechat` | 小影散码 + 朋友头像斜线谜题（原 P03） |
 | P15_Zjuding | `zjuding` | 浙大钉：加载门禁 + 签到/我的导航 |
-| P16_BikeArcade | `bike_arcade` | 竖屏三车道骑行小游戏 |
-| P17_ChapterTransition | `chapter_transition` | 章节完成记录与后续入口 |
 | P18_Photos | `photos` | 图书馆书包拍照与亮度证据处理 |
 
 ## 已并入其他位置的旧场景

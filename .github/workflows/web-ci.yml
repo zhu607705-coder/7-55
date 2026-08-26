@@ -71,9 +71,6 @@ jobs:
       - name: Verify Chapter 4 7:55 Task 14 contract
         run: npm run chapter4:validate-task14
 
-      - name: Verify endless arcade contract
-        run: npm run endless:validate
-
       - name: Type-check source
         run: npm run typecheck
 

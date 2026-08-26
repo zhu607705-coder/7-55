@@ -335,7 +335,7 @@ export class QizhenLoopScene extends Phaser.Scene {
       const reply = dialogue[index];
       if (reply) lines.push({ text: reply, durationMs: TRANSITION_DIALOGUE_MS });
     });
-    // 末尾多出的对白是下一步行动指引,按任务/线索类时长展示。
+    // 末尾多出的对白属于任务行动指引,按任务/线索类时长展示。
     dialogue.slice(visualBeats.length).forEach((text) => {
       lines.push({ text, durationMs: TRANSITION_GUIDANCE_MS });
     });
