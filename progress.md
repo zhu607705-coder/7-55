@@ -3220,3 +3220,26 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - `npm run build` 已生成普通 Vite 生产构建并通过，未运行 `build:single`，未编辑 `demo/index.html`。剧情文本重新导出为 `docs/game-text-by-chapter.md`，共 `6217` 条，其中第四章 `1269` 条。
 - 证据边界：本轮没有执行真实浏览器中的六教室靠近后 `Space` 闭环，也没有完成 Safari/移动端的内存峰值和阶段切换停顿 profile；纯流程、资源阶段、控制器与构建验证已通过，不能替代这两项真实运行证据。按既有决定，不执行第四章三层碰撞与遮挡浏览器专项校验。
 - 交付边界：本轮未执行 Git fetch、stage、commit、merge、rebase、push、reset 或上传，也未生成新的单文件。
+
+## 2026-08-27 `2a540e7` 第三章改动选择性语义合并
+
+- 以 `2a540e7a7325b177c3685ea6ea74a284d5d15745` 为语义来源恢复后续提交覆盖掉的第三章改动；没有整文件 checkout 或 cherry-pick，保留当前版本的无朝向交互契约、第四章、启真湖与资源预热实现。
+- 场馆对外名称按审阅意见统一为“剧场”：校园入口、食堂骑行终点建筑与路牌、CC98 委托正文和取票说明不再显示“求是大讲堂”。
+- 剧场取票机在手机票务已送达时仍提交 kiosk 请求并打开 `0832` 输入面板；检票员与读票器视觉、互动点和投放框统一下移 `42px`，原碰撞矩形保持不变。后台道具箱恢复到 `(294,165) / 96×95 / proximity 72`，票据扫描器恢复 `proximity 72`。
+- 节目单不再在场景中直接显示完整答案；深色观察只提示打开道具栏，三张残页详情分别显示荧光顺序 `1 / 2 / 3`。食堂转场提示同步改为“节目单简介里的荧光编号”。
+- 食堂 DEV 的守出口检查点恢复为开始/中段/末段，瞬态运行时分别从 `0 / 30000 / 50000ms` 起跑；中段和末段不再预填出口识别与命中数。点餐检查点重新播放队伍退让交接，自行车检查点说明补全深色读码、擦锁和支付 2 元。
+- 按用户明确范围保持六项现状：最近目标判定、食堂入场、食堂点餐机、食堂 NPC 范围、道具重叠决胜、剧院出口。对应当前值仍为入场半径 `360`、点餐机模型 `(790,218)` / 站位 `(790,260)`、坐席 NPC `72×88 / proximity 54`、剧院出口模型 `(836,842) / proximity 90` 与热点 `156×92`；共享最近目标和道具重叠排序未改。
+- Fresh 校验：`npm run typecheck`、`npm run verify:rpg-facing-agnostic`、`npm run verify:developer-levels`、`npm run verify:task-guidance`、`npm run verify:canteen-bike-transition`、17 项选择性语义断言、`npm run build:single` 与 `npm run verify:single` 均通过。单文件首次构建触及 Node 默认约 `2.5GB` 堆上限，使用临时 `--max-old-space-size=6144` 重跑后成功，产物为 `252298403 bytes`、两个内联脚本和一个内联样式。
+- Chromium `1280×720` 直接打开 `file:///D:/Code/7-55/demo/index.html` 完成 21 项真实运行断言：已送达票务状态可靠近取票机并打开 code panel，检票 target `y=732`；三张节目单详情依次显示 `顺序：1/2/3`；后台道具箱与扫描器坐标/距离生效；守出口中段和末段起点为 `30000/50000ms`，末段首次采样剩余 `9925ms`；console/page error 为 `0`。
+- 当前边界：未执行 stage、commit、merge、rebase、push、reset 或上传，也未处理 stash 和既有未跟踪 Godot/启真湖素材。临时 Chromium 进程已结束，临时浏览器资料已移入回收站，QA 脚本已删除。
+
+## 2026-08-27 启真湖返回手机后的地图、DEV 与云层校准断链修复
+
+- 根因是桌面双栏把手机焦点与持久运行模式混用了：点击“聚焦手机”只把 `activeSurface` 切到 `phone`，为保留 Phaser 地图，`runtimeMode` 会继续保持 `rpg`。因此“前往大地图上的启真湖入口”和 DEV 节点虽然已经正确写入 `campus_qizhen_loop / campus_qizhen_gate`，可见焦点仍留在手机；天气 controller 又把 `runtimeMode === "phone"` 误当成天气页可操作条件，导致云层按钮可见但返回 `inactive`。
+- App 现在监听 `qizhen_campus_approach_entered`、`qizhen_lake_entered` 与 `qizhen_rpg_resumed`，显式进入或恢复启真湖地图时同步聚焦 RPG；DeveloperChannel 在应用节点或恢复备份后按节点最终 `runtimeMode` 同步目标画面，所以同一地图场景内的 DEV 跳转也不会再被手机焦点遮住。
+- 校园地图恢复边界改为 controller 权威：只确认“启真湖”但尚未点击“前往大地图上的启真湖入口”时，仍打开首次入口页；一旦保存点到达 `campus_qizhen_gate`，或已经进入 `qizhen_lake`，之后从手机点击“校园地图”会直接恢复原 `rpgScene / rpgCheckpoint`，不重置湖区阶段、载具、出生点或道具链。
+- 云层校准的页面权威改为 `currentScene === "weather"`。装备齐全、阶段为 `boarding_tutorial`、已向安全员提交天气请求且尚未放行仍是正式前置条件；桌面双栏即使保持 `runtimeMode=rpg`，聚焦后的天气页也可开始并提交校准。雨天专项验证改为直接覆盖这个双栏状态。
+- Chromium `1280×720` Vite 实测首次解锁但保存点仍为 `campus_qizhen_transition_stop` 时继续显示入口页；点击入口后从“聚焦手机 → 浙大钉 → 校园地图”直接恢复 `campus_qizhen_loop / campus_qizhen_gate`；湖内同一路径恢复 `qizhen_lake / qizhen_open_water`，前后湖区事实逐字段不变。云层校准仍可从 0 次正常开始，六次右移显示 `3/3 · 6 步`，提交后为“多云”、最佳 `6` 步；DEV“启真湖入口”同样切回 RPG，console/page error 为 `0`。
+- 生成后的 `demo/index.html` 直接 `file://` 打开再次覆盖真实手机导航；`c3-qizhen-gate` 与 `c3-qizhen-open-water` 都从浙大钉“校园地图”直接恢复原检查点，没有重开地点检索页，Phaser canvas 始终为 `1`，console/page error 为 `0`。此前的地图入口、`runtimeMode=rpg + activeSurface=phone` 天气校准启动和 DEV 跳转也继续通过。
+- Fresh 校验通过：`npm run typecheck`、`npm run qizhen:validate-rain-safety`（28 项）、`npm run qizhen:validate-fishing`、`npm run qizhen:validate-journal`、`npm run verify:developer-levels`（509 项）、`npm run verify:task-guidance`、`npm run verify:rpg-facing-agnostic`、`npm run build:single`、`npm run verify:single` 与 `git diff --check`。单文件为 `252299207 bytes`、两个内联脚本和一个内联样式。
+- 当前边界：本轮未执行 fetch、stage、commit、merge、rebase、push、reset 或上传；按用户要求未处理 stash，也未碰既有未跟踪 Godot/启真湖素材。临时 Vite、Chromium 与 QA 脚本均已清理。

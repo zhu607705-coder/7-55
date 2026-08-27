@@ -4,6 +4,7 @@ import { SaveStore } from "../core/SaveStore";
 import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
+  DEVELOPER_CANTEEN_DEFENSE_START_KEY,
   DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY,
   DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY,
   DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY,
@@ -37,6 +38,7 @@ export class SaveController {
     this.sessionStorage.removeItem(DEVELOPER_ACTIVE_KEY);
     this.sessionStorage.removeItem(DEVELOPER_SOURCE_KEY);
     this.sessionStorage.removeItem(DEVELOPER_BACKUP_KEY);
+    this.sessionStorage.removeItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY);
     this.sessionStorage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
     this.sessionStorage.removeItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY);
     this.sessionStorage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);

@@ -177,7 +177,7 @@ export class BootScene extends Phaser.Scene {
     );
     this.theaterGate = this.createGateVisual(
       THEATER_GATE,
-      `求是大讲堂入口  ·  ${formatRpgInteractionHint("进入剧场")}`,
+      `剧场入口  ·  ${formatRpgInteractionHint("进入剧场")}`,
       0x8d3244
     );
     this.ensureCanteenTextures();

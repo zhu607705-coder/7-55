@@ -59,6 +59,7 @@ import {
   THEATER_OCCLUSION_RECTS,
   THEATER_STAGE_SPAWN,
   THEATER_STATIC_COLLISION_RECTS,
+  THEATER_TICKET_FIXTURE_OFFSET_Y,
   findNearestTheaterTarget,
   type TheaterInteractionTarget
 } from "./TheaterInteriorModel";
@@ -215,7 +216,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private softenedOcclusionIds: string[] = [];
   private programVisuals = new Map<TheaterProgramId, ProgramVisual>();
   private darkClues: Array<Phaser.GameObjects.Rectangle | Phaser.GameObjects.Text> = [];
-  private programOrderClue!: Phaser.GameObjects.Text;
   private propGhostClue!: Phaser.GameObjects.Text;
   private paper!: Phaser.GameObjects.Image;
   private panel: Phaser.GameObjects.Container | null = null;
@@ -582,11 +582,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
       .setScale(0.75)
       .setOrigin(0.5);
     this.ticketInspectorArm = null;
-    this.ticketInspector = this.add.container(753, 681, [
+    this.ticketInspector = this.add.container(753, 681 + THEATER_TICKET_FIXTURE_OFFSET_Y, [
       inspectorShadow,
       this.ticketInspectorSprite
     ])
-      .setDepth(832)
+      .setDepth(832 + THEATER_TICKET_FIXTURE_OFFSET_Y)
       .setSize(66, 86)
       .setInteractive({ useHandCursor: true })
       .on("pointerover", () => this.ticketInspector?.setScale(1.06))
@@ -604,7 +604,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       fontFamily: "monospace",
       fontSize: "9px"
     }).setOrigin(0.5);
-    this.ticketReader = this.add.container(907, 690, [
+    this.ticketReader = this.add.container(907, 690 + THEATER_TICKET_FIXTURE_OFFSET_Y, [
       readerShadow,
       readerStem,
       readerHead,
@@ -612,7 +612,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       readerSlot,
       readerLabel
     ])
-      .setDepth(839)
+      .setDepth(839 + THEATER_TICKET_FIXTURE_OFFSET_Y)
       .setSize(48, 72)
       .setInteractive({ useHandCursor: true })
       .on("pointerover", () => this.ticketReader?.setScale(1.06))
@@ -637,7 +637,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (!this.reducedMotion) {
       this.tweens.add({
         targets: this.ticketInspector,
-        y: 680,
+        y: 680 + THEATER_TICKET_FIXTURE_OFFSET_Y,
         duration: 1350,
         yoyo: true,
         repeat: -1,
@@ -725,9 +725,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const bounds: Record<string, { x: number; y: number; width: number; height: number }> = {
       theater_poster: { x: 278, y: 755, width: 365, height: 160 },
       theater_ticket_kiosk: { x: 1146, y: 755, width: 100, height: 150 },
-      theater_ticket_gate: { x: 907, y: 690, width: 112, height: 126 },
+      theater_ticket_gate: {
+        x: 907,
+        y: 690 + THEATER_TICKET_FIXTURE_OFFSET_Y,
+        width: 112,
+        height: 126
+      },
       theater_light_console: { x: 1140, y: 500, width: 130, height: 110 },
-      theater_prop_box: { x: 292, y: 166, width: 100, height: 100 },
+      theater_prop_box: { x: 294, y: 165, width: 96, height: 95 },
       theater_prop_scanner: { x: 364, y: 170, width: 76, height: 94 },
       theater_backstage_vent: { x: 936, y: 95, width: 78, height: 55 },
       theater_exit: { x: 836, y: 842, width: 156, height: 92 }
@@ -817,13 +822,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       fontSize: "13px",
       padding: { x: 7, y: 4 }
     }).setOrigin(0.5).setDepth(1603);
-    this.programOrderClue = this.add.text(836, 286, theaterContent.program.darkOrder, {
-      color: "#98e9ff",
-      backgroundColor: "#091126dd",
-      fontFamily: "monospace",
-      fontSize: "15px",
-      padding: { x: 9, y: 5 }
-    }).setOrigin(0.5).setDepth(1603);
     this.propGhostClue = this.add.text(310, 108, `${theaterContent.prop.ghost}\n${theaterContent.prop.managerHint}`, {
       color: "#9eeaff",
       backgroundColor: "#091126dd",
@@ -867,7 +865,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         }
       });
     }
-    this.darkClues = [posterTicket, posterLabel, kioskCode, this.programOrderClue, this.propGhostClue];
+    this.darkClues = [posterTicket, posterLabel, kioskCode, this.propGhostClue];
     this.darkClues.forEach((clue) => clue.setVisible(false));
   }
 
@@ -1005,7 +1003,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (name === "theater_program_order_read") {
-      this.showFeedback(theaterContent.program.darkOrder, "system", FEEDBACK_CLUE_MS);
+      this.showFeedback(theaterContent.program.darkInspectHint, "system", FEEDBACK_CLUE_MS);
       return;
     }
     if (name === "theater_program_order_changed") {
@@ -1091,9 +1089,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.darkClues[0]?.setVisible(posterVisible);
     this.darkClues[1]?.setVisible(posterVisible);
     this.darkClues[2]?.setVisible(kioskVisible);
-    this.programOrderClue?.setVisible(
-      dark && state.theaterHunt.phase === "program_search"
-    );
     const propGhostVisible = dark && state.theaterHunt.phase === "prop_setup" && !state.theaterHunt.propGhostRead;
     this.propGhostClue?.setVisible(propGhostVisible);
     this.propBoxGhostSprite?.setVisible(propGhostVisible);
@@ -1135,9 +1130,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "kiosk") {
-      if (state.theaterHunt.cc98TicketCommissionPhase === "delivered") {
-        return;
-      }
       this.runtime.emit("rpg_theater_ticket_kiosk_requested");
       return;
     }
@@ -1223,7 +1215,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const label = target.kind === "poster"
       ? dragOnly ? "油渍纸巾 → 入口海报" : "查看海报栏"
       : target.kind === "kiosk"
-        ? "查看取票机"
+        ? state.items.theaterTicketHalfB || state.items.temporaryTheaterTicket
+          ? "查看取票机"
+          : state.theaterHunt.cc98TicketCommissionPhase === "delivered"
+            ? "输入取票码"
+            : "查看取票机"
         : target.kind === "gate"
           ? dragOnly ? "临时观演票 → 右侧验票槽" : "与检票员对话"
           : target.kind === "program"

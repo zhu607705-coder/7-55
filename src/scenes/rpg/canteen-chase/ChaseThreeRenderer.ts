@@ -453,7 +453,7 @@ function buildTheaterDestination(): THREE.Group {
   const group = new THREE.Group();
   group.name = "canteen-chase-theater-destination";
 
-  // 求是大讲堂：白色椭圆屋顶、弧形蓝玻璃幕墙与正立面白色立柱。
+  // 剧场：白色椭圆屋顶、弧形蓝玻璃幕墙与正立面白色立柱。
   group.add(ellipticalCylinder(10.35, 0.78, 4.55, PALETTE.theaterRoofShade, 6.58, -0.45));
   group.add(ellipticalCylinder(9.92, 0.62, 4.2, PALETTE.theaterRoof, 7.02, -0.48));
   group.add(ellipticalCylinder(9.35, 4.55, 3.62, PALETTE.glass, 3.56, -0.35));
@@ -475,7 +475,7 @@ function buildTheaterDestination(): THREE.Group {
   group.add(box(0.16, 2.85, 0.18, PALETTE.theaterFrame, 0, 2.34, 4.05));
   group.add(box(4.65, 0.34, 0.72, PALETTE.theaterFrame, 0, 4.15, 3.78));
 
-  const signTexture = pixelTextTexture("求是大讲堂", "#24323A", "#E7D9A8", 420, 88);
+  const signTexture = pixelTextTexture("剧场", "#24323A", "#E7D9A8", 420, 88);
   const sign = new THREE.Mesh(
     CHASE_PRIMITIVES.plane(5.8, 1.22),
     new THREE.MeshBasicMaterial({ map: signTexture, toneMapped: false })
@@ -849,7 +849,7 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     qiushiRoadSign.rotation.y = -0.08;
     staticWorld.add(qiushiRoadSign);
 
-    const theaterGuideSign = pixelSign("求是大讲堂 →", 5.2, "#244A66");
+    const theaterGuideSign = pixelSign("剧场 →", 5.2, "#244A66");
     theaterGuideSign.position.set(-7.55, 0, -103);
     theaterGuideSign.rotation.y = 0.08;
     staticWorld.add(theaterGuideSign);

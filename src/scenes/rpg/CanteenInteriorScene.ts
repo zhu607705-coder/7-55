@@ -26,6 +26,7 @@ import type {
 } from "../../core/types";
 import canteenContent from "../../data/chapter3-canteen.content.json";
 import { CANTEEN_EXIT_SEQUENCE } from "../../modules/ChapterThreeCanteenController";
+import { getDeveloperCanteenDefenseStart } from "../../modules/DeveloperChannel";
 import type { RpgBridge } from "./RpgBridge";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
@@ -513,6 +514,18 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const state = this.bridge.getState();
     this.syncWorldFromState(state);
     this.updateCarriedTrayVisual(state);
+    const requestedDefenseStartMs = getDeveloperCanteenDefenseStart();
+    if (
+      state.canteenHunt.phase === "exit_blocking"
+      && this.defenseRuntime
+      && this.defenseRuntime.getDebugSnapshot().startElapsedMs !== requestedDefenseStartMs
+    ) {
+      // DEV checkpoints can switch between start, middle, and final validation
+      // while this Phaser scene remains active. Recreate only the transient
+      // defense simulation so the requested clock and speed take effect.
+      this.finishDefense();
+      this.startDefense();
+    }
     if (
       state.canteenHunt.phase === "exit_blocking"
       && !this.defenseRuntime
@@ -3634,7 +3647,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
           this.flashDefenseRoute(route);
           this.cameras.main.shake(this.reducedMotion ? 0 : 75, 0.0025);
         }
-      }
+      },
+      getDeveloperCanteenDefenseStart()
     );
   }
 
@@ -3843,6 +3857,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
         pickupDarkClueRead: state.canteenHunt.pickupDarkClueRead,
         identifiedExitIds: state.canteenHunt.identifiedExitIds,
         blockHits: state.canteenHunt.blockHits,
+        queueGapOpened: state.canteenHunt.queueGapOpened,
+        queueColumnThreeYs: this.thirdColumnQueue.map((entry) => Math.round(entry.sprite.y)),
+        defense: this.defenseRuntime?.getDebugSnapshot(),
         activeTarget: nearest?.id ?? null,
         pickupTargets: CANTEEN_PICKUP_WINDOWS.map((window) => ({
           id: window.id,

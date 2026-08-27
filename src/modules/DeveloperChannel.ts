@@ -9,6 +9,7 @@ import type {
 import {
   DEVELOPER_ACTIVE_KEY,
   DEVELOPER_BACKUP_KEY,
+  DEVELOPER_CANTEEN_DEFENSE_START_KEY,
   DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY,
   DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY,
   DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY,
@@ -153,10 +154,10 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-canteen-drinks", chapter: "第三章", label: "调配今日新品", detail: "三种饮料与插队合法化" },
   { id: "c3-canteen-menu", chapter: "第三章", label: "点餐机", detail: "浅色与深色菜单" },
   { id: "c3-canteen-pickup", chapter: "第三章", label: "0755 取餐", detail: "按暗号选择窗口" },
-  { id: "c3-canteen-block", chapter: "第三章", label: "推车守出口", detail: "60 秒全地图餐盘车追逐" },
-  { id: "c3-canteen-block-2", chapter: "第三章", label: "气泡减速验收", detail: "拖入今日新品减速纸条" },
-  { id: "c3-canteen-block-3", chapter: "第三章", label: "暗色提示验收", detail: "闪现一秒下一个出口" },
-  { id: "c3-canteen-bike", chapter: "第三章", label: "解锁自行车", detail: "使用餐盘回收费" },
+  { id: "c3-canteen-block", chapter: "第三章", label: "守出口·开始", detail: "完整 60 秒实时拦截" },
+  { id: "c3-canteen-block-2", chapter: "第三章", label: "守出口·中段", detail: "剩余 30 秒，纸条已经加速" },
+  { id: "c3-canteen-block-3", chapter: "第三章", label: "守出口·末段", detail: "剩余 10 秒，折返时自动闪路线" },
+  { id: "c3-canteen-bike", chapter: "第三章", label: "解锁自行车", detail: "深色读码、擦锁并支付 2 元" },
   { id: "c3-canteen-chase", chapter: "第三章", label: "755 米 3D 追逐", detail: "A / D 三车道骑行" },
   { id: "c3-canteen-theater", chapter: "第三章", label: "抵达剧院", detail: "纸条钻进剧院" },
   { id: "c3-theater-entry", chapter: "第三章", label: "剧院检票", detail: "海报栏与取票机" },
@@ -739,22 +740,18 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       drinkMixAttemptCount: afterDrinkStage ? 1 : 0,
       queueChallengeSeen: afterDrinkStage,
       promoDrinkPlaced: afterDrinkStage,
-      queueGapOpened: afterDrinkStage,
+      // The menu checkpoint should exercise the same queue-retreat handoff as
+      // normal play instead of loading directly into its final pose.
+      queueGapOpened: id === "c3-canteen-menu" ? false : afterDrinkStage,
       menuDarkClueRead: afterMenuStage,
       pickupTimeErrorSeen: false,
       pickupDarkClueRead: afterPickupStage,
       defenseDrinkUsed: false,
       orderedMenuOption: afterMenuStage && !afterPickupStage ? "D" : null,
-      identifiedExitIds: afterBlockingStage
-        ? ["southeast", "steam", "west"]
-        : id === "c3-canteen-block-3"
-          ? ["southeast", "steam"]
-          : id === "c3-canteen-block-2"
-            ? ["southeast"]
-            : [],
+      identifiedExitIds: afterBlockingStage ? ["southeast", "steam", "west"] : [],
       orderAttemptCount: afterMenuStage ? 1 : 0,
       pickupAttemptCount: afterPickupStage ? 1 : 0,
-      blockHits: afterBlockingStage ? 3 : id === "c3-canteen-block-3" ? 2 : id === "c3-canteen-block-2" ? 1 : 0,
+      blockHits: afterBlockingStage ? 3 : 0,
       bikeCodeRead: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       bikeLockCleaned: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
       bikePaid: ["c3-canteen-chase", "c3-canteen-theater"].includes(id),
@@ -1975,6 +1972,12 @@ export function applyDeveloperCheckpoint(
   }
   storage.setItem(DEVELOPER_ACTIVE_KEY, id);
   storage.setItem(DEVELOPER_SOURCE_KEY, source);
+  const defenseStartMs = id === "c3-canteen-block-2"
+    ? 30_000
+    : id === "c3-canteen-block-3"
+      ? 50_000
+      : 0;
+  storage.setItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY, String(defenseStartMs));
   if (id.startsWith("c3-qizhen-rhythm-")) {
     storage.setItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY, id.slice("c3-qizhen-rhythm-".length));
   } else {
@@ -2004,10 +2007,16 @@ export function restoreDeveloperBackup(store: GameStore, storage: Storage = wind
   storage.removeItem(DEVELOPER_BACKUP_KEY);
   storage.removeItem(DEVELOPER_ACTIVE_KEY);
   storage.removeItem(DEVELOPER_SOURCE_KEY);
+  storage.removeItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY);
   storage.removeItem(DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY);
   storage.removeItem(DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY);
   storage.removeItem(DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY);
   return true;
+}
+
+export function getDeveloperCanteenDefenseStart(storage: Storage = window.sessionStorage): number {
+  const stored = Number(storage.getItem(DEVELOPER_CANTEEN_DEFENSE_START_KEY) ?? 0);
+  return Number.isFinite(stored) ? Math.max(0, Math.min(50_000, stored)) : 0;
 }
 
 export function getDeveloperChapter4PrologueOffset(storage: Storage = window.sessionStorage): number {

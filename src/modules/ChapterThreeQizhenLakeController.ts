@@ -252,6 +252,32 @@ export class ChapterThreeQizhenLakeController {
     return true;
   }
 
+  resumeEnteredMapLocation(): boolean {
+    const state = this.store.getState();
+    const locationResolved = !["inactive", "location_search"].includes(state.qizhenLake.phase);
+    const campusGateEntered = locationResolved
+      && state.rpgScene === "campus_qizhen_loop"
+      && state.rpgCheckpoint === "campus_qizhen_gate";
+    const lakeEntered = state.rpgScene === "qizhen_lake"
+      && !["inactive", "location_search", "lake_unlocked"].includes(state.qizhenLake.phase);
+    if (!state.qizhenLake.active || (!campusGateEntered && !lakeEntered)) return false;
+    this.store.setState((current) => ({
+      ...current,
+      runtimeMode: "rpg",
+      ui: {
+        ...current.ui,
+        inventoryOpen: false,
+        selectedItem: null,
+        zjudingPage: "hub"
+      }
+    }));
+    this.events.emit("qizhen_rpg_resumed", {
+      scene: state.rpgScene,
+      checkpoint: state.rpgCheckpoint
+    });
+    return true;
+  }
+
   leaveLake(): boolean {
     const state = this.store.getState();
     if (state.rpgScene !== "qizhen_lake") return false;
@@ -381,7 +407,9 @@ export class ChapterThreeQizhenLakeController {
       });
       return "locked";
     }
-    if (state.runtimeMode !== "phone" || state.currentScene !== "weather") return "inactive";
+    // Desktop split mode keeps the RPG runtime mounted while the phone pane is
+    // focused. The phone route, not runtimeMode, is the weather-app authority.
+    if (state.currentScene !== "weather") return "inactive";
     this.store.setState((current) => ({
       ...current,
       qizhenLake: {
@@ -419,7 +447,7 @@ export class ChapterThreeQizhenLakeController {
       });
       return "locked";
     }
-    if (state.runtimeMode !== "phone" || state.currentScene !== "weather") return "inactive";
+    if (state.currentScene !== "weather") return "inactive";
     if (!isValidQizhenWeatherControlSummary(summary)) {
       this.events.emit("qizhen_dock_weather_adjustment_blocked", { reason: "invalid_control_summary" });
       return "locked";
