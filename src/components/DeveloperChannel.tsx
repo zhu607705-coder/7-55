@@ -12,6 +12,7 @@ import {
 interface DeveloperChannelProps {
   store: GameStore;
   onVisibilityChange?: (open: boolean) => void;
+  onCheckpointApplied?: () => void;
 }
 
 type DeveloperChapter = DeveloperCheckpoint["chapter"];
@@ -78,7 +79,7 @@ function getInitialDeveloperSelection(active: DeveloperCheckpointId | null): {
   return { chapter, levelId: levels[0]?.id ?? "全部" };
 }
 
-export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannelProps) {
+export function DeveloperChannel({ store, onVisibilityChange, onCheckpointApplied }: DeveloperChannelProps) {
   const params = new URLSearchParams(window.location.search);
   const explicitlyDisabled = params.get("dev") === "0";
   const explicitlyRequested = params.get("dev") === "1" || params.has("devCheckpoint");
@@ -160,10 +161,25 @@ export function DeveloperChannel({ store, onVisibilityChange }: DeveloperChannel
     <div className="developer-channel-scroll">
       <section>
         <h2><span>{selectedChapter} · {selectedLevel ? `${selectedLevel.id} ${selectedLevel.label}` : "全部关卡"}</span><small>{visibleCheckpoints.length} 个节点</small></h2>
-        {visibleCheckpoints.map((item) => <button key={item.id} type="button" data-dev-checkpoint={item.id} className={active === item.id ? "is-active" : ""} onClick={() => { applyDeveloperCheckpoint(store, item.id as DeveloperCheckpointId); setActive(item.id); }}><strong>{item.label}</strong><span>{item.detail}</span></button>)}
+        {visibleCheckpoints.map((item) => <button
+          key={item.id}
+          type="button"
+          data-dev-checkpoint={item.id}
+          className={active === item.id ? "is-active" : ""}
+          onClick={() => {
+            applyDeveloperCheckpoint(store, item.id as DeveloperCheckpointId);
+            setActive(item.id);
+            onCheckpointApplied?.();
+          }}
+        ><strong>{item.label}</strong><span>{item.detail}</span></button>)}
       </section>
     </div>
-    <footer><button type="button" onClick={() => { if (restoreDeveloperBackup(store)) setActive(null); }}>恢复进入前存档</button><span>Ctrl Shift D</span></footer>
+    <footer><button type="button" onClick={() => {
+      if (restoreDeveloperBackup(store)) {
+        setActive(null);
+        onCheckpointApplied?.();
+      }
+    }}>恢复进入前存档</button><span>Ctrl Shift D</span></footer>
   </aside>;
 }
 

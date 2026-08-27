@@ -88,10 +88,11 @@ try {
   if (controller.boardKayak() !== "locked") {
     throw new Error("boarding must stay blocked until the weather app executes the request");
   }
-  store.setState((current) => ({ ...current, runtimeMode: "phone", currentScene: "weather" }));
+  // Desktop split keeps runtimeMode=rpg while the player focuses the phone pane.
+  store.setState((current) => ({ ...current, runtimeMode: "rpg", currentScene: "weather" }));
   if (controller.beginDockWeatherAdjustment() !== "accepted"
     || store.getState().qizhenLake.weatherControlAttempts !== 1) {
-    throw new Error("weather app must begin one persisted cloud calibration attempt");
+    throw new Error("focused desktop phone pane must begin one persisted cloud calibration attempt");
   }
   let cloudOffsets = QIZHEN_WEATHER_CLOUD_INITIAL;
   cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 0, 1);
@@ -199,6 +200,42 @@ try {
     || selectCampusWeather(overcastCheckpoint).label !== "多云") {
     throw new Error("overcast developer checkpoint must seed the cleared dock state");
   }
+  const unlockedBeforeEntry = createDeveloperCheckpointState("c3-qizhen-gate");
+  unlockedBeforeEntry.runtimeMode = "phone";
+  unlockedBeforeEntry.currentScene = "zjuding";
+  unlockedBeforeEntry.rpgCheckpoint = "campus_qizhen_transition_stop";
+  const unlockedBeforeEntryStore = makeStore(unlockedBeforeEntry);
+  const unlockedBeforeEntryController = new ChapterThreeQizhenLakeController(unlockedBeforeEntryStore, eventBus);
+  if (unlockedBeforeEntryController.resumeEnteredMapLocation()
+    || unlockedBeforeEntryStore.getState().runtimeMode !== "phone"
+    || unlockedBeforeEntryStore.getState().rpgCheckpoint !== "campus_qizhen_transition_stop") {
+    throw new Error("location confirmation alone must keep the first Qizhen map-entry page visible");
+  }
+  const enteredGate = createDeveloperCheckpointState("c3-qizhen-gate");
+  enteredGate.runtimeMode = "phone";
+  enteredGate.currentScene = "zjuding";
+  const enteredGateStore = makeStore(enteredGate);
+  const enteredGateController = new ChapterThreeQizhenLakeController(enteredGateStore, eventBus);
+  if (!enteredGateController.resumeEnteredMapLocation()
+    || enteredGateStore.getState().runtimeMode !== "rpg"
+    || enteredGateStore.getState().rpgScene !== "campus_qizhen_loop"
+    || enteredGateStore.getState().rpgCheckpoint !== "campus_qizhen_gate") {
+    throw new Error("campus map must resume the already-entered Qizhen gate checkpoint");
+  }
+  const enteredLake = createDeveloperCheckpointState("c3-qizhen-open-water");
+  enteredLake.runtimeMode = "phone";
+  enteredLake.currentScene = "zjuding";
+  const enteredLakeFacts = JSON.stringify(enteredLake.qizhenLake);
+  const enteredLakeStore = makeStore(enteredLake);
+  const enteredLakeController = new ChapterThreeQizhenLakeController(enteredLakeStore, eventBus);
+  if (!enteredLakeController.resumeEnteredMapLocation()
+    || enteredLakeStore.getState().runtimeMode !== "rpg"
+    || enteredLakeStore.getState().rpgScene !== "qizhen_lake"
+    || enteredLakeStore.getState().rpgCheckpoint !== "qizhen_open_water"
+    || JSON.stringify(enteredLakeStore.getState().qizhenLake) !== enteredLakeFacts
+    || !events.some((event) => event.name === "qizhen_rpg_resumed")) {
+    throw new Error("campus map must resume the exact entered lake checkpoint without changing lake progress");
+  }
   if (QIZHEN_DOCK_AFTER_RAIN_PUDDLES.length !== 4) {
     throw new Error("overcast dock must expose four authored after-rain puddles");
   }
@@ -228,7 +265,7 @@ try {
   if (qizhenContent.dock.afterRainProof !== "这是下过雨的证明") {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
-  console.log("Qizhen rain safety PASS assertions=25 gate=controller-owned weather=shared-selector cloud-calibration=3-bands+6-min-moves+save-reload developer-checkpoints=3 puddles=4+walkable+foot-hit feedback=event-backed");
+  console.log("Qizhen rain safety PASS assertions=28 gate=controller-owned weather=shared-selector cloud-calibration=3-bands+6-min-moves+save-reload developer-checkpoints=3 map-resume=first-entry-boundary+gate+lake-checkpoint puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

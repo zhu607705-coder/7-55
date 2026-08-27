@@ -894,6 +894,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     playSfx("01_");
     setOverlay(null);
     if (state.qizhenLake.active && state.qizhenLake.phase !== "inactive") {
+      if (kit.qizhenLake.resumeEnteredMapLocation()) return;
       goPage("campus_map");
       return;
     }

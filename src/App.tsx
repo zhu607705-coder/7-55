@@ -156,7 +156,14 @@ export function App() {
     const detachAudio = audioDirector.attach(eventBus);
     const detachPresentation = presentationDirector.attach(gameStore, eventBus);
     const detachSurfaceSync = eventBus.subscribe((event) => {
-      if (["act2_rpg_entered", "library_entered", "library_reentered"].includes(event.name)) {
+      if ([
+        "act2_rpg_entered",
+        "library_entered",
+        "library_reentered",
+        "qizhen_campus_approach_entered",
+        "qizhen_lake_entered",
+        "qizhen_rpg_resumed"
+      ].includes(event.name)) {
         setActiveSurface("rpg");
       }
     });
@@ -252,6 +259,10 @@ export function App() {
     const focused = document.activeElement;
     if (focused instanceof HTMLElement && phonePaneRef.current?.contains(focused)) focused.blur();
     setActiveSurface("rpg");
+  }
+
+  function focusDeveloperCheckpointTarget() {
+    setActiveSurface(gameStore.getState().runtimeMode === "rpg" ? "rpg" : "phone");
   }
 
   function navigateFromTask(quest: QuestViewModel) {
@@ -384,7 +395,11 @@ export function App() {
             {chapterIntro}
             {libraryStoryLayer}
           </main>
-          <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
+          <DeveloperChannel
+            store={gameStore}
+            onVisibilityChange={setDeveloperChannelOpen}
+            onCheckpointApplied={focusDeveloperCheckpointTarget}
+          />
         </Chapter4PrologueRuntimeGate>
       );
     }
@@ -403,7 +418,11 @@ export function App() {
         <ToastLayer events={eventBus} state={state} surface="rpg" />
         {chapterIntro}
         {libraryStoryLayer}
-        <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
+        <DeveloperChannel
+          store={gameStore}
+          onVisibilityChange={setDeveloperChannelOpen}
+          onCheckpointApplied={focusDeveloperCheckpointTarget}
+        />
       </Chapter4PrologueRuntimeGate>
     );
   }
@@ -415,7 +434,11 @@ export function App() {
       </PhoneShell>
       {chapterIntro}
       {libraryStoryLayer}
-      <DeveloperChannel store={gameStore} onVisibilityChange={setDeveloperChannelOpen} />
+      <DeveloperChannel
+        store={gameStore}
+        onVisibilityChange={setDeveloperChannelOpen}
+        onCheckpointApplied={focusDeveloperCheckpointTarget}
+      />
     </Chapter4PrologueRuntimeGate>
   );
 }

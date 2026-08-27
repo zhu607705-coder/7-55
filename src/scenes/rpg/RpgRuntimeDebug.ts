@@ -109,6 +109,15 @@ export interface RpgRuntimeDebugState {
     defenseDrinkUsed?: boolean;
     identifiedExitIds: string[];
     blockHits: number;
+    queueGapOpened?: boolean;
+    queueColumnThreeYs?: number[];
+    defense?: {
+      startElapsedMs: number;
+      elapsedMs: number;
+      remainingMs: number;
+      currentExit: "northwest" | "south_gap" | "southeast";
+      paused: boolean;
+    };
     activeTarget: string | null;
     pickupTargets?: Array<{
       id: string;
