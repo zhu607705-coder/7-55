@@ -161,9 +161,9 @@ assert(
   "hall-clock sprite must use its visual registration instead of fitting the interaction rectangle"
 );
 assert(
-  /getRpgSceneWarmAssetUrls\(sceneId: RpgSceneId\)/.test(hostSource)
+  /getRpgSceneWarmAssetUrls\([\s\S]*?sceneId: RpgSceneId,[\s\S]*?phase\?: ChapterFourWarmupPhase/.test(hostSource)
     && /RPG_SCENE_WARM_ASSET_URLS:[\s\S]*?campus_bootstrap:[\s\S]*?duan_yongping_temporal_maze:/.test(hostSource)
-    && /module\.getRpgSceneWarmAssetUrls\(sceneId\)/.test(rpgPreloadSource)
+    && /module\.getRpgSceneWarmAssets\([\s\S]*?sceneId,[\s\S]*?phase === "scene" \? undefined : phase/.test(rpgPreloadSource)
     && !/import\.meta\.glob/.test(rpgPreloadSource)
     && /export function warmRpgRuntime\(/.test(rpgPreloadSource)
     && /export function scheduleRpgRuntimeWarmup\(/.test(rpgPreloadSource),
@@ -178,8 +178,8 @@ assert(
 );
 assert(
   /state\.currentScene === "timeline_recovery"/.test(appSource)
-    && /scheduleRpgRuntimeWarmup\(state\.rpgScene\)/.test(appSource)
-    && /chapter35_recovered_replay_gate_requested[\s\S]*?warmRpgRuntime\("duan_yongping_temporal_maze"\)/.test(prologueGateSource),
+    && /scheduleRpgRuntimeWarmup\([\s\S]*?state\.rpgScene,[\s\S]*?"duan_yongping_temporal_maze" \? "entry" : undefined/.test(appSource)
+    && /chapter35_recovered_replay_gate_requested[\s\S]*?warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGateSource),
   "phone play must idle-warm its pending RPG while the 3.5 destination gate keeps Chapter 4 warmup behind replay confirmation"
 );
 assert(

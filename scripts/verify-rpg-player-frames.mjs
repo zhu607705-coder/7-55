@@ -2,11 +2,15 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 const root = new URL("../src/assets/rpg/player/", import.meta.url);
-const directions = ["down", "up", "side"];
-const frameCount = 8;
+const directionFrameCounts = new Map([
+  ["down", 8],
+  ["up", 8],
+  ["side", 12]
+]);
 const hashes = new Set();
+let totalFrameCount = 0;
 
-for (const direction of directions) {
+for (const [direction, frameCount] of directionFrameCounts) {
   for (let phase = 0; phase < frameCount; phase += 1) {
     const name = `player_${direction}_${phase}.png`;
     const bytes = await readFile(new URL(name, root));
@@ -22,11 +26,15 @@ for (const direction of directions) {
       throw new Error(`${name} is unexpectedly small and may have lost source detail`);
     }
     hashes.add(createHash("sha256").update(bytes).digest("hex"));
+    totalFrameCount += 1;
   }
 }
 
-if (hashes.size !== directions.length * frameCount) {
-  throw new Error("The eight-phase player cycle contains duplicate runtime frames");
+if (hashes.size !== totalFrameCount) {
+  throw new Error("The directional player cycles contain duplicate runtime frames");
 }
 
-console.log("verified 24 unique high-resolution RPG player frames at 96x128");
+console.log(
+  "verified 28 unique high-resolution RPG player frames at 96x128 "
+  + "(8 down, 8 up, 12 side)"
+);

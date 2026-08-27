@@ -655,7 +655,7 @@ function validateTask7RuntimeSources(errors) {
     || !/chapterThreeInterlude:\s*\{[\s\S]*?phase:\s*["']replay_ready["'][\s\S]*?replayUnlocked:\s*true/.test(recoveredReplayMutation)
     || !/this\.events\.emit\(["']chapter35_recovered_replay_gate_requested["'],\s*\{\s*destinationId:\s*["']duan_yongping_a1["']\s*\}\s*\)/.test(recoveredReplayMutation)
     || /preloadRpgGameHost|runtimeMode\s*:|chapter35_recovered_replay_requested|\b(?:audio|music)\b/i.test(recoveredReplayMutation)
-    || !/chapter35_recovered_replay_gate_requested[\s\S]*?void\s+preloadRpgGameHost\(\)/.test(prologueGate)) {
+    || !/chapter35_recovered_replay_gate_requested[\s\S]*?void\s+warmRpgRuntime\(\s*["']duan_yongping_temporal_maze["'],\s*["']immediate["'],\s*["']entry["']\s*\)/.test(prologueGate)) {
     errors.push("Task 7 P20 must avoid mount-time preload, expose replay only after the correct destination, and let the controller commit replay_ready before the App gate starts preload");
   }
 
@@ -807,12 +807,12 @@ function validateTask7RuntimeSources(errors) {
     || !/const\s+initialElapsedRef\s*=\s*useRef\(\s*initialResumeRef\.current\s*\?\s*PROLOGUE_TASK_CARD_AT\s*:\s*getDeveloperChapter4PrologueOffset\(\)\s*\)/.test(prologueGate)
     || !/useState\(eligible\s*\|\|\s*resumeOpeningHandoff\)/.test(prologueGate)
     || !/useState<HandoffStatus>\(\s*resumeOpeningHandoff\s*\?\s*["']waiting_ready["']\s*:\s*["']idle["']\s*\)/.test(prologueGate)
-    || !/if\s*\(!resumeOpeningHandoff\s*\|\|\s*!initialResumeRef\.current\)\s*return\s*;[\s\S]*?requestIdRef\.current\s*=\s*requestId[\s\S]*?setHeld\(true\)[\s\S]*?setStatus\(["']waiting_ready["']\)[\s\S]*?armTimeoutGuard\(requestId\)[\s\S]*?void\s+preloadRpgGameHost\(\)/.test(prologueGate)
+    || !/if\s*\(!resumeOpeningHandoff\s*\|\|\s*!initialResumeRef\.current\)\s*return\s*;[\s\S]*?requestIdRef\.current\s*=\s*requestId[\s\S]*?setHeld\(true\)[\s\S]*?setStatus\(["']waiting_ready["']\)[\s\S]*?armTimeoutGuard\(requestId\)[\s\S]*?void\s+warmRpgRuntime\(\s*["']duan_yongping_temporal_maze["'],\s*["']immediate["'],\s*["']entry["']\s*\)/.test(prologueGate)
     || !/initialElapsedMs=\{initialElapsedRef\.current\}/.test(prologueGate)) {
     errors.push("Task 7 App gate must restore a reloaded committed opening_handoff directly at the 43834ms task card while the RPG runtime boots underneath");
   }
 
-  if (!/event\.name\s*!==\s*["']chapter35_recovered_replay_gate_requested["'][\s\S]*?requestIdRef\.current\s*=\s*createRequestId\(\)[\s\S]*?setRequested\(true\)[\s\S]*?setHeld\(true\)[\s\S]*?void\s+preloadRpgGameHost\(\)/.test(prologueGate)
+  if (!/event\.name\s*!==\s*["']chapter35_recovered_replay_gate_requested["'][\s\S]*?requestIdRef\.current\s*=\s*createRequestId\(\)[\s\S]*?setRequested\(true\)[\s\S]*?setHeld\(true\)[\s\S]*?void\s+warmRpgRuntime\(\s*["']duan_yongping_temporal_maze["'],\s*["']immediate["'],\s*["']entry["']\s*\)/.test(prologueGate)
     || !/event\.name\s*!==\s*["']rpg_chapter4_755_live_ready["']/.test(prologueGate)
     || !/phase\s*!==\s*["']opening_handoff["']/.test(prologueGate)
     || !/appliedPlateId\s*!==\s*["']a1_2245_opening["']/.test(prologueGate)
@@ -1250,8 +1250,15 @@ function validateTask7RuntimeSources(errors) {
   const room204ControllerBlock = controller.match(
     /case "observe_a3_reference"[\s\S]*?case "collect_short_pry_bar"/
   )?.[0] ?? "";
+  const room204FinalizeHelper = controller.match(
+    /function finalizeRoom204Facts\([\s\S]*?\n\}/
+  )?.[0] ?? "";
   if (!/case "place_room204_piece"[\s\S]*?resolveRoom204Placement\(chapter\.room204Placements/.test(room204ControllerBlock)
-    || !/resolution\.complete[\s\S]*?a3_reference_observed[\s\S]*?room204_residual_observed[\s\S]*?appendFact\(chapter, "room204_restored"\)/.test(room204ControllerBlock)) {
+    || (room204ControllerBlock.match(/finalizeRoom204Facts\(/g) ?? []).length < 3
+    || !/isRoom204PlacementSetComplete\(placements\)/.test(room204FinalizeHelper)
+    || !/next\.includes\("a3_reference_observed"\)/.test(room204FinalizeHelper)
+    || !/next\.includes\("room204_residual_observed"\)/.test(room204FinalizeHelper)
+    || !/next\.push\("room204_restored"\)/.test(room204FinalizeHelper)) {
     errors.push("Task 9 controller must route placement through the pure unique-piece/unique-slot model and commit restored only after both observations");
   }
   if (!/\|\s*\{\s*type:\s*"complete_room204_projection"\s*\}/.test(controller)
@@ -1267,12 +1274,23 @@ function validateTask7RuntimeSources(errors) {
   const room204QuestBlock = quest.match(
     /contract\.id\s*===\s*"room204_restore"[\s\S]*?return contract\.taskKeys\.includes/
   )?.[0] ?? "";
-  const questTaskPositions = EXPECTED_ROOM204_TASK_KEYS.map((taskKey) => room204QuestBlock.indexOf(`"${taskKey}"`));
-  if (questTaskPositions.some((position) => position < 0)
-    || questTaskPositions.some((position, index) => index > 0 && position <= questTaskPositions[index - 1])
+  const groupedRoom204TaskKeys = [
+    "verify_a1_classrooms",
+    "observe_elevator_history",
+    "answer_zhu_two_questions",
+    "solve_misaligned_stair",
+    "restore_room204",
+    "watch_room204_projection",
+    "collect_positioning_plate",
+    "install_positioning_plate"
+  ];
+  if (groupedRoom204TaskKeys.some((taskKey) => !room204QuestBlock.includes(`"${taskKey}"`))
+    || !/!facts\.has\("classroom_104_chalk_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("classroom_105_terminal_replay_checked"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("elevator_history_observed"\)[\s\S]*?\|\|\s*!facts\.has\("elevator_history_calibrated"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("a3_reference_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_restored"\)/.test(room204QuestBlock)
     || !/facts\.has\("room204_projection_completed"\)/.test(room204QuestBlock)
     || !/facts\.has\("positioning_plate_collected"\)/.test(room204QuestBlock)) {
-    errors.push("Task 9 QuestModel must select exactly one current objective across the six persisted Room204 branches in causal order");
+    errors.push("Task 9 QuestModel must expose one grouped current objective while keeping paired light/dark observations order-independent");
   }
 
   const maintenanceTargetBlock = interaction.match(

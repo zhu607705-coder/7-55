@@ -95,10 +95,12 @@ try {
     ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
     ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID,
     ROOM204_SLOT_ORDER,
+    ROOM204_RESTORED_DISPLAY_PHASES,
     createCanonicalCompleteRoom204Placements,
     isRoom204PlacementSetComplete,
     resolveRoom204Placement,
-    room204SlotRuntimeEntityId
+    room204SlotRuntimeEntityId,
+    selectRoom204RuntimePresentation
   } = room204Module;
   const {
     CHAPTER_FOUR_MAINTENANCE_GUARD_RULES,
@@ -342,6 +344,43 @@ try {
     undefined,
     "105 classroom terminal in dark mode"
   );
+  const earlyElevatorStore = createGameStore(makeState({
+    mode: "light",
+    roomId: "a1_lobby",
+    phase: "room204_restore",
+    facts: ["hour_hand_installed"]
+  }));
+  const earlyElevatorController = new ChapterFourTemporalMazeController(
+    earlyElevatorStore,
+    new EventBus()
+  );
+  const earlyCalibration = earlyElevatorController.resolve755Intent({
+    type: "calibrate_elevator_history",
+    startSeconds: 81811
+  });
+  assert(
+    earlyCalibration.accepted
+      && !earlyElevatorStore.getState().chapter4.factIds.includes("elevator_history_observed"),
+    "light elevator calibration must be available before classroom checks and must not synthesize dark observation"
+  );
+  earlyElevatorController.resolve755Intent({ type: "set_mode", mode: "dark" });
+  const earlyObservation = earlyElevatorController.resolve755Intent({ type: "observe_elevator_history" });
+  assert(
+    earlyObservation.accepted
+      && earlyElevatorStore.getState().chapter4.factIds.includes("elevator_history_calibrated")
+      && earlyElevatorStore.getState().chapter4.factIds.includes("elevator_history_observed"),
+    "dark elevator observation must remain available after light calibration and before classroom checks"
+  );
+  const earlyRoute = earlyElevatorController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_wayfinding",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(
+    !earlyRoute.accepted && earlyRoute.detailCode === "classroom_checks_required",
+    "mode-order freedom must not bypass the separate classroom route requirement"
+  );
   const classroomStore = createGameStore(makeState({
     mode: "dark",
     roomId: "a1_lobby",
@@ -404,8 +443,8 @@ try {
   );
   const classroomQuest = selectQuestViewModel(classroomStore.getState());
   assert(
-    classroomQuest.objective === "在深色观察中读取主电梯历史轨道",
-    "task drawer must advance to the elevator history after both classroom checks"
+    classroomQuest.objective === "完成主电梯历史读取与重放校准",
+    "task drawer must group elevator observation and calibration without prescribing their order"
   );
   const classroomProjection = selectChapterFourMazeProjection(classroomStore.getState());
   assert(
@@ -428,8 +467,8 @@ try {
   const elevatorObserved = classroomController.resolve755Intent({ type: "observe_elevator_history" });
   assert(elevatorObserved.accepted && elevatorObserved.changed, "dark observation must record elevator history once");
   assert(
-    selectQuestViewModel(classroomStore.getState()).objective === "校准主电梯的 18:50 重放窗口",
-    "recorded elevator history must advance the drawer to replay calibration"
+    selectQuestViewModel(classroomStore.getState()).objective === "完成主电梯历史读取与重放校准",
+    "one completed elevator branch must keep the grouped order-free task visible"
   );
   classroomController.resolve755Intent({ type: "set_mode", mode: "light" });
   const wrongElevatorReplay = classroomController.resolve755Intent({
@@ -449,6 +488,41 @@ try {
     checkpoint: "c4_a3_wayfinding"
   });
   assert(unlockedAfterCalibration.accepted, "elevator calibration must unlock the authored A3 route");
+
+  const elevatorCalibrationFirstStore = createGameStore(makeState({
+    mode: "light",
+    roomId: "a1_lobby",
+    phase: "room204_restore",
+    facts: [
+      "hour_hand_installed",
+      "classroom_104_chalk_residual_observed",
+      "classroom_105_terminal_replay_checked"
+    ]
+  }));
+  const elevatorCalibrationFirstController = new ChapterFourTemporalMazeController(
+    elevatorCalibrationFirstStore,
+    new EventBus()
+  );
+  const calibrationBeforeObservation = elevatorCalibrationFirstController.resolve755Intent({
+    type: "calibrate_elevator_history",
+    startSeconds: 81811
+  });
+  assert(
+    calibrationBeforeObservation.accepted
+      && !elevatorCalibrationFirstStore.getState().chapter4.factIds.includes("elevator_history_observed"),
+    "light elevator calibration must be accepted before the independent dark observation"
+  );
+  elevatorCalibrationFirstController.resolve755Intent({ type: "set_mode", mode: "dark" });
+  const observationAfterCalibration = elevatorCalibrationFirstController.resolve755Intent({
+    type: "observe_elevator_history"
+  });
+  assert(observationAfterCalibration.accepted, "dark elevator observation must remain available after light calibration");
+  assert(
+    ["elevator_history_observed", "elevator_history_calibrated"].every((factId) => (
+      elevatorCalibrationFirstStore.getState().chapter4.factIds.includes(factId)
+    )),
+    "both elevator facts must converge regardless of mode order"
+  );
 
   function runtimeTargetIntentFixture(target) {
     if (target.targetId === runtimeTargets.lamp.targetId) {
@@ -870,6 +944,35 @@ try {
   assert(backupMigration.storage.getItem(GAME_SAVE_KEY) === validBackupRaw, "valid backup recovery must repair the primary save slot");
 
   const room204Layout = chapterFourLayout.room204Runtime;
+  const completeRoom204Placements = createCanonicalCompleteRoom204Placements();
+  assert(
+    selectRoom204RuntimePresentation("room204_restore", false, []) === "interactive",
+    "Room 204 must mount its interactive furniture runtime while the restoration is in progress"
+  );
+  for (const phase of [
+    "maintenance_repair",
+    "blackout_light_grid",
+    "final_chase",
+    "final_minute_recovery",
+    "return_to_clock",
+    "morning_checkin",
+    "exterior_closure",
+    "complete"
+  ]) {
+    assert(ROOM204_RESTORED_DISPLAY_PHASES.has(phase), `${phase} must retain the restored Room 204 display`);
+    assert(
+      selectRoom204RuntimePresentation(phase, true, completeRoom204Placements) === "restored",
+      `${phase} must keep all completed Room 204 furniture mounted`
+    );
+  }
+  assert(
+    selectRoom204RuntimePresentation("final_chase", false, completeRoom204Placements) === "hidden",
+    "later phases must not fabricate a restored Room 204 without its persisted completion fact"
+  );
+  assert(
+    selectRoom204RuntimePresentation("final_chase", true, completeRoom204Placements.slice(1)) === "hidden",
+    "later phases must not render an incomplete Room 204 placement set as restored"
+  );
   const room204RuntimeTargets = {
     residual: {
       targetId: "a2_room204_residual_group",
@@ -908,14 +1011,16 @@ try {
     roomId = floor === "A3" ? "a3_reference_classroom" : "a2_room204",
     clockPositioningPlate = false,
     phase = "room204_restore",
-    stairSolved = true
+    stairSolved = true,
+    a3ReferenceObserved = stairSolved
   } = {}) {
     const state = makeState({
       facts: [
         ...task9FactPrerequisites,
         ...(stairSolved
-          ? ["a3_reference_observed", "zhu_two_questions_answered", "misaligned_stair_solved"]
+          ? ["zhu_two_questions_answered", "misaligned_stair_solved"]
           : []),
+        ...(a3ReferenceObserved ? ["a3_reference_observed"] : []),
         ...facts
       ],
       mode,
@@ -1079,6 +1184,106 @@ try {
     "projection completion without both observations"
   );
 
+  const zhuBeforeReferenceStore = createGameStore(makeRoom204State({
+    floor: "A3",
+    roomId: "a3_reference_classroom",
+    stairSolved: false,
+    a3ReferenceObserved: false
+  }));
+  const zhuBeforeReferenceController = new ChapterFourTemporalMazeController(
+    zhuBeforeReferenceStore,
+    new EventBus()
+  );
+  const zhuBeforeReference = zhuBeforeReferenceController.resolve755Intent({
+    type: "complete_zhu_two_questions",
+    targetId: "a3_alumni_zhu_kezhen",
+    purposeAnswer: "seek_truth",
+    personAnswer: "responsible",
+    spatial: validSpatial
+  });
+  assert(
+    zhuBeforeReference.accepted
+      && !zhuBeforeReferenceStore.getState().chapter4.factIds.includes("a3_reference_observed"),
+    "Zhu's two questions must be answerable before the independent A3 classroom reference"
+  );
+  const stairBeforeReference = zhuBeforeReferenceController.resolve755Intent({
+    type: "complete_misaligned_stair"
+  });
+  assert(
+    stairBeforeReference.accepted
+      && !zhuBeforeReferenceStore.getState().chapter4.factIds.includes("a3_reference_observed"),
+    "misaligned stair completion must not synthesize or require the independent A3 reference"
+  );
+
+  const placementBeforeObservationStore = createGameStore(makeRoom204State({
+    facts: [],
+    placements: [],
+    mode: "light",
+    floor: "A2",
+    roomId: "a2_room204",
+    stairSolved: true,
+    a3ReferenceObserved: false
+  }));
+  const placementBeforeObservationController = new ChapterFourTemporalMazeController(
+    placementBeforeObservationStore,
+    new EventBus()
+  );
+  for (const [index, pieceId] of ROOM204_PIECE_ORDER.entries()) {
+    const slotId = ROOM204_SLOT_ORDER[index];
+    const runtimeTarget = room204RuntimeTargets.slots[slotId];
+    const result = placementBeforeObservationController.resolve755Intent({
+      type: "place_room204_piece",
+      pieceId,
+      slotId,
+      orientation: "up",
+      targetId: runtimeTarget.targetId,
+      spatial: validSpatial
+    }, runtimeTarget);
+    assert(result.accepted, `${pieceId} must remain placeable before either Room204 observation`);
+  }
+  assert(
+    isRoom204PlacementSetComplete(placementBeforeObservationStore.getState().chapter4.room204Placements)
+      && !placementBeforeObservationStore.getState().chapter4.factIds.includes("room204_restored"),
+    "complete light furniture placement must wait for missing observations without fabricating them"
+  );
+  placementBeforeObservationController.resolve755Intent({ type: "set_mode", mode: "dark" });
+  const residualAfterPlacement = placementBeforeObservationController.resolve755Intent({
+    type: "observe_room204_residual",
+    targetId: room204RuntimeTargets.residual.targetId,
+    spatial: validSpatial
+  }, room204RuntimeTargets.residual);
+  assert(
+    residualAfterPlacement.accepted
+      && !placementBeforeObservationStore.getState().chapter4.factIds.includes("room204_restored"),
+    "dark residual observation must remain available after furniture placement and wait only for A3 reference"
+  );
+  const returnToA3Reference = placementBeforeObservationController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_reference_classroom",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(returnToA3Reference.accepted, "completed stair route must allow returning to the independent A3 reference");
+  placementBeforeObservationController.resolve755Intent({ type: "set_mode", mode: "light" });
+  const referenceAfterPlacement = placementBeforeObservationController.resolve755Intent({
+    type: "observe_a3_reference",
+    targetId: "a3_reference_classroom_layout",
+    spatial: validSpatial
+  });
+  assert(
+    referenceAfterPlacement.accepted
+      && placementBeforeObservationStore.getState().chapter4.factIds.includes("room204_restored"),
+    "the last real observation must close Room204 regardless of the earlier light/dark order"
+  );
+  const placementFirstReloaded = hydrate(placementBeforeObservationStore.getState());
+  assert(
+    placementFirstReloaded.chapter4.factIds.includes("a3_reference_observed")
+      && placementFirstReloaded.chapter4.factIds.includes("room204_residual_observed")
+      && placementFirstReloaded.chapter4.factIds.includes("room204_restored")
+      && isRoom204PlacementSetComplete(placementFirstReloaded.chapter4.room204Placements),
+    "order-free Room204 completion must survive SaveStore hydration"
+  );
+
   const roomSequenceStore = createGameStore(makeRoom204State({
     floor: "A3",
     roomId: "a3_reference_classroom",
@@ -1232,10 +1437,10 @@ try {
   ];
   const completePlacements = arbitraryModelPlacements.map((placement) => ({ ...placement }));
   const roomQuestCases = [
-    ["reference", [], [], "chapter_four_observe_a3_reference", false],
+    ["reference", [], [], "chapter_four_answer_zhu_two_questions", false],
     ["zhu questions", ["a3_reference_observed"], [], "chapter_four_answer_zhu_two_questions", false],
     ["stair", ["a3_reference_observed", "zhu_two_questions_answered"], [], "chapter_four_solve_misaligned_stair", false],
-    ["residual", ["a3_reference_observed"], [], "chapter_four_observe_room204_residual", true],
+    ["residual", ["a3_reference_observed"], [], "chapter_four_restore_room204", true],
     ["restore", ["a3_reference_observed", "room204_residual_observed"], [], "chapter_four_restore_room204", true],
     ["projection", ["a3_reference_observed", "room204_residual_observed", "room204_restored"], completePlacements, "chapter_four_watch_room204_projection", true],
     ["collect", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed"], completePlacements, "chapter_four_collect_positioning_plate", true],
@@ -2254,7 +2459,17 @@ try {
     stableFramesToArm: 4,
     playerSpeed: 208,
     guardSpeed: 196,
+    catchUpSpeed: 224,
+    closeSpeed: 178,
     catchDistance: 22,
+    predictionMs: 320,
+    targetHoldMs: 260,
+    waypointReachDistance: 34,
+    catchUpDistance: 420,
+    closeDistance: 120,
+    startContactGraceMs: 700,
+    portalContactGraceMs: 420,
+    contactConfirmMs: 180,
     maxStepMs: 50,
     finishBeforeContact: true,
     transportId: "main_stair",
@@ -2347,8 +2562,27 @@ try {
     sameJson(resolveChapterFourFinalChaseFinish(completedFinish, true), completedFinish),
     "Task12 repeated finish resolution must be a no-op"
   );
-  const failureStep = stepChapterFourFinalChase(chaseRuntimeState, {
+  const grazingContact = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    contactGraceRemainingMs: 0
+  }, {
     ...chaseInput,
+    deltaMs: 50,
+    guardContact: true
+  });
+  assert(
+    grazingContact.state.phase === "running"
+      && grazingContact.state.contactHoldMs === 50
+      && !grazingContact.failureRequested,
+    "Task12 one-frame corner contact must not fail the chase"
+  );
+  const failureStep = stepChapterFourFinalChase({
+    ...grazingContact.state,
+    contactHoldMs: 160,
+    contactGraceRemainingMs: 0
+  }, {
+    ...chaseInput,
+    deltaMs: 20,
     guardContact: true
   });
   assert(
@@ -2371,6 +2605,73 @@ try {
   );
   const acceptedPortal = resolveChapterFourFinalChasePortal(portalStep.state, true);
   assert(acceptedPortal.portalApplied && acceptedPortal.floor === "A2", "Task12 accepted portal must mark only the runtime transfer applied");
+  const simultaneousPortalContact = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    contactGraceRemainingMs: 0,
+    contactHoldMs: 170
+  }, {
+    ...chaseInput,
+    deltaMs: 20,
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a1Stair,
+    playerEnteredMainStair: true,
+    guardContact: true
+  });
+  assert(
+    simultaneousPortalContact.state.phase === "portal_transfer"
+      && simultaneousPortalContact.portalRequested
+      && !simultaneousPortalContact.failureRequested,
+    "Task12 authored main-stair entry must win over contact on the same frame"
+  );
+  const farPursuit = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    guardTargetHoldMs: 0,
+    lastPlayerPosition: { x: 1100, y: 232 }
+  }, {
+    ...chaseInput,
+    floor: "A2",
+    guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival,
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.room203DeadEnd
+  });
+  assert(
+    farPursuit.state.pursuitBand === "catch_up"
+      && farPursuit.state.pursuitSpeed === CHAPTER_FOUR_FINAL_CHASE_RULES.catchUpSpeed,
+    "Task12 a distant guard must enter bounded catch-up pressure"
+  );
+  const closePursuit = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    floor: "A2",
+    guardFloor: "A2",
+    guardTargetWaypointId: "a2_room202_outer",
+    guardTargetHoldMs: 0,
+    lastPlayerPosition: { x: 1353, y: 400 }
+  }, {
+    ...chaseInput,
+    floor: "A2",
+    guardPosition: { x: 1340, y: 400 },
+    playerPosition: { x: 1353, y: 400 }
+  });
+  assert(
+    closePursuit.state.pursuitBand === "close"
+      && closePursuit.state.pursuitSpeed === CHAPTER_FOUR_FINAL_CHASE_RULES.closeSpeed,
+    "Task12 a close guard must slow below player speed to preserve a recovery window"
+  );
+  const heldTarget = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    floor: "A2",
+    guardFloor: "A2",
+    guardTargetWaypointId: "a2_room202_outer",
+    guardTargetHoldMs: 200,
+    lastPlayerPosition: { x: 1100, y: 410 }
+  }, {
+    ...chaseInput,
+    floor: "A2",
+    guardPosition: { x: 1100, y: 400 },
+    playerPosition: { x: 1100, y: 415 }
+  });
+  assert(
+    heldTarget.state.guardTargetWaypointId === "a2_room202_outer",
+    "Task12 target hysteresis must prevent one-frame branch oscillation"
+  );
   assert(isChapterFourFinalChaseAttemptCurrent(chaseRuntimeState, 7), "Task12 runtime attempt token must accept its current attempt");
   assert(!isChapterFourFinalChaseAttemptCurrent(chaseRuntimeState, 6), "Task12 runtime attempt token must reject stale attempts");
 

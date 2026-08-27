@@ -18,7 +18,7 @@ try {
         'export { selectCampusWeather } from "./src/modules/CampusWeatherModel.ts";',
         'export { getQizhenWeatherMinimumMoves, isQizhenWeatherCloudAligned, moveQizhenWeatherCloud, QIZHEN_WEATHER_CLOUD_INITIAL } from "./src/modules/QizhenWeatherControlModel.ts";',
         'export { createDeveloperCheckpointState } from "./src/modules/DeveloperChannel.ts";',
-        'export { QIZHEN_DOCK_AFTER_RAIN_PUDDLES, QIZHEN_LAKE_WORLD, QIZHEN_LAKE_ZONES, isQizhenAfterRainPuddleFootHit } from "./src/scenes/rpg/QizhenLakeModel.ts";',
+        'export { QIZHEN_DOCK_AFTER_RAIN_PUDDLES, QIZHEN_DOCK_RAIN_EFFECT_PROFILE, QIZHEN_DOCK_RAIN_SPLASH_SITES, QIZHEN_LAKE_WORLD, QIZHEN_LAKE_ZONES, isQizhenAfterRainPuddleFootHit } from "./src/scenes/rpg/QizhenLakeModel.ts";',
         'export { default as qizhenContent } from "./src/data/chapter3-qizhen-lake.content.json";'
       ].join("\n"),
       resolveDir: root,
@@ -33,6 +33,8 @@ try {
   const {
     ChapterThreeQizhenLakeController,
     QIZHEN_DOCK_AFTER_RAIN_PUDDLES,
+    QIZHEN_DOCK_RAIN_EFFECT_PROFILE,
+    QIZHEN_DOCK_RAIN_SPLASH_SITES,
     QIZHEN_LAKE_WORLD,
     QIZHEN_LAKE_ZONES,
     createInitialGameState,
@@ -202,6 +204,22 @@ try {
   if (QIZHEN_DOCK_AFTER_RAIN_PUDDLES.length !== 4) {
     throw new Error("overcast dock must expose four authored after-rain puddles");
   }
+  if (QIZHEN_DOCK_RAIN_EFFECT_PROFILE.farStreakCount !== 64
+    || QIZHEN_DOCK_RAIN_EFFECT_PROFILE.nearStreakCount !== 36
+    || QIZHEN_DOCK_RAIN_EFFECT_PROFILE.mistBandCount !== 3
+    || QIZHEN_DOCK_RAIN_EFFECT_PROFILE.wetSheenCount !== QIZHEN_DOCK_AFTER_RAIN_PUDDLES.length
+    || QIZHEN_DOCK_RAIN_EFFECT_PROFILE.splashCount !== QIZHEN_DOCK_RAIN_SPLASH_SITES.length
+    || QIZHEN_DOCK_RAIN_SPLASH_SITES.length !== 18) {
+    throw new Error("rain effect profile must preserve two streak layers, mist, wet sheen, and eighteen lake splashes");
+  }
+  const dockWaterAreas = QIZHEN_LAKE_ZONES.dock.waterAreas;
+  for (const site of QIZHEN_DOCK_RAIN_SPLASH_SITES) {
+    if (site.width <= 0 || !dockWaterAreas.some((water) => (
+      site.x >= water.left && site.x <= water.right && site.y >= water.top && site.y <= water.bottom
+    ))) {
+      throw new Error(`rain splash leaves dock water: ${site.x},${site.y}`);
+    }
+  }
   const puddleBoundsIntersect = (puddle, collision) => {
     const left = puddle.x - puddle.width / 2;
     const right = puddle.x + puddle.width / 2;
@@ -228,7 +246,7 @@ try {
   if (qizhenContent.dock.afterRainProof !== "这是下过雨的证明") {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
-  console.log("Qizhen rain safety PASS assertions=25 gate=controller-owned weather=shared-selector cloud-calibration=3-bands+6-min-moves+save-reload developer-checkpoints=3 puddles=4+walkable+foot-hit feedback=event-backed");
+  console.log("Qizhen rain safety PASS assertions=47 gate=controller-owned weather=shared-selector cloud-calibration=3-bands+6-min-moves+save-reload developer-checkpoints=3 rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

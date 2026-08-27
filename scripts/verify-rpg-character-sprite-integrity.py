@@ -39,6 +39,7 @@ class RuntimeFrame:
     source_index: int
     image: Image.Image
     source_mirrored: bool = False
+    expected_height: int | None = None
 
 
 def extract_components(image: Image.Image) -> list[Component]:
@@ -146,6 +147,7 @@ def verify_role(
     columns: int,
     rows: int,
     groups: dict[str, list[RuntimeFrame]],
+    enforce_scale_ratio: bool = True,
 ) -> None:
     source = Image.open(source_path).convert("RGBA")
     components = order_components(extract_components(source), columns, rows)
@@ -161,6 +163,15 @@ def verify_role(
                 raise AssertionError(
                     f"{frame.label} clips its silhouette padding: "
                     f"top={top_padding} bottom={bottom_padding}"
+                )
+            runtime_height = bounds[3] - bounds[1]
+            if (
+                frame.expected_height is not None
+                and runtime_height != frame.expected_height
+            ):
+                raise AssertionError(
+                    f"{frame.label} expected silhouette height "
+                    f"{frame.expected_height}, got {runtime_height}"
                 )
             source_mask = (
                 source_component.mask.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
@@ -184,7 +195,7 @@ def verify_role(
                 )
             scales.append((bounds[3] - bounds[1]) / source_component.height)
         scale_ratio = max(scales) / min(scales)
-        if scale_ratio > MAX_SCALE_RATIO:
+        if enforce_scale_ratio and scale_ratio > MAX_SCALE_RATIO:
             raise AssertionError(
                 f"{role}/{group_name} changes character scale between frames: "
                 f"ratio={scale_ratio:.3f}"
@@ -196,10 +207,9 @@ def player_groups() -> dict[str, list[RuntimeFrame]]:
     source_specs = {
         "down": [(index, False) for index in range(0, 8)],
         "up": [(index, False) for index in range(8, 15)] + [(12, True)],
-        "side": [(index, False) for index in range(16, 24)],
     }
     groups: dict[str, list[RuntimeFrame]] = {}
-    for direction in ("down", "up", "side"):
+    for direction in ("down", "up"):
         groups[direction] = [
             RuntimeFrame(
                 label=f"player_{direction}_{phase}",
@@ -210,6 +220,48 @@ def player_groups() -> dict[str, list[RuntimeFrame]]:
             for phase, (source_index, mirrored) in enumerate(source_specs[direction])
         ]
     return groups
+
+
+def player_side_sheet_group() -> dict[str, list[RuntimeFrame]]:
+    root = ROOT / "src/assets/rpg/player"
+    specs = (
+        (0, 16, 104),
+        (2, 17, 102),
+        (3, 18, 101),
+        (5, 19, 103),
+        (6, 20, 104),
+        (8, 21, 102),
+        (9, 22, 101),
+        (11, 23, 103),
+    )
+    return {
+        "side_sheet": [
+            RuntimeFrame(
+                label=f"player_side_{phase}",
+                source_index=source_index,
+                image=Image.open(root / f"player_side_{phase}.png").convert("RGBA"),
+                expected_height=expected_height,
+            )
+            for phase, source_index, expected_height in specs
+        ]
+    }
+
+
+def player_side_transition_group(
+    phase: int,
+    expected_height: int,
+) -> dict[str, list[RuntimeFrame]]:
+    root = ROOT / "src/assets/rpg/player"
+    return {
+        f"side_transition_{phase}": [
+            RuntimeFrame(
+                label=f"player_side_{phase}",
+                source_index=0,
+                image=Image.open(root / f"player_side_{phase}.png").convert("RGBA"),
+                expected_height=expected_height,
+            )
+        ]
+    }
 
 
 def npc_groups(role: str) -> dict[str, list[RuntimeFrame]]:
@@ -279,6 +331,29 @@ def main() -> None:
         6,
         player_groups(),
     )
+    verify_role(
+        "player_side_sheet",
+        ROOT / "src/assets/rpg/player/source/player_walk_24pose_transparent_v2.png",
+        4,
+        6,
+        player_side_sheet_group(),
+        enforce_scale_ratio=False,
+    )
+    side_transition_sources = (
+        (1, 103, "player_side_transition_01_v3.png"),
+        (4, 102, "player_side_transition_23_v3.png"),
+        (7, 103, "player_side_transition_45_v3.png"),
+        (10, 102, "player_side_transition_67_v3.png"),
+    )
+    for phase, expected_height, source_file in side_transition_sources:
+        verify_role(
+            f"player_side_transition_{phase}",
+            ROOT / "src/assets/rpg/player/source" / source_file,
+            1,
+            1,
+            player_side_transition_group(phase, expected_height),
+            enforce_scale_ratio=False,
+        )
     npc_source_root = ROOT / "src/assets/rpg/npcs/finale/source"
     source_roles = (
         ("student", "finale_student_source_grid_v2.png", 4, 4),
