@@ -3255,3 +3255,5 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - Chromium 离线单文件在 `1280×720` 实际打开剧场节目单、启真湖入口与第四章 18:50 三个 DEV 检查点；前两处 canvas 画面正常，第四章 gameplay client 的 canvas 单独截图只得到 WebGL 黑底，但整页截图确认 A1 大厅、前台 NPC、玩家、任务栏和道具栏均正常。三个状态快照均与画面一致，没有生成 console/page error 文件。
 - Chromium `390×844` 验证开发面板可完整滚动；`?dev=0` 显示稳定的 7:55 启动页和固定手机外框。Playwright 当前未安装 Firefox 与 WebKit 可执行文件，因此本轮没有新增 Gecko/WebKit 实机证据；已有静态兼容合同和自动门禁不能替代该项。
 - 临时 QA 截图、状态快照与空的 Firefox/WebKit 临时目录在记录结论后删除。推送和远端 CI 结果由本节后续交付记录补充。
+- `git push origin HEAD:main` 非强制推送成功；本地 HEAD、`origin/main` 与 `git ls-remote` 三方均确认 `7f1f5e5a9ff0fb7d1cb904d13f96604298ec01c5`。GitHub Web CI [33086839856](https://github.com/zhu607705-coder/7-55/actions/runs/33086839856) 完整通过。
+- Release `demo-20260827` 的四个附件已由本次产物覆盖：HTML `252403148` 字节、SHA-256 `1b6d6909cc22507614e37b65629c8eb2cd1f640ab00a4b54ef51171275ba38ec`；实现 ZIP `551053650` 字节、SHA-256 `bb263c0b674e5fe5e126988bae21e6997cdc3139e20c4b93741871d087698bff`。ZIP 来自 `7f1f5e5` 的全部 Git 跟踪内容并通过 `unzip -t`；远端 SHA 文件下载回读一致。标签保留原始日更节点，Release 说明明确附件对应合并后的 `main` 提交。
