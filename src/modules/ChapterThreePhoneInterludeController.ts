@@ -122,6 +122,7 @@ export class ChapterThreePhoneInterludeController {
   submitPhotoSequence(order: readonly ChapterThreeInterludePhotoFrameId[]): ChapterThreeInterludeResult {
     const state = this.store.getState();
     if (!state.chapterThreeInterlude.evidenceIds.includes("journal_start")) return "locked";
+    if (state.chapterThreeInterlude.photoSequenceSolved) return "already_complete";
     const normalized = [...new Set(order)].filter((id): id is ChapterThreeInterludePhotoFrameId => PHOTO_ORDER.includes(id));
     const solved = sameOrder(normalized, PHOTO_ORDER);
     this.store.setState((current) => ({
@@ -262,7 +263,6 @@ export class ChapterThreePhoneInterludeController {
       !allEvidenceReady
       || !allDecoysRejected
       || !interlude.statusClockMarkedUntrusted
-      || !sameOrder(interlude.timelineOrder, EVIDENCE_ORDER)
     ) return "locked";
     if (destinationId !== chapterThreeInterludeValidationContract.destinationId) {
       this.events.emit("chapter35_destination_rejected", {
@@ -276,6 +276,7 @@ export class ChapterThreePhoneInterludeController {
       chapterThreeInterlude: {
         ...current.chapterThreeInterlude,
         phase: "destination_verified",
+        timelineOrder: [...EVIDENCE_ORDER],
         destinationId: destinationId as ChapterThreeInterludeDestinationId
       }
     }));

@@ -453,6 +453,9 @@ export class SaveStore {
       const drinkPreviouslyCompleted = ["menu_order", "pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const menuPreviouslyCompleted = ["pickup_search", "exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
       const pickupPreviouslyCompleted = ["exit_blocking", "chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase);
+      const hasSavedMenuObservation = Object.prototype.hasOwnProperty.call(savedCanteenHunt, "menuDarkClueRead");
+      const hasSavedPickupObservation = Object.prototype.hasOwnProperty.call(savedCanteenHunt, "pickupDarkClueRead");
+      const hasSavedExitObservations = Object.prototype.hasOwnProperty.call(savedCanteenHunt, "identifiedExitIds");
       let canteenHunt: GameState["canteenHunt"] = {
         active: typeof savedCanteenHunt.active === "boolean" ? savedCanteenHunt.active : initial.canteenHunt.active,
         phase: savedCanteenPhase === "entered" ? "tray_search" : savedCanteenPhase,
@@ -497,9 +500,15 @@ export class SaveStore {
         queueChallengeSeen: booleanOr(savedCanteenHunt.queueChallengeSeen, drinkPreviouslyCompleted),
         promoDrinkPlaced: booleanOr(savedCanteenHunt.promoDrinkPlaced, drinkPreviouslyCompleted),
         queueGapOpened: booleanOr(savedCanteenHunt.queueGapOpened, drinkPreviouslyCompleted),
-        menuDarkClueRead: booleanOr(savedCanteenHunt.menuDarkClueRead, menuPreviouslyCompleted),
+        menuDarkClueRead: booleanOr(
+          savedCanteenHunt.menuDarkClueRead,
+          hasSavedMenuObservation ? initial.canteenHunt.menuDarkClueRead : menuPreviouslyCompleted
+        ),
         pickupTimeErrorSeen: booleanOr(savedCanteenHunt.pickupTimeErrorSeen, pickupPreviouslyCompleted),
-        pickupDarkClueRead: booleanOr(savedCanteenHunt.pickupDarkClueRead, pickupPreviouslyCompleted),
+        pickupDarkClueRead: booleanOr(
+          savedCanteenHunt.pickupDarkClueRead,
+          hasSavedPickupObservation ? initial.canteenHunt.pickupDarkClueRead : pickupPreviouslyCompleted
+        ),
         defenseDrinkUsed: booleanOr(
           savedCanteenHunt.defenseDrinkUsed,
           ["chase_ready", "chasing", "theater_reached"].includes(savedCanteenPhase)
@@ -513,7 +522,9 @@ export class SaveStore {
         identifiedExitIds: filteredStringArrayFromSet(
           savedCanteenHunt.identifiedExitIds,
           VALID_CANTEEN_EXIT_IDS,
-          ["southeast", "steam", "west"].slice(0, savedBlockHits)
+          hasSavedExitObservations
+            ? initial.canteenHunt.identifiedExitIds
+            : ["southeast", "steam", "west"].slice(0, savedBlockHits)
         ) as GameState["canteenHunt"]["identifiedExitIds"],
         orderAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.orderAttemptCount, initial.canteenHunt.orderAttemptCount),
         pickupAttemptCount: nonNegativeIntegerOr(savedCanteenHunt.pickupAttemptCount, initial.canteenHunt.pickupAttemptCount),
@@ -797,10 +808,14 @@ function normalizeQizhenLake(
     VALID_QIZHEN_FISHING_SPOTS,
     initial.observedFishingSpotIds
   ));
-  if (lockerOpened) observedFishingSpotIds.add("locker_key");
-  if (netCombined) observedFishingSpotIds.add("net_frame");
-  if (fishCaught) observedFishingSpotIds.add("fish");
-  if (paperCaptured) observedFishingSpotIds.add("paper");
+  const hasSavedFishingObservations = Object.prototype.hasOwnProperty.call(saved, "observedFishingSpotIds");
+  if (!hasSavedFishingObservations) {
+    if (lockerOpened) observedFishingSpotIds.add("locker_key");
+    if (netCombined) observedFishingSpotIds.add("net_frame");
+    if (fishCaught) observedFishingSpotIds.add("fish");
+    if (paperCaptured) observedFishingSpotIds.add("paper");
+  }
+  const hasSavedReflectionObservation = Object.prototype.hasOwnProperty.call(saved, "reflectionLocationObserved");
 
   let zone = enumOr(saved.zone, VALID_QIZHEN_ZONES, initial.zone);
   let vehicle = enumOr(saved.vehicle, VALID_QIZHEN_VEHICLES, initial.vehicle);
@@ -873,9 +888,12 @@ function normalizeQizhenLake(
     decoyBaitAttached: reachedSwanExchange
       || migratedLegacyChase
       || booleanOr(saved.decoyBaitAttached, initial.decoyBaitAttached),
-    reflectionLocationObserved: reachedToolChain
-      || migratedLegacyChase
-      || booleanOr(saved.reflectionLocationObserved, initial.reflectionLocationObserved),
+    reflectionLocationObserved: booleanOr(
+      saved.reflectionLocationObserved,
+      hasSavedReflectionObservation
+        ? initial.reflectionLocationObserved
+        : reachedToolChain || migratedLegacyChase || initial.reflectionLocationObserved
+    ),
     observedFishingSpotIds: [...observedFishingSpotIds],
     directPaperCastFailures: nonNegativeIntegerOr(saved.directPaperCastFailures, initial.directPaperCastFailures),
     lockerOpened,
@@ -1862,17 +1880,13 @@ function normalizeChapterFourRoom204Closure(
     }
     for (const factId of CHAPTER_FOUR_ROOM204_FACT_ORDER) facts.add(factId);
   } else {
-    const progressedBeyondHonorWall = [
-      "misaligned_stair_solved",
-      "room204_residual_observed",
-      "room204_restored",
-      "room204_projection_completed",
-      "positioning_plate_collected"
-    ].some((factId) => facts.has(factId as ChapterFourFactId));
-    if (progressedBeyondHonorWall && facts.has("a3_reference_observed")) {
+    // The stair requires Zhu's two questions, while the A3 classroom
+    // reference is an independent observation.  Preserve either completion
+    // order across reload and only reconstruct the question fact from a
+    // legacy save that has already solved the stair.
+    if (facts.has("misaligned_stair_solved")) {
       facts.add("zhu_two_questions_answered");
     }
-    if (!facts.has("a3_reference_observed")) facts.delete("zhu_two_questions_answered");
     const hasBothObservations = facts.has("a3_reference_observed")
       && facts.has("room204_residual_observed");
     const complete = isRoom204PlacementSetComplete(placements);
@@ -2038,45 +2052,103 @@ function normalizeChapterThreeInterlude(
     : chapterFourStarted
       ? "duan_yongping_a1"
       : null;
+  const canonicalEvidenceOrder = [
+    "journal_start",
+    "photo_direction",
+    "network_destination",
+    "broadcast_end"
+  ] as const satisfies readonly GameState["chapterThreeInterlude"]["evidenceIds"][number][];
+  const canonicalPhotoOrder = ["paper_left", "paper_middle", "paper_right"] as const;
+  const canonicalVoiceOrder = ["lake", "stone", "lobby", "broadcast"] as const;
+  const canonicalDecoyOrder = ["canteen_0755", "theater_0832", "status_clock_075523"] as const;
+  const evidenceIds = chapterFourStarted
+    ? [...canonicalEvidenceOrder]
+    : filteredStringArrayFromSet(
+        saved.evidenceIds,
+        VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE,
+        initial.evidenceIds
+      );
+  const journalCloseoutPersisted = qizhenLake.journal.status === "archived"
+    && qizhenLake.journal.summaryPublished
+    && qizhenLake.journal.memoryCardUnlocked;
+  const recoveryOpened = chapterFourStarted
+    || booleanOr(saved.recoveryOpened, evidenceIds.includes("journal_start"));
+  // Opening the recovery page is persisted before the player closes the CC98
+  // journal.  Do not turn that intermediate UI fact into completed evidence on
+  // reload.  Only a genuinely archived legacy journal may reconstruct it.
+  if (journalCloseoutPersisted && !evidenceIds.includes("journal_start")) {
+    evidenceIds.push("journal_start");
+  }
+  const hasNetworkSummary = evidenceIds.includes("network_destination");
+  const photoSequenceSolved = chapterFourStarted
+    || booleanOr(saved.photoSequenceSolved, initial.photoSequenceSolved)
+    || evidenceIds.includes("photo_direction");
+  const voiceSequenceSolved = chapterFourStarted
+    || booleanOr(saved.voiceSequenceSolved, initial.voiceSequenceSolved)
+    || evidenceIds.includes("broadcast_end");
+  const officialNoticeSaved = chapterFourStarted
+    || booleanOr(saved.officialNoticeSaved, initial.officialNoticeSaved)
+    || hasNetworkSummary;
+  const routeScreenshotSaved = chapterFourStarted
+    || booleanOr(saved.routeScreenshotSaved, initial.routeScreenshotSaved)
+    || hasNetworkSummary;
+  const networkRecordRead = chapterFourStarted
+    || booleanOr(saved.networkRecordRead, initial.networkRecordRead)
+    || hasNetworkSummary;
+  if (photoSequenceSolved && !evidenceIds.includes("photo_direction")) evidenceIds.push("photo_direction");
+  if (voiceSequenceSolved && !evidenceIds.includes("broadcast_end")) evidenceIds.push("broadcast_end");
+  if (
+    officialNoticeSaved
+    && routeScreenshotSaved
+    && networkRecordRead
+    && !evidenceIds.includes("network_destination")
+  ) {
+    evidenceIds.push("network_destination");
+  }
+  const photoFrameIds = filteredStringArrayFromSet(
+    saved.photoFrameIds,
+    VALID_CHAPTER_THREE_INTERLUDE_PHOTOS,
+    chapterFourStarted ? canonicalPhotoOrder : initial.photoFrameIds
+  );
+  const voiceClipOrder = filteredStringArrayFromSet(
+    saved.voiceClipOrder,
+    VALID_CHAPTER_THREE_INTERLUDE_VOICES,
+    chapterFourStarted ? canonicalVoiceOrder : initial.voiceClipOrder
+  );
+  const rejectedDecoyIds = chapterFourStarted
+    ? [...canonicalDecoyOrder]
+    : filteredStringArrayFromSet(
+        saved.rejectedDecoyIds,
+        VALID_CHAPTER_THREE_INTERLUDE_DECOYS,
+        initial.rejectedDecoyIds
+      );
+  const statusClockMarkedUntrusted = chapterFourStarted
+    || booleanOr(saved.statusClockMarkedUntrusted, initial.statusClockMarkedUntrusted);
+  const timelinePrerequisitesReady = canonicalEvidenceOrder.every((id) => evidenceIds.includes(id))
+    && canonicalDecoyOrder.every((id) => rejectedDecoyIds.includes(id))
+    && statusClockMarkedUntrusted;
+  const timelineOrder = timelinePrerequisitesReady
+    ? [...canonicalEvidenceOrder]
+    : filteredStringArrayFromSet(
+        saved.timelineOrder,
+        VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE,
+        chapterFourStarted ? canonicalEvidenceOrder : initial.timelineOrder
+      );
   return {
     phase: completed ? "complete" : phase,
-    rebootSeen: booleanOr(saved.rebootSeen, chapterFourStarted),
-    recoveryOpened: booleanOr(saved.recoveryOpened, chapterFourStarted),
-    photoFrameIds: filteredStringArrayFromSet(
-      saved.photoFrameIds,
-      VALID_CHAPTER_THREE_INTERLUDE_PHOTOS,
-      chapterFourStarted ? ["paper_left", "paper_middle", "paper_right"] : initial.photoFrameIds
-    ),
-    photoSequenceSolved: booleanOr(saved.photoSequenceSolved, chapterFourStarted),
-    voiceClipOrder: filteredStringArrayFromSet(
-      saved.voiceClipOrder,
-      VALID_CHAPTER_THREE_INTERLUDE_VOICES,
-      chapterFourStarted ? ["lake", "stone", "lobby", "broadcast"] : initial.voiceClipOrder
-    ),
-    voiceSequenceSolved: booleanOr(saved.voiceSequenceSolved, chapterFourStarted),
-    officialNoticeSaved: booleanOr(saved.officialNoticeSaved, chapterFourStarted),
-    routeScreenshotSaved: booleanOr(saved.routeScreenshotSaved, chapterFourStarted),
-    networkRecordRead: booleanOr(saved.networkRecordRead, chapterFourStarted),
-    evidenceIds: filteredStringArrayFromSet(
-      saved.evidenceIds,
-      VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE,
-      chapterFourStarted
-        ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"]
-        : initial.evidenceIds
-    ),
-    timelineOrder: filteredStringArrayFromSet(
-      saved.timelineOrder,
-      VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE,
-      chapterFourStarted
-        ? ["journal_start", "photo_direction", "network_destination", "broadcast_end"]
-        : initial.timelineOrder
-    ),
-    rejectedDecoyIds: filteredStringArrayFromSet(
-      saved.rejectedDecoyIds,
-      VALID_CHAPTER_THREE_INTERLUDE_DECOYS,
-      chapterFourStarted ? ["canteen_0755", "theater_0832", "status_clock_075523"] : initial.rejectedDecoyIds
-    ),
-    statusClockMarkedUntrusted: booleanOr(saved.statusClockMarkedUntrusted, chapterFourStarted),
+    rebootSeen: booleanOr(saved.rebootSeen, recoveryOpened),
+    recoveryOpened,
+    photoFrameIds: photoSequenceSolved ? [...canonicalPhotoOrder] : photoFrameIds,
+    photoSequenceSolved,
+    voiceClipOrder: voiceSequenceSolved ? [...canonicalVoiceOrder] : voiceClipOrder,
+    voiceSequenceSolved,
+    officialNoticeSaved,
+    routeScreenshotSaved,
+    networkRecordRead,
+    evidenceIds: canonicalEvidenceOrder.filter((id) => evidenceIds.includes(id)),
+    timelineOrder,
+    rejectedDecoyIds,
+    statusClockMarkedUntrusted,
     destinationId,
     windowStartSeconds: rangedIntegerOr(saved.windowStartSeconds, 0, 86399, initial.windowStartSeconds),
     windowEndSeconds: rangedIntegerOr(saved.windowEndSeconds, 0, 86399, initial.windowEndSeconds),

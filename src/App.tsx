@@ -98,7 +98,10 @@ export function App() {
     // 3.5 章在玩家确认目的地前不求值第四章 RPG；确认回放后由过渡 Gate
     // 立即预热 A1。其他手机流程则在当前交互的空闲片段预取下一张 RPG 场景。
     if (state.currentScene === "timeline_recovery") return undefined;
-    return scheduleRpgRuntimeWarmup(state.rpgScene);
+    return scheduleRpgRuntimeWarmup(
+      state.rpgScene,
+      state.rpgScene === "duan_yongping_temporal_maze" ? "entry" : undefined
+    );
   }, [state.currentScene, state.rpgScene, state.runtimeMode]);
 
   const startLibraryStory = useCallback((sequenceId: string) => {

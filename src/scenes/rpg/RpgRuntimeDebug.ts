@@ -218,6 +218,17 @@ export interface RpgRuntimeDebugState {
       plateIds: Readonly<Record<"A1" | "A2" | "A3", string>>;
       targetIds: readonly string[];
     };
+    warmup?: {
+      requiredPhase: "entry" | "transport" | "maintenance" | "closure";
+      ready: boolean;
+      loadedPhases: readonly ("entry" | "transport" | "maintenance" | "closure")[];
+      inFlightPhases: readonly ("entry" | "transport" | "maintenance" | "closure")[];
+      failures: ReadonlyArray<{
+        phase: "entry" | "transport" | "maintenance" | "closure";
+        urls: readonly string[];
+        retryNotBeforeMs: number;
+      }>;
+    };
     runtimeEntities?: ReadonlyArray<{
       targetId: string;
       entityId: string;
@@ -263,6 +274,13 @@ export interface RpgRuntimeDebugState {
       guardFloor: "A1" | "A2" | null;
       attempt: number;
       targetWaypointId: string | null;
+      targetHoldMs: number;
+      predictedPlayerPosition: { x: number; y: number } | null;
+      pursuitBand: "catch_up" | "tracking" | "close" | null;
+      pursuitSpeed: number | null;
+      guardToPlayerRouteDistance: number | null;
+      contactHoldMs: number;
+      contactGraceRemainingMs: number;
       portalApplied: boolean;
       portalRequested: boolean;
       portalRemainingDistance: number;
@@ -281,6 +299,15 @@ export interface RpgRuntimeDebugState {
         openRequestId: string | null;
         targetId: string | null;
       };
+    };
+    room204Runtime?: {
+      presentation: "interactive" | "restored" | "hidden";
+      completePlacements: boolean;
+      mountedPieceCount: number;
+      visibleDeskCount: number;
+      visibleChairCount: number;
+      visibleDiscussionTableCount: number;
+      podiumVisible: boolean;
     };
     room202Door?: {
       state: "open" | "closed" | "inactive";

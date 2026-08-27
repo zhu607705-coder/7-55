@@ -142,11 +142,11 @@ export const ZJUDING_APP_REGISTRY: readonly ZjudingAppDefinition[] = [
   },
   {
     id: "feedback_draft",
-    label: "意见箱",
+    label: "开发反馈",
     icon: "信",
     tone: "blue",
     category: "service",
-    keywords: ["意见", "反馈", "建议", "草稿"],
+    keywords: ["意见", "反馈", "建议", "开发者", "GitHub", "Issue"],
     target: { kind: "utility", panel: "feedback_draft" },
     availability: "identity",
     badge: "新"

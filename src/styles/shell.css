@@ -631,6 +631,81 @@
   font: 900 var(--fs-caption)/1.4 monospace;
 }
 
+.quest-parallel-branches {
+  background: #1d2831;
+  border: 2px solid #58758a;
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+}
+
+.quest-parallel-branches > header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.quest-parallel-branches > header strong {
+  color: #f0d54e;
+  font-size: var(--fs-caption);
+}
+
+.quest-parallel-branches > header span {
+  color: #9fd3ff;
+  font: 900 var(--fs-caption)/1 monospace;
+}
+
+.quest-parallel-branches ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.quest-parallel-branches li button {
+  align-items: center;
+  background: #29343d;
+  border: 2px solid #6f8493;
+  color: #dbe1e5;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 44px;
+  padding: 6px 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.quest-parallel-branches li.is-complete button {
+  border-color: #77c48d;
+}
+
+.quest-parallel-branches li button > span {
+  display: grid;
+  gap: 2px;
+}
+
+.quest-parallel-branches li button strong {
+  font-size: var(--fs-body);
+}
+
+.quest-parallel-branches li button small {
+  color: #aebac2;
+  font-size: var(--fs-caption);
+}
+
+.quest-parallel-branches li.is-complete button small {
+  color: #9bd5aa;
+}
+
+.quest-parallel-branches li button em {
+  color: #9fd3ff;
+  font-size: var(--fs-caption);
+  font-style: normal;
+  font-weight: 900;
+}
+
 .quest-proof-requirements {
   background: #1d2831;
   border: 2px solid #8a7850;

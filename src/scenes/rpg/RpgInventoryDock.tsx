@@ -155,7 +155,7 @@ function feedbackFromPayload(
       itemId,
       tone: "warning",
       title: "目标位置尚未记录",
-      detail: customDetail || "先切到深色观察并记录目标轮廓，再回到浅色操作。"
+      detail: customDetail || "深色观察可以补充目标坐标；浅色操作仍可直接作用于画面中清晰可见的实体目标。"
     };
   }
   if (reason === "direct_paper_failure") {

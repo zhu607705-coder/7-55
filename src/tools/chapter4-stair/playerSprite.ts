@@ -15,6 +15,10 @@ import playerSide4Url from "../../assets/rpg/player/player_side_4.png";
 import playerSide5Url from "../../assets/rpg/player/player_side_5.png";
 import playerSide6Url from "../../assets/rpg/player/player_side_6.png";
 import playerSide7Url from "../../assets/rpg/player/player_side_7.png";
+import playerSide8Url from "../../assets/rpg/player/player_side_8.png";
+import playerSide9Url from "../../assets/rpg/player/player_side_9.png";
+import playerSide10Url from "../../assets/rpg/player/player_side_10.png";
+import playerSide11Url from "../../assets/rpg/player/player_side_11.png";
 import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
 import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
@@ -27,16 +31,20 @@ import playerUp7Url from "../../assets/rpg/player/player_up_7.png";
 /**
  * 第四章楼梯间像素人物 Sprite（设计文档 §8.4）。
  * 始终面向当前相机的 THREE.Sprite，复用 src/assets/rpg/player/ 的 96×128
- * 三方向八帧人物图；独立 vite 入口经 viteSingleFile 构建时上述静态导入会被内联。
+ * 下/上八帧、侧向十二帧人物图；独立 vite 入口经 viteSingleFile 构建时上述静态导入会被内联。
  * 本模块只依赖 three；纹理加载失败时自动退回程序化硬边备用人物，不影响通关（§11）。
  */
 
 /**
- * 行走帧间隔。与 src/scenes/rpg/RpgPlayerTextures.ts 的 RPG_PLAYER_WALK_FRAME_MS = 110
- * 保持一致；该文件依赖 Phaser，本模块不能引用，故复制常量于此（两处修改需同步）。
+ * 上下行走帧间隔与总周期。侧向帧间隔由同一 880ms 周期除以十二帧得到。
+ * 该文件依赖 Phaser，本模块不能引用共享常量，故复制于此（两处修改需同步）。
  */
 export const STAIR_PLAYER_WALK_FRAME_MS = 110;
 export const STAIR_PLAYER_WALK_FRAME_COUNT = 8;
+export const STAIR_PLAYER_SIDE_WALK_FRAME_COUNT = 12;
+export const STAIR_PLAYER_WALK_CYCLE_MS = (
+  STAIR_PLAYER_WALK_FRAME_MS * STAIR_PLAYER_WALK_FRAME_COUNT
+);
 
 export const STAIR_PLAYER_FRAME_WIDTH = 96;
 export const STAIR_PLAYER_FRAME_HEIGHT = 128;
@@ -66,7 +74,8 @@ const PLAYER_FRAME_URLS: Record<StairPlayerFacing, readonly string[]> = {
   ],
   side: [
     playerSide0Url, playerSide1Url, playerSide2Url, playerSide3Url,
-    playerSide4Url, playerSide5Url, playerSide6Url, playerSide7Url
+    playerSide4Url, playerSide5Url, playerSide6Url, playerSide7Url,
+    playerSide8Url, playerSide9Url, playerSide10Url, playerSide11Url
   ]
 };
 
@@ -194,7 +203,7 @@ export class StairPlayerSprite {
       side: []
     };
     FACING_ORDER.forEach((facing) => {
-      for (let frame = 0; frame < STAIR_PLAYER_WALK_FRAME_COUNT; frame += 1) {
+      for (let frame = 0; frame < PLAYER_FRAME_URLS[facing].length; frame += 1) {
         const fallback = createFallbackFrame(facing, frame);
         this.frames[facing].push(fallback);
         this.ownedTextures.push(fallback);
@@ -237,6 +246,7 @@ export class StairPlayerSprite {
       this.facing = dy > 0 ? "up" : "down";
       this.flipX = false;
     }
+    this.frame %= this.frames[this.facing].length;
     this.applyPose();
   }
 
@@ -266,13 +276,14 @@ export class StairPlayerSprite {
     this.object3d.renderOrder = enabled ? 100 : 0;
   }
 
-  /** 行走循环：110ms 一帧，八帧循环。每帧调用；静止时为空操作。 */
+  /** 行走循环保持 880ms 总周期；侧向十二帧、上下八帧。 */
   update(nowMs: number): void {
     if (!this.walking) {
       return;
     }
-    const nextFrame = Math.floor(nowMs / STAIR_PLAYER_WALK_FRAME_MS)
-      % STAIR_PLAYER_WALK_FRAME_COUNT;
+    const frameCount = this.frames[this.facing].length;
+    const frameMs = STAIR_PLAYER_WALK_CYCLE_MS / frameCount;
+    const nextFrame = Math.floor(nowMs / frameMs) % frameCount;
     if (nextFrame !== this.frame) {
       this.frame = nextFrame;
       this.applyPose();

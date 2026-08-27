@@ -203,7 +203,7 @@ export function UnifiedIdentityLogin({ state, onExit }: UnifiedIdentityLoginProp
           </button>
         </section>
 
-        <p className="cc98-login-local-note">剧情内离线认证 · 不连接真实账号服务</p>
+        <p className="cc98-login-local-note">浙江大学统一身份认证</p>
       </main>
 
       <button type="button" className="cc98-login-exit" onClick={onExit}>退出认证</button>

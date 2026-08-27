@@ -2119,7 +2119,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const targets: CanteenInteractionTarget[] = [
       ...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "exit")
     ];
-    if (state.canteenHunt.phase === "menu_order") {
+    if (
+      state.canteenHunt.phase === "menu_order"
+      || (state.canteenHunt.phase === "pickup_search"
+        && state.canteenHunt.mode === "dark"
+        && !state.canteenHunt.menuDarkClueRead)
+    ) {
       targets.push(...CANTEEN_INTERACTION_TARGETS.filter((target) => target.kind === "kiosk"));
     }
     if (state.canteenHunt.phase === "pickup_search") {
@@ -2205,13 +2210,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     if (target.kind === "pickup") {
       if (state.canteenHunt.mode === "dark") {
-        const canUseTicket = target.value === "3"
-          && state.canteenHunt.pickupDarkClueRead
-          && state.items.pickupTicket0755;
-        this.bridge.emit(
-          canUseTicket ? "rpg_canteen_pickup_selected" : "rpg_canteen_pickup_clue_requested",
-          { windowId: target.value }
-        );
+        this.bridge.emit("rpg_canteen_pickup_clue_requested", { windowId: target.value });
       } else {
         this.bridge.emit("rpg_canteen_pickup_selected", { windowId: target.value });
       }
@@ -2516,9 +2515,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       label = "使用点餐机";
     } else if (nearest.kind === "pickup") {
       label = state.canteenHunt.mode === "dark"
-        ? nearest.value === "3" && state.canteenHunt.pickupDarkClueRead && state.items.pickupTicket0755
-          ? "使用小票 · 3号窗口"
-          : `查看${nearest.value}号窗口`
+        ? `查看${nearest.value}号窗口`
         : state.items.pickupTicket0755
           ? `使用小票 · ${nearest.value}号窗口`
           : `${nearest.value}号取餐窗口`;
@@ -2529,9 +2526,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     } else if (nearest.kind === "cart") {
       label = state.canteenHunt.mode === "dark"
         ? "确认蓝色轨迹指向"
-        : state.canteenHunt.identifiedExitIds.includes(String(nearest.value) as CanteenExitId)
-          ? "靠近餐盘车把手"
-          : "先切深色模式确认这辆餐车";
+        : "靠近餐盘车把手";
     } else if (nearest.kind === "exit") {
       label = "靠近东南门离开食堂";
     }
@@ -3355,8 +3350,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     };
 
     const pullBackToEmptyCanteen = () => {
-      this.currentMode = "light";
-      this.bridge.emit("rpg_canteen_final_light_mode_requested");
       this.lightNpcSprites.forEach((sprite) => sprite.setVisible(false));
       this.lightNpcCollisionBodies.forEach((collision) => {
         const body = collision.body as Phaser.Physics.Arcade.StaticBody | null;

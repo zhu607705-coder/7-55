@@ -229,7 +229,6 @@ export class ChapterThreeQizhenLakeController {
         ...current.qizhenLake,
         active: true,
         phase: firstEntry ? "dock_outfitting" : current.qizhenLake.phase,
-        mode: firstEntry || current.qizhenLake.zone === "dock" ? "light" : current.qizhenLake.mode,
         zone: firstEntry ? "dock" : current.qizhenLake.zone,
         vehicle: firstEntry ? "on_foot" : current.qizhenLake.vehicle,
         safeSpawnId: firstEntry ? "dock_entry" : current.qizhenLake.safeSpawnId
@@ -566,13 +565,9 @@ export class ChapterThreeQizhenLakeController {
         ...current.qizhenLake,
         zone,
         vehicle: arrivedAtDock ? "on_foot" : current.qizhenLake.vehicle,
-        mode: arrivedAtDock ? "light" : current.qizhenLake.mode,
         safeSpawnId
       }
     }));
-    if (arrivedAtDock && state.qizhenLake.mode !== "light") {
-      this.events.emit("qizhen_mode_changed", { mode: "light", reason: "dock_return" });
-    }
     this.events.emit("qizhen_zone_entered", { zone, vehicle: arrivedAtDock ? "on_foot" : "kayak" });
     return "accepted";
   }
@@ -600,7 +595,6 @@ export class ChapterThreeQizhenLakeController {
     const state = this.store.getState();
     if (!["lake_exploration", "tool_chain"].includes(state.qizhenLake.phase)) return "inactive";
     if (state.qizhenLake.mode !== "light") return "wrong_mode";
-    if (!state.qizhenLake.reflectionLocationObserved) return "unobserved";
     if (state.qizhenLake.rodFound || state.items.fishingRod || state.items.magneticFishingRod) return "already_complete";
     this.store.setState((current) => ({
       ...current,
@@ -761,7 +755,6 @@ export class ChapterThreeQizhenLakeController {
     if (state.qizhenLake.phase !== "paper_capture") return "inactive";
     if (state.qizhenLake.mode !== "light") return "wrong_mode";
     if (!state.items.magneticFishingRod || !state.qizhenLake.magneticRodCombined) return "wrong_item";
-    if (!state.qizhenLake.observedFishingSpotIds.includes("paper")) return "unobserved";
     this.store.setState((current) => ({
       ...current,
       rpgCheckpoint: "qizhen_chase",
@@ -810,7 +803,6 @@ export class ChapterThreeQizhenLakeController {
         phase: "swan_chase",
         zone: "channel",
         vehicle: "kayak",
-        mode: "light",
         safeSpawnId: "channel_chase",
         chaseDistance: 0,
         chaseAttempts: nextAttempt
@@ -1232,7 +1224,6 @@ export class ChapterThreeQizhenLakeController {
       return "inactive";
     }
     if (state.qizhenLake.mode !== "light") return "wrong_mode";
-    if (!state.qizhenLake.observedFishingSpotIds.includes(spotId)) return "unobserved";
     if (spotId === "paper" && !state.items.magneticFishingRod) return "direct_paper_failure";
     if (spotId === "locker_key") {
       if (!state.items.fishingRod || !state.qizhenLake.decoyBaitAttached) return "wrong_item";

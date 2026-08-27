@@ -462,7 +462,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
     showChapterFourResult(
       kit.chapterFour.archiveWechatElevatorAudio(),
       "主电梯提示音已归档。",
-      "先回到一楼，在深色观察中记录电梯历史提示音。"
+      "文件传输助手尚未收到一楼电梯历史提示音记录。"
     );
   }
 
@@ -480,7 +480,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
     showChapterFourResult(
       kit.chapterFour.archiveWechatWayfindingPhotos(),
       "新旧导视板照片已归档。",
-      "先在三楼深色观察中找到旧导视板残影。"
+      "文件传输助手尚未收到三楼旧导视板残影记录。"
     );
   }
 

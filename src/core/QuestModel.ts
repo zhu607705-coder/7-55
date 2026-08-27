@@ -412,7 +412,7 @@ function canteenInteriorTask(state: GameState): TaskDefinition {
     return task(
       "tray_return",
       `找出并交回带污渍的餐盘（${returnedTargetTrays}/3）`,
-      ["深色观察确认带蓝光和油渍的餐盘，浅色操作拿起后交给收餐口阿姨。", "一次只能搬一个餐盘。"]
+      ["深色观察可辨认蓝光和油渍；浅色操作可直接拿起餐盘并交给收餐口阿姨。", "一次只能搬一个餐盘。"]
     );
   }
   if (!hunt.queueGapOpened) {
@@ -435,20 +435,24 @@ function canteenInteriorTask(state: GameState): TaskDefinition {
     return task("queue_shift", "等待第三列队伍让出位置");
   }
   if (hunt.phase === "menu_order") {
-    return hunt.menuDarkClueRead
-      ? task("menu_order", "切回浅色操作，在点餐机选择纸包鸡", ["点餐后会取得 0755 取餐号。"])
-      : task("menu_clue", "用深色观察读取点餐机菜单", ["确认暗色菜单中的异常文字后再切回浅色操作。"]);
+    return task(
+      "menu_order",
+      "在点餐机选择纸包鸡",
+      ["浅色操作可直接点餐；深色观察可补充读取异常菜单文字。", "点餐后会取得 0755 取餐号。"]
+    );
   }
   if (hunt.phase === "pickup_search") {
-    return hunt.pickupDarkClueRead
-      ? task("pickup", "把 0755 取餐号交给 3 号窗口", ["保持深色观察，与 3 号窗口的残影阿姨交互。"])
-      : task("pickup_clue", "用深色观察确认 3 号窗口", ["先与 3 号窗口的残影阿姨交互，再使用取餐号。"]);
+    return task(
+      "pickup",
+      "把 0755 取餐号交给 3 号窗口",
+      ["浅色操作可直接交票；深色观察可补充查看 3 号窗口残影。"]
+    );
   }
   if (hunt.phase === "exit_blocking") {
     return task(
       "exit_blocking",
       `守住纸条可能逃离的出口（${hunt.blockHits}/3）`,
-      ["深色观察确认蓝色轨迹指向的餐盘车，切回浅色操作后推动它。", "空格键可以冲刺；纸条回头时路线会再次出现。"]
+      ["浅色操作可推动当前路线上的餐盘车；深色观察可补充确认蓝色轨迹。", "空格键可以冲刺；纸条回头时路线会再次出现。"]
     );
   }
   return task("unlock_bike", canteenContent.bike.task.replace(/^任务：/, ""), canteenContent.bike.hints);
@@ -693,7 +697,18 @@ export function isQuestTaskBarVisible(state: GameState): boolean {
 
 function chapterThreeInterludeQuest(state: GameState): QuestViewModel {
   const viewModel = selectChapterThreeInterludeViewModel(state);
-  return buildQuest("chapter_three", viewModel.title, [viewModel.currentObjective], 0);
+  const quest = buildQuest("chapter_three", viewModel.title, [viewModel.currentObjective], 0);
+  if (viewModel.currentObjective.id !== "chapter_three_interlude_evidence") return quest;
+  return {
+    ...quest,
+    parallelProgress: viewModel.branchProgress,
+    parallelBranches: viewModel.parallelBranches.map((branch) => ({
+      id: branch.id,
+      label: branch.label,
+      status: branch.completed ? "completed" : "pending",
+      recommendedScene: branch.recommendedScene
+    }))
+  };
 }
 
 interface ChapterFour755PhaseTaskContract {
@@ -730,18 +745,15 @@ function selectChapterFour755TaskKey(
       || !facts.has("classroom_105_terminal_replay_checked")
       ? "verify_a1_classrooms"
       : !facts.has("elevator_history_observed")
+        || !facts.has("elevator_history_calibrated")
         ? "observe_elevator_history"
-      : !facts.has("elevator_history_calibrated")
-        ? "calibrate_elevator_history"
-      : !facts.has("a3_reference_observed")
-      ? "observe_a3_reference"
       : !facts.has("zhu_two_questions_answered")
         ? "answer_zhu_two_questions"
       : !facts.has("misaligned_stair_solved")
         ? "solve_misaligned_stair"
-      : !facts.has("room204_residual_observed")
-        ? "observe_room204_residual"
-        : !facts.has("room204_restored")
+      : !facts.has("a3_reference_observed")
+        || !facts.has("room204_residual_observed")
+        || !facts.has("room204_restored")
           ? "restore_room204"
           : !facts.has("room204_projection_completed")
             ? "watch_room204_projection"

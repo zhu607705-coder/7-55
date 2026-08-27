@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.png";
 import libraryFrontDeskStaffSheetUrl from "../../assets/rpg/npcs/library/front_desk_staff_2frame.png";
+import libraryFrontDeskStampUrl from "../../assets/rpg/props/library_front_desk_stamp_v01.png";
 import type { GameState, ItemId, LibraryLocationId } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import {
@@ -40,10 +41,12 @@ import {
 const LIBRARY_INTERIOR_MAP_KEY = "library-interior-gpt-image-map";
 export const LIBRARY_INTERIOR_WARM_ASSET_URLS = Object.freeze([
   libraryInteriorMapUrl,
-  libraryFrontDeskStaffSheetUrl
+  libraryFrontDeskStaffSheetUrl,
+  libraryFrontDeskStampUrl
 ]);
 const LIBRARY_FRONT_DESK_STAFF_SHEET_KEY = "library-front-desk-staff-2frame";
 const LIBRARY_FRONT_DESK_STAFF_ANIMATION_KEY = "library-front-desk-staff-idle";
+const LIBRARY_FRONT_DESK_STAMP_KEY = "library-front-desk-stamp-v01";
 const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_FRAME = "library-front-desk-counter-foreground";
 const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS = {
   left: 148,
@@ -54,6 +57,9 @@ const LIBRARY_FRONT_DESK_COUNTER_FOREGROUND_BOUNDS = {
 const LIBRARY_FRONT_DESK_STAFF_POSITION = { x: 334, y: 632 } as const;
 const LIBRARY_FRONT_DESK_STAFF_SCALE = 0.72;
 const LIBRARY_FRONT_DESK_STAMP_POSITION = { x: 334, y: 594 } as const;
+const LIBRARY_FRONT_DESK_STAMP_HEAD_X = -35;
+const LIBRARY_FRONT_DESK_STAMP_REST_Y = 14;
+const LIBRARY_FRONT_DESK_STAMP_PRESS_Y = 28;
 
 const ITEM_LABELS: Partial<Record<ItemId, string>> = {
   callNumber755: "索书号 755",
@@ -143,7 +149,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private frontDeskStampService!: Phaser.GameObjects.Container;
   private frontDeskStampHitFrame!: Phaser.GameObjects.Rectangle;
   private frontDeskReport!: Phaser.GameObjects.Container;
-  private frontDeskStampHead!: Phaser.GameObjects.Container;
+  private frontDeskStampHead!: Phaser.GameObjects.Image;
   private frontDeskStampMark!: Phaser.GameObjects.Text;
   private frontDeskValidationLights: Phaser.GameObjects.Arc[] = [];
   private frontDeskStampMotion: FrontDeskStampMotion = "idle";
@@ -185,6 +191,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
         frameWidth: 96,
         frameHeight: 128
       });
+    }
+    if (!this.textures.exists(LIBRARY_FRONT_DESK_STAMP_KEY)) {
+      this.load.image(LIBRARY_FRONT_DESK_STAMP_KEY, libraryFrontDeskStampUrl);
     }
     preloadRpgPlayerTextures(this);
   }
@@ -996,7 +1005,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     ]);
     this.frontDeskStampMotion = "receiving";
     this.frontDeskStampIndicator.setFillStyle(0xe1b953).setAlpha(1).setScale(1);
-    this.frontDeskStampHead.setY(-14);
+    this.frontDeskStampHead.setY(LIBRARY_FRONT_DESK_STAMP_REST_Y);
     this.frontDeskStampMark.setVisible(false).setAlpha(0).setScale(1.35);
     this.frontDeskReport.setVisible(true).setAlpha(1).setPosition(-78, 24);
     this.frontDeskScanLine.setVisible(false).setAlpha(0.95).setPosition(-20, 11);
@@ -1073,7 +1082,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.frontDeskScanLine.setVisible(false).setPosition(-20, 11);
     this.frontDeskStampIndicator.setFillStyle(0x5ed68d).setAlpha(1).setScale(1);
     this.frontDeskReport.setVisible(true).setAlpha(1).setPosition(-20, 24);
-    this.frontDeskStampHead.setY(-14);
+    this.frontDeskStampHead.setY(LIBRARY_FRONT_DESK_STAMP_REST_Y);
     this.frontDeskStampMark.setVisible(true).setAlpha(0).setScale(1.35);
     this.frontDeskStaff.stop().setFrame(1);
     this.tweens.add({
@@ -1117,7 +1126,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
       }
 
       this.time.delayedCall(this.reducedMotion ? 1 : 140, () => {
-        this.tweens.add({ targets: this.frontDeskStampHead, y: -14, duration: this.reducedMotion ? 1 : 120, ease: "Stepped" });
+        this.tweens.add({
+          targets: this.frontDeskStampHead,
+          y: LIBRARY_FRONT_DESK_STAMP_REST_Y,
+          duration: this.reducedMotion ? 1 : 120,
+          ease: "Stepped"
+        });
       });
       this.time.delayedCall(this.reducedMotion ? 2 : 280, () => {
         this.frontDeskStampMotion = "returning";
@@ -1140,12 +1154,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
     };
 
     if (this.reducedMotion) {
-      this.frontDeskStampHead.setY(10);
+      this.frontDeskStampHead.setY(LIBRARY_FRONT_DESK_STAMP_PRESS_Y);
       impact();
     } else {
       this.tweens.add({
         targets: this.frontDeskStampHead,
-        y: 10,
+        y: LIBRARY_FRONT_DESK_STAMP_PRESS_Y,
         duration: 110,
         ease: "Stepped",
         onComplete: impact
@@ -2070,13 +2084,12 @@ export class LibraryInteriorScene extends Phaser.Scene {
       return light;
     });
 
-    const stampHandle = this.add.rectangle(0, -7, 9, 18, 0x8d5a3d, 1)
-      .setStrokeStyle(2, 0x3b261c, 1);
-    const stampGrip = this.add.rectangle(0, -18, 18, 8, 0xb4774f, 1)
-      .setStrokeStyle(2, 0x3b261c, 1);
-    const stampBase = this.add.rectangle(0, 4, 30, 8, 0xb94f49, 1)
-      .setStrokeStyle(2, 0x5a2624, 1);
-    this.frontDeskStampHead = this.add.container(-9, -14, [stampHandle, stampGrip, stampBase]);
+    this.textures.get(LIBRARY_FRONT_DESK_STAMP_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    this.frontDeskStampHead = this.add.image(
+      LIBRARY_FRONT_DESK_STAMP_HEAD_X,
+      LIBRARY_FRONT_DESK_STAMP_REST_Y,
+      LIBRARY_FRONT_DESK_STAMP_KEY
+    ).setDisplaySize(28, 40);
 
     const paper = this.add.rectangle(0, 0, 46, 28, 0xf2ead5, 1)
       .setStrokeStyle(2, 0x5a625d, 1);
@@ -2168,7 +2181,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.frontDeskStaff
     ]);
     this.frontDeskStampService.setPosition(LIBRARY_FRONT_DESK_STAMP_POSITION.x, LIBRARY_FRONT_DESK_STAMP_POSITION.y);
-    this.frontDeskStampHead.setY(-14);
+    this.frontDeskStampHead.setY(LIBRARY_FRONT_DESK_STAMP_REST_Y);
     this.frontDeskScanLine.setVisible(false).setPosition(-20, 11).setAlpha(0.95);
     this.frontDeskReport.setVisible(false).setPosition(-78, 24).setAlpha(1);
     this.frontDeskStampMark.setVisible(false).setAlpha(0).setScale(1.35);

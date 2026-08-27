@@ -92,7 +92,9 @@ export function preloadFinaleNpcTextures(scene: Phaser.Scene): void {
 
 export function ensureFinaleNpcAnimations(scene: Phaser.Scene): void {
   Object.values(FINALE_NPC_ANIMATIONS).forEach((asset) => {
-    if (asset.frameCount <= 1 || scene.anims.exists(asset.id)) return;
+    if (!scene.textures.exists(asset.id)
+      || asset.frameCount <= 1
+      || scene.anims.exists(asset.id)) return;
     scene.anims.create({
       key: asset.id,
       frames: scene.anims.generateFrameNumbers(asset.id, {

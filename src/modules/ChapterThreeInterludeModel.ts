@@ -34,12 +34,21 @@ export interface ChapterThreeInterludeTaskView {
   recommendedScene: SceneId;
 }
 
+export interface ChapterThreeInterludeParallelBranchView {
+  id: "photos" | "voice" | "messages" | "network";
+  label: string;
+  completed: boolean;
+  recommendedScene: SceneId;
+}
+
 export interface ChapterThreeInterludeViewModel {
   title: string;
   timeWindow: ChapterThreeInterludeTimeWindowView;
   notificationTimeLabel: string;
   notificationMessage: string;
   evidenceProgress: { completed: number; total: number };
+  branchProgress: { completed: number; total: 4 };
+  parallelBranches: readonly ChapterThreeInterludeParallelBranchView[];
   networkProgress: { completed: number; total: 3 };
   sourceSummaries: readonly ChapterThreeInterludeTimelineRowView[];
   autoTimelineRows: readonly ChapterThreeInterludeTimelineRowView[];
@@ -47,10 +56,6 @@ export interface ChapterThreeInterludeViewModel {
   destinationCandidates: readonly { id: ChapterThreeInterludeDestinationCandidateId; label: string }[];
   currentObjective: ChapterThreeInterludeTaskView;
   derivedReasoning: string;
-}
-
-function sameOrder<T extends string>(actual: readonly T[], expected: readonly T[]): boolean {
-  return actual.length === expected.length && actual.every((value, index) => value === expected[index]);
 }
 
 function asTaskView(
@@ -98,6 +103,36 @@ export function selectChapterThreeInterludeViewModel(
     ].filter(Boolean).length,
     total: 3 as const
   };
+  const parallelBranches: readonly ChapterThreeInterludeParallelBranchView[] = [
+    {
+      id: "photos",
+      label: "照片线索",
+      completed: interlude.photoSequenceSolved,
+      recommendedScene: "photos"
+    },
+    {
+      id: "voice",
+      label: "录音线索",
+      completed: interlude.voiceSequenceSolved,
+      recommendedScene: "voice_memos"
+    },
+    {
+      id: "messages",
+      label: "消息线索",
+      completed: interlude.officialNoticeSaved && interlude.routeScreenshotSaved,
+      recommendedScene: "wechat"
+    },
+    {
+      id: "network",
+      label: "网络记录",
+      completed: interlude.networkRecordRead,
+      recommendedScene: "zjuding"
+    }
+  ];
+  const branchProgress = {
+    completed: parallelBranches.filter((branch) => branch.completed).length,
+    total: 4 as const
+  };
   const sourceSummaries = evidenceOrder
     .filter((id) => evidenceSet.has(id))
     .map((id) => ({ id, ...chapterThreeInterludePublicContent.evidence[id] }));
@@ -105,30 +140,20 @@ export function selectChapterThreeInterludeViewModel(
   const allDecoysRejected = Object.keys(chapterThreeInterludeValidationContract.decoyReasonById)
     .every((id) => interlude.rejectedDecoyIds.includes(id as keyof typeof chapterThreeInterludeValidationContract.decoyReasonById));
   const exclusionsReady = allEvidenceReady && allDecoysRejected && interlude.statusClockMarkedUntrusted;
-  const timelineReady = exclusionsReady
-    && sameOrder(interlude.timelineOrder, chapterThreeInterludeValidationContract.evidenceOrder);
   const autoTimelineRows = exclusionsReady
     ? evidenceOrder.map((id) => ({ id, ...chapterThreeInterludePublicContent.evidence[id] }))
     : [];
-  const destinationSelectionUnlocked = timelineReady && interlude.destinationId === null;
+  const destinationSelectionUnlocked = exclusionsReady && interlude.destinationId === null;
 
   let taskKey: keyof typeof chapterThreeInterludePresentationCopy.tasks;
   if (!interlude.recoveryOpened || interlude.phase === "reboot" || interlude.phase === "inactive") {
     taskKey = "reboot";
   } else if (!startResolved) {
     taskKey = "journal";
-  } else if (!interlude.photoSequenceSolved) {
-    taskKey = "photos";
-  } else if (!interlude.voiceSequenceSolved) {
-    taskKey = "voice";
-  } else if (!interlude.officialNoticeSaved || !interlude.routeScreenshotSaved) {
-    taskKey = "wechat";
-  } else if (!interlude.networkRecordRead) {
-    taskKey = "network";
+  } else if (branchProgress.completed < branchProgress.total) {
+    taskKey = "evidence";
   } else if (!exclusionsReady) {
     taskKey = "exclusions";
-  } else if (!timelineReady) {
-    taskKey = "timeline";
   } else if (interlude.destinationId === null) {
     taskKey = "destination";
   } else {
@@ -136,15 +161,12 @@ export function selectChapterThreeInterludeViewModel(
   }
 
   let derivedReasoning: string;
-  if (!startResolved || !endResolved) {
-    const missingCount = Number(!startResolved) + Number(!endResolved);
-    derivedReasoning = `时间窗还有 ${missingCount} 个边界待恢复。`;
-  } else if (!allEvidenceReady) {
-    derivedReasoning = `还有 ${evidenceProgress.total - evidenceProgress.completed} 类证据未归档。`;
+  if (!startResolved) {
+    derivedReasoning = "时间窗起点仍待恢复。";
+  } else if (branchProgress.completed < branchProgress.total) {
+    derivedReasoning = `还有 ${branchProgress.total - branchProgress.completed} 类证据待恢复。`;
   } else if (!exclusionsReady) {
     derivedReasoning = `还有 ${3 - interlude.rejectedDecoyIds.length} 条旧时间需要核验。`;
-  } else if (!timelineReady) {
-    derivedReasoning = "证据已经齐全，正在汇总恢复时间线。";
   } else if (interlude.destinationId === null) {
     derivedReasoning = `还需从 ${chapterThreeInterludePublicContent.destinationCandidates.length} 个候选地点中排除冲突。`;
   } else {
@@ -161,6 +183,8 @@ export function selectChapterThreeInterludeViewModel(
       ? `${chapterThreeInterludePublicContent.timeWindowLabel}：${timeWindow.label}`
       : "检测到 7 分 55 秒未同步记录。",
     evidenceProgress,
+    branchProgress,
+    parallelBranches,
     networkProgress,
     sourceSummaries,
     autoTimelineRows,

@@ -26,6 +26,44 @@ export const QIZHEN_DOCK_AFTER_RAIN_PUDDLES: readonly QizhenAfterRainPuddle[] = 
   { id: "entry_path", x: 410, y: 860, width: 70, height: 24 }
 ]);
 
+export interface QizhenDockRainSplashSite {
+  x: number;
+  y: number;
+  width: number;
+}
+
+/**
+ * 小雨期间湖面的落雨点。全部锚点落在码头原图的水面上，避开木栈桥和岸上铺装。
+ */
+export const QIZHEN_DOCK_RAIN_SPLASH_SITES: readonly QizhenDockRainSplashSite[] = Object.freeze([
+  { x: 555, y: 92, width: 24 },
+  { x: 760, y: 142, width: 20 },
+  { x: 995, y: 88, width: 28 },
+  { x: 1270, y: 134, width: 22 },
+  { x: 1515, y: 210, width: 26 },
+  { x: 545, y: 290, width: 22 },
+  { x: 840, y: 255, width: 26 },
+  { x: 1110, y: 320, width: 20 },
+  { x: 1435, y: 348, width: 28 },
+  { x: 585, y: 485, width: 20 },
+  { x: 900, y: 470, width: 24 },
+  { x: 1190, y: 510, width: 28 },
+  { x: 1510, y: 540, width: 22 },
+  { x: 1160, y: 665, width: 24 },
+  { x: 1420, y: 700, width: 30 },
+  { x: 1125, y: 835, width: 20 },
+  { x: 1325, y: 820, width: 26 },
+  { x: 1530, y: 790, width: 22 }
+]);
+
+export const QIZHEN_DOCK_RAIN_EFFECT_PROFILE = Object.freeze({
+  farStreakCount: 64,
+  nearStreakCount: 36,
+  mistBandCount: 3,
+  wetSheenCount: QIZHEN_DOCK_AFTER_RAIN_PUDDLES.length,
+  splashCount: QIZHEN_DOCK_RAIN_SPLASH_SITES.length
+});
+
 export function isQizhenAfterRainPuddleFootHit(
   puddle: QizhenAfterRainPuddle,
   footX: number,

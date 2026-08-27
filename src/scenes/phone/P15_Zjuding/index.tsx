@@ -798,18 +798,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     if (action === "取消预约") {
-      announce("本 Demo 不执行正式取消操作，已确认预约保持不变。");
+      announce("已确认预约保持不变。");
       return;
     }
     if (action === "找回账号") {
-      announce("当前可通过电子校园卡重新读取本机身份，不会发送真实找回请求。");
+      announce("请通过电子校园卡重新读取身份。");
       return;
     }
     if (action === "安全提示") {
-      announce("本 Demo 不上传校园账号、密码或访客草稿。");
+      announce("账号信息由电子校园卡状态读取。");
       return;
     }
-    announce("该菜单当前只提供本地状态说明。");
+    announce("当前状态已显示。");
   }
 
   function goPage(page: ZjudingPage) {
@@ -2143,7 +2143,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       ) : null}
       {overlay?.kind === "actions" ? (
         <ActionSheet title={overlay.title} onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>
-          <div className="zju-sheet-actions">
+          <div className="zju-sheet-actions is-plain">
             {overlay.actions.map((action) => (
               <button
                 key={action}

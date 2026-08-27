@@ -93,6 +93,10 @@ export function QuestTaskBar({
   if (!visible) return null;
 
   const hintTotal = quest.hints.length;
+  const parallelProgress = quest.parallelProgress;
+  const parallelObjective = parallelProgress
+    ? `${quest.objective}（${parallelProgress.completed}/${parallelProgress.total}）`
+    : quest.objective;
   const digitSlots = [state.digits.d1, state.digits.d2, state.digits.d3, state.digits.d4];
   const acquiredDigitCount = digitSlots.filter(Boolean).length;
   const showDigitHint = quest.chapter === "chapter_one"
@@ -124,6 +128,27 @@ export function QuestTaskBar({
     setOpen(false);
   }
 
+  function navigateToParallelBranch(branch: NonNullable<QuestViewModel["parallelBranches"]>[number]) {
+    const branchQuest: QuestViewModel = {
+      ...quest,
+      id: `${quest.id}:${branch.id}`,
+      objective: branch.label,
+      targetSurface: "phone",
+      recommendedScene: branch.recommendedScene
+    };
+    events.emit("quest_navigation_requested", {
+      questId: branchQuest.id,
+      targetSurface: branchQuest.targetSurface,
+      recommendedScene: branch.recommendedScene
+    });
+    if (onNavigate) {
+      onNavigate(branchQuest);
+    } else if (router) {
+      router.goTo(branch.recommendedScene);
+    }
+    setOpen(false);
+  }
+
   return (
     <aside
       className={`quest-task-bar quest-task-bar--${variant} ${open ? "is-open" : ""} ${updated ? "has-objective-update" : ""} ${progressUpdated ? "has-progress-update" : ""} ${showDigitHint ? "has-digits" : ""}`.trim()}
@@ -135,7 +160,7 @@ export function QuestTaskBar({
       <button
         type="button"
         className="quest-task-trigger"
-        aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${quest.objective}${chapterFourAria}${showDigitHint ? `。${digitHintAria}` : ""}。点击查看任务提示`}
+        aria-label={`${CHAPTER_LABEL[quest.chapter]}当前任务：${parallelObjective}${chapterFourAria}${showDigitHint ? `。${digitHintAria}` : ""}。点击查看任务提示`}
         aria-expanded={open}
         aria-controls={`quest-drawer-${variant}`}
         title="点击查看当前任务和提示"
@@ -170,8 +195,30 @@ export function QuestTaskBar({
 
             <section className="quest-task-objective">
               <span>当前任务</span>
-              <strong>{quest.objective}</strong>
+              <strong>{parallelObjective}</strong>
             </section>
+
+            {quest.parallelBranches && parallelProgress ? (
+              <section className="quest-parallel-branches" aria-label={`并行调查 ${parallelProgress.completed}/${parallelProgress.total}`}>
+                <header>
+                  <strong>调查分支</strong>
+                  <span>{parallelProgress.completed}/{parallelProgress.total}</span>
+                </header>
+                <ul>
+                  {quest.parallelBranches.map((branch) => (
+                    <li key={branch.id} className={branch.status === "completed" ? "is-complete" : ""}>
+                      <button type="button" onClick={() => navigateToParallelBranch(branch)}>
+                        <span>
+                          <strong>{branch.label}</strong>
+                          <small>{branch.status === "completed" ? "已恢复" : "待恢复"}</small>
+                        </span>
+                        <em>{branch.status === "completed" ? "重新打开" : "打开"}</em>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
 
             {chapterFourPresentation ? (
               <>

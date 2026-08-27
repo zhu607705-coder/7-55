@@ -36,6 +36,8 @@ import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntime
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   QIZHEN_DOCK_AFTER_RAIN_PUDDLES,
+  QIZHEN_DOCK_RAIN_EFFECT_PROFILE,
+  QIZHEN_DOCK_RAIN_SPLASH_SITES,
   QIZHEN_LAKE_TARGETS,
   QIZHEN_LAKE_WORLD,
   QIZHEN_LAKE_ZONES,
@@ -484,12 +486,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       }
     };
     document.addEventListener("visibilitychange", this.fishingVisibilityHandler);
-    if (runtime.zone === "dock" && runtime.mode !== "light") {
-      this.emitDomain("rpg_qizhen_mode_requested", {
-        mode: "light",
-        reason: "dock_restore"
-      });
-    }
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.cancelFishingSession("scene_shutdown");
       if (this.fishingVisibilityHandler) {
@@ -1121,35 +1117,8 @@ export class QizhenLakeScene extends Phaser.Scene {
   }
 
   private createAmbientVisuals(): void {
-    if (this.currentZone === "dock" && !this.currentRainSafetyCleared) {
-      const rainTint = this.add.rectangle(
-        QIZHEN_LAKE_WORLD.width / 2,
-        QIZHEN_LAKE_WORLD.height / 2,
-        QIZHEN_LAKE_WORLD.width,
-        QIZHEN_LAKE_WORLD.height,
-        0x436a86,
-        0.18
-      ).setDepth(-850);
-      this.ambientVisuals.push(rainTint);
-      for (let index = 0; index < 34; index += 1) {
-        const x = (index * 149 + 53) % QIZHEN_LAKE_WORLD.width;
-        const y = (index * 83 + 31) % QIZHEN_LAKE_WORLD.height;
-        const streak = this.add.line(x, y, 0, 0, -7, 30, 0xa9d8f5, 0.48)
-          .setOrigin(0.5)
-          .setDepth(4400);
-        this.ambientVisuals.push(streak);
-        if (!this.reducedMotion) {
-          this.tweens.add({
-            targets: streak,
-            x: x - 30,
-            y: y + 150,
-            duration: 820,
-            delay: index * 37,
-            repeat: -1
-          });
-        }
-      }
-    }
+    const rainingAtDock = this.currentZone === "dock" && !this.currentRainSafetyCleared;
+    if (rainingAtDock) this.createDockRainVisuals();
     if (this.currentZone === "dock" && this.currentRainSafetyCleared) {
       QIZHEN_DOCK_AFTER_RAIN_PUDDLES.forEach((puddle, index) => {
         const surface = this.add.ellipse(
@@ -1188,6 +1157,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         : this.currentZone === "dock"
           ? [[930, 290, 145], [1220, 540, 118], [1480, 340, 84]]
           : [[560, 500, 130], [915, 350, 180], [1320, 620, 112]];
+    if (rainingAtDock) return;
     bands.forEach(([x, y, width], index) => {
       const glint = this.add.ellipse(x, y, width, 12, 0xd7fbff, 0)
         .setStrokeStyle(2, 0xd7fbff, 0.32)
@@ -1206,6 +1176,191 @@ export class QizhenLakeScene extends Phaser.Scene {
         });
       } else {
         glint.setAlpha(0.28);
+      }
+    });
+  }
+
+  private createDockRainVisuals(): void {
+    const rainTint = this.add.rectangle(
+      QIZHEN_LAKE_WORLD.width / 2,
+      QIZHEN_LAKE_WORLD.height / 2,
+      QIZHEN_LAKE_WORLD.width,
+      QIZHEN_LAKE_WORLD.height,
+      0x31566f,
+      0.23
+    ).setDepth(-850);
+    this.ambientVisuals.push(rainTint);
+
+    QIZHEN_DOCK_AFTER_RAIN_PUDDLES.forEach((puddle, index) => {
+      const wetSurface = this.add.ellipse(
+        puddle.x,
+        puddle.y,
+        puddle.width * 1.34,
+        puddle.height * 1.3,
+        0x285b70,
+        0.14
+      ).setStrokeStyle(1, 0xb6dce5, 0.1).setDepth(-820);
+      const wetLobe = this.add.ellipse(
+        puddle.x + puddle.width * 0.16,
+        puddle.y + puddle.height * 0.05,
+        puddle.width * 0.92,
+        puddle.height * 1.04,
+        0x285b70,
+        0.09
+      ).setDepth(-820);
+      const sheen = this.add.ellipse(
+        puddle.x - puddle.width * 0.12,
+        puddle.y - puddle.height * 0.14,
+        puddle.width * 0.42,
+        Math.max(3, puddle.height * 0.14),
+        0xd7edf1,
+        0.14
+      ).setDepth(-819);
+      this.ambientVisuals.push(wetSurface, wetLobe, sheen);
+      if (!this.reducedMotion) {
+        this.tweens.add({
+          targets: sheen,
+          alpha: { from: 0.05, to: 0.18 },
+          duration: 780 + index * 120,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+    });
+
+    const createStreakLayer = (
+      count: number,
+      seedX: number,
+      seedY: number,
+      stepX: number,
+      stepY: number,
+      length: number,
+      drift: number,
+      fall: number,
+      duration: number,
+      color: number,
+      alpha: number,
+      depth: number,
+      lineWidth: number
+    ) => {
+      for (let index = 0; index < count; index += 1) {
+        const x = (index * stepX + seedX) % QIZHEN_LAKE_WORLD.width;
+        const y = (index * stepY + seedY) % QIZHEN_LAKE_WORLD.height;
+        const variableLength = length + (index % 4) * 4;
+        const streak = this.add.line(x, y, 0, 0, -variableLength * 0.28, variableLength, color, alpha)
+          .setOrigin(0.5)
+          .setLineWidth(lineWidth, Math.max(1, lineWidth - 1))
+          .setDepth(depth);
+        this.ambientVisuals.push(streak);
+        if (!this.reducedMotion) {
+          this.tweens.add({
+            targets: streak,
+            x: x - drift,
+            y: y + fall,
+            duration: duration + (index % 5) * 26,
+            delay: (index * 29) % duration,
+            repeatDelay: (index * 17) % 140,
+            repeat: -1,
+            ease: "Linear"
+          });
+        }
+      }
+    };
+
+    createStreakLayer(
+      QIZHEN_DOCK_RAIN_EFFECT_PROFILE.farStreakCount,
+      41,
+      17,
+      137,
+      79,
+      24,
+      34,
+      178,
+      760,
+      0x8dbdd1,
+      0.34,
+      4320,
+      1
+    );
+    createStreakLayer(
+      QIZHEN_DOCK_RAIN_EFFECT_PROFILE.nearStreakCount,
+      97,
+      53,
+      223,
+      131,
+      46,
+      52,
+      238,
+      570,
+      0xd4f0fb,
+      0.64,
+      4460,
+      2
+    );
+
+    const mistBands: ReadonlyArray<readonly [number, number, number, number, number]> = [
+      [500, 190, 760, 118, 0.075],
+      [1030, 380, 900, 142, 0.065],
+      [1290, 720, 680, 110, 0.055]
+    ];
+    mistBands.forEach(([x, y, width, height, alpha], index) => {
+      const mist = this.add.ellipse(x, y, width, height, 0xc5dbe1, alpha).setDepth(1180);
+      this.ambientVisuals.push(mist);
+      if (!this.reducedMotion) {
+        this.tweens.add({
+          targets: mist,
+          x: x + (index % 2 === 0 ? 74 : -64),
+          alpha: { from: alpha * 0.55, to: alpha },
+          duration: 4100 + index * 620,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+    });
+
+    QIZHEN_DOCK_RAIN_SPLASH_SITES.forEach((site, index) => {
+      const ring = this.add.ellipse(
+        site.x,
+        site.y,
+        site.width * 1.25,
+        Math.max(6, site.width * 0.34),
+        0x000000,
+        0
+      ).setStrokeStyle(2, 0xd8f5ff, 0.66).setDepth(1210).setScale(0.32);
+      const impact = this.add.ellipse(
+        site.x - 2,
+        site.y,
+        5,
+        2,
+        0xe8f9ff,
+        0.62
+      ).setDepth(1211);
+      this.ambientVisuals.push(ring, impact);
+      if (!this.reducedMotion) {
+        const cycle = 980 + (index % 4) * 130;
+        this.tweens.add({
+          targets: ring,
+          scaleX: 1.35,
+          scaleY: 1.35,
+          alpha: { from: 0.62, to: 0 },
+          duration: 620,
+          delay: (index * 157) % 920,
+          repeatDelay: Math.max(180, cycle - 620),
+          repeat: -1,
+          ease: "Quad.easeOut"
+        });
+        this.tweens.add({
+          targets: impact,
+          alpha: { from: 0.72, to: 0 },
+          y: site.y - 3,
+          duration: 240,
+          delay: (index * 157) % 920,
+          repeatDelay: Math.max(560, cycle - 240),
+          repeat: -1,
+          ease: "Quad.easeOut"
+        });
       }
     });
   }
@@ -1522,24 +1677,21 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (target.kind === "fishing_spot") {
         if (runtime.mode !== "light") return false;
         if (target.value === "fishing_rod") {
-          return runtime.reflectionLocationObserved && !runtime.rodFound;
+          return !runtime.rodFound;
         }
         if (target.value === "item_1") {
           return runtime.rodFound
             && runtime.decoyBaitAttached
-            && runtime.observedFishingSpotIds.includes("locker_key")
             && !hasItem(state, CHAIN_ITEMS.key)
             && !runtime.lockerOpened;
         }
         if (target.value === "item_3") {
           return runtime.lockerOpened
-            && runtime.observedFishingSpotIds.includes("net_frame")
             && !hasItem(state, CHAIN_ITEMS.netFrame)
             && !runtime.netCombined;
         }
         if (target.value === "fish") {
           return runtime.feedTinOpened
-            && runtime.observedFishingSpotIds.includes("fish")
             && !runtime.fishCaught;
         }
         return false;
@@ -1564,11 +1716,9 @@ export class QizhenLakeScene extends Phaser.Scene {
         if (runtime.mode !== "light") return false;
         if (target.value === "paper_reflection") {
           return runtime.rodFound
-            && runtime.observedFishingSpotIds.includes("paper")
             && !runtime.paperCaptured;
         }
         return runtime.magneticRodCombined
-          && runtime.observedFishingSpotIds.includes("paper")
           && !runtime.paperCaptured;
       }
       if (target.kind === "escape") return runtime.phase === "swan_chase";
@@ -2882,6 +3032,10 @@ export class QizhenLakeScene extends Phaser.Scene {
         zone: this.currentZone,
         vehicle: this.currentVehicle,
         dockSignRemoved: this.currentDockSignRemoved,
+        rainEffects: {
+          active: this.currentZone === "dock" && !this.currentRainSafetyCleared,
+          ...QIZHEN_DOCK_RAIN_EFFECT_PROFILE
+        },
         afterRainPuddles: {
           visible: this.currentZone === "dock" && this.currentRainSafetyCleared,
           activeId: this.activeAfterRainPuddleId,

@@ -69,10 +69,13 @@ import { QIZHEN_LAKE_WARM_ASSET_URLS, QizhenLakeScene } from "./QizhenLakeScene"
 import type { QizhenFishingAction, QizhenFishingResult } from "./QizhenFishingRhythmModel";
 import { CanteenBikeTransitionOverlay } from "./CanteenBikeTransitionOverlay";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
+import { ChapterFourTemporalMazeScene } from "./ChapterFourTemporalMazeScene";
 import {
-  CHAPTER_FOUR_TEMPORAL_MAZE_WARM_ASSET_URLS,
-  ChapterFourTemporalMazeScene
-} from "./ChapterFourTemporalMazeScene";
+  getChapterFourWarmupPhaseAssets,
+  isChapterFourWarmupPhase,
+  type ChapterFourWarmupPhase
+} from "./ChapterFourWarmupAssets";
+import { warmRpgRuntime } from "./RpgRuntimePreload";
 import { RPG_PLAYER_TEXTURE_ASSETS } from "./RpgPlayerTextures";
 import { ZIJINGANG_CAMPUS_PLATE_URL } from "./ZijingangLandmarkAssets";
 import { QIZHEN_LOOP_PANORAMA_URL } from "./QizhenLoopWorld";
@@ -136,15 +139,40 @@ const RPG_SCENE_WARM_ASSET_URLS: Readonly<Record<RpgSceneId, readonly string[]>>
   canteen_interior: CANTEEN_INTERIOR_WARM_ASSET_URLS,
   theater_interior: THEATER_INTERIOR_WARM_ASSET_URLS,
   qizhen_lake: QIZHEN_LAKE_WARM_ASSET_URLS,
-  duan_yongping_temporal_maze: CHAPTER_FOUR_TEMPORAL_MAZE_WARM_ASSET_URLS
+  duan_yongping_temporal_maze: []
 };
 
-/** 与各 Phaser Scene 的 preload() 使用同一批 URL，不扫描素材源目录。 */
-export function getRpgSceneWarmAssetUrls(sceneId: RpgSceneId): readonly string[] {
-  return [...new Set([
-    ...Object.values(RPG_PLAYER_TEXTURE_ASSETS),
-    ...RPG_SCENE_WARM_ASSET_URLS[sceneId]
-  ])];
+export interface RpgSceneWarmAsset {
+  key: string;
+  url: string;
+  sourceSize?: Readonly<{ width: number; height: number }>;
+}
+
+/** 与各 Phaser Scene 的阶段资源表使用同一批 URL，不扫描素材源目录。 */
+export function getRpgSceneWarmAssets(
+  sceneId: RpgSceneId,
+  phase?: ChapterFourWarmupPhase
+): readonly RpgSceneWarmAsset[] {
+  const includePlayerAssets = sceneId !== "duan_yongping_temporal_maze" || (phase ?? "entry") === "entry";
+  const playerAssets = includePlayerAssets
+    ? Object.entries(RPG_PLAYER_TEXTURE_ASSETS).map(([key, url]) => ({ key, url }))
+    : [];
+  const sceneAssets: readonly RpgSceneWarmAsset[] = sceneId === "duan_yongping_temporal_maze"
+    ? getChapterFourWarmupPhaseAssets(phase ?? "entry")
+    : RPG_SCENE_WARM_ASSET_URLS[sceneId].map((url, index) => ({
+        key: `${sceneId}-${index}`,
+        url
+      }));
+  return [...new Map(
+    [...playerAssets, ...sceneAssets].map((asset) => [asset.url, asset])
+  ).values()];
+}
+
+export function getRpgSceneWarmAssetUrls(
+  sceneId: RpgSceneId,
+  phase?: ChapterFourWarmupPhase
+): readonly string[] {
+  return getRpgSceneWarmAssets(sceneId, phase).map((asset) => asset.url);
 }
 
 const DOUBLE_TAP_WINDOW_MS = 380;
@@ -283,7 +311,7 @@ function emitQizhenItemFeedback(
     accepted: `${targetLabel}已完成当前操作。`,
     wrong_mode: "切到浅色操作后再使用道具。",
     wrong_item: `${targetLabel}当前需要其他道具。`,
-    unobserved: "先切到深色观察，记录该目标的倒影坐标。",
+    unobserved: "当前目标还没有观察记录；深色观察可补充坐标。",
     direct_paper_failure: "普通鱼钩无法固定纸条。需要完成湖区道具链。",
     already_complete: "这个目标已经完成，请查看当前任务。",
     locked: "当前剧情条件尚未满足。",
@@ -450,6 +478,14 @@ export function RpgGameHost({
     }
   }, [chapter4MazeActive]);
 
+  useEffect(() => events.subscribe((event) => {
+    if (event.name !== "rpg_chapter4_warmup_phase_requested") return;
+    const phase = event.payload?.phase;
+    if (!isChapterFourWarmupPhase(phase)) return;
+    const priority = event.payload?.priority === "required" ? "immediate" : "idle";
+    void warmRpgRuntime("duan_yongping_temporal_maze", priority, phase);
+  }), [events]);
+
   useEffect(() => {
     return events.subscribe((event) => {
       if (event.name !== "rpg_chapter4_stair_alignment_requested") return;
@@ -457,14 +493,11 @@ export function RpgGameHost({
       const allowed = runtimeScene === "duan_yongping_temporal_maze"
         && current.phase === "room204_restore"
         && current.floor === "A3"
-        && current.factIds.includes("a3_reference_observed")
         && current.factIds.includes("zhu_two_questions_answered")
         && !current.factIds.includes("misaligned_stair_solved");
       if (!allowed) {
         events.emit("rpg_subtitle", {
-          text: current.factIds.includes("a3_reference_observed")
-            ? "先到三楼校史人物荣誉墙阅读竺可桢生平并回答竺老两问。"
-            : "先在三楼记录 303 门口的参照，再从楼梯口进入空间校准。",
+          text: "到三楼校史人物荣誉墙阅读竺可桢生平并回答竺老两问后，可进入空间校准。",
           tone: "system",
           durationMs: 2800
         });
@@ -1119,7 +1152,7 @@ export function RpgGameHost({
           itemId: "greaseTissue",
           reason: result === "cleaned" ? "accepted" : "locked",
           targetLabel: "共享单车车锁",
-          detail: result === "rule" ? "先在深色模式读取二维码，再切回浅色模式清洁车锁。" : undefined
+          detail: result === "rule" ? "清洁车锁需要浅色操作。" : undefined
         });
       } else if (event.name === "rpg_canteen_bike_requested") {
         const result = canteenController.payForBike();
@@ -1127,7 +1160,7 @@ export function RpgGameHost({
           itemId: "cafeteriaWages",
           reason: result === "paid" ? "accepted" : "locked",
           targetLabel: "共享单车",
-          detail: result === "rule" ? "先读取二维码并清洁车锁，再在浅色模式付款。" : undefined
+          detail: result === "rule" ? "付款需要浅色操作，且车锁表面已经清洁。" : undefined
         });
       } else if (event.name === "rpg_theater_entry_requested") {
         theaterController.enterTheater();
@@ -1179,7 +1212,7 @@ export function RpgGameHost({
           targetLabel: "道具箱旁票据扫描器",
           detail: accepted
             ? "票据扫描完成，道具箱已经解锁；临时观演票已完成用途并从道具栏移除。"
-            : "先在深色模式读取管理员提示，再切回浅色模式扫描票据。"
+            : "扫描票据需要浅色操作、临时观演票和当前道具布置阶段。"
         });
       } else if (event.name === "rpg_theater_vent_brush_requested") {
         const accepted = theaterController.dustPaperAtVent();
@@ -1835,19 +1868,13 @@ export function RpgGameHost({
           || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
           <RpgRealityModeToggle
             mode={state.canteenHunt.mode}
-            onToggle={() => {
-              if (runtimeScene === "canteen_interior") {
-                events.emit("rpg_canteen_toggle_mode");
-                return;
-              }
-              events.emit("rpg_canteen_mode_requested", {
-                mode: state.canteenHunt.mode === "dark" ? "light" : "dark"
-              });
-            }}
+            onToggle={() => events.emit("rpg_canteen_mode_requested", {
+              mode: state.canteenHunt.mode === "dark" ? "light" : "dark"
+            })}
           />
         ) : null}
 
-        {runtimeScene === "theater_interior" && ["entry_ticket", "program_search", "prop_setup", "spotlight_ready"].includes(state.theaterHunt.phase) ? (
+        {runtimeScene === "theater_interior" && ["entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt"].includes(state.theaterHunt.phase) ? (
           <RpgRealityModeToggle
             className="rpg-theater-mode-toggle"
             mode={state.theaterHunt.mode}
@@ -1857,7 +1884,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "qizhen_lake" && !fishingSession && !photoSessionOpen && ["lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
+        {runtimeScene === "qizhen_lake" && !fishingSession && !photoSessionOpen && ["dock_outfitting", "boarding_tutorial", "lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
           <RpgRealityModeToggle
             className="rpg-qizhen-mode-toggle"
             mode={state.qizhenLake.mode}

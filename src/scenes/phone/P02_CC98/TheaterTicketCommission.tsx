@@ -54,7 +54,7 @@ export function TheaterTicketCommission({
   const status = phase === "posted"
     ? copy.postedStatus
     : phase === "accepted"
-      ? ticketCodeRead ? copy.acceptedStatus : copy.timeRequiredStatus
+      ? copy.acceptedStatus
       : phase === "first_wave_failed"
         ? secondWaveSeconds > 0
           ? `${copy.secondWaveCountdownStatus}${secondWaveSeconds} 秒`
@@ -107,7 +107,7 @@ export function TheaterTicketCommission({
       return;
     }
     playSfx("04_", { volume: 0.5 });
-    setReleaseFeedback(ticketCodeRead ? "当前放票尚未开放。" : copy.timeRequiredStatus);
+    setReleaseFeedback("当前放票尚未开放。");
   }
 
   const firstWaveFinished = phase === "first_wave_failed" || phase === "delivered";
@@ -124,7 +124,7 @@ export function TheaterTicketCommission({
           {phase === "posted"
             ? "待接"
             : phase === "accepted"
-              ? ticketCodeRead ? "第一波开放" : "待核对时间"
+              ? "第一波开放"
               : phase === "first_wave_failed"
                 ? secondWaveReady ? "第二波开放" : "第二波等待"
                 : claimedWave === 1 ? "第一波已中" : "第二波已中"}
@@ -133,8 +133,8 @@ export function TheaterTicketCommission({
 
       <div className="cc98-ticket-commission-steps" aria-label="委托进度">
         <span className={phase !== "posted" ? "is-done" : "is-current"}>1 接单</span>
-        <span className={ticketCodeRead ? "is-done" : phase !== "posted" ? "is-current" : ""}>2 核对 08:32</span>
-        <span className={phase === "accepted" && ticketCodeRead ? "is-current" : firstWaveFinished ? "is-done" : ""}>3 第一波</span>
+        <span className={ticketCodeRead ? "is-done" : ""}>2 大厅记录（可选）</span>
+        <span className={phase === "accepted" ? "is-current" : firstWaveFinished ? "is-done" : ""}>3 第一波</span>
         <span className={phase === "first_wave_failed" ? "is-current" : phase === "delivered" ? "is-done" : ""}>
           {phase === "delivered" && claimedWave === 1 ? "4 已抢到" : "4 第二波"}
         </span>
@@ -155,15 +155,14 @@ export function TheaterTicketCommission({
         <div className="cc98-ticket-release-actions">
           <div className="cc98-ticket-release-time" aria-label="第一波放票时间">
             <span>第一波放票</span>
-            <strong>{ticketCodeRead ? "08:32" : "--:--"}</strong>
+            <strong>{ticketCodeRead ? "08:32" : "08:32?"}</strong>
           </div>
           <button
             type="button"
             className="cc98-ticket-primary"
             onClick={attemptTicketRelease}
-            disabled={!ticketCodeRead}
           >
-            {ticketCodeRead ? copy.firstWaveLabel : copy.confirmTimeLabel}
+            {copy.firstWaveLabel}
           </button>
           <button type="button" className="cc98-ticket-secondary" onClick={openControlCenter}>
             {copy.controlCenterLabel}

@@ -41,7 +41,7 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   },
   cc98: {
     label: "P02 CC98",
-    contract: "仅校园网可进入；热门话题列表与剧情帖子内容保存到本机。"
+    contract: "仅校园网可进入；热门话题列表与剧情帖子记录跟随游戏进度。"
   },
   zjuding: {
     label: "P15 浙大钉",

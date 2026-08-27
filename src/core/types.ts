@@ -30,6 +30,13 @@ export interface QuestStep {
   itemId?: ItemId;
 }
 
+export interface QuestParallelBranch {
+  id: string;
+  label: string;
+  status: "pending" | "completed";
+  recommendedScene: SceneId;
+}
+
 /**
  * 第四章任务栏的只读展示上下文。字段全部由现有 ChapterFourState 派生，
  * 不参与存档，也不拥有章节推进规则。
@@ -57,6 +64,8 @@ export interface QuestViewModel {
   hints: readonly string[];
   targetSurface: "phone" | "rpg";
   recommendedScene?: SceneId;
+  parallelBranches?: readonly QuestParallelBranch[];
+  parallelProgress?: { completed: number; total: number };
   chapterFourPresentation?: ChapterFourQuestPresentationContext;
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import type {
@@ -42,14 +42,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
   const allEvidenceReady = viewModel.evidenceProgress.completed === viewModel.evidenceProgress.total;
   const allDecoysRejected = chapterThreeInterludePublicContent.oldTimeCandidates
     .every(({ id }) => interlude.rejectedDecoyIds.includes(id));
-  const timelineVerified = chapterThreeInterludeValidationContract.evidenceOrder
-    .every((id, index) => interlude.timelineOrder[index] === id);
   const destinationVerified = interlude.destinationId === chapterThreeInterludeValidationContract.destinationId;
-
-  useEffect(() => {
-    if (!allEvidenceReady || !allDecoysRejected || !interlude.statusClockMarkedUntrusted || timelineVerified) return;
-    kit.chapterThreeInterlude.assembleTimeline();
-  }, [allDecoysRejected, allEvidenceReady, interlude.statusClockMarkedUntrusted, timelineVerified]);
 
   function openRecovery() {
     const result = kit.chapterThreeInterlude.beginRecovery();
@@ -68,7 +61,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
       return;
     }
     if (result === "locked") {
-      setFeedback("先完成旧时间核验并等待时间线汇总。");
+      setFeedback("先完成四类证据与旧时间核验。");
       return;
     }
     if (candidateId === chapterThreeInterludeValidationContract.destinationId) {

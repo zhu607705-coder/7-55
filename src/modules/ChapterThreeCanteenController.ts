@@ -41,6 +41,15 @@ const CANTEEN_FOOD_REWARD: Partial<Record<CanteenMenuOptionId, ItemId>> = {
 const CANTEEN_SIDE_GAME_PHASES: readonly CanteenHuntPhase[] = [
   "tray_search", "drink_mix", "menu_order", "pickup_search", "chase_ready"
 ];
+const CANTEEN_MENU_OBSERVATION_PHASES: readonly CanteenHuntPhase[] = [
+  "menu_order", "pickup_search"
+];
+const CANTEEN_PICKUP_OBSERVATION_PHASES: readonly CanteenHuntPhase[] = [
+  "pickup_search", "exit_blocking", "chase_ready"
+];
+const CANTEEN_EXIT_OBSERVATION_PHASES: readonly CanteenHuntPhase[] = [
+  "exit_blocking", "chase_ready"
+];
 const CANTEEN_ENTRY_PHASES: readonly CanteenHuntPhase[] = [
   "tracking", "canteen_reached", "entered", ...CANTEEN_SIDE_GAME_PHASES
 ];
@@ -108,8 +117,7 @@ export class ChapterThreeCanteenController {
             ...current.canteenHunt,
             phase: CANTEEN_SIDE_GAME_PHASES.includes(current.canteenHunt.phase)
               ? current.canteenHunt.phase
-              : "tray_search",
-            mode: "light"
+              : "tray_search"
           }
         : current.canteenHunt
     }));
@@ -379,7 +387,7 @@ export class ChapterThreeCanteenController {
     const state = this.store.getState();
     if (
       !state.canteenHunt.active
-      || state.canteenHunt.phase !== "menu_order"
+      || !CANTEEN_MENU_OBSERVATION_PHASES.includes(state.canteenHunt.phase)
       || state.canteenHunt.mode !== "dark"
     ) return false;
     if (!state.canteenHunt.menuDarkClueRead) {
@@ -428,7 +436,7 @@ export class ChapterThreeCanteenController {
     const state = this.store.getState();
     if (
       !state.canteenHunt.active
-      || state.canteenHunt.phase !== "pickup_search"
+      || !CANTEEN_PICKUP_OBSERVATION_PHASES.includes(state.canteenHunt.phase)
       || state.canteenHunt.mode !== "dark"
     ) return false;
     const clueFound = windowId === "3";
@@ -459,11 +467,11 @@ export class ChapterThreeCanteenController {
       this.events.emit("canteen_pickup_wrong_window", { windowId, expectedWindow });
       return "wrong";
     }
+    if (state.canteenHunt.mode !== "light") {
+      this.events.emit("canteen_pickup_order_locked", { mode: state.canteenHunt.mode, windowId });
+      return "locked";
+    }
     if (menuOption !== "D") {
-      if (state.canteenHunt.mode !== "light") {
-        this.events.emit("canteen_pickup_order_locked", { mode: state.canteenHunt.mode, windowId });
-        return "locked";
-      }
       const itemId = CANTEEN_FOOD_REWARD[menuOption]!;
       this.store.setState((current) => ({
         ...current,
@@ -479,14 +487,6 @@ export class ChapterThreeCanteenController {
       this.events.emit("use_item", { itemId: "pickupTicket0755", targetId: `canteen_pickup_${windowId}` });
       this.events.emit("get_item", { itemId, sourceScene: "canteen_interior" });
       return "wrong";
-    }
-    if (state.canteenHunt.mode === "light") {
-      this.events.emit("canteen_correct_meal_time_error", { windowId });
-      return "locked";
-    }
-    if (!state.canteenHunt.pickupDarkClueRead) {
-      this.events.emit("canteen_pickup_order_locked", { mode: state.canteenHunt.mode, clueRead: false, windowId });
-      return "locked";
     }
     this.store.setState((current) => ({
       ...current,
@@ -505,24 +505,20 @@ export class ChapterThreeCanteenController {
 
   prepareDefenseLightMode(): boolean {
     const state = this.store.getState();
-    if (!state.canteenHunt.active || state.canteenHunt.phase !== "exit_blocking") return false;
-    if (state.canteenHunt.mode === "light") return true;
-    this.store.setState((current) => ({
-      ...current,
-      canteenHunt: { ...current.canteenHunt, mode: "light" }
-    }));
-    return true;
+    return state.canteenHunt.active && state.canteenHunt.phase === "exit_blocking";
   }
 
   inspectExitCart(exitId: CanteenExitId): boolean {
     const state = this.store.getState();
     if (
       !state.canteenHunt.active
-      || state.canteenHunt.phase !== "exit_blocking"
+      || !CANTEEN_EXIT_OBSERVATION_PHASES.includes(state.canteenHunt.phase)
       || state.canteenHunt.mode !== "dark"
     ) return false;
     const expected = CANTEEN_EXIT_SEQUENCE[state.canteenHunt.blockHits];
-    const matched = exitId === expected;
+    const exitIndex = CANTEEN_EXIT_SEQUENCE.indexOf(exitId);
+    const matched = exitIndex >= 0
+      && exitIndex <= Math.min(state.canteenHunt.blockHits, CANTEEN_EXIT_SEQUENCE.length - 1);
     if (matched && !state.canteenHunt.identifiedExitIds.includes(exitId)) {
       this.store.setState((current) => ({
         ...current,
@@ -535,7 +531,7 @@ export class ChapterThreeCanteenController {
     this.events.emit(matched ? "canteen_exit_dark_clue_read" : "canteen_exit_dark_clue_missed", {
       exitId,
       expected,
-      step: state.canteenHunt.blockHits + 1
+      step: matched ? exitIndex + 1 : state.canteenHunt.blockHits + 1
     });
     return matched;
   }
@@ -547,7 +543,7 @@ export class ChapterThreeCanteenController {
       return "inactive";
     }
     const expected = CANTEEN_EXIT_SEQUENCE[state.canteenHunt.blockHits];
-    if (state.canteenHunt.mode !== "light" || !state.canteenHunt.identifiedExitIds.includes(expected)) {
+    if (state.canteenHunt.mode !== "light") {
       this.events.emit("canteen_exit_block_unidentified", {
         exitId,
         expected,
@@ -582,12 +578,11 @@ export class ChapterThreeCanteenController {
       ...current,
       canteenHunt: {
         ...current.canteenHunt,
-        mode: "light",
         phase: "chase_ready",
         // Keep the legacy fields complete so old saves and later chapter checks
         // continue to understand that the exit-defense beat has been cleared.
-        blockHits: CANTEEN_EXIT_SEQUENCE.length,
-        identifiedExitIds: [...CANTEEN_EXIT_SEQUENCE]
+        // Observation facts stay untouched unless the player actually reads them.
+        blockHits: CANTEEN_EXIT_SEQUENCE.length
       }
     }));
     this.events.emit("canteen_defense_completed");
@@ -635,7 +630,7 @@ export class ChapterThreeCanteenController {
   cleanBikeLock(): CanteenBikeResult {
     const state = this.store.getState();
     if (state.canteenHunt.phase !== "chase_ready" || !state.items.greaseTissue) return "inactive";
-    if (state.canteenHunt.mode !== "light" || !state.canteenHunt.bikeCodeRead) {
+    if (state.canteenHunt.mode !== "light") {
       this.events.emit("canteen_bike_scan_rule");
       return "rule";
     }
@@ -658,7 +653,7 @@ export class ChapterThreeCanteenController {
       !state.items.cafeteriaWages
       || state.wallet.cashCents < CANTEEN_BIKE_FARE_CENTS
     ) return "inactive";
-    if (state.canteenHunt.mode !== "light" || !state.canteenHunt.bikeCodeRead || !state.canteenHunt.bikeLockCleaned) {
+    if (state.canteenHunt.mode !== "light" || !state.canteenHunt.bikeLockCleaned) {
       this.events.emit("canteen_bike_scan_rule");
       return "rule";
     }

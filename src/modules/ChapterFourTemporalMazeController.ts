@@ -21,6 +21,10 @@ import type {
 } from "../core/types";
 import content from "../data/chapter4-755.content.json";
 import {
+  isChapterFourContextInteractionTargetId,
+  type ChapterFourContextInteractionTargetId
+} from "../data/ChapterFourInteractionContent";
+import {
   isRoom204PlacementSetComplete,
   resolveRoom204Placement,
   room204SlotTargetId
@@ -178,6 +182,10 @@ export type ChapterFour755Intent =
       targetId:
         | typeof CHAPTER_FOUR_755_TARGET_IDS.a2ElevatorAttendant
         | typeof CHAPTER_FOUR_755_TARGET_IDS.a3ReferenceTeacher;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "inspect_chapter_four_context";
+      targetId: ChapterFourContextInteractionTargetId;
     }>
   | ChapterFour755TargetIntent<{
       type: "inspect_alumni_figure";
@@ -563,10 +571,6 @@ function lockedDetailForIntent(
       if (chapter.room204Placements.some((placement) => placement.slotId === intent.slotId)) {
         return "room204_slot_occupied";
       }
-      if (!hasFact(chapter, "a3_reference_observed")
-        || !hasFact(chapter, "room204_residual_observed")) {
-        return "room204_observations_required";
-      }
       return "target_unavailable";
     }
     case "complete_room204_projection":
@@ -798,10 +802,8 @@ export class ChapterFourTemporalMazeController {
 
       case "observe_elevator_history": {
         if (chapter.phase !== "room204_restore"
-          || chapter.floor !== "A1"
-          || !hasFact(chapter, "classroom_104_chalk_residual_observed")
-          || !hasFact(chapter, "classroom_105_terminal_replay_checked")) {
-          return reject("locked", "classroom_checks_required");
+          || chapter.floor !== "A1") {
+          return reject("locked", "elevator_history_required");
         }
         if (chapter.mode !== "dark") return reject("wrong_mode");
         if (hasFact(chapter, "elevator_history_observed")) return reject("already_complete");
@@ -812,9 +814,8 @@ export class ChapterFourTemporalMazeController {
 
       case "calibrate_elevator_history": {
         if (chapter.phase !== "room204_restore"
-          || chapter.floor !== "A1"
-          || !hasFact(chapter, "elevator_history_observed")) {
-          return reject("locked", "elevator_history_required");
+          || chapter.floor !== "A1") {
+          return reject("locked", "elevator_calibration_required");
         }
         if (chapter.mode !== "light") return reject("wrong_mode");
         if (hasFact(chapter, "elevator_history_calibrated")) return reject("already_complete");
@@ -829,8 +830,7 @@ export class ChapterFourTemporalMazeController {
 
       case "complete_misaligned_stair": {
         if (chapter.phase !== "room204_restore"
-          || chapter.floor !== "A3"
-          || !hasFact(chapter, "a3_reference_observed")) {
+          || chapter.floor !== "A3") {
           return reject("locked", "misaligned_stair_required");
         }
         if (!hasFact(chapter, "zhu_two_questions_answered")) {
@@ -992,14 +992,14 @@ export class ChapterFourTemporalMazeController {
 
       case "talk_to_a1_front_desk_attendant":
       case "talk_to_chapter_four_support_npc":
+      case "inspect_chapter_four_context":
       case "inspect_alumni_figure":
         return acceptReadOnly();
 
       case "complete_zhu_two_questions": {
         if (chapter.phase !== "room204_restore"
           || chapter.floor !== "A3"
-          || intent.targetId !== CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen
-          || !hasFact(chapter, "a3_reference_observed")) {
+          || intent.targetId !== CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen) {
           return reject("locked", "zhu_two_questions_required");
         }
         if (hasFact(chapter, "zhu_two_questions_answered")) return reject("already_complete");
@@ -1039,14 +1039,16 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "observe_a3_reference": {
+        const factIds = appendFact(chapter, "a3_reference_observed");
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "a3_reference_observed")
+          factIds: finalizeRoom204Facts(factIds, chapter.room204Placements)
         }));
       }
 
       case "observe_room204_residual": {
+        const factIds = appendFact(chapter, "room204_residual_observed");
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "room204_residual_observed")
+          factIds: finalizeRoom204Facts(factIds, chapter.room204Placements)
         }));
       }
 
@@ -1063,12 +1065,9 @@ export class ChapterFourTemporalMazeController {
             room204IssueDetailCode(resolution.issue)
           );
         }
-        const restored = resolution.complete
-          && hasFact(chapter, "a3_reference_observed")
-          && hasFact(chapter, "room204_residual_observed");
         return accept(this.patchChapter(state, {
           room204Placements: resolution.placements,
-          factIds: restored ? appendFact(chapter, "room204_restored") : chapter.factIds
+          factIds: finalizeRoom204Facts(chapter.factIds, resolution.placements)
         }));
       }
 
@@ -1705,6 +1704,10 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "talk_to_chapter_four_support_npc":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a2ElevatorAttendant)
         || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a3ReferenceTeacher);
+    case "inspect_chapter_four_context":
+      return typeof value.targetId === "string"
+        && isChapterFourContextInteractionTargetId(value.targetId)
+        && targetIntentIs(value.targetId);
     case "inspect_alumni_figure":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniSuBuqing)
         || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen)
@@ -1885,6 +1888,20 @@ function hasFact(chapter: ChapterFourState, factId: ChapterFourFactId): boolean 
 
 function appendFact(chapter: ChapterFourState, factId: ChapterFourFactId): ChapterFourFactId[] {
   return hasFact(chapter, factId) ? [...chapter.factIds] : [...chapter.factIds, factId];
+}
+
+function finalizeRoom204Facts(
+  factIds: readonly ChapterFourFactId[],
+  placements: ChapterFourState["room204Placements"]
+): ChapterFourFactId[] {
+  const next = [...factIds];
+  if (isRoom204PlacementSetComplete(placements)
+    && next.includes("a3_reference_observed")
+    && next.includes("room204_residual_observed")
+    && !next.includes("room204_restored")) {
+    next.push("room204_restored");
+  }
+  return next;
 }
 
 function withItem(state: GameState, itemId: InventoryItemId, owned: boolean): GameState["items"] {

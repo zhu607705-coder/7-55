@@ -258,6 +258,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private spotlightPreviewTween: Phaser.Tweens.Tween | null = null;
   private spotlightVisualTweens: Phaser.Tweens.Tween[] = [];
   private spotlightDelayTimers: Phaser.Time.TimerEvent[] = [];
+  private spotlightTrackingScheduled = false;
   private spotlightChoiceOpen = false;
   private ticketInspector: Phaser.GameObjects.Container | null = null;
   private ticketInspectorSprite: Phaser.GameObjects.Image | null = null;
@@ -398,7 +399,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.syncWorldFromState(state);
     this.updateSpotlightRound(delta);
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.panel && !this.spotlightPanel && !this.dialogueLocked) {
+    if (Phaser.Input.Keyboard.JustDown(this.keys.TAB) && !this.panel && !this.dialogueLocked) {
       this.requestModeToggle();
     }
 
@@ -700,7 +701,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
             && !state.theaterHunt.admitted
           : guide.target.kind === "scanner"
             ? state.theaterHunt.phase === "prop_setup"
-              && state.theaterHunt.managerHintRead
               && !state.theaterHunt.propBoxOpened
             : guide.target.kind === "vent"
               ? state.theaterHunt.phase === "prop_setup"
@@ -1092,9 +1092,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.darkClues[1]?.setVisible(posterVisible);
     this.darkClues[2]?.setVisible(kioskVisible);
     this.programOrderClue?.setVisible(
-      dark && state.theaterHunt.phase === "program_search" && state.theaterHunt.collectedProgramIds.length === 3
+      dark && state.theaterHunt.phase === "program_search"
     );
-    const propGhostVisible = dark && state.theaterHunt.phase === "prop_setup" && !state.theaterHunt.propBoxOpened;
+    const propGhostVisible = dark && state.theaterHunt.phase === "prop_setup" && !state.theaterHunt.propGhostRead;
     this.propGhostClue?.setVisible(propGhostVisible);
     this.propBoxGhostSprite?.setVisible(propGhostVisible);
     this.stageManagerGhost?.setVisible(propGhostVisible);
@@ -1148,21 +1148,15 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (target.kind === "program" && target.programId) {
       if (state.theaterHunt.mode === "light") {
         this.runtime.emit("rpg_theater_program_collect_requested", { programId: target.programId });
-      } else if (state.theaterHunt.collectedProgramIds.length === 3) {
-        this.runtime.emit("rpg_theater_program_order_read_requested");
       } else {
-        this.showFeedback(theaterContent.program.darkIncomplete, "system", FEEDBACK_GUIDANCE_MS);
+        this.runtime.emit("rpg_theater_program_order_read_requested");
       }
       return;
     }
     if (target.kind === "console") {
       if (state.theaterHunt.phase === "program_search") {
         if (state.theaterHunt.mode === "dark") {
-          if (state.theaterHunt.collectedProgramIds.length === 3) {
-            this.runtime.emit("rpg_theater_program_order_read_requested");
-          } else {
-            this.showFeedback(theaterContent.program.darkIncomplete, "system", FEEDBACK_GUIDANCE_MS);
-          }
+          this.runtime.emit("rpg_theater_program_order_read_requested");
         } else if (state.theaterHunt.collectedProgramIds.length === 3) {
           this.openProgramPanel();
         } else {
@@ -1174,6 +1168,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "prop") {
+      if (state.theaterHunt.mode === "dark") {
+        this.runtime.emit("rpg_theater_prop_inspect_requested");
+        return;
+      }
       if (state.theaterHunt.propBoxOpened) {
         this.showFeedback(theaterContent.prop.opened, "system", FEEDBACK_GUIDANCE_MS);
         return;
@@ -1906,7 +1904,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private prepareSpotlightAction(round: number): void {
     if (!this.spotlightPanel || this.runtime.getState().theaterHunt.spotlightRound !== round) return;
-    this.runtime.emit("rpg_theater_mode_requested", { mode: "light" });
     this.spotlightStage = "ready";
     this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 预置`);
     this.spotlightStatus?.setText("预置追光灯").setColor("#ffe49a");
@@ -1922,12 +1919,39 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightFireButton?.setVisible(true).setFillStyle(0x25384a, 0.98);
     this.spotlightFireLabel?.setVisible(true);
     this.setSpotlightAim(this.spotlightAimX);
-    this.scheduleSpotlight(900, () => this.startSpotlightTracking(round));
+    this.scheduleSpotlightTracking(round);
+  }
+
+  private scheduleSpotlightTracking(round: number): void {
+    if (!this.spotlightPanel || this.spotlightStage !== "ready" || this.spotlightTrackingScheduled) return;
+    if (this.runtime.getState().theaterHunt.mode !== "light") {
+      this.spotlightStatus?.setText("深色观察可核对尾迹；切至浅色操作后启动追光灯。")
+        .setColor("#91edff");
+      this.spotlightControlHint?.setText("Tab 切换模式；切换不会重置本轮观察。")
+        .setColor("#bcefff");
+      return;
+    }
+    this.spotlightTrackingScheduled = true;
+    this.spotlightStatus?.setText("浅色操作已就绪，追光灯正在启动。")
+      .setColor("#ffe49a");
+    this.scheduleSpotlight(900, () => {
+      this.spotlightTrackingScheduled = false;
+      if (this.runtime.getState().theaterHunt.mode !== "light") {
+        this.scheduleSpotlightTracking(round);
+        return;
+      }
+      this.startSpotlightTracking(round);
+    });
   }
 
   private startSpotlightTracking(round: number): void {
     const state = this.runtime.getState();
-    if (!this.spotlightPanel || state.theaterHunt.spotlightRound !== round || state.theaterHunt.phase !== "spotlight_hunt") return;
+    if (
+      !this.spotlightPanel
+      || state.theaterHunt.spotlightRound !== round
+      || state.theaterHunt.phase !== "spotlight_hunt"
+      || state.theaterHunt.mode !== "light"
+    ) return;
     this.spotlightStage = "tracking";
     this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 锁定`);
     this.spotlightChoiceOpen = true;
@@ -1949,6 +1973,21 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const round = state.theaterHunt.spotlightRound;
     const config = THEATER_SPOTLIGHT_ROUNDS[round];
     if (!config) return;
+    if (this.spotlightStage === "ready") {
+      this.scheduleSpotlightTracking(round);
+      return;
+    }
+    if (state.theaterHunt.mode !== "light") {
+      this.spotlightStage = "ready";
+      this.spotlightChoiceOpen = false;
+      this.spotlightBeamActive = false;
+      this.spotlightPointerFiring = false;
+      this.spotlightPaper?.setVisible(false);
+      this.spotlightDecoyPaper?.setVisible(false);
+      this.resetSpotlightBeamVisual();
+      this.scheduleSpotlightTracking(round);
+      return;
+    }
     const assist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
     const direction = Number(this.cursors.right.isDown || this.keys.D.isDown)
       - Number(this.cursors.left.isDown || this.keys.A.isDown);
@@ -2328,6 +2367,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.spotlightVisualTweens = [];
     this.spotlightDelayTimers.forEach((timer) => timer.remove(false));
     this.spotlightDelayTimers = [];
+    this.spotlightTrackingScheduled = false;
     this.spotlightPanel?.destroy(true);
     this.spotlightPanel = null;
     this.spotlightTitle = null;

@@ -18,7 +18,6 @@ import {
 } from "../modules/DeveloperChannel";
 import { Chapter4PrologueOverlay } from "../scenes/rpg/Chapter4PrologueOverlay";
 import { PROLOGUE_TASK_CARD_AT } from "../scenes/rpg/chapter4-prologue/PrologueTimeline";
-import { preloadRpgGameHost } from "../scenes/rpg/RpgRuntimePreload";
 import { warmRpgRuntime } from "../scenes/rpg/RpgRuntimePreload";
 
 type HandoffStatus = "idle" | "pending" | "waiting_ready" | "failed" | "ready";
@@ -106,8 +105,7 @@ export function Chapter4PrologueRuntimeGate({
     setHeld(true);
     setStatus("idle");
     setFeedback(null);
-    void preloadRpgGameHost();
-    void warmRpgRuntime("duan_yongping_temporal_maze");
+    void warmRpgRuntime("duan_yongping_temporal_maze", "immediate", "entry");
   }, [createRequestId, eligible, resumeOpeningHandoff]);
 
   useEffect(() => {
@@ -118,8 +116,7 @@ export function Chapter4PrologueRuntimeGate({
     setStatus("waiting_ready");
     setFeedback("正在恢复 A1 现场……");
     armTimeoutGuard(requestId);
-    void preloadRpgGameHost();
-    void warmRpgRuntime("duan_yongping_temporal_maze");
+    void warmRpgRuntime("duan_yongping_temporal_maze", "immediate", "entry");
   }, [armTimeoutGuard, createRequestId, resumeOpeningHandoff]);
 
   useEffect(() => events.subscribe((event) => {
@@ -130,9 +127,20 @@ export function Chapter4PrologueRuntimeGate({
     setHeld(true);
     setStatus("idle");
     setFeedback(null);
-    void preloadRpgGameHost();
-    void warmRpgRuntime("duan_yongping_temporal_maze");
+    void warmRpgRuntime("duan_yongping_temporal_maze", "immediate", "entry");
   }), [createRequestId, events]);
+
+  useEffect(() => events.subscribe((event) => {
+    if (event.name !== "rpg_chapter4_warmup_phase_failed" || !activeRef.current) return;
+    const failedUrls = Array.isArray(event.payload?.failedUrls)
+      ? event.payload.failedUrls.filter((url): url is string => typeof url === "string")
+      : [];
+    clearTimeoutGuard();
+    setStatus("failed");
+    setFeedback(
+      `${String(event.payload?.phaseLabel ?? "A1 入口")}资源准备失败（${failedUrls.length} 项）。请重试。`
+    );
+  }), [clearTimeoutGuard, events]);
 
   useEffect(() => events.subscribe((event) => {
     if (event.name !== "rpg_chapter4_755_live_ready") return;
@@ -150,11 +158,9 @@ export function Chapter4PrologueRuntimeGate({
       : "";
     if (!expectedRequestId) return;
     if (receivedRequestId !== expectedRequestId) {
-      if (!receivedRequestId) {
-        events.emit("rpg_chapter4_755_live_ready_retry_requested", {
-          requestId: expectedRequestId
-        });
-      }
+      events.emit("rpg_chapter4_755_live_ready_retry_requested", {
+        requestId: expectedRequestId
+      });
       return;
     }
 

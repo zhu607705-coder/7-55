@@ -16,6 +16,10 @@ import playerSide4Url from "../../assets/rpg/player/player_side_4.png";
 import playerSide5Url from "../../assets/rpg/player/player_side_5.png";
 import playerSide6Url from "../../assets/rpg/player/player_side_6.png";
 import playerSide7Url from "../../assets/rpg/player/player_side_7.png";
+import playerSide8Url from "../../assets/rpg/player/player_side_8.png";
+import playerSide9Url from "../../assets/rpg/player/player_side_9.png";
+import playerSide10Url from "../../assets/rpg/player/player_side_10.png";
+import playerSide11Url from "../../assets/rpg/player/player_side_11.png";
 import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
 import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
@@ -28,7 +32,7 @@ import { preloadRpgImages } from "./RpgAssetLoader";
 import type { RpgCardinalFacing } from "./RpgInteractionContract";
 
 export type RpgPlayerFacing = "down" | "up" | "side";
-export type RpgPlayerWalkFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type RpgPlayerWalkFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 
 export const RPG_PLAYER_FRAME_WIDTH = 96;
 export const RPG_PLAYER_FRAME_HEIGHT = 128;
@@ -38,6 +42,12 @@ export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = campusRuntimeData.perspective.b
 export const RPG_PLAYER_WALK_FRAME_MS = 110;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_WALK_FRAME_COUNT = 8;
+export const RPG_PLAYER_SIDE_WALK_FRAME_COUNT = 12;
+export const RPG_PLAYER_WALK_CYCLE_MS = RPG_PLAYER_WALK_FRAME_MS * RPG_PLAYER_WALK_FRAME_COUNT;
+export const RPG_PLAYER_SIDE_WALK_FRAME_MS = (
+  RPG_PLAYER_WALK_CYCLE_MS / RPG_PLAYER_SIDE_WALK_FRAME_COUNT
+);
+export const RPG_PLAYER_SIDE_WALK_FPS = 1000 / RPG_PLAYER_SIDE_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 30,
   height: 22.5,
@@ -95,7 +105,11 @@ export const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-side-4": playerSide4Url,
   "act1-player-side-5": playerSide5Url,
   "act1-player-side-6": playerSide6Url,
-  "act1-player-side-7": playerSide7Url
+  "act1-player-side-7": playerSide7Url,
+  "act1-player-side-8": playerSide8Url,
+  "act1-player-side-9": playerSide9Url,
+  "act1-player-side-10": playerSide10Url,
+  "act1-player-side-11": playerSide11Url
 } as const;
 
 export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
@@ -150,8 +164,15 @@ export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
   };
 
   (["down", "up", "side"] as const).forEach((direction) => {
-    ([0, 1, 2, 3, 4, 5, 6, 7] as const).forEach((frame) => {
-      drawPlayer(`act1-player-${direction}-${frame}`, direction, frame);
+    const frameCount = direction === "side"
+      ? RPG_PLAYER_SIDE_WALK_FRAME_COUNT
+      : RPG_PLAYER_WALK_FRAME_COUNT;
+    Array.from({ length: frameCount }, (_unused, frame) => frame).forEach((frame) => {
+      drawPlayer(
+        `act1-player-${direction}-${frame}`,
+        direction,
+        frame as RpgPlayerWalkFrame
+      );
     });
   });
 }
@@ -182,14 +203,24 @@ export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): 
 }
 
 /**
- * Convert elapsed movement time into the shared eight-phase walk sequence.
+ * Convert elapsed movement time into the shared directional walk sequence.
  * The elapsed value is local to one continuous walk, so a fresh walk cannot
  * enter halfway through a stride because of a scene's absolute game clock.
+ * Down/up retain eight frames. Side walking uses twelve actually drawn frames
+ * over the same 880ms cycle, so extra artwork improves continuity without
+ * changing movement cadence.
  */
-export function getRpgPlayerWalkFrameAt(elapsedMs: number): RpgPlayerWalkFrame {
+export function getRpgPlayerWalkFrameAt(
+  elapsedMs: number,
+  facing: RpgPlayerFacing = "down"
+): RpgPlayerWalkFrame {
+  const frameCount = facing === "side"
+    ? RPG_PLAYER_SIDE_WALK_FRAME_COUNT
+    : RPG_PLAYER_WALK_FRAME_COUNT;
+  const frameMs = RPG_PLAYER_WALK_CYCLE_MS / frameCount;
   return (
-    Math.floor(Math.max(0, elapsedMs) / RPG_PLAYER_WALK_FRAME_MS)
-    % RPG_PLAYER_WALK_FRAME_COUNT
+    Math.floor(Math.max(0, elapsedMs) / frameMs)
+    % frameCount
   ) as RpgPlayerWalkFrame;
 }
 
@@ -354,7 +385,7 @@ export class RpgPlayerAnimator {
       this.walkingFrame = 0;
       this.walkCycleStartedAt = now;
       // Keep the target's neutral pose visible for one render before the
-      // eight-phase loop advances. This preserves the missing support beat
+      // walk loop advances. This preserves the missing support beat
       // when the player changes direction while holding movement input.
       return;
     }
@@ -369,7 +400,10 @@ export class RpgPlayerAnimator {
     if (this.walkCycleStartedAt === null || now < this.walkCycleStartedAt) {
       this.walkCycleStartedAt = now;
     }
-    const nextFrame = getRpgPlayerWalkFrameAt(now - this.walkCycleStartedAt);
+    const nextFrame = getRpgPlayerWalkFrameAt(
+      now - this.walkCycleStartedAt,
+      this.targetFacing
+    );
     if (
       nextFrame !== this.walkingFrame
       || this.player.texture.key !== `act1-player-${this.targetFacing}-${nextFrame}`

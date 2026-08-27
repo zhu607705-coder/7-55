@@ -70,7 +70,7 @@ export function ElevatorTrackSyncGame({
         : result === "wrong_mode"
           ? "当前仍在深色观察。切回浅色操作后才能启动历史重放。"
           : result === "locked" || result === "inactive"
-            ? "三条历史轨道尚未完成读取。"
+            ? "当前剧情阶段尚未开放轿厢重放。"
             : "拖动下方时间游标，三条轨道会保持同一历史偏移。";
 
   return (
@@ -147,7 +147,7 @@ export function ElevatorTrackSyncGame({
           max={CHAPTER_FOUR_ELEVATOR.selectableStartMaxSeconds}
           step={1}
           value={startSeconds}
-          disabled={mode !== "light" || !observed}
+          disabled={mode !== "light"}
           onChange={(event) => {
             setStartSeconds(Number(event.currentTarget.value));
             setResult(null);
@@ -165,7 +165,6 @@ export function ElevatorTrackSyncGame({
           <button
             type="button"
             className="is-primary"
-            disabled={!observed}
             onClick={() => setResult(onConfirm(startSeconds))}
           >
             启动历史重放

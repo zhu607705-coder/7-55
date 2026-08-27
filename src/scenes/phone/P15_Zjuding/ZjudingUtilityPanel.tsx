@@ -52,6 +52,8 @@ interface FeedbackDraft {
 
 const VISITOR_DRAFT_STORAGE_KEY = "seven-fifty-five:zjuding:visitor-preview-draft:v1";
 const FEEDBACK_DRAFT_STORAGE_KEY = "seven-fifty-five:zjuding:feedback-draft:v1";
+const GAME_GITHUB_URL = "https://github.com/zhu607705-coder/7-55";
+const GAME_GITHUB_ISSUE_URL = `${GAME_GITHUB_URL}/issues/new`;
 
 const EMPTY_VISITOR_DRAFT: VisitorDraft = {
   visitorName: "",
@@ -71,7 +73,7 @@ const PANEL_TITLES: Record<ZjudingUtilityPanelId, string> = {
   lost_found: "失物招领",
   visitor_preview: "访客预约预览",
   language_cards: "慧学外语",
-  feedback_draft: "意见草稿",
+  feedback_draft: "开发者反馈",
   all_apps: "全部应用",
   contacts: "通讯录",
   messages: "消息",
@@ -104,6 +106,16 @@ const LOST_FOUND_ITEMS: ReadonlyArray<{ id: ItemId; label: string; source: strin
   { id: "seat022Receipt", label: "022 座位小票", source: "基础馆二层南区" },
   { id: "libraryPresenceProof", label: "本人到馆证明", source: "浙大体艺·到馆记录" }
 ];
+
+function buildGitHubIssueUrl(draft: FeedbackDraft): string {
+  const content = draft.content.trim();
+  const firstLine = content.split(/\r?\n/, 1)[0]?.slice(0, 60) || "游戏反馈";
+  const title = `[${draft.category}] ${firstLine}`;
+  const body = content
+    ? `## 反馈内容\n\n${content}\n\n## 游戏\n\n7:55`
+    : "## 反馈内容\n\n请描述问题、复现步骤或建议。\n\n## 游戏\n\n7:55";
+  return `${GAME_GITHUB_ISSUE_URL}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+}
 
 function readSessionDraft<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -300,14 +312,14 @@ export function ZjudingUtilityPanel({
     }
     const stored = writeSessionDraft(FEEDBACK_DRAFT_STORAGE_KEY, feedbackDraft);
     setFeedbackStatus(stored
-      ? "意见已保存为本次会话草稿，尚未正式提交。"
-      : "已保留在当前页面，当前浏览器不允许保存会话草稿。");
+      ? "反馈草稿已保存。"
+      : "反馈内容已保留在当前页面。");
   }
 
   function clearFeedbackDraft() {
     clearSessionDraft(FEEDBACK_DRAFT_STORAGE_KEY);
     setFeedbackDraft(EMPTY_FEEDBACK_DRAFT);
-    setFeedbackStatus("意见草稿已清空。");
+    setFeedbackStatus("反馈内容已清空。");
   }
 
   function runMessageAction(action: "library" | "campus_map" | "campus_card") {
@@ -445,17 +457,22 @@ export function ZjudingUtilityPanel({
       </>
     );
   } else if (panel === "feedback_draft") {
+    const githubIssueUrl = buildGitHubIssueUrl(feedbackDraft);
     body = (
       <>
         <section className="zju-utility-summary">
-          <small>会话级本地草稿</small>
-          <strong>意见箱</strong>
-          <p>本 Demo 只保存草稿，不会将内容发送给真实部门或网络服务。</p>
+          <small>7:55 开发者通道</small>
+          <strong>向开发团队反馈</strong>
+          <p>整理问题或建议后，可直接前往 GitHub 提交 Issue。</p>
         </section>
-        <section className="zju-utility-form" aria-label="意见草稿">
+        <nav className="zju-developer-links" aria-label="7:55 开发者链接">
+          <a href={GAME_GITHUB_URL} target="_blank" rel="noreferrer">GitHub 仓库</a>
+          <a className="primary" href={githubIssueUrl} target="_blank" rel="noreferrer">提交 Issue</a>
+        </nav>
+        <section className="zju-utility-form" aria-label="开发者反馈">
           <label><span>分类</span><select value={feedbackDraft.category} onChange={(event) => setFeedbackDraft((draft) => ({ ...draft, category: event.target.value }))}><option>功能建议</option><option>交互问题</option><option>内容校对</option></select></label>
-          <label><span>草稿内容</span><textarea value={feedbackDraft.content} onChange={(event) => setFeedbackDraft((draft) => ({ ...draft, content: event.target.value.slice(0, 500) }))} placeholder="写下希望保留的意见草稿" /><small>{feedbackDraft.content.length}/500</small></label>
-          <div className="zju-utility-form-actions"><button type="button" onClick={clearFeedbackDraft}>清空</button><button type="button" className="primary" onClick={saveFeedbackDraft}>保存本机草稿</button></div>
+          <label><span>反馈内容</span><textarea value={feedbackDraft.content} onChange={(event) => setFeedbackDraft((draft) => ({ ...draft, content: event.target.value.slice(0, 500) }))} placeholder="描述问题、复现步骤或建议" /><small>{feedbackDraft.content.length}/500</small></label>
+          <div className="zju-utility-form-actions"><button type="button" onClick={clearFeedbackDraft}>清空</button><button type="button" className="primary" onClick={saveFeedbackDraft}>保存草稿</button></div>
         </section>
         {feedbackStatus ? <UtilityFeedback>{feedbackStatus}</UtilityFeedback> : null}
       </>
@@ -555,7 +572,7 @@ export function ZjudingUtilityPanel({
           <article><div><strong>当前网络</strong><span>{networkLabel}</span></div><button type="button" onClick={() => onOpenApp("network_account")}>详情</button></article>
           <article><div><strong>电子校园卡</strong><span>{identityReadable ? "已读取" : "未读取"}</span></div>{identityReadable ? <button type="button" onClick={onOpenCampusCard}>查看</button> : <em>未开放</em>}</article>
           <article><div><strong>图书馆预约</strong><span>{state.ui.librarySeatReserved ? `座位 ${state.ui.librarySelectedSeat ?? "022"}` : "当前无预约"}</span></div>{access.library ? <button type="button" onClick={() => onOpenPage("library")}>查看</button> : <em>未开放</em>}</article>
-          <article><div><strong>账号安全</strong><span>本 Demo 不发送账号请求</span></div><em>只读</em></article>
+          <article><div><strong>开发者反馈</strong><span>GitHub Issues</span></div><button type="button" onClick={() => onOpenApp("feedback_draft")}>查看</button></article>
         </section>
       </>
     );

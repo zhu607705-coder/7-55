@@ -2342,6 +2342,13 @@
   font-weight: 800;
 }
 
+.zju-sheet .zju-sheet-actions.is-plain > button {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .zju-search-locked-result {
   background: #eef0f2;
   border: 2px solid #c4c9ce;
@@ -2600,6 +2607,36 @@
   background: #174d9d;
   border-color: #0f386f;
   color: #fff;
+}
+
+.zju-developer-links {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.zju-developer-links a {
+  align-items: center;
+  background: #fff;
+  border: 2px solid #315d9e;
+  color: #174d9d;
+  display: flex;
+  font-size: var(--fs-label);
+  font-weight: 800;
+  justify-content: center;
+  min-height: 44px;
+  padding: 7px 8px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.zju-developer-links a.primary,
+.zju-developer-links a:hover,
+.zju-developer-links a:focus-visible {
+  background: #174d9d;
+  border-color: #0f386f;
+  color: #fff;
+  outline: 0;
 }
 
 .zju-utility-preview {

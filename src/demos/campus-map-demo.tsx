@@ -219,7 +219,7 @@ function CampusMapDemo() {
           setNotice("大地图已就绪：道路可走，建筑与绿地保持阻挡。");
         }
       } else if (event.name === "rpg_library_gate_requested") {
-        setNotice("已到达基础图书馆入口。此独立 Demo 保持在大地图，不进入正式剧情。");
+        setNotice("已到达基础图书馆入口。当前大地图路线保持开放。");
       } else if (event.name === "canteen_returned_to_campus") {
         setNotice("食堂内的纸条已被逼出，已返回大食堂门前。");
       } else if (event.name === "rpg_subtitle") {

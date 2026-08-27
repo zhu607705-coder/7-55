@@ -489,7 +489,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
         icon: (
           <div className="app-icon interlude-voice-icon" aria-hidden="true">
             <span className="voice-microphone"><i /></span>
-            <span className="voice-wave"><i /><i /><i /></span>
+            <span className="voice-icon-wave"><i /><i /><i /></span>
           </div>
         )
       },

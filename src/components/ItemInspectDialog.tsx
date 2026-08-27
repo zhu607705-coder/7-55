@@ -250,7 +250,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   fishingRod: {
     category: "湖面工具",
     source: "启真湖码头装备架",
-    intro: "竿梢保留了附件连接位。先在深色观察中记录目标，再在浅色操作中抛竿。",
+    intro: "竿梢保留了附件连接位。深色观察可记录目标，浅色操作可在正确水纹抛竿。",
     useHint: "可安装诱饵、钓取水面物品，或与磁铁组合"
   },
   rustedLockerKey: {

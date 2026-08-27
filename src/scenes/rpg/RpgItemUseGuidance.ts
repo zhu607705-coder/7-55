@@ -169,7 +169,7 @@ export function selectRpgItemUseGuidance(
     if (state.canteenHunt.phase !== "pickup_search") {
       return locked("取餐号只在取餐阶段使用。先完成当前食堂任务。", "1、2、3号取餐窗口验票槽");
     }
-    return ready("取餐窗口", "不需要拖拽或站位。普通餐品在浅色对应窗口使用；纸包鸡先在浅色第三窗口报错，再切深色查看残影阿姨并按空格交票。");
+    return ready("取餐窗口", "不需要拖拽或站位。浅色操作可在对应窗口交票；深色观察可补充查看窗口残影。");
   }
 
   if (
@@ -200,11 +200,9 @@ export function selectRpgItemUseGuidance(
     if (itemId === "greaseTissue") {
       if (state.canteenHunt.bikeLockCleaned) return passive("车锁已经擦净，2 元现金可以用于付款。");
       if (state.canteenHunt.mode === "dark") return locked("切回浅色模式后再清洁车锁。", "共享单车车锁");
-      if (!state.canteenHunt.bikeCodeRead) return locked("先在深色模式检查车锁二维码，再切回浅色模式。", "共享单车车锁");
       return ready("共享单车车锁");
     }
     if (itemId === "cafeteriaWages") {
-      if (!state.canteenHunt.bikeCodeRead) return locked("先在深色模式读取二维码。", "共享单车");
       if (!state.canteenHunt.bikeLockCleaned) return locked("先用纸巾清洁车锁。", "共享单车");
       if (state.canteenHunt.mode === "dark") return locked("切回浅色模式后付款。", "共享单车");
       if (state.wallet.cashCents < 200) return locked("现金余额不足 2 元。回食堂完成收餐盘，领取 2 元和油渍纸巾。", "共享单车");
@@ -232,11 +230,8 @@ export function selectRpgItemUseGuidance(
       }
       if (theater.phase === "prop_setup") {
         if (theater.propBoxOpened) return passive("票据扫描已经完成，临时观演票已从道具栏移除。");
-        if (!theater.managerHintRead) {
-          return locked("先切到深色模式检查道具箱并读完管理员提示。", "道具箱旁票据扫描器");
-        }
         if (theater.mode !== "light") {
-          return locked("管理员提示已经取得；切回浅色模式后才能扫描票据。", "道具箱旁票据扫描器");
+          return locked("深色模式可查看道具箱残影；切回浅色模式后扫描票据。", "道具箱旁票据扫描器");
         }
         return ready(
           "道具箱旁票据扫描器",
@@ -286,9 +281,6 @@ export function selectRpgItemUseGuidance(
       if (lake.zone !== "open_water") {
         return locked("先划回大湖，再寻找纸条倒影装饵框。", "纸条倒影装饵框");
       }
-      if (!lake.observedFishingSpotIds.includes("paper")) {
-        return locked("先在深色观察中记录纸条倒影。", "纸条倒影装饵框");
-      }
       return requireLight("纸条倒影装饵框")
         ?? ready("纸条倒影水纹", "把船划到纸条倒影附近，再把假纸条拖到对应水纹。");
     }
@@ -302,13 +294,13 @@ export function selectRpgItemUseGuidance(
           ?? ready("船头工具区", "让船头对准工具区，把钓鱼竿拖到天鹅磁扣旁。");
       }
       if (lake.zone !== "open_water") {
-        return locked("当前抛竿点位于大湖，先划回大湖。", "已观察的抛竿点");
+        return locked("当前抛竿点位于大湖，先划回大湖。", "可用抛竿点");
       }
       if (!lake.decoyBaitAttached) {
         return locked("先把假纸条拖到钓鱼竿装饵框。", "钓鱼竿装饵框");
       }
-      return requireLight("已观察的抛竿点")
-        ?? ready("已观察的抛竿点", "把船划到已记录的倒影水纹附近后抛竿。直接钓纸条会显示失败原因。");
+      return requireLight("可用抛竿点")
+        ?? ready("可用抛竿点", "把船划到目标水纹附近后抛竿。深色观察可补充记录位置，直接钓纸条会显示失败原因。");
     }
 
     if (itemId === "rustedLockerKey") {
@@ -355,10 +347,8 @@ export function selectRpgItemUseGuidance(
       if (lake.zone !== "open_water") {
         return locked("回到大湖的鱼群水纹位置。", "鱼群水纹");
       }
-      return requireLight("已观察的鱼群水纹")
-        ?? (lake.observedFishingSpotIds.includes("fish")
-          ? ready("鱼群水纹", "把饲料颗粒拖入已记录的鱼群坐标。")
-          : locked("先切到深色观察，记录鱼群水纹。", "鱼群水纹"));
+      return requireLight("鱼群水纹")
+        ?? ready("鱼群水纹", "把饲料颗粒拖入鱼群水纹；深色观察可补充记录位置。");
     }
 
     if (itemId === "smallCarp") {
@@ -384,9 +374,7 @@ export function selectRpgItemUseGuidance(
         return locked("纸条本体水纹位于黑天鹅围栏区。", "纸条本体水纹");
       }
       return requireLight("纸条本体水纹")
-        ?? (lake.observedFishingSpotIds.includes("paper")
-          ? ready("纸条本体水纹", "把磁性钓鱼竿拖入已记录的纸条坐标。")
-          : locked("先在深色观察中记录纸条本体坐标。", "纸条本体水纹"));
+        ?? ready("纸条本体水纹", "把磁性钓鱼竿拖入纸条本体水纹；深色观察可补充记录位置。");
     }
   }
 

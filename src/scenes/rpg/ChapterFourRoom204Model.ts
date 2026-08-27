@@ -1,4 +1,5 @@
 import type {
+  ChapterFourPhase,
   ChapterFourRoom204Orientation,
   ChapterFourRoom204PieceId,
   ChapterFourRoom204Placement,
@@ -120,6 +121,32 @@ export const ROOM204_WALKABILITY = Object.freeze({ ...ROOM204_LAYOUT.walkability
 export const ROOM204_PROJECTION_HANDSHAKE = Object.freeze({
   ...ROOM204_LAYOUT.projectionHandshake
 });
+
+export const ROOM204_RESTORED_DISPLAY_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
+  "maintenance_repair",
+  "blackout_light_grid",
+  "final_chase",
+  "final_minute_recovery",
+  "return_to_clock",
+  "morning_checkin",
+  "exterior_closure",
+  "complete"
+]);
+
+export type Room204RuntimePresentation = "interactive" | "restored" | "hidden";
+
+export function selectRoom204RuntimePresentation(
+  phase: string,
+  restored: boolean,
+  placements: readonly ChapterFourRoom204Placement[]
+): Room204RuntimePresentation {
+  if (phase === "room204_restore") return "interactive";
+  return restored
+    && ROOM204_RESTORED_DISPLAY_PHASES.has(phase as ChapterFourPhase)
+    && isRoom204PlacementSetComplete(placements)
+    ? "restored"
+    : "hidden";
+}
 
 export const ROOM204_PIECE_ORDER = Object.freeze(
   ROOM204_LAYOUT.initialPiecePairs.map((entry) => entry.pieceId)

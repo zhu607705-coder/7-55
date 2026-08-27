@@ -3,20 +3,20 @@
   "title": "段永平教学楼时间迷宫",
   "arrival": {
     "objective": "进入一楼门厅，确认湿纸留下的气流轨迹",
-    "hint": "先切到深色观察，查看门厅中央的断续水迹。"
+    "hint": "深色观察可查看门厅中央的断续水迹。"
   },
   "airflow": {
     "objective": "恢复纸条进入主电梯厅的风路",
     "observePrompt": "深色观察：地面水迹从玻璃门延伸到迈斯威卷帘门。",
     "lightPrompt": "浅色操作：到迈斯威卷帘门前，借助暖风把纸条送向主电梯。",
-    "observed": "已记录气流轨迹。切回浅色操作，前往迈斯威卷帘门。",
+    "observed": "已记录气流轨迹。浅色操作可在迈斯威卷帘门前恢复风路。",
     "guided": "暖风重新接上水迹，湿纸进入主电梯厅。"
   },
   "elevator": {
     "objective": "在主电梯厅同步纸条留下的历史轨道",
     "observePrompt": "深色观察：读取轿厢、门体与玩家进入窗口三条历史轨道。",
     "operatePrompt": "浅色操作：拖动轿厢轨道，让一楼开门区间完整覆盖六秒进入窗口。",
-    "locked": "先切到深色观察，读取主电梯的三条历史轨道。",
+    "locked": "当前校准动作需要浅色操作；深色观察可独立读取三条历史轨道。",
     "aligned": "三轨已经对齐。电梯返回一楼，等待门体完全打开。",
     "misaligned": "开门区间没有完整覆盖进入窗口。调整重放起点后再试。",
     "missed": "开门窗口已经结束。再次启动历史重放。",
@@ -49,12 +49,12 @@
       "npcIds": ["a2_discussion_group", "a2_headphone_student", "a2_clearance_staff", "a2_security_patrol", "a2_upper_corridor_student", "a2_returning_student", "a2_study_student_201_west", "a2_study_student_201_east", "a2_study_student_204_west", "a2_study_student_204_east"],
       "residualNpcIds": ["a2_discussion_group_residual", "a2_headphone_student_residual", "a2_clearance_staff_residual", "a2_security_patrol_residual", "a2_upper_corridor_student_residual", "a2_returning_student_residual", "a2_study_student_201_west_residual", "a2_study_student_201_east_residual", "a2_study_student_204_west_residual", "a2_study_student_204_east_residual"],
       "observePrompt": "深色观察：记录同一时间片内经过门口和停留区的人员残影。",
-      "observed": "三组人员时刻已记录。切回浅色操作，处理可见隔断。"
+      "observed": "三组人员时刻已记录。浅色操作可处理可见隔断。"
     },
     "corridor": {
       "partitionIds": ["a2_partition_west", "a2_partition_east"],
       "operatePrompt": "浅色操作：依照已记录的空档逐一移动两组可见隔断。",
-      "locked": "仍缺人员时刻证据，先记录可见残影。",
+      "locked": "人员时刻证据尚未完整；两种现实模式的交互入口都保持开放。",
       "completed": "内圈支路已接通，开放学习区现在可达。"
     },
     "wayfinding": {
@@ -64,8 +64,8 @@
       "historyStartsAtSeconds": 81900,
       "correctOrder": ["a2_fragment_west", "empty", "a2_fragment_east"],
       "collectPrompt": "在开放学习区取得两块导视碎片。",
-      "observePrompt": "深色观察：先读取旧导视残影。",
-      "oldSignageObserved": "旧导视残影已记录。切回浅色操作，重建导视板。",
+      "observePrompt": "深色观察：读取旧导视残影。",
+      "oldSignageObserved": "旧导视残影已记录。浅色操作可重建导视板。",
       "alignPrompt": "浅色操作：按旧导视残影排列两块碎片，并保留中间的未验证空槽。",
       "misaligned": "碎片与当前历史记录不一致，重新检查已记录的导视痕迹。",
       "aligned": "导视板恢复了一段可验证记录。返回已访问楼层继续取证。"

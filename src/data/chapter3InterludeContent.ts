@@ -138,45 +138,15 @@ export const chapterThreeInterludePresentationCopy = {
       ],
       recommendedScene: "cc98"
     },
-    photos: {
-      id: "chapter_three_interlude_photos",
-      label: "恢复三张照片的先后关系",
+    evidence: {
+      id: "chapter_three_interlude_evidence",
+      label: "恢复剩余证据",
       hints: [
-        "留意三张照片中发生跳变的位置。",
-        "用画面中不移动的参照物比较纸条位置。",
-        "选择能形成一次连续水平移动的照片顺序。"
+        "照片、录音、消息和网络记录可以分别处理，完成顺序不影响恢复结果。",
+        "任务栏会分别记录四类证据的状态，每一行都能直接打开对应应用。",
+        "四类证据全部恢复后，再回到记录恢复页核验旧时间。"
       ],
-      recommendedScene: "photos"
-    },
-    voice: {
-      id: "chapter_three_interlude_voice",
-      label: "从七段录音中恢复移动过程",
-      hints: [
-        "先比较各段录音中的空间和环境声是否连续。",
-        "筛出属于同一次移动过程的四段录音。",
-        "再依据水声、进门声和广播声的变化排列四段录音。"
-      ],
-      recommendedScene: "voice_memos"
-    },
-    wechat: {
-      id: "chapter_three_interlude_wechat",
-      label: "保存两条地点约束",
-      hints: [
-        "微信里有两条需要打开后才能确认的记录。",
-        "分别检查楼宇通知与群聊中的路线图片。",
-        "打开相关消息，并保存闭楼通知和入口截图。"
-      ],
-      recommendedScene: "wechat"
-    },
-    network: {
-      id: "chapter_three_interlude_network",
-      label: "核对校园网络记录",
-      hints: [
-        "用已经保存的两条约束逐步缩小网络记录范围。",
-        "每个有效筛选条件都会让候选记录数量下降。",
-        "完成三项筛选，再打开唯一保留下来的短会话记录。"
-      ],
-      recommendedScene: "zjuding"
+      recommendedScene: "phone_home"
     },
     exclusions: {
       id: "chapter_three_interlude_exclusions",
@@ -185,16 +155,6 @@ export const chapterThreeInterludePresentationCopy = {
         "三条旧记录中，数字的含义和时钟可信度并不相同。",
         "分别判断编号、独立事件和未同步时钟能否作为本次时间。",
         "为三条旧时间各选择对应的排除理由。"
-      ],
-      recommendedScene: "timeline_recovery"
-    },
-    timeline: {
-      id: "chapter_three_interlude_timeline",
-      label: "核对自动恢复的时间线",
-      hints: [
-        "证据齐全后，系统会按记录来源自动汇总时间线。",
-        "检查四项证据是否都已进入恢复结果。",
-        "返回记录恢复页，核对自动生成的四行时间线。"
       ],
       recommendedScene: "timeline_recovery"
     },

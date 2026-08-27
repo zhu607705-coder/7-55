@@ -10,6 +10,10 @@ import type {
 } from "../../core/types";
 import chapterFourLayout from "../../data/chapter4-three-floor-maze.layout.json";
 import {
+  CHAPTER_FOUR_CONTEXT_INTERACTIONS,
+  type ChapterFourContextInteractionTargetId
+} from "../../data/ChapterFourInteractionContent";
+import {
   ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
   ROOM204_PODIUM_LAYOUT,
   ROOM204_RESIDUAL_GROUP_BOUNDS,
@@ -20,6 +24,10 @@ import {
 
 export type RpgRealityMode = "light" | "dark";
 
+/**
+ * `requiredMode` 只校验当前动作的现实模式，不表示另一模式的事实必须先写入。
+ * 实体操作完成后，仍可在可到达的观察点补录真实观察事实；模式切换本身不得补写事实或推进阶段。
+ */
 export const RPG_REALITY_MODE_CONTRACT = {
   dark: {
     label: "深色观察",
@@ -33,6 +41,13 @@ export const RPG_REALITY_MODE_CONTRACT = {
   label: string;
   shortHint: string;
 }>;
+
+export const RPG_REALITY_MODE_ORDER_CONTRACT = Object.freeze({
+  sequence: "independent",
+  operationMayPrecedeObservation: true,
+  observationMayFollowOperation: true,
+  inferObservationFromOperation: false
+} as const);
 
 export interface RpgWorldPoint {
   x: number;
@@ -72,6 +87,7 @@ export type ChapterFour755InteractionTargetId =
   | "a1_front_desk_attendant"
   | "a2_elevator_attendant"
   | "a3_reference_teacher"
+  | ChapterFourContextInteractionTargetId
   | "a3_alumni_su_buqing"
   | "a3_alumni_zhu_kezhen"
   | "a3_alumni_lu_yongxiang"
@@ -107,6 +123,7 @@ export type ChapterFour755TargetConditionId =
   | "hour_hand_install_available"
   | "front_desk_attendant_available"
   | "support_npc_available"
+  | "context_interaction_available"
   | "alumni_honor_wall_available"
   | "classroom_104_content_available"
   | "classroom_105_content_available"
@@ -409,9 +426,7 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
       activePhases: ["room204_restore"],
       roomIds: ["a2_corridor", "a2_room204", "a2_room_204"],
       activationCondition: targetCondition("room204_slot_available", (state) => (
-        hasChapterFourFact(state, "a3_reference_observed")
-        && hasChapterFourFact(state, "room204_residual_observed")
-        && !hasChapterFourFact(state, "room204_restored")
+        !hasChapterFourFact(state, "room204_restored")
         && !state.chapter4.room204Placements.some((placement) => placement.slotId === slotId)
       )),
       proximity: 56,
@@ -427,6 +442,19 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
   })
 ) as Readonly<Record<ChapterFour755Room204SlotTargetId, ChapterFour755InteractionTargetContract>>;
 
+const CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS = Object.fromEntries(
+  CHAPTER_FOUR_CONTEXT_INTERACTIONS.map((entry) => [entry.targetId, defineChapterFourTarget({
+    id: entry.targetId,
+    label: entry.label,
+    ...layoutAnchorTarget(entry.floor, entry.anchorId),
+    activation: "phase_exclusive",
+    activePhases: entry.activePhases,
+    roomIds: entry.roomAliases,
+    activationCondition: targetCondition("context_interaction_available", () => true),
+    proximity: 52
+  })])
+) as Readonly<Record<ChapterFourContextInteractionTargetId, ChapterFour755InteractionTargetContract>>;
+
 /**
  * Chapter 4's single interaction geometry contract. Layout-backed rectangles
  * are read directly from the Task 3 source-pixel anchors. Room 204 slots read
@@ -435,6 +463,7 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
  * scene resolves a visible runtime rectangle.
  */
 export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
+  ...CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS,
   a1_noticeboard_paper: defineChapterFourTarget({
     id: "a1_noticeboard_paper",
     label: "公告栏前的签到记录纸条",
@@ -683,8 +712,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     activePhases: ["room204_restore"],
     roomIds: ["a2_corridor", "a2_room204", "a2_room_204"],
     activationCondition: targetCondition("room204_residual_available", (state) => (
-      hasChapterFourFact(state, "a3_reference_observed")
-      && !hasChapterFourFact(state, "room204_residual_observed")
+      !hasChapterFourFact(state, "room204_residual_observed")
     )),
     proximity: 76,
     requiredMode: "dark",

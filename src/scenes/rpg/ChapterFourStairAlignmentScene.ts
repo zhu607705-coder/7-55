@@ -170,7 +170,7 @@ export class ChapterFourStairAlignmentScene extends Phaser.Scene {
 
   private requestRotation(direction: "left" | "right"): void {
     const state = this.bridge.getState().chapter4;
-    if (state.mode !== "light" || !state.stairEchoObserved || state.stairAlignmentSolved) return;
+    if (state.mode !== "light" || state.stairAlignmentSolved) return;
     this.animationLocked = true;
     this.bridge.emit("rpg_chapter4_action_requested", { action: "rotate_stair", direction });
     const targetQuarterTurns = (state.stairRotationQuarterTurns + (direction === "left" ? -1 : 1) + 4) % 4;
@@ -185,7 +185,7 @@ export class ChapterFourStairAlignmentScene extends Phaser.Scene {
 
   private requestInteraction(): void {
     const state = this.bridge.getState().chapter4;
-    if (!state.stairEchoObserved) {
+    if (state.mode === "dark" && !state.stairEchoObserved) {
       this.bridge.emit("rpg_chapter4_action_requested", { action: "observe_stair_echo" });
       return;
     }
@@ -213,18 +213,16 @@ export class ChapterFourStairAlignmentScene extends Phaser.Scene {
     this.shade.setAlpha(state.mode === "dark" ? 0.38 : 0);
     this.echoLayer.setVisible(state.mode === "dark" || state.stairEchoObserved);
     this.echoLayer.setAlpha(state.mode === "dark" ? 1 : 0.25);
-    this.routeGlow.setVisible(state.stairEchoObserved && state.stairRotationQuarterTurns === 1);
+    this.routeGlow.setVisible(state.stairRotationQuarterTurns === 1);
     if (force || !this.animationLocked) this.turntable.setAngle(state.stairRotationQuarterTurns * 90);
 
     const instruction = state.stairAlignmentSolved
       ? "B2 已接通"
-      : !state.stairEchoObserved
-        ? state.mode === "dark" ? "空格键  记录下层回声" : "切到深色观察后确认下层方向"
-        : state.mode === "dark"
-          ? "已确认下层方向 · 切回浅色操作"
-          : state.stairRotationQuarterTurns === 1
-            ? "端点已对齐 · 空格键通过"
-            : "A / ← 左转 · D / → 右转 · 让两端发光后通过";
+      : state.mode === "dark"
+        ? state.stairEchoObserved ? "下层回声已记录" : "空格键  记录下层回声"
+        : state.stairRotationQuarterTurns === 1
+          ? "端点已对齐 · 空格键通过"
+          : "A / ← 左转 · D / → 右转 · 让两端发光后通过";
     this.instruction.setText(instruction);
   }
 
@@ -273,7 +271,7 @@ export class ChapterFourStairAlignmentScene extends Phaser.Scene {
         y: PIVOT.y,
         width: 336,
         height: 236,
-        requiredMode: state.stairEchoObserved ? "light" : "dark"
+        requiredMode: state.mode
       }],
       chapterFour: {
         phase: state.phase,

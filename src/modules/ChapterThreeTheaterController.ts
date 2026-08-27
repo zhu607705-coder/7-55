@@ -57,7 +57,7 @@ export class ChapterThreeTheaterController {
         ...current.theaterHunt,
         active: true,
         phase: current.theaterHunt.active ? current.theaterHunt.phase : "entry_ticket",
-        mode: current.theaterHunt.active ? current.theaterHunt.mode : "light",
+        mode: current.theaterHunt.mode,
         cc98TicketCommissionPhase: current.theaterHunt.cc98TicketCommissionPhase === "locked"
           ? "posted"
           : current.theaterHunt.cc98TicketCommissionPhase
@@ -126,7 +126,6 @@ export class ChapterThreeTheaterController {
     if (
       !state.theaterHunt.active
       || state.theaterHunt.phase !== "entry_ticket"
-      || !state.theaterHunt.ticketCodeRead
     ) return "inactive";
     const commissionPhase = state.theaterHunt.cc98TicketCommissionPhase;
     if (commissionPhase === "delivered") return "already_won";
@@ -285,7 +284,7 @@ export class ChapterThreeTheaterController {
     this.store.setState((current) => ({
       ...current,
       rpgCheckpoint: "theater_auditorium",
-      theaterHunt: { ...current.theaterHunt, admitted: true, phase: "program_search", mode: "light" }
+      theaterHunt: { ...current.theaterHunt, admitted: true, phase: "program_search" }
     }));
     this.events.emit("use_item", { itemId: "temporaryTheaterTicket", targetId: "theater-ticket-gate", result: "retain" });
     this.events.emit("theater_ticket_admitted");
@@ -318,7 +317,6 @@ export class ChapterThreeTheaterController {
     if (
       state.theaterHunt.phase !== "program_search"
       || state.theaterHunt.mode !== "dark"
-      || state.theaterHunt.collectedProgramIds.length < 3
     ) return false;
     this.events.emit("theater_program_order_read");
     return true;
@@ -379,7 +377,6 @@ export class ChapterThreeTheaterController {
   inspectPropBox(): "ghost" | "locked" | "opened" | "inactive" {
     const state = this.store.getState();
     if (state.theaterHunt.phase !== "prop_setup") return "inactive";
-    if (state.theaterHunt.propBoxOpened) return "opened";
     if (state.theaterHunt.mode === "dark") {
       this.store.setState((current) => ({
         ...current,
@@ -388,6 +385,7 @@ export class ChapterThreeTheaterController {
       this.events.emit("theater_prop_ghost_read");
       return "ghost";
     }
+    if (state.theaterHunt.propBoxOpened) return "opened";
     this.events.emit("theater_prop_box_locked");
     return "locked";
   }
@@ -398,7 +396,6 @@ export class ChapterThreeTheaterController {
       state.theaterHunt.phase !== "prop_setup"
       || state.theaterHunt.mode !== "light"
       || !state.items.temporaryTheaterTicket
-      || !state.theaterHunt.managerHintRead
     ) return false;
     this.store.setState((current) => ({
       ...current,
@@ -452,7 +449,7 @@ export class ChapterThreeTheaterController {
       ui: current.ui.selectedItem === "spotlightRemote"
         ? { ...current.ui, selectedItem: null }
         : current.ui,
-      theaterHunt: { ...current.theaterHunt, phase: "spotlight_hunt", mode: "dark" }
+      theaterHunt: { ...current.theaterHunt, phase: "spotlight_hunt" }
     }));
     this.events.emit("use_item", { itemId: "spotlightRemote", targetId: "theater-spotlight-console", result: "consume" });
     this.events.emit("theater_spotlight_started");
@@ -480,7 +477,6 @@ export class ChapterThreeTheaterController {
       theaterHunt: {
         ...current.theaterHunt,
         spotlightRound,
-        mode: complete ? "light" : "dark",
         phase: complete ? "reversal" : "spotlight_hunt"
       }
     }));
@@ -545,12 +541,11 @@ export class ChapterThreeTheaterController {
     this.store.setState((current) => ({
       ...current,
       items: { ...current.items, decoyPaper: true, wetProgram: true },
-      theaterHunt: { ...current.theaterHunt, phase: "complete", decoyRevealed: true, mode: "light" },
+      theaterHunt: { ...current.theaterHunt, phase: "complete", decoyRevealed: true },
       qizhenLake: {
         ...current.qizhenLake,
         active: true,
-        phase: current.qizhenLake.phase === "inactive" ? "location_search" : current.qizhenLake.phase,
-        mode: "light"
+        phase: current.qizhenLake.phase === "inactive" ? "location_search" : current.qizhenLake.phase
       }
     }));
     this.events.emit("get_item", { itemId: "decoyPaper", sourceScene: "phone_home" });
@@ -589,7 +584,6 @@ export class ChapterThreeTheaterController {
       ...current,
       theaterHunt: {
         ...current.theaterHunt,
-        mode: "dark",
         spotlightMistakes: current.theaterHunt.spotlightMistakes + 1
       }
     }));

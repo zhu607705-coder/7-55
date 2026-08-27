@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the shared high-resolution eight-phase RPG player walk cycle."""
+"""Build the shared high-resolution RPG player walk cycles."""
 
 from __future__ import annotations
 
@@ -13,6 +13,12 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 PLAYER_DIR = ROOT / "src/assets/rpg/player"
 SOURCE_PATH = PLAYER_DIR / "source/player_walk_24pose_transparent_v2.png"
+SIDE_TRANSITION_PATHS = {
+    "near_acceptance": PLAYER_DIR / "source/player_side_transition_01_v3.png",
+    "near_toe_off": PLAYER_DIR / "source/player_side_transition_23_v3.png",
+    "far_acceptance": PLAYER_DIR / "source/player_side_transition_45_v3.png",
+    "far_toe_off": PLAYER_DIR / "source/player_side_transition_67_v3.png",
+}
 
 FRAME_WIDTH = 96
 FRAME_HEIGHT = 128
@@ -28,8 +34,26 @@ POSE_SPECS = {
     # The generated source contains seven back-facing poses and nine side poses.
     # Complete the back cycle deterministically with a mirrored back-facing step.
     "up": tuple((index, False) for index in range(8, 15)) + ((12, True),),
-    "side": tuple((index, False) for index in range(16, 24)),
 }
+
+# The side cycle keeps the original eight authored poses and inserts four
+# genuinely drawn transition poses. The two six-phase half strides explicitly
+# swap the near/far support leg. Target silhouette heights encode a restrained,
+# symmetric gait bob instead of inheriting source-resolution drift.
+SIDE_CYCLE_SPECS = (
+    ("sheet", 16, 104),
+    ("transition", "near_acceptance", 103),
+    ("sheet", 17, 102),
+    ("sheet", 18, 101),
+    ("transition", "near_toe_off", 102),
+    ("sheet", 19, 103),
+    ("sheet", 20, 104),
+    ("transition", "far_acceptance", 103),
+    ("sheet", 21, 102),
+    ("sheet", 22, 101),
+    ("transition", "far_toe_off", 102),
+    ("sheet", 23, 103),
+)
 
 
 @dataclass(frozen=True)
@@ -138,6 +162,40 @@ def render_pose(pose: SourcePose, scale: float, mirror: bool) -> Image.Image:
     return frame
 
 
+def extract_standalone_pose(path: Path) -> SourcePose:
+    image = Image.open(path).convert("RGBA")
+    alpha = image.getchannel("A")
+    visible_alpha = alpha.point(
+        lambda value: 255 if value >= ALPHA_THRESHOLD else 0
+    )
+    bounds = visible_alpha.getbbox()
+    if bounds is None:
+        raise ValueError(f"Standalone player pose is empty: {path}")
+    crop = image.crop(bounds)
+    crop.putalpha(crop.getchannel("A").point(
+        lambda value: value if value >= ALPHA_THRESHOLD else 0
+    ))
+    return SourcePose(image=crop, bounds=bounds)
+
+
+def render_pose_at_height(pose: SourcePose, target_height: int) -> Image.Image:
+    scale = min(
+        target_height / pose.image.height,
+        CONTENT_WIDTH / pose.image.width,
+    )
+    frame = render_pose(pose, scale, False)
+    bounds = frame.getchannel("A").getbbox()
+    if bounds is None:
+        raise ValueError(f"Rendered side pose is empty: {pose.bounds}")
+    rendered_height = bounds[3] - bounds[1]
+    if rendered_height != target_height:
+        raise ValueError(
+            f"Side pose {pose.bounds} must render at {target_height}px, "
+            f"received {rendered_height}px"
+        )
+    return frame
+
+
 def main() -> None:
     sheet = Image.open(SOURCE_PATH).convert("RGBA")
     poses = extract_source_poses(sheet)
@@ -153,6 +211,21 @@ def main() -> None:
             output = PLAYER_DIR / f"player_{facing}_{index}.png"
             frame.save(output, format="PNG", optimize=True)
             print(f"built {output.relative_to(ROOT)} {FRAME_WIDTH}x{FRAME_HEIGHT}")
+
+    standalone_side_poses = {
+        name: extract_standalone_pose(path)
+        for name, path in SIDE_TRANSITION_PATHS.items()
+    }
+    for index, (source_type, source_ref, target_height) in enumerate(SIDE_CYCLE_SPECS):
+        pose = (
+            poses[source_ref]
+            if source_type == "sheet"
+            else standalone_side_poses[source_ref]
+        )
+        frame = render_pose_at_height(pose, target_height)
+        output = PLAYER_DIR / f"player_side_{index}.png"
+        frame.save(output, format="PNG", optimize=True)
+        print(f"built {output.relative_to(ROOT)} {FRAME_WIDTH}x{FRAME_HEIGHT}")
 
 
 if __name__ == "__main__":
