@@ -5,7 +5,7 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 基于当前 `delivery-20260826` 源码重建 `demo/index.html`。`npm run build:single` 通过，Vite 处理 `659` 个模块；`npm run verify:single` 确认产物为 `252297406` 字节、`2` 个内联脚本、`1` 个内联样式，可直接作为离线单文件运行。
 - 构建前回归通过：`typecheck`；第四章拓扑 `2769` 项与运行时合同 `1201` 项；启真湖雨天安全 `25` 项；启真湖日志内容与确定性；任务提示所有权检查 `188` 个源文件。构建后 `git diff --check` 通过。
 - 按 `develop-web-game` 标准客户端通过 `file://` 直接打开新单文件并进入 `c4-755-bakery-1225`。Phaser 场景为 `duan_yongping_temporal_maze`，A1 画面正常；主角运行时深度为 `9900`，`a1-ann-014` 与 `a1-ann-015` 对应的两段北侧空气墙均出现在实际碰撞列表中，浏览器 console/page error 为 `0`。
-- 当前边界：单文件已完成并通过本地验证；尚未执行 Git 暂存、提交、合并或推送。GitHub 上传需先完成远端 `main` fetch 和三视图范围确认。
+- 交付范围：远端 `main` fetch 和三视图审计完成后，用户选择完整范围 A。源码提交为 `bbc4afd3618808988a61d4297f4c6652b1485cda`；日期化交付目录为 `7-55-upload-20260827`，其中单文件与实现归档及两份 SHA-256 均已通过本地复核。远端交付信息由 `README.md`、`ASSETS.md` 和 GitHub Release `demo-20260827` 统一记录。
 
 ## 2026-08-27 第四章北侧墙沿空气墙与主角固定顶层
 
