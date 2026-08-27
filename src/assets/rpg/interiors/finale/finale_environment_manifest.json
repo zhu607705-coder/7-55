@@ -3517,7 +3517,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 94,
-            "y": 609,
+            "y": 633,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3571,7 +3571,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 171,
-            "y": 609,
+            "y": 633,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3625,7 +3625,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 289,
-            "y": 609,
+            "y": 633,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3679,7 +3679,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 366,
-            "y": 609,
+            "y": 633,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3733,7 +3733,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 94,
-            "y": 686,
+            "y": 710,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3787,7 +3787,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 171,
-            "y": 686,
+            "y": 710,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3841,7 +3841,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 289,
-            "y": 686,
+            "y": 710,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3895,7 +3895,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 366,
-            "y": 686,
+            "y": 710,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -3949,7 +3949,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 94,
-            "y": 757,
+            "y": 781,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -4003,7 +4003,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 171,
-            "y": 757,
+            "y": 781,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -4057,7 +4057,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 289,
-            "y": 757,
+            "y": 781,
             "coordinateSpace": "world",
             "floor": "A2"
           }
@@ -4111,7 +4111,7 @@
           "approximate": true,
           "worldTarget": {
             "x": 366,
-            "y": 757,
+            "y": 781,
             "coordinateSpace": "world",
             "floor": "A2"
           }

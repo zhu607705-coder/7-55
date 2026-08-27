@@ -30,8 +30,8 @@ const expectedFloors = ["A1", "A2", "A3"];
 const expectedAssets = ["a1_base", "a2_base", "a3_base"];
 const expectedCheckpoints = ["c4_a1_lobby", "c4_a2_corridor", "c4_a3_wayfinding"];
 const expectedFloorCounts = {
-  A1: { collisions: 12, walkable: 7, occlusions: 9 },
-  A2: { collisions: 18, walkable: 5, occlusions: 6 },
+  A1: { collisions: 14, walkable: 7, occlusions: 9 },
+  A2: { collisions: 23, walkable: 5, occlusions: 6 },
   A3: { collisions: 13, walkable: 6, occlusions: 2 }
 };
 const expectedElevators = {
@@ -348,6 +348,45 @@ for (const floor of layout.floors ?? []) {
 
 const a1 = floorByStory.get("A1");
 const a2 = floorByStory.get("A2");
+for (const [collisionId, occlusionId, annotationId] of [
+  ["a1_air_wall_north_portrait_west_lip", "a1_foreground_014", "a1-ann-014"],
+  ["a1_air_wall_north_portrait_east_lip", "a1_foreground_015", "a1-ann-015"]
+]) {
+  const collision = a1?.staticCollisions?.find((entry) => entry.id === collisionId);
+  const occlusion = a1?.foregroundOcclusions?.find((entry) => entry.id === occlusionId);
+  assert(collision?.sourceAnnotationId === annotationId, `${collisionId} source annotation mismatch`);
+  assert(occlusion?.sourceAnnotationId === annotationId, `${occlusionId} source annotation mismatch`);
+  assertJsonEqual(rectOnly(collision), occlusion?.maskBounds, `${collisionId} must match ${occlusionId}`);
+}
+for (const [floorId, collisionIds] of [
+  ["A2", ["a2_air_wall_006", "a2_air_wall_007", "a2_air_wall_010", "a2_air_wall_011"]],
+  ["A3", ["a3_air_wall_009", "a3_air_wall_010"]]
+]) {
+  const floor = floorByStory.get(floorId);
+  for (const collisionId of collisionIds) {
+    assert(
+      floor?.staticCollisions?.some((entry) => entry.id === collisionId),
+      `${floorId} north room wall lip ${collisionId} must remain collidable`
+    );
+  }
+}
+for (const [collisionId, occlusionId, annotationId] of [
+  ["a2_air_wall_020", "a2_foreground_020", "a2-ann-020"],
+  ["a2_air_wall_021", "a2_foreground_021", "a2-ann-021"],
+  ["a2_air_wall_023", "a2_foreground_023", "a2-ann-023"],
+  ["a2_air_wall_024", "a2_foreground_024", "a2-ann-024"],
+  ["a2_air_wall_025", "a2_foreground_025", "a2-ann-025"]
+]) {
+  const collision = a2?.staticCollisions?.find((entry) => entry.id === collisionId);
+  const occlusion = a2?.foregroundOcclusions?.find((entry) => entry.id === occlusionId);
+  assert(collision?.sourceAnnotationId === annotationId, `${collisionId} source annotation mismatch`);
+  assert(occlusion?.sourceAnnotationId === annotationId, `${occlusionId} source annotation mismatch`);
+  assertJsonEqual(rectOnly(collision), occlusion?.maskBounds, `${collisionId} must match ${occlusionId}`);
+}
+assert(
+  !a2?.staticCollisions?.some((entry) => entry.id === "a2_air_wall_022"),
+  "A2 annotation 022 was not selected as an air wall"
+);
 for (const [walkableId, occlusionId, annotationId] of [
   ["a1_walkable_025", "a1_north_portrait_wall_west_front", "a1-ann-025"],
   ["a1_walkable_026", "a1_north_portrait_wall_east_front", "a1-ann-026"]
@@ -752,7 +791,7 @@ assertJsonEqual(
 );
 assertJsonEqual(
   room204Runtime?.walkability?.horizontalConnector,
-  { y: 623, fromX: 132.5, toX: 327.5 },
+  { y: 647, fromX: 132.5, toX: 327.5 },
   "room204 horizontal connector"
 );
 assert(
@@ -904,7 +943,7 @@ for (const sampleStep of room204Runtime?.walkability?.sampleSteps ?? []) {
       room204Runtime.walkability.playerFootBox,
       sampleStep
     ),
-    `room204 horizontal connector y=623 must clear every legal complete permutation at ${sampleStep}px sampling`
+    `room204 horizontal connector y=647 must clear every legal complete permutation at ${sampleStep}px sampling`
   );
 }
 const room204AssertionCount = assertionCount - room204AssertionStart;

@@ -60,26 +60,26 @@
   "dock": {
     "intro": [
       "玩家：小码头有一艘皮划艇。",
-      "系统：左桨是去掉叶子的树枝，右桨是禁止游泳三角牌。",
+      "系统：船边还缺两件可以划水的工具。",
       "玩家：先完成上船平衡。"
     ],
-    "outfitPrompt": "任务：皮划艇在器材架，两支桨散落在码头环境里。靠近实物后分别拾取。",
+    "outfitPrompt": "任务：先确认皮划艇，再在码头周围寻找两件可以划水的东西。",
     "kayakHint": "先查看救生圈旁的器材架。",
-    "leftPaddleHint": "左桨是去掉叶子的树枝，临水绿化边可能找得到。",
-    "rightPaddleHint": "右桨来自旧三角牌，码头设备区留有一块。",
+    "leftPaddleHint": "码头周围有一件细长物体，靠近后再判断能不能使用。",
+    "rightPaddleHint": "另一件需要从码头现有设施里找。",
     "boardPrompt": "三件装备收齐后，到码头前端上船，再交替划左右桨。",
     "leaveLocked": "先把皮划艇划回小码头并上岸。",
     "kayakCollected": "皮划艇已确认。两支桨没有放在器材架上，继续沿码头寻找。",
     "leftPaddleCollected": "柳树枝长度合适，已作为左桨。还要找另一侧的桨。",
     "rightPaddleCollected": "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。",
     "outfitComplete": "皮划艇和两支临时桨都已收齐。"
-    ,"safetyRainBlock": "安全员：现在还在下雨，禁止登船。先找齐器材，再来做下水前检查。"
-    ,"safetyWeatherRequest": "安全员：器材检查通过。雨势仍不适合下水，打开手机天气应用，执行启真湖小码头天气调控。"
-    ,"safetyWeatherPending": "安全员：天气调控申请已经提交。去手机天气应用确认执行。"
-    ,"safetyCleared": "安全员：天气调控完成，当前为多云。可以从小码头上船。"
-    ,"safetyAlreadyCleared": "安全员：当前为多云，已经允许下水。"
+    ,"safetyRainBlock": "安全员：现在天气不能下水。"
+    ,"safetyWeatherRequest": "安全员：现在天气不能下水。"
+    ,"safetyWeatherPending": "安全员：现在天气不能下水。"
+    ,"safetyCleared": "安全员：现在可以下水。"
+    ,"safetyAlreadyCleared": "安全员：现在可以下水。"
     ,"afterRainProof": "这是下过雨的证明"
-    ,"boardRainRejected": "雨天安全禁令仍在生效。先让湖边安全员提交天气调控申请。"
+    ,"boardRainRejected": "现在天气不能下水。"
   },
   "boarding": {
     "title": "上船平衡",
@@ -201,8 +201,8 @@
   },
   "prompts": {
     "collectKayak": "确认器材架上的皮划艇",
-    "collectLeftPaddle": "拾取花坛边的柳树枝左桨",
-    "collectRightPaddle": "拆下旧三角牌右桨",
+    "collectLeftPaddle": "查看花坛边的细长物体",
+    "collectRightPaddle": "查看设备区的旧设施",
     "board": "从小码头上船",
     "observeReflection": "观察倒影位置",
     "collectRod": "捞起钓鱼竿",
@@ -304,7 +304,7 @@
     ],
     "spotCaptions": {
       "dock": [
-        { "id": "caption_dock_depart", "text": "出发位打卡。两支桨都是在这附近凑齐的，一支是树枝，一支是旧三角牌。" },
+        { "id": "caption_dock_depart", "text": "出发位打卡。临时装备已经固定，先试着划离码头。" },
         { "id": "caption_dock_return", "text": "回码头补一张。能完整地划回来，我自己都没想到。" },
         { "id": "caption_dock_gear", "text": "器材架空了一半，这艘皮划艇暂时归我保管。" }
       ],

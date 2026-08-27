@@ -47,6 +47,7 @@ import {
 import {
   CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH,
   CHAPTER_FOUR_PLAYER_DEPTH_BASE,
+  CHAPTER_FOUR_PLAYER_TOP_DEPTH,
   chapterFourPlayerDepth
 } from "../../modules/ChapterFourElevatorDepthModel";
 import { CHAPTER_FOUR_ELEVATOR } from "../../modules/ChapterFourElevatorModel";
@@ -630,6 +631,7 @@ const WORLD = Object.freeze({
 });
 const PLAYER_SPEED = 176;
 const PLAYER_DEPTH_BASE = CHAPTER_FOUR_PLAYER_DEPTH_BASE;
+const PLAYER_TOP_DEPTH = CHAPTER_FOUR_PLAYER_TOP_DEPTH;
 const ELEVATOR_TEXTURE = "teaching-building-elevator-doors";
 const BAKERY_COUNTER_BAKER_TEXTURE = "chapter-four-bakery-counter-auntie";
 const BAKERY_COUNTER_BAKER_ANIMATION = "chapter-four-bakery-counter-auntie-pair-3";
@@ -1226,7 +1228,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       `act1-player-${initialSpawn.facing ?? "down"}-0`
     ).setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
-    this.player.setDepth(PLAYER_DEPTH_BASE + initialSpawn.y);
+    this.player.setDepth(PLAYER_TOP_DEPTH);
     this.animator = new RpgPlayerAnimator(this.player, initialSpawn.facing ?? "down");
     this.physics.add.collider(this.player, this.staticObstacles);
     this.platePlayerCollider = this.physics.add.collider(this.player, this.plateObstacles);
@@ -1323,7 +1325,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       ? CHAPTER_FOUR_FINAL_CHASE_RULES.playerSpeed
       : PLAYER_SPEED;
     if (movement.lengthSq() > 0) movement.normalize().scale(movementSpeed);
-    this.player.setVelocity(movement.x, movement.y).setDepth(PLAYER_DEPTH_BASE + this.player.y);
+    this.player.setVelocity(movement.x, movement.y).setDepth(PLAYER_TOP_DEPTH);
     this.animator.update(movement, this.time.now);
     this.updateRoom204CarryGhost();
     this.refreshProximity();
@@ -4030,7 +4032,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.maintenanceGuardAlert?.setVisible(false);
     this.player.setPosition(floor.offsetX + 836, 716)
       .setVelocity(0, 0)
-      .setDepth(PLAYER_DEPTH_BASE + 716);
+      .setDepth(PLAYER_TOP_DEPTH);
     this.animator.setFacing("up");
     this.cameras.main.centerOn(this.player.x, this.player.y);
     this.paintMaintenanceGuardVision(false);
@@ -4318,7 +4320,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.player.setPosition(
       floor.offsetX + FINAL_CHASE_RUNTIME.playerStart.x,
       FINAL_CHASE_RUNTIME.playerStart.y
-    ).setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + FINAL_CHASE_RUNTIME.playerStart.y);
+    ).setVelocity(0, 0).setDepth(PLAYER_TOP_DEPTH);
     this.animator.setFacing("up");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
@@ -7156,7 +7158,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         body.enable = true;
         body.reset(this.player.x, this.player.y);
-        this.player.setDepth(PLAYER_DEPTH_BASE + this.player.y);
+        this.player.setDepth(PLAYER_TOP_DEPTH);
         this.elevatorPhase = "destination_closing";
         this.tweenElevatorDoor(floorNumber, 1, 0, () => {
           this.elevatorVisuals.get(floorNumber)?.lamp.setVisible(false);

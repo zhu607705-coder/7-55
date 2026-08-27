@@ -14,7 +14,9 @@ try {
       contents: [
         'export { ChapterThreeQizhenLakeController } from "./src/modules/ChapterThreeQizhenLakeController.ts";',
         'export { createInitialGameState } from "./src/core/GameState.ts";',
+        'export { SaveStore } from "./src/core/SaveStore.ts";',
         'export { selectCampusWeather } from "./src/modules/CampusWeatherModel.ts";',
+        'export { getQizhenWeatherMinimumMoves, isQizhenWeatherCloudAligned, moveQizhenWeatherCloud, QIZHEN_WEATHER_CLOUD_INITIAL } from "./src/modules/QizhenWeatherControlModel.ts";',
         'export { createDeveloperCheckpointState } from "./src/modules/DeveloperChannel.ts";',
         'export { QIZHEN_DOCK_AFTER_RAIN_PUDDLES, QIZHEN_LAKE_WORLD, QIZHEN_LAKE_ZONES, isQizhenAfterRainPuddleFootHit } from "./src/scenes/rpg/QizhenLakeModel.ts";',
         'export { default as qizhenContent } from "./src/data/chapter3-qizhen-lake.content.json";'
@@ -34,7 +36,12 @@ try {
     QIZHEN_LAKE_WORLD,
     QIZHEN_LAKE_ZONES,
     createInitialGameState,
+    getQizhenWeatherMinimumMoves,
     isQizhenAfterRainPuddleFootHit,
+    isQizhenWeatherCloudAligned,
+    moveQizhenWeatherCloud,
+    QIZHEN_WEATHER_CLOUD_INITIAL,
+    SaveStore,
     qizhenContent,
     selectCampusWeather,
     createDeveloperCheckpointState
@@ -82,8 +89,23 @@ try {
     throw new Error("boarding must stay blocked until the weather app executes the request");
   }
   store.setState((current) => ({ ...current, runtimeMode: "phone", currentScene: "weather" }));
-  if (controller.applyDockWeatherAdjustment() !== "accepted"
+  if (controller.beginDockWeatherAdjustment() !== "accepted"
+    || store.getState().qizhenLake.weatherControlAttempts !== 1) {
+    throw new Error("weather app must begin one persisted cloud calibration attempt");
+  }
+  let cloudOffsets = QIZHEN_WEATHER_CLOUD_INITIAL;
+  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 0, 1);
+  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 0, 1);
+  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 1, 1);
+  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 1, 1);
+  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 2, 1);
+  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 2, 1);
+  if (!isQizhenWeatherCloudAligned(cloudOffsets) || getQizhenWeatherMinimumMoves() !== 6) {
+    throw new Error("cloud calibration model must resolve in six deterministic moves");
+  }
+  if (controller.applyDockWeatherAdjustment({ moves: 6, cloudOffsets }) !== "accepted"
     || !store.getState().qizhenLake.rainSafetyCleared
+    || store.getState().qizhenLake.weatherControlBestMoves !== 6
     || selectCampusWeather(store.getState()).condition !== "overcast"
     || selectCampusWeather(store.getState()).label !== "多云") {
     throw new Error("weather app must clear the rain hold and publish the overcast projection");
@@ -91,6 +113,26 @@ try {
   store.setState((current) => ({ ...current, runtimeMode: "rpg", currentScene: "phone_home" }));
   if (controller.boardKayak() !== "accepted" || store.getState().qizhenLake.vehicle !== "kayak") {
     throw new Error("boarding must resume after weather adjustment");
+  }
+  const stored = new Map();
+  const memoryStorage = {
+    get length() { return stored.size; },
+    clear: () => stored.clear(),
+    getItem: (key) => stored.get(key) ?? null,
+    key: (index) => [...stored.keys()][index] ?? null,
+    removeItem: (key) => stored.delete(key),
+    setItem: (key, value) => stored.set(key, String(value))
+  };
+  const saveStore = new SaveStore(memoryStorage);
+  if (!saveStore.save(store.getState())) {
+    throw new Error("weather calibration progress must produce a persistent snapshot");
+  }
+  const reloaded = saveStore.load(createInitialGameState());
+  if (!reloaded
+    || reloaded.qizhenLake.weatherControlAttempts !== 1
+    || reloaded.qizhenLake.weatherControlBestMoves !== 6
+    || !reloaded.qizhenLake.rainSafetyCleared) {
+    throw new Error("weather calibration attempt, best moves, and completion must survive save reload");
   }
 
   const incomplete = createInitialGameState();
@@ -125,9 +167,17 @@ try {
   };
   const bypassStore = makeStore(bypass);
   const bypassController = new ChapterThreeQizhenLakeController(bypassStore, eventBus);
-  if (bypassController.applyDockWeatherAdjustment() !== "locked"
+  if (bypassController.applyDockWeatherAdjustment({ moves: 6, cloudOffsets }) !== "locked"
     || bypassStore.getState().qizhenLake.rainSafetyCleared) {
     throw new Error("weather app must reject adjustment without the safety officer request");
+  }
+  bypass.qizhenLake.weatherAdjustmentRequested = true;
+  const invalidStore = makeStore(bypass);
+  const invalidController = new ChapterThreeQizhenLakeController(invalidStore, eventBus);
+  if (invalidController.beginDockWeatherAdjustment() !== "accepted"
+    || invalidController.applyDockWeatherAdjustment({ moves: 5, cloudOffsets }) !== "locked"
+    || invalidStore.getState().qizhenLake.rainSafetyCleared) {
+    throw new Error("controller must reject an impossible cloud calibration summary");
   }
   const rainCheckpoint = createDeveloperCheckpointState("c3-qizhen-rain-hold");
   const controlCheckpoint = createDeveloperCheckpointState("c3-qizhen-weather-control");
@@ -178,7 +228,7 @@ try {
   if (qizhenContent.dock.afterRainProof !== "这是下过雨的证明") {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
-  console.log("Qizhen rain safety PASS assertions=19 gate=controller-owned weather=shared-selector workflow=safety-to-app developer-checkpoints=3 puddles=4+walkable+foot-hit feedback=event-backed");
+  console.log("Qizhen rain safety PASS assertions=25 gate=controller-owned weather=shared-selector cloud-calibration=3-bands+6-min-moves+save-reload developer-checkpoints=3 puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

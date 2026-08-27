@@ -324,19 +324,16 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
   }
   if (lake.phase === "boarding_tutorial") {
     if (!lake.rainSafetyCleared && !lake.weatherAdjustmentRequested) {
-      return task("weather_request", "向湖边安全员申请天气调控", [
-        "确认皮划艇、左桨和右桨已经收齐。",
-        "在小码头靠近安全员并按空格交互。"
+      return task("weather_request", "确认能否下水", [
+        "器材收齐后，去小码头找安全员确认。"
       ]);
     }
     if (!lake.rainSafetyCleared) {
       return {
-        ...task("weather_adjustment", "在天气应用将启真湖调为多云", [
-          "返回手机主页并打开天气应用。",
-          "执行启真湖小码头天气调控，再返回码头。"
+        ...task("weather_adjustment", "解决当前下水条件", [
+          "查看手机里的校园状态。"
         ]),
-        targetSurface: "phone",
-        recommendedScene: "weather"
+        targetSurface: "phone"
       };
     }
     return task("boarding", qizhenContent.quest.boarding, [

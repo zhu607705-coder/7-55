@@ -210,6 +210,8 @@ export function createInitialGameState(): GameState {
       leftPaddleEquipped: false,
       rightPaddleEquipped: false,
       weatherAdjustmentRequested: false,
+      weatherControlAttempts: 0,
+      weatherControlBestMoves: 0,
       rainSafetyCleared: false,
       boardingStrokeCount: 0,
       boardingLastSide: null,

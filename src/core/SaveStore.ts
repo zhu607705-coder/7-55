@@ -854,6 +854,8 @@ function normalizeQizhenLake(
     leftPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.leftPaddleEquipped, initial.leftPaddleEquipped),
     rightPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.rightPaddleEquipped, initial.rightPaddleEquipped),
     weatherAdjustmentRequested,
+    weatherControlAttempts: nonNegativeIntegerOr(saved.weatherControlAttempts, initial.weatherControlAttempts),
+    weatherControlBestMoves: nonNegativeIntegerOr(saved.weatherControlBestMoves, initial.weatherControlBestMoves),
     rainSafetyCleared,
     boardingStrokeCount: Math.max(
       migratedLegacyChase ? 4 : 0,

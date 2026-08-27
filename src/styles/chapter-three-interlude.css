@@ -538,8 +538,18 @@
   33%, 100% { opacity: 0; }
 }
 
-.interlude-journal-closeout { height: 100%; background: #d7d9d2; }
-.interlude-journal-thread { height: calc(100% - 64px); overflow-y: auto; padding: 14px 14px 28px; }
+.interlude-journal-closeout {
+  background: #d7d9d2;
+  grid-template-rows: 72px minmax(0, 1fr);
+  height: 100%;
+}
+.interlude-journal-thread {
+  height: auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 14px 28px;
+}
 .interlude-journal-thread > article,
 .interlude-journal-replies {
   margin-bottom: 10px;

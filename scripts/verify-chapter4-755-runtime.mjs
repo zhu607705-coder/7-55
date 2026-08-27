@@ -135,6 +135,7 @@ try {
   const { selectRpgItemUseGuidance } = itemUseGuidanceModule;
   const {
     CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH,
+    CHAPTER_FOUR_PLAYER_TOP_DEPTH,
     chapterFourPlayerDepth,
     isChapterFourPlayerInFrontOfElevator
   } = elevatorDepthModule;
@@ -190,6 +191,10 @@ try {
     for (const point of [elevator.doorCenter, elevator.arrivalPosition, elevator.standPosition]) {
       const playerDepth = chapterFourPlayerDepth(point.y);
       assert(
+        playerDepth === CHAPTER_FOUR_PLAYER_TOP_DEPTH,
+        `${floor.storyFloor} player depth must stay fixed at the Chapter 4 top gameplay layer`
+      );
+      assert(
         isChapterFourPlayerInFrontOfElevator(playerDepth, CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH.door)
           && isChapterFourPlayerInFrontOfElevator(playerDepth, CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH.indicator)
           && isChapterFourPlayerInFrontOfElevator(playerDepth, CHAPTER_FOUR_ELEVATOR_VISUAL_DEPTH.lamp),
@@ -197,6 +202,10 @@ try {
       );
     }
   }
+  assert(
+    chapterFourPlayerDepth(0) === chapterFourPlayerDepth(chapterFourLayout.worldSize.height),
+    "Chapter 4 player depth must not change with world y"
+  );
   for (const targetId of ["a2_elevator_attendant", "a3_reference_teacher"]) {
     const target = getChapterFour755TargetContract(targetId);
     assert(

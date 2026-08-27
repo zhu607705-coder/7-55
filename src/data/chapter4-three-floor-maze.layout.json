@@ -195,38 +195,38 @@
       "chair": { "x": 0, "y": 0 }
     },
     "slotTargets": [
-      { "slotId": "morning_slot_01", "center": { "x": 94, "y": 609 }, "bounds": { "x": 84, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_02", "center": { "x": 171, "y": 609 }, "bounds": { "x": 161, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_03", "center": { "x": 289, "y": 609 }, "bounds": { "x": 279, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_04", "center": { "x": 366, "y": 609 }, "bounds": { "x": 356, "y": 599, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_05", "center": { "x": 94, "y": 686 }, "bounds": { "x": 84, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_06", "center": { "x": 171, "y": 686 }, "bounds": { "x": 161, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_07", "center": { "x": 289, "y": 686 }, "bounds": { "x": 279, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_08", "center": { "x": 366, "y": 686 }, "bounds": { "x": 356, "y": 676, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_09", "center": { "x": 94, "y": 757 }, "bounds": { "x": 84, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_10", "center": { "x": 171, "y": 757 }, "bounds": { "x": 161, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_11", "center": { "x": 289, "y": 757 }, "bounds": { "x": 279, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_12", "center": { "x": 366, "y": 757 }, "bounds": { "x": 356, "y": 747, "width": 20, "height": 20 }, "orientation": "up", "approximate": true }
+      { "slotId": "morning_slot_01", "center": { "x": 94, "y": 633 }, "bounds": { "x": 84, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_02", "center": { "x": 171, "y": 633 }, "bounds": { "x": 161, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_03", "center": { "x": 289, "y": 633 }, "bounds": { "x": 279, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_04", "center": { "x": 366, "y": 633 }, "bounds": { "x": 356, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_05", "center": { "x": 94, "y": 710 }, "bounds": { "x": 84, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_06", "center": { "x": 171, "y": 710 }, "bounds": { "x": 161, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_07", "center": { "x": 289, "y": 710 }, "bounds": { "x": 279, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_08", "center": { "x": 366, "y": 710 }, "bounds": { "x": 356, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_09", "center": { "x": 94, "y": 781 }, "bounds": { "x": 84, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_10", "center": { "x": 171, "y": 781 }, "bounds": { "x": 161, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_11", "center": { "x": 289, "y": 781 }, "bounds": { "x": 279, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
+      { "slotId": "morning_slot_12", "center": { "x": 366, "y": 781 }, "bounds": { "x": 356, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true }
     ],
     "initialPiecePairs": [
-      { "pieceId": "desk_pair_01", "chairFrame": "chair_r1c1", "deskFrame": "desk_r1c1", "residualFrame": "residual_r1c1", "position": { "x": 72, "y": 609 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
-      { "pieceId": "desk_pair_02", "chairFrame": "chair_r1c2", "deskFrame": "desk_r1c2", "residualFrame": "residual_r1c2", "position": { "x": 72, "y": 686 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
-      { "pieceId": "desk_pair_03", "chairFrame": "chair_r1c3", "deskFrame": "desk_r1c3", "residualFrame": "residual_r1c3", "position": { "x": 72, "y": 757 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
-      { "pieceId": "desk_pair_04", "chairFrame": "chair_r1c4", "deskFrame": "desk_r1c4", "residualFrame": "residual_r1c4", "position": { "x": 188, "y": 609 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
-      { "pieceId": "desk_pair_05", "chairFrame": "chair_r1c5", "deskFrame": "desk_r2c1", "residualFrame": "residual_r2c1", "position": { "x": 188, "y": 686 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
-      { "pieceId": "desk_pair_06", "chairFrame": "chair_r1c6", "deskFrame": "desk_r2c2", "residualFrame": "residual_r2c2", "position": { "x": 188, "y": 757 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
-      { "pieceId": "desk_pair_07", "chairFrame": "chair_r2c1", "deskFrame": "desk_r2c3", "residualFrame": "residual_r2c3", "position": { "x": 272, "y": 609 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
-      { "pieceId": "desk_pair_08", "chairFrame": "chair_r2c2", "deskFrame": "desk_r2c4", "residualFrame": "residual_r2c4", "position": { "x": 272, "y": 686 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
-      { "pieceId": "desk_pair_09", "chairFrame": "chair_r2c3", "deskFrame": "desk_r3c1", "residualFrame": "residual_r3c1", "position": { "x": 272, "y": 757 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
-      { "pieceId": "desk_pair_10", "chairFrame": "chair_r2c4", "deskFrame": "desk_r3c2", "residualFrame": "residual_r3c2", "position": { "x": 388, "y": 609 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
-      { "pieceId": "desk_pair_11", "chairFrame": "chair_r2c5", "deskFrame": "desk_r3c3", "residualFrame": "residual_r3c3", "position": { "x": 388, "y": 686 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
-      { "pieceId": "desk_pair_12", "chairFrame": "chair_r2c6", "deskFrame": "desk_r3c4", "residualFrame": "residual_r3c4", "position": { "x": 388, "y": 757 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true }
+      { "pieceId": "desk_pair_01", "chairFrame": "chair_r1c1", "deskFrame": "desk_r1c1", "residualFrame": "residual_r1c1", "position": { "x": 72, "y": 633 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
+      { "pieceId": "desk_pair_02", "chairFrame": "chair_r1c2", "deskFrame": "desk_r1c2", "residualFrame": "residual_r1c2", "position": { "x": 72, "y": 710 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
+      { "pieceId": "desk_pair_03", "chairFrame": "chair_r1c3", "deskFrame": "desk_r1c3", "residualFrame": "residual_r1c3", "position": { "x": 72, "y": 781 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
+      { "pieceId": "desk_pair_04", "chairFrame": "chair_r1c4", "deskFrame": "desk_r1c4", "residualFrame": "residual_r1c4", "position": { "x": 188, "y": 633 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
+      { "pieceId": "desk_pair_05", "chairFrame": "chair_r1c5", "deskFrame": "desk_r2c1", "residualFrame": "residual_r2c1", "position": { "x": 188, "y": 710 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
+      { "pieceId": "desk_pair_06", "chairFrame": "chair_r1c6", "deskFrame": "desk_r2c2", "residualFrame": "residual_r2c2", "position": { "x": 188, "y": 781 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
+      { "pieceId": "desk_pair_07", "chairFrame": "chair_r2c1", "deskFrame": "desk_r2c3", "residualFrame": "residual_r2c3", "position": { "x": 272, "y": 633 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
+      { "pieceId": "desk_pair_08", "chairFrame": "chair_r2c2", "deskFrame": "desk_r2c4", "residualFrame": "residual_r2c4", "position": { "x": 272, "y": 710 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
+      { "pieceId": "desk_pair_09", "chairFrame": "chair_r2c3", "deskFrame": "desk_r3c1", "residualFrame": "residual_r3c1", "position": { "x": 272, "y": 781 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
+      { "pieceId": "desk_pair_10", "chairFrame": "chair_r2c4", "deskFrame": "desk_r3c2", "residualFrame": "residual_r3c2", "position": { "x": 388, "y": 633 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
+      { "pieceId": "desk_pair_11", "chairFrame": "chair_r2c5", "deskFrame": "desk_r3c3", "residualFrame": "residual_r3c3", "position": { "x": 388, "y": 710 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
+      { "pieceId": "desk_pair_12", "chairFrame": "chair_r2c6", "deskFrame": "desk_r3c4", "residualFrame": "residual_r3c4", "position": { "x": 388, "y": 781 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true }
     ],
     "discussionTables": [
-      { "id": "group_table_1", "frame": "group_table_1", "position": { "x": 72, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_01", "desk_pair_02", "desk_pair_03"], "approximate": true },
-      { "id": "group_table_2", "frame": "group_table_2", "position": { "x": 188, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_04", "desk_pair_05", "desk_pair_06"], "approximate": true },
-      { "id": "group_table_3", "frame": "group_table_3", "position": { "x": 272, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_07", "desk_pair_08", "desk_pair_09"], "approximate": true },
-      { "id": "group_table_4", "frame": "group_table_4", "position": { "x": 388, "y": 686 }, "angle": 90, "pieceIds": ["desk_pair_10", "desk_pair_11", "desk_pair_12"], "approximate": true }
+      { "id": "group_table_1", "frame": "group_table_1", "position": { "x": 72, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_01", "desk_pair_02", "desk_pair_03"], "approximate": true },
+      { "id": "group_table_2", "frame": "group_table_2", "position": { "x": 188, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_04", "desk_pair_05", "desk_pair_06"], "approximate": true },
+      { "id": "group_table_3", "frame": "group_table_3", "position": { "x": 272, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_07", "desk_pair_08", "desk_pair_09"], "approximate": true },
+      { "id": "group_table_4", "frame": "group_table_4", "position": { "x": 388, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_10", "desk_pair_11", "desk_pair_12"], "approximate": true }
     ],
     "podium": {
       "frame": "podium",
@@ -239,7 +239,7 @@
       "sampleSteps": [2, 4],
       "verticalAisleCenters": [132.5, 230, 327.5],
       "verticalRange": { "fromY": 600, "toY": 792 },
-      "horizontalConnector": { "y": 623, "fromX": 132.5, "toX": 327.5 },
+      "horizontalConnector": { "y": 647, "fromX": 132.5, "toX": 327.5 },
       "playerFootBox": { "width": 19.5, "height": 14.625 }
     },
     "projectionHandshake": {
@@ -927,6 +927,24 @@
           "height": 345
         },
         {
+          "id": "a1_air_wall_north_portrait_west_lip",
+          "sourceAnnotationId": "a1-ann-014",
+          "label": "北侧西段肖像墙下沿空气墙",
+          "x": 43,
+          "y": 134,
+          "width": 496,
+          "height": 17
+        },
+        {
+          "id": "a1_air_wall_north_portrait_east_lip",
+          "sourceAnnotationId": "a1-ann-015",
+          "label": "北侧东段肖像墙下沿空气墙",
+          "x": 1201,
+          "y": 134,
+          "width": 408,
+          "height": 20
+        },
+        {
           "id": "a1_air_wall_front_desk_counter",
           "sourceAnnotationId": "a1-ann-016",
           "label": "前台柜台空气墙",
@@ -1532,6 +1550,51 @@
           "y": 265,
           "width": 67,
           "height": 186
+        },
+        {
+          "id": "a2_air_wall_020",
+          "sourceAnnotationId": "a2-ann-020",
+          "label": "空气墙",
+          "x": 641,
+          "y": 549,
+          "width": 403,
+          "height": 60
+        },
+        {
+          "id": "a2_air_wall_021",
+          "sourceAnnotationId": "a2-ann-021",
+          "label": "空气墙",
+          "x": 182,
+          "y": 178,
+          "width": 252,
+          "height": 45
+        },
+        {
+          "id": "a2_air_wall_023",
+          "sourceAnnotationId": "a2-ann-023",
+          "label": "空气墙",
+          "x": 1225,
+          "y": 592,
+          "width": 339,
+          "height": 42
+        },
+        {
+          "id": "a2_air_wall_024",
+          "sourceAnnotationId": "a2-ann-024",
+          "label": "空气墙",
+          "x": 1228,
+          "y": 692,
+          "width": 338,
+          "height": 40
+        },
+        {
+          "id": "a2_air_wall_025",
+          "sourceAnnotationId": "a2-ann-025",
+          "label": "空气墙",
+          "x": 1224,
+          "y": 779,
+          "width": 341,
+          "height": 43
         }
       ],
       "walkableRegions": [

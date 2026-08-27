@@ -338,6 +338,10 @@ export interface QizhenLakeState {
   rightPaddleEquipped: boolean;
   /** 湖边安全员已核对器材并提交天气调控申请。 */
   weatherAdjustmentRequested: boolean;
+  /** 云层校准小游戏的累计开始次数。 */
+  weatherControlAttempts: number;
+  /** 云层校准的最少移动数，0 表示尚未完成。 */
+  weatherControlBestMoves: number;
   /** 天气应用完成调控后才允许登船。 */
   rainSafetyCleared: boolean;
   boardingStrokeCount: number;
