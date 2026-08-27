@@ -3243,3 +3243,15 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 生成后的 `demo/index.html` 直接 `file://` 打开再次覆盖真实手机导航；`c3-qizhen-gate` 与 `c3-qizhen-open-water` 都从浙大钉“校园地图”直接恢复原检查点，没有重开地点检索页，Phaser canvas 始终为 `1`，console/page error 为 `0`。此前的地图入口、`runtimeMode=rpg + activeSurface=phone` 天气校准启动和 DEV 跳转也继续通过。
 - Fresh 校验通过：`npm run typecheck`、`npm run qizhen:validate-rain-safety`（28 项）、`npm run qizhen:validate-fishing`、`npm run qizhen:validate-journal`、`npm run verify:developer-levels`（509 项）、`npm run verify:task-guidance`、`npm run verify:rpg-facing-agnostic`、`npm run build:single`、`npm run verify:single` 与 `git diff --check`。单文件为 `252299207 bytes`、两个内联脚本和一个内联样式。
 - 当前边界：本轮未执行 fetch、stage、commit、merge、rebase、push、reset 或上传；按用户要求未处理 stash，也未碰既有未跟踪 Godot/启真湖素材。临时 Vite、Chromium 与 QA 脚本均已清理。
+
+## 2026-08-27 合作者版本比较、语义合并与 main 交付验证
+
+- 上传前执行 `git fetch origin main --prune`。本地基线为 `07d1472`，本地待交付范围为 `72` 个已修改跟踪文件和 `21` 个未跟踪文件；合作者在远端新增 `3e9eff4 fix(game): restore chapter 3 changes and Qizhen navigation`，共 `19` 个文件、`272` 行新增和 `65` 行删除。
+- 双方共有 `12` 个重叠文件。临时索引模拟合并确认 `8` 个文件可以自动合并，`4` 个文件需要语义决策：`progress.md`、启真湖雨天验证器、剧场内容表与剧场场景。实际合并提交为 `557246c`，没有强制推送、整文件覆盖或丢弃合作者提交。
+- 冲突处理保留双方进度记录；启真湖雨天验证同时覆盖地图恢复与 `64 + 36` 条雨线、雾层、地面反光和水花；场馆名称统一为“剧场”；节目顺序不在场景直接显示，改由三张节目单详情中的荧光编号给出；深色观察和浅色收集继续允许任意顺序；后台残影仍以 `propGhostRead` 作为是否已读的事实。
+- Fresh 自动验证通过：`typecheck`；第三章半 `1944` 项；现实模式 `180` 项；第四章 runtime `1252` 项、story、Task 14 `365` 项、topology `2769` 项、预热 `70` 项、六教室 `435` 项、保安表现 `40` 项；启真湖雨天 `50` 项、钓鱼和日志；开发检查点 `509` 项；无朝向合同、任务提示、食堂骑行 `40/40` 与剧场追光三轮。`git diff --check` 通过。
+- 合并后文本重新导出并通过 `text:check`：总计 `6219` 条，第一章 `401`、第二章 `406`、第三章 `1096`、3.5 章 `278`、第四章 `1269`、结局 `87`、跨章节系统 `2682`。
+- `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过。离线产物为 `demo/index.html`，`252403148` 字节、`2` 个内联脚本和 `1` 个内联样式。
+- Chromium 离线单文件在 `1280×720` 实际打开剧场节目单、启真湖入口与第四章 18:50 三个 DEV 检查点；前两处 canvas 画面正常，第四章 gameplay client 的 canvas 单独截图只得到 WebGL 黑底，但整页截图确认 A1 大厅、前台 NPC、玩家、任务栏和道具栏均正常。三个状态快照均与画面一致，没有生成 console/page error 文件。
+- Chromium `390×844` 验证开发面板可完整滚动；`?dev=0` 显示稳定的 7:55 启动页和固定手机外框。Playwright 当前未安装 Firefox 与 WebKit 可执行文件，因此本轮没有新增 Gecko/WebKit 实机证据；已有静态兼容合同和自动门禁不能替代该项。
+- 临时 QA 截图、状态快照与空的 Firefox/WebKit 临时目录在记录结论后删除。推送和远端 CI 结果由本节后续交付记录补充。
