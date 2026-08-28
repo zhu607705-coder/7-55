@@ -77,8 +77,11 @@ jobs:
       - name: Verify Chapter 4 7:55 Task 14 contract
         run: npm run chapter4:validate-task14
 
-      - name: Type-check and build production bundle
-        run: npm run build
+      - name: Type-check source
+        run: npm run typecheck
+
+      - name: Build production bundle
+        run: npm exec -- vite build
 
       - name: Build offline single-file demo
         run: npm exec -- vite build --mode demo
