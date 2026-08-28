@@ -16,6 +16,31 @@ interface ChapterFourPowerPanelGameProps {
   onClose: () => void;
 }
 
+interface PowerGridPosition {
+  column: number;
+  row: number;
+  x: number;
+  y: number;
+}
+
+const POWER_GRID_POSITIONS: Readonly<Record<ChapterFourLightZoneId, PowerGridPosition>> = Object.freeze({
+  hall: Object.freeze({ column: 2, row: 1, x: 150, y: 38 }),
+  west_corridor: Object.freeze({ column: 1, row: 2, x: 48, y: 132 }),
+  east_corridor: Object.freeze({ column: 3, row: 2, x: 252, y: 132 }),
+  bakery_back_area: Object.freeze({ column: 1, row: 3, x: 48, y: 226 }),
+  classroom_zone: Object.freeze({ column: 3, row: 3, x: 252, y: 226 })
+});
+
+const POWER_GRID_CONNECTIONS = Object.freeze([
+  ["hall", "west_corridor"],
+  ["hall", "east_corridor"],
+  ["west_corridor", "bakery_back_area"],
+  ["east_corridor", "classroom_zone"],
+  ["bakery_back_area", "classroom_zone"]
+] as const satisfies readonly (readonly [ChapterFourLightZoneId, ChapterFourLightZoneId])[]);
+
+type PowerGridDirection = "left" | "right" | "up" | "down";
+
 export function ChapterFourPowerPanelGame({
   mask,
   locked,
@@ -53,9 +78,30 @@ export function ChapterFourPowerPanelGame({
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  function focusByDelta(index: number, delta: number): void {
-    const count = CHAPTER_FOUR_LIGHT_GRID.zones.length;
-    buttonRefs.current[(index + delta + count) % count]?.focus();
+  function focusInDirection(index: number, direction: PowerGridDirection): void {
+    const currentZone = CHAPTER_FOUR_LIGHT_GRID.zones[index];
+    const current = POWER_GRID_POSITIONS[currentZone.id];
+    const candidates = CHAPTER_FOUR_LIGHT_GRID.zones
+      .map((zone, candidateIndex) => ({
+        candidateIndex,
+        position: POWER_GRID_POSITIONS[zone.id]
+      }))
+      .filter(({ position }) => {
+        if (direction === "left") return position.column < current.column;
+        if (direction === "right") return position.column > current.column;
+        if (direction === "up") return position.row < current.row;
+        return position.row > current.row;
+      })
+      .sort((a, b) => {
+        const aColumnDistance = a.position.column - current.column;
+        const aRowDistance = a.position.row - current.row;
+        const bColumnDistance = b.position.column - current.column;
+        const bRowDistance = b.position.row - current.row;
+        const aDistanceSquared = aColumnDistance ** 2 + aRowDistance ** 2;
+        const bDistanceSquared = bColumnDistance ** 2 + bRowDistance ** 2;
+        return aDistanceSquared - bDistanceSquared || a.candidateIndex - b.candidateIndex;
+      });
+    buttonRefs.current[candidates[0]?.candidateIndex ?? index]?.focus();
   }
 
   return (
@@ -85,9 +131,22 @@ export function ChapterFourPowerPanelGame({
           <h2 id="chapter4-power-panel-title">让必要路线亮起</h2>
         </header>
 
-        <div className="chapter4-power-panel__grid" role="group" aria-label="五个供电区域">
+        <div className="chapter4-power-panel__grid" role="group" aria-label="五区配电线路拓扑">
+          <svg
+            className="chapter4-power-panel__connections"
+            viewBox="0 0 300 264"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            {POWER_GRID_CONNECTIONS.map(([fromId, toId]) => {
+              const from = POWER_GRID_POSITIONS[fromId];
+              const to = POWER_GRID_POSITIONS[toId];
+              return <line key={`${fromId}-${toId}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
+            })}
+          </svg>
           {CHAPTER_FOUR_LIGHT_GRID.zones.map((zone, index) => {
             const on = (mask & (1 << zone.bit)) !== 0;
+            const position = POWER_GRID_POSITIONS[zone.id];
             return (
               <button
                 key={zone.id}
@@ -96,15 +155,23 @@ export function ChapterFourPowerPanelGame({
                 className={on ? "is-on" : "is-off"}
                 aria-pressed={on}
                 aria-label={`${zone.label}当前${on ? "亮" : "暗"}`}
+                data-zone-id={zone.id}
+                style={{ gridColumn: position.column, gridRow: position.row }}
                 disabled={pending || locked}
                 onClick={() => onToggle(zone.id)}
                 onKeyDown={(event) => {
-                  if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+                  if (event.key === "ArrowLeft") {
                     event.preventDefault();
-                    focusByDelta(index, -1);
-                  } else if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+                    focusInDirection(index, "left");
+                  } else if (event.key === "ArrowRight") {
                     event.preventDefault();
-                    focusByDelta(index, 1);
+                    focusInDirection(index, "right");
+                  } else if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    focusInDirection(index, "up");
+                  } else if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    focusInDirection(index, "down");
                   }
                 }}
               >
@@ -121,7 +188,7 @@ export function ChapterFourPowerPanelGame({
             ? "正在同步配电状态……"
             : locked
               ? "配电结果已锁定。"
-              : "每次操作会同时改变相邻区域。")}
+              : "操作一个节点会同时切换与它直接连线的区域。")}
         </p>
         <p className="chapter4-power-panel__controls">
           方向键移动焦点 · Enter / Space 切换 · Esc 关闭

@@ -15,6 +15,7 @@ try {
         'export { ChapterThreeQizhenLakeController } from "./src/modules/ChapterThreeQizhenLakeController.ts";',
         'export { createInitialGameState } from "./src/core/GameState.ts";',
         'export { SaveStore } from "./src/core/SaveStore.ts";',
+        'export { GAME_SAVE_KEY } from "./src/core/StorageKeys.ts";',
         'export { selectCampusWeather } from "./src/modules/CampusWeatherModel.ts";',
         'export { getQizhenWeatherMinimumMoves, isQizhenWeatherCloudAligned, moveQizhenWeatherCloud, QIZHEN_WEATHER_CLOUD_INITIAL } from "./src/modules/QizhenWeatherControlModel.ts";',
         'export { createDeveloperCheckpointState } from "./src/modules/DeveloperChannel.ts";',
@@ -32,6 +33,7 @@ try {
   });
   const {
     ChapterThreeQizhenLakeController,
+    GAME_SAVE_KEY,
     QIZHEN_DOCK_AFTER_RAIN_PUDDLES,
     QIZHEN_DOCK_RAIN_EFFECT_PROFILE,
     QIZHEN_DOCK_RAIN_SPLASH_SITES,
@@ -66,6 +68,8 @@ try {
     kayakEquipped: true,
     leftPaddleEquipped: true,
     rightPaddleEquipped: true,
+    rainWarningSeen: false,
+    rainRescueCompleted: false,
     weatherAdjustmentRequested: false,
     rainSafetyCleared: false
   };
@@ -82,13 +86,37 @@ try {
     throw new Error("rain rejection must emit visible feedback");
   }
   if (controller.requestDockSafetyClearance() !== "accepted"
-    || !store.getState().qizhenLake.weatherAdjustmentRequested
+    || !store.getState().qizhenLake.rainWarningSeen
+    || store.getState().qizhenLake.rainRescueCompleted
+    || store.getState().qizhenLake.weatherAdjustmentRequested
     || store.getState().qizhenLake.rainSafetyCleared
     || selectCampusWeather(store.getState()).condition !== "light_rain") {
-    throw new Error("safety officer must submit the weather request without clearing the rain hold");
+    throw new Error("teacher warning must record the rain hold without opening the weather control");
   }
-  if (controller.boardKayak() !== "locked") {
-    throw new Error("boarding must stay blocked until the weather app executes the request");
+  if (controller.beginDockWeatherAdjustment() !== "inactive") {
+    throw new Error("weather control must stay unavailable before the forced-launch rescue");
+  }
+  if (controller.boardKayak() !== "accepted"
+    || store.getState().qizhenLake.vehicle !== "on_foot"
+    || !events.some((event) => event.name === "qizhen_rain_forced_launch_started")) {
+    throw new Error("second boarding attempt must start the visible forced-launch sequence without boarding");
+  }
+  if (controller.completeRainRescue() !== "accepted"
+    || store.getState().qizhenLake.phase !== "rain_recovery"
+    || store.getState().rpgScene !== "dorm_hub"
+    || store.getState().rpgCheckpoint !== "dorm_spawn"
+    || !store.getState().qizhenLake.rainRescueCompleted
+    || !store.getState().qizhenLake.weatherAdjustmentRequested
+    || store.getState().items.hairDryer) {
+    throw new Error("forced-launch rescue must return the player to the dorm without granting the dryer");
+  }
+  store.setState((current) => ({ ...current, currentScene: "weather" }));
+  if (controller.beginDockWeatherAdjustment() !== "locked") {
+    throw new Error("weather control must require the dorm hair dryer after rescue");
+  }
+  store.setState((current) => ({ ...current, currentScene: "phone_home" }));
+  if (controller.collectHairDryer() !== "accepted" || !store.getState().items.hairDryer) {
+    throw new Error("the dorm desk interaction must grant the real hair dryer item");
   }
   // Desktop split keeps runtimeMode=rpg while the player focuses the phone pane.
   store.setState((current) => ({ ...current, runtimeMode: "rpg", currentScene: "weather" }));
@@ -106,8 +134,14 @@ try {
   if (!isQizhenWeatherCloudAligned(cloudOffsets) || getQizhenWeatherMinimumMoves() !== 6) {
     throw new Error("cloud calibration model must resolve in six deterministic moves");
   }
+  if (controller.applyDockWeatherAdjustment({ moves: 5, cloudOffsets }) !== "locked"
+    || store.getState().qizhenLake.rainSafetyCleared) {
+    throw new Error("controller must reject an impossible cloud calibration summary");
+  }
   if (controller.applyDockWeatherAdjustment({ moves: 6, cloudOffsets }) !== "accepted"
     || !store.getState().qizhenLake.rainSafetyCleared
+    || store.getState().items.hairDryer
+    || store.getState().qizhenLake.phase !== "boarding_tutorial"
     || store.getState().qizhenLake.weatherControlBestMoves !== 6
     || selectCampusWeather(store.getState()).condition !== "overcast"
     || selectCampusWeather(store.getState()).label !== "多云") {
@@ -134,8 +168,44 @@ try {
   if (!reloaded
     || reloaded.qizhenLake.weatherControlAttempts !== 1
     || reloaded.qizhenLake.weatherControlBestMoves !== 6
-    || !reloaded.qizhenLake.rainSafetyCleared) {
-    throw new Error("weather calibration attempt, best moves, and completion must survive save reload");
+    || !reloaded.qizhenLake.rainWarningSeen
+    || !reloaded.qizhenLake.rainRescueCompleted
+    || !reloaded.qizhenLake.rainSafetyCleared
+    || reloaded.items.hairDryer) {
+    throw new Error("warning, rescue, calibration, completion, and dryer consumption must survive save reload");
+  }
+
+  const legacyState = createInitialGameState();
+  legacyState.qizhenLake = {
+    ...legacyState.qizhenLake,
+    active: true,
+    phase: "boarding_tutorial",
+    zone: "dock",
+    vehicle: "on_foot",
+    kayakEquipped: true,
+    leftPaddleEquipped: true,
+    rightPaddleEquipped: true,
+    weatherAdjustmentRequested: true,
+    rainSafetyCleared: false
+  };
+  const legacyStored = new Map();
+  const legacyStorage = {
+    get length() { return legacyStored.size; },
+    clear: () => legacyStored.clear(),
+    getItem: (key) => legacyStored.get(key) ?? null,
+    key: (index) => [...legacyStored.keys()][index] ?? null,
+    removeItem: (key) => legacyStored.delete(key),
+    setItem: (key, value) => legacyStored.set(key, String(value))
+  };
+  legacyStorage.setItem(GAME_SAVE_KEY, JSON.stringify({ version: 29, state: legacyState, savedAt: 1 }));
+  const migratedLegacy = new SaveStore(legacyStorage).load(createInitialGameState());
+  if (!migratedLegacy
+    || migratedLegacy.qizhenLake.phase !== "rain_recovery"
+    || !migratedLegacy.qizhenLake.rainWarningSeen
+    || !migratedLegacy.qizhenLake.rainRescueCompleted
+    || !migratedLegacy.qizhenLake.weatherAdjustmentRequested
+    || !migratedLegacy.items.hairDryer) {
+    throw new Error("v29 pending weather saves must migrate into a recoverable dryer-ready state");
   }
 
   const incomplete = createInitialGameState();
@@ -149,6 +219,7 @@ try {
   const incompleteStore = makeStore(incomplete);
   const incompleteController = new ChapterThreeQizhenLakeController(incompleteStore, eventBus);
   if (incompleteController.requestDockSafetyClearance() !== "locked"
+    || incompleteStore.getState().qizhenLake.rainWarningSeen
     || incompleteStore.getState().qizhenLake.weatherAdjustmentRequested
     || incompleteStore.getState().qizhenLake.rainSafetyCleared) {
     throw new Error("safety officer must keep the rain hold when equipment is incomplete");
@@ -159,22 +230,25 @@ try {
   bypass.qizhenLake = {
     ...bypass.qizhenLake,
     active: true,
-    phase: "boarding_tutorial",
+    phase: "rain_recovery",
     zone: "dock",
     vehicle: "on_foot",
     kayakEquipped: true,
     leftPaddleEquipped: true,
     rightPaddleEquipped: true,
-    weatherAdjustmentRequested: false,
+    rainWarningSeen: true,
+    rainRescueCompleted: false,
+    weatherAdjustmentRequested: true,
     rainSafetyCleared: false
   };
   const bypassStore = makeStore(bypass);
   const bypassController = new ChapterThreeQizhenLakeController(bypassStore, eventBus);
   if (bypassController.applyDockWeatherAdjustment({ moves: 6, cloudOffsets }) !== "locked"
     || bypassStore.getState().qizhenLake.rainSafetyCleared) {
-    throw new Error("weather app must reject adjustment without the safety officer request");
+    throw new Error("weather app must reject adjustment without the rescue and hair dryer");
   }
-  bypass.qizhenLake.weatherAdjustmentRequested = true;
+  bypass.qizhenLake.rainRescueCompleted = true;
+  bypass.items.hairDryer = true;
   const invalidStore = makeStore(bypass);
   const invalidController = new ChapterThreeQizhenLakeController(invalidStore, eventBus);
   if (invalidController.beginDockWeatherAdjustment() !== "accepted"
@@ -183,17 +257,36 @@ try {
     throw new Error("controller must reject an impossible cloud calibration summary");
   }
   const rainCheckpoint = createDeveloperCheckpointState("c3-qizhen-rain-hold");
+  const rescueCheckpoint = createDeveloperCheckpointState("c3-qizhen-rescue-dorm");
+  const dryerCheckpoint = createDeveloperCheckpointState("c3-qizhen-hair-dryer");
   const controlCheckpoint = createDeveloperCheckpointState("c3-qizhen-weather-control");
   const overcastCheckpoint = createDeveloperCheckpointState("c3-qizhen-overcast");
   if (rainCheckpoint.runtimeMode !== "rpg"
     || !rainCheckpoint.qizhenLake.kayakEquipped
+    || rainCheckpoint.qizhenLake.rainWarningSeen
     || rainCheckpoint.qizhenLake.weatherAdjustmentRequested
     || selectCampusWeather(rainCheckpoint).condition !== "light_rain") {
     throw new Error("rain-hold developer checkpoint must seed equipped rainy dock state");
   }
+  if (rescueCheckpoint.runtimeMode !== "rpg"
+    || rescueCheckpoint.rpgScene !== "dorm_hub"
+    || rescueCheckpoint.qizhenLake.phase !== "rain_recovery"
+    || !rescueCheckpoint.qizhenLake.rainRescueCompleted
+    || rescueCheckpoint.items.hairDryer) {
+    throw new Error("rescue-dorm developer checkpoint must seed the pre-pickup desk state");
+  }
+  if (dryerCheckpoint.runtimeMode !== "rpg"
+    || dryerCheckpoint.rpgScene !== "dorm_hub"
+    || !dryerCheckpoint.items.hairDryer
+    || !dryerCheckpoint.qizhenLake.weatherAdjustmentRequested) {
+    throw new Error("hair-dryer developer checkpoint must seed the collected dorm state");
+  }
   if (controlCheckpoint.runtimeMode !== "phone"
     || controlCheckpoint.currentScene !== "weather"
     || !controlCheckpoint.qizhenLake.weatherAdjustmentRequested
+    || !controlCheckpoint.qizhenLake.rainRescueCompleted
+    || !controlCheckpoint.items.hairDryer
+    || controlCheckpoint.qizhenLake.phase !== "rain_recovery"
     || controlCheckpoint.qizhenLake.rainSafetyCleared) {
     throw new Error("weather-control developer checkpoint must seed the requested phone-app state");
   }
@@ -283,7 +376,13 @@ try {
   if (qizhenContent.dock.afterRainProof !== "这是下过雨的证明") {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
-  console.log("Qizhen rain safety PASS assertions=50 gate=controller-owned weather=shared-selector cloud-calibration=3-bands+6-min-moves+save-reload developer-checkpoints=3 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
+  if (qizhenContent.dock.safetyRainBlock !== "值班老师：现在天气不能下水。"
+    || !qizhenContent.dock.forcedLaunch
+    || !qizhenContent.dock.forcedCapsize
+    || !qizhenContent.dock.forcedRescue) {
+    throw new Error("teacher warning and forced-launch rescue copy must remain event-backed");
+  }
+  console.log("Qizhen rain safety PASS assertions=67 gate=teacher-warning+forced-launch+rescue+dorm-dryer weather=shared-selector cloud-calibration=3-bands+6-min-moves+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

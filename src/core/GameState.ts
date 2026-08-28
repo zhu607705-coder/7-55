@@ -66,6 +66,7 @@ export function createInitialGameState(): GameState {
       reflectionKeyword: false,
       lakeKeyword: false,
       reflectionCoordinate: false,
+      hairDryer: false,
       fishingRod: false,
       rustedLockerKey: false,
       nylonCord: false,
@@ -209,6 +210,8 @@ export function createInitialGameState(): GameState {
       kayakEquipped: false,
       leftPaddleEquipped: false,
       rightPaddleEquipped: false,
+      rainWarningSeen: false,
+      rainRescueCompleted: false,
       weatherAdjustmentRequested: false,
       weatherControlAttempts: 0,
       weatherControlBestMoves: 0,
@@ -321,7 +324,7 @@ export function createInitialGameState(): GameState {
       },
       room204Placements: [],
       lightGrid: {
-        mask: 6,
+        mask: 14,
         locked: false
       },
       guardMode: "absent",

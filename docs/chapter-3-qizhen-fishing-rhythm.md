@@ -4,7 +4,7 @@
 
 ## 1. 概述
 
-启真湖现有四次钓取（生锈的柜门钥匙、破损网框、小鲤鱼、纸条本体）改为场景内节奏玩法：皮划艇、湖面、目标水纹与浮标留在原场景中，画面中下部的固定节奏轨道与高对比判定线承担主要时机提示，浮标水纹作为场景内的辅助反馈。钓鱼阶段统一使用连续三键：`A` 左收线、`S` 提竿、`D` 右收线。
+启真湖四次钓取共用场景内节奏判定，但按剧情作用分成四个强度层级：钥匙使用完整教学谱面，网框使用带长按的短谱面，小鲤鱼只保留一次咬钩判定，纸条使用完整高难谱面。皮划艇、湖面、目标水纹与浮标留在原场景中，画面中下部的固定节奏轨道与高对比判定线承担主要时机提示，浮标水纹作为场景内的辅助反馈。钓鱼阶段统一使用 `A` 左收线、`S` 提竿、`D` 右收线。
 
 - 漂浮钓鱼竿仍是普通拾取物，不进节奏玩法。
 - 普通鱼钩直接抛向纸条倒影（`directPaperCast`）继续走原有即时失败逻辑，不启动音游。
@@ -15,7 +15,7 @@
 
 - 96 BPM、4/4 拍、8 小节、20.000 秒；每拍 `0.625 s`。
 - D Dorian；木质收线轮点击承担四分音符脉冲，低音正弦落在每小节 1、3 拍，马林巴与玻璃水滴承担八分装饰，短拨弦主旋律，薄空气感合成器随张力上升；无人声、无重鼓组、无长混响尾。
-- 第 4、6、8 小节（10.0 s / 15.0 s / 20.0 s）各设一个可结束的和声落点，四次钓鱼分别播放 10 s / 15 s / 15 s / 20 s。
+- 同一首音乐按完整小节使用：钥匙播放 10 s，网框播放 7.5 s，小鲤鱼播放 5 s，最终纸条播放完整 20 s。短流程均停在小节边界。
 - 八小节结构：1 Dm(add9) 预备 → 2 C6 咬钩 → 3 G6/B→A7sus4 左右交替 → 4 Dm6/9 第一结束点（钥匙）→ 5 Em7→G6 加八分与阻力 → 6 Dm6/9 第二结束点（网框、小鲤鱼）→ 7 G6→A7 纸条挣脱 → 8 Dm6/9 最终提竿。
 - 主旋律三短句（7/5/5 音，隐性呼应 7-55）：`D5 A4 C5 E5 D5 C5 A4` / `E5 G5 E5 D5 B4` / `A4 C5 E5 D5 A4`。
 
@@ -67,6 +67,8 @@ JSON Schema：
     "<chartId>": {
       "spotId": "<同 chartId>",
       "label": "<中文目标名>",
+      "experience": "tutorial_full | quick_hold | quick_strike | finale_full",
+      "instruction": "<当前谱面的单句操作提示>",
       "bars": 4,
       "durationSeconds": 10,
       "notes": [
@@ -87,23 +89,19 @@ JSON Schema：
 4H  6L  8R  10L  12R  13L  14R  15H
 ```
 
-### 3.2 net_frame（破损网框，阻力）— 6 小节 15 s，14 音符，首次长按
+### 3.2 net_frame（破损网框，短阻力）— 3 小节 7.5 s，4 音符，保留一次长按
 
 ```text
-4H  6L  8R  10L  11R  12L  14R
-16L~1  18R  19L  20R  21L  22R  23H
+4H  6L~1  9R  11H
 ```
 
-### 3.3 fish（小鲤鱼，换向）— 6 小节 15 s，20 音符，八分错位
+### 3.3 fish（小鲤鱼，咬钩）— 2 小节 5 s，1 次提竿判定
 
 ```text
-4H
-5.5L  6.5R  7.5L  8.5R
-9L  10.5R  11.5L  12.5R
-13.5L  14R  15.5L  16.5R
-17L  18.5R  19.5L  20R
-21L  22R  23H
+7H
 ```
+
+该音符同时是本谱面的首个和末个提竿。命中即可通过，错过则保留鱼饲料并允许立即重试。
 
 ### 3.4 paper（纸条本体，最终）— 8 小节 20 s，26 音符，两次长按 + 连续换向
 
@@ -219,10 +217,10 @@ JSON Schema：
 2. 场景发 `rpg_qizhen_fishing_attempt_requested`（替代原直接 `rpg_qizhen_fish_requested`）。
 3. 宿主调控制器 `precheckCast(spotId)` 只读验证；失败走既有 `rpg_item_use_feedback` 反馈，不发后续事件。
 4. 验证通过：宿主记录 pending session 并发 `qizhen_fishing_prechecked`；场景播抛竿动画（约 360 ms），浮标落水后锁镜头、清零船速、锁模式。
-5. 场景创建模型 + 视觉，发 `qizhen_fishing_started`（时间线播放 `music_qizhen_fishing`），第一小节四拍预备。
+5. 场景创建模型 + 视觉，发 `qizhen_fishing_started`（时间线播放 `music_qizhen_fishing` 和低音量湖面环境层）。纸条谱额外发 `qizhen_fishing_final_tension_started`，逐拍提高程序化节拍的音高与力度。
 6. 节奏输入：桌面场景内键盘；触屏宿主发 `rpg_qizhen_fishing_input`。
 7. 模型事件 → 场景转发领域事件 + 驱动视觉反馈。
-8. 自然结束且 `passed`：场景发 `rpg_qizhen_fishing_resolve_requested`；宿主核对 sessionId 后调 `castAt(spotId)` 结算（控制器内部再兜底验证），成功则发 `qizhen_fishing_completed`。
+8. 自然结束且 `passed`：场景发 `rpg_qizhen_fishing_resolve_requested`；宿主核对 sessionId 后调 `castAt(spotId)` 结算（控制器内部再兜底验证），成功先发通用 `qizhen_fishing_completed`，随后按目标发 `qizhen_fishing_catch_completed` 或 `qizhen_fishing_paper_completed`。
 9. 失败（grade 不达标 / 断线 / 脱钩 / castAt 意外失败）：发 `qizhen_fishing_failed`，保留全部剧情道具，回到浮标等待状态。
 10. 页面隐藏或场景卸载：发 `qizhen_fishing_cancelled`，本轮作废。
 
@@ -239,8 +237,11 @@ JSON Schema：
 // 场景 → 全局（domain，音频时间线消费）
 "qizhen_fishing_started": {
   sessionId: string; spotId: string; chartId: string;
-  targetLabel: string; totalNotes: number; assist: boolean;
+  targetLabel: string; totalNotes: number; durationSec: number;
+  experience: "tutorial_full" | "quick_hold" | "quick_strike" | "finale_full";
+  assist: boolean;
 }
+"qizhen_fishing_final_tension_started": { sessionId: string; spotId: "paper"; durationSec: 20 }
 // 宿主 → 场景（节奏输入）
 "rpg_qizhen_fishing_input": {
   action: "left" | "right" | "hook"; type: "press" | "release"; pointerType?: string;
@@ -253,6 +254,8 @@ JSON Schema：
 "rpg_qizhen_fishing_resolve_requested": { sessionId: string; spotId: string; result: QizhenFishingResult }
 // 宿主 → 全局
 "qizhen_fishing_completed": { sessionId: string; spotId: string; grade: string; accuracy: number }
+"qizhen_fishing_catch_completed": { sessionId: string; spotId: "locker_key" | "net_frame" | "fish"; grade: string; accuracy: number }
+"qizhen_fishing_paper_completed": { sessionId: string; spotId: "paper"; grade: string; accuracy: number }
 // 场景或宿主 → 全局
 "qizhen_fishing_failed": { sessionId: string; spotId: string; reason: string }
 "qizhen_fishing_cancelled": { sessionId: string; spotId: string; reason: "hidden" | "shutdown" }
@@ -265,16 +268,16 @@ JSON Schema：
 
 | 事件键 | cues |
 |---|---|
-| `qizhen_fishing_started` | music `music_qizhen_fishing` play（loop:false, volume ≈0.22）+ sfx `fx_qizhen_fishing_start` |
-| `qizhen_fishing_note_hit` | sfx `fx_qizhen_fishing_hit`（volume ≈0.22） |
+| `qizhen_fishing_started` | 停止旧音乐；低音量循环湖面环境层；播放 `music_qizhen_fishing`；补一次入水声 |
+| `qizhen_fishing_final_tension_started` | 提高节奏音乐音量，加入追逐前的低频观察声；程序化节拍随进度增强 |
 | `qizhen_fishing_warning` | sfx `fx_qizhen_fishing_warning` |
-| `qizhen_fishing_completed` | music stop + sfx `fx_qizhen_fishing_success` |
+| `qizhen_fishing_completed` | 通用 UI 清理事件，不直接调度音频 |
+| `qizhen_fishing_catch_completed` | 停止节奏与环境层，播放普通捕获声，恢复湖畔音乐 |
+| `qizhen_fishing_paper_completed` | 停止节奏与环境层，播放纸条脱离声，不恢复平静湖畔音乐 |
 | `qizhen_fishing_failed` | music stop + sfx `fx_qizhen_fishing_fail` |
 | `qizhen_fishing_cancelled` | music stop |
 
-新增 5 个音效（`group: "fishing"`，各 0.3–1.8 s）：`fx_qizhen_fishing_start`（约 0.8 s 抛竿入水+收线轮）、`fx_qizhen_fishing_hit`（0.3 s 短促木鱼/收线点击）、`fx_qizhen_fishing_warning`（约 0.6 s 钓线绷紧吱声）、`fx_qizhen_fishing_success`（约 1.2 s 水花+明亮捕获音）、`fx_qizhen_fishing_fail`（约 1.0 s 断线闷响+轻水花）。
-
-场景另运行常开低音量 Web Audio 节拍器（每拍一次短促点击，gain ≤ 0.05）：既辅助节奏，也在浏览器阻止 HTMLAudio 时保证「视觉水纹 + 程序化点击」仍可完成主线（验收 8）。判定反馈音以时间线 `fx_qizhen_fishing_hit` 为主，不再叠加程序化判定音，避免双重发声。
+当前复用已生成并验证的启真湖水声、观察声、失败声和纸条脱离声，避免增加新的音频依赖。场景另运行常开低音量 Web Audio 节拍器（每拍一次短促点击，gain ≤ 0.05）；最终纸条谱在 20 秒内逐步提高节拍音高与力度。HTMLAudio 被浏览器限制时，固定判定线、视觉水纹和程序化节拍仍可完成主线。
 
 ## 9. 模块 API 契约
 
@@ -431,13 +434,13 @@ precheckCast(spotId: QizhenFishingSpotId): QizhenActionResult
 
 ## 13. 实施顺序
 
-先打通钥匙 10 秒教程谱面的完整闭环（音乐节拍 → 浮标判定 → 触控输入 → 剧情延迟发奖），验证通过后再扩展到网框、小鲤鱼与纸条谱面。
+先验证钥匙 10 秒完整教学，再验证网框 7.5 秒长按短谱、小鲤鱼 5 秒单次判定和纸条 20 秒最终谱。四种强度必须继续共用同一判定引擎、预检事务和失败回滚。
 
 ## 14. 2026-08-11 实施状态
 
 已实施：
 
-- 四张 JSON 谱面、纯 TypeScript 判定/张力模型和 Phaser 水纹视觉全部接入启真湖场景。
+- 四张 JSON 谱面、纯 TypeScript 判定/张力模型和 Phaser 水纹视觉全部接入启真湖场景；2026-08-28 将四次完整演奏调整为 `8 / 4 / 1 / 26` 次输入的分层流程。
 - 钥匙、网框、小鲤鱼、纸条均改为 `precheck → rhythm → resolve` 延迟结算；漂浮鱼竿拾取与普通鱼钩直抛纸条继续走原有即时逻辑。
 - 桌面键盘和移动端三键输入已接入；演奏期间船速归零、镜头锁浮标、划桨手势停用，模式切换、道具栏、普通字幕不显示。
 - 同目标两次失败后第三次显示“辅助”并启用宽判定；成功后该目标失败计数清零。
@@ -445,7 +448,7 @@ precheckCast(spotId: QizhenFishingSpotId): QizhenActionResult
 
 实玩证据：
 
-- 四张谱面使用可控单调时钟逐音回放，均得到 `S / passed=true / accuracy=1 / tension=50`。
+- 四张谱面使用可控单调时钟逐音回放，均得到 `S / passed=true / accuracy=1 / tension=50`；网框仍验证长按提前松开，小鲤鱼仍验证失败不消耗鱼食。
 - Blink `1280×720` 以真实键盘事件完成 10 秒钥匙谱：开始前钥匙为 `false`，通过后才变为 `true`；过程中摄像机为 `fishing_lock`、船速为 `0`。
 - Blink `390×844` 以真实触摸事件命中首个提竿音符，判定 `perfect`，三键按 `A / S / D` 顺序排列，按钮约为 `75×75 CSS px`，文档无溢出，船速仍为 `0`。
 - 小鲤鱼谱无输入失败后，`fishFeedPellets=true / smallCarp=false / fishCaught=false`。
@@ -454,6 +457,5 @@ precheckCast(spotId: QizhenFishingSpotId): QizhenActionResult
 
 音频边界：
 
-- `qizhen.fishing` 内容配置、生成参数和时间线键已写入。MiniMax CLI 在本轮再次返回“已达到 Token Plan 用量上限”，因此 `music_qizhen_fishing.mp3` 与四曲生成清单仍未产生。
-- 为保证主线可玩，场景使用与判定同源的 `AudioContext.currentTime` 短点击节拍器；音频上下文不可用时回退到 `performance.now()`。
-- 新增 5 个专用钓鱼 SFX 尚未生成，当前时间线临时复用已验证的启真湖短音效。恢复额度后才能完成音频验收条目 1 和 11。
+- `music_qizhen_fishing.mp3` 已纳入生成清单与运行时时间线；普通钓取完成后恢复湖畔音乐，最终纸条完成后只播放纸条脱离声并直接衔接追逐。
+- 场景使用与判定同源的 `AudioContext.currentTime` 短点击节拍器；音频上下文不可用时回退到 `performance.now()`。

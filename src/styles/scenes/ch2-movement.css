@@ -446,6 +446,15 @@
   width: 44px;
 }
 
+.qizhen-weather-control > img {
+  filter: drop-shadow(2px 2px 0 rgba(19, 47, 61, 0.24));
+  grid-row: 1 / span 2;
+  height: 52px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 52px;
+}
+
 .qizhen-weather-control i::before,
 .qizhen-weather-control i::after {
   background: #1c5d77;
@@ -476,9 +485,17 @@
 }
 
 .qizhen-weather-calibration > header {
-  align-items: end;
-  display: flex;
-  justify-content: space-between;
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+}
+
+.qizhen-weather-calibration > header > img {
+  height: 38px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 38px;
 }
 
 .qizhen-weather-calibration > header div {
@@ -489,6 +506,30 @@
 .qizhen-weather-calibration > header strong { font-size: var(--fs-label); }
 .qizhen-weather-calibration > header span { color: #5f6b73; font-size: var(--fs-micro); }
 .qizhen-weather-calibration output { color: #1c5d77; font-family: monospace; font-size: var(--fs-caption); font-weight: 900; }
+
+.qizhen-weather-airflow {
+  display: grid;
+  gap: 3px;
+  height: 8px;
+  margin: -3px 0 0 45px;
+  width: 122px;
+}
+
+.qizhen-weather-airflow i {
+  animation: qizhen-weather-airflow 720ms steps(4, end) infinite;
+  background: linear-gradient(90deg, transparent 0 8%, #5ba6bd 8% 76%, transparent 76%);
+  height: 2px;
+  opacity: 0.78;
+  transform-origin: left center;
+}
+
+.qizhen-weather-airflow i:nth-child(2) { animation-delay: -240ms; margin-left: 12px; width: 86%; }
+.qizhen-weather-airflow i:nth-child(3) { animation-delay: -480ms; margin-left: 5px; width: 72%; }
+
+@keyframes qizhen-weather-airflow {
+  0% { transform: scaleX(0.45); }
+  100% { opacity: 0.2; transform: translateX(16px) scaleX(1); }
+}
 
 .qizhen-weather-bands {
   display: grid;

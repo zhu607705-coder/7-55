@@ -1,20 +1,24 @@
 import Phaser from "phaser";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import dormHubMapUrl from "../../assets/rpg/interiors/dorm_hub.png";
+import hairDryerUrl from "../../assets/rpg/props/items/hair_dryer_generated_v01.png";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import type { RpgBridge } from "./RpgBridge";
 import {
   DORM_CAMPUS_CARD,
   DORM_HUB_WORLD,
   DORM_INTERACTION_TARGETS,
+  DORM_QIZHEN_HAIR_DRYER,
   DORM_SPAWN,
   DORM_STATIC_COLLISION_RECTS,
+  distanceToDormTarget,
   findNearestDormTarget,
   type DormInteractionTarget,
   type DormInteractionTargetId
 } from "./DormHubModel";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
+import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
 import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
@@ -31,7 +35,8 @@ import {
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 
 const DORM_HUB_MAP_KEY = "dorm-hub-user-topdown-map";
-export const DORM_HUB_WARM_ASSET_URLS = Object.freeze([dormHubMapUrl]);
+const DORM_HAIR_DRYER_KEY = "dorm-qizhen-hair-dryer-generated-v01";
+export const DORM_HUB_WARM_ASSET_URLS = Object.freeze([dormHubMapUrl, hairDryerUrl]);
 const DORM_CAMERA_ZOOM = 960 / DORM_HUB_WORLD.width;
 
 const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
@@ -45,6 +50,7 @@ const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
   desk_02: "书翻到夹着便签的一页：先找到名字，再谈方向。",
   desk_03: "这是你的书桌。校园卡压在桌面的纸张旁边。",
   desk_04: "抽屉里有三支没墨的笔，以及非常稳定的失望。",
+  hair_dryer: "吹风机还能正常工作。",
   wash_basin: "水龙头还能出水。至少寝室里有一个系统响应正常。",
   lower_shelf: "书脊按课程排好，最薄的那本写着《平时分自救》。",
   floor_backpack: "不是你的包。拉链上挂着一句很明确的‘别翻’。",
@@ -66,15 +72,14 @@ export class DormHubScene extends Phaser.Scene {
   private characterName!: Phaser.GameObjects.Text;
   private interactionPrompt!: Phaser.GameObjects.Text;
   private campusCardPickup?: Phaser.GameObjects.Container;
+  private hairDryerPickup?: Phaser.GameObjects.Image;
   private curtainLeft!: Phaser.GameObjects.Rectangle;
   private curtainRight!: Phaser.GameObjects.Rectangle;
   private cabinetLeft!: Phaser.GameObjects.Rectangle;
   private cabinetRight!: Phaser.GameObjects.Rectangle;
   private deskDrawer!: Phaser.GameObjects.Rectangle;
   private backpackRing!: Phaser.GameObjects.Arc;
-  private doorPanel!: Phaser.GameObjects.Rectangle;
-  private doorHandle!: Phaser.GameObjects.Arc;
-  private doorLight!: Phaser.GameObjects.Rectangle;
+  private exitDoor!: RpgInteriorDoorRuntime;
   private deskLampGlows = new Map<DormInteractionTargetId, Phaser.GameObjects.Arc>();
   private toggledInteractions = new Set<DormInteractionTargetId>();
 
@@ -86,6 +91,9 @@ export class DormHubScene extends Phaser.Scene {
     if (!this.textures.exists(DORM_HUB_MAP_KEY)) {
       this.load.image(DORM_HUB_MAP_KEY, dormHubMapUrl);
     }
+    if (!this.textures.exists(DORM_HAIR_DRYER_KEY)) {
+      this.load.image(DORM_HAIR_DRYER_KEY, hairDryerUrl);
+    }
     preloadRpgPlayerTextures(this);
   }
 
@@ -96,7 +104,38 @@ export class DormHubScene extends Phaser.Scene {
     this.obstacles = this.physics.add.staticGroup();
     this.drawRoom();
     this.createAmbientAnimations();
+    this.exitDoor = new RpgInteriorDoorRuntime(this, this.obstacles, {
+      id: "dorm_center_exit",
+      centerX: 470,
+      centerY: 1550,
+      openingWidth: 118,
+      openingHeight: 130,
+      blockerY: 1496,
+      blockerWidth: 132,
+      blockerHeight: 12,
+      motion: "single-slide",
+      openOffset: 104,
+      durationMs: 380,
+      depth: 3600,
+      palette: {
+        portal: 0x15100d,
+        spill: 0xffdf91,
+        leaf: 0x6b3d20,
+        inset: 0x744626,
+        trim: 0x2c1a11,
+        handle: 0xb5a170
+      },
+      foreground: {
+        textureKey: DORM_HUB_MAP_KEY,
+        left: 392,
+        top: 1468,
+        right: 548,
+        bottom: 1536,
+        sortY: 1572
+      }
+    }, window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true);
     this.createCampusCardPickup();
+    this.createHairDryerPickup();
     ensureRpgPlayerTextures(this);
 
     const actOne = this.bridge.getState().actOne;
@@ -150,7 +189,7 @@ export class DormHubScene extends Phaser.Scene {
       Phaser.Math.Clamp(keyboardY + this.virtualDirection.y, -1, 1)
     );
 
-    if (actOne.movementEnabled && vector.lengthSq() > 0) {
+    if (actOne.movementEnabled && !this.exitTriggered && vector.lengthSq() > 0) {
       vector.normalize().scale(150);
       if (!this.manualMovementReported) {
         this.manualMovementReported = true;
@@ -166,6 +205,7 @@ export class DormHubScene extends Phaser.Scene {
 
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 2000);
     this.playerAnimator.update(vector, this.time.now);
+    this.exitDoor.updateActorOcclusion(this.player);
     const identityReadable = selectIdentityReadable(this.bridge.getState());
     this.characterName
       .setText(identityReadable && actOne.characterNamed ? actOneContent.studentName : "")
@@ -173,7 +213,13 @@ export class DormHubScene extends Phaser.Scene {
       .setPosition(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y)
       .setDepth(this.player.y + 2050);
 
-    const nearest = findNearestDormTarget(this.player.x, this.player.y);
+    const state = this.bridge.getState();
+    const hairDryerPending = this.isHairDryerPickupPending(state);
+    const nearHairDryer = hairDryerPending
+      && distanceToDormTarget(this.player.x, this.player.y, DORM_QIZHEN_HAIR_DRYER) <= DORM_QIZHEN_HAIR_DRYER.proximity;
+    const nearest = nearHairDryer
+      ? DORM_QIZHEN_HAIR_DRYER
+      : findNearestDormTarget(this.player.x, this.player.y);
     const cardPending = !actOne.inventoryRecovered && actOne.phase === "inventory_required";
     const nearCard = cardPending
       && Phaser.Math.Distance.Between(this.player.x, this.player.y, DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y) <= DORM_CAMPUS_CARD.proximity;
@@ -301,6 +347,55 @@ export class DormHubScene extends Phaser.Scene {
     this.campusCardPickup = pickup;
   }
 
+  private createHairDryerPickup(): void {
+    if (!this.isHairDryerPickupPending(this.bridge.getState())) return;
+    this.textures.get(DORM_HAIR_DRYER_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    const pickup = this.add.image(
+      DORM_QIZHEN_HAIR_DRYER.x,
+      DORM_QIZHEN_HAIR_DRYER.y,
+      DORM_HAIR_DRYER_KEY
+    )
+      .setDisplaySize(58, 58)
+      .setDepth(DORM_QIZHEN_HAIR_DRYER.y + 320)
+      .setInteractive({ useHandCursor: true });
+    pickup.on("pointerdown", () => this.collectHairDryer());
+    this.tweens.add({
+      targets: pickup,
+      alpha: { from: 0.88, to: 1 },
+      duration: 850,
+      yoyo: true,
+      repeat: -1,
+      ease: "Stepped"
+    });
+    this.hairDryerPickup = pickup;
+    this.time.delayedCall(420, () => {
+      if (this.isHairDryerPickupPending(this.bridge.getState())) {
+        this.showFeedback("你被送回寝室，衣服还在滴水。");
+      }
+    });
+  }
+
+  private isHairDryerPickupPending(state: ReturnType<RpgBridge["getState"]>): boolean {
+    return state.qizhenLake.phase === "rain_recovery"
+      && state.qizhenLake.rainRescueCompleted
+      && !state.items.hairDryer;
+  }
+
+  private collectHairDryer(): void {
+    if (!this.isHairDryerPickupPending(this.bridge.getState())) {
+      this.showFeedback(this.bridge.getState().items.hairDryer
+        ? "吹风机已经放进物品栏。"
+        : "现在还不需要使用吹风机。");
+      return;
+    }
+    this.bridge.emit("rpg_qizhen_hair_dryer_requested");
+    if (!this.bridge.getState().items.hairDryer) return;
+    if (this.hairDryerPickup) this.tweens.killTweensOf(this.hairDryerPickup);
+    this.hairDryerPickup?.destroy();
+    this.hairDryerPickup = undefined;
+    this.showFeedback("获得寝室吹风机。");
+  }
+
   private createAmbientAnimations(): void {
     const windowLight = this.add.rectangle(491, 181, 232, 214, 0x7fd7ff, 0.035).setDepth(900);
     this.tweens.add({ targets: windowLight, alpha: 0.095, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
@@ -338,20 +433,13 @@ export class DormHubScene extends Phaser.Scene {
     this.backpackRing = this.add.circle(714, 1382, 52, 0xffd954, 0).setStrokeStyle(2, 0xffd954, 0.22).setDepth(1300);
     this.tweens.add({ targets: this.backpackRing, alpha: 0.32, scale: 1.08, duration: 1150, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
 
-    this.doorLight = this.add.rectangle(470, 1550, 118, 130, 0xffdf91, 0)
-      .setStrokeStyle(2, 0xffe9af, 0)
-      .setDepth(1180);
-    this.doorPanel = this.add.rectangle(470, 1550, 118, 130, 0x6b3d20, 0.9)
-      .setStrokeStyle(5, 0x2c1a11, 0.96)
-      .setDepth(1200);
-    this.add.rectangle(470, 1492, 106, 6, 0x98613a, 0.8).setDepth(1201);
-    this.add.rectangle(470, 1608, 106, 6, 0x3d2417, 0.9).setDepth(1201);
-    this.doorHandle = this.add.circle(506, 1557, 5, 0xb5a170, 0.96)
-      .setStrokeStyle(2, 0x302a20, 0.9)
-      .setDepth(1202);
   }
 
   private triggerInteraction(target: DormInteractionTarget): void {
+    if (target.id === "hair_dryer") {
+      this.collectHairDryer();
+      return;
+    }
     if (target.id === "exit_door") {
       this.tryExitDorm();
       if (!this.bridge.getState().actOne.canLeaveDorm) this.animateDoorRejection();
@@ -455,27 +543,7 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private animateDoorRejection(): void {
-    const door = this.add.rectangle(470, 1536, 140, 104, 0x6f3e1e, 0.35).setStrokeStyle(3, 0xc99355, 0.75).setDepth(1600);
-    this.tweens.add({ targets: door, x: "+=6", duration: 55, yoyo: true, repeat: 5, onComplete: () => door.destroy() });
-  }
-
-  private animateDoorOpening(): void {
-    this.doorLight.setAlpha(0.9).setStrokeStyle(2, 0xffe9af, 0.85);
-    this.tweens.add({
-      targets: this.doorLight,
-      alpha: { from: 0.15, to: 0.95 },
-      scaleX: { from: 0.18, to: 1 },
-      duration: 280,
-      ease: "Stepped"
-    });
-    this.tweens.add({
-      targets: [this.doorPanel, this.doorHandle],
-      x: "-=54",
-      scaleX: 0.08,
-      duration: 360,
-      ease: "Stepped"
-    });
-    this.cameras.main.flash(90, 255, 238, 190, false);
+    this.exitDoor.reject();
   }
 
   private pulseTarget(target: DormInteractionTarget, color: number): void {
@@ -485,6 +553,10 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private updatePrompt(target: DormInteractionTarget | null, nearCard: boolean): void {
+    if (this.exitTriggered) {
+      this.interactionPrompt.setVisible(false);
+      return;
+    }
     if (nearCard) {
       this.interactionPrompt.setText(formatRpgInteractionHint("拿起个人书桌上的校园卡")).setVisible(true);
       return;
@@ -502,11 +574,29 @@ export class DormHubScene extends Phaser.Scene {
 
   private tryExitDorm(): void {
     if (this.exitTriggered) return;
+    const state = this.bridge.getState();
+    if (state.qizhenLake.phase === "rain_recovery" && !state.qizhenLake.rainSafetyCleared) {
+      this.showFeedback(state.items.hairDryer
+        ? "先用手机天气页面处理启真湖的云层。"
+        : "先从自己的书桌拿到吹风机。");
+      return;
+    }
     if (this.bridge.getState().actOne.canLeaveDorm) {
       this.exitTriggered = true;
       this.showFeedback("寝室门已打开。");
-      this.animateDoorOpening();
-      this.time.delayedCall(520, () => this.bridge.emit("rpg_dorm_exit"));
+      this.interactionPrompt.setVisible(false);
+      this.exitDoor.open();
+      this.player.setVelocity(0, 0);
+      this.time.delayedCall(this.exitDoor.passableDelayMs, () => {
+        this.tweens.add({
+          targets: this.player,
+          x: 470,
+          y: 1588,
+          duration: 300,
+          ease: "Sine.easeIn",
+          onComplete: () => this.bridge.emit("rpg_dorm_exit")
+        });
+      });
       return;
     }
     const actOne = this.bridge.getState().actOne;
@@ -555,6 +645,15 @@ export class DormHubScene extends Phaser.Scene {
     if (!state.actOne.inventoryRecovered && state.actOne.phase === "inventory_required") {
       activeTargets.push({ id: "campus_card", x: DORM_CAMPUS_CARD.x, y: DORM_CAMPUS_CARD.y, width: 68, height: 52 });
     }
+    if (this.isHairDryerPickupPending(state)) {
+      activeTargets.push({
+        id: DORM_QIZHEN_HAIR_DRYER.id,
+        x: DORM_QIZHEN_HAIR_DRYER.x,
+        y: DORM_QIZHEN_HAIR_DRYER.y,
+        width: DORM_QIZHEN_HAIR_DRYER.width,
+        height: DORM_QIZHEN_HAIR_DRYER.height
+      });
+    }
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       scene: "dorm_hub",
@@ -587,6 +686,7 @@ export class DormHubScene extends Phaser.Scene {
         zoom: this.cameras.main.zoom,
         mode: "follow"
       },
+      interiorDoor: this.exitDoor.getDebugSnapshot(),
       activeTargets,
       collisionRects: DORM_STATIC_COLLISION_RECTS
     });

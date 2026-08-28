@@ -47,7 +47,10 @@ export const CANTEEN_STATIC_COLLISION_RECTS: readonly CanteenCollisionRect[] = [
   { id: "pickup_right_pillar", left: 1050, top: 664, right: 1105, bottom: 907 },
   { id: "southeast_wall_west_upper", left: 1155, top: 655, right: 1195, bottom: 700 },
   { id: "southeast_wall_west_lower", left: 1450, top: 354, right: 1483, bottom: 410 },
-  { id: "southeast_wall_east", left: 1254, top: 760, right: 1643, bottom: 925 },
+  // The west frame is a same-source foreground passage: the player walks
+  // behind it and is occluded by the source crop. The animated door owns the
+  // temporary blocker across the clear 140 px doorway.
+  { id: "southeast_exit_east_frame", left: 1450, top: 760, right: 1643, bottom: 925 },
   { id: "table_1_1", left: 179, top: 315, right: 273, bottom: 401 },
   { id: "table_1_2", left: 329, top: 314, right: 423, bottom: 402 },
   { id: "table_1_3", left: 478, top: 314, right: 572, bottom: 401 },

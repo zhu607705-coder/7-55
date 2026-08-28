@@ -111,6 +111,14 @@ export const LIBRARY_ENTRANCE_DOOR = {
   sensorHalfHeight: 142
 } as const;
 
+export const LIBRARY_ENTRANCE_FOREGROUND = {
+  left: 505,
+  top: 672,
+  right: 995,
+  bottom: 744,
+  sortY: 782
+} as const;
+
 export type LibraryInteractionTargetId =
   | "entrance_record"
   | "library_exit"

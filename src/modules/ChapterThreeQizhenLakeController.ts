@@ -218,6 +218,7 @@ export class ChapterThreeQizhenLakeController {
   enterLake(): boolean {
     const state = this.store.getState();
     if (!state.qizhenLake.active || ["inactive", "location_search"].includes(state.qizhenLake.phase)) return false;
+    if (state.qizhenLake.phase === "rain_recovery" && !state.qizhenLake.rainSafetyCleared) return false;
     const firstEntry = state.qizhenLake.phase === "lake_unlocked";
     this.store.setState((current) => ({
       ...current,
@@ -236,6 +237,22 @@ export class ChapterThreeQizhenLakeController {
     }));
     this.events.emit("qizhen_lake_entered", { phase: firstEntry ? "dock_outfitting" : state.qizhenLake.phase });
     return true;
+  }
+
+  collectHairDryer(): QizhenActionResult {
+    const state = this.store.getState();
+    if (!state.qizhenLake.active
+      || state.qizhenLake.phase !== "rain_recovery"
+      || !state.qizhenLake.rainRescueCompleted
+      || state.rpgScene !== "dorm_hub") return "inactive";
+    if (state.items.hairDryer) return "already_complete";
+    this.store.setState((current) => ({
+      ...current,
+      items: { ...current.items, hairDryer: true }
+    }));
+    this.events.emit("get_item", { itemId: "hairDryer", sourceScene: "dorm_hub" });
+    this.events.emit("qizhen_hair_dryer_collected");
+    return "accepted";
   }
 
   enterCampusApproach(): boolean {
@@ -376,34 +393,79 @@ export class ChapterThreeQizhenLakeController {
       this.events.emit("qizhen_dock_safety_blocked", { reason: "rain_and_equipment" });
       return "locked";
     }
-    if (state.qizhenLake.weatherAdjustmentRequested) {
-      this.events.emit("qizhen_dock_weather_adjustment_pending", { weather: "light_rain" });
+    if (state.qizhenLake.rainWarningSeen) {
+      this.events.emit("qizhen_dock_safety_warning_repeated", { weather: "light_rain" });
       return "already_complete";
     }
     this.store.setState((current) => ({
       ...current,
-      qizhenLake: { ...current.qizhenLake, weatherAdjustmentRequested: true }
+      qizhenLake: { ...current.qizhenLake, rainWarningSeen: true }
     }));
-    this.events.emit("qizhen_dock_weather_adjustment_requested", { weather: "light_rain" });
+    this.events.emit("qizhen_dock_safety_warning_recorded", { weather: "light_rain" });
+    return "accepted";
+  }
+
+  completeRainRescue(): QizhenActionResult {
+    const state = this.store.getState();
+    if (!state.qizhenLake.active
+      || state.qizhenLake.phase !== "boarding_tutorial"
+      || state.qizhenLake.zone !== "dock"
+      || state.qizhenLake.vehicle !== "on_foot"
+      || !state.qizhenLake.rainWarningSeen
+      || state.qizhenLake.rainSafetyCleared) return "inactive";
+    if (state.qizhenLake.rainRescueCompleted) return "already_complete";
+    const capsizeCount = state.qizhenLake.capsizeCount + 1;
+    this.store.setState((current) => ({
+      ...current,
+      runtimeMode: "rpg",
+      rpgScene: "dorm_hub",
+      rpgCheckpoint: "dorm_spawn",
+      currentScene: "phone_home",
+      ui: {
+        ...current.ui,
+        controlCenterOpen: false,
+        inventoryOpen: false,
+        selectedItem: null
+      },
+      qizhenLake: {
+        ...current.qizhenLake,
+        phase: "rain_recovery",
+        zone: "dock",
+        vehicle: "on_foot",
+        safeSpawnId: "dock_entry",
+        rainRescueCompleted: true,
+        weatherAdjustmentRequested: true,
+        capsizeCount,
+        boardingStrokeCount: 0,
+        boardingLastSide: null
+      }
+    }));
+    this.events.emit("qizhen_rain_rescue_completed", {
+      count: capsizeCount,
+      destination: "dorm_hub"
+    });
     return "accepted";
   }
 
   beginDockWeatherAdjustment(): QizhenActionResult {
     const state = this.store.getState();
     if (!state.qizhenLake.active
-      || state.qizhenLake.phase !== "boarding_tutorial"
+      || state.qizhenLake.phase !== "rain_recovery"
       || state.qizhenLake.zone !== "dock"
       || state.qizhenLake.vehicle !== "on_foot") return "inactive";
     if (state.qizhenLake.rainSafetyCleared) {
       this.events.emit("qizhen_dock_weather_already_adjusted", { weather: "overcast", source: "weather_app" });
       return "already_complete";
     }
-    const outfitComplete = state.qizhenLake.kayakEquipped
-      && state.qizhenLake.leftPaddleEquipped
-      && state.qizhenLake.rightPaddleEquipped;
-    if (!outfitComplete || !state.qizhenLake.weatherAdjustmentRequested) {
+    if (!state.qizhenLake.rainRescueCompleted
+      || !state.qizhenLake.weatherAdjustmentRequested
+      || !state.items.hairDryer) {
       this.events.emit("qizhen_dock_weather_adjustment_blocked", {
-        reason: outfitComplete ? "safety_request_required" : "equipment_required"
+        reason: !state.qizhenLake.rainRescueCompleted
+          ? "rescue_required"
+          : !state.items.hairDryer
+            ? "hair_dryer_required"
+            : "safety_request_required"
       });
       return "locked";
     }
@@ -427,20 +489,22 @@ export class ChapterThreeQizhenLakeController {
   applyDockWeatherAdjustment(summary: QizhenWeatherControlSummary): QizhenActionResult {
     const state = this.store.getState();
     if (!state.qizhenLake.active
-      || state.qizhenLake.phase !== "boarding_tutorial"
+      || state.qizhenLake.phase !== "rain_recovery"
       || state.qizhenLake.zone !== "dock"
       || state.qizhenLake.vehicle !== "on_foot") return "inactive";
     if (state.qizhenLake.rainSafetyCleared) {
       this.events.emit("qizhen_dock_weather_already_adjusted", { weather: "overcast", source: "weather_app" });
       return "already_complete";
     }
-    const outfitComplete = state.qizhenLake.kayakEquipped
-      && state.qizhenLake.leftPaddleEquipped
-      && state.qizhenLake.rightPaddleEquipped;
-    if (!outfitComplete || !state.qizhenLake.weatherAdjustmentRequested || state.qizhenLake.weatherControlAttempts < 1) {
+    if (!state.qizhenLake.rainRescueCompleted
+      || !state.items.hairDryer
+      || !state.qizhenLake.weatherAdjustmentRequested
+      || state.qizhenLake.weatherControlAttempts < 1) {
       this.events.emit("qizhen_dock_weather_adjustment_blocked", {
-        reason: !outfitComplete
-          ? "equipment_required"
+        reason: !state.qizhenLake.rainRescueCompleted
+          ? "rescue_required"
+          : !state.items.hairDryer
+            ? "hair_dryer_required"
           : !state.qizhenLake.weatherAdjustmentRequested
             ? "safety_request_required"
             : "control_session_required"
@@ -454,14 +518,24 @@ export class ChapterThreeQizhenLakeController {
     }
     this.store.setState((current) => ({
       ...current,
+      items: { ...current.items, hairDryer: false },
+      ui: current.ui.selectedItem === "hairDryer"
+        ? { ...current.ui, selectedItem: null }
+        : current.ui,
       qizhenLake: {
         ...current.qizhenLake,
+        phase: "boarding_tutorial",
         rainSafetyCleared: true,
         weatherControlBestMoves: current.qizhenLake.weatherControlBestMoves === 0
           ? summary.moves
           : Math.min(current.qizhenLake.weatherControlBestMoves, summary.moves)
       }
     }));
+    this.events.emit("use_item", {
+      itemId: "hairDryer",
+      targetId: "qizhen-weather-clouds",
+      result: "consume"
+    });
     this.events.emit("qizhen_dock_weather_adjusted", {
       weather: "overcast",
       source: "weather_app",
@@ -481,6 +555,10 @@ export class ChapterThreeQizhenLakeController {
       return "locked";
     }
     if (!selectCampusWeather(state).boatingAllowed) {
+      if (state.qizhenLake.rainWarningSeen && !state.qizhenLake.rainRescueCompleted) {
+        this.events.emit("qizhen_rain_forced_launch_started", { weather: "light_rain" });
+        return "accepted";
+      }
       this.events.emit("qizhen_kayak_board_rejected", { reason: "rain_safety_hold" });
       return "locked";
     }

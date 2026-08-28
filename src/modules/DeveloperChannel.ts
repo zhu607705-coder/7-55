@@ -60,7 +60,8 @@ export type DeveloperCheckpointId =
   | "c3-theater-ticket-delivered" | "c3-theater-code" | "c3-theater-program"
   | "c3-theater-prop" | "c3-theater-spotlight" | "c3-theater-spotlight-round" | "c3-theater-complete"
   | "c3-qizhen-transition" | "c3-qizhen-location" | "c3-qizhen-map" | "c3-qizhen-gate"
-  | "c3-qizhen-dock" | "c3-qizhen-rain-hold" | "c3-qizhen-weather-control" | "c3-qizhen-overcast"
+  | "c3-qizhen-dock" | "c3-qizhen-rain-hold" | "c3-qizhen-rescue-dorm" | "c3-qizhen-hair-dryer"
+  | "c3-qizhen-weather-control" | "c3-qizhen-overcast"
   | "c3-qizhen-boarding" | "c3-qizhen-open-water"
   | "c3-qizhen-rhythm-key" | "c3-qizhen-rhythm-net" | "c3-qizhen-rhythm-fish" | "c3-qizhen-rhythm-paper"
   | "c3-qizhen-tool-chain" | "c3-qizhen-swan" | "c3-qizhen-paper"
@@ -178,14 +179,16 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-qizhen-gate", chapter: "第三章", label: "启真湖入口", detail: "从校园大地图步行进入" },
   { id: "c3-qizhen-dock", chapter: "第三章", label: "小码头取装备", detail: "确认皮划艇并寻找两件临时划水工具" },
   { id: "c3-qizhen-rain-hold", chapter: "第三章", label: "雨天安全禁令", detail: "器材齐全，码头仍在下雨并禁止登船" },
-  { id: "c3-qizhen-weather-control", chapter: "第三章", label: "云层校准", detail: "安全员已确认当前天气不能下水" },
+  { id: "c3-qizhen-rescue-dorm", chapter: "第三章", label: "落水后回寝室", detail: "值班老师救援完成，寻找可用设备" },
+  { id: "c3-qizhen-hair-dryer", chapter: "第三章", label: "取得吹风机", detail: "书桌道具已拾取，等待打开天气页" },
+  { id: "c3-qizhen-weather-control", chapter: "第三章", label: "风向校准", detail: "使用寝室吹风机调整三层云带" },
   { id: "c3-qizhen-overcast", chapter: "第三章", label: "返回码头", detail: "湖区状态已更新，回码头确认" },
   { id: "c3-qizhen-boarding", chapter: "第三章", label: "上船平衡", detail: "交替左右桨与翻船安全恢复" },
   { id: "c3-qizhen-open-water", chapter: "第三章", label: "大湖倒影", detail: "深色记录、浅色取钓竿和装饵" },
-  { id: "c3-qizhen-rhythm-key", chapter: "第三章", label: "节奏钓鱼·钥匙", detail: "倒影点已就位，验收 A / S / D 三键节奏" },
-  { id: "c3-qizhen-rhythm-net", chapter: "第三章", label: "节奏钓鱼·网框", detail: "已开柜门，验收长按节拍" },
-  { id: "c3-qizhen-rhythm-fish", chapter: "第三章", label: "节奏钓鱼·小鲤鱼", detail: "鱼饲料已装饵，验收快节拍" },
-  { id: "c3-qizhen-rhythm-paper", chapter: "第三章", label: "节奏钓鱼·纸条", detail: "磁性钓竿已组合，验收最终八小节" },
+  { id: "c3-qizhen-rhythm-key", chapter: "第三章", label: "节奏钓鱼·钥匙", detail: "完整教学谱面，验收 A / S / D 与失败恢复" },
+  { id: "c3-qizhen-rhythm-net", chapter: "第三章", label: "节奏钓鱼·网框", detail: "三小节短谱面，保留一次长按判定" },
+  { id: "c3-qizhen-rhythm-fish", chapter: "第三章", label: "节奏钓鱼·小鲤鱼", detail: "一次咬钩判定，水纹收紧时按 S" },
+  { id: "c3-qizhen-rhythm-paper", chapter: "第三章", label: "节奏钓鱼·纸条", detail: "最终八小节高难谱面与追逐前紧张节奏" },
   { id: "c3-qizhen-tool-chain", chapter: "第三章", label: "湖区工具链", detail: "道具 2 和 3 待组合" },
   { id: "c3-qizhen-swan", chapter: "第三章", label: "黑天鹅交换", detail: "小鲤鱼待投喂" },
   { id: "c3-qizhen-paper", chapter: "第三章", label: "磁性钓竿", detail: "道具 7 与钓竿待组合" },
@@ -856,7 +859,10 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
   const rhythmPaper = id === "c3-qizhen-rhythm-paper";
   const rhythmCheckpoint = rhythmKey || rhythmNet || rhythmFish || rhythmPaper;
   const rainSafetyCheckpoint = id === "c3-qizhen-rain-hold";
+  const rescueDormCheckpoint = id === "c3-qizhen-rescue-dorm";
+  const hairDryerCheckpoint = id === "c3-qizhen-hair-dryer";
   const weatherControlCheckpoint = id === "c3-qizhen-weather-control";
+  const rainRecoveryCheckpoint = rescueDormCheckpoint || hairDryerCheckpoint || weatherControlCheckpoint;
   const overcastCheckpoint = id === "c3-qizhen-overcast";
   const inLake = [
     "c3-qizhen-dock",
@@ -881,8 +887,12 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       ? "lake_unlocked"
       : id === "c3-qizhen-dock"
         ? "dock_outfitting"
-        : rainSafetyCheckpoint || weatherControlCheckpoint || overcastCheckpoint || id === "c3-qizhen-boarding"
+        : rainSafetyCheckpoint
           ? "boarding_tutorial"
+          : rainRecoveryCheckpoint
+            ? "rain_recovery"
+            : overcastCheckpoint || id === "c3-qizhen-boarding"
+              ? "boarding_tutorial"
           : id === "c3-qizhen-open-water"
             ? "lake_exploration"
             : rhythmKey || rhythmNet || rhythmFish
@@ -901,11 +911,12 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
   const locationSourcesCompleted = !["c3-qizhen-transition", "c3-qizhen-location"].includes(id);
   const locationSolved = !["c3-qizhen-transition", "c3-qizhen-location", "c3-qizhen-map"].includes(id);
   const boardingReady = rhythmCheckpoint || [
-    "c3-qizhen-rain-hold", "c3-qizhen-weather-control", "c3-qizhen-overcast", "c3-qizhen-boarding",
+    "c3-qizhen-rain-hold", "c3-qizhen-rescue-dorm", "c3-qizhen-hair-dryer",
+    "c3-qizhen-weather-control", "c3-qizhen-overcast", "c3-qizhen-boarding",
     "c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan",
     "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"
   ].includes(id);
-  const weatherAdjustmentRequested = weatherControlCheckpoint || overcastCheckpoint || rhythmCheckpoint || [
+  const weatherAdjustmentRequested = rainRecoveryCheckpoint || overcastCheckpoint || rhythmCheckpoint || [
     "c3-qizhen-boarding", "c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan",
     "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"
   ].includes(id);
@@ -913,6 +924,7 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
     "c3-qizhen-boarding", "c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan",
     "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"
   ].includes(id);
+  const rainRescueCompleted = rainRecoveryCheckpoint || rainSafetyCleared;
   const onWater = rhythmCheckpoint || ["c3-qizhen-open-water", "c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase"].includes(id);
   const toolChain = rhythmCheckpoint || ["c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
   const swanReached = ["c3-qizhen-swan", "c3-qizhen-paper", "c3-qizhen-chase", "c3-qizhen-complete"].includes(id);
@@ -921,6 +933,8 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
   const completed = id === "c3-qizhen-complete";
   const zone: GameState["qizhenLake"]["zone"] = id === "c3-qizhen-swan" || id === "c3-qizhen-paper" || rhythmPaper
     ? "swan_cove"
+    : rhythmNet
+      ? "channel"
     : id === "c3-qizhen-chase"
       ? "channel"
       : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain" || rhythmKey || rhythmNet || rhythmFish
@@ -939,6 +953,8 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
           : base.currentScene,
     rpgScene: inLake
       ? "qizhen_lake"
+      : rescueDormCheckpoint || hairDryerCheckpoint
+        ? "dorm_hub"
       : id === "c3-qizhen-transition" || id === "c3-qizhen-gate"
         ? "campus_qizhen_loop"
         : base.rpgScene,
@@ -946,7 +962,11 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       ? "campus_theater_junction"
       : id === "c3-qizhen-gate"
         ? "campus_qizhen_gate"
-        : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain" || rhythmKey || rhythmNet || rhythmFish
+        : rescueDormCheckpoint || hairDryerCheckpoint
+          ? "dorm_spawn"
+        : rhythmNet
+          ? "qizhen_channel"
+        : id === "c3-qizhen-open-water" || id === "c3-qizhen-tool-chain" || rhythmKey || rhythmFish
           ? "qizhen_open_water"
           : id === "c3-qizhen-swan" || id === "c3-qizhen-paper" || rhythmPaper
             ? "qizhen_swan_cove"
@@ -965,6 +985,7 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       reflectionKeyword: false,
       lakeKeyword: id === "c3-qizhen-map" && !locationSolved,
       reflectionCoordinate: false,
+      hairDryer: hairDryerCheckpoint || weatherControlCheckpoint,
       fishingRod: (id === "c3-qizhen-open-water" || toolChain || swanReached || paperReached) && !chaseReached && !rhythmPaper,
       rustedLockerKey: false,
       nylonCord: id === "c3-qizhen-tool-chain" || rhythmNet,
@@ -987,6 +1008,8 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
         ? "channel_chase"
         : zone === "swan_cove"
           ? "swan_cove_entry"
+          : zone === "channel"
+            ? "channel_entry"
           : zone === "open_water"
             ? "open_water_entry"
             : id === "c3-qizhen-boarding" ? "dock_kayak" : "dock_entry",
@@ -999,11 +1022,13 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
         : id === "c3-qizhen-map"
           ? ["bridge", "reflection"]
           : ["bridge", "reflection", "lake"],
-      introSeen: inLake,
+      introSeen: inLake || rainRecoveryCheckpoint,
       kayakEquipped: boardingReady,
       leftPaddleEquipped: boardingReady,
       rightPaddleEquipped: boardingReady,
       weatherAdjustmentRequested,
+      rainWarningSeen: rainRescueCompleted,
+      rainRescueCompleted,
       rainSafetyCleared,
       boardingStrokeCount: onWater || completed ? 4 : 0,
       boardingLastSide: onWater || completed ? "right" : null,
@@ -1252,7 +1277,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phoneStatusTimeTrusted: false,
       factIds: [],
       room204Placements: [],
-      lightGrid: { mask: 6, locked: false },
+      lightGrid: { mask: 14, locked: false },
       guardMode: "absent",
       chaseAttempt: 0,
       chaseRestartCheckpoint: null,
@@ -1389,7 +1414,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       buildingTimeSeconds: 28440,
       factIds: [...CHAPTER_FOUR_755_BLACKOUT_FACTS],
       room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
-      lightGrid: { mask: 6, locked: false },
+      lightGrid: { mask: 14, locked: false },
       guardMode: "absent"
     });
   }

@@ -1345,6 +1345,17 @@ export function RpgGameHost({
         qizhenController.boardKayak();
       } else if (event.name === "rpg_qizhen_safety_officer_requested") {
         qizhenController.requestDockSafetyClearance();
+      } else if (event.name === "rpg_qizhen_rain_rescue_completed_requested") {
+        const result = qizhenController.completeRainRescue();
+        if (result === "accepted") {
+          events.emit("toast", {
+            text: "你被救起并送回寝室。先找到吹风机。",
+            tone: "task",
+            durationMs: 4200
+          });
+        }
+      } else if (event.name === "rpg_qizhen_hair_dryer_requested") {
+        qizhenController.collectHairDryer();
       } else if (event.name === "rpg_qizhen_paddle_requested") {
         qizhenController.recordPaddleStroke(
           String(event.payload?.side ?? "left") as QizhenPaddleSide,
@@ -1419,6 +1430,15 @@ export function RpgGameHost({
               grade: fishingResult?.grade ?? "C",
               accuracy: fishingResult?.accuracy ?? 0
             });
+            events.emit(
+              spotId === "paper" ? "qizhen_fishing_paper_completed" : "qizhen_fishing_catch_completed",
+              {
+                sessionId,
+                spotId,
+                grade: fishingResult?.grade ?? "C",
+                accuracy: fishingResult?.accuracy ?? 0
+              }
+            );
           } else {
             events.emit("qizhen_fishing_failed", { sessionId, spotId, reason: result });
             const feedback = QIZHEN_FISHING_SPOT_FEEDBACK[spotId];

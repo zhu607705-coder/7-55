@@ -296,6 +296,10 @@ const task7RuntimeSourcePaths = Object.freeze({
     "../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx",
     import.meta.url
   )),
+  powerPanelCss: fileURLToPath(new URL(
+    "../src/styles/chapter4-755.css",
+    import.meta.url
+  )),
   types: fileURLToPath(new URL(
     "../src/core/types.ts",
     import.meta.url
@@ -531,6 +535,7 @@ function validateTask7RuntimeSources(errors) {
   const lightGridModel = sources.lightGridModel ?? "";
   const finalChaseModel = sources.finalChaseModel ?? "";
   const powerPanel = sources.powerPanel ?? "";
+  const powerPanelCss = sources.powerPanelCss ?? "";
   const types = sources.types ?? "";
   const controllerResolverStart = controller.indexOf("  resolve755Intent(");
   const controllerResolverEnd = controller.indexOf("\n  /**\n   * Applies the phase", controllerResolverStart);
@@ -1609,6 +1614,20 @@ function validateTask7RuntimeSources(errors) {
     || /verifiedSolutionZoneIds|clickVector|28/.test(powerPanel)) {
     errors.push("Task 11 React power panel must expose five accessible state lights, unlocked Escape, automatic solved locking and an accessible same-mask lock retry without revealing the answer");
   }
+  if (!/POWER_GRID_POSITIONS[\s\S]*?hall:[\s\S]*?column:\s*2,\s*row:\s*1/.test(powerPanel)
+    || !/west_corridor:[\s\S]*?column:\s*1,\s*row:\s*2/.test(powerPanel)
+    || !/east_corridor:[\s\S]*?column:\s*3,\s*row:\s*2/.test(powerPanel)
+    || !/bakery_back_area:[\s\S]*?column:\s*1,\s*row:\s*3/.test(powerPanel)
+    || !/classroom_zone:[\s\S]*?column:\s*3,\s*row:\s*3/.test(powerPanel)
+    || !/POWER_GRID_CONNECTIONS[\s\S]*?\["bakery_back_area", "classroom_zone"\]/.test(powerPanel)
+    || !/chapter4-power-panel__connections/.test(powerPanel)
+    || !/style=\{\{\s*gridColumn:\s*position\.column,\s*gridRow:\s*position\.row\s*\}\}/.test(powerPanel)
+    || !/focusInDirection/.test(powerPanel)
+    || /focusByDelta/.test(powerPanel)
+    || !/\.chapter4-power-panel__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3/.test(powerPanelCss)
+    || !/\.chapter4-power-panel__connections\s*\{[\s\S]*?position:\s*absolute/.test(powerPanelCss)) {
+    errors.push("Task 11 power panel must render the five zones as the authored circuit topology and use spatial keyboard navigation instead of the retired list arrangement");
+  }
 
   if (/^\s*import\s/m.test(finalChaseModel)
     || /Phaser|GameStore|document\.|window\.|HTMLElement/.test(finalChaseModel)) {
@@ -2234,6 +2253,7 @@ function validate(content) {
         errors.push(`lightGrid.${key} must be an integer mask from 0 to 31`);
       }
     }
+    if (lightGrid.initialMask !== 14) errors.push("lightGrid.initialMask must use the revised arrangement mask 14");
     if (lightGrid.allOnMask !== 31) errors.push("lightGrid.allOnMask must be 31");
     if (lightGrid.targetMask === lightGrid.allOnMask) {
       errors.push("lightGrid target must reject the all-on state");
@@ -2261,6 +2281,9 @@ function validate(content) {
     const verifiedSolution = Array.isArray(lightGrid.verifiedSolutionZoneIds)
       ? lightGrid.verifiedSolutionZoneIds
       : [];
+    if (!sameArray(verifiedSolution, ["hall", "west_corridor", "east_corridor", "bakery_back_area"])) {
+      errors.push("lightGrid.verifiedSolutionZoneIds must match the revised four-toggle solution");
+    }
     let replayMask = lightGrid.initialMask;
     for (const zoneId of verifiedSolution) {
       const zone = zoneById.get(zoneId);

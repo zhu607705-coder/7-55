@@ -329,6 +329,13 @@
     "target": ""
   },
   {
+    "id": "hairDryer",
+    "name": "寝室吹风机",
+    "desc": "从寝室书桌上拿来的吹风机。天气页面正在等待它处理启真湖的云层。",
+    "sourceScene": "dorm_hub",
+    "target": "qizhen-weather-clouds"
+  },
+  {
     "id": "fishingRod",
     "name": "钓竿",
     "desc": "码头装备架上的基础钓竿，可安装诱饵或磁吸附件。",

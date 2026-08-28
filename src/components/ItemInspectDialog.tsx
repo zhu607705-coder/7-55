@@ -253,6 +253,12 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     source: "启真湖指示牌",
     intro: "深浅两种观察结果共同指向右侧路灯杆。"
   },
+  hairDryer: {
+    category: "寝室电器",
+    source: "个人书桌",
+    intro: "吹风机的风量调节仍然可用。",
+    useHint: "进入天气页面后，用它推动低、中、高三层云带"
+  },
   fishingRod: {
     category: "湖面工具",
     source: "启真湖码头装备架",

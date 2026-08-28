@@ -1643,7 +1643,7 @@ try {
         phoneStatusTimeTrusted: true,
         guardMode,
         chaseAttempt,
-        lightGrid: { mask: 6, locked: false }
+        lightGrid: { mask: 14, locked: false }
       }
     };
   }
@@ -1991,28 +1991,28 @@ try {
     zoneIds: CHAPTER_FOUR_LIGHT_GRID.zones.map((zone) => zone.id),
     toggleMasks: CHAPTER_FOUR_LIGHT_GRID.zones.map((zone) => zone.toggleMask)
   }, {
-    initialMask: 6,
+    initialMask: 14,
     targetMask: 13,
     allOnMask: 31,
     zoneIds: ["hall", "west_corridor", "east_corridor", "classroom_zone", "bakery_back_area"],
     toggleMasks: [7, 19, 13, 28, 26]
   }), "Task11 pure light-grid contract must expose the exact five zones and masks");
-  assert(!evaluateChapterFourLightGrid(6).solved, "Task11 initial mask 6 must remain unsolved");
+  assert(!evaluateChapterFourLightGrid(14).solved, "Task11 initial mask 14 must remain unsolved");
   assert(isChapterFourLightGridSolved(13), "Task11 target mask 13 must solve the necessary route");
   assert(!isChapterFourLightGridSolved(31), "Task11 all-on mask must fail because off-route zones must stay dark");
   const lightGridSolutions = enumerateChapterFourLightGridSolutions();
   assert(lightGridSolutions.length === 1, "Task11 32-vector enumeration must have one unique solution");
   assert(sameJson(lightGridSolutions[0], {
-    clickVector: 28,
-    zoneIds: ["east_corridor", "classroom_zone", "bakery_back_area"],
+    clickVector: 23,
+    zoneIds: ["hall", "west_corridor", "east_corridor", "bakery_back_area"],
     resultMask: 13
-  }), "Task11 unique solution must be click vector 28");
+  }), "Task11 unique solution must be click vector 23");
   assert(
-    applyChapterFourLightGridClickVector(6, 28) === 13,
-    "Task11 click vector 28 must transform initial mask 6 to target mask 13"
+    applyChapterFourLightGridClickVector(14, 23) === 13,
+    "Task11 click vector 23 must transform initial mask 14 to target mask 13"
   );
   assert(
-    toggleChapterFourLightZone(toggleChapterFourLightZone(6, "hall"), "hall") === 6,
+    toggleChapterFourLightZone(toggleChapterFourLightZone(14, "hall"), "hall") === 14,
     "Task11 XOR toggles must be self-inverse"
   );
   const finalClockContract = getChapterFour755TargetContract("a1_hall_clock_minute_endpoint");
@@ -2166,7 +2166,7 @@ try {
     guard: "absent",
     paperHeld: false,
     paperOut: true,
-    mask: 6,
+    mask: 14,
     locked: false,
     floor: "A1",
     roomId: "a1_lobby",
@@ -2174,7 +2174,7 @@ try {
   }), "Task11 minute theft must write the complete blackout transaction atomically");
   assert(
     maintenanceEvents.getHistory().some((event) => event.name === "blackout_committed"
-      && event.payload?.mask === 6
+      && event.payload?.mask === 14
       && event.payload?.timeState === "0754_blackout"),
     "Task11 successful minute theft must emit blackout_committed data"
   );
@@ -2257,8 +2257,9 @@ try {
   assert(snapshot(allOnStore.getState()) === allOnBefore, "Task11 failed all-on lock must be zero-write");
 
   const expectedToggleSequence = [
-    ["east_corridor", 11],
-    ["classroom_zone", 23],
+    ["hall", 9],
+    ["west_corridor", 26],
+    ["east_corridor", 23],
     ["bakery_back_area", 13]
   ];
   for (const [zoneId, expectedMask] of expectedToggleSequence) {
@@ -2277,8 +2278,9 @@ try {
     previousMask: event.payload?.previousMask,
     mask: event.payload?.mask
   })), [
-    { zoneId: "east_corridor", previousMask: 6, mask: 11 },
-    { zoneId: "classroom_zone", previousMask: 11, mask: 23 },
+    { zoneId: "hall", previousMask: 14, mask: 9 },
+    { zoneId: "west_corridor", previousMask: 9, mask: 26 },
+    { zoneId: "east_corridor", previousMask: 26, mask: 23 },
     { zoneId: "bakery_back_area", previousMask: 23, mask: 13 }
   ]), "Task11 power-zone cues must report previous and committed masks");
   const lockGridResult = maintenanceController.resolve755Intent({
@@ -2364,7 +2366,7 @@ try {
   );
   assert(!malformedBlackoutLoaded.items.attendanceRecordPaper, "Task11 blackout save must remove the attendance paper");
   assert(sameJson(malformedBlackoutLoaded.chapter4.lightGrid, { mask: 19, locked: false }), "Task11 blackout save must retain a legal mask but keep it unlocked");
-  for (const mask of [0, 6, 13, 31]) {
+  for (const mask of [0, 14, 13, 31]) {
     const loaded = hydrate({
       ...blackoutState,
       chapter4: { ...blackoutState.chapter4, lightGrid: { mask, locked: false } }
@@ -2375,7 +2377,22 @@ try {
     ...blackoutState,
     chapter4: { ...blackoutState.chapter4, lightGrid: { mask: 32, locked: false } }
   });
-  assert(invalidMaskLoaded.chapter4.lightGrid.mask === 6, "Task11 invalid blackout mask must recover to initial mask 6");
+  assert(invalidMaskLoaded.chapter4.lightGrid.mask === 14, "Task11 invalid blackout mask must recover to initial mask 14");
+  const v28PowerGridLoaded = loadRawSave(JSON.stringify({
+    version: 28,
+    state: {
+      ...blackoutState,
+      chapter4: {
+        ...blackoutState.chapter4,
+        lightGrid: { mask: 6, locked: false }
+      }
+    },
+    savedAt: 1_755_029
+  })).loaded;
+  assert(
+    sameJson(v28PowerGridLoaded.chapter4.lightGrid, { mask: 14, locked: false }),
+    "v28 blackout save at the retired initial arrangement must migrate to initial mask 14"
+  );
   const malformedFinalChaseLoaded = hydrate({
     ...blackoutState,
     items: { ...blackoutState.items, attendanceRecordPaper: true },

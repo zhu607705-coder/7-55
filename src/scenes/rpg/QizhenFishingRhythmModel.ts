@@ -20,6 +20,7 @@ import {
 
 export type QizhenFishingAction = RhythmFishingAction;
 export type QizhenFishingChartId = "locker_key" | "net_frame" | "fish" | "paper";
+export type QizhenFishingExperience = "tutorial_full" | "quick_hold" | "quick_strike" | "finale_full";
 export type QizhenFishingJudgment = RhythmFishingJudgment;
 export type QizhenFishingGrade = RhythmFishingGrade;
 export type QizhenFishingFailReason = RhythmFishingFailReason;
@@ -70,6 +71,8 @@ export const QIZHEN_FISHING_TENSION = {
 interface QizhenFishingChartData extends RhythmFishingChartData {
   spotId: string;
   label: string;
+  experience: QizhenFishingExperience;
+  instruction: string;
   bars: number;
 }
 
@@ -77,15 +80,23 @@ const chartCatalog = chartsData.charts as unknown as Record<QizhenFishingChartId
 
 /** Preserves the Chapter 3 constructor and public model surface. */
 export class QizhenFishingRhythmModel extends RhythmFishingEngine<QizhenFishingChartId> {
+  readonly experience: QizhenFishingExperience;
+  readonly instruction: string;
+  readonly durationSec: number;
+
   constructor(options: QizhenFishingRhythmModelOptions) {
+    const chart = chartCatalog[options.chartId];
     super({
       chartId: options.chartId,
-      chart: chartCatalog[options.chartId],
+      chart,
       now: options.now,
       assist: options.assist,
       timing: QIZHEN_FISHING_TIMING,
       tension: QIZHEN_FISHING_TENSION,
       events: options.events,
     });
+    this.experience = chart.experience;
+    this.instruction = chart.instruction;
+    this.durationSec = chart.durationSeconds;
   }
 }

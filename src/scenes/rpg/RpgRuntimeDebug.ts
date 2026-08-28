@@ -58,6 +58,13 @@ export interface RpgRuntimeDebugState {
     state: "closed" | "opening" | "open" | "closing";
     accessGranted: boolean;
   };
+  interiorDoor?: {
+    id: string;
+    state: "closed" | "opening" | "open" | "closing";
+    progress: number;
+    passable: boolean;
+    actorOccluded: boolean;
+  };
   entranceRecord?: {
     open: boolean;
     read: boolean;

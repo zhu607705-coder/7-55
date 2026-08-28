@@ -8,6 +8,8 @@
     "locker_key": {
       "spotId": "locker_key",
       "label": "生锈的柜门钥匙",
+      "experience": "tutorial_full",
+      "instruction": "教学谱面：音符碰到判定线时按对应的 A / S / D",
       "bars": 4,
       "durationSeconds": 10,
       "notes": [
@@ -24,56 +26,33 @@
     "net_frame": {
       "spotId": "net_frame",
       "label": "破损网框",
-      "bars": 6,
-      "durationSeconds": 15,
+      "experience": "quick_hold",
+      "instruction": "短判定：按住 A 至圆环结束，再完成收线",
+      "bars": 3,
+      "durationSeconds": 7.5,
       "notes": [
         { "beat": 4, "action": "hook" },
-        { "beat": 6, "action": "left" },
-        { "beat": 8, "action": "right" },
-        { "beat": 10, "action": "left" },
-        { "beat": 11, "action": "right" },
-        { "beat": 12, "action": "left" },
-        { "beat": 14, "action": "right" },
-        { "beat": 16, "action": "left", "hold": 1 },
-        { "beat": 18, "action": "right" },
-        { "beat": 19, "action": "left" },
-        { "beat": 20, "action": "right" },
-        { "beat": 21, "action": "left" },
-        { "beat": 22, "action": "right" },
-        { "beat": 23, "action": "hook" }
+        { "beat": 6, "action": "left", "hold": 1 },
+        { "beat": 9, "action": "right" },
+        { "beat": 11, "action": "hook" }
       ]
     },
     "fish": {
       "spotId": "fish",
       "label": "小鲤鱼",
-      "bars": 6,
-      "durationSeconds": 15,
+      "experience": "quick_strike",
+      "instruction": "一次判定：水纹收紧到判定线时按 S 提竿",
+      "bars": 2,
+      "durationSeconds": 5,
       "notes": [
-        { "beat": 4, "action": "hook" },
-        { "beat": 5.5, "action": "left" },
-        { "beat": 6.5, "action": "right" },
-        { "beat": 7.5, "action": "left" },
-        { "beat": 8.5, "action": "right" },
-        { "beat": 9, "action": "left" },
-        { "beat": 10.5, "action": "right" },
-        { "beat": 11.5, "action": "left" },
-        { "beat": 12.5, "action": "right" },
-        { "beat": 13.5, "action": "left" },
-        { "beat": 14, "action": "right" },
-        { "beat": 15.5, "action": "left" },
-        { "beat": 16.5, "action": "right" },
-        { "beat": 17, "action": "left" },
-        { "beat": 18.5, "action": "right" },
-        { "beat": 19.5, "action": "left" },
-        { "beat": 20, "action": "right" },
-        { "beat": 21, "action": "left" },
-        { "beat": 22, "action": "right" },
-        { "beat": 23, "action": "hook" }
+        { "beat": 7, "action": "hook" }
       ]
     },
     "paper": {
       "spotId": "paper",
       "label": "纸条本体",
+      "experience": "finale_full",
+      "instruction": "最终捕纸：保持张力，完整完成八小节",
       "bars": 8,
       "durationSeconds": 20,
       "notes": [

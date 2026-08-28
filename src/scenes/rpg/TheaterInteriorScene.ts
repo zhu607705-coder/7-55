@@ -38,6 +38,7 @@ import {
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
+import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   requireTheaterRuntimePort,
@@ -198,6 +199,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private playerAnimator!: RpgPlayerAnimator;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
+  private exitDoor!: RpgInteriorDoorRuntime;
+  private exitTransitioning = false;
   private gateBlocker: Phaser.GameObjects.Rectangle | null = null;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
@@ -319,6 +322,36 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.physics.world.setBounds(66, 18, THEATER_INTERIOR_WORLD.width - 132, THEATER_INTERIOR_WORLD.height - 42);
     this.obstacles = this.physics.add.staticGroup();
     this.drawInterior(state.theaterHunt.admitted);
+    this.exitDoor = new RpgInteriorDoorRuntime(this, this.obstacles, {
+      id: "theater_center_exit",
+      centerX: 836,
+      centerY: 875,
+      openingWidth: 120,
+      openingHeight: 118,
+      blockerY: 833,
+      blockerWidth: 140,
+      blockerHeight: 14,
+      motion: "double-slide",
+      openOffset: 56,
+      durationMs: 380,
+      depth: 920,
+      palette: {
+        portal: 0x101319,
+        spill: 0xb7ddf4,
+        leaf: 0x313d43,
+        inset: 0x536169,
+        trim: 0x161d22,
+        handle: 0xd5b96e
+      },
+      foreground: {
+        textureKey: THEATER_MAP_KEY,
+        left: 708,
+        top: 786,
+        right: 964,
+        bottom: 846,
+        sortY: 910
+      }
+    }, this.reducedMotion);
     this.ensureTheaterTextures();
     ensureRpgPlayerTextures(this);
 
@@ -416,7 +449,8 @@ export class TheaterInteriorScene extends Phaser.Scene {
     const movementAllowed = state.actOne.movementEnabled
       && !this.paperBusy
       && !this.panel
-      && !this.spotlightPanel;
+      && !this.spotlightPanel
+      && !this.exitTransitioning;
     if (movementAllowed && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
@@ -425,6 +459,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 120);
     this.playerAnimator.update(vector, this.time.now);
     this.updateOcclusion();
+    this.exitDoor.updateActorOcclusion(this.player);
 
     const targets = this.getActiveTargets(state);
     const nearest = findNearestTheaterTarget(this.player.x, this.player.y, targets);
@@ -1122,7 +1157,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private triggerTarget(target: TheaterInteractionTarget, state: GameState): void {
     if (target.kind === "exit") {
-      this.runtime.emit("rpg_theater_exit_requested");
+      this.beginTheaterExit();
       return;
     }
     if (target.kind === "poster") {
@@ -1184,6 +1219,38 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
   }
 
+  private beginTheaterExit(): void {
+    if (
+      this.exitTransitioning
+      || this.dialogueLocked
+      || this.paperBusy
+      || this.panel
+      || this.spotlightPanel
+    ) {
+      this.exitDoor.reject();
+      return;
+    }
+    this.exitTransitioning = true;
+    this.player.setVelocity(0, 0);
+    this.promptText.setVisible(false);
+    this.exitDoor.open();
+    this.time.delayedCall(this.exitDoor.passableDelayMs, () => {
+      if (!this.scene.isActive() || !this.player.active) return;
+      this.tweens.add({
+        targets: this.player,
+        x: 836,
+        y: 900,
+        duration: this.reducedMotion ? 120 : 300,
+        ease: "Stepped",
+        onUpdate: () => {
+          this.player.setDepth(this.player.y + 120);
+          this.exitDoor.updateActorOcclusion(this.player);
+        },
+        onComplete: () => this.runtime.emit("rpg_theater_exit_requested")
+      });
+    });
+  }
+
   private triggerPointerTarget(target: TheaterInteractionTarget): void {
     const state = this.runtime.getState();
     if (this.dialogueLocked || this.paperBusy || this.panel || this.spotlightPanel) return;
@@ -1203,7 +1270,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private updatePrompt(target: TheaterInteractionTarget | null, state: GameState): void {
-    if (!target || this.dialogueLocked || this.paperBusy || this.panel || this.spotlightPanel) {
+    if (!target || this.exitTransitioning || this.dialogueLocked || this.paperBusy || this.panel || this.spotlightPanel) {
       this.promptText.setVisible(false);
       return;
     }
@@ -2470,6 +2537,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         mode: "follow"
       },
       scene: "theater_interior",
+      interiorDoor: this.exitDoor.getDebugSnapshot(),
       checkpoint: state.rpgCheckpoint,
       activeTargets: this.getActiveTargets(state).map((candidate) => ({
         id: candidate.id,

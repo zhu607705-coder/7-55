@@ -300,6 +300,7 @@ export type QizhenLakePhase =
   | "lake_unlocked"
   | "dock_outfitting"
   | "boarding_tutorial"
+  | "rain_recovery"
   | "lake_exploration"
   | "tool_chain"
   | "swan_exchange"
@@ -345,7 +346,11 @@ export interface QizhenLakeState {
   kayakEquipped: boolean;
   leftPaddleEquipped: boolean;
   rightPaddleEquipped: boolean;
-  /** 湖边安全员已核对器材并提交天气调控申请。 */
+  /** 值班老师已经明确劝阻雨天登船。 */
+  rainWarningSeen: boolean;
+  /** 玩家强行下水后已经落水获救并被送回寝室。 */
+  rainRescueCompleted: boolean;
+  /** 落水救援完成后，天气应用收到待处理的湖区记录。 */
   weatherAdjustmentRequested: boolean;
   /** 云层校准小游戏的累计开始次数。 */
   weatherControlAttempts: number;
@@ -949,6 +954,7 @@ export type ItemId =
   | "reflectionKeyword"
   | "lakeKeyword"
   | "reflectionCoordinate"
+  | "hairDryer"
   | "fishingRod"
   | "rustedLockerKey"
   | "nylonCord"

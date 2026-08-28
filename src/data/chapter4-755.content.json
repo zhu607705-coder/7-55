@@ -1381,7 +1381,7 @@
     "gameplayRule": "any_unique_piece_to_any_unique_empty_slot_orientation_up"
   },
   "lightGrid": {
-    "initialMask": 6,
+    "initialMask": 14,
     "targetMask": 13,
     "allOnMask": 31,
     "zones": [
@@ -1446,8 +1446,9 @@
       "bakery_back_area"
     ],
     "verifiedSolutionZoneIds": [
+      "hall",
+      "west_corridor",
       "east_corridor",
-      "classroom_zone",
       "bakery_back_area"
     ],
     "successLocks": true

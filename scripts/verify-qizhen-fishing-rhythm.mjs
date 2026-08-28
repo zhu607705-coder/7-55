@@ -7,8 +7,18 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chartPath = path.join(root, "src/data/chapter3-qizhen-fishing.charts.json");
-const expectedChartHash = "aa7e820faee753a9cb84f82d6dbedaa39353af72a268152102e9640cda6275af";
-const expectedNoteCounts = Object.freeze({ locker_key: [8, 8], net_frame: [14, 14], fish: [20, 8], paper: [26, 20] });
+const audioTimelinePath = path.join(root, "src/data/chapter3-qizhen.audio.json");
+const hostPath = path.join(root, "src/scenes/rpg/RpgGameHost.tsx");
+const scenePath = path.join(root, "src/scenes/rpg/QizhenLakeScene.ts");
+const lakeModelPath = path.join(root, "src/scenes/rpg/QizhenLakeModel.ts");
+const developerChannelPath = path.join(root, "src/modules/DeveloperChannel.ts");
+const expectedChartHash = "0923a8ce50fa7869110bf3ad179cbb8b46124ee1a92ebc58118515f651ddb489";
+const expectedCharts = Object.freeze({
+  locker_key: { notes: [8, 8], durationSec: 10, experience: "tutorial_full" },
+  net_frame: { notes: [4, 4], durationSec: 7.5, experience: "quick_hold" },
+  fish: { notes: [1, 1], durationSec: 5, experience: "quick_strike" },
+  paper: { notes: [26, 20], durationSec: 20, experience: "finale_full" },
+});
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -60,12 +70,14 @@ async function main() {
     const { QizhenFishingRhythmModel, QIZHEN_FISHING_TIMING, QIZHEN_FISHING_TENSION } = await import(pathToFileURL(modelBundle).href);
     const { RhythmFishingEngine } = await import(pathToFileURL(engineBundle).href);
 
-    for (const [chartId, counts] of Object.entries(expectedNoteCounts)) {
+    for (const [chartId, expectation] of Object.entries(expectedCharts)) {
       const normal = playPerfect(QizhenFishingRhythmModel, chartId, false);
       const assist = playPerfect(QizhenFishingRhythmModel, chartId, true);
       const timeShifted = playPerfect(QizhenFishingRhythmModel, chartId, false, 1_000);
-      assert(normal.model.totalNotes === counts[0], `${chartId} normal note count drifted`);
-      assert(assist.model.totalNotes === counts[1], `${chartId} assist note count drifted`);
+      assert(normal.model.totalNotes === expectation.notes[0], `${chartId} normal note count drifted`);
+      assert(assist.model.totalNotes === expectation.notes[1], `${chartId} assist note count drifted`);
+      assert(normal.model.durationSec === expectation.durationSec, `${chartId} duration drifted`);
+      assert(normal.model.experience === expectation.experience, `${chartId} experience tier drifted`);
       assert(normal.result.grade === "S" && normal.result.passed, `${chartId} normal all-perfect result drifted`);
       assert(assist.result.grade === "S" && assist.result.passed, `${chartId} assist all-perfect result drifted`);
       assert(JSON.stringify(normal.result) === JSON.stringify(timeShifted.result), `${chartId} timing origin changed result`);
@@ -100,6 +112,14 @@ async function main() {
     holdNow = holdNote.timeSec + holdNote.holdSec - QIZHEN_FISHING_TIMING.holdReleaseSlackSec - 0.001;
     hold.handleRelease(holdNote.action);
     assert(holdEvents[0]?.type === "note" && holdEvents[1]?.type === "hold_broken", "hold break event order drifted");
+
+    const fishProbe = new QizhenFishingRhythmModel({ chartId: "fish", now: () => 0, events: createEvents([]) });
+    assert(fishProbe.totalNotes === 1 && fishProbe.notes[0]?.action === "hook", "fish must remain one visible hook judgment");
+
+    const paperProbe = new QizhenFishingRhythmModel({ chartId: "paper", now: () => 0, events: createEvents([]) });
+    assert(paperProbe.totalNotes > expectedCharts.locker_key.notes[0], "paper must remain the highest-density chart");
+    assert(paperProbe.notes.filter((note) => note.holdBeats > 0).length === 2, "paper must retain two hold notes");
+    assert(paperProbe.notes.some((note) => !Number.isInteger(note.beat)), "paper must retain off-beat tension notes");
 
     for (const assist of [false, true]) {
       let now = 0;
@@ -157,7 +177,27 @@ async function main() {
     nearest.handlePress("left");
     assert(nearestEvents[0]?.index === 0 && nearestEvents[0]?.judgment === "great", "equal-distance note matching must retain first authored note");
 
-    console.log("Qizhen fishing rhythm parity PASS charts=4 boundaries=3 hold=1 sustain=2 cancel=1 nearest=1");
+    const audioTimeline = JSON.parse(await readFile(audioTimelinePath, "utf8"));
+    const startedAssets = audioTimeline.events.qizhen_fishing_started.cues.map((cue) => cue.asset).filter(Boolean);
+    assert(startedAssets.includes("music_qizhen_fishing"), "fishing must use its authored rhythm music");
+    assert(audioTimeline.events.qizhen_fishing_final_tension_started.cues.some((cue) => cue.action === "update" && cue.channel === "music"), "paper finale must raise the music tension");
+    assert(audioTimeline.events.qizhen_fishing_catch_completed.cues.some((cue) => cue.asset === "music_qizhen_lakeside"), "ordinary catches must return to the lakeside bed");
+    assert(!audioTimeline.events.qizhen_fishing_paper_completed.cues.some((cue) => cue.asset === "music_qizhen_lakeside"), "paper completion must not resume calm music before the chase");
+    assert(audioTimeline.events.qizhen_fishing_paper_completed.cues.some((cue) => cue.asset === "fx_qizhen_paper_release"), "paper completion must include the release sound");
+
+    const [hostSource, sceneSource, lakeModelSource, developerChannelSource] = await Promise.all([
+      readFile(hostPath, "utf8"),
+      readFile(scenePath, "utf8"),
+      readFile(lakeModelPath, "utf8"),
+      readFile(developerChannelPath, "utf8"),
+    ]);
+    assert(hostSource.includes('spotId === "paper" ? "qizhen_fishing_paper_completed" : "qizhen_fishing_catch_completed"'), "host must route ordinary and paper completion separately");
+    assert(sceneSource.includes('this.emitDomain("qizhen_fishing_final_tension_started"'), "paper chart must emit its tension prelude event");
+    assert(lakeModelSource.includes('id: "qizhen_fishing_fish"') && lakeModelSource.includes('acceptedItem: "fishFeedPellets"'), "fish quick strike must own a real item-use target");
+    assert(sceneSource.includes('if (target.value === "fish")') && sceneSource.includes('hasItem(state, CHAIN_ITEMS.pellets)'), "fish quick strike must become active when pellets are available");
+    assert(developerChannelSource.includes('rhythmNet\n      ? "channel"') && developerChannelSource.includes('? "qizhen_channel"'), "net quick-hold checkpoint must seed the channel plate");
+
+    console.log("Qizhen fishing tiered flow PASS tutorial=8 quick_hold=4 quick_strike=1 finale=26 audio=split recovery=preserved");
   } finally {
     await rm(bundleDir, { recursive: true, force: true });
   }

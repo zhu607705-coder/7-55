@@ -323,23 +323,33 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     return task("dock_outfitting", qizhenContent.quest.dock, [hint, stripPrefix(qizhenContent.dock.outfitPrompt)]);
   }
   if (lake.phase === "boarding_tutorial") {
-    if (!lake.rainSafetyCleared && !lake.weatherAdjustmentRequested) {
+    if (!lake.rainSafetyCleared && !lake.rainWarningSeen) {
       return task("weather_request", "确认能否下水", [
-        "器材收齐后，去小码头找安全员确认。"
+        "器材收齐后，去小码头找值班老师确认。"
       ]);
     }
-    if (!lake.rainSafetyCleared) {
-      return {
-        ...task("weather_adjustment", "解决当前下水条件", [
-          "查看手机里的校园状态。"
-        ]),
-        targetSurface: "phone"
-      };
+    if (!lake.rainSafetyCleared && !lake.rainRescueCompleted) {
+      return task("rain_launch", "再次尝试登船", [
+        "回到皮划艇旁。"
+      ]);
     }
     return task("boarding", qizhenContent.quest.boarding, [
       qizhenContent.boarding.instruction,
       qizhenContent.boarding.sameSide
     ]);
+  }
+  if (lake.phase === "rain_recovery") {
+    if (!state.items.hairDryer) {
+      return task("hair_dryer", "在寝室找一件能用的设备", [
+        "检查自己的书桌。"
+      ]);
+    }
+    return {
+      ...task("weather_adjustment", "处理启真湖的天气记录", [
+        "打开手机天气页面。"
+      ]),
+      targetSurface: "phone"
+    };
   }
   if (lake.phase === "lake_exploration") {
     if (!lake.reflectionLocationObserved) {

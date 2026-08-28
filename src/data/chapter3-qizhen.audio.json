@@ -71,7 +71,15 @@
     "qizhen_fishing_started": {
       "cues": [
         { "channel": "music", "action": "stop" },
-        { "channel": "music", "asset": "music_qizhen_mist", "action": "play", "offsetMs": 10, "volume": 0.2, "loop": false }
+        { "channel": "ambient", "asset": "music_qizhen_lakeside", "action": "play", "owner": "qizhen_fishing_lake", "offsetMs": 10, "volume": 0.055, "loop": true },
+        { "channel": "music", "asset": "music_qizhen_fishing", "action": "play", "offsetMs": 10, "volume": 0.22, "loop": false },
+        { "channel": "sfx", "asset": "fx_qizhen_reflection_shimmer", "offsetMs": 40, "playbackRate": 0.86, "volume": 0.26 }
+      ]
+    },
+    "qizhen_fishing_final_tension_started": {
+      "cues": [
+        { "channel": "music", "action": "update", "offsetMs": 120, "volume": 0.28, "loop": false },
+        { "channel": "sfx", "asset": "fx_qizhen_mist_observe", "offsetMs": 120, "playbackRate": 0.84, "volume": 0.3 }
       ]
     },
     "qizhen_fishing_warning": {
@@ -80,14 +88,26 @@
       ]
     },
     "qizhen_fishing_completed": {
+      "cues": []
+    },
+    "qizhen_fishing_catch_completed": {
       "cues": [
+        { "channel": "ambient", "action": "stop", "owner": "qizhen_fishing_lake" },
         { "channel": "music", "action": "stop" },
         { "channel": "sfx", "asset": "fx_qizhen_reflection_shimmer", "playbackRate": 1.12, "volume": 0.5 },
         { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "offsetMs": 40, "volume": 0.17, "loop": true }
       ]
     },
+    "qizhen_fishing_paper_completed": {
+      "cues": [
+        { "channel": "ambient", "action": "stop", "owner": "qizhen_fishing_lake" },
+        { "channel": "music", "action": "stop" },
+        { "channel": "sfx", "asset": "fx_qizhen_paper_release", "playbackRate": 1.02, "volume": 0.74 }
+      ]
+    },
     "qizhen_fishing_failed": {
       "cues": [
+        { "channel": "ambient", "action": "stop", "owner": "qizhen_fishing_lake" },
         { "channel": "music", "action": "stop" },
         { "channel": "sfx", "asset": "fx_qizhen_reflection_miss", "playbackRate": 0.9, "volume": 0.44 },
         { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "offsetMs": 40, "volume": 0.17, "loop": true }
@@ -95,6 +115,7 @@
     },
     "qizhen_fishing_cancelled": {
       "cues": [
+        { "channel": "ambient", "action": "stop", "owner": "qizhen_fishing_lake" },
         { "channel": "music", "action": "stop" },
         { "channel": "music", "asset": "music_qizhen_lakeside", "action": "play", "offsetMs": 40, "volume": 0.17, "loop": true }
       ]

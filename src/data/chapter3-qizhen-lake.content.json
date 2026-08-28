@@ -73,11 +73,13 @@
     "leftPaddleCollected": "柳树枝长度合适，已作为左桨。还要找另一侧的桨。",
     "rightPaddleCollected": "旧三角牌已经拆下，可作为右桨。继续找齐剩余装备。",
     "outfitComplete": "皮划艇和两支临时桨都已收齐。"
-    ,"safetyRainBlock": "安全员：现在天气不能下水。"
-    ,"safetyWeatherRequest": "安全员：现在天气不能下水。"
-    ,"safetyWeatherPending": "安全员：现在天气不能下水。"
-    ,"safetyCleared": "安全员：现在可以下水。"
-    ,"safetyAlreadyCleared": "安全员：现在可以下水。"
+    ,"safetyRainBlock": "值班老师：现在天气不能下水。"
+    ,"safetyWarningRepeated": "值班老师：雨还没停，不能下水。"
+    ,"forcedLaunch": "你还是把皮划艇推下了水。"
+    ,"forcedCapsize": "船刚离岸就被风浪掀翻。"
+    ,"forcedRescue": "值班老师和安全员把你救上岸。"
+    ,"safetyCleared": "值班老师：现在可以下水。"
+    ,"safetyAlreadyCleared": "值班老师：现在可以下水。"
     ,"afterRainProof": "这是下过雨的证明"
     ,"boardRainRejected": "现在天气不能下水。"
   },

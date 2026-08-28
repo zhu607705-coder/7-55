@@ -225,7 +225,7 @@ export class QizhenFishingRhythmVisual {
     this.controlsText = this.scene.add.text(
       0,
       20,
-      "彩色音符碰到白色判定线时按键  ·  A 左收线  ·  S 提竿  ·  D 右收线",
+      this.model.instruction,
       { ...HUD_TEXT_STYLE, fontSize: "12px", color: "#f4f1d4" }
     ).setOrigin(0.5, 0.5);
     this.statusBar.add([this.statusBg, this.labelText, this.tensionText, this.comboText, this.controlsText]);

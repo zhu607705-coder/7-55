@@ -49,6 +49,7 @@ export type DormInteractionTargetId =
   | "desk_02"
   | "desk_03"
   | "desk_04"
+  | "hair_dryer"
   | "wash_basin"
   | "lower_shelf"
   | "floor_backpack"
@@ -86,6 +87,16 @@ export const DORM_CAMPUS_CARD = {
   y: 928,
   proximity: 148
 } as const;
+
+export const DORM_QIZHEN_HAIR_DRYER: DormInteractionTarget = {
+  id: "hair_dryer",
+  x: 805,
+  y: 914,
+  width: 62,
+  height: 62,
+  proximity: 122,
+  label: "拿起书桌上的吹风机"
+};
 
 export const DORM_SPAWN = {
   x: 470,

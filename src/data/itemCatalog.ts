@@ -188,6 +188,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     body: ["两种模式记录的是同一个位置。"],
     footer: "来源：启真湖倒影指示牌。"
   }, []),
+  hairDryer: object([{ target: "qizhen-weather-clouds", result: "consume" }]),
   fishingRod: object([
     { target: "decoyPaper", result: "retain" },
     { target: "qizhen-net-frame", result: "retain" },

@@ -52,8 +52,9 @@ const EXPECTED_REQUIRED_OFF_ZONE_IDS = Object.freeze([
   "bakery_back_area"
 ] as const satisfies readonly ChapterFourLightZoneId[]);
 const EXPECTED_SOLUTION_ZONE_IDS = Object.freeze([
+  "hall",
+  "west_corridor",
   "east_corridor",
-  "classroom_zone",
   "bakery_back_area"
 ] as const satisfies readonly ChapterFourLightZoneId[]);
 
@@ -67,7 +68,7 @@ function normalizeContract(raw: typeof content.lightGrid): ChapterFourLightGridC
   if (raw.zones.length !== EXPECTED_ZONE_IDS.length) {
     throw new Error(`chapter4_light_grid_zone_count:${raw.zones.length}`);
   }
-  if (raw.initialMask !== 6 || raw.targetMask !== 13 || raw.allOnMask !== 31) {
+  if (raw.initialMask !== 14 || raw.targetMask !== 13 || raw.allOnMask !== 31) {
     throw new Error("chapter4_light_grid_mask_contract_mismatch");
   }
   if (JSON.stringify(raw.requiredOnZoneIds) !== JSON.stringify(EXPECTED_REQUIRED_ON_ZONE_IDS)

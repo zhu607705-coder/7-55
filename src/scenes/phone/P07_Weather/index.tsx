@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
+import hairDryerUrl from "../../../assets/rpg/props/items/hair_dryer_generated_v01.png";
 import { selectCampusWeather } from "../../../modules/CampusWeatherModel";
 import { kit } from "../../../modules/GameKit";
 import {
@@ -26,8 +27,11 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
     && !["inactive", "location_search", "lake_unlocked"].includes(state.qizhenLake.phase);
   const adjustmentRequested = state.qizhenLake.weatherAdjustmentRequested;
   const adjustmentComplete = state.qizhenLake.rainSafetyCleared;
-  const adjustmentAvailable = state.qizhenLake.phase === "boarding_tutorial"
+  const hasHairDryer = state.items.hairDryer;
+  const adjustmentAvailable = state.qizhenLake.phase === "rain_recovery"
+    && state.qizhenLake.rainRescueCompleted
     && adjustmentRequested
+    && hasHairDryer
     && !adjustmentComplete;
 
   function collectWater() {
@@ -53,7 +57,7 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
       return;
     }
     if (result === "locked") {
-      kit.flags.toast("当前没有待处理的湖区记录。", "system");
+      kit.flags.toast(hasHairDryer ? "当前没有待处理的湖区记录。" : "先从寝室书桌拿到吹风机。", "system");
       return;
     }
     kit.flags.toast("当前无法开始校准。", "system");
@@ -123,7 +127,7 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
           <article><span>风向</span><strong>西南风 2级</strong></article>
           <article><span>降水</span><strong>{weather.condition === "light_rain" ? "正在发生" : "已经停止"}</strong></article>
           <article><span>建议</span><strong>{qizhenWeatherContext
-            ? adjustmentComplete ? "返回码头确认" : adjustmentRequested ? "查看湖区记录" : "暂不适合下水"
+            ? adjustmentComplete ? "返回码头确认" : adjustmentRequested ? hasHairDryer ? "处理湖区云图" : "暂不适合下水" : "暂不适合下水"
             : "处理黏着物"}</strong></article>
         </section>
 
@@ -131,9 +135,11 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
           controlStarted && adjustmentAvailable ? (
             <section className="qizhen-weather-calibration" aria-label="湖区云层校准">
               <header>
-                <div><strong>云层校准</strong><span>把三层云带移入虚线框</span></div>
+                <img src={hairDryerUrl} alt="寝室吹风机" />
+                <div><strong>风向校准</strong><span>用吹风机把三层云带移入虚线框</span></div>
                 <output aria-live="polite">{alignedBandCount}/3 · {controlMoves} 步</output>
               </header>
+              <div className="qizhen-weather-airflow" aria-hidden="true"><i /><i /><i /></div>
               <div className="qizhen-weather-bands">
                 {WEATHER_CLOUD_BANDS.map((label, index) => (
                   <div className="qizhen-weather-band" key={label}>
@@ -158,7 +164,7 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
                 className="qizhen-weather-submit"
                 disabled={!cloudControlAligned}
                 onClick={submitQizhenWeatherControl}
-              >提交云图</button>
+              >送出最后一阵风</button>
             </section>
           ) : (
             <button
@@ -168,12 +174,12 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
               disabled={!adjustmentAvailable}
               onClick={startQizhenWeatherControl}
             >
-              <i aria-hidden="true" />
-              <strong>{adjustmentComplete ? "湖区状态已更新" : adjustmentRequested ? "校准湖区云图" : "暂无湖区记录"}</strong>
+              {adjustmentComplete ? <i aria-hidden="true" /> : <img src={hairDryerUrl} alt="" aria-hidden="true" />}
+              <strong>{adjustmentComplete ? "湖区状态已更新" : adjustmentRequested ? hasHairDryer ? "启动风向校准" : "缺少可用设备" : "暂无湖区记录"}</strong>
               <span>{adjustmentComplete
                 ? `返回码头确认${state.qizhenLake.weatherControlBestMoves > 0 ? ` · 最少 ${state.qizhenLake.weatherControlBestMoves} 步` : ""}`
                 : adjustmentRequested
-                  ? "对齐低、中、高三层云带"
+                  ? hasHairDryer ? "控制低、中、高三层云带" : "先检查寝室书桌"
                   : "完成码头检查后再查看"}</span>
             </button>
           )

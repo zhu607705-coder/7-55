@@ -9,6 +9,7 @@ import theaterProgramSpotlightIconUrl from "../assets/rpg/theater/generated/icon
 import theaterTicketHalfAIconUrl from "../assets/rpg/theater/generated/icons/item_theater_ticket_half_a.png";
 import theaterTicketHalfBIconUrl from "../assets/rpg/theater/generated/icons/item_theater_ticket_half_b.png";
 import wetProgramIconUrl from "../assets/rpg/theater/generated/icons/item_wet_program.png";
+import hairDryerIconUrl from "../assets/rpg/props/items/hair_dryer_generated_v01.png";
 
 /**
  * 字符画 → SVG 像素图标。
@@ -765,6 +766,7 @@ interface PixelIconProps {
 }
 
 const THEATER_RASTER_ICONS: Partial<Record<ItemId, string>> = {
+  hairDryer: hairDryerIconUrl,
   theaterTicketHalfA: theaterTicketHalfAIconUrl,
   theaterTicketHalfB: theaterTicketHalfBIconUrl,
   temporaryTheaterTicket: temporaryTheaterTicketIconUrl,
@@ -875,6 +877,7 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   reflectionKeyword: { name: "倒影", desc: "馆藏系统留下的地点关键词。" },
   lakeKeyword: { name: "湖", desc: "微信消息留下的地点关键词。" },
   reflectionCoordinate: { name: "倒影坐标", desc: "两种观察模式共同确认的位置。" },
+  hairDryer: { name: "寝室吹风机", desc: "从自己的书桌取得，可在天气页面推动湖区云带。" },
   fishingRod: { name: "钓竿", desc: "码头装备架上的基础钓竿，可安装诱饵或磁吸附件。" },
   rustedLockerKey: { name: "锈蚀柜钥匙", desc: "从湖中钓起的旧钥匙，表面锈迹与码头储物柜一致。" },
   nylonCord: { name: "尼龙绳", desc: "储物柜内的耐水尼龙绳，长度足够固定一圈网框。" },

@@ -45,6 +45,7 @@ import {
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
+import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   CanteenDefenseRuntime,
@@ -250,6 +251,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private playerAnimator!: RpgPlayerAnimator;
   private playerCollisionDebug: Phaser.GameObjects.Rectangle | null = null;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
+  private doorObstacles!: Phaser.Physics.Arcade.StaticGroup;
+  private exitDoor!: RpgInteriorDoorRuntime;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
   private virtualDirection = { x: 0, y: 0 };
@@ -260,7 +263,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private trayVisuals = new Map<string, TrayVisual>();
   private trayInteractionTargets = new Map<string, CanteenInteractionTarget>();
   private carriedTrayVisual!: Phaser.GameObjects.Image;
-  private exitButton: Phaser.GameObjects.Container | null = null;
+  private exitTransitioning = false;
   private pickupWindowVisuals = new Map<string, PickupWindowVisual>();
   private cartVisuals = new Map<CanteenExitId, Phaser.GameObjects.Image>();
   private exitGlows = new Map<CanteenExitId, Phaser.GameObjects.Arc>();
@@ -393,6 +396,37 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.physics.world.setBounds(28, 16, CANTEEN_INTERIOR_WORLD.width - 56, CANTEEN_INTERIOR_WORLD.height - 34);
     this.obstacles = this.physics.add.staticGroup();
     this.drawInterior();
+    this.doorObstacles = this.physics.add.staticGroup();
+    this.exitDoor = new RpgInteriorDoorRuntime(this, this.doorObstacles, {
+      id: "canteen_southeast_exit",
+      centerX: 1380,
+      centerY: 858,
+      openingWidth: 122,
+      openingHeight: 126,
+      blockerY: 823,
+      blockerWidth: 142,
+      blockerHeight: 14,
+      motion: "double-slide",
+      openOffset: 57,
+      durationMs: 380,
+      depth: 920,
+      palette: {
+        portal: 0x101719,
+        spill: 0xb8e7f1,
+        leaf: 0x283b39,
+        inset: 0x3f5a56,
+        trim: 0x142321,
+        handle: 0xd7bd72
+      },
+      foreground: {
+        textureKey: CANTEEN_MAP_KEY,
+        left: 1248,
+        top: 752,
+        right: 1497,
+        bottom: 833,
+        sortY: 900
+      }
+    }, this.reducedMotion);
     this.ensureCanteenTextures();
     ensureRpgPlayerTextures(this);
     this.createCanteenNpcs();
@@ -427,6 +461,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
     this.physics.add.collider(this.player, this.obstacles);
+    this.physics.add.collider(this.player, this.doorObstacles);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT,TAB") as Record<
@@ -478,7 +513,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.createWorldHotspots();
     this.createPromoBoardVisual();
     this.createDarkModeLayer();
-    this.createCanteenExitButton();
     this.createPrompt();
     this.syncWorldFromState(this.bridge.getState(), true);
 
@@ -560,6 +594,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       );
       this.playerAnimator.update(defenseMotion, this.time.now);
       this.updateOcclusion();
+      this.exitDoor.updateActorOcclusion(this.player);
       this.updateCarriedTrayVisual(state);
       this.updatePlayerCollisionDebug();
       this.promptText.setVisible(false);
@@ -572,7 +607,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
     const movementAllowed = state.actOne.movementEnabled
       && !this.hasModalPanel()
       && !this.paperBusy
-      && !this.cartPushBusy;
+      && !this.cartPushBusy
+      && !this.exitTransitioning;
     if (movementAllowed && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
@@ -585,6 +621,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.time.now
     );
     this.updateOcclusion();
+    this.exitDoor.updateActorOcclusion(this.player);
     this.updateCarriedTrayVisual(state);
     this.updatePlayerCollisionDebug();
 
@@ -1759,45 +1796,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     });
   }
 
-  private createCanteenExitButton(): void {
-    const exit = CANTEEN_INTERACTION_TARGETS.find((target) => target.kind === "exit");
-    if (!exit) return;
-
-    const shadow = this.add.rectangle(1, 2, 78, 28, 0x221713, 0.72);
-    const plate = this.add.rectangle(0, 0, 78, 28, 0x123548, 0.98)
-      .setStrokeStyle(2, 0xf1c85d, 1);
-    const door = this.add.rectangle(-27, 0, 10, 16, 0x70cbe3, 0.96)
-      .setStrokeStyle(1, 0xeaf9ff, 1);
-    const handle = this.add.rectangle(-24, 1, 2, 3, 0xf1c85d, 1);
-    const label = this.add.text(8, 0, "出门", {
-      color: "#fff6dc",
-      fontFamily: "monospace",
-      fontSize: "14px",
-      fontStyle: "bold"
-    }).setOrigin(0.5);
-    const button = this.add.container(exit.x, exit.y - 42, [shadow, plate, door, handle, label])
-      .setSize(78, 28)
-      .setDepth(2500)
-      .setInteractive({ useHandCursor: true })
-      .setVisible(false);
-    button.on("pointerover", () => plate.setFillStyle(0x1a4e66, 1));
-    button.on("pointerout", () => plate.setFillStyle(0x123548, 0.98));
-    button.on("pointerdown", () => {
-      this.suppressWorldPointerUntil = this.time.now + 180;
-      const state = this.bridge.getState();
-      if (
-        !this.canLeaveThroughDoor(state)
-        || this.dialogueLocked
-        || this.hasModalPanel()
-        || this.paperBusy
-        || this.cartPushBusy
-        || this.defenseRuntime
-      ) return;
-      this.bridge.emit("rpg_canteen_leave_requested");
-    });
-    this.exitButton = button;
-  }
-
   private createPromoBoardVisual(): void {
     this.promoEmptyCup = this.add.image(
       CANTEEN_PROMO_BOARD.x,
@@ -2046,7 +2044,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.animateDefenseVictory(() => {
         this.finishDefense();
         this.queueDialogue(canteenContent.blocking.escapeDialogue, () => {
-          this.bridge.emit("rpg_canteen_leave_requested");
+          this.beginCanteenExit();
         }, 1200);
       });
       return;
@@ -2234,8 +2232,43 @@ export class CanteenInteriorScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "exit") {
-      this.bridge.emit("rpg_canteen_leave_requested");
+      this.beginCanteenExit();
     }
+  }
+
+  private beginCanteenExit(): void {
+    const state = this.bridge.getState();
+    if (
+      this.exitTransitioning
+      || !this.canLeaveThroughDoor(state)
+      || this.dialogueLocked
+      || this.hasModalPanel()
+      || this.paperBusy
+      || this.cartPushBusy
+      || this.defenseRuntime
+    ) {
+      this.exitDoor.reject();
+      return;
+    }
+    this.exitTransitioning = true;
+    this.player.setVelocity(0, 0);
+    this.promptText.setVisible(false);
+    this.exitDoor.open();
+    this.time.delayedCall(this.exitDoor.passableDelayMs, () => {
+      if (!this.scene.isActive() || !this.player.active) return;
+      this.tweens.add({
+        targets: this.player,
+        x: 1380,
+        y: 892,
+        duration: this.reducedMotion ? 120 : 300,
+        ease: "Stepped",
+        onUpdate: () => {
+          this.updatePlayerWorldDepth();
+          this.exitDoor.updateActorOcclusion(this.player);
+        },
+        onComplete: () => this.bridge.emit("rpg_canteen_leave_requested")
+      });
+    });
   }
 
   private triggerPointerTarget(target: CanteenInteractionTarget): void {
@@ -2515,7 +2548,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private updatePrompt(nearest: CanteenInteractionTarget | null, state: GameState): void {
-    if (!nearest || this.dialogueLocked || this.hasModalPanel() || this.paperBusy || this.cartPushBusy) {
+    if (!nearest || this.exitTransitioning || this.dialogueLocked || this.hasModalPanel() || this.paperBusy || this.cartPushBusy) {
       this.promptText.setVisible(false);
       return;
     }
@@ -2567,15 +2600,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
       visual.dropLabel.setVisible(false);
     });
     const sideGamesAvailable = canPlayCanteenSideGames(state);
-    this.exitButton?.setVisible(
-      this.canLeaveThroughDoor(state)
-      && !this.entryPaperPending
-      && !this.dialogueLocked
-      && !this.hasModalPanel()
-      && !this.paperBusy
-      && !this.cartPushBusy
-      && !this.defenseRuntime
-    );
     const drinkPuzzleAvailable = canPlayCanteenDrinkPuzzle(state);
     const promoVisible = sideGamesAvailable && !this.entryPaperPending;
     const promoActivationPending = state.canteenHunt.promoDrinkPlaced
@@ -3831,6 +3855,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         mode: this.defenseRuntime ? "manual" : "follow"
       },
       scene: "canteen_interior",
+      interiorDoor: this.exitDoor.getDebugSnapshot(),
       activeTargets: this.getActiveTargets(state).map((target) => {
         const bounds = getRpgDropBounds(target);
         return {

@@ -10,6 +10,7 @@ import {
   getVisibleLibraryMarkerIds,
   LIBRARY_CHECKPOINT_SPAWNS,
   LIBRARY_ENTRANCE_DOOR,
+  LIBRARY_ENTRANCE_FOREGROUND,
   LIBRARY_INTERACTION_TARGETS,
   LIBRARY_INTERIOR_WORLD,
   LIBRARY_STATIC_COLLISION_RECTS,
@@ -19,6 +20,7 @@ import {
 } from "./LibraryInteriorModel";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
+import { createRpgDoorForeground, updateRpgDoorForeground } from "./RpgInteriorDoor";
 import {
   getRpgDropBounds,
   isPlayerWithinRpgTarget,
@@ -159,6 +161,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private entranceDoorLeft!: Phaser.GameObjects.Container;
   private entranceDoorRight!: Phaser.GameObjects.Container;
   private entranceDoorBlocker!: Phaser.GameObjects.Rectangle;
+  private entranceDoorForeground!: Phaser.GameObjects.Image;
+  private entranceDoorActorOccluded = false;
   private entranceSensorLight!: Phaser.GameObjects.Rectangle;
   private entranceTurnstileFlaps: Phaser.GameObjects.Rectangle[] = [];
   private entranceDoorMotion: EntranceDoorMotion = "closed";
@@ -276,6 +280,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 120);
     this.playerAnimator.update(vector, this.time.now);
     this.updateEntranceDoor(state);
+    this.entranceDoorActorOccluded = updateRpgDoorForeground(
+      this.entranceDoorForeground,
+      this.player,
+      LIBRARY_ENTRANCE_FOREGROUND
+    );
 
     const activeTargets = this.getActiveTargets(state);
     const seatedTarget = seatedConversation
@@ -748,6 +757,13 @@ export class LibraryInteriorScene extends Phaser.Scene {
       entranceDoor: {
         state: this.entranceDoorMotion,
         accessGranted: this.entranceAccessGranted
+      },
+      interiorDoor: {
+        id: "library_center_entrance",
+        state: this.entranceDoorMotion,
+        progress: this.entranceDoorMotion === "open" ? 1 : this.entranceDoorMotion === "closed" ? 0 : 0.5,
+        passable: this.entranceDoorMotion === "open" || this.entranceDoorMotion === "opening",
+        actorOccluded: this.entranceDoorActorOccluded
       },
       entranceRecord: {
         open: this.entranceRecordPanel.visible,
@@ -1985,6 +2001,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
       .setDepth(840);
     this.entranceDoorLeft = createGlassPanel(LIBRARY_ENTRANCE_DOOR.closedLeftX, 45);
     this.entranceDoorRight = createGlassPanel(LIBRARY_ENTRANCE_DOOR.closedRightX, -45);
+    this.entranceDoorForeground = createRpgDoorForeground(
+      this,
+      LIBRARY_INTERIOR_MAP_KEY,
+      LIBRARY_ENTRANCE_FOREGROUND
+    );
 
     this.entranceTurnstileFlaps = [715, 785].map((x) => this.add.rectangle(x, 806, 42, 8, 0x8fc9d1, 0.58)
       .setStrokeStyle(2, 0x23383d, 0.95)

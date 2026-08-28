@@ -51,7 +51,9 @@ import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
 const CHAPTER_FOUR_755_SAVE_VERSION = 25;
 const QIZHEN_WEATHER_CONTROL_SAVE_VERSION = 27;
 const CC98_UNIFIED_LOGIN_SAVE_VERSION = 28;
-const SAVE_VERSION = CC98_UNIFIED_LOGIN_SAVE_VERSION;
+const CHAPTER_FOUR_POWER_GRID_LAYOUT_SAVE_VERSION = 29;
+const QIZHEN_RAIN_RECOVERY_SAVE_VERSION = 30;
+const SAVE_VERSION = QIZHEN_RAIN_RECOVERY_SAVE_VERSION;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
 const SUPPORTED_ENVELOPE_VERSIONS = new Set([
@@ -59,6 +61,8 @@ const SUPPORTED_ENVELOPE_VERSIONS = new Set([
   CHAPTER_FOUR_755_SAVE_VERSION,
   26,
   QIZHEN_WEATHER_CONTROL_SAVE_VERSION,
+  CC98_UNIFIED_LOGIN_SAVE_VERSION,
+  CHAPTER_FOUR_POWER_GRID_LAYOUT_SAVE_VERSION,
   SAVE_VERSION
 ]);
 
@@ -145,7 +149,7 @@ const VALID_THEATER_PROGRAM_IDS = new Set<GameState["theaterHunt"]["collectedPro
   "opening", "spotlight", "finale"
 ]);
 const VALID_QIZHEN_PHASES = new Set<QizhenLakePhase>([
-  "inactive", "location_search", "lake_unlocked", "dock_outfitting", "boarding_tutorial",
+  "inactive", "location_search", "lake_unlocked", "dock_outfitting", "boarding_tutorial", "rain_recovery",
   "lake_exploration", "tool_chain", "swan_exchange", "paper_capture", "swan_chase", "complete"
 ]);
 const LEGACY_QIZHEN_INTERIOR_PHASES = new Set([
@@ -242,7 +246,7 @@ const VALID_ITEM_IDS = new Set<NonNullable<GameState["ui"]["selectedItem"]>>([
   "theaterTicketHalfB", "temporaryTheaterTicket", "theaterProgramOpening",
   "theaterProgramSpotlight", "theaterProgramFinale", "spotlightRemote",
   "fluorescentBrush", "decoyPaper", "wetProgram", "bridgeKeyword", "reflectionKeyword",
-  "lakeKeyword", "reflectionCoordinate", "fishingRod", "rustedLockerKey", "nylonCord",
+  "lakeKeyword", "reflectionCoordinate", "hairDryer", "fishingRod", "rustedLockerKey", "nylonCord",
   "brokenNetFrame", "improvisedDipNet", "sealedFeedTin", "fishFeedPellets", "smallCarp",
   "swanMagnet", "magneticFishingRod"
 ]);
@@ -608,7 +612,8 @@ export class SaveStore {
         saved.qizhenLake,
         initial.qizhenLake,
         envelopeVersion < QIZHEN_KAYAK_SAVE_VERSION,
-        envelopeVersion < QIZHEN_WEATHER_CONTROL_SAVE_VERSION
+        envelopeVersion < QIZHEN_WEATHER_CONTROL_SAVE_VERSION,
+        envelopeVersion < QIZHEN_RAIN_RECOVERY_SAVE_VERSION
       );
       const qizhenLake = qizhenNormalization.state;
       const clockCalibration = normalizeClockCalibration(saved.clockCalibration, initial.clockCalibration);
@@ -733,13 +738,15 @@ interface QizhenNormalizationResult {
   state: GameState["qizhenLake"];
   migratedLegacyInterior: boolean;
   migratedLegacyChase: boolean;
+  migratedWeatherRequestToRecovery: boolean;
 }
 
 function normalizeQizhenLake(
   value: unknown,
   initial: GameState["qizhenLake"],
   migrateLegacyPaperRelease: boolean,
-  migrateLegacyWeatherControl: boolean
+  migrateLegacyWeatherControl: boolean,
+  migrateRainRecovery: boolean
 ): QizhenNormalizationResult {
   const saved = asRecord(value);
   const signRotations = Array.isArray(saved.signRotations)
@@ -756,16 +763,22 @@ function normalizeQizhenLake(
     || (migrateLegacyPaperRelease && booleanOr(saved.paperReleased, false))
   );
   const migratedLegacyInterior = migratedLegacyChase || LEGACY_QIZHEN_INTERIOR_PHASES.has(savedPhase);
+  const migratedWeatherRequestToRecovery = migrateRainRecovery
+    && savedPhase === "boarding_tutorial"
+    && booleanOr(saved.weatherAdjustmentRequested, false)
+    && !booleanOr(saved.rainSafetyCleared, false);
   const phase: QizhenLakePhase = legacyCompletionRecorded
     ? "complete"
     : migratedLegacyChase
     ? "swan_chase"
     : migratedLegacyInterior
       ? "dock_outfitting"
+      : migratedWeatherRequestToRecovery
+        ? "rain_recovery"
       : enumOr(saved.phase, VALID_QIZHEN_PHASES, initial.phase);
   const decoyPlacedAt = nullableEnumOr(saved.decoyPlacedAt, VALID_QIZHEN_DECOY_TARGETS, initial.decoyPlacedAt);
   const reachedBoarding = [
-    "boarding_tutorial", "lake_exploration", "tool_chain", "swan_exchange",
+    "boarding_tutorial", "rain_recovery", "lake_exploration", "tool_chain", "swan_exchange",
     "paper_capture", "swan_chase", "complete"
   ].includes(phase);
   const reachedExploration = [
@@ -853,7 +866,12 @@ function normalizeQizhenLake(
     || migratedLegacyChase
     || (migrateLegacyWeatherControl && reachedBoarding)
     || booleanOr(saved.rainSafetyCleared, initial.rainSafetyCleared);
-  const weatherAdjustmentRequested = rainSafetyCleared
+  const rainRescueCompleted = rainSafetyCleared
+    || migratedWeatherRequestToRecovery
+    || booleanOr(saved.rainRescueCompleted, initial.rainRescueCompleted);
+  const rainWarningSeen = rainRescueCompleted
+    || booleanOr(saved.rainWarningSeen, initial.rainWarningSeen);
+  const weatherAdjustmentRequested = rainRescueCompleted
     || booleanOr(saved.weatherAdjustmentRequested, initial.weatherAdjustmentRequested);
   const state: GameState["qizhenLake"] = {
     active: phase !== "inactive" || booleanOr(saved.active, initial.active),
@@ -871,6 +889,8 @@ function normalizeQizhenLake(
     kayakEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.kayakEquipped, initial.kayakEquipped),
     leftPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.leftPaddleEquipped, initial.leftPaddleEquipped),
     rightPaddleEquipped: reachedBoarding || migratedLegacyChase || booleanOr(saved.rightPaddleEquipped, initial.rightPaddleEquipped),
+    rainWarningSeen,
+    rainRescueCompleted,
     weatherAdjustmentRequested,
     weatherControlAttempts: nonNegativeIntegerOr(saved.weatherControlAttempts, initial.weatherControlAttempts),
     weatherControlBestMoves: nonNegativeIntegerOr(saved.weatherControlBestMoves, initial.weatherControlBestMoves),
@@ -930,7 +950,12 @@ function normalizeQizhenLake(
     mistAttempts: nonNegativeIntegerOr(saved.mistAttempts, initial.mistAttempts),
     paperReleased: booleanOr(saved.paperReleased, initial.paperReleased)
   };
-  return { state, migratedLegacyInterior, migratedLegacyChase };
+  return {
+    state,
+    migratedLegacyInterior,
+    migratedLegacyChase,
+    migratedWeatherRequestToRecovery
+  };
 }
 
 /**
@@ -1626,11 +1651,14 @@ function normalizeChapterFour(
     "exterior_closure",
     "complete"
   ].includes(phase);
+  const savedLightGridMask = rangedIntegerOr(lightGridSaved.mask, 0, 31, 14);
   const lightGridMask = lightGridMustBeLocked
     ? 13
     : phase === "blackout_light_grid"
-      ? rangedIntegerOr(lightGridSaved.mask, 0, 31, 6)
-      : 6;
+      ? envelopeVersion < CHAPTER_FOUR_POWER_GRID_LAYOUT_SAVE_VERSION && savedLightGridMask === 6
+        ? 14
+        : savedLightGridMask
+      : 14;
   const checkinCardAccepted = checkinClosure.checkinCardAccepted;
   const checkinPaperAccepted = checkinClosure.checkinPaperAccepted;
   const prologueSeen = phase === "opening_handoff"
@@ -1706,7 +1734,7 @@ function createOpeningChapterFourState(
     factIds: [],
     zhuQuestionAnswers: { purpose: null, person: null },
     room204Placements: [],
-    lightGrid: { mask: 6, locked: false },
+    lightGrid: { mask: 14, locked: false },
     guardMode: "absent",
     chaseAttempt: 0,
     chaseRestartCheckpoint: null,
@@ -2403,6 +2431,9 @@ function normalizeQizhenItems(
     items.decoyPaper = !normalization.migratedLegacyChase;
     if (normalization.migratedLegacyChase) items.magneticFishingRod = true;
   }
+
+  if (normalization.migratedWeatherRequestToRecovery) items.hairDryer = true;
+  if (qizhenLake.rainSafetyCleared) items.hairDryer = false;
 
   if (qizhenLake.rodFound && !qizhenLake.magneticRodCombined) items.fishingRod = true;
   if (qizhenLake.decoyBaitAttached) items.decoyPaper = false;

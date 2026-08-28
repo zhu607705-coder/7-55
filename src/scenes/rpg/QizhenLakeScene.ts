@@ -167,6 +167,7 @@ type QizhenRuntimePhase =
   | "lake_unlocked"
   | "dock_outfitting"
   | "boarding_tutorial"
+  | "rain_recovery"
   | "lake_exploration"
   | "tool_chain"
   | "swan_exchange"
@@ -274,6 +275,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private dialogueLocked = false;
   private zoneTransitioning = false;
   private capsizing = false;
+  private rainRescueAnimating = false;
   private reducedMotion = false;
 
   private targetVisuals: TargetVisual[] = [];
@@ -534,6 +536,13 @@ export class QizhenLakeScene extends Phaser.Scene {
     const runtime = readQizhenRuntime(state);
     this.syncState(runtime);
 
+    if (this.rainRescueAnimating) {
+      this.player.setVelocity(0, 0);
+      this.playerAnimator.update(new Phaser.Math.Vector2(0, 0), this.time.now);
+      this.interactRequested = false;
+      return;
+    }
+
     if (this.fishingPendingAttempt || this.fishingActiveAttempt) {
       this.updateFishingSession(runtime);
       this.interactRequested = false;
@@ -632,6 +641,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.sameSideStreak = 0;
     this.lastStrokeAt = 0;
     this.capsizing = false;
+    this.rainRescueAnimating = false;
     this.chaseFailing = false;
     this.chaseSwanSpeed = 0;
     this.chaseActualGap = SWAN_CHASE_INITIAL_GAP;
@@ -1688,6 +1698,12 @@ export class QizhenLakeScene extends Phaser.Scene {
             && !hasItem(state, CHAIN_ITEMS.netFrame)
             && !runtime.netCombined;
         }
+        if (target.value === "fish") {
+          return runtime.rodFound
+            && hasItem(state, CHAIN_ITEMS.pellets)
+            && !hasItem(state, CHAIN_ITEMS.fish)
+            && !runtime.fishCaught;
+        }
         return false;
       }
       if (target.kind === "item_use") {
@@ -1839,8 +1855,17 @@ export class QizhenLakeScene extends Phaser.Scene {
       chartId: attempt.spotId,
       targetLabel: attempt.targetLabel,
       totalNotes: model.totalNotes,
+      durationSec: model.durationSec,
+      experience: model.experience,
       assist
     });
+    if (attempt.spotId === "paper") {
+      this.emitDomain("qizhen_fishing_final_tension_started", {
+        sessionId: attempt.sessionId,
+        spotId: attempt.spotId,
+        durationSec: model.durationSec
+      });
+    }
   }
 
   private updateFishingSession(runtime: QizhenRuntimeProjection): void {
@@ -1928,10 +1953,19 @@ export class QizhenLakeScene extends Phaser.Scene {
       try {
         const oscillator = audioContext.createOscillator();
         const gain = audioContext.createGain();
+        const finaleProgress = model.experience === "finale_full"
+          ? Phaser.Math.Clamp(model.elapsedSec / model.durationSec, 0, 1)
+          : 0;
         oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(beatIndex % 4 === 0 ? 820 : 610, beatTime);
+        oscillator.frequency.setValueAtTime(
+          (beatIndex % 4 === 0 ? 820 : 610) + finaleProgress * (beatIndex % 4 === 0 ? 140 : 90),
+          beatTime
+        );
         gain.gain.setValueAtTime(0.0001, beatTime);
-        gain.gain.exponentialRampToValueAtTime(beatIndex % 4 === 0 ? 0.035 : 0.022, beatTime + 0.004);
+        gain.gain.exponentialRampToValueAtTime(
+          (beatIndex % 4 === 0 ? 0.035 : 0.022) * (1 + finaleProgress * 0.45),
+          beatTime + 0.004
+        );
         gain.gain.exponentialRampToValueAtTime(0.0001, beatTime + 0.055);
         oscillator.connect(gain).connect(audioContext.destination);
         oscillator.start(beatTime);
@@ -2358,16 +2392,16 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (name === "qizhen_kayak_boarded") {
       return;
     }
-    if (name === "qizhen_dock_safety_blocked") {
+    if (name === "qizhen_dock_safety_warning_recorded") {
       this.showFeedback(qizhenContent.dock.safetyRainBlock, "system", 4200);
       return;
     }
-    if (name === "qizhen_dock_weather_adjustment_requested") {
-      this.showFeedback(qizhenContent.dock.safetyWeatherRequest, "task", 5200);
+    if (name === "qizhen_dock_safety_warning_repeated") {
+      this.showFeedback(qizhenContent.dock.safetyWarningRepeated, "system", 3600);
       return;
     }
-    if (name === "qizhen_dock_weather_adjustment_pending") {
-      this.showFeedback(qizhenContent.dock.safetyWeatherPending, "system", 3600);
+    if (name === "qizhen_rain_forced_launch_started") {
+      this.playRainRescueSequence();
       return;
     }
     if (name === "qizhen_dock_safety_cleared" || name === "qizhen_dock_weather_adjusted") {
@@ -3154,6 +3188,72 @@ export class QizhenLakeScene extends Phaser.Scene {
             : "";
     return rhythmSpawns[rhythmSpawnId]
       ?? this.getSpawn(runtime.zone, runtime.vehicle, null);
+  }
+
+  private playRainRescueSequence(): void {
+    if (this.rainRescueAnimating || this.currentZone !== "dock") return;
+    this.rainRescueAnimating = true;
+    this.dialogueLocked = true;
+    this.player.setVelocity(0, 0);
+    this.showFeedback(qizhenContent.dock.forcedLaunch, "narrator", 1100);
+
+    const splashX = 728;
+    const splashY = 626;
+    this.tweens.add({
+      targets: this.player,
+      x: splashX,
+      y: splashY,
+      duration: this.reducedMotion ? 160 : 620,
+      ease: "Sine.easeIn",
+      onComplete: () => {
+        const splashes: Phaser.GameObjects.GameObject[] = [];
+        for (let index = 0; index < 4; index += 1) {
+          const ring = this.add.ellipse(
+            splashX + (index - 1.5) * 12,
+            splashY + (index % 2 === 0 ? -6 : 7),
+            28 + index * 12,
+            12 + index * 4,
+            0x9bdff5,
+            0.62
+          ).setStrokeStyle(3, 0xe1f8ff, 0.88).setDepth(splashY + 210 + index);
+          splashes.push(ring);
+          this.tweens.add({
+            targets: ring,
+            scaleX: 1.7,
+            scaleY: 1.55,
+            alpha: 0,
+            duration: this.reducedMotion ? 220 : 780,
+            delay: index * 70,
+            onComplete: () => ring.destroy()
+          });
+        }
+        if (!this.reducedMotion) this.cameras.main.shake(260, 0.008);
+        this.showFeedback(qizhenContent.dock.forcedCapsize, "system", 1500);
+        this.tweens.add({
+          targets: this.player,
+          angle: 72,
+          alpha: 0.22,
+          duration: this.reducedMotion ? 180 : 520,
+          yoyo: true,
+          hold: this.reducedMotion ? 80 : 320,
+          onComplete: () => {
+            this.player.setAngle(0).setAlpha(1);
+            splashes.forEach((splash) => splash.destroy());
+          }
+        });
+      }
+    });
+
+    this.time.delayedCall(this.reducedMotion ? 520 : 1680, () => {
+      this.showFeedback(qizhenContent.dock.forcedRescue, "narrator", 1900);
+    });
+    this.time.delayedCall(this.reducedMotion ? 1250 : 3150, () => {
+      this.player.setAngle(0).setAlpha(1);
+      this.emitDomain("rpg_qizhen_rain_rescue_completed_requested", {
+        zone: "dock",
+        reason: "forced_launch_capsize"
+      });
+    });
   }
 
   private emitDomain(name: string, payload?: Record<string, unknown>): void {
