@@ -27,12 +27,15 @@ HTTP、部署环境和直接打开 `demo/index.html` 均使用同一浏览器原
 提交前执行：
 
 ```bash
+node scripts/run-test-suite.mjs critical
 npm run map:zijingang
 npm run audio:chapter3:verify
 npm run build
 npm exec -- vite build --mode demo
 npm run verify:single
 ```
+
+完整测试分层、覆盖边界与扩展审计命令见 [Testing Strategy](docs/TESTING.md)。
 
 生成单文件离线演示：
 
@@ -57,8 +60,9 @@ npm run verify:campus-map-demo
 
 `npm run build` 已包含 TypeScript 类型检查。后续 demo 构建直接执行 Vite，避免在同一批次重复运行 `tsc --noEmit`。
 
-GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` 推送执行第三章音频、校园地图、
-第四章 7:55、类型检查、生产构建和离线单文件验证。纯文档变更会跳过自动流程，仍可在 Actions 页面手动执行全量验证。
+GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` 推送执行关键玩法行为回归、
+第三章音频、校园地图、第四章 7:55、类型检查、生产构建、Chromium 启动检查和离线单文件验证。
+纯文档变更会跳过自动流程，仍可在 Actions 页面手动执行包含扩展内容审计的全量验证。
 
 ## 目录
 
@@ -81,6 +85,7 @@ GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` �
 ## 四人协作
 
 - [参与开发](CONTRIBUTING.md)
+- [测试策略](docs/TESTING.md)
 - [版本管理规范](docs/VERSION_MANAGEMENT.md)
 - [本次基线迁移记录](docs/BASELINE_MIGRATION_20260718.md)
 

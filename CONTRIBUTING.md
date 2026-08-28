@@ -18,6 +18,7 @@ git config core.hooksPath .githooks
 ## 提交前
 
 ```bash
+node scripts/run-test-suite.mjs critical
 npm run map:zijingang
 npm run audio:chapter3:verify
 npm run audio:chapter3-interlude-voice-memos:verify
@@ -29,10 +30,13 @@ npm run verify:single
 
 `npm run build` 已包含 TypeScript 类型检查。demo 构建直接执行 Vite，避免在同一验证批次再次运行相同的类型检查。
 
+行为级测试、仓库契约、浏览器启动检查和扩展内容审计的边界见
+[测试策略](docs/TESTING.md)。新增验证器时，需要明确它属于日常阻断、手动扩展审计或发布级端到端验证。
+
 退役的 Godot 源码、导出、兼容层和同步脚本已经删除，提交不得重新引入这些模块。
 
-仓库的 pre-push hook 和 GitHub Actions 会执行当前登记的检查；新增验证器后，应同步加入
-`package.json`、本文档和 `.github/workflows/web-ci.yml`。
+仓库的 pre-push hook 和 GitHub Actions 会执行当前登记的检查；新增验证器后，应同步更新
+测试策略、本文档和 `.github/workflows/web-ci.yml`。
 
 提交信息采用：
 
