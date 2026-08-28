@@ -212,11 +212,8 @@
 
 .chapter4-power-panel__grid {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(88px, 1fr));
-  grid-template-rows: repeat(3, minmax(64px, auto));
-  gap: 16px 12px;
-  min-height: 264px;
+  display: block;
+  height: 232px;
 }
 
 .chapter4-power-panel__connections {
@@ -238,8 +235,10 @@
 }
 
 .chapter4-power-panel__grid button {
-  position: relative;
+  position: absolute;
   z-index: 1;
+  width: 38%;
+  transform: translate(-50%, -50%);
   display: grid;
   grid-template-columns: 16px 1fr;
   grid-template-rows: auto auto;
@@ -255,8 +254,14 @@
   cursor: pointer;
 }
 
-.chapter4-power-panel__grid button small {
+.chapter4-power-panel__grid button > span:not(.chapter4-power-panel__lamp) {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.chapter4-power-panel__grid button > small {
   grid-column: 2;
+  font-size: 11px;
 }
 
 .chapter4-power-panel__grid button:focus-visible {
@@ -354,8 +359,12 @@
   }
 
   .chapter4-power-panel__grid {
-    grid-template-columns: repeat(3, minmax(72px, 1fr));
-    gap: 12px 8px;
+    height: 218px;
+  }
+
+  .chapter4-power-panel__grid button {
+    width: 40%;
+    padding-inline: 8px;
   }
 }
 

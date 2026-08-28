@@ -969,6 +969,32 @@ function validateTask7RuntimeSources(errors) {
     || !/resolveActionableTargets\(\)[\s\S]*?TASK13_ACTIONABLE_TARGET_IDS\.has\(target\.contract\.id\)/.test(scene)) {
     errors.push("Task 13 Scene actionable target allowlist must extend Task12 with exactly the card reader and paper slot");
   }
+  const realityTargetProjectionBlock = scene.match(
+    /private resolveProjectedTargets\(\)[\s\S]*?private resolveActionableTargets\(\)/
+  )?.[0] ?? "";
+  if (!/const mode = this\.appliedChapterMode/.test(realityTargetProjectionBlock)
+    || !/selectChapterFour755RequiredMode\(contract, phase\)/.test(realityTargetProjectionBlock)
+    || !/requiredMode !== undefined && requiredMode !== mode\) return \[\]/.test(realityTargetProjectionBlock)) {
+    errors.push("Chapter 4 mode-specific targets must be absent from both rendering and interaction in the opposite applied reality mode");
+  }
+  const realityPresentationBlock = scene.match(
+    /private refreshProjectedTargetVisuals\(\)[\s\S]*?private createElevatorVisuals\(\)/
+  )?.[0] ?? "";
+  if (!/private applyRealityModePresentation/.test(realityPresentationBlock)
+    || !/mode === "dark" \? REALITY_DARK_OVERLAY_ALPHA : 0/.test(realityPresentationBlock)
+    || !/const darkModeTarget = requiredMode === "dark"/.test(realityPresentationBlock)
+    || !/Phaser\.BlendModes\.ADD/.test(realityPresentationBlock)
+    || !/targets: marker/.test(realityPresentationBlock)
+    || !/targetGlowTweens/.test(realityPresentationBlock)
+    || /outerGlow|innerGlow/.test(realityPresentationBlock)) {
+    errors.push("Chapter 4 dark mode must dim the bright map and apply one additive fluorescent marker only to dark-mode targets");
+  }
+  const room204PieceResolverBlock = scene.match(
+    /private resolveNearbyRoom204PieceId\(\)[\s\S]*?private selectRoom204Piece/
+  )?.[0] ?? "";
+  if (!/state\.chapter4\.mode !== "light"/.test(room204PieceResolverBlock)) {
+    errors.push("Room 204 physical furniture pieces must not remain interactive in dark observation mode");
+  }
   const storyTargetInteractionBlock = scene.match(
     /private storySpatialResult[\s\S]*?private handleTravelInteraction/
   )?.[0] ?? "";
@@ -1604,6 +1630,9 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 11 Host must cache the accepted panel session, lock shared controls, mount one React panel, and notify the Scene of the modal input lock");
   }
   if (!/CHAPTER_FOUR_LIGHT_GRID\.zones\.map/.test(powerPanel)
+    || !/POWER_PANEL_CONNECTIONS[\s\S]*?zone\.adjacentZoneIds/.test(powerPanel)
+    || !/POWER_PANEL_ZONE_ORDER\.map/.test(powerPanel)
+    || !/<line[\s\S]*?x1=\{from\.x\}[\s\S]*?y2=\{to\.y\}/.test(powerPanel)
     || !/aria-pressed/.test(powerPanel)
     || !/event\.key === "Escape"/.test(powerPanel)
     || !/isChapterFourLightGridSolved\(mask\)/.test(powerPanel)
@@ -1611,22 +1640,23 @@ function validateTask7RuntimeSources(errors) {
     || !/onLock\(\)/.test(powerPanel)
     || !/canRetryLock[\s\S]*?lastAutoLockMaskRef\.current === mask/.test(powerPanel)
     || !/aria-label="重试锁定配电结果"[\s\S]*?onClick=\{onLock\}/.test(powerPanel)
-    || /verifiedSolutionZoneIds|clickVector|28/.test(powerPanel)) {
-    errors.push("Task 11 React power panel must expose five accessible state lights, unlocked Escape, automatic solved locking and an accessible same-mask lock retry without revealing the answer");
+    || /verifiedSolutionZoneIds|clickVector/.test(powerPanel)) {
+    errors.push("Task 11 React power panel must draw the exact adjacency graph, expose five accessible state lights, keep unlocked Escape and automatic solved locking, and avoid revealing the answer");
   }
-  if (!/POWER_GRID_POSITIONS[\s\S]*?hall:[\s\S]*?column:\s*2,\s*row:\s*1/.test(powerPanel)
+  if (!/POWER_PANEL_ZONE_POSITIONS[\s\S]*?hall:[\s\S]*?column:\s*2,\s*row:\s*1/.test(powerPanel)
     || !/west_corridor:[\s\S]*?column:\s*1,\s*row:\s*2/.test(powerPanel)
     || !/east_corridor:[\s\S]*?column:\s*3,\s*row:\s*2/.test(powerPanel)
     || !/bakery_back_area:[\s\S]*?column:\s*1,\s*row:\s*3/.test(powerPanel)
     || !/classroom_zone:[\s\S]*?column:\s*3,\s*row:\s*3/.test(powerPanel)
-    || !/POWER_GRID_CONNECTIONS[\s\S]*?\["bakery_back_area", "classroom_zone"\]/.test(powerPanel)
+    || !/POWER_PANEL_CONNECTIONS[\s\S]*?zone\.adjacentZoneIds/.test(powerPanel)
     || !/chapter4-power-panel__connections/.test(powerPanel)
-    || !/style=\{\{\s*gridColumn:\s*position\.column,\s*gridRow:\s*position\.row\s*\}\}/.test(powerPanel)
+    || !/style=\{\{\s*left:\s*`\$\{position\.x\}%`,\s*top:\s*`\$\{position\.y\}%`\s*\}\}/.test(powerPanel)
     || !/focusInDirection/.test(powerPanel)
     || /focusByDelta/.test(powerPanel)
-    || !/\.chapter4-power-panel__grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3/.test(powerPanelCss)
+    || !/\.chapter4-power-panel__grid\s*\{[\s\S]*?display:\s*block[\s\S]*?height:\s*232px/.test(powerPanelCss)
+    || !/\.chapter4-power-panel__grid button\s*\{[\s\S]*?position:\s*absolute/.test(powerPanelCss)
     || !/\.chapter4-power-panel__connections\s*\{[\s\S]*?position:\s*absolute/.test(powerPanelCss)) {
-    errors.push("Task 11 power panel must render the five zones as the authored circuit topology and use spatial keyboard navigation instead of the retired list arrangement");
+    errors.push("Task 11 power panel must render the five authored zones from the shared adjacency graph and keep spatial keyboard navigation");
   }
 
   if (/^\s*import\s/m.test(finalChaseModel)

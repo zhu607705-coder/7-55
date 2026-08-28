@@ -233,6 +233,12 @@ export interface RpgRuntimeDebugState {
       plateSignature: string;
       plateIds: Readonly<Record<"A1" | "A2" | "A3", string>>;
       targetIds: readonly string[];
+      realityPresentation: {
+        darkOverlayAlpha: number;
+        darkOverlayDepth: number;
+        targetDepth: number;
+        glowingTargetCount: number;
+      };
     };
     warmup?: {
       requiredPhase: "entry" | "transport" | "maintenance" | "closure";

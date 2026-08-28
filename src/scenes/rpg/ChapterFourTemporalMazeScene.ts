@@ -575,6 +575,7 @@ interface PreparedForeground {
 interface PreparedPlateGroup {
   signature: string;
   plateIds: Readonly<Record<StoryFloor, ChapterFour755PlateId>>;
+  preparedStoryFloors: StoryFloor[];
   colliders: CollisionRect[];
   foregrounds: PreparedForeground[];
   deferredFailures: string[];
@@ -656,6 +657,10 @@ const WORLD = Object.freeze({
 const PLAYER_SPEED = 176;
 const PLAYER_DEPTH_BASE = CHAPTER_FOUR_PLAYER_DEPTH_BASE;
 const PLAYER_TOP_DEPTH = CHAPTER_FOUR_PLAYER_TOP_DEPTH;
+const REALITY_DARK_OVERLAY_DEPTH = PLAYER_TOP_DEPTH - 50;
+const REALITY_DARK_CLUE_DEPTH = PLAYER_TOP_DEPTH - 30;
+const REALITY_TARGET_DEPTH = PLAYER_TOP_DEPTH - 20;
+const REALITY_DARK_OVERLAY_ALPHA = 0.54;
 const ELEVATOR_TEXTURE = CHAPTER_FOUR_ELEVATOR_TEXTURE_KEY;
 const BAKERY_COUNTER_BAKER_TEXTURE = CHAPTER_FOUR_BAKERY_STAFF_TEXTURE_KEY;
 const BAKERY_COUNTER_BAKER_ANIMATION = "chapter-four-bakery-counter-auntie-pair-3";
@@ -1005,6 +1010,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private elevatorVisuals = new Map<DisplayFloor, ElevatorVisual>();
   private appliedForegrounds: AppliedForeground[] = [];
   private targetVisuals = new Map<string, Phaser.GameObjects.Container>();
+  private targetGlowTweens: Phaser.Tweens.Tween[] = [];
+  private realityDarkOverlay!: Phaser.GameObjects.Rectangle;
+  private realityDarkOverlayTween: Phaser.Tweens.Tween | null = null;
   private debugOverlayObjects: Phaser.GameObjects.GameObject[] = [];
   private plateColliderDebugObjects: Phaser.GameObjects.Rectangle[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -1382,6 +1390,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private bindBridgeEvents(): void {
+    this.events.on(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this);
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
       if (event.name === "rpg_chapter4_755_intent_resolved") {
         this.handleIntentResolved(event.payload);
@@ -1451,6 +1460,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         else if (!this.isStoryInputLocked() && !this.hostPowerPanelOpen) this.interactionRequested = true;
       }
     }, () => {
+      this.events.off(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this);
       this.warmupLoadGeneration += 1;
       this.phaseLoadCancelled = true;
       for (const settle of [...this.pendingWarmupSettlers]) settle();
@@ -1472,8 +1482,23 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.storyPresentation = "idle";
       this.syncStoryInputLock(true);
       this.feedbackTimer?.remove(false);
+      this.clearProjectedTargetVisuals();
+      this.realityDarkOverlayTween?.remove();
+      this.realityDarkOverlayTween = null;
       clearRpgRuntimeDebugState();
     });
+  }
+
+  private handleSceneResume(): void {
+    const requiredPhase = chapterFourWarmupPhaseForState(this.bridge.getState());
+    if (!this.isWarmupPhaseLoaded(requiredPhase)) {
+      this.requestWarmupPhase(requiredPhase, "required");
+      return;
+    }
+    this.createBaseBackgrounds();
+    this.syncProjection(true);
+    this.syncExternalFloorWhenIdle();
+    this.refreshProximity();
   }
 
   private refreshLoadedChapterFourAssets(): void {
@@ -2020,6 +2045,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 5,
       shadow: { color: "#07111d", blur: 0, offsetX: 2, offsetY: 2, fill: true }
     };
+    this.realityDarkOverlay = this.add.rectangle(480, 270, 960, 540, 0x020817, 1)
+      .setScrollFactor(0)
+      .setDepth(REALITY_DARK_OVERLAY_DEPTH)
+      .setAlpha(0);
     this.floorCaption = this.add.text(24, 58, "", style).setScrollFactor(0).setDepth(10000);
     this.interactionHint = this.add.text(480, 500, "", {
       ...style, fontSize: "16px", align: "center"
@@ -2070,6 +2099,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.requestWarmupPhase(requiredWarmupPhase, "required");
       return;
     }
+    this.createBaseBackgrounds();
     const next = selectChapterFourMazeProjection(state);
     const signature = JSON.stringify({
       phase: next.phase,
@@ -2109,6 +2139,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.appliedChapterMode = state.chapter4.mode;
     this.appliedLightMask = state.chapter4.lightGrid.mask;
     this.appliedLightLocked = state.chapter4.lightGrid.locked;
+    this.applyRealityModePresentation(state.chapter4.mode, force);
     this.projectionRetryFailures = 0;
     this.projectionRetryNotBeforeMs = 0;
     this.syncBakeryRuntime(state, next);
@@ -2207,15 +2238,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
 
     try {
-      FLOORS.forEach((floor, index) => {
+      prepared.preparedStoryFloors.forEach((storyFloor, index) => {
+        const floor = FLOORS.find((candidate) => candidate.storyFloor === storyFloor);
+        if (!floor) throw new Error(`floor_missing:${storyFloor}`);
         const plateId = prepared.plateIds[floor.storyFloor];
         const background = this.backgrounds.get(floor.displayFloor);
-        if (!background) {
-          if (floor.displayFloor === this.currentFloor) {
-            throw new Error(`background_missing:${floor.displayFloor}`);
-          }
-          return;
-        }
+        if (!background) throw new Error(`background_missing:${floor.displayFloor}`);
         this.injectPlateTransactionFault({
           point: "background_set_texture",
           index,
@@ -2301,7 +2329,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       sourceAnnotationId: local.sourceAnnotationId
     })));
     this.appliedPlateSignature = prepared.signature;
-    this.appliedPlateIds = prepared.plateIds;
+    this.appliedPlateIds = Object.freeze({
+      ...this.appliedPlateIds,
+      ...Object.fromEntries(prepared.preparedStoryFloors.map((storyFloor) => (
+        [storyFloor, prepared.plateIds[storyFloor]]
+      )))
+    }) as Readonly<Record<StoryFloor, ChapterFour755PlateId>>;
     this.appliedCollisionRects = [...staticRects, ...prepared.colliders];
     this.appliedCollisionIds = this.appliedCollisionRects.map((rect) => rect.id);
     this.appliedOcclusionIds = staged.foregrounds.map((visual) => visual.id);
@@ -2540,6 +2573,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const deferredFailures: string[] = [];
     const colliders: CollisionRect[] = [];
     const foregrounds: PreparedForeground[] = [];
+    const preparedStoryFloors: StoryFloor[] = [];
+    const committedDisplayFloor = displayFloorFor(this.bridge.getState().chapter4.floor);
     for (const floor of FLOORS) {
       const plateId = plateIds[floor.storyFloor];
       const asset = CHAPTER_FOUR_755_PLATES[plateId];
@@ -2548,11 +2583,13 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         continue;
       }
       if (!this.textures.exists(plateId)) {
-        if (floor.displayFloor === this.currentFloor) {
+        if (floor.displayFloor === this.currentFloor
+          || floor.displayFloor === committedDisplayFloor) {
           fatal.push(`plate_missing:${floor.storyFloor}:${plateId}`);
         }
         continue;
       }
+      preparedStoryFloors.push(floor.storyFloor);
       const source = this.textures.get(plateId).getSourceImage() as { width?: number; height?: number };
       if (asset.sourceSize.width !== FLOOR_SIZE.width || asset.sourceSize.height !== FLOOR_SIZE.height
         || source.width !== FLOOR_SIZE.width || source.height !== FLOOR_SIZE.height) {
@@ -2579,6 +2616,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
 
     for (const delta of LAYOUT.physicalDeltas) {
+      if (!preparedStoryFloors.includes(delta.storyFloor)) continue;
       const displayFloor = displayFloorFor(delta.storyFloor);
       if (!displayFloor) {
         fatal.push(`physical_delta_floor:${delta.id}`);
@@ -2642,7 +2680,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.plateContractFailures.add(`plate_group_rejected:${signature}`);
       return null;
     }
-    return { signature, plateIds, colliders, foregrounds, deferredFailures };
+    return {
+      signature,
+      plateIds,
+      preparedStoryFloors,
+      colliders,
+      foregrounds,
+      deferredFailures
+    };
   }
 
   private rebuildDevelopmentOverlays(): void {
@@ -3396,7 +3441,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const residualVisible = interactive
       && pieceVisible
       && (state.chapter4.mode === "dark" || this.storyPresentation === "room204_projection");
-    this.room204ResidualSprites.forEach((sprite) => sprite.setVisible(residualVisible));
+    this.room204ResidualSprites.forEach((sprite) => sprite
+      .setVisible(residualVisible)
+      .setBlendMode(state.chapter4.mode === "dark" ? Phaser.BlendModes.ADD : Phaser.BlendModes.NORMAL)
+      .setDepth(state.chapter4.mode === "dark" ? REALITY_DARK_CLUE_DEPTH : PLAYER_DEPTH_BASE - 200));
     for (const pieceId of ROOM204_PIECE_ORDER) {
       const runtimePiece = this.room204RuntimePieces.get(pieceId);
       if (!runtimePiece) continue;
@@ -3489,6 +3537,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private resolveNearbyRoom204PieceId(): ChapterFourRoom204PieceId | null {
     const state = this.bridge.getState();
     if (state.chapter4.phase !== "room204_restore"
+      || state.chapter4.mode !== "light"
       || this.currentFloor !== 2
       || this.room204SelectedPieceId) return null;
     const floor = getFloor(2);
@@ -5055,12 +5104,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private resolveProjectedTargets(): ProjectedTarget[] {
     const phase = this.projection.phase;
     if (!phase) return [];
+    const mode = this.appliedChapterMode;
     return this.projection.availableTargetIds.flatMap((targetId) => {
       if (!TASK13_ACTIONABLE_TARGET_IDS.has(targetId)) return [];
       const contract = CHAPTER_FOUR_755_INTERACTION_TARGETS[
         targetId as keyof typeof CHAPTER_FOUR_755_INTERACTION_TARGETS
       ];
       if (!contract) return [];
+      const requiredMode = selectChapterFour755RequiredMode(contract, phase);
+      if (requiredMode !== undefined && requiredMode !== mode) return [];
       if (contract.boundsSource.kind === "runtime_entity") {
         const bakeryBinding = this.bakeryRuntimeTargets.get(contract.id);
         const room204Binding = this.room204RuntimeTargets.get(contract.id);
@@ -5180,21 +5232,37 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private refreshProjectedTargetVisuals(): void {
-    for (const visual of this.targetVisuals.values()) visual.destroy(true);
-    this.targetVisuals.clear();
+    this.clearProjectedTargetVisuals();
     const targets = this.resolveProjectedTargets();
     const showBounds = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("debugTargets") === "1";
     for (const target of targets) {
       const floor = getFloor(target.floor);
-      const mode = this.projection.phase
+      const requiredMode = this.projection.phase
         ? selectChapterFour755RequiredMode(target.contract, this.projection.phase)
         : undefined;
-      const color = mode === "dark" ? 0x67ddff : 0xffd36f;
+      const darkModeTarget = requiredMode === "dark";
+      const color = darkModeTarget ? 0x67e8ff : 0xffd36f;
       const container = this.add.container(
         floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds)
-      ).setDepth(3560);
-      container.add(this.add.circle(0, 0, 5, color, 0.78).setStrokeStyle(1, 0xf7f1dc, 0.72));
+      ).setDepth(REALITY_TARGET_DEPTH);
+      if (darkModeTarget) {
+        const marker = this.add.circle(0, 0, 5, 0xd5fbff, 0.92)
+          .setStrokeStyle(2, color, 0.96)
+          .setBlendMode(Phaser.BlendModes.ADD);
+        container.add(marker);
+        this.targetGlowTweens.push(this.tweens.add({
+          targets: marker,
+          alpha: { from: 0.58, to: 1 },
+          scale: { from: 0.92, to: 1.18 },
+          duration: 920,
+          ease: "Sine.InOut",
+          yoyo: true,
+          repeat: -1
+        }));
+      } else {
+        container.add(this.add.circle(0, 0, 5, color, 0.82).setStrokeStyle(1, 0xfff4c2, 0.86));
+      }
       if (showBounds) {
         container.add(this.add.rectangle(
           0, 0, target.bounds.width, target.bounds.height, color, 0.04
@@ -5203,6 +5271,34 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.targetVisuals.set(target.contract.id, container);
     }
     this.renderedTargetIds = targets.map((target) => target.contract.id);
+  }
+
+  private clearProjectedTargetVisuals(): void {
+    for (const tween of this.targetGlowTweens) tween.remove();
+    this.targetGlowTweens = [];
+    for (const visual of this.targetVisuals.values()) visual.destroy(true);
+    this.targetVisuals.clear();
+    this.renderedTargetIds = [];
+  }
+
+  private applyRealityModePresentation(
+    mode: GameState["chapter4"]["mode"],
+    immediate: boolean
+  ): void {
+    const targetAlpha = mode === "dark" ? REALITY_DARK_OVERLAY_ALPHA : 0;
+    this.realityDarkOverlayTween?.remove();
+    this.realityDarkOverlayTween = null;
+    if (immediate) {
+      this.realityDarkOverlay.setAlpha(targetAlpha);
+      return;
+    }
+    this.realityDarkOverlayTween = this.tweens.add({
+      targets: this.realityDarkOverlay,
+      alpha: targetAlpha,
+      duration: 220,
+      ease: "Sine.Out",
+      onComplete: () => { this.realityDarkOverlayTween = null; }
+    });
   }
 
   private createElevatorVisuals(): void {
@@ -7546,17 +7642,40 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private syncExternalFloorWhenIdle(): void {
     if (this.pendingMove || this.elevatorPhase !== "idle") return;
-    const stateFloor = displayFloorFor(this.bridge.getState().chapter4.floor);
+    const state = this.bridge.getState();
+    const stateFloor = displayFloorFor(state.chapter4.floor);
     if (!stateFloor || stateFloor === this.currentFloor) return;
-    this.currentFloor = stateFloor;
+    if (!this.isFloorPresentationReady(stateFloor, state)) return;
+    const previousFloor = getFloor(this.currentFloor);
     const floor = getFloor(stateFloor);
-    const spawn = floor.safeSpawn;
+    const stairArrival = state.chapter4.phase === "room204_restore"
+      && previousFloor.storyFloor === "A3"
+      && floor.storyFloor === "A2"
+      && hasChapterFourFact(state, "misaligned_stair_solved")
+        ? floor.stairLandings.find((landing) => landing.targetStoryFloor === "A3")?.arrivalPosition
+        : undefined;
+    const spawn = stairArrival
+      ? { ...stairArrival, facing: "down" as const }
+      : floor.safeSpawn;
+    this.currentFloor = stateFloor;
     this.player.setPosition(floor.offsetX + spawn.x, spawn.y)
       .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + spawn.y);
     this.animator.setFacing(spawn.facing ?? "down");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
     this.refreshProximity();
+  }
+
+  private isFloorPresentationReady(displayFloor: DisplayFloor, state: GameState): boolean {
+    const floor = getFloor(displayFloor);
+    const expectedProjection = selectChapterFourMazeProjection(state);
+    const expectedPlateId = plateForFloor(expectedProjection, floor.storyFloor);
+    const background = this.backgrounds.get(displayFloor);
+    return this.appliedPlateSignature.length > 0
+      && this.projection.phase === expectedProjection.phase
+      && this.appliedPlateIds[floor.storyFloor] === expectedPlateId
+      && Boolean(background?.active)
+      && background?.texture.key === expectedPlateId;
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
@@ -7901,7 +8020,13 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           displayFloor: this.currentFloor,
           plateSignature: this.appliedPlateSignature,
           plateIds: this.appliedPlateIds,
-          targetIds: [...this.renderedTargetIds]
+          targetIds: [...this.renderedTargetIds],
+          realityPresentation: {
+            darkOverlayAlpha: this.realityDarkOverlay.alpha,
+            darkOverlayDepth: REALITY_DARK_OVERLAY_DEPTH,
+            targetDepth: REALITY_TARGET_DEPTH,
+            glowingTargetCount: this.targetGlowTweens.length
+          }
         },
         warmup: {
           requiredPhase: chapterFourWarmupPhaseForState(state),

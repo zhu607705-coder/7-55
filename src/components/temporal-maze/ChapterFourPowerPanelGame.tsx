@@ -16,28 +16,46 @@ interface ChapterFourPowerPanelGameProps {
   onClose: () => void;
 }
 
-interface PowerGridPosition {
+interface PowerPanelZonePosition {
   column: number;
   row: number;
   x: number;
   y: number;
 }
 
-const POWER_GRID_POSITIONS: Readonly<Record<ChapterFourLightZoneId, PowerGridPosition>> = Object.freeze({
-  hall: Object.freeze({ column: 2, row: 1, x: 150, y: 38 }),
-  west_corridor: Object.freeze({ column: 1, row: 2, x: 48, y: 132 }),
-  east_corridor: Object.freeze({ column: 3, row: 2, x: 252, y: 132 }),
-  bakery_back_area: Object.freeze({ column: 1, row: 3, x: 48, y: 226 }),
-  classroom_zone: Object.freeze({ column: 3, row: 3, x: 252, y: 226 })
+const POWER_PANEL_ZONE_ORDER = Object.freeze([
+  "hall",
+  "west_corridor",
+  "bakery_back_area",
+  "classroom_zone",
+  "east_corridor"
+] as const satisfies readonly ChapterFourLightZoneId[]);
+
+const POWER_PANEL_ZONE_POSITIONS: Readonly<Record<
+  ChapterFourLightZoneId,
+  Readonly<PowerPanelZonePosition>
+>> = Object.freeze({
+  hall: Object.freeze({ column: 2, row: 1, x: 50, y: 13 }),
+  west_corridor: Object.freeze({ column: 1, row: 2, x: 20, y: 41 }),
+  east_corridor: Object.freeze({ column: 3, row: 2, x: 80, y: 41 }),
+  bakery_back_area: Object.freeze({ column: 1, row: 3, x: 28, y: 84 }),
+  classroom_zone: Object.freeze({ column: 3, row: 3, x: 72, y: 84 })
 });
 
-const POWER_GRID_CONNECTIONS = Object.freeze([
-  ["hall", "west_corridor"],
-  ["hall", "east_corridor"],
-  ["west_corridor", "bakery_back_area"],
-  ["east_corridor", "classroom_zone"],
-  ["bakery_back_area", "classroom_zone"]
-] as const satisfies readonly (readonly [ChapterFourLightZoneId, ChapterFourLightZoneId])[]);
+const POWER_PANEL_ZONE_BY_ID = new Map(
+  CHAPTER_FOUR_LIGHT_GRID.zones.map((zone) => [zone.id, zone] as const)
+);
+
+const POWER_PANEL_CONNECTIONS = Object.freeze(
+  CHAPTER_FOUR_LIGHT_GRID.zones.flatMap((zone) => (
+    zone.adjacentZoneIds.flatMap((adjacentId) => {
+      const adjacent = POWER_PANEL_ZONE_BY_ID.get(adjacentId);
+      return adjacent && zone.bit < adjacent.bit
+        ? [Object.freeze({ from: zone.id, to: adjacentId })]
+        : [];
+    })
+  ))
+);
 
 type PowerGridDirection = "left" | "right" | "up" | "down";
 
@@ -79,12 +97,12 @@ export function ChapterFourPowerPanelGame({
   }, []);
 
   function focusInDirection(index: number, direction: PowerGridDirection): void {
-    const currentZone = CHAPTER_FOUR_LIGHT_GRID.zones[index];
-    const current = POWER_GRID_POSITIONS[currentZone.id];
-    const candidates = CHAPTER_FOUR_LIGHT_GRID.zones
-      .map((zone, candidateIndex) => ({
+    const currentZoneId = POWER_PANEL_ZONE_ORDER[index];
+    const current = POWER_PANEL_ZONE_POSITIONS[currentZoneId];
+    const candidates = POWER_PANEL_ZONE_ORDER
+      .map((zoneId, candidateIndex) => ({
         candidateIndex,
-        position: POWER_GRID_POSITIONS[zone.id]
+        position: POWER_PANEL_ZONE_POSITIONS[zoneId]
       }))
       .filter(({ position }) => {
         if (direction === "left") return position.column < current.column;
@@ -134,29 +152,43 @@ export function ChapterFourPowerPanelGame({
         <div className="chapter4-power-panel__grid" role="group" aria-label="五区配电线路拓扑">
           <svg
             className="chapter4-power-panel__connections"
-            viewBox="0 0 300 264"
+            viewBox="0 0 100 100"
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            {POWER_GRID_CONNECTIONS.map(([fromId, toId]) => {
-              const from = POWER_GRID_POSITIONS[fromId];
-              const to = POWER_GRID_POSITIONS[toId];
-              return <line key={`${fromId}-${toId}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} />;
+            {POWER_PANEL_CONNECTIONS.map((connection) => {
+              const from = POWER_PANEL_ZONE_POSITIONS[connection.from];
+              const to = POWER_PANEL_ZONE_POSITIONS[connection.to];
+              return (
+                <line
+                  key={`${connection.from}-${connection.to}`}
+                  x1={from.x}
+                  y1={from.y}
+                  x2={to.x}
+                  y2={to.y}
+                />
+              );
             })}
           </svg>
-          {CHAPTER_FOUR_LIGHT_GRID.zones.map((zone, index) => {
+          {POWER_PANEL_ZONE_ORDER.map((zoneId, index) => {
+            const zone = POWER_PANEL_ZONE_BY_ID.get(zoneId);
+            if (!zone) return null;
             const on = (mask & (1 << zone.bit)) !== 0;
-            const position = POWER_GRID_POSITIONS[zone.id];
+            const position = POWER_PANEL_ZONE_POSITIONS[zone.id];
+            const adjacentLabels = zone.adjacentZoneIds
+              .map((adjacentId) => POWER_PANEL_ZONE_BY_ID.get(adjacentId)?.label)
+              .filter((label): label is string => Boolean(label))
+              .join("、");
             return (
               <button
                 key={zone.id}
                 ref={(node) => { buttonRefs.current[index] = node; }}
                 type="button"
                 className={on ? "is-on" : "is-off"}
-                aria-pressed={on}
-                aria-label={`${zone.label}当前${on ? "亮" : "暗"}`}
                 data-zone-id={zone.id}
-                style={{ gridColumn: position.column, gridRow: position.row }}
+                style={{ left: `${position.x}%`, top: `${position.y}%` }}
+                aria-pressed={on}
+                aria-label={`${zone.label}当前${on ? "亮" : "暗"}，连接${adjacentLabels}`}
                 disabled={pending || locked}
                 onClick={() => onToggle(zone.id)}
                 onKeyDown={(event) => {
@@ -188,7 +220,7 @@ export function ChapterFourPowerPanelGame({
             ? "正在同步配电状态……"
             : locked
               ? "配电结果已锁定。"
-              : "操作一个节点会同时切换与它直接连线的区域。")}
+              : "按下一区，会切换它自身和连线直接相接的区域。")}
         </p>
         <p className="chapter4-power-panel__controls">
           方向键移动焦点 · Enter / Space 切换 · Esc 关闭

@@ -161,9 +161,41 @@ assert(
     < scene.indexOf("const next = selectChapterFourMazeProjection(state);"),
   "projection gate: phase readiness must be checked before selecting/applying a new projection"
 );
+assertIncludes(
+  scene,
+  "this.events.on(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this)",
+  "stair return must explicitly resynchronize the resumed Phaser scene"
+);
+assert(
+  /private handleSceneResume\(\)[\s\S]*?createBaseBackgrounds\(\)[\s\S]*?syncProjection\(true\)[\s\S]*?syncExternalFloorWhenIdle\(\)/.test(scene),
+  "stair return must prepare backgrounds and projection before moving to the committed floor"
+);
+assert(
+  /const committedDisplayFloor = displayFloorFor\(this\.bridge\.getState\(\)\.chapter4\.floor\)/.test(scene)
+    && /floor\.displayFloor === this\.currentFloor[\s\S]*?floor\.displayFloor === committedDisplayFloor[\s\S]*?fatal\.push\(`plate_missing:/.test(scene),
+  "plate transaction must require exact textures for both the rendered and newly committed floor"
+);
+assert(
+  /prepared\.preparedStoryFloors\.forEach\(\(storyFloor, index\)/.test(scene)
+    && /Object\.fromEntries\(prepared\.preparedStoryFloors/.test(scene)
+    && /if \(!preparedStoryFloors\.includes\(delta\.storyFloor\)\) continue/.test(scene),
+  "phased warmup must atomically commit and report only floors whose plate resources are actually ready"
+);
+assert(
+  /private isFloorPresentationReady[\s\S]*?this\.appliedPlateIds\[floor\.storyFloor\] === expectedPlateId[\s\S]*?background\?\.texture\.key === expectedPlateId/.test(scene),
+  "external floor synchronization must wait for the exact committed plate to be rendered"
+);
+assert(
+  /misaligned_stair_solved[\s\S]*?targetStoryFloor === "A3"/.test(scene),
+  "A3 stair completion must restore at the authored A2 stair landing"
+);
 
 assertIncludes(host, "getChapterFourWarmupPhaseAssets(phase ?? \"entry\")", "host phase registry");
 assertIncludes(host, "rpg_chapter4_warmup_phase_requested", "host phase request subscription");
+assert(
+  /const targetIsRunning = game\.scene\.isActive\(target\)[\s\S]*?game\.scene\.isPaused\(target\)[\s\S]*?game\.scene\.isSleeping\(target\)/.test(host),
+  "host activation must resume the existing paused scene instead of restarting it after the Three.js stair"
+);
 assertIncludes(gate, '"duan_yongping_temporal_maze", "immediate", "entry"', "prologue entry wait");
 assert(
   !gate.includes("preloadRpgGameHost"),
