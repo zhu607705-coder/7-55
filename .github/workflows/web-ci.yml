@@ -2,9 +2,15 @@ name: Web CI
 
 on:
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
   push:
     branches:
       - main
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
   workflow_dispatch:
 
 permissions:
@@ -24,10 +30,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node.js 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
           cache: npm
@@ -71,14 +77,11 @@ jobs:
       - name: Verify Chapter 4 7:55 Task 14 contract
         run: npm run chapter4:validate-task14
 
-      - name: Type-check source
-        run: npm run typecheck
-
-      - name: Build production bundle
+      - name: Type-check and build production bundle
         run: npm run build
 
       - name: Build offline single-file demo
-        run: npm run build:single
+        run: npm exec -- vite build --mode demo
 
       - name: Verify offline single-file artifact
         run: npm run verify:single

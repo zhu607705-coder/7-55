@@ -29,9 +29,8 @@ HTTP、部署环境和直接打开 `demo/index.html` 均使用同一浏览器原
 ```bash
 npm run map:zijingang
 npm run audio:chapter3:verify
-npm run typecheck
 npm run build
-npm run build:single
+npm exec -- vite build --mode demo
 npm run verify:single
 ```
 
@@ -56,8 +55,10 @@ npm run verify:campus-map-demo
 输出位于 `demo/campus-map-demo.html`。它只加载当前紫金港大地图运行时与演示状态，不会写入正式剧情存档。
 需要交付离线演示时，请作为 Release 附件发布。
 
-GitHub Actions 会对每个 PR 和每次推送到 `main` 执行第三章音频、校园地图、
-第四章 7:55、类型检查、生产构建和离线单文件验证。
+`npm run build` 已包含 TypeScript 类型检查。后续 demo 构建直接执行 Vite，避免在同一批次重复运行 `tsc --noEmit`。
+
+GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` 推送执行第三章音频、校园地图、
+第四章 7:55、类型检查、生产构建和离线单文件验证。纯文档变更会跳过自动流程，仍可在 Actions 页面手动执行全量验证。
 
 ## 目录
 
