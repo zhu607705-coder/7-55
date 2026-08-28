@@ -15,14 +15,14 @@ interface WayfindingBoardGameProps {
 type WayfindingSlot = WayfindingFragmentId | null;
 
 const FRAGMENT_LABELS: Record<WayfindingFragmentId, string> = {
-  a2_fragment_west: "导视碎片 A",
-  a2_fragment_east: "导视碎片 B"
+  a2_fragment_west: "碎片 A · 箭头端",
+  a2_fragment_east: "碎片 B · 2F 字样端"
 };
 
 const INITIAL_SLOTS: readonly WayfindingSlot[] = [
   CHAPTER_FOUR_MAZE_IDS.fragments[1],
-  null,
-  CHAPTER_FOUR_MAZE_IDS.fragments[0]
+  CHAPTER_FOUR_MAZE_IDS.fragments[0],
+  null
 ];
 
 function feedbackForResult(result: ChapterFourActionResult): string {
@@ -39,7 +39,7 @@ export function WayfindingBoardGame({ onConfirm, onCancel }: WayfindingBoardGame
   const [pickedSlot, setPickedSlot] = useState<number | null>(null);
   const [focusedSlot, setFocusedSlot] = useState(0);
   const [result, setResult] = useState<ChapterFourActionResult | null>(null);
-  const [statusText, setStatusText] = useState("选择一块碎片，再选择目标槽位。中间槽保留无法验证的空位。");
+  const [statusText, setStatusText] = useState("比较三份现场材料后，选择一块碎片，再选择目标槽位。");
   const dialogRef = useRef<HTMLElement | null>(null);
   const slotRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -129,12 +129,27 @@ export function WayfindingBoardGame({ onConfirm, onCancel }: WayfindingBoardGame
 
       <p id="wayfinding-board-objective" className="chapter4-wayfinding-board__objective">
         <strong>当前目标</strong>
-        根据已记录的旧导视痕迹，排列两块碎片；保留一个未验证槽位。
+        比较当前导视照片、旧残影和二楼入口方向，判断两块碎片及缺失槽位的位置。
       </p>
+
+      <div className="chapter4-wayfinding-board__evidence" aria-label="导视板比对材料">
+        <article>
+          <span>当前导视照片</span>
+          <p>完整板面由三段等宽槽位组成；两块残片并拢后宽度仍不足。</p>
+        </article>
+        <article>
+          <span>旧导视残影</span>
+          <p>箭头端贴近左侧磨损边；“2F”字样端与箭头之间留有断续胶痕。</p>
+        </article>
+        <article>
+          <span>二楼入口方向</span>
+          <p>从交通核心进入二楼时，入口位于左侧导向一边。</p>
+        </article>
+      </div>
 
       <div className="chapter4-wayfinding-board__slots" role="group" aria-label="三个导视板槽位">
         {slots.map((fragment, index) => {
-          const label = fragment ? FRAGMENT_LABELS[fragment] : "未验证空位";
+          const label = fragment ? FRAGMENT_LABELS[fragment] : "当前空槽";
           const picked = pickedSlot === index;
           return (
             <button
@@ -168,7 +183,7 @@ export function WayfindingBoardGame({ onConfirm, onCancel }: WayfindingBoardGame
             >
               <span className="chapter4-wayfinding-slot__number">槽位 {index + 1}</span>
               <strong>{label}</strong>
-              <small>{fragment ? "选择后放入另一槽位" : "历史记录缺失"}</small>
+              <small>{fragment ? "选择后放入另一槽位" : "当前没有装入碎片"}</small>
             </button>
           );
         })}

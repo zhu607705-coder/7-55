@@ -309,13 +309,10 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
   const [areaFilter, setAreaFilter] = useState<"all" | "north_a" | "other">("all");
   const interlude = state.chapterThreeInterlude;
   const interludeViewModel = selectChapterThreeInterludeViewModel(state);
-  const filtersReady = timeFilter === "missing_475"
-    && sessionFilter === "unknown_short"
-    && areaFilter === "north_a";
   const filterProgress = [
-    timeFilter === "missing_475",
-    sessionFilter === "unknown_short",
-    areaFilter === "north_a"
+    timeFilter !== "all",
+    sessionFilter !== "all",
+    areaFilter !== "all"
   ].filter(Boolean).length;
   const destinationCopyUnlocked = interludeViewModel.destinationSelectionUnlocked || interlude.destinationId !== null;
 
@@ -384,10 +381,8 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
   function saveNetworkRecord(recordId: ChapterThreeInterludeNetworkRecordId) {
     const result = kit.chapterThreeInterlude.readNetworkRecord(recordId);
     setFeedback(result === "accepted" || result === "already_complete"
-      ? "22:44:57 的三秒接入记录已加入恢复证据。"
-      : result === "incorrect"
-        ? "这条记录的时间、地点或会话长度与缺口对不上。"
-        : "先在记录恢复中确认划船帖的离湖时间。"
+      ? "这条接入记录已加入证据矩阵；地点确认时会统一核对冲突。"
+      : "先在记录恢复中确认划船帖的离湖时间。"
     );
   }
 
@@ -427,7 +422,7 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
         <section className="interlude-network-results" aria-label="接入记录结果">
           <header><strong>查询结果</strong><span>{records.length} 条</span></header>
           {records.map((record) => (
-            <article key={record.id} className={`interlude-network-card ${filtersReady && record.id === "record_0755" ? "is-target" : ""}`.trim()}>
+            <article key={record.id} className={`interlude-network-card ${interlude.networkRecordId === record.id ? "is-target" : ""}`.trim()}>
               <header><span>{record.time}</span><b>{record.duration}</b></header>
               <dl>
                 <div><dt>接入点</dt><dd>{record.accessPoint}</dd></div>
@@ -436,19 +431,16 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
               </dl>
               <button
                 type="button"
-                disabled={!filtersReady || record.id !== "record_0755"}
                 onClick={() => saveNetworkRecord(record.id)}
               >
-                {interlude.networkRecordRead && record.id === "record_0755"
+                {interlude.networkRecordId === record.id
                   ? "记录已保存"
-                  : filtersReady && record.id === "record_0755"
-                    ? "保存这条记录"
-                    : "继续筛选"}
+                  : "保存这条记录"}
               </button>
             </article>
           ))}
         </section>
-        <p className="interlude-network-note">先按时间段、设备会话和已知入口区域逐项筛选；结果数量会从 4 条降至 1 条。</p>
+        <p className="interlude-network-note">可从任意维度开始筛选，也可直接保存候选记录。系统不会替你判定候选，最终冲突由证据矩阵统一核验。</p>
         {interlude.networkRecordRead ? (
           <section className="interlude-network-dialogue" aria-label="记录核验结果">
             <p><b>林星宇</b>这不是我的手机。</p>

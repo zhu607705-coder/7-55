@@ -83,6 +83,13 @@ export type ChapterFourCorridorPartitionId = "a2_partition_west" | "a2_partition
 /** @deprecated Task 6 removes the old wayfinding-fragment puzzle. */
 export type ChapterFourWayfindingFragmentId = "a2_fragment_west" | "a2_fragment_east";
 
+export type ChapterFourMaintenanceSymptomId = "wheel_sound" | "clock_jam" | "oil_trace";
+export type ChapterFourMaintenanceCauseId = "latch" | "oil_shortage" | "gear_offset" | "power_loss" | "foreign_object";
+export type ChapterFourMaintenanceDiagnosisAnswers = Record<
+  ChapterFourMaintenanceSymptomId,
+  ChapterFourMaintenanceCauseId
+>;
+
 export const CHAPTER_FOUR_755_TARGET_IDS = Object.freeze({
   attendancePaper: "a1_noticeboard_paper",
   hallClock: "a1_hall_clock",
@@ -234,6 +241,7 @@ export type ChapterFour755Intent =
       type: "inspect_cart_wheel";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.cartWheelInspection;
     }>
+  | { type: "complete_maintenance_diagnosis"; answers: ChapterFourMaintenanceDiagnosisAnswers }
   | ChapterFour755TargetIntent<{ type: "collect_short_pry_bar"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.pryBarPickup }>
   | ChapterFour755TargetIntent<{
       type: "open_cart_wheel_cover";
@@ -1124,21 +1132,40 @@ export class ChapterFourTemporalMazeController {
           || hasFact(chapter, "cart_wheel_repaired")
           || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
         if (hasFact(chapter, "cart_wheel_inspected")) return reject("already_complete");
-        const result = accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "cart_wheel_inspected")
-        }));
-        this.emitChapterFourCue("maintenance_cart_wheel_stuck", {
+        this.emitChapterFourCue("chapter4_maintenance_diagnosis_requested", {
           phase: chapter.phase,
           targetId: intent.targetId
+        });
+        return acceptReadOnly();
+      }
+
+      case "complete_maintenance_diagnosis": {
+        if (chapter.phase !== "maintenance_repair"
+          || chapter.guardMode !== "patrol"
+          || hasFact(chapter, "cart_wheel_inspected")) return reject("locked");
+        const correct = intent.answers.wheel_sound === "latch"
+          && intent.answers.clock_jam === "gear_offset"
+          && intent.answers.oil_trace === "oil_shortage";
+        if (!correct) {
+          this.emitChapterFourCue("chapter4_maintenance_diagnosis_rejected", { phase: chapter.phase });
+          return reject("incorrect");
+        }
+        const result = accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "cart_wheel_inspected")
+        }, {
+          ...state.items,
+          shortPryBar: true,
+          universalLubricatingOil: true
+        }));
+        this.emitChapterFourCue("chapter4_maintenance_diagnosis_completed", {
+          phase: chapter.phase,
+          actions: ["open_cart_wheel_cover", "lubricate_maintenance_linkage"]
         });
         return result;
       }
 
       case "collect_short_pry_bar": {
-        if (chapter.phase !== "maintenance_repair"
-          || hasFact(chapter, "cart_wheel_cover_opened")
-          || state.items.shortPryBar) return reject("locked");
-        return accept(this.patchChapter(state, {}, withItem(state, "shortPryBar", true)));
+        return reject("locked");
       }
 
       case "open_cart_wheel_cover": {
@@ -1152,11 +1179,7 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "collect_lubricating_oil": {
-        if (chapter.phase !== "maintenance_repair"
-          || !hasFact(chapter, "cart_wheel_cover_opened")
-          || state.items.universalLubricatingOil
-          || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
-        return accept(this.patchChapter(state, {}, withItem(state, "universalLubricatingOil", true)));
+        return reject("locked");
       }
 
       case "lubricate_cart_wheel": {
@@ -1164,29 +1187,28 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "cart_wheel_cover_opened")
           || !state.items.universalLubricatingOil
           || hasFact(chapter, "cart_wheel_repaired")) return reject("locked");
+        const repairedFacts = appendFact(chapter, "cart_wheel_repaired");
+        if (!repairedFacts.includes("clock_gear_repaired")) repairedFacts.push("clock_gear_repaired");
         const result = accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "cart_wheel_repaired")
-        }));
+          factIds: repairedFacts
+        }, withItem(state, "universalLubricatingOil", false)));
         this.emitChapterFourCue("maintenance_cart_wheel_repaired", {
           phase: chapter.phase,
-          targetId: intent.targetId
+          targetId: intent.targetId,
+          clockGearAligned: true
+        });
+        this.emitChapterFourCue("clock_gear_repaired", {
+          phase: chapter.phase,
+          targetId: intent.targetId,
+          linkedAction: true
         });
         return result;
       }
 
       case "lubricate_clock_gear": {
-        if (chapter.phase !== "maintenance_repair"
-          || !hasFact(chapter, "cart_wheel_repaired")
-          || !state.items.universalLubricatingOil
-          || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
-        const result = accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "clock_gear_repaired"),
-        }, withItem(state, "universalLubricatingOil", false)));
-        this.emitChapterFourCue("clock_gear_repaired", {
-          phase: chapter.phase,
-          targetId: intent.targetId
-        });
-        return result;
+        return hasFact(chapter, "clock_gear_repaired")
+          ? reject("already_complete")
+          : reject("locked");
       }
 
       case "recover_from_maintenance_patrol": {
@@ -1749,6 +1771,16 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
         && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.positioningPlateSocket, ["itemId"]);
     case "inspect_cart_wheel":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.cartWheelInspection);
+    case "complete_maintenance_diagnosis": {
+      if (!hasExactKeys(value, ["type", "answers"]) || !isRecord(value.answers)) return false;
+      if (!hasExactKeys(value.answers, ["wheel_sound", "clock_jam", "oil_trace"])) return false;
+      const validCauses = new Set<ChapterFourMaintenanceCauseId>([
+        "latch", "oil_shortage", "gear_offset", "power_loss", "foreign_object"
+      ]);
+      return Object.values(value.answers).every((cause) => (
+        typeof cause === "string" && validCauses.has(cause as ChapterFourMaintenanceCauseId)
+      ));
+    }
     case "collect_short_pry_bar":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.pryBarPickup);
     case "open_cart_wheel_cover":

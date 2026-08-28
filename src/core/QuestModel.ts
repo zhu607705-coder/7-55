@@ -354,23 +354,20 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     return task("attach_decoy", steps.attachDecoy.label, steps.attachDecoy.hints);
   }
   if (lake.phase === "tool_chain") {
-    if (!lake.lockerOpened) {
-      return state.items.rustedLockerKey
-        ? task("open_locker", steps.openLocker.label, steps.openLocker.hints)
-        : task("catch_key", steps.catchKey.label, steps.catchKey.hints);
+    const branchCount = [state.items.nylonCord, state.items.brokenNetFrame, state.items.swanMagnet]
+      .filter(Boolean).length;
+    if (branchCount < 3) {
+      return task("parallel_tool_branches", `完成湖区三处分支 ${branchCount}/3`, [
+        state.items.nylonCord ? "码头柜门：已取得尼龙绳。" : "码头柜门：钓起钥匙并打开柜门。",
+        state.items.brokenNetFrame ? "浮排分支：已取得破损网框。" : "浮排分支：在直河道钓起破损网框。",
+        state.items.swanMagnet ? "天鹅分支：已取得磁性扣。" : "天鹅分支：前往围栏处理旧饲料盒。",
+        "三个分支可以任意顺序完成。"
+      ]);
     }
-    if (!lake.netCombined) {
-      return state.items.brokenNetFrame
-        ? task("combine_net", steps.combineNet.label, steps.combineNet.hints)
-        : task("catch_net_frame", steps.catchNetFrame.label, steps.catchNetFrame.hints);
-    }
-    if (!lake.feedTinRetrieved) {
-      return task("retrieve_tin", steps.retrieveTin.label, steps.retrieveTin.hints);
-    }
-    if (!lake.feedTinOpened) {
-      return task("open_tin", steps.openTin.label, steps.openTin.hints);
-    }
-    return task("catch_fish", steps.catchFish.label, steps.catchFish.hints);
+    return task("combine_final_rig", "合并三处分支材料", [
+      "返回大湖面的最终钓具装配位。",
+      "将尼龙绳、破损网框、磁性扣和钓鱼竿放入装配位。"
+    ]);
   }
   if (lake.phase === "swan_exchange") {
     return task("feed_swan", qizhenContent.quest.swan, [
@@ -379,9 +376,7 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     ]);
   }
   if (lake.phase === "paper_capture") {
-    return lake.magneticRodCombined
-      ? task("capture_paper", qizhenContent.quest.paper, steps.capturePaper.hints)
-      : task("combine_magnetic_rod", steps.combineMagneticRod.label, steps.combineMagneticRod.hints);
+    return task("capture_paper", qizhenContent.quest.paper, steps.capturePaper.hints);
   }
   if (lake.phase === "swan_chase") {
     return task("swan_chase", qizhenContent.quest.chase, [qizhenContent.chase.instruction]);
@@ -763,17 +758,11 @@ function selectChapterFour755TaskKey(
   } else if (contract.id === "maintenance_repair") {
     preferredTaskKey = !facts.has("cart_wheel_inspected")
       ? "inspect_cart_wheel"
-      : !state.items.shortPryBar && !facts.has("cart_wheel_cover_opened")
-        ? "collect_short_pry_bar"
-        : !facts.has("cart_wheel_cover_opened")
-          ? "open_cart_wheel_cover"
-          : !state.items.universalLubricatingOil && !facts.has("cart_wheel_repaired")
-            ? "collect_lubricating_oil"
-            : !facts.has("cart_wheel_repaired")
-              ? "lubricate_cart_wheel"
-              : !facts.has("clock_gear_repaired")
-              ? "lubricate_clock_gear"
-                : "turn_clock_to_0755";
+      : !facts.has("cart_wheel_cover_opened")
+        ? "open_cart_wheel_cover"
+        : !facts.has("cart_wheel_repaired") || !facts.has("clock_gear_repaired")
+          ? "lubricate_cart_wheel"
+          : "turn_clock_to_0755";
   } else if (contract.id === "return_to_clock") {
     preferredTaskKey = state.chapter4.floor === "A1"
       ? "install_final_minute"

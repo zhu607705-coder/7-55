@@ -275,6 +275,7 @@ export function createInitialGameState(): GameState {
       officialNoticeSaved: false,
       routeScreenshotSaved: false,
       networkRecordRead: false,
+      networkRecordId: null,
       evidenceIds: [],
       timelineOrder: [],
       rejectedDecoyIds: [],

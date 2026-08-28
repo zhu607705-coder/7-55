@@ -1,3 +1,149 @@
+.chapter4-maintenance-diagnosis-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 142;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  color: #edf8f2;
+  background: rgb(2 7 13 / 82%);
+  pointer-events: auto;
+}
+
+.chapter4-maintenance-diagnosis {
+  width: min(670px, 92%);
+  padding: 24px 26px;
+  border: 3px solid #789aa2;
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, rgb(25 39 43 / 98%), rgb(8 17 21 / 98%)),
+    repeating-linear-gradient(90deg, transparent 0 11px, rgb(255 255 255 / 2%) 11px 12px);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 68%), inset 0 0 0 2px #13262c;
+  font-family: "Fusion Pixel", monospace;
+}
+
+.chapter4-maintenance-diagnosis header p {
+  margin: 0 0 4px;
+  color: #7eb8c3;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+.chapter4-maintenance-diagnosis header h2 {
+  margin: 0;
+  color: #fff0ad;
+  font-size: 22px;
+}
+
+.chapter4-maintenance-diagnosis header span {
+  display: block;
+  margin-top: 7px;
+  color: #a9bec3;
+  font-size: 12px;
+}
+
+.chapter4-maintenance-diagnosis__observations {
+  display: grid;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.chapter4-maintenance-diagnosis__observations label {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 148px;
+  gap: 12px;
+  align-items: center;
+  min-height: 58px;
+  padding: 9px 11px;
+  border: 1px solid #526c73;
+  background: #111f24;
+}
+
+.chapter4-maintenance-diagnosis__observations strong {
+  color: #f2dd87;
+}
+
+.chapter4-maintenance-diagnosis__observations span {
+  color: #c1d1d4;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.chapter4-maintenance-diagnosis__observations select {
+  min-height: 36px;
+  border: 2px solid #65808a;
+  color: #edf8f2;
+  background: #162a31;
+  font: inherit;
+}
+
+.chapter4-maintenance-diagnosis__observations select:focus-visible,
+.chapter4-maintenance-diagnosis button:focus-visible {
+  outline: 3px solid #f1d276;
+  outline-offset: 2px;
+}
+
+.chapter4-maintenance-diagnosis__feedback {
+  min-height: 20px;
+  margin: 12px 0 0;
+  color: #ffbd9e;
+  font-size: 12px;
+}
+
+.chapter4-maintenance-diagnosis footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.chapter4-maintenance-diagnosis footer button {
+  min-width: 118px;
+  min-height: 38px;
+  border: 2px solid #d8c15e;
+  color: #101a22;
+  background: #e7d16c;
+  font: inherit;
+  font-weight: 700;
+}
+
+.chapter4-maintenance-diagnosis footer button.is-secondary {
+  border-color: #647d85;
+  color: #dce8e9;
+  background: #18292e;
+}
+
+.chapter4-maintenance-diagnosis footer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+@media (max-width: 760px), (max-height: 520px) {
+  .chapter4-maintenance-diagnosis-overlay {
+    padding: 16px;
+  }
+
+  .chapter4-maintenance-diagnosis {
+    width: min(760px, 96%);
+    padding: 16px 18px;
+  }
+
+  .chapter4-maintenance-diagnosis__observations {
+    gap: 6px;
+    margin-top: 11px;
+  }
+
+  .chapter4-maintenance-diagnosis__observations label {
+    grid-template-columns: 88px minmax(0, 1fr) 132px;
+    min-height: 48px;
+    padding: 6px 8px;
+  }
+
+  .chapter4-maintenance-diagnosis footer {
+    margin-top: 10px;
+  }
+}
+
 .chapter4-power-panel-overlay {
   position: absolute;
   inset: 0;

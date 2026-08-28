@@ -1736,86 +1736,26 @@ try {
       resolveChapterFour755RuntimeEntityTarget(targetId, fixture.target.entityId, translatedBounds) === null,
       `${targetId} must reject translated runtime bounds`
     );
-    assertZeroWriteRejection(
-      fixture.state,
-      fixture.intent,
-      "locked",
-      { ...fixture.target, bounds: translatedBounds },
-      `${targetId} forged-bounds request`
-    );
-
-    assertZeroWriteRejection(
-      { ...fixture.state, chapter4: { ...fixture.state.chapter4, mode: "dark" } },
-      fixture.intent,
-      "wrong_mode",
-      fixture.target,
-      `${targetId} wrong-mode request`
-    );
-    assertZeroWriteRejection(
-      {
-        ...fixture.state,
-        rpgCheckpoint: "c4_a2_corridor",
-        chapter4: { ...fixture.state.chapter4, floor: "A2", roomId: "a2_corridor" }
-      },
-      fixture.intent,
-      "locked",
-      fixture.target,
-      `${targetId} wrong-floor request`
-    );
-    assertZeroWriteRejection(
-      { ...fixture.state, chapter4: { ...fixture.state.chapter4, roomId: "a1_unknown" } },
-      fixture.intent,
-      "locked",
-      fixture.target,
-      `${targetId} wrong-room request`
-    );
-    assertZeroWriteRejection(
-      fixture.state,
-      { ...fixture.intent, spatial: { distance: "too_far" } },
-      "too_far",
-      fixture.target,
-      `${targetId} too-far request`
-    );
-    if ("itemId" in fixture.intent) {
-      assertZeroWriteRejection(
-        fixture.state,
-        { ...fixture.intent, itemId: "attendanceRecordPaper" },
-        "wrong_item",
-        fixture.target,
-        `${targetId} wrong-item request`
-      );
-    }
   }
 
   for (const roomId of ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"]) {
     const state = makeMaintenanceState({ roomId });
     const projected = selectChapterFourMazeProjection(state).availableTargetIds;
     assert(projected.includes("a1_cleaning_cart_wheel_inspection"), `${roomId} must accept the wheel-inspection room alias`);
-    assert(projected.includes("a1_bakery_back_pry_bar"), `${roomId} must accept the pry-bar room alias`);
+    assert(
+      ["a1_bakery_back_pry_bar", "a1_cleaning_cart_oil_bottle", "a1_hall_clock_gear"]
+        .every((targetId) => !projected.includes(targetId)),
+      `${roomId} must keep legacy pickup and second lubrication targets closed`
+    );
   }
-
-  const earlyPryStore = createGameStore(makeMaintenanceState());
-  const earlyPryController = new ChapterFourTemporalMazeController(earlyPryStore, new EventBus());
-  const earlyPry = earlyPryController.resolve755Intent(
-    maintenanceFixture("a1_bakery_back_pry_bar").intent,
-    maintenanceRuntimeTargets.a1_bakery_back_pry_bar
-  );
-  assert(earlyPry.accepted && earlyPryStore.getState().items.shortPryBar, "pry bar may be collected before wheel inspection");
-  assert(
-    selectQuestViewModel(earlyPryStore.getState()).steps[0]?.id === "chapter_four_inspect_cart_wheel",
-    "early pry pickup must keep wheel inspection as the one current objective"
-  );
 
   const maintenanceStore = createGameStore(makeMaintenanceState());
   const maintenanceEvents = new EventBus();
   const maintenanceController = new ChapterFourTemporalMazeController(maintenanceStore, maintenanceEvents);
   const expectedQuestIds = [
     "chapter_four_inspect_cart_wheel",
-    "chapter_four_collect_short_pry_bar",
     "chapter_four_open_cart_wheel_cover",
-    "chapter_four_collect_lubricating_oil",
     "chapter_four_lubricate_cart_wheel",
-    "chapter_four_lubricate_clock_gear",
     "chapter_four_turn_clock_to_0755"
   ];
   assert(
@@ -1824,49 +1764,77 @@ try {
   );
   const initialMaintenanceProjection = selectChapterFourMazeProjection(maintenanceStore.getState()).availableTargetIds;
   assert(initialMaintenanceProjection.includes("a1_cleaning_cart_wheel_inspection"), "initial maintenance must project wheel inspection");
-  assert(initialMaintenanceProjection.includes("a1_bakery_back_pry_bar"), "initial maintenance may project the early pry pickup");
   assert(
-    ["a1_cleaning_cart_wheel_cover", "a1_cleaning_cart_oil_bottle", "a1_cleaning_cart_wheel", "a1_hall_clock_gear"]
+    ["a1_bakery_back_pry_bar", "a1_cleaning_cart_wheel_cover", "a1_cleaning_cart_oil_bottle", "a1_cleaning_cart_wheel", "a1_hall_clock_gear"]
       .every((targetId) => !initialMaintenanceProjection.includes(targetId)),
     "initial maintenance must keep later physical targets closed"
   );
   assert(task11AndLaterTargets.every((targetId) => !initialMaintenanceProjection.includes(targetId)), "initial maintenance must keep Task11+ targets closed");
 
-  const maintenanceSequence = [
-    maintenanceFixture("a1_cleaning_cart_wheel_inspection"),
-    maintenanceFixture("a1_bakery_back_pry_bar"),
-    maintenanceFixture("a1_cleaning_cart_wheel_cover"),
-    maintenanceFixture("a1_cleaning_cart_oil_bottle"),
-    maintenanceFixture("a1_cleaning_cart_wheel"),
-    maintenanceFixture("a1_hall_clock_gear")
-  ];
-  const maintenanceSnapshots = [];
-  for (const [index, fixture] of maintenanceSequence.entries()) {
-    const before = snapshot(maintenanceStore.getState());
-    const result = maintenanceController.resolve755Intent(fixture.intent, fixture.target);
-    assert(result.accepted && result.changed, `maintenance action ${index + 1} must commit once`);
-    assert(snapshot(maintenanceStore.getState()) !== before, `maintenance action ${index + 1} must write its transaction`);
-    maintenanceSnapshots.push(maintenanceStore.getState());
-    assert(
-      selectQuestViewModel(maintenanceStore.getState()).steps[0]?.id === expectedQuestIds[index + 1],
-      `maintenance action ${index + 1} must reveal only ${expectedQuestIds[index + 1]}`
+  const inspectionIntent = maintenanceFixture("a1_cleaning_cart_wheel_inspection").intent;
+  const inspectionTarget = maintenanceRuntimeTargets.a1_cleaning_cart_wheel_inspection;
+  assertZeroWriteRejection(
+    maintenanceStore.getState(),
+    { ...inspectionIntent, spatial: { distance: "too_far" } },
+    "too_far",
+    inspectionTarget,
+    "maintenance inspection too far"
+  );
+  const beforeInspection = snapshot(maintenanceStore.getState());
+  const inspection = maintenanceController.resolve755Intent(inspectionIntent, inspectionTarget);
+  assert(inspection.accepted && !inspection.changed, "maintenance inspection must open diagnosis as a read-only request");
+  assert(snapshot(maintenanceStore.getState()) === beforeInspection, "maintenance inspection must not write before diagnosis completion");
+
+  const wrongDiagnosisState = snapshot(maintenanceStore.getState());
+  const wrongDiagnosis = maintenanceController.resolve755Intent({
+    type: "complete_maintenance_diagnosis",
+    answers: { wheel_sound: "oil_shortage", clock_jam: "gear_offset", oil_trace: "latch" }
+  });
+  assert(!wrongDiagnosis.accepted && !wrongDiagnosis.changed && wrongDiagnosis.reason === "incorrect", "wrong maintenance diagnosis must reject as incorrect");
+  assert(snapshot(maintenanceStore.getState()) === wrongDiagnosisState, "wrong maintenance diagnosis must be zero-write");
+
+  const diagnosisIntent = {
+    type: "complete_maintenance_diagnosis",
+    answers: { wheel_sound: "latch", clock_jam: "gear_offset", oil_trace: "oil_shortage" }
+  };
+  const diagnosis = maintenanceController.resolve755Intent(diagnosisIntent);
+  assert(diagnosis.accepted && diagnosis.changed, "correct maintenance diagnosis must commit once");
+  const diagnosedState = maintenanceStore.getState();
+  assert(diagnosedState.chapter4.factIds.includes("cart_wheel_inspected"), "diagnosis must write cart_wheel_inspected");
+  assert(diagnosedState.items.shortPryBar && diagnosedState.items.universalLubricatingOil, "diagnosis must prepare both required tools");
+  assert(selectQuestViewModel(diagnosedState).steps[0]?.id === expectedQuestIds[1], "diagnosis must reveal the wheel-cover action");
+  const diagnosisSnapshot = snapshot(diagnosedState);
+  const duplicateDiagnosis = maintenanceController.resolve755Intent(diagnosisIntent);
+  assert(!duplicateDiagnosis.accepted && !duplicateDiagnosis.changed, "completed maintenance diagnosis must reject a duplicate");
+  assert(snapshot(maintenanceStore.getState()) === diagnosisSnapshot, "duplicate maintenance diagnosis must be zero-write");
+
+  for (const legacyTargetId of ["a1_bakery_back_pry_bar", "a1_cleaning_cart_oil_bottle", "a1_hall_clock_gear"]) {
+    const fixture = maintenanceFixture(legacyTargetId);
+    assertZeroWriteRejection(
+      maintenanceStore.getState(),
+      fixture.intent,
+      "locked",
+      fixture.target,
+      `${legacyTargetId} legacy action`
     );
-    const committedSnapshot = snapshot(maintenanceStore.getState());
-    const duplicate = maintenanceController.resolve755Intent(fixture.intent, fixture.target);
-    assert(!duplicate.accepted && !duplicate.changed, `maintenance action ${index + 1} duplicate must reject`);
-    assert(snapshot(maintenanceStore.getState()) === committedSnapshot, `maintenance action ${index + 1} duplicate must be zero-write`);
   }
 
-  const [inspectedState, pryHeldState, coverOpenState, oilHeldState, wheelRepairedState, gearRepairedState] = maintenanceSnapshots;
-  assert(inspectedState.chapter4.factIds.includes("cart_wheel_inspected"), "inspection must write cart_wheel_inspected");
-  assert(pryHeldState.items.shortPryBar === true, "pry pickup must grant shortPryBar once");
+  const coverFixture = maintenanceFixture("a1_cleaning_cart_wheel_cover");
+  const coverOpened = maintenanceController.resolve755Intent(coverFixture.intent, coverFixture.target);
+  assert(coverOpened.accepted && coverOpened.changed, "opening the diagnosed wheel cover must commit once");
+  const coverOpenState = maintenanceStore.getState();
   assert(coverOpenState.chapter4.factIds.includes("cart_wheel_cover_opened"), "cover use must write cart_wheel_cover_opened");
   assert(coverOpenState.items.shortPryBar === false, "opening the cover must consume shortPryBar");
-  assert(oilHeldState.items.universalLubricatingOil === true, "oil pickup must grant universalLubricatingOil once");
-  assert(wheelRepairedState.chapter4.factIds.includes("cart_wheel_repaired"), "wheel oil use must write cart_wheel_repaired");
-  assert(wheelRepairedState.items.universalLubricatingOil === true, "wheel oil use must retain the half bottle");
+  assert(coverOpenState.items.universalLubricatingOil === true, "opening the cover must preserve the diagnosed lubricant");
+  assert(selectQuestViewModel(coverOpenState).steps[0]?.id === expectedQuestIds[2], "opening the cover must reveal linked lubrication");
+
+  const wheelFixture = maintenanceFixture("a1_cleaning_cart_wheel");
+  const repaired = maintenanceController.resolve755Intent(wheelFixture.intent, wheelFixture.target);
+  assert(repaired.accepted && repaired.changed, "linked wheel and clock lubrication must commit once");
+  const gearRepairedState = maintenanceStore.getState();
+  assert(gearRepairedState.chapter4.factIds.includes("cart_wheel_repaired"), "linked lubrication must write cart_wheel_repaired");
   assert(gearRepairedState.chapter4.factIds.includes("clock_gear_repaired"), "gear oil use must write clock_gear_repaired");
-  assert(gearRepairedState.items.universalLubricatingOil === false, "gear oil use must consume the half bottle");
+  assert(gearRepairedState.items.universalLubricatingOil === false, "linked lubrication must consume the oil");
   assert(gearRepairedState.chapter4.phase === "maintenance_repair", "gear repair must remain in maintenance_repair");
   assert(gearRepairedState.chapter4.timeState === "2245_maintenance", "gear repair must remain at 22:45 maintenance time");
   assert(gearRepairedState.chapter4.worldTimeSeconds === 81900, "gear repair must preserve 81900 world seconds");
@@ -1885,8 +1853,8 @@ try {
     "gear repair must hand off to the exact Task11 clock objective"
   );
   assert(
-    maintenanceEvents.getHistory().filter((event) => event.name === "chapter4_755_intent_committed").length === 6,
-    "the six maintenance transactions must emit exactly six commit events"
+    maintenanceEvents.getHistory().filter((event) => event.name === "chapter4_755_intent_committed").length === 3,
+    "diagnosis, wheel-cover and linked lubrication must emit exactly three commit events"
   );
 
   for (const [intent, target, label] of [
@@ -1913,12 +1881,10 @@ try {
     assertZeroWriteRejection(gearRepairedState, intent, "locked", target, label);
   }
 
+  const maintenanceSnapshots = [diagnosedState, coverOpenState, gearRepairedState];
   const expectedMaintenanceSaveStates = [
-    { facts: ["cart_wheel_inspected"], pry: false, oil: false },
-    { facts: ["cart_wheel_inspected"], pry: true, oil: false },
-    { facts: ["cart_wheel_inspected", "cart_wheel_cover_opened"], pry: false, oil: false },
+    { facts: ["cart_wheel_inspected"], pry: true, oil: true },
     { facts: ["cart_wheel_inspected", "cart_wheel_cover_opened"], pry: false, oil: true },
-    { facts: ["cart_wheel_inspected", "cart_wheel_cover_opened", "cart_wheel_repaired"], pry: false, oil: true },
     { facts: maintenanceFactOrder, pry: false, oil: false }
   ];
   maintenanceSnapshots.forEach((state, index) => {
@@ -1933,10 +1899,9 @@ try {
   });
 
   const staleOilLoaded = hydrate(makeMaintenanceState({ universalLubricatingOil: true }));
-  assert(staleOilLoaded.items.universalLubricatingOil === false, "unopened cover must clear a forged oil item");
-  const stalePryAndOilLoaded = hydrate(makeMaintenanceState({ shortPryBar: true, universalLubricatingOil: true }));
-  assert(stalePryAndOilLoaded.items.shortPryBar === true, "clearing unopened-cover oil must preserve a legitimately collected pry bar");
-  assert(stalePryAndOilLoaded.items.universalLubricatingOil === false, "unopened-cover oil must clear even when the pry bar is held");
+  assert(staleOilLoaded.items.universalLubricatingOil === false, "pre-diagnosis save must clear a forged oil item");
+  const diagnosedLoaded = hydrate(diagnosedState);
+  assert(diagnosedLoaded.items.shortPryBar && diagnosedLoaded.items.universalLubricatingOil, "diagnosed save must restore both prepared tools");
   const wheelWithoutOilLoaded = hydrate(makeMaintenanceState({ facts: ["cart_wheel_repaired"] }));
   assert(
     sameJson(

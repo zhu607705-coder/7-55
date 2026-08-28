@@ -1659,14 +1659,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (target.kind === "zone_portal") {
         if (target.id === "qizhen_dock_to_open") return runtime.boardingTutorialCompleted;
         if (target.id === "qizhen_open_to_dock") return runtime.phase !== "swan_chase";
-        if (target.id === "qizhen_open_to_swan") return runtime.fishCaught || runtime.phase === "swan_exchange";
-        if (target.id === "qizhen_open_to_channel") {
-          return runtime.netCombined && !runtime.feedTinOpened && runtime.phase !== "swan_chase";
-        }
+        if (target.id === "qizhen_open_to_swan") return runtime.phase !== "swan_chase";
+        if (target.id === "qizhen_open_to_channel") return runtime.phase !== "swan_chase";
         if (target.id === "qizhen_swan_to_open") return runtime.phase !== "swan_chase" && !runtime.paperCaptured;
         if (target.id === "qizhen_swan_to_channel") return runtime.phase === "swan_chase" || runtime.swanReleased;
         if (target.id === "qizhen_channel_from_swan") return false;
-        if (target.id === "qizhen_channel_to_open") return runtime.phase !== "swan_chase" && runtime.feedTinOpened;
+        if (target.id === "qizhen_channel_to_open") return runtime.phase !== "swan_chase";
         return true;
       }
       if (target.kind === "reflection") {
@@ -1686,31 +1684,26 @@ export class QizhenLakeScene extends Phaser.Scene {
             && !runtime.lockerOpened;
         }
         if (target.value === "item_3") {
-          return runtime.lockerOpened
+          return runtime.decoyBaitAttached
             && !hasItem(state, CHAIN_ITEMS.netFrame)
             && !runtime.netCombined;
-        }
-        if (target.value === "fish") {
-          return runtime.feedTinOpened
-            && !runtime.fishCaught;
         }
         return false;
       }
       if (target.kind === "item_use") {
         if (runtime.mode !== "light") return false;
         if (target.value === "item_1_to_2") return hasItem(state, CHAIN_ITEMS.key) && !runtime.lockerOpened;
-        if (target.value === "combine_net") {
-          return hasItem(state, CHAIN_ITEMS.cord) && hasItem(state, CHAIN_ITEMS.netFrame) && !runtime.netCombined;
-        }
-        if (target.value === "item_4_to_5") return runtime.netCombined && !runtime.feedTinRetrieved;
-        if (target.value === "item_5_to_6") return runtime.feedTinRetrieved && !runtime.feedTinOpened;
-        if (target.value === "combine_magnetic_rod") {
-          return runtime.swanFed && hasItem(state, CHAIN_ITEMS.magnet) && !runtime.magneticRodCombined;
+        if (target.value === "combine_final_rig") {
+          return hasItem(state, CHAIN_ITEMS.cord)
+            && hasItem(state, CHAIN_ITEMS.netFrame)
+            && hasItem(state, CHAIN_ITEMS.magnet)
+            && hasItem(state, CHAIN_ITEMS.fishingRod)
+            && !runtime.magneticRodCombined;
         }
         return false;
       }
       if (target.kind === "swan") {
-        return runtime.mode === "light" && runtime.fishCaught && !runtime.swanFed;
+        return runtime.mode === "light" && runtime.phase === "tool_chain" && !runtime.swanFed;
       }
       if (target.kind === "paper") {
         if (runtime.mode !== "light") return false;
@@ -2110,9 +2103,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "item_use") {
-      if (target.value === "combine_net") {
+      if (target.value === "combine_final_rig") {
         this.emitDomain("rpg_qizhen_combine_requested", {
-          itemIds: [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame],
+          itemIds: [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame, CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod],
           targetId: target.id
         });
         return;
@@ -2131,7 +2124,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "swan") {
-      this.emitDomain("rpg_qizhen_swan_feed_requested", { itemId: CHAIN_ITEMS.fish, targetId: target.id });
+      this.emitDomain("rpg_qizhen_swan_branch_requested", { targetId: target.id });
       return;
     }
     if (target.kind === "paper") {
@@ -2232,15 +2225,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.emitDomain("rpg_qizhen_item_use_requested", { targetId: target.id, itemId });
       return;
     }
-    if (target.value === "combine_net" && [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame].includes(itemId as never)) {
+    if (target.value === "combine_final_rig"
+      && [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame, CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod].includes(itemId as never)) {
       this.emitDomain("rpg_qizhen_combine_requested", {
-        itemIds: [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame],
+        itemIds: [CHAIN_ITEMS.cord, CHAIN_ITEMS.netFrame, CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod],
         targetId: target.id
       });
-      return;
-    }
-    if (target.kind === "swan" && itemId === CHAIN_ITEMS.fish) {
-      this.emitDomain("rpg_qizhen_swan_feed_requested", { itemId, targetId: target.id });
       return;
     }
     if (target.value === "combine_magnetic_rod" && [CHAIN_ITEMS.magnet, CHAIN_ITEMS.fishingRod].includes(itemId as never)) {
@@ -2457,6 +2447,17 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (name === "qizhen_swan_fed") {
       this.queueDialogue([qizhenContent.swan.reward]);
+      return;
+    }
+    if (name === "qizhen_swan_branch_completed") {
+      this.queueDialogue([
+        "浮排边的旧饲料盒被捞起并撬开。",
+        "饲料撒入围栏，黑天鹅把一枚磁性扣推到船边。"
+      ]);
+      return;
+    }
+    if (name === "qizhen_final_rig_combined") {
+      this.showFeedback("三处分支素材已合并，可以进行最终捕纸。", "success");
       return;
     }
     if (name === "qizhen_magnetic_rod_combined") {

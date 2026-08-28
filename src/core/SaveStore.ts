@@ -167,6 +167,9 @@ const VALID_CHAPTER_THREE_INTERLUDE_VOICES = new Set<GameState["chapterThreeInte
 const VALID_CHAPTER_THREE_INTERLUDE_EVIDENCE = new Set<GameState["chapterThreeInterlude"]["evidenceIds"][number]>([
   "journal_start", "photo_direction", "network_destination", "broadcast_end"
 ]);
+const VALID_CHAPTER_THREE_INTERLUDE_NETWORK_RECORDS = new Set<NonNullable<GameState["chapterThreeInterlude"]["networkRecordId"]>>([
+  "record_qizhen_dock", "record_theater_hall", "record_library_south", "record_0755"
+]);
 const VALID_CHAPTER_THREE_INTERLUDE_DECOYS = new Set<GameState["chapterThreeInterlude"]["rejectedDecoyIds"][number]>([
   "canteen_0755", "theater_0832", "status_clock_075523"
 ]);
@@ -2095,6 +2098,13 @@ function normalizeChapterThreeInterlude(
   const networkRecordRead = chapterFourStarted
     || booleanOr(saved.networkRecordRead, initial.networkRecordRead)
     || hasNetworkSummary;
+  const networkRecordId = chapterFourStarted
+    ? "record_0755"
+    : nullableEnumOr(
+        saved.networkRecordId,
+        VALID_CHAPTER_THREE_INTERLUDE_NETWORK_RECORDS,
+        networkRecordRead ? "record_0755" : initial.networkRecordId
+      );
   if (photoSequenceSolved && !evidenceIds.includes("photo_direction")) evidenceIds.push("photo_direction");
   if (voiceSequenceSolved && !evidenceIds.includes("broadcast_end")) evidenceIds.push("broadcast_end");
   if (
@@ -2145,6 +2155,7 @@ function normalizeChapterThreeInterlude(
     officialNoticeSaved,
     routeScreenshotSaved,
     networkRecordRead,
+    networkRecordId,
     evidenceIds: canonicalEvidenceOrder.filter((id) => evidenceIds.includes(id)),
     timelineOrder,
     rejectedDecoyIds,
@@ -2496,6 +2507,7 @@ function normalizeChapterFourItems(
     items.clockPositioningPlate = hasFact("positioning_plate_collected");
   }
   if (phase === "maintenance_repair") {
+    const diagnosisCompleted = hasFact("cart_wheel_inspected");
     const cartWheelCoverOpened = hasFact("cart_wheel_cover_opened")
       || hasFact("cart_wheel_repaired")
       || hasFact("clock_gear_repaired");
@@ -2503,7 +2515,7 @@ function normalizeChapterFourItems(
       || hasFact("clock_gear_repaired");
     items.shortPryBar = savedItems.shortPryBar
       && !cartWheelCoverOpened;
-    items.universalLubricatingOil = cartWheelCoverOpened
+    items.universalLubricatingOil = diagnosisCompleted
       && !hasFact("clock_gear_repaired")
       && (savedItems.universalLubricatingOil || cartWheelRepaired);
   }

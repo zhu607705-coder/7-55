@@ -596,11 +596,8 @@
       ],
       "taskKeys": [
         "inspect_cart_wheel",
-        "collect_short_pry_bar",
         "open_cart_wheel_cover",
-        "collect_lubricating_oil",
         "lubricate_cart_wheel",
-        "lubricate_clock_gear",
         "turn_clock_to_0755"
       ],
       "dialogueIds": [
@@ -855,11 +852,11 @@
       ]
     },
     "inspect_cart_wheel": {
-      "label": "检查保洁车卡住的车轮",
+      "label": "诊断保洁车与旧钟的联动故障",
       "hints": [
-        "观察一楼维修时段中的保洁车车轮。",
-        "先确认轮罩卡滞，后续工具和润滑油才会形成有效维修链。",
-        "在浅色操作中靠近保洁车轮检查点并执行交互。"
+        "靠近保洁车检查车轮声音、旧钟卡滞和地面油迹。",
+        "三项现象分别对应一种故障原因；提交前可以反复改选。",
+        "诊断正确后会取得执行维修所需的短撬棍与润滑油。"
       ]
     },
     "collect_short_pry_bar": {
@@ -874,7 +871,7 @@
       "label": "用短撬棍打开保洁车轮罩",
       "hints": [
         "返回保洁车的车轮罩。",
-        "车轮检查完成后，短撬棍才可用于轮罩，并会在本次使用后消耗。",
+        "诊断完成后，短撬棍可用于打开卡住的轮罩，并会在本次使用后消耗。",
         "在浅色操作中把短撬棍拖到保洁车轮罩。"
       ]
     },
@@ -887,11 +884,11 @@
       ]
     },
     "lubricate_cart_wheel": {
-      "label": "先用润滑油修好保洁车轮",
+      "label": "润滑轮轴并校正旧钟齿轮",
       "hints": [
         "观察保洁车已打开轮罩的车轮。",
-        "润滑油必须先用于车轮，本次使用后仍会保留。",
-        "在浅色操作中把通用润滑油拖到保洁车轮。"
+        "诊断确认车轮缺油与旧钟齿轮偏位属于同一次卡滞。",
+        "在浅色操作中把通用润滑油拖到保洁车轮，完成联动修复。"
       ]
     },
     "lubricate_clock_gear": {
@@ -1458,24 +1455,29 @@
   "maintenance": {
     "orderedActions": [
       "inspect_cart_wheel",
-      "collect_short_pry_bar",
+      "complete_maintenance_diagnosis",
       "open_cart_wheel_cover",
-      "collect_lubricating_oil",
-      "lubricate_cart_wheel",
-      "lubricate_clock_gear"
+      "lubricate_cart_wheel"
     ],
     "inspectionFact": "cart_wheel_inspected",
+    "diagnosisAnswers": {
+      "wheel_sound": "latch",
+      "clock_jam": "gear_offset",
+      "oil_trace": "oil_shortage"
+    },
+    "preparedItems": [
+      "shortPryBar",
+      "universalLubricatingOil"
+    ],
     "pryBarFinalUse": "open_cart_wheel_cover",
     "oilUses": [
       {
         "targetId": "a1_cleaning_cart_wheel",
-        "inventoryEffect": "retain",
-        "factId": "cart_wheel_repaired"
-      },
-      {
-        "targetId": "a1_hall_clock_gear",
         "inventoryEffect": "consume",
-        "factId": "clock_gear_repaired"
+        "factIds": [
+          "cart_wheel_repaired",
+          "clock_gear_repaired"
+        ]
       }
     ],
     "gearRepairKeepsPhase": "maintenance_repair",
@@ -1605,14 +1607,6 @@
       "stateResult": "positioning_plate_installed"
     },
     {
-      "id": "collect_short_pry_bar",
-      "phase": "maintenance_repair",
-      "itemId": "shortPryBar",
-      "targetId": "a1_bakery_back_pry_bar",
-      "inventoryEffect": "grant",
-      "stateResult": "short_pry_bar_collected"
-    },
-    {
       "id": "open_cart_wheel_cover",
       "phase": "maintenance_repair",
       "itemId": "shortPryBar",
@@ -1621,34 +1615,18 @@
       "stateResult": "cart_wheel_cover_opened"
     },
     {
-      "id": "collect_lubricating_oil",
-      "phase": "maintenance_repair",
-      "itemId": "universalLubricatingOil",
-      "targetId": "a1_cleaning_cart_oil_bottle",
-      "inventoryEffect": "grant",
-      "requiresFacts": [
-        "cart_wheel_cover_opened"
-      ],
-      "stateResult": "lubricating_oil_collected"
-    },
-    {
       "id": "lubricate_cart_wheel",
       "phase": "maintenance_repair",
       "itemId": "universalLubricatingOil",
       "targetId": "a1_cleaning_cart_wheel",
-      "inventoryEffect": "retain",
-      "stateResult": "cart_wheel_repaired"
-    },
-    {
-      "id": "lubricate_clock_gear",
-      "phase": "maintenance_repair",
-      "itemId": "universalLubricatingOil",
-      "targetId": "a1_hall_clock_gear",
       "inventoryEffect": "consume",
       "requiresFacts": [
-        "cart_wheel_repaired"
+        "cart_wheel_cover_opened"
       ],
-      "stateResult": "clock_gear_repaired"
+      "stateResults": [
+        "cart_wheel_repaired",
+        "clock_gear_repaired"
+      ]
     },
     {
       "id": "minute_theft",

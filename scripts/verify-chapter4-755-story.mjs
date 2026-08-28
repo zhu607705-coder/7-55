@@ -62,11 +62,8 @@ const EXPECTED_ITEM_STEPS = [
   ["install_hour_hand", "oldClockHourHand", "a1_hall_clock_hour_hand_socket", "consume"],
   ["collect_positioning_plate", "clockPositioningPlate", "a2_room204_podium_drawer", "grant"],
   ["install_positioning_plate", "clockPositioningPlate", "a1_hall_clock_positioning_plate_slot", "consume"],
-  ["collect_short_pry_bar", "shortPryBar", "a1_bakery_back_pry_bar", "grant"],
   ["open_cart_wheel_cover", "shortPryBar", "a1_cleaning_cart_wheel_cover", "consume"],
-  ["collect_lubricating_oil", "universalLubricatingOil", "a1_cleaning_cart_oil_bottle", "grant"],
-  ["lubricate_cart_wheel", "universalLubricatingOil", "a1_cleaning_cart_wheel", "retain"],
-  ["lubricate_clock_gear", "universalLubricatingOil", "a1_hall_clock_gear", "consume"],
+  ["lubricate_cart_wheel", "universalLubricatingOil", "a1_cleaning_cart_wheel", "consume"],
   ["minute_theft", "attendanceRecordPaper", "a1_hall_clock_minute_endpoint", "consume"],
   ["collect_final_minute", "finalMinute", "a2_202_projection", "grant"],
   ["restore_attendance_paper", "attendanceRecordPaper", "a2_202_projection", "grant"],
@@ -154,11 +151,8 @@ const EXPECTED_ROOM204_FACTS = [
 ];
 const EXPECTED_MAINTENANCE_TASK_KEYS = [
   "inspect_cart_wheel",
-  "collect_short_pry_bar",
   "open_cart_wheel_cover",
-  "collect_lubricating_oil",
   "lubricate_cart_wheel",
-  "lubricate_clock_gear",
   "turn_clock_to_0755"
 ];
 const EXPECTED_MAINTENANCE_TARGET_IDS = [
@@ -1312,12 +1306,12 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 10 all six targets must accept the four approved A1 room aliases");
   }
   if (!/a1_cleaning_cart_wheel_inspection:[\s\S]*?cart_wheel_inspection_available[\s\S]*?!hasChapterFourFact\(state, "cart_wheel_inspected"\)/.test(maintenanceTargetBlock)
-    || !/a1_bakery_back_pry_bar:[\s\S]*?pry_bar_pickup_available[\s\S]*?!ownsChapterFourItem\(state, "shortPryBar"\)/.test(maintenanceTargetBlock)
+    || !/a1_bakery_back_pry_bar:[\s\S]*?pry_bar_granted_by_diagnosis[\s\S]*?\(\)\s*=>\s*false/.test(maintenanceTargetBlock)
     || !/a1_cleaning_cart_wheel_cover:[\s\S]*?cart_wheel_inspected[\s\S]*?"shortPryBar"/.test(maintenanceTargetBlock)
-    || !/a1_cleaning_cart_oil_bottle:[\s\S]*?cart_wheel_cover_opened[\s\S]*?!ownsChapterFourItem\(state, "universalLubricatingOil"\)/.test(maintenanceTargetBlock)
+    || !/a1_cleaning_cart_oil_bottle:[\s\S]*?oil_granted_by_diagnosis[\s\S]*?\(\)\s*=>\s*false/.test(maintenanceTargetBlock)
     || !/a1_cleaning_cart_wheel:[\s\S]*?cart_wheel_cover_opened[\s\S]*?"universalLubricatingOil"/.test(maintenanceTargetBlock)
-    || !/a1_hall_clock_gear:[\s\S]*?cart_wheel_repaired[\s\S]*?"universalLubricatingOil"/.test(maintenanceTargetBlock)) {
-    errors.push("Task 10 registry must preserve inspect, pry, cover, oil, wheel and gear activation/item causality");
+    || !/a1_hall_clock_gear:[\s\S]*?clock_gear_repaired_with_linkage[\s\S]*?\(\)\s*=>\s*false/.test(maintenanceTargetBlock)) {
+    errors.push("Task 10 registry must expose diagnosis, cover and linked lubrication while closing legacy pickup/second-oil targets");
   }
   const minuteEndpointBlock = interaction.match(
     /a1_hall_clock_minute_endpoint:[\s\S]*?a1_power_panel:/
@@ -1338,16 +1332,18 @@ function validateTask7RuntimeSources(errors) {
   const maintenanceControllerBlock = controllerIntentResolver.match(
     /case "inspect_cart_wheel"[\s\S]*?case "trigger_minute_theft"/
   )?.[0] ?? "";
-  if (!/case "inspect_cart_wheel"[\s\S]*?guardMode\s*!==\s*"patrol"[\s\S]*?appendFact\(chapter, "cart_wheel_inspected"\)/.test(maintenanceControllerBlock)
-    || !/case "collect_short_pry_bar"[\s\S]*?withItem\(state, "shortPryBar", true\)/.test(maintenanceControllerBlock)
+  if (!/case "inspect_cart_wheel"[\s\S]*?chapter4_maintenance_diagnosis_requested[\s\S]*?acceptReadOnly/.test(maintenanceControllerBlock)
+    || !/case "complete_maintenance_diagnosis"[\s\S]*?wheel_sound\s*===\s*"latch"[\s\S]*?clock_jam\s*===\s*"gear_offset"[\s\S]*?oil_trace\s*===\s*"oil_shortage"/.test(maintenanceControllerBlock)
+    || !/case "complete_maintenance_diagnosis"[\s\S]*?appendFact\(chapter, "cart_wheel_inspected"\)[\s\S]*?shortPryBar:\s*true[\s\S]*?universalLubricatingOil:\s*true/.test(maintenanceControllerBlock)
+    || !/case "collect_short_pry_bar"[\s\S]*?reject\("locked"\)/.test(maintenanceControllerBlock)
     || !/case "open_cart_wheel_cover"[\s\S]*?cart_wheel_inspected[\s\S]*?withItem\(state, "shortPryBar", false\)/.test(maintenanceControllerBlock)
-    || !/case "collect_lubricating_oil"[\s\S]*?cart_wheel_cover_opened[\s\S]*?withItem\(state, "universalLubricatingOil", true\)/.test(maintenanceControllerBlock)
-    || !/case "lubricate_cart_wheel"[\s\S]*?cart_wheel_cover_opened[\s\S]*?appendFact\(chapter, "cart_wheel_repaired"\)/.test(maintenanceControllerBlock)
-    || !/case "lubricate_clock_gear"[\s\S]*?cart_wheel_repaired[\s\S]*?appendFact\(chapter, "clock_gear_repaired"\)[\s\S]*?withItem\(state, "universalLubricatingOil", false\)/.test(maintenanceControllerBlock)) {
-    errors.push("Task 10 controller must implement the six ordered maintenance transactions and their item effects");
+    || !/case "collect_lubricating_oil"[\s\S]*?reject\("locked"\)/.test(maintenanceControllerBlock)
+    || !/case "lubricate_cart_wheel"[\s\S]*?appendFact\(chapter, "cart_wheel_repaired"\)[\s\S]*?repairedFacts\.push\("clock_gear_repaired"\)[\s\S]*?withItem\(state, "universalLubricatingOil", false\)/.test(maintenanceControllerBlock)
+    || !/case "lubricate_clock_gear"[\s\S]*?reject\("locked"\)/.test(maintenanceControllerBlock)) {
+    errors.push("Task 10 controller must implement diagnosis, prepared tools, cover opening and one linked lubrication transaction");
   }
   const gearControllerBlock = maintenanceControllerBlock.match(
-    /case "lubricate_clock_gear"[\s\S]*?case "recover_from_maintenance_patrol"/
+    /case "lubricate_cart_wheel"[\s\S]*?case "lubricate_clock_gear"/
   )?.[0] ?? "";
   if (!/this\.patchChapter\(state/.test(gearControllerBlock)
     || /transition\(state, "blackout_light_grid"/.test(gearControllerBlock)) {
@@ -1399,9 +1395,10 @@ function validateTask7RuntimeSources(errors) {
     /if \(phase === "maintenance_repair"\)\s*\{[\s\S]*?\n\s*\}/g
   ) ?? [];
   const maintenanceItemBlock = maintenanceItemBlocks.at(-1) ?? "";
-  if (!/items\.shortPryBar\s*=\s*savedItems\.shortPryBar[\s\S]*?!cartWheelCoverOpened/.test(maintenanceItemBlock)
-    || !/items\.universalLubricatingOil\s*=\s*cartWheelCoverOpened[\s\S]*?!hasFact\("clock_gear_repaired"\)[\s\S]*?savedItems\.universalLubricatingOil\s*\|\|\s*cartWheelRepaired/.test(maintenanceItemBlock)) {
-    errors.push("Task 10 SaveStore must clear unopened-cover oil, restore post-wheel oil and consume post-gear oil");
+  if (!/const diagnosisCompleted\s*=\s*hasFact\("cart_wheel_inspected"\)/.test(maintenanceItemBlock)
+    || !/items\.shortPryBar\s*=\s*savedItems\.shortPryBar[\s\S]*?!cartWheelCoverOpened/.test(maintenanceItemBlock)
+    || !/items\.universalLubricatingOil\s*=\s*diagnosisCompleted[\s\S]*?!hasFact\("clock_gear_repaired"\)[\s\S]*?savedItems\.universalLubricatingOil\s*\|\|\s*cartWheelRepaired/.test(maintenanceItemBlock)) {
+    errors.push("Task 10 SaveStore must preserve diagnosed tools and consume them at their final uses");
   }
 
   const maintenanceQuestBlock = quest.match(
@@ -1411,9 +1408,7 @@ function validateTask7RuntimeSources(errors) {
     (taskKey) => maintenanceQuestBlock.indexOf(`"${taskKey}"`)
   );
   if (maintenanceQuestPositions.some((position) => position < 0)
-    || maintenanceQuestPositions.some((position, index) => index > 0 && position <= maintenanceQuestPositions[index - 1])
-    || !/state\.items\.shortPryBar/.test(maintenanceQuestBlock)
-    || !/state\.items\.universalLubricatingOil/.test(maintenanceQuestBlock)) {
+    || maintenanceQuestPositions.some((position, index) => index > 0 && position <= maintenanceQuestPositions[index - 1])) {
     errors.push("Task 10 QuestModel must expose exactly one next objective across the maintenance chain");
   }
 
@@ -2132,21 +2127,29 @@ function validate(content) {
 
   const maintenance = content.maintenance;
   if (!isRecord(maintenance)
-    || !sameArray(maintenance.orderedActions, EXPECTED_MAINTENANCE_TASK_KEYS.slice(0, 6))
+    || !sameArray(maintenance.orderedActions, [
+      "inspect_cart_wheel",
+      "complete_maintenance_diagnosis",
+      "open_cart_wheel_cover",
+      "lubricate_cart_wheel"
+    ])
     || maintenance.inspectionFact !== "cart_wheel_inspected"
+    || !sameArray(maintenance.preparedItems, ["shortPryBar", "universalLubricatingOil"])
+    || maintenance.diagnosisAnswers?.wheel_sound !== "latch"
+    || maintenance.diagnosisAnswers?.clock_jam !== "gear_offset"
+    || maintenance.diagnosisAnswers?.oil_trace !== "oil_shortage"
     || maintenance.pryBarFinalUse !== "open_cart_wheel_cover"
     || !sameArray(
       Array.isArray(maintenance.oilUses)
-        ? maintenance.oilUses.map((use) => `${use?.targetId}:${use?.inventoryEffect}:${use?.factId}`)
+        ? maintenance.oilUses.map((use) => `${use?.targetId}:${use?.inventoryEffect}:${use?.factIds?.join("+")}`)
         : [],
       [
-        "a1_cleaning_cart_wheel:retain:cart_wheel_repaired",
-        "a1_hall_clock_gear:consume:clock_gear_repaired"
+        "a1_cleaning_cart_wheel:consume:cart_wheel_repaired+clock_gear_repaired"
       ]
     )
     || maintenance.gearRepairKeepsPhase !== "maintenance_repair"
     || maintenance.nextTask !== "把旧钟拨向 07:55") {
-    errors.push("maintenance must preserve the six-step item chain, half-bottle reuse and Task11 handoff");
+    errors.push("maintenance must preserve diagnosis, two physical actions and Task11 handoff");
   }
   if (!isRecord(content.tasks)
     || content.tasks.turn_clock_to_0755?.label !== "把旧钟拨向 07:55"
@@ -2339,13 +2342,11 @@ function validate(content) {
     errors.push("attendance paper catch must require the settled noticeboard fact");
   }
   const oilSteps = itemSequence.filter((step) => step?.itemId === "universalLubricatingOil");
-  if (oilSteps.length !== 3
-    || oilSteps[0]?.inventoryEffect !== "grant"
-    || oilSteps[1]?.targetId !== "a1_cleaning_cart_wheel"
-    || oilSteps[1]?.inventoryEffect !== "retain"
-    || oilSteps[2]?.targetId !== "a1_hall_clock_gear"
-    || oilSteps[2]?.inventoryEffect !== "consume") {
-    errors.push("lubricating oil must be granted, retained on the cart wheel, then consumed on the clock gear");
+  if (oilSteps.length !== 1
+    || oilSteps[0]?.targetId !== "a1_cleaning_cart_wheel"
+    || oilSteps[0]?.inventoryEffect !== "consume"
+    || !sameArray(oilSteps[0]?.stateResults, ["cart_wheel_repaired", "clock_gear_repaired"])) {
+    errors.push("diagnosed lubricating oil must be consumed by the linked cart-wheel and clock-gear repair");
   }
   const campusCardSteps = itemSequence.filter((step) => step?.itemId === "campusCard");
   if (campusCardSteps.length !== 1

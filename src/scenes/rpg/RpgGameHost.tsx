@@ -50,8 +50,10 @@ import {
   validateChapterFour755IntentRequest,
   type ChapterFour755Intent,
   type ChapterFour755IntentDetailCode,
-  type ChapterFour755IntentResult
+  type ChapterFour755IntentResult,
+  type ChapterFourMaintenanceDiagnosisAnswers
 } from "../../modules/ChapterFourTemporalMazeController";
+import { ChapterFourMaintenanceDiagnosisGame } from "../../components/temporal-maze/ChapterFourMaintenanceDiagnosisGame";
 import { ChapterFourPowerPanelGame } from "../../components/temporal-maze/ChapterFourPowerPanelGame";
 import { ChapterFourStairPuzzleOverlay } from "../../components/temporal-maze/ChapterFourStairPuzzleOverlay";
 import { useChapter4PrologueGateBlocked } from "../../components/Chapter4PrologueRuntimeGate";
@@ -410,6 +412,7 @@ export function RpgGameHost({
   const chapter4IntentRequestSerialRef = useRef(0);
   const chapter4ResolvedRequestIdsRef = useRef<Set<string>>(new Set());
   const chapter4PowerPanelPendingRequestRef = useRef<string | null>(null);
+  const chapter4MaintenanceDiagnosisPendingRequestRef = useRef<string | null>(null);
   const chapter4StairPendingRequestRef = useRef<string | null>(null);
   const chapter4StairPausedSceneKeysRef = useRef<Set<string>>(new Set());
   const [chapter4InteractionBlocked, setChapter4InteractionBlocked] = useState(false);
@@ -419,6 +422,9 @@ export function RpgGameHost({
     useState<ChapterFourPowerPanelSession | null>(null);
   const [chapter4PowerPanelPending, setChapter4PowerPanelPending] = useState(false);
   const [chapter4PowerPanelFeedback, setChapter4PowerPanelFeedback] = useState<string | null>(null);
+  const [chapter4MaintenanceDiagnosisOpen, setChapter4MaintenanceDiagnosisOpen] = useState(false);
+  const [chapter4MaintenanceDiagnosisPending, setChapter4MaintenanceDiagnosisPending] = useState(false);
+  const [chapter4MaintenanceDiagnosisFeedback, setChapter4MaintenanceDiagnosisFeedback] = useState<string | null>(null);
   const [chapter4StairActive, setChapter4StairActive] = useState(false);
   const [chapter4StairFeedback, setChapter4StairFeedback] = useState<string | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
@@ -454,10 +460,11 @@ export function RpgGameHost({
     && (state.chapter4.floor === "A1" || state.chapter4.floor === "A2" || state.chapter4.floor === "A3")
     && CHAPTER_FOUR_755_ACTIVE_PHASES.has(state.chapter4.phase);
   const chapter4PowerPanelOpen = chapter4PowerPanelSession !== null;
-  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen || chapter4StairActive;
-  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4StairActive
+  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen
+    || chapter4MaintenanceDiagnosisOpen || chapter4StairActive;
+  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
     || (chapter4InteractionBlocked && !chapter4ScenePointerAllowed);
-  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4StairActive
+  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
     || (chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed);
   inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked || photoSessionOpen;
   keyboardBlockedRef.current = keyboardBlocked || canteenExclusiveActive || chapter4PhaserKeyboardBlocked || photoSessionOpen;
@@ -472,6 +479,10 @@ export function RpgGameHost({
       setChapter4PowerPanelSession(null);
       setChapter4PowerPanelPending(false);
       setChapter4PowerPanelFeedback(null);
+      chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
+      setChapter4MaintenanceDiagnosisOpen(false);
+      setChapter4MaintenanceDiagnosisPending(false);
+      setChapter4MaintenanceDiagnosisFeedback(null);
       chapter4StairPendingRequestRef.current = null;
       setChapter4StairActive(false);
       setChapter4StairFeedback(null);
@@ -574,6 +585,30 @@ export function RpgGameHost({
     setChapter4PowerPanelPending(false);
     setChapter4PowerPanelFeedback(null);
   }, [state.chapter4.lightGrid.locked, state.chapter4.phase]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "chapter4_maintenance_diagnosis_requested") return;
+      const chapter = store.getState().chapter4;
+      if (runtimeScene !== "duan_yongping_temporal_maze"
+        || chapter.phase !== "maintenance_repair"
+        || chapter.factIds.includes("cart_wheel_inspected")) return;
+      chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
+      setChapter4MaintenanceDiagnosisPending(false);
+      setChapter4MaintenanceDiagnosisFeedback(null);
+      setChapter4MaintenanceDiagnosisOpen(true);
+    });
+  }, [events, runtimeScene, store]);
+
+  useEffect(() => {
+    const active = state.chapter4.phase === "maintenance_repair"
+      && !state.chapter4.factIds.includes("cart_wheel_inspected");
+    if (active) return;
+    chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
+    setChapter4MaintenanceDiagnosisOpen(false);
+    setChapter4MaintenanceDiagnosisPending(false);
+    setChapter4MaintenanceDiagnosisFeedback(null);
+  }, [state.chapter4.factIds, state.chapter4.phase]);
 
   useEffect(() => {
     events.emit("rpg_chapter4_power_panel_open_state_changed", {
@@ -1013,6 +1048,44 @@ export function RpgGameHost({
 
   useEffect(() => {
     return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
+      const requestId = String(event.payload?.requestId ?? "");
+      if (!requestId || requestId !== chapter4MaintenanceDiagnosisPendingRequestRef.current) return;
+      chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
+      setChapter4MaintenanceDiagnosisPending(false);
+      const result = event.payload?.result;
+      const accepted = typeof result === "object"
+        && result !== null
+        && (result as { accepted?: unknown }).accepted === true;
+      if (!accepted) {
+        setChapter4MaintenanceDiagnosisFeedback("三项判断中仍有矛盾，请重新核对现场现象。");
+        return;
+      }
+      setChapter4MaintenanceDiagnosisFeedback(null);
+      setChapter4MaintenanceDiagnosisOpen(false);
+    });
+  }, [events]);
+
+  const submitChapterFourMaintenanceDiagnosis = useCallback((answers: ChapterFourMaintenanceDiagnosisAnswers) => {
+    if (chapter4MaintenanceDiagnosisPendingRequestRef.current) return;
+    const requestId = `host-maintenance-diagnosis-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4MaintenanceDiagnosisPendingRequestRef.current = requestId;
+    setChapter4MaintenanceDiagnosisPending(true);
+    setChapter4MaintenanceDiagnosisFeedback(null);
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: { type: "complete_maintenance_diagnosis", answers }
+    });
+  }, [events]);
+
+  const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
+    if (chapter4MaintenanceDiagnosisPendingRequestRef.current) return;
+    setChapter4MaintenanceDiagnosisFeedback(null);
+    setChapter4MaintenanceDiagnosisOpen(false);
+  }, []);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
       if (event.name === "library_archived_rule_opened") {
         archivedRuleRevealPendingRef.current = true;
       } else if (event.name === "library_archived_rule_reveal_completed") {
@@ -1311,6 +1384,9 @@ export function RpgGameHost({
         const itemId = String(event.payload?.itemId ?? "smallCarp") as ItemId;
         const result = qizhenController.feedSwan(itemId);
         emitQizhenItemFeedback(events, itemId, result, "黑天鹅投喂区");
+      } else if (event.name === "rpg_qizhen_swan_branch_requested") {
+        const result = qizhenController.completeSwanBranch();
+        emitQizhenItemFeedback(events, "fishingRod", result, "黑天鹅围栏");
       } else if (event.name === "rpg_qizhen_paper_caught_requested") {
         const itemId = String(event.payload?.rigItemId ?? "magneticFishingRod") as ItemId;
         const result = qizhenController.castAt("paper");
@@ -1819,6 +1895,15 @@ export function RpgGameHost({
             })}
             onLock={() => submitChapterFourPowerPanelIntent({ type: "lock_light_grid" })}
             onClose={closeChapterFourPowerPanel}
+          />
+        ) : null}
+
+        {chapter4MaintenanceDiagnosisOpen ? (
+          <ChapterFourMaintenanceDiagnosisGame
+            pending={chapter4MaintenanceDiagnosisPending}
+            feedback={chapter4MaintenanceDiagnosisFeedback}
+            onSubmit={submitChapterFourMaintenanceDiagnosis}
+            onClose={closeChapterFourMaintenanceDiagnosis}
           />
         ) : null}
 

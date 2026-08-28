@@ -16,6 +16,7 @@ import {
   type ChapterThreeInterludeRouteMessageId,
   type ChapterThreeInterludeVoiceCandidateId
 } from "../data/chapter3InterludeContent";
+import { evaluateChapterThreeEvidenceMatrix } from "./ChapterThreeEvidenceMatrixModel";
 
 export type {
   ChapterThreeInterludeDecoyReasonId,
@@ -186,11 +187,29 @@ export class ChapterThreePhoneInterludeController {
   }
 
   readNetworkRecord(recordId: ChapterThreeInterludeNetworkRecordId): ChapterThreeInterludeResult {
-    if (recordId !== "record_0755") {
-      this.events.emit("chapter35_network_record_rejected", { recordId });
-      return "incorrect";
+    const state = this.store.getState();
+    if (!state.chapterThreeInterlude.evidenceIds.includes("journal_start")) return "locked";
+    if (state.chapterThreeInterlude.networkRecordId === recordId) return "already_complete";
+    this.store.setState((current) => {
+      const next = {
+        ...current.chapterThreeInterlude,
+        networkRecordRead: true,
+        networkRecordId: recordId
+      };
+      const networkReady = next.officialNoticeSaved && next.routeScreenshotSaved;
+      const staged: GameState = { ...current, chapterThreeInterlude: next };
+      return {
+        ...current,
+        chapterThreeInterlude: networkReady
+          ? withCollectedEvidence(staged, "network_destination")
+          : next
+      };
+    });
+    this.events.emit("chapter35_network_record_read", { recordId });
+    if (this.store.getState().chapterThreeInterlude.evidenceIds.includes("network_destination")) {
+      this.events.emit("chapter35_evidence_collected", { evidenceId: "network_destination" });
     }
-    return this.recordNetworkFact("networkRecordRead", "chapter35_network_record_read");
+    return "accepted";
   }
 
   rejectDecoy(
@@ -264,10 +283,15 @@ export class ChapterThreePhoneInterludeController {
       || !allDecoysRejected
       || !interlude.statusClockMarkedUntrusted
     ) return "locked";
-    if (destinationId !== chapterThreeInterludeValidationContract.destinationId) {
+    const matrix = evaluateChapterThreeEvidenceMatrix(interlude, destinationId);
+    if (!matrix.accepted) {
       this.events.emit("chapter35_destination_rejected", {
         destinationId,
-        conflictCode: chapterThreeInterludeValidationContract.destinationConflictById[destinationId]
+        conflictCode: matrix.conflict === "network_record_conflict"
+          ? matrix.conflict
+          : destinationId === chapterThreeInterludeValidationContract.destinationId
+            ? "destination_conflict"
+            : chapterThreeInterludeValidationContract.destinationConflictById[destinationId]
       });
       return "incorrect";
     }
@@ -309,7 +333,7 @@ export class ChapterThreePhoneInterludeController {
   }
 
   private recordNetworkFact(
-    key: "officialNoticeSaved" | "routeScreenshotSaved" | "networkRecordRead",
+    key: "officialNoticeSaved" | "routeScreenshotSaved",
     eventName: string
   ): ChapterThreeInterludeResult {
     const state = this.store.getState();

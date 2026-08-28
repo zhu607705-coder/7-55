@@ -730,22 +730,35 @@ export class ChapterThreeQizhenLakeController {
   combineItems(itemIds: readonly ItemId[]): QizhenActionResult {
     const state = this.store.getState();
     const items = new Set(itemIds);
-    if (items.has("nylonCord") && items.has("brokenNetFrame")) {
-      if (!state.items.nylonCord || !state.items.brokenNetFrame) return "wrong_item";
-      this.atomicCombine("nylonCord", "brokenNetFrame", "improvisedDipNet", {
-        netCombined: true,
-        phase: "tool_chain"
+    const finalParts = ["nylonCord", "brokenNetFrame", "swanMagnet", "fishingRod"] as const;
+    if (finalParts.every((itemId) => items.has(itemId))) {
+      if (!finalParts.every((itemId) => state.items[itemId])) return "wrong_item";
+      this.store.setState((current) => ({
+        ...current,
+        items: {
+          ...current.items,
+          nylonCord: false,
+          brokenNetFrame: false,
+          swanMagnet: false,
+          fishingRod: false,
+          magneticFishingRod: true
+        },
+        ui: finalParts.includes(current.ui.selectedItem as typeof finalParts[number])
+          ? { ...current.ui, selectedItem: null }
+          : current.ui,
+        qizhenLake: {
+          ...current.qizhenLake,
+          netCombined: true,
+          magneticRodCombined: true,
+          phase: "paper_capture"
+        }
+      }));
+      this.events.emit("combine_item", {
+        items: [...finalParts],
+        result: "magneticFishingRod"
       });
-      this.events.emit("qizhen_dip_net_combined");
-      return "accepted";
-    }
-    if (items.has("swanMagnet") && items.has("fishingRod")) {
-      if (!state.items.swanMagnet || !state.items.fishingRod || !state.qizhenLake.swanFed) return "wrong_item";
-      this.atomicCombine("swanMagnet", "fishingRod", "magneticFishingRod", {
-        magneticRodCombined: true,
-        phase: "paper_capture"
-      });
-      this.events.emit("qizhen_magnetic_rod_combined");
+      this.events.emit("get_item", { itemId: "magneticFishingRod", sourceScene: "qizhen_lake" });
+      this.events.emit("qizhen_final_rig_combined");
       return "accepted";
     }
     return "wrong_item";
@@ -775,6 +788,28 @@ export class ChapterThreeQizhenLakeController {
       phase: "paper_capture"
     });
     this.events.emit("qizhen_swan_fed");
+    return "accepted";
+  }
+
+  completeSwanBranch(): QizhenActionResult {
+    const state = this.store.getState();
+    if (state.qizhenLake.phase !== "tool_chain" || state.qizhenLake.zone !== "swan_cove") return "inactive";
+    if (state.qizhenLake.mode !== "light") return "wrong_mode";
+    if (state.qizhenLake.swanFed || state.items.swanMagnet) return "already_complete";
+    this.store.setState((current) => ({
+      ...current,
+      items: { ...current.items, swanMagnet: true },
+      qizhenLake: {
+        ...current.qizhenLake,
+        feedTinRetrieved: true,
+        feedTinOpened: true,
+        fishCaught: true,
+        swanFed: true,
+        phase: "tool_chain"
+      }
+    }));
+    this.events.emit("get_item", { itemId: "swanMagnet", sourceScene: "qizhen_lake" });
+    this.events.emit("qizhen_swan_branch_completed");
     return "accepted";
   }
 
@@ -1259,7 +1294,7 @@ export class ChapterThreeQizhenLakeController {
       return "accepted";
     }
     if (spotId === "net_frame") {
-      if (!state.items.fishingRod || !state.qizhenLake.lockerOpened) return "locked";
+      if (!state.items.fishingRod || !state.qizhenLake.decoyBaitAttached) return "wrong_item";
       if (state.items.brokenNetFrame || state.qizhenLake.netCombined) return "already_complete";
       return "accepted";
     }

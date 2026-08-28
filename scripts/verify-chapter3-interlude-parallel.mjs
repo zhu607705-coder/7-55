@@ -38,6 +38,7 @@ class MemoryStorage {
 
 const server = await createServer({
   logLevel: "error",
+  optimizeDeps: { noDiscovery: true },
   server: { middlewareMode: true },
   appType: "custom"
 });
@@ -214,11 +215,27 @@ try {
   assert(incorrectController.submitPhotoSequence(["paper_right", "paper_left"]) === "incorrect", "wrong photo order must be rejected");
   assert(incorrectController.submitVoiceSequence(["decoy_library"]) === "incorrect", "wrong voice selection must be rejected");
   assert(incorrectController.saveRouteScreenshot(["computer_left_on"]) === "incorrect", "wrong message selection must be rejected");
-  assert(incorrectController.readNetworkRecord("record_library_south") === "incorrect", "wrong network record must be rejected");
+  assert(incorrectController.readNetworkRecord("record_library_south") === "accepted", "any visible network record must be saveable as a candidate");
   const incorrectState = incorrectStore.getState().chapterThreeInterlude;
   assert(!incorrectState.photoSequenceSolved && !incorrectState.voiceSequenceSolved, "wrong sequence inputs must not write solved facts");
-  assert(!incorrectState.routeScreenshotSaved && !incorrectState.networkRecordRead, "wrong message/network inputs must not write completion facts");
-  assert(selectChapterThreeInterludeViewModel(incorrectStore.getState()).branchProgress.completed === 0, "wrong inputs must leave branch progress at 0/4");
+  assert(!incorrectState.routeScreenshotSaved && incorrectState.networkRecordRead, "network candidate saving must stay independent from message completion");
+  assert(incorrectState.networkRecordId === "record_library_south", "saved network candidate id must remain available to the evidence matrix");
+  assert(selectChapterThreeInterludeViewModel(incorrectStore.getState()).branchProgress.completed === 1, "saving a network candidate must complete only the network branch at 1/4");
+
+  const matrixStore = createGameStore(createDeveloperCheckpointState("c3-interlude-photos"));
+  const matrixController = new ChapterThreePhoneInterludeController(matrixStore, new EventBus());
+  assert(matrixController.submitPhotoSequence(["paper_left", "paper_middle", "paper_right"]) === "accepted", "matrix fixture photo branch must complete");
+  assert(matrixController.submitVoiceSequence(["lake", "stone", "lobby", "broadcast"]) === "accepted", "matrix fixture voice branch must complete");
+  assert(matrixController.saveOfficialNotice() === "accepted", "matrix fixture notice must save");
+  assert(matrixController.saveRouteScreenshot(["east_closed", "west_cleaner"]) === "accepted", "matrix fixture route must save");
+  assert(matrixController.readNetworkRecord("record_library_south") === "accepted", "matrix fixture must accept a conflicting network candidate");
+  assert(matrixController.rejectDecoy("canteen_0755", "number_not_time") === "accepted", "matrix fixture canteen decoy must be rejected");
+  assert(matrixController.rejectDecoy("theater_0832", "earlier_independent_event") === "accepted", "matrix fixture theater decoy must be rejected");
+  assert(matrixController.rejectDecoy("status_clock_075523", "frozen_local_clock") === "accepted", "matrix fixture clock decoy must be rejected");
+  assert(matrixController.verifyDestination("duan_yongping_a1") === "incorrect", "evidence matrix must reject the correct destination while the saved network record conflicts");
+  assert(matrixStore.getState().chapterThreeInterlude.destinationId === null, "matrix conflict must not write a destination");
+  assert(matrixController.readNetworkRecord("record_0755") === "accepted", "player must be able to replace a conflicting network candidate");
+  assert(matrixController.verifyDestination("duan_yongping_a1") === "accepted", "evidence matrix must accept the destination after the network conflict is resolved");
 
   const completedPhotoStore = createGameStore(createDeveloperCheckpointState("c3-interlude-photos"));
   const completedPhotoController = new ChapterThreePhoneInterludeController(

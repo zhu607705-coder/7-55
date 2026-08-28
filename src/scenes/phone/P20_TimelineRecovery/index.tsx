@@ -34,6 +34,13 @@ const EVIDENCE_ROUTE: Readonly<Record<ChapterThreeInterludeEvidenceId, SceneId>>
   broadcast_end: "voice_memos"
 };
 
+const NETWORK_RECORD_LABELS = {
+  record_qizhen_dock: "22:44:12 · 启真湖小码头",
+  record_theater_hall: "22:44:31 · 剧场前厅",
+  record_library_south: "22:43:11 · 基础图书馆南侧",
+  record_0755: "22:44:57 · 北教学区 A 区"
+} as const;
+
 export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
   const interlude = state.chapterThreeInterlude;
   const viewModel = selectChapterThreeInterludeViewModel(state);
@@ -65,7 +72,10 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
       return;
     }
     if (candidateId === chapterThreeInterludeValidationContract.destinationId) {
-      setFeedback("当前证据还不足以确认这个地点。");
+      setFeedback(interlude.networkRecordId && interlude.networkRecordId !== "record_0755"
+        ? "证据矩阵发现：保存的接入记录与该地点冲突，请返回网络记录重新选择。"
+        : "当前证据还不足以确认这个地点。"
+      );
       return;
     }
     setFeedback(chapterThreeInterludePublicContent.destinationConflictCopy[candidateId]);
@@ -200,6 +210,17 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                       <span><strong>{entry.label}</strong><small>{entry.summary}</small></span>
                     </li>
                   ))}
+                </ol>
+              </section>
+            ) : null}
+
+            {allEvidenceReady ? (
+              <section className="interlude-timeline-panel" aria-label="证据矩阵">
+                <header><h2>证据矩阵</h2><span>四源交叉核验</span></header>
+                <ol className="interlude-auto-timeline">
+                  <li><b>离湖</b><span><strong>CC98 × 照片</strong><small>同一移动过程，方向连续。</small></span></li>
+                  <li><b>末段</b><span><strong>录音 × 网络</strong><small>室内广播、三秒陌生设备与候选地点需要同时成立。</small></span></li>
+                  <li><b>候选</b><span><strong>已保存接入记录</strong><small>{interlude.networkRecordId ? NETWORK_RECORD_LABELS[interlude.networkRecordId] : "尚未保存"}</small></span></li>
                 </ol>
               </section>
             ) : null}

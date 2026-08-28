@@ -364,20 +364,16 @@ export const QIZHEN_LAKE_TARGETS: readonly QizhenLakeInteractionTarget[] = [
   target({ id: "qizhen_fishing_rod", label: "漂浮的钓鱼竿", x: 620, y: 520, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", proximity: 160, value: "fishing_rod" }),
   target({ id: "qizhen_paper_reflection", label: "纸条倒影水纹", x: 1320, y: 330, kind: "paper", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "paper_reflection", acceptedItem: "decoyPaper" }),
   target({ id: "qizhen_fishing_item_1", label: "钥匙水纹", x: 1040, y: 620, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "item_1", acceptedItem: "fishingRod" }),
-  target({ id: "qizhen_fishing_item_3", label: "网框水纹", x: 910, y: 360, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "item_3", acceptedItem: "fishingRod" }),
-  target({ id: "qizhen_open_workbench", label: "浮标组合位", x: 840, y: 430, stand: { x: 840, y: 580 }, kind: "item_use", zone: "open_water", vehicle: "kayak", proximity: 165, value: "combine_net", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItems: ["nylonCord", "brokenNetFrame"] }),
-  target({ id: "qizhen_fishing_fish", label: "鱼群水纹", x: 705, y: 585, kind: "fishing_spot", zone: "open_water", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "fish", acceptedItem: "fishFeedPellets" }),
+  target({ id: "qizhen_open_workbench", label: "最终钓具装配位", x: 840, y: 430, stand: { x: 840, y: 580 }, kind: "item_use", zone: "open_water", vehicle: "kayak", proximity: 165, value: "combine_final_rig", dropWidth: 170, dropHeight: 120, requiredMode: "light", acceptedItems: ["nylonCord", "brokenNetFrame", "swanMagnet", "fishingRod"] }),
 
   target({ id: "qizhen_swan_to_open", label: "返回大湖", x: 165, y: 510, kind: "zone_portal", zone: "swan_cove", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
   target({ id: "qizhen_swan_to_channel", label: "进入返航河道", x: 405, y: 840, kind: "zone_portal", zone: "swan_cove", targetZone: "channel", vehicle: "kayak", proximity: 150 }),
-  target({ id: "qizhen_black_swan", label: "围栏里的黑天鹅", x: 1165, y: 470, width: 470, height: 220, stand: { x: 890, y: 505 }, kind: "swan", zone: "swan_cove", vehicle: "kayak", proximity: 180, value: "black_swan", dropWidth: 150, dropHeight: 110, requiredMode: "light", acceptedItem: "smallCarp" }),
-  target({ id: "qizhen_swan_workbench", label: "船头磁吸组合位", x: 760, y: 520, stand: { x: 760, y: 660 }, kind: "item_use", zone: "swan_cove", vehicle: "kayak", proximity: 165, value: "combine_magnetic_rod", dropWidth: 96, dropHeight: 64, requiredMode: "light", acceptedItems: ["swanMagnet", "fishingRod"] }),
+  target({ id: "qizhen_black_swan", label: "围栏边的黑天鹅", x: 1165, y: 470, width: 470, height: 220, stand: { x: 890, y: 505 }, kind: "swan", zone: "swan_cove", vehicle: "kayak", proximity: 180, value: "black_swan", requiredMode: "light" }),
   target({ id: "qizhen_final_paper_cast", label: "纸条本体水纹", x: 760, y: 450, kind: "paper", zone: "swan_cove", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "paper_body", acceptedItem: "magneticFishingRod" }),
 
   target({ id: "qizhen_channel_from_swan", label: "黑天鹅追逐起点", x: 1515, y: 510, kind: "zone_portal", zone: "channel", targetZone: "swan_cove", vehicle: "kayak", proximity: 150 }),
   target({ id: "qizhen_channel_to_open", label: "返回大湖", x: 840, y: 735, kind: "zone_portal", zone: "channel", targetZone: "open_water", vehicle: "kayak", proximity: 145 }),
-  target({ id: "qizhen_use_item_4", label: "浮排下的密封饲料盒", x: 640, y: 575, stand: { x: 790, y: 575 }, kind: "item_use", zone: "channel", vehicle: "kayak", proximity: 175, value: "item_4_to_5", dropWidth: 156, dropHeight: 112, requiredMode: "light", acceptedItem: "improvisedDipNet" }),
-  target({ id: "qizhen_use_item_5", label: "浮排硬边开罐位", x: 640, y: 330, stand: { x: 790, y: 330 }, kind: "item_use", zone: "channel", vehicle: "kayak", proximity: 175, value: "item_5_to_6", dropWidth: 156, dropHeight: 104, requiredMode: "light", acceptedItem: "sealedFeedTin" }),
+  target({ id: "qizhen_fishing_item_3", label: "浮排下的破损网框", x: 640, y: 575, kind: "fishing_spot", zone: "channel", vehicle: "kayak", ...QIZHEN_CAST_RIPPLE_BOUNDS, value: "item_3", acceptedItem: "fishingRod" }),
   target({ id: "qizhen_channel_escape", label: "小码头方向", x: 105, y: 510, kind: "escape", zone: "channel", targetZone: "dock", vehicle: "kayak", proximity: 145 })
 ] as const;
 

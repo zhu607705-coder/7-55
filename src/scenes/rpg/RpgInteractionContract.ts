@@ -134,10 +134,13 @@ export type ChapterFour755TargetConditionId =
   | "positioning_plate_install_available"
   | "cart_wheel_inspection_available"
   | "pry_bar_pickup_available"
+  | "pry_bar_granted_by_diagnosis"
   | "cart_cover_available"
   | "oil_pickup_available"
+  | "oil_granted_by_diagnosis"
   | "cart_wheel_available"
   | "clock_gear_available"
+  | "clock_gear_repaired_with_linkage"
   | "minute_endpoint_available"
   | "power_panel_available"
   | "lecture202_threshold_available"
@@ -783,10 +786,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     ["maintenance_repair"],
     "chapter4_pry_bar_pickup",
     ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
-    targetCondition("pry_bar_pickup_available", (state) => (
-      !ownsChapterFourItem(state, "shortPryBar")
-      && !hasChapterFourFact(state, "cart_wheel_cover_opened")
-    )),
+    targetCondition("pry_bar_granted_by_diagnosis", () => false),
     undefined,
     52
   ),
@@ -811,11 +811,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     ["maintenance_repair"],
     "chapter4_cleaning_cart_oil_bottle",
     ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
-    targetCondition("oil_pickup_available", (state) => (
-      hasChapterFourFact(state, "cart_wheel_cover_opened")
-      && !ownsChapterFourItem(state, "universalLubricatingOil")
-      && !hasChapterFourFact(state, "clock_gear_repaired")
-    )),
+    targetCondition("oil_granted_by_diagnosis", () => false),
     undefined,
     72
   ),
@@ -840,10 +836,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     ["maintenance_repair"],
     "chapter4_hall_clock_gear",
     ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
-    targetCondition("clock_gear_available", (state) => (
-      hasChapterFourFact(state, "cart_wheel_repaired")
-      && !hasChapterFourFact(state, "clock_gear_repaired")
-    )),
+    targetCondition("clock_gear_repaired_with_linkage", () => false),
     "universalLubricatingOil",
     86
   ),

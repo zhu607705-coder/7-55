@@ -165,7 +165,7 @@ function selectLocalProgress(
         "room204_residual_observed"
       ])}/8 · 复原 ${normalizeRoom204Placements(state.chapter4.room204Placements).length}/12`;
     case "maintenance_repair":
-      return `维修流程 ${countMaintenanceMilestones(state, facts)}/6`;
+      return `维修流程 ${countMaintenanceMilestones(facts)}/3`;
     case "blackout_light_grid": {
       const progress = countRequiredLightConditions(state.chapter4.lightGrid.mask);
       return `必要灯区 ${progress.satisfied}/${progress.total}`;
@@ -186,19 +186,12 @@ function selectLocalProgress(
 }
 
 function countMaintenanceMilestones(
-  state: GameState,
   facts: ReadonlySet<ChapterFourFactId>
 ): number {
-  const coverOpened = facts.has("cart_wheel_cover_opened");
-  const wheelRepaired = facts.has("cart_wheel_repaired");
-  const gearRepaired = facts.has("clock_gear_repaired");
   return [
     facts.has("cart_wheel_inspected"),
-    state.items.shortPryBar || coverOpened || wheelRepaired || gearRepaired,
-    coverOpened,
-    state.items.universalLubricatingOil || wheelRepaired || gearRepaired,
-    wheelRepaired,
-    gearRepaired
+    facts.has("cart_wheel_cover_opened"),
+    facts.has("cart_wheel_repaired") && facts.has("clock_gear_repaired")
   ].filter(Boolean).length;
 }
 

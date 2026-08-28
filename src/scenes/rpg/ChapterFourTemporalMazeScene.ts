@@ -3608,7 +3608,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_bakery_back_pry_bar",
-      !state.items.shortPryBar && !coverOpened
+      false
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_cleaning_cart_wheel_cover",
@@ -3616,9 +3616,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_cleaning_cart_oil_bottle",
-      coverOpened
-        && !state.items.universalLubricatingOil
-        && !gearRepaired
+      false
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_cleaning_cart_wheel",
@@ -3626,12 +3624,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_hall_clock_gear",
-      wheelRepaired && !gearRepaired
+      false
     );
-    this.maintenancePryBar?.setVisible(!state.items.shortPryBar && !coverOpened);
-    this.maintenanceOilBottle?.setVisible(
-      coverOpened && !state.items.universalLubricatingOil && !gearRepaired
-    );
+    this.maintenancePryBar?.setVisible(false);
+    this.maintenanceOilBottle?.setVisible(false);
     if (this.maintenanceCoverVisual) {
       this.maintenanceCoverVisual
         .setVisible(!wheelRepaired)

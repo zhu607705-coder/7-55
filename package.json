@@ -55,6 +55,7 @@
     "chapter4:validate-stair-materials": "node scripts/verify-chapter4-stair-materials.mjs",
     "qizhen:validate-journal": "node scripts/verify-qizhen-journal.mjs",
     "qizhen:validate-fishing": "node scripts/verify-qizhen-fishing-rhythm.mjs",
+    "qizhen:validate-tool-branches": "node scripts/verify-qizhen-tool-branches.mjs",
     "qizhen:validate-rain-safety": "node scripts/verify-qizhen-rain-safety.mjs",
     "theater:validate-spotlight": "node scripts/verify-theater-spotlight.mjs",
     "art:canteen-push-cart": "python3 scripts/build-canteen-push-cart-frames.py",

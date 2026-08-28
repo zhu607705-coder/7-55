@@ -10,6 +10,7 @@
   display: grid;
   gap: 13px;
   inset: 70px 88px 52px;
+  overflow: auto;
   padding: 18px 20px;
   position: absolute;
   z-index: 122;
@@ -84,6 +85,31 @@
   flex: 0 0 auto;
 }
 
+.chapter4-wayfinding-board__evidence {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.chapter4-wayfinding-board__evidence article {
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid rgba(121, 203, 213, 0.45);
+  background: rgba(14, 31, 42, 0.82);
+}
+
+.chapter4-wayfinding-board__evidence span {
+  color: #fff1a8;
+  font: 700 11px/1.2 monospace;
+}
+
+.chapter4-wayfinding-board__evidence p {
+  margin: 5px 0 0;
+  color: #c1d4d7;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .chapter4-wayfinding-board__slots {
   display: grid;
   gap: 13px;
@@ -94,7 +120,7 @@
   align-content: center;
   display: grid;
   gap: 8px;
-  min-height: 132px !important;
+  min-height: 100px !important;
   position: relative;
   text-align: left;
 }
@@ -175,6 +201,18 @@
 
   .chapter4-wayfinding-board__slots {
     gap: 7px;
+  }
+
+  .chapter4-wayfinding-board__evidence {
+    gap: 5px;
+  }
+
+  .chapter4-wayfinding-board__evidence article {
+    padding: 5px 6px;
+  }
+
+  .chapter4-wayfinding-board__evidence p {
+    font-size: 9px;
   }
 
   .chapter4-wayfinding-slot {

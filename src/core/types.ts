@@ -498,6 +498,12 @@ export interface ChapterThreeInterludeState {
   officialNoticeSaved: boolean;
   routeScreenshotSaved: boolean;
   networkRecordRead: boolean;
+  networkRecordId:
+    | "record_qizhen_dock"
+    | "record_theater_hall"
+    | "record_library_south"
+    | "record_0755"
+    | null;
   evidenceIds: ChapterThreeInterludeEvidenceId[];
   timelineOrder: ChapterThreeInterludeEvidenceId[];
   rejectedDecoyIds: ChapterThreeInterludeDecoyId[];
