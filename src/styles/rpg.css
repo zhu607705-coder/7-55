@@ -144,7 +144,7 @@
   background: #07111df2;
   border: 2px solid #e7d9b9;
   color: #f7f1dc;
-  font-family: "Fusion Pixel", monospace;
+  font-family: var(--font-pixel);
   left: 50%;
   margin: 0;
   padding: 10px 16px;
@@ -172,7 +172,7 @@
   border: 2px solid #e7d9b9;
   color: #f7f1dc;
   cursor: pointer;
-  font-family: "Fusion Pixel", monospace;
+  font-family: var(--font-pixel);
   font-size: 13px;
   padding: 7px 12px;
   position: absolute;
@@ -188,9 +188,7 @@
 }
 
 .rpg-canvas-host canvas {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
+  image-rendering: auto;
 }
 
 .godot-rpg-frame {
@@ -343,10 +341,6 @@
   padding-left: 10px;
 }
 
-.rpg-stage.is-campus-map .rpg-canvas-host canvas {
-  image-rendering: auto;
-}
-
 .rpg-objective-bar {
   align-items: center;
   background: rgba(10, 14, 18, 0.94);
@@ -454,7 +448,7 @@
   border: 2px solid #d6c25f;
   color: #f5f1dc;
   display: flex;
-  font-family: monospace;
+  font-family: var(--font-pixel);
   font-size: 20px;
   font-weight: 900;
   height: 38px;
@@ -2152,7 +2146,7 @@
 
 .chapter4-elevator-sync > header span {
   color: #79c8d6;
-  font-family: monospace;
+  font-family: var(--font-pixel);
   font-size: 11px;
   letter-spacing: 0.12em;
 }
@@ -2168,7 +2162,10 @@
   border: 2px solid #87dbe8;
   color: #effbf7;
   cursor: pointer;
-  font: 700 14px/1 monospace;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
   min-height: 34px;
   padding: 8px 14px;
 }
@@ -2214,7 +2211,10 @@
 
 .chapter4-elevator-sync__summary strong {
   color: #fff3a5;
-  font: 700 13px/1.2 monospace;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .chapter4-elevator-sync__timeline {
@@ -2232,7 +2232,9 @@
 
 .chapter4-elevator-sync__ticks span {
   color: #78939f;
-  font: 10px/1 monospace;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 1;
   position: absolute;
   transform: translateX(-50%);
 }
@@ -2270,7 +2272,11 @@
   align-items: center;
   bottom: 4px;
   display: flex;
-  font: normal 700 10px/1 monospace;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
   justify-content: center;
   min-width: 18px;
   position: absolute;
@@ -2295,7 +2301,10 @@
 .chapter4-elevator-sync__cursor span {
   background: #fff4a0;
   color: #101821;
-  font: 700 10px/1 monospace;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
   left: 0;
   padding: 3px 5px;
   position: absolute;

@@ -19,7 +19,7 @@
     linear-gradient(180deg, rgb(25 39 43 / 98%), rgb(8 17 21 / 98%)),
     repeating-linear-gradient(90deg, transparent 0 11px, rgb(255 255 255 / 2%) 11px 12px);
   box-shadow: 0 18px 48px rgb(0 0 0 / 68%), inset 0 0 0 2px #13262c;
-  font-family: "Fusion Pixel", monospace;
+  font-family: var(--font-pixel);
 }
 
 .chapter4-maintenance-diagnosis header p {
@@ -168,7 +168,7 @@
     linear-gradient(180deg, rgb(27 40 43 / 98%), rgb(9 18 21 / 98%)),
     repeating-linear-gradient(90deg, transparent 0 9px, rgb(255 255 255 / 2%) 9px 10px);
   box-shadow: 0 18px 48px rgb(0 0 0 / 64%), inset 0 0 0 2px #17272b;
-  font-family: "Fusion Pixel", monospace;
+  font-family: var(--font-pixel);
 }
 
 .chapter4-power-panel__frame {

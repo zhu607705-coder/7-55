@@ -19,6 +19,7 @@ import {
   RpgPlayerAnimator
 } from "./RpgPlayerTextures";
 import { formatRpgInteractionHint } from "./RpgControlHints";
+import { RPG_LOGICAL_HEIGHT, RPG_LOGICAL_WIDTH } from "./RpgRenderResolution";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   drawQizhenLoopWorld,
@@ -26,13 +27,10 @@ import {
   QIZHEN_LOOP_RUNTIME
 } from "./QizhenLoopWorld";
 
-const RPG_LOGICAL_WIDTH = 960;
-const RPG_LOGICAL_HEIGHT = 540;
 const CAMERA_MIN_ZOOM = 0.7;
 const CAMERA_MAX_ZOOM = 1.8;
 const CAMERA_DEFAULT_ZOOM = 1.1;
 const CAMERA_ZOOM_STEP = 0.125;
-const MAX_RENDER_SCALE = 3;
 const CORRIDOR_LEFT = QIZHEN_LOOP_RUNTIME.theater.approach.x - 260;
 const CORRIDOR_RIGHT = QIZHEN_LOOP_RUNTIME.qizhen.gate.x + 250;
 const PATH_DOT_RADIUS = 7;
@@ -61,7 +59,6 @@ export class QizhenLoopScene extends Phaser.Scene {
   private pathGrid!: CampusPathGrid;
   private cameraController!: RpgCameraController;
   private pathIndicators: Phaser.GameObjects.Arc[] = [];
-  private renderScale = 1;
   private cinematicActive = false;
   private briefingQueued = false;
   private transitionPaper: Phaser.GameObjects.Image | null = null;
@@ -79,8 +76,7 @@ export class QizhenLoopScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.renderScale = this.enableNativeResolution();
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.restoreLogicalResolution, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.clearTransitionPresentation, this);
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     this.physics.world.setBounds(0, 0, QIZHEN_LOOP_RUNTIME.world.width, QIZHEN_LOOP_RUNTIME.world.height);
     this.cameras.main.setBackgroundColor(0x080a0c);
@@ -125,10 +121,10 @@ export class QizhenLoopScene extends Phaser.Scene {
     this.cameraController = new RpgCameraController(this, {
       player: this.player,
       world: QIZHEN_LOOP_RUNTIME.world,
-      minZoom: CAMERA_MIN_ZOOM * this.renderScale,
-      maxZoom: CAMERA_MAX_ZOOM * this.renderScale,
-      defaultZoom: CAMERA_DEFAULT_ZOOM * this.renderScale,
-      zoomStep: CAMERA_ZOOM_STEP * this.renderScale,
+      minZoom: CAMERA_MIN_ZOOM,
+      maxZoom: CAMERA_MAX_ZOOM,
+      defaultZoom: CAMERA_DEFAULT_ZOOM,
+      zoomStep: CAMERA_ZOOM_STEP,
       deadzoneRatio: { width: 300 / RPG_LOGICAL_WIDTH, height: 180 / RPG_LOGICAL_HEIGHT },
       followOffsetY: 34,
       minimap: null
@@ -265,7 +261,7 @@ export class QizhenLoopScene extends Phaser.Scene {
       body.stop();
       body.enable = false;
     }
-    this.cameraController.beginCinematicFollow(-270, CAMERA_MIN_ZOOM * this.renderScale);
+    this.cameraController.beginCinematicFollow(-270, CAMERA_MIN_ZOOM);
     this.ensureWetPaperTexture();
     this.transitionPaper = this.add.image(runtime.paperStart.x, runtime.paperStart.y, "qizhen-transition-wet-paper")
       .setDepth(runtime.paperStart.y + 140)
@@ -519,21 +515,8 @@ export class QizhenLoopScene extends Phaser.Scene {
     this.obstacles.add(collision);
   }
 
-  private enableNativeResolution(): number {
-    const bounds = this.game.canvas.getBoundingClientRect();
-    this.game.canvas.style.imageRendering = "auto";
-    const deviceScale = Math.max(1, window.devicePixelRatio || 1);
-    const displayScale = Math.min(bounds.width / RPG_LOGICAL_WIDTH, bounds.height / RPG_LOGICAL_HEIGHT);
-    const renderScale = Phaser.Math.Clamp(Math.max(1, displayScale * deviceScale), 1, MAX_RENDER_SCALE);
-    this.scale.setGameSize(Math.round(RPG_LOGICAL_WIDTH * renderScale), Math.round(RPG_LOGICAL_HEIGHT * renderScale));
-    return renderScale;
-  }
-
-  private restoreLogicalResolution(): void {
+  private clearTransitionPresentation(): void {
     this.transitionTrail.forEach((drop) => drop.destroy());
     this.transitionPaper?.destroy();
-    this.scale.setGameSize(RPG_LOGICAL_WIDTH, RPG_LOGICAL_HEIGHT);
-    this.game.canvas.style.imageRendering = "";
-    this.renderScale = 1;
   }
 }

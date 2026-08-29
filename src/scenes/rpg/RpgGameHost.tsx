@@ -85,6 +85,11 @@ import { RpgRealityModeToggle } from "./RpgRealityModeToggle";
 import { createRpgBridge } from "./RpgBridge";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
+import {
+  installRpgAdaptiveResolution,
+  RPG_LOGICAL_HEIGHT,
+  RPG_LOGICAL_WIDTH
+} from "./RpgRenderResolution";
 import { QuestTaskBar } from "../../components/QuestClueStrip";
 import { RpgSubtitleLayer } from "../../components/RpgSubtitleLayer";
 import { QizhenJournalCamera, type QizhenJournalCameraSession } from "../../components/QizhenJournalCamera";
@@ -664,11 +669,12 @@ export function RpgGameHost({
         .filter(([sceneId]) => sceneId !== initialScene)
         .map(([, SceneClass]) => SceneClass)
     ];
+    let stopAdaptiveResolution: () => void = () => undefined;
     const game = new Phaser.Game({
       type: Phaser.CANVAS,
       parent: host,
-      width: 960,
-      height: 540,
+      width: RPG_LOGICAL_WIDTH,
+      height: RPG_LOGICAL_HEIGHT,
       backgroundColor: "#080a0c",
       pixelArt: true,
       roundPixels: true,
@@ -687,6 +693,7 @@ export function RpgGameHost({
           phaserGame.registry.set("theaterRuntimePort", theaterRuntimePort);
         },
         postBoot: (phaserGame) => {
+          stopAdaptiveResolution = installRpgAdaptiveResolution(phaserGame, host);
           setRpgInputEnabled(phaserGame, !inputBlockedRef.current);
           if (!inputBlockedRef.current) setRpgKeyboardEnabled(phaserGame, !keyboardBlockedRef.current);
           bridge.emit("rpg_runtime_ready");
@@ -712,6 +719,7 @@ export function RpgGameHost({
       if (gameRef.current === game) {
         gameRef.current = null;
       }
+      stopAdaptiveResolution();
       game.destroy(true);
       clearRpgCanvasHost(host);
     };

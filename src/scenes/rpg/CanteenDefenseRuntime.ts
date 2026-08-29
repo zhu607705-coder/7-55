@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { CANTEEN_INTERIOR_WORLD } from "./CanteenInteriorModel";
+import { getRpgLogicalCameraZoom } from "./RpgRenderResolution";
 
 const PUSH_CART_SHEET_KEY = "chapter-3-canteen-player-push-cart";
 const PAPER_IDLE_KEY = "chapter-3-canteen-paper";
@@ -446,7 +447,7 @@ export class CanteenDefenseRuntime {
 
   private layoutHud(): void {
     const camera = this.scene.cameras.main;
-    const inverseZoom = 1 / camera.zoom;
+    const inverseZoom = 1 / getRpgLogicalCameraZoom(this.scene, camera);
     this.timerText
       .setPosition(CANTEEN_INTERIOR_WORLD.width / 2, 98 * inverseZoom)
       .setScale(inverseZoom);

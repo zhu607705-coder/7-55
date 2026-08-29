@@ -3347,3 +3347,13 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - Fresh 自动验证通过：`npm run typecheck`、室内门 `28` 项、启真湖钓取、启真湖雨天 `67` 项、第四章 story、第四章 runtime `1095` 项、`git diff --check`、`npm run build:single` 与 `npm run verify:single`。离线产物为 `demo/index.html`，`252440046` 字节、两个内联脚本和一个内联样式。
 - 本机 Chrome 以 `file://` 直接打开离线单文件，启动页、DEV 通道与固定手机外框正常渲染。Playwright 使用同一 `demo/index.html` 的本地 HTTP 预览完成“启动页 → 第一章开场 → DEV 第四章 RPG → 聚焦手机 → 天气页 → 云层校准”基础导航；云层校准正确显示透明吹风机和三层控制，console error 与 warning 均为 `0`。
 - 本轮生成的 Playwright 快照、console 日志、Chrome 临时用户目录与单文件截图已移入回收站。当前记录仍处于提交前状态；最终 commit、push、GitHub CI 与远端 `main` SHA 以本节后续远端证据为准。
+
+## 2026-08-29 RPG 自适应清晰度、像素字体与切换稳定性
+
+- 横屏 RPG 继续保持 `960×540` 逻辑视口和原碰撞坐标，按实际显示尺寸与设备像素比提高 Phaser 后备画布；摄像机可见范围不变。固定 HUD 使用逻辑坐标补偿，Phaser Text 的纹理分辨率随渲染倍率同步，地图、界面和文字不会因后备画布放大而错位。
+- 活跃 RPG 场景中的 Phaser Text 与共享 RPG DOM 覆盖层统一使用 `Fusion Pixel 12px Proportional SC` 像素字体；字体加载完成后会刷新已经创建的文字纹理。近黑色描边按字号限制为 `1 / 2 / 3px`，避免小字出现过重黑边；图书馆入馆记录面板同步微调底部控件位置，防止像素字形被裁切。
+- 修复撤销残缺后自适应分辨率回调调用缺失存活检查导致的 RPG 黑屏，并补齐 Phaser 销毁过程中的 ScaleManager 存活保护；快速连续切换图书馆、第四章与启真湖时不再在已销毁的画布上执行尺寸更新。
+- 本地字体资源核对确认只有 `Fusion Pixel 12px Proportional SC` 的 `400 normal`、2024.05.12 版本；项目 TTF 与依赖包 WOFF/WOFF2 是同一套 12px 字形的不同封装，没有更高网格、更高字重、可变轴或更精细版本，因此按用户要求保持当前字形，不做无效替换。
+- Chromium `1440×900 / DPR 1.5` 实测图书馆、食堂、启真湖与第四章四个代表场景：每处仅一个 canvas，后备尺寸均为 `1440×810`，像素字体错误数 `0`、文字源分辨率不一致数 `0`、字体加载成功；随后快速连续整页切换三处 RPG 检查点，console/page error 为 `0`。
+- Fresh 验证通过：`npm run typecheck`、第四章 runtime `1095` 项、现实模式顺序 `180` 项、室内门 `28` 项、`git diff --check`、`npm run build:single` 与 `npm run verify:single`。离线产物为 `demo/index.html`，`252448256` 字节、两个内联脚本和一个内联样式。
+- 当前边界：本轮未执行 Git fetch、暂存、提交、合并、推送或上传；既有未跟踪 Godot、启真湖素材和第三章文案保持未动。本轮专用 Chromium、临时截图和 QA 脚本均已清理，既有 Vite 开发服务保持运行。
