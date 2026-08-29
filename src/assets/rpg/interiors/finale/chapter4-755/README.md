@@ -78,4 +78,7 @@ npm run chapter4:validate-topology
 
 ## Existing Official Closing Material
 
-The project already owns the official “灿若星辰” material. This asset contract does not generate, copy, replace, or register a star-lamp sheet or exterior closing image.
+The official “灿若星辰” layered material is registered separately at
+`src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp/` and consumed by
+`src/components/temporal-maze/ChapterFourStarLampClosure.tsx`. The finale
+environment contract still does not generate or replace that material.

@@ -56,6 +56,7 @@
     "chapter4:validate-stair-materials": "node scripts/verify-chapter4-stair-materials.mjs",
     "qizhen:validate-journal": "node scripts/verify-qizhen-journal.mjs",
     "qizhen:validate-fishing": "node scripts/verify-qizhen-fishing-rhythm.mjs",
+    "qizhen:validate-swan-chase": "node scripts/verify-qizhen-swan-chase-pressure.mjs",
     "qizhen:validate-tool-branches": "node scripts/verify-qizhen-tool-branches.mjs",
     "qizhen:validate-rain-safety": "node scripts/verify-qizhen-rain-safety.mjs",
     "theater:validate-spotlight": "node scripts/verify-theater-spotlight.mjs",
@@ -82,6 +83,8 @@
     "audio:chapter3:qizhen:checkpoint": "node scripts/generate-chapter3-qizhen-sfx-audio.mjs --checkpoint-existing",
     "audio:chapter4-prologue-sfx": "node scripts/generate-chapter4-prologue-sfx-audio.mjs",
     "audio:chapter4-prologue-voice": "node scripts/generate-chapter4-prologue-voice-audio.mjs",
+    "audio:pursuit": "node scripts/generate-pursuit-audio.mjs",
+    "audio:pursuit:verify": "node scripts/generate-pursuit-audio.mjs --verify-only && node scripts/verify-pursuit-audio.mjs",
     "audio:chapter4-details": "node scripts/generate-chapter4-detail-sfx.mjs",
     "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only"
   },

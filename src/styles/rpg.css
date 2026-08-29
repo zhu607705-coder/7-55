@@ -499,6 +499,24 @@
   color: #26313b;
 }
 
+.rpg-stage.is-chapter-four-temporal-maze .rpg-reality-mode-toggle {
+  transition: background-color 240ms ease, border-color 240ms ease, color 240ms ease;
+}
+
+.rpg-stage.is-chapter-four-mode-dark .rpg-reality-mode-toggle.is-dark {
+  background: rgba(5, 23, 39, 0.96);
+  border-color: #67ddff;
+  color: #e9f9ff;
+  box-shadow: inset 0 0 0 1px rgba(154, 234, 255, 0.32), 0 0 18px rgba(64, 197, 235, 0.22);
+}
+
+.rpg-stage.is-chapter-four-mode-light .rpg-reality-mode-toggle.is-light {
+  background: rgba(246, 236, 207, 0.97);
+  border-color: #c79a32;
+  color: #2a3138;
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 222, 0.72), 0 0 14px rgba(216, 170, 65, 0.18);
+}
+
 .rpg-stage.is-canteen-bike .rpg-canteen-mode-toggle {
   right: 154px;
 }
@@ -525,6 +543,72 @@
   position: absolute;
   touch-action: none;
   z-index: 19;
+}
+
+.qizhen-rain-rescue-cinematic {
+  background: #06141a;
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  touch-action: none;
+  z-index: 24;
+}
+
+.qizhen-rain-rescue-cinematic video {
+  background: #06141a;
+  display: block;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.qizhen-rain-rescue-cinematic::after {
+  background: linear-gradient(180deg, rgba(3, 15, 22, 0.78), transparent 22%, transparent 72%, rgba(3, 15, 22, 0.72));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.qizhen-rain-rescue-cinematic header {
+  align-items: baseline;
+  color: #f8f3df;
+  display: flex;
+  gap: 12px;
+  left: 22px;
+  position: absolute;
+  top: 18px;
+  z-index: 1;
+}
+
+.qizhen-rain-rescue-cinematic header strong {
+  color: #f1d85c;
+  font-size: 15px;
+}
+
+.qizhen-rain-rescue-cinematic header span {
+  font-size: 12px;
+}
+
+.qizhen-rain-rescue-cinematic > button {
+  background: rgba(8, 23, 31, 0.86);
+  border: 2px solid #dbe9e9;
+  bottom: 18px;
+  color: #f7f3e6;
+  cursor: pointer;
+  min-height: 34px;
+  min-width: 108px;
+  padding: 5px 12px;
+  position: absolute;
+  right: 20px;
+  z-index: 1;
+}
+
+.qizhen-rain-rescue-cinematic > button:focus-visible {
+  outline: 3px solid #f0d54e;
+  outline-offset: 2px;
 }
 
 .canteen-bike-transition-canvas {

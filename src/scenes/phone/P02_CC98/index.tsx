@@ -20,6 +20,7 @@ import {
 import { Ac01FilterPuzzle } from "./Ac01FilterPuzzle";
 import { ControlExchangePuzzle } from "./ControlExchangePuzzle";
 import { Cc98ThreadPage } from "./ThreadPage";
+import { TheaterProductionArchive } from "./TheaterProductionArchive";
 import { TheaterTicketCommission } from "./TheaterTicketCommission";
 import { TopTenRisePuzzle } from "./TopTenRisePuzzle";
 import { UnifiedIdentityLogin } from "./UnifiedIdentityLogin";
@@ -1053,12 +1054,15 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             ) : undefined
           }
           beforeRepliesContent={openPostIsTheaterTicket && theaterTicketCommissionPhase !== "locked" ? (
-            <TheaterTicketCommission
-              phase={theaterTicketCommissionPhase}
-              networkMode={state.networkMode}
-              claimedWave={theaterTicketClaimedWave}
-              ticketCodeRead={state.theaterHunt.ticketCodeRead}
-            />
+            <>
+              <TheaterProductionArchive />
+              <TheaterTicketCommission
+                phase={theaterTicketCommissionPhase}
+                networkMode={state.networkMode}
+                claimedWave={theaterTicketClaimedWave}
+                ticketCodeRead={state.theaterHunt.ticketCodeRead}
+              />
+            </>
           ) : openPostIsChapterFourStudy ? (
             <ChapterFourStudyIndexImport imported={chapterFourCc98.imported} />
           ) : undefined}

@@ -454,7 +454,7 @@ const CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS = Object.fromEntries(
     activePhases: entry.activePhases,
     roomIds: entry.roomAliases,
     activationCondition: targetCondition("context_interaction_available", () => true),
-    proximity: 52
+    proximity: entry.proximity ?? 52
   })])
 ) as Readonly<Record<ChapterFourContextInteractionTargetId, ChapterFour755InteractionTargetContract>>;
 

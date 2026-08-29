@@ -233,12 +233,6 @@ export interface RpgRuntimeDebugState {
       plateSignature: string;
       plateIds: Readonly<Record<"A1" | "A2" | "A3", string>>;
       targetIds: readonly string[];
-      realityPresentation: {
-        darkOverlayAlpha: number;
-        darkOverlayDepth: number;
-        targetDepth: number;
-        glowingTargetCount: number;
-      };
     };
     warmup?: {
       requiredPhase: "entry" | "transport" | "maintenance" | "closure";
@@ -250,6 +244,15 @@ export interface RpgRuntimeDebugState {
         urls: readonly string[];
         retryNotBeforeMs: number;
       }>;
+    };
+    realityVisuals?: {
+      renderedMode: "light" | "dark";
+      darkLayerAlpha: number;
+      lightLayerAlpha: number;
+      atmosphereDepth: number;
+      targetDepth: number;
+      activeTargetMarkerIds: readonly string[];
+      dormantTargetMarkerIds: readonly string[];
     };
     runtimeEntities?: ReadonlyArray<{
       targetId: string;
@@ -299,6 +302,9 @@ export interface RpgRuntimeDebugState {
       targetHoldMs: number;
       predictedPlayerPosition: { x: number; y: number } | null;
       pursuitBand: "catch_up" | "tracking" | "close" | null;
+      audioBand: "catch_up" | "tracking" | "close" | null;
+      closeVoicePlayed: boolean;
+      floorVoicePlayed: boolean;
       pursuitSpeed: number | null;
       guardToPlayerRouteDistance: number | null;
       contactHoldMs: number;

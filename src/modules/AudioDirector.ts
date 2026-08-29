@@ -14,6 +14,8 @@ import chapterThreeStoryTimelineData from "../data/chapter3-story.audio.json";
 import chapterThreeStoryGeneratedAudioData from "../data/chapter3-story.audio.generated.json";
 import chapterFourPrologueTimelineData from "../data/chapter4-prologue.audio.json";
 import chapterFour755TimelineData from "../data/chapter4-755.audio.json";
+import pursuitTimelineData from "../data/pursuit.audio.json";
+import pursuitGeneratedAudioData from "../data/pursuit.audio.generated.json";
 import audioTimelineData from "../data/library-finals.audio.json";
 import generatedAudioData from "../data/library-finals.audio.generated.json";
 import { isVoicedDialogue, storyLineForKey } from "../data/storyLines";
@@ -47,20 +49,35 @@ interface GeneratedAsset {
   durationMs?: number;
 }
 
-const audioTimeline: AudioTimeline = {
-  events: {
-    ...(actOneTimelineData as AudioTimeline).events,
-    ...(audioTimelineData as AudioTimeline).events,
-    ...(chapterThreeCanteenTimelineData as AudioTimeline).events,
-    ...(chapterThreeTheaterTimelineData as AudioTimeline).events,
-    ...(chapterThreeQizhenTimelineData as AudioTimeline).events,
-    ...(chapterThreeStoryTimelineData as AudioTimeline).events,
-    ...(chapterFourPrologueTimelineData as AudioTimeline).events,
-    ...(chapterFour755TimelineData as AudioTimeline).events
+function mergeAudioTimelines(...timelines: AudioTimeline[]): AudioTimeline {
+  const events: AudioTimeline["events"] = {};
+  for (const timeline of timelines) {
+    for (const [eventId, beat] of Object.entries(timeline.events)) {
+      events[eventId] = {
+        cues: [...(events[eventId]?.cues ?? []), ...beat.cues]
+      };
+    }
   }
-};
+  return { events };
+}
+
+const audioTimeline = mergeAudioTimelines(
+  actOneTimelineData as AudioTimeline,
+  audioTimelineData as AudioTimeline,
+  chapterThreeCanteenTimelineData as AudioTimeline,
+  chapterThreeTheaterTimelineData as AudioTimeline,
+  chapterThreeQizhenTimelineData as AudioTimeline,
+  chapterThreeStoryTimelineData as AudioTimeline,
+  chapterFourPrologueTimelineData as AudioTimeline,
+  chapterFour755TimelineData as AudioTimeline,
+  pursuitTimelineData as AudioTimeline
+);
 const chapterFour755CueIds = new Set(
-  Object.keys((chapterFour755TimelineData as AudioTimeline).events)
+  [
+    ...Object.keys((chapterFour755TimelineData as AudioTimeline).events),
+    ...Object.keys((pursuitTimelineData as AudioTimeline).events)
+      .filter((cueId) => cueId.startsWith("final_chase_"))
+  ]
 );
 const generatedAssets = {
   ...(actOneGeneratedAudioData.assets as Record<string, GeneratedAsset>),
@@ -70,7 +87,8 @@ const generatedAssets = {
   ...(chapterThreeQizhenGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapterThreeQizhenSfxGeneratedAudioData.assets as Record<string, GeneratedAsset>),
   ...(chapter3InterludeVoiceMemosGeneratedAudioData.assets as Record<string, GeneratedAsset>),
-  ...(chapterThreeStoryGeneratedAudioData.assets as Record<string, GeneratedAsset>)
+  ...(chapterThreeStoryGeneratedAudioData.assets as Record<string, GeneratedAsset>),
+  ...(pursuitGeneratedAudioData.assets as Record<string, GeneratedAsset>)
 };
 const audioUrls = import.meta.glob("../assets/audio/**/*.mp3", {
   eager: true,
@@ -117,6 +135,7 @@ function toastTone(kind: "dialogue" | "taunt" | "task", speaker?: StoryLine["spe
  */
 export class AudioDirector {
   private currentVoice: HTMLAudioElement | null = null;
+  private currentVoiceAsset: string | null = null;
   private music: HTMLAudioElement | null = null;
   private musicAsset: string | null = null;
   private musicTargetVolume = 0.2;
@@ -147,6 +166,28 @@ export class AudioDirector {
     }
   }
 
+  getDebugState(): Readonly<{
+    musicAsset: string | null;
+    musicPlaying: boolean;
+    musicVolume: number | null;
+    musicPlaybackRate: number | null;
+    musicLoop: boolean;
+    voiceAsset: string | null;
+    voicePlaying: boolean;
+    scheduledCueIds: readonly string[];
+  }> {
+    return {
+      musicAsset: this.musicAsset,
+      musicPlaying: this.music !== null && !this.music.paused,
+      musicVolume: this.music ? Number(this.music.volume.toFixed(3)) : null,
+      musicPlaybackRate: this.music ? Number(this.music.playbackRate.toFixed(3)) : null,
+      musicLoop: this.music?.loop ?? false,
+      voiceAsset: this.currentVoiceAsset,
+      voicePlaying: this.currentVoice !== null && !this.currentVoice.paused,
+      scheduledCueIds: [...new Set(this.scheduled.values())].sort()
+    };
+  }
+
   private onEvent(events: EventBus, event: GameEvent): void {
     if (event.name !== PRESENTATION_CUE_EVENT) {
       return;
@@ -174,6 +215,11 @@ export class AudioDirector {
       this.cancelScheduled("chapter35_voice_audition_");
       this.stopVoice();
       return;
+    }
+    if (cueId === "qizhen_lake_left") {
+      this.cancelScheduled("qizhen_swan_chase_");
+      this.cancelScheduled("rpg_qizhen_chase_");
+      this.stopVoice();
     }
     const beat = audioTimeline.events[cueId];
     if (!beat) {
@@ -381,6 +427,7 @@ export class AudioDirector {
       this.stopVoice();
       const audio = new Audio(url);
       this.currentVoice = audio;
+      this.currentVoiceAsset = cue.asset;
       audio.volume = cue.volume ?? 1;
       const startAtSeconds = Math.max(0, cue.startMs ?? 0) / 1000;
       if (startAtSeconds > 0) {
@@ -398,7 +445,10 @@ export class AudioDirector {
         this.music.volume = cue.duckMusicTo;
       }
       const finishVoice = () => {
-        if (this.currentVoice === audio) this.currentVoice = null;
+        if (this.currentVoice === audio) {
+          this.currentVoice = null;
+          this.currentVoiceAsset = null;
+        }
         if (this.voiceRestoreTimer !== null) {
           window.clearTimeout(this.voiceRestoreTimer);
           this.voiceRestoreTimer = null;
@@ -421,6 +471,7 @@ export class AudioDirector {
   private stopVoice(): void {
     this.currentVoice?.pause();
     this.currentVoice = null;
+    this.currentVoiceAsset = null;
     if (this.voiceRestoreTimer !== null) {
       window.clearTimeout(this.voiceRestoreTimer);
       this.voiceRestoreTimer = null;

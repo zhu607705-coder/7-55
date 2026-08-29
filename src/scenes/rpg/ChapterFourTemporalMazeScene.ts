@@ -58,6 +58,7 @@ import {
 } from "../../modules/ChapterFourElevatorDepthModel";
 import { CHAPTER_FOUR_ELEVATOR } from "../../modules/ChapterFourElevatorModel";
 import type { ChapterFour755Intent } from "../../modules/ChapterFourTemporalMazeController";
+import { chapterFourInsertedPuzzleForTarget } from "../../modules/ChapterFourInsertedPuzzleModel";
 import {
   RPG_PIXEL_FONT_FAMILY,
   setRpgLogicalCameraZoom
@@ -94,6 +95,7 @@ import {
   type ChapterFourWarmupAsset,
   type ChapterFourWarmupPhase
 } from "./ChapterFourWarmupAssets";
+import { CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS } from "./ChapterFourInsertedPuzzleAssets";
 import {
   inspectChapterFourWarmupPhaseReadiness,
   runChapterFourWarmupAssetBatch,
@@ -661,10 +663,9 @@ const WORLD = Object.freeze({
 const PLAYER_SPEED = 176;
 const PLAYER_DEPTH_BASE = CHAPTER_FOUR_PLAYER_DEPTH_BASE;
 const PLAYER_TOP_DEPTH = CHAPTER_FOUR_PLAYER_TOP_DEPTH;
-const REALITY_DARK_OVERLAY_DEPTH = PLAYER_TOP_DEPTH - 50;
-const REALITY_DARK_CLUE_DEPTH = PLAYER_TOP_DEPTH - 30;
-const REALITY_TARGET_DEPTH = PLAYER_TOP_DEPTH - 20;
-const REALITY_DARK_OVERLAY_ALPHA = 0.54;
+const REALITY_MODE_ATMOSPHERE_DEPTH = PLAYER_TOP_DEPTH - 100;
+const REALITY_MODE_TARGET_DEPTH = PLAYER_TOP_DEPTH - 50;
+const REALITY_MODE_TRANSITION_MS = 240;
 const ELEVATOR_TEXTURE = CHAPTER_FOUR_ELEVATOR_TEXTURE_KEY;
 const BAKERY_COUNTER_BAKER_TEXTURE = CHAPTER_FOUR_BAKERY_STAFF_TEXTURE_KEY;
 const BAKERY_COUNTER_BAKER_ANIMATION = "chapter-four-bakery-counter-auntie-pair-3";
@@ -1014,9 +1015,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private elevatorVisuals = new Map<DisplayFloor, ElevatorVisual>();
   private appliedForegrounds: AppliedForeground[] = [];
   private targetVisuals = new Map<string, Phaser.GameObjects.Container>();
-  private targetGlowTweens: Phaser.Tweens.Tween[] = [];
-  private realityDarkOverlay!: Phaser.GameObjects.Rectangle;
-  private realityDarkOverlayTween: Phaser.Tweens.Tween | null = null;
+  private insertedPuzzleProps = new Map<string, Phaser.GameObjects.Image>();
+  private darkRealityVisuals: Phaser.GameObjects.Container | null = null;
+  private lightRealityVisuals: Phaser.GameObjects.Container | null = null;
+  private renderedRealityMode: GameState["chapter4"]["mode"] | null = null;
   private debugOverlayObjects: Phaser.GameObjects.GameObject[] = [];
   private plateColliderDebugObjects: Phaser.GameObjects.Rectangle[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -1132,6 +1134,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private hostPowerPanelSession: { openRequestId: string; targetId: string } | null = null;
   private finalChaseState: ChapterFourFinalChaseState | null = null;
   private finalChaseStep: ChapterFourFinalChaseStepResult | null = null;
+  private finalChaseAudioBand: ChapterFourFinalChaseState["pursuitBand"] | null = null;
+  private finalChaseCloseVoicePlayed = false;
+  private finalChaseFloorVoicePlayed = false;
   private finalChaseInsideFinish = false;
   private finalChaseContact = false;
   private chaseGuard: Phaser.Physics.Arcade.Sprite | null = null;
@@ -1257,6 +1262,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.refreshLoadedChapterFourAssets();
     this.cameras.main.setBackgroundColor(0x07111d).setRoundPixels(true);
     this.createBaseBackgrounds();
+    this.createInsertedPuzzleProps();
     this.createAlumniHonorWallPortraits();
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height);
     this.createCollisionGroups();
@@ -1294,6 +1300,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       3: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.THREE)
     };
     this.createHud();
+    this.createRealityModeVisuals(state.chapter4.mode);
     this.configureCameraForCurrentFloor();
     this.syncProjection(true);
     this.refreshProximity();
@@ -1479,6 +1486,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.destroyPhaseRuntime("scene_shutdown");
       this.destroyTask11Runtime("scene_shutdown");
       this.destroyTask12Runtime("scene_shutdown");
+      this.destroyRealityModeVisuals();
       this.destroyExternalTimeOverlay();
       this.closeAlumniPanel();
       this.hostPowerPanelOpen = false;
@@ -1487,8 +1495,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.syncStoryInputLock(true);
       this.feedbackTimer?.remove(false);
       this.clearProjectedTargetVisuals();
-      this.realityDarkOverlayTween?.remove();
-      this.realityDarkOverlayTween = null;
+      this.destroyInsertedPuzzleProps();
       clearRpgRuntimeDebugState();
     });
   }
@@ -1500,6 +1507,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       return;
     }
     this.createBaseBackgrounds();
+    this.createInsertedPuzzleProps();
     this.syncProjection(true);
     this.syncExternalFloorWhenIdle();
     this.refreshProximity();
@@ -1509,9 +1517,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.frameRegistration = registerChapterFour755ManifestFrames(this);
     this.validateFrameRegistrationReport(this.frameRegistration);
     ensureFinaleNpcAnimations(this);
+    this.refreshSupportNpcAnimations();
     this.ensureBakeryBakerAnimation();
     this.ensureFrontDeskStaffAnimation();
     this.createBaseBackgrounds();
+    this.createInsertedPuzzleProps();
     this.createAlumniHonorWallPortraits();
   }
 
@@ -1749,6 +1759,41 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       );
       this.textures.get(plateId).setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
+  }
+
+  private createInsertedPuzzleProps(): void {
+    for (const asset of CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS) {
+      const existing = this.insertedPuzzleProps.get(asset.puzzleId);
+      if (existing?.active || !this.textures.exists(asset.textureKey)) continue;
+      const displayFloor = displayFloorFor(asset.floor);
+      if (!displayFloor) continue;
+      const floor = getFloor(displayFloor);
+      this.textures.get(asset.textureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const image = this.add.image(
+        floor.offsetX + asset.center.x,
+        asset.center.y,
+        asset.textureKey
+      ).setDisplaySize(asset.sourceSize.width, asset.sourceSize.height)
+        .setDepth(asset.depth);
+      this.insertedPuzzleProps.set(asset.puzzleId, image);
+    }
+    this.syncInsertedPuzzlePropPresentation(this.bridge?.getState().chapter4.mode ?? this.appliedChapterMode);
+  }
+
+  private syncInsertedPuzzlePropPresentation(mode: GameState["chapter4"]["mode"]): void {
+    for (const image of this.insertedPuzzleProps.values()) {
+      if (!image.active) continue;
+      if (mode === "dark") {
+        image.setTint(0x64d9ff).setAlpha(0.78);
+      } else {
+        image.clearTint().setAlpha(1);
+      }
+    }
+  }
+
+  private destroyInsertedPuzzleProps(): void {
+    for (const image of this.insertedPuzzleProps.values()) image.destroy();
+    this.insertedPuzzleProps.clear();
   }
 
   private createAlumniHonorWallPortraits(): void {
@@ -2048,16 +2093,6 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       fontFamily: RPG_PIXEL_FONT_FAMILY,
       color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 1
     };
-    this.realityDarkOverlay = this.add.rectangle(
-      WORLD.width / 2,
-      WORLD.height / 2,
-      WORLD.width,
-      WORLD.height,
-      0x020817,
-      1
-    )
-      .setDepth(REALITY_DARK_OVERLAY_DEPTH)
-      .setAlpha(0);
     this.floorCaption = this.add.text(24, 58, "", style).setScrollFactor(0).setDepth(10000);
     this.interactionHint = this.add.text(480, 500, "", {
       ...style, fontSize: "16px", align: "center"
@@ -2071,6 +2106,97 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
     this.warmupStatusText.on("pointerdown", () => this.retryRequiredWarmupPhase());
     this.syncWarmupStatus();
+  }
+
+  private createRealityModeVisuals(initialMode: GameState["chapter4"]["mode"]): void {
+    this.destroyRealityModeVisuals();
+
+    const darkPattern = this.add.graphics();
+    darkPattern.fillStyle(0x020b16, 0.2);
+    darkPattern.fillRect(0, 0, 960, 22);
+    darkPattern.fillRect(0, 518, 960, 22);
+    darkPattern.fillRect(0, 0, 18, 540);
+    darkPattern.fillRect(942, 0, 18, 540);
+    darkPattern.lineStyle(1, 0x67ddff, 0.08);
+    for (let y = 30; y < 520; y += 16) darkPattern.lineBetween(0, y, 960, y);
+    darkPattern.lineStyle(2, 0x67ddff, 0.34);
+    darkPattern.strokeRect(8, 8, 944, 524);
+    darkPattern.lineStyle(3, 0x9aeaff, 0.46);
+    darkPattern.lineBetween(8, 34, 8, 8);
+    darkPattern.lineBetween(8, 8, 34, 8);
+    darkPattern.lineBetween(926, 8, 952, 8);
+    darkPattern.lineBetween(952, 8, 952, 34);
+    darkPattern.lineBetween(8, 506, 8, 532);
+    darkPattern.lineBetween(8, 532, 34, 532);
+    darkPattern.lineBetween(926, 532, 952, 532);
+    darkPattern.lineBetween(952, 506, 952, 532);
+
+    this.darkRealityVisuals = this.add.container(0, 0, [
+      this.add.rectangle(480, 270, 960, 540, 0x082846, 0.3),
+      darkPattern
+    ]).setScrollFactor(0).setDepth(REALITY_MODE_ATMOSPHERE_DEPTH);
+
+    const lightPattern = this.add.graphics();
+    lightPattern.lineStyle(2, 0xffd36f, 0.22);
+    lightPattern.strokeRect(8, 8, 944, 524);
+    lightPattern.lineStyle(2, 0xffe8ae, 0.3);
+    lightPattern.lineBetween(8, 8, 38, 8);
+    lightPattern.lineBetween(8, 8, 8, 38);
+    lightPattern.lineBetween(922, 8, 952, 8);
+    lightPattern.lineBetween(952, 8, 952, 38);
+    lightPattern.lineBetween(8, 502, 8, 532);
+    lightPattern.lineBetween(8, 532, 38, 532);
+    lightPattern.lineBetween(922, 532, 952, 532);
+    lightPattern.lineBetween(952, 502, 952, 532);
+
+    this.lightRealityVisuals = this.add.container(0, 0, [
+      this.add.rectangle(480, 270, 960, 540, 0xffe2a6, 0.07),
+      lightPattern
+    ]).setScrollFactor(0).setDepth(REALITY_MODE_ATMOSPHERE_DEPTH);
+
+    this.renderedRealityMode = null;
+    this.syncRealityModeVisuals(initialMode, true);
+  }
+
+  private syncRealityModeVisuals(
+    mode: GameState["chapter4"]["mode"],
+    immediate = false
+  ): void {
+    if (!this.darkRealityVisuals || !this.lightRealityVisuals) return;
+    if (!immediate && mode === this.renderedRealityMode) return;
+
+    const darkAlpha = mode === "dark" ? 1 : 0;
+    const lightAlpha = mode === "light" ? 1 : 0;
+    this.tweens.killTweensOf(this.darkRealityVisuals);
+    this.tweens.killTweensOf(this.lightRealityVisuals);
+    if (immediate) {
+      this.darkRealityVisuals.setAlpha(darkAlpha);
+      this.lightRealityVisuals.setAlpha(lightAlpha);
+    } else {
+      this.tweens.add({
+        targets: this.darkRealityVisuals,
+        alpha: darkAlpha,
+        duration: REALITY_MODE_TRANSITION_MS,
+        ease: "Sine.easeOut"
+      });
+      this.tweens.add({
+        targets: this.lightRealityVisuals,
+        alpha: lightAlpha,
+        duration: REALITY_MODE_TRANSITION_MS,
+        ease: "Sine.easeOut"
+      });
+    }
+    this.renderedRealityMode = mode;
+  }
+
+  private destroyRealityModeVisuals(): void {
+    if (this.darkRealityVisuals) this.tweens.killTweensOf(this.darkRealityVisuals);
+    if (this.lightRealityVisuals) this.tweens.killTweensOf(this.lightRealityVisuals);
+    this.darkRealityVisuals?.destroy(true);
+    this.lightRealityVisuals?.destroy(true);
+    this.darkRealityVisuals = null;
+    this.lightRealityVisuals = null;
+    this.renderedRealityMode = null;
   }
 
   private retryRequiredWarmupPhase(): void {
@@ -2128,6 +2254,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.projectionRetryNotBeforeMs = 0;
     }
     if (!force && signature === this.projectionSignature) {
+      this.syncRealityModeVisuals(state.chapter4.mode);
+      this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
       this.syncBakeryRuntime(state, next);
       this.syncRoom204Runtime(state);
       this.syncPhaseRuntime(state);
@@ -2148,7 +2276,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.appliedChapterMode = state.chapter4.mode;
     this.appliedLightMask = state.chapter4.lightGrid.mask;
     this.appliedLightLocked = state.chapter4.lightGrid.locked;
-    this.applyRealityModePresentation(state.chapter4.mode, force);
+    this.syncRealityModeVisuals(state.chapter4.mode, force);
+    this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
     this.projectionRetryFailures = 0;
     this.projectionRetryNotBeforeMs = 0;
     this.syncBakeryRuntime(state, next);
@@ -2809,8 +2938,22 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       ).setOrigin(definition.origin.x, definition.origin.y)
         .setScale(definition.uniformScale)
         .setDepth(PLAYER_DEPTH_BASE + definition.position.y);
-      sprite.play(animation, true);
+      if (this.anims.exists(animation)) sprite.play(animation, true);
       this.supportNpcSprites.set(definition.npcId, sprite);
+    }
+  }
+
+  private refreshSupportNpcAnimations(): void {
+    for (const definition of SUPPORT_NPC_RUNTIMES) {
+      const sprite = this.supportNpcSprites.get(definition.npcId);
+      if (!sprite?.active) continue;
+      const finaleAnimation = definition.visualSource === "finale_npc"
+        ? FINALE_NPC_ANIMATIONS[definition.animation as FinaleNpcAnimationId]
+        : null;
+      const animation = finaleAnimation?.id ?? FRONT_DESK_STAFF_ANIMATION;
+      if (this.anims.exists(animation) && sprite.anims.currentAnim?.key !== animation) {
+        sprite.play(animation, true);
+      }
     }
   }
 
@@ -3453,7 +3596,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.room204ResidualSprites.forEach((sprite) => sprite
       .setVisible(residualVisible)
       .setBlendMode(state.chapter4.mode === "dark" ? Phaser.BlendModes.ADD : Phaser.BlendModes.NORMAL)
-      .setDepth(state.chapter4.mode === "dark" ? REALITY_DARK_CLUE_DEPTH : PLAYER_DEPTH_BASE - 200));
+      .setDepth(state.chapter4.mode === "dark" ? REALITY_MODE_TARGET_DEPTH : PLAYER_DEPTH_BASE - 200));
     for (const pieceId of ROOM204_PIECE_ORDER) {
       const runtimePiece = this.room204RuntimePieces.get(pieceId);
       if (!runtimePiece) continue;
@@ -4715,6 +4858,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     // or stale intent responses therefore cannot move either actor.
     this.destroyChaseRuntime();
     this.finalChaseState = createChapterFourFinalChaseState(state.chapter4.chaseAttempt);
+    this.finalChaseAudioBand = null;
+    this.finalChaseCloseVoicePlayed = false;
+    this.finalChaseFloorVoicePlayed = false;
     const floor = getFloor(1);
     this.currentFloor = 1;
     this.player.setPosition(
@@ -4804,6 +4950,25 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     });
     this.finalChaseState = step.state;
     this.finalChaseStep = step;
+    if (step.state.pursuitBand !== this.finalChaseAudioBand) {
+      this.finalChaseAudioBand = step.state.pursuitBand;
+      this.safeBridgeEmit(`final_chase_pressure_${step.state.pursuitBand}`, {
+        attempt: committed.chapter4.chaseAttempt,
+        routeDistance: Math.round(step.guardToPlayerRouteDistance)
+      });
+      if (step.state.pursuitBand === "close" && !this.finalChaseCloseVoicePlayed) {
+        this.finalChaseCloseVoicePlayed = true;
+        this.safeBridgeEmit("final_chase_close_voice", {
+          attempt: committed.chapter4.chaseAttempt
+        });
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: chapterFourDialogueText("chase.close"),
+          tone: "system",
+          speaker: "保安",
+          durationMs: 2500
+        });
+      }
+    }
     if (step.guardPortalArrival) {
       const arrivalFloor = getFloor(2);
       guard.setPosition(
@@ -4812,6 +4977,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         )!.x,
         CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.y
       );
+      if (!this.finalChaseFloorVoicePlayed) {
+        this.finalChaseFloorVoicePlayed = true;
+        this.safeBridgeEmit("final_chase_floor_changed", {
+          attempt: committed.chapter4.chaseAttempt,
+          floor: "A2"
+        });
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: chapterFourDialogueText("chase.floor_changed"),
+          tone: "system",
+          speaker: "保安",
+          durationMs: 3100
+        });
+      }
     }
     const activeGuardFloor: DisplayFloor = step.state.guardFloor === "A2" ? 2 : 1;
     const visible = step.guardVisible && this.currentFloor === activeGuardFloor;
@@ -4960,6 +5138,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.finalChaseGuardTravelFlipX = false;
     this.finalChaseState = null;
     this.finalChaseStep = null;
+    this.finalChaseAudioBand = null;
+    this.finalChaseCloseVoicePlayed = false;
+    this.finalChaseFloorVoicePlayed = false;
     this.finalChaseInsideFinish = false;
     this.finalChaseContact = false;
   }
@@ -4990,7 +5171,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         break;
       case "final_chase":
         this.safeBridgeEmit("rpg_subtitle", {
-          text: chapterFourDialogueSequence("chase.started"),
+          text: chapterFourDialogueText("chase.started"),
           tone: "system",
           speaker: "保安",
           durationMs: 2200
@@ -5113,15 +5294,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private resolveProjectedTargets(): ProjectedTarget[] {
     const phase = this.projection.phase;
     if (!phase) return [];
-    const mode = this.appliedChapterMode;
     return this.projection.availableTargetIds.flatMap((targetId) => {
       if (!TASK13_ACTIONABLE_TARGET_IDS.has(targetId)) return [];
       const contract = CHAPTER_FOUR_755_INTERACTION_TARGETS[
         targetId as keyof typeof CHAPTER_FOUR_755_INTERACTION_TARGETS
       ];
       if (!contract) return [];
-      const requiredMode = selectChapterFour755RequiredMode(contract, phase);
-      if (requiredMode !== undefined && requiredMode !== mode) return [];
       if (contract.boundsSource.kind === "runtime_entity") {
         const bakeryBinding = this.bakeryRuntimeTargets.get(contract.id);
         const room204Binding = this.room204RuntimeTargets.get(contract.id);
@@ -5247,30 +5425,25 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       && new URLSearchParams(window.location.search).get("debugTargets") === "1";
     for (const target of targets) {
       const floor = getFloor(target.floor);
-      const requiredMode = this.projection.phase
+      const mode = this.projection.phase
         ? selectChapterFour755RequiredMode(target.contract, this.projection.phase)
         : undefined;
-      const darkModeTarget = requiredMode === "dark";
-      const color = darkModeTarget ? 0x67e8ff : 0xffd36f;
+      const color = mode === "dark" ? 0x67ddff : mode === "light" ? 0xffd36f : 0xf7f1dc;
+      const modeActive = mode === undefined || mode === this.appliedChapterMode;
       const container = this.add.container(
         floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds)
-      ).setDepth(REALITY_TARGET_DEPTH);
-      if (darkModeTarget) {
-        const marker = this.add.circle(0, 0, 5, 0xd5fbff, 0.92)
-          .setStrokeStyle(2, color, 0.96)
-          .setBlendMode(Phaser.BlendModes.ADD);
-        container.add(marker);
-        this.targetGlowTweens.push(this.tweens.add({
-          targets: marker,
-          alpha: { from: 0.58, to: 1 },
-          scale: { from: 0.92, to: 1.18 },
-          duration: 920,
-          ease: "Sine.InOut",
-          yoyo: true,
-          repeat: -1
-        }));
+      ).setDepth(REALITY_MODE_TARGET_DEPTH)
+        .setAlpha(modeActive ? 1 : 0.22)
+        .setScale(modeActive ? 1 : 0.72);
+      if (mode === "light") {
+        container.add(this.add.rectangle(0, 0, 13, 13, color, 0.12)
+          .setRotation(Math.PI / 4)
+          .setStrokeStyle(2, color, 0.94));
+        container.add(this.add.circle(0, 0, 3, color, 0.96));
       } else {
-        container.add(this.add.circle(0, 0, 5, color, 0.82).setStrokeStyle(1, 0xfff4c2, 0.86));
+        container.add(this.add.circle(0, 0, 10, color, 0.08)
+          .setStrokeStyle(2, color, 0.94));
+        container.add(this.add.circle(0, 0, 3, color, 0.96));
       }
       if (showBounds) {
         container.add(this.add.rectangle(
@@ -5283,31 +5456,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private clearProjectedTargetVisuals(): void {
-    for (const tween of this.targetGlowTweens) tween.remove();
-    this.targetGlowTweens = [];
-    for (const visual of this.targetVisuals.values()) visual.destroy(true);
+    for (const visual of this.targetVisuals.values()) {
+      this.tweens.killTweensOf(visual);
+      visual.destroy(true);
+    }
     this.targetVisuals.clear();
     this.renderedTargetIds = [];
-  }
-
-  private applyRealityModePresentation(
-    mode: GameState["chapter4"]["mode"],
-    immediate: boolean
-  ): void {
-    const targetAlpha = mode === "dark" ? REALITY_DARK_OVERLAY_ALPHA : 0;
-    this.realityDarkOverlayTween?.remove();
-    this.realityDarkOverlayTween = null;
-    if (immediate) {
-      this.realityDarkOverlay.setAlpha(targetAlpha);
-      return;
-    }
-    this.realityDarkOverlayTween = this.tweens.add({
-      targets: this.realityDarkOverlay,
-      alpha: targetAlpha,
-      duration: 220,
-      ease: "Sine.Out",
-      onComplete: () => { this.realityDarkOverlayTween = null; }
-    });
   }
 
   private createElevatorVisuals(): void {
@@ -6908,6 +7062,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       case "inspect_chapter_four_context": {
         this.storyPresentation = "idle";
         const state = this.bridge.getState();
+        const insertedPuzzleId = pending.targetId
+          ? chapterFourInsertedPuzzleForTarget(pending.targetId)
+          : null;
         const subtitle = resolveChapterFourContextInteractionSubtitle({
           targetId: pending.targetId,
           phase: this.projection.phase,
@@ -6915,13 +7072,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           mode: state.chapter4.mode,
           result: payload?.result
         });
-        this.safeBridgeEmit("rpg_subtitle", {
-          ...(subtitle ?? {
+        if (subtitle) {
+          this.safeBridgeEmit("rpg_subtitle", { ...subtitle });
+        } else if (!insertedPuzzleId) {
+          this.safeBridgeEmit("rpg_subtitle", {
             text: "当前教室没有新增状态记录。",
             tone: "system" as const,
             durationMs: 4400 as const
-          })
-        });
+          });
+        }
         break;
       }
       case "inspect_alumni_figure":
@@ -8032,13 +8191,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           displayFloor: this.currentFloor,
           plateSignature: this.appliedPlateSignature,
           plateIds: this.appliedPlateIds,
-          targetIds: [...this.renderedTargetIds],
-          realityPresentation: {
-            darkOverlayAlpha: this.realityDarkOverlay.alpha,
-            darkOverlayDepth: REALITY_DARK_OVERLAY_DEPTH,
-            targetDepth: REALITY_TARGET_DEPTH,
-            glowingTargetCount: this.targetGlowTweens.length
-          }
+          targetIds: [...this.renderedTargetIds]
         },
         warmup: {
           requiredPhase: chapterFourWarmupPhaseForState(state),
@@ -8050,6 +8203,21 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
             urls: [...urls],
             retryNotBeforeMs: this.phaseLoadRetryNotBeforeMs.get(phase) ?? 0
           }))
+        },
+        realityVisuals: {
+          renderedMode: this.renderedRealityMode ?? this.appliedChapterMode,
+          darkLayerAlpha: this.darkRealityVisuals?.alpha ?? 0,
+          lightLayerAlpha: this.lightRealityVisuals?.alpha ?? 0,
+          atmosphereDepth: REALITY_MODE_ATMOSPHERE_DEPTH,
+          targetDepth: REALITY_MODE_TARGET_DEPTH,
+          activeTargetMarkerIds: targetDebug
+            .filter((target) => target.requiredMode === undefined
+              || target.requiredMode === this.appliedChapterMode)
+            .map((target) => target.id),
+          dormantTargetMarkerIds: targetDebug
+            .filter((target) => target.requiredMode !== undefined
+              && target.requiredMode !== this.appliedChapterMode)
+            .map((target) => target.id)
         },
         activeFloorBounds: {
           x: floor.offsetX,
@@ -8105,6 +8273,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
             ? { ...this.finalChaseState.predictedPlayerPosition }
             : null,
           pursuitBand: this.finalChaseState?.pursuitBand ?? null,
+          audioBand: this.finalChaseAudioBand,
+          closeVoicePlayed: this.finalChaseCloseVoicePlayed,
+          floorVoicePlayed: this.finalChaseFloorVoicePlayed,
           pursuitSpeed: this.finalChaseState?.pursuitSpeed ?? null,
           guardToPlayerRouteDistance: this.finalChaseStep?.guardToPlayerRouteDistance ?? null,
           contactHoldMs: this.finalChaseState?.contactHoldMs ?? 0,

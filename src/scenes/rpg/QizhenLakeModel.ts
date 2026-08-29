@@ -164,6 +164,43 @@ const FULL_BOTTOM: QizhenLakeCollisionRect = {
   bottom: QIZHEN_LAKE_WORLD.height
 };
 
+/**
+ * Small water obstacles measured against the four 1672×941 source plates.
+ *
+ * These rectangles cover only the solid core that rises above the water. They
+ * deliberately exclude ripples, submerged stones and vegetation so the kayak
+ * does not stop while visible water still separates the hull from the prop.
+ */
+export const QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS: Readonly<
+  Record<QizhenLakeZoneId, readonly QizhenLakeCollisionRect[]>
+> = Object.freeze({
+  dock: Object.freeze([
+    { id: "dock_buoy_northwest", left: 621, top: 125, right: 639, bottom: 151 },
+    { id: "dock_buoy_northeast", left: 1207, top: 125, right: 1225, bottom: 151 },
+    { id: "dock_buoy_west", left: 295, top: 312, right: 313, bottom: 336 },
+    { id: "dock_buoy_center_east", left: 1051, top: 430, right: 1069, bottom: 455 },
+    { id: "dock_buoy_southeast", left: 1436, top: 602, right: 1454, bottom: 627 }
+  ]),
+  open_water: Object.freeze([
+    { id: "open_buoy_north", left: 828, top: 380, right: 843, bottom: 405 },
+    { id: "open_buoy_west", left: 777, top: 416, right: 792, bottom: 438 },
+    { id: "open_buoy_east", left: 890, top: 416, right: 905, bottom: 437 },
+    { id: "open_buoy_south", left: 830, top: 458, right: 845, bottom: 480 }
+  ]),
+  channel: Object.freeze([
+    { id: "rock_west", left: 304, top: 559, right: 339, bottom: 591 },
+    { id: "rock_mid_east_large", left: 1233, top: 530, right: 1272, bottom: 565 },
+    { id: "rock_mid_east_small", left: 1263, top: 553, right: 1296, bottom: 585 },
+    { id: "rock_east", left: 1369, top: 516, right: 1405, bottom: 547 },
+    { id: "buoy_1", left: 80, top: 498, right: 96, bottom: 522 },
+    { id: "buoy_2", left: 365, top: 442, right: 381, bottom: 467 },
+    { id: "buoy_3", left: 936, top: 441, right: 952, bottom: 467 },
+    { id: "buoy_4", left: 1231, top: 445, right: 1247, bottom: 468 },
+    { id: "buoy_5", left: 1481, top: 441, right: 1497, bottom: 467 }
+  ]),
+  swan_cove: Object.freeze([])
+});
+
 export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZoneDefinition>> = {
   dock: {
     id: "dock",
@@ -193,7 +230,8 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       { id: "west_land", left: 0, top: 370, right: 610, bottom: 941 },
       { id: "dock_walkway", left: 618, top: 430, right: 790, bottom: 670 },
       { id: "south_land", left: 790, top: 650, right: 1100, bottom: 941 },
-      { id: "south_willow", left: 860, top: 610, right: 1090, bottom: 890 }
+      { id: "south_willow", left: 860, top: 610, right: 1090, bottom: 890 },
+      ...QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS.dock
     ],
     waterAreas: [
       { id: "dock_basin", left: 520, top: 28, right: 1644, bottom: 913 }
@@ -222,7 +260,8 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       { id: "northwest_island", left: 90, top: 45, right: 575, bottom: 400 },
       { id: "north_channel_bank", left: 780, top: 28, right: 980, bottom: 180 },
       { id: "lily_piles", left: 1020, top: 520, right: 1260, bottom: 765 },
-      { id: "south_central_bank", left: 650, top: 810, right: 1040, bottom: 941 }
+      { id: "south_central_bank", left: 650, top: 810, right: 1040, bottom: 941 },
+      ...QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS.open_water
     ],
     waterAreas: [
       { id: "open_basin", left: 30, top: 30, right: 1642, bottom: 911 }
@@ -262,14 +301,7 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       { id: "raft_mooring_nw", left: 505, top: 388, right: 528, bottom: 435 },
       { id: "raft_mooring_se", left: 685, top: 525, right: 708, bottom: 572 },
       { id: "right_dock", left: 1548, top: 450, right: 1672, bottom: 580 },
-      { id: "rock_west", left: 285, top: 548, right: 350, bottom: 608 },
-      { id: "rock_mid_east", left: 1215, top: 525, right: 1322, bottom: 607 },
-      { id: "rock_east", left: 1350, top: 492, right: 1424, bottom: 557 },
-      { id: "buoy_1", left: 78, top: 485, right: 102, bottom: 523 },
-      { id: "buoy_2", left: 360, top: 440, right: 385, bottom: 479 },
-      { id: "buoy_3", left: 932, top: 440, right: 957, bottom: 479 },
-      { id: "buoy_4", left: 1228, top: 440, right: 1253, bottom: 479 },
-      { id: "buoy_5", left: 1478, top: 439, right: 1503, bottom: 478 }
+      ...QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS.channel
     ],
     waterAreas: [
       { id: "straight_channel", left: 28, top: 174, right: 1644, bottom: 770 }
@@ -306,7 +338,8 @@ export const QIZHEN_LAKE_ZONES: Readonly<Record<QizhenLakeZoneId, QizhenLakeZone
       { id: "swan_fence_south_center", left: 1232, top: 475, right: 1372, bottom: 514 },
       { id: "swan_fence_southeast_curve", left: 1350, top: 487, right: 1428, bottom: 535 },
       { id: "swan_fence_east", left: 1402, top: 220, right: 1438, bottom: 535 },
-      { id: "south_bank", left: 500, top: 760, right: 1450, bottom: 941 }
+      { id: "south_bank", left: 500, top: 760, right: 1450, bottom: 941 },
+      ...QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS.swan_cove
     ],
     waterAreas: [
       { id: "swan_basin", left: 28, top: 150, right: 1450, bottom: 913 }

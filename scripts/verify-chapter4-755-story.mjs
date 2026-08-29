@@ -123,9 +123,11 @@ const EXPECTED_BAKERY_CUES = [
   "chapter4_bakery_hour_hand_revealed"
 ];
 const EXPECTED_ROOM204_TASK_KEYS = [
+  "resolve_a1_investigation",
   "verify_a1_classrooms",
   "observe_elevator_history",
   "calibrate_elevator_history",
+  "resolve_a3_archive_chain",
   "observe_a3_reference",
   "answer_zhu_two_questions",
   "solve_misaligned_stair",
@@ -133,6 +135,7 @@ const EXPECTED_ROOM204_TASK_KEYS = [
   "restore_room204",
   "watch_room204_projection",
   "collect_positioning_plate",
+  "resolve_a2_inserted_puzzles",
   "install_positioning_plate"
 ];
 const EXPECTED_ROOM204_FACTS = [
@@ -140,6 +143,9 @@ const EXPECTED_ROOM204_FACTS = [
   "classroom_105_terminal_replay_checked",
   "elevator_history_observed",
   "elevator_history_calibrated",
+  "a1_duty_board_reconstructed",
+  "a3_archive_film_retrieved",
+  "a3_media_alignment_completed",
   "a3_reference_observed",
   "zhu_two_questions_answered",
   "misaligned_stair_solved",
@@ -147,6 +153,9 @@ const EXPECTED_ROOM204_FACTS = [
   "room204_restored",
   "room204_projection_completed",
   "positioning_plate_collected",
+  "a2_positioning_plate_calibrated",
+  "a2_power_topology_recovered",
+  "a2_evacuation_route_confirmed",
   "positioning_plate_installed"
 ];
 const EXPECTED_MAINTENANCE_TASK_KEYS = [
@@ -881,6 +890,8 @@ function validateTask7RuntimeSources(errors) {
     "observe_elevator_history",
     "calibrate_elevator_history",
     "observe_a3_reference",
+    "inspect_chapter_four_context",
+    "complete_inserted_puzzle",
     "complete_misaligned_stair",
     "observe_room204_residual",
     "place_room204_piece",
@@ -891,9 +902,10 @@ function validateTask7RuntimeSources(errors) {
     "complete_minute_theft",
     "open_power_panel",
     "toggle_light_zone",
-    "lock_light_grid"
+    "lock_light_grid",
+    "acknowledge_exterior_closure"
   ])) {
-    errors.push("Host handshake suppression must contain exactly the Task 7-11 Scene/overlay-owned presentations");
+    errors.push("Host handshake suppression must contain exactly the Chapter 4 Scene/overlay-owned presentations");
   }
 
   const task7LiveReadyBlock = scene.match(/const TASK7_LIVE_READY_TARGET_IDS[\s\S]*?new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? "";
@@ -972,22 +984,25 @@ function validateTask7RuntimeSources(errors) {
   const realityTargetProjectionBlock = scene.match(
     /private resolveProjectedTargets\(\)[\s\S]*?private resolveActionableTargets\(\)/
   )?.[0] ?? "";
-  if (!/const mode = this\.appliedChapterMode/.test(realityTargetProjectionBlock)
-    || !/selectChapterFour755RequiredMode\(contract, phase\)/.test(realityTargetProjectionBlock)
-    || !/requiredMode !== undefined && requiredMode !== mode\) return \[\]/.test(realityTargetProjectionBlock)) {
-    errors.push("Chapter 4 mode-specific targets must be absent from both rendering and interaction in the opposite applied reality mode");
+  if (/requiredMode !== undefined && requiredMode !== mode\) return \[\]/.test(realityTargetProjectionBlock)) {
+    errors.push("Chapter 4 must keep mode-specific targets projected so players can investigate in any order and receive mode correction without losing the puzzle point");
   }
   const realityPresentationBlock = scene.match(
     /private refreshProjectedTargetVisuals\(\)[\s\S]*?private createElevatorVisuals\(\)/
   )?.[0] ?? "";
-  if (!/private applyRealityModePresentation/.test(realityPresentationBlock)
-    || !/mode === "dark" \? REALITY_DARK_OVERLAY_ALPHA : 0/.test(realityPresentationBlock)
-    || !/const darkModeTarget = requiredMode === "dark"/.test(realityPresentationBlock)
-    || !/Phaser\.BlendModes\.ADD/.test(realityPresentationBlock)
-    || !/targets: marker/.test(realityPresentationBlock)
-    || !/targetGlowTweens/.test(realityPresentationBlock)
-    || /outerGlow|innerGlow/.test(realityPresentationBlock)) {
-    errors.push("Chapter 4 dark mode must dim the bright map and apply one additive fluorescent marker only to dark-mode targets");
+  const realityAtmosphereBlock = scene.match(
+    /private createRealityModeVisuals\([\s\S]*?private retryRequiredWarmupPhase\(\)/
+  )?.[0] ?? "";
+  if (!/private syncRealityModeVisuals/.test(realityAtmosphereBlock)
+    || !/0x082846, 0\.3/.test(realityAtmosphereBlock)
+    || !/0xffe2a6, 0\.07/.test(realityAtmosphereBlock)
+    || !/mode === "dark" \? 1 : 0/.test(realityAtmosphereBlock)
+    || !/mode === "light" \? 1 : 0/.test(realityAtmosphereBlock)
+    || !/modeActive \? 1 : 0\.22/.test(realityPresentationBlock)
+    || !/mode === "light"/.test(realityPresentationBlock)
+    || !/0x67ddff/.test(realityPresentationBlock)
+    || !/0xffd36f/.test(realityPresentationBlock)) {
+    errors.push("Chapter 4 must render distinct dark and light atmospheres while keeping opposite-mode puzzle markers visible in a dormant state");
   }
   const room204PieceResolverBlock = scene.match(
     /private resolveNearbyRoom204PieceId\(\)[\s\S]*?private selectRoom204Piece/
@@ -1300,10 +1315,10 @@ function validateTask7RuntimeSources(errors) {
     /contract\.id\s*===\s*"room204_restore"[\s\S]*?return contract\.taskKeys\.includes/
   )?.[0] ?? "";
   const groupedRoom204TaskKeys = [
-    "verify_a1_classrooms",
-    "observe_elevator_history",
-    "answer_zhu_two_questions",
+    "resolve_a1_investigation",
+    "resolve_a3_archive_chain",
     "solve_misaligned_stair",
+    "resolve_a2_inserted_puzzles",
     "restore_room204",
     "watch_room204_projection",
     "collect_positioning_plate",
@@ -1311,11 +1326,13 @@ function validateTask7RuntimeSources(errors) {
   ];
   if (groupedRoom204TaskKeys.some((taskKey) => !room204QuestBlock.includes(`"${taskKey}"`))
     || !/!facts\.has\("classroom_104_chalk_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("classroom_105_terminal_replay_checked"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("elevator_history_observed"\)[\s\S]*?\|\|\s*!facts\.has\("elevator_history_calibrated"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("elevator_history_observed"\)[\s\S]*?\|\|\s*!facts\.has\("elevator_history_calibrated"\)[\s\S]*?\|\|\s*!facts\.has\("a1_duty_board_reconstructed"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("zhu_two_questions_answered"\)[\s\S]*?\|\|\s*!facts\.has\("a3_archive_film_retrieved"\)[\s\S]*?\|\|\s*!facts\.has\("a3_media_alignment_completed"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("a2_positioning_plate_calibrated"\)[\s\S]*?\|\|\s*!facts\.has\("a2_power_topology_recovered"\)[\s\S]*?\|\|\s*!facts\.has\("a2_evacuation_route_confirmed"\)/.test(room204QuestBlock)
     || !/!facts\.has\("a3_reference_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_restored"\)/.test(room204QuestBlock)
     || !/facts\.has\("room204_projection_completed"\)/.test(room204QuestBlock)
     || !/facts\.has\("positioning_plate_collected"\)/.test(room204QuestBlock)) {
-    errors.push("Task 9 QuestModel must expose one grouped current objective while keeping paired light/dark observations order-independent");
+    errors.push("Task 9 QuestModel must expose grouped A1/A3/A2 objectives while keeping each investigation group and paired light/dark observations order-independent");
   }
 
   const maintenanceTargetBlock = interaction.match(
@@ -1787,9 +1804,12 @@ function validateTask7RuntimeSources(errors) {
     || !/saved\.checkinCardAccepted === true[\s\S]*?savedFactIds\.includes\("checkin_card_accepted"\)/.test(saveStore)
     || !/phase === "morning_checkin" && savedCardAccepted && savedPaperAccepted[\s\S]*?phase = "exterior_closure"/.test(saveStore)
     || !/facts\.delete\("exterior_closure_acknowledged"\)/.test(saveStore)
-    || !/const completed = false/.test(saveStore)
+    || !/const savedCompletionVerified = envelopeVersion >= CHAPTER_FOUR_CLOSURE_SAVE_VERSION[\s\S]*?savedPhase === "complete"[\s\S]*?saved\.completed === true[\s\S]*?saved\.exteriorClosureAcknowledged === true[\s\S]*?savedCardAccepted[\s\S]*?savedPaperAccepted[\s\S]*?savedLightGridForCompletion\.locked === true[\s\S]*?savedLightGridForCompletion\.mask === 13/.test(saveStore)
+    || !/const savedClaimsCompletion = saved\.completed === true[\s\S]*?savedPhase === "complete"[\s\S]*?saved\.exteriorClosureAcknowledged === true[\s\S]*?savedFactIds\.includes\("exterior_closure_acknowledged"\)/.test(saveStore)
+    || !/let phase: ChapterFourPhase = savedCompletionVerified[\s\S]*?: savedPhase === "complete" && savedClaimsCompletion[\s\S]*?\? "exterior_closure"[\s\S]*?: savedPhase/.test(saveStore)
+    || !/const completed = savedCompletionVerified/.test(saveStore)
     || !/items\.campusCard = true/.test(saveStore)) {
-    errors.push("Task 13 SaveStore must synchronize check-in booleans/facts/items, auto-close a complete morning pair and reject bare persisted completion");
+    errors.push("Task 13 SaveStore must synchronize check-in booleans/facts/items, auto-close a complete morning pair and accept completion only from a coherent v32 closure");
   }
   if (!/contract\.id === "return_to_clock"[\s\S]*?floor === "A1"[\s\S]*?"install_final_minute"[\s\S]*?"return_via_main_stair"/.test(quest)
     || !/contract\.id === "morning_checkin"[\s\S]*?checkin_card_accepted[\s\S]*?checkin_paper_accepted[\s\S]*?"submit_attendance_paper"[\s\S]*?"read_campus_card"[\s\S]*?"complete_checkin"/.test(quest)) {
@@ -1996,8 +2016,8 @@ function validate(content) {
     errors.push("tasks must be an object");
   } else {
     const activeTaskEntries = Object.entries(tasks).filter(([taskKey]) => taskKey !== "chapter_complete");
-    if (Object.keys(tasks).length !== 34 || activeTaskEntries.length !== 33) {
-      errors.push("tasks must contain 33 active tasks plus chapter_complete");
+    if (Object.keys(tasks).length !== 37 || activeTaskEntries.length !== 36) {
+      errors.push("tasks must contain 36 active tasks plus chapter_complete");
     }
     for (const [taskKey, task] of Object.entries(tasks)) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
@@ -2015,8 +2035,8 @@ function validate(content) {
       (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
       0
     );
-    if (activeHintCount !== 99) {
-      errors.push("tasks must expose the full 99-hint active contract");
+    if (activeHintCount !== 108) {
+      errors.push("tasks must expose the full 108-hint active contract");
     }
     const room204PlayerCopy = [
       tasks.restore_room204?.label,

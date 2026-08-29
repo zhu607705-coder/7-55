@@ -212,6 +212,9 @@
       "classroom_105_terminal_replay_checked": "105 讲台的本地回放延迟已确认",
       "elevator_history_observed": "主电梯三条历史轨道已读取",
       "elevator_history_calibrated": "主电梯 18:50 重放窗口已校准",
+      "a1_duty_board_reconstructed": "A1 值班签到板已重建",
+      "a3_archive_film_retrieved": "301 旧导视胶片已取出",
+      "a3_media_alignment_completed": "302 新旧影像已对齐",
       "a3_reference_observed": "三楼 303 晨间参照已记录",
       "zhu_two_questions_answered": "竺老两问已回答",
       "misaligned_stair_solved": "三楼至二楼的错位楼梯已接通",
@@ -219,6 +222,9 @@
       "room204_restored": "二楼 204 已恢复",
       "room204_projection_completed": "204 投影记录已完成",
       "positioning_plate_collected": "钟面定位片已取得",
+      "a2_positioning_plate_calibrated": "201 定位板已完成三轴校准",
+      "a2_power_topology_recovered": "203 五区供电拓扑已恢复",
+      "a2_evacuation_route_confirmed": "A2 夜间疏散路线已确认",
       "positioning_plate_installed": "钟面定位片已装回",
       "cart_wheel_inspected": "保洁车轮卡滞已确认",
       "cart_wheel_cover_opened": "保洁车轮罩已打开",
@@ -280,13 +286,37 @@
       "reason": "主电梯重放窗口尚未校准。",
       "nextAction": "使用浅色操作进入轿厢，让门体开放区间覆盖六秒进入窗口。"
     },
+    "duty_board_required": {
+      "reason": "A1 的三段值班记录还没有汇合。",
+      "nextAction": "到前台台面打开签到板；104、105 与电梯的调查顺序不受限制。"
+    },
+    "archive_film_required": {
+      "reason": "302 扫描台缺少旧导视胶片。",
+      "nextAction": "到三楼 301 的索引抽屉按年份、楼层与用途筛出胶片。"
+    },
+    "media_alignment_required": {
+      "reason": "三楼新旧导视影像尚未重合。",
+      "nextAction": "带着 301 胶片到 302，校准平移和旋转后再进入错位楼梯。"
+    },
+    "positioning_calibration_required": {
+      "reason": "钟面定位片尚未完成三轴校准。",
+      "nextAction": "到二楼 201 创客工坊调整横向、纵向和压力。"
+    },
+    "power_topology_required": {
+      "reason": "五区供电关系仍不完整。",
+      "nextAction": "到二楼 203 恢复停电前的五条相邻连线。"
+    },
+    "evacuation_route_required": {
+      "reason": "二楼疏散通路尚未确认。",
+      "nextAction": "在开放自习区按脚步残影排列通往 202 的四段路线。"
+    },
     "zhu_two_questions_required": {
       "reason": "竺老两问尚未完成。",
       "nextAction": "回到三楼校史人物荣誉门厅，靠近竺可桢画像按 Space 并提交两项回答。"
     },
     "misaligned_stair_required": {
       "reason": "三楼与二楼之间的楼梯仍处于投影错位状态。",
-      "nextAction": "完成竺老两问后，从三楼主楼梯下行口进入空间对齐关卡。"
+      "nextAction": "完成竺老两问，并用 301 胶片在 302 对齐新旧入口影像后，从三楼主楼梯进入空间校准。"
     },
       "room204_observations_required": {
         "reason": "204 复原缺少参照记录。",
@@ -570,9 +600,11 @@
         "a3_1850_reference"
       ],
       "taskKeys": [
+        "resolve_a1_investigation",
         "verify_a1_classrooms",
         "observe_elevator_history",
         "calibrate_elevator_history",
+        "resolve_a3_archive_chain",
         "observe_a3_reference",
         "answer_zhu_two_questions",
         "solve_misaligned_stair",
@@ -580,6 +612,7 @@
         "restore_room204",
         "watch_room204_projection",
         "collect_positioning_plate",
+        "resolve_a2_inserted_puzzles",
         "install_positioning_plate"
       ],
       "dialogueIds": [
@@ -771,6 +804,14 @@
         "保持浅色操作，靠近 303 晨间参照区域并执行记录。"
       ]
     },
+    "resolve_a1_investigation": {
+      "label": "汇总 A1 剩余调查点",
+      "hints": [
+        "104 黑板、105 讲台、主电梯和值班签到板都位于一楼，可自由选择先查看哪一处。",
+        "主电梯的历史轨道需要 104 与 105 的时间差记录；值班签到板可以在前后任意时机重建。",
+        "深色观察读取痕迹，浅色操作调整设备；两种模式的进入顺序不会锁死进度。"
+      ]
+    },
     "verify_a1_classrooms": {
       "label": "完成 104 与 105 的时间差校验",
       "hints": [
@@ -801,6 +842,14 @@
         "前往三楼校史人物荣誉门厅，中间画像为竺可桢老校长。",
         "靠近竺可桢画像并按 Space，先阅读生平，再依次回答两个问题。",
         "每个选项都会保留你的回答；提交后才能进入错位楼梯。"
+      ]
+    },
+    "resolve_a3_archive_chain": {
+      "label": "完成 A3 荣誉墙与影像档案调查",
+      "hints": [
+        "荣誉墙问答、301 胶片索引与 303 晨间参照可按任意顺序查看。",
+        "302 扫描台需要 301 取出的旧导视胶片，除此之外不强制调查顺序。",
+        "完成荣誉墙问答和 302 新旧影像对齐后，主楼梯会开放空间校准。"
       ]
     },
     "solve_misaligned_stair": {
@@ -841,6 +890,14 @@
         "查看 204 讲台的抽屉。",
         "投影记录完成后，讲台抽屉才会开放。",
         "在浅色操作中靠近讲台抽屉并执行拾取，取得钟面定位片。"
+      ]
+    },
+    "resolve_a2_inserted_puzzles": {
+      "label": "补齐 A2 三处现场记录",
+      "hints": [
+        "201 定位板、203 五区拓扑和开放自习区疏散路线互相独立，可以任意顺序处理。",
+        "深色观察用于读取旧痕，浅色操作用于校准、连线和排列；观察不构成提交的硬前置。",
+        "三处记录完成后，钟面定位片才具备可验证的安装依据。"
       ]
     },
     "install_positioning_plate": {
@@ -975,8 +1032,8 @@
       "label": "观看并完成楼外正式收束",
       "hints": [
         "完成双重签到后，查看教学楼外的正式收束画面。",
-        "楼外画面完整播放并通过会话校验后，章节完成确认才会开放。",
-        "等待正式收束播放结束，再点击完成确认。"
+        "楼外画面完整播放并通过会话校验后，章节会自动完成。",
+        "保持画面开启，直到灿若星辰灯全部点亮。"
       ]
     },
     "chapter_complete": {
@@ -1198,11 +1255,19 @@
     "chase.started": [
       {
         "speaker": "guard",
-        "text": "同学，站住。"
-      },
+        "text": "同学，站住。离旧钟远一点。"
+      }
+    ],
+    "chase.close": [
       {
-        "speaker": "system",
-        "text": "清楼流程启动。"
+        "speaker": "guard",
+        "text": "我看到你了。停下。"
+      }
+    ],
+    "chase.floor_changed": [
+      {
+        "speaker": "guard",
+        "text": "别往楼上跑。现在停下。"
       }
     ],
     "chase.failed": [

@@ -77,6 +77,20 @@ import {
   type QizhenFishingResult
 } from "./QizhenFishingRhythmModel";
 import { QizhenFishingRhythmVisual } from "./QizhenFishingRhythmVisual";
+import {
+  QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES,
+  QIZHEN_RAIN_RESCUE_ROUTE,
+  QIZHEN_RAIN_RESCUE_START,
+  QIZHEN_RAIN_RESCUE_TIMING,
+  type QizhenRainRescueRoutePoint
+} from "./QizhenRainRescuePresentation";
+import {
+  createQizhenSwanChasePressureState,
+  stepQizhenSwanChasePressure,
+  type QizhenSwanChaseCue,
+  type QizhenSwanChasePressureResult,
+  type QizhenSwanChasePressureState
+} from "../../modules/QizhenSwanChasePressureModel";
 
 const ZONE_TEXTURE_KEYS: Readonly<Record<QizhenLakeZoneId, string>> = {
   dock: "chapter-3-qizhen-dock",
@@ -115,8 +129,6 @@ const SWAN_CHASE_INITIAL_GAP = 230;
 const SWAN_CHASE_CATCH_DISTANCE = 104;
 const SWAN_CHASE_NEAR_DISTANCE = 150;
 const SWAN_CHASE_FAR_DISTANCE = 360;
-const SWAN_CHASE_NEAR_SPEED = 168;
-const SWAN_CHASE_FAR_SPEED = 440;
 const SWAN_CHASE_GRACE_SECONDS = 4;
 const SWAN_CHASE_SWAY = 16;
 const SWAN_CHASE_FINISH_X = 190;
@@ -262,6 +274,10 @@ export class QizhenLakeScene extends Phaser.Scene {
   private promptText!: Phaser.GameObjects.Text;
   private statusText!: Phaser.GameObjects.Text;
   private zoneText!: Phaser.GameObjects.Text;
+  private chaseHud!: Phaser.GameObjects.Container;
+  private chaseHudLabel!: Phaser.GameObjects.Text;
+  private chaseHudProgress!: Phaser.GameObjects.Text;
+  private chaseHudRiskFill!: Phaser.GameObjects.Rectangle;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "C" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
 
@@ -280,6 +296,8 @@ export class QizhenLakeScene extends Phaser.Scene {
   private zoneTransitioning = false;
   private capsizing = false;
   private rainRescueAnimating = false;
+  private rainRescueStage: "idle" | "approach" | "rowing" | "capsizing" | "cinematic" | "rescued" = "idle";
+  private rainRescueCinematicComplete: (() => void) | null = null;
   private reducedMotion = false;
 
   private targetVisuals: TargetVisual[] = [];
@@ -307,7 +325,11 @@ export class QizhenLakeScene extends Phaser.Scene {
   private chaseIntensity = 0;
   private chaseSwanX = 0;
   private chaseSwanY = 0;
+  private chasePressureState: QizhenSwanChasePressureState = createQizhenSwanChasePressureState(0);
+  private chasePressureView: QizhenSwanChasePressureResult | null = null;
   private chaseAnnounced = false;
+  private chaseTelegraphVoicePlayed = false;
+  private chaseFinalVoicePlayed = false;
   private chaseCompleting = false;
   private chaseFailing = false;
   private lockedPortalHintId: string | null = null;
@@ -477,6 +499,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       strokeThickness: 4,
       align: "center"
     }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(5200).setVisible(false);
+    this.createChaseHud();
 
     this.createPhotoCameraButton();
     this.rebuildZone(this.currentZone, this.currentVehicle, null, false);
@@ -506,6 +529,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         void audioContext.close().catch(() => undefined);
       }
       this.resetTransientKayakState();
+      this.rainRescueCinematicComplete = null;
       this.kayak.destroy();
       this.staticSwan?.destroy();
       this.chaseSwan?.destroy();
@@ -545,6 +569,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     if (this.rainRescueAnimating) {
       this.player.setVelocity(0, 0);
       this.playerAnimator.update(new Phaser.Math.Vector2(0, 0), this.time.now);
+      this.publishDebugState(null, this.getActiveTargets(state, runtime), runtime);
       this.interactRequested = false;
       return;
     }
@@ -648,9 +673,15 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.lastStrokeAt = 0;
     this.capsizing = false;
     this.rainRescueAnimating = false;
+    this.rainRescueStage = "idle";
+    this.rainRescueCinematicComplete = null;
     this.chaseFailing = false;
     this.chaseSwanSpeed = 0;
     this.chaseActualGap = SWAN_CHASE_INITIAL_GAP;
+    this.chasePressureState = createQizhenSwanChasePressureState(0);
+    this.chasePressureView = null;
+    this.chaseTelegraphVoicePlayed = false;
+    this.chaseFinalVoicePlayed = false;
     this.boundaryBlockedHintAt = Number.NEGATIVE_INFINITY;
     this.kayakBoundaryBlocked = false;
     this.boundaryBlockCount = 0;
@@ -817,26 +848,32 @@ export class QizhenLakeScene extends Phaser.Scene {
     const playerDx = this.player.x - this.chaseSwanX;
     const playerDy = this.player.y - this.chaseSwanY;
     const distanceBeforeMove = Math.hypot(playerDx, playerDy);
-    const distanceFactor = Phaser.Math.Clamp(
-      (distanceBeforeMove - SWAN_CHASE_NEAR_DISTANCE)
-        / (SWAN_CHASE_FAR_DISTANCE - SWAN_CHASE_NEAR_DISTANCE),
-      0,
-      1
-    );
-    const easedDistanceFactor = distanceFactor * distanceFactor * (3 - 2 * distanceFactor);
-    const targetSpeed = Phaser.Math.Linear(
-      SWAN_CHASE_NEAR_SPEED,
-      SWAN_CHASE_FAR_SPEED,
-      easedDistanceFactor
-    );
+    const progress = Math.max(runtime.chaseDistance, this.chaseStartX - this.player.x);
+    const goalDistance = Math.max(1, this.chaseStartX - SWAN_CHASE_FINISH_X);
+    const pressure = stepQizhenSwanChasePressure(this.chasePressureState, {
+      deltaMs: chaseDeltaSeconds * 1000,
+      elapsedSeconds: this.chaseElapsedSeconds,
+      actualGap: distanceBeforeMove,
+      catchDistance: SWAN_CHASE_CATCH_DISTANCE,
+      nearDistance: SWAN_CHASE_NEAR_DISTANCE,
+      farDistance: SWAN_CHASE_FAR_DISTANCE,
+      catchReady: this.chaseElapsedSeconds >= SWAN_CHASE_GRACE_SECONDS,
+      progressRatio: progress / goalDistance,
+      playerY: this.player.y
+    });
+    this.chasePressureState = pressure.state;
+    this.chasePressureView = pressure;
+    if (pressure.cue !== "none") this.playSwanChaseCue(pressure.cue);
     const graceRamp = Phaser.Math.Clamp(this.chaseElapsedSeconds / SWAN_CHASE_GRACE_SECONDS, 0, 1);
     const easedGrace = graceRamp * graceRamp * (3 - 2 * graceRamp);
-    const graceLimitedSpeed = Phaser.Math.Linear(76, targetSpeed, easedGrace);
+    const graceLimitedSpeed = Phaser.Math.Linear(76, pressure.targetSpeed, easedGrace);
     const speedBlend = 1 - Math.exp(-4.8 * chaseDeltaSeconds);
     this.chaseSwanSpeed = Phaser.Math.Linear(this.chaseSwanSpeed, graceLimitedSpeed, speedBlend);
 
-    const pursuitY = this.player.y
-      + Math.sin(this.chaseElapsedSeconds * 4.2) * SWAN_CHASE_SWAY * easedDistanceFactor;
+    const pursuitY = pressure.state.aimY
+      + Math.sin(this.chaseElapsedSeconds * 4.2)
+        * SWAN_CHASE_SWAY
+        * pressure.lateralSwayScale;
     const dx = this.player.x - this.chaseSwanX;
     const dy = pursuitY - this.chaseSwanY;
     const distanceToPursuit = Math.hypot(dx, dy);
@@ -869,10 +906,14 @@ export class QizhenLakeScene extends Phaser.Scene {
     const heading = Math.atan2(this.player.y - this.chaseSwanY, this.player.x - this.chaseSwanX);
     const beat = this.reducedMotion
       ? 0
-      : Math.sin(this.time.now / (105 - this.chaseIntensity * 48)) * (0.42 + this.chaseIntensity * 0.78);
-    this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, heading, beat, this.chaseIntensity);
+      : Math.sin(this.time.now / pressure.wingBeatPeriodMs) * (0.42 + this.chaseIntensity * 0.78);
+    const visualIntensity = Phaser.Math.Clamp(
+      this.chaseIntensity + pressure.visualIntensityBoost,
+      0,
+      1
+    );
+    this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, heading, beat, visualIntensity);
 
-    const progress = Math.max(runtime.chaseDistance, this.chaseStartX - this.player.x);
     if (progress >= this.lastChaseProgressSent + 20) {
       this.lastChaseProgressSent = progress;
       this.emitDomain("rpg_qizhen_chase_progress", { distance: Math.round(progress), zone: "channel" });
@@ -896,6 +937,54 @@ export class QizhenLakeScene extends Phaser.Scene {
     ) {
       this.triggerSwanCatch(runtime);
     }
+  }
+
+  private playSwanChaseCue(cue: QizhenSwanChaseCue): void {
+    if (cue === "none" || !this.chaseSwan?.root.active) return;
+    this.emitDomain(`qizhen_swan_chase_${cue}`, {
+      cycle: this.chasePressureState.cycleIndex,
+      segment: this.chasePressureState.segment,
+      gap: Math.max(0, Math.round(this.chaseActualGap))
+    });
+    if (cue === "telegraph" && !this.chaseTelegraphVoicePlayed) {
+      this.chaseTelegraphVoicePlayed = true;
+      this.emitDomain("qizhen_swan_chase_telegraph_voice", {
+        cycle: this.chasePressureState.cycleIndex
+      });
+      this.showFeedback(qizhenContent.chase.voiceSubtitles.telegraph, "narrator", 3600);
+    }
+    if (cue === "final_bank" && !this.chaseFinalVoicePlayed) {
+      this.chaseFinalVoicePlayed = true;
+      this.showFeedback(qizhenContent.chase.voiceSubtitles.finalBank, "narrator", 3200);
+    }
+    const color = cue === "surge"
+      ? 0xff785e
+      : cue === "final_bank"
+        ? 0xffd85f
+        : 0xdffcff;
+    const ring = this.add.ellipse(
+      this.chaseSwanX,
+      this.chaseSwanY,
+      cue === "final_bank" ? 132 : 92,
+      cue === "final_bank" ? 54 : 40,
+      0x000000,
+      0
+    ).setStrokeStyle(cue === "surge" ? 4 : 3, color, 0.88).setDepth(this.chaseSwanY + 150);
+    if (this.reducedMotion) {
+      ring.setAlpha(0.6).setScale(1.18);
+      this.time.delayedCall(320, () => ring.destroy());
+      return;
+    }
+    this.tweens.add({
+      targets: ring,
+      scaleX: cue === "surge" ? 1.9 : 1.55,
+      scaleY: cue === "surge" ? 1.65 : 1.38,
+      alpha: { from: 0.88, to: 0 },
+      duration: cue === "surge" ? 360 : 540,
+      ease: "Cubic.easeOut",
+      onComplete: () => ring.destroy()
+    });
+    if (cue === "surge") this.cameras.main.shake(110, 0.0016);
   }
 
   private triggerSwanCatch(runtime: QizhenRuntimeProjection): void {
@@ -937,7 +1026,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.lastStrokeSide = null;
       this.lastStrokeDirection = null;
       this.lastStrokeAt = 0;
-      this.resetChaseSwan();
+      this.resetChaseSwan(true);
       this.capsizing = false;
       this.chaseFailing = false;
     });
@@ -970,7 +1059,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.lastStrokeDirection = null;
       this.lastStrokeAt = 0;
       if (this.currentZone === "channel" && runtime.phase === "swan_chase") {
-        this.resetChaseSwan();
+        this.resetChaseSwan(true);
       }
       this.capsizing = false;
     });
@@ -983,7 +1072,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       if (runtime.phase === "swan_chase" && previous !== "swan_chase" && !this.chaseAnnounced) {
         this.chaseAnnounced = true;
         this.emitDomain("rpg_qizhen_chase_started", { zone: runtime.zone });
-        this.showFeedback(qizhenContent.swan.gateRelease, "system");
+        this.showFeedback(qizhenContent.chase.voiceSubtitles.start, "narrator", 3400);
       }
       if (runtime.phase !== "swan_chase") this.chaseAnnounced = false;
     }
@@ -1566,7 +1655,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.resetChaseSwan();
   }
 
-  private resetChaseSwan(): void {
+  private resetChaseSwan(restartAudio = false): void {
     this.chaseStartX = this.player.x;
     this.chaseElapsedSeconds = 0;
     this.chaseActualGap = SWAN_CHASE_INITIAL_GAP;
@@ -1575,9 +1664,18 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.lastChaseProgressSent = 0;
     this.chaseCompleting = false;
     this.chaseFailing = false;
+    this.chasePressureState = createQizhenSwanChasePressureState(this.player.y);
+    this.chasePressureView = null;
+    this.chaseTelegraphVoicePlayed = false;
+    this.chaseFinalVoicePlayed = false;
     this.chaseSwanX = Math.min(QIZHEN_LAKE_WORLD.width - 70, this.player.x + SWAN_CHASE_INITIAL_GAP);
     this.chaseSwanY = this.player.y;
     this.chaseSwan?.update(this.chaseSwanX, this.chaseSwanY, Math.PI, 0);
+    if (restartAudio) {
+      this.emitDomain("rpg_qizhen_chase_restarted", {
+        zone: "channel"
+      });
+    }
   }
 
   private destroyZoneVisuals(): void {
@@ -2410,6 +2508,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       this.playRainRescueSequence();
       return;
     }
+    if (name === "rpg_qizhen_rain_rescue_cinematic_completed") {
+      const complete = this.rainRescueCinematicComplete;
+      this.rainRescueCinematicComplete = null;
+      complete?.();
+      return;
+    }
     if (name === "qizhen_dock_safety_cleared" || name === "qizhen_dock_weather_adjusted") {
       this.showFeedback(qizhenContent.dock.safetyCleared, "success", 4200);
       return;
@@ -2686,6 +2790,64 @@ export class QizhenLakeScene extends Phaser.Scene {
       .setVisible(true);
   }
 
+  private createChaseHud(): void {
+    const background = this.add.rectangle(0, 0, 372, 48, 0x071723, 0.9)
+      .setOrigin(0)
+      .setStrokeStyle(2, 0xb9e5ef, 0.72);
+    this.chaseHudLabel = this.add.text(9, 6, "", {
+      color: "#eafcff",
+      fontFamily: "monospace",
+      fontSize: "11px"
+    });
+    this.chaseHudProgress = this.add.text(363, 6, "", {
+      color: "#fff2b6",
+      fontFamily: "monospace",
+      fontSize: "11px"
+    }).setOrigin(1, 0);
+    const riskTrack = this.add.rectangle(9, 34, 354, 7, 0x213744, 0.94).setOrigin(0, 0.5);
+    this.chaseHudRiskFill = this.add.rectangle(9, 34, 354, 7, 0x77d6e8, 1).setOrigin(0, 0.5);
+    this.chaseHud = this.add.container(18, 142, [
+      background,
+      this.chaseHudLabel,
+      this.chaseHudProgress,
+      riskTrack,
+      this.chaseHudRiskFill
+    ]).setScrollFactor(0).setDepth(5200).setVisible(false);
+  }
+
+  private updateChaseHud(runtime: QizhenRuntimeProjection): void {
+    const pressure = this.chasePressureView;
+    if (runtime.phase !== "swan_chase" || !pressure) {
+      this.chaseHud.setVisible(false);
+      return;
+    }
+    const phaseLabel = qizhenContent.chase.phaseLabels[pressure.state.phase];
+    const dangerLabel = qizhenContent.chase.dangerLabels[pressure.dangerBand];
+    const progressRatio = Phaser.Math.Clamp(
+      (this.chaseStartX - this.player.x) / Math.max(1, this.chaseStartX - SWAN_CHASE_FINISH_X),
+      0,
+      1
+    );
+    const segmentLabel = qizhenContent.chase.segmentLabels[pressure.state.segment];
+    const riskColor = pressure.dangerBand === "critical"
+      ? 0xff665a
+      : pressure.dangerBand === "pressured"
+        ? 0xffc857
+        : 0x77d6e8;
+    this.chaseHud
+      .setVisible(true)
+      .setAlpha(pressure.state.phase === "charge_warning" && !this.reducedMotion
+        ? 0.84 + Math.sin(this.time.now / 82) * 0.12
+        : 1);
+    this.chaseHudLabel.setText(
+      `${phaseLabel} · ${dangerLabel} · ${qizhenContent.chase.gapLabel} ${Math.max(0, Math.round(this.chaseActualGap))}`
+    );
+    this.chaseHudProgress.setText(`${segmentLabel} ${Math.round(progressRatio * 100)}%`);
+    this.chaseHudRiskFill
+      .setFillStyle(riskColor, 1)
+      .setScale(Math.max(0.035, pressure.riskRatio), 1);
+  }
+
   private updateStatus(runtime: QizhenRuntimeProjection): void {
     const zoneLabel = this.currentZone === "dock"
       ? qizhenContent.zones.dock
@@ -2693,24 +2855,21 @@ export class QizhenLakeScene extends Phaser.Scene {
         ? qizhenContent.zones.openWater
         : this.currentZone === "channel" ? qizhenContent.zones.channel : qizhenContent.zones.swanCove;
     this.zoneText.setText(`${zoneLabel} · ${RPG_REALITY_MODE_CONTRACT[runtime.mode].label}`);
+    this.updateChaseHud(runtime);
     if (this.currentVehicle === "kayak") {
       const tilt = Math.round(Math.min(1, Math.abs(this.kayakRoll)) * 100);
       const danger = tilt >= 70 ? ` · ${qizhenContent.boarding.capsizeWarning}` : "";
-      const chaseGap = runtime.phase === "swan_chase"
-        ? ` · ${qizhenContent.chase.statusSuffix} · ${qizhenContent.chase.gapLabel} ${Math.max(0, Math.round(this.chaseActualGap))}`
-        : "";
-      const chaseDanger = runtime.phase === "swan_chase" && this.chaseActualGap <= SWAN_CHASE_NEAR_DISTANCE
-        ? ` · ${qizhenContent.chase.dangerClose}`
-        : "";
+      const chaseCritical = runtime.phase === "swan_chase"
+        && this.chasePressureView?.dangerBand === "critical";
       const strokeMode = this.reverseInputHeld
         ? qizhenContent.boarding.reverseMode
         : this.kayakSpeed < -0.4
           ? qizhenContent.boarding.reverseCoast
           : qizhenContent.boarding.forwardMode;
       this.statusText.setText(
-        `${qizhenContent.boarding.controls} · ${strokeMode} · ${qizhenContent.boarding.tilt} ${tilt}%${danger}${chaseGap}${chaseDanger}`
+        `${qizhenContent.boarding.controls} · ${strokeMode} · ${qizhenContent.boarding.tilt} ${tilt}%${danger}`
       );
-      this.statusText.setColor(tilt >= 70 || chaseDanger.length > 0 ? "#ffaaa0" : "#fff2b6");
+      this.statusText.setColor(tilt >= 70 || chaseCritical ? "#ffaaa0" : "#fff2b6");
     } else if (!runtime.kayakEquipped) {
       this.statusText.setText(qizhenContent.dock.kayakHint).setColor("#fff2b6");
     } else if (!runtime.leftPaddleEquipped) {
@@ -3029,17 +3188,20 @@ export class QizhenLakeScene extends Phaser.Scene {
   ): void {
     const definition = QIZHEN_LAKE_ZONES[this.currentZone];
     const photoSpotId = resolveQizhenPhotoSpot(this.currentZone, this.player.x, this.player.y);
+    const presentedVehicle: QizhenLakeVehicle = this.rainRescueStage === "rowing" || this.rainRescueStage === "capsizing"
+      ? "kayak"
+      : this.currentVehicle;
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: QIZHEN_LAKE_WORLD,
       player: {
         x: Math.round(this.player.x),
         y: Math.round(this.player.y),
-        facing: this.currentVehicle === "kayak" ? "side" : this.playerAnimator.facing,
-        cardinalFacing: this.currentVehicle === "kayak" ? undefined : this.playerAnimator.cardinalFacing,
-        texture: this.currentVehicle === "kayak" ? "dynamic-kayak-rower" : this.playerAnimator.textureKey,
-        turning: this.currentVehicle === "kayak" ? Math.abs(this.kayakRoll) > 0.08 : this.playerAnimator.isTurning,
-        walkFps: this.currentVehicle === "kayak" ? undefined : RPG_PLAYER_WALK_FPS,
+        facing: presentedVehicle === "kayak" ? "side" : this.playerAnimator.facing,
+        cardinalFacing: presentedVehicle === "kayak" ? undefined : this.playerAnimator.cardinalFacing,
+        texture: presentedVehicle === "kayak" ? "dynamic-kayak-rower" : this.playerAnimator.textureKey,
+        turning: presentedVehicle === "kayak" ? Math.abs(this.kayakRoll) > 0.08 : this.playerAnimator.isTurning,
+        walkFps: presentedVehicle === "kayak" ? undefined : RPG_PLAYER_WALK_FPS,
         angle: Number(Phaser.Math.RadToDeg(this.kayakHeading).toFixed(1)),
         collisionWidth: Number((this.player.body?.width ?? 0).toFixed(2)),
         collisionHeight: Number((this.player.body?.height ?? 0).toFixed(2))
@@ -3066,13 +3228,15 @@ export class QizhenLakeScene extends Phaser.Scene {
         acceptedItem: candidate.acceptedItem,
         requiredMode: candidate.requiredMode
       })),
-      collisionRects: this.getActiveCollisionRects(this.currentVehicle),
+      collisionRects: this.getActiveCollisionRects(presentedVehicle),
       qizhenLake: {
         phase: runtime.phase,
         mode: runtime.mode,
         plate: this.currentZone,
         zone: this.currentZone,
-        vehicle: this.currentVehicle,
+        vehicle: presentedVehicle,
+        rainRescueAnimating: this.rainRescueAnimating,
+        rainRescueStage: this.rainRescueStage,
         dockSignRemoved: this.currentDockSignRemoved,
         rainEffects: {
           active: this.currentZone === "dock" && !this.currentRainSafetyCleared,
@@ -3145,6 +3309,14 @@ export class QizhenLakeScene extends Phaser.Scene {
           catchReady: this.chaseElapsedSeconds >= SWAN_CHASE_GRACE_SECONDS,
           swanSpeed: Number(this.chaseSwanSpeed.toFixed(1)),
           speedRule: "far_faster_near_slower",
+          pressurePhase: this.chasePressureView?.state.phase ?? this.chasePressureState.phase,
+          pressureSegment: this.chasePressureView?.state.segment ?? this.chasePressureState.segment,
+          pressureCycle: this.chasePressureView?.state.cycleIndex ?? this.chasePressureState.cycleIndex,
+          dangerBand: this.chasePressureView?.dangerBand ?? "safe",
+          riskRatio: Number((this.chasePressureView?.riskRatio ?? 0).toFixed(3)),
+          aimY: Number(this.chasePressureState.aimY.toFixed(1)),
+          telegraphVoicePlayed: this.chaseTelegraphVoicePlayed,
+          finalVoicePlayed: this.chaseFinalVoicePlayed,
           swanX: Math.round(this.chaseSwanX),
           swanY: Math.round(this.chaseSwanY)
         },
@@ -3200,66 +3372,242 @@ export class QizhenLakeScene extends Phaser.Scene {
   private playRainRescueSequence(): void {
     if (this.rainRescueAnimating || this.currentZone !== "dock") return;
     this.rainRescueAnimating = true;
+    this.rainRescueStage = "approach";
     this.dialogueLocked = true;
     this.player.setVelocity(0, 0);
-    this.showFeedback(qizhenContent.dock.forcedLaunch, "narrator", 1100);
+    this.promptText.setVisible(false);
+    const timing = this.reducedMotion
+      ? QIZHEN_RAIN_RESCUE_TIMING.reduced
+      : QIZHEN_RAIN_RESCUE_TIMING.normal;
+    const route = this.reducedMotion
+      ? QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES.map((index) => QIZHEN_RAIN_RESCUE_ROUTE[index])
+      : [...QIZHEN_RAIN_RESCUE_ROUTE];
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+    const rescuePoint = { x: 720, y: 744 };
+    let previousPose: Readonly<{ x: number; y: number; heading: number; roll: number }> = QIZHEN_RAIN_RESCUE_START;
+    let sequenceFinished = false;
 
-    const splashX = 728;
-    const splashY = 626;
-    this.tweens.add({
-      targets: this.player,
-      x: splashX,
-      y: splashY,
-      duration: this.reducedMotion ? 160 : 620,
-      ease: "Sine.easeIn",
-      onComplete: () => {
-        const splashes: Phaser.GameObjects.GameObject[] = [];
-        for (let index = 0; index < 4; index += 1) {
-          const ring = this.add.ellipse(
-            splashX + (index - 1.5) * 12,
-            splashY + (index % 2 === 0 ? -6 : 7),
-            28 + index * 12,
-            12 + index * 4,
-            0x9bdff5,
-            0.62
-          ).setStrokeStyle(3, 0xe1f8ff, 0.88).setDepth(splashY + 210 + index);
-          splashes.push(ring);
-          this.tweens.add({
-            targets: ring,
-            scaleX: 1.7,
-            scaleY: 1.55,
-            alpha: 0,
-            duration: this.reducedMotion ? 220 : 780,
-            delay: index * 70,
-            onComplete: () => ring.destroy()
-          });
-        }
-        if (!this.reducedMotion) this.cameras.main.shake(260, 0.008);
-        this.showFeedback(qizhenContent.dock.forcedCapsize, "system", 1500);
-        this.tweens.add({
-          targets: this.player,
-          angle: 72,
-          alpha: 0.22,
-          duration: this.reducedMotion ? 180 : 520,
-          yoyo: true,
-          hold: this.reducedMotion ? 80 : 320,
-          onComplete: () => {
-            this.player.setAngle(0).setAlpha(1);
-            splashes.forEach((splash) => splash.destroy());
-          }
+    this.showFeedback(qizhenContent.dock.forcedLaunch, "narrator", timing.approachMs + timing.launchMs + 720);
+
+    const finishRescue = (): void => {
+      if (sequenceFinished) return;
+      sequenceFinished = true;
+      this.rainRescueStage = "rescued";
+      this.kayak.setVisible(false);
+      this.kayak.root.setAlpha(1);
+      this.kayakHeading = QIZHEN_RAIN_RESCUE_START.heading;
+      this.kayakSpeed = 0;
+      this.kayakRoll = 0;
+      this.strokeIndex = 0;
+      this.lastStrokeSide = null;
+      this.lastStrokeDirection = null;
+      this.capsizing = false;
+      playerBody.enable = true;
+      this.player
+        .setPosition(rescuePoint.x, rescuePoint.y + 12)
+        .setAngle(0)
+        .setAlpha(0.28)
+        .setVisible(true);
+      playerBody.reset(rescuePoint.x, rescuePoint.y + 12);
+      this.tweens.add({
+        targets: this.player,
+        y: rescuePoint.y,
+        alpha: 1,
+        duration: this.reducedMotion ? 180 : 620,
+        ease: "Sine.easeOut"
+      });
+      this.showFeedback(qizhenContent.dock.forcedRescue, "narrator", timing.rescueHoldMs);
+      this.time.delayedCall(timing.rescueHoldMs, () => {
+        this.player.setAngle(0).setAlpha(1);
+        this.emitDomain("rpg_qizhen_rain_rescue_completed_requested", {
+          zone: "dock",
+          reason: "forced_launch_capsize"
         });
-      }
-    });
+      });
+    };
 
-    this.time.delayedCall(this.reducedMotion ? 520 : 1680, () => {
-      this.showFeedback(qizhenContent.dock.forcedRescue, "narrator", 1900);
-    });
-    this.time.delayedCall(this.reducedMotion ? 1250 : 3150, () => {
-      this.player.setAngle(0).setAlpha(1);
-      this.emitDomain("rpg_qizhen_rain_rescue_completed_requested", {
+    const requestRescueCinematic = (): void => {
+      if (sequenceFinished || this.rainRescueStage === "cinematic") return;
+      this.rainRescueStage = "cinematic";
+      this.rainRescueCinematicComplete = finishRescue;
+      this.kayak.setVisible(false);
+      this.player.setVisible(false);
+      this.emitDomain("rpg_qizhen_rain_rescue_cinematic_requested", {
         zone: "dock",
         reason: "forced_launch_capsize"
       });
+      this.time.delayedCall(9000, () => {
+        const complete = this.rainRescueCinematicComplete;
+        this.rainRescueCinematicComplete = null;
+        complete?.();
+      });
+    };
+
+    const createCapsizeSplash = (x: number, y: number): void => {
+      const splashes: Phaser.GameObjects.GameObject[] = [];
+      const count = this.reducedMotion ? 4 : 8;
+      for (let index = 0; index < count; index += 1) {
+        const offsetAngle = index / count * Math.PI * 2;
+        const ring = this.add.ellipse(
+          x + Math.cos(offsetAngle) * (10 + index * 2),
+          y + Math.sin(offsetAngle) * (5 + index),
+          30 + index * 10,
+          13 + index * 4,
+          0x9bdff5,
+          0.54
+        ).setStrokeStyle(3, 0xe1f8ff, 0.9).setDepth(y + 215 + index);
+        splashes.push(ring);
+        this.tweens.add({
+          targets: ring,
+          scaleX: 1.55 + index * 0.06,
+          scaleY: 1.35 + index * 0.04,
+          alpha: 0,
+          duration: this.reducedMotion ? 260 : 860,
+          delay: index * (this.reducedMotion ? 25 : 55),
+          onComplete: () => ring.destroy()
+        });
+      }
+      this.time.delayedCall(this.reducedMotion ? 360 : 1120, () => {
+        splashes.forEach((splash) => splash.destroy());
+      });
+    };
+
+    const capsizeAfterGust = (): void => {
+      this.rainRescueStage = "capsizing";
+      const from = previousPose;
+      const gustTarget: QizhenRainRescueRoutePoint = {
+        x: from.x + 46,
+        y: from.y - 14,
+        heading: from.heading + 0.72,
+        roll: -1,
+        side: "right",
+        intensity: 1.25
+      };
+      this.showFeedback(qizhenContent.dock.forcedCapsize, "system", timing.gustMs + timing.capsizeMs);
+      const gustProgress = { value: 0 };
+      this.tweens.add({
+        targets: gustProgress,
+        value: 1,
+        duration: timing.gustMs,
+        ease: "Cubic.easeIn",
+        onUpdate: () => {
+          const progress = gustProgress.value;
+          const x = from.x + (gustTarget.x - from.x) * progress;
+          const y = from.y + (gustTarget.y - from.y) * progress;
+          const heading = from.heading + (gustTarget.heading - from.heading) * progress;
+          const roll = from.roll + (gustTarget.roll - from.roll) * progress;
+          this.kayakHeading = heading;
+          this.kayakSpeed = 118 * (1 - progress);
+          this.kayakRoll = roll;
+          this.player.setPosition(x, y);
+          this.kayak.setPose({ x, y, heading, roll, speed: this.kayakSpeed });
+        },
+        onComplete: () => {
+          previousPose = gustTarget;
+          this.capsizing = true;
+          createCapsizeSplash(gustTarget.x, gustTarget.y);
+          if (!this.reducedMotion) {
+            this.cameras.main.shake(340, 0.011);
+            this.cameras.main.flash(130, 214, 244, 255, false);
+          }
+          this.kayak.playCapsize(requestRescueCinematic, {
+            dramatic: true,
+            durationMs: timing.capsizeMs
+          });
+        }
+      });
+    };
+
+    const playStroke = (index: number): void => {
+      const target = route[index];
+      if (!target) {
+        capsizeAfterGust();
+        return;
+      }
+      const from = previousPose;
+      const motion = { value: 0 };
+      this.strokeIndex = index + 1;
+      this.lastStrokeSide = target.side;
+      this.lastStrokeDirection = "forward";
+      this.kayak.stroke(target.side, "forward", target.intensity);
+      this.tweens.add({
+        targets: motion,
+        value: 1,
+        duration: timing.strokeMs,
+        ease: "Sine.easeOut",
+        onUpdate: () => {
+          const progress = motion.value;
+          const x = from.x + (target.x - from.x) * progress;
+          const y = from.y + (target.y - from.y) * progress;
+          const heading = from.heading + (target.heading - from.heading) * progress;
+          const roll = from.roll + (target.roll - from.roll) * progress;
+          this.kayakHeading = heading;
+          this.kayakSpeed = 228 - progress * 72;
+          this.kayakRoll = roll;
+          this.player.setPosition(x, y);
+          this.kayak.setPose({
+            x,
+            y,
+            heading,
+            roll,
+            speed: this.kayakSpeed
+          });
+        },
+        onComplete: () => {
+          previousPose = target;
+          this.kayakSpeed = 36;
+          this.kayak.setPose({ ...target, speed: 36 });
+          if (index === route.length - 1) {
+            capsizeAfterGust();
+            return;
+          }
+          this.time.delayedCall(timing.strokeGapMs, () => playStroke(index + 1));
+        }
+      });
+    };
+
+    this.tweens.add({
+      targets: this.player,
+      x: 690,
+      y: 620,
+      duration: timing.approachMs,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        playerBody.enable = false;
+        this.rainRescueStage = "rowing";
+        this.player.setVisible(false).setPosition(QIZHEN_RAIN_RESCUE_START.x, QIZHEN_RAIN_RESCUE_START.y);
+        this.kayak.setVisible(true);
+        this.kayak.root.setAlpha(0.36);
+        this.kayakHeading = QIZHEN_RAIN_RESCUE_START.heading;
+        this.kayakSpeed = 32;
+        this.kayakRoll = 0;
+        this.kayak.setPose({ ...QIZHEN_RAIN_RESCUE_START, speed: 32 });
+        const launchProgress = { value: 0 };
+        this.tweens.add({
+          targets: launchProgress,
+          value: 1,
+          duration: timing.launchMs,
+          ease: "Sine.easeOut",
+          onUpdate: () => {
+            const progress = launchProgress.value;
+            const y = 468 + (QIZHEN_RAIN_RESCUE_START.y - 468) * progress;
+            this.kayakSpeed = 54 + progress * 54;
+            this.player.setPosition(QIZHEN_RAIN_RESCUE_START.x, y);
+            this.kayak.root.setAlpha(0.36 + progress * 0.64);
+            this.kayak.setPose({
+              x: QIZHEN_RAIN_RESCUE_START.x,
+              y,
+              heading: QIZHEN_RAIN_RESCUE_START.heading,
+              roll: 0,
+              speed: this.kayakSpeed
+            });
+          },
+          onComplete: () => {
+            this.kayak.root.setAlpha(1);
+            playStroke(0);
+          }
+        });
+      }
     });
   }
 

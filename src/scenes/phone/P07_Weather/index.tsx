@@ -4,22 +4,12 @@ import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import hairDryerUrl from "../../../assets/rpg/props/items/hair_dryer_generated_v01.png";
 import { selectCampusWeather } from "../../../modules/CampusWeatherModel";
 import { kit } from "../../../modules/GameKit";
-import {
-  getQizhenWeatherAlignedBandCount,
-  isQizhenWeatherCloudAligned,
-  moveQizhenWeatherCloud,
-  QIZHEN_WEATHER_CLOUD_INITIAL,
-  QIZHEN_WEATHER_CLOUD_TARGET,
-  type QizhenWeatherCloudOffsets
-} from "../../../modules/QizhenWeatherControlModel";
-
-const WEATHER_CLOUD_BANDS = ["低层", "中层", "高层"] as const;
+import type { QizhenWeatherControlSummary } from "../../../modules/QizhenWeatherControlModel";
+import { QizhenWeatherCalibration } from "./QizhenWeatherCalibration";
 
 /** Shared weather app for the chapter-two water clue and the Qizhen Lake safety workflow. */
 export function WeatherScene({ state, router }: SceneComponentProps) {
   const [controlStarted, setControlStarted] = useState(false);
-  const [cloudOffsets, setCloudOffsets] = useState<QizhenWeatherCloudOffsets>(QIZHEN_WEATHER_CLOUD_INITIAL);
-  const [controlMoves, setControlMoves] = useState(0);
   const collected = state.actOne.weatherWaterTaken;
   const waterAvailable = state.actOne.exerciseStarted;
   const weather = selectCampusWeather(state);
@@ -41,14 +31,9 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
     }
   }
 
-  const alignedBandCount = getQizhenWeatherAlignedBandCount(cloudOffsets);
-  const cloudControlAligned = isQizhenWeatherCloudAligned(cloudOffsets);
-
   function startQizhenWeatherControl() {
     const result = kit.qizhenLake.beginDockWeatherAdjustment();
     if (result === "accepted") {
-      setCloudOffsets(QIZHEN_WEATHER_CLOUD_INITIAL);
-      setControlMoves(0);
       setControlStarted(true);
       return;
     }
@@ -63,35 +48,24 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
     kit.flags.toast("当前无法开始校准。", "system");
   }
 
-  function shiftCloudBand(bandIndex: number, direction: -1 | 1) {
-    setCloudOffsets((current) => moveQizhenWeatherCloud(current, bandIndex, direction));
-    setControlMoves((current) => current + 1);
-  }
-
-  function submitQizhenWeatherControl() {
-    if (!cloudControlAligned) {
-      kit.flags.toast("三层云带还没有对齐。", "system");
-      return;
-    }
-    const result = kit.qizhenLake.applyDockWeatherAdjustment({
-      moves: controlMoves,
-      cloudOffsets
-    });
+  function submitQizhenWeatherControl(summary: QizhenWeatherControlSummary): boolean {
+    const result = kit.qizhenLake.applyDockWeatherAdjustment(summary);
     if (result === "accepted") {
       setControlStarted(false);
       kit.flags.toast("湖区状态已更新。", "task");
-      return;
+      return true;
     }
     if (result === "already_complete") {
       setControlStarted(false);
       kit.flags.toast("湖区状态已经更新。", "system");
-      return;
+      return true;
     }
     kit.flags.toast("校准记录无效，请重新对齐。", "system");
+    return false;
   }
 
   return (
-    <section className="app-screen act2-weather-page" aria-label="天气">
+    <section className={`app-screen act2-weather-page ${controlStarted ? "is-calibrating" : ""}`} aria-label="天气">
       <header>
         <PhoneNavButton kind="exit" label="退出天气，返回手机主页" onClick={() => router.goTo("phone_home")} />
         <h1>杭州 · 紫金港</h1>
@@ -133,39 +107,7 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
 
         {qizhenWeatherContext ? (
           controlStarted && adjustmentAvailable ? (
-            <section className="qizhen-weather-calibration" aria-label="湖区云层校准">
-              <header>
-                <img src={hairDryerUrl} alt="寝室吹风机" />
-                <div><strong>风向校准</strong><span>用吹风机把三层云带移入虚线框</span></div>
-                <output aria-live="polite">{alignedBandCount}/3 · {controlMoves} 步</output>
-              </header>
-              <div className="qizhen-weather-airflow" aria-hidden="true"><i /><i /><i /></div>
-              <div className="qizhen-weather-bands">
-                {WEATHER_CLOUD_BANDS.map((label, index) => (
-                  <div className="qizhen-weather-band" key={label}>
-                    <span>{label}</span>
-                    <button type="button" aria-label={`${label}云带向左移动`} onClick={() => shiftCloudBand(index, -1)}>‹</button>
-                    <div className="qizhen-weather-track" aria-hidden="true">
-                      <i
-                        className="qizhen-weather-target"
-                        style={{ "--cloud-slot": QIZHEN_WEATHER_CLOUD_TARGET[index] } as CSSProperties}
-                      />
-                      <b
-                        className={cloudOffsets[index] === QIZHEN_WEATHER_CLOUD_TARGET[index] ? "is-aligned" : ""}
-                        style={{ "--cloud-slot": cloudOffsets[index] } as CSSProperties}
-                      ><em /><em /><em /></b>
-                    </div>
-                    <button type="button" aria-label={`${label}云带向右移动`} onClick={() => shiftCloudBand(index, 1)}>›</button>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                className="qizhen-weather-submit"
-                disabled={!cloudControlAligned}
-                onClick={submitQizhenWeatherControl}
-              >送出最后一阵风</button>
-            </section>
+            <QizhenWeatherCalibration onComplete={submitQizhenWeatherControl} />
           ) : (
             <button
               type="button"
@@ -177,9 +119,9 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
               {adjustmentComplete ? <i aria-hidden="true" /> : <img src={hairDryerUrl} alt="" aria-hidden="true" />}
               <strong>{adjustmentComplete ? "湖区状态已更新" : adjustmentRequested ? hasHairDryer ? "启动风向校准" : "缺少可用设备" : "暂无湖区记录"}</strong>
               <span>{adjustmentComplete
-                ? `返回码头确认${state.qizhenLake.weatherControlBestMoves > 0 ? ` · 最少 ${state.qizhenLake.weatherControlBestMoves} 步` : ""}`
+                ? `返回码头确认${state.qizhenLake.weatherControlBestMoves > 0 ? ` · 最少 ${state.qizhenLake.weatherControlBestMoves} 次校正` : ""}`
                 : adjustmentRequested
-                  ? hasHairDryer ? "控制低、中、高三层云带" : "先检查寝室书桌"
+                  ? hasHairDryer ? "在持续风力中同步稳定三层云带" : "先检查寝室书桌"
                   : "完成码头检查后再查看"}</span>
             </button>
           )

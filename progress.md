@@ -1,5 +1,63 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-08-29 A 范围主分支上传前质量门收口
+
+- 提交范围：用户确认 A 后，按三视图中列明的 `25` 个修改文件与 `19` 个新增文件准备直接提交到当前 `main`。继续排除被忽略的 `demo/`、`dist/`、外部 ZIP 与恢复副本、Godot 归档和临时浏览器检查文件；没有新增测试文件或测试依赖。
+- 远端基线：上传前两次执行 `git fetch origin main --prune`，本地与远端共同基线均为 `a7790f4da13e`，本地和远端互相缺少的提交均为 `0`，没有发现需要再次比较的合作者提交。
+- 质量门根因：首次 `pre-push` 的前十项验证通过，第十一项仍按旧合同要求“六个环境点全部只读”。当前正式结构已经扩展为六个控制器托管谜题点和两个只读环境点，旧验证还把紧随其后的 `complete_inserted_puzzle` 写状态分支截入只读分支，并错误要求桌面终端中心必须位于可行走地面。
+- 合同修正：现有 effective-interactions 验证器改为分别核对六个谜题点与两个只读点、A1/A2/A3 楼层投影、控制器谜题请求、任意深浅模式进入、只读零写入，以及桌面谜题周围的无碰撞站位。Phaser 场景在谜题弹窗打开时不再额外显示“当前教室没有新增状态记录”的通用字幕。
+- 复核结果：`npm run typecheck` 通过；关键玩法套件 `11/11` 通过，其中第四章有效交互为 `624` 项断言；`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过。离线单文件为 `258649617` 字节，含 `2` 个内联脚本和 `1` 个内联样式；`git diff --check` 通过。最终远端 SHA 与 GitHub Web CI 以推送后的读取结果为准。
+
+## 2026-08-29 “灿若星辰灯”正式素材归档、接入与旧版清理
+
+- 素材判定：用户提供的 `灿若星辰灯.zip` 原包为 `304494554` 字节、`33155` 个条目、解压后 `805997402` 字节，SHA-256 为 `5401308d838eed37466cc59b5485b0aed0d6bc0b1f785a9700c08b9cb2c674e7`。唯一需要的运行时内容是五张同画布透明分层 PNG：`lamp_dark`、`lamp_outline`、`lamp_leds`、`lamp_core`、`lamp_glow`，合计 `632195` 字节；Godot、Three.js、Next.js、`node_modules`、构建缓存、Git 历史、预览和重复副本属于旧版范围。
+- 可恢复清理：先把原包完整备份到 `.folder-organizer-backups/20260829-163543/灿若星辰灯.original.zip`，再把被替换的原包移动到 `.folder-organizer-trash/20260829-163543/灿若星辰灯.original.zip`；两份恢复副本的 SHA-256 均与原包一致。原路径已替换为 `598155` 字节精简包，SHA-256 为 `89d45b542b8f8e58deaad7ea5802366fe659b7ac69a17fe7b4df7fc4bc7ea47c`，只含五张正式素材、README 和 JSON 清单。外部恢复清单位于 `.folder-organizer-manifests/20260829-163543-canruo-star-lamp.json`。
+- 项目接入：五张正式素材复制到 `src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp/` 并逐项复核哈希。新增 `ChapterFourStarLampClosure`，按正式 `6200ms` 序列完成暗场、轮廓、LED、灯芯、光晕和镜头拉远；`ChapterFourClosureSessionRegistry` 只为真实播放完成回调签发一次性 runtime proof，控制器验证后才允许 `acknowledge_exterior_closure` 写入完成状态。
+- 存档收口：SaveStore 升级到 v32。只有 v32 且 `phase=complete`、双签到、配电锁定、最后一分钟装回、灯光准备和外景回执全部一致时才恢复正式完成；旧版、裸布尔值或不完整字段继续降级到安全的 `exterior_closure`。正式回执会保留 `exterior_closure_acknowledged=true / completed=true`，并返回手机主页。
+- 文案与预热：DEV 节点改名为“灿若星辰正式收束”；任务提示改为播放完成后自动结算；五张分层素材加入第四章收束阶段预热。章节文本重新导出并通过 `text:check`，总计 `6513` 条。
+- 验证：`npm run typecheck`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。离线单文件为 `258649544` 字节、两个内联脚本和一个内联样式，SHA-256 为 `3ff9e53b71b65a5f2125ef0fc28ff8160440415b7bbaa7e9b9794ad708f1e355`。应用内浏览器在本地 HTTP 完整播放正式灯光，画面中五层按原坐标组合；结束后返回手机主页，任务显示“章节完成 1/1”，console/page error 为 `0`。`file://` 自动控制受浏览器安全策略禁止，单文件通过结构、资源内嵌与哈希验证。
+- 交付边界：本轮没有新增测试文件或测试依赖，没有执行 Git 暂存、提交、合并、推送或上传。`demo/index.html` 只由构建命令生成；其他既有未提交改动均保留。
+
+## 2026-08-29 启真湖石块与浮标碰撞核心化
+
+- 用户指出黑天鹅追逐河道的石块与浮标空气墙明显大于可见物体，并要求继续核对其他启真湖地图。本轮仅校准水面上的离散小型障碍；岸线、码头、木排、围栏和大型水草仍使用各自的源像素碰撞。
+- 河道三组石块由原来的三个大矩形改为四个逐石块核心框：西侧单石、东部双石分别拆开、最东侧单石。碰撞只覆盖露出水面的岩石轮廓，不再包含浅色水底、涟漪和两石之间的水面。
+- 河道五个浮标由约 `24–25×38–39px` 收紧到 `16×23–26px`。同时补齐码头五个和大湖四个可见浮标的精准核心碰撞；启真湖四图现在共有十四个浮标碰撞，黑天鹅围栏图没有独立水面浮标。
+- 数据权威集中到 `QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS`，四张 `1672×941` 母图按地图维护同一套小型障碍矩形。追逐验证器增加数量、尺寸、世界边界和运行时引用一致性检查。
+- 自动验证：`qizhen:validate-swan-chase` 通过 `164` 项断言，`qizhen:validate-rain-safety` 通过 `70` 项断言，`typecheck`、`build:single`、`verify:single` 与 `git diff --check` 通过。离线单文件为 `257652626` 字节，SHA-256 为 `6cb5d79ca7fb1e7c4481398aec4632edc1bbd1d5758dd39bcc919cce045e960d`。
+- 浏览器验证：使用 `develop-web-game` 标准客户端分别打开码头登船、开阔水域、黑天鹅围栏与直河道追逐检查点。开发碰撞层确认十四个浮标框均贴合橙色实体、河道四个石块框逐石分离，浅水纹、藻斑、涟漪和石块间水面均可通行；围栏图的岸边石块继续由岸线轮廓统一阻挡。最终 `file://` 单文件成功进入 `qizhen_chase`，运行时返回四个新石块框和五个新浮标框，未产生 console/page error 文件。
+- 交付边界：本轮只修改启真湖碰撞模型、对应回归验证器与进度记录，并重建本地 `demo/index.html`；没有执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-29 A 范围交付与合作者第四章修复集成
+
+- 提交范围：按用户确认的 A 方案提交当前批准的源码、玩法数据、美术与音频资产、验证器及文案记录；继续排除 `demo/index.html`、`dist/`、Godot 归档和临时浏览器产物。离线单文件因体积超过 GitHub 单文件限制，仅作为本地交付物保留。
+- 合作者基线：合入远端 `origin/main` 的 `866ae84 fix(chapter4): restore floor loading and reality cues`，保留暂停 Phaser 后恢复、分阶段楼层贴图原子提交、A3 错位楼梯返回 A2 落点、宿主暂停场景复用及配电拓扑修复。
+- 语义消解：第四章继续使用本地统一现实模式视觉层；深色观察为青蓝扫描氛围，浅色操作为暖金边框氛围。两种模式的谜题点始终存在，不匹配模式以低透明度休眠，玩家可任意调查顺序并获得模式纠正；可操作权限仍由控制器验证。删除了远端重复遮罩和重复发光实现，避免同一场景出现两套视觉权威。
+- 自动验证：`npm run typecheck`、第四章 story、runtime（`1095` 项）、warmup（`77` 项）、topology（`2769` 项）、effective interactions（`435` 项）、assets、Task 14（`365` 项）全部通过；关键玩法套件 `11/11` 通过，并通过 3.5 章 `48` 种证据完成顺序、深浅模式 `180` 项顺序验证、启真湖雨天安全、分级节奏钓取、黑天鹅追逐、第三章追逐音频、RPG 朝向无关、人物帧与紫金港地图验证。
+- 音频与发布：第三章 `77/77` 音频合同和 3.5 章 `11` 个录音资产验证通过；生产构建通过。`build:single` 与 `verify:single` 通过，`demo/index.html` 为 `257651801` 字节，含 `2` 个内联脚本和 `1` 个内联样式。
+- 浏览器验证：Playwright 驱动真实 Chromium 检查 `390×844` 手机首页、`1440×900` 剧院入口和第四章入口；三处均脱离加载占位，关卡导航和 RPG 画布正确，console error 为 `0`。项目自带 `verify-browser-smoke.mjs` 在本机 Chrome 的同步截图调用达到 `60s` 超时，随后改用项目外 Playwright 会话完成等价验证；临时快照和日志已移出工作区。
+- CI 修复：首次推送后的 GitHub Web CI 在关键玩法套件内运行 `audio:pursuit:verify` 时找不到 `ffprobe`。根因是工作流把 FFmpeg 安装放在关键套件之后。现已将 FFmpeg/ffprobe 准备步骤移动到关键套件之前；本地关键套件和完整音频合同已通过，最终远端状态以后续 GitHub Actions 运行结果为准。
+- Git 状态：本节记录于本地功能提交 `1db10e3` 与远端 `866ae84` 的合并过程中；此处尚未声明推送或远端 CI 完成，最终状态以合并提交、远端 SHA 和 GitHub Actions 为准。
+
+## 2026-08-29 第三章北向校园地图主角缩小 50%
+
+- 范围：只调整 `BootScene` 使用的北向紫金港校园地图主角。室内、第四章、启真湖步行与皮划艇、剧院至启真湖侧视过场继续使用原共享人物比例。
+- 显示契约：共享人物基准保持 `0.65`；新增北向校园专用倍率 `0.5`，实际显示比例为 `0.325`。运行时尺寸由 `62×83` 世界像素降为 `31×42`，姓名标签按新图像顶部重新定位。
+- 碰撞与玩法：缩放继续通过共享 `applyRpgPlayerVisualScale` 应用，脚部碰撞保持 `19.5×14.63` 世界像素；出生点、移动速度、地图路径、剧院入口半径和交互范围均未修改。
+- 回归门禁：`verify:rpg-player` 新增北向校园专用比例与 `BootScene` 接入检查，防止以后误改全局人物比例或退回全尺寸配置。`npm run verify:rpg-player`、`npm run verify:rpg-character-sprites`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 均通过。
+- 浏览器验证：`develop-web-game` 标准客户端在 Vite 与最终 `file://` 单文件中完成左右移动；单文件 Blink 状态从 `x=3300` 连续更新至 `3322`、`3349`，剧院入口按 `Space` 后进入 `theater_interior / theater_lobby`。Blink、Gecko、WebKit 均确认 `displayScale=0.325`、`displayWidth=31`、`displayHeight=42`、碰撞 `19.5×14.63`，console/page error 为 `0`；`390×844` WebKit 页面无横向溢出且保持单个 Phaser canvas。
+- 单文件：`demo/index.html` 为 `257646004` 字节，SHA-256 为 `a62c2fe3c5ea5296718a1eeedfec1fd9be94b919c31b805d2a8063873ab09040`。
+- 交付边界：本轮直接修改现有 `main` 工作区并重建本地单文件，没有执行 Git 暂存、提交、合并、推送或 GitHub 上传。
+
+## 2026-08-29 755 米自行车换道抖动修复
+
+- 根因：3D 骑行渲染器先平滑移动骑手，随后又把 `-laneVelocity * 0.032` 作为横向相机偏移逐帧累加。一次向右换道中，相机会先向左移动，再拉回骑手所在车道；该增量也没有按帧时间缩放，帧率变化会改变回摆幅度。
+- 运动修正：删除逐帧累加的相机反向偏移。骑手横移、横向速度、车身倾角、车把转角和相机跟随统一改用按 `deltaSeconds` 计算的指数响应；车身与车把继续保留同向倾斜，换道规则、车道目标、碰撞、距离、踏频和结算权威均未修改。
+- 可观察性：3D 画布调试状态新增骑手横坐标、目标车道横坐标、平滑横向速度、车身侧倾和相机横坐标。食堂自行车合同新增 `runtime.chase-renderer.stable-steering`，要求上述运动使用帧率无关响应，并禁止重新引入 `lateralLag` 相机反向增量。
+- 自动验证：`npm run verify:canteen-bike-transition` 通过 `41/41` 项，`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。离线单文件为 `257645955` 字节，SHA-256 为 `4b48d636d60f8741183a93f1e988c5106a4bb5209e02c43ff18f2825036e5d13`。
+- 浏览器验证：在 Blink 的 Vite 版 Three.js 骑行画布中分别执行右换道和左回位，两次骑手横坐标与相机横坐标的方向反转均为 `0`，车身倾角和车把转角只向本次换道方向变化后归零。随后从最终 `file://` 单文件进入 `c3-canteen-chase`，右换道从 `riderX=0` 连续到 `3.35`、相机从 `0` 连续到 `0.904`，方向反转均为 `0`；运行仍处于 `755m` 故事模式，`3` 次机会、车道 `2`、碰撞 `0`。Gecko 与 WebKit 也各自运行 Three.js 右换道；两者的骑手与相机方向反转均为 `0`，转角单向变化后归零，三引擎 console/page error 均为 `0`。
+- 交付边界：本轮重建本地 `demo/index.html`，未执行 Git 暂存、提交、合并、推送或 GitHub 上传。
+
 ## 2026-08-29 远端 main 更新与第四章本地修复合并
 
 - 远端同步：成功 fetch 并将本地 `main` 从 `66da254` 快进到 `760cbbf`，纳入 `c174eaa / ac30d19 / 760cbbf` 三个远端提交，共 `65` 个文件、`9197` 行新增和 `6569` 行删除；本地没有领先远端的提交。
@@ -3348,6 +3406,108 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 本机 Chrome 以 `file://` 直接打开离线单文件，启动页、DEV 通道与固定手机外框正常渲染。Playwright 使用同一 `demo/index.html` 的本地 HTTP 预览完成“启动页 → 第一章开场 → DEV 第四章 RPG → 聚焦手机 → 天气页 → 云层校准”基础导航；云层校准正确显示透明吹风机和三层控制，console error 与 warning 均为 `0`。
 - 本轮生成的 Playwright 快照、console 日志、Chrome 临时用户目录与单文件截图已移入回收站。当前记录仍处于提交前状态；最终 commit、push、GitHub CI 与远端 `main` SHA 以本节后续远端证据为准。
 
+## 2026-08-28 启真湖雨天强行下水翻船动画延长
+
+- 原实现只把步行角色平移到水面后旋转淡出，约 `3.15s` 内结束，没有真正显示皮划艇或划桨动作。现改为分段演出：人物走向码头、皮划艇推出、六次左右交替划桨、速度与倾角逐步变化、侧风把船身压偏、船体侧翻入水、岸边获救、返回寝室。
+- 新增纯演出配置 `QizhenRainRescuePresentation.ts`，正常版本为六桨、约 `7.25s`；减少动态效果版本抽取三桨、约 `2.26s`。路线全部位于码头母图水域，演出坐标、速度和倾角不进入正式存档。
+- 复用正式皮划艇双帧、坐姿主角、左右桨水花和尾流。强制翻船增加船体 `82°` 侧倾、缩放、淡出、八层扩散水环、镜头轻震与闪光；救援后人物在值班老师旁重新出现。演出开始时清除旧上船提示，调试状态同步 `rainRescueStage`、六次桨序、船速、倾角和翻船状态。
+- 控制器结算保持原合同：演出完成后只发送一次 `rpg_qizhen_rain_rescue_completed_requested`，倾覆次数从 `0` 增到 `1`，阶段进入 `rain_recovery`，保存点回到 `dorm_spawn`，并开启寝室吹风机与后续天气处理任务。
+- Fresh 验证通过：`npm run typecheck`、启真湖雨天安全 `69` 项、`git diff --check`、文本导出与核对（总计 `6304` 条）、`npm run build:single` 和 `npm run verify:single`。离线单文件为 `252443985` 字节、两个内联脚本和一个内联样式。
+- Chromium `1280×720` 使用 `develop-web-game` 标准客户端从 `c3-qizhen-rain-hold` 完整执行劝阻、再次登船、六桨划行、翻船、救援和寝室落点；中段画面确认皮划艇、桨帧与尾流可见，翻船画面确认船体侧倾与水花可见，最终状态确认 `rainRescueCompleted=true`、`capsizeCount=1`、`weatherAdjustmentRequested=true`，console/page error 为 `0`。
+- 交付边界：本轮仅在现有工作区修改动画、文本、专项验证和进度记录；已生成本地 `demo/index.html` 做离线门禁，没有执行 Git 暂存、提交、合并、推送或上传。临时浏览器截图与状态文件在目视检查后删除。
+
+## 2026-08-28 启真湖持续风力三轨天气校准
+
+- 天气调整从离散点按改为三条 `0–100` 连续轨道。西南风始终向左施加位移，低、中、高三层分别使用 `Z/C`、`A/D`、`Q/E` 后退与前进；三组键可同时按住，触控端提供同语义的六个按住按钮。
+- 三层目标中心分别为 `34 / 52 / 70`，容差为 `±8`。玩家必须实际操作过每一层，并让三层同时进入目标区持续 `1000ms`；任意一层被风推出目标区时稳定进度立即清零。只有 controller 校验通过后才消耗吹风机、停止降雨并恢复上船阶段。
+- 天气页增加持续风向条、轨道内风向反馈、虚线目标区、云带连续位置、按键激活态、三层操作事实和同步稳定进度。校准期间收拢天气信息区，保持 `430×860` 手机外框不变；运行时快照向 `render_game_to_text()` 发布三层位置、输入方向、稳定时间、操作次数和对齐数量。
+- `npm run qizhen:validate-rain-safety` 通过 `69` 项断言，覆盖持续风、三层独立控制、最少三次有效输入、完整 `1s` 稳定、缺失操作拒绝、吹风机消耗、保存恢复和雨天救援闭环。`npm run typecheck`、文本导出/核对、`git diff --check` 均通过；文本总数更新为 `6309` 条，其中第三章 `1121` 条。
+- Chromium、Firefox 与 WebKit 在 `1280×720` 均确认无输入时高层云带持续左移，按 `E` 后能够逆风右移。Chromium `390×844` 触控端确认六个按钮实际命中区约为 `31.28×29.64px`，页面文档宽高无溢出，按住与松开均进入同一输入路径。标准网页游戏客户端与补充六键脚本完成正式成功闭环，console/page error 为 `0`。
+- `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `252450614` 字节、两个内联脚本和一个内联样式。离线 `file://` 再次完成六键控制与天气更新，最佳校正次数为 `5`，最终 `rainSafetyCleared=true`、`phase=boarding_tutorial`、吹风机已消耗。
+- 交付边界：本轮继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，也没有执行 Git fetch、暂存、提交、合并、推送或上传。临时浏览器截图、状态文件和 QA 脚本在记录结论后删除。
+
+## 2026-08-28 CC98《7:55》学生剧海报与演出档案
+
+- 使用内置 `imagegen` 按“空剧场、七点五十五分时钟、深蓝幕布、聚光灯下节目单与票根、红色观众席、竖版像素海报”的提示生成正式原画；缩放为 `512×768` 后保存至 `src/assets/ui/cc98/theater_755_student_play_poster_v01.png`。缩小到约 `99×148px` 的手机显示尺寸时，标题、时钟、聚光灯和票根仍可辨认。
+- CC98 帮抢帖楼主正文改为真实剧社退票说明，不再提前公布校园网失败、第二波流量要求与 `0832` 取票答案。原抢票 controller、两波回执、可选大厅记录和存档事实保持不变。
+- 帖内新增可展开的演出档案：默认显示正式海报、原创作品标识、剧名、核心句、演出时间、入场时间和地点；展开后补充剧情简介、四项演出信息、制作分工和三条现场须知。档案只承担世界观与现场信息，不写入任何章节进度。
+- Fresh 自动验证通过：`git diff --check`、`npm run typecheck`、文本导出/核对、`npm run build:single` 与 `npm run verify:single`。文本总计更新为 `6340` 条；离线 `demo/index.html` 为 `253134358` 字节、两个内联脚本和一个内联样式。
+- Chromium 在 Vite `842×837`、移动视口 `390×844` 和单文件本地 HTTP 预览中完成帖子打开、档案展开、向下滚动和帮抢接单。海报内嵌自然尺寸为 `512×768`，四个详情区完整渲染，手机与文档均无横向溢出，展开后票务按钮仍可见且可点击，console/page error 为 `0`。
+- 交付边界：本轮继续使用现有工作区，没有执行 Git fetch、暂存、提交、合并、推送或上传。浏览器验证截图仅用于本轮目视检查，结论记录后删除。
+
+## 2026-08-28 启真湖雨天强行下水提示与 MiniMax 救援回放
+
+- 首次向湖边值班老师确认时，反馈改为“现在天气不能下水。你要坚持，可以继续靠近码头试试。”，只提示仍可继续靠近码头，不直接说明强行下水、翻船或天气调整答案。雨天救援完成但尚未调整天气时，再次从湖畔入口申请进入会保持在原场景，并显示“这么不长记性，还想要再成一次落汤鸡不成。”。
+- 使用 MiniMax Hailuo 2.3 只提交一次雨天救援视频生成：`task_id=435712012501280`、`file_id=435718259605889`。正式素材为 `qizhen_rain_rescue_hailuo23_v01.mp4`，`1364×768`、`24fps`、`5.875s`、无音轨、`2462885` 字节，SHA-256 为 `9232e480334a8e74eff8f0439151380ea62ca00ab7e44a66d04aaea6d4f66eb3`；同目录 manifest 记录生成提示、任务号、验收结论和运行时边界。
+- 新增 React 救援回放层。Phaser 六桨翻船演出完成后，回放层覆盖同一 `960×540` 游戏壳并暂停人物、键盘、道具、任务栏和触控输入；视频结束或玩家跳过后才继续确定性救援结算。视频错误、超过 `9s` 未就绪、页面隐藏恢复失败或“减少动态效果”模式都会回退到同一控制器结算，不写第二套章节状态。
+- Fresh 自动验证通过：`npm run typecheck`、启真湖雨天安全 `70` 项、文本重新导出与 `npm run text:check`、`git diff --check`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 和 `npm run verify:single`。文本总计 `6349` 条；离线单文件为 `256422151` 字节、两个内联脚本、一个内联样式和一个内嵌 MP4 数据源。
+- Chromium `1280×720` 在 Vite 完整验证首次克制提示、强行登船、视频播放、回寝室和再次拦截；视频 `readyState=4`、`duration=5.875`，救援后 `rain_recovery / dorm_hub / capsizeCount=1`，console/page error 为 `0`。减少动态效果模式不挂载视频，仍完成同一救援结算。
+- 生成后的单文件经本地 HTTP 使用真实方向键和空格键完成“走到值班老师 → 查看提示 → 走到登船点 → 强行登船 → 内嵌视频 → 跳过 → 回寝室”，视频源确认为 `data:video/mp4;base64` 且 `readyState=4`；`file://` 直接打开同一产物也确认 `qizhen_lake / boarding_tutorial`、一个 Phaser canvas 和零 console/page error。
+- 交付边界：本轮继续使用既有工作区，没有执行 Git fetch、暂存、提交、合并、推送或上传；生成视频已纳入源码资产范围，临时锚点、逐帧审阅图和浏览器截图在记录结论后删除。
+
+## 2026-08-29 黑天鹅追逐压力阶段与跨浏览器收口
+
+- 雨天翻船后的 MiniMax 救援回放继续使用既有 React 覆盖层接入同一 `960×540` 游戏壳；视频结束、跳过、载入失败和超时仍汇入同一个 controller 结算，不把生成视频作为位置、碰撞、存档或剧情权威。
+- 新增纯 `QizhenSwanChasePressureModel`。追逐表现分为放飞警示、持续追踪、冲刺预警、短距冲刺和恢复调整五段，并按起始段、河道中段、左岸近段调整节奏。模型只读取真实间距、流程进度和玩家纵向位置，不写抓捕、终点、尝试次数、存档或章节事实。
+- 第一次冲刺预警提前到追逐 `2.7s`，锁定玩家当时所在航线并持续到原 `4s` 接触保护结束；黑天鹅在预警阶段不会提前冲刺。原规则保持：实际中心距 `≤104px` 且保护期结束才失败，同帧先结算左岸终点，近距速度始终低于皮划艇最大速度、远距速度始终高于最大速度。
+- 追逐 HUD 独立显示当前阶段、危险等级、真实距离、河道段落和进度，并使用蓝、黄、红三档风险条；冲刺预警锁定航线，冲刺开始产生水环和轻微镜头反馈，进入左岸近段产生单次收尾提示。通用划桨状态栏只保留控制、行进方式和侧倾，避免重复显示距离。
+- 新增 `npm run qizhen:validate-swan-chase` 并纳入 critical suite。专项 `86` 项断言覆盖五阶段循环、预警提前、保护期内禁止冲刺、航线锁定、三段速度边界、风险单调性、真实抓捕与同帧终点优先；全套 `10` 个 critical validator、`typecheck`、文本导出与核对均通过，文本总计更新为 `6360` 条。
+- Chromium 标准网页游戏客户端实测：静止时 `3.69s / gap=122 / catchReady=false` 显示冲刺预警，继续忽略后在 `4.11s / gap=104` 被追上；保持划行时在左岸近段进入冲刺；`44` 次左右交替划桨完成 `1000` 距离，`capsizeCount=0`、`chaseAttempts=1`，随后回到既有手机收尾。
+- Blink、Gecko、WebKit 共 `12` 个运行组合通过：每个引擎覆盖 `1280×720`、`1180×800`、`844×390` 触控横屏和 `390×844` 竖屏；键盘和触控划桨都推进真实追逐距离，所有 canvas 保持 `16:9`，页面无横纵溢出且 console/page error 为 `0`。
+- `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `256429273` 字节、两个内联脚本和一个内联样式。`file://` 直开后左右划桨将追逐推进至 `689`，压力阶段、真实间距与调试字段均可读，没有 console/page error。
+- 交付边界：本轮继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，也没有执行 Git fetch、暂存、提交、合并、推送或上传。临时浏览器截图与状态文件在结论记录后删除。
+
+## 2026-08-29 黑天鹅与保安追逐音乐、配音和动态混音
+
+- 黑天鹅追逐新增独立 `28s` 循环音乐床，开始与重试时恢复播放，失败和抵达左岸时停止；放飞警示、冲刺预警、短距冲刺和左岸近段只更新当前音乐的音量与速率，不重新起播。配音保持三句稀疏旁白：放飞后指向左岸、首次冲刺预警、接近左岸收尾，每句在一次尝试中最多播放一次。
+- 保安追逐继续沿用第四章既有夜间追逐音乐 `music_ch4_prologue_night_pursuit`，避免出现第二套风格身份；`catch_up / tracking / close` 三档依据真实路径距离动态调整音量和速率。新增开始追逐、楼层切换和近距离三句保安配音，楼层句与近距句在一次追逐中各播放一次。
+- 六条中文语音均由 MiniMax `speech-2.8-hd` 生成：黑天鹅段采用低音高旁白声线，保安段采用沉稳男声；生成清单记录模型、声线、文本哈希、配置哈希、文件 SHA-256、时长、采样率与声道。MiniMax Music 接口本次返回 HTTP `410`，黑天鹅音乐按生成脚本中的确定性 ffmpeg 兜底生成，清单明确保留该来源，不伪称为 MiniMax 音乐输出。
+- `AudioDirector` 改为合并同名事件的音频节拍，使第四章原有追逐音乐与新增配音可以同时接入；语音播放期间将音乐临时压低到 `0.075`，结束后恢复对应压力档。离开启真湖、失败、重试、完成和关闭第四章时会取消排队音频并停止相应声道，避免跨场景残留。
+- 新增 `npm run audio:pursuit` 与 `npm run audio:pursuit:verify`，专项验证通过 `112` 项断言，覆盖七个 MP3 的存在性、哈希、解码、时长、采样率、声道、MiniMax 声音来源、事件路由、一次性语音、动态混音、失败/完成收尾和第四章既有音乐保留；该验证已加入 critical suite，完整 `11` 个 critical validator 全部通过。
+- Chromium `1280×720` 真实浏览器运行态确认：黑天鹅左岸近段同时处于 `music_qizhen_swan_chase` 播放、音乐压低至 `0.075`、`vo_pursuit_qizhen_swan_final` 播放；保安追逐进入 `close` 档后确认 `music_ch4_prologue_night_pursuit` 正在循环、开始配音和近距配音均能播放，近距音乐同样正确压低至 `0.075`。两条追逐均无 console error 或 warning。
+- Fresh 自动验证通过：完整 critical suite、`npm run typecheck`、文本导出/核对、`git diff --check`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single`。离线 `demo/index.html` 为 `257645257` 字节、两个内联脚本和一个内联样式；本轮没有执行 Git 暂存、提交、合并、推送或上传，浏览器临时截图和状态文件在记录结论后删除。
+
+## 2026-08-29 第四章深浅模式视觉分层与解密锚点
+
+- 第四章 `深色观察` 增加冷蓝压暗、边缘暗角、轻量扫描纹和青色圆环线索锚点；`浅色操作` 增加暖色轻覆层和金色菱形操作锚点。两种模式使用 `240ms` 交叉淡入，模式按钮同步采用各自色温和边框。
+- 现有第四章投影目标全部接入同一解密锚点合同。当前模式目标完整显示，另一模式目标保留低亮提示；目标仍由原 room、phase、visibleWhen 和 controller 规则决定，视觉层不写章节状态。
+- 氛围层深度为 `9800`，解密锚点为 `9850`，人物为 `9900`，共享 HUD 为 `10000`。人物全程保持在模式氛围和解密点上方，现有门、电梯、碰撞与前景关系没有改变。
+- Chromium `1280×720` 对两个第四章 DEV 检查点各完成一次浅色/深色对照，共 `2` 个检查点、`4` 张运行画面。维修检查点确认金色操作点与青色观察点随模式互换 active/dormant，运行调试字段与画面一致，console/page error 为 `0`。
+- Fresh 自动验证通过：`npm run chapter4:validate-runtime`（`1095` 项）、`npm run chapter4:validate-effective-interactions`（`435` 项）、`npm run verify:rpg-reality-mode-order`（`180` 项）、`npm run chapter4:validate-story`、`npm run typecheck` 和 `npm run build:single`。单文件构建为 `257649.89 kB`，gzip `189331.88 kB`。
+- 当前浏览器上下文停在第三章检查点，没有包含用户所指第四章具体位置的标注。本轮先把所有现有第四章解密目标升级为可辨认锚点；如果需要在一个全新空白区域增加独立谜题，还需要 `A1/A2/A3 + 房间或物件`，或一张第四章标注图。本轮没有执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-29 第四章六处有机插入谜题与 image2 场景装配
+
+- 第四章新增六处与现场陈设绑定的谜题：A1 前台值班牌顺序、A3 301 胶片索引、A3 302 新旧影像对齐、A2 201 定位板三轴校准、A2 203 五区拓扑恢复、A2 开放自习区疏散路线。六处均由原场景空白装置触发，没有替换 104／105、电梯、错位楼梯和 204 家具复原的既有主谜题。
+- 使用 image2 生成并裁成真实透明底的六件正式素材，全部保存在 `src/assets/rpg/interiors/finale/chapter4-755/props/`。素材按源像素 `1:1`、nearest filtering 和各层世界坐标装配；深色模式统一施加荧光蓝色调，浅色模式保留原暖色与金色操作点，人物深度继续高于装置和模式氛围层。
+- 调查节奏调整为：A1 三项校验可任意顺序完成；A3 两处装置都可先打开查看，302 的实体校准在取得 301 胶片后提交；错位楼梯完成后，A2 三处现场记录可任意顺序处理，三项齐全后任务栏再进入 204 完整复原。浅色操作可以先完成允许的实体谜题，深色观察提供线索，不存在统一的“必须先深后浅”硬顺序。
+- 新增第四章 DEV 节点 `c4-755-a2-field-records`，直接落在 18:50 二楼交通核心并携带三楼与错位楼梯前置事实。开放自习区路线板保持原画面位置，交互距离单独校准为 `96px`，使人物可停在书架北侧打开装置，无需扩大书架空气墙或穿过家具。
+- Chromium `1280×633` 通过真实键盘路线分别抵达六件装置。A1 验证浅色直接完成；A3 验证错误组合不重置、深色荧光蓝残影与未取得胶片时的可查看提示；A2 三处均完成真实走位、打开、调节与提交，最终事实同时包含 `a2_positioning_plate_calibrated`、`a2_power_topology_recovered`、`a2_evacuation_route_confirmed`，任务栏随后切换为 204 家具复原。
+- 同一最终 `file://` 单文件在 Blink、Gecko、WebKit 的 `1280×720` 视口均显示一个 `1280×720` Phaser 画布、第四章任务和零页面溢出。Fresh Blink 与 WebKit 为 `0 exception / 0 error / 0 warning`；Gecko 为 `0 exception / 0 error`，只报告一次 headless WebGL 上下文恢复提示和一次无用户手势时的 AudioContext 自动播放拦截。Gecko 画布抽样 `144/144` 个像素均为非黑，临时截图目视确认场景、人物、HUD 与 A2 入口完整显示。
+- 本轮没有创建测试文件或测试依赖。发布检查通过：`npm run typecheck`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single`、`npm run verify:single` 和 `git diff --check`。离线 `demo/index.html` 为 `257773435` 字节、两个内联脚本和一个内联样式；`file://` 直开后进入 A2 检查点，Phaser canvas 为 `1`，预热素材 `20/20`，失败资源为 `0`。支持 NPC 的动画刷新改为在动画注册完成后补播，Fresh Chrome 单独载入最终单文件并等待 `15s` 后采集到 `0 exception / 0 error / 0 warning`。
+- 交付边界：继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，也没有执行 Git 暂存、提交、合并、推送或上传。浏览器临时截图与 Chrome 临时目录在本轮结论记录后删除。
+
+## 2026-08-29 剧院正中出口按原门重绘与动态复原
+
+- 删除剧院正中出口的灰蓝通用门表现。第二轮测量确认原门左右门轴相距约 `176px`、门页可见高度约 `70px`；先前 `116×118` 门页存在明显的窄高比例偏差。正式素材 `theater_center_exit_closed_v03.png` 直接提取 `theater_interior.png` 两扇开启门的木纹、描边和黄铜把手，按原门页四边形进行透视校正后重组为 `176×70` 的闭门状态。
+- 内置 imagegen 生成的闭门场景只用于复核俯视构图、门轴范围和垂直压缩比例。运行时没有采用生成图中的墙面、门柱或灯具，正式门页保持底图原始像素色域、光照方向和纹理密度。
+- 共享 `RpgInteriorDoorRuntime` 新增可选门页贴图、门洞/光照透明度、场景级缓动和 `double-fold` 双页透视收拢方式。剧院闭合时显示新门页；开启时两页沿外侧门轴收窄并淡出，随后完整露出底图中原有的两扇开启门，避免二维旋转产生大面积斜板。
+- 剧院门继续复用原门框前景裁片和既有阻挡线。闭门时不可通行，达到通行进度后解除阻挡；人物进入门洞时门页位于人物上层，门页让出后恢复原底图通道。其他寝室、食堂和图书馆门没有传入新选项，保持现有表现。
+- Vite 与最终 `file://` 单文件均在 `c3-theater-complete` 检查点验证闭合、开启中和通行状态。单文件开启中快照为 `progress=0.575 / passable=true / actorOccluded=false`，画面中门页已收窄、人物位于门洞、原开启门页逐步显露；浏览器 console/page error 为 `0`。
+- 本轮没有新增测试文件或测试依赖。`npm run typecheck`、`git diff --check`、`npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `257796896` 字节、两个内联脚本和一个内联样式，SHA-256 为 `726835a7bea96ff63a1d31266b8a7656239366eda09db43b7fa51336ed1a851f`。
+- 被否决的 `v01` 亮金边门页和 `v02` 窄高门页均已移入 macOS 回收站，可恢复；本轮继续使用既有工作区，没有执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-29 A 范围主分支上传与 CI 契约对齐
+
+- 按用户确认的范围 A，将现有 `selected-phaser-ui-20260721` 工作区内第四章有机插入谜题、启真湖追逐与碰撞修正、剧场出口复原、CC98 世界观素材、音频、文本、控制器、存档迁移和既有验证脚本纳入同一次 `main` 交付；被忽略的 `demo/`、`dist/`、外部 ZIP/备份、Godot 与临时 QA 产物没有进入提交。
+- 首次远端提交为 `8a46dd447ebe1e02c2a69571c9b0c707dd5c5be4`。本地 `HEAD`、`origin/main` 与 `git ls-remote origin refs/heads/main` 当时一致，工作树干净；GitHub Web CI `33245818634` 在第四章剧情契约步骤发现 7 项旧校验规则。
+- 本地复现确认正式内容已扩展为 `36` 个活动任务与 `108` 条提示，QuestModel 已使用 A1、A3、A2 三组并行调查，Host 增加六处现场谜题与正式收束的唯一呈现权，SaveStore v32 只在完整收束证明、双项签到与锁定灯阵同时成立时恢复 `complete`。运行时实现与批准设计一致，失败来源为旧 validator 仍固定检查 `33 / 99`、旧事实顺序和旧握手集合。
+- 只更新既有 `scripts/verify-chapter4-755-story.mjs`：精确锁定 `14` 项 204 阶段任务、`18` 项事实闭包、三组任意顺序调查、六处新增谜题、正式收束握手和 v32 防伪完成条件。没有创建测试文件或测试依赖；`npm run chapter4:validate-story` 已恢复通过，仍检查 `13` 个阶段、`6` 个时间状态、`5` 个配电区域与 `14` 个道具操作。
+- 剧情契约修复提交 `d8ec7a455d75d39cbcaa59de6a21eb056301d8b6` 推送后，GitHub Web CI `33246172873` 已通过剧情、资产和拓扑步骤，并在运行时矩阵暴露第二处状态夹具过期及一项真实存档边界问题。运行时夹具现已补齐 A1 值班板、A3 档案链与 A2 三项现场记录的合法前置事实，原 `116` 项级联失败收敛为 `6` 项独立差异。
+- SaveStore v32 的降级条件已收紧：只有原存档明确处于 `phase=complete` 时，缺少完整收束证明才降级至 `exterior_closure`；维修、返程或早晨阶段中伪造的 `completed/acknowledged` 字段不再把玩家提前送至外部收束页。合法的 v32 完整闭包仍可恢复 `complete`，外部收束页的伪造完成字段仍会被清除。
+- Task 14 校验同步纳入正式的 `c4-755-a2-field-records` 检查点，并更新为 `36` 个活动任务、`108` 条渐进提示与 `14` 个第四章 DEV 节点。该节点仍由 `DeveloperChannel` 生成合法 `A2 / a2_corridor / room204_restore` 状态，不影响正式存档。
+- 修正后 `npm run chapter4:validate-runtime` 通过 `1095` 项断言，`npm run chapter4:validate-story`、`npm run chapter4:validate-task14`（`375` 项）、`npm run chapter4:validate-topology`（`2781` 项）与 `npm run typecheck` 同步通过。远端最终提交与 GitHub CI 结果以本节后续交付证据为准。
+
 ## 2026-08-29 RPG 自适应清晰度、像素字体与切换稳定性
 
 - 横屏 RPG 继续保持 `960×540` 逻辑视口和原碰撞坐标，按实际显示尺寸与设备像素比提高 Phaser 后备画布；摄像机可见范围不变。固定 HUD 使用逻辑坐标补偿，Phaser Text 的纹理分辨率随渲染倍率同步，地图、界面和文字不会因后备画布放大而错位。
@@ -3357,3 +3517,12 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - Chromium `1440×900 / DPR 1.5` 实测图书馆、食堂、启真湖与第四章四个代表场景：每处仅一个 canvas，后备尺寸均为 `1440×810`，像素字体错误数 `0`、文字源分辨率不一致数 `0`、字体加载成功；随后快速连续整页切换三处 RPG 检查点，console/page error 为 `0`。
 - Fresh 验证通过：`npm run typecheck`、第四章 runtime `1095` 项、现实模式顺序 `180` 项、室内门 `28` 项、`git diff --check`、`npm run build:single` 与 `npm run verify:single`。离线产物为 `demo/index.html`，`252448256` 字节、两个内联脚本和一个内联样式。
 - 当前边界：本轮未执行 Git fetch、暂存、提交、合并、推送或上传；既有未跟踪 Godot、启真湖素材和第三章文案保持未动。本轮专用 Chromium、临时截图和 QA 脚本均已清理，既有 Vite 开发服务保持运行。
+
+## 2026-08-29 远端 main 合并与自适应渲染兼容复核
+
+- 合并前按项目规则执行 `git fetch origin main --prune` 并完成三视图审计：本地 `HEAD=866ae84`、本地独有提交 `0`、远端新增 `6` 个提交并前进到 `26315cf`；工作树有 `14` 个已修改跟踪文件与新增 `RpgRenderResolution.ts`，另有 `1456` 个未跟踪 Godot、启真湖素材、辅助脚本和第三章文案文件。
+- 按用户确认范围，只把上述 `15` 个 RPG 清晰度、字体和进度文件做本地保护提交，再合并远端 `93` 个文件。八个重叠文件中六个自动合并；人工冲突仅为 `progress.md` 与 `ChapterFourTemporalMazeScene.ts`，前者保留双方完整记录，后者同时保留远端插入谜题和完整明暗氛围层、本地像素字体与自适应相机入口。
+- Fresh 自动验证通过：`npm run typecheck`、第四章 story、runtime `1095` 项、有效交互 `624` 项、topology `2781` 项、warmup `77` 项、assets、启真湖雨天 `70` 项、天鹅追逐 `164` 项、钓鱼、工具分支 `114` 项、现实模式顺序 `180` 项、室内门 `28` 项、玩家帧、无朝向合同、启真湖日志与 `git diff --check`。
+- `chapter4:validate-task14` 与 `audio:pursuit:verify` 的本地音频时长探测未执行完成，因为当前 Windows 环境没有 `ffprobe`；前者的剧情/runtime 前置验证和其余音频消费者均未因此报出代码错误。远端 CI 已显式准备 `ffmpeg/ffprobe`，本轮没有修改对应远端验证脚本或安装系统工具。
+- Chromium `1440×900` 实测图书馆、启真湖和第四章 A2：三个场景都只有一个 canvas，像素字体错误数与文字源分辨率不一致数均为 `0`；第四章切到深色后氛围层为完整 `960×540`、alpha `1`，实际覆盖整个地图。随后快速连续切换三个 RPG 检查点，console/page error 为 `0`。
+- `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `258654608` 字节、两个内联脚本和一个内联样式。本轮没有推送；`1456` 个未跟踪文件保持未动，专用 Chromium、截图和 QA 脚本均已清理，既有 Vite 服务继续运行。

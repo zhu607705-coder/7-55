@@ -155,6 +155,18 @@ try {
     "bakery_hour_hand_collected",
     "hour_hand_installed"
   ];
+  const insertedA1Facts = [
+    "a1_duty_board_reconstructed"
+  ];
+  const insertedA3Facts = [
+    "a3_archive_film_retrieved",
+    "a3_media_alignment_completed"
+  ];
+  const insertedA2Facts = [
+    "a2_positioning_plate_calibrated",
+    "a2_power_topology_recovered",
+    "a2_evacuation_route_confirmed"
+  ];
   const layoutRuntimeTargetById = new Map([
     ...chapterFourLayout.bakeryRuntime.targetEntities,
     ...chapterFourLayout.maintenanceRuntime.targetEntities,
@@ -385,12 +397,12 @@ try {
     mode: "dark",
     roomId: "a1_lobby",
     phase: "room204_restore",
-    facts: ["hour_hand_installed"]
+    facts: ["hour_hand_installed", ...insertedA1Facts]
   }));
   const classroomController = new ChapterFourTemporalMazeController(classroomStore, new EventBus());
   assert(
-    selectQuestViewModel(classroomStore.getState()).objective === "完成 104 与 105 的时间差校验",
-    "task drawer must require both A1 classrooms before exposing the A3 objective"
+    selectQuestViewModel(classroomStore.getState()).objective === "汇总 A1 剩余调查点",
+    "task drawer must group the remaining A1 investigations before exposing the A3 objective"
   );
   const blockedBeforeChecks = classroomController.resolve755Intent({
     type: "move_to_location",
@@ -443,8 +455,8 @@ try {
   );
   const classroomQuest = selectQuestViewModel(classroomStore.getState());
   assert(
-    classroomQuest.objective === "完成主电梯历史读取与重放校准",
-    "task drawer must group elevator observation and calibration without prescribing their order"
+    classroomQuest.objective === "汇总 A1 剩余调查点",
+    "task drawer must keep elevator observation and calibration inside the order-free A1 group"
   );
   const classroomProjection = selectChapterFourMazeProjection(classroomStore.getState());
   assert(
@@ -467,8 +479,8 @@ try {
   const elevatorObserved = classroomController.resolve755Intent({ type: "observe_elevator_history" });
   assert(elevatorObserved.accepted && elevatorObserved.changed, "dark observation must record elevator history once");
   assert(
-    selectQuestViewModel(classroomStore.getState()).objective === "完成主电梯历史读取与重放校准",
-    "one completed elevator branch must keep the grouped order-free task visible"
+    selectQuestViewModel(classroomStore.getState()).objective === "汇总 A1 剩余调查点",
+    "one completed elevator branch must keep the grouped order-free A1 task visible"
   );
   classroomController.resolve755Intent({ type: "set_mode", mode: "light" });
   const wrongElevatorReplay = classroomController.resolve755Intent({
@@ -495,6 +507,7 @@ try {
     phase: "room204_restore",
     facts: [
       "hour_hand_installed",
+      ...insertedA1Facts,
       "classroom_104_chalk_residual_observed",
       "classroom_105_terminal_replay_checked"
     ]
@@ -997,10 +1010,13 @@ try {
   ];
   const task9FactPrerequisites = [
     ...bakeryFactOrder,
+    ...insertedA1Facts,
     "classroom_104_chalk_residual_observed",
     "classroom_105_terminal_replay_checked",
     "elevator_history_observed",
-    "elevator_history_calibrated"
+    "elevator_history_calibrated",
+    ...insertedA3Facts,
+    ...insertedA2Facts
   ];
 
   function makeRoom204State({
@@ -1437,8 +1453,8 @@ try {
   ];
   const completePlacements = arbitraryModelPlacements.map((placement) => ({ ...placement }));
   const roomQuestCases = [
-    ["reference", [], [], "chapter_four_answer_zhu_two_questions", false],
-    ["zhu questions", ["a3_reference_observed"], [], "chapter_four_answer_zhu_two_questions", false],
+    ["reference", [], [], "chapter_four_resolve_a3_archive_chain", false],
+    ["zhu questions", ["a3_reference_observed"], [], "chapter_four_resolve_a3_archive_chain", false],
     ["stair", ["a3_reference_observed", "zhu_two_questions_answered"], [], "chapter_four_solve_misaligned_stair", false],
     ["residual", ["a3_reference_observed"], [], "chapter_four_restore_room204", true],
     ["restore", ["a3_reference_observed", "room204_residual_observed"], [], "chapter_four_restore_room204", true],
@@ -3188,26 +3204,41 @@ try {
       && !bothMorningLoaded.chapter4.completed,
     "Task13 morning save with both valid check-ins must normalize once to the exterior wait"
   );
-  for (const [label, maliciousPhase] of [["bare complete", "complete"], ["bare acknowledged exterior", "exterior_closure"]]) {
-    const loaded = hydrate({
-      ...cardThenPaperExterior,
-      chapter4: {
-        ...cardThenPaperExterior.chapter4,
-        phase: maliciousPhase,
-        factIds: [...cardThenPaperExterior.chapter4.factIds, "exterior_closure_acknowledged"],
-        exteriorClosureAcknowledged: true,
-        completed: true
-      }
-    });
-    assert(
-      loaded.chapter4.phase === "exterior_closure"
-        && loaded.chapter4.roomId === "a1_exterior"
-        && !loaded.chapter4.factIds.includes("exterior_closure_acknowledged")
-        && !loaded.chapter4.exteriorClosureAcknowledged
-        && !loaded.chapter4.completed,
-      `Task13 ${label} save must stay blocked at the official exterior consumer boundary`
-    );
-  }
+  const coherentCompleteLoaded = hydrate({
+    ...cardThenPaperExterior,
+    chapter4: {
+      ...cardThenPaperExterior.chapter4,
+      phase: "complete",
+      factIds: [...cardThenPaperExterior.chapter4.factIds, "exterior_closure_acknowledged"],
+      exteriorClosureAcknowledged: true,
+      completed: true
+    }
+  });
+  assert(
+    coherentCompleteLoaded.chapter4.phase === "complete"
+      && coherentCompleteLoaded.chapter4.factIds.includes("exterior_closure_acknowledged")
+      && coherentCompleteLoaded.chapter4.exteriorClosureAcknowledged
+      && coherentCompleteLoaded.chapter4.completed,
+    "Task13 coherent v32 completion must survive hydration after the approved consumer proof has been persisted"
+  );
+  const bareAcknowledgedExteriorLoaded = hydrate({
+    ...cardThenPaperExterior,
+    chapter4: {
+      ...cardThenPaperExterior.chapter4,
+      phase: "exterior_closure",
+      factIds: [...cardThenPaperExterior.chapter4.factIds, "exterior_closure_acknowledged"],
+      exteriorClosureAcknowledged: true,
+      completed: true
+    }
+  });
+  assert(
+    bareAcknowledgedExteriorLoaded.chapter4.phase === "exterior_closure"
+      && bareAcknowledgedExteriorLoaded.chapter4.roomId === "a1_exterior"
+      && !bareAcknowledgedExteriorLoaded.chapter4.factIds.includes("exterior_closure_acknowledged")
+      && !bareAcknowledgedExteriorLoaded.chapter4.exteriorClosureAcknowledged
+      && !bareAcknowledgedExteriorLoaded.chapter4.completed,
+    "Task13 acknowledged exterior save must stay blocked at the official exterior consumer boundary"
+  );
 
   const failureFixture = {
     ...directElevatorState,

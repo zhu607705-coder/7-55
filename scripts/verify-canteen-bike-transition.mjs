@@ -679,6 +679,17 @@ if (chaseRendererSource) {
       && /chasePedalCadenceRpm/.test(chaseRendererSource),
     "live crank phase and cadence must derive from traveled distance through one gear ratio"
   );
+  recordCheck(
+    "runtime.chase-renderer.stable-steering",
+    /function\s+frameResponse\s*\(/.test(chaseRendererSource)
+      && /\bsmoothedLaneVelocity\b/.test(chaseRendererSource)
+      && /frameResponse\(LANE_POSITION_RESPONSE,\s*deltaSeconds\)/.test(chaseRendererSource)
+      && /frameResponse\(LANE_VELOCITY_RESPONSE,\s*deltaSeconds\)/.test(chaseRendererSource)
+      && /frameResponse\(STEERING_RESPONSE,\s*deltaSeconds\)/.test(chaseRendererSource)
+      && /frameResponse\(CAMERA_FOLLOW_RESPONSE,\s*deltaSeconds\)/.test(chaseRendererSource)
+      && !/\blateralLag\b/.test(chaseRendererSource),
+    "lane position, steering and camera follow must use frame-rate-independent responses without additive camera counter-shift"
+  );
 }
 
 if (timelineSource) {

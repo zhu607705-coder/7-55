@@ -1,0 +1,37 @@
+{
+  "id": "qizhen-rain-rescue-hailuo23-v01",
+  "role": "presentation-only",
+  "generatedAt": "2026-08-28T23:04:00+08:00",
+  "generator": {
+    "provider": "MiniMax CLI",
+    "model": "MiniMax-Hailuo-2.3",
+    "taskId": "435712012501280",
+    "fileId": "435718259605889",
+    "submissions": 1
+  },
+  "file": {
+    "path": "qizhen_rain_rescue_hailuo23_v01.mp4",
+    "sha256": "9232e480334a8e74eff8f0439151380ea62ca00ab7e44a66d04aaea6d4f66eb3",
+    "bytes": 2462885,
+    "durationSeconds": 5.875,
+    "width": 1364,
+    "height": 768,
+    "fps": 24,
+    "codec": "h264",
+    "pixelFormat": "yuv420p",
+    "audio": false
+  },
+  "prompt": "Single continuous static top-down 2D pixel-art gameplay shot, 16:9. Begin exactly from the supplied Qizhen Lake rainy capsize frame. Preserve the lake, pier, buoys, shoreline, pixel grid, lighting, kayak color and shape, and human scale. In heavy rain the orange kayak completes one roll and drifts only a short distance. The same dark-blue-jacket student surfaces beside it; the head and both arms remain visible. From the lower wooden pier, a college teacher in a dark teal raincoat and a campus safety officer in navy throw one orange life ring attached to a rope. The ring lands beside the student, the student grips it, and both adults pull the student smoothly toward the pier. End with the student safely sitting on the pier under a pale towel while both adults stand nearby. Water ripples and rain continue. No camera movement, no cut, no zoom, no view change, no close-up, no extra people, no extra boats, no text, no UI, no logo, no subtitles, no anatomy distortion, no disappearing limbs.",
+  "acceptance": {
+    "reviewedFullOutput": true,
+    "reviewedFrames": 24,
+    "accepted": true,
+    "notes": "地图、码头、浮标和雨势保持稳定；翻覆、抛圈、拉回、披毛巾动作连续。人物末段较游戏精灵写实，缩放至 RPG 视口后可接受。"
+  },
+  "runtimeContract": {
+    "progressionAuthority": "ChapterThreeQizhenLakeController",
+    "fallback": "QizhenLakeScene deterministic rescue finish",
+    "reducedMotion": "skip video and use fallback",
+    "failureBehavior": "complete cinematic event once and use fallback"
+  }
+}

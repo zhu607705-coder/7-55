@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "events": {
+    "rpg_qizhen_chase_started": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_qizhen_swan_chase",
+          "action": "play",
+          "volume": 0.22,
+          "loop": true
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_pursuit_qizhen_swan_start",
+          "offsetMs": 120,
+          "volume": 0.96,
+          "duckMusicTo": 0.075
+        }
+      ]
+    },
+    "rpg_qizhen_chase_restarted": {
+      "cues": [
+        {
+          "channel": "music",
+          "asset": "music_qizhen_swan_chase",
+          "action": "play",
+          "volume": 0.22,
+          "loop": true
+        }
+      ]
+    },
+    "qizhen_swan_chase_telegraph": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.27,
+          "loop": true,
+          "playbackRate": 1.02
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_qizhen_mist_observe",
+          "volume": 0.3,
+          "playbackRate": 0.82
+        }
+      ]
+    },
+    "qizhen_swan_chase_telegraph_voice": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_pursuit_qizhen_swan_warning",
+          "volume": 0.96,
+          "duckMusicTo": 0.075
+        }
+      ]
+    },
+    "qizhen_swan_chase_surge": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.31,
+          "loop": true,
+          "playbackRate": 1.06
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_qizhen_mist_spray",
+          "volume": 0.44,
+          "playbackRate": 1.08
+        }
+      ]
+    },
+    "qizhen_swan_chase_release": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.22,
+          "loop": true,
+          "playbackRate": 1
+        }
+      ]
+    },
+    "qizhen_swan_chase_final_bank": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.29,
+          "loop": true,
+          "playbackRate": 1.04
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_pursuit_qizhen_swan_final",
+          "volume": 0.96,
+          "duckMusicTo": 0.075
+        }
+      ]
+    },
+    "rpg_qizhen_chase_failed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_qizhen_reflection_miss",
+          "volume": 0.68,
+          "playbackRate": 0.84
+        }
+      ]
+    },
+    "rpg_qizhen_escape_completed_requested": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "stop"
+        },
+        {
+          "channel": "sfx",
+          "asset": "fx_qizhen_reflection_shimmer",
+          "volume": 0.62,
+          "playbackRate": 1.08
+        }
+      ]
+    },
+    "final_chase_started": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_pursuit_chapter4_guard_start",
+          "offsetMs": 180,
+          "volume": 1,
+          "duckMusicTo": 0.075
+        }
+      ]
+    },
+    "final_chase_pressure_catch_up": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.25,
+          "loop": true,
+          "playbackRate": 1.03
+        }
+      ]
+    },
+    "final_chase_pressure_tracking": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.21,
+          "loop": true,
+          "playbackRate": 1
+        }
+      ]
+    },
+    "final_chase_pressure_close": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.29,
+          "loop": true,
+          "playbackRate": 1.06
+        }
+      ]
+    },
+    "final_chase_close_voice": {
+      "cues": [
+        {
+          "channel": "voice",
+          "asset": "vo_pursuit_chapter4_guard_close",
+          "volume": 1,
+          "duckMusicTo": 0.075
+        }
+      ]
+    },
+    "final_chase_floor_changed": {
+      "cues": [
+        {
+          "channel": "music",
+          "action": "update",
+          "volume": 0.27,
+          "loop": true,
+          "playbackRate": 1.04
+        },
+        {
+          "channel": "voice",
+          "asset": "vo_pursuit_chapter4_guard_stair",
+          "volume": 1,
+          "duckMusicTo": 0.075
+        }
+      ]
+    }
+  }
+}

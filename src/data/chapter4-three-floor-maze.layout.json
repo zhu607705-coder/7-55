@@ -1219,6 +1219,16 @@
           }
         },
         {
+          "id": "a1_front_desk_duty_board",
+          "label": "一楼前台值班签到板",
+          "bounds": {
+            "x": 674,
+            "y": 550,
+            "width": 152,
+            "height": 100
+          }
+        },
+        {
           "id": "main_entrance",
           "label": "教学楼主入口",
           "bounds": {
@@ -1741,6 +1751,16 @@
           }
         },
         {
+          "id": "a2_201_calibration_bench",
+          "label": "201 定位板校准夹具",
+          "bounds": {
+            "x": 232,
+            "y": 178,
+            "width": 116,
+            "height": 105
+          }
+        },
+        {
           "id": "seminar_room_204",
           "label": "204 研讨教室",
           "bounds": {
@@ -1771,6 +1791,16 @@
           }
         },
         {
+          "id": "a2_203_circuit_terminal",
+          "label": "203 五区拓扑终端",
+          "bounds": {
+            "x": 1272,
+            "y": 548,
+            "width": 136,
+            "height": 104
+          }
+        },
+        {
           "id": "open_study",
           "label": "二楼开放学习区",
           "bounds": {
@@ -1778,6 +1808,16 @@
             "y": 520,
             "width": 448,
             "height": 294
+          }
+        },
+        {
+          "id": "a2_open_study_evacuation",
+          "label": "开放自习区疏散路线板",
+          "bounds": {
+            "x": 786,
+            "y": 600,
+            "width": 128,
+            "height": 93
           }
         },
         {
@@ -2158,6 +2198,16 @@
           }
         },
         {
+          "id": "a3_301_archive_index",
+          "label": "301 胶片索引抽屉",
+          "bounds": {
+            "x": 242,
+            "y": 309,
+            "width": 96,
+            "height": 82
+          }
+        },
+        {
           "id": "media_studio_302",
           "label": "302 媒体工作室",
           "bounds": {
@@ -2165,6 +2215,16 @@
             "y": 516,
             "width": 398,
             "height": 298
+          }
+        },
+        {
+          "id": "a3_302_alignment_scanner",
+          "label": "302 新旧影像对齐扫描台",
+          "bounds": {
+            "x": 204,
+            "y": 608,
+            "width": 132,
+            "height": 124
           }
         },
         {

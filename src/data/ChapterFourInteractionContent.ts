@@ -6,9 +6,11 @@ import type {
 } from "../core/types";
 
 export const CHAPTER_FOUR_CONTEXT_INTERACTION_TARGET_IDS = Object.freeze([
+  "a1_front_desk_duty_board_context",
   "a2_maker_workshop_201_context",
   "a2_lecture_room_202_context",
   "a2_computer_room_203_context",
+  "a2_open_study_evacuation_context",
   "a3_archive_exhibition_301_context",
   "a3_media_studio_302_context",
   "a3_report_hall_304_context"
@@ -31,6 +33,7 @@ export interface ChapterFourContextInteractionContent {
   anchorId: string;
   activePhases: readonly ChapterFourPhase[];
   roomAliases: readonly string[];
+  proximity?: number;
   purpose: ChapterFourContextInteractionPurpose;
   repeatPolicy: "repeatable";
   textByTimeState: Readonly<Record<
@@ -66,21 +69,45 @@ function defineContextInteraction(
   return Object.freeze(content);
 }
 
+function repeatedPuzzleText(
+  light: string,
+  dark: string
+): Readonly<Record<ChapterFourTimeState, Readonly<Record<ChapterFourRealityMode, string>>>> {
+  return Object.freeze(Object.fromEntries(TIME_STATES.map((timeState) => [
+    timeState,
+    Object.freeze({ light, dark })
+  ])) as Record<ChapterFourTimeState, Readonly<Record<ChapterFourRealityMode, string>>>);
+}
+
 /**
- * Optional, read-only classroom interactions. Their target rectangles come
- * from the authored 1672 x 941 floor-layout anchors. The controller never
- * persists a fact for these entries, so revisiting them cannot alter chapter
- * progression or consume an item. The six time-state variants are retained
- * for future authored phase exposure; the current active phase reaches the
- * 18:50 variant only and does not claim that every reserved state is playable.
+ * Layout-backed contextual targets. Ordinary room targets remain read-only;
+ * the six inserted puzzle targets launch their controller-owned overlay and
+ * persist only after an explicit, validated solution. Reopening any target is
+ * safe and never consumes an item. The current active phase reaches the 18:50
+ * variant while the other authored time states stay available for later use.
  */
 export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
+  defineContextInteraction({
+    targetId: "a1_front_desk_duty_board_context",
+    label: "打开前台值班签到板",
+    floor: "A1",
+    roomId: "a1_front_desk",
+    anchorId: "a1_front_desk_duty_board",
+    activePhases: ["room204_restore"],
+    roomAliases: ["a1_hall_clock", "a1_lobby"],
+    purpose: "state_feedback",
+    repeatPolicy: "repeatable",
+    textByTimeState: repeatedPuzzleText(
+      "前台签到板留有三个空位，可以把已确认的值班牌放回去。",
+      "三个夹痕的磨损不同，分别对应 104、105 与主电梯。"
+    )
+  }),
   defineContextInteraction({
     targetId: "a2_maker_workshop_201_context",
     label: "查看 201 创客工坊",
     floor: "A2",
     roomId: "a2_room_201",
-    anchorId: "maker_workshop_201",
+    anchorId: "a2_201_calibration_bench",
     activePhases: ["room204_restore"],
     roomAliases: ["a2_corridor", "a2_room204", "a2_room_204"],
     purpose: "environment",
@@ -154,7 +181,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     label: "查看 203 计算机教室",
     floor: "A2",
     roomId: "a2_room_203",
-    anchorId: "computer_room_203",
+    anchorId: "a2_203_circuit_terminal",
     activePhases: ["room204_restore"],
     roomAliases: ["a2_corridor", "a2_room204", "a2_room_204"],
     purpose: "side_info",
@@ -187,11 +214,27 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     }
   }),
   defineContextInteraction({
+    targetId: "a2_open_study_evacuation_context",
+    label: "查看开放自习区路线板",
+    floor: "A2",
+    roomId: "a2_open_study",
+    anchorId: "a2_open_study_evacuation",
+    activePhases: ["room204_restore"],
+    roomAliases: ["a2_corridor", "a2_room204", "a2_room_204"],
+    proximity: 96,
+    purpose: "state_feedback",
+    repeatPolicy: "repeatable",
+    textByTimeState: repeatedPuzzleText(
+      "路线板上的四段卡片可以重新排列，以确认前往 202 的通道。",
+      "人流残影从自习区向东移动，穿过教室门槛后抵达 202 出口。"
+    )
+  }),
+  defineContextInteraction({
     targetId: "a3_archive_exhibition_301_context",
     label: "查看 301 校史档案展",
     floor: "A3",
     roomId: "a3_room_301",
-    anchorId: "archive_exhibition_301",
+    anchorId: "a3_301_archive_index",
     activePhases: ["room204_restore"],
     roomAliases: ["a3_wayfinding", "a3_reference_classroom"],
     purpose: "theme",
@@ -228,7 +271,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     label: "查看 302 媒体工作室",
     floor: "A3",
     roomId: "a3_room_302",
-    anchorId: "media_studio_302",
+    anchorId: "a3_302_alignment_scanner",
     activePhases: ["room204_restore"],
     roomAliases: ["a3_wayfinding", "a3_reference_classroom"],
     purpose: "side_info",

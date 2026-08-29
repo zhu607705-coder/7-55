@@ -1,10 +1,8 @@
 /**
  * Stable identity for the approved Chapter 4 exterior closing material.
  *
- * Task 13 deliberately leaves the active reference unset until the existing
- * “灿若星辰” asset and its real consumer can be identified. A generated image,
- * another chapter's closing frame, or an arbitrary callback must never fill
- * this slot.
+ * The reference below identifies the user-provided official layered lamp
+ * material and the only runtime consumer allowed to complete Chapter 4.
  */
 export interface ChapterFourClosureAssetReference {
   assetId: string;
@@ -40,11 +38,22 @@ export interface ChapterFourClosureSessionVerifier {
 }
 
 export const CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:
-  ChapterFourClosureAssetReference | null = null;
+  ChapterFourClosureAssetReference = Object.freeze({
+    assetId: "canruo_star_lamp_layered_v1",
+    sourcePath: "src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp",
+    sequenceId: "chapter4_755_canruo_star_lamp_6200ms_v1",
+    consumerModule: "src/components/temporal-maze/ChapterFourStarLampClosure.tsx",
+    coordinateSpace: Object.freeze({ width: 1024, height: 1536 }),
+    lampTarget: Object.freeze({
+      targetId: "canruo_star_lamp",
+      entityId: "canruo_star_lamp_layered_v1",
+      bounds: Object.freeze({ x: 361, y: 27, width: 307, height: 1497 })
+    })
+  });
 
 export const BLOCKED_CHAPTER_FOUR_CLOSURE_SESSION_VERIFIER:
   ChapterFourClosureSessionVerifier = Object.freeze({
-    reference: CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE,
+    reference: null,
     verifyCompletedSession: (_proof: ChapterFourClosureSessionProof) => false
   });
 
