@@ -3496,3 +3496,11 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - Vite 与最终 `file://` 单文件均在 `c3-theater-complete` 检查点验证闭合、开启中和通行状态。单文件开启中快照为 `progress=0.575 / passable=true / actorOccluded=false`，画面中门页已收窄、人物位于门洞、原开启门页逐步显露；浏览器 console/page error 为 `0`。
 - 本轮没有新增测试文件或测试依赖。`npm run typecheck`、`git diff --check`、`npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `257796896` 字节、两个内联脚本和一个内联样式，SHA-256 为 `726835a7bea96ff63a1d31266b8a7656239366eda09db43b7fa51336ed1a851f`。
 - 被否决的 `v01` 亮金边门页和 `v02` 窄高门页均已移入 macOS 回收站，可恢复；本轮继续使用既有工作区，没有执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-29 A 范围主分支上传与 CI 契约对齐
+
+- 按用户确认的范围 A，将现有 `selected-phaser-ui-20260721` 工作区内第四章有机插入谜题、启真湖追逐与碰撞修正、剧场出口复原、CC98 世界观素材、音频、文本、控制器、存档迁移和既有验证脚本纳入同一次 `main` 交付；被忽略的 `demo/`、`dist/`、外部 ZIP/备份、Godot 与临时 QA 产物没有进入提交。
+- 首次远端提交为 `8a46dd447ebe1e02c2a69571c9b0c707dd5c5be4`。本地 `HEAD`、`origin/main` 与 `git ls-remote origin refs/heads/main` 当时一致，工作树干净；GitHub Web CI `33245818634` 在第四章剧情契约步骤发现 7 项旧校验规则。
+- 本地复现确认正式内容已扩展为 `36` 个活动任务与 `108` 条提示，QuestModel 已使用 A1、A3、A2 三组并行调查，Host 增加六处现场谜题与正式收束的唯一呈现权，SaveStore v32 只在完整收束证明、双项签到与锁定灯阵同时成立时恢复 `complete`。运行时实现与批准设计一致，失败来源为旧 validator 仍固定检查 `33 / 99`、旧事实顺序和旧握手集合。
+- 只更新既有 `scripts/verify-chapter4-755-story.mjs`：精确锁定 `14` 项 204 阶段任务、`18` 项事实闭包、三组任意顺序调查、六处新增谜题、正式收束握手和 v32 防伪完成条件。没有创建测试文件或测试依赖；`npm run chapter4:validate-story` 已恢复通过，仍检查 `13` 个阶段、`6` 个时间状态、`5` 个配电区域与 `14` 个道具操作。
+- 远端最终提交与 GitHub CI 结果以本节后续交付证据为准。
