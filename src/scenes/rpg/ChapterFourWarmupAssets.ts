@@ -1,6 +1,11 @@
 import type Phaser from "phaser";
 import type { GameState } from "../../core/types";
 import teachingBuildingElevatorDoorsUrl from "../../assets/rpg/interiors/finale/teaching_building_elevator_doors.png";
+import canruoStarLampCoreUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_core.png";
+import canruoStarLampDarkUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_dark.png";
+import canruoStarLampGlowUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_glow.png";
+import canruoStarLampLedsUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_leds.png";
+import canruoStarLampOutlineUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_outline.png";
 import canteenCounterAuntiesSheetUrl from "../../assets/rpg/npcs/canteen/counter_aunties_2frame.png";
 import frontDeskStaffSheetUrl from "../../assets/rpg/npcs/library/front_desk_staff_2frame.png";
 import { CHAPTER_FOUR_ALUMNI_HONOR_WALL } from "../../data/ChapterFourAlumniHonorWall";
@@ -14,6 +19,7 @@ import {
   FINALE_NPC_ANIMATIONS,
   type FinaleNpcAnimationId
 } from "./FinaleNpcTextures";
+import { CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS } from "./ChapterFourInsertedPuzzleAssets";
 
 export const CHAPTER_FOUR_WARMUP_PHASES = Object.freeze([
   "entry",
@@ -60,6 +66,18 @@ const CLOSURE_PLATE_IDS = Object.freeze([
   "a2_202_final_minute",
   "a1_0755_morning"
 ] satisfies readonly ChapterFour755PlateId[]);
+
+const CLOSURE_LAMP_ASSETS = Object.freeze([
+  { key: "canruo-star-lamp-dark", url: canruoStarLampDarkUrl },
+  { key: "canruo-star-lamp-outline", url: canruoStarLampOutlineUrl },
+  { key: "canruo-star-lamp-leds", url: canruoStarLampLedsUrl },
+  { key: "canruo-star-lamp-core", url: canruoStarLampCoreUrl },
+  { key: "canruo-star-lamp-glow", url: canruoStarLampGlowUrl }
+].map((asset) => Object.freeze({
+  ...asset,
+  kind: "image" as const,
+  sourceSize: Object.freeze({ width: 1024, height: 1536 })
+})));
 
 const ENTRY_SPRITESHEET_IDS = Object.freeze([
   "chapter4_clock_states",
@@ -156,6 +174,12 @@ export const CHAPTER_FOUR_WARMUP_ASSETS = Object.freeze({
     ...TRANSPORT_PLATE_IDS.map(plateAsset),
     ...TRANSPORT_SPRITESHEET_IDS.map(manifestSpritesheetAsset),
     ...TRANSPORT_NPC_IDS.map(npcAsset),
+    ...CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS.map((asset) => ({
+      key: asset.textureKey,
+      url: asset.url,
+      kind: "image" as const,
+      sourceSize: asset.sourceSize
+    })),
     {
       key: CHAPTER_FOUR_BAKERY_STAFF_TEXTURE_KEY,
       url: canteenCounterAuntiesSheetUrl,
@@ -175,7 +199,8 @@ export const CHAPTER_FOUR_WARMUP_ASSETS = Object.freeze({
     ...MAINTENANCE_NPC_IDS.map(npcAsset)
   ]),
   closure: Object.freeze([
-    ...CLOSURE_PLATE_IDS.map(plateAsset)
+    ...CLOSURE_PLATE_IDS.map(plateAsset),
+    ...CLOSURE_LAMP_ASSETS
   ])
 } satisfies Readonly<Record<ChapterFourWarmupPhase, readonly ChapterFourWarmupAsset[]>>);
 

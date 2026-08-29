@@ -1,5 +1,33 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-08-29 A 范围主分支上传前质量门收口
+
+- 提交范围：用户确认 A 后，按三视图中列明的 `25` 个修改文件与 `19` 个新增文件准备直接提交到当前 `main`。继续排除被忽略的 `demo/`、`dist/`、外部 ZIP 与恢复副本、Godot 归档和临时浏览器检查文件；没有新增测试文件或测试依赖。
+- 远端基线：上传前两次执行 `git fetch origin main --prune`，本地与远端共同基线均为 `a7790f4da13e`，本地和远端互相缺少的提交均为 `0`，没有发现需要再次比较的合作者提交。
+- 质量门根因：首次 `pre-push` 的前十项验证通过，第十一项仍按旧合同要求“六个环境点全部只读”。当前正式结构已经扩展为六个控制器托管谜题点和两个只读环境点，旧验证还把紧随其后的 `complete_inserted_puzzle` 写状态分支截入只读分支，并错误要求桌面终端中心必须位于可行走地面。
+- 合同修正：现有 effective-interactions 验证器改为分别核对六个谜题点与两个只读点、A1/A2/A3 楼层投影、控制器谜题请求、任意深浅模式进入、只读零写入，以及桌面谜题周围的无碰撞站位。Phaser 场景在谜题弹窗打开时不再额外显示“当前教室没有新增状态记录”的通用字幕。
+- 复核结果：`npm run typecheck` 通过；关键玩法套件 `11/11` 通过，其中第四章有效交互为 `624` 项断言；`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过。离线单文件为 `258649617` 字节，含 `2` 个内联脚本和 `1` 个内联样式；`git diff --check` 通过。最终远端 SHA 与 GitHub Web CI 以推送后的读取结果为准。
+
+## 2026-08-29 “灿若星辰灯”正式素材归档、接入与旧版清理
+
+- 素材判定：用户提供的 `灿若星辰灯.zip` 原包为 `304494554` 字节、`33155` 个条目、解压后 `805997402` 字节，SHA-256 为 `5401308d838eed37466cc59b5485b0aed0d6bc0b1f785a9700c08b9cb2c674e7`。唯一需要的运行时内容是五张同画布透明分层 PNG：`lamp_dark`、`lamp_outline`、`lamp_leds`、`lamp_core`、`lamp_glow`，合计 `632195` 字节；Godot、Three.js、Next.js、`node_modules`、构建缓存、Git 历史、预览和重复副本属于旧版范围。
+- 可恢复清理：先把原包完整备份到 `.folder-organizer-backups/20260829-163543/灿若星辰灯.original.zip`，再把被替换的原包移动到 `.folder-organizer-trash/20260829-163543/灿若星辰灯.original.zip`；两份恢复副本的 SHA-256 均与原包一致。原路径已替换为 `598155` 字节精简包，SHA-256 为 `89d45b542b8f8e58deaad7ea5802366fe659b7ac69a17fe7b4df7fc4bc7ea47c`，只含五张正式素材、README 和 JSON 清单。外部恢复清单位于 `.folder-organizer-manifests/20260829-163543-canruo-star-lamp.json`。
+- 项目接入：五张正式素材复制到 `src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp/` 并逐项复核哈希。新增 `ChapterFourStarLampClosure`，按正式 `6200ms` 序列完成暗场、轮廓、LED、灯芯、光晕和镜头拉远；`ChapterFourClosureSessionRegistry` 只为真实播放完成回调签发一次性 runtime proof，控制器验证后才允许 `acknowledge_exterior_closure` 写入完成状态。
+- 存档收口：SaveStore 升级到 v32。只有 v32 且 `phase=complete`、双签到、配电锁定、最后一分钟装回、灯光准备和外景回执全部一致时才恢复正式完成；旧版、裸布尔值或不完整字段继续降级到安全的 `exterior_closure`。正式回执会保留 `exterior_closure_acknowledged=true / completed=true`，并返回手机主页。
+- 文案与预热：DEV 节点改名为“灿若星辰正式收束”；任务提示改为播放完成后自动结算；五张分层素材加入第四章收束阶段预热。章节文本重新导出并通过 `text:check`，总计 `6513` 条。
+- 验证：`npm run typecheck`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。离线单文件为 `258649544` 字节、两个内联脚本和一个内联样式，SHA-256 为 `3ff9e53b71b65a5f2125ef0fc28ff8160440415b7bbaa7e9b9794ad708f1e355`。应用内浏览器在本地 HTTP 完整播放正式灯光，画面中五层按原坐标组合；结束后返回手机主页，任务显示“章节完成 1/1”，console/page error 为 `0`。`file://` 自动控制受浏览器安全策略禁止，单文件通过结构、资源内嵌与哈希验证。
+- 交付边界：本轮没有新增测试文件或测试依赖，没有执行 Git 暂存、提交、合并、推送或上传。`demo/index.html` 只由构建命令生成；其他既有未提交改动均保留。
+
+## 2026-08-29 启真湖石块与浮标碰撞核心化
+
+- 用户指出黑天鹅追逐河道的石块与浮标空气墙明显大于可见物体，并要求继续核对其他启真湖地图。本轮仅校准水面上的离散小型障碍；岸线、码头、木排、围栏和大型水草仍使用各自的源像素碰撞。
+- 河道三组石块由原来的三个大矩形改为四个逐石块核心框：西侧单石、东部双石分别拆开、最东侧单石。碰撞只覆盖露出水面的岩石轮廓，不再包含浅色水底、涟漪和两石之间的水面。
+- 河道五个浮标由约 `24–25×38–39px` 收紧到 `16×23–26px`。同时补齐码头五个和大湖四个可见浮标的精准核心碰撞；启真湖四图现在共有十四个浮标碰撞，黑天鹅围栏图没有独立水面浮标。
+- 数据权威集中到 `QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS`，四张 `1672×941` 母图按地图维护同一套小型障碍矩形。追逐验证器增加数量、尺寸、世界边界和运行时引用一致性检查。
+- 自动验证：`qizhen:validate-swan-chase` 通过 `164` 项断言，`qizhen:validate-rain-safety` 通过 `70` 项断言，`typecheck`、`build:single`、`verify:single` 与 `git diff --check` 通过。离线单文件为 `257652626` 字节，SHA-256 为 `6cb5d79ca7fb1e7c4481398aec4632edc1bbd1d5758dd39bcc919cce045e960d`。
+- 浏览器验证：使用 `develop-web-game` 标准客户端分别打开码头登船、开阔水域、黑天鹅围栏与直河道追逐检查点。开发碰撞层确认十四个浮标框均贴合橙色实体、河道四个石块框逐石分离，浅水纹、藻斑、涟漪和石块间水面均可通行；围栏图的岸边石块继续由岸线轮廓统一阻挡。最终 `file://` 单文件成功进入 `qizhen_chase`，运行时返回四个新石块框和五个新浮标框，未产生 console/page error 文件。
+- 交付边界：本轮只修改启真湖碰撞模型、对应回归验证器与进度记录，并重建本地 `demo/index.html`；没有执行 Git 暂存、提交、合并、推送或上传。
+
 ## 2026-08-29 A 范围交付与合作者第四章修复集成
 
 - 提交范围：按用户确认的 A 方案提交当前批准的源码、玩法数据、美术与音频资产、验证器及文案记录；继续排除 `demo/index.html`、`dist/`、Godot 归档和临时浏览器产物。离线单文件因体积超过 GitHub 单文件限制，仅作为本地交付物保留。
@@ -3447,3 +3475,24 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - Chromium `1280×720` 对两个第四章 DEV 检查点各完成一次浅色/深色对照，共 `2` 个检查点、`4` 张运行画面。维修检查点确认金色操作点与青色观察点随模式互换 active/dormant，运行调试字段与画面一致，console/page error 为 `0`。
 - Fresh 自动验证通过：`npm run chapter4:validate-runtime`（`1095` 项）、`npm run chapter4:validate-effective-interactions`（`435` 项）、`npm run verify:rpg-reality-mode-order`（`180` 项）、`npm run chapter4:validate-story`、`npm run typecheck` 和 `npm run build:single`。单文件构建为 `257649.89 kB`，gzip `189331.88 kB`。
 - 当前浏览器上下文停在第三章检查点，没有包含用户所指第四章具体位置的标注。本轮先把所有现有第四章解密目标升级为可辨认锚点；如果需要在一个全新空白区域增加独立谜题，还需要 `A1/A2/A3 + 房间或物件`，或一张第四章标注图。本轮没有执行 Git 暂存、提交、合并、推送或上传。
+
+## 2026-08-29 第四章六处有机插入谜题与 image2 场景装配
+
+- 第四章新增六处与现场陈设绑定的谜题：A1 前台值班牌顺序、A3 301 胶片索引、A3 302 新旧影像对齐、A2 201 定位板三轴校准、A2 203 五区拓扑恢复、A2 开放自习区疏散路线。六处均由原场景空白装置触发，没有替换 104／105、电梯、错位楼梯和 204 家具复原的既有主谜题。
+- 使用 image2 生成并裁成真实透明底的六件正式素材，全部保存在 `src/assets/rpg/interiors/finale/chapter4-755/props/`。素材按源像素 `1:1`、nearest filtering 和各层世界坐标装配；深色模式统一施加荧光蓝色调，浅色模式保留原暖色与金色操作点，人物深度继续高于装置和模式氛围层。
+- 调查节奏调整为：A1 三项校验可任意顺序完成；A3 两处装置都可先打开查看，302 的实体校准在取得 301 胶片后提交；错位楼梯完成后，A2 三处现场记录可任意顺序处理，三项齐全后任务栏再进入 204 完整复原。浅色操作可以先完成允许的实体谜题，深色观察提供线索，不存在统一的“必须先深后浅”硬顺序。
+- 新增第四章 DEV 节点 `c4-755-a2-field-records`，直接落在 18:50 二楼交通核心并携带三楼与错位楼梯前置事实。开放自习区路线板保持原画面位置，交互距离单独校准为 `96px`，使人物可停在书架北侧打开装置，无需扩大书架空气墙或穿过家具。
+- Chromium `1280×633` 通过真实键盘路线分别抵达六件装置。A1 验证浅色直接完成；A3 验证错误组合不重置、深色荧光蓝残影与未取得胶片时的可查看提示；A2 三处均完成真实走位、打开、调节与提交，最终事实同时包含 `a2_positioning_plate_calibrated`、`a2_power_topology_recovered`、`a2_evacuation_route_confirmed`，任务栏随后切换为 204 家具复原。
+- 同一最终 `file://` 单文件在 Blink、Gecko、WebKit 的 `1280×720` 视口均显示一个 `1280×720` Phaser 画布、第四章任务和零页面溢出。Fresh Blink 与 WebKit 为 `0 exception / 0 error / 0 warning`；Gecko 为 `0 exception / 0 error`，只报告一次 headless WebGL 上下文恢复提示和一次无用户手势时的 AudioContext 自动播放拦截。Gecko 画布抽样 `144/144` 个像素均为非黑，临时截图目视确认场景、人物、HUD 与 A2 入口完整显示。
+- 本轮没有创建测试文件或测试依赖。发布检查通过：`npm run typecheck`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single`、`npm run verify:single` 和 `git diff --check`。离线 `demo/index.html` 为 `257773435` 字节、两个内联脚本和一个内联样式；`file://` 直开后进入 A2 检查点，Phaser canvas 为 `1`，预热素材 `20/20`，失败资源为 `0`。支持 NPC 的动画刷新改为在动画注册完成后补播，Fresh Chrome 单独载入最终单文件并等待 `15s` 后采集到 `0 exception / 0 error / 0 warning`。
+- 交付边界：继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，也没有执行 Git 暂存、提交、合并、推送或上传。浏览器临时截图与 Chrome 临时目录在本轮结论记录后删除。
+
+## 2026-08-29 剧院正中出口按原门重绘与动态复原
+
+- 删除剧院正中出口的灰蓝通用门表现。第二轮测量确认原门左右门轴相距约 `176px`、门页可见高度约 `70px`；先前 `116×118` 门页存在明显的窄高比例偏差。正式素材 `theater_center_exit_closed_v03.png` 直接提取 `theater_interior.png` 两扇开启门的木纹、描边和黄铜把手，按原门页四边形进行透视校正后重组为 `176×70` 的闭门状态。
+- 内置 imagegen 生成的闭门场景只用于复核俯视构图、门轴范围和垂直压缩比例。运行时没有采用生成图中的墙面、门柱或灯具，正式门页保持底图原始像素色域、光照方向和纹理密度。
+- 共享 `RpgInteriorDoorRuntime` 新增可选门页贴图、门洞/光照透明度、场景级缓动和 `double-fold` 双页透视收拢方式。剧院闭合时显示新门页；开启时两页沿外侧门轴收窄并淡出，随后完整露出底图中原有的两扇开启门，避免二维旋转产生大面积斜板。
+- 剧院门继续复用原门框前景裁片和既有阻挡线。闭门时不可通行，达到通行进度后解除阻挡；人物进入门洞时门页位于人物上层，门页让出后恢复原底图通道。其他寝室、食堂和图书馆门没有传入新选项，保持现有表现。
+- Vite 与最终 `file://` 单文件均在 `c3-theater-complete` 检查点验证闭合、开启中和通行状态。单文件开启中快照为 `progress=0.575 / passable=true / actorOccluded=false`，画面中门页已收窄、人物位于门洞、原开启门页逐步显露；浏览器 console/page error 为 `0`。
+- 本轮没有新增测试文件或测试依赖。`npm run typecheck`、`git diff --check`、`npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `257796896` 字节、两个内联脚本和一个内联样式，SHA-256 为 `726835a7bea96ff63a1d31266b8a7656239366eda09db43b7fa51336ed1a851f`。
+- 被否决的 `v01` 亮金边门页和 `v02` 窄高门页均已移入 macOS 回收站，可恢复；本轮继续使用既有工作区，没有执行 Git 暂存、提交、合并、推送或上传。

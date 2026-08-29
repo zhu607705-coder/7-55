@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import theaterInteriorMapUrl from "../../assets/rpg/interiors/theater_interior.png";
+import theaterCenterExitClosedUrl from "../../assets/rpg/interiors/theater_center_exit_closed_v03.png";
 import ticketInspectorIdleUrl from "../../assets/rpg/theater/generated/actors/ticket_inspector_idle_front.png";
 import ticketInspectorScanUrl from "../../assets/rpg/theater/generated/actors/ticket_inspector_scan_front.png";
 import stageManagerGhostIdleUrl from "../../assets/rpg/theater/generated/actors/stage_manager_ghost_idle.png";
@@ -68,6 +69,7 @@ import {
 const THEATER_MAP_KEY = "chapter-3-theater-interior-map";
 export const THEATER_INTERIOR_WARM_ASSET_URLS = Object.freeze([
   theaterInteriorMapUrl,
+  theaterCenterExitClosedUrl,
   ticketInspectorIdleUrl,
   ticketInspectorScanUrl,
   stageManagerGhostIdleUrl,
@@ -90,6 +92,9 @@ export const THEATER_INTERIOR_WARM_ASSET_URLS = Object.freeze([
   paperFragmentsUrl
 ]);
 const THEATER_PAPER_KEY = "chapter-3-theater-paper";
+const THEATER_CENTER_EXIT_CLOSED_KEY = "chapter-3-theater-center-exit-closed-v03";
+const THEATER_CENTER_EXIT_LEFT_FRAME = "left";
+const THEATER_CENTER_EXIT_RIGHT_FRAME = "right";
 const THEATER_PAPER_RESIDUAL_KEY = "chapter-3-theater-paper-residual";
 const THEATER_PAPER_FLUORESCENT_KEY = "chapter-3-theater-paper-fluorescent";
 const THEATER_PAPER_LOCKED_KEY = "chapter-3-theater-paper-locked";
@@ -284,6 +289,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
     if (!this.textures.exists(THEATER_MAP_KEY)) {
       this.load.image(THEATER_MAP_KEY, theaterInteriorMapUrl);
     }
+    if (!this.textures.exists(THEATER_CENTER_EXIT_CLOSED_KEY)) {
+      this.load.image(THEATER_CENTER_EXIT_CLOSED_KEY, theaterCenterExitClosedUrl);
+    }
     const art: Array<[string, string]> = [
       [THEATER_PAPER_KEY, paperFlightUrl],
       [THEATER_PAPER_RESIDUAL_KEY, paperResidualUrl],
@@ -322,27 +330,42 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.physics.world.setBounds(66, 18, THEATER_INTERIOR_WORLD.width - 132, THEATER_INTERIOR_WORLD.height - 42);
     this.obstacles = this.physics.add.staticGroup();
     this.drawInterior(state.theaterHunt.admitted);
+    this.ensureTheaterExitDoorFrames();
     this.exitDoor = new RpgInteriorDoorRuntime(this, this.obstacles, {
       id: "theater_center_exit",
       centerX: 836,
-      centerY: 875,
-      openingWidth: 120,
-      openingHeight: 118,
+      centerY: 880,
+      openingWidth: 176,
+      openingHeight: 70,
       blockerY: 833,
       blockerWidth: 140,
       blockerHeight: 14,
-      motion: "double-slide",
-      openOffset: 56,
-      durationMs: 380,
+      motion: "double-fold",
+      motionEase: "Sine.easeInOut",
+      durationMs: 520,
       depth: 920,
       palette: {
-        portal: 0x101319,
-        spill: 0xb7ddf4,
-        leaf: 0x313d43,
-        inset: 0x536169,
-        trim: 0x161d22,
-        handle: 0xd5b96e
+        portal: 0x140908,
+        spill: 0xe0a052,
+        leaf: 0x522419,
+        inset: 0x6f3020,
+        trim: 0x1a0d0a,
+        handle: 0xd0a34a
       },
+      portalAlpha: 0,
+      spillAlphaClosed: 0,
+      spillAlphaOpen: 0,
+      leafTextures: {
+        left: {
+          key: THEATER_CENTER_EXIT_CLOSED_KEY,
+          frame: THEATER_CENTER_EXIT_LEFT_FRAME
+        },
+        right: {
+          key: THEATER_CENTER_EXIT_CLOSED_KEY,
+          frame: THEATER_CENTER_EXIT_RIGHT_FRAME
+        }
+      },
+      hideLeavesWhenOpen: true,
       foreground: {
         textureKey: THEATER_MAP_KEY,
         left: 708,
@@ -574,6 +597,16 @@ export class TheaterInteriorScene extends Phaser.Scene {
       g.generateTexture(key, 34, 28);
       g.destroy();
     });
+  }
+
+  private ensureTheaterExitDoorFrames(): void {
+    const texture = this.textures.get(THEATER_CENTER_EXIT_CLOSED_KEY);
+    if (!texture.has(THEATER_CENTER_EXIT_LEFT_FRAME)) {
+      texture.add(THEATER_CENTER_EXIT_LEFT_FRAME, 0, 0, 0, 88, 70);
+    }
+    if (!texture.has(THEATER_CENTER_EXIT_RIGHT_FRAME)) {
+      texture.add(THEATER_CENTER_EXIT_RIGHT_FRAME, 0, 88, 0, 88, 70);
+    }
   }
 
   private createProgramFragments(): void {

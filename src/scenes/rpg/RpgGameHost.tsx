@@ -53,9 +53,19 @@ import {
   type ChapterFour755IntentResult,
   type ChapterFourMaintenanceDiagnosisAnswers
 } from "../../modules/ChapterFourTemporalMazeController";
+import {
+  CHAPTER_FOUR_INSERTED_PUZZLES,
+  isChapterFourInsertedPuzzleId,
+  type ChapterFourInsertedPuzzleAnswer,
+  type ChapterFourInsertedPuzzleId,
+  type ChapterFourInsertedPuzzleTargetId
+} from "../../modules/ChapterFourInsertedPuzzleModel";
+import { ChapterFourInsertedPuzzleGame } from "../../components/temporal-maze/ChapterFourInsertedPuzzleGame";
 import { ChapterFourMaintenanceDiagnosisGame } from "../../components/temporal-maze/ChapterFourMaintenanceDiagnosisGame";
 import { ChapterFourPowerPanelGame } from "../../components/temporal-maze/ChapterFourPowerPanelGame";
+import { ChapterFourStarLampClosure } from "../../components/temporal-maze/ChapterFourStarLampClosure";
 import { ChapterFourStairPuzzleOverlay } from "../../components/temporal-maze/ChapterFourStairPuzzleOverlay";
+import { ChapterFourClosureSessionRegistry } from "../../modules/ChapterFourClosureSessionRegistry";
 import { useChapter4PrologueGateBlocked } from "../../components/Chapter4PrologueRuntimeGate";
 import { selectChapterFourMazeProjection } from "../../modules/ChapterFourMazeProjection";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
@@ -231,6 +241,13 @@ interface ChapterFourPowerPanelSession {
   spatial: { distance: "within_range" };
   runtimeTarget: ChapterFour755RuntimeTargetContext;
 }
+interface ChapterFourInsertedPuzzleSession {
+  puzzleId: ChapterFourInsertedPuzzleId;
+  targetId: ChapterFourInsertedPuzzleTargetId;
+  mode: "light" | "dark";
+  completed: boolean;
+  prerequisiteReady: boolean;
+}
 const CHAPTER_FOUR_755_ACTIVE_PHASES = new Set<GameState["chapter4"]["phase"]>([
   "opening_handoff",
   "opening_paper_caught",
@@ -266,6 +283,8 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "observe_elevator_history",
   "calibrate_elevator_history",
   "observe_a3_reference",
+  "inspect_chapter_four_context",
+  "complete_inserted_puzzle",
   "complete_misaligned_stair",
   "observe_room204_residual",
   "place_room204_piece",
@@ -276,7 +295,8 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "complete_minute_theft",
   "open_power_panel",
   "toggle_light_zone",
-  "lock_light_grid"
+  "lock_light_grid",
+  "acknowledge_exterior_closure"
 ]);
 const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; itemId: ItemId | "" }>> = {
   readEntranceRecord: { targetId: "entrance_record", itemId: "" },
@@ -417,8 +437,11 @@ export function RpgGameHost({
   const chapter4IntentRequestSerialRef = useRef(0);
   const chapter4ResolvedRequestIdsRef = useRef<Set<string>>(new Set());
   const chapter4PowerPanelPendingRequestRef = useRef<string | null>(null);
+  const chapter4InsertedPuzzlePendingRequestRef = useRef<string | null>(null);
   const chapter4MaintenanceDiagnosisPendingRequestRef = useRef<string | null>(null);
   const chapter4StairPendingRequestRef = useRef<string | null>(null);
+  const chapter4ClosurePendingRequestRef = useRef<string | null>(null);
+  const chapter4ClosureSessionIdRef = useRef<string | null>(null);
   const chapter4StairPausedSceneKeysRef = useRef<Set<string>>(new Set());
   const [chapter4InteractionBlocked, setChapter4InteractionBlocked] = useState(false);
   const [chapter4ScenePointerAllowed, setChapter4ScenePointerAllowed] = useState(false);
@@ -427,11 +450,17 @@ export function RpgGameHost({
     useState<ChapterFourPowerPanelSession | null>(null);
   const [chapter4PowerPanelPending, setChapter4PowerPanelPending] = useState(false);
   const [chapter4PowerPanelFeedback, setChapter4PowerPanelFeedback] = useState<string | null>(null);
+  const [chapter4InsertedPuzzleSession, setChapter4InsertedPuzzleSession] =
+    useState<ChapterFourInsertedPuzzleSession | null>(null);
+  const [chapter4InsertedPuzzlePending, setChapter4InsertedPuzzlePending] = useState(false);
+  const [chapter4InsertedPuzzleFeedback, setChapter4InsertedPuzzleFeedback] = useState<string | null>(null);
   const [chapter4MaintenanceDiagnosisOpen, setChapter4MaintenanceDiagnosisOpen] = useState(false);
   const [chapter4MaintenanceDiagnosisPending, setChapter4MaintenanceDiagnosisPending] = useState(false);
   const [chapter4MaintenanceDiagnosisFeedback, setChapter4MaintenanceDiagnosisFeedback] = useState<string | null>(null);
   const [chapter4StairActive, setChapter4StairActive] = useState(false);
   const [chapter4StairFeedback, setChapter4StairFeedback] = useState<string | null>(null);
+  const [chapter4ClosureSessionId, setChapter4ClosureSessionId] = useState<string | null>(null);
+  const [chapter4ClosureFeedback, setChapter4ClosureFeedback] = useState<string | null>(null);
   const archivedRuleRevealPendingRef = useRef(false);
   const pendingFishingRef = useRef<{ sessionId: string; spotId: QizhenFishingSpotId } | null>(null);
   const itemInspectOpen = inspectedMapItem !== null;
@@ -453,7 +482,11 @@ export function RpgGameHost({
   const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
   const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
   const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
-  const chapter4Controller = useMemo(() => new ChapterFourTemporalMazeController(store, events), [events, store]);
+  const chapter4ClosureRegistry = useMemo(() => new ChapterFourClosureSessionRegistry(), []);
+  const chapter4Controller = useMemo(
+    () => new ChapterFourTemporalMazeController(store, events, chapter4ClosureRegistry),
+    [chapter4ClosureRegistry, events, store]
+  );
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const theaterRuntimePort = useMemo(() => createTheaterRuntimePort(bridge), [bridge]);
   const runtimeScene = resolveRuntimeScene(state);
@@ -465,11 +498,15 @@ export function RpgGameHost({
     && (state.chapter4.floor === "A1" || state.chapter4.floor === "A2" || state.chapter4.floor === "A3")
     && CHAPTER_FOUR_755_ACTIVE_PHASES.has(state.chapter4.phase);
   const chapter4PowerPanelOpen = chapter4PowerPanelSession !== null;
+  const chapter4ClosureOpen = chapter4ClosureSessionId !== null;
   const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen
-    || chapter4MaintenanceDiagnosisOpen || chapter4StairActive;
-  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
+    || chapter4InsertedPuzzleSession !== null || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
+    || chapter4ClosureOpen;
+  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4InsertedPuzzleSession !== null
+    || chapter4MaintenanceDiagnosisOpen || chapter4StairActive || chapter4ClosureOpen
     || (chapter4InteractionBlocked && !chapter4ScenePointerAllowed);
-  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
+  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4InsertedPuzzleSession !== null
+    || chapter4MaintenanceDiagnosisOpen || chapter4StairActive || chapter4ClosureOpen
     || (chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed);
   inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked
     || photoSessionOpen || qizhenRainRescueCinematicOpen;
@@ -486,6 +523,10 @@ export function RpgGameHost({
       setChapter4PowerPanelSession(null);
       setChapter4PowerPanelPending(false);
       setChapter4PowerPanelFeedback(null);
+      chapter4InsertedPuzzlePendingRequestRef.current = null;
+      setChapter4InsertedPuzzleSession(null);
+      setChapter4InsertedPuzzlePending(false);
+      setChapter4InsertedPuzzleFeedback(null);
       chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
       setChapter4MaintenanceDiagnosisOpen(false);
       setChapter4MaintenanceDiagnosisPending(false);
@@ -512,10 +553,11 @@ export function RpgGameHost({
         && current.phase === "room204_restore"
         && current.floor === "A3"
         && current.factIds.includes("zhu_two_questions_answered")
+        && current.factIds.includes("a3_media_alignment_completed")
         && !current.factIds.includes("misaligned_stair_solved");
       if (!allowed) {
         events.emit("rpg_subtitle", {
-          text: "到三楼校史人物荣誉墙阅读竺可桢生平并回答竺老两问后，可进入空间校准。",
+          text: "先完成荣誉墙问答，并在 301 找到旧胶片、到 302 对齐新旧入口影像，再进入空间校准。",
           tone: "system",
           durationMs: 2800
         });
@@ -525,6 +567,73 @@ export function RpgGameHost({
       setChapter4StairActive(true);
     });
   }, [events, runtimeScene, store]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "chapter4_inserted_puzzle_requested") return;
+      const puzzleId = event.payload?.puzzleId;
+      if (!isChapterFourInsertedPuzzleId(puzzleId)) return;
+      const definition = CHAPTER_FOUR_INSERTED_PUZZLES[puzzleId];
+      if (event.payload?.targetId !== definition.targetId) return;
+      const mode = event.payload?.mode;
+      if (mode !== "light" && mode !== "dark") return;
+      chapter4InsertedPuzzlePendingRequestRef.current = null;
+      setChapter4InsertedPuzzlePending(false);
+      setChapter4InsertedPuzzleFeedback(null);
+      setChapter4InsertedPuzzleSession({
+        puzzleId,
+        targetId: definition.targetId,
+        mode,
+        completed: event.payload?.completed === true,
+        prerequisiteReady: event.payload?.prerequisiteReady === true
+      });
+    });
+  }, [events]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
+      const requestId = String(event.payload?.requestId ?? "");
+      if (!requestId || requestId !== chapter4InsertedPuzzlePendingRequestRef.current) return;
+      chapter4InsertedPuzzlePendingRequestRef.current = null;
+      setChapter4InsertedPuzzlePending(false);
+      const result = event.payload?.result;
+      const accepted = typeof result === "object"
+        && result !== null
+        && (result as { accepted?: unknown }).accepted === true;
+      if (!accepted) {
+        setChapter4InsertedPuzzleFeedback(String(
+          event.payload?.feedback ?? "当前组合与现场痕迹不一致，可以继续调整。"
+        ));
+        return;
+      }
+      setChapter4InsertedPuzzleSession((current) => current
+        ? { ...current, completed: true }
+        : current);
+      setChapter4InsertedPuzzleFeedback(null);
+    });
+  }, [events]);
+
+  const submitChapterFourInsertedPuzzle = useCallback((answer: ChapterFourInsertedPuzzleAnswer) => {
+    const session = chapter4InsertedPuzzleSession;
+    if (!session
+      || answer.puzzleId !== session.puzzleId
+      || chapter4InsertedPuzzlePendingRequestRef.current) return;
+    const requestId = `host-inserted-puzzle-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4InsertedPuzzlePendingRequestRef.current = requestId;
+    setChapter4InsertedPuzzlePending(true);
+    setChapter4InsertedPuzzleFeedback(null);
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: { type: "complete_inserted_puzzle", answer }
+    });
+  }, [chapter4InsertedPuzzleSession, events]);
+
+  const closeChapterFourInsertedPuzzle = useCallback(() => {
+    if (chapter4InsertedPuzzlePendingRequestRef.current) return;
+    setChapter4InsertedPuzzleFeedback(null);
+    setChapter4InsertedPuzzleSession(null);
+  }, []);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -629,6 +738,76 @@ export function RpgGameHost({
       }
     };
   }, [chapter4PowerPanelOpen, chapter4PowerPanelSession, events]);
+
+  useEffect(() => {
+    const active = runtimeScene === "duan_yongping_temporal_maze"
+      && state.chapter4.phase === "exterior_closure"
+      && !state.chapter4.completed;
+    if (active && chapter4ClosureSessionIdRef.current === null) {
+      const sessionId = chapter4ClosureRegistry.beginSession();
+      chapter4ClosureSessionIdRef.current = sessionId;
+      setChapter4ClosureSessionId(sessionId);
+      setChapter4ClosureFeedback(null);
+      return;
+    }
+    if (!active && chapter4ClosureSessionIdRef.current !== null) {
+      chapter4ClosureRegistry.cancelSession(chapter4ClosureSessionIdRef.current);
+      chapter4ClosureSessionIdRef.current = null;
+      chapter4ClosurePendingRequestRef.current = null;
+      setChapter4ClosureSessionId(null);
+      setChapter4ClosureFeedback(null);
+    }
+  }, [chapter4ClosureRegistry, runtimeScene, state.chapter4.completed, state.chapter4.phase]);
+
+  const completeChapterFourClosure = useCallback((sessionId: string) => {
+    if (chapter4ClosureSessionIdRef.current !== sessionId
+      || chapter4ClosurePendingRequestRef.current !== null) return;
+    const proof = chapter4ClosureRegistry.completeSession(sessionId);
+    if (!proof) {
+      setChapter4ClosureFeedback("灯光收束未完成，正在重新播放。");
+      return;
+    }
+    const requestId = `host-closure-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4ClosurePendingRequestRef.current = requestId;
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: { type: "acknowledge_exterior_closure", proof }
+    });
+  }, [chapter4ClosureRegistry, events]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
+      const requestId = String(event.payload?.requestId ?? "");
+      if (!requestId || requestId !== chapter4ClosurePendingRequestRef.current) return;
+      chapter4ClosurePendingRequestRef.current = null;
+      const result = event.payload?.result;
+      const accepted = typeof result === "object"
+        && result !== null
+        && (result as { accepted?: unknown }).accepted === true;
+      if (accepted) {
+        setChapter4ClosureFeedback(null);
+        return;
+      }
+      const currentSessionId = chapter4ClosureSessionIdRef.current;
+      if (currentSessionId) chapter4ClosureRegistry.cancelSession(currentSessionId);
+      const retrySessionId = chapter4ClosureRegistry.beginSession();
+      chapter4ClosureSessionIdRef.current = retrySessionId;
+      setChapter4ClosureSessionId(retrySessionId);
+      setChapter4ClosureFeedback(String(
+        event.payload?.feedback ?? "灯光收束确认未写入，已重新播放。"
+      ));
+    });
+  }, [chapter4ClosureRegistry, events]);
+
+  useEffect(() => {
+    return () => {
+      const sessionId = chapter4ClosureSessionIdRef.current;
+      if (sessionId) chapter4ClosureRegistry.cancelSession(sessionId);
+      chapter4ClosureSessionIdRef.current = null;
+      chapter4ClosurePendingRequestRef.current = null;
+    };
+  }, [chapter4ClosureRegistry]);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -1938,6 +2117,28 @@ export function RpgGameHost({
 
         {qizhenRainRescueCinematicOpen ? (
           <QizhenRainRescueCinematic onComplete={completeQizhenRainRescueCinematic} />
+        ) : null}
+
+        {chapter4ClosureSessionId ? (
+          <ChapterFourStarLampClosure
+            key={chapter4ClosureSessionId}
+            sessionId={chapter4ClosureSessionId}
+            feedback={chapter4ClosureFeedback}
+            onComplete={completeChapterFourClosure}
+          />
+        ) : null}
+
+        {chapter4InsertedPuzzleSession ? (
+          <ChapterFourInsertedPuzzleGame
+            puzzleId={chapter4InsertedPuzzleSession.puzzleId}
+            mode={chapter4InsertedPuzzleSession.mode}
+            completed={chapter4InsertedPuzzleSession.completed}
+            prerequisiteReady={chapter4InsertedPuzzleSession.prerequisiteReady}
+            pending={chapter4InsertedPuzzlePending}
+            feedback={chapter4InsertedPuzzleFeedback}
+            onSubmit={submitChapterFourInsertedPuzzle}
+            onClose={closeChapterFourInsertedPuzzle}
+          />
         ) : null}
 
         {chapter4PowerPanelSession ? (

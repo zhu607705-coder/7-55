@@ -13,6 +13,7 @@ import type {
   ChapterFour755IntentResult,
   ChapterFour755SpatialResult
 } from "../../modules/ChapterFourTemporalMazeController";
+import { chapterFourInsertedPuzzleForTarget } from "../../modules/ChapterFourInsertedPuzzleModel";
 
 export type ChapterFourContextInteractionIntent = Extract<
   ChapterFour755Intent,
@@ -70,6 +71,7 @@ export function resolveChapterFourContextInteractionSubtitle(options: {
 }): ChapterFourContextInteractionSubtitle | null {
   if (!options.targetId
     || !isChapterFourContextInteractionTargetId(options.targetId)
+    || chapterFourInsertedPuzzleForTarget(options.targetId) !== null
     || !isAcceptedReadOnlyContextResult(options.result)) return null;
   const text = selectChapterFourContextInteractionText({
     targetId: options.targetId as ChapterFourContextInteractionTargetId,

@@ -1,7 +1,12 @@
 import Phaser from "phaser";
 
 export type RpgInteriorDoorMotion = "closed" | "opening" | "open" | "closing";
-export type RpgInteriorDoorLeafMotion = "single-swing" | "single-slide" | "double-swing" | "double-slide";
+export type RpgInteriorDoorLeafMotion =
+  | "single-swing"
+  | "single-slide"
+  | "double-swing"
+  | "double-fold"
+  | "double-slide";
 
 export interface RpgInteriorDoorForegroundSpec {
   left: number;
@@ -20,6 +25,11 @@ export interface RpgInteriorDoorPalette {
   handle: number;
 }
 
+export interface RpgInteriorDoorLeafTextureSpec {
+  key: string;
+  frame?: string | number;
+}
+
 export interface RpgInteriorDoorSpec {
   id: string;
   centerX: number;
@@ -34,8 +44,18 @@ export interface RpgInteriorDoorSpec {
   motion: RpgInteriorDoorLeafMotion;
   openOffset?: number;
   openAngle?: number;
+  motionEase?: string;
   depth: number;
   palette: RpgInteriorDoorPalette;
+  portalAlpha?: number;
+  spillAlphaClosed?: number;
+  spillAlphaOpen?: number;
+  leafTextures?: {
+    single?: RpgInteriorDoorLeafTextureSpec;
+    left?: RpgInteriorDoorLeafTextureSpec;
+    right?: RpgInteriorDoorLeafTextureSpec;
+  };
+  hideLeavesWhenOpen?: boolean;
   foreground?: RpgInteriorDoorForegroundSpec & { textureKey: string };
 }
 
@@ -54,8 +74,14 @@ function createLeafPanel(
   width: number,
   height: number,
   palette: RpgInteriorDoorPalette,
-  handleX: number
+  handleX: number,
+  texture?: RpgInteriorDoorLeafTextureSpec
 ): Phaser.GameObjects.Container {
+  if (texture) {
+    const image = scene.add.image(0, 0, texture.key, texture.frame)
+      .setDisplaySize(width, height);
+    return scene.add.container(0, 0, [image]);
+  }
   const shadow = scene.add.rectangle(2, 3, width, height, 0x000000, 0.28);
   const panel = scene.add.rectangle(0, 0, width, height, palette.leaf, 1)
     .setStrokeStyle(3, palette.trim, 1);
@@ -140,7 +166,7 @@ export class RpgInteriorDoorRuntime {
       spec.openingWidth,
       spec.openingHeight,
       spec.palette.portal,
-      1
+      spec.portalAlpha ?? 1
     ).setDepth(spec.depth - 3);
     this.spill = scene.add.rectangle(
       spec.centerX,
@@ -178,9 +204,9 @@ export class RpgInteriorDoorRuntime {
     this.animateLeaves(true);
     this.scene.tweens.add({
       targets: this.spill,
-      alpha: 0.7,
+      alpha: this.spec.spillAlphaOpen ?? 0.7,
       duration: this.durationMs,
-      ease: "Stepped"
+      ease: this.spec.motionEase ?? "Stepped"
     });
     this.scene.time.delayedCall(this.passableDelayMs, () => {
       if (this.motion === "opening" || this.motion === "open") this.setBarrierEnabled(false);
@@ -195,9 +221,9 @@ export class RpgInteriorDoorRuntime {
     this.animateLeaves(false);
     this.scene.tweens.add({
       targets: this.spill,
-      alpha: 0.2,
+      alpha: this.spec.spillAlphaClosed ?? 0.2,
       duration: this.durationMs,
-      ease: "Stepped"
+      ease: this.spec.motionEase ?? "Stepped"
     });
   }
 
@@ -206,7 +232,12 @@ export class RpgInteriorDoorRuntime {
     this.progress = open ? 1 : 0;
     this.motion = open ? "open" : "closed";
     this.applyLeafTransform(open ? 1 : 0);
-    this.spill.setAlpha(open ? 0.7 : 0.2);
+    if (this.spec.hideLeavesWhenOpen) {
+      this.leaves.forEach((leaf) => leaf.setAlpha(open ? 0 : 1));
+    }
+    this.spill.setAlpha(open
+      ? this.spec.spillAlphaOpen ?? 0.7
+      : this.spec.spillAlphaClosed ?? 0.2);
     this.setBarrierEnabled(!open);
   }
 
@@ -250,16 +281,23 @@ export class RpgInteriorDoorRuntime {
         duration: 55,
         yoyo: true,
         repeat: 3,
-        ease: "Stepped",
+        ease: this.spec.motionEase ?? "Stepped",
         onComplete: () => this.applyLeafTransform(0)
       });
     });
   }
 
   private createLeaves(): Phaser.GameObjects.Container[] {
-    const { openingWidth, openingHeight, centerX, centerY, motion, palette } = this.spec;
+    const { openingWidth, openingHeight, centerX, centerY, motion, palette, leafTextures } = this.spec;
     if (motion === "single-swing" || motion === "single-slide") {
-      const leaf = createLeafPanel(this.scene, openingWidth, openingHeight, palette, openingWidth * 0.32);
+      const leaf = createLeafPanel(
+        this.scene,
+        openingWidth,
+        openingHeight,
+        palette,
+        openingWidth * 0.32,
+        leafTextures?.single
+      );
       leaf.setPosition(centerX - openingWidth / 2, centerY);
       leaf.getAll().forEach((child) => {
         if ("x" in child && typeof child.x === "number") child.x += openingWidth / 2;
@@ -267,9 +305,23 @@ export class RpgInteriorDoorRuntime {
       return [leaf];
     }
     const leafWidth = openingWidth / 2;
-    const left = createLeafPanel(this.scene, leafWidth, openingHeight, palette, leafWidth * 0.32);
-    const right = createLeafPanel(this.scene, leafWidth, openingHeight, palette, -leafWidth * 0.32);
-    if (motion === "double-swing") {
+    const left = createLeafPanel(
+      this.scene,
+      leafWidth,
+      openingHeight,
+      palette,
+      leafWidth * 0.32,
+      leafTextures?.left
+    );
+    const right = createLeafPanel(
+      this.scene,
+      leafWidth,
+      openingHeight,
+      palette,
+      -leafWidth * 0.32,
+      leafTextures?.right
+    );
+    if (motion === "double-swing" || motion === "double-fold") {
       left.setPosition(centerX - openingWidth / 2, centerY);
       right.setPosition(centerX + openingWidth / 2, centerY);
       left.getAll().forEach((child) => {
@@ -292,8 +344,9 @@ export class RpgInteriorDoorRuntime {
       this.scene.tweens.add({
         targets: leaf,
         ...targets[index],
+        ...(this.spec.hideLeavesWhenOpen ? { alpha: open ? 0 : 1 } : {}),
         duration,
-        ease: "Stepped",
+        ease: this.spec.motionEase ?? "Stepped",
         onComplete: index === this.leaves.length - 1 ? () => {
           this.progress = open ? 1 : 0;
           this.motion = open ? "open" : "closed";
@@ -323,6 +376,13 @@ export class RpgInteriorDoorRuntime {
       return [
         { x: centerX - openingWidth / 2, angle: -(this.spec.openAngle ?? 78) * progress, scaleX: 1 },
         { x: centerX + openingWidth / 2, angle: (this.spec.openAngle ?? 78) * progress, scaleX: 1 }
+      ];
+    }
+    if (motion === "double-fold") {
+      const foldedScale = Phaser.Math.Linear(1, 0.18, progress);
+      return [
+        { x: centerX - openingWidth / 2, angle: 0, scaleX: foldedScale },
+        { x: centerX + openingWidth / 2, angle: 0, scaleX: foldedScale }
       ];
     }
     const leafWidth = openingWidth / 2;

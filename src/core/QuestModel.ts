@@ -748,14 +748,20 @@ function selectChapterFour755TaskKey(
   } else if (contract.id === "room204_restore") {
     preferredTaskKey = !facts.has("classroom_104_chalk_residual_observed")
       || !facts.has("classroom_105_terminal_replay_checked")
-      ? "verify_a1_classrooms"
-      : !facts.has("elevator_history_observed")
+      || !facts.has("elevator_history_observed")
         || !facts.has("elevator_history_calibrated")
-        ? "observe_elevator_history"
+        || !facts.has("a1_duty_board_reconstructed")
+      ? "resolve_a1_investigation"
       : !facts.has("zhu_two_questions_answered")
-        ? "answer_zhu_two_questions"
+        || !facts.has("a3_archive_film_retrieved")
+        || !facts.has("a3_media_alignment_completed")
+        ? "resolve_a3_archive_chain"
       : !facts.has("misaligned_stair_solved")
         ? "solve_misaligned_stair"
+      : !facts.has("a2_positioning_plate_calibrated")
+        || !facts.has("a2_power_topology_recovered")
+        || !facts.has("a2_evacuation_route_confirmed")
+        ? "resolve_a2_inserted_puzzles"
       : !facts.has("a3_reference_observed")
         || !facts.has("room204_residual_observed")
         || !facts.has("room204_restored")

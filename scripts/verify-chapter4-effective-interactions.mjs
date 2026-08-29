@@ -14,12 +14,14 @@ function snapshot(value) {
 }
 
 const expectedEntries = Object.freeze([
-  ["a2_maker_workshop_201_context", "A2", "maker_workshop_201"],
-  ["a2_lecture_room_202_context", "A2", "lecture_room_202"],
-  ["a2_computer_room_203_context", "A2", "computer_room_203"],
-  ["a3_archive_exhibition_301_context", "A3", "archive_exhibition_301"],
-  ["a3_media_studio_302_context", "A3", "media_studio_302"],
-  ["a3_report_hall_304_context", "A3", "report_hall_304"]
+  ["a1_front_desk_duty_board_context", "A1", "a1_front_desk_duty_board", "duty_board"],
+  ["a2_maker_workshop_201_context", "A2", "a2_201_calibration_bench", "positioning_calibration"],
+  ["a2_lecture_room_202_context", "A2", "lecture_room_202", null],
+  ["a2_computer_room_203_context", "A2", "a2_203_circuit_terminal", "power_topology"],
+  ["a2_open_study_evacuation_context", "A2", "a2_open_study_evacuation", "evacuation_route"],
+  ["a3_archive_exhibition_301_context", "A3", "a3_301_archive_index", "archive_index"],
+  ["a3_media_studio_302_context", "A3", "a3_302_alignment_scanner", "media_alignment"],
+  ["a3_report_hall_304_context", "A3", "report_hall_304", null]
 ]);
 const timeStates = Object.freeze([
   "2245_opening",
@@ -64,7 +66,8 @@ try {
     interactionModule,
     flowModule,
     controllerModule,
-    projectionModule
+    projectionModule,
+    insertedPuzzleModule
   ] = await Promise.all([
     server.ssrLoadModule("/src/core/GameState.ts"),
     server.ssrLoadModule("/src/core/EventBus.ts"),
@@ -72,7 +75,8 @@ try {
     server.ssrLoadModule("/src/scenes/rpg/RpgInteractionContract.ts"),
     server.ssrLoadModule("/src/scenes/rpg/ChapterFourContextInteractionFlow.ts"),
     server.ssrLoadModule("/src/modules/ChapterFourTemporalMazeController.ts"),
-    server.ssrLoadModule("/src/modules/ChapterFourMazeProjection.ts")
+    server.ssrLoadModule("/src/modules/ChapterFourMazeProjection.ts"),
+    server.ssrLoadModule("/src/modules/ChapterFourInsertedPuzzleModel.ts")
   ]);
 
   const { createGameStore, createInitialGameState } = gameStateModule;
@@ -92,18 +96,22 @@ try {
   } = flowModule;
   const { ChapterFourTemporalMazeController } = controllerModule;
   const { selectChapterFourMazeProjection } = projectionModule;
+  const {
+    CHAPTER_FOUR_INSERTED_PUZZLES,
+    chapterFourInsertedPuzzleForTarget
+  } = insertedPuzzleModule;
 
   assert(
     CHAPTER_FOUR_CONTEXT_INTERACTIONS.length === expectedEntries.length,
-    "content catalog must contain exactly the six approved effective classroom interactions"
+    "content catalog must contain the six inserted puzzles and two read-only room interactions"
   );
   assert(
     snapshot(CHAPTER_FOUR_CONTEXT_INTERACTION_TARGET_IDS) === snapshot(expectedEntries.map(([id]) => id)),
-    "exported context target ids must preserve the approved six-target order"
+    "exported context target ids must preserve the approved eight-target order"
   );
 
   const floorById = new Map(layout.floors.map((floor) => [floor.storyFloor, floor]));
-  for (const [targetId, floorId, anchorId] of expectedEntries) {
+  for (const [targetId, floorId, anchorId, puzzleId] of expectedEntries) {
     const entry = CHAPTER_FOUR_CONTEXT_INTERACTIONS.find((candidate) => candidate.targetId === targetId);
     const target = CHAPTER_FOUR_755_INTERACTION_TARGETS[targetId];
     const floor = floorById.get(floorId);
@@ -118,6 +126,16 @@ try {
     assert(entry.activePhases.length === 1 && entry.activePhases[0] === "room204_restore", `${targetId} must avoid chase and final-minute phases`);
     assert(entry.repeatPolicy === "repeatable", `${targetId} must stay repeatable and optional`);
     assert(entry.roomAliases.length > 0, `${targetId} must declare reachable runtime room aliases`);
+    assert(
+      chapterFourInsertedPuzzleForTarget(targetId) === puzzleId,
+      `${targetId} must retain its inserted-puzzle classification`
+    );
+    if (puzzleId) {
+      assert(
+        CHAPTER_FOUR_INSERTED_PUZZLES[puzzleId]?.targetId === targetId,
+        `${targetId} must resolve to the matching inserted-puzzle definition`
+      );
+    }
 
     for (const timeState of timeStates) {
       const lightText = selectChapterFourContextInteractionText({
@@ -167,12 +185,31 @@ try {
       isPointInsideChapterFour755Bounds(anchor.bounds, center.x, center.y),
       `${targetId} authored anchor center must stay inside its half-open bounds`
     );
-    assert(
-      !floor.staticCollisions.some((collision) => (
-        isPointInsideChapterFour755Bounds(collision, center.x, center.y)
-      )),
-      `${targetId} authored anchor center must not land inside a static collision`
-    );
+    const centerBlocked = floor.staticCollisions.some((collision) => (
+      isPointInsideChapterFour755Bounds(collision, center.x, center.y)
+    ));
+    if (puzzleId) {
+      const standSamples = [
+        { x: center.x, y: anchor.bounds.y - 8 },
+        { x: center.x, y: anchor.bounds.y + anchor.bounds.height + 8 },
+        { x: anchor.bounds.x - 8, y: center.y },
+        { x: anchor.bounds.x + anchor.bounds.width + 8, y: center.y }
+      ].filter((point) => (
+        point.x >= 0
+          && point.y >= 0
+          && point.x < layout.worldSize.width
+          && point.y < layout.worldSize.height
+          && !floor.staticCollisions.some((collision) => (
+            isPointInsideChapterFour755Bounds(collision, point.x, point.y)
+          ))
+      ));
+      assert(
+        standSamples.length > 0,
+        `${targetId} tabletop prop must retain a collision-free stand point within interaction range`
+      );
+    } else {
+      assert(!centerBlocked, `${targetId} read-only room anchor center must stay on walkable floor`);
+    }
     const clearInteriorSamples = [
       [0.25, 0.25],
       [0.75, 0.25],
@@ -192,12 +229,21 @@ try {
 
   function makeState(entry, mode = "light", phase = "room204_restore") {
     const initial = createInitialGameState();
-    const isA2 = entry.floor === "A2";
+    const checkpointByFloor = {
+      A1: "c4_a1_lobby",
+      A2: "c4_a2_corridor",
+      A3: "c4_a3_wayfinding"
+    };
+    const roomByFloor = {
+      A1: "a1_lobby",
+      A2: "a2_corridor",
+      A3: "a3_wayfinding"
+    };
     return {
       ...initial,
       runtimeMode: "rpg",
       rpgScene: "duan_yongping_temporal_maze",
-      rpgCheckpoint: isA2 ? "c4_a2_corridor" : "c4_a3_wayfinding",
+      rpgCheckpoint: checkpointByFloor[entry.floor],
       qizhenLake: { ...initial.qizhenLake, phase: "complete", active: false },
       chapterThreeInterlude: {
         ...initial.chapterThreeInterlude,
@@ -212,7 +258,7 @@ try {
         mode,
         building: "A",
         floor: entry.floor,
-        roomId: isA2 ? "a2_corridor" : "a3_wayfinding",
+        roomId: roomByFloor[entry.floor],
         timeAuthority: "hall_clock",
         timeState: phase === "room204_restore" ? "1850_evening" : "2245_maintenance",
         worldTimeSeconds: phase === "room204_restore" ? 67800 : 81900,
@@ -223,13 +269,13 @@ try {
     };
   }
 
-  for (const floorId of ["A2", "A3"]) {
+  for (const floorId of ["A1", "A2", "A3"]) {
     const floorEntries = CHAPTER_FOUR_CONTEXT_INTERACTIONS.filter((entry) => entry.floor === floorId);
     const projection = selectChapterFourMazeProjection(makeState(floorEntries[0]));
     for (const entry of CHAPTER_FOUR_CONTEXT_INTERACTIONS) {
       assert(
         projection.availableTargetIds.includes(entry.targetId) === (entry.floor === floorId),
-        `${floorId} projection must expose only its three floor-local context targets (${entry.targetId})`
+        `${floorId} projection must expose only its floor-local context targets (${entry.targetId})`
       );
     }
   }
@@ -240,9 +286,11 @@ try {
   ]);
 
   for (const entry of CHAPTER_FOUR_CONTEXT_INTERACTIONS) {
+    const puzzleId = chapterFourInsertedPuzzleForTarget(entry.targetId);
     for (const modeOrder of modeOrders) {
       const store = createGameStore(makeState(entry, modeOrder[0]));
-      const controller = new ChapterFourTemporalMazeController(store, new EventBus());
+      const events = new EventBus();
+      const controller = new ChapterFourTemporalMazeController(store, events);
       const subtitles = [];
       for (let index = 0; index < modeOrder.length; index += 1) {
         const mode = modeOrder[index];
@@ -283,17 +331,34 @@ try {
           timeState: current.chapter4.timeState,
           mode: current.chapter4.mode
         });
-        assert(
-          subtitle?.text === expectedText
-            && subtitle?.tone === "system"
-            && subtitle?.durationMs === 4400,
-          `${entry.targetId}/${modeOrder.join("->")}/${mode} pure flow must close on its time/mode subtitle`
-        );
-        if (subtitle) subtitles.push(subtitle.text);
+        if (puzzleId) {
+          const requestEvent = events.getHistory().find((event) => (
+            event.name === "chapter4_inserted_puzzle_requested"
+              && event.payload?.targetId === entry.targetId
+              && event.payload?.mode === mode
+          ));
+          assert(subtitle === null, `${entry.targetId}/${mode} puzzle request must not emit a read-only subtitle`);
+          assert(
+            requestEvent?.payload?.puzzleId === puzzleId,
+            `${entry.targetId}/${mode} must emit its controller-owned puzzle request`
+          );
+        } else {
+          assert(
+            subtitle?.text === expectedText
+              && subtitle?.tone === "system"
+              && subtitle?.durationMs === 4400,
+            `${entry.targetId}/${modeOrder.join("->")}/${mode} pure flow must close on its time/mode subtitle`
+          );
+          if (subtitle) subtitles.push(subtitle.text);
+        }
       }
       assert(
-        subtitles.length === 2 && subtitles[0] !== subtitles[1],
-        `${entry.targetId}/${modeOrder.join("->")} must preserve two distinct read-only subtitles in either order`
+        puzzleId
+          ? subtitles.length === 0
+          : subtitles.length === 2 && subtitles[0] !== subtitles[1],
+        puzzleId
+          ? `${entry.targetId}/${modeOrder.join("->")} must open the puzzle without a duplicate subtitle`
+          : `${entry.targetId}/${modeOrder.join("->")} must preserve two distinct read-only subtitles in either order`
       );
     }
 
@@ -345,9 +410,13 @@ try {
   }
 
   const readOnlyCaseStart = controllerSource.indexOf('case "inspect_chapter_four_context":');
-  const readOnlyCaseEnd = controllerSource.indexOf('case "complete_zhu_two_questions":', readOnlyCaseStart);
+  const readOnlyCaseEnd = controllerSource.indexOf('case "complete_inserted_puzzle":', readOnlyCaseStart);
   const readOnlyCase = controllerSource.slice(readOnlyCaseStart, readOnlyCaseEnd);
   assert(readOnlyCase.includes("return acceptReadOnly();"), "controller must route context inspection through its unified read-only result");
+  assert(
+    readOnlyCase.includes('this.emitChapterFourCue("chapter4_inserted_puzzle_requested"'),
+    "controller must route inserted targets to the host-owned puzzle overlay"
+  );
   assert(!/(patchChapter|transition|appendFact|withItem)\s*\(/.test(readOnlyCase), "context intent must not mutate facts, phase, or inventory");
   for (const [targetId] of expectedEntries) {
     assert(!controllerSource.includes(`"${targetId}"`), `${targetId} must not be hard-coded into progression gates`);

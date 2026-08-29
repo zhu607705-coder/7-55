@@ -36,6 +36,7 @@ const server = await createServer({
 
 try {
   const model = await server.ssrLoadModule("/src/modules/QizhenSwanChasePressureModel.ts");
+  const lakeModel = await server.ssrLoadModule("/src/scenes/rpg/QizhenLakeModel.ts");
   const {
     QIZHEN_SWAN_CHASE_PRESSURE_RULES,
     createQizhenSwanChasePressureState,
@@ -44,6 +45,50 @@ try {
     resolveQizhenSwanChaseSpeedProfile,
     stepQizhenSwanChasePressure
   } = model;
+  const {
+    QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS,
+    QIZHEN_LAKE_WORLD,
+    QIZHEN_LAKE_ZONES
+  } = lakeModel;
+
+  const discreteCounts = {
+    dock: 5,
+    open_water: 4,
+    channel: 9,
+    swan_cove: 0
+  };
+  for (const [zone, expectedCount] of Object.entries(discreteCounts)) {
+    const discrete = QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS[zone];
+    assert(discrete.length === expectedCount, `${zone} must expose ${expectedCount} measured small-obstacle colliders`);
+    const activeById = new Map(QIZHEN_LAKE_ZONES[zone].kayakCollisions.map((rect) => [rect.id, rect]));
+    for (const rect of discrete) {
+      const width = rect.right - rect.left;
+      const height = rect.bottom - rect.top;
+      assert(width > 0 && height > 0, `${zone}/${rect.id} must have a positive collision area`);
+      assert(
+        rect.left >= 0 && rect.top >= 0 && rect.right <= QIZHEN_LAKE_WORLD.width && rect.bottom <= QIZHEN_LAKE_WORLD.height,
+        `${zone}/${rect.id} must stay within the 1672x941 source plate`
+      );
+      assert(activeById.get(rect.id) === rect, `${zone}/${rect.id} must be the exact active kayak collision object`);
+      if (rect.id.includes("buoy")) {
+        assert(width <= 18 && height <= 27, `${zone}/${rect.id} must cover only the visible buoy core`);
+      }
+      if (rect.id.startsWith("rock_")) {
+        assert(width <= 39 && height <= 35, `${zone}/${rect.id} must exclude submerged stones and surrounding water`);
+      }
+    }
+  }
+  const channelDiscrete = QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS.channel;
+  assert(
+    channelDiscrete.filter((rect) => rect.id.startsWith("rock_")).length === 4,
+    "the three visible channel rock groups must use four per-stone core colliders"
+  );
+  assert(
+    Object.values(QIZHEN_LAKE_DISCRETE_KAYAK_COLLISIONS)
+      .flat()
+      .filter((rect) => rect.id.includes("buoy")).length === 14,
+    "all fourteen visible dock, open-water and channel buoys must use measured core colliders"
+  );
 
   assert(
     !/(emitDomain|SaveStore|GameStore|requestStoryIntent|chaseDistance\s*:|chaseAttempts\s*:)/.test(modelSource),

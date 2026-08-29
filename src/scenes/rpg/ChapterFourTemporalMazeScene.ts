@@ -58,6 +58,7 @@ import {
 } from "../../modules/ChapterFourElevatorDepthModel";
 import { CHAPTER_FOUR_ELEVATOR } from "../../modules/ChapterFourElevatorModel";
 import type { ChapterFour755Intent } from "../../modules/ChapterFourTemporalMazeController";
+import { chapterFourInsertedPuzzleForTarget } from "../../modules/ChapterFourInsertedPuzzleModel";
 import type { RpgBridge } from "./RpgBridge";
 import {
   createChapterFourContextInteractionIntent,
@@ -90,6 +91,7 @@ import {
   type ChapterFourWarmupAsset,
   type ChapterFourWarmupPhase
 } from "./ChapterFourWarmupAssets";
+import { CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS } from "./ChapterFourInsertedPuzzleAssets";
 import {
   inspectChapterFourWarmupPhaseReadiness,
   runChapterFourWarmupAssetBatch,
@@ -1009,6 +1011,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private elevatorVisuals = new Map<DisplayFloor, ElevatorVisual>();
   private appliedForegrounds: AppliedForeground[] = [];
   private targetVisuals = new Map<string, Phaser.GameObjects.Container>();
+  private insertedPuzzleProps = new Map<string, Phaser.GameObjects.Image>();
   private darkRealityVisuals: Phaser.GameObjects.Container | null = null;
   private lightRealityVisuals: Phaser.GameObjects.Container | null = null;
   private renderedRealityMode: GameState["chapter4"]["mode"] | null = null;
@@ -1255,6 +1258,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.refreshLoadedChapterFourAssets();
     this.cameras.main.setBackgroundColor(0x07111d).setRoundPixels(true);
     this.createBaseBackgrounds();
+    this.createInsertedPuzzleProps();
     this.createAlumniHonorWallPortraits();
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height);
     this.createCollisionGroups();
@@ -1487,6 +1491,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.syncStoryInputLock(true);
       this.feedbackTimer?.remove(false);
       this.clearProjectedTargetVisuals();
+      this.destroyInsertedPuzzleProps();
       clearRpgRuntimeDebugState();
     });
   }
@@ -1498,6 +1503,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       return;
     }
     this.createBaseBackgrounds();
+    this.createInsertedPuzzleProps();
     this.syncProjection(true);
     this.syncExternalFloorWhenIdle();
     this.refreshProximity();
@@ -1507,9 +1513,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.frameRegistration = registerChapterFour755ManifestFrames(this);
     this.validateFrameRegistrationReport(this.frameRegistration);
     ensureFinaleNpcAnimations(this);
+    this.refreshSupportNpcAnimations();
     this.ensureBakeryBakerAnimation();
     this.ensureFrontDeskStaffAnimation();
     this.createBaseBackgrounds();
+    this.createInsertedPuzzleProps();
     this.createAlumniHonorWallPortraits();
   }
 
@@ -1747,6 +1755,41 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       );
       this.textures.get(plateId).setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
+  }
+
+  private createInsertedPuzzleProps(): void {
+    for (const asset of CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS) {
+      const existing = this.insertedPuzzleProps.get(asset.puzzleId);
+      if (existing?.active || !this.textures.exists(asset.textureKey)) continue;
+      const displayFloor = displayFloorFor(asset.floor);
+      if (!displayFloor) continue;
+      const floor = getFloor(displayFloor);
+      this.textures.get(asset.textureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const image = this.add.image(
+        floor.offsetX + asset.center.x,
+        asset.center.y,
+        asset.textureKey
+      ).setDisplaySize(asset.sourceSize.width, asset.sourceSize.height)
+        .setDepth(asset.depth);
+      this.insertedPuzzleProps.set(asset.puzzleId, image);
+    }
+    this.syncInsertedPuzzlePropPresentation(this.bridge?.getState().chapter4.mode ?? this.appliedChapterMode);
+  }
+
+  private syncInsertedPuzzlePropPresentation(mode: GameState["chapter4"]["mode"]): void {
+    for (const image of this.insertedPuzzleProps.values()) {
+      if (!image.active) continue;
+      if (mode === "dark") {
+        image.setTint(0x64d9ff).setAlpha(0.78);
+      } else {
+        image.clearTint().setAlpha(1);
+      }
+    }
+  }
+
+  private destroyInsertedPuzzleProps(): void {
+    for (const image of this.insertedPuzzleProps.values()) image.destroy();
+    this.insertedPuzzleProps.clear();
   }
 
   private createAlumniHonorWallPortraits(): void {
@@ -2209,6 +2252,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
     if (!force && signature === this.projectionSignature) {
       this.syncRealityModeVisuals(state.chapter4.mode);
+      this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
       this.syncBakeryRuntime(state, next);
       this.syncRoom204Runtime(state);
       this.syncPhaseRuntime(state);
@@ -2230,6 +2274,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.appliedLightMask = state.chapter4.lightGrid.mask;
     this.appliedLightLocked = state.chapter4.lightGrid.locked;
     this.syncRealityModeVisuals(state.chapter4.mode, force);
+    this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
     this.projectionRetryFailures = 0;
     this.projectionRetryNotBeforeMs = 0;
     this.syncBakeryRuntime(state, next);
@@ -2890,8 +2935,22 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       ).setOrigin(definition.origin.x, definition.origin.y)
         .setScale(definition.uniformScale)
         .setDepth(PLAYER_DEPTH_BASE + definition.position.y);
-      sprite.play(animation, true);
+      if (this.anims.exists(animation)) sprite.play(animation, true);
       this.supportNpcSprites.set(definition.npcId, sprite);
+    }
+  }
+
+  private refreshSupportNpcAnimations(): void {
+    for (const definition of SUPPORT_NPC_RUNTIMES) {
+      const sprite = this.supportNpcSprites.get(definition.npcId);
+      if (!sprite?.active) continue;
+      const finaleAnimation = definition.visualSource === "finale_npc"
+        ? FINALE_NPC_ANIMATIONS[definition.animation as FinaleNpcAnimationId]
+        : null;
+      const animation = finaleAnimation?.id ?? FRONT_DESK_STAFF_ANIMATION;
+      if (this.anims.exists(animation) && sprite.anims.currentAnim?.key !== animation) {
+        sprite.play(animation, true);
+      }
     }
   }
 
@@ -6997,6 +7056,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       case "inspect_chapter_four_context": {
         this.storyPresentation = "idle";
         const state = this.bridge.getState();
+        const insertedPuzzleId = pending.targetId
+          ? chapterFourInsertedPuzzleForTarget(pending.targetId)
+          : null;
         const subtitle = resolveChapterFourContextInteractionSubtitle({
           targetId: pending.targetId,
           phase: this.projection.phase,
@@ -7004,13 +7066,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           mode: state.chapter4.mode,
           result: payload?.result
         });
-        this.safeBridgeEmit("rpg_subtitle", {
-          ...(subtitle ?? {
+        if (subtitle) {
+          this.safeBridgeEmit("rpg_subtitle", { ...subtitle });
+        } else if (!insertedPuzzleId) {
+          this.safeBridgeEmit("rpg_subtitle", {
             text: "当前教室没有新增状态记录。",
             tone: "system" as const,
             durationMs: 4400 as const
-          })
-        });
+          });
+        }
         break;
       }
       case "inspect_alumni_figure":
