@@ -480,6 +480,7 @@
   border: 3px solid #1c5d77;
   box-shadow: 5px 5px 0 #8aa0ad;
   display: grid;
+  font-family: var(--font-pixel);
   gap: 6px;
   padding: 9px 10px 10px;
 }
@@ -530,7 +531,7 @@
 .qizhen-weather-calibration > header span { color: #5f6b73; font-size: var(--fs-micro); }
 .qizhen-weather-calibration output {
   color: #1c5d77;
-  font-family: monospace;
+  font-family: var(--font-pixel);
   font-size: var(--fs-caption);
   font-weight: 900;
   white-space: nowrap;
@@ -651,7 +652,7 @@
 }
 
 .qizhen-weather-band > button kbd {
-  font-family: monospace;
+  font-family: var(--font-pixel);
   font-size: 13px;
   font-weight: 900;
   line-height: 14px;

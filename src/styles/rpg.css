@@ -547,6 +547,7 @@
 
 .qizhen-rain-rescue-cinematic {
   background: #06141a;
+  font-family: var(--font-pixel);
   inset: 0;
   overflow: hidden;
   position: absolute;

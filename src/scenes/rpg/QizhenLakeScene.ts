@@ -35,6 +35,7 @@ import {
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import {
   getRpgLogicalCameraZoom,
+  RPG_PIXEL_FONT_FAMILY,
   setRpgLogicalCameraZoom
 } from "./RpgRenderResolution";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
@@ -2796,12 +2797,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xb9e5ef, 0.72);
     this.chaseHudLabel = this.add.text(9, 6, "", {
       color: "#eafcff",
-      fontFamily: "monospace",
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
       fontSize: "11px"
     });
     this.chaseHudProgress = this.add.text(363, 6, "", {
       color: "#fff2b6",
-      fontFamily: "monospace",
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
       fontSize: "11px"
     }).setOrigin(1, 0);
     const riskTrack = this.add.rectangle(9, 34, 354, 7, 0x213744, 0.94).setOrigin(0, 0.5);

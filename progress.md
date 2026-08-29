@@ -3526,3 +3526,11 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - `chapter4:validate-task14` 与 `audio:pursuit:verify` 的本地音频时长探测未执行完成，因为当前 Windows 环境没有 `ffprobe`；前者的剧情/runtime 前置验证和其余音频消费者均未因此报出代码错误。远端 CI 已显式准备 `ffmpeg/ffprobe`，本轮没有修改对应远端验证脚本或安装系统工具。
 - Chromium `1440×900` 实测图书馆、启真湖和第四章 A2：三个场景都只有一个 canvas，像素字体错误数与文字源分辨率不一致数均为 `0`；第四章切到深色后氛围层为完整 `960×540`、alpha `1`，实际覆盖整个地图。随后快速连续切换三个 RPG 检查点，console/page error 为 `0`。
 - `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `258654608` 字节、两个内联脚本和一个内联样式。本轮没有推送；`1456` 个未跟踪文件保持未动，专用 Chromium、截图和 QA 脚本均已清理，既有 Vite 服务继续运行。
+
+## 2026-08-29 合并后新增内容像素字体补齐
+
+- 合并后新增的第四章五区拓扑谜题、灿若星辰灯闭幕层、启真湖黑天鹅追逐 HUD 与雨天救援层、天气校准界面和 CC98 剧场档案，统一改用项目实际加载的 `Fusion Pixel 12px Proportional SC` 字体栈；原有字号、间距、坐标和交互范围保持不变。
+- Phaser 黑天鹅追逐文字在创建时直接使用共享 RPG 像素字体常量；DOM 覆盖层改为继承 `--font-pixel`，清理新增样式中的通用 `monospace` 和不完整旧字体别名，避免部分新界面回落到系统字体。
+- Chromium 通过真实第四章 A2 谜题、第四章闭幕层和启真湖追逐运行态核对字体，并对天气校准、CC98 剧场档案和雨天救援样式做浏览器级联检查；所有目标及子元素均解析为实际像素字体，字体资源加载成功，console/page error 为 `0`，第四章谜题画面未出现裁切或错位。
+- Fresh 验证通过：`npm run typecheck`、第四章有效交互 `624` 项、启真湖黑天鹅追逐 `164` 项、`git diff --check`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single`。离线 `demo/index.html` 为 `258654706` 字节、两个内联脚本和一个内联样式。
+- 本轮没有执行 Git fetch、暂存、提交、合并、推送或上传；既有未跟踪 Godot、启真湖素材、辅助脚本和第三章文案保持未动。
