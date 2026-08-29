@@ -3503,4 +3503,7 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 首次远端提交为 `8a46dd447ebe1e02c2a69571c9b0c707dd5c5be4`。本地 `HEAD`、`origin/main` 与 `git ls-remote origin refs/heads/main` 当时一致，工作树干净；GitHub Web CI `33245818634` 在第四章剧情契约步骤发现 7 项旧校验规则。
 - 本地复现确认正式内容已扩展为 `36` 个活动任务与 `108` 条提示，QuestModel 已使用 A1、A3、A2 三组并行调查，Host 增加六处现场谜题与正式收束的唯一呈现权，SaveStore v32 只在完整收束证明、双项签到与锁定灯阵同时成立时恢复 `complete`。运行时实现与批准设计一致，失败来源为旧 validator 仍固定检查 `33 / 99`、旧事实顺序和旧握手集合。
 - 只更新既有 `scripts/verify-chapter4-755-story.mjs`：精确锁定 `14` 项 204 阶段任务、`18` 项事实闭包、三组任意顺序调查、六处新增谜题、正式收束握手和 v32 防伪完成条件。没有创建测试文件或测试依赖；`npm run chapter4:validate-story` 已恢复通过，仍检查 `13` 个阶段、`6` 个时间状态、`5` 个配电区域与 `14` 个道具操作。
-- 远端最终提交与 GitHub CI 结果以本节后续交付证据为准。
+- 剧情契约修复提交 `d8ec7a455d75d39cbcaa59de6a21eb056301d8b6` 推送后，GitHub Web CI `33246172873` 已通过剧情、资产和拓扑步骤，并在运行时矩阵暴露第二处状态夹具过期及一项真实存档边界问题。运行时夹具现已补齐 A1 值班板、A3 档案链与 A2 三项现场记录的合法前置事实，原 `116` 项级联失败收敛为 `6` 项独立差异。
+- SaveStore v32 的降级条件已收紧：只有原存档明确处于 `phase=complete` 时，缺少完整收束证明才降级至 `exterior_closure`；维修、返程或早晨阶段中伪造的 `completed/acknowledged` 字段不再把玩家提前送至外部收束页。合法的 v32 完整闭包仍可恢复 `complete`，外部收束页的伪造完成字段仍会被清除。
+- Task 14 校验同步纳入正式的 `c4-755-a2-field-records` 检查点，并更新为 `36` 个活动任务、`108` 条渐进提示与 `14` 个第四章 DEV 节点。该节点仍由 `DeveloperChannel` 生成合法 `A2 / a2_corridor / room204_restore` 状态，不影响正式存档。
+- 修正后 `npm run chapter4:validate-runtime` 通过 `1095` 项断言，`npm run chapter4:validate-story`、`npm run chapter4:validate-task14`（`375` 项）、`npm run chapter4:validate-topology`（`2781` 项）与 `npm run typecheck` 同步通过。远端最终提交与 GitHub CI 结果以本节后续交付证据为准。

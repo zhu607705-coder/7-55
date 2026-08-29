@@ -1806,6 +1806,7 @@ function validateTask7RuntimeSources(errors) {
     || !/facts\.delete\("exterior_closure_acknowledged"\)/.test(saveStore)
     || !/const savedCompletionVerified = envelopeVersion >= CHAPTER_FOUR_CLOSURE_SAVE_VERSION[\s\S]*?savedPhase === "complete"[\s\S]*?saved\.completed === true[\s\S]*?saved\.exteriorClosureAcknowledged === true[\s\S]*?savedCardAccepted[\s\S]*?savedPaperAccepted[\s\S]*?savedLightGridForCompletion\.locked === true[\s\S]*?savedLightGridForCompletion\.mask === 13/.test(saveStore)
     || !/const savedClaimsCompletion = saved\.completed === true[\s\S]*?savedPhase === "complete"[\s\S]*?saved\.exteriorClosureAcknowledged === true[\s\S]*?savedFactIds\.includes\("exterior_closure_acknowledged"\)/.test(saveStore)
+    || !/let phase: ChapterFourPhase = savedCompletionVerified[\s\S]*?: savedPhase === "complete" && savedClaimsCompletion[\s\S]*?\? "exterior_closure"[\s\S]*?: savedPhase/.test(saveStore)
     || !/const completed = savedCompletionVerified/.test(saveStore)
     || !/items\.campusCard = true/.test(saveStore)) {
     errors.push("Task 13 SaveStore must synchronize check-in booleans/facts/items, auto-close a complete morning pair and accept completion only from a coherent v32 closure");

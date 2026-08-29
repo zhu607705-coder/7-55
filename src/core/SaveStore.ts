@@ -1682,7 +1682,7 @@ function normalizeChapterFour(
     || savedFactIds.includes("exterior_closure_acknowledged");
   let phase: ChapterFourPhase = savedCompletionVerified
     ? "complete"
-    : savedClaimsCompletion
+    : savedPhase === "complete" && savedClaimsCompletion
       ? "exterior_closure"
       : savedPhase;
   if (phase === "morning_checkin" && savedCardAccepted && savedPaperAccepted) {
