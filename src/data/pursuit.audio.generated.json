@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "chapterId": "cross-chapter-pursuit-audio",
+  "generatedAt": "2026-08-28T17:07:26.428Z",
+  "assets": {
+    "music_qizhen_swan_chase": {
+      "path": "pursuit/music/music_qizhen_swan_chase.mp3",
+      "kind": "music",
+      "durationMs": 28000,
+      "codec": "mp3",
+      "sampleRate": 44100,
+      "channels": 2,
+      "sha256": "9a175968d993cbf5d089b40f76def721377951f86ecba46f9c330615f9321e35",
+      "sourceConfigHash": "f05ab2d7f467a7feee945a164e16b984e58ff09fdf4761e1c87523e9c0f694c1",
+      "source": "Deterministic ffmpeg pursuit bed after MiniMax Music HTTP 410"
+    },
+    "vo_pursuit_qizhen_swan_start": {
+      "path": "pursuit/voice/vo_pursuit_qizhen_swan_start.mp3",
+      "kind": "voice",
+      "durationMs": 2260,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "2d8dfecbd5dfc3ae5bdd3f07c69c6e0247acf7c453c7f784c042c3fa4ea630e6",
+      "sourceConfigHash": "f9bdf8df2a22ea2141da3504f2c881a1cdd0c32c4277f6337b826e1328cf1158",
+      "sourceTextHash": "c3aff59ec54155c36d66b9cf422a23c62daa762026a1625aaae9633bd8bcd09a",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_pursuit_qizhen_swan_warning": {
+      "path": "pursuit/voice/vo_pursuit_qizhen_swan_warning.mp3",
+      "kind": "voice",
+      "durationMs": 3116,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "b8d5e1cdad42ed0f2776685143520a40db9153d596a37e99b3182fd673308ca8",
+      "sourceConfigHash": "9d0309001e3d3d9cda3d69df3cb7c9693798070015bc57e5242b576c18b3bd4c",
+      "sourceTextHash": "b2f93a15782c65dd4784c8e36fe2567ea170ce439ca005053beb8dd5b86b6587",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_pursuit_qizhen_swan_final": {
+      "path": "pursuit/voice/vo_pursuit_qizhen_swan_final.mp3",
+      "kind": "voice",
+      "durationMs": 2197,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "1855499dcbda202a1a865221786a9aae8bb0ceaf315ea7cb4d41ebdf42f87b2a",
+      "sourceConfigHash": "ecabed6cb3ff720bc58c84cfd650ba54a500d3cc8e9ff7f595ef1494dffb56de",
+      "sourceTextHash": "4316796a438d020bae45bc7efa4d70617a5dc698ab51da700513c44ad7c3fd8f",
+      "source": "MiniMax speech-2.8-hd English_expressive_narrator"
+    },
+    "vo_pursuit_chapter4_guard_start": {
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_start.mp3",
+      "kind": "voice",
+      "durationMs": 2087,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "90d54b388d150eba76da21960c216de10775755a9c4bf523c1fbdc007f3022ab",
+      "sourceConfigHash": "66ec4decb0b713b4e02ff77a9437fe56531cb707b215841438d4f3eb1987570e",
+      "sourceTextHash": "5e62fe16ec4e5341bb430c2f6e5b2db223f18f6a6532f1d8bb27feb51922694c",
+      "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
+    },
+    "vo_pursuit_chapter4_guard_stair": {
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_stair.mp3",
+      "kind": "voice",
+      "durationMs": 2596,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "b5e5a37051cf6bf11f3cb48994f56aa8c0a66f756b7ae4662773e3c9c945f5cb",
+      "sourceConfigHash": "d77c4726238331bd991db98fdfe7b1b1c8b96871dfcd288210a5a99066265c3b",
+      "sourceTextHash": "f3383145966587981743941b88a33ce7d46744f36a1fdcdda4ba41d890d3b442",
+      "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
+    },
+    "vo_pursuit_chapter4_guard_close": {
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_close.mp3",
+      "kind": "voice",
+      "durationMs": 1240,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "ae1dae0abc810c52ee988a62d689de4994cd22ba4acd658f06ff52fa210fa453",
+      "sourceConfigHash": "7d796da01ad570c05ade1d80f26fcab24ace7fad4876432c0bc99cb6b5ed5828",
+      "sourceTextHash": "f87d3db9628b14c6bc2f380dd6f7eb219ca6bbd30830585b503b46504ec34afa",
+      "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
+    }
+  }
+}

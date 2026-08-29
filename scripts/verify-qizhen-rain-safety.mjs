@@ -17,9 +17,10 @@ try {
         'export { SaveStore } from "./src/core/SaveStore.ts";',
         'export { GAME_SAVE_KEY } from "./src/core/StorageKeys.ts";',
         'export { selectCampusWeather } from "./src/modules/CampusWeatherModel.ts";',
-        'export { getQizhenWeatherMinimumMoves, isQizhenWeatherCloudAligned, moveQizhenWeatherCloud, QIZHEN_WEATHER_CLOUD_INITIAL } from "./src/modules/QizhenWeatherControlModel.ts";',
+        'export { createQizhenWeatherControlFrame, getQizhenWeatherMinimumMoves, isQizhenWeatherCloudAligned, isValidQizhenWeatherControlSummary, stepQizhenWeatherControl, QIZHEN_WEATHER_CLOUD_INITIAL, QIZHEN_WEATHER_STABLE_REQUIRED_MS } from "./src/modules/QizhenWeatherControlModel.ts";',
         'export { createDeveloperCheckpointState } from "./src/modules/DeveloperChannel.ts";',
         'export { QIZHEN_DOCK_AFTER_RAIN_PUDDLES, QIZHEN_DOCK_RAIN_EFFECT_PROFILE, QIZHEN_DOCK_RAIN_SPLASH_SITES, QIZHEN_LAKE_WORLD, QIZHEN_LAKE_ZONES, isQizhenAfterRainPuddleFootHit } from "./src/scenes/rpg/QizhenLakeModel.ts";',
+        'export { QIZHEN_RAIN_RESCUE_ROUTE, QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES, getQizhenRainRescueDurationMs } from "./src/scenes/rpg/QizhenRainRescuePresentation.ts";',
         'export { default as qizhenContent } from "./src/data/chapter3-qizhen-lake.content.json";'
       ].join("\n"),
       resolveDir: root,
@@ -39,13 +40,19 @@ try {
     QIZHEN_DOCK_RAIN_SPLASH_SITES,
     QIZHEN_LAKE_WORLD,
     QIZHEN_LAKE_ZONES,
+    QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES,
+    QIZHEN_RAIN_RESCUE_ROUTE,
+    QIZHEN_WEATHER_STABLE_REQUIRED_MS,
+    createQizhenWeatherControlFrame,
     createInitialGameState,
     getQizhenWeatherMinimumMoves,
+    getQizhenRainRescueDurationMs,
     isQizhenAfterRainPuddleFootHit,
     isQizhenWeatherCloudAligned,
-    moveQizhenWeatherCloud,
+    isValidQizhenWeatherControlSummary,
     QIZHEN_WEATHER_CLOUD_INITIAL,
     SaveStore,
+    stepQizhenWeatherControl,
     qizhenContent,
     selectCampusWeather,
     createDeveloperCheckpointState
@@ -110,6 +117,12 @@ try {
     || store.getState().items.hairDryer) {
     throw new Error("forced-launch rescue must return the player to the dorm without granting the dryer");
   }
+  const sceneBeforeBlockedReturn = store.getState().rpgScene;
+  if (controller.enterLake() !== false
+    || store.getState().rpgScene !== sceneBeforeBlockedReturn
+    || store.getState().qizhenLake.phase !== "rain_recovery") {
+    throw new Error("returning to the lake before weather adjustment must remain blocked without replaying the capsize");
+  }
   store.setState((current) => ({ ...current, currentScene: "weather" }));
   if (controller.beginDockWeatherAdjustment() !== "locked") {
     throw new Error("weather control must require the dorm hair dryer after rescue");
@@ -124,25 +137,41 @@ try {
     || store.getState().qizhenLake.weatherControlAttempts !== 1) {
     throw new Error("focused desktop phone pane must begin one persisted cloud calibration attempt");
   }
-  let cloudOffsets = QIZHEN_WEATHER_CLOUD_INITIAL;
-  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 0, 1);
-  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 0, 1);
-  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 1, 1);
-  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 1, 1);
-  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 2, 1);
-  cloudOffsets = moveQizhenWeatherCloud(cloudOffsets, 2, 1);
-  if (!isQizhenWeatherCloudAligned(cloudOffsets) || getQizhenWeatherMinimumMoves() !== 6) {
-    throw new Error("cloud calibration model must resolve in six deterministic moves");
+  const advanceWeatherControl = (frame, directions, durationMs) => {
+    let next = frame;
+    for (let elapsed = 0; elapsed < durationMs; elapsed += 20) {
+      next = stepQizhenWeatherControl(next, directions, Math.min(20, durationMs - elapsed));
+    }
+    return next;
+  };
+  let weatherFrame = createQizhenWeatherControlFrame();
+  weatherFrame = advanceWeatherControl(weatherFrame, [-1, 1, 1], 1150);
+  weatherFrame = advanceWeatherControl(weatherFrame, [0, 1, 1], 250);
+  weatherFrame = advanceWeatherControl(weatherFrame, [0, 0, 1], 160);
+  weatherFrame = advanceWeatherControl(weatherFrame, [0, 0, 0], 1000);
+  const cloudOffsets = weatherFrame.positions;
+  const validWeatherSummary = {
+    moves: 3,
+    cloudOffsets,
+    controlledBands: [true, true, true],
+    stableMs: weatherFrame.stableMs,
+    elapsedMs: weatherFrame.elapsedMs
+  };
+  if (!isQizhenWeatherCloudAligned(cloudOffsets)
+    || weatherFrame.stableMs !== QIZHEN_WEATHER_STABLE_REQUIRED_MS
+    || getQizhenWeatherMinimumMoves() !== 3
+    || !isValidQizhenWeatherControlSummary(validWeatherSummary)) {
+    throw new Error("continuous cloud calibration must counter the leftward wind and stabilize all three bands");
   }
-  if (controller.applyDockWeatherAdjustment({ moves: 5, cloudOffsets }) !== "locked"
+  if (controller.applyDockWeatherAdjustment({ ...validWeatherSummary, stableMs: 999 }) !== "locked"
     || store.getState().qizhenLake.rainSafetyCleared) {
-    throw new Error("controller must reject an impossible cloud calibration summary");
+    throw new Error("controller must reject a cloud calibration that was not stable for one second");
   }
-  if (controller.applyDockWeatherAdjustment({ moves: 6, cloudOffsets }) !== "accepted"
+  if (controller.applyDockWeatherAdjustment(validWeatherSummary) !== "accepted"
     || !store.getState().qizhenLake.rainSafetyCleared
     || store.getState().items.hairDryer
     || store.getState().qizhenLake.phase !== "boarding_tutorial"
-    || store.getState().qizhenLake.weatherControlBestMoves !== 6
+    || store.getState().qizhenLake.weatherControlBestMoves !== 3
     || selectCampusWeather(store.getState()).condition !== "overcast"
     || selectCampusWeather(store.getState()).label !== "多云") {
     throw new Error("weather app must clear the rain hold and publish the overcast projection");
@@ -167,7 +196,7 @@ try {
   const reloaded = saveStore.load(createInitialGameState());
   if (!reloaded
     || reloaded.qizhenLake.weatherControlAttempts !== 1
-    || reloaded.qizhenLake.weatherControlBestMoves !== 6
+    || reloaded.qizhenLake.weatherControlBestMoves !== 3
     || !reloaded.qizhenLake.rainWarningSeen
     || !reloaded.qizhenLake.rainRescueCompleted
     || !reloaded.qizhenLake.rainSafetyCleared
@@ -243,7 +272,7 @@ try {
   };
   const bypassStore = makeStore(bypass);
   const bypassController = new ChapterThreeQizhenLakeController(bypassStore, eventBus);
-  if (bypassController.applyDockWeatherAdjustment({ moves: 6, cloudOffsets }) !== "locked"
+  if (bypassController.applyDockWeatherAdjustment(validWeatherSummary) !== "locked"
     || bypassStore.getState().qizhenLake.rainSafetyCleared) {
     throw new Error("weather app must reject adjustment without the rescue and hair dryer");
   }
@@ -252,7 +281,10 @@ try {
   const invalidStore = makeStore(bypass);
   const invalidController = new ChapterThreeQizhenLakeController(invalidStore, eventBus);
   if (invalidController.beginDockWeatherAdjustment() !== "accepted"
-    || invalidController.applyDockWeatherAdjustment({ moves: 5, cloudOffsets }) !== "locked"
+    || invalidController.applyDockWeatherAdjustment({
+      ...validWeatherSummary,
+      controlledBands: [true, true, false]
+    }) !== "locked"
     || invalidStore.getState().qizhenLake.rainSafetyCleared) {
     throw new Error("controller must reject an impossible cloud calibration summary");
   }
@@ -376,13 +408,36 @@ try {
   if (qizhenContent.dock.afterRainProof !== "这是下过雨的证明") {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
-  if (qizhenContent.dock.safetyRainBlock !== "值班老师：现在天气不能下水。"
+  if (qizhenContent.dock.safetyRainBlock !== "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。"
+    || qizhenContent.dock.rainReturnBlocked !== "值班老师：这么不长记性，还想要再成一次落汤鸡不成。"
     || !qizhenContent.dock.forcedLaunch
     || !qizhenContent.dock.forcedCapsize
     || !qizhenContent.dock.forcedRescue) {
-    throw new Error("teacher warning and forced-launch rescue copy must remain event-backed");
+    throw new Error("teacher force-launch hint, repeat-entry rejection, and rescue copy must remain event-backed");
   }
-  console.log("Qizhen rain safety PASS assertions=67 gate=teacher-warning+forced-launch+rescue+dorm-dryer weather=shared-selector cloud-calibration=3-bands+6-min-moves+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
+  const reducedRescueRoute = QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES.map(
+    (index) => QIZHEN_RAIN_RESCUE_ROUTE[index]
+  );
+  if (QIZHEN_RAIN_RESCUE_ROUTE.length !== 6
+    || QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES.length !== 3
+    || reducedRescueRoute.some((point, index) => (
+      !point || (index > 0 && point.side === reducedRescueRoute[index - 1]?.side)
+    ))
+    || !QIZHEN_RAIN_RESCUE_ROUTE.every((point, index) => (
+      point.side === (index % 2 === 0 ? "left" : "right")
+      && point.intensity > 0
+      && dockWaterAreas.some((water) => (
+        point.x >= water.left && point.x <= water.right && point.y >= water.top && point.y <= water.bottom
+      ))
+    ))) {
+    throw new Error("forced-launch presentation must keep six alternating in-water strokes and a reduced-motion route");
+  }
+  if (getQizhenRainRescueDurationMs(false) < 7000
+    || getQizhenRainRescueDurationMs(false) > 8000
+    || getQizhenRainRescueDurationMs(true) > 2500) {
+    throw new Error("forced-launch presentation duration must remain extended while reduced motion stays concise");
+  }
+  console.log("Qizhen rain safety PASS assertions=70 gate=teacher-warning+six-stroke-forced-launch+dramatic-capsize+cinematic-rescue+dorm-dryer+repeat-entry-block weather=shared-selector cloud-calibration=continuous-left-wind+6-keys+3-bands+1s-stability+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

@@ -15,6 +15,11 @@ export interface QizhenKayakPose {
   chasing?: boolean;
 }
 
+export interface QizhenCapsizePresentationOptions {
+  readonly dramatic?: boolean;
+  readonly durationMs?: number;
+}
+
 const KAYAK_FRAME_A_KEY = "qizhen-kayak-overhead-a";
 const KAYAK_FRAME_B_KEY = "qizhen-kayak-overhead-b";
 const KAYAK_DISPLAY_SCALE = 0.52;
@@ -127,9 +132,31 @@ export class QizhenKayakVisual {
     this.splash(side, direction, intensity);
   }
 
-  playCapsize(onComplete: () => void): void {
+  playCapsize(onComplete: () => void, options: QizhenCapsizePresentationOptions = {}): void {
     if (this.destroyed) return;
     this.scene.tweens.killTweensOf(this.body);
+    if (options.dramatic) {
+      const totalDuration = Math.max(360, options.durationMs ?? 1080);
+      const fallDuration = Math.round(totalDuration * 0.62);
+      const holdDuration = totalDuration - fallDuration;
+      const fallDirection = this.body.y >= 0 ? 1 : -1;
+      this.scene.tweens.add({
+        targets: this.body,
+        y: fallDirection * 22,
+        angle: fallDirection * 82,
+        scaleX: 0.76,
+        scaleY: 0.68,
+        alpha: 0.14,
+        duration: fallDuration,
+        ease: "Cubic.easeIn",
+        hold: holdDuration,
+        onComplete: () => {
+          this.body.setPosition(0, 0).setAngle(0).setScale(1).setAlpha(1);
+          onComplete();
+        }
+      });
+      return;
+    }
     this.scene.tweens.add({
       targets: this.body,
       y: this.body.y >= 0 ? 10 : -10,

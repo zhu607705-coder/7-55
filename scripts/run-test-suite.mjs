@@ -12,6 +12,8 @@ const SUITES = Object.freeze({
     Object.freeze({ area: "chapter-3", script: "theater:validate-spotlight", risk: "spotlight timing boundaries and failure classification" }),
     Object.freeze({ area: "chapter-3", script: "qizhen:validate-rain-safety", risk: "weather safety gate, checkpoint resume, save/reload" }),
     Object.freeze({ area: "chapter-3", script: "qizhen:validate-fishing", risk: "rhythm timing, hold, failure, cancellation" }),
+    Object.freeze({ area: "chapter-3", script: "qizhen:validate-swan-chase", risk: "telegraphed pressure cycle without changing catch or finish authority" }),
+    Object.freeze({ area: "cross-chapter", script: "audio:pursuit:verify", risk: "pursuit music lifecycle, sparse voice cues, scene-owned subtitles and generated asset integrity" }),
     Object.freeze({ area: "chapter-4", script: "chapter4:validate-warmup", risk: "asset readiness, retry, cancellation and degradation" }),
     Object.freeze({ area: "chapter-4", script: "chapter4:validate-guard-presentation", risk: "guard presentation state without authority mutation" }),
     Object.freeze({ area: "chapter-4", script: "chapter4:validate-effective-interactions", risk: "optional interactions across floor, mode and phase" })

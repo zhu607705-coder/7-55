@@ -36,6 +36,11 @@ const DEFAULT_TONE_MAPPING_EXPOSURE = 1.02;
 const MAX_PEDAL_CADENCE_RPM = 110;
 const PEDAL_CADENCE_RESPONSE = 10;
 const SEATED_PEDAL_BOB_AMPLITUDE = 0.008;
+const LANE_POSITION_RESPONSE = 11;
+const LANE_VELOCITY_RESPONSE = 14;
+const STEERING_RESPONSE = 12;
+const HANDLEBAR_RESPONSE = 16;
+const CAMERA_FOLLOW_RESPONSE = 5.5;
 const TWO_PI = Math.PI * 2;
 
 const PALETTE = {
@@ -108,6 +113,11 @@ function defaultPixelRatioCap(): number {
 function smoothstep(value: number): number {
   const t = clamp(value, 0, 1);
   return t * t * (3 - 2 * t);
+}
+
+function frameResponse(rate: number, deltaSeconds: number): number {
+  if (deltaSeconds <= 0) return 0;
+  return 1 - Math.exp(-rate * deltaSeconds);
 }
 
 function hashString(value: string): number {
@@ -568,6 +578,8 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
   private pedalPhaseRadians = 0;
   private pedalCadenceRpm = 0;
   private previousRiderX = 0;
+  private smoothedLaneVelocity = 0;
+  private bodySteerRadians = 0;
   private lastCollisions = 0;
   private collisionFlashSeconds = 0;
   private readonly steeringPivot = new THREE.Vector3();
@@ -642,16 +654,29 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
 
     const playerZ = -state.distance * WORLD_PER_METER;
     const targetX = LANE_X[clamp(Math.round(state.lane), 0, 2)];
-    const easing = this.reducedMotion ? 1 : Math.min(1, deltaSeconds * 11);
+    const easing = this.reducedMotion ? 1 : frameResponse(LANE_POSITION_RESPONSE, deltaSeconds);
     this.rider.group.position.x += (targetX - this.rider.group.position.x) * easing;
     this.rider.group.position.z = playerZ;
-    const laneVelocity = deltaSeconds > 0 ? (this.rider.group.position.x - this.previousRiderX) / deltaSeconds : 0;
+    const rawLaneVelocity = deltaSeconds > 0
+      ? (this.rider.group.position.x - this.previousRiderX) / deltaSeconds
+      : 0;
     this.previousRiderX = this.rider.group.position.x;
-    const bodySteer = clamp(-laneVelocity * 0.055, -0.42, 0.42);
-    const handlebarSteer = bodySteer * 1.32;
+    if (this.reducedMotion) {
+      this.smoothedLaneVelocity = 0;
+      this.bodySteerRadians = 0;
+    } else {
+      this.smoothedLaneVelocity += (rawLaneVelocity - this.smoothedLaneVelocity)
+        * frameResponse(LANE_VELOCITY_RESPONSE, deltaSeconds);
+      const targetBodySteer = clamp(-this.smoothedLaneVelocity * 0.055, -0.42, 0.42);
+      this.bodySteerRadians += (targetBodySteer - this.bodySteerRadians)
+        * frameResponse(STEERING_RESPONSE, deltaSeconds);
+    }
+    const handlebarSteer = this.bodySteerRadians * 1.32;
     const resolvedHandlebarSteer = this.rider.frontAssembly.rotation.y
-      + (handlebarSteer - this.rider.frontAssembly.rotation.y) * Math.min(1, deltaSeconds * 16);
-    this.rider.group.rotation.z += (bodySteer * 0.45 - this.rider.group.rotation.z) * Math.min(1, deltaSeconds * 12);
+      + (handlebarSteer - this.rider.frontAssembly.rotation.y)
+        * frameResponse(HANDLEBAR_RESPONSE, deltaSeconds);
+    this.rider.group.rotation.z += (this.bodySteerRadians * 0.45 - this.rider.group.rotation.z)
+      * frameResponse(STEERING_RESPONSE, deltaSeconds);
     const distanceReset = state.distance + Number.EPSILON < this.previousDistance;
     if (distanceReset) {
       this.pedalPhaseRadians = 0;
@@ -686,7 +711,7 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.updatePedestrians(state.distance);
     this.updatePaper(state.distance);
     this.updateShadowRig(playerZ);
-    this.updateCamera(playerZ, laneVelocity, deltaSeconds, state);
+    this.updateCamera(playerZ, deltaSeconds, state);
     const steeringPivot = this.rider.frontAssembly.localToWorld(this.steeringPivot.set(0, 0, 0)).project(this.camera);
     const steeringTip = this.rider.frontAssembly.localToWorld(this.steeringTip.set(0, 0, -1)).project(this.camera);
     const background = this.scene.background;
@@ -696,9 +721,14 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.renderer.render(this.scene, this.camera);
     if (now >= this.nextDebugSnapshotAt) {
       this.nextDebugSnapshotAt = now + 100;
-      this.canvas.dataset.chaseSteer = bodySteer.toFixed(3);
+      this.canvas.dataset.chaseSteer = this.bodySteerRadians.toFixed(3);
       this.canvas.dataset.chaseHandlebarSteer = this.rider.frontAssembly.rotation.y.toFixed(3);
       this.canvas.dataset.chaseHandlebarScreenDx = (steeringTip.x - steeringPivot.x).toFixed(3);
+      this.canvas.dataset.chaseRiderX = this.rider.group.position.x.toFixed(3);
+      this.canvas.dataset.chaseTargetX = targetX.toFixed(3);
+      this.canvas.dataset.chaseLaneVelocity = this.smoothedLaneVelocity.toFixed(3);
+      this.canvas.dataset.chaseBodyRoll = this.rider.group.rotation.z.toFixed(3);
+      this.canvas.dataset.chaseCameraX = this.camera.position.x.toFixed(3);
       this.canvas.dataset.chaseDrawCalls = String(this.renderer.info.render.calls);
       this.canvas.dataset.chaseGeometries = String(this.renderer.info.memory.geometries);
       this.canvas.dataset.chaseTextures = String(this.renderer.info.memory.textures);
@@ -982,15 +1012,14 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     }
   }
 
-  private updateCamera(playerZ: number, laneVelocity: number, deltaSeconds: number, state: ChaseRenderState): void {
+  private updateCamera(playerZ: number, deltaSeconds: number, state: ChaseRenderState): void {
     const targetCameraX = this.rider.group.position.x * 0.27;
-    const cameraEase = this.reducedMotion ? 1 : Math.min(1, deltaSeconds * 5.5);
+    const cameraEase = this.reducedMotion ? 1 : frameResponse(CAMERA_FOLLOW_RESPONSE, deltaSeconds);
     this.camera.position.x += (targetCameraX - this.camera.position.x) * cameraEase;
     const speed = clamp((state.distance + 70) / GOAL_DISTANCE, 0, 1);
     const bob = this.reducedMotion ? 0 : Math.sin(this.animationSeconds * (7 + speed * 3)) * (0.035 + speed * 0.035);
-    const lateralLag = clamp(-laneVelocity * 0.032, -0.5, 0.5);
     this.camera.position.set(
-      this.camera.position.x + lateralLag,
+      this.camera.position.x,
       4.82 + bob,
       playerZ + PLAYER_CAMERA_GAP
     );

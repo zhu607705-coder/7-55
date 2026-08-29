@@ -37,6 +37,10 @@ export type RpgPlayerWalkFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
 export const RPG_PLAYER_FRAME_WIDTH = 96;
 export const RPG_PLAYER_FRAME_HEIGHT = 128;
 export const RPG_PLAYER_DISPLAY_SCALE = 0.65;
+export const RPG_NORTH_UP_CAMPUS_PLAYER_SCALE_MULTIPLIER = 0.5;
+export const RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE = (
+  RPG_PLAYER_DISPLAY_SCALE * RPG_NORTH_UP_CAMPUS_PLAYER_SCALE_MULTIPLIER
+);
 export const RPG_PLAYER_NAME_OFFSET_Y = 54;
 export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = campusRuntimeData.perspective.baseMultiplier;
 export const RPG_PLAYER_WALK_FRAME_MS = 110;
@@ -200,6 +204,12 @@ export function getRpgPlayerNameOffsetY(displayScale = RPG_PLAYER_DISPLAY_SCALE)
 
 export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): void {
   applyRpgPlayerVisualScale(player, RPG_PLAYER_DISPLAY_SCALE);
+}
+
+export function configureNorthUpCampusRpgPlayerSprite(
+  player: Phaser.Physics.Arcade.Sprite
+): void {
+  applyRpgPlayerVisualScale(player, RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE);
 }
 
 /**

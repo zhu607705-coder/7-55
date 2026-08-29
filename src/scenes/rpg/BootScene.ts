@@ -13,11 +13,11 @@ import { CampusPathGrid, type CampusPathPoint } from "./CampusPathfinder";
 import { RpgMovementController } from "./RpgMovementController";
 import { RpgCameraController } from "./RpgCameraController";
 import {
-  configureRpgPlayerSprite,
+  configureNorthUpCampusRpgPlayerSprite,
   ensureRpgPlayerTextures,
   getRpgPlayerNameOffsetY,
   preloadRpgPlayerTextures,
-  RPG_PLAYER_DISPLAY_SCALE,
+  RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE,
   RPG_PLAYER_FRAME_HEIGHT,
   RPG_PLAYER_FRAME_WIDTH,
   RPG_PLAYER_WALK_FPS,
@@ -123,12 +123,12 @@ export class BootScene extends Phaser.Scene {
     const spawn = this.resolveSpawn(state);
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-down-0");
     this.player.setCollideWorldBounds(true).setDepth(this.player.y + 30);
-    configureRpgPlayerSprite(this.player);
+    configureNorthUpCampusRpgPlayerSprite(this.player);
     this.playerAnimator = new RpgPlayerAnimator(this.player, "down");
     this.physics.add.collider(this.player, this.obstacles);
     this.characterName = this.add.text(
       this.player.x,
-      this.player.y - getRpgPlayerNameOffsetY(),
+      this.player.y - getRpgPlayerNameOffsetY(RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE),
       "",
       {
         color: "#fff7df",
@@ -704,7 +704,10 @@ export class BootScene extends Phaser.Scene {
     this.characterName
       .setText(readable && state.actOne.characterNamed ? actOneContent.studentName : "")
       .setVisible(readable && state.actOne.characterNamed)
-      .setPosition(this.player.x, this.player.y - getRpgPlayerNameOffsetY())
+      .setPosition(
+        this.player.x,
+        this.player.y - getRpgPlayerNameOffsetY(RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE)
+      )
       .setDepth(this.player.y + 72);
   }
 
@@ -723,9 +726,9 @@ export class BootScene extends Phaser.Scene {
         angle: this.player.angle,
         normalizedDepth: 0,
         perspectiveMultiplier: 1,
-        displayScale: RPG_PLAYER_DISPLAY_SCALE,
-        displayWidth: Math.round(RPG_PLAYER_FRAME_WIDTH * RPG_PLAYER_DISPLAY_SCALE),
-        displayHeight: Math.round(RPG_PLAYER_FRAME_HEIGHT * RPG_PLAYER_DISPLAY_SCALE),
+        displayScale: RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE,
+        displayWidth: Math.round(RPG_PLAYER_FRAME_WIDTH * RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE),
+        displayHeight: Math.round(RPG_PLAYER_FRAME_HEIGHT * RPG_NORTH_UP_CAMPUS_PLAYER_DISPLAY_SCALE),
         collisionWidth: Number((this.player.body?.width ?? 0).toFixed(2)),
         collisionHeight: Number((this.player.body?.height ?? 0).toFixed(2))
       },

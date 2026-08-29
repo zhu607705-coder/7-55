@@ -68,6 +68,10 @@ import { THEATER_INTERIOR_WARM_ASSET_URLS, TheaterInteriorScene } from "./Theate
 import { createTheaterRuntimePort } from "./TheaterRuntimeContract";
 import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
 import { QIZHEN_LAKE_WARM_ASSET_URLS, QizhenLakeScene } from "./QizhenLakeScene";
+import {
+  QizhenRainRescueCinematic,
+  type QizhenRainRescueCinematicResult
+} from "./QizhenRainRescueCinematic";
 import type { QizhenFishingAction, QizhenFishingResult } from "./QizhenFishingRhythmModel";
 import { CanteenBikeTransitionOverlay } from "./CanteenBikeTransitionOverlay";
 import { CanteenChaseOverlay } from "./CanteenChaseOverlay";
@@ -398,6 +402,7 @@ export function RpgGameHost({
   const [shellRoot, setShellRoot] = useState<HTMLElement | null>(null);
   const [fishingSession, setFishingSession] = useState<QizhenFishingSessionSnapshot | null>(null);
   const [photoSession, setPhotoSession] = useState<QizhenPhotoSessionState | null>(null);
+  const [qizhenRainRescueCinematicOpen, setQizhenRainRescueCinematicOpen] = useState(false);
   const photoSessionRef = useRef<QizhenPhotoSessionState | null>(null);
   const photoSessionOpen = photoSession !== null;
   const shellRef = useRef<HTMLElement | null>(null);
@@ -466,8 +471,10 @@ export function RpgGameHost({
     || (chapter4InteractionBlocked && !chapter4ScenePointerAllowed);
   const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
     || (chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed);
-  inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked || photoSessionOpen;
-  keyboardBlockedRef.current = keyboardBlocked || canteenExclusiveActive || chapter4PhaserKeyboardBlocked || photoSessionOpen;
+  inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked
+    || photoSessionOpen || qizhenRainRescueCinematicOpen;
+  keyboardBlockedRef.current = keyboardBlocked || canteenExclusiveActive || chapter4PhaserKeyboardBlocked
+    || photoSessionOpen || qizhenRainRescueCinematicOpen;
 
   useEffect(() => {
     if (!chapter4MazeActive) {
@@ -722,7 +729,8 @@ export function RpgGameHost({
     if (!game) {
       return undefined;
     }
-    if (inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked || photoSessionOpen) {
+    if (inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked
+      || photoSessionOpen || qizhenRainRescueCinematicOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return undefined;
@@ -742,7 +750,8 @@ export function RpgGameHost({
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [canteenExclusiveActive, chapter4PhaserInputBlocked, chapter4PhaserKeyboardBlocked, events, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
+  }, [canteenExclusiveActive, chapter4PhaserInputBlocked, chapter4PhaserKeyboardBlocked, events, inputBlocked,
+    itemInspectOpen, keyboardBlocked, photoSessionOpen, qizhenRainRescueCinematicOpen]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -1329,7 +1338,15 @@ export function RpgGameHost({
       } else if (event.name === "rpg_qizhen_location_briefing_seen_requested") {
         qizhenController.acknowledgeLocationBriefing();
       } else if (event.name === "rpg_qizhen_entry_requested") {
-        qizhenController.enterLake();
+        const beforeEntry = store.getState();
+        const entered = qizhenController.enterLake();
+        if (!entered && beforeEntry.qizhenLake.phase === "rain_recovery" && !beforeEntry.qizhenLake.rainSafetyCleared) {
+          events.emit("rpg_subtitle", {
+            text: qizhenLakeContent.dock.rainReturnBlocked,
+            tone: "dialogue",
+            durationMs: 4800
+          });
+        }
       } else if (event.name === "rpg_qizhen_leave_requested") {
         qizhenController.leaveLake();
       } else if (event.name === "rpg_qizhen_intro_seen_requested") {
@@ -1345,6 +1362,8 @@ export function RpgGameHost({
         qizhenController.boardKayak();
       } else if (event.name === "rpg_qizhen_safety_officer_requested") {
         qizhenController.requestDockSafetyClearance();
+      } else if (event.name === "rpg_qizhen_rain_rescue_cinematic_requested") {
+        setQizhenRainRescueCinematicOpen(true);
       } else if (event.name === "rpg_qizhen_rain_rescue_completed_requested") {
         const result = qizhenController.completeRainRescue();
         if (result === "accepted") {
@@ -1473,6 +1492,12 @@ export function RpgGameHost({
       }
     });
   }, [canteenController, events, qizhenController, store, theaterController]);
+
+  const completeQizhenRainRescueCinematic = useCallback((result: QizhenRainRescueCinematicResult) => {
+    setQizhenRainRescueCinematicOpen(false);
+    events.emit("rpg_qizhen_rain_rescue_cinematic_completed", { result });
+    window.requestAnimationFrame(() => gameRef.current?.canvas.focus());
+  }, [events]);
 
   const updatePhotoSession = useCallback((next: QizhenPhotoSessionState | null) => {
     photoSessionRef.current = next;
@@ -1681,13 +1706,16 @@ export function RpgGameHost({
 
   useEffect(() => {
     const handleFullscreenKey = (event: KeyboardEvent) => {
-      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4OverlayBlocked && !photoSessionOpen && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4OverlayBlocked
+        && !photoSessionOpen && !qizhenRainRescueCinematicOpen
+        && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         toggleRpgFullscreen();
       }
     };
     window.addEventListener("keydown", handleFullscreenKey);
     return () => window.removeEventListener("keydown", handleFullscreenKey);
-  }, [chapter4OverlayBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen]);
+  }, [chapter4OverlayBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen,
+    qizhenRainRescueCinematicOpen]);
 
   function direction(event: React.PointerEvent<HTMLButtonElement>, x: number, y: number) {
     if (directionStopTimerRef.current !== null) {
@@ -1855,12 +1883,17 @@ export function RpgGameHost({
 
   return (
     <main
-      className={`rpg-stage ${runtimeScene === "campus_bootstrap" || runtimeScene === "campus_qizhen_loop" ? "is-campus-map" : ""} ${runtimeScene === "campus_qizhen_loop" ? "is-qizhen-approach" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "duan_yongping_temporal_maze" ? "is-chapter-four-temporal-maze" : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
+      className={`rpg-stage ${runtimeScene === "campus_bootstrap" || runtimeScene === "campus_qizhen_loop" ? "is-campus-map" : ""} ${runtimeScene === "campus_qizhen_loop" ? "is-qizhen-approach" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "duan_yongping_temporal_maze" ? `is-chapter-four-temporal-maze is-chapter-four-mode-${state.chapter4.mode}` : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
-      data-input-blocked={inputBlocked || itemInspectOpen || chapter4OverlayBlocked || photoSessionOpen ? "true" : "false"}
-      data-keyboard-blocked={keyboardBlocked || chapter4OverlayBlocked || photoSessionOpen ? "true" : "false"}
+      data-input-blocked={inputBlocked || itemInspectOpen || chapter4OverlayBlocked || photoSessionOpen
+        || qizhenRainRescueCinematicOpen ? "true" : "false"}
+      data-keyboard-blocked={keyboardBlocked || chapter4OverlayBlocked || photoSessionOpen
+        || qizhenRainRescueCinematicOpen ? "true" : "false"}
       data-rpg-engine={chapter4StairActive ? "three" : "phaser"}
       data-rpg-engine-reason={chapter4StairActive ? "chapter4_misaligned_stair" : "web_runtime_only"}
+      data-reality-mode={runtimeScene === "duan_yongping_temporal_maze"
+        ? state.chapter4.mode
+        : undefined}
       data-canteen-handoff={canteenStartTransitionActive
         ? "start"
         : canteenChaseRunActive
@@ -1903,6 +1936,10 @@ export function RpgGameHost({
           />
         ) : null}
 
+        {qizhenRainRescueCinematicOpen ? (
+          <QizhenRainRescueCinematic onComplete={completeQizhenRainRescueCinematic} />
+        ) : null}
+
         {chapter4PowerPanelSession ? (
           <ChapterFourPowerPanelGame
             mask={state.chapter4.lightGrid.mask}
@@ -1943,7 +1980,8 @@ export function RpgGameHost({
           </div>
         ) : null}
 
-        {showTaskBar && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
+        {showTaskBar && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen
+          && !qizhenRainRescueCinematicOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
           <QuestTaskBar
             state={state}
             events={events}
@@ -1954,7 +1992,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {photoSessionOpen || chapter4OverlayBlocked ? null : (
+        {qizhenRainRescueCinematicOpen || photoSessionOpen || chapter4OverlayBlocked ? null : (
           <div className="rpg-system-actions">
             <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
             <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
@@ -1989,7 +2027,9 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "qizhen_lake" && !fishingSession && !photoSessionOpen && ["dock_outfitting", "boarding_tutorial", "lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
+        {runtimeScene === "qizhen_lake" && !fishingSession && !photoSessionOpen
+          && !qizhenRainRescueCinematicOpen
+          && ["dock_outfitting", "boarding_tutorial", "lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
           <RpgRealityModeToggle
             className="rpg-qizhen-mode-toggle"
             mode={state.qizhenLake.mode}
@@ -2054,7 +2094,7 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {!chapter4OverlayBlocked && !fishingSession && !photoSessionOpen && (runtimeScene === "library_interior"
+        {!chapter4OverlayBlocked && !fishingSession && !photoSessionOpen && !qizhenRainRescueCinematicOpen && (runtimeScene === "library_interior"
           || runtimeScene === "dorm_hub"
           || runtimeScene === "canteen_interior"
           || (runtimeScene === "theater_interior" && !["spotlight_hunt", "reversal"].includes(state.theaterHunt.phase))
@@ -2076,10 +2116,13 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4OverlayBlocked || Boolean(fishingSession) || photoSessionOpen}
+          blocked={inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4OverlayBlocked
+            || Boolean(fishingSession) || photoSessionOpen || qizhenRainRescueCinematicOpen}
         />
 
-        {state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
+        {state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
+          && !photoSessionOpen && !qizhenRainRescueCinematicOpen
+          && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
             <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼 A 左收线、S 提竿、D 右收线按钮">
               <button
@@ -2155,7 +2198,8 @@ export function RpgGameHost({
               <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
             </nav>
           )
-        ) : state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked ? (
+        ) : state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
+          && !qizhenRainRescueCinematicOpen ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
             aria-label="RPG操作键，键盘使用 WASD 移动和空格键交互"

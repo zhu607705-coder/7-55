@@ -245,6 +245,15 @@ export interface RpgRuntimeDebugState {
         retryNotBeforeMs: number;
       }>;
     };
+    realityVisuals?: {
+      renderedMode: "light" | "dark";
+      darkLayerAlpha: number;
+      lightLayerAlpha: number;
+      atmosphereDepth: number;
+      targetDepth: number;
+      activeTargetMarkerIds: readonly string[];
+      dormantTargetMarkerIds: readonly string[];
+    };
     runtimeEntities?: ReadonlyArray<{
       targetId: string;
       entityId: string;
@@ -293,6 +302,9 @@ export interface RpgRuntimeDebugState {
       targetHoldMs: number;
       predictedPlayerPosition: { x: number; y: number } | null;
       pursuitBand: "catch_up" | "tracking" | "close" | null;
+      audioBand: "catch_up" | "tracking" | "close" | null;
+      closeVoicePlayed: boolean;
+      floorVoicePlayed: boolean;
       pursuitSpeed: number | null;
       guardToPlayerRouteDistance: number | null;
       contactHoldMs: number;

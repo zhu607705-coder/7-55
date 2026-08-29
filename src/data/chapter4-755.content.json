@@ -1198,11 +1198,19 @@
     "chase.started": [
       {
         "speaker": "guard",
-        "text": "同学，站住。"
-      },
+        "text": "同学，站住。离旧钟远一点。"
+      }
+    ],
+    "chase.close": [
       {
-        "speaker": "system",
-        "text": "清楼流程启动。"
+        "speaker": "guard",
+        "text": "我看到你了。停下。"
+      }
+    ],
+    "chase.floor_changed": [
+      {
+        "speaker": "guard",
+        "text": "别往楼上跑。现在停下。"
       }
     ],
     "chase.failed": [

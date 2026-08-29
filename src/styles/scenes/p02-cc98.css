@@ -2758,6 +2758,221 @@
   margin: 0;
 }
 
+.cc98-theater-archive {
+  background: #101d31;
+  border: 3px solid #b9873d;
+  box-shadow: 4px 4px 0 #765a35;
+  color: #f7edcf;
+  display: grid;
+  gap: 10px;
+  margin: 12px;
+  padding: 10px;
+}
+
+.cc98-theater-archive-heading {
+  align-items: center;
+  border-bottom: 2px solid #675133;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 7px;
+}
+
+.cc98-theater-archive-heading > span {
+  color: #f1bd62;
+  font-size: var(--fs-label);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.cc98-theater-archive-heading > strong {
+  background: #702f37;
+  border: 1px solid #ca7c72;
+  color: #fff0d5;
+  font-size: 10px;
+  padding: 3px 6px;
+}
+
+.cc98-theater-poster-card {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 116px minmax(0, 1fr);
+}
+
+.cc98-theater-poster-card > figure {
+  background: #07101d;
+  border: 2px solid #d2a052;
+  box-shadow: 3px 3px 0 #050b13;
+  margin: 0;
+  padding: 3px;
+}
+
+.cc98-theater-poster-card img {
+  aspect-ratio: 2 / 3;
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  object-fit: cover;
+  width: 100%;
+}
+
+.cc98-theater-poster-copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cc98-theater-poster-copy > small {
+  color: #bcad91;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.cc98-theater-poster-copy > h3 {
+  color: #f7c76f;
+  font-size: 20px;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.cc98-theater-poster-copy > p {
+  color: #f7edcf;
+  font-size: var(--fs-caption);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cc98-theater-poster-copy > dl {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.cc98-theater-poster-copy > dl > div {
+  border-top: 1px solid #4b4134;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: 50px minmax(0, 1fr);
+  padding-top: 4px;
+}
+
+.cc98-theater-poster-copy dt,
+.cc98-theater-poster-copy dd {
+  font-size: 9px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.cc98-theater-poster-copy dt {
+  color: #bcad91;
+}
+
+.cc98-theater-poster-copy dd {
+  color: #fff5db;
+  font-weight: 800;
+}
+
+.cc98-theater-archive-toggle {
+  align-items: center;
+  background: #f3e3bd;
+  border: 3px solid #8d632b;
+  color: #352716;
+  display: flex;
+  font-size: var(--fs-caption);
+  font-weight: 900;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 6px 9px;
+  width: 100%;
+}
+
+.cc98-theater-archive-toggle:hover,
+.cc98-theater-archive-toggle:focus-visible {
+  background: #ffeec6;
+  outline: 2px solid #f4c76a;
+  outline-offset: 2px;
+}
+
+.cc98-theater-archive-toggle > i {
+  font-size: 20px;
+  font-style: normal;
+  line-height: 1;
+}
+
+.cc98-theater-archive-details {
+  border-top: 2px solid #675133;
+  display: grid;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.cc98-theater-archive-details > section {
+  display: grid;
+  gap: 7px;
+}
+
+.cc98-theater-archive-details h4 {
+  color: #f1bd62;
+  font-size: var(--fs-label);
+  margin: 0;
+}
+
+.cc98-theater-archive-details p,
+.cc98-theater-archive-details li {
+  color: #eee1c4;
+  font-size: var(--fs-caption);
+  line-height: 1.6;
+}
+
+.cc98-theater-archive-details p {
+  margin: 0;
+}
+
+.cc98-theater-archive-details ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.cc98-theater-fact-grid,
+.cc98-theater-credit-list {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+}
+
+.cc98-theater-fact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cc98-theater-fact-grid > div,
+.cc98-theater-credit-list > div {
+  background: #172941;
+  border: 1px solid #4d6178;
+  display: grid;
+  gap: 3px;
+  padding: 7px;
+}
+
+.cc98-theater-fact-grid dt,
+.cc98-theater-credit-list dt {
+  color: #b9ad94;
+  font-size: 9px;
+}
+
+.cc98-theater-fact-grid dd,
+.cc98-theater-credit-list dd {
+  color: #fff4d5;
+  font-size: var(--fs-caption);
+  font-weight: 800;
+  margin: 0;
+}
+
+.cc98-theater-credit-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .cc98-ticket-commission {
   background: #fff8d9;
   border: 3px solid #173f78;

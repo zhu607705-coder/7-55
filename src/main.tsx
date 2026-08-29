@@ -15,6 +15,8 @@ import { getRpgRuntimeWarmupSnapshot } from "./scenes/rpg/RpgRuntimePreload";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
 import { getChapterThreeOpeningRuntimeSnapshot } from "./components/ChapterThreeOpeningRuntime";
+import { getQizhenWeatherControlRuntimeSnapshot } from "./scenes/phone/P07_Weather/QizhenWeatherControlRuntime";
+import { audioDirector } from "./modules/AudioDirector";
 import "./styles/pixel-font.css";
 import "./styles.css";
 
@@ -68,6 +70,8 @@ function summarizeGameState(state: GameState) {
     presentation: getPresentationRuntimeSnapshot(),
     chapterThreeOpening: getChapterThreeOpeningRuntimeSnapshot(),
     endingGame: getEndingRuntimeSnapshot(),
+    qizhenWeatherControl: getQizhenWeatherControlRuntimeSnapshot(),
+    audio: audioDirector.getDebugState(),
     rpgRuntime: getRpgRuntimeDebugState(),
     rpgWarmup: getRpgRuntimeWarmupSnapshot(),
     canteenChase: getCanteenChaseSnapshot(),
@@ -131,7 +135,11 @@ window.render_game_to_text = () => JSON.stringify(summarizeGameState(gameStore.g
 applyDeveloperCheckpointFromUrl(gameStore, window.location);
 
 if (import.meta.env.DEV) {
-  (window as unknown as Record<string, unknown>).__game = { store: gameStore, bus: eventBus };
+  (window as unknown as Record<string, unknown>).__game = {
+    store: gameStore,
+    bus: eventBus,
+    audio: audioDirector
+  };
 }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

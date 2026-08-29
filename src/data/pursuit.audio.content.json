@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "chapterId": "cross-chapter-pursuit-audio",
+  "models": {
+    "music": "music-2.6",
+    "speech": "speech-2.8-hd"
+  },
+  "voices": {
+    "qizhen_narrator": {
+      "id": "English_expressive_narrator",
+      "language": "English",
+      "basePitch": -4
+    },
+    "chapter4_guard": {
+      "id": "English_Trustworthy_Man",
+      "language": "English",
+      "basePitch": 0
+    }
+  },
+  "music": [
+    {
+      "cue": "qizhen_swan_chase",
+      "asset": "music_qizhen_swan_chase",
+      "path": "pursuit/music/music_qizhen_swan_chase.mp3",
+      "durationSeconds": 28,
+      "prompt": "Instrumental chase music for a pixel-art kayak escape on a university lake. Urgent water percussion, alternating paddle pulse, low cello ostinato, brief woodwind warning figures, and a clear looping cadence. Build pressure without becoming horror music. Keep the center clear for spoken dialogue.",
+      "genre": "cinematic game soundtrack",
+      "mood": "urgent, focused, aquatic",
+      "instruments": "water percussion, low cello, muted toms, bass clarinet, short woodwind accents",
+      "bpm": 118,
+      "avoid": "vocals, choir, lyrics, EDM drop, heroic fanfare, horror drones, abrupt ending",
+      "useCase": "looping gameplay chase bed",
+      "structure": "two-bar paddle pulse intro, repeating pursuit loop, brief warning lift, seamless return cadence"
+    }
+  ],
+  "lines": [
+    {
+      "key": "qizhen_swan_start",
+      "asset": "vo_pursuit_qizhen_swan_start",
+      "path": "pursuit/voice/vo_pursuit_qizhen_swan_start.mp3",
+      "speaker": "narrator",
+      "voiceRole": "qizhen_narrator",
+      "maxDurationMs": 3400,
+      "deliveryPromptZh": "黑天鹅冲入直河道时的即时旁白，语气紧凑清楚，先说明开闸，再给一个方向，不喊叫。",
+      "subtitleZh": "围栏开了。朝左岸划。",
+      "voiceTextEn": "The gate is open. Paddle for the left bank.",
+      "speed": 1.03,
+      "pitch": -4,
+      "emotion": "fearful"
+    },
+    {
+      "key": "qizhen_swan_warning",
+      "asset": "vo_pursuit_qizhen_swan_warning",
+      "path": "pursuit/voice/vo_pursuit_qizhen_swan_warning.mp3",
+      "speaker": "narrator",
+      "voiceRole": "qizhen_narrator",
+      "maxDurationMs": 3600,
+      "deliveryPromptZh": "第一次冲刺预警，语气克制而紧迫，指出黑天鹅正在对准船尾，并提醒保持交替划桨。",
+      "subtitleZh": "它正在船尾对准航线。继续交替划桨。",
+      "voiceTextEn": "It is lining up behind you. Keep alternating.",
+      "speed": 1.04,
+      "pitch": -4,
+      "emotion": "fearful"
+    },
+    {
+      "key": "qizhen_swan_final",
+      "asset": "vo_pursuit_qizhen_swan_final",
+      "path": "pursuit/voice/vo_pursuit_qizhen_swan_final.mp3",
+      "speaker": "narrator",
+      "voiceRole": "qizhen_narrator",
+      "maxDurationMs": 3200,
+      "deliveryPromptZh": "接近左岸终点时的短句，语气仍紧张，但不给庆祝感，只要求继续保持节奏。",
+      "subtitleZh": "左岸快到了。稳住节奏。",
+      "voiceTextEn": "The left bank is close. Hold the rhythm.",
+      "speed": 1.04,
+      "pitch": -4,
+      "emotion": "fearful"
+    },
+    {
+      "key": "chapter4_guard_start",
+      "asset": "vo_pursuit_chapter4_guard_start",
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_start.mp3",
+      "speaker": "guard",
+      "voiceRole": "chapter4_guard",
+      "maxDurationMs": 3200,
+      "deliveryPromptZh": "保安发现主角动了旧钟后立即喝止，声音近、清晰、严厉，句子短，不使用广播腔。",
+      "subtitleZh": "同学，站住。离旧钟远一点。",
+      "voiceTextEn": "Stop! Step away from the clock.",
+      "speed": 1.05,
+      "pitch": 0,
+      "emotion": "angry"
+    },
+    {
+      "key": "chapter4_guard_stair",
+      "asset": "vo_pursuit_chapter4_guard_stair",
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_stair.mp3",
+      "speaker": "guard",
+      "voiceRole": "chapter4_guard",
+      "maxDurationMs": 3100,
+      "deliveryPromptZh": "主角冲上楼梯后，保安从楼梯后方追喊，保持同一声线和距离感，不拖长尾音。",
+      "subtitleZh": "别往楼上跑。现在停下。",
+      "voiceTextEn": "Do not run upstairs. Stop now.",
+      "speed": 1.06,
+      "pitch": 0,
+      "emotion": "angry"
+    },
+    {
+      "key": "chapter4_guard_close",
+      "asset": "vo_pursuit_chapter4_guard_close",
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_close.mp3",
+      "speaker": "guard",
+      "voiceRole": "chapter4_guard",
+      "maxDurationMs": 2500,
+      "deliveryPromptZh": "保安第一次逼近抓捕距离时的短促喝止，声音明确有压迫感，只说一次。",
+      "subtitleZh": "我看到你了。停下。",
+      "voiceTextEn": "I can see you. Stop!",
+      "speed": 1.08,
+      "pitch": 0,
+      "emotion": "angry"
+    }
+  ]
+}
