@@ -2243,7 +2243,10 @@ export function activateRpgScene(game: Phaser.Game, target: string): void {
       game.scene.stop(sceneKey);
     }
   });
-  if (!game.scene.isActive(target)) {
+  const targetIsRunning = game.scene.isActive(target)
+    || game.scene.isPaused(target)
+    || game.scene.isSleeping(target);
+  if (!targetIsRunning) {
     game.scene.start(target);
   }
 }

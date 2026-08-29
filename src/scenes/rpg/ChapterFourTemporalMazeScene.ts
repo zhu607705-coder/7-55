@@ -575,6 +575,7 @@ interface PreparedForeground {
 interface PreparedPlateGroup {
   signature: string;
   plateIds: Readonly<Record<StoryFloor, ChapterFour755PlateId>>;
+  preparedStoryFloors: StoryFloor[];
   colliders: CollisionRect[];
   foregrounds: PreparedForeground[];
   deferredFailures: string[];
@@ -1392,6 +1393,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private bindBridgeEvents(): void {
+    this.events.on(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this);
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
       if (event.name === "rpg_chapter4_755_intent_resolved") {
         this.handleIntentResolved(event.payload);
@@ -1461,6 +1463,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         else if (!this.isStoryInputLocked() && !this.hostPowerPanelOpen) this.interactionRequested = true;
       }
     }, () => {
+      this.events.off(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this);
       this.warmupLoadGeneration += 1;
       this.phaseLoadCancelled = true;
       for (const settle of [...this.pendingWarmupSettlers]) settle();
@@ -1483,8 +1486,21 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.storyPresentation = "idle";
       this.syncStoryInputLock(true);
       this.feedbackTimer?.remove(false);
+      this.clearProjectedTargetVisuals();
       clearRpgRuntimeDebugState();
     });
+  }
+
+  private handleSceneResume(): void {
+    const requiredPhase = chapterFourWarmupPhaseForState(this.bridge.getState());
+    if (!this.isWarmupPhaseLoaded(requiredPhase)) {
+      this.requestWarmupPhase(requiredPhase, "required");
+      return;
+    }
+    this.createBaseBackgrounds();
+    this.syncProjection(true);
+    this.syncExternalFloorWhenIdle();
+    this.refreshProximity();
   }
 
   private refreshLoadedChapterFourAssets(): void {
@@ -2172,6 +2188,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.requestWarmupPhase(requiredWarmupPhase, "required");
       return;
     }
+    this.createBaseBackgrounds();
     const next = selectChapterFourMazeProjection(state);
     const signature = JSON.stringify({
       phase: next.phase,
@@ -2311,15 +2328,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
 
     try {
-      FLOORS.forEach((floor, index) => {
+      prepared.preparedStoryFloors.forEach((storyFloor, index) => {
+        const floor = FLOORS.find((candidate) => candidate.storyFloor === storyFloor);
+        if (!floor) throw new Error(`floor_missing:${storyFloor}`);
         const plateId = prepared.plateIds[floor.storyFloor];
         const background = this.backgrounds.get(floor.displayFloor);
-        if (!background) {
-          if (floor.displayFloor === this.currentFloor) {
-            throw new Error(`background_missing:${floor.displayFloor}`);
-          }
-          return;
-        }
+        if (!background) throw new Error(`background_missing:${floor.displayFloor}`);
         this.injectPlateTransactionFault({
           point: "background_set_texture",
           index,
@@ -2405,7 +2419,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       sourceAnnotationId: local.sourceAnnotationId
     })));
     this.appliedPlateSignature = prepared.signature;
-    this.appliedPlateIds = prepared.plateIds;
+    this.appliedPlateIds = Object.freeze({
+      ...this.appliedPlateIds,
+      ...Object.fromEntries(prepared.preparedStoryFloors.map((storyFloor) => (
+        [storyFloor, prepared.plateIds[storyFloor]]
+      )))
+    }) as Readonly<Record<StoryFloor, ChapterFour755PlateId>>;
     this.appliedCollisionRects = [...staticRects, ...prepared.colliders];
     this.appliedCollisionIds = this.appliedCollisionRects.map((rect) => rect.id);
     this.appliedOcclusionIds = staged.foregrounds.map((visual) => visual.id);
@@ -2644,6 +2663,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const deferredFailures: string[] = [];
     const colliders: CollisionRect[] = [];
     const foregrounds: PreparedForeground[] = [];
+    const preparedStoryFloors: StoryFloor[] = [];
+    const committedDisplayFloor = displayFloorFor(this.bridge.getState().chapter4.floor);
     for (const floor of FLOORS) {
       const plateId = plateIds[floor.storyFloor];
       const asset = CHAPTER_FOUR_755_PLATES[plateId];
@@ -2652,11 +2673,13 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         continue;
       }
       if (!this.textures.exists(plateId)) {
-        if (floor.displayFloor === this.currentFloor) {
+        if (floor.displayFloor === this.currentFloor
+          || floor.displayFloor === committedDisplayFloor) {
           fatal.push(`plate_missing:${floor.storyFloor}:${plateId}`);
         }
         continue;
       }
+      preparedStoryFloors.push(floor.storyFloor);
       const source = this.textures.get(plateId).getSourceImage() as { width?: number; height?: number };
       if (asset.sourceSize.width !== FLOOR_SIZE.width || asset.sourceSize.height !== FLOOR_SIZE.height
         || source.width !== FLOOR_SIZE.width || source.height !== FLOOR_SIZE.height) {
@@ -2683,6 +2706,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
 
     for (const delta of LAYOUT.physicalDeltas) {
+      if (!preparedStoryFloors.includes(delta.storyFloor)) continue;
       const displayFloor = displayFloorFor(delta.storyFloor);
       if (!displayFloor) {
         fatal.push(`physical_delta_floor:${delta.id}`);
@@ -2746,7 +2770,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.plateContractFailures.add(`plate_group_rejected:${signature}`);
       return null;
     }
-    return { signature, plateIds, colliders, foregrounds, deferredFailures };
+    return {
+      signature,
+      plateIds,
+      preparedStoryFloors,
+      colliders,
+      foregrounds,
+      deferredFailures
+    };
   }
 
   private rebuildDevelopmentOverlays(): void {
@@ -3500,7 +3531,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const residualVisible = interactive
       && pieceVisible
       && (state.chapter4.mode === "dark" || this.storyPresentation === "room204_projection");
-    this.room204ResidualSprites.forEach((sprite) => sprite.setVisible(residualVisible));
+    this.room204ResidualSprites.forEach((sprite) => sprite
+      .setVisible(residualVisible)
+      .setBlendMode(state.chapter4.mode === "dark" ? Phaser.BlendModes.ADD : Phaser.BlendModes.NORMAL)
+      .setDepth(state.chapter4.mode === "dark" ? REALITY_MODE_TARGET_DEPTH : PLAYER_DEPTH_BASE - 200));
     for (const pieceId of ROOM204_PIECE_ORDER) {
       const runtimePiece = this.room204RuntimePieces.get(pieceId);
       if (!runtimePiece) continue;
@@ -3593,6 +3627,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private resolveNearbyRoom204PieceId(): ChapterFourRoom204PieceId | null {
     const state = this.bridge.getState();
     if (state.chapter4.phase !== "room204_restore"
+      || state.chapter4.mode !== "light"
       || this.currentFloor !== 2
       || this.room204SelectedPieceId) return null;
     const floor = getFloor(2);
@@ -5322,11 +5357,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private refreshProjectedTargetVisuals(): void {
-    for (const visual of this.targetVisuals.values()) {
-      this.tweens.killTweensOf(visual);
-      visual.destroy(true);
-    }
-    this.targetVisuals.clear();
+    this.clearProjectedTargetVisuals();
     const targets = this.resolveProjectedTargets();
     const showBounds = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("debugTargets") === "1";
@@ -5360,6 +5391,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.targetVisuals.set(target.contract.id, container);
     }
     this.renderedTargetIds = targets.map((target) => target.contract.id);
+  }
+
+  private clearProjectedTargetVisuals(): void {
+    for (const visual of this.targetVisuals.values()) {
+      this.tweens.killTweensOf(visual);
+      visual.destroy(true);
+    }
+    this.targetVisuals.clear();
+    this.renderedTargetIds = [];
   }
 
   private createElevatorVisuals(): void {
@@ -7703,17 +7743,40 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private syncExternalFloorWhenIdle(): void {
     if (this.pendingMove || this.elevatorPhase !== "idle") return;
-    const stateFloor = displayFloorFor(this.bridge.getState().chapter4.floor);
+    const state = this.bridge.getState();
+    const stateFloor = displayFloorFor(state.chapter4.floor);
     if (!stateFloor || stateFloor === this.currentFloor) return;
-    this.currentFloor = stateFloor;
+    if (!this.isFloorPresentationReady(stateFloor, state)) return;
+    const previousFloor = getFloor(this.currentFloor);
     const floor = getFloor(stateFloor);
-    const spawn = floor.safeSpawn;
+    const stairArrival = state.chapter4.phase === "room204_restore"
+      && previousFloor.storyFloor === "A3"
+      && floor.storyFloor === "A2"
+      && hasChapterFourFact(state, "misaligned_stair_solved")
+        ? floor.stairLandings.find((landing) => landing.targetStoryFloor === "A3")?.arrivalPosition
+        : undefined;
+    const spawn = stairArrival
+      ? { ...stairArrival, facing: "down" as const }
+      : floor.safeSpawn;
+    this.currentFloor = stateFloor;
     this.player.setPosition(floor.offsetX + spawn.x, spawn.y)
       .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + spawn.y);
     this.animator.setFacing(spawn.facing ?? "down");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
     this.refreshProximity();
+  }
+
+  private isFloorPresentationReady(displayFloor: DisplayFloor, state: GameState): boolean {
+    const floor = getFloor(displayFloor);
+    const expectedProjection = selectChapterFourMazeProjection(state);
+    const expectedPlateId = plateForFloor(expectedProjection, floor.storyFloor);
+    const background = this.backgrounds.get(displayFloor);
+    return this.appliedPlateSignature.length > 0
+      && this.projection.phase === expectedProjection.phase
+      && this.appliedPlateIds[floor.storyFloor] === expectedPlateId
+      && Boolean(background?.active)
+      && background?.texture.key === expectedPlateId;
   }
 
   private handleInventoryDrop(payload?: Record<string, unknown>): void {
