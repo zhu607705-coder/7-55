@@ -8,6 +8,7 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 自动验证：`npm run typecheck`、第四章 story、runtime（`1095` 项）、warmup（`77` 项）、topology（`2769` 项）、effective interactions（`435` 项）、assets、Task 14（`365` 项）全部通过；关键玩法套件 `11/11` 通过，并通过 3.5 章 `48` 种证据完成顺序、深浅模式 `180` 项顺序验证、启真湖雨天安全、分级节奏钓取、黑天鹅追逐、第三章追逐音频、RPG 朝向无关、人物帧与紫金港地图验证。
 - 音频与发布：第三章 `77/77` 音频合同和 3.5 章 `11` 个录音资产验证通过；生产构建通过。`build:single` 与 `verify:single` 通过，`demo/index.html` 为 `257651801` 字节，含 `2` 个内联脚本和 `1` 个内联样式。
 - 浏览器验证：Playwright 驱动真实 Chromium 检查 `390×844` 手机首页、`1440×900` 剧院入口和第四章入口；三处均脱离加载占位，关卡导航和 RPG 画布正确，console error 为 `0`。项目自带 `verify-browser-smoke.mjs` 在本机 Chrome 的同步截图调用达到 `60s` 超时，随后改用项目外 Playwright 会话完成等价验证；临时快照和日志已移出工作区。
+- CI 修复：首次推送后的 GitHub Web CI 在关键玩法套件内运行 `audio:pursuit:verify` 时找不到 `ffprobe`。根因是工作流把 FFmpeg 安装放在关键套件之后。现已将 FFmpeg/ffprobe 准备步骤移动到关键套件之前；本地关键套件和完整音频合同已通过，最终远端状态以后续 GitHub Actions 运行结果为准。
 - Git 状态：本节记录于本地功能提交 `1db10e3` 与远端 `866ae84` 的合并过程中；此处尚未声明推送或远端 CI 完成，最终状态以合并提交、远端 SHA 和 GitHub Actions 为准。
 
 ## 2026-08-29 第三章北向校园地图主角缩小 50%

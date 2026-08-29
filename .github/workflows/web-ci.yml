@@ -41,13 +41,6 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Verify critical gameplay behavior
-        run: node scripts/run-test-suite.mjs critical
-
-      - name: Verify extended authoring contracts
-        if: github.event_name == 'workflow_dispatch'
-        run: node scripts/run-test-suite.mjs extended
-
       - name: Ensure FFmpeg audio validation tools
         run: |
           if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
@@ -56,6 +49,13 @@ jobs:
           fi
           ffmpeg -version
           ffprobe -version
+
+      - name: Verify critical gameplay behavior
+        run: node scripts/run-test-suite.mjs critical
+
+      - name: Verify extended authoring contracts
+        if: github.event_name == 'workflow_dispatch'
+        run: node scripts/run-test-suite.mjs extended
 
       - name: Verify Chapter 3 audio contract
         run: npm run audio:chapter3:verify
