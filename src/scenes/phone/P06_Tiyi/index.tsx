@@ -6,6 +6,7 @@ import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { kit } from "../../../modules/GameKit";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
+import { ActOneVirtualRun } from "./ActOneVirtualRun";
 import { RouteAuditPanel } from "./RouteAuditPanel";
 import "../../../styles/library-v2-phone.css";
 
@@ -19,6 +20,7 @@ const LOAD_DELAY_MS = 1400;
  */
 export function TiyiScene({ state, router, events }: SceneComponentProps) {
   const [phase, setPhase] = useState<"loading" | "main" | "crashing">("loading");
+  const [virtualRunOpen, setVirtualRunOpen] = useState(false);
   const [entryAllowed] = useState(() => kit.network.canOpenTiyi());
   const { flags } = state;
   const finalsPhase = state.ui.libraryFinalsPhase;
@@ -72,15 +74,20 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
     kit.flags.toast("获得第 2 位：7", "task");
   }
 
-  function startActOneExercise() {
-    const alreadyStarted = state.actOne.exerciseStarted;
-    if (!kit.actOne.startExercise()) {
+  function openActOneExercise() {
+    if (state.actOne.exerciseStarted) {
+      kit.flags.toast("课外锻炼已经在记录。", "system");
+      return;
+    }
+    if (!state.actOne.characterNamed) {
       kit.flags.toast("锻炼对象没有姓名。先去给他打电话。", "system");
       return;
     }
-    if (alreadyStarted) {
-      kit.flags.toast("课外锻炼已经在记录。", "system");
-    }
+    setVirtualRunOpen(true);
+  }
+
+  function completeActOneExercise(): boolean {
+    return kit.actOne.startExercise();
   }
 
   if (phase !== "main") {
@@ -122,15 +129,22 @@ export function TiyiScene({ state, router, events }: SceneComponentProps) {
           type="button"
           className={`tiyi-act1-exercise-button ${state.actOne.exerciseStarted ? "is-active" : ""}`}
           disabled={state.actOne.exerciseStarted}
-          onClick={startActOneExercise}
+          onClick={openActOneExercise}
         >
-          <strong>{state.actOne.exerciseStarted ? "课外锻炼进行中" : "开始课外锻炼"}</strong>
+          <strong>{state.actOne.exerciseStarted ? "课外锻炼进行中" : "开始虚拟定位"}</strong>
           {!state.actOne.exerciseStarted ? (
             <span aria-live="polite">{state.actOne.characterNamed
-              ? "参加者已确认"
+              ? "10 分钟跑完 3 km · 点击生成轨迹"
               : "请先在部门黄页确认参加者"}</span>
           ) : null}
         </button>
+      ) : null}
+      {virtualRunOpen ? (
+        <ActOneVirtualRun
+          participantName="林星宇"
+          onClose={() => setVirtualRunOpen(false)}
+          onComplete={completeActOneExercise}
+        />
       ) : null}
       <PhoneNavButton kind="exit" className="app-back px-btn paper" onClick={() => router.goTo("phone_home")} label="退出浙大体艺，返回手机主页" />
     </section>

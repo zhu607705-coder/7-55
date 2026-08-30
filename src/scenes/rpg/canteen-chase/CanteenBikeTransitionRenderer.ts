@@ -37,9 +37,18 @@ const PALETTE = Object.freeze({
   canteenBrickDark: 0x784033,
   canteenGlass: 0x426a77,
   theaterStone: 0xc9c1ad,
+  theaterStoneLight: 0xeee5ce,
+  theaterStoneShadow: 0xa69f8c,
   theaterFrame: 0xe4dfd0,
+  theaterBrick: 0xb97848,
+  theaterBrickDark: 0x87523a,
   theaterGlass: 0x284856,
+  theaterGlassHighlight: 0x3a718b,
   theaterDark: 0x17272d,
+  theaterHedge: 0x4d7738,
+  theaterHedgeLight: 0x72a14a,
+  lampMetal: 0x26333a,
+  lampGlow: 0xf0d486,
   trunk: 0x674a32,
   paper: 0xe9d8a8,
   paperStain: 0x9c6d46,
@@ -225,6 +234,7 @@ function buildBrakeMacroFork(primitives: ThreePrimitiveCache): THREE.Group {
 
 function buildTree(primitives: ThreePrimitiveCache, scale = 1): THREE.Group {
   const group = new THREE.Group();
+  group.name = "canteen-transition-roadside-tree";
   const trunk = box(primitives, 0.5, 2.5, 0.5, PALETTE.trunk, 0, 1.25, 0);
   const crown = new THREE.Mesh(
     primitives.icosahedron(1.55, 1),
@@ -267,7 +277,11 @@ function buildPaper(primitives: ThreePrimitiveCache): THREE.Group {
   return group;
 }
 
-function addRoadEnvironment(primitives: ThreePrimitiveCache, root: THREE.Group): void {
+function addRoadEnvironment(
+  primitives: ThreePrimitiveCache,
+  root: THREE.Group,
+  options: { clearDestinationFacade?: boolean } = {}
+): void {
   root.add(
     plane(primitives, 54, 52, PALETTE.grass, 0, -0.035, -7),
     plane(primitives, 10.8, 52, PALETTE.road, 0, 0, -7),
@@ -284,7 +298,8 @@ function addRoadEnvironment(primitives: ThreePrimitiveCache, root: THREE.Group):
   for (const side of [-1, 1]) {
     for (let index = 0; index < 5; index += 1) {
       const tree = buildTree(primitives, 0.82 + index % 2 * 0.08);
-      tree.position.set(side * (9.8 + index % 2), 0, 4 - index * 7.4);
+      const facadeClearance = options.clearDestinationFacade && index === 0 ? 3.8 : 0;
+      tree.position.set(side * (9.8 + index % 2 + facadeClearance), 0, 4 - index * 7.4);
       root.add(tree);
     }
   }
@@ -317,36 +332,170 @@ function buildCanteenWorld(primitives: ThreePrimitiveCache): THREE.Group {
   return root;
 }
 
+function buildTheaterWindowGrid(
+  primitives: ThreePrimitiveCache,
+  width: number,
+  height: number,
+  columns: number,
+  rows: number
+): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "canteen-transition-theater-window-grid";
+  group.add(
+    box(primitives, width + 0.34, height + 0.34, 0.18, PALETTE.theaterBrickDark, 0, 0, -0.09),
+    box(primitives, width, height, 0.16, PALETTE.theaterGlass, 0, 0, 0.02, true),
+    box(primitives, width * 0.42, height * 0.86, 0.04, PALETTE.theaterGlassHighlight, -width * 0.2, 0, 0.13, true)
+  );
+  for (let column = 1; column < columns; column += 1) {
+    const x = -width / 2 + width * column / columns;
+    group.add(box(primitives, 0.14, height, 0.22, PALETTE.theaterDark, x, 0, 0.14));
+  }
+  for (let row = 1; row < rows; row += 1) {
+    const y = -height / 2 + height * row / rows;
+    group.add(box(primitives, width, 0.14, 0.22, PALETTE.theaterDark, 0, y, 0.14));
+  }
+  return group;
+}
+
+function buildTheaterWing(primitives: ThreePrimitiveCache, side: -1 | 1): THREE.Group {
+  const group = new THREE.Group();
+  group.name = side < 0
+    ? "canteen-transition-theater-left-wing"
+    : "canteen-transition-theater-right-wing";
+  group.position.x = side * 10.15;
+  group.add(
+    box(primitives, 7.5, 8.6, 5.8, PALETTE.theaterBrick, 0, 4.3, -2.05),
+    box(primitives, 7.9, 0.42, 6.2, PALETTE.theaterBrickDark, 0, 8.78, -2.05),
+    box(primitives, 7.55, 0.38, 0.42, PALETTE.theaterStoneShadow, 0, 0.22, 1.02),
+    box(primitives, 0.64, 8.9, 0.78, PALETTE.theaterStoneLight, side * 3.55, 4.45, 1.12),
+    box(primitives, 0.46, 8.5, 0.66, PALETTE.theaterFrame, -side * 3.46, 4.25, 1.08)
+  );
+  const windows = buildTheaterWindowGrid(primitives, 4.72, 6.4, 2, 3);
+  windows.position.set(0, 4.65, 1.08);
+  group.add(windows);
+  for (const y of [1.5, 3.6, 5.7, 7.8]) {
+    group.add(box(primitives, 5.28, 0.2, 0.42, PALETTE.theaterStoneShadow, 0, y, 1.18));
+  }
+  return group;
+}
+
+function buildTheaterEntrance(primitives: ThreePrimitiveCache): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "canteen-transition-theater-central-entrance";
+  group.add(
+    box(primitives, 13.2, 8.75, 5.9, PALETTE.theaterStone, 0, 4.38, -2.1),
+    box(primitives, 12.15, 7.05, 0.28, PALETTE.theaterDark, 0, 3.85, 1.03, true),
+    box(primitives, 14.3, 0.48, 1.5, PALETTE.theaterStoneLight, 0, 8.72, 0.58),
+    box(primitives, 15.2, 0.38, 6.35, PALETTE.theaterStoneShadow, 0, 9.03, -2.05)
+  );
+
+  const upperWindows = buildTheaterWindowGrid(primitives, 10.5, 2.55, 4, 2);
+  upperWindows.position.set(0, 6.72, 1.27);
+  group.add(upperWindows);
+
+  const leftLobbyWindow = buildTheaterWindowGrid(primitives, 3.2, 3.25, 2, 1);
+  leftLobbyWindow.position.set(-4.45, 2.64, 1.3);
+  const rightLobbyWindow = buildTheaterWindowGrid(primitives, 3.2, 3.25, 2, 1);
+  rightLobbyWindow.position.set(4.45, 2.64, 1.3);
+  group.add(leftLobbyWindow, rightLobbyWindow);
+
+  const doors = new THREE.Group();
+  doors.name = "canteen-transition-theater-double-doors";
+  doors.position.set(0, 2.48, 1.33);
+  doors.add(
+    box(primitives, 4.55, 3.65, 0.18, PALETTE.theaterDark, 0, 0, 0),
+    box(primitives, 2.1, 3.35, 0.16, PALETTE.theaterGlassHighlight, -1.12, 0, 0.12, true),
+    box(primitives, 2.1, 3.35, 0.16, PALETTE.theaterGlass, 1.12, 0, 0.12, true),
+    box(primitives, 0.16, 3.62, 0.24, PALETTE.theaterFrame, 0, 0, 0.23),
+    box(primitives, 0.14, 0.66, 0.18, PALETTE.amber, -0.28, 0, 0.3),
+    box(primitives, 0.14, 0.66, 0.18, PALETTE.amber, 0.28, 0, 0.3)
+  );
+  group.add(doors);
+
+  for (const side of [-1, 1] as const) {
+    const x = side * 6.22;
+    group.add(
+      box(primitives, 0.82, 7.7, 0.94, PALETTE.theaterStoneLight, x, 4.1, 1.4),
+      box(primitives, 1.18, 0.42, 1.22, PALETTE.theaterStoneShadow, x, 0.42, 1.4),
+      box(primitives, 1.18, 0.38, 1.22, PALETTE.theaterStoneLight, x, 7.96, 1.4)
+    );
+  }
+  group.add(
+    box(primitives, 13.9, 0.68, 1.6, PALETTE.theaterFrame, 0, 5.04, 1.38),
+    box(primitives, 12.7, 0.22, 1.82, PALETTE.theaterStoneShadow, 0, 4.62, 1.42),
+    box(primitives, 13.5, 0.34, 0.5, PALETTE.theaterStoneLight, 0, 1.02, 1.46)
+  );
+  return group;
+}
+
+function buildTheaterPlanter(primitives: ThreePrimitiveCache): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "canteen-transition-theater-planter";
+  group.add(
+    box(primitives, 4.6, 0.56, 1.38, PALETTE.theaterStoneShadow, 0, 0.28, 0),
+    box(primitives, 4.16, 0.68, 1.12, PALETTE.theaterHedge, 0, 0.82, 0),
+    box(primitives, 3.45, 0.26, 0.86, PALETTE.theaterHedgeLight, 0, 1.22, 0)
+  );
+  return group;
+}
+
+function buildCampusLamp(primitives: ThreePrimitiveCache): THREE.Group {
+  const group = new THREE.Group();
+  group.name = "canteen-transition-theater-campus-lamp";
+  const lantern = new THREE.Group();
+  lantern.position.y = 3.28;
+  lantern.add(
+    box(primitives, 0.58, 0.72, 0.58, PALETTE.lampMetal, 0, 0, 0),
+    box(primitives, 0.4, 0.48, 0.4, PALETTE.lampGlow, 0, 0, 0.01, true),
+    box(primitives, 0.76, 0.14, 0.76, PALETTE.lampMetal, 0, 0.44, 0),
+    box(primitives, 0.72, 0.14, 0.72, PALETTE.lampMetal, 0, -0.44, 0)
+  );
+  const cap = new THREE.Mesh(
+    primitives.cone(0.52, 0.38, 4),
+    material(primitives, PALETTE.lampMetal)
+  );
+  cap.rotation.y = Math.PI / 4;
+  cap.position.y = 0.75;
+  lantern.add(cap);
+  group.add(
+    box(primitives, 0.18, 2.85, 0.18, PALETTE.lampMetal, 0, 1.42, 0),
+    box(primitives, 0.72, 0.18, 0.72, PALETTE.lampMetal, 0, 0.09, 0),
+    box(primitives, 0.42, 0.22, 0.42, PALETTE.lampMetal, 0, 0.28, 0),
+    lantern
+  );
+  return group;
+}
+
 function buildTheaterWorld(primitives: ThreePrimitiveCache): THREE.Group {
   const root = new THREE.Group();
   root.name = "canteen-transition-finish-world";
-  addRoadEnvironment(primitives, root);
+  addRoadEnvironment(primitives, root, { clearDestinationFacade: true });
 
-  // The entrance sits north of the rider. The road remains open and contains
-  // no transverse staircase or other geometry copied from the rejected anchor.
+  // The entrance sits north of the rider. Its warm side wings, recessed blue
+  // lobby, high cream piers and symmetric forecourt follow the checked-in
+  // theater reference while the story approach remains flat and unobstructed.
   const theater = new THREE.Group();
-  theater.name = "canteen-transition-clean-theater";
+  theater.name = "canteen-transition-modeled-theater";
   theater.position.set(0, 0, -18.5);
   theater.add(
-    box(primitives, 25, 8.2, 5.6, PALETTE.theaterStone, 0, 4.1, -1.9),
-    box(primitives, 13.2, 5.2, 0.35, PALETTE.theaterGlass, 0, 2.7, 1.08, true),
-    box(primitives, 4.4, 4.8, 0.42, PALETTE.theaterDark, 0, 2.45, 1.34, true),
-    box(primitives, 1.05, 7.2, 1.05, PALETTE.theaterFrame, -6.5, 3.6, 1.15),
-    box(primitives, 1.05, 7.2, 1.05, PALETTE.theaterFrame, 6.5, 3.6, 1.15),
-    box(primitives, 16.8, 0.7, 2.35, PALETTE.theaterFrame, 0, 6.5, 1.15),
-    box(primitives, 26.2, 0.65, 6.4, PALETTE.theaterFrame, 0, 8.45, -1.9)
+    buildTheaterWing(primitives, -1),
+    buildTheaterEntrance(primitives),
+    buildTheaterWing(primitives, 1)
   );
-  for (const x of [-4.4, -2.2, 2.2, 4.4]) {
-    theater.add(box(primitives, 0.24, 5.1, 0.48, PALETTE.theaterFrame, x, 2.65, 1.32));
+  for (const side of [-1, 1] as const) {
+    const planter = buildTheaterPlanter(primitives);
+    planter.position.set(side * 8.65, 0, 1.9);
+    theater.add(planter);
   }
   root.add(theater);
 
-  const flatApproach = plane(primitives, 13.2, 13, PALETTE.pavementLight, 0, 0.026, -12.4);
+  const flatApproach = plane(primitives, 18.6, 13, PALETTE.pavementLight, 0, 0.026, -12.4);
   flatApproach.name = "canteen-transition-flat-theater-approach";
   root.add(flatApproach);
   for (const side of [-1, 1]) {
-    const bollard = box(primitives, 0.42, 1.2, 0.42, PALETTE.amber, side * 5.7, 0.6, -10.2);
-    root.add(bollard);
+    const lamp = buildCampusLamp(primitives);
+    lamp.position.set(side * 8.1, 0.03, -12.7);
+    root.add(lamp);
   }
   return root;
 }

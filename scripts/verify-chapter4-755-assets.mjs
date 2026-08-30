@@ -171,11 +171,25 @@ const expectedTask10NpcAssets = [
   }
 ];
 const expectedAlumniPortraits = [
+  { id: "bei_shizhang", targetId: "a1_alumni_bei_shizhang", file: "bei_shizhang_v01.png", width: 256 },
   { id: "chen_jiangong", targetId: "a3_alumni_chen_jiangong", file: "chen_jiangong_v01.png", width: 250 },
+  { id: "chen_yizhang", targetId: "a1_alumni_chen_yizhang", file: "chen_yizhang_v01.png", width: 256 },
   { id: "cheng_kaijia", targetId: "a3_alumni_cheng_kaijia", file: "cheng_kaijia_v01.png", width: 250 },
+  { id: "gu_chaohao", targetId: "a1_alumni_gu_chaohao", file: "gu_chaohao_v01.png", width: 256 },
+  { id: "han_zhenxiang", targetId: "a1_alumni_han_zhenxiang", file: "han_zhenxiang_v01.png", width: 256 },
+  { id: "li_zhengdao", targetId: "a1_alumni_li_zhengdao", file: "li_zhengdao_v01.png", width: 256 },
+  { id: "lin_junde", targetId: "a1_alumni_lin_junde", file: "lin_junde_v01.png", width: 256 },
   { id: "lu_yongxiang", targetId: "a3_alumni_lu_yongxiang", file: "lu_yongxiang_v01.png", width: 256 },
+  { id: "pan_jingfu", targetId: "a1_alumni_pan_jingfu", file: "pan_jingfu_v01.png", width: 256 },
+  { id: "pan_yunhe", targetId: "a1_alumni_pan_yunhe", file: "pan_yunhe_v01.png", width: 256 },
   { id: "su_buqing", targetId: "a3_alumni_su_buqing", file: "su_buqing_v01.png", width: 256 },
   { id: "tan_jiazhen", targetId: "a3_alumni_tan_jiazhen", file: "tan_jiazhen_v01.png", width: 250 },
+  { id: "tan_qixiang", targetId: "a1_alumni_tan_qixiang", file: "tan_qixiang_v01.png", width: 256 },
+  { id: "wang_ganchang", targetId: "a1_alumni_wang_ganchang", file: "wang_ganchang_v01.png", width: 256 },
+  { id: "wang_yuan", targetId: "a1_alumni_wang_yuan", file: "wang_yuan_v01.png", width: 256 },
+  { id: "xia_daoxing", targetId: "a1_alumni_xia_daoxing", file: "xia_daoxing_v01.png", width: 256 },
+  { id: "yang_wei", targetId: "a3_alumni_yang_wei", file: "yang_wei_v01.png", width: 256 },
+  { id: "zheng_shusen", targetId: "a1_alumni_zheng_shusen", file: "zheng_shusen_v01.png", width: 256 },
   { id: "zhu_kezhen", targetId: "a3_alumni_zhu_kezhen", file: "zhu_kezhen_v01.png", width: 256 }
 ];
 

@@ -136,6 +136,7 @@ const EXPECTED_ROOM204_TASK_KEYS = [
   "watch_room204_projection",
   "collect_positioning_plate",
   "resolve_a2_inserted_puzzles",
+  "resolve_elevator_stop_chain",
   "install_positioning_plate"
 ];
 const EXPECTED_ROOM204_FACTS = [
@@ -143,6 +144,9 @@ const EXPECTED_ROOM204_FACTS = [
   "classroom_105_terminal_replay_checked",
   "elevator_history_observed",
   "elevator_history_calibrated",
+  "elevator_a2_call_record_observed",
+  "elevator_a3_arrival_record_observed",
+  "elevator_stop_chain_reconstructed",
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
@@ -267,6 +271,10 @@ const task7RuntimeSourcePaths = Object.freeze({
   )),
   controller: fileURLToPath(new URL(
     "../src/modules/ChapterFourTemporalMazeController.ts",
+    import.meta.url
+  )),
+  elevatorFloorInvestigation: fileURLToPath(new URL(
+    "../src/modules/ChapterFourElevatorFloorInvestigation.ts",
     import.meta.url
   )),
   stagePresentation: fileURLToPath(new URL(
@@ -535,6 +543,7 @@ function validateTask7RuntimeSources(errors) {
   const scene = sources.scene ?? "";
   const quest = sources.quest ?? "";
   const controller = sources.controller ?? "";
+  const elevatorFloorInvestigation = sources.elevatorFloorInvestigation ?? "";
   const stagePresentation = sources.stagePresentation ?? "";
   const closureContract = sources.closureContract ?? "";
   const saveStore = sources.saveStore ?? "";
@@ -1262,7 +1271,8 @@ function validateTask7RuntimeSources(errors) {
     if (!types.includes(`| "${factId}"`)) {
       errors.push(`Task 9 ChapterFourFactId is missing ${factId}`);
     }
-    if (!controller.includes(`"${factId}"`)) {
+    if (!controller.includes(`"${factId}"`)
+      && !elevatorFloorInvestigation.includes(`"${factId}"`)) {
       errors.push(`Task 9 controller is missing fact ${factId}`);
     }
     if (!saveStore.includes(`"${factId}"`)) {
@@ -2016,8 +2026,8 @@ function validate(content) {
     errors.push("tasks must be an object");
   } else {
     const activeTaskEntries = Object.entries(tasks).filter(([taskKey]) => taskKey !== "chapter_complete");
-    if (Object.keys(tasks).length !== 37 || activeTaskEntries.length !== 36) {
-      errors.push("tasks must contain 36 active tasks plus chapter_complete");
+    if (Object.keys(tasks).length !== 38 || activeTaskEntries.length !== 37) {
+      errors.push("tasks must contain 37 active tasks plus chapter_complete");
     }
     for (const [taskKey, task] of Object.entries(tasks)) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
@@ -2035,8 +2045,8 @@ function validate(content) {
       (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
       0
     );
-    if (activeHintCount !== 108) {
-      errors.push("tasks must expose the full 108-hint active contract");
+    if (activeHintCount !== 111) {
+      errors.push("tasks must expose the full 111-hint active contract");
     }
     const room204PlayerCopy = [
       tasks.restore_room204?.label,

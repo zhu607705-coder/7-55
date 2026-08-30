@@ -1194,6 +1194,9 @@ const CHAPTER_FOUR_755_ROOM_FACTS = [
   ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
   "elevator_history_observed",
   "elevator_history_calibrated",
+  "elevator_a2_call_record_observed",
+  "elevator_a3_arrival_record_observed",
+  "elevator_stop_chain_reconstructed",
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
@@ -1390,6 +1393,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
         ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
         "elevator_history_observed",
         "elevator_history_calibrated",
+        "elevator_a3_arrival_record_observed",
         "a1_duty_board_reconstructed",
         "a3_reference_observed"
       ]
@@ -1400,6 +1404,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phase: "room204_restore",
       floor: "A2",
       roomId: "a2_corridor",
+      mode: "dark",
       timeAuthority: "hall_clock",
       timeState: "1850_evening",
       worldTimeSeconds: 67800,
@@ -1410,6 +1415,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
         ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
         "elevator_history_observed",
         "elevator_history_calibrated",
+        "elevator_a3_arrival_record_observed",
         "a1_duty_board_reconstructed",
         "a3_archive_film_retrieved",
         "a3_media_alignment_completed",

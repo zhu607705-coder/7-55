@@ -30,7 +30,7 @@ const expectedFloors = ["A1", "A2", "A3"];
 const expectedAssets = ["a1_base", "a2_base", "a3_base"];
 const expectedCheckpoints = ["c4_a1_lobby", "c4_a2_corridor", "c4_a3_wayfinding"];
 const expectedFloorCounts = {
-  A1: { collisions: 14, walkable: 7, occlusions: 9 },
+  A1: { collisions: 15, walkable: 7, occlusions: 9 },
   A2: { collisions: 23, walkable: 5, occlusions: 6 },
   A3: { collisions: 26, walkable: 6, occlusions: 2 }
 };
@@ -82,21 +82,21 @@ const expectedBakeryRuntimeTargets = [
     targetId: "a1_bakery_inspection_lamp",
     entityId: "chapter4-bakery-inspection-lamp",
     installationBounds: { x: 354, y: 313, width: 39, height: 30 },
-    standPosition: { x: 374, y: 386 },
+    standPosition: { x: 374, y: 390 },
     proximity: 56
   },
   {
     targetId: "a1_bakery_conveyor_edge",
     entityId: "chapter4-bakery-conveyor-edge",
     installationBounds: { x: 286, y: 332, width: 17, height: 29 },
-    standPosition: { x: 294, y: 386 },
+    standPosition: { x: 294, y: 390 },
     proximity: 48
   },
   {
     targetId: "a1_bakery_hour_hand_pickup",
     entityId: "chapter4-bakery-hour-hand-pickup",
     installationBounds: { x: 288, y: 312, width: 34, height: 39 },
-    standPosition: { x: 294, y: 386 },
+    standPosition: { x: 294, y: 390 },
     proximity: 48
   }
 ];
@@ -190,9 +190,9 @@ const expectedMorningCheckinRuntimeTargets = [
   {
     targetId: "a1_campus_card_reader",
     entityId: "chapter4_checkin_card_reader",
-    installationBounds: { x: 756, y: 608, width: 34, height: 24 },
-    standPosition: { x: 773, y: 662 },
-    proximity: 56,
+    installationBounds: { x: 768, y: 607, width: 30, height: 24 },
+    standPosition: { x: 783, y: 662 },
+    proximity: 72,
     boundsDerivation: {
       kind: "visible_programmatic_card_reader_get_bounds",
       zoneSource: "visibleFixture.getBounds"
@@ -202,9 +202,9 @@ const expectedMorningCheckinRuntimeTargets = [
   {
     targetId: "a1_attendance_paper_slot",
     entityId: "chapter4_checkin_attendance_paper_slot",
-    installationBounds: { x: 835, y: 606, width: 40, height: 26 },
-    standPosition: { x: 855, y: 662 },
-    proximity: 56,
+    installationBounds: { x: 848, y: 606, width: 38, height: 25 },
+    standPosition: { x: 867, y: 662 },
+    proximity: 72,
     boundsDerivation: {
       kind: "visible_programmatic_paper_slot_get_bounds",
       zoneSource: "visibleFixture.getBounds"
@@ -441,6 +441,29 @@ assert(
       === frontDeskAnchor?.bounds?.y + frontDeskAnchor?.bounds?.height,
   "A1 front desk collision must remain inside the interaction anchor and end at its lower edge"
 );
+const bakeryCounterCollision = a1?.staticCollisions?.find(
+  (entry) => entry.id === "a1_air_wall_bakery_counter"
+);
+const bakeryCounterOcclusion = a1?.foregroundOcclusions?.find(
+  (entry) => entry.id === "a1_foreground_018"
+);
+assert(
+  bakeryCounterCollision?.sourceAnnotationId === "a1-ann-018",
+  "A1 bakery counter collision must retain annotation 018 provenance"
+);
+assertJsonEqual(
+  rectOnly(bakeryCounterCollision),
+  { x: 80, y: 292, width: 397, height: 90 },
+  "A1 bakery counter collision"
+);
+assert(
+  bakeryCounterCollision.x === bakeryCounterOcclusion?.maskBounds?.x
+    && bakeryCounterCollision.y === bakeryCounterOcclusion?.maskBounds?.y
+    && bakeryCounterCollision.width === bakeryCounterOcclusion?.maskBounds?.width
+    && bakeryCounterCollision.y + bakeryCounterCollision.height
+      === bakeryCounterOcclusion?.baselineY - 5,
+  "A1 bakery counter collision must follow the visible counter and preserve the queue aisle"
+);
 
 const bakeryRuntime = layout.bakeryRuntime;
 assert(bakeryRuntime?.storyFloor === "A1", "bakery runtime must use A1 source coordinates");
@@ -538,9 +561,11 @@ assertJsonEqual(
     frames: [6, 7],
     origin: { x: 0.5, y: 1 },
     uniformScale: 0.52,
-    position: { x: 365, y: 340 },
+    position: { x: 260, y: 340 },
+    visibleSourceHeight: 80,
     collision: false,
-    foregroundOcclusionId: "a1_foreground_018"
+    foregroundOcclusionId: "a1_foreground_018",
+    activePhases: ["bakery_hour_hand", "morning_checkin"]
   },
   "bakery baker reuse contract"
 );
@@ -579,9 +604,9 @@ const expectedBakeryWalkabilityRoutes = [
       { x: 510.5, y: 560 },
       { x: 477, y: 560 },
       { x: 477, y: 470 },
-      { x: 477, y: 386 },
-      { x: 374, y: 386 },
-      { x: 294, y: 386 }
+      { x: 477, y: 390 },
+      { x: 374, y: 390 },
+      { x: 294, y: 390 }
     ]
   },
   {
@@ -593,9 +618,9 @@ const expectedBakeryWalkabilityRoutes = [
       { x: 477, y: 748 },
       { x: 477, y: 730 },
       { x: 477, y: 470 },
-      { x: 477, y: 386 },
-      { x: 374, y: 386 },
-      { x: 294, y: 386 }
+      { x: 477, y: 390 },
+      { x: 374, y: 390 },
+      { x: 294, y: 390 }
     ]
   }
 ];
@@ -642,7 +667,7 @@ assert(
     && route.waypoints.some((point) => point.x === 510.5 && pointInsideRect(point, bakeryDoor))
     && route.waypoints.some((point) => point.x === 477)
     && route.waypoints.at(-1)?.x === 294
-    && route.waypoints.at(-1)?.y === 386
+    && route.waypoints.at(-1)?.y === 390
   )),
   "both bakery routes must preserve east gap x=477 and reach the conveyor/hour-hand stand point"
 );

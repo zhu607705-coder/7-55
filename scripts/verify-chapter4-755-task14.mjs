@@ -201,7 +201,7 @@ const validationSuiteSource = source("./run-validation-suite.mjs");
 const taskEntries = Object.entries(content.tasks ?? {});
 const activeTaskEntries = taskEntries.filter(([taskId]) => taskId !== "chapter_complete");
 const activeHints = activeTaskEntries.flatMap(([, task]) => Array.isArray(task?.hints) ? task.hints : []);
-assert(taskEntries.length === 37 && activeTaskEntries.length === 36, "Task 14 must define 36 active tasks plus chapter_complete");
+assert(taskEntries.length === 38 && activeTaskEntries.length === 37, "Task 14 must define 37 active tasks plus chapter_complete");
 for (const [taskId, task] of activeTaskEntries) {
   assert(
     Array.isArray(task?.hints)
@@ -210,7 +210,7 @@ for (const [taskId, task] of activeTaskEntries) {
     `${taskId} must expose exactly three non-empty progressive hints`
   );
 }
-assert(activeHints.length === 108, "Task 14 must expose the complete 108-hint contract");
+assert(activeHints.length === 111, "Task 14 must expose the complete 111-hint contract");
 assert(
   Array.isArray(content.tasks?.chapter_complete?.hints)
     && content.tasks.chapter_complete.hints.length === 0,
@@ -740,4 +740,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=14+aliases+url+session-only quest=single-objective+108-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);
+console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=14+aliases+url+session-only quest=single-objective+111-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);

@@ -167,6 +167,11 @@ try {
     "a2_power_topology_recovered",
     "a2_evacuation_route_confirmed"
   ];
+  const elevatorStopChainFacts = [
+    "elevator_a2_call_record_observed",
+    "elevator_a3_arrival_record_observed",
+    "elevator_stop_chain_reconstructed"
+  ];
   const layoutRuntimeTargetById = new Map([
     ...chapterFourLayout.bakeryRuntime.targetEntities,
     ...chapterFourLayout.maintenanceRuntime.targetEntities,
@@ -1313,6 +1318,19 @@ try {
   });
   assert(referenceResult.accepted && referenceResult.changed, "A3 light reference must commit once");
   assert(roomSequenceStore.getState().chapter4.factIds.includes("a3_reference_observed"), "A3 reference fact must commit");
+  const a3RecordDarkMode = roomSequenceController.resolve755Intent({ type: "set_mode", mode: "dark" });
+  assert(a3RecordDarkMode.accepted, "A3 floor record must be readable after entering dark observation");
+  const a3RecordResult = roomSequenceController.resolve755Intent({
+    type: "observe_elevator_floor_record",
+    floor: "A3"
+  });
+  assert(
+    a3RecordResult.accepted
+      && roomSequenceStore.getState().chapter4.factIds.includes("elevator_a3_arrival_record_observed"),
+    "A3 arrival chime and door record must commit independently"
+  );
+  const a3RecordLightMode = roomSequenceController.resolve755Intent({ type: "set_mode", mode: "light" });
+  assert(a3RecordLightMode.accepted, "A3 investigation must return to light operation without losing its record");
   const blockedDirectA2 = roomSequenceController.resolve755Intent({
     type: "move_to_location",
     floor: "A2",
@@ -1347,8 +1365,39 @@ try {
     checkpoint: "c4_a2_corridor"
   });
   assert(moveToA2.accepted, "room sequence must accept the A2 room alias after stair arrival");
+  const a2RecordDarkMode = roomSequenceController.resolve755Intent({ type: "set_mode", mode: "dark" });
+  assert(a2RecordDarkMode.accepted, "A2 floor record must be readable after entering dark observation");
+  const a2RecordResult = roomSequenceController.resolve755Intent({
+    type: "observe_elevator_floor_record",
+    floor: "A2"
+  });
+  assert(
+    a2RecordResult.accepted
+      && roomSequenceStore.getState().chapter4.factIds.includes("elevator_a2_call_record_observed"),
+    "A2 unserved call and door-machine record must commit independently"
+  );
+  const chainLightMode = roomSequenceController.resolve755Intent({ type: "set_mode", mode: "light" });
+  assert(chainLightMode.accepted, "stop-chain reconstruction must run in light operation");
+  const beforeWrongChain = snapshot(roomSequenceStore.getState());
+  const wrongChain = roomSequenceController.resolve755Intent({
+    type: "reconstruct_elevator_stop_chain",
+    actualArrivalFloor: "A2",
+    unservedCallFloor: "A3"
+  });
+  assert(!wrongChain.accepted && wrongChain.reason === "incorrect", "reversed elevator stop chain must be rejected");
+  assert(snapshot(roomSequenceStore.getState()) === beforeWrongChain, "wrong elevator stop chain must remain zero-write");
+  const correctChain = roomSequenceController.resolve755Intent({
+    type: "reconstruct_elevator_stop_chain",
+    actualArrivalFloor: "A3",
+    unservedCallFloor: "A2"
+  });
+  assert(
+    correctChain.accepted
+      && roomSequenceStore.getState().chapter4.factIds.includes("elevator_stop_chain_reconstructed"),
+    "A3 arrival and A2 unserved-call reconstruction must commit once"
+  );
   const darkResult = roomSequenceController.resolve755Intent({ type: "set_mode", mode: "dark" });
-  assert(darkResult.accepted, "room sequence must enter dark observation mode");
+  assert(darkResult.accepted, "room sequence must re-enter dark observation mode for the Room204 residual");
   const darkProjection = selectChapterFourMazeProjection(roomSequenceStore.getState());
   assert(darkProjection.npcIds.includes("a2_evening_residual_group"), "A2 residual visual must project in dark mode");
   const residualResult = roomSequenceController.resolve755Intent({
@@ -1456,11 +1505,12 @@ try {
     ["reference", [], [], "chapter_four_resolve_a3_archive_chain", false],
     ["zhu questions", ["a3_reference_observed"], [], "chapter_four_resolve_a3_archive_chain", false],
     ["stair", ["a3_reference_observed", "zhu_two_questions_answered"], [], "chapter_four_solve_misaligned_stair", false],
-    ["residual", ["a3_reference_observed"], [], "chapter_four_restore_room204", true],
-    ["restore", ["a3_reference_observed", "room204_residual_observed"], [], "chapter_four_restore_room204", true],
-    ["projection", ["a3_reference_observed", "room204_residual_observed", "room204_restored"], completePlacements, "chapter_four_watch_room204_projection", true],
-    ["collect", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed"], completePlacements, "chapter_four_collect_positioning_plate", true],
-    ["install", ["a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed", "positioning_plate_collected"], completePlacements, "chapter_four_install_positioning_plate", true]
+    ["elevator chain", ["elevator_a2_call_record_observed", "elevator_a3_arrival_record_observed"], [], "chapter_four_resolve_elevator_stop_chain", true],
+    ["residual", [...elevatorStopChainFacts, "a3_reference_observed"], [], "chapter_four_restore_room204", true],
+    ["restore", [...elevatorStopChainFacts, "a3_reference_observed", "room204_residual_observed"], [], "chapter_four_restore_room204", true],
+    ["projection", [...elevatorStopChainFacts, "a3_reference_observed", "room204_residual_observed", "room204_restored"], completePlacements, "chapter_four_watch_room204_projection", true],
+    ["collect", [...elevatorStopChainFacts, "a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed"], completePlacements, "chapter_four_collect_positioning_plate", true],
+    ["install", [...elevatorStopChainFacts, "a3_reference_observed", "room204_residual_observed", "room204_restored", "room204_projection_completed", "positioning_plate_collected"], completePlacements, "chapter_four_install_positioning_plate", true]
   ];
   for (const [label, facts, placements, expectedTaskId, stairSolved] of roomQuestCases) {
     const state = makeRoom204State({ facts, placements, clockPositioningPlate: label === "install", stairSolved });
@@ -2973,8 +3023,8 @@ try {
 
   const task13CardTarget = runtimeTargetFromLayout("a1_campus_card_reader");
   const task13PaperTarget = runtimeTargetFromLayout("a1_attendance_paper_slot");
-  assert(sameJson(task13CardTarget.bounds, { x: 756, y: 608, width: 34, height: 24 }), "Task13 card-reader bounds must match the visible authored fixture");
-  assert(sameJson(task13PaperTarget.bounds, { x: 835, y: 606, width: 40, height: 26 }), "Task13 paper-slot bounds must match the visible authored fixture");
+  assert(sameJson(task13CardTarget.bounds, { x: 768, y: 607, width: 30, height: 24 }), "Task13 card-reader bounds must match the visible authored fixture");
+  assert(sameJson(task13PaperTarget.bounds, { x: 848, y: 606, width: 38, height: 25 }), "Task13 paper-slot bounds must match the visible authored fixture");
   for (const runtimeTarget of [task13CardTarget, task13PaperTarget]) {
     const resolved = resolveChapterFour755RuntimeEntityTarget(
       runtimeTarget.targetId,

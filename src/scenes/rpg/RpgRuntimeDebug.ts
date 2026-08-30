@@ -30,6 +30,7 @@ export interface RpgRuntimeDebugState {
     displayHeight?: number;
     collisionWidth?: number;
     collisionHeight?: number;
+    collisionBounds?: { x: number; y: number; width: number; height: number };
     depth?: number;
   };
   input?: {
@@ -292,6 +293,13 @@ export interface RpgRuntimeDebugState {
       flipX: boolean;
       animationId: string | null;
     }>;
+    bakeryStaff?: {
+      visible: boolean;
+      position: { x: number; y: number };
+      frame: number;
+      animationId: string | null;
+      activePhases: readonly ("bakery_hour_hand" | "morning_checkin")[];
+    } | null;
     finalChase?: {
       active: boolean;
       phase: string | null;
@@ -409,6 +417,21 @@ export interface RpgRuntimeDebugState {
       targetFloor: 1 | 2 | 3 | null;
       doorProgress: number;
       panelOpen: boolean;
+      panelMode: "floors" | "elevator_calibration" | "elevator_route_deduction";
+      selectedFloor: 1 | 2 | 3;
+      recordProgress: number;
+      records: ReadonlyArray<{
+        floor: 1 | 2 | 3;
+        factId: string;
+        collected: boolean;
+        reachable: boolean;
+      }>;
+      stopChainReconstructed: boolean;
+      deduction: {
+        actualArrivalFloor: "A2" | "A3";
+        unservedCallFloor: "A2" | "A3";
+        feedback: string;
+      } | null;
       nearbyTravelZone: string | null;
     };
     stairAlignment?: {

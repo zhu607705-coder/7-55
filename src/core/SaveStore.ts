@@ -221,7 +221,9 @@ const VALID_CHAPTER_FOUR_FACT_IDS = new Set<ChapterFourFactId>([
   "hall_clock_inspected", "bakery_conveyor_lamp_inspected", "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected", "hour_hand_installed",
   "classroom_104_chalk_residual_observed", "classroom_105_terminal_replay_checked",
-  "elevator_history_observed", "elevator_history_calibrated", "a3_reference_observed",
+  "elevator_history_observed", "elevator_history_calibrated",
+  "elevator_a2_call_record_observed", "elevator_a3_arrival_record_observed",
+  "elevator_stop_chain_reconstructed", "a3_reference_observed",
   "a1_duty_board_reconstructed", "a3_archive_film_retrieved", "a3_media_alignment_completed",
   "zhu_two_questions_answered", "misaligned_stair_solved",
   "room204_residual_observed", "room204_restored", "room204_projection_completed",
@@ -1408,6 +1410,9 @@ const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
   "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected",
   "hour_hand_installed",
+  "elevator_a2_call_record_observed",
+  "elevator_a3_arrival_record_observed",
+  "elevator_stop_chain_reconstructed",
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
@@ -1462,6 +1467,9 @@ const CHAPTER_FOUR_ROOM204_FACT_ORDER = [
   "classroom_105_terminal_replay_checked",
   "elevator_history_observed",
   "elevator_history_calibrated",
+  "elevator_a2_call_record_observed",
+  "elevator_a3_arrival_record_observed",
+  "elevator_stop_chain_reconstructed",
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
@@ -1536,6 +1544,11 @@ function normalizeChapterFourFactClosure(
   if (facts.has("hour_hand_installed")) facts.add("bakery_hour_hand_collected");
   if (facts.has("bakery_hour_hand_collected")) facts.add("bakery_hour_hand_exposed");
   if (facts.has("bakery_hour_hand_exposed")) facts.add("bakery_conveyor_lamp_inspected");
+  if (facts.has("elevator_stop_chain_reconstructed")) {
+    facts.add("elevator_history_observed");
+    facts.add("elevator_a2_call_record_observed");
+    facts.add("elevator_a3_arrival_record_observed");
+  }
 
   if (phase === "opening_handoff") {
     facts.delete("opening_paper_caught");
@@ -2001,6 +2014,16 @@ function normalizeChapterFourRoom204Closure(
     // legacy save that has already solved the stair.
     if (facts.has("misaligned_stair_solved")) {
       facts.add("zhu_two_questions_answered");
+    }
+    if (facts.has("elevator_stop_chain_reconstructed")) {
+      facts.add("elevator_history_observed");
+      facts.add("elevator_a2_call_record_observed");
+      facts.add("elevator_a3_arrival_record_observed");
+    }
+    if (!facts.has("elevator_history_observed")
+      || !facts.has("elevator_a2_call_record_observed")
+      || !facts.has("elevator_a3_arrival_record_observed")) {
+      facts.delete("elevator_stop_chain_reconstructed");
     }
     const hasBothObservations = facts.has("a3_reference_observed")
       && facts.has("room204_residual_observed");

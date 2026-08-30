@@ -855,6 +855,8 @@ function selectChapterFour755TaskKey(
         || !facts.has("a2_power_topology_recovered")
         || !facts.has("a2_evacuation_route_confirmed")
         ? "resolve_a2_inserted_puzzles"
+      : !facts.has("elevator_stop_chain_reconstructed")
+        ? "resolve_elevator_stop_chain"
       : !facts.has("a3_reference_observed")
         || !facts.has("room204_residual_observed")
         || !facts.has("room204_restored")
@@ -1007,6 +1009,42 @@ function chapterFour755Quest(
         label: "开放自习区",
         detail: "疏散路线",
         factId: "a2_evacuation_route_confirmed"
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => facts.has(branch.factId)).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: facts.has(branch.factId) ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "resolve_elevator_stop_chain") {
+    const branches = [
+      {
+        id: "elevator_record_a1",
+        label: "1F 起行轨",
+        detail: "门体与起行",
+        factId: "elevator_history_observed"
+      },
+      {
+        id: "elevator_record_a2",
+        label: "2F 外呼日志",
+        detail: "呼梯与门机",
+        factId: "elevator_a2_call_record_observed"
+      },
+      {
+        id: "elevator_record_a3",
+        label: "3F 到站记录",
+        detail: "铃声与开门",
+        factId: "elevator_a3_arrival_record_observed"
       }
     ] as const;
     return {

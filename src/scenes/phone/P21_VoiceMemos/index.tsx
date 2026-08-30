@@ -52,6 +52,22 @@ interface VoiceMemoContentManifest {
   recordings: VoiceMemoCatalogRecording[];
 }
 
+interface ActiveVoiceMemoPreview {
+  clipId: ChapterThreeInterludeVoiceCandidateId;
+  startedAtMs: number;
+  startOffsetMs: number;
+  endOffsetMs: number;
+  totalDurationMs: number;
+  marksClipHeard: boolean;
+}
+
+interface PausedVoiceMemoPreview {
+  clipId: ChapterThreeInterludeVoiceCandidateId;
+  positionMs: number;
+  endOffsetMs: number;
+  marksClipHeard: boolean;
+}
+
 const DISPLAY_ORDER: readonly ChapterThreeInterludeVoiceCandidateId[] = [
   "decoy_theater",
   "lake",
@@ -110,6 +126,13 @@ function clipFor(id: ChapterThreeInterludeVoiceCandidateId): VoiceMemoClip {
   return clip;
 }
 
+function previewPositionMs(preview: ActiveVoiceMemoPreview): number {
+  return Math.min(
+    preview.endOffsetMs,
+    preview.startOffsetMs + Math.max(0, performance.now() - preview.startedAtMs)
+  );
+}
+
 export function VoiceMemosScene({ state, router, events }: SceneComponentProps) {
   const initialDraftRef = useRef<ChapterThreeInterludeVoiceDraft | null>(null);
   if (initialDraftRef.current === null) {
@@ -137,14 +160,12 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
   const [selected, setSelected] = useState<ChapterThreeInterludeVoiceCandidateId[]>(initialDraft.selectedIds);
   const [order, setOrder] = useState<ChapterThreeInterludeVoiceCandidateId[]>(initialDraft.orderedIds);
   const [playing, setPlaying] = useState<ChapterThreeInterludeVoiceCandidateId | null>(null);
+  const [paused, setPaused] = useState<ChapterThreeInterludeVoiceCandidateId | null>(null);
   const [heard, setHeard] = useState<ChapterThreeInterludeVoiceCandidateId[]>(initialDraft.heardIds);
   const [feedback, setFeedback] = useState("");
   const playTimerRef = useRef<number | null>(null);
-  const playbackRef = useRef<{
-    clipId: ChapterThreeInterludeVoiceCandidateId;
-    startedAtMs: number;
-    durationMs: number;
-  } | null>(null);
+  const playbackRef = useRef<ActiveVoiceMemoPreview | null>(null);
+  const pausedPlaybackRef = useRef<PausedVoiceMemoPreview | null>(null);
   const stageRef = useRef(stage);
   const heardRef = useRef(heard);
   const selectedRef = useRef(selected);
@@ -180,18 +201,46 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
 
   const stopPreview = useCallback((updateUi = true) => {
     const playback = playbackRef.current;
-    if (playback) {
-      const listenedMs = performance.now() - playback.startedAtMs;
-      if (listenedMs >= playback.durationMs * HEARD_THRESHOLD) {
+    if (playback?.marksClipHeard) {
+      const listenedMs = previewPositionMs(playback);
+      if (listenedMs >= playback.totalDurationMs * HEARD_THRESHOLD) {
         markClipHeard(playback.clipId, updateUi);
       }
     }
     playbackRef.current = null;
+    pausedPlaybackRef.current = null;
     if (playTimerRef.current !== null) window.clearTimeout(playTimerRef.current);
     playTimerRef.current = null;
     events.emit("chapter35_voice_audition_stop");
-    if (updateUi) setPlaying(null);
+    if (updateUi) {
+      setPlaying(null);
+      setPaused(null);
+    }
   }, [events, markClipHeard]);
+
+  const pausePreview = useCallback(() => {
+    const playback = playbackRef.current;
+    if (!playback) {
+      stopPreview();
+      return;
+    }
+    const positionMs = previewPositionMs(playback);
+    if (playback.marksClipHeard && positionMs >= playback.totalDurationMs * HEARD_THRESHOLD) {
+      markClipHeard(playback.clipId, true);
+    }
+    playbackRef.current = null;
+    pausedPlaybackRef.current = {
+      clipId: playback.clipId,
+      positionMs,
+      endOffsetMs: playback.endOffsetMs,
+      marksClipHeard: playback.marksClipHeard
+    };
+    if (playTimerRef.current !== null) window.clearTimeout(playTimerRef.current);
+    playTimerRef.current = null;
+    events.emit("chapter35_voice_audition_stop");
+    setPlaying(null);
+    setPaused(playback.clipId);
+  }, [events, markClipHeard, stopPreview]);
 
   useEffect(() => {
     stageRef.current = stage;
@@ -230,27 +279,64 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
     };
   }, [events, stopPreview]);
 
-  function auditionClip(clip: VoiceMemoClip) {
-    if (playing === clip.id) {
-      stopPreview();
-      return;
-    }
-    stopPreview();
+  function startClipPreview(
+    clip: VoiceMemoClip,
+    startOffsetMs = 0,
+    endOffsetMs = clip.durationMs,
+    marksClipHeard = true
+  ) {
+    const boundedEndMs = Math.max(120, Math.min(clip.durationMs, endOffsetMs));
+    const boundedOffsetMs = Math.max(0, Math.min(boundedEndMs - 120, startOffsetMs));
+    const remainingMs = Math.max(120, boundedEndMs - boundedOffsetMs);
+    pausedPlaybackRef.current = null;
+    setPaused(null);
     setPlaying(clip.id);
     playbackRef.current = {
       clipId: clip.id,
       startedAtMs: performance.now(),
-      durationMs: clip.durationMs
+      startOffsetMs: boundedOffsetMs,
+      endOffsetMs: boundedEndMs,
+      totalDurationMs: clip.durationMs,
+      marksClipHeard
     };
-    events.emit(clip.cueId, { clipId: clip.id, previewKind: "full" });
+    events.emit(clip.cueId, boundedOffsetMs > 0 || boundedEndMs < clip.durationMs
+      ? {
+          clipId: clip.id,
+          previewKind: "event",
+          startMs: boundedOffsetMs,
+          durationMs: remainingMs
+        }
+      : { clipId: clip.id, previewKind: "full" }
+    );
     playTimerRef.current = window.setTimeout(() => {
-      if (playbackRef.current?.clipId === clip.id) {
+      if (playbackRef.current?.clipId === clip.id && playbackRef.current.marksClipHeard) {
         markClipHeard(clip.id, true);
-        playbackRef.current = null;
       }
+      playbackRef.current = null;
+      pausedPlaybackRef.current = null;
       setPlaying((current) => current === clip.id ? null : current);
+      setPaused((current) => current === clip.id ? null : current);
       playTimerRef.current = null;
-    }, clip.durationMs);
+    }, remainingMs);
+  }
+
+  function auditionClip(clip: VoiceMemoClip) {
+    if (playing === clip.id) {
+      pausePreview();
+      return;
+    }
+    const pausedPreview = pausedPlaybackRef.current;
+    if (paused === clip.id && pausedPreview?.clipId === clip.id) {
+      startClipPreview(
+        clip,
+        pausedPreview.positionMs,
+        pausedPreview.endOffsetMs,
+        pausedPreview.marksClipHeard
+      );
+      return;
+    }
+    stopPreview();
+    startClipPreview(clip);
   }
 
   function replaySoundEvent(clip: VoiceMemoClip, soundEvent: VoiceMemoSoundEvent, eventIndex: number) {
@@ -259,6 +345,15 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
     const endMs = Math.min(clip.durationMs, soundEvent.endMs + EVENT_REPLAY_TAIL_MS);
     const durationMs = Math.max(240, endMs - startMs);
     setPlaying(clip.id);
+    setPaused(null);
+    playbackRef.current = {
+      clipId: clip.id,
+      startedAtMs: performance.now(),
+      startOffsetMs: startMs,
+      endOffsetMs: endMs,
+      totalDurationMs: clip.durationMs,
+      marksClipHeard: false
+    };
     events.emit(clip.cueId, {
       clipId: clip.id,
       previewKind: "event",
@@ -269,6 +364,7 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
     });
     playTimerRef.current = window.setTimeout(() => {
       events.emit("chapter35_voice_audition_stop");
+      playbackRef.current = null;
       setPlaying((current) => current === clip.id ? null : current);
       playTimerRef.current = null;
     }, durationMs);
@@ -362,13 +458,21 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
             {CLIPS.map((clip) => {
               const listened = heard.includes(clip.id);
               const isSelected = selected.includes(clip.id);
+              const isPlaying = playing === clip.id;
+              const isPaused = paused === clip.id;
               return (
                 <article
                   key={clip.id}
-                  className={`${playing === clip.id ? "is-playing" : ""} ${isSelected ? "is-selected" : ""}`.trim()}
+                  className={`${isPlaying ? "is-playing" : ""} ${isPaused ? "is-paused" : ""} ${isSelected ? "is-selected" : ""}`.trim()}
                 >
-                  <button type="button" className="voice-play-dot" aria-label={`${playing === clip.id ? "停止" : "试听"} ${clip.code}`} onClick={() => auditionClip(clip)}>
-                    {playing === clip.id ? "■" : "▶"}
+                  <button
+                    type="button"
+                    className="voice-play-dot"
+                    aria-label={`${isPlaying ? "暂停" : isPaused ? "继续播放" : "播放"} ${clip.code}`}
+                    aria-pressed={isPlaying}
+                    onClick={() => auditionClip(clip)}
+                  >
+                    {isPlaying ? "Ⅱ" : "▶"}
                   </button>
                   <div><strong>{clip.code}</strong><small>{listened ? `${clip.revealZh} · ${clip.time}` : "未试听"}</small></div>
                   {clip.waveform.length > 0 ? (
@@ -400,31 +504,41 @@ export function VoiceMemosScene({ state, router, events }: SceneComponentProps) 
           </section>
         ) : (
           <section className="voice-order-list" aria-label="当前录音顺序">
-            {selectedClips.map((clip, index) => (
-              <article key={clip.id} className={playing === clip.id ? "is-playing" : ""}>
-                <b>{index + 1}</b>
-                <button type="button" className="voice-play-dot" aria-label={`${playing === clip.id ? "停止" : "试听"} ${clip.code}`} onClick={() => auditionClip(clip)}>
-                  {playing === clip.id ? "■" : "▶"}
-                </button>
-                <div><strong>{clip.code}</strong><small>{clip.revealZh}</small></div>
-                <span className="voice-order-controls">
-                  <button type="button" aria-label={`${clip.code} 上移`} disabled={index === 0} onClick={() => moveClip(index, -1)}>↑</button>
-                  <button type="button" aria-label={`${clip.code} 下移`} disabled={index === order.length - 1} onClick={() => moveClip(index, 1)}>↓</button>
-                </span>
-                {clip.soundEvents?.length ? (
-                  <div className="voice-event-chips" aria-label={`${clip.code} 可听事件`}>
-                    {clip.soundEvents.map((soundEvent, eventIndex) => (
-                      <button
-                        key={`${soundEvent.startMs}-${soundEvent.endMs}-${soundEvent.category}`}
-                        type="button"
-                        title={`${soundEvent.category} · ${soundEvent.startMs}–${soundEvent.endMs}ms`}
-                        onClick={() => replaySoundEvent(clip, soundEvent, eventIndex)}
-                      >{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small></button>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            ))}
+            {selectedClips.map((clip, index) => {
+              const isPlaying = playing === clip.id;
+              const isPaused = paused === clip.id;
+              return (
+                <article key={clip.id} className={isPlaying ? "is-playing" : isPaused ? "is-paused" : ""}>
+                  <b>{index + 1}</b>
+                  <button
+                    type="button"
+                    className="voice-play-dot"
+                    aria-label={`${isPlaying ? "暂停" : isPaused ? "继续播放" : "播放"} ${clip.code}`}
+                    aria-pressed={isPlaying}
+                    onClick={() => auditionClip(clip)}
+                  >
+                    {isPlaying ? "Ⅱ" : "▶"}
+                  </button>
+                  <div><strong>{clip.code}</strong><small>{clip.revealZh}</small></div>
+                  <span className="voice-order-controls">
+                    <button type="button" aria-label={`${clip.code} 上移`} disabled={index === 0} onClick={() => moveClip(index, -1)}>↑</button>
+                    <button type="button" aria-label={`${clip.code} 下移`} disabled={index === order.length - 1} onClick={() => moveClip(index, 1)}>↓</button>
+                  </span>
+                  {clip.soundEvents?.length ? (
+                    <div className="voice-event-chips" aria-label={`${clip.code} 可听事件`}>
+                      {clip.soundEvents.map((soundEvent, eventIndex) => (
+                        <button
+                          key={`${soundEvent.startMs}-${soundEvent.endMs}-${soundEvent.category}`}
+                          type="button"
+                          title={`${soundEvent.category} · ${soundEvent.startMs}–${soundEvent.endMs}ms`}
+                          onClick={() => replaySoundEvent(clip, soundEvent, eventIndex)}
+                        >{soundEvent.labelZh}<small>{DISTANCE_LABELS[soundEvent.distance]}距</small></button>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
           </section>
         )}
 

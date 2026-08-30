@@ -104,21 +104,21 @@
         "targetId": "a1_bakery_inspection_lamp",
         "entityId": "chapter4-bakery-inspection-lamp",
         "installationBounds": { "x": 354, "y": 313, "width": 39, "height": 30 },
-        "standPosition": { "x": 374, "y": 386 },
+        "standPosition": { "x": 374, "y": 390 },
         "proximity": 56
       },
       {
         "targetId": "a1_bakery_conveyor_edge",
         "entityId": "chapter4-bakery-conveyor-edge",
         "installationBounds": { "x": 286, "y": 332, "width": 17, "height": 29 },
-        "standPosition": { "x": 294, "y": 386 },
+        "standPosition": { "x": 294, "y": 390 },
         "proximity": 48
       },
       {
         "targetId": "a1_bakery_hour_hand_pickup",
         "entityId": "chapter4-bakery-hour-hand-pickup",
         "installationBounds": { "x": 288, "y": 312, "width": 34, "height": 39 },
-        "standPosition": { "x": 294, "y": 386 },
+        "standPosition": { "x": 294, "y": 390 },
         "proximity": 48,
         "visual": {
           "texture": "chapter4_story_items",
@@ -137,9 +137,11 @@
       "frames": [6, 7],
       "origin": { "x": 0.5, "y": 1 },
       "uniformScale": 0.52,
-      "position": { "x": 365, "y": 340 },
+      "position": { "x": 260, "y": 340 },
+      "visibleSourceHeight": 80,
       "collision": false,
-      "foregroundOcclusionId": "a1_foreground_018"
+      "foregroundOcclusionId": "a1_foreground_018",
+      "activePhases": ["bakery_hour_hand", "morning_checkin"]
     },
     "crowd": {
       "texture": "student_walk",
@@ -161,9 +163,9 @@
           { "x": 510.5, "y": 560 },
           { "x": 477, "y": 560 },
           { "x": 477, "y": 470 },
-          { "x": 477, "y": 386 },
-          { "x": 374, "y": 386 },
-          { "x": 294, "y": 386 }
+          { "x": 477, "y": 390 },
+          { "x": 374, "y": 390 },
+          { "x": 294, "y": 390 }
         ]
       },
       {
@@ -175,9 +177,9 @@
           { "x": 477, "y": 748 },
           { "x": 477, "y": 730 },
           { "x": 477, "y": 470 },
-          { "x": 477, "y": 386 },
-          { "x": 374, "y": 386 },
-          { "x": 294, "y": 386 }
+          { "x": 477, "y": 390 },
+          { "x": 374, "y": 390 },
+          { "x": 294, "y": 390 }
         ]
       }
     ]
@@ -588,9 +590,9 @@
       {
         "targetId": "a1_campus_card_reader",
         "entityId": "chapter4_checkin_card_reader",
-        "installationBounds": { "x": 756, "y": 608, "width": 34, "height": 24 },
-        "standPosition": { "x": 773, "y": 662 },
-        "proximity": 56,
+        "installationBounds": { "x": 768, "y": 607, "width": 30, "height": 24 },
+        "standPosition": { "x": 783, "y": 662 },
+        "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_programmatic_card_reader_get_bounds",
           "zoneSource": "visibleFixture.getBounds"
@@ -600,9 +602,9 @@
       {
         "targetId": "a1_attendance_paper_slot",
         "entityId": "chapter4_checkin_attendance_paper_slot",
-        "installationBounds": { "x": 835, "y": 606, "width": 40, "height": 26 },
-        "standPosition": { "x": 855, "y": 662 },
-        "proximity": 56,
+        "installationBounds": { "x": 848, "y": 606, "width": 38, "height": 25 },
+        "standPosition": { "x": 867, "y": 662 },
+        "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_programmatic_paper_slot_get_bounds",
           "zoneSource": "visibleFixture.getBounds"
@@ -952,6 +954,15 @@
           "y": 633,
           "width": 179,
           "height": 26
+        },
+        {
+          "id": "a1_air_wall_bakery_counter",
+          "sourceAnnotationId": "a1-ann-018",
+          "label": "面包坊柜台空气墙",
+          "x": 80,
+          "y": 292,
+          "width": 397,
+          "height": 90
         }
       ],
       "walkableRegions": [
@@ -1222,10 +1233,10 @@
           "id": "a1_front_desk_duty_board",
           "label": "一楼前台值班签到板",
           "bounds": {
-            "x": 674,
-            "y": 550,
-            "width": 152,
-            "height": 100
+            "x": 699,
+            "y": 548,
+            "width": 104,
+            "height": 68
           }
         },
         {

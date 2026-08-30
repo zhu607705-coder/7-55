@@ -286,6 +286,14 @@
       "reason": "主电梯重放窗口尚未校准。",
       "nextAction": "使用浅色操作进入轿厢，让门体开放区间覆盖六秒进入窗口。"
     },
+    "elevator_floor_records_required": {
+      "reason": "三层电梯运行记录尚未齐全。",
+      "nextAction": "分别在一楼、三楼和二楼查阅起行、到站与外呼记录；三段可按任意顺序归档。"
+    },
+    "elevator_stop_chain_required": {
+      "reason": "跨层停靠链尚未复核。",
+      "nextAction": "三段记录齐全后，在浅色操作的电梯面板中确认实际到站层和未响应外呼层。"
+    },
     "duty_board_required": {
       "reason": "A1 的三段值班记录还没有汇合。",
       "nextAction": "到前台台面打开签到板；104、105 与电梯的调查顺序不受限制。"
@@ -613,6 +621,7 @@
         "watch_room204_projection",
         "collect_positioning_plate",
         "resolve_a2_inserted_puzzles",
+        "resolve_elevator_stop_chain",
         "install_positioning_plate"
       ],
       "dialogueIds": [
@@ -834,6 +843,14 @@
         "在浅色操作中进入一楼主电梯轿厢。",
         "调整重放起点，让门体开放区间完整覆盖人物的六秒进入窗口。",
         "校准成功后乘电梯直达三楼，二楼按钮会暂时锁定。"
+      ]
+    },
+    "resolve_elevator_stop_chain": {
+      "label": "复核三层停靠记录，确认定位片的楼层基准",
+      "hints": [
+        "一楼起行轨、三楼到站铃和二楼外呼日志可以按任意顺序归档。",
+        "在各层主电梯轿厢中使用深色观察读取本层记录；二楼需先经三楼错位楼梯进入。",
+        "三段记录齐全后切回浅色操作，在电梯面板确认实际到站层和未响应外呼层。"
       ]
     },
     "answer_zhu_two_questions": {

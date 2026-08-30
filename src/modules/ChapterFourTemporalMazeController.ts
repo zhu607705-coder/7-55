@@ -46,6 +46,15 @@ import {
   isChapterFourElevatorTrackAligned
 } from "./ChapterFourElevatorModel";
 import {
+  CHAPTER_FOUR_ELEVATOR_FLOOR_RECORDS,
+  chapterFourElevatorRecordsComplete,
+  isChapterFourElevatorDeductionFloor,
+  isChapterFourElevatorRecordFloor,
+  isChapterFourElevatorStopChainCorrect,
+  type ChapterFourElevatorDeductionFloor,
+  type ChapterFourElevatorRecordFloor
+} from "./ChapterFourElevatorFloorInvestigation";
+import {
   CHAPTER_FOUR_INSERTED_PUZZLES,
   chapterFourInsertedPuzzleForTarget,
   isChapterFourInsertedPuzzleAnswer,
@@ -166,6 +175,12 @@ export type ChapterFour755Intent =
     }
   | { type: "observe_elevator_history" }
   | { type: "calibrate_elevator_history"; startSeconds: number }
+  | { type: "observe_elevator_floor_record"; floor: ChapterFourElevatorRecordFloor }
+  | {
+      type: "reconstruct_elevator_stop_chain";
+      actualArrivalFloor: ChapterFourElevatorDeductionFloor;
+      unservedCallFloor: ChapterFourElevatorDeductionFloor;
+    }
   | { type: "complete_misaligned_stair" }
   | { type: "complete_inserted_puzzle"; answer: ChapterFourInsertedPuzzleAnswer }
   | ChapterFour755TargetIntent<{ type: "catch_attendance_paper"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.attendancePaper }>
@@ -365,6 +380,8 @@ export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "classroom_checks_required",
   "elevator_history_required",
   "elevator_calibration_required",
+  "elevator_floor_records_required",
+  "elevator_stop_chain_required",
   "duty_board_required",
   "archive_film_required",
   "media_alignment_required",
@@ -570,6 +587,12 @@ function lockedDetailForIntent(
       return "elevator_history_required";
     case "calibrate_elevator_history":
       return "elevator_calibration_required";
+    case "observe_elevator_floor_record":
+      return "elevator_floor_records_required";
+    case "reconstruct_elevator_stop_chain":
+      return chapterFourElevatorRecordsComplete(chapter.factIds)
+        ? "elevator_stop_chain_required"
+        : "elevator_floor_records_required";
     case "complete_misaligned_stair":
       if (!hasFact(chapter, "a3_media_alignment_completed")) return "media_alignment_required";
       return hasFact(chapter, "zhu_two_questions_answered")
@@ -608,6 +631,11 @@ function lockedDetailForIntent(
     case "collect_positioning_plate":
       return "room204_projection_required";
     case "install_positioning_plate":
+      if (!hasFact(chapter, "elevator_stop_chain_reconstructed")) {
+        return chapterFourElevatorRecordsComplete(chapter.factIds)
+          ? "elevator_stop_chain_required"
+          : "elevator_floor_records_required";
+      }
       if (!hasFact(chapter, "a2_positioning_plate_calibrated")) {
         return "positioning_calibration_required";
       }
@@ -860,6 +888,45 @@ export class ChapterFourTemporalMazeController {
         }
         return accept(this.patchChapter(state, {
           factIds: appendFact(chapter, "elevator_history_calibrated")
+        }));
+      }
+
+      case "observe_elevator_floor_record": {
+        if (chapter.phase !== "room204_restore"
+          || chapter.floor !== intent.floor) {
+          return reject("locked", "elevator_floor_records_required");
+        }
+        if (chapter.mode !== "dark") return reject("wrong_mode");
+        const record = CHAPTER_FOUR_ELEVATOR_FLOOR_RECORDS[intent.floor];
+        if (hasFact(chapter, record.factId)) return reject("already_complete");
+        if (intent.floor === "A1") {
+          return reject("locked", "elevator_history_required");
+        }
+        if (intent.floor === "A2" && !hasFact(chapter, "misaligned_stair_solved")) {
+          return reject("locked", "misaligned_stair_required");
+        }
+        if (intent.floor === "A3" && !hasFact(chapter, "elevator_history_calibrated")) {
+          return reject("locked", "elevator_calibration_required");
+        }
+        return accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, record.factId)
+        }));
+      }
+
+      case "reconstruct_elevator_stop_chain": {
+        if (chapter.phase !== "room204_restore") {
+          return reject("locked", "elevator_stop_chain_required");
+        }
+        if (chapter.mode !== "light") return reject("wrong_mode");
+        if (hasFact(chapter, "elevator_stop_chain_reconstructed")) {
+          return reject("already_complete");
+        }
+        if (!chapterFourElevatorRecordsComplete(chapter.factIds)) {
+          return reject("locked", "elevator_floor_records_required");
+        }
+        if (!isChapterFourElevatorStopChainCorrect(intent)) return reject("incorrect");
+        return accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "elevator_stop_chain_reconstructed")
         }));
       }
 
@@ -1183,6 +1250,7 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "a2_positioning_plate_calibrated")
           || !hasFact(chapter, "a2_power_topology_recovered")
           || !hasFact(chapter, "a2_evacuation_route_confirmed")
+          || !hasFact(chapter, "elevator_stop_chain_reconstructed")
           || !state.items.clockPositioningPlate
           || hasFact(chapter, "positioning_plate_installed")) return reject("locked");
         const result = accept(this.transition(state, "maintenance_repair", {
@@ -1774,6 +1842,14 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "calibrate_elevator_history":
       return hasExactKeys(value, ["type", "startSeconds"])
         && isChapterFourElevatorStartSelectable(value.startSeconds as number);
+    case "observe_elevator_floor_record":
+      return hasExactKeys(value, ["type", "floor"])
+        && isChapterFourElevatorRecordFloor(value.floor);
+    case "reconstruct_elevator_stop_chain":
+      return hasExactKeys(value, ["type", "actualArrivalFloor", "unservedCallFloor"])
+        && isChapterFourElevatorDeductionFloor(value.actualArrivalFloor)
+        && isChapterFourElevatorDeductionFloor(value.unservedCallFloor)
+        && value.actualArrivalFloor !== value.unservedCallFloor;
     case "set_mode":
       return hasExactKeys(value, ["type", "mode"])
         && (value.mode === "light" || value.mode === "dark");

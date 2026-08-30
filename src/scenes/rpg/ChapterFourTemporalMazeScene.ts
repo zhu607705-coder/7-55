@@ -57,6 +57,14 @@ import {
   chapterFourPlayerDepth
 } from "../../modules/ChapterFourElevatorDepthModel";
 import { CHAPTER_FOUR_ELEVATOR } from "../../modules/ChapterFourElevatorModel";
+import {
+  CHAPTER_FOUR_ELEVATOR_FLOOR_RECORDS,
+  chapterFourElevatorCollectedRecordCount,
+  chapterFourElevatorRecordForDisplayFloor,
+  chapterFourElevatorRecordsComplete,
+  type ChapterFourElevatorDeductionFloor,
+  type ChapterFourElevatorRecordFloor
+} from "../../modules/ChapterFourElevatorFloorInvestigation";
 import type { ChapterFour755Intent } from "../../modules/ChapterFourTemporalMazeController";
 import { chapterFourInsertedPuzzleForTarget } from "../../modules/ChapterFourInsertedPuzzleModel";
 import {
@@ -493,13 +501,16 @@ interface BakeryRuntimeContract {
   statePlateId: "a1_1225_bakery";
   targetEntities: BakeryRuntimeTargetDefinition[];
   baker: {
+    textureFile: string;
     framePair: number;
     frames: number[];
     origin: { x: 0.5; y: 1 };
     uniformScale: number;
     position: { x: number; y: number };
+    visibleSourceHeight: number;
     collision: false;
     foregroundOcclusionId: string;
+    activePhases: Array<"bakery_hour_hand" | "morning_checkin">;
   };
   crowd: {
     texture: "student_walk";
@@ -663,6 +674,8 @@ const WORLD = Object.freeze({
 const PLAYER_SPEED = 176;
 const PLAYER_DEPTH_BASE = CHAPTER_FOUR_PLAYER_DEPTH_BASE;
 const PLAYER_TOP_DEPTH = CHAPTER_FOUR_PLAYER_TOP_DEPTH;
+const MAIN_ENTRANCE_FOREGROUND_ID = "floor_1_a1_foreground_017";
+const MAIN_ENTRANCE_OCCLUSION_DEPTH = PLAYER_TOP_DEPTH + 1;
 const REALITY_MODE_ATMOSPHERE_DEPTH = PLAYER_TOP_DEPTH - 100;
 const REALITY_MODE_TARGET_DEPTH = PLAYER_TOP_DEPTH - 50;
 const REALITY_MODE_TRANSITION_MS = 240;
@@ -1033,9 +1046,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private nearbyTravelTarget: TravelTarget | null = null;
   private nearbyTravelTargetHasPriority = false;
   private nearbyStoryTarget: ProjectedTarget | null = null;
+  private nearbyAlumniFigure: ChapterFourAlumniHonorWallFigure | null = null;
   private nearbyLandmark: LayoutAnchor | null = null;
   private floorPanel: Phaser.GameObjects.Container | null = null;
-  private floorPanelMode: "floors" | "elevator_calibration" = "floors";
+  private floorPanelMode: "floors" | "elevator_calibration" | "elevator_route_deduction" = "floors";
   private floorPanelSelection: DisplayFloor = 1;
   private elevatorReplayStartSeconds = CHAPTER_FOUR_ELEVATOR.selectableStartMinSeconds;
   private elevatorCalibrationGraphics: Phaser.GameObjects.Graphics | null = null;
@@ -1046,7 +1060,22 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     enabled: boolean;
     background: Phaser.GameObjects.Rectangle;
     label: Phaser.GameObjects.Text;
+    detail: Phaser.GameObjects.Text;
+    status: Phaser.GameObjects.Text;
   }> = [];
+  private floorPanelTitle: Phaser.GameObjects.Text | null = null;
+  private floorPanelDescription: Phaser.GameObjects.Text | null = null;
+  private floorPanelEvidence: Phaser.GameObjects.Text | null = null;
+  private floorPanelProgress: Phaser.GameObjects.Text | null = null;
+  private floorPanelPrimaryButton: Phaser.GameObjects.Rectangle | null = null;
+  private floorPanelPrimaryLabel: Phaser.GameObjects.Text | null = null;
+  private floorPanelDeductionButton: Phaser.GameObjects.Rectangle | null = null;
+  private floorPanelDeductionLabel: Phaser.GameObjects.Text | null = null;
+  private elevatorDeductionArrivalFloor: ChapterFourElevatorDeductionFloor = "A2";
+  private elevatorDeductionUnservedFloor: ChapterFourElevatorDeductionFloor = "A3";
+  private elevatorDeductionFeedback = "";
+  private elevatorDeductionGraphics: Phaser.GameObjects.Graphics | null = null;
+  private elevatorDeductionReadout: Phaser.GameObjects.Text | null = null;
   private alumniPanel: Phaser.GameObjects.Container | null = null;
   private alumniPanelFigure: ChapterFourAlumniHonorWallFigure | null = null;
   private alumniPanelStage: "biography" | "purpose" | "person" | "saving" = "biography";
@@ -1147,6 +1176,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private finalMinuteTargetZone: Phaser.GameObjects.Zone | null = null;
   private morningCheckinVisuals = new Map<string, {
     fixture: Phaser.GameObjects.Rectangle;
+    details: Phaser.GameObjects.Graphics;
     label: Phaser.GameObjects.Text;
   }>();
   private morningCheckinStudents: Phaser.GameObjects.Sprite[] = [];
@@ -1338,6 +1368,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.updateFinalChaseRuntime(delta);
     }
     this.syncStoryInputLock();
+    this.syncMainEntranceForegroundDepth();
     if (this.alumniPanel) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
@@ -1401,6 +1432,21 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.publishDebug();
   }
 
+  private syncMainEntranceForegroundDepth(): void {
+    const entrance = this.appliedForegrounds.find(
+      (visual) => visual.id === MAIN_ENTRANCE_FOREGROUND_ID
+    );
+    if (!entrance) return;
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const playerFootY = playerBody?.bottom ?? this.player.y;
+    const playerBehindDoor = this.currentFloor === entrance.floor
+      && playerFootY < entrance.baselineY;
+    const nextDepth = playerBehindDoor
+      ? MAIN_ENTRANCE_OCCLUSION_DEPTH
+      : PLAYER_DEPTH_BASE + entrance.baselineY;
+    if (entrance.image.depth !== nextDepth) entrance.image.setDepth(nextDepth);
+  }
+
   private bindBridgeEvents(): void {
     this.events.on(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this);
     subscribeRpgSceneBridge(this.events, this.bridge, (event) => {
@@ -1452,6 +1498,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           if (x !== 0 || y !== 0) {
             const delta = x > 0 || y > 0 ? 1 : -1;
             if (this.floorPanelMode === "elevator_calibration") this.shiftElevatorReplayStart(delta);
+            else if (this.floorPanelMode === "elevator_route_deduction") {
+              if (x !== 0) this.shiftElevatorDeductionArrival();
+              if (y !== 0) this.shiftElevatorDeductionUnserved();
+            }
             else this.shiftFloorPanelSelection(delta);
           }
           this.virtualDirection = { x: 0, y: 0 };
@@ -1467,7 +1517,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           this.advanceAlumniPanel();
         } else if (this.floorPanel) {
           if (this.floorPanelMode === "elevator_calibration") this.submitElevatorCalibration();
-          else this.requestElevatorDestination(this.floorPanelSelection);
+          else if (this.floorPanelMode === "elevator_route_deduction") this.submitElevatorStopChain();
+          else this.activateFloorPanelPrimary();
         }
         else if (!this.isStoryInputLocked() && !this.hostPowerPanelOpen) this.interactionRequested = true;
       }
@@ -1483,6 +1534,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.pendingStoryRequest = null;
       this.clearStoryPresentationTimers();
       this.destroyBakeryRuntime("scene_shutdown");
+      this.destroyBakeryCounterStaff();
       this.destroyRoom204Runtime("scene_shutdown");
       this.destroyPhaseRuntime("scene_shutdown");
       this.destroyTask11Runtime("scene_shutdown");
@@ -1770,11 +1822,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       if (!displayFloor) continue;
       const floor = getFloor(displayFloor);
       this.textures.get(asset.textureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const displaySize = "displaySize" in asset ? asset.displaySize : asset.sourceSize;
       const image = this.add.image(
         floor.offsetX + asset.center.x,
         asset.center.y,
         asset.textureKey
-      ).setDisplaySize(asset.sourceSize.width, asset.sourceSize.height)
+      ).setDisplaySize(
+        displaySize.width,
+        displaySize.height
+      )
         .setDepth(asset.depth);
       this.insertedPuzzleProps.set(asset.puzzleId, image);
     }
@@ -1802,10 +1858,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     if (CHAPTER_FOUR_ALUMNI_HONOR_WALL.some(
       (figure) => !this.textures.exists(figure.portraitTextureKey)
     )) return;
-    const floor = getFloor(3);
     for (const figure of CHAPTER_FOUR_ALUMNI_HONOR_WALL) {
+      const floor = getFloor(figure.floor);
+      const wallDisplayDepth = CHAPTER_FOUR_PLAYER_DEPTH_BASE + (figure.floor === 1 ? 160 : 840);
       this.textures.get(figure.portraitTextureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
-      if (figure.frameBounds.y < 200) {
+      if ("drawRuntimeFrame" in figure && figure.drawRuntimeFrame) {
         const frame = this.add.rectangle(
           floor.offsetX + rectCenterX(figure.frameBounds),
           rectCenterY(figure.frameBounds),
@@ -1813,7 +1870,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           figure.frameBounds.height,
           0x281f18,
           1
-        ).setStrokeStyle(3, 0xb8964d, 1).setDepth(18);
+        ).setStrokeStyle(3, 0xb8964d, 1).setDepth(wallDisplayDepth);
         this.alumniWallObjects.push(frame);
       }
       const matte = this.add.rectangle(
@@ -1823,14 +1880,31 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         figure.imageBounds.height,
         0x17191d,
         1
-      ).setDepth(19);
+      ).setDepth(wallDisplayDepth + 1);
       const portrait = this.add.image(
         floor.offsetX + rectCenterX(figure.imageBounds),
         rectCenterY(figure.imageBounds),
         figure.portraitTextureKey
       ).setDisplaySize(figure.imageBounds.width, figure.imageBounds.height)
-        .setDepth(20);
-      this.alumniWallObjects.push(matte, portrait);
+        .setDepth(wallDisplayDepth + 2);
+      const hitTarget = this.add.zone(
+        floor.offsetX + rectCenterX(figure.frameBounds),
+        rectCenterY(figure.frameBounds),
+        Math.max(52, figure.frameBounds.width),
+        Math.max(68, figure.frameBounds.height)
+      ).setDepth(wallDisplayDepth + 3).setInteractive({ useHandCursor: true });
+      hitTarget.on("pointerover", () => {
+        if (this.currentFloor === figure.floor && !this.isStoryInputLocked()) {
+          portrait.setTint(0xffe8a3);
+        }
+      });
+      hitTarget.on("pointerout", () => portrait.clearTint());
+      hitTarget.on("pointerdown", () => {
+        portrait.clearTint();
+        if (this.currentFloor !== figure.floor || this.isStoryInputLocked()) return;
+        this.openAlumniPanel(figure.targetId);
+      });
+      this.alumniWallObjects.push(matte, portrait, hitTarget);
     }
   }
 
@@ -1868,27 +1942,29 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const backdrop = this.add.rectangle(480, 290, 960, 500, 0x02060b, 0.78)
       .setScrollFactor(0)
       .setInteractive();
-    const card = this.add.rectangle(480, 286, 650, 400, 0x101b2b, 0.98)
+    const card = this.add.rectangle(480, 286, 760, 420, 0x101b2b, 0.98)
       .setStrokeStyle(3, 0xe9c34b, 1);
-    const title = this.add.text(205, 108, `${figure.name}  ${figure.years}`, {
+    const title = this.add.text(145, 96, `${figure.name}  ${figure.years}`, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "28px",
       color: "#f6d45a"
     });
-    const role = this.add.text(205, 146, figure.role, {
+    const role = this.add.text(145, 134, figure.role, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "16px",
-      color: "#8fe8ff"
+      color: "#8fe8ff",
+      wordWrap: { width: 650, useAdvancedWrap: true }
     });
-    const portraitMatte = this.add.rectangle(253, 277, 112, 170, 0x1b1d22, 1)
+    const portraitMatte = this.add.rectangle(248, 294, 160, 244, 0x1b1d22, 1)
       .setStrokeStyle(3, 0xb8964d, 1);
-    const portrait = this.add.image(253, 277, figure.portraitTextureKey).setDisplaySize(100, 158);
-    const source = this.add.text(326, 426, `资料依据：${figure.sourceLabel}`, {
+    const portrait = this.add.image(248, 294, figure.portraitTextureKey).setDisplaySize(150, 232);
+    const source = this.add.text(352, 428, `资料依据：${figure.sourceLabel}`, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "13px",
-      color: "#9ba9b8"
+      color: "#9ba9b8",
+      wordWrap: { width: 430, useAdvancedWrap: true }
     });
-    const close = this.add.text(785, 103, "×", {
+    const close = this.add.text(835, 96, "×", {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "30px",
       color: "#f7f1dc"
@@ -1897,28 +1973,28 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     panel.add([backdrop, card, title, role, portraitMatte, portrait, source, close]);
 
     if (this.alumniPanelStage === "biography") {
-      panel.add(this.add.text(326, 180, figure.biography.map((line) => `• ${line}`).join("\n\n"), {
+      panel.add(this.add.text(352, 184, figure.biography.map((line) => `• ${line}`).join("\n\n"), {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "16px",
         color: "#f7f1dc",
         lineSpacing: 6,
-        wordWrap: { width: 430, useAdvancedWrap: true }
+        wordWrap: { width: 445, useAdvancedWrap: true }
       }));
       const answered = this.bridge.getState().chapter4.factIds.includes("zhu_two_questions_answered");
       const actionLabel = figure.id === "zhu_kezhen" && !answered ? "进入竺老两问" : "返回地图";
-      const actionButton = this.add.rectangle(670, 460, 190, 42, 0x315e7c, 1)
+      const actionButton = this.add.rectangle(730, 470, 190, 42, 0x315e7c, 1)
         .setStrokeStyle(2, 0xf6d45a, 1)
         .setScrollFactor(0)
         .setInteractive({ useHandCursor: true });
       actionButton.on("pointerdown", () => this.advanceAlumniPanel());
       panel.add([
-        this.add.text(350, 460, "Space / Enter · 确认    Esc · 返回", {
+        this.add.text(352, 470, "Space / Enter · 确认    Esc · 返回", {
           fontFamily: "'Fusion Pixel', 'Courier New', monospace",
           fontSize: "14px",
           color: "#9ba9b8"
         }).setOrigin(0, 0.5),
         actionButton,
-        this.add.text(670, 460, actionLabel, {
+        this.add.text(730, 470, actionLabel, {
           fontFamily: "'Fusion Pixel', 'Courier New', monospace",
           fontSize: "16px",
           color: "#fff4bb"
@@ -1929,11 +2005,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
     const questionIndex = this.alumniPanelStage === "purpose" ? 0 : 1;
     const question = CHAPTER_FOUR_ZHU_QUESTIONS[questionIndex];
-    panel.add(this.add.text(326, 183, question.prompt, {
+    panel.add(this.add.text(352, 183, question.prompt, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "21px",
       color: "#f7f1dc",
-      wordWrap: { width: 430 }
+      wordWrap: { width: 445 }
     }));
     if (this.alumniPanelStage === "saving") {
       panel.add(this.add.text(520, 300, "正在保存两项回答……", {
@@ -1945,12 +2021,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
     question.options.forEach((option, index) => {
       const selected = index === this.alumniPanelSelection;
-      const optionBox = this.add.rectangle(535, 246 + index * 66, 420, 52,
+      const optionBox = this.add.rectangle(575, 246 + index * 66, 445, 52,
         selected ? 0x315e7c : 0x18283a, 1)
         .setStrokeStyle(2, selected ? 0xf6d45a : 0x758da6, 1)
         .setScrollFactor(0)
         .setInteractive({ useHandCursor: true });
-      const optionText = this.add.text(345, 246 + index * 66, option.label, {
+      const optionText = this.add.text(374, 246 + index * 66, option.label, {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "16px",
         color: selected ? "#fff4bb" : "#dce7f1"
@@ -1961,19 +2037,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       });
       panel.add([optionBox, optionText]);
     });
-    const confirmButton = this.add.rectangle(680, 460, 170, 42, 0x315e7c, 1)
+    const confirmButton = this.add.rectangle(750, 470, 170, 42, 0x315e7c, 1)
       .setStrokeStyle(2, 0xf6d45a, 1)
       .setScrollFactor(0)
       .setInteractive({ useHandCursor: true });
     confirmButton.on("pointerdown", () => this.advanceAlumniPanel());
     panel.add([
-      this.add.text(342, 460, "方向键选择 · Esc 返回", {
+      this.add.text(352, 470, "方向键选择 · Esc 返回", {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "14px",
         color: "#9ba9b8"
       }).setOrigin(0, 0.5),
       confirmButton,
-      this.add.text(680, 460, "确认选择", {
+      this.add.text(750, 470, "确认选择", {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "16px",
         color: "#fff4bb"
@@ -3098,18 +3174,6 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       ease: "Linear"
     });
 
-    const baker = BAKERY_RUNTIME.baker;
-    this.bakeryBaker = this.add.sprite(
-      floor.offsetX + baker.position.x,
-      baker.position.y,
-      BAKERY_COUNTER_BAKER_TEXTURE,
-      baker.frames[0]
-    ).setOrigin(baker.origin.x, baker.origin.y)
-      .setScale(baker.uniformScale)
-      .setDepth(PLAYER_DEPTH_BASE + baker.position.y);
-    this.bakeryBaker.play(BAKERY_COUNTER_BAKER_ANIMATION, true);
-    this.bakeryRuntimeObjects.push(this.bakeryBaker);
-
     const crowdSprites: Phaser.Physics.Arcade.Sprite[] = [];
     for (const [routeIndex, route] of BAKERY_RUNTIME.crowd.routes.entries()) {
       const sprite = this.physics.add.sprite(
@@ -3336,7 +3400,6 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
     this.bakeryRuntimeObjects = [];
     this.bakeryRuntimeTargets.clear();
-    this.bakeryBaker = null;
     this.bakeryConveyorGlint = null;
     this.bakeryHourHandSprite = null;
     this.bakeryHourHandGlint = null;
@@ -3748,6 +3811,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private syncPhaseRuntime(state: GameState): void {
+    this.syncBakeryCounterStaff(state);
     this.syncFrontDeskAttendant(state);
     this.syncSupportNpcs(state);
     if (state.chapter4.phase === "maintenance_repair") {
@@ -3789,6 +3853,41 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.destroyRoom202RecoveryBarrier("phase_change");
       this.destroyFinalMinuteRuntime("phase_change");
     }
+  }
+
+  private syncBakeryCounterStaff(state: GameState): void {
+    const baker = BAKERY_RUNTIME.baker;
+    const active = state.chapter4.floor === BAKERY_RUNTIME.storyFloor
+      && (baker.activePhases as readonly string[]).includes(state.chapter4.phase)
+      && this.textures.exists(BAKERY_COUNTER_BAKER_TEXTURE);
+    if (!active) {
+      this.destroyBakeryCounterStaff();
+      return;
+    }
+    if (this.bakeryBaker?.active) return;
+
+    const floor = getFloor(1);
+    const counterForeground = floor.foregroundOcclusions.find(
+      (definition) => definition.id === baker.foregroundOcclusionId
+    );
+    this.ensureBakeryBakerAnimation();
+    this.bakeryBaker = this.add.sprite(
+      floor.offsetX + baker.position.x,
+      baker.position.y,
+      BAKERY_COUNTER_BAKER_TEXTURE,
+      baker.frames[0]
+    ).setOrigin(baker.origin.x, baker.origin.y)
+      .setScale(baker.uniformScale)
+      .setCrop(0, 0, 96, baker.visibleSourceHeight)
+      .setDepth(PLAYER_DEPTH_BASE + (counterForeground?.baselineY ?? baker.position.y) + 1);
+    if (this.anims.exists(BAKERY_COUNTER_BAKER_ANIMATION)) {
+      this.bakeryBaker.play(BAKERY_COUNTER_BAKER_ANIMATION, true);
+    }
+  }
+
+  private destroyBakeryCounterStaff(): void {
+    this.bakeryBaker?.destroy();
+    this.bakeryBaker = null;
   }
 
   private hasPhaseRuntimeTargets(targetIds: readonly string[]): boolean {
@@ -4630,10 +4729,20 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.setPhaseRuntimeTargetVisible("a1_campus_card_reader", !cardAccepted);
     this.setPhaseRuntimeTargetVisible("a1_attendance_paper_slot", !paperAccepted);
     const cardVisual = this.morningCheckinVisuals.get("a1_campus_card_reader");
-    cardVisual?.fixture.setFillStyle(cardAccepted ? 0x294037 : 0x16394a, 0.96);
+    if (cardVisual) this.paintMorningCheckinFixture(
+      "a1_campus_card_reader",
+      cardVisual.details,
+      cardVisual.fixture.getBounds(),
+      cardAccepted
+    );
     cardVisual?.label.setText(cardAccepted ? "已刷卡" : "校园卡");
     const paperVisual = this.morningCheckinVisuals.get("a1_attendance_paper_slot");
-    paperVisual?.fixture.setFillStyle(paperAccepted ? 0x403929 : 0x493917, 0.96);
+    if (paperVisual) this.paintMorningCheckinFixture(
+      "a1_attendance_paper_slot",
+      paperVisual.details,
+      paperVisual.fixture.getBounds(),
+      paperAccepted
+    );
     paperVisual?.label.setText(paperAccepted ? "已签到" : "纸条");
   }
 
@@ -4698,9 +4807,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       bounds.width,
       bounds.height,
       fillColor,
-      0.96
+      0.01
     ).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 6)
-      .setStrokeStyle(2, strokeColor, 0.96)
+      .setStrokeStyle(1, strokeColor, 0.01)
       .setVisible(true);
     const measured = fixture.getBounds();
     const derived = {
@@ -4717,6 +4826,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       );
       return null;
     }
+    const details = this.add.graphics()
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 6);
+    this.paintMorningCheckinFixture(targetId, details, fixture.getBounds(), false);
     const label = this.add.text(
       getFloor(floor).offsetX + rectCenterX(derived),
       derived.y - 8,
@@ -4759,9 +4871,65 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       floor,
       boundsObject: zone
     });
-    this.phaseRuntimeObjects.push(fixture, label, zone);
-    this.morningCheckinVisuals.set(targetId, { fixture, label });
+    this.phaseRuntimeObjects.push(fixture, details, label, zone);
+    this.morningCheckinVisuals.set(targetId, { fixture, details, label });
     return zone;
+  }
+
+  private paintMorningCheckinFixture(
+    targetId: string,
+    graphics: Phaser.GameObjects.Graphics,
+    bounds: Phaser.Geom.Rectangle,
+    accepted: boolean
+  ): void {
+    const x = Math.round(bounds.left);
+    const y = Math.round(bounds.top);
+    const width = Math.round(bounds.width);
+    const height = Math.round(bounds.height);
+    const statusColor = accepted ? 0x7ee79a : 0x75e6ff;
+    graphics.clear();
+
+    if (targetId === "a1_campus_card_reader") {
+      graphics.fillStyle(0x07131c, 0.98);
+      graphics.fillPoints([
+        new Phaser.Geom.Point(x + 3, y),
+        new Phaser.Geom.Point(x + width - 3, y),
+        new Phaser.Geom.Point(x + width, y + 4),
+        new Phaser.Geom.Point(x + width - 2, y + height),
+        new Phaser.Geom.Point(x + 2, y + height),
+        new Phaser.Geom.Point(x, y + 4)
+      ], true);
+      graphics.lineStyle(1, 0x9eafaa, 0.96).strokeRect(x + 2, y + 3, width - 4, height - 5);
+      graphics.fillStyle(0xbadfdc, 1).fillRect(x + 6, y + 5, width - 12, 8);
+      graphics.fillStyle(0x1a6271, 0.85).fillRect(x + 7, y + 6, width - 14, 2);
+      graphics.fillStyle(statusColor, 0.95).fillRect(x + 7, y + 9, width - 14, 1);
+      graphics.fillStyle(0x0b0908, 1).fillRect(x + 7, y + height - 7, width - 14, 2);
+      graphics.fillStyle(statusColor, 1).fillRect(x + width - 7, y + height - 5, 3, 2);
+      graphics.fillStyle(0x9aa9a9, 0.9).fillRect(x + 5, y + height - 5, 2, 2);
+      graphics.fillStyle(0xe8f2e9, 1).fillRect(x + 9, y + height - 4, 6, 1);
+      return;
+    }
+
+    graphics.fillStyle(0x261c13, 0.99);
+    graphics.fillPoints([
+      new Phaser.Geom.Point(x + 3, y + 3),
+      new Phaser.Geom.Point(x + width - 3, y + 3),
+      new Phaser.Geom.Point(x + width, y + 7),
+      new Phaser.Geom.Point(x + width - 2, y + height),
+      new Phaser.Geom.Point(x + 2, y + height),
+      new Phaser.Geom.Point(x, y + 7)
+    ], true);
+    graphics.lineStyle(1, accepted ? 0x94d7a1 : 0xc89a55, 0.98)
+      .strokeRect(x + 2, y + 6, width - 4, height - 8);
+    graphics.fillStyle(0xf0e4c8, 1).fillRect(x + 8, y, width - 16, 9);
+    graphics.fillStyle(0xc1b090, 1).fillRect(x + 10, y + 2, width - 20, 1);
+    graphics.fillStyle(0xc1b090, 1).fillRect(x + 10, y + 5, width - 23, 1);
+    graphics.fillStyle(0x080707, 1).fillRect(x + 5, y + 11, width - 10, 4);
+    graphics.fillStyle(0x705032, 1).fillRect(x + 7, y + 12, width - 14, 1);
+    graphics.fillStyle(statusColor, 1).fillRect(x + width - 8, y + height - 6, 3, 3);
+    graphics.fillStyle(0xc8b27a, 0.92).fillRect(x + 6, y + height - 5, width - 18, 2);
+    graphics.fillStyle(0xe0c68c, 1).fillRect(x + 3, y + 7, 1, 1);
+    graphics.fillStyle(0xe0c68c, 1).fillRect(x + width - 4, y + 7, 1, 1);
   }
 
   private createPhaseDecorationRect(
@@ -5431,7 +5599,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         : undefined;
       const color = mode === "dark" ? 0x67ddff : mode === "light" ? 0xffd36f : 0xf7f1dc;
       const modeActive = mode === undefined || mode === this.appliedChapterMode;
-      const isAlumniPortrait = getChapterFourAlumniFigureByTargetId(target.contract.id) !== undefined;
+      const isAlumniPortrait = getChapterFourAlumniFigureByTargetId(target.contract.id) !== null;
       if (isAlumniPortrait && !showBounds) continue;
       const container = this.add.container(
         floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds)
@@ -5553,6 +5721,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       }))
       .filter(({ target, distance }) => distance <= target.contract.proximity)
       .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
+    this.nearbyAlumniFigure = CHAPTER_FOUR_ALUMNI_HONOR_WALL
+      .filter((figure) => figure.floor === this.currentFloor)
+      .map((figure) => ({
+        figure,
+        distance: pointDistanceToRect(localPlayer, figure.frameBounds)
+      }))
+      .filter(({ distance }) => distance <= 72)
+      .sort((a, b) => a.distance - b.distance)[0]?.figure ?? null;
     const nearbyTravelCandidate = this.projection.phase && OPENING_PHASES.has(this.projection.phase)
       ? undefined
       : createTravelTargets(floor)
@@ -5601,6 +5777,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       && !this.pendingMove
       && !this.pendingStoryRequest) {
       this.interactionHint.setText(`Space · ${this.nearbyTravelTarget.label}`).setVisible(true);
+      return;
+    }
+    if (this.nearbyAlumniFigure && !this.pendingStoryRequest) {
+      this.interactionHint.setText(`Space · 查看${this.nearbyAlumniFigure.name}生平`)
+        .setVisible(true);
       return;
     }
     if (this.nearbyStoryTarget && !this.pendingStoryRequest) {
@@ -5672,6 +5853,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const state = this.bridge.getState();
     if (this.nearbyTravelTargetHasPriority) {
       this.handleTravelInteraction();
+      return;
+    }
+    if (this.nearbyAlumniFigure) {
+      this.openAlumniPanel(this.nearbyAlumniFigure.targetId);
       return;
     }
     if (state.chapter4.phase === "room204_restore"
@@ -6072,35 +6257,94 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.floorPanelSelection = this.currentFloor;
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
     panel.add([
-      this.add.rectangle(0, 0, 390, 228, 0x07111d, 0.96).setStrokeStyle(3, 0xffd36f, 0.94),
-      this.add.text(0, -78, "选择楼层", {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: "22px", color: "#f7f1dc"
+      this.add.rectangle(0, 0, 690, 390, 0x07111d, 0.98).setStrokeStyle(3, 0xd7b654, 0.96),
+      this.add.rectangle(-270, 0, 2, 298, 0x6f8394, 0.58),
+      this.add.text(-316, -168, "A 楼主电梯", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "24px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(-316, -139, "18:50 运行复核", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#d7b654"
+      }).setOrigin(0, 0.5)
+    ]);
+    this.floorPanelProgress = this.add.text(312, -153, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#b8c7d2"
+    }).setOrigin(1, 0.5);
+    panel.add(this.floorPanelProgress);
+    this.floorPanelButtons = [];
+    for (const displayFloor of [3, 2, 1] as const) {
+      const record = chapterFourElevatorRecordForDisplayFloor(displayFloor);
+      const y = displayFloor === 3 ? -76 : displayFloor === 2 ? 10 : 96;
+      const enabled = this.isElevatorFloorReachable(displayFloor, state);
+      const background = this.add.rectangle(-270, y, 128, 70, 0x17263a, 1)
+        .setStrokeStyle(2, 0x7f93aa, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => {
+          this.floorPanelSelection = displayFloor;
+          this.paintFloorPanelSelection();
+        });
+      const label = this.add.text(-318, y - 12, `${displayFloor}F`, {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "21px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5);
+      const detail = this.add.text(-318, y + 14, record.shortLabel, {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "10px", color: "#a9bac7"
+      }).setOrigin(0, 0.5);
+      const status = this.add.text(-218, y - 14, "", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "9px", color: "#d7b654"
+      }).setOrigin(1, 0.5);
+      panel.add([background, label, detail, status]);
+      this.floorPanelButtons.push({ floor: displayFloor, enabled, background, label, detail, status });
+    }
+
+    this.floorPanelTitle = this.add.text(-178, -102, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "19px", color: "#f7f1dc"
+    }).setOrigin(0, 0.5);
+    this.floorPanelDescription = this.add.text(-178, -66, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#b8c7d2",
+      wordWrap: { width: 454 }, lineSpacing: 5
+    }).setOrigin(0, 0);
+    this.floorPanelEvidence = this.add.text(-178, -7, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#d8e7ec",
+      wordWrap: { width: 454 }, lineSpacing: 7
+    }).setOrigin(0, 0);
+    this.floorPanelPrimaryButton = this.add.rectangle(-34, 104, 286, 44, 0x274d63, 1)
+      .setStrokeStyle(2, 0xd7b654, 0.92)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.activateFloorPanelPrimary());
+    this.floorPanelPrimaryLabel = this.add.text(-34, 104, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#f7f1dc"
+    }).setOrigin(0.5);
+    this.floorPanelDeductionButton = this.add.rectangle(213, 104, 180, 44, 0x17263a, 1)
+      .setStrokeStyle(2, 0x60768c, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.openElevatorDeductionPanel());
+    this.floorPanelDeductionLabel = this.add.text(213, 104, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#a9bac7"
+    }).setOrigin(0.5);
+    panel.add([
+      this.floorPanelTitle,
+      this.floorPanelDescription,
+      this.floorPanelEvidence,
+      this.floorPanelPrimaryButton,
+      this.floorPanelPrimaryLabel,
+      this.floorPanelDeductionButton,
+      this.floorPanelDeductionLabel,
+      this.add.text(0, 166, "↑↓ 选层 · Enter 执行 · Space 复核 · Esc 离开", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#8298af"
       }).setOrigin(0.5)
     ]);
-    this.floorPanelButtons = [];
-    for (const floor of FLOORS) {
-      const x = (floor.displayFloor - 2) * 105;
-      const enabled = !(state.chapter4.phase === "room204_restore"
-        && this.currentFloor === 1
-        && floor.displayFloor === 2
-        && !hasChapterFourFact(state, "misaligned_stair_solved"));
-      const background = this.add.rectangle(x, 12, 78, 70, 0x17263a, 1)
-        .setStrokeStyle(2, 0x7f93aa, 1);
-      if (enabled) {
-        background.setInteractive({ useHandCursor: true })
-          .on("pointerup", () => this.requestElevatorDestination(floor.displayFloor));
-      }
-      const label = this.add.text(x, 12, `${floor.displayFloor}F${enabled ? "" : " ×"}`, {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: enabled ? "20px" : "17px", color: enabled ? "#f7f1dc" : "#657487"
-      }).setOrigin(0.5);
-      panel.add([background, label]);
-      this.floorPanelButtons.push({ floor: floor.displayFloor, enabled, background, label });
-    }
-    panel.add(this.add.text(0, 82, "方向键选择 · Enter 确认 · Esc 返回", {
-      fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#9bb0c7"
-    }).setOrigin(0.5));
     this.floorPanel = panel;
     this.paintFloorPanelSelection();
+  }
+
+  private isElevatorFloorReachable(
+    targetFloor: DisplayFloor,
+    state: GameState = this.bridge.getState()
+  ): boolean {
+    if (targetFloor === this.currentFloor) return true;
+    if (state.chapter4.phase === "room204_restore"
+      && targetFloor === 2
+      && !hasChapterFourFact(state, "misaligned_stair_solved")) return false;
+    return true;
   }
 
   private openElevatorCalibrationPanel(): void {
@@ -6212,30 +6456,324 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorSelection();
       return;
     }
+    if (this.floorPanelMode === "elevator_route_deduction") {
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
+        || Phaser.Input.Keyboard.JustDown(this.cursors.right)) this.shiftElevatorDeductionArrival();
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.up)
+        || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftElevatorDeductionUnserved();
+      if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) this.submitElevatorStopChain();
+      if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.returnToElevatorFloorPanel();
+      return;
+    }
     if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
       || Phaser.Input.Keyboard.JustDown(this.cursors.up)) this.shiftFloorPanelSelection(-1);
     if (Phaser.Input.Keyboard.JustDown(this.cursors.right)
       || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftFloorPanelSelection(1);
-    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[1])) this.requestElevatorDestination(1);
-    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[2])) this.requestElevatorDestination(2);
-    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[3])) this.requestElevatorDestination(3);
-    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) {
-      this.requestElevatorDestination(this.floorPanelSelection);
-    }
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[1])) this.selectFloorPanelFloor(1);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[2])) this.selectFloorPanelFloor(2);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[3])) this.selectFloorPanelFloor(3);
+    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) this.activateFloorPanelPrimary();
+    if (Phaser.Input.Keyboard.JustDown(this.interactKey)) this.openElevatorDeductionPanel();
     if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorSelection();
   }
+
+  private selectFloorPanelFloor(floor: DisplayFloor): void {
+    this.floorPanelSelection = floor;
+    this.paintFloorPanelSelection();
+  }
+
   private shiftFloorPanelSelection(delta: number): void {
     this.floorPanelSelection = Phaser.Math.Clamp(this.floorPanelSelection + delta, 1, 3) as DisplayFloor;
     this.paintFloorPanelSelection();
   }
   private paintFloorPanelSelection(): void {
+    const state = this.bridge.getState();
+    const facts = state.chapter4.factIds;
     for (const entry of this.floorPanelButtons) {
       const selected = entry.floor === this.floorPanelSelection;
-      entry.background.setFillStyle(selected && entry.enabled ? 0x315d78 : 0x17263a, entry.enabled ? 1 : 0.6)
-        .setStrokeStyle(2, selected && entry.enabled ? 0xffd36f : entry.enabled ? 0x7f93aa : 0x465365, 1);
-      entry.label.setColor(!entry.enabled ? "#657487" : selected ? "#ffe493" : "#f7f1dc");
+      const record = chapterFourElevatorRecordForDisplayFloor(entry.floor);
+      const recordCollected = hasChapterFourFact(state, record.factId);
+      const current = entry.floor === this.currentFloor;
+      entry.enabled = this.isElevatorFloorReachable(entry.floor, state);
+      entry.background
+        .setFillStyle(selected ? 0x263f50 : current ? 0x1c3241 : 0x142230, 1)
+        .setStrokeStyle(2, selected ? 0xd7b654 : current ? 0x6fb6c6 : 0x65798b, 1);
+      entry.label.setColor(selected ? "#ffe493" : "#f7f1dc");
+      entry.detail.setColor(entry.enabled ? "#a9bac7" : "#7d8c98");
+      entry.status.setText(
+        current
+          ? "当前层"
+          : recordCollected
+            ? "已归档"
+            : entry.enabled
+              ? "可直达"
+              : "楼梯绕行"
+      ).setColor(current ? "#79d4db" : recordCollected ? "#83d2a7" : entry.enabled ? "#d7b654" : "#b09575");
     }
+
+    const record = chapterFourElevatorRecordForDisplayFloor(this.floorPanelSelection);
+    const collected = hasChapterFourFact(state, record.factId);
+    const current = this.floorPanelSelection === this.currentFloor;
+    const reachable = this.isElevatorFloorReachable(this.floorPanelSelection, state);
+    const recordCount = chapterFourElevatorCollectedRecordCount(facts);
+    const chainSolved = hasChapterFourFact(state, "elevator_stop_chain_reconstructed");
+    this.floorPanelProgress?.setText(`跨层档案 ${recordCount}/3${chainSolved ? " · 已复核" : ""}`)
+      .setColor(chainSolved ? "#83d2a7" : "#b8c7d2");
+    this.floorPanelTitle?.setText(`${record.displayFloor}F · ${record.shortLabel}`);
+    this.floorPanelDescription?.setText([
+      record.destinationLabel,
+      `${record.recordTitle}  ${record.timestamp}`
+    ]);
+    this.floorPanelEvidence?.setText(collected
+      ? [`■ ${record.evidence[0]}`, `■ ${record.evidence[1]}`]
+      : current && record.floor === "A1"
+        ? ["□ 一楼记录来自门外三条时间轨。", "离开轿厢后切到深色观察，在门前完成记录。"]
+        : current
+          ? ["□ 本层门机日志尚未归档。", state.chapter4.mode === "dark"
+            ? "当前可直接读取，记录后不会限制其他楼层的调查顺序。"
+            : "离开轿厢切到深色观察，再进入电梯读取本层记录。"]
+          : reachable
+            ? ["□ 到达该层后可读取门机记录。", "线索归档顺序不影响楼层通行。"]
+            : ["□ 轿厢没有该层的历史开门记录。", "先乘到三楼，再从主楼梯完成空间校准并进入二楼。"]);
+
+    const primaryLabel = current
+      ? collected
+        ? "本层记录已归档"
+        : record.floor === "A1"
+          ? "离开轿厢读取一楼门体轨"
+          : state.chapter4.mode === "dark"
+            ? `读取${record.recordTitle}`
+            : "需切换深色观察"
+      : reachable
+        ? `前往 ${record.displayFloor}F`
+        : "查看主楼梯绕行说明";
+    this.floorPanelPrimaryLabel?.setText(primaryLabel).setColor(collected && current ? "#9eb0bb" : "#f7f1dc");
+    this.floorPanelPrimaryButton?.setFillStyle(collected && current ? 0x1a2731 : 0x274d63, 1)
+      .setStrokeStyle(2, collected && current ? 0x5e707d : 0xd7b654, 0.92);
+
+    const deductionReady = chapterFourElevatorRecordsComplete(facts);
+    this.floorPanelDeductionLabel?.setText(chainSolved
+      ? "停靠链已复核"
+      : deductionReady
+        ? "复核停靠链"
+        : `运行复核 ${recordCount}/3`)
+      .setColor(chainSolved ? "#83d2a7" : deductionReady ? "#ffe493" : "#8799a6");
+    this.floorPanelDeductionButton?.setFillStyle(deductionReady ? 0x3a3d2a : 0x17263a, 1)
+      .setStrokeStyle(2, deductionReady ? 0xd7b654 : 0x60768c, 1);
   }
+
+  private activateFloorPanelPrimary(): void {
+    if (this.floorPanelMode !== "floors" || this.pendingMove || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    const record = chapterFourElevatorRecordForDisplayFloor(this.floorPanelSelection);
+    const current = this.floorPanelSelection === this.currentFloor;
+    if (!current) {
+      if (!this.isElevatorFloorReachable(this.floorPanelSelection, state)) {
+        this.showFeedback("二楼没有历史开门记录。先到三楼完成荣誉墙与影像调查，再从主楼梯校准空间并进入二楼。");
+        return;
+      }
+      this.requestElevatorDestination(this.floorPanelSelection);
+      return;
+    }
+    if (hasChapterFourFact(state, record.factId)) {
+      this.showFeedback(`${record.displayFloor}F ${record.recordTitle}已经归档。`);
+      return;
+    }
+    if (record.floor === "A1") {
+      this.showFeedback("一楼起行记录位于电梯门外。离开轿厢后切到深色观察，在门前读取三条时间轨。");
+      this.cancelElevatorSelection();
+      return;
+    }
+    if (state.chapter4.mode !== "dark") {
+      this.showFeedback("门机旧记录只在深色观察中可读。离开轿厢切换模式后再进入电梯。");
+      return;
+    }
+    this.requestStoryIntent({
+      type: "observe_elevator_floor_record",
+      floor: record.floor as ChapterFourElevatorRecordFloor
+    });
+  }
+
+  private openElevatorDeductionPanel(): void {
+    if (this.floorPanelMode !== "floors" || this.pendingMove || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    if (hasChapterFourFact(state, "elevator_stop_chain_reconstructed")) {
+      this.showFeedback("停靠链已复核：1F 起行，轿厢越过 2F 后在 3F 到站；2F 外呼未得到响应。");
+      return;
+    }
+    if (!chapterFourElevatorRecordsComplete(state.chapter4.factIds)) {
+      this.showFeedback(`还缺 ${3 - chapterFourElevatorCollectedRecordCount(state.chapter4.factIds)} 段楼层记录。三段可按任意顺序归档。`);
+      return;
+    }
+    if (state.chapter4.mode !== "light") {
+      this.showFeedback("记录已经齐全。离开轿厢切回浅色操作，再打开面板完成运行复核。");
+      return;
+    }
+    this.closeFloorPanel();
+    this.floorPanelMode = "elevator_route_deduction";
+    this.elevatorDeductionArrivalFloor = "A2";
+    this.elevatorDeductionUnservedFloor = "A3";
+    this.elevatorDeductionFeedback = "";
+    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    panel.add([
+      this.add.rectangle(0, 0, 690, 390, 0x07111d, 0.98).setStrokeStyle(3, 0xd7b654, 0.96),
+      this.add.text(-316, -164, "复原 18:50 停靠链", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "23px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(316, -164, "3/3 记录齐全", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#83d2a7"
+      }).setOrigin(1, 0.5)
+    ]);
+    const recordRows: Array<[string, string, string]> = [
+      ["1F", "18:49:58", "门开八秒；18:50:06 转为上行"],
+      ["2F", "18:50:04", "下行外呼亮起；门机没有开门记录"],
+      ["3F", "18:50:12", "到站铃响；随后门机完整开启"]
+    ];
+    recordRows.forEach(([floor, timestamp, evidence], index) => {
+      const y = -108 + index * 48;
+      panel.add([
+        this.add.rectangle(0, y, 628, 38, index === 1 ? 0x1a2833 : 0x14222d, 1)
+          .setStrokeStyle(1, 0x506475, 1),
+        this.add.text(-294, y, floor, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#ffe493"
+        }).setOrigin(0, 0.5),
+        this.add.text(-246, y, timestamp, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#86bfc9"
+        }).setOrigin(0, 0.5),
+        this.add.text(-166, y, evidence, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#d7e2e7"
+        }).setOrigin(0, 0.5)
+      ]);
+    });
+    this.elevatorDeductionGraphics = this.add.graphics();
+    this.elevatorDeductionReadout = this.add.text(0, 112, "", {
+      align: "center",
+      fontFamily: "'Fusion Pixel', monospace",
+      fontSize: "11px",
+      color: "#f7f1dc",
+      wordWrap: { width: 610 }
+    }).setOrigin(0.5);
+    panel.add([
+      this.elevatorDeductionGraphics,
+      this.elevatorDeductionReadout,
+      this.add.text(-292, 36, "轿厢离开 1F 后实际到站：", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#d7e2e7"
+      }).setOrigin(0, 0.5),
+      this.add.text(-292, 82, "有外呼但未得到开门响应：", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#d7e2e7"
+      }).setOrigin(0, 0.5)
+    ]);
+    const addChoice = (
+      x: number,
+      y: number,
+      label: string,
+      onActivate: () => void
+    ) => {
+      panel.add([
+        this.add.rectangle(x, y, 72, 34, 0x17263a, 0.01)
+          .setInteractive({ useHandCursor: true })
+          .on("pointerup", onActivate),
+        this.add.text(x, y, label, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#f7f1dc"
+        }).setOrigin(0.5)
+      ]);
+    };
+    addChoice(190, 36, "2F", () => {
+      this.elevatorDeductionArrivalFloor = "A2";
+      this.paintElevatorDeductionPanel();
+    });
+    addChoice(278, 36, "3F", () => {
+      this.elevatorDeductionArrivalFloor = "A3";
+      this.paintElevatorDeductionPanel();
+    });
+    addChoice(190, 82, "2F", () => {
+      this.elevatorDeductionUnservedFloor = "A2";
+      this.paintElevatorDeductionPanel();
+    });
+    addChoice(278, 82, "3F", () => {
+      this.elevatorDeductionUnservedFloor = "A3";
+      this.paintElevatorDeductionPanel();
+    });
+    panel.add([
+      this.add.rectangle(0, 148, 190, 42, 0x274d63, 1)
+        .setStrokeStyle(2, 0xd7b654, 0.94)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => this.submitElevatorStopChain()),
+      this.add.text(0, 148, "提交运行复核", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#f7f1dc"
+      }).setOrigin(0.5),
+      this.add.text(0, 178, "←→ 选择实际到站 · ↑↓ 选择未响应层 · Enter 提交 · Esc 返回", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "10px", color: "#8298af"
+      }).setOrigin(0.5)
+    ]);
+    this.floorPanel = panel;
+    this.paintElevatorDeductionPanel();
+  }
+
+  private shiftElevatorDeductionArrival(): void {
+    this.elevatorDeductionArrivalFloor = this.elevatorDeductionArrivalFloor === "A2" ? "A3" : "A2";
+    this.elevatorDeductionFeedback = "";
+    this.paintElevatorDeductionPanel();
+  }
+
+  private shiftElevatorDeductionUnserved(): void {
+    this.elevatorDeductionUnservedFloor = this.elevatorDeductionUnservedFloor === "A2" ? "A3" : "A2";
+    this.elevatorDeductionFeedback = "";
+    this.paintElevatorDeductionPanel();
+  }
+
+  private paintElevatorDeductionPanel(): void {
+    const graphics = this.elevatorDeductionGraphics;
+    const readout = this.elevatorDeductionReadout;
+    if (!graphics || !readout) return;
+    graphics.clear();
+    graphics.fillStyle(0xd7b654, 0.16).fillRoundedRect(
+      this.elevatorDeductionArrivalFloor === "A2" ? 154 : 242,
+      19,
+      72,
+      34,
+      3
+    );
+    graphics.fillStyle(0x79c5cf, 0.12).fillRoundedRect(
+      this.elevatorDeductionUnservedFloor === "A2" ? 154 : 242,
+      65,
+      72,
+      34,
+      3
+    );
+    graphics.lineStyle(2, 0xd7b654, 0.96).strokeRoundedRect(
+      this.elevatorDeductionArrivalFloor === "A2" ? 154 : 242,
+      19,
+      72,
+      34,
+      3
+    );
+    graphics.lineStyle(2, 0x79c5cf, 0.96).strokeRoundedRect(
+      this.elevatorDeductionUnservedFloor === "A2" ? 154 : 242,
+      65,
+      72,
+      34,
+      3
+    );
+    readout.setText(
+      this.elevatorDeductionFeedback || "比较三段记录，再分别确认实际到站层和未响应外呼层。"
+    ).setColor(this.elevatorDeductionFeedback ? "#ff9b82" : "#8298af");
+  }
+
+  private submitElevatorStopChain(): void {
+    if (this.floorPanelMode !== "elevator_route_deduction" || this.pendingStoryRequest) return;
+    this.requestStoryIntent({
+      type: "reconstruct_elevator_stop_chain",
+      actualArrivalFloor: this.elevatorDeductionArrivalFloor,
+      unservedCallFloor: this.elevatorDeductionUnservedFloor
+    });
+  }
+
+  private returnToElevatorFloorPanel(): void {
+    this.closeFloorPanel();
+    this.openFloorPanel();
+  }
+
   private closeFloorPanel(): void {
     this.floorPanel?.destroy(true);
     this.floorPanel = null;
@@ -6243,6 +6781,16 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.floorPanelButtons = [];
     this.elevatorCalibrationGraphics = null;
     this.elevatorCalibrationReadout = null;
+    this.floorPanelTitle = null;
+    this.floorPanelDescription = null;
+    this.floorPanelEvidence = null;
+    this.floorPanelProgress = null;
+    this.floorPanelPrimaryButton = null;
+    this.floorPanelPrimaryLabel = null;
+    this.floorPanelDeductionButton = null;
+    this.floorPanelDeductionLabel = null;
+    this.elevatorDeductionGraphics = null;
+    this.elevatorDeductionReadout = null;
   }
   private requestElevatorDestination(targetFloor: DisplayFloor): void {
     if (this.elevatorPhase !== "selecting"
@@ -6253,7 +6801,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       && this.currentFloor === 1
       && targetFloor === 2
       && !hasChapterFourFact(state, "misaligned_stair_solved")) {
-      this.showFeedback("二楼按钮没有对应的历史到站记录。先乘到三楼，再从错位楼梯返回二楼。");
+      this.showFeedback("二楼外呼存在，但轿厢没有开门记录。先乘到三楼，再从错位主楼梯进入二楼。");
       return;
     }
     if (targetFloor === this.currentFloor) {
@@ -6924,6 +7472,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.syncStoryInputLock();
         return;
       }
+      if (pending.intentType === "reconstruct_elevator_stop_chain"
+        && this.floorPanelMode === "elevator_route_deduction") {
+        this.elevatorDeductionFeedback = "复核不一致：重新比较二楼外呼与三楼门机时间。";
+        this.paintElevatorDeductionPanel();
+        this.showFeedback("实际到站层与未响应外呼层不能互换。重新比较三段记录。");
+        this.syncStoryInputLock();
+        return;
+      }
       if (pending.intentType === "complete_zhu_two_questions") {
         this.alumniPanelStage = "person";
         this.redrawAlumniPanel();
@@ -7142,6 +7698,31 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.elevatorCalibrationFailed = false;
         this.closeFloorPanel();
         this.openFloorPanel();
+        break;
+      case "observe_elevator_floor_record": {
+        this.storyPresentation = "idle";
+        const state = this.bridge.getState();
+        const record = chapterFourElevatorRecordForDisplayFloor(this.currentFloor);
+        this.paintFloorPanelSelection();
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: `${record.displayFloor}F ${record.recordTitle}已归档。${record.evidence[0]}`,
+          tone: "system",
+          durationMs: 4200
+        });
+        if (chapterFourElevatorRecordsComplete(state.chapter4.factIds)) {
+          this.showFeedback("三层运行记录已经齐全。切回浅色操作后，可在面板中复核停靠链。");
+        }
+        break;
+      }
+      case "reconstruct_elevator_stop_chain":
+        this.storyPresentation = "idle";
+        this.closeFloorPanel();
+        this.openFloorPanel();
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "跨层运行链已复核：轿厢从一楼直达三楼，二楼外呼没有得到开门响应。定位片的楼层基准已确认。",
+          tone: "success",
+          durationMs: 4800
+        });
         break;
       case "observe_a3_reference":
         this.storyPresentation = "idle";
@@ -8159,6 +8740,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
             : RPG_PLAYER_WALK_FPS,
         collisionWidth: body?.width,
         collisionHeight: body?.height,
+        collisionBounds: body
+          ? {
+              x: body.left,
+              y: body.top,
+              width: body.width,
+              height: body.height
+            }
+          : undefined,
         depth: this.player.depth
       },
       input: {
@@ -8280,6 +8869,18 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           flipX: actor.sprite.flipX,
           animationId: actor.sprite.anims.currentAnim?.key ?? null
         })),
+        bakeryStaff: this.bakeryBaker?.active
+          ? {
+              visible: this.bakeryBaker.visible,
+              position: {
+                x: this.bakeryBaker.x - getFloor(1).offsetX,
+                y: this.bakeryBaker.y
+              },
+              frame: Number(this.bakeryBaker.frame.name),
+              animationId: this.bakeryBaker.anims.currentAnim?.key ?? null,
+              activePhases: [...BAKERY_RUNTIME.baker.activePhases]
+            }
+          : null,
         finalChase: {
           active: state.chapter4.phase === "final_chase" && this.finalChaseState !== null,
           phase: this.finalChaseState?.phase ?? null,
@@ -8400,6 +9001,26 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           targetFloor: this.elevatorTargetFloor,
           doorProgress: this.elevatorDoorProgress,
           panelOpen: this.floorPanel !== null,
+          panelMode: this.floorPanelMode,
+          selectedFloor: this.floorPanelSelection,
+          recordProgress: chapterFourElevatorCollectedRecordCount(state.chapter4.factIds),
+          records: ([1, 2, 3] as const).map((displayFloor) => {
+            const record = chapterFourElevatorRecordForDisplayFloor(displayFloor);
+            return {
+              floor: displayFloor,
+              factId: record.factId,
+              collected: hasChapterFourFact(state, record.factId),
+              reachable: this.isElevatorFloorReachable(displayFloor, state)
+            };
+          }),
+          stopChainReconstructed: hasChapterFourFact(state, "elevator_stop_chain_reconstructed"),
+          deduction: this.floorPanelMode === "elevator_route_deduction"
+            ? {
+                actualArrivalFloor: this.elevatorDeductionArrivalFloor,
+                unservedCallFloor: this.elevatorDeductionUnservedFloor,
+                feedback: this.elevatorDeductionFeedback
+              }
+            : null,
           nearbyTravelZone: this.nearbyTravelTarget?.id ?? null
         },
         floorElevators: FLOORS.map((entry) => ({
@@ -8430,7 +9051,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           baselineY: visual.baselineY,
           renderMode: visual.renderMode,
           depth: visual.image.depth,
-          visible: visual.image.visible
+          visible: visual.image.visible,
+          occludesPlayer: visual.id === MAIN_ENTRANCE_FOREGROUND_ID
+            && visual.floor === this.currentFloor
+            && (body?.bottom ?? this.player.y) < visual.baselineY
         }))
       }
     });

@@ -17,13 +17,16 @@ export interface ChapterFourInsertedPuzzleAsset {
   floor: "A1" | "A2" | "A3";
   center: Readonly<{ x: number; y: number }>;
   sourceSize: Readonly<{ width: number; height: number }>;
+  displaySize?: Readonly<{ width: number; height: number }>;
   depth: number;
 }
 
 /**
- * The six image2 props are authored as transparent, source-pixel overlays.
- * Their centers and dimensions match the corresponding layout anchors so the
- * visible object and interaction area remain traceable to the same rectangle.
+ * The six image2 props are authored as transparent overlays. Source size stays
+ * available for decode budgeting while an optional display size keeps a prop
+ * in proportion with the furniture beneath it. The rendered center and display
+ * bounds match the corresponding layout anchor so the visible object and
+ * interaction area remain traceable to the same rectangle.
  * They deliberately create no physics body or air wall.
  */
 export const CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS = Object.freeze([
@@ -33,8 +36,9 @@ export const CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS = Object.freeze([
     textureKey: "chapter4-front-desk-duty-board-v01",
     url: dutyBoardUrl,
     floor: "A1",
-    center: { x: 750, y: 600 },
+    center: { x: 751, y: 582 },
     sourceSize: { width: 152, height: 100 },
+    displaySize: { width: 104, height: 68 },
     depth: 24
   },
   {
