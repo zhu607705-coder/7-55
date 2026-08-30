@@ -996,6 +996,11 @@
   animation: rpg-inventory-receive-lock 1080ms steps(8, end) both;
 }
 
+.rpg-inventory-dock.is-blocked {
+  opacity: 0.58;
+  pointer-events: none;
+}
+
 .rpg-inventory-acquisition-flight {
   animation: rpg-inventory-item-flight 980ms steps(12, end) both;
   background: #f7f1d7;

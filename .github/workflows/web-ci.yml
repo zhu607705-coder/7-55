@@ -50,51 +50,9 @@ jobs:
           ffmpeg -version
           ffprobe -version
 
-      - name: Verify critical gameplay behavior
-        run: node scripts/run-test-suite.mjs critical
+      - name: Run release validation suite
+        run: npm run validate:release
 
       - name: Verify extended authoring contracts
         if: github.event_name == 'workflow_dispatch'
-        run: node scripts/run-test-suite.mjs extended
-
-      - name: Verify Chapter 3 audio contract
-        run: npm run audio:chapter3:verify
-
-      - name: Verify Chapter 3.5 voice memos
-        run: npm run audio:chapter3-interlude-voice-memos:verify
-
-      - name: Verify campus map contract
-        run: npm run map:zijingang
-
-      - name: Verify facing-agnostic RPG interactions
-        run: npm run verify:rpg-facing-agnostic
-
-      - name: Verify Chapter 4 7:55 assets
-        run: npm run chapter4:validate-assets
-
-      - name: Verify Chapter 4 7:55 story
-        run: npm run chapter4:validate-story
-
-      - name: Verify Chapter 4 7:55 topology
-        run: npm run chapter4:validate-topology
-
-      - name: Verify Chapter 4 7:55 runtime
-        run: npm run chapter4:validate-runtime
-
-      - name: Verify Chapter 4 7:55 Task 14 contract
-        run: npm run chapter4:validate-task14
-
-      - name: Type-check source
-        run: npm run typecheck
-
-      - name: Build production bundle
-        run: npm exec -- vite build
-
-      - name: Smoke-test production bundle in headless Chromium
-        run: node scripts/verify-browser-smoke.mjs
-
-      - name: Build offline single-file demo
-        run: npm exec -- vite build --mode demo
-
-      - name: Verify offline single-file artifact
-        run: npm run verify:single
+        run: npm run validate:extended

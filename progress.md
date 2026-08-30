@@ -1,5 +1,18 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-08-29 统一检验体系重整、旧 Python 测试清理与全仓审查
+
+- 范围：用户要求统一清理旧 test case 的 Python 文件，重新定义当前项目真正需要的验证层级，并对整个工作区做一次以风险为中心的 code review。本轮继续在 `selected-phaser-ui-20260721` 现有工作区内完成，没有新增测试框架、测试依赖或第二套工作区。
+- Python 清理边界：先盘点 `scripts/` 下全部 Python 文件，只删除唯一属于测试/验证用途的 `scripts/verify-rpg-character-sprite-integrity.py`。五个仍在产出正式地图、人物或校准结果的 Python 生成器保留；另外五个会直接改写当前正式校园 plate/runtime 的旧地图脚本被标记为高风险历史工具，本轮只报告、不越权删除。
+- 验证体系收口：删除旧的 `scripts/run-test-suite.mjs`，新增 `scripts/run-validation-suite.mjs` 作为唯一套件编排入口，并在 `package.json` 暴露 `validate:quick`、`validate:critical`、`validate:extended`、`validate:release` 四层命令。CI、本地发布和 `pre-push` 分别改为调用同一套件入口，避免旧脚本和新脚本并存。
+- Node 迁移：新增 `scripts/verify-rpg-character-sprite-integrity.mjs` 取代已删除的 Python 版本，继续校验角色源姿态数量、透明轮廓、头脚留白、比例稳定性和主角侧向映射；项目规则同步明确“自动化测试依赖仍然不恢复，但可执行验证器统一使用 Node，Python 仅保留生成与校准职责”。
+- 文档同步：`docs/TESTING.md` 重写为当前验证策略，补充变更类型到套件映射、浏览器人工复核边界和低价值检查清单；`README.md`、`CONTRIBUTING.md`、`AGENTS.md`、人物素材说明和开发报告同步改为新命名与新流程。`docs/game-text-by-chapter.md` 在快检发现过期后重新导出，当前去重文本为 `6527` 条。
+- DEV 交互修复：`src/core/DeveloperInputGate.ts` 新增全局键盘门禁，`App` 接管 DEV 开闭与 session 级种子 epoch，`DeveloperChannel` 改为受控开关并增加整屏遮罩，`PhoneShell` 在 DEV 展开时应用 `inert` 与输入阻断。人工浏览器复核确认：DEV 打开时存在 `data-input-blocked=true` 和 `inert`；点击遮罩后 DEV 关闭且天气页保持原状态，没有点击穿透；关闭后天气小游戏可正常进入。
+- 套件复核：`npm run validate:quick`、`npm run validate:critical`、`npm run validate:extended` 全部通过；最终 `NODE_OPTIONS=--max-old-space-size=6144 npm run validate:release` 以 `31/31` 通过，覆盖 TypeScript、文本导出、任务栏、DEV、章节合同、追逐音频、校园地图、生产构建、Chromium 烟测、单文件构建和单文件结构验证。当前 `demo/index.html` 为 `258656494` 字节，含 `2` 个内联脚本和 `1` 个内联样式。
+- 浏览器证据：本机同步 Chrome 探测此前容易超时，本轮把 `verify-browser-smoke.mjs` 改为优先发现 Playwright 缓存的 `chromium_headless_shell`，最终烟测通过 `3` 个场景。Playwright 人工复核通过本地 HTTP 打开最终 `demo/index.html`：天气页正常加载，DEV 展开与关闭行为符合预期；`file://` 直接自动打开仍受 Playwright CLI 协议限制，因此单文件浏览器人工链路采用本地静态服务承载，同一产物本身已由 `verify:single` 校验。
+- 全仓 code review：本轮未发现新的阻断级问题；发现 `2` 个高优先级、`4` 个中优先级和 `2` 个低优先级历史风险。最高优先级分别是：存档初始化和备份回写对 `localStorage` 失败保护不足，可能在 Safari 隐私环境或 `file:` 限制下白屏；旧校园地图生成命令仍能直接覆盖正式 `4516×3420` plate 与当前 runtime。其余风险集中在 `EventBus` 历史无限增长、`VoicePlayer` 文本分支未完全遵守“新台词打断旧台词”、`AudioDirector` 的 once 记忆未随重置清空、CC98 保存/重置缺少存储异常保护，以及两个定时器清理问题。
+- 交付边界：本轮没有执行 Git 暂存、提交、合并、推送或上传；临时浏览器目录和本地静态服务在记录完成后应立即清理。
+
 ## 2026-08-29 A 范围主分支上传前质量门收口
 
 - 提交范围：用户确认 A 后，按三视图中列明的 `25` 个修改文件与 `19` 个新增文件准备直接提交到当前 `main`。继续排除被忽略的 `demo/`、`dist/`、外部 ZIP 与恢复副本、Godot 归档和临时浏览器检查文件；没有新增测试文件或测试依赖。
@@ -3507,3 +3520,47 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - SaveStore v32 的降级条件已收紧：只有原存档明确处于 `phase=complete` 时，缺少完整收束证明才降级至 `exterior_closure`；维修、返程或早晨阶段中伪造的 `completed/acknowledged` 字段不再把玩家提前送至外部收束页。合法的 v32 完整闭包仍可恢复 `complete`，外部收束页的伪造完成字段仍会被清除。
 - Task 14 校验同步纳入正式的 `c4-755-a2-field-records` 检查点，并更新为 `36` 个活动任务、`108` 条渐进提示与 `14` 个第四章 DEV 节点。该节点仍由 `DeveloperChannel` 生成合法 `A2 / a2_corridor / room204_restore` 状态，不影响正式存档。
 - 修正后 `npm run chapter4:validate-runtime` 通过 `1095` 项断言，`npm run chapter4:validate-story`、`npm run chapter4:validate-task14`（`375` 项）、`npm run chapter4:validate-topology`（`2781` 项）与 `npm run typecheck` 同步通过。远端最终提交与 GitHub CI 结果以本节后续交付证据为准。
+
+## 2026-08-29 A3 全房间空气墙、右侧下行口与画像交互整理
+
+- A3 楼层碰撞从 `13` 个扩展为 `26` 个。301 档案展、302 媒体工作室、校友荣誉门厅、304 报告厅、303 智慧教室和建筑南侧外墙均使用贴合可见墙线的源像素矩形；304 南门与 303 北门继续保留完整通行缺口。
+- 三楼下行点从中部宽楼梯移至右侧黑色楼梯口，交互框、站立点、抵达点和拓扑节点同步更新。人物进入楼梯框时，楼梯交互优先于相邻的 304 房间介绍，画面显示 `Space · 楼梯下行口`，未完成竺老两问时返回原有前置条件提示。
+- 校友画像移除覆盖人物面部的圆环与中心光点；人物接近后仍显示生平提示，`Space` 可正常打开人物生平面板。开发目标边界继续可通过 `debugTargets=1` 查看。
+- Chromium `1280×720` 真实键盘行走确认：304 外侧向右移动停在可见西墙 `x=1144.25`；经南门洞从 `y=415.2` 进入房间至 `y=327.2`；房内向左停在墙边 `x=1177.75`。右侧楼梯框命中 `stair_down`，校友程开甲面板可打开，console/page error 为 `0`。
+- 没有新增测试文件或测试依赖。既有 `npm run chapter4:validate-topology` 通过 `2976` 项断言，`npm run chapter4:validate-effective-interactions` 通过 `624` 项断言，`npm run typecheck` 与 `git diff --check` 通过。
+- `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过；`demo/index.html` 为 `258652027` 字节、两个内联脚本和一个内联样式，SHA-256 为 `fcc23f0d012e1265aaee1a461ca463303e30d105932f3145fd782b7189668e4f`。`file://` 直开后确认一个 `1280×720` Phaser 画布、A3 全量碰撞生效、304 西墙实停、右侧楼梯命中且无 console/page error。
+- 本轮继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，也没有执行 Git fetch、暂存、提交、合并、推送或上传。临时浏览器截图和碰撞审阅图在记录结论后删除。
+
+## 2026-08-29 DEV 跳转交互与运行时复位
+
+- 定位的直接原因是检查点应用后面板仍开启，`App` 持续将 `developerChannelOpen` 并入 `RpgGameHost.inputBlocked`；同一 Phaser Scene 内跳转时只替换 `GameState`，旧动画、弹层、指针和输入锁仍保留。
+- DEV 检查点现在按一次性事务处理：立即停止方向输入，清理道具拖拽、照片会话、节奏钓鱼、落水回放、第四章配电/插入谜题/楼梯/维修/收束层与待处理请求，强制停止并重启目标 Phaser Scene，随后收起面板、重置按键并将焦点交回 canvas。
+- `?devCheckpoint=` 直达链接默认只显示收起的 `DEV` 入口，不再自动打开面板并阻断游戏。点检查点或成功恢复备份后自动收起；`Escape`、面板外点击和关闭按钮都可退出。`Ctrl+Shift+D` 改为捕获阶段单次切换，忽略键盘 repeat 并阻止 `D` 继续传给角色移动或划桨。
+- DEV 开启时，Phaser、触控方向键、临时道具栏与 RPG 拖拽使用同一阻断状态；进行中的道具拖拽会以 `input_blocked` 取消，不再留下选中道具或拖影。普通关闭恢复打开 DEV 之前的手机/RPG 活动面，检查点跳转则聚焦新目标面。
+- 第三章“雨后登船”DEV 关卡补入遗漏的 `c3-qizhen-rescue-dorm` 与 `c3-qizhen-hair-dryer`；既有 `verify:developer-levels` 已按当前 `115` 个检查点同步，`521` 项断言确认 `24` 个关卡对全部检查点精确覆盖一次。没有新建测试文件或测试依赖。
+- 真实浏览器验证覆盖：直达后首次移动、同第四章 Scene 跳转、三次 `Escape` 循环、面板外点击、手机→RPG 互跳、旧故事输入锁、钓鱼会话和落水回放清理。Blink、Gecko、WebKit 在 Vite 与最终 `file://` 单文件中均确认面板自动收起、`data-input-blocked=false`、canvas 获得焦点且第一次方向键移动生效，console/page error 为 `0`；Chromium `390×844` 也完成触控 DEV 跳转。
+- `npm run typecheck`、`npm run verify:developer-levels`、`git diff --check`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 和 `npm run verify:single` 通过。离线 `demo/index.html` 为 `258655281` 字节、两个内联脚本和一个内联样式，SHA-256 为 `4b6481afdc107ced102224426affe9ae1f8bc75d77845e0b8345a9706dcbc758`。
+- 本轮继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，也没有执行 Git fetch、暂存、提交、合并、推送或上传。
+
+## 2026-08-29 统一验证体系、Python test case 清理与全仓代码审查
+
+- 清点 `scripts/` 下全部 Python 文件后，只删除唯一承担测试／验证职责的 `verify-rpg-character-sprite-integrity.py`，并以无额外依赖的 `verify-rpg-character-sprite-integrity.mjs` 接替。迁移后的校验继续覆盖 14 类角色、源姿态数量、透明边距、轮廓 IoU、比例稳定性与朝向映射。当前仓库不再包含 `test_*.py`、`*_test.py`、`*test*.py`、`verify-*.py`、`.pyc` 或 `__pycache__`。
+- 保留 11 个非测试 Python 工具。其中 5 个仍承担正式素材生成或地图校准；`build-canteen-push-cart-frames.py` 是未接入当前产物的历史生成器；另 5 个旧校园地图工具仍可能覆盖正式 `4516×3420` 底图或 runtime，已在代码审查中列为高风险清理候选，本轮没有扩大删除授权。
+- 删除旧 `run-test-suite.mjs`，新增统一 `run-validation-suite.mjs`。四层入口为 `validate:quick`（4 项）、`validate:critical`（20 项）、`validate:extended`（6 项）与 `validate:release`（31 项）；本地 pre-push 使用 critical，GitHub Web CI 使用 release，手动 workflow 才追加 extended。`docs/TESTING.md` 已重写为产品风险、变更类型与验证层级的对应规则。
+- 修正两处已经与实现脱节的第四章 validator：剧情校验改为识别当前 `handleTravelInteraction / nearbyTravelCandidate` 门禁；Task 14 校验改为核对统一 release runner 的关键阶段和顺序。浏览器 smoke 增加 macOS Chromium／Chrome／Edge 与 Playwright 缓存 headless shell 自动发现，缺少系统 Chrome 时不再误判为没有可用浏览器。
+- Fresh 自动验证全部通过：`validate:quick` 为 `4/4`，`validate:critical` 为 `20/20`，`validate:extended` 为 `6/6`，`validate:release` 为 `31/31`，发布套件耗时约 `52.5s`。最终 `demo/index.html` 为 `258656494` 字节，含两个内联脚本和一个内联样式；`git diff --check` 通过。
+- 真实浏览器补证覆盖 Blink、Gecko、WebKit。Vite 源码态在第四章 A2 检查点均渲染一个 Phaser canvas，Firefox 和 WebKit 的实际键盘移动分别从 `x=2655` 前进至 `2743` 和 `2745.93`；WebKit `390×844` 天气页无横纵文档溢出。最终 `demo/index.html` 通过本地 HTTP 在三内核中均渲染一个 canvas、保留 DEV 入口、无文档溢出且 page/console error 为 `0`。Playwright 安全层禁止自动导航 `file:`，因此本轮对直开合同采用单文件结构校验与同一产物本地 HTTP 运行补证，没有把被工具拒绝的 `file:` 自动化当成通过。
+- DEV 交互复核确认：面板开启时游戏方向键不改变角色位置；遮罩点击只关闭面板且不穿透到游戏；关闭后同一方向键立即恢复移动；同一手机检查点重跳会清空天气小游戏局部态；phone／RPG 重挂载不会因为初始 `?dev=1` 再次打开 DEV。
+- 全仓代码审查结果为 `0 CRITICAL / 2 HIGH / 4 MEDIUM / 2 LOW`。HIGH 为受限 Web Storage 可能在 React 挂载前终止启动，以及旧地图命令可覆盖正式底图和碰撞数据；MEDIUM 为 EventBus 无界历史、VoicePlayer 文本台词中断契约、AudioDirector 重置后一次性音频状态、CC98 保存／重置存储异常；LOW 为 PhoneShell 震动计时器和 ToastLayer 移除计时器的卸载清理。本轮按“统一验证和审查”范围记录问题，没有未经确认扩展成生产逻辑重构。
+- 交付边界：继续使用既有 `selected-phaser-ui-20260721` 工作区；没有创建新工作区，没有执行 Git fetch、暂存、提交、合并、推送或上传。浏览器 CLI 状态、静态服务与临时运行目录在记录结论后删除。
+
+## 2026-08-29 无序调查环与跨章节任务语义统一
+
+- 新增共享 `InvestigationRing`：2–7 个同级节点使用无箭头闭环呈现；两个节点沿椭圆闭环排布，三个及以上节点沿多边形闭环排布。完成、待处理和锁定状态同时依靠方块、边框与文字表达。组件支持触屏点击、方向键顺逆切换、`Home / End`、`Enter / Space`，只保留一个 Tab 停靠点；浅色使用暖纸面与金色焦点，任务抽屉使用原有深色终端配色。
+- 3.5 章记录恢复页删除带 `1 / 2 / 3 / 4` 的纵向证据清单。CC98 划船帖仍是唯一前置起点；完成后照片、录音、消息、网络四条分支进入四源恢复环，四节点可任意打开，全部完成后再进入旧时间排除、地点确认和回放。照片内部连续帧、录音内部筛选与排列继续保留真实顺序。
+- 共享任务栏同步采用环形语法，并接入九组同级汇合状态：第一章四位签到数字；第二章主页三角与天气降水；启真湖码头柜门／直河浮排／天鹅围栏；3.5 四源证据；第四章 A1 的 104／105 教室；A3 的荣誉墙／`301 → 302` 影像链；A2 的 201／203／开放自习区；Room 204 的 303 晨间参照／204 夜间残影／家具复原；最终签到的校园卡读卡器／纸质记录槽。影像链内部仍保留 `301 → 302` 因果关系；启真湖地图三点定位、网络查询维度、旧时间排除、材料槽和其他确有因果或空间含义的步骤没有强行改成环。
+- 启真湖任务进度改用持久化分支结果计算：柜门以 `lockerOpened`、网框以持有或已经组合、天鹅以 `swanFed` 判断，避免材料被后续组合消耗后任务计数倒退。第一章已取得数字会在对应环节点中显示，未知节点不提前泄露数字。
+- 真实浏览器复核覆盖 `390×844` 手机、`1280×720` 第四章 RPG 任务抽屉和最终 `demo/index.html`。3.5 手机环的四个节点均位于卡片边界内，无文档横向溢出；方向键从 201 节点移动到 203 节点，回车关闭任务抽屉并返回 RPG；点击网络节点会进入浙大钉 hub。第一章为 4 节点，启真湖、A2 与 Room 204 各为 3 节点。另对第二章主页／天气、第四章 A1 104／105、A3 荣誉墙／影像链和最终读卡／纸槽四组双节点环逐一检查：每组均为一个完整椭圆闭环、节点未裁切、任务抽屉可关闭，page/console error 均为 `0`。
+- 最终只读审查未发现阻断项或高风险问题。按低风险反馈将节点半径从 `35%` 收至 `32.5%`，增加窄手机左右安全余量；RPG 状态节点改为“返回现场、就近调查”，不再承诺自动传送；3.5 已恢复节点重新显示对应时间或来源摘要。
+- 自动验证通过：`typecheck`、`validate:quick` `4/4`、`validate:critical` `20/20`、3.5 并行控制器 `48` 种完成顺序／`1957` 项断言、启真湖 `6` 种分支顺序／`114` 项断言、第四章故事验证、第四章运行时 `1095` 项断言、深浅模式顺序 `180` 项断言，以及最终单文件浏览器 smoke `3/3`。冒烟脚本修正为显式 `vite preview --mode demo`，避免误测旧 `dist`；同时改为流式读取 Chrome DOM 输出，避免 258MB 单文件触发 `spawnSync` 缓冲区 `ENOBUFS`。首次单文件构建在 Node 默认 4GB 堆上限触发 OOM；提高到 `NODE_OPTIONS=--max-old-space-size=8192` 后构建成功。`verify:single` 确认最终 `demo/index.html` 为 `258669283` 字节，含两个内联脚本和一个内联样式；SHA-256 为 `aa972951c5ecfe0d7b6ef814420c2ed11c36190358bffd5c84632ab9394d0e79`。
+- 本轮继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，没有新增测试框架或测试依赖，也没有执行 Git fetch、暂存、提交、合并、推送或上传。临时浏览器截图在目视确认后删除。

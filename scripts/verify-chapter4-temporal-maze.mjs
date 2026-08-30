@@ -32,7 +32,7 @@ const expectedCheckpoints = ["c4_a1_lobby", "c4_a2_corridor", "c4_a3_wayfinding"
 const expectedFloorCounts = {
   A1: { collisions: 14, walkable: 7, occlusions: 9 },
   A2: { collisions: 23, walkable: 5, occlusions: 6 },
-  A3: { collisions: 13, walkable: 6, occlusions: 2 }
+  A3: { collisions: 26, walkable: 6, occlusions: 2 }
 };
 const expectedElevators = {
   A1: {

@@ -78,7 +78,26 @@ function chapterOneQuest(state: GameState): QuestViewModel {
     }
   ];
   const currentIndex = !state.flags.codeScattered ? 0 : digitCount < 4 ? 1 : 2;
-  return buildQuest("chapter_one", "五分钟", tasks, currentIndex);
+  const quest = buildQuest("chapter_one", "五分钟", tasks, currentIndex);
+  if (currentIndex !== 1) return quest;
+  const branches = [
+    { id: "checkin_digit", label: "签到校园卡", detail: state.digits.d1 ? `数字 ${state.digits.d1}` : "签到页", complete: Boolean(state.digits.d1), recommendedScene: "checkin" },
+    { id: "tiyi_digit", label: "浙大体艺", detail: state.digits.d2 ? `数字 ${state.digits.d2}` : "应用异常", complete: Boolean(state.digits.d2), recommendedScene: "tiyi" },
+    { id: "settings_digit", label: "设置齿轮", detail: state.digits.d3 ? `数字 ${state.digits.d3}` : "设置页", complete: Boolean(state.digits.d3), recommendedScene: "settings" },
+    { id: "bonsai_digit", label: "盆栽机关", detail: state.digits.d4 ? `数字 ${state.digits.d4}` : "主页盆栽", complete: Boolean(state.digits.d4), recommendedScene: "bonsai" }
+  ] as const;
+  return {
+    ...quest,
+    parallelProgress: { completed: digitCount, total: branches.length },
+    parallelBranches: branches.map((branch) => ({
+      id: branch.id,
+      label: branch.label,
+      detail: branch.detail,
+      status: branch.complete ? "completed" : "pending",
+      targetSurface: "phone",
+      recommendedScene: branch.recommendedScene
+    }))
+  };
 }
 
 function movementQuest(state: GameState): QuestViewModel {
@@ -212,7 +231,40 @@ function movementQuest(state: GameState): QuestViewModel {
       : state.actOne.phase === "reservation_required"
         ? 3
         : 2;
-  return buildQuest("chapter_two", "找到移动的办法", tasks, currentIndex);
+  const quest = buildQuest("chapter_two", "找到移动的办法", tasks, currentIndex);
+  if (!["chapter_two_direction_collect_materials", "chapter_two_direction_collect_triangle", "chapter_two_direction_collect_weather_water"]
+    .includes(directionTask.id)) return quest;
+  const branches = [
+    {
+      id: "direction_triangle",
+      label: "主页方向校准",
+      detail: "松动三角形",
+      complete: state.actOne.pushTriangleTaken,
+      recommendedScene: "phone_home"
+    },
+    {
+      id: "weather_water",
+      label: "天气页面",
+      detail: "天气水滴",
+      complete: state.actOne.weatherWaterTaken,
+      recommendedScene: "weather"
+    }
+  ] as const;
+  return {
+    ...quest,
+    parallelProgress: {
+      completed: branches.filter((branch) => branch.complete).length,
+      total: branches.length
+    },
+    parallelBranches: branches.map((branch) => ({
+      id: branch.id,
+      label: branch.label,
+      detail: branch.detail,
+      status: branch.complete ? "completed" : "pending",
+      targetSurface: "phone",
+      recommendedScene: branch.recommendedScene
+    }))
+  };
 }
 
 function libraryQuest(state: GameState): QuestViewModel {
@@ -364,13 +416,17 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     return task("attach_decoy", steps.attachDecoy.label, steps.attachDecoy.hints);
   }
   if (lake.phase === "tool_chain") {
-    const branchCount = [state.items.nylonCord, state.items.brokenNetFrame, state.items.swanMagnet]
+    const branchCount = [
+      lake.lockerOpened,
+      state.items.brokenNetFrame || lake.netCombined,
+      lake.swanFed
+    ]
       .filter(Boolean).length;
     if (branchCount < 3) {
       return task("parallel_tool_branches", `完成湖区三处分支 ${branchCount}/3`, [
-        state.items.nylonCord ? "码头柜门：已取得尼龙绳。" : "码头柜门：钓起钥匙并打开柜门。",
-        state.items.brokenNetFrame ? "浮排分支：已取得破损网框。" : "浮排分支：在直河道钓起破损网框。",
-        state.items.swanMagnet ? "天鹅分支：已取得磁性扣。" : "天鹅分支：前往围栏处理旧饲料盒。",
+        lake.lockerOpened ? "码头柜门：已取得尼龙绳。" : "码头柜门：钓起钥匙并打开柜门。",
+        state.items.brokenNetFrame || lake.netCombined ? "浮排分支：已取得破损网框。" : "浮排分支：在直河道钓起破损网框。",
+        lake.swanFed ? "天鹅分支：已取得磁性扣。" : "天鹅分支：前往围栏处理旧饲料盒。",
         "三个分支可以任意顺序完成。"
       ]);
     }
@@ -495,7 +551,44 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
             recommendedScene: "zjuding"
           }
         : qizhenTaskForLakePhase(state);
-    return buildQuest("chapter_three", "启真湖追纸", [task], 0);
+    const quest = buildQuest("chapter_three", "启真湖追纸", [task], 0);
+    if (state.qizhenLake.phase !== "tool_chain" || !task.id.endsWith("parallel_tool_branches")) {
+      return quest;
+    }
+    const branches = [
+      {
+        id: "dock_locker",
+        label: "码头柜门",
+        detail: "钥匙与尼龙绳",
+        complete: state.qizhenLake.lockerOpened
+      },
+      {
+        id: "channel_raft",
+        label: "直河浮排",
+        detail: "破损网框",
+        complete: state.items.brokenNetFrame || state.qizhenLake.netCombined
+      },
+      {
+        id: "swan_cove",
+        label: "天鹅围栏",
+        detail: "饲料与磁性扣",
+        complete: state.qizhenLake.swanFed
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => branch.complete).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: branch.complete ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
   }
   if (state.theaterHunt.active) {
     const task: TaskDefinition = state.theaterHunt.phase === "entry_ticket"
@@ -804,12 +897,13 @@ function chapterFour755Quest(
   contract: ChapterFour755PhaseTaskContract
 ): QuestViewModel {
   const phase = String(state.chapter4.phase);
+  const facts = new Set(state.chapter4.factIds);
   const taskKey = selectChapterFour755TaskKey(state, contract);
   const task = CHAPTER_FOUR_755_TASKS[taskKey];
   const completed = state.chapter4.completed || phase === "complete";
   const label = task?.label ?? taskKey;
   const presentation = selectChapterFourStagePresentation(state);
-  return {
+  const quest: QuestViewModel = {
     id: "chapter_four_temporal_maze",
     chapter: "chapter_four",
     title: chapterFour755Content.title,
@@ -830,6 +924,176 @@ function chapterFour755Quest(
     targetSurface: "rpg",
     ...(presentation ? { chapterFourPresentation: presentation } : {})
   };
+  if (taskKey === "resolve_a1_investigation"
+    && (!facts.has("classroom_104_chalk_residual_observed")
+      || !facts.has("classroom_105_terminal_replay_checked"))) {
+    const branches = [
+      {
+        id: "a1_classroom_104",
+        label: "104 黑板",
+        detail: "擦痕残留",
+        factId: "classroom_104_chalk_residual_observed"
+      },
+      {
+        id: "a1_classroom_105",
+        label: "105 讲台",
+        detail: "本地回放",
+        factId: "classroom_105_terminal_replay_checked"
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => facts.has(branch.factId)).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: facts.has(branch.factId) ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "resolve_a3_archive_chain") {
+    const branches = [
+      {
+        id: "a3_honor_wall",
+        label: "荣誉墙问答",
+        detail: "竺老两问",
+        complete: facts.has("zhu_two_questions_answered")
+      },
+      {
+        id: "a3_media_chain",
+        label: "301 → 302",
+        detail: facts.has("a3_archive_film_retrieved")
+          ? "去 302 对齐影像"
+          : "先在 301 取胶片",
+        complete: facts.has("a3_media_alignment_completed")
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => branch.complete).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: branch.complete ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "resolve_a2_inserted_puzzles") {
+    const branches = [
+      {
+        id: "a2_positioning",
+        label: "201 定位板",
+        detail: "三轴校准",
+        factId: "a2_positioning_plate_calibrated"
+      },
+      {
+        id: "a2_power",
+        label: "203 配电箱",
+        detail: "五区拓扑",
+        factId: "a2_power_topology_recovered"
+      },
+      {
+        id: "a2_evacuation",
+        label: "开放自习区",
+        detail: "疏散路线",
+        factId: "a2_evacuation_route_confirmed"
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => facts.has(branch.factId)).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: facts.has(branch.factId) ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "restore_room204") {
+    const placementCount = state.chapter4.room204Placements.length;
+    const branches = [
+      {
+        id: "room204_reference",
+        label: "303 晨间参照",
+        detail: "浅色现场记录",
+        complete: facts.has("a3_reference_observed")
+      },
+      {
+        id: "room204_residual",
+        label: "204 夜间残影",
+        detail: "深色轮廓记录",
+        complete: facts.has("room204_residual_observed")
+      },
+      {
+        id: "room204_layout",
+        label: "204 家具复原",
+        detail: `${Math.min(placementCount, 12)}/12 组就位`,
+        complete: placementCount >= 12
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => branch.complete).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: branch.complete ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (["complete_checkin", "submit_attendance_paper", "read_campus_card"].includes(taskKey)) {
+    const branches = [
+      {
+        id: "checkin_card",
+        label: "校园卡读卡器",
+        detail: "刷卡确认",
+        complete: state.chapter4.checkinCardAccepted
+          && facts.has("checkin_card_accepted")
+      },
+      {
+        id: "checkin_paper",
+        label: "签到纸插槽",
+        detail: "纸条确认",
+        complete: state.chapter4.checkinPaperAccepted
+          && facts.has("checkin_paper_accepted")
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => branch.complete).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: branch.complete ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  return quest;
 }
 
 function chapterFourLegacyQuest(state: GameState): QuestViewModel {

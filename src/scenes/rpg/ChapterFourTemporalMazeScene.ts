@@ -1027,6 +1027,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private virtualDirection = { x: 0, y: 0 };
   private interactionRequested = false;
   private nearbyTravelTarget: TravelTarget | null = null;
+  private nearbyTravelTargetHasPriority = false;
   private nearbyStoryTarget: ProjectedTarget | null = null;
   private nearbyLandmark: LayoutAnchor | null = null;
   private floorPanel: Phaser.GameObjects.Container | null = null;
@@ -5427,17 +5428,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         : undefined;
       const color = mode === "dark" ? 0x67ddff : mode === "light" ? 0xffd36f : 0xf7f1dc;
       const modeActive = mode === undefined || mode === this.appliedChapterMode;
+      const isAlumniPortrait = getChapterFourAlumniFigureByTargetId(target.contract.id) !== undefined;
+      if (isAlumniPortrait && !showBounds) continue;
       const container = this.add.container(
         floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds)
       ).setDepth(REALITY_MODE_TARGET_DEPTH)
         .setAlpha(modeActive ? 1 : 0.22)
         .setScale(modeActive ? 1 : 0.72);
-      if (mode === "light") {
+      if (!isAlumniPortrait && mode === "light") {
         container.add(this.add.rectangle(0, 0, 13, 13, color, 0.12)
           .setRotation(Math.PI / 4)
           .setStrokeStyle(2, color, 0.94));
         container.add(this.add.circle(0, 0, 3, color, 0.96));
-      } else {
+      } else if (!isAlumniPortrait) {
         container.add(this.add.circle(0, 0, 10, color, 0.08)
           .setStrokeStyle(2, color, 0.94));
         container.add(this.add.circle(0, 0, 3, color, 0.96));
@@ -5544,12 +5547,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       }))
       .filter(({ target, distance }) => distance <= target.contract.proximity)
       .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
-    this.nearbyTravelTarget = this.projection.phase && OPENING_PHASES.has(this.projection.phase)
-      ? null
+    const nearbyTravelCandidate = this.projection.phase && OPENING_PHASES.has(this.projection.phase)
+      ? undefined
       : createTravelTargets(floor)
           .map((target) => ({ target, distance: pointDistanceToRect(localPlayer, target.bounds) }))
           .filter(({ distance }) => distance <= 76)
-          .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
+          .sort((a, b) => a.distance - b.distance)[0];
+    this.nearbyTravelTarget = nearbyTravelCandidate?.target ?? null;
+    this.nearbyTravelTargetHasPriority = nearbyTravelCandidate !== undefined
+      && nearbyTravelCandidate.distance <= 12;
     this.nearbyLandmark = floor.anchors
       .map((anchor) => ({ anchor, distance: pointDistanceToRect(localPlayer, anchor.bounds) }))
       .filter(({ distance }) => distance <= 44)
@@ -5583,6 +5589,13 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         ).setVisible(true);
         return;
       }
+    }
+    if (this.nearbyTravelTargetHasPriority
+      && this.nearbyTravelTarget
+      && !this.pendingMove
+      && !this.pendingStoryRequest) {
+      this.interactionHint.setText(`Space · ${this.nearbyTravelTarget.label}`).setVisible(true);
+      return;
     }
     if (this.nearbyStoryTarget && !this.pendingStoryRequest) {
       if (this.nearbyStoryTarget.acceptedItem !== undefined
@@ -5651,6 +5664,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private handleStoryOrTravelInteraction(): void {
     const storyTarget = this.nearbyStoryTarget;
     const state = this.bridge.getState();
+    if (this.nearbyTravelTargetHasPriority) {
+      this.handleTravelInteraction();
+      return;
+    }
     if (state.chapter4.phase === "room204_restore"
       && this.currentFloor === 2
       && !this.room204SelectedPieceId
@@ -8205,10 +8222,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           atmosphereDepth: REALITY_MODE_ATMOSPHERE_DEPTH,
           targetDepth: REALITY_MODE_TARGET_DEPTH,
           activeTargetMarkerIds: targetDebug
+            .filter((target) => this.targetVisuals.has(target.id))
             .filter((target) => target.requiredMode === undefined
               || target.requiredMode === this.appliedChapterMode)
             .map((target) => target.id),
           dormantTargetMarkerIds: targetDebug
+            .filter((target) => this.targetVisuals.has(target.id))
             .filter((target) => target.requiredMode !== undefined
               && target.requiredMode !== this.appliedChapterMode)
             .map((target) => target.id)

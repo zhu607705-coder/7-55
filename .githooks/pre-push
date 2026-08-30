@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-echo "Running pre-push critical gameplay tests..."
-node scripts/run-test-suite.mjs critical
+echo "Running pre-push critical validation suite..."
+npm run validate:critical
 
-echo "Running pre-push type-check and production build..."
-npm run build
+echo "Running pre-push production build..."
+npm run build:production:unchecked

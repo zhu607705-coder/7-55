@@ -33,8 +33,10 @@ export interface QuestStep {
 export interface QuestParallelBranch {
   id: string;
   label: string;
+  detail?: string;
   status: "pending" | "completed";
-  recommendedScene: SceneId;
+  targetSurface?: "phone" | "rpg";
+  recommendedScene?: SceneId;
 }
 
 /**

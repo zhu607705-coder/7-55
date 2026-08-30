@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { InvestigationRing } from "./InvestigationRing";
 import type { EventBus } from "../core/EventBus";
 import type { SceneRouter } from "../core/SceneRouter";
 import { isQuestTaskBarVisible, selectQuestViewModel } from "../core/QuestModel";
@@ -94,6 +95,13 @@ export function QuestTaskBar({
 
   const hintTotal = quest.hints.length;
   const parallelProgress = quest.parallelProgress;
+  const parallelBranchesAreRpgStatusNodes = Boolean(
+    quest.parallelBranches?.length
+    && quest.parallelBranches.every((branch) => (
+      (branch.targetSurface ?? quest.targetSurface) === "rpg"
+      && !branch.recommendedScene
+    ))
+  );
   const parallelObjective = parallelProgress
     ? `${quest.objective}（${parallelProgress.completed}/${parallelProgress.total}）`
     : quest.objective;
@@ -133,7 +141,7 @@ export function QuestTaskBar({
       ...quest,
       id: `${quest.id}:${branch.id}`,
       objective: branch.label,
-      targetSurface: "phone",
+      targetSurface: branch.targetSurface ?? quest.targetSurface,
       recommendedScene: branch.recommendedScene
     };
     events.emit("quest_navigation_requested", {
@@ -143,7 +151,7 @@ export function QuestTaskBar({
     });
     if (onNavigate) {
       onNavigate(branchQuest);
-    } else if (router) {
+    } else if (router && branch.recommendedScene) {
       router.goTo(branch.recommendedScene);
     }
     setOpen(false);
@@ -199,25 +207,35 @@ export function QuestTaskBar({
             </section>
 
             {quest.parallelBranches && parallelProgress ? (
-              <section className="quest-parallel-branches" aria-label={`并行调查 ${parallelProgress.completed}/${parallelProgress.total}`}>
-                <header>
-                  <strong>调查分支</strong>
-                  <span>{parallelProgress.completed}/{parallelProgress.total}</span>
-                </header>
-                <ul>
-                  {quest.parallelBranches.map((branch) => (
-                    <li key={branch.id} className={branch.status === "completed" ? "is-complete" : ""}>
-                      <button type="button" onClick={() => navigateToParallelBranch(branch)}>
-                        <span>
-                          <strong>{branch.label}</strong>
-                          <small>{branch.status === "completed" ? "已恢复" : "待恢复"}</small>
-                        </span>
-                        <em>{branch.status === "completed" ? "重新打开" : "打开"}</em>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <InvestigationRing
+                compact
+                ariaLabel={`并行调查 ${parallelProgress.completed}/${parallelProgress.total}`}
+                eyebrow="PARALLEL"
+                title="并行调查环"
+                completed={parallelProgress.completed}
+                total={parallelProgress.total}
+                centerLabel="调查分支"
+                hint={parallelBranchesAreRpgStatusNodes
+                  ? "环上节点没有提交先后；选择节点后返回现场，就近调查"
+                  : "环上节点没有提交先后；方向键切换节点，回车或空格打开"}
+                nodes={quest.parallelBranches.map((branch) => ({
+                  id: branch.id,
+                  label: branch.label,
+                  detail: branch.detail ?? (
+                    branch.status === "completed"
+                      ? "可重新查看"
+                      : branch.recommendedScene
+                        ? "可直接开始"
+                        : "就近调查"
+                  ),
+                  statusLabel: branch.status === "completed" ? "已完成" : "待处理",
+                  state: branch.status === "completed" ? "complete" : "ready"
+                }))}
+                onActivate={(branchId) => {
+                  const branch = quest.parallelBranches?.find((candidate) => candidate.id === branchId);
+                  if (branch) navigateToParallelBranch(branch);
+                }}
+              />
             ) : null}
 
             {chapterFourPresentation ? (
@@ -268,7 +286,7 @@ export function QuestTaskBar({
               </>
             ) : null}
 
-            {showDigitHint ? (
+            {showDigitHint && !quest.parallelBranches ? (
               <section className="quest-task-digits" aria-label={digitHintAria}>
                 <header>
                   <span>签到数字</span>

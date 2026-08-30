@@ -1,0 +1,274 @@
+.investigation-ring {
+  --investigation-bg: var(--phone-app-surface, #efe9d8);
+  --investigation-field: var(--phone-app-bg, #e2dccb);
+  --investigation-ink: var(--phone-app-ink, #1b2328);
+  --investigation-muted: var(--phone-app-muted, #677278);
+  --investigation-line: var(--phone-app-line, #65747a);
+  --investigation-ready: var(--phone-app-action, #1f6d7f);
+  --investigation-complete: #3d8168;
+  --investigation-focus: var(--phone-app-accent, #d6b951);
+  --investigation-shadow: rgba(27, 35, 40, 0.24);
+  --investigation-grid-line: rgba(101, 116, 122, 0.08);
+  --investigation-track-fill: rgba(31, 109, 127, 0.05);
+  --investigation-track-line: rgba(101, 116, 122, 0.76);
+  --investigation-center-bg: rgba(226, 220, 203, 0.92);
+  --investigation-center-line: rgba(101, 116, 122, 0.75);
+  --investigation-ready-node-bg: #efe9d8;
+  --investigation-complete-node-bg: #d3dfcf;
+  --investigation-complete-glow: rgba(61, 129, 104, 0.18);
+  --investigation-focus-glow: rgba(214, 185, 81, 0.36);
+  background: var(--investigation-bg);
+  border: 3px solid var(--investigation-ink);
+  box-shadow: 4px 4px 0 var(--investigation-shadow);
+  color: var(--investigation-ink);
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 11px;
+}
+
+.investigation-ring__header {
+  align-items: end;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.investigation-ring__header > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.investigation-ring__header small {
+  color: var(--investigation-muted);
+  font: 800 9px/1.2 ui-monospace, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.investigation-ring__header h2 {
+  font-size: 15px;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.investigation-ring__header > strong {
+  color: var(--investigation-ready);
+  font: 900 12px/1 ui-monospace, monospace;
+}
+
+.investigation-ring__field {
+  background:
+    linear-gradient(var(--investigation-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--investigation-grid-line) 1px, transparent 1px),
+    var(--investigation-field);
+  background-size: 8px 8px;
+  border: 1px solid var(--investigation-track-line);
+  height: 286px;
+  overflow: hidden;
+  position: relative;
+}
+
+.investigation-ring__track {
+  height: 100%;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.investigation-ring__track polygon,
+.investigation-ring__track ellipse {
+  fill: var(--investigation-track-fill);
+  stroke: var(--investigation-track-line);
+  stroke-dasharray: 1.8 1.2;
+  stroke-linejoin: bevel;
+  stroke-width: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+
+.investigation-ring__center {
+  align-content: center;
+  background: var(--investigation-center-bg);
+  border: 2px solid var(--investigation-center-line);
+  display: grid;
+  gap: 2px;
+  height: 82px;
+  justify-items: center;
+  left: 50%;
+  padding: 7px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 104px;
+  z-index: 1;
+}
+
+.investigation-ring__center span,
+.investigation-ring__center small {
+  color: var(--investigation-muted);
+  font-size: 9px;
+  line-height: 1.15;
+}
+
+.investigation-ring__center strong {
+  color: var(--investigation-ready);
+  font: 900 22px/1 ui-monospace, monospace;
+}
+
+.investigation-ring__center strong i {
+  color: var(--investigation-muted);
+  font-size: 12px;
+  font-style: normal;
+  margin: 0 2px;
+}
+
+.investigation-ring__node {
+  align-items: center;
+  background: var(--investigation-ready-node-bg);
+  border: 2px solid var(--investigation-line);
+  color: var(--investigation-ink);
+  display: grid;
+  gap: 5px;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  left: var(--investigation-node-x);
+  min-height: 58px;
+  padding: 6px 7px;
+  position: absolute;
+  text-align: left;
+  top: var(--investigation-node-y);
+  transform: translate(-50%, -50%);
+  width: 120px;
+  z-index: 2;
+}
+
+.investigation-ring__node:not(:disabled) {
+  cursor: pointer;
+}
+
+.investigation-ring__node-state {
+  background: transparent;
+  border: 2px solid var(--investigation-line);
+  height: 10px;
+  width: 10px;
+}
+
+.investigation-ring__node-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.investigation-ring__node-copy strong {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.investigation-ring__node-copy small,
+.investigation-ring__node em {
+  color: var(--investigation-muted);
+  font-size: 8px;
+  font-style: normal;
+  line-height: 1.2;
+}
+
+.investigation-ring__node[data-state="ready"] {
+  border-color: var(--investigation-ready);
+}
+
+.investigation-ring__node[data-state="ready"] .investigation-ring__node-state {
+  border-color: var(--investigation-ready);
+  box-shadow: inset 0 0 0 2px var(--investigation-bg);
+}
+
+.investigation-ring__node[data-state="complete"] {
+  background: var(--investigation-complete-node-bg);
+  border-color: var(--investigation-complete);
+}
+
+.investigation-ring__node[data-state="complete"] .investigation-ring__node-state {
+  background: var(--investigation-complete);
+  border-color: var(--investigation-complete);
+  box-shadow: 0 0 0 2px var(--investigation-complete-glow);
+}
+
+.investigation-ring__node[data-state="complete"] em {
+  color: var(--investigation-complete);
+}
+
+.investigation-ring__node[data-state="locked"] {
+  opacity: 0.55;
+}
+
+.investigation-ring__node:focus-visible {
+  border-color: var(--investigation-focus);
+  box-shadow: 0 0 0 3px var(--investigation-focus-glow);
+  outline: 2px solid var(--investigation-ink);
+  outline-offset: 2px;
+}
+
+.investigation-ring__node:active:not(:disabled) {
+  transform: translate(-50%, -50%) translateY(2px);
+}
+
+.investigation-ring__hint {
+  align-items: center;
+  color: var(--investigation-muted);
+  display: flex;
+  font-size: 9px;
+  gap: 6px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.investigation-ring__hint span {
+  color: var(--investigation-ready);
+  font: 900 14px/1 ui-monospace, monospace;
+}
+
+.investigation-ring--compact {
+  --investigation-bg: #1d2831;
+  --investigation-field: #171f26;
+  --investigation-ink: #f7f2df;
+  --investigation-muted: #aebac2;
+  --investigation-line: #6f8493;
+  --investigation-ready: #9fd3ff;
+  --investigation-complete: #77c48d;
+  --investigation-focus: #f0d54e;
+  --investigation-shadow: transparent;
+  --investigation-grid-line: rgba(111, 132, 147, 0.08);
+  --investigation-track-fill: rgba(159, 211, 255, 0.04);
+  --investigation-track-line: rgba(111, 132, 147, 0.82);
+  --investigation-center-bg: rgba(23, 31, 38, 0.94);
+  --investigation-center-line: rgba(111, 132, 147, 0.82);
+  --investigation-ready-node-bg: #29343d;
+  --investigation-complete-node-bg: #294139;
+  --investigation-complete-glow: rgba(119, 196, 141, 0.18);
+  --investigation-focus-glow: rgba(240, 213, 78, 0.34);
+  border: 2px solid #58758a;
+  box-shadow: none;
+  margin: 0;
+  padding: 9px;
+}
+
+.investigation-ring--compact .investigation-ring__field {
+  height: 248px;
+}
+
+.investigation-ring--compact .investigation-ring__center {
+  height: 70px;
+  width: 94px;
+}
+
+.investigation-ring--compact .investigation-ring__node {
+  min-height: 52px;
+  width: 112px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .investigation-ring__node {
+    scroll-behavior: auto;
+  }
+}

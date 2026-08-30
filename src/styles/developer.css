@@ -10,6 +10,13 @@
   z-index: 5000;
 }
 
+.developer-channel-backdrop {
+  background: rgba(4, 8, 14, .16);
+  inset: 0;
+  position: fixed;
+  z-index: 4999;
+}
+
 .developer-channel {
   background: #111927;
   border: 3px solid #f2c84b;

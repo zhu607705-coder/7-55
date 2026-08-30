@@ -10,6 +10,7 @@ import { selectRpgItemUseGuidance } from "./RpgItemUseGuidance";
 interface RpgInventoryDockProps {
   state: GameState;
   events: EventBus;
+  blocked?: boolean;
   shellRef: RefObject<HTMLElement | null>;
   canvasHostRef: RefObject<HTMLDivElement | null>;
   runtimeScene: RpgSceneId;
@@ -201,6 +202,7 @@ function feedbackFromPayload(
 export function RpgInventoryDock({
   state,
   events,
+  blocked = false,
   shellRef,
   canvasHostRef,
   runtimeScene,
@@ -228,6 +230,20 @@ export function RpgInventoryDock({
     setDrag(null);
     onDragSelectionChange(null);
   }, [drag, events, onDragSelectionChange, state.items]);
+
+  useEffect(() => {
+    if (!blocked || !drag) return;
+    if (drag.moved) {
+      events.emit("rpg_inventory_drag_ended", {
+        itemId: drag.itemId,
+        surface: "rpg",
+        cancelled: true,
+        reason: "input_blocked"
+      });
+    }
+    setDrag(null);
+    onDragSelectionChange(null);
+  }, [blocked, drag, events, onDragSelectionChange]);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -259,6 +275,7 @@ export function RpgInventoryDock({
   }
 
   function beginDrag(event: ReactPointerEvent<HTMLButtonElement>, itemId: ItemId) {
+    if (blocked) return;
     const point = relativePointer(event.clientX, event.clientY);
     try {
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -386,7 +403,11 @@ export function RpgInventoryDock({
   }
 
   return (
-    <aside className={`rpg-inventory-dock ${recentItem ? "is-receiving-item" : ""}`} aria-label="RPG 道具栏">
+    <aside
+      className={`rpg-inventory-dock ${recentItem ? "is-receiving-item" : ""} ${blocked ? "is-blocked" : ""}`.trim()}
+      aria-label="RPG 道具栏"
+      aria-disabled={blocked}
+    >
       <InventoryAcquisitionFlight item={recentItem} className="rpg-inventory-acquisition-flight" />
       <header>
         <strong>道具</strong>
@@ -411,6 +432,7 @@ export function RpgInventoryDock({
             className={`${drag?.itemId === itemId ? "is-dragging" : ""} ${recentItem === itemId ? "is-new-item" : ""}`.trim()}
             aria-label={`拖动${ITEM_META[itemId].name}，${isPaperItem(itemId) ? "单击" : "双击"}查看详情`}
             aria-grabbed={drag?.itemId === itemId}
+            disabled={blocked}
             title={`${ITEM_META[itemId].name}：${ITEM_META[itemId].desc}`}
             onPointerDown={(event) => beginDrag(event, itemId)}
             onPointerMove={moveDrag}

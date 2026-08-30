@@ -27,15 +27,10 @@ HTTP、部署环境和直接打开 `demo/index.html` 均使用同一浏览器原
 提交前执行：
 
 ```bash
-node scripts/run-test-suite.mjs critical
-npm run map:zijingang
-npm run audio:chapter3:verify
-npm run build
-npm exec -- vite build --mode demo
-npm run verify:single
+npm run validate:release
 ```
 
-完整测试分层、覆盖边界与扩展审计命令见 [Testing Strategy](docs/TESTING.md)。
+该入口依次执行类型检查、关键玩法合同、地图与音频合同、生产构建、Chromium 启动检查、离线单文件构建与结构校验。局部开发可先运行 `npm run validate:quick`，控制器、存档、输入或 Phaser 行为变更运行 `npm run validate:critical`。完整分层、覆盖边界与扩展审计命令见 [Validation Strategy](docs/TESTING.md)。
 
 生成单文件离线演示：
 

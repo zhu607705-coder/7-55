@@ -1,5 +1,10 @@
 /* ===== 像素基座：字体 / 设计 Token / 通用像素组件 ===== */
 
+.app-stage.is-input-blocked {
+  pointer-events: none;
+  user-select: none;
+}
+
 /* 开源中文像素字体：@fontsource/fusion-pixel-12px-proportional-sc（OFL 1.1），
    在 main.tsx 中 import，按 unicode-range 分包加载；缺失时回退系统字体。 */
 

@@ -196,6 +196,7 @@ const mazeProjectionSource = source("../src/modules/ChapterFourMazeProjection.ts
 const runtimeValidatorSource = source("./verify-chapter4-755-runtime.mjs");
 const task14ValidatorSource = source("./verify-chapter4-755-task14.mjs");
 const ciSource = source("../.github/workflows/web-ci.yml");
+const validationSuiteSource = source("./run-validation-suite.mjs");
 
 const taskEntries = Object.entries(content.tasks ?? {});
 const activeTaskEntries = taskEntries.filter(([taskId]) => taskId !== "chapter_complete");
@@ -277,29 +278,33 @@ assert(
   "the projection must not advertise a blackout service barrier without an authoritative runtime entity"
 );
 
-const chapterFourCiCommands = [
-  "npm run chapter4:validate-assets",
-  "npm run chapter4:validate-story",
-  "npm run chapter4:validate-topology",
-  "npm run chapter4:validate-runtime",
-  "npm run chapter4:validate-task14"
+const releaseValidatorKeys = [
+  '"typecheck"',
+  '"facingAgnostic"',
+  '"chapter4Assets"',
+  '"chapter4Story"',
+  '"chapter4Topology"',
+  '"chapter4Runtime"',
+  '"chapter4Task14"',
+  '"campusMap"',
+  '"productionBuild"',
+  '"browserSmoke"',
+  '"singleBuild"',
+  '"singleVerify"'
 ];
-const campusCiIndex = ciSource.indexOf("npm run map:zijingang");
-const facingCiIndex = ciSource.indexOf("npm run verify:rpg-facing-agnostic");
-const typecheckCiIndex = ciSource.indexOf("npm run typecheck");
-const chapterFourCiIndexes = chapterFourCiCommands.map((command) => ciSource.indexOf(command));
+const releaseSuiteBlock = validationSuiteSource.match(/release:\s*Object\.freeze\(\[([\s\S]*?)\]\)\s*\}\);/)?.[1] ?? "";
+const releaseValidatorIndexes = releaseValidatorKeys.map((key) => releaseSuiteBlock.indexOf(key));
 assert(
-  campusCiIndex >= 0
-    && facingCiIndex > campusCiIndex
-    && typecheckCiIndex >= 0
-    && chapterFourCiIndexes.every((index) => index >= 0)
-    && facingCiIndex < chapterFourCiIndexes[0]
-    && chapterFourCiIndexes.every((index, position) => position === 0 || chapterFourCiIndexes[position - 1] < index)
-    && chapterFourCiIndexes.at(-1) < typecheckCiIndex,
-  "CI must run the global facing contract and five read-only Chapter 4 gates after the campus contract and before typecheck"
+  /run:\s*npm run validate:release/.test(ciSource)
+    && releaseValidatorIndexes.every((index) => index >= 0)
+    && releaseValidatorIndexes.every((index, position) => position === 0 || releaseValidatorIndexes[position - 1] < index),
+  "CI must call the canonical release suite, which must run typecheck, facing, five Chapter 4 gates, campus, builds and artifact verification in order"
 );
-const chapterFourCiBlock = ciSource.slice(chapterFourCiIndexes[0], typecheckCiIndex);
-assert(!/(?:generate|rebuild|build):chapter4|chapter4:(?:generate|rebuild|build)/.test(chapterFourCiBlock), "CI Chapter 4 validation block must not invoke asset generators");
+const chapterFourValidatorCatalog = validationSuiteSource.slice(
+  validationSuiteSource.indexOf("chapter4Assets:"),
+  validationSuiteSource.indexOf("chapter3Audio:")
+);
+assert(!/(?:generate|rebuild|build):chapter4|chapter4:(?:generate|rebuild|build)/.test(chapterFourValidatorCatalog), "release-suite Chapter 4 validators must not invoke asset generators");
 assert(/server:\s*\{\s*middlewareMode:\s*true,\s*ws:\s*false\s*\}/.test(runtimeValidatorSource), "runtime validator must disable the Vite WebSocket server");
 assert(/server:\s*\{\s*middlewareMode:\s*true,\s*ws:\s*false\s*\}/.test(task14ValidatorSource), "Task 14 validator must disable the Vite WebSocket server");
 

@@ -2,6 +2,7 @@
 @import "./styles/base.css";
 @import "./styles/shell.css";
 @import "./styles/phone-app-ui.css";
+@import "./styles/investigation-ring.css";
 @import "./styles/scenes.css";
 @import "./styles/qizhen-journal-camera.css";
 @import "./styles/qizhen-recipe-frame.css";

@@ -11,7 +11,9 @@ import {
 } from "react";
 import { eventBus } from "./core/EventBus";
 import { gameStore } from "./core/GameState";
+import { setDeveloperInputBlocked } from "./core/DeveloperInputGate";
 import { SceneRouter } from "./core/SceneRouter";
+import { DEVELOPER_PANEL_OPEN_KEY } from "./core/StorageKeys";
 import { selectFeatureAccess } from "./core/FeatureAccess";
 import type { GameState, QuestViewModel } from "./core/types";
 import { PhoneShell } from "./components/PhoneShell";
@@ -68,13 +70,53 @@ function getSnapshot(): GameState {
 
 const DESKTOP_GAMEPLAY_QUERY = "(min-width: 1100px) and (orientation: landscape) and (any-pointer: fine) and (any-hover: hover)";
 
+function readInitialDeveloperChannelOpen(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("dev") === "0") return false;
+  if (params.has("devCheckpoint") && params.get("dev") !== "1") return false;
+  if (params.get("dev") === "1") return true;
+  try {
+    return window.sessionStorage.getItem(DEVELOPER_PANEL_OPEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function persistDeveloperChannelOpen(open: boolean): void {
+  try {
+    window.sessionStorage.setItem(DEVELOPER_PANEL_OPEN_KEY, open ? "1" : "0");
+  } catch {
+    // Session-only UI persistence remains optional in restricted browser contexts.
+  }
+}
+
+function focusSurfaceElement(surface: "phone" | "rpg"): void {
+  const selector = surface === "rpg" ? ".rpg-shell canvas" : ".phone-frame";
+  const element = document.querySelector<HTMLElement>(selector);
+  if (!element) return;
+  element.tabIndex = -1;
+  try {
+    element.focus({ preventScroll: true });
+  } catch {
+    element.focus();
+  }
+}
+
 export function App() {
   const state = useSyncExternalStore(gameStore.subscribe, getSnapshot, getSnapshot);
-  const [developerChannelOpen, setDeveloperChannelOpen] = useState(false);
+  const [developerChannelOpen, setDeveloperChannelOpen] = useState(() => {
+    const open = readInitialDeveloperChannelOpen();
+    setDeveloperInputBlocked(open);
+    return open;
+  });
+  const [developerCheckpointEpoch, setDeveloperCheckpointEpoch] = useState(0);
   const [libraryStorySequence, setLibraryStorySequence] = useState<string | null>(null);
   const libraryStorySequenceRef = useRef<string | null>(null);
   const libraryStoryQueueRef = useRef<string[]>([]);
   const [activeSurface, setActiveSurface] = useState<"phone" | "rpg">("rpg");
+  const activeSurfaceRef = useRef<"phone" | "rpg">("rpg");
+  const developerReturnSurfaceRef = useRef<"phone" | "rpg">("rpg");
+  const developerChannelVisibleRef = useRef(developerChannelOpen);
   const [resolvedRpgGameHost, setResolvedRpgGameHost] = useState<
     ComponentType<ComponentProps<typeof RpgGameHost>> | null
   >(() => getPreloadedRpgGameHostModule()?.RpgGameHost ?? null);
@@ -88,10 +130,13 @@ export function App() {
     && !state.ui.seenChapterIntros.includes("chapter_two");
   const libraryStoryVisible = libraryStorySequence !== null && !showChapterTwoIntro;
   const ActiveRpgGameHost = resolvedRpgGameHost ?? RpgGameHost;
+  activeSurfaceRef.current = activeSurface;
 
   useEffect(() => subscribePreloadedRpgGameHostModule((module) => {
     setResolvedRpgGameHost(() => module.RpgGameHost);
   }), []);
+
+  useEffect(() => () => setDeveloperInputBlocked(false), []);
 
   useEffect(() => {
     if (state.runtimeMode !== "phone") return undefined;
@@ -264,9 +309,33 @@ export function App() {
     setActiveSurface("rpg");
   }
 
-  function focusDeveloperCheckpointTarget() {
-    setActiveSurface(gameStore.getState().runtimeMode === "rpg" ? "rpg" : "phone");
-  }
+  const handleDeveloperChannelOpenChange = useCallback((open: boolean) => {
+    if (open && !developerChannelVisibleRef.current) {
+      developerReturnSurfaceRef.current = activeSurfaceRef.current;
+    } else if (!open && developerChannelVisibleRef.current) {
+      const returnSurface = developerReturnSurfaceRef.current;
+      setActiveSurface(returnSurface);
+      window.requestAnimationFrame(() => focusSurfaceElement(returnSurface));
+    }
+    developerChannelVisibleRef.current = open;
+    persistDeveloperChannelOpen(open);
+    setDeveloperInputBlocked(open);
+    setDeveloperChannelOpen(open);
+  }, []);
+
+  const focusDeveloperCheckpointTarget = useCallback(() => {
+    const next = gameStore.getState();
+    const targetSurface = next.runtimeMode === "rpg" ? "rpg" : "phone";
+    setActiveSurface(targetSurface);
+    setDeveloperCheckpointEpoch((current) => current + 1);
+    eventBus.emit("developer_checkpoint_applied", {
+      runtimeMode: next.runtimeMode,
+      rpgScene: next.rpgScene,
+      rpgCheckpoint: next.rpgCheckpoint,
+      currentScene: next.currentScene
+    });
+    window.requestAnimationFrame(() => focusSurfaceElement(targetSurface));
+  }, []);
 
   function navigateFromTask(quest: QuestViewModel) {
     if (quest.targetSurface === "phone") {
@@ -363,12 +432,13 @@ export function App() {
                 state={state}
                 router={router}
                 events={eventBus}
+                inputBlocked={developerChannelOpen}
                 embedded
                 showTaskBar={activeSurface === "phone"}
                 showGlobalLayers={false}
                 onTaskNavigate={navigateFromTask}
               >
-                <Scene state={state} router={router} events={eventBus} />
+                <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
               </PhoneShell>
             </section>
             <section
@@ -400,7 +470,8 @@ export function App() {
           </main>
           <DeveloperChannel
             store={gameStore}
-            onVisibilityChange={setDeveloperChannelOpen}
+            open={developerChannelOpen}
+            onOpenChange={handleDeveloperChannelOpenChange}
             onCheckpointApplied={focusDeveloperCheckpointTarget}
           />
         </Chapter4PrologueRuntimeGate>
@@ -423,7 +494,8 @@ export function App() {
         {libraryStoryLayer}
         <DeveloperChannel
           store={gameStore}
-          onVisibilityChange={setDeveloperChannelOpen}
+          open={developerChannelOpen}
+          onOpenChange={handleDeveloperChannelOpenChange}
           onCheckpointApplied={focusDeveloperCheckpointTarget}
         />
       </Chapter4PrologueRuntimeGate>
@@ -432,14 +504,15 @@ export function App() {
 
   return (
     <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
-      <PhoneShell state={state} router={router} events={eventBus} onTaskNavigate={navigateFromTask}>
-        <Scene state={state} router={router} events={eventBus} />
+      <PhoneShell state={state} router={router} events={eventBus} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
+        <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
       </PhoneShell>
       {chapterIntro}
       {libraryStoryLayer}
       <DeveloperChannel
         store={gameStore}
-        onVisibilityChange={setDeveloperChannelOpen}
+        open={developerChannelOpen}
+        onOpenChange={handleDeveloperChannelOpenChange}
         onCheckpointApplied={focusDeveloperCheckpointTarget}
       />
     </Chapter4PrologueRuntimeGate>

@@ -178,7 +178,7 @@
     { "id": "a2_202_chase_finish_point", "storyFloor": "A2", "role": "chase_finish", "point": { "x": 1353, "y": 356.5 } },
 
     { "id": "a3_elevator_stand", "storyFloor": "A3", "role": "transport_stand", "point": { "x": 787.5, "y": 204 } },
-    { "id": "a3_stair_stand", "storyFloor": "A3", "role": "transport_stand", "point": { "x": 1001, "y": 214 } },
+    { "id": "a3_stair_stand", "storyFloor": "A3", "role": "transport_stand", "point": { "x": 1090, "y": 274 } },
     { "id": "a3_reference_portal", "storyFloor": "A3", "role": "room_portal", "point": { "x": 1395.5, "y": 488 } },
     { "id": "a3_reference_target", "storyFloor": "A3", "role": "observation_target", "point": { "x": 1398, "y": 715 } }
   ],

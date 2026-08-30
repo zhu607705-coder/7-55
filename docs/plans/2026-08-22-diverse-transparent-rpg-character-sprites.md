@@ -109,7 +109,7 @@ MiniMax 候选未通过后，按备用路径使用图像生成工具生成真实
 
 ## 回归校验
 
-- `scripts/verify-rpg-character-sprite-integrity.py` 同时检查主人公、学生、保安和保洁阿姨四类角色。
+- `scripts/verify-rpg-character-sprite-integrity.mjs` 使用仓库已有 PNG 解码能力，同时检查主人公、学生、保安和保洁阿姨四类角色，不再依赖 Python 或 Pillow。
 - 校验内容包括源图有效轮廓数量、头顶和脚底留白、源图与运行帧轮廓重合度、宽高比误差、同动画固定缩放比和主人公镜像补帧映射。
 - 当前门限：轮廓宽高比误差不超过 `3%`，同动画最大与最小缩放比不超过 `1.03`，头顶和脚底至少各保留 `2px`。
 - 执行入口：`npm run verify:rpg-character-sprites`。

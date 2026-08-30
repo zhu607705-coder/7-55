@@ -17,6 +17,7 @@ interface PhoneShellProps {
   events: EventBus;
   children: ReactNode;
   embedded?: boolean;
+  inputBlocked?: boolean;
   showTaskBar?: boolean;
   showGlobalLayers?: boolean;
   onTaskNavigate?: (quest: QuestViewModel) => void;
@@ -91,6 +92,7 @@ export function PhoneShell({
   events,
   children,
   embedded = false,
+  inputBlocked = false,
   showTaskBar = true,
   showGlobalLayers = true,
   onTaskNavigate
@@ -132,6 +134,13 @@ export function PhoneShell({
     };
   }, [embedded]);
 
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    if (inputBlocked) stage.setAttribute("inert", "");
+    else stage.removeAttribute("inert");
+  }, [inputBlocked]);
+
   // 亮度遮罩：亮度越低越暗（最多 0.3），拉满则完全通透
   const veilOpacity = Math.max(0, (70 - state.ui.brightness) / 70) * 0.3;
   const scaleStyle = {
@@ -141,7 +150,13 @@ export function PhoneShell({
   } as CSSProperties;
 
   return (
-    <main ref={stageRef} className={`app-stage ${embedded ? "is-embedded" : ""}`.trim()} style={scaleStyle}>
+    <main
+      ref={stageRef}
+      className={`app-stage ${embedded ? "is-embedded" : ""} ${inputBlocked ? "is-input-blocked" : ""}`.trim()}
+      data-input-blocked={inputBlocked}
+      aria-hidden={inputBlocked || undefined}
+      style={scaleStyle}
+    >
       <section className="phone-scale-box" aria-label="7:55 scaled phone viewport">
         <div className="phone-scale-shell">
           <section ref={setFrameElement} className={`phone-frame ${shake}`} role="application" aria-label="7:55 phone runtime">

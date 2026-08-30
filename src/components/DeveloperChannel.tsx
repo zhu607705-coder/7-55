@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { GameStore } from "../core/types";
 import {
   applyDeveloperCheckpoint,
@@ -11,7 +11,8 @@ import {
 
 interface DeveloperChannelProps {
   store: GameStore;
-  onVisibilityChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onCheckpointApplied?: () => void;
 }
 
@@ -38,7 +39,7 @@ const DEVELOPER_LEVELS: readonly DeveloperLevel[] = [
   { id: "3-1", chapter: "第三章", label: "东区食堂追踪", checkpointIds: ["canteen-hunt", "c3-canteen-entry", "c3-canteen-drinks", "c3-canteen-menu", "c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"] },
   { id: "3-2", chapter: "第三章", label: "剧场追踪", checkpointIds: ["c3-theater-entry", "c3-theater-ticket-request", "c3-theater-ticket-accepted", "c3-theater-ticket-first-wave", "c3-theater-ticket-first-wave-won", "c3-theater-ticket-delivered", "c3-theater-code", "c3-theater-program", "c3-theater-prop", "c3-theater-spotlight", "c3-theater-spotlight-round", "c3-theater-complete"] },
   { id: "3-3", chapter: "第三章", label: "寻找启真湖", checkpointIds: ["c3-qizhen-transition", "c3-qizhen-location", "c3-qizhen-map", "c3-qizhen-gate"] },
-  { id: "3-4", chapter: "第三章", label: "雨后登船", checkpointIds: ["c3-qizhen-dock", "c3-qizhen-rain-hold", "c3-qizhen-weather-control", "c3-qizhen-overcast", "c3-qizhen-boarding"] },
+  { id: "3-4", chapter: "第三章", label: "雨后登船", checkpointIds: ["c3-qizhen-dock", "c3-qizhen-rain-hold", "c3-qizhen-rescue-dorm", "c3-qizhen-hair-dryer", "c3-qizhen-weather-control", "c3-qizhen-overcast", "c3-qizhen-boarding"] },
   { id: "3-5", chapter: "第三章", label: "湖区道具链", checkpointIds: ["c3-qizhen-open-water", "c3-qizhen-rhythm-key", "c3-qizhen-rhythm-net", "c3-qizhen-rhythm-fish", "c3-qizhen-rhythm-paper", "c3-qizhen-tool-chain", "c3-qizhen-swan", "c3-qizhen-paper"] },
   { id: "3-6", chapter: "第三章", label: "黑天鹅追逐", checkpointIds: ["c3-qizhen-chase", "c3-qizhen-complete"] },
   { id: "3.5-1", chapter: "3.5章", label: "未同步记录", checkpointIds: ["c3-interlude-reboot", "c3-interlude-journal", "c3-interlude-photos", "c3-interlude-voice", "c3-interlude-network", "c3-interlude-timeline", "c3-interlude-destination", "c3-interlude-replay"] },
@@ -79,13 +80,18 @@ function getInitialDeveloperSelection(active: DeveloperCheckpointId | null): {
   return { chapter, levelId: levels[0]?.id ?? "全部" };
 }
 
-export function DeveloperChannel({ store, onVisibilityChange, onCheckpointApplied }: DeveloperChannelProps) {
+export function DeveloperChannel({
+  store,
+  open,
+  onOpenChange,
+  onCheckpointApplied
+}: DeveloperChannelProps) {
   const params = new URLSearchParams(window.location.search);
   const explicitlyDisabled = params.get("dev") === "0";
-  const explicitlyRequested = params.get("dev") === "1" || params.has("devCheckpoint");
-  const [available, setAvailable] = useState(() => isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV));
-  const [open, setOpen] = useState(() => explicitlyRequested && isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV));
+  const initialAvailability = isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV);
+  const [available, setAvailable] = useState(initialAvailability || open);
   const [active, setActive] = useState(() => getActiveDeveloperCheckpoint());
+  const channelRef = useRef<HTMLElement>(null);
   const initialSelection = useMemo(() => getInitialDeveloperSelection(active), []);
   const [selectedChapter, setSelectedChapter] = useState<DeveloperChapter>(initialSelection.chapter);
   const [selectedLevelId, setSelectedLevelId] = useState(initialSelection.levelId);
@@ -101,26 +107,63 @@ export function DeveloperChannel({ store, onVisibilityChange, onCheckpointApplie
       : chapterCheckpoints.filter((checkpoint) => getCheckpointLevel(checkpoint).id === selectedLevelId),
     [chapterCheckpoints, selectedLevelId]
   );
-  useEffect(() => {
-    onVisibilityChange?.(open);
-  }, [onVisibilityChange, open]);
+  const setChannelOpen = useCallback((nextOpen: boolean) => {
+    onOpenChange(nextOpen);
+  }, [onOpenChange]);
+  const closeAndResume = useCallback(() => {
+    setChannelOpen(false);
+  }, [setChannelOpen]);
   useEffect(() => {
     if (explicitlyDisabled) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "d") {
         event.preventDefault();
+        event.stopImmediatePropagation();
+        if (event.repeat) return;
         setAvailable(true);
-        setOpen((value) => !value);
+        if (open) closeAndResume();
+        else setChannelOpen(true);
+        return;
+      }
+      if (open && event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (event.repeat) return;
+        closeAndResume();
       }
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [explicitlyDisabled]);
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [closeAndResume, explicitlyDisabled, open, setChannelOpen]);
+  useEffect(() => {
+    if (!open) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      channelRef.current?.querySelector<HTMLButtonElement>("button[aria-label='关闭开发者通道']")
+        ?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open]);
   const stopPointerPropagation = (event: React.SyntheticEvent) => event.stopPropagation();
   if (!available) return null;
-  if (!open) return <button type="button" className="developer-channel-trigger" aria-label="打开开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={(event) => { stopPointerPropagation(event); setOpen(true); }}>DEV</button>;
-  return <aside className="developer-channel" aria-label="开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
-    <header><div><small>7:55 DEV · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>章节与关卡直达</strong></div><button type="button" aria-label="关闭开发者通道" onClick={() => setOpen(false)}>×</button></header>
+  if (!open) return <button type="button" className="developer-channel-trigger" aria-label="打开开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={(event) => { stopPointerPropagation(event); setChannelOpen(true); }}>DEV</button>;
+  const dismissBackdrop = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeAndResume();
+  };
+  return <Fragment>
+    <div
+      className="developer-channel-backdrop"
+      aria-hidden="true"
+      onPointerDown={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+      onPointerUp={stopPointerPropagation}
+      onClick={dismissBackdrop}
+    />
+    <aside ref={channelRef} data-developer-channel-root className="developer-channel" aria-label="开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
+    <header><div><small>7:55 DEV · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>章节与关卡直达</strong></div><button type="button" aria-label="关闭开发者通道" onClick={closeAndResume}>×</button></header>
     <nav className="developer-channel-chapters" aria-label="选择章节">
       {DEVELOPER_CHAPTERS.map((chapter) => {
         const count = DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === chapter).length;
@@ -167,6 +210,7 @@ export function DeveloperChannel({ store, onVisibilityChange, onCheckpointApplie
           data-dev-checkpoint={item.id}
           className={active === item.id ? "is-active" : ""}
           onClick={() => {
+            setChannelOpen(false);
             applyDeveloperCheckpoint(store, item.id as DeveloperCheckpointId);
             setActive(item.id);
             onCheckpointApplied?.();
@@ -175,12 +219,16 @@ export function DeveloperChannel({ store, onVisibilityChange, onCheckpointApplie
       </section>
     </div>
     <footer><button type="button" onClick={() => {
+      setChannelOpen(false);
       if (restoreDeveloperBackup(store)) {
         setActive(null);
         onCheckpointApplied?.();
+      } else {
+        setChannelOpen(true);
       }
     }}>恢复进入前存档</button><span>Ctrl Shift D</span></footer>
-  </aside>;
+    </aside>
+  </Fragment>;
 }
 
 export function isDeveloperChannelAvailable(search: string, _devMode: boolean): boolean {

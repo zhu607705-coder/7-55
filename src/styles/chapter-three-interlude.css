@@ -186,59 +186,7 @@
   line-height: 1.5;
 }
 
-.interlude-evidence-grid {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.interlude-evidence-grid details {
-  min-height: 64px;
-  padding: 8px 10px;
-  border: 2px solid #65727a;
-  background: rgba(241, 242, 235, 0.9);
-}
-.interlude-evidence-grid summary {
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 9px;
-  cursor: pointer;
-  list-style: none;
-}
-.interlude-evidence-grid summary::-webkit-details-marker { display: none; }
-.interlude-evidence-grid summary > b {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border: 2px solid #66747b;
-  background: #c5c9c4;
-}
-.interlude-evidence-grid details.is-collected { border-color: var(--interlude-blue); }
-.interlude-evidence-grid details.is-collected summary > b { color: #fff; background: var(--interlude-blue); }
-.interlude-evidence-grid summary > span { min-width: 0; }
-.interlude-evidence-grid summary strong,
-.interlude-evidence-grid summary small { display: block; }
-.interlude-evidence-grid summary small,
-.interlude-evidence-grid summary > em { margin-top: 3px; color: #65727a; font-size: 10px; font-style: normal; }
-.interlude-evidence-grid details > p { margin: 9px 0 7px 47px; font-size: 10px; line-height: 1.55; }
-.interlude-evidence-grid details > button {
-  min-height: 30px;
-  margin-left: 47px;
-  border: 1px solid #65727a;
-  background: #f4f4ed;
-  font: inherit;
-  font-size: 10px;
-}
-
 .interlude-next-action { padding: 12px 14px; }
-.interlude-source-links {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.interlude-source-links button,
 .voice-actions button {
   min-height: 40px;
   border: 2px solid var(--interlude-ink);

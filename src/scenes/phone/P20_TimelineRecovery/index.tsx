@@ -1,18 +1,18 @@
 import { useState } from "react";
+import { InvestigationRing } from "../../../components/InvestigationRing";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
-import type {
-  ChapterThreeInterludeDecoyId,
-  ChapterThreeInterludeEvidenceId,
-  SceneId
-} from "../../../core/types";
+import type { ChapterThreeInterludeDecoyId } from "../../../core/types";
 import {
   chapterThreeInterludePublicContent,
   chapterThreeInterludeValidationContract,
   type ChapterThreeInterludeDecoyReasonId,
   type ChapterThreeInterludeDestinationCandidateId
 } from "../../../data/chapter3InterludeContent";
-import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
+import {
+  selectChapterThreeInterludeViewModel,
+  type ChapterThreeInterludeParallelBranchView
+} from "../../../modules/ChapterThreeInterludeModel";
 import { kit } from "../../../modules/GameKit";
 
 const DECOY_RESULT_COPY: Readonly<Record<ChapterThreeInterludeDecoyId, string>> = {
@@ -27,19 +27,19 @@ const DECOY_REASONS: ReadonlyArray<{ id: ChapterThreeInterludeDecoyReasonId; lab
   { id: "frozen_local_clock", label: "这是本机冻结值，不能代表实际时间" }
 ];
 
-const EVIDENCE_ROUTE: Readonly<Record<ChapterThreeInterludeEvidenceId, SceneId>> = {
-  journal_start: "cc98",
-  photo_direction: "photos",
-  network_destination: "zjuding",
-  broadcast_end: "voice_memos"
-};
-
 const NETWORK_RECORD_LABELS = {
   record_qizhen_dock: "22:44:12 · 启真湖小码头",
   record_theater_hall: "22:44:31 · 剧场前厅",
   record_library_south: "22:43:11 · 基础图书馆南侧",
   record_0755: "22:44:57 · 北教学区 A 区"
 } as const;
+
+const RESTORED_BRANCH_DETAIL = {
+  photos: chapterThreeInterludePublicContent.evidence.photo_direction.timeLabel,
+  voice: chapterThreeInterludePublicContent.evidence.broadcast_end.timeLabel,
+  messages: "通知与路线已核验",
+  network: chapterThreeInterludePublicContent.evidence.network_destination.timeLabel
+} satisfies Record<ChapterThreeInterludeParallelBranchView["id"], string>;
 
 export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
   const interlude = state.chapterThreeInterlude;
@@ -56,9 +56,11 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
     setFeedback(result === "accepted" ? "恢复工具已打开。" : "当前无法恢复这段记录。");
   }
 
-  function openEvidenceSource(id: ChapterThreeInterludeEvidenceId) {
-    if (id === "network_destination") kit.flags.setUi("zjudingPage", "hub");
-    router.goTo(EVIDENCE_ROUTE[id]);
+  function openParallelBranch(branchId: (typeof viewModel.parallelBranches)[number]["id"]) {
+    const branch = viewModel.parallelBranches.find((candidate) => candidate.id === branchId);
+    if (!branch) return;
+    if (branchId === "network") kit.flags.setUi("zjudingPage", "hub");
+    router.goTo(branch.recommendedScene);
   }
 
   function verifyDestination(candidateId: ChapterThreeInterludeDestinationCandidateId) {
@@ -142,24 +144,6 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
 
             <p className="interlude-derived-reasoning" role="status">{viewModel.derivedReasoning}</p>
 
-            <section className="interlude-evidence-grid" aria-label={`恢复证据 ${viewModel.evidenceProgress.completed}/${viewModel.evidenceProgress.total}`}>
-              {chapterThreeInterludeValidationContract.evidenceOrder.map((id, index) => {
-                const entry = chapterThreeInterludePublicContent.evidence[id];
-                const collected = interlude.evidenceIds.includes(id);
-                return (
-                  <details key={id} className={collected ? "is-collected" : ""}>
-                    <summary>
-                      <b>{index + 1}</b>
-                      <span><strong>{collected ? entry.timeLabel : "待恢复"}</strong><small>{entry.label}</small></span>
-                      <em>{collected ? "已记录" : "未完成"}</em>
-                    </summary>
-                    <p>{collected ? entry.summary : "打开对应来源，完成当前证据核验。"}</p>
-                    <button type="button" onClick={() => openEvidenceSource(id)}>{collected ? "重新打开来源" : "打开证据来源"}</button>
-                  </details>
-                );
-              })}
-            </section>
-
             {!interlude.evidenceIds.includes("journal_start") ? (
               <section className="interlude-next-action">
                 <h2>先恢复时间窗起点</h2>
@@ -167,12 +151,23 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                 <button type="button" onClick={() => router.goTo("cc98")}>去 CC98 收尾</button>
               </section>
             ) : (
-              <nav className="interlude-source-links" aria-label="证据来源">
-                <button type="button" onClick={() => router.goTo("photos")}>恢复照片</button>
-                <button type="button" onClick={() => router.goTo("voice_memos")}>整理录音</button>
-                <button type="button" onClick={() => router.goTo("wechat")}>查看微信</button>
-                <button type="button" onClick={() => openEvidenceSource("network_destination")}>核对网络</button>
-              </nav>
+              <InvestigationRing
+                ariaLabel={`四类证据并行恢复，已完成 ${viewModel.branchProgress.completed} 项，共 ${viewModel.branchProgress.total} 项`}
+                eyebrow="EVIDENCE LOOP"
+                title="四源恢复环"
+                completed={viewModel.branchProgress.completed}
+                total={viewModel.branchProgress.total}
+                centerLabel="恢复证据"
+                hint="四条分支互不锁定，可以从任一节点开始；全部完成后自动汇合"
+                nodes={viewModel.parallelBranches.map((branch) => ({
+                  id: branch.id,
+                  label: branch.label,
+                  detail: branch.completed ? RESTORED_BRANCH_DETAIL[branch.id] : "点击进入来源",
+                  statusLabel: branch.completed ? "已恢复" : "待恢复",
+                  state: branch.completed ? "complete" : "ready"
+                }))}
+                onActivate={openParallelBranch}
+              />
             )}
 
             {allEvidenceReady ? (

@@ -1019,8 +1019,8 @@ function validateTask7RuntimeSources(errors) {
     || /spatial\s*:\s*\{\s*distance\s*:\s*"within_range"/.test(storyTargetInteractionBlock)) {
     errors.push("Task 7 Scene spatial checks must derive from the real player foot body and target geometry");
   }
-  if (!/OPENING_PHASES\.has\(this\.bridge\.getState\(\)\.chapter4\.phase\)/.test(scene)
-    || !/this\.nearbyTravelTarget\s*=\s*this\.projection\.phase\s*&&\s*OPENING_PHASES\.has/.test(scene)) {
+  if (!/private handleTravelInteraction\(\): void \{[\s\S]*?OPENING_PHASES\.has\(this\.projection\.phase\)/.test(scene)
+    || !/const nearbyTravelCandidate\s*=\s*this\.projection\.phase\s*&&\s*OPENING_PHASES\.has\(this\.projection\.phase\)/.test(scene)) {
     errors.push("Task 7 opening phases must reject elevator and stair travel before request submission");
   }
   if (!/createExternalTimeOverlay/.test(scene)

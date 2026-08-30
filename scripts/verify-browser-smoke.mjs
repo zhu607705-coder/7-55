@@ -2,8 +2,9 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { existsSync, readdirSync } from "node:fs";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -54,6 +55,8 @@ try {
   const chrome = findChrome();
   preview = spawn(viteBinary, [
     "preview",
+    "--mode",
+    "demo",
     "--host",
     host,
     "--port",
@@ -75,7 +78,7 @@ try {
     const profileDir = path.join(tempRoot, `${testCase.id}-profile`);
     const screenshotPath = path.join(tempRoot, `${testCase.id}.png`);
     const url = new URL(testCase.path, origin).href;
-    const chromeResult = spawnSync(chrome, [
+    const chromeResult = await runChromeSmoke(chrome, [
       "--headless=new",
       "--no-sandbox",
       "--disable-dev-shm-usage",
@@ -95,9 +98,7 @@ try {
       url
     ], {
       cwd: root,
-      encoding: "utf8",
-      timeout: 60_000,
-      maxBuffer: 32 * 1024 * 1024
+      timeoutMs: 90_000
     });
 
     if (chromeResult.error) {
@@ -105,23 +106,22 @@ try {
     }
     if (chromeResult.status !== 0) {
       throw new Error(
-        `${testCase.id}: Chromium exited with status ${chromeResult.status}\n${trimDiagnostic(chromeResult.stderr)}`
+        `${testCase.id}: Chromium exited with status ${chromeResult.status}\n${chromeResult.stderr}`
       );
     }
 
-    const dom = chromeResult.stdout ?? "";
-    if (!/<div id="root"/.test(dom)) {
+    if (!chromeResult.rootMounted) {
       throw new Error(`${testCase.id}: rendered DOM lost the #root application mount`);
     }
-    if (dom.includes("正在加载 7:55...")) {
+    if (chromeResult.fallbackVisible) {
       throw new Error(`${testCase.id}: application fallback remained visible after the browser budget`);
     }
-    if (!/<title>7:55<\/title>/.test(dom)) {
+    if (!chromeResult.titlePresent) {
       throw new Error(`${testCase.id}: document title contract changed`);
     }
 
-    const canvasCount = (dom.match(/<canvas\b/g) ?? []).length;
-    if (testCase.expectCanvas && canvasCount === 0) {
+    const canvasCount = chromeResult.canvasPresent ? 1 : 0;
+    if (testCase.expectCanvas && !chromeResult.canvasPresent) {
       throw new Error(`${testCase.id}: RPG checkpoint rendered without a canvas`);
     }
 
@@ -171,10 +171,68 @@ try {
   await rm(tempRoot, { recursive: true, force: true });
 }
 
+function runChromeSmoke(executable, args, { cwd, timeoutMs }) {
+  return new Promise((resolve) => {
+    const child = spawn(executable, args, {
+      cwd,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let settled = false;
+    let error = null;
+    let stderr = "";
+    let scanTail = "";
+    const markers = {
+      rootMounted: false,
+      fallbackVisible: false,
+      titlePresent: false,
+      canvasPresent: false
+    };
+
+    const scan = (chunk) => {
+      const text = scanTail + String(chunk);
+      markers.rootMounted ||= text.includes('<div id="root"');
+      markers.fallbackVisible ||= text.includes("正在加载 7:55...");
+      markers.titlePresent ||= text.includes("<title>7:55</title>");
+      markers.canvasPresent ||= /<canvas\b/.test(text);
+      scanTail = text.slice(-128);
+    };
+
+    const finish = (status) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve({
+        status,
+        error,
+        stderr: trimDiagnostic(stderr),
+        ...markers
+      });
+    };
+
+    child.stdout.on("data", scan);
+    child.stderr.on("data", (chunk) => { stderr = appendBounded(stderr, chunk); });
+    child.on("error", (nextError) => {
+      error = nextError;
+      finish(null);
+    });
+    child.on("close", (status) => finish(status));
+
+    const timer = setTimeout(() => {
+      error = new Error(`Chromium smoke timed out after ${timeoutMs}ms`);
+      child.kill("SIGKILL");
+      finish(null);
+    }, timeoutMs);
+  });
+}
+
 function findChrome() {
   const candidates = [
     process.env.CHROME_BIN,
     process.env.GOOGLE_CHROME_BIN,
+    ...findPlaywrightHeadlessShells(),
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
     "/usr/bin/google-chrome-stable",
     "/usr/bin/google-chrome",
     "/usr/bin/chromium",
@@ -196,6 +254,38 @@ function findChrome() {
   throw new Error(
     "No supported Chromium executable was found. Set CHROME_BIN to google-chrome, google-chrome-stable, chromium, or chromium-browser."
   );
+}
+
+function findPlaywrightHeadlessShells() {
+  const roots = [
+    process.env.PLAYWRIGHT_BROWSERS_PATH,
+    path.join(homedir(), "Library", "Caches", "ms-playwright"),
+    path.join(homedir(), ".cache", "ms-playwright")
+  ].filter((value) => value && existsSync(value));
+  const executables = [];
+
+  for (const rootPath of roots) {
+    let versions = [];
+    try {
+      versions = readdirSync(rootPath)
+        .filter((entry) => entry.startsWith("chromium_headless_shell-"))
+        .sort()
+        .reverse();
+    } catch {
+      continue;
+    }
+    for (const version of versions) {
+      const versionRoot = path.join(rootPath, version);
+      executables.push(
+        path.join(versionRoot, "chrome-headless-shell-mac-arm64", "chrome-headless-shell"),
+        path.join(versionRoot, "chrome-headless-shell-mac-x64", "chrome-headless-shell"),
+        path.join(versionRoot, "chrome-headless-shell-linux64", "chrome-headless-shell"),
+        path.join(versionRoot, "chrome-headless-shell-win64", "chrome-headless-shell.exe")
+      );
+    }
+  }
+
+  return executables.filter((candidate) => existsSync(candidate));
 }
 
 async function waitForPreview(child) {

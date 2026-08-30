@@ -63,7 +63,7 @@ for (const checkpointId of assignments.keys()) {
 const levelIds = levels.map((level) => level.id);
 assert(new Set(levelIds).size === levelIds.length, "level ids must be unique");
 assert(levels.length === 24, `expected 24 levels, received ${levels.length}`);
-assert(checkpoints.length === 112, `expected 112 checkpoints, received ${checkpoints.length}`);
+assert(checkpoints.length === 115, `expected 115 checkpoints, received ${checkpoints.length}`);
 
 const expectedChapterLevelCounts = {
   "第一章": 2,

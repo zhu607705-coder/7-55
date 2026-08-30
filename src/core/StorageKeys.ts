@@ -7,3 +7,4 @@ export const DEVELOPER_CANTEEN_DEFENSE_START_KEY = "seven-fifty-five.developer-c
 export const DEVELOPER_CHAPTER4_PROLOGUE_OFFSET_KEY = "seven-fifty-five.developer-chapter4-prologue-offset.v1";
 export const DEVELOPER_CHAPTER4_TASK_CARD_CONFIRMED_KEY = "seven-fifty-five.developer-chapter4-task-card-confirmed.v1";
 export const DEVELOPER_QIZHEN_RHYTHM_SPAWN_KEY = "seven-fifty-five.developer-qizhen-rhythm-spawn.v1";
+export const DEVELOPER_PANEL_OPEN_KEY = "seven-fifty-five.developer-panel-open.v1";
