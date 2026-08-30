@@ -8,7 +8,7 @@
     "build": "npm run typecheck && npm run build:production:unchecked",
     "build:production:unchecked": "vite build",
     "build:demo": "npm run typecheck && npm run build:single:unchecked",
-    "build:single:unchecked": "vite build --mode demo",
+    "build:single:unchecked": "node --max-old-space-size=6144 node_modules/vite/bin/vite.js build --mode demo",
     "typecheck": "tsc --noEmit",
     "build:single": "npm run build:demo",
     "verify:single": "node scripts/verify-single-file-build.mjs",

@@ -13,7 +13,7 @@ Assertion counts are diagnostic output only. They do not represent line, branch,
 | `npm run validate:extended` | Auditing low-frequency authored content and generated assets | Text, guidance, DEV coverage, character silhouettes, Qizhen journal, stair materials |
 | `npm run validate:release` | Preparing a delivery, PR, push, or offline artifact | Critical and repository contracts, media, maps, production build, Chromium smoke, single-file build and verification |
 
-The suite catalog and execution order live in `scripts/run-validation-suite.mjs`. A validator is registered once and referenced by suite key; CI and local release validation call the same entry point.
+The suite catalog and execution order live in `scripts/run-validation-suite.mjs`. A validator is registered once and referenced by suite key; CI and local release validation call the same entry point. The single-file build command owns a 6144 MB Node heap budget because embedding the complete offline media set exceeds Node's default heap on clean GitHub runners.
 
 ## Blocking validation layers
 
