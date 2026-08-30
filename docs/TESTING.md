@@ -41,17 +41,15 @@ The map, media, asset, topology, story, runtime, interaction, type-check, and ar
 
 ### Browser smoke
 
-After the production bundle is built, `scripts/verify-browser-smoke.mjs` launches it through Vite preview and an available Chromium executable. Discovery covers explicit environment variables, the Playwright headless-shell cache, and common system Chrome, Chromium, or Edge locations. It checks:
+After the offline single file is built and structurally verified, `scripts/verify-browser-smoke.mjs` launches that exact `demo/index.html` through Vite preview and an available Chromium executable. Discovery covers explicit environment variables, the Playwright headless-shell cache, and common system Chrome, Chromium, or Edge locations. It checks:
 
 - mobile phone boot at `390 × 844`;
 - the Chapter 3 theater RPG checkpoint at `1440 × 900`;
 - the Chapter 4 opening RPG checkpoint at `1440 × 900`;
-- React replacement of the loading fallback;
-- RPG canvas creation;
 - valid, non-trivial screenshots with the requested dimensions;
 - distinct screenshots for distinct checkpoints.
 
-The browser smoke proves production-bundle startup and routing in Chromium. It does not establish full playthrough correctness, pixel-level visual equivalence, audio audibility, or Firefox and WebKit compatibility.
+The DOM is intentionally not dumped because serializing the 258 MB inline script would test browser-output throughput instead of game rendering. `verify:single` owns the HTML, title, inline-script, inline-style, and embedded-resource structure checks; the browser smoke owns visual boot and route differentiation for the same artifact. Together they prove offline-bundle startup and routing in Chromium. They do not establish full playthrough correctness, pixel-level visual equivalence, audio audibility, or Firefox and WebKit compatibility.
 
 ## Extended authoring audit
 

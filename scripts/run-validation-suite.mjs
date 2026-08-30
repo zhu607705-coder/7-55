@@ -107,9 +107,9 @@ const SUITE_KEYS = Object.freeze({
     "voiceMemos",
     "campusMap",
     "productionBuild",
-    "browserSmoke",
     "singleBuild",
-    "singleVerify"
+    "singleVerify",
+    "browserSmoke"
   ])
 });
 

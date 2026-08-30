@@ -288,9 +288,9 @@ const releaseValidatorKeys = [
   '"chapter4Task14"',
   '"campusMap"',
   '"productionBuild"',
-  '"browserSmoke"',
   '"singleBuild"',
-  '"singleVerify"'
+  '"singleVerify"',
+  '"browserSmoke"'
 ];
 const releaseSuiteBlock = validationSuiteSource.match(/release:\s*Object\.freeze\(\[([\s\S]*?)\]\)\s*\}\);/)?.[1] ?? "";
 const releaseValidatorIndexes = releaseValidatorKeys.map((key) => releaseSuiteBlock.indexOf(key));
@@ -298,7 +298,7 @@ assert(
   /run:\s*npm run validate:release/.test(ciSource)
     && releaseValidatorIndexes.every((index) => index >= 0)
     && releaseValidatorIndexes.every((index, position) => position === 0 || releaseValidatorIndexes[position - 1] < index),
-  "CI must call the canonical release suite, which must run typecheck, facing, five Chapter 4 gates, campus, builds and artifact verification in order"
+  "CI must call the canonical release suite, which must run typecheck, facing, five Chapter 4 gates, campus, builds, artifact verification and single-file browser smoke in order"
 );
 const chapterFourValidatorCatalog = validationSuiteSource.slice(
   validationSuiteSource.indexOf("chapter4Assets:"),
