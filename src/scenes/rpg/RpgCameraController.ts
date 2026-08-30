@@ -1,4 +1,9 @@
 import Phaser from "phaser";
+import {
+  getRpgLogicalCameraZoom,
+  getRpgRenderScale,
+  setRpgLogicalCameraZoom
+} from "./RpgRenderResolution";
 
 export interface RpgCameraOptions {
   player: Phaser.GameObjects.Sprite;
@@ -119,9 +124,11 @@ export class RpgCameraController {
 
     const camera = this.scene.cameras.main;
     this.camera = camera;
-    camera
-      .setBounds(0, 0, this.world.width, this.world.height)
-      .setZoom(this.defaultZoom)
+    setRpgLogicalCameraZoom(
+      this.scene,
+      this.defaultZoom,
+      camera.setBounds(0, 0, this.world.width, this.world.height)
+    )
       .startFollow(this.player, true, 0.1, 0.1, 0, this.followOffsetY);
     this.syncDeadzoneToViewport();
     camera.centerOn(this.player.x, this.player.y);
@@ -129,9 +136,11 @@ export class RpgCameraController {
     if (this.minimapOptions) {
       const { x, y, width, height, name } = this.minimapOptions;
       const minimap = this.scene.cameras.add(x, y, width, height, false, name);
-      minimap
-        .setBounds(0, 0, this.world.width, this.world.height)
-        .setZoom(Math.min(width / this.world.width, height / this.world.height))
+      setRpgLogicalCameraZoom(
+        this.scene,
+        Math.min(width / this.world.width, height / this.world.height),
+        minimap.setBounds(0, 0, this.world.width, this.world.height)
+      )
         .setBackgroundColor(MINIMAP_BACKGROUND)
         .centerOn(this.world.width / 2, this.world.height / 2);
       this.minimap = minimap;
@@ -170,11 +179,14 @@ export class RpgCameraController {
     this.stopInertia();
     this.completeZoomTween();
     if (this.cinematicReturnZoom === null) {
-      this.cinematicReturnZoom = this.camera.zoom;
+      this.cinematicReturnZoom = getRpgLogicalCameraZoom(this.scene, this.camera);
     }
     this.manual = false;
-    this.camera
-      .setZoom(Phaser.Math.Clamp(zoom, this.minZoom, this.maxZoom))
+    setRpgLogicalCameraZoom(
+      this.scene,
+      Phaser.Math.Clamp(zoom, this.minZoom, this.maxZoom),
+      this.camera
+    )
       .setDeadzone(0, 0)
       .startFollow(this.player, true, 0.075, 0.075, 0, offsetY)
       .centerOn(this.player.x, this.player.y + offsetY);
@@ -183,7 +195,7 @@ export class RpgCameraController {
   endCinematicFollow(): void {
     if (this.destroyed || !this.attached) return;
     if (this.cinematicReturnZoom !== null) {
-      this.camera.setZoom(this.cinematicReturnZoom);
+      setRpgLogicalCameraZoom(this.scene, this.cinematicReturnZoom, this.camera);
       this.cinematicReturnZoom = null;
     }
     this.resumeFollow(true);
@@ -197,13 +209,20 @@ export class RpgCameraController {
     if (step === 0) {
       return;
     }
-    const baseZoom = this.zoomTween ? this.zoomTween.to : this.camera.zoom;
+    const baseZoom = this.zoomTween
+      ? this.zoomTween.to
+      : getRpgLogicalCameraZoom(this.scene, this.camera);
     const nextZoom = Phaser.Math.Clamp(baseZoom + step * this.zoomStep, this.minZoom, this.maxZoom);
     if (nextZoom === baseZoom) {
       return;
     }
     this.resumeFollow(true);
-    this.zoomTween = { from: this.camera.zoom, to: nextZoom, elapsed: 0, anchor: null };
+    this.zoomTween = {
+      from: getRpgLogicalCameraZoom(this.scene, this.camera),
+      to: nextZoom,
+      elapsed: 0,
+      anchor: null
+    };
   }
 
   update(deltaMs: number): void {
@@ -239,7 +258,11 @@ export class RpgCameraController {
       tween.elapsed += deltaMs;
       const t = Phaser.Math.Clamp(tween.elapsed / ZOOM_TWEEN_MS, 0, 1);
       const eased = t * t * (3 - 2 * t);
-      this.camera.setZoom(t >= 1 ? tween.to : tween.from + (tween.to - tween.from) * eased);
+      setRpgLogicalCameraZoom(
+        this.scene,
+        t >= 1 ? tween.to : tween.from + (tween.to - tween.from) * eased,
+        this.camera
+      );
       if (tween.anchor) {
         const after = this.camera.getWorldPoint(tween.anchor.screenX, tween.anchor.screenY);
         this.camera.scrollX += tween.anchor.worldX - after.x;
@@ -316,7 +339,8 @@ export class RpgCameraController {
       }
       const dx = pointer.x - this.downX;
       const dy = pointer.y - this.downY;
-      if (dx * dx + dy * dy < DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) {
+      const dragThreshold = DRAG_THRESHOLD_PX * getRpgRenderScale(this.scene);
+      if (dx * dx + dy * dy < dragThreshold * dragThreshold) {
         return;
       }
       // Re-anchor at the threshold crossing so the pan starts without a jump.
@@ -374,7 +398,9 @@ export class RpgCameraController {
     _deltaX: number,
     deltaY: number
   ): void => {
-    const baseZoom = this.zoomTween ? this.zoomTween.to : this.camera.zoom;
+    const baseZoom = this.zoomTween
+      ? this.zoomTween.to
+      : getRpgLogicalCameraZoom(this.scene, this.camera);
     const rawZoom = baseZoom - deltaY * WHEEL_ZOOM_SENSITIVITY;
     const nextZoom = Phaser.Math.Clamp(
       Math.round(rawZoom / this.zoomStep) * this.zoomStep,
@@ -389,7 +415,7 @@ export class RpgCameraController {
     this.camera.stopFollow();
     const before = this.camera.getWorldPoint(pointer.x, pointer.y);
     this.zoomTween = {
-      from: this.camera.zoom,
+      from: getRpgLogicalCameraZoom(this.scene, this.camera),
       to: nextZoom,
       elapsed: 0,
       anchor: { screenX: pointer.x, screenY: pointer.y, worldX: before.x, worldY: before.y }
@@ -457,7 +483,7 @@ export class RpgCameraController {
     if (!this.zoomTween) {
       return;
     }
-    this.camera.setZoom(this.zoomTween.to);
+    setRpgLogicalCameraZoom(this.scene, this.zoomTween.to, this.camera);
     this.zoomTween = null;
   }
 

@@ -33,6 +33,11 @@ import {
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
+import {
+  getRpgLogicalCameraZoom,
+  RPG_PIXEL_FONT_FAMILY,
+  setRpgLogicalCameraZoom
+} from "./RpgRenderResolution";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   QIZHEN_DOCK_AFTER_RAIN_PUDDLES,
@@ -456,9 +461,11 @@ export class QizhenLakeScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.S
     ]);
 
-    this.cameras.main
-      .setBounds(0, 0, QIZHEN_LAKE_WORLD.width, QIZHEN_LAKE_WORLD.height)
-      .setZoom(1)
+    setRpgLogicalCameraZoom(
+      this,
+      1,
+      this.cameras.main.setBounds(0, 0, QIZHEN_LAKE_WORLD.width, QIZHEN_LAKE_WORLD.height)
+    )
       .startFollow(this.player, true, 0.13, 0.13, 0, 18)
       .setDeadzone(250, 150);
 
@@ -2769,7 +2776,8 @@ export class QizhenLakeScene extends Phaser.Scene {
     const itemOnly = target.kind === "paper" && target.value === "paper_reflection" && !runtime.decoyBaitAttached;
     const automaticEscape = target.kind === "escape" && runtime.phase === "swan_chase";
     const camera = this.cameras.main;
-    const playerScreenY = (this.player.y - camera.worldView.y) * camera.zoom;
+    const playerScreenY = (this.player.y - camera.worldView.y)
+      * getRpgLogicalCameraZoom(this, camera);
     const promptY = Math.abs(playerScreenY - RPG_HUD_LAYOUT.promptBottomY) < 78
       ? Math.min(492, RPG_HUD_LAYOUT.promptBottomY + 70)
       : RPG_HUD_LAYOUT.promptBottomY;
@@ -2789,12 +2797,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xb9e5ef, 0.72);
     this.chaseHudLabel = this.add.text(9, 6, "", {
       color: "#eafcff",
-      fontFamily: "monospace",
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
       fontSize: "11px"
     });
     this.chaseHudProgress = this.add.text(363, 6, "", {
       color: "#fff2b6",
-      fontFamily: "monospace",
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
       fontSize: "11px"
     }).setOrigin(1, 0);
     const riskTrack = this.add.rectangle(9, 34, 354, 7, 0x213744, 0.94).setOrigin(0, 0.5);

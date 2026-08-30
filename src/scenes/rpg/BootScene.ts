@@ -24,6 +24,7 @@ import {
   RpgPlayerAnimator
 } from "./RpgPlayerTextures";
 import { RPG_CONTROL_HINTS, formatRpgInteractionHint } from "./RpgControlHints";
+import { RPG_LOGICAL_HEIGHT, RPG_LOGICAL_WIDTH } from "./RpgRenderResolution";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 
 const CAMERA_MIN_ZOOM = 0.7;
@@ -31,11 +32,8 @@ const CAMERA_MAX_ZOOM = 1.8;
 const CAMERA_DEFAULT_ZOOM = 1.1;
 const CAMERA_ZOOM_STEP = 0.125;
 const CAMERA_FOLLOW_OFFSET_Y = 34;
-const RPG_LOGICAL_WIDTH = 960;
-const RPG_LOGICAL_HEIGHT = 540;
 const CAMERA_DEADZONE_WIDTH_RATIO = 300 / RPG_LOGICAL_WIDTH;
 const CAMERA_DEADZONE_HEIGHT_RATIO = 180 / RPG_LOGICAL_HEIGHT;
-const MAX_CAMPUS_RENDER_SCALE = 3;
 
 const CANTEEN_HUNT_SPAWN = campusRuntimeData.canteen.huntSpawn;
 const CANTEEN_GATE = campusRuntimeData.canteen.gate;
@@ -78,7 +76,6 @@ export class BootScene extends Phaser.Scene {
   private cameraController!: RpgCameraController;
   private pathIndicatorObjects: Phaser.GameObjects.Arc[] = [];
   private currentPathLength = 0;
-  private campusRenderScale = 1;
   private libraryGate!: GateVisual;
   private canteenGate!: GateVisual;
   private theaterGate!: GateVisual;
@@ -101,8 +98,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.campusRenderScale = this.enableNativeCampusResolution();
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.restoreLogicalCanvasResolution, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.clearCanteenPresentation, this);
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     this.physics.world.setBounds(0, 0, ZIJINGANG_WORLD.width, ZIJINGANG_WORLD.height);
     this.cameras.main.setBackgroundColor(0x10171c);
@@ -149,10 +145,10 @@ export class BootScene extends Phaser.Scene {
     this.cameraController = new RpgCameraController(this, {
       player: this.player,
       world: ZIJINGANG_WORLD,
-      minZoom: CAMERA_MIN_ZOOM * this.campusRenderScale,
-      maxZoom: CAMERA_MAX_ZOOM * this.campusRenderScale,
-      defaultZoom: CAMERA_DEFAULT_ZOOM * this.campusRenderScale,
-      zoomStep: CAMERA_ZOOM_STEP * this.campusRenderScale,
+      minZoom: CAMERA_MIN_ZOOM,
+      maxZoom: CAMERA_MAX_ZOOM,
+      defaultZoom: CAMERA_DEFAULT_ZOOM,
+      zoomStep: CAMERA_ZOOM_STEP,
       deadzoneRatio: {
         width: CAMERA_DEADZONE_WIDTH_RATIO,
         height: CAMERA_DEADZONE_HEIGHT_RATIO
@@ -761,23 +757,4 @@ export class BootScene extends Phaser.Scene {
     this.obstacles.add(collision);
   }
 
-  private enableNativeCampusResolution(): number {
-    const bounds = this.game.canvas.getBoundingClientRect();
-    this.game.canvas.style.imageRendering = "auto";
-    const deviceScale = Math.max(1, window.devicePixelRatio || 1);
-    const displayScale = Math.min(bounds.width / RPG_LOGICAL_WIDTH, bounds.height / RPG_LOGICAL_HEIGHT);
-    const renderScale = Phaser.Math.Clamp(Math.max(1, displayScale * deviceScale), 1, MAX_CAMPUS_RENDER_SCALE);
-    this.scale.setGameSize(
-      Math.round(RPG_LOGICAL_WIDTH * renderScale),
-      Math.round(RPG_LOGICAL_HEIGHT * renderScale)
-    );
-    return renderScale;
-  }
-
-  private restoreLogicalCanvasResolution(): void {
-    this.clearCanteenPresentation();
-    this.scale.setGameSize(RPG_LOGICAL_WIDTH, RPG_LOGICAL_HEIGHT);
-    this.game.canvas.style.imageRendering = "";
-    this.campusRenderScale = 1;
-  }
 }

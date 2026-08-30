@@ -20,6 +20,10 @@ import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
 import {
+  getRpgLogicalCameraZoom,
+  setRpgLogicalCameraZoom
+} from "./RpgRenderResolution";
+import {
   configureRpgPlayerSprite,
   ensureRpgPlayerTextures,
   preloadRpgPlayerTextures,
@@ -160,9 +164,11 @@ export class DormHubScene extends Phaser.Scene {
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D") as Record<"W" | "A" | "S" | "D", Phaser.Input.Keyboard.Key>;
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.cameras.main
-      .setBounds(0, 0, DORM_HUB_WORLD.width, DORM_HUB_WORLD.height)
-      .setZoom(DORM_CAMERA_ZOOM)
+    setRpgLogicalCameraZoom(
+      this,
+      DORM_CAMERA_ZOOM,
+      this.cameras.main.setBounds(0, 0, DORM_HUB_WORLD.width, DORM_HUB_WORLD.height)
+    )
       .startFollow(this.player, true, 0.12, 0.12, 0, 12)
       .setDeadzone(230, 130);
 
@@ -285,7 +291,8 @@ export class DormHubScene extends Phaser.Scene {
     }
     if (name === "rpg_camera_zoom") {
       const delta = Number(payload?.delta) || 0;
-      this.cameras.main.setZoom(Phaser.Math.Clamp(this.cameras.main.zoom + delta, 0.9, 1.35));
+      const logicalZoom = getRpgLogicalCameraZoom(this);
+      setRpgLogicalCameraZoom(this, Phaser.Math.Clamp(logicalZoom + delta, 0.9, 1.35));
     }
   }
 

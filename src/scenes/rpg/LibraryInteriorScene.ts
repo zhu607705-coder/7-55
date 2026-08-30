@@ -34,6 +34,10 @@ import {
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
+import {
+  getRpgLogicalCameraZoom,
+  setRpgLogicalCameraZoom
+} from "./RpgRenderResolution";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
   LIBRARY_SHELF_REVEAL_FRAMES,
@@ -233,9 +237,11 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.input.keyboard!.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.enterKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.escapeKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    this.cameras.main
-      .setBounds(0, 0, LIBRARY_INTERIOR_WORLD.width, LIBRARY_INTERIOR_WORLD.height)
-      .setZoom(1)
+    setRpgLogicalCameraZoom(
+      this,
+      1,
+      this.cameras.main.setBounds(0, 0, LIBRARY_INTERIOR_WORLD.width, LIBRARY_INTERIOR_WORLD.height)
+    )
       .startFollow(this.player, true, 0.12, 0.12, 0, 24)
       .setDeadzone(250, 150);
 
@@ -1305,8 +1311,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private animateEvidenceTransfer(worldX: number, worldY: number, color: number): void {
     const camera = this.cameras.main;
-    const startX = (worldX - camera.worldView.x) * camera.zoom;
-    const startY = (worldY - camera.worldView.y) * camera.zoom;
+    const logicalZoom = getRpgLogicalCameraZoom(this, camera);
+    const startX = (worldX - camera.worldView.x) * logicalZoom;
+    const startY = (worldY - camera.worldView.y) * logicalZoom;
     const targetX = 872;
     const targetY = 470;
     const packet = this.add.container(startX, startY).setScrollFactor(0).setDepth(10120);
@@ -1733,7 +1740,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontFamily: "monospace",
       fontSize: "20px"
     }).setOrigin(0.5);
-    const controls = this.add.text(0, 174, "Enter / 空格 确认 · Esc 关闭", {
+    const controls = this.add.text(0, 166, "Enter / 空格 确认 · Esc 关闭", {
       color: "#7fa49b",
       fontFamily: "monospace",
       fontSize: "10px"

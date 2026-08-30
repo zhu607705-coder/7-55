@@ -45,6 +45,13 @@ import {
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
+import {
+  RPG_LOGICAL_HEIGHT,
+  RPG_LOGICAL_WIDTH,
+  setRpgLogicalCameraZoom,
+  toRpgLogicalScreenPoint,
+  zoomRpgCameraTo
+} from "./RpgRenderResolution";
 import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
@@ -496,9 +503,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.handleMixerPointer(pointer);
     });
 
-    this.cameras.main
-      .setBounds(0, 0, CANTEEN_INTERIOR_WORLD.width, CANTEEN_INTERIOR_WORLD.height)
-      .setZoom(this.entryPaperPending ? ENTRY_CAMERA_ZOOM : 1)
+    setRpgLogicalCameraZoom(
+      this,
+      this.entryPaperPending ? ENTRY_CAMERA_ZOOM : 1,
+      this.cameras.main.setBounds(0, 0, CANTEEN_INTERIOR_WORLD.width, CANTEEN_INTERIOR_WORLD.height)
+    )
       .centerOn(this.player.x, this.player.y);
 
     this.createTrays();
@@ -1487,7 +1496,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.reducedMotion ? 120 : 520,
       "Sine.easeInOut"
     );
-    camera.zoomTo(1.22, this.reducedMotion ? 120 : 520, "Sine.easeInOut");
+    zoomRpgCameraTo(this, 1.22, this.reducedMotion ? 120 : 520, "Sine.easeInOut", camera);
     this.time.delayedCall(this.reducedMotion ? 160 : 820, () => this.playEntryPaperSurprise());
   }
 
@@ -1594,7 +1603,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     const camera = this.cameras.main;
     camera.startFollow(this.paper, true, 0.075, 0.075, 0, 24).setDeadzone(100, 68);
-    camera.zoomTo(1.22, this.reducedMotion ? 100 : 260, "Sine.easeOut");
+    zoomRpgCameraTo(this, 1.22, this.reducedMotion ? 100 : 260, "Sine.easeOut", camera);
     let frame = 0;
     this.entryPaperRunTimer?.remove(false);
     this.entryPaperRunTimer = this.time.addEvent({
@@ -1700,7 +1709,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     );
     this.time.delayedCall(cameraPauseMs, () => {
       camera.pan(this.player.x, this.player.y, cameraReturnMs, "Sine.easeInOut");
-      camera.zoomTo(1, cameraReturnMs, "Sine.easeInOut");
+      zoomRpgCameraTo(this, 1, cameraReturnMs, "Sine.easeInOut", camera);
       this.time.delayedCall(cameraReturnMs + 40, () => {
         this.entryPaperPending = false;
         this.paperBusy = false;
@@ -1715,8 +1724,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
     lines.forEach((line, index) => {
       this.time.delayedCall(startDelayMs + index * ENTRY_DIALOGUE_STEP_MS, () => {
         const prompt = this.add.text(
-          this.cameras.main.width / 2,
-          this.cameras.main.height - 86,
+          RPG_LOGICAL_WIDTH / 2,
+          RPG_LOGICAL_HEIGHT - 86,
           line,
           {
             color: "#f5fbff",
@@ -2728,7 +2737,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       focusMs,
       "Sine.easeInOut"
     );
-    camera.zoomTo(2.1, focusMs, "Sine.easeInOut");
+    zoomRpgCameraTo(this, 2.1, focusMs, "Sine.easeInOut", camera);
 
     const finishQueueShift = () => {
       this.thirdColumnQueue.forEach((entry) => {
@@ -2743,7 +2752,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       });
       const returnMs = promoBeatMs(120, 480);
       camera.pan(this.player.x, this.player.y, returnMs, "Sine.easeInOut");
-      camera.zoomTo(1, returnMs, "Sine.easeInOut");
+      zoomRpgCameraTo(this, 1, returnMs, "Sine.easeInOut", camera);
       this.time.delayedCall(returnMs + promoBeatMs(30, 30), () => {
         this.queueShiftAnimating = false;
         this.dialogueLocked = false;
@@ -2855,7 +2864,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
           queueFocusMs,
           "Sine.easeInOut"
         );
-        camera.zoomTo(1.55, queueFocusMs, "Sine.easeInOut");
+        zoomRpgCameraTo(this, 1.55, queueFocusMs, "Sine.easeInOut", camera);
         this.time.delayedCall(queueFocusMs + promoBeatMs(20, 20), shiftThirdColumn);
       });
     };
@@ -3010,8 +3019,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private handleDrinkChoicePointer(pointer: Phaser.Input.Pointer): void {
     if (!this.drinkChoicePanel || !this.drinkChoiceItem) return;
-    const localX = pointer.x - 480;
-    const localY = pointer.y - 270;
+    const logical = toRpgLogicalScreenPoint(this, pointer.x, pointer.y);
+    const localX = logical.x - 480;
+    const localY = logical.y - 270;
     if (Math.abs(localY - 82) > 30) return;
     if (Math.abs(localX + 95) <= 88) {
       this.drinkChoiceSelection = 0;
@@ -3154,8 +3164,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private handleMixerPointer(pointer: Phaser.Input.Pointer): void {
     if (!this.mixerPanel) return;
-    const localX = pointer.x - 480;
-    const localY = pointer.y - 245;
+    const logical = toRpgLogicalScreenPoint(this, pointer.x, pointer.y);
+    const localX = logical.x - 480;
+    const localY = logical.y - 245;
     if (Math.abs(localX - 274) <= 66 && Math.abs(localY + 170) <= 20) {
       this.closeMixerPanel();
       return;
@@ -3233,8 +3244,9 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private handleMenuPointer(pointer: Phaser.Input.Pointer): void {
     if (!this.menuPanel) return;
-    const localX = pointer.x - 480;
-    const localY = pointer.y - 270;
+    const logical = toRpgLogicalScreenPoint(this, pointer.x, pointer.y);
+    const localX = logical.x - 480;
+    const localY = logical.y - 270;
     if (Math.abs(localX - 255) <= 28 && Math.abs(localY + 168) <= 28) {
       this.closeMenuPanel();
       return;
@@ -3309,10 +3321,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     const camera = this.cameras.main;
     const vignette = this.add.rectangle(
-      camera.width / 2,
-      camera.height / 2,
-      camera.width - 30,
-      camera.height - 30,
+      RPG_LOGICAL_WIDTH / 2,
+      RPG_LOGICAL_HEIGHT / 2,
+      RPG_LOGICAL_WIDTH - 30,
+      RPG_LOGICAL_HEIGHT - 30,
       0x000000,
       0
     ).setStrokeStyle(70, 0x000000, 0)
@@ -3404,8 +3416,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
         ease: "Sine.easeOut"
       });
       const fullMapZoom = Math.min(
-        camera.width / CANTEEN_INTERIOR_WORLD.width,
-        camera.height / CANTEEN_INTERIOR_WORLD.height
+        RPG_LOGICAL_WIDTH / CANTEEN_INTERIOR_WORLD.width,
+        RPG_LOGICAL_HEIGHT / CANTEEN_INTERIOR_WORLD.height
       ) * 0.985;
       camera.stopFollow().setDeadzone(0, 0);
       camera.pan(
@@ -3414,7 +3426,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         pullBackMs,
         "Sine.easeOut"
       );
-      camera.zoomTo(fullMapZoom, pullBackMs, "Sine.easeOut");
+      zoomRpgCameraTo(this, fullMapZoom, pullBackMs, "Sine.easeOut", camera);
       const previewCart = this.add.sprite(908, 628, CANTEEN_PUSH_CART_SHEET_KEY, 8)
         .setScale(0.3)
         .setOrigin(0.5, 0.74)
@@ -3440,7 +3452,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setAngle(-12)
         .setVisible(true);
       camera.startFollow(this.paper, true, 0.07, 0.07).setDeadzone(90, 60);
-      camera.zoomTo(1.42, beatMs(100, 700), "Sine.easeOut");
+      zoomRpgCameraTo(this, 1.42, beatMs(100, 700), "Sine.easeOut", camera);
       this.tweens.add({
         targets: this.paper,
         x: 836,
@@ -3479,8 +3491,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
         fontStyle: "bold"
       }).setOrigin(0.5);
       const closeup = this.add.container(
-        camera.width / 2,
-        camera.height / 2,
+        RPG_LOGICAL_WIDTH / 2,
+        RPG_LOGICAL_HEIGHT / 2,
         [paperCard, paperTexture, closeLine]
       ).setScrollFactor(0).setDepth(6500).setScale(0.76).setAngle(-5);
       this.tweens.add({
@@ -3566,7 +3578,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       const pushInMs = beatMs(120, 1100);
       camera.stopFollow().setDeadzone(0, 0);
       camera.pan(steamWindow.x, steamWindow.y + 18, pushInMs, "Sine.easeInOut");
-      camera.zoomTo(2.18, pushInMs, "Sine.easeInOut");
+      zoomRpgCameraTo(this, 2.18, pushInMs, "Sine.easeInOut", camera);
       this.time.delayedCall(pushInMs + beatMs(20, 30), pushPackageFromShadow);
     };
 
@@ -3636,13 +3648,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     const camera = this.cameras.main;
     const fullMapZoom = Math.min(
-      camera.width / CANTEEN_INTERIOR_WORLD.width,
-      camera.height / CANTEEN_INTERIOR_WORLD.height
+      RPG_LOGICAL_WIDTH / CANTEEN_INTERIOR_WORLD.width,
+      RPG_LOGICAL_HEIGHT / CANTEEN_INTERIOR_WORLD.height
     ) * 0.985;
-    camera
-      .stopFollow()
-      .setDeadzone(0, 0)
-      .setZoom(fullMapZoom)
+    setRpgLogicalCameraZoom(
+      this,
+      fullMapZoom,
+      camera.stopFollow().setDeadzone(0, 0)
+    )
       .centerOn(CANTEEN_INTERIOR_WORLD.width / 2, CANTEEN_INTERIOR_WORLD.height / 2);
 
     this.defenseRuntime = new CanteenDefenseRuntime(

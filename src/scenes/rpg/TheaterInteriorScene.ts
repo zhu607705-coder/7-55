@@ -39,6 +39,7 @@ import {
   RPG_PLAYER_WALK_FPS
 } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
+import { setRpgLogicalCameraZoom } from "./RpgRenderResolution";
 import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 import {
@@ -408,9 +409,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.destroySpotlightPanel();
     });
 
-    this.cameras.main
-      .setBounds(0, 0, THEATER_INTERIOR_WORLD.width, THEATER_INTERIOR_WORLD.height)
-      .setZoom(1)
+    setRpgLogicalCameraZoom(
+      this,
+      1,
+      this.cameras.main.setBounds(0, 0, THEATER_INTERIOR_WORLD.width, THEATER_INTERIOR_WORLD.height)
+    )
       .startFollow(this.player, true, 0.13, 0.13, 0, 24)
       .setDeadzone(250, 150);
 

@@ -59,6 +59,10 @@ import {
 import { CHAPTER_FOUR_ELEVATOR } from "../../modules/ChapterFourElevatorModel";
 import type { ChapterFour755Intent } from "../../modules/ChapterFourTemporalMazeController";
 import { chapterFourInsertedPuzzleForTarget } from "../../modules/ChapterFourInsertedPuzzleModel";
+import {
+  RPG_PIXEL_FONT_FAMILY,
+  setRpgLogicalCameraZoom
+} from "./RpgRenderResolution";
 import type { RpgBridge } from "./RpgBridge";
 import {
   createChapterFourContextInteractionIntent,
@@ -2087,9 +2091,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private createHud(): void {
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-      color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 5,
-      shadow: { color: "#07111d", blur: 0, offsetX: 2, offsetY: 2, fill: true }
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
+      color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 1
     };
     this.floorCaption = this.add.text(24, 58, "", style).setScrollFactor(0).setDepth(10000);
     this.interactionHint = this.add.text(480, 500, "", {
@@ -5522,8 +5525,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       true,
       true
     );
-    this.cameras.main.setBounds(floor.offsetX, 0, FLOOR_SIZE.width, FLOOR_SIZE.height)
-      .setZoom(1).startFollow(this.player, true, 0.12, 0.12);
+    setRpgLogicalCameraZoom(
+      this,
+      1,
+      this.cameras.main.setBounds(floor.offsetX, 0, FLOOR_SIZE.width, FLOOR_SIZE.height)
+    ).startFollow(this.player, true, 0.12, 0.12);
   }
 
   /** All story distance checks use the shared player's authored foot body. */

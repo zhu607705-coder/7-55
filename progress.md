@@ -3564,3 +3564,29 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 最终只读审查未发现阻断项或高风险问题。按低风险反馈将节点半径从 `35%` 收至 `32.5%`，增加窄手机左右安全余量；RPG 状态节点改为“返回现场、就近调查”，不再承诺自动传送；3.5 已恢复节点重新显示对应时间或来源摘要。
 - 自动验证通过：`typecheck`、`validate:quick` `4/4`、`validate:critical` `20/20`、3.5 并行控制器 `48` 种完成顺序／`1957` 项断言、启真湖 `6` 种分支顺序／`114` 项断言、第四章故事验证、第四章运行时 `1095` 项断言、深浅模式顺序 `180` 项断言，以及最终单文件浏览器 smoke `3/3`。冒烟脚本修正为显式 `vite preview --mode demo`，避免误测旧 `dist`；同时改为流式读取 Chrome DOM 输出，避免 258MB 单文件触发 `spawnSync` 缓冲区 `ENOBUFS`。首次单文件构建在 Node 默认 4GB 堆上限触发 OOM；提高到 `NODE_OPTIONS=--max-old-space-size=8192` 后构建成功。`verify:single` 确认最终 `demo/index.html` 为 `258669283` 字节，含两个内联脚本和一个内联样式；SHA-256 为 `aa972951c5ecfe0d7b6ef814420c2ed11c36190358bffd5c84632ab9394d0e79`。
 - 本轮继续使用既有 `selected-phaser-ui-20260721` 工作区，没有创建新工作区，没有新增测试框架或测试依赖，也没有执行 Git fetch、暂存、提交、合并、推送或上传。临时浏览器截图在目视确认后删除。
+## 2026-08-29 RPG 自适应清晰度、像素字体与切换稳定性
+
+- 横屏 RPG 继续保持 `960×540` 逻辑视口和原碰撞坐标，按实际显示尺寸与设备像素比提高 Phaser 后备画布；摄像机可见范围不变。固定 HUD 使用逻辑坐标补偿，Phaser Text 的纹理分辨率随渲染倍率同步，地图、界面和文字不会因后备画布放大而错位。
+- 活跃 RPG 场景中的 Phaser Text 与共享 RPG DOM 覆盖层统一使用 `Fusion Pixel 12px Proportional SC` 像素字体；字体加载完成后会刷新已经创建的文字纹理。近黑色描边按字号限制为 `1 / 2 / 3px`，避免小字出现过重黑边；图书馆入馆记录面板同步微调底部控件位置，防止像素字形被裁切。
+- 修复撤销残缺后自适应分辨率回调调用缺失存活检查导致的 RPG 黑屏，并补齐 Phaser 销毁过程中的 ScaleManager 存活保护；快速连续切换图书馆、第四章与启真湖时不再在已销毁的画布上执行尺寸更新。
+- 本地字体资源核对确认只有 `Fusion Pixel 12px Proportional SC` 的 `400 normal`、2024.05.12 版本；项目 TTF 与依赖包 WOFF/WOFF2 是同一套 12px 字形的不同封装，没有更高网格、更高字重、可变轴或更精细版本，因此按用户要求保持当前字形，不做无效替换。
+- Chromium `1440×900 / DPR 1.5` 实测图书馆、食堂、启真湖与第四章四个代表场景：每处仅一个 canvas，后备尺寸均为 `1440×810`，像素字体错误数 `0`、文字源分辨率不一致数 `0`、字体加载成功；随后快速连续整页切换三处 RPG 检查点，console/page error 为 `0`。
+- Fresh 验证通过：`npm run typecheck`、第四章 runtime `1095` 项、现实模式顺序 `180` 项、室内门 `28` 项、`git diff --check`、`npm run build:single` 与 `npm run verify:single`。离线产物为 `demo/index.html`，`252448256` 字节、两个内联脚本和一个内联样式。
+- 当前边界：本轮未执行 Git fetch、暂存、提交、合并、推送或上传；既有未跟踪 Godot、启真湖素材和第三章文案保持未动。本轮专用 Chromium、临时截图和 QA 脚本均已清理，既有 Vite 开发服务保持运行。
+
+## 2026-08-29 远端 main 合并与自适应渲染兼容复核
+
+- 合并前按项目规则执行 `git fetch origin main --prune` 并完成三视图审计：本地 `HEAD=866ae84`、本地独有提交 `0`、远端新增 `6` 个提交并前进到 `26315cf`；工作树有 `14` 个已修改跟踪文件与新增 `RpgRenderResolution.ts`，另有 `1456` 个未跟踪 Godot、启真湖素材、辅助脚本和第三章文案文件。
+- 按用户确认范围，只把上述 `15` 个 RPG 清晰度、字体和进度文件做本地保护提交，再合并远端 `93` 个文件。八个重叠文件中六个自动合并；人工冲突仅为 `progress.md` 与 `ChapterFourTemporalMazeScene.ts`，前者保留双方完整记录，后者同时保留远端插入谜题和完整明暗氛围层、本地像素字体与自适应相机入口。
+- Fresh 自动验证通过：`npm run typecheck`、第四章 story、runtime `1095` 项、有效交互 `624` 项、topology `2781` 项、warmup `77` 项、assets、启真湖雨天 `70` 项、天鹅追逐 `164` 项、钓鱼、工具分支 `114` 项、现实模式顺序 `180` 项、室内门 `28` 项、玩家帧、无朝向合同、启真湖日志与 `git diff --check`。
+- `chapter4:validate-task14` 与 `audio:pursuit:verify` 的本地音频时长探测未执行完成，因为当前 Windows 环境没有 `ffprobe`；前者的剧情/runtime 前置验证和其余音频消费者均未因此报出代码错误。远端 CI 已显式准备 `ffmpeg/ffprobe`，本轮没有修改对应远端验证脚本或安装系统工具。
+- Chromium `1440×900` 实测图书馆、启真湖和第四章 A2：三个场景都只有一个 canvas，像素字体错误数与文字源分辨率不一致数均为 `0`；第四章切到深色后氛围层为完整 `960×540`、alpha `1`，实际覆盖整个地图。随后快速连续切换三个 RPG 检查点，console/page error 为 `0`。
+- `NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single` 通过；离线 `demo/index.html` 为 `258654608` 字节、两个内联脚本和一个内联样式。本轮没有推送；`1456` 个未跟踪文件保持未动，专用 Chromium、截图和 QA 脚本均已清理，既有 Vite 服务继续运行。
+
+## 2026-08-29 合并后新增内容像素字体补齐
+
+- 合并后新增的第四章五区拓扑谜题、灿若星辰灯闭幕层、启真湖黑天鹅追逐 HUD 与雨天救援层、天气校准界面和 CC98 剧场档案，统一改用项目实际加载的 `Fusion Pixel 12px Proportional SC` 字体栈；原有字号、间距、坐标和交互范围保持不变。
+- Phaser 黑天鹅追逐文字在创建时直接使用共享 RPG 像素字体常量；DOM 覆盖层改为继承 `--font-pixel`，清理新增样式中的通用 `monospace` 和不完整旧字体别名，避免部分新界面回落到系统字体。
+- Chromium 通过真实第四章 A2 谜题、第四章闭幕层和启真湖追逐运行态核对字体，并对天气校准、CC98 剧场档案和雨天救援样式做浏览器级联检查；所有目标及子元素均解析为实际像素字体，字体资源加载成功，console/page error 为 `0`，第四章谜题画面未出现裁切或错位。
+- Fresh 验证通过：`npm run typecheck`、第四章有效交互 `624` 项、启真湖黑天鹅追逐 `164` 项、`git diff --check`、`NODE_OPTIONS=--max-old-space-size=6144 npm run build:single` 与 `npm run verify:single`。离线 `demo/index.html` 为 `258654706` 字节、两个内联脚本和一个内联样式。
+- 本轮没有执行 Git fetch、暂存、提交、合并、推送或上传；既有未跟踪 Godot、启真湖素材、辅助脚本和第三章文案保持未动。

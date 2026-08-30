@@ -2764,6 +2764,7 @@
   box-shadow: 4px 4px 0 #765a35;
   color: #f7edcf;
   display: grid;
+  font-family: var(--font-pixel);
   gap: 10px;
   margin: 12px;
   padding: 10px;
