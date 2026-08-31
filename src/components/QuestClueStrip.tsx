@@ -6,7 +6,7 @@ import type { SceneRouter } from "../core/SceneRouter";
 import { isQuestTaskBarVisible, selectQuestViewModel } from "../core/QuestModel";
 import type { GameState, QuestViewModel } from "../core/types";
 
-export type QuestTaskBarVariant = "phone" | "rpg" | "desktop";
+export type QuestTaskBarVariant = "phone" | "rpg";
 
 export interface QuestTaskBarProps {
   state: GameState;
@@ -33,10 +33,11 @@ function QuestDrawerLayer({
   portalRoot?: Element | null;
   variant: QuestTaskBarVariant;
 }) {
-  if ((variant === "phone" || variant === "rpg") && portalRoot) {
-    return createPortal(children, portalRoot);
+  if (variant === "rpg") {
+    const layer = <div className="rpg-overlay-layer quest-task-drawer-layer">{children}</div>;
+    return portalRoot ? createPortal(layer, portalRoot) : layer;
   }
-  return children;
+  return portalRoot ? createPortal(children, portalRoot) : children;
 }
 
 export function isQuestCluePhase(): boolean {
@@ -191,6 +192,8 @@ export function QuestTaskBar({
           <section
             id={`quest-drawer-${variant}`}
             className={`quest-task-drawer quest-task-drawer--${variant}`}
+            role="dialog"
+            aria-modal="true"
             aria-label="任务详情"
           >
             <header>

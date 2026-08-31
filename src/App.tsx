@@ -23,7 +23,6 @@ import { LibraryStoryOverlay } from "./components/LibraryStoryOverlay";
 import { PresentationLayer } from "./components/PresentationLayer";
 import { ToastLayer } from "./components/ToastLayer";
 import { useMediaQuery } from "./components/useMediaQuery";
-import { QuestTaskBar } from "./components/QuestClueStrip";
 import { audioDirector } from "./modules/AudioDirector";
 import { kit } from "./modules/GameKit";
 import { presentationDirector } from "./modules/PresentationDirector";
@@ -412,15 +411,6 @@ export function App() {
             data-active-surface={activeSurface}
             data-split={clockSplit ? "clock" : undefined}
           >
-            {activeSurface === "rpg" && state.rpgScene !== "duan_yongping_temporal_maze" ? (
-              <QuestTaskBar
-                state={state}
-                events={eventBus}
-                router={router}
-                variant="desktop"
-                onNavigate={navigateFromTask}
-              />
-            ) : null}
             <section
               ref={phonePaneRef}
               className="desktop-phone-pane"
@@ -456,7 +446,7 @@ export function App() {
                   inputBlocked={developerChannelOpen || libraryStoryVisible}
                   keyboardBlocked={activeSurface !== "rpg"}
                   embedded
-                  showTaskBar={state.rpgScene === "duan_yongping_temporal_maze"}
+                  showTaskBar={activeSurface === "rpg"}
                   desktopSplit
                   onFocusPhone={() => setActiveSurface("phone")}
                   onTaskNavigate={navigateFromTask}

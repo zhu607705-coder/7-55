@@ -215,14 +215,6 @@ img {
   position: relative;
 }
 
-.desktop-gameplay-shell > .quest-task-bar--desktop {
-  left: 14px;
-  position: absolute;
-  right: 260px;
-  top: 14px;
-  z-index: 80;
-}
-
 .chapter-intro-overlay {
   background: rgba(5, 7, 9, 0.92);
   display: grid;

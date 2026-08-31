@@ -122,7 +122,10 @@ if (!selectedKeys) {
 }
 
 const selected = selectedKeys.map((key) => VALIDATORS[key]);
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const npmCliPath = process.env.npm_execpath;
+const npmCommand = npmCliPath
+  ? process.execPath
+  : process.platform === "win32" ? "npm.cmd" : "npm";
 const failures = [];
 const startedAt = performance.now();
 
@@ -133,7 +136,10 @@ for (const validator of selected) {
   console.log(`\n[${validator.area}] npm run ${validator.script}`);
   console.log(`Risk: ${validator.risk}`);
 
-  const result = spawnSync(npmCommand, ["run", validator.script], {
+  const npmArguments = npmCliPath
+    ? [npmCliPath, "run", validator.script]
+    : ["run", validator.script];
+  const result = spawnSync(npmCommand, npmArguments, {
     cwd: process.cwd(),
     env: { ...process.env, CI: process.env.CI ?? "true" },
     stdio: "inherit"

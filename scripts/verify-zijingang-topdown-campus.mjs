@@ -24,10 +24,12 @@ const EXPECTED = {
 const plateUrl = new URL("../src/assets/rpg/campus/zijingang_campus_plate.png", import.meta.url);
 const maskUrl = new URL("../src/assets/rpg/campus/zijingang_road_walkability_mask.png", import.meta.url);
 const runtimeUrl = new URL("../src/data/maps/zijingang-campus-runtime.json", import.meta.url);
-const [plate, mask, runtimeText] = await Promise.all([
+const bootSceneUrl = new URL("../src/scenes/rpg/BootScene.ts", import.meta.url);
+const [plate, mask, runtimeText, bootSceneSource] = await Promise.all([
   readFile(plateUrl),
   readFile(maskUrl),
-  readFile(runtimeUrl, "utf8")
+  readFile(runtimeUrl, "utf8"),
+  readFile(bootSceneUrl, "utf8")
 ]);
 const runtime = JSON.parse(runtimeText);
 const pngSignature = "89504e470d0a1a0a";
@@ -65,6 +67,12 @@ for (const [name, actual, expected] of [
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     throw new Error(`${name} changed outside the accepted top-down coordinate contract`);
   }
+}
+if (
+  !bootSceneSource.includes("findPath(CANTEEN_HUNT_SPAWN, CANTEEN_APPROACH)")
+  || !bootSceneSource.includes('if (state.rpgCheckpoint === "campus_canteen_gate") return CANTEEN_GATE;')
+) {
+  throw new Error("Canteen tracking route and campus return spawn must remain separate");
 }
 const foundationLibrary = runtime.landmarks?.find((landmark) => landmark.id === "foundation_library");
 if (JSON.stringify(foundationLibrary) !== JSON.stringify({ id: "foundation_library", ...EXPECTED.foundationLibrary })) {
@@ -111,6 +119,19 @@ const assertStandable = (name, point) => {
     throw new Error(`${name} does not fit the canonical player foot box`);
   }
 };
+const assertFourWayEgress = (name, point, distance) => {
+  for (const [direction, offsetX, offsetY] of [
+    ["north", 0, -distance],
+    ["south", 0, distance],
+    ["west", -distance, 0],
+    ["east", distance, 0]
+  ]) {
+    assertStandable(`${name} ${direction} egress`, {
+      x: point.x + offsetX,
+      y: point.y + offsetY
+    });
+  }
+};
 for (const [name, point] of [
   ["Campus spawn", runtime.spawn],
   ["Library approach", walkability.gateApproach],
@@ -121,6 +142,7 @@ for (const [name, point] of [
 ]) {
   assertStandable(name, point);
 }
+assertFourWayEgress("Canteen return checkpoint", runtime.canteen.gate, 24);
 for (const [name, point] of [
   ["Basic Library body", { x: 3706, y: 1600 }],
   ["Basic Library river bank", { x: 3500, y: 1700 }],

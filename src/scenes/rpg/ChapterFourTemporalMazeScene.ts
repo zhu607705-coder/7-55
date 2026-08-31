@@ -1243,6 +1243,102 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   constructor() { super("chapter-four-temporal-maze") }
 
+  /**
+   * Phaser reuses the same Scene instance after stop/start. Game objects from the
+   * previous run are destroyed by Scene shutdown, but class-field references are
+   * not reset automatically. Clear every restart-sensitive cache before create()
+   * rebuilds the active Chapter 4 projection.
+   */
+  private resetRestartLifecycleState(): void {
+    this.platePlayerCollider = null;
+    this.backgrounds.clear();
+    this.elevatorVisuals.clear();
+    this.appliedForegrounds = [];
+    this.targetVisuals.clear();
+    this.insertedPuzzleProps.clear();
+    this.darkRealityVisuals = null;
+    this.lightRealityVisuals = null;
+    this.renderedRealityMode = null;
+    this.debugOverlayObjects = [];
+    this.plateColliderDebugObjects = [];
+
+    this.virtualDirection = { x: 0, y: 0 };
+    this.interactionRequested = false;
+    this.nearbyTravelTarget = null;
+    this.nearbyTravelTargetHasPriority = false;
+    this.nearbyStoryTarget = null;
+    this.nearbyAlumniFigure = null;
+    this.nearbyLandmark = null;
+
+    this.floorPanel = null;
+    this.floorPanelMode = "floors";
+    this.floorPanelSelection = 1;
+    this.elevatorReplayStartSeconds = CHAPTER_FOUR_ELEVATOR.selectableStartMinSeconds;
+    this.elevatorCalibrationGraphics = null;
+    this.elevatorCalibrationReadout = null;
+    this.elevatorCalibrationFailed = false;
+    this.floorPanelButtons = [];
+    this.floorPanelTitle = null;
+    this.floorPanelDescription = null;
+    this.floorPanelEvidence = null;
+    this.floorPanelProgress = null;
+    this.floorPanelPrimaryButton = null;
+    this.floorPanelPrimaryLabel = null;
+    this.floorPanelDeductionButton = null;
+    this.floorPanelDeductionLabel = null;
+    this.elevatorDeductionArrivalFloor = "A2";
+    this.elevatorDeductionUnservedFloor = "A3";
+    this.elevatorDeductionFeedback = "";
+    this.elevatorDeductionGraphics = null;
+    this.elevatorDeductionReadout = null;
+
+    this.alumniPanel = null;
+    this.alumniPanelFigure = null;
+    this.alumniPanelStage = "biography";
+    this.alumniPanelSelection = 0;
+    this.alumniPurposeAnswer = null;
+    this.alumniPersonAnswer = null;
+    this.alumniWallObjects = [];
+
+    this.elevatorPhase = "idle";
+    this.elevatorTargetFloor = null;
+    this.elevatorDoorProgress = 0;
+    this.pendingMove = null;
+    this.pendingMoveTimer = null;
+    this.pendingStoryRequest = null;
+    this.storyPresentation = "idle";
+    this.storyPresentationTimers = [];
+    this.storyRetryNotBeforeMs = 0;
+    this.lastPublishedStoryInputLock = false;
+    this.lastPublishedStoryPointerAllowed = false;
+    this.lastPublishedStoryKeyboardAllowed = false;
+    this.liveReadySignature = "";
+    this.openingPaperSprite = null;
+    this.hallClockStateSprite = null;
+    this.externalTimeOverlay = null;
+    this.frontDeskAttendant = null;
+    this.supportNpcSprites.clear();
+    this.lastPhaseSignature = "";
+    this.requestSerial = 0;
+    this.feedbackTimer = null;
+
+    this.projectionSignature = "";
+    this.pendingProjectionSignature = "";
+    this.projectionRetryFailures = 0;
+    this.projectionRetryNotBeforeMs = 0;
+    this.appliedPlateSignature = "";
+    this.appliedPlateIds = Object.freeze({
+      A1: "a1_base", A2: "a2_base", A3: "a3_base"
+    });
+    this.appliedCollisionIds = [];
+    this.appliedCollisionRects = [];
+    this.appliedOcclusionIds = [];
+    this.renderedTargetIds = [];
+    this.persistentContractFailures.clear();
+    this.plateContractFailures.clear();
+    this.spatialAttestationLast = null;
+  }
+
   preload(): void {
     const bridge = this.registry.get("rpgBridge") as RpgBridge | undefined;
     this.preloadedWarmupPhase = bridge
@@ -1255,6 +1351,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.resetRestartLifecycleState();
     this.warmupLoadGeneration += 1;
     this.phaseLoadCancelled = false;
     for (const settle of [...this.pendingWarmupSettlers]) settle();
@@ -1541,6 +1638,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.destroyTask12Runtime("scene_shutdown");
       this.destroyRealityModeVisuals();
       this.destroyExternalTimeOverlay();
+      this.closeFloorPanel();
       this.closeAlumniPanel();
       this.hostPowerPanelOpen = false;
       this.hostPowerPanelSession = null;
@@ -1549,6 +1647,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.feedbackTimer?.remove(false);
       this.clearProjectedTargetVisuals();
       this.destroyInsertedPuzzleProps();
+      this.resetRestartLifecycleState();
       clearRpgRuntimeDebugState();
     });
   }
@@ -1805,7 +1904,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private createBaseBackgrounds(): void {
     for (const floor of FLOORS) {
       const plateId = basePlateFor(floor.storyFloor);
-      if (this.backgrounds.has(floor.displayFloor) || !this.textures.exists(plateId)) continue;
+      const existing = this.backgrounds.get(floor.displayFloor);
+      if (existing?.active) continue;
+      this.backgrounds.delete(floor.displayFloor);
+      if (!this.textures.exists(plateId)) continue;
       this.backgrounds.set(
         floor.displayFloor,
         this.add.image(floor.offsetX, 0, plateId).setOrigin(0).setDepth(0)
@@ -1939,7 +2041,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const figure = this.alumniPanelFigure;
     if (!panel || !figure) return;
     panel.removeAll(true);
-    const backdrop = this.add.rectangle(480, 290, 960, 500, 0x02060b, 0.78)
+    const backdrop = this.add.rectangle(480, 270, 960, 540, 0x02060b, 0.78)
       .setScrollFactor(0)
       .setInteractive();
     const card = this.add.rectangle(480, 286, 760, 420, 0x101b2b, 0.98)
@@ -2188,47 +2290,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private createRealityModeVisuals(initialMode: GameState["chapter4"]["mode"]): void {
     this.destroyRealityModeVisuals();
 
-    const darkPattern = this.add.graphics();
-    darkPattern.fillStyle(0x020b16, 0.2);
-    darkPattern.fillRect(0, 0, 960, 22);
-    darkPattern.fillRect(0, 518, 960, 22);
-    darkPattern.fillRect(0, 0, 18, 540);
-    darkPattern.fillRect(942, 0, 18, 540);
-    darkPattern.lineStyle(1, 0x67ddff, 0.08);
-    for (let y = 30; y < 520; y += 16) darkPattern.lineBetween(0, y, 960, y);
-    darkPattern.lineStyle(2, 0x67ddff, 0.34);
-    darkPattern.strokeRect(8, 8, 944, 524);
-    darkPattern.lineStyle(3, 0x9aeaff, 0.46);
-    darkPattern.lineBetween(8, 34, 8, 8);
-    darkPattern.lineBetween(8, 8, 34, 8);
-    darkPattern.lineBetween(926, 8, 952, 8);
-    darkPattern.lineBetween(952, 8, 952, 34);
-    darkPattern.lineBetween(8, 506, 8, 532);
-    darkPattern.lineBetween(8, 532, 34, 532);
-    darkPattern.lineBetween(926, 532, 952, 532);
-    darkPattern.lineBetween(952, 506, 952, 532);
-
+    // Match Chapter 3's uninterrupted full-scene wash. Screen-space line
+    // geometry aliases at responsive scales and can appear as a horizontal seam.
     this.darkRealityVisuals = this.add.container(0, 0, [
-      this.add.rectangle(480, 270, 960, 540, 0x082846, 0.3),
-      darkPattern
+      this.add.rectangle(480, 270, 960, 540, 0x071127, 0.56)
     ]).setScrollFactor(0).setDepth(REALITY_MODE_ATMOSPHERE_DEPTH);
 
-    const lightPattern = this.add.graphics();
-    lightPattern.lineStyle(2, 0xffd36f, 0.22);
-    lightPattern.strokeRect(8, 8, 944, 524);
-    lightPattern.lineStyle(2, 0xffe8ae, 0.3);
-    lightPattern.lineBetween(8, 8, 38, 8);
-    lightPattern.lineBetween(8, 8, 8, 38);
-    lightPattern.lineBetween(922, 8, 952, 8);
-    lightPattern.lineBetween(952, 8, 952, 38);
-    lightPattern.lineBetween(8, 502, 8, 532);
-    lightPattern.lineBetween(8, 532, 38, 532);
-    lightPattern.lineBetween(922, 532, 952, 532);
-    lightPattern.lineBetween(952, 502, 952, 532);
-
     this.lightRealityVisuals = this.add.container(0, 0, [
-      this.add.rectangle(480, 270, 960, 540, 0xffe2a6, 0.07),
-      lightPattern
+      this.add.rectangle(480, 270, 960, 540, 0xffe2a6, 0.07)
     ]).setScrollFactor(0).setDepth(REALITY_MODE_ATMOSPHERE_DEPTH);
 
     this.renderedRealityMode = null;

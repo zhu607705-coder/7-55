@@ -264,7 +264,10 @@ export class BootScene extends Phaser.Scene {
 
   private resolveSpawn(state: GameState): { x: number; y: number } {
     if (state.rpgCheckpoint === "campus_library_gate") return LIBRARY_APPROACH;
-    if (state.rpgCheckpoint === "campus_canteen_gate") return CANTEEN_APPROACH;
+    // Keep the authored tracking trail ending at CANTEEN_APPROACH. A checkpoint
+    // restore anchors the player at the gate center instead, so the canonical
+    // foot box has room to move without changing the visible pursuit route.
+    if (state.rpgCheckpoint === "campus_canteen_gate") return CANTEEN_GATE;
     if (state.rpgCheckpoint === "campus_theater_junction") return CANTEEN_THEATER_JUNCTION;
     if (state.canteenHunt.active) {
       if (["chase_ready", "chasing"].includes(state.canteenHunt.phase)) return CANTEEN_APPROACH;

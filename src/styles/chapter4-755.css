@@ -201,15 +201,10 @@
 }
 
 .chapter4-maintenance-diagnosis-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 142;
-  display: grid;
-  place-items: center;
-  padding: 28px;
+  --rpg-overlay-backdrop: rgb(2 7 13 / 82%);
+  --rpg-overlay-padding: 28px;
+  --rpg-overlay-z: 142;
   color: #edf8f2;
-  background: rgb(2 7 13 / 82%);
-  pointer-events: auto;
 }
 
 .chapter4-maintenance-diagnosis {
@@ -347,15 +342,10 @@
 }
 
 .chapter4-power-panel-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 140;
-  display: grid;
-  place-items: center;
-  padding: 28px;
+  --rpg-overlay-backdrop: rgb(2 7 13 / 78%);
+  --rpg-overlay-padding: 28px;
+  --rpg-overlay-z: 140;
   color: #edf8f2;
-  background: rgb(2 7 13 / 78%);
-  pointer-events: auto;
 }
 
 .chapter4-power-panel {
@@ -581,15 +571,10 @@
 }
 
 .chapter4-inserted-puzzle-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 146;
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  --rpg-overlay-backdrop: rgb(5 8 12 / 82%);
+  --rpg-overlay-padding: 24px;
+  --rpg-overlay-z: 146;
   color: #16212a;
-  background: rgb(5 8 12 / 82%);
-  pointer-events: auto;
 }
 
 .chapter4-inserted-puzzle {

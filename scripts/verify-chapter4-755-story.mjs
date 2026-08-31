@@ -1003,15 +1003,16 @@ function validateTask7RuntimeSources(errors) {
     /private createRealityModeVisuals\([\s\S]*?private retryRequiredWarmupPhase\(\)/
   )?.[0] ?? "";
   if (!/private syncRealityModeVisuals/.test(realityAtmosphereBlock)
-    || !/0x082846, 0\.3/.test(realityAtmosphereBlock)
+    || !/0x071127, 0\.56/.test(realityAtmosphereBlock)
     || !/0xffe2a6, 0\.07/.test(realityAtmosphereBlock)
+    || /darkPattern|lineBetween\(|strokeRect\(/.test(realityAtmosphereBlock)
     || !/mode === "dark" \? 1 : 0/.test(realityAtmosphereBlock)
     || !/mode === "light" \? 1 : 0/.test(realityAtmosphereBlock)
     || !/modeActive \? 1 : 0\.22/.test(realityPresentationBlock)
     || !/mode === "light"/.test(realityPresentationBlock)
     || !/0x67ddff/.test(realityPresentationBlock)
     || !/0xffd36f/.test(realityPresentationBlock)) {
-    errors.push("Chapter 4 must render distinct dark and light atmospheres while keeping opposite-mode puzzle markers visible in a dormant state");
+    errors.push("Chapter 4 must use Chapter 3's uninterrupted dark wash, retain the light atmosphere, and keep opposite-mode puzzle markers visible in a dormant state");
   }
   const room204PieceResolverBlock = scene.match(
     /private resolveNearbyRoom204PieceId\(\)[\s\S]*?private selectRoom204Piece/

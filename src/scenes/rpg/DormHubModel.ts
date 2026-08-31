@@ -1,7 +1,43 @@
-export const DORM_HUB_WORLD = {
+export const DORM_HUB_SOURCE_WORLD = {
   width: 941,
   height: 1672
 } as const;
+
+// The shared indoor actor already renders at twice the dorm's former character
+// treatment. Shrinking the authored room once more by one half yields the requested
+// four-times relative character presence without introducing a dorm-only actor scale.
+export const DORM_HUB_ENVIRONMENT_SCALE = 0.5;
+export const DORM_HUB_MAP_OFFSET_X = Math.round(
+  (960 - DORM_HUB_SOURCE_WORLD.width * DORM_HUB_ENVIRONMENT_SCALE) / 2
+);
+export const DORM_HUB_WORLD = {
+  width: 960,
+  height: DORM_HUB_SOURCE_WORLD.height * DORM_HUB_ENVIRONMENT_SCALE
+} as const;
+
+export function dormSourceToWorldX(sourceX: number): number {
+  return DORM_HUB_MAP_OFFSET_X + sourceX * DORM_HUB_ENVIRONMENT_SCALE;
+}
+
+export function dormSourceToWorldY(sourceY: number): number {
+  return sourceY * DORM_HUB_ENVIRONMENT_SCALE;
+}
+
+export function dormSourceToWorldSize(sourceSize: number): number {
+  return sourceSize * DORM_HUB_ENVIRONMENT_SCALE;
+}
+
+export function dormWorldToSourceX(worldX: number): number {
+  return (worldX - DORM_HUB_MAP_OFFSET_X) / DORM_HUB_ENVIRONMENT_SCALE;
+}
+
+export function dormWorldToSourceY(worldY: number): number {
+  return worldY / DORM_HUB_ENVIRONMENT_SCALE;
+}
+
+export function dormWorldToSourceSize(worldSize: number): number {
+  return worldSize / DORM_HUB_ENVIRONMENT_SCALE;
+}
 
 export interface DormCollisionRect {
   id: string;
@@ -13,7 +49,7 @@ export interface DormCollisionRect {
 
 // Bounds are authored directly against dorm_hub.png (941 x 1672).
 // Furniture keeps its visible source-pixel silhouette while the blue aisle stays open.
-export const DORM_STATIC_COLLISION_RECTS: readonly DormCollisionRect[] = [
+export const DORM_SOURCE_STATIC_COLLISION_RECTS: readonly DormCollisionRect[] = [
   { id: "north_wall", left: 20, top: 10, right: 920, bottom: 403 },
   { id: "west_wall", left: 18, top: 42, right: 66, bottom: 1518 },
   { id: "east_wall", left: 878, top: 42, right: 923, bottom: 1518 },
@@ -37,6 +73,16 @@ export const DORM_STATIC_COLLISION_RECTS: readonly DormCollisionRect[] = [
   { id: "floor_backpack", left: 680, top: 1324, right: 753, bottom: 1438 },
   { id: "lower_right_storage", left: 745, top: 1268, right: 879, bottom: 1477 }
 ] as const;
+
+export const DORM_STATIC_COLLISION_RECTS: readonly DormCollisionRect[] = Object.freeze(
+  DORM_SOURCE_STATIC_COLLISION_RECTS.map((rect) => ({
+    id: rect.id,
+    left: dormSourceToWorldX(rect.left),
+    top: dormSourceToWorldY(rect.top),
+    right: dormSourceToWorldX(rect.right),
+    bottom: dormSourceToWorldY(rect.bottom)
+  }))
+);
 
 export type DormInteractionTargetId =
   | "upper_bunk"
@@ -65,7 +111,7 @@ export interface DormInteractionTarget {
   label: string;
 }
 
-export const DORM_INTERACTION_TARGETS: readonly DormInteractionTarget[] = [
+export const DORM_SOURCE_INTERACTION_TARGETS: readonly DormInteractionTarget[] = [
   { id: "upper_bunk", x: 166, y: 350, width: 190, height: 500, proximity: 128, label: "检查上铺床组" },
   { id: "lower_bunk", x: 166, y: 790, width: 190, height: 340, proximity: 128, label: "检查下铺床组" },
   { id: "window", x: 375, y: 260, width: 90, height: 286, proximity: 100, label: "拉动窗帘" },
@@ -82,13 +128,34 @@ export const DORM_INTERACTION_TARGETS: readonly DormInteractionTarget[] = [
   { id: "exit_door", x: 470, y: 1530, width: 148, height: 118, proximity: 116, label: "打开寝室门" }
 ] as const;
 
-export const DORM_CAMPUS_CARD = {
+function dormSourceTargetToWorld(target: DormInteractionTarget): DormInteractionTarget {
+  return {
+    ...target,
+    x: dormSourceToWorldX(target.x),
+    y: dormSourceToWorldY(target.y),
+    width: dormSourceToWorldSize(target.width),
+    height: dormSourceToWorldSize(target.height),
+    proximity: dormSourceToWorldSize(target.proximity)
+  };
+}
+
+export const DORM_INTERACTION_TARGETS: readonly DormInteractionTarget[] = Object.freeze(
+  DORM_SOURCE_INTERACTION_TARGETS.map(dormSourceTargetToWorld)
+);
+
+export const DORM_SOURCE_CAMPUS_CARD = {
   x: 792,
   y: 928,
   proximity: 148
 } as const;
 
-export const DORM_QIZHEN_HAIR_DRYER: DormInteractionTarget = {
+export const DORM_CAMPUS_CARD = {
+  x: dormSourceToWorldX(DORM_SOURCE_CAMPUS_CARD.x),
+  y: dormSourceToWorldY(DORM_SOURCE_CAMPUS_CARD.y),
+  proximity: dormSourceToWorldSize(DORM_SOURCE_CAMPUS_CARD.proximity)
+} as const;
+
+export const DORM_SOURCE_QIZHEN_HAIR_DRYER: DormInteractionTarget = {
   id: "hair_dryer",
   x: 805,
   y: 914,
@@ -98,9 +165,16 @@ export const DORM_QIZHEN_HAIR_DRYER: DormInteractionTarget = {
   label: "拿起书桌上的吹风机"
 };
 
-export const DORM_SPAWN = {
+export const DORM_QIZHEN_HAIR_DRYER = dormSourceTargetToWorld(DORM_SOURCE_QIZHEN_HAIR_DRYER);
+
+export const DORM_SOURCE_SPAWN = {
   x: 470,
   y: 1440
+} as const;
+
+export const DORM_SPAWN = {
+  x: dormSourceToWorldX(DORM_SOURCE_SPAWN.x),
+  y: dormSourceToWorldY(DORM_SOURCE_SPAWN.y)
 } as const;
 
 export function findNearestDormTarget(

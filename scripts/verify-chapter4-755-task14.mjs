@@ -256,8 +256,10 @@ assert(
   "collapsed Chapter 4 task bar must use the same objective-only status layout as every other chapter"
 );
 assert(
-  /showTaskBar=\{state\.rpgScene\s*===\s*"duan_yongping_temporal_maze"\}/.test(appSource),
-  "desktop Chapter 4 must mount the shared RPG task bar through its Host without duplicating other scenes"
+  /showTaskBar=\{activeSurface\s*===\s*"rpg"\}/.test(appSource)
+    && !/import\s+\{\s*QuestTaskBar\s*\}/.test(appSource)
+    && !/<QuestTaskBar/.test(appSource),
+  "desktop RPG scenes, including Chapter 4, must mount the shared task bar only through their Host"
 );
 assert(
   /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"/.test(sceneSource)

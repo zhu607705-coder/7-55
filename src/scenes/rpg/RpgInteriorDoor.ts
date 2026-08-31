@@ -14,6 +14,13 @@ export interface RpgInteriorDoorForegroundSpec {
   right: number;
   bottom: number;
   sortY: number;
+  sourceCrop?: {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+  };
+  displayScale?: number;
 }
 
 export interface RpgInteriorDoorPalette {
@@ -99,9 +106,11 @@ export function createRpgDoorForeground(
   textureKey: string,
   spec: RpgInteriorDoorForegroundSpec
 ): Phaser.GameObjects.Image {
+  const crop = spec.sourceCrop ?? spec;
   return scene.add.image(spec.left, spec.top, textureKey)
     .setOrigin(0)
-    .setCrop(spec.left, spec.top, spec.right - spec.left, spec.bottom - spec.top)
+    .setCrop(crop.left, crop.top, crop.right - crop.left, crop.bottom - crop.top)
+    .setScale(spec.displayScale ?? 1)
     .setDepth(-900)
     .setVisible(false);
 }

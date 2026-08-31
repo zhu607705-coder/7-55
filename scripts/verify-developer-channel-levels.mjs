@@ -8,6 +8,10 @@ const checkpointSource = await readFile(
   new URL("../src/modules/DeveloperChannel.ts", import.meta.url),
   "utf8"
 );
+const rpgHostSource = await readFile(
+  new URL("../src/scenes/rpg/RpgGameHost.tsx", import.meta.url),
+  "utf8"
+);
 
 const failures = [];
 let assertions = 0;
@@ -84,6 +88,23 @@ assert(componentSource.includes('aria-label="选择章节"'), "chapter navigatio
 assert(componentSource.includes('aria-label="选择关卡"'), "level navigation must expose an accessible label");
 assert(componentSource.includes("data-dev-level={level.id}"), "level buttons must expose stable selectors");
 assert(componentSource.includes("data-dev-checkpoint={item.id}"), "checkpoint buttons must retain stable selectors");
+assert(
+  checkpointSource.includes('const beforeEntryPaperEscape = ["canteen-hunt", "c3-canteen-entry"].includes(id);')
+    && checkpointSource.includes("entryPaperEscaped: !beforeEntryPaperEscape"),
+  "canteen tracking and entry checkpoints must preserve the first-entry paper animation"
+);
+assert(
+  rpgHostSource.includes("developerCheckpointInputRestoreSerialRef")
+    && rpgHostSource.includes("restoreDeveloperCheckpointInput(12)")
+    && rpgHostSource.includes("if (inputBlockedRef.current)"),
+  "DEV checkpoint restart must retry input recovery until the overlay state has committed"
+);
+assert(
+  rpgHostSource.includes("syncActivatedSceneInput")
+    && rpgHostSource.includes("A stopped Phaser Scene retains its KeyboardPlugin.enabled value")
+    && rpgHostSource.includes("const frame = window.requestAnimationFrame(syncActivatedSceneInput);"),
+  "a Scene activated after DEV closes must inherit the current host input state"
+);
 
 if (failures.length > 0) {
   console.error(`Developer level validation FAIL assertions=${assertions}`);

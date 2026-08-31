@@ -111,6 +111,12 @@ export default defineConfig(({ mode }) => {
             outDir: "demo",
             // Keep the formal game and the map-only demo side by side. Both artifacts are self-contained.
             emptyOutDir: false,
+            // The embedded assets dominate this roughly 260 MB artifact. Running
+            // esbuild minification over that final inline payload creates several
+            // full-size copies and can exhaust Windows commit memory even with a
+            // large V8 heap. Syntax is still transpiled to BROWSER_BUILD_TARGET;
+            // skipping minification adds only a small amount of script text.
+            minify: false,
             chunkSizeWarningLimit: 8000,
             target: BROWSER_BUILD_TARGET,
             ...(isCampusMapDemo

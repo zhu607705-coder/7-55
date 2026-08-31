@@ -13,12 +13,7 @@ const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const host = "127.0.0.1";
 const port = 4173;
 const origin = `http://${host}:${port}`;
-const viteBinary = path.join(
-  root,
-  "node_modules",
-  ".bin",
-  process.platform === "win32" ? "vite.cmd" : "vite"
-);
+const viteCliPath = path.join(root, "node_modules", "vite", "bin", "vite.js");
 
 const cases = Object.freeze([
   Object.freeze({
@@ -53,7 +48,8 @@ let preview;
 
 try {
   const chrome = findChrome();
-  preview = spawn(viteBinary, [
+  preview = spawn(process.execPath, [
+    viteCliPath,
     "preview",
     "--mode",
     "demo",
@@ -197,6 +193,11 @@ function findChrome() {
     process.env.CHROME_BIN,
     process.env.GOOGLE_CHROME_BIN,
     ...findPlaywrightHeadlessShells(),
+    process.env.PROGRAMFILES && path.join(process.env.PROGRAMFILES, "Google", "Chrome", "Application", "chrome.exe"),
+    process.env["PROGRAMFILES(X86)"] && path.join(process.env["PROGRAMFILES(X86)"], "Google", "Chrome", "Application", "chrome.exe"),
+    process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, "Google", "Chrome", "Application", "chrome.exe"),
+    process.env.PROGRAMFILES && path.join(process.env.PROGRAMFILES, "Microsoft", "Edge", "Application", "msedge.exe"),
+    process.env["PROGRAMFILES(X86)"] && path.join(process.env["PROGRAMFILES(X86)"], "Microsoft", "Edge", "Application", "msedge.exe"),
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
     "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
@@ -227,7 +228,8 @@ function findPlaywrightHeadlessShells() {
   const roots = [
     process.env.PLAYWRIGHT_BROWSERS_PATH,
     path.join(homedir(), "Library", "Caches", "ms-playwright"),
-    path.join(homedir(), ".cache", "ms-playwright")
+    path.join(homedir(), ".cache", "ms-playwright"),
+    path.join(homedir(), "AppData", "Local", "ms-playwright")
   ].filter((value) => value && existsSync(value));
   const executables = [];
 

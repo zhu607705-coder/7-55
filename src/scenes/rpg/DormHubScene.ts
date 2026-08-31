@@ -6,12 +6,23 @@ import actOneContent from "../../data/act-one-bootstrap.content.json";
 import type { RpgBridge } from "./RpgBridge";
 import {
   DORM_CAMPUS_CARD,
+  DORM_HUB_ENVIRONMENT_SCALE,
+  DORM_HUB_MAP_OFFSET_X,
+  DORM_HUB_SOURCE_WORLD,
   DORM_HUB_WORLD,
   DORM_INTERACTION_TARGETS,
   DORM_QIZHEN_HAIR_DRYER,
+  DORM_SOURCE_CAMPUS_CARD,
+  DORM_SOURCE_QIZHEN_HAIR_DRYER,
   DORM_SPAWN,
   DORM_STATIC_COLLISION_RECTS,
   distanceToDormTarget,
+  dormSourceToWorldSize,
+  dormSourceToWorldX,
+  dormSourceToWorldY,
+  dormWorldToSourceSize,
+  dormWorldToSourceX,
+  dormWorldToSourceY,
   findNearestDormTarget,
   type DormInteractionTarget,
   type DormInteractionTargetId
@@ -41,7 +52,9 @@ import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
 const DORM_HUB_MAP_KEY = "dorm-hub-user-topdown-map";
 const DORM_HAIR_DRYER_KEY = "dorm-qizhen-hair-dryer-generated-v01";
 export const DORM_HUB_WARM_ASSET_URLS = Object.freeze([dormHubMapUrl, hairDryerUrl]);
-const DORM_CAMERA_ZOOM = 960 / DORM_HUB_WORLD.width;
+const DORM_CAMERA_ZOOM = 1;
+const DORM_WALK_SPEED = 160;
+const DORM_PACING_SPEED = 84;
 
 const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
   upper_bunk: "床帘后只有一床叠得过分认真的被子。",
@@ -75,6 +88,7 @@ export class DormHubScene extends Phaser.Scene {
   private playerAnimator!: RpgPlayerAnimator;
   private characterName!: Phaser.GameObjects.Text;
   private interactionPrompt!: Phaser.GameObjects.Text;
+  private roomLayer!: Phaser.GameObjects.Container;
   private campusCardPickup?: Phaser.GameObjects.Container;
   private hairDryerPickup?: Phaser.GameObjects.Image;
   private curtainLeft!: Phaser.GameObjects.Rectangle;
@@ -103,22 +117,27 @@ export class DormHubScene extends Phaser.Scene {
 
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
-    this.cameras.main.setBackgroundColor(0x050607);
-    this.physics.world.setBounds(24, 36, DORM_HUB_WORLD.width - 48, DORM_HUB_WORLD.height - 72);
+    this.cameras.main.setBackgroundColor(0x17130f);
+    this.physics.world.setBounds(
+      dormSourceToWorldX(24),
+      dormSourceToWorldY(36),
+      dormSourceToWorldSize(DORM_HUB_SOURCE_WORLD.width - 48),
+      dormSourceToWorldSize(DORM_HUB_SOURCE_WORLD.height - 72)
+    );
     this.obstacles = this.physics.add.staticGroup();
     this.drawRoom();
     this.createAmbientAnimations();
     this.exitDoor = new RpgInteriorDoorRuntime(this, this.obstacles, {
       id: "dorm_center_exit",
-      centerX: 470,
-      centerY: 1550,
-      openingWidth: 118,
-      openingHeight: 130,
-      blockerY: 1496,
-      blockerWidth: 132,
-      blockerHeight: 12,
+      centerX: dormSourceToWorldX(470),
+      centerY: dormSourceToWorldY(1550),
+      openingWidth: dormSourceToWorldSize(118),
+      openingHeight: dormSourceToWorldSize(130),
+      blockerY: dormSourceToWorldY(1496),
+      blockerWidth: dormSourceToWorldSize(132),
+      blockerHeight: dormSourceToWorldSize(12),
       motion: "single-slide",
-      openOffset: 104,
+      openOffset: dormSourceToWorldSize(104),
       durationMs: 380,
       depth: 3600,
       palette: {
@@ -131,11 +150,13 @@ export class DormHubScene extends Phaser.Scene {
       },
       foreground: {
         textureKey: DORM_HUB_MAP_KEY,
-        left: 392,
-        top: 1468,
-        right: 548,
-        bottom: 1536,
-        sortY: 1572
+        left: dormSourceToWorldX(392),
+        top: dormSourceToWorldY(1468),
+        right: dormSourceToWorldX(548),
+        bottom: dormSourceToWorldY(1536),
+        sortY: dormSourceToWorldY(1572),
+        sourceCrop: { left: 392, top: 1468, right: 548, bottom: 1536 },
+        displayScale: DORM_HUB_ENVIRONMENT_SCALE
       }
     }, window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true);
     this.createCampusCardPickup();
@@ -144,7 +165,9 @@ export class DormHubScene extends Phaser.Scene {
 
     const actOne = this.bridge.getState().actOne;
     const cardPending = !actOne.inventoryRecovered && actOne.phase === "inventory_required";
-    const spawn = cardPending ? { x: 650, y: 920 } : DORM_SPAWN;
+    const spawn = cardPending
+      ? { x: dormSourceToWorldX(650), y: dormSourceToWorldY(920) }
+      : DORM_SPAWN;
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0").setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
     this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
@@ -196,15 +219,15 @@ export class DormHubScene extends Phaser.Scene {
     );
 
     if (actOne.movementEnabled && !this.exitTriggered && vector.lengthSq() > 0) {
-      vector.normalize().scale(150);
+      vector.normalize().scale(DORM_WALK_SPEED);
       if (!this.manualMovementReported) {
         this.manualMovementReported = true;
         this.bridge.emit("rpg_manual_movement_started");
       }
     } else if (actOne.exerciseStarted && !actOne.controlsInstalled) {
-      if (this.player.x >= 650) this.pacingDirection = -1;
-      if (this.player.x <= 390) this.pacingDirection = 1;
-      vector.set(this.pacingDirection * 78, 0);
+      if (this.player.x >= dormSourceToWorldX(650)) this.pacingDirection = -1;
+      if (this.player.x <= dormSourceToWorldX(390)) this.pacingDirection = 1;
+      vector.set(this.pacingDirection * DORM_PACING_SPEED, 0);
     } else {
       vector.set(0, 0);
     }
@@ -298,8 +321,16 @@ export class DormHubScene extends Phaser.Scene {
 
   private drawRoom(): void {
     this.textures.get(DORM_HUB_MAP_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
-    this.add.image(0, 0, DORM_HUB_MAP_KEY).setOrigin(0).setDepth(0);
+    this.roomLayer = this.add.container(DORM_HUB_MAP_OFFSET_X, 0)
+      .setScale(DORM_HUB_ENVIRONMENT_SCALE)
+      .setDepth(0);
+    this.roomLayer.add(this.add.image(0, 0, DORM_HUB_MAP_KEY).setOrigin(0));
     this.createRoomColliders();
+  }
+
+  private addRoomObject<T extends Phaser.GameObjects.GameObject>(gameObject: T): T {
+    this.roomLayer.add(gameObject);
+    return gameObject;
   }
 
   private createRoomColliders(): void {
@@ -334,9 +365,8 @@ export class DormHubScene extends Phaser.Scene {
   private createCampusCardPickup(): void {
     const actOne = this.bridge.getState().actOne;
     if (actOne.inventoryRecovered || actOne.phase !== "inventory_required") return;
-    const pickup = this.add.container(DORM_CAMPUS_CARD.x, DORM_CAMPUS_CARD.y)
-      .setDepth(DORM_CAMPUS_CARD.y + 320)
-      .setSize(68, 52);
+    const pickup = this.add.container(DORM_SOURCE_CAMPUS_CARD.x, DORM_SOURCE_CAMPUS_CARD.y)
+      .setSize(72, 56);
     const shadow = this.add.rectangle(1, 2, 40, 26, 0x21180f, 0.32);
     const cardBody = this.add.rectangle(0, 0, 40, 26, 0xe8efec)
       .setStrokeStyle(2, 0x174f86);
@@ -348,9 +378,10 @@ export class DormHubScene extends Phaser.Scene {
     const cardMark = this.add.circle(14, -8, 2, 0xe4c45d);
     const cardArt = this.add.container(0, 0, [shadow, cardBody, cardHeader, portrait, nameLine, numberLine, cardMark])
       .setAngle(-3);
-    const hitTarget = this.add.rectangle(0, 0, 68, 52, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
+    const hitTarget = this.add.rectangle(0, 0, 72, 56, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
     hitTarget.on("pointerdown", () => this.collectCampusCard());
     pickup.add([cardArt, hitTarget]);
+    this.roomLayer.add(pickup);
     this.campusCardPickup = pickup;
   }
 
@@ -358,13 +389,13 @@ export class DormHubScene extends Phaser.Scene {
     if (!this.isHairDryerPickupPending(this.bridge.getState())) return;
     this.textures.get(DORM_HAIR_DRYER_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
     const pickup = this.add.image(
-      DORM_QIZHEN_HAIR_DRYER.x,
-      DORM_QIZHEN_HAIR_DRYER.y,
+      DORM_SOURCE_QIZHEN_HAIR_DRYER.x,
+      DORM_SOURCE_QIZHEN_HAIR_DRYER.y,
       DORM_HAIR_DRYER_KEY
     )
       .setDisplaySize(58, 58)
-      .setDepth(DORM_QIZHEN_HAIR_DRYER.y + 320)
       .setInteractive({ useHandCursor: true });
+    this.roomLayer.add(pickup);
     pickup.on("pointerdown", () => this.collectHairDryer());
     this.tweens.add({
       targets: pickup,
@@ -404,18 +435,24 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private createAmbientAnimations(): void {
-    const windowLight = this.add.rectangle(491, 181, 232, 214, 0x7fd7ff, 0.035).setDepth(900);
+    const windowLight = this.addRoomObject(
+      this.add.rectangle(491, 181, 232, 214, 0x7fd7ff, 0.035)
+    );
     this.tweens.add({ targets: windowLight, alpha: 0.095, duration: 2400, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
 
-    this.curtainLeft = this.add.rectangle(386, 153, 22, 158, 0x24599c, 0.16).setDepth(950);
-    this.curtainRight = this.add.rectangle(596, 153, 22, 158, 0x24599c, 0.16).setDepth(950);
+    this.curtainLeft = this.addRoomObject(this.add.rectangle(386, 153, 22, 158, 0x24599c, 0.16));
+    this.curtainRight = this.addRoomObject(this.add.rectangle(596, 153, 22, 158, 0x24599c, 0.16));
     this.tweens.add({ targets: this.curtainLeft, x: 389, angle: 1.5, duration: 1800, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
     this.tweens.add({ targets: this.curtainRight, x: 593, angle: -1.5, duration: 2050, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
 
-    this.cabinetLeft = this.add.rectangle(453, 315, 63, 153, 0x252a30, 0.88).setStrokeStyle(2, 0x11161b).setDepth(1000);
-    this.cabinetRight = this.add.rectangle(523, 315, 63, 153, 0x252a30, 0.88).setStrokeStyle(2, 0x11161b).setDepth(1000);
-    this.add.circle(472, 316, 3, 0xc4c9c2).setDepth(1001);
-    this.add.circle(504, 316, 3, 0xc4c9c2).setDepth(1001);
+    this.cabinetLeft = this.addRoomObject(
+      this.add.rectangle(453, 315, 63, 153, 0x252a30, 0.88).setStrokeStyle(2, 0x11161b)
+    );
+    this.cabinetRight = this.addRoomObject(
+      this.add.rectangle(523, 315, 63, 153, 0x252a30, 0.88).setStrokeStyle(2, 0x11161b)
+    );
+    this.addRoomObject(this.add.circle(472, 316, 3, 0xc4c9c2));
+    this.addRoomObject(this.add.circle(504, 316, 3, 0xc4c9c2));
 
     const lampPositions: Array<[DormInteractionTargetId, number, number]> = [
       ["desk_01", 830, 218],
@@ -424,20 +461,27 @@ export class DormHubScene extends Phaser.Scene {
       ["desk_04", 830, 1048]
     ];
     lampPositions.forEach(([id, x, y], index) => {
-      const glow = this.add.circle(x - 18, y + 24, 64, index % 2 === 0 ? 0x84b7ff : 0xffdf8a, 0.045)
-        .setBlendMode(Phaser.BlendModes.ADD)
-        .setDepth(920);
+      const glow = this.addRoomObject(
+        this.add.circle(x - 18, y + 24, 64, index % 2 === 0 ? 0x84b7ff : 0xffdf8a, 0.045)
+          .setBlendMode(Phaser.BlendModes.ADD)
+      );
       this.deskLampGlows.set(id, glow);
       this.tweens.add({ targets: glow, alpha: 0.085, duration: 1500 + index * 210, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
     });
 
     [0, 1, 2].forEach((index) => {
-      const steam = this.add.circle(842 + index * 4, 392 - index * 7, 3 - index * 0.45, 0xe6f4f0, 0.34).setDepth(1200);
+      const steam = this.addRoomObject(
+        this.add.circle(842 + index * 4, 392 - index * 7, 3 - index * 0.45, 0xe6f4f0, 0.34)
+      );
       this.tweens.add({ targets: steam, y: steam.y - 22, x: steam.x + (index % 2 === 0 ? 5 : -5), alpha: 0, duration: 1550 + index * 260, delay: index * 310, repeat: -1 });
     });
 
-    this.deskDrawer = this.add.rectangle(838, 1218, 72, 18, 0x66411f, 0.86).setStrokeStyle(2, 0x2c1b10).setDepth(1200);
-    this.backpackRing = this.add.circle(714, 1382, 52, 0xffd954, 0).setStrokeStyle(2, 0xffd954, 0.22).setDepth(1300);
+    this.deskDrawer = this.addRoomObject(
+      this.add.rectangle(838, 1218, 72, 18, 0x66411f, 0.86).setStrokeStyle(2, 0x2c1b10)
+    );
+    this.backpackRing = this.addRoomObject(
+      this.add.circle(714, 1382, 52, 0xffd954, 0).setStrokeStyle(2, 0xffd954, 0.22)
+    );
     this.tweens.add({ targets: this.backpackRing, alpha: 0.32, scale: 1.08, duration: 1150, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
 
   }
@@ -497,8 +541,14 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private animateBed(target: DormInteractionTarget): void {
-    const ripple = this.add.rectangle(target.x, target.y, target.width - 24, Math.min(170, target.height - 24), 0x5ba7ff, 0)
-      .setStrokeStyle(3, 0x8ec8ff, 0.8).setDepth(1300);
+    const sourceX = dormWorldToSourceX(target.x);
+    const sourceY = dormWorldToSourceY(target.y);
+    const sourceWidth = dormWorldToSourceSize(target.width);
+    const sourceHeight = dormWorldToSourceSize(target.height);
+    const ripple = this.addRoomObject(
+      this.add.rectangle(sourceX, sourceY, sourceWidth - 24, Math.min(170, sourceHeight - 24), 0x5ba7ff, 0)
+        .setStrokeStyle(3, 0x8ec8ff, 0.8)
+    );
     this.tweens.add({ targets: ripple, alpha: 0.7, scaleX: 1.04, duration: 160, yoyo: true, repeat: 2, onComplete: () => ripple.destroy() });
   }
 
@@ -527,7 +577,9 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private animatePageFlip(): void {
-    const page = this.add.rectangle(786, 586, 48, 72, 0xf0ead4, 0.92).setStrokeStyle(2, 0x6a5a42).setDepth(1400);
+    const page = this.addRoomObject(
+      this.add.rectangle(786, 586, 48, 72, 0xf0ead4, 0.92).setStrokeStyle(2, 0x6a5a42)
+    );
     this.tweens.add({ targets: page, scaleX: 0.05, angle: 4, duration: 190, yoyo: true, repeat: 1, ease: "Sine.easeInOut", onComplete: () => page.destroy() });
   }
 
@@ -540,7 +592,9 @@ export class DormHubScene extends Phaser.Scene {
 
   private animateWater(): void {
     [0, 1, 2].forEach((index) => {
-      const ring = this.add.circle(164, 1030, 12 + index * 5, 0x7ed9ff, 0).setStrokeStyle(2, 0x7ed9ff, 0.8).setDepth(1450);
+      const ring = this.addRoomObject(
+        this.add.circle(164, 1030, 12 + index * 5, 0x7ed9ff, 0).setStrokeStyle(2, 0x7ed9ff, 0.8)
+      );
       this.tweens.add({ targets: ring, scale: 1.8, alpha: 0, duration: 620, delay: index * 120, onComplete: () => ring.destroy() });
     });
   }
@@ -554,8 +608,16 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private pulseTarget(target: DormInteractionTarget, color: number): void {
-    const pulse = this.add.rectangle(target.x, target.y, target.width + 12, target.height + 12, color, 0)
-      .setStrokeStyle(3, color, 0.85).setDepth(1600);
+    const pulse = this.addRoomObject(
+      this.add.rectangle(
+        dormWorldToSourceX(target.x),
+        dormWorldToSourceY(target.y),
+        dormWorldToSourceSize(target.width) + 12,
+        dormWorldToSourceSize(target.height) + 12,
+        color,
+        0
+      ).setStrokeStyle(3, color, 0.85)
+    );
     this.tweens.add({ targets: pulse, alpha: 0.75, scale: 1.05, duration: 160, yoyo: true, repeat: 1, onComplete: () => pulse.destroy() });
   }
 
@@ -597,8 +659,8 @@ export class DormHubScene extends Phaser.Scene {
       this.time.delayedCall(this.exitDoor.passableDelayMs, () => {
         this.tweens.add({
           targets: this.player,
-          x: 470,
-          y: 1588,
+          x: dormSourceToWorldX(470),
+          y: dormSourceToWorldY(1588),
           duration: 300,
           ease: "Sine.easeIn",
           onComplete: () => this.bridge.emit("rpg_dorm_exit")
@@ -650,7 +712,13 @@ export class DormHubScene extends Phaser.Scene {
       height: target.height
     }));
     if (!state.actOne.inventoryRecovered && state.actOne.phase === "inventory_required") {
-      activeTargets.push({ id: "campus_card", x: DORM_CAMPUS_CARD.x, y: DORM_CAMPUS_CARD.y, width: 68, height: 52 });
+      activeTargets.push({
+        id: "campus_card",
+        x: DORM_CAMPUS_CARD.x,
+        y: DORM_CAMPUS_CARD.y,
+        width: dormSourceToWorldSize(72),
+        height: dormSourceToWorldSize(56)
+      });
     }
     if (this.isHairDryerPickupPending(state)) {
       activeTargets.push({

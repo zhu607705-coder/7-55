@@ -324,6 +324,58 @@ export class CanteenInteriorScene extends Phaser.Scene {
     super("canteen-interior");
   }
 
+  /**
+   * Phaser keeps one Scene instance and calls create() again after a stop/start.
+   * Only display objects are discarded automatically; scene-owned booleans,
+   * maps, and modal references otherwise survive into the next visit.
+   */
+  private resetRestartLifecycleState(): void {
+    this.playerCollisionDebug = null;
+    this.virtualDirection = { x: 0, y: 0 };
+    this.interactRequested = false;
+    this.modeFibers = [];
+    this.trayVisuals.clear();
+    this.trayInteractionTargets.clear();
+    this.exitTransitioning = false;
+    this.pickupWindowVisuals.clear();
+    this.cartVisuals.clear();
+    this.exitGlows.clear();
+    this.menuPanel = null;
+    this.drinkChoicePanel = null;
+    this.drinkChoiceItem = null;
+    this.drinkChoiceSelection = 0;
+    this.drinkChoiceControls = null;
+    this.suppressWorldPointerUntil = 0;
+    this.mixerPanel = null;
+    this.mixerButtonOrder = [];
+    this.promoPanel = null;
+    this.promoEmptyCup = null;
+    this.promoDrinkInsert = null;
+    this.promoBubbleLoop = null;
+    this.promoDropFrame = null;
+    this.thirdColumnQueue = [];
+    this.queueShiftAnimating = false;
+    this.dialogueLocked = false;
+    this.paperBusy = false;
+    this.entryPaperPending = false;
+    this.entryPaperTriggered = false;
+    this.entryPaperIdleTween = null;
+    this.entryPaperRunTimer = null;
+    this.cartPushBusy = false;
+    this.cartMotionExit = null;
+    this.cartMotionVector.set(0, 0);
+    this.occlusionVisuals = [];
+    this.activeOcclusionIds = [];
+    this.softenedOcclusionIds = [];
+    this.lightNpcSprites = [];
+    this.lightNpcCollisionBodies = [];
+    this.initialNpcInteractionTargets = [];
+    this.shadowNpcSprite = null;
+    this.defenseRuntime = null;
+    this.defenseRouteGraphics = null;
+    this.defenseRestartTimer = null;
+  }
+
   preload(): void {
     if (!this.textures.exists(CANTEEN_MAP_KEY)) {
       this.load.image(CANTEEN_MAP_KEY, canteenInteriorMapUrl);
@@ -392,6 +444,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.resetRestartLifecycleState();
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
     this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     this.currentMode = this.bridge.getState().canteenHunt.mode;
@@ -487,20 +540,26 @@ export class CanteenInteriorScene extends Phaser.Scene {
       if (!event.repeat) this.interactRequested = true;
     };
     const handleModalKeyboard = (event: KeyboardEvent) => this.handleModalKeyboard(event);
-    this.input.keyboard!.on("keydown-SPACE", requestKeyboardInteraction);
-    this.input.keyboard!.on("keydown", handleModalKeyboard);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      this.input.keyboard?.off("keydown-SPACE", requestKeyboardInteraction);
-      this.input.keyboard?.off("keydown", handleModalKeyboard);
-      this.entryPaperRunTimer?.remove(false);
-      this.defenseRestartTimer?.remove(false);
-      this.defenseRuntime?.destroy();
-      this.defenseRuntime = null;
-    });
-    this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+    const handleScenePointer = (pointer: Phaser.Input.Pointer) => {
       this.handleMenuPointer(pointer);
       this.handleDrinkChoicePointer(pointer);
       this.handleMixerPointer(pointer);
+    };
+    this.input.keyboard!.on("keydown-SPACE", requestKeyboardInteraction);
+    this.input.keyboard!.on("keydown", handleModalKeyboard);
+    this.input.on("pointerdown", handleScenePointer);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.input.keyboard?.off("keydown-SPACE", requestKeyboardInteraction);
+      this.input.keyboard?.off("keydown", handleModalKeyboard);
+      this.input.off("pointerdown", handleScenePointer);
+      this.entryPaperIdleTween?.stop();
+      this.entryPaperRunTimer?.remove(false);
+      this.defenseRestartTimer?.remove(false);
+      this.defenseRuntime?.destroy();
+      this.closeMenuPanel();
+      this.closeDrinkChoicePanel();
+      this.closeMixerPanel();
+      this.resetRestartLifecycleState();
     });
 
     setRpgLogicalCameraZoom(
@@ -613,11 +672,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     // Text overlays only pause interactions. A short prompt or a story line must
     // not freeze navigation across the canteen.
-    const movementAllowed = state.actOne.movementEnabled
-      && !this.hasModalPanel()
-      && !this.paperBusy
-      && !this.cartPushBusy
-      && !this.exitTransitioning;
+    const movementAllowed = this.isMovementAllowed(state);
     if (movementAllowed && vector.lengthSq() > 0) {
       vector.normalize().scale(this.keys.SHIFT.isDown ? RUN_SPEED : WALK_SPEED);
     } else {
@@ -2897,6 +2952,14 @@ export class CanteenInteriorScene extends Phaser.Scene {
     return this.menuPanel !== null || this.drinkChoicePanel !== null || this.mixerPanel !== null;
   }
 
+  private isMovementAllowed(state: GameState): boolean {
+    return state.actOne.movementEnabled
+      && !this.hasModalPanel()
+      && !this.paperBusy
+      && !this.cartPushBusy
+      && !this.exitTransitioning;
+  }
+
   private handleModalKeyboard(event: KeyboardEvent): void {
     if (this.drinkChoicePanel) {
       if (event.code === "ArrowLeft" || event.code === "KeyA" || event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
@@ -3320,18 +3383,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
 
     const camera = this.cameras.main;
-    const vignette = this.add.rectangle(
-      RPG_LOGICAL_WIDTH / 2,
-      RPG_LOGICAL_HEIGHT / 2,
-      RPG_LOGICAL_WIDTH - 30,
-      RPG_LOGICAL_HEIGHT - 30,
-      0x000000,
-      0
-    ).setStrokeStyle(70, 0x000000, 0)
-      .setScrollFactor(0)
-      .setDepth(6400)
-      .setStrokeStyle(70, 0x000000, 0.56)
-      .setAlpha(0);
     const windowGlow = this.add.circle(
       steamWindow.x,
       steamWindow.y + 10,
@@ -3389,7 +3440,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
         this.bridge.emit("canteen_paper_burst_completed");
         this.queueDialogue(["玩家：那是鸡吗？", "系统：现在不是了。"], () => {
           previewCart.destroy();
-          vignette.destroy();
           windowGlow.destroy();
           this.paperBusy = false;
           this.dialogueLocked = false;
@@ -3410,7 +3460,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       this.tweens.killTweensOf(this.darkOverlay);
       const pullBackMs = beatMs(120, 850);
       this.tweens.add({
-        targets: [this.darkOverlay, vignette, windowGlow],
+        targets: [this.darkOverlay, windowGlow],
         alpha: 0,
         duration: pullBackMs,
         ease: "Sine.easeOut"
@@ -3584,11 +3634,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     this.time.delayedCall(beatMs(170, 850), () => {
       this.bridge.emit("canteen_pickup_cutscene_quiet");
-      this.tweens.add({
-        targets: vignette,
-        alpha: 1,
-        duration: beatMs(90, 300)
-      });
       this.tweens.add({
         targets: windowGlow,
         alpha: 1,
@@ -3847,6 +3892,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private publishDebugState(nearest: CanteenInteractionTarget | null, state: GameState): void {
+    const modalPanelOpen = this.hasModalPanel();
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: CANTEEN_INTERIOR_WORLD,
@@ -3860,6 +3906,18 @@ export class CanteenInteriorScene extends Phaser.Scene {
         walkFps: RPG_PLAYER_WALK_FPS,
         collisionWidth: Number((this.player.body?.width ?? 0).toFixed(2)),
         collisionHeight: Number((this.player.body?.height ?? 0).toFixed(2))
+      },
+      input: {
+        gameEnabled: this.game.input.enabled,
+        sceneEnabled: this.input.enabled,
+        keyboardEnabled: this.input.keyboard?.enabled ?? false,
+        keys: {
+          up: this.cursors.up.isDown || this.keys.W.isDown,
+          down: this.cursors.down.isDown || this.keys.S.isDown,
+          left: this.cursors.left.isDown || this.keys.A.isDown,
+          right: this.cursors.right.isDown || this.keys.D.isDown,
+          interact: this.cursors.space.isDown
+        }
       },
       camera: {
         scrollX: Math.round(this.cameras.main.scrollX),
@@ -3915,6 +3973,20 @@ export class CanteenInteriorScene extends Phaser.Scene {
         menuOpen: this.menuPanel !== null,
         dialogueLocked: this.dialogueLocked,
         paperBusy: this.paperBusy,
+        entryPaperPending: this.entryPaperPending,
+        entryPaperTriggered: this.entryPaperTriggered,
+        entryPaperDistance: this.paper?.active
+          ? Number(Phaser.Math.Distance.Between(this.player.x, this.player.y, this.paper.x, this.paper.y).toFixed(1))
+          : null,
+        entryPaperTriggerRadius: ENTRY_PAPER_TRIGGER_RADIUS,
+        movementAllowed: this.isMovementAllowed(state),
+        movementBlockers: {
+          storyMovementDisabled: !state.actOne.movementEnabled,
+          modalPanelOpen,
+          paperBusy: this.paperBusy,
+          cartPushBusy: this.cartPushBusy,
+          exitTransitioning: this.exitTransitioning
+        },
         activeOcclusionIds: this.activeOcclusionIds,
         softenedOcclusionIds: this.softenedOcclusionIds
       },

@@ -686,6 +686,7 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
   const afterMenuStage = ["c3-canteen-pickup", "c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
   const afterPickupStage = ["c3-canteen-block", "c3-canteen-block-2", "c3-canteen-block-3", "c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
   const afterBlockingStage = ["c3-canteen-bike", "c3-canteen-chase", "c3-canteen-theater"].includes(id);
+  const beforeEntryPaperEscape = ["canteen-hunt", "c3-canteen-entry"].includes(id);
   const phase: GameState["canteenHunt"]["phase"] = id === "canteen-hunt"
     ? "tracking"
     : id === "c3-canteen-entry"
@@ -734,7 +735,7 @@ function createCanteenCheckpointState(id: CanteenDeveloperCheckpointId): GameSta
       active: true,
       phase,
       mode: "light",
-      entryPaperEscaped: id !== "c3-canteen-entry",
+      entryPaperEscaped: !beforeEntryPaperEscape,
       trayTaskStarted: afterTrayStage,
       carriedTrayIds: [],
       identifiedTrayIds: afterTrayStage ? identifiedTrayIds : [],

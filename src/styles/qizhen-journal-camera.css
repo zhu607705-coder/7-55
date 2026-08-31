@@ -398,8 +398,6 @@
    壳层控件;host 会同时收起任务栏、道具栏、模式开关、系统按钮与划桨按钮,
    见 RpgGameHost。 */
 .qizhen-journal-camera-overlay {
-  background: rgba(5, 7, 10, 0.72);
-  inset: 0;
-  position: absolute;
-  z-index: 84;
+  --rpg-overlay-backdrop: rgb(5 7 10 / 72%);
+  --rpg-overlay-z: 84;
 }

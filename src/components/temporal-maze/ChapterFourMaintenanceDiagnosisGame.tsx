@@ -37,7 +37,7 @@ export function ChapterFourMaintenanceDiagnosisGame({
   useEffect(() => { firstSelectRef.current?.focus(); }, []);
 
   return (
-    <div className="chapter4-maintenance-diagnosis-overlay" role="dialog" aria-modal="true" aria-labelledby="chapter4-maintenance-diagnosis-title">
+    <div className="rpg-overlay-layer chapter4-maintenance-diagnosis-overlay" role="dialog" aria-modal="true" aria-labelledby="chapter4-maintenance-diagnosis-title">
       <section className="chapter4-maintenance-diagnosis">
         <header>
           <p>22:45 · 维修记录</p>

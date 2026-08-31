@@ -104,7 +104,7 @@ export function ChapterFourInsertedPuzzleGame({
 
   return (
     <div
-      className={`chapter4-inserted-puzzle-overlay is-${mode}`}
+      className={`rpg-overlay-layer chapter4-inserted-puzzle-overlay is-${mode}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="chapter4-inserted-puzzle-title"

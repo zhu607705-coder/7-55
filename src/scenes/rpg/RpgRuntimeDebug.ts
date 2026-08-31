@@ -140,6 +140,18 @@ export interface RpgRuntimeDebugState {
     menuOpen: boolean;
     dialogueLocked: boolean;
     paperBusy: boolean;
+    entryPaperPending?: boolean;
+    entryPaperTriggered?: boolean;
+    entryPaperDistance?: number | null;
+    entryPaperTriggerRadius?: number;
+    movementAllowed?: boolean;
+    movementBlockers?: {
+      storyMovementDisabled: boolean;
+      modalPanelOpen: boolean;
+      paperBusy: boolean;
+      cartPushBusy: boolean;
+      exitTransitioning: boolean;
+    };
     activeOcclusionIds?: string[];
     softenedOcclusionIds?: string[];
   };

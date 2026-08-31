@@ -272,6 +272,20 @@
   text-align: left;
 }
 
+.rpg-overlay-layer {
+  background: var(--rpg-overlay-backdrop, rgb(5 8 12 / 76%));
+  display: grid;
+  inset: 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--rpg-overlay-padding, 0);
+  place-items: center;
+  pointer-events: auto;
+  position: absolute;
+  z-index: var(--rpg-overlay-z, 80);
+}
+
 .quest-task-drawer--phone {
   left: 14px;
   max-height: calc(100vh - 58px);
@@ -324,64 +338,17 @@
 }
 
 .quest-task-drawer--rpg {
-  left: 14px;
-  max-height: calc(100% - 78px);
-  position: absolute;
-  top: 64px;
-  width: min(470px, calc(100% - 28px));
-  z-index: 77;
-}
-
-.quest-task-bar--desktop {
-  grid-column: 1 / -1;
-  grid-row: 1;
+  max-height: 100%;
   position: relative;
+  width: min(470px, 100%);
 }
 
-.quest-task-bar--desktop .quest-task-trigger {
-  height: 48px;
-  padding-inline: 14px;
-}
-
-.quest-task-bar--desktop .quest-task-trigger span,
-.quest-task-bar--desktop .quest-task-trigger b {
-  font-size: var(--fs-caption);
-}
-
-.quest-task-bar--desktop .quest-task-trigger-copy > span {
-  font-size: var(--fs-body);
-}
-
-.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger {
-  grid-template-columns: minmax(0, 1fr);
-  padding-inline: 64px;
-  text-align: center;
-}
-
-.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger > span {
-  left: 14px;
-  position: absolute;
-}
-
-.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger-copy,
-.desktop-gameplay-shell.is-qizhen-lake .quest-task-bar--desktop .quest-task-trigger-copy > span {
-  justify-items: center;
-  text-align: center;
-  width: 100%;
-}
-
-.quest-task-bar--desktop .quest-task-digit-hint {
-  font-size: var(--fs-caption);
-}
-
-.quest-task-bar--desktop .quest-task-drawer {
-  left: 50%;
-  max-height: calc(100vh - 86px);
-  max-height: calc(var(--app-viewport-height, 100vh) - 86px);
-  position: fixed;
-  top: 68px;
-  transform: translateX(-50%);
-  width: min(520px, calc(100vw - 40px));
+.quest-task-drawer-layer {
+  --rpg-overlay-backdrop: rgb(5 8 12 / 72%);
+  --rpg-overlay-padding: 64px 14px 14px;
+  --rpg-overlay-z: 77;
+  align-items: start;
+  justify-items: start;
 }
 
 .quest-task-drawer > header {

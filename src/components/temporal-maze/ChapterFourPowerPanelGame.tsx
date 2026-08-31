@@ -124,7 +124,7 @@ export function ChapterFourPowerPanelGame({
 
   return (
     <div
-      className="chapter4-power-panel-overlay"
+      className="rpg-overlay-layer chapter4-power-panel-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="chapter4-power-panel-title"

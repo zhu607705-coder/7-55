@@ -449,6 +449,7 @@ export function RpgGameHost({
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
   const activeDirectionPointerRef = useRef<{ pointerId: number; startedAt: number } | null>(null);
   const directionStopTimerRef = useRef<number | null>(null);
+  const developerCheckpointInputRestoreSerialRef = useRef(0);
   const chapter4IntentRequestSerialRef = useRef(0);
   const chapter4ResolvedRequestIdsRef = useRef<Set<string>>(new Set());
   const chapter4PowerPanelPendingRequestRef = useRef<string | null>(null);
@@ -959,9 +960,25 @@ export function RpgGameHost({
   useEffect(() => {
     const game = gameRef.current;
     const sceneKey = resolveRuntimeSceneKey(state);
-    if (game?.isBooted) {
-      activateRpgScene(game, sceneKey);
-    }
+    if (!game?.isBooted) return undefined;
+
+    activateRpgScene(game, sceneKey);
+    const syncActivatedSceneInput = () => {
+      if (gameRef.current !== game) return;
+      const blocked = inputBlockedRef.current;
+      setRpgInputEnabled(game, !blocked);
+      if (!blocked) {
+        setRpgKeyboardEnabled(game, !keyboardBlockedRef.current);
+        if (!keyboardBlockedRef.current) focusRpgCanvas(game);
+      }
+    };
+    // A stopped Phaser Scene retains its KeyboardPlugin.enabled value. If it
+    // was stopped while DEV or another host overlay held input, starting it
+    // later does not retrigger the React blocker effect. Apply the current host
+    // contract both now and after Phaser has completed the activation frame.
+    syncActivatedSceneInput();
+    const frame = window.requestAnimationFrame(syncActivatedSceneInput);
+    return () => window.cancelAnimationFrame(frame);
   }, [runtimeScene, state.rpgCheckpoint]);
 
   useEffect(() => {
@@ -1801,6 +1818,7 @@ export function RpgGameHost({
   useEffect(() => events.subscribe((event) => {
     if (event.name !== "developer_checkpoint_applied") return;
 
+    const inputRestoreSerial = ++developerCheckpointInputRestoreSerialRef.current;
     const game = gameRef.current;
     if (game?.isBooted) setRpgInputEnabled(game, false);
     events.emit("rpg_direction_changed", { x: 0, y: 0 });
@@ -1860,12 +1878,26 @@ export function RpgGameHost({
     if (!game?.isBooted || event.payload?.runtimeMode !== "rpg") return;
     const target = resolveRuntimeSceneKey(store.getState());
     restartRpgScene(game, target);
-    window.requestAnimationFrame(() => {
-      if (gameRef.current !== game || inputBlockedRef.current) return;
-      setRpgInputEnabled(game, true);
-      setRpgKeyboardEnabled(game, !keyboardBlockedRef.current);
-      if (!keyboardBlockedRef.current) focusRpgCanvas(game);
-    });
+    const restoreDeveloperCheckpointInput = (attemptsRemaining: number) => {
+      window.requestAnimationFrame(() => {
+        if (
+          gameRef.current !== game
+          || developerCheckpointInputRestoreSerialRef.current !== inputRestoreSerial
+        ) return;
+        // The DEV click closes its React overlay and restarts Phaser in one
+        // browser event. The overlay state can commit one or more frames after
+        // this handler, so a single-frame check can permanently leave
+        // game.input disabled. Wait only while a real host blocker remains.
+        if (inputBlockedRef.current) {
+          if (attemptsRemaining > 0) restoreDeveloperCheckpointInput(attemptsRemaining - 1);
+          return;
+        }
+        setRpgInputEnabled(game, true);
+        setRpgKeyboardEnabled(game, !keyboardBlockedRef.current);
+        if (!keyboardBlockedRef.current) focusRpgCanvas(game);
+      });
+    };
+    restoreDeveloperCheckpointInput(12);
   }), [chapter4ClosureRegistry, events, qizhenController, store]);
 
   // 方案三.2/四 Task 4:页面隐藏视同关闭会话;离开湖区场景同理。
@@ -2261,7 +2293,7 @@ export function RpgGameHost({
 
 
         {photoSession ? (
-          <div className="qizhen-journal-camera-overlay" role="dialog" aria-modal="true" aria-label={QIZHEN_CAMERA_TITLE}>
+          <div className="rpg-overlay-layer qizhen-journal-camera-overlay" role="dialog" aria-modal="true" aria-label={QIZHEN_CAMERA_TITLE}>
             <QizhenJournalCamera
               session={photoSession.session}
               photo={photoSession.photo}

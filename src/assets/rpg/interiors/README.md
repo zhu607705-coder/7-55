@@ -2,7 +2,7 @@
 
 ## Ownership
 
-- `dorm_hub.png`: selected runtime dorm artwork, fixed at `941 x 1672` as a tall top-down world rendered through the `960 x 540` Phaser camera.
+- `dorm_hub.png`: selected runtime dorm artwork, fixed at `941 x 1672` and uniformly presented at `0.5` scale inside the `960 x 540` Phaser camera.
 - `library_interior.png`: runtime library artwork, fixed at `1500 x 900` for the library world.
 - `canteen_interior.png`: runtime canteen artwork, fixed at `1672 x 941`; the southeast doorway is the campus-map entrance and return point.
 - `finale/`: final-chapter environment plates and their schema 3 hash/atlas manifest. The arrival arcade alone uses the approved pseudo-`2.5D` transition view; all teaching-building exploration plates use the `1672 x 941` orthographic top-down projection. The active Chapter 4 `7:55` contract lives under `finale/chapter4-755/`.
@@ -23,7 +23,7 @@
 - The selected bitmap owns the rendered dorm architecture and furniture.
 - Phaser owns the `960 x 540` camera, source-pixel collisions, player movement, labels, hotspots, interaction animation overlays, quest markers, and state transitions.
 - Gameplay coordinates must be updated in the scene model when an artwork layout changes.
-- Dorm coordinates are authored against the original `941 x 1672` image in `DormHubModel.ts`; do not resize the bitmap independently from that model.
+- Dorm coordinates remain authored against the original `941 x 1672` image in `DormHubModel.ts`; its single `0.5` runtime transform maps the bitmap, collisions, hotspots, props, spawns, and door together. Do not resize any one of those layers independently.
 - Canteen collisions, occlusion crops, table aisles, interaction targets, and checkpoint spawns are authored once against the original `1672 x 941` image in `CanteenInteriorModel.ts`; do not resize or independently crop the runtime bitmap.
 - Final-chapter images are base environment layers only. Characters, paper, cleaning cart, attendance board, elevator doors and car, Maxwell shutter, time silhouettes, morning light, screens, scanner and interaction markers remain dynamic Phaser layers declared in `finale/finale_environment_manifest.json`.
 - The stitched teaching-building map keeps the Maxwell bakery, classroom vestibules, and alumni portrait galleries in the base artwork. Their story behavior remains controller-owned and is exposed through source-pixel anchor bounds; it must not be baked into the image as prompts or quest markers.

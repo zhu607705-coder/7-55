@@ -149,6 +149,30 @@ assertIncludes(
   "pendingWarmupSettlers",
   "scene shutdown must settle in-flight warmup waits and loaders"
 );
+assert(
+  /create\(\): void \{\s*this\.resetRestartLifecycleState\(\)[\s\S]*?this\.createBaseBackgrounds\(\)/.test(scene),
+  "scene restart: destroyed Phaser object references must be reset before backgrounds are rebuilt"
+);
+for (const token of [
+  "this.backgrounds.clear()",
+  "this.elevatorVisuals.clear()",
+  "this.appliedForegrounds = []",
+  "this.plateColliderDebugObjects = []",
+  "this.alumniWallObjects = []",
+  "this.supportNpcSprites.clear()",
+  "this.pendingMove = null",
+  "this.floorPanel = null"
+]) {
+  assertIncludes(scene, token, `scene restart reset ${token}`);
+}
+assert(
+  /scene_shutdown[\s\S]*?this\.closeFloorPanel\(\)[\s\S]*?this\.resetRestartLifecycleState\(\)/.test(scene),
+  "scene shutdown: modal input state and restart-sensitive references must be released"
+);
+assert(
+  /const existing = this\.backgrounds\.get\(floor\.displayFloor\)[\s\S]*?if \(existing\?\.active\) continue;[\s\S]*?this\.backgrounds\.delete\(floor\.displayFloor\)/.test(scene),
+  "background rebuild: a destroyed cached image must be evicted before a new floor plate is created"
+);
 assertIncludes(
   scene,
   "rpg_chapter4_warmup_phase_failed",
