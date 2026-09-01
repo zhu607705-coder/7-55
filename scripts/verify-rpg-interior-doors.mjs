@@ -24,11 +24,15 @@ const debugContract = read("src/scenes/rpg/RpgRuntimeDebug.ts");
 
 assert(sharedDoor.includes("export class RpgInteriorDoorRuntime"), "shared interior door runtime is missing");
 assert(sharedDoor.includes("passableDelayMs"), "shared door does not expose the passable timing contract");
-assert(sharedDoor.includes("setBarrierEnabled(false)"), "shared door never disables its blocker while opening");
+assert(!sharedDoor.includes("blockerY: number"), "shared animated door still requires an invisible blocker");
+assert(!sharedDoor.includes("setBarrierEnabled"), "shared animated door still toggles an invisible collision barrier");
+assert(!sharedDoor.includes("obstacles: Phaser.Physics.Arcade.StaticGroup"), "shared door constructor still accepts a collision group");
 assert(sharedDoor.includes("updateRpgDoorForeground"), "shared door has no actor occlusion helper");
 assert(sharedDoor.includes('motion: RpgInteriorDoorLeafMotion'), "shared door does not require an authored leaf motion");
+assert(sharedDoor.includes('textureKey, "__BASE"'), "door foreground crops do not pin the source texture base frame");
 
 assert(dorm.includes('id: "dorm_center_exit"'), "dorm centered exit is not registered");
+assert(!dorm.includes("blockerY:"), "dorm shared animated exit still declares an invisible blocker");
 assert(dorm.includes("this.exitDoor.open()"), "dorm exit does not animate open");
 assert(dorm.includes("this.exitDoor.updateActorOcclusion(this.player)"), "dorm exit does not update actor occlusion");
 assert(
@@ -53,11 +57,16 @@ assert(
 );
 
 assert(library.includes("private openEntranceDoor()"), "library entrance opening animation is missing");
+assert(
+  library.includes('LIBRARY_INTERIOR_MAP_KEY, "__BASE"'),
+  "library background does not pin the base frame across same-scene developer restarts"
+);
 assert(library.includes("setEntranceBarrierEnabled(false)"), "library entrance does not become passable while opening");
 assert(library.includes("createRpgDoorForeground"), "library entrance does not create a foreground occluder");
 assert(library.includes("updateRpgDoorForeground"), "library entrance does not update actor occlusion");
 
 assert(canteen.includes('id: "canteen_southeast_exit"'), "canteen player exit is not registered");
+assert(!canteen.includes("doorObstacles"), "canteen shared animated exit still owns an invisible collision group");
 assert(canteen.includes("private beginCanteenExit()"), "canteen exit does not use a physical door transition");
 assert(canteen.includes("this.exitDoor.open()"), "canteen exit does not animate open");
 assert(!canteen.includes("createCanteenExitButton"), "canteen still exposes a floating exit button");
@@ -97,6 +106,7 @@ assert(
 );
 
 assert(theater.includes('id: "theater_center_exit"'), "theater centered exit is not registered");
+assert(!theater.includes("blockerY:"), "theater shared animated exit still declares an invisible blocker");
 assert(theater.includes("private beginTheaterExit()"), "theater exit does not use a physical door transition");
 assert(theater.includes("this.exitDoor.open()"), "theater exit does not animate open");
 assert(theater.includes("this.exitDoor.updateActorOcclusion(this.player)"), "theater exit does not update actor occlusion");

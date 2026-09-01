@@ -5,6 +5,7 @@ import type {
   QizhenFishingSpotId,
   QizhenJournalDraft,
   QizhenJournalState,
+  QizhenLakeState,
   QizhenLakeMode,
   QizhenLakeZone,
   QizhenMapClueId,
@@ -43,6 +44,27 @@ export type QizhenActionResult =
   | "already_complete";
 
 export type QizhenDockOutfitPart = "kayak" | "left_paddle" | "right_paddle";
+
+export interface QizhenEntranceAccess {
+  keywordsCollected: boolean;
+  visible: boolean;
+  available: boolean;
+}
+
+export function selectQizhenEntranceAccess(
+  lake: Pick<
+    QizhenLakeState,
+    "active" | "phase" | "bridgeClueFound" | "reflectionClueFound" | "lakeClueFound"
+  >
+): QizhenEntranceAccess {
+  const active = lake.active && lake.phase !== "inactive";
+  const keywordsCollected = lake.bridgeClueFound && lake.reflectionClueFound && lake.lakeClueFound;
+  return {
+    keywordsCollected,
+    visible: active && (lake.phase !== "location_search" || keywordsCollected),
+    available: active && lake.phase !== "location_search"
+  };
+}
 
 /** 拍照/草稿事务的拒绝原因码。host 按原因码选择用户可见反馈。 */
 export type QizhenPhotoCaptureRejection =

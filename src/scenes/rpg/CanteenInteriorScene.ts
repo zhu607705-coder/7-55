@@ -258,7 +258,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private playerAnimator!: RpgPlayerAnimator;
   private playerCollisionDebug: Phaser.GameObjects.Rectangle | null = null;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
-  private doorObstacles!: Phaser.Physics.Arcade.StaticGroup;
   private exitDoor!: RpgInteriorDoorRuntime;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT" | "TAB", Phaser.Input.Keyboard.Key>;
@@ -456,16 +455,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.physics.world.setBounds(28, 16, CANTEEN_INTERIOR_WORLD.width - 56, CANTEEN_INTERIOR_WORLD.height - 34);
     this.obstacles = this.physics.add.staticGroup();
     this.drawInterior();
-    this.doorObstacles = this.physics.add.staticGroup();
-    this.exitDoor = new RpgInteriorDoorRuntime(this, this.doorObstacles, {
+    this.exitDoor = new RpgInteriorDoorRuntime(this, {
       id: "canteen_southeast_exit",
       centerX: 1380,
       centerY: 858,
       openingWidth: 122,
       openingHeight: 126,
-      blockerY: 823,
-      blockerWidth: 142,
-      blockerHeight: 14,
       motion: "double-slide",
       openOffset: 57,
       durationMs: 380,
@@ -521,7 +516,6 @@ export class CanteenInteriorScene extends Phaser.Scene {
     }
     this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
     this.physics.add.collider(this.player, this.obstacles);
-    this.physics.add.collider(this.player, this.doorObstacles);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,SHIFT,TAB") as Record<

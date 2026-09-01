@@ -127,15 +127,12 @@ export class DormHubScene extends Phaser.Scene {
     this.obstacles = this.physics.add.staticGroup();
     this.drawRoom();
     this.createAmbientAnimations();
-    this.exitDoor = new RpgInteriorDoorRuntime(this, this.obstacles, {
+    this.exitDoor = new RpgInteriorDoorRuntime(this, {
       id: "dorm_center_exit",
       centerX: dormSourceToWorldX(470),
       centerY: dormSourceToWorldY(1550),
       openingWidth: dormSourceToWorldSize(118),
       openingHeight: dormSourceToWorldSize(130),
-      blockerY: dormSourceToWorldY(1496),
-      blockerWidth: dormSourceToWorldSize(132),
-      blockerHeight: dormSourceToWorldSize(12),
       motion: "single-slide",
       openOffset: dormSourceToWorldSize(104),
       durationMs: 380,

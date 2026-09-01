@@ -332,15 +332,12 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.obstacles = this.physics.add.staticGroup();
     this.drawInterior(state.theaterHunt.admitted);
     this.ensureTheaterExitDoorFrames();
-    this.exitDoor = new RpgInteriorDoorRuntime(this, this.obstacles, {
+    this.exitDoor = new RpgInteriorDoorRuntime(this, {
       id: "theater_center_exit",
       centerX: 836,
       centerY: 880,
       openingWidth: 176,
       openingHeight: 70,
-      blockerY: 833,
-      blockerWidth: 140,
-      blockerHeight: 14,
       motion: "double-fold",
       motionEase: "Sine.easeInOut",
       durationMs: 520,

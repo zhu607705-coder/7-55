@@ -43,9 +43,6 @@ export interface RpgInteriorDoorSpec {
   centerY: number;
   openingWidth: number;
   openingHeight: number;
-  blockerY: number;
-  blockerWidth: number;
-  blockerHeight?: number;
   passableProgress?: number;
   durationMs?: number;
   motion: RpgInteriorDoorLeafMotion;
@@ -107,7 +104,7 @@ export function createRpgDoorForeground(
   spec: RpgInteriorDoorForegroundSpec
 ): Phaser.GameObjects.Image {
   const crop = spec.sourceCrop ?? spec;
-  return scene.add.image(spec.left, spec.top, textureKey)
+  return scene.add.image(spec.left, spec.top, textureKey, "__BASE")
     .setOrigin(0)
     .setCrop(crop.left, crop.top, crop.right - crop.left, crop.bottom - crop.top)
     .setScale(spec.displayScale ?? 1)
@@ -146,7 +143,6 @@ export class RpgInteriorDoorRuntime {
   private readonly portal: Phaser.GameObjects.Rectangle;
   private readonly spill: Phaser.GameObjects.Rectangle;
   private readonly leaves: Phaser.GameObjects.Container[];
-  private readonly blocker: Phaser.GameObjects.Rectangle;
   private readonly foreground: Phaser.GameObjects.Image | null;
   private readonly durationMs: number;
   private motion: RpgInteriorDoorMotion = "closed";
@@ -158,7 +154,6 @@ export class RpgInteriorDoorRuntime {
 
   constructor(
     scene: Phaser.Scene,
-    obstacles: Phaser.Physics.Arcade.StaticGroup,
     spec: RpgInteriorDoorSpec,
     reducedMotion = false
   ) {
@@ -189,16 +184,6 @@ export class RpgInteriorDoorRuntime {
     this.leaves = this.createLeaves();
     this.leaves.forEach((leaf) => leaf.setDepth(spec.depth));
 
-    this.blocker = scene.add.rectangle(
-      spec.centerX,
-      spec.blockerY,
-      spec.blockerWidth,
-      spec.blockerHeight ?? 14,
-      0x000000,
-      0
-    ).setDepth(spec.depth - 1);
-    obstacles.add(this.blocker);
-
     this.foreground = spec.foreground
       ? createRpgDoorForeground(scene, spec.foreground.textureKey, spec.foreground)
       : null;
@@ -216,9 +201,6 @@ export class RpgInteriorDoorRuntime {
       alpha: this.spec.spillAlphaOpen ?? 0.7,
       duration: this.durationMs,
       ease: this.spec.motionEase ?? "Stepped"
-    });
-    this.scene.time.delayedCall(this.passableDelayMs, () => {
-      if (this.motion === "opening" || this.motion === "open") this.setBarrierEnabled(false);
     });
   }
 
@@ -247,7 +229,6 @@ export class RpgInteriorDoorRuntime {
     this.spill.setAlpha(open
       ? this.spec.spillAlphaOpen ?? 0.7
       : this.spec.spillAlphaClosed ?? 0.2);
-    this.setBarrierEnabled(!open);
   }
 
   updateActorOcclusion(actor: Phaser.Physics.Arcade.Sprite): void {
@@ -359,7 +340,6 @@ export class RpgInteriorDoorRuntime {
         onComplete: index === this.leaves.length - 1 ? () => {
           this.progress = open ? 1 : 0;
           this.motion = open ? "open" : "closed";
-          if (!open) this.setBarrierEnabled(true);
         } : undefined
       });
     });
@@ -425,10 +405,5 @@ export class RpgInteriorDoorRuntime {
 
   private stopTweens(): void {
     this.scene.tweens.killTweensOf([...this.leaves, this.spill]);
-  }
-
-  private setBarrierEnabled(enabled: boolean): void {
-    const body = this.blocker.body as Phaser.Physics.Arcade.StaticBody | null;
-    if (body) body.enable = enabled;
   }
 }

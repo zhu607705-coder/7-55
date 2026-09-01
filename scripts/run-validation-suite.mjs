@@ -20,7 +20,7 @@ const VALIDATORS = Object.freeze({
   pursuitAudio: Object.freeze({ area: "cross-chapter", script: "audio:pursuit:verify", risk: "pursuit audio lifecycle, voice cues and asset integrity" }),
   facingAgnostic: Object.freeze({ area: "cross-chapter", script: "verify:rpg-facing-agnostic", risk: "interactions remain independent of actor facing" }),
   realityMode: Object.freeze({ area: "cross-chapter", script: "verify:rpg-reality-mode-order", risk: "mode-order independence and truthful persistence" }),
-  interiorDoors: Object.freeze({ area: "cross-chapter", script: "verify:rpg-interior-doors", risk: "door animation, collision release and actor occlusion" }),
+  interiorDoors: Object.freeze({ area: "cross-chapter", script: "verify:rpg-interior-doors", risk: "door animation, unobstructed passage and actor occlusion" }),
   chapter4Warmup: Object.freeze({ area: "chapter-4", script: "chapter4:validate-warmup", risk: "asset readiness, retry, cancellation and degradation" }),
   chapter4Guard: Object.freeze({ area: "chapter-4", script: "chapter4:validate-guard-presentation", risk: "guard presentation without progression authority mutation" }),
   chapter4Interactions: Object.freeze({ area: "chapter-4", script: "chapter4:validate-effective-interactions", risk: "optional interactions across floor, mode and phase" }),

@@ -343,6 +343,12 @@ export function App() {
       }
       setActiveSurface("phone");
       if (quest.recommendedScene) {
+        if (quest.id === "chapter_two_submit_recovery") {
+          const phase = gameStore.getState().ui.libraryFinalsPhase;
+          const recoveryReady = phase === "recovery_application"
+            || (phase === "top_ten_reached" && kit.libraryFinals.openRecoveryApplication());
+          if (recoveryReady) kit.flags.setUi("zjudingPage", "library_recovery");
+        }
         if (
           quest.recommendedScene === "cc98"
           && ["accepted", "first_wave_failed", "delivered"].includes(

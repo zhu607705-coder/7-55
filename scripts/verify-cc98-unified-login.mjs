@@ -23,6 +23,7 @@ try {
     stdin: {
       contents: [
         'export { ActOneBootstrapController } from "./src/modules/ActOneBootstrapController.ts";',
+        'export { LibraryFinalsController } from "./src/modules/LibraryFinalsController.ts";',
         'export { CC98_LOGIN_HINTS, CC98_LOGIN_PASSWORD, CC98_LOGIN_STUDENT_ID, evaluateCc98LoginAttempt, getCc98LoginLockDurationMs } from "./src/modules/Cc98UnifiedLoginModel.ts";',
         'export { createInitialGameState } from "./src/core/GameState.ts";',
         'export { SaveStore } from "./src/core/SaveStore.ts";',
@@ -48,6 +49,7 @@ try {
     CC98_LOGIN_PASSWORD,
     CC98_LOGIN_STUDENT_ID,
     GAME_SAVE_KEY,
+    LibraryFinalsController,
     SaveStore,
     actOneContent,
     createDeveloperCheckpointState,
@@ -70,6 +72,44 @@ try {
     || getCc98LoginLockDurationMs(4) !== 60_000
     || getCc98LoginLockDurationMs(5) !== 90_000) {
     throw new Error("lock duration must start after three immediate attempts and grow in 30-second steps");
+  }
+
+  let inventoryTaskState = createDeveloperCheckpointState("c2-system");
+  const inventoryTaskStore = {
+    getState: () => inventoryTaskState,
+    setState: (update) => { inventoryTaskState = typeof update === "function" ? update(inventoryTaskState) : update; }
+  };
+  const inventoryTaskController = new ActOneBootstrapController(inventoryTaskStore, { emit: () => undefined });
+  if (!inventoryTaskController.confrontSystem()
+    || inventoryTaskState.actOne.phase !== "inventory_required"
+    || inventoryTaskState.rpgScene !== "dorm_hub"
+    || inventoryTaskState.rpgCheckpoint !== "dorm_spawn"
+    || inventoryTaskState.runtimeMode !== "phone") {
+    throw new Error("the first Chapter 2 RPG task must prepare the dorm scene without leaving the phone immediately");
+  }
+  const inventoryQuest = selectQuestViewModel(inventoryTaskState);
+  if (inventoryQuest.id !== "chapter_two_character_response"
+    || inventoryQuest.objective !== "找到道具栏"
+    || inventoryQuest.targetSurface !== "rpg") {
+    throw new Error("the first Chapter 2 return-to-task action must point at the prepared dorm inventory task");
+  }
+
+  let postBdState = createDeveloperCheckpointState("c2-recovery-form");
+  postBdState.ui.libraryFinalsPhase = "top_ten_reached";
+  postBdState.ui.zjudingPage = "hub";
+  const postBdStore = {
+    getState: () => postBdState,
+    setState: (update) => { postBdState = typeof update === "function" ? update(postBdState) : update; }
+  };
+  const postBdQuest = selectQuestViewModel(postBdState);
+  if (postBdQuest.id !== "chapter_two_submit_recovery"
+    || postBdQuest.recommendedScene !== "zjuding") {
+    throw new Error("successful BD must advance the task drawer to the ZJU Ding recovery application");
+  }
+  const postBdController = new LibraryFinalsController(postBdStore, { emit: () => undefined });
+  if (!postBdController.openRecoveryApplication()
+    || postBdState.ui.libraryFinalsPhase !== "recovery_application") {
+    throw new Error("the post-BD task route must be able to open the recovery materials workflow");
   }
 
   let state = createDeveloperCheckpointState("c2-cc98-login");
@@ -160,7 +200,7 @@ try {
     throw new Error("authentication and lock outcomes must emit presentation events");
   }
 
-  console.log("CC98 unified login PASS assertions=18 student=3250100755 password=ZJU1897! immediate-attempts=3 lock-sequence=30/60/90s save-migration=v27 dev-checkpoints=2 quest-handoff=verified");
+  console.log("CC98 unified login PASS student=3250100755 password=ZJU1897! immediate-attempts=3 lock-sequence=30/60/90s save-migration=v27 dev-checkpoints=2 quest-handoff=dorm+recovery-materials");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

@@ -129,14 +129,16 @@ export class ActOneBootstrapController {
     const state = this.store.getState();
     const actOne = state.actOne;
     if (actOne.phase !== "system_required") {
-      return actOne.phase === "inventory_required" || actOne.phase === "system_return_required";
+      if (actOne.phase !== "inventory_required" && actOne.phase !== "system_return_required") return false;
+      this.prepareDormInventoryTask({});
+      return true;
     }
     if (actOne.inventoryRecovered && state.items.campusCard) {
-      this.patch({ phase: "system_return_required" });
+      this.prepareDormInventoryTask({ phase: "system_return_required" });
       this.events.emit("act2_system_inventory_confirmed", { itemId: "campusCard" });
       return true;
     }
-    this.patch({ phase: "inventory_required", dormHubUnlocked: true });
+    this.prepareDormInventoryTask({ phase: "inventory_required" });
     this.events.emit("act2_system_inventory_requested");
     return true;
   }
@@ -174,6 +176,19 @@ export class ActOneBootstrapController {
     this.patch({ phase: "movement_required" });
     this.events.emit("act2_movement_quest_started", { destination: "library" });
     return true;
+  }
+
+  private prepareDormInventoryTask(patch: Partial<ActOneBootstrapState>): void {
+    this.store.setState((current) => ({
+      ...current,
+      rpgScene: "dorm_hub",
+      rpgCheckpoint: "dorm_spawn",
+      actOne: {
+        ...current.actOne,
+        ...patch,
+        dormHubUnlocked: true
+      }
+    }));
   }
 
   inspectCharacter(): boolean {

@@ -12,7 +12,7 @@ try {
   await build({
     stdin: {
       contents: [
-        'export { ChapterThreeQizhenLakeController } from "./src/modules/ChapterThreeQizhenLakeController.ts";',
+        'export { ChapterThreeQizhenLakeController, selectQizhenEntranceAccess } from "./src/modules/ChapterThreeQizhenLakeController.ts";',
         'export { createInitialGameState } from "./src/core/GameState.ts";',
         'export { SaveStore } from "./src/core/SaveStore.ts";',
         'export { GAME_SAVE_KEY } from "./src/core/StorageKeys.ts";',
@@ -55,6 +55,7 @@ try {
     stepQizhenWeatherControl,
     qizhenContent,
     selectCampusWeather,
+    selectQizhenEntranceAccess,
     createDeveloperCheckpointState
   } =
     await import(`${pathToFileURL(bundlePath).href}?v=${Date.now()}`);
@@ -82,6 +83,39 @@ try {
   };
   const store = makeStore(state);
   const controller = new ChapterThreeQizhenLakeController(store, eventBus);
+
+  for (let keywordMask = 0; keywordMask < 7; keywordMask += 1) {
+    const access = selectQizhenEntranceAccess({
+      ...state.qizhenLake,
+      phase: "location_search",
+      bridgeClueFound: (keywordMask & 1) !== 0,
+      reflectionClueFound: (keywordMask & 2) !== 0,
+      lakeClueFound: (keywordMask & 4) !== 0
+    });
+    if (access.visible || access.available || access.keywordsCollected) {
+      throw new Error(`Qizhen entrance must stay hidden before all keywords are collected: mask=${keywordMask}`);
+    }
+  }
+  const collectedEntrance = selectQizhenEntranceAccess({
+    ...state.qizhenLake,
+    phase: "location_search",
+    bridgeClueFound: true,
+    reflectionClueFound: true,
+    lakeClueFound: true
+  });
+  if (!collectedEntrance.visible || collectedEntrance.available || !collectedEntrance.keywordsCollected) {
+    throw new Error("all three keywords must reveal the locked Qizhen entrance without opening it early");
+  }
+  const unlockedEntrance = selectQizhenEntranceAccess({
+    ...state.qizhenLake,
+    phase: "lake_unlocked",
+    bridgeClueFound: false,
+    reflectionClueFound: false,
+    lakeClueFound: false
+  });
+  if (!unlockedEntrance.visible || !unlockedEntrance.available) {
+    throw new Error("already-progressed or migrated lake states must keep the Qizhen entrance available");
+  }
 
   if (selectCampusWeather(store.getState()).boatingAllowed !== false) {
     throw new Error("light rain must block boating before safety clearance");
@@ -437,7 +471,7 @@ try {
     || getQizhenRainRescueDurationMs(true) > 2500) {
     throw new Error("forced-launch presentation duration must remain extended while reduced motion stays concise");
   }
-  console.log("Qizhen rain safety PASS assertions=70 gate=teacher-warning+six-stroke-forced-launch+dramatic-capsize+cinematic-rescue+dorm-dryer+repeat-entry-block weather=shared-selector cloud-calibration=continuous-left-wind+6-keys+3-bands+1s-stability+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
+  console.log("Qizhen rain safety PASS gate=hidden-until-3-keywords+teacher-warning+six-stroke-forced-launch+dramatic-capsize+cinematic-rescue+dorm-dryer+repeat-entry-block weather=shared-selector cloud-calibration=continuous-left-wind+6-keys+3-bands+1s-stability+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

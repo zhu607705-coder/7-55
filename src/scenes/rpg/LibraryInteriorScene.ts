@@ -1937,7 +1937,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   private drawInterior(): void {
     this.textures.get(LIBRARY_INTERIOR_MAP_KEY).setFilter(Phaser.Textures.FilterMode.NEAREST);
-    this.add.image(750, 450, LIBRARY_INTERIOR_MAP_KEY).setDisplaySize(1500, 900).setDepth(0);
+    this.add.image(750, 450, LIBRARY_INTERIOR_MAP_KEY, "__BASE").setDisplaySize(1500, 900).setDepth(0);
     this.createInteriorColliders();
 
     this.add.text(750, 66, "基础图书馆  ·  二层南区", {

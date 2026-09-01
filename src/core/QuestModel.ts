@@ -335,13 +335,13 @@ function libraryQuest(state: GameState): QuestViewModel {
   ];
 
   let currentIndex = 0;
-  if (state.ui.libraryFinalsPhase === "recovery_application") {
+  if (["top_ten_reached", "recovery_application"].includes(state.ui.libraryFinalsPhase)) {
     currentIndex = 5;
   } else if (["backpack_removed", "seat_recovered"].includes(state.ui.libraryFinalsPhase)
     || (state.ui.libraryFinalsPhase === "pass_ready" && puzzle.passBriefingSeen)) {
     currentIndex = 6;
   } else if (puzzle.preBdBriefingSeen) {
-    // 十大成功后的管理员剧情仍属于“让帖子被看见”，直到恢复申请真的打开。
+    // BD 说明完成后仍停留在帖子任务；进入十大后立即转到恢复材料页。
     currentIndex = 4;
   } else if (puzzle.archivedRuleBriefingSeen) {
     // 四项证据上传后的系统说明仍属于“凑齐恢复材料”，说明结束才进入下一关。

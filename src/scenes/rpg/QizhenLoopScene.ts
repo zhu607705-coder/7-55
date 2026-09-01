@@ -4,6 +4,7 @@ import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type { GameState } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
 import qizhenContent from "../../data/chapter3-qizhen-lake.content.json";
+import { selectQizhenEntranceAccess } from "../../modules/ChapterThreeQizhenLakeController";
 import type { RpgBridge } from "./RpgBridge";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntimeDebug";
 import { CampusPathGrid, type CampusPathPoint } from "./CampusPathfinder";
@@ -221,24 +222,23 @@ export class QizhenLoopScene extends Phaser.Scene {
   }
 
   private updateQizhenGate(state: GameState): void {
-    const phase = state.qizhenLake.phase;
-    const active = state.qizhenLake.active && phase !== "inactive";
-    const available = active && phase !== "location_search";
+    const access = selectQizhenEntranceAccess(state.qizhenLake);
     const gate = QIZHEN_LOOP_RUNTIME.qizhen.gate;
-    const nearby = active && Phaser.Math.Distance.Between(this.player.x, this.player.y, gate.x, gate.y) <= gate.radius;
-    // 地点确认期间 marker 常显但压暗:既给出「去启真湖」的方向,又表明入口暂未开放。
+    const nearby = access.visible
+      && Phaser.Math.Distance.Between(this.player.x, this.player.y, gate.x, gate.y) <= gate.radius;
+    // 三个地点关键词收齐前完全隐藏入口；收齐后、地点确认前才显示压暗标记。
     this.gateMarker
-      .setVisible(active)
-      .setFillStyle(0x1c8297, available ? 0.24 : 0.1)
-      .setStrokeStyle(5, available ? 0xa5e6d5 : 0x5f8f86, available ? 0.96 : 0.62);
+      .setVisible(access.visible)
+      .setFillStyle(0x1c8297, access.available ? 0.24 : 0.1)
+      .setStrokeStyle(5, access.available ? 0xa5e6d5 : 0x5f8f86, access.available ? 0.96 : 0.62);
     this.gatePrompt.setVisible(nearby);
     if (nearby) {
-      this.gatePrompt.setText(available
+      this.gatePrompt.setText(access.available
         ? `${GATE_ENTRY_LABEL}  ·  ${formatRpgInteractionHint("进入启真湖")}`
         : `${GATE_ENTRY_LABEL}  ·  ${formatRpgInteractionHint(GATE_LOCKED_PROMPT_LABEL)}`);
     }
     if (nearby && (Phaser.Input.Keyboard.JustDown(this.cursors.space) || this.interactRequested)) {
-      if (available) {
+      if (access.available) {
         this.bridge.setCheckpoint("campus_qizhen_gate");
         this.bridge.emit("rpg_qizhen_entry_requested");
       } else {
