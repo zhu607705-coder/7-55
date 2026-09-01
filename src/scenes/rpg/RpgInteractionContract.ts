@@ -2,6 +2,7 @@ import type {
   ChapterFour755FloorId,
   ChapterFourFactId,
   ChapterFourPhase,
+  ChapterFourRoom204GroupId,
   ChapterFourRoom204PieceId,
   ChapterFourRoom204SlotId,
   GameState,
@@ -14,11 +15,16 @@ import {
   type ChapterFourContextInteractionTargetId
 } from "../../data/ChapterFourInteractionContent";
 import {
+  ROOM204_GROUPS,
+  ROOM204_GROUP_ORDER,
   ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
   ROOM204_PODIUM_LAYOUT,
   ROOM204_RESIDUAL_GROUP_BOUNDS,
   ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID,
   ROOM204_SLOT_LAYOUTS,
+  isRoom204GroupComplete,
+  room204GroupRuntimeEntityId,
+  room204GroupTargetId,
   room204SlotRuntimeEntityId
 } from "./ChapterFourRoom204Model";
 
@@ -76,6 +82,7 @@ export type ChapterFour755BoundsSource =
     };
 
 type ChapterFour755Room204SlotTargetId = `a2_room204_slot_${ChapterFourRoom204SlotId}`;
+type ChapterFour755Room204GroupTargetId = `a2_room204_group_${ChapterFourRoom204GroupId}`;
 
 export type ChapterFour755InteractionTargetId =
   | "a1_noticeboard_paper"
@@ -98,6 +105,7 @@ export type ChapterFour755InteractionTargetId =
   | "a1_classroom_105_lectern_terminal"
   | "a3_reference_classroom_layout"
   | "a2_room204_residual_group"
+  | ChapterFour755Room204GroupTargetId
   | ChapterFour755Room204SlotTargetId
   | "a2_room204_podium_drawer"
   | "a1_hall_clock_positioning_plate_slot"
@@ -129,6 +137,7 @@ export type ChapterFour755TargetConditionId =
   | "classroom_105_content_available"
   | "a3_reference_available"
   | "room204_residual_available"
+  | "room204_group_available"
   | "room204_slot_available"
   | "positioning_plate_pickup_available"
   | "positioning_plate_install_available"
@@ -373,6 +382,15 @@ const CHAPTER_FOUR_755_RUNTIME_TARGET_INSTALLATIONS = new Map<
     entityId: ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
     bounds: ROOM204_PODIUM_LAYOUT.drawerBounds
   }],
+  ...ROOM204_GROUP_ORDER.map((groupId) => {
+    const targetId = room204GroupTargetId(groupId) as ChapterFour755Room204GroupTargetId;
+    const group = ROOM204_GROUPS[groupId];
+    return [targetId, {
+      targetId,
+      entityId: room204GroupRuntimeEntityId(groupId),
+      bounds: group.targetBounds
+    }] as const;
+  }),
   ...Object.entries(ROOM204_SLOT_LAYOUTS).map(([slotId, slot]) => {
     const typedSlotId = slotId as ChapterFourRoom204SlotId;
     const targetId = `a2_room204_slot_${typedSlotId}` as ChapterFour755Room204SlotTargetId;
@@ -428,10 +446,7 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
       activation: "runtime_entity",
       activePhases: ["room204_restore"],
       roomIds: ["a2_corridor", "a2_room204", "a2_room_204"],
-      activationCondition: targetCondition("room204_slot_available", (state) => (
-        !hasChapterFourFact(state, "room204_restored")
-        && !state.chapter4.room204Placements.some((placement) => placement.slotId === slotId)
-      )),
+      activationCondition: targetCondition("room204_slot_available", () => false),
       proximity: 56,
       requiredMode: "light",
       approximate: false,
@@ -444,6 +459,34 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
     })];
   })
 ) as Readonly<Record<ChapterFour755Room204SlotTargetId, ChapterFour755InteractionTargetContract>>;
+
+const ROOM204_GROUP_INTERACTION_TARGETS = Object.fromEntries(
+  ROOM204_GROUP_ORDER.map((groupId) => {
+    const id = room204GroupTargetId(groupId) as ChapterFour755Room204GroupTargetId;
+    return [id, defineChapterFourTarget({
+      id,
+      label: ROOM204_GROUPS[groupId].label,
+      bounds: null,
+      activation: "runtime_entity",
+      activePhases: ["room204_restore"],
+      roomIds: ["a2_corridor", "a2_room204", "a2_room_204"],
+      activationCondition: targetCondition("room204_group_available", (state) => (
+        hasChapterFourFact(state, "a3_reference_observed")
+        && hasChapterFourFact(state, "room204_residual_observed")
+        && !isRoom204GroupComplete(state.chapter4.room204Placements, groupId)
+      )),
+      proximity: 64,
+      requiredMode: "light",
+      approximate: false,
+      contractPending: true,
+      boundsSource: Object.freeze({
+        kind: "runtime_entity",
+        floor: "A2",
+        entityId: room204GroupRuntimeEntityId(groupId)
+      })
+    })];
+  })
+) as Readonly<Record<ChapterFour755Room204GroupTargetId, ChapterFour755InteractionTargetContract>>;
 
 const CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS = Object.fromEntries(
   CHAPTER_FOUR_CONTEXT_INTERACTIONS.map((entry) => [entry.targetId, defineChapterFourTarget({
@@ -614,7 +657,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_zhu_kezhen: defineChapterFourTarget({
     id: "a3_alumni_zhu_kezhen",
-    label: "查看竺可桢生平与竺老两问",
+    label: "查看竺可桢生平",
     ...layoutAnchorTarget("A3", "a3_alumni_zhu_kezhen"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -705,7 +748,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
       !hasChapterFourFact(state, "a3_reference_observed")
     )),
     proximity: 84,
-    requiredMode: "light"
+    requiredMode: "dark"
   }),
   a2_room204_residual_group: defineChapterFourTarget({
     id: "a2_room204_residual_group",
@@ -728,6 +771,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     })
   }),
   ...ROOM204_INTERACTION_TARGETS,
+  ...ROOM204_GROUP_INTERACTION_TARGETS,
   a2_room204_podium_drawer: defineChapterFourTarget({
     id: "a2_room204_podium_drawer",
     label: "204 讲台抽屉里的定位盘",

@@ -103,83 +103,225 @@
       {
         "targetId": "a1_bakery_inspection_lamp",
         "entityId": "chapter4-bakery-inspection-lamp",
-        "installationBounds": { "x": 354, "y": 313, "width": 39, "height": 30 },
-        "standPosition": { "x": 374, "y": 390 },
+        "installationBounds": {
+          "x": 354,
+          "y": 313,
+          "width": 39,
+          "height": 30
+        },
+        "standPosition": {
+          "x": 374,
+          "y": 390
+        },
         "proximity": 56
       },
       {
         "targetId": "a1_bakery_conveyor_edge",
         "entityId": "chapter4-bakery-conveyor-edge",
-        "installationBounds": { "x": 286, "y": 332, "width": 17, "height": 29 },
-        "standPosition": { "x": 294, "y": 390 },
+        "installationBounds": {
+          "x": 286,
+          "y": 332,
+          "width": 17,
+          "height": 29
+        },
+        "standPosition": {
+          "x": 294,
+          "y": 390
+        },
         "proximity": 48
       },
       {
         "targetId": "a1_bakery_hour_hand_pickup",
         "entityId": "chapter4-bakery-hour-hand-pickup",
-        "installationBounds": { "x": 288, "y": 312, "width": 34, "height": 39 },
-        "standPosition": { "x": 294, "y": 390 },
+        "installationBounds": {
+          "x": 288,
+          "y": 312,
+          "width": 34,
+          "height": 39
+        },
+        "standPosition": {
+          "x": 294,
+          "y": 390
+        },
         "proximity": 48,
         "visual": {
           "texture": "chapter4_story_items",
           "frame": "old_clock_hour_hand",
-          "pivot": { "x": 294, "y": 345 },
+          "pivot": {
+            "x": 294,
+            "y": 345
+          },
           "uniformScale": 0.1,
-          "sourceInteractionBounds": { "x": 402, "y": 92, "width": 330, "height": 379 },
-          "sourceCell": { "x": 384, "y": 0, "width": 384, "height": 512 },
-          "sourcePivot": { "x": 460, "y": 415 }
+          "sourceInteractionBounds": {
+            "x": 402,
+            "y": 92,
+            "width": 330,
+            "height": 379
+          },
+          "sourceCell": {
+            "x": 384,
+            "y": 0,
+            "width": 384,
+            "height": 512
+          },
+          "sourcePivot": {
+            "x": 460,
+            "y": 415
+          }
         }
       }
     ],
     "baker": {
       "textureFile": "src/assets/rpg/npcs/canteen/counter_aunties_2frame.png",
       "framePair": 3,
-      "frames": [6, 7],
-      "origin": { "x": 0.5, "y": 1 },
+      "frames": [
+        6,
+        7
+      ],
+      "origin": {
+        "x": 0.5,
+        "y": 1
+      },
       "uniformScale": 0.52,
-      "position": { "x": 260, "y": 340 },
+      "position": {
+        "x": 260,
+        "y": 340
+      },
       "visibleSourceHeight": 80,
       "collision": false,
       "foregroundOcclusionId": "a1_foreground_018",
-      "activePhases": ["bakery_hour_hand", "morning_checkin"]
+      "activePhases": [
+        "bakery_hour_hand",
+        "morning_checkin"
+      ]
     },
     "crowd": {
       "texture": "student_walk",
       "collisionProfile": "playerFootBoxContract.worldFootBox",
-      "origin": { "x": 0.5, "y": 1 },
+      "origin": {
+        "x": 0.5,
+        "y": 1
+      },
       "displayScale": 0.65,
       "routes": [
-        { "id": "bakery_student_01", "from": { "x": 540, "y": 600 }, "to": { "x": 670, "y": 600 }, "speed": 32, "endpointPauseMs": 360 },
-        { "id": "bakery_student_02", "from": { "x": 1120, "y": 600 }, "to": { "x": 990, "y": 600 }, "speed": 28, "endpointPauseMs": 420 },
-        { "id": "bakery_student_03", "from": { "x": 540, "y": 710 }, "to": { "x": 660, "y": 710 }, "speed": 34, "endpointPauseMs": 300 }
+        {
+          "id": "bakery_student_01",
+          "from": {
+            "x": 540,
+            "y": 600
+          },
+          "to": {
+            "x": 670,
+            "y": 600
+          },
+          "speed": 32,
+          "endpointPauseMs": 360
+        },
+        {
+          "id": "bakery_student_02",
+          "from": {
+            "x": 1120,
+            "y": 600
+          },
+          "to": {
+            "x": 990,
+            "y": 600
+          },
+          "speed": 28,
+          "endpointPauseMs": 420
+        },
+        {
+          "id": "bakery_student_03",
+          "from": {
+            "x": 540,
+            "y": 710
+          },
+          "to": {
+            "x": 660,
+            "y": 710
+          },
+          "speed": 34,
+          "endpointPauseMs": 300
+        }
       ]
     },
     "walkabilityRoutes": [
       {
         "id": "bakery_direct_y560",
         "waypoints": [
-          { "x": 620, "y": 560 },
-          { "x": 560, "y": 560 },
-          { "x": 510.5, "y": 560 },
-          { "x": 477, "y": 560 },
-          { "x": 477, "y": 470 },
-          { "x": 477, "y": 390 },
-          { "x": 374, "y": 390 },
-          { "x": 294, "y": 390 }
+          {
+            "x": 620,
+            "y": 560
+          },
+          {
+            "x": 560,
+            "y": 560
+          },
+          {
+            "x": 510.5,
+            "y": 560
+          },
+          {
+            "x": 477,
+            "y": 560
+          },
+          {
+            "x": 477,
+            "y": 470
+          },
+          {
+            "x": 477,
+            "y": 390
+          },
+          {
+            "x": 374,
+            "y": 390
+          },
+          {
+            "x": 294,
+            "y": 390
+          }
         ]
       },
       {
         "id": "bakery_alternate_y748",
         "waypoints": [
-          { "x": 620, "y": 748 },
-          { "x": 560, "y": 748 },
-          { "x": 510.5, "y": 748 },
-          { "x": 477, "y": 748 },
-          { "x": 477, "y": 730 },
-          { "x": 477, "y": 470 },
-          { "x": 477, "y": 390 },
-          { "x": 374, "y": 390 },
-          { "x": 294, "y": 390 }
+          {
+            "x": 620,
+            "y": 748
+          },
+          {
+            "x": 560,
+            "y": 748
+          },
+          {
+            "x": 510.5,
+            "y": 748
+          },
+          {
+            "x": 477,
+            "y": 748
+          },
+          {
+            "x": 477,
+            "y": 730
+          },
+          {
+            "x": 477,
+            "y": 470
+          },
+          {
+            "x": 477,
+            "y": 390
+          },
+          {
+            "x": 374,
+            "y": 390
+          },
+          {
+            "x": 294,
+            "y": 390
+          }
         ]
       }
     ]
@@ -187,65 +329,479 @@
   "room204Runtime": {
     "storyFloor": "A2",
     "statePlateId": "a2_1850_evening",
-    "roomBounds": { "x": 32, "y": 544, "width": 396, "height": 270 },
-    "residualGroupBounds": { "x": 44, "y": 556, "width": 372, "height": 246 },
+    "roomBounds": {
+      "x": 32,
+      "y": 544,
+      "width": 396,
+      "height": 270
+    },
+    "residualGroupBounds": {
+      "x": 44,
+      "y": 556,
+      "width": 372,
+      "height": 246
+    },
     "uniformScale": 0.25,
     "approximate": true,
     "transform": "uniform_scale_only",
     "pairOffsets": {
-      "desk": { "x": 0, "y": -28 },
-      "chair": { "x": 0, "y": 0 }
+      "desk": {
+        "x": 0,
+        "y": -28
+      },
+      "chair": {
+        "x": 0,
+        "y": 0
+      }
     },
     "slotTargets": [
-      { "slotId": "morning_slot_01", "center": { "x": 94, "y": 633 }, "bounds": { "x": 84, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_02", "center": { "x": 171, "y": 633 }, "bounds": { "x": 161, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_03", "center": { "x": 289, "y": 633 }, "bounds": { "x": 279, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_04", "center": { "x": 366, "y": 633 }, "bounds": { "x": 356, "y": 623, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_05", "center": { "x": 94, "y": 710 }, "bounds": { "x": 84, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_06", "center": { "x": 171, "y": 710 }, "bounds": { "x": 161, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_07", "center": { "x": 289, "y": 710 }, "bounds": { "x": 279, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_08", "center": { "x": 366, "y": 710 }, "bounds": { "x": 356, "y": 700, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_09", "center": { "x": 94, "y": 781 }, "bounds": { "x": 84, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_10", "center": { "x": 171, "y": 781 }, "bounds": { "x": 161, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_11", "center": { "x": 289, "y": 781 }, "bounds": { "x": 279, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true },
-      { "slotId": "morning_slot_12", "center": { "x": 366, "y": 781 }, "bounds": { "x": 356, "y": 771, "width": 20, "height": 20 }, "orientation": "up", "approximate": true }
+      {
+        "slotId": "morning_slot_01",
+        "center": {
+          "x": 94,
+          "y": 633
+        },
+        "bounds": {
+          "x": 84,
+          "y": 623,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_02",
+        "center": {
+          "x": 171,
+          "y": 633
+        },
+        "bounds": {
+          "x": 161,
+          "y": 623,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_03",
+        "center": {
+          "x": 289,
+          "y": 633
+        },
+        "bounds": {
+          "x": 279,
+          "y": 623,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_04",
+        "center": {
+          "x": 366,
+          "y": 633
+        },
+        "bounds": {
+          "x": 356,
+          "y": 623,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_05",
+        "center": {
+          "x": 94,
+          "y": 710
+        },
+        "bounds": {
+          "x": 84,
+          "y": 700,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_06",
+        "center": {
+          "x": 171,
+          "y": 710
+        },
+        "bounds": {
+          "x": 161,
+          "y": 700,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_07",
+        "center": {
+          "x": 289,
+          "y": 710
+        },
+        "bounds": {
+          "x": 279,
+          "y": 700,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_08",
+        "center": {
+          "x": 366,
+          "y": 710
+        },
+        "bounds": {
+          "x": 356,
+          "y": 700,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_09",
+        "center": {
+          "x": 94,
+          "y": 781
+        },
+        "bounds": {
+          "x": 84,
+          "y": 771,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_10",
+        "center": {
+          "x": 171,
+          "y": 781
+        },
+        "bounds": {
+          "x": 161,
+          "y": 771,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_11",
+        "center": {
+          "x": 289,
+          "y": 781
+        },
+        "bounds": {
+          "x": 279,
+          "y": 771,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      },
+      {
+        "slotId": "morning_slot_12",
+        "center": {
+          "x": 366,
+          "y": 781
+        },
+        "bounds": {
+          "x": 356,
+          "y": 771,
+          "width": 20,
+          "height": 20
+        },
+        "orientation": "up",
+        "approximate": true
+      }
     ],
     "initialPiecePairs": [
-      { "pieceId": "desk_pair_01", "chairFrame": "chair_r1c1", "deskFrame": "desk_r1c1", "residualFrame": "residual_r1c1", "position": { "x": 72, "y": 633 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
-      { "pieceId": "desk_pair_02", "chairFrame": "chair_r1c2", "deskFrame": "desk_r1c2", "residualFrame": "residual_r1c2", "position": { "x": 72, "y": 710 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
-      { "pieceId": "desk_pair_03", "chairFrame": "chair_r1c3", "deskFrame": "desk_r1c3", "residualFrame": "residual_r1c3", "position": { "x": 72, "y": 781 }, "angle": 90, "discussionTableId": "group_table_1", "approximate": true },
-      { "pieceId": "desk_pair_04", "chairFrame": "chair_r1c4", "deskFrame": "desk_r1c4", "residualFrame": "residual_r1c4", "position": { "x": 188, "y": 633 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
-      { "pieceId": "desk_pair_05", "chairFrame": "chair_r1c5", "deskFrame": "desk_r2c1", "residualFrame": "residual_r2c1", "position": { "x": 188, "y": 710 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
-      { "pieceId": "desk_pair_06", "chairFrame": "chair_r1c6", "deskFrame": "desk_r2c2", "residualFrame": "residual_r2c2", "position": { "x": 188, "y": 781 }, "angle": 90, "discussionTableId": "group_table_2", "approximate": true },
-      { "pieceId": "desk_pair_07", "chairFrame": "chair_r2c1", "deskFrame": "desk_r2c3", "residualFrame": "residual_r2c3", "position": { "x": 272, "y": 633 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
-      { "pieceId": "desk_pair_08", "chairFrame": "chair_r2c2", "deskFrame": "desk_r2c4", "residualFrame": "residual_r2c4", "position": { "x": 272, "y": 710 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
-      { "pieceId": "desk_pair_09", "chairFrame": "chair_r2c3", "deskFrame": "desk_r3c1", "residualFrame": "residual_r3c1", "position": { "x": 272, "y": 781 }, "angle": -90, "discussionTableId": "group_table_3", "approximate": true },
-      { "pieceId": "desk_pair_10", "chairFrame": "chair_r2c4", "deskFrame": "desk_r3c2", "residualFrame": "residual_r3c2", "position": { "x": 388, "y": 633 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
-      { "pieceId": "desk_pair_11", "chairFrame": "chair_r2c5", "deskFrame": "desk_r3c3", "residualFrame": "residual_r3c3", "position": { "x": 388, "y": 710 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true },
-      { "pieceId": "desk_pair_12", "chairFrame": "chair_r2c6", "deskFrame": "desk_r3c4", "residualFrame": "residual_r3c4", "position": { "x": 388, "y": 781 }, "angle": -90, "discussionTableId": "group_table_4", "approximate": true }
+      {
+        "pieceId": "desk_pair_01",
+        "chairFrame": "chair_r1c1",
+        "deskFrame": "desk_r1c1",
+        "residualFrame": "residual_r1c1",
+        "position": {
+          "x": 72,
+          "y": 633
+        },
+        "angle": 90,
+        "discussionTableId": "group_table_1",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_02",
+        "chairFrame": "chair_r1c2",
+        "deskFrame": "desk_r1c2",
+        "residualFrame": "residual_r1c2",
+        "position": {
+          "x": 72,
+          "y": 710
+        },
+        "angle": 90,
+        "discussionTableId": "group_table_1",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_03",
+        "chairFrame": "chair_r1c3",
+        "deskFrame": "desk_r1c3",
+        "residualFrame": "residual_r1c3",
+        "position": {
+          "x": 72,
+          "y": 781
+        },
+        "angle": 90,
+        "discussionTableId": "group_table_1",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_04",
+        "chairFrame": "chair_r1c4",
+        "deskFrame": "desk_r1c4",
+        "residualFrame": "residual_r1c4",
+        "position": {
+          "x": 188,
+          "y": 633
+        },
+        "angle": 90,
+        "discussionTableId": "group_table_2",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_05",
+        "chairFrame": "chair_r1c5",
+        "deskFrame": "desk_r2c1",
+        "residualFrame": "residual_r2c1",
+        "position": {
+          "x": 188,
+          "y": 710
+        },
+        "angle": 90,
+        "discussionTableId": "group_table_2",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_06",
+        "chairFrame": "chair_r1c6",
+        "deskFrame": "desk_r2c2",
+        "residualFrame": "residual_r2c2",
+        "position": {
+          "x": 188,
+          "y": 781
+        },
+        "angle": 90,
+        "discussionTableId": "group_table_2",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_07",
+        "chairFrame": "chair_r2c1",
+        "deskFrame": "desk_r2c3",
+        "residualFrame": "residual_r2c3",
+        "position": {
+          "x": 272,
+          "y": 633
+        },
+        "angle": -90,
+        "discussionTableId": "group_table_3",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_08",
+        "chairFrame": "chair_r2c2",
+        "deskFrame": "desk_r2c4",
+        "residualFrame": "residual_r2c4",
+        "position": {
+          "x": 272,
+          "y": 710
+        },
+        "angle": -90,
+        "discussionTableId": "group_table_3",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_09",
+        "chairFrame": "chair_r2c3",
+        "deskFrame": "desk_r3c1",
+        "residualFrame": "residual_r3c1",
+        "position": {
+          "x": 272,
+          "y": 781
+        },
+        "angle": -90,
+        "discussionTableId": "group_table_3",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_10",
+        "chairFrame": "chair_r2c4",
+        "deskFrame": "desk_r3c2",
+        "residualFrame": "residual_r3c2",
+        "position": {
+          "x": 388,
+          "y": 633
+        },
+        "angle": -90,
+        "discussionTableId": "group_table_4",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_11",
+        "chairFrame": "chair_r2c5",
+        "deskFrame": "desk_r3c3",
+        "residualFrame": "residual_r3c3",
+        "position": {
+          "x": 388,
+          "y": 710
+        },
+        "angle": -90,
+        "discussionTableId": "group_table_4",
+        "approximate": true
+      },
+      {
+        "pieceId": "desk_pair_12",
+        "chairFrame": "chair_r2c6",
+        "deskFrame": "desk_r3c4",
+        "residualFrame": "residual_r3c4",
+        "position": {
+          "x": 388,
+          "y": 781
+        },
+        "angle": -90,
+        "discussionTableId": "group_table_4",
+        "approximate": true
+      }
     ],
     "discussionTables": [
-      { "id": "group_table_1", "frame": "group_table_1", "position": { "x": 72, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_01", "desk_pair_02", "desk_pair_03"], "approximate": true },
-      { "id": "group_table_2", "frame": "group_table_2", "position": { "x": 188, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_04", "desk_pair_05", "desk_pair_06"], "approximate": true },
-      { "id": "group_table_3", "frame": "group_table_3", "position": { "x": 272, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_07", "desk_pair_08", "desk_pair_09"], "approximate": true },
-      { "id": "group_table_4", "frame": "group_table_4", "position": { "x": 388, "y": 710 }, "angle": 90, "pieceIds": ["desk_pair_10", "desk_pair_11", "desk_pair_12"], "approximate": true }
+      {
+        "id": "group_table_1",
+        "frame": "group_table_1",
+        "position": {
+          "x": 72,
+          "y": 710
+        },
+        "angle": 90,
+        "pieceIds": [
+          "desk_pair_01",
+          "desk_pair_02",
+          "desk_pair_03"
+        ],
+        "approximate": true
+      },
+      {
+        "id": "group_table_2",
+        "frame": "group_table_2",
+        "position": {
+          "x": 188,
+          "y": 710
+        },
+        "angle": 90,
+        "pieceIds": [
+          "desk_pair_04",
+          "desk_pair_05",
+          "desk_pair_06"
+        ],
+        "approximate": true
+      },
+      {
+        "id": "group_table_3",
+        "frame": "group_table_3",
+        "position": {
+          "x": 272,
+          "y": 710
+        },
+        "angle": 90,
+        "pieceIds": [
+          "desk_pair_07",
+          "desk_pair_08",
+          "desk_pair_09"
+        ],
+        "approximate": true
+      },
+      {
+        "id": "group_table_4",
+        "frame": "group_table_4",
+        "position": {
+          "x": 388,
+          "y": 710
+        },
+        "angle": 90,
+        "pieceIds": [
+          "desk_pair_10",
+          "desk_pair_11",
+          "desk_pair_12"
+        ],
+        "approximate": true
+      }
     ],
     "podium": {
       "frame": "podium",
-      "position": { "x": 199.5, "y": 601 },
-      "drawerBounds": { "x": 179, "y": 549, "width": 41, "height": 52 },
+      "position": {
+        "x": 199.5,
+        "y": 601
+      },
+      "drawerBounds": {
+        "x": 179,
+        "y": 549,
+        "width": 41,
+        "height": 52
+      },
       "fixedAxisReference": true,
       "approximate": true
     },
     "walkability": {
-      "sampleSteps": [2, 4],
-      "verticalAisleCenters": [132.5, 230, 327.5],
-      "verticalRange": { "fromY": 600, "toY": 792 },
-      "horizontalConnector": { "y": 647, "fromX": 132.5, "toX": 327.5 },
-      "playerFootBox": { "width": 19.5, "height": 14.625 }
+      "sampleSteps": [
+        2,
+        4
+      ],
+      "verticalAisleCenters": [
+        132.5,
+        230,
+        327.5
+      ],
+      "verticalRange": {
+        "fromY": 600,
+        "toY": 792
+      },
+      "horizontalConnector": {
+        "y": 647,
+        "fromX": 132.5,
+        "toX": 327.5
+      },
+      "playerFootBox": {
+        "width": 19.5,
+        "height": 14.625
+      }
     },
     "projectionHandshake": {
-      "screenBounds": { "x": 245, "y": 519, "width": 110, "height": 56 },
+      "screenBounds": {
+        "x": 245,
+        "y": 519,
+        "width": 110,
+        "height": 56
+      },
       "misalignedAtMs": 120,
       "stableAtMs": 360,
       "commitAtMs": 900,
@@ -258,37 +814,78 @@
     "approximate": true,
     "pryBar": {
       "frame": "short_pry_tool_candidate",
-      "pivot": { "x": 458, "y": 710 },
+      "pivot": {
+        "x": 458,
+        "y": 710
+      },
       "uniformScale": 0.1,
       "approximate": true
     },
     "cleaningCart": {
       "texture": "cleaning_cart",
-      "position": { "x": 1115, "y": 716 },
+      "position": {
+        "x": 1115,
+        "y": 716
+      },
       "uniformScale": 0.65,
-      "visibleBounds": { "x": 1088, "y": 648, "width": 53, "height": 68 },
-      "footBounds": { "x": 1089, "y": 700, "width": 51, "height": 16 },
+      "visibleBounds": {
+        "x": 1088,
+        "y": 648,
+        "width": 53,
+        "height": 68
+      },
+      "footBounds": {
+        "x": 1089,
+        "y": 700,
+        "width": 51,
+        "height": 16
+      },
       "wheelRegion": {
         "coordinateSpace": "cleaning_cart_frame_local",
-        "sourceFrameSize": { "width": 144, "height": 128 },
-        "origin": { "x": 0.5, "y": 1 },
-        "bounds": { "x": 88, "y": 91, "width": 28, "height": 37 },
+        "sourceFrameSize": {
+          "width": 144,
+          "height": 128
+        },
+        "origin": {
+          "x": 0.5,
+          "y": 1
+        },
+        "bounds": {
+          "x": 88,
+          "y": 91,
+          "width": 28,
+          "height": 37
+        },
         "visualRole": "programmatic_wheel_cover_and_wheel_interaction"
       },
       "approximate": true
     },
     "cleaner": {
       "animationId": "cleaner_idle",
-      "position": { "x": 1160, "y": 716 },
+      "position": {
+        "x": 1160,
+        "y": 716
+      },
       "uniformScale": 0.65,
-      "footBounds": { "x": 1150, "y": 708, "width": 20, "height": 16 },
+      "footBounds": {
+        "x": 1150,
+        "y": 708,
+        "width": 20,
+        "height": 16
+      },
       "approximate": true
     },
     "guard": {
       "animationId": "guard_walk",
-      "position": { "x": 1105, "y": 560 },
+      "position": {
+        "x": 1105,
+        "y": 560
+      },
       "uniformScale": 0.65,
-      "footBox": { "width": 20, "height": 16 },
+      "footBox": {
+        "width": 20,
+        "height": 16
+      },
       "initialPreviousWaypointId": "east_south",
       "initialTargetWaypointId": "west_south",
       "patrolSpeed": 84,
@@ -299,21 +896,70 @@
       "coneRange": 220,
       "coneHalfAngleDegrees": 36,
       "closeRadius": 56,
-      "pauseRangeMs": [1000, 2000],
+      "pauseRangeMs": [
+        1000,
+        2000
+      ],
       "maxStepMs": 50,
       "patrolWaypoints": [
-        { "id": "stair_north", "x": 1001, "y": 214, "neighborIds": ["west_north", "east_north"] },
-        { "id": "west_north", "x": 588, "y": 220, "neighborIds": ["stair_north", "west_south"] },
-        { "id": "east_north", "x": 1105, "y": 220, "neighborIds": ["stair_north", "east_south"] },
-        { "id": "east_south", "x": 1105, "y": 560, "neighborIds": ["east_north", "west_south"] },
-        { "id": "west_south", "x": 588, "y": 560, "neighborIds": ["east_south", "west_north"] }
+        {
+          "id": "stair_north",
+          "x": 1001,
+          "y": 214,
+          "neighborIds": [
+            "west_north",
+            "east_north"
+          ]
+        },
+        {
+          "id": "west_north",
+          "x": 588,
+          "y": 220,
+          "neighborIds": [
+            "stair_north",
+            "west_south"
+          ]
+        },
+        {
+          "id": "east_north",
+          "x": 1105,
+          "y": 220,
+          "neighborIds": [
+            "stair_north",
+            "east_south"
+          ]
+        },
+        {
+          "id": "east_south",
+          "x": 1105,
+          "y": 560,
+          "neighborIds": [
+            "east_north",
+            "west_south"
+          ]
+        },
+        {
+          "id": "west_south",
+          "x": 588,
+          "y": 560,
+          "neighborIds": [
+            "east_south",
+            "west_north"
+          ]
+        }
       ],
       "approximate": false
     },
     "repairedPush": {
       "animationId": "cleaner_push_cart_up",
-      "from": { "x": 1138, "y": 716 },
-      "to": { "x": 1138, "y": 650 },
+      "from": {
+        "x": 1138,
+        "y": 716
+      },
+      "to": {
+        "x": 1138,
+        "y": 650
+      },
       "durationMs": 900,
       "approximate": true
     },
@@ -321,8 +967,16 @@
       {
         "targetId": "a1_cleaning_cart_wheel_inspection",
         "entityId": "chapter4_cleaning_cart_wheel_inspection",
-        "installationBounds": { "x": 1125, "y": 691, "width": 19, "height": 25 },
-        "standPosition": { "x": 1060, "y": 716 },
+        "installationBounds": {
+          "x": 1125,
+          "y": 691,
+          "width": 19,
+          "height": 25
+        },
+        "standPosition": {
+          "x": 1060,
+          "y": 716
+        },
         "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_cleaning_cart_frame_local_region",
@@ -333,8 +987,16 @@
       {
         "targetId": "a1_bakery_back_pry_bar",
         "entityId": "chapter4_pry_bar_pickup",
-        "installationBounds": { "x": 442, "y": 691, "width": 32, "height": 38 },
-        "standPosition": { "x": 458, "y": 758 },
+        "installationBounds": {
+          "x": 442,
+          "y": 691,
+          "width": 32,
+          "height": 38
+        },
+        "standPosition": {
+          "x": 458,
+          "y": 758
+        },
         "proximity": 52,
         "frame": "short_pry_tool_candidate",
         "uniformScale": 0.1,
@@ -348,8 +1010,16 @@
       {
         "targetId": "a1_cleaning_cart_wheel_cover",
         "entityId": "chapter4_cleaning_cart_wheel_cover",
-        "installationBounds": { "x": 1125, "y": 691, "width": 19, "height": 25 },
-        "standPosition": { "x": 1060, "y": 716 },
+        "installationBounds": {
+          "x": 1125,
+          "y": 691,
+          "width": 19,
+          "height": 25
+        },
+        "standPosition": {
+          "x": 1060,
+          "y": 716
+        },
         "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_cleaning_cart_frame_local_region",
@@ -361,11 +1031,22 @@
       {
         "targetId": "a1_cleaning_cart_oil_bottle",
         "entityId": "chapter4_cleaning_cart_oil_bottle",
-        "installationBounds": { "x": 1091, "y": 647, "width": 22, "height": 31 },
-        "standPosition": { "x": 1060, "y": 716 },
+        "installationBounds": {
+          "x": 1091,
+          "y": 647,
+          "width": 22,
+          "height": 31
+        },
+        "standPosition": {
+          "x": 1060,
+          "y": 716
+        },
         "proximity": 72,
         "frame": "lubricating_oil",
-        "pivot": { "x": 1102, "y": 677 },
+        "pivot": {
+          "x": 1102,
+          "y": 677
+        },
         "uniformScale": 0.08,
         "boundsDerivation": {
           "kind": "visible_story_item_manifest_interaction",
@@ -377,8 +1058,16 @@
       {
         "targetId": "a1_cleaning_cart_wheel",
         "entityId": "chapter4_cleaning_cart_wheel",
-        "installationBounds": { "x": 1125, "y": 691, "width": 19, "height": 25 },
-        "standPosition": { "x": 1060, "y": 716 },
+        "installationBounds": {
+          "x": 1125,
+          "y": 691,
+          "width": 19,
+          "height": 25
+        },
+        "standPosition": {
+          "x": 1060,
+          "y": 716
+        },
         "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_cleaning_cart_frame_local_region",
@@ -389,8 +1078,16 @@
       {
         "targetId": "a1_hall_clock_gear",
         "entityId": "chapter4_hall_clock_gear",
-        "installationBounds": { "x": 940, "y": 30, "width": 122, "height": 120 },
-        "standPosition": { "x": 1001, "y": 214 },
+        "installationBounds": {
+          "x": 940,
+          "y": 30,
+          "width": 122,
+          "height": 120
+        },
+        "standPosition": {
+          "x": 1001,
+          "y": 214
+        },
         "proximity": 86,
         "frameBefore": "gear_stuttering",
         "frameAfter": "gear_running",
@@ -408,9 +1105,15 @@
     "storyFloor": "A1",
     "statePlateId": "a1_2245_maintenance",
     "clockFrame": "gear_running",
-    "clockCenter": { "x": 996, "y": 63 },
+    "clockCenter": {
+      "x": 996,
+      "y": 63
+    },
     "visualRegistration": {
-      "axis": { "x": 996, "y": 63 },
+      "axis": {
+        "x": 996,
+        "y": 63
+      },
       "sourceFrameFaceRadius": 108,
       "statePlateFaceRadius": 37,
       "uniformScale": 0.3425925926,
@@ -425,8 +1128,16 @@
     "endpoint": {
       "targetId": "a1_hall_clock_minute_endpoint",
       "entityId": "chapter4_hall_clock_minute_endpoint",
-      "installationBounds": { "x": 967, "y": 26, "width": 16, "height": 16 },
-      "standPosition": { "x": 1001, "y": 214 },
+      "installationBounds": {
+        "x": 967,
+        "y": 26,
+        "width": 16,
+        "height": 16
+      },
+      "standPosition": {
+        "x": 1001,
+        "y": 214
+      },
       "proximity": 148,
       "boundsDerivation": {
         "kind": "visible_programmatic_minute_endpoint_get_bounds",
@@ -450,11 +1161,29 @@
     "panel": {
       "targetId": "a1_power_panel",
       "entityId": "chapter4_power_panel",
-      "installationBounds": { "x": 493, "y": 528, "width": 67, "height": 124 },
-      "visibleBoxBounds": { "x": 505, "y": 540, "width": 43, "height": 100 },
-      "standPosition": { "x": 590, "y": 590 },
+      "installationBounds": {
+        "x": 493,
+        "y": 528,
+        "width": 67,
+        "height": 124
+      },
+      "visibleBoxBounds": {
+        "x": 505,
+        "y": 540,
+        "width": 43,
+        "height": 100
+      },
+      "standPosition": {
+        "x": 590,
+        "y": 590
+      },
       "proximity": 72,
-      "frames": ["closed", "open_powered", "open_partial", "open_restored"],
+      "frames": [
+        "closed",
+        "open_powered",
+        "open_partial",
+        "open_restored"
+      ],
       "boundsDerivation": {
         "kind": "visible_a1_wall_panel_extended_get_bounds",
         "spritesheetId": "chapter4_power_panel_states",
@@ -463,11 +1192,66 @@
       "approximate": true
     },
     "visualRegions": [
-      { "id": "hall", "bounds": { "x": 548, "y": 151, "width": 626, "height": 649 }, "nonColliding": true, "visualOnly": true, "approximate": true },
-      { "id": "west_corridor", "bounds": { "x": 36, "y": 486, "width": 512, "height": 314 }, "nonColliding": true, "visualOnly": true, "approximate": true },
-      { "id": "east_corridor", "bounds": { "x": 1174, "y": 151, "width": 462, "height": 335 }, "nonColliding": true, "visualOnly": true, "approximate": true },
-      { "id": "classroom_zone", "bounds": { "x": 1174, "y": 486, "width": 462, "height": 314 }, "nonColliding": true, "visualOnly": true, "approximate": true },
-      { "id": "bakery_back_area", "bounds": { "x": 36, "y": 151, "width": 512, "height": 335 }, "nonColliding": true, "visualOnly": true, "approximate": true }
+      {
+        "id": "hall",
+        "bounds": {
+          "x": 548,
+          "y": 151,
+          "width": 626,
+          "height": 649
+        },
+        "nonColliding": true,
+        "visualOnly": true,
+        "approximate": true
+      },
+      {
+        "id": "west_corridor",
+        "bounds": {
+          "x": 36,
+          "y": 486,
+          "width": 512,
+          "height": 314
+        },
+        "nonColliding": true,
+        "visualOnly": true,
+        "approximate": true
+      },
+      {
+        "id": "east_corridor",
+        "bounds": {
+          "x": 1174,
+          "y": 151,
+          "width": 462,
+          "height": 335
+        },
+        "nonColliding": true,
+        "visualOnly": true,
+        "approximate": true
+      },
+      {
+        "id": "classroom_zone",
+        "bounds": {
+          "x": 1174,
+          "y": 486,
+          "width": 462,
+          "height": 314
+        },
+        "nonColliding": true,
+        "visualOnly": true,
+        "approximate": true
+      },
+      {
+        "id": "bakery_back_area",
+        "bounds": {
+          "x": 36,
+          "y": 151,
+          "width": 512,
+          "height": 335
+        },
+        "nonColliding": true,
+        "visualOnly": true,
+        "approximate": true
+      }
     ],
     "visualCalibrationNote": "Five broad authored lighting regions are approximate visual overlays only; they do not claim pixel-precise room boundaries and never participate in collision.",
     "approximate": true
@@ -480,34 +1264,118 @@
     "maxStepMs": 50,
     "transportId": "main_stair",
     "restartCheckpoint": "c4_a1_lobby",
-    "playerStart": { "storyFloor": "A1", "x": 590, "y": 612 },
-    "guardSpawn": { "storyFloor": "A1", "x": 590, "y": 724 },
+    "playerStart": {
+      "storyFloor": "A1",
+      "x": 590,
+      "y": 612
+    },
+    "guardSpawn": {
+      "storyFloor": "A1",
+      "x": 590,
+      "y": 724
+    },
     "waypoints": [
-      { "id": "a1_lower_hall", "storyFloor": "A1", "x": 836, "y": 540, "role": "route" },
-      { "id": "a1_central", "storyFloor": "A1", "x": 836, "y": 228, "role": "route" },
-      { "id": "a1_main_stair", "storyFloor": "A1", "x": 1001, "y": 214, "role": "portal" },
-      { "id": "a2_main_stair_arrival", "storyFloor": "A2", "x": 966, "y": 214, "role": "portal" },
-      { "id": "a2_core_east", "storyFloor": "A2", "x": 1100, "y": 232, "role": "route" },
-      { "id": "a2_east_south", "storyFloor": "A2", "x": 1100, "y": 400, "role": "route" },
-      { "id": "a2_room202_outer", "storyFloor": "A2", "x": 1353, "y": 400, "role": "route" }
+      {
+        "id": "a1_lower_hall",
+        "storyFloor": "A1",
+        "x": 836,
+        "y": 540,
+        "role": "route"
+      },
+      {
+        "id": "a1_central",
+        "storyFloor": "A1",
+        "x": 836,
+        "y": 228,
+        "role": "route"
+      },
+      {
+        "id": "a1_main_stair",
+        "storyFloor": "A1",
+        "x": 1001,
+        "y": 214,
+        "role": "portal"
+      },
+      {
+        "id": "a2_main_stair_arrival",
+        "storyFloor": "A2",
+        "x": 966,
+        "y": 214,
+        "role": "portal"
+      },
+      {
+        "id": "a2_core_east",
+        "storyFloor": "A2",
+        "x": 1100,
+        "y": 232,
+        "role": "route"
+      },
+      {
+        "id": "a2_east_south",
+        "storyFloor": "A2",
+        "x": 1100,
+        "y": 400,
+        "role": "route"
+      },
+      {
+        "id": "a2_room202_outer",
+        "storyFloor": "A2",
+        "x": 1353,
+        "y": 400,
+        "role": "route"
+      }
     ],
     "decoyBranches": [
-      { "id": "a1_bakery_dead_end", "storyFloor": "A1", "x": 318, "y": 648, "canAdvance": false },
-      { "id": "a2_room203_dead_end", "storyFloor": "A2", "x": 1353, "y": 524, "canAdvance": false }
+      {
+        "id": "a1_bakery_dead_end",
+        "storyFloor": "A1",
+        "x": 318,
+        "y": 648,
+        "canAdvance": false
+      },
+      {
+        "id": "a2_room203_dead_end",
+        "storyFloor": "A2",
+        "x": 1353,
+        "y": 524,
+        "canAdvance": false
+      }
     ],
     "finishThreshold": {
       "targetId": "a2_202_threshold",
-      "point": { "x": 1353, "y": 356.5 },
-      "bounds": { "x": 1299, "y": 334, "width": 108, "height": 45 },
+      "point": {
+        "x": 1353,
+        "y": 356.5
+      },
+      "bounds": {
+        "x": 1299,
+        "y": 334,
+        "width": 108,
+        "height": 45
+      },
       "priority": "finish_before_contact_same_frame"
     },
     "room202Door": {
       "id": "a2_room202_door",
-      "barrierBounds": { "x": 1298, "y": 341, "width": 110, "height": 29 },
+      "barrierBounds": {
+        "x": 1298,
+        "y": 341,
+        "width": 110,
+        "height": 29
+      },
       "states": {
-        "final_chase": { "state": "open", "collider": false },
-        "final_minute_recovery": { "state": "closed", "collider": true },
-        "return_to_clock": { "state": "open", "collider": false }
+        "final_chase": {
+          "state": "open",
+          "collider": false
+        },
+        "final_minute_recovery": {
+          "state": "closed",
+          "collider": true
+        },
+        "return_to_clock": {
+          "state": "open",
+          "collider": false
+        }
       },
       "visual": "procedural_status_only",
       "officialClosedDoorSprite": false
@@ -520,17 +1388,39 @@
     "entityId": "chapter4_final_minute_shard",
     "texture": "chapter4_story_items",
     "frame": "final_minute_shard",
-    "pivot": { "x": 1353, "y": 320 },
+    "pivot": {
+      "x": 1353,
+      "y": 320
+    },
     "uniformScale": 0.18,
-    "installationBounds": { "x": 1320, "y": 250, "width": 70, "height": 93 },
+    "installationBounds": {
+      "x": 1320,
+      "y": 250,
+      "width": 70,
+      "height": 93
+    },
     "boundsDerivation": {
       "kind": "visible_sprite_get_bounds",
-      "sourceCell": { "x": 384, "y": 512, "width": 384, "height": 512 },
-      "sourcePivot": { "x": 566, "y": 900 },
+      "sourceCell": {
+        "x": 384,
+        "y": 512,
+        "width": 384,
+        "height": 512
+      },
+      "sourcePivot": {
+        "x": 566,
+        "y": 900
+      },
       "zoneSource": "sprite.getBounds"
     },
-    "standPosition": { "x": 1453, "y": 306 },
-    "recoveryPlayerSpawn": { "x": 1453, "y": 306 },
+    "standPosition": {
+      "x": 1453,
+      "y": 306
+    },
+    "recoveryPlayerSpawn": {
+      "x": 1453,
+      "y": 306
+    },
     "proximity": 112,
     "requiredMode": "light",
     "collision": false
@@ -540,11 +1430,20 @@
     "npcId": "a1_front_desk_attendant",
     "texture": "chapter-four-front-desk-staff",
     "animation": "chapter-four-front-desk-staff-idle",
-    "frames": [0, 1],
+    "frames": [
+      0,
+      1
+    ],
     "frameRate": 2,
-    "origin": { "x": 0.5, "y": 1 },
+    "origin": {
+      "x": 0.5,
+      "y": 1
+    },
     "uniformScale": 0.72,
-    "position": { "x": 819, "y": 652 },
+    "position": {
+      "x": 819,
+      "y": 652
+    },
     "interactionAnchorId": "a1_front_desk_attendant",
     "counterForegroundOcclusionId": "a1_foreground_016",
     "activePhases": [
@@ -561,11 +1460,19 @@
       "npcId": "a2_elevator_attendant",
       "visualSource": "finale_npc",
       "animation": "guard_check_watch",
-      "origin": { "x": 0.5, "y": 1 },
+      "origin": {
+        "x": 0.5,
+        "y": 1
+      },
       "uniformScale": 0.65,
-      "position": { "x": 700, "y": 224 },
+      "position": {
+        "x": 700,
+        "y": 224
+      },
       "interactionAnchorId": "a2_elevator_attendant",
-      "activePhases": ["room204_restore"],
+      "activePhases": [
+        "room204_restore"
+      ],
       "collision": false
     },
     {
@@ -573,11 +1480,19 @@
       "npcId": "a3_reference_teacher",
       "visualSource": "front_desk_staff",
       "animation": "chapter-four-front-desk-staff-idle",
-      "origin": { "x": 0.5, "y": 1 },
+      "origin": {
+        "x": 0.5,
+        "y": 1
+      },
       "uniformScale": 0.72,
-      "position": { "x": 1372, "y": 598 },
+      "position": {
+        "x": 1372,
+        "y": 598
+      },
       "interactionAnchorId": "a3_reference_teacher",
-      "activePhases": ["room204_restore"],
+      "activePhases": [
+        "room204_restore"
+      ],
       "collision": false
     }
   ],
@@ -585,13 +1500,24 @@
     "storyFloor": "A1",
     "statePlateId": "a1_0755_morning",
     "approximate": false,
-    "deskCenter": { "x": 819, "y": 646 },
+    "deskCenter": {
+      "x": 819,
+      "y": 646
+    },
     "targetEntities": [
       {
         "targetId": "a1_campus_card_reader",
         "entityId": "chapter4_checkin_card_reader",
-        "installationBounds": { "x": 768, "y": 607, "width": 30, "height": 24 },
-        "standPosition": { "x": 783, "y": 662 },
+        "installationBounds": {
+          "x": 768,
+          "y": 607,
+          "width": 30,
+          "height": 24
+        },
+        "standPosition": {
+          "x": 783,
+          "y": 662
+        },
         "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_programmatic_card_reader_get_bounds",
@@ -602,8 +1528,16 @@
       {
         "targetId": "a1_attendance_paper_slot",
         "entityId": "chapter4_checkin_attendance_paper_slot",
-        "installationBounds": { "x": 848, "y": 606, "width": 38, "height": 25 },
-        "standPosition": { "x": 867, "y": 662 },
+        "installationBounds": {
+          "x": 848,
+          "y": 606,
+          "width": 38,
+          "height": 25
+        },
+        "standPosition": {
+          "x": 867,
+          "y": 662
+        },
         "proximity": 72,
         "boundsDerivation": {
           "kind": "visible_programmatic_paper_slot_get_bounds",
@@ -617,8 +1551,15 @@
     {
       "id": "a2_room202_recovery_barrier",
       "storyFloor": "A2",
-      "bounds": { "x": 1298, "y": 341, "width": 110, "height": 29 },
-      "activePhases": ["final_minute_recovery"],
+      "bounds": {
+        "x": 1298,
+        "y": 341,
+        "width": 110,
+        "height": 29
+      },
+      "activePhases": [
+        "final_minute_recovery"
+      ],
       "collision": true,
       "visual": "procedural_status_only",
       "officialClosedDoorSprite": false
@@ -756,30 +1697,174 @@
       ],
       "activation": "plate_active",
       "collisionBounds": [
-        { "id": "a3_reference_row1_c1", "x": 1214, "y": 635, "width": 48, "height": 22 },
-        { "id": "a3_reference_row1_c2", "x": 1278, "y": 635, "width": 48, "height": 22 },
-        { "id": "a3_reference_row1_c3", "x": 1342, "y": 635, "width": 48, "height": 22 },
-        { "id": "a3_reference_row1_c4", "x": 1406, "y": 635, "width": 48, "height": 22 },
-        { "id": "a3_reference_row1_c5", "x": 1470, "y": 635, "width": 48, "height": 22 },
-        { "id": "a3_reference_row1_c6", "x": 1534, "y": 635, "width": 48, "height": 22 },
-        { "id": "a3_reference_row2_c1", "x": 1214, "y": 696, "width": 48, "height": 22 },
-        { "id": "a3_reference_row2_c2", "x": 1278, "y": 696, "width": 48, "height": 22 },
-        { "id": "a3_reference_row2_c3", "x": 1342, "y": 696, "width": 48, "height": 22 },
-        { "id": "a3_reference_row2_c4", "x": 1406, "y": 696, "width": 48, "height": 22 },
-        { "id": "a3_reference_row2_c5", "x": 1470, "y": 696, "width": 48, "height": 22 },
-        { "id": "a3_reference_row2_c6", "x": 1534, "y": 696, "width": 48, "height": 22 },
-        { "id": "a3_reference_row3_c1", "x": 1214, "y": 757, "width": 48, "height": 22 },
-        { "id": "a3_reference_row3_c2", "x": 1278, "y": 757, "width": 48, "height": 22 },
-        { "id": "a3_reference_row3_c3", "x": 1342, "y": 757, "width": 48, "height": 22 },
-        { "id": "a3_reference_row3_c4", "x": 1406, "y": 757, "width": 48, "height": 22 },
-        { "id": "a3_reference_row3_c5", "x": 1470, "y": 757, "width": 48, "height": 22 },
-        { "id": "a3_reference_row3_c6", "x": 1534, "y": 757, "width": 48, "height": 22 },
-        { "id": "a3_reference_row4_c1", "x": 1214, "y": 807, "width": 48, "height": 22 },
-        { "id": "a3_reference_row4_c2", "x": 1278, "y": 807, "width": 48, "height": 22 },
-        { "id": "a3_reference_row4_c3", "x": 1342, "y": 807, "width": 48, "height": 22 },
-        { "id": "a3_reference_row4_c4", "x": 1406, "y": 807, "width": 48, "height": 22 },
-        { "id": "a3_reference_row4_c5", "x": 1470, "y": 807, "width": 48, "height": 22 },
-        { "id": "a3_reference_row4_c6", "x": 1534, "y": 807, "width": 48, "height": 22 }
+        {
+          "id": "a3_reference_row1_c1",
+          "x": 1214,
+          "y": 635,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row1_c2",
+          "x": 1278,
+          "y": 635,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row1_c3",
+          "x": 1342,
+          "y": 635,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row1_c4",
+          "x": 1406,
+          "y": 635,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row1_c5",
+          "x": 1470,
+          "y": 635,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row1_c6",
+          "x": 1534,
+          "y": 635,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row2_c1",
+          "x": 1214,
+          "y": 696,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row2_c2",
+          "x": 1278,
+          "y": 696,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row2_c3",
+          "x": 1342,
+          "y": 696,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row2_c4",
+          "x": 1406,
+          "y": 696,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row2_c5",
+          "x": 1470,
+          "y": 696,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row2_c6",
+          "x": 1534,
+          "y": 696,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row3_c1",
+          "x": 1214,
+          "y": 757,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row3_c2",
+          "x": 1278,
+          "y": 757,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row3_c3",
+          "x": 1342,
+          "y": 757,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row3_c4",
+          "x": 1406,
+          "y": 757,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row3_c5",
+          "x": 1470,
+          "y": 757,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row3_c6",
+          "x": 1534,
+          "y": 757,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row4_c1",
+          "x": 1214,
+          "y": 807,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row4_c2",
+          "x": 1278,
+          "y": 807,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row4_c3",
+          "x": 1342,
+          "y": 807,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row4_c4",
+          "x": 1406,
+          "y": 807,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row4_c5",
+          "x": 1470,
+          "y": 807,
+          "width": 48,
+          "height": 22
+        },
+        {
+          "id": "a3_reference_row4_c6",
+          "x": 1534,
+          "y": 807,
+          "width": 48,
+          "height": 22
+        }
       ],
       "approximate": true
     }
@@ -2418,17 +3503,32 @@
         {
           "id": "a3_alumni_chen_jiangong",
           "label": "校史人物·陈建功",
-          "bounds": { "x": 574, "y": 108, "width": 38, "height": 60 }
+          "bounds": {
+            "x": 574,
+            "y": 108,
+            "width": 38,
+            "height": 60
+          }
         },
         {
           "id": "a3_alumni_tan_jiazhen",
           "label": "校史人物·谈家桢",
-          "bounds": { "x": 616, "y": 108, "width": 38, "height": 60 }
+          "bounds": {
+            "x": 616,
+            "y": 108,
+            "width": 38,
+            "height": 60
+          }
         },
         {
           "id": "a3_alumni_cheng_kaijia",
           "label": "校史人物·程开甲",
-          "bounds": { "x": 658, "y": 108, "width": 38, "height": 60 }
+          "bounds": {
+            "x": 658,
+            "y": 108,
+            "width": 38,
+            "height": 60
+          }
         },
         {
           "id": "alumni_gallery_3",
@@ -2482,6 +3582,1155 @@
           }
         }
       ]
+    }
+  ],
+  "evidenceDetails": [
+    {
+      "id": "noticeboard_paper_fold",
+      "family": "paper_route",
+      "visual": "fold",
+      "color": "#b8d6df",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_handoff",
+          "opening_paper_caught"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1098,
+          "y": 616,
+          "width": 24,
+          "height": 20
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "noticeboard_wet_edge",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#75d7e8",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_handoff",
+          "opening_paper_caught"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1095,
+          "y": 637,
+          "width": 34,
+          "height": 7
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "opening_external_time_receipt",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "22:45",
+      "color": "#f1c76f",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_paper_caught",
+          "hall_clock_inspection"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1082,
+          "y": 574,
+          "width": 48,
+          "height": 14
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "opening_phone_frozen_seconds",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "07:55:23",
+      "color": "#9ab7c9",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_paper_caught",
+          "hall_clock_inspection"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1080,
+          "y": 650,
+          "width": 62,
+          "height": 14
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "hall_clock_stuttering_gear",
+      "family": "time",
+      "visual": "gear",
+      "color": "#d7a85a",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "hall_clock_inspection",
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening",
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 978,
+          "y": 72,
+          "width": 24,
+          "height": 24
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_clock_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "hall_clock_inspected"
+          ],
+          "bounds": {
+            "x": 978,
+            "y": 72,
+            "width": 24,
+            "height": 24
+          }
+        }
+      ]
+    },
+    {
+      "id": "bakery_wet_drag_east",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#71d8e6",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 302,
+          "y": 348,
+          "width": 82,
+          "height": 8
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_wet_trace",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 254,
+            "y": 542,
+            "width": 28,
+            "height": 5
+          }
+        },
+        {
+          "id": "power_panel_wet_trace",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 511,
+            "y": 578,
+            "width": 28,
+            "height": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "bakery_conveyor_reverse_wear",
+      "family": "paper_route",
+      "visual": "wear",
+      "color": "#dbe6e8",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 287,
+          "y": 334,
+          "width": 30,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_conveyor_wear",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 286,
+            "y": 541,
+            "width": 20,
+            "height": 7
+          }
+        },
+        {
+          "id": "power_panel_conveyor_wear",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 515,
+            "y": 568,
+            "width": 20,
+            "height": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "bakery_pry_bar_outline",
+      "family": "paper_route",
+      "visual": "silhouette",
+      "color": "#cfb57b",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 442,
+          "y": 691,
+          "width": 32,
+          "height": 38
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_tool_outline",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "bakery_tool_location_observed"
+          ],
+          "bounds": {
+            "x": 442,
+            "y": 691,
+            "width": 32,
+            "height": 38
+          }
+        }
+      ]
+    },
+    {
+      "id": "classroom104_chalk_1844",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "18:44",
+      "color": "#d8d4bd",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 1350,
+          "y": 177,
+          "width": 54,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_104",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "classroom_104_chalk_residual_observed"
+          ],
+          "bounds": {
+            "x": 250,
+            "y": 523,
+            "width": 34,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "classroom105_terminal_1850",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "18:50",
+      "color": "#79ddf1",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 1384,
+          "y": 570,
+          "width": 52,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_105",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "classroom_105_terminal_replay_checked"
+          ],
+          "bounds": {
+            "x": 288,
+            "y": 523,
+            "width": 34,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "elevator_passenger_trace_6s",
+      "family": "time",
+      "visual": "timeline",
+      "glyph": "6s",
+      "color": "#82dce8",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 746,
+          "y": 151,
+          "width": 50,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_passenger_trace",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "elevator_history_observed"
+          ],
+          "bounds": {
+            "x": 326,
+            "y": 523,
+            "width": 28,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "elevator_door_interval_8s",
+      "family": "time",
+      "visual": "timeline",
+      "glyph": "8s",
+      "color": "#f0b85f",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 746,
+          "y": 164,
+          "width": 66,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_door_interval",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "elevator_history_calibrated"
+          ],
+          "bounds": {
+            "x": 326,
+            "y": 538,
+            "width": 28,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3_reference_desk_shadow",
+      "family": "identity",
+      "visual": "shadow",
+      "color": "#7eb5c3",
+      "source": {
+        "storyFloor": "A3",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a3_1850_reference"
+        ],
+        "bounds": {
+          "x": 1254,
+          "y": 646,
+          "width": 118,
+          "height": 28
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_a3_shadow",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "a3_reference_observed"
+          ],
+          "bounds": {
+            "x": 310,
+            "y": 554,
+            "width": 38,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3_history_wall_center",
+      "family": "identity",
+      "visual": "context",
+      "color": "#d9b45f",
+      "source": {
+        "storyFloor": "A3",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a3_1850_reference"
+        ],
+        "bounds": {
+          "x": 806,
+          "y": 573,
+          "width": 55,
+          "height": 82
+        }
+      },
+      "echoes": [
+        {
+          "id": "exterior_history_context",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "exterior_closure"
+          ],
+          "requiredFacts": [
+            "a3_identity_context_observed"
+          ],
+          "bounds": {
+            "x": 780,
+            "y": 650,
+            "width": 112,
+            "height": 28
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_window_time_marks",
+      "family": "paper_route",
+      "visual": "scratch",
+      "color": "#d4c9aa",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 68,
+          "y": 578,
+          "width": 86,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_screen_window_marks",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "room204_residual_observed"
+          ],
+          "bounds": {
+            "x": 248,
+            "y": 558,
+            "width": 24,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_central_drag_marks",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#8caeba",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 176,
+          "y": 662,
+          "width": 96,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_cart_drag_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "maintenance_incident_linked"
+          ],
+          "bounds": {
+            "x": 1080,
+            "y": 714,
+            "width": 72,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_projection_edge",
+      "family": "paper_route",
+      "visual": "edge",
+      "color": "#80e2ef",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 245,
+          "y": 519,
+          "width": 110,
+          "height": 56
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_impact_geometry",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "maintenance_incident_linked"
+          ],
+          "bounds": {
+            "x": 1104,
+            "y": 682,
+            "width": 44,
+            "height": 28
+          }
+        },
+        {
+          "id": "power_panel_projection_edge",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "room204_projection_composite_completed"
+          ],
+          "bounds": {
+            "x": 505,
+            "y": 542,
+            "width": 40,
+            "height": 24
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_door_paper_trace",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#72d4e2",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 356,
+          "y": 590,
+          "width": 52,
+          "height": 8
+        }
+      },
+      "echoes": [
+        {
+          "id": "power_panel_door_trace",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "room202_endpoint_inferred"
+          ],
+          "bounds": {
+            "x": 511,
+            "y": 608,
+            "width": 28,
+            "height": 6
+          }
+        },
+        {
+          "id": "chase_door_trace",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 1288,
+            "y": 392,
+            "width": 82,
+            "height": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "cart_wheel_impact_scratch",
+      "family": "time",
+      "visual": "scratch",
+      "color": "#c5b08b",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "maintenance_repair"
+        ],
+        "statePlateIds": [
+          "a1_2245_maintenance"
+        ],
+        "bounds": {
+          "x": 1122,
+          "y": 690,
+          "width": 28,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "power_panel_cart_scratch",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "cart_wheel_inspected"
+          ],
+          "bounds": {
+            "x": 515,
+            "y": 620,
+            "width": 22,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "cart_cover_matching_notch",
+      "family": "time",
+      "visual": "notch",
+      "color": "#e2c475",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "maintenance_repair"
+        ],
+        "statePlateIds": [
+          "a1_2245_maintenance"
+        ],
+        "bounds": {
+          "x": 1127,
+          "y": 696,
+          "width": 16,
+          "height": 14
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "hall_clock_oil_stain",
+      "family": "time",
+      "visual": "oil",
+      "color": "#8d7548",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "maintenance_repair"
+        ],
+        "statePlateIds": [
+          "a1_2245_maintenance"
+        ],
+        "bounds": {
+          "x": 987,
+          "y": 100,
+          "width": 22,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "return_clock_oil_trace",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "return_to_clock"
+          ],
+          "requiredFacts": [
+            "clock_gear_repaired"
+          ],
+          "bounds": {
+            "x": 987,
+            "y": 100,
+            "width": 22,
+            "height": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "power_hall_node",
+      "family": "paper_route",
+      "visual": "node",
+      "glyph": "1",
+      "color": "#f0d36d",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "blackout_light_grid"
+        ],
+        "statePlateIds": [
+          "a1_0754_blackout"
+        ],
+        "bounds": {
+          "x": 818,
+          "y": 500,
+          "width": 18,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "chase_hall_node",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 824,
+            "y": 528,
+            "width": 18,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "power_east_corridor_node",
+      "family": "paper_route",
+      "visual": "node",
+      "glyph": "3",
+      "color": "#f0d36d",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "blackout_light_grid"
+        ],
+        "statePlateIds": [
+          "a1_0754_blackout"
+        ],
+        "bounds": {
+          "x": 1208,
+          "y": 334,
+          "width": 18,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "chase_east_node",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 1100,
+            "y": 214,
+            "width": 18,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "power_classroom_node",
+      "family": "paper_route",
+      "visual": "node",
+      "glyph": "4",
+      "color": "#f0d36d",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "blackout_light_grid"
+        ],
+        "statePlateIds": [
+          "a1_0754_blackout"
+        ],
+        "bounds": {
+          "x": 1360,
+          "y": 516,
+          "width": 18,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "chase_classroom_node",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 1326,
+            "y": 390,
+            "width": 18,
+            "height": 18
+          }
+        },
+        {
+          "id": "recovery_classroom_node",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "final_minute_recovery"
+          ],
+          "requiredFacts": [
+            "room202_route_reached"
+          ],
+          "bounds": {
+            "x": 1326,
+            "y": 390,
+            "width": 18,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "room202_paper_torn_edge",
+      "family": "paper_route",
+      "visual": "torn_edge",
+      "color": "#d7e2df",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "final_minute_recovery"
+        ],
+        "statePlateIds": [
+          "a2_202_final_minute"
+        ],
+        "bounds": {
+          "x": 1334,
+          "y": 296,
+          "width": 28,
+          "height": 30
+        }
+      },
+      "echoes": [
+        {
+          "id": "checkin_paper_edge_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "morning_checkin"
+          ],
+          "requiredFacts": [
+            "attendance_record_recovered"
+          ],
+          "bounds": {
+            "x": 842,
+            "y": 609,
+            "width": 26,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "room202_minute_projection",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "07:54→07:55",
+      "color": "#85e4ef",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "final_minute_recovery"
+        ],
+        "statePlateIds": [
+          "a2_202_final_minute"
+        ],
+        "bounds": {
+          "x": 1368,
+          "y": 272,
+          "width": 96,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "checkin_minute_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "morning_checkin"
+          ],
+          "requiredFacts": [
+            "attendance_record_recovered"
+          ],
+          "bounds": {
+            "x": 794,
+            "y": 582,
+            "width": 72,
+            "height": 14
+          }
+        }
+      ]
+    },
+    {
+      "id": "checkin_card_name_strip",
+      "family": "identity",
+      "visual": "strip",
+      "color": "#83d9e7",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "morning_checkin"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 760,
+          "y": 612,
+          "width": 28,
+          "height": 7
+        }
+      },
+      "echoes": [
+        {
+          "id": "exterior_card_strip",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "exterior_closure"
+          ],
+          "requiredFacts": [
+            "checkin_identity_verified"
+          ],
+          "bounds": {
+            "x": 766,
+            "y": 690,
+            "width": 48,
+            "height": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "checkin_paper_torn_edge",
+      "family": "paper_route",
+      "visual": "torn_edge",
+      "color": "#d7e2df",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "morning_checkin"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 841,
+          "y": 608,
+          "width": 28,
+          "height": 20
+        }
+      },
+      "echoes": [
+        {
+          "id": "exterior_paper_edge",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "exterior_closure"
+          ],
+          "requiredFacts": [
+            "checkin_identity_verified"
+          ],
+          "bounds": {
+            "x": 820,
+            "y": 687,
+            "width": 40,
+            "height": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "exterior_history_question_panel",
+      "family": "identity",
+      "visual": "context",
+      "color": "#d4b35f",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "exterior_closure"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 730,
+          "y": 654,
+          "width": 220,
+          "height": 42
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "exterior_recovered_record_mark",
+      "family": "identity",
+      "visual": "fold",
+      "color": "#8edce7",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "exterior_closure"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 810,
+          "y": 704,
+          "width": 58,
+          "height": 28
+        }
+      },
+      "echoes": []
     }
   ]
 }

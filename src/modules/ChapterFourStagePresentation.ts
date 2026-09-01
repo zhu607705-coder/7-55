@@ -9,7 +9,10 @@ import type {
 import chapterFour755Content from "../data/chapter4-755.content.json";
 import chapterFourTemporalMazeContent from "../data/chapter4-temporal-maze.content.json";
 import { CHAPTER_FOUR_LIGHT_GRID } from "./ChapterFourLightGridModel";
-import { normalizeRoom204Placements } from "../scenes/rpg/ChapterFourRoom204Model";
+import {
+  ROOM204_GROUP_ORDER,
+  countCompletedRoom204Groups
+} from "../scenes/rpg/ChapterFourRoom204Model";
 
 interface PhasePresentationCopy {
   stageLabel: string;
@@ -160,10 +163,11 @@ function selectLocalProgress(
         "elevator_history_observed",
         "elevator_history_calibrated",
         "a3_reference_observed",
-        "zhu_two_questions_answered",
         "misaligned_stair_solved",
         "room204_residual_observed"
-      ])}/8 · 复原 ${normalizeRoom204Placements(state.chapter4.room204Placements).length}/12`;
+      ])}/7 · 复原 ${countCompletedRoom204Groups(
+        state.chapter4.room204Placements
+      )}/${ROOM204_GROUP_ORDER.length}`;
     case "maintenance_repair":
       return `维修流程 ${countMaintenanceMilestones(facts)}/3`;
     case "blackout_light_grid": {

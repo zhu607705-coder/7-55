@@ -53,6 +53,7 @@
     "verify:rpg-interior-doors": "node scripts/verify-rpg-interior-doors.mjs",
     "chapter4:validate-story": "node scripts/verify-chapter4-755-story.mjs",
     "chapter4:validate-runtime": "node scripts/verify-chapter4-755-runtime.mjs",
+    "chapter4:validate-causal-flow": "node scripts/verify-chapter4-causal-flow.mjs",
     "chapter4:validate-warmup": "node scripts/verify-chapter4-warmup-phases.mjs",
     "chapter4:validate-guard-presentation": "node scripts/verify-chapter4-guard-presentation.mjs",
     "chapter4:validate-effective-interactions": "node scripts/verify-chapter4-effective-interactions.mjs",

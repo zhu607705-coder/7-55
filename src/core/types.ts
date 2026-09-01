@@ -610,6 +610,11 @@ export type ChapterFourRoom204SlotId =
   | "morning_slot_10"
   | "morning_slot_11"
   | "morning_slot_12";
+export type ChapterFourRoom204GroupId =
+  | "window_time_marks"
+  | "central_drag_marks"
+  | "podium_projection_edge"
+  | "door_paper_trace";
 
 export interface ChapterFourLightGridState {
   mask: number;
@@ -628,6 +633,8 @@ export type ChapterFourFactId =
   | "external_time_rejected"
   | "hall_clock_inspected"
   | "bakery_conveyor_lamp_inspected"
+  | "bakery_conveyor_direction_observed"
+  | "bakery_tool_location_observed"
   | "bakery_hour_hand_exposed"
   | "bakery_hour_hand_collected"
   | "hour_hand_installed"
@@ -635,6 +642,7 @@ export type ChapterFourFactId =
   | "classroom_105_terminal_replay_checked"
   | "elevator_history_observed"
   | "elevator_history_calibrated"
+  | "a1_time_route_compared"
   | "elevator_a2_call_record_observed"
   | "elevator_a3_arrival_record_observed"
   | "elevator_stop_chain_reconstructed"
@@ -642,11 +650,15 @@ export type ChapterFourFactId =
   | "a3_archive_film_retrieved"
   | "a3_media_alignment_completed"
   | "a3_reference_observed"
+  | "a3_identity_context_observed"
   | "zhu_two_questions_answered"
   | "misaligned_stair_solved"
   | "room204_residual_observed"
   | "room204_restored"
   | "room204_projection_completed"
+  | "room204_projection_composite_completed"
+  | "room202_endpoint_inferred"
+  | "maintenance_incident_linked"
   | "positioning_plate_collected"
   | "a2_positioning_plate_calibrated"
   | "positioning_plate_installed"
@@ -658,11 +670,15 @@ export type ChapterFourFactId =
   | "clock_gear_repaired"
   | "paper_temporarily_out_of_inventory"
   | "light_grid_locked"
+  | "powered_route_confirmed"
   | "canruo_star_lamp_primed"
+  | "room202_route_reached"
   | "final_minute_recovered"
+  | "attendance_record_recovered"
   | "final_minute_installed"
   | "checkin_card_accepted"
   | "checkin_paper_accepted"
+  | "checkin_identity_verified"
   | "exterior_closure_acknowledged";
 
 export type ChapterFourZhuPurposeAnswerId =

@@ -129,7 +129,6 @@ const EXPECTED_ROOM204_TASK_KEYS = [
   "calibrate_elevator_history",
   "resolve_a3_archive_chain",
   "observe_a3_reference",
-  "answer_zhu_two_questions",
   "solve_misaligned_stair",
   "observe_room204_residual",
   "restore_room204",
@@ -150,12 +149,16 @@ const EXPECTED_ROOM204_FACTS = [
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
+  "a1_time_route_compared",
   "a3_reference_observed",
-  "zhu_two_questions_answered",
+  "a3_identity_context_observed",
   "misaligned_stair_solved",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
+  "room204_projection_composite_completed",
+  "room202_endpoint_inferred",
+  "maintenance_incident_linked",
   "positioning_plate_collected",
   "a2_positioning_plate_calibrated",
   "a2_power_topology_recovered",
@@ -194,7 +197,7 @@ const EXPECTED_TASK_KEYS_BY_ACTIVE_PHASE = Object.freeze({
   final_minute_recovery: ["collect_final_minute"],
   return_to_clock: ["return_via_main_stair", "install_final_minute"],
   morning_checkin: ["complete_checkin", "read_campus_card", "submit_attendance_paper"],
-  exterior_closure: ["acknowledge_exterior_closure"]
+  exterior_closure: ["answer_zhu_two_questions", "acknowledge_exterior_closure"]
 });
 
 const defaultContentPath = fileURLToPath(
@@ -255,6 +258,10 @@ const task7RuntimeSourcePaths = Object.freeze({
   )),
   host: fileURLToPath(new URL(
     "../src/scenes/rpg/RpgGameHost.tsx",
+    import.meta.url
+  )),
+  exteriorQuestions: fileURLToPath(new URL(
+    "../src/components/temporal-maze/ChapterFourExteriorQuestions.tsx",
     import.meta.url
   )),
   rpgCss: fileURLToPath(new URL(
@@ -539,6 +546,7 @@ function validateTask7RuntimeSources(errors) {
   const timelineRecovery = sources.timelineRecovery ?? "";
   const interludeController = sources.interludeController ?? "";
   const host = sources.host ?? "";
+  const exteriorQuestions = sources.exteriorQuestions ?? "";
   const rpgCss = sources.rpgCss ?? "";
   const scene = sources.scene ?? "";
   const quest = sources.quest ?? "";
@@ -1167,8 +1175,8 @@ function validateTask7RuntimeSources(errors) {
       errors.push(`Task 8 SaveStore is missing persisted fact ${factId}`);
     }
   }
-  if (!/case "complete_bakery_conveyor_stop"[\s\S]*?bakery_conveyor_lamp_inspected[\s\S]*?appendFact\(chapter, "bakery_hour_hand_exposed"\)/.test(controller)) {
-    errors.push("Task 8 completion intent must write exposed only after the lamp fact");
+  if (!/case "complete_bakery_conveyor_stop"[\s\S]*?bakery_conveyor_lamp_inspected[\s\S]*?appendFacts\(chapter,[\s\S]*?bakery_conveyor_direction_observed[\s\S]*?bakery_tool_location_observed[\s\S]*?bakery_hour_hand_exposed/.test(controller)) {
+    errors.push("Task 8 completion intent must record the two raw conveyor traces before exposing the hand");
   }
   if (!/case "collect_hour_hand"[\s\S]*?bakery_hour_hand_collected[\s\S]*?withItem\(state, "oldClockHourHand", true\)/.test(controller)) {
     errors.push("Task 8 pickup must atomically write collected and grant oldClockHourHand");
@@ -1259,9 +1267,9 @@ function validateTask7RuntimeSources(errors) {
   const room204ResidualTargetBlock = interaction.match(
     /a2_room204_residual_group:[\s\S]*?\.\.\.ROOM204_INTERACTION_TARGETS/
   )?.[0] ?? "";
-  if (!/requiredMode:\s*"light"/.test(a3ReferenceTargetBlock)
+  if (!/requiredMode:\s*"dark"/.test(a3ReferenceTargetBlock)
     || !/roomIds:\s*\["a3_reference_classroom",\s*"a3_wayfinding"\]/.test(a3ReferenceTargetBlock)) {
-    errors.push("Task 9 A3 reference must be a light-mode interaction available through both approved A3 room aliases");
+    errors.push("Task 9 A3 reference must be a dark-mode interaction available through both approved A3 room aliases");
   }
   if (!/requiredMode:\s*"dark"/.test(room204ResidualTargetBlock)
     || !/roomIds:\s*\["a2_corridor",\s*"a2_room204",\s*"a2_room_204"\]/.test(room204ResidualTargetBlock)) {
@@ -1272,8 +1280,17 @@ function validateTask7RuntimeSources(errors) {
     if (!types.includes(`| "${factId}"`)) {
       errors.push(`Task 9 ChapterFourFactId is missing ${factId}`);
     }
+    const modelOwnedInsertedFact = [
+      "a1_duty_board_reconstructed",
+      "a3_archive_film_retrieved",
+      "a3_media_alignment_completed",
+      "a2_positioning_plate_calibrated",
+      "a2_power_topology_recovered",
+      "a2_evacuation_route_confirmed"
+    ].includes(factId);
     if (!controller.includes(`"${factId}"`)
-      && !elevatorFloorInvestigation.includes(`"${factId}"`)) {
+      && !elevatorFloorInvestigation.includes(`"${factId}"`)
+      && !modelOwnedInsertedFact) {
       errors.push(`Task 9 controller is missing fact ${factId}`);
     }
     if (!saveStore.includes(`"${factId}"`)) {
@@ -1318,8 +1335,8 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 9 complete_room204_projection must be an exact-key, controller-owned completion intent gated by both observations, restoration and complete placements");
   }
   if (!/case "collect_positioning_plate"[\s\S]*?room204_projection_completed[\s\S]*?appendFact\(chapter, "positioning_plate_collected"\)[\s\S]*?withItem\(state, "clockPositioningPlate", true\)/.test(room204ControllerBlock)
-    || !/case "install_positioning_plate"[\s\S]*?room204_projection_completed[\s\S]*?positioning_plate_collected[\s\S]*?transition\(state, "maintenance_repair"[\s\S]*?withItem\(state, "clockPositioningPlate", false\)/.test(room204ControllerBlock)) {
-    errors.push("Task 9 positioning plate collection and installation must be controller-owned atomic fact/item transactions after projection completion");
+    || !/case "install_positioning_plate"[\s\S]*?room204_projection_composite_completed[\s\S]*?positioning_plate_collected[\s\S]*?transition\(state, "maintenance_repair"[\s\S]*?withItem\(state, "clockPositioningPlate", false\)/.test(room204ControllerBlock)) {
+    errors.push("Task 9 positioning plate collection and installation must remain atomic after the projection composite");
   }
 
   const room204QuestBlock = quest.match(
@@ -1338,9 +1355,9 @@ function validateTask7RuntimeSources(errors) {
   if (groupedRoom204TaskKeys.some((taskKey) => !room204QuestBlock.includes(`"${taskKey}"`))
     || !/!facts\.has\("classroom_104_chalk_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("classroom_105_terminal_replay_checked"\)/.test(room204QuestBlock)
     || !/!facts\.has\("elevator_history_observed"\)[\s\S]*?\|\|\s*!facts\.has\("elevator_history_calibrated"\)[\s\S]*?\|\|\s*!facts\.has\("a1_duty_board_reconstructed"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("zhu_two_questions_answered"\)[\s\S]*?\|\|\s*!facts\.has\("a3_archive_film_retrieved"\)[\s\S]*?\|\|\s*!facts\.has\("a3_media_alignment_completed"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("a3_reference_observed"\)[\s\S]*?\?\s*"resolve_a3_archive_chain"[\s\S]*?!facts\.has\("misaligned_stair_solved"\)/.test(room204QuestBlock)
     || !/!facts\.has\("a2_positioning_plate_calibrated"\)[\s\S]*?\|\|\s*!facts\.has\("a2_power_topology_recovered"\)[\s\S]*?\|\|\s*!facts\.has\("a2_evacuation_route_confirmed"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("a3_reference_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_restored"\)/.test(room204QuestBlock)
+    || !/!facts\.has\("room204_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_restored"\)/.test(room204QuestBlock)
     || !/facts\.has\("room204_projection_completed"\)/.test(room204QuestBlock)
     || !/facts\.has\("positioning_plate_collected"\)/.test(room204QuestBlock)) {
     errors.push("Task 9 QuestModel must expose grouped A1/A3/A2 objectives while keeping each investigation group and paired light/dark observations order-independent");
@@ -1560,10 +1577,14 @@ function validateTask7RuntimeSources(errors) {
   const powerControllerBlock = controllerIntentResolver.match(
     /case "open_power_panel"[\s\S]*?case "reach_202_threshold"/
   )?.[0] ?? "";
+  const lightGridLockBlock = powerControllerBlock.match(
+    /case "lock_light_grid"[\s\S]*?case "reach_202_threshold"/
+  )?.[0] ?? "";
   if (!/case "open_power_panel"[\s\S]*?paper_temporarily_out_of_inventory[\s\S]*?return acceptReadOnly\(\)/.test(powerControllerBlock)
     || !/case "toggle_light_zone"[\s\S]*?toggleChapterFourLightZone\(previousMask, intent\.zoneId\)[\s\S]*?power_zone_toggled/.test(powerControllerBlock)
-    || !/case "lock_light_grid"[\s\S]*?isChapterFourLightGridSolved[\s\S]*?targetMask[\s\S]*?zhu_two_questions_answered[\s\S]*?light_grid_locked[\s\S]*?canruo_star_lamp_primed[\s\S]*?transition\(state, "final_chase"[\s\S]*?locked:\s*true[\s\S]*?power_grid_locked/.test(powerControllerBlock)) {
-    errors.push("Task 11 controller must use the shared pure grid model for open, toggle, unique-target lock and final-chase commit");
+    || !/isChapterFourLightGridSolved[\s\S]*?targetMask[\s\S]*?light_grid_locked[\s\S]*?canruo_star_lamp_primed[\s\S]*?transition\(state, "final_chase"[\s\S]*?locked:\s*true[\s\S]*?power_grid_locked/.test(lightGridLockBlock)
+    || /zhu_two_questions|purposeAnswer|personAnswer/.test(lightGridLockBlock)) {
+    errors.push("Task 11 controller must enter the chase without reading or fabricating Zhu answers");
   }
 
   const finalClockSceneBlock = scene.match(
@@ -1620,9 +1641,11 @@ function validateTask7RuntimeSources(errors) {
   }
   if (!/allowScenePointer[\s\S]*?this\.alumniPanel !== null/.test(scene)
     || !/allowSceneKeyboard\s*=\s*locked && this\.alumniPanel !== null/.test(scene)
-    || !/actionButton[\s\S]*?setInteractive[\s\S]*?advanceAlumniPanel/.test(scene)
-    || !/confirmButton[\s\S]*?setInteractive[\s\S]*?advanceAlumniPanel/.test(scene)) {
-    errors.push("A3 alumni modal must keep Scene pointer/keyboard input available and provide explicit pointer confirmation controls");
+    || !/actionButton[\s\S]*?setInteractive[\s\S]*?closeAlumniPanel/.test(scene)
+    || !/ChapterFourExteriorQuestions/.test(host)
+    || !/保存两项回答/.test(exteriorQuestions)
+    || !/回答已保存/.test(exteriorQuestions)) {
+    errors.push("A3 alumni modal must remain biography-only while the exterior lamp owns atomic two-question submission and confirmation");
   }
   const lifecycleCleanupBlock = scene.match(
     /this\.pendingMoveTimer\?\.remove\(false\)[\s\S]*?clearRpgRuntimeDebugState\(\)/

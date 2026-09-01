@@ -329,6 +329,7 @@ const expectedAudioEvents = [
   "morning_checkin_card_accepted",
   "morning_checkin_paper_accepted",
   "morning_checkin_completed",
+  "chapter4_environment_hint_pulse",
   "chapter4_755_scene_closed"
 ];
 assert(audio.version === 1, "Task 14 audio timeline version must be 1");
@@ -565,7 +566,21 @@ try {
   );
   const closure = createDeveloperCheckpointState("c4-755-closure");
   assert(closure.chapter4.checkinCardAccepted && closure.chapter4.checkinPaperAccepted, "closure waiting seed must include both accepted check-in parts");
+  assert(
+    [
+      "a3_identity_context_observed",
+      "attendance_record_recovered",
+      "checkin_identity_verified"
+    ].every((factId) => closure.chapter4.factIds.includes(factId)),
+    "closure waiting seed must retain the three raw identity prerequisites consumed by the exterior questions"
+  );
   assert(!closure.chapter4.completed && !closure.chapter4.exteriorClosureAcknowledged, "closure waiting seed must not forge completion or acknowledgement");
+  assert(
+    !closure.chapter4.factIds.includes("zhu_two_questions_answered")
+      && closure.chapter4.zhuQuestionAnswers.purpose === null
+      && closure.chapter4.zhuQuestionAnswers.person === null,
+    "closure waiting seed must open before the exterior questions and must not forge either answer"
+  );
   assert(!closure.chapter4.factIds.includes("exterior_closure_acknowledged"), "closure waiting seed must not forge closure proof");
 
   for (const id of PROLOGUE_IDS) {

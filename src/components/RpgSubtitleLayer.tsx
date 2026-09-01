@@ -45,6 +45,7 @@ export function RpgSubtitleLayer({ events, state, blocked = false }: RpgSubtitle
         return;
       }
       if (event.name !== "rpg_subtitle") return;
+      if (blocked) return;
       const text = String(event.payload?.text ?? "");
       if (!text) return;
       const requestedTone = String(event.payload?.tone ?? "system") as GameSubtitleTone;
@@ -67,7 +68,7 @@ export function RpgSubtitleLayer({ events, state, blocked = false }: RpgSubtitle
       detach();
       if (timer !== null) window.clearTimeout(timer);
     };
-  }, [events]);
+  }, [blocked, events]);
 
   useEffect(() => {
     if (blocked) setActive(null);

@@ -274,65 +274,65 @@
         "reason": "旧时针流程尚未完成。",
         "nextAction": "先让传送带停稳，取得旧时针后拖到大厅旧钟。"
       },
-    "classroom_checks_required": {
-      "reason": "A1 的时间差校验尚未完成。",
-      "nextAction": "104 黑板擦痕与 105 讲台回放可按任意顺序确认。"
-    },
-    "elevator_history_required": {
-      "reason": "主电梯的历史轨道尚未记录。",
-      "nextAction": "完成 104 与 105 校验后，可在一楼电梯门前用深色观察记录；这不限制浅色校准的先后。"
-    },
-    "elevator_calibration_required": {
-      "reason": "主电梯重放窗口尚未校准。",
-      "nextAction": "使用浅色操作进入轿厢，让门体开放区间覆盖六秒进入窗口。"
-    },
-    "elevator_floor_records_required": {
-      "reason": "三层电梯运行记录尚未齐全。",
-      "nextAction": "分别在一楼、三楼和二楼查阅起行、到站与外呼记录；三段可按任意顺序归档。"
-    },
-    "elevator_stop_chain_required": {
-      "reason": "跨层停靠链尚未复核。",
-      "nextAction": "三段记录齐全后，在浅色操作的电梯面板中确认实际到站层和未响应外呼层。"
-    },
-    "duty_board_required": {
-      "reason": "A1 的三段值班记录还没有汇合。",
-      "nextAction": "到前台台面打开签到板；104、105 与电梯的调查顺序不受限制。"
-    },
-    "archive_film_required": {
-      "reason": "302 扫描台缺少旧导视胶片。",
-      "nextAction": "到三楼 301 的索引抽屉按年份、楼层与用途筛出胶片。"
-    },
-    "media_alignment_required": {
-      "reason": "三楼新旧导视影像尚未重合。",
-      "nextAction": "带着 301 胶片到 302，校准平移和旋转后再进入错位楼梯。"
-    },
-    "positioning_calibration_required": {
-      "reason": "钟面定位片尚未完成三轴校准。",
-      "nextAction": "到二楼 201 创客工坊调整横向、纵向和压力。"
-    },
-    "power_topology_required": {
-      "reason": "五区供电关系仍不完整。",
-      "nextAction": "到二楼 203 恢复停电前的五条相邻连线。"
-    },
-    "evacuation_route_required": {
-      "reason": "二楼疏散通路尚未确认。",
-      "nextAction": "在开放自习区按脚步残影排列通往 202 的四段路线。"
-    },
-    "zhu_two_questions_required": {
-      "reason": "竺老两问尚未完成。",
-      "nextAction": "回到三楼校史人物荣誉门厅，靠近竺可桢画像按 Space 并提交两项回答。"
-    },
-    "misaligned_stair_required": {
-      "reason": "三楼与二楼之间的楼梯仍处于投影错位状态。",
-      "nextAction": "完成竺老两问，并用 301 胶片在 302 对齐新旧入口影像后，从三楼主楼梯进入空间校准。"
-    },
+      "classroom_checks_required": {
+        "reason": "A1 的时间差校验尚未完成。",
+        "nextAction": "104 黑板擦痕与 105 讲台回放可按任意顺序确认。"
+      },
+      "elevator_history_required": {
+        "reason": "主电梯的历史轨道尚未记录。",
+        "nextAction": "完成 104 与 105 校验后，可在一楼电梯门前用深色观察记录；这不限制浅色校准的先后。"
+      },
+      "elevator_calibration_required": {
+        "reason": "主电梯重放窗口尚未校准。",
+        "nextAction": "使用浅色操作进入轿厢，让门体开放区间覆盖六秒进入窗口。"
+      },
+      "elevator_floor_records_required": {
+        "reason": "三层电梯运行记录尚未齐全。",
+        "nextAction": "分别在一楼、三楼和二楼查阅起行、到站与外呼记录；三段可按任意顺序归档。"
+      },
+      "elevator_stop_chain_required": {
+        "reason": "跨层停靠链尚未复核。",
+        "nextAction": "三段记录齐全后，在浅色操作的电梯面板中确认实际到站层和未响应外呼层。"
+      },
+      "duty_board_required": {
+        "reason": "A1 的三段值班记录还没有汇合。",
+        "nextAction": "到前台台面打开签到板；104、105 与电梯的调查顺序不受限制。"
+      },
+      "archive_film_required": {
+        "reason": "302 扫描台缺少旧导视胶片。",
+        "nextAction": "到三楼 301 的索引抽屉按年份、楼层与用途筛出胶片。"
+      },
+      "media_alignment_required": {
+        "reason": "三楼新旧导视影像尚未重合。",
+        "nextAction": "带着 301 胶片到 302，校准平移和旋转后再进入错位楼梯。"
+      },
+      "positioning_calibration_required": {
+        "reason": "钟面定位片尚未完成三轴校准。",
+        "nextAction": "到二楼 201 创客工坊调整横向、纵向和压力。"
+      },
+      "power_topology_required": {
+        "reason": "五区供电关系仍不完整。",
+        "nextAction": "到二楼 203 恢复停电前的五条相邻连线。"
+      },
+      "evacuation_route_required": {
+        "reason": "二楼疏散通路尚未确认。",
+        "nextAction": "在开放自习区按脚步残影排列通往 202 的四段路线。"
+      },
+      "zhu_two_questions_required": {
+        "reason": "竺老两问尚未完成。",
+        "nextAction": "在楼外未点亮的灿若星辰灯前选择并一次提交两项回答。"
+      },
+      "misaligned_stair_required": {
+        "reason": "三楼与二楼之间的楼梯仍处于投影错位状态。",
+        "nextAction": "在三楼晨间教室记录参照后，从主楼梯进入空间校准。"
+      },
       "room204_observations_required": {
         "reason": "204 复原缺少参照记录。",
         "nextAction": "补齐 303 参照与 204 深色残影；家具摆放可以在两项记录之前或之后完成。"
       },
       "room204_layout_incomplete": {
         "reason": "204 仍有家具未复原。",
-        "nextAction": "把剩余家具放入空槽位，直到进度达到 12/12。"
+        "nextAction": "依据四处原始痕迹完成剩余成组摆放，直到四组全部复原。"
       },
       "room204_unknown_piece": {
         "reason": "该家具未被当前场景识别。",
@@ -358,9 +358,45 @@
         "reason": "这组家具已经完成复原。",
         "nextAction": "继续选择一组尚未复原的家具。"
       },
+      "room204_unknown_group": {
+        "reason": "这片痕迹不属于当前复原记录。",
+        "nextAction": "靠近教室内仍有残影的痕迹区。"
+      },
+      "room204_wrong_group": {
+        "reason": "当前痕迹区与提交的复原组不一致。",
+        "nextAction": "留在当前痕迹区并重新执行一次复原。"
+      },
+      "room204_group_conflict": {
+        "reason": "这组三处位置含有旧存档中的占用记录。",
+        "nextAction": "先处理其他痕迹区；当前组会保留原记录。"
+      },
+      "room204_group_already_placed": {
+        "reason": "这组三处桌椅已经复原。",
+        "nextAction": "查看教室内仍有残影的痕迹区。"
+      },
       "room204_projection_required": {
         "reason": "讲台抽屉尚未解锁。",
-        "nextAction": "先完成 12/12 复原并确认 07:55 投影。"
+        "nextAction": "先完成四组复原并确认 07:55 投影。"
+      },
+      "a1_comparison_required": {
+        "reason": "一楼的时间记录还没有形成可比较的同一组。",
+        "nextAction": "补齐 104、105 与电梯的原始记录，再查看它们共有的时间差。"
+      },
+      "projection_composite_required": {
+        "reason": "投影中的时间、空间和纸痕仍未完成叠合。",
+        "nextAction": "回看教室里四组原始痕迹，确认它们在投影中同时稳定。"
+      },
+      "maintenance_incident_required": {
+        "reason": "保洁车与旧钟之间的同源碰撞痕迹尚未确认。",
+        "nextAction": "比较教室投影的缺口形状与保洁车轮罩附近的擦痕。"
+      },
+      "powered_route_required": {
+        "reason": "当前照明还没有确认纸痕经过的连续区域。",
+        "nextAction": "回到配电面板，让先前记录过的三个区域同时保持可见。"
+      },
+      "identity_context_required": {
+        "reason": "身份记录与三楼留下的求学信息尚未形成完整对应。",
+        "nextAction": "查看三楼参照教室与中央信息墙留下的姓名和时间细节。"
       },
       "positioning_plate_required": {
         "reason": "大厅旧钟仍缺少钟面定位片。",
@@ -483,11 +519,26 @@
       "hour_hand_installed"
     ],
     "timeline": [
-      { "atMs": 0, "event": "lamp_on_and_stop_cue" },
-      { "atMs": 120, "event": "conveyor_slowdown" },
-      { "atMs": 360, "event": "conveyor_stopped_and_nearby_npcs_paused" },
-      { "atMs": 520, "event": "hour_hand_revealed" },
-      { "atMs": 700, "event": "complete_bakery_conveyor_stop" }
+      {
+        "atMs": 0,
+        "event": "lamp_on_and_stop_cue"
+      },
+      {
+        "atMs": 120,
+        "event": "conveyor_slowdown"
+      },
+      {
+        "atMs": 360,
+        "event": "conveyor_stopped_and_nearby_npcs_paused"
+      },
+      {
+        "atMs": 520,
+        "event": "hour_hand_revealed"
+      },
+      {
+        "atMs": 700,
+        "event": "complete_bakery_conveyor_stop"
+      }
     ],
     "refreshMatrix": [
       {
@@ -499,30 +550,42 @@
       },
       {
         "id": "lamp_inspected_stop_incomplete",
-        "requiredFacts": ["bakery_conveyor_lamp_inspected"],
-        "forbiddenFacts": ["bakery_hour_hand_exposed"],
+        "requiredFacts": [
+          "bakery_conveyor_lamp_inspected"
+        ],
+        "forbiddenFacts": [
+          "bakery_hour_hand_exposed"
+        ],
         "conveyor": "replay_stop_sequence",
         "pickup": "hidden_until_520ms",
         "resume": "replay"
       },
       {
         "id": "hour_hand_exposed",
-        "requiredFacts": ["bakery_hour_hand_exposed"],
-        "forbiddenFacts": ["bakery_hour_hand_collected"],
+        "requiredFacts": [
+          "bakery_hour_hand_exposed"
+        ],
+        "forbiddenFacts": [
+          "bakery_hour_hand_collected"
+        ],
         "conveyor": "stopped",
         "pickup": "visible",
         "resume": "static"
       },
       {
         "id": "hour_hand_collected",
-        "requiredFacts": ["bakery_hour_hand_collected"],
+        "requiredFacts": [
+          "bakery_hour_hand_collected"
+        ],
         "conveyor": "stopped",
         "pickup": "hidden",
         "resume": "static"
       },
       {
         "id": "hour_hand_installed",
-        "requiredFacts": ["hour_hand_installed"],
+        "requiredFacts": [
+          "hour_hand_installed"
+        ],
         "conveyor": "inactive",
         "pickup": "hidden",
         "resume": "1850_evening"
@@ -614,7 +677,6 @@
         "calibrate_elevator_history",
         "resolve_a3_archive_chain",
         "observe_a3_reference",
-        "answer_zhu_two_questions",
         "solve_misaligned_stair",
         "observe_room204_residual",
         "restore_room204",
@@ -735,6 +797,7 @@
         "a1_0755_morning"
       ],
       "taskKeys": [
+        "answer_zhu_two_questions",
         "acknowledge_exterior_closure"
       ],
       "dialogueIds": [
@@ -854,25 +917,25 @@
       ]
     },
     "answer_zhu_two_questions": {
-      "label": "在校史人物荣誉墙回答竺老两问",
+      "label": "在未点亮的灿若星辰灯前回答竺老两问",
       "hints": [
-        "前往三楼校史人物荣誉门厅，中间画像为竺可桢老校长。",
-        "靠近竺可桢画像并按 Space，先阅读生平，再依次回答两个问题。",
-        "每个选项都会保留你的回答；提交后才能进入错位楼梯。"
+        "双重签到完成后，楼外会保留一盏未点亮的灿若星辰灯。",
+        "分别选择求学目的与希望成为的人，系统会一次保存两项回答。",
+        "确认文字只显示“回答已保存”；随后才开始点灯收束。"
       ]
     },
     "resolve_a3_archive_chain": {
-      "label": "完成 A3 荣誉墙与影像档案调查",
+      "label": "在三楼记录晨间教室参照",
       "hints": [
-        "荣誉墙问答、301 胶片索引与 303 晨间参照可按任意顺序查看。",
-        "302 扫描台需要 301 取出的旧导视胶片，除此之外不强制调查顺序。",
-        "完成荣誉墙问答和 302 新旧影像对齐后，主楼梯会开放空间校准。"
+        "前往三楼晨间教室，在深色观察中记录桌椅、入口与投影边界。",
+        "荣誉墙画像只提供人物生平与资料来源，301 与 302 影像可继续查阅。",
+        "晨间教室参照记录完成后，主楼梯开放空间校准。"
       ]
     },
     "solve_misaligned_stair": {
       "label": "接通三楼通往二楼的错位楼梯",
       "hints": [
-        "完成竺老两问后，前往三楼主楼梯下行口。303 晨间参照可在此前或此后记录。",
+        "记录三楼晨间教室参照后，前往主楼梯下行口。",
         "在三个固定视角中调节横移台、旋转梯和升降台，让投影端点形成连续通路。",
         "完成两段楼梯间后会从二楼交通核心恢复行动。"
       ]
@@ -889,7 +952,7 @@
       "label": "把教室恢复成早晨的样子",
       "hints": [
         "303 晨间参照、204 深色残影和浅色家具摆放可按任意顺序完成。",
-        "每组家具只占一个空槽，每个空槽只接受一组家具，共需放置 12 组。",
+        "十二件家具按四处原始痕迹分成四组，每次摆放同时复原一组。",
         "浅色操作可先摆放家具；缺失的参照或残影随后补齐时，系统会统一确认复原结果。"
       ]
     },
@@ -897,7 +960,7 @@
       "label": "查看 204 投影幕上的时间",
       "hints": [
         "完成复原后查看 204 前方的投影幕。",
-        "12 组家具全部就位后，投影记录才会稳定。",
+        "四组家具全部就位后，投影记录才会稳定。",
         "留在 204 内完成投影播放，并在稳定画面出现后执行确认。"
       ]
     },
@@ -1214,7 +1277,7 @@
     "supportNpc.a3_reference": [
       {
         "speaker": "教师",
-        "text": "这间教室保留标准布局。用浅色操作记录讲台和十二组桌椅，完成后回二楼 204。"
+        "text": "这间教室保留标准布局。用深色观察记录讲台、桌椅和入口边界，完成后回二楼 204。"
       }
     ],
     "supportNpc.a3_recorded": [
@@ -1232,7 +1295,7 @@
     "room204.a3_reference_recorded": [
       {
         "speaker": "system",
-        "text": "303 的 12 组参照位置已经记录。"
+        "text": "三楼晨间教室的讲台、桌椅和入口边界已经记录。"
       }
     ],
     "room204.residual_recorded": [
@@ -1460,7 +1523,113 @@
       }
     ],
     "canonicalUse": "save_recovery_only",
-    "gameplayRule": "any_unique_piece_to_any_unique_empty_slot_orientation_up"
+    "gameplayRule": "any_unique_piece_to_any_unique_empty_slot_orientation_up",
+    "groups": [
+      {
+        "id": "window_time_marks",
+        "label": "窗侧时间刻痕区",
+        "rawDetailId": "room204_window_time_marks",
+        "rationale": "窗沿粉尘断线与前三处桌面亮边位于同一水平带。",
+        "targetBounds": {
+          "x": 78,
+          "y": 593,
+          "width": 32,
+          "height": 32
+        },
+        "mappings": [
+          {
+            "pieceId": "desk_pair_01",
+            "slotId": "morning_slot_01"
+          },
+          {
+            "pieceId": "desk_pair_02",
+            "slotId": "morning_slot_02"
+          },
+          {
+            "pieceId": "desk_pair_03",
+            "slotId": "morning_slot_03"
+          }
+        ]
+      },
+      {
+        "id": "central_drag_marks",
+        "label": "中央拖痕区",
+        "rawDetailId": "room204_central_drag_marks",
+        "rationale": "中央地面的三段平行拖痕具有相同间距。",
+        "targetBounds": {
+          "x": 350,
+          "y": 593,
+          "width": 32,
+          "height": 32
+        },
+        "mappings": [
+          {
+            "pieceId": "desk_pair_04",
+            "slotId": "morning_slot_04"
+          },
+          {
+            "pieceId": "desk_pair_05",
+            "slotId": "morning_slot_05"
+          },
+          {
+            "pieceId": "desk_pair_06",
+            "slotId": "morning_slot_06"
+          }
+        ]
+      },
+      {
+        "id": "podium_projection_edge",
+        "label": "讲台投影边缘区",
+        "rawDetailId": "room204_projection_edge",
+        "rationale": "讲台投影边缘经过三处桌脚留下的浅色缺口。",
+        "targetBounds": {
+          "x": 273,
+          "y": 670,
+          "width": 32,
+          "height": 32
+        },
+        "mappings": [
+          {
+            "pieceId": "desk_pair_07",
+            "slotId": "morning_slot_07"
+          },
+          {
+            "pieceId": "desk_pair_08",
+            "slotId": "morning_slot_08"
+          },
+          {
+            "pieceId": "desk_pair_09",
+            "slotId": "morning_slot_09"
+          }
+        ]
+      },
+      {
+        "id": "door_paper_trace",
+        "label": "门侧纸痕区",
+        "rawDetailId": "room204_door_paper_trace",
+        "rationale": "门侧纸屑压痕在三处桌脚位置连续出现。",
+        "targetBounds": {
+          "x": 155,
+          "y": 741,
+          "width": 32,
+          "height": 32
+        },
+        "mappings": [
+          {
+            "pieceId": "desk_pair_10",
+            "slotId": "morning_slot_10"
+          },
+          {
+            "pieceId": "desk_pair_11",
+            "slotId": "morning_slot_11"
+          },
+          {
+            "pieceId": "desk_pair_12",
+            "slotId": "morning_slot_12"
+          }
+        ]
+      }
+    ]
   },
   "lightGrid": {
     "initialMask": 14,
@@ -1629,14 +1798,14 @@
   },
   "itemSequence": [
     {
-    "id": "catch_attendance_paper",
+      "id": "catch_attendance_paper",
       "phase": "opening_handoff",
       "itemId": "attendanceRecordPaper",
       "targetId": "a1_noticeboard_paper",
-    "inventoryEffect": "grant",
-    "requiresFacts": [
-      "opening_paper_at_noticeboard"
-    ],
+      "inventoryEffect": "grant",
+      "requiresFacts": [
+        "opening_paper_at_noticeboard"
+      ],
       "stateResult": "opening_paper_caught"
     },
     {
@@ -1797,5 +1966,387 @@
     ],
     "campusCardInventoryEffect": "retain",
     "attendanceRecordPaperInventoryEffect": "retain"
-  }
+  },
+  "evidenceContracts": [
+    {
+      "id": "opening_paper_continuity",
+      "family": "paper_route",
+      "producerPhase": "opening_handoff",
+      "producerFacts": [
+        "opening_paper_at_noticeboard",
+        "opening_paper_caught"
+      ],
+      "rawDetailIds": [
+        "noticeboard_paper_fold",
+        "noticeboard_wet_edge"
+      ],
+      "consumerPhases": [
+        "opening_paper_caught",
+        "hall_clock_inspection",
+        "morning_checkin",
+        "exterior_closure",
+        "complete"
+      ],
+      "consumedByFacts": [
+        "opening_paper_caught",
+        "attendance_record_recovered"
+      ]
+    },
+    {
+      "id": "opening_time_discrepancy",
+      "family": "time",
+      "producerPhase": "hall_clock_inspection",
+      "producerFacts": [
+        "external_time_rejected",
+        "hall_clock_inspected"
+      ],
+      "rawDetailIds": [
+        "opening_external_time_receipt",
+        "opening_phone_frozen_seconds",
+        "hall_clock_stuttering_gear"
+      ],
+      "consumerPhases": [
+        "bakery_hour_hand",
+        "maintenance_repair",
+        "return_to_clock"
+      ],
+      "consumedByFacts": [
+        "hour_hand_installed",
+        "clock_gear_repaired",
+        "final_minute_installed"
+      ]
+    },
+    {
+      "id": "bakery_eastbound_trace",
+      "family": "paper_route",
+      "producerPhase": "bakery_hour_hand",
+      "producerFacts": [
+        "bakery_conveyor_direction_observed",
+        "bakery_tool_location_observed",
+        "bakery_hour_hand_exposed",
+        "hour_hand_installed"
+      ],
+      "rawDetailIds": [
+        "bakery_wet_drag_east",
+        "bakery_conveyor_reverse_wear",
+        "bakery_pry_bar_outline"
+      ],
+      "consumerPhases": [
+        "room204_restore",
+        "maintenance_repair",
+        "blackout_light_grid"
+      ],
+      "consumedByFacts": [
+        "a1_time_route_compared",
+        "cart_wheel_cover_opened",
+        "powered_route_confirmed"
+      ]
+    },
+    {
+      "id": "a1_time_route_comparison",
+      "family": "time",
+      "producerPhase": "room204_restore",
+      "producerFacts": [
+        "classroom_104_chalk_residual_observed",
+        "classroom_105_terminal_replay_checked",
+        "elevator_history_observed",
+        "elevator_history_calibrated",
+        "a1_time_route_compared"
+      ],
+      "rawDetailIds": [
+        "classroom104_chalk_1844",
+        "classroom105_terminal_1850",
+        "elevator_passenger_trace_6s",
+        "elevator_door_interval_8s"
+      ],
+      "consumerPhases": [
+        "maintenance_repair",
+        "blackout_light_grid",
+        "final_chase"
+      ],
+      "consumedByFacts": [
+        "room204_projection_composite_completed",
+        "powered_route_confirmed"
+      ]
+    },
+    {
+      "id": "a3_spatial_identity_reference",
+      "family": "identity",
+      "producerPhase": "room204_restore",
+      "producerFacts": [
+        "a3_reference_observed",
+        "a3_identity_context_observed"
+      ],
+      "rawDetailIds": [
+        "a3_reference_desk_shadow",
+        "a3_history_wall_center"
+      ],
+      "consumerPhases": [
+        "maintenance_repair",
+        "exterior_closure"
+      ],
+      "consumedByFacts": [
+        "room204_projection_composite_completed",
+        "checkin_identity_verified"
+      ]
+    },
+    {
+      "id": "room204_projection_composite",
+      "family": "paper_route",
+      "producerPhase": "room204_restore",
+      "producerFacts": [
+        "room204_residual_observed",
+        "room204_restored",
+        "room204_projection_completed",
+        "room204_projection_composite_completed",
+        "room202_endpoint_inferred",
+        "maintenance_incident_linked"
+      ],
+      "rawDetailIds": [
+        "room204_window_time_marks",
+        "room204_central_drag_marks",
+        "room204_projection_edge",
+        "room204_door_paper_trace"
+      ],
+      "consumerPhases": [
+        "maintenance_repair",
+        "blackout_light_grid",
+        "final_chase",
+        "final_minute_recovery"
+      ],
+      "consumedByFacts": [
+        "cart_wheel_inspected",
+        "powered_route_confirmed",
+        "room202_route_reached"
+      ]
+    },
+    {
+      "id": "maintenance_mechanical_trace",
+      "family": "time",
+      "producerPhase": "maintenance_repair",
+      "producerFacts": [
+        "cart_wheel_inspected",
+        "cart_wheel_cover_opened",
+        "cart_wheel_repaired",
+        "clock_gear_repaired"
+      ],
+      "rawDetailIds": [
+        "cart_wheel_impact_scratch",
+        "cart_cover_matching_notch",
+        "hall_clock_oil_stain"
+      ],
+      "consumerPhases": [
+        "blackout_light_grid",
+        "return_to_clock"
+      ],
+      "consumedByFacts": [
+        "paper_temporarily_out_of_inventory",
+        "powered_route_confirmed",
+        "final_minute_installed"
+      ]
+    },
+    {
+      "id": "powered_route_confirmation",
+      "family": "paper_route",
+      "producerPhase": "blackout_light_grid",
+      "producerFacts": [
+        "paper_temporarily_out_of_inventory",
+        "light_grid_locked",
+        "powered_route_confirmed"
+      ],
+      "rawDetailIds": [
+        "power_hall_node",
+        "power_east_corridor_node",
+        "power_classroom_node"
+      ],
+      "consumerPhases": [
+        "final_chase",
+        "final_minute_recovery"
+      ],
+      "consumedByFacts": [
+        "room202_route_reached",
+        "final_minute_recovered"
+      ]
+    },
+    {
+      "id": "recovered_record_continuity",
+      "family": "paper_route",
+      "producerPhase": "final_minute_recovery",
+      "producerFacts": [
+        "room202_route_reached",
+        "final_minute_recovered",
+        "attendance_record_recovered"
+      ],
+      "rawDetailIds": [
+        "room202_paper_torn_edge",
+        "room202_minute_projection"
+      ],
+      "consumerPhases": [
+        "return_to_clock",
+        "morning_checkin",
+        "exterior_closure"
+      ],
+      "consumedByFacts": [
+        "final_minute_installed",
+        "checkin_paper_accepted"
+      ]
+    },
+    {
+      "id": "checkin_identity_continuity",
+      "family": "identity",
+      "producerPhase": "morning_checkin",
+      "producerFacts": [
+        "final_minute_installed",
+        "checkin_card_accepted",
+        "checkin_paper_accepted",
+        "checkin_identity_verified"
+      ],
+      "rawDetailIds": [
+        "checkin_card_name_strip",
+        "checkin_paper_torn_edge"
+      ],
+      "consumerPhases": [
+        "exterior_closure",
+        "complete"
+      ],
+      "consumedByFacts": [
+        "zhu_two_questions_answered",
+        "exterior_closure_acknowledged"
+      ]
+    },
+    {
+      "id": "closure_identity_resolution",
+      "family": "identity",
+      "producerPhase": "exterior_closure",
+      "producerFacts": [
+        "zhu_two_questions_answered",
+        "exterior_closure_acknowledged"
+      ],
+      "rawDetailIds": [
+        "exterior_history_question_panel",
+        "exterior_recovered_record_mark"
+      ],
+      "consumerPhases": [
+        "complete"
+      ],
+      "consumedByFacts": [
+        "exterior_closure_acknowledged"
+      ]
+    }
+  ],
+  "transitionContracts": [
+    {
+      "id": "hour_hand_to_room204",
+      "presentationKind": "time_shift",
+      "owner": "transition_overlay",
+      "intentTypes": [
+        "install_hour_hand"
+      ],
+      "fromPhase": "bakery_hour_hand",
+      "toPhase": "room204_restore",
+      "change": {
+        "kind": "time",
+        "eyebrow": "旧钟重新配准",
+        "title": "12:25 → 18:50",
+        "detail": "时针归位后，教学楼切换到教室仍有人活动的傍晚记录。",
+        "fromTimeState": "1225_bakery",
+        "toTimeState": "1850_evening"
+      }
+    },
+    {
+      "id": "room204_to_maintenance",
+      "presentationKind": "time_shift",
+      "owner": "transition_overlay",
+      "intentTypes": [
+        "install_positioning_plate"
+      ],
+      "fromPhase": "room204_restore",
+      "toPhase": "maintenance_repair",
+      "change": {
+        "kind": "time",
+        "eyebrow": "定位盘完成校准",
+        "title": "18:50 → 22:45",
+        "detail": "定位片归位后，旧钟进入清楼前的维护时段。",
+        "fromTimeState": "1850_evening",
+        "toTimeState": "2245_maintenance"
+      }
+    },
+    {
+      "id": "maintenance_to_blackout",
+      "presentationKind": "time_shift",
+      "owner": "transition_overlay",
+      "intentTypes": [
+        "complete_minute_theft"
+      ],
+      "fromPhase": "maintenance_repair",
+      "toPhase": "blackout_light_grid",
+      "change": {
+        "kind": "time",
+        "eyebrow": "校准发生偏移",
+        "title": "22:45 → 07:54",
+        "detail": "旧钟已经转到清晨，纸条带走了最后一分钟，教学楼同时停电。",
+        "fromTimeState": "2245_maintenance",
+        "toTimeState": "0754_blackout"
+      }
+    },
+    {
+      "id": "blackout_to_chase",
+      "presentationKind": "world_handoff",
+      "owner": "scene_interaction",
+      "intentTypes": [
+        "lock_light_grid"
+      ],
+      "fromPhase": "blackout_light_grid",
+      "toPhase": "final_chase"
+    },
+    {
+      "id": "chase_to_room202",
+      "presentationKind": "world_handoff",
+      "owner": "scene_interaction",
+      "intentTypes": [
+        "reach_202_threshold"
+      ],
+      "fromPhase": "final_chase",
+      "toPhase": "final_minute_recovery"
+    },
+    {
+      "id": "room202_to_clock_return",
+      "presentationKind": "world_handoff",
+      "owner": "scene_interaction",
+      "intentTypes": [
+        "collect_final_minute"
+      ],
+      "fromPhase": "final_minute_recovery",
+      "toPhase": "return_to_clock"
+    },
+    {
+      "id": "clock_return_to_morning",
+      "presentationKind": "time_shift",
+      "owner": "transition_overlay",
+      "intentTypes": [
+        "install_final_minute"
+      ],
+      "fromPhase": "return_to_clock",
+      "toPhase": "morning_checkin",
+      "change": {
+        "kind": "time",
+        "eyebrow": "最后一分钟归位",
+        "title": "07:54 → 07:55",
+        "detail": "旧钟和手机重新显示同一个清晨时刻。",
+        "fromTimeState": "0754_blackout",
+        "toTimeState": "0755_morning"
+      }
+    },
+    {
+      "id": "checkin_to_exterior",
+      "presentationKind": "world_handoff",
+      "owner": "scene_interaction",
+      "intentTypes": [
+        "read_campus_card",
+        "submit_attendance_paper"
+      ],
+      "fromPhase": "morning_checkin",
+      "toPhase": "exterior_closure"
+    }
+  ]
 }

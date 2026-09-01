@@ -1180,6 +1180,8 @@ const CHAPTER_FOUR_755_OPENING_FACTS = [
 const CHAPTER_FOUR_755_BAKERY_FACTS = [
   ...CHAPTER_FOUR_755_OPENING_FACTS,
   "bakery_conveyor_lamp_inspected",
+  "bakery_conveyor_direction_observed",
+  "bakery_tool_location_observed",
   "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected",
   "hour_hand_installed"
@@ -1195,6 +1197,7 @@ const CHAPTER_FOUR_755_ROOM_FACTS = [
   ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
   "elevator_history_observed",
   "elevator_history_calibrated",
+  "a1_time_route_compared",
   "elevator_a2_call_record_observed",
   "elevator_a3_arrival_record_observed",
   "elevator_stop_chain_reconstructed",
@@ -1202,11 +1205,14 @@ const CHAPTER_FOUR_755_ROOM_FACTS = [
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
   "a3_reference_observed",
-  "zhu_two_questions_answered",
+  "a3_identity_context_observed",
   "misaligned_stair_solved",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
+  "room204_projection_composite_completed",
+  "room202_endpoint_inferred",
+  "maintenance_incident_linked",
   "positioning_plate_collected",
   "a2_positioning_plate_calibrated",
   "a2_power_topology_recovered",
@@ -1230,12 +1236,15 @@ const CHAPTER_FOUR_755_BLACKOUT_FACTS = [
 const CHAPTER_FOUR_755_CHASE_FACTS = [
   ...CHAPTER_FOUR_755_BLACKOUT_FACTS,
   "light_grid_locked",
+  "powered_route_confirmed",
   "canruo_star_lamp_primed"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
 const CHAPTER_FOUR_755_RETURN_CLOCK_FACTS = [
   ...CHAPTER_FOUR_755_CHASE_FACTS,
-  "final_minute_recovered"
+  "room202_route_reached",
+  "final_minute_recovered",
+  "attendance_record_recovered"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
 const CHAPTER_FOUR_755_CHECKIN_FACTS = [
@@ -1246,7 +1255,8 @@ const CHAPTER_FOUR_755_CHECKIN_FACTS = [
 const CHAPTER_FOUR_755_COMPLETE_WAIT_FACTS = [
   ...CHAPTER_FOUR_755_CHECKIN_FACTS,
   "checkin_card_accepted",
-  "checkin_paper_accepted"
+  "checkin_paper_accepted",
+  "checkin_identity_verified"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
 const CHAPTER_FOUR_755_CANONICAL_ROOM204 = ROOM204_PIECE_ORDER.map((pieceId, index) => ({

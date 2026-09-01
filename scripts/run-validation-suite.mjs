@@ -28,6 +28,7 @@ const VALIDATORS = Object.freeze({
   chapter4Story: Object.freeze({ area: "chapter-4", script: "chapter4:validate-story", risk: "quest facts, causal gates and save closure" }),
   chapter4Topology: Object.freeze({ area: "chapter-4", script: "chapter4:validate-topology", risk: "walkability, room boundaries and floor transitions" }),
   chapter4Runtime: Object.freeze({ area: "chapter-4", script: "chapter4:validate-runtime", risk: "controller and runtime state-machine invariants" }),
+  chapter4CausalFlow: Object.freeze({ area: "chapter-4", script: "chapter4:validate-causal-flow", risk: "cross-phase clue reuse, grouped repetition cap and non-duplicated adaptive help" }),
   chapter4Task14: Object.freeze({ area: "chapter-4", script: "chapter4:validate-task14", risk: "final task and developer-checkpoint contract" }),
   chapter3Audio: Object.freeze({ area: "audio", script: "audio:chapter3:verify", risk: "Chapter 3 manifest, routing and generated audio integrity" }),
   voiceMemos: Object.freeze({ area: "audio", script: "audio:chapter3-interlude-voice-memos:verify", risk: "voice memo files, metadata and scene routing" }),
@@ -68,6 +69,7 @@ const SUITE_KEYS = Object.freeze({
     "chapter4Story",
     "chapter4Topology",
     "chapter4Runtime",
+    "chapter4CausalFlow",
     "chapter4Task14"
   ]),
   extended: Object.freeze([
@@ -102,6 +104,7 @@ const SUITE_KEYS = Object.freeze({
     "chapter4Story",
     "chapter4Topology",
     "chapter4Runtime",
+    "chapter4CausalFlow",
     "chapter4Task14",
     "chapter3Audio",
     "voiceMemos",
