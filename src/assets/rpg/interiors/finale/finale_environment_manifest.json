@@ -295,8 +295,8 @@
         },
         {
           "id": "stair_northwest",
-          "x": 932,
-          "y": 145
+          "x": 1046,
+          "y": 208
         },
         {
           "id": "safe_spawn",
@@ -1330,11 +1330,11 @@
     {
       "id": "chapter4_story_items",
       "title": "第四章 7:55 剧情道具",
-      "file": "chapter4-755/sprites/chapter4_story_items_v01.png",
-      "sourceFile": "src/assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_story_items_v01.png",
-      "sourceId": "chapter4_story_items_v01",
-      "sourceSha256": "dda862236ff986caaa900ba7d0f95b29acf172d83d480b1fd48e6c94479b90ed",
-      "sha256": "dda862236ff986caaa900ba7d0f95b29acf172d83d480b1fd48e6c94479b90ed",
+      "file": "chapter4-755/sprites/chapter4_story_items_v02.png",
+      "sourceFile": "src/assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_story_items_v02.png",
+      "sourceId": "chapter4_story_items_v02",
+      "sourceSha256": "ef78a5a24134d8c0ec4de3d7d656f5a619c6ff299cd4d908f994f811470b7488",
+      "sha256": "ef78a5a24134d8c0ec4de3d7d656f5a619c6ff299cd4d908f994f811470b7488",
       "sourceSize": {
         "width": 1536,
         "height": 1024
@@ -1620,16 +1620,16 @@
             "height": 512
           },
           "sourceTrim": {
-            "x": 428,
-            "y": 567,
-            "width": 276,
-            "height": 333
+            "x": 457,
+            "y": 642,
+            "width": 143,
+            "height": 250
           },
           "measuredAlphaBounds": {
-            "x": 428,
-            "y": 567,
-            "width": 276,
-            "height": 333
+            "x": 457,
+            "y": 642,
+            "width": 143,
+            "height": 250
           },
           "pivot": {
             "x": 566,
@@ -1645,10 +1645,10 @@
               "id": "final_minute_shard_source_trigger",
               "coordinateSpace": "source_sheet",
               "bounds": {
-                "x": 418,
-                "y": 557,
-                "width": 296,
-                "height": 353
+                "x": 447,
+                "y": 632,
+                "width": 163,
+                "height": 270
               }
             }
           ],

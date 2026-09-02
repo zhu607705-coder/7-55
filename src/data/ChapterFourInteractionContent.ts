@@ -215,7 +215,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
   }),
   defineContextInteraction({
     targetId: "a2_open_study_evacuation_context",
-    label: "查看开放自习区路线板",
+    label: "检查 202 疏散路线板",
     floor: "A2",
     roomId: "a2_open_study",
     anchorId: "a2_open_study_evacuation",
@@ -225,8 +225,8 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     purpose: "state_feedback",
     repeatPolicy: "repeatable",
     textByTimeState: repeatedPuzzleText(
-      "路线板上的四段卡片可以重新排列，以确认前往 202 的通道。",
-      "人流残影从自习区向东移动，穿过教室门槛后抵达 202 出口。"
+      "路线板缺少从 202 到主楼梯的连续箭头，四块磁贴仍可调整。",
+      "202 门外与楼梯黄线内留有同一种鞋底纹，中间两段需要根据朝向接续。"
     )
   }),
   defineContextInteraction({

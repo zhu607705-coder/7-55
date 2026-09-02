@@ -512,6 +512,38 @@ try {
   });
   assert(unlockedAfterCalibration.accepted, "elevator calibration must unlock the authored A3 route");
 
+  const deferredDutyBoardStore = createGameStore(makeState({
+    mode: "light",
+    roomId: "a1_main_elevator",
+    phase: "room204_restore",
+    facts: [
+      "hour_hand_installed",
+      "classroom_104_chalk_residual_observed",
+      "classroom_105_terminal_replay_checked",
+      "elevator_history_observed",
+      "elevator_history_calibrated"
+    ]
+  }));
+  const deferredDutyBoardController = new ChapterFourTemporalMazeController(
+    deferredDutyBoardStore,
+    new EventBus()
+  );
+  const routeBeforeDutyBoard = deferredDutyBoardController.resolve755Intent({
+    type: "move_to_location",
+    floor: "A3",
+    roomId: "a3_wayfinding",
+    checkpoint: "c4_a3_wayfinding"
+  });
+  assert(
+    routeBeforeDutyBoard.accepted
+      && deferredDutyBoardStore.getState().chapter4.floor === "A3",
+    "A1 duty-board evidence must remain collectable after the authored A3 route opens"
+  );
+  assert(
+    selectQuestViewModel(deferredDutyBoardStore.getState()).objective !== "汇总 A1 剩余调查点",
+    "the task drawer must follow the player into the A3 investigation while the deferred A1 clue remains unconsumed"
+  );
+
   const elevatorCalibrationFirstStore = createGameStore(makeState({
     mode: "light",
     roomId: "a1_lobby",
@@ -1216,6 +1248,20 @@ try {
     "locked",
     undefined,
     "projection completion without both observations"
+  );
+  const missingDutyBoardState = makeRoom204State({
+    facts: ["a3_reference_observed", "room204_residual_observed", "room204_restored"],
+    placements: arbitraryModelPlacements
+  });
+  missingDutyBoardState.chapter4.factIds = missingDutyBoardState.chapter4.factIds.filter(
+    (factId) => factId !== "a1_duty_board_reconstructed"
+  );
+  assertZeroWriteRejection(
+    missingDutyBoardState,
+    { type: "complete_room204_projection" },
+    "locked",
+    undefined,
+    "projection completion before the deferred A1 duty-board evidence is consumed"
   );
 
   const preReferenceStore = createGameStore(makeRoom204State({
@@ -2008,7 +2054,7 @@ try {
       && finalClockContract.contractPending
       && resolvedFinalClockContract?.contractPending === false
       && resolvedFinalClockContract.approximate === false,
-    "Task13 minute endpoint must remain closed until its exact visible getBounds runtime envelope resolves"
+    "Task13 minute target must remain closed until its exact visible clock-face runtime envelope resolves"
   );
   assert(sameJson(powerPanelRuntimeTarget.bounds, { x: 493, y: 528, width: 67, height: 124 }), "Task11 power panel must use the exact A1 installation bounds");
 
@@ -2875,7 +2921,7 @@ try {
     installFinalMinuteIntent,
     finalClockRuntimeTarget
   );
-  assert(installFinalMinute.accepted && installFinalMinute.changed, "Task13 exact visible minute endpoint must install the final minute once");
+  assert(installFinalMinute.accepted && installFinalMinute.changed, "Task13 exact visible clock-face target must install the final minute once");
   const morningState = chaseStore.getState();
   assert(sameJson({
     phase: morningState.chapter4.phase,
@@ -2938,7 +2984,7 @@ try {
 
   const task13CardTarget = runtimeTargetFromLayout("a1_campus_card_reader");
   const task13PaperTarget = runtimeTargetFromLayout("a1_attendance_paper_slot");
-  assert(sameJson(task13CardTarget.bounds, { x: 768, y: 607, width: 30, height: 24 }), "Task13 card-reader bounds must match the visible authored fixture");
+  assert(sameJson(task13CardTarget.bounds, { x: 784, y: 607, width: 30, height: 24 }), "Task13 card-reader bounds must match the visible authored fixture");
   assert(sameJson(task13PaperTarget.bounds, { x: 848, y: 606, width: 38, height: 25 }), "Task13 paper-slot bounds must match the visible authored fixture");
   for (const runtimeTarget of [task13CardTarget, task13PaperTarget]) {
     const resolved = resolveChapterFour755RuntimeEntityTarget(
@@ -3489,7 +3535,7 @@ try {
   const returningSource = {
     ...createChapterFourMaintenanceGuardRecoveryState(0x755),
     mode: "returning",
-    position: { x: 900, y: 214 },
+    position: { x: 900, y: 240 },
     targetWaypointId: "stair_north",
     pauseRemainingMs: 0
   };

@@ -25,6 +25,7 @@
     "verify:cc98-login": "node scripts/verify-cc98-unified-login.mjs",
     "verify:canteen-bike-transition": "node scripts/verify-canteen-bike-transition.mjs",
     "dev:library-shelf": "vite --host 0.0.0.0 --open library-shelf-debug.html",
+    "dev:chapter4-colliders": "vite --host 0.0.0.0 --open chapter4-collision-editor.html",
     "dev:canteen-chase": "vite --host 0.0.0.0 --open canteen-chase-debug.html",
     "dev:finale-npcs": "vite --host 0.0.0.0 --open finale-npc-debug.html",
     "dev:finale-environments": "vite --host 0.0.0.0 --open finale-environment-debug.html",

@@ -350,10 +350,10 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     useHint: "先拖向清洁车轮，再拖向旧钟齿轮"
   },
   finalMinute: {
-    category: "时间碎片",
-    source: "202 阶梯教室投影",
-    intro: "这是一段被偷走的最后一分钟。它只能回到旧钟分针端点。",
-    useHint: "拖向旧钟分针端点，恢复 07:55"
+    category: "钟表部件",
+    source: "202 阶梯教室座椅间",
+    intro: "黄铜分针组件带着旧钟轴座的磨损痕迹，应当装回一楼大厅的旧钟。",
+    useHint: "靠近旧钟，拖到可见表盘内，恢复 07:55"
   }
 };
 

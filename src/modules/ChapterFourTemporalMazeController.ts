@@ -656,6 +656,9 @@ function lockedDetailForIntent(
       if (!hasFact(chapter, "a1_time_route_compared")) {
         return "a1_comparison_required";
       }
+      if (!hasFact(chapter, "a1_duty_board_reconstructed")) {
+        return "duty_board_required";
+      }
       if (!hasFact(chapter, "a3_reference_observed")
         || !hasFact(chapter, "room204_residual_observed")) {
         return "room204_observations_required";
@@ -1023,11 +1026,6 @@ export class ChapterFourTemporalMazeController {
           return reject("locked", "classroom_checks_required");
         }
         if (chapter.phase === "room204_restore"
-          && intent.floor !== "A1"
-          && !hasFact(chapter, "a1_duty_board_reconstructed")) {
-          return reject("locked", "duty_board_required");
-        }
-        if (chapter.phase === "room204_restore"
           && intent.floor === "A3"
           && !hasFact(chapter, "elevator_history_calibrated")) {
           return reject("locked", "elevator_calibration_required");
@@ -1323,6 +1321,7 @@ export class ChapterFourTemporalMazeController {
       case "complete_room204_projection": {
         if (chapter.phase !== "room204_restore"
           || !hasFact(chapter, "a1_time_route_compared")
+          || !hasFact(chapter, "a1_duty_board_reconstructed")
           || !hasFact(chapter, "a3_reference_observed")
           || !hasFact(chapter, "a3_identity_context_observed")
           || !hasFact(chapter, "room204_residual_observed")

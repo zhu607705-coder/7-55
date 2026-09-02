@@ -219,7 +219,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c4-755-maintenance-2245", chapter: "第四章", label: "22:45 维修链", detail: "检查保洁车车轮并修复旧钟" },
   { id: "c4-755-blackout-0754", chapter: "第四章", label: "07:54 停电与配电", detail: "最后一分钟被带走，从配电箱初始状态解出灯路" },
   { id: "c4-755-chase", chapter: "第四章", label: "最终追逐", detail: "灯阵已锁定，从 A1 经主楼梯前往 202" },
-  { id: "c4-755-final-minute", chapter: "第四章", label: "最后一分钟", detail: "202 门已关，取回投影中的分钟碎片" },
+  { id: "c4-755-final-minute", chapter: "第四章", label: "最后一分钟", detail: "202 门已关，取回阶梯座椅间的黄铜分针组件" },
   { id: "c4-755-return-clock", chapter: "第四章", label: "送回最后一分钟", detail: "从 A2 的 202 安全点出发，带齐三项材料返回旧钟" },
   { id: "c4-755-checkin", chapter: "第四章", label: "07:55 签到", detail: "时间已恢复，刷卡与纸条可任意顺序提交" },
   { id: "c4-755-closure", chapter: "第四章", label: "灿若星辰正式收束", detail: "双签到已完成，播放正式分层灯光动画并写入一次性完成回执" }
@@ -1495,7 +1495,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phoneStatusTimeSeconds: 28440,
       phoneStatusTimeTrusted: true,
       buildingTimeSeconds: 28440,
-      factIds: [...CHAPTER_FOUR_755_CHASE_FACTS],
+      factIds: [...CHAPTER_FOUR_755_CHASE_FACTS, "room202_route_reached"],
       room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
       lightGrid: { mask: 13, locked: true },
       guardMode: "absent",

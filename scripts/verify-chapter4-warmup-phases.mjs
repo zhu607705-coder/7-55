@@ -101,6 +101,11 @@ assertUniqueCoverage(
   npcManifest.animations.map((entry) => entry.id),
   "NPC phases"
 );
+assert(
+  transportNpcs.includes("guard_check_watch")
+    && !maintenanceNpcs.includes("guard_check_watch"),
+  "transport: the A2 elevator attendant watch animation must load before room204_restore"
+);
 
 assertIncludes(registry, "CHAPTER_FOUR_ELEVATOR_TEXTURE_KEY", "entry elevator asset");
 assertIncludes(registry, "CHAPTER_FOUR_FRONT_DESK_TEXTURE_KEY", "entry front desk asset");
@@ -148,6 +153,16 @@ assertIncludes(
   scene,
   "pendingWarmupSettlers",
   "scene shutdown must settle in-flight warmup waits and loaders"
+);
+assertIncludes(
+  scene,
+  'this.safeBridgeEmit("rpg_chapter4_warmup_phase_ready"',
+  "required runtime warmup success must clear the host loading boundary"
+);
+assertIncludes(
+  scene,
+  "support_npc_texture_missing:${definition.npcId}:${texture}",
+  "support NPC creation must report and skip a missing texture instead of rendering __MISSING"
 );
 assert(
   /create\(\): void \{\s*this\.resetRestartLifecycleState\(\)[\s\S]*?this\.createBaseBackgrounds\(\)/.test(scene),

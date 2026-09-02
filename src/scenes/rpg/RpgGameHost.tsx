@@ -105,6 +105,11 @@ import { ZIJINGANG_CAMPUS_PLATE_URL } from "./ZijingangLandmarkAssets";
 import { QIZHEN_LOOP_PANORAMA_URL } from "./QizhenLoopWorld";
 import { RpgRealityModeToggle } from "./RpgRealityModeToggle";
 import { createRpgBridge } from "./RpgBridge";
+import {
+  RPG_ASSET_LOAD_REPORTER_REGISTRY_KEY,
+  type RpgAssetLoadReport,
+  type RpgAssetLoadReporter
+} from "./RpgAssetLoader";
 import { RPG_CONTROL_HINTS } from "./RpgControlHints";
 import { RpgInventoryDock } from "./RpgInventoryDock";
 import {
@@ -456,6 +461,8 @@ export function RpgGameHost({
   const hostRef = useRef<HTMLDivElement | null>(null);
   const phaserHostRef = useRef<HTMLDivElement | null>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
+  const [assetLoadReport, setAssetLoadReport] = useState<RpgAssetLoadReport | null>(null);
+  const assetLoadBlockedRef = useRef(false);
   const inputBlockedRef = useRef(inputBlocked);
   const keyboardBlockedRef = useRef(keyboardBlocked);
   const lastMapItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
@@ -549,10 +556,30 @@ export function RpgGameHost({
     || chapter4MaintenanceDiagnosisOpen || chapter4StairActive || chapter4QuestionOpen || chapter4ClosureOpen
     || chapter4TransitionSession !== null
     || (chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed);
+  const assetLoadBlocked = assetLoadReport?.status === "loading" || assetLoadReport?.status === "failed";
   inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked
-    || photoSessionOpen || qizhenRainRescueCinematicOpen;
+    || photoSessionOpen || qizhenRainRescueCinematicOpen || assetLoadBlockedRef.current;
   keyboardBlockedRef.current = keyboardBlocked || canteenExclusiveActive || chapter4PhaserKeyboardBlocked
-    || photoSessionOpen || qizhenRainRescueCinematicOpen;
+    || photoSessionOpen || qizhenRainRescueCinematicOpen || assetLoadBlockedRef.current;
+
+  const reportRpgAssetLoad = useCallback<RpgAssetLoadReporter>((report) => {
+    assetLoadBlockedRef.current = report.status !== "ready";
+    setAssetLoadReport(report);
+  }, []);
+
+  useEffect(() => events.subscribe((event) => {
+    if (event.name !== "rpg_chapter4_warmup_phase_ready"
+      || event.payload?.requiredForCurrentState !== true) return;
+    const current = store.getState();
+    if (current.rpgScene !== "duan_yongping_temporal_maze") return;
+    assetLoadBlockedRef.current = false;
+    setAssetLoadReport({
+      sceneKey: SCENE_KEYS.duan_yongping_temporal_maze,
+      status: "ready",
+      progress: 1,
+      failedAssets: []
+    });
+  }), [events, store]);
 
   useEffect(() => {
     if (!chapter4MazeActive) {
@@ -963,6 +990,12 @@ export function RpgGameHost({
         default: "arcade",
         arcade: { debug: false }
       },
+      loader: {
+        imageLoadType: "XHR",
+        maxParallelDownloads: 4,
+        maxRetries: 2,
+        timeout: 15_000
+      },
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
@@ -972,6 +1005,7 @@ export function RpgGameHost({
         preBoot: (phaserGame) => {
           phaserGame.registry.set("rpgBridge", bridge);
           phaserGame.registry.set("theaterRuntimePort", theaterRuntimePort);
+          phaserGame.registry.set(RPG_ASSET_LOAD_REPORTER_REGISTRY_KEY, reportRpgAssetLoad);
         },
         postBoot: (phaserGame) => {
           stopAdaptiveResolution = installRpgAdaptiveResolution(phaserGame, host);
@@ -1007,7 +1041,7 @@ export function RpgGameHost({
       game.destroy(true);
       clearRpgCanvasHost(host);
     };
-  }, [bridge, store, theaterRuntimePort]);
+  }, [bridge, reportRpgAssetLoad, store, theaterRuntimePort]);
 
   useEffect(() => {
     const game = gameRef.current;
@@ -1015,6 +1049,7 @@ export function RpgGameHost({
       return undefined;
     }
     if (inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked
+      || assetLoadBlocked
       || photoSessionOpen || qizhenRainRescueCinematicOpen) {
       setRpgInputEnabled(game, false);
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
@@ -1038,7 +1073,7 @@ export function RpgGameHost({
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [canteenExclusiveActive, chapter4PhaserInputBlocked, chapter4PhaserKeyboardBlocked, events, inputBlocked,
+  }, [assetLoadBlocked, canteenExclusiveActive, chapter4PhaserInputBlocked, chapter4PhaserKeyboardBlocked, events, inputBlocked,
     itemInspectOpen, keyboardBlocked, photoSessionOpen, qizhenRainRescueCinematicOpen]);
 
   useEffect(() => {
@@ -2113,7 +2148,7 @@ export function RpgGameHost({
 
   useEffect(() => {
     const handleFullscreenKey = (event: KeyboardEvent) => {
-      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4OverlayBlocked
+      if (!inputBlocked && !itemInspectOpen && !keyboardBlocked && !chapter4OverlayBlocked && !assetLoadBlocked
         && !photoSessionOpen && !qizhenRainRescueCinematicOpen
         && event.key.toLowerCase() === "f" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         toggleRpgFullscreen();
@@ -2121,7 +2156,7 @@ export function RpgGameHost({
     };
     window.addEventListener("keydown", handleFullscreenKey);
     return () => window.removeEventListener("keydown", handleFullscreenKey);
-  }, [chapter4OverlayBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen,
+  }, [assetLoadBlocked, chapter4OverlayBlocked, inputBlocked, itemInspectOpen, keyboardBlocked, photoSessionOpen,
     qizhenRainRescueCinematicOpen]);
 
   function direction(event: React.PointerEvent<HTMLButtonElement>, x: number, y: number) {
@@ -2233,6 +2268,21 @@ export function RpgGameHost({
     controller.returnToPhone();
   }
 
+  function retryRpgAssetLoad() {
+    const game = gameRef.current;
+    if (!game?.isBooted) return;
+    const target = resolveRuntimeSceneKey(store.getState());
+    const retryReport: RpgAssetLoadReport = {
+      sceneKey: target,
+      status: "loading",
+      progress: 0,
+      failedAssets: []
+    };
+    assetLoadBlockedRef.current = true;
+    setAssetLoadReport(retryReport);
+    restartRpgScene(game, target);
+  }
+
   function inspectMapItem(item: "campusCard" | "gamepad") {
     if (item === "campusCard") {
       const identityReadable = selectIdentityReadable(store.getState());
@@ -2293,9 +2343,10 @@ export function RpgGameHost({
       className={`rpg-stage ${runtimeScene === "campus_bootstrap" || runtimeScene === "campus_qizhen_loop" ? "is-campus-map" : ""} ${runtimeScene === "campus_qizhen_loop" ? "is-qizhen-approach" : ""} ${runtimeScene === "library_interior" ? "is-library-interior" : ""} ${runtimeScene === "canteen_interior" ? "is-canteen-interior" : ""} ${runtimeScene === "theater_interior" ? "is-theater-interior" : ""} ${runtimeScene === "qizhen_lake" ? "is-qizhen-lake" : ""} ${runtimeScene === "duan_yongping_temporal_maze" ? `is-chapter-four-temporal-maze is-chapter-four-mode-${state.chapter4.mode}` : ""} ${runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready" ? "is-canteen-bike" : ""} ${chaseActive ? "is-canteen-chase" : ""} ${embedded ? "is-embedded" : ""}`.trim()}
       aria-label="7:55 RPG runtime"
       data-input-blocked={inputBlocked || itemInspectOpen || chapter4OverlayBlocked || photoSessionOpen
-        || qizhenRainRescueCinematicOpen ? "true" : "false"}
+        || qizhenRainRescueCinematicOpen || assetLoadBlocked ? "true" : "false"}
       data-keyboard-blocked={keyboardBlocked || chapter4OverlayBlocked || photoSessionOpen
-        || qizhenRainRescueCinematicOpen ? "true" : "false"}
+        || qizhenRainRescueCinematicOpen || assetLoadBlocked ? "true" : "false"}
+      data-asset-load-status={assetLoadReport?.status ?? "idle"}
       data-rpg-engine={chapter4StairActive ? "three" : "phaser"}
       data-rpg-engine-reason={chapter4StairActive ? "chapter4_misaligned_stair" : "web_runtime_only"}
       data-reality-mode={runtimeScene === "duan_yongping_temporal_maze"
@@ -2325,6 +2376,46 @@ export function RpgGameHost({
             />
           ) : null}
         </div>
+
+        {assetLoadBlocked ? (
+          <section
+            className={`rpg-asset-load-overlay is-${assetLoadReport?.status ?? "loading"}`}
+            role={assetLoadReport?.status === "failed" ? "alert" : "status"}
+            aria-live="polite"
+          >
+            <div className="rpg-asset-load-card">
+              <small>场景资源</small>
+              <strong>
+                {assetLoadReport?.status === "failed" ? "地图资源没有完整载入" : "正在准备地图"}
+              </strong>
+              {assetLoadReport?.status === "failed" ? (
+                <p>
+                  本次缺少 {assetLoadReport.failedAssets.length} 项资源。网络恢复后重试，当前存档不会变化。
+                </p>
+              ) : (
+                <>
+                  <div
+                    className="rpg-asset-load-progress"
+                    role="progressbar"
+                    aria-label="地图资源加载进度"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round((assetLoadReport?.progress ?? 0) * 100)}
+                  >
+                    <i style={{ width: `${Math.round((assetLoadReport?.progress ?? 0) * 100)}%` }} />
+                  </div>
+                  <p>已完成 {Math.round((assetLoadReport?.progress ?? 0) * 100)}%</p>
+                </>
+              )}
+              {assetLoadReport?.status === "failed" ? (
+                <div className="rpg-asset-load-actions">
+                  <button type="button" onClick={retryRpgAssetLoad}>重试加载</button>
+                  <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
 
         {canteenStartTransitionActive ? (
           <CanteenBikeTransitionOverlay
@@ -2431,7 +2522,7 @@ export function RpgGameHost({
           </div>
         ) : null}
 
-        {showTaskBar && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen
+        {showTaskBar && !assetLoadBlocked && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen
           && !qizhenRainRescueCinematicOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
           <QuestTaskBar
             state={state}
@@ -2443,14 +2534,14 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {qizhenRainRescueCinematicOpen || photoSessionOpen || chapter4OverlayBlocked ? null : (
+        {qizhenRainRescueCinematicOpen || photoSessionOpen || chapter4OverlayBlocked || assetLoadBlocked ? null : (
           <div className="rpg-system-actions">
             <button type="button" onClick={returnToPhone}>{desktopSplit ? "聚焦手机" : "返回手机主页"}</button>
             <button type="button" onClick={() => toggleRpgFullscreen()}>全屏</button>
           </div>
         )}
 
-        {runtimeScene === "campus_bootstrap" && !canteenExclusiveActive ? (
+        {runtimeScene === "campus_bootstrap" && !canteenExclusiveActive && !assetLoadBlocked ? (
           <nav className="rpg-camera-actions" aria-label="地图视角">
             <button type="button" aria-label="定位人物" title="定位人物" onClick={(event) => { events.emit("rpg_camera_recenter"); event.currentTarget.blur(); }}>⌖</button>
             <button type="button" aria-label="放大地图" title="放大地图" onClick={(event) => { events.emit("rpg_camera_zoom", { delta: 0.1 }); event.currentTarget.blur(); }}>+</button>
@@ -2459,7 +2550,7 @@ export function RpgGameHost({
         ) : null}
 
         {((runtimeScene === "canteen_interior" && state.canteenHunt.active && ["tray_search", "drink_mix", "menu_order", "pickup_search", "exit_blocking", "chase_ready"].includes(state.canteenHunt.phase))
-          || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) ? (
+          || (runtimeScene === "campus_bootstrap" && state.canteenHunt.phase === "chase_ready")) && !assetLoadBlocked ? (
           <RpgRealityModeToggle
             mode={state.canteenHunt.mode}
             onToggle={() => events.emit("rpg_canteen_mode_requested", {
@@ -2468,7 +2559,8 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "theater_interior" && ["entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt"].includes(state.theaterHunt.phase) ? (
+        {runtimeScene === "theater_interior" && !assetLoadBlocked
+          && ["entry_ticket", "program_search", "prop_setup", "spotlight_ready", "spotlight_hunt"].includes(state.theaterHunt.phase) ? (
           <RpgRealityModeToggle
             className="rpg-theater-mode-toggle"
             mode={state.theaterHunt.mode}
@@ -2478,7 +2570,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {runtimeScene === "qizhen_lake" && !fishingSession && !photoSessionOpen
+        {runtimeScene === "qizhen_lake" && !assetLoadBlocked && !fishingSession && !photoSessionOpen
           && !qizhenRainRescueCinematicOpen
           && ["dock_outfitting", "boarding_tutorial", "lake_exploration", "tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase) ? (
           <RpgRealityModeToggle
@@ -2490,7 +2582,7 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {chapter4MazeUiActive && !chapter4OverlayBlocked ? (
+        {chapter4MazeUiActive && !chapter4OverlayBlocked && !assetLoadBlocked ? (
           <RpgRealityModeToggle
             mode={state.chapter4.mode}
             onToggle={() => events.emit("rpg_chapter4_755_intent_requested", {
@@ -2503,7 +2595,9 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {!inputBlocked && ((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad) && runtimeScene === "campus_bootstrap" && !canteenExclusiveActive ? (
+        {!inputBlocked && !assetLoadBlocked
+          && ((state.actOne.inventoryRecovered && state.items.campusCard) || state.items.gamepad)
+          && runtimeScene === "campus_bootstrap" && !canteenExclusiveActive ? (
           <aside className="rpg-temp-inventory" aria-label="地图物品栏">
             <strong>物品栏</strong>
             <div className="rpg-temp-items">
@@ -2545,7 +2639,7 @@ export function RpgGameHost({
           </aside>
         ) : null}
 
-        {!chapter4OverlayBlocked && !fishingSession && !photoSessionOpen && !qizhenRainRescueCinematicOpen && (runtimeScene === "library_interior"
+        {!assetLoadBlocked && !chapter4OverlayBlocked && !fishingSession && !photoSessionOpen && !qizhenRainRescueCinematicOpen && (runtimeScene === "library_interior"
           || runtimeScene === "dorm_hub"
           || runtimeScene === "canteen_interior"
           || (runtimeScene === "theater_interior" && !["spotlight_hunt", "reversal"].includes(state.theaterHunt.phase))
@@ -2555,7 +2649,7 @@ export function RpgGameHost({
           <RpgInventoryDock
             state={state}
             events={events}
-            blocked={inputBlocked}
+            blocked={inputBlocked || assetLoadBlocked}
             shellRef={shellRef}
             canvasHostRef={hostRef}
             runtimeScene={runtimeScene}
@@ -2568,11 +2662,11 @@ export function RpgGameHost({
           key={runtimeScene}
           events={events}
           state={state}
-          blocked={inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4OverlayBlocked
+          blocked={inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4OverlayBlocked || assetLoadBlocked
             || Boolean(fishingSession) || photoSessionOpen || qizhenRainRescueCinematicOpen}
         />
 
-        {!inputBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
+        {!inputBlocked && !assetLoadBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
           && !photoSessionOpen && !qizhenRainRescueCinematicOpen
           && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
@@ -2650,7 +2744,7 @@ export function RpgGameHost({
               <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
             </nav>
           )
-        ) : !inputBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
+        ) : !inputBlocked && !assetLoadBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
           && !qizhenRainRescueCinematicOpen ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
@@ -2704,14 +2798,21 @@ export function activateRpgScene(game: Phaser.Game, target: string): void {
 }
 
 function restartRpgScene(game: Phaser.Game, target: string): void {
+  const targetWasRunning = game.scene.isActive(target)
+    || game.scene.isPaused(target)
+    || game.scene.isSleeping(target);
   Object.values(SCENE_KEYS).forEach((sceneKey) => {
-    if (game.scene.isActive(sceneKey)
+    if (sceneKey !== target && (game.scene.isActive(sceneKey)
       || game.scene.isPaused(sceneKey)
-      || game.scene.isSleeping(sceneKey)) {
+      || game.scene.isSleeping(sceneKey))) {
       game.scene.stop(sceneKey);
     }
   });
-  game.scene.start(target);
+  if (targetWasRunning) {
+    game.scene.getScene(target).scene.restart();
+  } else {
+    game.scene.start(target);
+  }
 }
 
 function getLibraryObjective(state: GameState): string {

@@ -505,17 +505,22 @@
   font-family: var(--font-pixel);
 }
 
-.chapter4-power-panel__frame {
+.chapter4-power-panel__fixture {
   position: absolute;
   left: 18px;
   top: 70px;
   width: 142px;
   height: 130px;
+  pointer-events: none;
+}
+
+.chapter4-power-panel__frame {
+  position: absolute;
+  inset: 0;
   background-repeat: no-repeat;
   background-size: 200% 200%;
   image-rendering: pixelated;
   filter: drop-shadow(0 8px 9px rgb(0 0 0 / 52%));
-  pointer-events: none;
 }
 
 .chapter4-power-panel__frame.is-open_partial {
@@ -528,6 +533,33 @@
 
 .chapter4-power-panel__frame.is-open_restored {
   background-position: 100% 100%;
+}
+
+.chapter4-power-panel__fixture-switches {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.chapter4-power-panel__fixture-switches span {
+  position: absolute;
+  left: 60.2%;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #11191c;
+  border-radius: 1px;
+  transform: translate(-50%, -50%);
+  background: #20272a;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 7%);
+}
+
+.chapter4-power-panel__fixture-switches span.is-on {
+  border-color: #ffc14f;
+  background: #fff4a3;
+  box-shadow:
+    0 0 0 1px #8c4b08,
+    0 0 8px rgb(255 177 43 / 86%),
+    inset 0 0 0 1px #fffde1;
 }
 
 .chapter4-power-panel header p {
@@ -688,7 +720,7 @@
     padding: 22px;
   }
 
-  .chapter4-power-panel__frame {
+  .chapter4-power-panel__fixture {
     display: none;
   }
 
@@ -938,9 +970,52 @@
   list-style: none;
 }
 
+.chapter4-inserted-puzzle__route-order {
+  display: grid;
+  gap: 9px;
+}
+
+.chapter4-inserted-puzzle__route-objective {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 2px solid #827b67;
+  background: #ddd6bc;
+}
+
+.chapter4-inserted-puzzle__route-objective > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.chapter4-inserted-puzzle__route-objective > span:last-child {
+  text-align: right;
+}
+
+.chapter4-inserted-puzzle__route-objective small {
+  color: #756544;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.chapter4-inserted-puzzle__route-objective strong {
+  overflow-wrap: anywhere;
+  color: #243541;
+  font-size: 12px;
+}
+
+.chapter4-inserted-puzzle__route-objective i {
+  color: #a77b1f;
+  font-style: normal;
+  font-size: 20px;
+}
+
 .chapter4-inserted-puzzle__order li {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 36px 36px;
+  grid-template-columns: 30px minmax(0, 1fr) 48px 48px;
   gap: 7px;
   align-items: center;
   min-height: 44px;
@@ -967,6 +1042,12 @@
   background: #ded9c6;
   font: inherit;
   cursor: pointer;
+}
+
+.chapter4-inserted-puzzle__order button {
+  padding-inline: 4px;
+  white-space: nowrap;
+  font-size: 11px;
 }
 
 .chapter4-inserted-puzzle__selects {

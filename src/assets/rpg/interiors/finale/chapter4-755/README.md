@@ -51,7 +51,7 @@ Only these five sheets are active for the `7:55` path:
 | --- | --- | ---: | --- |
 | `chapter4_clock_states` | `sprites/chapter4_clock_states_v01.png` | 9 | Wall fixture; all frames explicitly `none`. |
 | `chapter4_power_panel_states` | `sprites/chapter4_power_panel_states_v01.png` | 4 | Wall fixture; all frames explicitly `none`. |
-| `chapter4_story_items` | `sprites/chapter4_story_items_v01.png` | 8 cells, one empty | Pickup/drop triggers; all item frames explicitly `none`. |
+| `chapter4_story_items` | `sprites/chapter4_story_items_v02.png` | 8 cells, one empty | Pickup/drop triggers; the final-minute cell uses the brass clock-hand component; all item frames explicitly `none`. |
 | `chapter4_room204_furniture` | `sprites/chapter4_a2_room204_furniture_v02.png` | 29 | Each visible object has one explicit low foot box and one placement trigger. |
 | `chapter4_room204_residual` | `sprites/chapter4_a2_room204_dark_residual_v02.png` | 12 | All frames explicitly `none`; one shared dark-observation bounds registers the group. |
 

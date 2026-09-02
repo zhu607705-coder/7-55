@@ -148,6 +148,7 @@ export class RpgInteriorDoorRuntime {
   private motion: RpgInteriorDoorMotion = "closed";
   private progress = 0;
   private actorOccluded = false;
+  private destroyed = false;
   private transitionStartedAt = 0;
   private transitionFrom = 0;
   private transitionTo = 0;
@@ -275,6 +276,18 @@ export class RpgInteriorDoorRuntime {
         onComplete: () => this.applyLeafTransform(0)
       });
     });
+  }
+
+  destroy(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.stopTweens();
+    if (this.foreground?.active) this.foreground.destroy();
+    this.leaves.forEach((leaf) => {
+      if (leaf.active) leaf.destroy(true);
+    });
+    if (this.spill.active) this.spill.destroy();
+    if (this.portal.active) this.portal.destroy();
   }
 
   private createLeaves(): Phaser.GameObjects.Container[] {

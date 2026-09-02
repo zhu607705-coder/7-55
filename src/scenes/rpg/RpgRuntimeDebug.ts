@@ -1,5 +1,6 @@
 import { cloneSerializable } from "../../core/ClientCompatibility";
 import type { QizhenPhotoRecipe, QizhenPhotoSpotId } from "../../core/types";
+import type { RpgInteriorDoorDebugSnapshot } from "./RpgInteriorDoor";
 
 export interface QizhenPhotoSessionDebugRequest {
   spotId: QizhenPhotoSpotId;
@@ -31,6 +32,8 @@ export interface RpgRuntimeDebugState {
     collisionWidth?: number;
     collisionHeight?: number;
     collisionBounds?: { x: number; y: number; width: number; height: number };
+    visualBounds?: { x: number; y: number; width: number; height: number };
+    movementBounds?: { x: number; y: number; width: number; height: number };
     depth?: number;
   };
   input?: {
@@ -217,6 +220,12 @@ export interface RpgRuntimeDebugState {
     /** Compatibility summary. Use committed/applied below for authority comparisons. */
     phase: string;
     mode: "light" | "dark";
+    storyPresentation?: string;
+    powerGridSuccess?: {
+      active: boolean;
+      visualCount: number;
+      tweenCount: number;
+    };
     committed?: {
       phase: string;
       timeState: string;
@@ -267,6 +276,16 @@ export interface RpgRuntimeDebugState {
       activeTargetMarkerIds: readonly string[];
       dormantTargetMarkerIds: readonly string[];
     };
+    mainEntranceDoor?: (RpgInteriorDoorDebugSnapshot & {
+      storyFloor: "A1";
+      anchorId: string;
+      plateId: string | null;
+      openRequested: boolean;
+      playerFoot: { x: number; y: number };
+      openingBounds: { x: number; y: number; width: number; height: number };
+      approachBounds: { x: number; y: number; width: number; height: number };
+      holdOpenBounds: { x: number; y: number; width: number; height: number };
+    }) | null;
     runtimeEntities?: ReadonlyArray<{
       targetId: string;
       entityId: string;

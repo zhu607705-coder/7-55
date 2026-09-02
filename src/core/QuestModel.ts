@@ -847,7 +847,6 @@ function selectChapterFour755TaskKey(
       || !facts.has("classroom_105_terminal_replay_checked")
       || !facts.has("elevator_history_observed")
         || !facts.has("elevator_history_calibrated")
-        || !facts.has("a1_duty_board_reconstructed")
       ? "resolve_a1_investigation"
       : !facts.has("a3_reference_observed")
         ? "resolve_a3_archive_chain"
@@ -859,6 +858,8 @@ function selectChapterFour755TaskKey(
         ? "resolve_a2_inserted_puzzles"
       : !facts.has("elevator_stop_chain_reconstructed")
         ? "resolve_elevator_stop_chain"
+      : !facts.has("a1_duty_board_reconstructed")
+        ? "resolve_a1_investigation"
       : !facts.has("room204_residual_observed")
         || !facts.has("room204_restored")
           ? "restore_room204"
@@ -979,8 +980,8 @@ function chapterFour755Quest(
       },
       {
         id: "a2_evacuation",
-        label: "开放自习区",
-        detail: "疏散路线",
+        label: "开放自习区路线板",
+        detail: "202 至主楼梯",
         factId: "a2_evacuation_route_confirmed"
       }
     ] as const;

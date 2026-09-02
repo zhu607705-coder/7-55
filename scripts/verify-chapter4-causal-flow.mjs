@@ -7,13 +7,14 @@ function assert(condition, message) {
   if (!condition) throw new Error(`[chapter4:validate-causal-flow] ${message}`);
 }
 
-const [layout, content, audio, hostSource, sceneSource, subtitleSource] = await Promise.all([
+const [layout, content, audio, hostSource, sceneSource, subtitleSource, powerPanelSource] = await Promise.all([
   readFile(new URL("../src/data/chapter4-three-floor-maze.layout.json", import.meta.url), "utf8").then(JSON.parse),
   readFile(new URL("../src/data/chapter4-755.content.json", import.meta.url), "utf8").then(JSON.parse),
   readFile(new URL("../src/data/chapter4-755.audio.json", import.meta.url), "utf8").then(JSON.parse),
   readFile(new URL("../src/scenes/rpg/RpgGameHost.tsx", import.meta.url), "utf8"),
   readFile(new URL("../src/scenes/rpg/ChapterFourTemporalMazeScene.ts", import.meta.url), "utf8"),
-  readFile(new URL("../src/components/RpgSubtitleLayer.tsx", import.meta.url), "utf8")
+  readFile(new URL("../src/components/RpgSubtitleLayer.tsx", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx", import.meta.url), "utf8")
 ]);
 
 assert(layout.evidenceDetails.length === 30, "exactly 30 source-pixel raw details are required");
@@ -24,8 +25,13 @@ assert(content.transitionContracts.length === 8, "the Chapter 4 sequence must de
 assert(content.transitionContracts.filter((entry) => entry.owner === "transition_overlay").length === 4, "only four genuine time changes may own overlays");
 assert(content.transitionContracts.filter((entry) => entry.owner === "scene_interaction").length === 4, "four world handoffs must stay inside the scene");
 assert(Boolean(audio.events.chapter4_environment_hint_pulse?.cues?.some((cue) => cue.panFromEvent === true)), "adaptive environment sound must consume scene position");
+assert(Boolean(audio.events.power_grid_locked?.cues?.some((cue) => cue.channel === "sfx")), "power-grid success must have an audible confirmation cue");
 assert(/selectChapterFourTransitionPresentation\(result\)/.test(hostSource) && /<ChapterFourTransitionOverlay/.test(hostSource), "Host must mount the selected time transition overlay");
 assert(/rpg_chapter4_power_panel_attempt_abandoned/.test(hostSource) && /recordVisualHintFailure\("power_route_comparison"\)/.test(sceneSource), "closing an unfinished power panel must count as one help attempt");
+assert(/allZonesPowered[\s\S]*?总负载过高。核对已记录的必要路线，关闭旁路回路。/.test(powerPanelSource), "all-on power state must explain that the necessary route is still unresolved");
+assert(/CHAPTER_FOUR_LIGHT_GRID\.zones\.map[\s\S]*?data-fixture-zone=\{zone\.id\}[\s\S]*?className=\{on \? "is-on" : "is-off"\}/.test(powerPanelSource), "physical breaker indicators must mirror all five diagram zone states");
+assert(/beginPowerGridSuccessPresentation[\s\S]*?chapter4_power_grid_success_presentation_completed/.test(sceneSource), "solved power grid must run a scene-owned success presentation before the chase handoff");
+assert(/storyPresentation === "power_grid_success"[\s\S]*?guard\.setVelocity\(0, 0\)\.setVisible\(false\)/.test(sceneSource), "final-chase guard must remain paused while the power-grid success presentation owns input");
 assert(/if \(blocked\) return;/.test(subtitleSource), "subtitle surface must stay suppressed while an overlay owns presentation");
 assert(!/字幕.*(?:房间|路线|答案)/.test(JSON.stringify(content.evidenceContracts)), "evidence contracts must remain raw-detail contracts");
 

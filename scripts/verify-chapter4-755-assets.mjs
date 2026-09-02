@@ -475,7 +475,7 @@ assertJsonEqual([
 ], [
   "cleaning_cart",
   "cleaner_idle",
-  "cleaner_push_cart_up",
+  "cleaner_push_cart",
   "guard_walk"
 ], "Task10 layout/NPC animation bindings");
 const pryTarget = maintenanceRuntime?.targetEntities?.find(
@@ -546,16 +546,20 @@ assert(
   "Task11 final clock frame must remain visual-only and non-colliding"
 );
 assert(
-  finalClockRuntime?.endpoint?.boundsDerivation?.kind === "visible_programmatic_minute_endpoint_get_bounds"
-    && finalClockRuntime.endpoint.boundsDerivation.clockFrame === finalClockRuntime.clockFrame,
+  finalClockRuntime?.endpoint?.visualHandleDerivation?.kind === "visible_programmatic_minute_endpoint_get_bounds"
+    && finalClockRuntime.endpoint.visualHandleDerivation.clockFrame === finalClockRuntime.clockFrame,
   "Task11 minute endpoint must derive from the visible programmatic hand bound to the approved clock frame"
 );
 assert(
-  finalClockRuntime?.endpoint?.installationBounds?.width === 16
-    && finalClockRuntime?.endpoint?.installationBounds?.height === 16
-    && finalClockRuntime.endpoint.installationBounds.width < 122
-    && finalClockRuntime.endpoint.installationBounds.height < 120,
-  "Task11 minute endpoint must use its small visible handle bounds and must not reuse the whole clock rectangle"
+  finalClockRuntime?.endpoint?.visualHandleBounds?.width === 16
+    && finalClockRuntime?.endpoint?.visualHandleBounds?.height === 16,
+  "Task11 minute endpoint must retain its measured visible handle bounds"
+);
+assert(
+  finalClockRuntime?.endpoint?.boundsDerivation?.kind === "visible_clock_face_drop_envelope"
+    && finalClockRuntime.endpoint.installationBounds.width === 122
+    && finalClockRuntime.endpoint.installationBounds.height === 120,
+  "Task11 minute installation must accept the full visible clock-face drop envelope"
 );
 
 const lightGridRuntime = layout.lightGridRuntime;

@@ -177,9 +177,9 @@ function selectLocalProgress(
     case "final_chase":
       return "抵达 202 0/1";
     case "final_minute_recovery":
-      return `最后一分钟 ${facts.has("final_minute_recovered") ? 1 : 0}/1`;
+      return `分针组件 ${facts.has("final_minute_recovered") ? 1 : 0}/1`;
     case "return_to_clock":
-      return state.chapter4.floor === "A1" ? "返回旧钟 1/1" : "返回旧钟 0/1";
+      return state.chapter4.floor === "A1" ? "抵达一楼 1/1" : "抵达一楼 0/1";
     case "morning_checkin":
       return `签到确认 ${countFacts(facts, ["checkin_card_accepted", "checkin_paper_accepted"])}/2`;
     case "exterior_closure":

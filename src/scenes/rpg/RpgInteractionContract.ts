@@ -292,6 +292,7 @@ interface ChapterFourLayoutFinalClockRuntime {
   endpoint: {
     targetId: "a1_hall_clock_minute_endpoint";
     entityId: string;
+    visualHandleBounds: RpgHalfOpenWorldRect;
     installationBounds: RpgHalfOpenWorldRect;
     approximate: boolean;
   };
@@ -886,7 +887,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   ),
   a1_hall_clock_minute_endpoint: runtimeEntityTarget(
     "a1_hall_clock_minute_endpoint",
-    "旧钟分针端点",
+    "大厅旧钟表盘",
     "light",
     ["maintenance_repair", "return_to_clock"],
     (chapterFourLayout.finalClockRuntime as ChapterFourLayoutFinalClockRuntime).endpoint.entityId,
@@ -937,7 +938,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a2_202_projection: runtimeEntityTarget(
     "a2_202_projection",
-    "202 投影中的最后一分钟",
+    "202 阶梯座椅间的黄铜分针组件",
     "light",
     ["final_minute_recovery"],
     (chapterFourLayout.finalMinuteRuntime as ChapterFourLayoutFinalMinuteRuntime).entityId,

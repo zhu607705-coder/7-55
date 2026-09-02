@@ -677,10 +677,10 @@ const ICONS: Record<string, PixelMap> = {
   },
   finalMinute: {
     rows: [
-      ".kkkkkkk.", ".kwwwwwk.", ".kwyyywk.", ".kwwwwwk.", ".kyyywwk.",
-      ".kwwwwwk.", ".kwyyywk.", ".kwwwwwk.", ".kkkkkkk.", "........."
+      ".......y.", "......yy.", ".....yy..", "....yy...", "...yy....",
+      "..yyy....", ".yky.....", "ykyky....", ".kyk.....", "..k......"
     ],
-    palette: { k: "#4b5054", w: "#ece5d8", y: "#e0c770" }
+    palette: { k: "#4b3a24", y: "#d6a94e" }
   },
   backpack: {
     rows: [
@@ -893,5 +893,5 @@ export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
   clockPositioningPlate: { name: "定位盘", desc: "204 复位完成后得到的旧钟定位盘。它负责让时间回到正确轨道。" },
   shortPryBar: { name: "短撬棍", desc: "面包店后场找到的短撬棍。适合掀开清洁车轮罩。" },
   universalLubricatingOil: { name: "通用润滑油", desc: "修好清洁车后取到的半瓶润滑油。先修车轮，再上旧钟齿轮。" },
-  finalMinute: { name: "最后一分钟", desc: "从 202 投影中追回的一分钟。它必须回到旧钟分针端点。" }
+  finalMinute: { name: "黄铜分针组件", desc: "从 202 阶梯座椅间取回的旧钟分针组件。轴座磨损与大厅旧钟吻合。" }
 };

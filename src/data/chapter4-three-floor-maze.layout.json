@@ -11,6 +11,81 @@
     "reviewStatus": "approved_for_integration",
     "file": "artifacts/chapter4-map-assets-20260820/chapter4-structure-annotations-user-v01.json"
   },
+  "furnitureCollisionDraftContract": {
+    "schema": "chapter4-furniture-collision-draft/v1",
+    "coordinateSystem": {
+      "origin": "top_left",
+      "unit": "source_pixel",
+      "rectangleSemantics": "x_y_width_height"
+    },
+    "importBatch": "user_browser_export_2026-09-02_a391c55a",
+    "floorDraftCounts": {
+      "A1": 32,
+      "A2": 0,
+      "A3": 42
+    },
+    "importedCollisionCounts": {
+      "A1": 28,
+      "A2": 0,
+      "A3": 37
+    },
+    "ignoredClickRectIds": [
+      "a1_furniture_015",
+      "a1_furniture_017",
+      "a1_furniture_018",
+      "a1_furniture_037",
+      "a3_furniture_012",
+      "a3_furniture_013",
+      "a3_furniture_014",
+      "a3_furniture_027",
+      "a3_furniture_040"
+    ],
+    "boundaryAdjustments": [
+      {
+        "id": "a1_furniture_009",
+        "reason": "preserve_required_walkable",
+        "sourceBounds": {
+          "x": 1040,
+          "y": 113,
+          "width": 8,
+          "height": 116
+        },
+        "runtimeBounds": {
+          "x": 1040,
+          "y": 113,
+          "width": 8,
+          "height": 114
+        }
+      },
+      {
+        "id": "a3_furniture_010",
+        "reason": "preserve_report_hall_doorway_and_east_wall",
+        "sourceBounds": {
+          "x": 1416,
+          "y": 217,
+          "width": 202,
+          "height": 148
+        },
+        "runtimeBounds": {
+          "x": 1416,
+          "y": 217,
+          "width": 200,
+          "height": 146
+        }
+      }
+    ],
+    "walkableRefinements": [
+      {
+        "sourceAnnotationId": "a3-ann-003",
+        "reason": "exclude_two_visible_stair_rails_while_preserving_connected_passages",
+        "runtimeRegionIds": [
+          "a3_walkable_003_elevator_landing",
+          "a3_walkable_003_stair_center",
+          "a3_walkable_003_lower_bridge"
+        ]
+      }
+    ]
+  },
   "worldSize": {
     "width": 1672,
     "height": 941
@@ -65,6 +140,77 @@
       "width": 19.5,
       "height": 14.625
     }
+  },
+  "mainEntranceDoorRuntime": {
+    "id": "a1_main_entrance_auto_door",
+    "storyFloor": "A1",
+    "anchorId": "main_entrance",
+    "motion": "double-fold",
+    "durationMs": 420,
+    "passableProgress": 0.38,
+    "openingBounds": {
+      "x": 778,
+      "y": 802,
+      "width": 132,
+      "height": 78
+    },
+    "approachBounds": {
+      "x": 720,
+      "y": 796,
+      "width": 246,
+      "height": 105
+    },
+    "holdOpenBounds": {
+      "x": 678,
+      "y": 770,
+      "width": 330,
+      "height": 171
+    },
+    "leftLeafSource": {
+      "x": 778,
+      "y": 802,
+      "width": 66,
+      "height": 78
+    },
+    "rightLeafSource": {
+      "x": 844,
+      "y": 802,
+      "width": 66,
+      "height": 78
+    },
+    "leftPortalSource": {
+      "x": 711,
+      "y": 802,
+      "width": 66,
+      "height": 78
+    },
+    "rightPortalSource": {
+      "x": 911,
+      "y": 802,
+      "width": 66,
+      "height": 78
+    },
+    "fixedForegroundBounds": [
+      {
+        "x": 649,
+        "y": 737,
+        "width": 375,
+        "height": 65
+      },
+      {
+        "x": 649,
+        "y": 802,
+        "width": 129,
+        "height": 79
+      },
+      {
+        "x": 910,
+        "y": 802,
+        "width": 114,
+        "height": 79
+      }
+    ],
+    "sortY": 881
   },
   "safeRoutes": {
     "a1LobbyBakery": {
@@ -905,7 +1051,7 @@
         {
           "id": "stair_north",
           "x": 1001,
-          "y": 214,
+          "y": 240,
           "neighborIds": [
             "west_north",
             "east_north"
@@ -923,7 +1069,7 @@
         {
           "id": "east_north",
           "x": 1105,
-          "y": 220,
+          "y": 240,
           "neighborIds": [
             "stair_north",
             "east_south"
@@ -951,14 +1097,25 @@
       "approximate": false
     },
     "repairedPush": {
-      "animationId": "cleaner_push_cart_up",
+      "animationId": "cleaner_push_cart",
+      "sourceFrameSize": {
+        "width": 192,
+        "height": 128
+      },
+      "visibleCharacterCrop": {
+        "x": 0,
+        "y": 0,
+        "width": 96,
+        "height": 128
+      },
+      "flipX": true,
       "from": {
         "x": 1138,
         "y": 716
       },
       "to": {
-        "x": 1138,
-        "y": 650
+        "x": 1072,
+        "y": 716
       },
       "durationMs": 900,
       "approximate": true
@@ -1128,11 +1285,17 @@
     "endpoint": {
       "targetId": "a1_hall_clock_minute_endpoint",
       "entityId": "chapter4_hall_clock_minute_endpoint",
-      "installationBounds": {
+      "visualHandleBounds": {
         "x": 967,
         "y": 26,
         "width": 16,
         "height": 16
+      },
+      "installationBounds": {
+        "x": 940,
+        "y": 30,
+        "width": 122,
+        "height": 120
       },
       "standPosition": {
         "x": 1001,
@@ -1140,6 +1303,11 @@
       },
       "proximity": 148,
       "boundsDerivation": {
+        "kind": "visible_clock_face_drop_envelope",
+        "sourceTargetId": "a1_hall_clock",
+        "hudSafeRule": "accept_visible_clock_face"
+      },
+      "visualHandleDerivation": {
         "kind": "visible_programmatic_minute_endpoint_get_bounds",
         "clockFrame": "gear_running",
         "source": "finalClockRuntime.clockCenter+minuteHandRadius+initialAngleDegrees"
@@ -1509,13 +1677,13 @@
         "targetId": "a1_campus_card_reader",
         "entityId": "chapter4_checkin_card_reader",
         "installationBounds": {
-          "x": 768,
+          "x": 784,
           "y": 607,
           "width": 30,
           "height": 24
         },
         "standPosition": {
-          "x": 783,
+          "x": 799,
           "y": 662
         },
         "proximity": 72,
@@ -2048,6 +2216,267 @@
           "y": 292,
           "width": 397,
           "height": 90
+        },
+        {
+          "id": "a1_air_wall_classroom_104_teaching_line",
+          "sourceAnnotationId": "a1-ann-020",
+          "label": "104 教室讲台桌前沿空气墙",
+          "x": 1278,
+          "y": 229,
+          "width": 290,
+          "height": 19
+        },
+        {
+          "id": "a1_furniture_007",
+          "sourceAnnotationId": "a1-ann-furniture-007",
+          "label": "前台左侧座椅阻挡",
+          "x": 757,
+          "y": 571,
+          "width": 23,
+          "height": 60
+        },
+        {
+          "id": "a1_furniture_008",
+          "sourceAnnotationId": "a1-ann-furniture-008",
+          "label": "前台右侧座椅与盆栽阻挡",
+          "x": 894,
+          "y": 582,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "id": "a1_furniture_009",
+          "sourceAnnotationId": "a1-ann-furniture-009",
+          "label": "主楼梯右侧边缘阻挡",
+          "x": 1040,
+          "y": 113,
+          "width": 8,
+          "height": 114
+        },
+        {
+          "id": "a1_furniture_010",
+          "sourceAnnotationId": "a1-ann-furniture-010",
+          "label": "主楼梯左侧边缘阻挡",
+          "x": 943,
+          "y": 112,
+          "width": 8,
+          "height": 109
+        },
+        {
+          "id": "a1_furniture_011",
+          "sourceAnnotationId": "a1-ann-furniture-011",
+          "label": "104 教室第一排第一组桌椅阻挡",
+          "x": 1276,
+          "y": 299,
+          "width": 42,
+          "height": 18
+        },
+        {
+          "id": "a1_furniture_012",
+          "sourceAnnotationId": "a1-ann-furniture-012",
+          "label": "104 教室第一排第二组桌椅阻挡",
+          "x": 1357,
+          "y": 293,
+          "width": 30,
+          "height": 19
+        },
+        {
+          "id": "a1_furniture_013",
+          "sourceAnnotationId": "a1-ann-furniture-013",
+          "label": "104 教室第一排第三组桌椅阻挡",
+          "x": 1428,
+          "y": 296,
+          "width": 40,
+          "height": 16
+        },
+        {
+          "id": "a1_furniture_014",
+          "sourceAnnotationId": "a1-ann-furniture-014",
+          "label": "104 教室第一排第四组桌椅阻挡",
+          "x": 1508,
+          "y": 297,
+          "width": 38,
+          "height": 17
+        },
+        {
+          "id": "a1_furniture_016",
+          "sourceAnnotationId": "a1-ann-furniture-016",
+          "label": "104 教室第二排第四组桌椅阻挡",
+          "x": 1510,
+          "y": 355,
+          "width": 36,
+          "height": 26
+        },
+        {
+          "id": "a1_furniture_001",
+          "sourceAnnotationId": "a1-ann-furniture-001",
+          "label": "104 教室第二排第三组桌椅阻挡",
+          "x": 1430,
+          "y": 358,
+          "width": 38,
+          "height": 23
+        },
+        {
+          "id": "a1_furniture_019",
+          "sourceAnnotationId": "a1-ann-furniture-019",
+          "label": "104 教室第二排第二组桌椅阻挡",
+          "x": 1356,
+          "y": 354,
+          "width": 41,
+          "height": 25
+        },
+        {
+          "id": "a1_furniture_020",
+          "sourceAnnotationId": "a1-ann-furniture-020",
+          "label": "104 教室第二排第一组桌椅阻挡",
+          "x": 1280,
+          "y": 359,
+          "width": 45,
+          "height": 20
+        },
+        {
+          "id": "a1_furniture_021",
+          "sourceAnnotationId": "a1-ann-furniture-021",
+          "label": "104 教室第三排第一组桌椅阻挡",
+          "x": 1278,
+          "y": 417,
+          "width": 40,
+          "height": 23
+        },
+        {
+          "id": "a1_furniture_022",
+          "sourceAnnotationId": "a1-ann-furniture-022",
+          "label": "104 教室第三排第二组桌椅阻挡",
+          "x": 1358,
+          "y": 417,
+          "width": 35,
+          "height": 20
+        },
+        {
+          "id": "a1_furniture_023",
+          "sourceAnnotationId": "a1-ann-furniture-023",
+          "label": "104 教室第三排第三组桌椅阻挡",
+          "x": 1429,
+          "y": 415,
+          "width": 41,
+          "height": 24
+        },
+        {
+          "id": "a1_furniture_024",
+          "sourceAnnotationId": "a1-ann-furniture-024",
+          "label": "104 教室第三排第四组桌椅阻挡",
+          "x": 1507,
+          "y": 417,
+          "width": 44,
+          "height": 22
+        },
+        {
+          "id": "a1_furniture_025",
+          "sourceAnnotationId": "a1-ann-furniture-025",
+          "label": "105 教室第一排第一组桌椅阻挡",
+          "x": 1272,
+          "y": 619,
+          "width": 44,
+          "height": 23
+        },
+        {
+          "id": "a1_furniture_026",
+          "sourceAnnotationId": "a1-ann-furniture-026",
+          "label": "105 教室第一排第二组桌椅阻挡",
+          "x": 1347,
+          "y": 623,
+          "width": 46,
+          "height": 19
+        },
+        {
+          "id": "a1_furniture_027",
+          "sourceAnnotationId": "a1-ann-furniture-027",
+          "label": "105 教室第一排第三组桌椅阻挡",
+          "x": 1434,
+          "y": 625,
+          "width": 35,
+          "height": 15
+        },
+        {
+          "id": "a1_furniture_028",
+          "sourceAnnotationId": "a1-ann-furniture-028",
+          "label": "105 教室第一排第四组桌椅阻挡",
+          "x": 1510,
+          "y": 621,
+          "width": 36,
+          "height": 22
+        },
+        {
+          "id": "a1_furniture_029",
+          "sourceAnnotationId": "a1-ann-furniture-029",
+          "label": "105 教室第二排第四组桌椅阻挡",
+          "x": 1509,
+          "y": 683,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "id": "a1_furniture_030",
+          "sourceAnnotationId": "a1-ann-furniture-030",
+          "label": "105 教室第二排第三组桌椅阻挡",
+          "x": 1423,
+          "y": 686,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "id": "a1_furniture_031",
+          "sourceAnnotationId": "a1-ann-furniture-031",
+          "label": "105 教室第二排第二组桌椅阻挡",
+          "x": 1355,
+          "y": 680,
+          "width": 39,
+          "height": 16
+        },
+        {
+          "id": "a1_furniture_032",
+          "sourceAnnotationId": "a1-ann-furniture-032",
+          "label": "105 教室第二排第一组桌椅阻挡",
+          "x": 1271,
+          "y": 677,
+          "width": 47,
+          "height": 27
+        },
+        {
+          "id": "a1_furniture_033",
+          "sourceAnnotationId": "a1-ann-furniture-033",
+          "label": "105 教室第三排第一组桌椅阻挡",
+          "x": 1277,
+          "y": 745,
+          "width": 42,
+          "height": 22
+        },
+        {
+          "id": "a1_furniture_034",
+          "sourceAnnotationId": "a1-ann-furniture-034",
+          "label": "105 教室第三排第二组桌椅阻挡",
+          "x": 1352,
+          "y": 746,
+          "width": 41,
+          "height": 19
+        },
+        {
+          "id": "a1_furniture_035",
+          "sourceAnnotationId": "a1-ann-furniture-035",
+          "label": "105 教室第三排第三组桌椅阻挡",
+          "x": 1431,
+          "y": 745,
+          "width": 38,
+          "height": 20
+        },
+        {
+          "id": "a1_furniture_036",
+          "sourceAnnotationId": "a1-ann-furniture-036",
+          "label": "105 教室第三排第四组桌椅阻挡",
+          "x": 1505,
+          "y": 744,
+          "width": 41,
+          "height": 19
         }
       ],
       "walkableRegions": [
@@ -2318,8 +2747,8 @@
           "id": "a1_front_desk_duty_board",
           "label": "一楼前台值班签到板",
           "bounds": {
-            "x": 699,
-            "y": 548,
+            "x": 820,
+            "y": 591,
             "width": 104,
             "height": 68
           }
@@ -2386,12 +2815,12 @@
         },
         {
           "id": "a1_hall_clock_minute_endpoint",
-          "label": "旧钟分针端点",
+          "label": "大厅旧钟表盘",
           "bounds": {
-            "x": 957,
-            "y": 82,
-            "width": 16,
-            "height": 16
+            "x": 940,
+            "y": 30,
+            "width": 122,
+            "height": 120
           }
         },
         {
@@ -2581,6 +3010,20 @@
           "y": 107,
           "width": 29,
           "height": 229
+        },
+        {
+          "id": "a2_air_wall_room202_blackboard_foot_limit",
+          "sourceAnnotationId": "a2-ann-031",
+          "label": "202 教室黑板下沿脚部通行边界",
+          "x": 1166,
+          "y": 107,
+          "width": 432,
+          "height": 19,
+          "visualBoundary": {
+            "kind": "foot_box_north_edge",
+            "provenance": "browser_comment_2026_09_02",
+            "sourceLineY": 126
+          }
         },
         {
           "id": "a2_air_wall_013",
@@ -2908,7 +3351,7 @@
         },
         {
           "id": "a2_open_study_evacuation",
-          "label": "开放自习区疏散路线板",
+          "label": "202 至主楼梯疏散路线板",
           "bounds": {
             "x": 786,
             "y": 600,
@@ -2968,7 +3411,7 @@
         },
         {
           "id": "a2_202_projection",
-          "label": "202 投影中的最后一分钟",
+          "label": "202 阶梯座椅间的黄铜分针组件",
           "bounds": {
             "x": 1372,
             "y": 56,
@@ -3307,6 +3750,339 @@
           "y": 823,
           "width": 1579,
           "height": 17
+        },
+        {
+          "id": "a3_furniture_003",
+          "sourceAnnotationId": "a3-ann-furniture-003",
+          "label": "301 北侧第三组校史展柜阻挡",
+          "x": 349,
+          "y": 130,
+          "width": 74,
+          "height": 35
+        },
+        {
+          "id": "a3_furniture_004",
+          "sourceAnnotationId": "a3-ann-furniture-004",
+          "label": "301 中央档案展台阻挡",
+          "x": 163,
+          "y": 214,
+          "width": 237,
+          "height": 72
+        },
+        {
+          "id": "a3_furniture_005",
+          "sourceAnnotationId": "a3-ann-furniture-005",
+          "label": "301 南侧左组展柜阻挡",
+          "x": 138,
+          "y": 327,
+          "width": 126,
+          "height": 33
+        },
+        {
+          "id": "a3_furniture_006",
+          "sourceAnnotationId": "a3-ann-furniture-006",
+          "label": "301 南侧右组展柜阻挡",
+          "x": 307,
+          "y": 328,
+          "width": 124,
+          "height": 35
+        },
+        {
+          "id": "a3_furniture_007",
+          "sourceAnnotationId": "a3-ann-furniture-007",
+          "label": "主楼梯左侧边缘阻挡",
+          "x": 895,
+          "y": 58,
+          "width": 13,
+          "height": 154
+        },
+        {
+          "id": "a3_furniture_008",
+          "sourceAnnotationId": "a3-ann-furniture-008",
+          "label": "主楼梯右侧边缘阻挡",
+          "x": 1010,
+          "y": 55,
+          "width": 6,
+          "height": 164
+        },
+        {
+          "id": "a3_furniture_009",
+          "sourceAnnotationId": "a3-ann-furniture-009",
+          "label": "304 报告厅左侧座席阻挡",
+          "x": 1195,
+          "y": 218,
+          "width": 154,
+          "height": 144
+        },
+        {
+          "id": "a3_furniture_010",
+          "sourceAnnotationId": "a3-ann-furniture-010",
+          "label": "304 报告厅右侧座席阻挡",
+          "x": 1416,
+          "y": 217,
+          "width": 200,
+          "height": 146
+        },
+        {
+          "id": "a3_furniture_001",
+          "sourceAnnotationId": "a3-ann-furniture-001",
+          "label": "301 北侧第一组校史展柜阻挡",
+          "x": 134,
+          "y": 125,
+          "width": 76,
+          "height": 32
+        },
+        {
+          "id": "a3_furniture_011",
+          "sourceAnnotationId": "a3-ann-furniture-011",
+          "label": "303 教室第一排第一组桌椅阻挡",
+          "x": 1214,
+          "y": 606,
+          "width": 31,
+          "height": 28
+        },
+        {
+          "id": "a3_furniture_015",
+          "sourceAnnotationId": "a3-ann-furniture-015",
+          "label": "303 教室第一排第二组桌椅阻挡",
+          "x": 1271,
+          "y": 613,
+          "width": 35,
+          "height": 17
+        },
+        {
+          "id": "a3_furniture_016",
+          "sourceAnnotationId": "a3-ann-furniture-016",
+          "label": "303 教室第一排第三组桌椅阻挡",
+          "x": 1338,
+          "y": 615,
+          "width": 21,
+          "height": 14
+        },
+        {
+          "id": "a3_furniture_017",
+          "sourceAnnotationId": "a3-ann-furniture-017",
+          "label": "303 教室第二排第一组桌椅阻挡",
+          "x": 1217,
+          "y": 656,
+          "width": 28,
+          "height": 19
+        },
+        {
+          "id": "a3_furniture_018",
+          "sourceAnnotationId": "a3-ann-furniture-018",
+          "label": "303 教室第二排第二组桌椅阻挡",
+          "x": 1271,
+          "y": 660,
+          "width": 35,
+          "height": 13
+        },
+        {
+          "id": "a3_furniture_019",
+          "sourceAnnotationId": "a3-ann-furniture-019",
+          "label": "303 教室第二排第三组桌椅阻挡",
+          "x": 1336,
+          "y": 657,
+          "width": 26,
+          "height": 17
+        },
+        {
+          "id": "a3_furniture_020",
+          "sourceAnnotationId": "a3-ann-furniture-020",
+          "label": "303 教室第一排第四组桌椅阻挡",
+          "x": 1429,
+          "y": 609,
+          "width": 20,
+          "height": 19
+        },
+        {
+          "id": "a3_furniture_021",
+          "sourceAnnotationId": "a3-ann-furniture-021",
+          "label": "303 教室第一排第五组桌椅阻挡",
+          "x": 1478,
+          "y": 607,
+          "width": 32,
+          "height": 18
+        },
+        {
+          "id": "a3_furniture_022",
+          "sourceAnnotationId": "a3-ann-furniture-022",
+          "label": "303 教室第一排第六组桌椅阻挡",
+          "x": 1543,
+          "y": 609,
+          "width": 23,
+          "height": 15
+        },
+        {
+          "id": "a3_furniture_023",
+          "sourceAnnotationId": "a3-ann-furniture-023",
+          "label": "303 教室第二排第四组桌椅阻挡",
+          "x": 1419,
+          "y": 661,
+          "width": 33,
+          "height": 17
+        },
+        {
+          "id": "a3_furniture_024",
+          "sourceAnnotationId": "a3-ann-furniture-024",
+          "label": "303 教室第二排第五组桌椅阻挡",
+          "x": 1483,
+          "y": 659,
+          "width": 24,
+          "height": 13
+        },
+        {
+          "id": "a3_furniture_025",
+          "sourceAnnotationId": "a3-ann-furniture-025",
+          "label": "303 教室第二排第六组桌椅阻挡",
+          "x": 1542,
+          "y": 656,
+          "width": 28,
+          "height": 19
+        },
+        {
+          "id": "a3_furniture_002",
+          "sourceAnnotationId": "a3-ann-furniture-002",
+          "label": "301 北侧第二组校史展柜阻挡",
+          "x": 237,
+          "y": 128,
+          "width": 91,
+          "height": 29
+        },
+        {
+          "id": "a3_furniture_026",
+          "sourceAnnotationId": "a3-ann-furniture-026",
+          "label": "303 教室第三排第一组桌椅阻挡",
+          "x": 1214,
+          "y": 706,
+          "width": 28,
+          "height": 19
+        },
+        {
+          "id": "a3_furniture_028",
+          "sourceAnnotationId": "a3-ann-furniture-028",
+          "label": "303 教室第三排第二组桌椅阻挡",
+          "x": 1267,
+          "y": 703,
+          "width": 39,
+          "height": 23
+        },
+        {
+          "id": "a3_furniture_029",
+          "sourceAnnotationId": "a3-ann-furniture-029",
+          "label": "303 教室第三排第三组桌椅阻挡",
+          "x": 1336,
+          "y": 707,
+          "width": 30,
+          "height": 15
+        },
+        {
+          "id": "a3_furniture_030",
+          "sourceAnnotationId": "a3-ann-furniture-030",
+          "label": "303 教室第三排第四组桌椅阻挡",
+          "x": 1416,
+          "y": 707,
+          "width": 41,
+          "height": 16
+        },
+        {
+          "id": "a3_furniture_031",
+          "sourceAnnotationId": "a3-ann-furniture-031",
+          "label": "303 教室第三排第五组桌椅阻挡",
+          "x": 1477,
+          "y": 709,
+          "width": 33,
+          "height": 15
+        },
+        {
+          "id": "a3_furniture_032",
+          "sourceAnnotationId": "a3-ann-furniture-032",
+          "label": "303 教室第三排第六组桌椅阻挡",
+          "x": 1541,
+          "y": 700,
+          "width": 38,
+          "height": 34
+        },
+        {
+          "id": "a3_furniture_033",
+          "sourceAnnotationId": "a3-ann-furniture-033",
+          "label": "303 教室第四排第一组桌椅阻挡",
+          "x": 1216,
+          "y": 756,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "id": "a3_furniture_034",
+          "sourceAnnotationId": "a3-ann-furniture-034",
+          "label": "303 教室第四排第二组桌椅阻挡",
+          "x": 1277,
+          "y": 751,
+          "width": 28,
+          "height": 23
+        },
+        {
+          "id": "a3_furniture_035",
+          "sourceAnnotationId": "a3-ann-furniture-035",
+          "label": "303 教室第四排第三组桌椅阻挡",
+          "x": 1336,
+          "y": 755,
+          "width": 29,
+          "height": 23
+        },
+        {
+          "id": "a3_furniture_036",
+          "sourceAnnotationId": "a3-ann-furniture-036",
+          "label": "303 教室第四排第四组桌椅阻挡",
+          "x": 1415,
+          "y": 757,
+          "width": 41,
+          "height": 19
+        },
+        {
+          "id": "a3_furniture_038",
+          "sourceAnnotationId": "a3-ann-furniture-038",
+          "label": "303 教室第四排第六组桌椅阻挡",
+          "x": 1540,
+          "y": 752,
+          "width": 33,
+          "height": 23
+        },
+        {
+          "id": "a3_furniture_037",
+          "sourceAnnotationId": "a3-ann-furniture-037",
+          "label": "303 教室第四排第五组桌椅阻挡",
+          "x": 1481,
+          "y": 754,
+          "width": 29,
+          "height": 20
+        },
+        {
+          "id": "a3_furniture_039",
+          "sourceAnnotationId": "a3-ann-furniture-039",
+          "label": "校史人物门厅右侧展柜阻挡",
+          "x": 976,
+          "y": 602,
+          "width": 47,
+          "height": 88
+        },
+        {
+          "id": "a3_furniture_041",
+          "sourceAnnotationId": "a3-ann-furniture-041",
+          "label": "校史人物门厅左侧展柜阻挡",
+          "x": 635,
+          "y": 603,
+          "width": 60,
+          "height": 93
+        },
+        {
+          "id": "a3_furniture_042",
+          "sourceAnnotationId": "a3-ann-furniture-042",
+          "label": "304 报告厅讲台阻挡",
+          "x": 1365,
+          "y": 147,
+          "width": 32,
+          "height": 35
         }
       ],
       "walkableRegions": [
@@ -3331,14 +4107,34 @@
           "height": 34
         },
         {
-          "id": "a3_walkable_003",
+          "id": "a3_walkable_003_elevator_landing",
           "sourceAnnotationId": "a3-ann-003",
-          "label": "必须可通行",
+          "label": "电梯出口平台必须可通行",
           "regionKind": "required_passage",
           "x": 711,
           "y": 147,
-          "width": 332,
+          "width": 184,
           "height": 108
+        },
+        {
+          "id": "a3_walkable_003_stair_center",
+          "sourceAnnotationId": "a3-ann-003",
+          "label": "主楼梯中央踏步必须可通行",
+          "regionKind": "required_passage",
+          "x": 908,
+          "y": 147,
+          "width": 102,
+          "height": 108
+        },
+        {
+          "id": "a3_walkable_003_lower_bridge",
+          "sourceAnnotationId": "a3-ann-003",
+          "label": "楼梯栏杆下沿连接区必须可通行",
+          "regionKind": "required_passage",
+          "x": 895,
+          "y": 219,
+          "width": 148,
+          "height": 36
         },
         {
           "id": "a3_walkable_004",
@@ -4573,9 +5369,8 @@
     {
       "id": "room202_minute_projection",
       "family": "time",
-      "visual": "digits",
-      "glyph": "07:54→07:55",
-      "color": "#85e4ef",
+      "visual": "wear",
+      "color": "#c59a4a",
       "source": {
         "storyFloor": "A2",
         "phaseIds": [
@@ -4585,10 +5380,10 @@
           "a2_202_final_minute"
         ],
         "bounds": {
-          "x": 1368,
-          "y": 272,
-          "width": 96,
-          "height": 18
+          "x": 1339,
+          "y": 318,
+          "width": 28,
+          "height": 6
         }
       },
       "echoes": [
@@ -4602,10 +5397,10 @@
             "attendance_record_recovered"
           ],
           "bounds": {
-            "x": 794,
-            "y": 582,
-            "width": 72,
-            "height": 14
+            "x": 822,
+            "y": 588,
+            "width": 24,
+            "height": 5
           }
         }
       ]

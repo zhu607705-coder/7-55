@@ -228,18 +228,9 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     { target: "chapter4-cleaning-cart-wheel", result: "retain" },
     { target: "chapter4-hall-clock-gear", result: "consume" }
   ]),
-  finalMinute: paper({
-    heading: "最后一分钟",
-    fields: [
-      { label: "来源", value: "202 阶梯教室投影" },
-      { label: "状态", value: "待归位" }
-    ],
-    body: [
-      "它是被偷走的最后一分钟，需要回到旧钟分针端点。",
-      "归位后，手机与世界时间会重新对齐。"
-    ],
-    footer: "纸面的光影像一截被掰下来的时间。"
-  }, [{ target: "chapter4-hall-clock-minute-endpoint", result: "consume" }])
+  finalMinute: object([
+    { target: "chapter4-hall-clock-minute-endpoint", result: "consume" }
+  ])
 };
 
 export function isPaperItem(itemId: ItemId): boolean {

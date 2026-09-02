@@ -19,10 +19,10 @@ const DUTY_LABELS: Readonly<Record<ChapterFourDutyBoardCardId, string>> = {
 };
 
 const EVACUATION_LABELS: Readonly<Record<ChapterFourEvacuationSegmentId, string>> = {
-  open_study: "开放自习区",
+  lecture_202_door: "202 教室门口",
   east_corridor: "东侧走廊",
-  classroom_threshold: "教室门槛",
-  lecture_202_exit: "202 出口"
+  transport_core: "交通核心",
+  main_stair_down: "主楼梯下行口"
 };
 
 const POWER_EDGE_LABELS: Readonly<Record<ChapterFourPowerEdgeId, string>> = {
@@ -71,7 +71,7 @@ export function ChapterFourInsertedPuzzleGame({
   const [calibration, setCalibration] = useState({ horizontal: 0, vertical: 0, pressure: 0 });
   const [powerEdges, setPowerEdges] = useState<ChapterFourPowerEdgeId[]>([]);
   const [evacuationOrder, setEvacuationOrder] = useState<ChapterFourEvacuationSegmentId[]>([
-    "classroom_threshold", "open_study", "lecture_202_exit", "east_corridor"
+    "transport_core", "lecture_202_door", "main_stair_down", "east_corridor"
   ]);
 
   useEffect(() => {
@@ -196,7 +196,12 @@ function ObservationTrace({ puzzleId }: { puzzleId: ChapterFourInsertedPuzzleId 
     media_alignment: ["横向：右移 2 格", "纵向：上移 1 格", "方向：顺时针 90°"],
     positioning_calibration: ["横向：−2", "纵向：+1", "压力：3 档"],
     power_topology: ["大厅分别连接两侧走廊", "两侧走廊分别连向两个末端区", "两个末端区互相连接"],
-    evacuation_route: ["起点：开放自习区", "中段：东侧走廊、教室门槛", "终点：202 出口"]
+    evacuation_route: [
+      "202 门外：完整鞋印的脚尖朝向门外",
+      "东侧走廊墙边：同一种鞋底纹连续出现",
+      "交通核心转角：右脚外缘磨损加深，脚尖偏向楼梯",
+      "主楼梯黄线内：只留下半枚向下的鞋印"
+    ]
   };
   return (
     <ol className="chapter4-inserted-puzzle__traces">
@@ -259,7 +264,16 @@ function PuzzleControls(props: PuzzleControlsProps) {
         </div>
       );
     case "evacuation_route":
-      return <OrderControls order={props.evacuationOrder} labels={EVACUATION_LABELS} disabled={props.pending} onChange={props.setEvacuationOrder} />;
+      return (
+        <div className="chapter4-inserted-puzzle__route-order">
+          <div className="chapter4-inserted-puzzle__route-objective" aria-label="路线起点为 202 教室门口，终点为主楼梯下行口">
+            <span><small>固定起点</small><strong>202 教室门口</strong></span>
+            <i aria-hidden="true">→</i>
+            <span><small>固定终点</small><strong>主楼梯下行口</strong></span>
+          </div>
+          <OrderControls order={props.evacuationOrder} labels={EVACUATION_LABELS} disabled={props.pending} onChange={props.setEvacuationOrder} />
+        </div>
+      );
   }
 }
 
@@ -281,8 +295,8 @@ function OrderControls<T extends string>({ order, labels, disabled, onChange }: 
       {order.map((id, index) => (
         <li key={id}>
           <span>{index + 1}</span><strong>{labels[id]}</strong>
-          <button type="button" aria-label={`${labels[id]}前移`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>←</button>
-          <button type="button" aria-label={`${labels[id]}后移`} disabled={disabled || index === order.length - 1} onClick={() => move(index, 1)}>→</button>
+          <button type="button" aria-label={`${labels[id]}上移`} disabled={disabled || index === 0} onClick={() => move(index, -1)}>上移</button>
+          <button type="button" aria-label={`${labels[id]}下移`} disabled={disabled || index === order.length - 1} onClick={() => move(index, 1)}>下移</button>
         </li>
       ))}
     </ol>

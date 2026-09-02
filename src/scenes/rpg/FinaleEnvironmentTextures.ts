@@ -24,7 +24,7 @@ import chapter4A2202FinalMinuteUrl from "../../assets/rpg/interiors/finale/chapt
 import chapter4A1MorningUrl from "../../assets/rpg/interiors/finale/chapter4-755/states/a1_0755_morning.png";
 import chapter4ClockStatesUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_clock_states_v01.png";
 import chapter4PowerPanelStatesUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_power_panel_states_v01.png";
-import chapter4StoryItemsUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_story_items_v01.png";
+import chapter4StoryItemsUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_story_items_v02.png";
 import chapter4Room204FurnitureUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_furniture_v02.png";
 import chapter4Room204ResidualUrl from "../../assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_dark_residual_v02.png";
 import { preloadRpgImage } from "./RpgAssetLoader";

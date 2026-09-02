@@ -134,6 +134,7 @@ const hostSource = source("../src/scenes/rpg/RpgGameHost.tsx");
 const rpgPreloadSource = source("../src/scenes/rpg/RpgRuntimePreload.ts");
 const prologueGateSource = source("../src/components/Chapter4PrologueRuntimeGate.tsx");
 const sceneSource = source("../src/scenes/rpg/ChapterFourTemporalMazeScene.ts");
+const playerTextureSource = source("../src/scenes/rpg/RpgPlayerTextures.ts");
 const debugSource = source("../src/scenes/rpg/RpgRuntimeDebug.ts");
 const audioDirectorSource = source("../src/modules/AudioDirector.ts");
 const presentationDirectorSource = source("../src/modules/PresentationDirector.ts");
@@ -262,9 +263,9 @@ assert(
   "desktop RPG scenes, including Chapter 4, must mount the shared task bar only through their Host"
 );
 assert(
-  /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"/.test(sceneSource)
+  /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"[\s\S]*?"a2_room204_disordered_furniture"[\s\S]*?"a2_room202_recovery_barrier"/.test(sceneSource)
     && /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS\.has\(projectedId\)/.test(sceneSource),
-  "the plate contract must recognize both runtime-managed final-chase guard bodies"
+  "the plate contract must recognize runtime-managed guard and authored furniture collision bodies"
 );
 assert(
   /automaticThresholdTarget[\s\S]*?payload\.targetId === thresholdContract\.id[\s\S]*?state\.chapter4\.phase === "final_chase"[\s\S]*?this\.currentFloor === 2[\s\S]*?this\.finalChaseInsideFinish[\s\S]*?this\.finalChaseState\?\.phase === "finish_pending"[\s\S]*?isChapterFour755TargetStateActive\(state, thresholdContract\)/.test(sceneSource),
@@ -275,6 +276,14 @@ assert(
   "every active Chapter 4 floor must apply matching four-sided physics and camera bounds"
 );
 assert(/setCollideWorldBounds\(true\)/.test(sceneSource), "the Chapter 4 player must collide with the active floor world bounds");
+assert(
+  /export function getRpgPlayerVisualContainmentInsets[\s\S]*?RPG_PLAYER_FRAME_WIDTH[\s\S]*?RPG_PLAYER_FOOT_WORLD_WIDTH[\s\S]*?RPG_PLAYER_FRAME_HEIGHT[\s\S]*?RPG_PLAYER_FOOT_BOTTOM_INSET[\s\S]*?RPG_PLAYER_FOOT_WORLD_HEIGHT/.test(playerTextureSource),
+  "the shared player contract must derive visual-containment insets from its frame, scale and fixed foot box"
+);
+assert(
+  /getRpgPlayerVisualContainmentInsets\(\)[\s\S]*?playerBody\.setBoundsRectangle\(new Phaser\.Geom\.Rectangle\([\s\S]*?floor\.offsetX \+ visualInsets\.left[\s\S]*?visualInsets\.top[\s\S]*?FLOOR_SIZE\.width - visualInsets\.left - visualInsets\.right[\s\S]*?FLOOR_SIZE\.height - visualInsets\.top - visualInsets\.bottom/.test(sceneSource),
+  "the Chapter 4 player body must use a per-floor custom boundary that keeps the complete visual frame inside the source plate"
+);
 assert(
   !mazeProjectionSource.includes('collisionIds.push("a1_blackout_service_barrier")'),
   "the projection must not advertise a blackout service barrier without an authoritative runtime entity"
@@ -322,6 +331,7 @@ const expectedAudioEvents = [
   "clock_gear_repaired",
   "blackout_committed",
   "power_zone_toggled",
+  "power_grid_locked",
   "final_chase_started",
   "final_chase_failed",
   "final_chase_succeeded",
@@ -416,13 +426,15 @@ assert(
 
 for (const token of [
   "committed?:", "applied?:", "activeFloorBounds?:", "runtimeEntities?:", "ordinaryGuard?:", "finalChase?:",
-  "lightGrid?:", "room202Door?:", "spatialAttestation?:", "contract?:", "developerCheckpoint?:"
+  "lightGrid?:", "room202Door?:", "spatialAttestation?:", "contract?:", "developerCheckpoint?:",
+  "visualBounds?:", "movementBounds?:"
 ]) {
   assert(debugSource.includes(token), `runtime debug schema is missing ${token}`);
 }
 for (const token of [
   "pendingProjectionSignature", "appliedPlateSignature", "runtimeEntities", "structuredFailures",
-  "activeFloorBounds", "finalChaseInsideFinish", "finalChaseContact", "hostPowerPanelSession", "developerCheckpointSource"
+  "activeFloorBounds", "finalChaseInsideFinish", "finalChaseContact", "hostPowerPanelSession", "developerCheckpointSource",
+  "playerVisualBounds", "playerMovementBounds"
 ]) {
   assert(sceneSource.includes(token), `Scene debug publisher is missing ${token}`);
 }
@@ -554,6 +566,13 @@ try {
       && typeof lockedResult.detailCode === "string"
       && CHAPTER_FOUR_755_INTENT_DETAIL_CODES.includes(lockedResult.detailCode),
     "a controller-owned locked result must expose a declared detailCode"
+  );
+  const finalMinuteRecovery = createDeveloperCheckpointState("c4-755-final-minute");
+  assert(
+    finalMinuteRecovery.chapter4.factIds.includes("room202_route_reached")
+      && !finalMinuteRecovery.chapter4.factIds.includes("final_minute_recovered")
+      && !finalMinuteRecovery.items.finalMinute,
+    "final-minute seed must represent a completed 202 arrival without forging the pickup"
   );
   const returnClock = createDeveloperCheckpointState("c4-755-return-clock");
   assert(

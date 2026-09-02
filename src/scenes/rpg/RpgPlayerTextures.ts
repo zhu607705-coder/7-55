@@ -85,6 +85,13 @@ export interface RpgPlayerPerspectiveMetrics {
   nameOffsetY: number;
 }
 
+export interface RpgPlayerVisualContainmentInsets {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
 export const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-down-0": playerDown0Url,
   "act1-player-down-1": playerDown1Url,
@@ -204,6 +211,31 @@ export function getRpgPlayerNameOffsetY(displayScale = RPG_PLAYER_DISPLAY_SCALE)
 
 export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): void {
   applyRpgPlayerVisualScale(player, RPG_PLAYER_DISPLAY_SCALE);
+}
+
+/**
+ * Insets the foot body's world-boundary rectangle so the complete configured
+ * player frame remains inside a map whose bounds are expressed in world pixels.
+ */
+export function getRpgPlayerVisualContainmentInsets(
+  displayScale = RPG_PLAYER_DISPLAY_SCALE
+): RpgPlayerVisualContainmentInsets {
+  const safeScale = Math.max(0.01, displayScale);
+  const horizontalInset = Math.max(
+    0,
+    (RPG_PLAYER_FRAME_WIDTH * safeScale - RPG_PLAYER_FOOT_WORLD_WIDTH) / 2
+  );
+  return {
+    left: horizontalInset,
+    top: Math.max(
+      0,
+      RPG_PLAYER_FRAME_HEIGHT * safeScale
+        - RPG_PLAYER_FOOT_BOTTOM_INSET
+        - RPG_PLAYER_FOOT_WORLD_HEIGHT
+    ),
+    right: horizontalInset,
+    bottom: RPG_PLAYER_FOOT_BOTTOM_INSET
+  };
 }
 
 export function configureNorthUpCampusRpgPlayerSprite(

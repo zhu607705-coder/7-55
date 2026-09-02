@@ -165,10 +165,10 @@ export const APPROVED_CHAPTER4_755_SPRITESHEETS = Object.freeze([
   },
   {
     id: "chapter4_story_items",
-    sourceId: "chapter4_story_items_v01",
-    source: "sprites/chapter4_story_items_v01.png",
-    destination: "sprites/chapter4_story_items_v01.png",
-    sourceSha256: "dda862236ff986caaa900ba7d0f95b29acf172d83d480b1fd48e6c94479b90ed",
+    sourceId: "chapter4_story_items_v02",
+    source: "sprites/chapter4_story_items_v02.png",
+    destination: "sprites/chapter4_story_items_v02.png",
+    sourceSha256: "ef78a5a24134d8c0ec4de3d7d656f5a619c6ff299cd4d908f994f811470b7488",
     width: 1536,
     height: 1024
   },

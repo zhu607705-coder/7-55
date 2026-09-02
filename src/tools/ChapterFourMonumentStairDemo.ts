@@ -109,6 +109,13 @@ const SEAM_VALID_ANIM_MS = 440;
 const SEAM_INVALID_FLASH_MS = 240;
 /** 局部反馈文案的驻留时长。 */
 const TOAST_MS = 3400;
+/** 正式章节的四段场景演出。时长只承担视觉建立，关卡判定仍由导航图负责。 */
+const ENTRY_SEQUENCE_MS = 2100;
+const LEVEL_BREAK_SEQUENCE_MS = 1750;
+const LEVEL_REVEAL_SEQUENCE_MS = 1650;
+const FINALE_SEQUENCE_MS = 2400;
+/** 所有空间特效按离散时间片更新，保持硬边像素节奏。 */
+const SPATIAL_FX_TICK_MS = 70;
 
 /* ------------------------------ DOM ------------------------------ */
 
@@ -130,18 +137,34 @@ root.innerHTML = `
         <h1 class="stair-level-name">楼梯间</h1>
         <p class="stair-objective"></p>
       </div>
+      <span class="stair-level-progress" aria-label="空间校准进度"><b>01</b><i>/02</i></span>
     </header>
     <div class="stair-mid">
       <div class="stair-stage-wrap">
         <div class="stair-stage">
           <canvas class="stair-canvas" width="${INTERNAL_WIDTH}" height="${INTERNAL_HEIGHT}" aria-label="楼梯间三维像素场景"></canvas>
+          <div class="stair-screen-fx" aria-hidden="true">
+            <span class="stair-screen-fx-frame"></span>
+            <span class="stair-screen-fx-corner is-nw"></span>
+            <span class="stair-screen-fx-corner is-ne"></span>
+            <span class="stair-screen-fx-corner is-sw"></span>
+            <span class="stair-screen-fx-corner is-se"></span>
+            <span class="stair-screen-fx-scan"></span>
+            <span class="stair-screen-fx-flash"></span>
+          </div>
+          <div class="stair-sequence" hidden aria-live="polite">
+            <span class="stair-sequence-index"></span>
+            <strong class="stair-sequence-title"></strong>
+            <p class="stair-sequence-detail"></p>
+            <span class="stair-sequence-track"><i></i></span>
+          </div>
           <div class="stair-curtain" hidden></div>
           <div class="stair-complete" hidden>
             <div class="stair-complete-card">
-              <span class="stair-complete-chapter">04</span>
-              <b>两个楼梯间均已连通</b>
-              <p>入口、梯段与出口在每一个需要的视角里连续。</p>
-              <button class="stair-pixel-button" type="button" data-act="replay">↺ 重新试玩</button>
+              <span class="stair-complete-chapter">A2</span>
+              <b>下降通路已固定</b>
+              <p>重新校准可再次观察两段空间结构。</p>
+              <button class="stair-pixel-button" type="button" data-act="replay">↺ 重新校准</button>
             </div>
           </div>
           <div class="stair-webgl-error" hidden>
@@ -179,9 +202,15 @@ root.innerHTML = `
 const topbarEl = root.querySelector<HTMLElement>(".stair-topbar")!;
 const levelNameEl = root.querySelector<HTMLElement>(".stair-level-name")!;
 const objectiveEl = root.querySelector<HTMLElement>(".stair-objective")!;
+const levelProgressEl = root.querySelector<HTMLElement>(".stair-level-progress")!;
 const stageWrapEl = root.querySelector<HTMLElement>(".stair-stage-wrap")!;
 const stageEl = root.querySelector<HTMLElement>(".stair-stage")!;
 const canvasEl = root.querySelector<HTMLCanvasElement>(".stair-canvas")!;
+const sequenceEl = root.querySelector<HTMLElement>(".stair-sequence")!;
+const sequenceIndexEl = root.querySelector<HTMLElement>(".stair-sequence-index")!;
+const sequenceTitleEl = root.querySelector<HTMLElement>(".stair-sequence-title")!;
+const sequenceDetailEl = root.querySelector<HTMLElement>(".stair-sequence-detail")!;
+const sequenceTrackFillEl = root.querySelector<HTMLElement>(".stair-sequence-track i")!;
 const curtainEl = root.querySelector<HTMLElement>(".stair-curtain")!;
 const completeEl = root.querySelector<HTMLElement>(".stair-complete")!;
 const webglErrorEl = root.querySelector<HTMLElement>(".stair-webgl-error")!;
@@ -281,6 +310,30 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     /** §5.3 规则 5 的实心遮挡面。 */
     occluderMeshes: THREE.Object3D[];
     door: FireDoorHandle | null;
+    /** 纯表现层：不参与射线、遮挡、导航图或完成判定。 */
+    effectRoot: THREE.Group;
+    effectMaterials: THREE.Material[];
+    floatingFragments: FloatingFragment[];
+    energyRings: THREE.LineLoop[];
+    dustField: THREE.Points | null;
+    routeEffect: RouteEffect | null;
+  }
+
+  interface FloatingFragment {
+    object: THREE.Object3D;
+    basePosition: THREE.Vector3;
+    driftDirection: THREE.Vector3;
+    phase: number;
+    spinX: number;
+    spinY: number;
+  }
+
+  interface RouteEffect {
+    group: THREE.Group;
+    line: THREE.Line;
+    sparks: THREE.Points;
+    pointCount: number;
+    startedAt: number;
   }
 
   interface CameraTransition {
@@ -350,6 +403,15 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     walkTo: THREE.Vector3;
   }
 
+  type PresentationStage = "entry" | "level_break" | "level_reveal" | "finale";
+
+  interface PresentationState {
+    stage: PresentationStage;
+    startedAt: number;
+    duration: number;
+    onFinished: (() => void) | null;
+  }
+
   const state = {
     levelId: "stair_a" as LevelId,
     phase: "playing" as DemoPhase,
@@ -378,6 +440,7 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
   let walk: WalkState | null = null;
   let curtain: CurtainState | null = null;
   let levelComplete: LevelCompleteState | null = null;
+  let presentation: PresentationState | null = null;
   const seamVisuals = new Map<string, SeamVisual>();
 
   let lastInputAt = performance.now();
@@ -570,10 +633,130 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     levelScene.group.add(group);
   }
 
+  /**
+   * 在真实楼梯结构外围增加离散漂浮构件、能量环和尘点。
+   * 这些对象不会注册到交互、遮挡或导航集合，视觉密度不会改变谜题答案。
+   */
+  function buildSpatialEffects(definition: StairLevelDefinition): void {
+    const fragmentMaterial = new THREE.MeshBasicMaterial({
+      color: STAIR_PALETTE.selection,
+      transparent: true,
+      opacity: definition.id === "stair_a" ? 0.2 : 0.26,
+      depthWrite: false,
+      fog: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending
+    });
+    const fragmentEdgeMaterial = new THREE.LineBasicMaterial({
+      color: STAIR_PALETTE.seamValid,
+      transparent: true,
+      opacity: 0.7,
+      depthWrite: false,
+      fog: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending
+    });
+    const ringMaterial = new THREE.LineBasicMaterial({
+      color: STAIR_PALETTE.selection,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false,
+      fog: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending
+    });
+    const dustMaterial = new THREE.PointsMaterial({
+      color: STAIR_PALETTE.seamValid,
+      size: definition.id === "stair_a" ? 0.075 : 0.09,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.46,
+      depthWrite: false,
+      fog: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending
+    });
+    levelScene.effectMaterials.push(fragmentMaterial, fragmentEdgeMaterial, ringMaterial, dustMaterial);
+
+    const fragmentCount = definition.id === "stair_a" ? 30 : 46;
+    const maxY = definition.id === "stair_a" ? 5.2 : 10.2;
+    for (let index = 0; index < fragmentCount; index += 1) {
+      const side = index % 2 === 0 ? -1 : 1;
+      const lane = ((index * 37) % 101) / 100;
+      const depth = ((index * 53 + 17) % 97) / 96;
+      const height = ((index * 29 + 11) % 89) / 88;
+      const width = 0.16 + (index % 5) * 0.07;
+      const fragmentHeight = 0.12 + ((index + 2) % 4) * 0.08;
+      const fragmentDepth = 0.12 + ((index + 1) % 3) * 0.09;
+      const geometry = createStairBoxGeometry(width, fragmentHeight, fragmentDepth, 0.7);
+      const fragment = new THREE.Mesh(geometry, fragmentMaterial);
+      fragment.name = `${definition.id}-spatial-fragment-${index}`;
+      const base = new THREE.Vector3(
+        side * (5.4 + lane * 4.4),
+        0.5 + height * maxY,
+        -4.7 + depth * 9.4
+      );
+      fragment.position.copy(base);
+      fragment.rotation.set((index % 7) * 0.23, (index % 9) * 0.31, (index % 5) * 0.19);
+      fragment.renderOrder = 14;
+      const edge = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 1), fragmentEdgeMaterial);
+      edge.renderOrder = 15;
+      fragment.add(edge);
+      levelScene.effectRoot.add(fragment);
+      levelScene.floatingFragments.push({
+        object: fragment,
+        basePosition: base,
+        driftDirection: new THREE.Vector3(side, 0.28 + (index % 3) * 0.08, depth - 0.5).normalize(),
+        phase: index * 0.71,
+        spinX: 0.08 + (index % 4) * 0.025,
+        spinY: 0.11 + (index % 5) * 0.02
+      });
+    }
+
+    const ringCount = definition.id === "stair_a" ? 3 : 5;
+    for (let index = 0; index < ringCount; index += 1) {
+      const points: THREE.Vector3[] = [];
+      const sides = index % 2 === 0 ? 8 : 6;
+      const radius = 1.25 + index * 0.42;
+      for (let point = 0; point < sides; point += 1) {
+        const angle = (point / sides) * Math.PI * 2;
+        points.push(new THREE.Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius, 0));
+      }
+      const ring = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points), ringMaterial);
+      ring.name = `${definition.id}-energy-ring-${index}`;
+      ring.position.set(
+        definition.id === "stair_a" ? 1.2 + index * 1.1 : 0.8 + index * 0.95,
+        definition.id === "stair_a" ? 2.0 + index * 0.34 : 3.0 + index * 0.92,
+        -4.9 + index * 0.2
+      );
+      ring.rotation.z = index * 0.22;
+      ring.renderOrder = 12;
+      levelScene.effectRoot.add(ring);
+      levelScene.energyRings.push(ring);
+    }
+
+    const dustCount = definition.id === "stair_a" ? 96 : 144;
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let index = 0; index < dustCount; index += 1) {
+      dustPositions[index * 3] = -9.2 + (((index * 47) % 193) / 192) * 18.4;
+      dustPositions[index * 3 + 1] = 0.4 + (((index * 67 + 13) % 181) / 180) * maxY;
+      dustPositions[index * 3 + 2] = -4.8 + (((index * 83 + 29) % 173) / 172) * 9.6;
+    }
+    const dustGeometry = new THREE.BufferGeometry();
+    dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
+    const dust = new THREE.Points(dustGeometry, dustMaterial);
+    dust.name = `${definition.id}-spatial-dust`;
+    dust.renderOrder = 11;
+    levelScene.effectRoot.add(dust);
+    levelScene.dustField = dust;
+  }
+
   function buildLevelScene(definition: StairLevelDefinition): LevelScene {
     levelDef = definition;
     const group = new THREE.Group();
     group.name = `level-${definition.id}`;
+    const effectRoot = new THREE.Group();
+    effectRoot.name = `${definition.id}-presentation-effects`;
     levelScene = {
       definition,
       group,
@@ -581,7 +764,13 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
       mechanismHitMeshes: [],
       walkMeshes: [],
       occluderMeshes: [],
-      door: null
+      door: null,
+      effectRoot,
+      effectMaterials: [],
+      floatingFragments: [],
+      energyRings: [],
+      dustField: null,
+      routeEffect: null
     };
     for (const mechanism of definition.mechanisms) {
       const mechanismGroup = new THREE.Group();
@@ -594,6 +783,8 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     for (const decoration of definition.geometry.decorations) {
       buildDecoration(decoration);
     }
+    group.add(effectRoot);
+    buildSpatialEffects(definition);
     // 场景装饰：数据山墙背后的同色系延展区，消除画框边缘的深色空区（§8.2 亮度档）。
     // 纯渲染用途：不走 registerMesh，不参与导航、点击与 §5.3 规则 5 遮挡判定。
     const backdropExtension = new THREE.Mesh(
@@ -615,11 +806,17 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     if (!levelScene) return;
     scene.remove(levelScene.group);
     levelScene.group.traverse((object) => {
-      if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments || object instanceof THREE.Line) {
+      if (
+        object instanceof THREE.Mesh
+        || object instanceof THREE.LineSegments
+        || object instanceof THREE.Line
+        || object instanceof THREE.Points
+      ) {
         object.geometry.dispose();
         // 材质来自 createStairMaterial 共享缓存，不逐个 dispose。
       }
     });
+    levelScene.effectMaterials.forEach((material) => material.dispose());
   }
 
   /* ---------------------------- 坐标换算 ---------------------------- */
@@ -917,6 +1114,231 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
       firstSeamToastShown = true;
       showToast(levelDef.feedback.firstSeam, "ok");
     }
+  }
+
+  /* ---------------------------- 空间演出层 ---------------------------- */
+
+  const PRESENTATION_COPY: Record<PresentationStage, { index: string; title: string; detail: string }> = {
+    entry: {
+      index: "03F / 楼梯井",
+      title: "空间偏移",
+      detail: "墙面、平台与梯段分处不同空间层。"
+    },
+    level_break: {
+      index: "第一段 / 已稳定",
+      title: "上层继续偏移",
+      detail: "消防门后的结构仍未回到同一位置。"
+    },
+    level_reveal: {
+      index: "第二段 / 错层井",
+      title: "垂直结构展开",
+      detail: "更高的落差需要连续观察。"
+    },
+    finale: {
+      index: "两段 / 已连通",
+      title: "下降路径固定",
+      detail: "消防门后的落点已稳定在 A2。"
+    }
+  };
+
+  function createRouteEffect(): void {
+    if (levelScene.routeEffect) return;
+    // 使用关卡节点的作者顺序回放玩家刚刚经过的完整路径。最终机关姿态可能已让
+    // 早先接缝失效，因此这里不再要求当前导航图仍保留一条起点到终点的同时连通路径。
+    const route = levelDef.nodes.map((node) => node.id);
+    if (route.length < 2) return;
+    const densePoints: THREE.Vector3[] = [];
+    for (let index = 0; index < route.length - 1; index += 1) {
+      const from = navGraph.nodes.get(route[index])?.position;
+      const to = navGraph.nodes.get(route[index + 1])?.position;
+      if (!from || !to) continue;
+      const divisions = Math.max(3, Math.ceil(from.distanceTo(to) * 4));
+      for (let step = 0; step < divisions; step += 1) {
+        if (index > 0 && step === 0) continue;
+        densePoints.push(from.clone().lerp(to, step / divisions).add(new THREE.Vector3(0, 0.09, 0)));
+      }
+    }
+    const exit = navGraph.nodes.get(route[route.length - 1])?.position;
+    if (exit) densePoints.push(exit.clone().add(new THREE.Vector3(0, 0.09, 0)));
+    if (densePoints.length < 2) return;
+
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: STAIR_PALETTE.seamValid,
+      transparent: true,
+      opacity: 0.92,
+      depthTest: false,
+      depthWrite: false,
+      fog: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending
+    });
+    const sparkMaterial = new THREE.PointsMaterial({
+      color: STAIR_PALETTE.wallLit,
+      size: 0.16,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.95,
+      depthTest: false,
+      depthWrite: false,
+      fog: false,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending
+    });
+    levelScene.effectMaterials.push(lineMaterial, sparkMaterial);
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(densePoints);
+    const sparkGeometry = new THREE.BufferGeometry().setFromPoints(densePoints);
+    lineGeometry.setDrawRange(0, 0);
+    sparkGeometry.setDrawRange(0, 0);
+    const line = new THREE.Line(lineGeometry, lineMaterial);
+    const sparks = new THREE.Points(sparkGeometry, sparkMaterial);
+    line.renderOrder = 95;
+    sparks.renderOrder = 96;
+    const group = new THREE.Group();
+    group.name = `${levelDef.id}-completion-route`;
+    group.add(line, sparks);
+    levelScene.effectRoot.add(group);
+    levelScene.routeEffect = {
+      group,
+      line,
+      sparks,
+      pointCount: densePoints.length,
+      startedAt: performance.now()
+    };
+  }
+
+  function updateRouteEffect(now: number): void {
+    const effect = levelScene.routeEffect;
+    if (!effect) return;
+    const elapsed = now - effect.startedAt;
+    const reveal = reducedMotion ? 1 : Math.min(1, elapsed / 1650);
+    const visibleCount = Math.max(2, Math.ceil(effect.pointCount * reveal));
+    effect.line.geometry.setDrawRange(0, visibleCount);
+    effect.sparks.geometry.setDrawRange(Math.max(0, visibleCount - 9), Math.min(9, visibleCount));
+    const pulse = reducedMotion ? 1 : 0.72 + Math.floor((elapsed % 420) / 105) * 0.08;
+    (effect.line.material as THREE.LineBasicMaterial).opacity = Math.min(1, pulse);
+    (effect.sparks.material as THREE.PointsMaterial).size = 0.12 + (Math.floor(elapsed / 90) % 3) * 0.035;
+  }
+
+  function updateSpatialEffects(now: number): void {
+    if (!levelScene) return;
+    const tick = Math.floor(now / SPATIAL_FX_TICK_MS) * SPATIAL_FX_TICK_MS;
+    const seconds = tick / 1000;
+    const stage = presentation?.stage ?? null;
+    const rawProgress = presentation
+      ? Math.min(1, Math.max(0, (now - presentation.startedAt) / presentation.duration))
+      : 0;
+    const breakProgress = stage === "level_break" ? rawProgress * rawProgress : 0;
+    const finalePulse = stage === "finale" ? Math.sin(rawProgress * Math.PI) : 0;
+    for (const fragment of levelScene.floatingFragments) {
+      const bob = Math.sin(seconds * 1.35 + fragment.phase) * (0.07 + finalePulse * 0.2);
+      fragment.object.position.copy(fragment.basePosition)
+        .addScaledVector(fragment.driftDirection, breakProgress * 4.6);
+      fragment.object.position.y += bob + breakProgress * 0.8;
+      fragment.object.rotation.x = fragment.phase * 0.17 + seconds * fragment.spinX;
+      fragment.object.rotation.y = fragment.phase * 0.23 + seconds * fragment.spinY;
+      const scale = 1 + breakProgress * 0.9 + finalePulse * 0.35;
+      fragment.object.scale.setScalar(scale);
+    }
+    levelScene.energyRings.forEach((ring, index) => {
+      ring.rotation.z = index * 0.22 + seconds * (index % 2 === 0 ? 0.08 : -0.07);
+      const scale = 1 + Math.sin(seconds * 0.9 + index) * 0.025 + finalePulse * 0.13;
+      ring.scale.setScalar(scale);
+    });
+    if (levelScene.dustField) {
+      levelScene.dustField.rotation.y = seconds * 0.018;
+      levelScene.dustField.position.y = Math.sin(seconds * 0.42) * 0.08;
+    }
+    updateRouteEffect(now);
+  }
+
+  function beginPresentation(
+    stage: PresentationStage,
+    duration: number,
+    onFinished: (() => void) | null = null
+  ): void {
+    const copy = PRESENTATION_COPY[stage];
+    presentation = {
+      stage,
+      startedAt: performance.now(),
+      duration: reducedMotion ? 1 : duration,
+      onFinished
+    };
+    state.phase = stage === "level_break"
+      ? "level_interlude"
+      : stage === "finale"
+        ? "finale"
+        : "entry_sequence";
+    stageEl.dataset.presentation = stage;
+    sequenceIndexEl.textContent = copy.index;
+    sequenceTitleEl.textContent = copy.title;
+    sequenceDetailEl.textContent = copy.detail;
+    sequenceTrackFillEl.style.transform = "scaleX(0)";
+    sequenceEl.hidden = false;
+    if (stage === "level_break") {
+      let index = 0;
+      for (const group of levelScene.mechanismGroups.values()) {
+        group.userData.presentationBasePosition = group.position.clone();
+        group.userData.presentationBaseRotationY = group.rotation.y;
+        group.userData.presentationBreakDirection = new THREE.Vector3(index % 2 === 0 ? -1 : 1, 0.35 + index * 0.12, index % 3 === 0 ? 0.6 : -0.45).normalize();
+        index += 1;
+      }
+    }
+    updateMechUI();
+    updateViewButtons();
+  }
+
+  function updatePresentation(now: number): void {
+    if (!presentation) return;
+    const active = presentation;
+    const t = Math.min(1, Math.max(0, (now - active.startedAt) / active.duration));
+    const stepped = reducedMotion ? 1 : Math.floor(t * 12) / 12;
+    sequenceTrackFillEl.style.transform = `scaleX(${stepped})`;
+    stageEl.style.setProperty("--stair-sequence-progress", String(stepped));
+
+    applyCameraView(state.cameraView);
+    if (active.stage === "entry") {
+      camera.zoom = 0.82 + stepped * 0.18;
+      player.object3d.visible = t >= 0.38;
+    } else if (active.stage === "level_reveal") {
+      camera.zoom = 0.76 + stepped * 0.24;
+      player.object3d.visible = t >= 0.28;
+    } else if (active.stage === "level_break") {
+      camera.zoom = 1 + Math.sin(t * Math.PI) * 0.08;
+      player.object3d.visible = false;
+      let index = 0;
+      for (const group of levelScene.mechanismGroups.values()) {
+        const basePosition = group.userData.presentationBasePosition as THREE.Vector3 | undefined;
+        const baseRotationY = Number(group.userData.presentationBaseRotationY ?? group.rotation.y);
+        const direction = group.userData.presentationBreakDirection as THREE.Vector3 | undefined;
+        if (basePosition && direction) {
+          group.position.copy(basePosition).addScaledVector(direction, stepped * (0.8 + index * 0.18));
+          group.rotation.y = baseRotationY + (index % 2 === 0 ? -1 : 1) * stepped * 0.18;
+        }
+        index += 1;
+      }
+    } else {
+      camera.zoom = 1 + Math.sin(t * Math.PI) * 0.055;
+      player.object3d.visible = false;
+    }
+    camera.updateProjectionMatrix();
+
+    if (t < 1) return;
+    const finishedStage = active.stage;
+    const onFinished = active.onFinished;
+    presentation = null;
+    delete stageEl.dataset.presentation;
+    stageEl.style.removeProperty("--stair-sequence-progress");
+    sequenceEl.hidden = true;
+    player.object3d.visible = true;
+    camera.zoom = 1;
+    applyCameraView(state.cameraView);
+    state.phase = "playing";
+    updateMechUI();
+    updateViewButtons();
+    if (finishedStage !== "level_break") {
+      recomputeWorld();
+    }
+    onFinished?.();
   }
 
   /* ---------------------------- 输入锁 ---------------------------- */
@@ -1346,6 +1768,7 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
   /* ---------------------------- 关卡流程（§6.5 / §9） ---------------------------- */
 
   function startLevelComplete(): void {
+    createRouteEffect();
     if (!levelScene.door) {
       advanceAfterDoor();
       return;
@@ -1400,16 +1823,24 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
   function advanceAfterDoor(): void {
     levelComplete = null;
     if (state.levelId === "stair_a") {
-      // 16×9 像素块遮罩 360ms 后进入第二关（§9）。
-      startCurtain(() => {
-        loadLevel("stair_b", { resetView: true });
+      beginPresentation("level_break", LEVEL_BREAK_SEQUENCE_MS, () => {
+        // 第一段在画面中解体后，再用同一像素块语言进入升高后的第二段。
+        startCurtain(() => {
+          loadLevel("stair_b", { resetView: true });
+          beginPresentation("level_reveal", LEVEL_REVEAL_SEQUENCE_MS);
+        });
       });
     } else {
-      state.phase = "all_complete";
-      completeEl.hidden = false;
-      updateMechUI();
-      updateViewButtons();
-      options.onComplete?.();
+      beginPresentation("finale", FINALE_SEQUENCE_MS, () => {
+        state.phase = "all_complete";
+        updateMechUI();
+        updateViewButtons();
+        if (options.onComplete) {
+          options.onComplete();
+        } else {
+          completeEl.hidden = false;
+        }
+      });
     }
   }
 
@@ -1476,6 +1907,9 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     lastBlockedSignature = null;
     invalidHoldDone.clear();
     completeEl.hidden = true;
+    sequenceEl.hidden = true;
+    delete stageEl.dataset.presentation;
+    stageEl.style.removeProperty("--stair-sequence-progress");
 
     applyCameraView(state.cameraView);
     snapMechanismTransforms();
@@ -1485,6 +1919,7 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
 
     levelNameEl.textContent = definition.title;
     objectiveEl.textContent = definition.feedback.objective;
+    levelProgressEl.querySelector("b")!.textContent = levelId === "stair_a" ? "01" : "02";
     statusEl.textContent = "";
     updateMechUI();
     updateViewButtons();
@@ -1506,6 +1941,7 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     completeEl.hidden = true;
     startCurtain(() => {
       loadLevel("stair_a", { resetView: true });
+      beginPresentation("entry", ENTRY_SEQUENCE_MS);
     });
   }
 
@@ -1674,7 +2110,7 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
 
   function updateSelectionHelper(now: number): void {
     const mechanismId = state.selectedMechanismId;
-    if (!mechanismId || !levelScene) {
+    if (!mechanismId || !levelScene || state.phase !== "playing") {
       selectionHelper.visible = false;
       return;
     }
@@ -1714,6 +2150,15 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
       invalidProjectedPairs: currentSeams.filter((seam) => !seam.valid).map((seam) => seam.linkId),
       inputLocked: computeInputLocked(),
       viewSwitchAvailable: canSwitchViewNow(),
+      presentation: {
+        stage: presentation?.stage ?? null,
+        floatingFragmentCount: levelScene.floatingFragments.length,
+        energyRingCount: levelScene.energyRings.length,
+        dustPointCount: levelScene.dustField
+          ? (levelScene.dustField.geometry.getAttribute("position")?.count ?? 0)
+          : 0,
+        routeEffectActive: levelScene.routeEffect !== null
+      },
       materialTextures: getStairMaterialTextureStatus()
     };
   }
@@ -1789,16 +2234,19 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
     updateMechanismAnimation(now);
     updateWalk(now, deltaSeconds);
     updateLevelComplete(now);
+    updatePresentation(now);
     updateCurtain(now);
     updateSeamAnimations(now);
     updateSelectionHelper(now);
     updateIdleHint(now);
+    updateSpatialEffects(now);
     player.update(now);
     playerShadow.position.set(
       player.object3d.position.x,
       player.object3d.position.y + 0.02,
       player.object3d.position.z
     );
+    playerShadow.visible = player.object3d.visible;
 
     renderer.render(scene, camera);
   });
@@ -1806,6 +2254,7 @@ function boot(renderer: THREE.WebGLRenderer): () => void {
   /* ---------------------------- 启动 ---------------------------- */
 
   loadLevel("stair_a", { resetView: true });
+  beginPresentation("entry", ENTRY_SEQUENCE_MS);
   // 开场像素块遮罩收起（§9 同一转场语言）。
   curtainBlocks.forEach((block) => block.classList.add("is-covered"));
   curtainEl.hidden = false;

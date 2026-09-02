@@ -80,6 +80,7 @@ export function ChapterFourPowerPanelGame({
     && !locked
     && !pending
     && lastAutoLockMaskRef.current === mask;
+  const allZonesPowered = mask === CHAPTER_FOUR_LIGHT_GRID.allOnMask;
 
   useEffect(() => {
     if (locked || pending || !solved || lastAutoLockMaskRef.current === mask) return;
@@ -140,10 +141,29 @@ export function ChapterFourPowerPanelGame({
     >
       <section className="chapter4-power-panel">
         <div
-          className={`chapter4-power-panel__frame is-${frame}`}
-          style={{ backgroundImage: `url(${powerPanelSheetUrl})` }}
-          aria-hidden="true"
-        />
+          className={`chapter4-power-panel__fixture is-${frame}`}
+          data-state-frame={frame}
+          aria-label="实体配电箱，五个开关状态与右侧区域同步"
+        >
+          <div
+            className="chapter4-power-panel__frame is-open_powered"
+            style={{ backgroundImage: `url(${powerPanelSheetUrl})` }}
+            aria-hidden="true"
+          />
+          <div className="chapter4-power-panel__fixture-switches" aria-hidden="true">
+            {CHAPTER_FOUR_LIGHT_GRID.zones.map((zone, index) => {
+              const on = (mask & (1 << zone.bit)) !== 0;
+              return (
+                <span
+                  key={zone.id}
+                  className={on ? "is-on" : "is-off"}
+                  data-fixture-zone={zone.id}
+                  style={{ top: `${32.7 + index * 10.25}%` }}
+                />
+              );
+            })}
+          </div>
+        </div>
         <header>
           <p>五区配电箱</p>
           <h2 id="chapter4-power-panel-title">让必要路线亮起</h2>
@@ -216,11 +236,13 @@ export function ChapterFourPowerPanelGame({
         </div>
 
         <p className="chapter4-power-panel__status" role="status" aria-live="polite">
-          {feedback ?? (pending
-            ? "正在同步配电状态……"
-            : locked
-              ? "配电结果已锁定。"
-              : "按下一区，会切换它自身和连线直接相接的区域。")}
+          {allZonesPowered && !locked && !pending
+            ? "总负载过高。核对已记录的必要路线，关闭旁路回路。"
+            : feedback ?? (pending
+              ? "正在同步配电状态……"
+              : locked
+                ? "配电结果已锁定。"
+                : "按下一区，会切换它自身和连线直接相接的区域。")}
         </p>
         <p className="chapter4-power-panel__controls">
           方向键移动焦点 · Enter / Space 切换 · Esc 关闭

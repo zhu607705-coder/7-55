@@ -113,6 +113,16 @@
         }
       ]
     },
+    "power_grid_locked": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_canteen_order_confirm",
+          "volume": 0.54,
+          "playbackRate": 0.9
+        }
+      ]
+    },
     "final_chase_started": {
       "cues": [
         {
