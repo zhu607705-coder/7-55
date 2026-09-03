@@ -1,15 +1,15 @@
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
-import hairDryerUrl from "../../../assets/rpg/props/items/hair_dryer_generated_v01.png";
 import { selectCampusWeather } from "../../../modules/CampusWeatherModel";
 import { kit } from "../../../modules/GameKit";
 import type { QizhenWeatherControlSummary } from "../../../modules/QizhenWeatherControlModel";
 import { QizhenWeatherCalibration } from "./QizhenWeatherCalibration";
 
 /** Shared weather app for the chapter-two water clue and the Qizhen Lake safety workflow. */
-export function WeatherScene({ state, router }: SceneComponentProps) {
+export function WeatherScene({ state, router, events }: SceneComponentProps) {
   const [controlStarted, setControlStarted] = useState(false);
+  const [deviceFeedback, setDeviceFeedback] = useState<string | null>(null);
   const collected = state.actOne.weatherWaterTaken;
   const waterAvailable = state.actOne.exerciseStarted;
   const weather = selectCampusWeather(state);
@@ -34,6 +34,9 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
   function startQizhenWeatherControl() {
     const result = kit.qizhenLake.beginDockWeatherAdjustment();
     if (result === "accepted") {
+      setDeviceFeedback(null);
+      kit.flags.setUi("selectedItem", null);
+      kit.flags.setUi("inventoryOpen", false);
       setControlStarted(true);
       return;
     }
@@ -46,6 +49,33 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
       return;
     }
     kit.flags.toast("当前无法开始校准。", "system");
+  }
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "item_dropped" || event.payload?.target !== "qizhen-weather-clouds") {
+        return;
+      }
+      if (event.payload?.item !== "hairDryer") {
+        setDeviceFeedback("这件道具无法送风 · 请拖入寝室吹风机");
+        return;
+      }
+      setDeviceFeedback(null);
+      startQizhenWeatherControl();
+    });
+  }, [events, hasHairDryer]);
+
+  function activateQizhenWeatherTarget() {
+    if (state.ui.selectedItem === "hairDryer") {
+      startQizhenWeatherControl();
+      return;
+    }
+    if (state.ui.selectedItem) {
+      setDeviceFeedback("当前道具无法送风 · 请改用寝室吹风机");
+      return;
+    }
+    kit.flags.setUi("inventoryOpen", true);
+    setDeviceFeedback("道具栏已展开 · 拖入吹风机，键盘可按空格选中");
   }
 
   function submitQizhenWeatherControl(summary: QizhenWeatherControlSummary): boolean {
@@ -111,17 +141,26 @@ export function WeatherScene({ state, router }: SceneComponentProps) {
           ) : (
             <button
               type="button"
-              className={`qizhen-weather-control ${adjustmentComplete ? "is-complete" : ""}`}
-              aria-label={adjustmentComplete ? "湖区状态已更新" : adjustmentAvailable ? "开始湖区云层校准" : "湖区记录尚未开放"}
+              className={`qizhen-weather-control ${adjustmentComplete ? "is-complete" : adjustmentAvailable ? "is-awaiting-item" : ""} ${deviceFeedback ? "has-device-feedback" : ""}`}
+              data-drop-target={adjustmentAvailable ? "qizhen-weather-clouds" : undefined}
+              aria-label={adjustmentComplete
+                ? "湖区状态已更新"
+                : adjustmentAvailable
+                  ? "吹风机校准接口，从道具栏拖入寝室吹风机；键盘可先选中吹风机后确认此接口"
+                  : "湖区记录尚未开放"}
               disabled={!adjustmentAvailable}
-              onClick={startQizhenWeatherControl}
+              onClick={activateQizhenWeatherTarget}
             >
-              {adjustmentComplete ? <i aria-hidden="true" /> : <img src={hairDryerUrl} alt="" aria-hidden="true" />}
-              <strong>{adjustmentComplete ? "湖区状态已更新" : adjustmentRequested ? hasHairDryer ? "启动风向校准" : "缺少可用设备" : "暂无湖区记录"}</strong>
+              {adjustmentComplete ? (
+                <i aria-hidden="true" />
+              ) : (
+                <span className="qizhen-weather-device-slot" aria-hidden="true"><b>+</b></span>
+              )}
+              <strong>{adjustmentComplete ? "湖区状态已更新" : adjustmentRequested ? hasHairDryer ? "接入寝室吹风机" : "缺少可用设备" : "暂无湖区记录"}</strong>
               <span>{adjustmentComplete
                 ? `返回码头确认${state.qizhenLake.weatherControlBestMoves > 0 ? ` · 最少 ${state.qizhenLake.weatherControlBestMoves} 次校正` : ""}`
                 : adjustmentRequested
-                  ? hasHairDryer ? "在持续风力中同步稳定三层云带" : "先检查寝室书桌"
+                  ? hasHairDryer ? deviceFeedback ?? "从左侧道具栏拖到此接口" : "先检查寝室书桌"
                   : "完成码头检查后再查看"}</span>
             </button>
           )

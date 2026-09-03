@@ -1,10 +1,12 @@
 import type {
   ChapterFourPhase,
+  ChapterFourRoom204GroupId,
   ChapterFourRoom204Orientation,
   ChapterFourRoom204PieceId,
   ChapterFourRoom204Placement,
   ChapterFourRoom204SlotId
 } from "../../core/types";
+import storyContent from "../../data/chapter4-755.content.json";
 import mazeLayout from "../../data/chapter4-three-floor-maze.layout.json";
 
 export interface Room204Point {
@@ -53,6 +55,20 @@ export interface Room204SlotLayout {
   approximate: true;
 }
 
+export interface Room204GroupMapping {
+  pieceId: ChapterFourRoom204PieceId;
+  slotId: ChapterFourRoom204SlotId;
+}
+
+export interface Room204GroupContract {
+  id: ChapterFourRoom204GroupId;
+  label: string;
+  rawDetailId: string;
+  rationale: string;
+  targetBounds: Room204Rect;
+  mappings: readonly Readonly<Room204GroupMapping>[];
+}
+
 export type Room204PlacementIssue =
   | "unknown_piece"
   | "unknown_slot"
@@ -70,6 +86,26 @@ export type Room204PlacementResolution =
   | {
       accepted: false;
       issue: Room204PlacementIssue | "already_placed";
+      placements: ChapterFourRoom204Placement[];
+    };
+
+export type Room204GroupPlacementIssue =
+  | "unknown_group"
+  | "wrong_group"
+  | "group_conflict"
+  | "already_placed";
+
+export type Room204GroupPlacementResolution =
+  | {
+      accepted: true;
+      groupId: ChapterFourRoom204GroupId;
+      addedPlacements: ChapterFourRoom204Placement[];
+      placements: ChapterFourRoom204Placement[];
+      complete: boolean;
+    }
+  | {
+      accepted: false;
+      issue: Room204GroupPlacementIssue;
       placements: ChapterFourRoom204Placement[];
     };
 
@@ -104,7 +140,19 @@ interface Room204RuntimeLayoutJson {
   };
 }
 
+interface Room204GroupContentJson {
+  groups: Array<{
+    id: ChapterFourRoom204GroupId;
+    label: string;
+    rawDetailId: string;
+    rationale: string;
+    targetBounds: Room204Rect;
+    mappings: Room204GroupMapping[];
+  }>;
+}
+
 const ROOM204_LAYOUT = mazeLayout.room204Runtime as Room204RuntimeLayoutJson;
+const ROOM204_CONTENT = storyContent.room204 as Room204GroupContentJson;
 
 export const ROOM204_ALLOWED_ORIENTATION: ChapterFourRoom204Orientation = "up";
 export const ROOM204_FURNITURE_SCALE = ROOM204_LAYOUT.uniformScale;
@@ -188,6 +236,18 @@ export const ROOM204_SLOT_LAYOUTS = Object.freeze(
   })]))
 ) as Readonly<Record<ChapterFourRoom204SlotId, Readonly<Room204SlotLayout>>>;
 
+export const ROOM204_GROUPS = Object.freeze(
+  Object.fromEntries(ROOM204_CONTENT.groups.map((group) => [group.id, Object.freeze({
+    ...group,
+    targetBounds: Object.freeze({ ...group.targetBounds }),
+    mappings: Object.freeze(group.mappings.map((mapping) => Object.freeze({ ...mapping })))
+  })]))
+) as Readonly<Record<ChapterFourRoom204GroupId, Readonly<Room204GroupContract>>>;
+
+export const ROOM204_GROUP_ORDER = Object.freeze(
+  ROOM204_CONTENT.groups.map((group) => group.id)
+) as readonly ChapterFourRoom204GroupId[];
+
 export const ROOM204_SLOT_CENTERS = Object.freeze(
   Object.fromEntries(ROOM204_LAYOUT.slotTargets.map((entry) => [
     entry.slotId,
@@ -204,6 +264,7 @@ export const ROOM204_INITIAL_PIECE_POSITIONS = Object.freeze(
 
 const ROOM204_PIECE_IDS = new Set<ChapterFourRoom204PieceId>(ROOM204_PIECE_ORDER);
 const ROOM204_SLOT_IDS = new Set<ChapterFourRoom204SlotId>(ROOM204_SLOT_ORDER);
+const ROOM204_GROUP_IDS = new Set<ChapterFourRoom204GroupId>(ROOM204_GROUP_ORDER);
 
 export function room204SlotTargetId(slotId: ChapterFourRoom204SlotId): string {
   return `a2_room204_slot_${slotId}`;
@@ -211,6 +272,21 @@ export function room204SlotTargetId(slotId: ChapterFourRoom204SlotId): string {
 
 export function room204SlotRuntimeEntityId(slotId: ChapterFourRoom204SlotId): string {
   return `chapter4-room204-slot-${slotId}`;
+}
+
+export function room204GroupTargetId(groupId: ChapterFourRoom204GroupId): string {
+  return `a2_room204_group_${groupId}`;
+}
+
+export function room204GroupRuntimeEntityId(groupId: ChapterFourRoom204GroupId): string {
+  return `chapter4-room204-group-${groupId}`;
+}
+
+export function room204GroupIdFromTargetId(targetId: string): ChapterFourRoom204GroupId | null {
+  const prefix = "a2_room204_group_";
+  if (!targetId.startsWith(prefix)) return null;
+  const groupId = targetId.slice(prefix.length) as ChapterFourRoom204GroupId;
+  return ROOM204_GROUP_IDS.has(groupId) ? groupId : null;
 }
 
 export const ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID = "chapter4-room204-residual-group";
@@ -304,6 +380,67 @@ export function resolveRoom204Placement(
     placements: next,
     complete: isRoom204PlacementSetComplete(next)
   };
+}
+
+export function resolveRoom204GroupPlacement(
+  current: readonly ChapterFourRoom204Placement[],
+  candidate: { groupId: unknown; targetGroupId?: unknown }
+): Room204GroupPlacementResolution {
+  const placements = normalizeRoom204Placements(current);
+  if (typeof candidate.groupId !== "string"
+    || !ROOM204_GROUP_IDS.has(candidate.groupId as ChapterFourRoom204GroupId)) {
+    return { accepted: false, issue: "unknown_group", placements };
+  }
+  const groupId = candidate.groupId as ChapterFourRoom204GroupId;
+  if (candidate.targetGroupId !== undefined && candidate.targetGroupId !== groupId) {
+    return { accepted: false, issue: "wrong_group", placements };
+  }
+  const group = ROOM204_GROUPS[groupId];
+  const placedPieceIds = new Set(placements.map((placement) => placement.pieceId));
+  if (group.mappings.every((mapping) => placedPieceIds.has(mapping.pieceId))) {
+    return { accepted: false, issue: "already_placed", placements };
+  }
+
+  const occupiedSlotIds = new Set(placements.map((placement) => placement.slotId));
+  const missingMappings = group.mappings.filter((mapping) => !placedPieceIds.has(mapping.pieceId));
+  const availableGroupSlots = group.mappings
+    .map((mapping) => mapping.slotId)
+    .filter((slotId) => !occupiedSlotIds.has(slotId));
+  if (availableGroupSlots.length < missingMappings.length) {
+    return { accepted: false, issue: "group_conflict", placements };
+  }
+
+  const remainingSlots = [...availableGroupSlots];
+  const addedPlacements = missingMappings.map((mapping) => {
+    const preferredIndex = remainingSlots.indexOf(mapping.slotId);
+    const slotIndex = preferredIndex >= 0 ? preferredIndex : 0;
+    const [slotId] = remainingSlots.splice(slotIndex, 1);
+    return { pieceId: mapping.pieceId, slotId, orientation: ROOM204_ALLOWED_ORIENTATION };
+  });
+  const next = [...placements, ...addedPlacements];
+  return {
+    accepted: true,
+    groupId,
+    addedPlacements,
+    placements: next,
+    complete: isRoom204PlacementSetComplete(next)
+  };
+}
+
+export function isRoom204GroupComplete(
+  placements: readonly ChapterFourRoom204Placement[],
+  groupId: ChapterFourRoom204GroupId
+): boolean {
+  const placedPieceIds = new Set(
+    normalizeRoom204Placements(placements).map((placement) => placement.pieceId)
+  );
+  return ROOM204_GROUPS[groupId].mappings.every((mapping) => placedPieceIds.has(mapping.pieceId));
+}
+
+export function countCompletedRoom204Groups(
+  placements: readonly ChapterFourRoom204Placement[]
+): number {
+  return ROOM204_GROUP_ORDER.filter((groupId) => isRoom204GroupComplete(placements, groupId)).length;
 }
 
 export function isRoom204PlacementSetComplete(

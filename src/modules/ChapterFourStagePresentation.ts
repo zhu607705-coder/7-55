@@ -9,7 +9,11 @@ import type {
 import chapterFour755Content from "../data/chapter4-755.content.json";
 import chapterFourTemporalMazeContent from "../data/chapter4-temporal-maze.content.json";
 import { CHAPTER_FOUR_LIGHT_GRID } from "./ChapterFourLightGridModel";
-import { normalizeRoom204Placements } from "../scenes/rpg/ChapterFourRoom204Model";
+import {
+  ROOM204_GROUP_ORDER,
+  countCompletedRoom204Groups
+} from "../scenes/rpg/ChapterFourRoom204Model";
+import { selectChapterFourRequiredClockTime } from "./ChapterFourTimeControlModel";
 
 interface PhasePresentationCopy {
   stageLabel: string;
@@ -118,6 +122,12 @@ export function selectChapterFourStagePresentation(
   const confirmedFacts = chapter.factIds
     .map((factId) => FACT_LABELS[factId])
     .filter((label): label is string => Boolean(label));
+  const requiredClockTime = selectChapterFourRequiredClockTime(chapter);
+  const currentDifference = requiredClockTime === "1850_evening"
+    ? "金属时针已经归位，外圈多出一处能够稳定停住的刻度。"
+    : requiredClockTime === "2245_maintenance"
+      ? "定位片已经归位，外圈另一处原本回弹的刻度保持不动。"
+      : PHASE_COPY[activePhase].currentDifference;
 
   return Object.freeze({
     stageLabel: PHASE_COPY[activePhase].stageLabel,
@@ -128,7 +138,7 @@ export function selectChapterFourStagePresentation(
       ? CONTEXT_COPY.trustStates.trusted
       : CONTEXT_COPY.trustStates.untrusted,
     floor: chapter.floor,
-    currentDifference: PHASE_COPY[activePhase].currentDifference,
+    currentDifference,
     localProgress: selectLocalProgress(state, activePhase, facts),
     confirmedFacts: Object.freeze(confirmedFacts)
   });
@@ -160,10 +170,11 @@ function selectLocalProgress(
         "elevator_history_observed",
         "elevator_history_calibrated",
         "a3_reference_observed",
-        "zhu_two_questions_answered",
         "misaligned_stair_solved",
         "room204_residual_observed"
-      ])}/8 · 复原 ${normalizeRoom204Placements(state.chapter4.room204Placements).length}/12`;
+      ])}/7 · 复原 ${countCompletedRoom204Groups(
+        state.chapter4.room204Placements
+      )}/${ROOM204_GROUP_ORDER.length}`;
     case "maintenance_repair":
       return `维修流程 ${countMaintenanceMilestones(facts)}/3`;
     case "blackout_light_grid": {
@@ -173,9 +184,9 @@ function selectLocalProgress(
     case "final_chase":
       return "抵达 202 0/1";
     case "final_minute_recovery":
-      return `最后一分钟 ${facts.has("final_minute_recovered") ? 1 : 0}/1`;
+      return `分针组件 ${facts.has("final_minute_recovered") ? 1 : 0}/1`;
     case "return_to_clock":
-      return state.chapter4.floor === "A1" ? "返回旧钟 1/1" : "返回旧钟 0/1";
+      return state.chapter4.floor === "A1" ? "抵达一楼 1/1" : "抵达一楼 0/1";
     case "morning_checkin":
       return `签到确认 ${countFacts(facts, ["checkin_card_accepted", "checkin_paper_accepted"])}/2`;
     case "exterior_closure":

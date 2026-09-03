@@ -113,6 +113,16 @@
         }
       ]
     },
+    "power_grid_locked": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_canteen_order_confirm",
+          "volume": 0.54,
+          "playbackRate": 0.9
+        }
+      ]
+    },
     "final_chase_started": {
       "cues": [
         {
@@ -184,6 +194,17 @@
           "asset": "27_p11_checkin_submit_button_press",
           "offsetMs": 900,
           "volume": 0.64
+        }
+      ]
+    },
+    "chapter4_environment_hint_pulse": {
+      "cues": [
+        {
+          "channel": "sfx",
+          "asset": "fx_theater_mode_switch",
+          "volume": 0.22,
+          "playbackRate": 1.35,
+          "panFromEvent": true
         }
       ]
     },

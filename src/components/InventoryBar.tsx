@@ -97,6 +97,7 @@ const ITEM_ORDER: ItemId[] = [
   "reflectionKeyword",
   "lakeKeyword",
   "reflectionCoordinate",
+  "hairDryer",
   "fishingRod",
   "rustedLockerKey",
   "nylonCord",
@@ -562,12 +563,24 @@ export function InventoryBar({ state }: InventoryBarProps) {
                   className={`inv-slot ${state.ui.selectedItem === item ? "is-selected" : ""} ${recentItem === item ? "is-new-item" : ""} ${
                     ghost?.moved && ghost.item === item ? "is-dragging" : ""
                   }`}
-                  aria-label={`道具：${ITEM_META[item].name}，${isPaperItem(item) ? "点击展开内容" : "双击查看详情"}`}
+                  aria-label={`道具：${ITEM_META[item].name}，${isPaperItem(item) ? "点击展开内容" : "空格选中，Enter 查看详情"}`}
                   onPointerDown={(e) => onSlotPointerDown(item, e)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
                       event.preventDefault();
                       openItemDetails(item);
+                      return;
+                    }
+                    if (event.key === " ") {
+                      event.preventDefault();
+                      const next = state.ui.selectedItem === item ? null : item;
+                      kit.flags.setUi("selectedItem", next);
+                      eventBus.emit("inventory_item_selection_changed", {
+                        itemId: item,
+                        selected: next !== null,
+                        surface: "phone",
+                        input: "keyboard"
+                      });
                     }
                   }}
                 >

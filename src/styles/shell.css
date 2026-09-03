@@ -2096,6 +2096,10 @@
     #2b3540;
 }
 
+.item-inspect-dialog--large-preview .item-inspect-icon-frame {
+  min-height: 150px;
+}
+
 .item-inspect-meta {
   display: grid;
   gap: 8px;

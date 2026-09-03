@@ -98,7 +98,8 @@ const TRANSPORT_NPC_IDS = Object.freeze([
   "student_phone_glance",
   "student_adjust_bag",
   "student_push_door",
-  "student_idle"
+  "student_idle",
+  "guard_check_watch"
 ] satisfies readonly FinaleNpcAnimationId[]);
 
 const MAINTENANCE_NPC_IDS = Object.freeze([
@@ -115,7 +116,6 @@ const MAINTENANCE_NPC_IDS = Object.freeze([
   "guard_walk_down",
   "guard_walk_up",
   "guard_check_list",
-  "guard_check_watch",
   "guard_flashlight_down",
   "guard_radio"
 ] satisfies readonly FinaleNpcAnimationId[]);

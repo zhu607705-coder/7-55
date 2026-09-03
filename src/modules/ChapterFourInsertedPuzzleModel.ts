@@ -37,10 +37,10 @@ export type ChapterFourPowerEdgeId =
   | "west_corridor__east_corridor"
   | "hall__classroom_zone";
 export type ChapterFourEvacuationSegmentId =
-  | "open_study"
+  | "lecture_202_door"
   | "east_corridor"
-  | "classroom_threshold"
-  | "lecture_202_exit";
+  | "transport_core"
+  | "main_stair_down";
 
 export type ChapterFourInsertedPuzzleAnswer =
   | {
@@ -140,11 +140,11 @@ export const CHAPTER_FOUR_INSERTED_PUZZLES = Object.freeze({
     id: "evacuation_route",
     factId: "a2_evacuation_route_confirmed",
     targetId: "a2_open_study_evacuation_context",
-    title: "疏散路线确认",
-    locationLabel: "A2 · 开放自习区",
-    darkPrompt: "脚步残影从自习区进入东侧走廊，穿过教室门槛后在 202 出口消失。",
-    lightPrompt: "按人流经过顺序排列四段路线卡。",
-    successText: "A2 夜间疏散路线已确认。"
+    title: "202 夜间疏散图",
+    locationLabel: "A2 · 开放自习区路线板",
+    darkPrompt: "图面没有完整箭头。比较四处鞋印的朝向、连续纹路和收束位置。",
+    lightPrompt: "从 202 门口开始，把四块磁贴排成连续通路；终点必须落在主楼梯下行口。",
+    successText: "202 到主楼梯的夜间疏散路线已记录。"
   }
 } as const satisfies Readonly<Record<ChapterFourInsertedPuzzleId, ChapterFourInsertedPuzzleDefinition>>);
 
@@ -154,10 +154,10 @@ const DUTY_ORDER: readonly ChapterFourDutyBoardCardId[] = [
   "main_elevator"
 ];
 const EVACUATION_ORDER: readonly ChapterFourEvacuationSegmentId[] = [
-  "open_study",
+  "lecture_202_door",
   "east_corridor",
-  "classroom_threshold",
-  "lecture_202_exit"
+  "transport_core",
+  "main_stair_down"
 ];
 const POWER_EDGES: readonly ChapterFourPowerEdgeId[] = [
   "hall__west_corridor",
@@ -215,10 +215,10 @@ export function isChapterFourInsertedPuzzleAnswer(
       ]);
     case "evacuation_route":
       return stringArray(answer.order, [
-        "open_study",
+        "lecture_202_door",
         "east_corridor",
-        "classroom_threshold",
-        "lecture_202_exit"
+        "transport_core",
+        "main_stair_down"
       ]);
   }
 }

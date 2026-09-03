@@ -82,7 +82,7 @@ export const CHAPTER_FOUR_MAINTENANCE_PATROL_WAYPOINTS: Readonly<
   stair_north: Object.freeze({
     id: "stair_north",
     x: 1001,
-    y: 214,
+    y: 240,
     neighborIds: Object.freeze(["west_north", "east_north"] as const)
   }),
   west_north: Object.freeze({
@@ -94,7 +94,7 @@ export const CHAPTER_FOUR_MAINTENANCE_PATROL_WAYPOINTS: Readonly<
   east_north: Object.freeze({
     id: "east_north",
     x: 1105,
-    y: 220,
+    y: 240,
     neighborIds: Object.freeze(["stair_north", "east_south"] as const)
   }),
   east_south: Object.freeze({
@@ -137,7 +137,7 @@ export function createChapterFourMaintenanceGuardRecoveryState(
   return {
     ...state,
     position: { x: 588, y: 220 },
-    heading: normalizedDirection({ x: 588, y: 220 }, { x: 1001, y: 214 }),
+    heading: normalizedDirection({ x: 588, y: 220 }, { x: 1001, y: 240 }),
     previousWaypointId: "west_north",
     targetWaypointId: "stair_north"
   };

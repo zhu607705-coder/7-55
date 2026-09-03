@@ -6,6 +6,7 @@ import type {
   ChapterFourLightZoneId,
   ChapterFourPhase,
   ChapterFourRealityMode,
+  ChapterFourRoom204GroupId,
   ChapterFourRoom204Orientation,
   ChapterFourRoom204PieceId,
   ChapterFourRoom204SlotId,
@@ -25,8 +26,13 @@ import {
   type ChapterFourContextInteractionTargetId
 } from "../data/ChapterFourInteractionContent";
 import {
+  ROOM204_GROUP_ORDER,
+  countCompletedRoom204Groups,
+  isRoom204GroupComplete,
   isRoom204PlacementSetComplete,
+  resolveRoom204GroupPlacement,
   resolveRoom204Placement,
+  room204GroupTargetId,
   room204SlotTargetId
 } from "../scenes/rpg/ChapterFourRoom204Model";
 import {
@@ -62,6 +68,11 @@ import {
   type ChapterFourInsertedPuzzleAnswer,
   type ChapterFourInsertedPuzzleId
 } from "./ChapterFourInsertedPuzzleModel";
+import {
+  chapterFourTimeContract,
+  isChapterFourPhaseTimeAligned,
+  selectChapterFourRequiredClockTime
+} from "./ChapterFourTimeControlModel";
 import {
   getChapterFour755TargetContract,
   resolveChapterFour755RuntimeEntityTarget,
@@ -187,6 +198,11 @@ export type ChapterFour755Intent =
   | ChapterFour755TargetIntent<{ type: "inspect_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
   | ChapterFour755TargetIntent<{ type: "pull_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
   | ChapterFour755TargetIntent<{
+      type: "adjust_hall_clock_time";
+      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock;
+      targetTimeState: ChapterFourTimeState;
+    }>
+  | ChapterFour755TargetIntent<{
       type: "inspect_bakery_conveyor_lamp";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.bakeryInspectionLamp;
     }>
@@ -228,12 +244,11 @@ export type ChapterFour755Intent =
         | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniTanJiazhen
         | typeof CHAPTER_FOUR_755_TARGET_IDS.alumniChengKaijia;
     }>
-  | ChapterFour755TargetIntent<{
+  | {
       type: "complete_zhu_two_questions";
-      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen;
       purposeAnswer: ChapterFourZhuPurposeAnswerId;
       personAnswer: ChapterFourZhuPersonAnswerId;
-    }>
+    }
   | ChapterFour755TargetIntent<{
       type: "observe_classroom_104_chalk_residual";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.classroom104BlackboardResidual;
@@ -249,6 +264,11 @@ export type ChapterFour755Intent =
       pieceId: ChapterFourRoom204PieceId;
       slotId: ChapterFourRoom204SlotId;
       orientation: ChapterFourRoom204Orientation;
+      targetId: string;
+    }>
+  | ChapterFour755TargetIntent<{
+      type: "place_room204_group";
+      groupId: ChapterFourRoom204GroupId;
       targetId: string;
     }>
   | { type: "complete_room204_projection" }
@@ -371,6 +391,7 @@ export type ChapterFour755IntentResultReason =
 export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "prologue_requirements_unmet",
   "current_phase_mismatch",
+  "clock_adjustment_required",
   "target_unavailable",
   "route_not_available",
   "stair_route_not_available",
@@ -398,7 +419,16 @@ export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "room204_duplicate_piece",
   "room204_slot_occupied",
   "room204_piece_already_placed",
+  "room204_unknown_group",
+  "room204_wrong_group",
+  "room204_group_conflict",
+  "room204_group_already_placed",
   "room204_projection_required",
+  "a1_comparison_required",
+  "projection_composite_required",
+  "maintenance_incident_required",
+  "powered_route_required",
+  "identity_context_required",
   "positioning_plate_required",
   "cart_wheel_inspection_required",
   "cart_wheel_cover_required",
@@ -428,6 +458,8 @@ export interface ChapterFour755IntentResult {
   intentType: ChapterFour755Intent["type"];
   previousPhase: ChapterFourPhase | null;
   phase: ChapterFourPhase | null;
+  previousTimeState: ChapterFourTimeState | null;
+  timeState: ChapterFourTimeState | null;
 }
 
 interface PhaseContract {
@@ -493,6 +525,7 @@ const ROOM204_PIECES = new Set<ChapterFourRoom204PieceId>(
 const ROOM204_SLOTS = new Set<ChapterFourRoom204SlotId>(
   content.room204.slotIds as readonly ChapterFourRoom204SlotId[]
 );
+const ROOM204_GROUPS = new Set<ChapterFourRoom204GroupId>(ROOM204_GROUP_ORDER);
 const ROOM204_ORIENTATIONS = new Set<ChapterFourRoom204Orientation>(["up"]);
 const LIGHT_ZONE_IDS = new Set<ChapterFourLightZoneId>(LIGHT_GRID_ZONES.map((zone) => zone.id));
 const ZHU_PURPOSE_ANSWER_IDS = new Set<ChapterFourZhuPurposeAnswerId>([
@@ -578,6 +611,8 @@ function lockedDetailForIntent(
   switch (intent.type) {
     case "complete_prologue_handoff":
       return "prologue_requirements_unmet";
+    case "adjust_hall_clock_time":
+      return "clock_adjustment_required";
     case "move_to_location":
     case "record_checkpoint":
       return "route_not_available";
@@ -594,10 +629,9 @@ function lockedDetailForIntent(
         ? "elevator_stop_chain_required"
         : "elevator_floor_records_required";
     case "complete_misaligned_stair":
-      if (!hasFact(chapter, "a3_media_alignment_completed")) return "media_alignment_required";
-      return hasFact(chapter, "zhu_two_questions_answered")
+      return hasFact(chapter, "a3_reference_observed")
         ? "misaligned_stair_required"
-        : "zhu_two_questions_required";
+        : "room204_observations_required";
     case "complete_inserted_puzzle":
       return insertedPuzzleLockedDetail(chapter, intent.answer.puzzleId);
     case "complete_zhu_two_questions":
@@ -622,7 +656,24 @@ function lockedDetailForIntent(
       }
       return "target_unavailable";
     }
+    case "place_room204_group": {
+      if (isRoom204GroupComplete(chapter.room204Placements, intent.groupId)
+        || countCompletedRoom204Groups(chapter.room204Placements) >= ROOM204_GROUP_ORDER.length) {
+        return "room204_group_already_placed";
+      }
+      if (!hasFact(chapter, "a3_reference_observed")
+        || !hasFact(chapter, "room204_residual_observed")) {
+        return "room204_observations_required";
+      }
+      return "target_unavailable";
+    }
     case "complete_room204_projection":
+      if (!hasFact(chapter, "a1_time_route_compared")) {
+        return "a1_comparison_required";
+      }
+      if (!hasFact(chapter, "a1_duty_board_reconstructed")) {
+        return "duty_board_required";
+      }
       if (!hasFact(chapter, "a3_reference_observed")
         || !hasFact(chapter, "room204_residual_observed")) {
         return "room204_observations_required";
@@ -631,6 +682,9 @@ function lockedDetailForIntent(
     case "collect_positioning_plate":
       return "room204_projection_required";
     case "install_positioning_plate":
+      if (!hasFact(chapter, "room204_projection_composite_completed")) {
+        return "projection_composite_required";
+      }
       if (!hasFact(chapter, "elevator_stop_chain_reconstructed")) {
         return chapterFourElevatorRecordsComplete(chapter.factIds)
           ? "elevator_stop_chain_required"
@@ -646,6 +700,12 @@ function lockedDetailForIntent(
         return "evacuation_route_required";
       }
       return "positioning_plate_required";
+    case "inspect_cart_wheel":
+    case "collect_short_pry_bar":
+      if (!hasFact(chapter, "maintenance_incident_linked")) {
+        return "maintenance_incident_required";
+      }
+      return "cart_wheel_inspection_required";
     case "open_cart_wheel_cover":
       return "cart_wheel_inspection_required";
     case "collect_lubricating_oil":
@@ -665,6 +725,9 @@ function lockedDetailForIntent(
     case "lock_light_grid":
       return "blackout_not_started";
     case "reach_202_threshold":
+      return hasFact(chapter, "powered_route_confirmed")
+        ? "chase_attempt_stale"
+        : "powered_route_required";
     case "fail_chase":
       return "chase_attempt_stale";
     case "collect_final_minute":
@@ -682,7 +745,9 @@ function lockedDetailForIntent(
       if (chapter.checkinCardAccepted || hasFact(chapter, "checkin_card_accepted")) {
         return "checkin_card_already_accepted";
       }
-      return "checkin_requirements_incomplete";
+      return hasFact(chapter, "a3_identity_context_observed")
+        ? "checkin_requirements_incomplete"
+        : "identity_context_required";
     case "submit_attendance_paper":
       if (chapter.checkinPaperAccepted || hasFact(chapter, "checkin_paper_accepted")) {
         return "checkin_paper_already_accepted";
@@ -709,6 +774,18 @@ function room204IssueDetailCode(
   return byIssue[issue];
 }
 
+function room204GroupIssueDetailCode(
+  issue: "unknown_group" | "wrong_group" | "group_conflict" | "already_placed"
+): ChapterFour755IntentDetailCode {
+  const byIssue: Record<typeof issue, ChapterFour755IntentDetailCode> = {
+    unknown_group: "room204_unknown_group",
+    wrong_group: "room204_wrong_group",
+    group_conflict: "room204_group_conflict",
+    already_placed: "room204_group_already_placed"
+  };
+  return byIssue[issue];
+}
+
 export class ChapterFourTemporalMazeController {
   private finalClockDragArmed = false;
 
@@ -726,6 +803,7 @@ export class ChapterFourTemporalMazeController {
     const state = this.store.getState();
     const chapter = activeChapterFour(state);
     const previousPhase = chapter?.phase ?? null;
+    const previousTimeState = chapter?.timeState ?? null;
     const reject = (
       reason: Exclude<ChapterFour755IntentResultReason, "accepted">,
       detailCode?: ChapterFour755IntentDetailCode
@@ -744,7 +822,9 @@ export class ChapterFourTemporalMazeController {
           : {}),
       intentType: intent.type,
       previousPhase,
-      phase: previousPhase
+      phase: previousPhase,
+      previousTimeState,
+      timeState: previousTimeState
     });
     const accept = (nextState: GameState): ChapterFour755IntentResult => {
       const nextChapter = activeChapterFour(nextState);
@@ -765,7 +845,9 @@ export class ChapterFourTemporalMazeController {
         reason: "accepted",
         intentType: intent.type,
         previousPhase,
-        phase: nextChapter?.phase ?? previousPhase
+        phase: nextChapter?.phase ?? previousPhase,
+        previousTimeState,
+        timeState: nextChapter?.timeState ?? previousTimeState
       };
     };
     const acceptReadOnly = (): ChapterFour755IntentResult => ({
@@ -774,7 +856,9 @@ export class ChapterFourTemporalMazeController {
       reason: "accepted",
       intentType: intent.type,
       previousPhase,
-      phase: previousPhase
+      phase: previousPhase,
+      previousTimeState,
+      timeState: previousTimeState
     });
 
     if (!chapter) return reject("inactive");
@@ -804,6 +888,11 @@ export class ChapterFourTemporalMazeController {
     }
     if (!chapter.prologueSeen) return reject("inactive");
     if (chapter.completed || chapter.phase === "complete") return reject("already_complete");
+    if (!isChapterFourPhaseTimeAligned(chapter)
+      && intent.type !== "adjust_hall_clock_time"
+      && intent.type !== "set_mode") {
+      return reject("locked", "clock_adjustment_required");
+    }
     if (isChapterFour755TargetIntent(intent)) {
       const resolvedTarget = runtimeTarget === undefined
         ? undefined
@@ -871,7 +960,9 @@ export class ChapterFourTemporalMazeController {
         if (chapter.mode !== "dark") return reject("wrong_mode");
         if (hasFact(chapter, "elevator_history_observed")) return reject("already_complete");
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "elevator_history_observed")
+          factIds: finalizeChapterFourCausalFacts(
+            appendFact(chapter, "elevator_history_observed")
+          )
         }));
       }
 
@@ -887,7 +978,9 @@ export class ChapterFourTemporalMazeController {
           return reject("incorrect");
         }
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "elevator_history_calibrated")
+          factIds: finalizeChapterFourCausalFacts(
+            appendFact(chapter, "elevator_history_calibrated")
+          )
         }));
       }
 
@@ -935,11 +1028,8 @@ export class ChapterFourTemporalMazeController {
           || chapter.floor !== "A3") {
           return reject("locked", "misaligned_stair_required");
         }
-        if (!hasFact(chapter, "zhu_two_questions_answered")) {
-          return reject("locked", "zhu_two_questions_required");
-        }
-        if (!hasFact(chapter, "a3_media_alignment_completed")) {
-          return reject("locked", "media_alignment_required");
+        if (!hasFact(chapter, "a3_reference_observed")) {
+          return reject("locked", "room204_observations_required");
         }
         if (hasFact(chapter, "misaligned_stair_solved")) return reject("already_complete");
         const withSolvedStair = this.patchChapter(state, {
@@ -961,11 +1051,6 @@ export class ChapterFourTemporalMazeController {
           && (!hasFact(chapter, "classroom_104_chalk_residual_observed")
             || !hasFact(chapter, "classroom_105_terminal_replay_checked"))) {
           return reject("locked", "classroom_checks_required");
-        }
-        if (chapter.phase === "room204_restore"
-          && intent.floor !== "A1"
-          && !hasFact(chapter, "a1_duty_board_reconstructed")) {
-          return reject("locked", "duty_board_required");
         }
         if (chapter.phase === "room204_restore"
           && intent.floor === "A3"
@@ -1028,11 +1113,23 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "pull_hall_clock": {
-        const result = accept(this.transition(state, "bakery_hour_hand"));
+        return reject("locked", "clock_adjustment_required");
+      }
+
+      case "adjust_hall_clock_time": {
+        const requiredTimeState = selectChapterFourRequiredClockTime(chapter);
+        if (!requiredTimeState) return reject("locked", "clock_adjustment_required");
+        if (intent.targetTimeState === chapter.timeState) return reject("already_complete");
+        if (intent.targetTimeState !== requiredTimeState) return reject("incorrect");
+        const next = chapter.phase === "hall_clock_inspection"
+          ? this.transition(state, "bakery_hour_hand")
+          : this.applyTimeState(state, chapter.phase, intent.targetTimeState);
+        const result = accept(next);
         this.emitChapterFourCue("chapter4_time_swap_committed", {
           previousPhase,
-          phase: "bakery_hour_hand",
-          timeState: "1225_bakery"
+          phase: next.chapter4.phase,
+          previousTimeState,
+          timeState: intent.targetTimeState
         });
         return result;
       }
@@ -1064,7 +1161,11 @@ export class ChapterFourTemporalMazeController {
           || hasFact(chapter, "hour_hand_installed")) return reject("locked");
         if (hasFact(chapter, "bakery_hour_hand_exposed")) return reject("already_complete");
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "bakery_hour_hand_exposed")
+          factIds: appendFacts(chapter, [
+            "bakery_conveyor_direction_observed",
+            "bakery_tool_location_observed",
+            "bakery_hour_hand_exposed"
+          ])
         }));
       }
 
@@ -1088,15 +1189,13 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "bakery_hour_hand_collected")
           || !state.items.oldClockHourHand
           || hasFact(chapter, "hour_hand_installed")) return reject("locked");
-        const result = accept(this.transition(state, "room204_restore", {
+        const result = accept(this.advancePhaseKeepingTime(state, "room204_restore", {
           factIds: appendFact(chapter, "hour_hand_installed"),
-          items: withItem(state, "oldClockHourHand", false)
+          items: withItem(state, "oldClockHourHand", false),
+          floor: "A1",
+          roomId: "a1_hall_clock",
+          checkpoint: "c4_a1_lobby"
         }));
-        this.emitChapterFourCue("chapter4_time_swap_committed", {
-          previousPhase,
-          phase: "room204_restore",
-          timeState: "1850_evening"
-        });
         return result;
       }
 
@@ -1144,10 +1243,15 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "complete_zhu_two_questions": {
-        if (chapter.phase !== "room204_restore"
-          || chapter.floor !== "A3"
-          || intent.targetId !== CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen) {
+        if (chapter.phase !== "exterior_closure"
+          || chapter.floor !== "A1"
+          || chapter.roomId !== "a1_exterior") {
           return reject("locked", "zhu_two_questions_required");
+        }
+        if (!hasFact(chapter, "a3_identity_context_observed")
+          || !hasFact(chapter, "attendance_record_recovered")
+          || !hasFact(chapter, "checkin_identity_verified")) {
+          return reject("locked", "identity_context_required");
         }
         if (hasFact(chapter, "zhu_two_questions_answered")) return reject("already_complete");
         if (!ZHU_PURPOSE_ANSWER_IDS.has(intent.purposeAnswer)
@@ -1172,7 +1276,9 @@ export class ChapterFourTemporalMazeController {
           return acceptReadOnly();
         }
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "classroom_104_chalk_residual_observed")
+          factIds: finalizeChapterFourCausalFacts(
+            appendFact(chapter, "classroom_104_chalk_residual_observed")
+          )
         }));
       }
 
@@ -1181,21 +1287,30 @@ export class ChapterFourTemporalMazeController {
           return acceptReadOnly();
         }
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "classroom_105_terminal_replay_checked")
+          factIds: finalizeChapterFourCausalFacts(
+            appendFact(chapter, "classroom_105_terminal_replay_checked")
+          )
         }));
       }
 
       case "observe_a3_reference": {
-        const factIds = appendFact(chapter, "a3_reference_observed");
+        const factIds = appendFacts(chapter, [
+          "a3_reference_observed",
+          "a3_identity_context_observed"
+        ]);
         return accept(this.patchChapter(state, {
-          factIds: finalizeRoom204Facts(factIds, chapter.room204Placements)
+          factIds: finalizeChapterFourCausalFacts(
+            finalizeRoom204Facts(factIds, chapter.room204Placements)
+          )
         }));
       }
 
       case "observe_room204_residual": {
         const factIds = appendFact(chapter, "room204_residual_observed");
         return accept(this.patchChapter(state, {
-          factIds: finalizeRoom204Facts(factIds, chapter.room204Placements)
+          factIds: finalizeChapterFourCausalFacts(
+            finalizeRoom204Facts(factIds, chapter.room204Placements)
+          )
         }));
       }
 
@@ -1214,19 +1329,46 @@ export class ChapterFourTemporalMazeController {
         }
         return accept(this.patchChapter(state, {
           room204Placements: resolution.placements,
-          factIds: finalizeRoom204Facts(chapter.factIds, resolution.placements)
+          factIds: finalizeChapterFourCausalFacts(
+            finalizeRoom204Facts(chapter.factIds, resolution.placements)
+          )
+        }));
+      }
+
+      case "place_room204_group": {
+        if (intent.targetId !== room204GroupTargetId(intent.groupId)) return reject("locked");
+        const resolution = resolveRoom204GroupPlacement(chapter.room204Placements, {
+          groupId: intent.groupId,
+          targetGroupId: intent.groupId
+        });
+        if (!resolution.accepted) {
+          return reject(
+            resolution.issue === "already_placed" ? "already_complete" : "incorrect",
+            room204GroupIssueDetailCode(resolution.issue)
+          );
+        }
+        return accept(this.patchChapter(state, {
+          room204Placements: resolution.placements,
+          factIds: finalizeChapterFourCausalFacts(
+            finalizeRoom204Facts(chapter.factIds, resolution.placements)
+          )
         }));
       }
 
       case "complete_room204_projection": {
         if (chapter.phase !== "room204_restore"
+          || !hasFact(chapter, "a1_time_route_compared")
+          || !hasFact(chapter, "a1_duty_board_reconstructed")
           || !hasFact(chapter, "a3_reference_observed")
+          || !hasFact(chapter, "a3_identity_context_observed")
           || !hasFact(chapter, "room204_residual_observed")
           || !hasFact(chapter, "room204_restored")
           || !isRoom204PlacementSetComplete(chapter.room204Placements)) return reject("locked");
         if (hasFact(chapter, "room204_projection_completed")) return reject("already_complete");
         return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "room204_projection_completed")
+          factIds: finalizeChapterFourCausalFacts(
+            appendFact(chapter, "room204_projection_completed")
+          )
         }));
       }
 
@@ -1245,7 +1387,7 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "install_positioning_plate": {
-        if (!hasFact(chapter, "room204_projection_completed")
+        if (!hasFact(chapter, "room204_projection_composite_completed")
           || !hasFact(chapter, "positioning_plate_collected")
           || !hasFact(chapter, "a2_positioning_plate_calibrated")
           || !hasFact(chapter, "a2_power_topology_recovered")
@@ -1253,24 +1395,20 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "elevator_stop_chain_reconstructed")
           || !state.items.clockPositioningPlate
           || hasFact(chapter, "positioning_plate_installed")) return reject("locked");
-        const result = accept(this.transition(state, "maintenance_repair", {
+        const result = accept(this.advancePhaseKeepingTime(state, "maintenance_repair", {
           factIds: appendFact(chapter, "positioning_plate_installed"),
           items: withItem(state, "clockPositioningPlate", false),
           floor: "A1",
           roomId: "a1_hall_clock",
           checkpoint: "c4_a1_lobby"
         }));
-        this.emitChapterFourCue("chapter4_time_swap_committed", {
-          previousPhase,
-          phase: "maintenance_repair",
-          timeState: "2245_maintenance"
-        });
         return result;
       }
 
       case "inspect_cart_wheel": {
         if (chapter.phase !== "maintenance_repair"
           || chapter.guardMode !== "patrol"
+          || !hasFact(chapter, "maintenance_incident_linked")
           || hasFact(chapter, "cart_wheel_cover_opened")
           || hasFact(chapter, "cart_wheel_repaired")
           || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
@@ -1462,8 +1600,9 @@ export class ChapterFourTemporalMazeController {
           || chapter.lightGrid.locked) return reject("locked");
         if (!isChapterFourLightGridSolved(chapter.lightGrid.mask)
           || chapter.lightGrid.mask !== CHAPTER_FOUR_LIGHT_GRID.targetMask) return reject("incorrect");
-        if (!hasFact(chapter, "zhu_two_questions_answered")) {
-          return reject("locked", "zhu_two_questions_required");
+        if (!hasFact(chapter, "room204_projection_composite_completed")
+          || !hasFact(chapter, "room202_endpoint_inferred")) {
+          return reject("locked", "projection_composite_required");
         }
         if (!hasFact(chapter, "a2_power_topology_recovered")) {
           return reject("locked", "power_topology_required");
@@ -1471,7 +1610,9 @@ export class ChapterFourTemporalMazeController {
         if (!hasFact(chapter, "a2_evacuation_route_confirmed")) {
           return reject("locked", "evacuation_route_required");
         }
-        const lightGridFacts = appendFact(chapter, "light_grid_locked");
+        const lightGridFacts = finalizeChapterFourCausalFacts(
+          appendFact(chapter, "light_grid_locked")
+        );
         const primedFacts = appendFact(
           { ...chapter, factIds: lightGridFacts },
           "canruo_star_lamp_primed"
@@ -1488,7 +1629,7 @@ export class ChapterFourTemporalMazeController {
           mask: CHAPTER_FOUR_LIGHT_GRID.targetMask,
           phase: "final_chase",
           canruoStarLampPrimed: true,
-          zhuQuestionAnswers: chapter.zhuQuestionAnswers
+          zhuQuestionAnswers: { purpose: null, person: null }
         });
         return result;
       }
@@ -1497,8 +1638,11 @@ export class ChapterFourTemporalMazeController {
         if (chapter.phase !== "final_chase"
           || intent.expectedAttempt !== chapter.chaseAttempt
           || chapter.floor !== "A2"
-          || !hasFact(chapter, "light_grid_locked")) return reject("locked");
+          || !hasFact(chapter, "light_grid_locked")
+          || !hasFact(chapter, "powered_route_confirmed")
+          || !hasFact(chapter, "room202_endpoint_inferred")) return reject("locked");
         return accept(this.transition(state, "final_minute_recovery", {
+          factIds: appendFact(chapter, "room202_route_reached"),
           floor: "A2",
           roomId: "a2_room_202",
           checkpoint: "c4_a2_room202"
@@ -1522,11 +1666,17 @@ export class ChapterFourTemporalMazeController {
           || chapter.floor !== "A2"
           || chapter.roomId !== "a2_room_202"
           || !hasFact(chapter, "paper_temporarily_out_of_inventory")
+          || !hasFact(chapter, "powered_route_confirmed")
+          || !hasFact(chapter, "room202_endpoint_inferred")
+          || !hasFact(chapter, "room202_route_reached")
           || hasFact(chapter, "final_minute_recovered")
           || state.items.finalMinute) return reject("locked");
         const items = withItem(withItemState(state, "finalMinute", true), "attendanceRecordPaper", true);
         return accept(this.transition(state, "return_to_clock", {
-          factIds: appendFact(chapter, "final_minute_recovered"),
+          factIds: appendFacts(chapter, [
+            "final_minute_recovered",
+            "attendance_record_recovered"
+          ]),
           items,
           floor: "A2",
           roomId: "a2_room_202",
@@ -1578,6 +1728,8 @@ export class ChapterFourTemporalMazeController {
           || !state.chapterThreeInterlude.completed
           || state.chapterThreeInterlude.phase !== "complete"
           || !hasFact(chapter, "final_minute_installed")
+          || !hasFact(chapter, "a3_identity_context_observed")
+          || !hasFact(chapter, "attendance_record_recovered")
           || !state.items.campusCard
           || chapter.checkinCardAccepted
           || hasFact(chapter, "checkin_card_accepted")) return reject("locked");
@@ -1606,6 +1758,8 @@ export class ChapterFourTemporalMazeController {
           || !state.chapterThreeInterlude.completed
           || state.chapterThreeInterlude.phase !== "complete"
           || !hasFact(chapter, "final_minute_installed")
+          || !hasFact(chapter, "a3_identity_context_observed")
+          || !hasFact(chapter, "attendance_record_recovered")
           || !state.items.attendanceRecordPaper
           || chapter.checkinPaperAccepted
           || hasFact(chapter, "checkin_paper_accepted")) return reject("locked");
@@ -1638,6 +1792,8 @@ export class ChapterFourTemporalMazeController {
           || !chapter.checkinPaperAccepted
           || !hasFact(chapter, "checkin_card_accepted")
           || !hasFact(chapter, "checkin_paper_accepted")
+          || !hasFact(chapter, "checkin_identity_verified")
+          || !hasFact(chapter, "zhu_two_questions_answered")
           || !hasFact(chapter, "final_minute_installed")
           || !chapter.lightGrid.locked
           || chapter.timeState !== "0755_morning"
@@ -1728,6 +1884,46 @@ export class ChapterFourTemporalMazeController {
     };
   }
 
+  private advancePhaseKeepingTime(
+    state: GameState,
+    phase: ChapterFourPhase,
+    overrides: PhaseTransitionOverrides = {}
+  ): GameState {
+    const next = this.transition(state, phase, overrides);
+    return {
+      ...next,
+      chapter4: {
+        ...next.chapter4,
+        timeAuthority: state.chapter4.timeAuthority,
+        timeState: state.chapter4.timeState,
+        worldTimeSeconds: state.chapter4.worldTimeSeconds,
+        phoneStatusTimeSeconds: state.chapter4.phoneStatusTimeSeconds,
+        phoneStatusTimeTrusted: state.chapter4.phoneStatusTimeTrusted,
+        guardMode: state.chapter4.guardMode
+      }
+    };
+  }
+
+  private applyTimeState(
+    state: GameState,
+    phase: ChapterFourPhase,
+    timeState: ChapterFourTimeState
+  ): GameState {
+    const time = chapterFourTimeContract(timeState);
+    return {
+      ...state,
+      chapter4: {
+        ...state.chapter4,
+        timeAuthority: "hall_clock",
+        timeState,
+        worldTimeSeconds: time.worldTimeSeconds,
+        phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
+        phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
+        guardMode: requirePhaseContract(phase).guardMode
+      }
+    };
+  }
+
   private relocate(state: GameState, location: AllowedLocation): GameState {
     return {
       ...state,
@@ -1747,9 +1943,15 @@ export class ChapterFourTemporalMazeController {
     const chapter = activeChapterFour(state)!;
     const cardAccepted = target === "card" || chapter.checkinCardAccepted;
     const paperAccepted = target === "paper" || chapter.checkinPaperAccepted;
-    const factIds = target === "card"
+    const acceptedFactIds = target === "card"
       ? appendFact(chapter, "checkin_card_accepted")
       : appendFact(chapter, "checkin_paper_accepted");
+    const factIds = cardAccepted
+      && paperAccepted
+      && acceptedFactIds.includes("a3_identity_context_observed")
+      && acceptedFactIds.includes("attendance_record_recovered")
+      ? appendFact({ ...chapter, factIds: acceptedFactIds }, "checkin_identity_verified")
+      : acceptedFactIds;
     const patch = {
       factIds,
       checkinCardAccepted: cardAccepted,
@@ -1872,6 +2074,10 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "inspect_hall_clock":
     case "pull_hall_clock":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hallClock);
+    case "adjust_hall_clock_time":
+      return typeof value.targetTimeState === "string"
+        && TIME_CONTRACTS.some((contract) => contract.id === value.targetTimeState)
+        && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hallClock, ["targetTimeState"]);
     case "collect_hour_hand":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.bakeryHourHandPickup);
     case "inspect_bakery_conveyor_lamp":
@@ -1898,14 +2104,11 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
         || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniTanJiazhen)
         || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniChengKaijia);
     case "complete_zhu_two_questions":
-      return typeof value.purposeAnswer === "string"
+      return hasExactKeys(value, ["type", "purposeAnswer", "personAnswer"])
+        && typeof value.purposeAnswer === "string"
         && ZHU_PURPOSE_ANSWER_IDS.has(value.purposeAnswer as ChapterFourZhuPurposeAnswerId)
         && typeof value.personAnswer === "string"
-        && ZHU_PERSON_ANSWER_IDS.has(value.personAnswer as ChapterFourZhuPersonAnswerId)
-        && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen, [
-          "purposeAnswer",
-          "personAnswer"
-        ]);
+        && ZHU_PERSON_ANSWER_IDS.has(value.personAnswer as ChapterFourZhuPersonAnswerId);
     case "observe_classroom_104_chalk_residual":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.classroom104BlackboardResidual);
     case "check_classroom_105_terminal_replay":
@@ -1914,6 +2117,12 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a3Reference);
     case "observe_room204_residual":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.room204Residual);
+    case "place_room204_group":
+      return hasExactKeys(value, ["type", "groupId", "targetId", "spatial"])
+        && isChapterFour755SpatialResult(value.spatial)
+        && typeof value.groupId === "string"
+        && ROOM204_GROUPS.has(value.groupId as ChapterFourRoom204GroupId)
+        && value.targetId === room204GroupTargetId(value.groupId as ChapterFourRoom204GroupId);
     case "place_room204_piece":
       return hasExactKeys(value, ["type", "pieceId", "slotId", "orientation", "targetId", "spatial"])
         && isChapterFour755SpatialResult(value.spatial)
@@ -2080,6 +2289,51 @@ function hasFact(chapter: ChapterFourState, factId: ChapterFourFactId): boolean 
 
 function appendFact(chapter: ChapterFourState, factId: ChapterFourFactId): ChapterFourFactId[] {
   return hasFact(chapter, factId) ? [...chapter.factIds] : [...chapter.factIds, factId];
+}
+
+function appendFacts(
+  chapter: Pick<ChapterFourState, "factIds">,
+  factIds: readonly ChapterFourFactId[]
+): ChapterFourFactId[] {
+  const next = [...chapter.factIds];
+  for (const factId of factIds) {
+    if (!next.includes(factId)) next.push(factId);
+  }
+  return next;
+}
+
+function finalizeChapterFourCausalFacts(
+  factIds: readonly ChapterFourFactId[]
+): ChapterFourFactId[] {
+  const next = new Set(factIds);
+  if ([
+    "classroom_104_chalk_residual_observed",
+    "classroom_105_terminal_replay_checked",
+    "elevator_history_observed",
+    "elevator_history_calibrated"
+  ].every((factId) => next.has(factId as ChapterFourFactId))) {
+    next.add("a1_time_route_compared");
+  }
+  if ([
+    "room204_restored",
+    "room204_projection_completed",
+    "a1_time_route_compared",
+    "a3_reference_observed",
+    "a3_identity_context_observed",
+    "room204_residual_observed"
+  ].every((factId) => next.has(factId as ChapterFourFactId))) {
+    next.add("room204_projection_composite_completed");
+    next.add("room202_endpoint_inferred");
+    next.add("maintenance_incident_linked");
+  }
+  if ([
+    "light_grid_locked",
+    "room204_projection_composite_completed",
+    "room202_endpoint_inferred"
+  ].every((factId) => next.has(factId as ChapterFourFactId))) {
+    next.add("powered_route_confirmed");
+  }
+  return [...next];
 }
 
 function insertedPuzzleFloor(

@@ -36,7 +36,7 @@ export const CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS = Object.freeze([
     textureKey: "chapter4-front-desk-duty-board-v01",
     url: dutyBoardUrl,
     floor: "A1",
-    center: { x: 751, y: 582 },
+    center: { x: 872, y: 625 },
     sourceSize: { width: 152, height: 100 },
     displaySize: { width: 104, height: 68 },
     depth: 24

@@ -61,10 +61,12 @@ const GAMEPLAY_IDS = [
   "c4-755-opening",
   "c4-755-hall-clock",
   "c4-755-bakery-1225",
+  "c4-755-clock-1850-ready",
   "c4-755-classrooms-1850",
   "c4-755-elevator-history",
   "c4-755-room204-1850",
   "c4-755-a2-field-records",
+  "c4-755-clock-2245-ready",
   "c4-755-maintenance-2245",
   "c4-755-blackout-0754",
   "c4-755-chase",
@@ -78,10 +80,12 @@ const EXPECTED_SEEDS = {
   "c4-755-opening": ["opening_handoff", "2245_opening", "A1", "a1_lobby"],
   "c4-755-hall-clock": ["hall_clock_inspection", "2245_opening", "A1", "a1_hall_clock"],
   "c4-755-bakery-1225": ["bakery_hour_hand", "1225_bakery", "A1", "a1_bakery"],
+  "c4-755-clock-1850-ready": ["room204_restore", "1225_bakery", "A1", "a1_hall_clock"],
   "c4-755-classrooms-1850": ["room204_restore", "1850_evening", "A1", "a1_hall_clock"],
   "c4-755-elevator-history": ["room204_restore", "1850_evening", "A1", "a1_main_elevator"],
   "c4-755-room204-1850": ["room204_restore", "1850_evening", "A3", "a3_reference_classroom"],
   "c4-755-a2-field-records": ["room204_restore", "1850_evening", "A2", "a2_corridor"],
+  "c4-755-clock-2245-ready": ["maintenance_repair", "1850_evening", "A1", "a1_hall_clock"],
   "c4-755-maintenance-2245": ["maintenance_repair", "2245_maintenance", "A1", "a1_lobby"],
   "c4-755-blackout-0754": ["blackout_light_grid", "0754_blackout", "A1", "a1_power_panel"],
   "c4-755-chase": ["final_chase", "0754_blackout", "A1", "a1_lobby"],
@@ -134,6 +138,7 @@ const hostSource = source("../src/scenes/rpg/RpgGameHost.tsx");
 const rpgPreloadSource = source("../src/scenes/rpg/RpgRuntimePreload.ts");
 const prologueGateSource = source("../src/components/Chapter4PrologueRuntimeGate.tsx");
 const sceneSource = source("../src/scenes/rpg/ChapterFourTemporalMazeScene.ts");
+const playerTextureSource = source("../src/scenes/rpg/RpgPlayerTextures.ts");
 const debugSource = source("../src/scenes/rpg/RpgRuntimeDebug.ts");
 const audioDirectorSource = source("../src/modules/AudioDirector.ts");
 const presentationDirectorSource = source("../src/modules/PresentationDirector.ts");
@@ -201,7 +206,7 @@ const validationSuiteSource = source("./run-validation-suite.mjs");
 const taskEntries = Object.entries(content.tasks ?? {});
 const activeTaskEntries = taskEntries.filter(([taskId]) => taskId !== "chapter_complete");
 const activeHints = activeTaskEntries.flatMap(([, task]) => Array.isArray(task?.hints) ? task.hints : []);
-assert(taskEntries.length === 38 && activeTaskEntries.length === 37, "Task 14 must define 37 active tasks plus chapter_complete");
+assert(taskEntries.length === 40 && activeTaskEntries.length === 39, "Task 14 must define 39 active tasks plus chapter_complete");
 for (const [taskId, task] of activeTaskEntries) {
   assert(
     Array.isArray(task?.hints)
@@ -210,7 +215,7 @@ for (const [taskId, task] of activeTaskEntries) {
     `${taskId} must expose exactly three non-empty progressive hints`
   );
 }
-assert(activeHints.length === 111, "Task 14 must expose the complete 111-hint contract");
+assert(activeHints.length === 117, "Task 14 must expose the complete 117-hint contract");
 assert(
   Array.isArray(content.tasks?.chapter_complete?.hints)
     && content.tasks.chapter_complete.hints.length === 0,
@@ -262,9 +267,9 @@ assert(
   "desktop RPG scenes, including Chapter 4, must mount the shared task bar only through their Host"
 );
 assert(
-  /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"/.test(sceneSource)
+  /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"[\s\S]*?"a2_room204_disordered_furniture"[\s\S]*?"a2_room202_recovery_barrier"/.test(sceneSource)
     && /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS\.has\(projectedId\)/.test(sceneSource),
-  "the plate contract must recognize both runtime-managed final-chase guard bodies"
+  "the plate contract must recognize runtime-managed guard and authored furniture collision bodies"
 );
 assert(
   /automaticThresholdTarget[\s\S]*?payload\.targetId === thresholdContract\.id[\s\S]*?state\.chapter4\.phase === "final_chase"[\s\S]*?this\.currentFloor === 2[\s\S]*?this\.finalChaseInsideFinish[\s\S]*?this\.finalChaseState\?\.phase === "finish_pending"[\s\S]*?isChapterFour755TargetStateActive\(state, thresholdContract\)/.test(sceneSource),
@@ -275,6 +280,14 @@ assert(
   "every active Chapter 4 floor must apply matching four-sided physics and camera bounds"
 );
 assert(/setCollideWorldBounds\(true\)/.test(sceneSource), "the Chapter 4 player must collide with the active floor world bounds");
+assert(
+  /export function getRpgPlayerVisualContainmentInsets[\s\S]*?RPG_PLAYER_FRAME_WIDTH[\s\S]*?RPG_PLAYER_FOOT_WORLD_WIDTH[\s\S]*?RPG_PLAYER_FRAME_HEIGHT[\s\S]*?RPG_PLAYER_FOOT_BOTTOM_INSET[\s\S]*?RPG_PLAYER_FOOT_WORLD_HEIGHT/.test(playerTextureSource),
+  "the shared player contract must derive visual-containment insets from its frame, scale and fixed foot box"
+);
+assert(
+  /getRpgPlayerVisualContainmentInsets\(\)[\s\S]*?playerBody\.setBoundsRectangle\(new Phaser\.Geom\.Rectangle\([\s\S]*?floor\.offsetX \+ visualInsets\.left[\s\S]*?visualInsets\.top[\s\S]*?FLOOR_SIZE\.width - visualInsets\.left - visualInsets\.right[\s\S]*?FLOOR_SIZE\.height - visualInsets\.top - visualInsets\.bottom/.test(sceneSource),
+  "the Chapter 4 player body must use a per-floor custom boundary that keeps the complete visual frame inside the source plate"
+);
 assert(
   !mazeProjectionSource.includes('collisionIds.push("a1_blackout_service_barrier")'),
   "the projection must not advertise a blackout service barrier without an authoritative runtime entity"
@@ -322,6 +335,7 @@ const expectedAudioEvents = [
   "clock_gear_repaired",
   "blackout_committed",
   "power_zone_toggled",
+  "power_grid_locked",
   "final_chase_started",
   "final_chase_failed",
   "final_chase_succeeded",
@@ -329,6 +343,7 @@ const expectedAudioEvents = [
   "morning_checkin_card_accepted",
   "morning_checkin_paper_accepted",
   "morning_checkin_completed",
+  "chapter4_environment_hint_pulse",
   "chapter4_755_scene_closed"
 ];
 assert(audio.version === 1, "Task 14 audio timeline version must be 1");
@@ -415,13 +430,15 @@ assert(
 
 for (const token of [
   "committed?:", "applied?:", "activeFloorBounds?:", "runtimeEntities?:", "ordinaryGuard?:", "finalChase?:",
-  "lightGrid?:", "room202Door?:", "spatialAttestation?:", "contract?:", "developerCheckpoint?:"
+  "lightGrid?:", "room202Door?:", "spatialAttestation?:", "contract?:", "developerCheckpoint?:",
+  "visualBounds?:", "movementBounds?:"
 ]) {
   assert(debugSource.includes(token), `runtime debug schema is missing ${token}`);
 }
 for (const token of [
   "pendingProjectionSignature", "appliedPlateSignature", "runtimeEntities", "structuredFailures",
-  "activeFloorBounds", "finalChaseInsideFinish", "finalChaseContact", "hostPowerPanelSession", "developerCheckpointSource"
+  "activeFloorBounds", "finalChaseInsideFinish", "finalChaseContact", "hostPowerPanelSession", "developerCheckpointSource",
+  "playerVisualBounds", "playerMovementBounds"
 ]) {
   assert(sceneSource.includes(token), `Scene debug publisher is missing ${token}`);
 }
@@ -554,6 +571,13 @@ try {
       && CHAPTER_FOUR_755_INTENT_DETAIL_CODES.includes(lockedResult.detailCode),
     "a controller-owned locked result must expose a declared detailCode"
   );
+  const finalMinuteRecovery = createDeveloperCheckpointState("c4-755-final-minute");
+  assert(
+    finalMinuteRecovery.chapter4.factIds.includes("room202_route_reached")
+      && !finalMinuteRecovery.chapter4.factIds.includes("final_minute_recovered")
+      && !finalMinuteRecovery.items.finalMinute,
+    "final-minute seed must represent a completed 202 arrival without forging the pickup"
+  );
   const returnClock = createDeveloperCheckpointState("c4-755-return-clock");
   assert(
     returnClock.items.finalMinute
@@ -565,7 +589,21 @@ try {
   );
   const closure = createDeveloperCheckpointState("c4-755-closure");
   assert(closure.chapter4.checkinCardAccepted && closure.chapter4.checkinPaperAccepted, "closure waiting seed must include both accepted check-in parts");
+  assert(
+    [
+      "a3_identity_context_observed",
+      "attendance_record_recovered",
+      "checkin_identity_verified"
+    ].every((factId) => closure.chapter4.factIds.includes(factId)),
+    "closure waiting seed must retain the three raw identity prerequisites consumed by the exterior questions"
+  );
   assert(!closure.chapter4.completed && !closure.chapter4.exteriorClosureAcknowledged, "closure waiting seed must not forge completion or acknowledgement");
+  assert(
+    !closure.chapter4.factIds.includes("zhu_two_questions_answered")
+      && closure.chapter4.zhuQuestionAnswers.purpose === null
+      && closure.chapter4.zhuQuestionAnswers.person === null,
+    "closure waiting seed must open before the exterior questions and must not forge either answer"
+  );
   assert(!closure.chapter4.factIds.includes("exterior_closure_acknowledged"), "closure waiting seed must not forge closure proof");
 
   for (const id of PROLOGUE_IDS) {
@@ -742,4 +780,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=14+aliases+url+session-only quest=single-objective+111-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);
+console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=16+aliases+url+session-only quest=single-objective+117-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);

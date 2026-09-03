@@ -925,7 +925,7 @@
   box-shadow: 3px 3px 0 rgba(21, 74, 137, 0.16);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 78px;
+  min-height: 88px;
 }
 
 .cc98-board-open {
@@ -933,7 +933,7 @@
   display: grid;
   gap: 1px 8px;
   grid-template-columns: 30px minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   min-width: 0;
   padding: 8px 7px 8px 9px;
   text-align: left;
@@ -963,6 +963,8 @@
 .cc98-board-open small {
   color: #697480;
   font-size: var(--fs-caption);
+  grid-column: 2;
+  grid-row: 2;
   line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -977,6 +979,19 @@
   font-weight: 800;
   grid-column: 3;
   grid-row: 1 / span 2;
+  white-space: nowrap;
+}
+
+.cc98-board-reference {
+  color: #4f6982;
+  font-size: 10px;
+  font-weight: 800;
+  grid-column: 2 / 4;
+  grid-row: 3;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

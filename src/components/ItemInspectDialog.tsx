@@ -350,10 +350,10 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     useHint: "先拖向清洁车轮，再拖向旧钟齿轮"
   },
   finalMinute: {
-    category: "时间碎片",
-    source: "202 阶梯教室投影",
-    intro: "这是一段被偷走的最后一分钟。它只能回到旧钟分针端点。",
-    useHint: "拖向旧钟分针端点，恢复 07:55"
+    category: "钟表部件",
+    source: "202 阶梯教室座椅间",
+    intro: "黄铜分针组件带着旧钟轴座的磨损痕迹，应当装回一楼大厅的旧钟。",
+    useHint: "靠近旧钟，拖到可见表盘内，恢复 07:55"
   }
 };
 
@@ -438,7 +438,8 @@ function ItemInspectDialogBody({
     >
       <section
         ref={dialogRef}
-        className={`item-inspect-dialog item-inspect-dialog--${variant}`}
+        className={`item-inspect-dialog item-inspect-dialog--${variant} ${itemId === "hairDryer" ? "item-inspect-dialog--large-preview" : ""}`.trim()}
+        data-item-id={itemId}
         role="dialog"
         tabIndex={-1}
         aria-modal="true"
@@ -466,7 +467,10 @@ function ItemInspectDialogBody({
         </header>
         <div className="item-inspect-body">
           <div className="item-inspect-icon-frame" aria-hidden="true">
-            <PixelIcon name={itemId} size={variant === "phone" ? 58 : 72} />
+            <PixelIcon
+              name={itemId}
+              size={itemId === "hairDryer" ? (variant === "phone" ? 96 : 128) : (variant === "phone" ? 58 : 72)}
+            />
           </div>
           <dl id={metaId} className="item-inspect-meta">
             <div className="item-inspect-row">

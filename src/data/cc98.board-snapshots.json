@@ -1,0 +1,23 @@
+{
+  "schema": "cc98-board-snapshot/v1",
+  "boards": [
+    {
+      "board": "郁闷小屋",
+      "boardId": 114,
+      "source": "CC98 114 板公开页面",
+      "sourceUrl": "https://www.cc98.org/board/114",
+      "capturedOn": "2026-09-03",
+      "todayPostCount": 292,
+      "totalTopicCount": 132481
+    },
+    {
+      "board": "开怀一笑",
+      "boardId": 135,
+      "source": "CC98 135 板公开页面",
+      "sourceUrl": "https://www.cc98.org/board/135",
+      "capturedOn": "2026-09-03",
+      "todayPostCount": 128,
+      "totalTopicCount": 139709
+    }
+  ]
+}

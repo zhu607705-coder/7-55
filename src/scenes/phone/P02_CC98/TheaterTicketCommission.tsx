@@ -58,7 +58,7 @@ export function TheaterTicketCommission({
       : phase === "first_wave_failed"
         ? secondWaveSeconds > 0
           ? `${copy.secondWaveCountdownStatus}${secondWaveSeconds} 秒`
-          : networkMode === "cellular" ? copy.cellularReadyStatus : copy.firstWaveStatus
+          : copy.secondWaveReadyStatus
         : claimedWave === 1 ? copy.deliveredFirstWaveStatus : copy.deliveredStatus;
 
   function acceptCommission() {
@@ -71,23 +71,18 @@ export function TheaterTicketCommission({
     kit.flags.toast("学生剧现场帮抢委托已接取。", "task");
   }
 
-  function openControlCenter() {
-    playSfx("02_", { volume: 0.55 });
-    kit.flags.setUi("controlCenterOpen", true);
-  }
-
   function attemptTicketRelease() {
     const result = kit.theater.attemptCc98TicketRelease();
     if (result === "first_wave_slow") {
       playSfx("04_", { volume: 0.65 });
       setReleaseFeedback(copy.firstWaveStatus);
-      kit.flags.toast("第一波结束：网速过慢。请切换到移动数据。", "system");
+      kit.flags.toast(copy.firstWaveStatus, "system");
       return;
     }
-    if (result === "cellular_required") {
+    if (result === "second_wave_slow") {
       playSfx("04_", { volume: 0.55 });
-      setReleaseFeedback(copy.cellularRequiredStatus);
-      kit.flags.toast("第二波要求使用移动数据。", "system");
+      setReleaseFeedback(copy.networkTooSlowStatus);
+      kit.flags.toast(copy.networkTooSlowStatus, "system");
       return;
     }
     if (result === "won_first_wave") {
@@ -112,8 +107,7 @@ export function TheaterTicketCommission({
 
   const firstWaveFinished = phase === "first_wave_failed" || phase === "delivered";
   const secondWaveReady = phase === "first_wave_failed"
-    && secondWaveSeconds === 0
-    && networkMode === "cellular";
+    && secondWaveSeconds === 0;
   const networkLabel = getNetworkLabel(networkMode);
 
   return (
@@ -164,9 +158,6 @@ export function TheaterTicketCommission({
           >
             {copy.firstWaveLabel}
           </button>
-          <button type="button" className="cc98-ticket-secondary" onClick={openControlCenter}>
-            {copy.controlCenterLabel}
-          </button>
         </div>
       ) : null}
 
@@ -182,12 +173,7 @@ export function TheaterTicketCommission({
             onClick={attemptTicketRelease}
             disabled={!secondWaveReady}
           >
-            {networkMode !== "cellular"
-              ? copy.cellularRequiredLabel
-              : secondWaveSeconds > 0 ? `${secondWaveSeconds} 秒后开放` : copy.secondWaveLabel}
-          </button>
-          <button type="button" className="cc98-ticket-secondary" onClick={openControlCenter}>
-            {copy.controlCenterLabel}
+            {secondWaveSeconds > 0 ? `${secondWaveSeconds} 秒后开放` : copy.secondWaveLabel}
           </button>
         </div>
       ) : null}

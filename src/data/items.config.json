@@ -442,8 +442,8 @@
   },
   {
     "id": "finalMinute",
-    "name": "最后一分钟",
-    "desc": "一分钟。不多，但足够签到。",
+    "name": "黄铜分针组件",
+    "desc": "从 202 阶梯座椅间取回的旧钟分针组件，轴座磨损与大厅旧钟吻合。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_minute_endpoint"
   }

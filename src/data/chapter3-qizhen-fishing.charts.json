@@ -9,7 +9,7 @@
       "spotId": "locker_key",
       "label": "生锈的柜门钥匙",
       "experience": "tutorial_full",
-      "instruction": "教学谱面：音符碰到判定线时按对应的 A / S / D",
+      "instruction": "教学谱面：音符落到白色判定线时按对应的 A / S / D",
       "bars": 4,
       "durationSeconds": 10,
       "notes": [
@@ -27,7 +27,7 @@
       "spotId": "net_frame",
       "label": "破损网框",
       "experience": "quick_hold",
-      "instruction": "短判定：按住 A 至圆环结束，再完成收线",
+      "instruction": "短判定：长条头端到线时按住 A，尾端过线后松开",
       "bars": 3,
       "durationSeconds": 7.5,
       "notes": [
@@ -41,7 +41,7 @@
       "spotId": "fish",
       "label": "小鲤鱼",
       "experience": "quick_strike",
-      "instruction": "一次判定：水纹收紧到判定线时按 S 提竿",
+      "instruction": "一次判定：S 音符落到白色判定线时按 S 提竿",
       "bars": 2,
       "durationSeconds": 5,
       "notes": [

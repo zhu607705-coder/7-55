@@ -48,9 +48,7 @@ export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_WALK_FRAME_COUNT = 8;
 export const RPG_PLAYER_SIDE_WALK_FRAME_COUNT = 12;
 export const RPG_PLAYER_WALK_CYCLE_MS = RPG_PLAYER_WALK_FRAME_MS * RPG_PLAYER_WALK_FRAME_COUNT;
-export const RPG_PLAYER_SIDE_WALK_FRAME_MS = (
-  RPG_PLAYER_WALK_CYCLE_MS / RPG_PLAYER_SIDE_WALK_FRAME_COUNT
-);
+export const RPG_PLAYER_SIDE_WALK_FRAME_MS = 100;
 export const RPG_PLAYER_SIDE_WALK_FPS = 1000 / RPG_PLAYER_SIDE_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 30,
@@ -83,6 +81,13 @@ export interface RpgPlayerPerspectiveMetrics {
   displayWidth: number;
   displayHeight: number;
   nameOffsetY: number;
+}
+
+export interface RpgPlayerVisualContainmentInsets {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
 }
 
 export const RPG_PLAYER_TEXTURE_ASSETS = {
@@ -206,6 +211,31 @@ export function configureRpgPlayerSprite(player: Phaser.Physics.Arcade.Sprite): 
   applyRpgPlayerVisualScale(player, RPG_PLAYER_DISPLAY_SCALE);
 }
 
+/**
+ * Insets the foot body's world-boundary rectangle so the complete configured
+ * player frame remains inside a map whose bounds are expressed in world pixels.
+ */
+export function getRpgPlayerVisualContainmentInsets(
+  displayScale = RPG_PLAYER_DISPLAY_SCALE
+): RpgPlayerVisualContainmentInsets {
+  const safeScale = Math.max(0.01, displayScale);
+  const horizontalInset = Math.max(
+    0,
+    (RPG_PLAYER_FRAME_WIDTH * safeScale - RPG_PLAYER_FOOT_WORLD_WIDTH) / 2
+  );
+  return {
+    left: horizontalInset,
+    top: Math.max(
+      0,
+      RPG_PLAYER_FRAME_HEIGHT * safeScale
+        - RPG_PLAYER_FOOT_BOTTOM_INSET
+        - RPG_PLAYER_FOOT_WORLD_HEIGHT
+    ),
+    right: horizontalInset,
+    bottom: RPG_PLAYER_FOOT_BOTTOM_INSET
+  };
+}
+
 export function configureNorthUpCampusRpgPlayerSprite(
   player: Phaser.Physics.Arcade.Sprite
 ): void {
@@ -216,9 +246,9 @@ export function configureNorthUpCampusRpgPlayerSprite(
  * Convert elapsed movement time into the shared directional walk sequence.
  * The elapsed value is local to one continuous walk, so a fresh walk cannot
  * enter halfway through a stride because of a scene's absolute game clock.
- * Down/up retain eight frames. Side walking uses twelve actually drawn frames
- * over the same 880ms cycle, so extra artwork improves continuity without
- * changing movement cadence.
+ * Down/up retain eight frames. Side walking keeps each of its twelve actual
+ * drawings visible for 100ms, keeping the close-leg passing pose readable while
+ * restoring a slightly quicker cadence without changing movement velocity.
  */
 export function getRpgPlayerWalkFrameAt(
   elapsedMs: number,
@@ -227,7 +257,9 @@ export function getRpgPlayerWalkFrameAt(
   const frameCount = facing === "side"
     ? RPG_PLAYER_SIDE_WALK_FRAME_COUNT
     : RPG_PLAYER_WALK_FRAME_COUNT;
-  const frameMs = RPG_PLAYER_WALK_CYCLE_MS / frameCount;
+  const frameMs = facing === "side"
+    ? RPG_PLAYER_SIDE_WALK_FRAME_MS
+    : RPG_PLAYER_WALK_FRAME_MS;
   return (
     Math.floor(Math.max(0, elapsedMs) / frameMs)
     % frameCount

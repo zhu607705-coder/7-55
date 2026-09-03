@@ -18,6 +18,7 @@ SIDE_TRANSITION_PATHS = {
     "near_toe_off": PLAYER_DIR / "source/player_side_transition_23_v3.png",
     "far_acceptance": PLAYER_DIR / "source/player_side_transition_45_v3.png",
     "far_toe_off": PLAYER_DIR / "source/player_side_transition_67_v3.png",
+    "passing_close": PLAYER_DIR / "source/player_side_passing_close_v1.png",
 }
 
 FRAME_WIDTH = 96
@@ -36,15 +37,15 @@ POSE_SPECS = {
     "up": tuple((index, False) for index in range(8, 15)) + ((12, True),),
 }
 
-# The side cycle keeps the original eight authored poses and inserts four
-# genuinely drawn transition poses. The two six-phase half strides explicitly
+# The side cycle keeps seven original authored poses and inserts five genuinely
+# drawn transition poses. The two six-phase half strides explicitly
 # swap the near/far support leg. Target silhouette heights encode a restrained,
 # symmetric gait bob instead of inheriting source-resolution drift.
 SIDE_CYCLE_SPECS = (
     ("sheet", 16, 104),
     ("transition", "near_acceptance", 103),
     ("sheet", 17, 102),
-    ("sheet", 18, 101),
+    ("transition", "passing_close", 101),
     ("transition", "near_toe_off", 102),
     ("sheet", 19, 103),
     ("sheet", 20, 104),

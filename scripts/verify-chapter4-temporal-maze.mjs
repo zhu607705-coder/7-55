@@ -30,9 +30,9 @@ const expectedFloors = ["A1", "A2", "A3"];
 const expectedAssets = ["a1_base", "a2_base", "a3_base"];
 const expectedCheckpoints = ["c4_a1_lobby", "c4_a2_corridor", "c4_a3_wayfinding"];
 const expectedFloorCounts = {
-  A1: { collisions: 15, walkable: 7, occlusions: 9 },
-  A2: { collisions: 23, walkable: 5, occlusions: 6 },
-  A3: { collisions: 26, walkable: 6, occlusions: 2 }
+  A1: { collisions: 44, walkable: 7, occlusions: 9 },
+  A2: { collisions: 24, walkable: 5, occlusions: 6 },
+  A3: { collisions: 63, walkable: 8, occlusions: 2 }
 };
 const expectedElevators = {
   A1: {
@@ -190,8 +190,8 @@ const expectedMorningCheckinRuntimeTargets = [
   {
     targetId: "a1_campus_card_reader",
     entityId: "chapter4_checkin_card_reader",
-    installationBounds: { x: 768, y: 607, width: 30, height: 24 },
-    standPosition: { x: 783, y: 662 },
+    installationBounds: { x: 784, y: 607, width: 30, height: 24 },
+    standPosition: { x: 799, y: 662 },
     proximity: 72,
     boundsDerivation: {
       kind: "visible_programmatic_card_reader_get_bounds",
@@ -254,6 +254,24 @@ assert(
   layout.sourceAnnotationContract?.reviewStatus === "approved_for_integration",
   "layout must retain the approved manual annotation source"
 );
+assert(
+  layout.furnitureCollisionDraftContract?.schema === "chapter4-furniture-collision-draft/v1",
+  "layout must retain the user browser furniture-collision draft provenance"
+);
+assertJsonEqual(
+  layout.furnitureCollisionDraftContract?.floorDraftCounts,
+  { A1: 32, A2: 0, A3: 42 },
+  "furniture collision source draft counts"
+);
+assertJsonEqual(
+  layout.furnitureCollisionDraftContract?.importedCollisionCounts,
+  { A1: 28, A2: 0, A3: 37 },
+  "furniture collision imported counts"
+);
+assert(
+  layout.furnitureCollisionDraftContract?.ignoredClickRectIds?.length === 9,
+  "furniture collision import must retain all nine filtered 4x4 click points"
+);
 
 assertJsonEqual(topology.floors?.map((floor) => floor.id), expectedFloors, "active topology floors");
 assertJsonEqual(topology.floors?.map((floor) => floor.basePlateId), expectedAssets, "active topology base plates");
@@ -278,6 +296,11 @@ for (const floor of layout.floors ?? []) {
   assert(floor.staticCollisions?.length === counts?.collisions, `${label} collision count mismatch`);
   assert(floor.walkableRegions?.length === counts?.walkable, `${label} walkable count mismatch`);
   assert(floor.foregroundOcclusions?.length === counts?.occlusions, `${label} occlusion count mismatch`);
+  assert(
+    floor.staticCollisions.filter((collision) => collision.id.includes("_furniture_")).length
+      === layout.furnitureCollisionDraftContract.importedCollisionCounts[floor.storyFloor],
+    `${label} furniture collision count mismatch`
+  );
   registerId(floor.safeSpawn, `${label}.safeSpawn`);
   registerId(floor.elevator, `${label}.elevator`);
 
@@ -306,6 +329,10 @@ for (const floor of layout.floors ?? []) {
     assert(
       collision.sourceAnnotationId?.startsWith(`${floor.storyFloor.toLowerCase()}-ann-`),
       `${label}.${collision.id} must retain its manual source annotation`
+    );
+    assert(
+      !collision.id.includes("_furniture_") || collision.width !== 4 || collision.height !== 4,
+      `${label}.${collision.id} must not retain a click-only 4x4 draft`
     );
   }
   for (const walkable of floor.walkableRegions ?? []) {
@@ -387,6 +414,38 @@ assert(
   !a2?.staticCollisions?.some((entry) => entry.id === "a2_air_wall_022"),
   "A2 annotation 022 was not selected as an air wall"
 );
+const room202FootLimit = a2?.staticCollisions?.find(
+  (entry) => entry.id === "a2_air_wall_room202_blackboard_foot_limit"
+);
+assert(
+  room202FootLimit?.sourceAnnotationId === "a2-ann-031",
+  "A2 room 202 foot limit must retain the user-marked browser line provenance"
+);
+assertJsonEqual(
+  rectOnly(room202FootLimit),
+  { x: 1166, y: 107, width: 432, height: 19 },
+  "A2 room 202 blackboard foot-limit collision"
+);
+assertJsonEqual(
+  room202FootLimit?.visualBoundary,
+  {
+    kind: "foot_box_north_edge",
+    provenance: "browser_comment_2026_09_02",
+    sourceLineY: 126
+  },
+  "A2 room 202 user-marked foot boundary"
+);
+const room202LeftWall = a2?.staticCollisions?.find((entry) => entry.id === "a2_air_wall_009");
+const room202RightWall = a2?.staticCollisions?.find((entry) => entry.id === "a2_air_wall_012");
+assert(
+  room202FootLimit?.x === room202LeftWall?.x + room202LeftWall?.width
+    && room202FootLimit.x + room202FootLimit.width === room202RightWall?.x,
+  "A2 room 202 foot limit must seal the full clear span between both side walls"
+);
+assert(
+  room202FootLimit.y + room202FootLimit.height === room202FootLimit.visualBoundary.sourceLineY,
+  "A2 room 202 player foot-box north edge must stop exactly on the user-marked line"
+);
 for (const [walkableId, occlusionId, annotationId] of [
   ["a1_walkable_025", "a1_north_portrait_wall_west_front", "a1-ann-025"],
   ["a1_walkable_026", "a1_north_portrait_wall_east_front", "a1-ann-026"]
@@ -463,6 +522,38 @@ assert(
     && bakeryCounterCollision.y + bakeryCounterCollision.height
       === bakeryCounterOcclusion?.baselineY - 5,
   "A1 bakery counter collision must follow the visible counter and preserve the queue aisle"
+);
+
+const classroom104TeachingLineCollision = a1?.staticCollisions?.find(
+  (entry) => entry.id === "a1_air_wall_classroom_104_teaching_line"
+);
+const classroom104BlackboardAnchor = a1?.anchors?.find(
+  (entry) => entry.id === "a1_classroom_104_blackboard_residual"
+);
+assert(
+  classroom104TeachingLineCollision?.sourceAnnotationId === "a1-ann-020",
+  "A1 classroom 104 teaching-line collision must retain lectern annotation 020 provenance"
+);
+assertJsonEqual(
+  rectOnly(classroom104TeachingLineCollision),
+  { x: 1278, y: 229, width: 290, height: 19 },
+  "A1 classroom 104 teaching-line collision"
+);
+const classroom104SouthEdge = (
+  classroom104TeachingLineCollision.y + classroom104TeachingLineCollision.height
+);
+const classroom104FootCenterStopY = (
+  classroom104SouthEdge + layout.playerFootBoxContract.worldFootBox.height / 2
+);
+assert(
+  classroom104FootCenterStopY === 255.3125,
+  "A1 classroom 104 player foot center must stop at the authored south-side limit"
+);
+assert(
+  classroom104FootCenterStopY - (
+    classroom104BlackboardAnchor.bounds.y + classroom104BlackboardAnchor.bounds.height
+  ) <= 96,
+  "A1 classroom 104 blackboard must remain reachable from the marked teaching line"
 );
 
 const bakeryRuntime = layout.bakeryRuntime;
@@ -1006,9 +1097,12 @@ assertJsonEqual(maintenanceRuntime?.cleaner, {
   approximate: true
 }, "maintenance cleaner runtime");
 assertJsonEqual(maintenanceRuntime?.repairedPush, {
-  animationId: "cleaner_push_cart_up",
+  animationId: "cleaner_push_cart",
+  sourceFrameSize: { width: 192, height: 128 },
+  visibleCharacterCrop: { x: 0, y: 0, width: 96, height: 128 },
+  flipX: true,
   from: { x: 1138, y: 716 },
-  to: { x: 1138, y: 650 },
+  to: { x: 1072, y: 716 },
   durationMs: 900,
   approximate: true
 }, "maintenance repaired-cart push");
@@ -1140,6 +1234,7 @@ assertJsonEqual(finalClockRuntime?.presentation, {
   feedbackAtMs: 1160
 }, "Task11 final-clock presentation timeline");
 validateRect(finalClockRuntime?.endpoint?.installationBounds, "finalClockRuntime.endpoint.installationBounds", topology.worldSize);
+validateRect(finalClockRuntime?.endpoint?.visualHandleBounds, "finalClockRuntime.endpoint.visualHandleBounds", topology.worldSize);
 validatePoint(finalClockRuntime?.endpoint?.standPosition, "finalClockRuntime.endpoint.standPosition", topology.worldSize);
 const initialEndpointCenter = {
   x: finalClockRuntime.clockCenter.x
@@ -1148,20 +1243,32 @@ const initialEndpointCenter = {
     + Math.sin(finalClockRuntime.initialAngleDegrees * Math.PI / 180) * finalClockRuntime.minuteHandRadius
 };
 assertJsonEqual({
-  x: Math.round(initialEndpointCenter.x - finalClockRuntime.endpoint.installationBounds.width / 2),
-  y: Math.round(initialEndpointCenter.y - finalClockRuntime.endpoint.installationBounds.height / 2),
-  width: finalClockRuntime.endpoint.installationBounds.width,
-  height: finalClockRuntime.endpoint.installationBounds.height
-}, finalClockRuntime.endpoint.installationBounds, "Task11 programmatic minute endpoint outward bounds");
+  x: Math.round(initialEndpointCenter.x - finalClockRuntime.endpoint.visualHandleBounds.width / 2),
+  y: Math.round(initialEndpointCenter.y - finalClockRuntime.endpoint.visualHandleBounds.height / 2),
+  width: finalClockRuntime.endpoint.visualHandleBounds.width,
+  height: finalClockRuntime.endpoint.visualHandleBounds.height
+}, finalClockRuntime.endpoint.visualHandleBounds, "Task11 programmatic minute endpoint outward bounds");
 assert(
-  finalClockRuntime?.endpoint?.boundsDerivation?.kind === "visible_programmatic_minute_endpoint_get_bounds"
+  finalClockRuntime?.endpoint?.visualHandleDerivation?.kind === "visible_programmatic_minute_endpoint_get_bounds"
+    && finalClockRuntime.endpoint.visualHandleDerivation.clockFrame === finalClockRuntime.clockFrame
     && finalClockRuntime.endpoint.approximate === false,
   "Task13 minute endpoint must document exact visible getBounds derivation"
 );
 assert(
-  finalClockRuntime.endpoint.installationBounds.width < gearTarget.installationBounds.width
-    && finalClockRuntime.endpoint.installationBounds.height < gearTarget.installationBounds.height,
-  "Task11 minute endpoint must not use the full clock interaction rectangle"
+  finalClockRuntime.endpoint.boundsDerivation?.kind === "visible_clock_face_drop_envelope"
+    && finalClockRuntime.endpoint.boundsDerivation.sourceTargetId === "a1_hall_clock"
+    && finalClockRuntime.endpoint.boundsDerivation.hudSafeRule === "accept_visible_clock_face",
+  "Task11 minute installation must document the visible clock-face drop envelope"
+);
+assertJsonEqual(
+  finalClockRuntime.endpoint.installationBounds,
+  gearTarget.installationBounds,
+  "Task11 minute installation must accept the full visible clock face"
+);
+assert(
+  finalClockRuntime.endpoint.visualHandleBounds.width < finalClockRuntime.endpoint.installationBounds.width
+    && finalClockRuntime.endpoint.visualHandleBounds.height < finalClockRuntime.endpoint.installationBounds.height,
+  "Task11 minute visual handle must remain smaller than its accessible drop envelope"
 );
 
 const morningCheckinRuntime = layout.morningCheckinRuntime;
@@ -1263,9 +1370,9 @@ assert(lightGridRuntime?.approximate === true, "Task11 light-grid composite cali
 
 const maintenanceGuardWaypoints = maintenanceRuntime?.guard?.patrolWaypoints ?? [];
 assertJsonEqual(maintenanceGuardWaypoints, [
-  { id: "stair_north", x: 1001, y: 214, neighborIds: ["west_north", "east_north"] },
+  { id: "stair_north", x: 1001, y: 240, neighborIds: ["west_north", "east_north"] },
   { id: "west_north", x: 588, y: 220, neighborIds: ["stair_north", "west_south"] },
-  { id: "east_north", x: 1105, y: 220, neighborIds: ["stair_north", "east_south"] },
+  { id: "east_north", x: 1105, y: 240, neighborIds: ["stair_north", "east_south"] },
   { id: "east_south", x: 1105, y: 560, neighborIds: ["east_north", "west_south"] },
   { id: "west_south", x: 588, y: 560, neighborIds: ["east_south", "west_north"] }
 ], "maintenance guard waypoint graph");

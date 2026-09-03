@@ -76,7 +76,7 @@ assert(
   "canteen static wall still fills the southeast doorway"
 );
 assert(
-  canteenModel.includes('{ id: "southeast_exit_east_frame", left: 1450, top: 760, right: 1643, bottom: 925 }'),
+  canteenModel.includes('{ id: "southeast_exit_east_frame", left: 1393, top: 760, right: 1643, bottom: 925 }'),
   "canteen southeast door has no solid east frame"
 );
 assert(

@@ -82,7 +82,7 @@ export function selectRpgItemUseGuidance(
         return ready("签到记录纸槽");
       }
       if (chapter.phase === "return_to_clock" && !chapter.factIds.includes("final_minute_installed")) {
-        return locked("先把最后一分钟归还到旧钟，再去签到口。", "旧钟分针端点");
+        return locked("先把黄铜分针组件装回大厅旧钟，再去签到口。", "大厅旧钟表盘");
       }
       if (chapter.phase === "blackout_light_grid" && !chapter.factIds.includes("paper_temporarily_out_of_inventory")) {
         return passive("旧钟接近 07:55 时，这张纸会被剧情自动带走。");
@@ -120,7 +120,7 @@ export function selectRpgItemUseGuidance(
     }
     if (itemId === "finalMinute") {
       return chapter.phase === "return_to_clock" && !chapter.factIds.includes("final_minute_installed")
-        ? ready("旧钟分针端点")
+        ? ready("大厅旧钟表盘", "靠近旧钟，把黄铜分针组件拖到可见表盘内松手。")
         : elsewhere(itemId);
     }
   }

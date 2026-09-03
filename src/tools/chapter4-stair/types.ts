@@ -10,7 +10,15 @@ export type CameraViewId = "south_east" | "south_west" | "top_oblique";
 
 export type LevelId = "stair_a" | "stair_b";
 
-export type DemoPhase = "playing" | "walking" | "camera_transition" | "level_complete" | "all_complete";
+export type DemoPhase =
+  | "entry_sequence"
+  | "playing"
+  | "walking"
+  | "camera_transition"
+  | "level_complete"
+  | "level_interlude"
+  | "finale"
+  | "all_complete";
 
 export type MechanismKind = "rotate" | "vertical" | "horizontal";
 
@@ -238,6 +246,13 @@ export interface StairDemoSnapshot {
   invalidProjectedPairs: string[];
   inputLocked: boolean;
   viewSwitchAvailable: boolean;
+  presentation: {
+    stage: "entry" | "level_break" | "level_reveal" | "finale" | null;
+    floatingFragmentCount: number;
+    energyRingCount: number;
+    dustPointCount: number;
+    routeEffectActive: boolean;
+  };
   materialTextures: {
     setId: string;
     expected: number;

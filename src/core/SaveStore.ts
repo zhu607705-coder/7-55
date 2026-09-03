@@ -47,6 +47,10 @@ import {
 } from "../scenes/rpg/ChapterFourRoom204Model";
 import { GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
+import {
+  chapterFourTimeContract,
+  isChapterFourPendingClockTimeState
+} from "../modules/ChapterFourTimeControlModel";
 
 const CHAPTER_FOUR_755_SAVE_VERSION = 25;
 const QIZHEN_WEATHER_CONTROL_SAVE_VERSION = 27;
@@ -55,7 +59,8 @@ const CHAPTER_FOUR_POWER_GRID_LAYOUT_SAVE_VERSION = 29;
 const QIZHEN_RAIN_RECOVERY_SAVE_VERSION = 30;
 const CHAPTER_FOUR_INSERTED_PUZZLES_SAVE_VERSION = 31;
 const CHAPTER_FOUR_CLOSURE_SAVE_VERSION = 32;
-const SAVE_VERSION = CHAPTER_FOUR_CLOSURE_SAVE_VERSION;
+const CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION = 33;
+const SAVE_VERSION = CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
 const SUPPORTED_ENVELOPE_VERSIONS = new Set([
@@ -218,24 +223,37 @@ const LEGACY_CHAPTER_FOUR_PUZZLE_IDS = new Set<GameState["chapter4"]["solvedPuzz
 ]);
 const VALID_CHAPTER_FOUR_FACT_IDS = new Set<ChapterFourFactId>([
   "opening_paper_at_noticeboard", "opening_paper_caught", "external_time_rejected",
-  "hall_clock_inspected", "bakery_conveyor_lamp_inspected", "bakery_hour_hand_exposed",
+  "hall_clock_inspected", "bakery_conveyor_lamp_inspected",
+  "bakery_conveyor_direction_observed", "bakery_tool_location_observed", "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected", "hour_hand_installed",
   "classroom_104_chalk_residual_observed", "classroom_105_terminal_replay_checked",
   "elevator_history_observed", "elevator_history_calibrated",
   "elevator_a2_call_record_observed", "elevator_a3_arrival_record_observed",
-  "elevator_stop_chain_reconstructed", "a3_reference_observed",
+  "elevator_stop_chain_reconstructed", "a1_time_route_compared", "a3_reference_observed",
+  "a3_identity_context_observed",
   "a1_duty_board_reconstructed", "a3_archive_film_retrieved", "a3_media_alignment_completed",
   "zhu_two_questions_answered", "misaligned_stair_solved",
   "room204_residual_observed", "room204_restored", "room204_projection_completed",
+  "room204_projection_composite_completed", "room202_endpoint_inferred", "maintenance_incident_linked",
   "positioning_plate_collected", "a2_positioning_plate_calibrated", "positioning_plate_installed",
   "a2_power_topology_recovered", "a2_evacuation_route_confirmed",
   "cart_wheel_inspected", "cart_wheel_cover_opened", "cart_wheel_repaired", "clock_gear_repaired",
-  "paper_temporarily_out_of_inventory", "light_grid_locked", "canruo_star_lamp_primed", "final_minute_recovered",
-  "final_minute_installed", "checkin_card_accepted", "checkin_paper_accepted",
+  "paper_temporarily_out_of_inventory", "light_grid_locked", "powered_route_confirmed",
+  "canruo_star_lamp_primed", "room202_route_reached", "final_minute_recovered",
+  "attendance_record_recovered", "final_minute_installed", "checkin_card_accepted",
+  "checkin_paper_accepted", "checkin_identity_verified",
   "exterior_closure_acknowledged"
 ]);
 const VALID_CHAPTER_FOUR_MODES = new Set<GameState["chapter4"]["mode"]>(["light", "dark"]);
 const VALID_CHAPTER_FOUR_FLOORS = new Set<ChapterFour755FloorId>(["A1", "A2", "A3"]);
+const VALID_CHAPTER_FOUR_TIME_STATES = new Set<ChapterFourTimeState>([
+  "2245_opening",
+  "1225_bakery",
+  "1850_evening",
+  "2245_maintenance",
+  "0754_blackout",
+  "0755_morning"
+]);
 const VALID_CHAPTER_FOUR_ZHU_PURPOSE_ANSWERS = new Set<ChapterFourZhuPurposeAnswerId>([
   "seek_truth", "solve_real_problems", "serve_public"
 ]);
@@ -1407,6 +1425,8 @@ const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
   "external_time_rejected",
   "hall_clock_inspected",
   "bakery_conveyor_lamp_inspected",
+  "bakery_conveyor_direction_observed",
+  "bakery_tool_location_observed",
   "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected",
   "hour_hand_installed",
@@ -1416,11 +1436,15 @@ const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
+  "a1_time_route_compared",
   "a3_reference_observed",
-  "zhu_two_questions_answered",
+  "a3_identity_context_observed",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
+  "room204_projection_composite_completed",
+  "room202_endpoint_inferred",
+  "maintenance_incident_linked",
   "positioning_plate_collected",
   "a2_positioning_plate_calibrated",
   "a2_power_topology_recovered",
@@ -1432,11 +1456,15 @@ const CHAPTER_FOUR_EXTERIOR_WAITING_FACT_IDS: ChapterFourFactId[] = [
   "clock_gear_repaired",
   "paper_temporarily_out_of_inventory",
   "light_grid_locked",
+  "powered_route_confirmed",
   "canruo_star_lamp_primed",
+  "room202_route_reached",
   "final_minute_recovered",
+  "attendance_record_recovered",
   "final_minute_installed",
   "checkin_card_accepted",
-  "checkin_paper_accepted"
+  "checkin_paper_accepted",
+  "checkin_identity_verified"
 ];
 
 const CHAPTER_FOUR_OPENING_FACT_ORDER = [
@@ -1447,6 +1475,8 @@ const CHAPTER_FOUR_OPENING_FACT_ORDER = [
 ] as const satisfies readonly ChapterFourFactId[];
 const CHAPTER_FOUR_BAKERY_FACT_ORDER = [
   "bakery_conveyor_lamp_inspected",
+  "bakery_conveyor_direction_observed",
+  "bakery_tool_location_observed",
   "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected",
   "hour_hand_installed"
@@ -1473,12 +1503,16 @@ const CHAPTER_FOUR_ROOM204_FACT_ORDER = [
   "a1_duty_board_reconstructed",
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
+  "a1_time_route_compared",
   "a3_reference_observed",
-  "zhu_two_questions_answered",
+  "a3_identity_context_observed",
   "misaligned_stair_solved",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
+  "room204_projection_composite_completed",
+  "room202_endpoint_inferred",
+  "maintenance_incident_linked",
   "positioning_plate_collected",
   "a2_positioning_plate_calibrated",
   "a2_power_topology_recovered",
@@ -1672,6 +1706,16 @@ function normalizeChapterFour(
     && savedFactIds.includes("checkin_paper_accepted");
   const savedPhase = enumOr(saved.phase, VALID_CHAPTER_FOUR_PHASES, "opening_handoff");
   const savedLightGridForCompletion = asRecord(saved.lightGrid);
+  const savedCausalCompletionVerified = envelopeVersion < CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION
+    || [
+      "room204_projection_composite_completed",
+      "room202_endpoint_inferred",
+      "powered_route_confirmed",
+      "room202_route_reached",
+      "attendance_record_recovered",
+      "checkin_identity_verified",
+      "zhu_two_questions_answered"
+    ].every((factId) => savedFactIds.includes(factId as ChapterFourFactId));
   const savedCompletionVerified = envelopeVersion >= CHAPTER_FOUR_CLOSURE_SAVE_VERSION
     && savedPhase === "complete"
     && saved.completed === true
@@ -1680,6 +1724,7 @@ function normalizeChapterFour(
     && savedPaperAccepted
     && savedLightGridForCompletion.locked === true
     && savedLightGridForCompletion.mask === 13
+    && savedCausalCompletionVerified
     && [
       "light_grid_locked",
       "canruo_star_lamp_primed",
@@ -1705,19 +1750,6 @@ function normalizeChapterFour(
   // returns a one-shot runtime proof. Older or partial completion fields still
   // downgrade to the safe exterior checkpoint.
   const completed = savedCompletionVerified;
-  const time = CHAPTER_FOUR_TIME_BY_PHASE[phase];
-  const timeAuthority = [
-    "opening_handoff",
-    "opening_paper_caught",
-    "hall_clock_inspection"
-  ].includes(phase) ? "external_evidence" : "hall_clock";
-  const location = normalizeChapterFour755Location(
-    phase,
-    nullableEnumOr(saved.floor, VALID_CHAPTER_FOUR_FLOORS, null),
-    typeof saved.roomId === "string"
-      ? migrateChapterFourRoomId(saved.roomId.trim())
-      : ""
-  );
   let factIds = normalizeChapterFourFactClosure(phase, savedFactIds);
   factIds = normalizeChapterFourInsertedPuzzleClosure(envelopeVersion, phase, factIds);
   let room204Placements = normalizeChapterFourRoom204Placements(saved.room204Placements);
@@ -1777,6 +1809,33 @@ function normalizeChapterFour(
         )
       }
     : { purpose: null, person: null };
+  const canonicalTime = CHAPTER_FOUR_TIME_BY_PHASE[phase];
+  const savedTimeState = enumOr(
+    saved.timeState,
+    VALID_CHAPTER_FOUR_TIME_STATES,
+    canonicalTime.timeState
+  );
+  const normalizedTimeState = isChapterFourPendingClockTimeState(
+    phase,
+    savedTimeState,
+    factIds
+  )
+    ? savedTimeState
+    : canonicalTime.timeState;
+  const time = chapterFourTimeContract(normalizedTimeState);
+  const timeAuthority = [
+    "opening_handoff",
+    "opening_paper_caught",
+    "hall_clock_inspection"
+  ].includes(phase) ? "external_evidence" : "hall_clock";
+  const location = normalizeChapterFour755Location(
+    phase,
+    nullableEnumOr(saved.floor, VALID_CHAPTER_FOUR_FLOORS, null),
+    typeof saved.roomId === "string"
+      ? migrateChapterFourRoomId(saved.roomId.trim())
+      : "",
+    isChapterFourPendingClockTimeState(phase, normalizedTimeState, factIds)
+  );
 
   return {
     state: {
@@ -1787,7 +1846,7 @@ function normalizeChapterFour(
       floor: location.floor,
       roomId: location.roomId,
       timeAuthority,
-      timeState: time.timeState,
+      timeState: time.id,
       worldTimeSeconds: time.worldTimeSeconds,
       phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
       phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
@@ -1798,7 +1857,11 @@ function normalizeChapterFour(
         mask: lightGridMask,
         locked: lightGridMustBeLocked
       },
-      guardMode: phase === "maintenance_repair" ? "patrol" : phase === "final_chase" ? "chase" : "absent",
+      guardMode: phase === "maintenance_repair" && normalizedTimeState === "2245_maintenance"
+        ? "patrol"
+        : phase === "final_chase"
+          ? "chase"
+          : "absent",
       chaseAttempt: nonNegativeSafeIntegerOr(saved.chaseAttempt, initial.chaseAttempt),
       chaseRestartCheckpoint: phase === "final_chase" ? "c4_a1_lobby" : null,
       checkinCardAccepted,
@@ -1922,12 +1985,16 @@ function createEmptyLegacyChapterFourControllerFields(
 function normalizeChapterFour755Location(
   phase: ChapterFourPhase,
   savedFloor: ChapterFour755FloorId | null,
-  savedRoomId: string
+  savedRoomId: string,
+  pendingClockAdjustment = false
 ): { floor: ChapterFour755FloorId; roomId: string } {
   if (phase === "opening_handoff") {
     return { floor: "A1", roomId: "a1_lobby" };
   }
   if (phase === "room204_restore") {
+    if (pendingClockAdjustment || savedFloor === "A1") {
+      return { floor: "A1", roomId: "a1_hall_clock" };
+    }
     const floor = savedFloor === "A3" ? "A3" : "A2";
     const roomIds = floor === "A3"
       ? new Set(["a3_reference_classroom", "a3_wayfinding"])
@@ -2008,12 +2075,16 @@ function normalizeChapterFourRoom204Closure(
     }
     for (const factId of CHAPTER_FOUR_ROOM204_FACT_ORDER) facts.add(factId);
   } else {
-    // The stair requires Zhu's two questions, while the A3 classroom
-    // reference is an independent observation.  Preserve either completion
-    // order across reload and only reconstruct the question fact from a
-    // legacy save that has already solved the stair.
-    if (facts.has("misaligned_stair_solved")) {
-      facts.add("zhu_two_questions_answered");
+    if (facts.has("a3_reference_observed")) facts.add("a3_identity_context_observed");
+    if ([
+      "classroom_104_chalk_residual_observed",
+      "classroom_105_terminal_replay_checked",
+      "elevator_history_observed",
+      "elevator_history_calibrated"
+    ].every((factId) => facts.has(factId as ChapterFourFactId))) {
+      facts.add("a1_time_route_compared");
+    } else {
+      facts.delete("a1_time_route_compared");
     }
     if (facts.has("elevator_stop_chain_reconstructed")) {
       facts.add("elevator_history_observed");
@@ -2032,6 +2103,23 @@ function normalizeChapterFourRoom204Closure(
     else facts.delete("room204_restored");
 
     if (!facts.has("room204_restored")) facts.delete("room204_projection_completed");
+    const compositeReady = [
+      "room204_restored",
+      "room204_projection_completed",
+      "a1_time_route_compared",
+      "a3_reference_observed",
+      "a3_identity_context_observed",
+      "room204_residual_observed"
+    ].every((factId) => facts.has(factId as ChapterFourFactId));
+    if (compositeReady) {
+      facts.add("room204_projection_composite_completed");
+      facts.add("room202_endpoint_inferred");
+      facts.add("maintenance_incident_linked");
+    } else {
+      facts.delete("room204_projection_composite_completed");
+      facts.delete("room202_endpoint_inferred");
+      facts.delete("maintenance_incident_linked");
+    }
     if (!facts.has("room204_projection_completed")) facts.delete("positioning_plate_collected");
     // Installing the positioning plate always performs the atomic transition
     // to maintenance_repair, so this fact cannot remain inside room204_restore.
@@ -2085,15 +2173,27 @@ function normalizeChapterFourMinuteTheftClosure(
   }
   if (CHAPTER_FOUR_POST_LIGHT_GRID_PHASES.has(phase)) {
     facts.add("light_grid_locked");
+    facts.add("powered_route_confirmed");
     facts.add("canruo_star_lamp_primed");
   } else {
     facts.delete("light_grid_locked");
+    facts.delete("powered_route_confirmed");
     facts.delete("canruo_star_lamp_primed");
   }
+  if ([
+    "final_minute_recovery",
+    "return_to_clock",
+    "morning_checkin",
+    "exterior_closure",
+    "complete"
+  ].includes(phase)) facts.add("room202_route_reached");
+  else facts.delete("room202_route_reached");
   const normalizedFactOrder = [
     "paper_temporarily_out_of_inventory",
     "light_grid_locked",
-    "canruo_star_lamp_primed"
+    "powered_route_confirmed",
+    "canruo_star_lamp_primed",
+    "room202_route_reached"
   ] as const satisfies readonly ChapterFourFactId[];
   return [
     ...savedFactIds.filter((factId) => !normalizedFactOrder.includes(
@@ -2111,16 +2211,20 @@ function normalizeChapterFourFinalMinuteClosure(
   const facts = new Set(savedFactIds);
   if (phase === "return_to_clock") {
     facts.add("final_minute_recovered");
+    facts.add("attendance_record_recovered");
     facts.delete("final_minute_installed");
   } else if (["morning_checkin", "exterior_closure", "complete"].includes(phase)) {
     facts.add("final_minute_recovered");
+    facts.add("attendance_record_recovered");
     facts.add("final_minute_installed");
   } else {
     facts.delete("final_minute_recovered");
+    facts.delete("attendance_record_recovered");
     facts.delete("final_minute_installed");
   }
   const normalizedFactOrder = [
     "final_minute_recovered",
+    "attendance_record_recovered",
     "final_minute_installed"
   ] as const satisfies readonly ChapterFourFactId[];
   return [
@@ -2150,13 +2254,21 @@ function normalizeChapterFourCheckinClosure(
   const checkinPaperAccepted = checkinFinished || (checkinAvailable && savedPaperAccepted);
   facts.delete("checkin_card_accepted");
   facts.delete("checkin_paper_accepted");
+  facts.delete("checkin_identity_verified");
   facts.delete("exterior_closure_acknowledged");
   if (checkinCardAccepted) facts.add("checkin_card_accepted");
   if (checkinPaperAccepted) facts.add("checkin_paper_accepted");
+  if (checkinCardAccepted
+    && checkinPaperAccepted
+    && facts.has("a3_identity_context_observed")
+    && facts.has("attendance_record_recovered")) {
+    facts.add("checkin_identity_verified");
+  }
   if (phase === "complete" && completed) facts.add("exterior_closure_acknowledged");
   const normalizedFactOrder = [
     "checkin_card_accepted",
     "checkin_paper_accepted",
+    "checkin_identity_verified",
     "exterior_closure_acknowledged"
   ] as const satisfies readonly ChapterFourFactId[];
   return {

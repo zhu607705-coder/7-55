@@ -68,8 +68,8 @@ export type DeveloperCheckpointId =
   | "c3-qizhen-chase" | "c3-qizhen-complete"
   | "c3-interlude-reboot" | "c3-interlude-journal" | "c3-interlude-photos"
   | "c3-interlude-voice" | "c3-interlude-network" | "c3-interlude-timeline" | "c3-interlude-destination" | "c3-interlude-replay"
-  | "c4-755-opening" | "c4-755-hall-clock" | "c4-755-bakery-1225"
-  | "c4-755-classrooms-1850" | "c4-755-elevator-history" | "c4-755-room204-1850" | "c4-755-a2-field-records" | "c4-755-maintenance-2245"
+  | "c4-755-opening" | "c4-755-hall-clock" | "c4-755-bakery-1225" | "c4-755-clock-1850-ready"
+  | "c4-755-classrooms-1850" | "c4-755-elevator-history" | "c4-755-room204-1850" | "c4-755-a2-field-records" | "c4-755-clock-2245-ready" | "c4-755-maintenance-2245"
   | "c4-755-blackout-0754" | "c4-755-chase" | "c4-755-final-minute"
   | "c4-755-return-clock" | "c4-755-checkin" | "c4-755-closure"
   | Chapter4PrologueDeveloperCheckpointId
@@ -210,16 +210,18 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c4-prologue-closing", chapter: "3.5章", label: "收尾", detail: "从回放收尾段继续 H3" },
   { id: "c4-prologue-task-card", chapter: "3.5章", label: "任务卡", detail: "未确认时刷新仍停在任务卡，确认后恢复 A1" },
   { id: "c4-755-opening", chapter: "第四章", label: "入楼与纸条", detail: "22:45 开场，等纸条落到公告栏" },
-  { id: "c4-755-hall-clock", chapter: "第四章", label: "大厅旧钟", detail: "外部时间已驳回，可第一次拉动旧钟" },
+  { id: "c4-755-hall-clock", chapter: "第四章", label: "大厅旧钟", detail: "旧钟露出第一处可调节的稳定刻度" },
   { id: "c4-755-bakery-1225", chapter: "第四章", label: "12:25 面包坊", detail: "检查灯与传送带，取回时针" },
+  { id: "c4-755-clock-1850-ready", chapter: "第四章", label: "旧钟第二次调时", detail: "时针装回后，返回大厅选择新刻度" },
   { id: "c4-755-classrooms-1850", chapter: "第四章", label: "18:50 一楼教室校验", detail: "完成 104 黑板与 105 讲台的两项时间差校验" },
   { id: "c4-755-elevator-history", chapter: "第四章", label: "18:50 电梯历史校准", detail: "三条历史轨道已读取，从轿厢重放校准" },
   { id: "c4-755-room204-1850", chapter: "第四章", label: "18:50 三楼档案与错位楼梯", detail: "从荣誉墙、301 胶片与 302 影像对齐开始，再进入空间校准" },
   { id: "c4-755-a2-field-records", chapter: "第四章", label: "18:50 二楼三处现场记录", detail: "错位楼梯完成后，校准 201、203 与开放自习区的三个独立装置" },
+  { id: "c4-755-clock-2245-ready", chapter: "第四章", label: "旧钟第三次调时", detail: "定位片装回后，返回大厅选择新刻度" },
   { id: "c4-755-maintenance-2245", chapter: "第四章", label: "22:45 维修链", detail: "检查保洁车车轮并修复旧钟" },
   { id: "c4-755-blackout-0754", chapter: "第四章", label: "07:54 停电与配电", detail: "最后一分钟被带走，从配电箱初始状态解出灯路" },
   { id: "c4-755-chase", chapter: "第四章", label: "最终追逐", detail: "灯阵已锁定，从 A1 经主楼梯前往 202" },
-  { id: "c4-755-final-minute", chapter: "第四章", label: "最后一分钟", detail: "202 门已关，取回投影中的分钟碎片" },
+  { id: "c4-755-final-minute", chapter: "第四章", label: "最后一分钟", detail: "202 门已关，取回阶梯座椅间的黄铜分针组件" },
   { id: "c4-755-return-clock", chapter: "第四章", label: "送回最后一分钟", detail: "从 A2 的 202 安全点出发，带齐三项材料返回旧钟" },
   { id: "c4-755-checkin", chapter: "第四章", label: "07:55 签到", detail: "时间已恢复，刷卡与纸条可任意顺序提交" },
   { id: "c4-755-closure", chapter: "第四章", label: "灿若星辰正式收束", detail: "双签到已完成，播放正式分层灯光动画并写入一次性完成回执" }
@@ -1180,6 +1182,8 @@ const CHAPTER_FOUR_755_OPENING_FACTS = [
 const CHAPTER_FOUR_755_BAKERY_FACTS = [
   ...CHAPTER_FOUR_755_OPENING_FACTS,
   "bakery_conveyor_lamp_inspected",
+  "bakery_conveyor_direction_observed",
+  "bakery_tool_location_observed",
   "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected",
   "hour_hand_installed"
@@ -1195,6 +1199,7 @@ const CHAPTER_FOUR_755_ROOM_FACTS = [
   ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
   "elevator_history_observed",
   "elevator_history_calibrated",
+  "a1_time_route_compared",
   "elevator_a2_call_record_observed",
   "elevator_a3_arrival_record_observed",
   "elevator_stop_chain_reconstructed",
@@ -1202,11 +1207,14 @@ const CHAPTER_FOUR_755_ROOM_FACTS = [
   "a3_archive_film_retrieved",
   "a3_media_alignment_completed",
   "a3_reference_observed",
-  "zhu_two_questions_answered",
+  "a3_identity_context_observed",
   "misaligned_stair_solved",
   "room204_residual_observed",
   "room204_restored",
   "room204_projection_completed",
+  "room204_projection_composite_completed",
+  "room202_endpoint_inferred",
+  "maintenance_incident_linked",
   "positioning_plate_collected",
   "a2_positioning_plate_calibrated",
   "a2_power_topology_recovered",
@@ -1230,12 +1238,15 @@ const CHAPTER_FOUR_755_BLACKOUT_FACTS = [
 const CHAPTER_FOUR_755_CHASE_FACTS = [
   ...CHAPTER_FOUR_755_BLACKOUT_FACTS,
   "light_grid_locked",
+  "powered_route_confirmed",
   "canruo_star_lamp_primed"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
 const CHAPTER_FOUR_755_RETURN_CLOCK_FACTS = [
   ...CHAPTER_FOUR_755_CHASE_FACTS,
-  "final_minute_recovered"
+  "room202_route_reached",
+  "final_minute_recovered",
+  "attendance_record_recovered"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
 const CHAPTER_FOUR_755_CHECKIN_FACTS = [
@@ -1246,7 +1257,8 @@ const CHAPTER_FOUR_755_CHECKIN_FACTS = [
 const CHAPTER_FOUR_755_COMPLETE_WAIT_FACTS = [
   ...CHAPTER_FOUR_755_CHECKIN_FACTS,
   "checkin_card_accepted",
-  "checkin_paper_accepted"
+  "checkin_paper_accepted",
+  "checkin_identity_verified"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
 const CHAPTER_FOUR_755_CANONICAL_ROOM204 = ROOM204_PIECE_ORDER.map((pieceId, index) => ({
@@ -1350,6 +1362,21 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       factIds: [...CHAPTER_FOUR_755_OPENING_FACTS]
     }, { attendanceRecordPaper: true });
   }
+  if (id === "c4-755-clock-1850-ready") {
+    return withChapter({
+      phase: "room204_restore",
+      floor: "A1",
+      roomId: "a1_hall_clock",
+      timeAuthority: "hall_clock",
+      timeState: "1225_bakery",
+      worldTimeSeconds: 44700,
+      phoneStatusTimeSeconds: 44700,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 44700,
+      factIds: [...CHAPTER_FOUR_755_BAKERY_FACTS],
+      guardMode: "absent"
+    }, { attendanceRecordPaper: true });
+  }
   if (id === "c4-755-classrooms-1850") {
     return withChapter({
       phase: "room204_restore",
@@ -1426,6 +1453,22 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       ]
     }, { attendanceRecordPaper: true }, "c4_a2_corridor");
   }
+  if (id === "c4-755-clock-2245-ready") {
+    return withChapter({
+      phase: "maintenance_repair",
+      floor: "A1",
+      roomId: "a1_hall_clock",
+      timeAuthority: "hall_clock",
+      timeState: "1850_evening",
+      worldTimeSeconds: 67800,
+      phoneStatusTimeSeconds: 67800,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 67800,
+      factIds: [...CHAPTER_FOUR_755_ROOM_FACTS],
+      room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
+      guardMode: "absent"
+    }, { attendanceRecordPaper: true });
+  }
   if (id === "c4-755-maintenance-2245") {
     return withChapter({
       phase: "maintenance_repair",
@@ -1485,7 +1528,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phoneStatusTimeSeconds: 28440,
       phoneStatusTimeTrusted: true,
       buildingTimeSeconds: 28440,
-      factIds: [...CHAPTER_FOUR_755_CHASE_FACTS],
+      factIds: [...CHAPTER_FOUR_755_CHASE_FACTS, "room202_route_reached"],
       room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
       lightGrid: { mask: 13, locked: true },
       guardMode: "absent",

@@ -159,8 +159,8 @@ export const DORM_SOURCE_QIZHEN_HAIR_DRYER: DormInteractionTarget = {
   id: "hair_dryer",
   x: 805,
   y: 914,
-  width: 62,
-  height: 62,
+  width: 104,
+  height: 104,
   proximity: 122,
   label: "拿起书桌上的吹风机"
 };

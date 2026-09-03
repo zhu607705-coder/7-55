@@ -1,6 +1,6 @@
 # 第四章楼梯间三视角空间解谜详细设计
 
-> 2026-08-09 状态：该文档保留为已完成的独立 Three.js 原型设计记录。Godot 迁移内容已失效；原型不进入当前教学楼主线，主线先完成纯俯视大地图验收。
+> 2026-09-02 状态：该 Three.js 两关已接入第四章教学楼正式流程，并由 `RpgGameHost` 在同一 `960×540` 舞台内接管画面。TypeScript 第四章控制器继续持有进入条件、完成事实与 A2 落点。
 
 ## 1. 文档目的
 
@@ -287,15 +287,14 @@ interface PerspectiveConnector {
 
 ## 9. 章节转场设计
 
-正式接入时，二维教学楼和三维楼梯关卡使用同一像素网格完成连续切换：
+正式流程中，二维教学楼和三维楼梯关卡使用同一像素网格完成连续切换：
 
 1. 人物在教学楼场景进入楼梯间门框，控制器保存来源楼层、门和朝向。
-2. 门内黑色区域扩展为 `16×9` 像素块遮罩，时长 `360ms`。
-3. 楼梯 Demo 从与原门方向一致的相机视角开始；人物从同一画面边缘进入，脚步相位连续。
-4. 通关后消防门四帧打开，人物走入；像素块沿原门方向收起，返回目标楼层安全点。
-5. 失败或重置留在楼梯关卡；返回键需要二次确认后回到来源门外，不写完成事实。
-
-独立 Demo 只实现两关之间的消防门切换和最终完成画面，不写正式章节状态。
+2. `16×9` 像素块遮罩收起时同步播放空间偏移建立段；外围漂浮构件、能量环和尘点只属于表现层。
+3. 第一关完成后，通路能量从入口传播到消防门，人物入门，已操作结构出现可见分离。
+4. 第二关随遮罩展开，垂直结构和更高密度漂浮构件进入画面；原有两次投影连通和一次错误重合判定保持不变。
+5. 第二关完成后，完整路径依次点亮，画面确认 A2 落点，再提交一次 `complete_misaligned_stair` 控制器意图。
+6. 失败或重置留在当前楼梯关卡；返回三楼不写完成事实。
 
 ## 10. 状态与调试接口
 
@@ -304,7 +303,7 @@ interface PerspectiveConnector {
 ```ts
 interface StairDemoSnapshot {
   levelId: "stair_a" | "stair_b";
-  phase: "playing" | "walking" | "camera_transition" | "level_complete" | "all_complete";
+  phase: "entry_sequence" | "playing" | "walking" | "camera_transition" | "level_complete" | "level_interlude" | "finale" | "all_complete";
   cameraView: CameraViewId;
   mechanismValues: Record<string, number>;
   playerNodeId: string;
@@ -314,6 +313,13 @@ interface StairDemoSnapshot {
   invalidProjectedPairs: string[];
   inputLocked: boolean;
   viewSwitchAvailable: boolean;
+  presentation: {
+    stage: "entry" | "level_break" | "level_reveal" | "finale" | null;
+    floatingFragmentCount: number;
+    energyRingCount: number;
+    dustPointCount: number;
+    routeEffectActive: boolean;
+  };
   materialTextures: {
     setId: string;
     expected: number;
@@ -370,8 +376,8 @@ interface StairDemoSnapshot {
 - `npm run typecheck` 与 `git diff --check` 通过。
 - 主 `npm run build:single` 仍需等待 `src/assets/rpg/campus/zijingang_campus_plate.png` 的删除决策；本工作不得私自恢复该文件。
 
-## 13. 开放问题
+## 13. 正式接入边界
 
-- 正式接入时两个楼梯关卡分别对应哪两个章节门，需要在独立 Demo 验收后由剧情控制器规格确认。
-- 独立 Three.js Demo 只负责保留玩法与投影算法证据，不构成当前 Phaser 教学楼场景验收。
-- 正式关卡是否保留关卡内“返回门外”功能，需要结合第四章循环重置规则另行确认。
+- 两个 Three.js 楼梯关卡共同承担 A3 到 A2 的一次正式运输，不拆分为两个控制器事实。
+- Phaser 在楼梯段暂停并隐藏；退出、失败或重置恢复 A3 来源点，完成后由控制器迁移到 A2 安全点。
+- 独立入口继续保留重放按钮；正式章节在最终场景演出结束后直接提交完成意图，不插入通用结果卡。

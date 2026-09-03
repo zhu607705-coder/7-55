@@ -77,6 +77,7 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "reflectionKeyword",
   "lakeKeyword",
   "reflectionCoordinate",
+  "hairDryer",
   "fishingRod",
   "rustedLockerKey",
   "nylonCord",

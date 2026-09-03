@@ -45,10 +45,10 @@ const DEVELOPER_LEVELS: readonly DeveloperLevel[] = [
   { id: "3.5-1", chapter: "3.5章", label: "未同步记录", checkpointIds: ["c3-interlude-reboot", "c3-interlude-journal", "c3-interlude-photos", "c3-interlude-voice", "c3-interlude-network", "c3-interlude-timeline", "c3-interlude-destination", "c3-interlude-replay"] },
   { id: "3.5-2", chapter: "3.5章", label: "教学楼过渡", checkpointIds: ["c4-prologue", "c4-prologue-lake-exit", "c4-prologue-arcade", "c4-prologue-entrance", "c4-prologue-lobby", "c4-prologue-closing", "c4-prologue-task-card"] },
   { id: "4-1", chapter: "第四章", label: "入楼与旧钟", checkpointIds: ["c4-755-opening", "c4-755-hall-clock"] },
-  { id: "4-2", chapter: "第四章", label: "12:25 面包坊", checkpointIds: ["c4-755-bakery-1225"] },
+  { id: "4-2", chapter: "第四章", label: "12:25 面包坊", checkpointIds: ["c4-755-bakery-1225", "c4-755-clock-1850-ready"] },
   { id: "4-3", chapter: "第四章", label: "18:50 差分校验", checkpointIds: ["c4-755-classrooms-1850", "c4-755-elevator-history"] },
   { id: "4-4", chapter: "第四章", label: "错位楼梯与二楼记录", checkpointIds: ["c4-755-room204-1850", "c4-755-a2-field-records"] },
-  { id: "4-5", chapter: "第四章", label: "22:45 维修链", checkpointIds: ["c4-755-maintenance-2245"] },
+  { id: "4-5", chapter: "第四章", label: "22:45 维修链", checkpointIds: ["c4-755-clock-2245-ready", "c4-755-maintenance-2245"] },
   { id: "4-6", chapter: "第四章", label: "07:54 停电追逐", checkpointIds: ["c4-755-blackout-0754", "c4-755-chase"] },
   { id: "4-7", chapter: "第四章", label: "最后一分钟", checkpointIds: ["c4-755-final-minute", "c4-755-return-clock"] },
   { id: "4-8", chapter: "第四章", label: "07:55 签到与收束", checkpointIds: ["c4-755-checkin", "c4-755-closure"] }

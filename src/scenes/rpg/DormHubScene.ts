@@ -55,6 +55,9 @@ export const DORM_HUB_WARM_ASSET_URLS = Object.freeze([dormHubMapUrl, hairDryerU
 const DORM_CAMERA_ZOOM = 1;
 const DORM_WALK_SPEED = 160;
 const DORM_PACING_SPEED = 84;
+const DORM_HAIR_DRYER_DISPLAY_SIZE = 104;
+const DORM_HAIR_DRYER_VISIBLE_CENTER = { x: 41 / 128, y: 44 / 128 } as const;
+const DORM_HAIR_DRYER_DOCK_SCREEN_RATIO = { x: 900 / 960, y: 470 / 540 } as const;
 
 const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
   upper_bunk: "床帘后只有一床叠得过分认真的被子。",
@@ -91,6 +94,7 @@ export class DormHubScene extends Phaser.Scene {
   private roomLayer!: Phaser.GameObjects.Container;
   private campusCardPickup?: Phaser.GameObjects.Container;
   private hairDryerPickup?: Phaser.GameObjects.Image;
+  private hairDryerAcquisitionInProgress = false;
   private curtainLeft!: Phaser.GameObjects.Rectangle;
   private curtainRight!: Phaser.GameObjects.Rectangle;
   private cabinetLeft!: Phaser.GameObjects.Rectangle;
@@ -98,6 +102,7 @@ export class DormHubScene extends Phaser.Scene {
   private deskDrawer!: Phaser.GameObjects.Rectangle;
   private backpackRing!: Phaser.GameObjects.Arc;
   private exitDoor!: RpgInteriorDoorRuntime;
+  private activePageFlip?: Phaser.GameObjects.Container;
   private deskLampGlows = new Map<DormInteractionTargetId, Phaser.GameObjects.Arc>();
   private toggledInteractions = new Set<DormInteractionTargetId>();
 
@@ -242,6 +247,7 @@ export class DormHubScene extends Phaser.Scene {
     const state = this.bridge.getState();
     const hairDryerPending = this.isHairDryerPickupPending(state);
     const nearHairDryer = hairDryerPending
+      && !this.hairDryerAcquisitionInProgress
       && distanceToDormTarget(this.player.x, this.player.y, DORM_QIZHEN_HAIR_DRYER) <= DORM_QIZHEN_HAIR_DRYER.proximity;
     const nearest = nearHairDryer
       ? DORM_QIZHEN_HAIR_DRYER
@@ -390,10 +396,21 @@ export class DormHubScene extends Phaser.Scene {
       DORM_SOURCE_QIZHEN_HAIR_DRYER.y,
       DORM_HAIR_DRYER_KEY
     )
-      .setDisplaySize(58, 58)
+      .setOrigin(DORM_HAIR_DRYER_VISIBLE_CENTER.x, DORM_HAIR_DRYER_VISIBLE_CENTER.y)
+      .setDisplaySize(DORM_HAIR_DRYER_DISPLAY_SIZE, DORM_HAIR_DRYER_DISPLAY_SIZE)
       .setInteractive({ useHandCursor: true });
     this.roomLayer.add(pickup);
     pickup.on("pointerdown", () => this.collectHairDryer());
+    this.startHairDryerIdleTween(pickup);
+    this.hairDryerPickup = pickup;
+    this.time.delayedCall(420, () => {
+      if (this.isHairDryerPickupPending(this.bridge.getState())) {
+        this.showFeedback("你被送回寝室，衣服还在滴水。");
+      }
+    });
+  }
+
+  private startHairDryerIdleTween(pickup: Phaser.GameObjects.Image): void {
     this.tweens.add({
       targets: pickup,
       alpha: { from: 0.88, to: 1 },
@@ -401,12 +418,6 @@ export class DormHubScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
       ease: "Stepped"
-    });
-    this.hairDryerPickup = pickup;
-    this.time.delayedCall(420, () => {
-      if (this.isHairDryerPickupPending(this.bridge.getState())) {
-        this.showFeedback("你被送回寝室，衣服还在滴水。");
-      }
     });
   }
 
@@ -417,18 +428,46 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private collectHairDryer(): void {
+    if (this.hairDryerAcquisitionInProgress) return;
     if (!this.isHairDryerPickupPending(this.bridge.getState())) {
       this.showFeedback(this.bridge.getState().items.hairDryer
         ? "吹风机已经放进物品栏。"
         : "现在还不需要使用吹风机。");
       return;
     }
+    const pickup = this.hairDryerPickup;
+    if (!pickup) return;
+    this.hairDryerAcquisitionInProgress = true;
     this.bridge.emit("rpg_qizhen_hair_dryer_requested");
-    if (!this.bridge.getState().items.hairDryer) return;
-    if (this.hairDryerPickup) this.tweens.killTweensOf(this.hairDryerPickup);
-    this.hairDryerPickup?.destroy();
-    this.hairDryerPickup = undefined;
-    this.showFeedback("获得寝室吹风机。");
+    if (!this.bridge.getState().items.hairDryer) {
+      this.hairDryerAcquisitionInProgress = false;
+      return;
+    }
+
+    this.tweens.killTweensOf(pickup);
+    pickup.disableInteractive();
+    const dockWorldPoint = this.cameras.main.getWorldPoint(
+      this.cameras.main.width * DORM_HAIR_DRYER_DOCK_SCREEN_RATIO.x,
+      this.cameras.main.height * DORM_HAIR_DRYER_DOCK_SCREEN_RATIO.y
+    );
+    this.interactionPrompt.setVisible(false);
+    this.showFeedback("获得寝室吹风机。双击道具可放大查看。");
+    this.tweens.add({
+      targets: pickup,
+      x: dormWorldToSourceX(dockWorldPoint.x),
+      y: dormWorldToSourceY(dockWorldPoint.y),
+      scaleX: pickup.scaleX * 0.2,
+      scaleY: pickup.scaleY * 0.2,
+      angle: 18,
+      alpha: 0,
+      duration: 680,
+      ease: "Cubic.easeIn",
+      onComplete: () => {
+        if (this.hairDryerPickup === pickup) this.hairDryerPickup = undefined;
+        pickup.destroy();
+        this.hairDryerAcquisitionInProgress = false;
+      }
+    });
   }
 
   private createAmbientAnimations(): void {
@@ -574,10 +613,35 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private animatePageFlip(): void {
-    const page = this.addRoomObject(
-      this.add.rectangle(786, 586, 48, 72, 0xf0ead4, 0.92).setStrokeStyle(2, 0x6a5a42)
+    if (this.activePageFlip) {
+      this.tweens.killTweensOf(this.activePageFlip);
+      this.activePageFlip.destroy();
+    }
+
+    // The open book is rotated 90 degrees on the desk: its spine runs horizontally.
+    // The upper half is the right-hand page, so a forward turn travels downward
+    // across the spine onto the lower, left-hand page.
+    const pageBody = this.add.rectangle(0, -24, 48, 48, 0xf0ead4, 0.96)
+      .setStrokeStyle(2, 0x6a5a42);
+    const leadingEdge = this.add.rectangle(0, -47, 44, 2, 0xc9bda0, 0.95);
+    const pageLines = [-15, -9, -3, 3, 9, 15].map((x, index) =>
+      this.add.rectangle(x, -25, 2, index % 2 === 0 ? 30 : 36, 0x8c8270, 0.45)
     );
-    this.tweens.add({ targets: page, scaleX: 0.05, angle: 4, duration: 190, yoyo: true, repeat: 1, ease: "Sine.easeInOut", onComplete: () => page.destroy() });
+    const page = this.addRoomObject(
+      this.add.container(786, 562, [pageBody, leadingEdge, ...pageLines])
+    );
+    this.activePageFlip = page;
+
+    this.tweens.add({
+      targets: page,
+      scaleY: -1,
+      duration: 360,
+      ease: "Sine.easeInOut",
+      onComplete: () => {
+        if (this.activePageFlip === page) this.activePageFlip = undefined;
+        page.destroy();
+      }
+    });
   }
 
   private animateDrawer(): void {

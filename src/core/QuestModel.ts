@@ -9,6 +9,11 @@ import chapterFourContent from "../data/chapter4-temporal-maze.content.json";
 import { selectChapterFourWechatObjective } from "../modules/ChapterFourWechatModel";
 import { selectChapterThreeInterludeViewModel } from "../modules/ChapterThreeInterludeModel";
 import { selectChapterFourStagePresentation } from "../modules/ChapterFourStagePresentation";
+import {
+  ROOM204_GROUP_ORDER,
+  countCompletedRoom204Groups
+} from "../scenes/rpg/ChapterFourRoom204Model";
+import { isChapterFourPhaseTimeAligned } from "../modules/ChapterFourTimeControlModel";
 
 interface TaskDefinition {
   id: string;
@@ -619,33 +624,22 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
                 label: "在手机 CC98 票务页参加第一波放票",
                 hints: [
                   "打开学生剧现场帮抢帖，在票务卡中操作。",
-                  "可以直接抢第一波，也可以先打开控制中心切换到移动数据。"
+                  "大厅记录可用于确认第一波的放票时间。"
                 ],
                 targetSurface: "phone",
                 recommendedScene: "cc98"
               }
           : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed"
-            ? state.networkMode === "cellular"
-              ? {
-                  id: "chapter_three_theater_ticket_second_wave",
-                  label: "在手机票务页参加第二波放票",
-                  hints: [
-                    "移动数据已经开启。",
-                    "回到 CC98 帮抢帖，等待倒计时结束后点击第二波。"
-                  ],
-                  targetSurface: "phone",
-                  recommendedScene: "cc98"
-                }
-              : {
-                  id: "chapter_three_theater_ticket_enable_cellular",
-                  label: "开启手机移动数据，等待第二波放票",
-                  hints: [
-                    "第一波已结束，系统提示响应速度过慢。",
-                    "在 CC98 票务卡中打开控制中心，切换为移动数据。"
-                  ],
-                  targetSurface: "phone",
-                  recommendedScene: "cc98"
-                }
+            ? {
+                id: "chapter_three_theater_ticket_second_wave",
+                label: "在手机票务页参加第二波放票",
+                hints: [
+                  "第一波未抢到，当前网速过慢。",
+                  "回到 CC98 帮抢帖，等待倒计时结束后再次提交。"
+                ],
+                targetSurface: "phone",
+                recommendedScene: "cc98"
+              }
           : state.theaterHunt.cc98TicketCommissionPhase === "delivered"
             ? state.items.temporaryTheaterTicket
               ? {
@@ -839,15 +833,14 @@ function selectChapterFour755TaskKey(
         ? "collect_hour_hand"
         : "explore_bakery";
   } else if (contract.id === "room204_restore") {
-    preferredTaskKey = !facts.has("classroom_104_chalk_residual_observed")
+    preferredTaskKey = !isChapterFourPhaseTimeAligned(state.chapter4)
+      ? "tune_clock_to_1850"
+      : !facts.has("classroom_104_chalk_residual_observed")
       || !facts.has("classroom_105_terminal_replay_checked")
       || !facts.has("elevator_history_observed")
         || !facts.has("elevator_history_calibrated")
-        || !facts.has("a1_duty_board_reconstructed")
       ? "resolve_a1_investigation"
-      : !facts.has("zhu_two_questions_answered")
-        || !facts.has("a3_archive_film_retrieved")
-        || !facts.has("a3_media_alignment_completed")
+      : !facts.has("a3_reference_observed")
         ? "resolve_a3_archive_chain"
       : !facts.has("misaligned_stair_solved")
         ? "solve_misaligned_stair"
@@ -857,8 +850,9 @@ function selectChapterFour755TaskKey(
         ? "resolve_a2_inserted_puzzles"
       : !facts.has("elevator_stop_chain_reconstructed")
         ? "resolve_elevator_stop_chain"
-      : !facts.has("a3_reference_observed")
-        || !facts.has("room204_residual_observed")
+      : !facts.has("a1_duty_board_reconstructed")
+        ? "resolve_a1_investigation"
+      : !facts.has("room204_residual_observed")
         || !facts.has("room204_restored")
           ? "restore_room204"
           : !facts.has("room204_projection_completed")
@@ -867,7 +861,9 @@ function selectChapterFour755TaskKey(
               ? "collect_positioning_plate"
               : "install_positioning_plate";
   } else if (contract.id === "maintenance_repair") {
-    preferredTaskKey = !facts.has("cart_wheel_inspected")
+    preferredTaskKey = !isChapterFourPhaseTimeAligned(state.chapter4)
+      ? "tune_clock_to_2245"
+      : !facts.has("cart_wheel_inspected")
       ? "inspect_cart_wheel"
       : !facts.has("cart_wheel_cover_opened")
         ? "open_cart_wheel_cover"
@@ -878,6 +874,10 @@ function selectChapterFour755TaskKey(
     preferredTaskKey = state.chapter4.floor === "A1"
       ? "install_final_minute"
       : "return_via_main_stair";
+  } else if (contract.id === "exterior_closure") {
+    preferredTaskKey = facts.has("zhu_two_questions_answered")
+      ? "acknowledge_exterior_closure"
+      : "answer_zhu_two_questions";
   } else if (contract.id === "morning_checkin") {
     const cardAccepted = state.chapter4.checkinCardAccepted
       && facts.has("checkin_card_accepted");
@@ -958,38 +958,6 @@ function chapterFour755Quest(
       }))
     };
   }
-  if (taskKey === "resolve_a3_archive_chain") {
-    const branches = [
-      {
-        id: "a3_honor_wall",
-        label: "荣誉墙问答",
-        detail: "竺老两问",
-        complete: facts.has("zhu_two_questions_answered")
-      },
-      {
-        id: "a3_media_chain",
-        label: "301 → 302",
-        detail: facts.has("a3_archive_film_retrieved")
-          ? "去 302 对齐影像"
-          : "先在 301 取胶片",
-        complete: facts.has("a3_media_alignment_completed")
-      }
-    ] as const;
-    return {
-      ...quest,
-      parallelProgress: {
-        completed: branches.filter((branch) => branch.complete).length,
-        total: branches.length
-      },
-      parallelBranches: branches.map((branch) => ({
-        id: branch.id,
-        label: branch.label,
-        detail: branch.detail,
-        status: branch.complete ? "completed" : "pending",
-        targetSurface: "rpg"
-      }))
-    };
-  }
   if (taskKey === "resolve_a2_inserted_puzzles") {
     const branches = [
       {
@@ -1006,8 +974,8 @@ function chapterFour755Quest(
       },
       {
         id: "a2_evacuation",
-        label: "开放自习区",
-        detail: "疏散路线",
+        label: "开放自习区路线板",
+        detail: "202 至主楼梯",
         factId: "a2_evacuation_route_confirmed"
       }
     ] as const;
@@ -1063,7 +1031,7 @@ function chapterFour755Quest(
     };
   }
   if (taskKey === "restore_room204") {
-    const placementCount = state.chapter4.room204Placements.length;
+    const completedGroupCount = countCompletedRoom204Groups(state.chapter4.room204Placements);
     const branches = [
       {
         id: "room204_reference",
@@ -1080,8 +1048,8 @@ function chapterFour755Quest(
       {
         id: "room204_layout",
         label: "204 家具复原",
-        detail: `${Math.min(placementCount, 12)}/12 组就位`,
-        complete: placementCount >= 12
+        detail: `${completedGroupCount}/${ROOM204_GROUP_ORDER.length} 组就位`,
+        complete: completedGroupCount === ROOM204_GROUP_ORDER.length
       }
     ] as const;
     return {
