@@ -170,7 +170,15 @@ function splitAtlas(path, frameWidth, frameHeight, count) {
   return Array.from({ length: count }, (_, index) => crop(atlas, index * frameWidth, 0, frameWidth, frameHeight));
 }
 
-function verifyRole(role, sourcePath, columns, rows, groups, enforceScaleRatio = true) {
+function verifyRole(
+  role,
+  sourcePath,
+  columns,
+  rows,
+  groups,
+  enforceScaleRatio = true,
+  maxAspectRatioError = MAX_ASPECT_RATIO_ERROR
+) {
   const components = orderComponents(extractComponents(loadPng(sourcePath)), columns, rows);
   for (const [groupName, frames] of Object.entries(groups)) {
     const scales = [];
@@ -193,7 +201,7 @@ function verifyRole(role, sourcePath, columns, rows, groups, enforceScaleRatio =
       const sourceAspect = sourceComponent.bounds.width / sourceComponent.bounds.height;
       const runtimeAspect = bounds.width / bounds.height;
       const aspectError = Math.abs(runtimeAspect / sourceAspect - 1);
-      if (aspectError > MAX_ASPECT_RATIO_ERROR) {
+      if (aspectError > maxAspectRatioError) {
         throw new Error(`${frame.label} changed source silhouette proportions: error=${aspectError.toFixed(3)}`);
       }
       scales.push(bounds.height / sourceComponent.bounds.height);
@@ -222,28 +230,33 @@ function playerGroups() {
   ]));
 }
 
-function playerSideSheetGroup() {
-  const root = resolve(ROOT, "src/assets/rpg/player");
-  const specs = [[0, 16, 104], [2, 17, 102], [3, 18, 101], [5, 19, 103], [6, 20, 104], [8, 21, 102], [9, 22, 101], [11, 23, 103]];
-  return {
-    side_sheet: specs.map(([phase, sourceIndex, expectedHeight]) => ({
-      label: `player_side_${phase}`,
-      sourceIndex,
-      image: loadPng(resolve(root, `player_side_${phase}.png`)),
-      expectedHeight
-    }))
-  };
+function lowerBodySpread(image, startY = 98) {
+  let minX = image.width;
+  let maxX = -1;
+  for (let y = startY; y < image.height; y += 1) {
+    for (let x = 0; x < image.width; x += 1) {
+      if (alphaAt(image, y * image.width + x) < ALPHA_THRESHOLD) continue;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+    }
+  }
+  if (maxX < minX) throw new Error("side walk frame has no lower-body pixels");
+  return maxX - minX + 1;
 }
 
-function playerSideTransitionGroup(phase, expectedHeight) {
-  return {
-    [`side_transition_${phase}`]: [{
-      label: `player_side_${phase}`,
-      sourceIndex: 0,
-      image: loadPng(resolve(ROOT, `src/assets/rpg/player/player_side_${phase}.png`)),
-      expectedHeight
-    }]
-  };
+function alphaIouInRegion(first, second, x, y, width, height) {
+  let intersection = 0;
+  let union = 0;
+  for (let row = y; row < y + height; row += 1) {
+    for (let column = x; column < x + width; column += 1) {
+      const index = row * first.width + column;
+      const left = alphaAt(first, index) >= ALPHA_THRESHOLD;
+      const right = alphaAt(second, index) >= ALPHA_THRESHOLD;
+      if (left && right) intersection += 1;
+      if (left || right) union += 1;
+    }
+  }
+  return union === 0 ? 1 : intersection / union;
 }
 
 function npcGroups(role) {
@@ -271,16 +284,42 @@ function npcGroups(role) {
 }
 
 verifyRole("player", resolve(ROOT, "src/assets/rpg/player/source/player_walk_24pose_transparent_v2.png"), 4, 6, playerGroups());
-verifyRole("player_side_sheet", resolve(ROOT, "src/assets/rpg/player/source/player_walk_24pose_transparent_v2.png"), 4, 6, playerSideSheetGroup(), false);
 
-for (const [phase, expectedHeight, sourceFile] of [[1, 103, "player_side_transition_01_v3.png"], [4, 102, "player_side_transition_23_v3.png"], [7, 103, "player_side_transition_45_v3.png"], [10, 102, "player_side_transition_67_v3.png"]]) {
-  verifyRole(
-    `player_side_transition_${phase}`,
-    resolve(ROOT, "src/assets/rpg/player/source", sourceFile),
-    1,
-    1,
-    playerSideTransitionGroup(phase, expectedHeight),
-    false
+const sideFrames = Array.from({ length: 8 }, (_, phase) => (
+  loadPng(resolve(ROOT, `src/assets/rpg/player/player_side_${phase}.png`))
+));
+const sideIdle = loadPng(resolve(ROOT, "src/assets/rpg/player/player_side_idle.png"));
+for (const [label, frame] of [["side idle", sideIdle], ...sideFrames.map((frame, phase) => [`side ${phase}`, frame])]) {
+  const { bounds } = alphaMask(frame);
+  const topPadding = bounds.y;
+  const bottomPadding = frame.height - bounds.y - bounds.height;
+  if (topPadding < MIN_EDGE_PADDING || bottomPadding < MIN_EDGE_PADDING) {
+    throw new Error(`${label} clips its silhouette padding: top=${topPadding} bottom=${bottomPadding}`);
+  }
+}
+const sideHeights = sideFrames.map((frame) => alphaMask(frame).bounds.height);
+if (sideHeights.some((height) => height !== 104) || alphaMask(sideIdle).bounds.height !== 104) {
+  throw new Error(`side walk resizes the character between frames: heights=${sideHeights.join(",")}`);
+}
+const headIous = sideFrames.map((frame) => alphaIouInRegion(sideIdle, frame, 20, 20, 56, 60));
+if (Math.min(...headIous) < 0.82) {
+  throw new Error(`side walk changes the locked head/upper-body silhouette: IoU=${headIous.map((value) => value.toFixed(3)).join(",")}`);
+}
+const contactSpreads = [0, 4].map((phase) => lowerBodySpread(sideFrames[phase]));
+const passingSpreads = [2, 6].map((phase) => lowerBodySpread(sideFrames[phase]));
+const recoverySpreads = [1, 3, 5, 7].map((phase) => lowerBodySpread(sideFrames[phase]));
+const idleSpread = lowerBodySpread(sideIdle);
+if (
+  Math.min(...contactSpreads) < 58
+  || Math.max(...passingSpreads) > 27
+  || Math.min(...recoverySpreads) < 27
+  || Math.max(...recoverySpreads) > 36
+  || idleSpread > 30
+) {
+  throw new Error(
+    `side gait must alternate contacts, compact recoveries, and joined-leg passing poses: `
+    + `contacts=${contactSpreads.join(",")} passing=${passingSpreads.join(",")} `
+    + `recovery=${recoverySpreads.join(",")} idle=${idleSpread}`
   );
 }
 
@@ -300,4 +339,4 @@ for (const [role, sourceFile, columns, rows] of [
   verifyRole(role, resolve(npcSourceRoot, sourceFile), columns, rows, npcGroups(role));
 }
 
-console.log("RPG character sprite validation PASS roles=14 runtime-silhouettes=complete padding=stable scale=stable mapping=verified");
+console.log("RPG character sprite validation PASS roles=12 runtime-silhouettes=complete side-idle=stationary-only side-gait=full-body-grounded-crossing scale=stable mapping=verified");

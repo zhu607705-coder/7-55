@@ -8,6 +8,7 @@ import playerDown4Url from "../../assets/rpg/player/player_down_4.png";
 import playerDown5Url from "../../assets/rpg/player/player_down_5.png";
 import playerDown6Url from "../../assets/rpg/player/player_down_6.png";
 import playerDown7Url from "../../assets/rpg/player/player_down_7.png";
+import playerSideIdleUrl from "../../assets/rpg/player/player_side_idle.png";
 import playerSide0Url from "../../assets/rpg/player/player_side_0.png";
 import playerSide1Url from "../../assets/rpg/player/player_side_1.png";
 import playerSide2Url from "../../assets/rpg/player/player_side_2.png";
@@ -16,10 +17,6 @@ import playerSide4Url from "../../assets/rpg/player/player_side_4.png";
 import playerSide5Url from "../../assets/rpg/player/player_side_5.png";
 import playerSide6Url from "../../assets/rpg/player/player_side_6.png";
 import playerSide7Url from "../../assets/rpg/player/player_side_7.png";
-import playerSide8Url from "../../assets/rpg/player/player_side_8.png";
-import playerSide9Url from "../../assets/rpg/player/player_side_9.png";
-import playerSide10Url from "../../assets/rpg/player/player_side_10.png";
-import playerSide11Url from "../../assets/rpg/player/player_side_11.png";
 import playerUp0Url from "../../assets/rpg/player/player_up_0.png";
 import playerUp1Url from "../../assets/rpg/player/player_up_1.png";
 import playerUp2Url from "../../assets/rpg/player/player_up_2.png";
@@ -32,7 +29,7 @@ import { preloadRpgImages } from "./RpgAssetLoader";
 import type { RpgCardinalFacing } from "./RpgInteractionContract";
 
 export type RpgPlayerFacing = "down" | "up" | "side";
-export type RpgPlayerWalkFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+export type RpgPlayerWalkFrame = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export const RPG_PLAYER_FRAME_WIDTH = 96;
 export const RPG_PLAYER_FRAME_HEIGHT = 128;
@@ -46,9 +43,11 @@ export const RPG_CAMPUS_PLAYER_BASE_MULTIPLIER = campusRuntimeData.perspective.b
 export const RPG_PLAYER_WALK_FRAME_MS = 110;
 export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_WALK_FRAME_COUNT = 8;
-export const RPG_PLAYER_SIDE_WALK_FRAME_COUNT = 12;
+export const RPG_PLAYER_SIDE_WALK_FRAME_COUNT = 8;
 export const RPG_PLAYER_WALK_CYCLE_MS = RPG_PLAYER_WALK_FRAME_MS * RPG_PLAYER_WALK_FRAME_COUNT;
-export const RPG_PLAYER_SIDE_WALK_FRAME_MS = 100;
+export const RPG_PLAYER_SIDE_WALK_FRAME_MS = (
+  RPG_PLAYER_WALK_CYCLE_MS / RPG_PLAYER_SIDE_WALK_FRAME_COUNT
+);
 export const RPG_PLAYER_SIDE_WALK_FPS = 1000 / RPG_PLAYER_SIDE_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 30,
@@ -107,6 +106,7 @@ export const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-up-5": playerUp5Url,
   "act1-player-up-6": playerUp6Url,
   "act1-player-up-7": playerUp7Url,
+  "act1-player-side-idle": playerSideIdleUrl,
   "act1-player-side-0": playerSide0Url,
   "act1-player-side-1": playerSide1Url,
   "act1-player-side-2": playerSide2Url,
@@ -114,11 +114,7 @@ export const RPG_PLAYER_TEXTURE_ASSETS = {
   "act1-player-side-4": playerSide4Url,
   "act1-player-side-5": playerSide5Url,
   "act1-player-side-6": playerSide6Url,
-  "act1-player-side-7": playerSide7Url,
-  "act1-player-side-8": playerSide8Url,
-  "act1-player-side-9": playerSide9Url,
-  "act1-player-side-10": playerSide10Url,
-  "act1-player-side-11": playerSide11Url
+  "act1-player-side-7": playerSide7Url
 } as const;
 
 export function preloadRpgPlayerTextures(scene: Phaser.Scene): void {
@@ -184,6 +180,7 @@ export function ensureRpgPlayerTextures(scene: Phaser.Scene): void {
       );
     });
   });
+  drawPlayer("act1-player-side-idle", "side", 0);
 }
 
 function applyRpgPlayerVisualScale(player: Phaser.Physics.Arcade.Sprite, displayScale: number): void {
@@ -246,9 +243,9 @@ export function configureNorthUpCampusRpgPlayerSprite(
  * Convert elapsed movement time into the shared directional walk sequence.
  * The elapsed value is local to one continuous walk, so a fresh walk cannot
  * enter halfway through a stride because of a scene's absolute game clock.
- * Down/up retain eight frames. Side walking keeps each of its twelve actual
- * drawings visible for 100ms, keeping the close-leg passing pose readable while
- * restoring a slightly quicker cadence without changing movement velocity.
+ * Every direction uses an eight-phase 880ms stride. Side movement has a
+ * separate neutral idle drawing, so its contact frame is never shown while
+ * standing still.
  */
 export function getRpgPlayerWalkFrameAt(
   elapsedMs: number,
@@ -345,7 +342,7 @@ export class RpgPlayerAnimator {
   ) {
     this.targetFacing = initialFacing;
     this.targetFlipX = initialFlipX;
-    this.applyPose(initialFacing, 0, initialFlipX);
+    this.applyPose(initialFacing, 0, initialFlipX, 0, true);
   }
 
   get facing(): RpgPlayerFacing {
@@ -367,13 +364,13 @@ export class RpgPlayerAnimator {
     return this.player.texture.key;
   }
 
-  setFacing(facing: RpgPlayerFacing, flipX = false): void {
+  setFacing(facing: RpgPlayerFacing, flipX = false, stationary = true): void {
     this.targetFacing = facing;
     this.targetFlipX = flipX;
     this.walkingFrame = 0;
     this.walkCycleStartedAt = null;
     this.turn = null;
-    this.applyPose(facing, 0, flipX);
+    this.applyPose(facing, 0, flipX, 0, stationary);
   }
 
   update(vector: Phaser.Math.Vector2, now: number): void {
@@ -426,16 +423,15 @@ export class RpgPlayerAnimator {
       this.turn = null;
       this.walkingFrame = 0;
       this.walkCycleStartedAt = now;
-      // Keep the target's neutral pose visible for one render before the
-      // walk loop advances. This preserves the missing support beat
-      // when the player changes direction while holding movement input.
+      // The dedicated side idle is reserved for zero-velocity updates. A
+      // direction change while moving stays entirely inside walk frames.
       return;
     }
 
     if (!moving) {
       this.walkingFrame = 0;
       this.walkCycleStartedAt = null;
-      this.applyPose(this.targetFacing, 0, this.targetFlipX);
+      this.applyPose(this.targetFacing, 0, this.targetFlipX, 0, true);
       return;
     }
 
@@ -460,9 +456,12 @@ export class RpgPlayerAnimator {
     facing: RpgPlayerFacing,
     frame: RpgPlayerWalkFrame,
     flipX: boolean,
-    angle = 0
+    angle = 0,
+    idle = false
   ): void {
-    const texture = `act1-player-${facing}-${frame}`;
+    const texture = idle && facing === "side"
+      ? "act1-player-side-idle"
+      : `act1-player-${facing}-${frame}`;
     if (this.player.texture.key !== texture) {
       this.player.setTexture(texture);
     }

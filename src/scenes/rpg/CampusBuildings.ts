@@ -5,6 +5,8 @@ import {
   ZIJINGANG_PLATE,
   type CampusScaleClass
 } from "./ZijingangCampusLayout";
+import { eraseCampusAnimatedWaterFromContext } from "./CampusWaterLayer";
+import { ZIJINGANG_CAMPUS_WATER_MASK_KEY } from "./ZijingangLandmarkAssets";
 
 // 分层约定：校园底图 depth 0；建筑遮挡层是同源裁剪 overlay，depth = 该建筑 footprint 南缘 y；
 // 玩家 depth = player.y + 30，于是玩家在南缘以北（建筑后方）被 overlay 盖住，以南（前方）盖住建筑。
@@ -115,8 +117,14 @@ export class CampusBuildingLayer {
     if (!this.scene.textures.exists(this.plateTextureKey)) {
       throw new Error(`CampusBuildingLayer: plate texture "${this.plateTextureKey}" must be loaded before build()`);
     }
+    if (!this.scene.textures.exists(ZIJINGANG_CAMPUS_WATER_MASK_KEY)) {
+      throw new Error("CampusBuildingLayer: final water mask must be loaded before building occlusion crops");
+    }
     const texture = this.scene.textures.get(this.plateTextureKey);
     const source = texture.getSourceImage() as CanvasImageSource;
+    const waterMaskSource = this.scene.textures
+      .get(ZIJINGANG_CAMPUS_WATER_MASK_KEY)
+      .getSourceImage() as CanvasImageSource;
     this.entries.forEach((entry) => {
       const halfWidth = entry.baseFootprint.width / 2;
       const halfHeight = entry.baseFootprint.height / 2;
@@ -154,6 +162,14 @@ export class CampusBuildingLayer {
       });
       context.clip();
       context.drawImage(source, left, top, width, height, 0, 0, width, height);
+      // The polygon is intentionally broader than the visible silhouette for
+      // player depth. Remove every pixel owned by the final hand-authored
+      // water mask so this foreground crop cannot restore old plate water.
+      eraseCampusAnimatedWaterFromContext(
+        context,
+        waterMaskSource,
+        { x: left, y: top, width, height }
+      );
       context.restore();
       overlayTexture.refresh();
       overlayTexture.setFilter(Phaser.Textures.FilterMode.LINEAR);

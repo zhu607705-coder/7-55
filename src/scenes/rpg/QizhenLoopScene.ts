@@ -93,7 +93,7 @@ export class QizhenLoopScene extends Phaser.Scene {
       : state.rpgCheckpoint === "campus_qizhen_transition_stop"
         ? QIZHEN_LOOP_RUNTIME.qizhen.approachTransition.stop
         : QIZHEN_LOOP_RUNTIME.qizhen.approachTransition.start;
-    this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-side-0");
+    this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-side-idle");
     this.player.setCollideWorldBounds(true).setDepth(this.player.y + 30);
     configureRpgPlayerSprite(this.player);
     this.playerPerspective = applyCampusRpgPlayerPerspectiveScale(this.player, this.player.y);

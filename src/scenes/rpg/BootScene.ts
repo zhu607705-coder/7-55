@@ -9,6 +9,7 @@ import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState } from "./RpgRuntime
 import { preloadZijingangWorldAssets, ZIJINGANG_CAMPUS_PLATE_KEY } from "./ZijingangLandmarkAssets";
 import { drawZijingangWorld, ZIJINGANG_WORLD } from "./ZijingangWorld";
 import { CampusBuildingLayer } from "./CampusBuildings";
+import { CampusWaterLayer } from "./CampusWaterLayer";
 import { CampusPathGrid, type CampusPathPoint } from "./CampusPathfinder";
 import { RpgMovementController } from "./RpgMovementController";
 import { RpgCameraController } from "./RpgCameraController";
@@ -63,6 +64,7 @@ export class BootScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
   private buildingLayer!: CampusBuildingLayer;
+  private waterLayer!: CampusWaterLayer;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private keys!: Record<"W" | "A" | "S" | "D" | "SHIFT", Phaser.Input.Keyboard.Key>;
   private virtualDirection = { x: 0, y: 0 };
@@ -106,6 +108,8 @@ export class BootScene extends Phaser.Scene {
     drawZijingangWorld(this, {
       addObstacle: (x, y, width, height) => this.addObstacle(x, y, width, height)
     });
+    this.waterLayer = new CampusWaterLayer(this);
+    this.waterLayer.build();
     this.contextualLandmarkLabels = this.children.list.filter(
       (object): object is Phaser.GameObjects.Text =>
         object instanceof Phaser.GameObjects.Text && object.getData("contextualLandmark") === true

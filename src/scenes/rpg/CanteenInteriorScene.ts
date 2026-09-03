@@ -2654,7 +2654,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   private setPushFacing(deltaX: number, deltaY: number): void {
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      this.playerAnimator.setFacing("side", deltaX < 0);
+      this.playerAnimator.setFacing("side", deltaX < 0, false);
       return;
     }
     this.playerAnimator.setFacing(deltaY < 0 ? "up" : "down");
