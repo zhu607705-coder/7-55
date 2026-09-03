@@ -14,6 +14,7 @@ import {
   isChapterFour755TargetProjectable,
   isChapterFour755TargetStateActive
 } from "../scenes/rpg/RpgInteractionContract";
+import { isChapterFourPhaseTimeAligned } from "./ChapterFourTimeControlModel";
 
 export type ChapterFour755DoorState = "open" | "closed" | "locked";
 
@@ -106,6 +107,13 @@ const PHASE_PLATES = new Map<ChapterFourPhase, readonly string[]>(
   ])
 );
 
+const TIME_PLATES = new Map<ChapterFourTimeState, readonly string[]>(
+  content.time.states.map((contract) => [
+    contract.id as ChapterFourTimeState,
+    [...contract.plateIds]
+  ])
+);
+
 interface ChapterFour755LayoutFloor {
   storyFloor: ChapterFourState["floor"];
   foregroundOcclusions: Array<{ id: string }>;
@@ -136,7 +144,11 @@ export function selectChapterFourMazeProjection(gameState: GameState): ChapterFo
   const state = activeChapter(gameState.chapter4);
   if (!state) return inactiveProjection();
 
-  const activePlateIds = [...(PHASE_PLATES.get(state.phase) ?? [])];
+  // A newly unlocked phase remains on the previous physical time plate until
+  // the player returns to the hall clock and commits the next setting.
+  const activePlateIds = isChapterFourPhaseTimeAligned(state)
+    ? [...(PHASE_PLATES.get(state.phase) ?? [])]
+    : [...(TIME_PLATES.get(state.timeState) ?? [])];
   const plateId = selectCurrentPlate(activePlateIds, state.floor);
   const factIds = new Set(state.factIds);
   const availableTargetIds = Object.values(CHAPTER_FOUR_755_INTERACTION_TARGETS)

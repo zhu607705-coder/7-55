@@ -48,9 +48,7 @@ export const RPG_PLAYER_WALK_FPS = 1000 / RPG_PLAYER_WALK_FRAME_MS;
 export const RPG_PLAYER_WALK_FRAME_COUNT = 8;
 export const RPG_PLAYER_SIDE_WALK_FRAME_COUNT = 12;
 export const RPG_PLAYER_WALK_CYCLE_MS = RPG_PLAYER_WALK_FRAME_MS * RPG_PLAYER_WALK_FRAME_COUNT;
-export const RPG_PLAYER_SIDE_WALK_FRAME_MS = (
-  RPG_PLAYER_WALK_CYCLE_MS / RPG_PLAYER_SIDE_WALK_FRAME_COUNT
-);
+export const RPG_PLAYER_SIDE_WALK_FRAME_MS = 100;
 export const RPG_PLAYER_SIDE_WALK_FPS = 1000 / RPG_PLAYER_SIDE_WALK_FRAME_MS;
 export const RPG_PLAYER_FOOT_COLLISION = Object.freeze({
   width: 30,
@@ -248,9 +246,9 @@ export function configureNorthUpCampusRpgPlayerSprite(
  * Convert elapsed movement time into the shared directional walk sequence.
  * The elapsed value is local to one continuous walk, so a fresh walk cannot
  * enter halfway through a stride because of a scene's absolute game clock.
- * Down/up retain eight frames. Side walking uses twelve actually drawn frames
- * over the same 880ms cycle, so extra artwork improves continuity without
- * changing movement cadence.
+ * Down/up retain eight frames. Side walking keeps each of its twelve actual
+ * drawings visible for 100ms, keeping the close-leg passing pose readable while
+ * restoring a slightly quicker cadence without changing movement velocity.
  */
 export function getRpgPlayerWalkFrameAt(
   elapsedMs: number,
@@ -259,7 +257,9 @@ export function getRpgPlayerWalkFrameAt(
   const frameCount = facing === "side"
     ? RPG_PLAYER_SIDE_WALK_FRAME_COUNT
     : RPG_PLAYER_WALK_FRAME_COUNT;
-  const frameMs = RPG_PLAYER_WALK_CYCLE_MS / frameCount;
+  const frameMs = facing === "side"
+    ? RPG_PLAYER_SIDE_WALK_FRAME_MS
+    : RPG_PLAYER_WALK_FRAME_MS;
   return (
     Math.floor(Math.max(0, elapsedMs) / frameMs)
     % frameCount

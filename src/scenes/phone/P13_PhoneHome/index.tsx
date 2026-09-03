@@ -179,7 +179,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
       );
     if (state.networkMode !== "campus_wifi" && !ticketPortalCanUseCellular) {
       kit.flags.toast(
-        "CC98 需要校园网；已经载入的手机票务页面可在移动数据下继续。",
+        "当前网络无法打开 CC98，请先恢复可访问的网络环境。",
         "task"
       );
       return;
@@ -744,9 +744,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
                       : state.theaterHunt.cc98TicketCommissionPhase === "accepted"
                         ? "已接单，第一波待开始"
                         : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed"
-                          ? state.networkMode === "cellular"
-                            ? "流量已开启，返回手机票务页抢第二波"
-                            : "第一波结束：网速过慢，开启流量"
+                          ? "第一波未抢到：当前网速过慢，第二波即将开放"
                           : state.theaterHunt.cc98TicketClaimedWave === 1
                             ? "第一波抢票成功，运气很好，钱包没那么好"
                             : "08:32 第二波取票回执已同步"}

@@ -61,10 +61,12 @@ const GAMEPLAY_IDS = [
   "c4-755-opening",
   "c4-755-hall-clock",
   "c4-755-bakery-1225",
+  "c4-755-clock-1850-ready",
   "c4-755-classrooms-1850",
   "c4-755-elevator-history",
   "c4-755-room204-1850",
   "c4-755-a2-field-records",
+  "c4-755-clock-2245-ready",
   "c4-755-maintenance-2245",
   "c4-755-blackout-0754",
   "c4-755-chase",
@@ -78,10 +80,12 @@ const EXPECTED_SEEDS = {
   "c4-755-opening": ["opening_handoff", "2245_opening", "A1", "a1_lobby"],
   "c4-755-hall-clock": ["hall_clock_inspection", "2245_opening", "A1", "a1_hall_clock"],
   "c4-755-bakery-1225": ["bakery_hour_hand", "1225_bakery", "A1", "a1_bakery"],
+  "c4-755-clock-1850-ready": ["room204_restore", "1225_bakery", "A1", "a1_hall_clock"],
   "c4-755-classrooms-1850": ["room204_restore", "1850_evening", "A1", "a1_hall_clock"],
   "c4-755-elevator-history": ["room204_restore", "1850_evening", "A1", "a1_main_elevator"],
   "c4-755-room204-1850": ["room204_restore", "1850_evening", "A3", "a3_reference_classroom"],
   "c4-755-a2-field-records": ["room204_restore", "1850_evening", "A2", "a2_corridor"],
+  "c4-755-clock-2245-ready": ["maintenance_repair", "1850_evening", "A1", "a1_hall_clock"],
   "c4-755-maintenance-2245": ["maintenance_repair", "2245_maintenance", "A1", "a1_lobby"],
   "c4-755-blackout-0754": ["blackout_light_grid", "0754_blackout", "A1", "a1_power_panel"],
   "c4-755-chase": ["final_chase", "0754_blackout", "A1", "a1_lobby"],
@@ -202,7 +206,7 @@ const validationSuiteSource = source("./run-validation-suite.mjs");
 const taskEntries = Object.entries(content.tasks ?? {});
 const activeTaskEntries = taskEntries.filter(([taskId]) => taskId !== "chapter_complete");
 const activeHints = activeTaskEntries.flatMap(([, task]) => Array.isArray(task?.hints) ? task.hints : []);
-assert(taskEntries.length === 38 && activeTaskEntries.length === 37, "Task 14 must define 37 active tasks plus chapter_complete");
+assert(taskEntries.length === 40 && activeTaskEntries.length === 39, "Task 14 must define 39 active tasks plus chapter_complete");
 for (const [taskId, task] of activeTaskEntries) {
   assert(
     Array.isArray(task?.hints)
@@ -211,7 +215,7 @@ for (const [taskId, task] of activeTaskEntries) {
     `${taskId} must expose exactly three non-empty progressive hints`
   );
 }
-assert(activeHints.length === 111, "Task 14 must expose the complete 111-hint contract");
+assert(activeHints.length === 117, "Task 14 must expose the complete 117-hint contract");
 assert(
   Array.isArray(content.tasks?.chapter_complete?.hints)
     && content.tasks.chapter_complete.hints.length === 0,
@@ -776,4 +780,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=14+aliases+url+session-only quest=single-objective+111-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);
+console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=16+aliases+url+session-only quest=single-objective+117-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);

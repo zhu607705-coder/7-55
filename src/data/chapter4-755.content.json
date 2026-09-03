@@ -102,7 +102,7 @@
       "toAuthority": "hall_clock",
       "fromTimeState": "2245_opening",
       "toTimeState": "1225_bakery",
-      "trigger": "pull_hall_clock",
+      "trigger": "adjust_hall_clock_time",
       "atomic": true
     },
     "atomicTransitionFields": [
@@ -136,19 +136,19 @@
       },
       "hall_clock_inspection": {
         "stageLabel": "阶段 3 · 接管大厅旧钟",
-        "currentDifference": "手机时间已被外部记录否定，大厅旧钟缺少时针，尚未成为可用时间源。"
+        "currentDifference": "缺失时针的轴孔旁留着一圈新磨痕，外圈只有一处额外刻度能够停住。"
       },
       "bakery_hour_hand": {
         "stageLabel": "阶段 4 · 找回旧时针",
-        "currentDifference": "大厅旧钟停在 12:25，时针落入面包坊传送带，需要取回并装回。"
+        "currentDifference": "旧钟停在 12:25；楼内西侧传来周期性的机械声，检修灯仍亮着。"
       },
       "room204_restore": {
         "stageLabel": "阶段 5 · 恢复 204",
-        "currentDifference": "电梯保留 18:50 历史轨道，三楼与二楼之间的楼梯发生投影错位；接通交通后再按 303 参照恢复 204。"
+        "currentDifference": "旧钟停在 18:50；走廊照明已亮，电梯门机留下了几段彼此错开的时间痕迹。"
       },
       "maintenance_repair": {
         "stageLabel": "阶段 6 · 完成维修",
-        "currentDifference": "旧钟进入 22:45 维修时段且手机已同步，保洁车轮与钟内齿轮仍影响校时。"
+        "currentDifference": "旧钟停在 22:45；地面留有尚未干透的轮印，钟壳内传出断续摩擦声。"
       },
       "blackout_light_grid": {
         "stageLabel": "阶段 7 · 接通必要照明",
@@ -249,6 +249,10 @@
       "current_phase_mismatch": {
         "reason": "该操作不属于当前阶段。",
         "nextAction": "打开任务栏，按当前目标继续。"
+      },
+      "clock_adjustment_required": {
+        "reason": "当前楼层仍停留在上一段时间。",
+        "nextAction": "回到一楼旧钟，在浅色操作中选择钟面上新出现的稳定刻度。"
       },
       "target_unavailable": {
         "reason": "当前目标尚未开放。",
@@ -472,7 +476,7 @@
       "resolve_external_time_rejection",
       "inspect_hall_clock",
       "resolve_hall_clock_inspection",
-      "pull_hall_clock"
+      "adjust_hall_clock_time"
     ],
     "paper": {
       "frame": "chapter4_story_items/sign_in_record_paper",
@@ -671,6 +675,7 @@
         "a3_1850_reference"
       ],
       "taskKeys": [
+        "tune_clock_to_1850",
         "resolve_a1_investigation",
         "verify_a1_classrooms",
         "observe_elevator_history",
@@ -699,6 +704,7 @@
         "a1_2245_maintenance"
       ],
       "taskKeys": [
+        "tune_clock_to_2245",
         "inspect_cart_wheel",
         "open_cart_wheel_cover",
         "lubricate_cart_wheel",
@@ -837,11 +843,27 @@
       ]
     },
     "pull_hall_clock": {
-      "label": "拉动大厅旧钟，让它第一次转动",
+      "label": "调节大厅旧钟的第一处稳定刻度",
       "hints": [
-        "继续检查大厅旧钟的可操作部位。",
-        "完成旧钟检查后，第一次拨动会切换时间来源。",
-        "在浅色操作中靠近大厅旧钟并执行拨动交互。"
+        "继续观察大厅旧钟上已经显出的刻度。",
+        "只有当前线索支撑的刻度能够稳定停住。",
+        "在浅色操作中靠近大厅旧钟，选择刻度并确认。"
+      ]
+    },
+    "tune_clock_to_1850": {
+      "label": "返回大厅重新调节旧钟",
+      "hints": [
+        "金属时针装回后，钟面出现了一处新的稳定刻度。",
+        "回到大厅旧钟，左右切换当前可见的时间刻度。",
+        "确认后留意楼内光线、设备声和可进入区域的变化。"
+      ]
+    },
+    "tune_clock_to_2245": {
+      "label": "用定位片校准出的刻度再次调时",
+      "hints": [
+        "定位片归位后，钟面又有一处刻度不再回弹。",
+        "回到大厅旧钟，左右切换当前可见的时间刻度。",
+        "确认后观察地面痕迹与夜间照明的变化。"
       ]
     },
     "explore_bakery": {
@@ -2236,37 +2258,55 @@
   ],
   "transitionContracts": [
     {
-      "id": "hour_hand_to_room204",
+      "id": "opening_to_bakery",
       "presentationKind": "time_shift",
       "owner": "transition_overlay",
       "intentTypes": [
-        "install_hour_hand"
+        "adjust_hall_clock_time"
       ],
-      "fromPhase": "bakery_hour_hand",
+      "fromPhase": "hall_clock_inspection",
+      "toPhase": "bakery_hour_hand",
+      "change": {
+        "kind": "time",
+        "eyebrow": "表盘刻度锁定",
+        "title": "22:45 → 12:25",
+        "detail": "钟摆恢复摆动，窗外光线收紧，远处传来一段断续的机械声。",
+        "fromTimeState": "2245_opening",
+        "toTimeState": "1225_bakery"
+      }
+    },
+    {
+      "id": "clock_tune_to_evening",
+      "presentationKind": "time_shift",
+      "owner": "transition_overlay",
+      "intentTypes": [
+        "adjust_hall_clock_time"
+      ],
+      "fromPhase": "room204_restore",
       "toPhase": "room204_restore",
       "change": {
         "kind": "time",
-        "eyebrow": "旧钟重新配准",
+        "eyebrow": "时针重新咬合",
         "title": "12:25 → 18:50",
-        "detail": "时针归位后，教学楼切换到教室仍有人活动的傍晚记录。",
+        "detail": "窗外光线转暗，走廊照明逐段亮起，楼内设备留下新的运行声。",
         "fromTimeState": "1225_bakery",
         "toTimeState": "1850_evening"
       }
     },
     {
-      "id": "room204_to_maintenance",
+      "id": "clock_tune_to_maintenance",
       "presentationKind": "time_shift",
       "owner": "transition_overlay",
       "intentTypes": [
-        "install_positioning_plate"
+        "adjust_hall_clock_time"
       ],
-      "fromPhase": "room204_restore",
+      "fromPhase": "maintenance_repair",
       "toPhase": "maintenance_repair",
       "change": {
         "kind": "time",
-        "eyebrow": "定位盘完成校准",
+        "eyebrow": "定位片完成校正",
         "title": "18:50 → 22:45",
-        "detail": "定位片归位后，旧钟进入清楼前的维护时段。",
+        "detail": "照明切换为夜间亮度，地面出现尚未干透的轮印和油光。",
         "fromTimeState": "1850_evening",
         "toTimeState": "2245_maintenance"
       }
@@ -2284,7 +2324,7 @@
         "kind": "time",
         "eyebrow": "校准发生偏移",
         "title": "22:45 → 07:54",
-        "detail": "旧钟已经转到清晨，纸条带走了最后一分钟，教学楼同时停电。",
+        "detail": "整层照明熄灭，签到纸从表盘边缘卷离，分针停在下一格之前。",
         "fromTimeState": "2245_maintenance",
         "toTimeState": "0754_blackout"
       }
@@ -2332,7 +2372,7 @@
         "kind": "time",
         "eyebrow": "最后一分钟归位",
         "title": "07:54 → 07:55",
-        "detail": "旧钟和手机重新显示同一个清晨时刻。",
+        "detail": "旧钟分针向前扣合一格，手机状态栏随即更新为相同读数。",
         "fromTimeState": "0754_blackout",
         "toTimeState": "0755_morning"
       }

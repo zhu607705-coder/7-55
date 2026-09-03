@@ -36,15 +36,13 @@ import playerUp7Url from "../../assets/rpg/player/player_up_7.png";
  */
 
 /**
- * 上下行走帧间隔与总周期。侧向帧间隔由同一 880ms 周期除以十二帧得到。
- * 该文件依赖 Phaser，本模块不能引用共享常量，故复制于此（两处修改需同步）。
+ * 上下每帧保留 110ms，侧向每帧 100ms；侧向十二帧会完整播放，同时保持更连贯的步频。
+ * 共享人物模块依赖 Phaser，本 Three.js 模块不引入它，故复制于此（两处修改需同步）。
  */
 export const STAIR_PLAYER_WALK_FRAME_MS = 110;
+export const STAIR_PLAYER_SIDE_WALK_FRAME_MS = 100;
 export const STAIR_PLAYER_WALK_FRAME_COUNT = 8;
 export const STAIR_PLAYER_SIDE_WALK_FRAME_COUNT = 12;
-export const STAIR_PLAYER_WALK_CYCLE_MS = (
-  STAIR_PLAYER_WALK_FRAME_MS * STAIR_PLAYER_WALK_FRAME_COUNT
-);
 
 export const STAIR_PLAYER_FRAME_WIDTH = 96;
 export const STAIR_PLAYER_FRAME_HEIGHT = 128;
@@ -276,13 +274,15 @@ export class StairPlayerSprite {
     this.object3d.renderOrder = enabled ? 100 : 0;
   }
 
-  /** 行走循环保持 880ms 总周期；侧向十二帧、上下八帧。 */
+  /** 侧向每帧 100ms、十二帧；上下每帧 110ms、八帧。 */
   update(nowMs: number): void {
     if (!this.walking) {
       return;
     }
     const frameCount = this.frames[this.facing].length;
-    const frameMs = STAIR_PLAYER_WALK_CYCLE_MS / frameCount;
+    const frameMs = this.facing === "side"
+      ? STAIR_PLAYER_SIDE_WALK_FRAME_MS
+      : STAIR_PLAYER_WALK_FRAME_MS;
     const nextFrame = Math.floor(nowMs / frameMs) % frameCount;
     if (nextFrame !== this.frame) {
       this.frame = nextFrame;

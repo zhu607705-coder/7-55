@@ -69,6 +69,11 @@ import {
   type ChapterFourInsertedPuzzleId
 } from "./ChapterFourInsertedPuzzleModel";
 import {
+  chapterFourTimeContract,
+  isChapterFourPhaseTimeAligned,
+  selectChapterFourRequiredClockTime
+} from "./ChapterFourTimeControlModel";
+import {
   getChapterFour755TargetContract,
   resolveChapterFour755RuntimeEntityTarget,
   validateChapterFour755TargetIntentContract,
@@ -192,6 +197,11 @@ export type ChapterFour755Intent =
   | ChapterFour755TargetIntent<{ type: "catch_attendance_paper"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.attendancePaper }>
   | ChapterFour755TargetIntent<{ type: "inspect_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
   | ChapterFour755TargetIntent<{ type: "pull_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
+  | ChapterFour755TargetIntent<{
+      type: "adjust_hall_clock_time";
+      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock;
+      targetTimeState: ChapterFourTimeState;
+    }>
   | ChapterFour755TargetIntent<{
       type: "inspect_bakery_conveyor_lamp";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.bakeryInspectionLamp;
@@ -381,6 +391,7 @@ export type ChapterFour755IntentResultReason =
 export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "prologue_requirements_unmet",
   "current_phase_mismatch",
+  "clock_adjustment_required",
   "target_unavailable",
   "route_not_available",
   "stair_route_not_available",
@@ -447,6 +458,8 @@ export interface ChapterFour755IntentResult {
   intentType: ChapterFour755Intent["type"];
   previousPhase: ChapterFourPhase | null;
   phase: ChapterFourPhase | null;
+  previousTimeState: ChapterFourTimeState | null;
+  timeState: ChapterFourTimeState | null;
 }
 
 interface PhaseContract {
@@ -598,6 +611,8 @@ function lockedDetailForIntent(
   switch (intent.type) {
     case "complete_prologue_handoff":
       return "prologue_requirements_unmet";
+    case "adjust_hall_clock_time":
+      return "clock_adjustment_required";
     case "move_to_location":
     case "record_checkpoint":
       return "route_not_available";
@@ -788,6 +803,7 @@ export class ChapterFourTemporalMazeController {
     const state = this.store.getState();
     const chapter = activeChapterFour(state);
     const previousPhase = chapter?.phase ?? null;
+    const previousTimeState = chapter?.timeState ?? null;
     const reject = (
       reason: Exclude<ChapterFour755IntentResultReason, "accepted">,
       detailCode?: ChapterFour755IntentDetailCode
@@ -806,7 +822,9 @@ export class ChapterFourTemporalMazeController {
           : {}),
       intentType: intent.type,
       previousPhase,
-      phase: previousPhase
+      phase: previousPhase,
+      previousTimeState,
+      timeState: previousTimeState
     });
     const accept = (nextState: GameState): ChapterFour755IntentResult => {
       const nextChapter = activeChapterFour(nextState);
@@ -827,7 +845,9 @@ export class ChapterFourTemporalMazeController {
         reason: "accepted",
         intentType: intent.type,
         previousPhase,
-        phase: nextChapter?.phase ?? previousPhase
+        phase: nextChapter?.phase ?? previousPhase,
+        previousTimeState,
+        timeState: nextChapter?.timeState ?? previousTimeState
       };
     };
     const acceptReadOnly = (): ChapterFour755IntentResult => ({
@@ -836,7 +856,9 @@ export class ChapterFourTemporalMazeController {
       reason: "accepted",
       intentType: intent.type,
       previousPhase,
-      phase: previousPhase
+      phase: previousPhase,
+      previousTimeState,
+      timeState: previousTimeState
     });
 
     if (!chapter) return reject("inactive");
@@ -866,6 +888,11 @@ export class ChapterFourTemporalMazeController {
     }
     if (!chapter.prologueSeen) return reject("inactive");
     if (chapter.completed || chapter.phase === "complete") return reject("already_complete");
+    if (!isChapterFourPhaseTimeAligned(chapter)
+      && intent.type !== "adjust_hall_clock_time"
+      && intent.type !== "set_mode") {
+      return reject("locked", "clock_adjustment_required");
+    }
     if (isChapterFour755TargetIntent(intent)) {
       const resolvedTarget = runtimeTarget === undefined
         ? undefined
@@ -1086,11 +1113,23 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "pull_hall_clock": {
-        const result = accept(this.transition(state, "bakery_hour_hand"));
+        return reject("locked", "clock_adjustment_required");
+      }
+
+      case "adjust_hall_clock_time": {
+        const requiredTimeState = selectChapterFourRequiredClockTime(chapter);
+        if (!requiredTimeState) return reject("locked", "clock_adjustment_required");
+        if (intent.targetTimeState === chapter.timeState) return reject("already_complete");
+        if (intent.targetTimeState !== requiredTimeState) return reject("incorrect");
+        const next = chapter.phase === "hall_clock_inspection"
+          ? this.transition(state, "bakery_hour_hand")
+          : this.applyTimeState(state, chapter.phase, intent.targetTimeState);
+        const result = accept(next);
         this.emitChapterFourCue("chapter4_time_swap_committed", {
           previousPhase,
-          phase: "bakery_hour_hand",
-          timeState: "1225_bakery"
+          phase: next.chapter4.phase,
+          previousTimeState,
+          timeState: intent.targetTimeState
         });
         return result;
       }
@@ -1150,15 +1189,13 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "bakery_hour_hand_collected")
           || !state.items.oldClockHourHand
           || hasFact(chapter, "hour_hand_installed")) return reject("locked");
-        const result = accept(this.transition(state, "room204_restore", {
+        const result = accept(this.advancePhaseKeepingTime(state, "room204_restore", {
           factIds: appendFact(chapter, "hour_hand_installed"),
-          items: withItem(state, "oldClockHourHand", false)
+          items: withItem(state, "oldClockHourHand", false),
+          floor: "A1",
+          roomId: "a1_hall_clock",
+          checkpoint: "c4_a1_lobby"
         }));
-        this.emitChapterFourCue("chapter4_time_swap_committed", {
-          previousPhase,
-          phase: "room204_restore",
-          timeState: "1850_evening"
-        });
         return result;
       }
 
@@ -1358,18 +1395,13 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "elevator_stop_chain_reconstructed")
           || !state.items.clockPositioningPlate
           || hasFact(chapter, "positioning_plate_installed")) return reject("locked");
-        const result = accept(this.transition(state, "maintenance_repair", {
+        const result = accept(this.advancePhaseKeepingTime(state, "maintenance_repair", {
           factIds: appendFact(chapter, "positioning_plate_installed"),
           items: withItem(state, "clockPositioningPlate", false),
           floor: "A1",
           roomId: "a1_hall_clock",
           checkpoint: "c4_a1_lobby"
         }));
-        this.emitChapterFourCue("chapter4_time_swap_committed", {
-          previousPhase,
-          phase: "maintenance_repair",
-          timeState: "2245_maintenance"
-        });
         return result;
       }
 
@@ -1852,6 +1884,46 @@ export class ChapterFourTemporalMazeController {
     };
   }
 
+  private advancePhaseKeepingTime(
+    state: GameState,
+    phase: ChapterFourPhase,
+    overrides: PhaseTransitionOverrides = {}
+  ): GameState {
+    const next = this.transition(state, phase, overrides);
+    return {
+      ...next,
+      chapter4: {
+        ...next.chapter4,
+        timeAuthority: state.chapter4.timeAuthority,
+        timeState: state.chapter4.timeState,
+        worldTimeSeconds: state.chapter4.worldTimeSeconds,
+        phoneStatusTimeSeconds: state.chapter4.phoneStatusTimeSeconds,
+        phoneStatusTimeTrusted: state.chapter4.phoneStatusTimeTrusted,
+        guardMode: state.chapter4.guardMode
+      }
+    };
+  }
+
+  private applyTimeState(
+    state: GameState,
+    phase: ChapterFourPhase,
+    timeState: ChapterFourTimeState
+  ): GameState {
+    const time = chapterFourTimeContract(timeState);
+    return {
+      ...state,
+      chapter4: {
+        ...state.chapter4,
+        timeAuthority: "hall_clock",
+        timeState,
+        worldTimeSeconds: time.worldTimeSeconds,
+        phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
+        phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
+        guardMode: requirePhaseContract(phase).guardMode
+      }
+    };
+  }
+
   private relocate(state: GameState, location: AllowedLocation): GameState {
     return {
       ...state,
@@ -2002,6 +2074,10 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "inspect_hall_clock":
     case "pull_hall_clock":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hallClock);
+    case "adjust_hall_clock_time":
+      return typeof value.targetTimeState === "string"
+        && TIME_CONTRACTS.some((contract) => contract.id === value.targetTimeState)
+        && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hallClock, ["targetTimeState"]);
     case "collect_hour_hand":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.bakeryHourHandPickup);
     case "inspect_bakery_conveyor_lamp":

@@ -27,6 +27,10 @@ import {
   room204GroupTargetId,
   room204SlotRuntimeEntityId
 } from "./ChapterFourRoom204Model";
+import {
+  isChapterFourClockControlAvailable,
+  isChapterFourPhaseTimeAligned
+} from "../../modules/ChapterFourTimeControlModel";
 
 export type RpgRealityMode = "light" | "dark";
 
@@ -534,7 +538,12 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     label: "一楼旧钟",
     ...layoutAnchorTarget("A1", "a1_hall_clock"),
     activation: "phase_exclusive",
-    activePhases: ["opening_paper_caught", "hall_clock_inspection"],
+    activePhases: [
+      "opening_paper_caught",
+      "hall_clock_inspection",
+      "room204_restore",
+      "maintenance_repair"
+    ],
     // The A1 map keeps one broad lobby room state. The exact clock geometry
     // and distance check remain authoritative for this wall fixture.
     roomIds: ["a1_lobby", "a1_hall_clock"],
@@ -545,11 +554,14 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
         && !hasChapterFourFact(state, "hall_clock_inspected"))
       || (state.chapter4.phase === "hall_clock_inspection"
         && hasChapterFourFact(state, "hall_clock_inspected"))
+      || isChapterFourClockControlAvailable(state.chapter4)
     )),
     proximity: 86,
     requiredModeByPhase: {
       opening_paper_caught: "light",
-      hall_clock_inspection: "light"
+      hall_clock_inspection: "light",
+      room204_restore: "light",
+      maintenance_repair: "light"
     }
   }),
   a1_bakery_inspection_lamp: runtimeEntityTarget(
@@ -1132,6 +1144,9 @@ export function isChapterFour755TargetStateActive(
 ): boolean {
   const chapter = state.chapter4;
   const phase = chapter.phase as ChapterFourPhase;
+  if (!isChapterFourPhaseTimeAligned(chapter) && target.id !== "a1_hall_clock") {
+    return false;
+  }
   return target.activePhases.includes(phase)
     && target.boundsSource.floor === chapter.floor
     && target.roomIds.includes(chapter.roomId)
@@ -1161,6 +1176,9 @@ export function validateChapterFour755TargetIntentContract(
   }
 
   const phase = state.chapter4.phase as ChapterFourPhase;
+  if (!isChapterFourPhaseTimeAligned(state.chapter4) && target.id !== "a1_hall_clock") {
+    return "locked";
+  }
   if (!target.activePhases.includes(phase)
     || target.boundsSource.floor !== state.chapter4.floor
     || !target.roomIds.includes(state.chapter4.roomId)) {

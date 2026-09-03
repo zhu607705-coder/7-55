@@ -47,6 +47,10 @@ import {
 } from "../scenes/rpg/ChapterFourRoom204Model";
 import { GAME_SAVE_BACKUP_KEY, GAME_SAVE_KEY } from "./StorageKeys";
 import { canEnterScene, sanitizeZjudingPage } from "./FeatureAccess";
+import {
+  chapterFourTimeContract,
+  isChapterFourPendingClockTimeState
+} from "../modules/ChapterFourTimeControlModel";
 
 const CHAPTER_FOUR_755_SAVE_VERSION = 25;
 const QIZHEN_WEATHER_CONTROL_SAVE_VERSION = 27;
@@ -242,6 +246,14 @@ const VALID_CHAPTER_FOUR_FACT_IDS = new Set<ChapterFourFactId>([
 ]);
 const VALID_CHAPTER_FOUR_MODES = new Set<GameState["chapter4"]["mode"]>(["light", "dark"]);
 const VALID_CHAPTER_FOUR_FLOORS = new Set<ChapterFour755FloorId>(["A1", "A2", "A3"]);
+const VALID_CHAPTER_FOUR_TIME_STATES = new Set<ChapterFourTimeState>([
+  "2245_opening",
+  "1225_bakery",
+  "1850_evening",
+  "2245_maintenance",
+  "0754_blackout",
+  "0755_morning"
+]);
 const VALID_CHAPTER_FOUR_ZHU_PURPOSE_ANSWERS = new Set<ChapterFourZhuPurposeAnswerId>([
   "seek_truth", "solve_real_problems", "serve_public"
 ]);
@@ -1738,19 +1750,6 @@ function normalizeChapterFour(
   // returns a one-shot runtime proof. Older or partial completion fields still
   // downgrade to the safe exterior checkpoint.
   const completed = savedCompletionVerified;
-  const time = CHAPTER_FOUR_TIME_BY_PHASE[phase];
-  const timeAuthority = [
-    "opening_handoff",
-    "opening_paper_caught",
-    "hall_clock_inspection"
-  ].includes(phase) ? "external_evidence" : "hall_clock";
-  const location = normalizeChapterFour755Location(
-    phase,
-    nullableEnumOr(saved.floor, VALID_CHAPTER_FOUR_FLOORS, null),
-    typeof saved.roomId === "string"
-      ? migrateChapterFourRoomId(saved.roomId.trim())
-      : ""
-  );
   let factIds = normalizeChapterFourFactClosure(phase, savedFactIds);
   factIds = normalizeChapterFourInsertedPuzzleClosure(envelopeVersion, phase, factIds);
   let room204Placements = normalizeChapterFourRoom204Placements(saved.room204Placements);
@@ -1810,6 +1809,33 @@ function normalizeChapterFour(
         )
       }
     : { purpose: null, person: null };
+  const canonicalTime = CHAPTER_FOUR_TIME_BY_PHASE[phase];
+  const savedTimeState = enumOr(
+    saved.timeState,
+    VALID_CHAPTER_FOUR_TIME_STATES,
+    canonicalTime.timeState
+  );
+  const normalizedTimeState = isChapterFourPendingClockTimeState(
+    phase,
+    savedTimeState,
+    factIds
+  )
+    ? savedTimeState
+    : canonicalTime.timeState;
+  const time = chapterFourTimeContract(normalizedTimeState);
+  const timeAuthority = [
+    "opening_handoff",
+    "opening_paper_caught",
+    "hall_clock_inspection"
+  ].includes(phase) ? "external_evidence" : "hall_clock";
+  const location = normalizeChapterFour755Location(
+    phase,
+    nullableEnumOr(saved.floor, VALID_CHAPTER_FOUR_FLOORS, null),
+    typeof saved.roomId === "string"
+      ? migrateChapterFourRoomId(saved.roomId.trim())
+      : "",
+    isChapterFourPendingClockTimeState(phase, normalizedTimeState, factIds)
+  );
 
   return {
     state: {
@@ -1820,7 +1846,7 @@ function normalizeChapterFour(
       floor: location.floor,
       roomId: location.roomId,
       timeAuthority,
-      timeState: time.timeState,
+      timeState: time.id,
       worldTimeSeconds: time.worldTimeSeconds,
       phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
       phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
@@ -1831,7 +1857,11 @@ function normalizeChapterFour(
         mask: lightGridMask,
         locked: lightGridMustBeLocked
       },
-      guardMode: phase === "maintenance_repair" ? "patrol" : phase === "final_chase" ? "chase" : "absent",
+      guardMode: phase === "maintenance_repair" && normalizedTimeState === "2245_maintenance"
+        ? "patrol"
+        : phase === "final_chase"
+          ? "chase"
+          : "absent",
       chaseAttempt: nonNegativeSafeIntegerOr(saved.chaseAttempt, initial.chaseAttempt),
       chaseRestartCheckpoint: phase === "final_chase" ? "c4_a1_lobby" : null,
       checkinCardAccepted,
@@ -1955,12 +1985,16 @@ function createEmptyLegacyChapterFourControllerFields(
 function normalizeChapterFour755Location(
   phase: ChapterFourPhase,
   savedFloor: ChapterFour755FloorId | null,
-  savedRoomId: string
+  savedRoomId: string,
+  pendingClockAdjustment = false
 ): { floor: ChapterFour755FloorId; roomId: string } {
   if (phase === "opening_handoff") {
     return { floor: "A1", roomId: "a1_lobby" };
   }
   if (phase === "room204_restore") {
+    if (pendingClockAdjustment || savedFloor === "A1") {
+      return { floor: "A1", roomId: "a1_hall_clock" };
+    }
     const floor = savedFloor === "A3" ? "A3" : "A2";
     const roomIds = floor === "A3"
       ? new Set(["a3_reference_classroom", "a3_wayfinding"])

@@ -21,8 +21,8 @@ assert(layout.evidenceDetails.length === 30, "exactly 30 source-pixel raw detail
 assert(content.evidenceContracts.length === 11, "exactly 11 causal evidence contracts are required");
 assert(content.room204.groups.length === 4, "Room204 must expose four grouped operations");
 assert(content.room204.groups.every((group) => group.mappings.length === 3), "each Room204 group must atomically place three legacy pieces");
-assert(content.transitionContracts.length === 8, "the Chapter 4 sequence must declare eight transitions");
-assert(content.transitionContracts.filter((entry) => entry.owner === "transition_overlay").length === 4, "only four genuine time changes may own overlays");
+assert(content.transitionContracts.length === 9, "the Chapter 4 sequence must declare nine transitions");
+assert(content.transitionContracts.filter((entry) => entry.owner === "transition_overlay").length === 5, "all five genuine time changes must own overlays");
 assert(content.transitionContracts.filter((entry) => entry.owner === "scene_interaction").length === 4, "four world handoffs must stay inside the scene");
 assert(Boolean(audio.events.chapter4_environment_hint_pulse?.cues?.some((cue) => cue.panFromEvent === true)), "adaptive environment sound must consume scene position");
 assert(Boolean(audio.events.power_grid_locked?.cues?.some((cue) => cue.channel === "sfx")), "power-grid success must have an audible confirmation cue");
@@ -55,7 +55,7 @@ try {
   assert(evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.contractCount === 11, "evidence validation count mismatch");
   assert(evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.rawDetailCount === 30, "raw detail validation count mismatch");
   assert(evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.multiPhaseReuseCount > 0, "at least one clue must be reused after multiple phases");
-  assert(transitionModule.CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.overlayCount === 4, "time overlay ownership mismatch");
+  assert(transitionModule.CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.overlayCount === 5, "time overlay ownership mismatch");
   assert(transitionModule.CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.worldHandoffCount === 4, "world handoff ownership mismatch");
 
   const knownDetailIds = new Set(layout.evidenceDetails.map((detail) => detail.id));
@@ -83,7 +83,7 @@ try {
   assert(room204Module.countCompletedRoom204Groups(placements) === 4, "Room204 must complete in four grouped operations");
   assert(placements.length === 12, "grouped operations must preserve the twelve-piece save format");
 
-  console.log(`chapter4 causal flow PASS evidence=${content.evidenceContracts.length} details=${layout.evidenceDetails.length} reused=${evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.multiPhaseReuseCount} room204Groups=4 hintLevels=${levels.join("/")} transitions=4+4`);
+  console.log(`chapter4 causal flow PASS evidence=${content.evidenceContracts.length} details=${layout.evidenceDetails.length} reused=${evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.multiPhaseReuseCount} room204Groups=4 hintLevels=${levels.join("/")} transitions=5+4`);
 } finally {
   await server.close();
 }

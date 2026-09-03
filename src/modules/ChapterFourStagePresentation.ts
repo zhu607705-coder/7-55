@@ -13,6 +13,7 @@ import {
   ROOM204_GROUP_ORDER,
   countCompletedRoom204Groups
 } from "../scenes/rpg/ChapterFourRoom204Model";
+import { selectChapterFourRequiredClockTime } from "./ChapterFourTimeControlModel";
 
 interface PhasePresentationCopy {
   stageLabel: string;
@@ -121,6 +122,12 @@ export function selectChapterFourStagePresentation(
   const confirmedFacts = chapter.factIds
     .map((factId) => FACT_LABELS[factId])
     .filter((label): label is string => Boolean(label));
+  const requiredClockTime = selectChapterFourRequiredClockTime(chapter);
+  const currentDifference = requiredClockTime === "1850_evening"
+    ? "金属时针已经归位，外圈多出一处能够稳定停住的刻度。"
+    : requiredClockTime === "2245_maintenance"
+      ? "定位片已经归位，外圈另一处原本回弹的刻度保持不动。"
+      : PHASE_COPY[activePhase].currentDifference;
 
   return Object.freeze({
     stageLabel: PHASE_COPY[activePhase].stageLabel,
@@ -131,7 +138,7 @@ export function selectChapterFourStagePresentation(
       ? CONTEXT_COPY.trustStates.trusted
       : CONTEXT_COPY.trustStates.untrusted,
     floor: chapter.floor,
-    currentDifference: PHASE_COPY[activePhase].currentDifference,
+    currentDifference,
     localProgress: selectLocalProgress(state, activePhase, facts),
     confirmedFacts: Object.freeze(confirmedFacts)
   });

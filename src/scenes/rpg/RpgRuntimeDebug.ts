@@ -69,6 +69,11 @@ export interface RpgRuntimeDebugState {
     passable: boolean;
     actorOccluded: boolean;
   };
+  interiorDoorTrigger?: {
+    proximityActive: boolean;
+    approachBounds: { left: number; top: number; right: number; bottom: number };
+    holdOpenBounds: { left: number; top: number; right: number; bottom: number };
+  };
   entranceRecord?: {
     open: boolean;
     read: boolean;
@@ -256,6 +261,12 @@ export interface RpgRuntimeDebugState {
       plateIds: Readonly<Record<"A1" | "A2" | "A3", string>>;
       targetIds: readonly string[];
     };
+    clockControl?: {
+      panelOpen: boolean;
+      selectedTimeState: string | null;
+      optionTimeStates: readonly string[];
+      requiredTimeState: string | null;
+    };
     warmup?: {
       requiredPhase: "entry" | "transport" | "maintenance" | "closure";
       ready: boolean;
@@ -281,6 +292,7 @@ export interface RpgRuntimeDebugState {
       anchorId: string;
       plateId: string | null;
       openRequested: boolean;
+      barrierActive: boolean;
       playerFoot: { x: number; y: number };
       openingBounds: { x: number; y: number; width: number; height: number };
       approachBounds: { x: number; y: number; width: number; height: number };
@@ -316,6 +328,15 @@ export interface RpgRuntimeDebugState {
       flipX: boolean | null;
       entityBounds: { x: number; y: number; width: number; height: number } | null;
     };
+    bakeryConveyor?: {
+      visible: boolean;
+      motion: "moving" | "stopped";
+      beltBounds: { x: number; y: number; width: number; height: number };
+      frontRailBounds: { x: number; y: number; width: number; height: number };
+      direction: "east";
+      timeState: string;
+      phase: string;
+    } | null;
     bakeryCrowd?: ReadonlyArray<{
       routeIndex: number;
       position: { x: number; y: number };

@@ -1,5 +1,437 @@
 [
   {
+    "id": "mood-room-01",
+    "author": "想把今天过完",
+    "avatar": "anonymous",
+    "rank": "30",
+    "board": "郁闷小屋",
+    "title": "求一份能把今天过完的待办清单",
+    "replies": "18",
+    "views": "764",
+    "time": "26-07-10 17:58",
+    "body": "桌面上摊着好几件事，越想一起做越动不了。现在打算只写三项：回一条必要消息、整理十分钟资料、按时去吃饭。还有人用过更小的清单吗？",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留互助讨论", "reason": "楼主说明了当下能执行的范围" },
+    "threadMetrics": { "favorites": "8", "likes": "37", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 18:01", "floor": "2楼", "role": "建议", "text": "先写一件完成后能立刻划掉的小事，别把清单当成新的压力。", "likes": "20", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 18:03", "floor": "3楼", "role": "补充", "text": "去食堂这一项保留。先离开桌面五分钟，回来再看下一项。", "likes": "16", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-02",
+    "author": "刷新到没电",
+    "avatar": "warrior",
+    "rank": "31",
+    "board": "郁闷小屋",
+    "title": "投递后不断刷新邮箱，怎样才能停下来",
+    "replies": "24",
+    "views": "1038",
+    "time": "26-07-10 17:54",
+    "body": "下午投完一份材料，之后每隔几分钟就去看一次邮箱。明知道这么快不会有结果，还是控制不住。想把提醒关掉，又怕错过消息。",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "标记等待期讨论", "reason": "讨论集中在投递后的信息焦虑" },
+    "threadMetrics": { "favorites": "11", "likes": "48", "dislikes": "1" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 17:57", "floor": "2楼", "role": "方法", "text": "给邮箱设两个固定查看时段，其他时间把页面关掉。我把时间写在日历里会更容易执行。", "likes": "27", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 18:00", "floor": "3楼", "role": "提醒", "text": "投递回执留好就够了。下一步应由对方完成，反复刷新不会改变材料状态。", "likes": "35", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-03",
+    "author": "耳机也挡不住",
+    "avatar": "blonde",
+    "rank": "32",
+    "board": "郁闷小屋",
+    "title": "和室友约个安静时段，怎么开口比较不尴尬",
+    "replies": "31",
+    "views": "1395",
+    "time": "26-07-10 17:50",
+    "body": "这周总在赶报告，晚上十点后还会有开麦和外放声音。大家关系正常，我不想把话说成指责。有没有比较具体的沟通方式？",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留宿舍沟通帖", "reason": "问题说明了时间和可协商边界" },
+    "threadMetrics": { "favorites": "9", "likes": "55", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 17:53", "floor": "2楼", "role": "经历", "text": "我们定的是十一点后耳机和键盘静音，白天不限制。把范围说清楚会比只说“太吵”好谈。", "likes": "32", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 17:55", "floor": "3楼", "role": "建议", "text": "先说自己这两天需要赶什么，再提出具体的一个时段。对方更容易知道怎么配合。", "likes": "26", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-04",
+    "author": "绕一圈再回来",
+    "avatar": "anonymous",
+    "rank": "33",
+    "board": "郁闷小屋",
+    "title": "想散步又怕一个人，晚上校园里还有人走吗",
+    "replies": "16",
+    "views": "608",
+    "time": "26-07-10 17:46",
+    "body": "一直坐在宿舍反而更闷，想出去走十分钟，又担心自己一个人会越走越乱。有没有人愿意推荐一段灯比较亮、路上人也多的路线？",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留夜间出行互助", "reason": "帖子明确询问公共区域的同行建议" },
+    "threadMetrics": { "favorites": "6", "likes": "29", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 17:49", "floor": "2楼", "role": "路线", "text": "选有路灯的主路，先设十分钟计时，到点就回。路线不用太远。", "likes": "18", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:51", "floor": "3楼", "role": "提醒", "text": "临时结伴先约在公共入口，告诉熟人去向和预计回来时间。", "likes": "21", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-05",
+    "author": "进度条停住了",
+    "avatar": "warrior",
+    "rank": "34",
+    "board": "郁闷小屋",
+    "title": "计划赶不上进度时，先做哪件最有用",
+    "replies": "22",
+    "views": "891",
+    "time": "26-07-10 17:41",
+    "body": "原来排好的三件事全被临时消息打断了，现在看着没完成的列表只想继续往后拖。想问大家会先补最紧急的，还是先收掉最小的一项？",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "整理执行建议", "reason": "提问聚焦于临时变更后的行动顺序" },
+    "threadMetrics": { "favorites": "10", "likes": "43", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 17:44", "floor": "2楼", "role": "做法", "text": "先做有明确截止时间的，再用一个十分钟任务把状态收回来。我的清单只有两列。", "likes": "24", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:46", "floor": "3楼", "role": "补充", "text": "把已经失效的计划划掉也算处理。留着它只会让列表看起来更难开始。", "likes": "28", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-06",
+    "author": "晚到一分钟",
+    "avatar": "blonde",
+    "rank": "35",
+    "board": "郁闷小屋",
+    "title": "今天没有抢到名额，补位通知会在哪里出现",
+    "replies": "14",
+    "views": "701",
+    "time": "26-07-10 17:37",
+    "body": "页面显示本轮已经结束，我没有抢到。先不想急着换网络或重复点了，想确认之后如果有人退掉，通知通常会从哪个入口出现。",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留补位信息询问", "reason": "楼主说明了当前结果和需要确认的后续入口" },
+    "threadMetrics": { "favorites": "5", "likes": "24", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:39", "floor": "2楼", "role": "经验", "text": "先看活动页的消息通知和报名记录，补位一般会在那里写清楚。别只守着原按钮。", "likes": "16", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:42", "floor": "3楼", "role": "提示", "text": "把当前结果截图留着，再核对官方说明的补位规则。没有说明时不要相信私下转发的时间。", "likes": "19", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-07",
+    "author": "电话挂断以后",
+    "avatar": "anonymous",
+    "rank": "36",
+    "board": "郁闷小屋",
+    "title": "给家里报平安后反而更难平静",
+    "replies": "19",
+    "views": "806",
+    "time": "26-07-10 17:33",
+    "body": "刚和家里通完电话，明明已经把近况说清楚了，挂断后还是一直在想有没有哪里没说好。现在不想继续反复回放这段对话。",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留陪伴讨论", "reason": "帖子请求的是当下可执行的安顿方法" },
+    "threadMetrics": { "favorites": "7", "likes": "39", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 17:35", "floor": "2楼", "role": "陪伴", "text": "通话结束后先做一个和手机无关的动作，比如洗杯子或下楼买水，让注意力换个落点。", "likes": "22", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 17:38", "floor": "3楼", "role": "补充", "text": "如果确实有事漏说，明天再补一条短消息也来得及。今晚先不用把每句话都重新审一遍。", "likes": "25", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-08",
+    "author": "借个安静角落",
+    "avatar": "warrior",
+    "rank": "37",
+    "board": "郁闷小屋",
+    "title": "复习到一半脑子卡住了，换个地方会有用吗",
+    "replies": "13",
+    "views": "539",
+    "time": "26-07-10 17:29",
+    "body": "同一页题目看了快半小时，连自己写过什么都记不住。想去图书馆坐一会，又担心换地方只是拖延。大家卡住时会怎么重新开始？",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留学习互助", "reason": "楼主描述了明确的卡点和可尝试的下一步" },
+    "threadMetrics": { "favorites": "6", "likes": "27", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 17:31", "floor": "2楼", "role": "建议", "text": "先站起来离开五分钟，回来只做一道最短的题。换地方之前先给自己一个能完成的入口。", "likes": "16", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 17:34", "floor": "3楼", "role": "经历", "text": "我会把不会的题圈起来，先写旁边最熟的一题。页面上有一点进度后再回头。", "likes": "18", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-09",
+    "author": "草稿箱里放着",
+    "avatar": "blonde",
+    "rank": "38",
+    "board": "郁闷小屋",
+    "title": "想把情绪写下来，但担心被认识的人看到",
+    "replies": "17",
+    "views": "672",
+    "time": "26-07-10 17:24",
+    "body": "有很多话想整理出来，又不想让熟人把它和现实里的我对应上。匿名发帖之外，还有没有更私人的记录办法？",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留表达方式讨论", "reason": "讨论范围限定在隐私和自我整理" },
+    "threadMetrics": { "favorites": "8", "likes": "33", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 17:26", "floor": "2楼", "role": "方法", "text": "可以先写在本地草稿，不急着发送。写完隔一会儿再决定哪些内容需要留下。", "likes": "20", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:28", "floor": "3楼", "role": "提醒", "text": "公开内容删掉可识别的地点、时间和人物细节。记录本身不需要一次写得完整。", "likes": "23", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-10",
+    "author": "还在等回应",
+    "avatar": "anonymous",
+    "rank": "39",
+    "board": "郁闷小屋",
+    "title": "小组作业一直没有回应，我该什么时候追问",
+    "replies": "20",
+    "views": "844",
+    "time": "26-07-10 17:20",
+    "body": "昨天把分工表发到群里，到现在没有人确认。截止日期还远，但我已经开始担心最后只剩一个人做。想催，又怕让人觉得太急。",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "整理协作建议", "reason": "帖子给出了现状与时间边界" },
+    "threadMetrics": { "favorites": "8", "likes": "41", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 17:23", "floor": "2楼", "role": "做法", "text": "定一个明确确认时间，例如明天中午前。问句里把需要回复的选项写好，大家更容易接。", "likes": "25", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 17:25", "floor": "3楼", "role": "补充", "text": "群里没人回应时，先把自己的部分拆出来开始。等到约定时间再同步进度，沟通会更具体。", "likes": "22", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-11",
+    "author": "今晚先不分析",
+    "avatar": "warrior",
+    "rank": "40",
+    "board": "郁闷小屋",
+    "title": "能不能开一个不分析对错的夜间闲聊楼",
+    "replies": "28",
+    "views": "1129",
+    "time": "26-07-10 17:16",
+    "body": "今天不想把每件事都解释成原因和结论，只想找个地方说一句“我现在有点累”。如果你也在，就留一句今天想吃什么或者刚刚看到什么。",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留夜间陪伴帖", "reason": "帖子设定了低门槛、非评判的交流范围" },
+    "threadMetrics": { "favorites": "12", "likes": "64", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 17:18", "floor": "2楼", "role": "路过", "text": "刚从风很大的路口回来，想喝一杯热的。", "likes": "31", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 17:21", "floor": "3楼", "role": "留言", "text": "我今天终于把桌面收出了一小块空地方，先在这里坐一会。", "likes": "29", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "mood-room-12",
+    "author": "午睡醒得太晚",
+    "avatar": "blonde",
+    "rank": "41",
+    "board": "郁闷小屋",
+    "title": "午睡醒来不知道今天星期几",
+    "replies": "11",
+    "views": "487",
+    "time": "26-07-10 17:12",
+    "body": "睡醒以后天色和时间都对不上，拿起手机才发现下午已经快结束了。没有发生什么大事，就是突然觉得这一天被跳过去了一段。",
+    "threadOperation": { "user": "郁闷小屋值班台", "action": "保留日常状态帖", "reason": "帖子以轻量描述邀请同类经历回应" },
+    "threadMetrics": { "favorites": "4", "likes": "21", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 17:14", "floor": "2楼", "role": "经历", "text": "我会先洗把脸再看日历，只安排今晚的一件小事。今天剩下的时间也还能用。", "likes": "14", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:17", "floor": "3楼", "role": "建议", "text": "把晚饭、洗漱和睡觉时间记下来就够了，不必急着追回已经过去的几个小时。", "likes": "17", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-01",
+    "author": "明天才上课",
+    "avatar": "blonde",
+    "rank": "42",
+    "board": "开怀一笑",
+    "title": "提前十分钟到教室，结果发现坐的是明天的课",
+    "replies": "26",
+    "views": "1286",
+    "time": "26-07-10 17:08",
+    "body": "坐下后发现周围的人全在复习我完全没学过的内容。我还坚持记了两行笔记，直到有人问我是哪门课的才看见日期。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入校园小乌龙", "reason": "帖子包含完整的误入过程和收尾" },
+    "threadMetrics": { "favorites": "13", "likes": "74", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:10", "floor": "2楼", "role": "经历", "text": "我更进一步，听完半节才发现自己没有选这门课。", "likes": "33", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:12", "floor": "3楼", "role": "建议", "text": "下次先看门口的课表。你至少提前到了。", "likes": "29", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-02",
+    "author": "三桌同款菜",
+    "avatar": "warrior",
+    "rank": "43",
+    "board": "开怀一笑",
+    "title": "在食堂连看三桌都是同一种菜，怀疑今天只有一个选项",
+    "replies": "19",
+    "views": "970",
+    "time": "26-07-10 17:05",
+    "body": "排队时看见前面三个人都端着同一盘菜，我以为窗口只剩这一种。轮到我才发现他们只是一起点了套餐。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留饭点观察", "reason": "主题来自公共食堂的即时误判" },
+    "threadMetrics": { "favorites": "7", "likes": "46", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 17:07", "floor": "2楼", "role": "补充", "text": "食堂里最容易传播的消息，就是前面三个人端了同一份菜。", "likes": "24", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 17:09", "floor": "3楼", "role": "结论", "text": "最后你还是点了套餐吗？", "likes": "21", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-03",
+    "author": "导航原地打转",
+    "avatar": "anonymous",
+    "rank": "44",
+    "board": "开怀一笑",
+    "title": "导航说“已到达”，我在原地转了两圈才看见门",
+    "replies": "17",
+    "views": "812",
+    "time": "26-07-10 17:02",
+    "body": "定位点落在楼的正中央，导航特别肯定地结束了。我绕着绿化带走了两圈，最后发现入口在背后的另一条小路。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入定位趣事", "reason": "帖子说明了定位点与真实入口的差异" },
+    "threadMetrics": { "favorites": "6", "likes": "38", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 17:04", "floor": "2楼", "role": "实测", "text": "导航负责把你送到建筑物附近，门要靠自己找。", "likes": "22", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 17:06", "floor": "3楼", "role": "记录", "text": "建议给入口补一个位置点，留给下一个在绿化带绕圈的人。", "likes": "20", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-04",
+    "author": "线材整理失败",
+    "avatar": "blonde",
+    "rank": "45",
+    "board": "开怀一笑",
+    "title": "把充电线落在桌上，回来时它已经被卷成一件艺术品",
+    "replies": "23",
+    "views": "1044",
+    "time": "26-07-10 16:59",
+    "body": "我离开半小时，室友怕我踩到线，顺手把它卷好。回来后面对那个完美的结，决定还是改用充电宝。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留宿舍日常", "reason": "主题为无损失的生活小插曲" },
+    "threadMetrics": { "favorites": "9", "likes": "51", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 17:01", "floor": "2楼", "role": "经历", "text": "越整齐的线，越不敢从哪里开始拆。", "likes": "27", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 17:03", "floor": "3楼", "role": "办法", "text": "下次给它留一个纸条：请保持自然生长。", "likes": "25", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-05",
+    "author": "群聊歪楼现场",
+    "avatar": "warrior",
+    "rank": "46",
+    "board": "开怀一笑",
+    "title": "社团群里问谁有空，三分钟后大家都在发猫",
+    "replies": "34",
+    "views": "1657",
+    "time": "26-07-10 16:56",
+    "body": "原本想统计周末布置场地的人手，第一张猫图出现后就没有人再回答问题。现在我只知道群里至少有五个人家里有猫。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入群聊现场", "reason": "帖子完整呈现话题偏离的过程" },
+    "threadMetrics": { "favorites": "14", "likes": "82", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "qiushi-rider", "time": "今天 16:58", "floor": "2楼", "role": "提案", "text": "先把猫图按反应数排序，再在最后补一个报名投票。", "likes": "39", "dislikes": "0" },
+      { "personaId": "six-cent-rich", "time": "今天 17:00", "floor": "3楼", "role": "补充", "text": "猫图不算报名，但可以算出勤激励。", "likes": "35", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-06",
+    "author": "门外轻声到啦",
+    "avatar": "anonymous",
+    "rank": "47",
+    "board": "开怀一笑",
+    "title": "给外卖备注“别敲门”，骑手在门外小声唱了句到啦",
+    "replies": "29",
+    "views": "1432",
+    "time": "26-07-10 16:53",
+    "body": "备注写了不要敲门，担心影响室友。门外没有敲门声，只有一句很轻的“到啦”，比系统通知还容易听见。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留取餐趣事", "reason": "主题来自公共配送场景的善意细节" },
+    "threadMetrics": { "favorites": "11", "likes": "69", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "yuquan-wind", "time": "今天 16:55", "floor": "2楼", "role": "现场", "text": "这种提示音很适合做宿舍文明配送标准。", "likes": "31", "dislikes": "0" },
+      { "personaId": "socket-observer", "time": "今天 16:57", "floor": "3楼", "role": "补充", "text": "我收到过轻敲三下的版本，也很克制。", "likes": "26", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-07",
+    "author": "门禁按错层",
+    "avatar": "blonde",
+    "rank": "48",
+    "board": "开怀一笑",
+    "title": "走错楼层还自信按了门禁",
+    "replies": "21",
+    "views": "917",
+    "time": "26-07-10 16:50",
+    "body": "门禁没有反应，我还认真检查了三次校园卡。后来电梯打开，才意识到自己早一层就出来了。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入楼层误会", "reason": "帖子以无伤害的误判收束" },
+    "threadMetrics": { "favorites": "8", "likes": "44", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "wild-auditor", "time": "今天 16:52", "floor": "2楼", "role": "核对", "text": "门禁正常，楼层也正常，只有人不在正确位置。", "likes": "25", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:54", "floor": "3楼", "role": "经历", "text": "我还对着陌生人的门牌想过是不是刚换了人。", "likes": "22", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-08",
+    "author": "洗衣机先毕业",
+    "avatar": "warrior",
+    "rank": "49",
+    "board": "开怀一笑",
+    "title": "第一次用新洗衣机，衣服比我先学会了流程",
+    "replies": "16",
+    "views": "742",
+    "time": "26-07-10 16:47",
+    "body": "我站在机器前研究按钮，旁边同学已经把衣服放进去开始转了。等我看懂选项时，他的洗衣程序快结束了。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留生活设备趣事", "reason": "主题来自公共设施的学习曲线" },
+    "threadMetrics": { "favorites": "5", "likes": "34", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 16:49", "floor": "2楼", "role": "建议", "text": "洗衣机旁最重要的按钮往往写着“开始”，但我也会先把所有按钮看一遍。", "likes": "19", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 16:51", "floor": "3楼", "role": "补充", "text": "第一次看说明书花十分钟，之后每次都能省十分钟。", "likes": "18", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-09",
+    "author": "关灯后发现",
+    "avatar": "anonymous",
+    "rank": "50",
+    "board": "开怀一笑",
+    "title": "临走前关灯，发现隔壁所有人都还在上课",
+    "replies": "15",
+    "views": "680",
+    "time": "26-07-10 16:44",
+    "body": "我以为最后一排只剩自己，收完电脑顺手关了灯。教室静了两秒，才发现前面还有一整节晚课的人。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入教室小场面", "reason": "帖子以短暂尴尬和即时修正结束" },
+    "threadMetrics": { "favorites": "5", "likes": "31", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 16:46", "floor": "2楼", "role": "补充", "text": "教室里最安静的时刻，往往发生在有人误关灯之后。", "likes": "17", "dislikes": "0" },
+      { "personaId": "yuquan-wind", "time": "今天 16:48", "floor": "3楼", "role": "回应", "text": "至少你马上发现了，不然那节课会多一个黑屏环节。", "likes": "16", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-10",
+    "author": "雨伞认错三次",
+    "avatar": "blonde",
+    "rank": "51",
+    "board": "开怀一笑",
+    "title": "把雨伞放在门口，出来时认错了三把",
+    "replies": "18",
+    "views": "795",
+    "time": "26-07-10 16:41",
+    "body": "黑伞、木柄、同款挂绳，门口像复制粘贴。每拿起一把都觉得很熟悉，直到看到自己的伞上贴着刚买的便利贴。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留雨天趣事", "reason": "主题来自公共区域的常见辨认失误" },
+    "threadMetrics": { "favorites": "6", "likes": "36", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "late-printer", "time": "今天 16:43", "floor": "2楼", "role": "建议", "text": "给伞加一个不容易掉的小标记，雨天能少做几次选择题。", "likes": "20", "dislikes": "0" },
+      { "personaId": "wild-auditor", "time": "今天 16:45", "floor": "3楼", "role": "提醒", "text": "确认伞柄和挂绳后再拿，别让别人的伞多走一段路。", "likes": "21", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-11",
+    "author": "卡片认错人",
+    "avatar": "warrior",
+    "rank": "52",
+    "board": "开怀一笑",
+    "title": "刷校园卡失败两次，第三次才发现自己拿的是门卡",
+    "replies": "20",
+    "views": "887",
+    "time": "26-07-10 16:38",
+    "body": "排在闸机前认真换角度，机器始终没有反应。第三次低头一看，手里那张根本没有照片。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "加入卡片误会", "reason": "主题来自日常通行时的自我纠正" },
+    "threadMetrics": { "favorites": "7", "likes": "42", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "six-cent-rich", "time": "今天 16:40", "floor": "2楼", "role": "经历", "text": "门卡和校园卡放在一起时，考验的是手感和运气。", "likes": "23", "dislikes": "0" },
+      { "personaId": "qiushi-rider", "time": "今天 16:42", "floor": "3楼", "role": "结论", "text": "闸机给了你三次重新确认身份的机会。", "likes": "21", "dislikes": "0" }
+    ]
+  },
+  {
+    "id": "smile-room-12",
+    "author": "投影桌面警报",
+    "avatar": "anonymous",
+    "rank": "53",
+    "board": "开怀一笑",
+    "title": "课堂投影突然成了自己的桌面，你们最怕露出什么",
+    "replies": "37",
+    "views": "1921",
+    "time": "26-07-10 16:35",
+    "body": "老师切换线缆后，屏幕短暂显示了我乱七八糟的桌面。幸好最显眼的是一堆叫“最终版”的文档，没有聊天窗口。",
+    "threadOperation": { "user": "开怀一笑值班员", "action": "保留课堂设备趣事", "reason": "帖子讨论的是无隐私细节的公共演示失误" },
+    "threadMetrics": { "favorites": "16", "likes": "90", "dislikes": "0" },
+    "threadReplies": [
+      { "personaId": "socket-observer", "time": "今天 16:37", "floor": "2楼", "role": "经验", "text": "我最怕看到下载目录，里面的命名比内容更有故事。", "likes": "46", "dislikes": "0" },
+      { "personaId": "late-printer", "time": "今天 16:39", "floor": "3楼", "role": "建议", "text": "上课前先关窗口，再把桌面清出一块空白，比临场抢救可靠。", "likes": "38", "dislikes": "0" }
+    ]
+  },
+  {
     "id": "p01",
     "author": "求是路况员",
     "avatar": "warrior",

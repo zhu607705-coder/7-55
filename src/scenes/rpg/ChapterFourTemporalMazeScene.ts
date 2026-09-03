@@ -5,6 +5,7 @@ import type {
   ChapterFourRoom204GroupId,
   ChapterFourRoom204PieceId,
   ChapterFourRoom204SlotId,
+  ChapterFourTimeState,
   GameState,
   ItemId,
   RpgCheckpointId
@@ -66,6 +67,13 @@ import {
   type ChapterFourElevatorRecordFloor
 } from "../../modules/ChapterFourElevatorFloorInvestigation";
 import type { ChapterFour755Intent } from "../../modules/ChapterFourTemporalMazeController";
+import {
+  isChapterFourClockControlAvailable,
+  isChapterFourPhaseTimeAligned,
+  selectChapterFourClockTimeOptions,
+  selectChapterFourRequiredClockTime,
+  type ChapterFourClockTimeOption
+} from "../../modules/ChapterFourTimeControlModel";
 import {
   clearAllChapterFourVisualHints,
   clearChapterFourVisualHintPuzzle,
@@ -227,7 +235,7 @@ interface MainEntranceDoorRuntimeContract {
   id: "a1_main_entrance_auto_door";
   storyFloor: "A1";
   anchorId: "main_entrance";
-  motion: "double-fold";
+  motion: "double-slide";
   durationMs: number;
   passableProgress: number;
   openingBounds: MapRect;
@@ -235,8 +243,7 @@ interface MainEntranceDoorRuntimeContract {
   holdOpenBounds: MapRect;
   leftLeafSource: MapRect;
   rightLeafSource: MapRect;
-  leftPortalSource: MapRect;
-  rightPortalSource: MapRect;
+  portalFloorSource: MapRect;
   fixedForegroundBounds: MapRect[];
   sortY: number;
 }
@@ -296,6 +303,12 @@ interface EvidenceDetailPlacement {
   statePlateIds?: string[];
   requiredFacts?: ChapterFourFactId[];
   bounds: MapRect;
+  supportingVisual?: {
+    kind: "classroom_chalkboard_notes";
+    bounds: MapRect;
+    chalkColor: string;
+    mutedColor: string;
+  };
 }
 interface EvidenceDetailContract {
   id: string;
@@ -557,6 +570,13 @@ interface BakeryRuntimeTargetDefinition {
 interface BakeryRuntimeContract {
   storyFloor: "A1";
   statePlateId: "a1_1225_bakery";
+  conveyorVisual: {
+    beltBounds: MapRect;
+    frontRailBounds: MapRect;
+    slatSpacing: number;
+    motionCycleMs: number;
+    direction: "east";
+  };
   targetEntities: BakeryRuntimeTargetDefinition[];
   baker: {
     textureFile: string;
@@ -740,8 +760,7 @@ const MAIN_ENTRANCE_DOOR_RUNTIME = LAYOUT.mainEntranceDoorRuntime;
 const MAIN_ENTRANCE_DOOR_FRAME_NAMES = Object.freeze({
   leftLeaf: "a1-main-entrance-left-leaf",
   rightLeaf: "a1-main-entrance-right-leaf",
-  leftPortal: "a1-main-entrance-left-portal",
-  rightPortal: "a1-main-entrance-right-portal"
+  portalFloor: "a1-main-entrance-portal-floor"
 });
 const REALITY_MODE_ATMOSPHERE_DEPTH = PLAYER_TOP_DEPTH - 100;
 const REALITY_MODE_TARGET_DEPTH = PLAYER_TOP_DEPTH - 50;
@@ -749,6 +768,7 @@ const REALITY_MODE_TRANSITION_MS = 240;
 const ELEVATOR_TEXTURE = CHAPTER_FOUR_ELEVATOR_TEXTURE_KEY;
 const BAKERY_COUNTER_BAKER_TEXTURE = CHAPTER_FOUR_BAKERY_STAFF_TEXTURE_KEY;
 const BAKERY_COUNTER_BAKER_ANIMATION = "chapter-four-bakery-counter-auntie-pair-3";
+const BAKERY_CONVEYOR_TILE_TEXTURE = "chapter-four-bakery-conveyor-tile";
 const FRONT_DESK_STAFF_TEXTURE = CHAPTER_FOUR_FRONT_DESK_TEXTURE_KEY;
 const FRONT_DESK_STAFF_ANIMATION = "chapter-four-front-desk-staff-idle";
 const ELEVATOR_FRAME_COUNT = 6;
@@ -1100,6 +1120,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private mainEntranceDoorPlateId: ChapterFour755PlateId | null = null;
   private mainEntranceDoorPortalImages: Phaser.GameObjects.Image[] = [];
   private mainEntranceDoorFixedForegrounds: Phaser.GameObjects.Image[] = [];
+  private mainEntranceDoorBarrier: Phaser.GameObjects.Rectangle | null = null;
+  private mainEntranceDoorBarrierCollider: Phaser.Physics.Arcade.Collider | null = null;
   private mainEntranceDoorOpenRequested = false;
   private targetVisuals = new Map<string, Phaser.GameObjects.Container>();
   private insertedPuzzleProps = new Map<string, Phaser.GameObjects.Image>();
@@ -1160,6 +1182,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private floorPanelPrimaryLabel: Phaser.GameObjects.Text | null = null;
   private floorPanelDeductionButton: Phaser.GameObjects.Rectangle | null = null;
   private floorPanelDeductionLabel: Phaser.GameObjects.Text | null = null;
+  private clockPanel: Phaser.GameObjects.Container | null = null;
+  private clockPanelOptions: readonly ChapterFourClockTimeOption[] = [];
+  private clockPanelSelection = 0;
+  private clockPanelSpatial: { distance: "within_range" | "too_far" } | null = null;
+  private clockPanelButtons: Array<{
+    timeState: ChapterFourTimeState;
+    background: Phaser.GameObjects.Rectangle;
+    label: Phaser.GameObjects.Text;
+    status: Phaser.GameObjects.Text;
+  }> = [];
+  private clockPanelHandGraphics: Phaser.GameObjects.Graphics | null = null;
+  private clockPanelReadout: Phaser.GameObjects.Text | null = null;
+  private clockPanelFeedback: Phaser.GameObjects.Text | null = null;
   private elevatorDeductionArrivalFloor: ChapterFourElevatorDeductionFloor = "A2";
   private elevatorDeductionUnservedFloor: ChapterFourElevatorDeductionFloor = "A3";
   private elevatorDeductionFeedback = "";
@@ -1191,8 +1226,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private bakeryBaker: Phaser.GameObjects.Sprite | null = null;
   private bakeryCrowdActors: BakeryCrowdActor[] = [];
   private bakeryCrowdCollider: Phaser.Physics.Arcade.Collider | null = null;
+  private bakeryConveyorFixtureSignature = "";
+  private bakeryConveyorFixtureObjects: Phaser.GameObjects.GameObject[] = [];
+  private bakeryConveyorBelt: Phaser.GameObjects.TileSprite | null = null;
   private bakeryConveyorGlint: Phaser.GameObjects.Rectangle | null = null;
   private bakeryConveyorTween: Phaser.Tweens.Tween | null = null;
+  private bakeryConveyorMotionTweens: Phaser.Tweens.Tween[] = [];
+  private bakeryConveyorStatusLight: Phaser.GameObjects.Arc | null = null;
+  private bakeryConveyorMotionActive = false;
   private bakeryHourHandSprite: Phaser.GameObjects.Sprite | null = null;
   private bakeryHourHandGlint: Phaser.GameObjects.Arc | null = null;
   private bakeryHourHandGlintTween: Phaser.Tweens.Tween | null = null;
@@ -1383,6 +1424,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.floorPanelPrimaryLabel = null;
     this.floorPanelDeductionButton = null;
     this.floorPanelDeductionLabel = null;
+    this.clockPanel = null;
+    this.clockPanelOptions = [];
+    this.clockPanelSelection = 0;
+    this.clockPanelSpatial = null;
+    this.clockPanelButtons = [];
+    this.clockPanelHandGraphics = null;
+    this.clockPanelReadout = null;
+    this.clockPanelFeedback = null;
     this.elevatorDeductionArrivalFloor = "A2";
     this.elevatorDeductionUnservedFloor = "A3";
     this.elevatorDeductionFeedback = "";
@@ -1577,6 +1626,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.publishDebug();
       return;
     }
+    if (this.clockPanel) {
+      this.player.setVelocity(0, 0);
+      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
+      this.updateRoom204CarryGhost();
+      if (this.pendingStoryRequest === null
+        && this.pendingMove === null
+        && this.storyPresentation === "idle") {
+        this.updateClockPanelKeyboard();
+      }
+      this.interactionRequested = false;
+      this.publishDebug();
+      return;
+    }
     if (this.floorPanel) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
@@ -1643,8 +1705,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       const frameDefinitions = [
         [MAIN_ENTRANCE_DOOR_FRAME_NAMES.leftLeaf, MAIN_ENTRANCE_DOOR_RUNTIME.leftLeafSource],
         [MAIN_ENTRANCE_DOOR_FRAME_NAMES.rightLeaf, MAIN_ENTRANCE_DOOR_RUNTIME.rightLeafSource],
-        [MAIN_ENTRANCE_DOOR_FRAME_NAMES.leftPortal, MAIN_ENTRANCE_DOOR_RUNTIME.leftPortalSource],
-        [MAIN_ENTRANCE_DOOR_FRAME_NAMES.rightPortal, MAIN_ENTRANCE_DOOR_RUNTIME.rightPortalSource]
+        [MAIN_ENTRANCE_DOOR_FRAME_NAMES.portalFloor, MAIN_ENTRANCE_DOOR_RUNTIME.portalFloorSource]
       ] as const;
       if (!frameDefinitions.every(([frameName, source]) => (
         this.ensureMainEntranceDoorFrame(plateId, frameName, source)
@@ -1652,24 +1713,17 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
       const floor = getFloor(1);
       const opening = MAIN_ENTRANCE_DOOR_RUNTIME.openingBounds;
-      const leafWidth = opening.width / 2;
       const centerY = opening.y + opening.height / 2;
       this.mainEntranceDoorPortalImages = [
         this.add.image(
-          floor.offsetX + opening.x + leafWidth / 2,
-          centerY,
+          floor.offsetX + opening.x,
+          opening.y + opening.height - MAIN_ENTRANCE_DOOR_RUNTIME.portalFloorSource.height,
           plateId,
-          MAIN_ENTRANCE_DOOR_FRAME_NAMES.leftPortal
-        ),
-        this.add.image(
-          floor.offsetX + opening.x + leafWidth + leafWidth / 2,
-          centerY,
-          plateId,
-          MAIN_ENTRANCE_DOOR_FRAME_NAMES.rightPortal
-        )
+          MAIN_ENTRANCE_DOOR_FRAME_NAMES.portalFloor
+        ).setOrigin(0)
       ].map((image) => image.setDepth(MAIN_ENTRANCE_DOOR_DEPTH - 2.5));
       this.mainEntranceDoorFixedForegrounds = MAIN_ENTRANCE_DOOR_RUNTIME.fixedForegroundBounds
-        .map((bounds) => this.add.image(floor.offsetX, 0, plateId)
+        .map((bounds) => this.add.image(floor.offsetX, 0, plateId, "__BASE")
           .setOrigin(0)
           .setCrop(bounds.x, bounds.y, bounds.width, bounds.height)
           .setDepth(MAIN_ENTRANCE_OCCLUSION_DEPTH)
@@ -1701,6 +1755,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           right: { key: plateId, frame: MAIN_ENTRANCE_DOOR_FRAME_NAMES.rightLeaf }
         }
       }, window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true);
+      this.mainEntranceDoorBarrier = this.add.rectangle(
+        floor.offsetX + opening.x + opening.width / 2,
+        opening.y + 5,
+        opening.width,
+        10,
+        0x000000,
+        0
+      ).setVisible(false);
+      this.physics.add.existing(this.mainEntranceDoorBarrier, true);
+      this.mainEntranceDoorBarrierCollider = this.physics.add.collider(
+        this.player,
+        this.mainEntranceDoorBarrier
+      );
       this.mainEntranceDoorPlateId = plateId;
     }
 
@@ -1721,6 +1788,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     if (this.mainEntranceDoorOpenRequested) door.open();
     else door.close();
     door.updateActorOcclusion(this.player);
+    const barrierBody = this.mainEntranceDoorBarrier?.body as Phaser.Physics.Arcade.StaticBody | undefined;
+    if (barrierBody) {
+      barrierBody.enable = this.currentFloor === 1 && !door.getDebugSnapshot().passable;
+    }
   }
 
   private ensureMainEntranceDoorFrame(
@@ -1754,6 +1825,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private destroyMainEntranceDoorRuntime(): void {
     this.mainEntranceDoor?.destroy();
     this.mainEntranceDoor = null;
+    this.mainEntranceDoorBarrierCollider?.destroy();
+    this.mainEntranceDoorBarrierCollider = null;
+    if (this.mainEntranceDoorBarrier?.active) this.mainEntranceDoorBarrier.destroy();
+    this.mainEntranceDoorBarrier = null;
     for (const image of this.mainEntranceDoorPortalImages) {
       if (image.active) image.destroy();
     }
@@ -1784,7 +1859,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     for (const fixedForeground of this.mainEntranceDoorFixedForegrounds) {
       fixedForeground
         .setDepth(MAIN_ENTRANCE_OCCLUSION_DEPTH)
-        .setVisible(playerBehindDoor && runtimeOwnsOpening);
+        .setVisible(runtimeOwnsOpening);
     }
   }
 
@@ -1839,7 +1914,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       } else if (event.name === "rpg_direction_changed") {
         const x = Number(event.payload?.x) || 0;
         const y = Number(event.payload?.y) || 0;
-        if (this.floorPanel) {
+        if (this.clockPanel) {
+          if (x !== 0 || y !== 0) {
+            this.shiftClockPanelSelection(x > 0 || y > 0 ? 1 : -1);
+          }
+          this.virtualDirection = { x: 0, y: 0 };
+        } else if (this.floorPanel) {
           if (x !== 0 || y !== 0) {
             const delta = x > 0 || y > 0 ? 1 : -1;
             if (this.floorPanelMode === "elevator_calibration") this.shiftElevatorReplayStart(delta);
@@ -1860,6 +1940,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       } else if (event.name === "rpg_interact") {
         if (this.alumniPanel) {
           this.closeAlumniPanel();
+        } else if (this.clockPanel) {
+          this.submitClockPanelSelection();
         } else if (this.floorPanel) {
           if (this.floorPanelMode === "elevator_calibration") this.submitElevatorCalibration();
           else if (this.floorPanelMode === "elevator_route_deduction") this.submitElevatorStopChain();
@@ -1879,6 +1961,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.pendingStoryRequest = null;
       this.clearStoryPresentationTimers();
       this.destroyBakeryRuntime("scene_shutdown");
+      this.destroyBakeryConveyorFixture();
       this.destroyBakeryCounterStaff();
       this.destroyRoom204Runtime("scene_shutdown");
       this.destroyEvidenceDetailRuntime();
@@ -1888,6 +1971,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.destroyTask12Runtime("scene_shutdown");
       this.destroyRealityModeVisuals();
       this.destroyExternalTimeOverlay();
+      this.closeClockPanel();
       this.closeFloorPanel();
       this.closeAlumniPanel();
       this.hostPowerPanelOpen = false;
@@ -2653,6 +2737,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     if (!force && signature === this.projectionSignature) {
       this.syncRealityModeVisuals(state.chapter4.mode);
       this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
+      this.syncBakeryConveyorFixture(state);
       this.syncBakeryRuntime(state, next);
       this.syncRoom204Runtime(state);
       this.syncPhaseRuntime(state);
@@ -2678,6 +2763,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
     this.projectionRetryFailures = 0;
     this.projectionRetryNotBeforeMs = 0;
+    this.syncBakeryConveyorFixture(state);
     this.syncBakeryRuntime(state, next);
     this.syncRoom204Runtime(state);
     this.syncPhaseRuntime(state);
@@ -2700,10 +2786,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       .filter((session): session is NonNullable<typeof session> => Boolean(session))
       .map((session) => `${session.puzzleId}:${session.failureCount}:${session.level}`)
       .sort();
+    const visiblePlateIds = [...new Set([
+      ...projection.activePlateIds,
+      ...Object.values(this.appliedPlateIds)
+    ])];
     const signature = JSON.stringify({
       phase: state.chapter4.phase,
       facts: state.chapter4.factIds,
-      plates: projection.activePlateIds,
+      plates: visiblePlateIds,
       hints: hintSignature
     });
     if (signature === this.evidenceDetailSignature) return;
@@ -2715,7 +2805,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       for (const placement of placements) {
         if (!placement.phaseIds.includes(state.chapter4.phase)) continue;
         if (placement.statePlateIds
-          && !placement.statePlateIds.some((plateId) => projection.activePlateIds.includes(plateId))) {
+          && !placement.statePlateIds.some((plateId) => visiblePlateIds.includes(plateId))) {
           continue;
         }
         if (placement.requiredFacts
@@ -2738,6 +2828,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     const emphasized = hint.level >= 3 ? hint.paired : hint.emphasized;
     const alpha = emphasized ? 0.88 : 0.34;
     const lineWidth = emphasized ? 3 : 1;
+    if (placement.supportingVisual?.kind === "classroom_chalkboard_notes") {
+      this.createClassroomChalkboardNotes(floor, placement.supportingVisual);
+    }
     const graphics = this.add.graphics()
       .setPosition(floor.offsetX, 0)
       .setDepth(PLAYER_TOP_DEPTH - 60)
@@ -2777,6 +2870,69 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         ease: "Sine.InOut"
       }));
     }
+  }
+
+  private createClassroomChalkboardNotes(
+    floor: FloorDefinition,
+    visual: NonNullable<EvidenceDetailPlacement["supportingVisual"]>
+  ): void {
+    const { bounds } = visual;
+    const chalkColor = Phaser.Display.Color.HexStringToColor(visual.chalkColor).color;
+    const mutedColor = Phaser.Display.Color.HexStringToColor(visual.mutedColor).color;
+    const graphics = this.add.graphics()
+      .setPosition(floor.offsetX, 0)
+      .setDepth(PLAYER_TOP_DEPTH - 61)
+      .setAlpha(0.72);
+
+    // Low-alpha erased strokes add normal classroom wear without labeling the clue.
+    graphics.fillStyle(mutedColor, 0.09);
+    graphics.fillRect(bounds.x + 4, bounds.y + 8, 46, 3);
+    graphics.fillRect(bounds.x + 57, bounds.y + 29, 34, 2);
+    graphics.fillRect(bounds.x + 99, bounds.y + 10, 35, 3);
+
+    graphics.lineStyle(1, chalkColor, 0.58);
+    graphics.lineBetween(bounds.x + 73, bounds.y + 17, bounds.x + 132, bounds.y + 17);
+    graphics.lineBetween(bounds.x + 72, bounds.y + 18, bounds.x + 119, bounds.y + 18);
+    graphics.lineBetween(bounds.x + 68, bounds.y + 33, bounds.x + 132, bounds.y + 33);
+    graphics.strokeCircle(bounds.x + 76, bounds.y + 33, 3);
+    graphics.strokeCircle(bounds.x + 100, bounds.y + 33, 3);
+    graphics.strokeCircle(bounds.x + 128, bounds.y + 33, 3);
+    graphics.lineBetween(bounds.x + 79, bounds.y + 33, bounds.x + 97, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 103, bounds.y + 33, bounds.x + 125, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 93, bounds.y + 30, bounds.x + 97, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 93, bounds.y + 36, bounds.x + 97, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 121, bounds.y + 30, bounds.x + 125, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 121, bounds.y + 36, bounds.x + 125, bounds.y + 33);
+
+    graphics.lineStyle(1, mutedColor, 0.46);
+    graphics.lineBetween(bounds.x + 7, bounds.y + 39, bounds.x + 51, bounds.y + 39);
+    graphics.lineBetween(bounds.x + 9, bounds.y + 41, bounds.x + 37, bounds.y + 41);
+    graphics.lineBetween(bounds.x + 137, bounds.y + 5, bounds.x + 137, bounds.y + 13);
+    graphics.lineBetween(bounds.x + 3, bounds.y + 18, bounds.x + 7, bounds.y + 17);
+    graphics.lineBetween(bounds.x + 5, bounds.y + 21, bounds.x + 10, bounds.y + 20);
+    this.evidenceDetailObjects.push(graphics);
+
+    const title = this.add.text(
+      floor.offsetX + bounds.x + 76,
+      bounds.y + 4,
+      "传递过程",
+      {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "7px",
+        color: visual.chalkColor
+      }
+    ).setDepth(PLAYER_TOP_DEPTH - 61).setAlpha(0.58);
+    const formula = this.add.text(
+      floor.offsetX + bounds.x + 7,
+      bounds.y + 27,
+      "Q = A·v",
+      {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "7px",
+        color: visual.chalkColor
+      }
+    ).setDepth(PLAYER_TOP_DEPTH - 61).setAlpha(0.62);
+    this.evidenceDetailObjects.push(title, formula);
   }
 
   private recordVisualHintFailure(
@@ -3509,6 +3665,231 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
   }
 
+  private syncBakeryConveyorFixture(state: GameState): void {
+    if (this.currentFloor !== 1) {
+      this.destroyBakeryConveyorFixture();
+      return;
+    }
+    if (!this.bakeryConveyorFixtureSignature) this.createBakeryConveyorFixture();
+    if (this.storyPresentation === "bakery_conveyor_stop") return;
+    const shouldRun = state.chapter4.phase === "bakery_hour_hand"
+      && state.chapter4.timeState === "1225_bakery"
+      && !hasChapterFourFact(state, "bakery_hour_hand_exposed");
+    this.setBakeryConveyorMotion(shouldRun);
+  }
+
+  private ensureBakeryConveyorTileTexture(): void {
+    if (this.textures.exists(BAKERY_CONVEYOR_TILE_TEXTURE)) return;
+    const { slatSpacing, beltBounds } = BAKERY_RUNTIME.conveyorVisual;
+    const graphics = this.make.graphics({ x: 0, y: 0 });
+    graphics.fillStyle(0x273238, 1).fillRect(0, 0, slatSpacing, beltBounds.height);
+    graphics.fillStyle(0x52636a, 0.92).fillRect(0, 1, 3, beltBounds.height - 2);
+    graphics.fillStyle(0xa7b8b8, 0.48).fillRect(3, 2, 1, beltBounds.height - 4);
+    graphics.fillStyle(0x182126, 0.82).fillRect(slatSpacing - 2, 1, 2, beltBounds.height - 2);
+    graphics.fillStyle(0x7f918f, 0.34).fillRect(4, 4, slatSpacing - 7, 2);
+    graphics.fillStyle(0x11181c, 0.5).fillRect(4, beltBounds.height - 6, slatSpacing - 7, 2);
+    graphics.generateTexture(
+      BAKERY_CONVEYOR_TILE_TEXTURE,
+      slatSpacing,
+      beltBounds.height
+    );
+    graphics.destroy();
+  }
+
+  private createBakeryConveyorFixture(): void {
+    this.destroyBakeryConveyorFixture();
+    this.ensureBakeryConveyorTileTexture();
+    const floor = getFloor(1);
+    const visual = BAKERY_RUNTIME.conveyorVisual;
+    const belt = visual.beltBounds;
+    const rail = visual.frontRailBounds;
+    const beltDepth = PLAYER_DEPTH_BASE + rectBottom(belt) - 5;
+    const worldLeft = floor.offsetX + belt.x;
+    const worldRight = floor.offsetX + rectRight(belt);
+
+    const bedShadow = this.add.rectangle(
+      floor.offsetX + rectCenterX(belt),
+      rectCenterY(belt) + 3,
+      belt.width + 8,
+      belt.height + 8,
+      0x111417,
+      0.72
+    ).setDepth(beltDepth - 2).setStrokeStyle(2, 0x7b7770, 0.92);
+    this.bakeryConveyorBelt = this.add.tileSprite(
+      floor.offsetX + rectCenterX(belt),
+      rectCenterY(belt),
+      belt.width,
+      belt.height,
+      BAKERY_CONVEYOR_TILE_TEXTURE
+    ).setDepth(beltDepth).setAlpha(0.94);
+    const topRail = this.add.rectangle(
+      floor.offsetX + rectCenterX(belt),
+      belt.y - 1,
+      belt.width + 10,
+      4,
+      0xb6aaa0,
+      0.94
+    ).setDepth(beltDepth + 2).setStrokeStyle(1, 0x493f38, 1);
+    const frontRail = this.add.rectangle(
+      floor.offsetX + rectCenterX(rail),
+      rectCenterY(rail),
+      rail.width,
+      rail.height,
+      0x8f8378,
+      0.98
+    ).setDepth(beltDepth + 5).setStrokeStyle(1, 0x382f2a, 1);
+    const leftRoller = this.add.circle(
+      worldLeft,
+      rectCenterY(belt),
+      6,
+      0x4a5558,
+      1
+    ).setDepth(beltDepth + 4).setStrokeStyle(2, 0xb6aaa0, 0.9);
+    const rightRoller = this.add.circle(
+      worldRight,
+      rectCenterY(belt),
+      6,
+      0x4a5558,
+      1
+    ).setDepth(beltDepth + 4).setStrokeStyle(2, 0xb6aaa0, 0.9);
+
+    const carriers: Phaser.GameObjects.Container[] = [];
+    for (const offset of [22, 78, 134]) {
+      const tray = this.add.rectangle(0, 1, 25, 12, 0x4c3724, 0.98)
+        .setStrokeStyle(1, 0xc9a566, 0.96);
+      const breadLeft = this.add.circle(-6, -1, 3, 0xd99d51, 1)
+        .setStrokeStyle(1, 0x80502c, 0.92);
+      const breadCenter = this.add.circle(0, -1, 3, 0xe5ad5d, 1)
+        .setStrokeStyle(1, 0x80502c, 0.92);
+      const breadRight = this.add.circle(6, -1, 3, 0xd99d51, 1)
+        .setStrokeStyle(1, 0x80502c, 0.92);
+      const carrier = this.add.container(
+        worldLeft + offset,
+        rectCenterY(belt),
+        [tray, breadLeft, breadCenter, breadRight]
+      ).setDepth(beltDepth + 3);
+      carriers.push(carrier);
+      this.bakeryConveyorFixtureObjects.push(carrier);
+    }
+
+    const directionMarkA = this.add.triangle(
+      floor.offsetX + rail.x + rail.width - 34,
+      rectCenterY(rail),
+      -3,
+      -2,
+      -3,
+      2,
+      3,
+      0,
+      0xdcc47a,
+      0.88
+    ).setDepth(beltDepth + 6);
+    const directionMarkB = this.add.triangle(
+      floor.offsetX + rail.x + rail.width - 24,
+      rectCenterY(rail),
+      -3,
+      -2,
+      -3,
+      2,
+      3,
+      0,
+      0xdcc47a,
+      0.88
+    ).setDepth(beltDepth + 6);
+    this.bakeryConveyorStatusLight = this.add.circle(
+      floor.offsetX + rail.x + rail.width - 9,
+      rectCenterY(rail),
+      2.5,
+      0xd49c46,
+      1
+    ).setDepth(beltDepth + 7).setStrokeStyle(1, 0x332922, 1);
+    this.bakeryConveyorGlint = this.add.rectangle(
+      worldLeft + 6,
+      rectCenterY(belt),
+      3,
+      belt.height - 5,
+      0xeaf7ff,
+      0.64
+    ).setDepth(beltDepth + 4);
+
+    this.bakeryConveyorFixtureObjects.push(
+      bedShadow,
+      this.bakeryConveyorBelt,
+      topRail,
+      frontRail,
+      leftRoller,
+      rightRoller,
+      directionMarkA,
+      directionMarkB,
+      this.bakeryConveyorStatusLight,
+      this.bakeryConveyorGlint
+    );
+    const beltTween = this.tweens.add({
+      targets: this.bakeryConveyorBelt,
+      tilePositionX: visual.direction === "east" ? -visual.slatSpacing : visual.slatSpacing,
+      duration: visual.motionCycleMs,
+      repeat: -1,
+      ease: "Linear"
+    });
+    const carrierMotion = { offset: 0 };
+    const carrierTween = this.tweens.add({
+      targets: carrierMotion,
+      offset: belt.width,
+      duration: visual.motionCycleMs * 5,
+      repeat: -1,
+      ease: "Linear",
+      onUpdate: () => {
+        carriers.forEach((carrier, index) => {
+          const localX = (22 + index * 56 + carrierMotion.offset) % belt.width;
+          carrier.x = Math.round(worldLeft + localX);
+        });
+      }
+    });
+    this.bakeryConveyorTween = this.tweens.add({
+      targets: this.bakeryConveyorGlint,
+      x: worldRight - 6,
+      duration: visual.motionCycleMs * 2,
+      repeat: -1,
+      ease: "Linear"
+    });
+    this.bakeryConveyorMotionTweens = [beltTween, carrierTween, this.bakeryConveyorTween];
+    this.bakeryConveyorFixtureSignature = `${BAKERY_RUNTIME.storyFloor}:${JSON.stringify(visual)}`;
+    this.setBakeryConveyorMotion(false);
+  }
+
+  private setBakeryConveyorMotion(active: boolean): void {
+    this.bakeryConveyorMotionActive = active;
+    for (const tween of this.bakeryConveyorMotionTweens) {
+      tween.timeScale = 1;
+      if (active) tween.resume();
+      else tween.pause();
+    }
+    this.bakeryConveyorGlint?.setVisible(active);
+    this.bakeryConveyorStatusLight?.setFillStyle(active ? 0x83d38b : 0xd49c46, 1);
+    this.bakeryConveyorBelt?.setAlpha(active ? 0.96 : 0.78);
+  }
+
+  private slowBakeryConveyorMotion(): void {
+    for (const tween of this.bakeryConveyorMotionTweens) tween.timeScale = 0.45;
+  }
+
+  private destroyBakeryConveyorFixture(): void {
+    for (const tween of this.bakeryConveyorMotionTweens) tween.remove();
+    this.bakeryConveyorMotionTweens = [];
+    for (const object of this.bakeryConveyorFixtureObjects) {
+      if (!object.active) continue;
+      if (object instanceof Phaser.GameObjects.Container) object.destroy(true);
+      else object.destroy();
+    }
+    this.bakeryConveyorFixtureObjects = [];
+    this.bakeryConveyorBelt = null;
+    this.bakeryConveyorGlint = null;
+    this.bakeryConveyorTween = null;
+    this.bakeryConveyorStatusLight = null;
+    this.bakeryConveyorMotionActive = false;
+    this.bakeryConveyorFixtureSignature = "";
+  }
+
   private syncBakeryRuntime(
     state: GameState,
     projection: ChapterFourMazeProjection
@@ -3632,23 +4013,6 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       ease: "Sine.InOut"
     });
 
-    this.bakeryConveyorGlint = this.add.rectangle(
-      floor.offsetX + conveyorDefinition.installationBounds.x + 2,
-      rectCenterY(conveyorDefinition.installationBounds),
-      3,
-      Math.max(5, conveyorDefinition.installationBounds.height - 4),
-      0xeaf7ff,
-      0.78
-    ).setDepth(PLAYER_DEPTH_BASE + rectBottom(conveyorDefinition.installationBounds));
-    this.bakeryRuntimeObjects.push(this.bakeryConveyorGlint);
-    this.bakeryConveyorTween = this.tweens.add({
-      targets: this.bakeryConveyorGlint,
-      x: floor.offsetX + rectRight(conveyorDefinition.installationBounds) - 2,
-      duration: 430,
-      repeat: -1,
-      ease: "Linear"
-    });
-
     const crowdSprites: Phaser.Physics.Arcade.Sprite[] = [];
     for (const [routeIndex, route] of BAKERY_RUNTIME.crowd.routes.entries()) {
       const sprite = this.physics.add.sprite(
@@ -3748,8 +4112,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private pauseBakeryActivity(): void {
     this.bakeryActivityPaused = true;
-    this.bakeryConveyorTween?.pause();
-    this.bakeryConveyorGlint?.setVisible(false);
+    this.setBakeryConveyorMotion(false);
     this.bakeryBaker?.anims.pause();
     for (const actor of this.bakeryCrowdActors) {
       actor.tween.pause();
@@ -3761,11 +4124,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
   private resumeBakeryActivity(): void {
     this.bakeryActivityPaused = false;
-    if (this.bakeryConveyorTween) {
-      this.bakeryConveyorTween.timeScale = 1;
-      this.bakeryConveyorTween.resume();
-    }
-    this.bakeryConveyorGlint?.setVisible(true);
+    this.setBakeryConveyorMotion(true);
     this.bakeryBaker?.anims.resume();
     for (const actor of this.bakeryCrowdActors) {
       actor.tween.resume();
@@ -3861,8 +4220,6 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private destroyBakeryRuntime(reason: string): void {
     this.bakeryCrowdCollider?.destroy();
     this.bakeryCrowdCollider = null;
-    this.bakeryConveyorTween?.remove();
-    this.bakeryConveyorTween = null;
     this.bakeryHourHandGlintTween?.remove();
     this.bakeryHourHandGlintTween = null;
     for (const actor of this.bakeryCrowdActors) {
@@ -3875,7 +4232,6 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
     this.bakeryRuntimeObjects = [];
     this.bakeryRuntimeTargets.clear();
-    this.bakeryConveyorGlint = null;
     this.bakeryHourHandSprite = null;
     this.bakeryHourHandGlint = null;
     this.bakeryRuntimeSignature = "";
@@ -4296,7 +4652,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.syncBakeryCounterStaff(state);
     this.syncFrontDeskAttendant(state);
     this.syncSupportNpcs(state);
-    if (state.chapter4.phase === "maintenance_repair") {
+    const phaseTimeAligned = isChapterFourPhaseTimeAligned(state.chapter4);
+    if (state.chapter4.phase === "maintenance_repair" && phaseTimeAligned) {
       this.ensureMaintenanceRuntime(state);
     }
     else if (this.hasPhaseRuntimeTargets(MAINTENANCE_RUNTIME_TARGET_IDS)) {
@@ -4305,6 +4662,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 
     const finalClockAvailable = (
       state.chapter4.phase === "maintenance_repair"
+        && phaseTimeAligned
         && hasChapterFourFact(state, "clock_gear_repaired")
     ) || (
       state.chapter4.phase === "return_to_clock"
@@ -5822,6 +6180,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       || this.storyPresentation === "power_grid_success") return;
     const state = this.bridge.getState();
     if (this.projection.phase !== state.chapter4.phase) return;
+    if (!isChapterFourPhaseTimeAligned(state.chapter4)) return;
     const signature = [
       state.chapter4.phase,
       state.chapter4.timeState
@@ -6309,6 +6668,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         ).setVisible(true);
         return;
       }
+      if (this.nearbyStoryTarget.contract.id === "a1_hall_clock"
+        && this.bridge.getState().chapter4.phase !== "opening_paper_caught") {
+        this.interactionHint.setText("Space · 调节大厅旧钟").setVisible(true);
+        return;
+      }
       this.interactionHint.setText(`Space · ${this.nearbyStoryTarget.contract.label}`)
         .setVisible(true);
       return;
@@ -6323,6 +6687,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private isStoryInputLocked(): boolean {
     return this.storyPresentation !== "idle"
       || this.alumniPanel !== null
+      || this.clockPanel !== null
       || this.floorPanel !== null
       || this.pendingStoryRequest !== null
       || this.pendingMove !== null
@@ -6335,13 +6700,19 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       && this.storyPresentation === "idle"
       && this.pendingStoryRequest === null
       && this.pendingMove === null;
+    const clockPanelInteractive = this.clockPanel !== null
+      && this.storyPresentation === "idle"
+      && this.pendingStoryRequest === null
+      && this.pendingMove === null;
     const allowScenePointer = locked
       && (this.alumniPanel !== null
+        || clockPanelInteractive
         || floorPanelInteractive
         || (this.finalClockDragActive
           && this.storyPresentation === "idle"
           && this.pendingStoryRequest === null));
-    const allowSceneKeyboard = locked && (this.alumniPanel !== null || floorPanelInteractive);
+    const allowSceneKeyboard = locked
+      && (this.alumniPanel !== null || clockPanelInteractive || floorPanelInteractive);
     if (!force
       && locked === this.lastPublishedStoryInputLock
       && allowScenePointer === this.lastPublishedStoryPointerAllowed
@@ -6374,7 +6745,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private handleStoryOrTravelInteraction(): void {
     const storyTarget = this.nearbyStoryTarget;
     const state = this.bridge.getState();
-    if (this.nearbyTravelTargetHasPriority) {
+    const pendingHallClockAdjustment = storyTarget?.contract.id === "a1_hall_clock"
+      && isChapterFourClockControlAvailable(state.chapter4);
+    if (this.nearbyTravelTargetHasPriority && !pendingHallClockAdjustment) {
       this.handleTravelInteraction();
       return;
     }
@@ -6458,10 +6831,15 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         return;
       }
       if (storyTarget.contract.id === "a1_hall_clock") {
-        const intent: ChapterFour755Intent = state.chapter4.phase === "opening_paper_caught"
-          ? { type: "inspect_hall_clock", targetId: "a1_hall_clock", spatial }
-          : { type: "pull_hall_clock", targetId: "a1_hall_clock", spatial };
-        this.requestStoryIntent(intent, storyTarget.contract.id);
+        if (state.chapter4.phase === "opening_paper_caught") {
+          this.requestStoryIntent({
+            type: "inspect_hall_clock",
+            targetId: "a1_hall_clock",
+            spatial
+          }, storyTarget.contract.id);
+        } else {
+          this.openClockPanel(spatial);
+        }
         return;
       }
       if (storyTarget.contract.id === "a1_bakery_inspection_lamp") {
@@ -6759,6 +7137,258 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       }
       this.requestMove(target.targetFloor, "stair");
     }
+  }
+
+  private openClockPanel(
+    spatial: { distance: "within_range" | "too_far" }
+  ): void {
+    if (this.clockPanel || this.pendingStoryRequest || this.storyPresentation !== "idle") return;
+    const state = this.bridge.getState();
+    const requiredTimeState = selectChapterFourRequiredClockTime(state.chapter4);
+    const options = selectChapterFourClockTimeOptions(state);
+    if (!requiredTimeState || options.length < 2) {
+      this.showFeedback("钟面暂时没有出现新的稳定刻度。");
+      return;
+    }
+
+    this.clockPanelOptions = options;
+    this.clockPanelSelection = Math.max(
+      0,
+      options.findIndex((option) => option.id === state.chapter4.timeState)
+    );
+    this.clockPanelSpatial = spatial;
+    this.clockPanelButtons = [];
+    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    panel.add([
+      this.add.rectangle(0, 0, 960, 540, 0x02070c, 0.74),
+      this.add.rectangle(7, 8, 720, 420, 0x000000, 0.46),
+      this.add.rectangle(0, 0, 720, 420, 0x08131f, 0.99)
+        .setStrokeStyle(3, 0xd7b654, 0.96),
+      this.add.rectangle(0, 0, 708, 408, 0x000000, 0)
+        .setStrokeStyle(1, 0x60768c, 0.72),
+      this.add.rectangle(-350, -200, 5, 64, 0xd7b654, 1).setOrigin(0, 0),
+      this.add.text(-322, -168, "大厅旧钟", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "24px",
+        color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(-322, -137, "转动外圈，比较能够停住的刻度", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "12px",
+        color: "#9fb2c1"
+      }).setOrigin(0, 0.5),
+      this.add.rectangle(304, -174, 88, 32, 0x17263a, 1)
+        .setStrokeStyle(2, 0x7f93aa, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => this.closeClockPanel()),
+      this.add.text(304, -174, "× 返回", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "12px",
+        color: "#dce8ec"
+      }).setOrigin(0.5),
+      this.add.rectangle(-118, 20, 2, 286, 0x60768c, 0.55)
+    ]);
+
+    const face = this.add.graphics();
+    face.fillStyle(0xe8dfc1, 1).fillCircle(-224, 4, 108);
+    face.lineStyle(5, 0xa57d34, 1).strokeCircle(-224, 4, 108);
+    face.lineStyle(2, 0x263746, 0.78).strokeCircle(-224, 4, 94);
+    for (let index = 0; index < 12; index += 1) {
+      const angle = Phaser.Math.DegToRad(index * 30 - 90);
+      const inner = index % 3 === 0 ? 78 : 84;
+      face.lineStyle(index % 3 === 0 ? 4 : 2, 0x263746, 0.9);
+      face.lineBetween(
+        -224 + Math.cos(angle) * inner,
+        4 + Math.sin(angle) * inner,
+        -224 + Math.cos(angle) * 92,
+        4 + Math.sin(angle) * 92
+      );
+    }
+    panel.add([
+      face,
+      this.add.text(-224, -75, "12", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5),
+      this.add.text(-145, 4, "3", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5),
+      this.add.text(-224, 83, "6", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5),
+      this.add.text(-303, 4, "9", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5)
+    ]);
+    this.clockPanelHandGraphics = this.add.graphics();
+    this.clockPanelReadout = this.add.text(-224, 135, "", {
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
+      fontSize: "18px",
+      color: "#ffe493"
+    }).setOrigin(0.5);
+    panel.add([this.clockPanelHandGraphics, this.clockPanelReadout]);
+
+    options.forEach((option, index) => {
+      const y = -64 + index * 76;
+      const background = this.add.rectangle(128, y, 334, 60, 0x142331, 1)
+        .setStrokeStyle(2, 0x60768c, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => {
+          this.clockPanelSelection = index;
+          this.clockPanelFeedback?.setText("");
+          this.paintClockPanel();
+        });
+      const label = this.add.text(-15, y - 3, option.label, {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "23px",
+        color: "#f7f1dc"
+      }).setOrigin(0, 0.5);
+      const status = this.add.text(276, y - 3, "", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "11px",
+        color: "#d7b654"
+      }).setOrigin(1, 0.5);
+      panel.add([background, label, status]);
+      this.clockPanelButtons.push({
+        timeState: option.id,
+        background,
+        label,
+        status
+      });
+    });
+
+    const confirmButton = this.add.rectangle(74, 105, 220, 46, 0x3b4b2d, 1)
+      .setStrokeStyle(2, 0xd7b654, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.submitClockPanelSelection());
+    const cancelButton = this.add.rectangle(250, 105, 112, 46, 0x17263a, 1)
+      .setStrokeStyle(2, 0x72889a, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.closeClockPanel());
+    this.clockPanelFeedback = this.add.text(128, 146, "", {
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
+      fontSize: "11px",
+      color: "#ffad8f",
+      align: "center",
+      wordWrap: { width: 334 }
+    }).setOrigin(0.5, 0);
+    panel.add([
+      confirmButton,
+      this.add.text(74, 105, "固定这一刻度", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "14px", color: "#fff1b4"
+      }).setOrigin(0.5),
+      cancelButton,
+      this.add.text(250, 105, "暂不调节", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "12px", color: "#dce8ec"
+      }).setOrigin(0.5),
+      this.clockPanelFeedback,
+      this.add.text(70, 184, "← / → 选择刻度 · Enter 确认 · Esc 返回", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "11px", color: "#8298af"
+      }).setOrigin(0.5)
+    ]);
+    this.clockPanel = panel;
+    this.interactionHint.setVisible(false);
+    this.syncStoryInputLock(true);
+    this.paintClockPanel();
+  }
+
+  private paintClockPanel(): void {
+    const option = this.clockPanelOptions[this.clockPanelSelection];
+    const state = this.bridge.getState();
+    const requiredTimeState = selectChapterFourRequiredClockTime(state.chapter4);
+    if (!option || !this.clockPanelHandGraphics || !this.clockPanelReadout) return;
+
+    this.clockPanelButtons.forEach((button, index) => {
+      const selected = index === this.clockPanelSelection;
+      const current = button.timeState === state.chapter4.timeState;
+      const newlyStable = button.timeState === requiredTimeState;
+      button.background
+        .setFillStyle(selected ? 0x263f50 : current ? 0x1b303d : 0x142331, 1)
+        .setStrokeStyle(2, selected ? 0xd7b654 : newlyStable ? 0x8ca46a : 0x60768c, 1);
+      button.label.setColor(selected ? "#ffe493" : "#f7f1dc");
+      button.status
+        .setText(current ? "当前" : newlyStable ? "刻痕清晰" : "")
+        .setColor(current ? "#79d4db" : "#b9d88b");
+    });
+
+    const seconds = option.worldTimeSeconds;
+    const hour = Math.floor(seconds / 3600) % 24;
+    const minute = Math.floor((seconds % 3600) / 60);
+    const centerX = -224;
+    const centerY = 4;
+    const hourAngle = Phaser.Math.DegToRad(((hour % 12) + minute / 60) * 30 - 90);
+    const minuteAngle = Phaser.Math.DegToRad(minute * 6 - 90);
+    this.clockPanelHandGraphics.clear();
+    this.clockPanelHandGraphics.lineStyle(6, 0x263746, 1).lineBetween(
+      centerX,
+      centerY,
+      centerX + Math.cos(hourAngle) * 50,
+      centerY + Math.sin(hourAngle) * 50
+    );
+    this.clockPanelHandGraphics.lineStyle(4, 0xb47c2d, 1).lineBetween(
+      centerX,
+      centerY,
+      centerX + Math.cos(minuteAngle) * 76,
+      centerY + Math.sin(minuteAngle) * 76
+    );
+    this.clockPanelHandGraphics.fillStyle(0x263746, 1).fillCircle(centerX, centerY, 7);
+    this.clockPanelReadout.setText(option.label);
+  }
+
+  private shiftClockPanelSelection(delta: number): void {
+    if (this.clockPanelOptions.length === 0 || this.pendingStoryRequest) return;
+    this.clockPanelSelection = Phaser.Math.Wrap(
+      this.clockPanelSelection + delta,
+      0,
+      this.clockPanelOptions.length
+    );
+    this.clockPanelFeedback?.setText("");
+    this.paintClockPanel();
+  }
+
+  private updateClockPanelKeyboard(): void {
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.up)) this.shiftClockPanelSelection(-1);
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.right)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftClockPanelSelection(1);
+    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) this.submitClockPanelSelection();
+    if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.closeClockPanel();
+  }
+
+  private submitClockPanelSelection(): void {
+    if (!this.clockPanel || this.pendingStoryRequest) return;
+    const option = this.clockPanelOptions[this.clockPanelSelection];
+    const state = this.bridge.getState();
+    const requiredTimeState = selectChapterFourRequiredClockTime(state.chapter4);
+    if (!option || !this.clockPanelSpatial || !requiredTimeState) return;
+    if (option.id === state.chapter4.timeState) {
+      this.clockPanelFeedback?.setText("旧钟已经停在这一格；另一圈刻痕刚刚变得清晰。");
+      return;
+    }
+    if (option.id !== requiredTimeState) {
+      this.clockPanelFeedback?.setText("这处刻度仍会回弹。");
+      return;
+    }
+    this.clockPanelFeedback?.setText("齿轮正在咬合……").setColor("#b9d88b");
+    this.requestStoryIntent({
+      type: "adjust_hall_clock_time",
+      targetId: "a1_hall_clock",
+      targetTimeState: option.id,
+      spatial: this.clockPanelSpatial
+    }, "a1_hall_clock");
+  }
+
+  private closeClockPanel(): void {
+    this.clockPanel?.destroy(true);
+    this.clockPanel = null;
+    this.clockPanelOptions = [];
+    this.clockPanelSelection = 0;
+    this.clockPanelSpatial = null;
+    this.clockPanelButtons = [];
+    this.clockPanelHandGraphics = null;
+    this.clockPanelReadout = null;
+    this.clockPanelFeedback = null;
+    this.interactionHint?.setVisible(false);
+    this.syncStoryInputLock(true);
   }
 
   private openElevatorForSelection(): void {
@@ -8126,6 +8756,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         && this.finalChaseState?.phase === "failure_pending") {
         this.finalChaseState = resolveChapterFourFinalChaseFailure(this.finalChaseState, false);
       }
+      if (timedOutIntentType === "adjust_hall_clock_time" && this.clockPanel) {
+        this.clockPanelFeedback?.setText("旧钟没有响应，请再次确认当前刻度。").setColor("#ffad8f");
+        this.syncStoryInputLock();
+        return;
+      }
       this.storyPresentation = "idle";
       this.destroyExternalTimeOverlay();
       this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
@@ -8256,6 +8891,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         );
         return;
       }
+      if (pending.intentType === "adjust_hall_clock_time" && this.clockPanel) {
+        this.clockPanelFeedback?.setText(detail).setColor("#ffad8f");
+        this.paintClockPanel();
+        this.syncStoryInputLock();
+        return;
+      }
       this.storyPresentation = "idle";
       this.destroyExternalTimeOverlay();
       this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
@@ -8315,6 +8956,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.storyPresentation = "idle";
         this.beginFirstHallClockPullPresentation();
         break;
+      case "adjust_hall_clock_time":
+        this.storyPresentation = "idle";
+        this.closeClockPanel();
+        break;
       case "inspect_bakery_conveyor_lamp":
         this.storyPresentation = "idle";
         this.beginBakeryConveyorStopPresentation();
@@ -8340,7 +8985,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.emitDropFeedback(
           "oldClockHourHand",
           "accepted",
-          "金属时针已装回旧钟，时间已切换到 18:50。"
+          "金属时针已装回，钟面多出一处能够稳定停住的刻度。"
         );
         this.storyPresentation = "idle";
         break;
@@ -8504,7 +9149,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.emitDropFeedback(
           "clockPositioningPlate",
           "accepted",
-          "定位盘已装回旧钟，现在线索转入 22:45 维护时段。"
+          "定位片已归位，钟面另一处刻度不再回弹。"
         );
         this.storyPresentation = "idle";
         break;
@@ -8732,7 +9377,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       phase: "lamp_accepted"
     });
     this.scheduleStoryPresentation(120, () => {
-      if (this.bakeryConveyorTween) this.bakeryConveyorTween.timeScale = 0.45;
+      this.slowBakeryConveyorMotion();
     });
     this.scheduleStoryPresentation(360, () => this.pauseBakeryActivity());
     this.scheduleStoryPresentation(520, () => {
@@ -9561,6 +10206,12 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           plateIds: this.appliedPlateIds,
           targetIds: [...this.renderedTargetIds]
         },
+        clockControl: {
+          panelOpen: this.clockPanel !== null,
+          selectedTimeState: this.clockPanelOptions[this.clockPanelSelection]?.id ?? null,
+          optionTimeStates: this.clockPanelOptions.map((option) => option.id),
+          requiredTimeState: selectChapterFourRequiredClockTime(state.chapter4)
+        },
         warmup: {
           requiredPhase: chapterFourWarmupPhaseForState(state),
           ready: this.isWarmupPhaseLoaded(chapterFourWarmupPhaseForState(state)),
@@ -9602,6 +10253,9 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
               anchorId: MAIN_ENTRANCE_DOOR_RUNTIME.anchorId,
               plateId: this.mainEntranceDoorPlateId,
               openRequested: this.mainEntranceDoorOpenRequested,
+              barrierActive: (
+                this.mainEntranceDoorBarrier?.body as Phaser.Physics.Arcade.StaticBody | undefined
+              )?.enable ?? false,
               playerFoot: mainEntrancePlayerFoot,
               openingBounds: { ...MAIN_ENTRANCE_DOOR_RUNTIME.openingBounds },
               approachBounds: { ...MAIN_ENTRANCE_DOOR_RUNTIME.approachBounds },
@@ -9633,6 +10287,17 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           flipX: this.maintenanceGuard?.flipX ?? null,
           entityBounds: ordinaryGuardEntityBounds
         },
+        bakeryConveyor: this.bakeryConveyorFixtureSignature
+          ? {
+              visible: this.currentFloor === 1,
+              motion: this.bakeryConveyorMotionActive ? "moving" : "stopped",
+              beltBounds: { ...BAKERY_RUNTIME.conveyorVisual.beltBounds },
+              frontRailBounds: { ...BAKERY_RUNTIME.conveyorVisual.frontRailBounds },
+              direction: BAKERY_RUNTIME.conveyorVisual.direction,
+              timeState: state.chapter4.timeState,
+              phase: state.chapter4.phase
+            }
+          : null,
         bakeryCrowd: this.bakeryCrowdActors.map((actor) => ({
           routeIndex: actor.routeIndex,
           position: {

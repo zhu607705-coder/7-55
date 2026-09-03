@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
+import boardSnapshotData from "../../../data/cc98.board-snapshots.json";
 import chapterFourCc98Content from "../../../data/chapter4-cc98.content.json";
 import theaterContent from "../../../data/chapter3-theater.content.json";
 import libraryFinalsContent from "../../../data/library-finals.content.json";
@@ -29,6 +30,16 @@ import "../../../styles/library-v2-phone.css";
 
 type EditablePostKey = "author" | "rank" | "board" | "title" | "replies" | "views" | "time" | "body";
 
+type Cc98BoardSnapshot = {
+  board: string;
+  boardId: number;
+  source: string;
+  sourceUrl: string;
+  capturedOn: string;
+  todayPostCount: number;
+  totalTopicCount: number;
+};
+
 const STORAGE_KEY = "seven-fifty-five.cc98-posts.v2";
 const QUEST_STORAGE_KEY = "seven-fifty-five.cc98-quest-post-overrides.v1";
 const CHAPTER_FOUR_STUDY_LEGACY_POST_ID = "p03";
@@ -36,6 +47,9 @@ const NETWORK_LOAD_DELAY_MS = 700;
 const NETWORK_REJECT_DELAY_MS = 1600;
 const NETWORK_CRASH_DELAY_MS = 620;
 const DEFAULT_POSTS = defaultPostData as Cc98Post[];
+const BOARD_SNAPSHOTS = new Map(
+  (boardSnapshotData.boards as Cc98BoardSnapshot[]).map((snapshot) => [snapshot.board, snapshot])
+);
 const ACT_ONE_EXCHANGE_POST = actOneContent.cc98ExchangePost as Cc98Post;
 const investigationPostContent = libraryFinalsContent.cc98.post;
 const BD_PASSWORD_REPLY_COUNT = libraryFinalsContent.cc98.bdPassword.posts.length;
@@ -191,6 +205,7 @@ type Cc98BottomTabId = typeof BOTTOM_TABS[number]["id"];
 const DEFAULT_FOLLOWED_BOARDS = ["校园生活", "学习天地", "交通出行", "开怀一笑"];
 const PREFERRED_BOARD_ORDER = [
   "校园生活",
+  "郁闷小屋",
   "交通出行",
   "学习天地",
   "手机服务",
@@ -205,6 +220,7 @@ const PREFERRED_BOARD_ORDER = [
 ];
 const BOARD_DESCRIPTIONS: Record<string, string> = {
   "校园生活": "校内日常、天气和临时消息",
+  "郁闷小屋": "匿名倾诉、互助和情绪整理",
   "交通出行": "步行、骑行和校内出行",
   "学习天地": "资料、课程和复习讨论",
   "手机服务": "电话卡、网络和通讯服务",
@@ -594,7 +610,8 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
       .map(([board, postCount]) => ({
         board,
         postCount,
-        description: BOARD_DESCRIPTIONS[board] ?? "校内讨论和临时信息"
+        description: BOARD_DESCRIPTIONS[board] ?? "校内讨论和临时信息",
+        snapshot: BOARD_SNAPSHOTS.get(board)
       }));
   }, [visiblePosts]);
   const activeNavigationTab: Cc98BottomTabId = selectedBoard ? "boards" : activeBottomTab;
@@ -881,20 +898,28 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
             <b>{boardEntries.length} 个</b>
           </header>
           <div className="cc98-board-grid">
-            {boardEntries.map(({ board, postCount, description }) => {
+            {boardEntries.map(({ board, postCount, description, snapshot }) => {
               const followed = followedBoards.includes(board);
+              const snapshotLabel = snapshot
+                ? `；公开快照 ${snapshot.capturedOn}，今日贴数 ${snapshot.todayPostCount}，总主题数 ${snapshot.totalTopicCount}`
+                : "";
               return (
                 <article className="cc98-board-card" key={board}>
                   <button
                     type="button"
                     className="cc98-board-open"
-                    aria-label={`进入${board}版面，共${postCount}帖`}
+                    aria-label={`进入${board}版面，共${postCount}帖${snapshotLabel}`}
                     onClick={() => openBoard(board)}
                   >
                     <span aria-hidden="true">▦</span>
                     <strong>{board}</strong>
                     <small>{description}</small>
                     <em>{postCount} 帖</em>
+                    {snapshot ? (
+                      <span className="cc98-board-reference">
+                        公开快照 · {snapshot.capturedOn} · 今日 {snapshot.todayPostCount} · 总主题 {snapshot.totalTopicCount}
+                      </span>
+                    ) : null}
                   </button>
                   <button
                     type="button"

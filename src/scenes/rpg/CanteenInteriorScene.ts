@@ -75,6 +75,7 @@ import {
   CANTEEN_PROMO_BOARD,
   CANTEEN_QUEUE_COLUMN_THREE,
   CANTEEN_SERVICE_WINDOWS,
+  CANTEEN_SOUTHEAST_EXIT_DOOR,
   CANTEEN_TRAYS,
   CANTEEN_TRAY_SLOTS,
   findNearestCanteenTarget,
@@ -82,6 +83,8 @@ import {
 } from "./CanteenInteriorModel";
 
 const CANTEEN_MAP_KEY = "chapter-3-canteen-interior-map";
+const CANTEEN_EXIT_DOOR_LEFT_FRAME = "southeast-exit-left-leaf";
+const CANTEEN_EXIT_DOOR_RIGHT_FRAME = "southeast-exit-right-leaf";
 export const CANTEEN_INTERIOR_WARM_ASSET_URLS = Object.freeze([
   canteenInteriorMapUrl,
   canteenCounterAuntiesSheetUrl,
@@ -270,6 +273,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   private trayInteractionTargets = new Map<string, CanteenInteractionTarget>();
   private carriedTrayVisual!: Phaser.GameObjects.Image;
   private exitTransitioning = false;
+  private exitDoorProximityActive = false;
   private pickupWindowVisuals = new Map<string, PickupWindowVisual>();
   private cartVisuals = new Map<CanteenExitId, Phaser.GameObjects.Image>();
   private exitGlows = new Map<CanteenExitId, Phaser.GameObjects.Arc>();
@@ -336,6 +340,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.trayVisuals.clear();
     this.trayInteractionTargets.clear();
     this.exitTransitioning = false;
+    this.exitDoorProximityActive = false;
     this.pickupWindowVisuals.clear();
     this.cartVisuals.clear();
     this.exitGlows.clear();
@@ -455,24 +460,34 @@ export class CanteenInteriorScene extends Phaser.Scene {
     this.physics.world.setBounds(28, 16, CANTEEN_INTERIOR_WORLD.width - 56, CANTEEN_INTERIOR_WORLD.height - 34);
     this.obstacles = this.physics.add.staticGroup();
     this.drawInterior();
+    this.ensureCanteenExitDoorFrames();
+    const exitOpening = CANTEEN_SOUTHEAST_EXIT_DOOR.opening;
     this.exitDoor = new RpgInteriorDoorRuntime(this, {
       id: "canteen_southeast_exit",
-      centerX: 1380,
-      centerY: 858,
-      openingWidth: 122,
-      openingHeight: 126,
-      motion: "double-slide",
-      openOffset: 57,
-      durationMs: 380,
+      centerX: CANTEEN_SOUTHEAST_EXIT_DOOR.center.x,
+      centerY: CANTEEN_SOUTHEAST_EXIT_DOOR.center.y,
+      openingWidth: exitOpening.right - exitOpening.left,
+      openingHeight: exitOpening.bottom - exitOpening.top,
+      motion: "double-fold",
+      motionEase: "Sine.easeInOut",
+      durationMs: 460,
       depth: 920,
       palette: {
-        portal: 0x101719,
-        spill: 0xb8e7f1,
-        leaf: 0x283b39,
-        inset: 0x3f5a56,
-        trim: 0x142321,
-        handle: 0xd7bd72
+        portal: 0x111716,
+        spill: 0xc8e7dc,
+        leaf: 0x3a3935,
+        inset: 0x4c4a43,
+        trim: 0x171713,
+        handle: 0xb8b6a7
       },
+      portalAlpha: 1,
+      spillAlphaClosed: 0,
+      spillAlphaOpen: 0.12,
+      leafTextures: {
+        left: { key: CANTEEN_MAP_KEY, frame: CANTEEN_EXIT_DOOR_LEFT_FRAME },
+        right: { key: CANTEEN_MAP_KEY, frame: CANTEEN_EXIT_DOOR_RIGHT_FRAME }
+      },
+      hideLeavesWhenOpen: true,
       foreground: {
         textureKey: CANTEEN_MAP_KEY,
         left: 1248,
@@ -673,6 +688,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
       vector.set(0, 0);
     }
     this.player.setVelocity(vector.x, vector.y);
+    this.syncCanteenExitDoorProximity(state);
     this.updatePlayerWorldDepth();
     this.playerAnimator.update(
       this.cartPushBusy && this.cartMotionVector.lengthSq() > 0 ? this.cartMotionVector : vector,
@@ -729,6 +745,19 @@ export class CanteenInteriorScene extends Phaser.Scene {
         .setVisible(false)
     }));
     this.rebuildStaticCollisionBodies();
+  }
+
+  private ensureCanteenExitDoorFrames(): void {
+    const texture = this.textures.get(CANTEEN_MAP_KEY);
+    const frames = [
+      [CANTEEN_EXIT_DOOR_LEFT_FRAME, CANTEEN_SOUTHEAST_EXIT_DOOR.leftLeafSource],
+      [CANTEEN_EXIT_DOOR_RIGHT_FRAME, CANTEEN_SOUTHEAST_EXIT_DOOR.rightLeafSource]
+    ] as const;
+    frames.forEach(([name, source]) => {
+      if (!texture.has(name)) {
+        texture.add(name, 0, source.x, source.y, source.width, source.height);
+      }
+    });
   }
 
   private createCanteenNpcs(): void {
@@ -2230,6 +2259,32 @@ export class CanteenInteriorScene extends Phaser.Scene {
     return !state.canteenHunt.active || canPlayCanteenSideGames(state);
   }
 
+  private syncCanteenExitDoorProximity(state: GameState): void {
+    if (this.exitTransitioning) {
+      this.exitDoorProximityActive = true;
+      return;
+    }
+    const within = (bounds: Readonly<{
+      left: number;
+      top: number;
+      right: number;
+      bottom: number;
+    }>) => (
+      this.player.x >= bounds.left
+      && this.player.x <= bounds.right
+      && this.player.y >= bounds.top
+      && this.player.y <= bounds.bottom
+    );
+    const shouldHoldOpen = this.exitDoorProximityActive
+      ? within(CANTEEN_SOUTHEAST_EXIT_DOOR.holdOpenBounds)
+      : within(CANTEEN_SOUTHEAST_EXIT_DOOR.approachBounds);
+    const canOpen = shouldHoldOpen && this.canLeaveThroughDoor(state);
+    if (canOpen === this.exitDoorProximityActive) return;
+    this.exitDoorProximityActive = canOpen;
+    if (canOpen) this.exitDoor.open();
+    else this.exitDoor.close();
+  }
+
   private triggerTarget(target: CanteenInteractionTarget, state: GameState): void {
     if (target.kind === "npc") {
       if (target.id === "return-auntie") {
@@ -2316,8 +2371,8 @@ export class CanteenInteriorScene extends Phaser.Scene {
       if (!this.scene.isActive() || !this.player.active) return;
       this.tweens.add({
         targets: this.player,
-        x: 1380,
-        y: 892,
+        x: CANTEEN_SOUTHEAST_EXIT_DOOR.exitPoint.x,
+        y: CANTEEN_SOUTHEAST_EXIT_DOOR.exitPoint.y,
         duration: this.reducedMotion ? 120 : 300,
         ease: "Stepped",
         onUpdate: () => {
@@ -3921,6 +3976,11 @@ export class CanteenInteriorScene extends Phaser.Scene {
       },
       scene: "canteen_interior",
       interiorDoor: this.exitDoor.getDebugSnapshot(),
+      interiorDoorTrigger: {
+        proximityActive: this.exitDoorProximityActive,
+        approachBounds: CANTEEN_SOUTHEAST_EXIT_DOOR.approachBounds,
+        holdOpenBounds: CANTEEN_SOUTHEAST_EXIT_DOOR.holdOpenBounds
+      },
       activeTargets: this.getActiveTargets(state).map((target) => {
         const bounds = getRpgDropBounds(target);
         return {

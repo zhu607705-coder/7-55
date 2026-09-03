@@ -10,6 +10,19 @@ export const CANTEEN_INTERIOR_WORLD = {
   height: 941
 } as const;
 
+// Authored directly against the southeast entrance in canteen_interior.png.
+// The two leaf crops preserve the source painting exactly; the opening bounds
+// are also the single authority for the animated door and its exit anchor.
+export const CANTEEN_SOUTHEAST_EXIT_DOOR = {
+  opening: { left: 1305, top: 795, right: 1393, bottom: 900 },
+  approachBounds: { left: 1170, top: 735, right: 1460, bottom: 925 },
+  holdOpenBounds: { left: 1135, top: 700, right: 1495, bottom: 935 },
+  leftLeafSource: { x: 1305, y: 795, width: 44, height: 105 },
+  rightLeafSource: { x: 1349, y: 795, width: 44, height: 105 },
+  center: { x: 1349, y: 847.5 },
+  exitPoint: { x: 1349, y: 892 }
+} as const;
+
 export interface CanteenCollisionRect {
   id: string;
   left: number;
@@ -48,9 +61,9 @@ export const CANTEEN_STATIC_COLLISION_RECTS: readonly CanteenCollisionRect[] = [
   { id: "southeast_wall_west_upper", left: 1155, top: 655, right: 1195, bottom: 700 },
   { id: "southeast_wall_west_lower", left: 1450, top: 354, right: 1483, bottom: 410 },
   // The west frame is a same-source foreground passage: the player walks
-  // behind it and is occluded by the source crop. The animated door owns the
-  // temporary blocker across the clear 140 px doorway.
-  { id: "southeast_exit_east_frame", left: 1450, top: 760, right: 1643, bottom: 925 },
+  // behind it and is occluded by the source crop. Both wall bounds stop at the
+  // exact 88 px doorway authored in the source plate.
+  { id: "southeast_exit_east_frame", left: 1393, top: 760, right: 1643, bottom: 925 },
   { id: "table_1_1", left: 179, top: 315, right: 273, bottom: 401 },
   { id: "table_1_2", left: 329, top: 314, right: 423, bottom: 402 },
   { id: "table_1_3", left: 478, top: 314, right: 572, bottom: 401 },
@@ -84,8 +97,8 @@ export const CANTEEN_OCCLUSION_RECTS: readonly CanteenOcclusionRect[] = [
   { id: "pickup_counter_front", left: 542, top: 688, right: 1087, bottom: 876, sortY: 876 },
   // Keep the doorway clear. The two wall frames still occlude the actor, while the
   // middle opening remains readable and walkable when entering or leaving the canteen.
-  { id: "southeast_exit_west_frame", left: 1252, top: 760, right: 1310, bottom: 934, sortY: 934 },
-  { id: "southeast_exit_east_frame", left: 1450, top: 760, right: 1643, bottom: 934, sortY: 934 },
+  { id: "southeast_exit_west_frame", left: 1252, top: 760, right: 1305, bottom: 934, sortY: 934 },
+  { id: "southeast_exit_east_frame", left: 1393, top: 760, right: 1643, bottom: 934, sortY: 934 },
   ...TABLE_ROWS.flatMap((y, rowIndex) => TABLE_COLUMNS.map((x, columnIndex) => ({
     id: `table_front_${rowIndex + 1}_${columnIndex + 1}`,
     left: x - 49,
@@ -471,9 +484,9 @@ export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = 
   {
     id: "southeast_exit",
     label: "食堂东南出口",
-    x: 1380,
+    x: CANTEEN_SOUTHEAST_EXIT_DOOR.center.x,
     y: 835,
-    stand: { x: 1380, y: 835 },
+    stand: { x: CANTEEN_SOUTHEAST_EXIT_DOOR.center.x, y: 835 },
     proximity: 80,
     kind: "exit"
   }
@@ -481,7 +494,7 @@ export const CANTEEN_INTERACTION_TARGETS: readonly CanteenInteractionTarget[] = 
 
 export const CANTEEN_ESCAPE_ANCHORS: Record<CanteenExitId, { x: number; y: number }> = {
   west: { x: 82, y: 250 },
-  southeast: { x: 1381, y: 853 },
+  southeast: { x: CANTEEN_SOUTHEAST_EXIT_DOOR.center.x, y: 853 },
   steam: { x: 1235, y: 227 }
 };
 

@@ -1399,8 +1399,28 @@
 }
 
 .rpg-kayak-controls.is-fishing {
-  grid-template-columns: repeat(3, minmax(62px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: calc(100% - 32px);
   width: 286px;
+}
+
+.rpg-kayak-controls.is-fishing button {
+  box-sizing: border-box;
+  gap: 1px;
+  min-width: 0;
+  min-height: 72px;
+}
+
+.rpg-kayak-controls.is-fishing button strong {
+  font-family: "Courier New", monospace;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.rpg-kayak-controls.is-fishing button span {
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .rpg-kayak-controls.is-fishing button.left-paddle {
@@ -2225,7 +2245,16 @@
   }
 
   .rpg-kayak-controls.is-fishing {
-    width: 236px;
+    max-width: calc(100% - 28px);
+    width: 198px;
+  }
+
+  .rpg-kayak-controls.is-fishing button strong {
+    font-size: 24px;
+  }
+
+  .rpg-kayak-controls.is-fishing button span {
+    font-size: 10px;
   }
 
   .rpg-kayak-controls button {
@@ -2261,6 +2290,12 @@
 }
 
 @media (max-width: 900px) and (orientation: landscape) {
+  .rpg-kayak-controls.is-fishing {
+    gap: 5px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 198px;
+  }
+
   .rpg-inventory-dock {
     bottom: 8px;
     max-width: calc(100% - 235px);

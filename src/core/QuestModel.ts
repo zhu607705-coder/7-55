@@ -13,6 +13,7 @@ import {
   ROOM204_GROUP_ORDER,
   countCompletedRoom204Groups
 } from "../scenes/rpg/ChapterFourRoom204Model";
+import { isChapterFourPhaseTimeAligned } from "../modules/ChapterFourTimeControlModel";
 
 interface TaskDefinition {
   id: string;
@@ -623,33 +624,22 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
                 label: "在手机 CC98 票务页参加第一波放票",
                 hints: [
                   "打开学生剧现场帮抢帖，在票务卡中操作。",
-                  "可以直接抢第一波，也可以先打开控制中心切换到移动数据。"
+                  "大厅记录可用于确认第一波的放票时间。"
                 ],
                 targetSurface: "phone",
                 recommendedScene: "cc98"
               }
           : state.theaterHunt.cc98TicketCommissionPhase === "first_wave_failed"
-            ? state.networkMode === "cellular"
-              ? {
-                  id: "chapter_three_theater_ticket_second_wave",
-                  label: "在手机票务页参加第二波放票",
-                  hints: [
-                    "移动数据已经开启。",
-                    "回到 CC98 帮抢帖，等待倒计时结束后点击第二波。"
-                  ],
-                  targetSurface: "phone",
-                  recommendedScene: "cc98"
-                }
-              : {
-                  id: "chapter_three_theater_ticket_enable_cellular",
-                  label: "开启手机移动数据，等待第二波放票",
-                  hints: [
-                    "第一波已结束，系统提示响应速度过慢。",
-                    "在 CC98 票务卡中打开控制中心，切换为移动数据。"
-                  ],
-                  targetSurface: "phone",
-                  recommendedScene: "cc98"
-                }
+            ? {
+                id: "chapter_three_theater_ticket_second_wave",
+                label: "在手机票务页参加第二波放票",
+                hints: [
+                  "第一波未抢到，当前网速过慢。",
+                  "回到 CC98 帮抢帖，等待倒计时结束后再次提交。"
+                ],
+                targetSurface: "phone",
+                recommendedScene: "cc98"
+              }
           : state.theaterHunt.cc98TicketCommissionPhase === "delivered"
             ? state.items.temporaryTheaterTicket
               ? {
@@ -843,7 +833,9 @@ function selectChapterFour755TaskKey(
         ? "collect_hour_hand"
         : "explore_bakery";
   } else if (contract.id === "room204_restore") {
-    preferredTaskKey = !facts.has("classroom_104_chalk_residual_observed")
+    preferredTaskKey = !isChapterFourPhaseTimeAligned(state.chapter4)
+      ? "tune_clock_to_1850"
+      : !facts.has("classroom_104_chalk_residual_observed")
       || !facts.has("classroom_105_terminal_replay_checked")
       || !facts.has("elevator_history_observed")
         || !facts.has("elevator_history_calibrated")
@@ -869,7 +861,9 @@ function selectChapterFour755TaskKey(
               ? "collect_positioning_plate"
               : "install_positioning_plate";
   } else if (contract.id === "maintenance_repair") {
-    preferredTaskKey = !facts.has("cart_wheel_inspected")
+    preferredTaskKey = !isChapterFourPhaseTimeAligned(state.chapter4)
+      ? "tune_clock_to_2245"
+      : !facts.has("cart_wheel_inspected")
       ? "inspect_cart_wheel"
       : !facts.has("cart_wheel_cover_opened")
         ? "open_cart_wheel_cover"

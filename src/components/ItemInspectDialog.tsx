@@ -438,7 +438,8 @@ function ItemInspectDialogBody({
     >
       <section
         ref={dialogRef}
-        className={`item-inspect-dialog item-inspect-dialog--${variant}`}
+        className={`item-inspect-dialog item-inspect-dialog--${variant} ${itemId === "hairDryer" ? "item-inspect-dialog--large-preview" : ""}`.trim()}
+        data-item-id={itemId}
         role="dialog"
         tabIndex={-1}
         aria-modal="true"
@@ -466,7 +467,10 @@ function ItemInspectDialogBody({
         </header>
         <div className="item-inspect-body">
           <div className="item-inspect-icon-frame" aria-hidden="true">
-            <PixelIcon name={itemId} size={variant === "phone" ? 58 : 72} />
+            <PixelIcon
+              name={itemId}
+              size={itemId === "hairDryer" ? (variant === "phone" ? 96 : 128) : (variant === "phone" ? 58 : 72)}
+            />
           </div>
           <dl id={metaId} className="item-inspect-meta">
             <div className="item-inspect-row">

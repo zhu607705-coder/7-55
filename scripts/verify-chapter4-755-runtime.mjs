@@ -844,14 +844,18 @@ try {
   assert(installResult.accepted && installResult.changed, "valid socket drop must install the hour hand");
   const installedState = sequenceStore.getState();
   assert(installedState.chapter4.phase === "room204_restore", "install must enter room204_restore");
-  assert(installedState.chapter4.timeState === "1850_evening", "install must enter 18:50 time state");
-  assert(installedState.chapter4.worldTimeSeconds === 67800, "install must set world time to 67800");
-  assert(installedState.chapter4.phoneStatusTimeSeconds === 67800, "install must set phone time to 67800");
+  assert(installedState.chapter4.timeState === "1225_bakery", "install must keep the committed 12:25 time until the player adjusts the clock");
+  assert(installedState.chapter4.worldTimeSeconds === 44700, "install must keep world time at 12:25 before the next clock action");
+  assert(installedState.chapter4.phoneStatusTimeSeconds === 44700, "install must keep phone time at 12:25 before the next clock action");
   assert(installedState.chapter4.phoneStatusTimeTrusted === true, "install must preserve trusted phone time");
+  assert(installedState.chapter4.floor === "A1" && installedState.chapter4.roomId === "a1_hall_clock", "install must return the player to the A1 hall clock");
+  assert(installedState.rpgCheckpoint === "c4_a1_lobby", "install must use the A1 safe checkpoint");
   assert(installedState.chapter4.factIds.includes("hour_hand_installed"), "install must commit hour_hand_installed");
   assert(installedState.items.oldClockHourHand === false, "install must consume oldClockHourHand");
   const installedProjection = selectChapterFourMazeProjection(installedState);
-  assert(sameJson(installedProjection.activePlateIds, ["a2_1850_evening", "a3_1850_reference"]), "install must switch atomically to the A2+A3 18:50 plate group");
+  assert(sameJson(installedProjection.activePlateIds, ["a1_1225_bakery"]), "install must retain the 12:25 plate until the next clock action");
+  assert(installedProjection.availableTargetIds.includes("a1_hall_clock"), "the hall clock must remain actionable for the required 18:50 adjustment");
+  assert(selectQuestViewModel(installedState).steps[0]?.id === "chapter_four_tune_clock_to_1850", "the next objective must ask the player to tune the clock to 18:50");
   const installedSnapshot = snapshot(installedState);
   const duplicateInstall = sequenceController.resolve755Intent({
     type: "install_hour_hand",
@@ -861,9 +865,21 @@ try {
   });
   assert(!duplicateInstall.accepted && !duplicateInstall.changed, "duplicate install must reject");
   assert(snapshot(sequenceStore.getState()) === installedSnapshot, "duplicate install must be zero-write");
+  const tune1850Result = sequenceController.resolve755Intent({
+    type: "adjust_hall_clock_time",
+    targetId: "a1_hall_clock",
+    targetTimeState: "1850_evening",
+    spatial: validSpatial
+  });
+  assert(tune1850Result.accepted && tune1850Result.changed, "the restored hour hand must unlock the explicit 18:50 adjustment");
+  const eveningState = sequenceStore.getState();
+  assert(eveningState.chapter4.phase === "room204_restore", "the 18:50 adjustment must stay in room204_restore");
+  assert(eveningState.chapter4.timeState === "1850_evening", "the explicit clock action must enter the 18:50 time state");
+  assert(eveningState.chapter4.worldTimeSeconds === 67800 && eveningState.chapter4.phoneStatusTimeSeconds === 67800, "the explicit 18:50 adjustment must synchronize world and phone time");
+  assert(sameJson(selectChapterFourMazeProjection(eveningState).activePlateIds, ["a2_1850_evening", "a3_1850_reference"]), "the explicit 18:50 adjustment must activate the A2+A3 plate group");
   assert(
-    sequenceEvents.getHistory().filter((event) => event.name === "chapter4_755_intent_committed").length === 5,
-    "only lamp, completion, pickup, return and install may emit commit events in the accepted sequence"
+    sequenceEvents.getHistory().filter((event) => event.name === "chapter4_755_intent_committed").length === 6,
+    "only lamp, completion, pickup, return, install and explicit clock adjustment may emit commit events in the accepted sequence"
   );
 
   for (const [label, state, expectedTaskId] of [
@@ -1428,11 +1444,15 @@ try {
   assert(installPlateResult.accepted && installPlateResult.changed, "positioning plate installation must commit once");
   const maintenanceState = roomSequenceStore.getState();
   assert(maintenanceState.chapter4.phase === "maintenance_repair", "positioning plate installation must enter maintenance_repair");
-  assert(maintenanceState.chapter4.timeState === "2245_maintenance", "positioning plate installation must restore 22:45 maintenance time");
+  assert(maintenanceState.chapter4.timeState === "1850_evening", "positioning plate installation must keep the committed 18:50 time until the player adjusts the clock");
+  assert(maintenanceState.chapter4.worldTimeSeconds === 67800 && maintenanceState.chapter4.phoneStatusTimeSeconds === 67800, "positioning plate installation must keep world and phone time at 18:50");
   assert(maintenanceState.chapter4.floor === "A1" && maintenanceState.chapter4.roomId === "a1_hall_clock", "positioning plate installation must relocate atomically to A1 clock");
   assert(maintenanceState.rpgCheckpoint === "c4_a1_lobby", "positioning plate installation must use the A1 safe checkpoint");
   assert(maintenanceState.chapter4.factIds.includes("positioning_plate_installed"), "positioning plate installation fact must commit");
   assert(maintenanceState.items.clockPositioningPlate === false, "positioning plate installation must consume the item");
+  assert(maintenanceState.chapter4.guardMode === "absent", "the maintenance guard must not appear before the 22:45 adjustment");
+  assert(selectChapterFourMazeProjection(maintenanceState).availableTargetIds.includes("a1_hall_clock"), "the hall clock must remain actionable for the required 22:45 adjustment");
+  assert(selectQuestViewModel(maintenanceState).steps[0]?.id === "chapter_four_tune_clock_to_2245", "the next objective must ask the player to tune the clock to 22:45");
   const maintenanceSnapshot = snapshot(maintenanceState);
   const duplicatePlateInstall = roomSequenceController.resolve755Intent({
     type: "install_positioning_plate",
@@ -1442,6 +1462,19 @@ try {
   });
   assert(!duplicatePlateInstall.accepted && !duplicatePlateInstall.changed, "positioning plate installation may resolve only once");
   assert(snapshot(roomSequenceStore.getState()) === maintenanceSnapshot, "duplicate positioning plate installation must be zero-write");
+  const tune2245Result = roomSequenceController.resolve755Intent({
+    type: "adjust_hall_clock_time",
+    targetId: "a1_hall_clock",
+    targetTimeState: "2245_maintenance",
+    spatial: validSpatial
+  });
+  assert(tune2245Result.accepted && tune2245Result.changed, "the positioning plate must unlock the explicit 22:45 adjustment");
+  const tunedMaintenanceState = roomSequenceStore.getState();
+  assert(tunedMaintenanceState.chapter4.phase === "maintenance_repair", "the 22:45 adjustment must stay in maintenance_repair");
+  assert(tunedMaintenanceState.chapter4.timeState === "2245_maintenance", "the explicit clock action must restore 22:45 maintenance time");
+  assert(tunedMaintenanceState.chapter4.worldTimeSeconds === 81900 && tunedMaintenanceState.chapter4.phoneStatusTimeSeconds === 81900, "the explicit 22:45 adjustment must synchronize world and phone time");
+  assert(tunedMaintenanceState.chapter4.guardMode === "patrol", "the maintenance guard must begin patrol only after the 22:45 adjustment");
+  assert(sameJson(selectChapterFourMazeProjection(tunedMaintenanceState).activePlateIds, ["a1_2245_maintenance"]), "the explicit 22:45 adjustment must activate the maintenance plate");
 
   const task10AndLaterTargets = [
     "a1_bakery_back_pry_bar",

@@ -89,7 +89,7 @@ const EXPECTED_OPENING_INTENTS = [
   "resolve_external_time_rejection",
   "inspect_hall_clock",
   "resolve_hall_clock_inspection",
-  "pull_hall_clock"
+  "adjust_hall_clock_time"
 ];
 const EXPECTED_BAKERY_INTENTS = [
   "inspect_bakery_conveyor_lamp",
@@ -123,6 +123,7 @@ const EXPECTED_BAKERY_CUES = [
   "chapter4_bakery_hour_hand_revealed"
 ];
 const EXPECTED_ROOM204_TASK_KEYS = [
+  "tune_clock_to_1850",
   "resolve_a1_investigation",
   "verify_a1_classrooms",
   "observe_elevator_history",
@@ -166,6 +167,7 @@ const EXPECTED_ROOM204_FACTS = [
   "positioning_plate_installed"
 ];
 const EXPECTED_MAINTENANCE_TASK_KEYS = [
+  "tune_clock_to_2245",
   "inspect_cart_wheel",
   "open_cart_wheel_cover",
   "lubricate_cart_wheel",
@@ -1183,8 +1185,8 @@ function validateTask7RuntimeSources(errors) {
   if (!/case "collect_hour_hand"[\s\S]*?bakery_hour_hand_collected[\s\S]*?withItem\(state, "oldClockHourHand", true\)/.test(controller)) {
     errors.push("Task 8 pickup must atomically write collected and grant oldClockHourHand");
   }
-  if (!/case "install_hour_hand"[\s\S]*?transition\(state, "room204_restore"[\s\S]*?hour_hand_installed[\s\S]*?withItem\(state, "oldClockHourHand", false\)/.test(controller)) {
-    errors.push("Task 8 install must consume the hand and atomically transition to room204_restore");
+  if (!/case "install_hour_hand"[\s\S]*?advancePhaseKeepingTime\(state, "room204_restore"[\s\S]*?hour_hand_installed[\s\S]*?withItem\(state, "oldClockHourHand", false\)[\s\S]*?floor:\s*"A1"[\s\S]*?roomId:\s*"a1_hall_clock"[\s\S]*?checkpoint:\s*"c4_a1_lobby"/.test(controller)) {
+    errors.push("Task 8 install must consume the hand, keep the current time, and return to the A1 clock for the next adjustment");
   }
   if (!/hour_hand_installed"\)\) facts\.add\("bakery_hour_hand_collected"\)/.test(saveStore)
     || !/bakery_hour_hand_collected"\)\) facts\.add\("bakery_hour_hand_exposed"\)/.test(saveStore)
@@ -1227,8 +1229,10 @@ function validateTask7RuntimeSources(errors) {
   if (!/setOrigin\(\s*BAKERY_RUNTIME\.crowd\.origin\.x,\s*BAKERY_RUNTIME\.crowd\.origin\.y\s*\)[\s\S]*?setScale\(BAKERY_RUNTIME\.crowd\.displayScale\)/.test(scene)) {
     errors.push("Task 8 Scene crowd must consume the layout-authored origin and display scale used by topology math");
   }
-  if (!/destroyBakeryRuntime[\s\S]*?bakeryCrowdCollider\?\.destroy\(\)[\s\S]*?bakeryConveyorTween\?\.remove\(\)[\s\S]*?bakeryHourHandGlintTween\?\.remove\(\)/.test(scene)) {
-    errors.push("Task 8 Scene must destroy bakery colliders and tweens on teardown or plate change");
+  if (!/destroyBakeryRuntime[\s\S]*?bakeryCrowdCollider\?\.destroy\(\)[\s\S]*?bakeryHourHandGlintTween\?\.remove\(\)/.test(scene)
+    || !/destroyBakeryConveyorFixture[\s\S]*?bakeryConveyorMotionTweens[\s\S]*?tween\.remove\(\)/.test(scene)
+    || !/destroyBakeryRuntime\("scene_shutdown"\)[\s\S]*?destroyBakeryConveyorFixture\(\)/.test(scene)) {
+    errors.push("Task 8 Scene must destroy bakery actor, pickup and conveyor lifecycles on scene teardown");
   }
   const proximityHintBlock = scene.match(/private refreshProximity\(\)[\s\S]*?private isStoryInputLocked/)?.[0] ?? "";
   if (!/acceptedItem\s*!==\s*undefined[\s\S]*?acceptedItem\s*!==\s*null[\s\S]*?把对应道具拖到/.test(proximityHintBlock)) {
@@ -1337,8 +1341,8 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 9 complete_room204_projection must be an exact-key, controller-owned completion intent gated by deferred A1 evidence, both observations, restoration and complete placements");
   }
   if (!/case "collect_positioning_plate"[\s\S]*?room204_projection_completed[\s\S]*?appendFact\(chapter, "positioning_plate_collected"\)[\s\S]*?withItem\(state, "clockPositioningPlate", true\)/.test(room204ControllerBlock)
-    || !/case "install_positioning_plate"[\s\S]*?room204_projection_composite_completed[\s\S]*?positioning_plate_collected[\s\S]*?transition\(state, "maintenance_repair"[\s\S]*?withItem\(state, "clockPositioningPlate", false\)/.test(room204ControllerBlock)) {
-    errors.push("Task 9 positioning plate collection and installation must remain atomic after the projection composite");
+    || !/case "install_positioning_plate"[\s\S]*?room204_projection_composite_completed[\s\S]*?positioning_plate_collected[\s\S]*?advancePhaseKeepingTime\(state, "maintenance_repair"[\s\S]*?withItem\(state, "clockPositioningPlate", false\)[\s\S]*?floor:\s*"A1"[\s\S]*?roomId:\s*"a1_hall_clock"[\s\S]*?checkpoint:\s*"c4_a1_lobby"/.test(room204ControllerBlock)) {
+    errors.push("Task 9 positioning plate collection and installation must remain atomic while returning to the A1 clock for the next adjustment");
   }
 
   const room204QuestBlock = quest.match(
@@ -1648,7 +1652,7 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 11 final-clock drag and minute-theft presentation must keep Scene movement plus Host task, system, mode and inventory controls locked");
   }
   if (!/allowScenePointer[\s\S]*?this\.alumniPanel !== null/.test(scene)
-    || !/allowSceneKeyboard\s*=\s*locked && \(this\.alumniPanel !== null \|\| floorPanelInteractive\)/.test(scene)
+    || !/allowSceneKeyboard\s*=\s*locked[\s\S]*?this\.alumniPanel !== null \|\| clockPanelInteractive \|\| floorPanelInteractive/.test(scene)
     || !/actionButton[\s\S]*?setInteractive[\s\S]*?closeAlumniPanel/.test(scene)
     || !/ChapterFourExteriorQuestions/.test(host)
     || !/保存两项回答/.test(exteriorQuestions)
@@ -1948,7 +1952,7 @@ function validate(content) {
       || firstPull.toAuthority !== "hall_clock"
       || firstPull.fromTimeState !== "2245_opening"
       || firstPull.toTimeState !== "1225_bakery"
-      || firstPull.trigger !== "pull_hall_clock"
+      || firstPull.trigger !== "adjust_hall_clock_time"
       || firstPull.atomic !== true) {
       errors.push("time.firstHallClockPull must atomically switch authority and time state");
     }
@@ -2058,8 +2062,8 @@ function validate(content) {
     errors.push("tasks must be an object");
   } else {
     const activeTaskEntries = Object.entries(tasks).filter(([taskKey]) => taskKey !== "chapter_complete");
-    if (Object.keys(tasks).length !== 38 || activeTaskEntries.length !== 37) {
-      errors.push("tasks must contain 37 active tasks plus chapter_complete");
+    if (Object.keys(tasks).length !== 40 || activeTaskEntries.length !== 39) {
+      errors.push("tasks must contain 39 active tasks plus chapter_complete");
     }
     for (const [taskKey, task] of Object.entries(tasks)) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
@@ -2077,8 +2081,8 @@ function validate(content) {
       (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
       0
     );
-    if (activeHintCount !== 111) {
-      errors.push("tasks must expose the full 111-hint active contract");
+    if (activeHintCount !== 117) {
+      errors.push("tasks must expose the full 117-hint active contract");
     }
     const room204PlayerCopy = [
       tasks.restore_room204?.label,

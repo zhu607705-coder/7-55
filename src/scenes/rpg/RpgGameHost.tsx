@@ -293,7 +293,7 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "resolve_external_time_rejection",
   "inspect_hall_clock",
   "resolve_hall_clock_inspection",
-  "pull_hall_clock",
+  "adjust_hall_clock_time",
   "inspect_bakery_conveyor_lamp",
   "complete_bakery_conveyor_stop",
   "talk_to_a1_front_desk_attendant",
@@ -2680,9 +2680,8 @@ export function RpgGameHost({
                 onPointerCancel={(event) => emitFishingTouchInput("left", "release", event)}
                 onLostPointerCapture={(event) => emitFishingTouchInput("left", "release", event)}
               >
-                <PixelIcon name="willowBranchPaddle" size={34} />
+                <strong aria-hidden="true">A</strong>
                 <span>左收线</span>
-                <small>A</small>
               </button>
               <button
                 type="button"
@@ -2693,9 +2692,8 @@ export function RpgGameHost({
                 onPointerCancel={(event) => emitFishingTouchInput("hook", "release", event)}
                 onLostPointerCapture={(event) => emitFishingTouchInput("hook", "release", event)}
               >
-                <PixelIcon name="fishingRod" size={34} />
+                <strong aria-hidden="true">S</strong>
                 <span>提竿</span>
-                <small>S</small>
               </button>
               <button
                 type="button"
@@ -2706,9 +2704,8 @@ export function RpgGameHost({
                 onPointerCancel={(event) => emitFishingTouchInput("right", "release", event)}
                 onLostPointerCapture={(event) => emitFishingTouchInput("right", "release", event)}
               >
-                <PixelIcon name="warningSignPaddle" size={34} />
+                <strong aria-hidden="true">D</strong>
                 <span>右收线</span>
-                <small>D</small>
               </button>
             </nav>
           ) : (

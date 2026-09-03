@@ -24,7 +24,7 @@ export type {
 
 export type TheaterTicketReleaseResult =
   | "first_wave_slow"
-  | "cellular_required"
+  | "second_wave_slow"
   | "won_first_wave"
   | "won_second_wave"
   | "already_won"
@@ -146,8 +146,8 @@ export class ChapterThreeTheaterController {
     }
     if (commissionPhase === "first_wave_failed") {
       if (state.networkMode !== "cellular") {
-        this.events.emit("theater_ticket_cellular_required", { releaseWave: 2, surface: "phone" });
-        return "cellular_required";
+        this.events.emit("theater_ticket_second_wave_slow", { releaseWave: 2, surface: "phone" });
+        return "second_wave_slow";
       }
       this.completeTicketCommission(2);
       return "won_second_wave";

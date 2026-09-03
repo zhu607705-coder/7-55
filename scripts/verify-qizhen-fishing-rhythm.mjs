@@ -12,7 +12,7 @@ const hostPath = path.join(root, "src/scenes/rpg/RpgGameHost.tsx");
 const scenePath = path.join(root, "src/scenes/rpg/QizhenLakeScene.ts");
 const lakeModelPath = path.join(root, "src/scenes/rpg/QizhenLakeModel.ts");
 const developerChannelPath = path.join(root, "src/modules/DeveloperChannel.ts");
-const expectedChartHash = "0923a8ce50fa7869110bf3ad179cbb8b46124ee1a92ebc58118515f651ddb489";
+const expectedChartHash = "ba470319fff851a3821467f62397d2d94753804a4e9991d74d02582c665a6b23";
 const expectedCharts = Object.freeze({
   locker_key: { notes: [8, 8], durationSec: 10, experience: "tutorial_full" },
   net_frame: { notes: [4, 4], durationSec: 7.5, experience: "quick_hold" },
