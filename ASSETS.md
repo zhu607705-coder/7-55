@@ -1,5 +1,22 @@
 # 7:55 Release Assets
 
+## 20260903
+
+- Release: [7:55 Demo 20260903](https://github.com/zhu607705-coder/7-55/releases/tag/demo-20260903)
+- Single-file game: [7-55-demo-20260903.html](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260903/7-55-demo-20260903.html)
+- Single-file checksum: [7-55-demo-20260903.html.sha256](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260903/7-55-demo-20260903.html.sha256)
+- Implementation archive: [7-55-implementation-20260903.zip](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260903/7-55-implementation-20260903.zip)
+- Implementation checksum: [7-55-implementation-20260903.zip.sha256](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260903/7-55-implementation-20260903.zip.sha256)
+- Single-file size: `268864910 bytes`
+- Single-file SHA-256: `ce7734e3071e112d38b9363ad48863bcb1c8431446f0e99d8576760807825041`
+- Implementation size: `569681321 bytes`
+- Implementation SHA-256: `9db27dc7dc7fa226334df02d8167351ca2dc8cc3cae38d9fa8b64279859c891e`
+- Implementation source commit: `75fec8a3ef12c77bb164dfad1fe5cc5f16038a9e`
+- Pull request Web CI: [run 33742422443](https://github.com/zhu607705-coder/7-55/actions/runs/33742422443) (`success`)
+- Main Web CI: [run 33742760526](https://github.com/zhu607705-coder/7-55/actions/runs/33742760526) (`success`)
+- Build commands: `npm run validate:critical`, `npm run validate:release`, `npm run build:single` and `npm run verify:single`
+- Runtime checks: phone mobile, theater RPG, Chapter 4 RPG, source-pixel editor data, direct single-file structure, source archive integrity, and SHA-256 verification
+
 ## 20260830
 
 - Release: [7:55 Demo 20260830](https://github.com/zhu607705-coder/7-55/releases/tag/demo-20260830)

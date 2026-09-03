@@ -41,7 +41,7 @@ npm run build:demo
 输出位于 `demo/index.html`。`demo/` 和 `dist/` 是可重建产物，不提交到普通 Git；
 需要交付离线演示时，以完成日期命名并作为 GitHub Release 附件发布。
 
-当前离线版本：[7-55-demo-20260830.html](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260830/7-55-demo-20260830.html)。对应实现归档与文件校验信息见 [ASSETS.md](ASSETS.md)。
+当前离线版本：[7-55-demo-20260903.html](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260903/7-55-demo-20260903.html)。对应实现归档与文件校验信息见 [ASSETS.md](ASSETS.md)。
 
 ### 独立校园大地图 Demo
 
