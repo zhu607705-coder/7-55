@@ -1,5 +1,15 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-09-04 main 合并与 20260904 Release
+
+- 完整功能提交为 `c153f2a248a9f8eeead957180db4e867ce84606b`，经 [PR #43](https://github.com/zhu607705-coder/7-55/pull/43) 合并；PR Web CI [33873949256](https://github.com/zhu607705-coder/7-55/actions/runs/33873949256) 成功，未解决 review thread 为 `0`。
+- GitHub 在 `2026-09-04 20:44:04 +08:00` 生成 `main` 合并提交 `37d5ca6b8b044d1304a9674db4609da3c0254277`；随后 `main` Web CI [33874278561](https://github.com/zhu607705-coder/7-55/actions/runs/33874278561) 成功。功能交付远端分支已删除。
+- [7:55 Demo 20260904](https://github.com/zhu607705-coder/7-55/releases/tag/demo-20260904) 于 `2026-09-04 20:54:30 +08:00` 发布，并被 GitHub 设为 latest release。标签目标固定为上述 `main` 合并提交。
+- Release 中四个资产均由 GitHub 报告为 `uploaded`：单文件 `269164832` 字节，SHA-256 `79297b91ac4b4c2e43617a4ed29d184e4bc20b76eccadc921e0f8ff77e0ccb08`；实现归档 `572766151` 字节，SHA-256 `a5aa5408e1dde9bfe4f0e8ddfbe46041af12083e5c8fd8a8ad10c2b32836b828`；两个对应 `.sha256` 文件也已上传。
+- 实现归档从合并提交直接生成，包含 Git 跟踪文件 `1243/1243`，通过 `unzip -t` 与两项本地 SHA-256 反向校验；GitHub 返回的两个大型资产摘要与本地摘要逐字一致。
+- `README.md` 的当前离线入口和 `ASSETS.md` 的最新资产清单已统一切换为完成日期 `20260904`。原始开发 checkout 全程未改动，所有同步、构建、提交和发布操作都在隔离交付 worktree 完成。
+- 本次发布门禁覆盖类型检查、`22/22` critical、`33/33` release、离线单文件结构、录制模式与三条真实 Chromium 冒烟；范围未包含从第一章到第四章的完整人工通关复验。
+
 ## 2026-09-04 全量上传前同步与发布门禁
 
 - 用户确认将当前隔离交付 worktree 中的完整修改上传 GitHub 并直接合并到 `main`。上传前重新执行三视图审计：本地待交付为 `47` 个已跟踪修改与 `8` 个新文件；本地基线之上待提交 commit 为 `0`；远端新增 `53e3121 feat(rpg): animate campus water and refine side walk`。

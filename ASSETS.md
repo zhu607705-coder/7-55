@@ -1,5 +1,22 @@
 # 7:55 Release Assets
 
+## 20260904
+
+- Release: [7:55 Demo 20260904](https://github.com/zhu607705-coder/7-55/releases/tag/demo-20260904)
+- Single-file game: [7-55-demo-20260904.html](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260904/7-55-demo-20260904.html)
+- Single-file checksum: [7-55-demo-20260904.html.sha256](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260904/7-55-demo-20260904.html.sha256)
+- Implementation archive: [7-55-implementation-20260904.zip](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260904/7-55-implementation-20260904.zip)
+- Implementation checksum: [7-55-implementation-20260904.zip.sha256](https://github.com/zhu607705-coder/7-55/releases/download/demo-20260904/7-55-implementation-20260904.zip.sha256)
+- Single-file size: `269164832` bytes
+- Single-file SHA-256: `79297b91ac4b4c2e43617a4ed29d184e4bc20b76eccadc921e0f8ff77e0ccb08`
+- Implementation archive size: `572766151` bytes
+- Implementation archive SHA-256: `a5aa5408e1dde9bfe4f0e8ddfbe46041af12083e5c8fd8a8ad10c2b32836b828`
+- Implementation source commit: `37d5ca6b8b044d1304a9674db4609da3c0254277`
+- Pull request validation: [Web CI 33873949256](https://github.com/zhu607705-coder/7-55/actions/runs/33873949256) — success
+- `main` validation: [Web CI 33874278561](https://github.com/zhu607705-coder/7-55/actions/runs/33874278561) — success
+- Build: `npm run validate:critical`, `npm run validate:release`, `npm run build:single`, `npm run verify:recording-mode`
+- Runtime checks: `390×844` phone, `1440×900` theater RPG, and `1440×900` Chapter 4 RPG browser smoke routes passed. The standalone HTML contains `2` inline scripts and `1` inline style. The implementation archive contains all `1243/1243` tracked files and passes `unzip -t` plus local SHA-256 verification.
+
 ## 20260903
 
 - Release: [7:55 Demo 20260903](https://github.com/zhu607705-coder/7-55/releases/tag/demo-20260903)
