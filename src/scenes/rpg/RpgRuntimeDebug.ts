@@ -24,6 +24,10 @@ export interface RpgRuntimeDebugState {
     turning?: boolean;
     walkFps?: number;
     angle?: number;
+    soaked?: boolean;
+    wetDropletCount?: number;
+    wetFootprintCount?: number;
+    wetEffectMode?: "full" | "reduced" | "off";
     normalizedDepth?: number;
     perspectiveMultiplier?: number;
     displayScale?: number;

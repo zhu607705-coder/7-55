@@ -14,6 +14,7 @@ import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
 import { getRpgRuntimeWarmupSnapshot } from "./scenes/rpg/RpgRuntimePreload";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
+import { isRecordingMode } from "./core/RecordingMode";
 import { getChapterThreeOpeningRuntimeSnapshot } from "./components/ChapterThreeOpeningRuntime";
 import { getQizhenWeatherControlRuntimeSnapshot } from "./scenes/phone/P07_Weather/QizhenWeatherControlRuntime";
 import { audioDirector } from "./modules/AudioDirector";
@@ -49,7 +50,13 @@ function summarizeGameState(state: GameState) {
       phoneShellCount: document.querySelectorAll(".phone-frame").length,
       phaserCanvasCount: document.querySelectorAll("canvas").length
     },
+    recordingMode: {
+      enabled: isRecordingMode(window.location.search),
+      developerLauncherVisible: document.querySelector(".developer-channel-trigger") !== null,
+      developerChannelOpen: document.querySelector("[data-developer-channel-root]") !== null
+    },
     networkMode: state.networkMode,
+    phoneBattery: state.phoneBattery,
     digits: state.digits,
     ownedItems: Object.entries(state.items)
       .filter(([, owned]) => owned)

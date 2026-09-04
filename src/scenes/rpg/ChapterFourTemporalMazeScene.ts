@@ -47,7 +47,9 @@ import {
   resolveChapterFourFinalChaseFailure,
   resolveChapterFourFinalChaseFinish,
   resolveChapterFourFinalChasePortal,
+  requestChapterFourFinalChaseDoorClose,
   stepChapterFourFinalChase,
+  type ChapterFourFinalChaseFloor,
   type ChapterFourFinalChaseState,
   type ChapterFourFinalChaseStepResult
 } from "../../modules/ChapterFourFinalChaseModel";
@@ -350,19 +352,26 @@ interface FinalChaseRuntimeContract {
   storyTimeSeconds: 28440;
   playerSpeed: 208;
   guardSpeed: 196;
+  guardUniformScale: number;
+  guardFootBox: { width: number; height: number };
+  waypointReachDistance: number;
   stableCommittedFramesToArm: 4;
+  a2EntryHoldMs: 1600;
   maxStepMs: 50;
   transportId: "main_stair";
+  guardPursuitStoryFloors: string[];
+  guardStopsAtTransport: string;
   restartCheckpoint: "c4_a1_lobby";
   playerStart: { storyFloor: "A1"; x: number; y: number };
   guardSpawn: { storyFloor: "A1"; x: number; y: number };
+  guardA2Reentry: { storyFloor: "A2"; x: number; y: number };
   waypoints: Array<{ id: string; storyFloor: "A1" | "A2"; x: number; y: number; role: string }>;
   decoyBranches: Array<{ id: string; storyFloor: "A1" | "A2"; x: number; y: number; canAdvance: false }>;
   finishThreshold: {
     targetId: "a2_202_threshold";
     point: { x: number; y: number };
     bounds: MapRect;
-    priority: "finish_before_contact_same_frame";
+    priority: "explicit_door_close";
   };
   room202Door: {
     id: "a2_room202_door";
@@ -882,6 +891,7 @@ export const TASK11_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
 ]);
 export const TASK12_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
   ...TASK11_ACTIONABLE_TARGET_IDS,
+  "a2_202_threshold",
   "a2_202_projection"
 ]);
 export const TASK13_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
@@ -1301,6 +1311,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   private chaseGuardPlateCollider: Phaser.Physics.Arcade.Collider | null = null;
   private finalMinuteSprite: Phaser.GameObjects.Sprite | null = null;
   private finalMinuteTargetZone: Phaser.GameObjects.Zone | null = null;
+  private finalMinuteRecoveryStep = 0;
+  private room202BlockedGuard: Phaser.GameObjects.Sprite | null = null;
   private morningCheckinVisuals = new Map<string, {
     fixture: Phaser.GameObjects.Rectangle;
     details: Phaser.GameObjects.Graphics;
@@ -5877,28 +5889,42 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     // A new runtime is created only from committed persistent state. Failed
     // or stale intent responses therefore cannot move either actor.
     this.destroyChaseRuntime();
-    this.finalChaseState = createChapterFourFinalChaseState(state.chapter4.chaseAttempt);
+    const startFloor: ChapterFourFinalChaseFloor = state.chapter4.floor === "A2" ? "A2" : "A1";
+    this.finalChaseState = createChapterFourFinalChaseState(
+      state.chapter4.chaseAttempt,
+      startFloor
+    );
     this.finalChaseAudioBand = null;
     this.finalChaseCloseVoicePlayed = false;
     this.finalChaseFloorVoicePlayed = false;
-    const floor = getFloor(1);
-    this.currentFloor = 1;
+    const displayFloor: DisplayFloor = startFloor === "A2" ? 2 : 1;
+    const floor = getFloor(displayFloor);
+    this.currentFloor = displayFloor;
+    const playerStart = startFloor === "A2"
+      ? CHAPTER_FOUR_FINAL_CHASE_POINTS.a2CoreEast
+      : FINAL_CHASE_RUNTIME.playerStart;
     this.player.setPosition(
-      floor.offsetX + FINAL_CHASE_RUNTIME.playerStart.x,
-      FINAL_CHASE_RUNTIME.playerStart.y
+      floor.offsetX + playerStart.x,
+      playerStart.y
     ).setVelocity(0, 0).setDepth(PLAYER_TOP_DEPTH);
     this.animator.setFacing("up");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
 
     this.chaseGuard = this.physics.add.sprite(
-      floor.offsetX + FINAL_CHASE_RUNTIME.guardSpawn.x,
-      FINAL_CHASE_RUNTIME.guardSpawn.y,
+      floor.offsetX + (startFloor === "A2"
+        ? FINAL_CHASE_RUNTIME.guardA2Reentry.x
+        : FINAL_CHASE_RUNTIME.guardSpawn.x),
+      startFloor === "A2"
+        ? FINAL_CHASE_RUNTIME.guardA2Reentry.y
+        : FINAL_CHASE_RUNTIME.guardSpawn.y,
       "guard_walk",
       0
     ).setOrigin(0.5, 1)
-      .setScale(0.68)
-      .setDepth(PLAYER_DEPTH_BASE + FINAL_CHASE_RUNTIME.guardSpawn.y + 2)
+      .setScale(FINAL_CHASE_RUNTIME.guardUniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + (startFloor === "A2"
+        ? FINAL_CHASE_RUNTIME.guardA2Reentry.y
+        : FINAL_CHASE_RUNTIME.guardSpawn.y) + 2)
       .setVisible(false);
     this.chaseGuard.play("guard_walk", true);
     this.finalChaseGuardTravelDirection = "side";
@@ -5968,10 +5994,16 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         x: guardBody.center.x - guardFloor.offsetX,
         y: guardBody.center.y
       },
-      playerInsideFinish,
       playerEnteredMainStair,
       guardContact
     });
+    if (runtime.guardFloor !== step.state.guardFloor && step.state.guardFloor === "A2") {
+      const a2 = getFloor(2);
+      const reentryX = a2.offsetX + FINAL_CHASE_RUNTIME.guardA2Reentry.x;
+      const reentryY = FINAL_CHASE_RUNTIME.guardA2Reentry.y;
+      guard.setPosition(reentryX, reentryY).setVelocity(0, 0);
+      guardBody.reset(reentryX, reentryY);
+    }
     this.finalChaseState = step.state;
     this.finalChaseStep = step;
     if (step.state.pursuitBand !== this.finalChaseAudioBand) {
@@ -5993,32 +6025,10 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         });
       }
     }
-    if (step.guardPortalArrival) {
-      const arrivalFloor = getFloor(2);
-      guard.setPosition(
-        arrivalFloor.offsetX + FINAL_CHASE_RUNTIME.waypoints.find(
-          (entry) => entry.id === "a2_main_stair_arrival"
-        )!.x,
-        CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.y
-      );
-      if (!this.finalChaseFloorVoicePlayed) {
-        this.finalChaseFloorVoicePlayed = true;
-        this.safeBridgeEmit("final_chase_floor_changed", {
-          attempt: committed.chapter4.chaseAttempt,
-          floor: "A2"
-        });
-        this.safeBridgeEmit("rpg_subtitle", {
-          text: chapterFourDialogueText("chase.floor_changed"),
-          tone: "system",
-          speaker: "保安",
-          durationMs: 3100
-        });
-      }
-    }
     const activeGuardFloor: DisplayFloor = step.state.guardFloor === "A2" ? 2 : 1;
     const visible = step.guardVisible && this.currentFloor === activeGuardFloor;
     guard.setVisible(visible);
-    if (visible) {
+    if (step.guardVisible) {
       guard.setVelocity(step.desiredGuardVelocity.x, step.desiredGuardVelocity.y)
         .setDepth(PLAYER_DEPTH_BASE + guard.y + 2);
       const guardAnimation = this.resolveFinalChaseGuardTravelAnimation(
@@ -6035,19 +6045,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       this.requestMove(2, "stair");
       return;
     }
-    if (step.finishRequested && !this.pendingStoryRequest) {
-      this.requestStoryIntent({
-        type: "reach_202_threshold",
-        targetId: FINAL_CHASE_RUNTIME.finishThreshold.targetId,
-        expectedAttempt: committed.chapter4.chaseAttempt,
-        spatial: { distance: "within_range" }
-      }, FINAL_CHASE_RUNTIME.finishThreshold.targetId);
-      return;
-    }
     if (step.failureRequested && !this.pendingStoryRequest) {
       this.requestStoryIntent({
         type: "fail_chase",
-        expectedAttempt: committed.chapter4.chaseAttempt
+        expectedAttempt: committed.chapter4.chaseAttempt,
+        failureFloor: playerFloorNumber === 2 ? "A2" : "A1"
       });
     }
   }
@@ -6077,7 +6079,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.room202DoorLabel = this.add.text(
       floor.offsetX + rectCenterX(bounds),
       bounds.y - 8,
-      "202 门已关闭",
+      "202 门已落闩",
       {
         fontFamily: "'Fusion Pixel', monospace",
         fontSize: "12px",
@@ -6086,6 +6088,16 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         strokeThickness: 3
       }
     ).setOrigin(0.5, 1).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 4);
+    this.room202BlockedGuard = this.add.sprite(
+      floor.offsetX + FINAL_CHASE_RUNTIME.finishThreshold.point.x,
+      rectBottom(bounds) + 45,
+      "guard_walk",
+      0
+    ).setOrigin(0.5, 1)
+      .setScale(FINAL_CHASE_RUNTIME.guardUniformScale)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 44)
+      .setTint(0xb9c9d3);
+    this.room202BlockedGuard.anims.stop();
   }
 
   private ensureFinalMinuteRuntime(state: GameState): void {
@@ -6133,6 +6145,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private destroyFinalMinuteRuntime(_reason: string): void {
+    this.finalMinuteRecoveryStep = 0;
     this.phaseRuntimeTargets.delete(FINAL_MINUTE_RUNTIME.targetId);
     this.finalMinuteTargetZone?.destroy();
     this.finalMinuteTargetZone = null;
@@ -6149,6 +6162,8 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.room202DoorVisual = null;
     this.room202DoorLabel?.destroy();
     this.room202DoorLabel = null;
+    this.room202BlockedGuard?.destroy();
+    this.room202BlockedGuard = null;
   }
 
   private destroyChaseRuntime(): void {
@@ -6673,6 +6688,23 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.interactionHint.setText("Space · 调节大厅旧钟").setVisible(true);
         return;
       }
+      if (this.nearbyStoryTarget.contract.id === "a2_202_threshold") {
+        this.interactionHint.setText("Space · 冲进 202 并关门").setVisible(true);
+        return;
+      }
+      if (this.nearbyStoryTarget.contract.id === "a2_202_projection") {
+        const recoveryActions = [
+          "压下座椅固定扣（1/3）",
+          "对准黄铜轴座（2/3）",
+          "取出黄铜分针组件（3/3）"
+        ] as const;
+        this.interactionHint.setText(
+          this.bridge.getState().chapter4.mode === "light"
+            ? `Space · ${recoveryActions[this.finalMinuteRecoveryStep]}`
+            : "当前为深色观察；拆取分针需要浅色操作"
+        ).setVisible(true);
+        return;
+      }
       this.interactionHint.setText(`Space · ${this.nearbyStoryTarget.contract.label}`)
         .setVisible(true);
       return;
@@ -7052,6 +7084,16 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         return;
       }
       if (storyTarget.contract.id === "a2_202_threshold") {
+        if (!this.finalChaseState) {
+          this.showRuntimeInteractionFailure("final_chase_runtime_missing_at_room202_door");
+          return;
+        }
+        const requestedDoorClose = requestChapterFourFinalChaseDoorClose(this.finalChaseState);
+        if (requestedDoorClose.phase !== "finish_pending") {
+          this.showFeedback("保安仍在追击。进入 202 门内后再按 Space 关门。");
+          return;
+        }
+        this.finalChaseState = requestedDoorClose;
         this.requestStoryIntent({
           type: "reach_202_threshold",
           targetId: "a2_202_threshold",
@@ -7061,12 +7103,35 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         return;
       }
       if (storyTarget.contract.id === "a2_202_projection") {
+        if (state.chapter4.mode !== "light") {
+          this.showFeedback("切到浅色操作后，再拆取黄铜分针组件。");
+          return;
+        }
         const runtimeTarget = this.resolveRuntimeTargetContext(
           storyTarget.contract,
           storyTarget.bounds
         );
         if (!runtimeTarget) {
           this.showRuntimeInteractionFailure("final_minute_runtime_bounds_missing");
+          return;
+        }
+        if (this.finalMinuteRecoveryStep < 2) {
+          this.finalMinuteRecoveryStep += 1;
+          const feedback = this.finalMinuteRecoveryStep === 1
+            ? "已压下座椅固定扣（1/3）。继续对准黄铜轴座。"
+            : "黄铜轴座已对准（2/3）。再按一次取出分针组件。";
+          this.showFeedback(feedback);
+          if (this.finalMinuteSprite?.active) {
+            this.tweens.add({
+              targets: this.finalMinuteSprite,
+              scaleX: FINAL_MINUTE_RUNTIME.uniformScale * 1.12,
+              scaleY: FINAL_MINUTE_RUNTIME.uniformScale * 1.12,
+              duration: 120,
+              yoyo: true,
+              ease: "Sine.InOut"
+            });
+          }
+          this.refreshProximity();
           return;
         }
         this.requestStoryIntent({
@@ -8835,6 +8900,21 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     }
     if (pending.route === "stair" && this.finalChaseState?.phase === "portal_transfer") {
       this.finalChaseState = resolveChapterFourFinalChasePortal(this.finalChaseState, true);
+      if (this.finalChaseState.portalApplied && !this.finalChaseFloorVoicePlayed) {
+        this.finalChaseFloorVoicePlayed = true;
+        this.safeBridgeEmit("final_chase_floor_changed", {
+          attempt: this.finalChaseState.attempt,
+          floor: "A2",
+          guardFloor: this.finalChaseState.guardFloor,
+          playerFloor: this.finalChaseState.floor
+        });
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: chapterFourDialogueText("chase.floor_changed"),
+          tone: "system",
+          speaker: "保安",
+          durationMs: 3100
+        });
+      }
     }
     // Transfer animation starts only after the controller accepts the authored
     // move or main-stair transaction.
@@ -9245,6 +9325,11 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
         this.configureCameraForCurrentFloor();
         this.cameras.main.centerOn(this.player.x, this.player.y);
         this.storyPresentation = "idle";
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "门闩已经落下，保安被挡在 202 门外。先拆开固定扣，再取出分针。",
+          tone: "system",
+          durationMs: 3200
+        });
         break;
       case "fail_chase":
         if (this.finalChaseState?.phase === "failure_pending") {
@@ -9782,6 +9867,17 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.currentFloor = pending.targetFloor;
     this.player.setPosition(destination.offsetX + arrival.x, arrival.y)
       .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + arrival.y);
+    if (pending.route === "stair"
+      && pending.targetFloor === 2
+      && this.finalChaseState?.guardFloor === "A2"
+      && this.chaseGuard?.active) {
+      const guardX = destination.offsetX + FINAL_CHASE_RUNTIME.guardA2Reentry.x;
+      const guardY = FINAL_CHASE_RUNTIME.guardA2Reentry.y;
+      this.chaseGuard.setPosition(guardX, guardY).setVelocity(0, 0)
+        .setDepth(PLAYER_DEPTH_BASE + guardY + 2)
+        .setVisible(true);
+      (this.chaseGuard.body as Phaser.Physics.Arcade.Body).reset(guardX, guardY);
+    }
     this.animator.setFacing("down");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);

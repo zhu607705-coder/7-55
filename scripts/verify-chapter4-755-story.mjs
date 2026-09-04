@@ -985,10 +985,10 @@ function validateTask7RuntimeSources(errors) {
   const task12ActionableIds = [...task12ActionableBlock.matchAll(/"([^"]+)"/g)]
     .map((match) => match[1]);
   if (!/\.\.\.TASK11_ACTIONABLE_TARGET_IDS/.test(task12ActionableBlock)
-    || !sameArray(task12ActionableIds, ["a2_202_projection"])
-    || /a2_202_threshold|a1_campus_card_reader|a1_attendance_paper_slot/.test(task12ActionableBlock)
+    || !sameArray(task12ActionableIds, ["a2_202_threshold", "a2_202_projection"])
+    || /a1_campus_card_reader|a1_attendance_paper_slot/.test(task12ActionableBlock)
   ) {
-    errors.push("Task 12 Scene actionable target allowlist must add only the final-minute runtime entity while threshold remains automatic");
+    errors.push("Task 12 Scene actionable target allowlist must add the explicit Room202 door action and final-minute runtime entity");
   }
   const task13ActionableBlock = scene.match(
     /export const TASK13_ACTIONABLE_TARGET_IDS[\s\S]*?const MAINTENANCE_RUNTIME_TARGET_IDS/
@@ -1655,9 +1655,14 @@ function validateTask7RuntimeSources(errors) {
     || !/allowSceneKeyboard\s*=\s*locked[\s\S]*?this\.alumniPanel !== null \|\| clockPanelInteractive \|\| floorPanelInteractive/.test(scene)
     || !/actionButton[\s\S]*?setInteractive[\s\S]*?closeAlumniPanel/.test(scene)
     || !/ChapterFourExteriorQuestions/.test(host)
-    || !/保存两项回答/.test(exteriorQuestions)
+    || !/purpose_entering[\s\S]*?purpose_dissolving[\s\S]*?person_entering[\s\S]*?person_dissolving[\s\S]*?submitting/.test(exteriorQuestions)
+    || !/setPurposeAnswer[\s\S]*?setStage\("purpose_dissolving"\)/.test(exteriorQuestions)
+    || !/setPersonAnswer[\s\S]*?setStage\("person_dissolving"\)/.test(exteriorQuestions)
+    || !/setStage\("submitting"\)[\s\S]*?onSubmit\(purposeAnswer, personAnswer\)/.test(exteriorQuestions)
+    || !/chapter4-exterior-questions__sparks/.test(exteriorQuestions)
+    || !/正在保存两项回答/.test(exteriorQuestions)
     || !/回答已保存/.test(exteriorQuestions)) {
-    errors.push("A3 alumni modal and elevator panels must keep scene-local pointer and keyboard input while the exterior lamp owns atomic two-question submission and confirmation");
+    errors.push("A3 panels must preserve local input while the exterior lamp reveals one question at a time, dissolves each answer with particles, and atomically submits both answers");
   }
   const lifecycleCleanupBlock = scene.match(
     /this\.pendingMoveTimer\?\.remove\(false\)[\s\S]*?clearRpgRuntimeDebugState\(\)/
@@ -1734,9 +1739,11 @@ function validateTask7RuntimeSources(errors) {
     || !/transportId:\s*"main_stair"/.test(finalChaseModel)
     || !/playerStart:[\s\S]*?x:\s*590,\s*y:\s*612/.test(finalChaseModel)
     || !/guardSpawn:[\s\S]*?x:\s*590,\s*y:\s*724/.test(finalChaseModel)
+    || !/a2GuardReentry:[\s\S]*?x:\s*966,\s*y:\s*174/.test(finalChaseModel)
     || !/finishThreshold:[\s\S]*?x:\s*1353,\s*y:\s*356\.5/.test(finalChaseModel)
-    || !/if \(input\.floor === "A2" && input\.playerInsideFinish[^)]*\)[\s\S]*?if \(input\.guardContact[^)]*\)/.test(finalChaseModel)) {
-    errors.push("Task 12 pure final-chase model must encode the six phases, four-frame arming, exact speeds/points, main-stair portal and finish-before-contact ordering");
+    || !/requestChapterFourFinalChaseDoorClose[\s\S]*?phase:\s*"finish_pending"/.test(finalChaseModel)
+    || !/guardFloor:\s*"A2"[\s\S]*?guardTargetWaypointId:\s*"a2_main_stair_arrival"/.test(finalChaseModel)) {
+    errors.push("Task 12 pure final-chase model must encode the seven phases, four-frame arming, exact speeds/points, upstairs re-entry and explicit Room202 door action");
   }
   const task12ControllerBlock = controllerIntentResolver.match(
     /case "traverse_main_stair"[\s\S]*?case "read_campus_card"/
@@ -1748,7 +1755,7 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 12 controller must own attempt-checked stair traversal, atomic finish/fail/final-minute transactions and the A2 recovery position");
   }
   if (!/case "reach_202_threshold"[\s\S]*?\["expectedAttempt"\]/.test(controller)
-    || !/case "fail_chase"[\s\S]*?hasExactKeys\(value, \["type", "expectedAttempt"\]\)/.test(controller)
+    || !/case "fail_chase"[\s\S]*?hasExactKeys\(value, \["type", "expectedAttempt", "failureFloor"\]\)[\s\S]*?value\.failureFloor === "A1"[\s\S]*?value\.failureFloor === "A2"/.test(controller)
     || !/case "traverse_main_stair"[\s\S]*?hasExactKeys\(value, \["type", "fromFloor", "toFloor", "expectedAttempt"\]\)/.test(controller)) {
     errors.push("Task 12 intent parser must require exact expectedAttempt fields for finish, failure and main-stair transfer");
   }
@@ -1767,21 +1774,22 @@ function validateTask7RuntimeSources(errors) {
   const task12TargetBlock = interaction.match(
     /a2_202_projection:\s*runtimeEntityTarget\([\s\S]*?\n\s*\),/
   )?.[0] ?? "";
-  if (!/"a2_202_projection"[\s\S]*?finalMinuteRuntime[\s\S]*?entityId/.test(task12TargetBlock)
+  if (!/TASK12_ACTIONABLE_TARGET_IDS:[\s\S]*?TASK11_ACTIONABLE_TARGET_IDS[\s\S]*?"a2_202_threshold"[\s\S]*?"a2_202_projection"/.test(scene)
+    || !/"a2_202_projection"[\s\S]*?finalMinuteRuntime[\s\S]*?entityId/.test(task12TargetBlock)
     || !/\["final_minute_recovery"\]/.test(task12TargetBlock)
     || /layoutAnchorTarget/.test(task12TargetBlock)) {
-    errors.push("Task 12 final-minute target must be a closed-by-default runtime entity, never a static layout anchor");
+    errors.push("Task 12 must keep the Room202 door and final-minute projection in the actionable target set, with the minute target bound to a closed-by-default runtime entity");
   }
   const task12SceneRuntimeBlock = scene.match(
     /private ensureFinalChaseRuntime[\s\S]*?private syncPhaseSideEffects/
   )?.[0] ?? "";
-  if (!/createChapterFourFinalChaseState\(state\.chapter4\.chaseAttempt\)/.test(task12SceneRuntimeBlock)
+  if (!/createChapterFourFinalChaseState\([\s\S]*?state\.chapter4\.chaseAttempt,[\s\S]*?startFloor[\s\S]*?\)/.test(task12SceneRuntimeBlock)
     || !/setVisible\(false\)/.test(task12SceneRuntimeBlock)
     || !/committedAndApplied[\s\S]*?projectionSignature === this\.pendingProjectionSignature[\s\S]*?appliedPlateIds/.test(task12SceneRuntimeBlock)
     || !/stepChapterFourFinalChase\(runtime/.test(task12SceneRuntimeBlock)
     || !/chapterFourFinalChaseFootContact/.test(task12SceneRuntimeBlock)
     || !/playerEnteredMainStair/.test(task12SceneRuntimeBlock)
-    || !/expectedAttempt:\s*committed\.chapter4\.chaseAttempt/.test(task12SceneRuntimeBlock)) {
+    || !/expectedAttempt:\s*committed\.chapter4\.chaseAttempt[\s\S]*?failureFloor:\s*playerFloorNumber === 2 \? "A2" : "A1"/.test(task12SceneRuntimeBlock)) {
     errors.push("Task 12 Scene must arm only from four committed/applied frames, feed actual feet into the pure model, recognize the real main stair and attach current attempt tokens to finish/failure");
   }
   if (!/const movementSpeed = this\.bridge\.getState\(\)\.chapter4\.phase === "final_chase"[\s\S]*?CHAPTER_FOUR_FINAL_CHASE_RULES\.playerSpeed/.test(scene)
@@ -1818,11 +1826,11 @@ function validateTask7RuntimeSources(errors) {
   if (!/case "acknowledge_exterior_closure"[\s\S]*?closureSessionVerifier\.reference[\s\S]*?closureProofMatchesReference\(intent\.proof, reference\)[\s\S]*?verifyCompletedSession\(intent\.proof\)/.test(controller)
     || !/proof:\s*ChapterFourClosureSessionProof/.test(controller)
     || !/hasExactKeys\(value, \["type", "proof"\]\)/.test(controller)
-    || !/CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:[\s\S]*?= null/.test(closureContract)
-    || !/verifyCompletedSession:[\s\S]*?=> false/.test(closureContract)
+    || !/CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:[\s\S]*?Object\.freeze\(\{[\s\S]*?sequenceId:\s*"chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4"[\s\S]*?rendererModule:\s*"src\/components\/temporal-maze\/ChapterFourStarLampThreeRenderer\.ts"/.test(closureContract)
+    || !/BLOCKED_CHAPTER_FOUR_CLOSURE_SESSION_VERIFIER:[\s\S]*?reference:\s*null[\s\S]*?verifyCompletedSession:[\s\S]*?=> false/.test(closureContract)
     || /syncExteriorClosureAcknowledgement/.test(scene)
     || /requestStoryIntent\(\{\s*type:\s*"acknowledge_exterior_closure"\s*\}\)/.test(scene)) {
-    errors.push("Task 13 exterior completion must require an exact approved consumer session proof and remain locked while the official reference is absent");
+    errors.push("Task 13 exterior completion must require the exact approved Three.js closure session proof while the blocked verifier remains fail-closed");
   }
 
   const task13SceneRuntimeBlock = scene.match(
@@ -2269,7 +2277,7 @@ function validate(content) {
   if (!isRecord(content.tasks)
     || content.tasks.turn_clock_to_0755?.label !== "把旧钟拨向 07:55"
     || content.tasks.solve_light_grid?.label !== "让必要路线亮起"
-    || content.tasks.reach_lecture_202?.label !== "前往 202"
+    || content.tasks.reach_lecture_202?.label !== "进入 202 并关门"
     || content.tasks.collect_final_minute?.label !== "取回黄铜分针组件"
     || content.tasks.return_via_main_stair?.label !== "把黄铜分针组件带回一楼大厅"
     || content.tasks.install_final_minute?.label !== "将黄铜分针组件装回大厅旧钟") {
@@ -2412,19 +2420,21 @@ function validate(content) {
       || guard.finalChase.mode !== "chase"
       || guard.finalChase.runtimeModel !== "ChapterFourFinalChaseModel"
       || !sameArray(guard.finalChase.states, [
-        "arming", "running", "portal_transfer", "finish_pending", "failure_pending", "complete"
+        "arming", "running", "portal_transfer", "escaped_floor", "finish_pending", "failure_pending", "complete"
       ])
       || guard.finalChase.armingCommittedFrames !== 4
       || guard.finalChase.playerSpeed !== 208
       || guard.finalChase.guardSpeed !== 196
       || guard.finalChase.maxStepMs !== 50
       || guard.finalChase.transportId !== "main_stair"
-      || guard.finalChase.finishPriority !== "finish_before_contact_same_frame"
+      || !sameArray(guard.finalChase.pursuitFloors, ["A1", "A2"])
+      || guard.finalChase.stopBoundary !== "room202_door"
+      || guard.finalChase.finishPriority !== "explicit_door_close_before_contact"
       || guard.finalChase.attemptToken !== "expectedAttempt"
       || guard.finalChase.restartPolicy !== "chase_only"
       || guard.finalChase.restartCheckpoint !== "c4_a1_lobby"
       || guard.finalChase.canDisengageAfterSightLoss !== false) {
-      errors.push("guard.finalChase must bind the pure six-state Task12 model, exact timing/speeds, main-stair portal, finish priority and attempt-checked chase-only restart");
+      errors.push("guard.finalChase must bind the pure seven-state Task12 model, upstairs pursuit, explicit Room202 door action and attempt-checked chase-only restart");
     }
   }
 
@@ -2557,4 +2567,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 story contract valid: ${EXPECTED_PHASES.length} phases, ${EXPECTED_TIME_STATES.length} time states, 5 light zones, ${EXPECTED_ITEM_STEPS.length} item operations, Task 7/8/9/10/11/12/13 runtime gates verified; exterior completion blocked without official reference.`);
+console.log(`Chapter 4 7:55 story contract valid: ${EXPECTED_PHASES.length} phases, ${EXPECTED_TIME_STATES.length} time states, 5 light zones, ${EXPECTED_ITEM_STEPS.length} item operations, Task 7/8/9/10/11/12/13 runtime gates verified; exterior completion requires the approved one-time closure proof.`);

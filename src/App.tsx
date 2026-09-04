@@ -12,6 +12,7 @@ import {
 import { eventBus } from "./core/EventBus";
 import { gameStore } from "./core/GameState";
 import { setDeveloperInputBlocked } from "./core/DeveloperInputGate";
+import { isRecordingMode } from "./core/RecordingMode";
 import { SceneRouter } from "./core/SceneRouter";
 import { DEVELOPER_PANEL_OPEN_KEY } from "./core/StorageKeys";
 import { selectFeatureAccess } from "./core/FeatureAccess";
@@ -37,7 +38,11 @@ import {
 } from "./scenes/rpg/RpgRuntimePreload";
 import { Chapter4PrologueRuntimeGate } from "./components/Chapter4PrologueRuntimeGate";
 
-const router = new SceneRouter(gameStore, eventBus);
+const router = new SceneRouter(
+  gameStore,
+  eventBus,
+  (previousScene, nextScene) => kit.battery.consumeForSceneOpen(previousScene, nextScene)
+);
 const RpgGameHost = lazy(() =>
   preloadRpgGameHost().then((module) => ({ default: module.RpgGameHost }))
 );
@@ -72,6 +77,7 @@ const DESKTOP_GAMEPLAY_QUERY = "(min-width: 1100px) and (orientation: landscape)
 function readInitialDeveloperChannelOpen(): boolean {
   const params = new URLSearchParams(window.location.search);
   if (params.get("dev") === "0") return false;
+  if (isRecordingMode(window.location.search) && params.get("dev") !== "1") return false;
   if (params.has("devCheckpoint") && params.get("dev") !== "1") return false;
   if (params.get("dev") === "1") return true;
   try {

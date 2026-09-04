@@ -428,14 +428,14 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     ]
       .filter(Boolean).length;
     if (branchCount < 3) {
-      return task("parallel_tool_branches", `完成湖区三处分支 ${branchCount}/3`, [
-        lake.lockerOpened ? "码头柜门：已取得尼龙绳。" : "码头柜门：钓起钥匙并打开柜门。",
-        state.items.brokenNetFrame || lake.netCombined ? "浮排分支：已取得破损网框。" : "浮排分支：在直河道钓起破损网框。",
-        lake.swanFed ? "天鹅分支：已取得磁性扣。" : "天鹅分支：前往围栏处理旧饲料盒。",
-        "三个分支可以任意顺序完成。"
+      return task("parallel_tool_branches", `取得尼龙绳、破损网框和磁性扣 ${branchCount}/3`, [
+        lake.lockerOpened ? "码头储物柜：已取得尼龙绳。" : "码头储物柜：钓起钥匙，再用钥匙打开柜门取得尼龙绳。",
+        state.items.brokenNetFrame || lake.netCombined ? "直河道旧木桩：已取得破损网框。" : "直河道旧木桩：靠近水纹，钓起破损网框。",
+        lake.swanFed ? "黑天鹅围栏：已取得磁性扣。" : "黑天鹅围栏：处理旧饲料盒，取得磁性扣。",
+        "三件材料可以按任意顺序取得。"
       ]);
     }
-    return task("combine_final_rig", "合并三处分支材料", [
+    return task("combine_final_rig", "把三件材料装到钓鱼竿上", [
       "返回大湖面的最终钓具装配位。",
       "将尼龙绳、破损网框、磁性扣和钓鱼竿放入装配位。"
     ]);

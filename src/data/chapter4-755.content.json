@@ -942,8 +942,8 @@
       "label": "在未点亮的灿若星辰灯前回答竺老两问",
       "hints": [
         "双重签到完成后，楼外会保留一盏未点亮的灿若星辰灯。",
-        "分别选择求学目的与希望成为的人，系统会一次保存两项回答。",
-        "确认文字只显示“回答已保存”；随后才开始点灯收束。"
+        "第一问逐渐浮现，选择回答后以星光粒子消散；随后第二问按同样的节奏出现。",
+        "第二问完成后一次保存两项回答；确认文字只显示“回答已保存”，随后开始点灯收束。"
       ]
     },
     "resolve_a3_archive_chain": {
@@ -1075,19 +1075,19 @@
       ]
     },
     "reach_lecture_202": {
-      "label": "前往 202",
+      "label": "进入 202 并关门",
       "hints": [
         "把已经确认的“202 至主楼梯”疏散线反向使用，从一楼主楼梯追向 202。",
-        "追逐阶段只保存当前追逐检查点，失败会从该段重新开始。",
-        "沿一楼主楼梯进入二楼，继续移动到 202 门口的到达区域。"
+        "保安会从主楼梯追到二楼；失败会从一楼追逐检查点重新开始。",
+        "进入 202 门内的到达区域，按 Space 落下门闩。"
       ]
     },
     "collect_final_minute": {
       "label": "取回黄铜分针组件",
       "hints": [
-        "查看二楼 202 内的投影区域。",
-        "到达 202 后，黄铜分针组件与签到记录纸会在同一记录点恢复。",
-        "在浅色操作中靠近 202 投影并执行拾取。"
+        "确认门闩已落下，保安仍被挡在 202 门外。",
+        "在浅色操作中靠近座椅间的黄铜分针组件。",
+        "依次压下固定扣、对准黄铜轴座，再取出分针组件。"
       ]
     },
     "return_via_main_stair": {
@@ -1369,7 +1369,7 @@
     "chase.floor_changed": [
       {
         "speaker": "guard",
-        "text": "别往楼上跑。现在停下。"
+        "text": "我已经上二楼了。别往 202 跑。"
       }
     ],
     "chase.failed": [
@@ -1391,7 +1391,7 @@
     "chase.arrived": [
       {
         "speaker": "system",
-        "text": "阶梯教室门已关闭。"
+        "text": "门闩已落下，保安被挡在 202 门外。"
       }
     ],
     "lecture.final_minute_recovered": [
@@ -1796,6 +1796,7 @@
         "arming",
         "running",
         "portal_transfer",
+        "escaped_floor",
         "finish_pending",
         "failure_pending",
         "complete"
@@ -1805,10 +1806,17 @@
       "guardSpeed": 196,
       "maxStepMs": 50,
       "transportId": "main_stair",
-      "finishPriority": "finish_before_contact_same_frame",
+      "pursuitFloors": [
+        "A1",
+        "A2"
+      ],
+      "stopBoundary": "room202_door",
+      "finishPriority": "explicit_door_close_before_contact",
       "attemptToken": "expectedAttempt",
       "restartPolicy": "chase_only",
       "restartCheckpoint": "c4_a1_lobby",
+      "upstairsRestartCheckpoint": "c4_a2_corridor",
+      "a2EntryHoldMs": 1600,
       "canDisengageAfterSightLoss": false,
       "preserveStatePaths": [
         "lightGrid.mask",

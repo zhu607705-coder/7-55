@@ -322,7 +322,11 @@ export type ChapterFour755Intent =
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.lecture202Threshold;
       expectedAttempt: number;
     }>
-  | { type: "fail_chase"; expectedAttempt: number }
+  | {
+      type: "fail_chase";
+      expectedAttempt: number;
+      failureFloor: "A1" | "A2";
+    }
   | ChapterFour755TargetIntent<{
       type: "collect_final_minute";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.finalMinuteProjection;
@@ -1651,13 +1655,15 @@ export class ChapterFourTemporalMazeController {
 
       case "fail_chase": {
         if (chapter.phase !== "final_chase"
-          || intent.expectedAttempt !== chapter.chaseAttempt) return reject("locked");
+          || intent.expectedAttempt !== chapter.chaseAttempt
+          || intent.failureFloor !== chapter.floor) return reject("locked");
+        const failedUpstairs = intent.failureFloor === "A2";
         return accept(this.transition(state, "final_chase", {
           chaseAttempt: chapter.chaseAttempt + 1,
-          chaseRestartCheckpoint: "c4_a1_lobby",
-          floor: "A1",
-          roomId: "a1_lobby",
-          checkpoint: "c4_a1_lobby"
+          chaseRestartCheckpoint: failedUpstairs ? "c4_a2_corridor" : "c4_a1_lobby",
+          floor: failedUpstairs ? "A2" : "A1",
+          roomId: failedUpstairs ? "a2_corridor" : "a1_lobby",
+          checkpoint: failedUpstairs ? "c4_a2_corridor" : "c4_a1_lobby"
         }));
       }
 
@@ -2180,8 +2186,9 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
       return isNonNegativeSafeInteger(value.expectedAttempt)
         && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.lecture202Threshold, ["expectedAttempt"]);
     case "fail_chase":
-      return hasExactKeys(value, ["type", "expectedAttempt"])
-        && isNonNegativeSafeInteger(value.expectedAttempt);
+      return hasExactKeys(value, ["type", "expectedAttempt", "failureFloor"])
+        && isNonNegativeSafeInteger(value.expectedAttempt)
+        && (value.failureFloor === "A1" || value.failureFloor === "A2");
     case "recover_from_maintenance_patrol":
       return hasExactKeys(value, ["type"]);
     case "acknowledge_exterior_closure":

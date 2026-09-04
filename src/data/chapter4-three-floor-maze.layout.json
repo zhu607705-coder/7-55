@@ -1439,10 +1439,23 @@
     "storyTimeSeconds": 28440,
     "playerSpeed": 208,
     "guardSpeed": 196,
+    "guardUniformScale": 0.68,
+    "guardFootBox": {
+      "width": 20.4,
+      "height": 15.3
+    },
+    "waypointReachDistance": 8,
     "stableCommittedFramesToArm": 4,
+    "a2EntryHoldMs": 1600,
     "maxStepMs": 50,
     "transportId": "main_stair",
+    "guardPursuitStoryFloors": [
+      "A1",
+      "A2"
+    ],
+    "guardStopsAtTransport": "room202_door",
     "restartCheckpoint": "c4_a1_lobby",
+    "upstairsRestartCheckpoint": "c4_a2_corridor",
     "playerStart": {
       "storyFloor": "A1",
       "x": 590,
@@ -1453,7 +1466,19 @@
       "x": 590,
       "y": 724
     },
+    "guardA2Reentry": {
+      "storyFloor": "A2",
+      "x": 966,
+      "y": 174
+    },
     "waypoints": [
+      {
+        "id": "a1_front_desk_west",
+        "storyFloor": "A1",
+        "x": 720,
+        "y": 540,
+        "role": "route"
+      },
       {
         "id": "a1_lower_hall",
         "storyFloor": "A1",
@@ -1466,6 +1491,13 @@
         "storyFloor": "A1",
         "x": 836,
         "y": 228,
+        "role": "route"
+      },
+      {
+        "id": "a1_stair_approach",
+        "storyFloor": "A1",
+        "x": 1001,
+        "y": 238,
         "role": "route"
       },
       {
@@ -1502,6 +1534,20 @@
         "x": 1353,
         "y": 400,
         "role": "route"
+      },
+      {
+        "id": "a2_room203_corner_north",
+        "storyFloor": "A2",
+        "x": 1310,
+        "y": 490,
+        "role": "route"
+      },
+      {
+        "id": "a2_room203_corner_south",
+        "storyFloor": "A2",
+        "x": 1310,
+        "y": 540,
+        "role": "route"
       }
     ],
     "decoyBranches": [
@@ -1532,7 +1578,7 @@
         "width": 108,
         "height": 45
       },
-      "priority": "finish_before_contact_same_frame"
+      "priority": "explicit_door_close"
     },
     "room202Door": {
       "id": "a2_room202_door",
@@ -3412,7 +3458,7 @@
         },
         {
           "id": "a2_202_threshold",
-          "label": "202 阶梯教室门槛",
+          "label": "进入 202 并关门",
           "bounds": {
             "x": 1299,
             "y": 334,

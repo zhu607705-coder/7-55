@@ -2602,7 +2602,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "qizhen_final_rig_combined") {
-      this.showFeedback("三处分支素材已合并，可以进行最终捕纸。", "success");
+      this.showFeedback("尼龙绳、破损网框和磁性扣已装到钓鱼竿上，可以捕纸了。", "success");
       return;
     }
     if (name === "qizhen_magnetic_rod_combined") {

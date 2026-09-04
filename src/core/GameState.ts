@@ -12,6 +12,11 @@ export function createInitialGameState(): GameState {
     currentScene: "alarm",
     networkMode: "campus_wifi",
     themeMode: "normal",
+    phoneBattery: {
+      percent: 17,
+      lowPowerMode: false,
+      rechargeCount: 0
+    },
     digits: {
       d1: null,
       d2: null,

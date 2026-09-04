@@ -1,5 +1,33 @@
 Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 
+## 2026-09-04 全量上传前同步与发布门禁
+
+- 用户确认将当前隔离交付 worktree 中的完整修改上传 GitHub 并直接合并到 `main`。上传前重新执行三视图审计：本地待交付为 `47` 个已跟踪修改与 `8` 个新文件；本地基线之上待提交 commit 为 `0`；远端新增 `53e3121 feat(rpg): animate campus water and refine side walk`。
+- 工作树改动使用精确 stash 保护后，以 fast-forward 同步 `origin/main@53e3121`，然后恢复完整修改。`docs/game-text-by-chapter.md` 通过正式导出命令解冲突，`progress.md` 同时保留远端水面／侧向人物记录与本地玩法记录；冲突标记为 `0`。原始开发 checkout 保持未动。
+- 首轮发布门禁精确发现 `chase.floor_changed` 中文字幕与旧追逐语音的合同不一致。将上楼语音更新为“我已经上二楼了。别往 202 跑。”并重新生成单句 MP3；最终时长 `2.526s`，SHA-256 为 `17961945e1d9bcb816761c07b0146e69f0ad532ce80647de3c430185f11c0fb6`，`npm run audio:pursuit:verify` 通过 `112` 项断言。
+- Fresh `npm run validate:critical` 通过 `22/22`；与 GitHub Web CI 相同的 Fresh `npm run validate:release` 通过 `33/33`，总用时 `201267ms`。包含 TypeScript、文案、存档／控制器，第三、四章玩法，地图／音频合同，生产构建，离线单文件与三条浏览器冒烟。文案清单为 `7194` 条；冒烟覆盖 `390×844` 手机、`1440×900` 剧场 RPG 与 `1440×900` 第四章 RPG，三条均通过。
+- 最新 `demo/index.html` 由发布套件生成，没有手工编辑；文件大小 `269164832` 字节，含 `2` 个内联脚本和 `1` 个内联样式，SHA-256 为 `79297b91ac4b4c2e43617a4ed29d184e4bc20b76eccadc921e0f8ff77e0ccb08`。当前结论不包含从第一章到第四章的全程人工通关复验。
+
+## 2026-09-04 终章问答面板滚动条移除
+
+- 用户反馈：终章两问面板右侧出现两条粗竖条，需要移除。
+- 根因：`.chapter4-exterior-questions__panel` 使用 `overflow-y: auto`，Codex 内置浏览器仍绘制原生滚动轨道与滑块；当前页面实测 `clientHeight=308`、`scrollHeight=308`，没有真实内容溢出。
+- 实现：继续保留 `overflow-y: auto` 作为矮窗口和触屏滚动后备，同时用 Firefox、旧 Edge/IE 和 WebKit 对应规则隐藏滚动条视觉。内容、键盘焦点、滚轮、触控板和触屏滚动能力不变。
+- 浏览器验证：已打开的 Chromium 源码页实测 `scrollbarWidth=none`、`clientHeight=308`、`scrollHeight=308`，第一问的三个回答按钮均可见，页面 error 日志为 `0`；标准 web-game 客户端返回当前终章状态且没有生成错误文件。
+- 构建验证：`npm run typecheck`、`git diff --check`、`npm run build:single`、`npm run verify:single` 和 `npm run verify:recording-mode` 通过。重新生成的 `demo/index.html` 为 `268937698` 字节，包含两个内联脚本和一个内联样式，SHA-256 为 `5caebcfe25b97dba1ebe812d28067c854c76ae796c0b8bdc7d19b65db339eec7`。
+- 清理：标准客户端生成的临时截图和状态文件在检查后删除，不进入交付。
+- Git 边界：本修改加入当前待上传完整交付范围；本节写入时仍未暂存、提交、变基、推送、发布或合并。
+
+## 2026-09-04 全游戏鼠标指针稳定化
+
+- 用户反馈：游戏内部的鼠标样式在画布、按钮、道具与拖拽目标之间反复跳转，需要统一。
+- 根因：现有场景样式包含 `default / pointer / grab / grabbing / not-allowed / ns-resize / ew-resize / text / wait` 九类指针值，Phaser RPG 场景另有 `39` 个 `useHandCursor` 动态命中点；移动经过小型交互区域时会连续改写画布指针。
+- 实现：新增最终加载的 `src/styles/cursor.css`，对文档和 `#root` 内全部元素、伪元素统一使用系统默认箭头，并以 `!important` 阻止 Phaser 运行时内联手形覆盖。各组件原有悬停颜色、焦点描边、禁用透明度和拖拽影像继续承担交互反馈。
+- 自动验证：静态导入顺序合同和 `git diff --check` 通过；`npm run typecheck` 通过。标准 web-game 客户端在 `c4-755-chase` 完成键盘移动并检查实际画面，页面与控制台错误为 `0`。真实 Chromium 在追击与终章两问两个源码入口采样页面、按钮、Phaser 画布和多个画布坐标，共 `17` 个指针样本，计算值全部为 `default`。
+- 单文件：`npm run build:single`、`npm run verify:single` 和 `npm run verify:recording-mode` 通过。最终 `demo/index.html` 为 `268937544` 字节，SHA-256 为 `615c2d4b775da677386735744bc4d16c4d783092faeb6f0a53a2eea523e6f11a`。延长资源加载等待后，标准客户端实际看到 A1 大厅完整画面；最终 `file://` 成品中有 `84` 个可见 DOM 元素和 `5` 个画布坐标样本，指针计算值全部为 `default`，录制模式保持 `DEV` 入口关闭，浏览器错误为 `0`。
+- 清理：本轮生成的 Playwright 截图、状态文件和临时 QA 目录在目检与结论记录后删除，不进入交付。
+- Git 边界：该修改加入当前待上传完整交付范围；本节写入时仍未暂存、提交、变基、推送、发布或合并。
+
 ## 2026-09-03 主角侧向迈腿节奏与近并步帧
 
 - 原因：共享主角侧向有 `12` 张实际姿势，旧逻辑却把它们压入上下方向 `8` 帧共用的 `880ms` 周期，侧向帧率达到约 `13.64 FPS`，单帧只停留约 `73.3ms`，两腿交换承重的姿势难以看清。
@@ -4104,3 +4132,110 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - 合并后定向验证通过：`npm run typecheck`、`npm run map:zijingang`、`npm run verify:rpg-character-sprites`。校园水面清单仍为 `188` 个分块、`255` 个非零 Alpha 级别并包含 `north_mid_river`；人物资源仍为 `24` 张唯一行走帧与一张独立侧向站立帧。
 - `npm run text:export` 已刷新文案清单，`npm run text:check` 确认为 `7145` 条。发布套件在与 CI 一致的 Node 22 环境及临时便携 `ffmpeg/ffprobe` 下通过 `32/32`；Windows 本地仅对上游因果校验器使用临时跨平台路径解析，验证完成后已还原，未纳入提交。
 - 生产构建、离线单文件结构和三条浏览器冒烟全部通过。最终 `demo/index.html` 为 `269093580` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `7813d9f168cfd42b5ab156dfc9c9947257dfd0bc7cc45e4a08ad7d55b172ced1`。
+
+## 2026-09-04 保安跨层追击、启真湖节奏反馈与终章 3D 灯收口
+
+- 修复第四章最终追逐中保安在前台、花坛转角和楼层切换处卡住的问题。A1 追逐图增加前台西侧与主楼梯接近节点，保安会锁定当前路径节点直至抵达，并按实际脚部碰撞框绕开前台、花坛和墙体；玩家进入 A2 后，保安继续留在 A1 离屏行走，抵达 A1 主楼梯后才进入 `escaped_floor` 并退出追击，不会出现在 A2 或跨层接触玩家。楼层切换语音恢复为一次性事件，并保留旧 `floor: "A2"` 字段与新增的保安、玩家楼层信息。
+- 第四章运行校验新增 accepted 主楼梯后的完整离屏路径模拟，逐段检查 `a1_chase_start → a1_front_desk_west → a1_lower_hall → a1_central → a1_stair_approach → a1_main_stair`。测试使用真实保安脚部框并以 `0.5px` 步长抽样，确认沿途无碰撞、到站前不会提前退出、到站后才结束 A1 追击。
+- 修复启真湖节奏钓鱼首枚音符长时间停在轨道顶部、临近判定才突然落下的问题。音符从首次渲染开始持续向判定线移动，预告、下落和判定共用同一单调时钟；内置浏览器在会话开始约 `0.4s` 已能看到 S 列白色下落块，A/S/D 固定键位完整可读。任务文案改为具体材料：尼龙绳、破损网框和磁性扣，并分别给出码头储物柜、直河道系缆柱和天鹅围栏的来源，不再使用意义不明的“三个所需钓具”。
+- 终章“灿若星辰灯”改为真实 Three.js 三维演出：使用透视相机、三维灯柱／球体／灯珠／灯芯和三层星空。正式时序先保持全灯暗态完成 `360°` 环绕，回到正面停顿后再依次点亮灯珠、灯芯和整体光晕，总长 `10.8s`；页面隐藏时暂停计时，减弱动态模式保留分段点亮，WebGL 不可用时使用五张既有 PNG 完整重播同一因果顺序。章节完成凭证只在整段演出结束后一次性签发并消费。
+- 定向回归通过：`chapter4:validate-star-lamp` `482` 项、`chapter4:validate-task14` `407` 项、`chapter4:validate-topology` `4953` 项、`chapter4:validate-runtime` `1124` 项；`chapter4:validate-story`、`chapter4:validate-assets`、`qizhen:validate-fishing`、`typecheck` 与 `git diff --check` 均通过。内置浏览器确认 3D 灯环绕中段保持 `lightLevel=0`、一周后达到 `orbitTurns=1` 再点亮，并确认启真湖节奏板已出现可见下落块；浏览器错误日志为 `0`。
+- `npm run build:single` 与 `npm run verify:single` 已通过。生成的 `demo/index.html` 为 `268912760` 字节，包含两个内联脚本和一个内联样式，SHA-256 为 `73ae150039c8e4f4eedf3c27b5ef601e3e5ecd1a8bf01291d8a555f1ccdad381`；产物内确认包含 `chapter4_755_canruo_star_lamp_10800ms_orbit3d_v2`、`a1_front_desk_west` 和“取得尼龙绳、破损网框和磁性扣”。该文件由构建命令生成，没有手工修改。
+- 生成单文件通过本机 HTTP 在内置浏览器实际加载。启真湖检查点成功启动节奏会话，运行时在 `elapsedSeconds=0.123` 返回 `state=running / totalNotes=1`，画面可见 S 列白色下落块；终章检查点显示暗态三维灯和分层星空，完整播放后返回手机并写入 `chapter4.phase=complete / completed=true`。最终浏览器恢复到保安追逐检查点，运行时返回 `floor=A1 / guardFloor=A1 / targetWaypointId=a1_chase_start / contact=false / failureRequested=false`，合同失败与浏览器 error 日志均为 `0`。
+- 本节记录时仍未执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 寝室雨后人物湿态呈现
+
+- 将寝室人物湿态绑定到控制器事实 `rain_recovery + rainRescueCompleted + !rainSafetyCleared`。救援回寝室后立即开启，取得吹风机后继续保留，完成天气安全校准后自动清除；吹风机拾取本身不会提前结束湿态。
+- 新增 Canvas 渲染兼容的程序化人物湿态层：按朝向贴合头发、肩部、外套和裤腿的浅蓝湿润高光；常规模式同时维持 `8` 枚下落水滴，减弱动态模式降为 `3` 枚；人物移动每隔 `18px` 留下一组交替湿脚印，最多 `6` 组并在 `980ms` 内消退；脚边另保留低透明度湿地反光和双层水纹。
+- 湿态层跟随共享人物位置、朝向与深度更新，没有改动人物纹理、动画帧、脚部碰撞框或剧情交互。实现不使用 Canvas 模式不支持的 WebGL tint、FX 或自定义管线，场景关闭时会清理自身对象与 Tween。
+- `render_game_to_text()` 增加 `soaked`、`wetDropletCount`、`wetFootprintCount` 和 `wetEffectMode`。最新离线单文件在内置浏览器实测：救援节点为 `soaked=true / droplets=8 / mode=full`；人物实际向上移动后到达 `wetFootprintCount=6`；左向迈步时水滴拖尾保持在人物后侧，侧面人物帧仍清晰；人物在关闭的寝室门前持续输入 `2.5s`、位置停在 `y=779` 后，旧脚印消退至 `0`，没有原地重复生成；取得吹风机后仍为湿态；天气安全处理完成后进入湖区且不再挂载寝室湿态。当前页面 console error 为 `0`。
+- 定向检查通过：`npm run qizhen:validate-rain-safety`、`npm run typecheck`、`npm run build:single`、`npm run verify:single` 与 `git diff --check`。生成的 `demo/index.html` 为 `268924503` 字节，包含两个内联脚本和一个内联样式，SHA-256 为 `e3ff59923f82cbc56c3256e2601c539dca928ba2a53de5bd3ea0c3105cf3e0b4`；该文件由构建命令生成，没有手工修改。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 最终追逐楼层边界与保安到点抖动复修
+
+- 重新在最新单文件的 `c4-755-chase` 检查点复现：保安到达 `a1_chase_start` 后仍持续接收满速指令，越过目标点后下一帧速度反向，人物会在朝上、朝下帧之间反复切换。上一版路径测试只按理想速度积分，没有覆盖 Arcade Physics 到点后的过冲与朝向反馈。
+- 追逐速度增加与既有 `8px` 路径点到达半径一致的停止区。保安进入到达半径后速度立即归零，不再跨过同一点反向；玩家移动到下一个路径分区后，既有最短路径选择仍会继续推进。
+- 主楼梯边界改为追逐的硬终点：A1 到 A2 的楼梯请求被控制器接受时，运行态立即进入 `escaped_floor`，保安楼层固定为 A1、目标归并为 A1 主楼梯、速度和剩余追逐距离归零，A2 首帧起不可见。若场景生命周期产生过期的 `arming/running + A2` 组合，模型也会按相同规则关闭追逐，不能再把 `guardFloor` 覆写成玩家楼层。
+- 回归脚本先新增两项失败约束，再完成实现：从路径点南北两侧进入到达半径时速度都必须为零；任何 A2 玩家帧都不能提升 A1 保安楼层。`npm run chapter4:validate-runtime` 通过 `1125` 项断言，A1 至主楼梯和面包坊岔路仍按真实脚部框保持无碰撞；`npm run typecheck` 与 `git diff --check` 通过。
+- 最新单文件通过内置浏览器实际加载。在原先会反复换向的位置连续取样，保安到点后保持同一朝向并按既有接触规则结算，没有再次出现越点折返；浏览器 error 日志为 `0`。完整 A1 路径及 A1/A2 楼层状态事务由定向回归覆盖，本轮没有重新手动走完整段追逐通关。
+- `npm run build:single` 与 `npm run verify:single` 通过。`demo/index.html` 为 `268925174` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `8cfa1991d5c1d1528e11b2e8af25afee72afb527faefddedfdf9c4fcae8c51c2`；文件由构建命令生成，没有手工修改。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 手机电量玩法化
+
+- 确认状态栏文字和电池填充都固定为 `17%`，既没有共享状态，也没有存档迁移或耗电规则。
+- 新增持久化 `phoneBattery`：初始 `17%`、低电量模式开关和充电次数。打开非主页应用普通消耗 `2%`，低电量模式消耗 `1%`；切换网络额外消耗 `1%`；最低保留 `1%` 任务电量，主线不会因电量耗尽被锁死。
+- 控制中心新增电量条、低电量模式和位置相关充电入口。低电量模式限制亮度到 `45%` 并暂停音乐；宿舍、图书馆、食堂、剧场和非停电阶段的教学楼可接入附近电源，恢复到 `45%`。第四章停电、追逐和最终一分钟阶段明确没有可用电源。
+- 状态栏和初次唤醒页改读真实电量，`render_game_to_text()` 同步输出电量状态；存档版本升到 `v34`，旧存档缺少电量字段时从 `17%` 安全初始化。
+- 标准 web-game Playwright 客户端在 `1280×720` 打开天气检查点与控制中心，`render_game_to_text()` 返回 `phoneBattery={percent:17, lowPowerMode:false, rechargeCount:0}`，截图确认新增电量卡、位置说明和按钮完整落在 `430×860` 手机框内，console/page error 为 `0`。
+- 内置浏览器完成四条真实点击链：普通模式打开天气 `17→15`；开启低电量模式后再次打开天气 `15→14`，状态栏显示“省”；在宿舍接入桌边插座后 `14→45`，低电量模式保持开启；网络从 ZJUWLAN 切到移动数据后再扣 `1%`。第四章 `final_chase` 检查点显示“附近没有可用电源”，从主页打开微信仍由 `17→15`。
+- 文案清单已刷新为 `7178` 条；`npm run validate:quick` 通过 `4/4`，`npm run verify:browser-smoke` 通过手机 `390×844`、剧场 RPG `1440×900` 和第四章 RPG `1440×900` 三个生产场景；`git diff --check` 通过。
+- `npm run build:single` 与 `npm run verify:single` 通过。最终 `demo/index.html` 为 `268939315` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `51f91af6597d22674bc3519b152f884bffd9d2cc990f1e7d5350235e0a783fb5`；文件由构建命令生成，没有手工修改。最终单文件在内置浏览器重新加载第四章追逐检查点，网络切换后由 `17→16`，并显示“网络切换消耗 1% 电量”和“附近没有可用电源”。
+- 当前验证覆盖电量初始值、普通耗电、省电耗电、网络切换耗电、场景充电、停电限制、状态栏与控制中心视觉，以及生产手机冒烟。另以隔离浏览器构造一份不含 `phoneBattery` 的 `v33` 存档，刷新后运行态补为 `17%`、状态栏同步显示 `17%`，并自动重存为含完整电量状态的 `v34`，console/page error 为 `0`。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 竺老两问逐题浮现与星光粒子消散
+
+- 终章楼外问答由同屏双题表单改为严格的逐题状态序列：`purpose_entering → purpose_ready → purpose_dissolving → person_entering → person_ready → person_dissolving → submitting`。第一问消失前第二问不会挂载，第二问完成后才进入保存阶段。
+- 每题使用约 `1150ms` 的模糊减弱、亮度回落和位移复位逐渐显示；选择答案后使用约 `980ms` 的文字淡出、轻微模糊与 `54` 枚暖白／浅蓝星光粒子向外散开。背景增加低亮度静态星点，面板尺寸在两题切换时保持稳定。
+- 两项选择先保存在组件运行态；第二问粒子消散完成后才调用一次既有 `complete_zhu_two_questions` 意图，因此控制器继续原子保存两项答案。确认层仍只显示 `回答已保存`，约 `1100ms` 后进入既有 Three.js 灯演出。提交失败会重新显示第二问，不会丢失第一项本地选择。
+- 减弱动态偏好下将浮现、消散和确认等待压缩为 `120/160/240ms`，同时停用模糊、粒子和星点动画；语义上仍保持第一问、第二问、提交的固定顺序。
+- 浏览器在桌面和 `390×844` 完成目检。桌面消散中确认题干、选项与粒子同步离场；移动端面板为 `351.6×360px`，三个答案纵向排列，无横向溢出。标准 web-game Playwright 客户端同时确认第四章 `exterior_closure` 运行状态、任务目标与地图无新增错误。
+- 最终单文件连续链验证返回：`purpose_ready`（第二问 DOM 数量 `0`）→ `purpose_dissolving`（粒子 `54`）→ `person_ready`（第一问 DOM 数量 `0`）→ `person_dissolving`（粒子 `54`）→ `answered`（唯一 `回答已保存`）→ `chapter4-star-lamp-closure / reveal_dark`，浏览器 error 日志为 `0`。
+- `npm run typecheck`、`npm run chapter4:validate-story`、`npm run chapter4:validate-task14`、`npm run chapter4:validate-star-lamp`、`npm run validate:quick`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 全部通过。文案清单刷新为 `7185` 条；`demo/index.html` 为 `268950893` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `e1f726a67a941a3cdd6fe58d9d7b288df59e2f41cf6f5a84128f68dfd4ec2f59`。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 灿若星辰灯恢复原版素材与纯摄像机环绕
+
+- 撤下终章主路径中的程序化 Three.js 灯柱、球体、灯珠和灯芯几何。五张既有 `1024×1536` 透明 PNG 恢复为 WebGL 正常路径与兼容路径共同使用的正式灯体，原版造型、比例和分层点亮关系保持不变。
+- Three.js 仅保留远、中、近三层固定星点与 `PerspectiveCamera`。星点对象和灯体均不旋转；普通动态模式下只改变摄像机世界坐标，`600–7100ms` 完成一周并回到起点，灯体旋转始终为 `0`。回位并完成暗灯停顿后，才显示原图灯珠、灯芯和光晕；减弱动态模式保留原有无环绕分段点亮。
+- 专项契约升级为 `chapter4_755_canruo_star_lamp_10800ms_camera_orbit_layered_v3`，明确记录 `artwork=layered-original`、`cameraMotion=position-orbit`、`lampRotationY=0` 和五张正式分层素材。WebGL 不可用时仍以相同原图完成完整时序，一次性章节完成凭证规则未改。
+- 内置浏览器在全新开发检查会话中读取三段实时状态：开始机位 `(0, 0.35, -15.8)`；约四分之一周机位 `(15.7968, 0.35, 0.3181)`；一周后精确回到 `(0, 0.35, -15.8)`。三段 `lampRotationY=0`；环绕中 `lightLevel=0`，回位后全亮态的灯珠、灯芯和光晕 opacity 均为 `1`。画面确认显示原版灯体，浏览器 error 和 warning 日志均为 `0`。
+- `npm run chapter4:validate-star-lamp` 通过 `481` 项断言；`npm run typecheck`、`npm run chapter4:validate-story`、`npm run chapter4:validate-task14`、`npm run build:single` 与 `npm run verify:single` 全部通过。`demo/index.html` 为 `268927853` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `6d84186f4b5a242d5f73fd11d5d25a23c6ca0ecfbcbdbcc0e514880465fd8d95`；文件由构建命令生成，没有手工修改。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 终章回答按钮无边框呈现
+
+- 移除竺老两问三枚回答按钮在普通、悬停、键盘焦点和已选状态下的可见边框与框状阴影；普通态背景透明，悬停与已选状态只通过中心渐变、文字亮度和文字阴影反馈选择。
+- 键盘焦点保留文字下划线反馈，回答按钮的语义、点击区域、逐题浮现和星光粒子消散时序均未改变；外层问题面板边框保持原样。
+- 标准 web-game Playwright 客户端已加载最终单文件检查点，`render_game_to_text()` 确认仍处于 `exterior_closure` 且目标为“在未点亮的灿若星辰灯前回答竺老两问”；未生成错误文件。其画布截图为空是因为本段问答属于 React DOM 覆盖层，随后改用内置浏览器完成视觉检查。
+- 内置浏览器在用户当前的 `577×739` 视口复核：三枚回答按钮普通态均为 `border-width: 0px / border-style: none / box-shadow: none`；第一枚悬停态与已选态仍保持相同无边框结果；页面 `scrollWidth/scrollHeight` 与视口一致，浏览器 error 日志为 `0`。最终页面已恢复至第一问并保留为可继续操作的标签页。
+- `git diff --check`、`npm run typecheck`、`npm run build:single` 与 `npm run verify:single` 通过。`demo/index.html` 为 `268928152` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `52ec7b7f3be74f883dc3ebf4c6411ded92350587276e0a542357163007c38fda`；文件由构建命令生成，没有手工修改。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree。
+
+## 2026-09-04 最终追逐跨层续追、202 主动关门与分针三步拆取
+
+- 重新贯通最终追逐的完整因果链。保安追击范围由 A1 扩展至 A1/A2；玩家通过主楼梯到达 A2 后，保安会在 A2 主楼梯口同步出现，保持可见并在 `1600ms` 进入停顿结束后继续沿 `主楼梯出口 → 交通核心 → 东侧走廊 → 202 门外` 的既有无碰撞路径追击。
+- A2 被追上后的失败恢复改为 `c4_a2_corridor`：只增加追逐尝试次数，玩家和保安继续从楼上安全点恢复，已取得的事实、道具、配电状态、现实模式和时间状态均不回退；A1 被追上仍使用 `c4_a1_lobby`。控制器要求失败请求同时携带当前楼层和当前尝试编号，过期或楼层不一致的请求保持零写入。
+- 找到并修复 202 关门长期无效的实际根因：`a2_202_threshold` 已存在于布局、交互合同和按键处理器，却被排除在场景可操作目标集合之外。现已把“进入 202 并关门”加入正式目标集合；玩家进入门内后必须主动按 `Space`，控制器才进入 `final_minute_recovery`，门闩碰撞随即启用，保安停在门外，单纯越过门槛不会自动完成追逐。
+- 黄铜分针改为三步拆取。进入 202 后第一次 `Space` 压下座椅固定扣，第二次对准黄铜轴座，第三次才取出分针组件；前两步均保持 `final_minute_recovery` 且 `items.finalMinute=false`，第三步才原子写入分针和签到记录纸并进入 `return_to_clock`。任务栏、近距离提示、失败反馈和内容合同同步更新。
+- 回归验证先覆盖旧行为并确认失败，再完成实现。最终 `chapter4:validate-runtime` 通过 `1129` 项断言，`chapter4:validate-story`、`chapter4:validate-topology`（`4954` 项）、`chapter4:validate-causal-flow`、`chapter4:validate-guard-presentation`（`40` 项）、`chapter4:validate-effective-interactions`（`624` 项）和 `typecheck` 均通过；文案清单刷新为 `7195` 条并通过 `text:check`。
+- Chromium 从 `c4-755-chase` 实际走完 A1 主楼梯、A2 续追、202 主动关门和三次拆取：A2 运行态返回 `guardFloor=A2 / guardVisible=true`；关门后返回 `phase=final_minute_recovery / door.state=closed / colliderActive=true`；三次拆取结果依次为 `false / false / true`，最终阶段为 `return_to_clock`。空间校验完成响应，运行时合同失败、console error 和 page error 均为 `0`。标准 web-game Playwright 客户端也已在最新单文件上运行并读取运行时状态。
+- `npm run build:single` 与 `npm run verify:single` 通过。`demo/index.html` 为 `268933407` 字节，包含两个内联脚本和一个内联样式；文件由构建命令生成，没有手工修改。最新追逐检查点已在内置浏览器打开并保留，浏览器 error 日志为 `0`。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree，原始开发 checkout 未改动。
+
+## 2026-09-04 终章底部抬升运镜与曝光收敛
+
+- 两个候选方案中采用“摄像机从灯体底部逐渐上升”。旧实现仅让 Three.js 相机围绕星空移动，原版五层灯图固定在屏幕中央，玩家对持续 `6.5s` 的环绕缺少直接视觉反馈。
+- 正常时序改为 `5.8s`：`120–2200ms` 从底部近景抬升到正面机位，`2200–2350ms` 保持正面暗灯，`2350ms` 开始灯珠，`2750ms` 开始灯芯，`4050ms` 进入稳定点亮，`4150ms` 显示收束字幕。减弱动态模式保持静止正面机位并压缩到 `3.6s`。
+- Three.js 透视相机从 `(0, -5.8, -12.4)` 移动到 `(0, 0.35, -15.8)`，观察点同步由 `y=-4.1` 上移到 `y=0.25`。五张原版 PNG 继续作为唯一灯体素材，其投影与同一时间轴同步从 `translateY(-22%) scale(1.16)` 过渡到 `translateY(0) scale(.92)`；灯体旋转值维持 `0`。
+- 点亮上限写入正式合同：灯珠 `0.70`、灯芯 `0.62`、光晕 `0.26`。同时降低灯珠阴影、灯芯 brightness、光晕 blur/brightness 和 flare 强度；最终画面仍能看清球体骨架、灯珠间隙与中央灯芯轮廓。
+- 专项校验先切换到新合同并确认旧实现产生 `108/251` 项失败，再完成源代码。最终 `npm run chapter4:validate-star-lamp` 通过 `189` 项断言；`chapter4:validate-story`、`chapter4:validate-task14`、`typecheck`、`text:check` 和 `git diff --check` 通过。正式序列标识更新为 `chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4`。
+- 内置浏览器在 `577×739` 视口完成五段连续取样：起始 `cameraRise=0 / offsetY=-22% / light=0`；约 `1050ms` 为 `cameraRise=0.5061 / cameraY=-2.6873 / offsetY=-10.865%`；约 `2250ms` 到达正面机位并开始微量点灯；约 `3550ms` 达到 `led=0.70 / core=0.62 / glow=0.2582`；约 `4450ms` 稳定为 `0.70 / 0.62 / 0.26`。画面中抬升位移清楚，稳定点亮后灯体细节保留，浏览器 error/warn 日志为 `0`。Firefox 与 WebKit 也分别走完“两问 → 抬升 → 点亮 → 返回手机”的完整链路；两者中段 `cameraRise` 分别为 `0.5656` 和 `0.5540`，最终 `light=0.70`，console/page error 均为 `0`。
+- 标准 web-game Playwright 客户端在 `1280×720` 加载同一单文件检查点，`render_game_to_text()` 返回 `chapter4.phase=exterior_closure`、两项答案未预填、任务目标正确，未产生 `errors-0.json`；临时截图和状态目录在检查后已删除。
+- `npm run build:single` 与 `npm run verify:single` 通过。`demo/index.html` 为 `268935355` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `5b7ac977522759a394576918fabd8c7c723132a11e14be5629d9bbf31be24968`；文件由构建命令生成，没有手工修改。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree，原始开发 checkout 未改动。
+
+## 2026-09-04 视频录制模式与无水印检查点跳转
+
+- 新增仅由 URL 控制的录制模式 `recording=1`。录制准备、检查点跳转和实际游戏共用同一个 `demo/index.html`，没有增加独立控制页或第二个游戏实例；该状态不进入 `GameState` 或 `SaveStore`，不会改变剧情、正式存档或检查点事实。
+- 录制模式关闭开发面板时不渲染左下角 DEV 启动按钮；DOM、键盘焦点树和无障碍树中都没有该按钮，也没有保留透明点击区域。普通试玩地址仍保留原 DEV 入口。
+- 录制模式继续支持检查点直达 URL，并将开发面板快捷键扩展为 Windows/Linux 的 `Ctrl+Shift+D` 与 macOS 的 `Cmd+Shift+D`。按快捷键可在同一页临时打开“录制检查点切换”面板，面板提示“选择节点后自动清屏 · Esc 关闭”；`Escape`、关闭按钮或选择检查点后立即回到干净画面。
+- 在录制面板内选择检查点时，当前地址的 `devCheckpoint` 会同步更新，其他查询参数保持不变；若准备地址含 `dev=1`，关闭面板或完成跳转时会移除该参数。因此当前录制地址刷新后仍回到相同检查点，并保持面板关闭、DEV 按钮不出现。
+- `render_game_to_text()` 增加 `recordingMode.enabled`、`developerLauncherVisible` 和 `developerChannelOpen`，录制脚本可直接校验画面清洁状态。新增 `npm run verify:recording-mode`，覆盖录制开关、检查点共存、普通模式隔离、快捷键合同、初始面板状态、地址同步、恢复存档关闭路径和同页录制提示，共 `12` 项断言。
+- 标准 web-game Playwright 客户端在 `1280×720` 加载最终追逐录制地址，返回 `enabled=true / developerLauncherVisible=false / developerChannelOpen=false / chapter4.phase=final_chase`，运行时合同失败为 `0` 且无错误文件；画布截图确认左下角没有 DEV 标记。
+- 内置浏览器完成完整录制链：干净终章地址的 DEV 按钮、启动标签和开发面板数量均为 `0`；macOS 快捷键在同一页打开 `录制检查点面板`，标题为“录制检查点切换”、底部提示为“选择节点后自动清屏 · Esc 关闭”，普通 DEV 标题不显示，关闭按钮获得焦点；选择第四章 `4-6` 的追逐节点后面板回到 `0`、任务切换为“进入 202 并关门”、地址同步为 `devCheckpoint=c4-755-chase`；刷新后任务与干净状态保持。另确认普通地址仍渲染唯一 DEV 入口，浏览器 error/warn 日志为 `0`。
+- `npm run verify:recording-mode`、`npm run verify:developer-levels`、`npm run typecheck`、`npm run validate:quick`、`npm run text:check`、`npm run build:single`、`npm run verify:single` 与 `git diff --check` 通过。`demo/index.html` 为 `268936842` 字节，含两个内联脚本和一个内联样式，SHA-256 为 `402816b5ff5737a28b28150815313f8387820d475460afcb14d94c0b7475e840`；文件由构建命令生成，没有手工修改。
+- 本节没有执行 Git 暂存、提交、推送、上传或合并；全部修改与生成产物继续只位于隔离交付 worktree，原始开发 checkout 未改动。

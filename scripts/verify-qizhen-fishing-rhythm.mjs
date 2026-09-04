@@ -12,6 +12,8 @@ const hostPath = path.join(root, "src/scenes/rpg/RpgGameHost.tsx");
 const scenePath = path.join(root, "src/scenes/rpg/QizhenLakeScene.ts");
 const lakeModelPath = path.join(root, "src/scenes/rpg/QizhenLakeModel.ts");
 const developerChannelPath = path.join(root, "src/modules/DeveloperChannel.ts");
+const questModelPath = path.join(root, "src/core/QuestModel.ts");
+const lakeContentPath = path.join(root, "src/data/chapter3-qizhen-lake.content.json");
 const expectedChartHash = "ba470319fff851a3821467f62397d2d94753804a4e9991d74d02582c665a6b23";
 const expectedCharts = Object.freeze({
   locker_key: { notes: [8, 8], durationSec: 10, experience: "tutorial_full" },
@@ -67,7 +69,12 @@ async function main() {
       build({ entryPoints: [path.join(root, "src/scenes/rpg/QizhenFishingRhythmModel.ts")], outfile: modelBundle, bundle: true, format: "esm", platform: "node", target: "node20" }),
       build({ entryPoints: [path.join(root, "src/modules/RhythmFishingEngine.ts")], outfile: engineBundle, bundle: true, format: "esm", platform: "node", target: "node20" }),
     ]);
-    const { QizhenFishingRhythmModel, QIZHEN_FISHING_TIMING, QIZHEN_FISHING_TENSION } = await import(pathToFileURL(modelBundle).href);
+    const {
+      QizhenFishingRhythmModel,
+      QIZHEN_FISHING_TIMING,
+      QIZHEN_FISHING_TENSION,
+      getQizhenFishingNoteTravelProgress,
+    } = await import(pathToFileURL(modelBundle).href);
     const { RhythmFishingEngine } = await import(pathToFileURL(engineBundle).href);
 
     for (const [chartId, expectation] of Object.entries(expectedCharts)) {
@@ -115,6 +122,12 @@ async function main() {
 
     const fishProbe = new QizhenFishingRhythmModel({ chartId: "fish", now: () => 0, events: createEvents([]) });
     assert(fishProbe.totalNotes === 1 && fishProbe.notes[0]?.action === "hook", "fish must remain one visible hook judgment");
+    const fishNote = fishProbe.notes[0];
+    const firstRenderedAtSec = 0.4;
+    const earlyTravel = getQizhenFishingNoteTravelProgress(fishNote, 1.4, firstRenderedAtSec);
+    const laterTravel = getQizhenFishingNoteTravelProgress(fishNote, 2.4, firstRenderedAtSec);
+    assert(earlyTravel > 0 && laterTravel > earlyTravel, "fish cue must visibly descend throughout the opening quiet gap");
+    assert(getQizhenFishingNoteTravelProgress(fishNote, fishNote.timeSec, firstRenderedAtSec) === 1, "early cue travel must still reach the authored judgment time exactly");
 
     const paperProbe = new QizhenFishingRhythmModel({ chartId: "paper", now: () => 0, events: createEvents([]) });
     assert(paperProbe.totalNotes > expectedCharts.locker_key.notes[0], "paper must remain the highest-density chart");
@@ -185,17 +198,23 @@ async function main() {
     assert(!audioTimeline.events.qizhen_fishing_paper_completed.cues.some((cue) => cue.asset === "music_qizhen_lakeside"), "paper completion must not resume calm music before the chase");
     assert(audioTimeline.events.qizhen_fishing_paper_completed.cues.some((cue) => cue.asset === "fx_qizhen_paper_release"), "paper completion must include the release sound");
 
-    const [hostSource, sceneSource, lakeModelSource, developerChannelSource] = await Promise.all([
+    const [hostSource, sceneSource, lakeModelSource, developerChannelSource, questModelSource, lakeContentSource] = await Promise.all([
       readFile(hostPath, "utf8"),
       readFile(scenePath, "utf8"),
       readFile(lakeModelPath, "utf8"),
       readFile(developerChannelPath, "utf8"),
+      readFile(questModelPath, "utf8"),
+      readFile(lakeContentPath, "utf8"),
     ]);
     assert(hostSource.includes('spotId === "paper" ? "qizhen_fishing_paper_completed" : "qizhen_fishing_catch_completed"'), "host must route ordinary and paper completion separately");
     assert(sceneSource.includes('this.emitDomain("qizhen_fishing_final_tension_started"'), "paper chart must emit its tension prelude event");
     assert(lakeModelSource.includes('id: "qizhen_fishing_fish"') && lakeModelSource.includes('acceptedItem: "fishFeedPellets"'), "fish quick strike must own a real item-use target");
     assert(sceneSource.includes('if (target.value === "fish")') && sceneSource.includes('hasItem(state, CHAIN_ITEMS.pellets)'), "fish quick strike must become active when pellets are available");
+    assert(!sceneSource.includes("三处分支素材"), "successful rig assembly feedback must name the concrete materials");
     assert(developerChannelSource.includes('rhythmNet\n      ? "channel"') && developerChannelSource.includes('? "qizhen_channel"'), "net quick-hold checkpoint must seed the channel plate");
+    assert(questModelSource.includes("取得尼龙绳、破损网框和磁性扣"), "tool-chain task must name the three required materials");
+    assert(!questModelSource.includes("完成湖区三处分支"), "tool-chain task must not expose abstract branch terminology");
+    assert(!lakeContentSource.includes("三处分支材料") && !lakeContentSource.includes("三处分支"), "lake guidance must describe concrete items and locations");
 
     console.log("Qizhen fishing tiered flow PASS tutorial=8 quick_hold=4 quick_strike=1 finale=26 audio=split recovery=preserved");
   } finally {

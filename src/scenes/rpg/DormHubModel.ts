@@ -15,6 +15,33 @@ export const DORM_HUB_WORLD = {
   height: DORM_HUB_SOURCE_WORLD.height * DORM_HUB_ENVIRONMENT_SCALE
 } as const;
 
+export const DORM_RAIN_SOAKED_VISUAL_PROFILE = Object.freeze({
+  dropletCount: 8,
+  reducedMotionDropletCount: 3,
+  maxFootprints: 6,
+  footprintSpacing: 18,
+  footprintLifetimeMs: 980
+});
+
+export interface DormRainSoakedState {
+  qizhenLake: {
+    phase: string;
+    rainRescueCompleted: boolean;
+    rainSafetyCleared: boolean;
+  };
+}
+
+/**
+ * The player stays visibly soaked for the complete dorm recovery detour.
+ * Picking up the dryer alone does not dry them; the weather calibration is the
+ * controller-owned terminal fact for this presentation state.
+ */
+export function isDormPlayerRainSoaked(state: DormRainSoakedState): boolean {
+  return state.qizhenLake.phase === "rain_recovery"
+    && state.qizhenLake.rainRescueCompleted
+    && !state.qizhenLake.rainSafetyCleared;
+}
+
 export function dormSourceToWorldX(sourceX: number): number {
   return DORM_HUB_MAP_OFFSET_X + sourceX * DORM_HUB_ENVIRONMENT_SCALE;
 }

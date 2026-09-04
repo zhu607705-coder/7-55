@@ -1425,31 +1425,46 @@ assertJsonEqual({
   storyTimeSeconds: finalChaseRuntime?.storyTimeSeconds,
   playerSpeed: finalChaseRuntime?.playerSpeed,
   guardSpeed: finalChaseRuntime?.guardSpeed,
+  guardUniformScale: finalChaseRuntime?.guardUniformScale,
+  guardFootBox: finalChaseRuntime?.guardFootBox,
+  waypointReachDistance: finalChaseRuntime?.waypointReachDistance,
   stableCommittedFramesToArm: finalChaseRuntime?.stableCommittedFramesToArm,
   maxStepMs: finalChaseRuntime?.maxStepMs,
   transportId: finalChaseRuntime?.transportId,
+  guardPursuitStoryFloors: finalChaseRuntime?.guardPursuitStoryFloors,
+  guardStopsAtTransport: finalChaseRuntime?.guardStopsAtTransport,
   restartCheckpoint: finalChaseRuntime?.restartCheckpoint
 }, {
   storyTimeSeconds: 28440,
   playerSpeed: 208,
   guardSpeed: 196,
+  guardUniformScale: 0.68,
+  guardFootBox: { width: 20.4, height: 15.3 },
+  waypointReachDistance: 8,
   stableCommittedFramesToArm: 4,
   maxStepMs: 50,
   transportId: "main_stair",
+  guardPursuitStoryFloors: ["A1", "A2"],
+  guardStopsAtTransport: "room202_door",
   restartCheckpoint: "c4_a1_lobby"
 }, "Task12 final-chase runtime rules");
 assertJsonEqual(finalChaseRuntime?.playerStart, { storyFloor: "A1", x: 590, y: 612 }, "Task12 player start");
 assertJsonEqual(finalChaseRuntime?.guardSpawn, { storyFloor: "A1", x: 590, y: 724 }, "Task12 guard spawn");
+assertJsonEqual(finalChaseRuntime?.guardA2Reentry, { storyFloor: "A2", x: 966, y: 174 }, "Task12 A2 guard re-entry");
 assertJsonEqual(
   finalChaseRuntime?.waypoints?.map(({ id, storyFloor, x, y, role }) => ({ id, storyFloor, x, y, role })),
   [
+    { id: "a1_front_desk_west", storyFloor: "A1", x: 720, y: 540, role: "route" },
     { id: "a1_lower_hall", storyFloor: "A1", x: 836, y: 540, role: "route" },
     { id: "a1_central", storyFloor: "A1", x: 836, y: 228, role: "route" },
+    { id: "a1_stair_approach", storyFloor: "A1", x: 1001, y: 238, role: "route" },
     { id: "a1_main_stair", storyFloor: "A1", x: 1001, y: 214, role: "portal" },
     { id: "a2_main_stair_arrival", storyFloor: "A2", x: 966, y: 214, role: "portal" },
     { id: "a2_core_east", storyFloor: "A2", x: 1100, y: 232, role: "route" },
     { id: "a2_east_south", storyFloor: "A2", x: 1100, y: 400, role: "route" },
-    { id: "a2_room202_outer", storyFloor: "A2", x: 1353, y: 400, role: "route" }
+    { id: "a2_room202_outer", storyFloor: "A2", x: 1353, y: 400, role: "route" },
+    { id: "a2_room203_corner_north", storyFloor: "A2", x: 1310, y: 490, role: "route" },
+    { id: "a2_room203_corner_south", storyFloor: "A2", x: 1310, y: 540, role: "route" }
   ],
   "Task12 route waypoints"
 );
@@ -1457,11 +1472,91 @@ assertJsonEqual(finalChaseRuntime?.decoyBranches, [
   { id: "a1_bakery_dead_end", storyFloor: "A1", x: 318, y: 648, canAdvance: false },
   { id: "a2_room203_dead_end", storyFloor: "A2", x: 1353, y: 524, canAdvance: false }
 ], "Task12 non-progressing decoy branches");
+const finalChaseGraphNodes = [
+  { id: "a1_guard_spawn", storyFloor: "A1", x: finalChaseRuntime?.guardSpawn?.x, y: finalChaseRuntime?.guardSpawn?.y },
+  { id: "a1_chase_start", storyFloor: "A1", x: finalChaseRuntime?.playerStart?.x, y: finalChaseRuntime?.playerStart?.y },
+  ...(finalChaseRuntime?.waypoints ?? []),
+  ...(finalChaseRuntime?.decoyBranches ?? []),
+  {
+    id: "a2_room202_finish",
+    storyFloor: "A2",
+    x: finalChaseRuntime?.finishThreshold?.point?.x,
+    y: finalChaseRuntime?.finishThreshold?.point?.y
+  }
+];
+const finalChaseGraphNodeById = new Map(finalChaseGraphNodes.map((node) => [node.id, node]));
+const finalChaseGraphEdges = [
+  ["a1_guard_spawn", "a1_chase_start"],
+  ["a1_chase_start", "a1_bakery_dead_end"],
+  ["a1_chase_start", "a1_front_desk_west"],
+  ["a1_front_desk_west", "a1_lower_hall"],
+  ["a1_lower_hall", "a1_central"],
+  ["a1_central", "a1_stair_approach"],
+  ["a1_stair_approach", "a1_main_stair"],
+  ["a2_main_stair_arrival", "a2_core_east"],
+  ["a2_core_east", "a2_east_south"],
+  ["a2_east_south", "a2_room202_outer"],
+  ["a2_room202_outer", "a2_room202_finish"],
+  ["a2_east_south", "a2_room203_corner_north"],
+  ["a2_room203_corner_north", "a2_room203_corner_south"],
+  ["a2_room203_corner_south", "a2_room203_dead_end"]
+];
+const finalChaseNeighbors = new Map(finalChaseGraphNodes.map((node) => [node.id, new Set()]));
+for (const [fromId, toId] of finalChaseGraphEdges) {
+  const from = finalChaseGraphNodeById.get(fromId);
+  const to = finalChaseGraphNodeById.get(toId);
+  assert(Boolean(from), `Task12 final-chase graph references missing node ${fromId}`);
+  assert(Boolean(to), `Task12 final-chase graph references missing node ${toId}`);
+  assert(from?.storyFloor === to?.storyFloor, `Task12 final-chase edge ${fromId}<->${toId} must stay on one floor`);
+  finalChaseNeighbors.get(fromId)?.add(toId);
+  finalChaseNeighbors.get(toId)?.add(fromId);
+  const floor = floorByStory.get(from?.storyFloor);
+  if (from && to && floor) {
+    assert(
+      sampledSegmentIsClear(from, to, floor.staticCollisions ?? [], finalChaseRuntime.guardFootBox, 0.5),
+      `Task12 final-chase edge ${fromId}<->${toId} must clear static collisions for the rendered guard foot box`
+    );
+  }
+}
+for (const node of finalChaseGraphNodes) {
+  const neighborIds = [...(finalChaseNeighbors.get(node.id) ?? [])];
+  for (let fromIndex = 0; fromIndex < neighborIds.length; fromIndex += 1) {
+    for (let toIndex = fromIndex + 1; toIndex < neighborIds.length; toIndex += 1) {
+      const from = finalChaseGraphNodeById.get(neighborIds[fromIndex]);
+      const to = finalChaseGraphNodeById.get(neighborIds[toIndex]);
+      const floor = floorByStory.get(node.storyFloor);
+      if (!from || !to || !floor) continue;
+      const approachDistance = Math.hypot(from.x - node.x, from.y - node.y);
+      const departureDistance = Math.hypot(to.x - node.x, to.y - node.y);
+      const turnRadius = finalChaseRuntime.waypointReachDistance;
+      const approachScale = Math.min(1, turnRadius / approachDistance);
+      const departureScale = Math.min(1, turnRadius / departureDistance);
+      const approach = {
+        x: node.x + (from.x - node.x) * approachScale,
+        y: node.y + (from.y - node.y) * approachScale
+      };
+      const departure = {
+        x: node.x + (to.x - node.x) * departureScale,
+        y: node.y + (to.y - node.y) * departureScale
+      };
+      assert(
+        sampledSegmentIsClear(
+          approach,
+          departure,
+          floor.staticCollisions ?? [],
+          finalChaseRuntime.guardFootBox,
+          0.5
+        ),
+        `Task12 final-chase turn ${from.id}->${node.id}->${to.id} must clear static collisions at the runtime turn radius`
+      );
+    }
+  }
+}
 assertJsonEqual(finalChaseRuntime?.finishThreshold, {
   targetId: "a2_202_threshold",
   point: { x: 1353, y: 356.5 },
   bounds: { x: 1299, y: 334, width: 108, height: 45 },
-  priority: "finish_before_contact_same_frame"
+  priority: "explicit_door_close"
 }, "Task12 finish threshold");
 assertJsonEqual(finalChaseRuntime?.room202Door, {
   id: "a2_room202_door",

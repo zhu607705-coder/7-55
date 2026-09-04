@@ -14,6 +14,7 @@ import { ChapterThreeTheaterController } from "./ChapterThreeTheaterController";
 import { ClockCalibrationController } from "./ClockCalibrationController";
 import { ChapterFourTemporalMazeController } from "./ChapterFourTemporalMazeController";
 import { SaveController } from "./SaveController";
+import { PhoneBatteryController } from "./PhoneBatteryController";
 
 /**
  * 绑定在全局单例 store / eventBus 上的控制器束。
@@ -33,6 +34,7 @@ export const kit = {
   network: new NetworkController(gameStore, eventBus),
   checkin: new CheckinController(gameStore, eventBus),
   plant: new PlantController(gameStore, eventBus),
+  battery: new PhoneBatteryController(gameStore, eventBus),
   save: new SaveController(gameStore, eventBus)
 };
 

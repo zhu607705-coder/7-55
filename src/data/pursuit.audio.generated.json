@@ -1,7 +1,7 @@
 {
   "version": 1,
   "chapterId": "cross-chapter-pursuit-audio",
-  "generatedAt": "2026-08-28T17:07:26.428Z",
+  "generatedAt": "2026-09-04T12:25:42.528Z",
   "assets": {
     "music_qizhen_swan_chase": {
       "path": "pursuit/music/music_qizhen_swan_chase.mp3",
@@ -62,18 +62,6 @@
       "sourceTextHash": "5e62fe16ec4e5341bb430c2f6e5b2db223f18f6a6532f1d8bb27feb51922694c",
       "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
     },
-    "vo_pursuit_chapter4_guard_stair": {
-      "path": "pursuit/voice/vo_pursuit_chapter4_guard_stair.mp3",
-      "kind": "voice",
-      "durationMs": 2596,
-      "codec": "mp3",
-      "sampleRate": 32000,
-      "channels": 1,
-      "sha256": "b5e5a37051cf6bf11f3cb48994f56aa8c0a66f756b7ae4662773e3c9c945f5cb",
-      "sourceConfigHash": "d77c4726238331bd991db98fdfe7b1b1c8b96871dfcd288210a5a99066265c3b",
-      "sourceTextHash": "f3383145966587981743941b88a33ce7d46744f36a1fdcdda4ba41d890d3b442",
-      "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
-    },
     "vo_pursuit_chapter4_guard_close": {
       "path": "pursuit/voice/vo_pursuit_chapter4_guard_close.mp3",
       "kind": "voice",
@@ -84,6 +72,18 @@
       "sha256": "ae1dae0abc810c52ee988a62d689de4994cd22ba4acd658f06ff52fa210fa453",
       "sourceConfigHash": "7d796da01ad570c05ade1d80f26fcab24ace7fad4876432c0bc99cb6b5ed5828",
       "sourceTextHash": "f87d3db9628b14c6bc2f380dd6f7eb219ca6bbd30830585b503b46504ec34afa",
+      "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
+    },
+    "vo_pursuit_chapter4_guard_stair": {
+      "path": "pursuit/voice/vo_pursuit_chapter4_guard_stair.mp3",
+      "kind": "voice",
+      "durationMs": 2526,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "17961945e1d9bcb816761c07b0146e69f0ad532ce80647de3c430185f11c0fb6",
+      "sourceConfigHash": "b306fcbe945b0286e02edd59e4b1468bce29552bd65c4285cb89805000fcd413",
+      "sourceTextHash": "ac3295294fc8cea57a792527ae456527c1e054bad8fc0a63195839fd4804c8dd",
       "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
     }
   }

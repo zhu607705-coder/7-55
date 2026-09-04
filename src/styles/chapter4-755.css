@@ -1,5 +1,11 @@
 .chapter4-star-lamp-closure {
-  --chapter4-star-lamp-duration: 6200ms;
+  --chapter4-star-lamp-led-level: 0;
+  --chapter4-star-lamp-core-level: 0;
+  --chapter4-star-lamp-glow-level: 0;
+  --chapter4-star-lamp-caption-level: 0;
+  --chapter4-star-lamp-blackout-level: 1;
+  --chapter4-star-lamp-camera-offset-y: -22%;
+  --chapter4-star-lamp-camera-scale: 1.16;
   position: absolute;
   inset: 0;
   z-index: 168;
@@ -11,11 +17,87 @@
   pointer-events: auto;
 }
 
-.chapter4-star-lamp-closure__camera {
+.chapter4-star-lamp-closure__canvas,
+.chapter4-star-lamp-closure__fallback {
   position: absolute;
-  inset: -9%;
-  transform-origin: 50% 29%;
-  animation: chapter4-star-lamp-camera var(--chapter4-star-lamp-duration) cubic-bezier(.2, .68, .2, 1) both;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.chapter4-star-lamp-closure__canvas {
+  z-index: 0;
+  display: block;
+  opacity: 0;
+  transition: opacity 180ms linear;
+}
+
+.chapter4-star-lamp-closure.is-three .chapter4-star-lamp-closure__canvas {
+  opacity: 1;
+}
+
+.chapter4-star-lamp-closure__fallback {
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgb(17 24 45 / 62%), transparent 42%),
+    linear-gradient(180deg, #01030a 0%, #020510 58%, #000 100%);
+  transition: opacity 180ms linear;
+}
+
+.chapter4-star-lamp-closure.is-initializing .chapter4-star-lamp-closure__fallback,
+.chapter4-star-lamp-closure.is-fallback .chapter4-star-lamp-closure__fallback {
+  opacity: 1;
+}
+
+.chapter4-star-lamp-closure__fallback-stars {
+  position: absolute;
+  inset: -12%;
+  opacity: .72;
+  background-repeat: repeat;
+  animation: chapter4-star-lamp-fallback-stars 18s linear infinite alternate;
+}
+
+.chapter4-star-lamp-closure__fallback-stars.is-far {
+  background-image:
+    radial-gradient(circle, rgb(178 199 232 / 82%) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgb(117 143 187 / 68%) 0 .8px, transparent 1.2px);
+  background-position: 0 0, 37px 53px;
+  background-size: 84px 76px, 111px 97px;
+}
+
+.chapter4-star-lamp-closure__fallback-stars.is-middle {
+  opacity: .64;
+  background-image:
+    radial-gradient(circle, rgb(234 238 249 / 88%) 0 1.15px, transparent 1.7px),
+    radial-gradient(circle, rgb(170 187 219 / 72%) 0 1px, transparent 1.5px);
+  background-position: 19px 31px, 81px 11px;
+  background-size: 137px 119px, 173px 151px;
+  animation-duration: 23s;
+  animation-direction: alternate-reverse;
+}
+
+.chapter4-star-lamp-closure__fallback-stars.is-near {
+  opacity: .58;
+  background-image:
+    radial-gradient(circle, rgb(255 232 171 / 94%) 0 1.5px, transparent 2.2px),
+    radial-gradient(circle, rgb(226 235 252 / 88%) 0 1.35px, transparent 2px);
+  background-position: 53px 23px, 124px 76px;
+  background-size: 223px 181px, 271px 209px;
+  animation-duration: 28s;
+}
+
+.chapter4-star-lamp-closure__artwork {
+  position: absolute;
+  z-index: 2;
+  inset: -7%;
+  transform:
+    translateY(var(--chapter4-star-lamp-camera-offset-y))
+    scale(var(--chapter4-star-lamp-camera-scale));
+  transform-origin: 50% 50%;
+  will-change: transform;
+  pointer-events: none;
 }
 
 .chapter4-star-lamp-closure__layer {
@@ -29,38 +111,33 @@
 }
 
 .chapter4-star-lamp-closure__layer.is-dark {
-  opacity: 0;
-  filter: brightness(.18) contrast(1.18);
-  animation: chapter4-star-lamp-dark var(--chapter4-star-lamp-duration) ease-out both;
+  opacity: 1;
+  filter: brightness(.56) contrast(1.1) saturate(.78);
 }
 
 .chapter4-star-lamp-closure__layer.is-outline {
-  opacity: 0;
+  opacity: .44;
   mix-blend-mode: screen;
-  filter: brightness(.64) contrast(1.3);
-  animation: chapter4-star-lamp-outline var(--chapter4-star-lamp-duration) ease-out both;
+  filter: brightness(.72) contrast(1.18) saturate(.72);
 }
 
 .chapter4-star-lamp-closure__layer.is-glow {
-  opacity: 0;
+  opacity: var(--chapter4-star-lamp-glow-level);
   mix-blend-mode: screen;
   transform-origin: 50% 29.5%;
-  filter: blur(7px) brightness(1.2);
-  animation: chapter4-star-lamp-glow var(--chapter4-star-lamp-duration) cubic-bezier(.2, .72, .2, 1) both;
+  filter: blur(6px) brightness(.9);
 }
 
 .chapter4-star-lamp-closure__layer.is-core {
-  opacity: 0;
+  opacity: var(--chapter4-star-lamp-core-level);
   mix-blend-mode: screen;
-  filter: brightness(1.15);
-  animation: chapter4-star-lamp-core var(--chapter4-star-lamp-duration) ease-in-out both;
+  filter: brightness(.96);
 }
 
 .chapter4-star-lamp-closure__layer.is-leds {
-  opacity: 0;
+  opacity: var(--chapter4-star-lamp-led-level);
   mix-blend-mode: screen;
-  filter: brightness(1.15) drop-shadow(0 0 3px rgb(255 244 198 / 88%));
-  animation: chapter4-star-lamp-leds var(--chapter4-star-lamp-duration) linear both;
+  filter: brightness(.94) drop-shadow(0 0 2px rgb(255 244 198 / 52%));
 }
 
 .chapter4-star-lamp-closure__flare {
@@ -70,12 +147,11 @@
   width: 22%;
   aspect-ratio: 1;
   border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(.4);
-  background: radial-gradient(circle, rgb(255 253 234 / 78%), rgb(255 232 155 / 22%) 27%, transparent 68%);
+  opacity: var(--chapter4-star-lamp-glow-level);
+  transform: translate(-50%, -50%) scale(calc(.72 + var(--chapter4-star-lamp-glow-level)));
+  background: radial-gradient(circle, rgb(255 253 234 / 52%), rgb(255 232 155 / 14%) 27%, transparent 64%);
   mix-blend-mode: screen;
-  filter: blur(10px);
-  animation: chapter4-star-lamp-flare var(--chapter4-star-lamp-duration) ease-out both;
+  filter: blur(8px);
 }
 
 .chapter4-star-lamp-closure__vignette {
@@ -92,7 +168,7 @@
   z-index: 4;
   pointer-events: none;
   background: #000;
-  animation: chapter4-star-lamp-blackout var(--chapter4-star-lamp-duration) linear both;
+  opacity: var(--chapter4-star-lamp-blackout-level);
 }
 
 .chapter4-star-lamp-closure__caption {
@@ -103,9 +179,8 @@
   display: grid;
   justify-items: end;
   gap: 2px;
-  opacity: 0;
+  opacity: var(--chapter4-star-lamp-caption-level);
   text-shadow: 0 2px 12px #000;
-  animation: chapter4-star-lamp-caption var(--chapter4-star-lamp-duration) ease-out both;
 }
 
 .chapter4-star-lamp-closure__caption strong {
@@ -126,6 +201,16 @@
   font-size: 11px;
   letter-spacing: .04em;
   text-align: right;
+}
+
+.chapter4-star-lamp-closure__sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .chapter4-exterior-questions {
@@ -161,18 +246,65 @@
   pointer-events: none;
 }
 
+.chapter4-exterior-questions__ambient-stars {
+  position: absolute;
+  inset: 0;
+  opacity: .52;
+  background-image:
+    radial-gradient(circle at 11% 19%, rgb(255 238 166 / 75%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 79% 13%, rgb(174 222 255 / 65%) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 62% 72%, rgb(255 245 202 / 56%) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 24% 81%, rgb(151 208 255 / 48%) 0 1px, transparent 1.6px);
+  background-size: 137px 113px, 191px 157px, 223px 181px, 269px 211px;
+  animation: chapter4-question-ambient-stars 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
 .chapter4-exterior-questions__panel {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 14px;
+  align-content: center;
+  gap: 16px;
   width: min(720px, 94%);
+  min-height: 310px;
   max-height: calc(100% - 12px);
   overflow-y: auto;
-  padding: 22px 24px;
-  border: 2px solid #8e7e50;
-  background: rgb(5 9 13 / 92%);
-  box-shadow: 0 18px 48px rgb(0 0 0 / 72%);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 25px 28px;
+  border: 1px solid rgb(208 187 118 / 44%);
+  background:
+    radial-gradient(ellipse at 50% 48%, rgb(27 36 53 / 86%), rgb(4 8 13 / 94%) 72%),
+    rgb(5 9 13 / 92%);
+  box-shadow:
+    0 18px 48px rgb(0 0 0 / 72%),
+    inset 0 0 42px rgb(85 128 174 / 9%),
+    0 0 36px rgb(238 207 106 / 7%);
+}
+
+.chapter4-exterior-questions__panel::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.chapter4-exterior-questions__panel::before,
+.chapter4-exterior-questions__panel::after {
+  position: absolute;
+  right: 28px;
+  left: 28px;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgb(232 208 129 / 58%), transparent);
+}
+
+.chapter4-exterior-questions__panel::before {
+  top: 16px;
+}
+
+.chapter4-exterior-questions__panel::after {
+  bottom: 16px;
 }
 
 .chapter4-exterior-questions__panel header small {
@@ -187,6 +319,43 @@
   font-size: 24px;
 }
 
+.chapter4-exterior-questions__question {
+  position: relative;
+  display: grid;
+  min-height: 180px;
+  place-items: center stretch;
+  isolation: isolate;
+}
+
+.chapter4-exterior-questions__question.is-entering,
+.chapter4-exterior-questions__question.is-dissolving {
+  pointer-events: none;
+}
+
+.chapter4-exterior-questions__question-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  will-change: opacity, filter, transform;
+}
+
+.chapter4-exterior-questions__question.is-entering .chapter4-exterior-questions__question-content {
+  animation: chapter4-question-materialize 1.15s cubic-bezier(.2, .72, .23, 1) both;
+}
+
+.chapter4-exterior-questions__question.is-dissolving .chapter4-exterior-questions__question-content {
+  animation: chapter4-question-dissolve .98s cubic-bezier(.46, .02, .72, .24) both;
+}
+
+.chapter4-exterior-questions__progress {
+  margin: 0;
+  color: #d8bd68;
+  font-size: 11px;
+  letter-spacing: .14em;
+}
+
 .chapter4-exterior-questions__panel fieldset {
   display: grid;
   gap: 8px;
@@ -197,8 +366,10 @@
 
 .chapter4-exterior-questions__panel legend {
   margin-bottom: 7px;
-  color: #efe8d3;
-  font-size: 15px;
+  color: #fff5d1;
+  font-size: 19px;
+  line-height: 1.45;
+  text-shadow: 0 0 14px rgb(241 206 99 / 24%);
 }
 
 .chapter4-exterior-questions__panel fieldset > div {
@@ -207,28 +378,37 @@
   gap: 8px;
 }
 
-.chapter4-exterior-questions__panel fieldset button,
-.chapter4-exterior-questions__submit {
+.chapter4-exterior-questions__panel fieldset button {
   min-height: 42px;
-  border: 1px solid #66717b;
+  border: 0;
   color: #e7edf2;
-  background: #15202a;
+  background: transparent;
   font: inherit;
+  transition: color 160ms ease, background 160ms ease, text-shadow 160ms ease;
+}
+
+.chapter4-exterior-questions__panel fieldset button:hover:not(:disabled) {
+  color: #fff4c9;
+  background: radial-gradient(ellipse at center, rgb(32 45 58 / 82%), transparent 76%);
+  box-shadow: none;
+  text-shadow: 0 0 12px rgb(227 200 111 / 24%);
+}
+
+.chapter4-exterior-questions__panel fieldset button:focus-visible {
+  outline: 0;
+  color: #fff4c9;
+  background: radial-gradient(ellipse at center, rgb(32 45 58 / 82%), transparent 76%);
+  box-shadow: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
 }
 
 .chapter4-exterior-questions__panel fieldset button.is-selected {
-  border-color: #f1ce63;
   color: #fff2ba;
-  background: #44526a;
-  box-shadow: inset 0 0 0 1px #f1ce63;
-}
-
-.chapter4-exterior-questions__submit {
-  justify-self: end;
-  min-width: 170px;
-  border-color: #d5b44e;
-  color: #17140b;
-  background: #e7c759;
+  background: radial-gradient(ellipse at center, rgb(68 82 106 / 86%), transparent 76%);
+  box-shadow: none;
+  text-shadow: 0 0 14px rgb(241 206 99 / 34%);
 }
 
 .chapter4-exterior-questions__panel button:disabled {
@@ -240,6 +420,75 @@
   margin: 0;
   color: #ffc6ad;
   font-size: 12px;
+  text-align: center;
+}
+
+.chapter4-exterior-questions__instruction {
+  margin: 1px 0 0;
+  color: #8ea0ad;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-align: right;
+}
+
+.chapter4-exterior-questions__sparks {
+  position: absolute;
+  z-index: 3;
+  inset: -26px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.chapter4-exterior-questions__sparks i {
+  position: absolute;
+  display: block;
+  width: var(--question-spark-size);
+  height: var(--question-spark-size);
+  opacity: 0;
+  background: #fff0ad;
+  box-shadow: 0 0 5px #f9d86d, 0 0 12px rgb(125 199 255 / 72%);
+  clip-path: polygon(50% 0, 64% 36%, 100% 50%, 64% 64%, 50% 100%, 36% 64%, 0 50%, 36% 36%);
+  will-change: opacity, transform;
+}
+
+.chapter4-exterior-questions__sparks.is-entering i {
+  animation: chapter4-question-spark-gather 1.15s cubic-bezier(.18, .65, .24, 1) var(--question-spark-delay) both;
+}
+
+.chapter4-exterior-questions__sparks.is-dissolving i,
+.chapter4-exterior-questions__sparks.is-final i {
+  animation: chapter4-question-spark-scatter .98s cubic-bezier(.17, .67, .36, 1) var(--question-spark-delay) both;
+}
+
+.chapter4-exterior-questions__saved-wrap {
+  position: relative;
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+}
+
+.chapter4-exterior-questions__submitting {
+  display: grid;
+  min-height: 190px;
+  place-content: center;
+  gap: 8px;
+  color: #f4e6b5;
+  text-align: center;
+}
+
+.chapter4-exterior-questions__submitting span {
+  color: #f4d36c;
+  font-size: 25px;
+  animation: chapter4-question-submit-pulse 1.15s ease-in-out infinite;
+}
+
+.chapter4-exterior-questions__submitting strong {
+  font-size: 18px;
+  letter-spacing: .08em;
+}
+
+.chapter4-exterior-questions__submitting small {
+  color: #ffc6ad;
 }
 
 .chapter4-exterior-questions__saved {
@@ -249,6 +498,90 @@
   font-size: 24px;
   letter-spacing: .08em;
   text-align: center;
+  text-shadow: 0 0 18px rgb(244 211 108 / 42%);
+  animation: chapter4-question-saved-reveal .62s ease-out both;
+}
+
+.chapter4-exterior-questions__sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes chapter4-question-materialize {
+  0% {
+    opacity: 0;
+    filter: blur(10px) brightness(1.75);
+    transform: translateY(10px) scale(.975);
+  }
+  38% { opacity: .28; }
+  72% { opacity: .82; }
+  100% {
+    opacity: 1;
+    filter: blur(0) brightness(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes chapter4-question-dissolve {
+  0% {
+    opacity: 1;
+    filter: blur(0) brightness(1);
+    transform: translateY(0) scale(1);
+  }
+  34% {
+    opacity: .82;
+    filter: blur(.8px) brightness(1.35);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(9px) brightness(2.15);
+    transform: translateY(-7px) scale(1.025);
+  }
+}
+
+@keyframes chapter4-question-spark-gather {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--question-spark-dx), var(--question-spark-dy), 0) scale(.15) rotate(0deg);
+  }
+  48% { opacity: .92; }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(.55) rotate(160deg);
+  }
+}
+
+@keyframes chapter4-question-spark-scatter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(.3) rotate(0deg);
+  }
+  24% { opacity: 1; }
+  66% { opacity: .76; }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--question-spark-dx), var(--question-spark-dy), 0) scale(1.55) rotate(190deg);
+  }
+}
+
+@keyframes chapter4-question-saved-reveal {
+  from { opacity: 0; filter: blur(6px); transform: scale(.96); }
+  to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@keyframes chapter4-question-submit-pulse {
+  0%, 100% { opacity: .42; transform: scale(.82); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+@keyframes chapter4-question-ambient-stars {
+  from { opacity: .34; transform: translate3d(-3px, -2px, 0); }
+  to { opacity: .62; transform: translate3d(4px, 3px, 0); }
 }
 
 @media (max-width: 560px) {
@@ -259,6 +592,7 @@
   .chapter4-exterior-questions__panel {
     gap: 9px;
     padding: 14px;
+    min-height: 360px;
   }
 
   .chapter4-exterior-questions__panel fieldset > div {
@@ -268,77 +602,29 @@
   .chapter4-exterior-questions__panel fieldset button {
     min-height: 34px;
   }
+
+  .chapter4-exterior-questions__panel legend {
+    font-size: 16px;
+  }
+
+  .chapter4-exterior-questions__question {
+    min-height: 238px;
+  }
 }
 
-@keyframes chapter4-star-lamp-camera {
-  0%, 43% { transform: translateY(7%) scale(1.38); }
-  100% { transform: translateY(0) scale(.88); }
-}
-
-@keyframes chapter4-star-lamp-dark {
-  0%, 8% { opacity: 0; filter: brightness(.05) contrast(1.2); }
-  25% { opacity: .34; filter: brightness(.12) contrast(1.2); }
-  58% { opacity: .76; filter: brightness(.34) contrast(1.12); }
-  100% { opacity: 1; filter: brightness(.62) contrast(1.06); }
-}
-
-@keyframes chapter4-star-lamp-outline {
-  0%, 11% { opacity: 0; filter: brightness(.2) contrast(1.3); }
-  23% { opacity: .16; }
-  39% { opacity: .68; filter: brightness(.7) contrast(1.24); }
-  100% { opacity: .9; filter: brightness(1.08) contrast(1.08); }
-}
-
-@keyframes chapter4-star-lamp-leds {
-  0%, 27% { opacity: 0; }
-  29% { opacity: .2; }
-  31% { opacity: .02; }
-  34% { opacity: .38; }
-  36% { opacity: .08; }
-  40% { opacity: .54; }
-  48% { opacity: .76; }
-  62%, 100% { opacity: 1; }
-}
-
-@keyframes chapter4-star-lamp-core {
-  0%, 34% { opacity: 0; }
-  42% { opacity: .18; }
-  61% { opacity: .82; }
-  100% { opacity: 1; }
-}
-
-@keyframes chapter4-star-lamp-glow {
-  0%, 38% { opacity: 0; transform: scale(.76); }
-  55% { opacity: .28; }
-  76% { opacity: .7; transform: scale(1.04); }
-  100% { opacity: .88; transform: scale(1.13); }
-}
-
-@keyframes chapter4-star-lamp-flare {
-  0%, 45% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
-  67% { opacity: .32; }
-  100% { opacity: .58; transform: translate(-50%, -50%) scale(1.28); }
-}
-
-@keyframes chapter4-star-lamp-blackout {
-  0%, 7% { opacity: 1; }
-  17% { opacity: .8; }
-  31%, 100% { opacity: 0; }
-}
-
-@keyframes chapter4-star-lamp-caption {
-  0%, 76% { opacity: 0; transform: translateY(8px); }
-  90%, 100% { opacity: 1; transform: translateY(0); }
+@keyframes chapter4-star-lamp-fallback-stars {
+  from { transform: translate3d(-1.5%, -.8%, 0); }
+  to { transform: translate3d(1.5%, .8%, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chapter4-star-lamp-closure__camera,
-  .chapter4-star-lamp-closure__layer,
-  .chapter4-star-lamp-closure__flare,
-  .chapter4-star-lamp-closure__blackout,
-  .chapter4-star-lamp-closure__caption {
-    animation-duration: 1ms;
-    animation-delay: 0ms;
+  .chapter4-star-lamp-closure__fallback-stars,
+  .chapter4-exterior-questions__ambient-stars,
+  .chapter4-exterior-questions__question-content,
+  .chapter4-exterior-questions__sparks i,
+  .chapter4-exterior-questions__submitting span,
+  .chapter4-exterior-questions__saved {
+    animation: none;
   }
 }
 

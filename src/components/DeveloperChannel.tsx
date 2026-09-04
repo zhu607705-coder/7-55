@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { GameStore } from "../core/types";
+import { isRecordingMode } from "../core/RecordingMode";
 import {
   applyDeveloperCheckpoint,
   DEVELOPER_CHECKPOINTS,
@@ -88,6 +89,7 @@ export function DeveloperChannel({
 }: DeveloperChannelProps) {
   const params = new URLSearchParams(window.location.search);
   const explicitlyDisabled = params.get("dev") === "0";
+  const recordingMode = isRecordingMode(window.location.search);
   const initialAvailability = isDeveloperChannelAvailable(window.location.search, import.meta.env.DEV);
   const [available, setAvailable] = useState(initialAvailability || open);
   const [active, setActive] = useState(() => getActiveDeveloperCheckpoint());
@@ -101,6 +103,7 @@ export function DeveloperChannel({
   );
   const chapterLevels = useMemo(() => getChapterLevels(selectedChapter), [selectedChapter]);
   const selectedLevel = chapterLevels.find((level) => level.id === selectedLevelId) ?? null;
+  const closeButtonLabel = recordingMode ? "关闭录制检查点面板" : "关闭开发者通道";
   const visibleCheckpoints = useMemo(
     () => selectedLevelId === "全部"
       ? chapterCheckpoints
@@ -111,12 +114,17 @@ export function DeveloperChannel({
     onOpenChange(nextOpen);
   }, [onOpenChange]);
   const closeAndResume = useCallback(() => {
+    if (recordingMode) {
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.delete("dev");
+      window.history.replaceState(window.history.state, "", nextUrl);
+    }
     setChannelOpen(false);
-  }, [setChannelOpen]);
+  }, [recordingMode, setChannelOpen]);
   useEffect(() => {
     if (explicitlyDisabled) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "d") {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "d") {
         event.preventDefault();
         event.stopImmediatePropagation();
         if (event.repeat) return;
@@ -138,14 +146,17 @@ export function DeveloperChannel({
   useEffect(() => {
     if (!open) return undefined;
     const frame = window.requestAnimationFrame(() => {
-      channelRef.current?.querySelector<HTMLButtonElement>("button[aria-label='关闭开发者通道']")
+      channelRef.current?.querySelector<HTMLButtonElement>(`button[aria-label='${closeButtonLabel}']`)
         ?.focus({ preventScroll: true });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [open]);
+  }, [closeButtonLabel, open]);
   const stopPointerPropagation = (event: React.SyntheticEvent) => event.stopPropagation();
   if (!available) return null;
-  if (!open) return <button type="button" className="developer-channel-trigger" aria-label="打开开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={(event) => { stopPointerPropagation(event); setChannelOpen(true); }}>DEV</button>;
+  if (!open) {
+    if (recordingMode) return null;
+    return <button type="button" className="developer-channel-trigger" aria-label="打开开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={(event) => { stopPointerPropagation(event); setChannelOpen(true); }}>DEV</button>;
+  }
   const dismissBackdrop = (event: React.SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
@@ -162,8 +173,8 @@ export function DeveloperChannel({
       onPointerUp={stopPointerPropagation}
       onClick={dismissBackdrop}
     />
-    <aside ref={channelRef} data-developer-channel-root className="developer-channel" aria-label="开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
-    <header><div><small>7:55 DEV · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>章节与关卡直达</strong></div><button type="button" aria-label="关闭开发者通道" onClick={closeAndResume}>×</button></header>
+    <aside ref={channelRef} data-developer-channel-root data-recording-mode={recordingMode ? "true" : undefined} className="developer-channel" aria-label={recordingMode ? "录制检查点面板" : "开发者通道"} onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={stopPointerPropagation}>
+    <header><div><small>{recordingMode ? "7:55 录制准备" : "7:55 DEV"} · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>{recordingMode ? "录制检查点切换" : "章节与关卡直达"}</strong></div><button type="button" aria-label={closeButtonLabel} onClick={closeAndResume}>×</button></header>
     <nav className="developer-channel-chapters" aria-label="选择章节">
       {DEVELOPER_CHAPTERS.map((chapter) => {
         const count = DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === chapter).length;
@@ -212,6 +223,12 @@ export function DeveloperChannel({
           onClick={() => {
             setChannelOpen(false);
             applyDeveloperCheckpoint(store, item.id as DeveloperCheckpointId);
+            if (recordingMode) {
+              const nextUrl = new URL(window.location.href);
+              nextUrl.searchParams.set("devCheckpoint", item.id);
+              nextUrl.searchParams.delete("dev");
+              window.history.replaceState(window.history.state, "", nextUrl);
+            }
             setActive(item.id);
             onCheckpointApplied?.();
           }}
@@ -219,14 +236,14 @@ export function DeveloperChannel({
       </section>
     </div>
     <footer><button type="button" onClick={() => {
-      setChannelOpen(false);
+      closeAndResume();
       if (restoreDeveloperBackup(store)) {
         setActive(null);
         onCheckpointApplied?.();
       } else {
         setChannelOpen(true);
       }
-    }}>恢复进入前存档</button><span>Ctrl Shift D</span></footer>
+    }}>恢复进入前存档</button><span>{recordingMode ? "选择节点后自动清屏 · Esc 关闭" : "Ctrl/Cmd Shift D"}</span></footer>
     </aside>
   </Fragment>;
 }

@@ -21,6 +21,7 @@ try {
         'export { createDeveloperCheckpointState } from "./src/modules/DeveloperChannel.ts";',
         'export { QIZHEN_DOCK_AFTER_RAIN_PUDDLES, QIZHEN_DOCK_RAIN_EFFECT_PROFILE, QIZHEN_DOCK_RAIN_SPLASH_SITES, QIZHEN_LAKE_WORLD, QIZHEN_LAKE_ZONES, isQizhenAfterRainPuddleFootHit } from "./src/scenes/rpg/QizhenLakeModel.ts";',
         'export { QIZHEN_RAIN_RESCUE_ROUTE, QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES, getQizhenRainRescueDurationMs } from "./src/scenes/rpg/QizhenRainRescuePresentation.ts";',
+        'export { DORM_RAIN_SOAKED_VISUAL_PROFILE, isDormPlayerRainSoaked } from "./src/scenes/rpg/DormHubModel.ts";',
         'export { default as qizhenContent } from "./src/data/chapter3-qizhen-lake.content.json";'
       ].join("\n"),
       resolveDir: root,
@@ -42,11 +43,13 @@ try {
     QIZHEN_LAKE_ZONES,
     QIZHEN_RAIN_RESCUE_REDUCED_ROUTE_INDICES,
     QIZHEN_RAIN_RESCUE_ROUTE,
+    DORM_RAIN_SOAKED_VISUAL_PROFILE,
     QIZHEN_WEATHER_STABLE_REQUIRED_MS,
     createQizhenWeatherControlFrame,
     createInitialGameState,
     getQizhenWeatherMinimumMoves,
     getQizhenRainRescueDurationMs,
+    isDormPlayerRainSoaked,
     isQizhenAfterRainPuddleFootHit,
     isQizhenWeatherCloudAligned,
     isValidQizhenWeatherControlSummary,
@@ -361,6 +364,19 @@ try {
     || selectCampusWeather(overcastCheckpoint).label !== "多云") {
     throw new Error("overcast developer checkpoint must seed the cleared dock state");
   }
+  if (!isDormPlayerRainSoaked(rescueCheckpoint)
+    || !isDormPlayerRainSoaked(dryerCheckpoint)
+    || !isDormPlayerRainSoaked(controlCheckpoint)
+    || isDormPlayerRainSoaked(overcastCheckpoint)) {
+    throw new Error("dorm wet-character presentation must span rescue, dryer pickup, and phone calibration, then clear with rain safety");
+  }
+  if (DORM_RAIN_SOAKED_VISUAL_PROFILE.dropletCount !== 8
+    || DORM_RAIN_SOAKED_VISUAL_PROFILE.reducedMotionDropletCount !== 3
+    || DORM_RAIN_SOAKED_VISUAL_PROFILE.maxFootprints !== 6
+    || DORM_RAIN_SOAKED_VISUAL_PROFILE.footprintSpacing < 16
+    || DORM_RAIN_SOAKED_VISUAL_PROFILE.footprintLifetimeMs > 1200) {
+    throw new Error("dorm wet-character visual profile must keep bounded droplets and short-lived footprints");
+  }
   const unlockedBeforeEntry = createDeveloperCheckpointState("c3-qizhen-gate");
   unlockedBeforeEntry.runtimeMode = "phone";
   unlockedBeforeEntry.currentScene = "zjuding";
@@ -471,7 +487,7 @@ try {
     || getQizhenRainRescueDurationMs(true) > 2500) {
     throw new Error("forced-launch presentation duration must remain extended while reduced motion stays concise");
   }
-  console.log("Qizhen rain safety PASS gate=hidden-until-3-keywords+teacher-warning+six-stroke-forced-launch+dramatic-capsize+cinematic-rescue+dorm-dryer+repeat-entry-block weather=shared-selector cloud-calibration=continuous-left-wind+6-keys+3-bands+1s-stability+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
+  console.log("Qizhen rain safety PASS gate=hidden-until-3-keywords+teacher-warning+six-stroke-forced-launch+dramatic-capsize+cinematic-rescue+dorm-dryer+wet-character+repeat-entry-block weather=shared-selector cloud-calibration=continuous-left-wind+6-keys+3-bands+1s-stability+dryer-consume+save-reload migration=v29-recoverable developer-checkpoints=5 map-resume=first-entry-boundary+gate+lake-checkpoint rain-effects=64+36-streaks+3-mist+4-sheen+18-splashes puddles=4+walkable+foot-hit feedback=event-backed");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

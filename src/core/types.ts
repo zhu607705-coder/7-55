@@ -1109,6 +1109,19 @@ export interface UiState {
   seenChapterIntros: ChapterId[];
 }
 
+/**
+ * 手机电量是持久化的轻量资源。最低 1% 为任务保底电量，避免玩家因耗尽电量
+ * 无法打开承载主线的手机页面。
+ */
+export interface PhoneBatteryState {
+  /** 1-100 */
+  percent: number;
+  /** 开启后，应用启动耗电由 2% 降为 1%。 */
+  lowPowerMode: boolean;
+  /** 成功连接场景内电源的累计次数，仅用于反馈与调试。 */
+  rechargeCount: number;
+}
+
 export interface GameState {
   runtimeMode: RuntimeMode;
   rpgScene: RpgSceneId;
@@ -1116,6 +1129,7 @@ export interface GameState {
   currentScene: SceneId;
   networkMode: NetworkMode;
   themeMode: ThemeMode;
+  phoneBattery: PhoneBatteryState;
   digits: Record<DigitIndex, DigitValue | null>;
   items: Record<InventoryItemId, boolean>;
   flags: GameFlags;

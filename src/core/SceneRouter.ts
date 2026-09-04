@@ -7,7 +7,8 @@ export class SceneRouter {
 
   constructor(
     private readonly store: GameStore,
-    private readonly events: EventBus
+    private readonly events: EventBus,
+    private readonly onSceneTransition?: (previousScene: SceneId, nextScene: SceneId) => void
   ) {}
 
   goTo(sceneId: SceneId): boolean {
@@ -16,6 +17,7 @@ export class SceneRouter {
       return false;
     }
     const previousScene = this.store.getState().currentScene;
+    this.onSceneTransition?.(previousScene, sceneId);
     this.history.push(previousScene);
     this.store.setState((state) => ({
       ...state,
@@ -38,6 +40,7 @@ export class SceneRouter {
       this.events.emit("feature_access_denied", { sceneId: previousScene });
       return;
     }
+    this.onSceneTransition?.(this.store.getState().currentScene, previousScene);
     this.store.setState((state) => ({
       ...state,
       currentScene: previousScene,
