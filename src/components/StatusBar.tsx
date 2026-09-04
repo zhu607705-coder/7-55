@@ -13,6 +13,8 @@ interface StatusBarProps {
  */
 export function StatusBar({ state }: StatusBarProps) {
   const network = state.networkMode;
+  const batteryPercent = state.phoneBattery.percent;
+  const batteryTone = batteryPercent <= 5 ? "is-critical" : batteryPercent <= 20 ? "is-low" : "is-normal";
   const chapterFourActive = state.chapterThreeInterlude.completed
     && (state.chapter4.prologueSeen
       || state.chapter4.completed
@@ -41,8 +43,8 @@ export function StatusBar({ state }: StatusBarProps) {
       </span>
       <button
         type="button"
-        className="sb-right"
-        aria-label="打开控制中心"
+        className={`sb-right ${batteryTone} ${state.phoneBattery.lowPowerMode ? "is-saving" : ""}`}
+        aria-label={`打开控制中心，当前电量 ${batteryPercent}%${state.phoneBattery.lowPowerMode ? "，低电量模式已开启" : ""}`}
         onClick={() => kit.flags.setUi("controlCenterOpen", true)}
       >
         {network === "campus_wifi" ? (
@@ -68,9 +70,9 @@ export function StatusBar({ state }: StatusBarProps) {
         ) : (
           <strong>无服务</strong>
         )}
-        <span className="sb-batt-num">17%</span>
+        <span className="sb-batt-num">{batteryPercent}%</span>
         <span className="sb-battery" aria-hidden="true">
-          <i />
+          <i style={{ width: `${batteryPercent}%` }} />
         </span>
       </button>
     </header>

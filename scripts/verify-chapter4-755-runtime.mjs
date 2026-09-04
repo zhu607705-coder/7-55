@@ -17,6 +17,25 @@ function snapshot(value) {
   return JSON.stringify(value);
 }
 
+function segmentClearsCollisions(start, end, collisions, footBox, sampleStep = 0.5) {
+  const distance = Math.hypot(end.x - start.x, end.y - start.y);
+  const samples = Math.max(1, Math.ceil(distance / sampleStep));
+  const halfWidth = footBox.width / 2;
+  const halfHeight = footBox.height / 2;
+  for (let sample = 0; sample <= samples; sample += 1) {
+    const t = sample / samples;
+    const x = start.x + (end.x - start.x) * t;
+    const y = start.y + (end.y - start.y) * t;
+    if (collisions.some((collision) => (
+      x >= collision.x - halfWidth
+      && x < collision.x + collision.width + halfWidth
+      && y >= collision.y - halfHeight
+      && y < collision.y + collision.height + halfHeight
+    ))) return false;
+  }
+  return true;
+}
+
 class MemoryStorage {
   #values = new Map();
 
@@ -136,6 +155,7 @@ try {
     resolveChapterFourFinalChaseFailure,
     resolveChapterFourFinalChaseFinish,
     resolveChapterFourFinalChasePortal,
+    requestChapterFourFinalChaseDoorClose,
     stepChapterFourFinalChase
   } = finalChaseModule;
   const { selectRpgItemUseGuidance } = itemUseGuidanceModule;
@@ -2373,7 +2393,7 @@ try {
     roomId: "a1_lobby",
     checkpoint: "c4_a1_lobby"
   }), "Task11 solved grid must atomically enter the 07:54 final chase at A1 lobby");
-  assert(selectQuestViewModel(finalChaseState).objective === "前往 202", "Task11 final chase must reveal only the 202 objective");
+  assert(selectQuestViewModel(finalChaseState).objective === "进入 202 并关门", "Task11 final chase must reveal only the Room202 door objective");
   const finalChaseProjection = selectChapterFourMazeProjection(finalChaseState);
   assert(
     finalChaseProjection.dynamicCollisionIds.includes("a1_guard_chase_body")
@@ -2506,45 +2526,82 @@ try {
     catchDistance: 22,
     predictionMs: 320,
     targetHoldMs: 260,
-    waypointReachDistance: 34,
+    waypointReachDistance: 8,
     catchUpDistance: 420,
     closeDistance: 120,
     startContactGraceMs: 700,
-    portalContactGraceMs: 420,
+    a2EntryHoldMs: 1600,
     contactConfirmMs: 180,
     maxStepMs: 50,
     finishBeforeContact: true,
     transportId: "main_stair",
+    guardPursuitFloors: ["A1", "A2"],
+    guardStopsAtTransport: "room202_door",
     restartCheckpoint: "c4_a1_lobby"
   }), "Task12 pure chase rules must match the approved timing, speeds, contact, transport and restart contract");
   assert(sameJson(CHAPTER_FOUR_FINAL_CHASE_POINTS, {
     playerStart: { x: 590, y: 612 },
     guardSpawn: { x: 590, y: 724 },
+    a1FrontDeskWest: { x: 720, y: 540 },
     a1LowerHall: { x: 836, y: 540 },
     a1Central: { x: 836, y: 228 },
+    a1StairApproach: { x: 1001, y: 238 },
     a1Stair: { x: 1001, y: 214 },
     a2Arrival: { x: 966, y: 214 },
+    a2GuardReentry: { x: 966, y: 174 },
     a2CoreEast: { x: 1100, y: 232 },
     a2EastSouth: { x: 1100, y: 400 },
     room202Outer: { x: 1353, y: 400 },
+    room203CornerNorth: { x: 1310, y: 490 },
+    room203CornerSouth: { x: 1310, y: 540 },
     finishThreshold: { x: 1353, y: 356.5 },
     finalMinuteSpawn: { x: 1353, y: 320 },
     bakeryDeadEnd: { x: 318, y: 648 },
     room203DeadEnd: { x: 1353, y: 524 }
   }), "Task12 pure chase points must preserve the authored route, finish, collectible and two decoys");
-  assert(CHAPTER_FOUR_FINAL_CHASE_WAYPOINTS.length === 12, "Task12 pure chase graph must contain 12 authored waypoints");
+  assert(CHAPTER_FOUR_FINAL_CHASE_WAYPOINTS.length === 16, "Task12 pure chase graph must contain 16 authored waypoints");
+  assert(
+    sameJson(chapterFourLayout.finalChaseRuntime.guardPursuitStoryFloors, ["A1", "A2"])
+      && chapterFourLayout.finalChaseRuntime.guardStopsAtTransport === "room202_door"
+      && sameJson(chapterFourLayout.finalChaseRuntime.guardA2Reentry, {
+        storyFloor: "A2",
+        x: 966,
+        y: 174
+      }),
+    "Task12 layout must author the upstairs guard re-entry and Room202 stop boundary"
+  );
   assert(
     CHAPTER_FOUR_FINAL_CHASE_WAYPOINTS.filter((waypoint) => waypoint.role === "decoy")
       .map((waypoint) => waypoint.id).join(",") === "a1_bakery_dead_end,a2_room203_dead_end",
     "Task12 bakery and Room203 must remain non-progressing decoy branches"
   );
+  assert(sameJson(
+    CHAPTER_FOUR_FINAL_CHASE_WAYPOINTS.map(({ id, neighborIds }) => ({ id, neighborIds })),
+    [
+      { id: "a1_guard_spawn", neighborIds: ["a1_chase_start"] },
+      { id: "a1_chase_start", neighborIds: ["a1_guard_spawn", "a1_bakery_dead_end", "a1_front_desk_west"] },
+      { id: "a1_bakery_dead_end", neighborIds: ["a1_chase_start"] },
+      { id: "a1_front_desk_west", neighborIds: ["a1_chase_start", "a1_lower_hall"] },
+      { id: "a1_lower_hall", neighborIds: ["a1_front_desk_west", "a1_central"] },
+      { id: "a1_central", neighborIds: ["a1_lower_hall", "a1_stair_approach"] },
+      { id: "a1_stair_approach", neighborIds: ["a1_central", "a1_main_stair"] },
+      { id: "a1_main_stair", neighborIds: ["a1_stair_approach"] },
+      { id: "a2_main_stair_arrival", neighborIds: ["a2_core_east"] },
+      { id: "a2_core_east", neighborIds: ["a2_main_stair_arrival", "a2_east_south"] },
+      { id: "a2_east_south", neighborIds: ["a2_core_east", "a2_room202_outer", "a2_room203_corner_north"] },
+      { id: "a2_room202_outer", neighborIds: ["a2_east_south", "a2_room202_finish"] },
+      { id: "a2_room202_finish", neighborIds: ["a2_room202_outer"] },
+      { id: "a2_room203_corner_north", neighborIds: ["a2_east_south", "a2_room203_corner_south"] },
+      { id: "a2_room203_corner_south", neighborIds: ["a2_room203_corner_north", "a2_room203_dead_end"] },
+      { id: "a2_room203_dead_end", neighborIds: ["a2_room203_corner_south"] }
+    ]
+  ), "Task12 pure chase graph must preserve the collision-safe authored edges");
   const chaseInput = {
     deltaMs: 16,
     committedAndApplied: true,
     floor: "A1",
     playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart,
     guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.guardSpawn,
-    playerInsideFinish: false,
     playerEnteredMainStair: false,
     guardContact: false
   };
@@ -2580,25 +2637,39 @@ try {
     !chapterFourFinalChaseFootContact({ x: 10, y: 10 }, { x: 32.001, y: 10, width: 1, height: 1 }),
     "Task12 final guard contact must reject points beyond the authored catch boundary"
   );
-  const simultaneousFinish = stepChapterFourFinalChase({
+  const thresholdWithoutDoorAction = stepChapterFourFinalChase({
     ...chaseRuntimeState,
+    phase: "running",
+    portalApplied: true,
     floor: "A2",
-    guardFloor: "A2"
+    guardFloor: "A2",
+    guardTargetWaypointId: "a2_room202_outer"
   }, {
     ...chaseInput,
     floor: "A2",
     playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.finishThreshold,
     guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.finishThreshold,
-    playerInsideFinish: true,
     guardContact: true
   });
   assert(
-    simultaneousFinish.state.phase === "finish_pending"
-      && simultaneousFinish.finishRequested
-      && !simultaneousFinish.failureRequested,
-    "Task12 finish must win before contact on the same frame"
+    thresholdWithoutDoorAction.state.phase !== "finish_pending"
+      && !thresholdWithoutDoorAction.finishRequested,
+    "Task12 merely crossing the 202 threshold must not close the door automatically"
   );
-  const completedFinish = resolveChapterFourFinalChaseFinish(simultaneousFinish.state, true);
+  const requestedDoorClose = requestChapterFourFinalChaseDoorClose({
+    ...chaseRuntimeState,
+    phase: "running",
+    portalApplied: true,
+    floor: "A2",
+    guardFloor: "A2",
+    guardTargetWaypointId: "a2_room202_outer"
+  });
+  assert(
+    requestedDoorClose.phase === "finish_pending"
+      && requestedDoorClose.finishRequestIssued,
+    "Task12 an explicit Room202 door action must enter finish_pending exactly once"
+  );
+  const completedFinish = resolveChapterFourFinalChaseFinish(requestedDoorClose, true);
   assert(completedFinish.phase === "complete", "Task12 accepted finish must resolve once to complete");
   assert(
     sameJson(resolveChapterFourFinalChaseFinish(completedFinish, true), completedFinish),
@@ -2646,7 +2717,57 @@ try {
     "Task12 real A1 main-stair entry must request one portal transfer while retaining guard distance"
   );
   const acceptedPortal = resolveChapterFourFinalChasePortal(portalStep.state, true);
-  assert(acceptedPortal.portalApplied && acceptedPortal.floor === "A2", "Task12 accepted portal must mark only the runtime transfer applied");
+  assert(
+    acceptedPortal.portalApplied
+      && acceptedPortal.phase === "running"
+      && acceptedPortal.floor === "A2"
+      && acceptedPortal.guardFloor === "A2"
+      && acceptedPortal.guardTargetWaypointId === "a2_main_stair_arrival"
+      && acceptedPortal.portalRemainingDistance === 0,
+    "Task12 accepted stair transfer must re-enter the guard on A2 and continue pursuit"
+  );
+  const transferringFloorStep = stepChapterFourFinalChase(acceptedPortal, {
+    ...chaseInput,
+    floor: "A2",
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival,
+    guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2GuardReentry,
+    playerEnteredMainStair: false,
+    guardContact: false
+  });
+  assert(
+    transferringFloorStep.state.phase === "running"
+      && transferringFloorStep.state.guardFloor === "A2"
+      && transferringFloorStep.guardVisible
+      && Math.hypot(
+        transferringFloorStep.desiredGuardVelocity.x,
+        transferringFloorStep.desiredGuardVelocity.y
+      ) === 0
+      && transferringFloorStep.state.contactGraceRemainingMs > 0
+      && !transferringFloorStep.failureRequested,
+    "Task12 the first A2 frame must render the upstairs guard at the stair while the authored entry hold gives the player a fair head start"
+  );
+  const releasedUpstairsGuard = stepChapterFourFinalChase({
+    ...transferringFloorStep.state,
+    contactGraceRemainingMs: 0
+  }, {
+    ...chaseInput,
+    floor: "A2",
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2EastSouth,
+    guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival,
+    playerEnteredMainStair: false,
+    guardContact: false
+  });
+  assert(
+    releasedUpstairsGuard.state.phase === "running"
+      && releasedUpstairsGuard.state.guardFloor === "A2"
+      && releasedUpstairsGuard.guardVisible
+      && Math.hypot(
+        releasedUpstairsGuard.desiredGuardVelocity.x,
+        releasedUpstairsGuard.desiredGuardVelocity.y
+      ) > 0
+      && !releasedUpstairsGuard.failureRequested,
+    "Task12 the upstairs guard must resume pursuit after the authored entry hold"
+  );
   const simultaneousPortalContact = stepChapterFourFinalChase({
     ...chaseRuntimeState,
     contactGraceRemainingMs: 0,
@@ -2667,12 +2788,11 @@ try {
   const farPursuit = stepChapterFourFinalChase({
     ...chaseRuntimeState,
     guardTargetHoldMs: 0,
-    lastPlayerPosition: { x: 1100, y: 232 }
+    lastPlayerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a1Central
   }, {
     ...chaseInput,
-    floor: "A2",
-    guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival,
-    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.room203DeadEnd
+    guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.guardSpawn,
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a1Stair
   });
   assert(
     farPursuit.state.pursuitBand === "catch_up"
@@ -2681,16 +2801,13 @@ try {
   );
   const closePursuit = stepChapterFourFinalChase({
     ...chaseRuntimeState,
-    floor: "A2",
-    guardFloor: "A2",
-    guardTargetWaypointId: "a2_room202_outer",
+    guardTargetWaypointId: "a1_lower_hall",
     guardTargetHoldMs: 0,
-    lastPlayerPosition: { x: 1353, y: 400 }
+    lastPlayerPosition: { x: 836, y: 540 }
   }, {
     ...chaseInput,
-    floor: "A2",
-    guardPosition: { x: 1340, y: 400 },
-    playerPosition: { x: 1353, y: 400 }
+    guardPosition: { x: 823, y: 540 },
+    playerPosition: { x: 836, y: 540 }
   });
   assert(
     closePursuit.state.pursuitBand === "close"
@@ -2699,20 +2816,198 @@ try {
   );
   const heldTarget = stepChapterFourFinalChase({
     ...chaseRuntimeState,
-    floor: "A2",
-    guardFloor: "A2",
-    guardTargetWaypointId: "a2_room202_outer",
+    guardTargetWaypointId: "a1_lower_hall",
     guardTargetHoldMs: 200,
-    lastPlayerPosition: { x: 1100, y: 410 }
+    lastPlayerPosition: { x: 836, y: 520 }
+  }, {
+    ...chaseInput,
+    guardPosition: { x: 720, y: 540 },
+    playerPosition: { x: 836, y: 515 }
+  });
+  assert(
+    heldTarget.state.guardTargetWaypointId === "a1_lower_hall",
+    "Task12 current waypoint must remain locked until the guard reaches it"
+  );
+  const settledWaypointFromNorth = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    guardTargetWaypointId: "a1_chase_start",
+    guardTargetHoldMs: 0,
+    lastPlayerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart
+  }, {
+    ...chaseInput,
+    guardPosition: {
+      x: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart.x,
+      y: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart.y - 4
+    },
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart
+  });
+  const settledWaypointFromSouth = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    guardTargetWaypointId: "a1_chase_start",
+    guardTargetHoldMs: 0,
+    lastPlayerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart
+  }, {
+    ...chaseInput,
+    guardPosition: {
+      x: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart.x,
+      y: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart.y + 4
+    },
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart
+  });
+  assert(
+    Math.hypot(
+      settledWaypointFromNorth.desiredGuardVelocity.x,
+      settledWaypointFromNorth.desiredGuardVelocity.y
+    ) === 0
+      && Math.hypot(
+        settledWaypointFromSouth.desiredGuardVelocity.x,
+        settledWaypointFromSouth.desiredGuardVelocity.y
+      ) === 0,
+    "Task12 guard must settle inside a reached waypoint instead of reversing across it every frame"
+  );
+  const leakedRunningFloor = stepChapterFourFinalChase({
+    ...chaseRuntimeState,
+    phase: "running",
+    floor: "A1",
+    guardFloor: "A1"
   }, {
     ...chaseInput,
     floor: "A2",
-    guardPosition: { x: 1100, y: 400 },
-    playerPosition: { x: 1100, y: 415 }
+    playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival,
+    guardPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.playerStart,
+    guardContact: false
   });
   assert(
-    heldTarget.state.guardTargetWaypointId === "a2_room202_outer",
-    "Task12 target hysteresis must prevent one-frame branch oscillation"
+    leakedRunningFloor.state.phase === "running"
+      && leakedRunningFloor.state.guardFloor === "A2"
+      && leakedRunningFloor.guardVisible,
+    "Task12 an A2 player frame must recover a stale chase runtime by promoting the guard upstairs"
+  );
+  const finalChaseA1Floor = chapterFourLayout.floors.find((floor) => floor.storyFloor === "A1");
+  const finalChaseA1Collisions = [
+    ...(finalChaseA1Floor?.staticCollisions ?? []),
+    ...chapterFourLayout.physicalDeltas
+      .filter((delta) => delta.storyFloor === "A1" && delta.statePlateIds?.includes("a1_0754_blackout"))
+      .flatMap((delta) => delta.collisionBounds ?? [])
+  ];
+  const simulateA1GuardRoute = (playerPosition, requiredTargets) => {
+    let state = {
+      ...chaseRuntimeState,
+      lastPlayerPosition: { ...playerPosition },
+      guardTargetWaypointId: "a1_chase_start",
+      guardTargetHoldMs: 0
+    };
+    let guardPosition = { ...CHAPTER_FOUR_FINAL_CHASE_POINTS.guardSpawn };
+    const visitedTargets = new Set([state.guardTargetWaypointId]);
+    let collisionFree = true;
+    let reached = false;
+    for (let frame = 0; frame < 720; frame += 1) {
+      const step = stepChapterFourFinalChase(state, {
+        ...chaseInput,
+        deltaMs: 16,
+        playerPosition,
+        guardPosition,
+        playerEnteredMainStair: false,
+        guardContact: false
+      });
+      const nextPosition = {
+        x: guardPosition.x + step.desiredGuardVelocity.x * 0.016,
+        y: guardPosition.y + step.desiredGuardVelocity.y * 0.016
+      };
+      collisionFree = collisionFree && segmentClearsCollisions(
+        guardPosition,
+        nextPosition,
+        finalChaseA1Collisions,
+        chapterFourLayout.finalChaseRuntime.guardFootBox
+      );
+      guardPosition = nextPosition;
+      state = step.state;
+      visitedTargets.add(state.guardTargetWaypointId);
+      if (Math.hypot(guardPosition.x - playerPosition.x, guardPosition.y - playerPosition.y)
+        <= CHAPTER_FOUR_FINAL_CHASE_RULES.waypointReachDistance) {
+        reached = true;
+        break;
+      }
+    }
+    return {
+      collisionFree,
+      reached,
+      sawRequiredTargets: requiredTargets.every((targetId) => visitedTargets.has(targetId))
+    };
+  };
+  const stairGuardRoute = simulateA1GuardRoute(CHAPTER_FOUR_FINAL_CHASE_POINTS.a1Stair, [
+    "a1_front_desk_west",
+    "a1_lower_hall",
+    "a1_central",
+    "a1_stair_approach",
+    "a1_main_stair"
+  ]);
+  assert(
+    stairGuardRoute.collisionFree && stairGuardRoute.reached && stairGuardRoute.sawRequiredTargets,
+    "Task12 simulated A1 guard route to the stair must traverse every detour without clipping a collider"
+  );
+  const bakeryGuardRoute = simulateA1GuardRoute(CHAPTER_FOUR_FINAL_CHASE_POINTS.bakeryDeadEnd, [
+    "a1_chase_start",
+    "a1_bakery_dead_end"
+  ]);
+  assert(
+    bakeryGuardRoute.collisionFree && bakeryGuardRoute.reached && bakeryGuardRoute.sawRequiredTargets,
+    "Task12 simulated A1 guard route to the bakery decoy must remain collision-free"
+  );
+  const finalChaseA2Floor = chapterFourLayout.floors.find((floor) => floor.storyFloor === "A2");
+  const finalChaseA2Collisions = [
+    ...(finalChaseA2Floor?.staticCollisions ?? []),
+    ...chapterFourLayout.physicalDeltas
+      .filter((delta) => delta.storyFloor === "A2" && delta.statePlateIds?.includes("a2_0754_chase"))
+      .flatMap((delta) => delta.collisionBounds ?? [])
+  ];
+  let a2RouteState = { ...acceptedPortal };
+  let a2GuardPosition = { ...CHAPTER_FOUR_FINAL_CHASE_POINTS.a2GuardReentry };
+  const a2VisitedTargets = new Set([a2RouteState.guardTargetWaypointId]);
+  let a2RouteCollisionFree = true;
+  let a2RouteReached = false;
+  for (let frame = 0; frame < 720; frame += 1) {
+    const step = stepChapterFourFinalChase(a2RouteState, {
+      ...chaseInput,
+      deltaMs: 16,
+      floor: "A2",
+      playerPosition: CHAPTER_FOUR_FINAL_CHASE_POINTS.finishThreshold,
+      guardPosition: a2GuardPosition,
+      playerEnteredMainStair: false,
+      guardContact: false
+    });
+    const nextPosition = {
+      x: a2GuardPosition.x + step.desiredGuardVelocity.x * 0.016,
+      y: a2GuardPosition.y + step.desiredGuardVelocity.y * 0.016
+    };
+    a2RouteCollisionFree = a2RouteCollisionFree && segmentClearsCollisions(
+      a2GuardPosition,
+      nextPosition,
+      finalChaseA2Collisions,
+      chapterFourLayout.finalChaseRuntime.guardFootBox
+    );
+    a2GuardPosition = nextPosition;
+    a2RouteState = step.state;
+    a2VisitedTargets.add(a2RouteState.guardTargetWaypointId);
+    if (Math.hypot(
+      a2GuardPosition.x - CHAPTER_FOUR_FINAL_CHASE_POINTS.finishThreshold.x,
+      a2GuardPosition.y - CHAPTER_FOUR_FINAL_CHASE_POINTS.finishThreshold.y
+    ) <= CHAPTER_FOUR_FINAL_CHASE_RULES.waypointReachDistance) {
+      a2RouteReached = true;
+      break;
+    }
+  }
+  assert(
+    a2RouteCollisionFree
+      && a2RouteReached
+      && [
+        "a2_main_stair_arrival",
+        "a2_core_east",
+        "a2_east_south",
+        "a2_room202_outer",
+        "a2_room202_finish"
+      ].every((targetId) => a2VisitedTargets.has(targetId)),
+    "Task12 simulated A2 guard route must reach Room202 through every authored waypoint without clipping a collider"
   );
   assert(isChapterFourFinalChaseAttemptCurrent(chaseRuntimeState, 7), "Task12 runtime attempt token must accept its current attempt");
   assert(!isChapterFourFinalChaseAttemptCurrent(chaseRuntimeState, 6), "Task12 runtime attempt token must reject stale attempts");
@@ -3317,7 +3612,11 @@ try {
   const failureStore = createGameStore(failureFixture);
   const failureController = new ChapterFourTemporalMazeController(failureStore, new EventBus());
   const beforeFailure = failureStore.getState();
-  const acceptedFailure = failureController.resolve755Intent({ type: "fail_chase", expectedAttempt: 7 });
+  const acceptedFailure = failureController.resolve755Intent({
+    type: "fail_chase",
+    expectedAttempt: 7,
+    failureFloor: "A1"
+  });
   const afterFailure = failureStore.getState();
   assert(acceptedFailure.accepted && acceptedFailure.changed, "Task12 current attempt failure must commit once");
   assert(sameJson({
@@ -3346,9 +3645,42 @@ try {
     selectedItem: "campusCard"
   }), "Task12 failure may change only attempt and the authored A1 restart location");
   const afterFailureSnapshot = snapshot(afterFailure);
-  const staleFailure = failureController.resolve755Intent({ type: "fail_chase", expectedAttempt: 7 });
+  const staleFailure = failureController.resolve755Intent({
+    type: "fail_chase",
+    expectedAttempt: 7,
+    failureFloor: "A1"
+  });
   assert(!staleFailure.accepted && !staleFailure.changed, "Task12 stale failure callback must reject");
   assert(snapshot(failureStore.getState()) === afterFailureSnapshot, "Task12 stale failure callback must be zero-write");
+
+  const upstairsFailureFixture = {
+    ...directElevatorState,
+    rpgCheckpoint: "c4_a2_corridor",
+    chapter4: {
+      ...directElevatorState.chapter4,
+      floor: "A2",
+      roomId: "a2_corridor"
+    }
+  };
+  const upstairsFailureStore = createGameStore(upstairsFailureFixture);
+  const upstairsFailureController = new ChapterFourTemporalMazeController(
+    upstairsFailureStore,
+    new EventBus()
+  );
+  const acceptedUpstairsFailure = upstairsFailureController.resolve755Intent({
+    type: "fail_chase",
+    expectedAttempt: 7,
+    failureFloor: "A2"
+  });
+  const afterUpstairsFailure = upstairsFailureStore.getState();
+  assert(
+    acceptedUpstairsFailure.accepted
+      && afterUpstairsFailure.chapter4.chaseAttempt === 8
+      && afterUpstairsFailure.chapter4.floor === "A2"
+      && afterUpstairsFailure.chapter4.roomId === "a2_corridor"
+      && afterUpstairsFailure.rpgCheckpoint === "c4_a2_corridor",
+    "Task12 an upstairs catch must restart from the authored A2 pursuit checkpoint instead of returning the player and guard to A1"
+  );
 
   const maliciousChaseLoaded = hydrate({
     ...directElevatorState,

@@ -397,8 +397,11 @@ for (const [asset, [minimumMs, maximumMs]] of Object.entries(expectedDetailAudio
   assert(probe.status === 0 && Number.isFinite(durationMs), `${asset}.mp3 must be readable by ffprobe`);
   assert(durationMs >= minimumMs && durationMs <= maximumMs, `${asset}.mp3 duration must be ${minimumMs}-${maximumMs}ms, got ${durationMs}`);
 }
-assert(!Object.keys(audio.events).some((id) => /exterior_closure|acknowledge_exterior/.test(id)), "official exterior closure must have zero audio cues while reference is null");
-assert(/CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE[\s\S]*?= null/.test(closureSource), "closure reference must remain null");
+assert(!Object.keys(audio.events).some((id) => /exterior_closure|acknowledge_exterior/.test(id)), "official exterior closure must retain zero audio cues");
+assert(
+  /CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:[\s\S]*?Object\.freeze\(\{[\s\S]*?sequenceId:\s*"chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4"[\s\S]*?rendererModule:\s*"src\/components\/temporal-maze\/ChapterFourStarLampThreeRenderer\.ts"/.test(closureSource),
+  "closure reference must register the approved original-artwork camera-orbit sequence"
+);
 assert(/chapter4-755\.audio\.json/.test(audioDirectorSource) && /chapter4-755\.audio\.json/.test(presentationDirectorSource), "both directors must import the Task 14 timeline");
 assert(!/chapterFourClockGearSfxUrl|CHAPTER_FOUR_CLOCK_GEAR_SFX|playHallClockGearSfx/.test(sceneSource), "Scene must not directly replay the time-swap gear SFX");
 assert(/maintenance_patrol_warning/.test(sceneSource) && !Object.prototype.hasOwnProperty.call(audio.events, "maintenance_patrol_warning"), "patrol warning must remain a domain event without an invented audio mapping");

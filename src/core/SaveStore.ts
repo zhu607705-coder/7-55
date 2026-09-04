@@ -60,7 +60,8 @@ const QIZHEN_RAIN_RECOVERY_SAVE_VERSION = 30;
 const CHAPTER_FOUR_INSERTED_PUZZLES_SAVE_VERSION = 31;
 const CHAPTER_FOUR_CLOSURE_SAVE_VERSION = 32;
 const CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION = 33;
-const SAVE_VERSION = CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION;
+const PHONE_BATTERY_SAVE_VERSION = 34;
+const SAVE_VERSION = PHONE_BATTERY_SAVE_VERSION;
 const WALLET_SAVE_VERSION = 12;
 const QIZHEN_KAYAK_SAVE_VERSION = 18;
 const SUPPORTED_ENVELOPE_VERSIONS = new Set([
@@ -72,6 +73,7 @@ const SUPPORTED_ENVELOPE_VERSIONS = new Set([
   CHAPTER_FOUR_POWER_GRID_LAYOUT_SAVE_VERSION,
   QIZHEN_RAIN_RECOVERY_SAVE_VERSION,
   CHAPTER_FOUR_INSERTED_PUZZLES_SAVE_VERSION,
+  CHAPTER_FOUR_CAUSAL_FLOW_SAVE_VERSION,
   SAVE_VERSION
 ]);
 
@@ -683,6 +685,23 @@ export class SaveStore {
         canteenHunt,
         envelopeVersion >= WALLET_SAVE_VERSION
       );
+      const savedPhoneBattery = asRecord(saved.phoneBattery);
+      const phoneBattery: GameState["phoneBattery"] = {
+        percent: rangedIntegerOr(
+          savedPhoneBattery.percent,
+          1,
+          100,
+          initial.phoneBattery.percent
+        ),
+        lowPowerMode: booleanOr(
+          savedPhoneBattery.lowPowerMode,
+          initial.phoneBattery.lowPowerMode
+        ),
+        rechargeCount: nonNegativeIntegerOr(
+          savedPhoneBattery.rechargeCount,
+          initial.phoneBattery.rechargeCount
+        )
+      };
       if (ui.selectedItem && !items[ui.selectedItem]) {
         ui.selectedItem = null;
       }
@@ -693,6 +712,7 @@ export class SaveStore {
         currentScene: enumOr(saved.currentScene, VALID_SCENES, initial.currentScene),
         networkMode: enumOr(saved.networkMode, VALID_NETWORK_MODES, initial.networkMode),
         themeMode: enumOr(saved.themeMode, VALID_THEME_MODES, initial.themeMode),
+        phoneBattery,
         digits,
         items,
         flags,

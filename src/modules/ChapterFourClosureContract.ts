@@ -9,6 +9,21 @@ export interface ChapterFourClosureAssetReference {
   sourcePath: string;
   sequenceId: string;
   consumerModule: string;
+  rendererModule: string;
+  presentation: Readonly<{
+    engine: "three";
+    artwork: "layered-original";
+    cameraMotion: "position-rise";
+    lampRotationY: 0;
+    durationMs: number;
+    riseStartMs: number;
+    riseEndMs: number;
+    lightStartMs: number;
+    fullyLitMs: number;
+    maximumLightLevels: Readonly<{ leds: number; core: number; glow: number }>;
+    starfieldLayers: number;
+  }>;
+  layerAssets: readonly string[];
   coordinateSpace: Readonly<{ width: number; height: number }>;
   lampTarget: Readonly<{
     targetId: string;
@@ -41,8 +56,29 @@ export const CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:
   ChapterFourClosureAssetReference = Object.freeze({
     assetId: "canruo_star_lamp_layered_v1",
     sourcePath: "src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp",
-    sequenceId: "chapter4_755_canruo_star_lamp_6200ms_v1",
+    sequenceId: "chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4",
     consumerModule: "src/components/temporal-maze/ChapterFourStarLampClosure.tsx",
+    rendererModule: "src/components/temporal-maze/ChapterFourStarLampThreeRenderer.ts",
+    presentation: Object.freeze({
+      engine: "three",
+      artwork: "layered-original",
+      cameraMotion: "position-rise",
+      lampRotationY: 0,
+      durationMs: 5_800,
+      riseStartMs: 120,
+      riseEndMs: 2_200,
+      lightStartMs: 2_350,
+      fullyLitMs: 4_050,
+      maximumLightLevels: Object.freeze({ leds: 0.7, core: 0.62, glow: 0.26 }),
+      starfieldLayers: 3
+    }),
+    layerAssets: Object.freeze([
+      "lamp_dark.png",
+      "lamp_outline.png",
+      "lamp_leds.png",
+      "lamp_core.png",
+      "lamp_glow.png"
+    ]),
     coordinateSpace: Object.freeze({ width: 1024, height: 1536 }),
     lampTarget: Object.freeze({
       targetId: "canruo_star_lamp",

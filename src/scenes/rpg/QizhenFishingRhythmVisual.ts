@@ -11,6 +11,7 @@
 
 import Phaser from "phaser";
 import {
+  getQizhenFishingNoteTravelProgress,
   QIZHEN_FISHING_TENSION,
   QIZHEN_FISHING_TIMING,
 } from "./QizhenFishingRhythmModel";
@@ -130,6 +131,7 @@ interface NoteVisual {
   holdLength: number;
   lastRadius: number;
   wasHolding: boolean;
+  travelStartedAtSec: number;
 }
 
 export class QizhenFishingRhythmVisual {
@@ -301,9 +303,8 @@ export class QizhenFishingRhythmVisual {
     for (const note of this.model.notes) {
       const judgment = note.judgment;
       if (judgment === null) {
-        // Keep one upcoming cue visible from the beginning of every quiet gap.
-        // The authored judgment time does not change: the preview waits at the
-        // top of its lane, then follows the normal lead-in once spawnSec arrives.
+        // Keep one upcoming cue moving from the beginning of every quiet gap.
+        // Its authored judgment time stays unchanged.
         if (elapsed >= note.spawnSec || note === nextPendingNote) this.renderNote(note, elapsed);
         continue;
       }
@@ -771,7 +772,7 @@ export class QizhenFishingRhythmVisual {
     this.lineHighMarker.setVisible(false);
   }
 
-  private createNoteVisual(note: QizhenFishingNote): NoteVisual {
+  private createNoteVisual(note: QizhenFishingNote, firstRenderedAtSec: number): NoteVisual {
     const ring = this.track(this.scene.add.graphics().setDepth(this.depth - 1));
     const laneX = ACTION_LANE_X[note.action];
     const holdLength = note.holdBeats > 0
@@ -859,16 +860,20 @@ export class QizhenFishingRhythmVisual {
       holdLength,
       lastRadius: RING_START_RADIUS,
       wasHolding: false,
+      travelStartedAtSec: firstRenderedAtSec,
     };
     this.noteVisuals.set(note.index, visual);
     return visual;
   }
 
   private renderNote(note: QizhenFishingNote, elapsed: number): void {
-    const visual = this.noteVisuals.get(note.index) ?? this.createNoteVisual(note);
+    const visual = this.noteVisuals.get(note.index) ?? this.createNoteVisual(note, elapsed);
     const previewing = elapsed < note.spawnSec;
-    const span = Math.max(note.timeSec - note.spawnSec, 0.001);
-    const progress = Phaser.Math.Clamp((elapsed - note.spawnSec) / span, 0, 1);
+    const progress = getQizhenFishingNoteTravelProgress(
+      note,
+      elapsed,
+      visual.travelStartedAtSec,
+    );
     const radius = this.reducedMotion
       ? this.discreteRadius(progress)
       : Phaser.Math.Linear(RING_START_RADIUS, RING_END_RADIUS, progress);
@@ -946,7 +951,7 @@ export class QizhenFishingRhythmVisual {
   private renderHoldState(note: QizhenFishingNote, elapsed: number): void {
     let visual = this.noteVisuals.get(note.index);
     if (!visual) {
-      visual = this.createNoteVisual(note);
+      visual = this.createNoteVisual(note, elapsed);
       if (visual.ring) {
         this.release(visual.ring);
         visual.ring = null;

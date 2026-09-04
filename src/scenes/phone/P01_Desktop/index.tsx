@@ -4,7 +4,7 @@ import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
 
 /** P01 手机主屏幕 07:55：……再睡5分钟…… → 旁白 → 巨大字幕“起床蠢货！！！” */
-export function WakeScene({ router, events }: SceneComponentProps) {
+export function WakeScene({ state, router, events }: SceneComponentProps) {
   const [warned, setWarned] = useState(false);
 
   // 底部旁白与进场同步
@@ -30,7 +30,7 @@ export function WakeScene({ router, events }: SceneComponentProps) {
     <section className="wake-scene">
       <header className="wake-status" aria-hidden="true">
         <strong>07:55</strong>
-        <span>ZJUWLAN · 17%</span>
+        <span>ZJUWLAN · {state.phoneBattery.percent}%</span>
       </header>
       <div className="wake-center">
         {!warned ? (

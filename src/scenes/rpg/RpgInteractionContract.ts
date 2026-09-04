@@ -938,7 +938,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   ),
   a2_202_threshold: defineChapterFourTarget({
     id: "a2_202_threshold",
-    label: "202 阶梯教室门槛",
+    label: "进入 202 并关门",
     ...layoutAnchorTarget("A2", "a2_202_threshold"),
     activation: "phase_exclusive",
     activePhases: ["final_chase"],

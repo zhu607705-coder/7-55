@@ -24,9 +24,11 @@ import {
   dormWorldToSourceX,
   dormWorldToSourceY,
   findNearestDormTarget,
+  isDormPlayerRainSoaked,
   type DormInteractionTarget,
   type DormInteractionTargetId
 } from "./DormHubModel";
+import { DormRainSoakedPlayerVisual } from "./DormRainSoakedPlayerVisual";
 import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import { RpgInteriorDoorRuntime } from "./RpgInteriorDoor";
@@ -89,6 +91,8 @@ export class DormHubScene extends Phaser.Scene {
   private manualMovementReported = false;
   private pacingDirection = 1;
   private playerAnimator!: RpgPlayerAnimator;
+  private rainSoakedVisual!: DormRainSoakedPlayerVisual;
+  private reducedMotion = false;
   private characterName!: Phaser.GameObjects.Text;
   private interactionPrompt!: Phaser.GameObjects.Text;
   private roomLayer!: Phaser.GameObjects.Container;
@@ -122,6 +126,7 @@ export class DormHubScene extends Phaser.Scene {
 
   create(): void {
     this.bridge = this.registry.get("rpgBridge") as RpgBridge;
+    this.reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
     this.cameras.main.setBackgroundColor(0x17130f);
     this.physics.world.setBounds(
       dormSourceToWorldX(24),
@@ -160,7 +165,7 @@ export class DormHubScene extends Phaser.Scene {
         sourceCrop: { left: 392, top: 1468, right: 548, bottom: 1536 },
         displayScale: DORM_HUB_ENVIRONMENT_SCALE
       }
-    }, window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true);
+    }, this.reducedMotion);
     this.createCampusCardPickup();
     this.createHairDryerPickup();
     ensureRpgPlayerTextures(this);
@@ -173,6 +178,14 @@ export class DormHubScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(spawn.x, spawn.y, "act1-player-up-0").setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
     this.playerAnimator = new RpgPlayerAnimator(this.player, "up");
+    this.rainSoakedVisual = new DormRainSoakedPlayerVisual(this, this.player, this.reducedMotion);
+    this.rainSoakedVisual.update({
+      active: isDormPlayerRainSoaked(this.bridge.getState()),
+      timeMs: this.time.now,
+      velocityX: 0,
+      velocityY: 0,
+      facing: this.playerAnimator.facing
+    });
     this.physics.add.collider(this.player, this.obstacles);
     this.player.setInteractive({ useHandCursor: true });
     this.player.on("pointerdown", () => this.inspectCharacter());
@@ -210,7 +223,8 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   update(): void {
-    const actOne = this.bridge.getState().actOne;
+    const state = this.bridge.getState();
+    const actOne = state.actOne;
     const keyboardX = Number(this.cursors.right.isDown || this.keys.D.isDown)
       - Number(this.cursors.left.isDown || this.keys.A.isDown);
     const keyboardY = Number(this.cursors.down.isDown || this.keys.S.isDown)
@@ -236,15 +250,21 @@ export class DormHubScene extends Phaser.Scene {
 
     this.player.setVelocity(vector.x, vector.y).setDepth(this.player.y + 2000);
     this.playerAnimator.update(vector, this.time.now);
+    this.rainSoakedVisual.update({
+      active: isDormPlayerRainSoaked(state),
+      timeMs: this.time.now,
+      velocityX: vector.x,
+      velocityY: vector.y,
+      facing: this.playerAnimator.facing
+    });
     this.exitDoor.updateActorOcclusion(this.player);
-    const identityReadable = selectIdentityReadable(this.bridge.getState());
+    const identityReadable = selectIdentityReadable(state);
     this.characterName
       .setText(identityReadable && actOne.characterNamed ? actOneContent.studentName : "")
       .setVisible(identityReadable && actOne.characterNamed)
       .setPosition(this.player.x, this.player.y - RPG_PLAYER_NAME_OFFSET_Y)
       .setDepth(this.player.y + 2050);
 
-    const state = this.bridge.getState();
     const hairDryerPending = this.isHairDryerPickupPending(state);
     const nearHairDryer = hairDryerPending
       && !this.hairDryerAcquisitionInProgress
@@ -765,6 +785,7 @@ export class DormHubScene extends Phaser.Scene {
 
   private publishRuntimeDebug(): void {
     const state = this.bridge.getState();
+    const wetAppearance = this.rainSoakedVisual.getDebugSnapshot();
     const activeTargets: NonNullable<RpgRuntimeDebugState["activeTargets"]> = DORM_INTERACTION_TARGETS.map((target) => ({
       id: target.id,
       x: target.x,
@@ -802,7 +823,11 @@ export class DormHubScene extends Phaser.Scene {
         texture: this.playerAnimator.textureKey,
         turning: this.playerAnimator.isTurning,
         walkFps: RPG_PLAYER_WALK_FPS,
-        angle: this.player.angle
+        angle: this.player.angle,
+        soaked: wetAppearance.active,
+        wetDropletCount: wetAppearance.dropletCount,
+        wetFootprintCount: wetAppearance.footprintCount,
+        wetEffectMode: wetAppearance.effectMode
       },
       input: {
         gameEnabled: this.game.input.enabled,

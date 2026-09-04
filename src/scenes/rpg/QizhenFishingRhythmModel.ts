@@ -68,6 +68,21 @@ export const QIZHEN_FISHING_TENSION = {
   assistFailSustainMs: 700,
 } as const;
 
+/**
+ * Maps a note onto the visible lane without changing its authored judgment
+ * time. When a quiet gap exposes the next cue early, the cue keeps travelling
+ * from that first rendered frame instead of waiting motionless at the top.
+ */
+export function getQizhenFishingNoteTravelProgress(
+  note: QizhenFishingNote,
+  elapsedSec: number,
+  firstRenderedAtSec: number,
+): number {
+  const travelStartSec = Math.min(note.spawnSec, Math.max(0, firstRenderedAtSec));
+  const travelDurationSec = Math.max(note.timeSec - travelStartSec, 0.001);
+  return Math.min(1, Math.max(0, (elapsedSec - travelStartSec) / travelDurationSec));
+}
+
 interface QizhenFishingChartData extends RhythmFishingChartData {
   spotId: string;
   label: string;

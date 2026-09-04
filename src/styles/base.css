@@ -542,7 +542,17 @@ img {
 .sb-bars i:nth-child(4) { height: 14px; }
 
 .sb-batt-num {
-  color: var(--red);
+  color: var(--ink);
+}
+
+.sb-right.is-low .sb-batt-num,
+.sb-right.is-critical .sb-batt-num { color: var(--red); }
+
+.sb-right.is-saving .sb-batt-num::after {
+  color: #2d7a52;
+  content: "省";
+  font-size: 9px;
+  margin-left: 2px;
 }
 
 .sb-battery {
@@ -564,10 +574,22 @@ img {
 }
 
 .sb-battery i {
-  background: var(--red);
+  background: #2d7a52;
   display: block;
   height: 100%;
-  width: 17%;
+  min-width: 1px;
+  transition: width 0.18s steps(4, end);
+}
+
+.sb-right.is-low .sb-battery i,
+.sb-right.is-critical .sb-battery i { background: var(--red); }
+
+.sb-right.is-critical .sb-battery i {
+  animation: phone-battery-critical 0.8s steps(2, end) infinite;
+}
+
+@keyframes phone-battery-critical {
+  50% { opacity: 0.35; }
 }
 
 /* ---- 通用像素组件 ---- */

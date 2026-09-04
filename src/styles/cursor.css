@@ -1,0 +1,20 @@
+/*
+ * One stable desktop cursor for the complete game surface.
+ *
+ * Scene styles historically used pointer, grab, grabbing, resize, wait and
+ * disabled cursors. Phaser also writes a hand cursor directly to its canvas
+ * for interactive objects. Moving across small hit areas therefore changed
+ * the cursor repeatedly even though the interaction itself stayed valid.
+ *
+ * Keep this stylesheet as the final styles.css import. The important rule is
+ * intentional: it also wins over Phaser's runtime canvas style while visual
+ * hover, focus, disabled and drag feedback remains owned by each component.
+ */
+html,
+body,
+#root,
+#root *,
+#root *::before,
+#root *::after {
+  cursor: default !important;
+}
