@@ -170,7 +170,7 @@ JSON Schema：
 - good 窗口扩大到 230 ms；
 - 八分音符（非整数拍）简化为四分音符（直接移除这些音符；首尾提竿均在整数拍，不受影响）；
 - 音符提前量 2.5 拍（`assistLeadSeconds = 1.5625`）；
-- 水纹脉冲对比度增强；
+- 状态栏标出辅助模式，三列方块保持高对比度；
 - 张力越界需持续 700 ms 才失败。
 
 ## 6. 输入契约
@@ -195,19 +195,17 @@ JSON Schema：
 - 可抛竿水纹使用金色主轮廓、白色内环、金色外环和白色中心点；深色观察水纹使用青色主轮廓。最近或正在接受手持道具的水纹显示一个目标名称；其他水纹不显示常驻文本。
 - `prefers-reduced-motion` 下保留三层高对比轮廓，取消水纹尺寸往复动画。
 
-## 7. 视觉契约（`QizhenFishingRhythmVisual`）
+## 7. 视觉契约（2026-09-05 重写）
 
-- 固定节奏板使用 `scrollFactor(0)`，逻辑视口范围为 `x=300..660`、`y=158..464`；从左到右固定为 `A / S / D` 三列，高对比判定线固定在 `y=392`，并在节奏板左侧显示「判定线」。
-- 音符提前 2 拍（`leadSeconds`）从对应列的 `y=204` 出现，向下移动并在目标时刻抵达判定线。若下一枚待判定音符尚未进入这段提前量，它会先以低透明度停在轨道顶端并显示剩余秒数；进入正式提前量后恢复满透明度并开始下落，判定时间不变。超过目标时刻但仍处于 good 窗口时，音符继续移到判定线下方并被固定键位区遮住，使「稍早 / 稍晚」保留空间方向。
-- 浮标世界坐标仍是抛竿落点和场景反馈锚点。半径 72 px 到 14 px 的水纹环保留为低透明度辅助提示，不得成为唯一可见判定参照。
-- 移动音符只显示动作图标：left = 柳树枝左桨图标；hook = 鱼钩图标；right = 三角牌右桨图标。`A / S / D` 与「左收线 / 提竿 / 右收线」固定在判定线下方，键位层的显示深度高于移动音符。三列中心固定为 `x=370 / 480 / 590`，左右各保留不少于 `30px` 的音符安全边距；触屏按钮与键盘保持相同的左中右顺序，三键网格允许等分收缩，最右侧 D 键不得溢出或被父层裁切。
-- 短按使用接近钢琴白键比例的短块；长按使用沿移动方向延伸的白色长条，条长直接表达持续时长。长条头端命中后锁定在判定线上，右侧窄进度沿长条由下向上填充；尾端过线、提前松开或完成时立即清除。
-- 音符进入当前 good 窗口时，判定线由白色切换为金色脉冲；输入后按 `perfect / great / good / miss` 颜色短暂闪示，同时显示「精准 / 良好·稍早或稍晚 / 命中·稍早或稍晚 / 错过」。
-- 顶部窄状态栏（`scrollFactor(0)`，位于共享任务栏下方、不遮挡其区域）：`目标：{label}  {judged}/{total}  张力 {n}  连击 {n}`。
-- 钓线：从船头到浮标；张力 <20 明显下垂 + ▼；>80 震动 + ▲。
-- 钓鱼期间：右下道具栏由宿主卸载；底部普通任务提示隐藏；摄像机 `stopFollow()` 并锁定浮标；船速清零；深浅模式切换锁定；环境动画（黑天鹅、水纹、柳枝）继续播放。
-- 完成后约 800 ms 等级反馈 + 道具飞入动画，不弹大型结算页。paper 谱面不播评级动画，直接衔接纸条挣脱与黑天鹅追逐。
-- `prefers-reduced-motion`：取消连续缩放和判定线脉冲；三列音符按离散纵向位置向判定线移动，水纹环按 `72→48→32→14` 离散半径变化，保留图标、长条长度与整数拍数字倒计时。
+- `QizhenFishingRhythmLayout.ts` 提供唯一的 `960×540` 逻辑布局：节奏板 `x=270..690 / y=84..490`；三列中心 `x=342 / 480 / 618`，从左到右为 `A / S / D`；音符区 `y=178..423`，判定线 `y=406`，固定键位区 `y=434..482`。共享任务栏占用的顶部不进入节奏板。
+- 标题、轨道、方块、长按条、判定线和固定键位全部归属一个 `scrollFactor(0)` 根容器，由共享分辨率适配层只转换一次。禁止创建独立的 GeometryMask 或 BitmapMask；先在逻辑坐标中求出可见矩形，再绘制。历史故障中，离开显示列表的遮罩没有接受共享缩放，实际裁掉了 S/D 音符。
+- 下一枚待判定音符从出现时就持续下落；开场间隔较长的小鲤鱼谱也能立即看到方块。其他音符按提前量进入。方块头端始终在原谱面的 `timeSec` 到达判定线，视觉重写不改变判定时间、容错或谱面。
+- 短块 `98×28`，长条的长度由持续时间和移动速度计算。长条头端按中后固定在线上，尾端继续下降，过线后完成。移动块内显示对应字母，固定键位保持完整可读；音符绘制范围与键位区相隔 `11px`，不会盖住字母。
+- 判定线保持高对比度；命中或失误按 `perfect / great / good / miss` 颜色短暂反馈，并显示「精准 / 良好 / 命中 / 错过」。提前释放长按显示「松开过早」。
+- 状态栏显示目标、已判定数量、张力和连击。张力低于 20 显示「松线 ▼」，高于 80 显示「绷紧 ▲」。浮标和船头钓线留在世界层，辅助水波不承担节拍判断。
+- 钓鱼期间宿主隐藏任务条、道具栏、模式切换和普通场景字幕，停止跟随并锁定浮标，船速清零。背景保持可见，移动音符与按键不被地图物体遮挡。小屏横向触控按键沿逻辑键位区布置，最小触控高度 `44px`；竖屏触控仍使用画布外操作区。
+- 普通钓获反馈保留约 `840ms` 后交给原控制器结算；失败说明道具保留。paper 谱面按原流程直接进入纸条与追逐段。视觉对象不授予道具、不写存档。
+- `prefers-reduced-motion` 取消装饰水波的尺寸变化；保留用于判定的连续音符下落。复用少量 Graphics/Text，不为每帧或每个音符分配贴图。
 
 ## 8. 流程与事件链
 
@@ -364,7 +362,7 @@ export interface QizhenFishingRhythmVisualOptions {
   targetLabel: string;
   lineFrom?: () => { x: number; y: number } // 船头世界坐标（钓线）
   reducedMotion: boolean;
-  depth?: number;                           // 默认 2600
+  depth?: number;                           // 屏幕根容器默认 10000；浮标世界层 2600
 }
 
 export class QizhenFishingRhythmVisual {
@@ -373,11 +371,13 @@ export class QizhenFishingRhythmVisual {
   notifyJudgment(note: QizhenFishingNote, judgment: QizhenFishingJudgment, errorMs: number): void;
   notifyHoldBroken(note: QizhenFishingNote): void;
   notifyWarning(kind: QizhenFishingWarningKind, tension: number): void;
-  playResult(result: QizhenFishingResult, onComplete: () => void): void;  // ≥800 ms 评级 + 飞入
+  playResult(result: QizhenFishingResult, onComplete: () => void): void;  // 840 ms 评级后提交结算
   playFailure(reason: QizhenFishingFailReason | "grade", onComplete: () => void): void; // ≥600 ms
   destroy(): void;
 }
 ```
+
+运行态调试读取 `rpgRuntime.qizhenLake.fishing.visual`：包含 `renderer=logical_geometry_v2`、逻辑布局、当前矩形和未完成谱面。该数据只在请求调试快照时生成，不持久化。验证必须包含实际浏览器像素检查；纯判定模拟不能证明音符没有被裁切。
 
 ### 9.3 控制器（`src/modules/ChapterThreeQizhenLakeController.ts`）
 

@@ -66,6 +66,13 @@ export interface RpgRuntimeDebugState {
     state: "closed" | "opening" | "open" | "closing";
     accessGranted: boolean;
   };
+  chargingStation?: {
+    id: string;
+    active: boolean;
+    elapsedMs: number;
+    rejection: "no_power_source" | "too_far" | "wrong_mode" | null;
+    percent: number;
+  };
   interiorDoor?: {
     id: string;
     state: "closed" | "opening" | "open" | "closing";
@@ -549,15 +556,34 @@ export interface RpgRuntimeDebugState {
 }
 
 let currentState: RpgRuntimeDebugState | null = null;
+let captureSnapshot: (() => void) | null = null;
+let capturing = false;
+
+/** Register the latest frame without constructing diagnostic arrays during gameplay. */
+export function deferRpgRuntimeDebugCapture(capture: () => void): boolean {
+  if (capturing) return false;
+  captureSnapshot = capture;
+  return true;
+}
 
 export function setRpgRuntimeDebugState(state: RpgRuntimeDebugState): void {
+  if (!capturing) captureSnapshot = null;
   currentState = state;
 }
 
 export function getRpgRuntimeDebugState(): RpgRuntimeDebugState | null {
+  if (captureSnapshot && !capturing) {
+    capturing = true;
+    try {
+      captureSnapshot();
+    } finally {
+      capturing = false;
+    }
+  }
   return currentState ? cloneSerializable(currentState) : null;
 }
 
 export function clearRpgRuntimeDebugState(): void {
   currentState = null;
+  captureSnapshot = null;
 }

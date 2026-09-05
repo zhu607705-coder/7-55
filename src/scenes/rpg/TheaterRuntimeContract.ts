@@ -21,6 +21,7 @@ export type TheaterRuntimeIntentName =
   | "rpg_subtitle"
   | "rpg_subtitle_clear"
   | "rpg_theater_admission_requested"
+  | "rpg_theater_charge_requested"
   | "rpg_theater_exit_requested"
   | "rpg_theater_mode_requested"
   | "rpg_theater_poster_tissue_requested"

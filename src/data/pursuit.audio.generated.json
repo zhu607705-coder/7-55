@@ -1,7 +1,7 @@
 {
   "version": 1,
   "chapterId": "cross-chapter-pursuit-audio",
-  "generatedAt": "2026-09-04T12:25:42.528Z",
+  "generatedAt": "2026-09-05T07:48:21.307Z",
   "assets": {
     "music_qizhen_swan_chase": {
       "path": "pursuit/music/music_qizhen_swan_chase.mp3",
@@ -77,13 +77,13 @@
     "vo_pursuit_chapter4_guard_stair": {
       "path": "pursuit/voice/vo_pursuit_chapter4_guard_stair.mp3",
       "kind": "voice",
-      "durationMs": 2526,
+      "durationMs": 2266,
       "codec": "mp3",
       "sampleRate": 32000,
       "channels": 1,
-      "sha256": "17961945e1d9bcb816761c07b0146e69f0ad532ce80647de3c430185f11c0fb6",
-      "sourceConfigHash": "b306fcbe945b0286e02edd59e4b1468bce29552bd65c4285cb89805000fcd413",
-      "sourceTextHash": "ac3295294fc8cea57a792527ae456527c1e054bad8fc0a63195839fd4804c8dd",
+      "sha256": "43f1470998f6f0aa58b763fe82ecf3c5d891a67b076e4dd33c1e415c6a93c4c6",
+      "sourceConfigHash": "b045bbe49b5433838c239f67116062b126a6672c62b9994666dc7a83d6b5fcac",
+      "sourceTextHash": "0acaf1e46d72ea4e3fd704d54b65c593a80120cfe5af562111b4589c6dd27634",
       "source": "MiniMax speech-2.8-hd English_Trustworthy_Man"
     }
   }

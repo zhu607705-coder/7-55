@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "assets:lossless": "node scripts/build-lossless-runtime-maps.mjs",
     "dev": "vite --host 0.0.0.0",
     "build": "npm run typecheck && npm run build:production:unchecked",
     "build:production:unchecked": "vite build",
@@ -74,6 +75,7 @@
     "qizhen:validate-tool-branches": "node scripts/verify-qizhen-tool-branches.mjs",
     "qizhen:validate-rain-safety": "node scripts/verify-qizhen-rain-safety.mjs",
     "theater:validate-spotlight": "node scripts/verify-theater-spotlight.mjs",
+    "theater:validate-lobby": "node scripts/verify-theater-lobby.mjs",
     "art:canteen-push-cart": "python3 scripts/build-canteen-push-cart-frames.py",
     "art:finale-npcs": "node scripts/build-finale-npc-atlases.mjs",
     "art:finale-environments": "npm run chapter4:normalize-assets && node scripts/build-finale-environment-manifest.mjs",

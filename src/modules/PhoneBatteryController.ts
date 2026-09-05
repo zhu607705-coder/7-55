@@ -1,8 +1,14 @@
 import type { EventBus } from "../core/EventBus";
-import type { GameState, GameStore, RpgSceneId, SceneId } from "../core/types";
+import type { GameStore, SceneId } from "../core/types";
+import {
+  checkPhoneChargingStation,
+  PHONE_BATTERY_RECHARGE_PERCENT,
+  THEATER_CHARGING_STATION,
+  type ChargingRejection
+} from "../core/PhoneChargingStation";
 
 export const PHONE_BATTERY_MIN_PERCENT = 1;
-export const PHONE_BATTERY_RECHARGE_PERCENT = 45;
+export { PHONE_BATTERY_RECHARGE_PERCENT } from "../core/PhoneChargingStation";
 
 const BATTERY_FREE_SCENES = new Set<SceneId>([
   "alarm",
@@ -11,31 +17,9 @@ const BATTERY_FREE_SCENES = new Set<SceneId>([
   "ending"
 ]);
 
-const CHAPTER_FOUR_POWER_OUT_PHASES = new Set<GameState["chapter4"]["phase"]>([
-  "blackout_light_grid",
-  "final_chase",
-  "final_minute_recovery"
-]);
-
-const CHARGING_SOURCE_BY_RPG_SCENE: Readonly<Partial<Record<RpgSceneId, string>>> = {
-  dorm_hub: "宿舍桌边插座",
-  library_interior: "基础图书馆公共插座",
-  canteen_interior: "食堂服务台电源",
-  theater_interior: "剧场服务台电源"
-};
-
 export function getPhoneSceneBatteryCost(sceneId: SceneId, lowPowerMode: boolean): number {
   if (BATTERY_FREE_SCENES.has(sceneId)) return 0;
   return lowPowerMode ? 1 : 2;
-}
-
-export function getNearbyChargingSource(state: GameState): string | null {
-  if (state.rpgScene === "duan_yongping_temporal_maze") {
-    return CHAPTER_FOUR_POWER_OUT_PHASES.has(state.chapter4.phase)
-      ? null
-      : "教学楼服务台插座";
-  }
-  return CHARGING_SOURCE_BY_RPG_SCENE[state.rpgScene] ?? null;
 }
 
 export class PhoneBatteryController {
@@ -81,23 +65,27 @@ export class PhoneBatteryController {
     });
   }
 
-  getNearbyChargingSource(): string | null {
-    return getNearbyChargingSource(this.store.getState());
-  }
-
-  rechargeFromNearbyPower(): "charged" | "already_sufficient" | "no_power_source" {
+  rechargeAtStation(
+    stationId: string,
+    position: { x: number; y: number }
+  ): "charged" | "already_sufficient" | ChargingRejection {
     const current = this.store.getState();
-    const source = getNearbyChargingSource(current);
-    if (!source) {
+    const rejection = checkPhoneChargingStation(current, stationId, position);
+    if (rejection) {
       this.events.emit("toast", {
-        text: "附近没有可用电源。回到室内服务区后再打开控制中心。",
+        text: rejection === "too_far"
+          ? "接线够不到，请走到充电服务站旁。"
+          : rejection === "wrong_mode"
+            ? "深色观察只能查看设备。切到浅色操作后接入充电线。"
+            : "需要在现场与充电服务站交互，手机中不能接入电源。",
         tone: "task"
       });
-      return "no_power_source";
+      return rejection;
     }
+    const source = THEATER_CHARGING_STATION.label;
     if (current.phoneBattery.percent >= PHONE_BATTERY_RECHARGE_PERCENT) {
       this.events.emit("toast", {
-        text: `当前电量足够，${source}暂不需要接入。`,
+        text: `当前电量 ${current.phoneBattery.percent}%，暂不需要补电。`,
         tone: "task"
       });
       return "already_sufficient";
@@ -148,7 +136,7 @@ export class PhoneBatteryController {
     }
     if (to === PHONE_BATTERY_MIN_PERCENT) {
       this.events.emit("toast", {
-        text: "已进入 1% 任务保底电量。主线功能继续可用，回到室内服务区可充电。",
+        text: "已进入 1% 任务保底电量。主线功能继续可用，可在现场充电服务站补电。",
         tone: "task"
       });
     }

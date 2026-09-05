@@ -114,15 +114,15 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     repeatPolicy: "repeatable",
     textByTimeState: {
       "2245_opening": {
-        light: "201 的工具已经归位，门边登记板停在晚间封闭状态。",
+        light: "201 工具都挂回原位了。门边登记板已签“封闭”，灯还亮着。",
         dark: "操作台边缘保留着较早的手部动作残影，当前房间没有新增活动轨迹。"
       },
       "1225_bakery": {
-        light: "午间工坊暂停开放，切割垫上压着尚未装配的校园模型。",
+        light: "工坊午休，切割垫上还压着没装完的校园模型。开放时间先结束，模型下次再装。",
         dark: "模型零件周围有连续取放残影，时间间隔与午休人流一致。"
       },
       "1850_evening": {
-        light: "晚课前的工坊已经清台，只有一台焊台仍显示余温警示。",
+        light: "工坊台面清完了，焊台还亮着余温警示。签离场表可以，伸手碰还不行。",
         dark: "焊台上方的动作残影在 18:50 前停止，随后没有人继续使用设备。"
       },
       "2245_maintenance": {
@@ -151,15 +151,15 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     repeatPolicy: "repeatable",
     textByTimeState: {
       "2245_opening": {
-        light: "202 的投影幕已经收起，阶梯座位按离场状态折叠。",
+        light: "202 幕布收了，座椅全折着。刚才坐过多少人，得去别的表上查。",
         dark: "最后一排到门口有一段连贯离场残影，讲台附近没有停留。"
       },
       "1225_bakery": {
-        light: "午间讲座尚未开始，前排桌面摆着未发放的空白资料。",
+        light: "讲座还没开始，前排资料已经放好，翻开全是空白页。内容等主讲人来。",
         dark: "座位间只有短暂经过的残影，没有形成完整听课轨迹。"
       },
       "1850_evening": {
-        light: "晚间教室已清空，投影机风扇刚停止，门槛处仍有散场脚印。",
+        light: "202 人走光了，投影机风扇刚停。门槛上还留着散场脚印。",
         dark: "座位残影从前排向出口逐段消失，散场时间集中在 18:50 前后。"
       },
       "2245_maintenance": {
@@ -188,7 +188,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     repeatPolicy: "repeatable",
     textByTimeState: {
       "2245_opening": {
-        light: "203 的终端已批量关机，教师机保留着当日维护清单。",
+        light: "203 学生机都关了，教师机还显示维护清单。最后一项也是“关机”。",
         dark: "屏幕前的残影按座位顺序消失，没有人在关机后返回。"
       },
       "1225_bakery": {
@@ -196,7 +196,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
         dark: "键盘上方的输入残影很短，属于自动部署前的检查动作。"
       },
       "1850_evening": {
-        light: "晚课结束后终端已退出账号，第三排有一把椅子尚未推回。",
+        light: "账号都退出了，第三排还有一把椅子没推回。软件能批量处理，椅子还得靠人。",
         dark: "第三排的离座残影比其他位置晚六秒，但随后直接离开机房。"
       },
       "2245_maintenance": {
@@ -249,7 +249,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
         dark: "访客残影在日志柜前停留最久，随后依次查看人物档案。"
       },
       "1850_evening": {
-        light: "晚间展厅已停止接待，档案扫描台仍显示当日校验结果。",
+        light: "301 停止接待了，扫描台还显示今日校验结果，档案逐页核完，等明天的人来签名。",
         dark: "扫描动作在 18:50 前完成，每页都保留来源编号。"
       },
       "2245_maintenance": {
@@ -319,11 +319,11 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
         dark: "观众残影在提问环节集中出现，讲台记录保留了每次修改。"
       },
       "1225_bakery": {
-        light: "午间报告尚未开始，讲台水杯和翻页器已经摆好。",
+        light: "水杯和翻页器摆好了，主讲人还没到。设备已检查完，听众还在等。",
         dark: "前排只有布场人员的短时残影，座位区尚未形成观众轨迹。"
       },
       "1850_evening": {
-        light: "晚间报告结束后，侧屏保留最后一页：记录结果，也记录判断过程。",
+        light: "报告结束了，侧屏停在末页，底下还有一行小字“修改记录请勿删除”。",
         dark: "散场残影从后排开始，讲台人员最后离开。"
       },
       "2245_maintenance": {

@@ -184,7 +184,9 @@ assert(
   "a completed warmup must publish the resolved Host so entering RPG avoids the first React.lazy Suspense flash"
 );
 assert(
-  /state\.currentScene === "timeline_recovery"/.test(appSource)
+  /const canWarmRpg = state\.runtimeMode === "phone" && access\.fullCampusMap[\s\S]*?state\.currentScene !== "timeline_recovery"/.test(appSource)
+    && /if \(!canWarmRpg\) return undefined/.test(appSource)
+    && /\[canWarmRpg, state\.rpgScene\]/.test(appSource)
     && /scheduleRpgRuntimeWarmup\([\s\S]*?state\.rpgScene,[\s\S]*?"duan_yongping_temporal_maze" \? "entry" : undefined/.test(appSource)
     && /chapter35_recovered_replay_gate_requested[\s\S]*?warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGateSource),
   "phone play must idle-warm its pending RPG while the 3.5 destination gate keeps Chapter 4 warmup behind replay confirmation"
@@ -210,12 +212,12 @@ assert(taskEntries.length === 40 && activeTaskEntries.length === 39, "Task 14 mu
 for (const [taskId, task] of activeTaskEntries) {
   assert(
     Array.isArray(task?.hints)
-      && task.hints.length === 3
+      && task.hints.length === (taskId === "acknowledge_exterior_closure" ? 0 : 3)
       && task.hints.every((hint) => typeof hint === "string" && hint.trim().length > 0),
-    `${taskId} must expose exactly three non-empty progressive hints`
+    `${taskId} must expose three progressive hints except saved final answers, which need no further task`
   );
 }
-assert(activeHints.length === 117, "Task 14 must expose the complete 117-hint contract");
+assert(activeHints.length === 114, "Task 14 must expose 114 hints without exposing internal final-answer receipt steps");
 assert(
   Array.isArray(content.tasks?.chapter_complete?.hints)
     && content.tasks.chapter_complete.hints.length === 0,
@@ -783,4 +785,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=16+aliases+url+session-only quest=single-objective+117-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);
+console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=16+aliases+url+session-only quest=single-objective+114-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);

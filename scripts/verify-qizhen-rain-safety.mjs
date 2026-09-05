@@ -459,7 +459,7 @@ try {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
   if (qizhenContent.dock.safetyRainBlock !== "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。"
-    || qizhenContent.dock.rainReturnBlocked !== "值班老师：这么不长记性，还想要再成一次落汤鸡不成。"
+    || qizhenContent.dock.rainReturnBlocked !== "值班老师：衣服还没干，又来？雨没停，先别下水。"
     || !qizhenContent.dock.forcedLaunch
     || !qizhenContent.dock.forcedCapsize
     || !qizhenContent.dock.forcedRescue) {

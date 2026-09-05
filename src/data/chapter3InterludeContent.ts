@@ -130,9 +130,9 @@ export const chapterThreeInterludePresentationCopy = {
     },
     journal: {
       id: "chapter_three_interlude_journal",
-      label: "恢复时间窗起点",
+      label: "查清离开湖边的时间",
       hints: [
-        "先寻找能够证明离湖时刻的原始记录。",
+        "离开湖边时有没有留下带时间的记录？",
         "CC98 划船记录保留了带时间的最后回复。",
         "打开划船记录帖并保存最后一条离湖回复。"
       ],
@@ -140,11 +140,11 @@ export const chapterThreeInterludePresentationCopy = {
     },
     evidence: {
       id: "chapter_three_interlude_evidence",
-      label: "恢复剩余证据",
+      label: "查清离湖后去了哪里",
       hints: [
-        "照片、录音、消息和网络记录可以分别处理，完成顺序不影响恢复结果。",
-        "任务栏会分别记录四类证据的状态，每一行都能直接打开对应应用。",
-        "四类证据全部恢复后，再回到记录恢复页核验旧时间。"
+        "照片拍到了哪里，录音里又有哪些声音？先从手边的一项看起。",
+        "消息与网络记录也留着线索；任务栏可以打开对应应用。",
+        "四项都查过以后，回记录恢复页核对时间。"
       ],
       recommendedScene: "phone_home"
     },
@@ -152,9 +152,9 @@ export const chapterThreeInterludePresentationCopy = {
       id: "chapter_three_interlude_exclusions",
       label: "排除旧时间记录",
       hints: [
-        "三条旧记录中，数字的含义和时钟可信度并不相同。",
-        "分别判断编号、独立事件和未同步时钟能否作为本次时间。",
-        "为三条旧时间各选择对应的排除理由。"
+        "这些数字分别记的是什么？其中有一条只是取餐编号。",
+        "再看记录发生在什么时候、本机时钟有没有同步。",
+        "给每条不能采用的时间选择理由。写着数字，不等于能拿来校时。"
       ],
       recommendedScene: "timeline_recovery"
     },
@@ -164,17 +164,17 @@ export const chapterThreeInterludePresentationCopy = {
       hints: [
         "比较每个候选地点与四项证据是否存在冲突。",
         "同时核对水面离开、室内路线、网络记录和闭楼广播。",
-        "在记录恢复页选择唯一没有证据冲突的地点。"
+        "回到记录恢复页，选一个能解释全部记录的地点。"
       ],
       recommendedScene: "timeline_recovery"
     },
     replay: {
       id: "chapter_three_interlude_replay",
-      label: "播放恢复回放",
+      label: "回看离湖后的那段路",
       hints: [
-        "目的地已经确认，可以播放恢复结果。",
-        "回放结束后会进入第四章任务卡。",
-        "在记录恢复页启动回放。"
+        "去向已经查清，可以把记录连起来看了。",
+        "这段路有照片和声音留下，你的手机却没记准时间。",
+        "在记录恢复页开始回放。"
       ],
       recommendedScene: "timeline_recovery"
     }

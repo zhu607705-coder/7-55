@@ -161,8 +161,8 @@
       "key": "c3_theater_logic_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：这场演出本来也没什么逻辑。",
-      "voiceTextEn": "This performance never had much logic to begin with.",
+      "subtitleZh": "系统：台上的顺序改过，印刷版未必跟得上。",
+      "voiceTextEn": "They changed the running order. The printed program may be out of date.",
       "speed": 1.03,
       "pitch": -1
     },
@@ -170,8 +170,8 @@
       "key": "c3_theater_celebrate_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：whooooo！",
-      "voiceTextEn": "Whooooo!",
+      "subtitleZh": "系统：先翻过来看。",
+      "voiceTextEn": "Turn it over first.",
       "speed": 1.08,
       "pitch": 1
     },
@@ -179,8 +179,8 @@
       "key": "c3_theater_substitute_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：哦，可能纸类之间有一些我们不懂的关系。",
-      "voiceTextEn": "Perhaps paper has relationships we do not understand.",
+      "subtitleZh": "系统：替身有编号。原件去向不在节目单里。",
+      "voiceTextEn": "The substitute has a serial number. The program says nothing about where the original went.",
       "speed": 0.98,
       "pitch": -1
     },

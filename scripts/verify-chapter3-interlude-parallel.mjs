@@ -94,7 +94,7 @@ try {
     pendingView.parallelBranches.map(({ id }) => id).join(",") === "photos,voice,messages,network",
     "parallel branches must remain photos, voice, messages and network"
   );
-  assert(pendingQuest.objective === "恢复剩余证据", "quest objective must use the aggregate evidence label");
+  assert(pendingQuest.objective === "查清离湖后去了哪里", "quest objective must describe the shared evidence question");
   assert(pendingQuest.recommendedScene === "phone_home", "aggregate evidence objective must not imply a first app");
   assert(pendingQuest.parallelProgress?.completed === 0 && pendingQuest.parallelProgress?.total === 4, "quest projection must expose 0/4 progress");
   assert(pendingQuest.parallelBranches?.length === 4, "quest projection must expose four clickable branch rows");

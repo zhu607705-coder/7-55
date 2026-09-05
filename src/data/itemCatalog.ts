@@ -33,7 +33,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "离开时长", value: "三分钟" },
       { label: "留言状态", value: "仍在占用" }
     ],
-    body: ["本人离开三分钟，精神仍在座位上。", "临时离座规则详见 CC98。"],
+    body: ["本人离开三分钟，回来前请勿使用。", "开始计时的时刻未填写。临时离座规则详见 CC98。"],
     footer: "纸张边缘留有反复折叠痕迹。"
   }, [{ target: "cc98-search", result: "consume" }]),
   callNumber755: paper({
@@ -43,7 +43,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "索书号", value: "I247.55 / 755" },
       { label: "馆藏位置", value: "基础馆文学书架 · 755 段" }
     ],
-    body: ["本条目为旧版规定的馆内定位线索。"],
+    body: ["旧版离座规定存放于上述书架。", "只供馆内查阅；查完能否离座，请查规定。"],
     footer: "状态：仅馆内查阅。"
   }, [{ target: "library-shelf-755", result: "consume" }]),
   archivedLeaveRule: paper({
@@ -69,7 +69,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "学号", value: "未识别" },
       { label: "识别结果", value: "未检测到可签到主体" }
     ],
-    body: ["检测到大量期末周使用痕迹。", "身份结论需由馆内前台工作人员确认。"],
+    body: ["识别到双肩带、拉链与课本，未识别到姓名或学号。", "书包身份待馆内前台核验。图像识别不代替盖章。"],
     footer: "报告状态：待盖章。"
   }, [{ target: "library-front-desk-staff", result: "transform" }]),
   bagNonPersonProof: paper({
@@ -80,7 +80,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "姓名 / 学号", value: "无 / 无" },
       { label: "盖章来源", value: "基础馆物品身份盖章机" }
     ],
-    body: ["该物品不具备独立占用座位的身份条件。"],
+    body: ["经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。", "本证明仅证明书包。持有人仍需另交到馆材料。"],
     footer: "电子章：基础馆失物身份登记。"
   }, [
     { target: "cc98-upload:bag_non_person_proof", result: "retain" },
@@ -108,7 +108,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "证明数量", value: "3" },
       { label: "记录状态", value: "补录成功" }
     ],
-    body: ["访问轨迹与 022 座位凭据的时间记录一致。"],
+    body: ["访问轨迹与 022 座位凭据的时间记录一致。", "到馆已确认，座位使用仍需单独申请。"],
     footer: "签发来源：浙大体艺访问记录补录。"
   }, [
     { target: "cc98-upload:library_presence_proof", result: "retain" },
@@ -140,8 +140,8 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "取餐号", value: "0755" },
       { label: "状态", value: "请取餐" }
     ],
-    body: ["一张从点餐机吐出来的小票。"],
-    footer: "它证明你认真排过队，也认真被骗进流程。"
+    body: ["请凭号码取餐，实际餐品请听窗口叫号。", "已完成点餐不等于已完成取餐。"],
+    footer: "小票遗失，请回原队伍处理。"
   }, [{ target: "canteen-pickup-window-3", result: "consume" }]),
   canteenRealBun: object([]),
   canteenCluelessSoyMilk: object([]),
@@ -166,11 +166,11 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "来源", value: "剧院舞台" }
     ],
     body: [
-      "纸条这次没有留下连续脚印。",
+      "纸条飞走以后，地上的水迹断了。",
       "潮湿痕迹只能说明它经过了有水的地方。",
-      "仍需从不同来源核对地点特征。"
+      "还得找目击记录和别的地点信息。"
     ],
-    footer: "边角湿得很有方向感。"
+    footer: "纸角滴水，文字还能辨认。"
   }, [
     { target: "cc98-search", result: "retain" },
     { target: "library-catalog-search", result: "retain" },
@@ -214,7 +214,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     ],
     body: [
       "纸面记录停在 07:55 前后，签字栏还空着。",
-      "它会暂时离开你的道具栏，但最后仍需要回到签到口。"
+      "提交时须另验校园卡。纸面有记录，签字栏里还缺本人。"
     ],
     footer: "边缘有多次折返留下的旧压痕。"
   }, [

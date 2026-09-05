@@ -12,6 +12,7 @@ import { getPresentationRuntimeSnapshot } from "./modules/PresentationRuntime";
 import { getEndingRuntimeSnapshot } from "./scenes/phone/P12_Ending/EndingRuntime";
 import { getRpgRuntimeDebugState } from "./scenes/rpg/RpgRuntimeDebug";
 import { getRpgRuntimeWarmupSnapshot } from "./scenes/rpg/RpgRuntimePreload";
+import { getRpgDecodedImageCacheSnapshot } from "./scenes/rpg/RpgDecodedImageCache";
 import { getCanteenChaseSnapshot } from "./scenes/rpg/CanteenChaseRuntime";
 import { getClientCompatibilitySnapshot, installClientCompatibility } from "./core/ClientCompatibility";
 import { isRecordingMode } from "./core/RecordingMode";
@@ -81,6 +82,7 @@ function summarizeGameState(state: GameState) {
     audio: audioDirector.getDebugState(),
     rpgRuntime: getRpgRuntimeDebugState(),
     rpgWarmup: getRpgRuntimeWarmupSnapshot(),
+    rpgDecodedImages: getRpgDecodedImageCacheSnapshot(),
     canteenChase: getCanteenChaseSnapshot(),
     ui: {
       inventoryOpen: state.ui.inventoryOpen,

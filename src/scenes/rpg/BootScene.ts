@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import type { GameState } from "../../core/types";
 import actOneContent from "../../data/act-one-bootstrap.content.json";
@@ -715,6 +716,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   private publishDebugState(): void {
+    if (deferRpgRuntimeDebugCapture(() => this.publishDebugState())) return;
     const camera = this.cameras.main;
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",

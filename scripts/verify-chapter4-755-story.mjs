@@ -626,8 +626,8 @@ function validateTask7RuntimeSources(errors) {
     || !/kind:\s*["']embedded_chunks["'][\s\S]*?chunks/.test(viteConfig)
     || !viteConfig.includes('mimeType: "video/mp4; codecs=\\"avc1.640028\\""')
     || (viteConfig.match(/embedChapter4H3AsChunks\(\)/g) ?? []).length !== 2
-    || !/plugins:\s*\[\s*embedChapter4H3AsChunks\(\),\s*react\(\),\s*viteSingleFile/.test(viteConfig)
-    || !/\}\s*:\s*\{\s*plugins:\s*\[react\(\)\]/.test(viteConfig)) {
+    || !/plugins:\s*\[\s*losslessRuntimeAssets\(import\.meta\.dirname,\s*true\),\s*embedChapter4H3AsChunks\(\),\s*react\(\),\s*viteSingleFile/.test(viteConfig)
+    || !/\}\s*:\s*\{\s*plugins:\s*\[losslessRuntimeAssets\(import\.meta\.dirname,\s*false\),\s*react\(\)\]/.test(viteConfig)) {
     errors.push("Task 7 single-file build must pre-embed only the queried H3 MP4 as independent 256KiB base64 chunks while normal Vite keeps the direct asset URL");
   }
   if (!/declare\s+module\s+["']\*\?chapter4-h3-embedded["']/.test(viteEnv)
@@ -2029,7 +2029,7 @@ function validate(content) {
     if (!sameArray(bakeryHandshake.intentOrder, EXPECTED_BAKERY_INTENTS)) {
       errors.push("bakeryHandshake.intentOrder must preserve inspect, stop completion, pickup and install order");
     }
-    if (bakeryHandshake.preLampConveyorCorrection !== "先点亮烤箱旁的检修灯，让传送带停一下。") {
+    if (bakeryHandshake.preLampConveyorCorrection !== "传送带还在转。烤箱旁那盏检修灯，连着一个开关。") {
       errors.push("bakeryHandshake must preserve the approved pre-lamp conveyor correction");
     }
     if (!isRecord(bakeryHandshake.targetIds)
@@ -2077,7 +2077,7 @@ function validate(content) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
         errors.push(`tasks.${taskKey}.label must be a non-empty string`);
       }
-      const expectedHintCount = taskKey === "chapter_complete" ? 0 : 3;
+      const expectedHintCount = ["chapter_complete", "acknowledge_exterior_closure"].includes(taskKey) ? 0 : 3;
       if (isRecord(task)
         && (!Array.isArray(task.hints)
           || task.hints.length !== expectedHintCount
@@ -2089,8 +2089,11 @@ function validate(content) {
       (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
       0
     );
-    if (activeHintCount !== 117) {
-      errors.push("tasks must expose the full 117-hint active contract");
+    if (activeHintCount !== 114) {
+      errors.push("tasks must expose 114 hints; saved answers and completion must not invent another objective");
+    }
+    if (tasks.acknowledge_exterior_closure?.label !== "回答已保存") {
+      errors.push("saved final answers must only confirm that the answers were saved");
     }
     const room204PlayerCopy = [
       tasks.restore_room204?.label,
@@ -2276,8 +2279,8 @@ function validate(content) {
   }
   if (!isRecord(content.tasks)
     || content.tasks.turn_clock_to_0755?.label !== "把旧钟拨向 07:55"
-    || content.tasks.solve_light_grid?.label !== "让必要路线亮起"
-    || content.tasks.reach_lecture_202?.label !== "进入 202 并关门"
+    || content.tasks.solve_light_grid?.label !== "点亮追赶所需的通路"
+    || content.tasks.reach_lecture_202?.label !== "追进 202，关好门"
     || content.tasks.collect_final_minute?.label !== "取回黄铜分针组件"
     || content.tasks.return_via_main_stair?.label !== "把黄铜分针组件带回一楼大厅"
     || content.tasks.install_final_minute?.label !== "将黄铜分针组件装回大厅旧钟") {

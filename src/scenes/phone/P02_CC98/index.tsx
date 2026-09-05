@@ -43,7 +43,6 @@ type Cc98BoardSnapshot = {
 const STORAGE_KEY = "seven-fifty-five.cc98-posts.v2";
 const QUEST_STORAGE_KEY = "seven-fifty-five.cc98-quest-post-overrides.v1";
 const CHAPTER_FOUR_STUDY_LEGACY_POST_ID = "p03";
-const NETWORK_LOAD_DELAY_MS = 700;
 const NETWORK_REJECT_DELAY_MS = 1600;
 const NETWORK_CRASH_DELAY_MS = 620;
 const DEFAULT_POSTS = defaultPostData as Cc98Post[];
@@ -496,7 +495,9 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
     if (kit.network.canOpenCc98()) return true;
     return ticketPortalCellularAccess;
   });
-  const [networkPhase, setNetworkPhase] = useState<"loading" | "ready" | "crashing">("loading");
+  const [networkPhase, setNetworkPhase] = useState<"loading" | "ready" | "crashing">(
+    () => entryAccessAllowed ? "ready" : "loading"
+  );
   const [posts, setPosts] = useState<Cc98Post[]>(loadPosts);
   const [questPostOverrides, setQuestPostOverrides] = useState<Record<string, Partial<Cc98Post>>>(loadQuestPostOverrides);
   const [editing, setEditing] = useState(false);
@@ -636,18 +637,15 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
   }, [readPostIds, visiblePosts]);
 
   useEffect(() => {
+    if (entryAccessAllowed) return;
     let exitTimer: number | null = null;
     const gateTimer = window.setTimeout(() => {
-      if (entryAccessAllowed) {
-        setNetworkPhase("ready");
-        return;
-      }
       setNetworkPhase("crashing");
       playSfx("12_");
       events.emit("cc98_network_rejected", { requiredNetwork: "campus_wifi" });
       kit.flags.toast("CC98 仅支持校园网。请切换后重新进入。", "system");
       exitTimer = window.setTimeout(() => router.goTo("phone_home"), NETWORK_CRASH_DELAY_MS);
-    }, entryAccessAllowed ? NETWORK_LOAD_DELAY_MS : NETWORK_REJECT_DELAY_MS);
+    }, NETWORK_REJECT_DELAY_MS);
 
     return () => {
       window.clearTimeout(gateTimer);

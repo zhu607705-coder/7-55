@@ -15,9 +15,9 @@
     },
     "dialogue": [
       "玩家：它去哪了？",
-      "系统：没有连续痕迹，需要核对其他来源。",
-      "玩家：那就分头查。",
-      "系统：先看论坛和馆藏记录。"
+      "系统：水迹断了，附近没人看清。",
+      "玩家：追了一路，还得发帖寻物。",
+      "系统：论坛有人路过，馆藏里也留着借阅记录。"
     ],
     "cc98": {
       "title": "【求助】剧院门口飞出一张湿纸，有人看见吗",
@@ -75,7 +75,7 @@
     "outfitComplete": "皮划艇和两支临时桨都已收齐。"
     ,"safetyRainBlock": "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。"
     ,"safetyWarningRepeated": "值班老师：雨还没停，不能下水。"
-    ,"rainReturnBlocked": "值班老师：这么不长记性，还想要再成一次落汤鸡不成。"
+    ,"rainReturnBlocked": "值班老师：衣服还没干，又来？雨没停，先别下水。"
     ,"forcedLaunch": "你还是把皮划艇推下水，顶着雨划离了码头。"
     ,"forcedCapsize": "连续几桨后，侧风把船身压向一边，皮划艇失去平衡。"
     ,"forcedRescue": "值班老师和安全员把你救上岸。"
@@ -90,7 +90,7 @@
     "sameSide": "连续划同一侧会增大倾角。",
     "reverseTutorial": "后划可以离岸或修正位置；上船平衡仍需交替前划。",
     "capsize": "皮划艇翻转，已回到最近安全点。",
-    "capsizeLossSubtitle": "你的手机和眼镜共沉启真湖，只有手机打捞上来了，眼镜永远离开了你。",
+    "capsizeLossSubtitle": "手机和眼镜一起掉进湖里。手机捞回来了，眼镜没找到。",
     "complete": "平衡已稳定，可以进入大湖。",
     "start": "上船阶段横向稳定性低。键盘左右桨默认前划，按住下方向键可后划；触屏上划前进、下划后退。先交替前划四次稳住重心。",
     "strokes": [
@@ -113,18 +113,18 @@
     "unobserved": "这个坐标尚未在深色观察中记录。",
     "rodFound": "系统：已在浮排边找到钓鱼竿。",
     "baitAttached": "假纸条已固定在鱼钩上。",
-    "directPaperFailure": "普通鱼钩无法固定纸条。先取得尼龙绳、破损网框和磁性扣。",
+    "directPaperFailure": "没钩住。普通鱼钩挂不牢这张纸，得看看纸上能固定的部位。",
     "baitNext": "任务：去钥匙倒影对应的浅色水面抛竿。"
   },
   "items": {
-    "rustedLockerKey": "道具 1：生锈的柜门钥匙",
-    "nylonCord": "道具 2：尼龙绳",
-    "brokenNetFrame": "道具 3：破损网框",
-    "improvisedDipNet": "道具 4：临时抄网",
-    "sealedFeedTin": "道具 5：密封饲料盒",
-    "fishFeedPellets": "道具 6：鱼饲料颗粒",
+    "rustedLockerKey": "锈蚀柜钥匙",
+    "nylonCord": "尼龙绳",
+    "brokenNetFrame": "断裂网框",
+    "improvisedDipNet": "临时抄网",
+    "sealedFeedTin": "密封饲料罐",
+    "fishFeedPellets": "鱼食颗粒",
     "smallCarp": "小鲤鱼",
-    "swanMagnet": "道具 7：黑天鹅掉落的磁性扣",
+    "swanMagnet": "天鹅磁铁",
     "magneticFishingRod": "磁性钓鱼竿"
   },
   "swan": {
@@ -132,7 +132,7 @@
     "reward": "系统：饲料盒处理完成，黑天鹅推来一枚磁性扣。",
     "paperCapture": "磁性钓鱼竿已固定纸条。",
     "gateRelease": "纸条触发围栏机关，黑天鹅进入直河道。",
-    "combineHint": "任务：带上尼龙绳、破损网框和磁性扣，返回大湖面的装配位。",
+    "combineHint": "磁性扣的固定环与竿端相配，可以试着装上。",
     "rodReady": "磁性钓鱼竿组合完成。",
     "wrongItem": "黑天鹅只接受刚钓到的小鲤鱼。",
     "needMagnetParts": "把黑天鹅磁性扣或钓鱼竿拖进组合位。",
@@ -174,7 +174,7 @@
   "reflection": {
     "dialogue": ["玩家：纸条只在倒影里出现。", "系统：深色观察可以记录它的坐标。"],
     "afterPaper": ["系统：位置已记录。", "浅色操作可在浮排边捞起漂浮的钓鱼竿。"],
-    "lightWater": "浅色操作显示金色高对比可抛竿水纹。",
+    "lightWater": "水纹围成一圈，可以朝那里抛竿。",
     "darkWater": "深色观察显示纸条倒影和物品位置。",
     "wrong": "该位置没有记录到目标。",
     "correct": "位置已记录；浅色操作可在对应水纹抛竿。",
@@ -221,7 +221,7 @@
     "missedTarget": "没有命中当前可用物体，靠近并对准后重试。",
     "wrongMode": "当前为深色观察；使用实体道具需要浅色操作。",
     "tooFar": "目标对了，把皮划艇划到金色水纹外圈附近即可抛竿。",
-    "tooFarGeneric": "先把人物或皮划艇移到高对比标记附近。",
+    "tooFarGeneric": "还够不着，靠近这个物体再试。",
     "wrongItemFallback": "当前道具与这个目标不匹配。"
   },
   "prompts": {
@@ -258,16 +258,16 @@
     "dock": "在小码头分别找齐皮划艇和左右桨",
     "boarding": "交替划左右桨完成上船",
     "observe": "切到深色观察，记录倒影位置",
-    "toolChain": "取得尼龙绳、破损网框和磁性扣",
+    "toolChain": "找能把纸条带回来的工具",
     "swan": "处理围栏边的旧饲料盒",
     "paper": "用磁性钓鱼竿取出纸条",
     "chase": "沿直河道逃回小码头",
-    "complete": "查看启真湖后续过渡剧情",
+    "complete": "上岸，看看手机里的新消息",
     "lake": "在启真湖找到纸条",
     "lakeHints": [
       "深色观察用于记录坐标，浅色操作可直接尝试抛竿。",
       "普通鱼钩无法直接固定纸条。",
-      "道具会在最后一次成功使用后消失。"
+      "捞上来的东西可以展开查看，留意能连接、承托或吸附的部位。"
     ],
     "steps": {
       "findRod": {
@@ -279,7 +279,7 @@
         "hints": ["把假纸条拖到大湖面的纸条倒影上装饵。", "直接对倒影抛竿只会穿过去。"]
       },
       "catchKey": {
-        "label": "在钥匙倒影处钓起储物柜钥匙",
+        "label": "钓起水下的小金属物",
         "hints": ["深色观察可记录钥匙倒影坐标，也可在浅色操作直接尝试。", "浅色操作时，皮划艇到达金色水纹外圈附近后，把钓鱼竿拖入水纹。", "音符沿 A、S、D 三列向下移动；短块到白线时点按，长条头端到线时按住，尾端过线后松开。"]
       },
       "openLocker": {
@@ -287,7 +287,7 @@
         "hints": ["带着生锈的柜门钥匙回小码头。", "靠近储物柜，把钥匙拖到锁孔。"]
       },
       "catchNetFrame": {
-        "label": "在旧木桩倒影处钓起破损网框",
+        "label": "查看旧木桩下的框状物",
         "hints": ["深色观察可记录网框倒影坐标，也可在浅色操作直接尝试。", "浅色操作时，皮划艇到达金色网框水纹外圈附近后开始节奏钓取。"]
       },
       "combineNet": {
@@ -296,7 +296,7 @@
       },
       "retrieveTin": {
         "label": "用临时抄网捞起密封饲料盒",
-        "hints": ["从大湖北侧进入浮排直河道。", "把临时抄网拖到浮排下方的投放框。"]
+        "hints": ["从大湖北侧进入浮排直河道。", "抄网可以伸到浮排下方，托住那个罐子。"]
       },
       "openTin": {
         "label": "在浮排硬边撬开密封饲料盒",
@@ -320,7 +320,7 @@
     "titles": [
       { "id": "title_makeshift_boat", "text": "【记录】启真湖首航：船是捡的，桨是凑的，人是活的" },
       { "id": "title_no_capsize", "text": "启真湖划船一圈没翻，特此发帖留念" },
-      { "id": "title_wind_at_center", "text": "在湖心漂了一下午，风比课表还满" }
+      { "id": "title_wind_at_center", "text": "在湖心漂了一下午，课表上没有这一项" }
     ],
     "statuses": [
       { "id": "status_still_afloat", "text": "人还在湖上，船还浮着" },
@@ -334,7 +334,7 @@
         { "id": "caption_dock_gear", "text": "器材架空了一半，这艘皮划艇暂时归我保管。" }
       ],
       "reflection": [
-        { "id": "caption_reflection_mirror", "text": "水面静下来的时候，倒影比实景还清楚，船都不敢动。" },
+        { "id": "caption_reflection_mirror", "text": "水静下来才拍清倒影，没敢再划桨。" },
         { "id": "caption_reflection_ripple", "text": "刚按快门就来一圈水纹，倒影当场断开，凑合看。" },
         { "id": "caption_reflection_wait", "text": "为了等水静下来，在湖心多漂了十分钟，值。" }
       ],
@@ -419,7 +419,7 @@
       ],
       "swan_cove": [
         { "id": "reply_swan_stare_contest", "personaId": "socket-observer", "text": "黑天鹅盯人是常规项目，建议不要长时间对视，赢不了。", "likes": "44" },
-        { "id": "reply_swan_head_turn", "personaId": "yuquan-wind", "text": "它转头那下我正好路过，连风都停了半秒，气场确实足。", "likes": "37" },
+        { "id": "reply_swan_head_turn", "personaId": "yuquan-wind", "text": "它转头那下我正好路过。楼主退得挺快，照片居然没糊。", "likes": "37" },
         { "id": "reply_swan_budget", "personaId": "six-cent-rich", "text": "这鹅一天的伙食费超过我的余额，楼主别跟它比气场，比不过。", "likes": "58" },
         { "id": "reply_swan_watermark", "personaId": "wild-auditor", "text": "空围栏这张亦已存档。水痕未散，后续动向保持观察。", "likes": "21" }
       ]

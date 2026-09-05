@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-26T23:31:01.598Z",
+  "generatedAt": "2026-09-05T07:48:16.139Z",
   "assets": {
     "vo_c3_canteen_queue_system": {
       "path": "chapter3/vo/vo_c3_canteen_queue_system.mp3",
@@ -177,39 +177,6 @@
       "sourceTextHash": "a95c44b92b5d670623413094918673e5468f383665867e2d152c05dde11bdca6",
       "sourceConfigHash": "8371bf0550ae95d486e586c824822fe7391351aa94d554f4f3325bdf9efb2387",
       "source": "MiniMax speech-2.8-hd English_expressive_narrator"
-    },
-    "vo_c3_theater_logic_system": {
-      "path": "chapter3/vo/vo_c3_theater_logic_system.mp3",
-      "durationMs": 2697,
-      "codec": "mp3",
-      "sampleRate": 32000,
-      "channels": 1,
-      "sha256": "08e93b4667c77a05026435c2f993d900eca43e17fa85fe9a4dcc6d97dfd1b58b",
-      "sourceTextHash": "856b31a41ea90632138541f250cf8f00511a1b2d8ba1e3fcd99801e4fb486904",
-      "sourceConfigHash": "aa79821c3ce7f848f601f12650b411d5e2e21e7ece71d2f323d7b9eaf4a93011",
-      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
-    },
-    "vo_c3_theater_celebrate_system": {
-      "path": "chapter3/vo/vo_c3_theater_celebrate_system.mp3",
-      "durationMs": 524,
-      "codec": "mp3",
-      "sampleRate": 32000,
-      "channels": 1,
-      "sha256": "c53e0bdeb4dd7670db617d953e5884808b30cc34967dc886b00e11a15b9d60f5",
-      "sourceTextHash": "8ceb8a558e12610c597f28828fe525705253d7a669bd769c54b951b665c95c81",
-      "sourceConfigHash": "712acf6e93e16c514a45685e1e503ec30331520b7972aee159889440d516b82e",
-      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
-    },
-    "vo_c3_theater_substitute_system": {
-      "path": "chapter3/vo/vo_c3_theater_substitute_system.mp3",
-      "durationMs": 3766,
-      "codec": "mp3",
-      "sampleRate": 32000,
-      "channels": 1,
-      "sha256": "c2fb79f1e498ee3971e176bb318148b6e69cff21bc82406eb7bbbd575ef7e26e",
-      "sourceTextHash": "5c2cc1c1166d18c8d0666f6b824dcbcc66ff2d4807f247f5f17e2a0b3106c920",
-      "sourceConfigHash": "1c5b9b1c3a6d7a3d5b3f94a562a0efc1f7b6d7235ee382708554cdeec2287626",
-      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
     },
     "vo_c3_qizhen_no_trail_system": {
       "path": "chapter3/vo/vo_c3_qizhen_no_trail_system.mp3",
@@ -407,6 +374,39 @@
       "sha256": "28c2f273b69fb7293a1f33c0e30e91c8209017658ca0d375407071811776b9d6",
       "sourceTextHash": "56b78c8db7fd678d5880efcfdecd24440a7f03176906afe60c81dfdfcbaab5d6",
       "sourceConfigHash": "17a755204357419e11df9080737b9c4ec024c32a6e98a33074ba7dc8a1acabcf",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_c3_theater_logic_system": {
+      "path": "chapter3/vo/vo_c3_theater_logic_system.mp3",
+      "durationMs": 5036,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "456021fd41cf253cea7b53c95a57a15f2a2839e3564fde7bfa77f44eac658803",
+      "sourceTextHash": "97d032e6950129c349c9215bce86a8f7b51dec79c0bcfe9afa0e6c13cfa5ba50",
+      "sourceConfigHash": "1bfedeef3c0cc2e479b3c62ba80e7c1dc2e8e9bc6f22dde6d3f65b90ab86ee41",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_c3_theater_celebrate_system": {
+      "path": "chapter3/vo/vo_c3_theater_celebrate_system.mp3",
+      "durationMs": 1142,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "cdca55c35ce06f47d85d324405c5b4b41c4a0df72d64e946e707b16c98ce6073",
+      "sourceTextHash": "bed4831fd317d93e1900cb89645e6323469a2da2bda653bc1603bb4846c5cd27",
+      "sourceConfigHash": "22fbd4dce7faed96fb59ff55a64c9e130529a7efb746a79a1bbd43a4f900cae0",
+      "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
+    },
+    "vo_c3_theater_substitute_system": {
+      "path": "chapter3/vo/vo_c3_theater_substitute_system.mp3",
+      "durationMs": 8112,
+      "codec": "mp3",
+      "sampleRate": 32000,
+      "channels": 1,
+      "sha256": "7ac38cce915f2612dc1f247a2df9a07d748a14fae561775efdbd0de634f8fc24",
+      "sourceTextHash": "0d7f0a90ea6a888f0b54645413bbd3160e1bdf42bfae402178b3ba8e97deb7db",
+      "sourceConfigHash": "1d69f7df0b35da9ab23f91fb6c9c53d219298ff9873f75c49d6112cdd5a1f1f4",
       "source": "MiniMax speech-2.8-hd English_Graceful_Lady"
     }
   }

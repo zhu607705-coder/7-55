@@ -97,9 +97,9 @@
       "speaker": "guard",
       "voiceRole": "chapter4_guard",
       "maxDurationMs": 3100,
-      "deliveryPromptZh": "保安追到二楼后从主角后方喝止，强调已经到达同一楼层并阻止主角靠近 202，保持同一声线和距离感，不拖长尾音。",
-      "subtitleZh": "我已经上二楼了。别往 202 跑。",
-      "voiceTextEn": "I'm upstairs now. Stay away from room two-oh-two.",
+      "deliveryPromptZh": "保安追到二楼后从主角后方短促喝止，不报房间号，保持同一声线和逼近的距离感，不拖长尾音。",
+      "subtitleZh": "同学，停下！前面的，听见没有？",
+      "voiceTextEn": "You there, stop! Can you hear me?",
       "speed": 1.1,
       "pitch": 0,
       "emotion": "angry"

@@ -1,4 +1,6 @@
+import { preloadRpgImage } from "./RpgAssetLoader";
 import Phaser from "phaser";
+import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import { selectIdentityReadable } from "../../core/IdentityAccess";
 import dormHubMapUrl from "../../assets/rpg/interiors/dorm_hub.png";
 import hairDryerUrl from "../../assets/rpg/props/items/hair_dryer_generated_v01.png";
@@ -116,10 +118,10 @@ export class DormHubScene extends Phaser.Scene {
 
   preload(): void {
     if (!this.textures.exists(DORM_HUB_MAP_KEY)) {
-      this.load.image(DORM_HUB_MAP_KEY, dormHubMapUrl);
+      preloadRpgImage(this, DORM_HUB_MAP_KEY, dormHubMapUrl);
     }
     if (!this.textures.exists(DORM_HAIR_DRYER_KEY)) {
-      this.load.image(DORM_HAIR_DRYER_KEY, hairDryerUrl);
+      preloadRpgImage(this, DORM_HAIR_DRYER_KEY, hairDryerUrl);
     }
     preloadRpgPlayerTextures(this);
   }
@@ -561,7 +563,6 @@ export class DormHubScene extends Phaser.Scene {
     switch (target.id) {
       case "upper_bunk":
       case "lower_bunk":
-        this.animateBed(target);
         break;
       case "window":
         this.animateCurtains();
@@ -572,7 +573,6 @@ export class DormHubScene extends Phaser.Scene {
       case "shoe_shelf":
       case "laundry_bin":
       case "lower_shelf":
-        this.pulseTarget(target, 0xffd75d);
         break;
       case "desk_01":
       case "desk_03":
@@ -594,18 +594,6 @@ export class DormHubScene extends Phaser.Scene {
         break;
     }
     this.showFeedback(INTERACTION_COPY[target.id]);
-  }
-
-  private animateBed(target: DormInteractionTarget): void {
-    const sourceX = dormWorldToSourceX(target.x);
-    const sourceY = dormWorldToSourceY(target.y);
-    const sourceWidth = dormWorldToSourceSize(target.width);
-    const sourceHeight = dormWorldToSourceSize(target.height);
-    const ripple = this.addRoomObject(
-      this.add.rectangle(sourceX, sourceY, sourceWidth - 24, Math.min(170, sourceHeight - 24), 0x5ba7ff, 0)
-        .setStrokeStyle(3, 0x8ec8ff, 0.8)
-    );
-    this.tweens.add({ targets: ripple, alpha: 0.7, scaleX: 1.04, duration: 160, yoyo: true, repeat: 2, onComplete: () => ripple.destroy() });
   }
 
   private animateCurtains(): void {
@@ -686,20 +674,6 @@ export class DormHubScene extends Phaser.Scene {
 
   private animateDoorRejection(): void {
     this.exitDoor.reject();
-  }
-
-  private pulseTarget(target: DormInteractionTarget, color: number): void {
-    const pulse = this.addRoomObject(
-      this.add.rectangle(
-        dormWorldToSourceX(target.x),
-        dormWorldToSourceY(target.y),
-        dormWorldToSourceSize(target.width) + 12,
-        dormWorldToSourceSize(target.height) + 12,
-        color,
-        0
-      ).setStrokeStyle(3, color, 0.85)
-    );
-    this.tweens.add({ targets: pulse, alpha: 0.75, scale: 1.05, duration: 160, yoyo: true, repeat: 1, onComplete: () => pulse.destroy() });
   }
 
   private updatePrompt(target: DormInteractionTarget | null, nearCard: boolean): void {
@@ -784,6 +758,7 @@ export class DormHubScene extends Phaser.Scene {
   }
 
   private publishRuntimeDebug(): void {
+    if (deferRpgRuntimeDebugCapture(() => this.publishRuntimeDebug())) return;
     const state = this.bridge.getState();
     const wetAppearance = this.rainSoakedVisual.getDebugSnapshot();
     const activeTargets: NonNullable<RpgRuntimeDebugState["activeTargets"]> = DORM_INTERACTION_TARGETS.map((target) => ({

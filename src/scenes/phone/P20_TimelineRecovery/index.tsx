@@ -75,7 +75,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
     }
     if (candidateId === chapterThreeInterludeValidationContract.destinationId) {
       setFeedback(interlude.networkRecordId && interlude.networkRecordId !== "record_0755"
-        ? "证据矩阵发现：保存的接入记录与该地点冲突，请返回网络记录重新选择。"
+        ? "保存的接入记录对不上这个地点，再看一遍网络记录。"
         : "当前证据还不足以确认这个地点。"
       );
       return;
@@ -124,7 +124,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
             </dl>
             <div className="interlude-reboot-dialogue">
               <p><b>林星宇</b>我离开湖边以后，去了哪里？</p>
-              <p><b>系统</b>先从能够核对来源的记录开始。</p>
+              <p><b>系统</b>照片、录音、消息都存了，就是没记清你去了哪。先看还能读出的。</p>
             </div>
             <button type="button" onClick={openRecovery}>打开恢复工具</button>
           </section>
@@ -139,26 +139,26 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                 <i aria-hidden="true">—</i>
                 <b className={viewModel.timeWindow.endResolved ? "is-restored" : ""}>{viewModel.timeWindow.endLabel}</b>
               </strong>
-              <small>左右边界分别由原始证据恢复</small>
+              <small>对照离湖时刻和最后一段录音，查清这段时间发生了什么。</small>
             </section>
 
             <p className="interlude-derived-reasoning" role="status">{viewModel.derivedReasoning}</p>
 
             {!interlude.evidenceIds.includes("journal_start") ? (
               <section className="interlude-next-action">
-                <h2>先恢复时间窗起点</h2>
+                <h2>先查离湖时间</h2>
                 <p>划船帖的最后一条回复保留了带来源的离湖时间。</p>
-                <button type="button" onClick={() => router.goTo("cc98")}>去 CC98 收尾</button>
+                <button type="button" onClick={() => router.goTo("cc98")}>查看划船帖</button>
               </section>
             ) : (
               <InvestigationRing
                 ariaLabel={`四类证据并行恢复，已完成 ${viewModel.branchProgress.completed} 项，共 ${viewModel.branchProgress.total} 项`}
                 eyebrow="EVIDENCE LOOP"
-                title="四源恢复环"
+                title="留下了哪些记录"
                 completed={viewModel.branchProgress.completed}
                 total={viewModel.branchProgress.total}
-                centerLabel="恢复证据"
-                hint="四条分支互不锁定，可以从任一节点开始；全部完成后自动汇合"
+                centerLabel="已查记录"
+                hint="先看哪项都行，查过的会记在这里"
                 nodes={viewModel.parallelBranches.map((branch) => ({
                   id: branch.id,
                   label: branch.label,
@@ -211,7 +211,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
 
             {allEvidenceReady ? (
               <section className="interlude-timeline-panel" aria-label="证据矩阵">
-                <header><h2>证据矩阵</h2><span>四源交叉核验</span></header>
+                <header><h2>把记录对一对</h2><span>四处来源</span></header>
                 <ol className="interlude-auto-timeline">
                   <li><b>离湖</b><span><strong>CC98 × 照片</strong><small>同一移动过程，方向连续。</small></span></li>
                   <li><b>末段</b><span><strong>录音 × 网络</strong><small>室内广播、三秒陌生设备与候选地点需要同时成立。</small></span></li>
@@ -223,7 +223,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
             {viewModel.destinationSelectionUnlocked ? (
               <section className="interlude-destination-panel">
                 <h2>选择最终地点</h2>
-                <p>选择唯一能够同时解释时间窗、移动过程、入口变化和网络短会话的地点。</p>
+                <p>哪个地方能对上时间、沿途声音、入口变化和网络记录？</p>
                 {viewModel.destinationCandidates.map((candidate) => (
                   <button key={candidate.id} type="button" onClick={() => verifyDestination(candidate.id)}>
                     {candidate.label}

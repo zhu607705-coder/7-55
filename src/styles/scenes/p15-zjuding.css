@@ -2203,7 +2203,6 @@
   z-index: 10;
 }
 
-.zjuding-checkin-hotspot:hover,
 .zjuding-checkin-hotspot:focus-visible {
   border-color: rgba(245, 197, 66, 0.9);
 }

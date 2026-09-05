@@ -3,6 +3,7 @@ type RpgGameHostModule = typeof import("./RpgGameHost");
 import type { RpgSceneId } from "../../core/types";
 import type { ChapterFourWarmupPhase } from "./ChapterFourWarmupAssets";
 import { chapterFourWarmupAttemptMetrics } from "./ChapterFourWarmupLoadPolicy";
+import { getRpgDecodedImage, retainRpgDecodedImage } from "./RpgDecodedImageCache";
 
 let rpgGameHostModulePromise: Promise<RpgGameHostModule> | null = null;
 let resolvedRpgGameHostModule: RpgGameHostModule | null = null;
@@ -179,6 +180,16 @@ function warmImageUrl(
   url: string,
   fallbackDecodedBytes: number
 ): { promise: Promise<WarmImageResult>; reused: boolean } {
+  const decoded = getRpgDecodedImage(url);
+  if (decoded) return {
+    reused: true,
+    promise: Promise.resolve({
+      success: true,
+      measuredTransferBytes: 0,
+      estimatedDecodedBytes: decoded.naturalWidth * decoded.naturalHeight * 4,
+      transferMeasurement: "unknown"
+    })
+  };
   const existing = imageWarmupPromises.get(url);
   if (existing) return { promise: existing, reused: true };
   const promise = new Promise<WarmImageResult>((resolve) => {
@@ -199,6 +210,7 @@ function warmImageUrl(
       window.clearTimeout(timeout);
       image.onload = null;
       image.onerror = null;
+      if (success) retainRpgDecodedImage(url, image);
       const measuredTransferBytes = measuredResourceBytes(url);
       const estimatedTransferBytes = estimateDataUrlBytes(url);
       resolve({
@@ -216,6 +228,7 @@ function warmImageUrl(
     };
     const timeout = window.setTimeout(() => finish(false), 15_000);
     image.decoding = "async";
+    image.crossOrigin = "anonymous";
     image.onload = () => {
       if (typeof image.decode !== "function") {
         finish(true);
@@ -226,7 +239,9 @@ function warmImageUrl(
     image.onerror = () => finish(false);
     image.src = url;
   }).then((result) => {
-    if (!result.success) imageWarmupPromises.delete(url);
+    // Keep only in-flight requests here. The bounded decoded pool owns completed
+    // images, so expiry/eviction can trigger a real warmup on the next attempt.
+    imageWarmupPromises.delete(url);
     return result;
   });
   imageWarmupPromises.set(url, promise);
@@ -410,59 +425,66 @@ export function warmRpgRuntime(
         ), 0)
       };
       publishPhaseSnapshot(snapshot);
-      for (const asset of assets) {
-        if (!run.required && strategy === "idle" && (constrainedNetwork || lowMemory)
-          && speculativeAssetCount >= 2) {
-          speculativeDegradation = true;
-          break;
+      let nextAssetIndex = 0;
+      const concurrency = constrainedNetwork || lowMemory ? 1 : run.required ? 4 : 2;
+      const worker = async () => {
+        while (nextAssetIndex < assets.length) {
+          if (!run.required && strategy === "idle" && (constrainedNetwork || lowMemory)
+            && speculativeAssetCount >= 2) {
+            speculativeDegradation = true;
+            break;
+          }
+          if (!run.required && strategy === "idle") {
+            const idle = await waitForWarmupIdleSlice(run);
+            if (!idle) break;
+          }
+          if (run.cancelled) break;
+          const asset = assets[nextAssetIndex++];
+          if (!asset) break;
+          speculativeAssetCount += 1;
+          try {
+            const fallbackDecodedBytes = asset.sourceSize
+              ? asset.sourceSize.width * asset.sourceSize.height * 4
+              : 0;
+            const warmed = warmImageUrl(asset.url, fallbackDecodedBytes);
+            const warmedResult = await awaitWarmupResult(warmed.promise, run);
+            if (warmedResult === WARMUP_CANCELLED) break;
+            const result = warmedResult;
+            const attemptMetrics = chapterFourWarmupAttemptMetrics(result, warmed.reused);
+            snapshot = {
+              ...snapshot,
+              loadedCount: snapshot.loadedCount + (result.success ? 1 : 0),
+              reusedCount: snapshot.reusedCount + (warmed.reused && result.success ? 1 : 0),
+              warmedAssetCount: snapshot.warmedAssetCount + (result.success ? 1 : 0),
+              failedAssetCount: snapshot.failedAssetCount + (result.success ? 0 : 1),
+              failedUrls: result.success
+                ? snapshot.failedUrls
+                : [...snapshot.failedUrls, reportableWarmupAssetUrl(asset.key, asset.url)],
+              measuredTransferBytes: snapshot.measuredTransferBytes + attemptMetrics.measuredTransferBytes,
+              estimatedDecodedBytes: snapshot.estimatedDecodedBytes + attemptMetrics.estimatedDecodedBytes,
+              transferMeasurement: snapshot.transferMeasurement === "measured" || attemptMetrics.transferMeasurement === "measured"
+                ? "measured"
+                : snapshot.transferMeasurement === "estimated" || attemptMetrics.transferMeasurement === "estimated"
+                  ? "estimated"
+                  : "unknown"
+            };
+            publishPhaseSnapshot(snapshot);
+          } catch {
+            snapshot = {
+              ...snapshot,
+              failedAssetCount: snapshot.failedAssetCount + 1,
+              failedUrls: [
+                ...snapshot.failedUrls,
+                reportableWarmupAssetUrl(asset.key, asset.url)
+              ]
+            };
+            publishPhaseSnapshot(snapshot);
+          }
+          if (run.cancelled) break;
+          await yieldToBrowser();
         }
-        if (!run.required && strategy === "idle") {
-          const idle = await waitForWarmupIdleSlice(run);
-          if (!idle) break;
-        }
-        if (run.cancelled) break;
-        speculativeAssetCount += 1;
-        try {
-          const fallbackDecodedBytes = asset.sourceSize
-            ? asset.sourceSize.width * asset.sourceSize.height * 4
-            : 0;
-          const warmed = warmImageUrl(asset.url, fallbackDecodedBytes);
-          const warmedResult = await awaitWarmupResult(warmed.promise, run);
-          if (warmedResult === WARMUP_CANCELLED) break;
-          const result = warmedResult;
-          const attemptMetrics = chapterFourWarmupAttemptMetrics(result, warmed.reused);
-          snapshot = {
-            ...snapshot,
-            loadedCount: snapshot.loadedCount + (result.success ? 1 : 0),
-            reusedCount: snapshot.reusedCount + (warmed.reused && result.success ? 1 : 0),
-            warmedAssetCount: snapshot.warmedAssetCount + (result.success ? 1 : 0),
-            failedAssetCount: snapshot.failedAssetCount + (result.success ? 0 : 1),
-            failedUrls: result.success
-              ? snapshot.failedUrls
-              : [...snapshot.failedUrls, reportableWarmupAssetUrl(asset.key, asset.url)],
-            measuredTransferBytes: snapshot.measuredTransferBytes + attemptMetrics.measuredTransferBytes,
-            estimatedDecodedBytes: snapshot.estimatedDecodedBytes + attemptMetrics.estimatedDecodedBytes,
-            transferMeasurement: snapshot.transferMeasurement === "measured" || attemptMetrics.transferMeasurement === "measured"
-              ? "measured"
-              : snapshot.transferMeasurement === "estimated" || attemptMetrics.transferMeasurement === "estimated"
-                ? "estimated"
-                : "unknown"
-          };
-          publishPhaseSnapshot(snapshot);
-        } catch {
-          snapshot = {
-            ...snapshot,
-            failedAssetCount: snapshot.failedAssetCount + 1,
-            failedUrls: [
-              ...snapshot.failedUrls,
-              reportableWarmupAssetUrl(asset.key, asset.url)
-            ]
-          };
-          publishPhaseSnapshot(snapshot);
-        }
-        if (run.cancelled) break;
-        await yieldToBrowser();
-      }
+      };
+      await Promise.all(Array.from({ length: concurrency }, worker));
       const completedAtMs = nowMs();
       if (run.cancelled) {
         snapshot = {

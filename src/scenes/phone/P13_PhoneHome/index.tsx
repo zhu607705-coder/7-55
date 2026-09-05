@@ -13,6 +13,7 @@ import type { PhoneHomeAppId } from "../../../core/types";
 import { selectChapterFourWechatObjective } from "../../../modules/ChapterFourWechatModel";
 import { selectChapterThreeInterludeViewModel } from "../../../modules/ChapterThreeInterludeModel";
 import { selectCampusWeather } from "../../../modules/CampusWeatherModel";
+import { preloadPhoneScene, schedulePhoneSceneWarmup } from "../PhoneScenePreload";
 
 /**
  * P13 手机主界面：像素浙大校园壁纸。
@@ -41,6 +42,11 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
   // 旧存档与开发节点可能只保留了已取走花中数字；该事实同样表示盆栽已开花。
   const bonsaiBloomed = flags.flowerBloomed || flags.flowerEightTaken;
   const access = selectFeatureAccess(state);
+  useEffect(() => schedulePhoneSceneWarmup([
+    ...(access.timelineRecovery ? ["timeline_recovery"] : []),
+    ...(access.voiceMemos ? ["voice_memos"] : []),
+    ...(access.cc98 ? ["cc98"] : [])
+  ]), [access.cc98, access.timelineRecovery, access.voiceMemos]);
   const friendFollowupPending = state.actOne.phase === "friend_message_required";
   const chapterServicesOpen = state.actOne.phase !== "prologue";
   const movementQuestActive = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"].includes(state.actOne.phase);
@@ -554,6 +560,9 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
             aria-label={`${definition.ariaLabel ?? definition.label}${access.chapter === "chapter_one" ? "" : "，按 F2 编辑桌面"}`}
             aria-keyshortcuts={access.chapter === "chapter_one" ? undefined : "F2"}
             onClick={activate}
+            onPointerEnter={() => { if (!homeEditing) preloadPhoneScene(appId); }}
+            onPointerDown={() => { if (!homeEditing) preloadPhoneScene(appId); }}
+            onFocus={() => { if (!homeEditing) preloadPhoneScene(appId); }}
             onKeyDown={(event) => {
               if (event.key === "F2") {
                 event.preventDefault();
