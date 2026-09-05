@@ -428,11 +428,11 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
     ]
       .filter(Boolean).length;
     if (branchCount < 3) {
-      return task("parallel_tool_branches", `取得尼龙绳、破损网框和磁性扣 ${branchCount}/3`, [
-        lake.lockerOpened ? "码头储物柜：已取得尼龙绳。" : "码头储物柜：钓起钥匙，再用钥匙打开柜门取得尼龙绳。",
-        state.items.brokenNetFrame || lake.netCombined ? "直河道旧木桩：已取得破损网框。" : "直河道旧木桩：靠近水纹，钓起破损网框。",
-        lake.swanFed ? "黑天鹅围栏：已取得磁性扣。" : "黑天鹅围栏：处理旧饲料盒，取得磁性扣。",
-        "三件材料可以按任意顺序取得。"
+      return task("parallel_tool_branches", `查看湖边三处线索 ${branchCount}/3`, [
+        lake.lockerOpened ? "码头柜门已打开，尼龙绳收好了。" : "码头的柜门还锁着，附近水下有个小金属物。",
+        state.items.brokenNetFrame || lake.netCombined ? "木桩下的网框已经捞起。" : "直河道旧木桩下，能看见框状物的轮廓。",
+        lake.swanFed ? "黑天鹅推来的磁性扣已经收好。" : "天鹅围栏边留着旧饲料盒。",
+        "这三处可以分头查看，先去哪处都行。"
       ]);
     }
     return task("combine_final_rig", "把三件材料装到钓鱼竿上", [
@@ -472,7 +472,7 @@ function canteenInteriorTask(state: GameState): TaskDefinition {
     return task("paper_entry", "靠近食堂里的异常纸条", ["纸条停在入口附近，靠近后会继续移动。"]);
   }
   if (!hunt.trayTaskStarted) {
-    return task("tray_start", "与收餐口阿姨交谈", ["先完成餐盘回收，取得后续行动需要的零钱和纸巾。"]);
+    return task("tray_start", "与收餐口阿姨交谈", ["她在找几只没送回来的餐盘，应该看见了刚才的动静。"]);
   }
   if (returnedTargetTrays < 3) {
     return task(
@@ -492,7 +492,7 @@ function canteenInteriorTask(state: GameState): TaskDefinition {
       return task(
         "drink_mix",
         `按货架顺序调配今日新品（${hunt.drinkMixSequence.length}/3）`,
-        ["从饮料机取得三种饮料，再到调配台按黑色、蓝色、白色依次倒入。"]
+        ["调配顺序能从饮料货架上找到。", "饮料机提供原料，调配台按倒入顺序记数。"]
       );
     }
     if (!hunt.promoDrinkPlaced) {
@@ -503,15 +503,15 @@ function canteenInteriorTask(state: GameState): TaskDefinition {
   if (hunt.phase === "menu_order") {
     return task(
       "menu_order",
-      "在点餐机选择纸包鸡",
-      ["浅色操作可直接点餐；深色观察可补充读取异常菜单文字。", "点餐后会取得 0755 取餐号。"]
+      "看看菜单里有什么异常",
+      ["两种模式下，菜单有几个字不一样。", "深色观察看字，浅色操作下单。"]
     );
   }
   if (hunt.phase === "pickup_search") {
     return task(
       "pickup",
-      "把 0755 取餐号交给 3 号窗口",
-      ["浅色操作可直接交票；深色观察可补充查看 3 号窗口残影。"]
+      "找到这张小票对应的窗口",
+      ["同一个号码，各窗口叫出的餐品未必相同。", "深色观察能听见残留的叫号；交票要用浅色操作。"]
     );
   }
   if (hunt.phase === "exit_blocking") {
@@ -564,19 +564,19 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
       {
         id: "dock_locker",
         label: "码头柜门",
-        detail: "钥匙与尼龙绳",
+        detail: state.qizhenLake.lockerOpened ? "尼龙绳已取出" : "一扇上锁的柜门",
         complete: state.qizhenLake.lockerOpened
       },
       {
         id: "channel_raft",
         label: "直河浮排",
-        detail: "破损网框",
+        detail: state.items.brokenNetFrame || state.qizhenLake.netCombined ? "网框已捞起" : "木桩下的框状物",
         complete: state.items.brokenNetFrame || state.qizhenLake.netCombined
       },
       {
         id: "swan_cove",
         label: "天鹅围栏",
-        detail: "饲料与磁性扣",
+        detail: state.qizhenLake.swanFed ? "磁性扣已收好" : "围栏边的旧饲料盒",
         complete: state.qizhenLake.swanFed
       }
     ] as const;
@@ -600,19 +600,19 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
       ? state.theaterHunt.cc98TicketCommissionPhase === "posted"
         ? {
             id: "chapter_three_theater_ticket_commission",
-            label: "去 CC98 接下学生剧现场帮抢委托",
+            label: "找到进入观众席的办法",
             hints: [
-              "手机 CC98 出现了一条学生剧临时退票求助帖。",
-              "接单后再到剧院大厅确认取票时间。"
+              "检票员只接受本场有效票，先看看大厅里的票务信息。",
+              "有人临时无法到场，可能留下过退票留言。",
+              "校园论坛的近期帖子里，或许能找到那位同学。"
             ],
-            targetSurface: "phone",
-            recommendedScene: "cc98"
+            targetSurface: "rpg"
           }
         : state.theaterHunt.cc98TicketCommissionPhase === "accepted"
           ? !state.theaterHunt.ticketCodeRead
             ? {
                 id: "chapter_three_theater_ticket_read_time",
-                label: "在剧院大厅确认 08:32 放票时间",
+                label: "确认这场演出的放票信息",
                 hints: [
                   "在深色观察中靠近取票机，读取屏幕残影。",
                   "确认时间后回到手机 CC98 帖子参加第一波。"
@@ -647,15 +647,15 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
                   label: "把临时观演票交给检票闸机",
                   hints: [
                     "靠近闸机右侧的读票器。",
-                    "把道具栏里的临时观演票拖到读票器的发光框内。"
+                    "把临时观演票交给读票器。"
                   ],
                   targetSurface: "rpg"
                 }
               : state.items.theaterTicketHalfA && state.items.theaterTicketHalfB
                 ? {
                     id: "chapter_three_theater_combine_ticket",
-                    label: "合成两张半票根",
-                    hints: ["在道具栏中将半张票根 A 与半张票根 B 组合。"],
+                    label: "核对两张票根能否拼合",
+                    hints: ["比较两半的场次、票号和断口，匹配的票根可以拼接。"],
                     targetSurface: "rpg"
                   }
                 : !state.items.theaterTicketHalfB
@@ -671,10 +671,10 @@ function chapterThreeQuest(state: GameState): QuestViewModel {
                   : !state.items.theaterTicketHalfA
                   ? {
                       id: "chapter_three_theater_find_half_a",
-                      label: "从入口海报栏取得半张票根 A",
+                      label: "找找缺失的另一半票根",
                       hints: [
                         "靠近大厅左侧的海报玻璃。",
-                        "把去油纸巾拖到海报玻璃的发光区域。"
+                        "玻璃上的反光挡住了夹层，手边的纸巾能擦一擦。"
                       ],
                       targetSurface: "rpg"
                     }

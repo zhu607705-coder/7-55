@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { getRpgDecodedImage, retainRpgDecodedImage } from "./RpgDecodedImageCache";
 
 type RpgTextureKey = string;
 
@@ -19,6 +20,7 @@ export interface RpgAssetLoadReport {
 export type RpgAssetLoadReporter = (report: RpgAssetLoadReport) => void;
 
 const configuredLoaders = new WeakSet<Phaser.Loader.LoaderPlugin>();
+const sourceUrls = new WeakMap<Phaser.Loader.LoaderPlugin, Map<string, string>>();
 
 function resolveReporter(scene: Phaser.Scene): RpgAssetLoadReporter | null {
   const reporter = scene.registry.get(RPG_ASSET_LOAD_REPORTER_REGISTRY_KEY) as unknown;
@@ -43,10 +45,33 @@ export function configureRpgSceneAssetLoading(scene: Phaser.Scene): void {
   const loader = scene.load;
   if (configuredLoaders.has(loader)) return;
   configuredLoaders.add(loader);
+  const urls = new Map<string, string>();
+  sourceUrls.set(loader, urls);
+
+  loader.on("filecomplete", (key: string, type: string) => {
+    if (type !== "image" && type !== "spritesheet") return;
+    const url = urls.get(key);
+    urls.delete(key);
+    const source = scene.textures.get(key)?.getSourceImage();
+    if (typeof HTMLImageElement !== "undefined" && source instanceof HTMLImageElement) {
+      if (url) retainRpgDecodedImage(url, source);
+    }
+  });
 
   let blockingStartupLoad = false;
   let progress = 0;
   let failures: RpgAssetLoadFailure[] = [];
+  scene.events.once("shutdown", () => {
+    // Phaser removes loader listeners on shutdown. A restart must install fresh
+    // progress/error handlers instead of leaving the host on "loading" forever.
+    configuredLoaders.delete(loader);
+    sourceUrls.delete(loader);
+  });
+  scene.events.once("create", () => {
+    // Fully cached startup may skip the Loader entirely. Report readiness only
+    // after create has finished, and never clear a failed required asset.
+    if (failures.length === 0) reportAssetLoad(scene, { status: "ready", progress: 1, failedAssets: [] });
+  });
   loader.on("start", () => {
     // Runtime-only speculative loads run after the Scene reaches RUNNING and
     // must stay silent. The full-screen boundary is reserved for startup loads
@@ -96,6 +121,9 @@ export function preloadRpgImage(
 ): void {
   configureRpgSceneAssetLoading(scene);
   if (!scene.textures.exists(key)) {
+    const decoded = getRpgDecodedImage(url);
+    if (decoded && scene.textures.addImage(key, decoded)) return;
+    sourceUrls.get(scene.load)?.set(key, url);
     scene.load.setCORS("anonymous");
     scene.load.image(key, url);
   }
@@ -119,6 +147,9 @@ export function preloadRpgSpriteSheet(
 ): void {
   configureRpgSceneAssetLoading(scene);
   if (!scene.textures.exists(key)) {
+    const decoded = getRpgDecodedImage(url);
+    if (decoded && scene.textures.addSpriteSheet(key, decoded, frameConfig)) return;
+    sourceUrls.get(scene.load)?.set(key, url);
     scene.load.setCORS("anonymous");
     scene.load.spritesheet(key, url, frameConfig);
   }

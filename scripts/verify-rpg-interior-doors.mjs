@@ -109,6 +109,7 @@ assert(theater.includes('id: "theater_center_exit"'), "theater centered exit is 
 assert(!theater.includes("blockerY:"), "theater shared animated exit still declares an invisible blocker");
 assert(theater.includes("private beginTheaterExit()"), "theater exit does not use a physical door transition");
 assert(theater.includes("this.exitDoor.open()"), "theater exit does not animate open");
+assert(theater.includes("this.updateEntranceSensor()") && theater.includes("this.exitDoor.close()"), "theater door must react to arrival and departure");
 assert(theater.includes("this.exitDoor.updateActorOcclusion(this.player)"), "theater exit does not update actor occlusion");
 
 [dorm, library, canteen, theater].forEach((scene, index) => {

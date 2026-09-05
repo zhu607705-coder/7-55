@@ -204,7 +204,6 @@ export function InventoryBar({ state }: InventoryBarProps) {
   const barRef = useRef<HTMLElement>(null);
   const slotsRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
-  const hoveredDropTarget = useRef<HTMLElement | null>(null);
   const feedbackTimer = useRef<number | null>(null);
   const open = state.ui.inventoryOpen;
   const owned = ITEM_ORDER.filter((id) => state.items[id]);
@@ -219,26 +218,8 @@ export function InventoryBar({ state }: InventoryBarProps) {
     }, PHONE_DROP_FEEDBACK_MS);
   }
 
-  function setHoveredDropTarget(target: HTMLElement | null) {
-    if (hoveredDropTarget.current === target) return;
-    hoveredDropTarget.current?.classList.remove("is-inventory-drop-hover");
-    hoveredDropTarget.current = target;
-    target?.classList.add("is-inventory-drop-hover");
-  }
-
-  useEffect(() => {
-    if (!ghost?.moved) return undefined;
-    const candidates = Array.from(document.querySelectorAll<HTMLElement>("[data-drop-target]"));
-    candidates.forEach((element) => element.classList.add("is-inventory-drop-candidate"));
-    return () => {
-      candidates.forEach((element) => element.classList.remove("is-inventory-drop-candidate", "is-inventory-drop-hover"));
-      hoveredDropTarget.current = null;
-    };
-  }, [ghost?.item, ghost?.moved]);
-
   useEffect(() => () => {
     if (feedbackTimer.current !== null) window.clearTimeout(feedbackTimer.current);
-    setHoveredDropTarget(null);
   }, []);
 
   function clampBarTop(nextTop: number) {
@@ -262,7 +243,6 @@ export function InventoryBar({ state }: InventoryBarProps) {
     if (!draggedItem || state.items[draggedItem]) return;
     dragFrom.current = null;
     setGhost(null);
-    setHoveredDropTarget(null);
   }, [ghost?.item, state.items]);
 
   function toggleOpen() {
@@ -376,7 +356,6 @@ export function InventoryBar({ state }: InventoryBarProps) {
     }
     if (moved) {
       moveGhost(e.clientX, e.clientY);
-      setHoveredDropTarget(closestDropTarget("[data-drop-target]", e.clientX, e.clientY));
       e.preventDefault();
     }
     if (!ghost || ghost.item !== item || ghost.moved !== dragFrom.current.moved) {
@@ -407,7 +386,6 @@ export function InventoryBar({ state }: InventoryBarProps) {
     }
     dragFrom.current = null;
     setGhost(null);
-    setHoveredDropTarget(null);
     if (!from) {
       return;
     }
@@ -462,12 +440,12 @@ export function InventoryBar({ state }: InventoryBarProps) {
     const dropZone = closestDropTarget("[data-drop-target]", e.clientX, e.clientY);
     if (dropZone?.dataset.dropTarget) {
       eventBus.emit("item_dropped", { item: from.item, target: dropZone.dataset.dropTarget });
-      showDropFeedback("已命中高亮目标，正在校验当前剧情条件。");
+      showDropFeedback("已放到目标上，正在处理。");
       return;
     }
 
     eventBus.emit("inventory_drop_missed", { itemId: from.item });
-    showDropFeedback("没有放进高亮区域，请在目标框内松手。");
+    showDropFeedback("道具未放到目标上。");
   }
 
   function onPointerMove(e: React.PointerEvent) {
@@ -590,11 +568,11 @@ export function InventoryBar({ state }: InventoryBarProps) {
             </div>
             <p className={`inv-tip ${dropFeedback ? "is-feedback" : ""}`} role="status" aria-live="polite">
               {dropFeedback
-                ?? (ghost?.moved
-                  ? "拖到真实物件；松手后会校验距离、目标和剧情条件"
+                ?? (ghost
+                  ? ITEM_META[ghost.item].name
                   : state.ui.selectedItem
-                    ? `${ITEM_META[state.ui.selectedItem].name} · 双击查看`
-                    : "可拖动 · 双击查看")}
+                    ? ITEM_META[state.ui.selectedItem].name
+                    : null)}
             </p>
           </div>
         ) : null}

@@ -1,3 +1,4 @@
+import { preloadRpgSpriteSheet, preloadRpgImage } from "./RpgAssetLoader";
 import type Phaser from "phaser";
 import type { GameState } from "../../core/types";
 import teachingBuildingElevatorDoorsUrl from "../../assets/rpg/interiors/finale/teaching_building_elevator_doors.png";
@@ -267,12 +268,12 @@ export function queueChapterFourWarmupAsset(
 ): boolean {
   if (scene.textures.exists(asset.key)) return false;
   if (asset.kind === "spritesheet") {
-    scene.load.spritesheet(asset.key, asset.url, {
+    preloadRpgSpriteSheet(scene, asset.key, asset.url, {
       frameWidth: asset.frameWidth!,
       frameHeight: asset.frameHeight!
     });
   } else {
-    scene.load.image(asset.key, asset.url);
+    preloadRpgImage(scene, asset.key, asset.url);
   }
-  return true;
+  return !scene.textures.exists(asset.key);
 }

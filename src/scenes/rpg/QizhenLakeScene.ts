@@ -1,4 +1,6 @@
+import { preloadRpgImage, preloadRpgSpriteSheet } from "./RpgAssetLoader";
 import Phaser from "phaser";
+import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import qizhenChannelUrl from "../../assets/rpg/interiors/qizhen_lake_channel.png";
 import qizhenDockUrl from "../../assets/rpg/interiors/qizhen_lake_dock.png";
 import qizhenDockNoSignUrl from "../../assets/rpg/interiors/qizhen_lake_dock_no_sign.png";
@@ -250,11 +252,6 @@ interface TargetVisual {
   rippleCenter: Phaser.GameObjects.Arc | null;
 }
 
-interface DropGuideVisual {
-  target: QizhenLakeInteractionTarget;
-  targetOutline: Phaser.GameObjects.Rectangle;
-}
-
 interface QizhenFishingAttempt {
   sessionId: string;
   spotId: QizhenFishingChartId;
@@ -302,7 +299,6 @@ export class QizhenLakeScene extends Phaser.Scene {
   private reducedMotion = false;
 
   private targetVisuals: TargetVisual[] = [];
-  private dropGuides: DropGuideVisual[] = [];
   private ambientVisuals: Phaser.GameObjects.GameObject[] = [];
   private occlusionVisuals: OcclusionVisual[] = [];
   private activeOcclusionIds: string[] = [];
@@ -391,14 +387,14 @@ export class QizhenLakeScene extends Phaser.Scene {
     };
     (Object.keys(sources) as QizhenLakeZoneId[]).forEach((zone) => {
       if (!this.textures.exists(ZONE_TEXTURE_KEYS[zone])) {
-        this.load.image(ZONE_TEXTURE_KEYS[zone], sources[zone]);
+        preloadRpgImage(this, ZONE_TEXTURE_KEYS[zone], sources[zone]);
       }
     });
     if (!this.textures.exists(DOCK_NO_SIGN_TEXTURE_KEY)) {
-      this.load.image(DOCK_NO_SIGN_TEXTURE_KEY, qizhenDockNoSignUrl);
+      preloadRpgImage(this, DOCK_NO_SIGN_TEXTURE_KEY, qizhenDockNoSignUrl);
     }
     if (!this.textures.exists(SAFETY_OFFICER_TEXTURE_KEY)) {
-      this.load.spritesheet(SAFETY_OFFICER_TEXTURE_KEY, safetyOfficerSheetUrl, {
+      preloadRpgSpriteSheet(this, SAFETY_OFFICER_TEXTURE_KEY, safetyOfficerSheetUrl, {
         frameWidth: 96,
         frameHeight: 128
       });
@@ -1586,29 +1582,6 @@ export class QizhenLakeScene extends Phaser.Scene {
         rippleCenter
       });
     });
-    this.createDropGuides();
-  }
-
-  private createDropGuides(): void {
-    QIZHEN_LAKE_TARGETS
-      .filter((target) => (
-        target.zone === this.currentZone
-        && (target.acceptedItem !== undefined || target.acceptedItems !== undefined)
-      ))
-      .forEach((target) => {
-        const bounds = getRpgDropBounds(target);
-        const targetOutline = this.add.rectangle(
-          target.x,
-          target.y,
-          bounds.width,
-          bounds.height,
-          0x000000,
-          0
-        ).setStrokeStyle(2, 0x72dcff, 0.9)
-          .setDepth(4960)
-          .setVisible(false);
-        this.dropGuides.push({ target, targetOutline });
-      });
   }
 
   private createDockOutfitProp(target: QizhenLakeInteractionTarget): Phaser.GameObjects.GameObject | null {
@@ -1689,10 +1662,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       root.destroy(true);
     });
     this.targetVisuals = [];
-    this.dropGuides.forEach((guide) => {
-      guide.targetOutline.destroy();
-    });
-    this.dropGuides = [];
     this.ambientVisuals.forEach((visual) => {
       this.tweens.killTweensOf(visual);
       visual.destroy();
@@ -2146,7 +2115,6 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.promptText?.setVisible(false);
     this.photoCameraButton?.setVisible(false);
     this.targetVisuals.forEach((visual) => visual.root.setVisible(false));
-    this.dropGuides.forEach((guide) => guide.targetOutline.setVisible(false));
   }
 
   private clearFishingSession(): void {
@@ -2670,24 +2638,6 @@ export class QizhenLakeScene extends Phaser.Scene {
       visual.root.setAlpha(alpha);
     });
     this.staticSwan?.root.setVisible(this.currentZone === "swan_cove" && runtime.phase !== "swan_chase");
-    this.syncDropGuides(targets, selectedItem);
-  }
-
-  private syncDropGuides(
-    targets: readonly QizhenLakeInteractionTarget[],
-    selectedItem: ItemId | null
-  ): void {
-    const activeById = new Map(targets.map((target) => [target.id, target] as const));
-    this.dropGuides.forEach((guide) => {
-      const activeTarget = activeById.get(guide.target.id);
-      const matches = selectedItem !== null && qizhenTargetAcceptsItem(guide.target, selectedItem);
-      const visible = activeTarget !== undefined && matches;
-      guide.targetOutline.setVisible(visible);
-      if (!visible) return;
-      guide.targetOutline.setPosition(activeTarget.x, activeTarget.y);
-      const ready = isPlayerWithinRpgTarget(activeTarget, this.player.x, this.player.y);
-      guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
-    });
   }
 
   private lockedPortalHintFor(
@@ -3188,6 +3138,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     runtime: QizhenRuntimeProjection
   ): void {
     const definition = QIZHEN_LAKE_ZONES[this.currentZone];
+    if (deferRpgRuntimeDebugCapture(() => this.publishDebugState(target, targets, runtime))) return;
     const photoSpotId = resolveQizhenPhotoSpot(this.currentZone, this.player.x, this.player.y);
     const presentedVehicle: QizhenLakeVehicle = this.rainRescueStage === "rowing" || this.rainRescueStage === "capsizing"
       ? "kayak"
@@ -3294,7 +3245,8 @@ export class QizhenLakeScene extends Phaser.Scene {
           totalNotes: this.fishingModel?.totalNotes ?? 0,
           assist: this.fishingModel?.assist ?? false,
           failureCounts: { ...this.fishingFailureCounts },
-          clock: this.fishingUsesAudioClock ? "audio_context" : "performance_fallback"
+          clock: this.fishingUsesAudioClock ? "audio_context" : "performance_fallback",
+          visual: this.fishingVisual?.getDebugSnapshot() ?? null
         },
         chase: {
           active: runtime.phase === "swan_chase",

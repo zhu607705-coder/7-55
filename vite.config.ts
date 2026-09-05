@@ -3,6 +3,7 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 import { defineConfig, normalizePath, type Plugin } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { losslessRuntimeAssets } from "./scripts/lossless-runtime-assets";
 
 const BROWSER_BUILD_TARGET = ["chrome90", "edge90", "firefox91", "safari15"];
 const CHAPTER4_H3_EMBEDDED_QUERY = "chapter4-h3-embedded";
@@ -102,6 +103,7 @@ export default defineConfig(({ mode }) => {
       ? {
           base: "./",
           plugins: [
+            losslessRuntimeAssets(import.meta.dirname, true),
             embedChapter4H3AsChunks(),
             react(),
             viteSingleFile({ removeViteModuleLoader: true }),
@@ -125,7 +127,7 @@ export default defineConfig(({ mode }) => {
           }
         }
       : {
-          plugins: [react()],
+          plugins: [losslessRuntimeAssets(import.meta.dirname, false), react()],
           build: {
             target: BROWSER_BUILD_TARGET
           }

@@ -214,13 +214,13 @@ export function QuestTaskBar({
                 compact
                 ariaLabel={`并行调查 ${parallelProgress.completed}/${parallelProgress.total}`}
                 eyebrow="PARALLEL"
-                title="并行调查环"
+                title="调查记录"
                 completed={parallelProgress.completed}
                 total={parallelProgress.total}
-                centerLabel="调查分支"
+                centerLabel="已查记录"
                 hint={parallelBranchesAreRpgStatusNodes
-                  ? "环上节点没有提交先后；选择节点后返回现场，就近调查"
-                  : "环上节点没有提交先后；方向键切换节点，回车或空格打开"}
+                  ? "先查哪处都行；选中记录后返回现场查看"
+                  : "先查哪项都行；方向键选择，回车或空格打开"}
                 nodes={quest.parallelBranches.map((branch) => ({
                   id: branch.id,
                   label: branch.label,

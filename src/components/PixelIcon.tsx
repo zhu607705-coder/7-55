@@ -1,4 +1,5 @@
 import type { ItemId } from "../core/types";
+import itemConfig from "../data/items.config.json";
 import decoyPaperIconUrl from "../assets/rpg/theater/generated/icons/item_decoy_paper.png";
 import fluorescentBrushIconUrl from "../assets/rpg/theater/generated/icons/item_fluorescent_brush.png";
 import spotlightRemoteIconUrl from "../assets/rpg/theater/generated/icons/item_spotlight_remote.png";
@@ -826,72 +827,7 @@ export function PixelIcon({ name, size = 36, className }: PixelIconProps) {
   );
 }
 
-export const ITEM_META: Record<ItemId, { name: string; desc: string }> = {
-  waterDrop: { name: "水滴", desc: "从早八雨里接住的一滴水。它看起来很普通，但已经比你更早起床。" },
-  headphone: { name: "耳机", desc: "从控制中心掉下来的耳机。背面朝下，像一个不太情愿的小水瓢。" },
-  wateredHeadphone: { name: "盛水的耳机", desc: "一只装了水的耳机。音质未知，灌溉能力暂时领先。" },
-  reverseGear: { name: "反转齿轮", desc: "从设置里掉下来的齿轮。背面刻着 9，说明它一直有背着你生活。" },
-  slashLine: { name: "斜线", desc: "朋友头像上掉下来的一撇。检测到未经授权的友情支援。" },
-  towerKey: { name: "钥匙", desc: "斜线和齿轮拼成的钥匙。合法性很低，开锁欲很强。" },
-  fertilizer: { name: "一袋肥料", desc: "钟楼里掉出来的肥料。不要问钟楼为什么会长出农业属性。" },
-  campusCard: {
-    name: "电子校园卡",
-    desc: "证明你是你的卡。余额方面，它持保留意见。"
-  },
-  pushTriangle: { name: "三角形", desc: "从主页推送头像里抠下来的三角形。它还没想好自己是播放键还是箭头的一部分。" },
-  weatherWater: { name: "天气水滴", desc: "从天气页面接到的一滴水。天气预报终于做了一件可以直接拿来用的事。" },
-  mentorLine: { name: "竖线", desc: "从导师头像上滑落的一条竖线。它看起来很严肃，像一句还没发完的消息。" },
-  rightArrow: { name: "右移箭头", desc: "能把什么东西往右移。它不解决问题，只负责让问题换个位置。" },
-  gamepad: { name: "游戏手柄", desc: "CC98 二手市场六块钱成交。它让你终于可以操作自己，听起来很悲伤。" },
-  occupancyNote: { name: "占座纸条", desc: "022 座位旁的纸条，写着“主人马上回来”。拖到 CC98 搜索栏查找同类记录。" },
-  callNumber755: { name: "索书号 755", desc: "书架定位编号。拖到 755 号书架，查找旧版离座规则。" },
-  archivedLeaveRule: { name: "旧离座规定", desc: "书架背面找到的旧版离座规定。上传到 CC98 作为证据。" },
-  itemRecognitionReport: { name: "物品识别报告", desc: "照片调暗后生成的书包识别报告。带到图书馆前台核验盖章。" },
-  bagNonPersonProof: { name: "书包非本人证明", desc: "前台盖章后的书包非本人证明。上传到 CC98 作为证据。" },
-  seat022Receipt: { name: "022 座位小票", desc: "从 022 桌下夹缝取到的小票。上传到 CC98 作为证据。" },
-  libraryPresenceProof: { name: "本人来过证明", desc: "体艺补录得到的到馆证明。上传到 CC98 作为证据。" },
-  seatReleasePass: { name: "离座清退 PASS", desc: "三项材料换来的清退凭证。拖到 022 书包使用。" },
-  cafeteriaWages: { name: "餐盘回收费 2.00 元", desc: "收回三只目标餐盘得到的两元钱，可支付一次扫码骑车。" },
-  greaseTissue: { name: "油渍纸巾", desc: "收餐口阿姨给的油渍纸巾，可擦掉车锁和海报玻璃上的反光。" },
-  sparklingWater: { name: "气泡水", desc: "蓝色饮料原料。与黑咖啡、柠檬茶按货架顺序调配。" },
-  lemonTea: { name: "柠檬茶", desc: "白色饮料原料。查看货架颜色顺序后放进混合台。" },
-  blackCoffee: { name: "黑咖啡", desc: "黑色饮料原料。按货架顺序放进混合台。" },
-  badDrink: { name: "难喝饮料", desc: "混错顺序得到的饮料。可以喝掉，不能推进任务。" },
-  dailySpecialSparklingWater: { name: "今日新品气泡水", desc: "拖到第三窗口宣传板的空杯位。守出口时可在地面留两秒减速气泡。" },
-  pickupTicket0755: { name: "0755 取餐号", desc: "点餐机打印的取餐小票。切到深色模式，交给 3 号窗口残影阿姨。" },
-  canteenRealBun: { name: "比较真实的包子", desc: "从窗口领到的包子。正常，且没有纸条线索。" },
-  canteenCluelessSoyMilk: { name: "没什么线索的豆浆", desc: "从窗口领到的豆浆。此时没有其他用途。" },
-  canteenEdgeEgg: { name: "世界观边缘的鸡蛋", desc: "从窗口领到的鸡蛋。此时没有其他用途。" },
-  canteenUselessCongee: { name: "很热但很没用的白粥", desc: "从窗口领到的白粥。烫手，且没有其他用途。" },
-  theaterTicketHalfA: { name: "半张剧院票根 A", desc: "它证明你的一半可以进场，另一半还在流程里。" },
-  theaterTicketHalfB: { name: "半张剧院票根 B", desc: "来自一台失败的取票机。它至少努力过。" },
-  temporaryTheaterTicket: { name: "临时观演票", desc: "两张半真半假的票根拼出来的票。剧院看了都沉默了一秒。" },
-  theaterProgramOpening: { name: "节目单残页·开场", desc: "普通节目单，看起来很会假装正式。" },
-  theaterProgramSpotlight: { name: "节目单残页·追光", desc: "普通节目单，看起来很会假装正式。" },
-  theaterProgramFinale: { name: "节目单残页·谢幕", desc: "普通节目单，看起来很会假装正式。" },
-  spotlightRemote: { name: "追光灯遥控器", desc: "能让舞台中央变亮。也能让逃避责任的纸条短暂接受审判。" },
-  fluorescentBrush: { name: "荧光粉刷", desc: "刷过之后，连借口都会发光。" },
-  decoyPaper: { name: "假纸条", desc: "长得很像目标，但态度没那么差。" },
-  wetProgram: { name: "湿掉的节目单", desc: "纸条逃跑时留下的节目单，边角湿得很有方向感。" },
-  bridgeKeyword: { name: "桥边", desc: "CC98 目击者留下的地点关键词。" },
-  reflectionKeyword: { name: "倒影", desc: "馆藏系统留下的地点关键词。" },
-  lakeKeyword: { name: "湖", desc: "微信消息留下的地点关键词。" },
-  reflectionCoordinate: { name: "倒影坐标", desc: "两种观察模式共同确认的位置。" },
-  hairDryer: { name: "寝室吹风机", desc: "从自己的书桌取得，可在天气页面推动湖区云带。" },
-  fishingRod: { name: "钓竿", desc: "码头装备架上的基础钓竿，可安装诱饵或磁吸附件。" },
-  rustedLockerKey: { name: "锈蚀柜钥匙", desc: "从湖中钓起的旧钥匙，表面锈迹与码头储物柜一致。" },
-  nylonCord: { name: "尼龙绳", desc: "储物柜内的耐水尼龙绳，长度足够固定一圈网框。" },
-  brokenNetFrame: { name: "断裂网框", desc: "从水下钓起的旧网框，网面已经脱落。" },
-  improvisedDipNet: { name: "临时抄网", desc: "用尼龙绳修复的网框，可打捞钓钩无法稳定带回的物品。" },
-  sealedFeedTin: { name: "密封饲料罐", desc: "从水中捞出的密封金属罐，内部有颗粒滚动声。" },
-  fishFeedPellets: { name: "鱼食颗粒", desc: "密封罐中的鱼食，可用于吸引小型鱼群靠近。" },
-  smallCarp: { name: "小鲤鱼", desc: "用鱼食引到钓点的小鲤鱼，暂时保持活性。" },
-  swanMagnet: { name: "天鹅磁铁", desc: "黑天鹅带回的小型磁铁，可固定到钓竿末端。" },
-  magneticFishingRod: { name: "磁吸钓竿", desc: "安装磁吸附件的钓竿，可接近夹在金属结构上的纸张。" },
-  attendanceRecordPaper: { name: "签到记录纸", desc: "第四章开场追到的签到纸。最后还得把它送回正式签到口。" },
-  oldClockHourHand: { name: "旧钟时针", desc: "从面包店传送带上取下来的旧钟时针。先停带，再拿它。" },
-  clockPositioningPlate: { name: "定位盘", desc: "204 复位完成后得到的旧钟定位盘。它负责让时间回到正确轨道。" },
-  shortPryBar: { name: "短撬棍", desc: "面包店后场找到的短撬棍。适合掀开清洁车轮罩。" },
-  universalLubricatingOil: { name: "通用润滑油", desc: "修好清洁车后取到的半瓶润滑油。先修车轮，再上旧钟齿轮。" },
-  finalMinute: { name: "黄铜分针组件", desc: "从 202 阶梯座椅间取回的旧钟分针组件。轴座磨损与大厅旧钟吻合。" }
-};
+// Both inventory docks and item details use the same authored copy.
+export const ITEM_META = Object.fromEntries(
+  itemConfig.map(({ id, name, desc }) => [id, { name, desc }])
+) as Record<ItemId, { name: string; desc: string }>;

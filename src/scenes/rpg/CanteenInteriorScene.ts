@@ -1,4 +1,6 @@
+import { preloadRpgImage, preloadRpgSpriteSheet } from "./RpgAssetLoader";
 import Phaser from "phaser";
+import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import canteenInteriorMapUrl from "../../assets/rpg/interiors/canteen_interior.png";
 import canteenCounterAuntiesSheetUrl from "../../assets/rpg/npcs/canteen/counter_aunties_2frame.png";
 import canteenQueueStudentsSheetUrl from "../../assets/rpg/npcs/canteen/queue_students_2frame.png";
@@ -382,10 +384,10 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
   preload(): void {
     if (!this.textures.exists(CANTEEN_MAP_KEY)) {
-      this.load.image(CANTEEN_MAP_KEY, canteenInteriorMapUrl);
+      preloadRpgImage(this, CANTEEN_MAP_KEY, canteenInteriorMapUrl);
     }
     if (!this.textures.exists(CANTEEN_PUSH_CART_SHEET_KEY)) {
-      this.load.spritesheet(CANTEEN_PUSH_CART_SHEET_KEY, playerPushCartSheetUrl, {
+      preloadRpgSpriteSheet(this, CANTEEN_PUSH_CART_SHEET_KEY, playerPushCartSheetUrl, {
         frameWidth: 314,
         frameHeight: 314
       });
@@ -400,46 +402,46 @@ export class CanteenInteriorScene extends Phaser.Scene {
     ];
     npcSheets.forEach(({ key, url }) => {
       if (this.textures.exists(key)) return;
-      this.load.spritesheet(key, url, {
+      preloadRpgSpriteSheet(this, key, url, {
         frameWidth: CANTEEN_NPC_FRAME_WIDTH,
         frameHeight: CANTEEN_NPC_FRAME_HEIGHT
       });
     });
     if (!this.textures.exists(CANTEEN_PROMO_BOARD_EMPTY_KEY)) {
-      this.load.image(CANTEEN_PROMO_BOARD_EMPTY_KEY, canteenPromoBoardEmptyUrl);
+      preloadRpgImage(this, CANTEEN_PROMO_BOARD_EMPTY_KEY, canteenPromoBoardEmptyUrl);
     }
     if (!this.textures.exists(CANTEEN_PROMO_BOARD_ACTIVE_KEY)) {
-      this.load.image(CANTEEN_PROMO_BOARD_ACTIVE_KEY, canteenPromoBoardActiveUrl);
+      preloadRpgImage(this, CANTEEN_PROMO_BOARD_ACTIVE_KEY, canteenPromoBoardActiveUrl);
     }
     if (!this.textures.exists(CANTEEN_PROMO_DRINK_INSERT_KEY)) {
-      this.load.spritesheet(CANTEEN_PROMO_DRINK_INSERT_KEY, canteenPromoDrinkInsertSheetUrl, {
+      preloadRpgSpriteSheet(this, CANTEEN_PROMO_DRINK_INSERT_KEY, canteenPromoDrinkInsertSheetUrl, {
         frameWidth: 48,
         frameHeight: 64
       });
     }
     if (!this.textures.exists(CANTEEN_PROMO_FX_KEY)) {
-      this.load.spritesheet(CANTEEN_PROMO_FX_KEY, canteenPromoFxSheetUrl, {
+      preloadRpgSpriteSheet(this, CANTEEN_PROMO_FX_KEY, canteenPromoFxSheetUrl, {
         frameWidth: 48,
         frameHeight: 48
       });
     }
     if (!this.textures.exists(CANTEEN_QUEUE_STUDENT_TURN_KEY)) {
-      this.load.image(CANTEEN_QUEUE_STUDENT_TURN_KEY, canteenQueueStudentTurnUrl);
+      preloadRpgImage(this, CANTEEN_QUEUE_STUDENT_TURN_KEY, canteenQueueStudentTurnUrl);
     }
     if (!this.textures.exists(CANTEEN_SHADOW_AUNTIE_PUSH_KEY)) {
-      this.load.spritesheet(CANTEEN_SHADOW_AUNTIE_PUSH_KEY, canteenShadowAuntiePushSheetUrl, {
+      preloadRpgSpriteSheet(this, CANTEEN_SHADOW_AUNTIE_PUSH_KEY, canteenShadowAuntiePushSheetUrl, {
         frameWidth: 96,
         frameHeight: 128
       });
     }
     if (!this.textures.exists(CANTEEN_PAPER_CHICKEN_SHAKE_KEY)) {
-      this.load.spritesheet(CANTEEN_PAPER_CHICKEN_SHAKE_KEY, canteenPaperChickenShakeSheetUrl, {
+      preloadRpgSpriteSheet(this, CANTEEN_PAPER_CHICKEN_SHAKE_KEY, canteenPaperChickenShakeSheetUrl, {
         frameWidth: 64,
         frameHeight: 80
       });
     }
     if (!this.textures.exists(CANTEEN_PAPER_CHICKEN_BURST_KEY)) {
-      this.load.spritesheet(CANTEEN_PAPER_CHICKEN_BURST_KEY, canteenPaperChickenBurstSheetUrl, {
+      preloadRpgSpriteSheet(this, CANTEEN_PAPER_CHICKEN_BURST_KEY, canteenPaperChickenBurstSheetUrl, {
         frameWidth: 96,
         frameHeight: 96
       });
@@ -2731,11 +2733,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         this.promoBubbleLoop.play(CANTEEN_PROMO_BUBBLE_ANIM_KEY, true);
       }
     }
-    this.promoDropFrame?.setVisible(
-      drinkPuzzleAvailable
-      && state.ui.selectedItem === "dailySpecialSparklingWater"
-      && state.canteenHunt.mode === "light"
-    );
+    this.promoDropFrame?.setVisible(false);
     this.trayVisuals.forEach((visual, trayId) => {
       const definition = CANTEEN_TRAYS.find((tray) => tray.id === trayId);
       const removed = state.canteenHunt.returnedTrayIds.includes(trayId)
@@ -3941,6 +3939,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private publishDebugState(nearest: CanteenInteractionTarget | null, state: GameState): void {
+    if (deferRpgRuntimeDebugCapture(() => this.publishDebugState(nearest, state))) return;
     const modalPanelOpen = this.hasModalPanel();
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",

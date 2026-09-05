@@ -464,17 +464,6 @@
   font: 900 28px/1 monospace;
 }
 
-.qizhen-weather-control.is-awaiting-item.is-inventory-drop-candidate .qizhen-weather-device-slot {
-  background-color: #fff4bf;
-  border-color: #9a6b00;
-}
-
-.qizhen-weather-control.is-awaiting-item.is-inventory-drop-hover .qizhen-weather-device-slot {
-  background-color: #d9f6e7;
-  border-color: #287958;
-  border-style: solid;
-}
-
 .qizhen-weather-control i::before,
 .qizhen-weather-control i::after {
   background: #1c5d77;

@@ -17,26 +17,15 @@ export function ControlCenter({ state }: ControlCenterProps) {
   const open = state.ui.controlCenterOpen;
   const [headphoneFalling, setHeadphoneFalling] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
-  const [batteryCharging, setBatteryCharging] = useState(false);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const sliderPointerRef = useRef<number | null>(null);
-  const chargeTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!open) {
       setHeadphoneFalling(false);
       setResetConfirmOpen(false);
-      setBatteryCharging(false);
-      if (chargeTimerRef.current !== null) {
-        window.clearTimeout(chargeTimerRef.current);
-        chargeTimerRef.current = null;
-      }
     }
   }, [open]);
-
-  useEffect(() => () => {
-    if (chargeTimerRef.current !== null) window.clearTimeout(chargeTimerRef.current);
-  }, []);
 
   if (!open) {
     return null;
@@ -160,28 +149,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
     kit.battery.setLowPowerMode(!state.phoneBattery.lowPowerMode);
   }
 
-  function startCharging() {
-    if (batteryCharging) return;
-    const source = kit.battery.getNearbyChargingSource();
-    if (!source) {
-      kit.battery.rechargeFromNearbyPower();
-      return;
-    }
-    if (state.phoneBattery.percent >= 45) {
-      kit.battery.rechargeFromNearbyPower();
-      return;
-    }
-    playSfx("14_", { volume: 0.55 });
-    setBatteryCharging(true);
-    chargeTimerRef.current = window.setTimeout(() => {
-      chargeTimerRef.current = null;
-      kit.battery.rechargeFromNearbyPower();
-      setBatteryCharging(false);
-    }, 900);
-  }
-
   const brightness = state.ui.brightness;
-  const chargingSource = kit.battery.getNearbyChargingSource();
   const batteryPercent = state.phoneBattery.percent;
 
   return (
@@ -352,24 +320,10 @@ export function ControlCenter({ state }: ControlCenterProps) {
             <span>{state.phoneBattery.lowPowerMode ? "恢复每次 2% 耗电" : "每次只耗 1%；亮度限至 45%，暂停音乐"}</span>
           </button>
           <p className="cc-power-location">
-            {chargingSource
-              ? `附近电源：${chargingSource}`
-              : "附近没有可用电源；室内服务区可充电。"}
+            {state.rpgScene === "theater_interior"
+              ? "剧场入口左侧设有充电服务站，需走到设备旁接线。"
+              : "充电需要在现场与充电服务站交互。"}
           </p>
-          <button
-            type="button"
-            className={`cc-charge ${batteryCharging ? "is-charging" : ""}`}
-            onClick={startCharging}
-            disabled={batteryCharging}
-          >
-            {batteryCharging
-              ? "正在接入电源…"
-              : chargingSource
-                ? batteryPercent < 45
-                  ? `接入电源，充至 45%`
-                  : "当前电量足够"
-                : "此处无法充电"}
-          </button>
           {batteryPercent === 1 ? (
             <p className="cc-power-reserve" role="status">1% 为任务保底电量，主线功能仍可使用。</p>
           ) : null}

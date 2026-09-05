@@ -1135,71 +1135,6 @@
   font-size: var(--fs-caption);
 }
 
-.rpg-inventory-dock > header span {
-  color: #9eb0aa;
-  font-size: var(--fs-micro);
-}
-
-.rpg-item-use-guidance {
-  align-items: baseline;
-  background: rgba(10, 17, 19, 0.72);
-  border: 0;
-  border-left: 3px solid #6b8079;
-  display: flex;
-  gap: 7px;
-  max-width: 100%;
-  padding: 3px 7px;
-}
-
-.rpg-item-use-guidance strong {
-  color: #f5eedb;
-  font-size: 11px;
-  line-height: 1.2;
-}
-
-.rpg-item-use-guidance span {
-  color: #bdc9c4;
-  font-size: 10px;
-  line-height: 1.35;
-}
-
-.rpg-item-use-guidance.is-ready,
-.rpg-item-use-guidance.is-success {
-  background: rgba(19, 48, 38, 0.72);
-  border-left-color: #7de0a3;
-}
-
-.rpg-item-use-guidance.is-ready strong,
-.rpg-item-use-guidance.is-success strong {
-  color: #a8f0c0;
-}
-
-.rpg-item-use-guidance.is-locked,
-.rpg-item-use-guidance.is-warning {
-  background: rgba(55, 43, 20, 0.72);
-  border-left-color: #e4b85b;
-}
-
-.rpg-item-use-guidance.is-locked strong,
-.rpg-item-use-guidance.is-warning strong {
-  color: #ffd982;
-}
-
-.rpg-item-use-guidance.is-error {
-  background: rgba(58, 27, 28, 0.72);
-  border-left-color: #e67f79;
-}
-
-.rpg-item-use-guidance.is-error strong {
-  color: #ffaaa5;
-}
-
-.rpg-item-use-guidance.is-passive,
-.rpg-item-use-guidance.is-elsewhere {
-  background: rgba(30, 39, 47, 0.72);
-  border-left-color: #8194a2;
-}
-
 .rpg-inventory-items {
   display: flex;
   gap: 6px;
@@ -2291,9 +2226,19 @@
 
 @media (max-width: 900px) and (orientation: landscape) {
   .rpg-kayak-controls.is-fishing {
+    /* Match the logical key deck (x=281..679, y=434), below all falling tiles. */
+    bottom: auto;
     gap: 5px;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: 198px;
+    left: 29.270833%;
+    top: 80.37037%;
+    width: 41.458333%;
+    max-width: none;
+  }
+
+  .rpg-kayak-controls.is-fishing button {
+    min-height: 44px;
+    height: 44px;
   }
 
   .rpg-inventory-dock {

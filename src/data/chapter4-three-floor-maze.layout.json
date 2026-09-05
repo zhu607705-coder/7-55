@@ -2160,11 +2160,11 @@
         {
           "id": "a1_air_wall_005",
           "sourceAnnotationId": "a1-ann-005",
-          "label": "空气墙",
+          "label": "104/105 隔墙实体底边",
           "x": 1226,
-          "y": 473,
+          "y": 584,
           "width": 381,
-          "height": 18
+          "height": 12
         },
         {
           "id": "a1_air_wall_006",
@@ -2241,20 +2241,20 @@
         {
           "id": "a1_air_wall_north_portrait_west_lip",
           "sourceAnnotationId": "a1-ann-014",
-          "label": "北侧西段肖像墙下沿空气墙",
+          "label": "面包坊北墙实体底边",
           "x": 43,
-          "y": 134,
+          "y": 264,
           "width": 496,
-          "height": 17
+          "height": 12
         },
         {
           "id": "a1_air_wall_north_portrait_east_lip",
           "sourceAnnotationId": "a1-ann-015",
-          "label": "北侧东段肖像墙下沿空气墙",
+          "label": "104 北墙实体底边",
           "x": 1201,
-          "y": 134,
+          "y": 248,
           "width": 408,
-          "height": 20
+          "height": 12
         },
         {
           "id": "a1_air_wall_front_desk_counter",
@@ -2617,9 +2617,10 @@
             "x": 43,
             "y": 134,
             "width": 496,
-            "height": 17
+            "height": 130
           },
-          "baselineY": 151,
+          "baselineY": 264,
+          "playerRevealAlpha": 0.22,
           "renderMode": "foot_behind_baseline"
         },
         {
@@ -2630,9 +2631,19 @@
             "x": 1201,
             "y": 134,
             "width": 408,
-            "height": 20
+            "height": 114
           },
-          "baselineY": 154,
+          "baselineY": 248,
+          "playerRevealAlpha": 0.22,
+          "renderMode": "foot_behind_baseline"
+        },
+        {
+          "id": "a1_classroom_partition_face",
+          "sourceAnnotationId": "a1-ann-005",
+          "label": "104/105 隔墙局部人物淡化",
+          "maskBounds": { "x": 1226, "y": 473, "width": 381, "height": 111 },
+          "baselineY": 584,
+          "playerRevealAlpha": 0.22,
           "renderMode": "foot_behind_baseline"
         },
         {

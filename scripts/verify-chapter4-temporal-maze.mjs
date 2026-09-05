@@ -30,7 +30,7 @@ const expectedFloors = ["A1", "A2", "A3"];
 const expectedAssets = ["a1_base", "a2_base", "a3_base"];
 const expectedCheckpoints = ["c4_a1_lobby", "c4_a2_corridor", "c4_a3_wayfinding"];
 const expectedFloorCounts = {
-  A1: { collisions: 44, walkable: 7, occlusions: 9 },
+  A1: { collisions: 44, walkable: 7, occlusions: 10 },
   A2: { collisions: 24, walkable: 5, occlusions: 6 },
   A3: { collisions: 63, walkable: 8, occlusions: 2 }
 };
@@ -377,13 +377,21 @@ const a1 = floorByStory.get("A1");
 const a2 = floorByStory.get("A2");
 for (const [collisionId, occlusionId, annotationId] of [
   ["a1_air_wall_north_portrait_west_lip", "a1_foreground_014", "a1-ann-014"],
-  ["a1_air_wall_north_portrait_east_lip", "a1_foreground_015", "a1-ann-015"]
+  ["a1_air_wall_north_portrait_east_lip", "a1_foreground_015", "a1-ann-015"],
+  ["a1_air_wall_005", "a1_classroom_partition_face", "a1-ann-005"]
 ]) {
   const collision = a1?.staticCollisions?.find((entry) => entry.id === collisionId);
   const occlusion = a1?.foregroundOcclusions?.find((entry) => entry.id === occlusionId);
   assert(collision?.sourceAnnotationId === annotationId, `${collisionId} source annotation mismatch`);
   assert(occlusion?.sourceAnnotationId === annotationId, `${occlusionId} source annotation mismatch`);
-  assertJsonEqual(rectOnly(collision), occlusion?.maskBounds, `${collisionId} must match ${occlusionId}`);
+  assert(collision.x === occlusion.maskBounds.x && collision.width === occlusion.maskBounds.width,
+    `${collisionId} must preserve the wall face source span`);
+  assert(collision.y === occlusion.baselineY
+    && collision.y === occlusion.maskBounds.y + occlusion.maskBounds.height,
+    `${collisionId} must stop feet at the wall base, not at its top trim`);
+  assert(occlusion.playerRevealAlpha === 0.22, `${occlusionId} covered player reveal`);
+  validateClearPoint({ x: collision.x + 22, y: occlusion.maskBounds.y + 28 },
+    a1.staticCollisions, `${occlusionId} walk behind top trim`, 0);
 }
 for (const [floorId, collisionIds] of [
   ["A2", ["a2_air_wall_006", "a2_air_wall_007", "a2_air_wall_010", "a2_air_wall_011"]],

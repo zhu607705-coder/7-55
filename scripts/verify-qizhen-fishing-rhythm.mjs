@@ -65,9 +65,11 @@ async function main() {
   try {
     const modelBundle = path.join(bundleDir, "model.mjs");
     const engineBundle = path.join(bundleDir, "engine.mjs");
+    const layoutBundle = path.join(bundleDir, "layout.mjs");
     await Promise.all([
       build({ entryPoints: [path.join(root, "src/scenes/rpg/QizhenFishingRhythmModel.ts")], outfile: modelBundle, bundle: true, format: "esm", platform: "node", target: "node20" }),
       build({ entryPoints: [path.join(root, "src/modules/RhythmFishingEngine.ts")], outfile: engineBundle, bundle: true, format: "esm", platform: "node", target: "node20" }),
+      build({ entryPoints: [path.join(root, "src/scenes/rpg/QizhenFishingRhythmLayout.ts")], outfile: layoutBundle, bundle: true, format: "esm", platform: "node", target: "node20" }),
     ]);
     const {
       QizhenFishingRhythmModel,
@@ -76,6 +78,33 @@ async function main() {
       getQizhenFishingNoteTravelProgress,
     } = await import(pathToFileURL(modelBundle).href);
     const { RhythmFishingEngine } = await import(pathToFileURL(engineBundle).href);
+    const { FISHING_BOARD: board, FISHING_LANES: lanes, fishingTileGeometry } = await import(pathToFileURL(layoutBundle).href);
+    assert(lanes.map((lane) => lane.key).join("") === "ASD", "fixed lane order must be A/S/D");
+    assert(board.noteBottom < board.keyTop, "falling notes must never overlap the fixed keys");
+    for (const chartId of Object.keys(expectedCharts)) {
+      const visualProbe = new QizhenFishingRhythmModel({ chartId, now: () => 0, events: createEvents([]) });
+      for (const note of visualProbe.notes) {
+        for (const firstVisible of [0, note.spawnSec]) {
+          const hit = fishingTileGeometry(note, note.timeSec, firstVisible);
+          assert(Math.abs(hit.headY - board.judgmentY) < 0.001, `${chartId}/${note.index}: note must reach the line at the authored instant`);
+          for (let elapsed = 0; elapsed < note.timeSec + note.holdSec + 1; elapsed += 0.047) {
+            const tile = fishingTileGeometry(note, elapsed, firstVisible);
+            assert(tile.height >= 0 && Number.isFinite(tile.height), "tile clipping must stay finite");
+            assert(tile.x > board.left && tile.x + tile.width < board.right, "both tile edges must stay inside board, including D");
+            if (tile.height > 0) assert(tile.y >= board.noteTop && tile.y + tile.height <= board.noteBottom + 0.001, "tile clipping must preserve the note/key separation");
+          }
+          if (note.holdSec > 0) {
+            const held = { ...note, holding: true };
+            const early = fishingTileGeometry(held, note.timeSec, firstVisible);
+            const late = fishingTileGeometry(held, note.timeSec + note.holdSec * 0.8, firstVisible);
+            assert(early.height > late.height && late.headY === board.judgmentY, "hold tail must shorten while head stays on the judgment line");
+          }
+        }
+      }
+    }
+    const visualSource = await readFile(path.join(root, "src/scenes/rpg/QizhenFishingRhythmVisual.ts"), "utf8");
+    assert(!/createGeometryMask|createBitmapMask|\.setMask\(/.test(visualSource), "screen-space fishing tiles must not restore independently transformed masks");
+    assert((visualSource.match(/setScrollFactor\(0\)/g) ?? []).length === 1 && visualSource.includes("this.root.add(object)"), "all fishing HUD objects must share one logical screen-space root");
 
     for (const [chartId, expectation] of Object.entries(expectedCharts)) {
       const normal = playPerfect(QizhenFishingRhythmModel, chartId, false);
@@ -212,11 +241,11 @@ async function main() {
     assert(sceneSource.includes('if (target.value === "fish")') && sceneSource.includes('hasItem(state, CHAIN_ITEMS.pellets)'), "fish quick strike must become active when pellets are available");
     assert(!sceneSource.includes("三处分支素材"), "successful rig assembly feedback must name the concrete materials");
     assert(developerChannelSource.includes('rhythmNet\n      ? "channel"') && developerChannelSource.includes('? "qizhen_channel"'), "net quick-hold checkpoint must seed the channel plate");
-    assert(questModelSource.includes("取得尼龙绳、破损网框和磁性扣"), "tool-chain task must name the three required materials");
+    assert(questModelSource.includes("查看湖边三处线索") && questModelSource.includes("浮排") && questModelSource.includes("黑天鹅"), "tool-chain task must identify visible leads without naming uncollected rewards");
     assert(!questModelSource.includes("完成湖区三处分支"), "tool-chain task must not expose abstract branch terminology");
     assert(!lakeContentSource.includes("三处分支材料") && !lakeContentSource.includes("三处分支"), "lake guidance must describe concrete items and locations");
 
-    console.log("Qizhen fishing tiered flow PASS tutorial=8 quick_hold=4 quick_strike=1 finale=26 audio=split recovery=preserved");
+    console.log("Qizhen fishing tiered flow PASS tutorial=8 quick_hold=4 quick_strike=1 finale=26 audio=split recovery=preserved geometry=bounded_ASD single_root=mask_free");
   } finally {
     await rm(bundleDir, { recursive: true, force: true });
   }

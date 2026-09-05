@@ -137,7 +137,7 @@ export function InvestigationRing<Id extends string>({
         <div className="investigation-ring__center" aria-hidden="true">
           <span>{centerLabel}</span>
           <strong>{completed}<i>/</i>{total}</strong>
-          <small>{completed === total ? "已汇合" : "等待汇合"}</small>
+          <small>{completed === total ? "已查齐" : "尚有未查"}</small>
         </div>
 
         {nodes.map((node, index) => {

@@ -39,6 +39,7 @@ import {
   ChapterThreeCanteenController
 } from "../../modules/ChapterThreeCanteenController";
 import { ChapterThreeTheaterController } from "../../modules/ChapterThreeTheaterController";
+import { PhoneBatteryController } from "../../modules/PhoneBatteryController";
 import {
   ChapterThreeQizhenLakeController,
   type QizhenActionResult,
@@ -522,6 +523,7 @@ export function RpgGameHost({
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
   const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
+  const batteryController = useMemo(() => new PhoneBatteryController(store, events), [events, store]);
   const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
   const chapter4ClosureRegistry = useMemo(() => new ChapterFourClosureSessionRegistry(), []);
   const chapter4Controller = useMemo(
@@ -1609,6 +1611,11 @@ export function RpgGameHost({
         });
       } else if (event.name === "rpg_theater_ticket_kiosk_requested") {
         theaterController.inspectTicketKiosk();
+      } else if (event.name === "rpg_theater_charge_requested") {
+        batteryController.rechargeAtStation(String(event.payload?.stationId ?? ""), {
+          x: Number(event.payload?.x ?? NaN),
+          y: Number(event.payload?.y ?? NaN)
+        });
       } else if (event.name === "rpg_theater_ticket_code_submitted") {
         theaterController.submitTicketCode(String(event.payload?.code ?? ""));
       } else if (event.name === "rpg_theater_ticket_combine_requested") {
@@ -1843,7 +1850,7 @@ export function RpgGameHost({
         qizhenController.completeEscape();
       }
     });
-  }, [canteenController, events, qizhenController, store, theaterController]);
+  }, [batteryController, canteenController, events, qizhenController, store, theaterController]);
 
   const completeQizhenRainRescueCinematic = useCallback((result: QizhenRainRescueCinematicResult) => {
     setQizhenRainRescueCinematicOpen(false);
@@ -2522,7 +2529,7 @@ export function RpgGameHost({
           </div>
         ) : null}
 
-        {showTaskBar && !assetLoadBlocked && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen
+        {showTaskBar && !fishingSession && !assetLoadBlocked && !canteenExclusiveActive && !chapter4OverlayBlocked && !photoSessionOpen
           && !qizhenRainRescueCinematicOpen && (!chapter4MazeActive || chapter4MazeUiActive) ? (
           <QuestTaskBar
             state={state}

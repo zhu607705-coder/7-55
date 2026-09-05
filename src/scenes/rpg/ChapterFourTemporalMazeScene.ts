@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import type {
   ChapterFourFactId,
   ChapterFourLightZoneId,
@@ -212,6 +213,7 @@ interface ForegroundDefinition {
   sourceAnnotationId?: string;
   maskBounds: MapRect;
   baselineY: number;
+  playerRevealAlpha?: number;
   renderMode: "foot_behind_baseline";
 }
 interface LayoutPoint { id?: string; x: number; y: number; facing?: "up" | "down" }
@@ -659,6 +661,7 @@ interface AppliedForeground {
   sourceAnnotationId?: string;
   maskBounds: MapRect;
   baselineY: number;
+  playerRevealAlpha?: number;
   renderMode: "foot_behind_baseline";
   image: Phaser.GameObjects.Image;
 }
@@ -675,6 +678,7 @@ interface PreparedForeground {
   worldBounds: MapRect;
   localBounds: MapRect;
   baselineY: number;
+  playerRevealAlpha?: number;
   plateId: ChapterFour755PlateId;
 }
 interface PreparedPlateGroup {
@@ -1588,6 +1592,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.syncProjection(true);
     this.syncMainEntranceDoorRuntime(true);
     this.syncMainEntranceForegroundDepth();
+    this.syncWallFaceOcclusion();
     this.refreshProximity();
     this.bindBridgeEvents();
     const checkpoint = state.rpgCheckpoint.startsWith("c4_")
@@ -1629,6 +1634,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
     this.syncStoryInputLock();
     this.syncMainEntranceDoorRuntime();
     this.syncMainEntranceForegroundDepth();
+    this.syncWallFaceOcclusion();
     if (this.alumniPanel) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
@@ -1872,6 +1878,17 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
       fixedForeground
         .setDepth(MAIN_ENTRANCE_OCCLUSION_DEPTH)
         .setVisible(runtimeOwnsOpening);
+    }
+  }
+
+  private syncWallFaceOcclusion(): void {
+    const footY = (this.player.body as Phaser.Physics.Arcade.Body | undefined)?.bottom ?? this.player.y;
+    for (const visual of this.appliedForegrounds) {
+      if (visual.playerRevealAlpha === undefined) continue;
+      const behind = visual.floor === this.currentFloor && footY <= visual.baselineY + 0.01;
+      // A same-source foreground blends only the covered character pixels with the wall.
+      visual.image.setDepth(behind ? PLAYER_TOP_DEPTH + 1 : PLAYER_DEPTH_BASE + visual.baselineY)
+        .setAlpha(behind ? 1 - visual.playerRevealAlpha : 1);
     }
   }
 
@@ -3219,6 +3236,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           sourceAnnotationId: definition.sourceAnnotationId,
           maskBounds: definition.worldBounds,
           baselineY: definition.baselineY,
+          playerRevealAlpha: definition.playerRevealAlpha,
           renderMode: "foot_behind_baseline",
           image
         };
@@ -3462,6 +3480,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           worldBounds: offsetRect(definition.maskBounds, floor.offsetX),
           localBounds: { ...definition.maskBounds },
           baselineY: definition.baselineY,
+          playerRevealAlpha: definition.playerRevealAlpha,
           plateId
         });
       }
@@ -10086,6 +10105,7 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
   }
 
   private publishDebug(): void {
+    if (deferRpgRuntimeDebugCapture(() => this.publishDebug())) return;
     const state = this.bridge.getState();
     const floor = getFloor(this.currentFloor);
     const body = this.player.body as Phaser.Physics.Arcade.Body | undefined;
@@ -10588,9 +10608,14 @@ export class ChapterFourTemporalMazeScene extends Phaser.Scene {
           renderMode: visual.renderMode,
           depth: visual.image.depth,
           visible: visual.image.visible,
-          occludesPlayer: visual.id === MAIN_ENTRANCE_FOREGROUND_ID
-            && visual.floor === this.currentFloor
-            && (body?.bottom ?? this.player.y) < visual.baselineY
+          playerRevealAlpha: visual.playerRevealAlpha ?? null,
+          occludesPlayer: visual.floor === this.currentFloor
+            && visual.image.depth > this.player.depth
+            && Phaser.Geom.Intersects.RectangleToRectangle(
+              this.player.getBounds(),
+              new Phaser.Geom.Rectangle(visual.maskBounds.x, visual.maskBounds.y,
+                visual.maskBounds.width, visual.maskBounds.height)
+            )
         }))
       }
     });

@@ -1,9 +1,9 @@
+import { lazy, type ComponentType } from "react";
 import { ScenePlaceholder, type SceneComponentProps } from "../../components/ScenePlaceholder";
 import type { SceneId } from "../../core/types";
 import { AlarmScene } from "./P00_Alarm";
 import { WakeScene } from "./P01_Desktop";
 import { CampusCardScene } from "./P04_CampusCard";
-import { Cc98Scene } from "./P02_CC98";
 import { TiyiScene } from "./P06_Tiyi";
 import { WeatherScene } from "./P07_Weather";
 import { SettingsScene } from "./P08_Settings";
@@ -15,8 +15,11 @@ import { WechatScene } from "./P14_Wechat";
 import { ZjudingScene } from "./P15_Zjuding";
 import { PhotosScene } from "./P18_Photos";
 import { ClockScene } from "./P19_Clock";
-import { TimelineRecoveryScene } from "./P20_TimelineRecovery";
-import { VoiceMemosScene } from "./P21_VoiceMemos";
+import { loadCc98Scene, loadTimelineRecoveryScene, loadVoiceMemosScene } from "./PhoneScenePreload";
+
+const Cc98Scene = lazy(loadCc98Scene);
+const TimelineRecoveryScene = lazy(loadTimelineRecoveryScene);
+const VoiceMemosScene = lazy(loadVoiceMemosScene);
 
 const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   alarm: {
@@ -89,7 +92,7 @@ const SCENE_META: Record<SceneId, { label: string; contract: string }> = {
   }
 };
 
-const REAL_SCENES: Partial<Record<SceneId, (props: SceneComponentProps) => JSX.Element>> = {
+const REAL_SCENES: Partial<Record<SceneId, ComponentType<SceneComponentProps>>> = {
   alarm: AlarmScene,
   desktop: WakeScene,
   phone_home: PhoneHomeScene,

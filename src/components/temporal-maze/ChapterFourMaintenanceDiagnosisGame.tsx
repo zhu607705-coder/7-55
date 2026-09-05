@@ -41,8 +41,8 @@ export function ChapterFourMaintenanceDiagnosisGame({
       <section className="chapter4-maintenance-diagnosis">
         <header>
           <p>22:45 · 维修记录</p>
-          <h2 id="chapter4-maintenance-diagnosis-title">根据三处现象判断故障原因</h2>
-          <span>每项现象选择一个原因，提交前可以改选。</span>
+          <h2 id="chapter4-maintenance-diagnosis-title">先查故障，再填报修单</h2>
+          <span>每种现象选一个原因。写错还能改，总比再报一次强。</span>
         </header>
         <div className="chapter4-maintenance-diagnosis__observations">
           {SYMPTOMS.map((symptom, index) => (

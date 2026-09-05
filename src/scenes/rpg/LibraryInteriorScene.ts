@@ -1,4 +1,6 @@
+import { preloadRpgImage, preloadRpgSpriteSheet } from "./RpgAssetLoader";
 import Phaser from "phaser";
+import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.png";
 import libraryFrontDeskStaffSheetUrl from "../../assets/rpg/npcs/library/front_desk_staff_2frame.png";
 import libraryFrontDeskStampUrl from "../../assets/rpg/props/library_front_desk_stamp_v01.png";
@@ -22,7 +24,6 @@ import { formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import { createRpgDoorForeground, updateRpgDoorForeground } from "./RpgInteriorDoor";
 import {
-  getRpgDropBounds,
   isPlayerWithinRpgTarget,
   resolveRpgItemDrop
 } from "./RpgInteractionContract";
@@ -109,11 +110,6 @@ interface MarkerParts {
   glyph: Phaser.GameObjects.Text;
 }
 
-interface LibraryDropGuideParts {
-  target: LibraryInteractionTarget;
-  targetOutline: Phaser.GameObjects.Rectangle;
-}
-
 type EntranceDoorMotion = "closed" | "opening" | "open" | "closing";
 type ShelfRevealPhase = "idle" | "shaking" | "sliding" | "paper" | "complete";
 type FrontDeskStampMotion = "idle" | "receiving" | "checking" | "stamping" | "returning" | "complete";
@@ -129,7 +125,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private playerAnimator!: RpgPlayerAnimator;
   private promptText!: Phaser.GameObjects.Text;
   private markers = new Map<LibraryInteractionTargetId, MarkerParts>();
-  private dropGuides = new Map<LibraryInteractionTargetId, LibraryDropGuideParts>();
   private backpack!: Phaser.GameObjects.Container;
   private backpackClearPatch!: Phaser.GameObjects.Image;
   private backpackShadow!: Phaser.GameObjects.Ellipse;
@@ -153,7 +148,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private frontDeskScanLine!: Phaser.GameObjects.Rectangle;
   private frontDeskStampStatusText!: Phaser.GameObjects.Text;
   private frontDeskStampService!: Phaser.GameObjects.Container;
-  private frontDeskStampHitFrame!: Phaser.GameObjects.Rectangle;
   private frontDeskReport!: Phaser.GameObjects.Container;
   private frontDeskStampHead!: Phaser.GameObjects.Image;
   private frontDeskStampMark!: Phaser.GameObjects.Text;
@@ -192,16 +186,16 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
   preload(): void {
     if (!this.textures.exists(LIBRARY_INTERIOR_MAP_KEY)) {
-      this.load.image(LIBRARY_INTERIOR_MAP_KEY, libraryInteriorMapUrl);
+      preloadRpgImage(this, LIBRARY_INTERIOR_MAP_KEY, libraryInteriorMapUrl);
     }
     if (!this.textures.exists(LIBRARY_FRONT_DESK_STAFF_SHEET_KEY)) {
-      this.load.spritesheet(LIBRARY_FRONT_DESK_STAFF_SHEET_KEY, libraryFrontDeskStaffSheetUrl, {
+      preloadRpgSpriteSheet(this, LIBRARY_FRONT_DESK_STAFF_SHEET_KEY, libraryFrontDeskStaffSheetUrl, {
         frameWidth: 96,
         frameHeight: 128
       });
     }
     if (!this.textures.exists(LIBRARY_FRONT_DESK_STAMP_KEY)) {
-      this.load.image(LIBRARY_FRONT_DESK_STAMP_KEY, libraryFrontDeskStampUrl);
+      preloadRpgImage(this, LIBRARY_FRONT_DESK_STAMP_KEY, libraryFrontDeskStampUrl);
     }
     preloadRpgPlayerTextures(this);
   }
@@ -247,7 +241,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     // The authored furniture and devices are the interaction affordances.
     // Floating target badges stay disabled to keep the source image readable.
-    this.createDropGuides();
     this.createHud();
     this.syncWorldFromState();
     this.bridge.setRpgLocation("library_interior", checkpoint);
@@ -303,9 +296,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     if (entranceRecordOpen) {
       this.promptText.setVisible(false);
       this.markers.forEach((marker) => marker.container.setVisible(false));
-      this.dropGuides.forEach((guide) => {
-        guide.targetOutline.setVisible(false);
-      });
       const confirmRequested = keyboardInteract
         || Phaser.Input.Keyboard.JustDown(this.enterKey)
         || this.interactRequested;
@@ -624,21 +614,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.updateSeatStatus(puzzle.backpackEvicted);
     }
     this.targetShelfTag.setText(puzzle.callNumberCollected || puzzle.archivedRuleCollected ? "I247.55" : "I247.??");
-    this.syncDropGuides(activeTargets, selectedItem);
-  }
-
-  private syncDropGuides(
-    activeTargets: readonly LibraryInteractionTarget[],
-    selectedItem: ItemId | null
-  ): void {
-    const activeIds = new Set(activeTargets.map((target) => target.id));
-    this.dropGuides.forEach((guide) => {
-      const visible = selectedItem === guide.target.acceptedItem && activeIds.has(guide.target.id);
-      guide.targetOutline.setVisible(visible);
-      if (!visible) return;
-      const ready = isPlayerWithinRpgTarget(guide.target, this.player.x, this.player.y);
-      guide.targetOutline.setStrokeStyle(ready ? 3 : 2, ready ? 0x63e58b : 0x72dcff, 0.92);
-    });
   }
 
   private getContextText(targetId: LibraryInteractionTargetId, state: GameState): string {
@@ -706,6 +681,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private publishRuntimeDebug(activeTargets: readonly LibraryInteractionTarget[]): void {
+    if (deferRpgRuntimeDebugCapture(() => this.publishRuntimeDebug(activeTargets))) return;
     const state = this.bridge.getState();
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
@@ -1610,25 +1586,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     });
   }
 
-  private createDropGuides(): void {
-    LIBRARY_INTERACTION_TARGETS
-      .filter((target) => target.acceptedItem)
-      .forEach((target) => {
-        const bounds = getRpgDropBounds(target);
-        const targetOutline = this.add.rectangle(
-          target.x,
-          target.y,
-          bounds.width,
-          bounds.height,
-          0x000000,
-          0
-        ).setStrokeStyle(2, 0x72dcff, 0.92)
-          .setDepth(4960)
-          .setVisible(false);
-        this.dropGuides.set(target.id, { target, targetOutline });
-      });
-  }
-
   private createHud(): void {
     this.promptText = this.add.text(RPG_HUD_LAYOUT.centerX, RPG_HUD_LAYOUT.promptBottomY, "", {
       color: "#fff7df",
@@ -1839,11 +1796,9 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     hitTarget
       .on("pointerover", () => {
-        this.entranceRecordScreen.setStrokeStyle(3, 0xcfe7a6, 1);
         this.entranceRecordDevice.setScale(1.02);
       })
       .on("pointerout", () => {
-        this.entranceRecordScreen.setStrokeStyle(2, 0x6f9e91, 0.9);
         this.entranceRecordDevice.setScale(1);
       })
       .on("pointerdown", () => {
@@ -2085,8 +2040,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     ).setDepth(728);
 
     const target = getLibraryTarget("front_desk");
-    this.frontDeskStampHitFrame = this.add.rectangle(0, 8, target.dropWidth ?? 116, target.dropHeight ?? 86, 0x5ed68d, 0)
-      .setStrokeStyle(3, 0x75dcad, 0);
     const statusPlate = this.add.rectangle(51, -40, 92, 22, 0x173b35, 0.92)
       .setStrokeStyle(2, 0x7fa89b, 0.9);
     this.frontDeskStampIndicator = this.add.circle(14, -40, 4, 0xc96a5e, 1)
@@ -2140,7 +2093,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
       LIBRARY_FRONT_DESK_STAMP_POSITION.x,
       LIBRARY_FRONT_DESK_STAMP_POSITION.y,
       [
-      this.frontDeskStampHitFrame,
       statusPlate,
       this.frontDeskStampIndicator,
       this.frontDeskStampStatusText,
@@ -2162,8 +2114,6 @@ export class LibraryInteriorScene extends Phaser.Scene {
     };
 
     hitTarget
-      .on("pointerover", () => this.frontDeskStampHitFrame.setStrokeStyle(3, 0x75dcad, 0.9))
-      .on("pointerout", () => this.frontDeskStampHitFrame.setStrokeStyle(3, 0x75dcad, 0))
       .on("pointerdown", interactWithFrontDesk);
     this.frontDeskStaff
       .setInteractive({ useHandCursor: true })

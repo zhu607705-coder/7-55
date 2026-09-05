@@ -143,7 +143,7 @@ export function ChapterFourInsertedPuzzleGame({
             ) : operationLocked ? (
               <div className="chapter4-inserted-puzzle__locked" role="status">
                 <strong>缺少可校准底片</strong>
-                <span>先在 301 的胶片索引中取出旧导视胶片；两处调查仍可按任意顺序打开查看。</span>
+                <span>扫描台里还没放底片。301 的索引抽屉存着旧导视胶片。</span>
               </div>
             ) : observationOnly ? (
               <ObservationTrace puzzleId={puzzleId} />
@@ -175,7 +175,7 @@ export function ChapterFourInsertedPuzzleGame({
         </div>
 
         <footer className="chapter4-inserted-puzzle__footer">
-          <span>{observationOnly ? "线索会保留在本次调查记录中；关闭后可直接切换模式。" : "当前装置允许反复调整，提交失败不会重置。"}</span>
+          <span>{observationOnly ? "痕迹已记下，可以关掉再动手试。" : "可以反复调整，核对失败会保留当前摆放。"}</span>
           {completed || observationOnly || operationLocked ? (
             <button type="button" disabled={pending} onClick={onClose}>返回现场</button>
           ) : (

@@ -4,6 +4,7 @@ import {
   type RpgSpatialInteractionTarget
 } from "./RpgInteractionContract";
 import { RPG_PLAYER_DISPLAY_SCALE, RPG_PLAYER_FRAME_HEIGHT } from "./RpgPlayerTextures";
+import { THEATER_CHARGING_STATION } from "../../core/PhoneChargingStation";
 
 export type TheaterProgramId = "opening" | "spotlight" | "finale";
 export type TheaterMode = "light" | "dark";
@@ -80,7 +81,7 @@ export const THEATER_OCCLUSION_RECTS: readonly TheaterOcclusionRect[] = [
   { id: "ticket_counter_front", left: 1255, top: 679, right: 1475, bottom: 850, sortY: 850 }
 ] as const;
 
-export type TheaterTargetKind = "poster" | "kiosk" | "gate" | "program" | "console" | "prop" | "scanner" | "vent" | "exit";
+export type TheaterTargetKind = "poster" | "kiosk" | "gate" | "program" | "console" | "prop" | "scanner" | "vent" | "exit" | "charger";
 
 export interface TheaterInteractionTarget extends RpgSpatialInteractionTarget {
   kind: TheaterTargetKind;
@@ -88,6 +89,7 @@ export interface TheaterInteractionTarget extends RpgSpatialInteractionTarget {
 }
 
 export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = [
+  { ...THEATER_CHARGING_STATION, kind: "charger" },
   {
     id: "theater_poster",
     label: "入口海报玻璃",

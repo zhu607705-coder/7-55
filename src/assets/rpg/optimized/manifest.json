@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "encoding": "webp-lossless-exact",
+  "assets": [
+    {
+      "source": "src/assets/rpg/campus/zijingang_campus_plate.png",
+      "file": "src/assets/rpg/optimized/campus__zijingang_campus_plate.webp",
+      "sourceSha256": "57e27997d0c24a77dd758869bcc1bab8665b10496a77ec0f802986461ceb116d",
+      "sha256": "2f89d1efe6febd7a8be9a9b895b35bec3baba741f8320d04fd98f8ab5f6a6245",
+      "sourceBytes": 24538006,
+      "bytes": 17288460
+    },
+    {
+      "source": "src/assets/rpg/campus/zijingang_campus_loop_panorama.png",
+      "file": "src/assets/rpg/optimized/campus__zijingang_campus_loop_panorama.webp",
+      "sourceSha256": "504b0fdc6e846a2e5b4214b327a93c03b720b6ea7e48acbfa7804acbdd56cfb6",
+      "sha256": "7ddc8461f7b14bb2f74534740c57dd30007343a3d8a387a5aca8d28a059e4ae3",
+      "sourceBytes": 23083200,
+      "bytes": 18472256
+    },
+    {
+      "source": "src/assets/rpg/interiors/dorm_hub.png",
+      "file": "src/assets/rpg/optimized/interiors__dorm_hub.webp",
+      "sourceSha256": "361f857e028b5d03defdaba9befd1e3ac0462133ca48a73f4e24c623a8db7519",
+      "sha256": "b3d5523881928b693f045628fdfbb31b485f387b57d0f046fd6aebfd1f160f9f",
+      "sourceBytes": 2256027,
+      "bytes": 1760088
+    },
+    {
+      "source": "src/assets/rpg/interiors/library_interior.png",
+      "file": "src/assets/rpg/optimized/interiors__library_interior.webp",
+      "sourceSha256": "9c17066c0edfdbaa53ff3025fbcd473129e54106b3a8452b465954999e22ee2b",
+      "sha256": "aa2f85f080addca715a2a34ea0c9bda0c08f61791f283eff5bb015d1a602d1f2",
+      "sourceBytes": 2621767,
+      "bytes": 1962660
+    },
+    {
+      "source": "src/assets/rpg/interiors/canteen_interior.png",
+      "file": "src/assets/rpg/optimized/interiors__canteen_interior.webp",
+      "sourceSha256": "e7ae6722e6ae599ab50edfca033e5879f0520f6879597500b366442d8483afb2",
+      "sha256": "294affec9ca3210e3ac22abc93f20d7cb9acd67793ebf25df560afd6325632ad",
+      "sourceBytes": 2639288,
+      "bytes": 2033626
+    },
+    {
+      "source": "src/assets/rpg/interiors/theater_interior.png",
+      "file": "src/assets/rpg/optimized/interiors__theater_interior.webp",
+      "sourceSha256": "8de37e1976c36c637b3022df76ce52d81b31a40ce9bbf64a7d82255fd5c9f5d3",
+      "sha256": "1a12bcf2ac867358f3cd1859899f26b4b21ce121a0f1f5bb953bc623b932b457",
+      "sourceBytes": 2084876,
+      "bytes": 1622174
+    },
+    {
+      "source": "src/assets/rpg/interiors/qizhen_lake_dock.png",
+      "file": "src/assets/rpg/optimized/interiors__qizhen_lake_dock.webp",
+      "sourceSha256": "c9d66e2b036a6d925a56feb65b5a0b65f29476ea5bcee3786927d5a74dab1351",
+      "sha256": "2da151bea50dc992bba894f6867cded1cc77191dde3eb37b0eeca61c4bb74710",
+      "sourceBytes": 2567407,
+      "bytes": 1962208
+    },
+    {
+      "source": "src/assets/rpg/interiors/qizhen_lake_dock_no_sign.png",
+      "file": "src/assets/rpg/optimized/interiors__qizhen_lake_dock_no_sign.webp",
+      "sourceSha256": "aa8d92483ffd86875a021123a876217dfa052cb2abe425b8a5ed1fc3b41d5f1d",
+      "sha256": "ad6b0c935d661e790a70736f84f67235a62f6476e997bbeb0e80f35cbc081ba1",
+      "sourceBytes": 2536147,
+      "bytes": 1960390
+    },
+    {
+      "source": "src/assets/rpg/interiors/qizhen_lake_open_water.png",
+      "file": "src/assets/rpg/optimized/interiors__qizhen_lake_open_water.webp",
+      "sourceSha256": "da1fb9f66960af061e194643ed4b7d72095a6cd0b28f3102c9e1a0520d33d72e",
+      "sha256": "c65df6f1f9007bcf067f791c32d0cb7b68f7757f8679dd69996c4cf72727e727",
+      "sourceBytes": 2712494,
+      "bytes": 2109992
+    },
+    {
+      "source": "src/assets/rpg/interiors/qizhen_lake_channel.png",
+      "file": "src/assets/rpg/optimized/interiors__qizhen_lake_channel.webp",
+      "sourceSha256": "6c30a174aba3d26269c79671db14f77c701fddbf1b94bd16fb37a91950ef39d3",
+      "sha256": "f89170ae8d23c2dec7de5030d8ce73e16673d6edc8a699d95aa13e6ee723d00b",
+      "sourceBytes": 2771284,
+      "bytes": 2165914
+    },
+    {
+      "source": "src/assets/rpg/interiors/qizhen_lake_swan_cove.png",
+      "file": "src/assets/rpg/optimized/interiors__qizhen_lake_swan_cove.webp",
+      "sourceSha256": "061faeef570be075c284449d289493025ffcbd13306487211409d2b21fda8912",
+      "sha256": "a539367940fa68805b083c48ae1f32ae1eb44611920deba230debe8f0a37a240",
+      "sourceBytes": 2701645,
+      "bytes": 2104984
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/base/a1.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__base__a1.webp",
+      "sourceSha256": "0df950f034d70b57429239871b5977acbd546b960fa0b89918b3718665f485e3",
+      "sha256": "4c52fd89df325cbbb2c499fbd3d7980e23b67352c93d8b5daab6ff88eee64db4",
+      "sourceBytes": 2398705,
+      "bytes": 1801520
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/base/a2.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__base__a2.webp",
+      "sourceSha256": "b1d09d66f13e4a0c63a34ff6eff5a3f446c6925061e8cb421f437e5ac6e7fb04",
+      "sha256": "c77dc9b5f7d001e1cfbdcba691cd93eb851fb90fc4a2e855ca6223af61e042f2",
+      "sourceBytes": 2409677,
+      "bytes": 1842386
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/base/a3.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__base__a3.webp",
+      "sourceSha256": "3077b3f6a2f16d97ecee866c516f1fd80341889f7a38779cc892680d5ba0a02e",
+      "sha256": "f42439a4502d325f83a05997c7b3732b98eeaecc83608784799bb9f946298636",
+      "sourceBytes": 2243422,
+      "bytes": 1706812
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a1_0754_blackout.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_0754_blackout.webp",
+      "sourceSha256": "47a72533a5312d65fe6961b430a0d08216af0aa18d4deb2ce4d586325ea0eef7",
+      "sha256": "d54a1e48da37bf5faf75573101df5b65f932b3b0648e765c1ac556cc04170ef9",
+      "sourceBytes": 1618195,
+      "bytes": 1236750
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a1_0755_morning.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_0755_morning.webp",
+      "sourceSha256": "ce7922dc71b68bf100b9952adb385e1cfa685b8bda55b3e9499b0a056b013db7",
+      "sha256": "8d5c6e20aa59d642867893600836417f3688acbd576471e4fbec86ae257b522c",
+      "sourceBytes": 2201113,
+      "bytes": 1680800
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a1_1225_bakery.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_1225_bakery.webp",
+      "sourceSha256": "6400a796a87ad3b98247560e1c9f1bd3b94bc408a9584284f661d7a645383f44",
+      "sha256": "7da904f76ba2f2b5a498e512632595de1d35c6aefc26adacf374700f8a8e9422",
+      "sourceBytes": 3802172,
+      "bytes": 1818880
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a1_2245_maintenance.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_2245_maintenance.webp",
+      "sourceSha256": "8059218cf9e49bbcda71bb34307adae2345b1bbcd2e592f65cd71c8fee27b2a3",
+      "sha256": "ad69f076e59a1d2c94b10aceb9b45d7e89840e7d250d42ce263d8cb328b7f4b3",
+      "sourceBytes": 1901936,
+      "bytes": 1466632
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a1_2245_opening.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a1_2245_opening.webp",
+      "sourceSha256": "722c89e62b8b3efdd83deacf7ca90d9950f387c3b05dd813f24ad02f8551d47e",
+      "sha256": "55f3c65ca56bab24b987e670c842079458fa3383792c8b56023fd1b68c619e78",
+      "sourceBytes": 3112902,
+      "bytes": 1470200
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a2_0754_chase.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a2_0754_chase.webp",
+      "sourceSha256": "9444e7bc9ac33fb73166134f54e3658d7151a0c476252716df52a9ab05d086dd",
+      "sha256": "6a27efd0a3158543f97d0d5917ea4a1b5a9fd71c97dd932f782d420a43ff29aa",
+      "sourceBytes": 1673981,
+      "bytes": 1326422
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a2_1850_evening.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a2_1850_evening.webp",
+      "sourceSha256": "52621f2fffb2273991a58f534198f8e5fbbeac26dc5cb3631e72658402830b0f",
+      "sha256": "ad84e66891b09277109a5877b1b87586c8887c730c9d61510d2a1e44b60049cb",
+      "sourceBytes": 2240196,
+      "bytes": 1742164
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a2_202_final_minute.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a2_202_final_minute.webp",
+      "sourceSha256": "171f05d4762794ef9d96db04a6c05ff24535a817639a336caea19760ef66a5e1",
+      "sha256": "7056c843a87e96d24c3d1fec37647ff6156042bcca91982ec6f7080efede1fe8",
+      "sourceBytes": 2414650,
+      "bytes": 1304334
+    },
+    {
+      "source": "src/assets/rpg/interiors/finale/chapter4-755/states/a3_1850_reference.png",
+      "file": "src/assets/rpg/optimized/interiors__finale__chapter4-755__states__a3_1850_reference.webp",
+      "sourceSha256": "e577321b077a70428a8819a376f066633fc5875e40431196eedc7160992b0836",
+      "sha256": "7c93acb3af3ace528ce520543420fe1fb23c9dc23b13c3c25b940de3b03da3fc",
+      "sourceBytes": 2151040,
+      "bytes": 1655332
+    }
+  ]
+}

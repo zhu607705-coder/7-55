@@ -143,16 +143,17 @@ export function App() {
 
   useEffect(() => () => setDeveloperInputBlocked(false), []);
 
+  const canWarmRpg = state.runtimeMode === "phone" && access.fullCampusMap
+    && state.currentScene !== "timeline_recovery";
   useEffect(() => {
-    if (state.runtimeMode !== "phone") return undefined;
+    if (!canWarmRpg) return undefined;
     // 3.5 章在玩家确认目的地前不求值第四章 RPG；确认回放后由过渡 Gate
     // 立即预热 A1。其他手机流程则在当前交互的空闲片段预取下一张 RPG 场景。
-    if (state.currentScene === "timeline_recovery") return undefined;
     return scheduleRpgRuntimeWarmup(
       state.rpgScene,
       state.rpgScene === "duan_yongping_temporal_maze" ? "entry" : undefined
     );
-  }, [state.currentScene, state.rpgScene, state.runtimeMode]);
+  }, [canWarmRpg, state.rpgScene]);
 
   const startLibraryStory = useCallback((sequenceId: string) => {
     if (!Object.prototype.hasOwnProperty.call(LIBRARY_STORY_SEQUENCES, sequenceId)) {
@@ -440,7 +441,9 @@ export function App() {
                 showGlobalLayers={false}
                 onTaskNavigate={navigateFromTask}
               >
-                <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
+                <Suspense fallback={<div role="status">加载中…</div>}>
+                  <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
+                </Suspense>
               </PhoneShell>
             </section>
             <section
@@ -507,7 +510,9 @@ export function App() {
   return (
     <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
       <PhoneShell state={state} router={router} events={eventBus} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
-        <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
+        <Suspense fallback={<div role="status">加载中…</div>}>
+          <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
+        </Suspense>
       </PhoneShell>
       {chapterIntro}
       {libraryStoryLayer}
