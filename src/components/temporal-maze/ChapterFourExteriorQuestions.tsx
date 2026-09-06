@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import "../../styles/chapter4-exterior-questions.css";
 import lampDarkUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_dark.png";
 import type {
   ChapterFourZhuPersonAnswerId,

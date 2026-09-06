@@ -5,6 +5,7 @@ import { CHASE_STAIR_HANDOFF_KEY, type ChaseStairHandoff } from "../../modules/C
 import Phaser from "phaser";
 import type { ChapterFourFactId, ChapterFourLightZoneId, ChapterFourRoom204PieceId, ChapterFourRoom204SlotId, GameState, ItemId, RpgCheckpointId, ChapterFourRoom204GroupId, ChapterFourTimeState } from "../../core/types";
 import { DEVELOPER_ACTIVE_KEY, DEVELOPER_SOURCE_KEY } from "../../core/StorageKeys";
+import { readMediaQuery } from "../../core/ClientCompatibility";
 import teachingBuildingElevatorDoorsUrl from "../../assets/rpg/interiors/finale/teaching_building_elevator_doors.png";
 import canteenCounterAuntiesSheetUrl from "../../assets/rpg/npcs/canteen/counter_aunties_2frame.png";
 import frontDeskStaffSheetUrl from "../../assets/rpg/npcs/library/front_desk_staff_2frame.png";
@@ -180,6 +181,7 @@ interface ChapterFourMazeLayout {
   finalChaseRuntime: FinalChaseRuntimeContract;
   finalMinuteRuntime: FinalMinuteRuntimeContract;
   frontDeskRuntime: FrontDeskRuntimeContract;
+  mainEntranceDoorRuntime: MainEntranceDoorRuntimeContract;
   supportNpcRuntimes: SupportNpcRuntimeContract[];
   morningCheckinRuntime: MorningCheckinRuntimeContract;
   floors: LayoutFloor[];
@@ -222,9 +224,9 @@ interface SupportNpcRuntimeContract {
 interface FinalChaseRuntimeContract {
   storyTimeSeconds: 28440;
   playerSpeed: 208;
-  guardSpeed: 196;
+  guardSpeed: 174;
   stableCommittedFramesToArm: 4;
-  startGraceMs: 1200;
+  startGraceMs: 2000;
   maxStepMs: 50;
   transportId: "main_stair";
   restartCheckpoint: "c4_a1_lobby";
@@ -419,7 +421,10 @@ interface MaintenanceRuntimeContract {
     footBox: { width: number; height: number };
   };
   repairedPush: {
-    animationId: "cleaner_push_cart_up";
+    animationId: "cleaner_push_cart";
+    sourceFrameSize: { width: number; height: number };
+    visibleCharacterCrop: MapRect;
+    flipX: boolean;
     from: { x: number; y: number };
     to: { x: number; y: number };
     durationMs: number;
@@ -522,7 +527,8 @@ type StoryPresentation =
   | "bakery_conveyor_stop"
   | "room204_projection"
   | "exterior_door_opening"
-  | "minute_theft";
+  | "minute_theft"
+  | "power_grid_success";
 
 interface ElevatorVisual {
   floor: DisplayFloor;
@@ -537,6 +543,7 @@ interface AppliedForeground {
   sourceAnnotationId?: string;
   maskBounds: MapRect;
   baselineY: number;
+  playerRevealAlpha?: number;
   renderMode: "foot_behind_baseline";
   image: Phaser.GameObjects.Image;
 }
@@ -656,6 +663,8 @@ export const CHAPTER_FOUR_PLATE_TRANSACTION_FAULT_INJECTOR_KEY =
 
 const LAYOUT = mazeLayout as ChapterFourMazeLayout;
 
+const MAIN_ENTRANCE_DOOR_RUNTIME = LAYOUT.mainEntranceDoorRuntime;
+
 const EVIDENCE_DETAILS = Object.freeze(LAYOUT.evidenceDetails);
 
 const FLOOR_SIZE = LAYOUT.worldSize;
@@ -714,6 +723,8 @@ const EXPECTED_MANIFEST_ENTRY_COUNT = 62;
 const EXPECTED_EMPTY_FRAME_COUNT = 1;
 
 const RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS: ReadonlySet<string> = new Set([
+  "a2_room204_disordered_furniture",
+  "a2_room202_recovery_barrier",
   "a1_guard_chase_body",
   "a2_guard_chase_body"
 ]);
@@ -1427,6 +1438,7 @@ private finalMinuteTargetZone: Phaser.GameObjects.Zone | null = null;
 
 private morningCheckinVisuals = new Map<string, {
     fixture: Phaser.GameObjects.Rectangle;
+    details: Phaser.GameObjects.Graphics;
     label: Phaser.GameObjects.Text;
   }>();
 
@@ -1592,7 +1604,7 @@ create(): void {
       `act1-player-${initialSpawn.facing ?? "down"}-0`
     ).setCollideWorldBounds(true);
     configureRpgPlayerSprite(this.player);
-    this.player.setDepth(PLAYER_DEPTH_BASE + initialSpawn.y);
+    this.player.setDepth(chapterFourPlayerDepth(initialSpawn.y));
     this.animator = new RpgPlayerAnimator(this.player, initialSpawn.facing ?? "down");
     this.physics.add.collider(this.player, this.staticObstacles);
     this.platePlayerCollider = this.physics.add.collider(this.player, this.plateObstacles);
@@ -1612,6 +1624,9 @@ create(): void {
     this.createRealityModeVisuals(state.chapter4.mode);
     this.configureCameraForCurrentFloor();
     this.syncProjection(true);
+    this.syncMainEntranceDoorRuntime(true);
+    this.syncMainEntranceForegroundDepth();
+    this.syncWallFaceOcclusion();
     this.refreshProximity();
     this.bindBridgeEvents();
     this.events.on(Phaser.Scenes.Events.RESUME, this.handleSceneResume, this);
@@ -1660,6 +1675,9 @@ update(_time: number, delta: number): void {
     }
     this.syncStoryInputLock();
     this.syncExteriorDoorPresentation();
+    this.syncMainEntranceDoorRuntime();
+    this.syncMainEntranceForegroundDepth();
+    this.syncWallFaceOcclusion();
     if (this.alumniPanel) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
@@ -1723,7 +1741,7 @@ update(_time: number, delta: number): void {
       ? CHAPTER_FOUR_FINAL_CHASE_RULES.playerSpeed
       : PLAYER_SPEED;
     if (movement.lengthSq() > 0) movement.normalize().scale(movementSpeed);
-    this.player.setVelocity(movement.x, movement.y).setDepth(PLAYER_DEPTH_BASE + this.player.y);
+    this.player.setVelocity(movement.x, movement.y).setDepth(chapterFourPlayerDepth(this.player.y));
     this.animator.update(movement, this.time.now);
     this.refreshProximity();
     if (Phaser.Input.Keyboard.JustDown(this.interactKey) || this.interactionRequested) {
@@ -1731,6 +1749,133 @@ update(_time: number, delta: number): void {
     }
     this.interactionRequested = false;
     this.publishDebug();
+  }
+
+private syncMainEntranceDoorRuntime(force = false): void {
+    const plateId = this.appliedPlateIds.A1;
+    if (!this.textures.exists(plateId)) return;
+    if (force || !this.mainEntranceDoor || this.mainEntranceDoorPlateId !== plateId) {
+      this.destroyMainEntranceDoorRuntime();
+      const frames = [
+        [MAIN_ENTRANCE_DOOR_FRAME_NAMES.leftLeaf, MAIN_ENTRANCE_DOOR_RUNTIME.leftLeafSource],
+        [MAIN_ENTRANCE_DOOR_FRAME_NAMES.rightLeaf, MAIN_ENTRANCE_DOOR_RUNTIME.rightLeafSource],
+        [MAIN_ENTRANCE_DOOR_FRAME_NAMES.portalFloor, MAIN_ENTRANCE_DOOR_RUNTIME.portalFloorSource]
+      ] as const;
+      if (!frames.every(([name, source]) => this.ensureMainEntranceDoorFrame(plateId, name, source))) return;
+
+      const floor = getFloor(1);
+      const opening = MAIN_ENTRANCE_DOOR_RUNTIME.openingBounds;
+      this.mainEntranceDoorPortalImages = [this.add.image(
+        floor.offsetX + opening.x,
+        opening.y + opening.height - MAIN_ENTRANCE_DOOR_RUNTIME.portalFloorSource.height,
+        plateId,
+        MAIN_ENTRANCE_DOOR_FRAME_NAMES.portalFloor
+      ).setOrigin(0).setDepth(MAIN_ENTRANCE_DOOR_DEPTH - 2.5)];
+      this.mainEntranceDoorFixedForegrounds = MAIN_ENTRANCE_DOOR_RUNTIME.fixedForegroundBounds.map((bounds) => (
+        this.add.image(floor.offsetX, 0, plateId, "__BASE")
+          .setOrigin(0)
+          .setCrop(bounds.x, bounds.y, bounds.width, bounds.height)
+          .setDepth(MAIN_ENTRANCE_OCCLUSION_DEPTH)
+          .setVisible(false)
+      ));
+      this.mainEntranceDoor = new RpgInteriorDoorRuntime(this, {
+        id: MAIN_ENTRANCE_DOOR_RUNTIME.id,
+        centerX: floor.offsetX + opening.x + opening.width / 2,
+        centerY: opening.y + opening.height / 2,
+        openingWidth: opening.width,
+        openingHeight: opening.height,
+        passableProgress: MAIN_ENTRANCE_DOOR_RUNTIME.passableProgress,
+        durationMs: MAIN_ENTRANCE_DOOR_RUNTIME.durationMs,
+        motion: MAIN_ENTRANCE_DOOR_RUNTIME.motion,
+        motionEase: "Sine.easeInOut",
+        depth: MAIN_ENTRANCE_DOOR_DEPTH,
+        palette: {
+          portal: 0x101923, spill: 0xc9f3ff, leaf: 0x536674,
+          inset: 0x8da4ae, trim: 0x192630, handle: 0xd6b35c
+        },
+        portalAlpha: 0.92,
+        spillAlphaClosed: 0,
+        spillAlphaOpen: 0.14,
+        leafTextures: {
+          left: { key: plateId, frame: MAIN_ENTRANCE_DOOR_FRAME_NAMES.leftLeaf },
+          right: { key: plateId, frame: MAIN_ENTRANCE_DOOR_FRAME_NAMES.rightLeaf }
+        }
+      }, readMediaQuery("(prefers-reduced-motion: reduce)"));
+      this.mainEntranceDoorBarrier = this.add.rectangle(
+        floor.offsetX + opening.x + opening.width / 2, opening.y + 5, opening.width, 10, 0x000000, 0
+      ).setVisible(false);
+      this.physics.add.existing(this.mainEntranceDoorBarrier, true);
+      this.mainEntranceDoorBarrierCollider = this.physics.add.collider(this.player, this.mainEntranceDoorBarrier);
+      this.mainEntranceDoorPlateId = plateId;
+    }
+
+    const door = this.mainEntranceDoor;
+    if (!door) return;
+    const floor = getFloor(1);
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const foot = { x: (playerBody?.center.x ?? this.player.x) - floor.offsetX, y: playerBody?.bottom ?? this.player.y };
+    const motion = door.getDebugSnapshot().state;
+    const trigger = motion === "closed" ? MAIN_ENTRANCE_DOOR_RUNTIME.approachBounds : MAIN_ENTRANCE_DOOR_RUNTIME.holdOpenBounds;
+    this.mainEntranceDoorOpenRequested = this.currentFloor === 1 && pointInsideRect(foot, trigger);
+    if (this.mainEntranceDoorOpenRequested) door.open(); else door.close();
+    door.updateActorOcclusion(this.player);
+    const barrierBody = this.mainEntranceDoorBarrier?.body as Phaser.Physics.Arcade.StaticBody | undefined;
+    if (barrierBody) barrierBody.enable = this.currentFloor === 1 && !door.getDebugSnapshot().passable;
+  }
+
+private ensureMainEntranceDoorFrame(plateId: ChapterFour755PlateId, name: string, source: Readonly<MapRect>): boolean {
+    const texture = this.textures.get(plateId);
+    if (texture.has(name)) {
+      const frame = texture.get(name);
+      const matches = frame.cutX === source.x && frame.cutY === source.y
+        && frame.cutWidth === source.width && frame.cutHeight === source.height;
+      if (!matches) this.persistentContractFailures.add(`main_entrance_frame_mismatch:${plateId}:${name}`);
+      return matches;
+    }
+    const frame = texture.add(name, 0, source.x, source.y, source.width, source.height);
+    if (frame) return true;
+    this.persistentContractFailures.add(`main_entrance_frame_registration:${plateId}:${name}`);
+    return false;
+  }
+
+private destroyMainEntranceDoorRuntime(): void {
+    this.mainEntranceDoor?.destroy();
+    this.mainEntranceDoor = null;
+    this.mainEntranceDoorBarrierCollider?.destroy();
+    this.mainEntranceDoorBarrierCollider = null;
+    this.mainEntranceDoorBarrier?.destroy();
+    this.mainEntranceDoorBarrier = null;
+    for (const image of this.mainEntranceDoorPortalImages) image.destroy();
+    for (const image of this.mainEntranceDoorFixedForegrounds) image.destroy();
+    this.mainEntranceDoorPortalImages = [];
+    this.mainEntranceDoorFixedForegrounds = [];
+    this.mainEntranceDoorPlateId = null;
+    this.mainEntranceDoorOpenRequested = false;
+  }
+
+private syncMainEntranceForegroundDepth(): void {
+    const entrance = this.appliedForegrounds.find((visual) => visual.id === MAIN_ENTRANCE_FOREGROUND_ID);
+    if (!entrance) return;
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const footY = playerBody?.bottom ?? this.player.y;
+    const behind = this.currentFloor === entrance.floor && footY < MAIN_ENTRANCE_DOOR_RUNTIME.sortY;
+    const runtimeOwnsOpening = (this.mainEntranceDoor?.getDebugSnapshot().state ?? "closed") !== "closed";
+    entrance.image.setDepth(behind && !runtimeOwnsOpening
+      ? MAIN_ENTRANCE_OCCLUSION_DEPTH
+      : PLAYER_DEPTH_BASE + entrance.baselineY);
+    for (const foreground of this.mainEntranceDoorFixedForegrounds) {
+      foreground.setDepth(MAIN_ENTRANCE_OCCLUSION_DEPTH).setVisible(runtimeOwnsOpening);
+    }
+  }
+
+private syncWallFaceOcclusion(): void {
+    const footY = (this.player.body as Phaser.Physics.Arcade.Body | undefined)?.bottom ?? this.player.y;
+    for (const visual of this.appliedForegrounds) {
+      if (visual.playerRevealAlpha === undefined) continue;
+      const behind = visual.floor === this.currentFloor && footY <= visual.baselineY + 0.01;
+      visual.image.setDepth(behind ? PLAYER_TOP_DEPTH + 1 : PLAYER_DEPTH_BASE + visual.baselineY)
+        .setAlpha(behind ? 1 - visual.playerRevealAlpha : 1);
+    }
   }
 
 private bindBridgeEvents(): void {
@@ -1856,13 +2001,19 @@ private bindBridgeEvents(): void {
 
 private validateFrameRegistrationReport(report: ChapterFour755FrameRegistrationReport): void {
     for (const failure of report.contractFailures) this.persistentContractFailures.add(failure);
-    if (CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT !== EXPECTED_MANIFEST_ENTRY_COUNT
-      || report.manifestFrameCount !== EXPECTED_MANIFEST_ENTRY_COUNT) {
+    const allSpritesheetsLoaded = Object.values(CHAPTER_FOUR_755_SPRITESHEETS)
+      .every((sheet) => this.textures.exists(sheet.id));
+    if (CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT !== EXPECTED_MANIFEST_ENTRY_COUNT) {
+      this.persistentContractFailures.add(
+        `manifest_source_frame_count:${CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT}/${EXPECTED_MANIFEST_ENTRY_COUNT}`
+      );
+    }
+    if (allSpritesheetsLoaded && report.manifestFrameCount !== EXPECTED_MANIFEST_ENTRY_COUNT) {
       this.persistentContractFailures.add(
         `manifest_frame_count:${report.manifestFrameCount}/${EXPECTED_MANIFEST_ENTRY_COUNT}`
       );
     }
-    if (report.skippedEmptyFrameCount !== EXPECTED_EMPTY_FRAME_COUNT) {
+    if (allSpritesheetsLoaded && report.skippedEmptyFrameCount !== EXPECTED_EMPTY_FRAME_COUNT) {
       this.persistentContractFailures.add(
         `manifest_empty_frame_count:${report.skippedEmptyFrameCount}/${EXPECTED_EMPTY_FRAME_COUNT}`
       );
@@ -2191,10 +2342,15 @@ private recordCurrentPhaseVisualHintFailure(): void {
   }
 
 private createAlumniHonorWallPortraits(): void {
-    const floor = getFloor(3);
+    if (this.alumniWallObjects.some((object) => object.active)) return;
+    if (CHAPTER_FOUR_ALUMNI_HONOR_WALL.some(
+      (figure) => !this.textures.exists(figure.portraitTextureKey)
+    )) return;
     for (const figure of CHAPTER_FOUR_ALUMNI_HONOR_WALL) {
+      const floor = getFloor(figure.floor);
+      const wallDisplayDepth = PLAYER_DEPTH_BASE + (figure.floor === 1 ? 160 : 840);
       this.textures.get(figure.portraitTextureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
-      if (figure.frameBounds.y < 200) {
+      if ("drawRuntimeFrame" in figure && figure.drawRuntimeFrame) {
         const frame = this.add.rectangle(
           floor.offsetX + rectCenterX(figure.frameBounds),
           rectCenterY(figure.frameBounds),
@@ -2202,7 +2358,7 @@ private createAlumniHonorWallPortraits(): void {
           figure.frameBounds.height,
           0x281f18,
           1
-        ).setStrokeStyle(3, 0xb8964d, 1).setDepth(18);
+        ).setStrokeStyle(3, 0xb8964d, 1).setDepth(wallDisplayDepth);
         this.alumniWallObjects.push(frame);
       }
       const matte = this.add.rectangle(
@@ -2212,14 +2368,31 @@ private createAlumniHonorWallPortraits(): void {
         figure.imageBounds.height,
         0x17191d,
         1
-      ).setDepth(19);
+      ).setDepth(wallDisplayDepth + 1);
       const portrait = this.add.image(
         floor.offsetX + rectCenterX(figure.imageBounds),
         rectCenterY(figure.imageBounds),
         figure.portraitTextureKey
       ).setDisplaySize(figure.imageBounds.width, figure.imageBounds.height)
-        .setDepth(20);
-      this.alumniWallObjects.push(matte, portrait);
+        .setDepth(wallDisplayDepth + 2);
+      const hitTarget = this.add.zone(
+        floor.offsetX + rectCenterX(figure.frameBounds),
+        rectCenterY(figure.frameBounds),
+        Math.max(52, figure.frameBounds.width),
+        Math.max(68, figure.frameBounds.height)
+      ).setDepth(wallDisplayDepth + 3).setInteractive({ useHandCursor: true });
+      hitTarget.on("pointerover", () => {
+        if (this.currentFloor === figure.floor && !this.isStoryInputLocked()) {
+          portrait.setTint(0xffe8a3);
+        }
+      });
+      hitTarget.on("pointerout", () => portrait.clearTint());
+      hitTarget.on("pointerdown", () => {
+        portrait.clearTint();
+        if (this.currentFloor !== figure.floor || this.isStoryInputLocked()) return;
+        this.openAlumniPanel(figure.targetId);
+      });
+      this.alumniWallObjects.push(matte, portrait, hitTarget);
     }
   }
 
@@ -2248,56 +2421,59 @@ private redrawAlumniPanel(): void {
     const figure = this.alumniPanelFigure;
     if (!panel || !figure) return;
     panel.removeAll(true);
-    const backdrop = this.add.rectangle(480, 290, 960, 500, 0x02060b, 0.78)
+    const backdrop = this.add.rectangle(480, 270, 960, 540, 0x02060b, 0.78)
       .setScrollFactor(0)
       .setInteractive();
-    const card = this.add.rectangle(480, 286, 650, 400, 0x101b2b, 0.98)
+    const card = this.add.rectangle(480, 286, 760, 420, 0x101b2b, 0.98)
       .setStrokeStyle(3, 0xe9c34b, 1);
-    const title = this.add.text(205, 108, `${figure.name}  ${figure.years}`, {
+    const title = this.add.text(145, 96, `${figure.name}  ${figure.years}`, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "28px",
       color: "#f6d45a"
     });
-    const role = this.add.text(205, 146, figure.role, {
+    const role = this.add.text(145, 134, figure.role, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "16px",
-      color: "#8fe8ff"
+      color: "#8fe8ff",
+      wordWrap: { width: 650, useAdvancedWrap: true }
     });
-    const portraitMatte = this.add.rectangle(253, 277, 112, 170, 0x1b1d22, 1)
+    const portraitMatte = this.add.rectangle(248, 294, 160, 244, 0x1b1d22, 1)
       .setStrokeStyle(3, 0xb8964d, 1);
-    const portrait = this.add.image(253, 277, figure.portraitTextureKey).setDisplaySize(100, 158);
-    const source = this.add.text(326, 426, `资料依据：${figure.sourceLabel}`, {
+    const portrait = this.add.image(248, 294, figure.portraitTextureKey).setDisplaySize(150, 232);
+    const source = this.add.text(352, 428, `资料依据：${figure.sourceLabel}`, {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "13px",
-      color: "#9ba9b8"
+      color: "#9ba9b8",
+      wordWrap: { width: 430, useAdvancedWrap: true }
     });
-    const close = this.add.text(785, 103, "×", {
+    const close = this.add.text(835, 96, "×", {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "30px",
       color: "#f7f1dc"
     }).setOrigin(0.5).setScrollFactor(0).setInteractive({ useHandCursor: true });
     close.on("pointerdown", () => this.closeAlumniPanel());
     panel.add([backdrop, card, title, role, portraitMatte, portrait, source, close]);
-    panel.add(this.add.text(326, 180, figure.biography.map((line) => `• ${line}`).join("\n\n"), {
+
+    panel.add(this.add.text(352, 184, figure.biography.map((line) => `• ${line}`).join("\n\n"), {
       fontFamily: "'Fusion Pixel', 'Courier New', monospace",
       fontSize: "16px",
       color: "#f7f1dc",
       lineSpacing: 6,
-      wordWrap: { width: 430, useAdvancedWrap: true }
+      wordWrap: { width: 445, useAdvancedWrap: true }
     }));
-    const closeButton = this.add.rectangle(670, 460, 190, 42, 0x315e7c, 1)
+    const actionButton = this.add.rectangle(730, 470, 190, 42, 0x315e7c, 1)
       .setStrokeStyle(2, 0xf6d45a, 1)
       .setScrollFactor(0)
       .setInteractive({ useHandCursor: true });
-    closeButton.on("pointerdown", () => this.closeAlumniPanel());
+    actionButton.on("pointerdown", () => this.closeAlumniPanel());
     panel.add([
-      this.add.text(350, 460, "Space / Enter · 关闭    Esc · 关闭", {
+      this.add.text(352, 470, "Space / Enter · 返回    Esc · 返回", {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "14px",
         color: "#9ba9b8"
       }).setOrigin(0, 0.5),
-      closeButton,
-      this.add.text(670, 460, "关闭", {
+      actionButton,
+      this.add.text(730, 470, "返回地图", {
         fontFamily: "'Fusion Pixel', 'Courier New', monospace",
         fontSize: "16px",
         color: "#fff4bb"
@@ -2367,9 +2543,8 @@ private addPhysicsRect(
 
 private createHud(): void {
     const style: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: "'Fusion Pixel', 'Courier New', monospace",
-      color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 5,
-      shadow: { color: "#07111d", blur: 0, offsetX: 2, offsetY: 2, fill: true }
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
+      color: "#f7f1dc", fontSize: "17px", stroke: "#07111d", strokeThickness: 1
     };
     this.floorCaption = this.add.text(24, 58, "", style).setScrollFactor(0).setDepth(10000);
     this.interactionHint = this.add.text(480, 500, "", {
@@ -2660,7 +2835,7 @@ private stagePlateForegrounds(definitions: readonly PreparedForeground[]): Appli
           id: definition.id
         });
         const image = this.add.image(
-          getFloor(definition.floor).offsetX, 0, definition.plateId
+          getFloor(definition.floor).offsetX, 0, definition.plateId, "__BASE"
         );
         const visual: AppliedForeground = {
           id: definition.id,
@@ -2668,6 +2843,7 @@ private stagePlateForegrounds(definitions: readonly PreparedForeground[]): Appli
           sourceAnnotationId: definition.sourceAnnotationId,
           maskBounds: definition.worldBounds,
           baselineY: definition.baselineY,
+          playerRevealAlpha: definition.playerRevealAlpha,
           renderMode: "foot_behind_baseline",
           image
         };
@@ -2749,15 +2925,15 @@ private stagePlateCollision(
   }
 
 private snapshotBackgroundTextures(): BackgroundTextureSnapshot[] {
-    return FLOORS.map((floor) => {
+    return FLOORS.flatMap((floor) => {
       const image = this.backgrounds.get(floor.displayFloor);
-      if (!image) throw new Error(`background_missing:${floor.displayFloor}`);
-      return {
+      if (!image) return [];
+      return [{
         floor: floor.displayFloor,
         image,
         textureKey: image.texture.key,
         frameName: image.frame.name
-      };
+      }];
     });
   }
 
@@ -2965,6 +3141,7 @@ private preparePlateGroup(
           worldBounds: offsetRect(definition.maskBounds, floor.offsetX),
           localBounds: { ...definition.maskBounds },
           baselineY: definition.baselineY,
+          playerRevealAlpha: definition.playerRevealAlpha,
           plateId: plateIds[delta.storyFloor]
         });
       }
@@ -3143,6 +3320,7 @@ private syncBakeryRuntime(
 private createBakeryRuntime(): void {
     this.destroyBakeryRuntime("runtime_recreate");
     const floor = getFloor(1);
+    const surfaceDepth = this.bakeryCounterSurfaceDepth();
     const targetById = new Map(BAKERY_RUNTIME.targetEntities.map((entry) => [entry.targetId, entry]));
     const lampDefinition = targetById.get("a1_bakery_inspection_lamp");
     const conveyorDefinition = targetById.get("a1_bakery_conveyor_edge");
@@ -3165,7 +3343,7 @@ private createBakeryRuntime(): void {
         bounds.height,
         fillColor,
         fillAlpha
-      ).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) - 1)
+      ).setDepth(surfaceDepth + 10)
         .setStrokeStyle(1, fillColor, 0.72);
       this.bakeryRuntimeTargets.set(definition.targetId, {
         targetId: definition.targetId,
@@ -3189,7 +3367,7 @@ private createBakeryRuntime(): void {
       (visual.sourcePivot.x - visual.sourceCell.x) / visual.sourceCell.width,
       (visual.sourcePivot.y - visual.sourceCell.y) / visual.sourceCell.height
     ).setScale(visual.uniformScale)
-      .setDepth(PLAYER_DEPTH_BASE + visual.pivot.y + 2)
+      .setDepth(surfaceDepth + 12)
       .setVisible(false);
     this.bakeryHourHandSprite = hourSprite;
     this.bakeryRuntimeObjects.push(hourSprite);
@@ -3207,7 +3385,7 @@ private createBakeryRuntime(): void {
       triggerHeight,
       0xffffff,
       0.001
-    ).setDepth(PLAYER_DEPTH_BASE + visual.pivot.y + 3).setVisible(false);
+    ).setDepth(surfaceDepth + 13).setVisible(false);
     this.bakeryRuntimeTargets.set(hourDefinition.targetId, {
       targetId: hourDefinition.targetId,
       entityId: hourDefinition.entityId,
@@ -3222,7 +3400,7 @@ private createBakeryRuntime(): void {
       0xfff3a8,
       0.2
     ).setStrokeStyle(2, 0xfff3a8, 0.9)
-      .setDepth(PLAYER_DEPTH_BASE + rectBottom(hourDefinition.installationBounds) + 3)
+      .setDepth(surfaceDepth + 14)
       .setVisible(false);
     this.bakeryRuntimeObjects.push(this.bakeryHourHandGlint);
     this.bakeryHourHandGlintTween = this.tweens.add({
@@ -3856,7 +4034,7 @@ private ensureMaintenanceRuntime(state: GameState): void {
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_bakery_back_pry_bar",
-      !state.items.shortPryBar && !coverOpened
+      false
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_cleaning_cart_wheel_cover",
@@ -3864,9 +4042,7 @@ private ensureMaintenanceRuntime(state: GameState): void {
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_cleaning_cart_oil_bottle",
-      coverOpened
-        && !state.items.universalLubricatingOil
-        && !gearRepaired
+      false
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_cleaning_cart_wheel",
@@ -3874,12 +4050,10 @@ private ensureMaintenanceRuntime(state: GameState): void {
     );
     this.setPhaseRuntimeTargetVisible(
       "a1_hall_clock_gear",
-      wheelRepaired && !gearRepaired
+      false
     );
-    this.maintenancePryBar?.setVisible(!state.items.shortPryBar && !coverOpened);
-    this.maintenanceOilBottle?.setVisible(
-      coverOpened && !state.items.universalLubricatingOil && !gearRepaired
-    );
+    this.maintenancePryBar?.setVisible(false);
+    this.maintenanceOilBottle?.setVisible(false);
     if (this.maintenanceCoverVisual) {
       this.maintenanceCoverVisual
         .setVisible(!wheelRepaired)
@@ -4069,6 +4243,38 @@ private presentMaintenanceOilReveal(): void {
     });
   }
 
+private presentMaintenanceToolContact(targetId: string, tool: "pry" | "oil"): void {
+    const target = this.phaseRuntimeTargets.get(targetId);
+    if (!target?.boundsObject.active) return;
+    const bounds = target.boundsObject.getBounds();
+    const x = bounds.centerX;
+    const y = bounds.centerY;
+    const contact = this.add.graphics().setPosition(x, y).setDepth(PLAYER_DEPTH_BASE + y + 120);
+    contact.lineStyle(3, 0xffd47b, 0.95);
+    contact.strokeCircle(0, 0, Math.max(12, Math.min(bounds.width, bounds.height) / 2));
+    const implement = this.add.graphics().setPosition(x, y).setDepth(contact.depth + 1);
+    if (tool === "pry") {
+      implement.lineStyle(7, 0xc4d2ce, 1);
+      implement.beginPath();
+      implement.moveTo(-5, 3);
+      implement.lineTo(3, -5);
+      implement.lineTo(42, -35);
+      implement.strokePath();
+    } else {
+      implement.fillStyle(0xffca62, 1);
+      for (let i = 0; i < 3; i += 1) implement.fillCircle((i - 1) * 8, -36 - i * 9, 4);
+    }
+    this.phaseRuntimeObjects.push(contact, implement);
+    this.tweens.add({ targets: contact, alpha: 0, scale: 1.35, duration: 1100, onComplete: () => contact.destroy() });
+    this.tweens.add({
+      targets: implement,
+      ...(tool === "pry" ? { angle: -24 } : { y: y + 34 }),
+      duration: 420,
+      hold: 220,
+      onComplete: () => this.tweens.add({ targets: implement, alpha: 0, duration: 220, onComplete: () => implement.destroy() })
+    });
+  }
+
 private clearMaintenanceOilReveal(): void {
     this.maintenanceOilRevealTween?.remove();
     this.maintenanceOilRevealTween = null;
@@ -4228,48 +4434,276 @@ private validateMaintenanceRuntimeBounds(): void {
     }
   }
 
+private ensureMaintenancePushCharacter(): Phaser.GameObjects.Sprite {
+    const floor = getFloor(1);
+    const push = MAINTENANCE_RUNTIME.repairedPush;
+    if (!this.maintenanceAttemptSprite?.active) {
+      this.maintenanceAttemptSprite = this.add.sprite(
+        floor.offsetX + push.from.x,
+        push.from.y,
+        push.animationId,
+        0
+      );
+      this.phaseRuntimeObjects.push(this.maintenanceAttemptSprite);
+    }
+    return this.maintenanceAttemptSprite.stop()
+      .setTexture(push.animationId, 0)
+      .setOrigin(0.5, 1)
+      .setScale(MAINTENANCE_RUNTIME.cleaner.uniformScale)
+      .setFlipX(push.flipX)
+      .setCrop(
+        push.visibleCharacterCrop.x,
+        push.visibleCharacterCrop.y,
+        push.visibleCharacterCrop.width,
+        push.visibleCharacterCrop.height
+      )
+      .setDepth(PLAYER_DEPTH_BASE + push.from.y + 2);
+  }
+
+private positionMaintenancePushLayers(offsetX: number, offsetY: number): void {
+    const floor = getFloor(1);
+    const push = MAINTENANCE_RUNTIME.repairedPush;
+    const cart = MAINTENANCE_RUNTIME.cleaningCart;
+    const cleaner = MAINTENANCE_RUNTIME.cleaner;
+    this.maintenanceAttemptSprite?.setPosition(
+      floor.offsetX + push.from.x + offsetX,
+      push.from.y + offsetY
+    ).setDepth(PLAYER_DEPTH_BASE + push.from.y + offsetY + 2);
+    this.maintenanceCart?.setPosition(
+      floor.offsetX + cart.position.x + offsetX,
+      cart.position.y + offsetY
+    ).setDepth(PLAYER_DEPTH_BASE + cart.position.y + offsetY);
+    this.maintenanceCleaner?.setPosition(
+      floor.offsetX + cleaner.position.x + offsetX,
+      cleaner.position.y + offsetY
+    ).setDepth(PLAYER_DEPTH_BASE + cleaner.position.y + offsetY + 1);
+  }
+
+private restoreMaintenanceIdleLayers(): void {
+    this.positionMaintenancePushLayers(0, 0);
+    this.maintenanceAttemptSprite?.stop().setAlpha(0).setVisible(false);
+    this.maintenanceCart?.setAlpha(1).setVisible(true);
+    if (this.maintenanceCleaner?.active) {
+      this.maintenanceCleaner.setAlpha(1).setVisible(true)
+        .play(MAINTENANCE_RUNTIME.cleaner.animationId, true);
+    }
+  }
+
+private paintMorningCheckinFixture(
+    targetId: string,
+    graphics: Phaser.GameObjects.Graphics,
+    bounds: Phaser.Geom.Rectangle,
+    accepted: boolean
+  ): void {
+    const x = Math.round(bounds.left);
+    const y = Math.round(bounds.top);
+    const width = Math.round(bounds.width);
+    const height = Math.round(bounds.height);
+    const statusColor = accepted ? 0x7ee79a : 0x75e6ff;
+    graphics.clear();
+
+    if (targetId === "a1_campus_card_reader") {
+      graphics.fillStyle(0x07131c, 0.98);
+      graphics.fillPoints([
+        new Phaser.Geom.Point(x + 3, y),
+        new Phaser.Geom.Point(x + width - 3, y),
+        new Phaser.Geom.Point(x + width, y + 4),
+        new Phaser.Geom.Point(x + width - 2, y + height),
+        new Phaser.Geom.Point(x + 2, y + height),
+        new Phaser.Geom.Point(x, y + 4)
+      ], true);
+      graphics.lineStyle(1, 0x9eafaa, 0.96).strokeRect(x + 2, y + 3, width - 4, height - 5);
+      graphics.fillStyle(0xbadfdc, 1).fillRect(x + 6, y + 5, width - 12, 8);
+      graphics.fillStyle(0x1a6271, 0.85).fillRect(x + 7, y + 6, width - 14, 2);
+      graphics.fillStyle(statusColor, 0.95).fillRect(x + 7, y + 9, width - 14, 1);
+      graphics.fillStyle(0x0b0908, 1).fillRect(x + 7, y + height - 7, width - 14, 2);
+      graphics.fillStyle(statusColor, 1).fillRect(x + width - 7, y + height - 5, 3, 2);
+      graphics.fillStyle(0x9aa9a9, 0.9).fillRect(x + 5, y + height - 5, 2, 2);
+      graphics.fillStyle(0xe8f2e9, 1).fillRect(x + 9, y + height - 4, 6, 1);
+      return;
+    }
+
+    graphics.fillStyle(0x261c13, 0.99);
+    graphics.fillPoints([
+      new Phaser.Geom.Point(x + 3, y + 3),
+      new Phaser.Geom.Point(x + width - 3, y + 3),
+      new Phaser.Geom.Point(x + width, y + 7),
+      new Phaser.Geom.Point(x + width - 2, y + height),
+      new Phaser.Geom.Point(x + 2, y + height),
+      new Phaser.Geom.Point(x, y + 7)
+    ], true);
+    graphics.lineStyle(1, accepted ? 0x94d7a1 : 0xc89a55, 0.98)
+      .strokeRect(x + 2, y + 6, width - 4, height - 8);
+    graphics.fillStyle(0xf0e4c8, 1).fillRect(x + 8, y, width - 16, 9);
+    graphics.fillStyle(0xc1b090, 1).fillRect(x + 10, y + 2, width - 20, 1);
+    graphics.fillStyle(0xc1b090, 1).fillRect(x + 10, y + 5, width - 23, 1);
+    graphics.fillStyle(0x080707, 1).fillRect(x + 5, y + 11, width - 10, 4);
+    graphics.fillStyle(0x705032, 1).fillRect(x + 7, y + 12, width - 14, 1);
+    graphics.fillStyle(statusColor, 1).fillRect(x + width - 8, y + height - 6, 3, 3);
+    graphics.fillStyle(0xc8b27a, 0.92).fillRect(x + 6, y + height - 5, width - 18, 2);
+    graphics.fillStyle(0xe0c68c, 1).fillRect(x + 3, y + 7, 1, 1);
+    graphics.fillStyle(0xe0c68c, 1).fillRect(x + width - 4, y + 7, 1, 1);
+  }
+
+private beginPowerGridSuccessPresentation(): void {
+    const state = this.bridge.getState();
+    if (this.storyPresentation === "power_grid_success"
+      || state.chapter4.phase !== "final_chase"
+      || !state.chapter4.lightGrid.locked
+      || !hasChapterFourFact(state, "light_grid_locked")) return;
+
+    this.clearStoryPresentationTimers();
+    this.destroyLightGridSuccessVisuals();
+    this.storyPresentation = "power_grid_success";
+    this.player.setVelocity(0, 0);
+    this.ensureLightGridRuntime(state);
+    this.lightGridPanelSprite?.setFrame("open_restored").setTint(0xc6ffdc);
+
+    const floor = getFloor(1);
+    const routeZoneIds = (
+      chapterFourContent.lightGrid.requiredOnZoneIds as ChapterFourLightZoneId[]
+    );
+    routeZoneIds.forEach((zoneId, index) => {
+      const region = LIGHT_GRID_RUNTIME.visualRegions.find((entry) => entry.id === zoneId);
+      if (!region) return;
+      const pulse = this.add.rectangle(
+        floor.offsetX + rectCenterX(region.bounds),
+        rectCenterY(region.bounds),
+        region.bounds.width,
+        region.bounds.height,
+        0x9fffc0,
+        1
+      ).setAlpha(0)
+        .setDepth(PLAYER_DEPTH_BASE - 165);
+      this.lightGridSuccessVisuals.push(pulse);
+      this.scheduleStoryPresentation(index * 170, () => {
+        if (!pulse.active || this.storyPresentation !== "power_grid_success") return;
+        this.lightGridSuccessTweens.push(this.tweens.add({
+          targets: pulse,
+          alpha: { from: 0, to: 0.3 },
+          duration: 240,
+          hold: 80,
+          yoyo: true,
+          ease: "Sine.InOut"
+        }));
+      });
+    });
+
+    const panelBounds = LIGHT_GRID_RUNTIME.panel.visibleBoxBounds;
+    const stableLabel = this.add.text(
+      floor.offsetX + rectCenterX(panelBounds),
+      panelBounds.y - 12,
+      "回路稳定",
+      {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "11px",
+        color: "#bfffd2",
+        stroke: "#07150d",
+        strokeThickness: 3
+      }
+    ).setOrigin(0.5, 1)
+      .setAlpha(0)
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(panelBounds) + 12);
+    this.lightGridSuccessVisuals.push(stableLabel);
+
+    this.scheduleStoryPresentation(520, () => {
+      if (this.storyPresentation !== "power_grid_success") return;
+      if (this.lightGridPanelSprite?.active) {
+        this.lightGridSuccessTweens.push(this.tweens.add({
+          targets: this.lightGridPanelSprite,
+          scaleX: 0.118,
+          scaleY: 0.118,
+          duration: 150,
+          yoyo: true,
+          repeat: 1,
+          ease: "Sine.InOut"
+        }));
+      }
+      this.lightGridSuccessTweens.push(this.tweens.add({
+        targets: stableLabel,
+        alpha: { from: 0, to: 1 },
+        y: stableLabel.y - 6,
+        duration: 180,
+        hold: 360,
+        yoyo: true,
+        ease: "Sine.Out"
+      }));
+    });
+
+    this.scheduleStoryPresentation(1320, () => {
+      if (this.storyPresentation !== "power_grid_success") return;
+      this.destroyLightGridSuccessVisuals();
+      this.lightGridPanelSprite?.clearTint().setScale(0.11).setFrame("closed");
+      this.storyPresentation = "idle";
+      this.safeBridgeEmit("chapter4_power_grid_success_presentation_completed", {
+        mask: state.chapter4.lightGrid.mask,
+        routeZoneIds
+      });
+      this.syncStoryInputLock();
+    });
+    this.safeBridgeEmit("chapter4_power_grid_success_presentation_started", {
+      mask: state.chapter4.lightGrid.mask,
+      routeZoneIds
+    });
+    this.syncStoryInputLock();
+  }
+
+private destroyLightGridSuccessVisuals(): void {
+    for (const tween of this.lightGridSuccessTweens) tween.stop();
+    this.lightGridSuccessTweens = [];
+    for (const visual of this.lightGridSuccessVisuals) visual.destroy();
+    this.lightGridSuccessVisuals = [];
+    this.lightGridPanelSprite?.clearTint().setScale(0.11);
+  }
+
 private startOrRestoreMaintenancePush(animate: boolean): void {
-    if (!this.maintenanceCleaner || this.maintenancePushCompleted || this.maintenancePushTween) return;
+    if (!this.maintenanceCart
+      || !this.maintenanceCleaner
+      || this.maintenancePushCompleted
+      || this.maintenancePushTween) return;
     this.cancelMaintenanceFailedPushAttempt();
     this.maintenanceObstacleCollider?.destroy();
     this.maintenanceObstacleCollider = null;
-    if (this.maintenanceCart) {
-      this.maintenanceCart.disableBody(false, true);
-      this.maintenanceCart.destroy();
-      this.maintenanceCart = null;
-    }
+    this.maintenanceCart.disableBody(false, false);
     this.maintenanceCleaner.disableBody(false, false);
-    this.maintenanceCleaner
-      .setTexture(MAINTENANCE_RUNTIME.repairedPush.animationId, 0)
-      .setPosition(
-        getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.from.x,
-        MAINTENANCE_RUNTIME.repairedPush.from.y
-      )
-      .setVisible(true);
+    const pushCharacter = this.ensureMaintenancePushCharacter();
+    this.positionMaintenancePushLayers(0, 0);
+    pushCharacter.setAlpha(0).setVisible(true)
+      .play(MAINTENANCE_RUNTIME.repairedPush.animationId, true);
+    this.maintenanceCleaner.setAlpha(1).setVisible(true)
+      .play(MAINTENANCE_RUNTIME.cleaner.animationId, true);
     if (!animate) {
-      this.maintenanceCleaner
-        .setPosition(
-          getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.to.x,
-          MAINTENANCE_RUNTIME.repairedPush.to.y
-        )
-        .setDepth(PLAYER_DEPTH_BASE + MAINTENANCE_RUNTIME.repairedPush.to.y);
+      this.positionMaintenancePushLayers(
+        MAINTENANCE_RUNTIME.repairedPush.to.x - MAINTENANCE_RUNTIME.repairedPush.from.x,
+        MAINTENANCE_RUNTIME.repairedPush.to.y - MAINTENANCE_RUNTIME.repairedPush.from.y
+      );
       this.settleMaintenanceCleanerAfterPush();
       this.maintenancePushCompleted = true;
       return;
     }
-    this.maintenanceCleaner.play(MAINTENANCE_RUNTIME.repairedPush.animationId, true);
     this.safeBridgeEmit("maintenance_cart_roll_started", {
       phase: "maintenance_repair",
       durationMs: MAINTENANCE_RUNTIME.repairedPush.durationMs
     });
-    this.maintenancePushTween = this.tweens.add({
-      targets: this.maintenanceCleaner,
-      x: getFloor(1).offsetX + MAINTENANCE_RUNTIME.repairedPush.to.x,
-      y: MAINTENANCE_RUNTIME.repairedPush.to.y,
+    this.maintenancePushTween = this.tweens.addCounter({
+      from: 0,
+      to: 1,
       duration: MAINTENANCE_RUNTIME.repairedPush.durationMs,
       ease: "Sine.InOut",
-      onUpdate: () => {
-        this.maintenanceCleaner?.setDepth(PLAYER_DEPTH_BASE + (this.maintenanceCleaner?.y ?? 0));
+      onUpdate: (tween) => {
+        const progress = tween.getValue() ?? 0;
+        const offsetX = (
+          MAINTENANCE_RUNTIME.repairedPush.to.x - MAINTENANCE_RUNTIME.repairedPush.from.x
+        ) * progress;
+        const offsetY = (
+          MAINTENANCE_RUNTIME.repairedPush.to.y - MAINTENANCE_RUNTIME.repairedPush.from.y
+        ) * progress;
+        this.positionMaintenancePushLayers(offsetX, offsetY);
+        const startBlend = Phaser.Math.Clamp(progress / 0.12, 0, 1);
+        const endBlend = Phaser.Math.Clamp((1 - progress) / 0.15, 0, 1);
+        const pushAlpha = Math.min(startBlend, endBlend);
+        this.maintenanceAttemptSprite?.setAlpha(pushAlpha);
+        this.maintenanceCleaner?.setAlpha(1 - pushAlpha);
       },
       onComplete: () => {
         this.maintenancePushTween = null;
@@ -4297,48 +4731,29 @@ private playMaintenanceFailedPushAttempt(): void {
       || !this.maintenanceCart
       || !this.maintenanceCleaner
       || this.maintenanceAttemptTween) return;
-    const floor = getFloor(1);
-    if (!this.maintenanceAttemptSprite?.active) {
-      this.maintenanceAttemptSprite = this.add.sprite(
-        floor.offsetX + MAINTENANCE_RUNTIME.repairedPush.from.x,
-        MAINTENANCE_RUNTIME.repairedPush.from.y,
-        MAINTENANCE_RUNTIME.repairedPush.animationId,
-        0
-      ).setOrigin(0.5, 1)
-        .setScale(MAINTENANCE_RUNTIME.cleaner.uniformScale)
-        .setDepth(PLAYER_DEPTH_BASE + MAINTENANCE_RUNTIME.repairedPush.from.y + 2)
-        .setVisible(false);
-      this.phaseRuntimeObjects.push(this.maintenanceAttemptSprite);
-    }
-    this.maintenanceCart.setVisible(false);
-    this.maintenanceCleaner.setVisible(false);
-    this.maintenanceAttemptSprite
-      .setPosition(
-        floor.offsetX + MAINTENANCE_RUNTIME.repairedPush.from.x,
-        MAINTENANCE_RUNTIME.repairedPush.from.y
-      )
-      .setVisible(true)
+    const pushCharacter = this.ensureMaintenancePushCharacter();
+    this.positionMaintenancePushLayers(0, 0);
+    this.maintenanceCleaner.setAlpha(1).setVisible(true);
+    this.maintenanceCart.setVisible(true);
+    pushCharacter.setAlpha(0).setVisible(true)
       .play(MAINTENANCE_RUNTIME.repairedPush.animationId, true);
-    this.maintenanceAttemptTween = this.tweens.add({
-      targets: this.maintenanceAttemptSprite,
-      y: MAINTENANCE_RUNTIME.repairedPush.from.y - 5,
+    this.maintenanceAttemptTween = this.tweens.addCounter({
+      from: 0,
+      to: 1,
       duration: 240,
       hold: 80,
       yoyo: true,
       ease: "Sine.InOut",
-      onUpdate: () => {
-        this.maintenanceAttemptSprite?.setDepth(
-          PLAYER_DEPTH_BASE + (this.maintenanceAttemptSprite?.y ?? 0) + 2
-        );
+      onUpdate: (tween) => {
+        const effort = tween.getValue() ?? 0;
+        this.positionMaintenancePushLayers(-5 * effort, 0);
+        const pushAlpha = Phaser.Math.Clamp(effort * 4, 0, 1);
+        this.maintenanceAttemptSprite?.setAlpha(pushAlpha);
+        this.maintenanceCleaner?.setAlpha(1 - pushAlpha);
       },
       onComplete: () => {
         this.maintenanceAttemptTween = null;
-        this.maintenanceAttemptSprite?.stop().setVisible(false);
-        this.maintenanceCart?.setVisible(true);
-        this.maintenanceCleaner?.setVisible(true).play(
-          MAINTENANCE_RUNTIME.cleaner.animationId,
-          true
-        );
+        this.restoreMaintenanceIdleLayers();
         this.scheduleMaintenanceFailedPushAttempt(2800);
       }
     });
@@ -4349,56 +4764,27 @@ private cancelMaintenanceFailedPushAttempt(): void {
     this.maintenanceAttemptTimer = null;
     this.maintenanceAttemptTween?.remove();
     this.maintenanceAttemptTween = null;
-    this.maintenanceAttemptSprite?.stop().setVisible(false);
-    this.maintenanceCart?.setVisible(true);
-    if (this.maintenanceCleaner?.active && !this.maintenancePushCompleted) {
-      this.maintenanceCleaner.setVisible(true).play(
-        MAINTENANCE_RUNTIME.cleaner.animationId,
-        true
-      );
-    }
+    if (!this.maintenancePushCompleted) this.restoreMaintenanceIdleLayers();
   }
 
 private settleMaintenanceCleanerAfterPush(): void {
     const cleaner = this.maintenanceCleaner;
-    if (!cleaner?.active) return;
-    const floor = getFloor(1);
-    const finalCartPosition = {
-      x: MAINTENANCE_RUNTIME.repairedPush.to.x
-        + MAINTENANCE_RUNTIME.cleaningCart.position.x
-        - MAINTENANCE_RUNTIME.repairedPush.from.x,
-      y: MAINTENANCE_RUNTIME.repairedPush.to.y
-    };
-    const finalCleanerPosition = {
-      x: MAINTENANCE_RUNTIME.repairedPush.to.x
-        + MAINTENANCE_RUNTIME.cleaner.position.x
-        - MAINTENANCE_RUNTIME.repairedPush.from.x,
-      y: MAINTENANCE_RUNTIME.repairedPush.to.y
-    };
-    if (!this.maintenanceSettledCart?.active) {
-      this.maintenanceSettledCart = this.add.sprite(
-        floor.offsetX + finalCartPosition.x,
-        finalCartPosition.y,
-        MAINTENANCE_RUNTIME.cleaningCart.texture,
-        0
-      ).setOrigin(0.5, 1)
-        .setScale(MAINTENANCE_RUNTIME.cleaningCart.uniformScale)
-        .setDepth(PLAYER_DEPTH_BASE + finalCartPosition.y);
-      this.phaseRuntimeObjects.push(this.maintenanceSettledCart);
-    }
-    cleaner.stop()
-      .setTexture("cleaner_rest", 0)
-      .setOrigin(0.5, 1)
-      .setScale(MAINTENANCE_RUNTIME.cleaner.uniformScale)
-      .setPosition(floor.offsetX + finalCleanerPosition.x, finalCleanerPosition.y)
-      .setDepth(PLAYER_DEPTH_BASE + finalCleanerPosition.y + 1)
-      .setVisible(true);
+    if (!cleaner?.active || !this.maintenanceCart?.active) return;
+    this.positionMaintenancePushLayers(
+      MAINTENANCE_RUNTIME.repairedPush.to.x - MAINTENANCE_RUNTIME.repairedPush.from.x,
+      MAINTENANCE_RUNTIME.repairedPush.to.y - MAINTENANCE_RUNTIME.repairedPush.from.y
+    );
+    this.maintenanceAttemptSprite?.stop().setAlpha(0).setVisible(false);
+    this.maintenanceCart.setAlpha(1).setVisible(true);
+    cleaner.setAlpha(1).setVisible(true)
+      .play(MAINTENANCE_RUNTIME.cleaner.animationId, true);
   }
 
 private createMaintenanceGuardRuntime(): void {
     const floor = getFloor(1);
     const guard = MAINTENANCE_RUNTIME.guard;
     this.maintenanceGuardState = createChapterFourMaintenanceGuardState();
+    this.maintenanceGuardPresentationState = createChapterFourGuardPresentationState();
     this.maintenanceGuard = this.physics.add.sprite(
       floor.offsetX + guard.position.x,
       guard.position.y,
@@ -4716,10 +5102,20 @@ private ensureMorningCheckinRuntime(state: GameState): void {
     this.setPhaseRuntimeTargetVisible("a1_campus_card_reader", !cardAccepted);
     this.setPhaseRuntimeTargetVisible("a1_attendance_paper_slot", !paperAccepted);
     const cardVisual = this.morningCheckinVisuals.get("a1_campus_card_reader");
-    cardVisual?.fixture.setFillStyle(cardAccepted ? 0x294037 : 0x16394a, 0.96);
+    if (cardVisual) this.paintMorningCheckinFixture(
+      "a1_campus_card_reader",
+      cardVisual.details,
+      cardVisual.fixture.getBounds(),
+      cardAccepted
+    );
     cardVisual?.label.setText(cardAccepted ? "已刷卡" : "校园卡");
     const paperVisual = this.morningCheckinVisuals.get("a1_attendance_paper_slot");
-    paperVisual?.fixture.setFillStyle(paperAccepted ? 0x403929 : 0x493917, 0.96);
+    if (paperVisual) this.paintMorningCheckinFixture(
+      "a1_attendance_paper_slot",
+      paperVisual.details,
+      paperVisual.fixture.getBounds(),
+      paperAccepted
+    );
     paperVisual?.label.setText(paperAccepted ? "已签到" : "纸条");
   }
 
@@ -4784,9 +5180,9 @@ private createMorningCheckinRuntimeTarget(
       bounds.width,
       bounds.height,
       fillColor,
-      0.96
+      0.01
     ).setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 6)
-      .setStrokeStyle(2, strokeColor, 0.96)
+      .setStrokeStyle(1, strokeColor, 0.01)
       .setVisible(true);
     const measured = fixture.getBounds();
     const derived = {
@@ -4803,6 +5199,9 @@ private createMorningCheckinRuntimeTarget(
       );
       return null;
     }
+    const details = this.add.graphics()
+      .setDepth(PLAYER_DEPTH_BASE + rectBottom(bounds) + 6);
+    this.paintMorningCheckinFixture(targetId, details, fixture.getBounds(), false);
     const label = this.add.text(
       getFloor(floor).offsetX + rectCenterX(derived),
       derived.y - 8,
@@ -4845,8 +5244,8 @@ private createMorningCheckinRuntimeTarget(
       floor,
       boundsObject: zone
     });
-    this.phaseRuntimeObjects.push(fixture, label, zone);
-    this.morningCheckinVisuals.set(targetId, { fixture, label });
+    this.phaseRuntimeObjects.push(fixture, details, label, zone);
+    this.morningCheckinVisuals.set(targetId, { fixture, details, label });
     return zone;
   }
 
@@ -4961,7 +5360,7 @@ private ensureFinalChaseRuntime(state: GameState): void {
     this.currentFloor = arrivedFromStairwell ? 2 : 1;
     const spawn = arrivedFromStairwell ? CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival : FINAL_CHASE_RUNTIME.playerStart;
     this.player.setPosition(floor.offsetX + spawn.x, spawn.y)
-      .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + spawn.y);
+      .setVelocity(0, 0).setDepth(chapterFourPlayerDepth(spawn.y));
     this.animator.setFacing("up");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
@@ -4997,6 +5396,11 @@ private updateFinalChaseRuntime(deltaMs: number): void {
     const runtime = this.finalChaseState;
     const guard = this.chaseGuard;
     if (!committed || committed.chapter4.phase !== "final_chase" || !runtime || !guard) return;
+    // Keep the full controller-owned chase grace until the circuit presentation ends.
+    if (this.storyPresentation === "power_grid_success") {
+      guard.setVelocity(0, 0).setVisible(false);
+      return;
+    }
     const playerFloorNumber = this.currentFloor === 2 ? 2 : 1;
     const playerFloor = getFloor(playerFloorNumber);
     const guardFloorNumber: DisplayFloor = runtime.guardFloor === "A2" ? 2 : 1;
@@ -5286,7 +5690,8 @@ private destroyTask12Runtime(reason: string): void {
   }
 
 private syncPhaseSideEffects(): void {
-    if (this.storyPresentation === "minute_theft") return;
+    if (this.storyPresentation === "minute_theft"
+      || this.storyPresentation === "power_grid_success") return;
     const state = this.bridge.getState();
     if (this.projection.phase !== state.chapter4.phase || !isChapterFourPhaseTimeAligned(state.chapter4)) return;
     const signature = [
@@ -5822,6 +6227,14 @@ private configureCameraForCurrentFloor(): void {
       true,
       true
     );
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+    const visualInsets = getRpgPlayerVisualContainmentInsets();
+    playerBody.setBoundsRectangle(new Phaser.Geom.Rectangle(
+      floor.offsetX + visualInsets.left,
+      visualInsets.top,
+      FLOOR_SIZE.width - visualInsets.left - visualInsets.right,
+      FLOOR_SIZE.height - visualInsets.top - visualInsets.bottom
+    ));
     this.cameras.main.setBounds(floor.offsetX, 0, FLOOR_SIZE.width, FLOOR_SIZE.height);
     setRpgLogicalCameraZoom(this, 1);
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -7107,7 +7520,7 @@ private ensureLightGridRuntime(state: GameState): void {
       this.lightGridOverlays.get(region.id)?.setFillStyle(0x020711, on ? 0.08 : 0.7);
     }
     const panelFrame = state.chapter4.lightGrid.locked
-      ? "open_restored"
+      ? this.storyPresentation === "power_grid_success" ? "open_restored" : "closed"
       : this.hostPowerPanelOpen
         ? state.chapter4.lightGrid.mask === chapterFourContent.lightGrid.initialMask
           ? "open_powered"
@@ -7204,6 +7617,7 @@ private destroyFinalClockRuntime(_reason: string): void {
   }
 
 private destroyLightGridRuntime(_reason: string): void {
+    this.destroyLightGridSuccessVisuals();
     this.phaseRuntimeTargets.get(LIGHT_GRID_RUNTIME.panel.targetId)?.boundsObject.destroy();
     this.phaseRuntimeTargets.delete(LIGHT_GRID_RUNTIME.panel.targetId);
     this.lightGridPanelSprite?.destroy();
@@ -7386,6 +7800,10 @@ private handleIntentResolved(payload?: Record<string, unknown>): void {
     if (this.pendingStoryRequest
       && String(payload?.requestId ?? "") === this.pendingStoryRequest.requestId) {
       this.handleStoryIntentResolved(payload);
+      return;
+    }
+    if (resolvedIntentType === "lock_light_grid" && resultAccepted(payload)) {
+      this.beginPowerGridSuccessPresentation();
       return;
     }
     const pending = this.pendingMove;
@@ -7687,6 +8105,7 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
         this.storyPresentation = "idle";
         break;
       case "open_cart_wheel_cover":
+        this.presentMaintenanceToolContact("a1_cleaning_cart_wheel_cover", "pry");
         this.presentMaintenanceOilReveal();
         this.emitDropFeedback(
           "shortPryBar",
@@ -7699,14 +8118,16 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
         this.storyPresentation = "idle";
         break;
       case "lubricate_cart_wheel":
+        this.presentMaintenanceToolContact("a1_cleaning_cart_wheel", "oil");
         this.emitDropFeedback(
           "universalLubricatingOil",
           "accepted",
-          "保洁车轮已修好，瓶里还剩一半润滑油。"
+          "保洁车轮与旧钟齿轮已完成维修，润滑油已用完。"
         );
         this.storyPresentation = "idle";
         break;
       case "lubricate_clock_gear":
+        this.presentMaintenanceToolContact("a1_hall_clock_gear", "oil");
         this.emitDropFeedback(
           "universalLubricatingOil",
           "accepted",
@@ -7760,7 +8181,7 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
         this.storyPresentation = "idle";
         break;
       case "lock_light_grid":
-        this.storyPresentation = "idle";
+        this.beginPowerGridSuccessPresentation();
         break;
       case "reach_202_threshold":
         if (this.finalChaseState?.phase === "finish_pending") {
@@ -7772,7 +8193,7 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
           getFloor(2).offsetX + FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.x,
           FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.y
         ).setVelocity(0, 0)
-          .setDepth(PLAYER_DEPTH_BASE + FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.y);
+          .setDepth(chapterFourPlayerDepth(FINAL_MINUTE_RUNTIME.recoveryPlayerSpawn.y));
         this.animator.setFacing("up");
         this.configureCameraForCurrentFloor();
         this.cameras.main.centerOn(this.player.x, this.player.y);
@@ -8361,7 +8782,7 @@ private beginElevatorExit(floorNumber: DisplayFloor): void {
         const body = this.player.body as Phaser.Physics.Arcade.Body;
         body.enable = true;
         body.reset(this.player.x, this.player.y);
-        this.player.setDepth(PLAYER_DEPTH_BASE + this.player.y);
+        this.player.setDepth(chapterFourPlayerDepth(this.player.y));
         this.elevatorPhase = "destination_closing";
         this.tweenElevatorDoor(floorNumber, 1, 0, () => {
           this.elevatorVisuals.get(floorNumber)?.lamp.setVisible(false);
@@ -8382,7 +8803,7 @@ private beginAcceptedStairTransfer(pending: PendingMove): void {
     )?.arrivalPosition ?? destination.safeSpawn;
     this.currentFloor = pending.targetFloor;
     this.player.setPosition(destination.offsetX + arrival.x, arrival.y)
-      .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + arrival.y);
+      .setVelocity(0, 0).setDepth(chapterFourPlayerDepth(arrival.y));
     this.animator.setFacing("down");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
@@ -8408,7 +8829,7 @@ private syncExternalFloorWhenIdle(): void {
       : floor.safeSpawn;
     this.currentFloor = stateFloor;
     this.player.setPosition(floor.offsetX + spawn.x, spawn.y)
-      .setVelocity(0, 0).setDepth(PLAYER_DEPTH_BASE + spawn.y);
+      .setVelocity(0, 0).setDepth(chapterFourPlayerDepth(spawn.y));
     this.animator.setFacing(spawn.facing ?? "down");
     this.configureCameraForCurrentFloor();
     this.cameras.main.centerOn(this.player.x, this.player.y);
@@ -8586,9 +9007,12 @@ private showFeedback(message: string): void {
   }
 
 private publishDebug(): void {
+    if (deferRpgRuntimeDebugCapture(() => this.publishDebug())) return;
     const state = this.bridge.getState();
     const floor = getFloor(this.currentFloor);
     const body = this.player.body as Phaser.Physics.Arcade.Body | undefined;
+    const playerVisualBounds = this.player.getBounds();
+    const playerMovementBounds = body?.customBoundsRectangle;
     const projectedTargets = this.resolveProjectedTargets();
     const actionableTargets = this.resolveActionableTargets();
     const projectedPlateIds = desiredPlateGroup(this.projection);
@@ -8728,6 +9152,12 @@ private publishDebug(): void {
         collisionWidth: body?.width,
         collisionHeight: body?.height,
         footPoint: body ? { x: body.center.x, y: body.center.y } : undefined,
+        collisionBounds: body ? { x: body.x, y: body.y, width: body.width, height: body.height } : undefined,
+        visualBounds: { x: playerVisualBounds.x, y: playerVisualBounds.y, width: playerVisualBounds.width, height: playerVisualBounds.height },
+        movementBounds: playerMovementBounds ? {
+          x: playerMovementBounds.x, y: playerMovementBounds.y,
+          width: playerMovementBounds.width, height: playerMovementBounds.height
+        } : undefined,
         depth: this.player.depth
       },
       input: {
@@ -9146,6 +9576,7 @@ private pendingWarmupSettlers = new Set<() => void>();
 private retryWarmupKey!: Phaser.Input.Keyboard.Key;
 
 private resetRestartLifecycleState(): void {
+    this.destroyMainEntranceDoorRuntime();
     this.guardCaptureActive = false;
     this.platePlayerCollider = null;
     this.backgrounds.clear();
@@ -10129,6 +10560,15 @@ private setBakeryConveyorMotion(active: boolean): void {
     this.bakeryConveyorBelt?.setAlpha(active ? 0.96 : 0.78);
   }
 
+private bakeryCounterSurfaceDepth(): number {
+    const counter = getFloor(1).foregroundOcclusions.find(
+      (entry) => entry.id === BAKERY_RUNTIME.baker.foregroundOcclusionId
+    );
+    // Countertop objects sit above the same-source crop that occludes actors
+    // behind the counter. World y alone would bury them under that crop.
+    return PLAYER_DEPTH_BASE + (counter?.baselineY ?? rectBottom(BAKERY_RUNTIME.conveyorVisual.beltBounds)) + 1;
+  }
+
 private createBakeryConveyorFixture(): void {
     this.destroyBakeryConveyorFixture();
     this.ensureBakeryConveyorTileTexture();
@@ -10136,7 +10576,7 @@ private createBakeryConveyorFixture(): void {
     const visual = BAKERY_RUNTIME.conveyorVisual;
     const belt = visual.beltBounds;
     const rail = visual.frontRailBounds;
-    const beltDepth = PLAYER_DEPTH_BASE + rectBottom(belt) - 5;
+    const beltDepth = this.bakeryCounterSurfaceDepth() + 3;
     const worldLeft = floor.offsetX + belt.x;
     const worldRight = floor.offsetX + rectRight(belt);
 

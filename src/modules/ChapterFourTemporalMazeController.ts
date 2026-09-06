@@ -1587,8 +1587,7 @@ case "lock_light_grid": {
         this.emitChapterFourCue("power_grid_locked", {
           mask: CHAPTER_FOUR_LIGHT_GRID.targetMask,
           phase: "final_chase",
-          canruoStarLampPrimed: true,
-          zhuQuestionAnswers: { purpose: null, person: null }
+          canruoStarLampPrimed: true
         });
         return result;
       }

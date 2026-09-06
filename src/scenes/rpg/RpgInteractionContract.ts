@@ -1035,7 +1035,9 @@ function clockSocketTarget(
     ...layoutAnchorTarget("A1", id),
     activation: "phase_exclusive",
     activePhases,
-    roomIds: ["a1_lobby", "a1_hall_clock"],
+    // Walking across the continuous A1 map does not rewrite the last story
+    // room. The socket's floor, bounds and distance still validate the drop.
+    roomIds: ["a1_lobby", "a1_hall_clock", "a1_bakery"],
     activationCondition,
     proximity: 86,
     acceptedItem,
