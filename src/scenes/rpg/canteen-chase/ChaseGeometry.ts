@@ -8,36 +8,36 @@ export interface ChaseObstacle {
   crossingSide: -1 | 1;
 }
 
-export const OBSTACLE_START_DISTANCE = 78;
-export const OBSTACLE_INTERVAL = 66;
-export const VISIBLE_DISTANCE = 240;
+export const VISIBLE_DISTANCE = 96;
 
-const OBSTACLE_KINDS: readonly ChaseObstacleKind[] = [
-  "barrier",
-  "bicycle",
-  "crowd",
-  "cone",
-  "car",
-  "runner"
+const STAGE_OBSTACLE_KINDS: readonly (readonly ChaseObstacleKind[])[] = [
+  ["bicycle", "cone", "runner", "bicycle"],
+  ["runner", "crowd", "bicycle", "cone"],
+  ["barrier", "cone", "barrier", "car"],
+  ["bicycle", "runner", "cone", "crowd"]
 ];
 
-export function obstacleAt(index: number): ChaseObstacle {
-  const hash = Math.imul(index + 11, 1103515245) >>> 0;
-  return {
-    id: `rush-${index}`,
-    distance: OBSTACLE_START_DISTANCE + index * OBSTACLE_INTERVAL,
-    lane: (hash >>> 8) % 3,
-    kind: OBSTACLE_KINDS[(hash >>> 16) % OBSTACLE_KINDS.length],
-    crossingSide: (hash & 1) === 0 ? -1 : 1
-  };
-}
+// Two occupied lanes leave one visibly open route. Every neighbouring opening
+// is one lane away; the final 29m remain clear for the braking handoff.
+export const CHASE_HAZARD_BEATS = Object.freeze([
+  42, 68, 94, 120, 146, 172,
+  204, 227, 250, 273, 296, 319, 342, 365,
+  394, 412, 430, 448, 466, 484, 502, 520, 538, 556,
+  579, 594, 609, 624, 639, 654, 669, 684, 699, 714, 726
+].map((distance, index) => ({ distance, openLane: [0, 1, 2, 1][index % 4] })));
+
+const AUTHORED_OBSTACLES: readonly ChaseObstacle[] = CHASE_HAZARD_BEATS.flatMap((beat, index) => {
+  const stage = beat.distance < 188 ? 0 : beat.distance < 377 ? 1 : beat.distance < 566 ? 2 : 3;
+  const kinds = STAGE_OBSTACLE_KINDS[stage];
+  return [0, 1, 2].filter((lane) => lane !== beat.openLane).map((lane, slot) => ({
+    id: `rush-${index}-${lane}`, distance: beat.distance, lane,
+    kind: kinds[(index + slot) % kinds.length],
+    crossingSide: (lane < beat.openLane ? -1 : 1) as -1 | 1
+  }));
+});
 
 export function obstaclesBetween(start: number, end: number): ChaseObstacle[] {
-  const first = Math.max(0, Math.ceil((start - OBSTACLE_START_DISTANCE) / OBSTACLE_INTERVAL));
-  const last = Math.max(first - 1, Math.floor((end - OBSTACLE_START_DISTANCE) / OBSTACLE_INTERVAL));
-  const result: ChaseObstacle[] = [];
-  for (let index = first; index <= last; index += 1) result.push(obstacleAt(index));
-  return result;
+  return AUTHORED_OBSTACLES.filter((obstacle) => obstacle.distance >= start && obstacle.distance <= end);
 }
 
 export function visibleObstacles(distance: number): ChaseObstacle[] {

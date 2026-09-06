@@ -175,7 +175,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
         <ul>
           <li><span>01 图书馆入口小屏</span><em>填写到座耗时</em></li>
           <li><span>02 CC98 调查帖楼主编辑</span><em>填写公示编号</em></li>
-          <li><span>03 二楼南区 755 书架旧版规则</span><em>填写证明数量</em></li>
+          <li><span>03 一层书库 755 书架旧版规则</span><em>填写证明数量</em></li>
         </ul>
         <small>三项材料可按任意顺序收集；取得后，下方会显示可核对的原文。</small>
       </section>
@@ -187,7 +187,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             <strong>图书馆入口小屏 <em>填：到座耗时</em></strong>
             {puzzle.entranceRecordRead ? (
               <>
-                <small className="tiyi-audit-source-evidence"><b>07:55</b> 主馆入口 <i>→</i> <b>08:02</b> 二楼南区 022</small>
+                <small className="tiyi-audit-source-evidence"><b>07:55</b> 基础馆入口 <i>→</i> <b>08:02</b> 一层书库 022</small>
                 <small>填写两次记录的分钟差</small>
               </>
             ) : <small>未取得 · 回到基础图书馆入口，查看门禁记录小屏</small>}
@@ -216,7 +216,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
                 </small>
                 <small>填写规则列出的证明类别数量</small>
               </>
-            ) : <small>未取得 · 在二楼南区 755 书架使用“索书号 755”，取得并阅读规则</small>}
+            ) : <small>未取得 · 在一层书库 755 书架使用“索书号 755”，取得并阅读规则</small>}
           </div>
         </article>
       </section>

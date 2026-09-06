@@ -95,3 +95,7 @@
 - Runtime checks: local HTTP, direct `file://`, story navigation, and RPG checkpoint recovery
 
 The HTML and implementation archive are generated Release assets and are intentionally excluded from ordinary Git history.
+
+## 20260906 源码整合
+
+当前主线与第四章细节任务的合并范围、来源和验证状态见 [整合记录](docs/releases/20260906-integration.md)。本次为源码上传，既有 Release 下载链接仍对应其原始日期，未生成 20260906 单文件游戏包。

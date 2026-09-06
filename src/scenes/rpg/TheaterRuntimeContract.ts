@@ -1,7 +1,7 @@
 import type { GameEvent, GameState, RpgCheckpointId } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 
-export const THEATER_RUNTIME_CONTRACT_VERSION = "1.1.0" as const;
+export const THEATER_RUNTIME_CONTRACT_VERSION = "1.2.0" as const;
 export const THEATER_RUNTIME_LOGICAL_VIEWPORT = { width: 960, height: 540 } as const;
 export type TheaterRuntimeSpawnZone = "lobby" | "auditorium" | "stage";
 

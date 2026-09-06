@@ -12,6 +12,11 @@
   --paper: #fff6df;
   --paper-2: #fff0cc;
   --ink: #222322;
+  --notification-background: rgba(255, 248, 226, 0.85);
+  --notification-border: 2px solid var(--ink);
+  --notification-shadow: 2px 2px 0 var(--shadow-warm);
+  --notification-padding: 8px 10px;
+  --notification-gap: 12px;
   --muted: #8d7f66;
   --line: #decfb4;
   --shadow-warm: rgba(119, 92, 49, 0.25);
@@ -97,19 +102,23 @@ img {
   -webkit-user-drag: none;
 }
 
-@media (pointer: coarse), (any-pointer: coarse), (max-width: 700px) {
-  #root,
-  #root * {
-    user-select: none;
-    -webkit-user-select: none;
-  }
+/* Include portaled game overlays, with native editing for authored form fields. */
+body,
+body * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 
-  #root input,
-  #root textarea,
-  #root [contenteditable="true"] {
-    user-select: text;
-    -webkit-user-select: text;
-  }
+body input,
+body textarea,
+body [contenteditable=""],
+body [contenteditable="true"],
+body [contenteditable="plaintext-only"],
+body [contenteditable]:not([contenteditable="false"]) * {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 /* ---- 舞台与手机框 ---- */

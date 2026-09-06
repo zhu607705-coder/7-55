@@ -1,3 +1,4 @@
+import { scheduleLakeFishingBeat, scheduleLakeFishingJudgment } from "./LakeFishingAudio";
 import { preloadRpgImage, preloadRpgSpriteSheet } from "./RpgAssetLoader";
 import Phaser from "phaser";
 import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
@@ -94,6 +95,7 @@ import {
   type QizhenSwanChasePressureResult,
   type QizhenSwanChasePressureState
 } from "../../modules/QizhenSwanChasePressureModel";
+
 
 const ZONE_TEXTURE_KEYS: Readonly<Record<QizhenLakeZoneId, string>> = {
   dock: "chapter-3-qizhen-dock",
@@ -260,6 +262,8 @@ interface QizhenFishingAttempt {
   targetLabel: string;
 }
 
+
+
 export class QizhenLakeScene extends Phaser.Scene {
   private bridge!: RpgBridge;
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -357,6 +361,7 @@ export class QizhenLakeScene extends Phaser.Scene {
   private fishingActiveAttempt: QizhenFishingAttempt | null = null;
   private fishingModel: QizhenFishingRhythmModel | null = null;
   private fishingVisual: QizhenFishingRhythmVisual | null = null;
+  private fishingEscapeKey!: Phaser.Input.Keyboard.Key;
   private fishingPrecheckTimer: Phaser.Time.TimerEvent | null = null;
   private fishingAudioContext: AudioContext | null = null;
   private fishingClockNow: () => number = () => performance.now() / 1000;
@@ -442,6 +447,7 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.kayak = new QizhenKayakVisual(this);
 
     this.cursors = this.input.keyboard!.createCursorKeys();
+    this.fishingEscapeKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.keys = this.input.keyboard!.addKeys("W,A,S,D,C,SHIFT,TAB") as Record<
       "W" | "A" | "S" | "D" | "C" | "SHIFT" | "TAB",
       Phaser.Input.Keyboard.Key
@@ -1867,6 +1873,13 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.fishingResolving = false;
     this.fishingHeldActions.clear();
 
+    this.cameras.main.stopFollow();
+    this.cameras.main.centerOn(attempt.target.x, attempt.target.y);
+    this.startFishingModelSession(attempt);
+  }
+
+  private startFishingModelSession(attempt: QizhenFishingAttempt): void {
+    if (!this.sys?.isActive() || this.fishingActiveAttempt?.sessionId !== attempt.sessionId) return;
     const assist = this.fishingFailureCounts[attempt.spotId] >= 2;
     const model = new QizhenFishingRhythmModel({
       chartId: attempt.spotId,
@@ -1875,6 +1888,7 @@ export class QizhenLakeScene extends Phaser.Scene {
       events: {
         onNoteJudged: (note, judgment, errorMs, tension) => {
           this.fishingVisual?.notifyJudgment(note, judgment, errorMs);
+          if(this.fishingAudioContext?.state==="running")scheduleLakeFishingJudgment(this.fishingAudioContext,judgment,this.fishingAudioContext.currentTime);
           this.emitDomain("qizhen_fishing_note_judged", {
             sessionId: attempt.sessionId,
             spotId: attempt.spotId,
@@ -1910,16 +1924,15 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.fishingVisual = new QizhenFishingRhythmVisual({
       scene: this,
       model,
-      anchor: { x: attempt.target.x, y: attempt.target.y },
       targetLabel: attempt.targetLabel,
-      lineFrom: () => ({
-        x: this.player.x + Math.cos(this.kayakHeading) * 44,
-        y: this.player.y + Math.sin(this.kayakHeading) * 44
-      }),
-      reducedMotion: this.reducedMotion
+      catchKind: attempt.spotId,
+      reducedMotion: this.reducedMotion,
+      onInput: type => this.routeFishingInput("hook", type),
+      onDirection: (action, type) => this.routeFishingInput(action, type),
+      onNeutralRelease: () => { this.fishingHeldActions.clear(); this.fishingModel?.releaseHeldInputs(); },
+      onCancel: () => this.cancelFishingSession("player_cancel"),
+      onRetry: () => this.finishFishingFailure(attempt, "grade", undefined, true)
     });
-    this.cameras.main.stopFollow();
-    this.cameras.main.centerOn(attempt.target.x, attempt.target.y);
     this.fishingNextMetronomeBeat = 0;
     model.start();
     this.fishingStartedAtSec = this.fishingClockNow() - model.elapsedSec;
@@ -1929,15 +1942,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       chartId: attempt.spotId,
       targetLabel: attempt.targetLabel,
       totalNotes: model.totalNotes,
-      durationSec: model.durationSec,
-      experience: model.experience,
       assist
     });
     if (attempt.spotId === "paper") {
       this.emitDomain("qizhen_fishing_final_tension_started", {
         sessionId: attempt.sessionId,
         spotId: attempt.spotId,
-        durationSec: model.durationSec
       });
     }
   }
@@ -1968,9 +1978,9 @@ export class QizhenLakeScene extends Phaser.Scene {
       chasing: false
     });
 
+    this.updateFishingKeyboardInput();
     const model = this.fishingModel;
     if (model) {
-      this.updateFishingKeyboardInput(model);
       model.update();
       this.scheduleFishingMetronome();
       this.fishingVisual?.update();
@@ -1979,18 +1989,23 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.publishDebugState(null, [], runtime);
   }
 
-  private updateFishingKeyboardInput(model: QizhenFishingRhythmModel): void {
-    const leftPressed = Phaser.Input.Keyboard.JustDown(this.keys.A);
-    const rightPressed = Phaser.Input.Keyboard.JustDown(this.keys.D);
-    if (leftPressed) this.applyFishingInput(model, "left", "press");
-    if (rightPressed) this.applyFishingInput(model, "right", "press");
-    if (Phaser.Input.Keyboard.JustDown(this.keys.S)) this.applyFishingInput(model, "hook", "press");
+  private updateFishingKeyboardInput(): void {
+    for (const [action, keys] of [["left", [this.keys.A, this.cursors.left]], ["right", [this.keys.D, this.cursors.right]]] as const) {
+      if (keys.some(key => Phaser.Input.Keyboard.JustDown(key))) this.routeFishingInput(action, "press");
+      if (keys.some(key => Phaser.Input.Keyboard.JustUp(key)) && keys.every(key => !key.isDown)) this.routeFishingInput(action, "release");
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) this.routeFishingInput("hook", "press");
+    if (Phaser.Input.Keyboard.JustUp(this.cursors.space)) this.routeFishingInput("hook", "release");
+    if (Phaser.Input.Keyboard.JustDown(this.fishingEscapeKey)) this.cancelFishingSession("player_cancel");
+  }
 
-    const leftReleased = Phaser.Input.Keyboard.JustUp(this.keys.A) && !this.keys.A.isDown;
-    const rightReleased = Phaser.Input.Keyboard.JustUp(this.keys.D) && !this.keys.D.isDown;
-    if (leftReleased) this.applyFishingInput(model, "left", "release");
-    if (rightReleased) this.applyFishingInput(model, "right", "release");
-    if (Phaser.Input.Keyboard.JustUp(this.keys.S)) this.applyFishingInput(model, "hook", "release");
+  private routeFishingInput(
+    action: QizhenFishingAction,
+    type: "press" | "release"
+  ): void {
+    if (type === "press" && action === "hook" && this.fishingVisual?.handleResultInput()) return;
+    if (!this.fishingModel) return;
+    this.applyFishingInput(this.fishingModel, action, type);
   }
 
   private applyFishingInput(
@@ -2011,9 +2026,10 @@ export class QizhenLakeScene extends Phaser.Scene {
   private scheduleFishingMetronome(): void {
     const audioContext = this.fishingAudioContext;
     const model = this.fishingModel;
-    if (!this.fishingUsesAudioClock || !audioContext || audioContext.state !== "running" || model?.phase !== "running") {
+    if (!this.fishingUsesAudioClock || !audioContext || audioContext.state !== "running" || model?.phase !== "running" || model.stage === "casting") {
       return;
     }
+    this.fishingStartedAtSec = model.musicStartedAtSec ?? audioContext.currentTime;
     const scheduleUntil = audioContext.currentTime + 0.12;
     while (
       this.fishingStartedAtSec + this.fishingNextMetronomeBeat * QIZHEN_FISHING_TIMING.beatSec
@@ -2025,25 +2041,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         this.fishingStartedAtSec + beatIndex * QIZHEN_FISHING_TIMING.beatSec
       );
       try {
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        const finaleProgress = model.experience === "finale_full"
-          ? Phaser.Math.Clamp(model.elapsedSec / model.durationSec, 0, 1)
-          : 0;
-        oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(
-          (beatIndex % 4 === 0 ? 820 : 610) + finaleProgress * (beatIndex % 4 === 0 ? 140 : 90),
-          beatTime
-        );
-        gain.gain.setValueAtTime(0.0001, beatTime);
-        gain.gain.exponentialRampToValueAtTime(
-          (beatIndex % 4 === 0 ? 0.035 : 0.022) * (1 + finaleProgress * 0.45),
-          beatTime + 0.004
-        );
-        gain.gain.exponentialRampToValueAtTime(0.0001, beatTime + 0.055);
-        oscillator.connect(gain).connect(audioContext.destination);
-        oscillator.start(beatTime);
-        oscillator.stop(beatTime + 0.06);
+        scheduleLakeFishingBeat(audioContext, beatIndex, beatTime);
       } catch {
         this.fishingUsesAudioClock = false;
         break;
@@ -2072,11 +2070,7 @@ export class QizhenLakeScene extends Phaser.Scene {
         result: result as unknown as Record<string, unknown>
       });
     };
-    if (attempt.spotId === "paper") {
-      submit();
-    } else {
-      this.fishingVisual?.playResult(result, submit);
-    }
+    this.fishingVisual?.playResult(result, submit);
   }
 
   private resolveFishingModelFailure(attempt: QizhenFishingAttempt, reason: QizhenFishingFailReason): void {
@@ -2089,7 +2083,8 @@ export class QizhenLakeScene extends Phaser.Scene {
   private finishFishingFailure(
     attempt: QizhenFishingAttempt,
     reason: QizhenFishingFailReason | "grade",
-    result?: QizhenFishingResult
+    result?: QizhenFishingResult,
+    retry = false
   ): void {
     if (this.fishingActiveAttempt?.sessionId !== attempt.sessionId) return;
     this.clearFishingSession();
@@ -2101,9 +2096,10 @@ export class QizhenLakeScene extends Phaser.Scene {
       failures: this.fishingFailureCounts[attempt.spotId],
       assistNext: this.fishingFailureCounts[attempt.spotId] >= 2
     });
+    if (retry) { this.requestFishingAttempt(attempt.target, attempt.itemId); return; }
     this.showFeedback(
       this.fishingFailureCounts[attempt.spotId] >= 2
-        ? "未通过：道具已保留。下次将扩大判定窗口并精简节拍。"
+        ? "道具已保留。下次白圈的有效窗口会放宽，操作仍然相同。"
         : "未通过：道具已保留，靠近同一水纹可立即重试。",
       "system"
     );
@@ -2373,15 +2369,14 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (name === "rpg_qizhen_fishing_input") {
-      const model = this.fishingModel;
       const action = String(payload?.action ?? "");
       const type = String(payload?.type ?? "");
+      if (type === "cancel") { this.fishingHeldActions.clear(); this.fishingModel?.releaseHeldInputs(); return; }
       if (
-        model
-        && (action === "left" || action === "right" || action === "hook")
+        (action === "left" || action === "right" || action === "hook")
         && (type === "press" || type === "release")
       ) {
-        this.applyFishingInput(model, action, type);
+        this.routeFishingInput(action, type);
       }
       return;
     }
@@ -3244,9 +3239,23 @@ export class QizhenLakeScene extends Phaser.Scene {
           judged: this.fishingModel?.judgedCount ?? 0,
           totalNotes: this.fishingModel?.totalNotes ?? 0,
           assist: this.fishingModel?.assist ?? false,
+          tutorial: null,
+          protocol: "lake-rhythm-v3",
+          rhythmBeat: this.fishingModel?.rhythmBeat ?? 0,
+          countIn: this.fishingModel?.countIn ?? 0,
+          beatProgress: this.fishingModel?.beatProgress ?? 0,
+          stage: this.fishingModel?.stage ?? "casting",
+          lineX: this.fishingModel?.lineX ?? -0.5,
+          fishX: this.fishingModel?.fishX ?? 0.42,
+          castPower: this.fishingModel?.castPower ?? 0,
+          tracking: this.fishingModel?.tracking ?? 0,
+          fishRushing: this.fishingModel?.fishRushing ?? false,
+          liftReady: this.fishingModel?.liftReady ?? false,
+          waitingForCast: this.fishingModel?.stage === "casting",
+          holding: this.fishingModel?.isHolding ?? false,
+          nextPullAtSeconds: this.fishingModel?.currentNote?.timeSec ?? null,
           failureCounts: { ...this.fishingFailureCounts },
           clock: this.fishingUsesAudioClock ? "audio_context" : "performance_fallback",
-          visual: this.fishingVisual?.getDebugSnapshot() ?? null
         },
         chase: {
           active: runtime.phase === "swan_chase",

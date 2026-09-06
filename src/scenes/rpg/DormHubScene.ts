@@ -725,7 +725,7 @@ export class DormHubScene extends Phaser.Scene {
     }
     const actOne = this.bridge.getState().actOne;
     this.showFeedback(actOne.manualControlTested
-      ? "先完成基础馆二层南区 022 的座位预约。"
+      ? "先完成基础馆一层书库 022 的座位预约。"
       : INTERACTION_COPY.exit_door);
   }
 

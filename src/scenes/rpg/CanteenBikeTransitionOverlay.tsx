@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import { CanteenBikeTransitionRenderer } from "./canteen-chase/CanteenBikeTransitionRenderer";
 import {
@@ -22,6 +22,7 @@ export function CanteenBikeTransitionOverlay({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const onCompleteRef = useRef(onComplete);
   const completedRef = useRef(false);
+  const [assetState, setAssetState] = useState<"loading" | "ready" | "error">("loading");
   onCompleteRef.current = onComplete;
 
   const finishOnce = useCallback(() => {
@@ -38,18 +39,27 @@ export function CanteenBikeTransitionOverlay({
     const renderer = new CanteenBikeTransitionRenderer(canvas, stage);
     const lastFrame = getCanteenBikeTransitionLastFrame(stage);
     let frameRequest = 0;
-    let timeout = 0;
-    let startedAt = performance.now();
-    let hiddenAt: number | null = document.visibilityState === "hidden" ? startedAt : null;
+    let lastTick = performance.now();
+    let visibleElapsedMs = 0;
 
     const render = (now: number) => {
-      if (hiddenAt !== null) {
+      const elapsed = Math.min(250, Math.max(0, now - lastTick));
+      lastTick = now;
+      const readiness = renderer.getAssetState();
+      setAssetState(readiness);
+      if (readiness !== "ready") {
+        renderer.renderFrame(0);
         frameRequest = window.requestAnimationFrame(render);
         return;
       }
+      if (document.visibilityState === "hidden") {
+        frameRequest = window.requestAnimationFrame(render);
+        return;
+      }
+      visibleElapsedMs += elapsed;
       const frame = prefersReducedMotion
         ? lastFrame
-        : Math.min(lastFrame, Math.floor((now - startedAt) / FRAME_DURATION_MS));
+        : Math.min(lastFrame, Math.floor(visibleElapsedMs / FRAME_DURATION_MS));
       renderer.renderFrame(frame);
       if (frame >= lastFrame) {
         finishOnce();
@@ -59,13 +69,7 @@ export function CanteenBikeTransitionOverlay({
     };
 
     const handleVisibility = () => {
-      const now = performance.now();
-      if (document.visibilityState === "hidden") {
-        hiddenAt = now;
-      } else if (hiddenAt !== null) {
-        startedAt += now - hiddenAt;
-        hiddenAt = null;
-      }
+      lastTick = performance.now();
     };
     const handleResize = () => renderer.resizeViewport();
 
@@ -73,14 +77,9 @@ export function CanteenBikeTransitionOverlay({
     window.addEventListener("resize", handleResize);
     renderer.renderFrame(prefersReducedMotion ? lastFrame : 0);
     frameRequest = window.requestAnimationFrame(render);
-    timeout = window.setTimeout(
-      finishOnce,
-      prefersReducedMotion ? 160 : (lastFrame + 1) * FRAME_DURATION_MS + 1200
-    );
 
     return () => {
       window.cancelAnimationFrame(frameRequest);
-      window.clearTimeout(timeout);
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("resize", handleResize);
       renderer.destroy();
@@ -99,6 +98,12 @@ export function CanteenBikeTransitionOverlay({
         role="img"
         aria-label={stage === "start" ? "角色解锁共享单车并开始骑行" : "角色刹车下车并进入剧院外广场"}
       />
+      {assetState !== "ready" && (
+        <div className="canteen-bike-asset-status" role="status">
+          <p>{assetState === "error" ? "人物资源加载失败，转场已暂停。" : "正在准备人物…"}</p>
+          {assetState === "error" && <button type="button" onClick={() => window.location.reload()}>重新载入</button>}
+        </div>
+      )}
     </section>
   );
 }

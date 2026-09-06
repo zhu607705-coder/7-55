@@ -1,8 +1,12 @@
 import { cloneElement, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
+import { GameSubtitleContent } from "../../../components/GameSubtitleFrame";
+import { createPortal } from "react-dom";
 import libraryAvatarUrl from "../../../assets/ui/library_avatar.png";
 import libraryRoomEastUrl from "../../../assets/ui/library_room_east.png";
 import libraryRoomNorthUrl from "../../../assets/ui/library_room_north.png";
 import libraryRoomSouthUrl from "../../../assets/ui/library_room_south.png";
+import libraryFoundationReferenceUrl from "../../../assets/ui/library_foundation_reference.jpg";
+import libraryReservation from "../../../data/library-reservation.config.json";
 import threeMinuteLeaveMethodUrl from "../../../assets/phone/library-search/runtime/three_minute_leave_method.webp";
 import threeMinuteLeaveArtUrl from "../../../assets/phone/library-search/runtime/three_minute_leave_art.webp";
 import threeMinutePauseApplicationUrl from "../../../assets/phone/library-search/runtime/three_minute_pause_application.webp";
@@ -92,7 +96,7 @@ const SYSTEM_DIALOGUES: Record<SystemDialogueKind, SystemDialogueLine[]> = {
     { speaker: "system", text: "别打扰我……哦，你已经完事了，速度还挺快的" },
     { speaker: "system", text: "我以为你要在寝室“就再睡一会儿”呢" },
     { speaker: "system", text: "你知道的，去图书馆要先完成座位预约。" },
-    { speaker: "system", text: "基础馆二楼南区022，记住了。" }
+    { speaker: "system", text: "基础馆一层书库022，记住了。" }
   ]
 };
 
@@ -200,7 +204,7 @@ const RECOVERY_EVIDENCE: Array<{
     id: "seat_022_receipt",
     label: "022 座位小票",
     item: "seat022Receipt",
-    source: "二层南区 · 022 桌面夹缝"
+    source: "一层书库 · 022 桌面夹缝"
   },
   {
     id: "library_presence_proof",
@@ -210,7 +214,7 @@ const RECOVERY_EVIDENCE: Array<{
   }
 ];
 
-const ROOMS: RoomData[] = [
+const MAIN_LIBRARY_ROOMS: RoomData[] = [
   { label: "二层南", floor: "二层", seats: 32, available: 32, imageUrl: libraryRoomSouthUrl },
   { label: "二层北", floor: "二层", seats: 176, available: 171, imageUrl: libraryRoomNorthUrl },
   { label: "三层东", floor: "三层", seats: 48, available: 47, imageUrl: libraryRoomEastUrl },
@@ -223,12 +227,6 @@ const SEAT_TABLES = [
   { leftStart: 13, rightStart: 9 },
   { leftStart: 5, rightStart: 1 }
 ] as const;
-
-const SEAT_LIST_IDS = SEAT_TABLES.flatMap(({ leftStart, rightStart }) =>
-  Array.from({ length: 4 }, (_, index) => [leftStart + index, rightStart + index])
-    .flat()
-    .map((seat) => String(seat).padStart(3, "0"))
-).sort();
 
 function PixelAppIcon({ symbol, tone, badge }: { symbol: string; tone: string; badge?: string }) {
   return (
@@ -455,6 +453,8 @@ function InterludeNetworkRecord({ state, router }: Pick<SceneComponentProps, "st
 }
 
 function SeatMap({
+  seatOffset,
+  seatCount,
   selectedSeat,
   lost,
   restored,
@@ -462,6 +462,8 @@ function SeatMap({
   targetSeatRef,
   onSelect
 }: {
+  seatOffset: number;
+  seatCount: number;
   selectedSeat: string | null;
   lost: boolean;
   restored: boolean;
@@ -472,7 +474,7 @@ function SeatMap({
   return (
     <section className={`zju-seat-map ${dropReady ? "is-pass-drop-ready" : ""} ${restored ? "is-seat-restored" : ""}`.trim()} aria-label="可选座位地图" data-ui-part="seat-map">
       <div className="zju-seat-tables">
-        {SEAT_TABLES.map((table, tableIndex) => (
+        {SEAT_TABLES.map((baseTable) => ({ leftStart: baseTable.leftStart + seatOffset, rightStart: baseTable.rightStart + seatOffset })).map((table, tableIndex) => (
           <div className="zju-seat-table" key={`${table.leftStart}-${table.rightStart}`}>
             <div className="zju-seat-edge-label top" aria-hidden="true">
               {tableIndex === 1 ? `${String(table.leftStart).padStart(3, "0")}  ${String(table.rightStart).padStart(3, "0")}` : ""}
@@ -488,6 +490,7 @@ function SeatMap({
                     className={`${selectedSeat === leftSeat ? "is-selected" : ""} ${selectedSeat === leftSeat && lost ? "is-lost" : ""}`.trim()}
                     aria-label={`选择座位${leftSeat}`}
                     data-seat={leftSeat}
+                    disabled={Number(leftSeat) > seatCount}
                     onClick={() => onSelect(leftSeat)}
                   >
                     <i aria-hidden="true" />
@@ -499,6 +502,7 @@ function SeatMap({
                     className={`${selectedSeat === rightSeat ? "is-selected" : ""} ${selectedSeat === rightSeat && lost ? "is-lost" : ""}`.trim()}
                     aria-label={`选择座位${rightSeat}`}
                     data-seat={rightSeat}
+                    disabled={Number(rightSeat) > seatCount}
                     onClick={() => onSelect(rightSeat)}
                   >
                     <i aria-hidden="true" />
@@ -549,8 +553,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const sheetTriggerRef = useRef<HTMLElement | null>(null);
   const [utilityPanel, setUtilityPanel] = useState<ZjudingUtilityPanelId | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLibrary, setSelectedLibrary] = useState("请选择馆舍");
-  const [selectedRoom, setSelectedRoom] = useState("二层南");
+  const [selectedLibrary, setSelectedLibrary] = useState(libraryReservation.library);
+  const [selectedRoom, setSelectedRoom] = useState(libraryReservation.targetRoom);
+  const [seatSection, setSeatSection] = useState(0);
   const [selectedDate, setSelectedDate] = useState("07月10日 · 今天");
   const [selectedTime, setSelectedTime] = useState("00:01 - 23:59");
   const [seatView, setSeatView] = useState<"map" | "list">("map");
@@ -565,6 +570,11 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const [directoryEntryActive, setDirectoryEntryActive] = useState(false);
   const [systemDialogue, setSystemDialogue] = useState<SystemDialogueKind | null>(null);
   const [systemDialogueIndex, setSystemDialogueIndex] = useState(0);
+  const systemDialogueRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (systemDialogue) systemDialogueRef.current?.focus();
+  }, [systemDialogue]);
   const [catalogQuery, setCatalogQuery] = useState("");
   const [catalogSubmitted, setCatalogSubmitted] = useState(false);
   const [catalogSubmittedQuery, setCatalogSubmittedQuery] = useState("");
@@ -588,6 +598,16 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   const recoveryUnlocked = access.libraryRecovery;
   const currentPage = sanitizeZjudingPage(state);
   const actOnePhase = state.actOne.phase;
+  const rooms: RoomData[] = selectedLibrary === libraryReservation.library
+    ? libraryReservation.rooms.map((room) => ({
+      ...room,
+      available: room.seats - (room.label === libraryReservation.targetRoom && state.ui.librarySeatReserved ? 1 : 0),
+      imageUrl: libraryFoundationReferenceUrl
+    }))
+    : selectedLibrary === "主馆" ? MAIN_LIBRARY_ROOMS : [];
+  const activeRoom = rooms.find((room) => room.label === selectedRoom);
+  const seatCount = activeRoom?.seats ?? 0;
+  const seatSectionCount = Math.ceil(seatCount / 32);
   const identityReadable = selectIdentityReadable(state);
   const directoryDisplayAllowed = identityReadable && (state.actOne.characterNamed || directoryEntryActive);
   const visibleDirectoryCardStatus = directoryDisplayAllowed ? directoryCardStatus : "idle";
@@ -775,6 +795,9 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     }
     if (action === "我的预约") {
       if (state.ui.librarySeatReserved || access.libraryReservation) {
+        setSelectedLibrary(libraryReservation.library);
+        setSelectedRoom(libraryReservation.targetRoom);
+        setSeatSection(0);
         goPage("library_seat");
       } else {
         announce("当前没有已确认的图书馆预约。");
@@ -782,7 +805,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       return;
     }
     if (action === "刷新空位" || action === "刷新座位") {
-      announce(`已重新读取本机座位状态：${selectedRoom}空闲 ${ROOMS.find((room) => room.label === selectedRoom)?.available ?? 0} 席。`);
+      announce(`已重新读取本机座位状态：${selectedRoom}空闲 ${activeRoom?.available ?? 0} 席。`);
       return;
     }
     if (action === "预约规则") {
@@ -1003,7 +1026,12 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
   }
 
   function enterRoom(room: string) {
+    if (state.ui.librarySeatReserved && (selectedLibrary !== libraryReservation.library || room !== libraryReservation.targetRoom)) {
+      announce(`当前预约为${libraryReservation.library}${libraryReservation.targetRoom} 022，本次任务不支持改签。`);
+      return;
+    }
     setSelectedRoom(room);
+    setSeatSection(0);
     if (!state.ui.librarySeatReserved) {
       kit.flags.setUi("librarySelectedSeat", null);
     }
@@ -1042,7 +1070,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
       setOverlay(null);
       const feedback = {
         wrong_library: "预约来源不匹配：请选择基础馆。",
-        wrong_room: "预约区域不匹配：请选择二层南区。",
+        wrong_room: "预约区域不匹配：请选择一层书库。",
         wrong_seat: "座位凭据不匹配：目标座位为 022。",
         inactive: "系统还没有开放本次座位预约。"
       }[result];
@@ -1051,7 +1079,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
     }
     setOverlay(null);
     playSfx("01_");
-    kit.flags.toast("预约成功：基础馆二层南区 022。任务更新：前往基础图书馆 022", "task");
+    kit.flags.toast("预约成功：基础馆一层书库 022。", "task");
   }
 
   function submitCatalogSearch() {
@@ -1710,7 +1738,7 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           <header className="zju-recovery-summary">
             <span>022</span>
             <div>
-              <strong>基础馆 · 二楼南区</strong>
+              <strong>基础馆 · 一层书库</strong>
               <small>CC98 公示排名：01</small>
             </div>
             <b>{passReady ? "PASS" : `${submitted.length}/3`}</b>
@@ -1793,18 +1821,18 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               <button type="button" role="tab" aria-selected={spaceMode === "quick"} className={spaceMode === "quick" ? "is-active" : ""} onClick={() => setSpaceMode("quick")}>快速选择</button>
             </div>
             <div className="zju-space-toolbar">
-              <p>显示 <strong>{spaceMode === "list" ? 25 : 4}</strong> 空间</p>
-              <button type="button" onClick={() => setOverlay({ kind: "libraries" })}>
+              <p>显示 <strong>{rooms.length}</strong> 空间</p>
+              <button type="button" aria-label={`选择馆舍，当前${selectedLibrary}`} onClick={() => setOverlay({ kind: "libraries" })}>
                 {selectedLibrary}<span aria-hidden="true">▼</span>
               </button>
             </div>
             {spaceMode === "list" ? (
               <div className="zju-room-list" aria-label="可预约空间列表" data-ui-part="room-list">
-                {ROOMS.map((room) => (
+                {rooms.map((room) => (
                   <article className="zju-room-card" key={room.label}>
-                    <div className="zju-room-photo">
+                    <div className={`zju-room-photo ${selectedLibrary === libraryReservation.library ? "is-foundation-photo" : ""}`}>
                       <img src={room.imageUrl} alt={`${room.label}自习空间`} />
-                      <span>主馆</span>
+                      <span>{selectedLibrary}</span>
                     </div>
                     <div className="zju-room-copy">
                       <header><h2>{room.label}</h2><span>{room.floor}</span></header>
@@ -1813,15 +1841,17 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
                     </div>
                   </article>
                 ))}
+                <p className="zju-room-list-end">{rooms.length ? "没有更多了" : "该馆暂未开放可预约空间"}</p>
               </div>
             ) : (
               <div className="zju-room-quick" aria-label="快速选择空间" data-ui-part="quick-room-grid">
-                {ROOMS.map((room) => (
+                {rooms.map((room) => (
                   <button type="button" key={room.label} onClick={() => enterRoom(room.label)}>
                     <strong>{room.label}</strong>
                     <span>空闲 {room.available}</span>
                   </button>
                 ))}
+                {!rooms.length ? <p className="zju-room-list-end">该馆暂未开放可预约空间</p> : null}
               </div>
             )}
           </section>
@@ -1867,13 +1897,13 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         <main className="zju-seat-content">
           <section className="zju-seat-room-summary" data-ui-part="room-summary">
             <div>
-              <h2>主馆 · 二层 · {selectedRoom}</h2>
+              <h2>{selectedLibrary} · {selectedRoom}</h2>
               <p>
                 <button type="button" onClick={() => { setSeatView("map"); announce("已切换到下方平面图。"); }}>查看平面图 ›</button>
-                <button type="button" onClick={() => announce(`${selectedRoom}：座位 ${ROOMS.find((room) => room.label === selectedRoom)?.seats ?? 0}，当前空闲 ${ROOMS.find((room) => room.label === selectedRoom)?.available ?? 0}。`) }>查看房间详情 ›</button>
+                <button type="button" onClick={() => announce(`${selectedRoom}：座位 ${seatCount}，当前空闲 ${activeRoom?.available ?? 0}。`) }>查看房间详情 ›</button>
               </p>
             </div>
-            <button type="button" className="zju-seat-available" onClick={() => announce("当前空余 32 个座位。")}>空余 32</button>
+            <button type="button" className="zju-seat-available" onClick={() => announce(`当前空余 ${activeRoom?.available ?? 0} 个座位。`)}>空余 {activeRoom?.available ?? 0}</button>
           </section>
 
           {investigationActive ? (
@@ -1911,7 +1941,19 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
           </div>
 
           {seatView === "map" ? (
+            <>
+            {seatSectionCount > 1 ? (
+              <nav className="zju-seat-section-nav" aria-label="座位分区">
+                {Array.from({ length: seatSectionCount }, (_, section) => (
+                  <button key={section} type="button" aria-current={seatSection === section ? "true" : undefined} onClick={() => setSeatSection(section)}>
+                    {String(section * 32 + 1).padStart(3, "0")}–{String(Math.min(seatCount, (section + 1) * 32)).padStart(3, "0")}
+                  </button>
+                ))}
+              </nav>
+            ) : null}
             <SeatMap
+              seatOffset={seatSection * 32}
+              seatCount={seatCount}
               selectedSeat={state.ui.librarySelectedSeat}
               lost={finalsPuzzle.backpackInspected && !finalsPuzzle.playerSeated}
               restored={finalsPuzzle.playerSeated}
@@ -1919,9 +1961,10 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
               targetSeatRef={seatDropTargetRef}
               onSelect={selectSeat}
             />
+            </>
           ) : (
             <section className="zju-seat-list" aria-label="可选座位列表" data-ui-part="seat-list">
-              {SEAT_LIST_IDS.map((seat) => (
+              {Array.from({ length: seatCount }, (_, index) => String(index + 1).padStart(3, "0")).map((seat) => (
                 <button key={seat} type="button" className={state.ui.librarySelectedSeat === seat ? "is-selected" : ""} onClick={() => selectSeat(seat)}>
                   {seat}
                 </button>
@@ -2087,18 +2130,42 @@ export function ZjudingScene({ state, router, events }: SceneComponentProps) {
         portalRoot={typeof document === "undefined" ? null : document.querySelector(".phone-frame")}
         onClose={() => setSubmittedDocument(null)}
       />
-      {systemDialogue ? (
-        <div className="zju-system-dialogue-layer" role="dialog" aria-modal="true" aria-label="系统对话">
-          <div className="zju-system-orb" aria-hidden="true"><span>求</span><i /></div>
+      {systemDialogue ? createPortal(
+        <div
+          ref={systemDialogueRef}
+          className="zju-system-dialogue-layer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="系统对话，点击任意位置继续"
+          tabIndex={-1}
+          onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            advanceSystemDialogue();
+          }}
+          onKeyDown={(event) => {
+            event.stopPropagation();
+            if (event.key === "Tab") {
+              event.preventDefault();
+              systemDialogueRef.current?.focus();
+            }
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              advanceSystemDialogue();
+            }
+          }}
+        >
           <section
             key={`${systemDialogue}-${systemDialogueIndex}`}
             className={`zju-system-dialogue game-subtitle-frame subtitle-tone-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker} is-${SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker} is-line-entering`}
           >
-            <small className="game-subtitle-speaker">{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker === "system" ? "系统" : "我"}</small>
-            <p>{SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].text}</p>
-            <button type="button" aria-label="继续对话" onClick={advanceSystemDialogue}>›</button>
+            <GameSubtitleContent
+              speaker={SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].speaker === "system" ? "系统" : "我"}
+              text={SYSTEM_DIALOGUES[systemDialogue][systemDialogueIndex].text}
+            />
           </section>
-        </div>
+        </div>,
+        document.querySelector(".phone-frame") ?? document.body
       ) : null}
       {overlay?.kind === "search" ? (
         <ActionSheet title="浙大百事通" onClose={() => setOverlay(null)} returnFocusElement={sheetTriggerRef.current}>

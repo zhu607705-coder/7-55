@@ -13,6 +13,8 @@ export interface ChapterFourLightGridContract {
   initialMask: number;
   targetMask: number;
   allOnMask: number;
+  evidenceDetailIds: readonly string[];
+  maximumSolutionToggles: 3;
   zones: readonly ChapterFourLightZoneContract[];
   requiredOnZoneIds: readonly ChapterFourLightZoneId[];
   requiredOffZoneIds: readonly ChapterFourLightZoneId[];
@@ -52,9 +54,8 @@ const EXPECTED_REQUIRED_OFF_ZONE_IDS = Object.freeze([
   "bakery_back_area"
 ] as const satisfies readonly ChapterFourLightZoneId[]);
 const EXPECTED_SOLUTION_ZONE_IDS = Object.freeze([
-  "hall",
-  "west_corridor",
   "east_corridor",
+  "classroom_zone",
   "bakery_back_area"
 ] as const satisfies readonly ChapterFourLightZoneId[]);
 
@@ -68,12 +69,22 @@ function normalizeContract(raw: typeof content.lightGrid): ChapterFourLightGridC
   if (raw.zones.length !== EXPECTED_ZONE_IDS.length) {
     throw new Error(`chapter4_light_grid_zone_count:${raw.zones.length}`);
   }
-  if (raw.initialMask !== 14 || raw.targetMask !== 13 || raw.allOnMask !== 31) {
+  if (raw.initialMask !== 6 || raw.targetMask !== 13 || raw.allOnMask !== 31) {
     throw new Error("chapter4_light_grid_mask_contract_mismatch");
+  }
+  if (raw.maximumSolutionToggles !== 3
+    || JSON.stringify(raw.evidenceDetailIds) !== JSON.stringify([
+      "room204_door_paper_trace",
+      "power_hall_node",
+      "power_east_corridor_node",
+      "power_classroom_node"
+    ])) {
+    throw new Error("chapter4_light_grid_evidence_contract_mismatch");
   }
   if (JSON.stringify(raw.requiredOnZoneIds) !== JSON.stringify(EXPECTED_REQUIRED_ON_ZONE_IDS)
     || JSON.stringify(raw.requiredOffZoneIds) !== JSON.stringify(EXPECTED_REQUIRED_OFF_ZONE_IDS)
     || JSON.stringify(raw.verifiedSolutionZoneIds) !== JSON.stringify(EXPECTED_SOLUTION_ZONE_IDS)
+    || raw.verifiedSolutionZoneIds.length > raw.maximumSolutionToggles
     || raw.successLocks !== true) {
     throw new Error("chapter4_light_grid_solution_contract_mismatch");
   }
@@ -110,6 +121,8 @@ function normalizeContract(raw: typeof content.lightGrid): ChapterFourLightGridC
     initialMask: raw.initialMask,
     targetMask: raw.targetMask,
     allOnMask: raw.allOnMask,
+    evidenceDetailIds: Object.freeze([...raw.evidenceDetailIds]),
+    maximumSolutionToggles: raw.maximumSolutionToggles,
     zones: Object.freeze(zones),
     requiredOnZoneIds: Object.freeze([...raw.requiredOnZoneIds] as ChapterFourLightZoneId[]),
     requiredOffZoneIds: Object.freeze([...raw.requiredOffZoneIds] as ChapterFourLightZoneId[]),

@@ -109,23 +109,6 @@ async function readJson(relativePath, checkId) {
   }
 }
 
-async function readOptionalJson(relativePath, checkId) {
-  const source = await readOptionalText(relativePath);
-  if (source === null) return null;
-  try {
-    const value = JSON.parse(source);
-    recordCheck(`${checkId}.json`, true, `${relativePath} is valid JSON when present`);
-    return value;
-  } catch (error) {
-    recordCheck(
-      `${checkId}.json`,
-      false,
-      `${relativePath} is invalid JSON (${error instanceof Error ? error.message : String(error)})`
-    );
-    return null;
-  }
-}
-
 function validateManifestGate(gateName, gate, expectedFrames, expectedSegments) {
   recordCheck(
     `manifest.timeline.${gateName}.frames`,
@@ -304,11 +287,9 @@ function segmentObjectContains(source, id, frameStart, frameEnd) {
     && new RegExp(`frameEnd\\s*:\\s*${frameEnd}\\b`).test(window);
 }
 
-// Generation manifests and rejected-output archives are review evidence, not
-// runtime dependencies. Validate them when a local art archive is present,
-// while keeping the formal repository validator runnable without docs/assets.
-const manifest = await readOptionalJson(manifestRelativePath, "manifest");
-const rejectedResults = await readOptionalJson(rejectedResultsRelativePath, "rejected-media");
+const auditAuthoring = process.argv.includes("--with-authoring");
+const manifest = auditAuthoring ? await readJson(manifestRelativePath, "manifest") : null;
+const rejectedResults = auditAuthoring ? await readJson(rejectedResultsRelativePath, "rejected-media") : null;
 
 let inspectedAnchorCount = 0;
 let rejectedMediaCount = 0;
@@ -566,11 +547,8 @@ if (chaseOverlaySource) {
   );
   recordCheck(
     "runtime.chase-overlay.exact-run-start",
-    /distance\s*:\s*0\b/.test(chaseOverlaySource)
-      && /lives\s*:\s*MAX_LIVES\b/.test(chaseOverlaySource)
-      && /lane\s*:\s*1\b/.test(chaseOverlaySource)
-      && /GOAL_DISTANCE\s*=\s*755\b/.test(chaseOverlaySource),
-    "the chase runtime must initialize at distance 0, goal 755, lives 3 and lane 1"
+    /new ChaseStuntModel\(/.test(chaseOverlaySource),
+    "the overlay must use the independently validated 755m stunt model"
   );
 }
 
@@ -645,7 +623,7 @@ if (sharedRigSource) {
     : "";
   recordCheck(
     "runtime.shared-rig.ride-ik-authority",
-    /CHASE_RIDER_GEAR_RATIO\s*=\s*2\.6\b/.test(sharedRigSource)
+    /CHASE_RIDER_GEAR_RATIO\s*=\s*2\.2\b/.test(sharedRigSource)
       && /rig\.crank\.rotation\.x\s*=\s*pedalPhase/.test(ridePoseSource)
       && /enforceChaseRiderContactConstraints\(rig\)/.test(ridePoseSource)
       && !/rig\.(?:leftLeg|rightLeg)\.rotation\.x\s*=/.test(ridePoseSource),
@@ -673,8 +651,8 @@ if (chaseRendererSource) {
   recordCheck(
     "runtime.chase-renderer.distance-driven-pedals",
     /CHASE_RIDER_GEAR_RATIO/.test(chaseRendererSource)
-      && /distanceDelta\s*\*\s*WORLD_PER_METER\s*\/\s*CHASE_RIDER_WHEEL_RADIUS/.test(chaseRendererSource)
-      && /crankDelta\s*=\s*wheelSpin\s*\/\s*CHASE_RIDER_GEAR_RATIO/.test(chaseRendererSource)
+      && /distanceDelta\s*\*\s*WORLD_PER_METER\s*\/\s*\(CHASE_RIDER_WHEEL_RADIUS\s*\*\s*CHASE_RIDER_DISPLAY_SCALE\)/.test(chaseRendererSource)
+      && /crankDelta\s*=\s*-wheelSpin\s*\/\s*CHASE_RIDER_GEAR_RATIO/.test(chaseRendererSource)
       && /pedalPhaseRadians\s*=\s*\(this\.pedalPhaseRadians\s*\+\s*crankDelta\)\s*%\s*TWO_PI/.test(chaseRendererSource)
       && /chasePedalCadenceRpm/.test(chaseRendererSource),
     "live crank phase and cadence must derive from traveled distance through one gear ratio"
@@ -722,8 +700,12 @@ if (transitionOverlaySource) {
     "runtime.transition-overlay.finish-once",
     /\bfinishOnce\b/.test(transitionOverlaySource)
       && /\bonComplete\b/.test(transitionOverlaySource)
-      && /\btimeout\b/.test(transitionOverlaySource),
-    "the transition overlay must converge ended/fallback paths through finishOnce() and onComplete"
+      && /frame >= lastFrame/.test(transitionOverlaySource)
+      && /getAssetState/.test(transitionOverlaySource)
+      && /readiness !== "ready"/.test(transitionOverlaySource)
+      && /visibleElapsedMs/.test(transitionOverlaySource)
+      && !/setTimeout\(\s*finishOnce/.test(transitionOverlaySource),
+    "transition completion requires loaded assets and the final visible frame; hidden/loading time cannot bypass finishOnce"
   );
 }
 
@@ -776,6 +758,7 @@ const uploadIds = manifest
     .join(",")
   : "unavailable";
 
+console.log(`Native runtime validation; historical video-authoring audit ${auditAuthoring ? "enabled" : "not requested"}.`);
 console.log(
   `Canteen bike transition contract summary fps=${String(manifest?.timeline?.fps ?? "?")}`
   + ` startFrames=${String(manifest?.timeline?.startGate?.frames ?? "?")}`

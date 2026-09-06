@@ -5,6 +5,7 @@ const outputDirectory = resolve(process.cwd(), "demo");
 const requestedArtifact = process.argv[2] ?? "index.html";
 const allowedArtifacts = new Set([
   "index.html",
+  "bike-755-prototype.html",
   "campus-map-demo.html",
   "chapter4-monument-stair-demo.html"
 ]);
@@ -61,16 +62,18 @@ function verifyHtmlArtifact(name, html, outputStat) {
     throw new Error(`demo/${name} contains an HTTP-loaded resource.`);
   }
 
+  const nonInlineResourcePattern = /\b(?:src|href|poster)\s*=\s*["'](?!#|data:|blob:|javascript:)([^"']+)["']/i;
+  const nonInlineResourceTag = resourceTags.find((tag) => nonInlineResourcePattern.test(tag));
+  if (nonInlineResourceTag) {
+    throw new Error(`demo/${name} contains a non-inline resource reference: ${nonInlineResourceTag}`);
+  }
+
   return { bytes: outputStat.size, inlineScripts: scriptTags.length, inlineStyles: styleTags.length };
 }
 
-const validatedArtifacts = await Promise.all(outputFiles.map(async (name) => {
-  const outputPath = resolve(outputDirectory, name);
-  const [outputStat, html] = await Promise.all([stat(outputPath), readFile(outputPath, "utf8")]);
-  return { name, ...verifyHtmlArtifact(name, html, outputStat) };
-}));
-
-const requested = validatedArtifacts.find((artifact) => artifact.name === requestedArtifact);
+const outputPath = resolve(outputDirectory, requestedArtifact);
+const [outputStat, html] = await Promise.all([stat(outputPath), readFile(outputPath, "utf8")]);
+const requested = { name: requestedArtifact, ...verifyHtmlArtifact(requestedArtifact, html, outputStat) };
 console.log(
-  `verified single-file artifact path=demo/${requestedArtifact} bytes=${requested?.bytes ?? 0} inlineScripts=${requested?.inlineScripts ?? 0} inlineStyles=${requested?.inlineStyles ?? 0} validated=${validatedArtifacts.map((artifact) => artifact.name).join(",")}`
+  `verified single-file artifact path=demo/${requestedArtifact} bytes=${requested.bytes} inlineScripts=${requested.inlineScripts} inlineStyles=${requested.inlineStyles} validated=${outputFiles.join(",")}`
 );

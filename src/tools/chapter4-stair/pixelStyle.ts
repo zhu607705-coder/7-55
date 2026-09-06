@@ -8,7 +8,7 @@ import type { StairMaterialKey } from "./types";
  * 第四章楼梯间三视角解谜 —— 像素画风模块。
  * 设计依据：docs/plans/2026-08-08-chapter4-monument-perspective-two-level-design.md §8。
  * 仍禁用雾、软阴影、抗锯齿与色调映射；墙面、混凝土和金属使用本地
- * CC0 颜色贴图，经 64×64 少量灰阶化后由既有色板调制。
+ * CC0 颜色贴图，经 256×256 少量灰阶化后由既有色板调制。
  * 阴影一律用 createBlobShadow 的硬边色块，轮廓用 addHardOutline 的深色线框。
  */
 
@@ -92,7 +92,7 @@ const surfacePixelLevels = new Map<SurfaceFamily, readonly number[]>();
 let textureLoadGeneration = 0;
 
 /**
- * 64×64 表面纹理生成最近邻 mip 层：内部画面仍按像素块输出，
+ * 256×256 表面纹理生成最近邻 mip 层：内部画面仍按像素块输出，
  * 远处墙面和台阶不会因高频细节产生闪烁。
  */
 function configureSurfaceTexture(texture: THREE.Texture): void {
@@ -119,7 +119,7 @@ function createPixelSurfaceImage(
   family: SurfaceFamily,
   image: HTMLImageElement
 ): HTMLCanvasElement {
-  const size = 64;
+  const size = 256;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
@@ -294,8 +294,8 @@ export function createStairBoxGeometry(
 
 /**
  * 为网格叠加 1–2px 深轮廓（§8.3）。
- * WebGL 线宽恒为 1 设备像素：在 480×270 内部缓冲绘制为 1px，
- * 整数倍放大到 960×540 画布后恰为 2px 的硬边轮廓，符合规范区间。
+ * WebGL 线宽恒为 1 设备像素：在 960×540 原生缓冲绘制为 1px，
+ * 直接显示为 1px 硬边轮廓。
  * 返回的 LineSegments 作为子节点挂在 mesh 上，随机关刚体变换一起运动。
  */
 export function addHardOutline(
@@ -339,13 +339,13 @@ export function lowSegCylinder(
   radiusTop: number,
   radiusBottom: number,
   height: number,
-  radialSegments: 4 | 6 | 8 = 6
+  radialSegments: number = 16
 ): THREE.CylinderGeometry {
   return new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, 1, false);
 }
 
 /** 低细分球体（装饰用，默认 6×4 段）。 */
-export function lowSegSphere(radius: number, widthSegments = 6, heightSegments = 4): THREE.SphereGeometry {
+export function lowSegSphere(radius: number, widthSegments = 16, heightSegments = 10): THREE.SphereGeometry {
   return new THREE.SphereGeometry(radius, widthSegments, heightSegments);
 }
 
@@ -353,7 +353,7 @@ export function lowSegSphere(radius: number, widthSegments = 6, heightSegments =
  * 统一像素渲染配置（§8.1 / §8.2）。
  * 注意：抗锯齿只能在构造参数 `new THREE.WebGLRenderer({ antialias: false })` 保证，
  * 本函数无法事后关闭；这里负责像素比、色调映射与软阴影。
- * 内部缓冲 480×270 由渲染目标 / setSize 控制，画布 CSS 另设 image-rendering: pixelated。
+ * 内部缓冲 960×540 由渲染目标 / setSize 控制，画布 CSS 另设 image-rendering: pixelated。
  */
 export function configurePixelRenderer(renderer: THREE.WebGLRenderer): void {
   // 像素比恒为 1：设备像素比不改变世界可见范围，也不启用超采样柔化。

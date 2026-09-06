@@ -1,6 +1,7 @@
 import type { EventBus } from "../core/EventBus";
 import type { ActOneBootstrapState, GameStore, RpgCheckpointId, RpgSceneId } from "../core/types";
 import content from "../data/act-one-bootstrap.content.json";
+import libraryReservation from "../data/library-reservation.config.json";
 import {
   CC98_LOGIN_HINTS,
   evaluateCc98LoginAttempt,
@@ -520,7 +521,7 @@ export class ActOneBootstrapController {
     this.patch({ phase: "reservation_required", canLeaveDorm: false });
     this.events.emit("act2_library_reservation_requested", {
       library: "foundation_library",
-      area: "second_floor_south",
+      area: libraryReservation.areaId,
       seat: "022"
     });
     return true;
@@ -534,15 +535,15 @@ export class ActOneBootstrapController {
     if (actOne.phase !== "reservation_required" || !actOne.manualControlTested) {
       return "inactive";
     }
-    if (library !== "基础馆") {
+    if (library !== libraryReservation.library) {
       this.events.emit("act2_library_reservation_rejected", { reason: "wrong_library", library, room, seat });
       return "wrong_library";
     }
-    if (room !== "二层南") {
+    if (room !== libraryReservation.targetRoom) {
       this.events.emit("act2_library_reservation_rejected", { reason: "wrong_room", library, room, seat });
       return "wrong_room";
     }
-    if (seat !== "022") {
+    if (seat !== libraryReservation.targetSeat) {
       this.events.emit("act2_library_reservation_rejected", { reason: "wrong_seat", library, room, seat });
       return "wrong_seat";
     }

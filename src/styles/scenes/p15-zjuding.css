@@ -1644,6 +1644,50 @@
   margin-top: 8px;
 }
 
+/* User-supplied Basic Library reference; native controls inside the shared phone. */
+.zju-spaces-page {
+  color: #252525;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.zju-spaces-page .zju-native-header { flex: 0 0 60px; background: #fff; border: 0; }
+.zju-spaces-page .zju-native-bottom-nav { position: relative; flex: 0 0 68px; border-top: 1px solid #eee; }
+.zju-spaces-page .zju-native-bottom-nav button.is-active { background: #fff; color: #666; }
+.zju-spaces-page .zju-native-bottom-nav button { color: #666; }
+.zju-seat-map button:disabled { visibility: hidden; }
+.zju-spaces-page .zju-space-shell { flex: 1; height: auto; min-height: 0; }
+.zju-spaces-page .zju-space-rail { flex-basis: 54px; background: #061a49; border: 0; }
+.zju-spaces-page .zju-space-rail button { padding-top: 17px; gap: 25px; }
+.zju-spaces-page .zju-space-rail button span { font: 40px/0.7 sans-serif; }
+.zju-spaces-page .zju-space-rail button b { font-size: 22px; font-weight: 500; line-height: 1.65; }
+.zju-spaces-page.rail-collapsed .zju-space-rail { flex-basis: 28px; }
+.zju-spaces-page .zju-space-tabs { flex-basis: 52px; grid-template-rows: 52px; }
+.zju-spaces-page .zju-space-tabs button { background: #122e66; border: 0; font-size: 19px; font-weight: 600; }
+.zju-spaces-page .zju-space-tabs button.is-active { background: #39589e; box-shadow: none; }
+.zju-spaces-page .zju-space-toolbar { flex-basis: 80px; padding: 12px 15px 12px 24px; gap: 12px; border-bottom: 1px solid #aaa; }
+.zju-spaces-page .zju-space-toolbar p { color: #737373; font-size: 16px; }
+.zju-spaces-page .zju-space-toolbar p strong { color: #242424; font-size: 21px; }
+.zju-spaces-page .zju-space-toolbar > button { width: 49%; height: 56px; font-size: 17px; border: 1px solid #bdbdbd; border-radius: 5px; background: #fff; }
+.zju-spaces-page .zju-room-list { min-height: 0; padding: 0 15px; }
+.zju-spaces-page .zju-room-card { grid-template-columns: 118px minmax(0, 1fr); gap: 19px; min-height: 168px; padding: 23px 0; border-bottom: 1px solid #d2d2d2; }
+.zju-spaces-page .zju-room-card:last-of-type { border-bottom: 0; }
+.zju-spaces-page .zju-room-photo { width: 118px; height: 130px; border: 0; border-radius: 4px; }
+.zju-spaces-page .zju-room-photo span { left: 0; top: 0; padding: 6px 7px; background: #ef8d00; border: 0; font-size: 15px; font-weight: 500; }
+/* Source 1080×2376; photo bounds x=173, y=684, width=298, height=328. */
+.zju-spaces-page .is-foundation-photo img { position: absolute; width: 362.4161%; max-width: none; height: auto; left: -58.0537%; top: -208.5366%; image-rendering: auto; }
+.zju-spaces-page .zju-room-copy header { align-items: baseline; gap: 6px; }
+.zju-spaces-page .zju-room-copy h2 { font-size: 20px; line-height: 1.3; font-weight: 650; margin: 3px 0 19px; white-space: nowrap; }
+.zju-spaces-page .zju-room-copy header span { color: #aaa; font-size: 18px; white-space: nowrap; }
+.zju-spaces-page .zju-room-copy p { color: #888; font-size: 14px; white-space: nowrap; }
+.zju-spaces-page .zju-room-copy p strong { color: #39589e; font-size: 18px; }
+.zju-spaces-page .zju-room-copy > button { bottom: 0; width: 72px; height: 38px; background: #39589e; border: 0; border-radius: 2px; box-shadow: none; font-size: 17px; }
+.zju-room-list-end { color: #999; text-align: center; font-size: 16px; padding: 20px 0 28px; margin: 0; }
+.zju-seat-section-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 12px; }
+.zju-seat-section-nav button { min-height: 32px; padding: 4px 7px; border: 1px solid #bbc8df; font-size: 12px; }
+.zju-seat-section-nav button[aria-current="true"] { color: #fff; background: #39589e; }
+
 /* 选座页 */
 .zju-seat-page {
   background: #f7f7f5;

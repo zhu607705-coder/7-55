@@ -1,6 +1,6 @@
 import {
   projectObstaclePoint,
-  visibleObstacles,
+  projectRoadPoint,
   visiblePedestrians,
   VISIBLE_DISTANCE,
   type ChaseObstacleKind,
@@ -13,6 +13,7 @@ import roadsideActorAtlasUrl from "../../../assets/rpg/canteen_chase/roadside_ac
 import runnerCrowdCycleUrl from "../../../assets/rpg/canteen_chase/runner_crowd_cycle_4f.png";
 import frontWalkerCycleUrl from "../../../assets/rpg/canteen_chase/front_walker_cycle_4f.png";
 import riderTurnCycleUrl from "../../../assets/rpg/canteen_chase/rider_turn_cycle_12f.png";
+import { visibleStuntObstacles as visibleObstacles, STUNT_RAMPS, STUNT_PICKUPS } from "./ChaseStuntModel";
 import { ChaseThreeRenderer } from "./ChaseThreeRenderer";
 import { CHASE_RIDER_GEAR_RATIO, CHASE_RIDER_WHEEL_RADIUS } from "./ChaseRiderRig";
 import type { ChaseRenderState, ChaseRendererBackend } from "./ChaseRenderContract";
@@ -293,7 +294,8 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
     this.drawPedestrians(ctx, state.distance);
     this.drawPaper(ctx, state.distance);
     this.drawObstacles(ctx, state);
-    this.drawRider(ctx, state, deltaMs);
+    this.drawStuntObjects(ctx, state);
+    ctx.save();ctx.translate(0,-(state.airHeight??0)*48);this.drawRider(ctx, state, deltaMs);ctx.restore();
     if (state.runState === "running" && !this.reduceMotion) {
       this.drawSpeedTicks(ctx, state.distance);
       this.drawWheelSpray(ctx, state.distance);
@@ -902,8 +904,20 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
     ctx.restore();
   }
 
+  private drawStuntObjects(ctx:CanvasRenderingContext2D,state:ChaseRenderState):void {
+    ctx.save();
+    for(const ramp of STUNT_RAMPS){const d=ramp.distance-state.distance;if(d<0||d>96)continue;const p=projectRoadPoint(d,ramp.lane),s=p.scale;
+      ctx.fillStyle="#cd902e";ctx.strokeStyle="#ffe6a2";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x-36*s,p.y);ctx.lineTo(p.x+36*s,p.y);ctx.lineTo(p.x+25*s,p.y-28*s);ctx.lineTo(p.x-25*s,p.y-28*s);ctx.closePath();ctx.fill();ctx.stroke();}
+    for(const item of STUNT_PICKUPS){const d=item.distance-state.distance;if(d<0||d>96||state.collectedPickupIds?.has(item.id))continue;const p=projectRoadPoint(d,item.lane),s=p.scale;
+      ctx.fillStyle=item.kind==="tray"?"#a9e9d4":"#ffe08b";ctx.strokeStyle="#17383f";ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y-42*s,15*s,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#194343";ctx.font=`${Math.max(8,16*s)}px sans-serif`;ctx.textAlign="center";ctx.fillText(item.kind==="tray"?"盘":"风",p.x,p.y-37*s);}
+    if((state.bellPulse??0)>0){const pulse=state.bellPulse!;ctx.globalAlpha=pulse;ctx.strokeStyle="#ffe39c";ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(this.riderX,475,35+(1-pulse)*170,10+(1-pulse)*45,0,0,Math.PI*2);ctx.stroke();}
+    if(state.shield){ctx.globalAlpha=.6;ctx.strokeStyle="#8ae9d2";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(this.riderX,400-(state.airHeight??0)*48,42,64,0,0,Math.PI*2);ctx.stroke();}
+    ctx.restore();
+  }
+
   private drawObstacles(ctx: CanvasRenderingContext2D, state: ChaseRenderState): void {
     for (const obstacle of visibleObstacles(state.distance)) {
+      if(state.clearedObstacleIds?.has(obstacle.id))continue;
       const projection = projectObstaclePoint(obstacle, obstacle.distance - state.distance);
       if (projection.opacity < 0.28) continue;
       const pulse = this.reduceMotion ? 0 : Math.floor(state.distance * 8) % 2;
@@ -1349,11 +1363,16 @@ export class ChaseCanvasRenderer implements ChaseRendererBackend {
 export class ChaseRenderer implements ChaseRendererBackend {
   private readonly backend: ChaseRendererBackend;
 
+  getAssetState(): "loading" | "ready" | "error" {
+    return this.backend instanceof ChaseThreeRenderer ? this.backend.getAssetState() : "ready";
+  }
+
   constructor(canvas: HTMLCanvasElement) {
     try {
       this.backend = new ChaseThreeRenderer(canvas);
       canvas.dataset.chaseRenderer = "three";
-    } catch {
+    } catch (error) {
+      canvas.dataset.chaseRendererFailure = error instanceof Error ? error.message : String(error);
       this.backend = new ChaseCanvasRenderer(canvas);
       canvas.dataset.chaseRenderer = "canvas-fallback";
     }

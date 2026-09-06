@@ -17,7 +17,8 @@ interface DeveloperChannelProps {
   onCheckpointApplied?: () => void;
 }
 
-type DeveloperChapter = DeveloperCheckpoint["chapter"];
+type DeveloperChapter = "第一章" | "第二章" | "第三章" | "3.5章" | "第四章";
+type VisibleDeveloperCheckpoint = DeveloperCheckpoint & { chapter: DeveloperChapter };
 
 interface DeveloperLevel {
   id: string;
@@ -27,6 +28,10 @@ interface DeveloperLevel {
 }
 
 const DEVELOPER_CHAPTERS: readonly DeveloperChapter[] = ["第一章", "第二章", "第三章", "3.5章", "第四章"];
+
+const VISIBLE_DEVELOPER_CHECKPOINTS = DEVELOPER_CHECKPOINTS.filter(
+  (checkpoint): checkpoint is VisibleDeveloperCheckpoint => !checkpoint.id.startsWith("postgame-")
+);
 
 const DEVELOPER_LEVELS: readonly DeveloperLevel[] = [
   { id: "1-1", chapter: "第一章", label: "闹钟与散码", checkpointIds: ["c1-alarm", "c1-home", "c1-code-hunt", "c1-dorm-card"] },
@@ -46,16 +51,16 @@ const DEVELOPER_LEVELS: readonly DeveloperLevel[] = [
   { id: "3.5-1", chapter: "3.5章", label: "未同步记录", checkpointIds: ["c3-interlude-reboot", "c3-interlude-journal", "c3-interlude-photos", "c3-interlude-voice", "c3-interlude-network", "c3-interlude-timeline", "c3-interlude-destination", "c3-interlude-replay"] },
   { id: "3.5-2", chapter: "3.5章", label: "教学楼过渡", checkpointIds: ["c4-prologue", "c4-prologue-lake-exit", "c4-prologue-arcade", "c4-prologue-entrance", "c4-prologue-lobby", "c4-prologue-closing", "c4-prologue-task-card"] },
   { id: "4-1", chapter: "第四章", label: "入楼与旧钟", checkpointIds: ["c4-755-opening", "c4-755-hall-clock"] },
-  { id: "4-2", chapter: "第四章", label: "12:25 面包坊", checkpointIds: ["c4-755-bakery-1225", "c4-755-clock-1850-ready"] },
+  { id: "4-2", chapter: "第四章", label: "12:25 面包坊", checkpointIds: ["c4-755-bakery-1225"] },
   { id: "4-3", chapter: "第四章", label: "18:50 差分校验", checkpointIds: ["c4-755-classrooms-1850", "c4-755-elevator-history"] },
-  { id: "4-4", chapter: "第四章", label: "错位楼梯与二楼记录", checkpointIds: ["c4-755-room204-1850", "c4-755-a2-field-records"] },
-  { id: "4-5", chapter: "第四章", label: "22:45 维修链", checkpointIds: ["c4-755-clock-2245-ready", "c4-755-maintenance-2245"] },
+  { id: "4-4", chapter: "第四章", label: "错位楼梯与教室复原", checkpointIds: ["c4-755-room204-1850"] },
+  { id: "4-5", chapter: "第四章", label: "22:45 维修链", checkpointIds: ["c4-755-maintenance-2245"] },
   { id: "4-6", chapter: "第四章", label: "07:54 停电追逐", checkpointIds: ["c4-755-blackout-0754", "c4-755-chase"] },
   { id: "4-7", chapter: "第四章", label: "最后一分钟", checkpointIds: ["c4-755-final-minute", "c4-755-return-clock"] },
   { id: "4-8", chapter: "第四章", label: "07:55 签到与收束", checkpointIds: ["c4-755-checkin", "c4-755-closure"] }
 ];
 
-function getCheckpointLevel(checkpoint: DeveloperCheckpoint): DeveloperLevel {
+function getCheckpointLevel(checkpoint: VisibleDeveloperCheckpoint): DeveloperLevel {
   return DEVELOPER_LEVELS.find((level) => level.checkpointIds.includes(checkpoint.id)) ?? {
     id: "未分组",
     chapter: checkpoint.chapter,
@@ -72,7 +77,7 @@ function getInitialDeveloperSelection(active: DeveloperCheckpointId | null): {
   chapter: DeveloperChapter;
   levelId: string;
 } {
-  const activeCheckpoint = DEVELOPER_CHECKPOINTS.find((checkpoint) => checkpoint.id === active);
+  const activeCheckpoint = VISIBLE_DEVELOPER_CHECKPOINTS.find((checkpoint) => checkpoint.id === active);
   if (activeCheckpoint) {
     return { chapter: activeCheckpoint.chapter, levelId: getCheckpointLevel(activeCheckpoint).id };
   }
@@ -98,7 +103,7 @@ export function DeveloperChannel({
   const [selectedChapter, setSelectedChapter] = useState<DeveloperChapter>(initialSelection.chapter);
   const [selectedLevelId, setSelectedLevelId] = useState(initialSelection.levelId);
   const chapterCheckpoints = useMemo(
-    () => DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === selectedChapter),
+    () => VISIBLE_DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === selectedChapter),
     [selectedChapter]
   );
   const chapterLevels = useMemo(() => getChapterLevels(selectedChapter), [selectedChapter]);
@@ -177,7 +182,7 @@ export function DeveloperChannel({
     <header><div><small>{recordingMode ? "7:55 录制准备" : "7:55 DEV"} · {DEVELOPER_CHAPTERS.length} 章 · {DEVELOPER_LEVELS.length} 关 · {DEVELOPER_CHECKPOINTS.length} 节点</small><strong>{recordingMode ? "录制检查点切换" : "章节与关卡直达"}</strong></div><button type="button" aria-label={closeButtonLabel} onClick={closeAndResume}>×</button></header>
     <nav className="developer-channel-chapters" aria-label="选择章节">
       {DEVELOPER_CHAPTERS.map((chapter) => {
-        const count = DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === chapter).length;
+        const count = VISIBLE_DEVELOPER_CHECKPOINTS.filter((checkpoint) => checkpoint.chapter === chapter).length;
         return <button
           key={chapter}
           type="button"

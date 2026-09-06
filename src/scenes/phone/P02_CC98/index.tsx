@@ -182,7 +182,7 @@ const INVESTIGATION_SEARCH_RESULTS = [
   { id: "seat-022-backpack", title: INVESTIGATION_POST.title, floors: "23 楼", body: INVESTIGATION_POST.body, rejection: null },
   { id: "seat-022-old-source", title: "【求助】022 座位今日临时离开", floors: "12 楼", body: "来源为今日新帖，没有旧版离座规定的引用。", rejection: "来源不匹配：这是今日新帖，纸条引用的是旧版公开记录。" },
   { id: "seat-022-wrong-time", title: "【记录】二南 022 晚间使用情况", floors: "31 楼", body: "发布时间为当日 22:40，早于纸条中的本次离座事件。", rejection: "时间不匹配：这条记录早于本次 022 占用事件。" },
-  { id: "seat-022-missing-attachment", title: "【闲聊】二楼南区今天还有位置吗", floors: "18 楼", body: "正文提到 022，附件区为空。", rejection: "附件不匹配：这条帖子没有纸条对应的离座凭据。" }
+  { id: "seat-022-missing-attachment", title: "【闲聊】一层书库今天还有位置吗", floors: "18 楼", body: "正文提到 022，附件区为空。", rejection: "附件不匹配：这条帖子没有纸条对应的离座凭据。" }
 ] as const;
 const QUEST_POST_IDS = new Set([
   ACT_ONE_EXCHANGE_POST.id,

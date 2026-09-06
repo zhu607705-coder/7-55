@@ -1,26 +1,28 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { ThreePrimitiveCache, type ThreeFlatMaterial } from "../ThreePrimitiveCache";
+import { createChaseHuman, type ChaseHumanInstance } from "./ChaseHumanAsset";
+import { syncChaseHumanToRider } from "./ChaseHumanPose";
 
 export const CHASE_RIDER_DISPLAY_SCALE = 1.28;
 export const CHASE_RIDER_WHEEL_RADIUS = 0.5;
-export const CHASE_RIDER_GEAR_RATIO = 2.6;
+export const CHASE_RIDER_GEAR_RATIO = 2.2;
 export const CHASE_RIDER_CONTACT_EPSILON = 0.00001;
 
-const LEFT_HAND_BASE_POSITION = Object.freeze({ x: 0, y: -0.31, z: -0.04 });
-const RIGHT_HAND_BASE_POSITION = Object.freeze({ x: 0, y: -0.31, z: -0.04 });
+const LEFT_HAND_BASE_POSITION = Object.freeze({ x: 0, y: -0.36, z: -0.04 });
+const RIGHT_HAND_BASE_POSITION = Object.freeze({ x: 0, y: -0.36, z: -0.04 });
 const LEFT_FOOT_BASE_POSITION = Object.freeze({ x: 0, y: -0.42, z: 0.02 });
 const RIGHT_FOOT_BASE_POSITION = Object.freeze({ x: 0, y: -0.42, z: 0.02 });
 // The standing offset is derived from the authored hip, two-bone leg and shoe
 // contact lengths so both soles meet the same ground plane as the wheels.
 const STAND_RIDER_OFFSET_Y = -0.44;
-const SEATED_RIDER_OFFSET_Y = -0.08;
+const SEATED_RIDER_OFFSET_Y = 0.08;
 const SEATED_RIDER_OFFSET_Z = 0.04;
 const DEFAULT_SHOULDER_X = 0.28;
 const DEFAULT_SHOULDER_Y = 1.84;
 const RIDE_SHOULDER_X = 0.3;
-const RIDE_SHOULDER_Y = 1.67;
-const RIDE_SHOULDER_Z = -0.22;
+const RIDE_SHOULDER_Y = 1.65;
+const RIDE_SHOULDER_Z = -0.32;
 const HIP_X = 0.145;
 const HIP_Y = 1.27;
 const HIP_Z = 0.17;
@@ -42,23 +44,25 @@ export interface ChaseRiderRigPalette {
 }
 
 export const DEFAULT_CHASE_RIDER_RIG_PALETTE: ChaseRiderRigPalette = Object.freeze({
-  outline: 0x17232b,
-  blue: 0x315f9f,
-  blueDark: 0x234672,
-  cyan: 0x6bbec8,
-  white: 0xf1ead7,
-  skin: 0xf4b781,
-  hair: 0x252a31,
-  metal: 0x68757a,
+  outline: 0x252b2b,
+  blue: 0x647768,
+  blueDark: 0x3d4b41,
+  cyan: 0xb5bbb1,
+  white: 0xe8e6dc,
+  skin: 0xd8b395,
+  hair: 0x30322f,
+  metal: 0x989f9a,
   shadow: 0x253128
 });
 
 export interface ChaseRiderRig {
+  human: ChaseHumanInstance;
   root: THREE.Group;
   /** Compatibility alias retained for the live chase renderer. */
   group: THREE.Group;
   bicycleRoot: THREE.Group;
   riderRoot: THREE.Group;
+  upperBody: THREE.Group;
   frontAssembly: THREE.Group;
   wheels: readonly [THREE.Mesh, THREE.Mesh];
   rearWheel: THREE.Mesh;
@@ -96,6 +100,13 @@ export interface ChaseRiderRig {
   leftShin: THREE.Group;
   rightShin: THREE.Group;
 }
+
+export type ChaseBicycleRig = Pick<ChaseRiderRig,
+  "bicycleRoot" | "frontAssembly" | "rearWheel" | "frontWheel" |
+  "leftGrip" | "rightGrip" | "leftGripContact" | "rightGripContact" |
+  "leftPedalContact" | "rightPedalContact" | "rightBrakeLever" |
+  "crank" | "leftPedal" | "rightPedal" | "chain" | "basket"
+>;
 
 export type ChaseRiderPoseName =
   | "ride"
@@ -232,7 +243,7 @@ function rigWheel(
   palette: ChaseRiderRigPalette,
   radius: number
 ): THREE.Mesh {
-  const spokeCount = 16;
+  const spokeCount = 24;
   const rimRadius = radius * 0.84;
   const hubHalfWidth = 0.14;
   const tire = transformGeometry(primitives.torus(radius, radius * 0.105, 14, 56), {
@@ -306,13 +317,19 @@ function rigShadow(
   width: number,
   depth: number
 ): THREE.Mesh {
+  const pixels = new Uint8Array(32 * 32 * 4);
+  for (let y = 0; y < 32; y += 1) for (let x = 0; x < 32; x += 1) {
+    const radius = Math.hypot((x - 15.5) / 15.5, (y - 15.5) / 15.5);
+    const offset = (y * 32 + x) * 4;
+    pixels[offset] = pixels[offset + 1] = pixels[offset + 2] = 255;
+    pixels[offset + 3] = Math.round(255 * Math.max(0, 1 - radius) ** 1.6);
+  }
+  const texture = new THREE.DataTexture(pixels, 32, 32);
+  texture.magFilter = THREE.LinearFilter;
+  texture.needsUpdate = true;
   const shadow = new THREE.Mesh(
     primitives.plane(width, depth),
-    rigMaterial(primitives, palette.shadow, {
-      unlit: true,
-      opacity: 0.34,
-      depthWrite: false
-    })
+    new THREE.MeshBasicMaterial({ color: palette.shadow, map: texture, transparent: true, opacity: 0.46, depthWrite: false })
   );
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = 0.018;
@@ -592,22 +609,13 @@ function alignPedalFootOrientation(
  * at unit transform; their extra hierarchy therefore preserves the original
  * buildRider() world transforms used by the live chase.
  */
-export function createChaseRiderRig(
+export function createChaseBicycleRig(
   primitives: ThreePrimitiveCache,
   palette: ChaseRiderRigPalette = DEFAULT_CHASE_RIDER_RIG_PALETTE
-): ChaseRiderRig {
-  const root = new THREE.Group();
-  root.name = "canteen-chase-player";
-
+): ChaseBicycleRig {
   const bicycleRoot = new THREE.Group();
   bicycleRoot.name = "canteen-chase-bicycle-root";
   setIdentityTransform(bicycleRoot);
-
-  const riderRoot = new THREE.Group();
-  riderRoot.name = "canteen-chase-rider-root";
-  setIdentityTransform(riderRoot);
-
-  root.add(rigShadow(primitives, palette, 1.45, 2.2), bicycleRoot, riderRoot);
 
   const rearWheel = rigWheel(primitives, palette, CHASE_RIDER_WHEEL_RADIUS);
   rearWheel.name = "canteen-chase-rear-wheel";
@@ -626,19 +634,19 @@ export function createChaseRiderRig(
   const forkDropoutLeft = new THREE.Vector3(-0.13, 0.53, 0);
   const forkDropoutRight = new THREE.Vector3(0.13, 0.53, 0);
   const frontAssemblyBody = rigMergedMesh(primitives, palette.blue, [
-    tubeGeometry(primitives, new THREE.Vector3(0, 0.98, 0.04), new THREE.Vector3(0, 1.19, -0.02), 0.06, 12),
+    tubeGeometry(primitives, new THREE.Vector3(0, 0.98, 0.04), new THREE.Vector3(0, 1.35, 0.1), 0.06, 12),
     curveTubeGeometry([
-      new THREE.Vector3(0, 1.18, -0.02),
-      new THREE.Vector3(-0.2, 1.22, -0.07),
-      new THREE.Vector3(-0.43, 1.27, -0.09),
-      new THREE.Vector3(-0.58, 1.23, -0.05)
-    ], 0.047, 22, 10),
+      new THREE.Vector3(0, 1.34, 0.1),
+      new THREE.Vector3(-0.2, 1.38, 0.05),
+      new THREE.Vector3(-0.32, 1.43, 0.03),
+      new THREE.Vector3(-0.45, 1.39, 0.07)
+    ], 0.029, 22, 10),
     curveTubeGeometry([
-      new THREE.Vector3(0, 1.18, -0.02),
-      new THREE.Vector3(0.2, 1.22, -0.07),
-      new THREE.Vector3(0.43, 1.27, -0.09),
-      new THREE.Vector3(0.58, 1.23, -0.05)
-    ], 0.047, 22, 10),
+      new THREE.Vector3(0, 1.34, 0.1),
+      new THREE.Vector3(0.2, 1.38, 0.05),
+      new THREE.Vector3(0.32, 1.43, 0.03),
+      new THREE.Vector3(0.45, 1.39, 0.07)
+    ], 0.029, 22, 10),
     tubeGeometry(primitives, forkCrownLeft, forkDropoutLeft, 0.047, 12),
     tubeGeometry(primitives, forkCrownRight, forkDropoutRight, 0.047, 12),
     transformGeometry(primitives.box(0.2, 0.08, 0.18), {
@@ -649,7 +657,7 @@ export function createChaseRiderRig(
 
   const leftGrip = new THREE.Group();
   leftGrip.name = "canteen-chase-left-grip";
-  leftGrip.position.set(-0.64, 1.22, -0.04);
+  leftGrip.position.set(-0.49, 1.38, 0.08);
   leftGrip.add(
     rigMergedMesh(primitives, palette.outline, [
       transformGeometry(primitives.cylinder(0.045, 0.045, 0.24, 8), {
@@ -662,7 +670,7 @@ export function createChaseRiderRig(
 
   const rightGrip = new THREE.Group();
   rightGrip.name = "canteen-chase-right-grip";
-  rightGrip.position.set(0.64, 1.22, -0.04);
+  rightGrip.position.set(0.49, 1.38, 0.08);
   rightGrip.add(
     rigMergedMesh(primitives, palette.outline, [
       transformGeometry(primitives.cylinder(0.045, 0.045, 0.24, 8), {
@@ -693,27 +701,39 @@ export function createChaseRiderRig(
 
   const bell = rigMergedMesh(primitives, palette.metal, [
     transformGeometry(primitives.sphere(0.075, 16, 12), {
-      position: [-0.37, 1.29, -0.12],
+      position: [-0.37, 1.45, 0],
       scale: [1, 0.72, 1]
     }),
     transformGeometry(primitives.cylinder(0.018, 0.018, 0.09, 10), {
-      position: [-0.29, 1.27, -0.12],
+      position: [-0.29, 1.43, 0],
       rotation: [0, 0, Math.PI / 2]
     })
   ], { shading: "standard", roughness: 0.16, metalness: 0.94, flatShading: false });
 
   const rightBrakeLever = new THREE.Group();
   rightBrakeLever.name = "canteen-chase-right-brake-lever";
-  rightBrakeLever.position.set(0.54, 1.19, -0.13);
+  rightBrakeLever.position.set(0.4, 1.35, -0.01);
   rightBrakeLever.rotation.z = -0.38;
   rightBrakeLever.add(
     rigMergedMesh(primitives, palette.metal, [
-      tubeGeometry(primitives, new THREE.Vector3(0, 0.02, 0), new THREE.Vector3(0, -0.26, 0), 0.02, 8),
+      curveTubeGeometry([new THREE.Vector3(0, 0.02, 0), new THREE.Vector3(0.08, -0.015, -0.075), new THREE.Vector3(0.18, 0.005, -0.05)], 0.017, 12, 8),
       transformGeometry(primitives.sphere(0.03, 8, 6), {
         position: [0, 0.03, 0]
       })
     ], { shading: "standard", roughness: 0.28, metalness: 0.82, flatShading: false })
   );
+
+  const leftBrakeLever = rightBrakeLever.clone();
+  leftBrakeLever.name = "canteen-chase-left-brake-lever";
+  leftBrakeLever.position.x = -0.4;
+  leftBrakeLever.rotation.y = Math.PI;
+  const brakeCables = rigMergedMesh(primitives, 0x252d32, [-1, 1].map((side) => curveTubeGeometry([
+    new THREE.Vector3(side * 0.38, 1.37, -0.04),
+    new THREE.Vector3(side * 0.29, 1.2, -0.28),
+    new THREE.Vector3(side * 0.18, 0.87, -0.23),
+    new THREE.Vector3(side * 0.1, 0.88, -0.02)
+  ], 0.009, 20, 6)), { shading: "standard", roughness: 0.72, flatShading: false });
+  brakeCables.name = "canteen-chase-brake-cables";
 
   const basket = new THREE.Group();
   basket.name = "canteen-chase-front-basket";
@@ -775,6 +795,8 @@ export function createChaseRiderRig(
     headLamp,
     bell,
     rightBrakeLever,
+    leftBrakeLever,
+    brakeCables,
     basket,
     frontFender
   );
@@ -784,21 +806,21 @@ export function createChaseRiderRig(
   frame.name = "canteen-chase-blue-frame";
   const seatTop = new THREE.Vector3(0, 1.18, 0.44);
   const headJoint = new THREE.Vector3(0, 1.02, -0.54);
-  const bottomBracket = new THREE.Vector3(0, 0.84, 0.14);
+  const bottomBracket = new THREE.Vector3(0, 0.56, 0.14);
   const stepThroughJoint = new THREE.Vector3(0, 0.77, -0.08);
   const rearAxleLeft = new THREE.Vector3(-0.09, 0.52, 0.72);
   const rearAxleRight = new THREE.Vector3(0.09, 0.52, 0.72);
   frame.add(
     rigMergedMesh(primitives, palette.blue, [
-      curveTubeGeometry([headJoint, new THREE.Vector3(0, 0.9, -0.33), stepThroughJoint, bottomBracket], 0.064, 28, 12),
-      curveTubeGeometry([headJoint, new THREE.Vector3(0, 0.78, -0.18), new THREE.Vector3(0, 0.72, 0.12), seatTop], 0.046, 30, 12),
-      tubeGeometry(primitives, seatTop, bottomBracket, 0.06, 12),
-      tubeGeometry(primitives, new THREE.Vector3(-0.05, 0.86, 0.18), rearAxleLeft, 0.042, 10),
-      tubeGeometry(primitives, new THREE.Vector3(0.05, 0.86, 0.18), rearAxleRight, 0.042, 10),
+      curveTubeGeometry([headJoint, new THREE.Vector3(0, 0.9, -0.33), stepThroughJoint, bottomBracket], 0.045, 28, 12),
+      curveTubeGeometry([headJoint, new THREE.Vector3(0, 1.025, -0.18), new THREE.Vector3(0, 1.07, 0.12), seatTop], 0.032, 30, 12),
+      tubeGeometry(primitives, seatTop, bottomBracket, 0.037, 12),
+      tubeGeometry(primitives, new THREE.Vector3(-0.05, 0.58, 0.18), rearAxleLeft, 0.042, 10),
+      tubeGeometry(primitives, new THREE.Vector3(0.05, 0.58, 0.18), rearAxleRight, 0.042, 10),
       tubeGeometry(primitives, new THREE.Vector3(-0.02, 1.14, 0.39), rearAxleLeft, 0.034, 10),
       tubeGeometry(primitives, new THREE.Vector3(0.02, 1.14, 0.39), rearAxleRight, 0.034, 10),
       transformGeometry(primitives.capsule(0.07, 0.38, 6, 12), {
-        position: [0, 1.31, 0.48],
+        position: [0, 1.22, 0.44],
         rotation: [0, 0, Math.PI / 2],
         scale: [1, 0.82, 0.9]
       })
@@ -810,6 +832,12 @@ export function createChaseRiderRig(
       })
     ], { shading: "standard", roughness: 0.82, metalness: 0.08, flatShading: false })
   );
+  const saddle = rigMergedMesh(primitives, 0x25292d, [
+    transformGeometry(primitives.sphere(1, 18, 12), { position: [0, 1.285, 0.4], scale: [0.18, 0.048, 0.25] }),
+    transformGeometry(primitives.sphere(1, 16, 10), { position: [0, 1.28, 0.23], scale: [0.075, 0.04, 0.15] })
+  ], { shading: "standard", roughness: 0.85, flatShading: false });
+  saddle.name = "canteen-chase-shaped-saddle";
+  frame.add(saddle);
   bicycleRoot.add(frame);
 
   const rearFenderPoints = Array.from({ length: 25 }, (_, index) => {
@@ -858,9 +886,9 @@ export function createChaseRiderRig(
   rearReflector.name = "canteen-chase-rear-reflector";
 
   const kickstand = rigMergedMesh(primitives, palette.metal, [
-    tubeGeometry(primitives, new THREE.Vector3(0.18, 0.82, 0.2), new THREE.Vector3(0.34, 0.08, 0.54), 0.024, 10),
+    tubeGeometry(primitives, new THREE.Vector3(0.18, 0.82, 0.2), new THREE.Vector3(0.25, 0.54, 0.85), 0.024, 10),
     transformGeometry(primitives.capsule(0.028, 0.1, 4, 8), {
-      position: [0.35, 0.07, 0.55],
+      position: [0.25, 0.54, 0.85],
       rotation: [0, 0, Math.PI / 2]
     })
   ], { shading: "standard", roughness: 0.34, metalness: 0.82, flatShading: false });
@@ -869,7 +897,7 @@ export function createChaseRiderRig(
 
   const crank = new THREE.Group();
   crank.name = "canteen-chase-crank";
-  crank.position.set(0, 0.84, 0.14);
+  crank.position.copy(bottomBracket);
   const crankBody = rigMergedMesh(primitives, palette.metal, [
     transformGeometry(primitives.cylinder(0.08, 0.08, 0.44, 14), {
       rotation: [0, 0, Math.PI / 2]
@@ -878,8 +906,8 @@ export function createChaseRiderRig(
       rotation: [0, Math.PI / 2, 0],
       position: [-0.03, 0, 0]
     }),
-    tubeGeometry(primitives, new THREE.Vector3(0.12, -0.02, 0), new THREE.Vector3(0.28, -0.34, 0), 0.025, 8),
-    tubeGeometry(primitives, new THREE.Vector3(-0.12, 0.02, 0), new THREE.Vector3(-0.28, 0.34, 0), 0.025, 8),
+    tubeGeometry(primitives, new THREE.Vector3(0.12, -0.02, 0), new THREE.Vector3(0.28, -0.22, 0), 0.025, 8),
+    tubeGeometry(primitives, new THREE.Vector3(-0.12, 0.02, 0), new THREE.Vector3(-0.28, 0.22, 0), 0.025, 8),
     tubeGeometry(primitives, new THREE.Vector3(-0.03, 0, 0), new THREE.Vector3(-0.23, 0.07, 0), 0.018, 6),
     tubeGeometry(primitives, new THREE.Vector3(-0.03, 0, 0), new THREE.Vector3(-0.23, -0.07, 0), 0.018, 6),
     tubeGeometry(primitives, new THREE.Vector3(-0.03, 0, 0), new THREE.Vector3(-0.1, 0.22, 0), 0.018, 6),
@@ -887,7 +915,7 @@ export function createChaseRiderRig(
   ], { shading: "standard", roughness: 0.24, metalness: 0.88, flatShading: false });
   const rightPedal = new THREE.Group();
   rightPedal.name = "canteen-chase-right-pedal";
-  rightPedal.position.set(0.3, -0.34, 0);
+  rightPedal.position.set(0.3, -0.22, 0);
   rightPedal.add(
     rigMergedMesh(primitives, palette.outline, [
       transformGeometry(primitives.capsule(0.03, 0.22, 4, 8), {
@@ -902,7 +930,7 @@ export function createChaseRiderRig(
   rightPedal.add(rightPedalContact);
   const leftPedal = new THREE.Group();
   leftPedal.name = "canteen-chase-left-pedal";
-  leftPedal.position.set(-0.3, 0.34, 0);
+  leftPedal.position.set(-0.3, 0.22, 0);
   leftPedal.add(
     rigMergedMesh(primitives, palette.outline, [
       transformGeometry(primitives.capsule(0.03, 0.22, 4, 8), {
@@ -922,8 +950,8 @@ export function createChaseRiderRig(
   chain.name = "canteen-chase-short-chain";
   chain.add(
     rigMergedMesh(primitives, palette.outline, [
-      tubeGeometry(primitives, new THREE.Vector3(-0.2, 0.68, 0.16), new THREE.Vector3(-0.2, 0.58, 0.72), 0.012, 8),
-      tubeGeometry(primitives, new THREE.Vector3(-0.2, 1, 0.16), new THREE.Vector3(-0.2, 0.72, 0.72), 0.012, 8),
+      tubeGeometry(primitives, new THREE.Vector3(-0.2, 0.35, 0.16), new THREE.Vector3(-0.2, 0.58, 0.72), 0.012, 8),
+      tubeGeometry(primitives, new THREE.Vector3(-0.2, 0.77, 0.16), new THREE.Vector3(-0.2, 0.72, 0.72), 0.012, 8),
       transformGeometry(primitives.torus(0.105, 0.012, 8, 30), {
         position: [-0.2, 0.65, 0.72],
         rotation: [0, Math.PI / 2, 0]
@@ -932,12 +960,12 @@ export function createChaseRiderRig(
   );
   const chainGuard = rigMergedMesh(primitives, palette.blue, [
     transformGeometry(primitives.capsule(0.095, 0.52, 8, 16), {
-      position: [-0.23, 0.78, 0.4],
-      rotation: [Math.PI / 2, 0, 0],
+      position: [-0.23, 0.61, 0.4],
+      rotation: [1.4, 0, 0],
       scale: [0.72, 1, 0.9]
     }),
     transformGeometry(primitives.cylinder(0.23, 0.23, 0.055, 24), {
-      position: [-0.23, 0.84, 0.14],
+      position: [-0.23, 0.56, 0.14],
       rotation: [0, 0, Math.PI / 2]
     })
   ], { shading: "standard", roughness: 0.34, metalness: 0.48, flatShading: false });
@@ -945,672 +973,66 @@ export function createChaseRiderRig(
   bicycleRoot.add(chain);
   bicycleRoot.add(chainGuard);
 
-  const torso = rigMergedMesh(primitives, palette.blueDark, [
-    transformGeometry(primitives.capsule(0.145, 0.4, 10, 20), {
-      position: [0, 1.61, 0.105],
-      rotation: [-0.055, 0, 0],
-      scale: [1.64, 1.03, 0.94]
-    }),
-    transformGeometry(primitives.capsule(0.105, 0.17, 9, 18), {
-      position: [0, 1.325, 0.115],
-      rotation: [-0.02, 0, 0],
-      scale: [1.92, 1, 0.92]
-    })
-  ], { shading: "standard", roughness: 0.76, metalness: 0.03, flatShading: false });
-  torso.name = "canteen-chase-player-jacket-shell";
-
-  const shirt = rigMergedMesh(primitives, palette.white, [
-    transformGeometry(primitives.capsule(0.105, 0.38, 10, 20), {
-      position: [0, 1.615, -0.085],
-      rotation: [-0.06, 0, 0],
-      scale: [1.02, 1.02, 0.28]
-    }),
-    transformGeometry(primitives.cylinder(0.079, 0.095, 0.065, 20), {
-      position: [0, 1.895, -0.082],
-      scale: [1.12, 1, 0.45]
-    }),
-    tubeGeometry(primitives, new THREE.Vector3(0, 1.37, -0.125), new THREE.Vector3(0, 1.78, -0.128), 0.008, 8)
-  ], { shading: "standard", roughness: 0.96, metalness: 0, flatShading: false });
-  shirt.name = "canteen-chase-player-light-shirt";
-
-  const jacketPanels = rigMergedMesh(primitives, palette.blue, [
-    extrudedPanelGeometry([
-      [-0.045, 1.875], [-0.178, 1.935], [-0.288, 1.785],
-      [-0.278, 1.34], [-0.222, 1.286], [-0.098, 1.302], [-0.07, 1.736]
-    ], -0.136, 0.058),
-    extrudedPanelGeometry([
-      [0.045, 1.875], [0.07, 1.736], [0.098, 1.302],
-      [0.222, 1.286], [0.278, 1.34], [0.288, 1.785], [0.178, 1.935]
-    ], -0.136, 0.058)
-  ], { shading: "standard", roughness: 0.68, metalness: 0.04, flatShading: false });
-  jacketPanels.name = "canteen-chase-player-open-jacket";
-
-  const jacketTrim = rigMergedMesh(primitives, 0x4e78a1, [
-    tubeGeometry(primitives, new THREE.Vector3(-0.084, 1.304, -0.143), new THREE.Vector3(-0.074, 1.735, -0.143), 0.01, 10),
-    tubeGeometry(primitives, new THREE.Vector3(0.084, 1.304, -0.143), new THREE.Vector3(0.074, 1.735, -0.143), 0.01, 10),
-    tubeGeometry(primitives, new THREE.Vector3(-0.178, 1.91, -0.142), new THREE.Vector3(-0.05, 1.84, -0.151), 0.015, 10),
-    tubeGeometry(primitives, new THREE.Vector3(0.178, 1.91, -0.142), new THREE.Vector3(0.05, 1.84, -0.151), 0.015, 10),
-    curveTubeGeometry([
-      new THREE.Vector3(-0.242, 1.3, -0.136),
-      new THREE.Vector3(-0.17, 1.285, -0.144),
-      new THREE.Vector3(-0.092, 1.295, -0.146)
-    ], 0.011, 12, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(0.092, 1.295, -0.146),
-      new THREE.Vector3(0.17, 1.285, -0.144),
-      new THREE.Vector3(0.242, 1.3, -0.136)
-    ], 0.011, 12, 8),
-    tubeGeometry(primitives, new THREE.Vector3(-0.255, 1.535, -0.142), new THREE.Vector3(-0.155, 1.495, -0.148), 0.007, 8),
-    tubeGeometry(primitives, new THREE.Vector3(0.155, 1.495, -0.148), new THREE.Vector3(0.255, 1.535, -0.142), 0.007, 8)
-  ], { shading: "standard", roughness: 0.64, metalness: 0.03, flatShading: false });
-  jacketTrim.name = "canteen-chase-player-jacket-trim";
-
-  const head = rigMergedMesh(primitives, palette.skin, [
-    transformGeometry(primitives.cylinder(0.069, 0.076, 0.105, 20), {
-      position: [0, 1.992, 0.045]
-    }),
-    stylizedHeadGeometry(primitives),
-    transformGeometry(primitives.sphere(0.04, 18, 14), {
-      position: [-0.229, 2.213, 0.014],
-      scale: [0.58, 1.02, 0.7]
-    }),
-    transformGeometry(primitives.sphere(0.04, 18, 14), {
-      position: [0.229, 2.213, 0.014],
-      scale: [0.58, 1.02, 0.7]
-    })
-  ], { shading: "standard", roughness: 0.92, metalness: 0, flatShading: false });
-  head.name = "canteen-chase-player-face";
-
-  const eyeWhites = rigMergedMesh(primitives, 0xf8f1e7, [
-    transformGeometry(primitives.capsule(0.016, 0.068, 10, 18), {
-      position: [-0.083, 2.229, -0.176],
-      rotation: [0, 0, Math.PI / 2],
-      scale: [0.98, 0.68, 0.14]
-    }),
-    transformGeometry(primitives.capsule(0.016, 0.068, 10, 18), {
-      position: [0.083, 2.229, -0.176],
-      rotation: [0, 0, Math.PI / 2],
-      scale: [0.98, 0.68, 0.14]
-    })
-  ], { shading: "standard", roughness: 0.72, metalness: 0, flatShading: false });
-  eyeWhites.name = "canteen-chase-player-eye-whites";
-
-  const irises = rigMergedMesh(primitives, 0x2a211d, [
-    transformGeometry(primitives.sphere(0.019, 20, 16), {
-      position: [-0.073, 2.227, -0.184],
-      scale: [0.78, 1, 0.18]
-    }),
-    transformGeometry(primitives.sphere(0.019, 20, 16), {
-      position: [0.073, 2.227, -0.184],
-      scale: [0.78, 1, 0.18]
-    })
-  ], { shading: "standard", roughness: 0.56, metalness: 0.01, flatShading: false });
-  irises.name = "canteen-chase-player-irises";
-
-  const faceLinework = rigMergedMesh(primitives, 0x342925, [
-    curveTubeGeometry([
-      new THREE.Vector3(-0.138, 2.294, -0.17),
-      new THREE.Vector3(-0.086, 2.307, -0.176),
-      new THREE.Vector3(-0.03, 2.301, -0.172)
-    ], 0.008, 12, 10),
-    curveTubeGeometry([
-      new THREE.Vector3(0.03, 2.301, -0.172),
-      new THREE.Vector3(0.086, 2.307, -0.176),
-      new THREE.Vector3(0.138, 2.294, -0.17)
-    ], 0.008, 12, 10),
-    curveTubeGeometry([
-      new THREE.Vector3(-0.124, 2.24, -0.182),
-      new THREE.Vector3(-0.083, 2.248, -0.186),
-      new THREE.Vector3(-0.04, 2.24, -0.183)
-    ], 0.0048, 10, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(0.04, 2.24, -0.183),
-      new THREE.Vector3(0.083, 2.248, -0.186),
-      new THREE.Vector3(0.124, 2.24, -0.182)
-    ], 0.0048, 10, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(-0.024, 2.094, -0.175),
-      new THREE.Vector3(0, 2.089, -0.178),
-      new THREE.Vector3(0.024, 2.094, -0.175)
-    ], 0.0032, 10, 8)
-  ], { shading: "standard", roughness: 0.7, metalness: 0, flatShading: false });
-  faceLinework.name = "canteen-chase-player-brows-mouth";
-
-  const eyeHighlights = rigMergedMesh(primitives, 0xffffff, [
-    transformGeometry(primitives.sphere(0.0044, 12, 10), { position: [-0.079, 2.233, -0.189] }),
-    transformGeometry(primitives.sphere(0.0044, 12, 10), { position: [0.069, 2.233, -0.189] })
-  ], { shading: "standard", roughness: 0.28, metalness: 0, flatShading: false });
-  eyeHighlights.name = "canteen-chase-player-eye-highlights";
-
-  const noseAccent = rigMergedMesh(primitives, 0xe1a36f, [
-    transformGeometry(primitives.sphere(0.014, 18, 14), {
-      position: [0, 2.158, -0.181],
-      scale: [0.42, 0.82, 0.3]
-    })
-  ], { shading: "standard", roughness: 0.94, metalness: 0, flatShading: false });
-  noseAccent.name = "canteen-chase-player-nose-accent";
-
-  const hairBase = rigMergedMesh(primitives, 0x2c333c, [
-    transformGeometry(primitives.sphere(0.235, 40, 30), {
-      position: [0, 2.392, 0.06],
-      scale: [0.98, 0.8, 0.88]
-    }),
-    transformGeometry(primitives.sphere(0.205, 34, 26), {
-      position: [0, 2.332, 0.148],
-      scale: [1.06, 1.02, 0.94]
-    }),
-    transformGeometry(primitives.icosahedron(0.105, 3), {
-      position: [-0.162, 2.45, 0.02],
-      rotation: [0.12, 0.08, -0.28],
-      scale: [1.04, 0.74, 0.88]
-    }),
-    transformGeometry(primitives.icosahedron(0.112, 3), {
-      position: [-0.058, 2.492, 0.012],
-      rotation: [0.18, 0.05, -0.1],
-      scale: [1, 0.76, 0.84]
-    }),
-    transformGeometry(primitives.icosahedron(0.108, 3), {
-      position: [0.056, 2.492, 0.014],
-      rotation: [0.12, -0.04, 0.06],
-      scale: [1, 0.76, 0.86]
-    }),
-    transformGeometry(primitives.icosahedron(0.102, 3), {
-      position: [0.168, 2.45, 0.03],
-      rotation: [0.08, -0.06, 0.24],
-      scale: [1.02, 0.76, 0.88]
-    }),
-    transformGeometry(primitives.icosahedron(0.082, 3), {
-      position: [-0.204, 2.306, 0.075],
-      rotation: [0.06, 0.08, -0.16],
-      scale: [0.68, 1.1, 0.76]
-    }),
-    transformGeometry(primitives.icosahedron(0.078, 3), {
-      position: [0.206, 2.31, 0.078],
-      rotation: [0.05, -0.06, 0.14],
-      scale: [0.66, 1.08, 0.74]
-    }),
-    transformGeometry(primitives.icosahedron(0.095, 3), {
-      position: [-0.11, 2.276, 0.212],
-      rotation: [0.18, 0.05, -0.12],
-      scale: [0.86, 1.02, 0.7]
-    }),
-    transformGeometry(primitives.icosahedron(0.1, 3), {
-      position: [0, 2.262, 0.222],
-      rotation: [0.12, 0, 0.02],
-      scale: [0.96, 1.02, 0.72]
-    }),
-    transformGeometry(primitives.icosahedron(0.09, 3), {
-      position: [0.114, 2.28, 0.212],
-      rotation: [0.16, -0.05, 0.15],
-      scale: [0.84, 1, 0.7]
-    })
-  ], { shading: "standard", roughness: 0.72, metalness: 0.01, flatShading: false });
-  hairBase.name = "canteen-chase-player-layered-hair";
-
-  const hairStrandParts: THREE.BufferGeometry[] = [];
-  const fringe = [
-    [-0.18, 2.344, -0.162, -0.38, 0.044, 0.15],
-    [-0.106, 2.36, -0.175, -0.24, 0.046, 0.16],
-    [-0.022, 2.372, -0.182, -0.08, 0.042, 0.145],
-    [0.05, 2.382, -0.178, 0.13, 0.039, 0.12],
-    [0.118, 2.364, -0.17, 0.28, 0.043, 0.14],
-    [0.182, 2.338, -0.152, 0.42, 0.04, 0.145]
-  ] as const;
-  fringe.forEach(([x, y, z, tilt, radius, height], index) => {
-    hairStrandParts.push(transformGeometry(primitives.icosahedron(1, 2), {
-      position: [x, y, z],
-      rotation: [index % 2 === 0 ? -0.08 : 0.06, 0, tilt],
-      scale: [radius * 0.86, height * 0.53, radius * 0.48]
-    }));
-  });
-  hairStrandParts.push(
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [-0.224, 2.334, -0.1],
-      rotation: [0.06, 0, -0.52],
-      scale: [0.034, 0.07, 0.024]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [0.226, 2.338, -0.094],
-      rotation: [-0.06, 0, 0.48],
-      scale: [0.032, 0.068, 0.023]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [-0.136, 2.518, 0.072],
-      rotation: [0.2, 0.08, -0.72],
-      scale: [0.035, 0.078, 0.032]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [0.14, 2.51, 0.078],
-      rotation: [0.18, -0.06, 0.58],
-      scale: [0.033, 0.074, 0.03]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [0.008, 2.552, 0.098],
-      rotation: [0.12, 0, 0.12],
-      scale: [0.024, 0.055, 0.022]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [-0.14, 2.34, 0.29],
-      rotation: [0.08, 0.12, -0.22],
-      scale: [0.07, 0.11, 0.045]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [-0.045, 2.3, 0.315],
-      rotation: [0.04, 0.05, -0.08],
-      scale: [0.076, 0.12, 0.044]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [0.055, 2.305, 0.315],
-      rotation: [0.04, -0.04, 0.1],
-      scale: [0.076, 0.118, 0.044]
-    }),
-    transformGeometry(primitives.icosahedron(1, 2), {
-      position: [0.145, 2.345, 0.285],
-      rotation: [0.08, -0.1, 0.22],
-      scale: [0.068, 0.105, 0.043]
-    })
-  );
-  const hairStrands = rigMergedMesh(primitives, 0x20252c, hairStrandParts, {
-    shading: "standard",
-    roughness: 0.68,
-    metalness: 0.01,
-    flatShading: false
-  });
-  hairStrands.name = "canteen-chase-player-hair-strands";
-
-  const hairHighlights = rigMergedMesh(primitives, 0x51565e, [
-    curveTubeGeometry([
-      new THREE.Vector3(-0.155, 2.515, -0.075),
-      new THREE.Vector3(-0.1, 2.565, -0.09),
-      new THREE.Vector3(-0.045, 2.58, -0.08)
-    ], 0.008, 16, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(-0.01, 2.585, -0.078),
-      new THREE.Vector3(0.05, 2.57, -0.088),
-      new THREE.Vector3(0.11, 2.53, -0.078)
-    ], 0.007, 16, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(0.13, 2.49, -0.11),
-      new THREE.Vector3(0.16, 2.455, -0.135),
-      new THREE.Vector3(0.18, 2.405, -0.15)
-    ], 0.006, 14, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(-0.13, 2.43, 0.308),
-      new THREE.Vector3(-0.04, 2.46, 0.325),
-      new THREE.Vector3(0.05, 2.45, 0.326)
-    ], 0.007, 16, 8)
-  ], { shading: "standard", roughness: 0.62, metalness: 0.02, flatShading: false });
-  hairHighlights.name = "canteen-chase-player-hair-highlights";
-
-  const pantsWaist = rigMergedMesh(primitives, palette.outline, [
-    transformGeometry(primitives.capsule(0.11, 0.19, 10, 20), {
-      position: [0, 1.235, 0.1],
-      rotation: [0, 0, Math.PI / 2],
-      scale: [1, 0.72, 0.92]
-    }),
-    transformGeometry(primitives.capsule(0.052, 0.18, 8, 16), {
-      position: [0, 1.19, 0.025],
-      rotation: [0, 0, Math.PI / 2],
-      scale: [0.82, 0.62, 0.7]
-    })
-  ], { shading: "standard", roughness: 0.8, metalness: 0.02, flatShading: false });
-  pantsWaist.name = "canteen-chase-player-pants-waist";
-
-  const pantsDetail = rigMergedMesh(primitives, 0x39414a, [
-    curveTubeGeometry([
-      new THREE.Vector3(-0.18, 1.26, -0.002),
-      new THREE.Vector3(0, 1.245, -0.018),
-      new THREE.Vector3(0.18, 1.26, -0.002)
-    ], 0.007, 16, 8),
-    tubeGeometry(primitives, new THREE.Vector3(0, 1.245, -0.02), new THREE.Vector3(0, 1.16, -0.03), 0.006, 8)
-  ], { shading: "standard", roughness: 0.78, metalness: 0.02, flatShading: false });
-  pantsDetail.name = "canteen-chase-player-pants-detail";
-
-  const jacketBackDetail = rigMergedMesh(primitives, 0x557ba2, [
-    curveTubeGeometry([
-      new THREE.Vector3(-0.205, 1.805, 0.235),
-      new THREE.Vector3(0, 1.83, 0.255),
-      new THREE.Vector3(0.205, 1.805, 0.235)
-    ], 0.009, 18, 8),
-    curveTubeGeometry([
-      new THREE.Vector3(-0.19, 1.315, 0.225),
-      new THREE.Vector3(0, 1.295, 0.238),
-      new THREE.Vector3(0.19, 1.315, 0.225)
-    ], 0.011, 18, 8)
-  ], { shading: "standard", roughness: 0.66, metalness: 0.03, flatShading: false });
-  jacketBackDetail.name = "canteen-chase-player-jacket-back-detail";
-
-  riderRoot.add(
-    torso,
-    shirt,
-    jacketPanels,
-    jacketTrim,
-    head,
-    eyeWhites,
-    irises,
-    faceLinework,
-    eyeHighlights,
-    noseAccent,
-    hairBase,
-    hairStrands,
-    hairHighlights,
-    pantsWaist,
-    pantsDetail,
-    jacketBackDetail
-  );
-
-  const leftArm = new THREE.Group();
-  const rightArm = new THREE.Group();
-  leftArm.name = "canteen-chase-left-arm";
-  rightArm.name = "canteen-chase-right-arm";
-  leftArm.position.set(-DEFAULT_SHOULDER_X, DEFAULT_SHOULDER_Y, 0.02);
-  rightArm.position.set(DEFAULT_SHOULDER_X, DEFAULT_SHOULDER_Y, 0.02);
-  const leftUpperArm = new THREE.Group();
-  const rightUpperArm = new THREE.Group();
-  const leftForearm = new THREE.Group();
-  const rightForearm = new THREE.Group();
-  const armUpperLength = 0.34;
-  const armLowerLength = 0.31;
-  leftForearm.position.set(0, -armUpperLength, 0);
-  rightForearm.position.set(0, -armUpperLength, 0);
-  leftUpperArm.add(
-    rigMergedMesh(primitives, palette.blue, [
-      transformGeometry(primitives.capsule(0.056, armUpperLength - 0.06, 9, 16), {
-        position: [0, -armUpperLength / 2, 0],
-        scale: [1.08, 1, 1]
-      }),
-      tubeGeometry(primitives, new THREE.Vector3(0.04, -0.012, 0), new THREE.Vector3(0, -0.04, 0), 0.048, 12),
-      transformGeometry(primitives.sphere(0.052, 18, 14), { position: [0.01, -0.035, 0], scale: [1.06, 0.88, 1] }),
-      transformGeometry(primitives.sphere(0.06, 14, 10), { position: [0, -armUpperLength, 0], scale: [1, 0.92, 1] })
-    ], { shading: "standard", roughness: 0.68, metalness: 0.03, flatShading: false })
-  );
-  rightUpperArm.add(
-    rigMergedMesh(primitives, palette.blue, [
-      transformGeometry(primitives.capsule(0.056, armUpperLength - 0.06, 9, 16), {
-        position: [0, -armUpperLength / 2, 0],
-        scale: [1.08, 1, 1]
-      }),
-      tubeGeometry(primitives, new THREE.Vector3(-0.04, -0.012, 0), new THREE.Vector3(0, -0.04, 0), 0.048, 12),
-      transformGeometry(primitives.sphere(0.052, 18, 14), { position: [-0.01, -0.035, 0], scale: [1.06, 0.88, 1] }),
-      transformGeometry(primitives.sphere(0.06, 14, 10), { position: [0, -armUpperLength, 0], scale: [1, 0.92, 1] })
-    ], { shading: "standard", roughness: 0.68, metalness: 0.03, flatShading: false })
-  );
-  leftForearm.add(
-    rigMergedMesh(primitives, palette.blue, [
-      transformGeometry(primitives.capsule(0.048, armLowerLength - 0.05, 8, 14), {
-        position: [0, -armLowerLength / 2, 0],
-        scale: [1, 1, 0.98]
-      }),
-      transformGeometry(primitives.sphere(0.056, 14, 10), { position: [0, -0.008, 0], scale: [1.02, 0.94, 1] }),
-      transformGeometry(primitives.sphere(0.048, 14, 10), { position: [0, -armLowerLength, 0], scale: [1, 0.9, 1] })
-    ], { shading: "standard", roughness: 0.68, metalness: 0.03, flatShading: false }),
-    rigMergedMesh(primitives, 0x6d9ac4, [
-      transformGeometry(primitives.cylinder(0.058, 0.055, 0.08, 14), {
-        position: [0, -armLowerLength + 0.03, 0],
-        scale: [1, 1, 0.92]
-      })
-    ], { shading: "standard", roughness: 0.62, metalness: 0.02, flatShading: false })
-  );
-  rightForearm.add(
-    rigMergedMesh(primitives, palette.blue, [
-      transformGeometry(primitives.capsule(0.048, armLowerLength - 0.05, 8, 14), {
-        position: [0, -armLowerLength / 2, 0],
-        scale: [1, 1, 0.98]
-      }),
-      transformGeometry(primitives.sphere(0.056, 14, 10), { position: [0, -0.008, 0], scale: [1.02, 0.94, 1] }),
-      transformGeometry(primitives.sphere(0.048, 14, 10), { position: [0, -armLowerLength, 0], scale: [1, 0.9, 1] })
-    ], { shading: "standard", roughness: 0.68, metalness: 0.03, flatShading: false }),
-    rigMergedMesh(primitives, 0x6d9ac4, [
-      transformGeometry(primitives.cylinder(0.058, 0.055, 0.08, 14), {
-        position: [0, -armLowerLength + 0.03, 0],
-        scale: [1, 1, 0.92]
-      })
-    ], { shading: "standard", roughness: 0.62, metalness: 0.02, flatShading: false })
-  );
-  const leftHand = new THREE.Group();
-  const rightHand = new THREE.Group();
-  leftHand.position.set(
-    LEFT_HAND_BASE_POSITION.x,
-    LEFT_HAND_BASE_POSITION.y,
-    LEFT_HAND_BASE_POSITION.z
-  );
-  rightHand.position.set(
-    RIGHT_HAND_BASE_POSITION.x,
-    RIGHT_HAND_BASE_POSITION.y,
-    RIGHT_HAND_BASE_POSITION.z
-  );
-  leftHand.add(
-    rigMergedMesh(primitives, palette.skin, [
-      transformGeometry(primitives.sphere(0.056, 16, 12), {
-        scale: [1.08, 0.8, 1]
-      }),
-      transformGeometry(primitives.capsule(0.02, 0.08, 6, 12), {
-        position: [0, -0.03, -0.018],
-        rotation: [0.3, 0, Math.PI / 2]
-      })
-    ], { shading: "standard", roughness: 0.96, metalness: 0.01, flatShading: false })
-  );
-  rightHand.add(
-    rigMergedMesh(primitives, palette.skin, [
-      transformGeometry(primitives.sphere(0.056, 16, 12), {
-        scale: [1.08, 0.8, 1]
-      }),
-      transformGeometry(primitives.capsule(0.02, 0.08, 6, 12), {
-        position: [0, -0.03, -0.018],
-        rotation: [0.3, 0, Math.PI / 2]
-      })
-    ], { shading: "standard", roughness: 0.96, metalness: 0.01, flatShading: false })
-  );
-  leftHand.name = "canteen-chase-left-hand";
-  rightHand.name = "canteen-chase-right-hand";
-  const leftHandContact = createContactPoint("canteen-chase-left-hand-contact", 0, 0, -0.1);
-  const rightHandContact = createContactPoint("canteen-chase-right-hand-contact", 0, 0, -0.1);
-  leftHand.add(leftHandContact);
-  rightHand.add(rightHandContact);
-  leftForearm.add(leftHand);
-  rightForearm.add(rightHand);
-  leftUpperArm.add(leftForearm);
-  rightUpperArm.add(rightForearm);
-  leftArm.add(leftUpperArm);
-  rightArm.add(rightUpperArm);
-  leftArm.rotation.x = -0.72;
-  rightArm.rotation.x = -0.72;
-  leftArm.rotation.z = -0.2;
-  rightArm.rotation.z = 0.2;
-  riderRoot.add(leftArm, rightArm);
-
-  const leftLeg = new THREE.Group();
-  const rightLeg = new THREE.Group();
-  leftLeg.name = "canteen-chase-left-leg";
-  rightLeg.name = "canteen-chase-right-leg";
-  leftLeg.position.set(-HIP_X, HIP_Y, HIP_Z);
-  rightLeg.position.set(HIP_X, HIP_Y, HIP_Z);
-  const leftThigh = new THREE.Group();
-  const rightThigh = new THREE.Group();
-  const leftShin = new THREE.Group();
-  const rightShin = new THREE.Group();
-  const legUpperLength = 0.42;
-  const legLowerLength = 0.39;
-  leftShin.position.set(0, -legUpperLength, 0);
-  rightShin.position.set(0, -legUpperLength, 0);
-  leftThigh.add(
-    rigMergedMesh(primitives, 0x242b34, [
-      transformGeometry(primitives.capsule(0.098, legUpperLength - 0.06, 10, 20), {
-        position: [0, -legUpperLength / 2, 0],
-        scale: [1.08, 1, 1.06]
-      }),
-      transformGeometry(primitives.sphere(0.106, 20, 16), { position: [0, -0.01, 0], scale: [1.02, 0.86, 1.08] }),
-      transformGeometry(primitives.sphere(0.094, 18, 14), { position: [0, -legUpperLength, 0], scale: [1, 0.9, 1.04] })
-    ], { shading: "standard", roughness: 0.78, metalness: 0.02, flatShading: false }),
-    rigMergedMesh(primitives, 0x313842, [
-      tubeGeometry(primitives, new THREE.Vector3(0, -0.08, -0.093), new THREE.Vector3(0, -0.32, -0.085), 0.009, 8)
-    ], { shading: "standard", roughness: 0.76, metalness: 0.02, flatShading: false })
-  );
-  rightThigh.add(
-    rigMergedMesh(primitives, 0x242b34, [
-      transformGeometry(primitives.capsule(0.098, legUpperLength - 0.06, 10, 20), {
-        position: [0, -legUpperLength / 2, 0],
-        scale: [1.08, 1, 1.06]
-      }),
-      transformGeometry(primitives.sphere(0.106, 20, 16), { position: [0, -0.01, 0], scale: [1.02, 0.86, 1.08] }),
-      transformGeometry(primitives.sphere(0.094, 18, 14), { position: [0, -legUpperLength, 0], scale: [1, 0.9, 1.04] })
-    ], { shading: "standard", roughness: 0.78, metalness: 0.02, flatShading: false }),
-    rigMergedMesh(primitives, 0x313842, [
-      tubeGeometry(primitives, new THREE.Vector3(0, -0.08, -0.093), new THREE.Vector3(0, -0.32, -0.085), 0.009, 8)
-    ], { shading: "standard", roughness: 0.76, metalness: 0.02, flatShading: false })
-  );
-  leftShin.add(
-    rigMergedMesh(primitives, 0x242b34, [
-      transformGeometry(primitives.capsule(0.084, legLowerLength - 0.05, 10, 20), {
-        position: [0, -legLowerLength / 2, 0],
-        scale: [1.04, 1, 1.04]
-      }),
-      transformGeometry(primitives.sphere(0.092, 18, 14), { position: [0, -0.008, 0], scale: [1, 0.9, 1.04] }),
-      transformGeometry(primitives.sphere(0.079, 18, 14), { position: [0, -legLowerLength, 0], scale: [1, 0.88, 1.02] })
-    ], { shading: "standard", roughness: 0.78, metalness: 0.02, flatShading: false }),
-    rigMergedMesh(primitives, 0x313842, [
-      tubeGeometry(primitives, new THREE.Vector3(0, -0.07, -0.078), new THREE.Vector3(0, -0.31, -0.071), 0.008, 8)
-    ], { shading: "standard", roughness: 0.76, metalness: 0.02, flatShading: false })
-  );
-  rightShin.add(
-    rigMergedMesh(primitives, 0x242b34, [
-      transformGeometry(primitives.capsule(0.084, legLowerLength - 0.05, 10, 20), {
-        position: [0, -legLowerLength / 2, 0],
-        scale: [1.04, 1, 1.04]
-      }),
-      transformGeometry(primitives.sphere(0.092, 18, 14), { position: [0, -0.008, 0], scale: [1, 0.9, 1.04] }),
-      transformGeometry(primitives.sphere(0.079, 18, 14), { position: [0, -legLowerLength, 0], scale: [1, 0.88, 1.02] })
-    ], { shading: "standard", roughness: 0.78, metalness: 0.02, flatShading: false }),
-    rigMergedMesh(primitives, 0x313842, [
-      tubeGeometry(primitives, new THREE.Vector3(0, -0.07, -0.078), new THREE.Vector3(0, -0.31, -0.071), 0.008, 8)
-    ], { shading: "standard", roughness: 0.76, metalness: 0.02, flatShading: false })
-  );
-  const leftFoot = new THREE.Group();
-  const rightFoot = new THREE.Group();
-  leftFoot.position.set(
-    LEFT_FOOT_BASE_POSITION.x,
-    LEFT_FOOT_BASE_POSITION.y,
-    LEFT_FOOT_BASE_POSITION.z
-  );
-  rightFoot.position.set(
-    RIGHT_FOOT_BASE_POSITION.x,
-    RIGHT_FOOT_BASE_POSITION.y,
-    RIGHT_FOOT_BASE_POSITION.z
-  );
-  leftFoot.add(
-    rigMergedMesh(primitives, palette.white, [
-      transformGeometry(primitives.capsule(0.084, 0.23, 10, 20), {
-        position: [0, -0.012, -0.04],
-        rotation: [Math.PI / 2, 0, 0],
-        scale: [1.22, 1.06, 0.78]
-      }),
-      transformGeometry(primitives.capsule(0.038, 0.13, 8, 16), {
-        position: [0, 0.03, 0.012],
-        rotation: [Math.PI / 2, 0, 0],
-        scale: [1.12, 1, 0.46]
-      })
-    ], { shading: "standard", roughness: 0.72, metalness: 0.02, flatShading: false }),
-    rigMergedMesh(primitives, 0xaeb7bf, [
-      transformGeometry(primitives.capsule(0.069, 0.245, 8, 18), {
-        position: [0, -0.056, -0.03],
-        rotation: [Math.PI / 2, 0, 0],
-        scale: [1.3, 1.04, 0.34]
-      }),
-      transformGeometry(primitives.box(0.138, 0.018, 0.026), { position: [0, 0.052, -0.12] }),
-      transformGeometry(primitives.box(0.138, 0.018, 0.026), { position: [0, 0.052, -0.07] }),
-      transformGeometry(primitives.box(0.132, 0.018, 0.026), { position: [0, 0.05, -0.02] }),
-      transformGeometry(primitives.box(0.075, 0.055, 0.062), { position: [0, 0.022, 0.052] })
-    ], { shading: "standard", roughness: 0.68, metalness: 0.05, flatShading: false })
-  );
-  rightFoot.add(
-    rigMergedMesh(primitives, palette.white, [
-      transformGeometry(primitives.capsule(0.084, 0.23, 10, 20), {
-        position: [0, -0.012, -0.04],
-        rotation: [Math.PI / 2, 0, 0],
-        scale: [1.22, 1.06, 0.78]
-      }),
-      transformGeometry(primitives.capsule(0.038, 0.13, 8, 16), {
-        position: [0, 0.03, 0.012],
-        rotation: [Math.PI / 2, 0, 0],
-        scale: [1.12, 1, 0.46]
-      })
-    ], { shading: "standard", roughness: 0.72, metalness: 0.02, flatShading: false }),
-    rigMergedMesh(primitives, 0xaeb7bf, [
-      transformGeometry(primitives.capsule(0.069, 0.245, 8, 18), {
-        position: [0, -0.056, -0.03],
-        rotation: [Math.PI / 2, 0, 0],
-        scale: [1.3, 1.04, 0.34]
-      }),
-      transformGeometry(primitives.box(0.138, 0.018, 0.026), { position: [0, 0.052, -0.12] }),
-      transformGeometry(primitives.box(0.138, 0.018, 0.026), { position: [0, 0.052, -0.07] }),
-      transformGeometry(primitives.box(0.132, 0.018, 0.026), { position: [0, 0.05, -0.02] }),
-      transformGeometry(primitives.box(0.075, 0.055, 0.062), { position: [0, 0.022, 0.052] })
-    ], { shading: "standard", roughness: 0.68, metalness: 0.05, flatShading: false })
-  );
-  leftFoot.name = "canteen-chase-left-foot";
-  rightFoot.name = "canteen-chase-right-foot";
-  const leftFootContact = createContactPoint("canteen-chase-left-foot-contact", 0, -0.085, 0);
-  const rightFootContact = createContactPoint("canteen-chase-right-foot-contact", 0, -0.085, 0);
-  leftFoot.add(leftFootContact);
-  rightFoot.add(rightFootContact);
-  leftShin.add(leftFoot);
-  rightShin.add(rightFoot);
-  leftThigh.add(leftShin);
-  rightThigh.add(rightShin);
-  leftLeg.add(leftThigh);
-  rightLeg.add(rightThigh);
-  riderRoot.add(leftLeg, rightLeg);
-
-  root.scale.setScalar(CHASE_RIDER_DISPLAY_SCALE);
-
   return {
-    root,
-    group: root,
-    bicycleRoot,
-    riderRoot,
-    frontAssembly,
-    wheels: [rearWheel, frontWheel],
-    rearWheel,
-    frontWheel,
-    leftArm,
-    rightArm,
-    leftLeg,
-    rightLeg,
-    leftHand,
-    rightHand,
-    leftFoot,
-    rightFoot,
-    leftGrip,
-    rightGrip,
-    leftHandContact,
-    rightHandContact,
-    leftGripContact,
-    rightGripContact,
-    leftFootContact,
-    rightFootContact,
-    leftPedalContact,
-    rightPedalContact,
-    rightBrakeLever,
-    crank,
-    leftPedal,
-    rightPedal,
-    chain,
-    basket,
-    leftUpperArm,
-    rightUpperArm,
-    leftForearm,
-    rightForearm,
-    leftThigh,
-    rightThigh,
-    leftShin,
-    rightShin
+    bicycleRoot, rearWheel, frontAssembly, frontWheel, leftGrip, rightGrip,
+    leftGripContact, rightGripContact, leftPedalContact, rightPedalContact,
+    rightBrakeLever, crank, leftPedal, rightPedal, chain, basket
   };
+}
+
+/** The hero and roadside bicycles share the same authored mechanical structure. */
+export function createChaseRiderRig(
+  primitives: ThreePrimitiveCache,
+  palette: ChaseRiderRigPalette = DEFAULT_CHASE_RIDER_RIG_PALETTE
+): ChaseRiderRig {
+  const root = new THREE.Group();
+  root.name = "canteen-chase-player";
+  const riderRoot = new THREE.Group();
+  riderRoot.name = "canteen-chase-rider-root";
+  const bike = createChaseBicycleRig(primitives, palette);
+  root.add(rigShadow(primitives, palette, 1.45, 2.2), bike.bicycleRoot, riderRoot);
+  // Non-rendering controls retain the authored transition and interaction targets.
+  // Only the licensed skinned model provides the visible human geometry.
+  const upperBody = new THREE.Group();
+  upperBody.position.set(0, HIP_Y, HIP_Z);
+  riderRoot.add(upperBody);
+  const makeLimb = (side: number, arm: boolean) => {
+    const limb = new THREE.Group(), upper = new THREE.Group(), lower = new THREE.Group(), end = new THREE.Group();
+    limb.position.set(side * (arm ? DEFAULT_SHOULDER_X : HIP_X), arm ? DEFAULT_SHOULDER_Y : HIP_Y, arm ? 0.02 : HIP_Z);
+    lower.position.y = arm ? -0.36 : -0.42;
+    const base = arm ? LEFT_HAND_BASE_POSITION : LEFT_FOOT_BASE_POSITION;
+    end.position.set(base.x, base.y, base.z);
+    const contact = createContactPoint(
+      `canteen-chase-${side < 0 ? "left" : "right"}-${arm ? "hand" : "foot"}-contact`,
+      0, arm ? 0 : -0.085, arm ? -0.1 : 0
+    );
+    end.add(contact); lower.add(end); upper.add(lower); limb.add(upper); riderRoot.add(limb);
+    return { limb, upper, lower, end, contact };
+  };
+  const la = makeLimb(-1, true), ra = makeLimb(1, true);
+  const ll = makeLimb(-1, false), rl = makeLimb(1, false);
+  const human = createChaseHuman(2.15, 0x315b7b, true);
+  root.add(human.group);
+  root.scale.setScalar(CHASE_RIDER_DISPLAY_SCALE);
+  const rig: ChaseRiderRig = {
+    root, group: root, ...bike, riderRoot, upperBody, human,
+    wheels: [bike.rearWheel, bike.frontWheel],
+    leftArm: la.limb, rightArm: ra.limb, leftLeg: ll.limb, rightLeg: rl.limb,
+    leftUpperArm: la.upper, rightUpperArm: ra.upper, leftForearm: la.lower, rightForearm: ra.lower,
+    leftThigh: ll.upper, rightThigh: rl.upper, leftShin: ll.lower, rightShin: rl.lower,
+    leftHand: la.end, rightHand: ra.end, leftFoot: ll.end, rightFoot: rl.end,
+    leftHandContact: la.contact, rightHandContact: ra.contact,
+    leftFootContact: ll.contact, rightFootContact: rl.contact
+  };
+  human.onReady = () => syncChaseHumanToRider(rig);
+  return rig;
 }
 
 /** Reset every pose-controlled node while leaving root placement and scale intact. */
 export function resetChaseRiderRigPose(rig: ChaseRiderRig): void {
   setIdentityTransform(rig.bicycleRoot);
   setIdentityTransform(rig.riderRoot);
+  rig.upperBody.rotation.set(0, 0, 0);
   rig.frontAssembly.rotation.set(0, 0, 0);
   rig.leftArm.position.set(-DEFAULT_SHOULDER_X, DEFAULT_SHOULDER_Y, 0.02);
   rig.rightArm.position.set(DEFAULT_SHOULDER_X, DEFAULT_SHOULDER_Y, 0.02);
@@ -1806,10 +1228,27 @@ export function applyChaseRiderPose(
   pose: ChaseRiderPoseName,
   options: ChaseRiderPoseOptions = {}
 ): void {
+  applyChaseRiderControlPose(rig, pose, options);
+  syncChaseHumanToRider(rig);
+}
+
+function applyChaseRiderControlPose(
+  rig: ChaseRiderRig,
+  pose: ChaseRiderPoseName,
+  options: ChaseRiderPoseOptions = {}
+): void {
   const progress = clamp01(options.progress ?? 1);
   const pedalPhase = options.pedalPhaseRadians ?? 0;
   const steering = options.steeringRadians ?? 0;
   resetChaseRiderRigPose(rig);
+
+  if (pose === "ride" || pose === "brake" || pose === "pedal_press" || pose === "seated_balance" || pose === "leg_over") {
+    rig.upperBody.rotation.x = -0.6;
+  } else if (pose === "grip") {
+    rig.upperBody.rotation.x = -0.6 * progress;
+  } else if (pose === "left_foot_down" || pose === "dismount_leg_over") {
+    rig.upperBody.rotation.x = -0.6 * (1 - progress);
+  }
 
   if (pose === "ride") {
     setSymmetricShoulders(rig, RIDE_SHOULDER_X, RIDE_SHOULDER_Y, RIDE_SHOULDER_Z);
@@ -1854,7 +1293,7 @@ export function applyChaseRiderPose(
       lerp(DEFAULT_SHOULDER_Y, RIDE_SHOULDER_Y, progress),
       lerp(0.02, RIDE_SHOULDER_Z, progress)
     );
-    rig.riderRoot.position.x = lerp(-0.58, -0.08, progress);
+    rig.riderRoot.position.x = lerp(-0.58, -0.08, clamp01(progress / 0.48));
     rig.riderRoot.position.y = lerp(STAND_RIDER_OFFSET_Y, -0.22, progress);
     rig.riderRoot.position.z = lerp(0.08, SEATED_RIDER_OFFSET_Z, progress);
     rig.leftArm.rotation.x = lerp(-0.34, -0.72, progress);

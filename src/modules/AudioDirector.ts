@@ -34,6 +34,8 @@ interface AudioCue {
   volume?: number;
   loop?: boolean;
   playbackRate?: number;
+  panFromEvent?: boolean;
+  pan?: number;
   owner?: string;
   subtitleKey?: string;
   subtitleSurface?: "toast" | "scene";
@@ -238,6 +240,9 @@ export class AudioDirector {
       && Number.isFinite(event.payload.durationMs)
       ? Math.max(120, Math.min(10_000, event.payload.durationMs))
       : null;
+    const eventPan = typeof event.payload?.pan === "number" && Number.isFinite(event.payload.pan)
+      ? Math.max(-1, Math.min(1, event.payload.pan))
+      : 0;
     const cues = beat.cues.map((cue) => {
       const subtitleKey = dynamicSubtitleKey ?? cue.subtitleKey;
       const storyLine = storyLineForKey(subtitleKey);
@@ -246,6 +251,7 @@ export class AudioDirector {
         subtitleKey,
         ...(eventStartMs === null ? {} : { startMs: eventStartMs }),
         ...(eventDurationMs === null ? {} : { durationMs: eventDurationMs }),
+        ...(cue.panFromEvent ? { pan: eventPan } : {}),
         asset: cue.asset ?? (cue.channel === "voice" ? storyLine?.voiceAsset : undefined)
       };
     });
@@ -498,6 +504,39 @@ export class AudioDirector {
       }
       if (cue.startMs) {
         audio.currentTime = cue.startMs / 1000;
+      }
+      const AudioContextConstructor = (
+        window as typeof window & {
+          webkitAudioContext?: typeof AudioContext;
+        }
+      ).AudioContext ?? (
+        window as typeof window & {
+          webkitAudioContext?: typeof AudioContext;
+        }
+      ).webkitAudioContext;
+      let spatialContext: AudioContext | null = null;
+      if (cue.pan !== undefined && AudioContextConstructor) {
+        try {
+          spatialContext = new AudioContextConstructor();
+          const source = spatialContext.createMediaElementSource(audio);
+          if (typeof spatialContext.createStereoPanner === "function") {
+            const panner = spatialContext.createStereoPanner();
+            panner.pan.value = Math.max(-1, Math.min(1, cue.pan));
+            source.connect(panner).connect(spatialContext.destination);
+          } else {
+            source.connect(spatialContext.destination);
+          }
+          const closeSpatialContext = () => {
+            spatialContext?.close().catch(() => undefined);
+            spatialContext = null;
+          };
+          audio.addEventListener("ended", closeSpatialContext, { once: true });
+          audio.addEventListener("error", closeSpatialContext, { once: true });
+          spatialContext.resume().catch(() => undefined);
+        } catch {
+          spatialContext?.close().catch(() => undefined);
+          spatialContext = null;
+        }
       }
       const result = audio.play();
       result?.catch(() => undefined);

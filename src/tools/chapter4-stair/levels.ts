@@ -46,8 +46,27 @@ const VIEW_POSITIONS: Record<CameraViewId, StairViewCameraSpec> = {
   top_oblique: { position: [0, 17, 12] }
 };
 
+const ADVANCED_CAMERA: StairLevelCameraSpec = {
+  center: [0, 4.5, 0.5], halfWidth: 11.6, halfHeight: 6.525, near: 0.1, far: 100,
+  views: {
+    south_east: { position: [16, 19.5, 20.5] },
+    south_west: { position: [-16, 19.5, 20.5] },
+    top_oblique: { position: [0, 26.5, 12.5] }
+  }
+};
+
 /** 每关相机：同一关卡内三个视角 lookAt 同一中心。 */
 export const LEVEL_CAMERAS: Record<LevelId, StairLevelCameraSpec> = {
+  stair_c: { ...ADVANCED_CAMERA, halfWidth: 9.8, halfHeight: 5.5125 },
+  stair_d: {
+    ...ADVANCED_CAMERA,
+    center: [0, 6.7, 0.5],
+    views: {
+      south_east: { position: [16, 21.7, 20.5] },
+      south_west: { position: [-16, 21.7, 20.5] },
+      top_oblique: { position: [0, 28.7, 12.5] }
+    }
+  },
   stair_a: {
     center: [0, 1.55, 0],
     halfWidth: 9.8,
@@ -392,16 +411,117 @@ export const LEVEL_B: StairLevelDefinition = {
   }
 };
 
-/** 按关卡 id 取关卡定义；未知 id 抛错（调用方只传 LevelId）。 */
-export function getStairLevel(id: LevelId): StairLevelDefinition {
-  if (id === "stair_a") return LEVEL_A;
-  if (id === "stair_b") return LEVEL_B;
-  throw new Error(`Unknown stair level "${id}".`);
+/** Advanced switchbacks have distinct authored routes. Transfer platforms must be
+ * boarded at state 0, ridden, then left at state 2; no single static solution joins
+ * the entire route. Projected landings are calibrated to the shared camera ray.
+ */
+function createAdvancedLevel(id: "stair_c" | "stair_d"): StairLevelDefinition {
+  const isFinal = id === "stair_d";
+  const views: CameraViewId[] = isFinal
+    ? ["south_west", "top_oblique", "south_east"]
+    : ["south_west", "top_oblique"];
+  const level: StairLevelDefinition = {
+    id, title: isFinal ? "三重折叠天井" : "双向换乘回廊",
+    startNodeId: `${id}_start`, exitNodeId: `${id}_exit`,
+    nodes: [], physicalEdges: [], mechanisms: [], mechanismEdges: [], connectors: [],
+    perspectiveLinks: [], ascentViewSequence: views,
+    geometry: { platforms: [], stairs: [], decorations: [] },
+    feedback: {
+      objective: isFinal ? "穿过三段错层，在移动平台上换乘，接通天井出口。" : "乘台到达另一端，再从新的视角接通回廊。",
+      firstSeam: "两端在这个视角下接通了。",
+      blocked: "通路中断。检查台面位置或切换视角。",
+      wrongDirection: "端点重合，方向还没有接上。"
+    }
+  };
+  type Point = [number, number, number];
+  const point = (v: THREE.Vector3): Point => [v.x, v.y, v.z];
+  function node(name: string, position: THREE.Vector3, ownerId = "level") {
+    level.nodes.push({ id: name, ownerId, position: point(position), safe: ownerId === "level" });
+  }
+  function platform(name: string, position: THREE.Vector3, ownerId = "level", width = 1.5) {
+    level.geometry.platforms.push({ id: name, ownerId,
+      center: [position.x, position.y - 0.18, position.z], size: [width, 0.36, 1.5],
+      material: ownerId === "level" ? "stone_lit" : "structure", walkable: true });
+  }
+  let low = new THREE.Vector3(-4.5, 0.9, -2.4);
+  node(level.startNodeId, low.clone().add(new THREE.Vector3(-1.5, 0, 0)));
+  platform(`${id}_entry`, low.clone().add(new THREE.Vector3(-1.5, 0, 0)), "level", 2.2);
+  let precedingNode = level.startNodeId;
+  views.forEach((view, index) => {
+    const prefix = `${id}_${index + 1}`;
+    const stairId = `${prefix}_rotate`;
+    const lowId = `${prefix}_low`;
+    const highId = `${prefix}_high`;
+    const islandId = `${prefix}_island`;
+    const direction = new THREE.Vector3(index % 2 === 0 ? 1 : -1, 0, 0);
+    const high = low.clone().addScaledVector(direction, 3.2);
+    high.y += 1.5;
+    const cameraRay = new THREE.Vector3(...ADVANCED_CAMERA.views[view].position)
+      .sub(new THREE.Vector3(...ADVANCED_CAMERA.center));
+    const island = high.clone().addScaledVector(cameraRay, 0.055);
+    level.mechanisms.push({ id: stairId, kind: "rotate", stateCount: 4,
+      initialState: index % 2 === 0 ? 1 : 3, pivot: point(low), axis: "y", stepSize: 0,
+      label: `第${index + 1}段旋转梯` });
+    node(lowId, low, stairId); node(highId, high, stairId); node(islandId, island);
+    platform(`${prefix}_base`, low); platform(`${prefix}_landing`, island);
+    level.physicalEdges.push({ id: `${prefix}_approach`, a: precedingNode, b: lowId },
+      { id: `${prefix}_flight`, a: lowId, b: highId });
+    level.geometry.stairs.push({ id: `${prefix}_steps`, ownerId: stairId,
+      from: point(low), to: point(high), width: 1.3, steps: 14, material: "stone_lit" });
+    const linkGroup = `${prefix}_seam`;
+    level.connectors.push({ id: `${prefix}_out`, ownerId: stairId, worldPosition: high.clone(),
+      worldTangent: direction.clone(), nodeId: highId, views: ALL_VIEWS, linkGroup, projectionMode: "perspective" },
+    { id: `${prefix}_in`, ownerId: "level", worldPosition: island.clone(),
+      worldTangent: direction.clone().negate(), nodeId: islandId, views: ALL_VIEWS, linkGroup, projectionMode: "perspective" });
+    level.perspectiveLinks.push({ id: `${prefix}_link`, linkGroup,
+      connectorA: `${prefix}_out`, connectorB: `${prefix}_in` });
+
+    // Final lift and intermediate shuttles share a ride-only transfer contract.
+    const last = index === views.length - 1;
+    const vertical = last || (isFinal && index === 1);
+    const transferId = `${prefix}_transfer`;
+    const transferNode = `${prefix}_car`;
+    const board = island.clone().add(new THREE.Vector3(0, 0, 1.5));
+    const destination = board.clone().add(vertical ? new THREE.Vector3(0, 1.6, 0) : new THREE.Vector3(2.4, 0, 0));
+    const landing = destination.clone().add(new THREE.Vector3(1.5, 0, 0));
+    const landingId = last ? level.exitNodeId : `${prefix}_transfer_exit`;
+    level.mechanisms.push({ id: transferId, kind: vertical ? "vertical" : "horizontal",
+      stateCount: 3, initialState: 2, pivot: point(board), axis: vertical ? "y" : "x",
+      stepSize: vertical ? 0.8 : 1.2, label: last ? "终点升降台" : vertical ? "中继升降台" : "回廊横渡台" });
+    node(transferNode, board, transferId); node(landingId, landing);
+    platform(`${prefix}_car_platform`, board, transferId);
+    platform(`${prefix}_transfer_landing`, landing);
+    level.mechanismEdges.push({ id: `${prefix}_board`, a: islandId, b: transferNode, mechanismId: transferId, requiredState: 0 },
+      { id: `${prefix}_leave`, a: transferNode, b: landingId, mechanismId: transferId, requiredState: 2 });
+    if (last) {
+      level.geometry.decorations.push({ id: `${id}_door`, kind: "fire_door",
+        position: [landing.x + 0.5, landing.y, landing.z], rotationY: Math.PI / 2 });
+    } else {
+      low = landing.clone();
+      precedingNode = landingId;
+    }
+  });
+  level.geometry.platforms.push({ id: `${id}_wall`, ownerId: "level", center: [0, 5, -5.5],
+    size: [23, 14, 0.35], material: "wall_lit", walkable: false });
+  for (let index = 0; index < 4; index++) {
+    level.geometry.decorations.push({ id: `${id}_window_${index}`, kind: "window_frame",
+      position: [-6 + index * 4, 2.4 + index * 1.6, -5.28] });
+  }
+  return level;
 }
 
-// 类型自检：确保 perspectiveLinks 引用的 connector 分属同一 linkGroup（运行期校验由
-// scripts/verify-chapter4-stair-levels.mjs 负责，这里只做数据形状提示）。
+export const LEVEL_C = createAdvancedLevel("stair_c");
+export const LEVEL_D = createAdvancedLevel("stair_d");
+export const STAIR_LEVEL_ORDER: readonly LevelId[] = ["stair_a", "stair_b", "stair_c", "stair_d"];
+
+/** One ordered campaign for standalone and integrated runtime. */
+export function getStairLevel(id: LevelId): StairLevelDefinition {
+  const level = { stair_a: LEVEL_A, stair_b: LEVEL_B, stair_c: LEVEL_C, stair_d: LEVEL_D }[id];
+  if (!level) throw new Error(`Unknown stair level "${id}".`);
+  return level;
+}
+
 export const LEVEL_LINKS: Record<LevelId, readonly PerspectiveLinkDefinition[]> = {
-  stair_a: LEVEL_A.perspectiveLinks,
-  stair_b: LEVEL_B.perspectiveLinks
+  stair_a: LEVEL_A.perspectiveLinks, stair_b: LEVEL_B.perspectiveLinks,
+  stair_c: LEVEL_C.perspectiveLinks, stair_d: LEVEL_D.perspectiveLinks
 };

@@ -1,0 +1,218 @@
+.chapter4-star-lamp-playback {
+  --chapter4-star-lamp-led-level: 0;
+  --chapter4-star-lamp-core-level: 0;
+  --chapter4-star-lamp-glow-level: 0;
+  --chapter4-star-lamp-caption-level: 0;
+  --chapter4-star-lamp-blackout-level: 1;
+  --chapter4-star-lamp-camera-offset-y: -22%;
+  --chapter4-star-lamp-camera-scale: 1.16;
+  position: absolute;
+  inset: 0;
+  z-index: 168;
+  overflow: hidden;
+  isolation: isolate;
+  color: #f7f1dd;
+  background: #000;
+  font-family: var(--font-pixel);
+  pointer-events: auto;
+}
+
+.chapter4-star-lamp-playback__canvas,
+.chapter4-star-lamp-playback__fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.chapter4-star-lamp-playback__canvas {
+  z-index: 0;
+  display: block;
+  opacity: 0;
+  transition: opacity 180ms linear;
+}
+
+.chapter4-star-lamp-playback.is-three .chapter4-star-lamp-playback__canvas {
+  opacity: 1;
+}
+
+.chapter4-star-lamp-playback__fallback {
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 50% 42%, rgb(17 24 45 / 62%), transparent 42%),
+    linear-gradient(180deg, #01030a 0%, #020510 58%, #000 100%);
+  transition: opacity 180ms linear;
+}
+
+.chapter4-star-lamp-playback.is-initializing .chapter4-star-lamp-playback__fallback,
+.chapter4-star-lamp-playback.is-fallback .chapter4-star-lamp-playback__fallback {
+  opacity: 1;
+}
+
+.chapter4-star-lamp-playback__fallback-stars {
+  position: absolute;
+  inset: -12%;
+  opacity: .72;
+  background-repeat: repeat;
+  animation: chapter4-star-lamp-fallback-stars 18s linear infinite alternate;
+}
+
+.chapter4-star-lamp-playback__fallback-stars.is-far {
+  background-image:
+    radial-gradient(circle, rgb(178 199 232 / 82%) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgb(117 143 187 / 68%) 0 .8px, transparent 1.2px);
+  background-position: 0 0, 37px 53px;
+  background-size: 84px 76px, 111px 97px;
+}
+
+.chapter4-star-lamp-playback__fallback-stars.is-middle {
+  opacity: .64;
+  background-image:
+    radial-gradient(circle, rgb(234 238 249 / 88%) 0 1.15px, transparent 1.7px),
+    radial-gradient(circle, rgb(170 187 219 / 72%) 0 1px, transparent 1.5px);
+  background-position: 19px 31px, 81px 11px;
+  background-size: 137px 119px, 173px 151px;
+  animation-duration: 23s;
+  animation-direction: alternate-reverse;
+}
+
+.chapter4-star-lamp-playback__fallback-stars.is-near {
+  opacity: .58;
+  background-image:
+    radial-gradient(circle, rgb(255 232 171 / 94%) 0 1.5px, transparent 2.2px),
+    radial-gradient(circle, rgb(226 235 252 / 88%) 0 1.35px, transparent 2px);
+  background-position: 53px 23px, 124px 76px;
+  background-size: 223px 181px, 271px 209px;
+  animation-duration: 28s;
+}
+
+.chapter4-star-lamp-playback__artwork {
+  position: absolute;
+  z-index: 2;
+  inset: -7%;
+  transform:
+    translateY(var(--chapter4-star-lamp-camera-offset-y))
+    scale(var(--chapter4-star-lamp-camera-scale));
+  transform-origin: 50% 50%;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.chapter4-star-lamp-playback__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.chapter4-star-lamp-playback__layer.is-dark {
+  opacity: 1;
+  filter: brightness(.56) contrast(1.1) saturate(.78);
+}
+
+.chapter4-star-lamp-playback__layer.is-outline {
+  opacity: .44;
+  mix-blend-mode: screen;
+  filter: brightness(.72) contrast(1.18) saturate(.72);
+}
+
+.chapter4-star-lamp-playback__layer.is-glow {
+  opacity: var(--chapter4-star-lamp-glow-level);
+  mix-blend-mode: screen;
+  transform-origin: 50% 29.5%;
+  filter: blur(6px) brightness(.9);
+}
+
+.chapter4-star-lamp-playback__layer.is-core {
+  opacity: var(--chapter4-star-lamp-core-level);
+  mix-blend-mode: screen;
+  filter: brightness(.96);
+}
+
+.chapter4-star-lamp-playback__layer.is-leds {
+  opacity: var(--chapter4-star-lamp-led-level);
+  mix-blend-mode: screen;
+  filter: brightness(.94) drop-shadow(0 0 2px rgb(255 244 198 / 52%));
+}
+
+.chapter4-star-lamp-playback__flare {
+  position: absolute;
+  top: 29.5%;
+  left: 50%;
+  width: 22%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: var(--chapter4-star-lamp-glow-level);
+  transform: translate(-50%, -50%) scale(calc(.72 + var(--chapter4-star-lamp-glow-level)));
+  background: radial-gradient(circle, rgb(255 253 234 / 52%), rgb(255 232 155 / 14%) 27%, transparent 64%);
+  mix-blend-mode: screen;
+  filter: blur(8px);
+}
+
+.chapter4-star-lamp-playback__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 38%, transparent 20%, rgb(0 0 0 / 24%) 58%, rgb(0 0 0 / 92%));
+}
+
+.chapter4-star-lamp-playback__blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: #000;
+  opacity: var(--chapter4-star-lamp-blackout-level);
+}
+
+.chapter4-star-lamp-playback__caption {
+  position: absolute;
+  z-index: 5;
+  right: 28px;
+  bottom: 24px;
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  opacity: var(--chapter4-star-lamp-caption-level);
+  text-shadow: 0 2px 12px #000;
+}
+
+.chapter4-star-lamp-playback__caption strong {
+  color: #fff2b7;
+  font-family: inherit;
+  font-size: 28px;
+  letter-spacing: .08em;
+}
+
+.chapter4-star-lamp-playback__caption span {
+  font-size: 13px;
+  letter-spacing: .24em;
+}
+
+.chapter4-star-lamp-playback__caption small {
+  max-width: 320px;
+  color: #ffc7b0;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-align: right;
+}
+
+.chapter4-star-lamp-playback__sr-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+@keyframes chapter4-star-lamp-fallback-stars { from { transform: translateY(0); } to { transform: translateY(28px); } }
+@media (prefers-reduced-motion: reduce) { .chapter4-star-lamp-playback__fallback-stars { animation: none; } }

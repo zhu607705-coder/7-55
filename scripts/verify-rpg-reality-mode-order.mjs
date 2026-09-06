@@ -48,7 +48,7 @@ try {
         'export { ChapterThreeTheaterController } from "./src/modules/ChapterThreeTheaterController.ts";',
         'export { ChapterThreeQizhenLakeController } from "./src/modules/ChapterThreeQizhenLakeController.ts";',
         'export { ChapterFourTemporalMazeController } from "./src/modules/ChapterFourTemporalMazeController.ts";',
-        'export { THEATER_SPOTLIGHT_ROUNDS, getRequiredTheaterSpotlightLockMs } from "./src/scenes/rpg/TheaterSpotlightModel.ts";'
+        'export { createTheaterShow, stepTheaterShow, getTheaterShowFood, getTheaterShowMouth, getTheaterShowHazards } from "./src/scenes/rpg/TheaterSpotlightModel.ts";'
       ].join("\n"),
       resolveDir: root,
       sourcefile: "rpg-reality-mode-order-entry.ts"
@@ -70,10 +70,9 @@ try {
     EventBus,
     GAME_SAVE_KEY,
     SaveStore,
-    THEATER_SPOTLIGHT_ROUNDS,
+    createTheaterShow, stepTheaterShow, getTheaterShowFood, getTheaterShowMouth, getTheaterShowHazards,
     createGameStore,
     createInitialGameState,
-    getRequiredTheaterSpotlightLockMs
   } = runtime;
 
   const saveAndReload = (state) => {
@@ -171,17 +170,17 @@ try {
           worldTimeSeconds: 67800,
           phoneStatusTimeSeconds: 67800,
           phoneStatusTimeTrusted: true,
-          factIds: ["hour_hand_installed"]
+          factIds: ["hour_hand_installed", "classroom_104_chalk_residual_observed", "classroom_105_terminal_replay_checked"]
         };
       }
     );
     if (observeFirst) {
-      assert(controller.resolve755Intent({ type: "observe_elevator_history" }).accepted, "Chapter 4 dark elevator observation must work before any light operation or classroom check");
+      assert(controller.resolve755Intent({ type: "observe_elevator_history" }).accepted, "Chapter 4 dark elevator observation must work after classroom checks and before calibration");
       assert(!store.getState().chapter4.factIds.includes("elevator_history_calibrated"), "Chapter 4 dark observation must not synthesize light calibration");
       assert(controller.resolve755Intent({ type: "set_mode", mode: "light" }).accepted, "Chapter 4 must allow switching to light after early dark observation");
       assert(controller.resolve755Intent({ type: "calibrate_elevator_history", startSeconds: 81811 }).accepted, "Chapter 4 light calibration must work after dark observation");
     } else {
-      assert(controller.resolve755Intent({ type: "calibrate_elevator_history", startSeconds: 81811 }).accepted, "Chapter 4 light elevator calibration must work before any dark observation or classroom check");
+      assert(controller.resolve755Intent({ type: "calibrate_elevator_history", startSeconds: 81811 }).accepted, "Chapter 4 light elevator calibration must work after classroom checks and before dark observation");
       assert(!store.getState().chapter4.factIds.includes("elevator_history_observed"), "Chapter 4 light calibration must not synthesize dark observation");
       assert(controller.resolve755Intent({ type: "set_mode", mode: "dark" }).accepted, "Chapter 4 must allow switching to dark after early light calibration");
       assert(controller.resolve755Intent({ type: "observe_elevator_history" }).accepted, "Chapter 4 dark observation must remain available after light calibration");
@@ -719,33 +718,25 @@ try {
         state.items.spotlightRemote = true;
       }
     );
-    assert(controller.startSpotlightHunt(), "theater spotlight must start without forcing an observation order");
-    assert(store.getState().theaterHunt.mode === "dark", "theater spotlight start must preserve dark mode");
-    assert(controller.setMode("light"), "theater player must switch to light before physical spotlight operation");
-    const firstRound = THEATER_SPOTLIGHT_ROUNDS[0];
-    const firstRequired = getRequiredTheaterSpotlightLockMs(firstRound, 0);
-    assert(controller.resolveSpotlightAttempt({
-      round: firstRound.round,
-      lane: firstRound.lane,
-      maxContinuousLockMs: firstRequired,
-      beamActivated: true,
-      firstBeamAtMs: firstRound.actionMs * 0.25,
-      actionMs: firstRound.actionMs,
-      submittedAtMs: firstRound.actionMs * 0.75
-    }), "theater valid spotlight operation must succeed in light mode");
-    assert(store.getState().theaterHunt.mode === "light", "theater spotlight success must not force dark mode for the next round");
-    const secondRound = THEATER_SPOTLIGHT_ROUNDS[1];
-    const secondRequired = getRequiredTheaterSpotlightLockMs(secondRound, 0);
-    assert(!controller.resolveSpotlightAttempt({
-      round: secondRound.round,
-      lane: "left",
-      maxContinuousLockMs: secondRequired,
-      beamActivated: true,
-      firstBeamAtMs: secondRound.actionMs * 0.25,
-      actionMs: secondRound.actionMs,
-      submittedAtMs: secondRound.actionMs * 0.75
-    }), "theater invalid spotlight operation must still fail");
-    assert(store.getState().theaterHunt.mode === "light", "theater spotlight failure must not force dark mode");
+    assert(!controller.startSpotlightHunt(), "connecting the physical spotlight remote must reject dark mode");
+    assert(store.getState().items.spotlightRemote, "wrong-mode connection preserves the remote");
+    assert(controller.setMode("light"), "player switches to light for the physical console");
+    assert(controller.startSpotlightHunt(), "light-mode console starts the three-act show");
+    let show = createTheaterShow(0, 0);
+    const inputs = [];
+    while (show.status === "running") {
+      const food = getTheaterShowFood(show);
+      const target = [...food].sort((a, b) => Math.hypot(a.x-show.head.x,a.y-show.head.y)-Math.hypot(b.x-show.head.x,b.y-show.head.y))[0] ?? getTheaterShowMouth(show);
+      const dx=target.x-show.head.x, dy=target.y-show.head.y, length=Math.hypot(dx,dy);
+      const danger=getTheaterShowHazards(show).some(h=>Math.hypot(h.x-show.head.x,h.y-show.head.y)<85);
+      const input={x:dx/(length||1),y:dy/(length||1),dash:danger&&show.dashCooldown===0};
+      inputs.push(input); show=stepTheaterShow(show,input);
+    }
+    assert(show.status === "won", "first act trace reaches its mouth");
+    assert(controller.resolveSpotlightAttempt({version:2,round:0,attempt:0,inputs}), "verified light-mode act advances");
+    assert(store.getState().theaterHunt.mode === "light", "successful act preserves light mode");
+    assert(!controller.resolveSpotlightAttempt({version:1,round:1,lane:"left"}), "retired spotlight protocol cannot advance the new show");
+    assert(store.getState().theaterHunt.mode === "light", "rejected record preserves mode");
   }
 
   {

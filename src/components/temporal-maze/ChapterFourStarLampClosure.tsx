@@ -1,262 +1,405 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { ChapterFourStarLampPlayback } from "./ChapterFourStarLampPlayback";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { GameSubtitleContent } from "../GameSubtitleFrame";
 import lampCoreUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_core.png";
 import lampDarkUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_dark.png";
 import lampGlowUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_glow.png";
 import lampLedsUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_leds.png";
 import lampOutlineUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_outline.png";
-import { useMediaQuery } from "../useMediaQuery";
-import {
-  CHAPTER_FOUR_STAR_LAMP_REDUCED_SEQUENCE,
-  CHAPTER_FOUR_STAR_LAMP_SEQUENCE,
-  resolveChapterFourStarLampCameraPose,
-  resolveChapterFourStarLampSequenceFrame,
-  type ChapterFourStarLampSequenceFrame
-} from "./ChapterFourStarLampSequence";
-import { ChapterFourStarLampThreeRenderer } from "./ChapterFourStarLampThreeRenderer";
+import type {
+  ChapterFourZhuPersonAnswerId,
+  ChapterFourZhuPurposeAnswerId,
+  ChapterFourZhuQuestionAnswers
+} from "../../core/types";
 
-export const CHAPTER_FOUR_STAR_LAMP_SEQUENCE_DURATION_MS =
-  CHAPTER_FOUR_STAR_LAMP_SEQUENCE.durationMs;
+export { CHAPTER_FOUR_STAR_LAMP_SEQUENCE_DURATION_MS } from "./ChapterFourStarLampPlayback";
+export const CHAPTER_FOUR_STAR_LAMP_SAVED_CONFIRMATION_MS = 900;
+export const CHAPTER_FOUR_STAR_LAMP_FINAL_MESSAGE =
+  "从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！";
 
-interface ChapterFourStarLampClosureProps {
+type ChapterFourStarLampQuestionOption<AnswerId extends string> = Readonly<{
+  id: AnswerId;
+  label: string;
+}>;
+
+export type ChapterFourStarLampQuestions = readonly [
+  purpose: Readonly<{
+    id: "purpose";
+    prompt: string;
+    options: readonly ChapterFourStarLampQuestionOption<ChapterFourZhuPurposeAnswerId>[];
+  }>,
+  person: Readonly<{
+    id: "person";
+    prompt: string;
+    options: readonly ChapterFourStarLampQuestionOption<ChapterFourZhuPersonAnswerId>[];
+  }>
+];
+
+export type ChapterFourStarLampSavedAnswers = Readonly<{
+  purpose: ChapterFourZhuPurposeAnswerId;
+  person: ChapterFourZhuPersonAnswerId;
+}>;
+
+export interface ChapterFourStarLampClosureProps {
   sessionId: string;
+  questions: ChapterFourStarLampQuestions;
+  selectedAnswers: ChapterFourZhuQuestionAnswers;
+  answersSaved: boolean;
+  saving?: boolean;
+  saveError?: string | null;
   feedback?: string | null;
+  onSaveAnswers: (answers: ChapterFourStarLampSavedAnswers) => void;
   onComplete: (sessionId: string) => void;
 }
 
-type StarLampRendererMode = "initializing" | "three" | "fallback";
-
-interface StarLampCssProperties extends CSSProperties {
-  "--chapter4-star-lamp-led-level": string;
-  "--chapter4-star-lamp-core-level": string;
-  "--chapter4-star-lamp-glow-level": string;
-  "--chapter4-star-lamp-caption-level": string;
-  "--chapter4-star-lamp-blackout-level": string;
-  "--chapter4-star-lamp-camera-offset-y": string;
-  "--chapter4-star-lamp-camera-scale": string;
-}
+type ChapterFourStarLampStage = "questions" | "saved" | "playback" | "final";
+type ChapterFourStarLampQuestionId = "purpose" | "person";
 
 export function ChapterFourStarLampClosure({
   sessionId,
+  questions,
+  selectedAnswers,
+  answersSaved,
+  saving = false,
+  saveError = null,
   feedback = null,
+  onSaveAnswers,
   onComplete
 }: ChapterFourStarLampClosureProps) {
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const rootRef = useRef<HTMLElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [stage, setStage] = useState<ChapterFourStarLampStage>("questions");
+  const [activeQuestion, setActiveQuestion] = useState<ChapterFourStarLampQuestionId>(
+    selectedAnswers.purpose ? "person" : "purpose"
+  );
+  const [draftAnswers, setDraftAnswers] = useState<ChapterFourZhuQuestionAnswers>(() => ({
+    purpose: selectedAnswers.purpose,
+    person: selectedAnswers.person
+  }));
+  const dialogRef = useRef<HTMLElement | null>(null);
   const completedRef = useRef(false);
-  const onCompleteRef = useRef(onComplete);
-  const [rendererMode, setRendererMode] = useState<StarLampRendererMode>("initializing");
-  onCompleteRef.current = onComplete;
 
-  const completeOnce = useCallback(() => {
-    if (completedRef.current) return;
-    completedRef.current = true;
-    onCompleteRef.current(sessionId);
+  const [purposeQuestion, personQuestion] = questions;
+  const savedAnswers = completeAnswers(selectedAnswers);
+
+  useEffect(() => {
+    completedRef.current = false;
+    setStage("questions");
+    setDraftAnswers({
+      purpose: selectedAnswers.purpose,
+      person: selectedAnswers.person
+    });
+    setActiveQuestion(selectedAnswers.purpose ? "person" : "purpose");
+    // A session id identifies one isolated presentation attempt. Answer updates
+    // inside that session are synchronized by the dedicated effects below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   useEffect(() => {
-    const root = rootRef.current;
-    const canvas = canvasRef.current;
-    if (!root || !canvas) return undefined;
+    if (stage !== "questions" || saving) return;
+    setDraftAnswers((current) => ({
+      purpose: selectedAnswers.purpose ?? current.purpose,
+      person: selectedAnswers.person ?? current.person
+    }));
+  }, [saving, selectedAnswers.person, selectedAnswers.purpose, stage]);
 
-    completedRef.current = false;
-    let renderer: ChapterFourStarLampThreeRenderer | null = null;
-    let resizeObserver: ResizeObserver | null = null;
-    let fallbackAnimationFrame = 0;
-    let fallbackElapsedMs = 0;
-    let fallbackLastTimestamp: number | null = null;
-    let fallbackStarted = false;
-    let disposed = false;
+  useEffect(() => {
+    if (!answersSaved || !savedAnswers || stage !== "questions") return;
+    setDraftAnswers(savedAnswers);
+    setStage("saved");
+  }, [answersSaved, savedAnswers, stage]);
 
-    const reflectFrame = (frame: ChapterFourStarLampSequenceFrame) => {
-      const cameraPosition = resolveChapterFourStarLampCameraPose(frame);
-      root.dataset.sequencePhase = frame.phase;
-      root.dataset.sequenceProgress = frame.progress.toFixed(4);
-      root.dataset.cameraRise = frame.cameraRiseProgress.toFixed(4);
-      root.dataset.cameraX = cameraPosition.x.toFixed(4);
-      root.dataset.cameraY = cameraPosition.y.toFixed(4);
-      root.dataset.cameraZ = cameraPosition.z.toFixed(4);
-      root.dataset.lampRotationY = "0.0000";
-      root.dataset.lampArtwork = "layered-original-v1";
-      root.dataset.lightLevel = Math.max(
-        frame.ledLevel,
-        frame.coreLevel,
-        frame.glowLevel
-      ).toFixed(4);
-      root.style.setProperty("--chapter4-star-lamp-led-level", frame.ledLevel.toFixed(4));
-      root.style.setProperty("--chapter4-star-lamp-core-level", frame.coreLevel.toFixed(4));
-      root.style.setProperty("--chapter4-star-lamp-glow-level", frame.glowLevel.toFixed(4));
-      root.style.setProperty("--chapter4-star-lamp-caption-level", frame.captionLevel.toFixed(4));
-      root.style.setProperty(
-        "--chapter4-star-lamp-camera-offset-y",
-        `${frame.artworkOffsetY.toFixed(3)}%`
-      );
-      root.style.setProperty(
-        "--chapter4-star-lamp-camera-scale",
-        frame.artworkScale.toFixed(4)
-      );
-      root.style.setProperty(
-        "--chapter4-star-lamp-blackout-level",
-        (1 - frame.sceneReveal).toFixed(4)
-      );
+  useEffect(() => {
+    if (stage !== "saved") return;
+    const timer = window.setTimeout(
+      () => setStage("playback"),
+      CHAPTER_FOUR_STAR_LAMP_SAVED_CONFIRMATION_MS
+    );
+    return () => window.clearTimeout(timer);
+  }, [stage]);
+
+  const finishPlayback = useCallback(() => {
+    setStage((current) => current === "playback" ? "final" : current);
+  }, []);
+
+
+  const completeOnce = useCallback(() => {
+    if (stage !== "final" || completedRef.current) return;
+    completedRef.current = true;
+    onComplete(sessionId);
+  }, [onComplete, sessionId, stage]);
+
+  useEffect(() => {
+    if (stage !== "final") return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || (event.key !== "Enter" && event.key !== " ")) return;
+      event.preventDefault();
+      completeOnce();
     };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [completeOnce, stage]);
 
-    const tickFallback = (timestamp: number) => {
-      if (disposed || completedRef.current) return;
-      if (document.visibilityState === "hidden") {
-        fallbackLastTimestamp = null;
-        fallbackAnimationFrame = window.requestAnimationFrame(tickFallback);
+  useEffect(() => {
+    const root = dialogRef.current;
+    if (!root) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => !element.hasAttribute("aria-hidden"));
+      if (focusables.length === 0) {
+        event.preventDefault();
+        root.focus({ preventScroll: true });
         return;
       }
-      if (fallbackLastTimestamp === null) fallbackLastTimestamp = timestamp;
-      const frameDelta = Math.min(100, Math.max(0, timestamp - fallbackLastTimestamp));
-      fallbackLastTimestamp = timestamp;
-      fallbackElapsedMs += frameDelta;
-      const frame = resolveChapterFourStarLampSequenceFrame(fallbackElapsedMs, reducedMotion);
-      reflectFrame(frame);
-      if (frame.phase === "complete") {
-        completeOnce();
-        return;
-      }
-      fallbackAnimationFrame = window.requestAnimationFrame(tickFallback);
+      const currentIndex = focusables.indexOf(document.activeElement as HTMLElement);
+      const nextIndex = event.shiftKey
+        ? (currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1)
+        : (currentIndex === -1 || currentIndex >= focusables.length - 1 ? 0 : currentIndex + 1);
+      event.preventDefault();
+      focusables[nextIndex]?.focus();
     };
+    root.addEventListener("keydown", handleKeyDown);
+    return () => root.removeEventListener("keydown", handleKeyDown);
+  }, [stage]);
 
-    const startFallback = (reason: string) => {
-      if (disposed || fallbackStarted || completedRef.current) return;
-      fallbackStarted = true;
-      renderer?.destroy();
-      renderer = null;
-      fallbackElapsedMs = 0;
-      fallbackLastTimestamp = null;
-      root.dataset.renderer = "layered-camera-fallback";
-      root.dataset.fallbackReason = reason;
-      reflectFrame(resolveChapterFourStarLampSequenceFrame(0, reducedMotion));
-      setRendererMode("fallback");
-      fallbackAnimationFrame = window.requestAnimationFrame(tickFallback);
-    };
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const focusTarget = stage === "questions"
+      ? dialog.querySelector<HTMLButtonElement>(
+        `.chapter4-star-lamp-closure__question.is-${activeQuestion} .chapter4-star-lamp-closure__options button:not(:disabled)`
+      )
+      : stage === "final"
+        ? dialog.querySelector<HTMLButtonElement>(".chapter4-star-lamp-closure__final > button")
+        : null;
+    (focusTarget ?? dialog).focus({ preventScroll: true });
+  }, [activeQuestion, stage]);
 
-    const resizeRenderer = () => {
-      if (!renderer) return;
-      const bounds = root.getBoundingClientRect();
-      renderer.resize(bounds.width || 960, bounds.height || 540);
-    };
+  const draftComplete = completeAnswers(draftAnswers);
+  const displayedAnswers = savedAnswers ?? draftComplete;
+  const purposeLabel = displayedAnswers
+    ? labelForAnswer(purposeQuestion.options, displayedAnswers.purpose)
+    : "";
+  const personLabel = displayedAnswers
+    ? labelForAnswer(personQuestion.options, displayedAnswers.person)
+    : "";
 
-    if (!canCreateWebGlContext()) {
-      startFallback("star_lamp_webgl_unavailable");
-    } else {
-      try {
-        renderer = new ChapterFourStarLampThreeRenderer(canvas, reducedMotion);
-        root.dataset.renderer = "three-camera-stage";
-        delete root.dataset.fallbackReason;
-        setRendererMode("three");
-        resizeRenderer();
-        renderer.start({
-          onComplete: completeOnce,
-          onFailure: startFallback,
-          onFrame: reflectFrame
-        });
-      } catch (error) {
-        startFallback(error instanceof Error ? error.message : "star_lamp_webgl_unavailable");
-      }
-    }
-
-    if (typeof ResizeObserver === "function") {
-      resizeObserver = new ResizeObserver(resizeRenderer);
-      resizeObserver.observe(root);
-    }
-    window.addEventListener("resize", resizeRenderer);
-
-    return () => {
-      disposed = true;
-      window.cancelAnimationFrame(fallbackAnimationFrame);
-      window.removeEventListener("resize", resizeRenderer);
-      resizeObserver?.disconnect();
-      renderer?.destroy();
-    };
-  }, [completeOnce, reducedMotion]);
-
-  const style: StarLampCssProperties = {
-    "--chapter4-star-lamp-led-level": "0",
-    "--chapter4-star-lamp-core-level": "0",
-    "--chapter4-star-lamp-glow-level": "0",
-    "--chapter4-star-lamp-caption-level": "0",
-    "--chapter4-star-lamp-blackout-level": "1",
-    "--chapter4-star-lamp-camera-offset-y": "-22%",
-    "--chapter4-star-lamp-camera-scale": "1.16"
+  const submitAnswers = () => {
+    const answers = completeAnswers(draftAnswers);
+    if (!answers || saving) return;
+    onSaveAnswers(answers);
   };
+
+  if (stage === "playback") {
+    return <ChapterFourStarLampPlayback sessionId={sessionId} feedback={feedback} onComplete={finishPlayback} />;
+  }
 
   return (
     <section
-      ref={rootRef}
-      className={`chapter4-star-lamp-closure is-${rendererMode}`}
+      ref={dialogRef}
+      className={`chapter4-star-lamp-closure is-${stage}`}
       role="dialog"
       aria-modal="true"
-      aria-label="灿若星辰灯由底部向上观察与点亮演出"
+      aria-label={stage === "questions" ? "竺老两问" : "灿若星辰灯点亮"}
+      aria-busy={saving ? "true" : "false"}
       data-session-id={sessionId}
-      data-motion={reducedMotion ? "reduced" : "full"}
-      style={style}
+      data-stage={stage}
+      tabIndex={-1}
     >
-      <div className="chapter4-star-lamp-closure__fallback" aria-hidden="true">
-        <div className="chapter4-star-lamp-closure__fallback-stars is-far" />
-        <div className="chapter4-star-lamp-closure__fallback-stars is-middle" />
-        <div className="chapter4-star-lamp-closure__fallback-stars is-near" />
-      </div>
-      <canvas
-        ref={canvasRef}
-        className="chapter4-star-lamp-closure__canvas"
-        role="img"
-        aria-hidden={rendererMode !== "three"}
-        aria-label={reducedMotion
-          ? "原版灿若星辰灯依次点亮灯珠与中央灯芯"
-          : "相机从固定的原版灿若星辰灯底部向上移动，随后灯珠与中央灯芯依次点亮"}
-      />
-      <div className="chapter4-star-lamp-closure__artwork" aria-hidden="true">
-        <img className="chapter4-star-lamp-closure__layer is-dark" src={lampDarkUrl} alt="" />
-        <img className="chapter4-star-lamp-closure__layer is-outline" src={lampOutlineUrl} alt="" />
-        <img className="chapter4-star-lamp-closure__layer is-leds" src={lampLedsUrl} alt="" />
-        <img className="chapter4-star-lamp-closure__layer is-core" src={lampCoreUrl} alt="" />
-        <img className="chapter4-star-lamp-closure__layer is-glow" src={lampGlowUrl} alt="" />
-        <div className="chapter4-star-lamp-closure__flare" />
-      </div>
+      <LampLayers stage={stage} onPlaybackFinished={finishPlayback} />
       <div className="chapter4-star-lamp-closure__vignette" aria-hidden="true" />
-      <div className="chapter4-star-lamp-closure__blackout" aria-hidden="true" />
-      <footer className="chapter4-star-lamp-closure__caption">
-        <strong>07:55</strong>
-        <span>灿若星辰</span>
-        {feedback ? <small role="status">{feedback}</small> : null}
-      </footer>
-      <span className="chapter4-star-lamp-closure__sr-status" aria-live="polite">
-        {rendererMode === "fallback"
-          ? "正在以兼容模式完整播放灯光演出"
-          : reducedMotion
-            ? "正在按减弱动态模式播放完整点灯演出"
-            : "摄像机正在从固定灯体底部向上移动，到达正面机位后点亮"}
-      </span>
+
+      {stage === "questions" ? (
+        <div className="chapter4-star-lamp-closure__questions">
+          <QuestionColumn
+            side="purpose"
+            prompt={purposeQuestion.prompt}
+            options={purposeQuestion.options}
+            selectedAnswer={draftAnswers.purpose}
+            active={activeQuestion === "purpose"}
+            upcoming={false}
+            disabled={saving}
+            onSelect={(answer) => {
+              setDraftAnswers((current) => ({ ...current, purpose: answer }));
+              setActiveQuestion("person");
+            }}
+            onEdit={() => setActiveQuestion("purpose")}
+          />
+          <QuestionColumn
+            side="person"
+            prompt={personQuestion.prompt}
+            options={personQuestion.options}
+            selectedAnswer={draftAnswers.person}
+            active={activeQuestion === "person"}
+            upcoming={!draftAnswers.purpose}
+            disabled={saving || !draftAnswers.purpose}
+            onSelect={(answer) => {
+              setDraftAnswers((current) => ({ ...current, person: answer }));
+            }}
+            onEdit={() => setActiveQuestion("person")}
+          />
+
+          <div className="chapter4-star-lamp-closure__question-actions">
+            {saveError ? (
+              <p className="chapter4-star-lamp-closure__save-error" role="alert">
+                {saveError}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              disabled={!draftComplete || saving}
+              onClick={submitAnswers}
+            >
+              {saving ? "正在保存…" : "保存回答并继续"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {stage === "saved" ? (
+        <div className="chapter4-star-lamp-closure__saved" role="status" aria-live="polite">
+          回答已保存
+        </div>
+      ) : null}
+
+
+      {stage === "final" ? (
+        <div className="chapter4-star-lamp-closure__final" aria-live="polite">
+          <header>
+            <strong>07:55</strong>
+            <span>灿若星辰</span>
+          </header>
+          <p className="chapter4-star-lamp-closure__final-message">
+            {CHAPTER_FOUR_STAR_LAMP_FINAL_MESSAGE}
+          </p>
+          <dl className="chapter4-star-lamp-closure__answer-summary">
+            <div>
+              <dt>求学所向</dt>
+              <dd>{purposeLabel}</dd>
+            </div>
+            <div>
+              <dt>成人所守</dt>
+              <dd>{personLabel}</dd>
+            </div>
+          </dl>
+          {feedback ? (
+            <p className="chapter4-star-lamp-closure__final-feedback" role="status">
+              {feedback}
+            </p>
+          ) : null}
+          <button type="button" onClick={completeOnce}>继续</button>
+          <small>按 Space 或 Enter 继续</small>
+        </div>
+      ) : null}
     </section>
   );
 }
 
-export const CHAPTER_FOUR_STAR_LAMP_REDUCED_SEQUENCE_DURATION_MS =
-  CHAPTER_FOUR_STAR_LAMP_REDUCED_SEQUENCE.durationMs;
+function LampLayers({
+  stage,
+  onPlaybackFinished
+}: Readonly<{
+  stage: ChapterFourStarLampStage;
+  onPlaybackFinished: () => void;
+}>) {
+  const cameraState = stage === "playback"
+    ? "is-playback"
+    : stage === "final"
+      ? "is-final"
+      : "is-unlit";
+  return (
+    <div
+      className={`chapter4-star-lamp-closure__camera ${cameraState}`}
+      aria-hidden="true"
+      onAnimationEnd={(event) => {
+        if (stage === "playback"
+          && event.currentTarget === event.target
+          && (event.animationName === "chapter4-star-lamp-camera"
+            || event.animationName === "chapter4-star-lamp-camera-reduced")) {
+          onPlaybackFinished();
+        }
+      }}
+    >
+      <img className="chapter4-star-lamp-closure__layer is-dark" src={lampDarkUrl} alt="" />
+      <img className="chapter4-star-lamp-closure__layer is-outline" src={lampOutlineUrl} alt="" />
+      <img className="chapter4-star-lamp-closure__layer is-glow" src={lampGlowUrl} alt="" />
+      <img className="chapter4-star-lamp-closure__layer is-core" src={lampCoreUrl} alt="" />
+      <img className="chapter4-star-lamp-closure__layer is-leds" src={lampLedsUrl} alt="" />
+      <div className="chapter4-star-lamp-closure__flare" />
+    </div>
+  );
+}
 
-function canCreateWebGlContext(): boolean {
-  const probe = document.createElement("canvas");
-  const attributes: WebGLContextAttributes = {
-    alpha: false,
-    antialias: false,
-    depth: false,
-    failIfMajorPerformanceCaveat: false,
-    powerPreference: "low-power",
-    preserveDrawingBuffer: false,
-    stencil: false
-  };
-  try {
-    const context = probe.getContext("webgl2", attributes)
-      ?? probe.getContext("webgl", attributes);
-    if (!context) return false;
-    context.getExtension("WEBGL_lose_context")?.loseContext();
-    return true;
-  } catch {
-    return false;
-  }
+function QuestionColumn<AnswerId extends string>({
+  side,
+  prompt,
+  options,
+  selectedAnswer,
+  active,
+  upcoming,
+  disabled,
+  onSelect,
+  onEdit
+}: Readonly<{
+  side: "purpose" | "person";
+  prompt: string;
+  options: readonly ChapterFourStarLampQuestionOption<AnswerId>[];
+  selectedAnswer: AnswerId | null;
+  active: boolean;
+  upcoming: boolean;
+  disabled: boolean;
+  onSelect: (answer: AnswerId) => void;
+  onEdit: () => void;
+}>) {
+  const selectedLabel = selectedAnswer ? labelForAnswer(options, selectedAnswer) : "";
+  const summaryLabel = side === "purpose" ? "求学所向" : "成人所守";
+  return (
+    <fieldset
+      className={`chapter4-star-lamp-closure__question is-${side}${active ? " is-active" : ""}${selectedAnswer && !active ? " is-complete" : ""}${upcoming ? " is-upcoming" : ""}`}
+      disabled={disabled}
+      aria-hidden={upcoming ? "true" : undefined}
+    >
+      {active || !selectedAnswer ? (
+        <>
+          <legend>{prompt}</legend>
+          <div className="chapter4-star-lamp-closure__options">
+            {options.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={option.id === selectedAnswer ? "is-selected" : ""}
+                aria-pressed={option.id === selectedAnswer}
+                onClick={() => onSelect(option.id)}
+              >
+                <span aria-hidden="true">{option.id === selectedAnswer ? "●" : "○"}</span>
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="chapter4-star-lamp-closure__question-summary">
+          <span>{summaryLabel}</span>
+          <strong>{selectedLabel}</strong>
+          <button type="button" onClick={onEdit}>修改</button>
+        </div>
+      )}
+    </fieldset>
+  );
+}
+
+function completeAnswers(
+  answers: ChapterFourZhuQuestionAnswers
+): ChapterFourStarLampSavedAnswers | null {
+  if (!answers.purpose || !answers.person) return null;
+  return { purpose: answers.purpose, person: answers.person };
+}
+
+function labelForAnswer<AnswerId extends string>(
+  options: readonly ChapterFourStarLampQuestionOption<AnswerId>[],
+  answer: AnswerId
+): string {
+  return options.find((option) => option.id === answer)?.label ?? answer;
 }

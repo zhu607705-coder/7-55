@@ -23,6 +23,7 @@ export interface CanteenChaseSnapshot {
     distanceAhead: number;
   }>;
   narration: { id: string; text: string } | null;
+  stunt?: { started:boolean;airHeight:number;charge:number;bellCooldown:number;powerup:"tray"|"gust"|null;shield:boolean;combo:number;stunts:number;speed:number;paperLane:number;paperGap:number;cleared:string[];pickups:ReadonlyArray<{id:string;distance:number;lane:number;kind:"tray"|"gust"}>;ramps:ReadonlyArray<{id:string;distance:number;lane:number}> };
 }
 
 let snapshot: CanteenChaseSnapshot | null = null;

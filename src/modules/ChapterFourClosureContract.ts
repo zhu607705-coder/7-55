@@ -1,8 +1,8 @@
 /**
  * Stable identity for the approved Chapter 4 exterior closing material.
  *
- * The reference below identifies the user-provided official layered lamp
- * material and the only runtime consumer allowed to complete Chapter 4.
+ * The reference below identifies the approved five-layer “灿若星辰灯” asset
+ * and the only runtime consumer allowed to issue a Chapter 4 closure proof.
  */
 export interface ChapterFourClosureAssetReference {
   assetId: string;

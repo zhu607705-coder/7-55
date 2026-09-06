@@ -9,10 +9,6 @@ import stageManagerGhostIdleUrl from "../../assets/rpg/theater/generated/actors/
 import stageManagerGhostPointUrl from "../../assets/rpg/theater/generated/actors/stage_manager_ghost_point.png";
 import propBoxGhostUrl from "../../assets/rpg/theater/generated/effects/clue_prop_box_ghost.png";
 import paperFuturePathUrl from "../../assets/rpg/theater/generated/effects/clue_paper_future_path.png";
-import spotlightBeamArtUrl from "../../assets/rpg/theater/generated/effects/spotlight_beam.png";
-import spotlightFaultStripUrl from "../../assets/rpg/theater/generated/effects/spotlight_fault_strip.png";
-import spotlightHitRingUrl from "../../assets/rpg/theater/generated/effects/spotlight_hit_ring.png";
-import spotlightSparksUrl from "../../assets/rpg/theater/generated/effects/spotlight_sparks.png";
 import programOpeningUrl from "../../assets/rpg/theater/generated/icons/item_theater_program_opening.png";
 import programSpotlightUrl from "../../assets/rpg/theater/generated/icons/item_theater_program_spotlight.png";
 import programFinaleUrl from "../../assets/rpg/theater/generated/icons/item_theater_program_finale.png";
@@ -56,12 +52,7 @@ import {
   selectTheaterRuntimeSpawnZone,
   type TheaterRuntimePort
 } from "./TheaterRuntimeContract";
-import {
-  getTheaterSpotlightAssist,
-  THEATER_SPOTLIGHT_ROUNDS,
-  type TheaterSpotlightFailureReason,
-  type TheaterSpotlightLane
-} from "./TheaterSpotlightModel";
+import { TheaterImpossibleShow } from "./TheaterImpossibleShow";
 import {
   THEATER_AUDITORIUM_SPAWN,
   THEATER_GATE_BLOCKER,
@@ -86,10 +77,6 @@ export const THEATER_INTERIOR_WARM_ASSET_URLS = Object.freeze([
   stageManagerGhostPointUrl,
   propBoxGhostUrl,
   paperFuturePathUrl,
-  spotlightBeamArtUrl,
-  spotlightFaultStripUrl,
-  spotlightHitRingUrl,
-  spotlightSparksUrl,
   programOpeningUrl,
   programSpotlightUrl,
   programFinaleUrl,
@@ -117,10 +104,6 @@ const THEATER_MANAGER_GHOST_IDLE_KEY = "chapter-3-theater-manager-ghost-idle";
 const THEATER_MANAGER_GHOST_POINT_KEY = "chapter-3-theater-manager-ghost-point";
 const THEATER_PROP_GHOST_KEY = "chapter-3-theater-prop-ghost";
 const THEATER_PAPER_PATH_KEY = "chapter-3-theater-paper-path";
-const THEATER_SPOTLIGHT_BEAM_ART_KEY = "chapter-3-theater-spotlight-beam-art";
-const THEATER_SPOTLIGHT_HIT_RING_KEY = "chapter-3-theater-spotlight-hit-ring";
-const THEATER_SPOTLIGHT_SPARKS_KEY = "chapter-3-theater-spotlight-sparks";
-const THEATER_SPOTLIGHT_FAULT_KEY = "chapter-3-theater-spotlight-fault";
 const THEATER_PROGRAM_KEYS: Record<TheaterProgramId, string> = {
   opening: "chapter-3-theater-program-opening",
   spotlight: "chapter-3-theater-program-spotlight",
@@ -187,7 +170,6 @@ interface PendingFeedback {
   speaker?: string;
 }
 
-type SpotlightStage = "idle" | "preview" | "ready" | "tracking" | "hit" | "miss";
 
 function theaterDropTargetLabel(kind: TheaterInteractionTarget["kind"]): string {
   return {
@@ -243,41 +225,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private codeInput = "";
   private codeDisplay: Phaser.GameObjects.Text | null = null;
   private spotlightPanel: Phaser.GameObjects.Container | null = null;
-  private spotlightTitle: Phaser.GameObjects.Text | null = null;
   private spotlightStatus: Phaser.GameObjects.Text | null = null;
   private spotlightPaper: Phaser.GameObjects.Image | null = null;
-  private spotlightDecoyPaper: Phaser.GameObjects.Image | null = null;
   private spotlightConsoleGuide: Phaser.GameObjects.Container | null = null;
-  private spotlightPathPreview: Phaser.GameObjects.Graphics | null = null;
-  private spotlightBeam: Phaser.GameObjects.Graphics | null = null;
-  private spotlightBeamArt: Phaser.GameObjects.Image | null = null;
-  private spotlightAimRing: Phaser.GameObjects.Arc | null = null;
-  private spotlightAimMarker: Phaser.GameObjects.Arc | null = null;
-  private spotlightFireButton: Phaser.GameObjects.Rectangle | null = null;
-  private spotlightFireLabel: Phaser.GameObjects.Text | null = null;
-  private spotlightControlHint: Phaser.GameObjects.Text | null = null;
-  private spotlightTimeBar: Phaser.GameObjects.Rectangle | null = null;
-  private spotlightLockBar: Phaser.GameObjects.Rectangle | null = null;
-  private spotlightLockText: Phaser.GameObjects.Text | null = null;
-  private spotlightAssistText: Phaser.GameObjects.Text | null = null;
-  private spotlightStage: SpotlightStage = "idle";
-  private spotlightAimX = 0;
-  private spotlightActionElapsedMs = 0;
-  private spotlightCurrentLockMs = 0;
-  private spotlightMaxContinuousLockMs = 0;
-  private spotlightFirstBeamAtMs: number | null = null;
-  private spotlightEarlyExposureMs = 0;
-  private spotlightBeamActivated = false;
-  private spotlightPointerAiming = false;
-  private spotlightPointerFiring = false;
-  private spotlightBeamActive = false;
-  private spotlightDecoyOverlap = false;
-  private spotlightLastFailureReason: TheaterSpotlightFailureReason | null = null;
-  private spotlightPreviewTween: Phaser.Tweens.Tween | null = null;
-  private spotlightVisualTweens: Phaser.Tweens.Tween[] = [];
   private spotlightDelayTimers: Phaser.Time.TimerEvent[] = [];
-  private spotlightTrackingScheduled = false;
-  private spotlightChoiceOpen = false;
+  private impossibleShow: TheaterImpossibleShow | null = null;
   private ticketInspector: Phaser.GameObjects.Container | null = null;
   private ticketInspectorSprite: Phaser.GameObjects.Image | null = null;
   private ticketInspectorArm: Phaser.GameObjects.Rectangle | null = null;
@@ -315,10 +267,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       [THEATER_MANAGER_GHOST_POINT_KEY, stageManagerGhostPointUrl],
       [THEATER_PROP_GHOST_KEY, propBoxGhostUrl],
       [THEATER_PAPER_PATH_KEY, paperFuturePathUrl],
-      [THEATER_SPOTLIGHT_BEAM_ART_KEY, spotlightBeamArtUrl],
-      [THEATER_SPOTLIGHT_HIT_RING_KEY, spotlightHitRingUrl],
-      [THEATER_SPOTLIGHT_SPARKS_KEY, spotlightSparksUrl],
-      [THEATER_SPOTLIGHT_FAULT_KEY, spotlightFaultStripUrl],
       [THEATER_PROGRAM_KEYS.opening, programOpeningUrl],
       [THEATER_PROGRAM_KEYS.spotlight, programSpotlightUrl],
       [THEATER_PROGRAM_KEYS.finale, programFinaleUrl]
@@ -418,13 +366,22 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.input.on("pointerdown", pointerHandler);
     this.input.on("pointermove", pointerMoveHandler);
     this.input.on("pointerup", pointerUpHandler);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      this.input.keyboard?.off("keydown", keyHandler);
-      this.input.off("pointerdown", pointerHandler);
-      this.input.off("pointermove", pointerMoveHandler);
-      this.input.off("pointerup", pointerUpHandler);
+    this.input.on("pointerupoutside", pointerUpHandler);
+    let inputDetached = false;
+    const detachShowInput = () => {
+      if (inputDetached) return;
+      inputDetached = true;
+      this.input?.keyboard?.off("keydown", keyHandler);
+      this.input?.off("pointerdown", pointerHandler);
+      this.input?.off("pointermove", pointerMoveHandler);
+      this.input?.off("pointerup", pointerUpHandler);
+      this.input?.off("pointerupoutside", pointerUpHandler);
+      this.events.off(Phaser.Scenes.Events.SHUTDOWN, detachShowInput);
+      this.events.off(Phaser.Scenes.Events.DESTROY, detachShowInput);
       this.destroySpotlightPanel();
-    });
+    };
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, detachShowInput);
+    this.events.once(Phaser.Scenes.Events.DESTROY, detachShowInput);
 
     setRpgLogicalCameraZoom(
       this,
@@ -1187,7 +1144,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       this.animateSpotlightHit(false);
       return;
     }
-    if (name === "theater_spotlight_missed") {
+    if (name === "theater_spotlight_missed" || name === "theater_spotlight_rejected") {
       this.animateSpotlightMiss(payload);
       return;
     }
@@ -1229,7 +1186,11 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private syncDarkClues(state: GameState): void {
     const dark = state.theaterHunt.mode === "dark";
     const posterVisible = dark && state.theaterHunt.phase === "entry_ticket" && !state.theaterHunt.posterCleaned;
-    const kioskVisible = dark && state.theaterHunt.phase === "entry_ticket";
+    const kioskVisible = !dark
+      && state.theaterHunt.phase === "entry_ticket"
+      && state.theaterHunt.cc98TicketCommissionPhase === "delivered"
+      && !state.items.theaterTicketHalfB
+      && !state.items.temporaryTheaterTicket;
     this.darkClues[0]?.setVisible(posterVisible);
     this.darkClues[1]?.setVisible(posterVisible);
     this.darkClues[2]?.setVisible(kioskVisible);
@@ -1668,30 +1629,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
       button?.action();
       return;
     }
-    if (!["ready", "tracking"].includes(this.spotlightStage)) return;
-    const localX = logical.x - 480;
-    const localY = logical.y - 270;
-    const insideAimTrack = localX >= -340 && localX <= 340 && localY >= 58 && localY <= 126;
-    const insideFireButton = localX >= 205 && localX <= 355 && localY >= 142 && localY <= 202;
-    if (insideFireButton && this.spotlightStage === "tracking") {
-      this.spotlightPointerFiring = true;
-      return;
-    }
-    if (insideAimTrack) {
-      this.spotlightPointerAiming = true;
-      this.setSpotlightAim(localX);
-    }
+    this.impossibleShow?.pointerDown(logical);
   }
 
   private handleSpotlightPointerMove(pointer: Phaser.Input.Pointer): void {
-    if (!this.spotlightPointerAiming || !["ready", "tracking"].includes(this.spotlightStage)) return;
-    this.setSpotlightAim(this.getLogicalPointerPosition(pointer).x - 480);
+    this.impossibleShow?.pointerMove(this.getLogicalPointerPosition(pointer));
   }
 
-  private handleSpotlightPointerUp(): void {
-    this.spotlightPointerAiming = false;
-    this.spotlightPointerFiring = false;
-  }
+  private handleSpotlightPointerUp(): void { this.impossibleShow?.pointerUp(); }
 
   private getLogicalPointerPosition(pointer: Phaser.Input.Pointer): { x: number; y: number } {
     const bounds = this.game.canvas.getBoundingClientRect();
@@ -1720,11 +1665,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       }
       return;
     }
-    if (["ready", "tracking"].includes(this.spotlightStage)) {
-      if (event.key === "1") this.setSpotlightAim(-230);
-      else if (event.key === "2") this.setSpotlightAim(0);
-      else if (event.key === "3") this.setSpotlightAim(230);
-    }
+    this.impossibleShow?.keyDown(event);
   }
 
   private animatePosterCleaned(): void {
@@ -1857,612 +1798,35 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.destroySpotlightPanel();
     const state = this.runtime.getState();
     if (state.theaterHunt.phase !== "spotlight_hunt") return;
+    this.closePanel();
     this.runtime.emit("rpg_subtitle_clear");
-    const round = state.theaterHunt.spotlightRound;
-    const config = THEATER_SPOTLIGHT_ROUNDS[round];
-    if (!config) return;
-    const assist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
-    const previewMs = config.previewMs + assist.previewBonusMs;
-    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(7000);
-    const shade = this.add.rectangle(0, 0, 858, 446, 0x040611, 0.96)
-      .setStrokeStyle(5, 0xe3c76e, 0.96);
-    const innerFrame = this.add.rectangle(0, 0, 832, 420, 0x08101d, 0.88)
-      .setStrokeStyle(2, 0x66d9ed, 0.84);
-    const headerBand = this.add.rectangle(0, -181, 792, 50, 0x172338, 0.98)
-      .setStrokeStyle(2, 0xd7bd68, 0.72);
-    const arena = this.add.rectangle(0, 8, 724, 242, 0x0b1628, 0.94)
-      .setStrokeStyle(3, 0x4d7188, 0.94);
-    const stageTop = this.add.rectangle(0, -112, 724, 5, 0x73e3ef, 0.52);
-    const stageFloor = this.add.rectangle(0, 104, 724, 45, 0x111827, 0.92)
-      .setStrokeStyle(2, 0x2e5064, 0.7);
-    const leftCurtain = this.add.rectangle(-398, 6, 34, 342, 0x4e1625, 0.9)
-      .setStrokeStyle(2, 0xa64551, 0.72);
-    const rightCurtain = this.add.rectangle(398, 6, 34, 342, 0x4e1625, 0.9)
-      .setStrokeStyle(2, 0xa64551, 0.72);
-    const scanLine = this.add.rectangle(0, -102, 716, 3, 0x73efff, 0.18);
-    this.spotlightTitle = this.add.text(-330, -181, `第 ${round + 1} / 3 轮 · 观察`, {
-      color: "#fff2c6", fontFamily: "monospace", fontSize: "20px", fontStyle: "bold"
-    }).setOrigin(0, 0.5);
-    this.spotlightStatus = this.add.text(0, -143, theaterContent.spotlight.preview, {
-      color: "#91edff", fontFamily: "monospace", fontSize: "15px", align: "center",
-      wordWrap: { width: 660 }
-    }).setOrigin(0.5);
-    this.spotlightControlHint = this.add.text(0, 145, "观察尾迹，记住最后一个灯区。", {
-      color: "#bcefff", fontFamily: "monospace", fontSize: "14px", align: "center"
-    }).setOrigin(0.5);
-    const lockTrack = this.add.rectangle(-192, 178, 270, 10, 0x26313e, 0.96).setOrigin(0, 0.5).setVisible(false);
-    const timerTrack = this.add.rectangle(-192, 200, 270, 8, 0x26313e, 0.92).setOrigin(0, 0.5).setVisible(false);
-    this.spotlightLockBar = this.add.rectangle(-192, 178, 270, 10, 0x66e4ff, 0.96).setOrigin(0, 0.5).setVisible(false);
-    this.spotlightTimeBar = this.add.rectangle(-192, 200, 270, 8, 0xffdf73, 0.96).setOrigin(0, 0.5).setVisible(false);
-    this.spotlightLockText = this.add.text(-326, 178, theaterContent.spotlight.lockLabel, {
-      color: "#bcefff", fontFamily: "monospace", fontSize: "13px"
-    }).setOrigin(0, 0.5).setVisible(false);
-    this.spotlightAssistText = this.add.text(0, -112, assist.active ? theaterContent.spotlight.assistHint : "", {
-      color: "#ffe699", fontFamily: "monospace", fontSize: "12px"
-    }).setOrigin(0.5).setVisible(assist.active);
-    this.spotlightFireButton = this.add.rectangle(276, 188, 150, 48, 0x25384a, 0.98)
-      .setStrokeStyle(3, 0xb9d7e8, 0.9)
-      .setVisible(false);
-    this.spotlightFireLabel = this.add.text(276, 188, theaterContent.spotlight.fireLabel, {
-      color: "#f4fbff", fontFamily: "monospace", fontSize: "16px"
-    }).setOrigin(0.5).setVisible(false);
-    panel.add([
-      shade,
-      innerFrame,
-      leftCurtain,
-      rightCurtain,
-      headerBand,
-      arena,
-      stageTop,
-      stageFloor,
-      scanLine,
-      this.spotlightTitle,
-      this.spotlightStatus,
-      this.spotlightControlHint,
-      lockTrack,
-      timerTrack,
-      this.spotlightLockBar,
-      this.spotlightTimeBar,
-      this.spotlightLockText,
-      this.spotlightAssistText,
-      this.spotlightFireButton,
-      this.spotlightFireLabel
-    ]);
-    const roundPipX = 245;
-    for (let index = 0; index < 3; index += 1) {
-      const completed = index < round;
-      const active = index === round;
-      const pip = this.add.rectangle(roundPipX + index * 34, -181, 24, 12, completed ? 0xf0d56d : active ? 0x78e6f5 : 0x2b3a49, 1)
-        .setStrokeStyle(2, active ? 0xe9fbff : 0x7c7250, active ? 0.96 : 0.58);
-      panel.add(pip);
-      if (active && !this.reducedMotion) {
-        this.spotlightVisualTweens.push(this.tweens.add({
-          targets: pip,
-          alpha: { from: 0.52, to: 1 },
-          scaleX: { from: 0.86, to: 1.08 },
-          duration: 360,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut"
-        }));
-      }
-    }
-    panel.add(this.add.rectangle(0, 90, 650, 4, 0x708394, 0.62));
-    [-230, 0, 230].forEach((x) => {
-      panel.add(this.add.rectangle(x, 5, 2, 210, 0x41617a, 0.2));
+    this.runtime.emit("rpg_theater_mode_requested", { mode: "light" });
+    this.impossibleShow = new TheaterImpossibleShow(this, state.theaterHunt.spotlightRound, state.theaterHunt.spotlightMistakes, {
+      submit: attempt => this.runtime.emit("rpg_theater_spotlight_attempt", { attempt }),
+      restart: () => this.beginSpotlightRound(),
+      finale: () => { this.destroySpotlightPanel(); this.animateReversal(); }
     });
-    const lanePositions: Record<TheaterSpotlightLane, number> = { left: -230, center: 0, right: 230 };
-    (Object.entries(lanePositions) as [TheaterSpotlightLane, number][]).forEach(([lane, x]) => {
-      const laneLabel = lane === "left" ? "左" : lane === "center" ? "中" : "右";
-      const circle = this.add.circle(x, 90, 52, 0x65dded, 0.025).setStrokeStyle(3, 0x80dbe5, 0.34);
-      const innerCircle = this.add.circle(x, 90, 38, 0xe7c769, 0.025).setStrokeStyle(2, 0xd9c76d, 0.32);
-      const labelPlate = this.add.rectangle(x, 116, 54, 22, 0x101c2a, 0.94).setStrokeStyle(1, 0x66889a, 0.72);
-      const label = this.add.text(x, 116, laneLabel, {
-        color: "#d9eef2", fontFamily: "monospace", fontSize: "13px", fontStyle: "bold"
-      }).setOrigin(0.5);
-      panel.add([circle, innerCircle, labelPlate, label]);
-      if (!this.reducedMotion) {
-        this.spotlightVisualTweens.push(this.tweens.add({
-          targets: circle,
-          alpha: { from: 0.35, to: 0.95 },
-          scale: { from: 0.94, to: 1.06 },
-          duration: 660 + Math.abs(x),
-          delay: x + 230,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut"
-        }));
-      }
-    });
-
-    if (!this.reducedMotion) {
-      this.spotlightVisualTweens.push(this.tweens.add({
-        targets: scanLine,
-        y: { from: -102, to: 105 },
-        alpha: { from: 0.04, to: 0.32 },
-        duration: 1500,
-        repeat: -1,
-        ease: "Linear"
-      }));
-    }
-
-    this.spotlightPathPreview = this.add.graphics();
-    this.spotlightPathPreview.lineStyle(6, 0x62dfff, 0.82);
-    this.drawSpotlightPath(this.spotlightPathPreview, config.pathPoints, false);
-    if (config.decoyPathPoints) {
-      this.drawSpotlightPath(this.spotlightPathPreview, config.decoyPathPoints, true);
-    }
-    panel.add(this.spotlightPathPreview);
-    const path = this.createSpotlightSpline(config.pathPoints);
-    const trailDots = Array.from({ length: 13 }, (_, index) => {
-      const point = path.getPoint(index / 12);
-      const dot = this.add.circle(point.x, point.y, index % 3 === 0 ? 4 : 2, 0x8df2ff, 0.72);
-      panel.add(dot);
-      if (!this.reducedMotion) {
-        this.spotlightVisualTweens.push(this.tweens.add({
-          targets: dot,
-          alpha: { from: 0.18, to: 0.95 },
-          scale: { from: 0.65, to: 1.28 },
-          duration: 420,
-          delay: index * 58,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut"
-        }));
-      }
-      return dot;
-    });
-    const start = path.getPoint(0);
-    this.spotlightPaper = this.add.image(start.x, start.y, THEATER_PAPER_RESIDUAL_KEY)
-      .setAlpha(0.94);
-    panel.add(this.spotlightPaper);
-    if (!this.reducedMotion) {
-      this.spotlightVisualTweens.push(this.tweens.add({
-        targets: this.spotlightPaper,
-        scale: { from: 0.96, to: 1.08 },
-        alpha: { from: 0.72, to: 1 },
-        duration: 180,
-        yoyo: true,
-        repeat: -1,
-        ease: "Stepped"
-      }));
-    }
-    if (config.decoyPathPoints) {
-      const decoyPath = this.createSpotlightSpline(config.decoyPathPoints);
-      const decoyStart = decoyPath.getPoint(0);
-      this.spotlightDecoyPaper = this.add.image(decoyStart.x, decoyStart.y, THEATER_PAPER_ESCAPE_KEY)
-        .setAlpha(0.42);
-      panel.add(this.spotlightDecoyPaper);
-    }
-    this.spotlightBeam = this.add.graphics();
-    this.spotlightBeamArt = this.add.image(0, -22, THEATER_SPOTLIGHT_BEAM_ART_KEY)
-      .setScale(0.78)
-      .setAlpha(0.2)
-      .setVisible(false);
-    this.spotlightAimRing = this.add.circle(0, 90, config.beamRadius, 0xffdf73, 0.06)
-      .setStrokeStyle(4, 0xffe999, 0.58)
-      .setVisible(false);
-    this.spotlightAimMarker = this.add.circle(0, 90, 5, 0xfff2aa, 0.94).setVisible(false);
-    panel.add([this.spotlightBeam, this.spotlightBeamArt]);
-    panel.add([this.spotlightAimRing, this.spotlightAimMarker]);
-    trailDots.forEach((dot) => panel.bringToTop(dot));
-    panel.bringToTop(this.spotlightPaper);
-    this.spotlightPanel = panel;
-    this.spotlightStage = "preview";
-    this.spotlightAimX = 0;
-    this.spotlightActionElapsedMs = 0;
-    this.spotlightCurrentLockMs = 0;
-    this.spotlightMaxContinuousLockMs = 0;
-    this.spotlightFirstBeamAtMs = null;
-    this.spotlightEarlyExposureMs = 0;
-    this.spotlightBeamActivated = false;
-    this.spotlightBeamActive = false;
-    this.spotlightPointerAiming = false;
-    this.spotlightPointerFiring = false;
-    this.spotlightLastFailureReason = null;
-    this.spotlightChoiceOpen = false;
-    if (!this.reducedMotion) {
-      const previewState = { progress: 0 };
-      this.spotlightPreviewTween = this.tweens.add({
-        targets: previewState,
-        progress: 1,
-        duration: previewMs,
-        ease: "Linear",
-        onUpdate: () => {
-          const point = path.getPoint(previewState.progress);
-          this.spotlightPaper?.setPosition(point.x, point.y).setAngle(previewState.progress * 220);
-          if (config.decoyPathPoints && this.spotlightDecoyPaper) {
-            const decoyPoint = this.createSpotlightSpline(config.decoyPathPoints).getPoint(previewState.progress);
-            this.spotlightDecoyPaper.setPosition(decoyPoint.x, decoyPoint.y).setAngle(-previewState.progress * 170);
-          }
-        }
-      });
-    } else {
-      const end = path.getPoint(1);
-      this.spotlightPaper.setPosition(end.x, end.y);
-    }
-    this.scheduleSpotlight(previewMs, () => this.prepareSpotlightAction(round));
-  }
-
-  private prepareSpotlightAction(round: number): void {
-    if (!this.spotlightPanel || this.runtime.getState().theaterHunt.spotlightRound !== round) return;
-    this.spotlightStage = "ready";
-    this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 预置`);
-    this.spotlightStatus?.setText("预置追光灯").setColor("#ffe49a");
-    this.spotlightControlHint?.setText("拖动下方滑轨，或按 ← / → 移动。").setColor("#fff3bd");
-    this.spotlightPaper?.setTexture(THEATER_PAPER_FLUORESCENT_KEY).setVisible(false).clearTint();
-    this.spotlightDecoyPaper?.setVisible(false);
-    this.spotlightPathPreview?.setVisible(false);
-    this.spotlightAimRing?.setVisible(true);
-    this.spotlightAimMarker?.setVisible(true);
-    this.spotlightLockText?.setVisible(true);
-    this.spotlightLockBar?.setVisible(true).setScale(0, 1);
-    this.spotlightTimeBar?.setVisible(true).setScale(1, 1);
-    this.spotlightFireButton?.setVisible(true).setFillStyle(0x25384a, 0.98);
-    this.spotlightFireLabel?.setVisible(true);
-    this.setSpotlightAim(this.spotlightAimX);
-    this.scheduleSpotlightTracking(round);
-  }
-
-  private scheduleSpotlightTracking(round: number): void {
-    if (!this.spotlightPanel || this.spotlightStage !== "ready" || this.spotlightTrackingScheduled) return;
-    if (this.runtime.getState().theaterHunt.mode !== "light") {
-      this.spotlightStatus?.setText("深色观察可核对尾迹；切至浅色操作后启动追光灯。")
-        .setColor("#91edff");
-      this.spotlightControlHint?.setText("Tab 切换模式；切换不会重置本轮观察。")
-        .setColor("#bcefff");
-      return;
-    }
-    this.spotlightTrackingScheduled = true;
-    this.spotlightStatus?.setText("浅色操作已就绪，追光灯正在启动。")
-      .setColor("#ffe49a");
-    this.scheduleSpotlight(900, () => {
-      this.spotlightTrackingScheduled = false;
-      if (this.runtime.getState().theaterHunt.mode !== "light") {
-        this.scheduleSpotlightTracking(round);
-        return;
-      }
-      this.startSpotlightTracking(round);
-    });
-  }
-
-  private startSpotlightTracking(round: number): void {
-    const state = this.runtime.getState();
-    if (
-      !this.spotlightPanel
-      || state.theaterHunt.spotlightRound !== round
-      || state.theaterHunt.phase !== "spotlight_hunt"
-      || state.theaterHunt.mode !== "light"
-    ) return;
-    this.spotlightStage = "tracking";
-    this.spotlightTitle?.setText(`第 ${round + 1} / 3 轮 · 锁定`);
-    this.spotlightChoiceOpen = true;
-    this.spotlightActionElapsedMs = 0;
-    this.spotlightCurrentLockMs = 0;
-    this.spotlightMaxContinuousLockMs = 0;
-    this.spotlightFirstBeamAtMs = null;
-    this.spotlightEarlyExposureMs = 0;
-    this.spotlightBeamActivated = false;
-    this.spotlightStatus?.setText(theaterContent.spotlight.choose).setColor("#ffe49a");
-    this.spotlightControlHint?.setText(theaterContent.spotlight.controlHint).setColor("#fff3bd");
-    this.spotlightPaper?.setTexture(THEATER_PAPER_FLUORESCENT_KEY).setVisible(true).clearTint();
-    this.spotlightDecoyPaper?.setVisible(Boolean(THEATER_SPOTLIGHT_ROUNDS[round]?.decoyPathPoints));
+    this.spotlightPanel = this.impossibleShow.container;
   }
 
   private updateSpotlightRound(delta: number): void {
-    if (!this.spotlightPanel || !["ready", "tracking"].includes(this.spotlightStage)) return;
-    const state = this.runtime.getState();
-    const round = state.theaterHunt.spotlightRound;
-    const config = THEATER_SPOTLIGHT_ROUNDS[round];
-    if (!config) return;
-    if (this.spotlightStage === "ready") {
-      this.scheduleSpotlightTracking(round);
-      return;
-    }
-    if (state.theaterHunt.mode !== "light") {
-      this.spotlightStage = "ready";
-      this.spotlightChoiceOpen = false;
-      this.spotlightBeamActive = false;
-      this.spotlightPointerFiring = false;
-      this.spotlightPaper?.setVisible(false);
-      this.spotlightDecoyPaper?.setVisible(false);
-      this.resetSpotlightBeamVisual();
-      this.scheduleSpotlightTracking(round);
-      return;
-    }
-    const assist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
-    const direction = Number(this.cursors.right.isDown || this.keys.D.isDown)
-      - Number(this.cursors.left.isDown || this.keys.A.isDown);
-    if (direction !== 0) this.setSpotlightAim(this.spotlightAimX + direction * delta * 0.38);
-    if (this.spotlightPointerFiring && !this.input.activePointer.isDown) this.spotlightPointerFiring = false;
-    this.spotlightBeamActive = this.spotlightStage === "tracking"
-      && (this.spotlightPointerFiring || this.cursors.space.isDown);
-    this.drawSpotlightBeam(config.beamRadius * assist.radiusScale);
-    if (this.spotlightStage !== "tracking") return;
-
-    this.spotlightActionElapsedMs = Math.min(config.actionMs, this.spotlightActionElapsedMs + delta);
-    const progress = Phaser.Math.Clamp(this.spotlightActionElapsedMs / config.actionMs, 0, 1);
-    const motionProgress = Phaser.Math.Clamp(progress / 0.72, 0, 1);
-    const path = this.createSpotlightSpline(config.pathPoints);
-    const target = path.getPoint(motionProgress);
-    this.spotlightPaper?.setPosition(target.x, target.y).setAngle(motionProgress * 220);
-
-    let decoy: Phaser.Math.Vector2 | null = null;
-    if (config.decoyPathPoints && this.spotlightDecoyPaper) {
-      decoy = this.createSpotlightSpline(config.decoyPathPoints).getPoint(Phaser.Math.Clamp(progress / 0.78, 0, 1));
-      this.spotlightDecoyPaper.setPosition(decoy.x, decoy.y).setAngle(-motionProgress * 170);
-    }
-
-    if (this.spotlightBeamActive) {
-      this.spotlightBeamActivated = true;
-      if (this.spotlightFirstBeamAtMs === null) this.spotlightFirstBeamAtMs = this.spotlightActionElapsedMs;
-    }
-    const beamRadius = config.beamRadius * assist.radiusScale;
-    const targetOverlap = this.spotlightBeamActive
-      && Math.hypot(target.x - this.spotlightAimX, target.y - 90) <= beamRadius + 12;
-    const decoyOverlap = Boolean(
-      this.spotlightBeamActive
-      && decoy
-      && Math.hypot(decoy.x - this.spotlightAimX, decoy.y - 90) <= beamRadius + 10
-    );
-    if (this.spotlightBeamActive && !targetOverlap && !decoyOverlap && progress < 0.68) {
-      this.spotlightEarlyExposureMs += delta;
-    } else {
-      this.spotlightEarlyExposureMs = Math.max(0, this.spotlightEarlyExposureMs - delta * 1.5);
-    }
-    if (this.spotlightEarlyExposureMs >= 450) {
-      this.spotlightChoiceOpen = false;
-      this.spotlightStage = "miss";
-      this.runtime.emit("rpg_theater_spotlight_attempt", {
-        round,
-        lane: this.getSpotlightAimLane(),
-        maxContinuousLockMs: this.spotlightMaxContinuousLockMs,
-        beamActivated: this.spotlightBeamActivated,
-        firstBeamAtMs: this.spotlightFirstBeamAtMs,
-        submittedAtMs: this.spotlightActionElapsedMs,
-        actionMs: config.actionMs
-      });
-      return;
-    }
-    if (decoyOverlap && !targetOverlap) {
-      this.spotlightCurrentLockMs = 0;
-      if (!this.spotlightDecoyOverlap) {
-        this.spotlightStatus?.setText("断裂尾迹是假残影。").setColor("#ffb3b3");
-      }
-    } else if (targetOverlap) {
-      this.spotlightCurrentLockMs += delta;
-      this.spotlightStatus?.setText("锁定中，保持照射。").setColor("#9af3ff");
-    } else if (this.spotlightCurrentLockMs > 0) {
-      this.spotlightCurrentLockMs = Math.max(0, this.spotlightCurrentLockMs - delta * 2.4);
-      this.spotlightStatus?.setText("光圈脱离纸条，重新锁定。").setColor("#ffd49a");
-    }
-    this.spotlightDecoyOverlap = decoyOverlap;
-    this.spotlightMaxContinuousLockMs = Math.max(this.spotlightMaxContinuousLockMs, this.spotlightCurrentLockMs);
-    const requiredLockMs = config.requiredLockMs * assist.lockScale;
-    this.spotlightLockBar?.setScale(Phaser.Math.Clamp(this.spotlightCurrentLockMs / requiredLockMs, 0, 1), 1);
-    this.spotlightTimeBar?.setScale(1 - progress, 1);
-
-    if (this.spotlightCurrentLockMs >= requiredLockMs) {
-      this.spotlightChoiceOpen = false;
-      this.spotlightStage = "hit";
-      this.runtime.emit("rpg_theater_spotlight_attempt", {
-        round,
-        lane: this.getSpotlightAimLane(),
-        maxContinuousLockMs: this.spotlightMaxContinuousLockMs,
-        beamActivated: this.spotlightBeamActivated,
-        firstBeamAtMs: this.spotlightFirstBeamAtMs,
-        submittedAtMs: this.spotlightActionElapsedMs,
-        actionMs: config.actionMs
-      });
-      return;
-    }
-    if (this.spotlightActionElapsedMs >= config.actionMs) {
-      this.spotlightChoiceOpen = false;
-      this.spotlightStage = "miss";
-      this.runtime.emit("rpg_theater_spotlight_attempt", {
-        round,
-        lane: this.getSpotlightAimLane(),
-        maxContinuousLockMs: this.spotlightMaxContinuousLockMs,
-        beamActivated: this.spotlightBeamActivated,
-        firstBeamAtMs: this.spotlightFirstBeamAtMs,
-        submittedAtMs: this.spotlightActionElapsedMs,
-        actionMs: config.actionMs
-      });
-    }
-  }
-
-  private setSpotlightAim(x: number): void {
-    this.spotlightAimX = Phaser.Math.Clamp(x, -320, 320);
-    this.spotlightAimRing?.setX(this.spotlightAimX);
-    this.spotlightAimMarker?.setX(this.spotlightAimX);
-  }
-
-  private getSpotlightAimLane(): TheaterSpotlightLane {
-    if (this.spotlightAimX <= -112) return "left";
-    if (this.spotlightAimX >= 112) return "right";
-    return "center";
-  }
-
-  private drawSpotlightBeam(radius: number): void {
-    this.spotlightAimRing?.setRadius(radius);
-    this.spotlightBeam?.clear();
-    if (!this.spotlightBeam) return;
-    const activeAlpha = this.spotlightBeamActive ? 0.3 : 0.06;
-    this.spotlightBeamArt
-      ?.setPosition(this.spotlightAimX, -22)
-      .setVisible(["ready", "tracking"].includes(this.spotlightStage))
-      .setAlpha(this.spotlightBeamActive ? 0.84 : 0.18);
-    this.spotlightBeam
-      .fillStyle(0xffe89a, activeAlpha)
-      .fillTriangle(this.spotlightAimX - 15, -105, this.spotlightAimX + 15, -105, this.spotlightAimX + radius, 90)
-      .fillTriangle(this.spotlightAimX - 15, -105, this.spotlightAimX - radius, 90, this.spotlightAimX + radius, 90);
-    this.spotlightAimRing
-      ?.setFillStyle(0xffdf73, this.spotlightBeamActive ? 0.28 : 0.06)
-      .setStrokeStyle(this.spotlightBeamActive ? 5 : 3, 0xffeb9c, this.spotlightBeamActive ? 0.98 : 0.58);
-    this.spotlightFireButton
-      ?.setFillStyle(this.spotlightBeamActive ? 0x7c5f22 : 0x25384a, 0.98)
-      .setStrokeStyle(3, this.spotlightBeamActive ? 0xffe99b : 0xb9d7e8, 0.94);
-  }
-
-  private resetSpotlightBeamVisual(): void {
-    this.spotlightBeam?.clear();
-    this.spotlightBeamArt?.setVisible(false);
-    this.spotlightAimRing
-      ?.setFillStyle(0xffdf73, 0.06)
-      .setStrokeStyle(3, 0xffeb9c, 0.58);
-    this.spotlightFireButton
-      ?.setFillStyle(0x25384a, 0.98)
-      .setStrokeStyle(3, 0xb9d7e8, 0.94);
-  }
-
-  private createSpotlightSpline(points: readonly { x: number; y: number }[]): Phaser.Curves.Spline {
-    return new Phaser.Curves.Spline(points.map((point) => new Phaser.Math.Vector2(point.x, point.y)));
-  }
-
-  private drawSpotlightPath(
-    graphics: Phaser.GameObjects.Graphics,
-    points: readonly { x: number; y: number }[],
-    broken: boolean
-  ): void {
-    const spline = this.createSpotlightSpline(points);
-    const samples = Array.from({ length: 31 }, (_, index) => spline.getPoint(index / 30));
-    graphics.lineStyle(broken ? 3 : 6, broken ? 0x7994a2 : 0x62dfff, broken ? 0.48 : 0.82);
-    samples.slice(0, -1).forEach((point, index) => {
-      if (broken && index % 5 >= 2) return;
-      const next = samples[index + 1];
-      graphics.lineBetween(point.x, point.y, next.x, next.y);
+    if (this.interactRequested) this.impossibleShow?.interact();
+    this.impossibleShow?.update(delta, {
+      x: Number(this.cursors.right.isDown || this.keys.D.isDown) - Number(this.cursors.left.isDown || this.keys.A.isDown) + this.virtualDirection.x,
+      y: Number(this.cursors.down.isDown || this.keys.S.isDown) - Number(this.cursors.up.isDown || this.keys.W.isDown) + this.virtualDirection.y
     });
   }
 
   private scheduleSpotlight(delayMs: number, callback: () => void): void {
     const timer = this.time.delayedCall(delayMs, () => {
-      this.spotlightDelayTimers = this.spotlightDelayTimers.filter((candidate) => candidate !== timer);
+      this.spotlightDelayTimers = this.spotlightDelayTimers.filter(candidate => candidate !== timer);
       callback();
     });
     this.spotlightDelayTimers.push(timer);
   }
 
-  private animateSpotlightHit(finalHit: boolean): void {
-    this.spotlightChoiceOpen = false;
-    this.spotlightStage = "hit";
-    this.spotlightBeamActive = false;
-    this.spotlightPointerFiring = false;
-    this.resetSpotlightBeamVisual();
-    const hitCount = this.runtime.getState().theaterHunt.spotlightRound;
-    this.spotlightTitle?.setText(`第 ${hitCount} / 3 轮 · 命中`);
-    this.spotlightStatus?.setText(`${theaterContent.spotlight.hit}  已命中 ${hitCount} / 3`).setColor("#fff4b2");
-    this.spotlightControlHint?.setText("连续锁定完成。").setColor("#fff4b2");
-    this.spotlightLockBar?.setScale(1, 1).setFillStyle(0xffe487, 1);
-    if (this.spotlightPanel) {
-      const originX = this.spotlightPaper?.x ?? this.spotlightAimX;
-      const originY = this.spotlightPaper?.y ?? 90;
-      this.spotlightPaper?.setTexture(THEATER_PAPER_LOCKED_KEY).clearTint();
-      const hitRingArt = this.add.image(originX, originY, THEATER_SPOTLIGHT_HIT_RING_KEY).setScale(0.42);
-      const sparkArt = this.add.image(originX, originY, THEATER_SPOTLIGHT_SPARKS_KEY).setScale(0.4);
-      this.spotlightPanel.add([hitRingArt, sparkArt]);
-      this.spotlightVisualTweens.push(this.tweens.add({
-        targets: hitRingArt,
-        scale: 0.92,
-        alpha: 0,
-        duration: this.reducedMotion ? 100 : 460,
-        ease: "Cubic.easeOut",
-        onComplete: () => hitRingArt.destroy()
-      }));
-      this.spotlightVisualTweens.push(this.tweens.add({
-        targets: sparkArt,
-        scale: 0.68,
-        alpha: 0,
-        duration: this.reducedMotion ? 100 : 540,
-        ease: "Cubic.easeOut",
-        onComplete: () => sparkArt.destroy()
-      }));
-      for (let index = 0; index < 3; index += 1) {
-        const ring = this.add.circle(originX, originY, 18 + index * 8, 0xffe68a, 0)
-          .setStrokeStyle(4 - index, index === 0 ? 0xffffff : 0xffdf73, 0.92);
-        this.spotlightPanel.add(ring);
-        this.spotlightVisualTweens.push(this.tweens.add({
-          targets: ring,
-          scale: 2.5 + index * 0.35,
-          alpha: 0,
-          duration: this.reducedMotion ? 100 : 420 + index * 90,
-          ease: "Cubic.easeOut",
-          onComplete: () => ring.destroy()
-        }));
-      }
-      for (let index = 0; index < 12; index += 1) {
-        const angle = Math.PI * 2 * index / 12;
-        const spark = this.add.rectangle(originX, originY, 7, 3, index % 2 === 0 ? 0xffe68a : 0x8ff2ff, 0.96)
-          .setAngle(Phaser.Math.RadToDeg(angle));
-        this.spotlightPanel.add(spark);
-        this.spotlightVisualTweens.push(this.tweens.add({
-          targets: spark,
-          x: originX + Math.cos(angle) * 72,
-          y: originY + Math.sin(angle) * 48,
-          alpha: 0,
-          duration: this.reducedMotion ? 100 : 360,
-          ease: "Cubic.easeOut",
-          onComplete: () => spark.destroy()
-        }));
-      }
-    }
-    if (!this.reducedMotion) this.cameras.main.shake(80, 0.002);
-    if (finalHit) {
-      this.scheduleSpotlight(80, () => this.animateReversal());
-    } else {
-      this.scheduleSpotlight(350, () => this.beginSpotlightRound());
-    }
-  }
-
-  private animateSpotlightMiss(payload?: Record<string, unknown>): void {
-    this.spotlightChoiceOpen = false;
-    this.spotlightStage = "miss";
-    this.spotlightBeamActive = false;
-    this.spotlightPointerFiring = false;
-    this.resetSpotlightBeamVisual();
-    this.spotlightTitle?.setText(`第 ${this.runtime.getState().theaterHunt.spotlightRound + 1} / 3 轮 · 重试`);
-    const reason = String(payload?.failureReason ?? "late") as TheaterSpotlightFailureReason;
-    this.spotlightLastFailureReason = reason;
-    const failureHints = theaterContent.spotlight.failureHints as Partial<Record<TheaterSpotlightFailureReason, string>>;
-    const failureHint = failureHints[reason] ?? theaterContent.spotlight.wrongHint;
-    this.spotlightStatus?.setText(`${theaterContent.spotlight.miss}\n${failureHint}`).setColor("#ff9f9f");
-    this.spotlightControlHint?.setText("保持已完成轮次，重新观察本轮。").setColor("#bcefff");
-    if (this.spotlightPanel) {
-      const faultArt = this.add.image(0, 60, THEATER_SPOTLIGHT_FAULT_KEY).setScale(0.72);
-      this.spotlightPanel.add(faultArt);
-      this.spotlightVisualTweens.push(this.tweens.add({
-        targets: faultArt,
-        x: 48,
-        alpha: 0,
-        duration: this.reducedMotion ? 90 : 620,
-        ease: "Cubic.easeOut",
-        onComplete: () => faultArt.destroy()
-      }));
-      for (let index = 0; index < 5; index += 1) {
-        const strip = this.add.rectangle(-300 + index * 150, -80 + index * 37, 96, 8, index % 2 === 0 ? 0xe65867 : 0x65dbe8, 0.72);
-        this.spotlightPanel.add(strip);
-        this.spotlightVisualTweens.push(this.tweens.add({
-          targets: strip,
-          x: strip.x + (index % 2 === 0 ? 86 : -86),
-          alpha: 0,
-          duration: this.reducedMotion ? 90 : 260 + index * 35,
-          ease: "Cubic.easeOut",
-          onComplete: () => strip.destroy()
-        }));
-      }
-    }
-    if (this.spotlightPaper && !this.reducedMotion) {
-      this.tweens.add({
-        targets: this.spotlightPaper,
-        x: this.spotlightPaper.x + 54,
-        y: this.spotlightPaper.y - 24,
-        angle: this.spotlightPaper.angle + 220,
-        duration: 360,
-        yoyo: true,
-        ease: "Sine.easeInOut"
-      });
-    }
-    this.scheduleSpotlight(1100, () => this.beginSpotlightRound());
-  }
+  private animateSpotlightHit(finalHit: boolean): void { this.impossibleShow?.resolve(true, finalHit); }
+  private animateSpotlightMiss(_payload?: Record<string, unknown>): void { this.impossibleShow?.resolve(false); }
 
   private animateReversal(): void {
     if (!this.spotlightPanel) {
@@ -2543,38 +1907,14 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private destroySpotlightPanel(): void {
-    this.spotlightPreviewTween?.stop();
-    this.spotlightPreviewTween = null;
-    this.spotlightVisualTweens.forEach((tween) => tween.stop());
-    this.spotlightVisualTweens = [];
-    this.spotlightDelayTimers.forEach((timer) => timer.remove(false));
+    this.spotlightDelayTimers.forEach(timer => timer.remove(false));
     this.spotlightDelayTimers = [];
-    this.spotlightTrackingScheduled = false;
-    this.spotlightPanel?.destroy(true);
+    if (this.impossibleShow) this.impossibleShow.destroy();
+    else this.spotlightPanel?.destroy(true);
+    this.impossibleShow = null;
     this.spotlightPanel = null;
-    this.spotlightTitle = null;
     this.spotlightStatus = null;
     this.spotlightPaper = null;
-    this.spotlightDecoyPaper = null;
-    this.spotlightPathPreview = null;
-    this.spotlightBeam = null;
-    this.spotlightBeamArt = null;
-    this.spotlightAimRing = null;
-    this.spotlightAimMarker = null;
-    this.spotlightFireButton = null;
-    this.spotlightFireLabel = null;
-    this.spotlightControlHint = null;
-    this.spotlightTimeBar = null;
-    this.spotlightLockBar = null;
-    this.spotlightLockText = null;
-    this.spotlightAssistText = null;
-    this.spotlightStage = "idle";
-    this.spotlightPointerAiming = false;
-    this.spotlightPointerFiring = false;
-    this.spotlightBeamActive = false;
-    this.spotlightDecoyOverlap = false;
-    this.spotlightLastFailureReason = null;
-    this.spotlightChoiceOpen = false;
   }
 
   private queueDialogue(lines: readonly string[], onComplete?: () => void): void {
@@ -2636,8 +1976,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
   private publishDebugState(target: TheaterInteractionTarget | null, state: GameState): void {
     if (deferRpgRuntimeDebugCapture(() => this.publishDebugState(target, state))) return;
-    const spotlightConfig = THEATER_SPOTLIGHT_ROUNDS[state.theaterHunt.spotlightRound];
-    const spotlightAssist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes);
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       world: THEATER_INTERIOR_WORLD,
@@ -2692,31 +2030,9 @@ export class TheaterInteriorScene extends Phaser.Scene {
         mode: state.theaterHunt.mode,
         activeTarget: target?.id ?? null,
         panel: this.panelKind,
-        spotlightChoiceOpen: this.spotlightChoiceOpen,
+        spotlightChoiceOpen: this.impossibleShow !== null,
         ticketDropGuide: null,
-        spotlight: {
-          stage: this.spotlightStage,
-          round: state.theaterHunt.spotlightRound,
-          aimX: Math.round(this.spotlightAimX),
-          aimLane: this.getSpotlightAimLane(),
-          beamActive: this.spotlightBeamActive,
-          actionElapsedMs: Math.round(this.spotlightActionElapsedMs),
-          actionRemainingMs: Math.max(0, Math.round((spotlightConfig?.actionMs ?? 0) - this.spotlightActionElapsedMs)),
-          currentLockMs: Math.round(this.spotlightCurrentLockMs),
-          maxContinuousLockMs: Math.round(this.spotlightMaxContinuousLockMs),
-          requiredLockMs: Math.round((spotlightConfig?.requiredLockMs ?? 0) * spotlightAssist.lockScale),
-          earlyExposureMs: Math.round(this.spotlightEarlyExposureMs),
-          assistActive: spotlightAssist.active,
-          lastFailureReason: this.spotlightLastFailureReason,
-          target: this.spotlightPaper
-            ? {
-                x: Math.round(this.spotlightPaper.x),
-                y: Math.round(this.spotlightPaper.y),
-                visible: this.spotlightPaper.visible
-              }
-            : null,
-          decoyVisible: this.spotlightDecoyPaper?.visible === true
-        },
+        spotlight: this.impossibleShow?.snapshot() ?? null,
         activeOcclusionIds: this.activeOcclusionIds,
         softenedOcclusionIds: this.softenedOcclusionIds
       }

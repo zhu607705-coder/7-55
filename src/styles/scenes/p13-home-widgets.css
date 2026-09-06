@@ -234,14 +234,14 @@
 
 .phone .note {
   align-items: center;
-  background: rgba(255, 248, 226, 0.85);
-  border: 2px solid var(--ink);
-  box-shadow: 2px 2px 0 var(--shadow-warm);
+  background: var(--notification-background);
+  border: var(--notification-border);
+  box-shadow: var(--notification-shadow);
   display: grid;
-  gap: 12px;
+  gap: var(--notification-gap);
   grid-template-columns: 44px 1fr 46px;
   min-height: 54px;
-  padding: 8px 10px;
+  padding: var(--notification-padding);
   text-align: left;
 }
 

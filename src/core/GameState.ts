@@ -329,12 +329,14 @@ export function createInitialGameState(): GameState {
       },
       room204Placements: [],
       lightGrid: {
-        mask: 14,
+        mask: 6,
         locked: false
       },
       guardMode: "absent",
       chaseAttempt: 0,
       chaseRestartCheckpoint: null,
+      chaseStairwellStage: "pending",
+      chaseStairwellLanding: 0,
       checkinCardAccepted: false,
       checkinPaperAccepted: false,
       exteriorClosureAcknowledged: false,

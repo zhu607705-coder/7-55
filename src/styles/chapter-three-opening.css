@@ -835,32 +835,16 @@
   font-size: 20px;
 }
 
+/* Subtitle appearance is owned by subtitles.css. */
 .chapter-three-opening__subtitle {
-  background: rgba(7, 12, 17, 0.94);
-  border: 2px solid #cdbd77;
-  bottom: 26px;
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.48);
+  bottom: 12px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   left: 50%;
-  min-height: 88px;
-  padding: 10px 12px 11px;
   position: absolute;
   transform: translateX(-50%);
   width: min(680px, calc(100% - 152px));
   z-index: 12;
-}
-
-.chapter-three-opening__subtitle.tone-player { border-color: #78b9df; }
-.chapter-three-opening__subtitle.tone-system { border-color: #efcf61; }
-.chapter-three-opening__subtitle.tone-paper { border-color: #df7d82; }
-
-.chapter-three-opening.phase-route .chapter-three-opening__subtitle {
-  animation: chapter-three-task-card-in 520ms steps(8, end) both;
-}
-
-.chapter-three-opening.phase-arrival .chapter-three-opening__subtitle {
-  animation: chapter-three-arrival-task 4s steps(18, end) both;
 }
 
 .chapter-three-opening__subtitle-meta {

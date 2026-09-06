@@ -1,5 +1,4 @@
 import type {
-  ChapterFourPhase,
   ChapterFourRoom204GroupId,
   ChapterFourRoom204Orientation,
   ChapterFourRoom204PieceId,
@@ -169,32 +168,6 @@ export const ROOM204_WALKABILITY = Object.freeze({ ...ROOM204_LAYOUT.walkability
 export const ROOM204_PROJECTION_HANDSHAKE = Object.freeze({
   ...ROOM204_LAYOUT.projectionHandshake
 });
-
-export const ROOM204_RESTORED_DISPLAY_PHASES: ReadonlySet<ChapterFourPhase> = new Set([
-  "maintenance_repair",
-  "blackout_light_grid",
-  "final_chase",
-  "final_minute_recovery",
-  "return_to_clock",
-  "morning_checkin",
-  "exterior_closure",
-  "complete"
-]);
-
-export type Room204RuntimePresentation = "interactive" | "restored" | "hidden";
-
-export function selectRoom204RuntimePresentation(
-  phase: string,
-  restored: boolean,
-  placements: readonly ChapterFourRoom204Placement[]
-): Room204RuntimePresentation {
-  if (phase === "room204_restore") return "interactive";
-  return restored
-    && ROOM204_RESTORED_DISPLAY_PHASES.has(phase as ChapterFourPhase)
-    && isRoom204PlacementSetComplete(placements)
-    ? "restored"
-    : "hidden";
-}
 
 export const ROOM204_PIECE_ORDER = Object.freeze(
   ROOM204_LAYOUT.initialPiecePairs.map((entry) => entry.pieceId)
@@ -382,9 +355,19 @@ export function resolveRoom204Placement(
   };
 }
 
+/**
+ * The active Room 204 interaction commits one environmental group at a time.
+ * Fresh progress uses the three authored mappings exactly. A partial legacy
+ * save keeps already placed pieces and fills the remaining authored group
+ * slots when those slots are still free. The returned array is transactional:
+ * any conflict returns the normalized input without a partial append.
+ */
 export function resolveRoom204GroupPlacement(
   current: readonly ChapterFourRoom204Placement[],
-  candidate: { groupId: unknown; targetGroupId?: unknown }
+  candidate: {
+    groupId: unknown;
+    targetGroupId?: unknown;
+  }
 ): Room204GroupPlacementResolution {
   const placements = normalizeRoom204Placements(current);
   if (typeof candidate.groupId !== "string"
@@ -415,7 +398,11 @@ export function resolveRoom204GroupPlacement(
     const preferredIndex = remainingSlots.indexOf(mapping.slotId);
     const slotIndex = preferredIndex >= 0 ? preferredIndex : 0;
     const [slotId] = remainingSlots.splice(slotIndex, 1);
-    return { pieceId: mapping.pieceId, slotId, orientation: ROOM204_ALLOWED_ORIENTATION };
+    return {
+      pieceId: mapping.pieceId,
+      slotId,
+      orientation: ROOM204_ALLOWED_ORIENTATION
+    };
   });
   const next = [...placements, ...addedPlacements];
   return {
@@ -431,9 +418,7 @@ export function isRoom204GroupComplete(
   placements: readonly ChapterFourRoom204Placement[],
   groupId: ChapterFourRoom204GroupId
 ): boolean {
-  const placedPieceIds = new Set(
-    normalizeRoom204Placements(placements).map((placement) => placement.pieceId)
-  );
+  const placedPieceIds = new Set(normalizeRoom204Placements(placements).map((placement) => placement.pieceId));
   return ROOM204_GROUPS[groupId].mappings.every((mapping) => placedPieceIds.has(mapping.pieceId));
 }
 

@@ -8,8 +8,8 @@
   "runtimePolicy": {
     "sourceResolution": "1K-JPG",
     "colorSpace": "sRGB source color maps converted to a small grayscale luminance palette before Chapter 4 palette modulation",
-    "runtimeReduction": "Each 1K color map becomes one 64x64 pixel tile in memory; plaster uses a restrained 248-255 range while concrete and metal use up to six luminance levels.",
-    "sampling": "NearestFilter with nearest mip levels at the 480x270 internal render resolution",
+    "runtimeReduction": "Each 1K color map becomes one 256x256 pixel tile in memory; plaster uses a restrained 248-255 range while concrete and metal use up to six luminance levels.",
+    "sampling": "NearestFilter with nearest mip levels at the 960x540 native render resolution",
     "networkDependency": false
   },
   "materials": [

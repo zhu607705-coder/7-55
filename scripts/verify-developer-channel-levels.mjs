@@ -27,6 +27,8 @@ const checkpointBlock = checkpointSource.slice(
 const checkpoints = [...checkpointBlock.matchAll(
   /\{\s*id:\s*"([^"]+)",\s*chapter:\s*"([^"]+)"/g
 )].map((match) => ({ id: match[1], chapter: match[2] }));
+const visibleCheckpoints = checkpoints.filter((checkpoint) => !checkpoint.id.startsWith("postgame-"));
+const hiddenPostgameCheckpoints = checkpoints.filter((checkpoint) => checkpoint.id.startsWith("postgame-"));
 
 const levelBlock = componentSource.slice(
   componentSource.indexOf("const DEVELOPER_LEVELS"),
@@ -57,8 +59,11 @@ for (const level of levels) {
   }
 }
 
-for (const checkpoint of checkpoints) {
+for (const checkpoint of visibleCheckpoints) {
   assert(assignments.get(checkpoint.id) === 1, `${checkpoint.id} must belong to exactly one level`);
+}
+for (const checkpoint of hiddenPostgameCheckpoints) {
+  assert(!assignments.has(checkpoint.id), `${checkpoint.id} must stay out of visible developer levels`);
 }
 for (const checkpointId of assignments.keys()) {
   assert(checkpointById.has(checkpointId), `level assignment contains extra checkpoint ${checkpointId}`);
@@ -113,5 +118,5 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `Developer level validation PASS assertions=${assertions} chapters=5 levels=${levels.length} checkpoints=${checkpoints.length} coverage=exactly-once`
+  `Developer level validation PASS assertions=${assertions} chapters=5 levels=${levels.length} visibleCheckpoints=${visibleCheckpoints.length} hiddenPostgameCheckpoints=${hiddenPostgameCheckpoints.length} coverage=exactly-once`
 );

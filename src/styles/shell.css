@@ -197,21 +197,6 @@
   font: 800 var(--fs-micro)/1 monospace;
 }
 
-.quest-task-local-progress {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.quest-task-bar.has-chapter-four-context .quest-task-trigger-copy {
-  gap: 2px;
-}
-
-.quest-task-bar.has-chapter-four-context .quest-task-trigger-copy > span {
-  line-height: 1.15;
-}
-
 @keyframes quest-task-update-lock {
   0%, 100% { border-color: #f2e7c9; transform: translateX(0); }
   12% { border-color: #f0d54e; transform: translateX(-2px); }

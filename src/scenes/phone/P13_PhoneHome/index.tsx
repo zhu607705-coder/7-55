@@ -220,6 +220,7 @@ export function PhoneHomeScene({ state, router, events }: SceneComponentProps) {
     kit.flags.toast(feedback, "system");
   }
 
+
   function clickGearIcon() {
     if (flags.gearNineTaken) {
       kit.flags.toast("设置图标只剩一个空位，风从里面吹过。");

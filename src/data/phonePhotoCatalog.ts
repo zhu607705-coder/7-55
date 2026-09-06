@@ -103,7 +103,7 @@ export const PHONE_PHOTO_CATALOG: readonly PhonePhotoEntry[] = [
     imageUrl: librarySeat022ClueUrl,
     detail: "同一只 022 书包。侧袋里的半包纸，在 07:55 时已经存在。",
     capturedAt: "06月28日 07:55",
-    location: "基础馆二楼南区",
+    location: "基础馆一层书库",
     sourceNote: "checked_in_original"
   },
   {

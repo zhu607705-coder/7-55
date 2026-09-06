@@ -102,7 +102,12 @@
     "audio:pursuit": "node scripts/generate-pursuit-audio.mjs",
     "audio:pursuit:verify": "node scripts/generate-pursuit-audio.mjs --verify-only && node scripts/verify-pursuit-audio.mjs",
     "audio:chapter4-details": "node scripts/generate-chapter4-detail-sfx.mjs",
-    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only"
+    "audio:chapters:english": "node scripts/generate-act-one-audio.mjs --voice-only && node scripts/generate-library-finals-audio.mjs --voice-only && node scripts/generate-chapter3-audio.mjs --voice-only",
+    "verify:mode-order-flexibility": "node scripts/verify-mode-order-flexibility-runner.mjs",
+    "chapter4:validate-chase-stairwell": "node scripts/verify-chapter4-chase-stairwell.mjs",
+    "chapter4:validate-stair-campaign": "node scripts/verify-chapter4-stair-campaign.mjs",
+    "canteen:validate-stunts": "node scripts/verify-canteen-stunts.mjs",
+    "verify:canteen-chase-model": "node scripts/verify-canteen-chase-model.mjs"
   },
   "dependencies": {
     "@fontsource/fusion-pixel-12px-proportional-sc": "^5.2.5",

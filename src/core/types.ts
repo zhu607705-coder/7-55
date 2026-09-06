@@ -643,12 +643,6 @@ export type ChapterFourFactId =
   | "elevator_history_observed"
   | "elevator_history_calibrated"
   | "a1_time_route_compared"
-  | "elevator_a2_call_record_observed"
-  | "elevator_a3_arrival_record_observed"
-  | "elevator_stop_chain_reconstructed"
-  | "a1_duty_board_reconstructed"
-  | "a3_archive_film_retrieved"
-  | "a3_media_alignment_completed"
   | "a3_reference_observed"
   | "a3_identity_context_observed"
   | "zhu_two_questions_answered"
@@ -679,7 +673,13 @@ export type ChapterFourFactId =
   | "checkin_card_accepted"
   | "checkin_paper_accepted"
   | "checkin_identity_verified"
-  | "exterior_closure_acknowledged";
+  | "exterior_closure_acknowledged"
+  | "elevator_a2_call_record_observed"
+  | "elevator_a3_arrival_record_observed"
+  | "elevator_stop_chain_reconstructed"
+  | "a1_duty_board_reconstructed"
+  | "a3_archive_film_retrieved"
+  | "a3_media_alignment_completed";
 
 export type ChapterFourZhuPurposeAnswerId =
   | "seek_truth"
@@ -730,6 +730,8 @@ export interface ChapterFourState {
   guardMode: ChapterFourGuardMode;
   chaseAttempt: number;
   chaseRestartCheckpoint: RpgCheckpointId | null;
+  chaseStairwellStage: "pending" | "inside" | "complete";
+  chaseStairwellLanding: 0 | 1 | 2;
   checkinCardAccepted: boolean;
   checkinPaperAccepted: boolean;
   exteriorClosureAcknowledged: boolean;

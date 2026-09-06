@@ -135,7 +135,7 @@ export function PhotoEvidenceOverlay({
           </section>
         ) : (
         <section className="photo-library-viewer">
-          <header><strong>IMG_0755.JPG</strong><span>022 · 二楼南区</span></header>
+          <header><strong>IMG_0755.JPG</strong><span>022 · 一层书库</span></header>
           <div
             className={`photo-backpack-frame ${exposurePhase} ${revealAnimating ? "is-revealing" : ""}`}
             style={frameStyle}
