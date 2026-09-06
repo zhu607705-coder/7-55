@@ -230,7 +230,7 @@ export class LakeFishingRitualVisual<Id extends string = string> {
       if(musicVisible){g.fillStyle(active?GOLD:0x375e56,1);g.fillCircle(x,beatY,active?5+pulse*2:4);if(active){g.lineStyle(1,GOLD,pulse*.7);g.strokeCircle(x,beatY,9+(1-pulse)*5);}}
     }
     this.labels.beatAction.setVisible(musicVisible).setText(model.stage==="count_in"?"听四拍，准备开始":commands[model.rhythmBeat]).setPosition(trackCenter,beatY-47);
-    this.labels.nextBeat.setVisible(musicVisible&&model.stage==="fighting").setText(`下一拍：${commands[(model.rhythmBeat+1)%4]}`).setPosition(trackCenter,beatY-22);
+    this.labels.nextBeat.setVisible(musicVisible&&model.stage==="fighting").setText(`${model.rhythmName} · ${Math.round(60/model.beatSec)} BPM  下一拍：${commands[(model.rhythmBeat+1)%4]}`).setPosition(trackCenter,beatY-22);
     this.labels.countIn.setVisible(model.stage==="count_in"&&!this.ending).setText(`预备 ${model.countIn}`).setPosition(w/2,h*.47);
     if(musicVisible&&model.rhythmBeat===3){g.lineStyle(3,GOLD,Math.exp(-model.beatProgress*7)*.65);g.strokeEllipse(fishX,waterY+4,90+model.beatProgress*40,32+model.beatProgress*16);}
     for(let i=0;i<4;i++)this.root.bringToTop(this.labels[`beat${i}`]);

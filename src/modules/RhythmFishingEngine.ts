@@ -1,3 +1,4 @@
+import storyFishingCharts from "../data/chapter3-qizhen-fishing.charts.json";
 export type RhythmFishingAction = "left" | "right" | "hook";
 export type RhythmFishingJudgment = "perfect" | "great" | "good" | "miss";
 export type RhythmFishingGrade = "S" | "A" | "B" | "C";
@@ -26,6 +27,12 @@ export interface RhythmFishingChartNoteData {
 }
 
 export interface RhythmFishingChartData {
+  beatSeconds?: number;
+  beatPattern?: readonly number[];
+  timingScale?: number;
+  fishMotionScale?: number;
+  difficulty?: number;
+  rhythmName?: string;
   durationSeconds: number;
   notes: readonly RhythmFishingChartNoteData[];
 }
@@ -70,7 +77,7 @@ export interface RhythmFishingResult<ChartId extends string> {
   miss: number;
   maxCombo: number;
   finalTension: number;
-  protocol: "lake-rhythm-v3";
+  protocol: "lake-rhythm-v4";
   assist: boolean;
   finishedAtSec: number;
   inputs: readonly RhythmFishingInputEvent[];
@@ -128,6 +135,11 @@ export class RhythmFishingEngine<ChartId extends string> {
   readonly notes: readonly RhythmFishingNote[];
   readonly totalNotes: number;
   readonly beatSec: number;
+  readonly rhythmName: string;
+  readonly difficulty: number;
+  private readonly beatPattern: readonly number[];
+  private readonly timingScale: number;
+  private readonly fishMotionScale: number;
   readonly leadSec = LAKE_FISHING_TIMING.leadSec;
   readonly assist: boolean;
   private readonly events: RhythmFishingEngineEvents<ChartId>;
@@ -153,15 +165,21 @@ export class RhythmFishingEngine<ChartId extends string> {
   private lastCueValue = "左右移动浮漂，对准鱼影；按住蓄力，松手抛竿";
 
   constructor(options: RhythmFishingEngineOptions<ChartId>) {
-    this.beatSec = options.timing.beatSec;
+    this.beatSec = options.chart.beatSeconds ?? options.timing.beatSec;
+    this.beatPattern = options.chart.beatPattern ?? [1,1,1,1];
+    if (this.beatPattern.length !== 4 || this.beatPattern.some(v=>!Number.isFinite(v)||v<=0) || Math.abs(this.beatPattern.reduce((a,b)=>a+b,0)-4)>1e-6) throw new Error("Invalid fishing beat pattern");
+    this.timingScale = options.chart.timingScale ?? 1;
+    this.fishMotionScale = options.chart.fishMotionScale ?? 1;
+    this.rhythmName = options.chart.rhythmName ?? "四拍收放";
+    this.difficulty = options.chart.difficulty ?? 1;
     this.events = options.events; this.chartId = options.chartId; this.now = options.now; this.assist = options.assist === true;
     this.tensionValue = clamp(Number.isFinite(options.initialTension) ? options.initialTension! : 40, 20, 75);
     this.comboValue = Number.isSafeInteger(options.initialCombo) ? clamp(options.initialCombo!, 0, 1_000_000) : 0;
     this.maxComboValue = this.comboValue;
     this.notes = options.chart.notes.slice(0, 64).map((raw, index) => ({
-      index, beat: raw.beat, timeSec: raw.beat * options.timing.beatSec,
-      spawnSec: raw.beat * options.timing.beatSec - this.leadSec, action: "hook",
-      holdBeats: LAKE_FISHING_HOLD_MIN_SEC / options.timing.beatSec,
+      index, beat: raw.beat, timeSec: this.phraseBeatTime(raw.beat),
+      spawnSec: this.phraseBeatTime(raw.beat) - this.leadSec, action: "hook",
+      holdBeats: LAKE_FISHING_HOLD_MIN_SEC / this.beatSec,
       holdSec: LAKE_FISHING_HOLD_MIN_SEC, cue: null, judgment: null, holding: false
     }));
     if (!this.notes.length || this.notes.some((note, i) => !Number.isFinite(note.timeSec) || note.timeSec <= 0 || (i > 0 && note.timeSec <= this.notes[i - 1].timeSec))) throw new Error("Invalid lake fishing chart");
@@ -177,8 +195,22 @@ export class RhythmFishingEngine<ChartId extends string> {
   get startedAtSec(): number | null { return this.t0Sec; }
   get musicStartedAtSec(): number | null { return this.castAt === null || this.t0Sec === null ? null : this.t0Sec + this.castAt; }
   get fightStartedAtSec(): number | null { return this.musicStartedAtSec === null ? null : this.musicStartedAtSec + 4 * this.beatSec; }
-  get rhythmBeat(): number { return this.castAt===null ? 0 : Math.floor(Math.max(0,this.elapsedSec-this.castAt)/this.beatSec)%4; }
-  get beatProgress(): number { return this.castAt===null ? 0 : (Math.max(0,this.elapsedSec-this.castAt)/this.beatSec)%1; }
+  private phraseBeatTime(beat: number): number {
+    const whole = Math.floor(beat), index = whole % 4;
+    return (Math.floor(whole/4)*4 + this.beatPattern.slice(0,index).reduce((a,b)=>a+b,0) + (beat-whole)*this.beatPattern[index])*this.beatSec;
+  }
+  /** Seconds from the audio start; the preparation bar stays four even clicks. */
+  metronomeBeatTime(beat: number): number { return beat < 4 ? beat*this.beatSec : 4*this.beatSec + this.phraseBeatTime(beat-4); }
+  private rhythmPosition(time: number): {beat:number;progress:number} {
+    if (this.castAt===null) return {beat:0,progress:0};
+    const sinceCast=Math.max(0,time-this.castAt);
+    if(sinceCast<4*this.beatSec)return {beat:Math.floor(sinceCast/this.beatSec)%4,progress:(sinceCast/this.beatSec)%1};
+    let position=((sinceCast-4*this.beatSec)/this.beatSec)%4;
+    for(let beat=0;beat<4;beat++){if(position<this.beatPattern[beat] || beat===3)return {beat,progress:Math.min(1,position/this.beatPattern[beat])};position-=this.beatPattern[beat];}
+    return {beat:0,progress:0};
+  }
+  get rhythmBeat(): number { return this.rhythmPosition(this.elapsedSec).beat; }
+  get beatProgress(): number { return this.rhythmPosition(this.elapsedSec).progress; }
   get countIn(): number { return this.stageValue!=="count_in"||this.castAt===null ? 0 : Math.max(1,4-Math.floor((this.elapsedSec-this.castAt)/this.beatSec)); }
   get lastCue(): string { return this.lastCueValue; }
   get currentNote(): RhythmFishingNote | null { return this.notes.find(note => note.judgment === null) ?? null; }
@@ -196,7 +228,7 @@ export class RhythmFishingEngine<ChartId extends string> {
     if (Number.isFinite(value)) this.lastElapsed = Math.max(this.lastElapsed, value);
     return this.lastElapsed;
   }
-  private get goodWindow(): number { return (this.assist ? LAKE_FISHING_TIMING.assistGoodMs : LAKE_FISHING_TIMING.goodMs) / 1000; }
+  private get goodWindow(): number { return (this.assist ? LAKE_FISHING_TIMING.assistGoodMs : LAKE_FISHING_TIMING.goodMs) * this.timingScale / 1000; }
   start(): void { if (this.phaseValue === "idle") this.armed = true; }
 
   handlePress(action: RhythmFishingAction): void {
@@ -243,7 +275,7 @@ export class RhythmFishingEngine<ChartId extends string> {
     const safeLine = this.tensionValue < 88;
     const magnitude = Math.abs(errorMs);
     const judgment: RhythmFishingJudgment = !stable || !heldEnough || !safeLine ? "miss"
-      : magnitude <= LAKE_FISHING_TIMING.perfectMs + 1e-6 ? "perfect" : magnitude <= LAKE_FISHING_TIMING.greatMs + 1e-6 ? "great" : "good";
+      : magnitude <= LAKE_FISHING_TIMING.perfectMs * this.timingScale + 1e-6 ? "perfect" : magnitude <= LAKE_FISHING_TIMING.greatMs * this.timingScale + 1e-6 ? "great" : "good";
     if (!heldEnough) this.events.onHoldBroken(note, this.tension);
     this.judge(note, judgment, errorMs, elapsed);
     if (judgment === "miss") this.lastCueValue = !stable ? "鱼影没跟住：左右控线，再择机收竿" : !safeLine ? "线太紧了：猛拽时松手放线" : "收线太短：先按住稳住，再松手";
@@ -260,13 +292,12 @@ export class RhythmFishingEngine<ChartId extends string> {
   update(): void { this.updateAt(this.elapsedSec); }
   private fishAt(time: number): number {
     if (this.castAt === null) return 0.42 + Math.sin(time * 0.6) * 0.07;
-    const t = Math.max(0, time - this.castAt - 4 * this.beatSec);
+    const t = Math.max(0, time - this.castAt - 4 * this.beatSec) * this.fishMotionScale;
     return clamp(0.59 * Math.sin(t * 1.05 + 0.8) + 0.12 * Math.sin(t * 2.1 + 0.2), -0.8, 0.8);
   }
   private rushingAt(time: number): boolean {
     if (this.stageValue !== "fighting") return false;
-    const remaining = (this.currentNote?.timeSec ?? -100) - time;
-    return remaining > this.beatSec && remaining <= 2 * this.beatSec;
+    return this.rhythmPosition(time).beat === 1;
   }
   private updateAt(elapsed: number): void {
     if (this.phaseValue !== "running") return;
@@ -318,7 +349,7 @@ export class RhythmFishingEngine<ChartId extends string> {
     const passed = perfect + great + good >= Math.ceil(this.totalNotes * 0.75);
     const grade: RhythmFishingGrade = passed ? accuracy >= 0.9 ? "S" : accuracy >= 0.75 ? "A" : "B" : "C";
     this.events.onCompleted({ chartId: this.chartId, grade, passed, accuracy, perfect, great, good, miss, maxCombo: this.maxComboValue,
-      finalTension: this.tension, protocol: "lake-rhythm-v3", assist: this.assist, finishedAtSec: atSec, inputs: this.trace.map(event => ({ ...event })) });
+      finalTension: this.tension, protocol: "lake-rhythm-v4", assist: this.assist, finishedAtSec: atSec, inputs: this.trace.map(event => ({ ...event })) });
   }
   private fail(reason: RhythmFishingFailReason): void {
     if (!["idle", "running"].includes(this.phaseValue)) return;
@@ -331,11 +362,13 @@ export class RhythmFishingEngine<ChartId extends string> {
 export function validateLakeFishingResult(value: unknown, expectedChartId: string): boolean {
   if (!value || typeof value !== "object") return false;
   const result = value as Partial<RhythmFishingResult<string>>;
-  if (result.protocol !== "lake-rhythm-v3" || result.chartId !== expectedChartId || result.passed !== true || typeof result.assist !== "boolean"
+  if (result.protocol !== "lake-rhythm-v4" || result.chartId !== expectedChartId || result.passed !== true || typeof result.assist !== "boolean"
     || !Array.isArray(result.inputs) || result.inputs.length < 8 || result.inputs.length > LAKE_FISHING_INPUT_LIMIT
     || typeof result.finishedAtSec !== "number" || !Number.isFinite(result.finishedAtSec) || result.finishedAtSec < 0 || result.finishedAtSec > 180) return false;
   let now = 0, last = -1, replay: RhythmFishingResult<string> | null = null;
-  const engine = new RhythmFishingEngine({ chartId: expectedChartId, chart: createLakeFishingChart(), now: () => now, assist: result.assist,
+  const chart = (storyFishingCharts.charts as Record<string,RhythmFishingChartData>)[expectedChartId];
+  if (!chart) return false;
+  const engine = new RhythmFishingEngine({ chartId: expectedChartId, chart, now: () => now, assist: result.assist,
     timing: LAKE_FISHING_TIMING, tension: LAKE_FISHING_TENSION, events: { onNoteJudged() {}, onHoldBroken() {}, onWarning() {}, onFailed() {}, onCompleted(r) { replay = r; } } });
   engine.start();
   for (const event of result.inputs) {

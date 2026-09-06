@@ -5,7 +5,7 @@ const built = await build({ stdin: { contents: `export * from './src/modules/Rhy
 const api = await import(`data:text/javascript;base64,${Buffer.from(built.outputFiles[0].text).toString('base64')}`);
 const data = JSON.parse(await readFile('src/data/chapter3-qizhen-fishing.charts.json', 'utf8'));
 const ids = ['locker_key','net_frame','fish','paper'];
-for (const id of ids) assert.deepEqual(data.charts[id].notes,data.charts.locker_key.notes,`${id} shares the authored rhythm`);
+for(let i=1;i<ids.length;i++){const a=data.charts[ids[i-1]],b=data.charts[ids[i]];assert(b.bpm>a.bpm);assert(b.timingScale<a.timingScale);assert.notDeepEqual(b.beatPattern,a.beatPattern);}
 function create(chartId='fish',assist=false,chart) {
  let now=100;
  const events=[];
@@ -46,6 +46,7 @@ for(const id of ids)for(const assist of [false,true]){
  run.model.update();assert.equal(run.events.filter(e=>e.type==='complete').length,1);
  console.log(`${id} ${assist?'assist':'normal'}: aimed cast, directional tracking, eight lifts, exact replay`);
 }
+const borrowed=create('paper',false,{...data.charts.locker_key,beatSec:data.charts.locker_key.beatSeconds});const borrowedResult=play(borrowed);assert(borrowedResult?.passed);assert(!api.validateLakeFishingResult(borrowedResult,'paper'),'paper reward rejects an easier borrowed chart even with the paper chart ID');
 for(const hz of [30,120]){const r=create(),result=play(r,{hz});assert(result?.passed,JSON.stringify({hz,phase:r.model.phase,line:r.model.lineX,fish:r.model.fishX,events:r.events}));assert(api.validateLakeFishingResult(result,'fish'));}
 const idle=create();idle.set(60);idle.model.update();assert.equal(idle.model.judgedCount,0);assert.equal(idle.model.phase,'idle');
 const oneButton=create();oneButton.model.handlePress('hook');for(let i=0;i<8;i++){oneButton.set((i+1)*2.4);oneButton.model.handleRelease('hook');oneButton.set((i+1)*2.4+.1);oneButton.model.handlePress('hook');}assert.equal(oneButton.model.stage,'casting');assert.equal(oneButton.model.judgedCount,0);
@@ -56,4 +57,4 @@ const unattended=create();play(unattended,{stopAfterCast:true});unattended.model
 const noRest=create();play(noRest,{holdThroughRush:true});assert.equal(noRest.model.phase,'failed','holding through every surge must snap the line');
 const tooShort=create();play(tooShort,{shortLift:true});assert(!tooShort.events.find(e=>e.type==='complete')?.result.passed);
 for(const [error,expected] of [[.08,'perfect'],[.15,'great'],[.25,'good']]){const r=create();play(r,{error});assert.equal(r.model.notes[0].judgment,expected);}
-console.log('Unified tackle fishing PASS: same rules for all four story catches, no single-button shortcut, deterministic replay, retries, cancellation and tension management.');
+console.log('Unified tackle fishing PASS: progressive tempos, distinct beat patterns and trusted per-catch replay, no single-button shortcut, deterministic replay, retries, cancellation and tension management.');

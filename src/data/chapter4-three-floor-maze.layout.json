@@ -2597,7 +2597,7 @@
   "finalChaseRuntime": {
     "storyTimeSeconds": 28440,
     "playerSpeed": 208,
-    "guardSpeed": 196,
+    "guardSpeed": 174,
     "guardUniformScale": 0.68,
     "guardFootBox": {
       "width": 20.4,
@@ -2605,7 +2605,7 @@
     },
     "waypointReachDistance": 8,
     "stableCommittedFramesToArm": 4,
-    "startGraceMs": 1200,
+    "startGraceMs": 2000,
     "maxStepMs": 50,
     "transportId": "main_stair",
     "guardPursuitStoryFloors": [

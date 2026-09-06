@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "bpm": 100,
   "beatSeconds": 0.6,
   "leadSeconds": 1.6,
@@ -9,7 +9,7 @@
       "spotId": "locker_key",
       "label": "生锈的柜门钥匙",
       "bars": 8,
-      "durationSeconds": 19.2,
+      "durationSeconds": 24.0,
       "notes": [
         {
           "beat": 3,
@@ -51,13 +51,25 @@
           "action": "hook",
           "hold": 0.4
         }
-      ]
+      ],
+      "bpm": 80,
+      "beatSeconds": 0.75,
+      "beatPattern": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "timingScale": 1.2,
+      "fishMotionScale": 0.8,
+      "difficulty": 1,
+      "rhythmName": "均匀慢拍"
     },
     "net_frame": {
       "spotId": "net_frame",
       "label": "破损网框",
       "bars": 8,
-      "durationSeconds": 19.2,
+      "durationSeconds": 20.0,
       "notes": [
         {
           "beat": 3,
@@ -99,13 +111,25 @@
           "action": "hook",
           "hold": 0.4
         }
-      ]
+      ],
+      "bpm": 96,
+      "beatSeconds": 0.625,
+      "beatPattern": [
+        1.15,
+        0.85,
+        1.15,
+        0.85
+      ],
+      "timingScale": 1.05,
+      "fishMotionScale": 0.95,
+      "difficulty": 2,
+      "rhythmName": "长短交替"
     },
     "fish": {
       "spotId": "fish",
       "label": "小鲤鱼",
       "bars": 8,
-      "durationSeconds": 19.2,
+      "durationSeconds": 17.142857142857142,
       "notes": [
         {
           "beat": 3,
@@ -147,13 +171,25 @@
           "action": "hook",
           "hold": 0.4
         }
-      ]
+      ],
+      "bpm": 112,
+      "beatSeconds": 0.5357142857142857,
+      "beatPattern": [
+        1.1,
+        0.9,
+        0.85,
+        1.15
+      ],
+      "timingScale": 0.95,
+      "fishMotionScale": 1.05,
+      "difficulty": 3,
+      "rhythmName": "变拍追鱼"
     },
     "paper": {
       "spotId": "paper",
       "label": "纸条本体",
       "bars": 8,
-      "durationSeconds": 19.2,
+      "durationSeconds": 15.0,
       "notes": [
         {
           "beat": 3,
@@ -195,7 +231,19 @@
           "action": "hook",
           "hold": 0.4
         }
-      ]
+      ],
+      "bpm": 128,
+      "beatSeconds": 0.46875,
+      "beatPattern": [
+        0.9,
+        0.8,
+        0.8,
+        1.5
+      ],
+      "timingScale": 0.8,
+      "fishMotionScale": 1.15,
+      "difficulty": 4,
+      "rhythmName": "短拍连奏"
     }
   },
   "mechanic": "lake-pull-v1"

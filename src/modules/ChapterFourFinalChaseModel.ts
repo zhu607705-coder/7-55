@@ -72,9 +72,9 @@ export interface ChapterFourFinalChaseStepResult {
 
 export const CHAPTER_FOUR_FINAL_CHASE_RULES = Object.freeze({
   stableFramesToArm: 4,
-  startGraceMs: 1200,
+  startGraceMs: 2000,
   playerSpeed: 208,
-  guardSpeed: 196,
+  guardSpeed: 174,
   catchDistance: 22,
   maxStepMs: 50,
   finishBeforeContact: true,
@@ -292,7 +292,7 @@ export function resolveChapterFourFinalChaseFinish(
   if (state.phase !== "finish_pending") return { ...state };
   return accepted
     ? { ...state, phase: "complete", floor: "A2", guardFloor: "A2" }
-    : { ...state, phase: "running", floor: "A2", guardFloor: "A2" };
+    : { ...state, phase: "running", floor: "A2", guardFloor: "A2", finishRequestIssued: false };
 }
 
 export function resolveChapterFourFinalChaseFailure(

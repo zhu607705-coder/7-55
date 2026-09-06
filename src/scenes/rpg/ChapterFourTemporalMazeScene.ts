@@ -1,3 +1,5 @@
+import { presentGuardCapture, playGuardAnimation } from "./ChapterFourGuardPresentation";
+import { createGuardNavigation, type GuardPoint } from "../../modules/ChapterFourGuardNavigation";
 import { CHASE_STAIR_HANDOFF_KEY, type ChaseStairHandoff } from "../../modules/ChapterFourChaseStairwellModel";
 import Phaser from "phaser";
 import type { ChapterFourFactId, ChapterFourLightZoneId, ChapterFourRoom204PieceId, ChapterFourRoom204SlotId, GameState, ItemId, RpgCheckpointId, ChapterFourRoom204GroupId, ChapterFourTimeState } from "../../core/types";
@@ -1113,8 +1115,19 @@ function isRoom204SlotTargetId(targetId: string): targetId is `a2_room204_slot_$
   return targetId.startsWith("a2_room204_slot_");
 }
 
+let chapterFourRequestEpoch = 0;
+
 export class ChapterFourTemporalMazeScene extends Phaser.Scene {
 private bridge!: RpgBridge;
+private guardCaptureActive = false;
+private room202CloseRequested = false;
+private room202CloseControl: Phaser.GameObjects.Text | null = null;
+private guardNavigation: ReturnType<typeof createGuardNavigation> | null = null;
+private guardNavigationFloor: DisplayFloor | null = null;
+private guardNavigationTarget: GuardPoint | null = null;
+private guardRepathAt = 0;
+private guardAnimationSwitchAt = 0;
+
 
 private player!: Phaser.Physics.Arcade.Sprite;
 
@@ -1426,6 +1439,7 @@ private room204ObstacleGroup: Phaser.Physics.Arcade.StaticGroup | null = null;
 private room204ObstacleCollider: Phaser.Physics.Arcade.Collider | null = null;
 
 private requestSerial = 0;
+private requestEpoch = 0;
 
 private floorCaption!: Phaser.GameObjects.Text;
 
@@ -1493,6 +1507,7 @@ preload(): void {
   }
 
 create(): void {
+    this.requestEpoch = ++chapterFourRequestEpoch;
     this.resetRestartLifecycleState();
     this.warmupLoadGeneration += 1;
     this.phaseLoadCancelled = false;
@@ -1599,6 +1614,7 @@ create(): void {
   }
 
 update(_time: number, delta: number): void {
+    if (this.guardCaptureActive) return;
     if (Phaser.Input.Keyboard.JustDown(this.retryWarmupKey)) this.retryRequiredWarmupPhase();
     this.syncWarmupStatus();
     this.syncProjection();
@@ -4439,14 +4455,14 @@ private updateMaintenanceGuard(deltaMs: number): void {
 
 private playMaintenanceGuardAnimation(animationId: FinaleNpcAnimationId): void {
     const guard = this.maintenanceGuard;
-    if (!guard?.active || this.maintenanceGuardVisualId === animationId) return;
+    if (!guard?.active || this.maintenanceGuardVisualId === animationId || !this.textures.exists(animationId) || !this.anims.exists(animationId)) return;
     const floor = getFloor(1);
     const foot = this.maintenanceGuardFootPoint(floor);
     const asset = FINALE_NPC_ANIMATIONS[animationId];
     const scale = MAINTENANCE_RUNTIME.guard.uniformScale;
     const sourceFootWidth = MAINTENANCE_RUNTIME.guard.footBox.width / scale;
     const sourceFootHeight = MAINTENANCE_RUNTIME.guard.footBox.height / scale;
-    guard.play(animationId, true);
+    playGuardAnimation(this, guard, animationId);
     const body = guard.body as Phaser.Physics.Arcade.Body;
     body.setSize(sourceFootWidth, sourceFootHeight).setOffset(
       (asset.frameWidth - sourceFootWidth) / 2,
@@ -4471,7 +4487,8 @@ private resolveFinalChaseGuardTravelAnimation(
     const absY = Math.abs(velocity.y);
     let direction = previousDirection;
     let flipX = previousFlipX;
-    if (Math.hypot(velocity.x, velocity.y) >= speedThreshold) {
+    if (Math.hypot(velocity.x, velocity.y) >= speedThreshold && this.time.now >= this.guardAnimationSwitchAt) {
+      this.guardAnimationSwitchAt = this.time.now + 220;
       if (absX >= absY) {
         direction = "side";
         flipX = velocity.x < 0;
@@ -4547,7 +4564,16 @@ private tryMaintenancePatrolCapture(): void {
       width: playerBody.width,
       height: playerBody.height
     })) return;
-    this.requestStoryIntent({ type: "recover_from_maintenance_patrol" });
+    this.beginGuardCapture(() => this.requestStoryIntent({ type: "recover_from_maintenance_patrol" }));
+  }
+
+private beginGuardCapture(resume: () => void): void {
+    if (this.guardCaptureActive) return;
+    this.guardCaptureActive = true;
+    this.player.setVelocity(0,0);
+    this.chaseGuard?.setVelocity(0,0);
+    this.maintenanceGuard?.setVelocity(0,0);
+    presentGuardCapture(this, this.bridge, () => { this.guardCaptureActive = false; resume(); });
   }
 
 private resetMaintenanceGuardAfterRecovery(): void {
@@ -4848,7 +4874,7 @@ private ensureFinalChaseRuntime(state: GameState): void {
     const handoff = this.registry.get(CHASE_STAIR_HANDOFF_KEY) as ChaseStairHandoff | undefined;
     if (arrivedFromStairwell) {
       const leadDistance = handoff?.attempt === state.chapter4.chaseAttempt && handoff.destination === "A2"
-        ? handoff.leadDistance : 180;
+        ? Math.max(600, handoff.leadDistance) : 600;
       this.finalChaseState = { ...this.finalChaseState, phase: "portal_transfer", floor: "A2",
         guardFloor: "A1", portalApplied: true, portalRemainingDistance: Math.max(42, Math.min(2000, leadDistance)) };
       this.registry.remove(CHASE_STAIR_HANDOFF_KEY);
@@ -4913,8 +4939,18 @@ private updateFinalChaseRuntime(deltaMs: number): void {
         height: playerBody.height
       }
     );
+    const doorBounds = FINAL_CHASE_RUNTIME.finishThreshold.bounds;
     const playerInsideFinish = playerFloorNumber === 2
-      && pointInsideRect({ x: playerFoot.x, y: playerFoot.y }, FINAL_CHASE_RUNTIME.finishThreshold.bounds);
+      && playerFoot.x >= doorBounds.x - 12 && playerFoot.x <= rectRight(doorBounds) + 12
+      && playerFoot.y >= doorBounds.y - 32 && playerFoot.y <= rectBottom(doorBounds) + 32;
+    if (!this.room202CloseControl) {
+      this.room202CloseControl = this.add.text(getFloor(2).offsetX + rectCenterX(doorBounds), doorBounds.y-36,
+        "关门  [Space]", {fontFamily:RPG_PIXEL_FONT_FAMILY,fontSize:"16px",color:"#fff2c7",backgroundColor:"#182530",padding:{x:14,y:10}})
+        .setOrigin(0.5).setDepth(12000).setInteractive({useHandCursor:true});
+      this.room202CloseControl.on("pointerdown", () => { if (this.finalChaseInsideFinish) this.room202CloseRequested = true; });
+    }
+    this.room202CloseControl.setVisible(playerInsideFinish);
+    if (playerInsideFinish && (this.interactKey.isDown || Phaser.Input.Keyboard.JustDown(this.interactKey) || this.confirmKey.isDown || Phaser.Input.Keyboard.JustDown(this.confirmKey) || this.interactionRequested)) this.room202CloseRequested = true;
     this.finalChaseInsideFinish = playerInsideFinish;
     this.finalChaseContact = guardContact;
     const a1Stair = getFloor(1).stairLandings.find((landing) => landing.targetStoryFloor === "A2");
@@ -4935,7 +4971,7 @@ private updateFinalChaseRuntime(deltaMs: number): void {
         x: guardBody.center.x - guardFloor.offsetX,
         y: guardBody.center.y
       },
-      playerInsideFinish,
+      playerInsideFinish: playerInsideFinish && this.room202CloseRequested,
       playerEnteredMainStair,
       guardContact
     });
@@ -4943,25 +4979,40 @@ private updateFinalChaseRuntime(deltaMs: number): void {
     this.finalChaseStep = step;
     if (step.guardPortalArrival) {
       const arrivalFloor = getFloor(2);
-      guard.setPosition(
-        arrivalFloor.offsetX + FINAL_CHASE_RUNTIME.waypoints.find(
-          (entry) => entry.id === "a2_main_stair_arrival"
-        )!.x,
-        CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.y
-      );
+      guardBody.reset(arrivalFloor.offsetX + CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.x,
+        CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.y + guardBody.height - guardBody.halfHeight);
+
     }
     const activeGuardFloor: DisplayFloor = step.state.guardFloor === "A2" ? 2 : 1;
     const visible = step.guardVisible && this.currentFloor === activeGuardFloor;
     guard.setVisible(visible);
     if (visible) {
-      guard.setVelocity(step.desiredGuardVelocity.x, step.desiredGuardVelocity.y)
-        .setDepth(PLAYER_DEPTH_BASE + guard.y + 2);
+      const guardPoint = {x:guardBody.center.x-getFloor(activeGuardFloor).offsetX,y:guardBody.center.y};
+      if (!this.guardNavigation || this.guardNavigationFloor !== activeGuardFloor) {
+        const offset = getFloor(activeGuardFloor).offsetX;
+        const walls = [this.staticObstacles, this.plateObstacles].flatMap(group => group.getChildren().flatMap(object => {
+          const body = (object as Phaser.GameObjects.Zone).body as Phaser.Physics.Arcade.StaticBody | null;
+          return body && body.x >= offset && body.x < offset + FLOOR_SIZE.width ? [{x:body.x-offset,y:body.y,width:body.width,height:body.height}] : [];
+        }));
+        this.guardNavigation = createGuardNavigation(walls);
+        this.guardNavigationFloor = activeGuardFloor;
+        this.guardRepathAt = 0;
+      }
+      if (this.time.now >= this.guardRepathAt || !this.guardNavigationTarget || Math.hypot(guardPoint.x-this.guardNavigationTarget.x,guardPoint.y-this.guardNavigationTarget.y)<10) {
+        const goal = playerFloorNumber === activeGuardFloor ? {x:playerFoot.x,y:playerFoot.y} : CHAPTER_FOUR_FINAL_CHASE_POINTS.a1Stair;
+        this.guardNavigationTarget = this.guardNavigation(guardPoint,goal)[0] ?? null;
+        this.guardRepathAt = this.time.now + 260;
+      }
+      const target = this.guardNavigationTarget;
+      const desired = new Phaser.Math.Vector2(target ? target.x-guardPoint.x : 0,target ? target.y-guardPoint.y : 0);
+      if (desired.lengthSq()>4) desired.normalize().scale(CHAPTER_FOUR_FINAL_CHASE_RULES.guardSpeed); else desired.set(0,0);
+      guard.setVelocity(desired.x, desired.y).setDepth(PLAYER_DEPTH_BASE + guard.y + 2);
       const guardAnimation = this.resolveFinalChaseGuardTravelAnimation(
-        step.desiredGuardVelocity,
+        desired,
         "final_chase"
       );
       if (guard.anims.currentAnim?.key !== guardAnimation) {
-        guard.play(guardAnimation, true);
+        playGuardAnimation(this, guard, guardAnimation);
       }
     } else {
       guard.setVelocity(0, 0);
@@ -4981,10 +5032,11 @@ private updateFinalChaseRuntime(deltaMs: number): void {
       return;
     }
     if (step.failureRequested && !this.pendingStoryRequest) {
-      this.requestStoryIntent({
+      guard.setVisible(true);
+      this.beginGuardCapture(() => this.requestStoryIntent({
         type: "fail_chase",
         expectedAttempt: committed.chapter4.chaseAttempt
-      });
+      }));
     }
   }
 
@@ -5088,6 +5140,10 @@ private destroyRoom202RecoveryBarrier(_reason: string): void {
   }
 
 private destroyChaseRuntime(): void {
+    this.room202CloseControl?.destroy(); this.room202CloseControl = null;
+    this.room202CloseRequested = false;
+    this.guardNavigation = null; this.guardNavigationFloor = null; this.guardNavigationTarget = null;
+
     this.chaseGuardStaticCollider?.destroy();
     this.chaseGuardStaticCollider = null;
     this.chaseGuardPlateCollider?.destroy();
@@ -5987,12 +6043,7 @@ private handleStoryOrTravelInteraction(): void {
         return;
       }
       if (storyTarget.contract.id === "a2_202_threshold") {
-        this.requestStoryIntent({
-          type: "reach_202_threshold",
-          targetId: "a2_202_threshold",
-          expectedAttempt: this.bridge.getState().chapter4.chaseAttempt,
-          spatial
-        }, storyTarget.contract.id);
+        this.room202CloseRequested = true;
         return;
       }
       if (storyTarget.contract.id === "a2_202_projection") {
@@ -6833,7 +6884,7 @@ private requestMove(targetFloor: DisplayFloor, route: TravelRoute): void {
     }
     const destinationFloor = getFloor(targetFloor);
     const destination = this.preferredDestinationForFloor(targetFloor);
-    const requestId = `c4-755-scene-${++this.requestSerial}`;
+    const requestId = `c4-755-scene-${this.requestEpoch}-${++this.requestSerial}`;
     this.pendingMove = { requestId, fromFloor: this.currentFloor, targetFloor, route };
     this.pendingMoveTimer?.remove(false);
     this.pendingMoveTimer = this.time.delayedCall(REQUEST_TIMEOUT_MS, () => {
@@ -6872,7 +6923,7 @@ private requestStoryIntent(
     runtimeTarget?: ChapterFour755RuntimeTargetContext
   ): void {
     if (this.pendingStoryRequest) return;
-    const requestId = `c4-755-story-${++this.requestSerial}`;
+    const requestId = `c4-755-story-${this.requestEpoch}-${++this.requestSerial}`;
     const timer = this.time.delayedCall(STORY_REQUEST_TIMEOUT_MS, () => {
       if (this.pendingStoryRequest?.requestId !== requestId) return;
       const timedOutIntentType = this.pendingStoryRequest.intentType;
@@ -6921,7 +6972,7 @@ private requestStoryIntent(
 
 private request755Intent(
     intent: ChapterFour755Intent,
-    requestId = `c4-755-scene-${++this.requestSerial}`,
+    requestId = `c4-755-scene-${this.requestEpoch}-${++this.requestSerial}`,
     runtimeTarget?: ChapterFour755RuntimeTargetContext
   ): void {
     this.bridge.emit("rpg_chapter4_755_intent_requested", {
@@ -8635,6 +8686,7 @@ private pendingWarmupSettlers = new Set<() => void>();
 private retryWarmupKey!: Phaser.Input.Keyboard.Key;
 
 private resetRestartLifecycleState(): void {
+    this.guardCaptureActive = false;
     this.platePlayerCollider = null;
     this.backgrounds.clear();
     this.elevatorVisuals.clear();

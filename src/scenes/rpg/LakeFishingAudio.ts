@@ -13,7 +13,7 @@ function tone(context: AudioContext, at: number, type: OscillatorType, start: nu
     osc.stop(at + duration + .01);
 }
 /** Four audible beats: steady / let out / reel / lift; also supplies the four-beat count-in. */
-export function scheduleLakeFishingBeat(context: AudioContext, beat: number, at: number): void {
+export function scheduleLakeFishingBeat(context: AudioContext, beat: number, at: number, beatDurationSec = 0.6): void {
     const step = ((beat % 4) + 4) % 4;
     tone(context, at, "sine", step === 0 ? 135 : 105, 45, step === 0 ? .17 : .095, .13);
     if (step === 1)
@@ -25,7 +25,7 @@ export function scheduleLakeFishingBeat(context: AudioContext, beat: number, at:
         tone(context, at + .035, "sine", 1175, 1100, .06, .12);
     }
     else
-        tone(context, at + .3, "square", 1600, 1100, .012, .025);
+        tone(context, at + beatDurationSec / 2, "square", 1600, 1100, .012, .025);
 }
 export function scheduleLakeFishingJudgment(context: AudioContext, judgment: RhythmFishingJudgment, at: number): void {
     if (context.state !== "running")
