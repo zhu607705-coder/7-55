@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
+import { createPortal } from "react-dom";
 import { InventoryAcquisitionFlight, useRecentInventoryItem } from "../../components/InventoryAcquisitionFeedback";
 import { ITEM_META, PixelIcon } from "../../components/PixelIcon";
 import type { EventBus } from "../../core/EventBus";
@@ -371,10 +372,11 @@ export function RpgInventoryDock({
           </button>
         </div>
       ) : null}
-      {drag ? (
+      {drag && shellRef.current ? createPortal(
         <div className="rpg-inventory-drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">
           <PixelIcon name={drag.itemId} size={42} />
-        </div>
+        </div>,
+        shellRef.current
       ) : null}
     </aside>
   );

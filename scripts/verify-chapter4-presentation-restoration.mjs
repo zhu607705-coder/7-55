@@ -137,9 +137,16 @@ check('entry snapshots only loaded floors and retains the exact frame for rollba
 });
 check('staged warmup does not report unloaded sprite sheets as corrupt', () => {
   const failures = new Set();
+  const firstFrames = Array.from({ length: 8 }, (_, index) => ({ id: `first_${index}`, sourceTrim: {} }));
+  const laterFrames = Array.from({ length: 54 }, (_, index) => index === 0
+    ? { id: 'empty', sourceTrim: null }
+    : { id: `later_${index}`, sourceTrim: {} });
   const validate = loadMethod('validateFrameRegistrationReport', {
-    CHAPTER_FOUR_755_SPRITESHEETS: { first: { id: 'first' }, later: { id: 'later' } },
-    CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT: 62, EXPECTED_MANIFEST_ENTRY_COUNT: 62, EXPECTED_EMPTY_FRAME_COUNT: 1
+    CHAPTER_FOUR_755_SPRITESHEETS: {
+      first: { id: 'first', frames: firstFrames },
+      later: { id: 'later', frames: laterFrames }
+    },
+    CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT: 62, EXPECTED_MANIFEST_ENTRY_COUNT: 62
   });
   const context = { persistentContractFailures: failures, textures: { exists: id => id === 'first' } };
   const partial = { contractFailures: [], manifestFrameCount: 8, registeredFrameCount: 8, reusedFrameCount: 0, skippedEmptyFrameCount: 0 };

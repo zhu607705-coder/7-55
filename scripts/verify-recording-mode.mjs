@@ -36,8 +36,8 @@ try {
   );
   assert(
     channelSource.includes("const recordingMode = isRecordingMode(window.location.search);")
-      && channelSource.includes("if (recordingMode) return null;"),
-    "the closed recording-mode channel must render no DEV launcher"
+      && channelSource.includes("if (!open) return null;"),
+    "the closed developer channel must render no DEV launcher"
   );
   assert(
     channelSource.includes("(event.ctrlKey || event.metaKey)")
