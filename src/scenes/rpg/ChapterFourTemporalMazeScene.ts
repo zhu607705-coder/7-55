@@ -1,3 +1,4 @@
+import { createChapterFourContextInteractionIntent, resolveChapterFourContextInteractionSubtitle } from "./ChapterFourContextInteractionFlow";
 import { presentGuardCapture, playGuardAnimation } from "./ChapterFourGuardPresentation";
 import { createGuardNavigation, type GuardPoint } from "../../modules/ChapterFourGuardNavigation";
 import { CHASE_STAIR_HANDOFF_KEY, type ChaseStairHandoff } from "../../modules/ChapterFourChaseStairwellModel";
@@ -22,7 +23,7 @@ import type { RpgBridge } from "./RpgBridge";
 import { CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT, CHAPTER_FOUR_755_PLATES, CHAPTER_FOUR_755_SPRITESHEETS, getChapterFour755ManifestFrame, registerChapterFour755ManifestFrames, type ChapterFour755FrameRegistrationReport, type ChapterFour755PlateId } from "./FinaleEnvironmentTextures";
 import { FINALE_NPC_ANIMATIONS, ensureFinaleNpcAnimations, type FinaleNpcAnimationId } from "./FinaleNpcTextures";
 import { CHAPTER_FOUR_755_INTERACTION_TARGETS, CHAPTER_FOUR_755_SCENE_KEY, getChapterFour755RuntimeTargetInstallation, isChapterFour755TargetStateActive, isChapterFour755SpatialAttestationRequest, selectChapterFour755BakeryCommittedRuntimeState, selectChapterFour755AcceptedItem, selectChapterFour755RequiredMode, type ChapterFour755InteractionTargetContract, type ChapterFour755RuntimeTargetContext, type RpgHalfOpenWorldRect } from "./RpgInteractionContract";
-import { ROOM204_GROUP_ORDER, ROOM204_GROUPS, ROOM204_DISCUSSION_TABLES, ROOM204_FURNITURE_SCALE, ROOM204_INITIAL_PIECE_LAYOUTS, ROOM204_INITIAL_PIECE_POSITIONS, ROOM204_PAIR_OFFSETS, ROOM204_PIECE_FRAME_BINDINGS, ROOM204_PIECE_ORDER, ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID, ROOM204_PODIUM_LAYOUT, ROOM204_PROJECTION_HANDSHAKE, ROOM204_RESIDUAL_GROUP_BOUNDS, ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID, ROOM204_SLOT_CENTERS, ROOM204_SLOT_ORDER, countCompletedRoom204Groups, findRoom204PlacementForPiece, isRoom204PlacementSetComplete, room204GroupIdFromTargetId, room204GroupRuntimeEntityId, room204GroupTargetId, ROOM204_SLOT_LAYOUTS, normalizeRoom204Placements, room204SlotRuntimeEntityId } from "../rpg/ChapterFourRoom204Model";
+import { selectRoom204RuntimePresentation, ROOM204_GROUP_ORDER, ROOM204_GROUPS, ROOM204_DISCUSSION_TABLES, ROOM204_FURNITURE_SCALE, ROOM204_INITIAL_PIECE_LAYOUTS, ROOM204_INITIAL_PIECE_POSITIONS, ROOM204_PAIR_OFFSETS, ROOM204_PIECE_FRAME_BINDINGS, ROOM204_PIECE_ORDER, ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID, ROOM204_PODIUM_LAYOUT, ROOM204_PROJECTION_HANDSHAKE, ROOM204_RESIDUAL_GROUP_BOUNDS, ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID, ROOM204_SLOT_CENTERS, ROOM204_SLOT_ORDER, countCompletedRoom204Groups, findRoom204PlacementForPiece, isRoom204PlacementSetComplete, room204GroupIdFromTargetId, room204GroupRuntimeEntityId, room204GroupTargetId, ROOM204_SLOT_LAYOUTS, normalizeRoom204Placements, room204SlotRuntimeEntityId } from "../rpg/ChapterFourRoom204Model";
 import { configureRpgPlayerSprite, ensureRpgPlayerTextures, preloadRpgPlayerTextures, RpgPlayerAnimator, getRpgPlayerVisualContainmentInsets, RPG_PLAYER_SIDE_WALK_FPS, RPG_PLAYER_WALK_FPS } from "./RpgPlayerTextures";
 import { clearRpgRuntimeDebugState, setRpgRuntimeDebugState, deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import { subscribeRpgSceneBridge } from "./RpgSceneBridgeSubscription";
@@ -138,11 +139,18 @@ type EvidenceDetailVisual =
   | "strip";
 
 interface EvidenceDetailPlacement {
+  id?: string;
   storyFloor: StoryFloor;
   phaseIds: GameState["chapter4"]["phase"][];
-  bounds: MapRect;
-  statePlateIds?: ChapterFour755PlateId[];
+  statePlateIds?: string[];
   requiredFacts?: ChapterFourFactId[];
+  bounds: MapRect;
+  supportingVisual?: {
+    kind: "classroom_chalkboard_notes";
+    bounds: MapRect;
+    chalkColor: string;
+    mutedColor: string;
+  };
 }
 
 interface EvidenceDetailEcho extends EvidenceDetailPlacement { id: string }
@@ -301,6 +309,7 @@ interface FinalClockRuntimeContract {
   endpoint: {
     targetId: "a1_hall_clock_minute_endpoint";
     entityId: string;
+    visualHandleBounds: MapRect;
     installationBounds: MapRect;
     standPosition: { x: number; y: number };
     proximity: number;
@@ -441,15 +450,25 @@ interface BakeryRuntimeTargetDefinition {
 interface BakeryRuntimeContract {
   storyFloor: "A1";
   statePlateId: "a1_1225_bakery";
+  conveyorVisual: {
+    beltBounds: MapRect;
+    frontRailBounds: MapRect;
+    slatSpacing: number;
+    motionCycleMs: number;
+    direction: "east";
+  };
   targetEntities: BakeryRuntimeTargetDefinition[];
   baker: {
+    textureFile: string;
     framePair: number;
     frames: number[];
     origin: { x: 0.5; y: 1 };
     uniformScale: number;
     position: { x: number; y: number };
+    visibleSourceHeight: number;
     collision: false;
     foregroundOcclusionId: string;
+    activePhases: Array<"bakery_hour_hand" | "morning_checkin">;
   };
   crowd: {
     texture: "student_walk";
@@ -761,6 +780,7 @@ const TASK7_LIVE_READY_TARGET_IDS: ReadonlySet<string> = new Set([
 ]);
 
 export const TASK9_ACTIONABLE_TARGET_IDS: ReadonlySet<string> = new Set([
+  ...CHAPTER_FOUR_CONTEXT_INTERACTION_TARGET_IDS,
   "a1_noticeboard_paper",
   "a1_hall_clock",
   "a1_bakery_inspection_lamp",
@@ -1187,7 +1207,7 @@ private nearbyLandmark: LayoutAnchor | null = null;
 
 private floorPanel: Phaser.GameObjects.Container | null = null;
 
-private floorPanelMode: "floors" | "elevator_calibration" = "floors";
+private floorPanelMode: "floors" | "elevator_calibration" | "elevator_route_deduction" = "floors";
 
 private floorPanelSelection: DisplayFloor = 1;
 
@@ -1204,6 +1224,8 @@ private floorPanelButtons: Array<{
     enabled: boolean;
     background: Phaser.GameObjects.Rectangle;
     label: Phaser.GameObjects.Text;
+    detail: Phaser.GameObjects.Text;
+    status: Phaser.GameObjects.Text;
   }> = [];
 
 private alumniPanel: Phaser.GameObjects.Container | null = null;
@@ -1548,6 +1570,8 @@ create(): void {
     this.refreshLoadedChapterFourAssets();
     this.cameras.main.setBackgroundColor(0x07111d).setRoundPixels(true);
     this.createBaseBackgrounds();
+    this.createStairPreludeEffects();
+    this.createInsertedPuzzleProps();
     this.createAlumniHonorWallPortraits();
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height);
     this.createCollisionGroups();
@@ -1585,6 +1609,7 @@ create(): void {
     };
     this.retryWarmupKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.R);
     this.createHud();
+    this.createRealityModeVisuals(state.chapter4.mode);
     this.configureCameraForCurrentFloor();
     this.syncProjection(true);
     this.refreshProximity();
@@ -1615,25 +1640,54 @@ create(): void {
 
 update(_time: number, delta: number): void {
     if (this.guardCaptureActive) return;
+    this.syncProjection();
+    this.syncStairPreludeEffects(_time);
     if (Phaser.Input.Keyboard.JustDown(this.retryWarmupKey)) this.retryRequiredWarmupPhase();
     this.syncWarmupStatus();
-    this.syncProjection();
-    this.syncEvidenceDetailRuntime(this.bridge.getState());
-    this.syncExternalFloorWhenIdle();
-    this.syncPhaseSideEffects();
-    this.syncExteriorDoorPresentation();
-    this.syncOpeningPresentation();
-    this.syncBakeryPresentation();
-    this.updateBakeryCrowdEndpointActions();
-    this.syncRoom204ProjectionPresentation();
-    this.maybeEmitBakeryApproachCue();
-    this.updateMaintenanceGuard(delta);
-    this.updateFinalChaseRuntime(delta);
+    const warmupReady = this.isWarmupPhaseLoaded(
+      chapterFourWarmupPhaseForState(this.bridge.getState())
+    );
+    if (warmupReady) {
+      this.syncExternalFloorWhenIdle();
+      this.syncPhaseSideEffects();
+      this.syncOpeningPresentation();
+      this.syncBakeryPresentation();
+      this.updateBakeryCrowdEndpointActions();
+      this.syncRoom204ProjectionPresentation();
+      this.maybeEmitBakeryApproachCue();
+      this.updateMaintenanceGuard(delta);
+      this.updateFinalChaseRuntime(delta);
+    }
     this.syncStoryInputLock();
+    this.syncExteriorDoorPresentation();
     if (this.alumniPanel) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
       this.updateAlumniPanelKeyboard();
+      this.interactionRequested = false;
+      this.publishDebug();
+      return;
+    }
+    if (this.clockPanel) {
+      this.player.setVelocity(0, 0);
+      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
+      if (this.pendingStoryRequest === null
+        && this.pendingMove === null
+        && this.storyPresentation === "idle") {
+        this.updateClockPanelKeyboard();
+      }
+      this.interactionRequested = false;
+      this.publishDebug();
+      return;
+    }
+    if (this.floorPanel) {
+      this.player.setVelocity(0, 0);
+      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
+      if (this.pendingStoryRequest === null
+        && this.pendingMove === null
+        && this.storyPresentation === "idle") {
+        this.updateFloorPanelKeyboard();
+      }
       this.interactionRequested = false;
       this.publishDebug();
       return;
@@ -1648,14 +1702,6 @@ update(_time: number, delta: number): void {
     if (this.hostPowerPanelOpen || this.finalClockDragActive) {
       this.player.setVelocity(0, 0);
       this.animator.update(new Phaser.Math.Vector2(), this.time.now);
-      this.interactionRequested = false;
-      this.publishDebug();
-      return;
-    }
-    if (this.floorPanel) {
-      this.player.setVelocity(0, 0);
-      this.animator.update(new Phaser.Math.Vector2(), this.time.now);
-      this.updateFloorPanelKeyboard();
       this.interactionRequested = false;
       this.publishDebug();
       return;
@@ -1698,7 +1744,12 @@ private bindBridgeEvents(): void {
         const requestId = typeof event.payload?.requestId === "string"
           ? event.payload.requestId
           : undefined;
-        this.publishLiveReady(true, requestId);
+        const requiredPhase = chapterFourWarmupPhaseForState(this.bridge.getState());
+        if (!this.isWarmupPhaseLoaded(requiredPhase)) {
+          this.retryRequiredWarmupPhase();
+        } else {
+          this.publishLiveReady(true, requestId);
+        }
       } else if (event.name === "rpg_inventory_drop_requested") {
         this.handleInventoryDrop(event.payload);
       } else if (event.name === "rpg_chapter4_power_panel_open_state_changed") {
@@ -1716,9 +1767,7 @@ private bindBridgeEvents(): void {
           this.virtualDirection = { x: 0, y: 0 };
         }
       } else if (event.name === "rpg_chapter4_power_panel_attempt_abandoned") {
-        const state = this.bridge.getState();
-        if (state.chapter4.phase === "blackout_light_grid"
-          && !state.chapter4.lightGrid.locked) {
+        if (this.bridge.getState().chapter4.phase === "blackout_light_grid") {
           this.recordVisualHintFailure("power_route_comparison");
         }
       } else if (event.name === "rpg_chapter4_755_spatial_attestation_requested") {
@@ -1734,10 +1783,19 @@ private bindBridgeEvents(): void {
       } else if (event.name === "rpg_direction_changed") {
         const x = Number(event.payload?.x) || 0;
         const y = Number(event.payload?.y) || 0;
-        if (this.floorPanel) {
+        if (this.clockPanel) {
+          if (x !== 0 || y !== 0) {
+            this.shiftClockPanelSelection(x > 0 || y > 0 ? 1 : -1);
+          }
+          this.virtualDirection = { x: 0, y: 0 };
+        } else if (this.floorPanel) {
           if (x !== 0 || y !== 0) {
             const delta = x > 0 || y > 0 ? 1 : -1;
             if (this.floorPanelMode === "elevator_calibration") this.shiftElevatorReplayStart(delta);
+            else if (this.floorPanelMode === "elevator_route_deduction") {
+              if (x !== 0) this.shiftElevatorDeductionArrival();
+              if (y !== 0) this.shiftElevatorDeductionUnserved();
+            }
             else this.shiftFloorPanelSelection(delta);
           }
           this.virtualDirection = { x: 0, y: 0 };
@@ -1751,31 +1809,47 @@ private bindBridgeEvents(): void {
       } else if (event.name === "rpg_interact") {
         if (this.alumniPanel) {
           this.advanceAlumniPanel();
+        } else if (this.clockPanel) {
+          this.submitClockPanelSelection();
         } else if (this.floorPanel) {
           if (this.floorPanelMode === "elevator_calibration") this.submitElevatorCalibration();
-          else this.requestElevatorDestination(this.floorPanelSelection);
+          else if (this.floorPanelMode === "elevator_route_deduction") this.submitElevatorStopChain();
+          else this.activateFloorPanelPrimary();
         }
         else if (!this.isStoryInputLocked() && !this.hostPowerPanelOpen) this.interactionRequested = true;
       }
     }, () => {
+      this.warmupLoadGeneration += 1;
+      this.phaseLoadCancelled = true;
+      for (const settle of [...this.pendingWarmupSettlers]) settle();
+      this.scheduledWarmupTimer?.remove(false);
+      this.scheduledWarmupTimer = null;
       this.pendingMoveTimer?.remove(false);
       this.pendingStoryRequest?.timer.remove(false);
       this.pendingStoryRequest = null;
       this.clearStoryPresentationTimers();
       this.destroyBakeryRuntime("scene_shutdown");
+      this.destroyBakeryConveyorFixture();
+      this.destroyBakeryCounterStaff();
       this.destroyRoom204Runtime("scene_shutdown");
+      this.destroyEvidenceDetailRuntime();
+      this.visualHintModel = clearAllChapterFourVisualHints();
       this.destroyPhaseRuntime("scene_shutdown");
       this.destroyTask11Runtime("scene_shutdown");
       this.destroyTask12Runtime("scene_shutdown");
-      this.destroyEvidenceDetailRuntime("scene_shutdown");
+      this.destroyRealityModeVisuals();
       this.destroyExteriorDoorPresentation("scene_shutdown");
       this.destroyExternalTimeOverlay();
+      this.closeClockPanel();
+      this.closeFloorPanel();
       this.closeAlumniPanel();
       this.hostPowerPanelOpen = false;
       this.hostPowerPanelSession = null;
       this.storyPresentation = "idle";
       this.syncStoryInputLock(true);
       this.feedbackTimer?.remove(false);
+      this.clearProjectedTargetVisuals();
+      this.destroyInsertedPuzzleProps();
       clearRpgRuntimeDebugState();
     });
   }
@@ -1860,7 +1934,13 @@ private syncEvidenceDetailRuntime(state: GameState): void {
           placement,
           pairedFocus
         );
-        if (binding) this.evidenceDetailRuntime.set(placementId, binding);
+        if (binding) {
+          this.evidenceDetailRuntime.set(placementId, binding);
+          if (placement.supportingVisual?.kind === "classroom_chalkboard_notes") {
+            const floor = getFloor(displayFloorFor(placement.storyFloor)!);
+            this.createClassroomChalkboardNotes(floor, placement.supportingVisual);
+          }
+        }
       }
     }
     this.evidenceDetailSignature = signature;
@@ -2035,13 +2115,15 @@ private createEvidenceDetailRuntimeBinding(
     };
   }
 
-private destroyEvidenceDetailRuntime(_reason: string): void {
+private destroyEvidenceDetailRuntime(_reason = "state_or_hint_change"): void {
     for (const tween of this.evidenceDetailTweens) tween.remove();
     this.evidenceDetailTweens = [];
     for (const binding of this.evidenceDetailRuntime.values()) {
       binding.container.destroy(true);
     }
     this.evidenceDetailRuntime.clear();
+    for (const object of this.evidenceDetailObjects) object.destroy();
+    this.evidenceDetailObjects = [];
     this.evidenceDetailSignature = "";
     if (_reason === "scene_shutdown") {
       this.visualHintModel = clearAllChapterFourVisualHints();
@@ -2049,30 +2131,45 @@ private destroyEvidenceDetailRuntime(_reason: string): void {
     }
   }
 
-private recordVisualHintFailure(puzzleId: ChapterFourVisualHintPuzzleId): void {
-    const previousLevel = selectChapterFourVisualHintSession(this.visualHintModel, puzzleId)?.level ?? 0;
+private recordVisualHintFailure(
+    puzzleId: ChapterFourVisualHintPuzzleId
+  ): void {
+    const before = selectChapterFourVisualHintSession(this.visualHintModel, puzzleId);
     this.visualHintModel = recordChapterFourVisualHintFailure(this.visualHintModel, puzzleId);
+    const after = selectChapterFourVisualHintSession(this.visualHintModel, puzzleId);
+    if (after?.positionalAudio && !before?.positionalAudio) {
+      const state = this.bridge.getState();
+      const sourceDetail = LAYOUT.evidenceDetails.find((detail) =>
+        after.emphasizedDetailIds.includes(detail.id)
+      );
+      const sourcePlacement = sourceDetail
+        ? [sourceDetail.source, ...sourceDetail.echoes].find((placement) =>
+          placement.phaseIds.includes(state.chapter4.phase)
+            && (!placement.requiredFacts
+              || placement.requiredFacts.every((factId) => hasChapterFourFact(state, factId)))
+        )
+        : undefined;
+      const sourceFloor = sourcePlacement
+        ? getFloor(displayFloorFor(sourcePlacement.storyFloor) ?? 1)
+        : null;
+      const sourceWorldX = sourcePlacement && sourceFloor
+        ? sourceFloor.offsetX + sourcePlacement.bounds.x + sourcePlacement.bounds.width / 2
+        : this.player.x;
+      this.bridge.emit("chapter4_environment_hint_pulse", {
+        puzzleId,
+        failureCount: after.failureCount,
+        hintLevel: after.level,
+        detailIds: after.pairedEmphasis ? after.pairedDetailIds : after.emphasizedDetailIds,
+        sourceWorldX,
+        sourceWorldY: sourcePlacement
+          ? sourcePlacement.bounds.y + sourcePlacement.bounds.height / 2
+          : this.player.y,
+        playerWorldX: this.player.x,
+        pan: Phaser.Math.Clamp((sourceWorldX - this.player.x) / 480, -1, 1)
+      });
+    }
     this.evidenceDetailSignature = "";
     this.syncEvidenceDetailRuntime(this.bridge.getState());
-    const session = selectChapterFourVisualHintSession(this.visualHintModel, puzzleId);
-    if (!session || !session.positionalAudio || session.level <= previousLevel) return;
-    const source = [...this.evidenceDetailRuntime.values()].find((binding) => (
-      session.emphasizedDetailIds.includes(binding.detailId)
-    ));
-    if (!source) return;
-    const floor = getFloor(displayFloorFor(source.storyFloor) ?? 1);
-    const sourceWorldX = floor.offsetX + rectCenterX(source.bounds);
-    const pan = Phaser.Math.Clamp((sourceWorldX - this.player.x) / 480, -1, 1);
-    this.safeBridgeEmit("chapter4_environment_hint_pulse", {
-      puzzleId,
-      failureCount: session.failureCount,
-      hintLevel: session.level,
-      detailIds: [...session.emphasizedDetailIds],
-      sourceWorldX,
-      sourceWorldY: rectCenterY(source.bounds),
-      playerWorldX: this.player.x,
-      pan
-    });
   }
 
 private clearVisualHintPuzzle(puzzleId: ChapterFourVisualHintPuzzleId): void {
@@ -2291,11 +2388,12 @@ private createHud(): void {
 
 private syncProjection(force = false): void {
     const state = this.bridge.getState();
-    const requiredPhase = chapterFourWarmupPhaseForState(state);
-    if (!this.isWarmupPhaseLoaded(requiredPhase)) {
-      this.requestWarmupPhase(requiredPhase, "required");
+    const requiredWarmupPhase = chapterFourWarmupPhaseForState(state);
+    if (!this.isWarmupPhaseLoaded(requiredWarmupPhase)) {
+      this.requestWarmupPhase(requiredWarmupPhase, "required");
       return;
     }
+    this.createBaseBackgrounds();
     const next = selectChapterFourMazeProjection(state);
     const signature = JSON.stringify({
       phase: next.phase,
@@ -2315,9 +2413,13 @@ private syncProjection(force = false): void {
       this.projectionRetryNotBeforeMs = 0;
     }
     if (!force && signature === this.projectionSignature) {
+      this.syncRealityModeVisuals(state.chapter4.mode);
+      this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
+      this.syncBakeryConveyorFixture(state);
       this.syncBakeryRuntime(state, next);
       this.syncRoom204Runtime(state);
       this.syncPhaseRuntime(state);
+      this.syncEvidenceDetailRuntime(state);
       return;
     }
     if (!force && this.time.now < this.projectionRetryNotBeforeMs) return;
@@ -2335,14 +2437,19 @@ private syncProjection(force = false): void {
     this.appliedChapterMode = state.chapter4.mode;
     this.appliedLightMask = state.chapter4.lightGrid.mask;
     this.appliedLightLocked = state.chapter4.lightGrid.locked;
+    this.syncRealityModeVisuals(state.chapter4.mode, force);
+    this.syncInsertedPuzzlePropPresentation(state.chapter4.mode);
     this.projectionRetryFailures = 0;
     this.projectionRetryNotBeforeMs = 0;
+    this.syncBakeryConveyorFixture(state);
     this.syncBakeryRuntime(state, next);
     this.syncRoom204Runtime(state);
     this.syncPhaseRuntime(state);
+    this.syncEvidenceDetailRuntime(state);
     this.refreshProjectedTargetVisuals();
     this.refreshProximity();
     this.publishLiveReady();
+    this.scheduleNextWarmupPhase(requiredWarmupPhase);
   }
 
 private publishLiveReady(force = false, requestId?: string): void {
@@ -2910,7 +3017,8 @@ private rebuildDevelopmentOverlays(): void {
   }
 
 private ensureBakeryBakerAnimation(): void {
-    if (this.anims.exists(BAKERY_COUNTER_BAKER_ANIMATION)) return;
+    if (!this.textures.exists(BAKERY_COUNTER_BAKER_TEXTURE)
+      || this.anims.exists(BAKERY_COUNTER_BAKER_ANIMATION)) return;
     this.anims.create({
       key: BAKERY_COUNTER_BAKER_ANIMATION,
       frames: BAKERY_RUNTIME.baker.frames.map((frame) => ({
@@ -2924,7 +3032,8 @@ private ensureBakeryBakerAnimation(): void {
   }
 
 private ensureFrontDeskStaffAnimation(): void {
-    if (this.anims.exists(FRONT_DESK_STAFF_ANIMATION)) return;
+    if (!this.textures.exists(FRONT_DESK_STAFF_TEXTURE)
+      || this.anims.exists(FRONT_DESK_STAFF_ANIMATION)) return;
     this.anims.create({
       key: FRONT_DESK_STAFF_ANIMATION,
       frames: FRONT_DESK_RUNTIME.frames.map((frame) => ({
@@ -3127,35 +3236,6 @@ private createBakeryRuntime(): void {
       ease: "Sine.InOut"
     });
 
-    this.bakeryConveyorGlint = this.add.rectangle(
-      floor.offsetX + conveyorDefinition.installationBounds.x + 2,
-      rectCenterY(conveyorDefinition.installationBounds),
-      3,
-      Math.max(5, conveyorDefinition.installationBounds.height - 4),
-      0xeaf7ff,
-      0.78
-    ).setDepth(PLAYER_DEPTH_BASE + rectBottom(conveyorDefinition.installationBounds));
-    this.bakeryRuntimeObjects.push(this.bakeryConveyorGlint);
-    this.bakeryConveyorTween = this.tweens.add({
-      targets: this.bakeryConveyorGlint,
-      x: floor.offsetX + rectRight(conveyorDefinition.installationBounds) - 2,
-      duration: 430,
-      repeat: -1,
-      ease: "Linear"
-    });
-
-    const baker = BAKERY_RUNTIME.baker;
-    this.bakeryBaker = this.add.sprite(
-      floor.offsetX + baker.position.x,
-      baker.position.y,
-      BAKERY_COUNTER_BAKER_TEXTURE,
-      baker.frames[0]
-    ).setOrigin(baker.origin.x, baker.origin.y)
-      .setScale(baker.uniformScale)
-      .setDepth(PLAYER_DEPTH_BASE + baker.position.y);
-    this.bakeryBaker.play(BAKERY_COUNTER_BAKER_ANIMATION, true);
-    this.bakeryRuntimeObjects.push(this.bakeryBaker);
-
     const crowdSprites: Phaser.Physics.Arcade.Sprite[] = [];
     for (const [routeIndex, route] of BAKERY_RUNTIME.crowd.routes.entries()) {
       const sprite = this.physics.add.sprite(
@@ -3255,8 +3335,7 @@ private paintBakeryInspectionLamp(lit: boolean): void {
 
 private pauseBakeryActivity(): void {
     this.bakeryActivityPaused = true;
-    this.bakeryConveyorTween?.pause();
-    this.bakeryConveyorGlint?.setVisible(false);
+    this.setBakeryConveyorMotion(false);
     this.bakeryBaker?.anims.pause();
     for (const actor of this.bakeryCrowdActors) {
       actor.tween.pause();
@@ -3268,11 +3347,7 @@ private pauseBakeryActivity(): void {
 
 private resumeBakeryActivity(): void {
     this.bakeryActivityPaused = false;
-    if (this.bakeryConveyorTween) {
-      this.bakeryConveyorTween.timeScale = 1;
-      this.bakeryConveyorTween.resume();
-    }
-    this.bakeryConveyorGlint?.setVisible(true);
+    this.setBakeryConveyorMotion(true);
     this.bakeryBaker?.anims.resume();
     for (const actor of this.bakeryCrowdActors) {
       actor.tween.resume();
@@ -3368,8 +3443,6 @@ private rollbackBakeryConveyorStopToCommittedState(
 private destroyBakeryRuntime(reason: string): void {
     this.bakeryCrowdCollider?.destroy();
     this.bakeryCrowdCollider = null;
-    this.bakeryConveyorTween?.remove();
-    this.bakeryConveyorTween = null;
     this.bakeryHourHandGlintTween?.remove();
     this.bakeryHourHandGlintTween = null;
     for (const actor of this.bakeryCrowdActors) {
@@ -3382,8 +3455,6 @@ private destroyBakeryRuntime(reason: string): void {
     }
     this.bakeryRuntimeObjects = [];
     this.bakeryRuntimeTargets.clear();
-    this.bakeryBaker = null;
-    this.bakeryConveyorGlint = null;
     this.bakeryHourHandSprite = null;
     this.bakeryHourHandGlint = null;
     this.bakeryRuntimeSignature = "";
@@ -3614,7 +3685,8 @@ private outwardRoom204Bounds(object: Phaser.GameObjects.GameObject & Phaser.Game
   }
 
 private syncRoom204Runtime(state: GameState): void {
-    if (state.chapter4.phase !== "room204_restore") {
+    const presentation = selectRoom204RuntimePresentation(state.chapter4.phase, hasChapterFourFact(state, "room204_restored"), state.chapter4.room204Placements);
+    if (presentation === "hidden") {
       if (this.room204RuntimePieces.size > 0
         || this.room204ResidualSprites.length > 0
         || this.room204RuntimeTargets.size > 0) {
@@ -3624,7 +3696,7 @@ private syncRoom204Runtime(state: GameState): void {
     }
     if (this.room204RuntimePieces.size === 0) this.createRoom204Runtime();
     const pieceVisible = this.currentFloor === 2;
-    const residualVisible = pieceVisible
+    const residualVisible = presentation === "interactive" && pieceVisible
       && (state.chapter4.mode === "dark" || this.storyPresentation === "room204_projection");
     this.room204ResidualSprites.forEach((sprite) => sprite.setVisible(residualVisible));
     for (const pieceId of ROOM204_PIECE_ORDER) {
@@ -3719,9 +3791,11 @@ private destroyRoom204Runtime(reason: string): void {
   }
 
 private syncPhaseRuntime(state: GameState): void {
+    this.syncBakeryCounterStaff(state);
     this.syncFrontDeskAttendant(state);
     this.syncSupportNpcs(state);
-    if (state.chapter4.phase === "maintenance_repair") {
+    const phaseTimeAligned = isChapterFourPhaseTimeAligned(state.chapter4);
+    if (state.chapter4.phase === "maintenance_repair" && phaseTimeAligned) {
       this.ensureMaintenanceRuntime(state);
     }
     else if (this.hasPhaseRuntimeTargets(MAINTENANCE_RUNTIME_TARGET_IDS)) {
@@ -3730,6 +3804,7 @@ private syncPhaseRuntime(state: GameState): void {
 
     const finalClockAvailable = (
       state.chapter4.phase === "maintenance_repair"
+        && phaseTimeAligned
         && hasChapterFourFact(state, "clock_gear_repaired")
     ) || (
       state.chapter4.phase === "return_to_clock"
@@ -5167,6 +5242,7 @@ private destroyTask12Runtime(reason: string): void {
 private syncPhaseSideEffects(): void {
     if (this.storyPresentation === "minute_theft") return;
     const state = this.bridge.getState();
+    if (this.projection.phase !== state.chapter4.phase || !isChapterFourPhaseTimeAligned(state.chapter4)) return;
     const signature = [
       state.chapter4.phase,
       state.chapter4.timeState
@@ -5364,7 +5440,6 @@ private syncRoom204ProjectionPresentation(): void {
       || this.time.now < this.storyRetryNotBeforeMs
       || state.chapter4.phase !== "room204_restore"
       || this.currentFloor !== 2
-      || !hasChapterFourFact(state, "a1_time_route_compared")
       || !hasChapterFourFact(state, "a3_reference_observed")
       || !hasChapterFourFact(state, "room204_residual_observed")
       || !hasChapterFourFact(state, "room204_restored")
@@ -5377,7 +5452,6 @@ private beginRoom204ProjectionPresentation(): void {
     const state = this.bridge.getState();
     if (state.chapter4.phase !== "room204_restore"
       || this.currentFloor !== 2
-      || !hasChapterFourFact(state, "a1_time_route_compared")
       || !hasChapterFourFact(state, "a3_reference_observed")
       || !hasChapterFourFact(state, "room204_residual_observed")
       || !hasChapterFourFact(state, "room204_restored")
@@ -5604,8 +5678,7 @@ private handleSpatialAttestationRequest(payload?: Record<string, unknown>): void
   }
 
 private refreshProjectedTargetVisuals(): void {
-    for (const visual of this.targetVisuals.values()) visual.destroy(true);
-    this.targetVisuals.clear();
+    this.clearProjectedTargetVisuals();
     const targets = this.resolveProjectedTargets();
     const showBounds = import.meta.env.DEV
       && new URLSearchParams(window.location.search).get("debugTargets") === "1";
@@ -5614,11 +5687,25 @@ private refreshProjectedTargetVisuals(): void {
       const mode = this.projection.phase
         ? selectChapterFour755RequiredMode(target.contract, this.projection.phase)
         : undefined;
-      const color = mode === "dark" ? 0x67ddff : 0xffd36f;
+      const color = mode === "dark" ? 0x67ddff : mode === "light" ? 0xffd36f : 0xf7f1dc;
+      const modeActive = mode === undefined || mode === this.appliedChapterMode;
+      const isAlumniPortrait = getChapterFourAlumniFigureByTargetId(target.contract.id) !== null;
+      if (isAlumniPortrait && !showBounds) continue;
       const container = this.add.container(
         floor.offsetX + rectCenterX(target.bounds), rectCenterY(target.bounds)
-      ).setDepth(3560);
-      container.add(this.add.circle(0, 0, 5, color, 0.78).setStrokeStyle(1, 0xf7f1dc, 0.72));
+      ).setDepth(REALITY_MODE_TARGET_DEPTH)
+        .setAlpha(modeActive ? 1 : 0.22)
+        .setScale(modeActive ? 1 : 0.72);
+      if (!isAlumniPortrait && mode === "light") {
+        container.add(this.add.rectangle(0, 0, 13, 13, color, 0.12)
+          .setRotation(Math.PI / 4)
+          .setStrokeStyle(2, color, 0.94));
+        container.add(this.add.circle(0, 0, 3, color, 0.96));
+      } else if (!isAlumniPortrait) {
+        container.add(this.add.circle(0, 0, 10, color, 0.08)
+          .setStrokeStyle(2, color, 0.94));
+        container.add(this.add.circle(0, 0, 3, color, 0.96));
+      }
       if (showBounds) {
         container.add(this.add.rectangle(
           0, 0, target.bounds.width, target.bounds.height, color, 0.04
@@ -5713,12 +5800,23 @@ private refreshProximity(): void {
       }))
       .filter(({ target, distance }) => distance <= target.contract.proximity)
       .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
-    this.nearbyTravelTarget = this.projection.phase && OPENING_PHASES.has(this.projection.phase)
-      ? null
+    this.nearbyAlumniFigure = CHAPTER_FOUR_ALUMNI_HONOR_WALL
+      .filter((figure) => figure.floor === this.currentFloor)
+      .map((figure) => ({
+        figure,
+        distance: pointDistanceToRect(localPlayer, figure.frameBounds)
+      }))
+      .filter(({ distance }) => distance <= 72)
+      .sort((a, b) => a.distance - b.distance)[0]?.figure ?? null;
+    const nearbyTravelCandidate = this.projection.phase && OPENING_PHASES.has(this.projection.phase)
+      ? undefined
       : createTravelTargets(floor)
           .map((target) => ({ target, distance: pointDistanceToRect(localPlayer, target.bounds) }))
           .filter(({ distance }) => distance <= 76)
-          .sort((a, b) => a.distance - b.distance)[0]?.target ?? null;
+          .sort((a, b) => a.distance - b.distance)[0];
+    this.nearbyTravelTarget = nearbyTravelCandidate?.target ?? null;
+    this.nearbyTravelTargetHasPriority = nearbyTravelCandidate !== undefined
+      && nearbyTravelCandidate.distance <= 12;
     this.nearbyLandmark = floor.anchors
       .map((anchor) => ({ anchor, distance: pointDistanceToRect(localPlayer, anchor.bounds) }))
       .filter(({ distance }) => distance <= 44)
@@ -5737,12 +5835,20 @@ private refreshProximity(): void {
       ).setVisible(true);
       return;
     }
+    if (this.nearbyAlumniFigure && !this.pendingStoryRequest) {
+      this.interactionHint.setText(`Space · 查看${this.nearbyAlumniFigure.name}生平`).setVisible(true);
+      return;
+    }
     if (this.nearbyStoryTarget && !this.pendingStoryRequest) {
       if (this.nearbyStoryTarget.acceptedItem !== undefined
         && this.nearbyStoryTarget.acceptedItem !== null) {
         this.interactionHint.setText(
           `把对应道具拖到${this.nearbyStoryTarget.contract.label}`
         ).setVisible(true);
+        return;
+      }
+      if (this.nearbyStoryTarget.contract.id === "a1_hall_clock" && this.bridge.getState().chapter4.phase !== "opening_paper_caught") {
+        this.interactionHint.setText("Space · 调节大厅旧钟").setVisible(true);
         return;
       }
       this.interactionHint.setText(`Space · ${this.nearbyStoryTarget.contract.label}`)
@@ -5759,6 +5865,8 @@ private refreshProximity(): void {
 private isStoryInputLocked(): boolean {
     return this.storyPresentation !== "idle"
       || this.alumniPanel !== null
+      || this.clockPanel !== null
+      || this.floorPanel !== null
       || this.pendingStoryRequest !== null
       || this.pendingMove !== null
       || this.finalClockDragActive;
@@ -5766,12 +5874,23 @@ private isStoryInputLocked(): boolean {
 
 private syncStoryInputLock(force = false): void {
     const locked = this.isStoryInputLocked();
+    const floorPanelInteractive = this.floorPanel !== null
+      && this.storyPresentation === "idle"
+      && this.pendingStoryRequest === null
+      && this.pendingMove === null;
+    const clockPanelInteractive = this.clockPanel !== null
+      && this.storyPresentation === "idle"
+      && this.pendingStoryRequest === null
+      && this.pendingMove === null;
     const allowScenePointer = locked
       && (this.alumniPanel !== null
+        || clockPanelInteractive
+        || floorPanelInteractive
         || (this.finalClockDragActive
           && this.storyPresentation === "idle"
           && this.pendingStoryRequest === null));
-    const allowSceneKeyboard = locked && this.alumniPanel !== null;
+    const allowSceneKeyboard = locked
+      && (this.alumniPanel !== null || clockPanelInteractive || floorPanelInteractive);
     if (!force
       && locked === this.lastPublishedStoryInputLock
       && allowScenePointer === this.lastPublishedStoryPointerAllowed
@@ -5804,6 +5923,15 @@ private storySpatialResult(target: ProjectedTarget): {
 private handleStoryOrTravelInteraction(): void {
     const storyTarget = this.nearbyStoryTarget;
     const state = this.bridge.getState();
+    const pendingHallClockAdjustment = storyTarget?.contract.id === "a1_hall_clock" && isChapterFourClockControlAvailable(state.chapter4);
+    if (this.nearbyTravelTargetHasPriority && !pendingHallClockAdjustment) {
+      this.handleTravelInteraction();
+      return;
+    }
+    if (this.nearbyAlumniFigure) {
+      this.openAlumniPanel(this.nearbyAlumniFigure.targetId);
+      return;
+    }
     if (storyTarget) {
       const spatial = this.storySpatialResult(storyTarget);
       if (state.chapter4.phase === "room204_restore" && this.currentFloor === 2) {
@@ -5835,10 +5963,15 @@ private handleStoryOrTravelInteraction(): void {
         return;
       }
       if (storyTarget.contract.id === "a1_hall_clock") {
-        const intent: ChapterFour755Intent = state.chapter4.phase === "opening_paper_caught"
-          ? { type: "inspect_hall_clock", targetId: "a1_hall_clock", spatial }
-          : { type: "pull_hall_clock", targetId: "a1_hall_clock", spatial };
-        this.requestStoryIntent(intent, storyTarget.contract.id);
+        if (state.chapter4.phase === "opening_paper_caught") {
+          this.requestStoryIntent({
+            type: "inspect_hall_clock",
+            targetId: "a1_hall_clock",
+            spatial
+          }, storyTarget.contract.id);
+        } else {
+          this.openClockPanel(spatial);
+        }
         return;
       }
       if (storyTarget.contract.id === "a1_bakery_inspection_lamp") {
@@ -5912,6 +6045,14 @@ private handleStoryOrTravelInteraction(): void {
           targetId: storyTarget.contract.id,
           spatial
         }, storyTarget.contract.id);
+        return;
+      }
+      const contextInteractionIntent = createChapterFourContextInteractionIntent({
+        targetId: storyTarget.contract.id,
+        spatial
+      });
+      if (contextInteractionIntent) {
+        this.requestStoryIntent(contextInteractionIntent, storyTarget.contract.id);
         return;
       }
       if (getChapterFourAlumniFigureByTargetId(storyTarget.contract.id)) {
@@ -6080,34 +6221,26 @@ private handleTravelInteraction(): void {
       if (phase === "final_chase" || phase === "return_to_clock") {
         this.showFeedback(phase === "final_chase"
           ? "追逐中电梯已锁，请进入主楼梯。"
-          : "返程只能沿主楼梯回到一楼旧钟。");
+          : "停电状态下电梯无法返程。带着黄铜分针组件，从二楼主楼梯下到一楼大厅。");
         return;
       }
       if (phase === "room204_restore" && this.currentFloor === 1) {
-        const classroomsReady = hasChapterFourFact(state, "classroom_104_chalk_residual_observed")
-          && hasChapterFourFact(state, "classroom_105_terminal_replay_checked");
-        if (!classroomsReady) {
-          this.showFeedback("先完成 104 黑板与 105 讲台的两项时间差校验。");
-          return;
-        }
         if (!hasChapterFourFact(state, "elevator_history_observed")) {
-          if (state.chapter4.mode !== "dark") {
-            this.showFeedback("切到深色观察，再读取主电梯的三条历史轨道。");
+          if (state.chapter4.mode === "dark") {
+            this.requestStoryIntent({ type: "observe_elevator_history" });
             return;
           }
-          this.requestStoryIntent({ type: "observe_elevator_history" });
-          return;
         }
         if (!hasChapterFourFact(state, "elevator_history_calibrated")
           && state.chapter4.mode !== "light") {
-          this.showFeedback("历史轨道已记录。切回浅色操作后进入轿厢校准。");
+          this.showFeedback("当前可继续观察；轿厢重放校准需要浅色操作。");
           return;
         }
       }
       if (phase === "room204_restore"
         && this.currentFloor === 3
         && !hasChapterFourFact(state, "misaligned_stair_solved")) {
-        this.showFeedback("当前电梯记录没有下行片段。");
+        this.showFeedback("电梯的历史片段只保留上行记录。请从三楼主楼梯返回二楼。");
         return;
       }
       this.openElevatorForSelection();
@@ -6119,7 +6252,7 @@ private handleTravelInteraction(): void {
         && target.targetFloor === 2
         && !hasChapterFourFact(state, "misaligned_stair_solved")) {
         if (!hasChapterFourFact(state, "a3_reference_observed")) {
-          this.showFeedback("三楼空间参照尚未记录。切到深色观察后再试。");
+          this.showFeedback("先在三楼晨间教室记录桌椅、入口与投影边界。");
           return;
         }
         this.bridge.emit("rpg_chapter4_stair_alignment_requested", {
@@ -6161,7 +6294,6 @@ private openFloorPanel(): void {
     const state = this.bridge.getState();
     if (state.chapter4.phase === "room204_restore"
       && this.currentFloor === 1
-      && hasChapterFourFact(state, "elevator_history_observed")
       && !hasChapterFourFact(state, "elevator_history_calibrated")) {
       this.openElevatorCalibrationPanel();
       return;
@@ -6170,35 +6302,91 @@ private openFloorPanel(): void {
     this.floorPanelMode = "floors";
     this.floorPanelSelection = this.currentFloor;
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    this.addElevatorPanelFrame(panel);
     panel.add([
-      this.add.rectangle(0, 0, 390, 228, 0x07111d, 0.96).setStrokeStyle(3, 0xffd36f, 0.94),
-      this.add.text(0, -78, "选择楼层", {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: "22px", color: "#f7f1dc"
+      this.add.rectangle(-270, 0, 2, 298, 0x6f8394, 0.58),
+      this.add.text(-316, -168, "A 楼主电梯", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "24px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(-316, -139, "18:50 运行复核", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#d7b654"
+      }).setOrigin(0, 0.5)
+    ]);
+    this.floorPanelProgress = this.add.text(312, -153, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#b8c7d2"
+    }).setOrigin(1, 0.5);
+    panel.add(this.floorPanelProgress);
+    this.floorPanelButtons = [];
+    for (const displayFloor of [3, 2, 1] as const) {
+      const record = chapterFourElevatorRecordForDisplayFloor(displayFloor);
+      const y = displayFloor === 3 ? -76 : displayFloor === 2 ? 10 : 96;
+      const enabled = this.isElevatorFloorReachable(displayFloor, state);
+      const background = this.add.rectangle(-270, y, 128, 70, 0x17263a, 1)
+        .setStrokeStyle(2, 0x7f93aa, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => {
+          this.floorPanelSelection = displayFloor;
+          this.floorPanelFeedback?.setText("");
+          this.paintFloorPanelSelection();
+        });
+      const label = this.add.text(-318, y - 12, `${displayFloor}F`, {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "21px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5);
+      const detail = this.add.text(-318, y + 14, record.shortLabel, {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "10px", color: "#a9bac7"
+      }).setOrigin(0, 0.5);
+      const status = this.add.text(-218, y - 14, "", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "9px", color: "#d7b654"
+      }).setOrigin(1, 0.5);
+      panel.add([background, label, detail, status]);
+      this.floorPanelButtons.push({ floor: displayFloor, enabled, background, label, detail, status });
+    }
+
+    this.floorPanelTitle = this.add.text(-178, -102, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "19px", color: "#f7f1dc"
+    }).setOrigin(0, 0.5);
+    this.floorPanelDescription = this.add.text(-178, -66, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#b8c7d2",
+      wordWrap: { width: 454 }, lineSpacing: 5
+    }).setOrigin(0, 0);
+    this.floorPanelEvidence = this.add.text(-178, -7, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#d8e7ec",
+      wordWrap: { width: 454 }, lineSpacing: 7
+    }).setOrigin(0, 0);
+    this.floorPanelFeedback = this.add.text(-178, 139, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "10px", color: "#ffad8f",
+      wordWrap: { width: 454 }, align: "center"
+    }).setOrigin(0, 0.5);
+    this.floorPanelPrimaryButton = this.add.rectangle(-34, 104, 286, 44, 0x274d63, 1)
+      .setStrokeStyle(2, 0xd7b654, 0.92)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.activateFloorPanelPrimary());
+    this.floorPanelPrimaryLabel = this.add.text(-34, 104, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#f7f1dc"
+    }).setOrigin(0.5);
+    this.floorPanelDeductionButton = this.add.rectangle(213, 104, 180, 44, 0x17263a, 1)
+      .setStrokeStyle(2, 0x60768c, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.openElevatorDeductionPanel());
+    this.floorPanelDeductionLabel = this.add.text(213, 104, "", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#a9bac7"
+    }).setOrigin(0.5);
+    panel.add([
+      this.floorPanelTitle,
+      this.floorPanelDescription,
+      this.floorPanelEvidence,
+      this.floorPanelFeedback,
+      this.floorPanelPrimaryButton,
+      this.floorPanelPrimaryLabel,
+      this.floorPanelDeductionButton,
+      this.floorPanelDeductionLabel,
+      this.add.text(0, 166, "↑↓ 选层 · Enter 执行 · Space 复核 · Esc 离开", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#8298af"
       }).setOrigin(0.5)
     ]);
-    this.floorPanelButtons = [];
-    for (const floor of FLOORS) {
-      const x = (floor.displayFloor - 2) * 105;
-      const enabled = !(state.chapter4.phase === "room204_restore"
-        && this.currentFloor === 1
-        && floor.displayFloor === 2
-        && !hasChapterFourFact(state, "misaligned_stair_solved"));
-      const background = this.add.rectangle(x, 12, 78, 70, 0x17263a, 1)
-        .setStrokeStyle(2, 0x7f93aa, 1);
-      if (enabled) {
-        background.setInteractive({ useHandCursor: true })
-          .on("pointerup", () => this.requestElevatorDestination(floor.displayFloor));
-      }
-      const label = this.add.text(x, 12, `${floor.displayFloor}F${enabled ? "" : " ×"}`, {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: enabled ? "20px" : "17px", color: enabled ? "#f7f1dc" : "#657487"
-      }).setOrigin(0.5);
-      panel.add([background, label]);
-      this.floorPanelButtons.push({ floor: floor.displayFloor, enabled, background, label });
-    }
-    panel.add(this.add.text(0, 82, "方向键选择 · Enter 确认 · Esc 返回", {
-      fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#9bb0c7"
-    }).setOrigin(0.5));
     this.floorPanel = panel;
+    this.interactionHint.setVisible(false);
+    this.syncStoryInputLock(true);
     this.paintFloorPanelSelection();
   }
 
@@ -6208,41 +6396,76 @@ private openElevatorCalibrationPanel(): void {
     this.elevatorReplayStartSeconds = CHAPTER_FOUR_ELEVATOR.selectableStartMinSeconds;
     this.elevatorCalibrationFailed = false;
     const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    this.addElevatorPanelFrame(panel);
     panel.add([
-      this.add.rectangle(0, 0, 540, 304, 0x07111d, 0.98).setStrokeStyle(3, 0xffd36f, 0.94),
-      this.add.text(0, -126, "同步电梯历史", {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: "22px", color: "#f7f1dc"
-      }).setOrigin(0.5),
-      this.add.text(0, -96, "让一楼开门记录完整覆盖人物的六秒进入窗口", {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#9bb0c7"
-      }).setOrigin(0.5)
+      this.add.text(-320, -178, "18:50 / 一号电梯运行档案", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#d7b654",
+        letterSpacing: 1
+      }).setOrigin(0, 0.5),
+      this.add.text(-320, -145, "同步一楼开门记录", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "25px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(-320, -112, "调整蓝色门体区间，让它完整覆盖黄色人物进入区间。", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#a9bac7"
+      }).setOrigin(0, 0.5),
+      this.add.rectangle(0, -88, 640, 2, 0x60768c, 0.52),
+      this.add.text(-320, -46, "门体开放", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#79c5cf"
+      }).setOrigin(0, 0.5),
+      this.add.text(-320, -14, "人物进入", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#ffd36f"
+      }).setOrigin(0, 0.5),
+      this.add.text(-236, -76, "记录起点", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "9px", color: "#6f8798"
+      }).setOrigin(0, 0.5),
+      this.add.text(304, -76, "记录结束", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "9px", color: "#6f8798"
+      }).setOrigin(1, 0.5)
     ]);
     this.elevatorCalibrationGraphics = this.add.graphics();
-    this.elevatorCalibrationReadout = this.add.text(0, 74, "", {
-      align: "center",
+    this.elevatorCalibrationReadout = this.add.text(-320, 42, "", {
+      align: "left",
       fontFamily: "'Fusion Pixel', monospace",
-      fontSize: "14px",
-      color: "#f7f1dc"
-    }).setOrigin(0.5);
+      fontSize: "12px",
+      color: "#dce8ec",
+      lineSpacing: 6
+    }).setOrigin(0, 0);
     panel.add([this.elevatorCalibrationGraphics, this.elevatorCalibrationReadout]);
 
-    const addControl = (x: number, label: string, onActivate: () => void) => {
-      const button = this.add.rectangle(x, 116, label === "重放校准" ? 132 : 56, 38, 0x17263a, 1)
-        .setStrokeStyle(2, 0x7f93aa, 1)
+    const addControl = (
+      x: number,
+      label: string,
+      width: number,
+      primary: boolean,
+      onActivate: () => void
+    ) => {
+      const button = this.add.rectangle(
+        x,
+        142,
+        width,
+        46,
+        primary ? 0xd7b654 : 0x17263a,
+        1
+      )
+        .setStrokeStyle(2, primary ? 0xffefad : 0x7f93aa, 1)
         .setInteractive({ useHandCursor: true })
         .on("pointerup", onActivate);
-      const text = this.add.text(x, 116, label, {
-        fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#f7f1dc"
+      const text = this.add.text(x, 142, label, {
+        fontFamily: "'Fusion Pixel', monospace",
+        fontSize: primary ? "15px" : "13px",
+        color: primary ? "#111b24" : "#f7f1dc"
       }).setOrigin(0.5);
       panel.add([button, text]);
     };
-    addControl(-120, "−1 秒", () => this.shiftElevatorReplayStart(-1));
-    addControl(0, "重放校准", () => this.submitElevatorCalibration());
-    addControl(120, "+1 秒", () => this.shiftElevatorReplayStart(1));
-    panel.add(this.add.text(0, 144, "←/→ 调整 · Enter 重放 · Esc 离开", {
-      fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#8298af"
+    addControl(-210, "提前 1 秒", 126, false, () => this.shiftElevatorReplayStart(-1));
+    addControl(0, "重放并校验", 184, true, () => this.submitElevatorCalibration());
+    addControl(210, "延后 1 秒", 126, false, () => this.shiftElevatorReplayStart(1));
+    panel.add(this.add.text(0, 188, "← / → 调整重放起点    Enter 校验    Esc 返回", {
+      fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#8298af"
     }).setOrigin(0.5));
     this.floorPanel = panel;
+    this.interactionHint.setVisible(false);
+    this.syncStoryInputLock(true);
     this.paintElevatorCalibrationPanel();
   }
 
@@ -6260,9 +6483,9 @@ private paintElevatorCalibrationPanel(): void {
     const graphics = this.elevatorCalibrationGraphics;
     const readout = this.elevatorCalibrationReadout;
     if (!graphics || !readout) return;
-    const timelineX = -220;
-    const timelineY = -54;
-    const timelineWidth = 440;
+    const timelineX = -236;
+    const timelineY = -63;
+    const timelineWidth = 540;
     const timelineDuration = CHAPTER_FOUR_ELEVATOR.timelineEndSeconds
       - CHAPTER_FOUR_ELEVATOR.timelineStartSeconds;
     const toX = (seconds: number) => timelineX
@@ -6273,12 +6496,12 @@ private paintElevatorCalibrationPanel(): void {
     const playerEnd = CHAPTER_FOUR_ELEVATOR.playerWindowEndSeconds;
 
     graphics.clear();
-    graphics.fillStyle(0x102033, 1).fillRect(timelineX, timelineY, timelineWidth, 60);
-    graphics.lineStyle(2, 0x60768c, 1).strokeRect(timelineX, timelineY, timelineWidth, 60);
-    graphics.fillStyle(0x4ca7c7, 0.9).fillRect(toX(doorStart), timelineY + 10, Math.max(4, toX(doorEnd) - toX(doorStart)), 16);
-    graphics.fillStyle(0xffcf58, 0.96).fillRect(toX(playerStart), timelineY + 34, Math.max(4, toX(playerEnd) - toX(playerStart)), 14);
+    graphics.fillStyle(0x102033, 1).fillRect(timelineX, timelineY, timelineWidth, 64);
+    graphics.lineStyle(2, 0x60768c, 1).strokeRect(timelineX, timelineY, timelineWidth, 64);
+    graphics.fillStyle(0x4ca7c7, 0.9).fillRect(toX(doorStart), timelineY + 9, Math.max(4, toX(doorEnd) - toX(doorStart)), 18);
+    graphics.fillStyle(0xffcf58, 0.96).fillRect(toX(playerStart), timelineY + 38, Math.max(4, toX(playerEnd) - toX(playerStart)), 16);
     graphics.lineStyle(2, 0xf7f1dc, 0.9);
-    graphics.lineBetween(toX(doorStart + CHAPTER_FOUR_ELEVATOR.riseOffsetSeconds), timelineY + 4, toX(doorStart + CHAPTER_FOUR_ELEVATOR.riseOffsetSeconds), timelineY + 54);
+    graphics.lineBetween(toX(doorStart + CHAPTER_FOUR_ELEVATOR.riseOffsetSeconds), timelineY + 4, toX(doorStart + CHAPTER_FOUR_ELEVATOR.riseOffsetSeconds), timelineY + 58);
 
     const formatClock = (seconds: number) => {
       const hours = Math.floor(seconds / 3600).toString().padStart(2, "0");
@@ -6287,9 +6510,11 @@ private paintElevatorCalibrationPanel(): void {
       return `${hours}:${minutes}:${secs}`;
     };
     readout.setText([
-      `蓝色 门体开放 ${formatClock(doorStart)}—${formatClock(doorEnd)}`,
-      `黄色 人物进入 ${formatClock(playerStart)}—${formatClock(playerEnd)}`,
-      this.elevatorCalibrationFailed ? "重放失败：门体没有覆盖完整进入窗口" : "白线 轿厢开始上行"
+      `当前门体记录  ${formatClock(doorStart)}—${formatClock(doorEnd)}  /  8 秒`,
+      `人物进入记录  ${formatClock(playerStart)}—${formatClock(playerEnd)}  /  6 秒`,
+      this.elevatorCalibrationFailed
+        ? "校验结果：覆盖不完整，请调整重放起点。"
+        : `白线：轿厢于 ${formatClock(doorStart + CHAPTER_FOUR_ELEVATOR.riseOffsetSeconds)} 开始上行。`
     ]).setColor(this.elevatorCalibrationFailed ? "#ff987d" : "#f7f1dc");
   }
 
@@ -6311,16 +6536,24 @@ private updateFloorPanelKeyboard(): void {
       if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorSelection();
       return;
     }
+    if (this.floorPanelMode === "elevator_route_deduction") {
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
+        || Phaser.Input.Keyboard.JustDown(this.cursors.right)) this.shiftElevatorDeductionArrival();
+      if (Phaser.Input.Keyboard.JustDown(this.cursors.up)
+        || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftElevatorDeductionUnserved();
+      if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) this.submitElevatorStopChain();
+      if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.returnToElevatorFloorPanel();
+      return;
+    }
     if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
       || Phaser.Input.Keyboard.JustDown(this.cursors.up)) this.shiftFloorPanelSelection(-1);
     if (Phaser.Input.Keyboard.JustDown(this.cursors.right)
       || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftFloorPanelSelection(1);
-    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[1])) this.requestElevatorDestination(1);
-    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[2])) this.requestElevatorDestination(2);
-    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[3])) this.requestElevatorDestination(3);
-    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) {
-      this.requestElevatorDestination(this.floorPanelSelection);
-    }
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[1])) this.selectFloorPanelFloor(1);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[2])) this.selectFloorPanelFloor(2);
+    if (Phaser.Input.Keyboard.JustDown(this.floorKeys[3])) this.selectFloorPanelFloor(3);
+    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) this.activateFloorPanelPrimary();
+    if (Phaser.Input.Keyboard.JustDown(this.interactKey)) this.openElevatorDeductionPanel();
     if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.cancelElevatorSelection();
   }
 
@@ -6330,12 +6563,79 @@ private shiftFloorPanelSelection(delta: number): void {
   }
 
 private paintFloorPanelSelection(): void {
+    const state = this.bridge.getState();
+    const facts = state.chapter4.factIds;
     for (const entry of this.floorPanelButtons) {
       const selected = entry.floor === this.floorPanelSelection;
-      entry.background.setFillStyle(selected && entry.enabled ? 0x315d78 : 0x17263a, entry.enabled ? 1 : 0.6)
-        .setStrokeStyle(2, selected && entry.enabled ? 0xffd36f : entry.enabled ? 0x7f93aa : 0x465365, 1);
-      entry.label.setColor(!entry.enabled ? "#657487" : selected ? "#ffe493" : "#f7f1dc");
+      const record = chapterFourElevatorRecordForDisplayFloor(entry.floor);
+      const recordCollected = hasChapterFourFact(state, record.factId);
+      const current = entry.floor === this.currentFloor;
+      entry.enabled = this.isElevatorFloorReachable(entry.floor, state);
+      entry.background
+        .setFillStyle(selected ? 0x263f50 : current ? 0x1c3241 : 0x142230, 1)
+        .setStrokeStyle(2, selected ? 0xd7b654 : current ? 0x6fb6c6 : 0x65798b, 1);
+      entry.label.setColor(selected ? "#ffe493" : "#f7f1dc");
+      entry.detail.setColor(entry.enabled ? "#a9bac7" : "#7d8c98");
+      entry.status.setText(
+        current
+          ? "当前层"
+          : recordCollected
+            ? "已归档"
+            : entry.enabled
+              ? "可直达"
+              : "楼梯绕行"
+      ).setColor(current ? "#79d4db" : recordCollected ? "#83d2a7" : entry.enabled ? "#d7b654" : "#b09575");
     }
+
+    const record = chapterFourElevatorRecordForDisplayFloor(this.floorPanelSelection);
+    const collected = hasChapterFourFact(state, record.factId);
+    const current = this.floorPanelSelection === this.currentFloor;
+    const reachable = this.isElevatorFloorReachable(this.floorPanelSelection, state);
+    const recordCount = chapterFourElevatorCollectedRecordCount(facts);
+    const chainSolved = hasChapterFourFact(state, "elevator_stop_chain_reconstructed");
+    this.floorPanelProgress?.setText(`跨层档案 ${recordCount}/3${chainSolved ? " · 已复核" : ""}`)
+      .setColor(chainSolved ? "#83d2a7" : "#b8c7d2");
+    this.floorPanelTitle?.setText(`${record.displayFloor}F · ${record.shortLabel}`);
+    this.floorPanelDescription?.setText([
+      record.destinationLabel,
+      `${record.recordTitle}  ${record.timestamp}`
+    ]);
+    this.floorPanelEvidence?.setText(collected
+      ? [`■ ${record.evidence[0]}`, `■ ${record.evidence[1]}`]
+      : current && record.floor === "A1"
+        ? ["□ 一楼记录来自门外三条时间轨。", "离开轿厢后切到深色观察，在门前完成记录。"]
+        : current
+          ? ["□ 本层门机日志尚未归档。", state.chapter4.mode === "dark"
+            ? "当前可直接读取，记录后不会限制其他楼层的调查顺序。"
+            : "离开轿厢切到深色观察，再进入电梯读取本层记录。"]
+          : reachable
+            ? ["□ 到达该层后可读取门机记录。", "线索归档顺序不影响楼层通行。"]
+            : ["□ 轿厢没有该层的历史开门记录。", "先乘到三楼，再从主楼梯完成空间校准并进入二楼。"]);
+
+    const primaryLabel = current
+      ? collected
+        ? "本层记录已归档"
+        : record.floor === "A1"
+          ? "离开轿厢读取一楼门体轨"
+          : state.chapter4.mode === "dark"
+            ? `读取${record.recordTitle}`
+            : "需切换深色观察"
+      : reachable
+        ? `前往 ${record.displayFloor}F`
+        : "查看主楼梯绕行说明";
+    this.floorPanelPrimaryLabel?.setText(primaryLabel).setColor(collected && current ? "#9eb0bb" : "#f7f1dc");
+    this.floorPanelPrimaryButton?.setFillStyle(collected && current ? 0x1a2731 : 0x274d63, 1)
+      .setStrokeStyle(2, collected && current ? 0x5e707d : 0xd7b654, 0.92);
+
+    const deductionReady = chapterFourElevatorRecordsComplete(facts);
+    this.floorPanelDeductionLabel?.setText(chainSolved
+      ? "停靠链已复核"
+      : deductionReady
+        ? "复核停靠链"
+        : `运行复核 ${recordCount}/3`)
+      .setColor(chainSolved ? "#83d2a7" : deductionReady ? "#ffe493" : "#8799a6");
+    this.floorPanelDeductionButton?.setFillStyle(deductionReady ? 0x3a3d2a : 0x17263a, 1)
+      .setStrokeStyle(2, deductionReady ? 0xd7b654 : 0x60768c, 1);
   }
 
 private closeFloorPanel(): void {
@@ -6345,6 +6645,19 @@ private closeFloorPanel(): void {
     this.floorPanelButtons = [];
     this.elevatorCalibrationGraphics = null;
     this.elevatorCalibrationReadout = null;
+    this.floorPanelTitle = null;
+    this.floorPanelDescription = null;
+    this.floorPanelEvidence = null;
+    this.floorPanelProgress = null;
+    this.floorPanelFeedback = null;
+    this.floorPanelPrimaryButton = null;
+    this.floorPanelPrimaryLabel = null;
+    this.floorPanelDeductionButton = null;
+    this.floorPanelDeductionLabel = null;
+    this.elevatorDeductionGraphics = null;
+    this.elevatorDeductionReadout = null;
+    this.interactionHint?.setVisible(false);
+    this.syncStoryInputLock(true);
   }
 
 private requestElevatorDestination(targetFloor: DisplayFloor): void {
@@ -6356,7 +6669,7 @@ private requestElevatorDestination(targetFloor: DisplayFloor): void {
       && this.currentFloor === 1
       && targetFloor === 2
       && !hasChapterFourFact(state, "misaligned_stair_solved")) {
-      this.showFeedback("二楼按钮没有对应的历史到站记录。");
+      this.showFeedback("二楼外呼存在，但轿厢没有开门记录。先乘到三楼，再从错位主楼梯进入二楼。");
       return;
     }
     if (targetFloor === this.currentFloor) {
@@ -6404,28 +6717,29 @@ private ensureFinalClockRuntime(state: GameState = this.bridge.getState()): void
     this.finalClockEndpointHandle = this.add.circle(
       floor.offsetX + endpoint.x,
       endpoint.y,
-      FINAL_CLOCK_RUNTIME.endpoint.installationBounds.width / 2,
+      FINAL_CLOCK_RUNTIME.endpoint.visualHandleBounds.width / 2,
       0xf2d47b,
       0.92
     ).setStrokeStyle(2, 0xf7f1dc, 0.98)
       .setDepth(PLAYER_DEPTH_BASE + 162);
     const visibleBounds = this.finalClockEndpointHandle.getBounds();
-    const derived = {
+    const derivedHandleBounds = {
       x: Math.floor(visibleBounds.left - floor.offsetX),
       y: Math.floor(visibleBounds.top),
       width: Math.ceil(visibleBounds.right - floor.offsetX) - Math.floor(visibleBounds.left - floor.offsetX),
       height: Math.ceil(visibleBounds.bottom) - Math.floor(visibleBounds.top)
     };
-    if (!rectEquals(derived, FINAL_CLOCK_RUNTIME.endpoint.installationBounds)) {
-      this.persistentContractFailures.add(`final_clock_endpoint_bounds:${JSON.stringify(derived)}`);
+    if (!rectEquals(derivedHandleBounds, FINAL_CLOCK_RUNTIME.endpoint.visualHandleBounds)) {
+      this.persistentContractFailures.add(`final_clock_endpoint_handle_bounds:${JSON.stringify(derivedHandleBounds)}`);
       this.destroyFinalClockRuntime("invalid_bounds");
       return;
     }
+    const installationBounds = FINAL_CLOCK_RUNTIME.endpoint.installationBounds;
     this.finalClockEndpointZone = this.add.zone(
-      floor.offsetX + rectCenterX(derived),
-      rectCenterY(derived),
-      derived.width,
-      derived.height
+      floor.offsetX + rectCenterX(installationBounds),
+      rectCenterY(installationBounds),
+      installationBounds.width,
+      installationBounds.height
     );
     this.phaseRuntimeTargets.set(FINAL_CLOCK_RUNTIME.endpoint.targetId, {
       targetId: FINAL_CLOCK_RUNTIME.endpoint.targetId,
@@ -6959,6 +7273,11 @@ private requestStoryIntent(
         && this.finalChaseState?.phase === "failure_pending") {
         this.finalChaseState = resolveChapterFourFinalChaseFailure(this.finalChaseState, false);
       }
+      if (timedOutIntentType === "adjust_hall_clock_time" && this.clockPanel) {
+        this.clockPanelFeedback?.setText("旧钟没有响应，请再次确认当前刻度。").setColor("#ffad8f");
+        this.syncStoryInputLock();
+        return;
+      }
       this.storyPresentation = "idle";
       this.destroyExternalTimeOverlay();
       this.storyRetryNotBeforeMs = this.time.now + STORY_RETRY_DELAY_MS;
@@ -6994,7 +7313,7 @@ private handleIntentResolved(payload?: Record<string, unknown>): void {
     );
     if (visualHintPuzzle) {
       if (resultAccepted(payload)) {
-        this.clearVisualHintPuzzle(visualHintPuzzle);
+        this.clearVisualHintForIntent(resolvedIntentType, resolvedTargetId);
       } else if (!["already_complete", "duplicate_request", "system_failure"].includes(
         resultReason(payload)
       )) {
@@ -7062,6 +7381,19 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
     this.pendingStoryRequest = null;
     if (!resultAccepted(payload)) {
       const detail = String(payload?.feedback ?? "当前剧情条件尚未满足。");
+      if (pending.intentType === "adjust_hall_clock_time" && this.clockPanel) {
+        this.clockPanelFeedback?.setText(detail).setColor("#ffad8f");
+        this.paintClockPanel();
+        this.syncStoryInputLock();
+        return;
+      }
+      if (pending.intentType === "reconstruct_elevator_stop_chain" && this.floorPanelMode === "elevator_route_deduction") {
+        this.elevatorDeductionFeedback = detail;
+        this.paintElevatorDeductionPanel();
+        this.showFeedback(detail);
+        this.syncStoryInputLock();
+        return;
+      }
       if (pending.intentType === "calibrate_elevator_history") {
         this.elevatorCalibrationFailed = true;
         this.paintElevatorCalibrationPanel();
@@ -7182,13 +7514,11 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
         this.storyPresentation = "idle";
         break;
       case "install_hour_hand":
-        if (!transitionPresentationOwned) {
-          this.emitDropFeedback(
-            "oldClockHourHand",
-            "accepted",
-            "金属时针已装回旧钟，时间已切换到 18:50。"
-          );
-        }
+        this.emitDropFeedback(
+          "oldClockHourHand",
+          "accepted",
+          "金属时针已装回，钟面多出一处能够稳定停住的刻度。"
+        );
         this.storyPresentation = "idle";
         break;
       case "talk_to_a1_front_desk_attendant": {
@@ -7244,9 +7574,9 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
       case "observe_elevator_history":
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "门体区间、人物轨迹与轿厢记录已分别保存。",
+          text: "已记录门体开放、人物进入和轿厢上行三条时间轨。轿厢重放校准可独立在浅色操作中完成。",
           tone: "system",
-          durationMs: 2400
+          durationMs: 3600
         });
         break;
       case "calibrate_elevator_history":
@@ -7258,7 +7588,7 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
       case "observe_a3_reference":
         this.storyPresentation = "idle";
         this.safeBridgeEmit("rpg_subtitle", {
-          text: "桌影边缘与墙面中心已记录。",
+          text: chapterFourDialogueText("room204.a3_reference_recorded"),
           tone: "system",
           durationMs: 2200
         });
@@ -7297,13 +7627,11 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
         this.storyPresentation = "idle";
         break;
       case "install_positioning_plate":
-        if (!transitionPresentationOwned) {
-          this.emitDropFeedback(
-            "clockPositioningPlate",
-            "accepted",
-            "定位盘已装回旧钟，现在线索转入 22:45 维护时段。"
-          );
-        }
+        this.emitDropFeedback(
+          "clockPositioningPlate",
+          "accepted",
+          "定位片已归位，钟面另一处刻度不再回弹。"
+        );
         this.storyPresentation = "idle";
         break;
       case "inspect_cart_wheel":
@@ -7476,7 +7804,64 @@ private handleStoryIntentResolved(payload?: Record<string, unknown>): void {
       default:
         this.storyPresentation = "idle";
         break;
-    }
+
+case "reconstruct_elevator_stop_chain":
+        this.storyPresentation = "idle";
+        this.closeFloorPanel();
+        this.openFloorPanel();
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: "跨层运行链已复核：轿厢从一楼直达三楼，二楼外呼没有得到开门响应。定位片的楼层基准已确认。",
+          tone: "success",
+          durationMs: 4800
+        });
+        break;
+
+case "observe_elevator_floor_record": {
+        this.storyPresentation = "idle";
+        const state = this.bridge.getState();
+        const record = chapterFourElevatorRecordForDisplayFloor(this.currentFloor);
+        this.paintFloorPanelSelection();
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: `${record.displayFloor}F ${record.recordTitle}已归档。${record.evidence[0]}`,
+          tone: "system",
+          durationMs: 4200
+        });
+        if (chapterFourElevatorRecordsComplete(state.chapter4.factIds)) {
+          this.showFeedback("三层运行记录已经齐全。切回浅色操作后，可在面板中复核停靠链。");
+        }
+        break;
+      }
+
+case "inspect_chapter_four_context": {
+        this.storyPresentation = "idle";
+        const state = this.bridge.getState();
+        const insertedPuzzleId = pending.targetId
+          ? chapterFourInsertedPuzzleForTarget(pending.targetId)
+          : null;
+        const subtitle = resolveChapterFourContextInteractionSubtitle({
+          targetId: pending.targetId,
+          phase: this.projection.phase,
+          timeState: state.chapter4.timeState,
+          mode: state.chapter4.mode,
+          result: payload?.result
+        });
+        if (subtitle) {
+          this.safeBridgeEmit("rpg_subtitle", { ...subtitle });
+        } else if (!insertedPuzzleId) {
+          this.safeBridgeEmit("rpg_subtitle", {
+            text: "当前教室没有新增状态记录。",
+            tone: "system" as const,
+            durationMs: 4400 as const
+          });
+        }
+        break;
+      }
+
+case "adjust_hall_clock_time":
+        this.storyPresentation = "idle";
+        this.closeClockPanel();
+        break;
+}
     this.syncStoryInputLock();
   }
 
@@ -7543,7 +7928,7 @@ private beginBakeryConveyorStopPresentation(): void {
       phase: "lamp_accepted"
     });
     this.scheduleStoryPresentation(120, () => {
-      if (this.bakeryConveyorTween) this.bakeryConveyorTween.timeScale = 0.45;
+      this.slowBakeryConveyorMotion();
     });
     this.scheduleStoryPresentation(360, () => this.pauseBakeryActivity());
     this.scheduleStoryPresentation(520, () => {
@@ -8379,6 +8764,17 @@ private publishDebug(): void {
           flipX: this.maintenanceGuard?.flipX ?? null,
           entityBounds: ordinaryGuardEntityBounds
         },
+        bakeryConveyor: this.bakeryConveyorFixtureSignature
+          ? {
+              visible: this.currentFloor === 1,
+              motion: this.bakeryConveyorMotionActive ? "moving" : "stopped",
+              beltBounds: { ...BAKERY_RUNTIME.conveyorVisual.beltBounds },
+              frontRailBounds: { ...BAKERY_RUNTIME.conveyorVisual.frontRailBounds },
+              direction: BAKERY_RUNTIME.conveyorVisual.direction,
+              timeState: state.chapter4.timeState,
+              phase: state.chapter4.phase
+            }
+          : null,
         bakeryCrowd: this.bakeryCrowdActors.map((actor) => ({
           routeIndex: actor.routeIndex,
           position: {
@@ -8499,6 +8895,24 @@ private publishDebug(): void {
           targetFloor: this.elevatorTargetFloor,
           doorProgress: this.elevatorDoorProgress,
           panelOpen: this.floorPanel !== null,
+          recordProgress: chapterFourElevatorCollectedRecordCount(state.chapter4.factIds),
+          records: ([1, 2, 3] as const).map((displayFloor) => {
+            const record = chapterFourElevatorRecordForDisplayFloor(displayFloor);
+            return {
+              floor: displayFloor,
+              factId: record.factId,
+              collected: hasChapterFourFact(state, record.factId),
+              reachable: this.isElevatorFloorReachable(displayFloor, state)
+            };
+          }),
+          stopChainReconstructed: hasChapterFourFact(state, "elevator_stop_chain_reconstructed"),
+          deduction: this.floorPanelMode === "elevator_route_deduction"
+            ? {
+                actualArrivalFloor: this.elevatorDeductionArrivalFloor,
+                unservedCallFloor: this.elevatorDeductionUnservedFloor,
+                feedback: this.elevatorDeductionFeedback
+              }
+            : null,
           nearbyTravelZone: this.nearbyTravelTarget?.id ?? null
         },
         floorElevators: FLOORS.map((entry) => ({
@@ -8707,7 +9121,7 @@ private resetRestartLifecycleState(): void {
     this.nearbyStoryTarget = null;
     this.nearbyAlumniFigure = null;
     this.nearbyLandmark = null;
-    this.destroyEvidenceDetailRuntime("scene_restart");
+    this.destroyEvidenceDetailRuntime();
     this.visualHintModel = clearAllChapterFourVisualHints();
     this.evidenceDetailPhase = null;
 
@@ -8792,7 +9206,8 @@ private handleSceneResume(): void {
       return;
     }
     this.createBaseBackgrounds();
-    
+    this.createInsertedPuzzleProps();
+
     this.syncProjection(true);
     this.syncExternalFloorWhenIdle();
     this.refreshProximity();
@@ -8806,7 +9221,8 @@ private refreshLoadedChapterFourAssets(): void {
     this.ensureBakeryBakerAnimation();
     this.ensureFrontDeskStaffAnimation();
     this.createBaseBackgrounds();
-    
+
+    this.createInsertedPuzzleProps();
     this.createAlumniHonorWallPortraits();
   }
 
@@ -9076,5 +9492,1061 @@ private isFloorPresentationReady(displayFloor: DisplayFloor, state: GameState): 
       && this.appliedPlateIds[floor.storyFloor] === expectedPlateId
       && Boolean(background?.active)
       && background?.texture.key === expectedPlateId;
+  }
+
+private clearProjectedTargetVisuals(): void {
+    for (const visual of this.targetVisuals.values()) {
+      this.tweens.killTweensOf(visual);
+      visual.destroy(true);
+    }
+    this.targetVisuals.clear();
+    this.renderedTargetIds = [];
+  }
+
+private returnToElevatorFloorPanel(): void {
+    this.closeFloorPanel();
+    this.openFloorPanel();
+  }
+
+private submitElevatorStopChain(): void {
+    if (this.floorPanelMode !== "elevator_route_deduction" || this.pendingStoryRequest) return;
+    this.requestStoryIntent({
+      type: "reconstruct_elevator_stop_chain",
+      actualArrivalFloor: this.elevatorDeductionArrivalFloor,
+      unservedCallFloor: this.elevatorDeductionUnservedFloor
+    });
+  }
+
+private paintElevatorDeductionPanel(): void {
+    const graphics = this.elevatorDeductionGraphics;
+    const readout = this.elevatorDeductionReadout;
+    if (!graphics || !readout) return;
+    graphics.clear();
+    graphics.fillStyle(0xd7b654, 0.16).fillRoundedRect(
+      this.elevatorDeductionArrivalFloor === "A2" ? 154 : 242,
+      19,
+      72,
+      34,
+      3
+    );
+    graphics.fillStyle(0x79c5cf, 0.12).fillRoundedRect(
+      this.elevatorDeductionUnservedFloor === "A2" ? 154 : 242,
+      65,
+      72,
+      34,
+      3
+    );
+    graphics.lineStyle(2, 0xd7b654, 0.96).strokeRoundedRect(
+      this.elevatorDeductionArrivalFloor === "A2" ? 154 : 242,
+      19,
+      72,
+      34,
+      3
+    );
+    graphics.lineStyle(2, 0x79c5cf, 0.96).strokeRoundedRect(
+      this.elevatorDeductionUnservedFloor === "A2" ? 154 : 242,
+      65,
+      72,
+      34,
+      3
+    );
+    readout.setText(
+      this.elevatorDeductionFeedback || "比较三段记录，再分别确认实际到站层和未响应外呼层。"
+    ).setColor(this.elevatorDeductionFeedback ? "#ff9b82" : "#8298af");
+  }
+
+private shiftElevatorDeductionUnserved(): void {
+    this.elevatorDeductionUnservedFloor = this.elevatorDeductionUnservedFloor === "A2" ? "A3" : "A2";
+    this.elevatorDeductionFeedback = "";
+    this.paintElevatorDeductionPanel();
+  }
+
+private shiftElevatorDeductionArrival(): void {
+    this.elevatorDeductionArrivalFloor = this.elevatorDeductionArrivalFloor === "A2" ? "A3" : "A2";
+    this.elevatorDeductionFeedback = "";
+    this.paintElevatorDeductionPanel();
+  }
+
+private openElevatorDeductionPanel(): void {
+    if (this.floorPanelMode !== "floors" || this.pendingMove || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    if (hasChapterFourFact(state, "elevator_stop_chain_reconstructed")) {
+      this.showFeedback("停靠链已复核：1F 起行，轿厢越过 2F 后在 3F 到站；2F 外呼未得到响应。");
+      return;
+    }
+    if (!chapterFourElevatorRecordsComplete(state.chapter4.factIds)) {
+      this.showFeedback(`还缺 ${3 - chapterFourElevatorCollectedRecordCount(state.chapter4.factIds)} 段楼层记录。三段可按任意顺序归档。`);
+      return;
+    }
+    if (state.chapter4.mode !== "light") {
+      this.showFeedback("记录已经齐全。离开轿厢切回浅色操作，再打开面板完成运行复核。");
+      return;
+    }
+    this.closeFloorPanel();
+    this.floorPanelMode = "elevator_route_deduction";
+    this.elevatorDeductionArrivalFloor = "A2";
+    this.elevatorDeductionUnservedFloor = "A3";
+    this.elevatorDeductionFeedback = "";
+    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    this.addElevatorPanelFrame(panel);
+    panel.add([
+      this.add.text(-316, -164, "复原 18:50 停靠链", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "23px", color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(316, -164, "3/3 记录齐全", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#83d2a7"
+      }).setOrigin(1, 0.5)
+    ]);
+    const recordRows: Array<[string, string, string]> = [
+      ["1F", "18:49:58", "门开八秒；18:50:06 转为上行"],
+      ["2F", "18:50:04", "下行外呼亮起；门机没有开门记录"],
+      ["3F", "18:50:12", "到站铃响；随后门机完整开启"]
+    ];
+    recordRows.forEach(([floor, timestamp, evidence], index) => {
+      const y = -108 + index * 48;
+      panel.add([
+        this.add.rectangle(0, y, 628, 38, index === 1 ? 0x1a2833 : 0x14222d, 1)
+          .setStrokeStyle(1, 0x506475, 1),
+        this.add.text(-294, y, floor, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#ffe493"
+        }).setOrigin(0, 0.5),
+        this.add.text(-246, y, timestamp, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#86bfc9"
+        }).setOrigin(0, 0.5),
+        this.add.text(-166, y, evidence, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "11px", color: "#d7e2e7"
+        }).setOrigin(0, 0.5)
+      ]);
+    });
+    this.elevatorDeductionGraphics = this.add.graphics();
+    this.elevatorDeductionReadout = this.add.text(0, 112, "", {
+      align: "center",
+      fontFamily: "'Fusion Pixel', monospace",
+      fontSize: "11px",
+      color: "#f7f1dc",
+      wordWrap: { width: 610 }
+    }).setOrigin(0.5);
+    panel.add([
+      this.elevatorDeductionGraphics,
+      this.elevatorDeductionReadout,
+      this.add.text(-292, 36, "轿厢离开 1F 后实际到站：", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#d7e2e7"
+      }).setOrigin(0, 0.5),
+      this.add.text(-292, 82, "有外呼但未得到开门响应：", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#d7e2e7"
+      }).setOrigin(0, 0.5)
+    ]);
+    const addChoice = (
+      x: number,
+      y: number,
+      label: string,
+      onActivate: () => void
+    ) => {
+      panel.add([
+        this.add.rectangle(x, y, 72, 34, 0x17263a, 0.01)
+          .setInteractive({ useHandCursor: true })
+          .on("pointerup", onActivate),
+        this.add.text(x, y, label, {
+          fontFamily: "'Fusion Pixel', monospace", fontSize: "13px", color: "#f7f1dc"
+        }).setOrigin(0.5)
+      ]);
+    };
+    addChoice(190, 36, "2F", () => {
+      this.elevatorDeductionArrivalFloor = "A2";
+      this.paintElevatorDeductionPanel();
+    });
+    addChoice(278, 36, "3F", () => {
+      this.elevatorDeductionArrivalFloor = "A3";
+      this.paintElevatorDeductionPanel();
+    });
+    addChoice(190, 82, "2F", () => {
+      this.elevatorDeductionUnservedFloor = "A2";
+      this.paintElevatorDeductionPanel();
+    });
+    addChoice(278, 82, "3F", () => {
+      this.elevatorDeductionUnservedFloor = "A3";
+      this.paintElevatorDeductionPanel();
+    });
+    panel.add([
+      this.add.rectangle(0, 148, 190, 42, 0x274d63, 1)
+        .setStrokeStyle(2, 0xd7b654, 0.94)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => this.submitElevatorStopChain()),
+      this.add.text(0, 148, "提交运行复核", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "14px", color: "#f7f1dc"
+      }).setOrigin(0.5),
+      this.add.text(0, 178, "←→ 选择实际到站 · ↑↓ 选择未响应层 · Enter 提交 · Esc 返回", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "10px", color: "#8298af"
+      }).setOrigin(0.5)
+    ]);
+    this.floorPanel = panel;
+    this.interactionHint.setVisible(false);
+    this.syncStoryInputLock(true);
+    this.paintElevatorDeductionPanel();
+  }
+
+private activateFloorPanelPrimary(): void {
+    if (this.floorPanelMode !== "floors" || this.pendingMove || this.pendingStoryRequest) return;
+    const state = this.bridge.getState();
+    const record = chapterFourElevatorRecordForDisplayFloor(this.floorPanelSelection);
+    const current = this.floorPanelSelection === this.currentFloor;
+    if (!current) {
+      if (!this.isElevatorFloorReachable(this.floorPanelSelection, state)) {
+        const feedback = "二楼没有历史开门记录。先到三楼记录晨间教室布局，再从主楼梯完成空间校准进入二楼。";
+        this.floorPanelFeedback?.setText(feedback);
+        this.showFeedback(feedback);
+        return;
+      }
+      this.requestElevatorDestination(this.floorPanelSelection);
+      return;
+    }
+    if (hasChapterFourFact(state, record.factId)) {
+      const feedback = `${record.displayFloor}F ${record.recordTitle}已经归档。`;
+      this.floorPanelFeedback?.setText(feedback);
+      this.showFeedback(feedback);
+      return;
+    }
+    if (record.floor === "A1") {
+      this.showFeedback("一楼起行记录位于电梯门外。离开轿厢后切到深色观察，在门前读取三条时间轨。");
+      this.cancelElevatorSelection();
+      return;
+    }
+    if (state.chapter4.mode !== "dark") {
+      this.showFeedback("门机旧记录只在深色观察中可读。离开轿厢切换模式后再进入电梯。");
+      return;
+    }
+    this.requestStoryIntent({
+      type: "observe_elevator_floor_record",
+      floor: record.floor as ChapterFourElevatorRecordFloor
+    });
+  }
+
+private selectFloorPanelFloor(floor: DisplayFloor): void {
+    this.floorPanelSelection = floor;
+    this.paintFloorPanelSelection();
+  }
+
+private isElevatorFloorReachable(
+    targetFloor: DisplayFloor,
+    state: GameState = this.bridge.getState()
+  ): boolean {
+    if (targetFloor === this.currentFloor) return true;
+    if (state.chapter4.phase === "room204_restore"
+      && targetFloor === 2
+      && !hasChapterFourFact(state, "misaligned_stair_solved")) return false;
+    return true;
+  }
+
+private addElevatorPanelFrame(
+    panel: Phaser.GameObjects.Container,
+    width = 720,
+    height = 420
+  ): void {
+    const closeX = width / 2 - 56;
+    const closeY = -height / 2 + 28;
+    panel.add([
+      this.add.rectangle(0, 0, 960, 540, 0x02070c, 0.72),
+      this.add.rectangle(7, 8, width, height, 0x000000, 0.48),
+      this.add.rectangle(0, 0, width, height, 0x08131f, 0.99)
+        .setStrokeStyle(3, 0xd7b654, 0.96),
+      this.add.rectangle(0, 0, width - 12, height - 12, 0x000000, 0)
+        .setStrokeStyle(1, 0x60768c, 0.72),
+      this.add.rectangle(-width / 2 + 10, -height / 2 + 10, 5, 62, 0xd7b654, 1)
+        .setOrigin(0, 0),
+      this.add.rectangle(closeX, closeY, 88, 32, 0x17263a, 1)
+        .setStrokeStyle(2, 0x7f93aa, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => this.cancelElevatorSelection()),
+      this.add.text(closeX, closeY, "× 返回", {
+        fontFamily: "'Fusion Pixel', monospace", fontSize: "12px", color: "#dce8ec"
+      }).setOrigin(0.5)
+    ]);
+  }
+
+private closeClockPanel(): void {
+    this.clockPanel?.destroy(true);
+    this.clockPanel = null;
+    this.clockPanelOptions = [];
+    this.clockPanelSelection = 0;
+    this.clockPanelSpatial = null;
+    this.clockPanelButtons = [];
+    this.clockPanelHandGraphics = null;
+    this.clockPanelReadout = null;
+    this.clockPanelFeedback = null;
+    this.interactionHint?.setVisible(false);
+    this.syncStoryInputLock(true);
+  }
+
+private submitClockPanelSelection(): void {
+    if (!this.clockPanel || this.pendingStoryRequest) return;
+    const option = this.clockPanelOptions[this.clockPanelSelection];
+    const state = this.bridge.getState();
+    const requiredTimeState = selectChapterFourRequiredClockTime(state.chapter4);
+    if (!option || !this.clockPanelSpatial || !requiredTimeState) return;
+    if (option.id === state.chapter4.timeState) {
+      this.clockPanelFeedback?.setText("旧钟已经停在这一格；另一圈刻痕刚刚变得清晰。");
+      return;
+    }
+    if (option.id !== requiredTimeState) {
+      this.clockPanelFeedback?.setText("这处刻度仍会回弹。");
+      return;
+    }
+    this.clockPanelFeedback?.setText("齿轮正在咬合……").setColor("#b9d88b");
+    this.requestStoryIntent({
+      type: "adjust_hall_clock_time",
+      targetId: "a1_hall_clock",
+      targetTimeState: option.id,
+      spatial: this.clockPanelSpatial
+    }, "a1_hall_clock");
+  }
+
+private updateClockPanelKeyboard(): void {
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.left)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.up)) this.shiftClockPanelSelection(-1);
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.right)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.down)) this.shiftClockPanelSelection(1);
+    if (Phaser.Input.Keyboard.JustDown(this.confirmKey)) this.submitClockPanelSelection();
+    if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) this.closeClockPanel();
+  }
+
+private shiftClockPanelSelection(delta: number): void {
+    if (this.clockPanelOptions.length === 0 || this.pendingStoryRequest) return;
+    this.clockPanelSelection = Phaser.Math.Wrap(
+      this.clockPanelSelection + delta,
+      0,
+      this.clockPanelOptions.length
+    );
+    this.clockPanelFeedback?.setText("");
+    this.paintClockPanel();
+  }
+
+private paintClockPanel(): void {
+    const option = this.clockPanelOptions[this.clockPanelSelection];
+    const state = this.bridge.getState();
+    const requiredTimeState = selectChapterFourRequiredClockTime(state.chapter4);
+    if (!option || !this.clockPanelHandGraphics || !this.clockPanelReadout) return;
+
+    this.clockPanelButtons.forEach((button, index) => {
+      const selected = index === this.clockPanelSelection;
+      const current = button.timeState === state.chapter4.timeState;
+      const newlyStable = button.timeState === requiredTimeState;
+      button.background
+        .setFillStyle(selected ? 0x263f50 : current ? 0x1b303d : 0x142331, 1)
+        .setStrokeStyle(2, selected ? 0xd7b654 : newlyStable ? 0x8ca46a : 0x60768c, 1);
+      button.label.setColor(selected ? "#ffe493" : "#f7f1dc");
+      button.status
+        .setText(current ? "当前" : newlyStable ? "刻痕清晰" : "")
+        .setColor(current ? "#79d4db" : "#b9d88b");
+    });
+
+    const seconds = option.worldTimeSeconds;
+    const hour = Math.floor(seconds / 3600) % 24;
+    const minute = Math.floor((seconds % 3600) / 60);
+    const centerX = -224;
+    const centerY = 4;
+    const hourAngle = Phaser.Math.DegToRad(((hour % 12) + minute / 60) * 30 - 90);
+    const minuteAngle = Phaser.Math.DegToRad(minute * 6 - 90);
+    this.clockPanelHandGraphics.clear();
+    this.clockPanelHandGraphics.lineStyle(6, 0x263746, 1).lineBetween(
+      centerX,
+      centerY,
+      centerX + Math.cos(hourAngle) * 50,
+      centerY + Math.sin(hourAngle) * 50
+    );
+    this.clockPanelHandGraphics.lineStyle(4, 0xb47c2d, 1).lineBetween(
+      centerX,
+      centerY,
+      centerX + Math.cos(minuteAngle) * 76,
+      centerY + Math.sin(minuteAngle) * 76
+    );
+    this.clockPanelHandGraphics.fillStyle(0x263746, 1).fillCircle(centerX, centerY, 7);
+    this.clockPanelReadout.setText(option.label);
+  }
+
+private openClockPanel(
+    spatial: { distance: "within_range" | "too_far" }
+  ): void {
+    if (this.clockPanel || this.pendingStoryRequest || this.storyPresentation !== "idle") return;
+    const state = this.bridge.getState();
+    const requiredTimeState = selectChapterFourRequiredClockTime(state.chapter4);
+    const options = selectChapterFourClockTimeOptions(state);
+    if (!requiredTimeState || options.length < 2) {
+      this.showFeedback("钟面暂时没有出现新的稳定刻度。");
+      return;
+    }
+
+    this.clockPanelOptions = options;
+    this.clockPanelSelection = Math.max(
+      0,
+      options.findIndex((option) => option.id === state.chapter4.timeState)
+    );
+    this.clockPanelSpatial = spatial;
+    this.clockPanelButtons = [];
+    const panel = this.add.container(480, 270).setScrollFactor(0).setDepth(11000);
+    panel.add([
+      this.add.rectangle(0, 0, 960, 540, 0x02070c, 0.74),
+      this.add.rectangle(7, 8, 720, 420, 0x000000, 0.46),
+      this.add.rectangle(0, 0, 720, 420, 0x08131f, 0.99)
+        .setStrokeStyle(3, 0xd7b654, 0.96),
+      this.add.rectangle(0, 0, 708, 408, 0x000000, 0)
+        .setStrokeStyle(1, 0x60768c, 0.72),
+      this.add.rectangle(-350, -200, 5, 64, 0xd7b654, 1).setOrigin(0, 0),
+      this.add.text(-322, -168, "大厅旧钟", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "24px",
+        color: "#f7f1dc"
+      }).setOrigin(0, 0.5),
+      this.add.text(-322, -137, "转动外圈，比较能够停住的刻度", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "12px",
+        color: "#9fb2c1"
+      }).setOrigin(0, 0.5),
+      this.add.rectangle(304, -174, 88, 32, 0x17263a, 1)
+        .setStrokeStyle(2, 0x7f93aa, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => this.closeClockPanel()),
+      this.add.text(304, -174, "× 返回", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "12px",
+        color: "#dce8ec"
+      }).setOrigin(0.5),
+      this.add.rectangle(-118, 20, 2, 286, 0x60768c, 0.55)
+    ]);
+
+    const face = this.add.graphics();
+    face.fillStyle(0xe8dfc1, 1).fillCircle(-224, 4, 108);
+    face.lineStyle(5, 0xa57d34, 1).strokeCircle(-224, 4, 108);
+    face.lineStyle(2, 0x263746, 0.78).strokeCircle(-224, 4, 94);
+    for (let index = 0; index < 12; index += 1) {
+      const angle = Phaser.Math.DegToRad(index * 30 - 90);
+      const inner = index % 3 === 0 ? 78 : 84;
+      face.lineStyle(index % 3 === 0 ? 4 : 2, 0x263746, 0.9);
+      face.lineBetween(
+        -224 + Math.cos(angle) * inner,
+        4 + Math.sin(angle) * inner,
+        -224 + Math.cos(angle) * 92,
+        4 + Math.sin(angle) * 92
+      );
+    }
+    panel.add([
+      face,
+      this.add.text(-224, -75, "12", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5),
+      this.add.text(-145, 4, "3", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5),
+      this.add.text(-224, 83, "6", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5),
+      this.add.text(-303, 4, "9", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "13px", color: "#263746"
+      }).setOrigin(0.5)
+    ]);
+    this.clockPanelHandGraphics = this.add.graphics();
+    this.clockPanelReadout = this.add.text(-224, 135, "", {
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
+      fontSize: "18px",
+      color: "#ffe493"
+    }).setOrigin(0.5);
+    panel.add([this.clockPanelHandGraphics, this.clockPanelReadout]);
+
+    options.forEach((option, index) => {
+      const y = -64 + index * 76;
+      const background = this.add.rectangle(128, y, 334, 60, 0x142331, 1)
+        .setStrokeStyle(2, 0x60768c, 1)
+        .setInteractive({ useHandCursor: true })
+        .on("pointerup", () => {
+          this.clockPanelSelection = index;
+          this.clockPanelFeedback?.setText("");
+          this.paintClockPanel();
+        });
+      const label = this.add.text(-15, y - 3, option.label, {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "23px",
+        color: "#f7f1dc"
+      }).setOrigin(0, 0.5);
+      const status = this.add.text(276, y - 3, "", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "11px",
+        color: "#d7b654"
+      }).setOrigin(1, 0.5);
+      panel.add([background, label, status]);
+      this.clockPanelButtons.push({
+        timeState: option.id,
+        background,
+        label,
+        status
+      });
+    });
+
+    const confirmButton = this.add.rectangle(74, 105, 220, 46, 0x3b4b2d, 1)
+      .setStrokeStyle(2, 0xd7b654, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.submitClockPanelSelection());
+    const cancelButton = this.add.rectangle(250, 105, 112, 46, 0x17263a, 1)
+      .setStrokeStyle(2, 0x72889a, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerup", () => this.closeClockPanel());
+    this.clockPanelFeedback = this.add.text(128, 146, "", {
+      fontFamily: RPG_PIXEL_FONT_FAMILY,
+      fontSize: "11px",
+      color: "#ffad8f",
+      align: "center",
+      wordWrap: { width: 334 }
+    }).setOrigin(0.5, 0);
+    panel.add([
+      confirmButton,
+      this.add.text(74, 105, "固定这一刻度", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "14px", color: "#fff1b4"
+      }).setOrigin(0.5),
+      cancelButton,
+      this.add.text(250, 105, "暂不调节", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "12px", color: "#dce8ec"
+      }).setOrigin(0.5),
+      this.clockPanelFeedback,
+      this.add.text(70, 184, "← / → 选择刻度 · Enter 确认 · Esc 返回", {
+        fontFamily: RPG_PIXEL_FONT_FAMILY, fontSize: "11px", color: "#8298af"
+      }).setOrigin(0.5)
+    ]);
+    this.clockPanel = panel;
+    this.interactionHint.setVisible(false);
+    this.syncStoryInputLock(true);
+    this.paintClockPanel();
+  }
+
+private destroyBakeryCounterStaff(): void {
+    this.bakeryBaker?.destroy();
+    this.bakeryBaker = null;
+  }
+
+private syncBakeryCounterStaff(state: GameState): void {
+    const baker = BAKERY_RUNTIME.baker;
+    const active = state.chapter4.floor === BAKERY_RUNTIME.storyFloor
+      && (baker.activePhases as readonly string[]).includes(state.chapter4.phase)
+      && this.textures.exists(BAKERY_COUNTER_BAKER_TEXTURE);
+    if (!active) {
+      this.destroyBakeryCounterStaff();
+      return;
+    }
+    if (this.bakeryBaker?.active) return;
+
+    const floor = getFloor(1);
+    const counterForeground = floor.foregroundOcclusions.find(
+      (definition) => definition.id === baker.foregroundOcclusionId
+    );
+    this.ensureBakeryBakerAnimation();
+    this.bakeryBaker = this.add.sprite(
+      floor.offsetX + baker.position.x,
+      baker.position.y,
+      BAKERY_COUNTER_BAKER_TEXTURE,
+      baker.frames[0]
+    ).setOrigin(baker.origin.x, baker.origin.y)
+      .setScale(baker.uniformScale)
+      .setCrop(0, 0, 96, baker.visibleSourceHeight)
+      .setDepth(PLAYER_DEPTH_BASE + (counterForeground?.baselineY ?? baker.position.y) + 1);
+    if (this.anims.exists(BAKERY_COUNTER_BAKER_ANIMATION)) {
+      this.bakeryBaker.play(BAKERY_COUNTER_BAKER_ANIMATION, true);
+    }
+  }
+
+private destroyBakeryConveyorFixture(): void {
+    for (const tween of this.bakeryConveyorMotionTweens) tween.remove();
+    this.bakeryConveyorMotionTweens = [];
+    for (const object of this.bakeryConveyorFixtureObjects) {
+      if (!object.active) continue;
+      if (object instanceof Phaser.GameObjects.Container) object.destroy(true);
+      else object.destroy();
+    }
+    this.bakeryConveyorFixtureObjects = [];
+    this.bakeryConveyorBelt = null;
+    this.bakeryConveyorGlint = null;
+    this.bakeryConveyorTween = null;
+    this.bakeryConveyorStatusLight = null;
+    this.bakeryConveyorMotionActive = false;
+    this.bakeryConveyorFixtureSignature = "";
+  }
+
+private slowBakeryConveyorMotion(): void {
+    for (const tween of this.bakeryConveyorMotionTweens) tween.timeScale = 0.45;
+  }
+
+private setBakeryConveyorMotion(active: boolean): void {
+    this.bakeryConveyorMotionActive = active;
+    for (const tween of this.bakeryConveyorMotionTweens) {
+      tween.timeScale = 1;
+      if (active) tween.resume();
+      else tween.pause();
+    }
+    this.bakeryConveyorGlint?.setVisible(active);
+    this.bakeryConveyorStatusLight?.setFillStyle(active ? 0x83d38b : 0xd49c46, 1);
+    this.bakeryConveyorBelt?.setAlpha(active ? 0.96 : 0.78);
+  }
+
+private createBakeryConveyorFixture(): void {
+    this.destroyBakeryConveyorFixture();
+    this.ensureBakeryConveyorTileTexture();
+    const floor = getFloor(1);
+    const visual = BAKERY_RUNTIME.conveyorVisual;
+    const belt = visual.beltBounds;
+    const rail = visual.frontRailBounds;
+    const beltDepth = PLAYER_DEPTH_BASE + rectBottom(belt) - 5;
+    const worldLeft = floor.offsetX + belt.x;
+    const worldRight = floor.offsetX + rectRight(belt);
+
+    const bedShadow = this.add.rectangle(
+      floor.offsetX + rectCenterX(belt),
+      rectCenterY(belt) + 3,
+      belt.width + 8,
+      belt.height + 8,
+      0x111417,
+      0.72
+    ).setDepth(beltDepth - 2).setStrokeStyle(2, 0x7b7770, 0.92);
+    this.bakeryConveyorBelt = this.add.tileSprite(
+      floor.offsetX + rectCenterX(belt),
+      rectCenterY(belt),
+      belt.width,
+      belt.height,
+      BAKERY_CONVEYOR_TILE_TEXTURE
+    ).setDepth(beltDepth).setAlpha(0.94);
+    const topRail = this.add.rectangle(
+      floor.offsetX + rectCenterX(belt),
+      belt.y - 1,
+      belt.width + 10,
+      4,
+      0xb6aaa0,
+      0.94
+    ).setDepth(beltDepth + 2).setStrokeStyle(1, 0x493f38, 1);
+    const frontRail = this.add.rectangle(
+      floor.offsetX + rectCenterX(rail),
+      rectCenterY(rail),
+      rail.width,
+      rail.height,
+      0x8f8378,
+      0.98
+    ).setDepth(beltDepth + 5).setStrokeStyle(1, 0x382f2a, 1);
+    const leftRoller = this.add.circle(
+      worldLeft,
+      rectCenterY(belt),
+      6,
+      0x4a5558,
+      1
+    ).setDepth(beltDepth + 4).setStrokeStyle(2, 0xb6aaa0, 0.9);
+    const rightRoller = this.add.circle(
+      worldRight,
+      rectCenterY(belt),
+      6,
+      0x4a5558,
+      1
+    ).setDepth(beltDepth + 4).setStrokeStyle(2, 0xb6aaa0, 0.9);
+
+    const carriers: Phaser.GameObjects.Container[] = [];
+    for (const offset of [22, 78, 134]) {
+      const tray = this.add.rectangle(0, 1, 25, 12, 0x4c3724, 0.98)
+        .setStrokeStyle(1, 0xc9a566, 0.96);
+      const breadLeft = this.add.circle(-6, -1, 3, 0xd99d51, 1)
+        .setStrokeStyle(1, 0x80502c, 0.92);
+      const breadCenter = this.add.circle(0, -1, 3, 0xe5ad5d, 1)
+        .setStrokeStyle(1, 0x80502c, 0.92);
+      const breadRight = this.add.circle(6, -1, 3, 0xd99d51, 1)
+        .setStrokeStyle(1, 0x80502c, 0.92);
+      const carrier = this.add.container(
+        worldLeft + offset,
+        rectCenterY(belt),
+        [tray, breadLeft, breadCenter, breadRight]
+      ).setDepth(beltDepth + 3);
+      carriers.push(carrier);
+      this.bakeryConveyorFixtureObjects.push(carrier);
+    }
+
+    const directionMarkA = this.add.triangle(
+      floor.offsetX + rail.x + rail.width - 34,
+      rectCenterY(rail),
+      -3,
+      -2,
+      -3,
+      2,
+      3,
+      0,
+      0xdcc47a,
+      0.88
+    ).setDepth(beltDepth + 6);
+    const directionMarkB = this.add.triangle(
+      floor.offsetX + rail.x + rail.width - 24,
+      rectCenterY(rail),
+      -3,
+      -2,
+      -3,
+      2,
+      3,
+      0,
+      0xdcc47a,
+      0.88
+    ).setDepth(beltDepth + 6);
+    this.bakeryConveyorStatusLight = this.add.circle(
+      floor.offsetX + rail.x + rail.width - 9,
+      rectCenterY(rail),
+      2.5,
+      0xd49c46,
+      1
+    ).setDepth(beltDepth + 7).setStrokeStyle(1, 0x332922, 1);
+    this.bakeryConveyorGlint = this.add.rectangle(
+      worldLeft + 6,
+      rectCenterY(belt),
+      3,
+      belt.height - 5,
+      0xeaf7ff,
+      0.64
+    ).setDepth(beltDepth + 4);
+
+    this.bakeryConveyorFixtureObjects.push(
+      bedShadow,
+      this.bakeryConveyorBelt,
+      topRail,
+      frontRail,
+      leftRoller,
+      rightRoller,
+      directionMarkA,
+      directionMarkB,
+      this.bakeryConveyorStatusLight,
+      this.bakeryConveyorGlint
+    );
+    const beltTween = this.tweens.add({
+      targets: this.bakeryConveyorBelt,
+      tilePositionX: visual.direction === "east" ? -visual.slatSpacing : visual.slatSpacing,
+      duration: visual.motionCycleMs,
+      repeat: -1,
+      ease: "Linear"
+    });
+    const carrierMotion = { offset: 0 };
+    const carrierTween = this.tweens.add({
+      targets: carrierMotion,
+      offset: belt.width,
+      duration: visual.motionCycleMs * 5,
+      repeat: -1,
+      ease: "Linear",
+      onUpdate: () => {
+        carriers.forEach((carrier, index) => {
+          const localX = (22 + index * 56 + carrierMotion.offset) % belt.width;
+          carrier.x = Math.round(worldLeft + localX);
+        });
+      }
+    });
+    this.bakeryConveyorTween = this.tweens.add({
+      targets: this.bakeryConveyorGlint,
+      x: worldRight - 6,
+      duration: visual.motionCycleMs * 2,
+      repeat: -1,
+      ease: "Linear"
+    });
+    this.bakeryConveyorMotionTweens = [beltTween, carrierTween, this.bakeryConveyorTween];
+    this.bakeryConveyorFixtureSignature = `${BAKERY_RUNTIME.storyFloor}:${JSON.stringify(visual)}`;
+    this.setBakeryConveyorMotion(false);
+  }
+
+private ensureBakeryConveyorTileTexture(): void {
+    if (this.textures.exists(BAKERY_CONVEYOR_TILE_TEXTURE)) return;
+    const { slatSpacing, beltBounds } = BAKERY_RUNTIME.conveyorVisual;
+    const graphics = this.make.graphics({ x: 0, y: 0 });
+    graphics.fillStyle(0x273238, 1).fillRect(0, 0, slatSpacing, beltBounds.height);
+    graphics.fillStyle(0x52636a, 0.92).fillRect(0, 1, 3, beltBounds.height - 2);
+    graphics.fillStyle(0xa7b8b8, 0.48).fillRect(3, 2, 1, beltBounds.height - 4);
+    graphics.fillStyle(0x182126, 0.82).fillRect(slatSpacing - 2, 1, 2, beltBounds.height - 2);
+    graphics.fillStyle(0x7f918f, 0.34).fillRect(4, 4, slatSpacing - 7, 2);
+    graphics.fillStyle(0x11181c, 0.5).fillRect(4, beltBounds.height - 6, slatSpacing - 7, 2);
+    graphics.generateTexture(
+      BAKERY_CONVEYOR_TILE_TEXTURE,
+      slatSpacing,
+      beltBounds.height
+    );
+    graphics.destroy();
+  }
+
+private syncBakeryConveyorFixture(state: GameState): void {
+    if (this.currentFloor !== 1) {
+      this.destroyBakeryConveyorFixture();
+      return;
+    }
+    if (!this.bakeryConveyorFixtureSignature) this.createBakeryConveyorFixture();
+    if (this.storyPresentation === "bakery_conveyor_stop") return;
+    const shouldRun = state.chapter4.phase === "bakery_hour_hand"
+      && state.chapter4.timeState === "1225_bakery"
+      && !hasChapterFourFact(state, "bakery_hour_hand_exposed");
+    this.setBakeryConveyorMotion(shouldRun);
+  }
+
+private clearVisualHintForIntent(intentType: string, targetId?: string): void {
+    const puzzleId = selectChapterFourVisualHintPuzzleForIntent(intentType, targetId);
+    if (!puzzleId) return;
+    this.visualHintModel = clearChapterFourVisualHintPuzzle(this.visualHintModel, puzzleId);
+    this.evidenceDetailSignature = "";
+  }
+
+private createClassroomChalkboardNotes(
+    floor: FloorDefinition,
+    visual: NonNullable<EvidenceDetailPlacement["supportingVisual"]>
+  ): void {
+    const { bounds } = visual;
+    const chalkColor = Phaser.Display.Color.HexStringToColor(visual.chalkColor).color;
+    const mutedColor = Phaser.Display.Color.HexStringToColor(visual.mutedColor).color;
+    const graphics = this.add.graphics()
+      .setPosition(floor.offsetX, 0)
+      .setDepth(PLAYER_TOP_DEPTH - 61)
+      .setAlpha(0.72);
+
+    // Low-alpha erased strokes add normal classroom wear without labeling the clue.
+    graphics.fillStyle(mutedColor, 0.09);
+    graphics.fillRect(bounds.x + 4, bounds.y + 8, 46, 3);
+    graphics.fillRect(bounds.x + 57, bounds.y + 29, 34, 2);
+    graphics.fillRect(bounds.x + 99, bounds.y + 10, 35, 3);
+
+    graphics.lineStyle(1, chalkColor, 0.58);
+    graphics.lineBetween(bounds.x + 73, bounds.y + 17, bounds.x + 132, bounds.y + 17);
+    graphics.lineBetween(bounds.x + 72, bounds.y + 18, bounds.x + 119, bounds.y + 18);
+    graphics.lineBetween(bounds.x + 68, bounds.y + 33, bounds.x + 132, bounds.y + 33);
+    graphics.strokeCircle(bounds.x + 76, bounds.y + 33, 3);
+    graphics.strokeCircle(bounds.x + 100, bounds.y + 33, 3);
+    graphics.strokeCircle(bounds.x + 128, bounds.y + 33, 3);
+    graphics.lineBetween(bounds.x + 79, bounds.y + 33, bounds.x + 97, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 103, bounds.y + 33, bounds.x + 125, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 93, bounds.y + 30, bounds.x + 97, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 93, bounds.y + 36, bounds.x + 97, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 121, bounds.y + 30, bounds.x + 125, bounds.y + 33);
+    graphics.lineBetween(bounds.x + 121, bounds.y + 36, bounds.x + 125, bounds.y + 33);
+
+    graphics.lineStyle(1, mutedColor, 0.46);
+    graphics.lineBetween(bounds.x + 7, bounds.y + 39, bounds.x + 51, bounds.y + 39);
+    graphics.lineBetween(bounds.x + 9, bounds.y + 41, bounds.x + 37, bounds.y + 41);
+    graphics.lineBetween(bounds.x + 137, bounds.y + 5, bounds.x + 137, bounds.y + 13);
+    graphics.lineBetween(bounds.x + 3, bounds.y + 18, bounds.x + 7, bounds.y + 17);
+    graphics.lineBetween(bounds.x + 5, bounds.y + 21, bounds.x + 10, bounds.y + 20);
+    this.evidenceDetailObjects.push(graphics);
+
+    const title = this.add.text(
+      floor.offsetX + bounds.x + 76,
+      bounds.y + 4,
+      "传递过程",
+      {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "7px",
+        color: visual.chalkColor
+      }
+    ).setDepth(PLAYER_TOP_DEPTH - 61).setAlpha(0.58);
+    const formula = this.add.text(
+      floor.offsetX + bounds.x + 7,
+      bounds.y + 27,
+      "Q = A·v",
+      {
+        fontFamily: RPG_PIXEL_FONT_FAMILY,
+        fontSize: "7px",
+        color: visual.chalkColor
+      }
+    ).setDepth(PLAYER_TOP_DEPTH - 61).setAlpha(0.62);
+    this.evidenceDetailObjects.push(title, formula);
+  }
+
+
+
+private destroyRealityModeVisuals(): void {
+    if (this.darkRealityVisuals) this.tweens.killTweensOf(this.darkRealityVisuals);
+    if (this.lightRealityVisuals) this.tweens.killTweensOf(this.lightRealityVisuals);
+    this.darkRealityVisuals?.destroy(true);
+    this.lightRealityVisuals?.destroy(true);
+    this.darkRealityVisuals = null;
+    this.lightRealityVisuals = null;
+    this.renderedRealityMode = null;
+  }
+
+private syncRealityModeVisuals(
+    mode: GameState["chapter4"]["mode"],
+    immediate = false
+  ): void {
+    if (!this.darkRealityVisuals || !this.lightRealityVisuals) return;
+    if (!immediate && mode === this.renderedRealityMode) return;
+
+    const darkAlpha = mode === "dark" ? 1 : 0;
+    const lightAlpha = mode === "light" ? 1 : 0;
+    this.tweens.killTweensOf(this.darkRealityVisuals);
+    this.tweens.killTweensOf(this.lightRealityVisuals);
+    if (immediate) {
+      this.darkRealityVisuals.setAlpha(darkAlpha);
+      this.lightRealityVisuals.setAlpha(lightAlpha);
+    } else {
+      this.tweens.add({
+        targets: this.darkRealityVisuals,
+        alpha: darkAlpha,
+        duration: REALITY_MODE_TRANSITION_MS,
+        ease: "Sine.easeOut"
+      });
+      this.tweens.add({
+        targets: this.lightRealityVisuals,
+        alpha: lightAlpha,
+        duration: REALITY_MODE_TRANSITION_MS,
+        ease: "Sine.easeOut"
+      });
+    }
+    this.renderedRealityMode = mode;
+  }
+
+private createRealityModeVisuals(initialMode: GameState["chapter4"]["mode"]): void {
+    this.destroyRealityModeVisuals();
+
+    // Match Chapter 3's uninterrupted full-scene wash. Screen-space line
+    // geometry aliases at responsive scales and can appear as a horizontal seam.
+    this.darkRealityVisuals = this.add.container(0, 0, [
+      this.add.rectangle(480, 270, 960, 540, 0x071127, 0.56)
+    ]).setScrollFactor(0).setDepth(REALITY_MODE_ATMOSPHERE_DEPTH);
+
+    this.lightRealityVisuals = this.add.container(0, 0, [
+      this.add.rectangle(480, 270, 960, 540, 0xffe2a6, 0.07)
+    ]).setScrollFactor(0).setDepth(REALITY_MODE_ATMOSPHERE_DEPTH);
+
+    this.renderedRealityMode = null;
+    this.syncRealityModeVisuals(initialMode, true);
+  }
+
+private destroyInsertedPuzzleProps(): void {
+    for (const image of this.insertedPuzzleProps.values()) image.destroy();
+    this.insertedPuzzleProps.clear();
+  }
+
+private syncInsertedPuzzlePropPresentation(mode: GameState["chapter4"]["mode"]): void {
+    for (const image of this.insertedPuzzleProps.values()) {
+      if (!image.active) continue;
+      if (mode === "dark") {
+        image.setTint(0x64d9ff).setAlpha(0.78);
+      } else {
+        image.clearTint().setAlpha(1);
+      }
+    }
+  }
+
+private createInsertedPuzzleProps(): void {
+    for (const asset of CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS) {
+      const existing = this.insertedPuzzleProps.get(asset.puzzleId);
+      if (existing?.active || !this.textures.exists(asset.textureKey)) continue;
+      const displayFloor = displayFloorFor(asset.floor);
+      if (!displayFloor) continue;
+      const floor = getFloor(displayFloor);
+      this.textures.get(asset.textureKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      const displaySize = "displaySize" in asset ? asset.displaySize : asset.sourceSize;
+      const image = this.add.image(
+        floor.offsetX + asset.center.x,
+        asset.center.y,
+        asset.textureKey
+      ).setDisplaySize(
+        displaySize.width,
+        displaySize.height
+      )
+        .setDepth(asset.depth);
+      this.insertedPuzzleProps.set(asset.puzzleId, image);
+    }
+    this.syncInsertedPuzzlePropPresentation(this.bridge?.getState().chapter4.mode ?? this.appliedChapterMode);
+  }
+
+private syncStairPreludeEffects(time: number): void {
+    const state = this.bridge.getState();
+    const active = state.chapter4.phase === "room204_restore"
+      && !hasChapterFourFact(state, "misaligned_stair_solved");
+    const referenceReady = hasChapterFourFact(state, "a3_reference_observed");
+    const tickSeconds = Math.floor(time / 80) * 0.08;
+    for (const effect of this.stairPreludeEffects) {
+      const formalEntrance = effect.floor === 3 && effect.targetFloor === 2;
+      const visible = active && (formalEntrance || effect.floor === this.currentFloor);
+      effect.container.setVisible(visible);
+      if (!visible) continue;
+      const baseStrength = formalEntrance ? (referenceReady ? 1 : 0.64) : 0.46;
+      const strength = state.chapter4.mode === "dark"
+        ? Math.min(1, baseStrength + 0.16)
+        : baseStrength;
+      const pulse = Math.sin(tickSeconds * 2.1 + effect.floor) * 0.04;
+      effect.container.setAlpha(strength).setScale(1 + pulse * strength);
+      effect.structure.setAlpha(0.55 + strength * 0.45);
+      effect.fragments.forEach((fragment, index) => {
+        const wave = Math.sin(tickSeconds * (1.3 + (index % 3) * 0.16) + fragment.phase);
+        const lateral = Math.cos(tickSeconds * 0.9 + fragment.phase);
+        fragment.object.setPosition(
+          fragment.baseX + fragment.driftX * wave * strength,
+          fragment.baseY + fragment.driftY * lateral * strength
+        );
+        fragment.object.setAngle((index * 37 + Math.floor(tickSeconds * (12 + index % 5))) % 180);
+        fragment.object.setAlpha(0.48 + ((index + Math.floor(tickSeconds * 4)) % 4) * 0.14);
+      });
+    }
+  }
+
+private createStairPreludeEffects(): void {
+    this.stairPreludeEffects = [];
+    for (const floor of FLOORS) {
+      for (const landing of floor.stairLandings) {
+        const targetFloor = displayFloorFor(landing.targetStoryFloor);
+        if (!targetFloor) continue;
+        const centerX = floor.offsetX + rectCenterX(landing.bounds);
+        const centerY = rectCenterY(landing.bounds);
+        const container = this.add.container(centerX, centerY)
+          .setDepth(6200)
+          .setVisible(false);
+        const structure = this.add.graphics().setBlendMode(Phaser.BlendModes.ADD);
+        const halfWidth = Math.max(38, landing.bounds.width * 0.58);
+        const halfHeight = Math.max(46, landing.bounds.height * 0.56);
+        structure.lineStyle(3, 0x64d9ff, 0.62);
+        structure.strokeRect(-halfWidth, -halfHeight, halfWidth * 2, halfHeight * 2);
+        structure.lineStyle(2, 0xffd56a, 0.44);
+        structure.strokeRect(-halfWidth - 8, -halfHeight + 7, halfWidth * 2 + 16, halfHeight * 2 - 14);
+        structure.lineStyle(3, 0x86f5df, 0.54);
+        for (let step = 0; step < 5; step += 1) {
+          const y = -halfHeight + 13 + step * ((halfHeight * 2 - 26) / 4);
+          const skew = (step % 2 === 0 ? -1 : 1) * (5 + step * 2);
+          structure.lineBetween(-halfWidth + 10 + skew, y, halfWidth - 10 + skew, y);
+        }
+        structure.fillStyle(0x64d9ff, 0.5);
+        structure.fillRect(-halfWidth - 13, -5, 6, 10);
+        structure.fillRect(halfWidth + 7, -5, 6, 10);
+        container.add(structure);
+
+        const isFormalEntrance = floor.displayFloor === 3 && targetFloor === 2;
+        const fragmentCount = isFormalEntrance ? 30 : 18;
+        const fragments: Array<{
+          object: Phaser.GameObjects.Rectangle;
+          baseX: number;
+          baseY: number;
+          phase: number;
+          driftX: number;
+          driftY: number;
+        }> = [];
+        for (let index = 0; index < fragmentCount; index += 1) {
+          const angle = (index / fragmentCount) * Math.PI * 2 + (index % 4) * 0.17;
+          const radiusX = halfWidth + 16 + (index % 5) * 7;
+          const radiusY = halfHeight + 12 + (index % 4) * 6;
+          const baseX = Math.cos(angle) * radiusX;
+          const baseY = Math.sin(angle) * radiusY;
+          const fragment = this.add.rectangle(
+            baseX,
+            baseY,
+            4 + (index % 3) * 2,
+            3 + ((index + 1) % 4),
+            index % 4 === 0 ? 0xffd56a : index % 3 === 0 ? 0x86f5df : 0x64d9ff,
+            0.78
+          ).setAngle((index * 37) % 180)
+            .setBlendMode(Phaser.BlendModes.ADD);
+          container.add(fragment);
+          fragments.push({
+            object: fragment,
+            baseX,
+            baseY,
+            phase: index * 0.73,
+            driftX: Math.cos(angle) * (3 + index % 4),
+            driftY: Math.sin(angle) * (2 + index % 3)
+          });
+        }
+        this.stairPreludeEffects.push({
+          floor: floor.displayFloor,
+          targetFloor,
+          container,
+          structure,
+          fragments
+        });
+      }
+    }
   }
 }

@@ -1,0 +1,13 @@
+
+> seven-fifty-five@0.1.0 qizhen:validate-fishing
+> node scripts/verify-qizhen-fishing-rhythm.mjs
+
+locker_key normal: aimed cast, directional tracking, eight lifts, exact replay
+locker_key assist: aimed cast, directional tracking, eight lifts, exact replay
+net_frame normal: aimed cast, directional tracking, eight lifts, exact replay
+net_frame assist: aimed cast, directional tracking, eight lifts, exact replay
+fish normal: aimed cast, directional tracking, eight lifts, exact replay
+fish assist: aimed cast, directional tracking, eight lifts, exact replay
+paper normal: aimed cast, directional tracking, eight lifts, exact replay
+paper assist: aimed cast, directional tracking, eight lifts, exact replay
+Unified tackle fishing PASS: progressive tempos, distinct beat patterns and trusted per-catch replay, no single-button shortcut, deterministic replay, retries, cancellation and tension management.

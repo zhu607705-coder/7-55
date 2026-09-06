@@ -136,7 +136,7 @@ export class PhoneBatteryController {
     }
     if (to === PHONE_BATTERY_MIN_PERCENT) {
       this.events.emit("toast", {
-        text: "已进入 1% 任务保底电量。主线功能继续可用，可在现场充电服务站补电。",
+        text: "电量仅剩 1%，请寻找现场充电服务站。",
         tone: "task"
       });
     }

@@ -68,6 +68,7 @@ export type DeveloperCheckpointId =
   | "c3-qizhen-chase" | "c3-qizhen-complete"
   | "c3-interlude-reboot" | "c3-interlude-journal" | "c3-interlude-photos"
   | "c3-interlude-voice" | "c3-interlude-network" | "c3-interlude-timeline" | "c3-interlude-destination" | "c3-interlude-replay"
+  | "c4-755-clock-1850-ready" | "c4-755-a2-field-records" | "c4-755-clock-2245-ready"
   | "c4-755-opening" | "c4-755-hall-clock" | "c4-755-bakery-1225"
   | "c4-755-classrooms-1850" | "c4-755-elevator-history" | "c4-755-room204-1850" | "c4-755-maintenance-2245"
   | "c4-755-blackout-0754" | "c4-755-chase" | "c4-755-final-minute"
@@ -209,6 +210,9 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c4-prologue-lobby", chapter: "3.5章", label: "进入大厅", detail: "从大厅段继续 H3" },
   { id: "c4-prologue-closing", chapter: "3.5章", label: "收尾", detail: "从回放收尾段继续 H3" },
   { id: "c4-prologue-task-card", chapter: "3.5章", label: "任务卡", detail: "未确认时刷新仍停在任务卡，确认后恢复 A1" },
+  { id: "c4-755-clock-1850-ready", chapter: "第四章", label: "旧钟第二次调时", detail: "时针装回后，返回大厅选择新刻度" },
+  { id: "c4-755-a2-field-records", chapter: "第四章", label: "18:50 二楼三处现场记录", detail: "错位楼梯完成后，校准 201、203 与开放自习区的三个独立装置" },
+  { id: "c4-755-clock-2245-ready", chapter: "第四章", label: "旧钟第三次调时", detail: "定位片装回后，返回大厅选择新刻度" },
   { id: "c4-755-opening", chapter: "第四章", label: "入楼与纸条", detail: "22:45 开场，等纸条落到公告栏" },
   { id: "c4-755-hall-clock", chapter: "第四章", label: "大厅旧钟", detail: "旧钟露出第一处可调节的稳定刻度" },
   { id: "c4-755-bakery-1225", chapter: "第四章", label: "12:25 面包坊", detail: "检查灯与传送带，取回时针" },
@@ -1402,6 +1406,63 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
         "a3_identity_context_observed"
       ]
     }, { attendanceRecordPaper: true }, "c4_a3_wayfinding");
+  }
+if (id === "c4-755-clock-1850-ready") {
+    return withChapter({
+      phase: "room204_restore",
+      floor: "A1",
+      roomId: "a1_hall_clock",
+      timeAuthority: "hall_clock",
+      timeState: "1225_bakery",
+      worldTimeSeconds: 44700,
+      phoneStatusTimeSeconds: 44700,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 44700,
+      factIds: [...CHAPTER_FOUR_755_BAKERY_FACTS],
+      guardMode: "absent"
+    }, { attendanceRecordPaper: true });
+  }
+if (id === "c4-755-a2-field-records") {
+    return withChapter({
+      phase: "room204_restore",
+      floor: "A2",
+      roomId: "a2_corridor",
+      mode: "dark",
+      timeAuthority: "hall_clock",
+      timeState: "1850_evening",
+      worldTimeSeconds: 67800,
+      phoneStatusTimeSeconds: 67800,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 67800,
+      factIds: [
+        ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
+        "elevator_history_observed",
+        "elevator_history_calibrated",
+        "elevator_a3_arrival_record_observed",
+        "a1_duty_board_reconstructed",
+        "a3_archive_film_retrieved",
+        "a3_media_alignment_completed",
+        "a3_reference_observed",
+        "zhu_two_questions_answered",
+        "misaligned_stair_solved"
+      ]
+    }, { attendanceRecordPaper: true }, "c4_a2_corridor");
+  }
+if (id === "c4-755-clock-2245-ready") {
+    return withChapter({
+      phase: "maintenance_repair",
+      floor: "A1",
+      roomId: "a1_hall_clock",
+      timeAuthority: "hall_clock",
+      timeState: "1850_evening",
+      worldTimeSeconds: 67800,
+      phoneStatusTimeSeconds: 67800,
+      phoneStatusTimeTrusted: true,
+      buildingTimeSeconds: 67800,
+      factIds: [...CHAPTER_FOUR_755_ROOM_FACTS],
+      room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
+      guardMode: "absent"
+    }, { attendanceRecordPaper: true });
   }
   if (id === "c4-755-maintenance-2245") {
     return withChapter({
