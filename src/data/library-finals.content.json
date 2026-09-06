@@ -14,7 +14,7 @@
       { "speaker": "玩家", "text": "馆长？" },
       { "speaker": "系统", "text": "也不在馆长名册里。" },
       { "speaker": "玩家", "text": "所以是？" },
-      { "speaker": "系统", "text": "一个座位，二楼南区 022。" },
+      { "speaker": "系统", "text": "一个座位，一层书库 022。" },
       { "speaker": "玩家", "text": "……" },
       { "speaker": "系统", "text": "上次见面时，她就在 022。" },
       { "speaker": "玩家", "text": "以前？" },
@@ -33,7 +33,7 @@
     ],
     "library_catalog_match_found": [
       { "speaker": "旁白", "text": "书名、索书号和 022 的记录都能对上。" },
-      { "speaker": "系统", "text": "去二楼南区 755 号书架背面找旧版规则。" }
+      { "speaker": "系统", "text": "去一层书库 755 号书架背面找旧版规则。" }
     ],
     "library_archived_rule_recovered": [
       { "speaker": "系统", "text": "旧版离座规则找到了。" },
@@ -87,7 +87,7 @@
   "cc98": {
     "post": {
       "id": "seat-022-backpack",
-      "author": "二南临时读者",
+      "author": "一层临时读者",
       "avatar": "anonymous",
       "rank": "求助",
       "board": "校园生活",
@@ -95,13 +95,13 @@
       "replies": "23",
       "views": "7550",
       "time": "26-07-12 08:02",
-      "body": "二楼南区 022 有个书包，纸条写着离开三分钟。人没回来，座位也没有空。",
+      "body": "一层书库 022 有个书包，纸条写着离开三分钟。人没回来，座位也没有空。",
       "publicNoticeFloor": 47
     },
     "storyReplies": [
       {
         "floor": 1,
-        "author": "二南临时读者",
+        "author": "一层临时读者",
         "role": "楼主",
         "text": "022 有个书包，离开三分钟回来还在。纸条写着离开三分钟，回来时系统已经换人。"
       },
@@ -135,7 +135,7 @@
       },
       {
         "floor": 23,
-        "author": "二南临时读者",
+        "author": "一层临时读者",
         "role": "楼主编辑",
         "text": "帖子进十大第一后，图书馆 App 会开放 022 恢复申请。旧申请统一挂在公示编号 47。"
       }
@@ -148,7 +148,7 @@
       { "floor": 21, "author": "体艺凑数办", "text": "公示编号 47，运动次数 47，建议书包报名体艺。ac01" }
     ],
     "fillerReplies": {
-      "authors": ["二南窗边位", "续杯失败者", "期末周返场员", "自习室回声"],
+      "authors": ["一层窗边位", "续杯失败者", "期末周返场员", "自习室回声"],
       "texts": [
         "先等后续。我刚从 022 旁边经过，书包还在，座位一直没人。",
         "我去接杯水再回来，座位就换人了。三分钟从什么时候开始算？",
@@ -202,7 +202,7 @@
         "callNumber": "I247.55 / 755",
         "year": "2026",
         "publisher": "馆藏内部资料",
-        "location": "基础馆二楼南区 755 号书架背面",
+        "location": "基础馆一层书库 755 号书架背面",
         "note": "本书不可借阅，因为借走过一次后规则失效了三天。",
         "cover": "correct"
       },
@@ -213,7 +213,7 @@
         "callNumber": "B821.0 / 003",
         "year": "2024",
         "publisher": "自习室出版社",
-        "location": "基础馆四楼 B 区",
+        "location": "主馆四楼 B 区",
         "note": "研究心理边界，不包含座位恢复条款。",
         "cover": "distractor-1"
       },
@@ -224,7 +224,7 @@
         "callNumber": "R161.1 / 300",
         "year": "2025",
         "publisher": "效率实验社",
-        "location": "基础馆三楼 G 区",
+        "location": "主馆三楼 G 区",
         "note": "暂离计时器实践手册，没有 022 相关附件。",
         "cover": "distractor-2"
       },
@@ -235,7 +235,7 @@
         "callNumber": "C913 / 003",
         "year": "2023",
         "publisher": "清醒文库",
-        "location": "基础馆一楼 C 区",
+        "location": "基础馆一层书库 C 区",
         "note": "讨论起身后的边界，不提供占座处理权限。",
         "cover": "distractor-3"
       },
@@ -246,7 +246,7 @@
         "callNumber": "G252.1 / 003",
         "year": "2022",
         "publisher": "静坐资料室",
-        "location": "基础馆五楼 G 区",
+        "location": "主馆五楼 G 区",
         "note": "解释空座现象，不处理有书包的座位。",
         "cover": "distractor-4"
       }

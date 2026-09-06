@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { EventBus } from "../core/EventBus";
 import type { GameState } from "../core/types";
 import { GameSubtitleFrame, type GameSubtitleTone } from "./GameSubtitleFrame";
@@ -51,13 +52,14 @@ export function ToastLayer({ events, state, surface = "phone" }: ToastLayerProps
     return null;
   }
 
-  return (
+  const layer = (
     <div className={`toast-layer subtitle-layer--${surface}`} role="status" aria-live="polite" aria-atomic="true">
       {toasts.map((toast) => (
         <GameSubtitleFrame
           key={toast.id}
           text={toast.text}
           tone={SUBTITLE_TONE_BY_TOAST[toast.tone]}
+          speaker={toast.tone === "xiaoying" ? "小影" : undefined}
           state={state}
           durationMs={toast.durationMs}
           className={`px-toast tone-${toast.tone}`}
@@ -65,4 +67,7 @@ export function ToastLayer({ events, state, surface = "phone" }: ToastLayerProps
       ))}
     </div>
   );
+
+  const phoneFrame = surface === "phone" ? document.querySelector(".phone-frame") : null;
+  return phoneFrame ? createPortal(layer, phoneFrame) : layer;
 }

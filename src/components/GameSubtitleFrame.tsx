@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { selectIdentityReadable } from "../core/IdentityAccess";
 import type { GameState } from "../core/types";
 import actOneContent from "../data/act-one-bootstrap.content.json";
+import { SubtitleSpeakerIcon } from "./SubtitleSpeakerIcon";
 
 export type GameSubtitleTone =
   | "system"
@@ -38,6 +39,18 @@ function visibleSubtitleText(text: string, state?: GameState): string {
     .replaceAll(actOneContent.studentId, "身份编号");
 }
 
+export function GameSubtitleContent({ speaker, text }: { speaker: string; text: string }) {
+  return (
+    <span className="game-subtitle-content">
+      <SubtitleSpeakerIcon speaker={speaker} />
+      <span className="game-subtitle-copy">
+        <span className="game-subtitle-speaker">{speaker}</span>
+        <span className="game-subtitle-text">{text}</span>
+      </span>
+    </span>
+  );
+}
+
 /** Shared transient subtitle frame for phone, desktop, and RPG surfaces. */
 export function GameSubtitleFrame({
   text,
@@ -57,8 +70,7 @@ export function GameSubtitleFrame({
       className={`game-subtitle-frame subtitle-tone-${tone} ${timed ? "is-timed" : "is-line-entering"} ${className}`.trim()}
       style={style}
     >
-      <small className="game-subtitle-speaker">{speaker}</small>
-      <span>{visibleSubtitleText(text, state)}</span>
+      <GameSubtitleContent speaker={speaker} text={visibleSubtitleText(text, state)} />
     </p>
   );
 }

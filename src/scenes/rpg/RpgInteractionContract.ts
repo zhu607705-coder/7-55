@@ -11,12 +11,8 @@ import type {
 } from "../../core/types";
 import chapterFourLayout from "../../data/chapter4-three-floor-maze.layout.json";
 import {
-  CHAPTER_FOUR_CONTEXT_INTERACTIONS,
-  type ChapterFourContextInteractionTargetId
-} from "../../data/ChapterFourInteractionContent";
-import {
-  ROOM204_GROUPS,
   ROOM204_GROUP_ORDER,
+  ROOM204_GROUPS,
   ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
   ROOM204_PODIUM_LAYOUT,
   ROOM204_RESIDUAL_GROUP_BOUNDS,
@@ -27,10 +23,6 @@ import {
   room204GroupTargetId,
   room204SlotRuntimeEntityId
 } from "./ChapterFourRoom204Model";
-import {
-  isChapterFourClockControlAvailable,
-  isChapterFourPhaseTimeAligned
-} from "../../modules/ChapterFourTimeControlModel";
 
 export type RpgRealityMode = "light" | "dark";
 
@@ -98,7 +90,6 @@ export type ChapterFour755InteractionTargetId =
   | "a1_front_desk_attendant"
   | "a2_elevator_attendant"
   | "a3_reference_teacher"
-  | ChapterFourContextInteractionTargetId
   | "a3_alumni_su_buqing"
   | "a3_alumni_zhu_kezhen"
   | "a3_alumni_lu_yongxiang"
@@ -135,7 +126,6 @@ export type ChapterFour755TargetConditionId =
   | "hour_hand_install_available"
   | "front_desk_attendant_available"
   | "support_npc_available"
-  | "context_interaction_available"
   | "alumni_honor_wall_available"
   | "classroom_104_content_available"
   | "classroom_105_content_available"
@@ -147,13 +137,10 @@ export type ChapterFour755TargetConditionId =
   | "positioning_plate_install_available"
   | "cart_wheel_inspection_available"
   | "pry_bar_pickup_available"
-  | "pry_bar_granted_by_diagnosis"
   | "cart_cover_available"
   | "oil_pickup_available"
-  | "oil_granted_by_diagnosis"
   | "cart_wheel_available"
   | "clock_gear_available"
-  | "clock_gear_repaired_with_linkage"
   | "minute_endpoint_available"
   | "power_panel_available"
   | "lecture202_threshold_available"
@@ -296,7 +283,6 @@ interface ChapterFourLayoutFinalClockRuntime {
   endpoint: {
     targetId: "a1_hall_clock_minute_endpoint";
     entityId: string;
-    visualHandleBounds: RpgHalfOpenWorldRect;
     installationBounds: RpgHalfOpenWorldRect;
     approximate: boolean;
   };
@@ -387,15 +373,6 @@ const CHAPTER_FOUR_755_RUNTIME_TARGET_INSTALLATIONS = new Map<
     entityId: ROOM204_PODIUM_DRAWER_RUNTIME_ENTITY_ID,
     bounds: ROOM204_PODIUM_LAYOUT.drawerBounds
   }],
-  ...ROOM204_GROUP_ORDER.map((groupId) => {
-    const targetId = room204GroupTargetId(groupId) as ChapterFour755Room204GroupTargetId;
-    const group = ROOM204_GROUPS[groupId];
-    return [targetId, {
-      targetId,
-      entityId: room204GroupRuntimeEntityId(groupId),
-      bounds: group.targetBounds
-    }] as const;
-  }),
   ...Object.entries(ROOM204_SLOT_LAYOUTS).map(([slotId, slot]) => {
     const typedSlotId = slotId as ChapterFourRoom204SlotId;
     const targetId = `a2_room204_slot_${typedSlotId}` as ChapterFour755Room204SlotTargetId;
@@ -403,6 +380,15 @@ const CHAPTER_FOUR_755_RUNTIME_TARGET_INSTALLATIONS = new Map<
       targetId,
       entityId: room204SlotRuntimeEntityId(typedSlotId),
       bounds: slot.bounds
+    }] as const;
+  }),
+  ...ROOM204_GROUP_ORDER.map((groupId) => {
+    const group = ROOM204_GROUPS[groupId];
+    const targetId = room204GroupTargetId(groupId) as ChapterFour755Room204GroupTargetId;
+    return [targetId, {
+      targetId,
+      entityId: room204GroupRuntimeEntityId(groupId),
+      bounds: group.targetBounds
     }] as const;
   }),
   ...CHAPTER_FOUR_755_MORNING_CHECKIN_RUNTIME.targetEntities.map((entry) => (
@@ -451,7 +437,10 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
       activation: "runtime_entity",
       activePhases: ["room204_restore"],
       roomIds: ["a2_corridor", "a2_room204", "a2_room_204"],
-      activationCondition: targetCondition("room204_slot_available", () => false),
+      activationCondition: targetCondition("room204_slot_available", (state) => (
+        !hasChapterFourFact(state, "room204_restored")
+        && !state.chapter4.room204Placements.some((placement) => placement.slotId === slotId)
+      )),
       proximity: 56,
       requiredMode: "light",
       approximate: false,
@@ -467,10 +456,11 @@ const ROOM204_INTERACTION_TARGETS = Object.fromEntries(
 
 const ROOM204_GROUP_INTERACTION_TARGETS = Object.fromEntries(
   ROOM204_GROUP_ORDER.map((groupId) => {
+    const group = ROOM204_GROUPS[groupId];
     const id = room204GroupTargetId(groupId) as ChapterFour755Room204GroupTargetId;
     return [id, defineChapterFourTarget({
       id,
-      label: ROOM204_GROUPS[groupId].label,
+      label: group.label,
       bounds: null,
       activation: "runtime_entity",
       activePhases: ["room204_restore"],
@@ -478,9 +468,10 @@ const ROOM204_GROUP_INTERACTION_TARGETS = Object.fromEntries(
       activationCondition: targetCondition("room204_group_available", (state) => (
         hasChapterFourFact(state, "a3_reference_observed")
         && hasChapterFourFact(state, "room204_residual_observed")
+        && !hasChapterFourFact(state, "room204_restored")
         && !isRoom204GroupComplete(state.chapter4.room204Placements, groupId)
       )),
-      proximity: 64,
+      proximity: 72,
       requiredMode: "light",
       approximate: false,
       contractPending: true,
@@ -493,19 +484,6 @@ const ROOM204_GROUP_INTERACTION_TARGETS = Object.fromEntries(
   })
 ) as Readonly<Record<ChapterFour755Room204GroupTargetId, ChapterFour755InteractionTargetContract>>;
 
-const CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS = Object.fromEntries(
-  CHAPTER_FOUR_CONTEXT_INTERACTIONS.map((entry) => [entry.targetId, defineChapterFourTarget({
-    id: entry.targetId,
-    label: entry.label,
-    ...layoutAnchorTarget(entry.floor, entry.anchorId),
-    activation: "phase_exclusive",
-    activePhases: entry.activePhases,
-    roomIds: entry.roomAliases,
-    activationCondition: targetCondition("context_interaction_available", () => true),
-    proximity: entry.proximity ?? 52
-  })])
-) as Readonly<Record<ChapterFourContextInteractionTargetId, ChapterFour755InteractionTargetContract>>;
-
 /**
  * Chapter 4's single interaction geometry contract. Layout-backed rectangles
  * are read directly from the Task 3 source-pixel anchors. Room 204 slots read
@@ -514,7 +492,6 @@ const CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS = Object.fromEntries(
  * scene resolves a visible runtime rectangle.
  */
 export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
-  ...CHAPTER_FOUR_CONTEXT_INTERACTION_TARGETS,
   a1_noticeboard_paper: defineChapterFourTarget({
     id: "a1_noticeboard_paper",
     label: "公告栏前的签到记录纸条",
@@ -538,12 +515,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     label: "一楼旧钟",
     ...layoutAnchorTarget("A1", "a1_hall_clock"),
     activation: "phase_exclusive",
-    activePhases: [
-      "opening_paper_caught",
-      "hall_clock_inspection",
-      "room204_restore",
-      "maintenance_repair"
-    ],
+    activePhases: ["opening_paper_caught", "hall_clock_inspection"],
     // The A1 map keeps one broad lobby room state. The exact clock geometry
     // and distance check remain authoritative for this wall fixture.
     roomIds: ["a1_lobby", "a1_hall_clock"],
@@ -554,14 +526,11 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
         && !hasChapterFourFact(state, "hall_clock_inspected"))
       || (state.chapter4.phase === "hall_clock_inspection"
         && hasChapterFourFact(state, "hall_clock_inspected"))
-      || isChapterFourClockControlAvailable(state.chapter4)
     )),
     proximity: 86,
     requiredModeByPhase: {
       opening_paper_caught: "light",
-      hall_clock_inspection: "light",
-      room204_restore: "light",
-      maintenance_repair: "light"
+      hall_clock_inspection: "light"
     }
   }),
   a1_bakery_inspection_lamp: runtimeEntityTarget(
@@ -660,7 +629,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_su_buqing: defineChapterFourTarget({
     id: "a3_alumni_su_buqing",
-    label: "查看苏步青生平",
+    label: "阅读苏步青生平",
     ...layoutAnchorTarget("A3", "a3_alumni_su_buqing"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -670,7 +639,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_zhu_kezhen: defineChapterFourTarget({
     id: "a3_alumni_zhu_kezhen",
-    label: "查看竺可桢生平",
+    label: "阅读竺可桢生平",
     ...layoutAnchorTarget("A3", "a3_alumni_zhu_kezhen"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -680,7 +649,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_lu_yongxiang: defineChapterFourTarget({
     id: "a3_alumni_lu_yongxiang",
-    label: "查看路甬祥生平",
+    label: "阅读路甬祥生平",
     ...layoutAnchorTarget("A3", "a3_alumni_lu_yongxiang"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -690,7 +659,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_chen_jiangong: defineChapterFourTarget({
     id: "a3_alumni_chen_jiangong",
-    label: "查看陈建功生平",
+    label: "阅读陈建功生平",
     ...layoutAnchorTarget("A3", "a3_alumni_chen_jiangong"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -700,7 +669,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_tan_jiazhen: defineChapterFourTarget({
     id: "a3_alumni_tan_jiazhen",
-    label: "查看谈家桢生平",
+    label: "阅读谈家桢生平",
     ...layoutAnchorTarget("A3", "a3_alumni_tan_jiazhen"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -710,7 +679,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a3_alumni_cheng_kaijia: defineChapterFourTarget({
     id: "a3_alumni_cheng_kaijia",
-    label: "查看程开甲生平",
+    label: "阅读程开甲生平",
     ...layoutAnchorTarget("A3", "a3_alumni_cheng_kaijia"),
     activation: "phase_exclusive",
     activePhases: ["room204_restore"],
@@ -783,8 +752,8 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
       entityId: ROOM204_RESIDUAL_GROUP_RUNTIME_ENTITY_ID
     })
   }),
-  ...ROOM204_INTERACTION_TARGETS,
   ...ROOM204_GROUP_INTERACTION_TARGETS,
+  ...ROOM204_INTERACTION_TARGETS,
   a2_room204_podium_drawer: defineChapterFourTarget({
     id: "a2_room204_podium_drawer",
     label: "204 讲台抽屉里的定位盘",
@@ -843,7 +812,10 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     ["maintenance_repair"],
     "chapter4_pry_bar_pickup",
     ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
-    targetCondition("pry_bar_granted_by_diagnosis", () => false),
+    targetCondition("pry_bar_pickup_available", (state) => (
+      !ownsChapterFourItem(state, "shortPryBar")
+      && !hasChapterFourFact(state, "cart_wheel_cover_opened")
+    )),
     undefined,
     52
   ),
@@ -868,7 +840,11 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     ["maintenance_repair"],
     "chapter4_cleaning_cart_oil_bottle",
     ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
-    targetCondition("oil_granted_by_diagnosis", () => false),
+    targetCondition("oil_pickup_available", (state) => (
+      hasChapterFourFact(state, "cart_wheel_cover_opened")
+      && !ownsChapterFourItem(state, "universalLubricatingOil")
+      && !hasChapterFourFact(state, "clock_gear_repaired")
+    )),
     undefined,
     72
   ),
@@ -893,13 +869,16 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
     ["maintenance_repair"],
     "chapter4_hall_clock_gear",
     ["a1_lobby", "a1_hall_clock", "a1_bakery", "a1_cleaning_cart"],
-    targetCondition("clock_gear_repaired_with_linkage", () => false),
+    targetCondition("clock_gear_available", (state) => (
+      hasChapterFourFact(state, "cart_wheel_repaired")
+      && !hasChapterFourFact(state, "clock_gear_repaired")
+    )),
     "universalLubricatingOil",
     86
   ),
   a1_hall_clock_minute_endpoint: runtimeEntityTarget(
     "a1_hall_clock_minute_endpoint",
-    "大厅旧钟表盘",
+    "旧钟分针端点",
     "light",
     ["maintenance_repair", "return_to_clock"],
     (chapterFourLayout.finalClockRuntime as ChapterFourLayoutFinalClockRuntime).endpoint.entityId,
@@ -938,7 +917,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   ),
   a2_202_threshold: defineChapterFourTarget({
     id: "a2_202_threshold",
-    label: "进入 202 并关门",
+    label: "亮区尽头的门槛",
     ...layoutAnchorTarget("A2", "a2_202_threshold"),
     activation: "phase_exclusive",
     activePhases: ["final_chase"],
@@ -950,7 +929,7 @@ export const CHAPTER_FOUR_755_INTERACTION_TARGETS = Object.freeze({
   }),
   a2_202_projection: runtimeEntityTarget(
     "a2_202_projection",
-    "202 阶梯座椅间的黄铜分针组件",
+    "纸边旁的分钟投影",
     "light",
     ["final_minute_recovery"],
     (chapterFourLayout.finalMinuteRuntime as ChapterFourLayoutFinalMinuteRuntime).entityId,
@@ -1144,9 +1123,6 @@ export function isChapterFour755TargetStateActive(
 ): boolean {
   const chapter = state.chapter4;
   const phase = chapter.phase as ChapterFourPhase;
-  if (!isChapterFourPhaseTimeAligned(chapter) && target.id !== "a1_hall_clock") {
-    return false;
-  }
   return target.activePhases.includes(phase)
     && target.boundsSource.floor === chapter.floor
     && target.roomIds.includes(chapter.roomId)
@@ -1176,9 +1152,6 @@ export function validateChapterFour755TargetIntentContract(
   }
 
   const phase = state.chapter4.phase as ChapterFourPhase;
-  if (!isChapterFourPhaseTimeAligned(state.chapter4) && target.id !== "a1_hall_clock") {
-    return "locked";
-  }
   if (!target.activePhases.includes(phase)
     || target.boundsSource.floor !== state.chapter4.floor
     || !target.roomIds.includes(state.chapter4.roomId)) {
@@ -1206,6 +1179,7 @@ export function isChapterFour755TargetProjectable(
   phase: ChapterFourPhase
 ): boolean {
   if (!target.activePhases.includes(phase)) return false;
+  if (target.id.startsWith("a2_room204_slot_")) return false;
   if (target.activation === "runtime_entity") {
     return CHAPTER_FOUR_755_CALIBRATED_RUNTIME_TARGET_IDS.has(target.id);
   }

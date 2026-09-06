@@ -9,6 +9,7 @@ import type { RpgBridge } from "./RpgBridge";
 import {
   findNearestLibraryTarget,
   getLibraryTarget,
+  getLibraryShelfCollision,
   getVisibleLibraryMarkerIds,
   LIBRARY_CHECKPOINT_SPAWNS,
   LIBRARY_ENTRANCE_DOOR,
@@ -16,6 +17,8 @@ import {
   LIBRARY_INTERACTION_TARGETS,
   LIBRARY_INTERIOR_WORLD,
   LIBRARY_STATIC_COLLISION_RECTS,
+  LIBRARY_SHELF_SOURCE_BOUNDS,
+  LIBRARY_SHELF_OUTLINE,
   shouldOpenLibraryEntranceDoor,
   type LibraryInteractionTarget,
   type LibraryInteractionTargetId
@@ -87,19 +90,13 @@ const BACKPACK_TABLE_PATCH_FRAME = "library-seat-022-clear-patch";
 const BACKPACK_TABLE_PATCH_SOURCE = { left: 1080, top: 392, width: 34, height: 38 } as const;
 const SHELF_SPRITE_FRAME = "library-shelf-755-sprite";
 const SHELF_FLOOR_FRAME = "library-shelf-755-floor";
-const SHELF_SPRITE_BOUNDS = {
-  left: 511,
-  top: 105,
-  width: 112,
-  height: 146
-} as const;
+const SHELF_SPRITE_BOUNDS = LIBRARY_SHELF_SOURCE_BOUNDS;
 const SHELF_FLOOR_SOURCE_TOP = SHELF_SPRITE_BOUNDS.top + 160;
 const SHELF_BASE_X = SHELF_SPRITE_BOUNDS.left + SHELF_SPRITE_BOUNDS.width / 2;
 const SHELF_BASE_Y = SHELF_SPRITE_BOUNDS.top + SHELF_SPRITE_BOUNDS.height / 2;
 const SHELF_COLLISION_RECT = LIBRARY_STATIC_COLLISION_RECTS.find((rect) => rect.id === "north_display_shelf")!;
 const SHELF_FRONT_DEPTH = SHELF_COLLISION_RECT.bottom + 96;
-const SHELF_BACKGROUND_PATCH_DEPTH = SHELF_FRONT_DEPTH - 2;
-const SHELF_COLLISION_BASE_X = (SHELF_COLLISION_RECT.left + SHELF_COLLISION_RECT.right) / 2;
+const SHELF_BACKGROUND_PATCH_DEPTH = 1;
 const SHELF_PAPER_HIDDEN_X = SHELF_SPRITE_BOUNDS.left + 12;
 const SHELF_PAPER_REVEALED_X = SHELF_SPRITE_BOUNDS.left - 8;
 const SHELF_PAPER_Y = SHELF_SPRITE_BOUNDS.top + 42;
@@ -696,7 +693,13 @@ export class LibraryInteriorScene extends Phaser.Scene {
         texture: this.playerAnimator.textureKey,
         turning: this.playerAnimator.isTurning,
         walkFps: RPG_PLAYER_WALK_FPS,
-        angle: this.player.angle
+        angle: this.player.angle,
+        collisionBounds: {
+          x: this.player.body!.position.x,
+          y: this.player.body!.position.y,
+          width: this.player.body!.width,
+          height: this.player.body!.height
+        }
       },
       input: {
         gameEnabled: this.game.input.enabled,
@@ -730,11 +733,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
         ...(target.acceptedItem ? { acceptedItem: target.acceptedItem } : {})
       })),
       collisionRects: LIBRARY_STATIC_COLLISION_RECTS.map((rect) => rect.id === "north_display_shelf"
-        ? {
-            ...rect,
-            left: rect.left + this.shelfRevealOffsetPx,
-            right: rect.right + this.shelfRevealOffsetPx
-          }
+        ? getLibraryShelfCollision(this.shelfRevealOffsetPx)
         : rect),
       entranceDoor: {
         state: this.entranceDoorMotion,
@@ -753,8 +752,8 @@ export class LibraryInteriorScene extends Phaser.Scene {
         ...(this.entranceRecordPanel.visible
           ? {
               entries: [
-                { time: "07:55", location: "主馆入口" },
-                { time: "08:02", location: "二楼南区 022" }
+                { time: "07:55", location: "基础馆入口" },
+                { time: "08:02", location: "一层书库 022" }
               ],
               calculation: "08:02 - 07:55"
             }
@@ -967,7 +966,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.shelfRevealOffsetPx = snappedOffset;
     this.shelfPanel.setX(SHELF_BASE_X + snappedOffset);
     this.shelfMechanism.setAlpha(Phaser.Math.Clamp(0.18 + Math.max(0, snappedOffset) / LIBRARY_SHELF_REVEAL_SHIFT_PX * 0.82, 0.18, 1));
-    this.shelfCollision.setX(SHELF_COLLISION_BASE_X + snappedOffset);
+    const solid = getLibraryShelfCollision(snappedOffset);
+    this.shelfCollision
+      .setPosition((solid.left + solid.right) / 2, (solid.top + solid.bottom) / 2)
+      .setSize(solid.right - solid.left, solid.bottom - solid.top);
     const body = this.shelfCollision.body as Phaser.Physics.Arcade.StaticBody | null;
     body?.updateFromGameObject();
   }
@@ -1639,7 +1641,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "38px",
       fontStyle: "bold"
     }).setOrigin(0.5);
-    const leftLocation = this.add.text(-157, 22, "主馆入口", {
+    const leftLocation = this.add.text(-157, 22, "基础馆入口", {
       color: "#eff7ef",
       fontFamily: "monospace",
       fontSize: "13px"
@@ -1658,7 +1660,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "38px",
       fontStyle: "bold"
     }).setOrigin(0.5);
-    const rightLocation = this.add.text(157, 22, "二楼南区 022", {
+    const rightLocation = this.add.text(157, 22, "一层书库 022", {
       color: "#eff7ef",
       fontFamily: "monospace",
       fontSize: "13px"
@@ -1676,7 +1678,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontSize: "14px",
       fontStyle: "bold"
     }).setOrigin(0.5);
-    const seatStatus = this.add.text(0, 96, "目标记录：二楼南区 022 · 会话未闭合", {
+    const seatStatus = this.add.text(0, 96, "目标记录：一层书库 022 · 会话未闭合", {
       color: "#8fb9ae",
       fontFamily: "monospace",
       fontSize: "12px"
@@ -1895,7 +1897,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
     this.add.image(750, 450, LIBRARY_INTERIOR_MAP_KEY, "__BASE").setDisplaySize(1500, 900).setDepth(0);
     this.createInteriorColliders();
 
-    this.add.text(750, 66, "基础图书馆  ·  二层南区", {
+    this.add.text(750, 66, "基础图书馆  ·  一层书库", {
       color: "#e9ddbd",
       backgroundColor: "#172520dc",
       fontFamily: "monospace",
@@ -2197,28 +2199,34 @@ export class LibraryInteriorScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(120);
 
     const mapTexture = this.textures.get(LIBRARY_INTERIOR_MAP_KEY);
-    if (!mapTexture.has(SHELF_SPRITE_FRAME)) {
-      mapTexture.add(
-        SHELF_SPRITE_FRAME,
-        0,
-        SHELF_SPRITE_BOUNDS.left,
-        SHELF_SPRITE_BOUNDS.top,
-        SHELF_SPRITE_BOUNDS.width,
-        SHELF_SPRITE_BOUNDS.height
-      );
-    }
-    if (!mapTexture.has(SHELF_FLOOR_FRAME)) {
-      mapTexture.add(
-        SHELF_FLOOR_FRAME,
-        0,
-        SHELF_SPRITE_BOUNDS.left,
-        SHELF_FLOOR_SOURCE_TOP,
-        SHELF_SPRITE_BOUNDS.width,
-        SHELF_SPRITE_BOUNDS.height
-      );
+    // Clip the existing map at runtime; never move an opaque floor rectangle
+    // with the cabinet or draw a floor patch over the player's body.
+    for (const [key, sourceTop] of [
+      [SHELF_SPRITE_FRAME, SHELF_SPRITE_BOUNDS.top],
+      [SHELF_FLOOR_FRAME, SHELF_FLOOR_SOURCE_TOP]
+    ] as const) {
+      if (this.textures.exists(key)) continue;
+      const texture = this.textures.createCanvas(key, SHELF_SPRITE_BOUNDS.width, SHELF_SPRITE_BOUNDS.height)!;
+      const context = texture.context;
+      context.imageSmoothingEnabled = false;
+      context.beginPath();
+      LIBRARY_SHELF_OUTLINE.forEach(([x, y], index) => {
+        const localX = x - SHELF_SPRITE_BOUNDS.left;
+        const localY = y - SHELF_SPRITE_BOUNDS.top;
+        if (index === 0) context.moveTo(localX, localY);
+        else context.lineTo(localX, localY);
+      });
+      context.closePath();
+      // The background erases the complete old footprint, including leaves
+      // outside the moving silhouette; only the moving sprite is clipped.
+      if (key === SHELF_SPRITE_FRAME) context.clip();
+      context.drawImage(mapTexture.getSourceImage() as HTMLImageElement,
+        SHELF_SPRITE_BOUNDS.left, sourceTop, SHELF_SPRITE_BOUNDS.width, SHELF_SPRITE_BOUNDS.height,
+        0, 0, SHELF_SPRITE_BOUNDS.width, SHELF_SPRITE_BOUNDS.height);
+      texture.refresh().setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
 
-    this.add.image(SHELF_BASE_X, SHELF_BASE_Y, LIBRARY_INTERIOR_MAP_KEY, SHELF_FLOOR_FRAME)
+    this.add.image(SHELF_BASE_X, SHELF_BASE_Y, SHELF_FLOOR_FRAME)
       .setDepth(SHELF_BACKGROUND_PATCH_DEPTH);
     const upperRail = this.add.rectangle(0, -48, SHELF_SPRITE_BOUNDS.width, 5, 0x4a3525)
       .setStrokeStyle(2, 0x241a14);
@@ -2246,7 +2254,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       "旧规",
       0xe7d8ab
     ).setDepth(425).setVisible(false);
-    const shelfSprite = this.add.image(0, 0, LIBRARY_INTERIOR_MAP_KEY, SHELF_SPRITE_FRAME);
+    const shelfSprite = this.add.image(0, 0, SHELF_SPRITE_FRAME);
     this.targetShelfTag = this.add.text(0, SHELF_SPRITE_BOUNDS.height / 2 + 15, "I247.??", {
       color: "#18231f",
       backgroundColor: "#e8d9b8",
@@ -2262,7 +2270,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   }
 
   private drawSeatingArea(): void {
-    this.add.text(1140, 105, "二层南区 · 安静阅览", {
+    this.add.text(1140, 105, "一层书库 · 安静阅览", {
       color: "#e9dfc7",
       fontFamily: "monospace",
       fontSize: "14px",

@@ -29,7 +29,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
   occupancyNote: paper({
     heading: "022 临时离座留言",
     fields: [
-      { label: "座位", value: "022 · 二楼南区" },
+      { label: "座位", value: "022 · 一层书库" },
       { label: "离开时长", value: "三分钟" },
       { label: "留言状态", value: "仍在占用" }
     ],
@@ -90,7 +90,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     heading: "022 座位凭据",
     fields: [
       { label: "座位编号", value: "022" },
-      { label: "区域", value: "二楼南区" },
+      { label: "区域", value: "一层书库" },
       { label: "时间", value: "07:55" },
       { label: "凭据状态", value: "离座中 · 待公示" }
     ],

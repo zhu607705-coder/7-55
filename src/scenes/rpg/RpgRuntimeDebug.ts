@@ -35,6 +35,7 @@ export interface RpgRuntimeDebugState {
     displayHeight?: number;
     collisionWidth?: number;
     collisionHeight?: number;
+    footPoint?: { x: number; y: number };
     collisionBounds?: { x: number; y: number; width: number; height: number };
     visualBounds?: { x: number; y: number; width: number; height: number };
     movementBounds?: { x: number; y: number; width: number; height: number };
@@ -48,6 +49,12 @@ export interface RpgRuntimeDebugState {
   };
   camera: { scrollX: number; scrollY: number; zoom: number; mode: "follow" | "manual" };
   path?: { followingPath: boolean; pathLength: number };
+  chaseStairwell?: {
+    active: boolean; landing: number; attempt: number;
+    guard: { x: number; y: number }; guardVisible: boolean; guardTarget: { x: number; y: number } | null;
+    remainingDistance: number; gates: Array<{ x: number; y: number; width: number; height: number }>;
+    exit: { x: number; y: number; width: number; height: number }; pending: string | null;
+  };
   campusLoop?: {
     enabled: boolean;
     wrapping: boolean;
@@ -190,23 +197,7 @@ export interface RpgRuntimeDebugState {
       maxDistance: number;
       dropBounds: { x: number; y: number; width: number; height: number };
     } | null;
-	    spotlight?: {
-	      stage: "idle" | "preview" | "ready" | "tracking" | "awaiting" | "hit" | "miss" | "reversal";
-      round: number;
-      aimX: number;
-      aimLane: "left" | "center" | "right";
-      beamActive: boolean;
-      actionElapsedMs: number;
-      actionRemainingMs: number;
-      currentLockMs: number;
-      maxContinuousLockMs: number;
-      requiredLockMs: number;
-      earlyExposureMs: number;
-      assistActive: boolean;
-      lastFailureReason: string | null;
-      target: { x: number; y: number; visible: boolean } | null;
-      decoyVisible: boolean;
-    };
+	    spotlight?: ReturnType<import("./TheaterImpossibleShow").TheaterImpossibleShow["snapshot"]> | null;
     activeOcclusionIds?: string[];
     softenedOcclusionIds?: string[];
   };
@@ -370,16 +361,16 @@ export interface RpgRuntimeDebugState {
       guardFloor: "A1" | "A2" | null;
       attempt: number;
       targetWaypointId: string | null;
-      targetHoldMs: number;
-      predictedPlayerPosition: { x: number; y: number } | null;
-      pursuitBand: "catch_up" | "tracking" | "close" | null;
-      audioBand: "catch_up" | "tracking" | "close" | null;
-      closeVoicePlayed: boolean;
-      floorVoicePlayed: boolean;
-      pursuitSpeed: number | null;
-      guardToPlayerRouteDistance: number | null;
-      contactHoldMs: number;
-      contactGraceRemainingMs: number;
+      targetHoldMs?: number;
+      predictedPlayerPosition?: { x: number; y: number } | null;
+      pursuitBand?: "catch_up" | "tracking" | "close" | null;
+      audioBand?: "catch_up" | "tracking" | "close" | null;
+      closeVoicePlayed?: boolean;
+      floorVoicePlayed?: boolean;
+      pursuitSpeed?: number | null;
+      guardToPlayerRouteDistance?: number | null;
+      contactHoldMs?: number;
+      contactGraceRemainingMs?: number;
       portalApplied: boolean;
       portalRequested: boolean;
       portalRemainingDistance: number;
@@ -388,6 +379,10 @@ export interface RpgRuntimeDebugState {
       finishRequested: boolean;
       contact: boolean;
       failureRequested: boolean;
+      elapsedMs: number;
+      stableCommittedFrames: number;
+      startGraceReady: boolean;
+      guardVisible: boolean;
       guardBounds: { x: number; y: number; width: number; height: number } | null;
     };
     lightGrid?: {
@@ -398,6 +393,29 @@ export interface RpgRuntimeDebugState {
         openRequestId: string | null;
         targetId: string | null;
       };
+    };
+    environmentEvidence?: {
+      visibleRawDetailIds: readonly string[];
+      visiblePlacements: ReadonlyArray<{
+        detailId: string;
+        placementId: string;
+        storyFloor: "A1" | "A2" | "A3";
+        bounds: { x: number; y: number; width: number; height: number };
+        hintLevel: 0 | 1 | 2 | 3;
+      }>;
+      hintLevels: ReadonlyArray<{
+        failureCount: number;
+        level: 0 | 1 | 2 | 3;
+        emphasizedDetailIds: readonly string[];
+        pairedDetailIds: readonly string[];
+      }>;
+    };
+    exteriorDoor?: {
+      state: "idle" | "opening" | "open";
+      progress: number;
+      openedEventEmitted: boolean;
+      plateId: "a1_0755_morning";
+      doorwayBounds: { x: number; y: number; width: number; height: number };
     };
     room204Runtime?: {
       presentation: "interactive" | "restored" | "hidden";
@@ -480,17 +498,17 @@ export interface RpgRuntimeDebugState {
       targetFloor: 1 | 2 | 3 | null;
       doorProgress: number;
       panelOpen: boolean;
-      panelMode: "floors" | "elevator_calibration" | "elevator_route_deduction";
-      selectedFloor: 1 | 2 | 3;
-      recordProgress: number;
-      records: ReadonlyArray<{
+      panelMode?: "floors" | "elevator_calibration" | "elevator_route_deduction";
+      selectedFloor?: 1 | 2 | 3;
+      recordProgress?: number;
+      records?: ReadonlyArray<{
         floor: 1 | 2 | 3;
         factId: string;
         collected: boolean;
         reachable: boolean;
       }>;
-      stopChainReconstructed: boolean;
-      deduction: {
+      stopChainReconstructed?: boolean;
+      deduction?: {
         actualArrivalFloor: "A2" | "A3";
         unservedCallFloor: "A2" | "A3";
         feedback: string;

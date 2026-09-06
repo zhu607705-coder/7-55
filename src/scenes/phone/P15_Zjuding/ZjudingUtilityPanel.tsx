@@ -103,7 +103,7 @@ const LANGUAGE_CARDS = [
 const LOST_FOUND_ITEMS: ReadonlyArray<{ id: ItemId; label: string; source: string }> = [
   { id: "itemRecognitionReport", label: "书包物品识别报告", source: "照片·本机识别" },
   { id: "bagNonPersonProof", label: "书包非本人证明", source: "图书馆前台" },
-  { id: "seat022Receipt", label: "022 座位小票", source: "基础馆二层南区" },
+  { id: "seat022Receipt", label: "022 座位小票", source: "基础馆一层书库" },
   { id: "libraryPresenceProof", label: "本人到馆证明", source: "浙大体艺·到馆记录" }
 ];
 

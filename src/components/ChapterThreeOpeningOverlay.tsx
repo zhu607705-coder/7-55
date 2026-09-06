@@ -6,6 +6,7 @@ import {
   useState,
   type CSSProperties
 } from "react";
+import { GameSubtitleContent } from "./GameSubtitleFrame";
 import libraryMapUrl from "../assets/rpg/interiors/library_interior.png";
 import type { EventBus } from "../core/EventBus";
 import {
@@ -367,6 +368,11 @@ export function ChapterThreeOpeningOverlay({
       aria-label="第二章到第三章转场演出"
       tabIndex={-1}
       style={progressStyle}
+      onPointerDown={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.stopPropagation();
+        advanceCurrentBeat();
+      }}
     >
       <div className="chapter-three-opening__letterbox">
         <div className="chapter-three-opening__stage">
@@ -424,14 +430,20 @@ export function ChapterThreeOpeningOverlay({
             <strong>追到东区大食堂</strong>
           </div>
 
-          <div className={`chapter-three-opening__subtitle tone-${line ? speakerTone(line.speaker) : "system"}`}>
-            <div className="chapter-three-opening__subtitle-meta">
-              <span>{line?.speaker ?? (view.phase === "arrival" ? "地点" : "剧情")}</span>
-              <small>{view.beatIndex + 1}/{beats.length}</small>
-            </div>
-            <p aria-live="polite">{line?.text ?? beat?.caption ?? ""}</p>
-            <button ref={advanceButtonRef} type="button" onClick={advanceCurrentBeat}>
-              {line ? "快进此句" : view.phase === "arrival" ? "回到校园" : "继续演出"}
+          <div className={`chapter-three-opening__subtitle game-subtitle-frame is-line-entering subtitle-tone-${line ? speakerTone(line.speaker) === "paper" ? "narrator" : speakerTone(line.speaker) : "system"}`}>
+            <span aria-live="polite">
+              <GameSubtitleContent
+                speaker={line?.speaker ?? (view.phase === "arrival" ? "地点" : "剧情")}
+                text={line?.text ?? beat?.caption ?? ""}
+              />
+            </span>
+            <button
+              ref={advanceButtonRef}
+              className={view.phase === "arrival" ? "is-arrival" : ""}
+              type="button"
+              aria-label={line ? "快进此句" : view.phase === "arrival" ? "回到校园" : "继续演出"}
+            >
+              {view.phase === "arrival" ? "回到校园" : <span aria-hidden="true">▾</span>}
             </button>
           </div>
 
@@ -439,14 +451,16 @@ export function ChapterThreeOpeningOverlay({
             ref={skipButtonRef}
             className="chapter-three-opening__skip"
             type="button"
-            onClick={skipToArrival}
+            onClick={(event) => {
+              event.stopPropagation();
+              skipToArrival();
+            }}
             disabled={view.phase === "arrival"}
           >
             跳过演出
           </button>
 
           <div className="chapter-three-opening__progress" aria-hidden="true"><i /></div>
-          {view.paused ? <div className="chapter-three-opening__paused" role="status">演出已暂停</div> : null}
         </div>
       </div>
     </section>

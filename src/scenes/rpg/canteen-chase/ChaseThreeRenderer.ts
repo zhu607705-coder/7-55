@@ -1,7 +1,7 @@
 import * as THREE from "three";
+import { visibleStuntObstacles as visibleObstacles, STUNT_RAMPS, STUNT_PICKUPS } from "./ChaseStuntModel";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import {
-  visibleObstacles,
   visiblePedestrians,
   VISIBLE_DISTANCE,
   type ChaseObstacle,
@@ -13,23 +13,28 @@ import type { ChaseRenderState, ChaseRendererBackend } from "./ChaseRenderContra
 import {
   applyChaseRiderPose,
   CHASE_RIDER_GEAR_RATIO,
+  CHASE_RIDER_DISPLAY_SCALE,
   CHASE_RIDER_WHEEL_RADIUS,
   createChaseRiderRig,
+  createChaseBicycleRig,
   measureChaseRiderContactError,
   measureChaseRiderFootOrientationError,
   measureChaseRiderRigComplexity,
   type ChaseRiderRig
 } from "./ChaseRiderRig";
 import { ThreePrimitiveCache, type ThreeFlatMaterial } from "../ThreePrimitiveCache";
+import { createChaseCampusEnvironment, createChaseTheaterFacade } from "./ChaseCampusEnvironment";
+import { CHASE_WORLD_PER_METER, chaseStageAt } from "./ChaseRoute";
+import { createChasePedestrian, animateChasePedestrian, type ChasePedestrianModel as PedestrianModel } from "./ChasePeople";
 
 const LOGICAL_WIDTH = 960;
 const LOGICAL_HEIGHT = 540;
 const GOAL_DISTANCE = 755;
-const WORLD_PER_METER = 0.22;
+const WORLD_PER_METER = CHASE_WORLD_PER_METER;
 const ROAD_HALF_WIDTH = 5.55;
 const LANE_X = [-3.35, 0, 3.35] as const;
-const PLAYER_CAMERA_GAP = 8.45;
-const PLAYER_LOOK_AHEAD = 12.8;
+const PLAYER_CAMERA_GAP = 8.1;
+const PLAYER_LOOK_AHEAD = 13.5;
 const PLAYER_BASE_Y = 0.08;
 const DESTINATION_Z = -GOAL_DISTANCE * WORLD_PER_METER - 8;
 const DEFAULT_TONE_MAPPING_EXPOSURE = 1.02;
@@ -44,13 +49,13 @@ const CAMERA_FOLLOW_RESPONSE = 5.5;
 const TWO_PI = Math.PI * 2;
 
 const PALETTE = {
-  sky: 0x89bcdc,
-  fog: 0xa9c8d6,
+  sky: 0xc4dfe4,
+  fog: 0xd6e4df,
   grass: 0x6f9852,
   grassDark: 0x4e713f,
   water: 0x397f96,
   waterLight: 0x6fb8bd,
-  road: 0x464640,
+  road: 0x657073,
   roadEdge: 0xe7d39a,
   lane: 0xf0e8cf,
   pavement: 0xb4a88e,
@@ -87,15 +92,6 @@ const CHASE_PRIMITIVES = new ThreePrimitiveCache();
 
 type VoxelMaterial = ThreeFlatMaterial;
 
-interface PedestrianModel {
-  group: THREE.Group;
-  leftLeg: THREE.Group;
-  rightLeg: THREE.Group;
-  leftArm: THREE.Group;
-  rightArm: THREE.Group;
-  pair?: PedestrianModel;
-}
-
 function clamp(value: number, minimum: number, maximum: number): number {
   return Math.max(minimum, Math.min(maximum, value));
 }
@@ -107,7 +103,7 @@ function safeMatchMedia(query: string): boolean {
 }
 
 function defaultPixelRatioCap(): number {
-  return safeMatchMedia("(any-pointer: coarse)") || safeMatchMedia("(max-width: 900px)") ? 1.25 : 1.5;
+  return 1.25;
 }
 
 function smoothstep(value: number): number {
@@ -130,7 +126,7 @@ function hashString(value: string): number {
 }
 
 function material(color: number, unlit = false): VoxelMaterial {
-  return CHASE_PRIMITIVES.material(color, { unlit });
+  return CHASE_PRIMITIVES.material(color, { unlit, shading: "standard", roughness: 0.78, flatShading: false });
 }
 
 function pixelTextTexture(
@@ -197,6 +193,19 @@ function box(
   return mesh;
 }
 
+function roundedPart(radius: number, length: number, color: number, x: number, y: number, z: number): THREE.Mesh {
+  const part = new THREE.Mesh(CHASE_PRIMITIVES.capsule(radius, length, 6, 12), material(color));
+  part.position.set(x, y, z);
+  return part;
+}
+
+function ovalPart(width: number, height: number, depth: number, color: number, x: number, y: number, z: number): THREE.Mesh {
+  const part = new THREE.Mesh(CHASE_PRIMITIVES.sphere(1, 16, 12), material(color));
+  part.scale.set(width, height, depth);
+  part.position.set(x, y, z);
+  return part;
+}
+
 function pixelWheel(radius: number): THREE.Mesh {
   const wheel = new THREE.Mesh(
     CHASE_PRIMITIVES.torus(radius, radius * 0.18, 4, 10),
@@ -218,74 +227,11 @@ function blobShadow(width: number, depth: number): THREE.Mesh {
 }
 
 function buildPerson(kind: ChasePedestrianKind, seed: number): PedestrianModel {
-  const shirtPalette = [PALETTE.blue, PALETTE.red, 0x6e65a0, 0x4c8461, 0xb37447] as const;
-  const shirt = shirtPalette[seed % shirtPalette.length];
-  const group = new THREE.Group();
-  group.add(blobShadow(kind === "chattingPair" ? 1.3 : 0.7, 0.55));
-  const torso = box(0.5, 0.78, 0.34, shirt, 0, 1.22, 0);
-  const head = box(0.38, 0.42, 0.36, PALETTE.skin, 0, 1.84, -0.02);
-  const hair = box(0.42, 0.16, 0.4, PALETTE.hair, 0, 2.05, -0.02);
-  group.add(torso, head, hair);
-  const leftLeg = new THREE.Group();
-  const rightLeg = new THREE.Group();
-  leftLeg.position.set(-0.14, 0.88, 0);
-  rightLeg.position.set(0.14, 0.88, 0);
-  leftLeg.add(box(0.18, 0.72, 0.2, PALETTE.outline, 0, -0.34, 0));
-  rightLeg.add(box(0.18, 0.72, 0.2, PALETTE.outline, 0, -0.34, 0));
-  group.add(leftLeg, rightLeg);
-  const leftArm = new THREE.Group();
-  const rightArm = new THREE.Group();
-  leftArm.position.set(-0.34, 1.5, 0);
-  rightArm.position.set(0.34, 1.5, 0);
-  leftArm.add(box(0.14, 0.62, 0.16, shirt, 0, -0.28, 0));
-  rightArm.add(box(0.14, 0.62, 0.16, shirt, 0, -0.28, 0));
-  group.add(leftArm, rightArm);
-
-  if (kind === "phoneWalker") {
-    const phone = box(0.22, 0.34, 0.08, PALETTE.outline, 0, 1.38, -0.32);
-    phone.add(box(0.14, 0.22, 0.02, PALETTE.cyan, 0, 0, -0.052, true));
-    group.add(phone);
-    leftArm.rotation.x = -0.75;
-    rightArm.rotation.x = -0.75;
-  } else if (kind === "soyMilk") {
-    const cup = box(0.2, 0.34, 0.2, PALETTE.white, 0.42, 1.3, -0.18);
-    cup.add(box(0.06, 0.3, 0.06, PALETTE.red, 0, 0.27, 0));
-    group.add(cup);
-    rightArm.rotation.z = 0.48;
-  } else if (kind === "bikePusher") {
-    const bicycle = buildSimpleBicycle(PALETTE.cyan);
-    bicycle.scale.setScalar(0.58);
-    bicycle.position.set(0.62, 0, -0.18);
-    bicycle.rotation.y = Math.PI;
-    group.add(bicycle);
-    rightArm.rotation.z = 0.58;
-  }
-
-  const model: PedestrianModel = { group, leftLeg, rightLeg, leftArm, rightArm };
-  if (kind === "chattingPair") {
-    const pair = buildPerson("phoneWalker", seed + 5);
-    pair.group.position.x = 0.64;
-    group.position.x = -0.32;
-    group.add(pair.group);
-    model.pair = pair;
-  }
-  return model;
+  return createChasePedestrian(CHASE_PRIMITIVES, kind, seed);
 }
 
 function buildSimpleBicycle(color: number): THREE.Group {
-  const group = new THREE.Group();
-  const rear = pixelWheel(0.44);
-  rear.position.set(0, 0.46, 0.66);
-  const front = pixelWheel(0.44);
-  front.position.set(0, 0.46, -0.66);
-  group.add(
-    rear,
-    front,
-    box(0.12, 0.12, 1.12, color, 0, 0.68, 0),
-    box(0.12, 0.66, 0.12, color, 0, 0.86, 0.36),
-    box(0.72, 0.1, 0.1, PALETTE.outline, 0, 1.04, -0.58)
-  );
-  return group;
+  return createChaseBicycleRig(CHASE_PRIMITIVES, { ...PALETTE, blue: color }).bicycleRoot;
 }
 
 function buildObstacle(kind: ChaseObstacleKind): THREE.Group {
@@ -299,24 +245,57 @@ function buildObstacle(kind: ChaseObstacleKind): THREE.Group {
     group.add(box(0.28, 0.28, 0.22, PALETTE.red, 0, 1.36, 0, true));
   } else if (kind === "cone") {
     group.add(blobShadow(1.1, 1.0));
-    const cone = new THREE.Mesh(CHASE_PRIMITIVES.cone(0.45, 1.25, 6), material(PALETTE.orange));
+    const cone = new THREE.Mesh(CHASE_PRIMITIVES.cone(0.45, 1.25, 24), material(PALETTE.orange));
     cone.position.y = 0.7;
     group.add(box(1.05, 0.14, 1.05, PALETTE.outline, 0, 0.07, 0), cone);
-    group.add(box(0.64, 0.15, 0.64, PALETTE.white, 0, 0.62, 0));
+    const stripe = new THREE.Mesh(CHASE_PRIMITIVES.cylinder(0.21, 0.27, 0.15, 24), material(PALETTE.white));
+    stripe.position.y = 0.62;
+    group.add(stripe);
   } else if (kind === "car") {
     group.add(blobShadow(2.35, 4.1));
-    group.add(box(2.15, 0.82, 3.7, PALETTE.red, 0, 0.72, 0));
-    group.add(box(1.72, 0.68, 1.9, PALETTE.glass, 0, 1.34, -0.28));
+    const profile = new THREE.Shape();
+    profile.moveTo(-1.85, 0.45);
+    profile.lineTo(-1.78, 0.94);
+    profile.lineTo(-0.99, 1.02);
+    profile.lineTo(-0.48, 1.67);
+    profile.lineTo(0.86, 1.64);
+    profile.lineTo(1.36, 1.09);
+    profile.lineTo(1.78, 1.0);
+    profile.lineTo(1.85, 0.46);
+    profile.closePath();
+    const bodyGeometry = new THREE.ExtrudeGeometry(profile, { depth: 1.94, steps: 1, bevelEnabled: true, bevelSize: 0.055, bevelThickness: 0.055, bevelSegments: 3 });
+    bodyGeometry.translate(0, 0, -0.97);
+    bodyGeometry.rotateY(Math.PI / 2);
+    const body = new THREE.Mesh(bodyGeometry, CHASE_PRIMITIVES.material(0x6c929b, { shading: "standard", metalness: 0.35, roughness: 0.35, flatShading: false }));
+    group.add(body);
+    const windscreen = box(1.77, 0.64, 0.035, 0x466776, 0, 1.35, 0.76);
+    windscreen.rotation.x = -0.64;
+    group.add(windscreen);
+    for (const side of [-1, 1]) {
+      group.add(box(0.02, 0.44, 0.61, 0x466776, side * 1.012, 1.34, -0.34));
+      group.add(box(0.02, 0.44, 0.57, 0x557c88, side * 1.012, 1.34, 0.33));
+      group.add(box(0.025, 0.033, 0.21, 0xd3d7d2, side * 1.018, 1.03, -0.23));
+      group.add(ovalPart(0.16, 0.085, 0.13, 0x6c929b, side * 1.12, 1.15, 0.65));
+      group.add(box(0.027, 0.06, 2.35, 0x405358, side * 1.02, 0.45, 0));
+    }
     for (const x of [-1.08, 1.08]) {
       for (const z of [-1.18, 1.18]) {
-        const wheel = new THREE.Mesh(CHASE_PRIMITIVES.cylinder(0.38, 0.38, 0.28, 8), material(PALETTE.outline));
+        const wheel = new THREE.Mesh(CHASE_PRIMITIVES.cylinder(0.38, 0.38, 0.28, 32), material(PALETTE.outline));
         wheel.rotation.z = Math.PI / 2;
         wheel.position.set(x, 0.38, z);
         group.add(wheel);
+        const hub = new THREE.Mesh(CHASE_PRIMITIVES.cylinder(0.24, 0.24, 0.29, 24), material(0xc1c9c8));
+        hub.rotation.z = Math.PI / 2;
+        hub.position.copy(wheel.position);
+        group.add(hub);
       }
     }
-    group.add(box(0.44, 0.22, 0.08, PALETTE.white, -0.62, 0.72, -1.9, true));
-    group.add(box(0.44, 0.22, 0.08, PALETTE.white, 0.62, 0.72, -1.9, true));
+    for (const side of [-1, 1]) {
+      group.add(box(0.38, 0.11, 0.06, PALETTE.white, side * 0.62, 0.88, 1.91, true));
+      group.add(box(0.4, 0.1, 0.055, 0xb86559, side * 0.62, 0.92, -1.91));
+    }
+    group.add(box(0.88, 0.16, 0.06, 0x34494f, 0, 0.63, 1.92));
+    group.add(box(0.45, 0.13, 0.07, 0xe3dcc7, 0, 0.67, -1.92));
   } else if (kind === "bicycle") {
     group.add(buildSimpleBicycle(PALETTE.red));
     group.rotation.y = Math.PI;
@@ -333,191 +312,10 @@ function buildObstacle(kind: ChaseObstacleKind): THREE.Group {
   return group;
 }
 
-function buildTree(seed: number): THREE.Group {
-  const group = new THREE.Group();
-  group.add(blobShadow(2.2, 1.5));
-  group.add(box(0.38, 2.7, 0.38, PALETTE.trunk, 0, 1.35, 0));
-  const foliageColors = [PALETTE.tree, PALETTE.treeLight, 0x3f7440] as const;
-  for (let index = 0; index < 4; index += 1) {
-    const crown = new THREE.Mesh(
-      CHASE_PRIMITIVES.icosahedron(0.82 + ((seed + index) % 3) * 0.12, 1),
-      material(foliageColors[(seed + index) % foliageColors.length])
-    );
-    crown.position.set((index - 1.5) * 0.38, 2.75 + (index % 2) * 0.45, ((seed + index) % 2) * 0.28);
-    group.add(crown);
-  }
-  return group;
-}
-
-function buildLamp(): THREE.Group {
-  const group = new THREE.Group();
-  group.add(box(0.12, 3.5, 0.12, PALETTE.outline, 0, 1.75, 0));
-  group.add(box(0.55, 0.12, 0.12, PALETTE.outline, 0.22, 3.45, 0));
-  group.add(box(0.34, 0.3, 0.3, PALETTE.amber, 0.48, 3.32, 0, true));
-  return group;
-}
-
-function buildCampusBlock(width: number, height: number, depth: number, seed: number): THREE.Group {
-  const group = new THREE.Group();
-  const wall = seed % 3 === 0 ? PALETTE.cream : PALETTE.brick;
-  group.add(box(width, height, depth, wall, 0, height / 2, 0));
-  group.add(box(width + 0.28, 0.26, depth + 0.28, PALETTE.creamDark, 0, height + 0.13, 0));
-  group.add(box(width * 0.42, height * 0.88, 0.16, PALETTE.cream, 0, height * 0.48, depth / 2 + 0.08));
-  group.add(box(width * 0.34, height * 0.72, 0.18, PALETTE.glass, 0, height * 0.48, depth / 2 + 0.18, true));
-  const columns = Math.max(2, Math.floor(width / 1.45));
-  const rows = Math.max(2, Math.floor(height / 1.25));
-  for (let row = 0; row < rows; row += 1) {
-    for (let column = 0; column < columns; column += 1) {
-      const x = -width / 2 + 0.7 + column * ((width - 1.4) / Math.max(1, columns - 1));
-      const y = 0.8 + row * ((height - 1.5) / Math.max(1, rows - 1));
-      group.add(box(0.52, 0.52, 0.08, (row + column + seed) % 7 === 0 ? PALETTE.amber : PALETTE.glass, x, y, depth / 2 + 0.05, true));
-    }
-  }
-  for (const side of [-1, 1]) {
-    group.add(box(0.28, height + 0.12, 0.26, PALETTE.cream, side * width * 0.29, height / 2, depth / 2 + 0.2));
-    group.add(box(1.25, 0.7, 1.1, PALETTE.grassDark, side * width * 0.38, 0.38, depth / 2 + 0.8));
-  }
-  return group;
-}
-
-function buildLakesideHall(seed: number): THREE.Group {
-  const group = new THREE.Group();
-  const width = 9.2 + (seed % 2) * 1.4;
-  group.add(box(width, 4.9, 4.6, PALETTE.theaterStone, 0, 2.45, 0));
-  group.add(box(width + 0.55, 0.42, 5.05, PALETTE.theaterRoof, 0, 5.1, 0));
-  group.add(box(width * 0.78, 3.35, 0.22, PALETTE.glass, 0, 2.65, 2.44, true));
-  for (let x = -width * 0.31; x <= width * 0.31; x += width * 0.155) {
-    group.add(box(0.22, 3.75, 0.28, PALETTE.theaterFrame, x, 2.7, 2.62));
-  }
-  group.add(box(width * 0.28, 2.55, 0.32, PALETTE.outline, 0, 1.85, 2.72));
-  group.add(box(width * 0.22, 2.18, 0.16, PALETTE.glassLight, 0, 1.82, 2.91, true));
-  return group;
-}
-
-function buildLakeRoadside(side: number, centerZ: number, length: number, seed: number): THREE.Group {
-  const group = new THREE.Group();
-  const water = new THREE.Mesh(CHASE_PRIMITIVES.plane(10.8, length), material(PALETTE.water));
-  water.rotation.x = -Math.PI / 2;
-  water.position.set(side * 14.3, 0.018, centerZ);
-  group.add(water);
-  group.add(box(0.48, 0.34, length, PALETTE.theaterStone, side * 8.82, 0.17, centerZ));
-  group.add(box(0.72, 0.42, length, PALETTE.grassDark, side * 19.88, 0.18, centerZ));
-  for (let row = -1; row <= 1; row += 1) {
-    for (let index = 0; index < 8; index += 1) {
-      const wave = box(1.25, 0.025, 0.12, PALETTE.waterLight, side * (11.2 + row * 2.4), 0.042, centerZ - length / 2 + 2.3 + index * 3.25, true);
-      wave.rotation.y = side * (0.08 + row * 0.03);
-      group.add(wave);
-    }
-  }
-  const hall = buildLakesideHall(seed);
-  hall.position.set(side * 23.1, 0, centerZ - 1.6);
-  hall.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
-  group.add(hall);
-  return group;
-}
-
-function buildStoneCampusMarker(): THREE.Group {
-  const group = new THREE.Group();
-  const marker = box(3.9, 1.35, 0.72, PALETTE.cream, 0, 0.68, 0);
-  const face = new THREE.Mesh(
-    CHASE_PRIMITIVES.plane(3.45, 0.72),
-    new THREE.MeshBasicMaterial({ map: pixelTextTexture("紫金港校区", "#DCCDAE", "#254B67"), toneMapped: false })
-  );
-  face.position.set(0, 0.75, 0.37);
-  group.add(marker, face, box(4.45, 0.18, 1.05, PALETTE.creamDark, 0, 0.09, 0));
-  return group;
-}
-
-function buildCampusBicycleRack(): THREE.Group {
-  const group = new THREE.Group();
-  for (let index = -2; index <= 2; index += 1) {
-    const bicycle = buildSimpleBicycle(index % 2 === 0 ? PALETTE.cyan : PALETTE.yellow);
-    bicycle.scale.setScalar(0.52);
-    bicycle.position.set(index * 0.72, 0, (index % 2) * 0.22);
-    bicycle.rotation.y = Math.PI / 2;
-    group.add(bicycle);
-  }
-  group.add(box(4.25, 0.12, 0.16, PALETTE.metal, 0, 0.25, 0.42));
-  return group;
-}
-
-function ellipticalCylinder(
-  radiusX: number,
-  height: number,
-  radiusZ: number,
-  color: number,
-  y: number,
-  z = 0,
-  segments = 24
-): THREE.Mesh {
-  const mesh = new THREE.Mesh(
-    CHASE_PRIMITIVES.cylinder(1, 1, height, segments, 1, false),
-    material(color)
-  );
-  mesh.scale.set(radiusX, 1, radiusZ);
-  mesh.position.set(0, y, z);
-  return mesh;
-}
-
-function buildTheaterDestination(): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-chase-theater-destination";
-
-  // 剧场：白色椭圆屋顶、弧形蓝玻璃幕墙与正立面白色立柱。
-  group.add(ellipticalCylinder(10.35, 0.78, 4.55, PALETTE.theaterRoofShade, 6.58, -0.45));
-  group.add(ellipticalCylinder(9.92, 0.62, 4.2, PALETTE.theaterRoof, 7.02, -0.48));
-  group.add(ellipticalCylinder(9.35, 4.55, 3.62, PALETTE.glass, 3.56, -0.35));
-  group.add(ellipticalCylinder(9.52, 0.38, 3.78, PALETTE.theaterFrame, 5.67, -0.37));
-  group.add(ellipticalCylinder(9.42, 0.34, 3.72, PALETTE.theaterFrame, 1.28, -0.34));
-
-  const facadeRadiusX = 9.35;
-  const facadeRadiusZ = 3.62;
-  for (const x of [-7.25, -5.15, -3.0, 0, 3.0, 5.15, 7.25]) {
-    const normalizedX = x / facadeRadiusX;
-    const frontZ = -0.35 + facadeRadiusZ * Math.sqrt(Math.max(0, 1 - normalizedX * normalizedX));
-    group.add(box(0.48, 4.55, 0.52, PALETTE.theaterFrame, x, 3.55, frontZ + 0.16));
-  }
-
-  // 中央入口在弧形幕墙前方，保持从道路正中能够读出真实到达点。
-  group.add(box(4.0, 3.3, 0.52, PALETTE.outline, 0, 2.42, 3.64));
-  group.add(box(1.68, 2.85, 0.18, PALETTE.glassLight, -0.92, 2.34, 3.94, true));
-  group.add(box(1.68, 2.85, 0.18, PALETTE.glassLight, 0.92, 2.34, 3.94, true));
-  group.add(box(0.16, 2.85, 0.18, PALETTE.theaterFrame, 0, 2.34, 4.05));
-  group.add(box(4.65, 0.34, 0.72, PALETTE.theaterFrame, 0, 4.15, 3.78));
-
-  const signTexture = pixelTextTexture("剧场", "#24323A", "#E7D9A8", 420, 88);
-  const sign = new THREE.Mesh(
-    CHASE_PRIMITIVES.plane(5.8, 1.22),
-    new THREE.MeshBasicMaterial({ map: signTexture, toneMapped: false })
-  );
-  sign.position.set(5.95, 1.35, 4.58);
-  group.add(sign);
-
-  for (let step = 0; step < 4; step += 1) {
-    group.add(box(8.8 + step * 1.2, 0.18, 0.96, step % 2 === 0 ? PALETTE.theaterStone : PALETTE.creamDark, 0, 0.09 + step * 0.18, 4.1 + step * 0.46));
-  }
-
-  for (const side of [-1, 1]) {
-    group.add(box(4.1, 0.78, 1.55, PALETTE.grassDark, side * 7.05, 0.39, 4.38));
-    group.add(box(3.62, 0.28, 1.18, PALETTE.treeLight, side * 7.05, 0.88, 4.38));
-    const lamp = buildLamp();
-    lamp.position.set(side * 9.0, 0, 5.05);
-    if (side < 0) lamp.scale.x = -1;
-    group.add(lamp);
-  }
-
-  // 屋顶边缘与幕墙分格使用低面数硬边块，避免出现写实光滑表面。
-  for (let index = -7; index <= 7; index += 1) {
-    const x = index * 1.22;
-    const normalizedX = x / 9.35;
-    const frontZ = -0.35 + facadeRadiusZ * Math.sqrt(Math.max(0, 1 - normalizedX * normalizedX));
-    group.add(box(0.08, 3.55, 0.1, PALETTE.outline, x, 3.42, frontZ + 0.2));
-  }
-  return group;
-}
 
 function disposeObject(object: THREE.Object3D): void {
   object.traverse((child) => {
+    child.userData.disposeHuman?.();
     if (!(child instanceof THREE.Mesh)) return;
     if (!CHASE_PRIMITIVES.ownsGeometry(child.geometry)) child.geometry.dispose();
     const materials = Array.isArray(child.material) ? child.material : [child.material];
@@ -535,26 +333,42 @@ function disposeObject(object: THREE.Object3D): void {
  */
 function mergeStaticWorldMeshes(root: THREE.Object3D): void {
   root.updateWorldMatrix(true, true);
-  const buckets = new Map<THREE.Material, THREE.BufferGeometry[]>();
+  const buckets = new Map<THREE.Material, Map<number, THREE.BufferGeometry[]>>();
   const mergedSources: THREE.Mesh[] = [];
   root.traverse((child) => {
     if (!(child instanceof THREE.Mesh)) return;
     if (Array.isArray(child.material)) return;
-    if (!CHASE_PRIMITIVES.ownsGeometry(child.geometry) || !CHASE_PRIMITIVES.ownsMaterial(child.material)) return;
+    if (!CHASE_PRIMITIVES.ownsMaterial(child.material)) return;
     if (child.material.transparent) return;
     const geometry = child.geometry.index ? child.geometry.toNonIndexed() : child.geometry.clone();
     geometry.applyMatrix4(child.matrixWorld);
-    const entries = buckets.get(child.material) ?? [];
+    geometry.computeBoundingSphere();
+    const sphere = geometry.boundingSphere;
+    const chunk = sphere && sphere.radius < 40 ? Math.floor(sphere.center.z / 24) : Number.MAX_SAFE_INTEGER;
+    const materialBuckets = buckets.get(child.material) ?? new Map<number, THREE.BufferGeometry[]>();
+    const entries = materialBuckets.get(chunk) ?? [];
     entries.push(geometry);
-    buckets.set(child.material, entries);
+    materialBuckets.set(chunk, entries);
+    buckets.set(child.material, materialBuckets);
     mergedSources.push(child);
   });
-  mergedSources.forEach((mesh) => mesh.removeFromParent());
-  buckets.forEach((geometries, material) => {
-    const merged = mergeGeometries(geometries, false);
-    geometries.forEach((geometry) => geometry.dispose());
-    if (!merged) return;
-    root.add(new THREE.Mesh(merged, material));
+  mergedSources.forEach((mesh) => {
+    mesh.removeFromParent();
+    if (!CHASE_PRIMITIVES.ownsGeometry(mesh.geometry)) mesh.geometry.dispose();
+  });
+  buckets.forEach((chunks, material) => {
+    chunks.forEach((geometries, chunk) => {
+      const merged = mergeGeometries(geometries, false);
+      geometries.forEach((geometry) => geometry.dispose());
+      if (!merged) return;
+      merged.computeBoundingSphere();
+      merged.computeBoundingBox();
+      const mesh = new THREE.Mesh(merged, material);
+      mesh.name = `canteen-campus-chunk-${chunk}`;
+      mesh.userData.worldMinZ = merged.boundingBox!.min.z;
+      mesh.userData.worldMaxZ = merged.boundingBox!.max.z;
+      root.add(mesh);
+    });
   });
 }
 
@@ -562,14 +376,18 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
   private readonly canvas: HTMLCanvasElement;
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
-  private readonly camera = new THREE.PerspectiveCamera(55, 16 / 9, 0.1, 420);
+  private readonly camera = new THREE.PerspectiveCamera(51, 16 / 9, 0.1, 150);
   private readonly observer: ResizeObserver;
   private readonly rider: ChaseRiderRig;
   private readonly paper = new THREE.Group();
   private readonly obstacleModels = new Map<string, THREE.Group>();
   private readonly pedestrianModels = new Map<string, PedestrianModel>();
-  private readonly sun = new THREE.DirectionalLight(0xffedbd, 1.3);
+  private readonly sun = new THREE.DirectionalLight(0xffecd3, 2.4);
   private readonly sunTarget = new THREE.Object3D();
+  private staticWorld: THREE.Group | null = null;
+  private quality: "high" | "balanced" | "light" = "high";
+  private qualityFrameCount = 0;
+  private qualityFrameTimeMs = 0;
   private readonly enableLiveShadows = safeMatchMedia("(pointer: fine)") && !safeMatchMedia("(any-pointer: coarse)");
   private reducedMotion = false;
   private lastTime = performance.now();
@@ -585,6 +403,10 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
   private readonly steeringPivot = new THREE.Vector3();
   private readonly steeringTip = new THREE.Vector3();
   private nextDebugSnapshotAt = 0;
+  private readonly clearingStarts = new Map<string, number>();
+  private readonly stuntObjects = new Map<string, THREE.Group>();
+  private readonly bellRing = new THREE.Mesh(new THREE.RingGeometry(0.93,1,48), new THREE.MeshBasicMaterial({color:0xfbe5a2,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));
+  private readonly trayShield = new THREE.Mesh(new THREE.TorusGeometry(1.25,.05,8,40),new THREE.MeshBasicMaterial({color:0x8becda,transparent:true,opacity:.72,depthWrite:false}));
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -604,8 +426,8 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.renderer.shadowMap.enabled = this.enableLiveShadows;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.scene.background = new THREE.Color(PALETTE.sky);
-    this.scene.fog = new THREE.Fog(PALETTE.fog, 38, 126);
-    this.scene.add(new THREE.HemisphereLight(0xf2ecd8, 0x4f6747, this.enableLiveShadows ? 1.38 : 1.25));
+    this.scene.fog = new THREE.Fog(PALETTE.fog, 45, 120);
+    this.scene.add(new THREE.HemisphereLight(0xeaf4f1, 0x6e7b65, 2.0));
     this.sun.position.set(7, 15, 6);
     this.sun.target = this.sunTarget;
     this.scene.add(this.sunTarget, this.sun);
@@ -616,7 +438,7 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.scene.add(fill, portraitFill);
     this.configureLiveShadows();
     this.buildWorld();
-    this.rider = createChaseRiderRig(CHASE_PRIMITIVES, PALETTE);
+    this.rider = createChaseRiderRig(CHASE_PRIMITIVES);
     this.rider.group.position.set(0, PLAYER_BASE_Y, 0);
     this.scene.add(this.rider.group);
     this.configureHeroShadowState();
@@ -626,14 +448,19 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.canvas.dataset.chaseRiderMaterials = String(riderComplexity.materials);
     this.buildPaper();
     this.scene.add(this.paper);
+    this.bellRing.rotation.x=-Math.PI/2;this.scene.add(this.bellRing,this.trayShield);
     this.observer = new ResizeObserver(() => this.handleResize());
     this.observer.observe(canvas);
     this.handleResize();
+    this.lastTime = performance.now();
   }
 
   destroy(): void {
     this.observer.disconnect();
     disposeObject(this.scene);
+    // StrictMode and reduced-motion changes can reuse this canvas/context.
+    // Restore pixel-store flags before the next renderer creates 3D placeholders.
+    this.renderer.resetState();
     this.renderer.dispose();
   }
 
@@ -641,10 +468,26 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.reducedMotion = reduced;
   }
 
+  getAssetState(): "loading" | "ready" | "error" {
+    return this.rider.human.error ? "error" : this.rider.human.ready ? "ready" : "loading";
+  }
+
   render(state: ChaseRenderState): void {
+    const humanState = this.getAssetState();
+    if (humanState === "ready" && this.canvas.dataset.chaseHumanState !== "ready") {
+      const complexity = measureChaseRiderRigComplexity(this.rider);
+      this.canvas.dataset.chaseRiderMeshes = String(complexity.meshes);
+      this.canvas.dataset.chaseRiderTriangles = String(complexity.triangles);
+      this.canvas.dataset.chaseRiderMaterials = String(complexity.materials);
+      this.configureHeroShadowState();
+    }
+    this.canvas.dataset.chaseHumanState = humanState;
+    if (this.rider.human.ready) this.canvas.dataset.chaseHumanContactErrors = JSON.stringify(this.rider.human.group.userData.contactErrors);
     const now = performance.now();
-    const deltaSeconds = clamp((now - this.lastTime) / 1000, 0, 0.08);
+    const frameTimeMs = now - this.lastTime;
+    const deltaSeconds = clamp(frameTimeMs / 1000, 0, 0.25);
     this.lastTime = now;
+    this.updateRenderQuality(frameTimeMs);
     if (!state.paused && state.runState === "running" && !this.reducedMotion) {
       this.animationSeconds += deltaSeconds;
     }
@@ -653,9 +496,16 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.collisionFlashSeconds = Math.max(0, this.collisionFlashSeconds - deltaSeconds);
 
     const playerZ = -state.distance * WORLD_PER_METER;
-    const targetX = LANE_X[clamp(Math.round(state.lane), 0, 2)];
+    this.staticWorld?.children.forEach((object) => {
+      const { worldMinZ, worldMaxZ } = object.userData;
+      if (!Number.isFinite(worldMinZ) || !Number.isFinite(worldMaxZ)) return;
+      const ahead = this.quality === "light" ? 65 : this.quality === "balanced" ? 85 : 115;
+      object.visible = worldMaxZ >= playerZ - ahead && worldMinZ <= playerZ + 20;
+    });
+    const targetX = LANE_X[0] + clamp(state.lane,0,2) / 2 * (LANE_X[2]-LANE_X[0]);
     const easing = this.reducedMotion ? 1 : frameResponse(LANE_POSITION_RESPONSE, deltaSeconds);
-    this.rider.group.position.x += (targetX - this.rider.group.position.x) * easing;
+    if(state.airHeight !== undefined)this.rider.group.position.x=targetX;
+    else this.rider.group.position.x += (targetX - this.rider.group.position.x) * easing;
     this.rider.group.position.z = playerZ;
     const rawLaneVelocity = deltaSeconds > 0
       ? (this.rider.group.position.x - this.previousRiderX) / deltaSeconds
@@ -667,11 +517,11 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     } else {
       this.smoothedLaneVelocity += (rawLaneVelocity - this.smoothedLaneVelocity)
         * frameResponse(LANE_VELOCITY_RESPONSE, deltaSeconds);
-      const targetBodySteer = clamp(-this.smoothedLaneVelocity * 0.055, -0.42, 0.42);
+      const targetBodySteer = clamp(-this.smoothedLaneVelocity * 0.032, -0.28, 0.28);
       this.bodySteerRadians += (targetBodySteer - this.bodySteerRadians)
         * frameResponse(STEERING_RESPONSE, deltaSeconds);
     }
-    const handlebarSteer = this.bodySteerRadians * 1.32;
+    const handlebarSteer = this.bodySteerRadians * 1.1;
     const resolvedHandlebarSteer = this.rider.frontAssembly.rotation.y
       + (handlebarSteer - this.rider.frontAssembly.rotation.y)
         * frameResponse(HANDLEBAR_RESPONSE, deltaSeconds);
@@ -679,20 +529,22 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
       * frameResponse(STEERING_RESPONSE, deltaSeconds);
     const distanceReset = state.distance + Number.EPSILON < this.previousDistance;
     if (distanceReset) {
+      this.clearingStarts.clear();
       this.pedalPhaseRadians = 0;
       this.pedalCadenceRpm = 0;
       this.rider.wheels.forEach((wheel) => { wheel.rotation.x = 0; });
     }
     const distanceDelta = Math.max(0, state.distance - this.previousDistance);
     this.previousDistance = state.distance;
-    const wheelSpin = distanceDelta * WORLD_PER_METER / CHASE_RIDER_WHEEL_RADIUS;
-    const crankDelta = wheelSpin / CHASE_RIDER_GEAR_RATIO;
+    const wheelSpin = distanceDelta * WORLD_PER_METER / (CHASE_RIDER_WHEEL_RADIUS * CHASE_RIDER_DISPLAY_SCALE);
+    // Travel is along -Z. Both wheel and crank must rotate about -X.
+    const crankDelta = -wheelSpin / CHASE_RIDER_GEAR_RATIO;
     const pedalsCanAdvance = !state.paused && !this.reducedMotion && distanceDelta > 0;
     if (pedalsCanAdvance) {
       this.pedalPhaseRadians = (this.pedalPhaseRadians + crankDelta) % TWO_PI;
     }
     const targetCadenceRpm = pedalsCanAdvance && deltaSeconds > 0
-      ? clamp((crankDelta / deltaSeconds) * (60 / TWO_PI), 0, MAX_PEDAL_CADENCE_RPM)
+      ? clamp((Math.abs(crankDelta) / deltaSeconds) * (60 / TWO_PI), 0, MAX_PEDAL_CADENCE_RPM)
       : 0;
     this.pedalCadenceRpm += (targetCadenceRpm - this.pedalCadenceRpm)
       * Math.min(1, deltaSeconds * PEDAL_CADENCE_RESPONSE);
@@ -700,16 +552,18 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     const seatedPedalBob = this.reducedMotion
       ? 0
       : SEATED_PEDAL_BOB_AMPLITUDE * (0.5 - Math.cos(pedalPhase * 2) * 0.5);
-    this.rider.group.position.y = PLAYER_BASE_Y + seatedPedalBob;
+    this.rider.group.position.y = PLAYER_BASE_Y + seatedPedalBob + (state.airHeight ?? 0);
+    this.rider.group.rotation.x = (state.airHeight ?? 0)>0.05 ? -0.12 : (state.charge ?? 0)*0.06;
     applyChaseRiderPose(this.rider, "ride", {
       pedalPhaseRadians: pedalPhase,
       steeringRadians: resolvedHandlebarSteer
     });
     this.rider.wheels.forEach((wheel) => { wheel.rotation.x -= wheelSpin; });
 
-    this.updateObstacles(state.distance);
+    this.updateObstacles(state);
     this.updatePedestrians(state.distance);
-    this.updatePaper(state.distance);
+    this.updatePaper(state);
+    this.updateStuntObjects(state);
     this.updateShadowRig(playerZ);
     this.updateCamera(playerZ, deltaSeconds, state);
     const steeringPivot = this.rider.frontAssembly.localToWorld(this.steeringPivot.set(0, 0, 0)).project(this.camera);
@@ -730,6 +584,10 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
       this.canvas.dataset.chaseBodyRoll = this.rider.group.rotation.z.toFixed(3);
       this.canvas.dataset.chaseCameraX = this.camera.position.x.toFixed(3);
       this.canvas.dataset.chaseDrawCalls = String(this.renderer.info.render.calls);
+      this.canvas.dataset.chaseTriangles = String(this.renderer.info.render.triangles);
+      this.canvas.dataset.chaseStage = chaseStageAt(state.distance).id;
+      this.canvas.dataset.chaseGameplay = "stunts-and-bell";
+      this.canvas.dataset.chaseAirHeight = (state.airHeight??0).toFixed(3);
       this.canvas.dataset.chaseGeometries = String(this.renderer.info.memory.geometries);
       this.canvas.dataset.chaseTextures = String(this.renderer.info.memory.textures);
       this.canvas.dataset.chasePrimitiveGeometries = String(CHASE_PRIMITIVES.geometryCount);
@@ -745,6 +603,8 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
       this.canvas.dataset.chaseLeftToeDirectionError = footOrientationError.leftToeDirectionRadians.toFixed(6);
       this.canvas.dataset.chaseRightToeDirectionError = footOrientationError.rightToeDirectionRadians.toFixed(6);
       this.canvas.dataset.chasePedalPhase = pedalPhase.toFixed(4);
+      this.canvas.dataset.chaseCrankAngle = this.rider.crank.rotation.x.toFixed(4);
+      this.canvas.dataset.chaseWheelAngle = this.rider.frontWheel.rotation.x.toFixed(4);
       this.canvas.dataset.chasePedalCadenceRpm = this.pedalCadenceRpm.toFixed(1);
       this.canvas.dataset.chasePedalGearRatio = CHASE_RIDER_GEAR_RATIO.toFixed(1);
       this.canvas.dataset.chaseSeatedPedalBob = seatedPedalBob.toFixed(4);
@@ -756,10 +616,29 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     const cssHeight = this.canvas.clientHeight || LOGICAL_HEIGHT;
     const width = Math.max(480, Math.min(LOGICAL_WIDTH, Math.round(cssWidth)));
     const height = Math.max(270, Math.min(LOGICAL_HEIGHT, Math.round(cssHeight)));
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, defaultPixelRatioCap()));
+    const qualityScale = this.quality === "light" ? 0.78 : this.quality === "balanced" ? 1 : defaultPixelRatioCap();
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, qualityScale));
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+  }
+
+  private updateRenderQuality(frameTimeMs: number): void {
+    if (frameTimeMs <= 0 || frameTimeMs > 1000 || this.qualityFrameCount >= 50) return;
+    this.qualityFrameCount += 1;
+    this.qualityFrameTimeMs += frameTimeMs;
+    if (this.qualityFrameCount !== 24) return;
+    const mean = this.qualityFrameTimeMs / this.qualityFrameCount;
+    this.quality = mean > 65 ? "light" : mean > 34 ? "balanced" : "high";
+    this.canvas.dataset.chaseQuality = this.quality;
+    this.canvas.dataset.chaseMeasuredFrameMs = mean.toFixed(1);
+    if (this.quality === "high") return;
+    this.renderer.shadowMap.enabled = false;
+    const shadow = this.rider.root.getObjectByName("canteen-chase-rider-shadow");
+    if (shadow) shadow.visible = true;
+    this.camera.far = this.quality === "light" ? 92 : 115;
+    this.scene.fog = new THREE.Fog(PALETTE.fog, 34, this.camera.far - 4);
+    this.handleResize();
   }
 
   private configureLiveShadows(): void {
@@ -773,7 +652,7 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.sun.shadow.camera.top = 12;
     this.sun.shadow.camera.bottom = -4.5;
     this.sun.shadow.bias = -0.00016;
-    this.sun.shadow.normalBias = 0.018;
+    this.sun.shadow.normalBias = 0.065;
     this.sun.shadow.radius = 2.2;
   }
 
@@ -794,123 +673,21 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
   }
 
   private buildWorld(): void {
-    const staticWorld = new THREE.Group();
-    staticWorld.name = "canteen-chase-static-world";
-    const routeLength = GOAL_DISTANCE * WORLD_PER_METER + 86;
-    const routeCenter = -(GOAL_DISTANCE * WORLD_PER_METER) / 2 + 4;
-    const grass = new THREE.Mesh(CHASE_PRIMITIVES.plane(72, routeLength), material(PALETTE.grass));
-    grass.rotation.x = -Math.PI / 2;
-    grass.position.set(0, -0.03, routeCenter);
-    staticWorld.add(grass);
-    const road = new THREE.Mesh(CHASE_PRIMITIVES.plane(ROAD_HALF_WIDTH * 2, routeLength), material(PALETTE.road));
-    road.rotation.x = -Math.PI / 2;
-    road.position.set(0, 0, routeCenter);
-    staticWorld.add(road);
-    for (const side of [-1, 1]) {
-      const sidewalk = new THREE.Mesh(CHASE_PRIMITIVES.plane(2.7, routeLength), material(PALETTE.pavement));
-      sidewalk.rotation.x = -Math.PI / 2;
-      sidewalk.position.set(side * (ROAD_HALF_WIDTH + 1.42), 0.012, routeCenter);
-      staticWorld.add(sidewalk);
-      const curb = box(0.22, 0.2, routeLength, PALETTE.pavementLight, side * (ROAD_HALF_WIDTH + 0.11), 0.1, routeCenter);
-      staticWorld.add(curb);
-      const edge = new THREE.Mesh(CHASE_PRIMITIVES.plane(0.13, routeLength), material(PALETTE.roadEdge, true));
-      edge.rotation.x = -Math.PI / 2;
-      edge.position.set(side * (ROAD_HALF_WIDTH - 0.18), 0.025, routeCenter);
-      staticWorld.add(edge);
-    }
-    for (const x of [-ROAD_HALF_WIDTH / 3, ROAD_HALF_WIDTH / 3]) {
-      for (let z = 20; z > -routeLength + 20; z -= 5.8) {
-        const dash = new THREE.Mesh(CHASE_PRIMITIVES.plane(0.2, 2.9), material(PALETTE.lane, true));
-        dash.rotation.x = -Math.PI / 2;
-        dash.position.set(x, 0.028, z);
-        staticWorld.add(dash);
-      }
-    }
-
-    // 路线按草坪树阵、校园楼群与启真湖水岸三类路段交替，避免两侧重复砖楼。
-    staticWorld.add(buildLakeRoadside(1, -61, 28, 4));
-    staticWorld.add(buildLakeRoadside(-1, -132, 28, 9));
-
-    for (let index = 0; index < 30; index += 1) {
-      const z = 11 - index * 6.2;
-      const zoneIndex = Math.floor(Math.max(0, -z + 4) / 30);
-      const zoneType = zoneIndex % 3;
-      const firstLake = z <= -47 && z >= -75;
-      const secondLake = z <= -118 && z >= -146;
-      const lakeSide = firstLake ? 1 : -1;
-      for (const side of [-1, 1]) {
-        const seed = index * 7 + (side > 0 ? 3 : 0);
-        const isLakeZone = firstLake || secondLake;
-        const isWaterEdge = isLakeZone && side === lakeSide;
-        if (!isWaterEdge || index % 3 === 0) {
-          const tree = buildTree(seed);
-          tree.position.set(side * (isWaterEdge ? 20.5 : 9.2 + (seed % 3) * 0.55), 0, z - (seed % 4) * 0.7);
-          staticWorld.add(tree);
-        }
-        if (index % 2 === 0) {
-          const lamp = buildLamp();
-          lamp.position.set(side * 6.45, 0, z - 2.7);
-          if (side < 0) lamp.scale.x = -1;
-          staticWorld.add(lamp);
-        }
-        if (!isLakeZone && zoneType === 1 && index % 3 === 1) {
-          const width = 7 + (seed % 3) * 1.6;
-          const height = 4.8 + (seed % 4) * 0.8;
-          const building = buildCampusBlock(width, height, 5.2, seed);
-          building.position.set(side * (14.2 + width * 0.34), 0, z - 1.5);
-          if (side < 0) building.rotation.y = Math.PI;
-          staticWorld.add(building);
-        } else if (isLakeZone && side !== lakeSide && index % 4 === 1) {
-          const hall = buildLakesideHall(seed);
-          hall.position.set(side * 16.8, 0, z - 1.2);
-          hall.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
-          staticWorld.add(hall);
-        }
-      }
-    }
-
-    const campusMarker = buildStoneCampusMarker();
-    campusMarker.position.set(-8.05, 0, -16);
-    campusMarker.rotation.y = 0.08;
-    staticWorld.add(campusMarker);
-
-    const qiushiRoadSign = pixelSign("求是路", 3.2);
-    qiushiRoadSign.position.set(7.25, 0, -42);
-    qiushiRoadSign.rotation.y = -0.08;
-    staticWorld.add(qiushiRoadSign);
-
-    const theaterGuideSign = pixelSign("剧场 →", 5.2, "#244A66");
-    theaterGuideSign.position.set(-7.55, 0, -103);
-    theaterGuideSign.rotation.y = 0.08;
-    staticWorld.add(theaterGuideSign);
-
-    const firstRack = buildCampusBicycleRack();
-    firstRack.position.set(8.35, 0.02, -28);
-    staticWorld.add(firstRack);
-    const secondRack = buildCampusBicycleRack();
-    secondRack.position.set(-8.35, 0.02, -118);
-    secondRack.rotation.y = Math.PI;
-    staticWorld.add(secondRack);
-
-    for (const z of [-70, -139]) {
-      for (const side of [-1, 1]) {
-        const hedge = box(4.4, 0.72, 1.35, PALETTE.grassDark, side * 8.7, 0.36, z);
-        hedge.add(box(4.0, 0.3, 1.0, PALETTE.treeLight, 0, 0.42, 0));
-        staticWorld.add(hedge);
-      }
-    }
-
-    const destination = buildTheaterDestination();
+    const staticWorld = createChaseCampusEnvironment(CHASE_PRIMITIVES);
+    this.staticWorld = staticWorld;
+    const destination = createChaseTheaterFacade(CHASE_PRIMITIVES);
     destination.position.set(0, 0, DESTINATION_Z);
     staticWorld.add(destination);
     mergeStaticWorldMeshes(staticWorld);
-    if (this.enableLiveShadows) {
-      staticWorld.traverse((object) => {
-        if (!(object instanceof THREE.Mesh)) return;
-        object.castShadow = false;
-        object.receiveShadow = true;
-      });
-    }
+    staticWorld.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+      const material = object.material as THREE.MeshStandardMaterial;
+      const color = material.color?.getHex();
+      const ground = [0x788b6d, 0x657073, 0x727b7b, 0xe0d9c8, 0xecece0, 0xb9bfb6].includes(color);
+      const foliage = [0x3b6045, 0x59794e, 0x2c4c3b].includes(color);
+      object.castShadow = this.enableLiveShadows && !ground;
+      object.receiveShadow = this.enableLiveShadows && !foliage;
+    });
     this.scene.add(staticWorld);
   }
 
@@ -925,11 +702,12 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.paper.add(glow);
   }
 
-  private updatePaper(distance: number): void {
+  private updatePaper(state: ChaseRenderState): void {
+    const distance=state.distance;
     const progress = clamp(distance / GOAL_DISTANCE, 0, 1);
-    const ahead = 28 - progress * 15;
+    const ahead = state.paperGap ?? 28 - progress * 15;
     this.paper.position.set(
-      Math.sin(this.animationSeconds * 1.7) * (1.6 - progress * 0.8),
+      state.paperLane !== undefined ? (state.paperLane-1)*3.4 : Math.sin(this.animationSeconds * 1.7) * (1.6 - progress * 0.8),
       3.25 + Math.sin(this.animationSeconds * 5.2) * 0.28,
       -distance * WORLD_PER_METER - ahead
     );
@@ -937,7 +715,8 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     this.paper.rotation.z = Math.sin(this.animationSeconds * 4.4) * 0.12;
   }
 
-  private updateObstacles(distance: number): void {
+  private updateObstacles(state: ChaseRenderState): void {
+    const distance=state.distance;
     const visible = visibleObstacles(distance);
     const active = new Set(visible.map((entry) => entry.id));
     this.obstacleModels.forEach((model, id) => {
@@ -954,7 +733,42 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
         this.scene.add(model);
       }
       this.placeObstacle(model, obstacle, distance);
+      if(state.clearedObstacleIds?.has(obstacle.id)) {
+        if(!this.clearingStarts.has(obstacle.id))this.clearingStarts.set(obstacle.id,this.animationSeconds);
+        const progress=this.reducedMotion?1:clamp((this.animationSeconds-this.clearingStarts.get(obstacle.id)!)/.55,0,1);
+        model.position.x += (obstacle.lane<1?-1:1)*progress*6;
+        model.rotation.z = progress*(obstacle.lane<1?.45:-.45);
+        model.visible=progress<1;
+      } else {model.visible=true;model.rotation.z=0;}
     });
+  }
+
+  private updateStuntObjects(state: ChaseRenderState):void {
+    const active=new Set<string>();
+    for(const ramp of STUNT_RAMPS){
+      if(ramp.distance<state.distance-8||ramp.distance>state.distance+100)continue;active.add(ramp.id);
+      let group=this.stuntObjects.get(ramp.id);
+      if(!group){group=new THREE.Group();
+        const shape=new THREE.Shape();shape.moveTo(-2.4,0);shape.lineTo(2.4,0);shape.lineTo(2.4,1.15);shape.closePath();
+        const geo=new THREE.ExtrudeGeometry(shape,{depth:2.3,bevelEnabled:false});geo.rotateY(Math.PI/2);geo.translate(-1.15,0,0);
+        group.add(new THREE.Mesh(geo,material(0xd69431)));for(let i=0;i<3;i++)group.add(box(.22,.05,.8,0xffe7a7,(i-1)*.55,.7,.0));
+        this.stuntObjects.set(ramp.id,group);this.scene.add(group);
+      }
+      group.position.set(LANE_X[ramp.lane],.01,-ramp.distance*WORLD_PER_METER);
+    }
+    for(const item of STUNT_PICKUPS){
+      if(item.distance<state.distance-3||item.distance>state.distance+100||state.collectedPickupIds?.has(item.id))continue;active.add(item.id);
+      let group=this.stuntObjects.get(item.id);
+      if(!group){group=new THREE.Group();
+        const ring=new THREE.Mesh(new THREE.TorusGeometry(.62,.09,8,20),new THREE.MeshStandardMaterial({color:item.kind==="tray"?0x82e8d2:0xffd783,emissive:item.kind==="tray"?0x246b5f:0x8f661b,emissiveIntensity:.6,roughness:.3}));group.add(ring);
+        if(item.kind==="tray")group.add(box(.68,.48,.1,0xbfd5d0,0,0,0));else{const flap=box(.5,.65,.045,0xffedb9,0,0,0);flap.rotation.z=.25;group.add(flap);}
+        this.stuntObjects.set(item.id,group);this.scene.add(group);
+      }
+      group.position.set(LANE_X[item.lane],1.6+Math.sin(this.animationSeconds*3)*.16,-item.distance*WORLD_PER_METER);group.rotation.y=this.animationSeconds*1.3;
+    }
+    for(const [id,group]of this.stuntObjects)if(!active.has(id)){this.scene.remove(group);disposeObject(group);this.stuntObjects.delete(id);}
+    const pulse=state.bellPulse??0;this.bellRing.visible=pulse>0;this.bellRing.position.set(this.rider.group.position.x,.14,this.rider.group.position.z-3);this.bellRing.scale.setScalar(1+(1-pulse)*10);(this.bellRing.material as THREE.MeshBasicMaterial).opacity=pulse*.72;
+    this.trayShield.visible=state.shield===true;this.trayShield.position.copy(this.rider.group.position);this.trayShield.position.y+=1.3;this.trayShield.rotation.y=this.animationSeconds*1.7;
   }
 
   private placeObstacle(model: THREE.Group, obstacle: ChaseObstacle, distance: number): void {
@@ -1001,28 +815,23 @@ export class ChaseThreeRenderer implements ChaseRendererBackend {
     const sidewalkX = pedestrian.side * (6.45 + pedestrian.laneOffset * 1.45);
     model.group.position.set(sidewalkX, 0.04, -pedestrian.distance * WORLD_PER_METER + walkOffset);
     model.group.rotation.y = direction < 0 ? 0 : Math.PI;
-    const stride = this.reducedMotion ? 0 : Math.sin(this.animationSeconds * 7.4 + pedestrian.phase * Math.PI);
-    model.leftLeg.rotation.x = stride * 0.54;
-    model.rightLeg.rotation.x = -stride * 0.54;
-    model.leftArm.rotation.x = -stride * 0.4;
-    model.rightArm.rotation.x = stride * 0.4;
-    if (model.pair) {
-      model.pair.leftLeg.rotation.x = -stride * 0.48;
-      model.pair.rightLeg.rotation.x = stride * 0.48;
-    }
+    animateChasePedestrian(model, this.animationSeconds * 5.7 + pedestrian.phase * Math.PI, this.reducedMotion);
   }
 
   private updateCamera(playerZ: number, deltaSeconds: number, state: ChaseRenderState): void {
-    const targetCameraX = this.rider.group.position.x * 0.27;
+    const targetCameraX = this.rider.group.position.x * 0.34 + 1.7;
     const cameraEase = this.reducedMotion ? 1 : frameResponse(CAMERA_FOLLOW_RESPONSE, deltaSeconds);
     this.camera.position.x += (targetCameraX - this.camera.position.x) * cameraEase;
     const speed = clamp((state.distance + 70) / GOAL_DISTANCE, 0, 1);
-    const bob = this.reducedMotion ? 0 : Math.sin(this.animationSeconds * (7 + speed * 3)) * (0.035 + speed * 0.035);
+    const targetFov = this.reducedMotion ? 53 : 53 + speed * 5 + ((state.boostSeconds??0)>0?7:0);
+    this.camera.fov += (targetFov - this.camera.fov) * cameraEase;
+    this.camera.updateProjectionMatrix();
+    const bob = this.reducedMotion ? 0 : Math.sin(this.animationSeconds * (7 + speed * 3)) * 0.012;
     this.camera.position.set(
       this.camera.position.x,
-      4.82 + bob,
+      3.85 + bob + (state.airHeight??0)*.35,
       playerZ + PLAYER_CAMERA_GAP
     );
-    this.camera.lookAt(this.rider.group.position.x * 0.46, 1.12, playerZ - PLAYER_LOOK_AHEAD);
+    this.camera.lookAt(this.rider.group.position.x * 0.46, 1.1, playerZ - PLAYER_LOOK_AHEAD);
   }
 }

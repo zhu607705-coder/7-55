@@ -19,6 +19,22 @@ const finaleManifest = JSON.parse(await readFile(
   ),
   "utf8"
 ));
+const visualHintModelSource = await readFile(
+  new URL("../src/modules/ChapterFourVisualHintModel.ts", import.meta.url),
+  "utf8"
+);
+const sceneSource = await readFile(
+  new URL("../src/scenes/rpg/ChapterFourTemporalMazeScene.ts", import.meta.url),
+  "utf8"
+);
+const gameStateSource = await readFile(
+  new URL("../src/core/GameState.ts", import.meta.url),
+  "utf8"
+);
+const saveStoreSource = await readFile(
+  new URL("../src/core/SaveStore.ts", import.meta.url),
+  "utf8"
+);
 
 const errors = [];
 let assertionCount = 0;
@@ -372,6 +388,172 @@ for (const floor of layout.floors ?? []) {
   validateClearPoint(floor.elevator.standPosition, floor.staticCollisions, `${label}.elevator.standPosition`, 0);
   validateClearPoint(floor.elevator.arrivalPosition, floor.staticCollisions, `${label}.elevator.arrivalPosition`, 0);
 }
+
+const evidenceContracts = content.evidenceContracts ?? [];
+const expectedRawDetailIds = evidenceContracts.flatMap(
+  (contract) => contract.rawDetailIds ?? []
+);
+const evidenceDetails = layout.evidenceDetails ?? [];
+const authoredPhaseIds = new Set(content.orderedPhases ?? []);
+const authoredPlateIds = new Set(
+  [
+    ...(content.phaseContracts ?? []).flatMap((contract) => contract.floorPlateIds ?? []),
+    ...(layout.floors ?? []).map((floor) => floor.assetId)
+  ]
+);
+const validEvidenceFacts = new Set([
+  ...Object.keys(content.presentation?.factCopy ?? {}),
+  ...evidenceContracts.flatMap((contract) => contract.producerFacts ?? []),
+  ...evidenceContracts.flatMap((contract) => contract.consumedByFacts ?? [])
+]);
+assert(evidenceContracts.length === 11, "Chapter 4 must retain eleven cross-level evidence contracts");
+assert(expectedRawDetailIds.length === 30, "Chapter 4 evidence contracts must declare exactly thirty raw details");
+assert(
+  new Set(expectedRawDetailIds).size === expectedRawDetailIds.length,
+  "Chapter 4 evidence-contract raw detail ids must be unique"
+);
+assert(evidenceDetails.length === 30, "layout must author exactly thirty environmental evidence details");
+assertSetEqual(
+  evidenceDetails.map((detail) => detail.id),
+  expectedRawDetailIds,
+  "layout/content environmental evidence detail coverage"
+);
+const evidenceContractByRawDetailId = new Map(
+  evidenceContracts.flatMap((contract) => (
+    (contract.rawDetailIds ?? []).map((detailId) => [detailId, contract])
+  ))
+);
+const evidenceEchoIds = [];
+const allowedDetailKeys = new Set(["id", "family", "visual", "glyph", "color", "source", "echoes"]);
+const allowedSourceKeys = new Set(["storyFloor", "phaseIds", "statePlateIds", "bounds", "supportingVisual"]);
+const allowedEchoKeys = new Set(["id", "storyFloor", "phaseIds", "requiredFacts", "bounds"]);
+for (const detail of evidenceDetails) {
+  registerId(detail, "layout.evidenceDetails");
+  const contract = evidenceContractByRawDetailId.get(detail.id);
+  assert(Boolean(contract), `environment detail ${detail.id} must belong to one evidence contract`);
+  assert(
+    ["time", "paper_route", "identity"].includes(detail.family),
+    `environment detail ${detail.id} must use an authored evidence family`
+  );
+  assert(
+    Object.keys(detail).every((key) => allowedDetailKeys.has(key)),
+    `environment detail ${detail.id} must contain raw rendering data only`
+  );
+  assert(
+    typeof detail.color === "string" && /^#[0-9a-f]{6}$/i.test(detail.color),
+    `environment detail ${detail.id} must define one hex color`
+  );
+  assert(
+    typeof detail.visual === "string" && detail.visual.length > 0,
+    `environment detail ${detail.id} must define one primitive visual`
+  );
+  assert(
+    Object.keys(detail.source ?? {}).every((key) => allowedSourceKeys.has(key)),
+    `environment detail ${detail.id}.source must not include answer or prompt fields`
+  );
+  assert(
+    expectedFloors.includes(detail.source?.storyFloor),
+    `environment detail ${detail.id}.source must use an active story floor`
+  );
+  assert(
+    Array.isArray(detail.source?.phaseIds)
+      && detail.source.phaseIds.length > 0
+      && detail.source.phaseIds.every((phaseId) => authoredPhaseIds.has(phaseId)),
+    `environment detail ${detail.id}.source phases must be active Chapter 4 phases`
+  );
+  assert(
+    detail.source?.phaseIds?.includes(contract?.producerPhase),
+    `environment detail ${detail.id}.source must remain visible in its producer phase`
+  );
+  assert(
+    Array.isArray(detail.source?.statePlateIds)
+      && detail.source.statePlateIds.length > 0
+      && detail.source.statePlateIds.every((plateId) => authoredPlateIds.has(plateId)),
+    `environment detail ${detail.id}.source must bind authored state plates`
+  );
+  validateRect(detail.source?.bounds, `evidenceDetails.${detail.id}.source.bounds`, topology.worldSize);
+  assert(Array.isArray(detail.echoes), `environment detail ${detail.id}.echoes must be an array`);
+  for (const echo of detail.echoes ?? []) {
+    registerId(echo, `layout.evidenceDetails.${detail.id}.echoes`);
+    evidenceEchoIds.push(echo.id);
+    assert(
+      Object.keys(echo).every((key) => allowedEchoKeys.has(key)),
+      `environment echo ${echo.id} must not include answer or prompt fields`
+    );
+    assert(expectedFloors.includes(echo.storyFloor), `environment echo ${echo.id} floor must be active`);
+    assert(
+      Array.isArray(echo.phaseIds)
+        && echo.phaseIds.length > 0
+        && echo.phaseIds.every((phaseId) => authoredPhaseIds.has(phaseId)),
+      `environment echo ${echo.id} phases must be active Chapter 4 phases`
+    );
+    const allowedEchoPhases = new Set([
+      contract?.producerPhase,
+      ...(contract?.consumerPhases ?? [])
+    ]);
+    assert(
+      echo.phaseIds?.every((phaseId) => allowedEchoPhases.has(phaseId)),
+      `environment echo ${echo.id} must stay within its evidence producer/consumer phases`
+    );
+    assert(
+      (echo.requiredFacts ?? []).every((factId) => validEvidenceFacts.has(factId)),
+      `environment echo ${echo.id} must use controller-owned evidence facts`
+    );
+    validateRect(echo.bounds, `evidenceDetails.${detail.id}.echoes.${echo.id}.bounds`, topology.worldSize);
+  }
+}
+assert(evidenceEchoIds.length === 28, "Chapter 4 must author twenty-eight cross-level evidence echoes");
+assert(
+  new Set(evidenceEchoIds).size === evidenceEchoIds.length,
+  "Chapter 4 environmental evidence echo ids must be unique"
+);
+assertSetEqual(
+  [
+    "room204_projection_wet_trace",
+    "maintenance_tool_outline",
+    "power_panel_door_trace",
+    "chase_hall_node",
+    "checkin_paper_edge_echo",
+    "exterior_card_strip"
+  ].filter((echoId) => evidenceEchoIds.includes(echoId)),
+  [
+    "room204_projection_wet_trace",
+    "maintenance_tool_outline",
+    "power_panel_door_trace",
+    "chase_hall_node",
+    "checkin_paper_edge_echo",
+    "exterior_card_strip"
+  ],
+  "critical cross-level evidence consumers"
+);
+assert(
+  /CHAPTER_FOUR_VISUAL_HINT_MAX_FAILURES\s*=\s*4/.test(visualHintModelSource)
+    && /failureCount\s*<=\s*1\)\s*return\s*0/.test(visualHintModelSource)
+    && /failureCount\s*===\s*2\)\s*return\s*1/.test(visualHintModelSource)
+    && /failureCount\s*===\s*3\)\s*return\s*2/.test(visualHintModelSource)
+    && /levels\.join\(","\)\s*!==\s*"0,1,2,3,3"/.test(visualHintModelSource),
+  "adaptive environmental help must progress 0,1,2,3 and clamp after four failures"
+);
+assert(
+  /visualEmphasis:\s*level\s*>=\s*1/.test(visualHintModelSource)
+    && /positionalAudio:\s*level\s*>=\s*2/.test(visualHintModelSource)
+    && /pairedEmphasis:\s*level\s*>=\s*3/.test(visualHintModelSource)
+    && !/auto.?complete|factIds|SaveStore|GameState/i.test(visualHintModelSource),
+  "adaptive help may strengthen perception only and must not write progression"
+);
+assert(
+  /syncEvidenceDetailRuntime\(this\.bridge\.getState\(\)\)/.test(sceneSource)
+    && /chapter4_environment_hint_pulse/.test(sceneSource)
+    && /clearAllChapterFourVisualHints\(\)/.test(sceneSource)
+    && /destroyEvidenceDetailRuntime\("scene_shutdown"\)/.test(sceneSource)
+    && /environmentEvidence:/.test(sceneSource),
+  "Phaser must render, reset, spatially cue and debug the runtime-only evidence-help layer"
+);
+assert(
+  !/visualHint|visual_hint|hintFailure|hint_failure|adaptiveHint|adaptive_hint/i.test(gameStateSource)
+    && !/visualHint|visual_hint|hintFailure|hint_failure|adaptiveHint|adaptive_hint/i.test(saveStoreSource),
+  "adaptive help attempts must remain absent from GameState and SaveStore"
+);
 
 const a1 = floorByStory.get("A1");
 const a2 = floorByStory.get("A2");
@@ -1437,6 +1619,7 @@ assertJsonEqual({
   guardFootBox: finalChaseRuntime?.guardFootBox,
   waypointReachDistance: finalChaseRuntime?.waypointReachDistance,
   stableCommittedFramesToArm: finalChaseRuntime?.stableCommittedFramesToArm,
+  startGraceMs: finalChaseRuntime?.startGraceMs,
   maxStepMs: finalChaseRuntime?.maxStepMs,
   transportId: finalChaseRuntime?.transportId,
   guardPursuitStoryFloors: finalChaseRuntime?.guardPursuitStoryFloors,
@@ -1450,6 +1633,7 @@ assertJsonEqual({
   guardFootBox: { width: 20.4, height: 15.3 },
   waypointReachDistance: 8,
   stableCommittedFramesToArm: 4,
+  startGraceMs: 1200,
   maxStepMs: 50,
   transportId: "main_stair",
   guardPursuitStoryFloors: ["A1", "A2"],
@@ -1810,7 +1994,7 @@ if (errors.length) {
 }
 
 console.log(
-  `Chapter 4 topology PASS assertions=${assertionCount} schema=2 floors=${topology.floors.length} networks=${topology.navigationNetworks.length} routes=${topology.routeAssertions.length} chaseRoutes=${topology.interfloorRouteAssertions.length} chaseAndReturnTransport=main_stair sampleSteps=2,4 bakeryRoutes=${bakeryRuntime.walkabilityRoutes.length} bakeryNpcCollision=pure_data_arcade_math_contract(no_browser_evidence) room204Assertions=${room204AssertionCount} room204PieceSlotCandidates=${room204PieceSlotCandidateCount} room204Aisles=3+1 sampleSteps=2,4 room204Collision=pure_data_manifest_math_contract(no_browser_evidence) maintenanceGuardEdges=${maintenanceGuardEdgeKeys.size} maintenanceGuardSampleStep=2 maintenanceGuardCollision=pure_data_layout_math_contract(no_browser_evidence) task11MinuteEndpoint=programmatic_visible_bounds task11LightRegions=5_visual_only_noncolliding_no_browser_evidence task12Collision=pure_data_layout_math_contract(no_browser_evidence)`
+  `Chapter 4 topology PASS assertions=${assertionCount} schema=2 floors=${topology.floors.length} networks=${topology.navigationNetworks.length} routes=${topology.routeAssertions.length} chaseRoutes=${topology.interfloorRouteAssertions.length} chaseAndReturnTransport=main_stair sampleSteps=2,4 evidence=30raw+28echo adaptiveHelp=runtime-only+clamped4 bakeryRoutes=${bakeryRuntime.walkabilityRoutes.length} bakeryNpcCollision=pure_data_arcade_math_contract(no_browser_evidence) room204Assertions=${room204AssertionCount} room204PieceSlotCandidates=${room204PieceSlotCandidateCount} room204Aisles=3+1 sampleSteps=2,4 room204Collision=pure_data_manifest_math_contract(no_browser_evidence) maintenanceGuardEdges=${maintenanceGuardEdgeKeys.size} maintenanceGuardSampleStep=2 maintenanceGuardCollision=pure_data_layout_math_contract(no_browser_evidence) task11MinuteEndpoint=programmatic_visible_bounds task11LightRegions=5_visual_only_noncolliding_no_browser_evidence task12Collision=pure_data_layout_math_contract(no_browser_evidence)`
 );
 
 function assert(condition, message) {

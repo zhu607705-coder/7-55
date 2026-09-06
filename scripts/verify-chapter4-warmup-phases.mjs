@@ -181,7 +181,7 @@ for (const token of [
   assertIncludes(scene, token, `scene restart reset ${token}`);
 }
 assert(
-  /scene_shutdown[\s\S]*?this\.closeFloorPanel\(\)[\s\S]*?this\.resetRestartLifecycleState\(\)/.test(scene),
+  /Phaser\.Scenes\.Events\.SHUTDOWN[\s\S]*?this\.closeFloorPanel\(\)[\s\S]*?this\.resetRestartLifecycleState\(\)/.test(scene),
   "scene shutdown: modal input state and restart-sensitive references must be released"
 );
 assert(

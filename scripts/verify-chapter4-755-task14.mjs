@@ -61,12 +61,9 @@ const GAMEPLAY_IDS = [
   "c4-755-opening",
   "c4-755-hall-clock",
   "c4-755-bakery-1225",
-  "c4-755-clock-1850-ready",
   "c4-755-classrooms-1850",
   "c4-755-elevator-history",
   "c4-755-room204-1850",
-  "c4-755-a2-field-records",
-  "c4-755-clock-2245-ready",
   "c4-755-maintenance-2245",
   "c4-755-blackout-0754",
   "c4-755-chase",
@@ -80,12 +77,9 @@ const EXPECTED_SEEDS = {
   "c4-755-opening": ["opening_handoff", "2245_opening", "A1", "a1_lobby"],
   "c4-755-hall-clock": ["hall_clock_inspection", "2245_opening", "A1", "a1_hall_clock"],
   "c4-755-bakery-1225": ["bakery_hour_hand", "1225_bakery", "A1", "a1_bakery"],
-  "c4-755-clock-1850-ready": ["room204_restore", "1225_bakery", "A1", "a1_hall_clock"],
   "c4-755-classrooms-1850": ["room204_restore", "1850_evening", "A1", "a1_hall_clock"],
   "c4-755-elevator-history": ["room204_restore", "1850_evening", "A1", "a1_main_elevator"],
   "c4-755-room204-1850": ["room204_restore", "1850_evening", "A3", "a3_reference_classroom"],
-  "c4-755-a2-field-records": ["room204_restore", "1850_evening", "A2", "a2_corridor"],
-  "c4-755-clock-2245-ready": ["maintenance_repair", "1850_evening", "A1", "a1_hall_clock"],
   "c4-755-maintenance-2245": ["maintenance_repair", "2245_maintenance", "A1", "a1_lobby"],
   "c4-755-blackout-0754": ["blackout_light_grid", "0754_blackout", "A1", "a1_power_panel"],
   "c4-755-chase": ["final_chase", "0754_blackout", "A1", "a1_lobby"],
@@ -93,6 +87,62 @@ const EXPECTED_SEEDS = {
   "c4-755-return-clock": ["return_to_clock", "0754_blackout", "A2", "a2_room_202"],
   "c4-755-checkin": ["morning_checkin", "0755_morning", "A1", "a1_checkin"],
   "c4-755-closure": ["exterior_closure", "0755_morning", "A1", "a1_exterior"]
+};
+
+const REQUIRED_EVIDENCE_FACTS_BY_CHECKPOINT = {
+  "c4-755-opening": [],
+  "c4-755-hall-clock": [],
+  "c4-755-bakery-1225": [],
+  "c4-755-classrooms-1850": [
+    "bakery_conveyor_direction_observed",
+    "bakery_tool_location_observed"
+  ],
+  "c4-755-elevator-history": [
+    "bakery_conveyor_direction_observed",
+    "bakery_tool_location_observed",
+    "classroom_104_chalk_residual_observed",
+    "classroom_105_terminal_replay_checked",
+    "elevator_history_observed"
+  ],
+  "c4-755-room204-1850": [
+    "bakery_conveyor_direction_observed",
+    "bakery_tool_location_observed",
+    "a1_time_route_compared",
+    "a3_reference_observed",
+    "a3_identity_context_observed"
+  ],
+  "c4-755-maintenance-2245": [
+    "room204_projection_composite_completed",
+    "room202_endpoint_inferred",
+    "maintenance_incident_linked"
+  ],
+  "c4-755-blackout-0754": [
+    "maintenance_incident_linked",
+    "clock_gear_repaired"
+  ],
+  "c4-755-chase": [
+    "light_grid_locked",
+    "powered_route_confirmed"
+  ],
+  "c4-755-final-minute": [
+    "powered_route_confirmed",
+    "room202_route_reached"
+  ],
+  "c4-755-return-clock": [
+    "room202_route_reached",
+    "final_minute_recovered",
+    "attendance_record_recovered"
+  ],
+  "c4-755-checkin": [
+    "attendance_record_recovered",
+    "final_minute_installed"
+  ],
+  "c4-755-closure": [
+    "attendance_record_recovered",
+    "checkin_card_accepted",
+    "checkin_paper_accepted",
+    "checkin_identity_verified"
+  ]
 };
 
 const LEGACY_C4_ALIASES = {
@@ -138,12 +188,14 @@ const hostSource = source("../src/scenes/rpg/RpgGameHost.tsx");
 const rpgPreloadSource = source("../src/scenes/rpg/RpgRuntimePreload.ts");
 const prologueGateSource = source("../src/components/Chapter4PrologueRuntimeGate.tsx");
 const sceneSource = source("../src/scenes/rpg/ChapterFourTemporalMazeScene.ts");
-const playerTextureSource = source("../src/scenes/rpg/RpgPlayerTextures.ts");
 const debugSource = source("../src/scenes/rpg/RpgRuntimeDebug.ts");
 const audioDirectorSource = source("../src/modules/AudioDirector.ts");
 const presentationDirectorSource = source("../src/modules/PresentationDirector.ts");
 const controllerSource = source("../src/modules/ChapterFourTemporalMazeController.ts");
 const stagePresentationSource = source("../src/modules/ChapterFourStagePresentation.ts");
+const transitionPresentationSource = source("../src/modules/ChapterFourTransitionPresentation.ts");
+const transitionOverlaySource = source("../src/components/temporal-maze/ChapterFourTransitionOverlay.tsx");
+const subtitleLayerSource = source("../src/components/RpgSubtitleLayer.tsx");
 const room204ModelSource = source("../src/scenes/rpg/ChapterFourRoom204Model.ts");
 
 const clockRegistration = layout.finalClockRuntime?.visualRegistration;
@@ -168,12 +220,7 @@ assert(
   "hall-clock sprite must use its visual registration instead of fitting the interaction rectangle"
 );
 assert(
-  /getRpgSceneWarmAssetUrls\([\s\S]*?sceneId: RpgSceneId,[\s\S]*?phase\?: ChapterFourWarmupPhase/.test(hostSource)
-    && /RPG_SCENE_WARM_ASSET_URLS:[\s\S]*?campus_bootstrap:[\s\S]*?duan_yongping_temporal_maze:/.test(hostSource)
-    && /module\.getRpgSceneWarmAssets\([\s\S]*?sceneId,[\s\S]*?phase === "scene" \? undefined : phase/.test(rpgPreloadSource)
-    && !/import\.meta\.glob/.test(rpgPreloadSource)
-    && /export function warmRpgRuntime\(/.test(rpgPreloadSource)
-    && /export function scheduleRpgRuntimeWarmup\(/.test(rpgPreloadSource),
+  /export function getRpgSceneWarmAssets\(/.test(hostSource) && /getChapterFourWarmupPhaseAssets\(phase \?\? "entry"\)/.test(hostSource) && /module\.getRpgSceneWarmAssets\(\s*sceneId,\s*phase === "scene" \? undefined : phase\s*\)/.test(rpgPreloadSource) && !/import\.meta\.glob/.test(rpgPreloadSource) && /export function warmRpgRuntime\(/.test(rpgPreloadSource) && /export function scheduleRpgRuntimeWarmup\(/.test(rpgPreloadSource),
   "RPG warmup must reuse one explicit Scene preload asset registry plus immediate and idle entry points"
 );
 assert(
@@ -184,11 +231,7 @@ assert(
   "a completed warmup must publish the resolved Host so entering RPG avoids the first React.lazy Suspense flash"
 );
 assert(
-  /const canWarmRpg = state\.runtimeMode === "phone" && access\.fullCampusMap[\s\S]*?state\.currentScene !== "timeline_recovery"/.test(appSource)
-    && /if \(!canWarmRpg\) return undefined/.test(appSource)
-    && /\[canWarmRpg, state\.rpgScene\]/.test(appSource)
-    && /scheduleRpgRuntimeWarmup\([\s\S]*?state\.rpgScene,[\s\S]*?"duan_yongping_temporal_maze" \? "entry" : undefined/.test(appSource)
-    && /chapter35_recovered_replay_gate_requested[\s\S]*?warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGateSource),
+  /state\.currentScene !== "timeline_recovery"/.test(appSource) && /scheduleRpgRuntimeWarmup\(\s*state\.rpgScene,\s*state\.rpgScene === "duan_yongping_temporal_maze" \? "entry" : undefined\s*\)/.test(appSource) && /chapter35_recovered_replay_gate_requested[\s\S]*?warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGateSource),
   "phone play must idle-warm its pending RPG while the 3.5 destination gate keeps Chapter 4 warmup behind replay confirmation"
 );
 assert(
@@ -199,25 +242,44 @@ assert(
   "RPG warmup must preserve save-data and Safari-compatible idle fallbacks"
 );
 const closureSource = source("../src/modules/ChapterFourClosureContract.ts");
+const exteriorDoorSource = source("../src/modules/ChapterFourExteriorDoorContract.ts");
+const closureSessionSource = source("../src/modules/ChapterFourClosureSessionRegistry.ts");
+const closurePlaybackSource = source("../src/components/temporal-maze/ChapterFourStarLampPlayback.tsx");
+const validationRunnerSource = source("./run-validation-suite.mjs");
+const closureComponentSource = source("../src/components/temporal-maze/ChapterFourStarLampClosure.tsx");
+const closureWarmAssetsSource = source("../src/scenes/rpg/ChapterFourWarmupAssets.ts");
 const mazeProjectionSource = source("../src/modules/ChapterFourMazeProjection.ts");
 const runtimeValidatorSource = source("./verify-chapter4-755-runtime.mjs");
 const task14ValidatorSource = source("./verify-chapter4-755-task14.mjs");
 const ciSource = source("../.github/workflows/web-ci.yml");
-const validationSuiteSource = source("./run-validation-suite.mjs");
+const packageSource = source("../package.json");
 
 const taskEntries = Object.entries(content.tasks ?? {});
 const activeTaskEntries = taskEntries.filter(([taskId]) => taskId !== "chapter_complete");
 const activeHints = activeTaskEntries.flatMap(([, task]) => Array.isArray(task?.hints) ? task.hints : []);
-assert(taskEntries.length === 40 && activeTaskEntries.length === 39, "Task 14 must define 39 active tasks plus chapter_complete");
+const expectedActiveTaskIds = new Set(
+  (content.phaseContracts ?? [])
+    .flatMap((contract) => contract?.taskKeys ?? [])
+    .filter((taskId) => taskId !== "chapter_complete")
+);
+assert(
+  taskEntries.length === expectedActiveTaskIds.size + 1
+    && activeTaskEntries.length === expectedActiveTaskIds.size
+    && activeTaskEntries.every(([taskId]) => expectedActiveTaskIds.has(taskId)),
+  "Task 14 must define exactly the active phase tasks plus chapter_complete"
+);
 for (const [taskId, task] of activeTaskEntries) {
   assert(
     Array.isArray(task?.hints)
-      && task.hints.length === (taskId === "acknowledge_exterior_closure" ? 0 : 3)
+      && task.hints.length === 3
       && task.hints.every((hint) => typeof hint === "string" && hint.trim().length > 0),
-    `${taskId} must expose three progressive hints except saved final answers, which need no further task`
+    `${taskId} must expose exactly three non-empty progressive hints`
   );
 }
-assert(activeHints.length === 114, "Task 14 must expose 114 hints without exposing internal final-answer receipt steps");
+assert(
+  activeHints.length === expectedActiveTaskIds.size * 3,
+  "Task 14 must expose exactly three hints for every active phase task"
+);
 assert(
   Array.isArray(content.tasks?.chapter_complete?.hints)
     && content.tasks.chapter_complete.hints.length === 0,
@@ -263,15 +325,13 @@ assert(
   "collapsed Chapter 4 task bar must use the same objective-only status layout as every other chapter"
 );
 assert(
-  /showTaskBar=\{activeSurface\s*===\s*"rpg"\}/.test(appSource)
-    && !/import\s+\{\s*QuestTaskBar\s*\}/.test(appSource)
-    && !/<QuestTaskBar/.test(appSource),
-  "desktop RPG scenes, including Chapter 4, must mount the shared task bar only through their Host"
+  /<PhoneShell\b[\s\S]*?showTaskBar=\{activeSurface === "phone"\}/.test(appSource) && /<ActiveRpgGameHost\b[\s\S]*?showTaskBar=\{activeSurface === "rpg"\}/.test(appSource) && /showTaskBar && !fishingSession && !assetLoadBlocked && !canteenExclusiveActive && !chapter4OverlayBlocked/.test(hostSource),
+  "desktop Chapter 4 must mount the shared RPG task bar through its Host without duplicating other scenes"
 );
 assert(
-  /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"[\s\S]*?"a2_room204_disordered_furniture"[\s\S]*?"a2_room202_recovery_barrier"/.test(sceneSource)
+  /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS[\s\S]*?"a1_guard_chase_body"[\s\S]*?"a2_guard_chase_body"/.test(sceneSource)
     && /RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS\.has\(projectedId\)/.test(sceneSource),
-  "the plate contract must recognize runtime-managed guard and authored furniture collision bodies"
+  "the plate contract must recognize both runtime-managed final-chase guard bodies"
 );
 assert(
   /automaticThresholdTarget[\s\S]*?payload\.targetId === thresholdContract\.id[\s\S]*?state\.chapter4\.phase === "final_chase"[\s\S]*?this\.currentFloor === 2[\s\S]*?this\.finalChaseInsideFinish[\s\S]*?this\.finalChaseState\?\.phase === "finish_pending"[\s\S]*?isChapterFour755TargetStateActive\(state, thresholdContract\)/.test(sceneSource),
@@ -283,45 +343,21 @@ assert(
 );
 assert(/setCollideWorldBounds\(true\)/.test(sceneSource), "the Chapter 4 player must collide with the active floor world bounds");
 assert(
-  /export function getRpgPlayerVisualContainmentInsets[\s\S]*?RPG_PLAYER_FRAME_WIDTH[\s\S]*?RPG_PLAYER_FOOT_WORLD_WIDTH[\s\S]*?RPG_PLAYER_FRAME_HEIGHT[\s\S]*?RPG_PLAYER_FOOT_BOTTOM_INSET[\s\S]*?RPG_PLAYER_FOOT_WORLD_HEIGHT/.test(playerTextureSource),
-  "the shared player contract must derive visual-containment insets from its frame, scale and fixed foot box"
-);
-assert(
-  /getRpgPlayerVisualContainmentInsets\(\)[\s\S]*?playerBody\.setBoundsRectangle\(new Phaser\.Geom\.Rectangle\([\s\S]*?floor\.offsetX \+ visualInsets\.left[\s\S]*?visualInsets\.top[\s\S]*?FLOOR_SIZE\.width - visualInsets\.left - visualInsets\.right[\s\S]*?FLOOR_SIZE\.height - visualInsets\.top - visualInsets\.bottom/.test(sceneSource),
-  "the Chapter 4 player body must use a per-floor custom boundary that keeps the complete visual frame inside the source plate"
-);
-assert(
   !mazeProjectionSource.includes('collisionIds.push("a1_blackout_service_barrier")'),
   "the projection must not advertise a blackout service barrier without an authoritative runtime entity"
 );
 
-const releaseValidatorKeys = [
-  '"typecheck"',
-  '"facingAgnostic"',
-  '"chapter4Assets"',
-  '"chapter4Story"',
-  '"chapter4Topology"',
-  '"chapter4Runtime"',
-  '"chapter4Task14"',
-  '"campusMap"',
-  '"productionBuild"',
-  '"singleBuild"',
-  '"singleVerify"',
-  '"browserSmoke"'
-];
-const releaseSuiteBlock = validationSuiteSource.match(/release:\s*Object\.freeze\(\[([\s\S]*?)\]\)\s*\}\);/)?.[1] ?? "";
-const releaseValidatorIndexes = releaseValidatorKeys.map((key) => releaseSuiteBlock.indexOf(key));
-assert(
-  /run:\s*npm run validate:release/.test(ciSource)
-    && releaseValidatorIndexes.every((index) => index >= 0)
-    && releaseValidatorIndexes.every((index, position) => position === 0 || releaseValidatorIndexes[position - 1] < index),
-  "CI must call the canonical release suite, which must run typecheck, facing, five Chapter 4 gates, campus, builds, artifact verification and single-file browser smoke in order"
-);
-const chapterFourValidatorCatalog = validationSuiteSource.slice(
-  validationSuiteSource.indexOf("chapter4Assets:"),
-  validationSuiteSource.indexOf("chapter3Audio:")
-);
-assert(!/(?:generate|rebuild|build):chapter4|chapter4:(?:generate|rebuild|build)/.test(chapterFourValidatorCatalog), "release-suite Chapter 4 validators must not invoke asset generators");
+const packageJson = JSON.parse(packageSource);
+const releaseMatch = validationRunnerSource.match(/\brelease:\s*Object\.freeze\(\[([\s\S]*?)\]\)/);
+const releaseKeys = [...(releaseMatch?.[1] ?? "").matchAll(/"([^"]+)"/g)].map(match=>match[1]);
+const validatorScripts = new Map([...validationRunnerSource.matchAll(/^\s*(\w+):\s*Object\.freeze\(\{\s*area:\s*"[^"]+",\s*script:\s*"([^"]+)"/gm)].map(match=>[match[1],match[2]]));
+const requiredChapterFourKeys = ["chapter4Assets","chapter4Story","chapter4Topology","chapter4Runtime","chapter4Task14"];
+const requiredChapterFourScripts = ["chapter4:validate-assets","chapter4:validate-story","chapter4:validate-topology","chapter4:validate-runtime","chapter4:validate-task14"];
+const firstBuild = releaseKeys.indexOf("productionBuild");
+const gates = ["facingAgnostic","campusMap",...requiredChapterFourKeys];
+assert(/run:\s*npm run validate:release\b/.test(ciSource) && packageJson.scripts["validate:release"] === "node scripts/run-validation-suite.mjs release" && releaseKeys.filter(key=>key==="typecheck").length===1 && releaseKeys.indexOf("typecheck")===0 && firstBuild>0 && gates.every(key=>releaseKeys.indexOf(key)>0&&releaseKeys.indexOf(key)<firstBuild) && requiredChapterFourKeys.every((key,index)=>validatorScripts.get(key)===requiredChapterFourScripts[index]) && validatorScripts.get("facingAgnostic")==="verify:rpg-facing-agnostic" && validatorScripts.get("campusMap")==="map:zijingang" && gates.every(key=>Boolean(packageJson.scripts[validatorScripts.get(key)])), "CI release must run one typecheck, campus, facing and five Chapter 4 gates before production builds");
+const chapterFourCiBlock = requiredChapterFourKeys.map(key=>{const script=validatorScripts.get(key);return script+"\n"+packageJson.scripts[script]}).join("\n");
+assert(!/(?:generate|rebuild|build):chapter4|chapter4:(?:generate|rebuild|build)/.test(chapterFourCiBlock), "CI Chapter 4 validation block must not invoke asset generators");
 assert(/server:\s*\{\s*middlewareMode:\s*true,\s*ws:\s*false\s*\}/.test(runtimeValidatorSource), "runtime validator must disable the Vite WebSocket server");
 assert(/server:\s*\{\s*middlewareMode:\s*true,\s*ws:\s*false\s*\}/.test(task14ValidatorSource), "Task 14 validator must disable the Vite WebSocket server");
 
@@ -379,6 +415,13 @@ const sceneClosedAmbientStop = audio.events.chapter4_755_scene_closed?.cues?.fin
   cue.channel === "ambient" && cue.owner === "chapter4_clock" && cue.action === "stop"
 ));
 assert(Boolean(sceneClosedAmbientStop), "scene_closed must stop the chapter4_clock ambient owner");
+assert(
+  audio.events.chapter4_environment_hint_pulse?.cues?.length === 1
+    && audio.events.chapter4_environment_hint_pulse.cues[0].panFromEvent === true
+    && /createStereoPanner/.test(audioDirectorSource)
+    && /payload\?\.pan/.test(audioDirectorSource),
+  "adaptive environmental help must use one event-positioned audio cue without adding story facts"
+);
 const expectedDetailAudio = {
   sfx_ch4_cart_wheel_stuck: [450, 2500],
   sfx_ch4_cart_wheel_repaired: [450, 2500],
@@ -399,10 +442,34 @@ for (const [asset, [minimumMs, maximumMs]] of Object.entries(expectedDetailAudio
   assert(probe.status === 0 && Number.isFinite(durationMs), `${asset}.mp3 must be readable by ffprobe`);
   assert(durationMs >= minimumMs && durationMs <= maximumMs, `${asset}.mp3 duration must be ${minimumMs}-${maximumMs}ms, got ${durationMs}`);
 }
-assert(!Object.keys(audio.events).some((id) => /exterior_closure|acknowledge_exterior/.test(id)), "official exterior closure must retain zero audio cues");
+assert(!Object.keys(audio.events).some((id) => /exterior_closure|acknowledge_exterior/.test(id)), "official exterior closure must keep its visual sequence free of an invented audio cue");
 assert(
-  /CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:[\s\S]*?Object\.freeze\(\{[\s\S]*?sequenceId:\s*"chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4"[\s\S]*?rendererModule:\s*"src\/components\/temporal-maze\/ChapterFourStarLampThreeRenderer\.ts"/.test(closureSource),
-  "closure reference must register the approved original-artwork camera-orbit sequence"
+  /assetId:\s*"canruo_star_lamp_layered_v1"/.test(closureSource)
+    && /sequenceId:\s*"chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4"/.test(closureSource)
+    && /consumerModule:\s*"src\/components\/temporal-maze\/ChapterFourStarLampClosure\.tsx"/.test(closureSource)
+    && /class ChapterFourClosureSessionRegistry/.test(closureSessionSource)
+    && /session\.consumed = true/.test(closureSessionSource),
+  "closure contract must register the approved lamp consumer and a once-consumed runtime session proof"
+);
+assert(
+  /CHAPTER_FOUR_STAR_LAMP_SAVED_CONFIRMATION_MS\s*=\s*900/.test(closureComponentSource) && /回答已保存/.test(closureComponentSource) && /从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！/.test(closureComponentSource) && /stage === "playback"[\s\S]*?<ChapterFourStarLampPlayback[\s\S]*?onComplete=\{finishPlayback\}/.test(closureComponentSource) && /current === "playback" \? "final" : current/.test(closureComponentSource) && /stage !== "final" \|\| completedRef\.current/.test(closureComponentSource) && /onComplete\(sessionId\)/.test(closureComponentSource) && /renderer\.start\(\{\s*onComplete:\s*completeOnce/.test(closurePlaybackSource) && /frame\.phase === "complete"[\s\S]*?completeOnce\(\)/.test(closurePlaybackSource) && /document\.visibilityState === "hidden"/.test(closurePlaybackSource) && ["lamp_dark.png","lamp_outline.png","lamp_leds.png","lamp_core.png","lamp_glow.png"].every(file=>closurePlaybackSource.includes(file)&&closureWarmAssetsSource.includes(file)) && /closure:\s*Object\.freeze\(\[[\s\S]*?\.\.\.CLOSURE_LAMP_ASSETS/.test(closureWarmAssetsSource) && /getChapterFourWarmupPhaseAssets\(phase \?\? "entry"\)/.test(hostSource),
+  "closure UI must preserve saved-only confirmation, complete phase-warmed playback and final acknowledgement"
+);
+assert(
+  /doorwayBounds:\s*Object\.freeze\(\{ x: 767, y: 779, width: 141, height: 94 \}\)/.test(exteriorDoorSource)
+    && /frameName:\s*"a1-exterior-door-left"[\s\S]*?hinge:\s*"left"/.test(exteriorDoorSource)
+    && /frameName:\s*"a1-exterior-door-right"[\s\S]*?hinge:\s*"right"/.test(exteriorDoorSource)
+    && /openedEventName:\s*"rpg_chapter4_exterior_door_opened"/.test(exteriorDoorSource),
+  "A1 exterior door contract must retain its measured opening, two hinged leaves and completion event"
+);
+assert(
+  /syncExteriorDoorPresentation\(\)/.test(sceneSource)
+    && /storyPresentation = "exterior_door_opening"/.test(sceneSource)
+    && /scaleX:\s*contract\.finalLeafScaleX/.test(sceneSource)
+    && /safeBridgeEmit\(CHAPTER_FOUR_EXTERIOR_DOOR\.openedEventName/.test(sceneSource)
+    && /chapter4ClosurePresentationReady/.test(hostSource)
+    && /event\.name !== CHAPTER_FOUR_EXTERIOR_DOOR\.openedEventName/.test(hostSource),
+  "the Scene must finish and report the A1 door animation before the Host opens the final lamp overlay"
 );
 assert(/chapter4-755\.audio\.json/.test(audioDirectorSource) && /chapter4-755\.audio\.json/.test(presentationDirectorSource), "both directors must import the Task 14 timeline");
 assert(!/chapterFourClockGearSfxUrl|CHAPTER_FOUR_CLOCK_GEAR_SFX|playHallClockGearSfx/.test(sceneSource), "Scene must not directly replay the time-swap gear SFX");
@@ -432,23 +499,66 @@ assert(
     && /旧钟 22:45 · 维修时段 · 手机已同步/.test(stagePresentationSource),
   "stage presentation selector must lock 13 phases, 6 time states and two distinct 22:45 states"
 );
+assert(
+  /selectChapterFourTransitionPresentation/.test(hostSource)
+    && /selectChapterFourTransitionPresentationOwner/.test(hostSource)
+    && /const transitionOwner =/.test(hostSource)
+    && /presentationOwner:\s*ChapterFourTransitionPresentationOwner/.test(hostSource)
+    && /rememberChapterFourTransitionForResume/.test(hostSource)
+    && /rpg_chapter4_transition_resumed/.test(hostSource)
+    && /data-chapter4-transition-id/.test(hostSource),
+  "Host must own typed Chapter 4 transition presentation and interrupted-session recovery"
+);
+assert(
+  /data-transition-step/.test(transitionOverlaySource)
+    && /data-transition-surface="rpg-shell"/.test(transitionOverlaySource)
+    && /data-transition-step="time_shift"/.test(transitionOverlaySource)
+    && /继续行动/.test(transitionOverlaySource)
+    && !/startAtHandoff|puzzleHandoff|dialogueGroups|下一步行动|跳过演出/.test(transitionOverlaySource),
+  "transition overlay must show one actual time change without duplicating dialogue or task guidance"
+);
+assert(
+  /transitionPresentationOwned/.test(sceneSource)
+    && /resultPresentationOwner\(payload\) === "transition_overlay"/.test(sceneSource)
+    && /startGraceReady/.test(sceneSource)
+    && /if \(blocked\) return;/.test(subtitleLayerSource),
+  "Phaser must expose chase handoff grace and suppress duplicate cross-phase feedback with the shared subtitle layer while the Host overlay owns presentation"
+);
+assert(
+  /transitionCount:\s*8/.test(transitionPresentationSource)
+    && /overlayCount:\s*4/.test(transitionPresentationSource)
+    && /worldHandoffCount:\s*4/.test(transitionPresentationSource)
+    && /intentMatchCount:\s*9/.test(transitionPresentationSource)
+    && /CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY/.test(transitionPresentationSource)
+    && /getChapterFourTransitionPresentationById/.test(transitionPresentationSource)
+    && /chapter4_transition_duplicate_match/.test(transitionPresentationSource)
+    && /chapter4_transition_world_handoff/.test(transitionPresentationSource)
+    && /selectChapterFourTransitionPresentationOwner/.test(transitionPresentationSource),
+  "transition selector must validate four time overlays, four in-scene handoffs and nine unique intent matches"
+);
 
 for (const token of [
   "committed?:", "applied?:", "activeFloorBounds?:", "runtimeEntities?:", "ordinaryGuard?:", "finalChase?:",
-  "lightGrid?:", "room202Door?:", "spatialAttestation?:", "contract?:", "developerCheckpoint?:",
-  "visualBounds?:", "movementBounds?:"
+  "lightGrid?:", "room202Door?:", "environmentEvidence?:", "spatialAttestation?:", "contract?:", "developerCheckpoint?:"
 ]) {
   assert(debugSource.includes(token), `runtime debug schema is missing ${token}`);
 }
 for (const token of [
   "pendingProjectionSignature", "appliedPlateSignature", "runtimeEntities", "structuredFailures",
-  "activeFloorBounds", "finalChaseInsideFinish", "finalChaseContact", "hostPowerPanelSession", "developerCheckpointSource",
-  "playerVisualBounds", "playerMovementBounds"
+  "activeFloorBounds", "finalChaseInsideFinish", "finalChaseContact", "visibleRawDetailIds",
+  "hintLevels", "hostPowerPanelSession", "developerCheckpointSource"
 ]) {
   assert(sceneSource.includes(token), `Scene debug publisher is missing ${token}`);
 }
 assert(/finally\s*\{\s*unsubscribeAttestation\(\)/.test(hostSource), "Host attestation listener must detach in finally");
 assert(/responses\.length !== 1/.test(source("../src/scenes/rpg/RpgInteractionContract.ts")), "attestation must require exactly one producer");
+assert(
+  /rpg_chapter4_power_panel_attempt_abandoned/.test(hostSource)
+    && /!isChapterFourLightGridSolved\(mask\)/.test(hostSource)
+    && /event\.name === "rpg_chapter4_power_panel_attempt_abandoned"/.test(sceneSource)
+    && /recordVisualHintFailure\("power_route_comparison"\)/.test(sceneSource),
+  "closing an unsolved power panel must register one runtime-only adaptive-help attempt"
+);
 
 const server = await createServer({
   configFile: false,
@@ -468,7 +578,9 @@ try {
     storageKeysModule,
     interactionModule,
     controllerModule,
-    stagePresentationModule
+    stagePresentationModule,
+    transitionPresentationModule,
+    visualHintModule
   ] = await Promise.all([
     server.ssrLoadModule("/src/core/GameState.ts"),
     server.ssrLoadModule("/src/core/EventBus.ts"),
@@ -478,7 +590,9 @@ try {
     server.ssrLoadModule("/src/core/StorageKeys.ts"),
     server.ssrLoadModule("/src/scenes/rpg/RpgInteractionContract.ts"),
     server.ssrLoadModule("/src/modules/ChapterFourTemporalMazeController.ts"),
-    server.ssrLoadModule("/src/modules/ChapterFourStagePresentation.ts")
+    server.ssrLoadModule("/src/modules/ChapterFourStagePresentation.ts"),
+    server.ssrLoadModule("/src/modules/ChapterFourTransitionPresentation.ts"),
+    server.ssrLoadModule("/src/modules/ChapterFourVisualHintModel.ts")
   ]);
   const { createGameStore, createInitialGameState } = gameStateModule;
   const { EventBus } = eventBusModule;
@@ -514,6 +628,21 @@ try {
     CHAPTER_FOUR_STAGE_PRESENTATION_VALIDATION,
     selectChapterFourStagePresentation
   } = stagePresentationModule;
+  const {
+    CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION,
+    CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY,
+    getChapterFourTransitionPresentationById,
+    selectChapterFourTransitionPresentation,
+    selectChapterFourTransitionPresentationOwner
+  } = transitionPresentationModule;
+  const {
+    CHAPTER_FOUR_VISUAL_HINT_VALIDATION,
+    clearChapterFourVisualHintPuzzle,
+    createChapterFourVisualHintModel,
+    recordChapterFourVisualHintFailure,
+    selectChapterFourVisualHintSession,
+    validateChapterFourVisualHintContracts
+  } = visualHintModule;
 
   assert(
     sameJson(
@@ -533,6 +662,102 @@ try {
     CHAPTER_FOUR_STAGE_PRESENTATION_VALIDATION.phaseCount === 13
       && CHAPTER_FOUR_STAGE_PRESENTATION_VALIDATION.timeStateCount === 6,
     "stage presentation runtime validation must cover 13 phases and 6 time states"
+  );
+  assert(
+    CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.transitionCount === 8
+      && CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.overlayCount === 4
+      && CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.worldHandoffCount === 4
+      && CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.intentMatchCount === 9,
+    "transition runtime validation must cover four time overlays, four in-scene handoffs and nine intent matches"
+  );
+  assert(
+    CHAPTER_FOUR_VISUAL_HINT_VALIDATION.puzzleCount === 9
+      && CHAPTER_FOUR_VISUAL_HINT_VALIDATION.maximumFailureCount === 4
+      && validateChapterFourVisualHintContracts(
+        new Set(layout.evidenceDetails.map((detail) => detail.id))
+      ).puzzleCount === 9,
+    "adaptive environmental help contracts must cover nine puzzles and only authored raw details"
+  );
+  let visualHintState = createChapterFourVisualHintModel();
+  const visualHintLevels = [];
+  const visualHintCounts = [];
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    visualHintState = recordChapterFourVisualHintFailure(
+      visualHintState,
+      "power_route_comparison"
+    );
+    const session = selectChapterFourVisualHintSession(
+      visualHintState,
+      "power_route_comparison"
+    );
+    visualHintLevels.push(session?.level);
+    visualHintCounts.push(session?.failureCount);
+  }
+  const maximumHintSession = selectChapterFourVisualHintSession(
+    visualHintState,
+    "power_route_comparison"
+  );
+  assert(
+    sameJson(visualHintLevels, [0, 1, 2, 3, 3])
+      && sameJson(visualHintCounts, [1, 2, 3, 4, 4])
+      && maximumHintSession?.visualEmphasis === true
+      && maximumHintSession?.positionalAudio === true
+      && maximumHintSession?.pairedEmphasis === true
+      && maximumHintSession?.pairedDetailIds.length === 2,
+    "adaptive help must preserve raw state on failure one, then add visual, audio and paired-detail emphasis without exceeding four attempts"
+  );
+  visualHintState = clearChapterFourVisualHintPuzzle(
+    visualHintState,
+    "power_route_comparison"
+  );
+  assert(
+    selectChapterFourVisualHintSession(visualHintState, "power_route_comparison") === null,
+    "accepted puzzle completion must clear its runtime-only adaptive-help session"
+  );
+  for (const contract of content.transitionContracts) {
+    for (const intentType of contract.intentTypes) {
+      const result = {
+        accepted: true,
+        changed: true,
+        intentType,
+        previousPhase: contract.fromPhase,
+        phase: contract.toPhase
+      };
+      const plan = selectChapterFourTransitionPresentation(result);
+      const owner = selectChapterFourTransitionPresentationOwner(result);
+      assert(owner === contract.owner, `${contract.id}:${intentType} must resolve its authored presentation owner`);
+      if (contract.presentationKind === "time_shift") {
+        assert(
+          getChapterFourTransitionPresentationById(contract.id)?.id === contract.id
+            && plan?.id === contract.id
+            && plan.owner === "transition_overlay"
+            && plan.change.kind === "time",
+          `${contract.id}:${intentType} must resolve one recoverable time-change card`
+        );
+      } else {
+        assert(
+          getChapterFourTransitionPresentationById(contract.id) === null
+            && plan === null
+            && owner === "scene_interaction",
+          `${contract.id}:${intentType} must remain an in-scene world handoff`
+        );
+      }
+    }
+  }
+  assert(
+    CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY === "chapter4_transition_resume_v1"
+      && getChapterFourTransitionPresentationById("missing-transition") === null,
+    "transition resume storage must use one stable versioned key and reject unknown plans"
+  );
+  assert(
+    selectChapterFourTransitionPresentation({
+      accepted: true,
+      changed: true,
+      intentType: "inspect_hall_clock",
+      previousPhase: "hall_clock_inspection",
+      phase: "hall_clock_inspection"
+    }) === null,
+    "an accepted intra-phase interaction must not open the transition overlay"
   );
 
   const visibleChapterThreeHalfIds = DEVELOPER_CHECKPOINTS
@@ -554,6 +779,10 @@ try {
     assert(state.chapter4.floor === floor && state.chapter4.roomId === roomId, `${id} floor/room seed is invalid`);
     assert(state.runtimeMode === "rpg" && state.rpgScene === "duan_yongping_temporal_maze", `${id} must enter the browser-native Chapter 4 runtime`);
     assert(state.ui.controlCenterOpen === false && state.ui.inventoryOpen === false && state.ui.selectedItem === null, `${id} must close transient UI`);
+    assert(
+      REQUIRED_EVIDENCE_FACTS_BY_CHECKPOINT[id].every((factId) => state.chapter4.factIds.includes(factId)),
+      `${id} must seed every producer fact required by its completed evidence consumers`
+    );
     const quest = selectQuestViewModel(state);
     assert(quest.total === 1 && (quest.completed === 0 || quest.completed === 1) && quest.steps.length === 1, `${id} must expose one 0/1 or 1/1 objective`);
     assert(selectChapterFourStagePresentation(state) !== null, `${id} must resolve a stage presentation`);
@@ -576,13 +805,6 @@ try {
       && CHAPTER_FOUR_755_INTENT_DETAIL_CODES.includes(lockedResult.detailCode),
     "a controller-owned locked result must expose a declared detailCode"
   );
-  const finalMinuteRecovery = createDeveloperCheckpointState("c4-755-final-minute");
-  assert(
-    finalMinuteRecovery.chapter4.factIds.includes("room202_route_reached")
-      && !finalMinuteRecovery.chapter4.factIds.includes("final_minute_recovered")
-      && !finalMinuteRecovery.items.finalMinute,
-    "final-minute seed must represent a completed 202 arrival without forging the pickup"
-  );
   const returnClock = createDeveloperCheckpointState("c4-755-return-clock");
   assert(
     returnClock.items.finalMinute
@@ -594,22 +816,21 @@ try {
   );
   const closure = createDeveloperCheckpointState("c4-755-closure");
   assert(closure.chapter4.checkinCardAccepted && closure.chapter4.checkinPaperAccepted, "closure waiting seed must include both accepted check-in parts");
-  assert(
-    [
-      "a3_identity_context_observed",
-      "attendance_record_recovered",
-      "checkin_identity_verified"
-    ].every((factId) => closure.chapter4.factIds.includes(factId)),
-    "closure waiting seed must retain the three raw identity prerequisites consumed by the exterior questions"
-  );
   assert(!closure.chapter4.completed && !closure.chapter4.exteriorClosureAcknowledged, "closure waiting seed must not forge completion or acknowledgement");
+  assert(!closure.chapter4.factIds.includes("exterior_closure_acknowledged"), "closure waiting seed must not forge closure proof");
   assert(
     !closure.chapter4.factIds.includes("zhu_two_questions_answered")
-      && closure.chapter4.zhuQuestionAnswers.purpose === null
-      && closure.chapter4.zhuQuestionAnswers.person === null,
-    "closure waiting seed must open before the exterior questions and must not forge either answer"
+      && sameJson(closure.chapter4.zhuQuestionAnswers, { purpose: null, person: null })
+      && selectQuestViewModel(closure).steps[0]?.id === "chapter_four_answer_zhu_two_questions",
+    "closure waiting seed must begin before the two final answers and expose their real submission task"
   );
-  assert(!closure.chapter4.factIds.includes("exterior_closure_acknowledged"), "closure waiting seed must not forge closure proof");
+  const room204Seed = createDeveloperCheckpointState("c4-755-room204-1850");
+  assert(
+    room204Seed.chapter4.factIds.includes("a3_reference_observed")
+      && !room204Seed.chapter4.factIds.includes("zhu_two_questions_answered")
+      && selectQuestViewModel(room204Seed).steps[0]?.id === "chapter_four_solve_misaligned_stair",
+    "A3 DEV seed must open the stair after the 303 reference without fabricating final Zhu answers"
+  );
 
   for (const id of PROLOGUE_IDS) {
     const previewState = createDeveloperCheckpointState(id);
@@ -666,7 +887,7 @@ try {
   try { createDeveloperCheckpointState("c4-755-result"); } catch (error) {
     unverifiedResultRejected = String(error).includes("unknown_developer_checkpoint:c4-755-result");
   }
-  assert(unverifiedResultRejected, "c4-755-result must stay unavailable until a verified completed consumer state exists");
+  assert(unverifiedResultRejected, "c4-755-result must stay unavailable because completion is exercised through the closure seed and a real session proof, not a forged DEV result");
 
   const unknownStore = createGameStore(createInitialGameState());
   const unknownBefore = sameJson(unknownStore.getState(), createInitialGameState());
@@ -785,4 +1006,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=16+aliases+url+session-only quest=single-objective+114-hints stage=13-phases+6-times audio=ambient-owner+detail-assets+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+failures attestation=single-producer+nonce+scene+bounds+finite+spatial`);
+console.log(`Chapter 4 7:55 Task 14 PASS assertions=${assertionCount} dev=13+aliases+url+session-only quest=single-objective+three-tier-task-copy adaptiveHelp=0-1-2-3+clamped4 stage=13-phases+6-times transitions=4-time+4-world audio=ambient-owner+positioned-detail+zero-closure feedback=detail-codes+host-lookup debug=committed-applied+entities+guards+grid+door+evidence attestation=single-producer+nonce+scene+bounds+finite+spatial`);

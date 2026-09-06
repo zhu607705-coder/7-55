@@ -415,6 +415,9 @@ export function App() {
         )
     : null;
 
+  const libraryStoryUsesPhone = libraryStorySequence !== "library_friend_contacted"
+    && (state.runtimeMode === "phone" || (desktopGameplay && activeSurface === "phone"));
+
   if (state.runtimeMode === "rpg") {
     if (desktopGameplay) {
       return (
@@ -439,6 +442,7 @@ export function App() {
                 embedded
                 showTaskBar={activeSurface === "phone"}
                 showGlobalLayers={false}
+                dialogueOverlay={libraryStoryUsesPhone ? libraryStoryLayer : null}
                 onTaskNavigate={navigateFromTask}
               >
                 <Suspense fallback={<div role="status">加载中…</div>}>
@@ -471,7 +475,7 @@ export function App() {
             <PresentationLayer events={eventBus} />
             <ToastLayer events={eventBus} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} />
             {chapterIntro}
-            {libraryStoryLayer}
+            {!libraryStoryUsesPhone ? libraryStoryLayer : null}
           </main>
           <DeveloperChannel
             store={gameStore}
@@ -496,7 +500,7 @@ export function App() {
         <PresentationLayer events={eventBus} />
         <ToastLayer events={eventBus} state={state} surface="rpg" />
         {chapterIntro}
-        {libraryStoryLayer}
+        {!libraryStoryUsesPhone ? libraryStoryLayer : null}
         <DeveloperChannel
           store={gameStore}
           open={developerChannelOpen}
@@ -509,13 +513,13 @@ export function App() {
 
   return (
     <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
-      <PhoneShell state={state} router={router} events={eventBus} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
+      <PhoneShell state={state} router={router} events={eventBus} dialogueOverlay={libraryStoryUsesPhone ? libraryStoryLayer : null} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
         <Suspense fallback={<div role="status">加载中…</div>}>
           <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
         </Suspense>
       </PhoneShell>
       {chapterIntro}
-      {libraryStoryLayer}
+      {!libraryStoryUsesPhone ? libraryStoryLayer : null}
       <DeveloperChannel
         store={gameStore}
         open={developerChannelOpen}

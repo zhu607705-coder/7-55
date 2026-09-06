@@ -259,3 +259,12 @@
 - Only `StoryLine.kind === "dialogue"` with an explicit `voiceRole` may play speech. Male narrator dialogue uses `English_expressive_narrator` at base pitch `-4`; female system dialogue uses `English_Graceful_Lady`. Player, seat 022, task, success, failure, and taunt lines are text-only.
 - Text feedback duration is `clamp(2400, 6500, 1600 + 120 * visibleGraphemeCount)`. Audio paths use exact generated-manifest entries; fuzzy filename matching and audio-owned progression are prohibited.
 - Audio generation filters retired voice assets from manifests. Running `npm run audio:chapters:english` twice consecutively must report no unexpected regenerated voice files.
+
+## 20260906 Integrated Mainline Contract
+
+- The 755m story chase uses `ChaseStuntModel` for continuous steering, charged jumps, bell clearing and temporary tray/gust items. Only the ChapterThree controller persists terminal results; the Host owns mutually exclusive start, ride and finish presentations.
+- Four story fishing catches use the shared `lake-rhythm-v3` clock and four-beat hold/release rhythm. Retry controls must retain matching zero scroll factors for the fixed visual and interactive zone.
+- Current Chapter 4 progression uses the classroom/elevator/reference/four-level stair chain, four grouped Room204 placements, and the authored chase stairwell. Retired inserted-puzzle/context UI is not an alternative progression path.
+- ChapterFourStarLampClosure owns the unlit final questions and final acknowledgement. ChapterFourStarLampPlayback reuses the approved five-layer Three.js camera-rise sequence; it only reports playback completion to the outer consumer. Preserve the registered Closure consumer identity.
+- Save version 35 preserves remote phone-battery/rain/interlude data and verified Chapter 4 completion. A2/A3 recovery requires actual transport facts. Ordinary saves must never gain missing stair proof from phase alone; confirmed pre-v25 completed saves use their explicit legacy-completion migration.
+- Keep phased asset loading, visible retry, exact floor bounds and adaptive-resolution-aware camera changes while editing the integrated Chapter 4 scene.

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { SceneComponentProps } from "../../../components/ScenePlaceholder";
 import { playSfx } from "../../../modules/Sfx";
 import { playVo } from "../../../modules/VoicePlayer";
+import { GameSubtitleContent } from "../../../components/GameSubtitleFrame";
 
 /** P01 手机主屏幕 07:55：……再睡5分钟…… → 旁白 → 巨大字幕“起床蠢货！！！” */
 export function WakeScene({ state, router, events }: SceneComponentProps) {
@@ -54,8 +55,7 @@ export function WakeScene({ state, router, events }: SceneComponentProps) {
       </div>
       {!warned ? (
         <p className="bottom-narration game-subtitle-frame subtitle-tone-narrator is-line-entering">
-          <small className="game-subtitle-speaker">旁白</small>
-          <span>你没有5分钟了，但你很有勇气</span>
+          <GameSubtitleContent speaker="旁白" text="你没有5分钟了，但你很有勇气" />
         </p>
       ) : null}
     </section>

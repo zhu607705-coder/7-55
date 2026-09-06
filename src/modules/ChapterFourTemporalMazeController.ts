@@ -1,3 +1,4 @@
+import { CHASE_STAIR_GATES, CHASE_STAIR_EXIT, chaseStairInside } from "./ChapterFourChaseStairwellModel";
 import type { EventBus } from "../core/EventBus";
 import type {
   ChapterFour755FloorId,
@@ -22,10 +23,6 @@ import type {
 } from "../core/types";
 import content from "../data/chapter4-755.content.json";
 import {
-  isChapterFourContextInteractionTargetId,
-  type ChapterFourContextInteractionTargetId
-} from "../data/ChapterFourInteractionContent";
-import {
   ROOM204_GROUP_ORDER,
   countCompletedRoom204Groups,
   isRoom204GroupComplete,
@@ -40,6 +37,7 @@ import {
   isChapterFourLightGridSolved,
   toggleChapterFourLightZone
 } from "./ChapterFourLightGridModel";
+import { isChapterFourEvidenceReady } from "./ChapterFourEvidenceCausality";
 import {
   BLOCKED_CHAPTER_FOUR_CLOSURE_SESSION_VERIFIER,
   closureProofMatchesReference,
@@ -51,28 +49,6 @@ import {
   isChapterFourElevatorStartSelectable,
   isChapterFourElevatorTrackAligned
 } from "./ChapterFourElevatorModel";
-import {
-  CHAPTER_FOUR_ELEVATOR_FLOOR_RECORDS,
-  chapterFourElevatorRecordsComplete,
-  isChapterFourElevatorDeductionFloor,
-  isChapterFourElevatorRecordFloor,
-  isChapterFourElevatorStopChainCorrect,
-  type ChapterFourElevatorDeductionFloor,
-  type ChapterFourElevatorRecordFloor
-} from "./ChapterFourElevatorFloorInvestigation";
-import {
-  CHAPTER_FOUR_INSERTED_PUZZLES,
-  chapterFourInsertedPuzzleForTarget,
-  isChapterFourInsertedPuzzleAnswer,
-  isChapterFourInsertedPuzzleAnswerCorrect,
-  type ChapterFourInsertedPuzzleAnswer,
-  type ChapterFourInsertedPuzzleId
-} from "./ChapterFourInsertedPuzzleModel";
-import {
-  chapterFourTimeContract,
-  isChapterFourPhaseTimeAligned,
-  selectChapterFourRequiredClockTime
-} from "./ChapterFourTimeControlModel";
 import {
   getChapterFour755TargetContract,
   resolveChapterFour755RuntimeEntityTarget,
@@ -110,13 +86,6 @@ export interface ChapterFourMazeMoveIntent {
 export type ChapterFourCorridorPartitionId = "a2_partition_west" | "a2_partition_east";
 /** @deprecated Task 6 removes the old wayfinding-fragment puzzle. */
 export type ChapterFourWayfindingFragmentId = "a2_fragment_west" | "a2_fragment_east";
-
-export type ChapterFourMaintenanceSymptomId = "wheel_sound" | "clock_jam" | "oil_trace";
-export type ChapterFourMaintenanceCauseId = "latch" | "oil_shortage" | "gear_offset" | "power_loss" | "foreign_object";
-export type ChapterFourMaintenanceDiagnosisAnswers = Record<
-  ChapterFourMaintenanceSymptomId,
-  ChapterFourMaintenanceCauseId
->;
 
 export const CHAPTER_FOUR_755_TARGET_IDS = Object.freeze({
   attendancePaper: "a1_noticeboard_paper",
@@ -184,24 +153,14 @@ export type ChapterFour755Intent =
       toFloor: "A1" | "A2";
       expectedAttempt: number;
     }
+  | { type: "reach_chase_stairwell_landing"; landing: 1 | 2; position: { x: number; y: number }; expectedAttempt: number }
+  | { type: "leave_chase_stairwell"; position: { x: number; y: number }; expectedAttempt: number }
   | { type: "observe_elevator_history" }
   | { type: "calibrate_elevator_history"; startSeconds: number }
-  | { type: "observe_elevator_floor_record"; floor: ChapterFourElevatorRecordFloor }
-  | {
-      type: "reconstruct_elevator_stop_chain";
-      actualArrivalFloor: ChapterFourElevatorDeductionFloor;
-      unservedCallFloor: ChapterFourElevatorDeductionFloor;
-    }
   | { type: "complete_misaligned_stair" }
-  | { type: "complete_inserted_puzzle"; answer: ChapterFourInsertedPuzzleAnswer }
   | ChapterFour755TargetIntent<{ type: "catch_attendance_paper"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.attendancePaper }>
   | ChapterFour755TargetIntent<{ type: "inspect_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
   | ChapterFour755TargetIntent<{ type: "pull_hall_clock"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock }>
-  | ChapterFour755TargetIntent<{
-      type: "adjust_hall_clock_time";
-      targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.hallClock;
-      targetTimeState: ChapterFourTimeState;
-    }>
   | ChapterFour755TargetIntent<{
       type: "inspect_bakery_conveyor_lamp";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.bakeryInspectionLamp;
@@ -229,10 +188,6 @@ export type ChapterFour755Intent =
       targetId:
         | typeof CHAPTER_FOUR_755_TARGET_IDS.a2ElevatorAttendant
         | typeof CHAPTER_FOUR_755_TARGET_IDS.a3ReferenceTeacher;
-    }>
-  | ChapterFour755TargetIntent<{
-      type: "inspect_chapter_four_context";
-      targetId: ChapterFourContextInteractionTargetId;
     }>
   | ChapterFour755TargetIntent<{
       type: "inspect_alumni_figure";
@@ -285,7 +240,6 @@ export type ChapterFour755Intent =
       type: "inspect_cart_wheel";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.cartWheelInspection;
     }>
-  | { type: "complete_maintenance_diagnosis"; answers: ChapterFourMaintenanceDiagnosisAnswers }
   | ChapterFour755TargetIntent<{ type: "collect_short_pry_bar"; targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.pryBarPickup }>
   | ChapterFour755TargetIntent<{
       type: "open_cart_wheel_cover";
@@ -322,11 +276,7 @@ export type ChapterFour755Intent =
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.lecture202Threshold;
       expectedAttempt: number;
     }>
-  | {
-      type: "fail_chase";
-      expectedAttempt: number;
-      failureFloor: "A1" | "A2";
-    }
+  | { type: "fail_chase"; expectedAttempt: number }
   | ChapterFour755TargetIntent<{
       type: "collect_final_minute";
       targetId: typeof CHAPTER_FOUR_755_TARGET_IDS.finalMinuteProjection;
@@ -395,24 +345,18 @@ export type ChapterFour755IntentResultReason =
 export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "prologue_requirements_unmet",
   "current_phase_mismatch",
-  "clock_adjustment_required",
   "target_unavailable",
   "route_not_available",
   "stair_route_not_available",
   "bakery_lamp_required",
   "bakery_stop_pending",
+  "bakery_trace_required",
   "hour_hand_required",
   "classroom_checks_required",
+  "a1_comparison_required",
   "elevator_history_required",
   "elevator_calibration_required",
-  "elevator_floor_records_required",
-  "elevator_stop_chain_required",
-  "duty_board_required",
-  "archive_film_required",
-  "media_alignment_required",
-  "positioning_calibration_required",
-  "power_topology_required",
-  "evacuation_route_required",
+  "a3_reference_required",
   "zhu_two_questions_required",
   "misaligned_stair_required",
   "room204_observations_required",
@@ -428,23 +372,23 @@ export const CHAPTER_FOUR_755_INTENT_DETAIL_CODES = Object.freeze([
   "room204_group_conflict",
   "room204_group_already_placed",
   "room204_projection_required",
-  "a1_comparison_required",
   "projection_composite_required",
-  "maintenance_incident_required",
-  "powered_route_required",
-  "identity_context_required",
   "positioning_plate_required",
+  "maintenance_incident_required",
   "cart_wheel_inspection_required",
   "cart_wheel_cover_required",
   "cart_wheel_repair_required",
   "clock_gear_repair_required",
   "final_clock_drag_not_armed",
   "blackout_not_started",
+  "powered_route_required",
   "chase_attempt_stale",
   "final_minute_not_recovered",
+  "recovered_record_required",
   "return_route_incomplete",
   "interlude_completion_required",
   "checkin_requirements_incomplete",
+  "identity_context_required",
   "checkin_card_already_accepted",
   "checkin_paper_already_accepted",
   "closure_prerequisites_incomplete",
@@ -462,8 +406,6 @@ export interface ChapterFour755IntentResult {
   intentType: ChapterFour755Intent["type"];
   previousPhase: ChapterFourPhase | null;
   phase: ChapterFourPhase | null;
-  previousTimeState: ChapterFourTimeState | null;
-  timeState: ChapterFourTimeState | null;
 }
 
 interface PhaseContract {
@@ -529,8 +471,8 @@ const ROOM204_PIECES = new Set<ChapterFourRoom204PieceId>(
 const ROOM204_SLOTS = new Set<ChapterFourRoom204SlotId>(
   content.room204.slotIds as readonly ChapterFourRoom204SlotId[]
 );
-const ROOM204_GROUPS = new Set<ChapterFourRoom204GroupId>(ROOM204_GROUP_ORDER);
 const ROOM204_ORIENTATIONS = new Set<ChapterFourRoom204Orientation>(["up"]);
+const ROOM204_GROUPS = new Set<ChapterFourRoom204GroupId>(ROOM204_GROUP_ORDER);
 const LIGHT_ZONE_IDS = new Set<ChapterFourLightZoneId>(LIGHT_GRID_ZONES.map((zone) => zone.id));
 const ZHU_PURPOSE_ANSWER_IDS = new Set<ChapterFourZhuPurposeAnswerId>([
   "seek_truth",
@@ -615,29 +557,21 @@ function lockedDetailForIntent(
   switch (intent.type) {
     case "complete_prologue_handoff":
       return "prologue_requirements_unmet";
-    case "adjust_hall_clock_time":
-      return "clock_adjustment_required";
     case "move_to_location":
     case "record_checkpoint":
       return "route_not_available";
     case "traverse_main_stair":
+    case "reach_chase_stairwell_landing":
+    case "leave_chase_stairwell":
       return "stair_route_not_available";
     case "observe_elevator_history":
       return "elevator_history_required";
     case "calibrate_elevator_history":
       return "elevator_calibration_required";
-    case "observe_elevator_floor_record":
-      return "elevator_floor_records_required";
-    case "reconstruct_elevator_stop_chain":
-      return chapterFourElevatorRecordsComplete(chapter.factIds)
-        ? "elevator_stop_chain_required"
-        : "elevator_floor_records_required";
     case "complete_misaligned_stair":
       return hasFact(chapter, "a3_reference_observed")
         ? "misaligned_stair_required"
-        : "room204_observations_required";
-    case "complete_inserted_puzzle":
-      return insertedPuzzleLockedDetail(chapter, intent.answer.puzzleId);
+        : "a3_reference_required";
     case "complete_zhu_two_questions":
       return "zhu_two_questions_required";
     case "inspect_bakery_conveyor_edge":
@@ -658,6 +592,10 @@ function lockedDetailForIntent(
       if (chapter.room204Placements.some((placement) => placement.slotId === intent.slotId)) {
         return "room204_slot_occupied";
       }
+      if (!hasFact(chapter, "a3_reference_observed")
+        || !hasFact(chapter, "room204_residual_observed")) {
+        return "room204_observations_required";
+      }
       return "target_unavailable";
     }
     case "place_room204_group": {
@@ -675,9 +613,6 @@ function lockedDetailForIntent(
       if (!hasFact(chapter, "a1_time_route_compared")) {
         return "a1_comparison_required";
       }
-      if (!hasFact(chapter, "a1_duty_board_reconstructed")) {
-        return "duty_board_required";
-      }
       if (!hasFact(chapter, "a3_reference_observed")
         || !hasFact(chapter, "room204_residual_observed")) {
         return "room204_observations_required";
@@ -686,32 +621,18 @@ function lockedDetailForIntent(
     case "collect_positioning_plate":
       return "room204_projection_required";
     case "install_positioning_plate":
-      if (!hasFact(chapter, "room204_projection_composite_completed")) {
-        return "projection_composite_required";
-      }
-      if (!hasFact(chapter, "elevator_stop_chain_reconstructed")) {
-        return chapterFourElevatorRecordsComplete(chapter.factIds)
-          ? "elevator_stop_chain_required"
-          : "elevator_floor_records_required";
-      }
-      if (!hasFact(chapter, "a2_positioning_plate_calibrated")) {
-        return "positioning_calibration_required";
-      }
-      if (!hasFact(chapter, "a2_power_topology_recovered")) {
-        return "power_topology_required";
-      }
-      if (!hasFact(chapter, "a2_evacuation_route_confirmed")) {
-        return "evacuation_route_required";
-      }
-      return "positioning_plate_required";
+      return hasFact(chapter, "room204_projection_composite_completed")
+        ? "positioning_plate_required"
+        : "projection_composite_required";
     case "inspect_cart_wheel":
     case "collect_short_pry_bar":
-      if (!hasFact(chapter, "maintenance_incident_linked")) {
-        return "maintenance_incident_required";
-      }
-      return "cart_wheel_inspection_required";
+      return hasFact(chapter, "maintenance_incident_linked")
+        ? "bakery_trace_required"
+        : "maintenance_incident_required";
     case "open_cart_wheel_cover":
-      return "cart_wheel_inspection_required";
+      return hasFact(chapter, "bakery_tool_location_observed")
+        ? "cart_wheel_inspection_required"
+        : "bakery_trace_required";
     case "collect_lubricating_oil":
     case "lubricate_cart_wheel":
       return "cart_wheel_cover_required";
@@ -727,7 +648,9 @@ function lockedDetailForIntent(
     case "open_power_panel":
     case "toggle_light_zone":
     case "lock_light_grid":
-      return "blackout_not_started";
+      return isChapterFourEvidenceReady("room204_projection_composite", chapter.factIds)
+        ? "blackout_not_started"
+        : "projection_composite_required";
     case "reach_202_threshold":
       return hasFact(chapter, "powered_route_confirmed")
         ? "chase_attempt_stale"
@@ -735,7 +658,9 @@ function lockedDetailForIntent(
     case "fail_chase":
       return "chase_attempt_stale";
     case "collect_final_minute":
-      return "final_minute_not_recovered";
+      return hasFact(chapter, "room202_route_reached")
+        ? "final_minute_not_recovered"
+        : "powered_route_required";
     case "install_final_minute":
       if (!state.chapterThreeInterlude.completed
         || state.chapterThreeInterlude.phase !== "complete") {
@@ -756,7 +681,9 @@ function lockedDetailForIntent(
       if (chapter.checkinPaperAccepted || hasFact(chapter, "checkin_paper_accepted")) {
         return "checkin_paper_already_accepted";
       }
-      return "checkin_requirements_incomplete";
+      return hasFact(chapter, "attendance_record_recovered")
+        ? "checkin_requirements_incomplete"
+        : "recovered_record_required";
     case "acknowledge_exterior_closure":
       return "closure_prerequisites_incomplete";
     default:
@@ -807,7 +734,6 @@ export class ChapterFourTemporalMazeController {
     const state = this.store.getState();
     const chapter = activeChapterFour(state);
     const previousPhase = chapter?.phase ?? null;
-    const previousTimeState = chapter?.timeState ?? null;
     const reject = (
       reason: Exclude<ChapterFour755IntentResultReason, "accepted">,
       detailCode?: ChapterFour755IntentDetailCode
@@ -826,9 +752,7 @@ export class ChapterFourTemporalMazeController {
           : {}),
       intentType: intent.type,
       previousPhase,
-      phase: previousPhase,
-      previousTimeState,
-      timeState: previousTimeState
+      phase: previousPhase
     });
     const accept = (nextState: GameState): ChapterFour755IntentResult => {
       const nextChapter = activeChapterFour(nextState);
@@ -849,9 +773,7 @@ export class ChapterFourTemporalMazeController {
         reason: "accepted",
         intentType: intent.type,
         previousPhase,
-        phase: nextChapter?.phase ?? previousPhase,
-        previousTimeState,
-        timeState: nextChapter?.timeState ?? previousTimeState
+        phase: nextChapter?.phase ?? previousPhase
       };
     };
     const acceptReadOnly = (): ChapterFour755IntentResult => ({
@@ -860,9 +782,7 @@ export class ChapterFourTemporalMazeController {
       reason: "accepted",
       intentType: intent.type,
       previousPhase,
-      phase: previousPhase,
-      previousTimeState,
-      timeState: previousTimeState
+      phase: previousPhase
     });
 
     if (!chapter) return reject("inactive");
@@ -892,11 +812,6 @@ export class ChapterFourTemporalMazeController {
     }
     if (!chapter.prologueSeen) return reject("inactive");
     if (chapter.completed || chapter.phase === "complete") return reject("already_complete");
-    if (!isChapterFourPhaseTimeAligned(chapter)
-      && intent.type !== "adjust_hall_clock_time"
-      && intent.type !== "set_mode") {
-      return reject("locked", "clock_adjustment_required");
-    }
     if (isChapterFour755TargetIntent(intent)) {
       const resolvedTarget = runtimeTarget === undefined
         ? undefined
@@ -958,22 +873,24 @@ export class ChapterFourTemporalMazeController {
 
       case "observe_elevator_history": {
         if (chapter.phase !== "room204_restore"
-          || chapter.floor !== "A1") {
-          return reject("locked", "elevator_history_required");
+          || chapter.floor !== "A1"
+          || !hasFact(chapter, "classroom_104_chalk_residual_observed")
+          || !hasFact(chapter, "classroom_105_terminal_replay_checked")) {
+          return reject("locked", "classroom_checks_required");
         }
         if (chapter.mode !== "dark") return reject("wrong_mode");
         if (hasFact(chapter, "elevator_history_observed")) return reject("already_complete");
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            appendFact(chapter, "elevator_history_observed")
-          )
+          factIds: appendA1ComparisonFact(chapter, "elevator_history_observed")
         }));
       }
 
       case "calibrate_elevator_history": {
         if (chapter.phase !== "room204_restore"
-          || chapter.floor !== "A1") {
-          return reject("locked", "elevator_calibration_required");
+          || chapter.floor !== "A1"
+          || !hasFact(chapter, "classroom_104_chalk_residual_observed")
+          || !hasFact(chapter, "classroom_105_terminal_replay_checked")) {
+          return reject("locked", "classroom_checks_required");
         }
         if (chapter.mode !== "light") return reject("wrong_mode");
         if (hasFact(chapter, "elevator_history_calibrated")) return reject("already_complete");
@@ -982,48 +899,7 @@ export class ChapterFourTemporalMazeController {
           return reject("incorrect");
         }
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            appendFact(chapter, "elevator_history_calibrated")
-          )
-        }));
-      }
-
-      case "observe_elevator_floor_record": {
-        if (chapter.phase !== "room204_restore"
-          || chapter.floor !== intent.floor) {
-          return reject("locked", "elevator_floor_records_required");
-        }
-        if (chapter.mode !== "dark") return reject("wrong_mode");
-        const record = CHAPTER_FOUR_ELEVATOR_FLOOR_RECORDS[intent.floor];
-        if (hasFact(chapter, record.factId)) return reject("already_complete");
-        if (intent.floor === "A1") {
-          return reject("locked", "elevator_history_required");
-        }
-        if (intent.floor === "A2" && !hasFact(chapter, "misaligned_stair_solved")) {
-          return reject("locked", "misaligned_stair_required");
-        }
-        if (intent.floor === "A3" && !hasFact(chapter, "elevator_history_calibrated")) {
-          return reject("locked", "elevator_calibration_required");
-        }
-        return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, record.factId)
-        }));
-      }
-
-      case "reconstruct_elevator_stop_chain": {
-        if (chapter.phase !== "room204_restore") {
-          return reject("locked", "elevator_stop_chain_required");
-        }
-        if (chapter.mode !== "light") return reject("wrong_mode");
-        if (hasFact(chapter, "elevator_stop_chain_reconstructed")) {
-          return reject("already_complete");
-        }
-        if (!chapterFourElevatorRecordsComplete(chapter.factIds)) {
-          return reject("locked", "elevator_floor_records_required");
-        }
-        if (!isChapterFourElevatorStopChainCorrect(intent)) return reject("incorrect");
-        return accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, "elevator_stop_chain_reconstructed")
+          factIds: appendA1ComparisonFact(chapter, "elevator_history_calibrated")
         }));
       }
 
@@ -1033,7 +909,7 @@ export class ChapterFourTemporalMazeController {
           return reject("locked", "misaligned_stair_required");
         }
         if (!hasFact(chapter, "a3_reference_observed")) {
-          return reject("locked", "room204_observations_required");
+          return reject("locked", "a3_reference_required");
         }
         if (hasFact(chapter, "misaligned_stair_solved")) return reject("already_complete");
         const withSolvedStair = this.patchChapter(state, {
@@ -1087,11 +963,8 @@ export class ChapterFourTemporalMazeController {
         if (chapter.phase === "final_chase"
           && intent.fromFloor === "A1"
           && intent.toFloor === "A2") {
-          return accept(this.relocate(state, {
-            floor: "A2",
-            roomId: "a2_corridor",
-            checkpoint: "c4_a2_corridor"
-          }));
+          if (chapter.chaseStairwellStage === "inside") return reject("already_complete");
+          return accept(this.patchChapter(state, { chaseStairwellStage: "inside", chaseStairwellLanding: 0 }));
         }
         if (chapter.phase === "return_to_clock"
           && intent.fromFloor === "A2"
@@ -1103,6 +976,23 @@ export class ChapterFourTemporalMazeController {
           }));
         }
         return reject("locked");
+      }
+
+      case "reach_chase_stairwell_landing": {
+        if (chapter.phase !== "final_chase" || chapter.floor !== "A1"
+          || chapter.chaseStairwellStage !== "inside" || intent.expectedAttempt !== chapter.chaseAttempt
+          || intent.landing !== chapter.chaseStairwellLanding + 1
+          || !chaseStairInside(intent.position, CHASE_STAIR_GATES[intent.landing - 1])) return reject("locked");
+        return accept(this.patchChapter(state, { chaseStairwellLanding: intent.landing }));
+      }
+
+      case "leave_chase_stairwell": {
+        if (chapter.phase !== "final_chase" || chapter.floor !== "A1"
+          || chapter.chaseStairwellStage !== "inside" || chapter.chaseStairwellLanding !== 2
+          || intent.expectedAttempt !== chapter.chaseAttempt || !chaseStairInside(intent.position, CHASE_STAIR_EXIT)) return reject("locked");
+        return accept(this.relocate(this.patchChapter(state, { chaseStairwellStage: "complete" }), {
+          floor: "A2", roomId: "a2_corridor", checkpoint: "c4_a2_corridor"
+        }));
       }
 
       case "catch_attendance_paper": {
@@ -1117,23 +1007,11 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "pull_hall_clock": {
-        return reject("locked", "clock_adjustment_required");
-      }
-
-      case "adjust_hall_clock_time": {
-        const requiredTimeState = selectChapterFourRequiredClockTime(chapter);
-        if (!requiredTimeState) return reject("locked", "clock_adjustment_required");
-        if (intent.targetTimeState === chapter.timeState) return reject("already_complete");
-        if (intent.targetTimeState !== requiredTimeState) return reject("incorrect");
-        const next = chapter.phase === "hall_clock_inspection"
-          ? this.transition(state, "bakery_hour_hand")
-          : this.applyTimeState(state, chapter.phase, intent.targetTimeState);
-        const result = accept(next);
+        const result = accept(this.transition(state, "bakery_hour_hand"));
         this.emitChapterFourCue("chapter4_time_swap_committed", {
           previousPhase,
-          phase: next.chapter4.phase,
-          previousTimeState,
-          timeState: intent.targetTimeState
+          phase: "bakery_hour_hand",
+          timeState: "1225_bakery"
         });
         return result;
       }
@@ -1189,17 +1067,21 @@ export class ChapterFourTemporalMazeController {
       case "install_hour_hand": {
         if (chapter.phase !== "bakery_hour_hand"
           || !hasFact(chapter, "bakery_conveyor_lamp_inspected")
+          || !hasFact(chapter, "bakery_conveyor_direction_observed")
+          || !hasFact(chapter, "bakery_tool_location_observed")
           || !hasFact(chapter, "bakery_hour_hand_exposed")
           || !hasFact(chapter, "bakery_hour_hand_collected")
           || !state.items.oldClockHourHand
           || hasFact(chapter, "hour_hand_installed")) return reject("locked");
-        const result = accept(this.advancePhaseKeepingTime(state, "room204_restore", {
+        const result = accept(this.transition(state, "room204_restore", {
           factIds: appendFact(chapter, "hour_hand_installed"),
-          items: withItem(state, "oldClockHourHand", false),
-          floor: "A1",
-          roomId: "a1_hall_clock",
-          checkpoint: "c4_a1_lobby"
+          items: withItem(state, "oldClockHourHand", false)
         }));
+        this.emitChapterFourCue("chapter4_time_swap_committed", {
+          previousPhase,
+          phase: "room204_restore",
+          timeState: "1850_evening"
+        });
         return result;
       }
 
@@ -1207,44 +1089,6 @@ export class ChapterFourTemporalMazeController {
       case "talk_to_chapter_four_support_npc":
       case "inspect_alumni_figure":
         return acceptReadOnly();
-
-      case "inspect_chapter_four_context": {
-        const puzzleId = chapterFourInsertedPuzzleForTarget(intent.targetId);
-        if (puzzleId) {
-          const definition = CHAPTER_FOUR_INSERTED_PUZZLES[puzzleId];
-          this.emitChapterFourCue("chapter4_inserted_puzzle_requested", {
-            puzzleId,
-            targetId: intent.targetId,
-            mode: chapter.mode,
-            completed: hasFact(chapter, definition.factId),
-            prerequisiteReady: insertedPuzzlePrerequisiteReady(chapter, puzzleId)
-          });
-        }
-        return acceptReadOnly();
-      }
-
-      case "complete_inserted_puzzle": {
-        const { answer } = intent;
-        const definition = CHAPTER_FOUR_INSERTED_PUZZLES[answer.puzzleId];
-        if (chapter.phase !== "room204_restore"
-          || chapter.floor !== insertedPuzzleFloor(answer.puzzleId)) {
-          return reject("locked", insertedPuzzleLockedDetail(chapter, answer.puzzleId));
-        }
-        if (!insertedPuzzlePrerequisiteReady(chapter, answer.puzzleId)) {
-          return reject("locked", insertedPuzzleLockedDetail(chapter, answer.puzzleId));
-        }
-        if (hasFact(chapter, definition.factId)) return reject("already_complete");
-        if (!isChapterFourInsertedPuzzleAnswerCorrect(answer)) return reject("incorrect");
-        const result = accept(this.patchChapter(state, {
-          factIds: appendFact(chapter, definition.factId)
-        }));
-        this.emitChapterFourCue("chapter4_inserted_puzzle_completed", {
-          puzzleId: answer.puzzleId,
-          factId: definition.factId,
-          successText: definition.successText
-        });
-        return result;
-      }
 
       case "complete_zhu_two_questions": {
         if (chapter.phase !== "exterior_closure"
@@ -1269,8 +1113,7 @@ export class ChapterFourTemporalMazeController {
         }));
         this.emitChapterFourCue("zhu_two_questions_answered", {
           purposeAnswer: intent.purposeAnswer,
-          personAnswer: intent.personAnswer,
-          nextConsumer: "canruo_star_lamp"
+          personAnswer: intent.personAnswer
         });
         return result;
       }
@@ -1280,9 +1123,7 @@ export class ChapterFourTemporalMazeController {
           return acceptReadOnly();
         }
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            appendFact(chapter, "classroom_104_chalk_residual_observed")
-          )
+          factIds: appendA1ComparisonFact(chapter, "classroom_104_chalk_residual_observed")
         }));
       }
 
@@ -1291,30 +1132,24 @@ export class ChapterFourTemporalMazeController {
           return acceptReadOnly();
         }
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            appendFact(chapter, "classroom_105_terminal_replay_checked")
-          )
+          factIds: appendA1ComparisonFact(chapter, "classroom_105_terminal_replay_checked")
         }));
       }
 
       case "observe_a3_reference": {
-        const factIds = appendFacts(chapter, [
-          "a3_reference_observed",
-          "a3_identity_context_observed"
-        ]);
+        if (hasFact(chapter, "a3_reference_observed")
+          && hasFact(chapter, "a3_identity_context_observed")) return acceptReadOnly();
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            finalizeRoom204Facts(factIds, chapter.room204Placements)
-          )
+          factIds: appendFacts(chapter, [
+            "a3_reference_observed",
+            "a3_identity_context_observed"
+          ])
         }));
       }
 
       case "observe_room204_residual": {
-        const factIds = appendFact(chapter, "room204_residual_observed");
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            finalizeRoom204Facts(factIds, chapter.room204Placements)
-          )
+          factIds: appendFact(chapter, "room204_residual_observed")
         }));
       }
 
@@ -1331,11 +1166,12 @@ export class ChapterFourTemporalMazeController {
             room204IssueDetailCode(resolution.issue)
           );
         }
+        const restored = resolution.complete
+          && hasFact(chapter, "a3_reference_observed")
+          && hasFact(chapter, "room204_residual_observed");
         return accept(this.patchChapter(state, {
           room204Placements: resolution.placements,
-          factIds: finalizeChapterFourCausalFacts(
-            finalizeRoom204Facts(chapter.factIds, resolution.placements)
-          )
+          factIds: restored ? appendFact(chapter, "room204_restored") : chapter.factIds
         }));
       }
 
@@ -1351,28 +1187,30 @@ export class ChapterFourTemporalMazeController {
             room204GroupIssueDetailCode(resolution.issue)
           );
         }
+        const restored = resolution.complete
+          && hasFact(chapter, "a3_reference_observed")
+          && hasFact(chapter, "room204_residual_observed");
         return accept(this.patchChapter(state, {
           room204Placements: resolution.placements,
-          factIds: finalizeChapterFourCausalFacts(
-            finalizeRoom204Facts(chapter.factIds, resolution.placements)
-          )
+          factIds: restored ? appendFact(chapter, "room204_restored") : chapter.factIds
         }));
       }
 
       case "complete_room204_projection": {
         if (chapter.phase !== "room204_restore"
-          || !hasFact(chapter, "a1_time_route_compared")
-          || !hasFact(chapter, "a1_duty_board_reconstructed")
-          || !hasFact(chapter, "a3_reference_observed")
-          || !hasFact(chapter, "a3_identity_context_observed")
+          || !isChapterFourEvidenceReady("a1_time_route_comparison", chapter.factIds)
+          || !isChapterFourEvidenceReady("a3_spatial_identity_reference", chapter.factIds)
           || !hasFact(chapter, "room204_residual_observed")
           || !hasFact(chapter, "room204_restored")
           || !isRoom204PlacementSetComplete(chapter.room204Placements)) return reject("locked");
         if (hasFact(chapter, "room204_projection_completed")) return reject("already_complete");
         return accept(this.patchChapter(state, {
-          factIds: finalizeChapterFourCausalFacts(
-            appendFact(chapter, "room204_projection_completed")
-          )
+          factIds: appendFacts(chapter, [
+            "room204_projection_completed",
+            "room204_projection_composite_completed",
+            "room202_endpoint_inferred",
+            "maintenance_incident_linked"
+          ])
         }));
       }
 
@@ -1391,21 +1229,22 @@ export class ChapterFourTemporalMazeController {
       }
 
       case "install_positioning_plate": {
-        if (!hasFact(chapter, "room204_projection_composite_completed")
+        if (!isChapterFourEvidenceReady("room204_projection_composite", chapter.factIds)
           || !hasFact(chapter, "positioning_plate_collected")
-          || !hasFact(chapter, "a2_positioning_plate_calibrated")
-          || !hasFact(chapter, "a2_power_topology_recovered")
-          || !hasFact(chapter, "a2_evacuation_route_confirmed")
-          || !hasFact(chapter, "elevator_stop_chain_reconstructed")
           || !state.items.clockPositioningPlate
           || hasFact(chapter, "positioning_plate_installed")) return reject("locked");
-        const result = accept(this.advancePhaseKeepingTime(state, "maintenance_repair", {
+        const result = accept(this.transition(state, "maintenance_repair", {
           factIds: appendFact(chapter, "positioning_plate_installed"),
           items: withItem(state, "clockPositioningPlate", false),
           floor: "A1",
           roomId: "a1_hall_clock",
           checkpoint: "c4_a1_lobby"
         }));
+        this.emitChapterFourCue("chapter4_time_swap_committed", {
+          previousPhase,
+          phase: "maintenance_repair",
+          timeState: "2245_maintenance"
+        });
         return result;
       }
 
@@ -1417,83 +1256,81 @@ export class ChapterFourTemporalMazeController {
           || hasFact(chapter, "cart_wheel_repaired")
           || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
         if (hasFact(chapter, "cart_wheel_inspected")) return reject("already_complete");
-        this.emitChapterFourCue("chapter4_maintenance_diagnosis_requested", {
-          phase: chapter.phase,
-          targetId: intent.targetId
-        });
-        return acceptReadOnly();
-      }
-
-      case "complete_maintenance_diagnosis": {
-        if (chapter.phase !== "maintenance_repair"
-          || chapter.guardMode !== "patrol"
-          || hasFact(chapter, "cart_wheel_inspected")) return reject("locked");
-        const correct = intent.answers.wheel_sound === "latch"
-          && intent.answers.clock_jam === "gear_offset"
-          && intent.answers.oil_trace === "oil_shortage";
-        if (!correct) {
-          this.emitChapterFourCue("chapter4_maintenance_diagnosis_rejected", { phase: chapter.phase });
-          return reject("incorrect");
-        }
         const result = accept(this.patchChapter(state, {
           factIds: appendFact(chapter, "cart_wheel_inspected")
-        }, {
-          ...state.items,
-          shortPryBar: true,
-          universalLubricatingOil: true
         }));
-        this.emitChapterFourCue("chapter4_maintenance_diagnosis_completed", {
+        this.emitChapterFourCue("maintenance_cart_wheel_stuck", {
           phase: chapter.phase,
-          actions: ["open_cart_wheel_cover", "lubricate_maintenance_linkage"]
+          targetId: intent.targetId
         });
         return result;
       }
 
       case "collect_short_pry_bar": {
-        return reject("locked");
+        if (chapter.phase !== "maintenance_repair"
+          || !hasFact(chapter, "maintenance_incident_linked")
+          || !hasFact(chapter, "bakery_tool_location_observed")
+          || hasFact(chapter, "cart_wheel_cover_opened")
+          || state.items.shortPryBar) return reject("locked");
+        return accept(this.patchChapter(state, {}, withItem(state, "shortPryBar", true)));
       }
 
       case "open_cart_wheel_cover": {
         if (chapter.phase !== "maintenance_repair"
+          || !hasFact(chapter, "maintenance_incident_linked")
+          || !hasFact(chapter, "bakery_tool_location_observed")
           || !hasFact(chapter, "cart_wheel_inspected")
           || !state.items.shortPryBar
           || hasFact(chapter, "cart_wheel_cover_opened")) return reject("locked");
         return accept(this.patchChapter(state, {
           factIds: appendFact(chapter, "cart_wheel_cover_opened")
-        }, withItem(state, "shortPryBar", false)));
+        }, {
+          ...state.items,
+          shortPryBar: false,
+          universalLubricatingOil: true
+        }));
       }
 
       case "collect_lubricating_oil": {
-        return reject("locked");
+        if (state.items.universalLubricatingOil
+          || hasFact(chapter, "cart_wheel_repaired")
+          || hasFact(chapter, "clock_gear_repaired")) return reject("already_complete");
+        if (chapter.phase !== "maintenance_repair"
+          || !hasFact(chapter, "cart_wheel_cover_opened")
+          || !hasFact(chapter, "maintenance_incident_linked")) return reject("locked");
+        return accept(this.patchChapter(state, {}, withItem(state, "universalLubricatingOil", true)));
       }
 
       case "lubricate_cart_wheel": {
         if (chapter.phase !== "maintenance_repair"
+          || !hasFact(chapter, "maintenance_incident_linked")
           || !hasFact(chapter, "cart_wheel_cover_opened")
           || !state.items.universalLubricatingOil
           || hasFact(chapter, "cart_wheel_repaired")) return reject("locked");
-        const repairedFacts = appendFact(chapter, "cart_wheel_repaired");
-        if (!repairedFacts.includes("clock_gear_repaired")) repairedFacts.push("clock_gear_repaired");
         const result = accept(this.patchChapter(state, {
-          factIds: repairedFacts
-        }, withItem(state, "universalLubricatingOil", false)));
+          factIds: appendFact(chapter, "cart_wheel_repaired")
+        }));
         this.emitChapterFourCue("maintenance_cart_wheel_repaired", {
           phase: chapter.phase,
-          targetId: intent.targetId,
-          clockGearAligned: true
-        });
-        this.emitChapterFourCue("clock_gear_repaired", {
-          phase: chapter.phase,
-          targetId: intent.targetId,
-          linkedAction: true
+          targetId: intent.targetId
         });
         return result;
       }
 
       case "lubricate_clock_gear": {
-        return hasFact(chapter, "clock_gear_repaired")
-          ? reject("already_complete")
-          : reject("locked");
+        if (chapter.phase !== "maintenance_repair"
+          || !hasFact(chapter, "maintenance_incident_linked")
+          || !hasFact(chapter, "cart_wheel_repaired")
+          || !state.items.universalLubricatingOil
+          || hasFact(chapter, "clock_gear_repaired")) return reject("locked");
+        const result = accept(this.patchChapter(state, {
+          factIds: appendFact(chapter, "clock_gear_repaired"),
+        }, withItem(state, "universalLubricatingOil", false)));
+        this.emitChapterFourCue("clock_gear_repaired", {
+          phase: chapter.phase,
+          targetId: intent.targetId
+        });
+        return result;
       }
 
       case "recover_from_maintenance_patrol": {
@@ -1569,6 +1406,7 @@ export class ChapterFourTemporalMazeController {
 
       case "open_power_panel": {
         if (chapter.phase !== "blackout_light_grid"
+          || !isChapterFourEvidenceReady("room204_projection_composite", chapter.factIds)
           || !hasFact(chapter, "paper_temporarily_out_of_inventory")
           || hasFact(chapter, "light_grid_locked")
           || chapter.lightGrid.locked) return reject("locked");
@@ -1577,6 +1415,7 @@ export class ChapterFourTemporalMazeController {
 
       case "toggle_light_zone": {
         if (chapter.phase !== "blackout_light_grid"
+          || !isChapterFourEvidenceReady("room204_projection_composite", chapter.factIds)
           || !hasFact(chapter, "paper_temporarily_out_of_inventory")
           || hasFact(chapter, "light_grid_locked")
           || chapter.lightGrid.locked) return reject("locked");
@@ -1599,24 +1438,16 @@ export class ChapterFourTemporalMazeController {
 
       case "lock_light_grid": {
         if (chapter.phase !== "blackout_light_grid"
+          || !isChapterFourEvidenceReady("room204_projection_composite", chapter.factIds)
           || !hasFact(chapter, "paper_temporarily_out_of_inventory")
           || hasFact(chapter, "light_grid_locked")
           || chapter.lightGrid.locked) return reject("locked");
         if (!isChapterFourLightGridSolved(chapter.lightGrid.mask)
           || chapter.lightGrid.mask !== CHAPTER_FOUR_LIGHT_GRID.targetMask) return reject("incorrect");
-        if (!hasFact(chapter, "room204_projection_composite_completed")
-          || !hasFact(chapter, "room202_endpoint_inferred")) {
-          return reject("locked", "projection_composite_required");
-        }
-        if (!hasFact(chapter, "a2_power_topology_recovered")) {
-          return reject("locked", "power_topology_required");
-        }
-        if (!hasFact(chapter, "a2_evacuation_route_confirmed")) {
-          return reject("locked", "evacuation_route_required");
-        }
-        const lightGridFacts = finalizeChapterFourCausalFacts(
-          appendFact(chapter, "light_grid_locked")
-        );
+        const lightGridFacts = appendFacts(chapter, [
+          "light_grid_locked",
+          "powered_route_confirmed"
+        ]);
         const primedFacts = appendFact(
           { ...chapter, factIds: lightGridFacts },
           "canruo_star_lamp_primed"
@@ -1625,6 +1456,8 @@ export class ChapterFourTemporalMazeController {
           factIds: primedFacts,
           lightGrid: { mask: CHAPTER_FOUR_LIGHT_GRID.targetMask, locked: true },
           chaseRestartCheckpoint: "c4_a1_lobby",
+          chaseStairwellStage: "pending",
+          chaseStairwellLanding: 0,
           floor: "A1",
           roomId: "a1_lobby",
           checkpoint: "c4_a1_lobby"
@@ -1632,8 +1465,7 @@ export class ChapterFourTemporalMazeController {
         this.emitChapterFourCue("power_grid_locked", {
           mask: CHAPTER_FOUR_LIGHT_GRID.targetMask,
           phase: "final_chase",
-          canruoStarLampPrimed: true,
-          zhuQuestionAnswers: { purpose: null, person: null }
+          canruoStarLampPrimed: true
         });
         return result;
       }
@@ -1655,15 +1487,15 @@ export class ChapterFourTemporalMazeController {
 
       case "fail_chase": {
         if (chapter.phase !== "final_chase"
-          || intent.expectedAttempt !== chapter.chaseAttempt
-          || intent.failureFloor !== chapter.floor) return reject("locked");
-        const failedUpstairs = intent.failureFloor === "A2";
+          || intent.expectedAttempt !== chapter.chaseAttempt) return reject("locked");
         return accept(this.transition(state, "final_chase", {
           chaseAttempt: chapter.chaseAttempt + 1,
-          chaseRestartCheckpoint: failedUpstairs ? "c4_a2_corridor" : "c4_a1_lobby",
-          floor: failedUpstairs ? "A2" : "A1",
-          roomId: failedUpstairs ? "a2_corridor" : "a1_lobby",
-          checkpoint: failedUpstairs ? "c4_a2_corridor" : "c4_a1_lobby"
+          chaseStairwellStage: "pending",
+          chaseStairwellLanding: 0,
+          chaseRestartCheckpoint: "c4_a1_lobby",
+          floor: "A1",
+          roomId: "a1_lobby",
+          checkpoint: "c4_a1_lobby"
         }));
       }
 
@@ -1671,10 +1503,10 @@ export class ChapterFourTemporalMazeController {
         if (chapter.phase !== "final_minute_recovery"
           || chapter.floor !== "A2"
           || chapter.roomId !== "a2_room_202"
-          || !hasFact(chapter, "paper_temporarily_out_of_inventory")
           || !hasFact(chapter, "powered_route_confirmed")
           || !hasFact(chapter, "room202_endpoint_inferred")
           || !hasFact(chapter, "room202_route_reached")
+          || !hasFact(chapter, "paper_temporarily_out_of_inventory")
           || hasFact(chapter, "final_minute_recovered")
           || state.items.finalMinute) return reject("locked");
         const items = withItem(withItemState(state, "finalMinute", true), "attendanceRecordPaper", true);
@@ -1695,6 +1527,7 @@ export class ChapterFourTemporalMazeController {
           || chapter.floor !== "A1"
           || !["a1_lobby", "a1_hall_clock"].includes(chapter.roomId)
           || !hasFact(chapter, "final_minute_recovered")
+          || !hasFact(chapter, "attendance_record_recovered")
           || hasFact(chapter, "final_minute_installed")
           || !state.items.finalMinute
           || !state.items.attendanceRecordPaper
@@ -1799,14 +1632,19 @@ export class ChapterFourTemporalMazeController {
           || !hasFact(chapter, "checkin_card_accepted")
           || !hasFact(chapter, "checkin_paper_accepted")
           || !hasFact(chapter, "checkin_identity_verified")
-          || !hasFact(chapter, "zhu_two_questions_answered")
           || !hasFact(chapter, "final_minute_installed")
+          || !hasSavedZhuQuestionAnswers(chapter)
           || !chapter.lightGrid.locked
           || chapter.timeState !== "0755_morning"
           || chapter.worldTimeSeconds !== 28500
           || chapter.phoneStatusTimeSeconds !== 28500
           || !chapter.phoneStatusTimeTrusted) {
-          return reject("locked");
+          return reject(
+            "locked",
+            hasSavedZhuQuestionAnswers(chapter)
+              ? "closure_prerequisites_incomplete"
+              : "zhu_two_questions_required"
+          );
         }
         const reference = this.closureSessionVerifier.reference;
         if (!reference
@@ -1887,46 +1725,6 @@ export class ChapterFourTemporalMazeController {
       ...state,
       items,
       chapter4: { ...state.chapter4, ...patch }
-    };
-  }
-
-  private advancePhaseKeepingTime(
-    state: GameState,
-    phase: ChapterFourPhase,
-    overrides: PhaseTransitionOverrides = {}
-  ): GameState {
-    const next = this.transition(state, phase, overrides);
-    return {
-      ...next,
-      chapter4: {
-        ...next.chapter4,
-        timeAuthority: state.chapter4.timeAuthority,
-        timeState: state.chapter4.timeState,
-        worldTimeSeconds: state.chapter4.worldTimeSeconds,
-        phoneStatusTimeSeconds: state.chapter4.phoneStatusTimeSeconds,
-        phoneStatusTimeTrusted: state.chapter4.phoneStatusTimeTrusted,
-        guardMode: state.chapter4.guardMode
-      }
-    };
-  }
-
-  private applyTimeState(
-    state: GameState,
-    phase: ChapterFourPhase,
-    timeState: ChapterFourTimeState
-  ): GameState {
-    const time = chapterFourTimeContract(timeState);
-    return {
-      ...state,
-      chapter4: {
-        ...state.chapter4,
-        timeAuthority: "hall_clock",
-        timeState,
-        worldTimeSeconds: time.worldTimeSeconds,
-        phoneStatusTimeSeconds: time.phoneStatusTimeSeconds,
-        phoneStatusTimeTrusted: time.phoneStatusTimeTrusted,
-        guardMode: requirePhaseContract(phase).guardMode
-      }
     };
   }
 
@@ -2044,20 +1842,9 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "observe_elevator_history":
     case "complete_misaligned_stair":
       return hasExactKeys(value, ["type"]);
-    case "complete_inserted_puzzle":
-      return hasExactKeys(value, ["type", "answer"])
-        && isChapterFourInsertedPuzzleAnswer(value.answer);
     case "calibrate_elevator_history":
       return hasExactKeys(value, ["type", "startSeconds"])
         && isChapterFourElevatorStartSelectable(value.startSeconds as number);
-    case "observe_elevator_floor_record":
-      return hasExactKeys(value, ["type", "floor"])
-        && isChapterFourElevatorRecordFloor(value.floor);
-    case "reconstruct_elevator_stop_chain":
-      return hasExactKeys(value, ["type", "actualArrivalFloor", "unservedCallFloor"])
-        && isChapterFourElevatorDeductionFloor(value.actualArrivalFloor)
-        && isChapterFourElevatorDeductionFloor(value.unservedCallFloor)
-        && value.actualArrivalFloor !== value.unservedCallFloor;
     case "set_mode":
       return hasExactKeys(value, ["type", "mode"])
         && (value.mode === "light" || value.mode === "dark");
@@ -2069,6 +1856,16 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
         && value.roomId.length > 0
         && value.roomId.trim() === value.roomId
         && is755Checkpoint(value.checkpoint);
+    case "reach_chase_stairwell_landing":
+    case "leave_chase_stairwell": {
+      const point = value.position as Record<string, unknown> | undefined;
+      return hasExactKeys(value, value.type === "reach_chase_stairwell_landing"
+        ? ["type", "landing", "position", "expectedAttempt"] : ["type", "position", "expectedAttempt"])
+        && (value.type !== "reach_chase_stairwell_landing" || value.landing === 1 || value.landing === 2)
+        && isNonNegativeSafeInteger(value.expectedAttempt)
+        && Boolean(point && typeof point === "object" && hasExactKeys(point, ["x", "y"])
+          && typeof point.x === "number" && Number.isFinite(point.x) && typeof point.y === "number" && Number.isFinite(point.y));
+    }
     case "traverse_main_stair":
       return hasExactKeys(value, ["type", "fromFloor", "toFloor", "expectedAttempt"])
         && (value.fromFloor === "A1" || value.fromFloor === "A2")
@@ -2080,10 +1877,6 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "inspect_hall_clock":
     case "pull_hall_clock":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hallClock);
-    case "adjust_hall_clock_time":
-      return typeof value.targetTimeState === "string"
-        && TIME_CONTRACTS.some((contract) => contract.id === value.targetTimeState)
-        && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.hallClock, ["targetTimeState"]);
     case "collect_hour_hand":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.bakeryHourHandPickup);
     case "inspect_bakery_conveyor_lamp":
@@ -2098,10 +1891,6 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
     case "talk_to_chapter_four_support_npc":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a2ElevatorAttendant)
         || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a3ReferenceTeacher);
-    case "inspect_chapter_four_context":
-      return typeof value.targetId === "string"
-        && isChapterFourContextInteractionTargetId(value.targetId)
-        && targetIntentIs(value.targetId);
     case "inspect_alumni_figure":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniSuBuqing)
         || targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.alumniZhuKezhen)
@@ -2123,12 +1912,6 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.a3Reference);
     case "observe_room204_residual":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.room204Residual);
-    case "place_room204_group":
-      return hasExactKeys(value, ["type", "groupId", "targetId", "spatial"])
-        && isChapterFour755SpatialResult(value.spatial)
-        && typeof value.groupId === "string"
-        && ROOM204_GROUPS.has(value.groupId as ChapterFourRoom204GroupId)
-        && value.targetId === room204GroupTargetId(value.groupId as ChapterFourRoom204GroupId);
     case "place_room204_piece":
       return hasExactKeys(value, ["type", "pieceId", "slotId", "orientation", "targetId", "spatial"])
         && isChapterFour755SpatialResult(value.spatial)
@@ -2139,6 +1922,12 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
         && typeof value.orientation === "string"
         && ROOM204_ORIENTATIONS.has(value.orientation as ChapterFourRoom204Orientation)
         && value.targetId === room204SlotTargetId(value.slotId as ChapterFourRoom204SlotId);
+    case "place_room204_group":
+      return hasExactKeys(value, ["type", "groupId", "targetId", "spatial"])
+        && isChapterFour755SpatialResult(value.spatial)
+        && typeof value.groupId === "string"
+        && ROOM204_GROUPS.has(value.groupId as ChapterFourRoom204GroupId)
+        && value.targetId === room204GroupTargetId(value.groupId as ChapterFourRoom204GroupId);
     case "collect_positioning_plate":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.positioningPlatePickup);
     case "install_positioning_plate":
@@ -2146,16 +1935,6 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
         && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.positioningPlateSocket, ["itemId"]);
     case "inspect_cart_wheel":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.cartWheelInspection);
-    case "complete_maintenance_diagnosis": {
-      if (!hasExactKeys(value, ["type", "answers"]) || !isRecord(value.answers)) return false;
-      if (!hasExactKeys(value.answers, ["wheel_sound", "clock_jam", "oil_trace"])) return false;
-      const validCauses = new Set<ChapterFourMaintenanceCauseId>([
-        "latch", "oil_shortage", "gear_offset", "power_loss", "foreign_object"
-      ]);
-      return Object.values(value.answers).every((cause) => (
-        typeof cause === "string" && validCauses.has(cause as ChapterFourMaintenanceCauseId)
-      ));
-    }
     case "collect_short_pry_bar":
       return targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.pryBarPickup);
     case "open_cart_wheel_cover":
@@ -2186,9 +1965,8 @@ export function isChapterFour755Intent(value: unknown): value is ChapterFour755I
       return isNonNegativeSafeInteger(value.expectedAttempt)
         && targetIntentIs(CHAPTER_FOUR_755_TARGET_IDS.lecture202Threshold, ["expectedAttempt"]);
     case "fail_chase":
-      return hasExactKeys(value, ["type", "expectedAttempt", "failureFloor"])
-        && isNonNegativeSafeInteger(value.expectedAttempt)
-        && (value.failureFloor === "A1" || value.failureFloor === "A2");
+      return hasExactKeys(value, ["type", "expectedAttempt"])
+        && isNonNegativeSafeInteger(value.expectedAttempt);
     case "recover_from_maintenance_patrol":
       return hasExactKeys(value, ["type"]);
     case "acknowledge_exterior_closure":
@@ -2294,98 +2072,49 @@ function hasFact(chapter: ChapterFourState, factId: ChapterFourFactId): boolean 
   return chapter.factIds.includes(factId);
 }
 
+function hasSavedZhuQuestionAnswers(chapter: ChapterFourState): boolean {
+  return hasFact(chapter, "zhu_two_questions_answered")
+    && chapter.zhuQuestionAnswers.purpose !== null
+    && ZHU_PURPOSE_ANSWER_IDS.has(chapter.zhuQuestionAnswers.purpose)
+    && chapter.zhuQuestionAnswers.person !== null
+    && ZHU_PERSON_ANSWER_IDS.has(chapter.zhuQuestionAnswers.person);
+}
+
 function appendFact(chapter: ChapterFourState, factId: ChapterFourFactId): ChapterFourFactId[] {
   return hasFact(chapter, factId) ? [...chapter.factIds] : [...chapter.factIds, factId];
 }
 
 function appendFacts(
-  chapter: Pick<ChapterFourState, "factIds">,
+  chapter: ChapterFourState,
   factIds: readonly ChapterFourFactId[]
 ): ChapterFourFactId[] {
   const next = [...chapter.factIds];
+  const present = new Set(next);
   for (const factId of factIds) {
-    if (!next.includes(factId)) next.push(factId);
+    if (present.has(factId)) continue;
+    present.add(factId);
+    next.push(factId);
   }
   return next;
 }
 
-function finalizeChapterFourCausalFacts(
-  factIds: readonly ChapterFourFactId[]
-): ChapterFourFactId[] {
-  const next = new Set(factIds);
-  if ([
-    "classroom_104_chalk_residual_observed",
-    "classroom_105_terminal_replay_checked",
-    "elevator_history_observed",
-    "elevator_history_calibrated"
-  ].every((factId) => next.has(factId as ChapterFourFactId))) {
-    next.add("a1_time_route_compared");
-  }
-  if ([
-    "room204_restored",
-    "room204_projection_completed",
-    "a1_time_route_compared",
-    "a3_reference_observed",
-    "a3_identity_context_observed",
-    "room204_residual_observed"
-  ].every((factId) => next.has(factId as ChapterFourFactId))) {
-    next.add("room204_projection_composite_completed");
-    next.add("room202_endpoint_inferred");
-    next.add("maintenance_incident_linked");
-  }
-  if ([
-    "light_grid_locked",
-    "room204_projection_composite_completed",
-    "room202_endpoint_inferred"
-  ].every((factId) => next.has(factId as ChapterFourFactId))) {
-    next.add("powered_route_confirmed");
-  }
-  return [...next];
-}
+const A1_COMPARISON_REQUIRED_FACTS = Object.freeze([
+  "bakery_conveyor_direction_observed",
+  "classroom_104_chalk_residual_observed",
+  "classroom_105_terminal_replay_checked",
+  "elevator_history_observed",
+  "elevator_history_calibrated"
+] as const satisfies readonly ChapterFourFactId[]);
 
-function insertedPuzzleFloor(
-  puzzleId: ChapterFourInsertedPuzzleId
-): ChapterFour755FloorId {
-  if (puzzleId === "duty_board") return "A1";
-  if (puzzleId === "archive_index" || puzzleId === "media_alignment") return "A3";
-  return "A2";
-}
-
-function insertedPuzzlePrerequisiteReady(
+function appendA1ComparisonFact(
   chapter: ChapterFourState,
-  puzzleId: ChapterFourInsertedPuzzleId
-): boolean {
-  return puzzleId !== "media_alignment" || hasFact(chapter, "a3_archive_film_retrieved");
-}
-
-function insertedPuzzleLockedDetail(
-  chapter: ChapterFourState,
-  puzzleId: ChapterFourInsertedPuzzleId
-): ChapterFour755IntentDetailCode {
-  if (puzzleId === "duty_board") return "duty_board_required";
-  if (puzzleId === "archive_index") return "archive_film_required";
-  if (puzzleId === "media_alignment") {
-    return hasFact(chapter, "a3_archive_film_retrieved")
-      ? "media_alignment_required"
-      : "archive_film_required";
-  }
-  if (puzzleId === "positioning_calibration") return "positioning_calibration_required";
-  if (puzzleId === "power_topology") return "power_topology_required";
-  return "evacuation_route_required";
-}
-
-function finalizeRoom204Facts(
-  factIds: readonly ChapterFourFactId[],
-  placements: ChapterFourState["room204Placements"]
+  factId: ChapterFourFactId
 ): ChapterFourFactId[] {
-  const next = [...factIds];
-  if (isRoom204PlacementSetComplete(placements)
-    && next.includes("a3_reference_observed")
-    && next.includes("room204_residual_observed")
-    && !next.includes("room204_restored")) {
-    next.push("room204_restored");
+  const observed = appendFact(chapter, factId);
+  if (!A1_COMPARISON_REQUIRED_FACTS.every((required) => observed.includes(required))) {
+    return observed;
   }
-  return next;
+  return appendFact({ ...chapter, factIds: observed }, "a1_time_route_compared");
 }
 
 function withItem(state: GameState, itemId: InventoryItemId, owned: boolean): GameState["items"] {

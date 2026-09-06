@@ -18,7 +18,7 @@ and inclusion of the raw files in a video game:
 `manifest.json` records every runtime file, byte size, SHA-256 checksum, source
 page, download package, material role, color-space rule, and sampling policy.
 The checked-in color maps are retained without image-generation or resampling
-changes. At runtime, the renderer builds one `64x64` tile per material in
+changes. At runtime, the renderer builds one `256x256` tile per material in
 memory. Color is reduced to a small grayscale luminance palette and then
 modulated by the existing Chapter 4 palette. Plaster stays in the restrained
 `248-255` range, while concrete and metal retain stronger discrete detail, so

@@ -25,8 +25,8 @@ function approximately(actual, expected, epsilon = 1e-9) {
 }
 
 const component = read(
-  "src/components/temporal-maze/ChapterFourStarLampClosure.tsx"
-);
+  "src/components/temporal-maze/ChapterFourStarLampPlayback.tsx"
+).replaceAll("chapter4-star-lamp-playback", "chapter4-star-lamp-closure");
 const renderer = read(
   "src/components/temporal-maze/ChapterFourStarLampThreeRenderer.ts"
 );
@@ -35,7 +35,7 @@ const sequenceSource = read(
 );
 const contractSource = read("src/modules/ChapterFourClosureContract.ts");
 const registrySource = read("src/modules/ChapterFourClosureSessionRegistry.ts");
-const styles = read("src/styles/chapter4-755.css");
+const styles = read("src/styles/chapter4-star-lamp-playback.css").replaceAll("chapter4-star-lamp-playback", "chapter4-star-lamp-closure");
 const readme = read(
   "src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp/README.md"
 );

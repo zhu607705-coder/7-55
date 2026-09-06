@@ -36,6 +36,20 @@ const EXPECTED_ZONE_IDS = [
 ];
 const EXPECTED_ZONE_LABELS = ["大厅", "西走廊", "东走廊", "教室区", "面包店后场"];
 const EXPECTED_GUARD_MODES = ["absent", "patrol", "chase"];
+const EXPECTED_EVIDENCE_CONTRACT_IDS = [
+  "opening_paper_continuity",
+  "opening_time_discrepancy",
+  "bakery_eastbound_trace",
+  "a1_time_route_comparison",
+  "a3_spatial_identity_reference",
+  "room204_projection_composite",
+  "maintenance_mechanical_trace",
+  "powered_route_confirmation",
+  "recovered_record_continuity",
+  "checkin_identity_continuity",
+  "closure_identity_resolution"
+];
+const EXPECTED_EVIDENCE_FAMILIES = new Set(["time", "paper_route", "identity"]);
 const EXPECTED_PHASE_TIME = {
   opening_handoff: ["external_evidence", "2245_opening"],
   opening_paper_caught: ["external_evidence", "2245_opening"],
@@ -55,6 +69,16 @@ const EXPECTED_PHASE_GUARD = {
   maintenance_repair: "patrol",
   final_chase: "chase"
 };
+const EXPECTED_TRANSITION_CONTRACTS = [
+  ["hour_hand_to_room204", ["install_hour_hand"], "bakery_hour_hand", "room204_restore", "time_shift", "transition_overlay"],
+  ["room204_to_maintenance", ["install_positioning_plate"], "room204_restore", "maintenance_repair", "time_shift", "transition_overlay"],
+  ["maintenance_to_blackout", ["complete_minute_theft"], "maintenance_repair", "blackout_light_grid", "time_shift", "transition_overlay"],
+  ["blackout_to_chase", ["lock_light_grid"], "blackout_light_grid", "final_chase", "world_handoff", "scene_interaction"],
+  ["chase_to_room202", ["reach_202_threshold"], "final_chase", "final_minute_recovery", "world_handoff", "scene_interaction"],
+  ["room202_to_clock_return", ["collect_final_minute"], "final_minute_recovery", "return_to_clock", "world_handoff", "scene_interaction"],
+  ["clock_return_to_morning", ["install_final_minute"], "return_to_clock", "morning_checkin", "time_shift", "transition_overlay"],
+  ["checkin_to_exterior", ["read_campus_card", "submit_attendance_paper"], "morning_checkin", "exterior_closure", "world_handoff", "scene_interaction"]
+];
 const EXPECTED_ITEM_STEPS = [
   ["catch_attendance_paper", "attendanceRecordPaper", "a1_noticeboard_paper", "grant"],
   ["reject_external_submission", "attendanceRecordPaper", "external_submission_diagnostic", "retain"],
@@ -62,8 +86,10 @@ const EXPECTED_ITEM_STEPS = [
   ["install_hour_hand", "oldClockHourHand", "a1_hall_clock_hour_hand_socket", "consume"],
   ["collect_positioning_plate", "clockPositioningPlate", "a2_room204_podium_drawer", "grant"],
   ["install_positioning_plate", "clockPositioningPlate", "a1_hall_clock_positioning_plate_slot", "consume"],
+  ["collect_short_pry_bar", "shortPryBar", "a1_bakery_back_pry_bar", "grant"],
   ["open_cart_wheel_cover", "shortPryBar", "a1_cleaning_cart_wheel_cover", "consume"],
-  ["lubricate_cart_wheel", "universalLubricatingOil", "a1_cleaning_cart_wheel", "consume"],
+  ["lubricate_cart_wheel", "universalLubricatingOil", "a1_cleaning_cart_wheel", "retain"],
+  ["lubricate_clock_gear", "universalLubricatingOil", "a1_hall_clock_gear", "consume"],
   ["minute_theft", "attendanceRecordPaper", "a1_hall_clock_minute_endpoint", "consume"],
   ["collect_final_minute", "finalMinute", "a2_202_projection", "grant"],
   ["restore_attendance_paper", "attendanceRecordPaper", "a2_202_projection", "grant"],
@@ -89,7 +115,7 @@ const EXPECTED_OPENING_INTENTS = [
   "resolve_external_time_rejection",
   "inspect_hall_clock",
   "resolve_hall_clock_inspection",
-  "adjust_hall_clock_time"
+  "pull_hall_clock"
 ];
 const EXPECTED_BAKERY_INTENTS = [
   "inspect_bakery_conveyor_lamp",
@@ -105,6 +131,8 @@ const EXPECTED_BAKERY_TARGET_IDS = [
 ];
 const EXPECTED_BAKERY_FACTS = [
   "bakery_conveyor_lamp_inspected",
+  "bakery_conveyor_direction_observed",
+  "bakery_tool_location_observed",
   "bakery_hour_hand_exposed",
   "bakery_hour_hand_collected",
   "hour_hand_installed"
@@ -123,20 +151,15 @@ const EXPECTED_BAKERY_CUES = [
   "chapter4_bakery_hour_hand_revealed"
 ];
 const EXPECTED_ROOM204_TASK_KEYS = [
-  "tune_clock_to_1850",
-  "resolve_a1_investigation",
   "verify_a1_classrooms",
   "observe_elevator_history",
   "calibrate_elevator_history",
-  "resolve_a3_archive_chain",
   "observe_a3_reference",
   "solve_misaligned_stair",
   "observe_room204_residual",
   "restore_room204",
   "watch_room204_projection",
   "collect_positioning_plate",
-  "resolve_a2_inserted_puzzles",
-  "resolve_elevator_stop_chain",
   "install_positioning_plate"
 ];
 const EXPECTED_ROOM204_FACTS = [
@@ -144,12 +167,6 @@ const EXPECTED_ROOM204_FACTS = [
   "classroom_105_terminal_replay_checked",
   "elevator_history_observed",
   "elevator_history_calibrated",
-  "elevator_a2_call_record_observed",
-  "elevator_a3_arrival_record_observed",
-  "elevator_stop_chain_reconstructed",
-  "a1_duty_board_reconstructed",
-  "a3_archive_film_retrieved",
-  "a3_media_alignment_completed",
   "a1_time_route_compared",
   "a3_reference_observed",
   "a3_identity_context_observed",
@@ -161,16 +178,26 @@ const EXPECTED_ROOM204_FACTS = [
   "room202_endpoint_inferred",
   "maintenance_incident_linked",
   "positioning_plate_collected",
-  "a2_positioning_plate_calibrated",
-  "a2_power_topology_recovered",
-  "a2_evacuation_route_confirmed",
   "positioning_plate_installed"
 ];
+const EXPECTED_ROOM204_GROUP_IDS = [
+  "window_time_marks",
+  "central_drag_marks",
+  "podium_projection_edge",
+  "door_paper_trace"
+];
+const EXPECTED_ROOM204_GROUP_DETAIL_IDS = [
+  "room204_window_time_marks",
+  "room204_central_drag_marks",
+  "room204_projection_edge",
+  "room204_door_paper_trace"
+];
 const EXPECTED_MAINTENANCE_TASK_KEYS = [
-  "tune_clock_to_2245",
   "inspect_cart_wheel",
+  "collect_short_pry_bar",
   "open_cart_wheel_cover",
   "lubricate_cart_wheel",
+  "lubricate_clock_gear",
   "turn_clock_to_0755"
 ];
 const EXPECTED_MAINTENANCE_TARGET_IDS = [
@@ -195,7 +222,7 @@ const EXPECTED_TASK_KEYS_BY_ACTIVE_PHASE = Object.freeze({
   room204_restore: EXPECTED_ROOM204_TASK_KEYS,
   maintenance_repair: EXPECTED_MAINTENANCE_TASK_KEYS,
   blackout_light_grid: ["solve_light_grid"],
-  final_chase: ["reach_lecture_202"],
+  final_chase: ["reach_lecture_202", "cross_chase_stairwell"],
   final_minute_recovery: ["collect_final_minute"],
   return_to_clock: ["return_via_main_stair", "install_final_minute"],
   morning_checkin: ["complete_checkin", "read_campus_card", "submit_attendance_paper"],
@@ -221,6 +248,17 @@ const TASK7_H3_SHA256 = "d5cb9e9a91ef778337f5eeef74fad59643ca1f393607f993d7e5fc8
 const TASK7_H3_SIZE_BYTES = 8282814;
 const TASK7_H3_MEDIA_SOURCE_TYPE = "video/mp4; codecs=\"avc1.640028\"";
 const TASK7_H3_RUNTIME_MUSIC_SHA256 = "0b8e5a0eb47f431af5d96f13b9bbff07580419b1641de9e6637fa59d7c4685c6";
+const CHAPTER_FOUR_STAR_LAMP_LAYERS = Object.freeze({
+  "lamp_dark.png": "d44f7e4d3a6b261b19345c0340289af99a69a6a5d51852d9c5eea918c72b75bd",
+  "lamp_outline.png": "a04d8d0463c74a0096780a7f7e3a4cf0c45140115abd0e9141a2ba1ad78899e9",
+  "lamp_leds.png": "88eec957a051cf0553154718f32147a2daea34d9e23e16431a8a7dac2d52bbce",
+  "lamp_core.png": "24f629cdd3aac6d6ae37cf1ea59ddcc51e425e2b5c97d4fcab5f6ce63fd22c2c",
+  "lamp_glow.png": "e40985f91f179f583f0b87c01628b1ed72f72b4f05424d2377af5019e3550d6c"
+});
+const chapterFourStarLampAssetRoot = fileURLToPath(new URL(
+  "../src/assets/rpg/cinematics/chapter4-755/canruo-star-lamp/",
+  import.meta.url
+));
 const task7RuntimeSourcePaths = Object.freeze({
   timeline: fileURLToPath(new URL(
     "../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts",
@@ -262,10 +300,6 @@ const task7RuntimeSourcePaths = Object.freeze({
     "../src/scenes/rpg/RpgGameHost.tsx",
     import.meta.url
   )),
-  exteriorQuestions: fileURLToPath(new URL(
-    "../src/components/temporal-maze/ChapterFourExteriorQuestions.tsx",
-    import.meta.url
-  )),
   rpgCss: fileURLToPath(new URL(
     "../src/styles/rpg.css",
     import.meta.url
@@ -282,16 +316,28 @@ const task7RuntimeSourcePaths = Object.freeze({
     "../src/modules/ChapterFourTemporalMazeController.ts",
     import.meta.url
   )),
-  elevatorFloorInvestigation: fileURLToPath(new URL(
-    "../src/modules/ChapterFourElevatorFloorInvestigation.ts",
-    import.meta.url
-  )),
   stagePresentation: fileURLToPath(new URL(
     "../src/modules/ChapterFourStagePresentation.ts",
     import.meta.url
   )),
   closureContract: fileURLToPath(new URL(
     "../src/modules/ChapterFourClosureContract.ts",
+    import.meta.url
+  )),
+  closureSessionRegistry: fileURLToPath(new URL(
+    "../src/modules/ChapterFourClosureSessionRegistry.ts",
+    import.meta.url
+  )),
+  closureComponent: fileURLToPath(new URL(
+    "../src/components/temporal-maze/ChapterFourStarLampClosure.tsx",
+    import.meta.url
+  )),
+  closureWarmAssets: fileURLToPath(new URL(
+    "../src/scenes/rpg/ChapterFourWarmupAssets.ts",
+    import.meta.url
+  )),
+  closureCss: fileURLToPath(new URL(
+    "../src/styles/chapter4-755.css",
     import.meta.url
   )),
   saveStore: fileURLToPath(new URL(
@@ -320,10 +366,6 @@ const task7RuntimeSourcePaths = Object.freeze({
   )),
   powerPanel: fileURLToPath(new URL(
     "../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx",
-    import.meta.url
-  )),
-  powerPanelCss: fileURLToPath(new URL(
-    "../src/styles/chapter4-755.css",
     import.meta.url
   )),
   types: fileURLToPath(new URL(
@@ -536,6 +578,36 @@ function validateTask7H3Asset(errors) {
   }
 }
 
+function validateChapterFourStarLampLayers(errors) {
+  let files;
+  try {
+    files = fs.readdirSync(chapterFourStarLampAssetRoot)
+      .filter((fileName) => fileName.endsWith(".png"))
+      .sort();
+  } catch (error) {
+    errors.push(`Chapter 4 star-lamp asset directory cannot be read: ${error instanceof Error ? error.message : String(error)}`);
+    return;
+  }
+  const expectedNames = Object.keys(CHAPTER_FOUR_STAR_LAMP_LAYERS).sort();
+  if (!sameArray(files, expectedNames)) {
+    errors.push("Chapter 4 star-lamp asset directory must contain exactly the approved five PNG layers");
+    return;
+  }
+  for (const [fileName, expectedSha256] of Object.entries(CHAPTER_FOUR_STAR_LAMP_LAYERS)) {
+    const bytes = fs.readFileSync(path.join(chapterFourStarLampAssetRoot, fileName));
+    const pngSignature = bytes.subarray(0, 8).toString("hex");
+    const width = bytes.length >= 24 ? bytes.readUInt32BE(16) : 0;
+    const height = bytes.length >= 24 ? bytes.readUInt32BE(20) : 0;
+    const sha256 = createHash("sha256").update(bytes).digest("hex");
+    if (pngSignature !== "89504e470d0a1a0a"
+      || width !== 1024
+      || height !== 1536
+      || sha256 !== expectedSha256) {
+      errors.push(`${fileName} must remain the approved 1024x1536 star-lamp layer with its checked-in hash`);
+    }
+  }
+}
+
 function validateTask7RuntimeSources(errors) {
   const sources = readTask7RuntimeSources(errors);
   const timeline = sources.timeline ?? "";
@@ -548,14 +620,16 @@ function validateTask7RuntimeSources(errors) {
   const timelineRecovery = sources.timelineRecovery ?? "";
   const interludeController = sources.interludeController ?? "";
   const host = sources.host ?? "";
-  const exteriorQuestions = sources.exteriorQuestions ?? "";
   const rpgCss = sources.rpgCss ?? "";
   const scene = sources.scene ?? "";
   const quest = sources.quest ?? "";
   const controller = sources.controller ?? "";
-  const elevatorFloorInvestigation = sources.elevatorFloorInvestigation ?? "";
   const stagePresentation = sources.stagePresentation ?? "";
   const closureContract = sources.closureContract ?? "";
+  const closureSessionRegistry = sources.closureSessionRegistry ?? "";
+  const closureComponent = sources.closureComponent ?? "";
+  const closureWarmAssets = sources.closureWarmAssets ?? "";
+  const closureCss = sources.closureCss ?? "";
   const saveStore = sources.saveStore ?? "";
   const interaction = sources.interaction ?? "";
   const room204Model = sources.room204Model ?? "";
@@ -563,7 +637,6 @@ function validateTask7RuntimeSources(errors) {
   const lightGridModel = sources.lightGridModel ?? "";
   const finalChaseModel = sources.finalChaseModel ?? "";
   const powerPanel = sources.powerPanel ?? "";
-  const powerPanelCss = sources.powerPanelCss ?? "";
   const types = sources.types ?? "";
   const controllerResolverStart = controller.indexOf("  resolve755Intent(");
   const controllerResolverEnd = controller.indexOf("\n  /**\n   * Applies the phase", controllerResolverStart);
@@ -626,8 +699,8 @@ function validateTask7RuntimeSources(errors) {
     || !/kind:\s*["']embedded_chunks["'][\s\S]*?chunks/.test(viteConfig)
     || !viteConfig.includes('mimeType: "video/mp4; codecs=\\"avc1.640028\\""')
     || (viteConfig.match(/embedChapter4H3AsChunks\(\)/g) ?? []).length !== 2
-    || !/plugins:\s*\[\s*losslessRuntimeAssets\(import\.meta\.dirname,\s*true\),\s*embedChapter4H3AsChunks\(\),\s*react\(\),\s*viteSingleFile/.test(viteConfig)
-    || !/\}\s*:\s*\{\s*plugins:\s*\[losslessRuntimeAssets\(import\.meta\.dirname,\s*false\),\s*react\(\)\]/.test(viteConfig)) {
+    || !/plugins:\s*\[\s*losslessRuntimeAssets\(import.meta.dirname, true\),\s*embedChapter4H3AsChunks\(\),\s*react\(\),\s*viteSingleFile/.test(viteConfig)
+    || !/\}\s*:\s*\{\s*plugins:\s*\[losslessRuntimeAssets\(import.meta.dirname, false\), react\(\)\]/.test(viteConfig)) {
     errors.push("Task 7 single-file build must pre-embed only the queried H3 MP4 as independent 256KiB base64 chunks while normal Vite keeps the direct asset URL");
   }
   if (!/declare\s+module\s+["']\*\?chapter4-h3-embedded["']/.test(viteEnv)
@@ -682,7 +755,7 @@ function validateTask7RuntimeSources(errors) {
     || !/chapterThreeInterlude:\s*\{[\s\S]*?phase:\s*["']replay_ready["'][\s\S]*?replayUnlocked:\s*true/.test(recoveredReplayMutation)
     || !/this\.events\.emit\(["']chapter35_recovered_replay_gate_requested["'],\s*\{\s*destinationId:\s*["']duan_yongping_a1["']\s*\}\s*\)/.test(recoveredReplayMutation)
     || /preloadRpgGameHost|runtimeMode\s*:|chapter35_recovered_replay_requested|\b(?:audio|music)\b/i.test(recoveredReplayMutation)
-    || !/chapter35_recovered_replay_gate_requested[\s\S]*?void\s+warmRpgRuntime\(\s*["']duan_yongping_temporal_maze["'],\s*["']immediate["'],\s*["']entry["']\s*\)/.test(prologueGate)) {
+    || !/chapter35_recovered_replay_gate_requested[\s\S]*?void\s+warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGate)) {
     errors.push("Task 7 P20 must avoid mount-time preload, expose replay only after the correct destination, and let the controller commit replay_ready before the App gate starts preload");
   }
 
@@ -834,12 +907,12 @@ function validateTask7RuntimeSources(errors) {
     || !/const\s+initialElapsedRef\s*=\s*useRef\(\s*initialResumeRef\.current\s*\?\s*PROLOGUE_TASK_CARD_AT\s*:\s*getDeveloperChapter4PrologueOffset\(\)\s*\)/.test(prologueGate)
     || !/useState\(eligible\s*\|\|\s*resumeOpeningHandoff\)/.test(prologueGate)
     || !/useState<HandoffStatus>\(\s*resumeOpeningHandoff\s*\?\s*["']waiting_ready["']\s*:\s*["']idle["']\s*\)/.test(prologueGate)
-    || !/if\s*\(!resumeOpeningHandoff\s*\|\|\s*!initialResumeRef\.current\)\s*return\s*;[\s\S]*?requestIdRef\.current\s*=\s*requestId[\s\S]*?setHeld\(true\)[\s\S]*?setStatus\(["']waiting_ready["']\)[\s\S]*?armTimeoutGuard\(requestId\)[\s\S]*?void\s+warmRpgRuntime\(\s*["']duan_yongping_temporal_maze["'],\s*["']immediate["'],\s*["']entry["']\s*\)/.test(prologueGate)
+    || !/if\s*\(!resumeOpeningHandoff\s*\|\|\s*!initialResumeRef\.current\)\s*return\s*;[\s\S]*?requestIdRef\.current\s*=\s*requestId[\s\S]*?setHeld\(true\)[\s\S]*?setStatus\(["']waiting_ready["']\)[\s\S]*?armTimeoutGuard\(requestId\)[\s\S]*?void\s+warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGate)
     || !/initialElapsedMs=\{initialElapsedRef\.current\}/.test(prologueGate)) {
     errors.push("Task 7 App gate must restore a reloaded committed opening_handoff directly at the 43834ms task card while the RPG runtime boots underneath");
   }
 
-  if (!/event\.name\s*!==\s*["']chapter35_recovered_replay_gate_requested["'][\s\S]*?requestIdRef\.current\s*=\s*createRequestId\(\)[\s\S]*?setRequested\(true\)[\s\S]*?setHeld\(true\)[\s\S]*?void\s+warmRpgRuntime\(\s*["']duan_yongping_temporal_maze["'],\s*["']immediate["'],\s*["']entry["']\s*\)/.test(prologueGate)
+  if (!/event\.name\s*!==\s*["']chapter35_recovered_replay_gate_requested["'][\s\S]*?requestIdRef\.current\s*=\s*createRequestId\(\)[\s\S]*?setRequested\(true\)[\s\S]*?setHeld\(true\)[\s\S]*?void\s+warmRpgRuntime\("duan_yongping_temporal_maze", "immediate", "entry"\)/.test(prologueGate)
     || !/event\.name\s*!==\s*["']rpg_chapter4_755_live_ready["']/.test(prologueGate)
     || !/phase\s*!==\s*["']opening_handoff["']/.test(prologueGate)
     || !/appliedPlateId\s*!==\s*["']a1_2245_opening["']/.test(prologueGate)
@@ -847,11 +920,9 @@ function validateTask7RuntimeSources(errors) {
     || !/const\s+expectedRequestId\s*=\s*requestIdRef\.current[\s\S]*?const\s+receivedRequestId[\s\S]*?if\s*\(!expectedRequestId\)\s*return[\s\S]*?if\s*\(receivedRequestId\s*!==\s*expectedRequestId\)[\s\S]*?events\.emit\(["']rpg_chapter4_755_live_ready_retry_requested["'],\s*\{\s*requestId:\s*expectedRequestId\s*\}\)[\s\S]*?return\s*;/.test(prologueGate)
     || !/setStatus\(["']ready["']\)[\s\S]*?window\.setTimeout\(\(\)\s*=>\s*\{[\s\S]*?setRequested\(false\)[\s\S]*?setHeld\(false\)[\s\S]*?events\.emit\(["']rpg_chapter4_755_handoff_released["'],\s*\{\s*requestId:\s*expectedRequestId,[\s\S]*?appliedPlateId[\s\S]*?\}\)[\s\S]*?\},\s*80\)/.test(prologueGate)
     || !/event\.name\s*===\s*["']rpg_chapter4_755_live_ready_retry_requested["'][\s\S]*?event\.payload\?\.requestId[\s\S]*?this\.publishLiveReady\(true,\s*requestId\)/.test(scene)
-    || !/event\.name\s*!==\s*["']rpg_chapter4_warmup_phase_ready["'][\s\S]*?event\.payload\?\.requiredForCurrentState\s*!==\s*true[\s\S]*?current\.rpgScene\s*!==\s*["']duan_yongping_temporal_maze["'][\s\S]*?assetLoadBlockedRef\.current\s*=\s*false[\s\S]*?setAssetLoadReport\(\{[\s\S]*?status:\s*["']ready["'][\s\S]*?progress:\s*1[\s\S]*?failedAssets:\s*\[\][\s\S]*?\}\)/.test(host)
-    || !/function\s+restartRpgScene\(game:\s*Phaser\.Game,\s*target:\s*string\):\s*void\s*\{[\s\S]*?const\s+targetWasRunning\s*=\s*game\.scene\.isActive\(target\)[\s\S]*?sceneKey\s*!==\s*target[\s\S]*?if\s*\(targetWasRunning\)\s*\{\s*game\.scene\.getScene\(target\)\.scene\.restart\(\);\s*\}\s*else\s*\{\s*game\.scene\.start\(target\);\s*\}/.test(host)
     || !/private\s+publishLiveReady\(force\s*=\s*false,\s*requestId\?:\s*string\):\s*void/.test(scene)
     || !/\.\.\.\(requestId\s*\?\s*\{\s*requestId\s*\}\s*:\s*\{\}\)/.test(scene)) {
-    errors.push("Task 7 live-ready handshake must clear a stale host load failure after required warmup, round-trip the App gate requestId and release after the Scene becomes ready");
+    errors.push("Task 7 live-ready handshake must round-trip the App gate requestId through the Scene retry echo before the 80ms release");
   }
 
   const phaserClearIndex = host.indexOf("clearRpgCanvasHost(host);");
@@ -911,11 +982,10 @@ function validateTask7RuntimeSources(errors) {
     "observe_elevator_history",
     "calibrate_elevator_history",
     "observe_a3_reference",
-    "inspect_chapter_four_context",
-    "complete_inserted_puzzle",
     "complete_misaligned_stair",
     "observe_room204_residual",
     "place_room204_piece",
+    "place_room204_group",
     "complete_room204_projection",
     "collect_positioning_plate",
     "install_positioning_plate",
@@ -923,10 +993,9 @@ function validateTask7RuntimeSources(errors) {
     "complete_minute_theft",
     "open_power_panel",
     "toggle_light_zone",
-    "lock_light_grid",
-    "acknowledge_exterior_closure"
+    "lock_light_grid"
   ])) {
-    errors.push("Host handshake suppression must contain exactly the Chapter 4 Scene/overlay-owned presentations");
+    errors.push("Host handshake suppression must contain exactly the Task 7-11 Scene/overlay-owned presentations");
   }
 
   const task7LiveReadyBlock = scene.match(/const TASK7_LIVE_READY_TARGET_IDS[\s\S]*?new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? "";
@@ -936,8 +1005,7 @@ function validateTask7RuntimeSources(errors) {
   }
   const task9ActionableBlock = scene.match(/export const TASK9_ACTIONABLE_TARGET_IDS[\s\S]*?new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? "";
   const task9ActionableIds = [...task9ActionableBlock.matchAll(/"([^"]+)"/g)]
-    .map((match) => match[1])
-    .filter((id) => id !== "a2_room204_slot_");
+    .map((match) => match[1]);
   if (!sameArray(task9ActionableIds, [
     "a1_noticeboard_paper",
     "a1_hall_clock",
@@ -957,8 +1025,16 @@ function validateTask7RuntimeSources(errors) {
     "a2_room204_residual_group",
     "a2_room204_podium_drawer",
     "a1_hall_clock_positioning_plate_slot"
-  ]) || !/startsWith\("a2_room204_slot_"\)/.test(task9ActionableBlock)) {
-    errors.push("Task 9 Scene actionable target allowlist must include the front desk, A2 safety officer, A3 teacher, both classroom gates, A3 reference, A2 residual, positioning plate, and all 12 Room204 slot targets");
+  ])
+    || !/ROOM204_GROUP_ORDER\.map\(room204GroupTargetId\)/.test(task9ActionableBlock)
+    || /startsWith\("a2_room204_slot_"\)/.test(task9ActionableBlock)) {
+    errors.push("Task 9 Scene actionable target allowlist must include the approved story targets and exactly the four Room204 group targets");
+  }
+  if (!/figure\.biography\.map/.test(scene)
+    || !/`资料依据：\$\{figure\.sourceLabel\}`/.test(scene)
+    || !/桌影边缘与墙面中心已记录。/.test(scene)
+    || /complete_zhu_two_questions|回答已保存/.test(scene)) {
+    errors.push("A3 portraits must remain biography/source interactions only, while the reference interaction confirms raw spatial details and submits no Zhu answer");
   }
   const task10ActionableBlock = scene.match(
     /export const TASK10_ACTIONABLE_TARGET_IDS[\s\S]*?export const TASK11_ACTIONABLE_TARGET_IDS/
@@ -985,10 +1061,10 @@ function validateTask7RuntimeSources(errors) {
   const task12ActionableIds = [...task12ActionableBlock.matchAll(/"([^"]+)"/g)]
     .map((match) => match[1]);
   if (!/\.\.\.TASK11_ACTIONABLE_TARGET_IDS/.test(task12ActionableBlock)
-    || !sameArray(task12ActionableIds, ["a2_202_threshold", "a2_202_projection"])
-    || /a1_campus_card_reader|a1_attendance_paper_slot/.test(task12ActionableBlock)
+    || !sameArray(task12ActionableIds, ["a2_202_projection"])
+    || /a2_202_threshold|a1_campus_card_reader|a1_attendance_paper_slot/.test(task12ActionableBlock)
   ) {
-    errors.push("Task 12 Scene actionable target allowlist must add the explicit Room202 door action and final-minute runtime entity");
+    errors.push("Task 12 Scene actionable target allowlist must add only the final-minute runtime entity while threshold remains automatic");
   }
   const task13ActionableBlock = scene.match(
     /export const TASK13_ACTIONABLE_TARGET_IDS[\s\S]*?const MAINTENANCE_RUNTIME_TARGET_IDS/
@@ -1002,36 +1078,6 @@ function validateTask7RuntimeSources(errors) {
     || !/resolveActionableTargets\(\)[\s\S]*?TASK13_ACTIONABLE_TARGET_IDS\.has\(target\.contract\.id\)/.test(scene)) {
     errors.push("Task 13 Scene actionable target allowlist must extend Task12 with exactly the card reader and paper slot");
   }
-  const realityTargetProjectionBlock = scene.match(
-    /private resolveProjectedTargets\(\)[\s\S]*?private resolveActionableTargets\(\)/
-  )?.[0] ?? "";
-  if (/requiredMode !== undefined && requiredMode !== mode\) return \[\]/.test(realityTargetProjectionBlock)) {
-    errors.push("Chapter 4 must keep mode-specific targets projected so players can investigate in any order and receive mode correction without losing the puzzle point");
-  }
-  const realityPresentationBlock = scene.match(
-    /private refreshProjectedTargetVisuals\(\)[\s\S]*?private createElevatorVisuals\(\)/
-  )?.[0] ?? "";
-  const realityAtmosphereBlock = scene.match(
-    /private createRealityModeVisuals\([\s\S]*?private retryRequiredWarmupPhase\(\)/
-  )?.[0] ?? "";
-  if (!/private syncRealityModeVisuals/.test(realityAtmosphereBlock)
-    || !/0x071127, 0\.56/.test(realityAtmosphereBlock)
-    || !/0xffe2a6, 0\.07/.test(realityAtmosphereBlock)
-    || /darkPattern|lineBetween\(|strokeRect\(/.test(realityAtmosphereBlock)
-    || !/mode === "dark" \? 1 : 0/.test(realityAtmosphereBlock)
-    || !/mode === "light" \? 1 : 0/.test(realityAtmosphereBlock)
-    || !/modeActive \? 1 : 0\.22/.test(realityPresentationBlock)
-    || !/mode === "light"/.test(realityPresentationBlock)
-    || !/0x67ddff/.test(realityPresentationBlock)
-    || !/0xffd36f/.test(realityPresentationBlock)) {
-    errors.push("Chapter 4 must use Chapter 3's uninterrupted dark wash, retain the light atmosphere, and keep opposite-mode puzzle markers visible in a dormant state");
-  }
-  const room204PieceResolverBlock = scene.match(
-    /private resolveNearbyRoom204PieceId\(\)[\s\S]*?private selectRoom204Piece/
-  )?.[0] ?? "";
-  if (!/state\.chapter4\.mode !== "light"/.test(room204PieceResolverBlock)) {
-    errors.push("Room 204 physical furniture pieces must not remain interactive in dark observation mode");
-  }
   const storyTargetInteractionBlock = scene.match(
     /private storySpatialResult[\s\S]*?private handleTravelInteraction/
   )?.[0] ?? "";
@@ -1041,8 +1087,8 @@ function validateTask7RuntimeSources(errors) {
     || /spatial\s*:\s*\{\s*distance\s*:\s*"within_range"/.test(storyTargetInteractionBlock)) {
     errors.push("Task 7 Scene spatial checks must derive from the real player foot body and target geometry");
   }
-  if (!/private handleTravelInteraction\(\): void \{[\s\S]*?OPENING_PHASES\.has\(this\.projection\.phase\)/.test(scene)
-    || !/const nearbyTravelCandidate\s*=\s*this\.projection\.phase\s*&&\s*OPENING_PHASES\.has\(this\.projection\.phase\)/.test(scene)) {
+  if (!/OPENING_PHASES\.has\(this\.bridge\.getState\(\)\.chapter4\.phase\)/.test(scene)
+    || !/this\.nearbyTravelTarget\s*=\s*this\.projection\.phase\s*&&\s*OPENING_PHASES\.has/.test(scene)) {
     errors.push("Task 7 opening phases must reject elevator and stair travel before request submission");
   }
   if (!/createExternalTimeOverlay/.test(scene)
@@ -1171,7 +1217,7 @@ function validateTask7RuntimeSources(errors) {
     || !/selectChapterFourStagePresentation/.test(stagePresentation)) {
     errors.push("Task 7-13 stage selector must cover 13 phases, 6 time states and distinguish both 22:45 contexts");
   }
-  for (const factId of EXPECTED_BAKERY_FACTS.slice(0, 3)) {
+  for (const factId of EXPECTED_BAKERY_FACTS.slice(0, -1)) {
     if (!controller.includes(`"${factId}"`)) {
       errors.push(`Task 8 controller is missing fact ${factId}`);
     }
@@ -1180,13 +1226,13 @@ function validateTask7RuntimeSources(errors) {
     }
   }
   if (!/case "complete_bakery_conveyor_stop"[\s\S]*?bakery_conveyor_lamp_inspected[\s\S]*?appendFacts\(chapter,[\s\S]*?bakery_conveyor_direction_observed[\s\S]*?bakery_tool_location_observed[\s\S]*?bakery_hour_hand_exposed/.test(controller)) {
-    errors.push("Task 8 completion intent must record the two raw conveyor traces before exposing the hand");
+    errors.push("Task 8 completion intent must atomically record the two visible bakery traces and expose the hand only after the lamp fact");
   }
   if (!/case "collect_hour_hand"[\s\S]*?bakery_hour_hand_collected[\s\S]*?withItem\(state, "oldClockHourHand", true\)/.test(controller)) {
     errors.push("Task 8 pickup must atomically write collected and grant oldClockHourHand");
   }
-  if (!/case "install_hour_hand"[\s\S]*?advancePhaseKeepingTime\(state, "room204_restore"[\s\S]*?hour_hand_installed[\s\S]*?withItem\(state, "oldClockHourHand", false\)[\s\S]*?floor:\s*"A1"[\s\S]*?roomId:\s*"a1_hall_clock"[\s\S]*?checkpoint:\s*"c4_a1_lobby"/.test(controller)) {
-    errors.push("Task 8 install must consume the hand, keep the current time, and return to the A1 clock for the next adjustment");
+  if (!/case "install_hour_hand"[\s\S]*?transition\(state, "room204_restore"[\s\S]*?hour_hand_installed[\s\S]*?withItem\(state, "oldClockHourHand", false\)/.test(controller)) {
+    errors.push("Task 8 install must consume the hand and atomically transition to room204_restore");
   }
   if (!/hour_hand_installed"\)\) facts\.add\("bakery_hour_hand_collected"\)/.test(saveStore)
     || !/bakery_hour_hand_collected"\)\) facts\.add\("bakery_hour_hand_exposed"\)/.test(saveStore)
@@ -1229,10 +1275,8 @@ function validateTask7RuntimeSources(errors) {
   if (!/setOrigin\(\s*BAKERY_RUNTIME\.crowd\.origin\.x,\s*BAKERY_RUNTIME\.crowd\.origin\.y\s*\)[\s\S]*?setScale\(BAKERY_RUNTIME\.crowd\.displayScale\)/.test(scene)) {
     errors.push("Task 8 Scene crowd must consume the layout-authored origin and display scale used by topology math");
   }
-  if (!/destroyBakeryRuntime[\s\S]*?bakeryCrowdCollider\?\.destroy\(\)[\s\S]*?bakeryHourHandGlintTween\?\.remove\(\)/.test(scene)
-    || !/destroyBakeryConveyorFixture[\s\S]*?bakeryConveyorMotionTweens[\s\S]*?tween\.remove\(\)/.test(scene)
-    || !/destroyBakeryRuntime\("scene_shutdown"\)[\s\S]*?destroyBakeryConveyorFixture\(\)/.test(scene)) {
-    errors.push("Task 8 Scene must destroy bakery actor, pickup and conveyor lifecycles on scene teardown");
+  if (!/destroyBakeryRuntime[\s\S]*?bakeryCrowdCollider\?\.destroy\(\)[\s\S]*?bakeryConveyorTween\?\.remove\(\)[\s\S]*?bakeryHourHandGlintTween\?\.remove\(\)/.test(scene)) {
+    errors.push("Task 8 Scene must destroy bakery colliders and tweens on teardown or plate change");
   }
   const proximityHintBlock = scene.match(/private refreshProximity\(\)[\s\S]*?private isStoryInputLocked/)?.[0] ?? "";
   if (!/acceptedItem\s*!==\s*undefined[\s\S]*?acceptedItem\s*!==\s*null[\s\S]*?把对应道具拖到/.test(proximityHintBlock)) {
@@ -1246,25 +1290,38 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 8 visible socket drop must distinguish missed/wrong item and submit install_hour_hand");
   }
 
-  const room204SlotContractsBlock = interaction.match(
-    /const ROOM204_SLOT_CONTRACTS[\s\S]*?const ROOM204_INTERACTION_TARGETS/
-  )?.[0] ?? "";
   const room204InteractionTargetsBlock = interaction.match(
-    /const ROOM204_INTERACTION_TARGETS[\s\S]*?export const CHAPTER_FOUR_755_INTERACTION_TARGETS/
+    /const ROOM204_INTERACTION_TARGETS[\s\S]*?const ROOM204_GROUP_INTERACTION_TARGETS/
   )?.[0] ?? "";
   if (/acceptedPieceId/.test(interaction)
-    || /\bpieceId\s*:/.test(room204SlotContractsBlock)
     || /\bpieceId\s*:/.test(room204InteractionTargetsBlock)) {
-    errors.push("Task 9 slot contracts must not bind a slot to a predetermined pieceId or acceptedPieceId");
+    errors.push("Task 9 legacy slot contracts must not bind a slot to a predetermined pieceId or acceptedPieceId");
   }
   if (!/ROOM204_ALLOWED_ORIENTATION[^\n]*=\s*"up"/.test(room204Model)
     || !/ROOM204_PIECE_IDS\.has\(candidate\.pieceId/.test(room204Model)
     || !/ROOM204_SLOT_IDS\.has\(candidate\.slotId/.test(room204Model)
     || !/candidate\.orientation\s*!==\s*ROOM204_ALLOWED_ORIENTATION/.test(room204Model)
     || !/placements\.find\(\(placement\)\s*=>\s*placement\.pieceId\s*===\s*pieceId\)/.test(room204Model)
-    || !/placements\.some\(\(placement\)\s*=>\s*placement\.slotId\s*===\s*slotId\)/.test(room204Model)
-    || /canonicalCompletePlacements|content\.room204/.test(room204Model)) {
-    errors.push("Task 9 pure model must accept any known unique piece in any known empty slot with orientation up, independent of the recovery-only canonical mapping");
+    || !/placements\.some\(\(placement\)\s*=>\s*placement\.slotId\s*===\s*slotId\)/.test(room204Model)) {
+    errors.push("Task 9 pure model must retain the legacy unique-piece/unique-slot compatibility resolver");
+  }
+  if (!/export function resolveRoom204GroupPlacement/.test(room204Model)
+    || !/ROOM204_GROUP_IDS\.has\(candidate\.groupId/.test(room204Model)
+    || !/candidate\.targetGroupId !== undefined && candidate\.targetGroupId !== groupId/.test(room204Model)
+    || !/availableGroupSlots\.length < missingMappings\.length/.test(room204Model)
+    || !/const next = \[\.\.\.placements, \.\.\.addedPlacements\]/.test(room204Model)
+    || !/export function countCompletedRoom204Groups/.test(room204Model)) {
+    errors.push("Task 9 pure model must commit four atomic groups, preserve partial legacy progress and reject group conflicts without partial writes");
+  }
+  const room204GroupTargetBlock = interaction.match(
+    /const ROOM204_GROUP_INTERACTION_TARGETS[\s\S]*?export const CHAPTER_FOUR_755_INTERACTION_TARGETS/
+  )?.[0] ?? "";
+  if (!/ROOM204_GROUP_ORDER\.map/.test(room204GroupTargetBlock)
+    || !/room204GroupTargetId\(groupId\)/.test(room204GroupTargetBlock)
+    || !/room204GroupRuntimeEntityId\(groupId\)/.test(room204GroupTargetBlock)
+    || !/requiredMode:\s*"light"/.test(room204GroupTargetBlock)
+    || !/isRoom204GroupComplete\(state\.chapter4\.room204Placements, groupId\)/.test(room204GroupTargetBlock)) {
+    errors.push("Task 9 interaction registry must expose exactly four light-mode Room204 group targets derived from persisted triplets");
   }
 
   const a3ReferenceTargetBlock = interaction.match(
@@ -1286,17 +1343,7 @@ function validateTask7RuntimeSources(errors) {
     if (!types.includes(`| "${factId}"`)) {
       errors.push(`Task 9 ChapterFourFactId is missing ${factId}`);
     }
-    const modelOwnedInsertedFact = [
-      "a1_duty_board_reconstructed",
-      "a3_archive_film_retrieved",
-      "a3_media_alignment_completed",
-      "a2_positioning_plate_calibrated",
-      "a2_power_topology_recovered",
-      "a2_evacuation_route_confirmed"
-    ].includes(factId);
-    if (!controller.includes(`"${factId}"`)
-      && !elevatorFloorInvestigation.includes(`"${factId}"`)
-      && !modelOwnedInsertedFact) {
+    if (!controller.includes(`"${factId}"`)) {
       errors.push(`Task 9 controller is missing fact ${factId}`);
     }
     if (!saveStore.includes(`"${factId}"`)) {
@@ -1324,50 +1371,61 @@ function validateTask7RuntimeSources(errors) {
   const room204ControllerBlock = controller.match(
     /case "observe_a3_reference"[\s\S]*?case "collect_short_pry_bar"/
   )?.[0] ?? "";
-  const room204FinalizeHelper = controller.match(
-    /function finalizeRoom204Facts\([\s\S]*?\n\}/
+  const stairControllerBlock = controller.match(
+    /case "complete_misaligned_stair": \{[\s\S]*?case "move_to_location"/
   )?.[0] ?? "";
+  if (!/chapter\.phase !== "room204_restore"[\s\S]*?chapter\.floor !== "A3"/.test(stairControllerBlock)
+    || !/!hasFact\(chapter, "a3_reference_observed"\)[\s\S]*?reject\("locked", "a3_reference_required"\)/.test(stairControllerBlock)
+    || !/appendFact\(chapter, "misaligned_stair_solved"\)[\s\S]*?floor:\s*"A2"[\s\S]*?roomId:\s*"a2_corridor"/.test(stairControllerBlock)
+    || /zhu_two_questions/.test(stairControllerBlock)) {
+    errors.push("Task 9 stair completion must use only the A3 classroom reference as its story prerequisite and relocate to A2");
+  }
   if (!/case "place_room204_piece"[\s\S]*?resolveRoom204Placement\(chapter\.room204Placements/.test(room204ControllerBlock)
-    || (room204ControllerBlock.match(/finalizeRoom204Facts\(/g) ?? []).length < 3
-    || !/isRoom204PlacementSetComplete\(placements\)/.test(room204FinalizeHelper)
-    || !/next\.includes\("a3_reference_observed"\)/.test(room204FinalizeHelper)
-    || !/next\.includes\("room204_residual_observed"\)/.test(room204FinalizeHelper)
-    || !/next\.push\("room204_restored"\)/.test(room204FinalizeHelper)) {
-    errors.push("Task 9 controller must route placement through the pure unique-piece/unique-slot model and commit restored only after both observations");
+    || !/case "place_room204_group"[\s\S]*?room204GroupTargetId\(intent\.groupId\)[\s\S]*?resolveRoom204GroupPlacement\(chapter\.room204Placements/.test(room204ControllerBlock)
+    || !/resolution\.complete[\s\S]*?a3_reference_observed[\s\S]*?room204_residual_observed[\s\S]*?appendFact\(chapter, "room204_restored"\)/.test(room204ControllerBlock)) {
+    errors.push("Task 9 controller must retain legacy placement compatibility, commit active group placements atomically and restore only after both observations");
+  }
+  const room204SceneInteractionBlock = scene.match(
+    /private handleStoryOrTravelInteraction\(\)[\s\S]*?private handleTravelInteraction/
+  )?.[0] ?? "";
+  const room204SceneCreationBlock = scene.match(
+    /private createRoom204Runtime\(\)[\s\S]*?private createRoom204RuntimeTargetZone/
+  )?.[0] ?? "";
+  if (!/type:\s*"place_room204_group"/.test(room204SceneInteractionBlock)
+    || /type:\s*"place_room204_piece"/.test(room204SceneInteractionBlock)
+    || !/ROOM204_GROUP_ORDER/.test(room204SceneCreationBlock)
+    || /a2_room204_slot_/.test(room204SceneCreationBlock)) {
+    errors.push("Task 9 active Scene must create and submit only four Room204 group targets while retaining twelve visual pieces");
+  }
+  if (!/countCompletedRoom204Groups\([\s\S]*?ROOM204_GROUP_ORDER\.length/.test(stagePresentation)
+    || /room204Placements\)\.length\}\/12/.test(stagePresentation)) {
+    errors.push("Task 9 stage progress must derive 0/4 through 4/4 from persisted Room204 triplets");
   }
   if (!/\|\s*\{\s*type:\s*"complete_room204_projection"\s*\}/.test(controller)
     || !/case "complete_room204_projection"[\s\S]*?hasExactKeys\(value, \["type"\]\)/.test(controller)
-    || !/case "complete_room204_projection"[\s\S]*?a1_duty_board_reconstructed[\s\S]*?room204_restored[\s\S]*?isRoom204PlacementSetComplete\(chapter\.room204Placements\)[\s\S]*?appendFact\(chapter, "room204_projection_completed"\)/.test(room204ControllerBlock)) {
-    errors.push("Task 9 complete_room204_projection must be an exact-key, controller-owned completion intent gated by deferred A1 evidence, both observations, restoration and complete placements");
+    || !/case "complete_room204_projection"[\s\S]*?a1_time_route_comparison[\s\S]*?a3_spatial_identity_reference[\s\S]*?room204_restored[\s\S]*?isRoom204PlacementSetComplete\(chapter\.room204Placements\)[\s\S]*?appendFacts\(chapter,[\s\S]*?room204_projection_completed[\s\S]*?room204_projection_composite_completed[\s\S]*?room202_endpoint_inferred[\s\S]*?maintenance_incident_linked/.test(room204ControllerBlock)) {
+    errors.push("Task 9 complete_room204_projection must be exact-key, require the cross-floor evidence sets, and commit the projection composite atomically");
   }
   if (!/case "collect_positioning_plate"[\s\S]*?room204_projection_completed[\s\S]*?appendFact\(chapter, "positioning_plate_collected"\)[\s\S]*?withItem\(state, "clockPositioningPlate", true\)/.test(room204ControllerBlock)
-    || !/case "install_positioning_plate"[\s\S]*?room204_projection_composite_completed[\s\S]*?positioning_plate_collected[\s\S]*?advancePhaseKeepingTime\(state, "maintenance_repair"[\s\S]*?withItem\(state, "clockPositioningPlate", false\)[\s\S]*?floor:\s*"A1"[\s\S]*?roomId:\s*"a1_hall_clock"[\s\S]*?checkpoint:\s*"c4_a1_lobby"/.test(room204ControllerBlock)) {
-    errors.push("Task 9 positioning plate collection and installation must remain atomic while returning to the A1 clock for the next adjustment");
+    || !/case "install_positioning_plate"[\s\S]*?isChapterFourEvidenceReady\("room204_projection_composite"[\s\S]*?positioning_plate_collected[\s\S]*?transition\(state, "maintenance_repair"[\s\S]*?withItem\(state, "clockPositioningPlate", false\)/.test(room204ControllerBlock)) {
+    errors.push("Task 9 positioning plate collection and installation must be controller-owned atomic transactions after the projection composite");
   }
 
   const room204QuestBlock = quest.match(
-    /contract\.id\s*===\s*"room204_restore"[\s\S]*?return contract\.taskKeys\.includes/
+    /contract\.id\s*===\s*"room204_restore"[\s\S]*?else if \(contract\.id === "maintenance_repair"\)/
   )?.[0] ?? "";
-  const groupedRoom204TaskKeys = [
-    "resolve_a1_investigation",
-    "resolve_a3_archive_chain",
-    "solve_misaligned_stair",
-    "resolve_a2_inserted_puzzles",
-    "restore_room204",
-    "watch_room204_projection",
-    "collect_positioning_plate",
-    "install_positioning_plate"
-  ];
-  if (groupedRoom204TaskKeys.some((taskKey) => !room204QuestBlock.includes(`"${taskKey}"`))
-    || !/!facts\.has\("classroom_104_chalk_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("classroom_105_terminal_replay_checked"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("elevator_history_observed"\)[\s\S]*?\|\|\s*!facts\.has\("elevator_history_calibrated"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("a3_reference_observed"\)[\s\S]*?\?\s*"resolve_a3_archive_chain"[\s\S]*?!facts\.has\("misaligned_stair_solved"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("a2_positioning_plate_calibrated"\)[\s\S]*?\|\|\s*!facts\.has\("a2_power_topology_recovered"\)[\s\S]*?\|\|\s*!facts\.has\("a2_evacuation_route_confirmed"\)/.test(room204QuestBlock)
-    || !/!facts\.has\("elevator_stop_chain_reconstructed"\)[\s\S]*?!facts\.has\("a1_duty_board_reconstructed"\)[\s\S]*?\?\s*"resolve_a1_investigation"/.test(room204QuestBlock)
-    || !/!facts\.has\("room204_residual_observed"\)[\s\S]*?\|\|\s*!facts\.has\("room204_restored"\)/.test(room204QuestBlock)
+  const questTaskPositions = EXPECTED_ROOM204_TASK_KEYS.map((taskKey) => room204QuestBlock.indexOf(`"${taskKey}"`));
+  if (questTaskPositions.some((position) => position < 0)
+    || !/state\.chapter4\.mode === "dark"[\s\S]*"observe_elevator_history"/.test(room204QuestBlock)
+    || !/!elevatorCalibrated[\s\S]*"calibrate_elevator_history"/.test(room204QuestBlock)
+    || !/!referenceObserved[\s\S]*"observe_a3_reference"/.test(room204QuestBlock)
+    || !/!referenceObserved \|\| !stairSolved[\s\S]*!referenceObserved[\s\S]*"observe_a3_reference"[\s\S]*"solve_misaligned_stair"/.test(room204QuestBlock)
+    || /answer_zhu_two_questions|zhu_two_questions_answered/.test(room204QuestBlock)
+    || !/state\.chapter4\.mode === "dark"[\s\S]*"observe_room204_residual"/.test(room204QuestBlock)
+    || !/!roomRestored[\s\S]*"restore_room204"/.test(room204QuestBlock)
     || !/facts\.has\("room204_projection_completed"\)/.test(room204QuestBlock)
     || !/facts\.has\("positioning_plate_collected"\)/.test(room204QuestBlock)) {
-    errors.push("Task 9 QuestModel must expose grouped A1/A3/A2 objectives while keeping each investigation group and paired light/dark observations order-independent");
+    errors.push("Task 9 QuestModel must make the A3 reference the sole story prerequisite for the stair and keep Zhu questions outside Room204");
   }
 
   const maintenanceTargetBlock = interaction.match(
@@ -1389,12 +1447,12 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 10 all six targets must accept the four approved A1 room aliases");
   }
   if (!/a1_cleaning_cart_wheel_inspection:[\s\S]*?cart_wheel_inspection_available[\s\S]*?!hasChapterFourFact\(state, "cart_wheel_inspected"\)/.test(maintenanceTargetBlock)
-    || !/a1_bakery_back_pry_bar:[\s\S]*?pry_bar_granted_by_diagnosis[\s\S]*?\(\)\s*=>\s*false/.test(maintenanceTargetBlock)
+    || !/a1_bakery_back_pry_bar:[\s\S]*?pry_bar_pickup_available[\s\S]*?!ownsChapterFourItem\(state, "shortPryBar"\)/.test(maintenanceTargetBlock)
     || !/a1_cleaning_cart_wheel_cover:[\s\S]*?cart_wheel_inspected[\s\S]*?"shortPryBar"/.test(maintenanceTargetBlock)
-    || !/a1_cleaning_cart_oil_bottle:[\s\S]*?oil_granted_by_diagnosis[\s\S]*?\(\)\s*=>\s*false/.test(maintenanceTargetBlock)
+    || !/a1_cleaning_cart_oil_bottle:[\s\S]*?cart_wheel_cover_opened[\s\S]*?!ownsChapterFourItem\(state, "universalLubricatingOil"\)/.test(maintenanceTargetBlock)
     || !/a1_cleaning_cart_wheel:[\s\S]*?cart_wheel_cover_opened[\s\S]*?"universalLubricatingOil"/.test(maintenanceTargetBlock)
-    || !/a1_hall_clock_gear:[\s\S]*?clock_gear_repaired_with_linkage[\s\S]*?\(\)\s*=>\s*false/.test(maintenanceTargetBlock)) {
-    errors.push("Task 10 registry must expose diagnosis, cover and linked lubrication while closing legacy pickup/second-oil targets");
+    || !/a1_hall_clock_gear:[\s\S]*?cart_wheel_repaired[\s\S]*?"universalLubricatingOil"/.test(maintenanceTargetBlock)) {
+    errors.push("Task 10 registry must preserve inspect, pry, cover, oil, wheel and gear activation/item causality");
   }
   const minuteEndpointBlock = interaction.match(
     /a1_hall_clock_minute_endpoint:[\s\S]*?a1_power_panel:/
@@ -1415,18 +1473,21 @@ function validateTask7RuntimeSources(errors) {
   const maintenanceControllerBlock = controllerIntentResolver.match(
     /case "inspect_cart_wheel"[\s\S]*?case "trigger_minute_theft"/
   )?.[0] ?? "";
-  if (!/case "inspect_cart_wheel"[\s\S]*?chapter4_maintenance_diagnosis_requested[\s\S]*?acceptReadOnly/.test(maintenanceControllerBlock)
-    || !/case "complete_maintenance_diagnosis"[\s\S]*?wheel_sound\s*===\s*"latch"[\s\S]*?clock_jam\s*===\s*"gear_offset"[\s\S]*?oil_trace\s*===\s*"oil_shortage"/.test(maintenanceControllerBlock)
-    || !/case "complete_maintenance_diagnosis"[\s\S]*?appendFact\(chapter, "cart_wheel_inspected"\)[\s\S]*?shortPryBar:\s*true[\s\S]*?universalLubricatingOil:\s*true/.test(maintenanceControllerBlock)
-    || !/case "collect_short_pry_bar"[\s\S]*?reject\("locked"\)/.test(maintenanceControllerBlock)
-    || !/case "open_cart_wheel_cover"[\s\S]*?cart_wheel_inspected[\s\S]*?withItem\(state, "shortPryBar", false\)/.test(maintenanceControllerBlock)
-    || !/case "collect_lubricating_oil"[\s\S]*?reject\("locked"\)/.test(maintenanceControllerBlock)
-    || !/case "lubricate_cart_wheel"[\s\S]*?appendFact\(chapter, "cart_wheel_repaired"\)[\s\S]*?repairedFacts\.push\("clock_gear_repaired"\)[\s\S]*?withItem\(state, "universalLubricatingOil", false\)/.test(maintenanceControllerBlock)
-    || !/case "lubricate_clock_gear"[\s\S]*?reject\("locked"\)/.test(maintenanceControllerBlock)) {
-    errors.push("Task 10 controller must implement diagnosis, prepared tools, cover opening and one linked lubrication transaction");
+  if (!/case "inspect_cart_wheel"[\s\S]*?guardMode\s*!==\s*"patrol"[\s\S]*?appendFact\(chapter, "cart_wheel_inspected"\)/.test(maintenanceControllerBlock)
+    || !/case "collect_short_pry_bar"[\s\S]*?withItem\(state, "shortPryBar", true\)/.test(maintenanceControllerBlock)
+    || !/case "open_cart_wheel_cover"[\s\S]*?cart_wheel_inspected[\s\S]*?shortPryBar:\s*false[\s\S]*?universalLubricatingOil:\s*true/.test(maintenanceControllerBlock)
+    || !/case "collect_lubricating_oil"[\s\S]*?already_complete[\s\S]*?cart_wheel_cover_opened[\s\S]*?withItem\(state, "universalLubricatingOil", true\)/.test(maintenanceControllerBlock)
+    || !/case "lubricate_cart_wheel"[\s\S]*?cart_wheel_cover_opened[\s\S]*?appendFact\(chapter, "cart_wheel_repaired"\)/.test(maintenanceControllerBlock)
+    || !/case "lubricate_clock_gear"[\s\S]*?cart_wheel_repaired[\s\S]*?appendFact\(chapter, "clock_gear_repaired"\)[\s\S]*?withItem\(state, "universalLubricatingOil", false\)/.test(maintenanceControllerBlock)) {
+    errors.push("Task 10 controller must implement the five active maintenance actions, atomic cover/oil grant and idempotent legacy oil intent");
+  }
+  if (!/private presentMaintenanceOilReveal\(\)/.test(scene)
+    || !/case "open_cart_wheel_cover"[\s\S]*?this\.presentMaintenanceOilReveal\(\)[\s\S]*?轮罩已打开，油瓶已取出/.test(scene)
+    || !/private destroyPhaseRuntime[\s\S]*?this\.clearMaintenanceOilReveal\(\)/.test(scene)) {
+    errors.push("Task 10 atomic cover action must visibly reveal the granted oil and clean that transient presentation on teardown");
   }
   const gearControllerBlock = maintenanceControllerBlock.match(
-    /case "lubricate_cart_wheel"[\s\S]*?case "lubricate_clock_gear"/
+    /case "lubricate_clock_gear"[\s\S]*?case "recover_from_maintenance_patrol"/
   )?.[0] ?? "";
   if (!/this\.patchChapter\(state/.test(gearControllerBlock)
     || /transition\(state, "blackout_light_grid"/.test(gearControllerBlock)) {
@@ -1468,7 +1529,7 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 10 SaveStore must restore maintenance causal closure without advancing the phase");
   }
   const maintenanceLocationBlock = saveStore.match(
-    /if \(phase === "maintenance_repair"\)[\s\S]*?if \(phase === "final_chase"\)/
+    /function normalizeChapterFour755Location[\s\S]*?if \(phase === "maintenance_repair"\)[\s\S]*?if \(phase === "final_chase"\)/
   )?.[0] ?? "";
   if (!/"a1_lobby"[\s\S]*?"a1_hall_clock"[\s\S]*?"a1_bakery"[\s\S]*?"a1_cleaning_cart"/.test(maintenanceLocationBlock)
     || !/roomIds\.has\(savedRoomId\)\s*\?\s*savedRoomId\s*:\s*"a1_lobby"/.test(maintenanceLocationBlock)) {
@@ -1478,10 +1539,9 @@ function validateTask7RuntimeSources(errors) {
     /if \(phase === "maintenance_repair"\)\s*\{[\s\S]*?\n\s*\}/g
   ) ?? [];
   const maintenanceItemBlock = maintenanceItemBlocks.at(-1) ?? "";
-  if (!/const diagnosisCompleted\s*=\s*hasFact\("cart_wheel_inspected"\)/.test(maintenanceItemBlock)
-    || !/items\.shortPryBar\s*=\s*savedItems\.shortPryBar[\s\S]*?!cartWheelCoverOpened/.test(maintenanceItemBlock)
-    || !/items\.universalLubricatingOil\s*=\s*diagnosisCompleted[\s\S]*?!hasFact\("clock_gear_repaired"\)[\s\S]*?savedItems\.universalLubricatingOil\s*\|\|\s*cartWheelRepaired/.test(maintenanceItemBlock)) {
-    errors.push("Task 10 SaveStore must preserve diagnosed tools and consume them at their final uses");
+  if (!/items\.shortPryBar\s*=\s*savedItems\.shortPryBar[\s\S]*?!cartWheelCoverOpened/.test(maintenanceItemBlock)
+    || !/items\.universalLubricatingOil\s*=\s*cartWheelCoverOpened[\s\S]*?!hasFact\("clock_gear_repaired"\)/.test(maintenanceItemBlock)) {
+    errors.push("Task 10 SaveStore must grant oil from the opened cover, retain it through wheel repair and consume it after gear repair");
   }
 
   const maintenanceQuestBlock = quest.match(
@@ -1491,7 +1551,9 @@ function validateTask7RuntimeSources(errors) {
     (taskKey) => maintenanceQuestBlock.indexOf(`"${taskKey}"`)
   );
   if (maintenanceQuestPositions.some((position) => position < 0)
-    || maintenanceQuestPositions.some((position, index) => index > 0 && position <= maintenanceQuestPositions[index - 1])) {
+    || maintenanceQuestPositions.some((position, index) => index > 0 && position <= maintenanceQuestPositions[index - 1])
+    || !/state\.items\.shortPryBar/.test(maintenanceQuestBlock)
+    || !/cart_wheel_cover_opened[\s\S]*?lubricate_cart_wheel/.test(maintenanceQuestBlock)) {
     errors.push("Task 10 QuestModel must expose exactly one next objective across the maintenance chain");
   }
 
@@ -1518,20 +1580,15 @@ function validateTask7RuntimeSources(errors) {
   const maintenancePushBlock = maintenanceCreationBlock.match(
     /private startOrRestoreMaintenancePush[\s\S]*?private createMaintenanceGuardRuntime/
   )?.[0] ?? "";
-  if (!/this\.maintenancePushCompleted\s*\|\|\s*this\.maintenancePushTween/.test(maintenancePushBlock)
-    || !/maintenanceCart\.disableBody\(false, false\)/.test(maintenancePushBlock)
+  if (!/this\.maintenancePushCompleted \|\| this\.maintenancePushTween/.test(maintenancePushBlock)
+    || !/maintenanceCart\.disableBody\(false, true\)[\s\S]*?maintenanceCart\.destroy\(\)[\s\S]*?maintenanceCart = null/.test(maintenancePushBlock)
     || !/MAINTENANCE_RUNTIME\.repairedPush\.animationId/.test(maintenancePushBlock)
-    || !/ensureMaintenancePushCharacter[\s\S]*?setCrop\([\s\S]*?visibleCharacterCrop/.test(maintenancePushBlock)
-    || !/setFlipX\(push\.flipX\)/.test(maintenancePushBlock)
-    || !/tweens\.addCounter/.test(maintenancePushBlock)
-    || !/positionMaintenancePushLayers[\s\S]*?maintenanceCart\?\.setPosition/.test(maintenancePushBlock)
-    || !/restoreMaintenanceIdleLayers/.test(maintenancePushBlock)
-    || /maintenanceCart\.destroy\(\)/.test(maintenancePushBlock)
-    || /setTexture\("cleaner_rest"/.test(maintenancePushBlock)
+    || !/targets:\s*this\.maintenanceCleaner/.test(maintenancePushBlock)
+    || /targets:\s*\[[^\]]*maintenanceCart/.test(maintenancePushBlock)
     || !/MAINTENANCE_RUNTIME\.repairedPush\.animationId/.test(maintenanceCreationBlock)
     || !/duration:\s*MAINTENANCE_RUNTIME\.repairedPush\.durationMs/.test(maintenanceCreationBlock)
     || !/maintenanceObstacleCollider\?\.destroy\(\)/.test(maintenanceCreationBlock)) {
-    errors.push("Task 10 repaired wheel must keep the full-size cart, crop the push sheet to the cleaner, blend both cleaner poses, and move both layers for 900ms");
+    errors.push("Task 10 repaired wheel must destroy the independent cart and move only the combined 900ms push sprite once");
   }
   if (!/this\.physics\.add\.collider\(\s*this\.maintenanceGuard,\s*this\.staticObstacles/.test(maintenanceCreationBlock)
     || !/this\.physics\.add\.overlap\(\s*this\.player,\s*this\.maintenanceGuard/.test(maintenanceCreationBlock)
@@ -1596,7 +1653,7 @@ function validateTask7RuntimeSources(errors) {
     || !/case "toggle_light_zone"[\s\S]*?toggleChapterFourLightZone\(previousMask, intent\.zoneId\)[\s\S]*?power_zone_toggled/.test(powerControllerBlock)
     || !/isChapterFourLightGridSolved[\s\S]*?targetMask[\s\S]*?light_grid_locked[\s\S]*?canruo_star_lamp_primed[\s\S]*?transition\(state, "final_chase"[\s\S]*?locked:\s*true[\s\S]*?power_grid_locked/.test(lightGridLockBlock)
     || /zhu_two_questions|purposeAnswer|personAnswer/.test(lightGridLockBlock)) {
-    errors.push("Task 11 controller must enter the chase without reading or fabricating Zhu answers");
+    errors.push("Task 11 controller must lock the solved grid, prime the approved lamp and enter final chase without reading or fabricating Zhu answers");
   }
 
   const finalClockSceneBlock = scene.match(
@@ -1646,23 +1703,17 @@ function validateTask7RuntimeSources(errors) {
     || !/setChapter4SceneKeyboardAllowed\(locked && event\.payload\?\.allowSceneKeyboard === true\)/.test(host)
     || !/setRpgKeyboardEnabled\(game, !keyboardBlocked && !chapter4PhaserKeyboardBlocked\)/.test(host)
     || !/showTaskBar[\s\S]*?!chapter4OverlayBlocked/.test(host)
-    || !/photoSessionOpen\s*\|\|\s*chapter4OverlayBlocked(?:\s*\|\|\s*[A-Za-z0-9_]+)*\s*\?\s*null/.test(host)
+    || !/photoSessionOpen \|\| chapter4OverlayBlocked \|\| assetLoadBlocked \? null/.test(host)
     || !/chapter4MazeUiActive && !chapter4OverlayBlocked/.test(host)
     || !/!chapter4OverlayBlocked\s*&&\s*!fishingSession\s*&&\s*!photoSessionOpen[\s\S]*?<RpgInventoryDock/.test(host)) {
     errors.push("Task 11 final-clock drag and minute-theft presentation must keep Scene movement plus Host task, system, mode and inventory controls locked");
   }
   if (!/allowScenePointer[\s\S]*?this\.alumniPanel !== null/.test(scene)
-    || !/allowSceneKeyboard\s*=\s*locked[\s\S]*?this\.alumniPanel !== null \|\| clockPanelInteractive \|\| floorPanelInteractive/.test(scene)
-    || !/actionButton[\s\S]*?setInteractive[\s\S]*?closeAlumniPanel/.test(scene)
-    || !/ChapterFourExteriorQuestions/.test(host)
-    || !/purpose_entering[\s\S]*?purpose_dissolving[\s\S]*?person_entering[\s\S]*?person_dissolving[\s\S]*?submitting/.test(exteriorQuestions)
-    || !/setPurposeAnswer[\s\S]*?setStage\("purpose_dissolving"\)/.test(exteriorQuestions)
-    || !/setPersonAnswer[\s\S]*?setStage\("person_dissolving"\)/.test(exteriorQuestions)
-    || !/setStage\("submitting"\)[\s\S]*?onSubmit\(purposeAnswer, personAnswer\)/.test(exteriorQuestions)
-    || !/chapter4-exterior-questions__sparks/.test(exteriorQuestions)
-    || !/正在保存两项回答/.test(exteriorQuestions)
-    || !/回答已保存/.test(exteriorQuestions)) {
-    errors.push("A3 panels must preserve local input while the exterior lamp reveals one question at a time, dissolves each answer with particles, and atomically submits both answers");
+    || !/allowSceneKeyboard\s*=\s*locked && this\.alumniPanel !== null/.test(scene)
+    || !/const close =[\s\S]*?setInteractive[\s\S]*?close\.on\("pointerdown", \(\) => this\.closeAlumniPanel\(\)\)/.test(scene)
+    || !/const closeButton =[\s\S]*?setInteractive[\s\S]*?closeButton\.on\("pointerdown", \(\) => this\.closeAlumniPanel\(\)\)/.test(scene)
+    || !/updateAlumniPanelKeyboard[\s\S]*?escapeKey[\s\S]*?confirmKey[\s\S]*?interactKey[\s\S]*?closeAlumniPanel/.test(scene)) {
+    errors.push("A3 biography modal must keep Scene pointer/keyboard input available and provide explicit close controls without an answer-confirmation flow");
   }
   const lifecycleCleanupBlock = scene.match(
     /this\.pendingMoveTimer\?\.remove\(false\)[\s\S]*?clearRpgRuntimeDebugState\(\)/
@@ -1698,9 +1749,6 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 11 Host must cache the accepted panel session, lock shared controls, mount one React panel, and notify the Scene of the modal input lock");
   }
   if (!/CHAPTER_FOUR_LIGHT_GRID\.zones\.map/.test(powerPanel)
-    || !/POWER_PANEL_CONNECTIONS[\s\S]*?zone\.adjacentZoneIds/.test(powerPanel)
-    || !/POWER_PANEL_ZONE_ORDER\.map/.test(powerPanel)
-    || !/<line[\s\S]*?x1=\{from\.x\}[\s\S]*?y2=\{to\.y\}/.test(powerPanel)
     || !/aria-pressed/.test(powerPanel)
     || !/event\.key === "Escape"/.test(powerPanel)
     || !/isChapterFourLightGridSolved\(mask\)/.test(powerPanel)
@@ -1708,23 +1756,8 @@ function validateTask7RuntimeSources(errors) {
     || !/onLock\(\)/.test(powerPanel)
     || !/canRetryLock[\s\S]*?lastAutoLockMaskRef\.current === mask/.test(powerPanel)
     || !/aria-label="重试锁定配电结果"[\s\S]*?onClick=\{onLock\}/.test(powerPanel)
-    || /verifiedSolutionZoneIds|clickVector/.test(powerPanel)) {
-    errors.push("Task 11 React power panel must draw the exact adjacency graph, expose five accessible state lights, keep unlocked Escape and automatic solved locking, and avoid revealing the answer");
-  }
-  if (!/POWER_PANEL_ZONE_POSITIONS[\s\S]*?hall:[\s\S]*?column:\s*2,\s*row:\s*1/.test(powerPanel)
-    || !/west_corridor:[\s\S]*?column:\s*1,\s*row:\s*2/.test(powerPanel)
-    || !/east_corridor:[\s\S]*?column:\s*3,\s*row:\s*2/.test(powerPanel)
-    || !/bakery_back_area:[\s\S]*?column:\s*1,\s*row:\s*3/.test(powerPanel)
-    || !/classroom_zone:[\s\S]*?column:\s*3,\s*row:\s*3/.test(powerPanel)
-    || !/POWER_PANEL_CONNECTIONS[\s\S]*?zone\.adjacentZoneIds/.test(powerPanel)
-    || !/chapter4-power-panel__connections/.test(powerPanel)
-    || !/style=\{\{\s*left:\s*`\$\{position\.x\}%`,\s*top:\s*`\$\{position\.y\}%`\s*\}\}/.test(powerPanel)
-    || !/focusInDirection/.test(powerPanel)
-    || /focusByDelta/.test(powerPanel)
-    || !/\.chapter4-power-panel__grid\s*\{[\s\S]*?display:\s*block[\s\S]*?height:\s*232px/.test(powerPanelCss)
-    || !/\.chapter4-power-panel__grid button\s*\{[\s\S]*?position:\s*absolute/.test(powerPanelCss)
-    || !/\.chapter4-power-panel__connections\s*\{[\s\S]*?position:\s*absolute/.test(powerPanelCss)) {
-    errors.push("Task 11 power panel must render the five authored zones from the shared adjacency graph and keep spatial keyboard navigation");
+    || /verifiedSolutionZoneIds|clickVector|28/.test(powerPanel)) {
+    errors.push("Task 11 React power panel must expose five accessible state lights, unlocked Escape, automatic solved locking and an accessible same-mask lock retry without revealing the answer");
   }
 
   if (/^\s*import\s/m.test(finalChaseModel)
@@ -1733,17 +1766,16 @@ function validateTask7RuntimeSources(errors) {
   }
   if (!/"arming"[\s\S]*?"running"[\s\S]*?"portal_transfer"[\s\S]*?"finish_pending"[\s\S]*?"failure_pending"[\s\S]*?"complete"/.test(finalChaseModel)
     || !/stableFramesToArm:\s*4/.test(finalChaseModel)
+    || !/startGraceMs:\s*1200/.test(finalChaseModel)
     || !/playerSpeed:\s*208/.test(finalChaseModel)
     || !/guardSpeed:\s*196/.test(finalChaseModel)
     || !/maxStepMs:\s*50/.test(finalChaseModel)
     || !/transportId:\s*"main_stair"/.test(finalChaseModel)
     || !/playerStart:[\s\S]*?x:\s*590,\s*y:\s*612/.test(finalChaseModel)
     || !/guardSpawn:[\s\S]*?x:\s*590,\s*y:\s*724/.test(finalChaseModel)
-    || !/a2GuardReentry:[\s\S]*?x:\s*966,\s*y:\s*174/.test(finalChaseModel)
     || !/finishThreshold:[\s\S]*?x:\s*1353,\s*y:\s*356\.5/.test(finalChaseModel)
-    || !/requestChapterFourFinalChaseDoorClose[\s\S]*?phase:\s*"finish_pending"/.test(finalChaseModel)
-    || !/guardFloor:\s*"A2"[\s\S]*?guardTargetWaypointId:\s*"a2_main_stair_arrival"/.test(finalChaseModel)) {
-    errors.push("Task 12 pure final-chase model must encode the seven phases, four-frame arming, exact speeds/points, upstairs re-entry and explicit Room202 door action");
+    || !/if \(input\.floor === "A2" && input\.playerInsideFinish[^)]*\)[\s\S]*?if \(input\.guardContact[^)]*\)/.test(finalChaseModel)) {
+    errors.push("Task 12 pure final-chase model must encode the six phases, four-frame plus 1200ms arming, exact speeds/points, main-stair portal and finish-before-contact ordering");
   }
   const task12ControllerBlock = controllerIntentResolver.match(
     /case "traverse_main_stair"[\s\S]*?case "read_campus_card"/
@@ -1755,17 +1787,17 @@ function validateTask7RuntimeSources(errors) {
     errors.push("Task 12 controller must own attempt-checked stair traversal, atomic finish/fail/final-minute transactions and the A2 recovery position");
   }
   if (!/case "reach_202_threshold"[\s\S]*?\["expectedAttempt"\]/.test(controller)
-    || !/case "fail_chase"[\s\S]*?hasExactKeys\(value, \["type", "expectedAttempt", "failureFloor"\]\)[\s\S]*?value\.failureFloor === "A1"[\s\S]*?value\.failureFloor === "A2"/.test(controller)
+    || !/case "fail_chase"[\s\S]*?hasExactKeys\(value, \["type", "expectedAttempt"\]\)/.test(controller)
     || !/case "traverse_main_stair"[\s\S]*?hasExactKeys\(value, \["type", "fromFloor", "toFloor", "expectedAttempt"\]\)/.test(controller)) {
     errors.push("Task 12 intent parser must require exact expectedAttempt fields for finish, failure and main-stair transfer");
   }
-  if (!/phase === "final_chase"[\s\S]*?return \{ floor: "A1", roomId: "a1_lobby" \}/.test(saveStore)
+  if (!/phase === "final_chase"[\s\S]*?savedFloor === "A2" && stairwellComplete[\s\S]*?floor: "A2"[\s\S]*?floor: "A1"/.test(saveStore)
     || !/phase === "final_minute_recovery"[\s\S]*?return \{ floor: "A2", roomId: "a2_room_202" \}/.test(saveStore)
     || !/phase === "return_to_clock"[\s\S]*?savedFloor === "A2"[\s\S]*?"a2_room_202"[\s\S]*?floor:\s*"A1"/.test(saveStore)
     || !/roomId === "a2_lecture_202" \? "a2_room_202"/.test(saveStore)
-    || !/chapter\.phase === "final_chase"\) return "c4_a1_lobby"/.test(saveStore)
+    || !/chapter\.phase === "final_chase"\) return chapter\.floor === "A2" && chapter\.chaseStairwellStage === "complete" \? "c4_a2_corridor" : "c4_a1_lobby"/.test(saveStore)
     || !/chapter\.phase === "final_minute_recovery"\) return "c4_a2_room202"/.test(saveStore)) {
-    errors.push("Task 12 SaveStore must restart chase at A1, restore recovery inside A2-202, preserve either return floor, migrate the legacy room id and select matching checkpoints");
+    errors.push("Task 12 SaveStore must preserve completed stairwell A2 checkpoints, recover older chase saves at A1, and preserve final-minute/return locations");
   }
   if (!/const taskKey = selectChapterFour755TaskKey\(state, contract\)/.test(quest)
     || !/steps:\s*\[\{[\s\S]*?id:\s*`chapter_four_\$\{taskKey\}`/.test(quest)) {
@@ -1774,22 +1806,21 @@ function validateTask7RuntimeSources(errors) {
   const task12TargetBlock = interaction.match(
     /a2_202_projection:\s*runtimeEntityTarget\([\s\S]*?\n\s*\),/
   )?.[0] ?? "";
-  if (!/TASK12_ACTIONABLE_TARGET_IDS:[\s\S]*?TASK11_ACTIONABLE_TARGET_IDS[\s\S]*?"a2_202_threshold"[\s\S]*?"a2_202_projection"/.test(scene)
-    || !/"a2_202_projection"[\s\S]*?finalMinuteRuntime[\s\S]*?entityId/.test(task12TargetBlock)
+  if (!/"a2_202_projection"[\s\S]*?finalMinuteRuntime[\s\S]*?entityId/.test(task12TargetBlock)
     || !/\["final_minute_recovery"\]/.test(task12TargetBlock)
     || /layoutAnchorTarget/.test(task12TargetBlock)) {
-    errors.push("Task 12 must keep the Room202 door and final-minute projection in the actionable target set, with the minute target bound to a closed-by-default runtime entity");
+    errors.push("Task 12 final-minute target must be a closed-by-default runtime entity, never a static layout anchor");
   }
   const task12SceneRuntimeBlock = scene.match(
     /private ensureFinalChaseRuntime[\s\S]*?private syncPhaseSideEffects/
   )?.[0] ?? "";
-  if (!/createChapterFourFinalChaseState\([\s\S]*?state\.chapter4\.chaseAttempt,[\s\S]*?startFloor[\s\S]*?\)/.test(task12SceneRuntimeBlock)
+  if (!/createChapterFourFinalChaseState\(state\.chapter4\.chaseAttempt\)/.test(task12SceneRuntimeBlock)
     || !/setVisible\(false\)/.test(task12SceneRuntimeBlock)
     || !/committedAndApplied[\s\S]*?projectionSignature === this\.pendingProjectionSignature[\s\S]*?appliedPlateIds/.test(task12SceneRuntimeBlock)
     || !/stepChapterFourFinalChase\(runtime/.test(task12SceneRuntimeBlock)
     || !/chapterFourFinalChaseFootContact/.test(task12SceneRuntimeBlock)
     || !/playerEnteredMainStair/.test(task12SceneRuntimeBlock)
-    || !/expectedAttempt:\s*committed\.chapter4\.chaseAttempt[\s\S]*?failureFloor:\s*playerFloorNumber === 2 \? "A2" : "A1"/.test(task12SceneRuntimeBlock)) {
+    || !/expectedAttempt:\s*committed\.chapter4\.chaseAttempt/.test(task12SceneRuntimeBlock)) {
     errors.push("Task 12 Scene must arm only from four committed/applied frames, feed actual feet into the pure model, recognize the real main stair and attach current attempt tokens to finish/failure");
   }
   if (!/const movementSpeed = this\.bridge\.getState\(\)\.chapter4\.phase === "final_chase"[\s\S]*?CHAPTER_FOUR_FINAL_CHASE_RULES\.playerSpeed/.test(scene)
@@ -1811,7 +1842,7 @@ function validateTask7RuntimeSources(errors) {
   if (!/timedOutIntentType === "reach_202_threshold"[\s\S]*?resolveChapterFourFinalChaseFinish\(this\.finalChaseState, false\)/.test(scene)
     || !/timedOutIntentType === "fail_chase"[\s\S]*?resolveChapterFourFinalChaseFailure\(this\.finalChaseState, false\)/.test(scene)
     || !/target\.contract\.id === "a1_hall_clock_minute_endpoint"[\s\S]*?itemId === "finalMinute"[\s\S]*?type:\s*"install_final_minute"/.test(scene)) {
-    errors.push("Task 12 timeout paths must release pending finish/failure handshakes, and Task13 must submit the finalMinute drop through the visible clock-face envelope");
+    errors.push("Task 12 timeout paths must release pending finish/failure handshakes, and Task13 must submit the finalMinute drop through the visible minute endpoint");
   }
 
   const task13ControllerBlock = controllerIntentResolver.match(
@@ -1823,14 +1854,49 @@ function validateTask7RuntimeSources(errors) {
     || !/cardAccepted && paperAccepted[\s\S]*?transition\(state, "exterior_closure"[\s\S]*?roomId:\s*"a1_exterior"/.test(controller)) {
     errors.push("Task 13 controller must atomically install the final minute, accept both retained check-in items in either order and enter the unacknowledged exterior wait");
   }
-  if (!/case "acknowledge_exterior_closure"[\s\S]*?closureSessionVerifier\.reference[\s\S]*?closureProofMatchesReference\(intent\.proof, reference\)[\s\S]*?verifyCompletedSession\(intent\.proof\)/.test(controller)
+  const zhuClosureControllerBlock = controller.match(
+    /case "complete_zhu_two_questions": \{[\s\S]*?case "observe_classroom_104_chalk_residual"/
+  )?.[0] ?? "";
+  if (!/chapter\.phase !== "exterior_closure"[\s\S]*?chapter\.floor !== "A1"[\s\S]*?chapter\.roomId !== "a1_exterior"/.test(zhuClosureControllerBlock)
+    || !/appendFact\(chapter, "zhu_two_questions_answered"\)[\s\S]*?purpose:\s*intent\.purposeAnswer[\s\S]*?person:\s*intent\.personAnswer/.test(zhuClosureControllerBlock)
+    || !/hasExactKeys\(value, \["type", "purposeAnswer", "personAnswer"\]\)/.test(controller)
+    || /targetId|spatial/.test(zhuClosureControllerBlock)) {
+    errors.push("Task 13 Zhu questions must be an exact non-spatial exterior-only transaction that saves both real selections atomically");
+  }
+  if (!/case "acknowledge_exterior_closure"[\s\S]*?hasSavedZhuQuestionAnswers\(chapter\)[\s\S]*?closureSessionVerifier\.reference[\s\S]*?closureProofMatchesReference\(intent\.proof, reference\)[\s\S]*?verifyCompletedSession\(intent\.proof\)/.test(controller)
     || !/proof:\s*ChapterFourClosureSessionProof/.test(controller)
     || !/hasExactKeys\(value, \["type", "proof"\]\)/.test(controller)
-    || !/CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE:[\s\S]*?Object\.freeze\(\{[\s\S]*?sequenceId:\s*"chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4"[\s\S]*?rendererModule:\s*"src\/components\/temporal-maze\/ChapterFourStarLampThreeRenderer\.ts"/.test(closureContract)
-    || !/BLOCKED_CHAPTER_FOUR_CLOSURE_SESSION_VERIFIER:[\s\S]*?reference:\s*null[\s\S]*?verifyCompletedSession:[\s\S]*?=> false/.test(closureContract)
+    || !/assetId:\s*"canruo_star_lamp_layered_v1"/.test(closureContract)
+    || !/sequenceId:\s*"chapter4_755_canruo_star_lamp_5800ms_camera_rise_layered_v4"/.test(closureContract)
+    || !/consumerModule:\s*"src\/components\/temporal-maze\/ChapterFourStarLampClosure\.tsx"/.test(closureContract)
+    || !/coordinateSpace:\s*Object\.freeze\(\{ width: 1024, height: 1536 \}\)/.test(closureContract)
+    || !/bounds:\s*Object\.freeze\(\{ x: 361, y: 27, width: 307, height: 1497 \}\)/.test(closureContract)
+    || !/class ChapterFourClosureSessionRegistry[\s\S]*?beginSession\(\)[\s\S]*?completeSession\(sessionId: string\)[\s\S]*?verifyCompletedSession\(proof: ChapterFourClosureSessionProof\)[\s\S]*?session\.consumed = true[\s\S]*?cancelSession\(sessionId: string\)/.test(closureSessionRegistry)
     || /syncExteriorClosureAcknowledgement/.test(scene)
-    || /requestStoryIntent\(\{\s*type:\s*"acknowledge_exterior_closure"\s*\}\)/.test(scene)) {
-    errors.push("Task 13 exterior completion must require the exact approved Three.js closure session proof while the blocked verifier remains fail-closed");
+    || /type:\s*"(?:complete_zhu_two_questions|acknowledge_exterior_closure)"/.test(scene)) {
+    errors.push("Task 13 exterior completion must require saved answers plus one exact, once-consumed approved lamp-session proof, with no Scene-owned shortcut");
+  }
+  if (!/ChapterFourStarLampPlayback/.test(closureComponent)
+    || !/CHAPTER_FOUR_STAR_LAMP_SAVED_CONFIRMATION_MS\s*=\s*900/.test(closureComponent)
+    || !/回答已保存/.test(closureComponent)
+    || !/从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！/.test(closureComponent)
+    || !/stage === "questions"[\s\S]*?stage === "saved"[\s\S]*?stage === "playback"[\s\S]*?stage === "final"/.test(closureComponent)
+    || !/purposeLabel/.test(closureComponent)
+    || !/personLabel/.test(closureComponent)
+    || !/onComplete\(sessionId\)/.test(closureComponent)
+    || !/--chapter4-star-lamp-duration:\s*6200ms/.test(closureCss)
+    || !/<ChapterFourStarLampPlayback[^>]*onComplete=\{finishPlayback\}/.test(closureComponent)) {
+    errors.push("The approved closure component must show only the saved confirmation, run the approved camera-rise five-layer sequence, then show the fixed sentence and both selected labels");
+  }
+  if (!/CLOSURE_LAMP_ASSETS\s*=\s*Object\.freeze\(\[[\s\S]*?DarkUrl[\s\S]*?OutlineUrl[\s\S]*?LedsUrl[\s\S]*?CoreUrl[\s\S]*?GlowUrl/.test(closureWarmAssets)
+    || !/getChapterFourWarmupPhaseAssets/.test(host)
+    || !/getRpgSceneWarmAssets/.test(host)
+    || !/new ChapterFourClosureSessionRegistry\(\)/.test(host)
+    || !/new ChapterFourTemporalMazeController\(store, events, chapter4ClosureSessionRegistry\)/.test(host)
+    || !/<ChapterFourStarLampClosure[\s\S]*?questions=\{CHAPTER_FOUR_ZHU_QUESTIONS\}[\s\S]*?selectedAnswers=\{state\.chapter4\.zhuQuestionAnswers\}[\s\S]*?answersSaved=\{chapter4ClosureAnswersSaved\}[\s\S]*?onSaveAnswers=\{saveChapterFourClosureAnswers\}[\s\S]*?onComplete=\{completeChapterFourClosure\}/.test(host)
+    || !/type:\s*"complete_zhu_two_questions"[\s\S]*?purposeAnswer:\s*answers\.purpose[\s\S]*?personAnswer:\s*answers\.person/.test(host)
+    || !/completeSession\(sessionId\)[\s\S]*?type:\s*"acknowledge_exterior_closure", proof/.test(host)) {
+    errors.push("RpgGameHost must preload and mount the approved five-layer consumer, save the two answers through the controller, and submit only its registered session proof");
   }
 
   const task13SceneRuntimeBlock = scene.match(
@@ -1858,16 +1924,22 @@ function validateTask7RuntimeSources(errors) {
     || !/saved\.checkinCardAccepted === true[\s\S]*?savedFactIds\.includes\("checkin_card_accepted"\)/.test(saveStore)
     || !/phase === "morning_checkin" && savedCardAccepted && savedPaperAccepted[\s\S]*?phase = "exterior_closure"/.test(saveStore)
     || !/facts\.delete\("exterior_closure_acknowledged"\)/.test(saveStore)
-    || !/const savedCompletionVerified = envelopeVersion >= CHAPTER_FOUR_CLOSURE_SAVE_VERSION[\s\S]*?savedPhase === "complete"[\s\S]*?saved\.completed === true[\s\S]*?saved\.exteriorClosureAcknowledged === true[\s\S]*?savedCardAccepted[\s\S]*?savedPaperAccepted[\s\S]*?savedLightGridForCompletion\.locked === true[\s\S]*?savedLightGridForCompletion\.mask === 13/.test(saveStore)
-    || !/const savedClaimsCompletion = saved\.completed === true[\s\S]*?savedPhase === "complete"[\s\S]*?saved\.exteriorClosureAcknowledged === true[\s\S]*?savedFactIds\.includes\("exterior_closure_acknowledged"\)/.test(saveStore)
-    || !/let phase: ChapterFourPhase = savedCompletionVerified[\s\S]*?: savedPhase === "complete" && savedClaimsCompletion[\s\S]*?\? "exterior_closure"[\s\S]*?: savedPhase/.test(saveStore)
-    || !/const completed = savedCompletionVerified/.test(saveStore)
-    || !/items\.campusCard = true/.test(saveStore)) {
-    errors.push("Task 13 SaveStore must synchronize check-in booleans/facts/items, auto-close a complete morning pair and accept completion only from a coherent v32 closure");
+    || !/const completed = saved.phase === "complete"/.test(saveStore)
+    || !/items\.campusCard = true/.test(saveStore)
+    || !/CHAPTER_FOUR_ZHU_CLOSURE_SAVE_VERSION = 29/.test(saveStore)
+    || !/CHAPTER_FOUR_EVIDENCE_CAUSALITY_SAVE_VERSION = 30/.test(saveStore)
+    || !/const SAVE_VERSION = 35/.test(saveStore)
+    || !/migrateChapterFourEvidenceCausality/.test(saveStore)
+    || !/restoredToSafePhase/.test(saveStore)
+    || !/room204_restore[\s\S]*?bakery_hour_hand[\s\S]*?maintenance_repair[\s\S]*?blackout_light_grid/.test(saveStore)
+    || !/envelopeVersion >= CHAPTER_FOUR_ZHU_CLOSURE_SAVE_VERSION[\s\S]*?phase === "exterior_closure"[\s\S]*?factIds\.includes\("zhu_two_questions_answered"\)[\s\S]*?hasValidZhuAnswerDraft/.test(saveStore)
+    || !/factIds = factIds\.filter\(\(factId\) => factId !== "zhu_two_questions_answered"\)/.test(saveStore)) {
+    errors.push("Task 13 SaveStore must synchronize check-in state, preserve the v29 Zhu closure rule, and use v35 evidence-derived safe recovery with verified completion persistence");
   }
   if (!/contract\.id === "return_to_clock"[\s\S]*?floor === "A1"[\s\S]*?"install_final_minute"[\s\S]*?"return_via_main_stair"/.test(quest)
-    || !/contract\.id === "morning_checkin"[\s\S]*?checkin_card_accepted[\s\S]*?checkin_paper_accepted[\s\S]*?"submit_attendance_paper"[\s\S]*?"read_campus_card"[\s\S]*?"complete_checkin"/.test(quest)) {
-    errors.push("Task 13 QuestModel must expose one A2/A1 return objective and only the remaining check-in action");
+    || !/contract\.id === "morning_checkin"[\s\S]*?checkin_card_accepted[\s\S]*?checkin_paper_accepted[\s\S]*?"submit_attendance_paper"[\s\S]*?"read_campus_card"[\s\S]*?"complete_checkin"/.test(quest)
+    || !/contract\.id === "exterior_closure"[\s\S]*?zhu_two_questions_answered[\s\S]*?"acknowledge_exterior_closure"[\s\S]*?"answer_zhu_two_questions"/.test(quest)) {
+    errors.push("Task 13 QuestModel must expose one return/check-in action, then the exterior Zhu answer and approved lamp objectives in order");
   }
 
   if (/^\s*import\s/m.test(guardModel)
@@ -1903,6 +1975,79 @@ function validate(content) {
   if (content.chapterId !== "chapter_four") errors.push("chapterId must be chapter_four");
   if (!sameArray(content.orderedPhases, EXPECTED_PHASES)) {
     errors.push("orderedPhases must exactly match the approved 13-phase 7:55 sequence");
+  }
+
+  const evidenceContracts = content.evidenceContracts;
+  if (!Array.isArray(evidenceContracts)
+    || !sameArray(evidenceContracts.map((contract) => contract?.id), EXPECTED_EVIDENCE_CONTRACT_IDS)) {
+    errors.push("evidenceContracts must contain the eleven approved cross-level evidence contracts in causal order");
+  } else {
+    const detailIds = new Set();
+    const producedFacts = new Set();
+    const consumedFacts = new Set();
+    const coveredPhases = new Set();
+    for (const [index, contract] of evidenceContracts.entries()) {
+      if (!isRecord(contract)) {
+        errors.push(`evidenceContracts[${index}] must be an object`);
+        continue;
+      }
+      const producerIndex = EXPECTED_PHASES.indexOf(contract.producerPhase);
+      if (!EXPECTED_EVIDENCE_FAMILIES.has(contract.family)) {
+        errors.push(`evidence contract ${contract.id} has invalid family ${String(contract.family)}`);
+      }
+      if (producerIndex < 0 || producerIndex === EXPECTED_PHASES.length - 1) {
+        errors.push(`evidence contract ${contract.id} must have an active producer phase`);
+      } else {
+        coveredPhases.add(contract.producerPhase);
+      }
+      for (const [field, values] of [
+        ["producerFacts", contract.producerFacts],
+        ["rawDetailIds", contract.rawDetailIds],
+        ["consumerPhases", contract.consumerPhases],
+        ["consumedByFacts", contract.consumedByFacts]
+      ]) {
+        if (!Array.isArray(values)
+          || values.length === 0
+          || values.some((value) => !nonEmptyString(value))
+          || new Set(values).size !== values.length) {
+          errors.push(`evidence contract ${contract.id}.${field} must be a unique non-empty string array`);
+        }
+      }
+      for (const factId of Array.isArray(contract.producerFacts) ? contract.producerFacts : []) {
+        producedFacts.add(factId);
+      }
+      for (const factId of Array.isArray(contract.consumedByFacts) ? contract.consumedByFacts : []) {
+        consumedFacts.add(factId);
+      }
+      for (const detailId of Array.isArray(contract.rawDetailIds) ? contract.rawDetailIds : []) {
+        if (detailIds.has(detailId)) {
+          errors.push(`raw evidence detail ${detailId} must have one owning contract`);
+        }
+        detailIds.add(detailId);
+      }
+      for (const consumerPhase of Array.isArray(contract.consumerPhases) ? contract.consumerPhases : []) {
+        const consumerIndex = EXPECTED_PHASES.indexOf(consumerPhase);
+        if (producerIndex < 0 || consumerIndex <= producerIndex) {
+          errors.push(`evidence contract ${contract.id} consumer ${consumerPhase} must occur after ${contract.producerPhase}`);
+        } else {
+          coveredPhases.add(consumerPhase);
+        }
+      }
+      const playerFacingEvidenceCopy = JSON.stringify(contract);
+      if (/前往\s*202|定位结果|答案是/.test(playerFacingEvidenceCopy)) {
+        errors.push(`evidence contract ${contract.id} must not name a pending endpoint or answer`);
+      }
+    }
+    for (const factId of consumedFacts) {
+      if (!producedFacts.has(factId)) {
+        errors.push(`consumed evidence fact ${factId} must be declared by a producer contract`);
+      }
+    }
+    for (const phase of EXPECTED_PHASES) {
+      if (!coveredPhases.has(phase)) {
+        errors.push(`phase ${phase} must produce or consume durable evidence`);
+      }
+    }
   }
 
   const time = content.time;
@@ -1960,7 +2105,7 @@ function validate(content) {
       || firstPull.toAuthority !== "hall_clock"
       || firstPull.fromTimeState !== "2245_opening"
       || firstPull.toTimeState !== "1225_bakery"
-      || firstPull.trigger !== "adjust_hall_clock_time"
+      || firstPull.trigger !== "pull_hall_clock"
       || firstPull.atomic !== true) {
       errors.push("time.firstHallClockPull must atomically switch authority and time state");
     }
@@ -2029,7 +2174,7 @@ function validate(content) {
     if (!sameArray(bakeryHandshake.intentOrder, EXPECTED_BAKERY_INTENTS)) {
       errors.push("bakeryHandshake.intentOrder must preserve inspect, stop completion, pickup and install order");
     }
-    if (bakeryHandshake.preLampConveyorCorrection !== "传送带还在转。烤箱旁那盏检修灯，连着一个开关。") {
+    if (bakeryHandshake.preLampConveyorCorrection !== "先点亮烤箱旁的检修灯，让传送带停一下。") {
       errors.push("bakeryHandshake must preserve the approved pre-lamp conveyor correction");
     }
     if (!isRecord(bakeryHandshake.targetIds)
@@ -2070,14 +2215,17 @@ function validate(content) {
     errors.push("tasks must be an object");
   } else {
     const activeTaskEntries = Object.entries(tasks).filter(([taskKey]) => taskKey !== "chapter_complete");
-    if (Object.keys(tasks).length !== 40 || activeTaskEntries.length !== 39) {
-      errors.push("tasks must contain 39 active tasks plus chapter_complete");
+    const expectedActiveTaskKeys = new Set(Object.values(EXPECTED_TASK_KEYS_BY_ACTIVE_PHASE).flat());
+    if (Object.keys(tasks).length !== expectedActiveTaskKeys.size + 1
+      || activeTaskEntries.length !== expectedActiveTaskKeys.size
+      || activeTaskEntries.some(([taskKey]) => !expectedActiveTaskKeys.has(taskKey))) {
+      errors.push("tasks must contain exactly the active phase task keys plus chapter_complete");
     }
     for (const [taskKey, task] of Object.entries(tasks)) {
       if (!isRecord(task) || !nonEmptyString(task.label)) {
         errors.push(`tasks.${taskKey}.label must be a non-empty string`);
       }
-      const expectedHintCount = ["chapter_complete", "acknowledge_exterior_closure"].includes(taskKey) ? 0 : 3;
+      const expectedHintCount = taskKey === "chapter_complete" ? 0 : 3;
       if (isRecord(task)
         && (!Array.isArray(task.hints)
           || task.hints.length !== expectedHintCount
@@ -2089,11 +2237,8 @@ function validate(content) {
       (count, [, task]) => count + (Array.isArray(task?.hints) ? task.hints.length : 0),
       0
     );
-    if (activeHintCount !== 114) {
-      errors.push("tasks must expose 114 hints; saved answers and completion must not invent another objective");
-    }
-    if (tasks.acknowledge_exterior_closure?.label !== "回答已保存") {
-      errors.push("saved final answers must only confirm that the answers were saved");
+    if (activeHintCount !== expectedActiveTaskKeys.size * 3) {
+      errors.push("tasks must expose exactly three hints for every active phase task");
     }
     const room204PlayerCopy = [
       tasks.restore_room204?.label,
@@ -2204,6 +2349,73 @@ function validate(content) {
     });
   }
 
+  if (!Array.isArray(content.transitionContracts)
+    || content.transitionContracts.length !== EXPECTED_TRANSITION_CONTRACTS.length) {
+    errors.push("transitionContracts must contain the eight regular Chapter 4 phase transitions");
+  } else {
+    const ids = new Set();
+    const matchKeys = new Set();
+    let overlayCount = 0;
+    let worldHandoffCount = 0;
+    content.transitionContracts.forEach((contract, index) => {
+      const expected = EXPECTED_TRANSITION_CONTRACTS[index];
+      if (!isRecord(contract)
+        || contract.id !== expected[0]
+        || !sameArray(contract.intentTypes, expected[1])
+        || contract.fromPhase !== expected[2]
+        || contract.toPhase !== expected[3]
+        || contract.presentationKind !== expected[4]
+        || contract.owner !== expected[5]) {
+        errors.push(`transitionContracts[${index}] must preserve the approved transition match`);
+        return;
+      }
+      if (ids.has(contract.id)) {
+        errors.push(`transition contract id ${contract.id} must be unique`);
+      }
+      ids.add(contract.id);
+      for (const intentType of contract.intentTypes) {
+        const matchKey = `${intentType}:${contract.fromPhase}:${contract.toPhase}`;
+        if (matchKeys.has(matchKey)) {
+          errors.push(`transition match ${matchKey} must be unique`);
+        }
+        matchKeys.add(matchKey);
+      }
+      if (contract.dialogueIds !== undefined || contract.puzzleHandoff !== undefined) {
+        errors.push(`transition ${contract.id} must not duplicate dialogue or task-bar guidance`);
+      }
+      if (contract.presentationKind === "time_shift") {
+        overlayCount += 1;
+        const change = contract.change;
+        if (!isRecord(change)
+          || change.kind !== "time"
+          || !nonEmptyString(change.eyebrow)
+          || !nonEmptyString(change.title)
+          || !nonEmptyString(change.detail)) {
+          errors.push(`time transition ${contract.id} must define one readable time-change card`);
+          return;
+        }
+        const fromTime = EXPECTED_PHASE_TIME[contract.fromPhase]?.[1];
+        const toTime = EXPECTED_PHASE_TIME[contract.toPhase]?.[1];
+        if (change.fromTimeState !== fromTime
+          || change.toTimeState !== toTime
+          || change.fromTimeState === change.toTimeState) {
+          errors.push(`transition ${contract.id} must use the controller-owned time-state change`);
+        }
+        return;
+      }
+      worldHandoffCount += 1;
+      if (contract.change !== undefined) {
+        errors.push(`world handoff ${contract.id} must remain inside the live scene`);
+      }
+    });
+    if (matchKeys.size !== 9) {
+      errors.push("transitionContracts must expose nine unique intent/phase matches");
+    }
+    if (overlayCount !== 4 || worldHandoffCount !== 4) {
+      errors.push("transitionContracts must split into four time overlays and four in-scene handoffs");
+    }
+  }
+
   const room204 = content.room204;
   if (!isRecord(room204)) {
     errors.push("room204 must be an object");
@@ -2225,8 +2437,44 @@ function validate(content) {
     if (room204.canonicalUse !== "save_recovery_only") {
       errors.push("room204.canonicalUse must restrict the canonical mapping to save recovery");
     }
-    if (room204.gameplayRule !== "any_unique_piece_to_any_unique_empty_slot_orientation_up") {
-      errors.push("room204.gameplayRule must accept any unique piece in any unique empty slot with orientation up");
+    if (room204.gameplayRule !== "four_atomic_groups_expand_to_twelve_unique_placements") {
+      errors.push("room204.gameplayRule must expose four atomic groups backed by twelve persisted placements");
+    }
+    const groups = Array.isArray(room204.groups) ? room204.groups : [];
+    const groupedPieces = [];
+    const groupedSlots = [];
+    if (!sameArray(groups.map((group) => group?.id), EXPECTED_ROOM204_GROUP_IDS)) {
+      errors.push("room204.groups must preserve the four authored environmental groups in order");
+    }
+    groups.forEach((group, index) => {
+      const mappings = Array.isArray(group?.mappings) ? group.mappings : [];
+      if (!isRecord(group)
+        || !nonEmptyString(group.label)
+        || !nonEmptyString(group.rationale)
+        || group.rawDetailId !== EXPECTED_ROOM204_GROUP_DETAIL_IDS[index]
+        || !isRecord(group.targetBounds)
+        || group.targetBounds.width < 28
+        || group.targetBounds.height < 28
+        || mappings.length !== 3) {
+        errors.push(`room204.groups[${index}] must define one readable detail target and exactly three mappings`);
+        return;
+      }
+      for (const mapping of mappings) {
+        if (!isRecord(mapping)
+          || !pieceIds.includes(mapping.pieceId)
+          || !slotIds.includes(mapping.slotId)) {
+          errors.push(`room204.groups[${index}] contains an invalid piece-to-slot mapping`);
+          continue;
+        }
+        groupedPieces.push(mapping.pieceId);
+        groupedSlots.push(mapping.slotId);
+      }
+    });
+    if (groupedPieces.length !== 12
+      || new Set(groupedPieces).size !== 12
+      || groupedSlots.length !== 12
+      || new Set(groupedSlots).size !== 12) {
+      errors.push("room204.groups must cover all twelve pieces and all twelve persisted slots exactly once");
     }
     if (!Array.isArray(room204.canonicalCompletePlacements)
       || room204.canonicalCompletePlacements.length !== 12) {
@@ -2255,36 +2503,42 @@ function validate(content) {
   if (!isRecord(maintenance)
     || !sameArray(maintenance.orderedActions, [
       "inspect_cart_wheel",
-      "complete_maintenance_diagnosis",
+      "collect_short_pry_bar",
       "open_cart_wheel_cover",
-      "lubricate_cart_wheel"
+      "lubricate_cart_wheel",
+      "lubricate_clock_gear"
     ])
     || maintenance.inspectionFact !== "cart_wheel_inspected"
-    || !sameArray(maintenance.preparedItems, ["shortPryBar", "universalLubricatingOil"])
-    || maintenance.diagnosisAnswers?.wheel_sound !== "latch"
-    || maintenance.diagnosisAnswers?.clock_jam !== "gear_offset"
-    || maintenance.diagnosisAnswers?.oil_trace !== "oil_shortage"
     || maintenance.pryBarFinalUse !== "open_cart_wheel_cover"
     || !sameArray(
       Array.isArray(maintenance.oilUses)
-        ? maintenance.oilUses.map((use) => `${use?.targetId}:${use?.inventoryEffect}:${use?.factIds?.join("+")}`)
+        ? maintenance.oilUses.map((use) => `${use?.targetId}:${use?.inventoryEffect}:${use?.factId}`)
         : [],
       [
-        "a1_cleaning_cart_wheel:consume:cart_wheel_repaired+clock_gear_repaired"
+        "a1_cleaning_cart_wheel:retain:cart_wheel_repaired",
+        "a1_hall_clock_gear:consume:clock_gear_repaired"
       ]
     )
     || maintenance.gearRepairKeepsPhase !== "maintenance_repair"
     || maintenance.nextTask !== "把旧钟拨向 07:55") {
-    errors.push("maintenance must preserve diagnosis, two physical actions and Task11 handoff");
+    errors.push("maintenance must preserve the five-action chain, atomic cover/oil grant, retained wheel use and Task11 handoff");
   }
   if (!isRecord(content.tasks)
     || content.tasks.turn_clock_to_0755?.label !== "把旧钟拨向 07:55"
-    || content.tasks.solve_light_grid?.label !== "点亮追赶所需的通路"
-    || content.tasks.reach_lecture_202?.label !== "追进 202，关好门"
-    || content.tasks.collect_final_minute?.label !== "取回黄铜分针组件"
-    || content.tasks.return_via_main_stair?.label !== "把黄铜分针组件带回一楼大厅"
-    || content.tasks.install_final_minute?.label !== "将黄铜分针组件装回大厅旧钟") {
-    errors.push("Task 11-13 quest copy must use the physical component name, real return destination and visible clock-face action");
+    || content.tasks.solve_light_grid?.label !== "核对面板上的旧灯痕"
+    || content.tasks.reach_lecture_202?.label !== "沿亮起的三处痕迹继续追赶"
+    || content.tasks.collect_final_minute?.label !== "比较纸边与分钟投影"
+    || content.tasks.return_via_main_stair?.label !== "沿主楼梯回到一楼旧钟"
+    || content.tasks.install_final_minute?.label !== "把最后一分钟装回旧钟") {
+    errors.push("Task 11-12 quest copy must keep goals while withholding the light-grid mask and chase destination");
+  }
+  const clueFacingCopy = JSON.stringify({ tasks: content.tasks, dialogues: content.dialogues });
+  if (clueFacingCopy.includes("大厅、东走廊和教室区亮起")
+    || clueFacingCopy.includes("定位结果：阶梯教室")
+    || clueFacingCopy.includes("阶梯教室门已关闭")
+    || clueFacingCopy.includes("本地画面延迟 7 分 55 秒")
+    || clueFacingCopy.includes("校准通往二楼")) {
+    errors.push("task and dialogue copy must leave solution facts in environmental details");
   }
 
   const patrol = isRecord(content.guard) && isRecord(content.guard.patrol)
@@ -2360,7 +2614,6 @@ function validate(content) {
         errors.push(`lightGrid.${key} must be an integer mask from 0 to 31`);
       }
     }
-    if (lightGrid.initialMask !== 14) errors.push("lightGrid.initialMask must use the revised arrangement mask 14");
     if (lightGrid.allOnMask !== 31) errors.push("lightGrid.allOnMask must be 31");
     if (lightGrid.targetMask === lightGrid.allOnMask) {
       errors.push("lightGrid target must reject the all-on state");
@@ -2388,9 +2641,6 @@ function validate(content) {
     const verifiedSolution = Array.isArray(lightGrid.verifiedSolutionZoneIds)
       ? lightGrid.verifiedSolutionZoneIds
       : [];
-    if (!sameArray(verifiedSolution, ["hall", "west_corridor", "east_corridor", "bakery_back_area"])) {
-      errors.push("lightGrid.verifiedSolutionZoneIds must match the revised four-toggle solution");
-    }
     let replayMask = lightGrid.initialMask;
     for (const zoneId of verifiedSolution) {
       const zone = zoneById.get(zoneId);
@@ -2402,6 +2652,16 @@ function validate(content) {
     }
     if (replayMask !== lightGrid.targetMask) {
       errors.push("lightGrid.verifiedSolutionZoneIds does not reach targetMask");
+    }
+    if (!sameArray(lightGrid.evidenceDetailIds, [
+      "room204_door_paper_trace",
+      "power_hall_node",
+      "power_east_corridor_node",
+      "power_classroom_node"
+    ])
+      || lightGrid.maximumSolutionToggles !== 3
+      || verifiedSolution.length > lightGrid.maximumSolutionToggles) {
+      errors.push("lightGrid must consume four raw environment details and solve within three toggles");
     }
     if (lightGrid.successLocks !== true) errors.push("lightGrid success must lock later toggles");
   }
@@ -2423,21 +2683,20 @@ function validate(content) {
       || guard.finalChase.mode !== "chase"
       || guard.finalChase.runtimeModel !== "ChapterFourFinalChaseModel"
       || !sameArray(guard.finalChase.states, [
-        "arming", "running", "portal_transfer", "escaped_floor", "finish_pending", "failure_pending", "complete"
+        "arming", "running", "portal_transfer", "finish_pending", "failure_pending", "complete"
       ])
       || guard.finalChase.armingCommittedFrames !== 4
+      || guard.finalChase.startGraceMs !== 1200
       || guard.finalChase.playerSpeed !== 208
       || guard.finalChase.guardSpeed !== 196
       || guard.finalChase.maxStepMs !== 50
       || guard.finalChase.transportId !== "main_stair"
-      || !sameArray(guard.finalChase.pursuitFloors, ["A1", "A2"])
-      || guard.finalChase.stopBoundary !== "room202_door"
-      || guard.finalChase.finishPriority !== "explicit_door_close_before_contact"
+      || guard.finalChase.finishPriority !== "finish_before_contact_same_frame"
       || guard.finalChase.attemptToken !== "expectedAttempt"
       || guard.finalChase.restartPolicy !== "chase_only"
       || guard.finalChase.restartCheckpoint !== "c4_a1_lobby"
       || guard.finalChase.canDisengageAfterSightLoss !== false) {
-      errors.push("guard.finalChase must bind the pure seven-state Task12 model, upstairs pursuit, explicit Room202 door action and attempt-checked chase-only restart");
+      errors.push("guard.finalChase must bind the pure six-state Task12 model, 1200ms start grace, exact speeds, main-stair portal, finish priority and attempt-checked chase-only restart");
     }
   }
 
@@ -2473,12 +2732,16 @@ function validate(content) {
     || !sameArray(paperCatch.requiresFacts, ["opening_paper_at_noticeboard"])) {
     errors.push("attendance paper catch must require the settled noticeboard fact");
   }
+  const coverStep = itemSequence.find((step) => step?.id === "open_cart_wheel_cover");
   const oilSteps = itemSequence.filter((step) => step?.itemId === "universalLubricatingOil");
-  if (oilSteps.length !== 1
+  if (coverStep?.grantedItemId !== "universalLubricatingOil"
+    || coverStep?.grantEffect !== "grant"
+    || oilSteps.length !== 2
     || oilSteps[0]?.targetId !== "a1_cleaning_cart_wheel"
-    || oilSteps[0]?.inventoryEffect !== "consume"
-    || !sameArray(oilSteps[0]?.stateResults, ["cart_wheel_repaired", "clock_gear_repaired"])) {
-    errors.push("diagnosed lubricating oil must be consumed by the linked cart-wheel and clock-gear repair");
+    || oilSteps[0]?.inventoryEffect !== "retain"
+    || oilSteps[1]?.targetId !== "a1_hall_clock_gear"
+    || oilSteps[1]?.inventoryEffect !== "consume") {
+    errors.push("opening the cart cover must grant oil in the same action, retain it on the wheel, then consume it on the clock gear");
   }
   const campusCardSteps = itemSequence.filter((step) => step?.itemId === "campusCard");
   if (campusCardSteps.length !== 1
@@ -2517,6 +2780,7 @@ function validate(content) {
     "final_minute_installed",
     "checkin_card_accepted",
     "checkin_paper_accepted",
+    "zhu_two_questions_answered",
     "exterior_closure_acknowledged"
   ]);
   const completionFacts = new Set(
@@ -2563,6 +2827,7 @@ try {
 
 const errors = validate(content);
 validateTask7H3Asset(errors);
+validateChapterFourStarLampLayers(errors);
 validateTask7RuntimeSources(errors);
 if (errors.length > 0) {
   console.error(`Chapter 4 7:55 story validation failed (${errors.length} error${errors.length === 1 ? "" : "s"}):`);
@@ -2570,4 +2835,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Chapter 4 7:55 story contract valid: ${EXPECTED_PHASES.length} phases, ${EXPECTED_TIME_STATES.length} time states, 5 light zones, ${EXPECTED_ITEM_STEPS.length} item operations, Task 7/8/9/10/11/12/13 runtime gates verified; exterior completion requires the approved one-time closure proof.`);
+console.log(`Chapter 4 7:55 story contract valid: ${EXPECTED_PHASES.length} phases, 4 time overlays, 4 in-scene handoffs, ${EXPECTED_TIME_STATES.length} time states, 5 light zones, ${EXPECTED_ITEM_STEPS.length} item operations, Task 7/8/9/10/11/12/13 closure runtime gates and five approved lamp layers verified.`);

@@ -1,88 +1,202 @@
 {
-  "version": 1,
-  "bpm": 96,
-  "beatSeconds": 0.625,
-  "leadSeconds": 1.25,
-  "assistLeadSeconds": 1.5625,
+  "version": 3,
+  "bpm": 100,
+  "beatSeconds": 0.6,
+  "leadSeconds": 1.6,
+  "assistLeadSeconds": 1.6,
   "charts": {
     "locker_key": {
       "spotId": "locker_key",
       "label": "生锈的柜门钥匙",
-      "experience": "tutorial_full",
-      "instruction": "教学谱面：音符落到白色判定线时按对应的 A / S / D",
-      "bars": 4,
-      "durationSeconds": 10,
+      "bars": 8,
+      "durationSeconds": 19.2,
       "notes": [
-        { "beat": 4, "action": "hook" },
-        { "beat": 6, "action": "left", "cue": "left_intro" },
-        { "beat": 8, "action": "right", "cue": "right_intro" },
-        { "beat": 10, "action": "left" },
-        { "beat": 12, "action": "right" },
-        { "beat": 13, "action": "left" },
-        { "beat": 14, "action": "right" },
-        { "beat": 15, "action": "hook" }
+        {
+          "beat": 3,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 7,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 11,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 15,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 19,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 23,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 27,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 31,
+          "action": "hook",
+          "hold": 0.4
+        }
       ]
     },
     "net_frame": {
       "spotId": "net_frame",
       "label": "破损网框",
-      "experience": "quick_hold",
-      "instruction": "短判定：长条头端到线时按住 A，尾端过线后松开",
-      "bars": 3,
-      "durationSeconds": 7.5,
+      "bars": 8,
+      "durationSeconds": 19.2,
       "notes": [
-        { "beat": 4, "action": "hook" },
-        { "beat": 6, "action": "left", "hold": 1 },
-        { "beat": 9, "action": "right" },
-        { "beat": 11, "action": "hook" }
+        {
+          "beat": 3,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 7,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 11,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 15,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 19,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 23,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 27,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 31,
+          "action": "hook",
+          "hold": 0.4
+        }
       ]
     },
     "fish": {
       "spotId": "fish",
       "label": "小鲤鱼",
-      "experience": "quick_strike",
-      "instruction": "一次判定：S 音符落到白色判定线时按 S 提竿",
-      "bars": 2,
-      "durationSeconds": 5,
+      "bars": 8,
+      "durationSeconds": 19.2,
       "notes": [
-        { "beat": 7, "action": "hook" }
+        {
+          "beat": 3,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 7,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 11,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 15,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 19,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 23,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 27,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 31,
+          "action": "hook",
+          "hold": 0.4
+        }
       ]
     },
     "paper": {
       "spotId": "paper",
       "label": "纸条本体",
-      "experience": "finale_full",
-      "instruction": "最终捕纸：保持张力，完整完成八小节",
       "bars": 8,
-      "durationSeconds": 20,
+      "durationSeconds": 19.2,
       "notes": [
-        { "beat": 4, "action": "hook" },
-        { "beat": 5, "action": "left" },
-        { "beat": 6, "action": "right" },
-        { "beat": 7, "action": "left" },
-        { "beat": 8.5, "action": "right" },
-        { "beat": 9, "action": "left" },
-        { "beat": 10, "action": "right" },
-        { "beat": 11.5, "action": "left" },
-        { "beat": 12, "action": "right", "hold": 1 },
-        { "beat": 14, "action": "left" },
-        { "beat": 15, "action": "right" },
-        { "beat": 16.5, "action": "left" },
-        { "beat": 17, "action": "right" },
-        { "beat": 18, "action": "left" },
-        { "beat": 19.5, "action": "right" },
-        { "beat": 20.5, "action": "left" },
-        { "beat": 21, "action": "right" },
-        { "beat": 22, "action": "left" },
-        { "beat": 23, "action": "right" },
-        { "beat": 24.5, "action": "left", "hold": 1 },
-        { "beat": 26, "action": "right" },
-        { "beat": 27, "action": "left" },
-        { "beat": 28, "action": "right" },
-        { "beat": 29, "action": "left" },
-        { "beat": 30, "action": "right" },
-        { "beat": 31, "action": "hook" }
+        {
+          "beat": 3,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 7,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 11,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 15,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 19,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 23,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 27,
+          "action": "hook",
+          "hold": 0.4
+        },
+        {
+          "beat": 31,
+          "action": "hook",
+          "hold": 0.4
+        }
       ]
     }
-  }
+  },
+  "mechanic": "lake-pull-v1"
 }

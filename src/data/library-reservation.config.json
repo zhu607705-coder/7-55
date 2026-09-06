@@ -1,0 +1,11 @@
+{
+  "library": "基础馆",
+  "targetRoom": "一层书库",
+  "targetSeat": "022",
+  "areaId": "first_floor_stacks",
+  "rooms": [
+    { "label": "负一层书库", "floor": "负一层", "seats": 160 },
+    { "label": "一层书库", "floor": "一层", "seats": 160 },
+    { "label": "二层书库", "floor": "二层", "seats": 160 }
+  ]
+}

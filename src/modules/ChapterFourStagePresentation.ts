@@ -8,12 +8,10 @@ import type {
 } from "../core/types";
 import chapterFour755Content from "../data/chapter4-755.content.json";
 import chapterFourTemporalMazeContent from "../data/chapter4-temporal-maze.content.json";
-import { CHAPTER_FOUR_LIGHT_GRID } from "./ChapterFourLightGridModel";
 import {
   ROOM204_GROUP_ORDER,
   countCompletedRoom204Groups
 } from "../scenes/rpg/ChapterFourRoom204Model";
-import { selectChapterFourRequiredClockTime } from "./ChapterFourTimeControlModel";
 
 interface PhasePresentationCopy {
   stageLabel: string;
@@ -122,12 +120,6 @@ export function selectChapterFourStagePresentation(
   const confirmedFacts = chapter.factIds
     .map((factId) => FACT_LABELS[factId])
     .filter((label): label is string => Boolean(label));
-  const requiredClockTime = selectChapterFourRequiredClockTime(chapter);
-  const currentDifference = requiredClockTime === "1850_evening"
-    ? "金属时针已经归位，外圈多出一处能够稳定停住的刻度。"
-    : requiredClockTime === "2245_maintenance"
-      ? "定位片已经归位，外圈另一处原本回弹的刻度保持不动。"
-      : PHASE_COPY[activePhase].currentDifference;
 
   return Object.freeze({
     stageLabel: PHASE_COPY[activePhase].stageLabel,
@@ -138,7 +130,7 @@ export function selectChapterFourStagePresentation(
       ? CONTEXT_COPY.trustStates.trusted
       : CONTEXT_COPY.trustStates.untrusted,
     floor: chapter.floor,
-    currentDifference,
+    currentDifference: PHASE_COPY[activePhase].currentDifference,
     localProgress: selectLocalProgress(state, activePhase, facts),
     confirmedFacts: Object.freeze(confirmedFacts)
   });
@@ -176,17 +168,15 @@ function selectLocalProgress(
         state.chapter4.room204Placements
       )}/${ROOM204_GROUP_ORDER.length}`;
     case "maintenance_repair":
-      return `维修流程 ${countMaintenanceMilestones(facts)}/3`;
-    case "blackout_light_grid": {
-      const progress = countRequiredLightConditions(state.chapter4.lightGrid.mask);
-      return `必要灯区 ${progress.satisfied}/${progress.total}`;
-    }
+      return `维修流程 ${countMaintenanceMilestones(state, facts)}/5`;
+    case "blackout_light_grid":
+      return `灯痕核对 ${facts.has("light_grid_locked") ? 1 : 0}/1`;
     case "final_chase":
-      return "抵达 202 0/1";
+      return "亮区终点 0/1";
     case "final_minute_recovery":
-      return `分针组件 ${facts.has("final_minute_recovered") ? 1 : 0}/1`;
+      return `纸边与分钟投影 ${facts.has("final_minute_recovered") ? 1 : 0}/1`;
     case "return_to_clock":
-      return state.chapter4.floor === "A1" ? "抵达一楼 1/1" : "抵达一楼 0/1";
+      return state.chapter4.floor === "A1" ? "返回旧钟 1/1" : "返回旧钟 0/1";
     case "morning_checkin":
       return `签到确认 ${countFacts(facts, ["checkin_card_accepted", "checkin_paper_accepted"])}/2`;
     case "exterior_closure":
@@ -197,30 +187,19 @@ function selectLocalProgress(
 }
 
 function countMaintenanceMilestones(
+  state: GameState,
   facts: ReadonlySet<ChapterFourFactId>
 ): number {
+  const coverOpened = facts.has("cart_wheel_cover_opened");
+  const wheelRepaired = facts.has("cart_wheel_repaired");
+  const gearRepaired = facts.has("clock_gear_repaired");
   return [
     facts.has("cart_wheel_inspected"),
-    facts.has("cart_wheel_cover_opened"),
-    facts.has("cart_wheel_repaired") && facts.has("clock_gear_repaired")
+    state.items.shortPryBar || coverOpened || wheelRepaired || gearRepaired,
+    coverOpened,
+    wheelRepaired,
+    gearRepaired
   ].filter(Boolean).length;
-}
-
-function countRequiredLightConditions(maskValue: number): { satisfied: number; total: number } {
-  const mask = Number.isInteger(maskValue)
-    ? maskValue & CHAPTER_FOUR_LIGHT_GRID.allOnMask
-    : 0;
-  const isOn = (zoneId: (typeof CHAPTER_FOUR_LIGHT_GRID.requiredOnZoneIds)[number]): boolean => {
-    const zone = CHAPTER_FOUR_LIGHT_GRID.zones.find((candidate) => candidate.id === zoneId);
-    return zone ? (mask & (1 << zone.bit)) !== 0 : false;
-  };
-  const satisfiedOn = CHAPTER_FOUR_LIGHT_GRID.requiredOnZoneIds.filter(isOn).length;
-  const satisfiedOff = CHAPTER_FOUR_LIGHT_GRID.requiredOffZoneIds.filter((zoneId) => !isOn(zoneId)).length;
-  return {
-    satisfied: satisfiedOn + satisfiedOff,
-    total: CHAPTER_FOUR_LIGHT_GRID.requiredOnZoneIds.length
-      + CHAPTER_FOUR_LIGHT_GRID.requiredOffZoneIds.length
-  };
 }
 
 function countFacts(

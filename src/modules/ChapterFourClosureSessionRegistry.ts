@@ -13,7 +13,7 @@ interface ClosureSessionRecord {
 
 let closureSessionSerial = 0;
 
-/** Runtime-only registry for one official lamp playback and one completion write. */
+/** Runtime-only registry for one approved lamp playback and one completion write. */
 export class ChapterFourClosureSessionRegistry implements ChapterFourClosureSessionVerifier {
   readonly reference = CHAPTER_FOUR_APPROVED_CLOSURE_REFERENCE;
 

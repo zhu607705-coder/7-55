@@ -1,333 +1,274 @@
-/* Canonical subtitle contract: bottom-center safe row, one pixel frame, one stepped transition. */
+/* Subtitle structure and typography are shared; phone surfaces use notification cards. */
+:root {
+  --subtitle-ink: #fcf7e8;
+  --subtitle-panel: rgba(24, 33, 34, 0.84);
+  --subtitle-border: rgba(214, 204, 169, 0.48);
+  --subtitle-size: 16px;
+  --subtitle-leading: 1.6;
+  --subtitle-text-shadow: 0 1px 0 #111b1c;
+  --subtitle-avatar-cutout: #233032;
+}
 
-.game-subtitle-frame {
-  --subtitle-accent: #d8c35e;
-  --subtitle-panel: rgba(9, 14, 17, 0.95);
-  --subtitle-ink: #f7f2df;
+.game-subtitle-frame[class] {
+  --subtitle-accent: #dccb8e;
   background: var(--subtitle-panel);
-  border: 3px solid var(--subtitle-accent);
-  border-left-width: 6px;
+  border: 1px solid var(--subtitle-border);
   border-radius: 0;
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.56);
+  box-shadow: none;
   box-sizing: border-box;
   color: var(--subtitle-ink);
-  isolation: isolate;
-  overflow: hidden;
-}
-
-.game-subtitle-frame::before,
-.game-subtitle-frame.is-line-entering::before {
-  animation: none;
-  background: var(--subtitle-accent);
-  content: "";
-  height: 3px;
-  inset: 0 0 auto;
-  opacity: 0.9;
-  pointer-events: none;
-  position: absolute;
-  transform: none;
-  width: auto;
-  z-index: 2;
-}
-
-.game-subtitle-frame.subtitle-tone-system { --subtitle-accent: #e06572; }
-.game-subtitle-frame.subtitle-tone-narrator { --subtitle-accent: #b9afa0; }
-.game-subtitle-frame.subtitle-tone-task { --subtitle-accent: #e0c45e; }
-.game-subtitle-frame.subtitle-tone-player { --subtitle-accent: #65a6cf; }
-.game-subtitle-frame.subtitle-tone-success { --subtitle-accent: #76c58e; }
-.game-subtitle-frame.subtitle-tone-error { --subtitle-accent: #e3726d; }
-.game-subtitle-frame.subtitle-tone-broadcast { --subtitle-accent: #d9ad55; }
-
-.game-subtitle-speaker {
-  color: var(--subtitle-accent);
   display: block;
   font-family: var(--font-pixel);
-  font-size: var(--fs-caption);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
-  margin: 0;
+  font-size: var(--subtitle-size);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+  line-height: var(--subtitle-leading);
+  min-height: 0;
+  overflow: visible;
+  padding: 16px 20px;
+  text-shadow: var(--subtitle-text-shadow);
 }
+.game-subtitle-frame[class]::before,
+.game-subtitle-frame[class]::after { content: none; }
+.game-subtitle-frame.subtitle-tone-system { --subtitle-accent: #edb3ab; }
+.game-subtitle-frame.subtitle-tone-player { --subtitle-accent: #acd2df; }
+.game-subtitle-frame.subtitle-tone-success { --subtitle-accent: #bcdbb2; }
+.game-subtitle-frame.subtitle-tone-error { --subtitle-accent: #f4b2a2; }
+.game-subtitle-frame.subtitle-tone-broadcast { --subtitle-accent: #e8ca8b; }
+.game-subtitle-frame.subtitle-tone-seat { --subtitle-accent: #b8d0b4; }
 
-.game-subtitle-frame.is-line-entering {
-  animation: game-subtitle-enter var(--dur-slow) var(--ease-in-pixel) both;
+.game-subtitle-frame[class] .game-subtitle-content {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 26px auto minmax(0, 1fr);
+  min-width: 0;
 }
-
-.game-subtitle-frame.is-timed {
-  animation: game-subtitle-lifecycle var(--subtitle-duration, 3000ms) steps(16, end) both;
-}
-
-.game-subtitle-frame.is-line-entering > p,
-.game-subtitle-frame.is-line-entering > span {
+.game-subtitle-frame[class] .game-subtitle-copy { display: contents; }
+.game-subtitle-frame[class] .game-subtitle-speaker,
+.game-subtitle-frame[class] .game-subtitle-text {
   animation: none;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: var(--subtitle-size);
+  font-weight: 400;
+  font-synthesis: none;
+  grid-column: auto;
+  letter-spacing: 0;
+  line-height: var(--subtitle-leading);
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  position: static;
+  text-align: left;
+  text-shadow: var(--subtitle-text-shadow);
 }
-
-@keyframes game-subtitle-enter {
-  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(16px); }
-  100% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
+.game-subtitle-frame[class] .game-subtitle-speaker {
+  color: var(--subtitle-accent);
+  white-space: nowrap;
 }
+.game-subtitle-speaker::before { content: none; }
+.game-subtitle-frame[class] .game-subtitle-text {
+  color: var(--subtitle-ink);
+  overflow-wrap: anywhere;
+}
+.game-subtitle-avatar {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid currentColor;
+  color: var(--subtitle-accent);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+.game-subtitle-avatar svg { height: 16px; width: 16px; }
 
+/* Surface centering transforms are never animated. */
+.game-subtitle-frame.is-line-entering { animation: game-subtitle-enter 160ms ease-out both; }
+.game-subtitle-frame.is-timed {
+  animation: game-subtitle-lifecycle var(--subtitle-duration, 3000ms) linear both;
+}
+@keyframes game-subtitle-enter { from { opacity: 0; } to { opacity: 1; } }
 @keyframes game-subtitle-lifecycle {
-  0% { clip-path: inset(100% 0 0); opacity: 0; transform: translateY(14px); }
-  8% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
-  88% { clip-path: inset(0); opacity: 1; transform: translateY(0); }
-  100% { clip-path: inset(0); opacity: 0; transform: translateY(8px); }
+  0% { opacity: 0; }
+  5%, 92% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-/* Global voice, narrator, system, and task subtitles. */
-
-.toast-layer {
-  gap: 8px;
-  justify-items: center;
-}
-
+.toast-layer { gap: 10px; justify-items: center; }
 .toast-layer.subtitle-layer--phone {
-  bottom: 86px;
-  left: 50%;
-  max-width: calc(var(--phone-width, 430px) - 36px);
-  right: auto;
-  transform: translateX(-50%);
-  width: min(calc(100% - 36px), calc(var(--phone-width, 430px) - 36px));
+  bottom: auto;
+  left: 16px;
+  max-width: calc(var(--phone-width, 430px) - 32px);
+  right: 16px;
+  top: 52px;
+  transform: none;
+  width: auto;
 }
-
 .toast-layer.subtitle-layer--rpg {
-  bottom: max(96px, 13vh);
+  bottom: max(72px, 10vh);
   left: 50%;
   max-width: 680px;
   right: auto;
   transform: translateX(-50%);
   width: calc(100% - 32px);
 }
-
-.toast-layer .px-toast {
-  align-items: start;
-  background: var(--subtitle-panel);
-  border-color: var(--subtitle-accent);
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.56);
-  color: var(--subtitle-ink);
-  display: grid;
-  font-size: var(--fs-label);
-  font-weight: 700;
-  gap: 4px;
-  justify-items: start;
-  line-height: 1.5;
-  max-width: 100%;
-  padding: 10px 14px 11px;
-  position: relative;
-  text-align: left;
-  width: 100%;
-}
-
-.toast-layer .px-toast > span {
-  display: block;
-}
-
-/* RPG feedback now lives in the shell instead of scene-local Phaser text. */
+.toast-layer .px-toast { margin: 0; max-width: 100%; position: relative; width: fit-content; }
+.subtitle-layer--phone .px-toast { width: 100%; }
 
 .rpg-subtitle-layer {
-  bottom: var(--rpg-subtitle-bottom, 112px);
+  bottom: var(--rpg-subtitle-bottom, 108px);
+  display: flex;
+  justify-content: center;
   left: 50%;
-  max-width: 600px;
+  max-width: 660px;
   pointer-events: none;
   position: absolute;
   transform: translateX(-50%);
   width: calc(100% - 220px);
   z-index: 28;
 }
-
-.rpg-subtitle-layer .game-subtitle-frame {
-  align-items: start;
-  display: grid;
-  gap: 4px;
-  justify-items: start;
-  margin: 0;
-  padding: 10px 14px 11px;
-  position: relative;
-  width: 100%;
-}
-
-.rpg-subtitle-layer .game-subtitle-frame > span {
-  font-family: var(--font-pixel);
-  font-size: var(--fs-label);
-  font-weight: 700;
-  line-height: 1.45;
-  text-align: left;
-}
-
-/* Full story dialogue uses the same frame and stays in the lower safe row. */
-
+.rpg-subtitle-layer .game-subtitle-frame { margin: 0; max-width: 100%; position: relative; width: fit-content; }
 .library-story-overlay {
+  background: transparent;
+  cursor: pointer;
+  outline: none;
   padding: clamp(18px, 4vw, 42px);
+  padding-bottom: 24px;
   place-items: end center;
 }
-
 .library-story-dialogue.game-subtitle-frame {
-  background: var(--subtitle-panel);
-  border-color: var(--subtitle-accent);
-  color: var(--subtitle-ink);
-  max-width: 760px;
-  padding: 12px 15px 13px;
+  max-width: 700px;
+  min-width: min(320px, 100%);
   position: relative;
-  width: min(100%, 760px);
+  width: fit-content;
 }
 
-.library-story-dialogue-header {
-  border-bottom: 1px solid color-mix(in srgb, var(--subtitle-accent) 44%, transparent);
-  color: #b7c5ca;
-  margin: 0;
-  padding: 2px 2px 8px;
+.game-subtitle-frame[class] button {
+  background: rgba(24, 33, 34, 0.9);
+  border: 1px solid var(--subtitle-border);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--subtitle-ink);
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.4;
+  min-height: 32px;
+  padding: 4px 9px;
 }
+.game-subtitle-frame[class] button:focus-visible { outline: 2px solid #dccb8e; outline-offset: 3px; }
 
-.library-story-dialogue-header span {
-  color: var(--subtitle-accent);
+.zju-system-dialogue-layer { background: transparent; cursor: pointer; outline: none; z-index: 100; }
+.zju-system-dialogue.game-subtitle-frame { bottom: 80px; display: block; left: 20px; right: 20px; }
+.ending-intercept-field { bottom: 66px; top: 230px; }
+.ending-game-subtitle.game-subtitle-frame,
+.ending-dialogue.game-subtitle-frame { bottom: 38px; left: 18px; right: 18px; top: auto; }
+.bottom-narration.game-subtitle-frame { bottom: 10px; left: 18px; right: 18px; }
+
+.chapter-three-opening__subtitle.game-subtitle-frame {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  max-width: min(720px, calc(100% - 24px));
+  min-width: min(360px, calc(100% - 24px));
+  width: max-content;
 }
-
-.library-story-dialogue.game-subtitle-frame .library-story-dialogue-box {
+.chapter-three-opening__subtitle.game-subtitle-frame button:not(.is-arrival) {
+  align-self: center;
   background: transparent;
   border: 0;
-  color: inherit;
-  min-height: 76px;
-  padding: 12px 3px 10px;
-}
-
-.library-story-dialogue.game-subtitle-frame .game-subtitle-speaker {
+  box-shadow: none;
   color: var(--subtitle-accent);
-  font-size: var(--fs-caption);
-  margin-bottom: 7px;
+  font-size: 16px;
+  min-height: 28px;
+  min-width: 28px;
+  padding: 0;
 }
-
-.library-story-dialogue-box p {
-  font-size: var(--fs-label);
-  line-height: 1.6;
+.chapter-three-opening__subtitle.game-subtitle-frame button:not(.is-arrival):focus-visible {
+  outline: 1px solid var(--subtitle-accent);
+  outline-offset: 1px;
 }
+.chapter4-star-lamp-closure__caption.game-subtitle-frame { display: block; }
 
-.library-story-dialogue-actions {
-  border-top: 1px solid color-mix(in srgb, var(--subtitle-accent) 36%, transparent);
-  color: #a9b5ba;
+/* All phone-owned captions share the notification layout and the PhoneShell scale. */
+.phone-frame {
+  --subtitle-ink: var(--ink);
+  --subtitle-panel: var(--notification-background);
+  --subtitle-border: var(--ink);
+  --subtitle-text-shadow: none;
+  --subtitle-avatar-cutout: #fff8e2;
+}
+.phone-frame .game-subtitle-frame {
+  --subtitle-accent: var(--ink);
+  border: var(--notification-border);
+  border-radius: 0;
+  box-shadow: var(--notification-shadow);
+  padding: var(--notification-padding);
+}
+.phone-frame .subtitle-tone-system { --subtitle-accent: var(--ink); }
+.phone-frame .subtitle-tone-player { --subtitle-accent: var(--ink); }
+.phone-frame .subtitle-tone-success { --subtitle-accent: var(--ink); }
+.phone-frame .subtitle-tone-error { --subtitle-accent: var(--ink); }
+.phone-frame .game-subtitle-frame .game-subtitle-content { align-items: center; gap: var(--notification-gap); grid-template-columns: 44px minmax(0, 1fr); }
+.phone-frame .game-subtitle-frame .game-subtitle-copy { display: grid; gap: 3px; }
+.phone-frame .game-subtitle-avatar { background: transparent; border: var(--notification-border); border-radius: 0; height: 36px; width: 36px; }
+.phone-frame .game-subtitle-avatar svg { height: 20px; width: 20px; }
+.phone-frame .library-story-overlay { inset: 0; padding: 52px 16px 16px; place-items: start stretch; position: absolute; }
+.phone-frame .library-story-dialogue.game-subtitle-frame { max-width: none; min-width: 0; width: 100%; }
+.phone-frame .zju-system-dialogue.game-subtitle-frame,
+.phone-frame .bottom-narration.game-subtitle-frame,
+.phone-frame .ending-game-subtitle.game-subtitle-frame,
+.phone-frame .ending-dialogue.game-subtitle-frame {
+  bottom: auto;
+  left: 16px;
   margin: 0;
-  padding: 9px 2px 0;
+  right: 16px;
+  top: 52px;
 }
+.phone-frame .ending-game-subtitle.game-subtitle-frame { top: 84px; }
 
-.library-story-dialogue-actions button {
-  background: var(--subtitle-accent);
-  border-color: #080d10;
-  color: #10171b;
+/* Mobile RPG and cinematic captions use the same notification composition in their safe zones. */
+@media (max-width: 700px) {
+  .game-subtitle-frame[class] {
+    --subtitle-ink: var(--ink);
+    --subtitle-panel: var(--notification-background);
+    --subtitle-border: var(--ink);
+    --subtitle-text-shadow: none;
+    --subtitle-avatar-cutout: #fff8e2;
+    --subtitle-accent: var(--ink);
+    border: var(--notification-border);
+  border-radius: 0;
+    box-shadow: var(--notification-shadow);
+    padding: var(--notification-padding);
+  }
+  .game-subtitle-frame.subtitle-tone-system { --subtitle-accent: var(--ink); }
+  .game-subtitle-frame.subtitle-tone-player { --subtitle-accent: var(--ink); }
+  .game-subtitle-frame.subtitle-tone-success { --subtitle-accent: var(--ink); }
+  .game-subtitle-frame.subtitle-tone-error { --subtitle-accent: var(--ink); }
+  .game-subtitle-frame[class] .game-subtitle-content { align-items: center; gap: var(--notification-gap); grid-template-columns: 44px minmax(0, 1fr); }
+  .game-subtitle-frame[class] .game-subtitle-copy { display: grid; gap: 3px; }
+  .game-subtitle-avatar { background: transparent; border: var(--notification-border); border-radius: 0; height: 36px; width: 36px; }
+  .game-subtitle-avatar svg { height: 20px; width: 20px; }
+  .game-subtitle-frame[class] button { background: rgba(255, 255, 255, 0.6); color: var(--subtitle-ink); }
+  .chapter-three-opening__subtitle.game-subtitle-frame { min-width: 0; width: calc(100% - 24px); }
 }
-
-/* ZJU Ding scene-owned system dialogue. */
-
-.phone-frame:has(.zju-system-dialogue-layer) > .scene-surface {
-  z-index: 90;
-}
-
-.zju-system-dialogue.game-subtitle-frame {
-  background: var(--subtitle-panel);
-  border-color: var(--subtitle-accent);
-  bottom: 76px;
-  color: var(--subtitle-ink);
-  min-height: 118px;
-  padding: 13px 14px;
-}
-
-.zju-system-dialogue.game-subtitle-frame .game-subtitle-speaker {
-  color: var(--subtitle-accent);
-}
-
-.zju-system-dialogue.game-subtitle-frame p {
-  animation: none;
-  font-size: var(--fs-label);
-  line-height: 1.55;
-}
-
-.zju-system-dialogue.game-subtitle-frame button {
-  background: var(--subtitle-accent);
-  border-color: #111a20;
-  color: #111a20;
-}
-
-/* Prologue narration and caught dialogue reserve one shared lower row. */
-
-.ending-intercept-field {
-  bottom: 172px;
-}
-
-.ending-game-subtitle.game-subtitle-frame,
-.ending-dialogue.game-subtitle-frame {
-  background: var(--subtitle-panel);
-  border-color: var(--subtitle-accent);
-  bottom: 54px;
-  color: var(--subtitle-ink);
-  display: grid;
-  gap: 5px;
-  left: 18px;
-  line-height: 1.55;
-  min-height: 88px;
-  padding: 12px 14px;
-  right: 18px;
-  top: auto;
-}
-
-.ending-game-subtitle.game-subtitle-frame {
-  align-items: start;
-  font-size: var(--fs-label);
-}
-
-.ending-dialogue.game-subtitle-frame,
-.ending-dialogue.game-subtitle-frame.is-player {
-  font-size: var(--fs-label);
-  left: 18px;
-}
-
-.ending-game-subtitle.game-subtitle-frame .game-subtitle-speaker,
-.ending-dialogue.game-subtitle-frame .game-subtitle-speaker {
-  color: var(--subtitle-accent);
-  margin: 0;
-}
-
-.ending-intercept-feedback.game-subtitle-frame {
-  background: var(--subtitle-panel);
-  border-color: var(--subtitle-accent);
-  color: var(--subtitle-ink);
-  padding: 8px 13px;
-}
-
-/* The first spoken line follows the same frame without reserving a phone nav row. */
-
-.bottom-narration.game-subtitle-frame {
-  background: var(--subtitle-panel);
-  border: 3px solid var(--subtitle-accent);
-  border-left-width: 6px;
-  bottom: 18px;
-  color: var(--subtitle-ink);
-  display: grid;
-  gap: 5px;
-  left: 18px;
-  padding: 11px 14px 12px;
-  right: 18px;
-}
-
 @media (max-width: 700px) and (orientation: landscape) {
-  .rpg-subtitle-layer {
-    bottom: 106px;
-    max-width: 500px;
-    width: calc(100% - 180px);
-  }
-
-  .rpg-subtitle-layer .game-subtitle-frame {
-    padding: 8px 11px 9px;
-  }
-
-  .rpg-subtitle-layer .game-subtitle-frame > span {
-    font-size: var(--fs-caption);
-  }
+  .rpg-subtitle-layer { bottom: 82px; max-width: 500px; width: calc(100% - 180px); }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .game-subtitle-frame.is-line-entering,
-  .game-subtitle-frame.is-timed {
-    animation: none;
-    clip-path: none;
-    opacity: 1;
-    transform: none;
-  }
+  .game-subtitle-frame.is-timed,
+  .phone-frame .game-subtitle-frame.is-line-entering .game-subtitle-content,
+  .phone-frame .game-subtitle-frame.is-timed .game-subtitle-content,
+  .game-subtitle-frame.is-line-entering .game-subtitle-content,
+  .game-subtitle-frame.is-timed .game-subtitle-content { animation: none; opacity: 1; }
 }

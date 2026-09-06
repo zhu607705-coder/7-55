@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { ThreePrimitiveCache, type ThreeFlatMaterial } from "../ThreePrimitiveCache";
+import { createChasePedestrian } from "./ChasePeople";
+import { createChaseTransitionEnvironment } from "./ChaseCampusEnvironment";
+import { syncChaseHumanToRider } from "./ChaseHumanPose";
 import {
   applyChaseRiderPose,
   createChaseRiderRig,
@@ -24,8 +27,8 @@ const LOGICAL_HEIGHT = 540;
 const DEFAULT_TONE_MAPPING_EXPOSURE = 1.02;
 
 const PALETTE = Object.freeze({
-  sky: 0x8dbfda,
-  fog: 0xb8d0da,
+  sky: 0xc5dbe0,
+  fog: 0xdce6df,
   grass: 0x6f9755,
   grassDark: 0x426d3f,
   road: 0x494a46,
@@ -93,6 +96,8 @@ export type CanteenBikeTransitionInspectionView =
   | "hero_close"
   | "hero_side"
   | "hero_back"
+  | "ride_side"
+  | "ride_front"
   | "bicycle";
 
 export interface CanteenBikeTransitionRendererOptions {
@@ -104,6 +109,7 @@ export interface CanteenBikeTransitionRendererOptions {
   enableCaptureShadows?: boolean;
   shadowMapSize?: 1024 | 2048;
   inspectionView?: CanteenBikeTransitionInspectionView;
+  inspectionPedalPhase?: number;
 }
 
 function clamp01(value: number): number {
@@ -139,7 +145,7 @@ function material(
   color: number,
   options: { unlit?: boolean; opacity?: number; depthWrite?: boolean } = {}
 ): ThreeFlatMaterial {
-  return primitives.material(color, options);
+  return primitives.material(color, { shading: "standard", roughness: 0.83, flatShading: false, ...options });
 }
 
 function box(
@@ -180,86 +186,15 @@ function plane(
   return mesh;
 }
 
-function capsuleBetween(
-  primitives: ThreePrimitiveCache,
-  from: THREE.Vector3,
-  to: THREE.Vector3,
-  radius: number,
-  color: number
-): THREE.Mesh {
-  const direction = to.clone().sub(from);
-  const distance = direction.length();
-  const mesh = new THREE.Mesh(
-    primitives.capsule(radius, Math.max(0.01, distance - radius * 2), 8, 16),
-    primitives.material(color, {
-      shading: "standard",
-      roughness: 0.38,
-      metalness: 0.56,
-      flatShading: false
-    })
-  );
-  mesh.position.copy(from).add(to).multiplyScalar(0.5);
-  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
-  return mesh;
-}
 
-function buildGripPedalMacroFrame(primitives: ThreePrimitiveCache): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-grip-pedal-frame-patch";
-  const crank = new THREE.Vector3(0, 1.15, 0.18);
-  const head = new THREE.Vector3(0, 1.38, -0.9);
-  const barCenter = new THREE.Vector3(0, 1.61, -0.95);
-  group.add(
-    capsuleBetween(primitives, crank, head, 0.064, PALETTE.blue),
-    capsuleBetween(primitives, crank, new THREE.Vector3(0, 0.82, 0.9), 0.048, PALETTE.blue),
-    capsuleBetween(primitives, head, barCenter, 0.052, PALETTE.blue),
-    capsuleBetween(primitives, barCenter, new THREE.Vector3(0.78, 1.63, -0.98), 0.044, PALETTE.blue)
-  );
-  return group;
-}
-
-function buildBrakeMacroFork(primitives: ThreePrimitiveCache): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-brake-fork-patch";
-  const crown = new THREE.Vector3(0, 1.39, -0.95);
-  const barCenter = new THREE.Vector3(0, 1.61, -0.95);
-  group.add(
-    capsuleBetween(primitives, new THREE.Vector3(-0.15, 1.38, -0.95), new THREE.Vector3(-0.17, 0.76, -0.92), 0.047, PALETTE.blue),
-    capsuleBetween(primitives, new THREE.Vector3(0.15, 1.38, -0.95), new THREE.Vector3(0.17, 0.76, -0.92), 0.047, PALETTE.blue),
-    capsuleBetween(primitives, crown, barCenter, 0.052, PALETTE.blue),
-    capsuleBetween(primitives, barCenter, new THREE.Vector3(0.78, 1.63, -0.98), 0.044, PALETTE.blue)
-  );
-  return group;
-}
-
-function buildTree(primitives: ThreePrimitiveCache, scale = 1): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-roadside-tree";
-  const trunk = box(primitives, 0.5, 2.5, 0.5, PALETTE.trunk, 0, 1.25, 0);
-  const crown = new THREE.Mesh(
-    primitives.icosahedron(1.55, 1),
-    material(primitives, PALETTE.grassDark)
-  );
-  crown.scale.set(1.05, 1.3, 0.9);
-  crown.position.y = 3.25;
-  group.add(trunk, crown);
-  group.scale.setScalar(scale);
-  return group;
-}
 
 function buildNpc(
   primitives: ThreePrimitiveCache,
   coatColor: number,
   facingRadians: number
 ): THREE.Group {
-  const group = new THREE.Group();
+  const group = createChasePedestrian(primitives, "soyMilk", coatColor % 7, coatColor).group;
   group.name = "canteen-transition-native-npc";
-  const torso = box(primitives, 0.7, 1.05, 0.42, coatColor, 0, 1.55, 0);
-  const head = box(primitives, 0.46, 0.48, 0.44, PALETTE.skin, 0, 2.3, -0.02);
-  const hair = box(primitives, 0.5, 0.18, 0.48, PALETTE.hair, 0, 2.57, -0.02);
-  const leftLeg = box(primitives, 0.22, 0.9, 0.24, PALETTE.outline, -0.2, 0.58, 0);
-  const rightLeg = box(primitives, 0.22, 0.9, 0.24, PALETTE.outline, 0.2, 0.58, 0);
-  group.add(torso, head, hair, leftLeg, rightLeg);
   group.rotation.y = facingRadians;
   return group;
 }
@@ -277,240 +212,22 @@ function buildPaper(primitives: ThreePrimitiveCache): THREE.Group {
   return group;
 }
 
-function addRoadEnvironment(
-  primitives: ThreePrimitiveCache,
-  root: THREE.Group,
-  options: { clearDestinationFacade?: boolean } = {}
-): void {
-  root.add(
-    plane(primitives, 54, 52, PALETTE.grass, 0, -0.035, -7),
-    plane(primitives, 10.8, 52, PALETTE.road, 0, 0, -7),
-    plane(primitives, 2.8, 52, PALETTE.pavement, -6.8, 0.012, -7),
-    plane(primitives, 2.8, 52, PALETTE.pavement, 6.8, 0.012, -7),
-    box(primitives, 0.22, 0.2, 52, PALETTE.pavementLight, -5.5, 0.1, -7),
-    box(primitives, 0.22, 0.2, 52, PALETTE.pavementLight, 5.5, 0.1, -7)
-  );
-  for (const laneX of [-1.8, 1.8]) {
-    for (let z = 12; z >= -31; z -= 5.6) {
-      root.add(plane(primitives, 0.16, 2.5, PALETTE.lane, laneX, 0.022, z, true));
-    }
-  }
-  for (const side of [-1, 1]) {
-    for (let index = 0; index < 5; index += 1) {
-      const tree = buildTree(primitives, 0.82 + index % 2 * 0.08);
-      const facadeClearance = options.clearDestinationFacade && index === 0 ? 3.8 : 0;
-      tree.position.set(side * (9.8 + index % 2 + facadeClearance), 0, 4 - index * 7.4);
-      root.add(tree);
-    }
-  }
-}
-
-function buildCanteenWorld(primitives: ThreePrimitiveCache): THREE.Group {
-  const root = new THREE.Group();
-  root.name = "canteen-transition-start-world";
-  addRoadEnvironment(primitives, root);
-
-  const building = new THREE.Group();
-  building.name = "canteen-transition-east-canteen";
-  building.position.set(-12.5, 0, -5.5);
-  building.rotation.y = 0.24;
-  building.add(
-    box(primitives, 12.8, 5.3, 5.7, PALETTE.canteenBrick, 0, 2.65, 0),
-    box(primitives, 10.7, 1.5, 0.15, PALETTE.canteenGlass, 0.4, 3.25, 2.93, true),
-    box(primitives, 3.4, 2.5, 0.18, PALETTE.canteenBrickDark, 3.5, 1.3, 2.95),
-    box(primitives, 2.6, 2.6, 0.2, PALETTE.canteenGlass, -3.4, 1.35, 2.96, true),
-    box(primitives, 13.6, 0.35, 6.4, PALETTE.canteenBrickDark, 0, 5.45, 0)
-  );
-  root.add(building);
-
-  const bikeRack = new THREE.Group();
-  bikeRack.position.set(7.5, 0, -5.2);
-  for (let index = 0; index < 5; index += 1) {
-    bikeRack.add(box(primitives, 0.1, 0.8, 1.2, PALETTE.metal, index * 0.75, 0.4, 0));
-  }
-  root.add(bikeRack);
-  return root;
-}
-
-function buildTheaterWindowGrid(
-  primitives: ThreePrimitiveCache,
-  width: number,
-  height: number,
-  columns: number,
-  rows: number
-): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-theater-window-grid";
-  group.add(
-    box(primitives, width + 0.34, height + 0.34, 0.18, PALETTE.theaterBrickDark, 0, 0, -0.09),
-    box(primitives, width, height, 0.16, PALETTE.theaterGlass, 0, 0, 0.02, true),
-    box(primitives, width * 0.42, height * 0.86, 0.04, PALETTE.theaterGlassHighlight, -width * 0.2, 0, 0.13, true)
-  );
-  for (let column = 1; column < columns; column += 1) {
-    const x = -width / 2 + width * column / columns;
-    group.add(box(primitives, 0.14, height, 0.22, PALETTE.theaterDark, x, 0, 0.14));
-  }
-  for (let row = 1; row < rows; row += 1) {
-    const y = -height / 2 + height * row / rows;
-    group.add(box(primitives, width, 0.14, 0.22, PALETTE.theaterDark, 0, y, 0.14));
-  }
-  return group;
-}
-
-function buildTheaterWing(primitives: ThreePrimitiveCache, side: -1 | 1): THREE.Group {
-  const group = new THREE.Group();
-  group.name = side < 0
-    ? "canteen-transition-theater-left-wing"
-    : "canteen-transition-theater-right-wing";
-  group.position.x = side * 10.15;
-  group.add(
-    box(primitives, 7.5, 8.6, 5.8, PALETTE.theaterBrick, 0, 4.3, -2.05),
-    box(primitives, 7.9, 0.42, 6.2, PALETTE.theaterBrickDark, 0, 8.78, -2.05),
-    box(primitives, 7.55, 0.38, 0.42, PALETTE.theaterStoneShadow, 0, 0.22, 1.02),
-    box(primitives, 0.64, 8.9, 0.78, PALETTE.theaterStoneLight, side * 3.55, 4.45, 1.12),
-    box(primitives, 0.46, 8.5, 0.66, PALETTE.theaterFrame, -side * 3.46, 4.25, 1.08)
-  );
-  const windows = buildTheaterWindowGrid(primitives, 4.72, 6.4, 2, 3);
-  windows.position.set(0, 4.65, 1.08);
-  group.add(windows);
-  for (const y of [1.5, 3.6, 5.7, 7.8]) {
-    group.add(box(primitives, 5.28, 0.2, 0.42, PALETTE.theaterStoneShadow, 0, y, 1.18));
-  }
-  return group;
-}
-
-function buildTheaterEntrance(primitives: ThreePrimitiveCache): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-theater-central-entrance";
-  group.add(
-    box(primitives, 13.2, 8.75, 5.9, PALETTE.theaterStone, 0, 4.38, -2.1),
-    box(primitives, 12.15, 7.05, 0.28, PALETTE.theaterDark, 0, 3.85, 1.03, true),
-    box(primitives, 14.3, 0.48, 1.5, PALETTE.theaterStoneLight, 0, 8.72, 0.58),
-    box(primitives, 15.2, 0.38, 6.35, PALETTE.theaterStoneShadow, 0, 9.03, -2.05)
-  );
-
-  const upperWindows = buildTheaterWindowGrid(primitives, 10.5, 2.55, 4, 2);
-  upperWindows.position.set(0, 6.72, 1.27);
-  group.add(upperWindows);
-
-  const leftLobbyWindow = buildTheaterWindowGrid(primitives, 3.2, 3.25, 2, 1);
-  leftLobbyWindow.position.set(-4.45, 2.64, 1.3);
-  const rightLobbyWindow = buildTheaterWindowGrid(primitives, 3.2, 3.25, 2, 1);
-  rightLobbyWindow.position.set(4.45, 2.64, 1.3);
-  group.add(leftLobbyWindow, rightLobbyWindow);
-
-  const doors = new THREE.Group();
-  doors.name = "canteen-transition-theater-double-doors";
-  doors.position.set(0, 2.48, 1.33);
-  doors.add(
-    box(primitives, 4.55, 3.65, 0.18, PALETTE.theaterDark, 0, 0, 0),
-    box(primitives, 2.1, 3.35, 0.16, PALETTE.theaterGlassHighlight, -1.12, 0, 0.12, true),
-    box(primitives, 2.1, 3.35, 0.16, PALETTE.theaterGlass, 1.12, 0, 0.12, true),
-    box(primitives, 0.16, 3.62, 0.24, PALETTE.theaterFrame, 0, 0, 0.23),
-    box(primitives, 0.14, 0.66, 0.18, PALETTE.amber, -0.28, 0, 0.3),
-    box(primitives, 0.14, 0.66, 0.18, PALETTE.amber, 0.28, 0, 0.3)
-  );
-  group.add(doors);
-
-  for (const side of [-1, 1] as const) {
-    const x = side * 6.22;
-    group.add(
-      box(primitives, 0.82, 7.7, 0.94, PALETTE.theaterStoneLight, x, 4.1, 1.4),
-      box(primitives, 1.18, 0.42, 1.22, PALETTE.theaterStoneShadow, x, 0.42, 1.4),
-      box(primitives, 1.18, 0.38, 1.22, PALETTE.theaterStoneLight, x, 7.96, 1.4)
-    );
-  }
-  group.add(
-    box(primitives, 13.9, 0.68, 1.6, PALETTE.theaterFrame, 0, 5.04, 1.38),
-    box(primitives, 12.7, 0.22, 1.82, PALETTE.theaterStoneShadow, 0, 4.62, 1.42),
-    box(primitives, 13.5, 0.34, 0.5, PALETTE.theaterStoneLight, 0, 1.02, 1.46)
-  );
-  return group;
-}
-
-function buildTheaterPlanter(primitives: ThreePrimitiveCache): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-theater-planter";
-  group.add(
-    box(primitives, 4.6, 0.56, 1.38, PALETTE.theaterStoneShadow, 0, 0.28, 0),
-    box(primitives, 4.16, 0.68, 1.12, PALETTE.theaterHedge, 0, 0.82, 0),
-    box(primitives, 3.45, 0.26, 0.86, PALETTE.theaterHedgeLight, 0, 1.22, 0)
-  );
-  return group;
-}
-
-function buildCampusLamp(primitives: ThreePrimitiveCache): THREE.Group {
-  const group = new THREE.Group();
-  group.name = "canteen-transition-theater-campus-lamp";
-  const lantern = new THREE.Group();
-  lantern.position.y = 3.28;
-  lantern.add(
-    box(primitives, 0.58, 0.72, 0.58, PALETTE.lampMetal, 0, 0, 0),
-    box(primitives, 0.4, 0.48, 0.4, PALETTE.lampGlow, 0, 0, 0.01, true),
-    box(primitives, 0.76, 0.14, 0.76, PALETTE.lampMetal, 0, 0.44, 0),
-    box(primitives, 0.72, 0.14, 0.72, PALETTE.lampMetal, 0, -0.44, 0)
-  );
-  const cap = new THREE.Mesh(
-    primitives.cone(0.52, 0.38, 4),
-    material(primitives, PALETTE.lampMetal)
-  );
-  cap.rotation.y = Math.PI / 4;
-  cap.position.y = 0.75;
-  lantern.add(cap);
-  group.add(
-    box(primitives, 0.18, 2.85, 0.18, PALETTE.lampMetal, 0, 1.42, 0),
-    box(primitives, 0.72, 0.18, 0.72, PALETTE.lampMetal, 0, 0.09, 0),
-    box(primitives, 0.42, 0.22, 0.42, PALETTE.lampMetal, 0, 0.28, 0),
-    lantern
-  );
-  return group;
-}
-
-function buildTheaterWorld(primitives: ThreePrimitiveCache): THREE.Group {
-  const root = new THREE.Group();
-  root.name = "canteen-transition-finish-world";
-  addRoadEnvironment(primitives, root, { clearDestinationFacade: true });
-
-  // The entrance sits north of the rider. Its warm side wings, recessed blue
-  // lobby, high cream piers and symmetric forecourt follow the checked-in
-  // theater reference while the story approach remains flat and unobstructed.
-  const theater = new THREE.Group();
-  theater.name = "canteen-transition-modeled-theater";
-  theater.position.set(0, 0, -18.5);
-  theater.add(
-    buildTheaterWing(primitives, -1),
-    buildTheaterEntrance(primitives),
-    buildTheaterWing(primitives, 1)
-  );
-  for (const side of [-1, 1] as const) {
-    const planter = buildTheaterPlanter(primitives);
-    planter.position.set(side * 8.65, 0, 1.9);
-    theater.add(planter);
-  }
-  root.add(theater);
-
-  const flatApproach = plane(primitives, 18.6, 13, PALETTE.pavementLight, 0, 0.026, -12.4);
-  flatApproach.name = "canteen-transition-flat-theater-approach";
-  root.add(flatApproach);
-  for (const side of [-1, 1]) {
-    const lamp = buildCampusLamp(primitives);
-    lamp.position.set(side * 8.1, 0.03, -12.7);
-    root.add(lamp);
-  }
-  return root;
-}
 
 function disposeScene(root: THREE.Object3D): void {
   const geometries = new Set<THREE.BufferGeometry>();
   const materials = new Set<THREE.Material>();
   root.traverse((child) => {
+    child.userData.disposeHuman?.();
     if (!(child instanceof THREE.Mesh)) return;
     geometries.add(child.geometry);
     const entries = Array.isArray(child.material) ? child.material : [child.material];
     entries.forEach((entry) => materials.add(entry));
   });
   geometries.forEach((geometry) => geometry.dispose());
-  materials.forEach((entry) => entry.dispose());
+  materials.forEach((entry) => {
+    if ("map" in entry && entry.map instanceof THREE.Texture) entry.map.dispose();
+    entry.dispose();
+  });
 }
 
 export class CanteenBikeTransitionRenderer {
@@ -524,12 +241,10 @@ export class CanteenBikeTransitionRenderer {
   private readonly startWorld: THREE.Group;
   private readonly finishWorld: THREE.Group;
   private readonly macroWorld = new THREE.Group();
-  private readonly gripPedalMacroFrame: THREE.Group;
-  private readonly brakeMacroFork: THREE.Group;
   private readonly paper: THREE.Group;
   private readonly npcs = new THREE.Group();
   private readonly doorOccluder: THREE.Mesh;
-  private readonly hemi = new THREE.HemisphereLight(0xf5efe0, 0x5f7756, 1.35);
+  private readonly hemi = new THREE.HemisphereLight(0xeaf4f1, 0x6e7b65, 2.0);
   private readonly sun: THREE.DirectionalLight;
   private readonly sunTarget = new THREE.Object3D();
   private readonly fill = new THREE.DirectionalLight(0xb3d7e8, 0.38);
@@ -541,6 +256,7 @@ export class CanteenBikeTransitionRenderer {
   private readonly enableCaptureShadows: boolean;
   private readonly shadowMapSize: 1024 | 2048;
   private readonly inspectionView: CanteenBikeTransitionInspectionView | null;
+  private readonly inspectionPedalPhase: number;
   private stage: CanteenBikeTransitionStage;
   private frame = 0;
   private destroyed = false;
@@ -558,6 +274,7 @@ export class CanteenBikeTransitionRenderer {
     this.enableCaptureShadows = options.enableCaptureShadows ?? false;
     this.shadowMapSize = options.shadowMapSize ?? (this.renderWidth >= 1920 || this.renderHeight >= 1080 ? 2048 : 1024);
     this.inspectionView = options.inspectionView ?? null;
+    this.inspectionPedalPhase = options.inspectionPedalPhase ?? 0;
     this.renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: false,
@@ -576,7 +293,7 @@ export class CanteenBikeTransitionRenderer {
     this.scene.background = new THREE.Color(PALETTE.sky);
     this.scene.fog = this.worldFog;
     this.scene.add(this.hemi);
-    this.sun = new THREE.DirectionalLight(0xffe8b5, 1.55);
+    this.sun = new THREE.DirectionalLight(0xffecd3, 2.4);
     this.sun.position.set(8, 14, 7);
     this.sun.target = this.sunTarget;
     this.scene.add(this.sunTarget, this.sun);
@@ -585,15 +302,11 @@ export class CanteenBikeTransitionRenderer {
     this.rim.position.set(-4, 9, 11);
     this.scene.add(this.fill, this.portraitFill, this.rim);
 
-    this.startWorld = buildCanteenWorld(this.primitives);
-    this.finishWorld = buildTheaterWorld(this.primitives);
-    this.gripPedalMacroFrame = buildGripPedalMacroFrame(this.primitives);
-    this.brakeMacroFork = buildBrakeMacroFork(this.primitives);
+    this.startWorld = createChaseTransitionEnvironment(this.primitives, "start");
+    this.finishWorld = createChaseTransitionEnvironment(this.primitives, "finish");
     this.macroWorld.name = "canteen-transition-neutral-macro-world";
     this.macroWorld.add(
-      plane(this.primitives, 28, 28, 0x6f7872, 0, -0.025, -2),
-      this.gripPedalMacroFrame,
-      this.brakeMacroFork
+      plane(this.primitives, 28, 28, 0x6f7872, 0, -0.025, -2)
     );
     this.scene.add(this.startWorld, this.finishWorld, this.macroWorld);
 
@@ -620,6 +333,9 @@ export class CanteenBikeTransitionRenderer {
     this.camera.add(this.doorOccluder);
     this.configureCaptureShadows();
     this.renderFrame(0);
+    this.rider.human.onReady = () => {
+      if (!this.destroyed) this.renderFrame(this.frame);
+    };
   }
 
   setStage(stage: CanteenBikeTransitionStage): void {
@@ -635,6 +351,10 @@ export class CanteenBikeTransitionRenderer {
 
   getFrame(): number {
     return this.frame;
+  }
+
+  getAssetState(): "loading" | "ready" | "error" {
+    return this.rider.human.error ? "error" : this.rider.human.ready ? "ready" : "loading";
   }
 
   resizeViewport(): void {
@@ -659,17 +379,14 @@ export class CanteenBikeTransitionRenderer {
     this.rider.riderRoot.position.x += pose.riderOffsetX;
     this.rider.riderRoot.position.z += pose.riderOffsetZ;
     this.rider.wheels.forEach((wheel) => { wheel.rotation.x = pose.wheelRotationRadians; });
+    syncChaseHumanToRider(this.rider);
 
     const macroShot = camera.shot === "grip_pedal_macro" || camera.shot === "brake_wheel_macro";
     this.applyShotEnvironment(macroShot);
     this.startWorld.visible = this.stage === "start" && !macroShot;
     this.finishWorld.visible = this.stage === "finish" && !macroShot;
     this.macroWorld.visible = macroShot;
-    this.macroWorld.children.forEach((child, index) => {
-      child.visible = index === 0
-        || child === this.gripPedalMacroFrame && camera.shot === "grip_pedal_macro"
-        || child === this.brakeMacroFork && camera.shot === "brake_wheel_macro";
-    });
+    this.macroWorld.children.forEach((child) => { child.visible = true; });
     this.paper.position.set(pose.paperX, pose.paperY, pose.paperZ);
     this.paper.rotation.y = Math.sin(this.frame * 0.19) * 0.26;
     this.paper.rotation.z = Math.sin(this.frame * 0.27) * 0.12;
@@ -694,6 +411,8 @@ export class CanteenBikeTransitionRenderer {
     this.canvas.dataset.transitionCamera = camera.shot;
     this.canvas.dataset.transitionPose = pose.pose;
     this.canvas.dataset.transitionWheelSpeed = pose.wheelSpeedRatio.toFixed(3);
+    this.canvas.dataset.chaseHumanState = this.getAssetState();
+    this.canvas.dataset.chaseHumanContactErrors = JSON.stringify(this.rider.human.group.userData.contactErrors);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -731,6 +450,7 @@ export class CanteenBikeTransitionRenderer {
     if (this.destroyed) return;
     this.destroyed = true;
     disposeScene(this.scene);
+    this.renderer.resetState();
     this.renderer.dispose();
   }
 
@@ -745,10 +465,10 @@ export class CanteenBikeTransitionRenderer {
 
   private configureCaptureShadows(): void {
     this.sun.castShadow = this.enableCaptureShadows;
-    this.sun.intensity = this.enableCaptureShadows ? 1.28 : 1.55;
+    this.sun.intensity = 2.4;
     this.fill.intensity = this.enableCaptureShadows ? 0.58 : 0.38;
     this.portraitFill.intensity = this.enableCaptureShadows ? 0.56 : 0.46;
-    this.hemi.intensity = this.enableCaptureShadows ? 1.58 : 1.35;
+    this.hemi.intensity = 2.0;
     this.sun.shadow.mapSize.set(this.shadowMapSize, this.shadowMapSize);
     this.sun.shadow.camera.near = 0.5;
     this.sun.shadow.camera.far = 52;
@@ -792,6 +512,8 @@ export class CanteenBikeTransitionRenderer {
     this.showHandAndCuff(this.rider.rightForearm, this.rider.rightHand);
     this.setMeshVisibility(this.rider.rightGrip, true);
 
+    // Detail shots use the actual frame and transmission from the ride.
+    this.setMeshVisibility(this.rider.bicycleRoot, true);
     if (isGripMacro) {
       this.setMeshVisibility(this.rider.rightFoot, true);
       this.showDirectMeshes(this.rider.crank);
@@ -827,10 +549,10 @@ export class CanteenBikeTransitionRenderer {
     this.scene.background = new THREE.Color(macroShot ? 0x9ca9ac : PALETTE.sky);
     this.scene.fog = macroShot ? null : this.worldFog;
     this.renderer.toneMappingExposure = macroShot ? 1.1 : DEFAULT_TONE_MAPPING_EXPOSURE;
-    this.sun.intensity = macroShot ? 1.42 : this.enableCaptureShadows ? 1.28 : 1.55;
+    this.sun.intensity = macroShot ? 1.8 : 2.4;
     this.fill.intensity = macroShot ? 0.68 : this.enableCaptureShadows ? 0.58 : 0.38;
     this.portraitFill.intensity = macroShot ? 0.66 : this.enableCaptureShadows ? 0.56 : 0.46;
-    this.hemi.intensity = macroShot ? 1.5 : this.enableCaptureShadows ? 1.58 : 1.35;
+    this.hemi.intensity = 2.0;
   }
 
   private applyMacroCamera(shot: CanteenBikeTransitionCameraShot): void {
@@ -866,6 +588,7 @@ export class CanteenBikeTransitionRenderer {
     this.rider.rightArm.rotation.set(0, 0, 0.035);
     this.rider.leftLeg.rotation.set(0, 0, 0);
     this.rider.rightLeg.rotation.set(0, 0, 0);
+    syncChaseHumanToRider(this.rider);
     this.rider.root.traverse((object) => { object.visible = true; });
     const rootShadow = this.rider.root.children.find((child) => child.name === "canteen-chase-rider-shadow");
     if (rootShadow) rootShadow.visible = !this.enableCaptureShadows;
@@ -893,7 +616,15 @@ export class CanteenBikeTransitionRenderer {
     this.paper.visible = false;
     this.npcs.visible = false;
     this.doorOccluder.visible = false;
-    if (inspectionView.startsWith("hero")) {
+    if (inspectionView.startsWith("ride")) {
+      applyChaseRiderPose(this.rider, "ride", { pedalPhaseRadians: this.inspectionPedalPhase });
+      this.rider.root.position.set(0, 0.08, 0);
+      syncChaseHumanToRider(this.rider);
+      this.rider.bicycleRoot.visible = true;
+      this.camera.position.set(inspectionView === "ride_side" ? 7.5 : 0, 2.2, inspectionView === "ride_side" ? 0.05 : -8);
+      this.camera.lookAt(0, 1.65, 0);
+      this.camera.fov = 32;
+    } else if (inspectionView.startsWith("hero")) {
       this.rider.bicycleRoot.visible = false;
       this.rider.riderRoot.visible = true;
       this.camera.fov = 29;
@@ -913,6 +644,7 @@ export class CanteenBikeTransitionRenderer {
     } else {
       this.rider.bicycleRoot.visible = true;
       this.rider.riderRoot.visible = false;
+      this.rider.human.group.visible = false;
       this.camera.position.set(4.65, 1.9, -4.55);
       this.camera.lookAt(0, 0.82, 0.02);
       this.camera.fov = 30;

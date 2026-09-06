@@ -16,6 +16,7 @@ interface PhoneShellProps {
   router: SceneRouter;
   events: EventBus;
   children: ReactNode;
+  dialogueOverlay?: ReactNode;
   embedded?: boolean;
   inputBlocked?: boolean;
   showTaskBar?: boolean;
@@ -91,6 +92,7 @@ export function PhoneShell({
   router,
   events,
   children,
+  dialogueOverlay,
   embedded = false,
   inputBlocked = false,
   showTaskBar = true,
@@ -177,6 +179,7 @@ export function PhoneShell({
             <ControlCenter state={state} />
             {showGlobalLayers ? <PresentationLayer events={events} /> : null}
             {showGlobalLayers ? <ToastLayer events={events} state={state} surface="phone" /> : null}
+            {dialogueOverlay}
           </section>
         </div>
       </section>

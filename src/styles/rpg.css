@@ -633,6 +633,29 @@
   z-index: 19;
 }
 
+.canteen-bike-asset-status {
+  position: absolute;
+  z-index: 12;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: #23302d;
+  background: rgba(239, 244, 241, 0.94);
+  font: 600 15px/1.5 system-ui, sans-serif;
+}
+
+.canteen-bike-asset-status button {
+  min-height: 40px;
+  padding: 8px 20px;
+  color: #fff;
+  background: #285db5;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .qizhen-rain-rescue-cinematic {
   background: #06141a;
   font-family: var(--font-pixel);
@@ -722,15 +745,21 @@
   width: 100%;
 }
 
+.canteen-bike-canvas[data-chase-renderer="three"] {
+  image-rendering: auto;
+}
+
 .canteen-bike-rush-3d.is-paused .canteen-bike-canvas {
   filter: saturate(0.65) brightness(0.68);
 }
 
 .canteen-bike-hud {
   align-items: center;
-  background: rgba(40, 30, 18, 0.88);
-  border-bottom: 3px solid rgba(242, 234, 210, 0.9);
-  border-top: 3px solid rgba(242, 234, 210, 0.9);
+  background: rgba(246, 247, 240, 0.96);
+  border-bottom: 1px solid rgba(96, 112, 97, 0.32);
+  border-top: 1px solid rgba(96, 112, 97, 0.32);
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(29, 40, 31, 0.12);
   display: grid;
   gap: 14px;
   grid-template-columns: 116px minmax(120px, 1fr) 94px;
@@ -752,22 +781,22 @@
 }
 
 .canteen-bike-hud-card > span {
-  color: #d8c9a8;
-  font-family: var(--font-pixel);
+  color: #617062;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   font-size: 9px;
   letter-spacing: 0.12em;
 }
 
 .canteen-bike-hud-card strong {
-  color: #f0d668;
-  font-family: var(--font-pixel);
+  color: #374d3c;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   font-size: 19px;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 
 .canteen-bike-hud-card strong small {
-  color: #d8c9a8;
+  color: #617062;
   font-size: 10px;
 }
 
@@ -787,11 +816,11 @@
 }
 
 .canteen-bike-hud-card.is-lives strong svg.is-alive {
-  color: #f2b25c;
+  color: #62856a;
 }
 
 .canteen-bike-hud-card.is-lives strong svg.is-lost {
-  color: #8a7a60;
+  color: #8e988e;
   opacity: 0.4;
 }
 
@@ -806,16 +835,16 @@
 }
 
 .canteen-bike-progress {
-  background: #3d332a;
-  border: 2px solid #a8946a;
+  background: #d5ddd1;
+  border: 1px solid #91a08d;
   height: 13px;
   position: relative;
 }
 
 .canteen-bike-progress::after {
-  color: #d8c9a8;
-  content: "东区食堂　　　　　　　　　　剧院";
-  font-family: var(--font-pixel);
+  color: #617062;
+  content: "东区食堂　→　剧场";
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   font-size: 8px;
   inset: 18px 0 auto;
   letter-spacing: 0.04em;
@@ -824,17 +853,17 @@
 }
 
 .canteen-bike-progress > i {
-  background: linear-gradient(90deg, #f0d668, #f0b93e);
+  background: linear-gradient(90deg, #374d3c, #6f9273);
   bottom: 2px;
   display: block;
   left: 2px;
   position: absolute;
   top: 2px;
-  width: calc(var(--canteen-chase-progress) - 4px);
+  width: max(0px, calc(var(--canteen-chase-progress) - 4px));
 }
 
 .canteen-bike-progress > b {
-  background: #f2ead2;
+  background: #829c81;
   height: 17px;
   position: absolute;
   top: -4px;
@@ -868,9 +897,9 @@
 
 .canteen-bike-milestone {
   animation: canteen-milestone-pop 360ms cubic-bezier(0.2, 1.4, 0.4, 1);
-  background: rgba(58, 42, 20, 0.95);
-  border-left: 5px solid #f0b93e;
-  color: #f0d668;
+  background: rgba(246, 247, 240, 0.96);
+  border-left: 5px solid #6f9273;
+  color: #374d3c;
   display: grid;
   left: 20px;
   min-width: 122px;
@@ -888,23 +917,23 @@
 }
 
 .canteen-bike-milestone strong {
-  font-family: var(--font-pixel);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   font-size: 18px;
 }
 
 .canteen-bike-milestone span {
-  color: #e8d9b8;
+  color: #617062;
   font-size: 11px;
 }
 
 .canteen-bike-key-hint {
   align-items: center;
-  background: rgba(40, 30, 18, 0.85);
-  border-bottom: 2px solid #a8946a;
-  color: #e8dcc0;
+  background: rgba(246, 247, 240, 0.94);
+  border-bottom: 1px solid #91a08d;
+  color: #526c56;
   display: flex;
   gap: 5px;
-  font-family: var(--font-pixel);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   font-size: 9px;
   bottom: 14px;
   left: 50%;
@@ -917,9 +946,9 @@
 }
 
 .canteen-bike-key-hint kbd {
-  background: #f2ead2;
+  background: #829c81;
   border: 0;
-  color: #3a2c16;
+  color: #f4f6ef;
   min-width: 22px;
   padding: 2px 4px;
   text-align: center;
@@ -937,10 +966,10 @@
 
 .canteen-chase-controls button {
   align-items: center;
-  background: rgba(43, 32, 20, 0.92);
-  border: 3px solid #e8dcc0;
-  border-radius: 0;
-  color: #f0d668;
+  background: rgba(246, 247, 240, 0.96);
+  border: 1px solid #91a08d;
+  border-radius: 14px;
+  color: #374d3c;
   display: flex;
   font-size: 25px;
   font-weight: 900;
@@ -955,8 +984,8 @@
 }
 
 .canteen-chase-paused {
-  background: rgba(40, 30, 18, 0.95);
-  border: 3px solid #f0b93e;
+  background: rgba(38, 51, 42, 0.96);
+  border: 3px solid #6f9273;
   color: #f7f2df;
   font-size: var(--fs-title);
   left: 50%;
@@ -968,13 +997,13 @@
 }
 
 .canteen-chase-paused small {
-  color: #d8c9a8;
+  color: #617062;
   font-size: 11px;
 }
 
 .canteen-chase-narration.game-subtitle-frame {
-  --subtitle-panel: rgba(40, 30, 18, 0.92);
-  --subtitle-accent: #e8dcc0;
+  --subtitle-panel: rgba(38, 51, 42, 0.92);
+  --subtitle-accent: #526c56;
   bottom: auto;
   display: grid;
   gap: 2px;
@@ -985,7 +1014,7 @@
   pointer-events: none;
   position: absolute;
   right: 20px;
-  top: 136px;
+  top: 160px;
   width: max-content;
   z-index: 23;
 }
@@ -1642,8 +1671,7 @@
 }
 
 .chapter4-prologue-subtitle.game-subtitle-frame {
-  --subtitle-panel: rgba(24, 55, 77, 0.9);
-  bottom: 132px;
+  bottom: 108px;
   display: grid;
   gap: 2px;
   left: 50%;
@@ -1932,7 +1960,7 @@
   }
 
   .chapter4-prologue-subtitle.game-subtitle-frame {
-    bottom: 40px;
+    bottom: 16px;
     max-width: calc(100% - 24px);
     padding: 5px 8px 6px;
   }
@@ -2641,3 +2669,22 @@
     transition-duration: 1ms !important;
   }
 }
+
+/* All fishing sessions share one generous hold/release touch target. */
+.canteen-bike-asset-status { position: absolute; z-index: 12; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; color: #23302d; background: rgba(239,244,241,.94); }
+.canteen-bike-asset-status button { min-height: 40px; padding: 8px 20px; color: white; background: #285db5; border: 0; border-radius: 8px; cursor: pointer; }
+.rpg-kayak-controls.is-unified-fishing { display: grid; grid-template-columns: 1fr 1.5fr 1fr; width: min(94%, 420px); gap: 7px; }
+.rpg-kayak-controls.is-unified-fishing .interact { min-width: 0; width: 100%; min-height: 64px; padding: 7px 4px; }
+.rpg-kayak-controls.is-unified-fishing .interact span { font-size: 14px; }
+.rpg-kayak-controls.is-unified-fishing .interact small { font-size: 10px; }
+
+.stunt-hud { position:absolute;left:16px;right:16px;top:74px;display:flex;align-items:center;gap:18px;padding:10px 14px;color:#fff0bf;background:rgba(19,45,48,.88);border:1px solid #b29f69;pointer-events:none;font-family:var(--font-pixel); }
+.stunt-hud>div{display:grid;gap:4px;white-space:nowrap}.stunt-hud strong{font-size:20px}.stunt-hud small{font-size:11px}.stunt-hud .stunt-route-meter{display:block;flex:1;height:6px;background:#5b726c}.stunt-route-meter i{display:block;height:100%;width:var(--stunt-progress);background:#f3cc71}
+.stunt-pocket{position:absolute;right:18px;top:148px;display:grid;gap:5px;padding:10px 13px;background:rgba(16,40,43,.78);color:#e0eee1;font:13px/1.4 var(--font-pixel);border-left:3px solid #79ceba;pointer-events:none}
+.stunt-feedback{position:absolute;left:15%;right:15%;bottom:84px;text-align:center;color:#ffe4a3;font:22px/1.4 var(--font-pixel);text-shadow:2px 2px #173f42;pointer-events:none}
+.stunt-charge{position:absolute;left:35%;right:35%;bottom:55px;height:9px;background:#263e44;color:#ffe4a3}.stunt-charge span{position:absolute;left:0;right:0;bottom:13px;text-align:center;font:14px var(--font-pixel)}.stunt-charge i{display:block;height:100%;background:#efc26d}
+.stunt-boost{position:absolute;top:33%;left:30px;color:#ffedb6;font:22px var(--font-pixel);transform:rotate(-5deg);text-shadow:2px 2px #23454b;pointer-events:none}
+.stunt-keyboard{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff0bc;font:13px var(--font-pixel);text-shadow:1px 1px #1f3a3c;pointer-events:none}
+.stunt-modal{position:absolute;z-index:15;left:50%;top:54%;transform:translate(-50%,-50%);width:min(520px,84%);box-sizing:border-box;padding:24px 28px;text-align:center;background:rgba(11,38,42,.94);border:2px solid #e2c881;color:#eff1d7;box-shadow:0 12px 60px #082f3980;font:16px/1.7 var(--font-pixel)}.stunt-modal h2{margin:6px 0 12px;font:26px/1.4 var(--font-pixel);color:#ffe2a0}.stunt-modal small{color:#85d8c7}.stunt-modal p{margin:10px 0}.stunt-modal .stunt-tip{font-size:13px;color:#baceb7}.stunt-modal button{margin-top:10px;min-height:44px;min-width:180px;background:#edcd83;border:1px solid #ffedb4;color:#143b41;padding:8px 18px;font:18px var(--font-pixel);cursor:pointer}
+.stunt-touch{position:absolute;bottom:8px;left:3%;right:3%;display:grid;grid-template-columns:1fr 1.4fr 1fr 1fr 1fr;gap:6px;z-index:12}.stunt-touch button{min-width:28px;min-height:42px;border:1px solid #e6ce8c;background:#1a4544e8;color:#ffedb9;font:14px var(--font-pixel);touch-action:none;user-select:none}
+@media(max-width:700px){.stunt-hud{top:42px;left:6px;right:6px;gap:7px;padding:4px 7px}.stunt-hud strong{font-size:13px}.stunt-hud small{font-size:8px}.stunt-pocket{right:8px;top:83px;font-size:10px;padding:5px}.stunt-feedback{bottom:58px;font-size:14px}.stunt-modal{padding:12px;max-height:84%;overflow:auto;top:55%;font-size:12px;line-height:1.45}.stunt-modal h2{font-size:19px}.stunt-modal .stunt-tip{font-size:10px}.stunt-modal button{font-size:14px;min-height:32px;margin-top:4px}.stunt-modal p{margin:5px 0}.stunt-charge{bottom:52px}.stunt-boost{top:42%;left:12px;font-size:14px}}

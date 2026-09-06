@@ -1,26 +1,6 @@
 import type { EventBus } from "../core/EventBus";
 import type { GameStore, TheaterMode, TheaterProgramId } from "../core/types";
-import {
-  getRequiredTheaterSpotlightLockMs,
-  getTheaterSpotlightAssist,
-  getTheaterSpotlightRound,
-  validateTheaterSpotlightAttempt,
-  THEATER_SPOTLIGHT_ROUNDS,
-  THEATER_SPOTLIGHT_SEQUENCE
-} from "../scenes/rpg/TheaterSpotlightModel";
-import type {
-  TheaterSpotlightAttempt,
-  TheaterSpotlightFailureReason,
-  TheaterSpotlightLane,
-  TheaterSpotlightRoundConfig
-} from "../scenes/rpg/TheaterSpotlightModel";
-
-export { THEATER_SPOTLIGHT_ROUNDS, THEATER_SPOTLIGHT_SEQUENCE };
-export type {
-  TheaterSpotlightAttempt,
-  TheaterSpotlightFailureReason,
-  TheaterSpotlightLane
-};
+import { THEATER_SHOW_ACTS, validateTheaterSpotlightAttempt } from "../scenes/rpg/TheaterSpotlightModel";
 
 export type TheaterTicketReleaseResult =
   | "first_wave_slow"
@@ -440,6 +420,7 @@ export class ChapterThreeTheaterController {
     const state = this.store.getState();
     if (
       state.theaterHunt.phase !== "spotlight_ready"
+      || state.theaterHunt.mode !== "light"
       || !state.theaterHunt.paperDusted
       || !state.items.spotlightRemote
     ) return false;
@@ -449,89 +430,34 @@ export class ChapterThreeTheaterController {
       ui: current.ui.selectedItem === "spotlightRemote"
         ? { ...current.ui, selectedItem: null }
         : current.ui,
-      theaterHunt: { ...current.theaterHunt, phase: "spotlight_hunt" }
+      theaterHunt: { ...current.theaterHunt, phase: "spotlight_hunt", mode: "light" }
     }));
     this.events.emit("use_item", { itemId: "spotlightRemote", targetId: "theater-spotlight-console", result: "consume" });
     this.events.emit("theater_spotlight_started");
     return true;
   }
 
-  resolveSpotlightAttempt(attempt: TheaterSpotlightAttempt): boolean {
+  resolveSpotlightAttempt(attempt: unknown): boolean {
     const state = this.store.getState();
     if (state.theaterHunt.phase !== "spotlight_hunt" || state.theaterHunt.mode !== "light") return false;
-    const round = getTheaterSpotlightRound(state.theaterHunt.spotlightRound);
-    if (!round) return false;
-    const requiredLockMs = getRequiredTheaterSpotlightLockMs(
-      round,
-      state.theaterHunt.spotlightMistakes
-    );
-    const failureReason = validateTheaterSpotlightAttempt(attempt, round, requiredLockMs);
-    if (failureReason) {
-      return this.rejectSpotlightAttempt(attempt, round, requiredLockMs, failureReason);
+    const result = validateTheaterSpotlightAttempt(attempt, state.theaterHunt.spotlightRound, state.theaterHunt.spotlightMistakes);
+    if (!result) {
+      this.events.emit("theater_spotlight_rejected", { feedback: "演出记录没有完成，请重演本幕。" });
+      return false;
     }
-
+    if (result.status === "lost") {
+      this.store.setState(current => ({ ...current, theaterHunt: { ...current.theaterHunt,
+        spotlightMistakes: current.theaterHunt.spotlightMistakes + 1, mode: "light" } }));
+      this.events.emit("theater_spotlight_missed", { round: result.round, reason: result.lives <= 0 ? "shadow" : "timeout" });
+      return false;
+    }
     const spotlightRound = state.theaterHunt.spotlightRound + 1;
-    const complete = spotlightRound >= THEATER_SPOTLIGHT_ROUNDS.length;
-    this.store.setState((current) => ({
-      ...current,
-      theaterHunt: {
-        ...current.theaterHunt,
-        spotlightRound,
-        phase: complete ? "reversal" : "spotlight_hunt"
-      }
-    }));
+    const complete = spotlightRound >= THEATER_SHOW_ACTS.length;
+    this.store.setState(current => ({ ...current, theaterHunt: { ...current.theaterHunt,
+      spotlightRound, mode: "light", phase: complete ? "reversal" : "spotlight_hunt" } }));
     this.events.emit(complete ? "theater_spotlight_third_hit" : "theater_spotlight_hit", {
-      lane: attempt.lane,
-      round: spotlightRound,
-      roundIndex: round.round,
-      maxContinuousLockMs: attempt.maxContinuousLockMs,
-      requiredLockMs,
-      assistEnabled: getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes).enabled
+      round: spotlightRound, collected: result.collected.length, ticks: result.tick
     });
-    return true;
-  }
-
-  /**
-   * Compatibility lane for older theater scenes. New scenes must submit the
-   * measured `rpg_theater_spotlight_attempt` payload.
-   */
-  resolveSpotlightChoice(lane: TheaterSpotlightLane): boolean {
-    const state = this.store.getState();
-    const round = getTheaterSpotlightRound(state.theaterHunt.spotlightRound);
-    if (!round) return false;
-    const requiredLockMs = getRequiredTheaterSpotlightLockMs(
-      round,
-      state.theaterHunt.spotlightMistakes
-    );
-    return this.resolveSpotlightAttempt({
-      round: round.round,
-      lane,
-      maxContinuousLockMs: requiredLockMs,
-      beamActivated: true,
-      firstBeamAtMs: 0,
-      actionMs: round.actionMs,
-      submittedAtMs: requiredLockMs
-    });
-  }
-
-  missSpotlightRound(): boolean {
-    const state = this.store.getState();
-    if (state.theaterHunt.phase !== "spotlight_hunt" || state.theaterHunt.mode !== "light") return false;
-    const round = getTheaterSpotlightRound(state.theaterHunt.spotlightRound);
-    if (!round) return false;
-    const requiredLockMs = getRequiredTheaterSpotlightLockMs(
-      round,
-      state.theaterHunt.spotlightMistakes
-    );
-    this.rejectSpotlightAttempt({
-      round: round.round,
-      lane: round.lane,
-      maxContinuousLockMs: 0,
-      beamActivated: false,
-      firstBeamAtMs: null,
-      actionMs: round.actionMs,
-      submittedAtMs: round.actionMs
-    }, round, requiredLockMs, "timeout");
     return true;
   }
 
@@ -570,40 +496,6 @@ export class ChapterThreeTheaterController {
     }));
     this.events.emit("theater_left_for_location_search");
     return true;
-  }
-
-  private rejectSpotlightAttempt(
-    attempt: TheaterSpotlightAttempt,
-    round: TheaterSpotlightRoundConfig,
-    requiredLockMs: number,
-    failureReason: TheaterSpotlightFailureReason
-  ): false {
-    const state = this.store.getState();
-    const assist = getTheaterSpotlightAssist(state.theaterHunt.spotlightMistakes + 1);
-    this.store.setState((current) => ({
-      ...current,
-      theaterHunt: {
-        ...current.theaterHunt,
-        spotlightMistakes: current.theaterHunt.spotlightMistakes + 1
-      }
-    }));
-    this.events.emit("theater_spotlight_missed", {
-      lane: attempt.lane,
-      round: round.round + 1,
-      roundIndex: round.round,
-      attemptedRound: attempt.round,
-      maxContinuousLockMs: attempt.maxContinuousLockMs,
-      requiredLockMs,
-      beamActivated: attempt.beamActivated,
-      firstBeamAtMs: attempt.firstBeamAtMs,
-      actionMs: attempt.actionMs,
-      submittedAtMs: attempt.submittedAtMs,
-      timeout: failureReason === "timeout",
-      failureReason,
-      retryRound: round.round + 1,
-      assistEnabled: assist.enabled
-    });
-    return false;
   }
 
   private publishTicketHalvesReady(): void {

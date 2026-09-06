@@ -21,17 +21,15 @@ assert(layout.evidenceDetails.length === 30, "exactly 30 source-pixel raw detail
 assert(content.evidenceContracts.length === 11, "exactly 11 causal evidence contracts are required");
 assert(content.room204.groups.length === 4, "Room204 must expose four grouped operations");
 assert(content.room204.groups.every((group) => group.mappings.length === 3), "each Room204 group must atomically place three legacy pieces");
-assert(content.transitionContracts.length === 9, "the Chapter 4 sequence must declare nine transitions");
-assert(content.transitionContracts.filter((entry) => entry.owner === "transition_overlay").length === 5, "all five genuine time changes must own overlays");
+assert(content.transitionContracts.length === 8, "the Chapter 4 sequence must declare eight transitions");
+assert(content.transitionContracts.filter((entry) => entry.owner === "transition_overlay").length === 4, "all four genuine time changes must own overlays");
 assert(content.transitionContracts.filter((entry) => entry.owner === "scene_interaction").length === 4, "four world handoffs must stay inside the scene");
 assert(Boolean(audio.events.chapter4_environment_hint_pulse?.cues?.some((cue) => cue.panFromEvent === true)), "adaptive environment sound must consume scene position");
 assert(Boolean(audio.events.power_grid_locked?.cues?.some((cue) => cue.channel === "sfx")), "power-grid success must have an audible confirmation cue");
 assert(/selectChapterFourTransitionPresentation\(result\)/.test(hostSource) && /<ChapterFourTransitionOverlay/.test(hostSource), "Host must mount the selected time transition overlay");
 assert(/rpg_chapter4_power_panel_attempt_abandoned/.test(hostSource) && /recordVisualHintFailure\("power_route_comparison"\)/.test(sceneSource), "closing an unfinished power panel must count as one help attempt");
 assert(/allZonesPowered[\s\S]*?总负载过高。核对已记录的必要路线，关闭旁路回路。/.test(powerPanelSource), "all-on power state must explain that the necessary route is still unresolved");
-assert(/CHAPTER_FOUR_LIGHT_GRID\.zones\.map[\s\S]*?data-fixture-zone=\{zone\.id\}[\s\S]*?className=\{on \? "is-on" : "is-off"\}/.test(powerPanelSource), "physical breaker indicators must mirror all five diagram zone states");
-assert(/beginPowerGridSuccessPresentation[\s\S]*?chapter4_power_grid_success_presentation_completed/.test(sceneSource), "solved power grid must run a scene-owned success presentation before the chase handoff");
-assert(/storyPresentation === "power_grid_success"[\s\S]*?guard\.setVelocity\(0, 0\)\.setVisible\(false\)/.test(sceneSource), "final-chase guard must remain paused while the power-grid success presentation owns input");
+assert(/CHAPTER_FOUR_LIGHT_GRID\.zones\.map[\s\S]*?className=\{on \? "is-on" : "is-off"\}[\s\S]*?data-fixture-zone=\{zone\.id\}/.test(powerPanelSource), "physical breaker indicators must mirror all five diagram zone states");
 assert(/if \(blocked\) return;/.test(subtitleSource), "subtitle surface must stay suppressed while an overlay owns presentation");
 assert(!/字幕.*(?:房间|路线|答案)/.test(JSON.stringify(content.evidenceContracts)), "evidence contracts must remain raw-detail contracts");
 
@@ -55,7 +53,7 @@ try {
   assert(evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.contractCount === 11, "evidence validation count mismatch");
   assert(evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.rawDetailCount === 30, "raw detail validation count mismatch");
   assert(evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.multiPhaseReuseCount > 0, "at least one clue must be reused after multiple phases");
-  assert(transitionModule.CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.overlayCount === 5, "time overlay ownership mismatch");
+  assert(transitionModule.CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.overlayCount === 4, "time overlay ownership mismatch");
   assert(transitionModule.CHAPTER_FOUR_TRANSITION_PRESENTATION_VALIDATION.worldHandoffCount === 4, "world handoff ownership mismatch");
 
   const knownDetailIds = new Set(layout.evidenceDetails.map((detail) => detail.id));
@@ -83,7 +81,7 @@ try {
   assert(room204Module.countCompletedRoom204Groups(placements) === 4, "Room204 must complete in four grouped operations");
   assert(placements.length === 12, "grouped operations must preserve the twelve-piece save format");
 
-  console.log(`chapter4 causal flow PASS evidence=${content.evidenceContracts.length} details=${layout.evidenceDetails.length} reused=${evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.multiPhaseReuseCount} room204Groups=4 hintLevels=${levels.join("/")} transitions=5+4`);
+  console.log(`chapter4 causal flow PASS evidence=${content.evidenceContracts.length} details=${layout.evidenceDetails.length} reused=${evidenceModule.CHAPTER_FOUR_EVIDENCE_VALIDATION.multiPhaseReuseCount} room204Groups=4 hintLevels=${levels.join("/")} transitions=4+4`);
 } finally {
   await server.close();
 }

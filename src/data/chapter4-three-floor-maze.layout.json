@@ -90,6 +90,1165 @@
     "width": 1672,
     "height": 941
   },
+  "evidenceDetails": [
+    {
+      "id": "noticeboard_paper_fold",
+      "family": "paper_route",
+      "visual": "fold",
+      "color": "#b8d6df",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_handoff",
+          "opening_paper_caught"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1098,
+          "y": 616,
+          "width": 24,
+          "height": 20
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "noticeboard_wet_edge",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#75d7e8",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_handoff",
+          "opening_paper_caught"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1095,
+          "y": 637,
+          "width": 34,
+          "height": 7
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "opening_external_time_receipt",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "22:45",
+      "color": "#f1c76f",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_paper_caught",
+          "hall_clock_inspection"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1082,
+          "y": 574,
+          "width": 48,
+          "height": 14
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "opening_phone_frozen_seconds",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "07:55:23",
+      "color": "#9ab7c9",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "opening_paper_caught",
+          "hall_clock_inspection"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening"
+        ],
+        "bounds": {
+          "x": 1080,
+          "y": 650,
+          "width": 62,
+          "height": 14
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "hall_clock_stuttering_gear",
+      "family": "time",
+      "visual": "gear",
+      "color": "#d7a85a",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "hall_clock_inspection",
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_2245_opening",
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 978,
+          "y": 72,
+          "width": 24,
+          "height": 24
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_clock_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "hall_clock_inspected"
+          ],
+          "bounds": {
+            "x": 978,
+            "y": 72,
+            "width": 24,
+            "height": 24
+          }
+        }
+      ]
+    },
+    {
+      "id": "bakery_wet_drag_east",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#71d8e6",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 302,
+          "y": 348,
+          "width": 82,
+          "height": 8
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_wet_trace",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 254,
+            "y": 542,
+            "width": 28,
+            "height": 5
+          }
+        },
+        {
+          "id": "power_panel_wet_trace",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 511,
+            "y": 578,
+            "width": 28,
+            "height": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "bakery_conveyor_reverse_wear",
+      "family": "paper_route",
+      "visual": "wear",
+      "color": "#dbe6e8",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 287,
+          "y": 334,
+          "width": 30,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_conveyor_wear",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 286,
+            "y": 541,
+            "width": 20,
+            "height": 7
+          }
+        },
+        {
+          "id": "power_panel_conveyor_wear",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "bakery_conveyor_direction_observed"
+          ],
+          "bounds": {
+            "x": 515,
+            "y": 568,
+            "width": 20,
+            "height": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "bakery_pry_bar_outline",
+      "family": "paper_route",
+      "visual": "silhouette",
+      "color": "#cfb57b",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "bakery_hour_hand"
+        ],
+        "statePlateIds": [
+          "a1_1225_bakery"
+        ],
+        "bounds": {
+          "x": 442,
+          "y": 691,
+          "width": 32,
+          "height": 38
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_tool_outline",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "bakery_tool_location_observed"
+          ],
+          "bounds": {
+            "x": 442,
+            "y": 691,
+            "width": 32,
+            "height": 38
+          }
+        }
+      ]
+    },
+    {
+      "id": "classroom104_chalk_1844",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "18:44",
+      "color": "#d8d4bd",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 1350,
+          "y": 177,
+          "width": 54,
+          "height": 18
+        },
+        "supportingVisual": {
+          "kind": "classroom_chalkboard_notes",
+          "bounds": {
+            "x": 1338,
+            "y": 170,
+            "width": 142,
+            "height": 43
+          },
+          "chalkColor": "#c8d2c5",
+          "mutedColor": "#87968d"
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_104",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "classroom_104_chalk_residual_observed"
+          ],
+          "bounds": {
+            "x": 250,
+            "y": 523,
+            "width": 34,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "classroom105_terminal_1850",
+      "family": "time",
+      "visual": "digits",
+      "glyph": "18:50",
+      "color": "#79ddf1",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 1384,
+          "y": 570,
+          "width": 52,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_105",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "classroom_105_terminal_replay_checked"
+          ],
+          "bounds": {
+            "x": 288,
+            "y": 523,
+            "width": 34,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "elevator_passenger_trace_6s",
+      "family": "time",
+      "visual": "timeline",
+      "glyph": "6s",
+      "color": "#82dce8",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 746,
+          "y": 151,
+          "width": 50,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_passenger_trace",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "elevator_history_observed"
+          ],
+          "bounds": {
+            "x": 326,
+            "y": 523,
+            "width": 28,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "elevator_door_interval_8s",
+      "family": "time",
+      "visual": "timeline",
+      "glyph": "8s",
+      "color": "#f0b85f",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a1_base"
+        ],
+        "bounds": {
+          "x": 746,
+          "y": 164,
+          "width": 66,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_door_interval",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "elevator_history_calibrated"
+          ],
+          "bounds": {
+            "x": 326,
+            "y": 538,
+            "width": 28,
+            "height": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3_reference_desk_shadow",
+      "family": "identity",
+      "visual": "shadow",
+      "color": "#7eb5c3",
+      "source": {
+        "storyFloor": "A3",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a3_1850_reference"
+        ],
+        "bounds": {
+          "x": 1254,
+          "y": 646,
+          "width": 118,
+          "height": 28
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_projection_a3_shadow",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "a3_reference_observed"
+          ],
+          "bounds": {
+            "x": 310,
+            "y": 554,
+            "width": 38,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3_history_wall_center",
+      "family": "identity",
+      "visual": "context",
+      "color": "#d9b45f",
+      "source": {
+        "storyFloor": "A3",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a3_1850_reference"
+        ],
+        "bounds": {
+          "x": 806,
+          "y": 573,
+          "width": 55,
+          "height": 82
+        }
+      },
+      "echoes": [
+        {
+          "id": "exterior_history_context",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "exterior_closure"
+          ],
+          "requiredFacts": [
+            "a3_identity_context_observed"
+          ],
+          "bounds": {
+            "x": 780,
+            "y": 650,
+            "width": 112,
+            "height": 28
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_window_time_marks",
+      "family": "paper_route",
+      "visual": "scratch",
+      "color": "#d4c9aa",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 68,
+          "y": 578,
+          "width": 86,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "room204_screen_window_marks",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "room204_restore"
+          ],
+          "requiredFacts": [
+            "room204_residual_observed"
+          ],
+          "bounds": {
+            "x": 248,
+            "y": 558,
+            "width": 24,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_central_drag_marks",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#8caeba",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 176,
+          "y": 662,
+          "width": 96,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_cart_drag_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "maintenance_incident_linked"
+          ],
+          "bounds": {
+            "x": 1080,
+            "y": 714,
+            "width": 72,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_projection_edge",
+      "family": "paper_route",
+      "visual": "edge",
+      "color": "#80e2ef",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 245,
+          "y": 519,
+          "width": 110,
+          "height": 56
+        }
+      },
+      "echoes": [
+        {
+          "id": "maintenance_impact_geometry",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "maintenance_repair"
+          ],
+          "requiredFacts": [
+            "maintenance_incident_linked"
+          ],
+          "bounds": {
+            "x": 1104,
+            "y": 682,
+            "width": 44,
+            "height": 28
+          }
+        },
+        {
+          "id": "power_panel_projection_edge",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "room204_projection_composite_completed"
+          ],
+          "bounds": {
+            "x": 505,
+            "y": 542,
+            "width": 40,
+            "height": 24
+          }
+        }
+      ]
+    },
+    {
+      "id": "room204_door_paper_trace",
+      "family": "paper_route",
+      "visual": "wet_trace",
+      "color": "#72d4e2",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "room204_restore"
+        ],
+        "statePlateIds": [
+          "a2_1850_evening"
+        ],
+        "bounds": {
+          "x": 356,
+          "y": 590,
+          "width": 52,
+          "height": 8
+        }
+      },
+      "echoes": [
+        {
+          "id": "power_panel_door_trace",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "room202_endpoint_inferred"
+          ],
+          "bounds": {
+            "x": 511,
+            "y": 608,
+            "width": 28,
+            "height": 6
+          }
+        },
+        {
+          "id": "chase_door_trace",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 1288,
+            "y": 392,
+            "width": 82,
+            "height": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "cart_wheel_impact_scratch",
+      "family": "time",
+      "visual": "scratch",
+      "color": "#c5b08b",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "maintenance_repair"
+        ],
+        "statePlateIds": [
+          "a1_2245_maintenance"
+        ],
+        "bounds": {
+          "x": 1122,
+          "y": 690,
+          "width": 28,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "power_panel_cart_scratch",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "blackout_light_grid"
+          ],
+          "requiredFacts": [
+            "cart_wheel_inspected"
+          ],
+          "bounds": {
+            "x": 515,
+            "y": 620,
+            "width": 22,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "cart_cover_matching_notch",
+      "family": "time",
+      "visual": "notch",
+      "color": "#e2c475",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "maintenance_repair"
+        ],
+        "statePlateIds": [
+          "a1_2245_maintenance"
+        ],
+        "bounds": {
+          "x": 1127,
+          "y": 696,
+          "width": 16,
+          "height": 14
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "hall_clock_oil_stain",
+      "family": "time",
+      "visual": "oil",
+      "color": "#8d7548",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "maintenance_repair"
+        ],
+        "statePlateIds": [
+          "a1_2245_maintenance"
+        ],
+        "bounds": {
+          "x": 987,
+          "y": 100,
+          "width": 22,
+          "height": 10
+        }
+      },
+      "echoes": [
+        {
+          "id": "return_clock_oil_trace",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "return_to_clock"
+          ],
+          "requiredFacts": [
+            "clock_gear_repaired"
+          ],
+          "bounds": {
+            "x": 987,
+            "y": 100,
+            "width": 22,
+            "height": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "power_hall_node",
+      "family": "paper_route",
+      "visual": "node",
+      "glyph": "1",
+      "color": "#f0d36d",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "blackout_light_grid"
+        ],
+        "statePlateIds": [
+          "a1_0754_blackout"
+        ],
+        "bounds": {
+          "x": 818,
+          "y": 500,
+          "width": 18,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "chase_hall_node",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 824,
+            "y": 528,
+            "width": 18,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "power_east_corridor_node",
+      "family": "paper_route",
+      "visual": "node",
+      "glyph": "3",
+      "color": "#f0d36d",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "blackout_light_grid"
+        ],
+        "statePlateIds": [
+          "a1_0754_blackout"
+        ],
+        "bounds": {
+          "x": 1208,
+          "y": 334,
+          "width": 18,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "chase_east_node",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 1100,
+            "y": 214,
+            "width": 18,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "power_classroom_node",
+      "family": "paper_route",
+      "visual": "node",
+      "glyph": "4",
+      "color": "#f0d36d",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "blackout_light_grid"
+        ],
+        "statePlateIds": [
+          "a1_0754_blackout"
+        ],
+        "bounds": {
+          "x": 1360,
+          "y": 516,
+          "width": 18,
+          "height": 18
+        }
+      },
+      "echoes": [
+        {
+          "id": "chase_classroom_node",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "final_chase"
+          ],
+          "requiredFacts": [
+            "powered_route_confirmed"
+          ],
+          "bounds": {
+            "x": 1326,
+            "y": 390,
+            "width": 18,
+            "height": 18
+          }
+        },
+        {
+          "id": "recovery_classroom_node",
+          "storyFloor": "A2",
+          "phaseIds": [
+            "final_minute_recovery"
+          ],
+          "requiredFacts": [
+            "room202_route_reached"
+          ],
+          "bounds": {
+            "x": 1326,
+            "y": 390,
+            "width": 18,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "room202_paper_torn_edge",
+      "family": "paper_route",
+      "visual": "torn_edge",
+      "color": "#d7e2df",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "final_minute_recovery"
+        ],
+        "statePlateIds": [
+          "a2_202_final_minute"
+        ],
+        "bounds": {
+          "x": 1334,
+          "y": 296,
+          "width": 28,
+          "height": 30
+        }
+      },
+      "echoes": [
+        {
+          "id": "checkin_paper_edge_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "morning_checkin"
+          ],
+          "requiredFacts": [
+            "attendance_record_recovered"
+          ],
+          "bounds": {
+            "x": 842,
+            "y": 609,
+            "width": 26,
+            "height": 18
+          }
+        }
+      ]
+    },
+    {
+      "id": "room202_minute_projection",
+      "family": "time",
+      "visual": "wear",
+      "color": "#c59a4a",
+      "source": {
+        "storyFloor": "A2",
+        "phaseIds": [
+          "final_minute_recovery"
+        ],
+        "statePlateIds": [
+          "a2_202_final_minute"
+        ],
+        "bounds": {
+          "x": 1339,
+          "y": 318,
+          "width": 28,
+          "height": 6
+        }
+      },
+      "echoes": [
+        {
+          "id": "checkin_minute_echo",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "morning_checkin"
+          ],
+          "requiredFacts": [
+            "attendance_record_recovered"
+          ],
+          "bounds": {
+            "x": 822,
+            "y": 588,
+            "width": 24,
+            "height": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "checkin_card_name_strip",
+      "family": "identity",
+      "visual": "strip",
+      "color": "#83d9e7",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "morning_checkin"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 760,
+          "y": 612,
+          "width": 28,
+          "height": 7
+        }
+      },
+      "echoes": [
+        {
+          "id": "exterior_card_strip",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "exterior_closure"
+          ],
+          "requiredFacts": [
+            "checkin_identity_verified"
+          ],
+          "bounds": {
+            "x": 766,
+            "y": 690,
+            "width": 48,
+            "height": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "checkin_paper_torn_edge",
+      "family": "paper_route",
+      "visual": "torn_edge",
+      "color": "#d7e2df",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "morning_checkin"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 841,
+          "y": 608,
+          "width": 28,
+          "height": 20
+        }
+      },
+      "echoes": [
+        {
+          "id": "exterior_paper_edge",
+          "storyFloor": "A1",
+          "phaseIds": [
+            "exterior_closure"
+          ],
+          "requiredFacts": [
+            "checkin_identity_verified"
+          ],
+          "bounds": {
+            "x": 820,
+            "y": 687,
+            "width": 40,
+            "height": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "exterior_history_question_panel",
+      "family": "identity",
+      "visual": "context",
+      "color": "#d4b35f",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "exterior_closure"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 730,
+          "y": 654,
+          "width": 220,
+          "height": 42
+        }
+      },
+      "echoes": []
+    },
+    {
+      "id": "exterior_recovered_record_mark",
+      "family": "identity",
+      "visual": "fold",
+      "color": "#8edce7",
+      "source": {
+        "storyFloor": "A1",
+        "phaseIds": [
+          "exterior_closure"
+        ],
+        "statePlateIds": [
+          "a1_0755_morning"
+        ],
+        "bounds": {
+          "x": 810,
+          "y": 704,
+          "width": 58,
+          "height": 28
+        }
+      },
+      "echoes": []
+    }
+  ],
   "transportCore": {
     "elevators": [
       {
@@ -962,7 +2121,7 @@
       "misalignedAtMs": 120,
       "stableAtMs": 360,
       "commitAtMs": 900,
-      "stableText": "07:55 / 早到的人还没有开始后悔。"
+      "stableText": "门框局部 / 楼层差 1"
     }
   },
   "maintenanceRuntime": {
@@ -1446,7 +2605,7 @@
     },
     "waypointReachDistance": 8,
     "stableCommittedFramesToArm": 4,
-    "a2EntryHoldMs": 1600,
+    "startGraceMs": 1200,
     "maxStepMs": 50,
     "transportId": "main_stair",
     "guardPursuitStoryFloors": [
@@ -2641,7 +3800,12 @@
           "id": "a1_classroom_partition_face",
           "sourceAnnotationId": "a1-ann-005",
           "label": "104/105 隔墙局部人物淡化",
-          "maskBounds": { "x": 1226, "y": 473, "width": 381, "height": 111 },
+          "maskBounds": {
+            "x": 1226,
+            "y": 473,
+            "width": 381,
+            "height": 111
+          },
           "baselineY": 584,
           "playerRevealAlpha": 0.22,
           "renderMode": "foot_behind_baseline"
@@ -4446,1165 +5610,6 @@
           }
         }
       ]
-    }
-  ],
-  "evidenceDetails": [
-    {
-      "id": "noticeboard_paper_fold",
-      "family": "paper_route",
-      "visual": "fold",
-      "color": "#b8d6df",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "opening_handoff",
-          "opening_paper_caught"
-        ],
-        "statePlateIds": [
-          "a1_2245_opening"
-        ],
-        "bounds": {
-          "x": 1098,
-          "y": 616,
-          "width": 24,
-          "height": 20
-        }
-      },
-      "echoes": []
-    },
-    {
-      "id": "noticeboard_wet_edge",
-      "family": "paper_route",
-      "visual": "wet_trace",
-      "color": "#75d7e8",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "opening_handoff",
-          "opening_paper_caught"
-        ],
-        "statePlateIds": [
-          "a1_2245_opening"
-        ],
-        "bounds": {
-          "x": 1095,
-          "y": 637,
-          "width": 34,
-          "height": 7
-        }
-      },
-      "echoes": []
-    },
-    {
-      "id": "opening_external_time_receipt",
-      "family": "time",
-      "visual": "digits",
-      "glyph": "22:45",
-      "color": "#f1c76f",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "opening_paper_caught",
-          "hall_clock_inspection"
-        ],
-        "statePlateIds": [
-          "a1_2245_opening"
-        ],
-        "bounds": {
-          "x": 1082,
-          "y": 574,
-          "width": 48,
-          "height": 14
-        }
-      },
-      "echoes": []
-    },
-    {
-      "id": "opening_phone_frozen_seconds",
-      "family": "time",
-      "visual": "digits",
-      "glyph": "07:55:23",
-      "color": "#9ab7c9",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "opening_paper_caught",
-          "hall_clock_inspection"
-        ],
-        "statePlateIds": [
-          "a1_2245_opening"
-        ],
-        "bounds": {
-          "x": 1080,
-          "y": 650,
-          "width": 62,
-          "height": 14
-        }
-      },
-      "echoes": []
-    },
-    {
-      "id": "hall_clock_stuttering_gear",
-      "family": "time",
-      "visual": "gear",
-      "color": "#d7a85a",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "hall_clock_inspection",
-          "bakery_hour_hand"
-        ],
-        "statePlateIds": [
-          "a1_2245_opening",
-          "a1_1225_bakery"
-        ],
-        "bounds": {
-          "x": 978,
-          "y": 72,
-          "width": 24,
-          "height": 24
-        }
-      },
-      "echoes": [
-        {
-          "id": "maintenance_clock_echo",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "maintenance_repair"
-          ],
-          "requiredFacts": [
-            "hall_clock_inspected"
-          ],
-          "bounds": {
-            "x": 978,
-            "y": 72,
-            "width": 24,
-            "height": 24
-          }
-        }
-      ]
-    },
-    {
-      "id": "bakery_wet_drag_east",
-      "family": "paper_route",
-      "visual": "wet_trace",
-      "color": "#71d8e6",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "bakery_hour_hand"
-        ],
-        "statePlateIds": [
-          "a1_1225_bakery"
-        ],
-        "bounds": {
-          "x": 302,
-          "y": 348,
-          "width": 82,
-          "height": 8
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_wet_trace",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "bakery_conveyor_direction_observed"
-          ],
-          "bounds": {
-            "x": 254,
-            "y": 542,
-            "width": 28,
-            "height": 5
-          }
-        },
-        {
-          "id": "power_panel_wet_trace",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "blackout_light_grid"
-          ],
-          "requiredFacts": [
-            "bakery_conveyor_direction_observed"
-          ],
-          "bounds": {
-            "x": 511,
-            "y": 578,
-            "width": 28,
-            "height": 5
-          }
-        }
-      ]
-    },
-    {
-      "id": "bakery_conveyor_reverse_wear",
-      "family": "paper_route",
-      "visual": "wear",
-      "color": "#dbe6e8",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "bakery_hour_hand"
-        ],
-        "statePlateIds": [
-          "a1_1225_bakery"
-        ],
-        "bounds": {
-          "x": 287,
-          "y": 334,
-          "width": 30,
-          "height": 10
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_conveyor_wear",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "bakery_conveyor_direction_observed"
-          ],
-          "bounds": {
-            "x": 286,
-            "y": 541,
-            "width": 20,
-            "height": 7
-          }
-        },
-        {
-          "id": "power_panel_conveyor_wear",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "blackout_light_grid"
-          ],
-          "requiredFacts": [
-            "bakery_conveyor_direction_observed"
-          ],
-          "bounds": {
-            "x": 515,
-            "y": 568,
-            "width": 20,
-            "height": 7
-          }
-        }
-      ]
-    },
-    {
-      "id": "bakery_pry_bar_outline",
-      "family": "paper_route",
-      "visual": "silhouette",
-      "color": "#cfb57b",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "bakery_hour_hand"
-        ],
-        "statePlateIds": [
-          "a1_1225_bakery"
-        ],
-        "bounds": {
-          "x": 442,
-          "y": 691,
-          "width": 32,
-          "height": 38
-        }
-      },
-      "echoes": [
-        {
-          "id": "maintenance_tool_outline",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "maintenance_repair"
-          ],
-          "requiredFacts": [
-            "bakery_tool_location_observed"
-          ],
-          "bounds": {
-            "x": 442,
-            "y": 691,
-            "width": 32,
-            "height": 38
-          }
-        }
-      ]
-    },
-    {
-      "id": "classroom104_chalk_1844",
-      "family": "time",
-      "visual": "digits",
-      "glyph": "18:44",
-      "color": "#d8d4bd",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a1_base"
-        ],
-        "bounds": {
-          "x": 1350,
-          "y": 177,
-          "width": 54,
-          "height": 18
-        },
-        "supportingVisual": {
-          "kind": "classroom_chalkboard_notes",
-          "bounds": {
-            "x": 1338,
-            "y": 170,
-            "width": 142,
-            "height": 43
-          },
-          "chalkColor": "#c8d2c5",
-          "mutedColor": "#87968d"
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_104",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "classroom_104_chalk_residual_observed"
-          ],
-          "bounds": {
-            "x": 250,
-            "y": 523,
-            "width": 34,
-            "height": 12
-          }
-        }
-      ]
-    },
-    {
-      "id": "classroom105_terminal_1850",
-      "family": "time",
-      "visual": "digits",
-      "glyph": "18:50",
-      "color": "#79ddf1",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a1_base"
-        ],
-        "bounds": {
-          "x": 1384,
-          "y": 570,
-          "width": 52,
-          "height": 18
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_105",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "classroom_105_terminal_replay_checked"
-          ],
-          "bounds": {
-            "x": 288,
-            "y": 523,
-            "width": 34,
-            "height": 12
-          }
-        }
-      ]
-    },
-    {
-      "id": "elevator_passenger_trace_6s",
-      "family": "time",
-      "visual": "timeline",
-      "glyph": "6s",
-      "color": "#82dce8",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a1_base"
-        ],
-        "bounds": {
-          "x": 746,
-          "y": 151,
-          "width": 50,
-          "height": 10
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_passenger_trace",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "elevator_history_observed"
-          ],
-          "bounds": {
-            "x": 326,
-            "y": 523,
-            "width": 28,
-            "height": 12
-          }
-        }
-      ]
-    },
-    {
-      "id": "elevator_door_interval_8s",
-      "family": "time",
-      "visual": "timeline",
-      "glyph": "8s",
-      "color": "#f0b85f",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a1_base"
-        ],
-        "bounds": {
-          "x": 746,
-          "y": 164,
-          "width": 66,
-          "height": 10
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_door_interval",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "elevator_history_calibrated"
-          ],
-          "bounds": {
-            "x": 326,
-            "y": 538,
-            "width": 28,
-            "height": 12
-          }
-        }
-      ]
-    },
-    {
-      "id": "a3_reference_desk_shadow",
-      "family": "identity",
-      "visual": "shadow",
-      "color": "#7eb5c3",
-      "source": {
-        "storyFloor": "A3",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a3_1850_reference"
-        ],
-        "bounds": {
-          "x": 1254,
-          "y": 646,
-          "width": 118,
-          "height": 28
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_projection_a3_shadow",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "a3_reference_observed"
-          ],
-          "bounds": {
-            "x": 310,
-            "y": 554,
-            "width": 38,
-            "height": 8
-          }
-        }
-      ]
-    },
-    {
-      "id": "a3_history_wall_center",
-      "family": "identity",
-      "visual": "context",
-      "color": "#d9b45f",
-      "source": {
-        "storyFloor": "A3",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a3_1850_reference"
-        ],
-        "bounds": {
-          "x": 806,
-          "y": 573,
-          "width": 55,
-          "height": 82
-        }
-      },
-      "echoes": [
-        {
-          "id": "exterior_history_context",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "exterior_closure"
-          ],
-          "requiredFacts": [
-            "a3_identity_context_observed"
-          ],
-          "bounds": {
-            "x": 780,
-            "y": 650,
-            "width": 112,
-            "height": 28
-          }
-        }
-      ]
-    },
-    {
-      "id": "room204_window_time_marks",
-      "family": "paper_route",
-      "visual": "scratch",
-      "color": "#d4c9aa",
-      "source": {
-        "storyFloor": "A2",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a2_1850_evening"
-        ],
-        "bounds": {
-          "x": 68,
-          "y": 578,
-          "width": 86,
-          "height": 18
-        }
-      },
-      "echoes": [
-        {
-          "id": "room204_screen_window_marks",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "room204_restore"
-          ],
-          "requiredFacts": [
-            "room204_residual_observed"
-          ],
-          "bounds": {
-            "x": 248,
-            "y": 558,
-            "width": 24,
-            "height": 8
-          }
-        }
-      ]
-    },
-    {
-      "id": "room204_central_drag_marks",
-      "family": "paper_route",
-      "visual": "wet_trace",
-      "color": "#8caeba",
-      "source": {
-        "storyFloor": "A2",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a2_1850_evening"
-        ],
-        "bounds": {
-          "x": 176,
-          "y": 662,
-          "width": 96,
-          "height": 10
-        }
-      },
-      "echoes": [
-        {
-          "id": "maintenance_cart_drag_echo",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "maintenance_repair"
-          ],
-          "requiredFacts": [
-            "maintenance_incident_linked"
-          ],
-          "bounds": {
-            "x": 1080,
-            "y": 714,
-            "width": 72,
-            "height": 8
-          }
-        }
-      ]
-    },
-    {
-      "id": "room204_projection_edge",
-      "family": "paper_route",
-      "visual": "edge",
-      "color": "#80e2ef",
-      "source": {
-        "storyFloor": "A2",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a2_1850_evening"
-        ],
-        "bounds": {
-          "x": 245,
-          "y": 519,
-          "width": 110,
-          "height": 56
-        }
-      },
-      "echoes": [
-        {
-          "id": "maintenance_impact_geometry",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "maintenance_repair"
-          ],
-          "requiredFacts": [
-            "maintenance_incident_linked"
-          ],
-          "bounds": {
-            "x": 1104,
-            "y": 682,
-            "width": 44,
-            "height": 28
-          }
-        },
-        {
-          "id": "power_panel_projection_edge",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "blackout_light_grid"
-          ],
-          "requiredFacts": [
-            "room204_projection_composite_completed"
-          ],
-          "bounds": {
-            "x": 505,
-            "y": 542,
-            "width": 40,
-            "height": 24
-          }
-        }
-      ]
-    },
-    {
-      "id": "room204_door_paper_trace",
-      "family": "paper_route",
-      "visual": "wet_trace",
-      "color": "#72d4e2",
-      "source": {
-        "storyFloor": "A2",
-        "phaseIds": [
-          "room204_restore"
-        ],
-        "statePlateIds": [
-          "a2_1850_evening"
-        ],
-        "bounds": {
-          "x": 356,
-          "y": 590,
-          "width": 52,
-          "height": 8
-        }
-      },
-      "echoes": [
-        {
-          "id": "power_panel_door_trace",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "blackout_light_grid"
-          ],
-          "requiredFacts": [
-            "room202_endpoint_inferred"
-          ],
-          "bounds": {
-            "x": 511,
-            "y": 608,
-            "width": 28,
-            "height": 6
-          }
-        },
-        {
-          "id": "chase_door_trace",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "final_chase"
-          ],
-          "requiredFacts": [
-            "powered_route_confirmed"
-          ],
-          "bounds": {
-            "x": 1288,
-            "y": 392,
-            "width": 82,
-            "height": 7
-          }
-        }
-      ]
-    },
-    {
-      "id": "cart_wheel_impact_scratch",
-      "family": "time",
-      "visual": "scratch",
-      "color": "#c5b08b",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "maintenance_repair"
-        ],
-        "statePlateIds": [
-          "a1_2245_maintenance"
-        ],
-        "bounds": {
-          "x": 1122,
-          "y": 690,
-          "width": 28,
-          "height": 18
-        }
-      },
-      "echoes": [
-        {
-          "id": "power_panel_cart_scratch",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "blackout_light_grid"
-          ],
-          "requiredFacts": [
-            "cart_wheel_inspected"
-          ],
-          "bounds": {
-            "x": 515,
-            "y": 620,
-            "width": 22,
-            "height": 8
-          }
-        }
-      ]
-    },
-    {
-      "id": "cart_cover_matching_notch",
-      "family": "time",
-      "visual": "notch",
-      "color": "#e2c475",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "maintenance_repair"
-        ],
-        "statePlateIds": [
-          "a1_2245_maintenance"
-        ],
-        "bounds": {
-          "x": 1127,
-          "y": 696,
-          "width": 16,
-          "height": 14
-        }
-      },
-      "echoes": []
-    },
-    {
-      "id": "hall_clock_oil_stain",
-      "family": "time",
-      "visual": "oil",
-      "color": "#8d7548",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "maintenance_repair"
-        ],
-        "statePlateIds": [
-          "a1_2245_maintenance"
-        ],
-        "bounds": {
-          "x": 987,
-          "y": 100,
-          "width": 22,
-          "height": 10
-        }
-      },
-      "echoes": [
-        {
-          "id": "return_clock_oil_trace",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "return_to_clock"
-          ],
-          "requiredFacts": [
-            "clock_gear_repaired"
-          ],
-          "bounds": {
-            "x": 987,
-            "y": 100,
-            "width": 22,
-            "height": 10
-          }
-        }
-      ]
-    },
-    {
-      "id": "power_hall_node",
-      "family": "paper_route",
-      "visual": "node",
-      "glyph": "1",
-      "color": "#f0d36d",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "blackout_light_grid"
-        ],
-        "statePlateIds": [
-          "a1_0754_blackout"
-        ],
-        "bounds": {
-          "x": 818,
-          "y": 500,
-          "width": 18,
-          "height": 18
-        }
-      },
-      "echoes": [
-        {
-          "id": "chase_hall_node",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "final_chase"
-          ],
-          "requiredFacts": [
-            "powered_route_confirmed"
-          ],
-          "bounds": {
-            "x": 824,
-            "y": 528,
-            "width": 18,
-            "height": 18
-          }
-        }
-      ]
-    },
-    {
-      "id": "power_east_corridor_node",
-      "family": "paper_route",
-      "visual": "node",
-      "glyph": "3",
-      "color": "#f0d36d",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "blackout_light_grid"
-        ],
-        "statePlateIds": [
-          "a1_0754_blackout"
-        ],
-        "bounds": {
-          "x": 1208,
-          "y": 334,
-          "width": 18,
-          "height": 18
-        }
-      },
-      "echoes": [
-        {
-          "id": "chase_east_node",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "final_chase"
-          ],
-          "requiredFacts": [
-            "powered_route_confirmed"
-          ],
-          "bounds": {
-            "x": 1100,
-            "y": 214,
-            "width": 18,
-            "height": 18
-          }
-        }
-      ]
-    },
-    {
-      "id": "power_classroom_node",
-      "family": "paper_route",
-      "visual": "node",
-      "glyph": "4",
-      "color": "#f0d36d",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "blackout_light_grid"
-        ],
-        "statePlateIds": [
-          "a1_0754_blackout"
-        ],
-        "bounds": {
-          "x": 1360,
-          "y": 516,
-          "width": 18,
-          "height": 18
-        }
-      },
-      "echoes": [
-        {
-          "id": "chase_classroom_node",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "final_chase"
-          ],
-          "requiredFacts": [
-            "powered_route_confirmed"
-          ],
-          "bounds": {
-            "x": 1326,
-            "y": 390,
-            "width": 18,
-            "height": 18
-          }
-        },
-        {
-          "id": "recovery_classroom_node",
-          "storyFloor": "A2",
-          "phaseIds": [
-            "final_minute_recovery"
-          ],
-          "requiredFacts": [
-            "room202_route_reached"
-          ],
-          "bounds": {
-            "x": 1326,
-            "y": 390,
-            "width": 18,
-            "height": 18
-          }
-        }
-      ]
-    },
-    {
-      "id": "room202_paper_torn_edge",
-      "family": "paper_route",
-      "visual": "torn_edge",
-      "color": "#d7e2df",
-      "source": {
-        "storyFloor": "A2",
-        "phaseIds": [
-          "final_minute_recovery"
-        ],
-        "statePlateIds": [
-          "a2_202_final_minute"
-        ],
-        "bounds": {
-          "x": 1334,
-          "y": 296,
-          "width": 28,
-          "height": 30
-        }
-      },
-      "echoes": [
-        {
-          "id": "checkin_paper_edge_echo",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "morning_checkin"
-          ],
-          "requiredFacts": [
-            "attendance_record_recovered"
-          ],
-          "bounds": {
-            "x": 842,
-            "y": 609,
-            "width": 26,
-            "height": 18
-          }
-        }
-      ]
-    },
-    {
-      "id": "room202_minute_projection",
-      "family": "time",
-      "visual": "wear",
-      "color": "#c59a4a",
-      "source": {
-        "storyFloor": "A2",
-        "phaseIds": [
-          "final_minute_recovery"
-        ],
-        "statePlateIds": [
-          "a2_202_final_minute"
-        ],
-        "bounds": {
-          "x": 1339,
-          "y": 318,
-          "width": 28,
-          "height": 6
-        }
-      },
-      "echoes": [
-        {
-          "id": "checkin_minute_echo",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "morning_checkin"
-          ],
-          "requiredFacts": [
-            "attendance_record_recovered"
-          ],
-          "bounds": {
-            "x": 822,
-            "y": 588,
-            "width": 24,
-            "height": 5
-          }
-        }
-      ]
-    },
-    {
-      "id": "checkin_card_name_strip",
-      "family": "identity",
-      "visual": "strip",
-      "color": "#83d9e7",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "morning_checkin"
-        ],
-        "statePlateIds": [
-          "a1_0755_morning"
-        ],
-        "bounds": {
-          "x": 760,
-          "y": 612,
-          "width": 28,
-          "height": 7
-        }
-      },
-      "echoes": [
-        {
-          "id": "exterior_card_strip",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "exterior_closure"
-          ],
-          "requiredFacts": [
-            "checkin_identity_verified"
-          ],
-          "bounds": {
-            "x": 766,
-            "y": 690,
-            "width": 48,
-            "height": 7
-          }
-        }
-      ]
-    },
-    {
-      "id": "checkin_paper_torn_edge",
-      "family": "paper_route",
-      "visual": "torn_edge",
-      "color": "#d7e2df",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "morning_checkin"
-        ],
-        "statePlateIds": [
-          "a1_0755_morning"
-        ],
-        "bounds": {
-          "x": 841,
-          "y": 608,
-          "width": 28,
-          "height": 20
-        }
-      },
-      "echoes": [
-        {
-          "id": "exterior_paper_edge",
-          "storyFloor": "A1",
-          "phaseIds": [
-            "exterior_closure"
-          ],
-          "requiredFacts": [
-            "checkin_identity_verified"
-          ],
-          "bounds": {
-            "x": 820,
-            "y": 687,
-            "width": 40,
-            "height": 20
-          }
-        }
-      ]
-    },
-    {
-      "id": "exterior_history_question_panel",
-      "family": "identity",
-      "visual": "context",
-      "color": "#d4b35f",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "exterior_closure"
-        ],
-        "statePlateIds": [
-          "a1_0755_morning"
-        ],
-        "bounds": {
-          "x": 730,
-          "y": 654,
-          "width": 220,
-          "height": 42
-        }
-      },
-      "echoes": []
-    },
-    {
-      "id": "exterior_recovered_record_mark",
-      "family": "identity",
-      "visual": "fold",
-      "color": "#8edce7",
-      "source": {
-        "storyFloor": "A1",
-        "phaseIds": [
-          "exterior_closure"
-        ],
-        "statePlateIds": [
-          "a1_0755_morning"
-        ],
-        "bounds": {
-          "x": 810,
-          "y": 704,
-          "width": 58,
-          "height": 28
-        }
-      },
-      "echoes": []
     }
   ]
 }

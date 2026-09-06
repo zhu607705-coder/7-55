@@ -266,7 +266,10 @@ async function waitForPreview(child) {
       throw new Error(`Vite preview exited before readiness with code ${child.exitCode}`);
     }
     try {
-      const response = await fetch(`${origin}/`, { signal: AbortSignal.timeout(1_500) });
+      // Readiness only needs headers. GET starts transferring the complete
+      // embedded game (~236MB) and can time out before a ready server responds.
+      // The three browser cases below still load and render the entire page.
+      const response = await fetch(`${origin}/`, { method: "HEAD", signal: AbortSignal.timeout(5_000) });
       if (response.ok) return;
       lastError = new Error(`HTTP ${response.status}`);
     } catch (error) {

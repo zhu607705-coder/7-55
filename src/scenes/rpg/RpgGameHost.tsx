@@ -1,3 +1,6 @@
+import { validateLakeFishingResult } from "../../modules/RhythmFishingEngine";
+import { ChapterFourChaseStairwellScene, CHASE_STAIR_WARM_ASSET_URLS } from "./ChapterFourChaseStairwellScene";
+import { CHASE_STAIR_SCENE_KEY } from "../../modules/ChapterFourChaseStairwellModel";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Phaser from "phaser";
 import type { EventBus } from "../../core/EventBus";
@@ -30,6 +33,7 @@ import actOneContent from "../../data/act-one-bootstrap.content.json";
 import { chapterThreeStoryLineKeyForSubtitle } from "../../data/chapterThreeStory";
 import qizhenLakeContent from "../../data/chapter3-qizhen-lake.content.json";
 import chapterFour755Content from "../../data/chapter4-755.content.json";
+import { CHAPTER_FOUR_ZHU_QUESTIONS } from "../../data/ChapterFourAlumniHonorWall";
 import { ItemInspectDialog } from "../../components/ItemInspectDialog";
 import { PixelIcon } from "../../components/PixelIcon";
 import { ActOneBootstrapController } from "../../modules/ActOneBootstrapController";
@@ -54,29 +58,30 @@ import {
   type ChapterFour755Intent,
   type ChapterFour755IntentDetailCode,
   type ChapterFour755IntentResult,
-  type ChapterFourMaintenanceDiagnosisAnswers
 } from "../../modules/ChapterFourTemporalMazeController";
-import {
-  CHAPTER_FOUR_INSERTED_PUZZLES,
-  isChapterFourInsertedPuzzleId,
-  type ChapterFourInsertedPuzzleAnswer,
-  type ChapterFourInsertedPuzzleId,
-  type ChapterFourInsertedPuzzleTargetId
-} from "../../modules/ChapterFourInsertedPuzzleModel";
-import { ChapterFourInsertedPuzzleGame } from "../../components/temporal-maze/ChapterFourInsertedPuzzleGame";
-import { ChapterFourMaintenanceDiagnosisGame } from "../../components/temporal-maze/ChapterFourMaintenanceDiagnosisGame";
+import { isChapterFourLightGridSolved } from "../../modules/ChapterFourLightGridModel";
 import { ChapterFourPowerPanelGame } from "../../components/temporal-maze/ChapterFourPowerPanelGame";
-import { ChapterFourExteriorQuestions } from "../../components/temporal-maze/ChapterFourExteriorQuestions";
-import { ChapterFourStarLampClosure } from "../../components/temporal-maze/ChapterFourStarLampClosure";
 import { ChapterFourStairPuzzleOverlay } from "../../components/temporal-maze/ChapterFourStairPuzzleOverlay";
 import { ChapterFourTransitionOverlay } from "../../components/temporal-maze/ChapterFourTransitionOverlay";
+import {
+  ChapterFourStarLampClosure,
+  type ChapterFourStarLampSavedAnswers
+} from "../../components/temporal-maze/ChapterFourStarLampClosure";
+import { useChapter4PrologueGateBlocked } from "../../components/Chapter4PrologueRuntimeGate";
 import { ChapterFourClosureSessionRegistry } from "../../modules/ChapterFourClosureSessionRegistry";
 import {
+  CHAPTER_FOUR_EXTERIOR_DOOR,
+  CHAPTER_FOUR_EXTERIOR_DOOR_FALLBACK_MS
+} from "../../modules/ChapterFourExteriorDoorContract";
+import { selectChapterFourMazeProjection } from "../../modules/ChapterFourMazeProjection";
+import {
+  CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY,
+  getChapterFourTransitionPresentationById,
   selectChapterFourTransitionPresentation,
+  selectChapterFourTransitionPresentationOwner,
+  type ChapterFourTransitionPresentationOwner,
   type ChapterFourTransitionPresentationPlan
 } from "../../modules/ChapterFourTransitionPresentation";
-import { useChapter4PrologueGateBlocked } from "../../components/Chapter4PrologueRuntimeGate";
-import { selectChapterFourMazeProjection } from "../../modules/ChapterFourMazeProjection";
 import { exitRpgFullscreen, toggleRpgFullscreen } from "../../modules/RpgFullscreen";
 import { BootScene } from "./BootScene";
 import { QizhenLoopScene } from "./QizhenLoopScene";
@@ -85,7 +90,6 @@ import { LIBRARY_INTERIOR_WARM_ASSET_URLS, LibraryInteriorScene } from "./Librar
 import { CANTEEN_INTERIOR_WARM_ASSET_URLS, CanteenInteriorScene } from "./CanteenInteriorScene";
 import { THEATER_INTERIOR_WARM_ASSET_URLS, TheaterInteriorScene } from "./TheaterInteriorScene";
 import { createTheaterRuntimePort } from "./TheaterRuntimeContract";
-import type { TheaterSpotlightAttempt, TheaterSpotlightLane } from "./TheaterSpotlightModel";
 import { QIZHEN_LAKE_WARM_ASSET_URLS, QizhenLakeScene } from "./QizhenLakeScene";
 import {
   QizhenRainRescueCinematic,
@@ -260,16 +264,64 @@ interface ChapterFourPowerPanelSession {
   spatial: { distance: "within_range" };
   runtimeTarget: ChapterFour755RuntimeTargetContext;
 }
+
 interface ChapterFourTransitionSession {
   sessionId: string;
+  requestId: string;
   plan: ChapterFourTransitionPresentationPlan;
 }
-interface ChapterFourInsertedPuzzleSession {
-  puzzleId: ChapterFourInsertedPuzzleId;
-  targetId: ChapterFourInsertedPuzzleTargetId;
-  mode: "light" | "dark";
-  completed: boolean;
-  prerequisiteReady: boolean;
+
+interface ChapterFourTransitionResumeMarker {
+  version: 1;
+  transitionId: string;
+  toPhase: ChapterFourTransitionPresentationPlan["toPhase"];
+}
+
+function readChapterFourTransitionResumeMarker(): ChapterFourTransitionResumeMarker | null {
+  try {
+    const raw = window.sessionStorage.getItem(CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY);
+    if (!raw) return null;
+    const marker = JSON.parse(raw) as Partial<ChapterFourTransitionResumeMarker>;
+    if (marker.version !== 1
+      || typeof marker.transitionId !== "string"
+      || typeof marker.toPhase !== "string") {
+      window.sessionStorage.removeItem(CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY);
+      return null;
+    }
+    return marker as ChapterFourTransitionResumeMarker;
+  } catch {
+    return null;
+  }
+}
+
+function rememberChapterFourTransitionForResume(
+  plan: ChapterFourTransitionPresentationPlan
+): void {
+  try {
+    const marker: ChapterFourTransitionResumeMarker = {
+      version: 1,
+      transitionId: plan.id,
+      toPhase: plan.toPhase
+    };
+    window.sessionStorage.setItem(
+      CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY,
+      JSON.stringify(marker)
+    );
+  } catch {
+    // Session-only recovery is best effort and never controls progression.
+  }
+}
+
+function clearChapterFourTransitionResumeMarker(transitionId?: string): void {
+  try {
+    if (transitionId) {
+      const marker = readChapterFourTransitionResumeMarker();
+      if (marker && marker.transitionId !== transitionId) return;
+    }
+    window.sessionStorage.removeItem(CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY);
+  } catch {
+    // Storage cleanup cannot block gameplay continuation.
+  }
 }
 const CHAPTER_FOUR_755_ACTIVE_PHASES = new Set<GameState["chapter4"]["phase"]>([
   "opening_handoff",
@@ -294,7 +346,7 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "resolve_external_time_rejection",
   "inspect_hall_clock",
   "resolve_hall_clock_inspection",
-  "adjust_hall_clock_time",
+  "pull_hall_clock",
   "inspect_bakery_conveyor_lamp",
   "complete_bakery_conveyor_stop",
   "talk_to_a1_front_desk_attendant",
@@ -306,11 +358,10 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "observe_elevator_history",
   "calibrate_elevator_history",
   "observe_a3_reference",
-  "inspect_chapter_four_context",
-  "complete_inserted_puzzle",
   "complete_misaligned_stair",
   "observe_room204_residual",
   "place_room204_piece",
+  "place_room204_group",
   "complete_room204_projection",
   "collect_positioning_plate",
   "install_positioning_plate",
@@ -318,7 +369,11 @@ const CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS = new Set([
   "complete_minute_theft",
   "open_power_panel",
   "toggle_light_zone",
-  "lock_light_grid",
+  "lock_light_grid"
+]);
+const CHAPTER_FOUR_755_EXTERNAL_OVERLAY_INTENTS = new Set<ChapterFour755Intent["type"]>([
+  "complete_misaligned_stair",
+  "complete_zhu_two_questions",
   "acknowledge_exterior_closure"
 ]);
 const LIBRARY_ACTION_CONTRACTS: Record<string, Readonly<{ targetId: string; itemId: ItemId | "" }>> = {
@@ -473,13 +528,13 @@ export function RpgGameHost({
   const chapter4IntentRequestSerialRef = useRef(0);
   const chapter4ResolvedRequestIdsRef = useRef<Set<string>>(new Set());
   const chapter4PowerPanelPendingRequestRef = useRef<string | null>(null);
-  const chapter4InsertedPuzzlePendingRequestRef = useRef<string | null>(null);
-  const chapter4MaintenanceDiagnosisPendingRequestRef = useRef<string | null>(null);
   const chapter4StairPendingRequestRef = useRef<string | null>(null);
-  const chapter4QuestionPendingRequestRef = useRef<string | null>(null);
+  const chapter4ClosureAnswerPendingRequestRef = useRef<string | null>(null);
   const chapter4ClosurePendingRequestRef = useRef<string | null>(null);
   const chapter4ClosureSessionIdRef = useRef<string | null>(null);
-  const chapter4StairPausedSceneKeysRef = useRef<Set<string>>(new Set());
+  const chapter4TransitionSessionRef = useRef<ChapterFourTransitionSession | null>(null);
+  const chapter4ExteriorDoorFallbackTimerRef = useRef<number | null>(null);
+  const chapter4PausedSceneKeysRef = useRef<Set<string>>(new Set());
   const [chapter4InteractionBlocked, setChapter4InteractionBlocked] = useState(false);
   const [chapter4ScenePointerAllowed, setChapter4ScenePointerAllowed] = useState(false);
   const [chapter4SceneKeyboardAllowed, setChapter4SceneKeyboardAllowed] = useState(false);
@@ -487,19 +542,12 @@ export function RpgGameHost({
     useState<ChapterFourPowerPanelSession | null>(null);
   const [chapter4PowerPanelPending, setChapter4PowerPanelPending] = useState(false);
   const [chapter4PowerPanelFeedback, setChapter4PowerPanelFeedback] = useState<string | null>(null);
-  const [chapter4InsertedPuzzleSession, setChapter4InsertedPuzzleSession] =
-    useState<ChapterFourInsertedPuzzleSession | null>(null);
-  const [chapter4InsertedPuzzlePending, setChapter4InsertedPuzzlePending] = useState(false);
-  const [chapter4InsertedPuzzleFeedback, setChapter4InsertedPuzzleFeedback] = useState<string | null>(null);
-  const [chapter4MaintenanceDiagnosisOpen, setChapter4MaintenanceDiagnosisOpen] = useState(false);
-  const [chapter4MaintenanceDiagnosisPending, setChapter4MaintenanceDiagnosisPending] = useState(false);
-  const [chapter4MaintenanceDiagnosisFeedback, setChapter4MaintenanceDiagnosisFeedback] = useState<string | null>(null);
   const [chapter4StairActive, setChapter4StairActive] = useState(false);
   const [chapter4StairFeedback, setChapter4StairFeedback] = useState<string | null>(null);
-  const [chapter4QuestionPending, setChapter4QuestionPending] = useState(false);
-  const [chapter4QuestionFeedback, setChapter4QuestionFeedback] = useState<string | null>(null);
-  const [chapter4QuestionConfirmed, setChapter4QuestionConfirmed] = useState(false);
   const [chapter4ClosureSessionId, setChapter4ClosureSessionId] = useState<string | null>(null);
+  const [chapter4ExteriorDoorReady, setChapter4ExteriorDoorReady] = useState(false);
+  const [chapter4ClosureAnswerSaving, setChapter4ClosureAnswerSaving] = useState(false);
+  const [chapter4ClosureAnswerError, setChapter4ClosureAnswerError] = useState<string | null>(null);
   const [chapter4ClosureFeedback, setChapter4ClosureFeedback] = useState<string | null>(null);
   const [chapter4TransitionSession, setChapter4TransitionSession] =
     useState<ChapterFourTransitionSession | null>(null);
@@ -507,17 +555,10 @@ export function RpgGameHost({
   const pendingFishingRef = useRef<{ sessionId: string; spotId: QizhenFishingSpotId } | null>(null);
   const itemInspectOpen = inspectedMapItem !== null;
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState);
-  const canteenStartTransitionActive = state.canteenHunt.phase === "chase_ready"
-    && state.canteenHunt.bikePaid
-    && !state.canteenHunt.chaseCompleted;
-  const canteenChaseRunActive = state.canteenHunt.phase === "chasing"
-    && !state.canteenHunt.chaseCompleted;
-  const canteenFinishTransitionActive = state.canteenHunt.phase === "chasing"
-    && state.canteenHunt.chaseCompleted
-    && state.canteenHunt.chaseBestDistance >= 755;
-  const canteenExclusiveActive = canteenStartTransitionActive
-    || canteenChaseRunActive
-    || canteenFinishTransitionActive;
+  const canteenStartTransitionActive = state.canteenHunt.phase === "chase_ready" && state.canteenHunt.bikePaid && !state.canteenHunt.chaseCompleted;
+  const canteenChaseRunActive = state.canteenHunt.phase === "chasing" && !state.canteenHunt.chaseCompleted;
+  const canteenFinishTransitionActive = state.canteenHunt.phase === "chasing" && state.canteenHunt.chaseCompleted && state.canteenHunt.chaseBestDistance >= 755;
+  const canteenExclusiveActive = canteenStartTransitionActive || canteenChaseRunActive || canteenFinishTransitionActive;
   const chaseActive = canteenChaseRunActive;
   const controller = useMemo(() => new ActOneBootstrapController(store, events), [events, store]);
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
@@ -525,19 +566,14 @@ export function RpgGameHost({
   const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
   const batteryController = useMemo(() => new PhoneBatteryController(store, events), [events, store]);
   const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
-  const chapter4ClosureRegistry = useMemo(() => new ChapterFourClosureSessionRegistry(), []);
+  const chapter4ClosureSessionRegistry = useMemo(() => new ChapterFourClosureSessionRegistry(), []);
   const chapter4Controller = useMemo(
-    () => new ChapterFourTemporalMazeController(store, events, chapter4ClosureRegistry),
-    [chapter4ClosureRegistry, events, store]
+    () => new ChapterFourTemporalMazeController(store, events, chapter4ClosureSessionRegistry),
+    [chapter4ClosureSessionRegistry, events, store]
   );
   const bridge = useMemo(() => createRpgBridge(store, router, events), [events, router, store]);
   const theaterRuntimePort = useMemo(() => createTheaterRuntimePort(bridge), [bridge]);
   const runtimeScene = resolveRuntimeScene(state);
-  const chapter4QuestionsAnswered = state.chapter4.factIds.includes("zhu_two_questions_answered");
-  const chapter4QuestionOpen = runtimeScene === "duan_yongping_temporal_maze"
-    && state.chapter4.phase === "exterior_closure"
-    && !state.chapter4.completed
-    && !chapter4QuestionConfirmed;
   const kayakPaddleGesturesRef = useRef<Map<number, KayakPaddleGesture>>(new Map());
   const [kayakPaddleSwipeState, setKayakPaddleSwipeState] = useState<Partial<Record<QizhenPaddleSide, KayakPaddleSwipePhase>>>({});
   const chapter4MazeActive = runtimeScene === "duan_yongping_temporal_maze";
@@ -545,18 +581,26 @@ export function RpgGameHost({
     && state.chapter4.prologueSeen
     && (state.chapter4.floor === "A1" || state.chapter4.floor === "A2" || state.chapter4.floor === "A3")
     && CHAPTER_FOUR_755_ACTIVE_PHASES.has(state.chapter4.phase);
-  const chapter4PowerPanelOpen = chapter4PowerPanelSession !== null;
+  const chapter4ClosurePhaseActive = chapter4MazeActive
+    && state.chapter4.phase === "exterior_closure"
+    && state.chapter4.floor === "A1"
+    && state.chapter4.roomId === "a1_exterior"
+    && !state.chapter4.completed;
+  const chapter4TransitionActive = chapter4TransitionSession !== null;
+  const chapter4ClosurePresentationReady = chapter4ClosurePhaseActive
+    && chapter4ExteriorDoorReady
+    && !chapter4TransitionActive;
   const chapter4ClosureOpen = chapter4ClosureSessionId !== null;
-  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen
-    || chapter4InsertedPuzzleSession !== null || chapter4MaintenanceDiagnosisOpen || chapter4StairActive
-    || chapter4QuestionOpen || chapter4ClosureOpen || chapter4TransitionSession !== null;
-  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4InsertedPuzzleSession !== null
-    || chapter4MaintenanceDiagnosisOpen || chapter4StairActive || chapter4QuestionOpen || chapter4ClosureOpen
-    || chapter4TransitionSession !== null
+  const chapter4ClosureAnswersSaved = state.chapter4.factIds.includes("zhu_two_questions_answered")
+    && state.chapter4.zhuQuestionAnswers.purpose !== null
+    && state.chapter4.zhuQuestionAnswers.person !== null;
+  const chapter4PowerPanelOpen = chapter4PowerPanelSession !== null;
+  const chapter4SurfaceReplacementActive = chapter4StairActive || chapter4ClosureOpen;
+  const chapter4ExclusiveOverlayActive = chapter4SurfaceReplacementActive || chapter4TransitionActive;
+  const chapter4OverlayBlocked = chapter4InteractionBlocked || chapter4PowerPanelOpen || chapter4ExclusiveOverlayActive;
+  const chapter4PhaserInputBlocked = chapter4PowerPanelOpen || chapter4ExclusiveOverlayActive
     || (chapter4InteractionBlocked && !chapter4ScenePointerAllowed);
-  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4InsertedPuzzleSession !== null
-    || chapter4MaintenanceDiagnosisOpen || chapter4StairActive || chapter4QuestionOpen || chapter4ClosureOpen
-    || chapter4TransitionSession !== null
+  const chapter4PhaserKeyboardBlocked = chapter4PowerPanelOpen || chapter4ExclusiveOverlayActive
     || (chapter4InteractionBlocked && !chapter4SceneKeyboardAllowed);
   const assetLoadBlocked = assetLoadReport?.status === "loading" || assetLoadReport?.status === "failed";
   inputBlockedRef.current = inputBlocked || itemInspectOpen || canteenExclusiveActive || chapter4PhaserInputBlocked
@@ -593,21 +637,15 @@ export function RpgGameHost({
       setChapter4PowerPanelSession(null);
       setChapter4PowerPanelPending(false);
       setChapter4PowerPanelFeedback(null);
-      chapter4InsertedPuzzlePendingRequestRef.current = null;
-      setChapter4InsertedPuzzleSession(null);
-      setChapter4InsertedPuzzlePending(false);
-      setChapter4InsertedPuzzleFeedback(null);
-      chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
-      setChapter4MaintenanceDiagnosisOpen(false);
-      setChapter4MaintenanceDiagnosisPending(false);
-      setChapter4MaintenanceDiagnosisFeedback(null);
       chapter4StairPendingRequestRef.current = null;
       setChapter4StairActive(false);
       setChapter4StairFeedback(null);
-      chapter4QuestionPendingRequestRef.current = null;
-      setChapter4QuestionPending(false);
-      setChapter4QuestionFeedback(null);
-      setChapter4QuestionConfirmed(false);
+      chapter4ClosureAnswerPendingRequestRef.current = null;
+      chapter4ClosurePendingRequestRef.current = null;
+      setChapter4ClosureAnswerSaving(false);
+      setChapter4ClosureAnswerError(null);
+      setChapter4ClosureFeedback(null);
+      chapter4TransitionSessionRef.current = null;
       setChapter4TransitionSession(null);
     }
   }, [chapter4MazeActive]);
@@ -621,6 +659,103 @@ export function RpgGameHost({
   }), [events]);
 
   useEffect(() => {
+    if (!chapter4MazeActive || chapter4TransitionSessionRef.current) return;
+    const marker = readChapterFourTransitionResumeMarker();
+    if (!marker) return;
+    const plan = getChapterFourTransitionPresentationById(marker.transitionId);
+    const current = store.getState();
+    if (!plan
+      || marker.toPhase !== plan.toPhase
+      || current.chapter4.phase !== plan.toPhase) {
+      clearChapterFourTransitionResumeMarker(marker.transitionId);
+      return;
+    }
+    const transitionSession: ChapterFourTransitionSession = {
+      sessionId: `chapter4-transition-resume-${plan.id}`,
+      requestId: `resume:${plan.id}`,
+      plan
+    };
+    chapter4TransitionSessionRef.current = transitionSession;
+    setChapter4TransitionSession(transitionSession);
+    events.emit("rpg_subtitle_clear");
+    events.emit("rpg_chapter4_transition_resumed", {
+      sessionId: transitionSession.sessionId,
+      transitionId: plan.id,
+      phase: plan.toPhase
+    });
+  }, [chapter4MazeActive, events, state.chapter4.phase, store]);
+
+  useEffect(() => {
+    if (chapter4ClosurePresentationReady) {
+      if (chapter4ClosureSessionIdRef.current === null) {
+        const sessionId = chapter4ClosureSessionRegistry.beginSession();
+        chapter4ClosureSessionIdRef.current = sessionId;
+        setChapter4ClosureSessionId(sessionId);
+        setChapter4ClosureAnswerError(null);
+        setChapter4ClosureFeedback(null);
+      }
+      return;
+    }
+    const sessionId = chapter4ClosureSessionIdRef.current;
+    if (sessionId !== null) {
+      chapter4ClosureSessionRegistry.cancelSession(sessionId);
+    }
+    chapter4ClosureSessionIdRef.current = null;
+    chapter4ClosureAnswerPendingRequestRef.current = null;
+    chapter4ClosurePendingRequestRef.current = null;
+    setChapter4ClosureSessionId(null);
+    setChapter4ClosureAnswerSaving(false);
+    setChapter4ClosureAnswerError(null);
+    setChapter4ClosureFeedback(null);
+  }, [chapter4ClosurePresentationReady, chapter4ClosureSessionRegistry]);
+
+  useEffect(() => {
+    if (chapter4ExteriorDoorFallbackTimerRef.current !== null) {
+      window.clearTimeout(chapter4ExteriorDoorFallbackTimerRef.current);
+      chapter4ExteriorDoorFallbackTimerRef.current = null;
+    }
+    setChapter4ExteriorDoorReady(false);
+    if (!chapter4ClosurePhaseActive || chapter4TransitionActive) return;
+    chapter4ExteriorDoorFallbackTimerRef.current = window.setTimeout(() => {
+      chapter4ExteriorDoorFallbackTimerRef.current = null;
+      setChapter4ExteriorDoorReady(true);
+    }, CHAPTER_FOUR_EXTERIOR_DOOR_FALLBACK_MS);
+    return () => {
+      if (chapter4ExteriorDoorFallbackTimerRef.current !== null) {
+        window.clearTimeout(chapter4ExteriorDoorFallbackTimerRef.current);
+        chapter4ExteriorDoorFallbackTimerRef.current = null;
+      }
+    };
+  }, [chapter4ClosurePhaseActive, chapter4TransitionActive]);
+
+  useEffect(() => events.subscribe((event) => {
+    if (event.name !== CHAPTER_FOUR_EXTERIOR_DOOR.openedEventName) return;
+    const current = store.getState();
+    if (runtimeScene !== "duan_yongping_temporal_maze"
+      || current.chapter4.phase !== "exterior_closure"
+      || current.chapter4.floor !== "A1"
+      || current.chapter4.roomId !== "a1_exterior") return;
+    if (chapter4ExteriorDoorFallbackTimerRef.current !== null) {
+      window.clearTimeout(chapter4ExteriorDoorFallbackTimerRef.current);
+      chapter4ExteriorDoorFallbackTimerRef.current = null;
+    }
+    setChapter4ExteriorDoorReady(true);
+  }), [events, runtimeScene, store]);
+
+  useEffect(() => () => {
+    if (chapter4ExteriorDoorFallbackTimerRef.current !== null) {
+      window.clearTimeout(chapter4ExteriorDoorFallbackTimerRef.current);
+      chapter4ExteriorDoorFallbackTimerRef.current = null;
+    }
+    const sessionId = chapter4ClosureSessionIdRef.current;
+    if (sessionId !== null) chapter4ClosureSessionRegistry.cancelSession(sessionId);
+    chapter4ClosureSessionIdRef.current = null;
+    chapter4ClosureAnswerPendingRequestRef.current = null;
+    chapter4ClosurePendingRequestRef.current = null;
+    chapter4TransitionSessionRef.current = null;
+  }, [chapter4ClosureSessionRegistry]);
+
+  useEffect(() => {
     return events.subscribe((event) => {
       if (event.name !== "rpg_chapter4_stair_alignment_requested") return;
       const current = store.getState().chapter4;
@@ -631,7 +766,7 @@ export function RpgGameHost({
         && !current.factIds.includes("misaligned_stair_solved");
       if (!allowed) {
         events.emit("rpg_subtitle", {
-          text: "先在三楼晨间教室记录桌椅与入口位置，再进入空间校准。",
+          text: "三楼参照记录尚未完成，请先在深色观察中保存桌影边缘与墙面中心。",
           tone: "system",
           durationMs: 2800
         });
@@ -643,77 +778,10 @@ export function RpgGameHost({
   }, [events, runtimeScene, store]);
 
   useEffect(() => {
-    return events.subscribe((event) => {
-      if (event.name !== "chapter4_inserted_puzzle_requested") return;
-      const puzzleId = event.payload?.puzzleId;
-      if (!isChapterFourInsertedPuzzleId(puzzleId)) return;
-      const definition = CHAPTER_FOUR_INSERTED_PUZZLES[puzzleId];
-      if (event.payload?.targetId !== definition.targetId) return;
-      const mode = event.payload?.mode;
-      if (mode !== "light" && mode !== "dark") return;
-      chapter4InsertedPuzzlePendingRequestRef.current = null;
-      setChapter4InsertedPuzzlePending(false);
-      setChapter4InsertedPuzzleFeedback(null);
-      setChapter4InsertedPuzzleSession({
-        puzzleId,
-        targetId: definition.targetId,
-        mode,
-        completed: event.payload?.completed === true,
-        prerequisiteReady: event.payload?.prerequisiteReady === true
-      });
-    });
-  }, [events]);
-
-  useEffect(() => {
-    return events.subscribe((event) => {
-      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
-      const requestId = String(event.payload?.requestId ?? "");
-      if (!requestId || requestId !== chapter4InsertedPuzzlePendingRequestRef.current) return;
-      chapter4InsertedPuzzlePendingRequestRef.current = null;
-      setChapter4InsertedPuzzlePending(false);
-      const result = event.payload?.result;
-      const accepted = typeof result === "object"
-        && result !== null
-        && (result as { accepted?: unknown }).accepted === true;
-      if (!accepted) {
-        setChapter4InsertedPuzzleFeedback(String(
-          event.payload?.feedback ?? "当前组合与现场痕迹不一致，可以继续调整。"
-        ));
-        return;
-      }
-      setChapter4InsertedPuzzleSession((current) => current
-        ? { ...current, completed: true }
-        : current);
-      setChapter4InsertedPuzzleFeedback(null);
-    });
-  }, [events]);
-
-  const submitChapterFourInsertedPuzzle = useCallback((answer: ChapterFourInsertedPuzzleAnswer) => {
-    const session = chapter4InsertedPuzzleSession;
-    if (!session
-      || answer.puzzleId !== session.puzzleId
-      || chapter4InsertedPuzzlePendingRequestRef.current) return;
-    const requestId = `host-inserted-puzzle-${++chapter4IntentRequestSerialRef.current}`;
-    chapter4InsertedPuzzlePendingRequestRef.current = requestId;
-    setChapter4InsertedPuzzlePending(true);
-    setChapter4InsertedPuzzleFeedback(null);
-    events.emit("rpg_chapter4_755_intent_requested", {
-      requestId,
-      intent: { type: "complete_inserted_puzzle", answer }
-    });
-  }, [chapter4InsertedPuzzleSession, events]);
-
-  const closeChapterFourInsertedPuzzle = useCallback(() => {
-    if (chapter4InsertedPuzzlePendingRequestRef.current) return;
-    setChapter4InsertedPuzzleFeedback(null);
-    setChapter4InsertedPuzzleSession(null);
-  }, []);
-
-  useEffect(() => {
     const game = gameRef.current;
     if (!game?.isBooted) return;
-    if (chapter4StairActive) {
-      const pausedKeys = chapter4StairPausedSceneKeysRef.current;
+    if (chapter4ExclusiveOverlayActive) {
+      const pausedKeys = chapter4PausedSceneKeysRef.current;
       pausedKeys.clear();
       for (const scene of game.scene.getScenes(true)) {
         const sceneKey = scene.sys.settings.key;
@@ -726,11 +794,25 @@ export function RpgGameHost({
       events.emit("rpg_direction_changed", { x: 0, y: 0 });
       return;
     }
-    for (const sceneKey of chapter4StairPausedSceneKeysRef.current) {
+    for (const sceneKey of chapter4PausedSceneKeysRef.current) {
       if (game.scene.isPaused(sceneKey)) game.scene.resume(sceneKey);
     }
-    chapter4StairPausedSceneKeysRef.current.clear();
-  }, [chapter4StairActive, events]);
+    chapter4PausedSceneKeysRef.current.clear();
+  }, [chapter4ExclusiveOverlayActive, events]);
+
+  const completeChapterFourTransition = useCallback((sessionId: string) => {
+    const session = chapter4TransitionSessionRef.current;
+    if (!session || session.sessionId !== sessionId) return;
+    chapter4TransitionSessionRef.current = null;
+    setChapter4TransitionSession(null);
+    clearChapterFourTransitionResumeMarker(session.plan.id);
+    events.emit("rpg_chapter4_transition_completed", {
+      sessionId,
+      requestId: session.requestId,
+      transitionId: session.plan.id,
+      phase: session.plan.toPhase
+    });
+  }, [events]);
 
   const completeChapterFourStair = useCallback(() => {
     if (chapter4StairPendingRequestRef.current) return;
@@ -760,12 +842,92 @@ export function RpgGameHost({
       setChapter4StairFeedback(null);
       setChapter4StairActive(false);
       events.emit("rpg_subtitle", {
-        text: "两层错位楼梯已连通。已从三楼抵达二楼，204 教室恢复流程开放。",
+        text: "四层错位楼梯已连通，当前位置已经更新。",
         tone: "system",
-        durationMs: 3600
+        durationMs: 2400
       });
     });
   }, [events]);
+
+  const saveChapterFourClosureAnswers = useCallback((answers: ChapterFourStarLampSavedAnswers) => {
+    if (chapter4ClosureAnswerPendingRequestRef.current !== null
+      || chapter4ClosurePendingRequestRef.current !== null) return;
+    const requestId = `host-closure-answers-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4ClosureAnswerPendingRequestRef.current = requestId;
+    setChapter4ClosureAnswerSaving(true);
+    setChapter4ClosureAnswerError(null);
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: {
+        type: "complete_zhu_two_questions",
+        purposeAnswer: answers.purpose,
+        personAnswer: answers.person
+      }
+    });
+  }, [events]);
+
+  const completeChapterFourClosure = useCallback((sessionId: string) => {
+    if (chapter4ClosurePendingRequestRef.current !== null
+      || sessionId !== chapter4ClosureSessionIdRef.current) return;
+    const proof = chapter4ClosureSessionRegistry.completeSession(sessionId);
+    if (!proof) {
+      chapter4ClosureSessionRegistry.cancelSession(sessionId);
+      const retrySessionId = chapter4ClosureSessionRegistry.beginSession();
+      chapter4ClosureSessionIdRef.current = retrySessionId;
+      setChapter4ClosureSessionId(retrySessionId);
+      setChapter4ClosureFeedback("灯光播放记录未能确认，正在重新播放本段。");
+      return;
+    }
+    const requestId = `host-closure-${++chapter4IntentRequestSerialRef.current}`;
+    chapter4ClosurePendingRequestRef.current = requestId;
+    setChapter4ClosureFeedback("正在确认最终收束…");
+    events.emit("rpg_chapter4_755_intent_requested", {
+      requestId,
+      intent: { type: "acknowledge_exterior_closure", proof }
+    });
+  }, [chapter4ClosureSessionRegistry, events]);
+
+  useEffect(() => {
+    return events.subscribe((event) => {
+      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
+      const requestId = String(event.payload?.requestId ?? "");
+      const result = event.payload?.result;
+      const accepted = typeof result === "object"
+        && result !== null
+        && (result as { accepted?: unknown }).accepted === true;
+
+      if (requestId && requestId === chapter4ClosureAnswerPendingRequestRef.current) {
+        chapter4ClosureAnswerPendingRequestRef.current = null;
+        setChapter4ClosureAnswerSaving(false);
+        if (accepted) {
+          setChapter4ClosureAnswerError(null);
+        } else {
+          setChapter4ClosureAnswerError(
+            String(event.payload?.feedback ?? "回答未能保存，请重试。")
+          );
+        }
+        return;
+      }
+
+      if (!requestId || requestId !== chapter4ClosurePendingRequestRef.current) return;
+      chapter4ClosurePendingRequestRef.current = null;
+      if (accepted) {
+        setChapter4ClosureFeedback(null);
+        return;
+      }
+
+      const previousSessionId = chapter4ClosureSessionIdRef.current;
+      if (previousSessionId !== null) {
+        chapter4ClosureSessionRegistry.cancelSession(previousSessionId);
+      }
+      const retrySessionId = chapter4ClosureSessionRegistry.beginSession();
+      chapter4ClosureSessionIdRef.current = retrySessionId;
+      setChapter4ClosureSessionId(retrySessionId);
+      setChapter4ClosureFeedback(
+        String(event.payload?.feedback ?? "最终收束未能确认，灯光将重新播放。")
+      );
+    });
+  }, [chapter4ClosureSessionRegistry, events]);
 
   useEffect(() => {
     if (state.chapter4.phase === "blackout_light_grid"
@@ -775,30 +937,6 @@ export function RpgGameHost({
     setChapter4PowerPanelPending(false);
     setChapter4PowerPanelFeedback(null);
   }, [state.chapter4.lightGrid.locked, state.chapter4.phase]);
-
-  useEffect(() => {
-    return events.subscribe((event) => {
-      if (event.name !== "chapter4_maintenance_diagnosis_requested") return;
-      const chapter = store.getState().chapter4;
-      if (runtimeScene !== "duan_yongping_temporal_maze"
-        || chapter.phase !== "maintenance_repair"
-        || chapter.factIds.includes("cart_wheel_inspected")) return;
-      chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
-      setChapter4MaintenanceDiagnosisPending(false);
-      setChapter4MaintenanceDiagnosisFeedback(null);
-      setChapter4MaintenanceDiagnosisOpen(true);
-    });
-  }, [events, runtimeScene, store]);
-
-  useEffect(() => {
-    const active = state.chapter4.phase === "maintenance_repair"
-      && !state.chapter4.factIds.includes("cart_wheel_inspected");
-    if (active) return;
-    chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
-    setChapter4MaintenanceDiagnosisOpen(false);
-    setChapter4MaintenanceDiagnosisPending(false);
-    setChapter4MaintenanceDiagnosisFeedback(null);
-  }, [state.chapter4.factIds, state.chapter4.phase]);
 
   useEffect(() => {
     events.emit("rpg_chapter4_power_panel_open_state_changed", {
@@ -814,129 +952,13 @@ export function RpgGameHost({
   }, [chapter4PowerPanelOpen, chapter4PowerPanelSession, events]);
 
   useEffect(() => {
-    if (state.chapter4.phase === "exterior_closure" && !state.chapter4.completed) return;
-    chapter4QuestionPendingRequestRef.current = null;
-    setChapter4QuestionPending(false);
-    setChapter4QuestionFeedback(null);
-    setChapter4QuestionConfirmed(false);
-  }, [state.chapter4.completed, state.chapter4.phase]);
-
-  const submitChapterFourQuestions = useCallback((
-    purposeAnswer: ChapterFourZhuPurposeAnswerId,
-    personAnswer: ChapterFourZhuPersonAnswerId
-  ) => {
-    if (chapter4QuestionPendingRequestRef.current !== null) return;
-    const requestId = `host-zhu-questions-${++chapter4IntentRequestSerialRef.current}`;
-    chapter4QuestionPendingRequestRef.current = requestId;
-    setChapter4QuestionPending(true);
-    setChapter4QuestionFeedback(null);
-    events.emit("rpg_chapter4_755_intent_requested", {
-      requestId,
-      intent: {
-        type: "complete_zhu_two_questions",
-        purposeAnswer,
-        personAnswer
-      }
-    });
-  }, [events]);
-
-  const confirmChapterFourQuestions = useCallback(() => {
-    setChapter4QuestionConfirmed(true);
-  }, []);
-
-  useEffect(() => events.subscribe((event) => {
-    if (event.name !== "rpg_chapter4_755_intent_resolved") return;
-    const requestId = String(event.payload?.requestId ?? "");
-    if (!requestId || requestId !== chapter4QuestionPendingRequestRef.current) return;
-    chapter4QuestionPendingRequestRef.current = null;
-    setChapter4QuestionPending(false);
-    const result = event.payload?.result;
-    const accepted = typeof result === "object"
-      && result !== null
-      && (result as { accepted?: unknown }).accepted === true;
-    setChapter4QuestionFeedback(accepted
-      ? "回答已保存"
-      : String(event.payload?.feedback ?? "回答未保存，请重试。"));
-  }), [events]);
-
-  useEffect(() => {
-    const active = runtimeScene === "duan_yongping_temporal_maze"
-      && state.chapter4.phase === "exterior_closure"
-      && chapter4QuestionsAnswered
-      && chapter4QuestionConfirmed
-      && !state.chapter4.completed;
-    if (active && chapter4ClosureSessionIdRef.current === null) {
-      const sessionId = chapter4ClosureRegistry.beginSession();
-      chapter4ClosureSessionIdRef.current = sessionId;
-      setChapter4ClosureSessionId(sessionId);
-      setChapter4ClosureFeedback(null);
-      return;
-    }
-    if (!active && chapter4ClosureSessionIdRef.current !== null) {
-      chapter4ClosureRegistry.cancelSession(chapter4ClosureSessionIdRef.current);
-      chapter4ClosureSessionIdRef.current = null;
-      chapter4ClosurePendingRequestRef.current = null;
-      setChapter4ClosureSessionId(null);
-      setChapter4ClosureFeedback(null);
-    }
-  }, [
-    chapter4ClosureRegistry,
-    chapter4QuestionConfirmed,
-    chapter4QuestionsAnswered,
-    runtimeScene,
-    state.chapter4.completed,
-    state.chapter4.phase
-  ]);
-
-  const completeChapterFourClosure = useCallback((sessionId: string) => {
-    if (chapter4ClosureSessionIdRef.current !== sessionId
-      || chapter4ClosurePendingRequestRef.current !== null) return;
-    const proof = chapter4ClosureRegistry.completeSession(sessionId);
-    if (!proof) {
-      setChapter4ClosureFeedback("灯光收束未完成，正在重新播放。");
-      return;
-    }
-    const requestId = `host-closure-${++chapter4IntentRequestSerialRef.current}`;
-    chapter4ClosurePendingRequestRef.current = requestId;
-    events.emit("rpg_chapter4_755_intent_requested", {
-      requestId,
-      intent: { type: "acknowledge_exterior_closure", proof }
-    });
-  }, [chapter4ClosureRegistry, events]);
-
-  useEffect(() => {
-    return events.subscribe((event) => {
-      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
-      const requestId = String(event.payload?.requestId ?? "");
-      if (!requestId || requestId !== chapter4ClosurePendingRequestRef.current) return;
-      chapter4ClosurePendingRequestRef.current = null;
-      const result = event.payload?.result;
-      const accepted = typeof result === "object"
-        && result !== null
-        && (result as { accepted?: unknown }).accepted === true;
-      if (accepted) {
-        setChapter4ClosureFeedback(null);
-        return;
-      }
-      const currentSessionId = chapter4ClosureSessionIdRef.current;
-      if (currentSessionId) chapter4ClosureRegistry.cancelSession(currentSessionId);
-      const retrySessionId = chapter4ClosureRegistry.beginSession();
-      chapter4ClosureSessionIdRef.current = retrySessionId;
-      setChapter4ClosureSessionId(retrySessionId);
-      setChapter4ClosureFeedback(String(
-        event.payload?.feedback ?? "灯光收束确认未写入，已重新播放。"
-      ));
-    });
-  }, [chapter4ClosureRegistry, events]);
-
-  useEffect(() => {
     return () => {
       const sessionId = chapter4ClosureSessionIdRef.current;
-      if (sessionId) chapter4ClosureRegistry.cancelSession(sessionId);
+      if (sessionId) chapter4ClosureSessionRegistry.cancelSession(sessionId);
       chapter4ClosureSessionIdRef.current = null;
       chapter4ClosurePendingRequestRef.current = null;
     };
-  }, [chapter4ClosureRegistry]);
+  }, [chapter4ClosureSessionRegistry]);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -973,12 +995,10 @@ export function RpgGameHost({
     }
     clearRpgCanvasHost(host);
     const initialScene = resolveRuntimeScene(store.getState());
-    const sceneClasses = [
-      SCENE_CLASSES[initialScene],
-      ...Object.entries(SCENE_CLASSES)
-        .filter(([sceneId]) => sceneId !== initialScene)
-        .map(([, SceneClass]) => SceneClass)
-    ];
+    const InitialSceneClass = resolveRuntimeSceneKey(store.getState()) === CHASE_STAIR_SCENE_KEY
+      ? ChapterFourChaseStairwellScene : SCENE_CLASSES[initialScene];
+    const sceneClasses = [InitialSceneClass, ...[...Object.values(SCENE_CLASSES), ChapterFourChaseStairwellScene]
+      .filter(SceneClass => SceneClass !== InitialSceneClass)];
     let stopAdaptiveResolution: () => void = () => undefined;
     const game = new Phaser.Game({
       type: Phaser.CANVAS,
@@ -1100,7 +1120,7 @@ export function RpgGameHost({
     syncActivatedSceneInput();
     const frame = window.requestAnimationFrame(syncActivatedSceneInput);
     return () => window.cancelAnimationFrame(frame);
-  }, [runtimeScene, state.rpgCheckpoint]);
+  }, [runtimeScene, state.rpgCheckpoint, state.chapter4.chaseStairwellStage]);
 
   useEffect(() => {
     if (runtimeScene === "library_interior" && state.rpgScene !== runtimeScene) {
@@ -1295,18 +1315,53 @@ export function RpgGameHost({
         return;
       }
       const result = sessionResolution.result;
-      const transitionPlan = selectChapterFourTransitionPresentation(result);
-      if (transitionPlan) {
-        setChapter4TransitionSession({
-          sessionId: `chapter4-transition-${requestId}`,
-          plan: transitionPlan
-        });
-      }
       const feedback = chapterFour755Feedback(result, trustedIntent.type);
-      const presentationOwner = CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS.has(trustedIntent.type)
-        ? "scene_or_overlay"
-        : "controller_feedback";
+      const transitionPlan = selectChapterFourTransitionPresentation(result);
+      const transitionOwner = selectChapterFourTransitionPresentationOwner(result);
+      let presentationOwner: ChapterFourTransitionPresentationOwner = transitionOwner
+        ?? (CHAPTER_FOUR_755_EXTERNAL_OVERLAY_INTENTS.has(trustedIntent.type)
+          ? "external_overlay"
+          : CHAPTER_FOUR_755_PRESENTATION_HANDSHAKE_INTENTS.has(trustedIntent.type)
+            ? "scene_interaction"
+            : "controller_feedback");
       const projection = selectChapterFourMazeProjection(store.getState());
+      if (transitionPlan) {
+        const activeSession = chapter4TransitionSessionRef.current;
+        if (activeSession && activeSession.requestId !== requestId) {
+          events.emit("rpg_chapter4_transition_cancelled", {
+            sessionId: activeSession.sessionId,
+            requestId: activeSession.requestId,
+            transitionId: activeSession.plan.id,
+            reason: "superseded"
+          });
+        }
+        const transitionSession: ChapterFourTransitionSession = {
+          sessionId: `chapter4-transition-${requestId}`,
+          requestId,
+          plan: transitionPlan
+        };
+        rememberChapterFourTransitionForResume(transitionPlan);
+        chapter4TransitionSessionRef.current = transitionSession;
+        setChapter4TransitionSession(transitionSession);
+        events.emit("rpg_subtitle_clear");
+        events.emit("rpg_chapter4_transition_started", {
+          sessionId: transitionSession.sessionId,
+          requestId,
+          transitionId: transitionPlan.id,
+          fromPhase: transitionPlan.fromPhase,
+          toPhase: transitionPlan.toPhase
+        });
+      } else if (result.accepted
+        && result.changed
+        && result.previousPhase !== null
+        && result.phase !== null
+        && result.previousPhase !== result.phase
+        && presentationOwner === "controller_feedback") {
+        presentationOwner = "controller_feedback";
+        console.error(
+          `[chapter4-755] missing transition presentation: ${trustedIntent.type}:${result.previousPhase}:${result.phase}`
+        );
+      }
       if (trustedIntent.type === "open_power_panel"
         && result.accepted
         && runtimeTarget
@@ -1335,7 +1390,8 @@ export function RpgGameHost({
         result,
         projection,
         feedback,
-        presentationOwner
+        presentationOwner,
+        ...(transitionPlan ? { transitionId: transitionPlan.id } : {})
       });
       events.emit("rpg_chapter4_755_intent_feedback", {
         requestId,
@@ -1343,7 +1399,8 @@ export function RpgGameHost({
         reason: result.reason,
         ...(result.detailCode ? { detailCode: result.detailCode } : {}),
         feedback,
-        presentationOwner
+        presentationOwner,
+        ...(transitionPlan ? { transitionId: transitionPlan.id } : {})
       });
     });
   }, [chapter4Controller, events, store]);
@@ -1399,53 +1456,13 @@ export function RpgGameHost({
   const closeChapterFourPowerPanel = useCallback(() => {
     if (chapter4PowerPanelPendingRequestRef.current !== null
       || store.getState().chapter4.lightGrid.locked) return;
-    if (chapter4PowerPanelSession) {
-      events.emit("rpg_chapter4_power_panel_attempt_abandoned", {
-        openRequestId: chapter4PowerPanelSession.openRequestId,
-        targetId: chapter4PowerPanelSession.targetId
-      });
+    const mask = store.getState().chapter4.lightGrid.mask;
+    if (!isChapterFourLightGridSolved(mask)) {
+      events.emit("rpg_chapter4_power_panel_attempt_abandoned", { mask });
     }
     setChapter4PowerPanelSession(null);
     setChapter4PowerPanelFeedback(null);
-  }, [chapter4PowerPanelSession, events, store]);
-
-  useEffect(() => {
-    return events.subscribe((event) => {
-      if (event.name !== "rpg_chapter4_755_intent_resolved") return;
-      const requestId = String(event.payload?.requestId ?? "");
-      if (!requestId || requestId !== chapter4MaintenanceDiagnosisPendingRequestRef.current) return;
-      chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
-      setChapter4MaintenanceDiagnosisPending(false);
-      const result = event.payload?.result;
-      const accepted = typeof result === "object"
-        && result !== null
-        && (result as { accepted?: unknown }).accepted === true;
-      if (!accepted) {
-        setChapter4MaintenanceDiagnosisFeedback("三项判断中仍有矛盾，请重新核对现场现象。");
-        return;
-      }
-      setChapter4MaintenanceDiagnosisFeedback(null);
-      setChapter4MaintenanceDiagnosisOpen(false);
-    });
-  }, [events]);
-
-  const submitChapterFourMaintenanceDiagnosis = useCallback((answers: ChapterFourMaintenanceDiagnosisAnswers) => {
-    if (chapter4MaintenanceDiagnosisPendingRequestRef.current) return;
-    const requestId = `host-maintenance-diagnosis-${++chapter4IntentRequestSerialRef.current}`;
-    chapter4MaintenanceDiagnosisPendingRequestRef.current = requestId;
-    setChapter4MaintenanceDiagnosisPending(true);
-    setChapter4MaintenanceDiagnosisFeedback(null);
-    events.emit("rpg_chapter4_755_intent_requested", {
-      requestId,
-      intent: { type: "complete_maintenance_diagnosis", answers }
-    });
-  }, [events]);
-
-  const closeChapterFourMaintenanceDiagnosis = useCallback(() => {
-    if (chapter4MaintenanceDiagnosisPendingRequestRef.current) return;
-    setChapter4MaintenanceDiagnosisFeedback(null);
-    setChapter4MaintenanceDiagnosisOpen(false);
-  }, []);
+  }, [events, store]);
 
   useEffect(() => {
     return events.subscribe((event) => {
@@ -1670,23 +1687,7 @@ export function RpgGameHost({
           targetLabel: "灯光控制台"
         });
       } else if (event.name === "rpg_theater_spotlight_attempt") {
-        const firstBeamAt = event.payload?.firstBeamAtMs;
-        const attempt: TheaterSpotlightAttempt = {
-          round: Number(event.payload?.round),
-          lane: String(event.payload?.lane ?? "center") as TheaterSpotlightLane,
-          maxContinuousLockMs: Number(event.payload?.maxContinuousLockMs),
-          beamActivated: event.payload?.beamActivated === true,
-          firstBeamAtMs: firstBeamAt === null || firstBeamAt === undefined
-            ? null
-            : Number(firstBeamAt),
-          actionMs: Number(event.payload?.actionMs),
-          submittedAtMs: Number(event.payload?.submittedAtMs)
-        };
-        theaterController.resolveSpotlightAttempt(attempt);
-      } else if (event.name === "rpg_theater_spotlight_choice") {
-        theaterController.resolveSpotlightChoice(String(event.payload?.lane ?? "center") as TheaterSpotlightLane);
-      } else if (event.name === "rpg_theater_spotlight_timeout") {
-        theaterController.missSpotlightRound();
+        theaterController.resolveSpotlightAttempt(event.payload?.attempt);
       } else if (event.name === "rpg_theater_reversal_complete_requested") {
         theaterController.completeReversal();
       } else if (event.name === "rpg_theater_exit_requested") {
@@ -1788,6 +1789,16 @@ export function RpgGameHost({
         const result = qizhenController.precheckCast(spotId);
         if (result === "accepted") {
           pendingFishingRef.current = { sessionId, spotId };
+          kayakPaddleGesturesRef.current.clear();
+          setKayakPaddleSwipeState({});
+          setFishingSession({
+            sessionId,
+            spotId,
+            chartId: spotId,
+            targetLabel: feedback.targetLabel,
+            totalNotes: 0,
+            assist: false
+          });
           events.emit("qizhen_fishing_prechecked", { sessionId, spotId, chartId: spotId });
         } else {
           events.emit("qizhen_fishing_precheck_failed", { sessionId, spotId, reason: result });
@@ -1799,6 +1810,10 @@ export function RpgGameHost({
         if (pending && pending.sessionId === sessionId) {
           pendingFishingRef.current = null;
           const spotId = pending.spotId;
+          if (!validateLakeFishingResult(event.payload?.result, spotId)) {
+            events.emit("qizhen_fishing_failed", { sessionId, spotId, reason: "invalid_result" });
+            return;
+          }
           const result = qizhenController.castAt(spotId);
           if (result === "accepted") {
             const fishingResult = event.payload?.result as QizhenFishingResult | undefined;
@@ -1985,32 +2000,20 @@ export function RpgGameHost({
 
     chapter4ResolvedRequestIdsRef.current.clear();
     chapter4PowerPanelPendingRequestRef.current = null;
-    chapter4InsertedPuzzlePendingRequestRef.current = null;
-    chapter4MaintenanceDiagnosisPendingRequestRef.current = null;
     chapter4StairPendingRequestRef.current = null;
-    chapter4QuestionPendingRequestRef.current = null;
     chapter4ClosurePendingRequestRef.current = null;
     const closureSessionId = chapter4ClosureSessionIdRef.current;
-    if (closureSessionId) chapter4ClosureRegistry.cancelSession(closureSessionId);
+    if (closureSessionId) chapter4ClosureSessionRegistry.cancelSession(closureSessionId);
     chapter4ClosureSessionIdRef.current = null;
-    chapter4StairPausedSceneKeysRef.current.clear();
+    chapter4PausedSceneKeysRef.current.clear();
     setChapter4InteractionBlocked(false);
     setChapter4ScenePointerAllowed(false);
     setChapter4SceneKeyboardAllowed(false);
     setChapter4PowerPanelSession(null);
     setChapter4PowerPanelPending(false);
     setChapter4PowerPanelFeedback(null);
-    setChapter4InsertedPuzzleSession(null);
-    setChapter4InsertedPuzzlePending(false);
-    setChapter4InsertedPuzzleFeedback(null);
-    setChapter4MaintenanceDiagnosisOpen(false);
-    setChapter4MaintenanceDiagnosisPending(false);
-    setChapter4MaintenanceDiagnosisFeedback(null);
     setChapter4StairActive(false);
     setChapter4StairFeedback(null);
-    setChapter4QuestionPending(false);
-    setChapter4QuestionFeedback(null);
-    setChapter4QuestionConfirmed(false);
     setChapter4TransitionSession(null);
     setChapter4ClosureSessionId(null);
     setChapter4ClosureFeedback(null);
@@ -2042,7 +2045,7 @@ export function RpgGameHost({
       });
     };
     restoreDeveloperCheckpointInput(12);
-  }), [chapter4ClosureRegistry, events, qizhenController, store]);
+  }), [chapter4ClosureSessionRegistry, events, qizhenController, store]);
 
   // 方案三.2/四 Task 4:页面隐藏视同关闭会话;离开湖区场景同理。
   useEffect(() => {
@@ -2253,14 +2256,20 @@ export function RpgGameHost({
     setKayakPaddlePhase(gesture.side, null);
   }
 
-  function emitFishingTouchInput(action: QizhenFishingAction, type: "press" | "release", event: React.PointerEvent<HTMLButtonElement>) {
+  const fishingTouchPointers = useRef(new Map<number, QizhenFishingAction>());
+
+  function emitFishingTouchInput(action: QizhenFishingAction, type: "press" | "release" | "cancel", event: React.PointerEvent<HTMLButtonElement>) {
+    if (type !== "press" && !fishingTouchPointers.current.has(event.pointerId)) return;
     if (type === "press") {
+      fishingTouchPointers.current.set(event.pointerId, action);
       try {
         event.currentTarget.setPointerCapture?.(event.pointerId);
       } catch {
         // Pointer capture is optional in older WebKit and some embedded browsers.
       }
     }
+    if (type !== "press") fishingTouchPointers.current.delete(event.pointerId);
+    if (type === "cancel") fishingTouchPointers.current.clear();
     events.emit("rpg_qizhen_fishing_input", { action, type, pointerType: event.pointerType });
     event.preventDefault();
   }
@@ -2356,6 +2365,7 @@ export function RpgGameHost({
       data-asset-load-status={assetLoadReport?.status ?? "idle"}
       data-rpg-engine={chapter4StairActive ? "three" : "phaser"}
       data-rpg-engine-reason={chapter4StairActive ? "chapter4_misaligned_stair" : "web_runtime_only"}
+      data-chapter4-transition-id={chapter4TransitionSession?.plan.id ?? ""}
       data-reality-mode={runtimeScene === "duan_yongping_temporal_maze"
         ? state.chapter4.mode
         : undefined}
@@ -2369,7 +2379,7 @@ export function RpgGameHost({
     >
       <section ref={bindShellRef} className="rpg-shell" aria-label="7:55 横屏游戏">
         <div ref={hostRef} className="rpg-canvas-host">
-          <div ref={phaserHostRef} className={`rpg-phaser-host${chapter4StairActive ? " is-suspended" : ""}`} />
+          <div ref={phaserHostRef} className={`rpg-phaser-host${chapter4SurfaceReplacementActive ? " is-suspended" : ""}`} />
           {chapter4StairActive ? (
             <ChapterFourStairPuzzleOverlay
               events={events}
@@ -2380,6 +2390,19 @@ export function RpgGameHost({
                 setChapter4StairFeedback(null);
                 setChapter4StairActive(false);
               }}
+            />
+          ) : null}
+          {chapter4ClosureSessionId ? (
+            <ChapterFourStarLampClosure
+              sessionId={chapter4ClosureSessionId}
+              questions={CHAPTER_FOUR_ZHU_QUESTIONS}
+              selectedAnswers={state.chapter4.zhuQuestionAnswers}
+              answersSaved={chapter4ClosureAnswersSaved}
+              saving={chapter4ClosureAnswerSaving}
+              saveError={chapter4ClosureAnswerError}
+              feedback={chapter4ClosureFeedback}
+              onSaveAnswers={saveChapterFourClosureAnswers}
+              onComplete={completeChapterFourClosure}
             />
           ) : null}
         </div>
@@ -2424,69 +2447,35 @@ export function RpgGameHost({
           </section>
         ) : null}
 
+        {chapter4TransitionSession ? (
+          <ChapterFourTransitionOverlay
+            sessionId={chapter4TransitionSession.sessionId}
+            plan={chapter4TransitionSession.plan}
+            onComplete={completeChapterFourTransition}
+
+          />
+        ) : null}
+
         {canteenStartTransitionActive ? (
           <CanteenBikeTransitionOverlay
             stage="start"
             onComplete={() => { canteenController.startChase(); }}
           />
-        ) : canteenChaseRunActive ? (
+        ) : null}
+
+        {chaseActive ? (
           <CanteenChaseOverlay
             events={events}
             onAttempt={(attempt) => { canteenController.resolveChaseAttempt(attempt); }}
           />
-        ) : canteenFinishTransitionActive ? (
-          <CanteenBikeTransitionOverlay
-            stage="finish"
-            onComplete={() => { canteenController.completeChase(); }}
-          />
+        ) : null}
+
+        {canteenFinishTransitionActive ? (
+          <CanteenBikeTransitionOverlay stage="finish" onComplete={() => { canteenController.completeChase(); }} />
         ) : null}
 
         {qizhenRainRescueCinematicOpen ? (
           <QizhenRainRescueCinematic onComplete={completeQizhenRainRescueCinematic} />
-        ) : null}
-
-        {chapter4QuestionOpen ? (
-          <ChapterFourExteriorQuestions
-            answered={chapter4QuestionsAnswered}
-            pending={chapter4QuestionPending}
-            feedback={chapter4QuestionFeedback}
-            onSubmit={submitChapterFourQuestions}
-            onConfirmationComplete={confirmChapterFourQuestions}
-          />
-        ) : null}
-
-        {chapter4ClosureSessionId ? (
-          <ChapterFourStarLampClosure
-            key={chapter4ClosureSessionId}
-            sessionId={chapter4ClosureSessionId}
-            feedback={chapter4ClosureFeedback}
-            onComplete={completeChapterFourClosure}
-          />
-        ) : null}
-
-        {chapter4TransitionSession ? (
-          <ChapterFourTransitionOverlay
-            sessionId={chapter4TransitionSession.sessionId}
-            plan={chapter4TransitionSession.plan}
-            onComplete={(sessionId) => {
-              setChapter4TransitionSession((current) =>
-                current?.sessionId === sessionId ? null : current
-              );
-            }}
-          />
-        ) : null}
-
-        {chapter4InsertedPuzzleSession ? (
-          <ChapterFourInsertedPuzzleGame
-            puzzleId={chapter4InsertedPuzzleSession.puzzleId}
-            mode={chapter4InsertedPuzzleSession.mode}
-            completed={chapter4InsertedPuzzleSession.completed}
-            prerequisiteReady={chapter4InsertedPuzzleSession.prerequisiteReady}
-            pending={chapter4InsertedPuzzlePending}
-            feedback={chapter4InsertedPuzzleFeedback}
-            onSubmit={submitChapterFourInsertedPuzzle}
-            onClose={closeChapterFourInsertedPuzzle}
-          />
         ) : null}
 
         {chapter4PowerPanelSession ? (
@@ -2504,14 +2493,6 @@ export function RpgGameHost({
           />
         ) : null}
 
-        {chapter4MaintenanceDiagnosisOpen ? (
-          <ChapterFourMaintenanceDiagnosisGame
-            pending={chapter4MaintenanceDiagnosisPending}
-            feedback={chapter4MaintenanceDiagnosisFeedback}
-            onSubmit={submitChapterFourMaintenanceDiagnosis}
-            onClose={closeChapterFourMaintenanceDiagnosis}
-          />
-        ) : null}
 
 
         {photoSession ? (
@@ -2677,43 +2658,19 @@ export function RpgGameHost({
           && !photoSessionOpen && !qizhenRainRescueCinematicOpen
           && runtimeScene === "qizhen_lake" && state.qizhenLake.vehicle === "kayak" ? (
           fishingSession ? (
-            <nav className="rpg-kayak-controls is-fishing" aria-label="节奏钓鱼 A 左收线、S 提竿、D 右收线按钮">
-              <button
-                type="button"
-                className="left-paddle"
-                aria-label="A 左收线"
-                onPointerDown={(event) => emitFishingTouchInput("left", "press", event)}
-                onPointerUp={(event) => emitFishingTouchInput("left", "release", event)}
-                onPointerCancel={(event) => emitFishingTouchInput("left", "release", event)}
-                onLostPointerCapture={(event) => emitFishingTouchInput("left", "release", event)}
+            <nav className="rpg-kayak-controls is-fishing is-unified-fishing" aria-label="启真湖垂钓：左右控线与收竿">
+              {(["left", "hook", "right"] as const).map(action => <button
+                key={action} type="button" className={`interact fishing-${action}`}
+                aria-label={action === "hook" ? "按住收线，松手放线或起鱼" : action === "left" ? "向左控线" : "向右控线"}
+                disabled={fishingSession.totalNotes === 0}
+                onPointerDown={event => emitFishingTouchInput(action, "press", event)}
+                onPointerUp={event => emitFishingTouchInput(action, "release", event)}
+                onPointerCancel={event => emitFishingTouchInput(action, "cancel", event)}
+                onLostPointerCapture={event => emitFishingTouchInput(action, "cancel", event)}
               >
-                <strong aria-hidden="true">A</strong>
-                <span>左收线</span>
-              </button>
-              <button
-                type="button"
-                className="interact"
-                aria-label="S 提竿"
-                onPointerDown={(event) => emitFishingTouchInput("hook", "press", event)}
-                onPointerUp={(event) => emitFishingTouchInput("hook", "release", event)}
-                onPointerCancel={(event) => emitFishingTouchInput("hook", "release", event)}
-                onLostPointerCapture={(event) => emitFishingTouchInput("hook", "release", event)}
-              >
-                <strong aria-hidden="true">S</strong>
-                <span>提竿</span>
-              </button>
-              <button
-                type="button"
-                className="right-paddle"
-                aria-label="D 右收线"
-                onPointerDown={(event) => emitFishingTouchInput("right", "press", event)}
-                onPointerUp={(event) => emitFishingTouchInput("right", "release", event)}
-                onPointerCancel={(event) => emitFishingTouchInput("right", "release", event)}
-                onLostPointerCapture={(event) => emitFishingTouchInput("right", "release", event)}
-              >
-                <strong aria-hidden="true">D</strong>
-                <span>右收线</span>
-              </button>
+                <span>{action === "hook" ? "按住收线" : action === "left" ? "◀ 控线" : "控线 ▶"}</span>
+                <small>{action === "hook" ? "松手放线 / 起鱼" : action === "left" ? "A / ←" : "D / →"}</small>
+              </button>)}
             </nav>
           ) : (
             <nav className="rpg-kayak-controls" aria-label="皮划艇划桨手势和交互按钮">
@@ -2748,7 +2705,7 @@ export function RpgGameHost({
               <button type="button" className="interact" aria-label="与当前湖区目标交互" onClick={() => events.emit("rpg_interact")}>交互</button>
             </nav>
           )
-        ) : !inputBlocked && !assetLoadBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
+        ) : !photoSessionOpen && !inputBlocked && !assetLoadBlocked && state.actOne.controlsInstalled && touchControls && !canteenExclusiveActive && !chapter4OverlayBlocked
           && !qizhenRainRescueCinematicOpen ? (
           <nav
             className={`rpg-touch-controls ${state.actOne.movementEnabled ? "" : "is-disabled"}`.trim()}
@@ -2788,7 +2745,7 @@ export function clearRpgCanvasHost(host: HTMLElement): void {
 }
 
 export function activateRpgScene(game: Phaser.Game, target: string): void {
-  Object.values(SCENE_KEYS).forEach((sceneKey) => {
+  [...Object.values(SCENE_KEYS), CHASE_STAIR_SCENE_KEY].forEach((sceneKey) => {
     if (sceneKey !== target && game.scene.isActive(sceneKey)) {
       game.scene.stop(sceneKey);
     }
@@ -2822,7 +2779,7 @@ function restartRpgScene(game: Phaser.Game, target: string): void {
 function getLibraryObjective(state: GameState): string {
   const phase = state.ui.libraryFinalsPhase;
   const puzzle = state.ui.libraryFinalsPuzzle;
-  if (phase === "library_entered") return puzzle.entranceRecordRead ? "前往二层南区寻找 022" : "点击闸机小屏，核对入馆与到达时间";
+  if (phase === "library_entered") return puzzle.entranceRecordRead ? "前往一层书库寻找 022" : "点击闸机小屏，核对入馆与到达时间";
   if (phase === "occupied_seat_found") return puzzle.occupancyNoteCollected ? "调查纸条提到的公开记录" : "检查书包旁边的占座纸条";
   if (phase === "evidence_gathering") {
     if (!puzzle.investigationOpened) return "用占座纸条查找公开记录";
@@ -2895,5 +2852,7 @@ function resolveRuntimeScene(state: GameState): RpgSceneId {
 }
 
 function resolveRuntimeSceneKey(state: GameState): string {
+  if (resolveRuntimeScene(state) === "duan_yongping_temporal_maze"
+    && state.chapter4.phase === "final_chase" && state.chapter4.chaseStairwellStage === "inside") return CHASE_STAIR_SCENE_KEY;
   return SCENE_KEYS[resolveRuntimeScene(state)];
 }

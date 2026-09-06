@@ -16,6 +16,9 @@ export type ChapterFourTransitionPresentationOwner =
 
 export type ChapterFourTransitionPresentationKind = "time_shift" | "world_handoff";
 
+export const CHAPTER_FOUR_TRANSITION_RESUME_STORAGE_KEY =
+  "chapter4_transition_resume_v1";
+
 export interface ChapterFourTransitionChange {
   kind: "time";
   eyebrow: string;
@@ -45,47 +48,27 @@ interface RawTransitionContract {
   change?: ChapterFourTransitionChange;
 }
 
-interface ExpectedTransitionContract {
-  id: string;
-  presentationKind: ChapterFourTransitionPresentationKind;
-  owner: "transition_overlay" | "scene_interaction";
-  intentTypes: readonly ChapterFour755Intent["type"][];
-  fromPhase: ChapterFourPhase;
-  toPhase: ChapterFourPhase;
-  fromTimeState?: ChapterFourTimeState;
-  toTimeState?: ChapterFourTimeState;
+interface PhaseContract {
+  id: ChapterFourPhase;
+  timeState: ChapterFourTimeState;
 }
 
-const EXPECTED_TRANSITIONS: readonly ExpectedTransitionContract[] = Object.freeze([
+const EXPECTED_TRANSITIONS = Object.freeze([
   {
-    id: "opening_to_bakery",
+    id: "hour_hand_to_room204",
     presentationKind: "time_shift",
     owner: "transition_overlay",
-    intentTypes: ["adjust_hall_clock_time"],
-    fromPhase: "hall_clock_inspection",
-    toPhase: "bakery_hour_hand",
-    fromTimeState: "2245_opening",
-    toTimeState: "1225_bakery"
+    intentTypes: ["install_hour_hand"],
+    fromPhase: "bakery_hour_hand",
+    toPhase: "room204_restore"
   },
   {
-    id: "clock_tune_to_evening",
+    id: "room204_to_maintenance",
     presentationKind: "time_shift",
     owner: "transition_overlay",
-    intentTypes: ["adjust_hall_clock_time"],
+    intentTypes: ["install_positioning_plate"],
     fromPhase: "room204_restore",
-    toPhase: "room204_restore",
-    fromTimeState: "1225_bakery",
-    toTimeState: "1850_evening"
-  },
-  {
-    id: "clock_tune_to_maintenance",
-    presentationKind: "time_shift",
-    owner: "transition_overlay",
-    intentTypes: ["adjust_hall_clock_time"],
-    fromPhase: "maintenance_repair",
-    toPhase: "maintenance_repair",
-    fromTimeState: "1850_evening",
-    toTimeState: "2245_maintenance"
+    toPhase: "maintenance_repair"
   },
   {
     id: "maintenance_to_blackout",
@@ -93,9 +76,7 @@ const EXPECTED_TRANSITIONS: readonly ExpectedTransitionContract[] = Object.freez
     owner: "transition_overlay",
     intentTypes: ["complete_minute_theft"],
     fromPhase: "maintenance_repair",
-    toPhase: "blackout_light_grid",
-    fromTimeState: "2245_maintenance",
-    toTimeState: "0754_blackout"
+    toPhase: "blackout_light_grid"
   },
   {
     id: "blackout_to_chase",
@@ -127,9 +108,7 @@ const EXPECTED_TRANSITIONS: readonly ExpectedTransitionContract[] = Object.freez
     owner: "transition_overlay",
     intentTypes: ["install_final_minute"],
     fromPhase: "return_to_clock",
-    toPhase: "morning_checkin",
-    fromTimeState: "0754_blackout",
-    toTimeState: "0755_morning"
+    toPhase: "morning_checkin"
   },
   {
     id: "checkin_to_exterior",
@@ -139,9 +118,17 @@ const EXPECTED_TRANSITIONS: readonly ExpectedTransitionContract[] = Object.freez
     fromPhase: "morning_checkin",
     toPhase: "exterior_closure"
   }
-]);
+] as const satisfies readonly {
+  id: string;
+  presentationKind: ChapterFourTransitionPresentationKind;
+  owner: "transition_overlay" | "scene_interaction";
+  intentTypes: readonly ChapterFour755Intent["type"][];
+  fromPhase: ChapterFourPhase;
+  toPhase: ChapterFourPhase;
+}[]);
 
 const RAW_TRANSITIONS = chapterFour755Content.transitionContracts as RawTransitionContract[];
+const PHASE_CONTRACTS = chapterFour755Content.phaseContracts as PhaseContract[];
 const PHASE_IDS = new Set<ChapterFourPhase>(
   chapterFour755Content.orderedPhases as ChapterFourPhase[]
 );
@@ -158,11 +145,19 @@ function sameStrings(actual: readonly string[], expected: readonly string[]): bo
     && actual.every((value, index) => value === expected[index]);
 }
 
+function requirePhaseTimeState(phase: ChapterFourPhase): ChapterFourTimeState {
+  const contract = PHASE_CONTRACTS.find((candidate) => candidate.id === phase);
+  if (!contract) {
+    throw new Error(`chapter4_transition_missing_phase_contract:${phase}`);
+  }
+  return contract.timeState;
+}
+
 export function validateChapterFourTransitionPresentationContracts(): {
-  transitionCount: 9;
-  overlayCount: 5;
+  transitionCount: 8;
+  overlayCount: 4;
   worldHandoffCount: 4;
-  intentMatchCount: 10;
+  intentMatchCount: 9;
 } {
   if (RAW_TRANSITIONS.length !== EXPECTED_TRANSITIONS.length) {
     throw new Error("chapter4_transition_contract_count");
@@ -214,8 +209,8 @@ export function validateChapterFourTransitionPresentationContracts(): {
         || !TIME_STATE_IDS.has(change.fromTimeState)
         || !TIME_STATE_IDS.has(change.toTimeState)
         || change.fromTimeState === change.toTimeState
-        || change.fromTimeState !== expected.fromTimeState
-        || change.toTimeState !== expected.toTimeState) {
+        || change.fromTimeState !== requirePhaseTimeState(contract.fromPhase)
+        || change.toTimeState !== requirePhaseTimeState(contract.toPhase)) {
         throw new Error(`chapter4_transition_time_change:${contract.id}`);
       }
       return;
@@ -227,17 +222,17 @@ export function validateChapterFourTransitionPresentationContracts(): {
     }
   });
 
-  if (matchKeys.size !== 10) {
+  if (matchKeys.size !== 9) {
     throw new Error("chapter4_transition_match_count");
   }
-  if (overlayCount !== 5 || worldHandoffCount !== 4) {
+  if (overlayCount !== 4 || worldHandoffCount !== 4) {
     throw new Error("chapter4_transition_ownership_count");
   }
   return Object.freeze({
-    transitionCount: 9,
-    overlayCount: 5,
+    transitionCount: 8,
+    overlayCount: 4,
     worldHandoffCount: 4,
-    intentMatchCount: 10
+    intentMatchCount: 9
   });
 }
 
@@ -266,24 +261,19 @@ function matchTransition(
   result: Pick<
     ChapterFour755IntentResult,
     "accepted" | "changed" | "intentType" | "previousPhase" | "phase"
-      | "previousTimeState" | "timeState"
   >
 ): RawTransitionContract | null {
   if (!result.accepted
     || !result.changed
     || result.previousPhase === null
     || result.phase === null
-    || result.previousTimeState === null
-    || result.timeState === null) {
+    || result.previousPhase === result.phase) {
     return null;
   }
   return RAW_TRANSITIONS.find((contract) =>
     contract.fromPhase === result.previousPhase
       && contract.toPhase === result.phase
       && contract.intentTypes.includes(result.intentType)
-      && (contract.presentationKind !== "time_shift"
-        || (contract.change?.fromTimeState === result.previousTimeState
-          && contract.change.toTimeState === result.timeState))
   ) ?? null;
 }
 
@@ -291,7 +281,6 @@ export function selectChapterFourTransitionPresentationOwner(
   result: Pick<
     ChapterFour755IntentResult,
     "accepted" | "changed" | "intentType" | "previousPhase" | "phase"
-      | "previousTimeState" | "timeState"
   >
 ): "transition_overlay" | "scene_interaction" | null {
   return matchTransition(result)?.owner ?? null;
@@ -301,7 +290,6 @@ export function selectChapterFourTransitionPresentation(
   result: Pick<
     ChapterFour755IntentResult,
     "accepted" | "changed" | "intentType" | "previousPhase" | "phase"
-      | "previousTimeState" | "timeState"
   >
 ): ChapterFourTransitionPresentationPlan | null {
   const contract = matchTransition(result);

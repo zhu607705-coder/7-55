@@ -68,8 +68,8 @@ export type DeveloperCheckpointId =
   | "c3-qizhen-chase" | "c3-qizhen-complete"
   | "c3-interlude-reboot" | "c3-interlude-journal" | "c3-interlude-photos"
   | "c3-interlude-voice" | "c3-interlude-network" | "c3-interlude-timeline" | "c3-interlude-destination" | "c3-interlude-replay"
-  | "c4-755-opening" | "c4-755-hall-clock" | "c4-755-bakery-1225" | "c4-755-clock-1850-ready"
-  | "c4-755-classrooms-1850" | "c4-755-elevator-history" | "c4-755-room204-1850" | "c4-755-a2-field-records" | "c4-755-clock-2245-ready" | "c4-755-maintenance-2245"
+  | "c4-755-opening" | "c4-755-hall-clock" | "c4-755-bakery-1225"
+  | "c4-755-classrooms-1850" | "c4-755-elevator-history" | "c4-755-room204-1850" | "c4-755-maintenance-2245"
   | "c4-755-blackout-0754" | "c4-755-chase" | "c4-755-final-minute"
   | "c4-755-return-clock" | "c4-755-checkin" | "c4-755-closure"
   | Chapter4PrologueDeveloperCheckpointId
@@ -129,7 +129,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c2-gamepad-market", chapter: "第二章", label: "购买游戏手柄", detail: "CC98 二手交易" },
   { id: "c2-manual-movement", chapter: "第二章", label: "首次手动移动", detail: "寝室方向控制" },
   { id: "c2-reservation-briefing", chapter: "第二章", label: "系统预约说明", detail: "首次移动后的三句说明" },
-  { id: "c2-seat-reservation", chapter: "第二章", label: "预约 022", detail: "基础馆二层南区" },
+  { id: "c2-seat-reservation", chapter: "第二章", label: "预约 022", detail: "基础馆一层书库" },
   { id: "c2-dorm-exit", chapter: "第二章", label: "离开寝室", detail: "出口已开放" },
   { id: "c2-library-gate", chapter: "第二章", label: "图书馆门口", detail: "校园地图入口" },
   { id: "c2-entrance-record", chapter: "第二章", label: "入馆记录", detail: "点击小屏核对两条时间" },
@@ -159,7 +159,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-canteen-block-2", chapter: "第三章", label: "守出口·中段", detail: "剩余 30 秒，纸条已经加速" },
   { id: "c3-canteen-block-3", chapter: "第三章", label: "守出口·末段", detail: "剩余 10 秒，折返时自动闪路线" },
   { id: "c3-canteen-bike", chapter: "第三章", label: "解锁自行车", detail: "深色读码、擦锁并支付 2 元" },
-  { id: "c3-canteen-chase", chapter: "第三章", label: "755 米 3D 追逐", detail: "A / D 三车道骑行" },
+  { id: "c3-canteen-chase", chapter: "第三章", label: "755 米 3D 追逐", detail: "连续转向、蓄力跳跃、响铃和道具" },
   { id: "c3-canteen-theater", chapter: "第三章", label: "抵达剧院", detail: "纸条钻进剧院" },
   { id: "c3-theater-entry", chapter: "第三章", label: "剧院检票", detail: "海报栏与取票机" },
   { id: "c3-theater-ticket-request", chapter: "第三章", label: "CC98 帮抢委托", detail: "打开帖子，等待玩家接单" },
@@ -170,8 +170,8 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-theater-code", chapter: "第三章", label: "剧场打印票根 B", detail: "手机已抢中，在取票机输入 0832" },
   { id: "c3-theater-program", chapter: "第三章", label: "节目顺序", detail: "追光、开场、谢幕" },
   { id: "c3-theater-prop", chapter: "第三章", label: "后台道具箱", detail: "票根验证与荧光粉刷" },
-  { id: "c3-theater-spotlight", chapter: "第三章", label: "追光围捕", detail: "三轮路径预判" },
-  { id: "c3-theater-spotlight-round", chapter: "第三章", label: "追光第一轮", detail: "观察路径终点并选择光圈" },
+  { id: "c3-theater-spotlight", chapter: "第三章", label: "追光灯辞职以后", detail: "剧院怪诞演出入口" },
+  { id: "c3-theater-spotlight-round", chapter: "第三章", label: "光的第一幕", detail: "吃掉逗号，让椅子当月亮" },
   { id: "c3-theater-complete", chapter: "第三章", label: "替身揭晓", detail: "假纸条与湿节目单" },
   { id: "c3-qizhen-transition", chapter: "第三章", label: "剧场到湖畔过场", detail: "湿纸、水迹和环湖道路衔接" },
   { id: "c3-qizhen-location", chapter: "第三章", label: "寻找启真湖", detail: "CC98、馆藏与微信三条线索" },
@@ -185,10 +185,10 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-qizhen-overcast", chapter: "第三章", label: "返回码头", detail: "湖区状态已更新，回码头确认" },
   { id: "c3-qizhen-boarding", chapter: "第三章", label: "上船平衡", detail: "交替左右桨与翻船安全恢复" },
   { id: "c3-qizhen-open-water", chapter: "第三章", label: "大湖倒影", detail: "深色记录、浅色取钓竿和装饵" },
-  { id: "c3-qizhen-rhythm-key", chapter: "第三章", label: "节奏钓鱼·钥匙", detail: "完整教学谱面，验收 A / S / D 与失败恢复" },
-  { id: "c3-qizhen-rhythm-net", chapter: "第三章", label: "节奏钓鱼·网框", detail: "三小节短谱面，保留一次长按判定" },
-  { id: "c3-qizhen-rhythm-fish", chapter: "第三章", label: "节奏钓鱼·小鲤鱼", detail: "一次咬钩判定，水纹收紧时按 S" },
-  { id: "c3-qizhen-rhythm-paper", chapter: "第三章", label: "节奏钓鱼·纸条", detail: "最终八小节高难谱面与追逐前紧张节奏" },
+  { id: "c3-qizhen-rhythm-key", chapter: "第三章", label: "节奏钓鱼·钥匙", detail: "倒影点已就位，四拍预备与稳放收提" },
+  { id: "c3-qizhen-rhythm-net", chapter: "第三章", label: "节奏钓鱼·网框", detail: "已开柜门，同一套控线与放线规则" },
+  { id: "c3-qizhen-rhythm-fish", chapter: "第三章", label: "节奏钓鱼·小鲤鱼", detail: "鱼饲料已装饵，同一套抛竿与起鱼规则" },
+  { id: "c3-qizhen-rhythm-paper", chapter: "第三章", label: "节奏钓鱼·纸条", detail: "磁性钓竿已组合，控线收起纸页" },
   { id: "c3-qizhen-tool-chain", chapter: "第三章", label: "湖区工具链", detail: "道具 2 和 3 待组合" },
   { id: "c3-qizhen-swan", chapter: "第三章", label: "黑天鹅交换", detail: "小鲤鱼待投喂" },
   { id: "c3-qizhen-paper", chapter: "第三章", label: "磁性钓竿", detail: "道具 7 与钓竿待组合" },
@@ -212,19 +212,16 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c4-755-opening", chapter: "第四章", label: "入楼与纸条", detail: "22:45 开场，等纸条落到公告栏" },
   { id: "c4-755-hall-clock", chapter: "第四章", label: "大厅旧钟", detail: "旧钟露出第一处可调节的稳定刻度" },
   { id: "c4-755-bakery-1225", chapter: "第四章", label: "12:25 面包坊", detail: "检查灯与传送带，取回时针" },
-  { id: "c4-755-clock-1850-ready", chapter: "第四章", label: "旧钟第二次调时", detail: "时针装回后，返回大厅选择新刻度" },
   { id: "c4-755-classrooms-1850", chapter: "第四章", label: "18:50 一楼教室校验", detail: "完成 104 黑板与 105 讲台的两项时间差校验" },
   { id: "c4-755-elevator-history", chapter: "第四章", label: "18:50 电梯历史校准", detail: "三条历史轨道已读取，从轿厢重放校准" },
-  { id: "c4-755-room204-1850", chapter: "第四章", label: "18:50 三楼档案与错位楼梯", detail: "从荣誉墙、301 胶片与 302 影像对齐开始，再进入空间校准" },
-  { id: "c4-755-a2-field-records", chapter: "第四章", label: "18:50 二楼三处现场记录", detail: "错位楼梯完成后，校准 201、203 与开放自习区的三个独立装置" },
-  { id: "c4-755-clock-2245-ready", chapter: "第四章", label: "旧钟第三次调时", detail: "定位片装回后，返回大厅选择新刻度" },
+  { id: "c4-755-room204-1850", chapter: "第四章", label: "18:50 错位楼梯", detail: "三楼参照已记录，从主楼梯完成两层空间校准" },
   { id: "c4-755-maintenance-2245", chapter: "第四章", label: "22:45 维修链", detail: "检查保洁车车轮并修复旧钟" },
   { id: "c4-755-blackout-0754", chapter: "第四章", label: "07:54 停电与配电", detail: "最后一分钟被带走，从配电箱初始状态解出灯路" },
   { id: "c4-755-chase", chapter: "第四章", label: "最终追逐", detail: "灯阵已锁定，从 A1 经主楼梯前往 202" },
   { id: "c4-755-final-minute", chapter: "第四章", label: "最后一分钟", detail: "202 门已关，取回阶梯座椅间的黄铜分针组件" },
   { id: "c4-755-return-clock", chapter: "第四章", label: "送回最后一分钟", detail: "从 A2 的 202 安全点出发，带齐三项材料返回旧钟" },
   { id: "c4-755-checkin", chapter: "第四章", label: "07:55 签到", detail: "时间已恢复，刷卡与纸条可任意顺序提交" },
-  { id: "c4-755-closure", chapter: "第四章", label: "灿若星辰正式收束", detail: "双签到已完成，播放正式分层灯光动画并写入一次性完成回执" }
+  { id: "c4-755-closure", chapter: "第四章", label: "竺老两问与外景收束", detail: "双签到已完成，先保存竺老两问，再等待“灿若星辰” consumer proof" }
 ];
 
 const CHECKPOINT_IDS = new Set(DEVELOPER_CHECKPOINTS.map((checkpoint) => checkpoint.id));
@@ -1200,12 +1197,6 @@ const CHAPTER_FOUR_755_ROOM_FACTS = [
   "elevator_history_observed",
   "elevator_history_calibrated",
   "a1_time_route_compared",
-  "elevator_a2_call_record_observed",
-  "elevator_a3_arrival_record_observed",
-  "elevator_stop_chain_reconstructed",
-  "a1_duty_board_reconstructed",
-  "a3_archive_film_retrieved",
-  "a3_media_alignment_completed",
   "a3_reference_observed",
   "a3_identity_context_observed",
   "misaligned_stair_solved",
@@ -1242,9 +1233,13 @@ const CHAPTER_FOUR_755_CHASE_FACTS = [
   "canruo_star_lamp_primed"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
 
-const CHAPTER_FOUR_755_RETURN_CLOCK_FACTS = [
+const CHAPTER_FOUR_755_FINAL_MINUTE_FACTS = [
   ...CHAPTER_FOUR_755_CHASE_FACTS,
-  "room202_route_reached",
+  "room202_route_reached"
+] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
+
+const CHAPTER_FOUR_755_RETURN_CLOCK_FACTS = [
+  ...CHAPTER_FOUR_755_FINAL_MINUTE_FACTS,
   "final_minute_recovered",
   "attendance_record_recovered"
 ] as const satisfies readonly GameState["chapter4"]["factIds"][number][];
@@ -1300,7 +1295,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phoneStatusTimeTrusted: false,
       factIds: [],
       room204Placements: [],
-      lightGrid: { mask: 14, locked: false },
+      lightGrid: { mask: 6, locked: false },
       guardMode: "absent",
       chaseAttempt: 0,
       chaseRestartCheckpoint: null,
@@ -1326,17 +1321,13 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
     itemPatch: Partial<GameState["items"]> = {},
     checkpoint: GameState["rpgCheckpoint"] = "c4_a1_lobby"
   ): GameState => {
-    const zhuQuestionsAnswered = patch.factIds?.includes("zhu_two_questions_answered") ?? false;
     return {
       ...common,
       rpgCheckpoint: checkpoint,
       items: { ...common.items, ...itemPatch },
       chapter4: {
         ...common.chapter4,
-        ...patch,
-        ...(zhuQuestionsAnswered && patch.zhuQuestionAnswers === undefined
-          ? { zhuQuestionAnswers: { purpose: "seek_truth", person: "responsible" } }
-          : {})
+        ...patch
       }
     };
   };
@@ -1360,21 +1351,6 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phoneStatusTimeTrusted: true,
       buildingTimeSeconds: 44700,
       factIds: [...CHAPTER_FOUR_755_OPENING_FACTS]
-    }, { attendanceRecordPaper: true });
-  }
-  if (id === "c4-755-clock-1850-ready") {
-    return withChapter({
-      phase: "room204_restore",
-      floor: "A1",
-      roomId: "a1_hall_clock",
-      timeAuthority: "hall_clock",
-      timeState: "1225_bakery",
-      worldTimeSeconds: 44700,
-      phoneStatusTimeSeconds: 44700,
-      phoneStatusTimeTrusted: true,
-      buildingTimeSeconds: 44700,
-      factIds: [...CHAPTER_FOUR_755_BAKERY_FACTS],
-      guardMode: "absent"
     }, { attendanceRecordPaper: true });
   }
   if (id === "c4-755-classrooms-1850") {
@@ -1421,53 +1397,11 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
         ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
         "elevator_history_observed",
         "elevator_history_calibrated",
-        "elevator_a3_arrival_record_observed",
-        "a1_duty_board_reconstructed",
-        "a3_reference_observed"
+        "a1_time_route_compared",
+        "a3_reference_observed",
+        "a3_identity_context_observed"
       ]
     }, { attendanceRecordPaper: true }, "c4_a3_wayfinding");
-  }
-  if (id === "c4-755-a2-field-records") {
-    return withChapter({
-      phase: "room204_restore",
-      floor: "A2",
-      roomId: "a2_corridor",
-      mode: "dark",
-      timeAuthority: "hall_clock",
-      timeState: "1850_evening",
-      worldTimeSeconds: 67800,
-      phoneStatusTimeSeconds: 67800,
-      phoneStatusTimeTrusted: true,
-      buildingTimeSeconds: 67800,
-      factIds: [
-        ...CHAPTER_FOUR_755_CLASSROOM_FACTS,
-        "elevator_history_observed",
-        "elevator_history_calibrated",
-        "elevator_a3_arrival_record_observed",
-        "a1_duty_board_reconstructed",
-        "a3_archive_film_retrieved",
-        "a3_media_alignment_completed",
-        "a3_reference_observed",
-        "zhu_two_questions_answered",
-        "misaligned_stair_solved"
-      ]
-    }, { attendanceRecordPaper: true }, "c4_a2_corridor");
-  }
-  if (id === "c4-755-clock-2245-ready") {
-    return withChapter({
-      phase: "maintenance_repair",
-      floor: "A1",
-      roomId: "a1_hall_clock",
-      timeAuthority: "hall_clock",
-      timeState: "1850_evening",
-      worldTimeSeconds: 67800,
-      phoneStatusTimeSeconds: 67800,
-      phoneStatusTimeTrusted: true,
-      buildingTimeSeconds: 67800,
-      factIds: [...CHAPTER_FOUR_755_ROOM_FACTS],
-      room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
-      guardMode: "absent"
-    }, { attendanceRecordPaper: true });
   }
   if (id === "c4-755-maintenance-2245") {
     return withChapter({
@@ -1496,7 +1430,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       buildingTimeSeconds: 28440,
       factIds: [...CHAPTER_FOUR_755_BLACKOUT_FACTS],
       room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
-      lightGrid: { mask: 14, locked: false },
+      lightGrid: { mask: 6, locked: false },
       guardMode: "absent"
     });
   }
@@ -1528,7 +1462,7 @@ function createChapterFour755CheckpointState(id: ChapterFour755DeveloperCheckpoi
       phoneStatusTimeSeconds: 28440,
       phoneStatusTimeTrusted: true,
       buildingTimeSeconds: 28440,
-      factIds: [...CHAPTER_FOUR_755_CHASE_FACTS, "room202_route_reached"],
+      factIds: [...CHAPTER_FOUR_755_FINAL_MINUTE_FACTS],
       room204Placements: [...CHAPTER_FOUR_755_CANONICAL_ROOM204],
       lightGrid: { mask: 13, locked: true },
       guardMode: "absent",

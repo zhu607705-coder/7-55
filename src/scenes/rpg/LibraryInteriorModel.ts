@@ -20,6 +20,30 @@ export interface LibraryCollisionRect {
   bottom: number;
 }
 
+// The movable cabinet and its fixed floor rails share one solid footprint.
+// Source-pixel bounds include both plant pots and the cabinet feet.
+export const LIBRARY_SHELF_SOURCE_BOUNDS = { left: 502, top: 110, width: 123, height: 123 } as const;
+export const LIBRARY_SHELF_OUTLINE: readonly (readonly [number, number])[] = [
+  [514, 110], [617, 110], [617, 138], [613, 138],
+  [613, 186], [620, 188], [625, 198], [623, 224],
+  [609, 227], [605, 221], [605, 232], [590, 232],
+  [590, 222], [540, 222], [540, 232], [525, 232],
+  [525, 222], [520, 227], [506, 227], [502, 216],
+  [502, 197], [507, 189], [512, 189], [512, 138],
+  [514, 138]
+];
+
+export function getLibraryShelfCollision(offsetPx: number): LibraryCollisionRect {
+  const offset = Math.round(offsetPx);
+  return {
+    id: "north_display_shelf",
+    left: 502 + Math.min(0, offset),
+    top: 108,
+    right: 625 + Math.max(0, offset),
+    bottom: 234
+  };
+}
+
 // Bounds are authored directly against library_interior.png (1500 x 900).
 // Keep these on visible solid pixels so clear floor remains traversable.
 export const LIBRARY_STATIC_COLLISION_RECTS: readonly LibraryCollisionRect[] = [
@@ -30,7 +54,7 @@ export const LIBRARY_STATIC_COLLISION_RECTS: readonly LibraryCollisionRect[] = [
   { id: "north_shelf_03", left: 283, top: 85, right: 325, bottom: 316 },
   { id: "north_shelf_04", left: 362, top: 85, right: 404, bottom: 316 },
   { id: "north_shelf_05", left: 442, top: 85, right: 484, bottom: 316 },
-  { id: "north_display_shelf", left: 513, top: 108, right: 620, bottom: 234 },
+  getLibraryShelfCollision(0),
   { id: "north_shelf_06", left: 643, top: 85, right: 684, bottom: 317 },
   { id: "north_shelf_07", left: 714, top: 85, right: 756, bottom: 317 },
   { id: "north_shelf_08", left: 787, top: 85, right: 830, bottom: 317 },

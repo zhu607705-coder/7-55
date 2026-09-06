@@ -87,3 +87,7 @@ GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` �
 - [本次基线迁移记录](docs/BASELINE_MIGRATION_20260718.md)
 
 `main` 只保留已验证版本；4 名协作者可按规范直接推送，禁止强制推送。
+
+## 20260906 源码整合
+
+当前主线与第四章细节任务的合并范围、来源和验证状态见 [整合记录](docs/releases/20260906-integration.md)。本次为源码上传，既有 Release 下载链接仍对应其原始日期，未生成 20260906 单文件游戏包。

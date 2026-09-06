@@ -8,21 +8,13 @@ import type * as THREE from "three";
 
 export type CameraViewId = "south_east" | "south_west" | "top_oblique";
 
-export type LevelId = "stair_a" | "stair_b";
+export type LevelId = "stair_a" | "stair_b" | "stair_c" | "stair_d";
 
-export type DemoPhase =
-  | "entry_sequence"
-  | "playing"
-  | "walking"
-  | "camera_transition"
-  | "level_complete"
-  | "level_interlude"
-  | "finale"
-  | "all_complete";
+export type DemoPhase = "playing" | "walking" | "camera_transition" | "level_complete" | "all_complete";
 
 export type MechanismKind = "rotate" | "vertical" | "horizontal";
 
-/** 内部像素网格（渲染缓冲区）尺寸；画布逻辑尺寸为其整数倍放大。 */
+/** 稳定的投影判定网格；渲染缓冲区使用 CANVAS_WIDTH/HEIGHT，避免画质改变解谜容差。 */
 export const INTERNAL_WIDTH = 480;
 export const INTERNAL_HEIGHT = 270;
 export const CANVAS_WIDTH = 960;
@@ -246,13 +238,6 @@ export interface StairDemoSnapshot {
   invalidProjectedPairs: string[];
   inputLocked: boolean;
   viewSwitchAvailable: boolean;
-  presentation: {
-    stage: "entry" | "level_break" | "level_reveal" | "finale" | null;
-    floatingFragmentCount: number;
-    energyRingCount: number;
-    dustPointCount: number;
-    routeEffectActive: boolean;
-  };
   materialTextures: {
     setId: string;
     expected: number;
@@ -269,6 +254,7 @@ export interface StairDemoSnapshot {
 export interface StairDemoDevApi {
   setView(view: CameraViewId): void;
   setMechanism(id: string, state: number): void;
+  operateMechanism(id: string): void;
   clickNode(nodeId: string): void;
   resetLevel(): void;
   replayAll(): void;

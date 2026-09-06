@@ -1,203 +1,123 @@
-export type TheaterSpotlightLane = "left" | "center" | "right";
-
-export type TheaterSpotlightFailureReason =
-  | "round_mismatch"
-  | "wrong_lane"
-  | "beam_not_activated"
-  | "early"
-  | "late"
-  | "interrupted"
-  | "timeout"
-  | "invalid_attempt";
-
-export interface TheaterSpotlightPoint {
-  readonly x: number;
-  readonly y: number;
-}
-
+/** Deterministic rules for 追光灯辞职以后. No Phaser, DOM, assets or save writes. */
+export const THEATER_SHOW_STEP_MS = 50;
+export const THEATER_SHOW_MAX_TICKS = 1600;
+export const THEATER_SHOW_BOUNDS = { left: 58, right: 902, top: 132, bottom: 409 } as const;
+export const THEATER_SHOW_ACTS = [
+  { title: "椅子申请当月亮", subtitle: "吃掉逗号。椅子会自己走路，别让它坐到你身上。", glyph: "，", color: 0xffcf68, count: 4 },
+  { title: "你的影子迟到了", subtitle: "吃掉问号。影子沿着你三秒前的路线追过来。", glyph: "？", color: 0x94f3d0, count: 5 },
+  { title: "观众席正在退潮", subtitle: "吃掉感叹号。掌声会把光推走；集齐后钻进谢幕的大嘴。", glyph: "！", color: 0xff94bc, count: 6 }
+] as const;
+export interface TheaterShowPoint { x: number; y: number }
+export interface TheaterShowInput { x: number; y: number; dash: boolean }
 export interface TheaterSpotlightAttempt {
-  /** Zero-based round index. It must match theaterHunt.spotlightRound. */
-  readonly round: number;
-  readonly lane: TheaterSpotlightLane;
-  readonly maxContinuousLockMs: number;
-  readonly beamActivated: boolean;
-  /** Milliseconds from the start of the action window; null when the beam never fired. */
-  readonly firstBeamAtMs: number | null;
-  /** The action-window duration used by the scene for this attempt. */
-  readonly actionMs: number;
-  /** Milliseconds elapsed in the action window when the scene submitted the attempt. */
-  readonly submittedAtMs: number;
+  version: 2;
+  round: number;
+  attempt: number;
+  inputs: TheaterShowInput[];
 }
-
-export interface TheaterSpotlightRoundConfig {
-  readonly round: 0 | 1 | 2;
-  readonly lane: TheaterSpotlightLane;
-  readonly previewMs: number;
-  readonly actionMs: number;
-  readonly requiredLockMs: number;
-  readonly beamRadius: number;
-  readonly pathKind: "direct" | "broken_decoy" | "lamp_boundary";
-  readonly pathPoints: readonly TheaterSpotlightPoint[];
-  readonly decoyPathPoints?: readonly TheaterSpotlightPoint[];
+export interface TheaterShowState {
+  round: number;
+  attempt: number;
+  tick: number;
+  status: "running" | "won" | "lost";
+  head: TheaterShowPoint;
+  trail: TheaterShowPoint[];
+  history: TheaterShowPoint[];
+  collected: number[];
+  lives: number;
+  invulnerable: number;
+  dashTicks: number;
+  dashCooldown: number;
+  dashHeld: boolean;
+  lastDirection: TheaterShowPoint;
+  lastEvent: "none" | "eat" | "hurt" | "dash" | "exit";
 }
-
-export interface TheaterSpotlightAssist {
-  readonly active: boolean;
-  readonly enabled: boolean;
-  readonly previewBonusMs: number;
-  readonly radiusScale: number;
-  readonly lockScale: number;
+export interface TheaterShowHazard extends TheaterShowPoint { id: string; radius: number; kind: "chair" | "shadow" | "eye" }
+const FOOD_POINTS: readonly TheaterShowPoint[] = [
+  { x: 300, y: 193 }, { x: 515, y: 341 }, { x: 738, y: 187 },
+  { x: 800, y: 361 }, { x: 346, y: 344 }, { x: 567, y: 178 }
+];
+export function createTheaterShow(round: number, attempt = 0): TheaterShowState {
+  if (!Number.isInteger(round) || round < 0 || round >= THEATER_SHOW_ACTS.length) throw new Error("Invalid theater act");
+  const head = { x: 156, y: 280 };
+  return { round, attempt, tick: 0, status: "running", head, trail: [{ ...head }], history: [{ ...head }], collected: [],
+    lives: 3, invulnerable: 0, dashTicks: 0, dashCooldown: 0, dashHeld: false, lastDirection: { x: 1, y: 0 }, lastEvent: "none" };
 }
-
-const point = (x: number, y: number): TheaterSpotlightPoint => Object.freeze({ x, y });
-
-/**
- * Paths use the spotlight-panel local coordinate system:
- * the center of the panel is (0, 0), x grows rightward and y grows downward.
- */
-export const THEATER_SPOTLIGHT_ROUNDS: readonly TheaterSpotlightRoundConfig[] = Object.freeze([
-  Object.freeze({
-    round: 0,
-    lane: "left",
-    previewMs: 1200,
-    actionMs: 3000,
-    requiredLockMs: 300,
-    beamRadius: 60,
-    pathKind: "direct",
-    pathPoints: Object.freeze([
-      point(-340, -55),
-      point(-300, -10),
-      point(-265, 35),
-      point(-230, 90)
-    ])
-  }),
-  Object.freeze({
-    round: 1,
-    lane: "right",
-    previewMs: 1000,
-    actionMs: 2700,
-    requiredLockMs: 420,
-    beamRadius: 54,
-    pathKind: "broken_decoy",
-    pathPoints: Object.freeze([
-      point(340, -55),
-      point(285, -4),
-      point(250, 44),
-      point(230, 90)
-    ]),
-    decoyPathPoints: Object.freeze([
-      point(-340, 20),
-      point(-205, 40),
-      point(-90, 64),
-      point(0, 90)
-    ])
-  }),
-  Object.freeze({
-    round: 2,
-    lane: "center",
-    previewMs: 900,
-    actionMs: 2500,
-    requiredLockMs: 550,
-    beamRadius: 48,
-    pathKind: "lamp_boundary",
-    pathPoints: Object.freeze([
-      point(-340, -55),
-      point(-210, -5),
-      point(-112, 25),
-      point(18, 58),
-      point(0, 90)
-    ])
-  })
-]);
-
-export const THEATER_SPOTLIGHT_SEQUENCE: readonly TheaterSpotlightLane[] = Object.freeze(
-  THEATER_SPOTLIGHT_ROUNDS.map(({ lane }) => lane)
-);
-
-const BASE_ASSIST: TheaterSpotlightAssist = Object.freeze({
-  active: false,
-  enabled: false,
-  previewBonusMs: 0,
-  radiusScale: 1,
-  lockScale: 1
-});
-
-const FAILURE_ASSIST: TheaterSpotlightAssist = Object.freeze({
-  active: true,
-  enabled: true,
-  previewBonusMs: 800,
-  radiusScale: 1.2,
-  lockScale: 1
-});
-
-/**
- * Three failed attempts unlock the authored accessibility assist. The controller
- * remains authoritative for progression; scenes use this only for presentation.
- */
-export function getTheaterSpotlightAssist(mistakes: number): TheaterSpotlightAssist {
-  return Number.isFinite(mistakes) && mistakes >= 3 ? FAILURE_ASSIST : BASE_ASSIST;
+export function getTheaterShowFood(state: TheaterShowState): (TheaterShowPoint & { id: number })[] {
+  return FOOD_POINTS.slice(0, THEATER_SHOW_ACTS[state.round].count)
+    .map((p, id) => ({ ...p, id }))
+    .filter(p => !state.collected.includes(p.id));
 }
-
-export function getTheaterSpotlightRound(
-  round: number
-): TheaterSpotlightRoundConfig | undefined {
-  if (!Number.isInteger(round)) return undefined;
-  return THEATER_SPOTLIGHT_ROUNDS[round];
+export function getTheaterShowMouth(state: TheaterShowState): TheaterShowPoint {
+  return { x: 839, y: state.round === 2 ? 266 + Math.sin(state.tick * 0.035) * 36 : 274 };
 }
-
-export function isTheaterSpotlightLane(value: unknown): value is TheaterSpotlightLane {
-  return value === "left" || value === "center" || value === "right";
-}
-
-export function getRequiredTheaterSpotlightLockMs(
-  round: TheaterSpotlightRoundConfig,
-  mistakes: number
-): number {
-  const assist = getTheaterSpotlightAssist(mistakes);
-  return round.requiredLockMs * assist.lockScale;
-}
-
-/**
- * Pure story validation with no store, scene or timer dependency. The chapter
- * controller retains progression ownership while matching the measured scene
- * payload exactly.
- */
-export function validateTheaterSpotlightAttempt(
-  attempt: TheaterSpotlightAttempt,
-  round: TheaterSpotlightRoundConfig,
-  requiredLockMs: number
-): TheaterSpotlightFailureReason | null {
-  if (!Number.isInteger(attempt.round) || attempt.round !== round.round) {
-    return "round_mismatch";
+export function getTheaterShowHazards(state: TheaterShowState): TheaterShowHazard[] {
+  const t = state.tick * 0.05 * Math.max(0.72, 1 - state.attempt * 0.045);
+  const hazards: TheaterShowHazard[] = [
+    { id: "chair-0", kind: "chair", x: 421 + Math.sin(t * 0.8) * 40, y: 264 + Math.sin(t * 1.3) * 87, radius: 21 },
+    { id: "chair-1", kind: "chair", x: 655 + Math.sin(t * 0.67 + 2) * 49, y: 281 + Math.cos(t * 1.1) * 69, radius: 21 }
+  ];
+  if (state.round >= 1 && state.history.length > 60) {
+    const p = state.history[state.history.length - 61];
+    hazards.push({ id: "late-shadow", kind: "shadow", ...p, radius: 22 });
   }
-  if (
-    !Number.isFinite(attempt.maxContinuousLockMs)
-    || attempt.maxContinuousLockMs < 0
-    || !Number.isFinite(attempt.actionMs)
-    || attempt.actionMs <= 0
-    || attempt.actionMs !== round.actionMs
-    || !Number.isFinite(attempt.submittedAtMs)
-    || attempt.submittedAtMs < 0
-  ) {
-    return "invalid_attempt";
+  if (state.round === 2) hazards.push({ id: "audience-eye", kind: "eye", x: 495 + Math.cos(t * 0.9) * 125, y: 255 + Math.sin(t * 1.5) * 88, radius: 23 });
+  return hazards;
+}
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+export function stepTheaterShow(state: TheaterShowState, input: TheaterShowInput): TheaterShowState {
+  if (state.status !== "running") return state;
+  const next: TheaterShowState = { ...state, tick: state.tick + 1, head: { ...state.head }, collected: [...state.collected],
+    invulnerable: Math.max(0, state.invulnerable - 1), dashTicks: Math.max(0, state.dashTicks - 1),
+    dashCooldown: Math.max(0, state.dashCooldown - 1), dashHeld: input.dash, lastEvent: "none" };
+  let dx = clamp(input.x, -1, 1), dy = clamp(input.y, -1, 1);
+  const length = Math.hypot(dx, dy);
+  if (length > 0.001) { dx /= length; dy /= length; next.lastDirection = { x: dx, y: dy }; }
+  if (input.dash && !state.dashHeld && next.dashCooldown === 0) {
+    next.dashTicks = 9; next.dashCooldown = 100; next.lastEvent = "dash";
   }
-  if (!attempt.beamActivated || attempt.firstBeamAtMs === null) {
-    return "beam_not_activated";
+  const speed = next.dashTicks > 0 ? 330 : 166;
+  if (next.dashTicks > 0 && length < 0.001) { dx = state.lastDirection.x; dy = state.lastDirection.y; }
+  next.head.x += dx * speed * 0.05;
+  next.head.y += dy * speed * 0.05;
+  if (state.round === 2 && next.dashTicks === 0) {
+    next.head.y += Math.sin(next.tick * 0.028) * 1.5;
+    next.head.x += Math.cos(next.tick * 0.019) * 0.7;
   }
-  if (attempt.lane !== round.lane) return "wrong_lane";
-  if (!Number.isFinite(attempt.firstBeamAtMs)) return "invalid_attempt";
-  if (attempt.firstBeamAtMs < 0) return "early";
-  if (
-    attempt.firstBeamAtMs > attempt.submittedAtMs
-    || attempt.firstBeamAtMs >= round.actionMs
-    || attempt.submittedAtMs > round.actionMs
-  ) {
-    return "late";
+  next.head.x = clamp(next.head.x, THEATER_SHOW_BOUNDS.left + 13, THEATER_SHOW_BOUNDS.right - 13);
+  next.head.y = clamp(next.head.y, THEATER_SHOW_BOUNDS.top + 13, THEATER_SHOW_BOUNDS.bottom - 13);
+  next.history = [...state.history, { ...next.head }].slice(-100);
+  next.trail = Math.hypot(next.head.x - state.trail[0].x, next.head.y - state.trail[0].y) > 3
+    ? [{ ...next.head }, ...state.trail].slice(0, 24 + next.collected.length * 5)
+    : state.trail;
+  for (const food of getTheaterShowFood(next)) {
+    if (Math.hypot(food.x - next.head.x, food.y - next.head.y) < 25) {
+      next.collected.push(food.id); next.lastEvent = "eat";
+    }
   }
-  if (attempt.maxContinuousLockMs < requiredLockMs) {
-    if (attempt.firstBeamAtMs <= round.actionMs * 0.1) return "early";
-    if (attempt.firstBeamAtMs + requiredLockMs > round.actionMs) return "late";
-    return "interrupted";
+  // The exit wins on a shared frame before hazards are checked.
+  const mouth = getTheaterShowMouth(next);
+  if (next.collected.length >= THEATER_SHOW_ACTS[next.round].count && Math.hypot(mouth.x - next.head.x, mouth.y - next.head.y) < 35) {
+    next.status = "won"; next.lastEvent = "exit"; return next;
   }
-  return null;
+  if (next.invulnerable === 0 && next.dashTicks === 0) {
+    const hazard = getTheaterShowHazards(next).find(h => Math.hypot(h.x - next.head.x, h.y - next.head.y) < h.radius + 10);
+    if (hazard) { next.lives -= 1; next.invulnerable = 36; next.lastEvent = "hurt"; }
+  }
+  if (next.lives <= 0 || next.tick >= THEATER_SHOW_MAX_TICKS) next.status = "lost";
+  return next;
+}
+/** Replay the actual bounded movement trace; UI outcome flags are never accepted. */
+export function validateTheaterSpotlightAttempt(value: unknown, round: number, attempt: number): TheaterShowState | null {
+  if (!value || typeof value !== "object") return null;
+  const candidate = value as Partial<TheaterSpotlightAttempt>;
+  if (candidate.version !== 2 || candidate.round !== round || candidate.attempt !== attempt
+    || !Array.isArray(candidate.inputs) || candidate.inputs.length < 1 || candidate.inputs.length > THEATER_SHOW_MAX_TICKS) return null;
+  let state = createTheaterShow(round, attempt);
+  for (const input of candidate.inputs) {
+    if (state.status !== "running" || !input || typeof input.x !== "number" || typeof input.y !== "number"
+      || !Number.isFinite(input.x) || !Number.isFinite(input.y) || Math.abs(input.x) > 1 || Math.abs(input.y) > 1 || typeof input.dash !== "boolean") return null;
+    state = stepTheaterShow(state, input);
+  }
+  return state.status === "running" ? null : state;
 }
