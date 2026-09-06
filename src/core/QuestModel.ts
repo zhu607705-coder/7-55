@@ -824,9 +824,7 @@ function selectChapterFour755TaskKey(
 ): string {
   const facts = new Set(state.chapter4.factIds);
   let preferredTaskKey = contract.taskKeys[0];
-  if (contract.id === "final_chase" && state.chapter4.chaseStairwellStage === "inside") {
-    preferredTaskKey = "cross_chase_stairwell";
-  } else if (contract.id === "bakery_hour_hand") {
+  if (contract.id === "bakery_hour_hand") {
     preferredTaskKey = state.items.oldClockHourHand
       || facts.has("bakery_hour_hand_collected")
       || facts.has("hour_hand_installed")
@@ -835,52 +833,51 @@ function selectChapterFour755TaskKey(
         ? "collect_hour_hand"
         : "explore_bakery";
   } else if (contract.id === "room204_restore") {
-    const elevatorObserved = facts.has("elevator_history_observed");
-    const elevatorCalibrated = facts.has("elevator_history_calibrated");
-    const referenceObserved = facts.has("a3_reference_observed");
-    const stairSolved = facts.has("misaligned_stair_solved");
-    const residualObserved = facts.has("room204_residual_observed");
-    const roomRestored = facts.has("room204_restored");
-    preferredTaskKey = !facts.has("classroom_104_chalk_residual_observed")
+    preferredTaskKey = !isChapterFourPhaseTimeAligned(state.chapter4)
+      ? "tune_clock_to_1850"
+      : !facts.has("classroom_104_chalk_residual_observed")
       || !facts.has("classroom_105_terminal_replay_checked")
-      ? "verify_a1_classrooms"
-      : !elevatorObserved || !elevatorCalibrated
-        ? (state.chapter4.mode === "dark" && !elevatorObserved
-            ? "observe_elevator_history"
-            : !elevatorCalibrated
-              ? "calibrate_elevator_history"
-              : "observe_elevator_history")
-      : !referenceObserved || !stairSolved
-        ? (!referenceObserved
-            ? "observe_a3_reference"
-            : "solve_misaligned_stair")
-      : !residualObserved || !roomRestored
-        ? (state.chapter4.mode === "dark" && !residualObserved
-            ? "observe_room204_residual"
-            : !roomRestored
-              ? "restore_room204"
-              : "observe_room204_residual")
-        : !facts.has("room204_projection_completed")
-          ? "watch_room204_projection"
-          : !facts.has("positioning_plate_collected")
-            ? "collect_positioning_plate"
-            : "install_positioning_plate";
+      || !facts.has("elevator_history_observed")
+        || !facts.has("elevator_history_calibrated")
+      ? "resolve_a1_investigation"
+      : !facts.has("a3_reference_observed")
+        ? "resolve_a3_archive_chain"
+      : !facts.has("misaligned_stair_solved")
+        ? "solve_misaligned_stair"
+      : !facts.has("a2_positioning_plate_calibrated")
+        || !facts.has("a2_power_topology_recovered")
+        || !facts.has("a2_evacuation_route_confirmed")
+        ? "resolve_a2_inserted_puzzles"
+      : !facts.has("elevator_stop_chain_reconstructed")
+        ? "resolve_elevator_stop_chain"
+      : !facts.has("a1_duty_board_reconstructed")
+        ? "resolve_a1_investigation"
+      : !facts.has("room204_residual_observed")
+        || !facts.has("room204_restored")
+          ? "restore_room204"
+          : !facts.has("room204_projection_completed")
+            ? "watch_room204_projection"
+            : !facts.has("positioning_plate_collected")
+              ? "collect_positioning_plate"
+              : "install_positioning_plate";
   } else if (contract.id === "maintenance_repair") {
-    preferredTaskKey = !facts.has("cart_wheel_inspected")
+    preferredTaskKey = !isChapterFourPhaseTimeAligned(state.chapter4)
+      ? "tune_clock_to_2245"
+      : !facts.has("cart_wheel_inspected")
       ? "inspect_cart_wheel"
-      : !state.items.shortPryBar && !facts.has("cart_wheel_cover_opened")
-        ? "collect_short_pry_bar"
-        : !facts.has("cart_wheel_cover_opened")
-          ? "open_cart_wheel_cover"
-          : !facts.has("cart_wheel_repaired")
-            ? "lubricate_cart_wheel"
-            : !facts.has("clock_gear_repaired")
-              ? "lubricate_clock_gear"
-              : "turn_clock_to_0755";
+      : !facts.has("cart_wheel_cover_opened")
+        ? "open_cart_wheel_cover"
+        : !facts.has("cart_wheel_repaired") || !facts.has("clock_gear_repaired")
+          ? "lubricate_cart_wheel"
+          : "turn_clock_to_0755";
   } else if (contract.id === "return_to_clock") {
     preferredTaskKey = state.chapter4.floor === "A1"
       ? "install_final_minute"
       : "return_via_main_stair";
+  } else if (contract.id === "exterior_closure") {
+    preferredTaskKey = facts.has("zhu_two_questions_answered")
+      ? "acknowledge_exterior_closure"
+      : "answer_zhu_two_questions";
   } else if (contract.id === "morning_checkin") {
     const cardAccepted = state.chapter4.checkinCardAccepted
       && facts.has("checkin_card_accepted");
@@ -891,13 +888,6 @@ function selectChapterFour755TaskKey(
       : paperAccepted && !cardAccepted
         ? "read_campus_card"
         : "complete_checkin";
-  } else if (contract.id === "exterior_closure") {
-    const zhuAnswersSaved = facts.has("zhu_two_questions_answered")
-      && state.chapter4.zhuQuestionAnswers.purpose !== null
-      && state.chapter4.zhuQuestionAnswers.person !== null;
-    preferredTaskKey = zhuAnswersSaved
-      ? "acknowledge_exterior_closure"
-      : "answer_zhu_two_questions";
   }
   return contract.taskKeys.includes(preferredTaskKey)
     ? preferredTaskKey
@@ -909,12 +899,13 @@ function chapterFour755Quest(
   contract: ChapterFour755PhaseTaskContract
 ): QuestViewModel {
   const phase = String(state.chapter4.phase);
+  const facts = new Set(state.chapter4.factIds);
   const taskKey = selectChapterFour755TaskKey(state, contract);
   const task = CHAPTER_FOUR_755_TASKS[taskKey];
   const completed = state.chapter4.completed || phase === "complete";
   const label = task?.label ?? taskKey;
   const presentation = selectChapterFourStagePresentation(state);
-  return {
+  const quest: QuestViewModel = {
     id: "chapter_four_temporal_maze",
     chapter: "chapter_four",
     title: chapterFour755Content.title,
@@ -935,6 +926,180 @@ function chapterFour755Quest(
     targetSurface: "rpg",
     ...(presentation ? { chapterFourPresentation: presentation } : {})
   };
+  if (taskKey === "resolve_a1_investigation"
+    && (!facts.has("classroom_104_chalk_residual_observed")
+      || !facts.has("classroom_105_terminal_replay_checked"))) {
+    const branches = [
+      {
+        id: "a1_classroom_104",
+        label: "104 黑板",
+        detail: "擦痕残留",
+        factId: "classroom_104_chalk_residual_observed"
+      },
+      {
+        id: "a1_classroom_105",
+        label: "105 讲台",
+        detail: "本地回放",
+        factId: "classroom_105_terminal_replay_checked"
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => facts.has(branch.factId)).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: facts.has(branch.factId) ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "resolve_a2_inserted_puzzles") {
+    const branches = [
+      {
+        id: "a2_positioning",
+        label: "201 定位板",
+        detail: "三轴校准",
+        factId: "a2_positioning_plate_calibrated"
+      },
+      {
+        id: "a2_power",
+        label: "203 配电箱",
+        detail: "五区拓扑",
+        factId: "a2_power_topology_recovered"
+      },
+      {
+        id: "a2_evacuation",
+        label: "开放自习区路线板",
+        detail: "202 至主楼梯",
+        factId: "a2_evacuation_route_confirmed"
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => facts.has(branch.factId)).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: facts.has(branch.factId) ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "resolve_elevator_stop_chain") {
+    const branches = [
+      {
+        id: "elevator_record_a1",
+        label: "1F 起行轨",
+        detail: "门体与起行",
+        factId: "elevator_history_observed"
+      },
+      {
+        id: "elevator_record_a2",
+        label: "2F 外呼日志",
+        detail: "呼梯与门机",
+        factId: "elevator_a2_call_record_observed"
+      },
+      {
+        id: "elevator_record_a3",
+        label: "3F 到站记录",
+        detail: "铃声与开门",
+        factId: "elevator_a3_arrival_record_observed"
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => facts.has(branch.factId)).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: facts.has(branch.factId) ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (taskKey === "restore_room204") {
+    const completedGroupCount = countCompletedRoom204Groups(state.chapter4.room204Placements);
+    const branches = [
+      {
+        id: "room204_reference",
+        label: "303 晨间参照",
+        detail: "浅色现场记录",
+        complete: facts.has("a3_reference_observed")
+      },
+      {
+        id: "room204_residual",
+        label: "204 夜间残影",
+        detail: "深色轮廓记录",
+        complete: facts.has("room204_residual_observed")
+      },
+      {
+        id: "room204_layout",
+        label: "204 家具复原",
+        detail: `${completedGroupCount}/${ROOM204_GROUP_ORDER.length} 组就位`,
+        complete: completedGroupCount === ROOM204_GROUP_ORDER.length
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => branch.complete).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: branch.complete ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  if (["complete_checkin", "submit_attendance_paper", "read_campus_card"].includes(taskKey)) {
+    const branches = [
+      {
+        id: "checkin_card",
+        label: "校园卡读卡器",
+        detail: "刷卡确认",
+        complete: state.chapter4.checkinCardAccepted
+          && facts.has("checkin_card_accepted")
+      },
+      {
+        id: "checkin_paper",
+        label: "签到纸插槽",
+        detail: "纸条确认",
+        complete: state.chapter4.checkinPaperAccepted
+          && facts.has("checkin_paper_accepted")
+      }
+    ] as const;
+    return {
+      ...quest,
+      parallelProgress: {
+        completed: branches.filter((branch) => branch.complete).length,
+        total: branches.length
+      },
+      parallelBranches: branches.map((branch) => ({
+        id: branch.id,
+        label: branch.label,
+        detail: branch.detail,
+        status: branch.complete ? "completed" : "pending",
+        targetSurface: "rpg"
+      }))
+    };
+  }
+  return quest;
 }
 
 function chapterFourLegacyQuest(state: GameState): QuestViewModel {

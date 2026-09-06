@@ -23,6 +23,7 @@ import { ChapterThreeOpeningOverlay } from "./components/ChapterThreeOpeningOver
 import { LibraryStoryOverlay } from "./components/LibraryStoryOverlay";
 import { PresentationLayer } from "./components/PresentationLayer";
 import { ToastLayer } from "./components/ToastLayer";
+import { PhoneBatteryPrankNotice, usePhoneBatteryPrank } from "./components/PhoneBatteryPrankNotice";
 import { useMediaQuery } from "./components/useMediaQuery";
 import { audioDirector } from "./modules/AudioDirector";
 import { kit } from "./modules/GameKit";
@@ -109,6 +110,7 @@ function focusSurfaceElement(surface: "phone" | "rpg"): void {
 
 export function App() {
   const state = useSyncExternalStore(gameStore.subscribe, getSnapshot, getSnapshot);
+  const batteryPrank = usePhoneBatteryPrank(eventBus, state);
   const [developerChannelOpen, setDeveloperChannelOpen] = useState(() => {
     const open = readInitialDeveloperChannelOpen();
     setDeveloperInputBlocked(open);
@@ -474,6 +476,7 @@ export function App() {
             </section>
             <PresentationLayer events={eventBus} />
             <ToastLayer events={eventBus} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} />
+            <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface={activeSurface === "phone" ? "phone" : "rpg"} />
             {chapterIntro}
             {!libraryStoryUsesPhone ? libraryStoryLayer : null}
           </main>
@@ -499,6 +502,7 @@ export function App() {
         </Suspense>
         <PresentationLayer events={eventBus} />
         <ToastLayer events={eventBus} state={state} surface="rpg" />
+        <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="rpg" />
         {chapterIntro}
         {!libraryStoryUsesPhone ? libraryStoryLayer : null}
         <DeveloperChannel
@@ -520,6 +524,7 @@ export function App() {
       </PhoneShell>
       {chapterIntro}
       {!libraryStoryUsesPhone ? libraryStoryLayer : null}
+      <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="phone" />
       <DeveloperChannel
         store={gameStore}
         open={developerChannelOpen}

@@ -184,7 +184,10 @@ assert(presentationDirectorSource.includes("pursuitTimelineData"), "Presentation
 assert(qizhenSceneSource.includes('this.emitDomain("qizhen_swan_chase_telegraph_voice"'), "Swan chase must emit its one-shot warning voice event.");
 assert(qizhenSceneSource.includes("!this.chaseTelegraphVoicePlayed"), "Swan warning voice must be attempt-scoped.");
 assert(qizhenSceneSource.includes('this.emitDomain("rpg_qizhen_chase_restarted"'), "Swan retry must restart its music after the failure animation.");
-assert(chapterFourSceneSource.includes("step.state.pursuitBand !== this.finalChaseAudioBand"), "Guard music intensity must follow pursuit-band transitions.");
+assert(
+  /const pursuitBand = guardGap <= 120 \? "close" : guardGap <= 420 \? "tracking" : "catch_up";[\s\S]*?pursuitBand !== this\.finalChaseAudioBand/.test(chapterFourSceneSource),
+  "Guard music intensity must follow pursuit-band transitions."
+);
 assert(chapterFourSceneSource.includes("!this.finalChaseCloseVoicePlayed"), "Guard close voice must play at most once per attempt.");
 assert(chapterFourSceneSource.includes('this.safeBridgeEmit("final_chase_floor_changed"'), "Guard floor-transition voice event must be emitted.");
 

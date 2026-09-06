@@ -164,8 +164,10 @@ assertIncludes(
   "support_npc_texture_missing:${definition.npcId}:${texture}",
   "support NPC creation must report and skip a missing texture instead of rendering __MISSING"
 );
+const createBlock = scene.match(/create\(\): void \{([\s\S]*?)\n  \}/)?.[1] ?? "";
 assert(
-  /create\(\): void \{\s*this\.resetRestartLifecycleState\(\)[\s\S]*?this\.createBaseBackgrounds\(\)/.test(scene),
+  createBlock.indexOf("this.resetRestartLifecycleState()") >= 0
+    && createBlock.indexOf("this.resetRestartLifecycleState()") < createBlock.indexOf("this.createBaseBackgrounds()"),
   "scene restart: destroyed Phaser object references must be reset before backgrounds are rebuilt"
 );
 for (const token of [

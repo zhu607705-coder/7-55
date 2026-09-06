@@ -1,0 +1,27 @@
+MOVE {"goal":{"x":970,"y":550},"from":{"x":835.25,"y":747.375},"to":{"x":959,"y":665},"goalWalls":[],"locked":false}
+MOVE {"goal":{"x":890,"y":550},"from":{"x":972.1458728377147,"y":556.9023280774213},"to":{"x":890,"y":550},"goalWalls":[],"locked":false}
+TARGET [
+  {
+    id: 'a1_front_desk_duty_board_context',
+    bounds: { x: 820, y: 591, width: 104, height: 68 },
+    proximity: 52
+  },
+  {
+    id: 'a1_front_desk_attendant',
+    bounds: { x: 758, y: 625, width: 179, height: 34 },
+    proximity: 104
+  }
+]
+Native puzzle submit and world pause PASS
+Investigation UI PASS A1 前台 · 浅色操作
+
+值班牌重建
+×
+调整当前装置
+
+把三张值班牌按痕迹先后放回签到板。
+
+记录完成
+A1 的三处调查已汇成一条值班记录。
+可以反复调整，核对失败会保留当前摆放。
+返回现场

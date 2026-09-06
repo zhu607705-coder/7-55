@@ -1,0 +1,10 @@
+MOVE {"goal":{"x":590,"y":590},"from":{"x":835.25,"y":747.375},"to":{"x":590,"y":590},"goalWalls":[],"locked":false}
+PENTAGON [{"zone":"hall","x":645.5,"y":230.15625},{"zone":"west_corridor","x":540.5,"y":295.109375},{"zone":"bakery_back_area","x":568.5,"y":394.875},{"zone":"classroom_zone","x":722.5,"y":394.875},{"zone":"east_corridor","x":750.5,"y":295.109375}]
+MOVE {"goal":{"x":620,"y":748},"from":{"x":835.25,"y":747.375},"to":{"x":620,"y":748},"goalWalls":[],"locked":false}
+MOVE {"goal":{"x":560,"y":748},"from":{"x":626.9833333333371,"y":747.375},"to":{"x":560,"y":748},"goalWalls":[],"locked":false}
+MOVE {"goal":{"x":477,"y":748},"from":{"x":565.3833333333382,"y":747.375},"to":{"x":477,"y":748},"goalWalls":[],"locked":false}
+MOVE {"goal":{"x":477,"y":390},"from":{"x":477.3833333333389,"y":747.375},"to":{"x":477,"y":390},"goalWalls":[],"locked":false}
+MOVE {"goal":{"x":374,"y":390},"from":{"x":474.45000000000556,"y":395.3750000000039},"goalWalls":[],"locked":false}
+MOVE {"goal":{"x":294,"y":390},"from":{"x":371.42746032556386,"y":389},"to":{"x":294,"y":390},"goalWalls":[],"locked":true}
+BAKERY {"before":{"motion":true,"tweens":3},"after":{"motion":false,"phase":"bakery_hour_hand","facts":["opening_paper_at_noticeboard","opening_paper_caught","external_time_rejected","hall_clock_inspected","bakery_conveyor_lamp_inspected","bakery_conveyor_direction_observed","bakery_tool_location_observed","bakery_hour_hand_exposed","bakery_hour_hand_collected"]}}
+History browser PASS

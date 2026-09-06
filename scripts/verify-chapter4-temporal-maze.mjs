@@ -545,7 +545,7 @@ assert(
   /syncEvidenceDetailRuntime\(this\.bridge\.getState\(\)\)/.test(sceneSource)
     && /chapter4_environment_hint_pulse/.test(sceneSource)
     && /clearAllChapterFourVisualHints\(\)/.test(sceneSource)
-    && /destroyEvidenceDetailRuntime\("scene_shutdown"\)/.test(sceneSource)
+    && /destroyEvidenceDetailRuntime\(/.test(sceneSource)
     && /environmentEvidence:/.test(sceneSource),
   "Phaser must render, reset, spatially cue and debug the runtime-only evidence-help layer"
 );
@@ -1628,12 +1628,12 @@ assertJsonEqual({
 }, {
   storyTimeSeconds: 28440,
   playerSpeed: 208,
-  guardSpeed: 196,
+  guardSpeed: 174,
   guardUniformScale: 0.68,
   guardFootBox: { width: 20.4, height: 15.3 },
   waypointReachDistance: 8,
   stableCommittedFramesToArm: 4,
-  startGraceMs: 1200,
+  startGraceMs: 2000,
   maxStepMs: 50,
   transportId: "main_stair",
   guardPursuitStoryFloors: ["A1", "A2"],

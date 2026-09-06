@@ -325,7 +325,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
               : "充电需要在现场与充电服务站交互。"}
           </p>
           {batteryPercent === 1 ? (
-            <p className="cc-power-reserve" role="status">1% 为任务保底电量，主线功能仍可使用。</p>
+            <p className="cc-power-reserve" role="status">电量仅剩 1%，请寻找现场充电服务站。</p>
           ) : null}
         </section>
 

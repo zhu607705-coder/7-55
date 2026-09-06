@@ -228,6 +228,15 @@ const LEGACY_CHAPTER_FOUR_PUZZLE_IDS = new Set<GameState["chapter4"]["solvedPuzz
   "route_schedule", "clock_phase_lock"
 ]);
 const VALID_CHAPTER_FOUR_FACT_IDS = new Set<ChapterFourFactId>([
+  "elevator_a2_call_record_observed",
+  "elevator_a3_arrival_record_observed",
+  "elevator_stop_chain_reconstructed",
+  "a1_duty_board_reconstructed",
+  "a3_archive_film_retrieved",
+  "a3_media_alignment_completed",
+  "a2_positioning_plate_calibrated",
+  "a2_power_topology_recovered",
+  "a2_evacuation_route_confirmed",
   "opening_paper_at_noticeboard", "opening_paper_caught", "external_time_rejected",
   "hall_clock_inspected", "bakery_conveyor_lamp_inspected", "bakery_hour_hand_exposed",
   "bakery_conveyor_direction_observed", "bakery_tool_location_observed",
@@ -1897,7 +1906,12 @@ function normalizeChapterFour(
       .every(fact => savedFactIds.includes(fact as ChapterFourFactId))
     && !evidenceMigration.restoredToSafePhase;
   if (completed) phase = "complete";
-  const time = CHAPTER_FOUR_TIME_BY_PHASE[phase];
+  const canonicalTime = CHAPTER_FOUR_TIME_BY_PHASE[phase];
+  const savedTimeState = enumOr(saved.timeState, VALID_CHAPTER_FOUR_TIME_STATES, canonicalTime.timeState);
+  const pendingClockAdjustment = !evidenceMigration.restoredToSafePhase
+    && isChapterFourPendingClockTimeState(phase, savedTimeState, evidenceMigration.factIds);
+  const timeState = pendingClockAdjustment ? savedTimeState : canonicalTime.timeState;
+  const time = { ...chapterFourTimeContract(timeState), timeState };
   const timeAuthority = [
     "opening_handoff",
     "opening_paper_caught",
@@ -2002,9 +2016,9 @@ function normalizeChapterFour(
         mask: lightGridMask,
         locked: lightGridMustBeLocked
       },
-      guardMode: phase === "maintenance_repair" ? "patrol" : phase === "final_chase" ? "chase" : "absent",
+      guardMode: phase === "maintenance_repair" && !pendingClockAdjustment ? "patrol" : phase === "final_chase" ? "chase" : "absent",
       chaseAttempt: nonNegativeSafeIntegerOr(saved.chaseAttempt, initial.chaseAttempt),
-      chaseRestartCheckpoint: phase === "final_chase" ? "c4_a1_lobby" : null,
+      chaseRestartCheckpoint: phase === "final_chase" ? location.floor === "A2" ? "c4_a2_corridor" : "c4_a1_lobby" : null,
       chaseStairwellStage: phase === "final_chase"
         ? location.floor === "A2" ? "complete" : saved.chaseStairwellStage === "inside" ? "inside" : "pending"
         : "pending",

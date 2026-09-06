@@ -7,8 +7,29 @@ export const GUARD_CAUGHT_DISPLAY_MS = 5200;
 export function presentGuardCapture(scene: Phaser.Scene, bridge: RpgBridge, resume: () => void): void {
   scene.physics.pause();
   bridge.emit("rpg_subtitle", { speaker: "保安", text: GUARD_CAUGHT_LINE, tone: "dialogue", durationMs: GUARD_CAUGHT_DISPLAY_MS });
-  const timer = scene.time.delayedCall(GUARD_CAUGHT_DISPLAY_MS, () => { scene.physics.resume(); resume(); });
-  scene.events.once("shutdown", () => { timer.remove(false); scene.physics.resume(); });
+  let settled = false;
+  const detach = () => {
+    scene.events.off("shutdown", cancel);
+    scene.events.off("destroy", cancel);
+  };
+  const cancel = () => {
+    if (settled) return;
+    settled = true;
+    timer.remove(false);
+    detach();
+    // ArcadePhysics has already destroyed its world during scene shutdown.
+    // Cancelling a presentation must never resume that world or submit a retry.
+  };
+  const timer = scene.time.delayedCall(GUARD_CAUGHT_DISPLAY_MS, () => {
+    if (settled) return;
+    settled = true;
+    detach();
+    if (!scene.sys.isActive() || !scene.physics.world) return;
+    scene.physics.resume();
+    resume();
+  });
+  scene.events.once("shutdown", cancel);
+  scene.events.once("destroy", cancel);
 }
 
 /** Switch only to loaded animation frames and preserve the world-space foot box. */
