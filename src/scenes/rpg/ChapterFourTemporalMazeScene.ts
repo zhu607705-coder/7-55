@@ -4945,6 +4945,9 @@ private ensureFinalChaseRuntime(state: GameState): void {
     // or stale intent responses therefore cannot move either actor.
     this.destroyChaseRuntime();
     this.finalChaseState = createChapterFourFinalChaseState(state.chapter4.chaseAttempt);
+    this.finalChaseAudioBand = null;
+    this.finalChaseCloseVoicePlayed = false;
+    this.finalChaseFloorVoicePlayed = false;
     const arrivedFromStairwell = state.chapter4.floor === "A2" && state.chapter4.chaseStairwellStage === "complete";
     const handoff = this.registry.get(CHASE_STAIR_HANDOFF_KEY) as ChaseStairHandoff | undefined;
     if (arrivedFromStairwell) {
@@ -5052,13 +5055,53 @@ private updateFinalChaseRuntime(deltaMs: number): void {
     });
     this.finalChaseState = step.state;
     this.finalChaseStep = step;
+    const activeGuardFloor: DisplayFloor = step.state.guardFloor === "A2" ? 2 : 1;
+    const guardFloorAfterStep = getFloor(activeGuardFloor);
+    const guardPointAfterStep = {
+      x: guardBody.center.x - guardFloorAfterStep.offsetX,
+      y: guardBody.center.y
+    };
+    const guardGap = playerFloorNumber === activeGuardFloor
+      ? Math.hypot(playerFoot.x - guardPointAfterStep.x, playerFoot.y - guardPointAfterStep.y)
+      : Number.POSITIVE_INFINITY;
+    const pursuitBand = guardGap <= 120 ? "close" : guardGap <= 420 ? "tracking" : "catch_up";
+    if (pursuitBand !== this.finalChaseAudioBand) {
+      this.finalChaseAudioBand = pursuitBand;
+      this.safeBridgeEmit(`final_chase_pressure_${pursuitBand}`, {
+        attempt: committed.chapter4.chaseAttempt,
+        routeDistance: Math.round(step.remainingRouteDistance)
+      });
+      if (pursuitBand === "close" && !this.finalChaseCloseVoicePlayed) {
+        this.finalChaseCloseVoicePlayed = true;
+        this.safeBridgeEmit("final_chase_close_voice", {
+          attempt: committed.chapter4.chaseAttempt
+        });
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: chapterFourDialogueText("chase.close"),
+          tone: "system",
+          speaker: "保安",
+          durationMs: 2500
+        });
+      }
+    }
     if (step.guardPortalArrival) {
       const arrivalFloor = getFloor(2);
       guardBody.reset(arrivalFloor.offsetX + CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.x,
         CHAPTER_FOUR_FINAL_CHASE_POINTS.a2Arrival.y + guardBody.height - guardBody.halfHeight);
-
+      if (!this.finalChaseFloorVoicePlayed) {
+        this.finalChaseFloorVoicePlayed = true;
+        this.safeBridgeEmit("final_chase_floor_changed", {
+          attempt: committed.chapter4.chaseAttempt,
+          floor: "A2"
+        });
+        this.safeBridgeEmit("rpg_subtitle", {
+          text: chapterFourDialogueText("chase.floor_changed"),
+          tone: "system",
+          speaker: "保安",
+          durationMs: 3100
+        });
+      }
     }
-    const activeGuardFloor: DisplayFloor = step.state.guardFloor === "A2" ? 2 : 1;
     const visible = step.guardVisible && this.currentFloor === activeGuardFloor;
     guard.setVisible(visible);
     if (visible) {
@@ -5229,6 +5272,9 @@ private destroyChaseRuntime(): void {
     this.finalChaseGuardTravelFlipX = false;
     this.finalChaseState = null;
     this.finalChaseStep = null;
+    this.finalChaseAudioBand = null;
+    this.finalChaseCloseVoicePlayed = false;
+    this.finalChaseFloorVoicePlayed = false;
     this.finalChaseInsideFinish = false;
     this.finalChaseContact = false;
   }

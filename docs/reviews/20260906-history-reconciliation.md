@@ -36,6 +36,7 @@
 - `chapter4:validate-star-lamp`：189 条断言通过。
 - 捕获生命周期、低电量恶作剧、四种钓鱼正常/辅助模式的确定性回放检查通过。
 - Chrome 1280×720 实际键盘操作：从停电检查点走到配电箱并打开五边形面板；从大厅沿标注门洞路线走进面包房，检查指示灯、停止传送带并取得时针；走到大厅旧钟，打开调钟界面、选择 18:50 并确认时间变化。上述场景检查无 pageerror。另从大厅绕到柜台后方，实际打开了值班牌重建面板、调整顺序并提交成功，同时断言面板期间世界处于暂停状态；柜台前侧最近目标为值班助理。
+- 完整关键验证最初暴露出旧验证器仍要求 1.2 秒／196 追逐和八段转场。已将其迁移到当前合同：2 秒／174、九段转场（五次时间覆盖、四次场景内交接），并恢复了随实际守卫距离切换的追逐音乐事件；`npm run validate:critical` 现为 24/24 通过。
 
 截图与构建、浏览器日志位于 [验证目录](20260906-history-reconciliation-evidence/)。[配电面板](20260906-history-reconciliation-evidence/power-panel.png)、[面包房](20260906-history-reconciliation-evidence/bakery.png)、[手动调钟](20260906-history-reconciliation-evidence/clock.png)。
 
