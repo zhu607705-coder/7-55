@@ -435,9 +435,9 @@ function qizhenTaskForLakePhase(state: GameState): TaskDefinition {
         "这三处可以分头查看，先去哪处都行。"
       ]);
     }
-    return task("combine_final_rig", "把三件材料装到钓鱼竿上", [
-      "返回大湖面的最终钓具装配位。",
-      "将尼龙绳、破损网框、磁性扣和钓鱼竿放入装配位。"
+    return task("combine_final_rig", "在物品栏组合四件材料", [
+      "尼龙绳、断裂网框、天鹅磁铁与钓竿集齐后，点击物品栏的“组合四件材料”。",
+      "这些材料可以按任意顺序获取，组合前会一直保留。"
     ]);
   }
   if (lake.phase === "swan_exchange") {

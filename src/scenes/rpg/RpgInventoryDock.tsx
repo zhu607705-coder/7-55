@@ -89,6 +89,13 @@ const RPG_DOCK_ORDER: readonly ItemId[] = [
   "finalMinute"
 ];
 
+const QIZHEN_FINAL_RIG_PARTS = Object.freeze([
+  "nylonCord",
+  "brokenNetFrame",
+  "swanMagnet",
+  "fishingRod"
+] as const satisfies readonly ItemId[]);
+
 export function isRpgInventoryFeedbackItemId(
   items: GameState["items"],
   value: unknown
@@ -126,6 +133,10 @@ export function RpgInventoryDock({
   const lastItemTap = useRef<{ itemId: ItemId; at: number } | null>(null);
   const visibleItems = RPG_DOCK_ORDER.filter((itemId) => state.items[itemId]);
   const recentItem = useRecentInventoryItem(visibleItems);
+  const qizhenFinalRigReady = runtimeScene === "qizhen_lake"
+    && !state.items.magneticFishingRod
+    && !state.qizhenLake.magneticRodCombined
+    && QIZHEN_FINAL_RIG_PARTS.every((itemId) => state.items[itemId]);
 
   useEffect(() => {
     if (!drag || state.items[drag.itemId]) return;
@@ -309,6 +320,15 @@ export function RpgInventoryDock({
     onDragSelectionChange(null);
   }
 
+  function combineQizhenFinalRig() {
+    if (!qizhenFinalRigReady || blocked) return;
+    events.emit("rpg_qizhen_combine_requested", {
+      itemIds: [...QIZHEN_FINAL_RIG_PARTS],
+      targetId: "inventory_final_rig",
+      source: "inventory"
+    });
+  }
+
   return (
     <aside
       className={`rpg-inventory-dock ${recentItem ? "is-receiving-item" : ""} ${blocked ? "is-blocked" : ""}`.trim()}
@@ -344,6 +364,14 @@ export function RpgInventoryDock({
           </button>
         ))}
       </div>
+      {qizhenFinalRigReady ? (
+        <div className="rpg-inventory-assembly" role="group" aria-label="四件材料组合">
+          <p>四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿</p>
+          <button type="button" aria-label="组合四件材料" onClick={combineQizhenFinalRig}>
+            组合四件材料
+          </button>
+        </div>
+      ) : null}
       {drag && shellRef.current ? createPortal(
         <div className="rpg-inventory-drag-ghost" style={{ left: drag.x, top: drag.y }} aria-hidden="true">
           <PixelIcon name={drag.itemId} size={42} />

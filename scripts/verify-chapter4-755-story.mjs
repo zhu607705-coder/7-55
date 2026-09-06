@@ -790,7 +790,7 @@ function validateTask7RuntimeSources(errors) {
     || appGateOpenCount !== 3
     || appGateCloseCount !== 3
     || !/if\s*\(state\.runtimeMode\s*===\s*["']rpg["']\)[\s\S]*?if\s*\(desktopGameplay\)[\s\S]*?<Chapter4PrologueRuntimeGate[\s\S]*?<(?:RpgGameHost|ActiveRpgGameHost)/.test(app)
-    || (app.match(/<Chapter4PrologueRuntimeGate\s+store=\{gameStore\}\s+events=\{eventBus\}>/g) ?? []).length !== 3
+    || (app.match(/<Chapter4PrologueRuntimeGate\s+key=\{developerCheckpointEpoch\}\s+store=\{gameStore\}\s+events=\{eventBus\}>/g) ?? []).length !== 3
     || /Chapter4PrologueOverlay|complete_prologue_handoff/.test(app)) {
     errors.push("Task 7 App must make Chapter4PrologueRuntimeGate the root owner across desktop RPG, single-surface RPG and phone branches");
   }

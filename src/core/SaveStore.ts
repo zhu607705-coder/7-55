@@ -863,7 +863,8 @@ function normalizeQizhenLake(
   const feedTinRetrieved = feedTinOpened
     || migratedLegacyChase
     || booleanOr(saved.feedTinRetrieved, initial.feedTinRetrieved);
-  const netCombined = feedTinRetrieved
+  const independentToolBranches = phase === "tool_chain" && !magneticRodCombined;
+  const netCombined = (!independentToolBranches && feedTinRetrieved)
     || migratedLegacyChase
     || booleanOr(saved.netCombined, initial.netCombined);
   const lockerOpened = netCombined
