@@ -2104,9 +2104,9 @@
         "complete"
       ],
       "armingCommittedFrames": 4,
-      "startGraceMs": 1200,
+      "startGraceMs": 2000,
       "playerSpeed": 208,
-      "guardSpeed": 196,
+      "guardSpeed": 174,
       "maxStepMs": 50,
       "transportId": "main_stair",
       "finishPriority": "finish_before_contact_same_frame",

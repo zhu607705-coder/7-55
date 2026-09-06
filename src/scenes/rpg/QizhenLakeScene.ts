@@ -2032,16 +2032,16 @@ export class QizhenLakeScene extends Phaser.Scene {
     this.fishingStartedAtSec = model.musicStartedAtSec ?? audioContext.currentTime;
     const scheduleUntil = audioContext.currentTime + 0.12;
     while (
-      this.fishingStartedAtSec + this.fishingNextMetronomeBeat * QIZHEN_FISHING_TIMING.beatSec
+      this.fishingStartedAtSec + model.metronomeBeatTime(this.fishingNextMetronomeBeat)
       <= scheduleUntil
     ) {
       const beatIndex = this.fishingNextMetronomeBeat;
       const beatTime = Math.max(
         audioContext.currentTime,
-        this.fishingStartedAtSec + beatIndex * QIZHEN_FISHING_TIMING.beatSec
+        this.fishingStartedAtSec + model.metronomeBeatTime(beatIndex)
       );
       try {
-        scheduleLakeFishingBeat(audioContext, beatIndex, beatTime);
+        scheduleLakeFishingBeat(audioContext, beatIndex, beatTime, model.metronomeBeatTime(beatIndex+1)-model.metronomeBeatTime(beatIndex));
       } catch {
         this.fishingUsesAudioClock = false;
         break;
@@ -3240,8 +3240,11 @@ export class QizhenLakeScene extends Phaser.Scene {
           totalNotes: this.fishingModel?.totalNotes ?? 0,
           assist: this.fishingModel?.assist ?? false,
           tutorial: null,
-          protocol: "lake-rhythm-v3",
+          protocol: "lake-rhythm-v4",
           rhythmBeat: this.fishingModel?.rhythmBeat ?? 0,
+          bpm: this.fishingModel ? Math.round(60/this.fishingModel.beatSec) : null,
+          difficulty: this.fishingModel?.difficulty ?? null,
+          rhythmName: this.fishingModel?.rhythmName ?? null,
           countIn: this.fishingModel?.countIn ?? 0,
           beatProgress: this.fishingModel?.beatProgress ?? 0,
           stage: this.fishingModel?.stage ?? "casting",

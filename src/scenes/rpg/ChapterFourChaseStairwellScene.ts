@@ -1,3 +1,5 @@
+import { presentGuardCapture, playGuardAnimation } from "./ChapterFourGuardPresentation";
+import { setRpgLogicalCameraZoom } from "./RpgRenderResolution";
 import Phaser from "phaser";
 import stairwellUrl from "../../assets/rpg/interiors/finale/finale_stairwell.png";
 import {
@@ -26,6 +28,8 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private virtual = {x:0,y:0};
   private elapsed = 0;
+  private caught = false;
+  private animationSwitchAt = 0;
   private guardDelay = 0;
   private attempt = 0;
   private serial = 0;
@@ -43,7 +47,7 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
   create(): void {
     this.bridge=this.registry.get("rpgBridge") as RpgBridge;
     const chapter=this.bridge.getState().chapter4;
-    this.attempt=chapter.chaseAttempt;this.elapsed=0;this.virtual={x:0,y:0};this.pending=null;this.guardTarget=null;this.guardRepathMs=0;
+    this.attempt=chapter.chaseAttempt;this.elapsed=0;this.caught=false;this.animationSwitchAt=0;this.virtual={x:0,y:0};this.pending=null;this.guardTarget=null;this.guardRepathMs=0;
     this.add.image(0,0,TEXTURE).setOrigin(0).setDepth(-1000);
     this.physics.world.setBounds(0,0,CHASE_STAIR_SIZE.width,CHASE_STAIR_SIZE.height);
     ensureRpgPlayerTextures(this);
@@ -58,7 +62,7 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
     const handoff=this.registry.get(CHASE_STAIR_HANDOFF_KEY) as ChaseStairHandoff|undefined;
     const sameHandoff=handoff?.attempt===this.attempt&&handoff.destination==="stairwell";
     const localDistance=Math.hypot(landing.spawn.x-landing.guard.x,landing.spawn.y-landing.guard.y);
-    const lead=sameHandoff?Math.max(42,Math.min(2000,handoff.leadDistance)):localDistance+90;
+    const lead=sameHandoff?Math.max(650,Math.min(2000,handoff.leadDistance)):650;
     const guardSpawn=lead<localDistance
       ? {x:landing.spawn.x+(landing.guard.x-landing.spawn.x)*lead/localDistance,y:landing.spawn.y+(landing.guard.y-landing.spawn.y)*lead/localDistance}
       : landing.guard;
@@ -80,7 +84,8 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
     this.cursors=this.input.keyboard!.createCursorKeys();
     this.keys=this.input.keyboard!.addKeys("W,A,S,D") as typeof this.keys;
     // Camera-only headroom keeps the upper exit below the shared task bar; physics stays source-bounded.
-    this.cameras.main.setBounds(0,-190,CHASE_STAIR_SIZE.width,CHASE_STAIR_SIZE.height+190).setZoom(1).startFollow(this.player,true,0.18,0.18).setDeadzone(150,80);
+    this.cameras.main.setBounds(0,-190,CHASE_STAIR_SIZE.width,CHASE_STAIR_SIZE.height+190).startFollow(this.player,true,0.18,0.18).setDeadzone(150,80);
+    setRpgLogicalCameraZoom(this, 1);
     this.cameras.main.centerOn(this.player.x,this.player.y);
     subscribeRpgSceneBridge(this.events,this.bridge,event=>{
       if(event.name==="rpg_direction_changed")this.virtual={x:Number(event.payload?.x)||0,y:Number(event.payload?.y)||0};
@@ -111,7 +116,7 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
     this.bridge.emit("rpg_chapter4_755_intent_requested",{requestId:id,intent});
   }
   update(_time:number,delta:number):void {
-    if(!this.player||!this.guard)return;
+    if(!this.player||!this.guard||this.caught)return;
     const chapter=this.bridge.getState().chapter4;
     if(chapter.phase!=="final_chase"||chapter.chaseStairwellStage!=="inside"||chapter.chaseAttempt!==this.attempt){this.player.setVelocity(0,0);this.guard.setVelocity(0,0);return;}
     this.elapsed+=Math.min(delta,100);
@@ -127,13 +132,17 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
     if(visible&&!frozen){
       this.guardRepathMs-=Math.min(delta,100);
       if(this.guardRepathMs<=0||!this.guardTarget||Math.hypot(this.guardTarget.x-guard.x,this.guardTarget.y-guard.y)<12){
-        this.guardTarget=chaseStairPath(guard,player)[0]??null;this.guardRepathMs=100;
+        this.guardTarget=chaseStairPath(guard,player)[0]??null;this.guardRepathMs=260;
       }
       const vector=new Phaser.Math.Vector2(this.guardTarget?this.guardTarget.x-guard.x:0,this.guardTarget?this.guardTarget.y-guard.y:0);
       if(vector.lengthSq()>1)vector.normalize().scale(CHAPTER_FOUR_FINAL_CHASE_RULES.guardSpeed);else vector.set(0,0);
       this.guard.setVelocity(vector.x,vector.y);
       const animation=Math.abs(vector.y)>Math.abs(vector.x)?vector.y<0?"guard_walk_up":"guard_walk_down":"guard_walk";
-      this.guard.setFlipX(animation==="guard_walk"&&vector.x<0).play(animation,true);
+      if (vector.lengthSq()>16 && this.time.now>=this.animationSwitchAt) {
+        this.guard.setFlipX(animation==="guard_walk"&&vector.x<0);
+        playGuardAnimation(this,this.guard,animation);
+        this.animationSwitchAt=this.time.now+240;
+      }
     }else this.guard.setVelocity(0,0);
     // Crossing the exit wins before contact on the same frame, as on the A2 threshold.
     if(!this.pending&&chapter.chaseStairwellLanding===2&&chaseStairInside(player,CHASE_STAIR_EXIT)){
@@ -141,7 +150,8 @@ export class ChapterFourChaseStairwellScene extends Phaser.Scene {
       this.registry.set(CHASE_STAIR_HANDOFF_KEY,{attempt:this.attempt,destination:"A2",leadDistance:lead} satisfies ChaseStairHandoff);
       this.request({type:"leave_chase_stairwell",position:player,expectedAttempt:this.attempt});
     }else if(!this.pending&&visible&&chapterFourFinalChaseFootContact(guard,{x:(this.player.body as Phaser.Physics.Arcade.Body).x,y:(this.player.body as Phaser.Physics.Arcade.Body).y,width:this.player.body!.width,height:this.player.body!.height})){
-      this.request({type:"fail_chase",expectedAttempt:this.attempt});
+      this.caught=true;this.player.setVelocity(0,0);this.guard.setVelocity(0,0);
+      presentGuardCapture(this,this.bridge,()=>{this.caught=false;this.request({type:"fail_chase",expectedAttempt:this.attempt});});
     }else if(!this.pending&&chapter.chaseStairwellLanding<2&&chaseStairInside(player,CHASE_STAIR_GATES[chapter.chaseStairwellLanding as 0 | 1])){
       this.request({type:"reach_chase_stairwell_landing",landing:(chapter.chaseStairwellLanding+1) as 1|2,position:player,expectedAttempt:this.attempt});
     }
