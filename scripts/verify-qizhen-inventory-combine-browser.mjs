@@ -23,7 +23,7 @@ try {
     assert.equal(state.items[itemId], true, `${itemId} must remain available before final assembly`);
   }
   assert.equal(state.items.magneticFishingRod, false, "paper checkpoint must wait for final assembly");
-  const assemble = page.getByRole("button", { name: "组合四件材料" });
+  const assemble = page.getByRole("button", { name: "组合四件材料", exact: true });
   await assemble.waitFor({ timeout: 5000 });
   await page.screenshot({ path: `/tmp/qizhen-inventory-combine-${engine}-before.png` });
   await assemble.click();
