@@ -502,7 +502,10 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private drawInterior(admitted: boolean): void {
-    this.add.image(0, 0, THEATER_MAP_KEY).setOrigin(0).setDepth(-1000);
+    // The exit leaves are registered as named crops on this same texture.
+    // Keep every full-size theater layer pinned to the source frame so a
+    // return visit cannot render the map as the most recently added door crop.
+    this.add.image(0, 0, THEATER_MAP_KEY, "__BASE").setOrigin(0).setDepth(-1000);
     this.occlusionVisuals = THEATER_OCCLUSION_RECTS.map((definition) => ({
       id: definition.id,
       bounds: new Phaser.Geom.Rectangle(
@@ -512,7 +515,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
         definition.bottom - definition.top
       ),
       sortY: definition.sortY,
-      image: this.add.image(0, 0, THEATER_MAP_KEY)
+      image: this.add.image(0, 0, THEATER_MAP_KEY, "__BASE")
         .setOrigin(0)
         .setCrop(definition.left, definition.top, definition.right - definition.left, definition.bottom - definition.top)
         .setDepth(-900)
