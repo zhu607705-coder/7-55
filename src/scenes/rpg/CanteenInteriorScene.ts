@@ -725,7 +725,12 @@ export class CanteenInteriorScene extends Phaser.Scene {
   }
 
   private drawInterior(): void {
-    this.add.image(0, 0, CANTEEN_MAP_KEY).setOrigin(0).setDepth(-1000);
+    // `ensureCanteenExitDoorFrames()` adds two named door crops to this same
+    // texture. Phaser may then point the texture's implicit default frame at a
+    // newly added crop. The room background must always name the original,
+    // full-size source frame explicitly or it can render as a tiny door leaf
+    // over the camera background.
+    this.add.image(0, 0, CANTEEN_MAP_KEY, "__BASE").setOrigin(0).setDepth(-1000);
     this.occlusionVisuals = CANTEEN_OCCLUSION_RECTS.map((definition) => ({
       id: definition.id,
       bounds: new Phaser.Geom.Rectangle(
@@ -735,7 +740,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
         definition.bottom - definition.top
       ),
       sortY: definition.sortY,
-      image: this.add.image(0, 0, CANTEEN_MAP_KEY)
+      image: this.add.image(0, 0, CANTEEN_MAP_KEY, "__BASE")
         .setOrigin(0)
         .setCrop(
           definition.left,
@@ -780,7 +785,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
 
     // The authored counter front stays above workers, but below customers and
     // the player. This keeps heads in the service opening and bodies behind food trays.
-    this.add.image(0, 0, CANTEEN_MAP_KEY)
+    this.add.image(0, 0, CANTEEN_MAP_KEY, "__BASE")
       .setOrigin(0)
       .setCrop(
         CANTEEN_COUNTER_FRONT_CROP.left,
@@ -839,7 +844,7 @@ export class CanteenInteriorScene extends Phaser.Scene {
     // Redraw the occupied table bodies above the seated sprites. Heads, arms and
     // plates remain readable while knees and feet tuck behind the table edge.
     CANTEEN_SEATED_TABLE_CROPS.forEach((crop) => {
-      this.add.image(0, 0, CANTEEN_MAP_KEY)
+      this.add.image(0, 0, CANTEEN_MAP_KEY, "__BASE")
         .setOrigin(0)
         .setCrop(crop.left, crop.top, crop.right - crop.left, crop.bottom - crop.top)
         .setDepth(crop.bottom + CANTEEN_WORLD_DEPTH_OFFSET);
