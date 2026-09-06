@@ -4982,7 +4982,7 @@
 50. 105 教室
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:18](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L18)；[src/components/temporal-maze/ChapterFourPuzzlePreview.tsx:17](../src/components/temporal-maze/ChapterFourPuzzlePreview.tsx#L17)
 51. 主电梯
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:19](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L19)；[src/components/temporal-maze/ChapterFourPuzzlePreview.tsx:17](../src/components/temporal-maze/ChapterFourPuzzlePreview.tsx#L17)；[src/data/chapter4-clock.content.json:50](../src/data/chapter4-clock.content.json#L50)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1042](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1042)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:19](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L19)；[src/components/temporal-maze/ChapterFourPuzzlePreview.tsx:17](../src/components/temporal-maze/ChapterFourPuzzlePreview.tsx#L17)；[src/data/chapter4-clock.content.json:50](../src/data/chapter4-clock.content.json#L50)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1041](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1041)
 52. 202 教室门口
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:23](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L23)；[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:276](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L276)；[src/components/temporal-maze/ChapterFourPuzzlePreview.tsx:18](../src/components/temporal-maze/ChapterFourPuzzlePreview.tsx#L18)
 53. 东侧走廊
@@ -5400,7 +5400,7 @@
 259. 取消并关闭导视板
    来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:127](../src/components/temporal-maze/WayfindingBoardGame.tsx#L127)
 260. 当前目标
-   来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:131](../src/components/temporal-maze/WayfindingBoardGame.tsx#L131)；[src/scenes/rpg/Chapter4PrologueOverlay.tsx:709](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L709)
+   来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:131](../src/components/temporal-maze/WayfindingBoardGame.tsx#L131)；[src/scenes/rpg/Chapter4PrologueOverlay.tsx:719](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L719)
 261. 比较当前导视照片、旧残影和二楼入口方向，判断两块碎片及缺失槽位的位置。
    来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:132](../src/components/temporal-maze/WayfindingBoardGame.tsx#L132)
 262. 导视板比对材料
@@ -6688,7 +6688,7 @@
 903. 四项外部记录
    来源：[src/data/chapter4-temporal-maze.content.json:99](../src/data/chapter4-temporal-maze.content.json#L99)
 904. 大厅旧钟
-   来源：[src/data/chapter4-temporal-maze.content.json:100](../src/data/chapter4-temporal-maze.content.json#L100)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10371](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10371)
+   来源：[src/data/chapter4-temporal-maze.content.json:100](../src/data/chapter4-temporal-maze.content.json#L100)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10375](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10375)
 905. 手机已同步
    来源：[src/data/chapter4-temporal-maze.content.json:103](../src/data/chapter4-temporal-maze.content.json#L103)
 906. 手机未同步，当前读数不可信
@@ -7686,7 +7686,7 @@
 1402. failed
    来源：[src/modules/ChapterFourTemporalMazeController.ts:384](../src/modules/ChapterFourTemporalMazeController.ts#L384)
 1403. accepted
-   来源：[src/modules/ChapterFourTemporalMazeController.ts:854](../src/modules/ChapterFourTemporalMazeController.ts#L854)；[src/modules/ChapterFourTemporalMazeController.ts:865](../src/modules/ChapterFourTemporalMazeController.ts#L865)；[src/scenes/phone/P08_Settings/index.tsx:105](../src/scenes/phone/P08_Settings/index.tsx#L105)；[src/scenes/phone/P08_Settings/index.tsx:124](../src/scenes/phone/P08_Settings/index.tsx#L124)；[src/scenes/phone/P19_Clock/index.tsx:148](../src/scenes/phone/P19_Clock/index.tsx#L148)；[src/scenes/phone/P19_Clock/index.tsx:155](../src/scenes/phone/P19_Clock/index.tsx#L155)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7983](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7983)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8096](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8096)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8112](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8112)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8124](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8124)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8133](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8133)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8237](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8237)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8247](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8247)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8257](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8257)
+   来源：[src/modules/ChapterFourTemporalMazeController.ts:854](../src/modules/ChapterFourTemporalMazeController.ts#L854)；[src/modules/ChapterFourTemporalMazeController.ts:865](../src/modules/ChapterFourTemporalMazeController.ts#L865)；[src/scenes/phone/P08_Settings/index.tsx:105](../src/scenes/phone/P08_Settings/index.tsx#L105)；[src/scenes/phone/P08_Settings/index.tsx:124](../src/scenes/phone/P08_Settings/index.tsx#L124)；[src/scenes/phone/P19_Clock/index.tsx:148](../src/scenes/phone/P19_Clock/index.tsx#L148)；[src/scenes/phone/P19_Clock/index.tsx:155](../src/scenes/phone/P19_Clock/index.tsx#L155)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7987](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7987)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8100](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8100)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8116](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8116)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8128](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8128)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8137](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8137)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8241](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8241)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8251](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8251)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8261](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8261)
 1404. invalid\_request
    来源：[src/modules/ChapterFourTemporalMazeController.ts:2193](../src/modules/ChapterFourTemporalMazeController.ts#L2193)；[src/modules/ChapterFourTemporalMazeController.ts:2200](../src/modules/ChapterFourTemporalMazeController.ts#L2200)；[src/modules/ChapterFourTemporalMazeController.ts:2203](../src/modules/ChapterFourTemporalMazeController.ts#L2203)
 1405. invalid\_intent
@@ -7838,7 +7838,7 @@
 1478. 保存照片
    来源：[src/scenes/phone/P14_Wechat/index.tsx:714](../src/scenes/phone/P14_Wechat/index.tsx#L714)
 1479. 已归档
-   来源：[src/scenes/phone/P14_Wechat/index.tsx:714](../src/scenes/phone/P14_Wechat/index.tsx#L714)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7042](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7042)
+   来源：[src/scenes/phone/P14_Wechat/index.tsx:714](../src/scenes/phone/P14_Wechat/index.tsx#L714)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7046](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7046)
 1480. 朋友导视板对照聊天
    来源：[src/scenes/phone/P14_Wechat/index.tsx:720](../src/scenes/phone/P14_Wechat/index.tsx#L720)
 1481. 新旧导视板照片
@@ -7962,37 +7962,37 @@
 1540. 保洁员
    来源：[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:86](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L86)
 1541. 第四章序幕：纸条进入段永平教学楼
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:641](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L641)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:651](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L651)
 1542. 夜色中，湿纸条离开启真湖，经过街机厅进入段永平教学楼，沿大厅进入熄灯后的走廊
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:664](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L664)
-1543. 由四项手机证据恢复的现场回放
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:667](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L667)
-1544. RECOVERED TIMELINE
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:668](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L668)
-1545. SOURCE 4 / 4
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:669](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L669)
-1546. 跳过恢复回放
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:674](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L674)
+1543. 由四项手机证据恢复的现场回放
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:677](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L677)
+1544. RECOVERED TIMELINE
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:678](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L678)
+1545. SOURCE 4 / 4
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:679](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L679)
+1546. 跳过恢复回放
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:684](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L684)
 1547. CHAPTER 03.5 · COMPLETE
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:701](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L701)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:711](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L711)
 1548. 第四章：时间迷宫
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:702](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L702)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:712](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L712)
 1549. 现场定位
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:705](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L705)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:715](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L715)
 1550. 段永平教学楼玻璃门
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:706](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L706)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:716](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L716)
 1551. 追踪进入教学楼的异常签到纸
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:710](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L710)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:720](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L720)
 1552. 正在提交任务……
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:724](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L724)
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:734](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L734)
 1553. 正在同步教学楼现场……
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:726](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L726)
-1554. 重试进入第四章
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:728](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L728)
-1555. 收下任务，进入第四章
-   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:729](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L729)
-1556. 重播过场
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:736](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L736)
+1554. 重试进入第四章
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:738](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L738)
+1555. 收下任务，进入第四章
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:739](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L739)
+1556. 重播过场
+   来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:746](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L746)
 1557. 二楼走廊
    来源：[src/scenes/rpg/ChapterFourChaseStairwellScene.ts:83](../src/scenes/rpg/ChapterFourChaseStairwellScene.ts#L83)
 1558. 沿平台继续上行，再进入上方楼梯口。
@@ -8000,7 +8000,7 @@
 1559. 你在这里干什么？已经这么晚了，快点回去，要清楼了。
    来源：[src/scenes/rpg/ChapterFourGuardPresentation.ts:5](../src/scenes/rpg/ChapterFourGuardPresentation.ts#L5)
 1560. 保安
-   来源：[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:94](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L94)；[src/scenes/rpg/ChapterFourGuardPresentation.ts:9](../src/scenes/rpg/ChapterFourGuardPresentation.ts#L9)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5486](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5486)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5504](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5504)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5715](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5715)
+   来源：[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:94](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L94)；[src/scenes/rpg/ChapterFourGuardPresentation.ts:9](../src/scenes/rpg/ChapterFourGuardPresentation.ts#L9)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5490](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5490)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5508](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5508)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5719](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5719)
 1561. 楼梯的空间关系发生错位。
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:87](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L87)
 1562. B2 已接通
@@ -8016,369 +8016,369 @@
 1567. 错位折返楼梯
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:269](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L269)
 1568. A1 · 麦思威面包坊与门厅
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:733](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L733)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:732](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L732)
 1569. A2 · 教室与开放学习区
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:734](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L734)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:733](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L733)
 1570. A3 · 校友荣誉门厅
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:735](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L735)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:734](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L734)
 1571. 楼梯上行口
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1051](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1051)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1050](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1050)
 1572. 楼梯下行口
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1051](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1051)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1050](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1050)
 1573. up
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1051](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1051)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1050](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1050)
 1574. A1 入口
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1098](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1098)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1097](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1097)
 1575. 电梯与楼层
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1099](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1099)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1098](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1098)
 1576. 维修与追逐
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1100](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1100)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1099](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1099)
 1577. 收束场景
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1101](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1101)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1100](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1100)
 1578. unknown
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1926](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1926)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1925](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1925)
 1579. 资料依据：{{figure.sourceLabel}}
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2443](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2443)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2445](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2445)
 1580. Space / Enter · 返回 Esc · 返回
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2470](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2470)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2472](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2472)
 1581. 返回地图
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2476](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2476)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2478](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2478)
 1582. 进度已恢复，请重试当前操作。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:3616](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L3616)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5995](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5995)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7505](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7505)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:3620](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L3620)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5999](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5999)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7509](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7509)
 1583. 回路稳定
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:4596](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L4596)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:4600](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L4600)
 1584. 校园卡
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5088](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5088)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5111](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5111)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5092](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5092)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5115](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5115)
 1585. 纸条
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5094](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5094)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5119](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5119)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5098](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5098)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5123](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5123)
 1586. 已刷卡
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5111](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5111)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5115](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5115)
 1587. 已签到
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5119](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5119)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5123](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5123)
 1588. 关门 \[Space\]
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5430](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5430)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5434](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5434)
 1589. chase.close
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5484](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5484)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5488](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5488)
 1590. chase.floor\_changed
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5502](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5502)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5506](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5506)
 1591. 门禁已落锁
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5590](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5590)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5594](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5594)
 1592. maintenance.cleaner
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5706](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5706)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5710](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5710)
 1593. chase.started
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5713](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5713)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5717](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5717)
 1594. morning.entry
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5721](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5721)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5725](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5725)
 1595. exterior.closure
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5728](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5728)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8266](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8266)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5732](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5732)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8270](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8270)
 1596. 记录叠合
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5926](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5926)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5930](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5930)
 1597. 边缘未重合
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5932](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5932)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5936](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5936)
 1598. 18:44
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5939](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5939)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5943](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5943)
 1599. 18:50
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5940](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5940)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5944](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5944)
 1600. 6s/8s
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5941](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5941)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5945](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5945)
 1601. A3
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5942](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5942)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5946](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5946)
 1602. 边缘偏移
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5969](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5969)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5973](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5973)
 1603. Space · 复原{{this.nearbyStoryTarget.contract.label}}
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6292](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6292)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6296](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6296)
 1604. 切到浅色操作后处理这片痕迹
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6293](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6293)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6297](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6297)
 1605. Space · 查看{{this.nearbyAlumniFigure.name}}生平
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6298](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6298)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6302](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6302)
 1606. 把对应道具拖到{{this.nearbyStoryTarget.contract.label}}
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6305](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6305)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6309](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6309)
 1607. Space · 调节大厅旧钟
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6310](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6310)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6314](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6314)
 1608. 请从道具栏拖动道具到{{storyTarget.contract.label}}。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6666](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6666)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6670](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6670)
 1609. final\_chase
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6681](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6681)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6685](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6685)
 1610. 追逐中电梯已锁，请进入主楼梯。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6682](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6682)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6686](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6686)
 1611. 停电状态下电梯无法返程。带着黄铜分针组件，从二楼主楼梯下到一楼大厅。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6683](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6683)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6687](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6687)
 1612. 当前可继续观察；轿厢重放校准需要浅色操作。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6695](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6695)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6699](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6699)
 1613. 电梯的历史片段只保留上行记录。请从三楼主楼梯返回二楼。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6702](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6702)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6706](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6706)
 1614. 先在三楼晨间教室记录桌椅、入口与投影边界。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6714](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6714)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6718](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6718)
 1615. A 楼主电梯
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6767](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6767)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6771](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6771)
 1616. 18:50 运行复核
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6770](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6770)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6774](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6774)
 1617. ↑↓ 选层 · Enter 执行 · Space 复核 · Esc 离开
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6842](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6842)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6846](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6846)
 1618. 18:50 / 一号电梯运行档案
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6860](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6860)
-1619. 同步一楼开门记录
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6864](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6864)
+1619. 同步一楼开门记录
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6868](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6868)
 1620. 调整蓝色门体区间，让它完整覆盖黄色人物进入区间。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6867](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6867)
-1621. 门体开放
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6871](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6871)
+1621. 门体开放
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6875](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6875)
 1622. 人物进入
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6874](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6874)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6878](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6878)
 1623. 记录起点
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6877](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6877)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6881](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6881)
 1624. 记录结束
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6880](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6880)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6884](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6884)
 1625. 提前 1 秒
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6919](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6919)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6923](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6923)
 1626. 重放并校验
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6920](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6920)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6924](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6924)
 1627. 延后 1 秒
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6921](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6921)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6925](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6925)
 1628. ← / → 调整重放起点 Enter 校验 Esc 返回
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6922](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6922)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6926](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6926)
 1629. 当前门体记录 {{formatClock(doorStart)}}—{{formatClock(doorEnd)}} / 8 秒
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6972](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6972)
-1630. 人物进入记录 {{formatClock(playerStart)}}—{{formatClock(playerEnd)}} / 6 秒
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6973](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6973)
-1631. 校验结果：覆盖不完整，请调整重放起点。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6975](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6975)
-1632. 白线：轿厢于 {{formatClock(doorStart + CHAPTER\_FOUR\_ELEVATOR.riseOffsetSeconds)}} 开始上行。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6976](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6976)
+1630. 人物进入记录 {{formatClock(playerStart)}}—{{formatClock(playerEnd)}} / 6 秒
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6977](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6977)
+1631. 校验结果：覆盖不完整，请调整重放起点。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6979](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6979)
+1632. 白线：轿厢于 {{formatClock(doorStart + CHAPTER\_FOUR\_ELEVATOR.riseOffsetSeconds)}} 开始上行。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6980](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6980)
 1633. 当前层
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7040](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7040)
-1634. 可直达
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7044](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7044)
+1634. 可直达
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7048](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7048)
 1635. 楼梯绕行
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7045](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7045)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7049](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7049)
 1636. 跨层档案 {{recordCount}}/3{{chainSolved ? " · 已复核" : ""}}
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7055](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7055)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7059](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7059)
 1637. □ 一楼记录来自门外三条时间轨。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7065](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7065)
-1638. 离开轿厢后切到深色观察，在门前完成记录。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7065](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7065)
-1639. □ 本层门机日志尚未归档。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7067](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7067)
-1640. 当前可直接读取，记录后不会限制其他楼层的调查顺序。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7068](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7068)
-1641. 离开轿厢切到深色观察，再进入电梯读取本层记录。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7069](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7069)
+1638. 离开轿厢后切到深色观察，在门前完成记录。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7069](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7069)
+1639. □ 本层门机日志尚未归档。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7071](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7071)
+1640. 当前可直接读取，记录后不会限制其他楼层的调查顺序。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7072](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7072)
+1641. 离开轿厢切到深色观察，再进入电梯读取本层记录。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7073](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7073)
 1642. □ 到达该层后可读取门机记录。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7071](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7071)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7075](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7075)
 1643. 线索归档顺序不影响楼层通行。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7071](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7071)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7075](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7075)
 1644. □ 轿厢没有该层的历史开门记录。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7072](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7072)
-1645. 先乘到三楼，再从主楼梯完成空间校准并进入二楼。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7072](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7072)
-1646. 本层记录已归档
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7076](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7076)
-1647. 离开轿厢读取一楼门体轨
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7078](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7078)
-1648. 读取{{record.recordTitle}}
+1645. 先乘到三楼，再从主楼梯完成空间校准并进入二楼。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7076](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7076)
+1646. 本层记录已归档
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7080](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7080)
-1649. 需切换深色观察
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7081](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7081)
-1650. 前往 {{record.displayFloor}}F
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7083](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7083)
-1651. 查看主楼梯绕行说明
+1647. 离开轿厢读取一楼门体轨
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7082](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7082)
+1648. 读取{{record.recordTitle}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7084](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7084)
+1649. 需切换深色观察
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7085](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7085)
+1650. 前往 {{record.displayFloor}}F
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7087](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7087)
+1651. 查看主楼梯绕行说明
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7088](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7088)
 1652. 停靠链已复核
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7091](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7091)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7095](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7095)
 1653. 复核停靠链
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7093](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7093)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7097](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7097)
 1654. 运行复核 {{recordCount}}/3
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7094](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7094)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7098](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7098)
 1655. 二楼外呼存在，但轿厢没有开门记录。先乘到三楼，再从错位主楼梯进入二楼。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7131](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7131)
-1656. 当前已在 {{targetFloor}}F
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7135](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7135)
+1656. 当前已在 {{targetFloor}}F
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7139](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7139)
 1657. 拨钟操作已取消，旧钟和纸条均已恢复，可重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7267](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7267)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7300](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7300)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7315](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7315)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7271](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7271)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7304](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7304)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7319](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7319)
 1658. 最终拨钟条件尚未满足，可重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7360](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7360)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7364](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7364)
 1659. 时间校准至 07:54。纸条带走了最后一分钟。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7405](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7405)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7409](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7409)
 1660. 传送带停机确认超时，已恢复到当前进度，将自动重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7707](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7707)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7711](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7711)
 1661. 记录叠合确认超时，已回到已完成的教室布局，将自动重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7713](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7713)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7717](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7717)
 1662. 最终拨钟确认超时，已恢复转动的旧钟和签到纸条，可重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7720](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7720)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7724](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7724)
 1663. 旧钟没有响应，请再次确认当前刻度。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7737](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7737)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7741](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7741)
 1664. 当前楼层状态已经同步。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7820](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7820)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7824](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7824)
 1665. 请切回浅色操作后再移动。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7821](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7821)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7825](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7825)
 1666. 当前剧情阶段没有开放这条楼层通道。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7822](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7822)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7826](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7826)
 1667. 当前无法前往该楼层。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7823](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7823)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7828](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7828)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7827](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7827)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7832](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7832)
 1668. 当前剧情条件尚未满足。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7847](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7847)；[src/scenes/rpg/RpgGameHost.tsx:465](../src/scenes/rpg/RpgGameHost.tsx#L465)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7851](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7851)；[src/scenes/rpg/RpgGameHost.tsx:465](../src/scenes/rpg/RpgGameHost.tsx#L465)
 1669. 两条区间边缘仍未对齐，调整重放起点后再试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7864](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7864)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7868](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7868)
 1670. {{detail}}已恢复到当前进度，将自动重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7882](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7882)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7886](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7886)
 1671. {{detail}}已回到已完成的教室布局，将自动重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7888](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7888)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7892](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7892)
 1672. {{detail}}已恢复转动的旧钟和签到纸条，可重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7895](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7895)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7899](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7899)
 1673. oldClockHourHand
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7904](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7904)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7982](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7982)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7908](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7908)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7986](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7986)
 1674. finalMinute
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7908](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7908)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8236](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8236)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7912](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7912)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8240](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8240)
 1675. campusCard
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7912](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7912)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8246](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8246)；[src/scenes/rpg/RpgGameHost.tsx:2791](../src/scenes/rpg/RpgGameHost.tsx#L2791)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7916](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7916)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8250](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8250)；[src/scenes/rpg/RpgGameHost.tsx:2791](../src/scenes/rpg/RpgGameHost.tsx#L2791)
 1676. attendanceRecordPaper
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7916](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7916)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8256](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8256)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7920](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7920)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8260](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8260)
 1677. shortPryBar
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7920](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7920)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8111](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8111)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7924](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7924)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8115](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8115)
 1678. universalLubricatingOil
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7925](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7925)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8123](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8123)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8132](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8132)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7929](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7929)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8127](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8127)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8136](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8136)
 1679. 传送带停机结果缺少已提交记录，已恢复到当前进度，将自动重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7967](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7967)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7971](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7971)
 1680. 金属时针已装回，钟面多出一处能够稳定停住的刻度。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7984](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7984)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7988](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7988)
 1681. classroom104.chalk\_residual
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8025](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8025)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8029](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8029)
 1682. classroom105.terminal\_replay
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8033](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8033)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8037](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8037)
 1683. 已记录门体开放、人物进入和轿厢上行三条时间轨。轿厢重放校准可独立在浅色操作中完成。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8041](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8041)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8045](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8045)
 1684. room204.a3\_reference\_recorded
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8055](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8055)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8059](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8059)
 1685. room204.residual\_recorded
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8063](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8063)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8067](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8067)
 1686. 已复原 {{countCompletedRoom204Groups( this.bridge.getState().chapter4.room204Placements )}}/{{ROOM204\_GROUP\_ORDER.length}}
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8071](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8071)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8075](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8075)
 1687. 记录叠合结果缺少已提交记录，将自动重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8081](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8081)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8085](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8085)
 1688. clockPositioningPlate
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8095](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8095)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8099](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8099)
 1689. 定位片已归位，钟面另一处刻度不再回弹。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8097](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8097)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8101](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8101)
 1690. 轮罩已打开，油瓶已取出，短撬棍已消耗。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8113](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8113)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8117](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8117)
 1691. 保洁车轮与旧钟齿轮已完成维修，润滑油已用完。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8125](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8125)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8129](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8129)
 1692. 旧钟齿轮已恢复转动。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8134](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8134)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8138](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8138)
 1693. 已回到大厅安全点。维修进度和道具均已保留。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8147](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8147)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8151](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8151)
 1694. 偷走最后一分钟的提交不完整，已恢复旧钟和纸条，可重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8165](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8165)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8169](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8169)
 1695. chase.retry
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8210](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8210)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8214](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8214)
 1696. lecture.recovered\_result
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8221](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8221)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8225](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8225)
 1697. 最后一分钟已装回旧钟。时间已恢复到 07:55。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8238](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8238)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8242](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8242)
 1698. 校园卡已通过签到校验。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8248](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8248)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8252](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8252)
 1699. 签到记录已提交。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8258](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8258)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8262](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8262)
 1700. 跨层运行链已复核：轿厢从一楼直达三楼，二楼外呼没有得到开门响应。定位片的楼层基准已确认。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8280](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8280)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8284](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8284)
 1701. {{record.displayFloor}}F {{record.recordTitle}}已归档。{{record.evidence\[0\]}}
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8292](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8292)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8296](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8296)
 1702. 三层运行记录已经齐全。切回浅色操作后，可在面板中复核停靠链。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8297](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8297)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8301](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8301)
 1703. 当前教室没有新增状态记录。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8319](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8319)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8323](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8323)
 1704. 记录回来了，你没有回到记录发生的时候。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8518](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8518)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8522](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8522)
 1705. 外部现场
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8539](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8539)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8543](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8543)
 1706. 手机状态栏 · 冻结
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8549](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8549)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8553](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8553)
 1707. 不可信
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8555](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8555)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8559](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8559)
 1708. 外部时间与手机冻结时间冲突 · 签到提交已拒绝
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8558](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8558)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8562](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8562)
 1709. 旧钟停在 22:45。表盘能被拨动，但响应方向和幅度都不对。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8584](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8584)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8588](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8588)
 1710. 旧钟停在 12:25。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8666](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8666)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8670](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8670)
 1711. 无法使用该道具。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8844](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8844)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8848](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8848)
 1712. invalid\_item
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8845](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8845)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8849](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8849)
 1713. 未命中有效目标。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8853](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8853)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8857](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8857)
 1714. missed\_target
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8853](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8853)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8867](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8867)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8857](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8857)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8871](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8871)
 1715. 未命中当前阶段的可见道具目标。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8867](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8867)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8871](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8871)
 1716. {{target.contract.label}}需要另一件道具。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8873](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8873)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8877](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8877)
 1717. wrong\_item
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8873](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8873)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8877](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8877)
 1718. 交互失败，请重新靠近目标后重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8992](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8992)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8997](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8997)；[src/scenes/rpg/RpgGameHost.tsx:1229](../src/scenes/rpg/RpgGameHost.tsx#L1229)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8996](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8996)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9001](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9001)；[src/scenes/rpg/RpgGameHost.tsx:1229](../src/scenes/rpg/RpgGameHost.tsx#L1229)
 1719. locked
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8992](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8992)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8996](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8996)
 1720. {{CHAPTER\_FOUR\_WARMUP\_PHASE\_LABELS\[failedPhase\]}}资源准备失败（{{failedCount}} 项）· R 重试
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9936](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9936)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9940](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9940)
 1721. 比较三段记录，再分别确认实际到站层和未响应外呼层。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10031](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10031)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10035](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10035)
 1722. 停靠链已复核：1F 起行，轿厢越过 2F 后在 3F 到站；2F 外呼未得到响应。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10051](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10051)
-1723. 还缺 {{3 - chapterFourElevatorCollectedRecordCount(state.chapter4.factIds)}} 段楼层记录。三段可按任意顺序归档。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10055](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10055)
-1724. 记录已经齐全。离开轿厢切回浅色操作，再打开面板完成运行复核。
+1723. 还缺 {{3 - chapterFourElevatorCollectedRecordCount(state.chapter4.factIds)}} 段楼层记录。三段可按任意顺序归档。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10059](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10059)
+1724. 记录已经齐全。离开轿厢切回浅色操作，再打开面板完成运行复核。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10063](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10063)
 1725. 复原 18:50 停靠链
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10070](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10070)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10074](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10074)
 1726. 3/3 记录齐全
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10073](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10073)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10077](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10077)
 1727. 门开八秒；18:50:06 转为上行
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10078](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10078)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10082](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10082)
 1728. 下行外呼亮起；门机没有开门记录
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10079](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10079)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10083](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10083)
 1729. 到站铃响；随后门机完整开启
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10080](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10080)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10084](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10084)
 1730. 轿厢离开 1F 后实际到站：
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10109](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10109)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10113](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10113)
 1731. 有外呼但未得到开门响应：
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10112](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10112)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10116](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10116)
 1732. 提交运行复核
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10152](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10152)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10156](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10156)
 1733. ←→ 选择实际到站 · ↑↓ 选择未响应层 · Enter 提交 · Esc 返回
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10155](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10155)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10159](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10159)
 1734. 二楼没有历史开门记录。先到三楼记录晨间教室布局，再从主楼梯完成空间校准进入二楼。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10172](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10172)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10176](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10176)
 1735. {{record.displayFloor}}F {{record.recordTitle}}已经归档。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10181](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10181)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10185](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10185)
 1736. 一楼起行记录位于电梯门外。离开轿厢后切到深色观察，在门前读取三条时间轨。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10187](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10187)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10191](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10191)
 1737. 门机旧记录只在深色观察中可读。离开轿厢切换模式后再进入电梯。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10192](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10192)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10196](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10196)
 1738. × 返回
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10237](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10237)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10385](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10385)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10241](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10241)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10389](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10389)
 1739. 旧钟已经停在这一格；另一圈刻痕刚刚变得清晰。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10264](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10264)
-1740. 这处刻度仍会回弹。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10268](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10268)
+1740. 这处刻度仍会回弹。
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10272](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10272)
 1741. 齿轮正在咬合……
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10271](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10271)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10275](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10275)
 1742. 当前
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10315](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10315)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10319](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10319)
 1743. 刻痕清晰
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10315](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10315)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10319](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10319)
 1744. 钟面暂时没有出现新的稳定刻度。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10351](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10351)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10355](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10355)
 1745. 转动外圈，比较能够停住的刻度
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10376](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10376)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10380](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10380)
 1746. 固定这一刻度
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10477](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10477)
-1747. 暂不调节
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10481](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10481)
-1748. ← / → 选择刻度 · Enter 确认 · Esc 返回
+1747. 暂不调节
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10485](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10485)
+1748. ← / → 选择刻度 · Enter 确认 · Esc 返回
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10489](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10489)
 1749. 传递过程
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10814](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10814)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10818](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10818)
 1750. 当前目标需要另一件道具。
    来源：[src/scenes/rpg/RpgGameHost.tsx:461](../src/scenes/rpg/RpgGameHost.tsx#L461)
 1751. 距离目标太远，请靠近可见交互区域。
@@ -9346,7 +9346,7 @@
 273. 已放到目标上，正在处理。
    来源：[src/components/InventoryBar.tsx:443](../src/components/InventoryBar.tsx#L443)
 274. 道具未放到目标上。
-   来源：[src/components/InventoryBar.tsx:448](../src/components/InventoryBar.tsx#L448)；[src/scenes/rpg/RpgInventoryDock.tsx:112](../src/scenes/rpg/RpgInventoryDock.tsx#L112)
+   来源：[src/components/InventoryBar.tsx:448](../src/components/InventoryBar.tsx#L448)；[src/scenes/rpg/RpgInventoryDock.tsx:113](../src/scenes/rpg/RpgInventoryDock.tsx#L113)
 275. 物品栏
    来源：[src/components/InventoryBar.tsx:499](../src/components/InventoryBar.tsx#L499)
 276. 收起物品栏
@@ -14092,7 +14092,7 @@
 2646. 共享单车当前只接收纸巾或 2 元现金。
    来源：[src/scenes/rpg/BootScene.ts:583](../src/scenes/rpg/BootScene.ts#L583)
 2647. missed\_target
-   来源：[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:600](../src/scenes/rpg/BootScene.ts#L600)；[src/scenes/rpg/RpgInventoryDock.tsx:304](../src/scenes/rpg/RpgInventoryDock.tsx#L304)
+   来源：[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:600](../src/scenes/rpg/BootScene.ts#L600)；[src/scenes/rpg/RpgInventoryDock.tsx:305](../src/scenes/rpg/RpgInventoryDock.tsx#L305)
 2648. 松手点没有进入共享单车车身的高亮范围。
    来源：[src/scenes/rpg/BootScene.ts:602](../src/scenes/rpg/BootScene.ts#L602)
 2649. success
@@ -14374,39 +14374,39 @@
 2787. 需要{{contract.label}}：{{contract.shortHint}}
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1628](../src/scenes/rpg/RpgInteractionContract.ts#L1628)
 2788. {{ITEM\_META\[itemId\].name}}已使用。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:109](../src/scenes/rpg/RpgInventoryDock.tsx#L109)
-2789. 距离太远，未能使用。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:110](../src/scenes/rpg/RpgInventoryDock.tsx#L110)
-2790. 道具不匹配。
+2789. 距离太远，未能使用。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:111](../src/scenes/rpg/RpgInventoryDock.tsx#L111)
+2790. 道具不匹配。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:112](../src/scenes/rpg/RpgInventoryDock.tsx#L112)
 2791. 当前模式无法进行这项操作。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:113](../src/scenes/rpg/RpgInventoryDock.tsx#L113)
-2792. 尚未记录目标位置。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:114](../src/scenes/rpg/RpgInventoryDock.tsx#L114)
-2793. 钓钩无法固定纸张。
+2792. 尚未记录目标位置。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:115](../src/scenes/rpg/RpgInventoryDock.tsx#L115)
-2794. 这项操作已经完成。
+2793. 钓钩无法固定纸张。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:116](../src/scenes/rpg/RpgInventoryDock.tsx#L116)
-2795. 这次使用没有生效。
+2794. 这项操作已经完成。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:117](../src/scenes/rpg/RpgInventoryDock.tsx#L117)
+2795. 这次使用没有生效。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:118](../src/scenes/rpg/RpgInventoryDock.tsx#L118)
 2796. consumed
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:147](../src/scenes/rpg/RpgInventoryDock.tsx#L147)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:148](../src/scenes/rpg/RpgInventoryDock.tsx#L148)
 2797. input\_blocked
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:161](../src/scenes/rpg/RpgInventoryDock.tsx#L161)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:162](../src/scenes/rpg/RpgInventoryDock.tsx#L162)
 2798. 道具没有进入游戏画布，请拖到场景中的对应物体。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:305](../src/scenes/rpg/RpgInventoryDock.tsx#L305)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:306](../src/scenes/rpg/RpgInventoryDock.tsx#L306)
 2799. RPG 道具栏
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:334](../src/scenes/rpg/RpgInventoryDock.tsx#L334)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:335](../src/scenes/rpg/RpgInventoryDock.tsx#L335)
 2800. 道具
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:339](../src/scenes/rpg/RpgInventoryDock.tsx#L339)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:340](../src/scenes/rpg/RpgInventoryDock.tsx#L340)
 2801. 拖动{{ITEM\_META\[itemId\].name}}，{{isPaperItem(itemId) ? "单击" : "双击"}}查看详情
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:347](../src/scenes/rpg/RpgInventoryDock.tsx#L347)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:348](../src/scenes/rpg/RpgInventoryDock.tsx#L348)
 2802. 四件材料组合
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:367](../src/scenes/rpg/RpgInventoryDock.tsx#L367)
-2803. 四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:368](../src/scenes/rpg/RpgInventoryDock.tsx#L368)
+2803. 四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:369](../src/scenes/rpg/RpgInventoryDock.tsx#L369)
 2804. 组合四件材料
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:369](../src/scenes/rpg/RpgInventoryDock.tsx#L369)；[src/scenes/rpg/RpgInventoryDock.tsx:370](../src/scenes/rpg/RpgInventoryDock.tsx#L370)
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:370](../src/scenes/rpg/RpgInventoryDock.tsx#L370)；[src/scenes/rpg/RpgInventoryDock.tsx:371](../src/scenes/rpg/RpgInventoryDock.tsx#L371)
 2805. 校园卡在手机应用和地图入口中读取
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:13](../src/scenes/rpg/RpgItemUseGuidance.ts#L13)
 2806. 前往 CC98 搜索栏提交占座纸条
