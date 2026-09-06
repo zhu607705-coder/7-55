@@ -720,7 +720,6 @@ const PLATE_RETRY_MAX_MS = 1920;
 
 const EXPECTED_MANIFEST_ENTRY_COUNT = 62;
 
-const EXPECTED_EMPTY_FRAME_COUNT = 1;
 
 const RUNTIME_MANAGED_DYNAMIC_COLLISION_IDS: ReadonlySet<string> = new Set([
   "a2_room204_disordered_furniture",
@@ -2001,21 +2000,24 @@ private bindBridgeEvents(): void {
 
 private validateFrameRegistrationReport(report: ChapterFour755FrameRegistrationReport): void {
     for (const failure of report.contractFailures) this.persistentContractFailures.add(failure);
-    const allSpritesheetsLoaded = Object.values(CHAPTER_FOUR_755_SPRITESHEETS)
-      .every((sheet) => this.textures.exists(sheet.id));
+    const loadedSheets = Object.values(CHAPTER_FOUR_755_SPRITESHEETS)
+      .filter((sheet) => this.textures.exists(sheet.id));
+    const expectedLoadedFrames = loadedSheets.reduce((count, sheet) => count + sheet.frames.length, 0);
+    const expectedLoadedEmptyFrames = loadedSheets.reduce((count, sheet) => count
+      + sheet.frames.filter((frame) => frame.id === "empty" && frame.sourceTrim === null).length, 0);
     if (CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT !== EXPECTED_MANIFEST_ENTRY_COUNT) {
       this.persistentContractFailures.add(
         `manifest_source_frame_count:${CHAPTER_FOUR_755_MANIFEST_FRAME_COUNT}/${EXPECTED_MANIFEST_ENTRY_COUNT}`
       );
     }
-    if (allSpritesheetsLoaded && report.manifestFrameCount !== EXPECTED_MANIFEST_ENTRY_COUNT) {
+    if (report.manifestFrameCount !== expectedLoadedFrames) {
       this.persistentContractFailures.add(
-        `manifest_frame_count:${report.manifestFrameCount}/${EXPECTED_MANIFEST_ENTRY_COUNT}`
+        `manifest_frame_count:${report.manifestFrameCount}/${expectedLoadedFrames}`
       );
     }
-    if (allSpritesheetsLoaded && report.skippedEmptyFrameCount !== EXPECTED_EMPTY_FRAME_COUNT) {
+    if (report.skippedEmptyFrameCount !== expectedLoadedEmptyFrames) {
       this.persistentContractFailures.add(
-        `manifest_empty_frame_count:${report.skippedEmptyFrameCount}/${EXPECTED_EMPTY_FRAME_COUNT}`
+        `manifest_empty_frame_count:${report.skippedEmptyFrameCount}/${expectedLoadedEmptyFrames}`
       );
     }
     if (report.registeredFrameCount + report.reusedFrameCount + report.skippedEmptyFrameCount
@@ -2704,7 +2706,7 @@ private applyAtomicPlateGroup(projection: ChapterFourMazeProjection): boolean {
     };
     let backgroundSnapshots: BackgroundTextureSnapshot[];
     try {
-      backgroundSnapshots = this.snapshotBackgroundTextures();
+      backgroundSnapshots = this.snapshotBackgroundTextures(prepared.preparedStoryFloors);
     } catch (error) {
       this.disposeStagedPlateApplication(staged, "background_snapshot_rollback");
       this.plateContractFailures.add(
@@ -2924,8 +2926,10 @@ private stagePlateCollision(
     }
   }
 
-private snapshotBackgroundTextures(): BackgroundTextureSnapshot[] {
-    return FLOORS.flatMap((floor) => {
+private snapshotBackgroundTextures(
+    storyFloors: readonly StoryFloor[] = FLOORS.map((floor) => floor.storyFloor)
+  ): BackgroundTextureSnapshot[] {
+    return FLOORS.filter((floor) => storyFloors.includes(floor.storyFloor)).flatMap((floor) => {
       const image = this.backgrounds.get(floor.displayFloor);
       if (!image) return [];
       return [{

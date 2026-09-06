@@ -423,7 +423,7 @@ export function App() {
   if (state.runtimeMode === "rpg") {
     if (desktopGameplay) {
       return (
-        <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
+        <Chapter4PrologueRuntimeGate key={developerCheckpointEpoch} store={gameStore} events={eventBus}>
           <main
             className={`desktop-gameplay-shell ${state.rpgScene === "qizhen_lake" ? "is-qizhen-lake" : ""}`.trim()}
             data-active-surface={activeSurface}
@@ -490,7 +490,7 @@ export function App() {
       );
     }
     return (
-      <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
+      <Chapter4PrologueRuntimeGate key={developerCheckpointEpoch} store={gameStore} events={eventBus}>
         <Suspense fallback={<main className="rpg-stage">Loading RPG runtime</main>}>
           <ActiveRpgGameHost
             store={gameStore}
@@ -516,7 +516,7 @@ export function App() {
   }
 
   return (
-    <Chapter4PrologueRuntimeGate store={gameStore} events={eventBus}>
+    <Chapter4PrologueRuntimeGate key={developerCheckpointEpoch} store={gameStore} events={eventBus}>
       <PhoneShell state={state} router={router} events={eventBus} dialogueOverlay={libraryStoryUsesPhone ? libraryStoryLayer : null} inputBlocked={developerChannelOpen} onTaskNavigate={navigateFromTask}>
         <Suspense fallback={<div role="status">加载中…</div>}>
           <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />

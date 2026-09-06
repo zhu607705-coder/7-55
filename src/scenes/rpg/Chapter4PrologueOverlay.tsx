@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "../../components/useMediaQuery";
 import { GameSubtitleFrame } from "../../components/GameSubtitleFrame";
 import type { EventBus } from "../../core/EventBus";
+import { isDeveloperInputBlocked } from "../../core/DeveloperInputGate";
 import h3TransitionSource from "../../assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4?chapter4-h3-embedded";
 import {
   PROLOGUE_DEPARTING_STUDENT_PORTRAIT,
@@ -558,7 +559,7 @@ export function Chapter4PrologueOverlay({
 
   useEffect(() => {
     const handleVisibility = () => {
-      const hidden = document.visibilityState === "hidden";
+      const hidden = document.visibilityState === "hidden" || isDeveloperInputBlocked();
       runtimeRef.current.paused = hidden;
       if (hidden) videoRef.current?.pause();
       else if (videoReadyRef.current) {
@@ -578,6 +579,15 @@ export function Chapter4PrologueOverlay({
     const tick = (now: number) => {
       const delta = Math.min(48, Math.max(0, now - previous));
       previous = now;
+      const paused = document.visibilityState === "hidden" || isDeveloperInputBlocked();
+      if (runtimeRef.current.paused !== paused) {
+        runtimeRef.current.paused = paused;
+        if (paused) videoRef.current?.pause();
+        else if (videoReadyRef.current) {
+          syncVideoToRuntime(true);
+          playVideo();
+        }
+      }
       advance(delta);
       const runtime = runtimeRef.current;
       if (videoReadyRef.current && !runtime.cardShown) syncVideoToRuntime();
@@ -598,7 +608,7 @@ export function Chapter4PrologueOverlay({
     };
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
-  }, [advance, syncVideoToRuntime]);
+  }, [advance, playVideo, syncVideoToRuntime]);
 
   useEffect(() => {
     const previousAdvance = window.advanceTime;

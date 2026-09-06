@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { GameStore } from "../core/types";
 import { isRecordingMode } from "../core/RecordingMode";
 import {
@@ -158,16 +159,13 @@ export function DeveloperChannel({
   }, [closeButtonLabel, open]);
   const stopPointerPropagation = (event: React.SyntheticEvent) => event.stopPropagation();
   if (!available) return null;
-  if (!open) {
-    if (recordingMode) return null;
-    return <button type="button" className="developer-channel-trigger" aria-label="打开开发者通道" onPointerDown={stopPointerPropagation} onPointerUp={stopPointerPropagation} onClick={(event) => { stopPointerPropagation(event); setChannelOpen(true); }}>DEV</button>;
-  }
+  if (!open) return null;
   const dismissBackdrop = (event: React.SyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
     closeAndResume();
   };
-  return <Fragment>
+  return createPortal(<Fragment>
     <div
       className="developer-channel-backdrop"
       aria-hidden="true"
@@ -250,7 +248,7 @@ export function DeveloperChannel({
       }
     }}>恢复进入前存档</button><span>{recordingMode ? "选择节点后自动清屏 · Esc 关闭" : "Ctrl/Cmd Shift D"}</span></footer>
     </aside>
-  </Fragment>;
+  </Fragment>, document.body);
 }
 
 export function isDeveloperChannelAvailable(search: string, _devMode: boolean): boolean {
