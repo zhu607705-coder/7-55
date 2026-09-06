@@ -1232,6 +1232,38 @@
   z-index: 70;
 }
 
+.rpg-inventory-assembly {
+  display: grid;
+  gap: 5px;
+  border-top: 1px solid rgba(240, 213, 106, 0.55);
+  padding-top: 6px;
+}
+
+.rpg-inventory-assembly p {
+  margin: 0;
+  color: #f0d56a;
+  font-size: var(--fs-micro);
+  line-height: 1.25;
+}
+
+.rpg-inventory-assembly button {
+  min-height: 32px;
+  border: 2px solid #f0d56a;
+  color: #18231f;
+  background: #f0d56a;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+}
+
+.rpg-inventory-assembly button:hover,
+.rpg-inventory-assembly button:focus-visible {
+  background: #fff0a4;
+  outline: 2px solid #fff0a4;
+  outline-offset: 1px;
+}
+
 @keyframes rpg-inventory-item-flight {
   0% { opacity: 0; transform: translate(-28px, -34px) scale(1.45); }
   12% { opacity: 1; }

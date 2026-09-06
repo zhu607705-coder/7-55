@@ -829,6 +829,9 @@ export class ChapterThreeQizhenLakeController {
 
   combineItems(itemIds: readonly ItemId[]): QizhenActionResult {
     const state = this.store.getState();
+    if (!state.qizhenLake.active || !["tool_chain", "swan_exchange", "paper_capture"].includes(state.qizhenLake.phase)) return "inactive";
+    if (state.qizhenLake.mode !== "light") return "wrong_mode";
+    if (state.qizhenLake.magneticRodCombined) return "already_complete";
     const items = new Set(itemIds);
     const finalParts = ["nylonCord", "brokenNetFrame", "swanMagnet", "fishingRod"] as const;
     if (finalParts.every((itemId) => items.has(itemId))) {
@@ -885,7 +888,7 @@ export class ChapterThreeQizhenLakeController {
     if (itemId !== "smallCarp" || !state.items.smallCarp) return "wrong_item";
     this.atomicTransform("smallCarp", "swanMagnet", {
       swanFed: true,
-      phase: "paper_capture"
+      phase: "tool_chain"
     });
     this.events.emit("qizhen_swan_fed");
     return "accepted";

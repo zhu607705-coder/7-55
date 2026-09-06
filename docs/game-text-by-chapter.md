@@ -2,7 +2,7 @@
 
 > 本文件由 `npm run text:export` 从当前 `src/` 自动生成。请修改源文件后重新导出，不要只修改本文件。
 
-- 文本条目：7313
+- 文本条目：7318
 - 来源文件：163
 - 收录范围：剧情对白、字幕、任务说明、交互提示、按钮、页面标题、帖子、物品说明、失败反馈与玩家可见状态文案。
 - 排除范围：开发者面板、测试断言、内部 ID、CSS 类名、资源路径、存档字段和运行时调试信息。
@@ -19,7 +19,7 @@
 | [3.5章过渡](#35章过渡) | 298 |
 | [第四章](#第四章) | 1816 |
 | [结局](#结局) | 140 |
-| [跨章节与共用系统](#跨章节与共用系统) | 2934 |
+| [跨章节与共用系统](#跨章节与共用系统) | 2939 |
 
 ## 第一章
 
@@ -2862,7 +2862,7 @@
 545. 空围栏这张亦已存档。水痕未散，后续动向保持观察。
    来源：[src/data/chapter3-qizhen-lake.content.json:424](../src/data/chapter3-qizhen-lake.content.json#L424)
 546. system
-   来源：[src/data/chapter3-story-lines.json:18](../src/data/chapter3-story-lines.json#L18)；[src/data/chapter3-story-lines.json:27](../src/data/chapter3-story-lines.json#L27)；[src/data/chapter3-story-lines.json:36](../src/data/chapter3-story-lines.json#L36)；[src/data/chapter3-story-lines.json:45](../src/data/chapter3-story-lines.json#L45)；[src/data/chapter3-story-lines.json:54](../src/data/chapter3-story-lines.json#L54)；[src/data/chapter3-story-lines.json:63](../src/data/chapter3-story-lines.json#L63)；[src/data/chapter3-story-lines.json:72](../src/data/chapter3-story-lines.json#L72)；[src/data/chapter3-story-lines.json:81](../src/data/chapter3-story-lines.json#L81)；[src/data/chapter3-story-lines.json:108](../src/data/chapter3-story-lines.json#L108)；[src/data/chapter3-story-lines.json:126](../src/data/chapter3-story-lines.json#L126)；[src/data/chapter3-story-lines.json:135](../src/data/chapter3-story-lines.json#L135)；[src/data/chapter3-story-lines.json:144](../src/data/chapter3-story-lines.json#L144)；[src/data/chapter3-story-lines.json:162](../src/data/chapter3-story-lines.json#L162)；[src/data/chapter3-story-lines.json:171](../src/data/chapter3-story-lines.json#L171)；[src/data/chapter3-story-lines.json:180](../src/data/chapter3-story-lines.json#L180)；[src/data/chapter3-story-lines.json:189](../src/data/chapter3-story-lines.json#L189)；[src/data/chapter3-story-lines.json:198](../src/data/chapter3-story-lines.json#L198)；[src/data/chapter3-story-lines.json:207](../src/data/chapter3-story-lines.json#L207)；[src/data/chapter3-story-lines.json:216](../src/data/chapter3-story-lines.json#L216)；[src/data/chapter3-story-lines.json:225](../src/data/chapter3-story-lines.json#L225)；[src/data/chapter3-story-lines.json:234](../src/data/chapter3-story-lines.json#L234)；[src/data/chapter3-story-lines.json:243](../src/data/chapter3-story-lines.json#L243)；[src/data/chapter3-story-lines.json:252](../src/data/chapter3-story-lines.json#L252)；[src/data/chapter3-story-lines.json:261](../src/data/chapter3-story-lines.json#L261)；[src/data/chapter3-story-lines.json:270](../src/data/chapter3-story-lines.json#L270)；[src/data/chapter3-story-lines.json:279](../src/data/chapter3-story-lines.json#L279)；[src/data/chapter3-story-lines.json:288](../src/data/chapter3-story-lines.json#L288)；[src/data/chapter3-story-lines.json:297](../src/data/chapter3-story-lines.json#L297)；[src/data/chapter3-story-lines.json:306](../src/data/chapter3-story-lines.json#L306)；[src/data/chapter3-story-lines.json:315](../src/data/chapter3-story-lines.json#L315)；[src/data/chapter3-story-lines.json:333](../src/data/chapter3-story-lines.json#L333)；[src/data/chapter3-story-lines.json:342](../src/data/chapter3-story-lines.json#L342)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:67](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L67)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:79](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L79)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:85](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L85)；[src/scenes/rpg/CanteenInteriorScene.ts:2013](../src/scenes/rpg/CanteenInteriorScene.ts#L2013)；[src/scenes/rpg/CanteenInteriorScene.ts:2017](../src/scenes/rpg/CanteenInteriorScene.ts#L2017)；[src/scenes/rpg/CanteenInteriorScene.ts:2049](../src/scenes/rpg/CanteenInteriorScene.ts#L2049)；[src/scenes/rpg/CanteenInteriorScene.ts:2053](../src/scenes/rpg/CanteenInteriorScene.ts#L2053)；[src/scenes/rpg/CanteenInteriorScene.ts:2062](../src/scenes/rpg/CanteenInteriorScene.ts#L2062)；[src/scenes/rpg/CanteenInteriorScene.ts:2071](../src/scenes/rpg/CanteenInteriorScene.ts#L2071)；[src/scenes/rpg/CanteenInteriorScene.ts:2087](../src/scenes/rpg/CanteenInteriorScene.ts#L2087)；[src/scenes/rpg/CanteenInteriorScene.ts:2091](../src/scenes/rpg/CanteenInteriorScene.ts#L2091)；[src/scenes/rpg/CanteenInteriorScene.ts:2105](../src/scenes/rpg/CanteenInteriorScene.ts#L2105)；[src/scenes/rpg/CanteenInteriorScene.ts:2113](../src/scenes/rpg/CanteenInteriorScene.ts#L2113)；[src/scenes/rpg/CanteenInteriorScene.ts:2117](../src/scenes/rpg/CanteenInteriorScene.ts#L2117)；[src/scenes/rpg/CanteenInteriorScene.ts:2121](../src/scenes/rpg/CanteenInteriorScene.ts#L2121)；[src/scenes/rpg/CanteenInteriorScene.ts:2150](../src/scenes/rpg/CanteenInteriorScene.ts#L2150)；[src/scenes/rpg/CanteenInteriorScene.ts:2154](../src/scenes/rpg/CanteenInteriorScene.ts#L2154)；[src/scenes/rpg/CanteenInteriorScene.ts:2331](../src/scenes/rpg/CanteenInteriorScene.ts#L2331)；[src/scenes/rpg/CanteenInteriorScene.ts:3295](../src/scenes/rpg/CanteenInteriorScene.ts#L3295)；[src/scenes/rpg/CanteenInteriorScene.ts:3371](../src/scenes/rpg/CanteenInteriorScene.ts#L3371)；[src/scenes/rpg/CanteenInteriorScene.ts:3723](../src/scenes/rpg/CanteenInteriorScene.ts#L3723)；[src/scenes/rpg/CanteenInteriorScene.ts:3773](../src/scenes/rpg/CanteenInteriorScene.ts#L3773)；[src/scenes/rpg/CanteenInteriorScene.ts:3863](../src/scenes/rpg/CanteenInteriorScene.ts#L3863)；[src/scenes/rpg/QizhenLakeScene.ts:593](../src/scenes/rpg/QizhenLakeScene.ts#L593)；[src/scenes/rpg/QizhenLakeScene.ts:843](../src/scenes/rpg/QizhenLakeScene.ts#L843)；[src/scenes/rpg/QizhenLakeScene.ts:1014](../src/scenes/rpg/QizhenLakeScene.ts#L1014)；[src/scenes/rpg/QizhenLakeScene.ts:1047](../src/scenes/rpg/QizhenLakeScene.ts#L1047)；[src/scenes/rpg/QizhenLakeScene.ts:1835](../src/scenes/rpg/QizhenLakeScene.ts#L1835)；[src/scenes/rpg/QizhenLakeScene.ts:2104](../src/scenes/rpg/QizhenLakeScene.ts#L2104)；[src/scenes/rpg/QizhenLakeScene.ts:2160](../src/scenes/rpg/QizhenLakeScene.ts#L2160)；[src/scenes/rpg/QizhenLakeScene.ts:2264](../src/scenes/rpg/QizhenLakeScene.ts#L2264)；[src/scenes/rpg/QizhenLakeScene.ts:2464](../src/scenes/rpg/QizhenLakeScene.ts#L2464)；[src/scenes/rpg/QizhenLakeScene.ts:2468](../src/scenes/rpg/QizhenLakeScene.ts#L2468)；[src/scenes/rpg/QizhenLakeScene.ts:2486](../src/scenes/rpg/QizhenLakeScene.ts#L2486)；[src/scenes/rpg/QizhenLakeScene.ts:2490](../src/scenes/rpg/QizhenLakeScene.ts#L2490)；[src/scenes/rpg/QizhenLakeScene.ts:2496](../src/scenes/rpg/QizhenLakeScene.ts#L2496)；[src/scenes/rpg/QizhenLakeScene.ts:2510](../src/scenes/rpg/QizhenLakeScene.ts#L2510)；[src/scenes/rpg/QizhenLakeScene.ts:2525](../src/scenes/rpg/QizhenLakeScene.ts#L2525)；[src/scenes/rpg/QizhenLakeScene.ts:2584](../src/scenes/rpg/QizhenLakeScene.ts#L2584)；[src/scenes/rpg/QizhenLakeScene.ts:2892](../src/scenes/rpg/QizhenLakeScene.ts#L2892)；[src/scenes/rpg/QizhenLakeScene.ts:2898](../src/scenes/rpg/QizhenLakeScene.ts#L2898)；[src/scenes/rpg/QizhenLakeScene.ts:2902](../src/scenes/rpg/QizhenLakeScene.ts#L2902)；[src/scenes/rpg/QizhenLakeScene.ts:2906](../src/scenes/rpg/QizhenLakeScene.ts#L2906)；[src/scenes/rpg/QizhenLakeScene.ts:2910](../src/scenes/rpg/QizhenLakeScene.ts#L2910)；[src/scenes/rpg/QizhenLakeScene.ts:2920](../src/scenes/rpg/QizhenLakeScene.ts#L2920)；[src/scenes/rpg/QizhenLakeScene.ts:3451](../src/scenes/rpg/QizhenLakeScene.ts#L3451)；[src/scenes/rpg/TheaterInteriorScene.ts:665](../src/scenes/rpg/TheaterInteriorScene.ts#L665)；[src/scenes/rpg/TheaterInteriorScene.ts:669](../src/scenes/rpg/TheaterInteriorScene.ts#L669)；[src/scenes/rpg/TheaterInteriorScene.ts:682](../src/scenes/rpg/TheaterInteriorScene.ts#L682)；[src/scenes/rpg/TheaterInteriorScene.ts:1057](../src/scenes/rpg/TheaterInteriorScene.ts#L1057)；[src/scenes/rpg/TheaterInteriorScene.ts:1065](../src/scenes/rpg/TheaterInteriorScene.ts#L1065)；[src/scenes/rpg/TheaterInteriorScene.ts:1069](../src/scenes/rpg/TheaterInteriorScene.ts#L1069)；[src/scenes/rpg/TheaterInteriorScene.ts:1076](../src/scenes/rpg/TheaterInteriorScene.ts#L1076)；[src/scenes/rpg/TheaterInteriorScene.ts:1110](../src/scenes/rpg/TheaterInteriorScene.ts#L1110)；[src/scenes/rpg/TheaterInteriorScene.ts:1131](../src/scenes/rpg/TheaterInteriorScene.ts#L1131)；[src/scenes/rpg/TheaterInteriorScene.ts:1242](../src/scenes/rpg/TheaterInteriorScene.ts#L1242)；[src/scenes/rpg/TheaterInteriorScene.ts:1283](../src/scenes/rpg/TheaterInteriorScene.ts#L1283)；[src/scenes/rpg/TheaterInteriorScene.ts:1292](../src/scenes/rpg/TheaterInteriorScene.ts#L1292)；[src/scenes/rpg/TheaterInteriorScene.ts:1338](../src/scenes/rpg/TheaterInteriorScene.ts#L1338)；[src/scenes/rpg/TheaterInteriorScene.ts:1344](../src/scenes/rpg/TheaterInteriorScene.ts#L1344)；[src/scenes/rpg/TheaterInteriorScene.ts:1744](../src/scenes/rpg/TheaterInteriorScene.ts#L1744)
+   来源：[src/data/chapter3-story-lines.json:18](../src/data/chapter3-story-lines.json#L18)；[src/data/chapter3-story-lines.json:27](../src/data/chapter3-story-lines.json#L27)；[src/data/chapter3-story-lines.json:36](../src/data/chapter3-story-lines.json#L36)；[src/data/chapter3-story-lines.json:45](../src/data/chapter3-story-lines.json#L45)；[src/data/chapter3-story-lines.json:54](../src/data/chapter3-story-lines.json#L54)；[src/data/chapter3-story-lines.json:63](../src/data/chapter3-story-lines.json#L63)；[src/data/chapter3-story-lines.json:72](../src/data/chapter3-story-lines.json#L72)；[src/data/chapter3-story-lines.json:81](../src/data/chapter3-story-lines.json#L81)；[src/data/chapter3-story-lines.json:108](../src/data/chapter3-story-lines.json#L108)；[src/data/chapter3-story-lines.json:126](../src/data/chapter3-story-lines.json#L126)；[src/data/chapter3-story-lines.json:135](../src/data/chapter3-story-lines.json#L135)；[src/data/chapter3-story-lines.json:144](../src/data/chapter3-story-lines.json#L144)；[src/data/chapter3-story-lines.json:162](../src/data/chapter3-story-lines.json#L162)；[src/data/chapter3-story-lines.json:171](../src/data/chapter3-story-lines.json#L171)；[src/data/chapter3-story-lines.json:180](../src/data/chapter3-story-lines.json#L180)；[src/data/chapter3-story-lines.json:189](../src/data/chapter3-story-lines.json#L189)；[src/data/chapter3-story-lines.json:198](../src/data/chapter3-story-lines.json#L198)；[src/data/chapter3-story-lines.json:207](../src/data/chapter3-story-lines.json#L207)；[src/data/chapter3-story-lines.json:216](../src/data/chapter3-story-lines.json#L216)；[src/data/chapter3-story-lines.json:225](../src/data/chapter3-story-lines.json#L225)；[src/data/chapter3-story-lines.json:234](../src/data/chapter3-story-lines.json#L234)；[src/data/chapter3-story-lines.json:243](../src/data/chapter3-story-lines.json#L243)；[src/data/chapter3-story-lines.json:252](../src/data/chapter3-story-lines.json#L252)；[src/data/chapter3-story-lines.json:261](../src/data/chapter3-story-lines.json#L261)；[src/data/chapter3-story-lines.json:270](../src/data/chapter3-story-lines.json#L270)；[src/data/chapter3-story-lines.json:279](../src/data/chapter3-story-lines.json#L279)；[src/data/chapter3-story-lines.json:288](../src/data/chapter3-story-lines.json#L288)；[src/data/chapter3-story-lines.json:297](../src/data/chapter3-story-lines.json#L297)；[src/data/chapter3-story-lines.json:306](../src/data/chapter3-story-lines.json#L306)；[src/data/chapter3-story-lines.json:315](../src/data/chapter3-story-lines.json#L315)；[src/data/chapter3-story-lines.json:333](../src/data/chapter3-story-lines.json#L333)；[src/data/chapter3-story-lines.json:342](../src/data/chapter3-story-lines.json#L342)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:67](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L67)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:79](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L79)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:85](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L85)；[src/scenes/rpg/CanteenInteriorScene.ts:2013](../src/scenes/rpg/CanteenInteriorScene.ts#L2013)；[src/scenes/rpg/CanteenInteriorScene.ts:2017](../src/scenes/rpg/CanteenInteriorScene.ts#L2017)；[src/scenes/rpg/CanteenInteriorScene.ts:2049](../src/scenes/rpg/CanteenInteriorScene.ts#L2049)；[src/scenes/rpg/CanteenInteriorScene.ts:2053](../src/scenes/rpg/CanteenInteriorScene.ts#L2053)；[src/scenes/rpg/CanteenInteriorScene.ts:2062](../src/scenes/rpg/CanteenInteriorScene.ts#L2062)；[src/scenes/rpg/CanteenInteriorScene.ts:2071](../src/scenes/rpg/CanteenInteriorScene.ts#L2071)；[src/scenes/rpg/CanteenInteriorScene.ts:2087](../src/scenes/rpg/CanteenInteriorScene.ts#L2087)；[src/scenes/rpg/CanteenInteriorScene.ts:2091](../src/scenes/rpg/CanteenInteriorScene.ts#L2091)；[src/scenes/rpg/CanteenInteriorScene.ts:2105](../src/scenes/rpg/CanteenInteriorScene.ts#L2105)；[src/scenes/rpg/CanteenInteriorScene.ts:2113](../src/scenes/rpg/CanteenInteriorScene.ts#L2113)；[src/scenes/rpg/CanteenInteriorScene.ts:2117](../src/scenes/rpg/CanteenInteriorScene.ts#L2117)；[src/scenes/rpg/CanteenInteriorScene.ts:2121](../src/scenes/rpg/CanteenInteriorScene.ts#L2121)；[src/scenes/rpg/CanteenInteriorScene.ts:2150](../src/scenes/rpg/CanteenInteriorScene.ts#L2150)；[src/scenes/rpg/CanteenInteriorScene.ts:2154](../src/scenes/rpg/CanteenInteriorScene.ts#L2154)；[src/scenes/rpg/CanteenInteriorScene.ts:2331](../src/scenes/rpg/CanteenInteriorScene.ts#L2331)；[src/scenes/rpg/CanteenInteriorScene.ts:3295](../src/scenes/rpg/CanteenInteriorScene.ts#L3295)；[src/scenes/rpg/CanteenInteriorScene.ts:3371](../src/scenes/rpg/CanteenInteriorScene.ts#L3371)；[src/scenes/rpg/CanteenInteriorScene.ts:3723](../src/scenes/rpg/CanteenInteriorScene.ts#L3723)；[src/scenes/rpg/CanteenInteriorScene.ts:3773](../src/scenes/rpg/CanteenInteriorScene.ts#L3773)；[src/scenes/rpg/CanteenInteriorScene.ts:3863](../src/scenes/rpg/CanteenInteriorScene.ts#L3863)；[src/scenes/rpg/QizhenLakeScene.ts:593](../src/scenes/rpg/QizhenLakeScene.ts#L593)；[src/scenes/rpg/QizhenLakeScene.ts:843](../src/scenes/rpg/QizhenLakeScene.ts#L843)；[src/scenes/rpg/QizhenLakeScene.ts:1014](../src/scenes/rpg/QizhenLakeScene.ts#L1014)；[src/scenes/rpg/QizhenLakeScene.ts:1047](../src/scenes/rpg/QizhenLakeScene.ts#L1047)；[src/scenes/rpg/QizhenLakeScene.ts:1837](../src/scenes/rpg/QizhenLakeScene.ts#L1837)；[src/scenes/rpg/QizhenLakeScene.ts:2106](../src/scenes/rpg/QizhenLakeScene.ts#L2106)；[src/scenes/rpg/QizhenLakeScene.ts:2162](../src/scenes/rpg/QizhenLakeScene.ts#L2162)；[src/scenes/rpg/QizhenLakeScene.ts:2271](../src/scenes/rpg/QizhenLakeScene.ts#L2271)；[src/scenes/rpg/QizhenLakeScene.ts:2479](../src/scenes/rpg/QizhenLakeScene.ts#L2479)；[src/scenes/rpg/QizhenLakeScene.ts:2483](../src/scenes/rpg/QizhenLakeScene.ts#L2483)；[src/scenes/rpg/QizhenLakeScene.ts:2501](../src/scenes/rpg/QizhenLakeScene.ts#L2501)；[src/scenes/rpg/QizhenLakeScene.ts:2505](../src/scenes/rpg/QizhenLakeScene.ts#L2505)；[src/scenes/rpg/QizhenLakeScene.ts:2511](../src/scenes/rpg/QizhenLakeScene.ts#L2511)；[src/scenes/rpg/QizhenLakeScene.ts:2525](../src/scenes/rpg/QizhenLakeScene.ts#L2525)；[src/scenes/rpg/QizhenLakeScene.ts:2540](../src/scenes/rpg/QizhenLakeScene.ts#L2540)；[src/scenes/rpg/QizhenLakeScene.ts:2599](../src/scenes/rpg/QizhenLakeScene.ts#L2599)；[src/scenes/rpg/QizhenLakeScene.ts:2907](../src/scenes/rpg/QizhenLakeScene.ts#L2907)；[src/scenes/rpg/QizhenLakeScene.ts:2913](../src/scenes/rpg/QizhenLakeScene.ts#L2913)；[src/scenes/rpg/QizhenLakeScene.ts:2917](../src/scenes/rpg/QizhenLakeScene.ts#L2917)；[src/scenes/rpg/QizhenLakeScene.ts:2921](../src/scenes/rpg/QizhenLakeScene.ts#L2921)；[src/scenes/rpg/QizhenLakeScene.ts:2925](../src/scenes/rpg/QizhenLakeScene.ts#L2925)；[src/scenes/rpg/QizhenLakeScene.ts:2935](../src/scenes/rpg/QizhenLakeScene.ts#L2935)；[src/scenes/rpg/QizhenLakeScene.ts:3466](../src/scenes/rpg/QizhenLakeScene.ts#L3466)；[src/scenes/rpg/TheaterInteriorScene.ts:665](../src/scenes/rpg/TheaterInteriorScene.ts#L665)；[src/scenes/rpg/TheaterInteriorScene.ts:669](../src/scenes/rpg/TheaterInteriorScene.ts#L669)；[src/scenes/rpg/TheaterInteriorScene.ts:682](../src/scenes/rpg/TheaterInteriorScene.ts#L682)；[src/scenes/rpg/TheaterInteriorScene.ts:1057](../src/scenes/rpg/TheaterInteriorScene.ts#L1057)；[src/scenes/rpg/TheaterInteriorScene.ts:1065](../src/scenes/rpg/TheaterInteriorScene.ts#L1065)；[src/scenes/rpg/TheaterInteriorScene.ts:1069](../src/scenes/rpg/TheaterInteriorScene.ts#L1069)；[src/scenes/rpg/TheaterInteriorScene.ts:1076](../src/scenes/rpg/TheaterInteriorScene.ts#L1076)；[src/scenes/rpg/TheaterInteriorScene.ts:1110](../src/scenes/rpg/TheaterInteriorScene.ts#L1110)；[src/scenes/rpg/TheaterInteriorScene.ts:1131](../src/scenes/rpg/TheaterInteriorScene.ts#L1131)；[src/scenes/rpg/TheaterInteriorScene.ts:1242](../src/scenes/rpg/TheaterInteriorScene.ts#L1242)；[src/scenes/rpg/TheaterInteriorScene.ts:1283](../src/scenes/rpg/TheaterInteriorScene.ts#L1283)；[src/scenes/rpg/TheaterInteriorScene.ts:1292](../src/scenes/rpg/TheaterInteriorScene.ts#L1292)；[src/scenes/rpg/TheaterInteriorScene.ts:1338](../src/scenes/rpg/TheaterInteriorScene.ts#L1338)；[src/scenes/rpg/TheaterInteriorScene.ts:1344](../src/scenes/rpg/TheaterInteriorScene.ts#L1344)；[src/scenes/rpg/TheaterInteriorScene.ts:1744](../src/scenes/rpg/TheaterInteriorScene.ts#L1744)
 547. 系统：它可能只是来体验一下排队，很多东西在食堂都会排队。
    来源：[src/data/chapter3-story-lines.json:20](../src/data/chapter3-story-lines.json#L20)
 548. Maybe it only came to experience the queue. Many things end up queuing in a cafeteria.
@@ -2896,7 +2896,7 @@
 562. Please do not expand the worldbuilding.
    来源：[src/data/chapter3-story-lines.json:84](../src/data/chapter3-story-lines.json#L84)
 563. narrator
-   来源：[src/data/chapter3-story-lines.json:90](../src/data/chapter3-story-lines.json#L90)；[src/data/chapter3-story-lines.json:99](../src/data/chapter3-story-lines.json#L99)；[src/data/chapter3-story-lines.json:117](../src/data/chapter3-story-lines.json#L117)；[src/data/chapter3-story-lines.json:153](../src/data/chapter3-story-lines.json#L153)；[src/data/chapter3-story-lines.json:324](../src/data/chapter3-story-lines.json#L324)；[src/scenes/rpg/CanteenInteriorScene.ts:2021](../src/scenes/rpg/CanteenInteriorScene.ts#L2021)；[src/scenes/rpg/QizhenLakeScene.ts:957](../src/scenes/rpg/QizhenLakeScene.ts#L957)；[src/scenes/rpg/QizhenLakeScene.ts:961](../src/scenes/rpg/QizhenLakeScene.ts#L961)；[src/scenes/rpg/QizhenLakeScene.ts:1078](../src/scenes/rpg/QizhenLakeScene.ts#L1078)；[src/scenes/rpg/QizhenLakeScene.ts:2505](../src/scenes/rpg/QizhenLakeScene.ts#L2505)；[src/scenes/rpg/QizhenLakeScene.ts:3355](../src/scenes/rpg/QizhenLakeScene.ts#L3355)；[src/scenes/rpg/QizhenLakeScene.ts:3384](../src/scenes/rpg/QizhenLakeScene.ts#L3384)；[src/scenes/rpg/TheaterInteriorScene.ts:1252](../src/scenes/rpg/TheaterInteriorScene.ts#L1252)
+   来源：[src/data/chapter3-story-lines.json:90](../src/data/chapter3-story-lines.json#L90)；[src/data/chapter3-story-lines.json:99](../src/data/chapter3-story-lines.json#L99)；[src/data/chapter3-story-lines.json:117](../src/data/chapter3-story-lines.json#L117)；[src/data/chapter3-story-lines.json:153](../src/data/chapter3-story-lines.json#L153)；[src/data/chapter3-story-lines.json:324](../src/data/chapter3-story-lines.json#L324)；[src/scenes/rpg/CanteenInteriorScene.ts:2021](../src/scenes/rpg/CanteenInteriorScene.ts#L2021)；[src/scenes/rpg/QizhenLakeScene.ts:957](../src/scenes/rpg/QizhenLakeScene.ts#L957)；[src/scenes/rpg/QizhenLakeScene.ts:961](../src/scenes/rpg/QizhenLakeScene.ts#L961)；[src/scenes/rpg/QizhenLakeScene.ts:1078](../src/scenes/rpg/QizhenLakeScene.ts#L1078)；[src/scenes/rpg/QizhenLakeScene.ts:2520](../src/scenes/rpg/QizhenLakeScene.ts#L2520)；[src/scenes/rpg/QizhenLakeScene.ts:3370](../src/scenes/rpg/QizhenLakeScene.ts#L3370)；[src/scenes/rpg/QizhenLakeScene.ts:3399](../src/scenes/rpg/QizhenLakeScene.ts#L3399)；[src/scenes/rpg/TheaterInteriorScene.ts:1252](../src/scenes/rpg/TheaterInteriorScene.ts#L1252)
 564. 纸条撞回食堂，掉下一点蓝光。
    来源：[src/data/chapter3-story-lines.json:92](../src/data/chapter3-story-lines.json#L92)
 565. The paper crashes back into the cafeteria and sheds a flicker of blue light.
@@ -3286,7 +3286,7 @@
 757. 已到达基础图书馆入口。当前大地图路线保持开放。
    来源：[src/demos/campus-map-demo.tsx:222](../src/demos/campus-map-demo.tsx#L222)
 758. archived
-   来源：[src/modules/ChapterThreePhoneInterludeController.ts:108](../src/modules/ChapterThreePhoneInterludeController.ts#L108)；[src/modules/ChapterThreeQizhenLakeController.ts:1308](../src/modules/ChapterThreeQizhenLakeController.ts#L1308)；[src/modules/ChapterThreeQizhenLakeController.ts:1336](../src/modules/ChapterThreeQizhenLakeController.ts#L1336)
+   来源：[src/modules/ChapterThreePhoneInterludeController.ts:108](../src/modules/ChapterThreePhoneInterludeController.ts#L108)；[src/modules/ChapterThreeQizhenLakeController.ts:1311](../src/modules/ChapterThreeQizhenLakeController.ts#L1311)；[src/modules/ChapterThreeQizhenLakeController.ts:1339](../src/modules/ChapterThreeQizhenLakeController.ts#L1339)
 759. return\_to\_dock
    来源：[src/modules/ChapterThreeQizhenLakeController.ts:324](../src/modules/ChapterThreeQizhenLakeController.ts#L324)
 760. rain\_and\_equipment
@@ -3304,37 +3304,37 @@
 766. rain\_safety\_hold
    来源：[src/modules/ChapterThreeQizhenLakeController.ts:584](../src/modules/ChapterThreeQizhenLakeController.ts#L584)
 767. qizhen\_escape\_completed
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1032](../src/modules/ChapterThreeQizhenLakeController.ts#L1032)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1035](../src/modules/ChapterThreeQizhenLakeController.ts#L1035)
 768. capture\_ready
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1086](../src/modules/ChapterThreeQizhenLakeController.ts#L1086)；[src/modules/ChapterThreeQizhenLakeController.ts:1143](../src/modules/ChapterThreeQizhenLakeController.ts#L1143)；[src/modules/ChapterThreeQizhenLakeController.ts:1182](../src/modules/ChapterThreeQizhenLakeController.ts#L1182)；[src/modules/QizhenJournalModel.ts:224](../src/modules/QizhenJournalModel.ts#L224)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1089](../src/modules/ChapterThreeQizhenLakeController.ts#L1089)；[src/modules/ChapterThreeQizhenLakeController.ts:1146](../src/modules/ChapterThreeQizhenLakeController.ts#L1146)；[src/modules/ChapterThreeQizhenLakeController.ts:1185](../src/modules/ChapterThreeQizhenLakeController.ts#L1185)；[src/modules/QizhenJournalModel.ts:224](../src/modules/QizhenJournalModel.ts#L224)
 769. inactive
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1112](../src/modules/ChapterThreeQizhenLakeController.ts#L1112)；[src/modules/ChapterThreeQizhenLakeController.ts:1353](../src/modules/ChapterThreeQizhenLakeController.ts#L1353)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1115](../src/modules/ChapterThreeQizhenLakeController.ts#L1115)；[src/modules/ChapterThreeQizhenLakeController.ts:1356](../src/modules/ChapterThreeQizhenLakeController.ts#L1356)
 770. swan\_chase
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1114](../src/modules/ChapterThreeQizhenLakeController.ts#L1114)；[src/modules/ChapterThreeQizhenLakeController.ts:1307](../src/modules/ChapterThreeQizhenLakeController.ts#L1307)；[src/modules/ChapterThreeQizhenLakeController.ts:1335](../src/modules/ChapterThreeQizhenLakeController.ts#L1335)；[src/modules/ChapterThreeQizhenLakeController.ts:1355](../src/modules/ChapterThreeQizhenLakeController.ts#L1355)；[src/scenes/rpg/QizhenLakeScene.ts:1044](../src/scenes/rpg/QizhenLakeScene.ts#L1044)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1117](../src/modules/ChapterThreeQizhenLakeController.ts#L1117)；[src/modules/ChapterThreeQizhenLakeController.ts:1310](../src/modules/ChapterThreeQizhenLakeController.ts#L1310)；[src/modules/ChapterThreeQizhenLakeController.ts:1338](../src/modules/ChapterThreeQizhenLakeController.ts#L1338)；[src/modules/ChapterThreeQizhenLakeController.ts:1358](../src/modules/ChapterThreeQizhenLakeController.ts#L1358)；[src/scenes/rpg/QizhenLakeScene.ts:1044](../src/scenes/rpg/QizhenLakeScene.ts#L1044)
 771. journal\_archived
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1115](../src/modules/ChapterThreeQizhenLakeController.ts#L1115)；[src/modules/QizhenJournalModel.ts:204](../src/modules/QizhenJournalModel.ts#L204)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1118](../src/modules/ChapterThreeQizhenLakeController.ts#L1118)；[src/modules/QizhenJournalModel.ts:204](../src/modules/QizhenJournalModel.ts#L204)
 772. journal\_locked
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1117](../src/modules/ChapterThreeQizhenLakeController.ts#L1117)；[src/modules/ChapterThreeQizhenLakeController.ts:1318](../src/modules/ChapterThreeQizhenLakeController.ts#L1318)；[src/modules/ChapterThreeQizhenLakeController.ts:1337](../src/modules/ChapterThreeQizhenLakeController.ts#L1337)；[src/modules/QizhenJournalModel.ts:203](../src/modules/QizhenJournalModel.ts#L203)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1120](../src/modules/ChapterThreeQizhenLakeController.ts#L1120)；[src/modules/ChapterThreeQizhenLakeController.ts:1321](../src/modules/ChapterThreeQizhenLakeController.ts#L1321)；[src/modules/ChapterThreeQizhenLakeController.ts:1340](../src/modules/ChapterThreeQizhenLakeController.ts#L1340)；[src/modules/QizhenJournalModel.ts:203](../src/modules/QizhenJournalModel.ts#L203)
 773. draft\_mismatch
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1119](../src/modules/ChapterThreeQizhenLakeController.ts#L1119)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1122](../src/modules/ChapterThreeQizhenLakeController.ts#L1122)
 774. orphan\_photo
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1121](../src/modules/ChapterThreeQizhenLakeController.ts#L1121)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1124](../src/modules/ChapterThreeQizhenLakeController.ts#L1124)
 775. incomplete\_draft
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1123](../src/modules/ChapterThreeQizhenLakeController.ts#L1123)；[src/modules/ChapterThreeQizhenLakeController.ts:1125](../src/modules/ChapterThreeQizhenLakeController.ts#L1125)；[src/modules/ChapterThreeQizhenLakeController.ts:1233](../src/modules/ChapterThreeQizhenLakeController.ts#L1233)；[src/modules/ChapterThreeQizhenLakeController.ts:1323](../src/modules/ChapterThreeQizhenLakeController.ts#L1323)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1126](../src/modules/ChapterThreeQizhenLakeController.ts#L1126)；[src/modules/ChapterThreeQizhenLakeController.ts:1128](../src/modules/ChapterThreeQizhenLakeController.ts#L1128)；[src/modules/ChapterThreeQizhenLakeController.ts:1236](../src/modules/ChapterThreeQizhenLakeController.ts#L1236)；[src/modules/ChapterThreeQizhenLakeController.ts:1326](../src/modules/ChapterThreeQizhenLakeController.ts#L1326)
 776. main\_draft
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1182](../src/modules/ChapterThreeQizhenLakeController.ts#L1182)；[src/modules/QizhenJournalModel.ts:224](../src/modules/QizhenJournalModel.ts#L224)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1185](../src/modules/ChapterThreeQizhenLakeController.ts#L1185)；[src/modules/QizhenJournalModel.ts:224](../src/modules/QizhenJournalModel.ts#L224)
 777. open
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1247](../src/modules/ChapterThreeQizhenLakeController.ts#L1247)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1250](../src/modules/ChapterThreeQizhenLakeController.ts#L1250)
 778. already\_published
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1316](../src/modules/ChapterThreeQizhenLakeController.ts#L1316)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1319](../src/modules/ChapterThreeQizhenLakeController.ts#L1319)
 779. no\_draft
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1319](../src/modules/ChapterThreeQizhenLakeController.ts#L1319)；[src/modules/ChapterThreeQizhenLakeController.ts:1322](../src/modules/ChapterThreeQizhenLakeController.ts#L1322)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1322](../src/modules/ChapterThreeQizhenLakeController.ts#L1322)；[src/modules/ChapterThreeQizhenLakeController.ts:1325](../src/modules/ChapterThreeQizhenLakeController.ts#L1325)
 780. offline
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1324](../src/modules/ChapterThreeQizhenLakeController.ts#L1324)；[src/modules/ChapterThreeQizhenLakeController.ts:1345](../src/modules/ChapterThreeQizhenLakeController.ts#L1345)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1327](../src/modules/ChapterThreeQizhenLakeController.ts#L1327)；[src/modules/ChapterThreeQizhenLakeController.ts:1348](../src/modules/ChapterThreeQizhenLakeController.ts#L1348)
 781. not\_open
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1339](../src/modules/ChapterThreeQizhenLakeController.ts#L1339)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1342](../src/modules/ChapterThreeQizhenLakeController.ts#L1342)
 782. no\_photo
-   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1344](../src/modules/ChapterThreeQizhenLakeController.ts#L1344)
+   来源：[src/modules/ChapterThreeQizhenLakeController.ts:1347](../src/modules/ChapterThreeQizhenLakeController.ts#L1347)
 783. 演出记录没有完成，请重演本幕。
    来源：[src/modules/ChapterThreeTheaterController.ts:445](../src/modules/ChapterThreeTheaterController.ts#L445)
 784. shadow
@@ -3822,7 +3822,7 @@
 1025. {{canteenContent.drinks.shelfPrompt}} / {{canteenContent.drinks.shelfOrder}}
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2053](../src/scenes/rpg/CanteenInteriorScene.ts#L2053)
 1026. success
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2067](../src/scenes/rpg/CanteenInteriorScene.ts#L2067)；[src/scenes/rpg/CanteenInteriorScene.ts:2130](../src/scenes/rpg/CanteenInteriorScene.ts#L2130)；[src/scenes/rpg/CanteenInteriorScene.ts:3764](../src/scenes/rpg/CanteenInteriorScene.ts#L3764)；[src/scenes/rpg/CanteenInteriorScene.ts:3890](../src/scenes/rpg/CanteenInteriorScene.ts#L3890)；[src/scenes/rpg/QizhenLakeScene.ts:2482](../src/scenes/rpg/QizhenLakeScene.ts#L2482)；[src/scenes/rpg/QizhenLakeScene.ts:2501](../src/scenes/rpg/QizhenLakeScene.ts#L2501)；[src/scenes/rpg/QizhenLakeScene.ts:2512](../src/scenes/rpg/QizhenLakeScene.ts#L2512)；[src/scenes/rpg/QizhenLakeScene.ts:2521](../src/scenes/rpg/QizhenLakeScene.ts#L2521)；[src/scenes/rpg/QizhenLakeScene.ts:2532](../src/scenes/rpg/QizhenLakeScene.ts#L2532)；[src/scenes/rpg/QizhenLakeScene.ts:2537](../src/scenes/rpg/QizhenLakeScene.ts#L2537)；[src/scenes/rpg/QizhenLakeScene.ts:2541](../src/scenes/rpg/QizhenLakeScene.ts#L2541)；[src/scenes/rpg/QizhenLakeScene.ts:2545](../src/scenes/rpg/QizhenLakeScene.ts#L2545)；[src/scenes/rpg/QizhenLakeScene.ts:2549](../src/scenes/rpg/QizhenLakeScene.ts#L2549)；[src/scenes/rpg/QizhenLakeScene.ts:2553](../src/scenes/rpg/QizhenLakeScene.ts#L2553)；[src/scenes/rpg/QizhenLakeScene.ts:2568](../src/scenes/rpg/QizhenLakeScene.ts#L2568)；[src/scenes/rpg/QizhenLakeScene.ts:2572](../src/scenes/rpg/QizhenLakeScene.ts#L2572)；[src/scenes/rpg/QizhenLakeScene.ts:2576](../src/scenes/rpg/QizhenLakeScene.ts#L2576)；[src/scenes/rpg/QizhenLakeScene.ts:2580](../src/scenes/rpg/QizhenLakeScene.ts#L2580)；[src/scenes/rpg/TheaterInteriorScene.ts:1686](../src/scenes/rpg/TheaterInteriorScene.ts#L1686)；[src/scenes/rpg/TheaterInteriorScene.ts:1761](../src/scenes/rpg/TheaterInteriorScene.ts#L1761)；[src/scenes/rpg/TheaterInteriorScene.ts:1796](../src/scenes/rpg/TheaterInteriorScene.ts#L1796)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2067](../src/scenes/rpg/CanteenInteriorScene.ts#L2067)；[src/scenes/rpg/CanteenInteriorScene.ts:2130](../src/scenes/rpg/CanteenInteriorScene.ts#L2130)；[src/scenes/rpg/CanteenInteriorScene.ts:3764](../src/scenes/rpg/CanteenInteriorScene.ts#L3764)；[src/scenes/rpg/CanteenInteriorScene.ts:3890](../src/scenes/rpg/CanteenInteriorScene.ts#L3890)；[src/scenes/rpg/QizhenLakeScene.ts:2497](../src/scenes/rpg/QizhenLakeScene.ts#L2497)；[src/scenes/rpg/QizhenLakeScene.ts:2516](../src/scenes/rpg/QizhenLakeScene.ts#L2516)；[src/scenes/rpg/QizhenLakeScene.ts:2527](../src/scenes/rpg/QizhenLakeScene.ts#L2527)；[src/scenes/rpg/QizhenLakeScene.ts:2536](../src/scenes/rpg/QizhenLakeScene.ts#L2536)；[src/scenes/rpg/QizhenLakeScene.ts:2547](../src/scenes/rpg/QizhenLakeScene.ts#L2547)；[src/scenes/rpg/QizhenLakeScene.ts:2552](../src/scenes/rpg/QizhenLakeScene.ts#L2552)；[src/scenes/rpg/QizhenLakeScene.ts:2556](../src/scenes/rpg/QizhenLakeScene.ts#L2556)；[src/scenes/rpg/QizhenLakeScene.ts:2560](../src/scenes/rpg/QizhenLakeScene.ts#L2560)；[src/scenes/rpg/QizhenLakeScene.ts:2564](../src/scenes/rpg/QizhenLakeScene.ts#L2564)；[src/scenes/rpg/QizhenLakeScene.ts:2568](../src/scenes/rpg/QizhenLakeScene.ts#L2568)；[src/scenes/rpg/QizhenLakeScene.ts:2583](../src/scenes/rpg/QizhenLakeScene.ts#L2583)；[src/scenes/rpg/QizhenLakeScene.ts:2587](../src/scenes/rpg/QizhenLakeScene.ts#L2587)；[src/scenes/rpg/QizhenLakeScene.ts:2591](../src/scenes/rpg/QizhenLakeScene.ts#L2591)；[src/scenes/rpg/QizhenLakeScene.ts:2595](../src/scenes/rpg/QizhenLakeScene.ts#L2595)；[src/scenes/rpg/TheaterInteriorScene.ts:1686](../src/scenes/rpg/TheaterInteriorScene.ts#L1686)；[src/scenes/rpg/TheaterInteriorScene.ts:1761](../src/scenes/rpg/TheaterInteriorScene.ts#L1761)；[src/scenes/rpg/TheaterInteriorScene.ts:1796](../src/scenes/rpg/TheaterInteriorScene.ts#L1796)
 1027. 窗口正常出餐。
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2130](../src/scenes/rpg/CanteenInteriorScene.ts#L2130)
 1028. rpg\_canteen\_tray\_task\_start\_requested
@@ -3926,11 +3926,11 @@
 1077. rpg\_canteen\_leave\_requested
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:3908](../src/scenes/rpg/CanteenInteriorScene.ts#L3908)
 1078. 玩家：
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3932](../src/scenes/rpg/CanteenInteriorScene.ts#L3932)；[src/scenes/rpg/QizhenLakeScene.ts:3099](../src/scenes/rpg/QizhenLakeScene.ts#L3099)；[src/scenes/rpg/QizhenLoopScene.ts:348](../src/scenes/rpg/QizhenLoopScene.ts#L348)；[src/scenes/rpg/TheaterInteriorScene.ts:1942](../src/scenes/rpg/TheaterInteriorScene.ts#L1942)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3932](../src/scenes/rpg/CanteenInteriorScene.ts#L3932)；[src/scenes/rpg/QizhenLakeScene.ts:3114](../src/scenes/rpg/QizhenLakeScene.ts#L3114)；[src/scenes/rpg/QizhenLoopScene.ts:348](../src/scenes/rpg/QizhenLoopScene.ts#L348)；[src/scenes/rpg/TheaterInteriorScene.ts:1942](../src/scenes/rpg/TheaterInteriorScene.ts#L1942)
 1079. 系统：
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3933](../src/scenes/rpg/CanteenInteriorScene.ts#L3933)；[src/scenes/rpg/QizhenLakeScene.ts:3100](../src/scenes/rpg/QizhenLakeScene.ts#L3100)；[src/scenes/rpg/QizhenLoopScene.ts:349](../src/scenes/rpg/QizhenLoopScene.ts#L349)；[src/scenes/rpg/TheaterInteriorScene.ts:1943](../src/scenes/rpg/TheaterInteriorScene.ts#L1943)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3933](../src/scenes/rpg/CanteenInteriorScene.ts#L3933)；[src/scenes/rpg/QizhenLakeScene.ts:3115](../src/scenes/rpg/QizhenLakeScene.ts#L3115)；[src/scenes/rpg/QizhenLoopScene.ts:349](../src/scenes/rpg/QizhenLoopScene.ts#L349)；[src/scenes/rpg/TheaterInteriorScene.ts:1943](../src/scenes/rpg/TheaterInteriorScene.ts#L1943)
 1080. 任务：
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3934](../src/scenes/rpg/CanteenInteriorScene.ts#L3934)；[src/scenes/rpg/QizhenLakeScene.ts:3101](../src/scenes/rpg/QizhenLakeScene.ts#L3101)；[src/scenes/rpg/QizhenLoopScene.ts:350](../src/scenes/rpg/QizhenLoopScene.ts#L350)；[src/scenes/rpg/TheaterInteriorScene.ts:1944](../src/scenes/rpg/TheaterInteriorScene.ts#L1944)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3934](../src/scenes/rpg/CanteenInteriorScene.ts#L3934)；[src/scenes/rpg/QizhenLakeScene.ts:3116](../src/scenes/rpg/QizhenLakeScene.ts#L3116)；[src/scenes/rpg/QizhenLoopScene.ts:350](../src/scenes/rpg/QizhenLoopScene.ts#L350)；[src/scenes/rpg/TheaterInteriorScene.ts:1944](../src/scenes/rpg/TheaterInteriorScene.ts#L1944)
 1081. 左收线
    来源：[src/scenes/rpg/QizhenFishingRhythmLayout.ts:11](../src/scenes/rpg/QizhenFishingRhythmLayout.ts#L11)；[src/scenes/rpg/QizhenFishingTutorialOverlay.ts:40](../src/scenes/rpg/QizhenFishingTutorialOverlay.ts#L40)
 1082. 提竿
@@ -4032,41 +4032,41 @@
 1130. {{qizhenContent.boarding.capsizeSameSide}}{{qizhenContent.chase.failed}}
    来源：[src/scenes/rpg/QizhenLakeScene.ts:1045](../src/scenes/rpg/QizhenLakeScene.ts#L1045)
 1131. 节奏钓取未能启动，道具已保留，请重试。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:1835](../src/scenes/rpg/QizhenLakeScene.ts#L1835)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:1837](../src/scenes/rpg/QizhenLakeScene.ts#L1837)
 1132. 道具已保留。下次白圈的有效窗口会放宽，操作仍然相同。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2102](../src/scenes/rpg/QizhenLakeScene.ts#L2102)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2104](../src/scenes/rpg/QizhenLakeScene.ts#L2104)
 1133. 未通过：道具已保留，靠近同一水纹可立即重试。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2103](../src/scenes/rpg/QizhenLakeScene.ts#L2103)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2105](../src/scenes/rpg/QizhenLakeScene.ts#L2105)
 1134. {{qizhenContent.mist.darkPrompt}} {{formatRpgModeRequirement("light")}}
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2159](../src/scenes/rpg/QizhenLakeScene.ts#L2159)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2161](../src/scenes/rpg/QizhenLakeScene.ts#L2161)
 1135. locker\_key
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2531](../src/scenes/rpg/QizhenLakeScene.ts#L2531)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2546](../src/scenes/rpg/QizhenLakeScene.ts#L2546)
 1136. 浮排边的旧饲料盒被捞起并撬开。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2562](../src/scenes/rpg/QizhenLakeScene.ts#L2562)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2577](../src/scenes/rpg/QizhenLakeScene.ts#L2577)
 1137. 饲料撒入围栏，黑天鹅把一枚磁性扣推到船边。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2563](../src/scenes/rpg/QizhenLakeScene.ts#L2563)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2578](../src/scenes/rpg/QizhenLakeScene.ts#L2578)
 1138. 尼龙绳、破损网框和磁性扣已装到钓鱼竿上，可以捕纸了。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2568](../src/scenes/rpg/QizhenLakeScene.ts#L2568)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2583](../src/scenes/rpg/QizhenLakeScene.ts#L2583)
 1139. player
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2851](../src/scenes/rpg/QizhenLakeScene.ts#L2851)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2866](../src/scenes/rpg/QizhenLakeScene.ts#L2866)
 1140. 相机
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2860](../src/scenes/rpg/QizhenLakeScene.ts#L2860)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2875](../src/scenes/rpg/QizhenLakeScene.ts#L2875)
 1141. 正在节奏钓取,收竿后再拍。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2892](../src/scenes/rpg/QizhenLakeScene.ts#L2892)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2907](../src/scenes/rpg/QizhenLakeScene.ts#L2907)
 1142. 黑天鹅正追着船尾,顾不上拍照。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2898](../src/scenes/rpg/QizhenLakeScene.ts#L2898)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2913](../src/scenes/rpg/QizhenLakeScene.ts#L2913)
 1143. 这里要上船后才能取景。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2902](../src/scenes/rpg/QizhenLakeScene.ts#L2902)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2917](../src/scenes/rpg/QizhenLakeScene.ts#L2917)
 1144. 船还没停稳,等一下再拍。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2906](../src/scenes/rpg/QizhenLakeScene.ts#L2906)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2921](../src/scenes/rpg/QizhenLakeScene.ts#L2921)
 1145. 先听完这段话,再打开相机。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2910](../src/scenes/rpg/QizhenLakeScene.ts#L2910)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2925](../src/scenes/rpg/QizhenLakeScene.ts#L2925)
 1146. 这里构不成画面,再往{{nearest.label}}靠一靠。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2918](../src/scenes/rpg/QizhenLakeScene.ts#L2918)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2933](../src/scenes/rpg/QizhenLakeScene.ts#L2933)
 1147. 河道里取景太窄,去大湖面或黑天鹅围栏旁再拍。
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:2919](../src/scenes/rpg/QizhenLakeScene.ts#L2919)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:2934](../src/scenes/rpg/QizhenLakeScene.ts#L2934)
 1148. forced\_launch\_capsize
-   来源：[src/scenes/rpg/QizhenLakeScene.ts:3389](../src/scenes/rpg/QizhenLakeScene.ts#L3389)；[src/scenes/rpg/QizhenLakeScene.ts:3402](../src/scenes/rpg/QizhenLakeScene.ts#L3402)
+   来源：[src/scenes/rpg/QizhenLakeScene.ts:3404](../src/scenes/rpg/QizhenLakeScene.ts#L3404)；[src/scenes/rpg/QizhenLakeScene.ts:3417](../src/scenes/rpg/QizhenLakeScene.ts#L3417)
 1149. 启真湖入口
    来源：[src/scenes/rpg/QizhenLoopScene.ts:44](../src/scenes/rpg/QizhenLoopScene.ts#L44)
 1150. 查看入口
@@ -5132,15 +5132,15 @@
 125. 抬起
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:327](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L327)
 126. 向上
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:327](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L327)；[src/scenes/rpg/RpgGameHost.tsx:2900](../src/scenes/rpg/RpgGameHost.tsx#L2900)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:327](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L327)；[src/scenes/rpg/RpgGameHost.tsx:2905](../src/scenes/rpg/RpgGameHost.tsx#L2905)
 127. 向左
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:327](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L327)；[src/scenes/rpg/RpgGameHost.tsx:2901](../src/scenes/rpg/RpgGameHost.tsx#L2901)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:327](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L327)；[src/scenes/rpg/RpgGameHost.tsx:2906](../src/scenes/rpg/RpgGameHost.tsx#L2906)
 128. 顺时针
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)
 129. 向下
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2902](../src/scenes/rpg/RpgGameHost.tsx#L2902)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2907](../src/scenes/rpg/RpgGameHost.tsx#L2907)
 130. 向右
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2903](../src/scenes/rpg/RpgGameHost.tsx#L2903)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2908](../src/scenes/rpg/RpgGameHost.tsx#L2908)
 131. 压下
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)
 132. 1档
@@ -7874,7 +7874,7 @@
 1496. {{channel.label}}漂移已归零。
    来源：[src/scenes/phone/P19_Clock/index.tsx:155](../src/scenes/phone/P19_Clock/index.tsx#L155)
 1497. 返回手机主页
-   来源：[src/scenes/phone/P19_Clock/index.tsx:166](../src/scenes/phone/P19_Clock/index.tsx#L166)；[src/scenes/phone/P19_Clock/index.tsx:227](../src/scenes/phone/P19_Clock/index.tsx#L227)；[src/scenes/rpg/RpgGameHost.tsx:2609](../src/scenes/rpg/RpgGameHost.tsx#L2609)；[src/scenes/rpg/RpgGameHost.tsx:2713](../src/scenes/rpg/RpgGameHost.tsx#L2713)
+   来源：[src/scenes/phone/P19_Clock/index.tsx:166](../src/scenes/phone/P19_Clock/index.tsx#L166)；[src/scenes/phone/P19_Clock/index.tsx:227](../src/scenes/phone/P19_Clock/index.tsx#L227)；[src/scenes/rpg/RpgGameHost.tsx:2614](../src/scenes/rpg/RpgGameHost.tsx#L2614)；[src/scenes/rpg/RpgGameHost.tsx:2718](../src/scenes/rpg/RpgGameHost.tsx#L2718)
 1498. B2-04 / TIME REPAIR
    来源：[src/scenes/phone/P19_Clock/index.tsx:167](../src/scenes/phone/P19_Clock/index.tsx#L167)
 1499. 校时状态
@@ -8230,7 +8230,7 @@
 1674. finalMinute
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7908](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7908)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8236](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8236)
 1675. campusCard
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7912](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7912)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8246](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8246)；[src/scenes/rpg/RpgGameHost.tsx:2786](../src/scenes/rpg/RpgGameHost.tsx#L2786)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7912](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7912)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8246](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8246)；[src/scenes/rpg/RpgGameHost.tsx:2791](../src/scenes/rpg/RpgGameHost.tsx#L2791)
 1676. attendanceRecordPaper
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7916](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7916)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8256](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8256)
 1677. shortPryBar
@@ -8424,69 +8424,69 @@
 1771. 区域供电状态已同步。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1468](../src/scenes/rpg/RpgGameHost.tsx#L1468)
 1772. 当前组合与现场痕迹不一致，可以继续调整。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2349](../src/scenes/rpg/RpgGameHost.tsx#L2349)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2354](../src/scenes/rpg/RpgGameHost.tsx#L2354)
 1773. 三项判断中仍有矛盾，请重新核对现场现象。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2417](../src/scenes/rpg/RpgGameHost.tsx#L2417)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2422](../src/scenes/rpg/RpgGameHost.tsx#L2422)
 1774. loading
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2459](../src/scenes/rpg/RpgGameHost.tsx#L2459)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2464](../src/scenes/rpg/RpgGameHost.tsx#L2464)
 1775. 7:55 RPG runtime
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2526](../src/scenes/rpg/RpgGameHost.tsx#L2526)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2531](../src/scenes/rpg/RpgGameHost.tsx#L2531)
 1776. 7:55 横屏游戏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2546](../src/scenes/rpg/RpgGameHost.tsx#L2546)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2551](../src/scenes/rpg/RpgGameHost.tsx#L2551)
 1777. 场景资源
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2583](../src/scenes/rpg/RpgGameHost.tsx#L2583)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2588](../src/scenes/rpg/RpgGameHost.tsx#L2588)
 1778. 地图资源没有完整载入
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2585](../src/scenes/rpg/RpgGameHost.tsx#L2585)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2590](../src/scenes/rpg/RpgGameHost.tsx#L2590)
 1779. 正在准备地图
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2585](../src/scenes/rpg/RpgGameHost.tsx#L2585)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2590](../src/scenes/rpg/RpgGameHost.tsx#L2590)
 1780. 本次缺少
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2589](../src/scenes/rpg/RpgGameHost.tsx#L2589)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2594](../src/scenes/rpg/RpgGameHost.tsx#L2594)
 1781. 项资源。网络恢复后重试，当前存档不会变化。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2589](../src/scenes/rpg/RpgGameHost.tsx#L2589)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2594](../src/scenes/rpg/RpgGameHost.tsx#L2594)
 1782. 重试加载
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2608](../src/scenes/rpg/RpgGameHost.tsx#L2608)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2613](../src/scenes/rpg/RpgGameHost.tsx#L2613)
 1783. 聚焦手机
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2609](../src/scenes/rpg/RpgGameHost.tsx#L2609)；[src/scenes/rpg/RpgGameHost.tsx:2713](../src/scenes/rpg/RpgGameHost.tsx#L2713)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2614](../src/scenes/rpg/RpgGameHost.tsx#L2614)；[src/scenes/rpg/RpgGameHost.tsx:2718](../src/scenes/rpg/RpgGameHost.tsx#L2718)
 1784. 全屏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2714](../src/scenes/rpg/RpgGameHost.tsx#L2714)
-1785. 地图视角
    来源：[src/scenes/rpg/RpgGameHost.tsx:2719](../src/scenes/rpg/RpgGameHost.tsx#L2719)
+1785. 地图视角
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2724](../src/scenes/rpg/RpgGameHost.tsx#L2724)
 1786. 定位人物
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2720](../src/scenes/rpg/RpgGameHost.tsx#L2720)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2725](../src/scenes/rpg/RpgGameHost.tsx#L2725)
 1787. 放大地图
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2721](../src/scenes/rpg/RpgGameHost.tsx#L2721)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2726](../src/scenes/rpg/RpgGameHost.tsx#L2726)
 1788. 缩小地图
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2722](../src/scenes/rpg/RpgGameHost.tsx#L2722)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2727](../src/scenes/rpg/RpgGameHost.tsx#L2727)
 1789. 地图物品栏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2775](../src/scenes/rpg/RpgGameHost.tsx#L2775)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2780](../src/scenes/rpg/RpgGameHost.tsx#L2780)
 1790. 物品栏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2776](../src/scenes/rpg/RpgGameHost.tsx#L2776)
-1791. 查看电子校园卡
    来源：[src/scenes/rpg/RpgGameHost.tsx:2781](../src/scenes/rpg/RpgGameHost.tsx#L2781)
+1791. 查看电子校园卡
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2786](../src/scenes/rpg/RpgGameHost.tsx#L2786)
 1792. 单击查看校园卡信息，双击查看完整详情
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2782](../src/scenes/rpg/RpgGameHost.tsx#L2782)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2787](../src/scenes/rpg/RpgGameHost.tsx#L2787)
 1793. 已连接
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2807](../src/scenes/rpg/RpgGameHost.tsx#L2807)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2812](../src/scenes/rpg/RpgGameHost.tsx#L2812)
 1794. 待登记姓名
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2809](../src/scenes/rpg/RpgGameHost.tsx#L2809)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2814](../src/scenes/rpg/RpgGameHost.tsx#L2814)
 1795. 待开始锻炼
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2810](../src/scenes/rpg/RpgGameHost.tsx#L2810)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2815](../src/scenes/rpg/RpgGameHost.tsx#L2815)
 1796. 启真湖垂钓：左右控线与收竿
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2847](../src/scenes/rpg/RpgGameHost.tsx#L2847)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2852](../src/scenes/rpg/RpgGameHost.tsx#L2852)
 1797. 按住收线，松手放线或起鱼
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2850](../src/scenes/rpg/RpgGameHost.tsx#L2850)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2855](../src/scenes/rpg/RpgGameHost.tsx#L2855)
 1798. 向右控线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2850](../src/scenes/rpg/RpgGameHost.tsx#L2850)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2855](../src/scenes/rpg/RpgGameHost.tsx#L2855)
 1799. 向左控线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2850](../src/scenes/rpg/RpgGameHost.tsx#L2850)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2855](../src/scenes/rpg/RpgGameHost.tsx#L2855)
 1800. hook
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2850](../src/scenes/rpg/RpgGameHost.tsx#L2850)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2855](../src/scenes/rpg/RpgGameHost.tsx#L2855)
 1801. left
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2850](../src/scenes/rpg/RpgGameHost.tsx#L2850)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2855](../src/scenes/rpg/RpgGameHost.tsx#L2855)
 1802. 交互
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2891](../src/scenes/rpg/RpgGameHost.tsx#L2891)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2896](../src/scenes/rpg/RpgGameHost.tsx#L2896)
 1803. RPG操作键，键盘使用 WASD 移动和空格键交互
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2898](../src/scenes/rpg/RpgGameHost.tsx#L2898)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2903](../src/scenes/rpg/RpgGameHost.tsx#L2903)
 1804. 204 教室空槽位
    来源：[src/scenes/rpg/RpgInteractionContract.ts:449](../src/scenes/rpg/RpgInteractionContract.ts#L449)
 1805. 烤箱旁的检修灯
@@ -8785,7 +8785,7 @@
 134. 道具栏里没有手柄。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1525](../src/scenes/rpg/RpgGameHost.tsx#L1525)
 135. invalid\_result
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1851](../src/scenes/rpg/RpgGameHost.tsx#L1851)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1856](../src/scenes/rpg/RpgGameHost.tsx#L1856)
 136. 204 讲台抽屉里的定位盘
    来源：[src/scenes/rpg/RpgInteractionContract.ts:790](../src/scenes/rpg/RpgInteractionContract.ts#L790)
 137. 旧钟定位盘插槽
@@ -9346,7 +9346,7 @@
 273. 已放到目标上，正在处理。
    来源：[src/components/InventoryBar.tsx:443](../src/components/InventoryBar.tsx#L443)
 274. 道具未放到目标上。
-   来源：[src/components/InventoryBar.tsx:448](../src/components/InventoryBar.tsx#L448)；[src/scenes/rpg/RpgInventoryDock.tsx:105](../src/scenes/rpg/RpgInventoryDock.tsx#L105)
+   来源：[src/components/InventoryBar.tsx:448](../src/components/InventoryBar.tsx#L448)；[src/scenes/rpg/RpgInventoryDock.tsx:112](../src/scenes/rpg/RpgInventoryDock.tsx#L112)
 275. 物品栏
    来源：[src/components/InventoryBar.tsx:499](../src/components/InventoryBar.tsx#L499)
 276. 收起物品栏
@@ -9700,7 +9700,7 @@
 450. 待处理
    来源：[src/components/QuestClueStrip.tsx:234](../src/components/QuestClueStrip.tsx#L234)
 451. 已完成
-   来源：[src/components/QuestClueStrip.tsx:234](../src/components/QuestClueStrip.tsx#L234)；[src/scenes/rpg/RpgGameHost.tsx:2603](../src/scenes/rpg/RpgGameHost.tsx#L2603)
+   来源：[src/components/QuestClueStrip.tsx:234](../src/components/QuestClueStrip.tsx#L234)；[src/scenes/rpg/RpgGameHost.tsx:2608](../src/scenes/rpg/RpgGameHost.tsx#L2608)
 452. 第
    来源：[src/components/QuestClueStrip.tsx:301](../src/components/QuestClueStrip.tsx#L301)
 453. 位
@@ -9757,11 +9757,11 @@
    来源：[src/core/QuestModel.ts:434](../src/core/QuestModel.ts#L434)
 479. 这三处可以分头查看，先去哪处都行。
    来源：[src/core/QuestModel.ts:435](../src/core/QuestModel.ts#L435)
-480. 把三件材料装到钓鱼竿上
+480. 在物品栏组合四件材料
    来源：[src/core/QuestModel.ts:438](../src/core/QuestModel.ts#L438)
-481. 返回大湖面的最终钓具装配位。
+481. 尼龙绳、断裂网框、天鹅磁铁与钓竿集齐后，点击物品栏的“组合四件材料”。
    来源：[src/core/QuestModel.ts:439](../src/core/QuestModel.ts#L439)
-482. 将尼龙绳、破损网框、磁性扣和钓鱼竿放入装配位。
+482. 这些材料可以按任意顺序获取，组合前会一直保留。
    来源：[src/core/QuestModel.ts:440](../src/core/QuestModel.ts#L440)
 483. 按货架顺序调配今日新品（{{hunt.drinkMixSequence.length}}/3）
    来源：[src/core/QuestModel.ts:494](../src/core/QuestModel.ts#L494)
@@ -10466,7 +10466,7 @@
 833. 六分钱余额
    来源：[src/data/cc98.posts.json:502](../src/data/cc98.posts.json#L502)
 834. 校园卡
-   来源：[src/data/cc98.posts.json:505](../src/data/cc98.posts.json#L505)；[src/data/cc98.posts.json:795](../src/data/cc98.posts.json#L795)；[src/data/cc98.posts.json:910](../src/data/cc98.posts.json#L910)；[src/scenes/phone/P02_CC98/index.tsx:215](../src/scenes/phone/P02_CC98/index.tsx#L215)；[src/scenes/rpg/RpgGameHost.tsx:2787](../src/scenes/rpg/RpgGameHost.tsx#L2787)
+   来源：[src/data/cc98.posts.json:505](../src/data/cc98.posts.json#L505)；[src/data/cc98.posts.json:795](../src/data/cc98.posts.json#L795)；[src/data/cc98.posts.json:910](../src/data/cc98.posts.json#L910)；[src/scenes/phone/P02_CC98/index.tsx:215](../src/scenes/phone/P02_CC98/index.tsx#L215)；[src/scenes/rpg/RpgGameHost.tsx:2792](../src/scenes/rpg/RpgGameHost.tsx#L2792)
 835. 余额 0.06 元能通过临时离座校验吗
    来源：[src/data/cc98.posts.json:506](../src/data/cc98.posts.json#L506)
 836. 26-07-10 17:31
@@ -12664,7 +12664,7 @@
 1932. 拖动图标调整位置
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:705](../src/scenes/phone/P13_PhoneHome/index.tsx#L705)
 1933. 完成
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:706](../src/scenes/phone/P13_PhoneHome/index.tsx#L706)；[src/scenes/rpg/RpgGameHost.tsx:2995](../src/scenes/rpg/RpgGameHost.tsx#L2995)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:706](../src/scenes/phone/P13_PhoneHome/index.tsx#L706)；[src/scenes/rpg/RpgGameHost.tsx:3000](../src/scenes/rpg/RpgGameHost.tsx#L3000)
 1934. 应用
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:709](../src/scenes/phone/P13_PhoneHome/index.tsx#L709)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:160](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L160)
 1935. 掉落的齿轮，背面刻着 9
@@ -14092,7 +14092,7 @@
 2646. 共享单车当前只接收纸巾或 2 元现金。
    来源：[src/scenes/rpg/BootScene.ts:583](../src/scenes/rpg/BootScene.ts#L583)
 2647. missed\_target
-   来源：[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:600](../src/scenes/rpg/BootScene.ts#L600)；[src/scenes/rpg/RpgInventoryDock.tsx:293](../src/scenes/rpg/RpgInventoryDock.tsx#L293)
+   来源：[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:600](../src/scenes/rpg/BootScene.ts#L600)；[src/scenes/rpg/RpgInventoryDock.tsx:304](../src/scenes/rpg/RpgInventoryDock.tsx#L304)
 2648. 松手点没有进入共享单车车身的高亮范围。
    来源：[src/scenes/rpg/BootScene.ts:602](../src/scenes/rpg/BootScene.ts#L602)
 2649. success
@@ -14210,7 +14210,7 @@
 2705. 浮排边钓鱼竿
    来源：[src/scenes/rpg/RpgGameHost.tsx:1788](../src/scenes/rpg/RpgGameHost.tsx#L1788)
 2706. fishingRod
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1788](../src/scenes/rpg/RpgGameHost.tsx#L1788)；[src/scenes/rpg/RpgGameHost.tsx:1807](../src/scenes/rpg/RpgGameHost.tsx#L1807)；[src/scenes/rpg/RpgGameHost.tsx:1816](../src/scenes/rpg/RpgGameHost.tsx#L1816)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1788](../src/scenes/rpg/RpgGameHost.tsx#L1788)；[src/scenes/rpg/RpgGameHost.tsx:1809](../src/scenes/rpg/RpgGameHost.tsx#L1809)；[src/scenes/rpg/RpgGameHost.tsx:1821](../src/scenes/rpg/RpgGameHost.tsx#L1821)
 2707. 钓鱼竿装饵框
    来源：[src/scenes/rpg/RpgGameHost.tsx:1791](../src/scenes/rpg/RpgGameHost.tsx#L1791)；[src/scenes/rpg/RpgItemUseGuidance.ts:300](../src/scenes/rpg/RpgItemUseGuidance.ts#L300)
 2708. decoyPaper
@@ -14220,451 +14220,461 @@
 2710. 湖区道具点
    来源：[src/scenes/rpg/RpgGameHost.tsx:1802](../src/scenes/rpg/RpgGameHost.tsx#L1802)
 2711. 工具装配框
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1807](../src/scenes/rpg/RpgGameHost.tsx#L1807)；[src/scenes/rpg/RpgItemUseGuidance.ts:293](../src/scenes/rpg/RpgItemUseGuidance.ts#L293)；[src/scenes/rpg/RpgItemUseGuidance.ts:319](../src/scenes/rpg/RpgItemUseGuidance.ts#L319)；[src/scenes/rpg/RpgItemUseGuidance.ts:322](../src/scenes/rpg/RpgItemUseGuidance.ts#L322)；[src/scenes/rpg/RpgItemUseGuidance.ts:324](../src/scenes/rpg/RpgItemUseGuidance.ts#L324)；[src/scenes/rpg/RpgItemUseGuidance.ts:325](../src/scenes/rpg/RpgItemUseGuidance.ts#L325)；[src/scenes/rpg/RpgItemUseGuidance.ts:363](../src/scenes/rpg/RpgItemUseGuidance.ts#L363)；[src/scenes/rpg/RpgItemUseGuidance.ts:366](../src/scenes/rpg/RpgItemUseGuidance.ts#L366)；[src/scenes/rpg/RpgItemUseGuidance.ts:367](../src/scenes/rpg/RpgItemUseGuidance.ts#L367)；[src/scenes/rpg/RpgItemUseGuidance.ts:368](../src/scenes/rpg/RpgItemUseGuidance.ts#L368)
-2712. 黑天鹅投喂区
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1813](../src/scenes/rpg/RpgGameHost.tsx#L1813)；[src/scenes/rpg/RpgItemUseGuidance.ts:355](../src/scenes/rpg/RpgItemUseGuidance.ts#L355)；[src/scenes/rpg/RpgItemUseGuidance.ts:358](../src/scenes/rpg/RpgItemUseGuidance.ts#L358)
-2713. 黑天鹅围栏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1816](../src/scenes/rpg/RpgGameHost.tsx#L1816)
-2714. 纸条本体水纹
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1820](../src/scenes/rpg/RpgGameHost.tsx#L1820)；[src/scenes/rpg/RpgItemUseGuidance.ts:374](../src/scenes/rpg/RpgItemUseGuidance.ts#L374)；[src/scenes/rpg/RpgItemUseGuidance.ts:376](../src/scenes/rpg/RpgItemUseGuidance.ts#L376)；[src/scenes/rpg/RpgItemUseGuidance.ts:377](../src/scenes/rpg/RpgItemUseGuidance.ts#L377)
-2715. 电子校园卡：{{actOneContent.studentName}} · {{actOneContent.studentId}}
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2473](../src/scenes/rpg/RpgGameHost.tsx#L2473)
-2716. 电子校园卡：身份信息尚未读取
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2474](../src/scenes/rpg/RpgGameHost.tsx#L2474)
-2717. 手柄已连接：WASD 或方向键移动，空格键交互。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2483](../src/scenes/rpg/RpgGameHost.tsx#L2483)
-2718. 手柄有电，角色还没有姓名。去部门黄页读取校园卡。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2484](../src/scenes/rpg/RpgGameHost.tsx#L2484)
-2719. 手柄已连接，浙大体艺还没有开始课外锻炼。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2485](../src/scenes/rpg/RpgGameHost.tsx#L2485)
-2720. 道具栏里没有手柄。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2486](../src/scenes/rpg/RpgGameHost.tsx#L2486)
-2721. 当前任务还没有开放手柄控制。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2487](../src/scenes/rpg/RpgGameHost.tsx#L2487)
-2722. 地图资源加载进度
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2596](../src/scenes/rpg/RpgGameHost.tsx#L2596)
-2723. 使用游戏手柄
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2794](../src/scenes/rpg/RpgGameHost.tsx#L2794)
-2724. 单击连接手柄，双击查看完整详情
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2795](../src/scenes/rpg/RpgGameHost.tsx#L2795)
-2725. gamepad
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1811](../src/scenes/rpg/RpgGameHost.tsx#L1811)；[src/scenes/rpg/RpgItemUseGuidance.ts:293](../src/scenes/rpg/RpgItemUseGuidance.ts#L293)；[src/scenes/rpg/RpgItemUseGuidance.ts:319](../src/scenes/rpg/RpgItemUseGuidance.ts#L319)；[src/scenes/rpg/RpgItemUseGuidance.ts:322](../src/scenes/rpg/RpgItemUseGuidance.ts#L322)；[src/scenes/rpg/RpgItemUseGuidance.ts:324](../src/scenes/rpg/RpgItemUseGuidance.ts#L324)；[src/scenes/rpg/RpgItemUseGuidance.ts:325](../src/scenes/rpg/RpgItemUseGuidance.ts#L325)；[src/scenes/rpg/RpgItemUseGuidance.ts:363](../src/scenes/rpg/RpgItemUseGuidance.ts#L363)；[src/scenes/rpg/RpgItemUseGuidance.ts:366](../src/scenes/rpg/RpgItemUseGuidance.ts#L366)；[src/scenes/rpg/RpgItemUseGuidance.ts:367](../src/scenes/rpg/RpgItemUseGuidance.ts#L367)；[src/scenes/rpg/RpgItemUseGuidance.ts:368](../src/scenes/rpg/RpgItemUseGuidance.ts#L368)
+2712. 物品栏四件材料
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1811](../src/scenes/rpg/RpgGameHost.tsx#L1811)
+2713. inventory
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1811](../src/scenes/rpg/RpgGameHost.tsx#L1811)
+2714. 黑天鹅投喂区
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1818](../src/scenes/rpg/RpgGameHost.tsx#L1818)；[src/scenes/rpg/RpgItemUseGuidance.ts:355](../src/scenes/rpg/RpgItemUseGuidance.ts#L355)；[src/scenes/rpg/RpgItemUseGuidance.ts:358](../src/scenes/rpg/RpgItemUseGuidance.ts#L358)
+2715. 黑天鹅围栏
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1821](../src/scenes/rpg/RpgGameHost.tsx#L1821)
+2716. 纸条本体水纹
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1825](../src/scenes/rpg/RpgGameHost.tsx#L1825)；[src/scenes/rpg/RpgItemUseGuidance.ts:374](../src/scenes/rpg/RpgItemUseGuidance.ts#L374)；[src/scenes/rpg/RpgItemUseGuidance.ts:376](../src/scenes/rpg/RpgItemUseGuidance.ts#L376)；[src/scenes/rpg/RpgItemUseGuidance.ts:377](../src/scenes/rpg/RpgItemUseGuidance.ts#L377)
+2717. 电子校园卡：{{actOneContent.studentName}} · {{actOneContent.studentId}}
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2478](../src/scenes/rpg/RpgGameHost.tsx#L2478)
+2718. 电子校园卡：身份信息尚未读取
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2479](../src/scenes/rpg/RpgGameHost.tsx#L2479)
+2719. 手柄已连接：WASD 或方向键移动，空格键交互。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2488](../src/scenes/rpg/RpgGameHost.tsx#L2488)
+2720. 手柄有电，角色还没有姓名。去部门黄页读取校园卡。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2489](../src/scenes/rpg/RpgGameHost.tsx#L2489)
+2721. 手柄已连接，浙大体艺还没有开始课外锻炼。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2490](../src/scenes/rpg/RpgGameHost.tsx#L2490)
+2722. 道具栏里没有手柄。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2491](../src/scenes/rpg/RpgGameHost.tsx#L2491)
+2723. 当前任务还没有开放手柄控制。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2492](../src/scenes/rpg/RpgGameHost.tsx#L2492)
+2724. 地图资源加载进度
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2601](../src/scenes/rpg/RpgGameHost.tsx#L2601)
+2725. 使用游戏手柄
    来源：[src/scenes/rpg/RpgGameHost.tsx:2799](../src/scenes/rpg/RpgGameHost.tsx#L2799)
-2726. 手柄
+2726. 单击连接手柄，双击查看完整详情
    来源：[src/scenes/rpg/RpgGameHost.tsx:2800](../src/scenes/rpg/RpgGameHost.tsx#L2800)
-2727. ◀ 控线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2857](../src/scenes/rpg/RpgGameHost.tsx#L2857)
-2728. 按住收线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2857](../src/scenes/rpg/RpgGameHost.tsx#L2857)
-2729. 控线 ▶
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2857](../src/scenes/rpg/RpgGameHost.tsx#L2857)
-2730. 松手放线 / 起鱼
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2858](../src/scenes/rpg/RpgGameHost.tsx#L2858)
-2731. 皮划艇划桨手势和交互按钮
+2727. gamepad
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2804](../src/scenes/rpg/RpgGameHost.tsx#L2804)
+2728. 手柄
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2805](../src/scenes/rpg/RpgGameHost.tsx#L2805)
+2729. ◀ 控线
    来源：[src/scenes/rpg/RpgGameHost.tsx:2862](../src/scenes/rpg/RpgGameHost.tsx#L2862)
-2732. 左桨，上划前进，下划后退，轻触默认前进
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2866](../src/scenes/rpg/RpgGameHost.tsx#L2866)
-2733. willowBranchPaddle
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2873](../src/scenes/rpg/RpgGameHost.tsx#L2873)
-2734. 左桨
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2874](../src/scenes/rpg/RpgGameHost.tsx#L2874)
-2735. ↑ 前进
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2875](../src/scenes/rpg/RpgGameHost.tsx#L2875)；[src/scenes/rpg/RpgGameHost.tsx:2889](../src/scenes/rpg/RpgGameHost.tsx#L2889)
-2736. ↑前进 · ↓后退
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2875](../src/scenes/rpg/RpgGameHost.tsx#L2875)；[src/scenes/rpg/RpgGameHost.tsx:2889](../src/scenes/rpg/RpgGameHost.tsx#L2889)
-2737. ↓ 后退
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2875](../src/scenes/rpg/RpgGameHost.tsx#L2875)；[src/scenes/rpg/RpgGameHost.tsx:2889](../src/scenes/rpg/RpgGameHost.tsx#L2889)
-2738. 右桨，上划前进，下划后退，轻触默认前进
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2880](../src/scenes/rpg/RpgGameHost.tsx#L2880)
-2739. warningSignPaddle
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2887](../src/scenes/rpg/RpgGameHost.tsx#L2887)
-2740. 右桨
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2888](../src/scenes/rpg/RpgGameHost.tsx#L2888)
-2741. 与当前湖区目标交互
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2891](../src/scenes/rpg/RpgGameHost.tsx#L2891)
-2742. 交互（键盘为空格键）
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2907](../src/scenes/rpg/RpgGameHost.tsx#L2907)
-2743. 请将设备横过来继续 RPG
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2916](../src/scenes/rpg/RpgGameHost.tsx#L2916)
-2744. 点击闸机小屏，核对入馆与到达时间
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2968](../src/scenes/rpg/RpgGameHost.tsx#L2968)
-2745. 前往一层书库寻找 022
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2968](../src/scenes/rpg/RpgGameHost.tsx#L2968)
-2746. 调查纸条提到的公开记录
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2969](../src/scenes/rpg/RpgGameHost.tsx#L2969)
-2747. 检查书包旁边的占座纸条
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2969](../src/scenes/rpg/RpgGameHost.tsx#L2969)
-2748. 用占座纸条查找公开记录
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2971](../src/scenes/rpg/RpgGameHost.tsx#L2971)
-2749. 并行收集四项公示材料（{{evidenceReadyCount}}/4）
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2979](../src/scenes/rpg/RpgGameHost.tsx#L2979)
-2750. 把已取得材料上传到 CC98
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2980](../src/scenes/rpg/RpgGameHost.tsx#L2980)
-2751. 确认系统说明，开始筛选有效回复
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2982](../src/scenes/rpg/RpgGameHost.tsx#L2982)
-2752. 让证据公示进入 CC98 十大
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2983](../src/scenes/rpg/RpgGameHost.tsx#L2983)
-2753. 完成图书馆座位恢复申请
+2730. 按住收线
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2862](../src/scenes/rpg/RpgGameHost.tsx#L2862)
+2731. 控线 ▶
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2862](../src/scenes/rpg/RpgGameHost.tsx#L2862)
+2732. 松手放线 / 起鱼
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2863](../src/scenes/rpg/RpgGameHost.tsx#L2863)
+2733. 皮划艇划桨手势和交互按钮
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2867](../src/scenes/rpg/RpgGameHost.tsx#L2867)
+2734. 左桨，上划前进，下划后退，轻触默认前进
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2871](../src/scenes/rpg/RpgGameHost.tsx#L2871)
+2735. willowBranchPaddle
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2878](../src/scenes/rpg/RpgGameHost.tsx#L2878)
+2736. 左桨
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2879](../src/scenes/rpg/RpgGameHost.tsx#L2879)
+2737. ↑ 前进
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2880](../src/scenes/rpg/RpgGameHost.tsx#L2880)；[src/scenes/rpg/RpgGameHost.tsx:2894](../src/scenes/rpg/RpgGameHost.tsx#L2894)
+2738. ↑前进 · ↓后退
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2880](../src/scenes/rpg/RpgGameHost.tsx#L2880)；[src/scenes/rpg/RpgGameHost.tsx:2894](../src/scenes/rpg/RpgGameHost.tsx#L2894)
+2739. ↓ 后退
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2880](../src/scenes/rpg/RpgGameHost.tsx#L2880)；[src/scenes/rpg/RpgGameHost.tsx:2894](../src/scenes/rpg/RpgGameHost.tsx#L2894)
+2740. 右桨，上划前进，下划后退，轻触默认前进
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2885](../src/scenes/rpg/RpgGameHost.tsx#L2885)
+2741. warningSignPaddle
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2892](../src/scenes/rpg/RpgGameHost.tsx#L2892)
+2742. 右桨
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2893](../src/scenes/rpg/RpgGameHost.tsx#L2893)
+2743. 与当前湖区目标交互
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2896](../src/scenes/rpg/RpgGameHost.tsx#L2896)
+2744. 交互（键盘为空格键）
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2912](../src/scenes/rpg/RpgGameHost.tsx#L2912)
+2745. 请将设备横过来继续 RPG
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2921](../src/scenes/rpg/RpgGameHost.tsx#L2921)
+2746. 点击闸机小屏，核对入馆与到达时间
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2973](../src/scenes/rpg/RpgGameHost.tsx#L2973)
+2747. 前往一层书库寻找 022
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2973](../src/scenes/rpg/RpgGameHost.tsx#L2973)
+2748. 调查纸条提到的公开记录
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2974](../src/scenes/rpg/RpgGameHost.tsx#L2974)
+2749. 检查书包旁边的占座纸条
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2974](../src/scenes/rpg/RpgGameHost.tsx#L2974)
+2750. 用占座纸条查找公开记录
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2976](../src/scenes/rpg/RpgGameHost.tsx#L2976)
+2751. 并行收集四项公示材料（{{evidenceReadyCount}}/4）
    来源：[src/scenes/rpg/RpgGameHost.tsx:2984](../src/scenes/rpg/RpgGameHost.tsx#L2984)
-2754. 对 022 书包使用离座清退 PASS
+2752. 把已取得材料上传到 CC98
    来源：[src/scenes/rpg/RpgGameHost.tsx:2985](../src/scenes/rpg/RpgGameHost.tsx#L2985)
-2755. 坐到已经恢复的 022
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2986](../src/scenes/rpg/RpgGameHost.tsx#L2986)
-2756. 与 022 继续对话
+2753. 确认系统说明，开始筛选有效回复
    来源：[src/scenes/rpg/RpgGameHost.tsx:2987](../src/scenes/rpg/RpgGameHost.tsx#L2987)
-2757. 追上逃跑的记录纸条
+2754. 让证据公示进入 CC98 十大
    来源：[src/scenes/rpg/RpgGameHost.tsx:2988](../src/scenes/rpg/RpgGameHost.tsx#L2988)
-2758. 前往基础图书馆，寻找系统的朋友
+2755. 完成图书馆座位恢复申请
    来源：[src/scenes/rpg/RpgGameHost.tsx:2989](../src/scenes/rpg/RpgGameHost.tsx#L2989)
-2759. 说明
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2998](../src/scenes/rpg/RpgGameHost.tsx#L2998)
-2760. 调查
-   来源：[src/scenes/rpg/RpgGameHost.tsx:3012](../src/scenes/rpg/RpgGameHost.tsx#L3012)
-2761. 深色模式只读取线索和异常，不执行实体操作。
+2756. 对 022 书包使用离座清退 PASS
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2990](../src/scenes/rpg/RpgGameHost.tsx#L2990)
+2757. 坐到已经恢复的 022
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2991](../src/scenes/rpg/RpgGameHost.tsx#L2991)
+2758. 与 022 继续对话
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2992](../src/scenes/rpg/RpgGameHost.tsx#L2992)
+2759. 追上逃跑的记录纸条
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2993](../src/scenes/rpg/RpgGameHost.tsx#L2993)
+2760. 前往基础图书馆，寻找系统的朋友
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2994](../src/scenes/rpg/RpgGameHost.tsx#L2994)
+2761. 说明
+   来源：[src/scenes/rpg/RpgGameHost.tsx:3003](../src/scenes/rpg/RpgGameHost.tsx#L3003)
+2762. 调查
+   来源：[src/scenes/rpg/RpgGameHost.tsx:3017](../src/scenes/rpg/RpgGameHost.tsx#L3017)
+2763. 深色模式只读取线索和异常，不执行实体操作。
    来源：[src/scenes/rpg/RpgInteractionContract.ts:44](../src/scenes/rpg/RpgInteractionContract.ts#L44)
-2762. 浅色操作
+2764. 浅色操作
    来源：[src/scenes/rpg/RpgInteractionContract.ts:47](../src/scenes/rpg/RpgInteractionContract.ts#L47)
-2763. 浅色模式执行移动、拖放、清洁、付款和设备操作。
+2765. 浅色模式执行移动、拖放、清洁、付款和设备操作。
    来源：[src/scenes/rpg/RpgInteractionContract.ts:48](../src/scenes/rpg/RpgInteractionContract.ts#L48)
-2764. 公告栏前的签到记录纸条
+2766. 公告栏前的签到记录纸条
    来源：[src/scenes/rpg/RpgInteractionContract.ts:520](../src/scenes/rpg/RpgInteractionContract.ts#L520)
-2765. 一楼旧钟
+2767. 一楼旧钟
    来源：[src/scenes/rpg/RpgInteractionContract.ts:538](../src/scenes/rpg/RpgInteractionContract.ts#L538)
-2766. 与一楼前台值班助理交谈
+2768. 与一楼前台值班助理交谈
    来源：[src/scenes/rpg/RpgInteractionContract.ts:628](../src/scenes/rpg/RpgInteractionContract.ts#L628)
-2767. 与二楼电梯口值班安全员交谈
+2769. 与二楼电梯口值班安全员交谈
    来源：[src/scenes/rpg/RpgInteractionContract.ts:643](../src/scenes/rpg/RpgInteractionContract.ts#L643)
-2768. 与三楼参照教室教师交谈
+2770. 与三楼参照教室教师交谈
    来源：[src/scenes/rpg/RpgInteractionContract.ts:653](../src/scenes/rpg/RpgInteractionContract.ts#L653)
-2769. 查看苏步青生平
+2771. 查看苏步青生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:663](../src/scenes/rpg/RpgInteractionContract.ts#L663)
-2770. 查看竺可桢生平
+2772. 查看竺可桢生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:673](../src/scenes/rpg/RpgInteractionContract.ts#L673)
-2771. 查看路甬祥生平
+2773. 查看路甬祥生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:683](../src/scenes/rpg/RpgInteractionContract.ts#L683)
-2772. 查看陈建功生平
+2774. 查看陈建功生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:693](../src/scenes/rpg/RpgInteractionContract.ts#L693)
-2773. 查看谈家桢生平
+2775. 查看谈家桢生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:703](../src/scenes/rpg/RpgInteractionContract.ts#L703)
-2774. 查看程开甲生平
+2776. 查看程开甲生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:713](../src/scenes/rpg/RpgInteractionContract.ts#L713)
-2775. 观察 104 黑板擦痕
+2777. 观察 104 黑板擦痕
    来源：[src/scenes/rpg/RpgInteractionContract.ts:723](../src/scenes/rpg/RpgInteractionContract.ts#L723)
-2776. 检查 105 讲台回放
+2778. 检查 105 讲台回放
    来源：[src/scenes/rpg/RpgInteractionContract.ts:739](../src/scenes/rpg/RpgInteractionContract.ts#L739)
-2777. 三楼晨间教室布置参照
+2779. 三楼晨间教室布置参照
    来源：[src/scenes/rpg/RpgInteractionContract.ts:755](../src/scenes/rpg/RpgInteractionContract.ts#L755)
-2778. 204 教室残影组
+2780. 204 教室残影组
    来源：[src/scenes/rpg/RpgInteractionContract.ts:768](../src/scenes/rpg/RpgInteractionContract.ts#L768)
-2779. mismatched\_nonce
+2781. mismatched\_nonce
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1347](../src/scenes/rpg/RpgInteractionContract.ts#L1347)
-2780. wrong\_scene
+2782. wrong\_scene
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1350](../src/scenes/rpg/RpgInteractionContract.ts#L1350)
-2781. wrong\_bounds
+2783. wrong\_bounds
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1356](../src/scenes/rpg/RpgInteractionContract.ts#L1356)
-2782. stale\_projection
+2784. stale\_projection
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1361](../src/scenes/rpg/RpgInteractionContract.ts#L1361)
-2783. invalid\_player
+2785. invalid\_player
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1370](../src/scenes/rpg/RpgInteractionContract.ts#L1370)
-2784. spatial\_claim\_mismatch
+2786. spatial\_claim\_mismatch
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1386](../src/scenes/rpg/RpgInteractionContract.ts#L1386)
-2785. 需要{{contract.label}}：{{contract.shortHint}}
+2787. 需要{{contract.label}}：{{contract.shortHint}}
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1628](../src/scenes/rpg/RpgInteractionContract.ts#L1628)
-2786. {{ITEM\_META\[itemId\].name}}已使用。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:102](../src/scenes/rpg/RpgInventoryDock.tsx#L102)
-2787. 距离太远，未能使用。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:103](../src/scenes/rpg/RpgInventoryDock.tsx#L103)
-2788. 道具不匹配。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:104](../src/scenes/rpg/RpgInventoryDock.tsx#L104)
-2789. 当前模式无法进行这项操作。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:106](../src/scenes/rpg/RpgInventoryDock.tsx#L106)
-2790. 尚未记录目标位置。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:107](../src/scenes/rpg/RpgInventoryDock.tsx#L107)
-2791. 钓钩无法固定纸张。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:108](../src/scenes/rpg/RpgInventoryDock.tsx#L108)
-2792. 这项操作已经完成。
+2788. {{ITEM\_META\[itemId\].name}}已使用。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:109](../src/scenes/rpg/RpgInventoryDock.tsx#L109)
-2793. 这次使用没有生效。
+2789. 距离太远，未能使用。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:110](../src/scenes/rpg/RpgInventoryDock.tsx#L110)
-2794. consumed
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:136](../src/scenes/rpg/RpgInventoryDock.tsx#L136)
-2795. input\_blocked
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:150](../src/scenes/rpg/RpgInventoryDock.tsx#L150)
-2796. 道具没有进入游戏画布，请拖到场景中的对应物体。
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:294](../src/scenes/rpg/RpgInventoryDock.tsx#L294)
-2797. RPG 道具栏
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:314](../src/scenes/rpg/RpgInventoryDock.tsx#L314)
-2798. 道具
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:319](../src/scenes/rpg/RpgInventoryDock.tsx#L319)
-2799. 拖动{{ITEM\_META\[itemId\].name}}，{{isPaperItem(itemId) ? "单击" : "双击"}}查看详情
-   来源：[src/scenes/rpg/RpgInventoryDock.tsx:327](../src/scenes/rpg/RpgInventoryDock.tsx#L327)
-2800. 校园卡在手机应用和地图入口中读取
+2790. 道具不匹配。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:111](../src/scenes/rpg/RpgInventoryDock.tsx#L111)
+2791. 当前模式无法进行这项操作。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:113](../src/scenes/rpg/RpgInventoryDock.tsx#L113)
+2792. 尚未记录目标位置。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:114](../src/scenes/rpg/RpgInventoryDock.tsx#L114)
+2793. 钓钩无法固定纸张。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:115](../src/scenes/rpg/RpgInventoryDock.tsx#L115)
+2794. 这项操作已经完成。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:116](../src/scenes/rpg/RpgInventoryDock.tsx#L116)
+2795. 这次使用没有生效。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:117](../src/scenes/rpg/RpgInventoryDock.tsx#L117)
+2796. consumed
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:147](../src/scenes/rpg/RpgInventoryDock.tsx#L147)
+2797. input\_blocked
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:161](../src/scenes/rpg/RpgInventoryDock.tsx#L161)
+2798. 道具没有进入游戏画布，请拖到场景中的对应物体。
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:305](../src/scenes/rpg/RpgInventoryDock.tsx#L305)
+2799. RPG 道具栏
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:334](../src/scenes/rpg/RpgInventoryDock.tsx#L334)
+2800. 道具
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:339](../src/scenes/rpg/RpgInventoryDock.tsx#L339)
+2801. 拖动{{ITEM\_META\[itemId\].name}}，{{isPaperItem(itemId) ? "单击" : "双击"}}查看详情
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:347](../src/scenes/rpg/RpgInventoryDock.tsx#L347)
+2802. 四件材料组合
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:367](../src/scenes/rpg/RpgInventoryDock.tsx#L367)
+2803. 四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:368](../src/scenes/rpg/RpgInventoryDock.tsx#L368)
+2804. 组合四件材料
+   来源：[src/scenes/rpg/RpgInventoryDock.tsx:369](../src/scenes/rpg/RpgInventoryDock.tsx#L369)；[src/scenes/rpg/RpgInventoryDock.tsx:370](../src/scenes/rpg/RpgInventoryDock.tsx#L370)
+2805. 校园卡在手机应用和地图入口中读取
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:13](../src/scenes/rpg/RpgItemUseGuidance.ts#L13)
-2801. 前往 CC98 搜索栏提交占座纸条
+2806. 前往 CC98 搜索栏提交占座纸条
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:14](../src/scenes/rpg/RpgItemUseGuidance.ts#L14)
-2802. 前往 CC98 证据上传区提交旧版规定
+2807. 前往 CC98 证据上传区提交旧版规定
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:15](../src/scenes/rpg/RpgItemUseGuidance.ts#L15)
-2803. 前往 CC98 或恢复申请页面提交证明
+2808. 前往 CC98 或恢复申请页面提交证明
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:16](../src/scenes/rpg/RpgItemUseGuidance.ts#L16)；[src/scenes/rpg/RpgItemUseGuidance.ts:18](../src/scenes/rpg/RpgItemUseGuidance.ts#L18)
-2804. 前往 CC98 或恢复申请页面提交凭据
+2809. 前往 CC98 或恢复申请页面提交凭据
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:17](../src/scenes/rpg/RpgItemUseGuidance.ts#L17)
-2805. 到食堂左下角混合台倒入玻璃杯
+2810. 到食堂左下角混合台倒入玻璃杯
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:19](../src/scenes/rpg/RpgItemUseGuidance.ts#L19)；[src/scenes/rpg/RpgItemUseGuidance.ts:20](../src/scenes/rpg/RpgItemUseGuidance.ts#L20)；[src/scenes/rpg/RpgItemUseGuidance.ts:21](../src/scenes/rpg/RpgItemUseGuidance.ts#L21)
-2806. 在食堂地图中拖到自己身上喝掉
+2811. 在食堂地图中拖到自己身上喝掉
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:22](../src/scenes/rpg/RpgItemUseGuidance.ts#L22)
-2807. 到食堂第五个打饭窗口上方的宣传灯箱空杯位
+2812. 到食堂第五个打饭窗口上方的宣传灯箱空杯位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:23](../src/scenes/rpg/RpgItemUseGuidance.ts#L23)
-2808. 靠近取餐窗口后按空格使用；纸包鸡需在深色第三窗口交票
+2813. 靠近取餐窗口后按空格使用；纸包鸡需在深色第三窗口交票
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:24](../src/scenes/rpg/RpgItemUseGuidance.ts#L24)
-2809. 食物彩蛋，没有剧情用途
+2814. 食物彩蛋，没有剧情用途
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:25](../src/scenes/rpg/RpgItemUseGuidance.ts#L25)；[src/scenes/rpg/RpgItemUseGuidance.ts:26](../src/scenes/rpg/RpgItemUseGuidance.ts#L26)；[src/scenes/rpg/RpgItemUseGuidance.ts:27](../src/scenes/rpg/RpgItemUseGuidance.ts#L27)；[src/scenes/rpg/RpgItemUseGuidance.ts:28](../src/scenes/rpg/RpgItemUseGuidance.ts#L28)
-2810. 与另一半临时票合成，无需拖到场景
+2815. 与另一半临时票合成，无需拖到场景
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:29](../src/scenes/rpg/RpgItemUseGuidance.ts#L29)；[src/scenes/rpg/RpgItemUseGuidance.ts:30](../src/scenes/rpg/RpgItemUseGuidance.ts#L30)
-2811. 到剧院灯光控制台打开节目单排序
+2816. 到剧院灯光控制台打开节目单排序
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:31](../src/scenes/rpg/RpgItemUseGuidance.ts#L31)；[src/scenes/rpg/RpgItemUseGuidance.ts:32](../src/scenes/rpg/RpgItemUseGuidance.ts#L32)；[src/scenes/rpg/RpgItemUseGuidance.ts:33](../src/scenes/rpg/RpgItemUseGuidance.ts#L33)
-2812. 前往 CC98 或馆藏检索提交湿节目单
+2817. 前往 CC98 或馆藏检索提交湿节目单
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:34](../src/scenes/rpg/RpgItemUseGuidance.ts#L34)
-2813. 前往校园地图搜索栏提交地点关键词
+2818. 前往校园地图搜索栏提交地点关键词
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:35](../src/scenes/rpg/RpgItemUseGuidance.ts#L35)；[src/scenes/rpg/RpgItemUseGuidance.ts:36](../src/scenes/rpg/RpgItemUseGuidance.ts#L36)；[src/scenes/rpg/RpgItemUseGuidance.ts:37](../src/scenes/rpg/RpgItemUseGuidance.ts#L37)
-2814. 坐标会在启真湖布置假纸条时自动核验
+2819. 坐标会在启真湖布置假纸条时自动核验
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:38](../src/scenes/rpg/RpgItemUseGuidance.ts#L38)
-2815. 靠近目标，把道具拖到物体本身后松手。
+2820. 靠近目标，把道具拖到物体本身后松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:41](../src/scenes/rpg/RpgItemUseGuidance.ts#L41)
-2816. ready
+2821. ready
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:42](../src/scenes/rpg/RpgItemUseGuidance.ts#L42)
-2817. 当前可以使用
+2822. 当前可以使用
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:43](../src/scenes/rpg/RpgItemUseGuidance.ts#L43)
-2818. 当前使用条件未满足
+2823. 当前使用条件未满足
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:50](../src/scenes/rpg/RpgItemUseGuidance.ts#L50)
-2819. passive
+2824. passive
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:56](../src/scenes/rpg/RpgItemUseGuidance.ts#L56)
-2820. 无需拖动
+2825. 无需拖动
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:57](../src/scenes/rpg/RpgItemUseGuidance.ts#L57)
-2821. elsewhere
+2826. elsewhere
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:62](../src/scenes/rpg/RpgItemUseGuidance.ts#L62)
-2822. 本场景没有使用点
+2827. 本场景没有使用点
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:63](../src/scenes/rpg/RpgItemUseGuidance.ts#L63)
-2823. 保留该道具，跟随当前任务前往对应页面或场景。
+2828. 保留该道具，跟随当前任务前往对应页面或场景。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:64](../src/scenes/rpg/RpgItemUseGuidance.ts#L64)
-2824. 旧钟时针插槽
+2829. 旧钟时针插槽
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:94](../src/scenes/rpg/RpgItemUseGuidance.ts#L94)
-2825. 旧钟定位盘插槽
+2830. 旧钟定位盘插槽
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:99](../src/scenes/rpg/RpgItemUseGuidance.ts#L99)
-2826. 清洁车车轮
+2831. 清洁车车轮
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:105](../src/scenes/rpg/RpgItemUseGuidance.ts#L105)；[src/scenes/rpg/RpgItemUseGuidance.ts:114](../src/scenes/rpg/RpgItemUseGuidance.ts#L114)
-2827. 先靠近保洁车检查卡住的车轮。
+2832. 先靠近保洁车检查卡住的车轮。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:105](../src/scenes/rpg/RpgItemUseGuidance.ts#L105)
-2828. 清洁车轮罩
+2833. 清洁车轮罩
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:108](../src/scenes/rpg/RpgItemUseGuidance.ts#L108)
-2829. 先把润滑油拖到清洁车车轮，修好后仍会保留半瓶。
+2834. 先把润滑油拖到清洁车车轮，修好后仍会保留半瓶。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:114](../src/scenes/rpg/RpgItemUseGuidance.ts#L114)
-2830. 把剩下的半瓶润滑油拖到旧钟齿轮。
+2835. 把剩下的半瓶润滑油拖到旧钟齿轮。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:117](../src/scenes/rpg/RpgItemUseGuidance.ts#L117)
-2831. 旧钟齿轮
+2836. 旧钟齿轮
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:117](../src/scenes/rpg/RpgItemUseGuidance.ts#L117)
-2832. 润滑油的剧情用途已经完成。
+2837. 润滑油的剧情用途已经完成。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:119](../src/scenes/rpg/RpgItemUseGuidance.ts#L119)
-2833. 大厅旧钟表盘
+2838. 大厅旧钟表盘
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:123](../src/scenes/rpg/RpgItemUseGuidance.ts#L123)
-2834. 靠近旧钟，把黄铜分针组件拖到可见表盘内松手。
+2839. 靠近旧钟，把黄铜分针组件拖到可见表盘内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:123](../src/scenes/rpg/RpgItemUseGuidance.ts#L123)
-2835. 手柄已经连接并等待方向输入校验。
+2840. 手柄已经连接并等待方向输入校验。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:129](../src/scenes/rpg/RpgItemUseGuidance.ts#L129)
-2836. 先在部门黄页完成角色命名。
+2841. 先在部门黄页完成角色命名。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:130](../src/scenes/rpg/RpgItemUseGuidance.ts#L130)
-2837. 先在浙大体艺开始课外锻炼。
+2842. 先在浙大体艺开始课外锻炼。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:131](../src/scenes/rpg/RpgItemUseGuidance.ts#L131)
-2838. 先在 CC98 完成手柄购买。
+2843. 先在 CC98 完成手柄购买。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:132](../src/scenes/rpg/RpgItemUseGuidance.ts#L132)
-2839. 把手柄拖到角色身体范围内，并在人物轮廓内松手。
+2844. 把手柄拖到角色身体范围内，并在人物轮廓内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:133](../src/scenes/rpg/RpgItemUseGuidance.ts#L133)
-2840. 文学书架 755 段
+2845. 文学书架 755 段
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:142](../src/scenes/rpg/RpgItemUseGuidance.ts#L142)；[src/scenes/rpg/RpgItemUseGuidance.ts:143](../src/scenes/rpg/RpgItemUseGuidance.ts#L143)
-2841. 先完成馆藏检索并取得索书号 755。
+2846. 先完成馆藏检索并取得索书号 755。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:143](../src/scenes/rpg/RpgItemUseGuidance.ts#L143)
-2842. 前台正在人工核验并盖章，等待流程完成。
+2847. 前台正在人工核验并盖章，等待流程完成。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:146](../src/scenes/rpg/RpgItemUseGuidance.ts#L146)
-2843. 靠近前台，把物品识别报告拖到工作人员与盖章台之间。
+2848. 靠近前台，把物品识别报告拖到工作人员与盖章台之间。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:151](../src/scenes/rpg/RpgItemUseGuidance.ts#L151)
-2844. 前台工作人员
+2849. 前台工作人员
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:151](../src/scenes/rpg/RpgItemUseGuidance.ts#L151)；[src/scenes/rpg/RpgItemUseGuidance.ts:152](../src/scenes/rpg/RpgItemUseGuidance.ts#L152)
-2845. 先在照片页面生成物品识别报告。
+2850. 先在照片页面生成物品识别报告。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:152](../src/scenes/rpg/RpgItemUseGuidance.ts#L152)
-2846. 022 座位凭据已经取出，右移箭头已完成最后用途。
+2851. 022 座位凭据已经取出，右移箭头已完成最后用途。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:157](../src/scenes/rpg/RpgItemUseGuidance.ts#L157)
-2847. 022 占座书包
+2852. 022 占座书包
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:163](../src/scenes/rpg/RpgItemUseGuidance.ts#L163)；[src/scenes/rpg/RpgItemUseGuidance.ts:164](../src/scenes/rpg/RpgItemUseGuidance.ts#L164)
-2848. 先完成公开公示和三项恢复材料，取得清退 PASS。
+2853. 先完成公开公示和三项恢复材料，取得清退 PASS。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:164](../src/scenes/rpg/RpgItemUseGuidance.ts#L164)
-2849. 1、2、3号取餐窗口验票槽
+2854. 1、2、3号取餐窗口验票槽
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:170](../src/scenes/rpg/RpgItemUseGuidance.ts#L170)
-2850. 取餐号只在取餐阶段使用。先完成当前食堂任务。
+2855. 取餐号只在取餐阶段使用。先完成当前食堂任务。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:170](../src/scenes/rpg/RpgItemUseGuidance.ts#L170)
-2851. 不需要拖拽或站位。浅色操作可在对应窗口交票；深色观察可补充查看窗口残影。
+2856. 不需要拖拽或站位。浅色操作可在对应窗口交票；深色观察可补充查看窗口残影。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:172](../src/scenes/rpg/RpgItemUseGuidance.ts#L172)
-2852. 取餐窗口
+2857. 取餐窗口
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:172](../src/scenes/rpg/RpgItemUseGuidance.ts#L172)
-2853. 靠近混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。
+2858. 靠近混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:185](../src/scenes/rpg/RpgItemUseGuidance.ts#L185)
-2854. 左下角混合台
+2859. 左下角混合台
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:185](../src/scenes/rpg/RpgItemUseGuidance.ts#L185)
-2855. 第五个打饭窗口下方的宣传板空杯位
+2860. 第五个打饭窗口下方的宣传板空杯位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:192](../src/scenes/rpg/RpgItemUseGuidance.ts#L192)
-2856. 先靠近宣传板，再把今日新品气泡水拖进发光的空杯位。
+2861. 先靠近宣传板，再把今日新品气泡水拖进发光的空杯位。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:192](../src/scenes/rpg/RpgItemUseGuidance.ts#L192)
-2857. 把难喝饮料拖到人物身上可以喝掉，但不会推进剧情。
+2862. 把难喝饮料拖到人物身上可以喝掉，但不会推进剧情。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:195](../src/scenes/rpg/RpgItemUseGuidance.ts#L195)
-2858. 玩家自己
+2863. 玩家自己
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:195](../src/scenes/rpg/RpgItemUseGuidance.ts#L195)
-2859. 车锁已经擦净，2 元现金可以用于付款。
+2864. 车锁已经擦净，2 元现金可以用于付款。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:201](../src/scenes/rpg/RpgItemUseGuidance.ts#L201)
-2860. 切回浅色模式后再清洁车锁。
+2865. 切回浅色模式后再清洁车锁。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:202](../src/scenes/rpg/RpgItemUseGuidance.ts#L202)
-2861. 先用纸巾清洁车锁。
+2866. 先用纸巾清洁车锁。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:206](../src/scenes/rpg/RpgItemUseGuidance.ts#L206)
-2862. 切回浅色模式后付款。
+2867. 切回浅色模式后付款。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:207](../src/scenes/rpg/RpgItemUseGuidance.ts#L207)
-2863. 现金余额不足 2 元。回食堂完成收餐盘，领取 2 元和油渍纸巾。
+2868. 现金余额不足 2 元。回食堂完成收餐盘，领取 2 元和油渍纸巾。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:208](../src/scenes/rpg/RpgItemUseGuidance.ts#L208)
-2864. 把 2 元现金拖到共享单车范围内，并在车身上松手。
+2869. 把 2 元现金拖到共享单车范围内，并在车身上松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:209](../src/scenes/rpg/RpgItemUseGuidance.ts#L209)
-2865. 海报玻璃已经擦净。
+2870. 海报玻璃已经擦净。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:216](../src/scenes/rpg/RpgItemUseGuidance.ts#L216)
-2866. 擦拭海报只在剧院入口取票阶段开放。
+2871. 擦拭海报只在剧院入口取票阶段开放。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:217](../src/scenes/rpg/RpgItemUseGuidance.ts#L217)
-2867. 切回浅色模式后擦拭海报玻璃。
+2872. 切回浅色模式后擦拭海报玻璃。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:218](../src/scenes/rpg/RpgItemUseGuidance.ts#L218)
-2868. 从海报右侧靠近，把油渍纸巾拖到玻璃污渍上。
+2873. 从海报右侧靠近，把油渍纸巾拖到玻璃污渍上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:219](../src/scenes/rpg/RpgItemUseGuidance.ts#L219)
-2869. 入口海报玻璃
+2874. 入口海报玻璃
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:219](../src/scenes/rpg/RpgItemUseGuidance.ts#L219)
-2870. 深色模式只读取异常；切回浅色操作后再把票拖入读票器。
+2875. 深色模式只读取异常；切回浅色操作后再把票拖入读票器。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:224](../src/scenes/rpg/RpgItemUseGuidance.ts#L224)
-2871. 靠近读票器，把票拖到右侧验票槽内松手。
+2876. 靠近读票器，把票拖到右侧验票槽内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:228](../src/scenes/rpg/RpgItemUseGuidance.ts#L228)
-2872. 票据扫描已经完成，临时观演票已从道具栏移除。
+2877. 票据扫描已经完成，临时观演票已从道具栏移除。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:232](../src/scenes/rpg/RpgItemUseGuidance.ts#L232)
-2873. 深色模式可查看道具箱残影；切回浅色模式后扫描票据。
+2878. 深色模式可查看道具箱残影；切回浅色模式后扫描票据。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:234](../src/scenes/rpg/RpgItemUseGuidance.ts#L234)
-2874. 靠近道具箱旁的扫描器，把票拖到扫描口内松手。
+2879. 靠近道具箱旁的扫描器，把票拖到扫描口内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:238](../src/scenes/rpg/RpgItemUseGuidance.ts#L238)
-2875. 入场核验已完成。票会在后台道具箱阶段再次使用，先完成当前节目单任务。
+2880. 入场核验已完成。票会在后台道具箱阶段再次使用，先完成当前节目单任务。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:242](../src/scenes/rpg/RpgItemUseGuidance.ts#L242)
-2876. 当前流程不需要再次拖动临时观演票。
+2881. 当前流程不需要再次拖动临时观演票。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:244](../src/scenes/rpg/RpgItemUseGuidance.ts#L244)
-2877. 后台纸屑已经显影，荧光粉刷已从道具栏移除。
+2882. 后台纸屑已经显影，荧光粉刷已从道具栏移除。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:247](../src/scenes/rpg/RpgItemUseGuidance.ts#L247)
-2878. 先在后台完成票据扫描并打开道具箱，取得荧光粉刷。
+2883. 先在后台完成票据扫描并打开道具箱，取得荧光粉刷。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:249](../src/scenes/rpg/RpgItemUseGuidance.ts#L249)
-2879. 切回浅色操作后，把荧光粉刷拖入通风口。
+2884. 切回浅色操作后，把荧光粉刷拖入通风口。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:252](../src/scenes/rpg/RpgItemUseGuidance.ts#L252)
-2880. 靠近通风口，把荧光粉刷拖到栅格上。
+2885. 靠近通风口，把荧光粉刷拖到栅格上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:254](../src/scenes/rpg/RpgItemUseGuidance.ts#L254)
-2881. 先完成后台纸屑显影，灯光控制台随后开放。
+2886. 先完成后台纸屑显影，灯光控制台随后开放。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:258](../src/scenes/rpg/RpgItemUseGuidance.ts#L258)
-2882. 深色模式只观察追光残影；切回浅色操作后启动灯光控制台。
+2887. 深色模式只观察追光残影；切回浅色操作后启动灯光控制台。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:261](../src/scenes/rpg/RpgItemUseGuidance.ts#L261)
-2883. 从下方靠近控制台，把追光灯遥控器拖到控制面板上。
+2888. 从下方靠近控制台，把追光灯遥控器拖到控制面板上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:263](../src/scenes/rpg/RpgItemUseGuidance.ts#L263)
-2884. 靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。
+2889. 靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:266](../src/scenes/rpg/RpgItemUseGuidance.ts#L266)
-2885. 深色观察只记录坐标。切回浅色操作后使用道具。
+2890. 深色观察只记录坐标。切回浅色操作后使用道具。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:274](../src/scenes/rpg/RpgItemUseGuidance.ts#L274)
-2886. 假纸条已经固定到鱼钩上并从道具栏移除。
+2891. 假纸条已经固定到鱼钩上并从道具栏移除。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:277](../src/scenes/rpg/RpgItemUseGuidance.ts#L277)
-2887. 先在大湖浮排边找到钓鱼竿。
+2892. 先在大湖浮排边找到钓鱼竿。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:279](../src/scenes/rpg/RpgItemUseGuidance.ts#L279)
-2888. 纸条倒影装饵框
+2893. 纸条倒影装饵框
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:279](../src/scenes/rpg/RpgItemUseGuidance.ts#L279)；[src/scenes/rpg/RpgItemUseGuidance.ts:282](../src/scenes/rpg/RpgItemUseGuidance.ts#L282)；[src/scenes/rpg/RpgItemUseGuidance.ts:284](../src/scenes/rpg/RpgItemUseGuidance.ts#L284)
-2889. 先划回大湖，再寻找纸条倒影装饵框。
+2894. 先划回大湖，再寻找纸条倒影装饵框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:282](../src/scenes/rpg/RpgItemUseGuidance.ts#L282)
-2890. 把船划到纸条倒影附近，再把假纸条拖到对应水纹。
+2895. 把船划到纸条倒影附近，再把假纸条拖到对应水纹。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:285](../src/scenes/rpg/RpgItemUseGuidance.ts#L285)
-2891. 纸条倒影水纹
+2896. 纸条倒影水纹
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:285](../src/scenes/rpg/RpgItemUseGuidance.ts#L285)
-2892. 船头磁吸组合位
+2897. 船头磁吸组合位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:291](../src/scenes/rpg/RpgItemUseGuidance.ts#L291)
-2893. 先划到黑天鹅围栏区。
+2898. 先划到黑天鹅围栏区。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:291](../src/scenes/rpg/RpgItemUseGuidance.ts#L291)
-2894. 船头工具区
+2899. 船头工具区
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:294](../src/scenes/rpg/RpgItemUseGuidance.ts#L294)
-2895. 让船头对准工具区，把钓鱼竿拖到天鹅磁扣旁。
+2900. 让船头对准工具区，把钓鱼竿拖到天鹅磁扣旁。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:294](../src/scenes/rpg/RpgItemUseGuidance.ts#L294)
-2896. 当前抛竿点位于大湖，先划回大湖。
+2901. 当前抛竿点位于大湖，先划回大湖。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:297](../src/scenes/rpg/RpgItemUseGuidance.ts#L297)
-2897. 可用抛竿点
+2902. 可用抛竿点
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:297](../src/scenes/rpg/RpgItemUseGuidance.ts#L297)；[src/scenes/rpg/RpgItemUseGuidance.ts:302](../src/scenes/rpg/RpgItemUseGuidance.ts#L302)；[src/scenes/rpg/RpgItemUseGuidance.ts:303](../src/scenes/rpg/RpgItemUseGuidance.ts#L303)
-2898. 先把假纸条拖到钓鱼竿装饵框。
+2903. 先把假纸条拖到钓鱼竿装饵框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:300](../src/scenes/rpg/RpgItemUseGuidance.ts#L300)
-2899. 把船划到目标水纹附近后抛竿。深色观察可补充记录位置，直接钓纸条会显示失败原因。
+2904. 把船划到目标水纹附近后抛竿。深色观察可补充记录位置，直接钓纸条会显示失败原因。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:303](../src/scenes/rpg/RpgItemUseGuidance.ts#L303)
-2900. 码头储物柜已经打开。
+2905. 码头储物柜已经打开。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:308](../src/scenes/rpg/RpgItemUseGuidance.ts#L308)
-2901. 返回小码头，储物柜锁孔只在码头区域开放。
+2906. 返回小码头，储物柜锁孔只在码头区域开放。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:310](../src/scenes/rpg/RpgItemUseGuidance.ts#L310)
-2902. 码头储物柜
+2907. 码头储物柜
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:310](../src/scenes/rpg/RpgItemUseGuidance.ts#L310)；[src/scenes/rpg/RpgItemUseGuidance.ts:311](../src/scenes/rpg/RpgItemUseGuidance.ts#L311)；[src/scenes/rpg/RpgItemUseGuidance.ts:312](../src/scenes/rpg/RpgItemUseGuidance.ts#L312)
-2903. 返回小码头，靠近柜门，把钥匙拖到锁孔。
+2908. 返回小码头，靠近柜门，把钥匙拖到锁孔。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:312](../src/scenes/rpg/RpgItemUseGuidance.ts#L312)
-2904. 两件道具已组合为临时抄网。
+2909. 两件道具已组合为临时抄网。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:316](../src/scenes/rpg/RpgItemUseGuidance.ts#L316)
-2905. 先取得另一个组合部件。
+2910. 先取得另一个组合部件。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:319](../src/scenes/rpg/RpgItemUseGuidance.ts#L319)
-2906. 回到大湖的浮标组合位。
+2911. 回到大湖的浮标组合位。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:322](../src/scenes/rpg/RpgItemUseGuidance.ts#L322)
-2907. 把尼龙绳或破损网框拖入装配框。
+2912. 把尼龙绳或破损网框拖入装配框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:325](../src/scenes/rpg/RpgItemUseGuidance.ts#L325)
-2908. 密封饲料盒已经取回。
+2913. 密封饲料盒已经取回。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:330](../src/scenes/rpg/RpgItemUseGuidance.ts#L330)
-2909. 浮排系绳下方
+2914. 浮排系绳下方
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:332](../src/scenes/rpg/RpgItemUseGuidance.ts#L332)；[src/scenes/rpg/RpgItemUseGuidance.ts:333](../src/scenes/rpg/RpgItemUseGuidance.ts#L333)；[src/scenes/rpg/RpgItemUseGuidance.ts:334](../src/scenes/rpg/RpgItemUseGuidance.ts#L334)
-2910. 进入浮排直河道，再靠近浮排系绳。
+2915. 进入浮排直河道，再靠近浮排系绳。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:332](../src/scenes/rpg/RpgItemUseGuidance.ts#L332)
-2911. 进入直河道，让船头对准浮排下方，把抄网拖到密封饲料盒上。
+2916. 进入直河道，让船头对准浮排下方，把抄网拖到密封饲料盒上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:334](../src/scenes/rpg/RpgItemUseGuidance.ts#L334)
-2912. 饲料盒已经打开。
+2917. 饲料盒已经打开。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:339](../src/scenes/rpg/RpgItemUseGuidance.ts#L339)
-2913. 返回浮排直河道，开盒位在浮排上缘。
+2918. 返回浮排直河道，开盒位在浮排上缘。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:341](../src/scenes/rpg/RpgItemUseGuidance.ts#L341)
-2914. 浮排开盒位
+2919. 浮排开盒位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:341](../src/scenes/rpg/RpgItemUseGuidance.ts#L341)；[src/scenes/rpg/RpgItemUseGuidance.ts:342](../src/scenes/rpg/RpgItemUseGuidance.ts#L342)
-2915. 浮排硬边
+2920. 浮排硬边
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:343](../src/scenes/rpg/RpgItemUseGuidance.ts#L343)
-2916. 让船头对准浮排硬边，把密封饲料盒拖到边缘上开启。
+2921. 让船头对准浮排硬边，把密封饲料盒拖到边缘上开启。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:343](../src/scenes/rpg/RpgItemUseGuidance.ts#L343)
-2917. 回到大湖的鱼群水纹位置。
+2922. 回到大湖的鱼群水纹位置。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:348](../src/scenes/rpg/RpgItemUseGuidance.ts#L348)
-2918. 鱼群水纹
+2923. 鱼群水纹
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:348](../src/scenes/rpg/RpgItemUseGuidance.ts#L348)；[src/scenes/rpg/RpgItemUseGuidance.ts:350](../src/scenes/rpg/RpgItemUseGuidance.ts#L350)；[src/scenes/rpg/RpgItemUseGuidance.ts:351](../src/scenes/rpg/RpgItemUseGuidance.ts#L351)
-2919. 把饲料颗粒拖入鱼群水纹；深色观察可补充记录位置。
+2924. 把饲料颗粒拖入鱼群水纹；深色观察可补充记录位置。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:351](../src/scenes/rpg/RpgItemUseGuidance.ts#L351)
-2920. 黑天鹅
+2925. 黑天鹅
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:357](../src/scenes/rpg/RpgItemUseGuidance.ts#L357)
-2921. 让船头对准黑天鹅，把小鲤鱼拖到天鹅面前。
+2926. 让船头对准黑天鹅，把小鲤鱼拖到天鹅面前。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:357](../src/scenes/rpg/RpgItemUseGuidance.ts#L357)
-2922. 划到黑天鹅围栏区。
+2927. 划到黑天鹅围栏区。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:358](../src/scenes/rpg/RpgItemUseGuidance.ts#L358)
-2923. 划到黑天鹅围栏区的船头装配位。
+2928. 划到黑天鹅围栏区的船头装配位。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:363](../src/scenes/rpg/RpgItemUseGuidance.ts#L363)
-2924. 把磁性扣拖到钓鱼竿所在的装配框。
+2929. 把磁性扣拖到钓鱼竿所在的装配框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:367](../src/scenes/rpg/RpgItemUseGuidance.ts#L367)
-2925. 钓鱼竿当前不在道具栏。
+2930. 钓鱼竿当前不在道具栏。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:368](../src/scenes/rpg/RpgItemUseGuidance.ts#L368)
-2926. 纸条已经被固定，进入返航追逐。
+2931. 纸条已经被固定，进入返航追逐。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:372](../src/scenes/rpg/RpgItemUseGuidance.ts#L372)
-2927. 纸条本体水纹位于黑天鹅围栏区。
+2932. 纸条本体水纹位于黑天鹅围栏区。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:374](../src/scenes/rpg/RpgItemUseGuidance.ts#L374)
-2928. 把磁性钓鱼竿拖入纸条本体水纹；深色观察可补充记录位置。
+2933. 把磁性钓鱼竿拖入纸条本体水纹；深色观察可补充记录位置。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:377](../src/scenes/rpg/RpgItemUseGuidance.ts#L377)
-2929. 当前{{current.label}}。点击切换到{{next.label}}
+2934. 当前{{current.label}}。点击切换到{{next.label}}
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:25](../src/scenes/rpg/RpgRealityModeToggle.tsx#L25)
-2930. {{current.shortHint}} 点击切换到{{next.label}}。
+2935. {{current.shortHint}} 点击切换到{{next.label}}。
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:26](../src/scenes/rpg/RpgRealityModeToggle.tsx#L26)
-2931. 当前模式
+2936. 当前模式
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:34](../src/scenes/rpg/RpgRealityModeToggle.tsx#L34)
-2932. 切换：
+2937. 切换：
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:36](../src/scenes/rpg/RpgRealityModeToggle.tsx#L36)
-2933. 紫云碧峰
+2938. 紫云碧峰
    来源：[src/scenes/rpg/ZijingangCampusLayout.ts:54](../src/scenes/rpg/ZijingangCampusLayout.ts#L54)
-2934. 东区大食堂
+2939. 东区大食堂
    来源：[src/scenes/rpg/ZijingangCampusLayout.ts:73](../src/scenes/rpg/ZijingangCampusLayout.ts#L73)
 

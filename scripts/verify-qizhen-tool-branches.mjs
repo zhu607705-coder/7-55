@@ -37,6 +37,18 @@ try {
   const { createGameStore, createInitialGameState } = gameStateModule;
   const { EventBus } = eventBusModule;
   const { ChapterThreeQizhenLakeController } = controllerModule;
+  const { SaveStore } = await server.ssrLoadModule("/src/core/SaveStore.ts");
+  function reload(fixture) {
+    const data = new Map();
+    const save = new SaveStore({ getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) });
+    const before = fixture.store.getState();
+    save.save(before);
+    const after = save.load(createInitialGameState());
+    for (const id of ["fishingRod", "nylonCord", "brokenNetFrame", "swanMagnet", "magneticFishingRod"]) {
+      assert(after.items[id] === before.items[id], `reload must preserve ${id} after each independent branch`);
+    }
+    fixture.store.setState(() => after);
+  }
 
   function createFixture() {
     const initial = createInitialGameState();
@@ -100,6 +112,7 @@ try {
       branches[branchId](fixture);
       assert(snapshot(fixture.store.getState()) !== before, `${order.join("→")} ${branchId} must commit state`);
       assert(fixture.store.getState().qizhenLake.phase === "tool_chain", `${order.join("→")} must stay in tool_chain until assembly`);
+      reload(fixture);
     }
     const beforeWrongAssembly = snapshot(fixture.store.getState());
     assert(

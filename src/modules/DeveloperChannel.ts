@@ -192,7 +192,7 @@ export const DEVELOPER_CHECKPOINTS: DeveloperCheckpoint[] = [
   { id: "c3-qizhen-rhythm-paper", chapter: "第三章", label: "节奏钓鱼·纸条", detail: "磁性钓竿已组合，控线收起纸页" },
   { id: "c3-qizhen-tool-chain", chapter: "第三章", label: "湖区工具链", detail: "道具 2 和 3 待组合" },
   { id: "c3-qizhen-swan", chapter: "第三章", label: "黑天鹅交换", detail: "小鲤鱼待投喂" },
-  { id: "c3-qizhen-paper", chapter: "第三章", label: "磁性钓竿", detail: "道具 7 与钓竿待组合" },
+  { id: "c3-qizhen-paper", chapter: "第三章", label: "四件材料待组装", detail: "尼龙绳、破旧网框、天鹅磁铁和钓鱼竿均已取得" },
   { id: "c3-qizhen-chase", chapter: "第三章", label: "直河道追逐", detail: "黑天鹅追逐并返回码头" },
   { id: "c3-qizhen-complete", chapter: "第三章", label: "启真湖结束", detail: "磁性扣损坏，纸条逃离" },
   { id: "c3-interlude-reboot", chapter: "3.5章", label: "恢复通知", detail: "手机检测到 7 分 55 秒未同步记录" },
@@ -908,8 +908,8 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
               ? "tool_chain"
               : id === "c3-qizhen-swan"
                 ? "swan_exchange"
-                : id === "c3-qizhen-paper"
-                  ? "paper_capture"
+            : id === "c3-qizhen-paper"
+                  ? "tool_chain"
                   : id === "c3-qizhen-chase"
                     ? "swan_chase"
                     : "complete";
@@ -993,8 +993,8 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
       hairDryer: hairDryerCheckpoint || weatherControlCheckpoint,
       fishingRod: (id === "c3-qizhen-open-water" || toolChain || swanReached || paperReached) && !chaseReached && !rhythmPaper,
       rustedLockerKey: false,
-      nylonCord: id === "c3-qizhen-tool-chain" || rhythmNet,
-      brokenNetFrame: id === "c3-qizhen-tool-chain",
+      nylonCord: id === "c3-qizhen-tool-chain" || id === "c3-qizhen-paper" || rhythmNet,
+      brokenNetFrame: id === "c3-qizhen-tool-chain" || id === "c3-qizhen-paper",
       improvisedDipNet: false,
       sealedFeedTin: false,
       fishFeedPellets: rhythmFish,
@@ -1055,7 +1055,7 @@ function createQizhenCheckpointState(id: QizhenDeveloperCheckpointId): GameState
           ? ["locker_key", "net_frame", "fish", "paper"]
           : [],
       lockerOpened: !rhythmKey && (toolChain || swanReached || paperReached || chaseReached || completed),
-      netCombined: rhythmFish || swanReached || paperReached || chaseReached || completed,
+      netCombined: id !== "c3-qizhen-paper" && (rhythmFish || swanReached || paperReached || chaseReached || completed),
       feedTinRetrieved: rhythmFish || swanReached || paperReached || chaseReached || completed,
       feedTinOpened: rhythmFish || swanReached || paperReached || chaseReached || completed,
       fishCaught: swanReached || paperReached || chaseReached || completed,

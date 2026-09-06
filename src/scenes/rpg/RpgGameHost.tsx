@@ -1804,7 +1804,12 @@ const [chapter4MaintenanceDiagnosisFeedback, setChapter4MaintenanceDiagnosisFeed
         const rawItems = Array.isArray(event.payload?.itemIds) ? event.payload.itemIds : [];
         const itemIds = rawItems.map((itemId) => String(itemId) as ItemId);
         const result = qizhenController.combineItems(itemIds);
-        emitQizhenItemFeedback(events, itemIds[0] ?? "fishingRod", result, "工具装配框");
+        emitQizhenItemFeedback(
+          events,
+          itemIds[0] ?? "fishingRod",
+          result,
+          event.payload?.source === "inventory" ? "物品栏四件材料" : "工具装配框"
+        );
       } else if (event.name === "combine_item") {
         qizhenController.recordInventoryCombination(String(event.payload?.result ?? "campusCard") as ItemId);
       } else if (event.name === "rpg_qizhen_swan_feed_requested") {

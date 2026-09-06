@@ -1799,7 +1799,9 @@ export class QizhenLakeScene extends Phaser.Scene {
         return false;
       }
       if (target.kind === "swan") {
-        return runtime.mode === "light" && runtime.phase === "tool_chain" && !runtime.swanFed;
+        return runtime.mode === "light"
+          && ["tool_chain", "swan_exchange"].includes(runtime.phase)
+          && !runtime.swanFed;
       }
       if (target.kind === "paper") {
         if (runtime.mode !== "light") return false;
@@ -2227,7 +2229,12 @@ export class QizhenLakeScene extends Phaser.Scene {
       return;
     }
     if (target.kind === "swan") {
-      this.emitDomain("rpg_qizhen_swan_branch_requested", { targetId: target.id });
+      this.emitDomain(this.bridge.getState().qizhenLake.phase === "swan_exchange"
+        ? "rpg_qizhen_swan_feed_requested"
+        : "rpg_qizhen_swan_branch_requested", {
+        itemId: CHAIN_ITEMS.fish,
+        targetId: target.id
+      });
       return;
     }
     if (target.kind === "paper") {
@@ -2326,6 +2333,14 @@ export class QizhenLakeScene extends Phaser.Scene {
     }
     if (target.value === "item_5_to_6" && itemId === CHAIN_ITEMS.feedTin) {
       this.emitDomain("rpg_qizhen_item_use_requested", { targetId: target.id, itemId });
+      return;
+    }
+    if (target.kind === "swan") {
+      if (itemId === CHAIN_ITEMS.fish) {
+        this.emitDomain("rpg_qizhen_swan_feed_requested", { itemId, targetId: target.id });
+        return;
+      }
+      this.emitDropFailure(itemId, "wrong_item", target.label, qizhenContent.swan.wrongItem);
       return;
     }
     if (target.value === "combine_final_rig"
