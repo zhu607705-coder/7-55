@@ -1941,7 +1941,8 @@
 
   .rpg-stage.is-canteen-interior .rpg-inventory-dock,
   .rpg-stage.is-theater-interior .rpg-inventory-dock,
-  .rpg-stage.is-qizhen-lake .rpg-inventory-dock {
+  .rpg-stage.is-qizhen-lake .rpg-inventory-dock,
+  .rpg-stage.is-chapter-four-temporal-maze .rpg-inventory-dock {
     top: calc(var(--rpg-mobile-canvas-height) + 164px);
   }
 

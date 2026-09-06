@@ -1,0 +1,139 @@
+.chapter4-inserted-puzzle { display: flex; flex-direction: column; overflow: hidden; }
+.chapter4-inserted-puzzle__header, .chapter4-inserted-puzzle__footer { flex-shrink: 0; }
+.chapter4-inserted-puzzle__body {
+  grid-template-columns: minmax(260px, 44%) minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+.chapter4-inserted-puzzle__asset.has-live-preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+.chapter4-inserted-puzzle__asset.has-live-preview figcaption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.chapter4-inserted-puzzle__asset.has-live-preview figcaption img {
+  width: 42px;
+  height: 36px;
+  object-fit: contain;
+  filter: none;
+}
+.puzzle-preview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  color: #fff0bb;
+  background: #142c35;
+  border: 2px solid #68756c;
+  font-family: var(--font-pixel);
+}
+.puzzle-preview svg { display: block; width: 100%; height: auto; min-height: 0; flex: 1; }
+.puzzle-preview text { fill: #e5ead3; font-size: 13px; font-weight: normal; }
+.puzzle-preview .puzzle-preview__ink { fill: #23352e; }
+.puzzle-preview .puzzle-preview__accent { fill: #ffcc6e; }
+.puzzle-preview__datum { fill: none; stroke: #a9c3b6; stroke-width: 2px; stroke-dasharray: 4 4; }
+.puzzle-preview__moving { transition: transform 220ms ease-out; }
+.puzzle-preview__wire { stroke: #697f7f; stroke-width: 2px; stroke-dasharray: 4 6; transition: stroke 160ms; }
+.puzzle-preview__wire.is-connected { stroke: #ffcc6e; stroke-width: 5px; stroke-dasharray: none; }
+.puzzle-preview__readout {
+  flex-shrink: 0;
+  display: block;
+  padding: 8px 10px;
+  min-height: 40px;
+  border-top: 1px solid #62776e;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.chapter4-inserted-puzzle__axis {
+  display: grid;
+  grid-template-columns: 36px minmax(54px, 1fr) 56px minmax(54px, 1fr);
+  gap: 6px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 2px solid #aaa594;
+  font-size: 12px;
+}
+.chapter4-inserted-puzzle__axis button { min-height: 46px; padding: 4px; }
+.chapter4-inserted-puzzle__axis button small { display: block; margin-top: 3px; font-size: 10px; }
+.chapter4-inserted-puzzle__selects { grid-template-columns: 1fr; }
+.chapter4-inserted-puzzle__selects label { grid-template-columns: 40px 1fr; align-items: center; }
+.chapter4-inserted-puzzle__workspace { padding: 16px; overflow: auto; }
+
+/* Keep the device visible while controls scroll inside the short mobile RPG surface. */
+@media (max-width: 760px) {
+  .chapter4-inserted-puzzle-overlay { padding: 4px; }
+  .chapter4-inserted-puzzle { width: 100%; max-height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+  .chapter4-inserted-puzzle__header { padding: 4px 8px; align-items: center; gap: 4px; }
+  .chapter4-inserted-puzzle__header p { font-size: 9px; margin-bottom: 2px; }
+  .chapter4-inserted-puzzle__header h2 { font-size: 14px; }
+  .chapter4-inserted-puzzle__header > button { width: 28px; height: 28px; }
+  .chapter4-inserted-puzzle__body { grid-template-columns: 43% minmax(0, 1fr); min-height: 0; overflow: hidden; }
+  .chapter4-inserted-puzzle__asset,
+  .chapter4-inserted-puzzle__asset.has-live-preview { padding: 3px; min-height: 0; gap: 3px; overflow: auto; justify-content: flex-start; }
+  .chapter4-inserted-puzzle__asset.has-live-preview figcaption { font-size: 9px; gap: 4px; }
+  .chapter4-inserted-puzzle__asset.has-live-preview figcaption img { width: 22px; height: 18px; }
+  .puzzle-preview__readout { font-size: 10px; min-height: 0; padding: 3px; }
+  .chapter4-inserted-puzzle__workspace { padding: 5px; overflow: auto; }
+  .chapter4-inserted-puzzle__prompt { font-size: 10px; min-height: 0; padding: 4px; margin-bottom: 4px; }
+  .chapter4-inserted-puzzle__axis { grid-template-columns: 23px minmax(38px, 1fr) 35px minmax(38px, 1fr); gap: 3px; font-size: 10px; padding: 4px 0; }
+  .chapter4-inserted-puzzle__axis button { font-size: 10px; min-height: 34px; }
+  .chapter4-inserted-puzzle__axis button small { font-size: 9px; margin-top: 1px; }
+  .chapter4-inserted-puzzle__footer { padding: 4px 6px; gap: 6px; }
+  .chapter4-inserted-puzzle__footer span { font-size: 9px; }
+  .chapter4-inserted-puzzle__footer button { min-width: 72px; min-height: 28px; font-size: 11px; }
+  .chapter4-inserted-puzzle__edges { grid-template-columns: 1fr; }
+  .chapter4-inserted-puzzle__edges button { font-size: 11px; }
+  .chapter4-inserted-puzzle__order li { grid-template-columns: 19px minmax(0, 1fr); gap: 3px; padding: 4px; }
+  .chapter4-inserted-puzzle__order strong { font-size: 11px; }
+  .chapter4-inserted-puzzle__order button { min-height: 28px; }
+  .chapter4-inserted-puzzle__order button:first-of-type { grid-column: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .puzzle-preview__moving, .puzzle-preview__wire { transition: none; }
+}
+
+.chapter4-maintenance-diagnosis { width: min(800px, 96%); max-height: 96%; overflow: auto; }
+.chapter4-maintenance-diagnosis__body { display: grid; grid-template-columns: 42% minmax(0, 1fr); gap: 14px; margin-top: 12px; }
+.maintenance-preview { margin: 0; align-self: start; }
+.maintenance-preview figcaption { padding: 9px; font-size: 12px; }
+.maintenance-preview button { display: block; margin: 8px; min-height: 30px; background: #25444e; color: #eee1ac; border: 1px solid #9cad92; font: inherit; font-size: 12px; }
+.chapter4-maintenance-diagnosis__observations { margin-top: 0; }
+.chapter4-maintenance-diagnosis__observations label { grid-template-columns: 1fr; gap: 5px; }
+.chapter4-maintenance-diagnosis__observations label.is-active { border-color: #ebca7c; }
+.maintenance-preview__jam { animation: maintenance-jam 1.5s ease-in-out 2; }
+.maintenance-preview__wheel { animation: maintenance-wheel 1.5s ease-out 2; }
+.maintenance-preview__cover { animation: maintenance-cover 1.5s ease-out 2; }
+@keyframes maintenance-jam { 0%, 80%, 100% { transform: rotate(0deg); } 50%, 65% { transform: rotate(24deg); } }
+@keyframes maintenance-wheel { 0%, 20% { transform: rotate(0deg); } 42%, 100% { transform: rotate(16deg); } }
+@keyframes maintenance-cover { 0%, 20%, 100% { transform: translateX(0); } 5%, 15% { transform: translateX(4px); } 10% { transform: translateX(-4px); } }
+@media (max-width: 760px) {
+  .chapter4-maintenance-diagnosis-overlay { padding: 4px; }
+  .chapter4-maintenance-diagnosis { width: 100%; max-height: 100%; padding: 7px; display: flex; flex-direction: column; overflow: hidden; }
+  .chapter4-maintenance-diagnosis header h2 { font-size: 14px; }
+  .chapter4-maintenance-diagnosis header p { font-size: 9px; }
+  .chapter4-maintenance-diagnosis header > span { display: none; }
+  .chapter4-maintenance-diagnosis__body { min-height: 0; overflow: hidden; gap: 6px; margin-top: 5px; }
+  .maintenance-preview { max-height: 100%; overflow: auto; }
+  .maintenance-preview figcaption { font-size: 10px; padding: 4px; }
+  .chapter4-maintenance-diagnosis__observations { overflow: auto; }
+  .chapter4-maintenance-diagnosis__observations label { grid-template-columns: 1fr; padding: 4px; }
+  .chapter4-maintenance-diagnosis__observations strong { font-size: 12px; }
+  .chapter4-maintenance-diagnosis__observations select { max-width: 100%; min-height: 28px; font-size: 12px; }
+  .chapter4-maintenance-diagnosis footer { margin-top: 5px; }
+  .chapter4-maintenance-diagnosis footer button { min-height: 28px; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .maintenance-preview__jam, .maintenance-preview__wheel, .maintenance-preview__cover { animation: none; }
+}

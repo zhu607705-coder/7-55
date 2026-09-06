@@ -12,6 +12,26 @@ try {
   const spatial={distance:"within_range"};
   const roundtrip=state=>{const data=new Map();const memory={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};const save=new saves.SaveStore(memory);assert(save.save(state));return save.load(game.createInitialGameState());};
   const harness=id=>{const store=game.createGameStore(dev.createDeveloperCheckpointState(id));return {store,ctrl:new controller.ChapterFourTemporalMazeController(store,new events.EventBus())};};
+  {
+    const layout=JSON.parse(readFileSync('src/data/chapter4-three-floor-maze.layout.json','utf8'));
+    const {store,ctrl}=harness('c4-755-bakery-1225');
+    const invokeTarget=(type,targetId,extra={})=>{
+      const target=layout.bakeryRuntime.targetEntities.find(t=>t.targetId===targetId);
+      return ctrl.resolve755Intent({type,targetId,spatial,...extra},{targetId,entityId:target.entityId,bounds:target.installationBounds});
+    };
+    assert(invokeTarget('inspect_bakery_conveyor_lamp','a1_bakery_inspection_lamp').accepted);
+    assert(ctrl.resolve755Intent({type:'complete_bakery_conveyor_stop'}).accepted);
+    assert(invokeTarget('collect_hour_hand','a1_bakery_hour_hand_pickup').accepted);
+    assert.equal(store.getState().chapter4.roomId,'a1_bakery');
+    const install={type:'install_hour_hand',itemId:'oldClockHourHand',targetId:'a1_hall_clock_hour_hand_socket'};
+    const before=store.getState();
+    assert.equal(ctrl.resolve755Intent({...install,spatial:{distance:'too_far'}}).reason,'too_far','clock reachability uses physical distance, not stale bakery room metadata');
+    assert.equal(store.getState(),before,'a distant drop must keep the item and state');
+    assert(ctrl.resolve755Intent({...install,spatial}).accepted,'walking back to the hall must enable the clock socket without a room-id rewrite');
+    assert.equal(store.getState().chapter4.timeState,'1225_bakery');
+    assert.equal(store.getState().items.oldClockHourHand,false);
+    assert.equal(roundtrip(store.getState()).chapter4.timeState,'1225_bakery');
+  }
   for(const [id,before,after] of [["c4-755-clock-1850-ready","1225_bakery","1850_evening"],["c4-755-clock-2245-ready","1850_evening","2245_maintenance"]]){
     const {store,ctrl}=harness(id);assert.equal(store.getState().chapter4.timeState,before);
     const restored=roundtrip(store.getState());assert.equal(restored.chapter4.timeState,before,"reload must not skip the player's pending clock operation");assert.equal(restored.chapter4.guardMode,"absent");

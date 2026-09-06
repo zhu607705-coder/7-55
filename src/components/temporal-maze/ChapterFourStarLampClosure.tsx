@@ -1,6 +1,6 @@
 import { ChapterFourStarLampPlayback } from "./ChapterFourStarLampPlayback";
+import { ChapterFourExteriorQuestions } from "./ChapterFourExteriorQuestions";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GameSubtitleContent } from "../GameSubtitleFrame";
 import lampCoreUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_core.png";
 import lampDarkUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_dark.png";
 import lampGlowUrl from "../../assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_glow.png";
@@ -13,7 +13,6 @@ import type {
 } from "../../core/types";
 
 export { CHAPTER_FOUR_STAR_LAMP_SEQUENCE_DURATION_MS } from "./ChapterFourStarLampPlayback";
-export const CHAPTER_FOUR_STAR_LAMP_SAVED_CONFIRMATION_MS = 900;
 export const CHAPTER_FOUR_STAR_LAMP_FINAL_MESSAGE =
   "从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！";
 
@@ -52,8 +51,7 @@ export interface ChapterFourStarLampClosureProps {
   onComplete: (sessionId: string) => void;
 }
 
-type ChapterFourStarLampStage = "questions" | "saved" | "playback" | "final";
-type ChapterFourStarLampQuestionId = "purpose" | "person";
+type ChapterFourStarLampStage = "questions" | "playback" | "final";
 
 export function ChapterFourStarLampClosure({
   sessionId,
@@ -67,13 +65,6 @@ export function ChapterFourStarLampClosure({
   onComplete
 }: ChapterFourStarLampClosureProps) {
   const [stage, setStage] = useState<ChapterFourStarLampStage>("questions");
-  const [activeQuestion, setActiveQuestion] = useState<ChapterFourStarLampQuestionId>(
-    selectedAnswers.purpose ? "person" : "purpose"
-  );
-  const [draftAnswers, setDraftAnswers] = useState<ChapterFourZhuQuestionAnswers>(() => ({
-    purpose: selectedAnswers.purpose,
-    person: selectedAnswers.person
-  }));
   const dialogRef = useRef<HTMLElement | null>(null);
   const completedRef = useRef(false);
 
@@ -83,38 +74,17 @@ export function ChapterFourStarLampClosure({
   useEffect(() => {
     completedRef.current = false;
     setStage("questions");
-    setDraftAnswers({
-      purpose: selectedAnswers.purpose,
-      person: selectedAnswers.person
-    });
-    setActiveQuestion(selectedAnswers.purpose ? "person" : "purpose");
-    // A session id identifies one isolated presentation attempt. Answer updates
-    // inside that session are synchronized by the dedicated effects below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
-  useEffect(() => {
-    if (stage !== "questions" || saving) return;
-    setDraftAnswers((current) => ({
-      purpose: selectedAnswers.purpose ?? current.purpose,
-      person: selectedAnswers.person ?? current.person
-    }));
-  }, [saving, selectedAnswers.person, selectedAnswers.purpose, stage]);
+  const submitQuestions = useCallback((
+    purpose: ChapterFourZhuPurposeAnswerId,
+    person: ChapterFourZhuPersonAnswerId
+  ) => onSaveAnswers({ purpose, person }), [onSaveAnswers]);
 
-  useEffect(() => {
-    if (!answersSaved || !savedAnswers || stage !== "questions") return;
-    setDraftAnswers(savedAnswers);
-    setStage("saved");
-  }, [answersSaved, savedAnswers, stage]);
-
-  useEffect(() => {
-    if (stage !== "saved") return;
-    const timer = window.setTimeout(
-      () => setStage("playback"),
-      CHAPTER_FOUR_STAR_LAMP_SAVED_CONFIRMATION_MS
-    );
-    return () => window.clearTimeout(timer);
-  }, [stage]);
+  const confirmQuestions = useCallback(() => {
+    if (!answersSaved || !selectedAnswers.purpose || !selectedAnswers.person) return;
+    setStage((current) => current === "questions" ? "playback" : current);
+  }, [answersSaved, selectedAnswers.person, selectedAnswers.purpose]);
 
   const finishPlayback = useCallback(() => {
     setStage((current) => current === "playback" ? "final" : current);
@@ -167,18 +137,13 @@ export function ChapterFourStarLampClosure({
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    const focusTarget = stage === "questions"
-      ? dialog.querySelector<HTMLButtonElement>(
-        `.chapter4-star-lamp-closure__question.is-${activeQuestion} .chapter4-star-lamp-closure__options button:not(:disabled)`
-      )
-      : stage === "final"
+    const focusTarget = stage === "final"
         ? dialog.querySelector<HTMLButtonElement>(".chapter4-star-lamp-closure__final > button")
         : null;
     (focusTarget ?? dialog).focus({ preventScroll: true });
-  }, [activeQuestion, stage]);
+  }, [stage]);
 
-  const draftComplete = completeAnswers(draftAnswers);
-  const displayedAnswers = savedAnswers ?? draftComplete;
+  const displayedAnswers = savedAnswers;
   const purposeLabel = displayedAnswers
     ? labelForAnswer(purposeQuestion.options, displayedAnswers.purpose)
     : "";
@@ -186,11 +151,16 @@ export function ChapterFourStarLampClosure({
     ? labelForAnswer(personQuestion.options, displayedAnswers.person)
     : "";
 
-  const submitAnswers = () => {
-    const answers = completeAnswers(draftAnswers);
-    if (!answers || saving) return;
-    onSaveAnswers(answers);
-  };
+  if (stage === "questions") {
+    return <ChapterFourExteriorQuestions
+      key={sessionId}
+      answered={answersSaved && savedAnswers !== null}
+      pending={saving}
+      feedback={saveError}
+      onSubmit={submitQuestions}
+      onConfirmationComplete={confirmQuestions}
+    />;
+  }
 
   if (stage === "playback") {
     return <ChapterFourStarLampPlayback sessionId={sessionId} feedback={feedback} onComplete={finishPlayback} />;
@@ -202,7 +172,7 @@ export function ChapterFourStarLampClosure({
       className={`chapter4-star-lamp-closure is-${stage}`}
       role="dialog"
       aria-modal="true"
-      aria-label={stage === "questions" ? "竺老两问" : "灿若星辰灯点亮"}
+      aria-label="灿若星辰灯点亮"
       aria-busy={saving ? "true" : "false"}
       data-session-id={sessionId}
       data-stage={stage}
@@ -210,60 +180,6 @@ export function ChapterFourStarLampClosure({
     >
       <LampLayers stage={stage} onPlaybackFinished={finishPlayback} />
       <div className="chapter4-star-lamp-closure__vignette" aria-hidden="true" />
-
-      {stage === "questions" ? (
-        <div className="chapter4-star-lamp-closure__questions">
-          <QuestionColumn
-            side="purpose"
-            prompt={purposeQuestion.prompt}
-            options={purposeQuestion.options}
-            selectedAnswer={draftAnswers.purpose}
-            active={activeQuestion === "purpose"}
-            upcoming={false}
-            disabled={saving}
-            onSelect={(answer) => {
-              setDraftAnswers((current) => ({ ...current, purpose: answer }));
-              setActiveQuestion("person");
-            }}
-            onEdit={() => setActiveQuestion("purpose")}
-          />
-          <QuestionColumn
-            side="person"
-            prompt={personQuestion.prompt}
-            options={personQuestion.options}
-            selectedAnswer={draftAnswers.person}
-            active={activeQuestion === "person"}
-            upcoming={!draftAnswers.purpose}
-            disabled={saving || !draftAnswers.purpose}
-            onSelect={(answer) => {
-              setDraftAnswers((current) => ({ ...current, person: answer }));
-            }}
-            onEdit={() => setActiveQuestion("person")}
-          />
-
-          <div className="chapter4-star-lamp-closure__question-actions">
-            {saveError ? (
-              <p className="chapter4-star-lamp-closure__save-error" role="alert">
-                {saveError}
-              </p>
-            ) : null}
-            <button
-              type="button"
-              disabled={!draftComplete || saving}
-              onClick={submitAnswers}
-            >
-              {saving ? "正在保存…" : "保存回答并继续"}
-            </button>
-          </div>
-        </div>
-      ) : null}
-
-      {stage === "saved" ? (
-        <div className="chapter4-star-lamp-closure__saved" role="status" aria-live="polite">
-          回答已保存
-        </div>
-      ) : null}
-
 
       {stage === "final" ? (
         <div className="chapter4-star-lamp-closure__final" aria-live="polite">
@@ -329,64 +245,6 @@ function LampLayers({
       <img className="chapter4-star-lamp-closure__layer is-leds" src={lampLedsUrl} alt="" />
       <div className="chapter4-star-lamp-closure__flare" />
     </div>
-  );
-}
-
-function QuestionColumn<AnswerId extends string>({
-  side,
-  prompt,
-  options,
-  selectedAnswer,
-  active,
-  upcoming,
-  disabled,
-  onSelect,
-  onEdit
-}: Readonly<{
-  side: "purpose" | "person";
-  prompt: string;
-  options: readonly ChapterFourStarLampQuestionOption<AnswerId>[];
-  selectedAnswer: AnswerId | null;
-  active: boolean;
-  upcoming: boolean;
-  disabled: boolean;
-  onSelect: (answer: AnswerId) => void;
-  onEdit: () => void;
-}>) {
-  const selectedLabel = selectedAnswer ? labelForAnswer(options, selectedAnswer) : "";
-  const summaryLabel = side === "purpose" ? "求学所向" : "成人所守";
-  return (
-    <fieldset
-      className={`chapter4-star-lamp-closure__question is-${side}${active ? " is-active" : ""}${selectedAnswer && !active ? " is-complete" : ""}${upcoming ? " is-upcoming" : ""}`}
-      disabled={disabled}
-      aria-hidden={upcoming ? "true" : undefined}
-    >
-      {active || !selectedAnswer ? (
-        <>
-          <legend>{prompt}</legend>
-          <div className="chapter4-star-lamp-closure__options">
-            {options.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                className={option.id === selectedAnswer ? "is-selected" : ""}
-                aria-pressed={option.id === selectedAnswer}
-                onClick={() => onSelect(option.id)}
-              >
-                <span aria-hidden="true">{option.id === selectedAnswer ? "●" : "○"}</span>
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="chapter4-star-lamp-closure__question-summary">
-          <span>{summaryLabel}</span>
-          <strong>{selectedLabel}</strong>
-          <button type="button" onClick={onEdit}>修改</button>
-        </div>
-      )}
-    </fieldset>
   );
 }
 

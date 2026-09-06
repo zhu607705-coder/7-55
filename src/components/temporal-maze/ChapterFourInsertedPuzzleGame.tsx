@@ -11,6 +11,7 @@ import {
   type ChapterFourPowerEdgeId
 } from "../../modules/ChapterFourInsertedPuzzleModel";
 import { CHAPTER_FOUR_INSERTED_PUZZLE_ASSET_BY_ID } from "../../scenes/rpg/ChapterFourInsertedPuzzleAssets";
+import { ChapterFourPuzzlePreview } from "./ChapterFourPuzzlePreview";
 
 const DUTY_LABELS: Readonly<Record<ChapterFourDutyBoardCardId, string>> = {
   classroom_104: "104 教室",
@@ -125,9 +126,14 @@ export function ChapterFourInsertedPuzzleGame({
         </header>
 
         <div className="chapter4-inserted-puzzle__body">
-          <figure className="chapter4-inserted-puzzle__asset">
-            <img src={asset.url} alt={`${definition.locationLabel}的${definition.title}装置`} draggable={false} />
-            <figcaption>{observationOnly ? "观察残留痕迹" : "调整当前装置"}</figcaption>
+          <figure className={`chapter4-inserted-puzzle__asset${!observationOnly && !operationLocked && !completed ? " has-live-preview" : ""}`}>
+            {!observationOnly && !operationLocked && !completed ? <>
+              <figcaption><img src={asset.url} alt="" draggable={false} />装置近景 · 当前调节</figcaption>
+              <ChapterFourPuzzlePreview puzzleId={puzzleId} state={{ dutyOrder, archiveYearBand, archiveFloor, archivePurpose, mediaAlignment, calibration, powerEdges, evacuationOrder }} />
+            </> : <>
+              <img src={asset.url} alt={`${definition.locationLabel}的${definition.title}装置`} draggable={false} />
+              <figcaption>{completed ? "记录完成" : observationOnly ? "观察残留痕迹" : "扫描台尚未放入底片"}</figcaption>
+            </>}
           </figure>
 
           <div className="chapter4-inserted-puzzle__workspace">
@@ -315,14 +321,20 @@ function AxisControls<T extends Record<string, number>>({ values, labels, ranges
     <div className="chapter4-inserted-puzzle__axes">
       {(Object.keys(values) as Array<keyof T>).map((key) => {
         const [min, max] = ranges[key];
-        const display = key === rotationKey ? `${values[key] * 90}°` : `${values[key] > 0 ? "+" : ""}${values[key]}`;
+        const rotation = key === rotationKey;
+        const pressure = key === "pressure";
+        const vertical = key === "yOffset" || key === "vertical";
+        const decrease = rotation ? "逆时针" : pressure ? "抬起" : vertical ? "向上" : "向左";
+        const increase = rotation ? "顺时针" : pressure ? "压下" : vertical ? "向下" : "向右";
+        const unit = rotation ? "90°" : pressure ? "1档" : "1格";
+        const display = rotation ? `${values[key] * 90}°` : pressure ? `${values[key]}档` : `${values[key] > 0 ? "+" : ""}${values[key]}格`;
         return (
-          <label key={String(key)}>
+          <div key={String(key)} className="chapter4-inserted-puzzle__axis" role="group" aria-label={`${labels[key]}调节`}>
             <span>{labels[key]}</span>
-            <button type="button" disabled={disabled || values[key] <= min} onClick={() => onChange({ ...values, [key]: values[key] - 1 })}>−</button>
-            <output>{display}</output>
-            <button type="button" disabled={disabled || values[key] >= max} onClick={() => onChange({ ...values, [key]: values[key] + 1 })}>＋</button>
-          </label>
+            <button type="button" aria-label={`${labels[key]}${decrease}${unit}`} disabled={disabled || values[key] <= min} onClick={() => onChange({ ...values, [key]: values[key] - 1 })}>{decrease}<small>{unit}</small></button>
+            <output aria-label={`${labels[key]}当前值`}>{display}</output>
+            <button type="button" aria-label={`${labels[key]}${increase}${unit}`} disabled={disabled || values[key] >= max} onClick={() => onChange({ ...values, [key]: values[key] + 1 })}>{increase}<small>{unit}</small></button>
+          </div>
         );
       })}
     </div>

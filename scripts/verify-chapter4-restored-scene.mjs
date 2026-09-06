@@ -59,6 +59,22 @@ const checks = [
     assert.match(source, /CHASE_STAIR_HANDOFF_KEY/);
     assert.match(member('handleStoryIntentResolved'), /registry.remove\(CHASE_STAIR_HANDOFF_KEY\)/);
   }],
+  ['wall-face and entrance occlusion stay tied to player foot depth', () => {
+    assert.match(member('syncWallFaceOcclusion'), /visual\.playerRevealAlpha/);
+    assert.match(member('syncWallFaceOcclusion'), /PLAYER_TOP_DEPTH \+ 1/);
+    assert.match(member('syncMainEntranceForegroundDepth'), /MAIN_ENTRANCE_DOOR_RUNTIME\.sortY/);
+    assert.match(member('syncMainEntranceDoorRuntime'), /ensureMainEntranceDoorFrame/);
+    assert.match(member('destroyMainEntranceDoorRuntime'), /mainEntranceDoorBarrierCollider/);
+    assert.match(member('create'), /syncMainEntranceDoorRuntime\(true\)[\s\S]*syncWallFaceOcclusion\(\)/);
+    assert.match(member('update'), /syncMainEntranceDoorRuntime\(\)[\s\S]*syncWallFaceOcclusion\(\)/);
+  }],
+  ['alumni wall preserves authored floors, y-depth and portrait hit targets', () => {
+    assert.match(member('createAlumniHonorWallPortraits'), /getFloor\(figure\.floor\)/);
+    assert.match(member('createAlumniHonorWallPortraits'), /wallDisplayDepth/);
+    assert.match(member('createAlumniHonorWallPortraits'), /hitTarget\.on\("pointerdown"/);
+    assert.match(member('createAlumniHonorWallPortraits'), /this\.alumniWallObjects\.some/);
+    assert.match(member('createAlumniHonorWallPortraits'), /figure\.drawRuntimeFrame/);
+  }],
   ['scene does not submit final Zhu answers or lamp completion', () => assert.doesNotMatch(source, /type: "(?:submit_zhu_question_answers|complete_canruo_star_lamp)"/)],
   ['warmup keeps failure recovery and cancellation', () => {
     assert.match(member('retryRequiredWarmupPhase'), /phaseLoadRetryNotBeforeMs/);

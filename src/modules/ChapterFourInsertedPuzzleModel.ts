@@ -167,6 +167,12 @@ const POWER_EDGES: readonly ChapterFourPowerEdgeId[] = [
   "bakery_back_area__classroom_zone"
 ];
 
+// Authored registration marks used by both the device preview and controller judgment.
+export const CHAPTER_FOUR_DEVICE_REGISTRATION = Object.freeze({
+  media: Object.freeze({ xOffset: 2, yOffset: -1, rotationQuarterTurns: 1 }),
+  calibration: Object.freeze({ horizontal: -2, vertical: 1, pressure: 3 })
+});
+
 export function chapterFourInsertedPuzzleForTarget(
   targetId: string
 ): ChapterFourInsertedPuzzleId | null {
@@ -234,13 +240,13 @@ export function isChapterFourInsertedPuzzleAnswerCorrect(
         && answer.floor === "A3"
         && answer.purpose === "wayfinding";
     case "media_alignment":
-      return answer.xOffset === 2
-        && answer.yOffset === -1
-        && answer.rotationQuarterTurns === 1;
+      return answer.xOffset === CHAPTER_FOUR_DEVICE_REGISTRATION.media.xOffset
+        && answer.yOffset === CHAPTER_FOUR_DEVICE_REGISTRATION.media.yOffset
+        && answer.rotationQuarterTurns === CHAPTER_FOUR_DEVICE_REGISTRATION.media.rotationQuarterTurns;
     case "positioning_calibration":
-      return answer.horizontal === -2
-        && answer.vertical === 1
-        && answer.pressure === 3;
+      return answer.horizontal === CHAPTER_FOUR_DEVICE_REGISTRATION.calibration.horizontal
+        && answer.vertical === CHAPTER_FOUR_DEVICE_REGISTRATION.calibration.vertical
+        && answer.pressure === CHAPTER_FOUR_DEVICE_REGISTRATION.calibration.pressure;
     case "power_topology":
       return sameSet(answer.edgeIds, POWER_EDGES);
     case "evacuation_route":
