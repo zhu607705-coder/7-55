@@ -34,6 +34,8 @@ import { CHAPTER_FOUR_ELEVATOR_FLOOR_RECORDS, chapterFourElevatorCollectedRecord
 import { isChapterFourClockControlAvailable, isChapterFourPhaseTimeAligned, selectChapterFourClockTimeOptions, selectChapterFourRequiredClockTime, type ChapterFourClockTimeOption } from "../../modules/ChapterFourTimeControlModel";
 import { chapterFourInsertedPuzzleForTarget } from "../../modules/ChapterFourInsertedPuzzleModel";
 import { RPG_PIXEL_FONT_FAMILY, setRpgLogicalCameraZoom } from "./RpgRenderResolution";
+import { createChapterFourPaperPickupPresentation } from "./ChapterFourPaperPickupPresentation";
+import { ChapterFourClockMotion } from "./ChapterFourClockMotion";
 import { CHAPTER_FOUR_BAKERY_STAFF_TEXTURE_KEY, CHAPTER_FOUR_ELEVATOR_TEXTURE_KEY, CHAPTER_FOUR_FRONT_DESK_TEXTURE_KEY, CHAPTER_FOUR_WARMUP_PHASES, chapterFourWarmupPhaseForState, getChapterFourWarmupAssetsThroughPhase, getChapterFourWarmupPhaseAssets, getNextChapterFourWarmupPhase, queueChapterFourWarmupAsset, type ChapterFourWarmupAsset, type ChapterFourWarmupPhase } from "./ChapterFourWarmupAssets";
 import { CHAPTER_FOUR_INSERTED_PUZZLE_ASSETS } from "./ChapterFourInsertedPuzzleAssets";
 import { inspectChapterFourWarmupPhaseReadiness, runChapterFourWarmupAssetBatch, selectChapterFourWarmupRetryBlocker, type ChapterFourWarmupPriority } from "./ChapterFourWarmupLoadPolicy";
@@ -1287,6 +1289,8 @@ private liveReadySignature = "";
 private openingPaperSprite: Phaser.GameObjects.Sprite | null = null;
 
 private hallClockStateSprite: Phaser.GameObjects.Sprite | null = null;
+private hallClockMotion: ChapterFourClockMotion | null = null;
+private hallClockMotionFrame = "blank_face";
 
 private externalTimeOverlay: Phaser.GameObjects.Container | null = null;
 
@@ -1653,6 +1657,7 @@ create(): void {
   }
 
 update(_time: number, delta: number): void {
+    this.updateHallClockMotion(delta);
     if (this.guardCaptureActive) return;
     this.syncProjection();
     this.syncStairPreludeEffects(_time);
@@ -1743,8 +1748,9 @@ update(_time: number, delta: number): void {
     this.player.setVelocity(movement.x, movement.y).setDepth(chapterFourPlayerDepth(this.player.y));
     this.animator.update(movement, this.time.now);
     this.refreshProximity();
-    if (Phaser.Input.Keyboard.JustDown(this.interactKey) || this.interactionRequested) {
-      this.handleStoryOrTravelInteraction();
+    const spacePressed = Phaser.Input.Keyboard.JustDown(this.interactKey);
+    if (spacePressed || this.interactionRequested) {
+      this.handleStoryOrTravelInteraction(spacePressed);
     }
     this.interactionRequested = false;
     this.publishDebug();
@@ -2377,24 +2383,7 @@ private createAlumniHonorWallPortraits(): void {
         figure.portraitTextureKey
       ).setDisplaySize(figure.imageBounds.width, figure.imageBounds.height)
         .setDepth(wallDisplayDepth + 2);
-      const hitTarget = this.add.zone(
-        floor.offsetX + rectCenterX(figure.frameBounds),
-        rectCenterY(figure.frameBounds),
-        Math.max(52, figure.frameBounds.width),
-        Math.max(68, figure.frameBounds.height)
-      ).setDepth(wallDisplayDepth + 3).setInteractive({ useHandCursor: true });
-      hitTarget.on("pointerover", () => {
-        if (this.currentFloor === figure.floor && !this.isStoryInputLocked()) {
-          portrait.setTint(0xffe8a3);
-        }
-      });
-      hitTarget.on("pointerout", () => portrait.clearTint());
-      hitTarget.on("pointerdown", () => {
-        portrait.clearTint();
-        if (this.currentFloor !== figure.floor || this.isStoryInputLocked()) return;
-        this.openAlumniPanel(figure.targetId);
-      });
-      this.alumniWallObjects.push(matte, portrait, hitTarget);
+      this.alumniWallObjects.push(matte, portrait);
     }
   }
 
@@ -2404,6 +2393,8 @@ private openAlumniPanel(targetId: string): void {
       this.showRuntimeInteractionFailure(`unknown_alumni_target:${targetId}`);
       return;
     }
+    if (this.currentFloor !== figure.floor
+      || pointDistanceToRect(this.playerFootPoint(getFloor(figure.floor)), figure.frameBounds) > 72) return;
     this.closeAlumniPanel();
     this.alumniPanelFigure = figure;
     this.alumniPanel = this.add.container(0, 0).setScrollFactor(0).setDepth(10040);
@@ -6383,7 +6374,7 @@ private storySpatialResult(target: ProjectedTarget): {
     };
   }
 
-private handleStoryOrTravelInteraction(): void {
+private handleStoryOrTravelInteraction(spacePressed = false): void {
     const storyTarget = this.nearbyStoryTarget;
     const state = this.bridge.getState();
     const pendingHallClockAdjustment = storyTarget?.contract.id === "a1_hall_clock" && isChapterFourClockControlAvailable(state.chapter4);
@@ -6392,7 +6383,7 @@ private handleStoryOrTravelInteraction(): void {
       return;
     }
     if (this.nearbyAlumniFigure) {
-      this.openAlumniPanel(this.nearbyAlumniFigure.targetId);
+      if (spacePressed) this.openAlumniPanel(this.nearbyAlumniFigure.targetId);
       return;
     }
     if (storyTarget) {
@@ -8530,43 +8521,7 @@ private beginExternalTimeRejection(): void {
 
 private createExternalTimeOverlay(): void {
     this.destroyExternalTimeOverlay();
-    const labelStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontFamily: "'Fusion Pixel', monospace",
-      color: "#f7f1dc",
-      fontSize: "18px",
-      align: "center"
-    };
-    const overlay = this.add.container(480, 270).setScrollFactor(0).setDepth(12500);
-    const shade = this.add.rectangle(0, 0, 960, 540, 0x02060d, 0.84);
-    const panel = this.add.rectangle(0, 0, 660, 360, 0x0b1726, 0.98)
-      .setStrokeStyle(3, 0x8fe8ff, 0.9);
-    const externalTitle = this.add.text(-205, -125, "外部现场", {
-      ...labelStyle, color: "#9bb0c7", fontSize: "16px"
-    }).setOrigin(0.5);
-    const externalTime = this.add.text(-205, -60, "22:45", {
-      ...labelStyle, color: "#ffd36f", fontSize: "48px"
-    }).setOrigin(0.5);
-    const divider = this.add.rectangle(0, 0, 2, 238, 0x52708f, 0.76);
-    const phone = this.add.rectangle(205, 4, 230, 286, 0x111827, 1)
-      .setStrokeStyle(4, 0xd8e5f2, 0.9);
-    const phoneSpeaker = this.add.rectangle(205, -114, 54, 5, 0x61738a, 0.92);
-    const phoneTitle = this.add.text(205, -82, "手机状态栏 · 冻结", {
-      ...labelStyle, color: "#9bb0c7", fontSize: "14px"
-    }).setOrigin(0.5);
-    const phoneTime = this.add.text(205, -24, "07:55:23", {
-      ...labelStyle, color: "#f7f1dc", fontSize: "31px"
-    }).setOrigin(0.5);
-    const trust = this.add.text(205, 46, "不可信", {
-      ...labelStyle, color: "#ff786f", fontSize: "24px"
-    }).setOrigin(0.5);
-    const detail = this.add.text(0, 142, "外部时间与手机冻结时间冲突 · 签到提交已拒绝", {
-      ...labelStyle, color: "#8fe8ff", fontSize: "16px"
-    }).setOrigin(0.5);
-    overlay.add([
-      shade, panel, externalTitle, externalTime, divider,
-      phone, phoneSpeaker, phoneTitle, phoneTime, trust, detail
-    ]);
-    this.externalTimeOverlay = overlay;
+    this.externalTimeOverlay = createChapterFourPaperPickupPresentation(this);
   }
 
 private destroyExternalTimeOverlay(): void {
@@ -8675,6 +8630,7 @@ private beginFirstHallClockPullPresentation(): void {
   }
 
 private ensureHallClockStateSprite(frameName: string): void {
+    this.hallClockMotionFrame = frameName;
     if (!this.textures.exists("chapter4_clock_states")
       || !this.textures.get("chapter4_clock_states").has(frameName)) {
       throw new Error(`chapter4_clock_states_frame_missing:${frameName}`);
@@ -8696,6 +8652,34 @@ private ensureHallClockStateSprite(frameName: string): void {
       .setScale(registration.uniformScale)
       .setVisible(true)
       .setDepth(PLAYER_DEPTH_BASE - 180);
+    this.hallClockMotion ??= new ChapterFourClockMotion(this);
+    this.updateHallClockMotion(0);
+  }
+
+private updateHallClockMotion(delta: number): void {
+    const sprite = this.hallClockStateSprite;
+    if (!sprite?.active || !this.hallClockMotion) return;
+    const chapter = this.bridge.getState().chapter4;
+    const frame = this.hallClockMotionFrame;
+    const timeByFrame: Record<string, number> = {
+      "2245_missing_hour_hand": 22 * 3600 + 45 * 60,
+      "1225_missing_hour_hand": 12 * 3600 + 25 * 60,
+      "0754_calibrated": 7 * 3600 + 54 * 60,
+      "0755_complete": 7 * 3600 + 55 * 60
+    };
+    const running = frame === "gear_running" || chapter.factIds.includes("clock_gear_repaired");
+    // Cover baked pointers with an independent empty-face layer; retain the registered state frame for interaction bounds.
+    this.hallClockMotion.update(delta, {
+      x: sprite.x, y: sprite.y,
+      radius: FINAL_CLOCK_RUNTIME.visualRegistration.statePlateFaceRadius,
+      scale: FINAL_CLOCK_RUNTIME.visualRegistration.uniformScale,
+      depth: sprite.depth + 1,
+      visible: this.currentFloor === 1 && sprite.visible,
+      frame, seconds: timeByFrame[frame] ?? chapter.worldTimeSeconds,
+      running,
+      hasHourHand: !frame.includes("missing_hour_hand") && chapter.factIds.includes("hour_hand_installed"),
+      manualMinute: this.finalClockMinuteLine?.active === true || this.finalClockDragActive
+    });
   }
 
 private scheduleStoryPresentation(delayMs: number, callback: () => void): void {
@@ -9655,6 +9639,9 @@ private resetRestartLifecycleState(): void {
     this.lastPublishedStoryKeyboardAllowed = false;
     this.liveReadySignature = "";
     this.openingPaperSprite = null;
+    this.hallClockMotion?.destroy();
+    this.hallClockMotion = null;
+    this.hallClockMotionFrame = "blank_face";
     this.hallClockStateSprite = null;
     this.externalTimeOverlay = null;
     this.frontDeskAttendant = null;

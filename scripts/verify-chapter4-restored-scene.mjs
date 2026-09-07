@@ -68,10 +68,13 @@ const checks = [
     assert.match(member('create'), /syncMainEntranceDoorRuntime\(true\)[\s\S]*syncWallFaceOcclusion\(\)/);
     assert.match(member('update'), /syncMainEntranceDoorRuntime\(\)[\s\S]*syncWallFaceOcclusion\(\)/);
   }],
-  ['alumni wall preserves authored floors, y-depth and portrait hit targets', () => {
+  ['alumni wall preserves authored floors, depth and nearby Space interaction', () => {
     assert.match(member('createAlumniHonorWallPortraits'), /getFloor\(figure\.floor\)/);
     assert.match(member('createAlumniHonorWallPortraits'), /wallDisplayDepth/);
-    assert.match(member('createAlumniHonorWallPortraits'), /hitTarget\.on\("pointerdown"/);
+    assert.doesNotMatch(member('createAlumniHonorWallPortraits'), /setInteractive|pointerdown/);
+    assert.match(member('handleStoryOrTravelInteraction'), /if \(spacePressed\) this\.openAlumniPanel/);
+    assert.match(member('openAlumniPanel'), /this\.currentFloor !== figure\.floor/);
+    assert.match(member('openAlumniPanel'), /pointDistanceToRect[\s\S]*> 72/);
     assert.match(member('createAlumniHonorWallPortraits'), /this\.alumniWallObjects\.some/);
     assert.match(member('createAlumniHonorWallPortraits'), /figure\.drawRuntimeFrame/);
   }],

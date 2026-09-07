@@ -425,7 +425,7 @@ try {
   assert(sceneSource.includes("...CHAPTER_FOUR_CONTEXT_INTERACTION_TARGET_IDS"), "scene actionable sets must include all context targets");
   assert(
     sceneSource.includes("Phaser.Input.Keyboard.JustDown(this.interactKey)")
-      && sceneSource.includes("this.handleStoryOrTravelInteraction();"),
+      && sceneSource.includes("this.handleStoryOrTravelInteraction(spacePressed);"),
     "keyboard-binding-only check: Space must still enter the shared story/travel handler"
   );
   assert(
