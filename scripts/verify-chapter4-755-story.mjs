@@ -1050,11 +1050,12 @@ function validateTask7RuntimeSources(errors) {
     || !/const nearbyTravelCandidate\s*=\s*this\.projection\.phase\s*&&\s*OPENING_PHASES\.has\(this\.projection\.phase\)/.test(scene)) {
     errors.push("Task 7 opening phases must reject elevator and stair travel before request submission");
   }
-  if (!/createExternalTimeOverlay/.test(scene)
-    || !/setScrollFactor\(0\)\.setDepth\(12500\)/.test(scene)
-    || !/"22:45"/.test(scene)
-    || !/"07:55:23"/.test(scene)
-    || !/"不可信"/.test(scene)) {
+  const paperPickup = fs.readFileSync("src/scenes/rpg/ChapterFourPaperPickupPresentation.ts", "utf8");
+  if (!/this\.externalTimeOverlay = createChapterFourPaperPickupPresentation\(this\)/.test(scene)
+    || !/setScrollFactor\(0\)\.setDepth\(12500\)/.test(paperPickup)
+    || !/"22:45"/.test(paperPickup)
+    || !/"07:55:23"/.test(paperPickup)
+    || !/"时间不符"/.test(paperPickup)) {
     errors.push("Task 7 external-time rejection must render a visible locked close-up with both clock readings");
   }
   if (!/rpg_chapter4_story_input_lock_changed/.test(scene)
