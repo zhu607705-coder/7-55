@@ -141,7 +141,9 @@ if (import.meta.hot) {
 }
 
 window.render_game_to_text = () => JSON.stringify(summarizeGameState(gameStore.getState()));
-applyDeveloperCheckpointFromUrl(gameStore, window.location);
+if (import.meta.env.BASE_URL !== "/7-55/") {
+  applyDeveloperCheckpointFromUrl(gameStore, window.location);
+}
 
 if (import.meta.env.DEV) {
   (window as unknown as Record<string, unknown>).__game = {

@@ -18,7 +18,6 @@ import { DEVELOPER_PANEL_OPEN_KEY } from "./core/StorageKeys";
 import { selectFeatureAccess } from "./core/FeatureAccess";
 import type { GameState, QuestViewModel } from "./core/types";
 import { PhoneShell } from "./components/PhoneShell";
-import { DeveloperChannel } from "./components/DeveloperChannel";
 import { ChapterThreeOpeningOverlay } from "./components/ChapterThreeOpeningOverlay";
 import { LibraryStoryOverlay } from "./components/LibraryStoryOverlay";
 import { PresentationLayer } from "./components/PresentationLayer";
@@ -38,6 +37,11 @@ import {
   subscribePreloadedRpgGameHostModule
 } from "./scenes/rpg/RpgRuntimePreload";
 import { Chapter4PrologueRuntimeGate } from "./components/Chapter4PrologueRuntimeGate";
+
+const DEVELOPER_TOOLS_ENABLED = import.meta.env.BASE_URL !== "/7-55/";
+const DeveloperChannel = DEVELOPER_TOOLS_ENABLED
+  ? lazy(async () => ({ default: (await import("./components/DeveloperChannel")).DeveloperChannel }))
+  : null;
 
 const router = new SceneRouter(
   gameStore,
@@ -112,7 +116,7 @@ export function App() {
   const state = useSyncExternalStore(gameStore.subscribe, getSnapshot, getSnapshot);
   const batteryPrank = usePhoneBatteryPrank(eventBus, state);
   const [developerChannelOpen, setDeveloperChannelOpen] = useState(() => {
-    const open = readInitialDeveloperChannelOpen();
+    const open = DEVELOPER_TOOLS_ENABLED && readInitialDeveloperChannelOpen();
     setDeveloperInputBlocked(open);
     return open;
   });
@@ -480,12 +484,12 @@ export function App() {
             {chapterIntro}
             {!libraryStoryUsesPhone ? libraryStoryLayer : null}
           </main>
-          <DeveloperChannel
-            store={gameStore}
-            open={developerChannelOpen}
-            onOpenChange={handleDeveloperChannelOpenChange}
-            onCheckpointApplied={focusDeveloperCheckpointTarget}
-          />
+          {DeveloperChannel ? <Suspense fallback={null}><DeveloperChannel
+              store={gameStore}
+              open={developerChannelOpen}
+              onOpenChange={handleDeveloperChannelOpenChange}
+              onCheckpointApplied={focusDeveloperCheckpointTarget}
+            /></Suspense> : null}
         </Chapter4PrologueRuntimeGate>
       );
     }
@@ -505,12 +509,12 @@ export function App() {
         <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="rpg" />
         {chapterIntro}
         {!libraryStoryUsesPhone ? libraryStoryLayer : null}
-        <DeveloperChannel
-          store={gameStore}
-          open={developerChannelOpen}
-          onOpenChange={handleDeveloperChannelOpenChange}
-          onCheckpointApplied={focusDeveloperCheckpointTarget}
-        />
+        {DeveloperChannel ? <Suspense fallback={null}><DeveloperChannel
+            store={gameStore}
+            open={developerChannelOpen}
+            onOpenChange={handleDeveloperChannelOpenChange}
+            onCheckpointApplied={focusDeveloperCheckpointTarget}
+          /></Suspense> : null}
       </Chapter4PrologueRuntimeGate>
     );
   }
@@ -525,12 +529,12 @@ export function App() {
       {chapterIntro}
       {!libraryStoryUsesPhone ? libraryStoryLayer : null}
       <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="phone" />
-      <DeveloperChannel
-        store={gameStore}
-        open={developerChannelOpen}
-        onOpenChange={handleDeveloperChannelOpenChange}
-        onCheckpointApplied={focusDeveloperCheckpointTarget}
-      />
+      {DeveloperChannel ? <Suspense fallback={null}><DeveloperChannel
+          store={gameStore}
+          open={developerChannelOpen}
+          onOpenChange={handleDeveloperChannelOpenChange}
+          onCheckpointApplied={focusDeveloperCheckpointTarget}
+        /></Suspense> : null}
     </Chapter4PrologueRuntimeGate>
   );
 }
