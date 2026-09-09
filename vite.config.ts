@@ -127,6 +127,7 @@ export default defineConfig(({ mode }) => {
           }
         }
       : {
+          base: process.env.VITE_BASE_PATH || "/",
           plugins: [losslessRuntimeAssets(import.meta.dirname, false), react()],
           build: {
             target: BROWSER_BUILD_TARGET
