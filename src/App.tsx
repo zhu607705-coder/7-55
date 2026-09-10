@@ -321,6 +321,26 @@ export function App() {
     setActiveSurface("rpg");
   }
 
+  useEffect(() => {
+    if (!desktopGameplay || state.runtimeMode !== "rpg" || activeSurface !== "phone") return undefined;
+    const returnToRpgOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented || event.repeat
+        || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      const target = event.target;
+      if (target instanceof HTMLInputElement
+        || target instanceof HTMLTextAreaElement
+        || target instanceof HTMLSelectElement
+        || (target instanceof HTMLElement && target.isContentEditable)
+        || document.querySelector('[role="dialog"], [aria-modal="true"]')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      focusRpg();
+      window.requestAnimationFrame(() => focusSurfaceElement("rpg"));
+    };
+    window.addEventListener("keydown", returnToRpgOnEscape);
+    return () => window.removeEventListener("keydown", returnToRpgOnEscape);
+  }, [activeSurface, desktopGameplay, state.runtimeMode]);
+
   const handleDeveloperChannelOpenChange = useCallback((open: boolean) => {
     if (open && !developerChannelVisibleRef.current) {
       developerReturnSurfaceRef.current = activeSurfaceRef.current;
