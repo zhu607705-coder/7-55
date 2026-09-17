@@ -1,0 +1,5 @@
+.godot/
+generated/
+.generated-*/
+exports/
+*.tmp

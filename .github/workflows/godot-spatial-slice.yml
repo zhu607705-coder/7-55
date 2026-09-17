@@ -1,0 +1,58 @@
+name: Godot spatial slice
+on:
+  pull_request:
+    paths:
+      - "godot-port/**"
+      - "scripts/lib/static-ts-data.mjs"
+      - "scripts/*godot*.mjs"
+      - "src/scenes/rpg/TheaterInteriorModel.ts"
+      - "src/scenes/rpg/TheaterRuntimeContract.ts"
+      - "src/scenes/rpg/RpgPlayerTextures.ts"
+      - "src/assets/rpg/**"
+      - ".github/workflows/godot-spatial-slice.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          lfs: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Dynamic data boundaries and actual source conversion
+        run: |
+          node scripts/verify-godot-data.mjs
+          node scripts/export-godot-theater.mjs
+      - name: Install pinned official Godot editor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          name=Godot_v4.7.2-stable_linux.x86_64.zip
+          gh api repos/godotengine/godot-builds/releases/tags/4.7.2-stable > "$RUNNER_TEMP/release.json"
+          url=$(jq -r --arg n "$name" '.assets[] | select(.name == $n) | .browser_download_url' "$RUNNER_TEMP/release.json")
+          digest=$(jq -r --arg n "$name" '.assets[] | select(.name == $n) | .digest' "$RUNNER_TEMP/release.json")
+          [[ "$url" == "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$name" ]]
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          curl --fail --location --retry 3 "$url" -o "$RUNNER_TEMP/godot.zip"
+          echo "${digest#sha256:}  $RUNNER_TEMP/godot.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot-bin"
+          chmod +x "$RUNNER_TEMP/godot-bin/Godot_v4.7.2-stable_linux.x86_64"
+          echo "$RUNNER_TEMP/godot-bin" >> "$GITHUB_PATH"
+      - name: Import actual assets and run native dynamic checks
+        run: |
+          timeout 180 Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-port --editor --import
+          timeout 120 Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-port --script res://tests/smoke.gd
+      - name: Static checks after dynamic tests
+        run: |
+          node --check scripts/lib/static-ts-data.mjs
+          node --check scripts/export-godot-theater.mjs
+          timeout 30 Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-port --check-only --script res://scripts/player.gd
+          timeout 30 Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-port --check-only --script res://scripts/theater.gd
