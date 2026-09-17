@@ -3,6 +3,7 @@ import { SaveStore } from "./SaveStore";
 import type { GameState, GameStore } from "./types";
 import { DEVELOPER_ACTIVE_KEY } from "./StorageKeys";
 import { DEFAULT_PHONE_HOME_APP_ORDER } from "./PhoneHomeApps";
+import { createJsonSnapshotWriter } from "./state/JsonSnapshotWriter";
 
 export function createInitialGameState(): GameState {
   return {
@@ -440,23 +441,14 @@ export function createPersistentGameStore(storage?: Storage): GameStore {
   const persistedGame = saveStore.load(initial);
   const hydrated: GameState = persistedGame ?? initial;
   const store = createGameStore(hydrated);
-  let lastSnapshot = JSON.stringify(hydrated);
-
-  if (persistedGame) {
-    saveStore.save(hydrated);
-  }
-  store.subscribe(() => {
-    const state = store.getState();
-    const snapshot = JSON.stringify(state);
-    if (snapshot === lastSnapshot) {
-      return;
-    }
-    lastSnapshot = snapshot;
-    if (typeof window !== "undefined" && window.sessionStorage.getItem(DEVELOPER_ACTIVE_KEY)) {
-      return;
-    }
-    saveStore.save(state);
+  const writeSnapshot = createJsonSnapshotWriter({
+    initial: hydrated,
+    initialPersisted: persistedGame ? saveStore.save(hydrated) : true,
+    write: (state) => saveStore.save(state),
+    canWrite: () => typeof window === "undefined"
+      || !window.sessionStorage.getItem(DEVELOPER_ACTIVE_KEY)
   });
+  store.subscribe(() => { writeSnapshot(store.getState()); });
 
   return store;
 }
