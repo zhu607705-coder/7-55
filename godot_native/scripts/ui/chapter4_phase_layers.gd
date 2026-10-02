@@ -1,4 +1,5 @@
 extends RefCounted
+const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source ChapterFourTemporalMazeScene phase props and ChapterFourClockMotion.
 ## All clocks here are local presentation time; no story state is written.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
@@ -101,6 +102,7 @@ func _draw_objects(owner: RefCounted,canvas: CanvasItem,context: Dictionary,stat
 			if _depth(context,bounds.end.y+6,front):
 				owner._world(canvas,context)
 				var accepted: bool=bool(c.checkinCardAccepted) if target.targetId=="a1_campus_card_reader" else bool(c.checkinPaperAccepted)
+				Picker.record(canvas,[str(target.targetId)],bounds)
 				_draw_checkin(canvas,bounds,target.targetId=="a1_campus_card_reader",accepted)
 				owner._text(canvas,Vector2(bounds.get_center().x,bounds.position.y-8),"校园卡" if target.targetId=="a1_campus_card_reader" else "纸条",8,Color("f7f1dc")); canvas.draw_set_transform(Vector2.ZERO)
 		for student in [{"p":Vector2(582,700),"id":"student_phone_glance","flip":false},{"p":Vector2(1078,704),"id":"student_adjust_bag","flip":true},{"p":Vector2(1110,570),"id":"student_idle","flip":true}]:
@@ -171,6 +173,10 @@ func _draw_clock(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state:
 		canvas.draw_line(p,end,Color("d8edf0",0.96),3); canvas.draw_circle(end,8,Color("f2d47b",0.92)); canvas.draw_arc(end,8,0,TAU,32,Color("f7f1dc",0.98),2)
 	if running and not manual:
 		var unit: Vector2=Vector2.from_angle(fmod(floor(time),60)/60*TAU-PI/2); canvas.draw_line(p-unit*radius*0.18,p+unit*radius*0.83,Color("aa4932"),1)
+	for target: Dictionary in (canvas.get("targets") if canvas.has_method("_pick_target") else []):
+		if str(target.get("id","")).begins_with("a1_hall_clock"):
+			var b: Array=target.bounds
+			Picker.record(canvas,[str(target.id)],Rect2(b[0],b[1],b[2],b[3]))
 	canvas.draw_circle(p,3,Color("785128")); canvas.draw_circle(p-Vector2(0.5,0.5),1.7,Color("e0b569")); canvas.draw_set_transform(Vector2.ZERO)
 func _hand(canvas: CanvasItem,p: Vector2,angle: float,length: float,width: float,color: Color) -> void:
 	var end: Vector2=p+Vector2(sin(angle),-cos(angle))*length
@@ -198,6 +204,7 @@ func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state
 	for person in honor_figures(state):
 		if not _depth(context,162 if int(person.floor)==1 else 842,front): continue
 		var frame: Rect2=Room.rect(person.frameBounds); var image_bounds: Rect2=Room.rect(person.imageBounds)
+		Picker.record(canvas,[str(person.targetId)],frame)
 		owner._world(canvas,context)
 		if person.get("drawRuntimeFrame",false): canvas.draw_rect(frame,Color("281f18")); canvas.draw_rect(frame,Color("b8964d"),false,3)
 		canvas.draw_rect(image_bounds,Color("17191d")); canvas.draw_set_transform(Vector2.ZERO)
@@ -208,4 +215,11 @@ func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state
 			canvas.draw_texture_rect(portrait,Rect2(Vector2(context.origin)+(image_bounds.get_center()-dimensions/2)*float(context.zoom),dimensions*float(context.zoom)),false)
 	for person in support_people(state):
 		var p: Vector2=Room.point(person.position)
-		if _depth(context,p.y,front): _npc(owner,canvas,context,person.animation,p,float(person.uniformScale),elapsed_ms)
+		if _depth(context,p.y,front):
+			var def: Dictionary=npcs[person.animation]; var full:=Vector2(def.frameWidth,def.frameHeight); var dimensions:=full*float(person.uniformScale)
+			var tex: Texture2D=owner.texture(str(def.file).replace("src/assets/","res://assets/"))
+			if tex!=null:
+				var index: int=int(elapsed_ms*float(def.fps)/1000)%int(def.frameCount)
+				var columns: int=maxi(1,int(tex.get_width()/full.x))
+				Picker.record(canvas,[str(person.interactionAnchorId)],{"rect":Rect2(p-dimensions*Vector2(.5,1),dimensions),"texture":tex,"source":Rect2(Vector2((index%columns)*full.x,int(index/columns)*full.y),full)})
+			_npc(owner,canvas,context,person.animation,p,float(person.uniformScale),elapsed_ms)

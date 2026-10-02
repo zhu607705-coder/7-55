@@ -1,4 +1,5 @@
 extends RefCounted
+const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
@@ -173,6 +174,26 @@ func adjusted_collisions(base: Array,s: Dictionary) -> Array:
 		if not s.theaterHunt.admitted:
 			var entry: Dictionary=worlds.theater_interior.constants.THEATER_GATE_BLOCKER.duplicate(); entry.id="c3_dynamic_admission_gate"; out.append(entry)
 	return out
+func owns_pick_target(target: Dictionary,_state: Dictionary) -> bool:
+	var id: String=str(target.get("id",""))
+	return scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate"])
+
+func _pick_ids(entry: Dictionary,targets: Array) -> Array:
+	var id: String=str(entry.id)
+	if id.begins_with("program_") and not id.begins_with("program_flight_"): return ["theater_"+id]
+	if id in ["promo_empty","promo_active","promo_insert","promo_bubbles"]: return ["canteen-promo-board"]
+	if id=="ticket_reader": return ["theater_ticket_gate"]
+	if id=="prop_ghost": return ["theater_prop_box"]
+	if id=="return_worker": return ["auntie"]
+	var result: Array=[]
+	for target: Dictionary in targets:
+		var target_id: String=str(target.get("id",""))
+		if not target_id.begins_with("initial-"): continue
+		var point:=Vector2(float(target.position[0]),float(target.position[1]))
+		if target_id.begins_with("initial-seated-"): point.y+=30
+		if point.is_equal_approx(entry.get("point",Vector2.INF)): result.append(target_id)
+	return result
+
 func handles_target(target: Dictionary,_s: Dictionary) -> bool: return str(target.get("id","")).begins_with("theater_program_")
 func _foot(id: String,p: Vector2) -> Dictionary: return {"id":"c3_dynamic_"+id,"left":p.x-Metrics.FOOT_SIZE.x/2,"right":p.x+Metrics.FOOT_SIZE.x/2,"top":p.y-Metrics.FOOT_SIZE.y,"bottom":p.y}
 func _bounds(r: Dictionary) -> Rect2: return Rect2(r.left,r.top,r.right-r.left,r.bottom-r.top)
@@ -210,12 +231,18 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 			if entry.get("glow",false):
 				var pulse: float=_yoyo(clock_ms,820)
 				canvas.draw_circle(Vector2.ZERO,26*lerpf(.82,1.18,pulse),Color("2aaeff",.16)); canvas.draw_arc(Vector2.ZERO,26*lerpf(.82,1.18,pulse),0,TAU,32,Color("83e4ff",lerpf(.3,.9,pulse)),4)
+			if float(entry.get("alpha",1))>0.05:
+				var ids: Array=_pick_ids(entry,(canvas.get("targets") if canvas.has_method("_pick_target") else []))
+				# These surfaces use the exact current frame, pivot, scale and rotation.
+				Picker.record(canvas,ids,{"rect":Rect2(-size_value*entry.get("anchor",Vector2(.5,.5)),size_value),"texture":tex,"source":region,"transform":Transform2D(deg_to_rad(float(entry.get("angle",0))),Vector2.ONE*scale_value,0,point)})
 			canvas.draw_texture_rect_region(tex,Rect2(-size_value*entry.get("anchor",Vector2(.5,.5)),size_value),region,Color(1,1,1,clampf(float(entry.get("alpha",1)),0,1)))
 	elif entry.kind=="glow":
 		canvas.draw_rect(Rect2(-entry.size/2,entry.size),Color("9af4ff",entry.alpha))
 	elif entry.kind=="tray":
 		canvas.draw_style_box(_rounded(Color("9eabad"),Color("59686d"),3),Rect2(-11,-7,22,13)); canvas.draw_style_box(_rounded(Color("e7ece9"),Color.TRANSPARENT,2),Rect2(-9,-5,18,9))
 	elif entry.kind=="reader":
+		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-11,-13),Vector2(22,42)))
+		Picker.record(canvas,["theater_ticket_gate"],Rect2(point+Vector2(-17,-30.5),Vector2(34,25)))
 		canvas.draw_rect(Rect2(-11,-13,22,42),Color("263443")); canvas.draw_rect(Rect2(-11,-13,22,42),Color("101820"),false,3)
 		canvas.draw_rect(Rect2(-17,-30.5,34,25),Color("182431")); canvas.draw_rect(Rect2(-17,-30.5,34,25),Color("090f18"),false,3)
 		canvas.draw_rect(Rect2(-10,-24,20,8),Color("64e58d") if entry.admitted else Color("58d7f2",lerpf(.55,1,_yoyo(clock_ms,760))))

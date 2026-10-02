@@ -16,9 +16,9 @@ func click(control: Control) -> void:
 	check(control!=null,"Visible pointer target exists")
 	if not control:return
 	var point=control.get_global_rect().get_center()
-	var motion=InputEventMouseMotion.new();motion.position=point;root.push_input(motion,true)
+	var motion=InputEventMouseMotion.new();motion.position=point;Input.parse_input_event(motion)
 	for pressed in [true,false]:
-		var event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=pressed;root.push_input(event,true);await process_frame
+		var event=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=pressed;Input.parse_input_event(event);await process_frame
 	await frames()
 func drag(item: String) -> void:
 	if not shell.phone_chrome.inventory_open:await click(named("InventoryHandle"))
@@ -27,12 +27,12 @@ func drag(item: String) -> void:
 	check(source!=null and target!=null,"Source and full plant drop target exist")
 	if not source or not target:return
 	var start=source.get_global_rect().get_center();var end=target.get_global_rect().get_center()
-	var down=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.position=start;down.global_position=start;down.pressed=true;root.push_input(down,true);await process_frame
+	var down=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.position=start;down.global_position=start;down.pressed=true;Input.parse_input_event(down);await process_frame
 	var last=start
 	for i in range(1,13):
-		var point=start.lerp(end,i/12.0);var motion=InputEventMouseMotion.new();motion.position=point;motion.global_position=point;motion.relative=point-last;motion.button_mask=MOUSE_BUTTON_MASK_LEFT;root.push_input(motion,true);last=point;await process_frame
+		var point=start.lerp(end,i/12.0);var motion=InputEventMouseMotion.new();motion.position=point;motion.global_position=point;motion.relative=point-last;motion.button_mask=MOUSE_BUTTON_MASK_LEFT;Input.parse_input_event(motion);last=point;await process_frame
 	var payload=root.gui_get_drag_data();check(payload is Dictionary and payload.get("item")==item,"Real inventory drag started")
-	var up=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT;up.position=end;up.global_position=end;root.push_input(up,true);await frames()
+	var up=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT;up.position=end;up.global_position=end;Input.parse_input_event(up);await frames()
 func run() -> void:
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
@@ -59,13 +59,22 @@ func run() -> void:
 		if slider:
 			var point=slider.get_global_rect().position+Vector2(slider.get_global_rect().size.x*.5,3)
 			for pressed in [true,false]:
-				var e=InputEventMouseButton.new();e.position=point;e.global_position=point;e.button_index=MOUSE_BUTTON_LEFT;e.pressed=pressed;root.push_input(e,true);await process_frame
+				var e=InputEventMouseButton.new();e.position=point;e.global_position=point;e.button_index=MOUSE_BUTTON_LEFT;e.pressed=pressed;Input.parse_input_event(e);await process_frame
 		await frames(8)
 		check(float(state.d.ui.brightness)>=80,"Pointer raises the real brightness value")
 		check(state.d.flags.plantLit and state.d.flags.flowerBloomed,"Mounted source light effect triggers automatically behind overlay")
 		var count=actions.count("c1_plant_light");shell._refresh();await frames()
 		check(actions.count("c1_plant_light")==count,"Rebuild does not replay light or its sound")
 		shell._on_phone_action("native_control_center_close",null);await frames()
+		var plant_target:Control=named("BonsaiPlant");plant_target.grab_focus();await frames()
+		check(plant_target.has_focus() and plant_target.focus_anchor_source.is_finite(),"Plant has object-anchored keyboard focus without a boundary box")
+		for code in [KEY_ENTER,KEY_SPACE]:
+			named("BonsaiPlant").grab_focus();await frames()
+			var before_click=actions.count("c1_flower")
+			for pressed in [true,false]:
+				var key=InputEventKey.new();key.keycode=code;key.pressed=pressed;Input.parse_input_event(key);await process_frame
+			await frames()
+			check(actions.count("c1_flower")==before_click+1,"Keyboard activates only the visible flower action once")
 		await click(named("BonsaiPlant"))
 		check(state.d.native.get("flower_eight_visible",false),"Actual flower click reveals source8")
 		state.open_page("phone_home");await frames();state.open_page("bonsai");await frames()

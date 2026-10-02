@@ -64,10 +64,14 @@ func run() -> void:
 	state.native.mode="light"; state.canteenHunt.mode="light"; await drain()
 	check(seen("canteen_light_mode_enabled"),"light-mode cue is reachable")
 	at("canteen_interior","auntie"); act("c3_target:auntie")
+	var tray_started_ms:=Time.get_ticks_msec()
 	at("canteen_interior","tray_blue_01"); act("c3_target:tray_blue_01")
 	check(latest("canteen_tray_slide_started")=={"trayId":"tray_blue_01"},"actual tray pickup emits exact payload")
-	await create_timer(.4).timeout
-	check(seen("canteen_tray_slide_completed"),"source360ms tray completion sound is reached")
+	# The director schedules on monotonic time; a SceneTreeTimer can consume
+	# an already-long frame and return before the actual360ms cue deadline.
+	while not seen("canteen_tray_slide_completed") and Time.get_ticks_msec()-tray_started_ms<2000:
+		await process_frame
+	check(seen("canteen_tray_slide_completed") and Time.get_ticks_msec()-tray_started_ms>=360,"source360ms tray completion sound is reached")
 	state.canteenHunt.phase="menu_order"; at("canteen_interior","ordering_kiosk"); act("c3_order","A")
 	check(latest("canteen_order_wrong")=={"optionId":"A"},"wrong-order cue comes from accepted controller attempt")
 	at("canteen_interior","pickup_window_1"); act("c3_target:pickup_window_1")

@@ -82,7 +82,9 @@ func run() -> void:
 	check(chrome.acquisition.visible and chrome.recent_item=="occupancyNote","new ownership starts acquisition flight")
 	check(chrome._acquisition_icon.pixels==Chrome.PIXEL_ICONS.occupancyNote,"acquisition uses actual acquired item art")
 	chrome._activate_item("occupancyNote")
-	check(inspections.size()==2 and inspections.back().id=="occupancyNote","paper single-click opens document immediately")
+	check(inspections.size()==1,"paper single-click selects without opening")
+	chrome._activate_item("occupancyNote")
+	check(inspections.size()==2 and inspections.back().id=="occupancyNote","paper double-click opens document")
 	current.flags.codeScattered=true
 	current.digits.d1="0"; current.digits.d2=null; current.digits.d3="9"; current.digits.d4="8"
 	chrome.refresh(current)
@@ -128,8 +130,13 @@ func run() -> void:
 	chrome.set_input_blocked(false)
 	parent.scale=Vector2.ONE*0.8
 	check(chrome.get_global_transform().get_scale()==Vector2.ONE*0.8 and chrome.size==Vector2(424,854),"scaled mobile preserves logical geometry and uniform scale")
-	await create_timer(1.2).timeout
+	# The animation uses monotonic ticks, whereas SceneTreeTimer consumes frame
+	# delta (including an already-long frame). Wait on the animation's own clock.
+	var acquisition_started_ms:=roundi(chrome._acquisition_started*1000.0)
+	var acquisition_deadline_ms:=acquisition_started_ms+1151 # one ms clock-resolution margin
+	while Time.get_ticks_msec()<acquisition_deadline_ms: await process_frame
 	chrome._process(0)
+	print("ACQUISITION_DEADLINE ",JSON.stringify({"elapsed_ms":Time.get_ticks_msec()-acquisition_started_ms,"required_ms":1150}))
 	check(not chrome.acquisition.visible and chrome.recent_item.is_empty(),"acquisition clears after source1150ms")
 	current.items={}; chrome.refresh(current)
 	check(not chrome.inventory.visible,"empty inventory produces no handle")

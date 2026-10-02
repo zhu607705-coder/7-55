@@ -287,8 +287,12 @@ func test_interlude(s: Dictionary) -> void:
 	media.event.connect(func(id: String,value: Variant) -> void: act(s,id,value))
 	for clip: String in ["lake","stone","lobby","broadcast"]:
 		media.apply(act(s,"c35_listen",clip).media)
-		await create_timer(4.55).timeout
-		check(controller.interlude.voice_reviewed(s,clip),"actual audition completed "+clip+" "+str(media.current.snapshot())+" verified="+str(media.current.verified_ms))
+		# AudioServer uses its own playback clock. A SceneTreeTimer can expire
+		# before that clock reaches the source 80% threshold under load.
+		var deadline: int=Time.get_ticks_msec()+int(media.current.duration_ms)+5000
+		while not controller.interlude.voice_reviewed(s,clip) and Time.get_ticks_msec()<deadline:
+			await process_frame
+		check(controller.interlude.voice_reviewed(s,clip) and not media.current.fallback,"actual audition completed "+clip+" "+str(media.current.snapshot())+" verified="+str(media.current.verified_ms))
 	act(s,"c35_voice",["lake","stone","lobby","broadcast"])
 	if not await media.shutdown():
 		errors+=1

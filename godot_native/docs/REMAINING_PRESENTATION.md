@@ -13,9 +13,12 @@ The prior compact world-device visibility blocker is fixed and tested at390/430/
 - P00/P01 source palette, type roles, bell/clock motion, pressed states and notice placement were repaired and replayed through actual CUA. Opening audio layers and cancellation were independently checked in mixed PCM. Broader phone effects still require node-by-node acceptance.
 - Zjuding campus-WiFi mount eligibility and1500ms loading/blocked-entry/reentry behavior are restored; actual compact app navigation has been exercised. See `PHONE_ENTRY_LIFECYCLE.md`. Remaining app-specific overlays and transitions still need full-route acceptance.
 - WeChat attack/corruption and Tiyi anomaly clocks now survive Control Center and rebuilds, with source arrival/crash cues and cancellation. Focused source-boundary tests pass. Not every interruption branch has yet been replayed manually.
+- Chapter3.5 retry acceptance remains open: resubmitting solved photo/journal controls can still rewrite their completion details. A bounded source-idempotency fix is being verified separately; it is not included in this frozen increment.
 - The source mixer option shuffle is not reproduced. Required recipe selection is tested, but option-order behavior remains a source-parity item.
 - Compare each effect and lifecycle against its active source consumer rather than merely checking shared strings or screenshot assets.
 - Remaining app-specific spacing/texture differences need side-by-side running-source review at 430×860 and 390×844. The current cloud browser blocks the local original preview with `ERR_BLOCKED_BY_CLIENT`; no security setting was bypassed. Native screenshots have been reviewed independently.
+
+The current item targeting, optional comparison, photo material, virtual-run track/results and inline gamepad listing are documented in `INTERACTION_AND_COHESION.md`; each has its own automated and actual-input evidence boundary.
 
 ## World near-views and effects
 

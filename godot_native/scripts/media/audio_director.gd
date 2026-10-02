@@ -1,4 +1,5 @@
 extends Node
+const NativePrologueEffects = preload("res://scripts/media/native_prologue_effects.gd")
 ## Read-only presentation consumer. No autoload, controller, save or progression writes.
 ## The JSON is generated from the unchanged TypeScript catalogs at build time.
 signal subtitle(text: String, surface: String)
@@ -515,7 +516,8 @@ func stop_voice() -> void:
 func _play_effect(item: Dictionary, id: String) -> void:
 	if not _effects_allowed: return
 	var asset: String = str(item.get("asset", ""))
-	var stream: AudioStream = _tone_stream(item.tone) if item.get("tone") is Dictionary else _stream(asset, bool(item.get("loop", false)))
+	var stream: AudioStream = NativePrologueEffects.stream(id, asset)
+	if stream == null: stream = _tone_stream(item.tone) if item.get("tone") is Dictionary else _stream(asset, bool(item.get("loop", false)))
 	if stream == null: return
 	var player: AudioStreamPlayer = _player("sfx", asset, stream, item)
 	var entry: Dictionary = {"player":player,"asset":asset,"id":id,"gain":float(item.get("volume", .8)),"deadline":Time.get_ticks_msec()+maxi(1,int(item.durationMs)) if item.has("durationMs") else -1,"bus":""}

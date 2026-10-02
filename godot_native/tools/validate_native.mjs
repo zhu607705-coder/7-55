@@ -7,8 +7,8 @@ const executable=process.env.GODOT_BIN||'godot';
 const logs=[];
 function run(label,args,command=executable){
  const sandbox=fs.mkdtempSync(path.join(os.tmpdir(),'755-native-check-'));
- for(const folder of ['home','data','config','cache','state'])fs.mkdirSync(path.join(sandbox,folder));
- const env={...process.env,HOME:path.join(sandbox,'home'),XDG_DATA_HOME:path.join(sandbox,'data'),XDG_CONFIG_HOME:path.join(sandbox,'config'),XDG_CACHE_HOME:path.join(sandbox,'cache'),XDG_STATE_HOME:path.join(sandbox,'state'),GODOT_SILENCE_ROOT_WARNING:'1'};
+ for(const folder of ['data','config','cache','state'])fs.mkdirSync(path.join(sandbox,folder));
+ const env={...process.env,XDG_DATA_HOME:path.join(sandbox,'data'),XDG_CONFIG_HOME:path.join(sandbox,'config'),XDG_CACHE_HOME:path.join(sandbox,'cache'),XDG_STATE_HOME:path.join(sandbox,'state'),GODOT_SILENCE_ROOT_WARNING:'1'};
  const timeout=(label==='Godot asset import and editor parse'?20:label==='test_full_campaign.gd'?12:5)*60*1000;
  const r=spawnSync(command,args,{encoding:'utf8',maxBuffer:32*1024*1024,timeout,env});
  const text=(r.stdout||'')+(r.stderr||''); logs.push({label,status:r.status,output:text});
@@ -25,5 +25,6 @@ for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-direc
 }
 for(const relative of ['tests/verify_source_model_parity.mjs','tests/verify_canteen_defense_source.mjs','tests/verify_lake_branch_source.mjs'])run('Source oracle '+relative,[path.join(project,relative)],process.execPath);
 run('Phone entry source contracts', [path.join(project,'tests/verify_phone_entry_source.py')], 'python3');
+run('Photo brightness source lifecycle', [path.join(project,'tests/verify_photo_consumer_source.mjs')],process.execPath);
 run('Original SaveStore differential', [path.join(project,'tests/verify_save_migration.mjs')],process.execPath);
 if(process.env.GODOT_TEST_REPORT)fs.writeFileSync(process.env.GODOT_TEST_REPORT,JSON.stringify(logs,null,2));

@@ -1,4 +1,5 @@
 extends RefCounted
+const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-pixel furniture, residuals and bakery machinery. No progression writes.
 const Room = preload("res://scripts/games/chapter4_room204_model.gd")
 const PhaseLayers = preload("res://scripts/ui/chapter4_phase_layers.gd")
@@ -38,6 +39,14 @@ func tick(delta: float,state: Dictionary) -> void:
 	last_entities=current; placement_signature=signature; floor_id=c.get("floor","")
 	for id in moves.keys():
 		if clock_ms-float(moves[id].start)>=480: moves.erase(id)
+func owns_pick_target(id: String) -> bool:
+	return id.begins_with("a1_hall_clock") or id in ["a1_front_desk_attendant","a2_elevator_attendant","a3_reference_teacher","a1_bakery_inspection_lamp","a1_bakery_hour_hand_pickup","a1_noticeboard_paper","a1_campus_card_reader","a1_attendance_paper_slot"] or not phases.alumni.filter(func(person):return str(person.targetId)==id).is_empty()
+
+func register_frame(canvas: CanvasItem,ids: Array,sheet_id: String,frame_id: String,pos: Vector2,angle: float,scale_value: float) -> void:
+	var sheet: Dictionary=Room.data().sheets[sheet_id]; var frame: Dictionary=sheet.frames[frame_id]
+	var src: Rect2=Room.rect(frame.sourceTrim)
+	Picker.record(canvas,ids,{"rect":Rect2(src.position-Room.point(frame.pivot),src.size),"texture":texture(sheet.path),"source":src,"transform":Transform2D(deg_to_rad(angle),Vector2.ONE*scale_value,0,pos)})
+
 func _active(context: Dictionary,state: Dictionary) -> bool:
 	return context.get("scene_id","")=="duan_yongping_temporal_maze" and state.has("chapter4")
 func draw_back(canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
@@ -63,7 +72,9 @@ func draw_front(canvas: CanvasItem,context: Dictionary,state: Dictionary) -> voi
 		if state.chapter4.phase=="opening_handoff" and "opening_paper_at_noticeboard" in state.chapter4.factIds:
 			for a in source.floors[0].anchors:
 				if a.id=="a1_noticeboard_paper":
-					var r: Rect2=Room.rect(a.bounds); draw_frame(canvas,context,"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
+					var r: Rect2=Room.rect(a.bounds)
+					register_frame(canvas,["a1_noticeboard_paper"],"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
+					draw_frame(canvas,context,"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
 func _draw_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	var player: Vector2=context.get("player",Vector2.ZERO)
 	for e in Room.entities(state):
@@ -144,10 +155,12 @@ func _draw_bakery(canvas: CanvasItem,context: Dictionary,state: Dictionary,front
 	if not stopped:
 		var x: float=belt.position.x+6+fmod(motion/1040.0,1)*(belt.size.x-12); canvas.draw_rect(Rect2(Vector2(x-1.5,belt.position.y+2.5),Vector2(3,belt.size.y-5)),Color(0.92,0.97,1,0.64))
 	var lamp: Rect2=Room.rect(b.targetEntities[0].installationBounds)
+	Picker.record(canvas,["a1_bakery_inspection_lamp"],lamp)
 	var lit: bool="bakery_conveyor_lamp_inspected" in c.factIds
 	canvas.draw_rect(lamp,Color("ffd66b",0.72) if lit else Color("4d4330",0.34)); canvas.draw_rect(lamp,Color("fff1a8",0.92) if lit else Color("907b53",0.92),false,2)
 	canvas.draw_set_transform(Vector2.ZERO)
 	if ("bakery_hour_hand_exposed" in c.factIds or (stop_active and t>=520)) and "bakery_hour_hand_collected" not in c.factIds:
+		register_frame(canvas,["a1_bakery_hour_hand_pickup"],"chapter4_story_items","old_clock_hour_hand",Vector2(294,345),0,0.1)
 		draw_frame(canvas,context,"chapter4_story_items","old_clock_hour_hand",Vector2(294,345),0,0.1)
 		_world(canvas,context)
 		var glint: float=(1-cos(fmod(clock_ms/520,2)*PI))/2

@@ -112,7 +112,7 @@ func from_source(source: Dictionary, action: String, item: String = "") -> Dicti
 		result.radius = maxf(radius,Vector2(dx,dy).length()+4)
 	if source.has("width") and source.has("height"):
 		result.bounds = [float(source.x)-float(source.width)/2,float(source.y)-float(source.height)/2,float(source.width),float(source.height)]
-	for key: String in ["width","height","dropWidth","dropHeight","stand"]:
+	for key: String in ["width","height","dropWidth","dropHeight","stand","acceptedItems"]:
 		if source.has(key): result[key] = source[key]
 	return result
 

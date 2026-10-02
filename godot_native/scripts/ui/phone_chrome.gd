@@ -92,8 +92,7 @@ class PixelIcon extends Control:
 class InventorySlot extends "res://scripts/ui/inventory_item.gd":
 	signal combine_requested(from_id: String, to_id: String)
 	var artwork: Control
-	func _get_drag_data(_at_position: Vector2) -> Variant:
-		if item_id.is_empty(): return null
+	func _make_drag_preview() -> Control:
 		var ghost := Control.new()
 		ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var copy := PixelIcon.new()
@@ -102,8 +101,7 @@ class InventorySlot extends "res://scripts/ui/inventory_item.gd":
 		copy.size = Vector2(34,34)*1.15
 		copy.position = -copy.size/2.0
 		ghost.add_child(copy)
-		set_drag_preview(ghost)
-		return {"kind":"inventory_item","item":item_id}
+		return ghost
 	func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 		return data is Dictionary and data.get("kind")=="inventory_item" and data.get("item") is String and str(data.item)!=item_id
 	func _drop_data(at_position: Vector2, data: Variant) -> void:
@@ -183,8 +181,8 @@ var input_blocked := false
 var _built := false
 var _seen_inventory := false
 var _inventory_signature := ""
-var _last_tap_item := ""
-var _last_tap_ms := 0
+var _slot_ids: Array=[]
+var inventory_gestures := preload("res://scripts/ui/inventory_gesture.gd").new()
 var _bar_drag_start := 0.0
 var _bar_top_start := 0.0
 var _bar_dragging := false
@@ -409,21 +407,27 @@ func _refresh_inventory() -> void:
 		inventory_handle.add_theme_stylebox_override(part,box)
 	inventory_count.text=str(owned.size()); inventory_count.size=Vector2(_text_width(inventory_count.text,9)+12,15); inventory_count.position=Vector2(inventory_handle.size.x-inventory_count.size.x+8,-8)
 	var scroll_before:=inventory_scroll.scroll_vertical
-	for child in inventory_slots.get_children(): inventory_slots.remove_child(child); child.queue_free()
-	for id in owned:
-		var item: Dictionary=catalog.get(id,{"id":id,"name":id,"desc":""})
-		var slot:=InventorySlot.new(); slot.name="Item_"+id; slot.item_id=id; slot.tooltip_text=str(item.name)+"："+str(item.get("desc",""))
-		slot.custom_minimum_size=Vector2(52,52); slot.size=Vector2(52,52); slot.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
-		_set_button_style(slot,_style(Color("f5c542") if selected_item==id else Color("cfd3d9"),Color("101116"),2),_style(Color("e2e6ec"),Color("101116"),2))
-		inventory_slots.add_child(slot)
-		# Source inset highlights and shadows, inside the 2px ink outline.
-		for edge in [[Rect2(2,2,48,3),Color(1,1,1,0.35)],[Rect2(2,2,3,48),Color(1,1,1,0.35)],[Rect2(2,47,48,3),Color(0,0,0,0.18)],[Rect2(47,2,3,48),Color(0,0,0,0.18)]]:
-			var shade:=ColorRect.new(); shade.position=edge[0].position; shade.size=edge[0].size; shade.color=edge[1]; shade.mouse_filter=Control.MOUSE_FILTER_IGNORE; slot.add_child(shade)
-		slot.artwork=_make_icon(slot,id,34); slot.artwork.position=Vector2(9,9)
-		slot.pressed.connect(_activate_item.bind(id)); slot.gui_input.connect(_on_slot_input.bind(id)); slot.combine_requested.connect(func(from_id: String,to_id: String): items_combined.emit(from_id,to_id))
+	if _slot_ids!=owned:
+		_slot_ids=owned.duplicate()
+		for child in inventory_slots.get_children(): inventory_slots.remove_child(child); child.queue_free()
+		for id in owned:
+			var item: Dictionary=catalog.get(id,{"id":id,"name":id,"desc":""})
+			var slot:=InventorySlot.new(); slot.name="Item_"+id; slot.item_id=id; slot.tooltip_text=str(item.name)+"："+str(item.get("desc",""))
+			slot.custom_minimum_size=Vector2(52,52); slot.size=Vector2(52,52); slot.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+			_set_button_style(slot,_style(Color("f5c542") if selected_item==id else Color("cfd3d9"),Color("101116"),2),_style(Color("e2e6ec"),Color("101116"),2))
+			inventory_slots.add_child(slot)
+			# Source inset highlights and shadows, inside the 2px ink outline.
+			for edge in [[Rect2(2,2,48,3),Color(1,1,1,0.35)],[Rect2(2,2,3,48),Color(1,1,1,0.35)],[Rect2(2,47,48,3),Color(0,0,0,0.18)],[Rect2(47,2,3,48),Color(0,0,0,0.18)]]:
+				var shade:=ColorRect.new(); shade.position=edge[0].position; shade.size=edge[0].size; shade.color=edge[1]; shade.mouse_filter=Control.MOUSE_FILTER_IGNORE; slot.add_child(shade)
+			slot.artwork=_make_icon(slot,id,34); slot.artwork.position=Vector2(9,9)
+			slot.gestures=inventory_gestures
+			slot.selection_requested.connect(_select_inventory_item); slot.inspection_requested.connect(_inspect_inventory_item)
+			slot.drag_finished.connect(func(landed: bool): if not landed: get_node("/root/State").feedback.emit("没有落在可使用的物品上，道具仍在物品栏。"))
+			slot.combine_requested.connect(func(from_id: String,to_id: String): items_combined.emit(from_id,to_id))
+	for slot in inventory_slots.get_children():
+		_set_button_style(slot,_style(Color("f5c542") if selected_item==slot.item_id else Color("cfd3d9"),Color("101116"),2),_style(Color("e2e6ec"),Color("101116"),2))
 	var slots_height:=minf(260,owned.size()*60-8+4)
 	inventory_scroll.size=Vector2(62,slots_height)
-	inventory_slots.position=Vector2(0,2)
 	var tip:=str(catalog.get(selected_item,{}).get("name",""))
 	inventory_tip.text=tip; inventory_tip.position=Vector2(6,18+slots_height); inventory_tip.size=Vector2(60,15 if not tip.is_empty() else 0)
 	var height:=27+slots_height+(15 if not tip.is_empty() else 0)
@@ -436,6 +440,7 @@ func _toggle_inventory() -> void:
 	if _suppress_handle_click:
 		_suppress_handle_click=false
 		return
+	inventory_gestures.reset()
 	inventory_open=not inventory_open
 	if not inventory_open:
 		selected_item=""; item_selected.emit("")
@@ -443,21 +448,18 @@ func _toggle_inventory() -> void:
 	utility_requested.emit("inventory_toggle")
 
 func _activate_item(id: String) -> void:
-	var now:=Time.get_ticks_msec()
-	var paper: bool=inspect_kinds.get(id,{}).get("inspectKind","")=="paper"
-	if paper or (_last_tap_item==id and now-_last_tap_ms<=380):
-		_last_tap_item=""; item_selected.emit(""); inspect_requested.emit(catalog.get(id,{"id":id,"name":id})); return
-	_last_tap_item=id; _last_tap_ms=now
-	selected_item="" if selected_item==id else id
-	item_selected.emit(selected_item)
+	# Kept as a semantic tap entry point for existing callers/tests.
+	if inventory_gestures.tap(id,Vector2.ZERO,Time.get_ticks_msec()): _inspect_inventory_item(id)
+	else: _select_inventory_item(id)
+
+func _select_inventory_item(id: String) -> void:
+	selected_item=id
+	item_selected.emit(id)
 	_refresh_inventory()
 
-func _on_slot_input(event: InputEvent, id: String) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode in [KEY_ENTER,KEY_KP_ENTER]:
-			get_viewport().set_input_as_handled(); item_selected.emit(""); inspect_requested.emit(catalog.get(id,{"id":id,"name":id}))
-		elif event.keycode==KEY_SPACE:
-			get_viewport().set_input_as_handled(); selected_item="" if selected_item==id else id; item_selected.emit(selected_item); _refresh_inventory()
+func _inspect_inventory_item(id: String) -> void:
+	inventory_gestures.reset()
+	inspect_requested.emit(catalog.get(id,{"id":id,"name":id}))
 
 func _on_handle_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
@@ -495,7 +497,9 @@ func set_input_blocked(blocked: bool) -> void:
 	if not _built: return
 	status_right.disabled=blocked; task_button.disabled=blocked; inventory_handle.disabled=blocked
 	for child in inventory_slots.get_children(): child.disabled=blocked
-	if blocked: _bar_dragging=false
+	if blocked:
+		_bar_dragging=false; inventory_gestures.reset()
+		for child in inventory_slots.get_children(): child.cancel_gesture()
 
 func _start_acquisition(id: String) -> void:
 	recent_item=id; _acquisition_started=Time.get_ticks_msec()/1000.0

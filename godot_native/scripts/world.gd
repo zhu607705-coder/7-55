@@ -1,6 +1,7 @@
 extends Control
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
+const ObjectPicker = preload("res://scripts/world_object_picker.gd")
 const KayakVisual = preload("res://scripts/ui/kayak_visual.gd")
 ## Source-pixel exploration surface. No story facts are authored by rendering.
 var worlds: Dictionary = {}
@@ -71,6 +72,7 @@ var furniture_drag_preview: Label
 var presentation_actor_hidden := false
 var kayak_visual: RefCounted = KayakVisual.new()
 var lake_session: RefCounted
+var object_picker: RefCounted=ObjectPicker.new()
 
 func _ready() -> void:
 	clip_contents = true
@@ -117,6 +119,7 @@ func refresh_world() -> void:
 	if key == world_key and pending_teleport == Vector2.INF:
 		queue_redraw()
 		return
+	object_picker.clear()
 	world_key = key
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
@@ -426,7 +429,48 @@ func _update_camera() -> void:
 	if world_size.x < half.x*2: camera.x = world_size.x/2
 	if world_size.y < half.y*2: camera.y = world_size.y/2
 
+func register_object_surface(ids: Array, geometry: Dictionary) -> void:
+	object_picker.add(ids,geometry)
+
+func register_object_bounds(ids: Array, bounds: Rect2) -> void:
+	register_object_surface(ids,{"rect":bounds})
+
+func _ordered_targets() -> Array:
+	var ordered: Array=targets.duplicate()
+	# Coincident lake observation/operation surfaces share one physical object.
+	# Paint the existing mode-owned priority last, so visible order and input agree.
+	if scene_id=="qizhen_lake":
+		ordered.sort_custom(func(a: Dictionary,b: Dictionary) -> bool: return int(a.get("interaction_priority",0))<int(b.get("interaction_priority",0)) if int(a.get("interaction_priority",0))!=int(b.get("interaction_priority",0)) else targets.find(a)<targets.find(b))
+	return ordered
+
+func _record_plate_targets() -> void:
+	# Baked plate regions have no independent CanvasItem z order. Retain the
+	# existing click precedence where their authored regions overlap; do not
+	# invent depth or promote a target because an inventory item fits it.
+	var plate_targets: Array=targets.duplicate()
+	plate_targets.reverse()
+	for target: Dictionary in plate_targets:
+		if target.has("art") or target.get("follow_player",false): continue
+		if library_layers!=null and scene_id=="library_interior" and library_layers.owns_pick_target(str(target.get("id",""))): continue
+		if chapter3_layers!=null and chapter3_layers.owns_pick_target(target,State.d): continue
+		if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and chapter4_layers.owns_pick_target(str(target.get("id",""))): continue
+		var geometry: Dictionary
+		if target.has("bounds"):
+			var b=target.bounds
+			var rect: Rect2=Rect2(b[0],b[1],b[2],b[3]) if b is Array else _rect(b)
+			if scene_id=="dorm_hub": rect=Rect2(rect.position*.5+Vector2(245,0),rect.size*.5)
+			geometry={"rect":rect}
+		else:
+			# Unmeasured route anchors retain the existing 32px point affordance.
+			geometry={"center":_target_point(target),"radius":32.0}
+		object_picker.add([str(target.get("id",""))],geometry,false)
+
+func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
+	return object_picker.pick(point,targets,inventory_drop)
+
 func _draw() -> void:
+	object_picker.clear()
+	_record_plate_targets()
 	draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
 	if scene_id.is_empty(): return
 	var center := size/2
@@ -438,7 +482,8 @@ func _draw() -> void:
 	if library_layers!=null: library_layers.draw_back(self,layer_context,State.d)
 	if chapter4_layers != null: chapter4_layers.draw_back(self,layer_context,State.d)
 	var frame_set: Array = player_frames.get(facing,[])
-	for target in targets:
+	var ordered_targets: Array=_ordered_targets()
+	for target in ordered_targets:
 		if _target_point(target).y <= player.y: _draw_target(target,origin)
 	if not presentation_actor_hidden and kayak and kayak_texture:
 		var presentation: Dictionary=lake_session.actor_presentation() if lake_session!=null else {"offset":Vector2.ZERO,"scale":1.0,"alpha":1.0}
@@ -449,8 +494,12 @@ func _draw() -> void:
 		var dimensions := visual.size*zoom
 		var position := origin+visual.position*zoom
 		draw_ellipse_shadow(origin+(player+Vector2(0,39))*zoom,Vector2(19,6)*zoom)
+		var actor_ids: Array=[]
+		for target: Dictionary in targets:
+			if target.get("follow_player",false): actor_ids.push_front(str(target.id))
+		if not actor_ids.is_empty(): register_object_surface(actor_ids,{"rect":visual,"texture":frame,"flip_h":player_flip and facing=="side"})
 		draw_texture_rect(frame,Rect2(position+Vector2(dimensions.x,0) if player_flip and facing == "side" else position,Vector2(-dimensions.x,dimensions.y) if player_flip and facing == "side" else dimensions),false)
-	for target in targets:
+	for target in ordered_targets:
 		if _target_point(target).y > player.y: _draw_target(target,origin)
 	if chapter3_layers!=null: chapter3_layers.draw_front(self,layer_context,State.d)
 	if background:
@@ -520,6 +569,7 @@ func _draw_target(target: Dictionary, origin: Vector2) -> void:
 	var point := _target_point(target)+Vector2(float(offset[0]),float(offset[1]))
 	var scale_to_fit := minf(dimensions.x/texture.get_width(),dimensions.y/texture.get_height())
 	var drawn := Vector2(texture.get_size())*scale_to_fit*zoom
+	register_object_surface([str(target.get("id",""))],{"rect":Rect2(point-drawn/(2*zoom),drawn/zoom),"texture":texture})
 	draw_texture_rect(texture,Rect2(origin+point*zoom-drawn/2,drawn),false)
 
 func draw_ellipse_shadow(center: Vector2, extent: Vector2) -> void:
@@ -550,9 +600,7 @@ func _gui_input(event: InputEvent) -> void:
 			if chapter4_layers != null and scene_id == "duan_yongping_temporal_maze" and not chapter4_layers.pick_drag(point,State.d).is_empty():
 				move_target = Vector2.INF
 				return
-			var clicked: Dictionary = {}
-			for target in targets:
-				if point.distance_to(_target_point(target)) < 36: clicked = target; break
+			var clicked: Dictionary = _pick_target(point)
 			if not clicked.is_empty(): _try_interact(clicked)
 			else: move_target = point
 		accept_event()
@@ -613,20 +661,9 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 			_sync_player()
 			State.act(str(result.action),result.value)
 		return
-	var matching: Dictionary = {}
-	for target in targets:
-		if target.get("decorative",false): continue
-		var hit := point.distance_to(_target_point(target)) <= 32
-		if target.has("bounds"):
-			var bounds = target.bounds
-			var box: Rect2 = Rect2(bounds[0],bounds[1],bounds[2],bounds[3]) if bounds is Array else _rect(bounds)
-			if scene_id == "dorm_hub": box = Rect2(box.position*.5+Vector2(245,0),box.size*.5)
-			hit = box.has_point(point)
-		if hit:
-			matching = target
-			if str(target.get("item","")) == str(data.item): break
+	var matching: Dictionary = _pick_target(point,true)
 	if matching.is_empty(): State.feedback.emit("没有落在可使用的物品上，道具仍在物品栏。") ; return
-	if matching.has("item") and str(matching.item) != str(data.item): State.feedback.emit("这个物品不适合当前目标。") ; return
+	if (matching.has("item") and str(matching.item) != str(data.item)) or (not matching.get("acceptedItems",[]).is_empty() and str(data.item) not in matching.acceptedItems): State.feedback.emit("这个物品不适合当前目标。") ; return
 	State.select_item(str(data.item))
 	_try_interact(matching)
 

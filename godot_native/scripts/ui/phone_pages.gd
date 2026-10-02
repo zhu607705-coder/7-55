@@ -8,14 +8,17 @@ signal document_requested(config: Dictionary)
 const OpeningPresentation = preload("res://scripts/ui/native_opening_presentation.gd")
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const PhotoEvidence = preload("res://scripts/ui/photo_evidence_surface.gd")
 const WeatherIcon = preload("res://scripts/ui/native_weather_icon.gd")
 const TiyiIdentity = preload("res://scripts/ui/native_tiyi_identity.gd")
+const EndingResume = preload("res://scripts/ui/native_ending_resume.gd")
 const CheckinPage = preload("res://scripts/ui/native_checkin_page.gd")
 var checkin_page = CheckinPage.new()
 const HomeArt = preload("res://scripts/ui/phone_home_art.gd")
 const NativeLibrary = preload("res://scripts/ui/native_library_pages.gd")
 var native_library = NativeLibrary.new()
 const Cc98Login = preload("res://scripts/ui/cc98_login_page.gd")
+const Cc98Gamepad = preload("res://scripts/ui/cc98_gamepad_exchange.gd")
 var cc98_login = Cc98Login.new()
 const LakeApps = preload("res://scripts/ui/c3_lake_app_context.gd")
 var lake_apps = LakeApps.new()
@@ -93,6 +96,7 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 		match page:
 			"alarm": root = _alarm()
 			"desktop": root = _wake()
+			"ending": root = EndingResume.new().build(self)
 			"phone_home": root = _home()
 			"wechat": root = _wechat(view)
 			"system_chat": root = _conversation(view)
@@ -109,7 +113,7 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 			"photos": root = _photos(view)
 			"settings": root = _settings(view)
 			_: return null
-	var bare = page in ["alarm","desktop"]
+	var bare = page in ["alarm","desktop","ending"]
 	if not bare:
 		root.custom_minimum_size.y = maxf(APP_HEIGHT,root.custom_minimum_size.y)
 		root.size.y = root.custom_minimum_size.y
@@ -914,14 +918,24 @@ func _campus_card() -> Control:
 func _bonsai() -> Control:
 	var root = _base(Color("cfc3de"),APP_HEIGHT)
 	var plant = _image(root,"ui/bonsai_bloom.png" if s.flags.flowerBloomed else "ui/bonsai_bud.png",Rect2(0,-40/PHONE_SCALE,378,854/PHONE_SCALE))
+	plant.name="BonsaiArtwork"
 	plant.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	var stage = int(s.flags.plantWatered)+int(s.flags.plantLit)+int(s.flags.plantFertilized)
 	plant.pivot_offset = Vector2(189,463)
 	plant.scale = Vector2.ONE*(1.0+stage*.045)
-	# Source P10 makes the full plant image a drop surface; the three footer
-	# icons are observations, not extra generic action buttons.
+	# Invisible semantic plant silhouette measured on the two 941x1672 assets.
+	# Inversion follows the actual cropped/scaled artwork, including growth.
 	var button=DropButton.new(); button.name="BonsaiPlant"
 	button.position=Vector2.ZERO; button.size=Vector2(378,APP_HEIGHT)
+	button.hit_texture=plant
+	button.focus_anchor_source=Vector2(470,1290)
+	button.hit_polygons=[PackedVector2Array([
+		Vector2(451,701),Vector2(494,701),Vector2(507,765),Vector2(589,751),Vector2(597,771),Vector2(518,817),Vector2(494,846),Vector2(551,839),Vector2(607,838),Vector2(655,863),Vector2(575,909),Vector2(526,932),Vector2(593,941),Vector2(638,964),Vector2(639,1047),Vector2(621,1070),Vector2(605,1226),Vector2(563,1259),Vector2(386,1272),Vector2(329,1237),Vector2(315,1077),Vector2(290,1050),Vector2(289,963),Vector2(319,943),Vector2(392,931),Vector2(332,913),Vector2(282,924),Vector2(287,897),Vector2(337,865),Vector2(381,862),Vector2(427,885),Vector2(418,857),Vector2(369,830),Vector2(329,773),Vector2(341,765),Vector2(416,781),Vector2(459,817),Vector2(459,774),Vector2(445,749)
+	])]
+	if s.flags.flowerBloomed:
+		button.hit_polygons=[PackedVector2Array([
+			Vector2(424,447),Vector2(540,441),Vector2(585,461),Vector2(612,537),Vector2(563,593),Vector2(513,600),Vector2(532,643),Vector2(588,618),Vector2(593,599),Vector2(625,599),Vector2(634,637),Vector2(596,693),Vector2(655,665),Vector2(711,690),Vector2(743,739),Vector2(732,779),Vector2(686,829),Vector2(633,820),Vector2(690,883),Vector2(648,900),Vector2(615,894),Vector2(650,958),Vector2(625,955),Vector2(601,951),Vector2(628,981),Vector2(628,1051),Vector2(604,1077),Vector2(584,1235),Vector2(550,1257),Vector2(383,1257),Vector2(343,1230),Vector2(326,1078),Vector2(306,1050),Vector2(306,985),Vector2(335,964),Vector2(279,960),Vector2(270,942),Vector2(317,905),Vector2(286,886),Vector2(226,885),Vector2(225,864),Vector2(278,834),Vector2(234,807),Vector2(234,765),Vector2(255,748),Vector2(289,761),Vector2(309,810),Vector2(341,820),Vector2(326,741),Vector2(281,733),Vector2(240,711),Vector2(248,670),Vector2(235,648),Vector2(262,625),Vector2(274,585),Vector2(306,587),Vector2(324,562),Vector2(355,577),Vector2(373,576),Vector2(386,600),Vector2(416,627),Vector2(416,665),Vector2(389,692),Vector2(411,716),Vector2(446,709),Vector2(446,665),Vector2(423,623),Vector2(450,620),Vector2(479,647),Vector2(475,589),Vector2(432,587),Vector2(397,561),Vector2(396,527),Vector2(391,497),Vector2(423,485)
+		])]
 	for mode in ["normal","hover","pressed","focus"]: button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	button.item_dropped.connect(func(item): action_requested.emit("c1_plant",item))
 	button.pressed.connect(func(): action_requested.emit("c1_flower",null))
@@ -1193,6 +1207,7 @@ func _cc98_note_search(feed: Control) -> void:
 
 func _cc98_story(view: Dictionary) -> Control:
 	if not s.actOne.cc98Login.authenticated: return cc98_login.build(self)
+	if str(view.get("post", {}).get("id", "")) == "act-two-gamepad-market": return Cc98Gamepad.new().build(self, view)
 	var rows: Array = view.get("rows",[])
 	var root = _base(Color("f2f3f5"),maxf(500,750+rows.size()*164))
 	_panel(root,Rect2(0,0,378,57),Color("297b9b"))
@@ -1674,20 +1689,11 @@ func _photos(view: Dictionary) -> Control:
 		return root
 	_label(root,"IMG_0755.JPG",Rect2(17,64,217,35),21)
 	_label(root,"022 · 一层书库",Rect2(217,67,147,30),14,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
-	_image(root,"ui/photo-evidence/library_022_reflection.webp",Rect2(16,107,346,300))
-	var progress = clampf((72-float(s.ui.brightness))/52,0,1)
-	var readable = s.ui.libraryFinalsPuzzle.photoDimmed and float(s.ui.brightness)<=20
-	var glare = maxf(.08,.94-progress*.78) if not readable else 0.0
-	_panel(root,Rect2(16,107,346,300),Color(1,1,1,glare))
-	_panel(root,Rect2(179,166,171,209),Color(.95,.96,.95,.93),Color("89adb4"),1,1)
-	_label(root,"OCR　"+("LOCK" if readable else "SCAN"),Rect2(188,171,154,30),16,Color("518d85"))
-	_label(root,"书包标签\n高数教材 x1\n水杯 x1　充电器 x1\n半包纸 x1\n姓名：未检测到\n学号：未检测到\n人格：加载失败" if readable else "标签反光，无法识别\n▓▓▓▓▓▓\n▓▓▓▓▓▓\n▓▓▓▓▓▓",Rect2(188,207,150,160),15,Color("435957"))
-	var scan = _panel(root,Rect2(17,107+progress*285,344,2),Color("70babe"))
-	if not readable:
-		root.ready.connect(func():
-			var tween = scan.create_tween().set_loops()
-			tween.tween_property(scan,"modulate:a",.2,.6)
-			tween.tween_property(scan,"modulate:a",1.0,.6))
+	var evidence_surface = PhotoEvidence.new()
+	evidence_surface.position = Vector2(16,107)
+	evidence_surface.configure(float(s.ui.brightness),s.ui.libraryFinalsPuzzle,bool(s.native.get("settings",{}).get("reduced_motion",false)))
+	root.add_child(evidence_surface)
+	var readable: bool = evidence_surface.exposure.readable
 	_label(root,"控制中心亮度　%s%%" % int(s.ui.brightness),Rect2(22,419,333,35),19)
 	_label(root,"识别稳定，标签内容已锁定。" if readable else "光照太亮了，识别器无法对焦。" if float(s.ui.brightness)>56 else "标签边缘已出现，识别信号仍不稳定。",Rect2(22,457,333,56),18,MUTED)
 	var y = 527

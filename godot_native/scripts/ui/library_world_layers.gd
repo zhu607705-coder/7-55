@@ -1,4 +1,5 @@
 extends RefCounted
+const Picker=preload("res://scripts/world_object_picker.gd")
 ## LibraryInteriorScene's source-pixel replacement layers and timed prop motion.
 ## Runtime-only presentation; reads persisted facts but never creates them.
 var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/library-world-source.json"))
@@ -151,6 +152,9 @@ func paper_pose() -> Dictionary:
 func debug_snapshot() -> Dictionary:
 	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":collision_rect(),"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":receipt_ms,"staff":staff_pose(),"stampMs":stamp_ms}
 
+func owns_pick_target(id: String) -> bool:
+	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note"]
+
 func _context(canvas: CanvasItem,context: Dictionary) -> void:
 	canvas.draw_set_transform(context.get("origin",Vector2.ZERO),0,Vector2.ONE*float(context.get("zoom",1)))
 func _in_pass(depth: float,context: Dictionary,front: bool) -> bool:
@@ -181,6 +185,7 @@ func _draw_depth_pass(canvas: CanvasItem,context: Dictionary,state: Dictionary,f
 	if bag.visible and _in_pass(float(bag.depth),context,front): _draw_backpack(canvas,context,bag)
 	var p: Dictionary=state.get("ui",{}).get("libraryFinalsPuzzle",{})
 	if _in_pass(602,context,front) and ((p.get("backpackInspected",false) and not note_collected) or note_ms>=0):
+		if note_ms<0: Picker.record(canvas,["occupancy_note"],Rect2(1261,407,42,30))
 		_draw_paper(canvas,context,Vector2(1282,422-(48*_stepped(note_ms/420) if note_ms>=0 else 0)),"纸条",Color("e9dcae"),1-_stepped(note_ms/420) if note_ms>=0 else 1)
 	if _in_pass(625,context,front) and receipt_ms>=0:
 		_draw_paper(canvas,context,Vector2(1300+100*_stepped(receipt_ms/520),421),"022",Color("f1ead8"),1,6*_stepped(receipt_ms/520))
@@ -194,6 +199,7 @@ func _draw_shelf(canvas: CanvasItem,state: Dictionary) -> void:
 	for point: Array in source.shelf.outline:
 		vertices.append(Vector2(float(point[0])+shelf_offset,float(point[1])))
 		uv.append(Vector2(float(point[0])/art.get_width(),float(point[1])/art.get_height()))
+	Picker.record(canvas,["library_shelf_755"],{"polygon":vertices})
 	canvas.draw_polygon(vertices,PackedColorArray([Color.WHITE]),uv,art)
 	var known: bool=state.get("ui",{}).get("libraryFinalsPuzzle",{}).get("callNumberCollected",false) or shelf_collected
 	var center:=Vector2(563.5+shelf_offset,248)
@@ -260,9 +266,11 @@ func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> voi
 	_context(canvas,context)
 	var pose: Dictionary=staff_pose(); var scale_value: float=pose.scale
 	if _in_pass(float(source.frontDesk.staffDepth),context,front):
+		Picker.record(canvas,["front_desk"],{"rect":Rect2(Vector2(pose.position)-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value),"texture":staff_art,"source":Rect2(int(pose.frame)*96,0,96,128)})
 		canvas.draw_texture_rect_region(staff_art,Rect2(Vector2(pose.position)-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value),Rect2(int(pose.frame)*96,0,96,128))
 	if _in_pass(float(source.frontDesk.counterDepth),context,front):
 		var b: Dictionary=source.frontDesk.counterBounds; var region:=Rect2(b.left,b.top,b.width,b.height)
+		Picker.record(canvas,["front_desk"],region)
 		canvas.draw_texture_rect_region(art,region,region)
 	if _in_pass(float(source.frontDesk.serviceDepth),context,front): _draw_stamp_service(canvas)
 	if _in_pass(810,context,front):
@@ -271,6 +279,10 @@ func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> voi
 	canvas.draw_set_transform(Vector2.ZERO)
 func _draw_stamp_service(canvas: CanvasItem) -> void:
 	var at:=Vector2(334,594)
+	# Original LibraryInteriorScene's service zone: (0,8), 116×86.
+	# Active scan and ordinary service are affordances of this same object.
+	Picker.record(canvas,["identity_machine","front_desk"],Rect2(at+Vector2(-58,-35),Vector2(116,86)))
+	Picker.record(canvas,["identity_machine","front_desk"],Rect2(at+Vector2(5,-51),Vector2(92,22)))
 	var indicator: Color=Color("5ed68d") if lost_stage=="stamped" else Color("e1b953") if lost_stage in ["ready","scanning"] else Color("c96a5e")
 	var status: String={"missing_report":"等待报告","ready":"递交报告","scanning":"人工核验","stamped":"已盖章"}.get(lost_stage,"")
 	canvas.draw_rect(Rect2(at+Vector2(5,-51),Vector2(92,22)),Color("173b35",0.92)); canvas.draw_rect(Rect2(at+Vector2(5,-51),Vector2(92,22)),Color("7fa89b",0.9),false,2)

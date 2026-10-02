@@ -9,6 +9,7 @@ var phone_document_previous_focus: WeakRef
 var control_center: Control
 var control_builder: RefCounted
 var inspected_item_id := ""
+var inventory_gestures := preload("res://scripts/ui/inventory_gesture.gd").new()
 var phone_scroll: ScrollContainer
 var world_frame: PanelContainer
 var world: Control
@@ -55,6 +56,11 @@ var audio_director: Node
 var c3_scene_host: Control
 var library_story_host: Control
 var c3_narrative_host: Control
+const ObservationComparisonSession = preload("res://scripts/presentation/observation_comparison_session.gd")
+const ObservationComparisonView = preload("res://scripts/ui/observation_comparison_view.gd")
+var observation_comparison_session = ObservationComparisonSession.new()
+const PhotoBrightnessSession = preload("res://scripts/ui/photo_brightness_session.gd")
+var photo_brightness_session = PhotoBrightnessSession.new()
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const NativeFileDialogTheme = preload("res://scripts/ui/native_file_dialog_theme.gd")
@@ -308,6 +314,10 @@ func _layout() -> void:
 	phone.size = Vector2(430,860)
 	phone.position = Vector2(18,(available.y - 860*phone_scale)/2) if split else (available - phone.size*phone_scale)/2
 	phone.visible = not (mobile_world and not split)
+	# Compact RPG unmounts Photos; a visible desktop split keeps its session.
+	if not phone.visible: photo_brightness_session.reset()
+	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
+		photo_brightness_session.observe("photos",State.d.ui)
 	world_frame.visible = split or mobile_world
 	mobile_back.visible = mobile_world and not split and not is_instance_valid(active_game)
 	if mobile_world and not split:
@@ -394,6 +404,10 @@ func _refresh() -> void:
 		n.page="phone_home"
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
+	# Preserve the source Photos mount baseline behind Control Center overlays.
+	var photos_mounted := not (mobile_world and not _uses_split_layout())
+	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):
+		State.act("lib_dim_photo")
 	# A new phone destination starts at its top. Same-page state refreshes keep
 	# the player's scroll position, including open overlay/brightness updates.
 	if page != phone_scroll_page:
@@ -606,7 +620,10 @@ func _refresh_inventory_dock() -> void:
 		button.text = str(item.name)
 		button.custom_minimum_size = Vector2(86,48)
 		button.add_theme_font_size_override("font_size",14)
-		button.pressed.connect(func(): State.select_item(str(entry.id)); _inspect_item(entry))
+		button.gestures=inventory_gestures
+		button.selection_requested.connect(func(id: String): State.select_item(id))
+		button.inspection_requested.connect(func(_id: String): _inspect_item(entry))
+		button.drag_finished.connect(func(landed: bool): if not landed: State.feedback.emit("没有落在可使用的物品上，道具仍在物品栏。"))
 		inventory_buttons.add_child(button)
 
 func _inspect_item(item: Dictionary) -> void:
@@ -615,12 +632,13 @@ func _inspect_item(item: Dictionary) -> void:
 	var catalog = JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
 	var entry: Dictionary = catalog.get(str(item.id),{}) if catalog is Dictionary else {}
 	var document: Dictionary = entry.get("document",{})
-	var description := str(item.get("desc",""))
+	var description := str(item.get("desc","")) # Canonical observation prose; never derive hints from uses[].target
 	if not document.is_empty():
 		description = str(document.get("heading",item.name))+"\n\n"
 		for field in document.get("fields",[]): description += str(field.label)+"："+str(field.value)+"\n"
 		description += "\n"+"\n".join(document.get("body",[]))+"\n\n"+str(document.get("footer",""))
 	var text := _label(description,19)
+	text.name="InventoryObservation"
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(text)
 	box.add_child(_button("选择使用",func(): State.select_item(str(item.id)); _close_modal()))
@@ -642,7 +660,12 @@ func _show_inventory() -> void:
 		var item_entry: Dictionary = item.duplicate(true)
 		item_entry["id"] = item_id
 		item_entry["name"] = label
-		box.add_child(_button(label,func(): State.select_item(item_id); _inspect_item(item_entry)))
+		var item_button=load("res://scripts/ui/inventory_item.gd").new()
+		item_button.text=label; item_button.item_id=item_id; item_button.gestures=inventory_gestures; item_button.allow_drag=false
+		item_button.custom_minimum_size=Vector2(0,44)
+		item_button.selection_requested.connect(func(id: String): State.select_item(id))
+		item_button.inspection_requested.connect(func(_id: String): _inspect_item(item_entry))
+		box.add_child(item_button)
 		var desc := _label(str(item.get("desc",item.get("description",item.get("intro","")))),16)
 		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		box.add_child(desc)
@@ -657,11 +680,31 @@ func _show_journal() -> void:
 	var obj := _label("当前任务\n"+State.objective(),20)
 	obj.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(obj)
+	_refresh_observation_comparison()
+	if observation_comparison_session.available():
+		var compare := _button("线索对照",_show_observation_comparison)
+		compare.name = "JournalObservationCompare"
+		box.add_child(compare)
 	var log: Array = State.d.native.log
 	for index in range(log.size()-1,maxi(-1,log.size()-51),-1):
 		var row := _label(str(log[index].get("text","")),17)
 		row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		box.add_child(row)
+
+func _refresh_observation_comparison() -> void:
+	var documents: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
+	observation_comparison_session.refresh(State.d,State.content("items.config.json"),documents if documents is Dictionary else {})
+
+func _show_observation_comparison() -> void:
+	if is_instance_valid(active_game) or State.story_input_locked(): return
+	_refresh_observation_comparison()
+	if not observation_comparison_session.available(): return
+	var box := _modal_base("线索对照")
+	var comparison = ObservationComparisonView.new()
+	comparison.configure(observation_comparison_session)
+	comparison.close_requested.connect(_close_modal)
+	box.add_child(comparison)
+	comparison.call_deferred("_restore_focus","ObservationSlot0")
 
 func _show_form(action: Dictionary) -> void:
 	var box := _modal_base(str(action.get("label","输入")))
@@ -785,6 +828,15 @@ func _open_game(config: Dictionary) -> void:
 	add_child(active_game)
 	var finish := func(result: Dictionary):
 		var callback := str(config.get("on_success",config.get("callback","")))
+		# Tiyi retains its finished track while the existing chapter authority
+		# validates the unchanged ten-fix proof. Return only closes this view.
+		if path == "res://scripts/games/virtual_run.gd" and is_instance_valid(active_game) and active_game.has_method("resolve"):
+			var submitted_game: Control = active_game
+			if not callback.is_empty(): State.act(callback,result)
+			if is_instance_valid(submitted_game) and active_game == submitted_game:
+				submitted_game.resolve(bool(State.d.actOne.exerciseStarted))
+			_layout()
+			return
 		var node := active_game
 		active_game = null
 		if is_instance_valid(node): node.queue_free()
@@ -825,7 +877,13 @@ func _on_file_selected(path: String) -> void:
 func _feedback_world_active() -> bool:
 	return is_instance_valid(world) and is_instance_valid(world_frame) and world_frame.is_visible_in_tree() and not str(State.d.native.scene).is_empty() and not is_instance_valid(active_game)
 
+func _virtual_run_owns_feedback(message: String) -> bool:
+	if not is_instance_valid(active_game) or not active_game.has_method("owns_result_feedback"): return false
+	if str(active_game.get_script().resource_path) != "res://scripts/games/virtual_run.gd": return false
+	return active_game.owns_result_feedback(message)
+
 func _feedback(message: String,tone: String="system") -> void:
+	if _virtual_run_owns_feedback(message): return
 	if _scene_owns_feedback(message):
 		toast.text=""; toast_time=0; toast.hide()
 		_layout_toast()
@@ -899,6 +957,7 @@ func _setup_runtime_hosts() -> void:
 		State.action_completed.connect(audio_director.update_state)
 		audio_director.subtitle_timed.connect(func(text: String,surface: String,duration_ms: float,_tone: String):
 			if surface == "toast":
+				if _virtual_run_owns_feedback(text): return
 				_feedback(text,_tone)
 				if _feedback_world_active(): world.subtitle_left=maxf(.1,duration_ms/1000.0)
 				else: toast_time = maxf(.1,duration_ms/1000.0)
@@ -970,6 +1029,8 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	photo_brightness_session.reset()
+	observation_comparison_session.clear()
 	world_page_origin_scene=""
 	if is_instance_valid(world):
 		world.world_key=""; world.scene_id=""; world.pending_teleport=Vector2.INF

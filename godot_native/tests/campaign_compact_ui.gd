@@ -83,7 +83,7 @@ func pointer_button(point: Vector2,pressed: bool) -> void:
 	event.button_index=MOUSE_BUTTON_LEFT
 	event.button_mask=MOUSE_BUTTON_MASK_LEFT if pressed else 0
 	event.position=point; event.global_position=point; event.pressed=pressed
-	runner.root.push_input(event,true)
+	Input.parse_input_event(event)
 	await runner.process_frame
 
 func home() -> bool:
@@ -145,7 +145,7 @@ func drag_item(item: String,target_id: String) -> bool:
 		var motion:=InputEventMouseMotion.new()
 		motion.position=point; motion.global_position=point
 		motion.relative=point-previous; motion.button_mask=MOUSE_BUTTON_MASK_LEFT
-		runner.root.push_input(motion,true)
+		Input.parse_input_event(motion)
 		previous=point
 		await runner.process_frame
 	var payload: Variant=runner.root.gui_get_drag_data()
