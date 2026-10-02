@@ -1,0 +1,79 @@
+{
+  "kind": "native-ui-baseline-not-full-manual-acceptance",
+  "baseRecoveryCommit": "6239990e8037678f5780a33666083f1e0c74a520",
+  "engine": "Godot 4.6.3 official (Compatibility renderer)",
+  "runtimeFiles": 891,
+  "runtimeSha256": "28d5ba3a490d60d89cbfedaadbf11a17352b2155ffa8aa39ccc944344fb2f33b",
+  "aggregate": {
+    "stages": 90,
+    "failures": 0,
+    "warnings": 0,
+    "postAggregateChange": "One inherited trailing space removed; 30 phone-page checks and the exported native campaign reran on final content"
+  },
+  "focused": {
+    "independentUi": 783,
+    "compactOverlay": 184,
+    "theme": 54,
+    "phoneAfterWhitespace": 30
+  },
+  "exportedPack": {
+    "nativeFirstChecks": 21,
+    "nativeReloadChecks": 17,
+    "packedResources": 1658,
+    "browserRuntimeFiles": 0,
+    "nodeOnPath": false,
+    "browserSourcePresent": false,
+    "sourceCheckoutUsed": false,
+    "campaignChecks": 768,
+    "campaignTraceEntries": 1268,
+    "completedChapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "campaignFailures": 0,
+    "campaignIsManual": false,
+    "spatialSetupExplicit": true,
+    "runner": "Official Godot 4.6.3 runner; release template path-override policy retained"
+  },
+  "actualLinuxExecutable": {
+    "guiFreshAlarmToHome": true,
+    "realMouseAndKeyboard": true,
+    "secondProcessHomeRestored": true,
+    "saveSha256": "c6cc985649ad4b8c94ab999c078a44ca9eeb17b79c0277a0b93ce185b4dcc557",
+    "emptyWorkingDirectory": true,
+    "emptyExecutableSearchPath": true,
+    "audioDriver": "Dummy",
+    "audioAudibilityVerified": false,
+    "observedWarnings": [
+      "VSync mode change unsupported by cloud graphics driver"
+    ]
+  },
+  "graphicalSamples": {
+    "phoneModalEditors": 17,
+    "longFormPopups": 4,
+    "componentStates": 15,
+    "compactWorldAndChase": 15
+  },
+  "acceptanceLimits": [
+    "Full node-by-node manual CUA walkthrough remains open",
+    "Alarm/wake source palettes, big-button typography, subtitle scale and phone feedback toast still need correction and manual retest",
+    "Phone entry lifecycles, authored device near-views and other documented source-presentation gaps remain open",
+    "Physical Android/iPhone and Windows runtime not verified",
+    "No original-browser pixel-diff acceptance",
+    "No remote publication, merge or deployment in this batch"
+  ],
+  "exportedArtifacts": [
+    {
+      "name": "7-55-native.pck",
+      "bytes": 533884388,
+      "sha256": "de43ea522ed7d919ca6e249b045037fb8e8fa91067df65190f228307403c499d"
+    },
+    {
+      "name": "7-55-native.x86_64",
+      "bytes": 71075864,
+      "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "baseCommit": "69e26c0d402c30ec18f8ad6d2fdb69839c031247",
+  "runtimeFiles": 894,
+  "runtimeTreeSha256": "ac3fa9c6c7a855c7d8d83700915c49ddc46d225560fba1e4587d5809fd06b18e",
+  "aggregate": {
+    "stages": 95,
+    "failures": 0,
+    "warnings": 0
+  },
+  "exportedCampaign": {
+    "completedChapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "checks": 768,
+    "failures": 0,
+    "traceEntries": 1268,
+    "notManualPlaythrough": true,
+    "spatialSetupExplicit": true,
+    "externalHarnessOnly": true,
+    "runtimeOverrides": false
+  },
+  "nativeOnly": {
+    "firstChecks": 21,
+    "reloadChecks": 17,
+    "failures": 0,
+    "packedResources": 1664,
+    "browserRuntimeFiles": 0,
+    "emptyExecutableSearchPath": true,
+    "launchedOutsideSourceCheckout": true
+  },
+  "artifacts": [
+    {
+      "name": "7-55-native.pck",
+      "bytes": 533893488,
+      "sha256": "6612414af3c9183f535eef47978d826d39dd0a673beec962ba88baf95130fbd7"
+    },
+    {
+      "name": "7-55-native.x86_64",
+      "bytes": 71075864,
+      "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+    }
+  ],
+  "manual": {
+    "normalEarnedProfile": true,
+    "acceptedRenderedOpeningRows": [
+      "C1-001",
+      "C1-002",
+      "C1-003"
+    ],
+    "exercisedRows": 26,
+    "fullManualAcceptance": false,
+    "physicalSpeakerListening": false,
+    "actual390x844SavePickerExport": true
+  },
+  "exportScope": "Fresh Linux export; official Godot runner executes exported PCK only. New release executable GUI not separately rerun in this increment; actual CUA exercised the same frozen source project. Windows runtime not tested."
+}

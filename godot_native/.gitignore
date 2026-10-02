@@ -1,0 +1,11 @@
+.godot/
+exports/
+*.log
+# Recreated byte-for-byte from tracked original source by tools/sync_source.mjs.
+assets/*
+!assets/native/
+data/source/
+.screenshots/
+
+# Godot-generated import metadata is rebuilt from portable source assets.
+*.import

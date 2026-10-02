@@ -1,0 +1,404 @@
+{
+  "sources": [
+    {
+      "path": "src/App.tsx",
+      "sha256": "80423741ed73b814ed44c219ceba376bebea60d2e988686f1baa6df09bc78df0"
+    },
+    {
+      "path": "src/components/LibraryStoryOverlay.tsx",
+      "sha256": "8d388a250b6812f6fcb5421e5f798d689c0735157e8eeeba6942a689d8d010f9"
+    },
+    {
+      "path": "src/data/libraryFinalsStory.ts",
+      "sha256": "e65c2b8bd95e89815ba3823b03027035096cb0516f99c396133e8de5eb07977f"
+    },
+    {
+      "path": "src/data/library-finals.content.json",
+      "sha256": "e5a17a58e1bbf20fd2497f6d57957c57a947cec119a88f88ac4290b2f244868b"
+    },
+    {
+      "path": "src/modules/LibraryFinalsController.ts",
+      "sha256": "e655e11c29b4b884bc40538b4405a631c7dd242235c8057ddf2957315d86324f"
+    },
+    {
+      "path": "src/modules/AudioDirector.ts",
+      "sha256": "50a6c082522b3f25031a37a5cdf9fcd82820f2cab275725710f36098520d62bc"
+    }
+  ],
+  "eventMap": {
+    "library_route_unlocked": "library_route_unlocked",
+    "library_entered": "library_entered",
+    "library_occupied_seat_found": "library_occupied_seat_found",
+    "cc98_occupation_post_opened": "cc98_occupation_post_opened",
+    "library_catalog_match_found": "library_catalog_match_found",
+    "library_archived_rule_recovered": "library_archived_rule_recovered",
+    "library_front_desk_proof_request": "library_front_desk_proof_request",
+    "library_bag_nonperson_proof_issued": "library_bag_nonperson_proof_issued",
+    "tiyi_presence_proof_issued": "tiyi_presence_proof_issued",
+    "cc98_evidence_set_completed": "cc98_evidence_set_completed",
+    "cc98_top_ten_reached": "cc98_top_ten_reached",
+    "library_seat_release_pass_issued": "library_seat_release_pass_issued",
+    "library_backpack_evicted": "library_backpack_evicted",
+    "library_seat_recovered": "library_friend_contacted"
+  },
+  "delays": {
+    "library_bag_nonperson_proof_issued": 900
+  },
+  "confirmation": [
+    "cc98_evidence_set_completed"
+  ],
+  "sequenceCount": 12,
+  "lineCount": 53,
+  "ignoredUnresolvedSequenceIds": [
+    "library_route_unlocked"
+  ],
+  "separateOwner": {
+    "sequenceId": "library_friend_contacted",
+    "native": "scripts/presentation/c3_scene_session.gd",
+    "lineCount": 20
+  },
+  "sequences": {
+    "library_entered": [
+      {
+        "speaker": "玩家",
+        "text": "这里就是图书馆？",
+        "lineKey": "library_story_library_entered_01",
+        "durationMs": 2560
+      },
+      {
+        "speaker": "系统",
+        "text": "她最后留下入馆记录的地方。",
+        "lineKey": "library_story_library_entered_02",
+        "durationMs": 3160
+      },
+      {
+        "speaker": "玩家",
+        "text": "你朋友是管理员？",
+        "lineKey": "library_story_library_entered_03",
+        "durationMs": 2560
+      },
+      {
+        "speaker": "系统",
+        "text": "她不管馆内秩序。",
+        "lineKey": "library_story_library_entered_04",
+        "durationMs": 2560
+      },
+      {
+        "speaker": "玩家",
+        "text": "馆长？",
+        "lineKey": "library_story_library_entered_05",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "也不在馆长名册里。",
+        "lineKey": "library_story_library_entered_06",
+        "durationMs": 2680
+      },
+      {
+        "speaker": "玩家",
+        "text": "所以是？",
+        "lineKey": "library_story_library_entered_07",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "一个座位，一层书库 022。",
+        "lineKey": "library_story_library_entered_08",
+        "durationMs": 3160
+      },
+      {
+        "speaker": "玩家",
+        "text": "……",
+        "lineKey": "library_story_library_entered_09",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "上次见面时，她就在 022。",
+        "lineKey": "library_story_library_entered_10",
+        "durationMs": 3160
+      },
+      {
+        "speaker": "玩家",
+        "text": "以前？",
+        "lineKey": "library_story_library_entered_11",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "这张记录没有固定时长。先去闸机核对入馆时间。",
+        "lineKey": "library_story_library_entered_12",
+        "durationMs": 4240
+      }
+    ],
+    "library_occupied_seat_found": [
+      {
+        "speaker": "书包",
+        "text": "……",
+        "lineKey": "library_story_library_occupied_seat_found_01",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "旁白",
+        "text": "022 被一个书包占着，桌上的纸条写着“主人马上回来”。",
+        "lineKey": "library_story_library_occupied_seat_found_02",
+        "durationMs": 4840
+      },
+      {
+        "speaker": "玩家",
+        "text": "它把座位占了。",
+        "lineKey": "library_story_library_occupied_seat_found_03",
+        "durationMs": 2440
+      },
+      {
+        "speaker": "系统",
+        "text": "先别碰。去 CC98 查三分钟离座的规则。",
+        "lineKey": "library_story_library_occupied_seat_found_04",
+        "durationMs": 3880
+      }
+    ],
+    "cc98_occupation_post_opened": [
+      {
+        "speaker": "系统",
+        "text": "先看这条讨论，确认三分钟离座的规则。",
+        "lineKey": "library_story_cc98_occupation_post_opened_01",
+        "durationMs": 3760
+      },
+      {
+        "speaker": "玩家",
+        "text": "查到以后呢？",
+        "lineKey": "library_story_cc98_occupation_post_opened_02",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "拿到规则，再补齐恢复 022 的证明。",
+        "lineKey": "library_story_cc98_occupation_post_opened_03",
+        "durationMs": 3640
+      }
+    ],
+    "library_catalog_match_found": [
+      {
+        "speaker": "旁白",
+        "text": "书名、索书号和 022 的记录都能对上。",
+        "lineKey": "library_story_library_catalog_match_found_01",
+        "durationMs": 3760
+      },
+      {
+        "speaker": "系统",
+        "text": "去一层书库 755 号书架背面找旧版规则。",
+        "lineKey": "library_story_library_catalog_match_found_02",
+        "durationMs": 3880
+      }
+    ],
+    "library_archived_rule_recovered": [
+      {
+        "speaker": "系统",
+        "text": "旧版离座规则找到了。",
+        "lineKey": "library_story_library_archived_rule_recovered_01",
+        "durationMs": 2800
+      },
+      {
+        "speaker": "玩家",
+        "text": "坏消息？",
+        "lineKey": "library_story_library_archived_rule_recovered_02",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "它要求三项证明。",
+        "lineKey": "library_story_library_archived_rule_recovered_03",
+        "durationMs": 2560
+      },
+      {
+        "speaker": "玩家",
+        "text": "书包还要核验身份？",
+        "lineKey": "library_story_library_archived_rule_recovered_04",
+        "durationMs": 2680
+      },
+      {
+        "speaker": "系统",
+        "text": "规则只认已经留下的材料。",
+        "lineKey": "library_story_library_archived_rule_recovered_05",
+        "durationMs": 3040
+      },
+      {
+        "speaker": "系统",
+        "text": "座位小票、到馆证明、书包非本人证明。",
+        "lineKey": "library_story_library_archived_rule_recovered_06",
+        "durationMs": 3760
+      },
+      {
+        "speaker": "玩家",
+        "text": "……",
+        "lineKey": "library_story_library_archived_rule_recovered_07",
+        "durationMs": 2400
+      }
+    ],
+    "library_front_desk_proof_request": [
+      {
+        "speaker": "前台",
+        "text": "请说明要处理的物品。",
+        "lineKey": "library_story_library_front_desk_proof_request_01",
+        "durationMs": 2800
+      },
+      {
+        "speaker": "玩家",
+        "text": "022 的占座书包。",
+        "lineKey": "library_story_library_front_desk_proof_request_02",
+        "durationMs": 2680
+      },
+      {
+        "speaker": "前台",
+        "text": "请先提交书包非本人证明。",
+        "lineKey": "library_story_library_front_desk_proof_request_03",
+        "durationMs": 3040
+      },
+      {
+        "speaker": "玩家",
+        "text": "书包也要做身份核验？",
+        "lineKey": "library_story_library_front_desk_proof_request_04",
+        "durationMs": 2800
+      },
+      {
+        "speaker": "前台",
+        "text": "系统里，它目前登记为座位使用者。",
+        "lineKey": "library_story_library_front_desk_proof_request_05",
+        "durationMs": 3520
+      }
+    ],
+    "library_bag_nonperson_proof_issued": [
+      {
+        "speaker": "系统",
+        "text": "盖章完成。书包不再算 022 的使用者。",
+        "lineKey": "library_story_library_bag_nonperson_proof_issued_01",
+        "durationMs": 3760
+      },
+      {
+        "speaker": "玩家",
+        "text": "我今天跑的证明比上课还多。",
+        "lineKey": "library_story_library_bag_nonperson_proof_issued_02",
+        "durationMs": 3160
+      }
+    ],
+    "tiyi_presence_proof_issued": [
+      {
+        "speaker": "体艺",
+        "text": "补录成功。",
+        "lineKey": "library_story_tiyi_presence_proof_issued_01",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "体艺",
+        "text": "入馆和到馆时间已写入记录。",
+        "lineKey": "library_story_tiyi_presence_proof_issued_02",
+        "durationMs": 3160
+      },
+      {
+        "speaker": "系统",
+        "text": "到馆证明拿到了。",
+        "lineKey": "library_story_tiyi_presence_proof_issued_03",
+        "durationMs": 2560
+      },
+      {
+        "speaker": "玩家",
+        "text": "终于有一项证明的是我自己。",
+        "lineKey": "library_story_tiyi_presence_proof_issued_04",
+        "durationMs": 3160
+      },
+      {
+        "speaker": "系统",
+        "text": "还差座位小票。",
+        "lineKey": "library_story_tiyi_presence_proof_issued_05",
+        "durationMs": 2440
+      }
+    ],
+    "cc98_evidence_set_completed": [
+      {
+        "speaker": "玩家",
+        "text": "好了，证据齐了。现在图书馆会处理了吧？",
+        "lineKey": "library_story_cc98_evidence_set_completed_01",
+        "durationMs": 3880
+      },
+      {
+        "speaker": "系统",
+        "text": "还差公开确认。图书馆 App 只读取十大帖的四位热度口令。",
+        "lineKey": "library_story_cc98_evidence_set_completed_02",
+        "durationMs": 4840
+      },
+      {
+        "speaker": "玩家",
+        "text": "bd 到底是什么？",
+        "lineKey": "library_story_cc98_evidence_set_completed_03",
+        "durationMs": 2560
+      },
+      {
+        "speaker": "系统",
+        "text": "bd 是“帮顶”。在一条数字回复上点 bd，数字就会按顺序写入口令。",
+        "lineKey": "library_story_cc98_evidence_set_completed_04",
+        "durationMs": 5440
+      }
+    ],
+    "cc98_top_ten_reached": [
+      {
+        "speaker": "旁白",
+        "text": "帖子到了第一，022 的恢复申请入口开放。",
+        "lineKey": "library_story_cc98_top_ten_reached_01",
+        "durationMs": 4000
+      }
+    ],
+    "library_seat_release_pass_issued": [
+      {
+        "speaker": "系统",
+        "text": "清退凭证生成。带它回 022。",
+        "lineKey": "library_story_library_seat_release_pass_issued_01",
+        "durationMs": 3280
+      },
+      {
+        "speaker": "玩家",
+        "text": "这次该把座位还给人了。",
+        "lineKey": "library_story_library_seat_release_pass_issued_02",
+        "durationMs": 2920
+      }
+    ],
+    "library_backpack_evicted": [
+      {
+        "speaker": "图书馆提示",
+        "text": "请占座物品离开 022。",
+        "lineKey": "library_story_library_backpack_evicted_01",
+        "durationMs": 2920
+      },
+      {
+        "speaker": "图书馆提示",
+        "text": "如需认领，请前往失物招领。",
+        "lineKey": "library_story_library_backpack_evicted_02",
+        "durationMs": 3160
+      },
+      {
+        "speaker": "书包",
+        "text": "主人马上回来。",
+        "lineKey": "library_story_library_backpack_evicted_03",
+        "durationMs": 2440
+      },
+      {
+        "speaker": "玩家",
+        "text": "什么时候？",
+        "lineKey": "library_story_library_backpack_evicted_04",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "书包",
+        "text": "三分钟。",
+        "lineKey": "library_story_library_backpack_evicted_05",
+        "durationMs": 2400
+      },
+      {
+        "speaker": "系统",
+        "text": "纸条上的这句话已经留了三天。",
+        "lineKey": "library_story_library_backpack_evicted_06",
+        "durationMs": 3280
+      }
+    ]
+  }
+}

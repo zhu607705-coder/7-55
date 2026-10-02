@@ -1,0 +1,77 @@
+{
+  "baseCommit": "35c37e264751410a2f672a2f13b62403f4972d4f",
+  "runtimeFiles": 899,
+  "runtimeTreeSha256": "cafa54e8f132eddf4cda40e2e98ab4b0c38e56b20ea367c4316ab48e84f95c6c",
+  "aggregate": {
+    "stages": 103,
+    "failures": 0,
+    "warnings": 0
+  },
+  "exportedCampaign": {
+    "completedChapters": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "checks": 792,
+    "failures": 0,
+    "traceEntries": 1296,
+    "notManualPlaythrough": true,
+    "spatialSetupExplicit": true,
+    "externalHarnessOnly": true,
+    "runtimeOverrides": false
+  },
+  "nativeOnly": {
+    "firstChecks": 25,
+    "reloadChecks": 21,
+    "failures": 0,
+    "packedResources": 1674,
+    "browserRuntimeFiles": 0,
+    "emptyExecutableSearchPath": true,
+    "launchedOutsideSourceCheckout": true
+  },
+  "standaloneLinuxGui": {
+    "actualCUA": true,
+    "freshOpeningToHome": true,
+    "saveAndNormalRestart": true,
+    "exactSaveBytesPreserved": true,
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  "graphicalFixtures": {
+    "loadingNoticeCaptures": 12,
+    "checks": 135,
+    "failures": 0,
+    "notManualCampaignProof": true
+  },
+  "manualScope": {
+    "mainRoute": "Chapter1 completed; Chapter2 reached movement_required",
+    "operatedAcceptanceRows": 41,
+    "totalPlannedRows": 551,
+    "formalRenderedAcceptedRows": 3,
+    "noDevOrStateSeedingInMainRoute": true,
+    "separateBranchRetest": "ordinary UI import of a previously player-earned export",
+    "fullManualCampaignCompleted": false
+  },
+  "limitations": [
+    "Cloud Linux execution only; no Windows runtime or physical mobile-device claim",
+    "Physical speaker listening not verified; mixed PCM and frame/sample evidence are separate",
+    "Five silent original prologue effect assets remain for a separately approved sound-design increment",
+    "Remaining gameplay/presentation and manual acceptance work continues"
+  ],
+  "artifacts": [
+    {
+      "file": "7-55-native.pck",
+      "bytes": 533909880,
+      "sha256": "204e21ef7c6fcdfcaa31e85aad98a8405e212290aecedbf94d3604c11c764f59"
+    },
+    {
+      "file": "7-55-native.x86_64",
+      "bytes": 71075864,
+      "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+    }
+  ]
+}
