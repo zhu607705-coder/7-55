@@ -28,6 +28,9 @@ func _journal_page(page: String) -> void:
 	page_requested.emit(page)
 
 func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
+	# Source P18 Photos switches its contents for the interlude. Keep the
+	# ordinary Home app route, but show its recovered frames in this phase.
+	if page=="photos" and s.qizhenLake.phase=="complete" and not s.chapterThreeInterlude.completed: page="c35_photos"
 	if page in ["c3_journal","c3_journal_camera"]: return journal_builder.build(page,_view,s)
 	if page not in ["c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network","c3_ticket_post"]: return null
 	state=s

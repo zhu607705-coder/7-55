@@ -19,6 +19,13 @@ func run() -> void:
 	activity.completed.connect(func(proof): owner.act("c4_closure_done",proof))
 	check(activity.stage=="questions" and activity.question_index==0,"Actual scene starts at first question")
 	check(activity.title.get_theme_color("font_color")==Color("edf4dc") and activity.body.get_theme_color("font_color")==Color("edf4dc"),"Question/title labels are legible on native dark background")
+	for rect in [Rect2(350,-120,260,800),Rect2(350,0,260,540),Rect2(350,30,260,800),Rect2(350,-900,260,800)]:
+		var region: Dictionary=activity._lamp_visible_region(rect,Vector2(512,2048))
+		if not rect.intersects(Rect2(0,0,960,540)): check(region.is_empty(),"Entirely offscreen artwork does not draw")
+		else:
+			check(Rect2(0,0,960,540).encloses(region.destination),"Camera-rise artwork is clipped within actual activity viewport")
+			check(Rect2(0,0,512,2048).encloses(region.source),"Clipped crop remains within original source artwork")
+			check((region.destination.size/region.source.size).distance_to(rect.size/Vector2(512,2048))<0.0001,"Clipping preserves original art scaling on both axes")
 	activity._answer("purpose","seek_truth"); await drain()
 	check(activity.stage=="questions" and activity.question_index==1 and not owner.d.chapter4.factIds.has("zhu_two_questions_answered"),"First answer shows second question without premature saved completion")
 	activity._answer("person","clear_minded"); await drain()

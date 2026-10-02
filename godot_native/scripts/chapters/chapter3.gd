@@ -154,13 +154,13 @@ func actions(page: String, s: Dictionary) -> Array:
 	match page:
 		"c3_campus_map": list.append(command("c3_walk_campus","进入校园地图"))
 		"c3_canteen":
+			if own(s,"badDrink"): list.append(command("c3_bad_drink","试饮难喝饮料"))
 			if c.phase not in ["chasing","theater_reached"] and s.native.scene!="canteen_interior": list.append(command("c3_open_map","查看校园地图"))
 			if c.phase=="theater_reached": list.append(command("c3_enter_theater","进入剧院"))
 			if c.phase=="exit_blocking": list.append(command("c3_defense","重新拦截纸条"))
 			if c.phase=="chasing": list.append(command("c3_chase","开始骑行" if c.chaseAttemptCount==0 else "重试骑行"))
 		"c3_mixer":
-			for item: String in RECIPE:
-				if own(s,item): list.append(command("c3_mix:"+item,{"blackCoffee":"倒入黑咖啡","sparklingWater":"倒入气泡水","lemonTea":"倒入柠檬茶"}[item]))
+			list.append(command("c3_target:canteen-mixer","查看混合台"))
 			if own(s,"badDrink"): list.append(command("c3_bad_drink","试饮"))
 		"c3_menu":
 			if c.phase=="menu_order":
@@ -176,17 +176,13 @@ func actions(page: String, s: Dictionary) -> Array:
 			if t.cc98TicketCommissionPhase=="posted": list.append(command("c3_ticket_accept",prose("chapter3-theater.content","cc98TicketCommission.acceptLabel")))
 			if t.cc98TicketCommissionPhase in ["accepted","first_wave_failed"]: list.append(command("c3_ticket_claim",prose("chapter3-theater.content","cc98TicketCommission.firstWaveLabel" if t.cc98TicketCommissionPhase=="accepted" else "cc98TicketCommission.secondWaveLabel")))
 			list.append(field("c3_network","连接网络",[option("campus_wifi","校园网"),option("cellular","移动数据"),option("offline","无网络")]))
-		"c3_kiosk": list.append(field("c3_ticket_code","输入取票码"))
+		"c3_kiosk": list.append(command("c3_target:theater_ticket_kiosk","查看取票机"))
 		"c3_theater":
 			if own(s,"theaterTicketHalfA") and own(s,"theaterTicketHalfB"): list.append(command("c3_ticket_combine","拼接两张票根"))
 			if t.phase=="spotlight_hunt": list.append(command("c3_spotlight","开始本幕"))
 			if t.phase=="reversal": list.append(command("c3_reversal","翻看纸条背面"))
 		"c3_program":
-			if t.phase=="program_search":
-				var inputs: Array = []
-				for index: int in range(3):
-					inputs.append({"id":"slot"+str(index),"label":"第 %d 位" % (index+1),"type":"choice","options":[option("opening","开场"),option("spotlight","追光"),option("finale","谢幕")]})
-				list.append({"id":"c3_program_submit","label":"提交节目顺序","inputs":inputs})
+			if t.phase=="program_search": list.append(command("c3_target:theater_light_console","查看灯控台"))
 	list.append_array(lake.actions(page,s))
 	list.append_array(interlude.actions(page,s))
 	return list
@@ -355,9 +351,13 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			return response(prose("chapter3-theater.content","cc98TicketCommission.deliveredFirstWaveReply" if wave==1 else "cc98TicketCommission.deliveredReply"))
 		"c3_ticket_code":
 			if t.phase!="entry_ticket" or not can_operate(s,"theater_interior","theater_ticket_kiosk"): return locked()
+			if str(value)=="0832" and t.cc98TicketCommissionPhase=="delivered" and (own(s,"theaterTicketHalfB") or own(s,"temporaryTheaterTicket")): return {"handled":true,"close_theater_device":true}
 			t.ticketCodeAttempts+=1
 			if str(value)!="0832": return locked(prose("chapter3-theater.content","ticket.codeWrong"))
-			if t.cc98TicketCommissionPhase!="delivered": return locked(prose("chapter3-theater.content","ticket.phoneReleaseRequired"))
+			if t.cc98TicketCommissionPhase!="delivered":
+				var pending: Dictionary=locked(prose("chapter3-theater.content","ticket.commissionRequired" if t.cc98TicketCommissionPhase=="posted" else "ticket.phoneReleaseRequired"))
+				pending["close_theater_device"]=true
+				return pending
 			if not own(s,"temporaryTheaterTicket"): s.items.theaterTicketHalfB=true
 			t.ticketCodeRead=true
 			return tell(s,"theater_printed","chapter3-theater.content","ticket.ticketPrinted")
@@ -367,9 +367,18 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			consume(s,"theaterTicketHalfB")
 			s.items.temporaryTheaterTicket=true
 			return tell(s,"theater_combined","chapter3-theater.content","ticket.combinedDialogue")
+		"c3_program_set":
+			if t.phase!="program_search" or not can_operate(s,"theater_interior","theater_light_console"): return locked()
+			if not value is Array or value.size()>3: return locked()
+			var unique_order: Array=[]
+			for id in value:
+				if not id is String or not t.collectedProgramIds.has(id) or unique_order.has(id): return locked()
+				unique_order.append(id)
+			t.programOrder=unique_order
+			return {"handled":true}
 		"c3_program_submit":
 			if t.phase!="program_search" or not can_operate(s,"theater_interior","theater_light_console"): return locked()
-			var order: Array = [value.get("slot0"),value.get("slot1"),value.get("slot2")] if value is Dictionary else parse_order(value)
+			var order: Array = t.programOrder.duplicate() if value==null else ([value.get("slot0"),value.get("slot1"),value.get("slot2")] if value is Dictionary else parse_order(value))
 			if order.size()!=3 or t.collectedProgramIds.size()!=3: return locked(prose("chapter3-theater.content","program.darkIncomplete"))
 			t.programOrder=order
 			if order!=PROGRAM_ORDER:
@@ -378,6 +387,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 				return tell(s,"theater_wrong_order","chapter3-theater.content","program.wrongDialogue")
 			for item: String in PROGRAM.values(): consume(s,item)
 			s.items.spotlightRemote=true
+			s.rpgCheckpoint="theater_stage"
 			t.phase="prop_setup"
 			return response(prose("chapter3-theater.content","program.unlocked"))
 		"c3_spotlight":
@@ -518,7 +528,7 @@ func canteen_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 		"drink_shelf":
 			c.drinkShelfRead=true
 			return response(prose("chapter3-canteen.content","drinks.shelfPrompt")+"\n"+prose("chapter3-canteen.content","drinks.shelfOrder"))
-		"mixer": return {"handled":true,"page":"c3_mixer"}
+		"mixer": return {"handled":true,"open_canteen_mixer":true}
 		"promo":
 			if not side_active(c) or c.promoDrinkPlaced or not own(s,"dailySpecialSparklingWater") or dark: return locked()
 			consume(s,"dailySpecialSparklingWater")
@@ -585,7 +595,8 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			if dark:
 				t.ticketCodeRead=true
 				return response(prose("chapter3-theater.content","ticket.codeVisible"))
-			return {"handled":true,"page":"c3_kiosk"}
+			if own(s,"theaterTicketHalfB") or own(s,"temporaryTheaterTicket"): return {"handled":true}
+			return {"handled":true,"open_theater_device":"code"}
 		"gate":
 			if t.phase!="entry_ticket" or dark or not own(s,"temporaryTheaterTicket"): return response(prose("chapter3-theater.content","ticket.gateDenied"))
 			t.admitted=true
@@ -602,7 +613,7 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			if t.phase=="program_search":
 				if dark: return response(prose("chapter3-theater.content","program.darkInspectHint"))
 				if t.collectedProgramIds.size()<3: return tell_lines(s,"theater_console",[prose("chapter3-theater.content","program.consolePrompt"),prose("chapter3-theater.content","program.consoleState")])
-				return {"handled":true,"page":"c3_program"}
+				return {"handled":true,"open_theater_device":"program"}
 			if t.phase!="spotlight_ready" or dark or not own(s,"spotlightRemote") or not t.paperDusted: return locked()
 			consume(s,"spotlightRemote")
 			t.phase="spotlight_hunt"

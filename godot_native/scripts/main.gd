@@ -23,6 +23,7 @@ var toast_time := 0.0
 var chapter_label: Label
 var app_grid: GridContainer
 var page_body: VBoxContainer
+var c3_device_panel: Control
 var modal: Control
 var modal_panel: PanelContainer
 var modal_notice_slot: Control
@@ -48,6 +49,10 @@ var header_row: HBoxContainer
 var footer_row: HBoxContainer
 var inventory_dock: PanelContainer
 var inventory_buttons: HBoxContainer
+var inventory_scroll: ScrollContainer
+var inventory_dock_rect := Rect2()
+var inventory_handle: Button
+var compact_inventory_open := false
 var media_host: Node
 var world_effect: Control
 var battery_prank: Control
@@ -224,13 +229,17 @@ func _build_shell() -> void:
 	var inventory_row := HBoxContainer.new()
 	inventory_dock.add_child(inventory_row)
 	inventory_row.add_child(_label("物品",17,Color("e7ead9")))
-	var inventory_scroll := ScrollContainer.new()
+	inventory_scroll = ScrollContainer.new()
 	inventory_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	inventory_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	inventory_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	inventory_row.add_child(inventory_scroll)
 	inventory_buttons = HBoxContainer.new()
 	inventory_buttons.add_theme_constant_override("separation",8)
 	inventory_scroll.add_child(inventory_buttons)
+	inventory_handle=_button("展开物品栏",func(): compact_inventory_open=not compact_inventory_open; _layout(),Vector2(120,44))
+	inventory_handle.name="WorldInventoryHandle"
+	add_child(inventory_handle)
 	toast = PhoneNotice.create()
 	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	toast.z_index = 110
@@ -277,6 +286,20 @@ func _uses_split_layout() -> bool:
 	return not DisplayServer.is_touchscreen_available() and size.x>=1100 and size.x>size.y and not str(State.d.get("native",{}).get("scene","")).is_empty()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if _action in ["c4_checkin_card","c4_checkin_paper"] and current.get("chapter4",{}).get("phase","")=="exterior_closure" and _previous.get("chapter4",{}).get("phase","")=="morning_checkin":
+		# Source check-in hands off automatically through the actual door reveal.
+		_show_world_mobile()
+		State.act.call_deferred("c4_lamp_start")
+		return
+	# Only a genuine controller-opened device intent creates a fresh session.
+	if _action.begins_with("c4_device_") and result.get("page","")=="c4_device":
+		if _open_chapter4_device(_action.trim_prefix("c4_device_"),current): return
+	if result.get("open_canteen_mixer",false):
+		_open_c3_device("mixer")
+		return
+	if result.has("open_theater_device"):
+		_open_c3_device(str(result.open_theater_device))
+		return
 	if result.get("open_inventory",false):
 		State.d.ui.inventoryOpen=true
 		if is_instance_valid(phone_chrome): phone_chrome.refresh(State.d)
@@ -330,10 +353,30 @@ func _layout() -> void:
 		var scale_world := minf(free/980.0,(available.y-150)/560.0)
 		world_frame.scale = Vector2.ONE * scale_world
 		world_frame.position = Vector2(phone.position.x+430*phone_scale+18,(available.y-560*scale_world)/2)
-	inventory_dock.visible = split and inventory_buttons.get_child_count() > 0 and not (State.d.flags.checkinDone and not State.d.actOne.inventoryRecovered)
+	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
+	inventory_handle.visible=mobile_world and not split and inventory_available
+	inventory_handle.text="%s物品栏 · %d"%["收起" if compact_inventory_open else "展开",inventory_buttons.get_child_count()]
+	inventory_handle.position=Vector2(12,available.y-56)
+	inventory_handle.size=Vector2(available.x-24,44)
+	inventory_dock.visible=(split or (mobile_world and compact_inventory_open)) and inventory_available
 	if split:
-		inventory_dock.position = world_frame.position+Vector2(0,world_frame.size.y*world_frame.scale.y+12)
-		inventory_dock.size = Vector2(world_frame.size.x*world_frame.scale.x,76)
+		inventory_dock.position=world_frame.position+Vector2(0,world_frame.size.y*world_frame.scale.y+12)
+		inventory_dock.size=Vector2(world_frame.size.x*world_frame.scale.x,76)
+	elif mobile_world:
+		inventory_dock.position=Vector2(12,available.y-140)
+		inventory_dock.size=Vector2(available.x-24,76)
+		# Keep portrait's existing world transform whenever it fits. In a short
+		# window, fit the same 960x540 surface between Back and the bottom bag.
+		if inventory_handle.visible:
+			var bottom: float=(inventory_dock.position.y if compact_inventory_open else inventory_handle.position.y)-12
+			var compact_scale:=minf(world_frame.scale.x,maxf(1,bottom-64)/560.0)
+			world_frame.scale=Vector2.ONE*compact_scale
+			world_frame.position=Vector2((available.x-980*compact_scale)/2,clampf(world_frame.position.y,64,bottom-560*compact_scale))
+	var dock_rect:=inventory_dock.get_global_rect()
+	if dock_rect!=inventory_dock_rect:
+		for button in inventory_buttons.get_children(): button.cancel_gesture()
+		inventory_dock_rect=dock_rect
+	_sync_inventory_dock_input()
 	chapter_label.visible = split
 	chapter_label.position = Vector2(phone.position.x+430*phone_scale+22,36)
 	_layout_toast()
@@ -386,12 +429,30 @@ func _relayout_after_minimum() -> void:
 	if is_inside_tree(): _layout()
 
 func _layout_modal() -> void:
+	if is_instance_valid(modal) and modal.has_method("layout_panel"):
+		modal.layout_panel(size)
+		return
+	if is_instance_valid(c3_device_panel):
+		var compact: bool=not _uses_split_layout()
+		c3_device_panel.configure_layout(size,compact)
+		if compact:
+			# Compact device presentation is an unscaled modal, not a miniature
+			# world canvas. Gameplay/controller state and RPG geometry stay shared.
+			c3_device_panel.scale=Vector2.ONE
+			c3_device_panel.position=Vector2.ZERO
+		else:
+			var world_rect: Rect2=world_view.get_global_rect()
+			var device_scale: float=minf(world_rect.size.x/960.0,world_rect.size.y/540.0)
+			c3_device_panel.scale=Vector2.ONE*device_scale
+			c3_device_panel.global_position=world_rect.position+(world_rect.size-Vector2(960,540)*device_scale)/2
+		return
 	if not is_instance_valid(modal_panel): return
 	modal_panel.size = Vector2(maxf(1,minf(580,size.x-24)),maxf(1,minf(700,size.y-24)))
 	modal_panel.position = (size-modal_panel.size)/2
 	_layout_toast()
 
 func _schedule_refresh() -> void:
+	_sync_inventory_dock_input()
 	if rebuild_pending: return
 	rebuild_pending = true
 	_refresh.call_deferred()
@@ -399,6 +460,9 @@ func _schedule_refresh() -> void:
 func _refresh() -> void:
 	rebuild_pending = false
 	if State.d.is_empty(): return
+	# Refresh authority without remounting or resetting the current draft.
+	if is_instance_valid(modal) and modal.has_method("sync_authority"):
+		if not modal.sync_authority(State.d): _close_modal()
 	var n: Dictionary = State.d.native
 	if n.page=="control_center":
 		n.page="phone_home"
@@ -500,7 +564,36 @@ func _add_app_grid(parent: Control) -> void:
 		var button := _button(str(page.get("label",target)),func(): _close_modal(); State.open_page(target),Vector2(119,64))
 		grid.add_child(button)
 
+func _open_chapter4_device(id: String, current: Dictionary) -> bool:
+	var device: Control = load("res://scripts/ui/chapter4_device_panel.gd").new()
+	if not device.configure(id,current,font):
+		device.free()
+		return false
+	_close_modal()
+	if is_instance_valid(modal):
+		device.free()
+		return false
+	_cancel_world_effect()
+	var previous_focus = get_viewport().gui_get_focus_owner()
+	modal_previous_focus = weakref(previous_focus) if previous_focus != null else null
+	modal = device
+	modal_panel = device.frame
+	device.close_requested.connect(_close_modal)
+	device.submit_requested.connect(func(action: String,value: Dictionary,serial: int):
+		var result: Dictionary = State.act(action,value)
+		if is_instance_valid(device) and modal == device:
+			device.resolve_submission(serial,State.d,result)
+	)
+	add_child(device)
+	_show_world_mobile()
+	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
+	return true
+
 func _invoke_action(action: Dictionary) -> void:
+	# Existing phone action lists must never reopen the retired generic form.
+	if str(action.get("id","")).begins_with("c4_solve_"):
+		_open_chapter4_device(str(action.id).trim_prefix("c4_solve_"),State.d)
+		return
 	if action.has("input") or action.has("inputs"):
 		_show_form(action)
 	else: State.act(str(action.id),action.get("value"))
@@ -551,6 +644,7 @@ func _modal_base(title: String) -> VBoxContainer:
 	scroll.add_child(content)
 	_layout_modal()
 	modal.grab_focus()
+	_sync_inventory_dock_input()
 	return content
 
 func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
@@ -560,6 +654,7 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 		_modal_focus_controls(child,result)
 
 func _input(event: InputEvent) -> void:
+	_sync_inventory_dock_input()
 	if not is_instance_valid(modal) or not event is InputEventKey or not event.pressed: return
 	# OptionButton popups own their own keyboard navigation while open.
 	for choice in modal.find_children("*","OptionButton",true,false):
@@ -584,12 +679,18 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _close_modal() -> void:
+	if is_instance_valid(modal) and modal.has_method("can_close") and not modal.can_close(): return
+	if is_instance_valid(modal) and modal.has_method("dispose_session"): modal.dispose_session()
+	var closing_device: Control=c3_device_panel
+	c3_device_panel=null
+	if is_instance_valid(closing_device) and closing_device.has_method("dismiss"): closing_device.dismiss()
 	var closed_item := inspected_item_id
 	inspected_item_id=""
 	if is_instance_valid(modal):
 		remove_child(modal)
 		modal.queue_free()
 	modal = null
+	_sync_inventory_dock_input()
 	modal_panel = null
 	modal_notice_slot = null
 	_layout_toast()
@@ -602,29 +703,96 @@ func _close_modal() -> void:
 		if not story_owned and is_instance_valid(audio_director): audio_director.cue("theater_decoy_inspect_closed")
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(is_instance_valid(active_game) or is_instance_valid(phone_document))
 
+func _open_c3_device(kind: String) -> void:
+	if is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document): return
+	if not is_instance_valid(world) or world._interaction_presentation_blocks(): return
+	if not world_frame.is_visible_in_tree(): _show_world_mobile()
+	# A world device returns keyboard control to its originating SubViewport,
+	# rather than a stale phone/root focus owner after Escape.
+	modal_previous_focus=weakref(world)
+	modal=Control.new()
+	modal.name="C3WorldDeviceOverlay"
+	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	modal.mouse_filter=Control.MOUSE_FILTER_STOP
+	modal.focus_mode=Control.FOCUS_ALL
+	modal.z_index=100
+	add_child(modal)
+	c3_device_panel=load("res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd").new()
+	c3_device_panel.name="C3WorldDevicePanel"
+	modal.add_child(c3_device_panel)
+	c3_device_panel.closed.connect(func(_reason: String):
+		if is_instance_valid(c3_device_panel):
+			c3_device_panel=null
+			_close_modal())
+	var reader:=func() -> Dictionary: return State.d
+	var opened: bool=c3_device_panel.setup(reader,State.act,_feedback) if kind=="mixer" else c3_device_panel.setup(kind,reader,State.act,_feedback)
+	if not opened: _close_modal(); return
+	world.move_target=Vector2.INF
+	world.touch_axis=Vector2.ZERO
+	world.walk_clock=0
+	world.subtitle=""; world.subtitle_left=0
+	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
+	_layout_modal()
+	modal.grab_focus()
+
 func _show_apps() -> void:
 	_close_modal()
 	world_page_origin_scene=""
 	State.open_page("phone_home")
 
+func _inventory_dock_available() -> bool:
+	return inventory_buttons.get_child_count()>0 and not (State.d.flags.checkinDone and not State.d.actOne.inventoryRecovered)
+
+func _inventory_dock_input_blocked() -> bool:
+	if is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(active_game) or bool(State.d.ui.controlCenterOpen) or State.story_input_locked(): return true
+	if is_instance_valid(file_dialog) and file_dialog.visible: return true
+	if is_instance_valid(world) and (world._interaction_presentation_blocks() or world.capture_mode): return true
+	return is_instance_valid(world_effect) and world_effect.get_meta("blocks_input",false)
+
+func _sync_inventory_dock_input() -> void:
+	if not is_instance_valid(inventory_dock): return
+	if is_instance_valid(active_game):
+		inventory_dock.hide(); inventory_handle.hide()
+	var blocked:=_inventory_dock_input_blocked()
+	inventory_handle.disabled=blocked
+	blocked=blocked or not inventory_dock.is_visible_in_tree()
+	for button in inventory_buttons.get_children():
+		if blocked and not button.disabled: button.cancel_gesture()
+		button.disabled=blocked
+
 func _refresh_inventory_dock() -> void:
-	for child in inventory_buttons.get_children():
-		inventory_buttons.remove_child(child)
-		child.queue_free()
+	# Selection refreshes must preserve pointer ownership, focus, order and scroll.
+	# Only ownership changes create/remove slots; the shared tap history stays put.
+	var existing: Dictionary={}
+	for button in inventory_buttons.get_children(): existing[button.item_id]=button
 	var catalog = State.content("items.config.json")
 	for item in catalog:
-		if not State.d.items.get(str(item.id),false): continue
+		var id:=str(item.id)
+		if not State.d.items.get(id,false): continue
+		if existing.has(id):
+			existing.erase(id)
+			continue
 		var entry: Dictionary = item
 		var button = load("res://scripts/ui/inventory_item.gd").new()
-		button.item_id = str(item.id)
+		button.name="WorldItem_"+id
+		button.item_id = id
 		button.text = str(item.name)
 		button.custom_minimum_size = Vector2(86,48)
 		button.add_theme_font_size_override("font_size",14)
 		button.gestures=inventory_gestures
-		button.selection_requested.connect(func(id: String): State.select_item(id))
-		button.inspection_requested.connect(func(_id: String): _inspect_item(entry))
+		button.selection_requested.connect(func(item_id: String):
+			if not _inventory_dock_input_blocked(): State.select_item(item_id)
+		)
+		button.inspection_requested.connect(func(_id: String):
+			if not _inventory_dock_input_blocked(): _inspect_item(entry)
+		)
 		button.drag_finished.connect(func(landed: bool): if not landed: State.feedback.emit("没有落在可使用的物品上，道具仍在物品栏。"))
 		inventory_buttons.add_child(button)
+	for button in existing.values():
+		button.cancel_gesture()
+		inventory_buttons.remove_child(button)
+		button.queue_free()
+	_sync_inventory_dock_input()
 
 func _inspect_item(item: Dictionary) -> void:
 	var box := _modal_base(str(item.name))
@@ -811,6 +979,19 @@ func _play_audio(path: String) -> void:
 		voice_player.play()
 
 func _open_game(config: Dictionary) -> void:
+	# The source opens the real A1 doors before the registered lamp questions.
+	# This local visual prelude never changes controller facts or completion proof.
+	if config.get("kind","")=="star_lamp_closure" and not config.get("native_exterior_presented",false):
+		_cancel_world_effect(); _close_modal(); _show_world_mobile()
+		world_effect=load("res://scripts/ui/chapter4_exterior_door.gd").new()
+		world.add_child(world_effect)
+		world_effect.opened.connect(func():
+			var continued: Dictionary=config.duplicate(true)
+			continued.native_exterior_presented=true
+			_open_game(continued)
+		)
+		world_effect.setup(_read_runtime_state,func(source: Vector2): return world.size/2+(source-world.camera)*world.zoom)
+		return
 	_cancel_world_effect()
 	_close_modal()
 	if is_instance_valid(active_game): active_game.queue_free()
@@ -883,6 +1064,8 @@ func _virtual_run_owns_feedback(message: String) -> bool:
 	return active_game.owns_result_feedback(message)
 
 func _feedback(message: String,tone: String="system") -> void:
+	# The device owns failed-attempt feedback while submitting.
+	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
 	if _virtual_run_owns_feedback(message): return
 	if _scene_owns_feedback(message):
 		toast.text=""; toast_time=0; toast.hide()
@@ -900,6 +1083,9 @@ func _feedback(message: String,tone: String="system") -> void:
 	toast.move_to_front()
 
 func _process(delta: float) -> void:
+	_sync_inventory_dock_input()
+	if is_instance_valid(c3_device_panel) and c3_device_panel.compact_layout and is_instance_valid(world):
+		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
 	for cue: String in State.advance_phone_entry(delta*1000): _play_presentation_cue(cue)
 	if toast_time > 0:
 		toast_time -= delta
@@ -1161,6 +1347,7 @@ func _open_phone_document(config: Dictionary) -> void:
 func _close_phone_document() -> void:
 	if is_instance_valid(phone_document): phone_document.queue_free()
 	phone_document=null
+	_sync_inventory_dock_input()
 	if phone_document_previous_focus!=null:
 		var control=phone_document_previous_focus.get_ref()
 		if is_instance_valid(control) and control.is_inside_tree(): control.grab_focus()

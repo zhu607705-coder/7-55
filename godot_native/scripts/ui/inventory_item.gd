@@ -14,7 +14,8 @@ var _touch_time := 0
 var _touch_dragging := false
 var _scrolling := false
 var _scroll: ScrollContainer
-var _scroll_start := 0
+var _scroll_start := Vector2.ZERO
+var _scroll_horizontal := false
 var _suppress_mouse_until := 0
 var _pointer_position := Vector2.ZERO
 var _native_double_click := false
@@ -73,7 +74,8 @@ func _gui_input(event: InputEvent) -> void:
 		_touch_index=event.index; _touch_start=get_global_transform_with_canvas()*event.position
 		_touch_time=Time.get_ticks_msec(); _touch_dragging=false; _scrolling=false; _drag_was_started=false
 		_suppress_mouse_until=Time.get_ticks_msec()+1000
-		_scroll=_find_scroll(); _scroll_start=_scroll.scroll_vertical if _scroll else 0
+		_scroll=_find_scroll()
+		_scroll_start=Vector2(_scroll.scroll_horizontal,_scroll.scroll_vertical) if _scroll else Vector2.ZERO
 		accept_event()
 
 func _find_scroll() -> ScrollContainer:
@@ -96,15 +98,20 @@ func _input(event: InputEvent) -> void:
 		_suppress_mouse_until=Time.get_ticks_msec()+1000
 		var delta: Vector2=event.position-_touch_start
 		if not _touch_dragging and not _scrolling and delta.length()>=DRAG_DISTANCE:
-			var scroll_available:=is_instance_valid(_scroll) and _scroll.get_v_scroll_bar().max_value>_scroll.get_v_scroll_bar().page
-			if not allow_drag or (scroll_available and absf(delta.y)>absf(delta.x)*1.25 and Time.get_ticks_msec()-_touch_time<TOUCH_HOLD_MS):
+			var horizontal:=is_instance_valid(_scroll) and _scroll.horizontal_scroll_mode!=ScrollContainer.SCROLL_MODE_DISABLED and _scroll.get_h_scroll_bar().max_value>_scroll.get_h_scroll_bar().page
+			var vertical:=is_instance_valid(_scroll) and _scroll.vertical_scroll_mode!=ScrollContainer.SCROLL_MODE_DISABLED and _scroll.get_v_scroll_bar().max_value>_scroll.get_v_scroll_bar().page
+			_scroll_horizontal=horizontal and absf(delta.x)>absf(delta.y)*1.25
+			var along_scroll:=_scroll_horizontal or (vertical and absf(delta.y)>absf(delta.x)*1.25)
+			if not allow_drag or (along_scroll and Time.get_ticks_msec()-_touch_time<TOUCH_HOLD_MS):
 				_scrolling=true; gestures.reset()
 			else:
 				_touch_dragging=true; gestures.reset(); _drag_ticket=Gesture.begin_drag()
 				force_drag({"kind":"inventory_item","item":item_id},_make_drag_preview())
 				_drag_was_started=true
 		if _scrolling and is_instance_valid(_scroll):
-			_scroll.scroll_vertical=_scroll_start-roundi(delta.y/maxf(.001,_scroll.get_global_transform_with_canvas().get_scale().y))
+			var scroll_scale:=_scroll.get_global_transform_with_canvas().get_scale()
+			if _scroll_horizontal: _scroll.scroll_horizontal=roundi(_scroll_start.x-delta.x/maxf(.001,scroll_scale.x))
+			else: _scroll.scroll_vertical=roundi(_scroll_start.y-delta.y/maxf(.001,scroll_scale.y))
 		elif _touch_dragging:
 			var motion:=InputEventMouseMotion.new(); motion.position=event.position; motion.global_position=event.position; motion.button_mask=MOUSE_BUTTON_MASK_LEFT
 			Input.parse_input_event(motion)

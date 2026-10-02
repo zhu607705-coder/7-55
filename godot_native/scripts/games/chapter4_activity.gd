@@ -365,8 +365,16 @@ func _draw_lamp() -> void:
 			"leds": alpha=_smooth((t-2350)/780)*0.7; brightness=0.94
 			"core": alpha=_smooth((t-2750)/800)*0.62; brightness=0.96
 			"glow": alpha=glow; brightness=0.9
-		draw_texture_rect(lamp[key],rect,false,Color(brightness,brightness,brightness,alpha))
+		# The source renderer is viewport-clipped. Crop rather than letting the
+		# camera-rise artwork paint over the surrounding phone/task shell.
+		var region: Dictionary=_lamp_visible_region(rect,lamp[key].get_size())
+		if not region.is_empty(): draw_texture_rect_region(lamp[key],region.destination,region.source,Color(brightness,brightness,brightness,alpha))
 	if playback and t<260: draw_rect(Rect2(Vector2.ZERO,size),Color(0,0,0,1-_smooth(t/260)))
+func _lamp_visible_region(destination: Rect2,dimensions: Vector2) -> Dictionary:
+	var visible: Rect2=destination.intersection(Rect2(Vector2.ZERO,size))
+	if not visible.has_area(): return {}
+	var source_rect:=Rect2((visible.position-destination.position)/destination.size*dimensions,visible.size/destination.size*dimensions)
+	return {"destination":visible,"source":source_rect}
 func _gui_input(event: InputEvent) -> void:
 	if kind=="chase_stairwell":
 		if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:

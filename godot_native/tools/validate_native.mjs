@@ -20,7 +20,7 @@ if(!fs.existsSync(path.join(project,'assets/rpg/fonts/fusion_pixel_12px_proporti
 run('Godot asset import and editor parse',['--headless','--path',project,'--editor','--import','--quit']);
 run('Native startup',['--headless','--path',project,'--quit-after','15','--','--fresh']);
 for(const f of fs.readdirSync(path.join(project,'tests')).filter(x=>x.endsWith('.gd')&&x!=='test_save_migration.gd'&&(x.startsWith('test_')||x.startsWith('smoke_'))).sort())run(f,['--headless','--path',project,'--script',`res://tests/${f}`]);
-for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-director.mjs','tools/export-c3-world-source.mjs','tests/export_audio_state_fixtures.mjs','tests/export_chapter3_scene_source.mjs','tests/export_library_story_source.mjs','tests/export_lake_live_source_fixtures.mjs','tests/export_chapter3_narrative_source.mjs','tests/export_library_world_source.mjs']) {
+for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-director.mjs','tools/export-c3-world-source.mjs','tools/export-chapter4-device-source.mjs','tools/export-chapter4-context-source.mjs','tests/export_audio_state_fixtures.mjs','tests/export_chapter3_scene_source.mjs','tests/export_library_story_source.mjs','tests/export_lake_live_source_fixtures.mjs','tests/export_chapter3_narrative_source.mjs','tests/export_library_world_source.mjs','tests/export_canteen_mixer_source.mjs','tests/export_c3_devices_source.mjs']) {
  run('Source catalog '+relative,[path.join(project,relative),'--check'],process.execPath);
 }
 for(const relative of ['tests/verify_source_model_parity.mjs','tests/verify_canteen_defense_source.mjs','tests/verify_lake_branch_source.mjs'])run('Source oracle '+relative,[path.join(project,relative)],process.execPath);

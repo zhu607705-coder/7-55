@@ -25,6 +25,7 @@ var pickup_start:=Vector2.ZERO
 var collected_programs: Array=[]
 var program_flights: Array=[]
 var last_carried: Array=[]
+var occlusion_alphas: Dictionary={}
 func texture(path: String) -> Texture2D:
 	if not textures.has(path): textures[path]=load(path) if ResourceLoader.exists(path) else null
 	return textures[path]
@@ -34,7 +35,7 @@ func scene_npcs(s: Dictionary) -> bool: return s.canteenHunt.phase!="exit_blocki
 func sync(s: Dictionary,scene_changed: bool=false) -> void:
 	var current: String=str(s.native.get("scene",""))
 	if scene_changed or current!=scene_id or previous_state.is_empty():
-		scene_id=current; clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
+		scene_id=current; occlusion_alphas.clear(); clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
 		last_carried=s.canteenHunt.carriedTrayIds.duplicate(); collected_programs=s.theaterHunt.collectedProgramIds.duplicate()
 		previous_state=s.duplicate(true)
 		fade_to=Vector2(1,0) if s.native.mode=="light" else Vector2(0,1)
@@ -157,6 +158,39 @@ func entries(s: Dictionary) -> Array:
 			result.append({"id":"kiosk_receipt","kind":"text","point":Vector2(1146,715),"text":theater_text.ticket.codeVisible,"width":350.0,"fontSize":13,"depth":1603})
 	result.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.depth)<float(b.depth))
 	return result
+func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> Dictionary:
+	# CanteenInteriorScene.updateOcclusion uses the actual foot body, not the
+	# sprite anchor. It softens intersecting foreground instead of losing the actor.
+	var bounds:=_bounds(cover)
+	var player_bounds: Rect2=Metrics.visual_rect(player)
+	var foot_y: float=Metrics.foot_rect(player).end.y
+	var behind: bool=player_bounds.end.x>bounds.position.x and player_bounds.position.x<bounds.end.x and foot_y<float(cover.get("sortY",bounds.end.y))-1
+	var overlaps: bool=behind and player_bounds.intersects(bounds)
+	var target_alpha: float=.52 if overlaps else 1.0
+	var id: String=str(cover.get("id",""))
+	var alpha: float=target_alpha if is_reduced else lerpf(float(occlusion_alphas.get(id,1.0)),target_alpha,.18)
+	occlusion_alphas[id]=alpha
+	return {"visible":behind,"alpha":alpha,"softened":overlaps}
+
+func draw_landmarks(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	# Small presentation repair for an existing authored mixer hotspot that was
+	# otherwise indistinguishable from the five ordering kiosks in the base plate.
+	# No recipe/color clue, collision, availability, or transaction change.
+	if scene_id!="canteen_interior" or not s.canteenHunt.active or not s.canteenHunt.entryPaperEscaped or s.canteenHunt.promoDrinkPlaced or s.canteenHunt.phase not in source.constants.CANTEEN_SIDE_GAME_PHASES: return
+	var station: Dictionary=worlds.canteen_interior.constants.CANTEEN_MIX_STATION
+	var point:=Vector2(station.x,station.y)
+	var origin: Vector2=context.origin; var z: float=context.zoom
+	canvas.draw_set_transform(origin+point*z,0,Vector2.ONE*z)
+	canvas.draw_rect(Rect2(-57,-46,114,97),Color("18333a"))
+	canvas.draw_rect(Rect2(-57,-46,114,97),Color("8e7754"),false,3)
+	canvas.draw_rect(Rect2(-26,-32,52,54),Color("b9e6ee",.16))
+	canvas.draw_polyline(PackedVector2Array([Vector2(-27,-34),Vector2(-23,24),Vector2(23,24),Vector2(27,-34)]),Color("b9e6ee"),3)
+	canvas.draw_line(Vector2(7,11),Vector2(19,-42),Color("d9caa9"),3)
+	canvas.draw_rect(Rect2(-55,27,110,22),Color("8e7754"))
+	canvas.draw_string(font,Vector2(-36,43),"混合台",HORIZONTAL_ALIGNMENT_CENTER,72,16,Color("fff2d8"))
+	canvas.draw_set_transform(Vector2.ZERO)
+	if canvas.has_method("register_object_bounds"): canvas.register_object_bounds(["canteen-mixer"],Rect2(point+Vector2(-57,-46),Vector2(114,97)))
+
 func adjusted_collisions(base: Array,s: Dictionary) -> Array:
 	var out: Array=base.filter(func(box: Dictionary)->bool:return not str(box.get("id","")).begins_with("c3_dynamic_"))
 	if scene_id=="canteen_interior" and scene_npcs(s) and s.native.mode=="light":

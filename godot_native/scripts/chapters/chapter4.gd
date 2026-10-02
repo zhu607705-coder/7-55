@@ -6,11 +6,13 @@ const SCENE = "duan_yongping_temporal_maze"
 var content: Dictionary = {}
 var layout: Dictionary = {}
 var extra: Dictionary = {}
+var context_source: Dictionary = {}
 var timeline: Dictionary = {}
 var pending: Dictionary = {}
 var serial: int = 0
 func _init() -> void:
 	content=_json("chapter4-755.content.json"); layout=_json("chapter4-three-floor-maze.layout.json"); extra=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/chapter4-native-source.json")); timeline=_json("chapter4-temporal-maze.content.json").elevator.timeline
+	context_source=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/chapter4-context-source.json"))
 func _json(name: String) -> Dictionary:
 	var result: Variant=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/"+name))
 	return result if result is Dictionary else {}
@@ -208,6 +210,12 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if c.phase=="hall_clock_inspection": _phase(c,"bakery_hour_hand")
 		s.native.erase("c4_context"); return _ok(_dialogue("hall_clock.first_pull"),{"scene":SCENE})
 	if not _aligned(c): return _locked("clock_adjustment_required")
+	if action.begins_with("c4_context_"):
+		for entry in context_source.contexts:
+			if action!="c4_context_"+entry.targetId: continue
+			if c.phase not in entry.activePhases or c.floor!=entry.floor or c.roomId not in entry.roomAliases: return _locked()
+			return _ok(str(entry.textByTimeState[c.timeState][c.mode]))
+		return _locked()
 	if action=="c4_paper_settled":
 		if not _proof(s,action,value) or float(value.get("elapsedMs",0))<1900: return _locked()
 		_fact(c,"opening_paper_at_noticeboard"); pending={}; return _ok(_dialogue("opening.paper_flight"),{"scene":SCENE})
@@ -342,7 +350,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if action.begins_with("c4_device_"):
 		var id: String=action.trim_prefix("c4_device_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id): return _locked()
-		if id=="media_alignment" and not _has(c,"a3_archive_film_retrieved"): return _locked("archive_film_required")
+		# The source opens the scanner to explain the missing film; submission stays gated.
 		s.native.c4_context=id; return _ok("",{"page":"c4_device"})
 	if action.begins_with("c4_solve_"):
 		var id: String=action.trim_prefix("c4_solve_")
@@ -578,6 +586,11 @@ func targets(scene: String,s: Dictionary) -> Array:
 				if c.floor!="A1": out.append({"id":"elevator_record","label":"电梯门机记录","position":[float(b.x)+float(b.width)+60,float(b.y)+float(b.height)+35],"radius":100,"action":"c4_record","mode":"dark"})
 	if (c.floor=="A3" and c.phase=="room204_restore") or (c.floor=="A1" and c.phase=="final_chase") or (c.floor=="A2" and c.phase=="return_to_clock"):
 		out.append({"id":"main_stair","label":"主楼梯","position":[1090,274] if c.floor=="A3" else ([966,214] if c.floor=="A2" else [1001,214]),"radius":105,"action":"c4_stairs" if c.floor=="A3" else ("c4_chase" if c.phase=="final_chase" else "c4_return_stair")})
+	for entry in context_source.contexts:
+		if c.phase not in entry.activePhases or c.floor!=entry.floor or c.roomId not in entry.roomAliases: continue
+		var target: Dictionary=_target(entry.anchorId,entry.label,"c4_context_"+entry.targetId,c)
+		if not target.is_empty():
+			target.id=entry.targetId; target.radius=float(entry.get("proximity",52)); out.append(target)
 	return out.filter(func(t): return not t.is_empty())
 func objective(s: Dictionary) -> String:
 	if not _active(s): return ""

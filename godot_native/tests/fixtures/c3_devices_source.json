@@ -1,0 +1,298 @@
+{
+  "sources": {
+    "src/scenes/rpg/TheaterInteriorScene.ts": "2b041bb08127f781be95457c30de3fa0d95aaed28756588214dcf0f64c20c7a1",
+    "src/modules/ChapterThreeTheaterController.ts": "5d6ef51e91ca6129706b61112d848c92f9b9172f6bcd6687e3090c417609a119",
+    "src/scenes/rpg/CanteenInteriorScene.ts": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
+  },
+  "keypad": {
+    "draft": "0123",
+    "display": "0 1 2 3",
+    "buttons": [
+      {
+        "x": -180,
+        "y": 5,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": -90,
+        "y": 5,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": 90,
+        "y": 5,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": 180,
+        "y": 5,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": -180,
+        "y": 63,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": -90,
+        "y": 63,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": 0,
+        "y": 63,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": 90,
+        "y": 63,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": 180,
+        "y": 63,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "x": -150,
+        "y": 132,
+        "width": 120,
+        "height": 42
+      },
+      {
+        "x": 0,
+        "y": 132,
+        "width": 120,
+        "height": 42
+      },
+      {
+        "x": 150,
+        "y": 132,
+        "width": 120,
+        "height": 42
+      }
+    ],
+    "afterBackspace": "012",
+    "freshOpen": ""
+  },
+  "programButtons": [
+    {
+      "x": -190,
+      "y": 4,
+      "width": 150,
+      "height": 48
+    },
+    {
+      "x": 0,
+      "y": 4,
+      "width": 150,
+      "height": 48
+    },
+    {
+      "x": 190,
+      "y": 4,
+      "width": 150,
+      "height": 48
+    },
+    {
+      "x": -205,
+      "y": 92,
+      "width": 120,
+      "height": 42
+    },
+    {
+      "x": -68,
+      "y": 92,
+      "width": 120,
+      "height": 42
+    },
+    {
+      "x": 68,
+      "y": 92,
+      "width": 120,
+      "height": 42
+    },
+    {
+      "x": 205,
+      "y": 92,
+      "width": 120,
+      "height": 42
+    }
+  ],
+  "orders": [
+    {
+      "order": [],
+      "accepted": true,
+      "draft": []
+    },
+    {
+      "order": [
+        "opening"
+      ],
+      "accepted": true,
+      "draft": [
+        "opening"
+      ]
+    },
+    {
+      "order": [
+        "opening",
+        "opening"
+      ],
+      "accepted": false,
+      "draft": [
+        "opening"
+      ]
+    },
+    {
+      "order": [
+        "unknown"
+      ],
+      "accepted": false,
+      "draft": [
+        "opening"
+      ]
+    },
+    {
+      "order": [
+        "opening",
+        "spotlight",
+        "finale"
+      ],
+      "accepted": true,
+      "draft": [
+        "opening",
+        "spotlight",
+        "finale"
+      ]
+    },
+    {
+      "order": [
+        "opening",
+        "spotlight",
+        "finale",
+        "opening"
+      ],
+      "accepted": false,
+      "draft": [
+        "opening",
+        "spotlight",
+        "finale"
+      ]
+    },
+    {
+      "order": [
+        "spotlight",
+        "opening",
+        "finale"
+      ],
+      "accepted": true,
+      "draft": [
+        "spotlight",
+        "opening",
+        "finale"
+      ]
+    }
+  ],
+  "wrongDraft": [
+    "opening",
+    "spotlight"
+  ],
+  "occlusions": [
+    {
+      "anchor": {
+        "x": 1370,
+        "y": 380
+      },
+      "reduced": true,
+      "visible": false,
+      "alpha": 1,
+      "softened": false
+    },
+    {
+      "anchor": {
+        "x": 1370,
+        "y": 380
+      },
+      "reduced": false,
+      "visible": false,
+      "alpha": 1,
+      "softened": false
+    },
+    {
+      "anchor": {
+        "x": 1370,
+        "y": 345
+      },
+      "reduced": true,
+      "visible": true,
+      "alpha": 0.52,
+      "softened": true
+    },
+    {
+      "anchor": {
+        "x": 1370,
+        "y": 345
+      },
+      "reduced": false,
+      "visible": true,
+      "alpha": 0.9136,
+      "softened": true
+    },
+    {
+      "anchor": {
+        "x": 1300,
+        "y": 345
+      },
+      "reduced": true,
+      "visible": false,
+      "alpha": 1,
+      "softened": false
+    },
+    {
+      "anchor": {
+        "x": 1300,
+        "y": 345
+      },
+      "reduced": false,
+      "visible": false,
+      "alpha": 1,
+      "softened": false
+    },
+    {
+      "anchor": {
+        "x": 1370,
+        "y": 405
+      },
+      "reduced": true,
+      "visible": false,
+      "alpha": 1,
+      "softened": false
+    },
+    {
+      "anchor": {
+        "x": 1370,
+        "y": 405
+      },
+      "reduced": false,
+      "visible": false,
+      "alpha": 1,
+      "softened": false
+    }
+  ]
+}

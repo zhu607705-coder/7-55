@@ -98,6 +98,9 @@ func finish() -> void:
 	sample()
 	# Completion cannot add unobserved playback or set an evidence flag.
 	if is_instance_valid(player): player.stop()
+	# The mixer can finish between UI frames. Show the completed endpoint,
+	# but leave verified_ms/heard_ready untouched: display is not a receipt.
+	position_ms = end_ms
 	phase = "finished"
 
 func snapshot() -> Dictionary:

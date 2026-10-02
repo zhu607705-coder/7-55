@@ -1,6 +1,8 @@
 extends SceneTree
 ## Required device surfaces through actual Main, world targets and Control input.
 ## Source-phase fixtures isolate routing; they are not a campaign completion proof.
+## Source-authentic C3/C4 devices are live world modals, not generic phone forms.
+const WORLD_DEVICES := ["mixer","kiosk","console","c4_duty","c4_numeric"]
 var checks: int=0
 var failures: int=0
 var state: Node
@@ -107,12 +109,16 @@ func run() -> void:
 	state=root.get_node("State"); seed_case("mixer")
 	root.size=Vector2i(390,844); main=load("res://scenes/main.tscn").instantiate(); root.add_child(main); await process_frame; await process_frame
 	var actions: Dictionary={"mixer":"c3_target:canteen-mixer","menu":"c3_target:ordering_kiosk","bike":"c3_target:bike","kiosk":"c3_target:theater_ticket_kiosk","console":"c3_target:theater_light_console","library_record":"lib_open_record","library_catalog":"lib_catalog_terminal","c4_duty":"c4_device_duty_board","c4_elevator":"c4_elevator","c4_power":"c4_power","c4_numeric":"c4_device_positioning_calibration"}
-	var pages: Dictionary={"mixer":"c3_mixer","menu":"c3_menu","bike":"c3_bike","kiosk":"c3_kiosk","console":"c3_program","library_record":"library_record","library_catalog":"library_catalog"}
+	var pages: Dictionary={"menu":"c3_menu","bike":"c3_bike","library_record":"library_record","library_catalog":"library_catalog"}
 	for width: int in [390,430,1280]:
 		for id: String in actions:
 			await prepare(id,width)
 			var scene: String=state.d.native.scene
+			var original_page: String=state.d.native.page
 			await interact(actions[id]); var position: Vector2=main.world.player
+			if id in WORLD_DEVICES:
+				await exercise_world_device(id,actions[id],width,scene,position,original_page)
+				continue
 			if id.begins_with("library"):
 				check(state.get_phone_entry_session().phase=="loading","new Library mount observes source Zjuding entry delay")
 				await create_timer(1.6).timeout
@@ -124,13 +130,10 @@ func run() -> void:
 			state.act("phone_refresh",{}); await process_frame; await process_frame
 			check(main.phone.is_visible_in_tree(),"ordinary refresh leaves selected device visible")
 			match id:
-				"mixer": await click(find_button(main.page_body,"倒入黑咖啡"),"mixer ingredient"); check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"visible mixer actually accepts ingredient")
 				"menu":
 					await click(find_button(main.page_body,"下单"),"menu order"); await fill_form([3])
 					check(state.d.items.pickupTicket0755 and state.d.canteenHunt.orderedMenuOption=="D","real menu input reaches source controller")
 				"bike": await click(find_button(main.page_body,"用油渍纸巾擦拭车锁"),"bike cleaning"); check(state.d.canteenHunt.bikeLockCleaned,"visible bike action mutates only intended fact")
-				"kiosk": await click(find_button(main.page_body,"输入取票码"),"ticket code"); await fill_form(["0832"]); check(state.d.items.theaterTicketHalfB,"real kiosk text input accepted")
-				"console": await click(find_button(main.page_body,"提交节目顺序"),"program console"); await fill_form([1,0,2]); check(state.d.theaterHunt.phase=="prop_setup","real console choices accepted")
 				"library_record": await click(find_button(main.page_body,"记下入馆记录"),"library record"); check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"library record action accepted")
 				"library_catalog":
 					var query: LineEdit=main.page_body.find_child("LibraryCatalogQuery",true,false)
@@ -138,13 +141,11 @@ func run() -> void:
 					if query!=null: query.text="离座"; query.text_changed.emit(query.text); query.text_submitted.emit(query.text)
 					await process_frame; await process_frame
 					check(main.phone_builder.native_library.catalog_submitted,"real Library custom search preserves interaction")
-				"c4_duty": await click(find_button(main.page_body,"确认装置设置"),"C4 order device"); await fill_form([2,1,0]); check(state.d.chapter4.factIds.has("a1_duty_board_reconstructed"),"real C4 order submitted")
 				"c4_elevator": check(find_button(main.page_body,"调节回放起点")!=null,"elevator calibration control reachable")
 				"c4_power":
 					var button: Button=find_button(main.page_body,"大厅"); var before: int=state.d.chapter4.lightGrid.mask
 					await click(button,"power toggle"); check(state.d.chapter4.lightGrid.mask!=before,"real power control applies toggle")
-				"c4_numeric": await click(find_button(main.page_body,"确认装置设置"),"C4 numeric device"); await fill_form(["-2","1","3"]); check(state.d.chapter4.factIds.has("a2_positioning_plate_calibrated"),"real C4 numeric input accepted")
-			if id in ["menu","kiosk"]:
+			if id=="menu":
 				check(main.world_frame.is_visible_in_tree(),"device submission reveals its source world dialogue")
 				main.c3_narrative_host.tick(0,true)
 				check(main.c3_narrative_host.current!=null,"genuine narrative host receives source queue")
@@ -157,12 +158,79 @@ func run() -> void:
 				check(main.world_frame.is_visible_in_tree() and main.world.player==position and state.d.native.scene==scene,"return retains source world position")
 				state.act("phone_refresh",{}); await process_frame
 				check(main.world_frame.is_visible_in_tree(),"refresh does not yank return view back to phone")
-				if id in ["mixer","bike","library_record","library_catalog","c4_elevator","c4_power","c4_numeric"]:
+				if id in ["bike","library_record","library_catalog","c4_elevator","c4_power"]:
 					await interact(actions[id]); check(main.phone.is_visible_in_tree(),"same world device reopens its controls")
 	await rain_return()
 	await closure_return()
 	await main.shutdown(); main.queue_free(); await process_frame
 	print("Compact device navigation: %d checks, %d failures" % [checks,failures]); quit(0 if failures==0 else 1)
+
+
+func exercise_world_device(id: String,action: String,width: int,scene: String,position: Vector2,original_page: String) -> void:
+	var c4: bool=id.begins_with("c4")
+	var panel: Control=main.modal if c4 else main.c3_device_panel
+	check(is_instance_valid(panel),id+" opens source world device at "+str(width))
+	if not is_instance_valid(panel): return
+	check(state.d.native.page==("c4_device" if c4 else original_page),id+" preserves source page contract")
+	check(panel.is_visible_in_tree() and main.world_frame.is_visible_in_tree(),id+" actionable modal and world are visible")
+	check(main.phone.is_visible_in_tree()==(width>=1100),id+" compact keeps world device, desktop keeps split phone")
+	check(state.d.native.scene==scene and main.world.player==position,"world device preserves source scene and position")
+	var frame: Control=panel.frame if c4 else panel
+	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(frame.get_global_rect()),id+" device frame fits physical viewport")
+	state.act("phone_refresh",{}); await process_frame; await process_frame
+	check(is_instance_valid(panel) and panel.is_visible_in_tree() and main.world_frame.is_visible_in_tree(),"ordinary refresh retains exact live world device")
+	match id:
+		"mixer":
+			var slot: int=panel.session.button_order.find("blackCoffee")
+			check(slot>=0,"live shuffled mixer contains owned coffee control")
+			if slot>=0: await click(panel.slots[slot],"mixer coffee slot")
+			check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"real mixer pointer accepts ingredient")
+			await click(panel.exit_button,"return from source mixer")
+		"kiosk":
+			for digit in ["0","8","3","2"]: await click(panel.controls[digit],"kiosk digit "+digit)
+			check(panel.code=="0832","actual keypad preserves four-digit draft")
+			await click(panel.controls.submit,"kiosk submit")
+			check(state.d.items.theaterTicketHalfB,"real kiosk keypad accepted")
+		"console":
+			for card in ["spotlight","opening","finale"]: await click(panel.controls[card],"program card "+card)
+			await click(panel.controls.submit,"program submit")
+			check(state.d.theaterHunt.phase=="prop_setup","real program cards accepted")
+		"c4_duty":
+			# Fresh source draft: elevator, 104, 105. Move the actual card twice.
+			await click(panel.find_child("down_main_elevator",true,false),"C4 duty first move")
+			await click(panel.find_child("down_main_elevator",true,false),"C4 duty second move")
+			await click(panel.submit_button,"C4 order submit")
+			check(panel.session.completed and state.d.chapter4.factIds.has("a1_duty_board_reconstructed"),"real C4 order accepted")
+			await click(panel.close_button,"return from completed duty device")
+		"c4_numeric":
+			await click(panel.submit_button,"C4 initial wrong calibration")
+			check(not state.d.chapter4.factIds.has("a2_positioning_plate_calibrated") and not panel.session.feedback.is_empty(),"wrong calibration keeps live controls and no fact")
+			for step in ["minus_horizontal","minus_horizontal","plus_vertical","plus_pressure","plus_pressure","plus_pressure"]:
+				await click(panel.find_child(step,true,false),"C4 axis "+step)
+			await click(panel.submit_button,"C4 calibration submit")
+			check(panel.session.completed and state.d.chapter4.factIds.has("a2_positioning_plate_calibrated"),"real C4 numeric axis input accepted")
+			await click(panel.close_button,"return from completed calibration")
+	check(not is_instance_valid(main.modal),id+" source return closes modal")
+	check(main.world_frame.is_visible_in_tree() and state.d.native.scene==scene,id+" source return retains visible world")
+	if id=="kiosk":
+		main.c3_narrative_host.tick(0,true)
+		check(main.c3_narrative_host.current!=null,"real keypad submission reaches original narrative queue")
+		for _i in range(300):
+			if main.c3_narrative_host.current==null: break
+			main.c3_narrative_host.tick(100,true)
+		check(main.c3_narrative_host.current==null,"keypad dialogue completes in visible world")
+	if id in ["mixer","c4_duty","c4_numeric"]:
+		check(main.world.player==position,"source modal close retains exact world position")
+		state.act("phone_refresh",{}); await process_frame
+		check(main.world_frame.is_visible_in_tree(),"refresh after modal return keeps world visible")
+		await interact(action)
+		var reopened: Control=main.modal if c4 else main.c3_device_panel
+		check(is_instance_valid(reopened) and reopened.is_visible_in_tree(),"same world device reopens live controls")
+		if is_instance_valid(reopened):
+			if c4: check(reopened.session.completed,"reopened C4 completed state comes from controller fact")
+			else: check(reopened.model.layers.size()==1,"reopened mixer retains partial pour")
+			await click(reopened.close_button if c4 else reopened.exit_button,"close reopened world device")
+		check(not is_instance_valid(main.modal),"reopened world device closes through live control")
 
 func rain_return() -> void:
 	# The real issued reduced-motion rescue owns its elapsed clock and callback.
@@ -194,7 +262,27 @@ func closure_return() -> void:
 	root.size=Vector2i(430,844); await process_frame; await process_frame
 	main.world.set_process(false); main._show_world_mobile()
 	var request: Dictionary=state.act("c4_lamp_start")
-	check(request.has("game") and is_instance_valid(main.active_game),"actual final lamp activity issued")
+	check(request.has("game") and main.active_game==null and is_instance_valid(main.world_effect),"actual closure request starts source door before lamp")
+	if not is_instance_valid(main.world_effect): return
+	var door: Control=main.world_effect
+	var before: Dictionary=state.d.chapter4.duplicate(true)
+	var source_duration: float=door.source.presentationMs
+	check(source_duration==1500.0,"door uses original 240ms delay, 880ms opening and 380ms hold")
+	var started: int=Time.get_ticks_msec()
+	var observed: Dictionary={"elapsed_ms":-1.0,"wall_ms":-1}
+	door.opened.connect(func():
+		observed.elapsed_ms=door.elapsed_ms
+		observed.wall_ms=Time.get_ticks_msec()-started
+	)
+	# Let the real process/focus/delta-clamp clock deliver its registered callback.
+	# A monotonic bound prevents hanging; no timers or story gates are shortened.
+	while not is_instance_valid(main.active_game) and Time.get_ticks_msec()-started<10000:
+		if not is_instance_valid(door): break
+		await process_frame
+	check(is_instance_valid(main.active_game),"actual source door completion issues final lamp activity")
+	check(float(observed.elapsed_ms)>=source_duration,"registered door callback waits for full source clock")
+	print("Door handoff observed: source=",observed.elapsed_ms,"ms; wall=",observed.wall_ms,"ms")
+	check(state.d.chapter4==before,"door handoff never writes answer or completion facts")
 	if not is_instance_valid(main.active_game): return
 	var activity: Control=main.active_game; activity.set_process(false)
 	await process_frame; await process_frame

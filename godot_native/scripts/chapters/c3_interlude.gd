@@ -143,6 +143,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		s.native.c35_summary_choice=value
 		return response()
 	if action=="c35_journal":
+		# Source completeJournalCloseout is idempotent. A stale submit must not
+		# replace the published wording or send later evidence back a phase.
+		if c.evidenceIds.has("journal_start"): return response("离湖回复已保存。")
 		if value not in ["safe_return","details_withheld"]: return locked()
 		s.qizhenLake.journal.summaryChoice=value
 		s.qizhenLake.journal.summaryPublished=true
@@ -211,6 +214,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 				if frame.id==str(value): s.native.c35_frame=str(value); return response()
 			return locked()
 		"c35_photos":
+			# Keep the accepted evidence immutable on repeated/wrong submissions,
+			# matching source submitPhotoSequence's already_complete boundary.
+			if c.photoSequenceSolved: return response("连续帧已恢复。")
 			var order: Array=order_value(value,3)
 			c.photoFrameIds=order.filter(func(id: Variant) -> bool: return id in PHOTOS)
 			if order!=PHOTOS: return response("照片中的移动不连续。再核对纸条位置、岸边参照和镜像方向。")
@@ -230,6 +236,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if recording.is_empty() or not voice_reviewed(s,str(recording.id)) or index<0 or index>=recording.get("soundEvents",[]).size(): return locked("先试听这段录音。")
 			return start_voice(s,recording,index)
 		"c35_voice":
+			if c.voiceSequenceSolved: return response("录音已恢复，记录终点：22:45:00。")
 			var order: Array=order_value(value,4)
 			if order!=VOICES: return response("录音未形成连续路径。核对水声、硬岸、室内环境与末段广播。")
 			for id: String in order:

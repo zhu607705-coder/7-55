@@ -505,10 +505,15 @@ func _draw() -> void:
 	if background:
 		for cover in foreground:
 			var baseline := float(cover.get("baselineY",cover.get("sortY",cover.get("bottom",0))))
-			if player.y >= baseline: continue
-			var region := _rect(cover.get("maskBounds",cover))
 			var alpha := 1.0 - float(cover.get("playerRevealAlpha",0.0))
+			if scene_id=="canteen_interior" and chapter3_layers!=null:
+				var occlusion: Dictionary=chapter3_layers.canteen_occlusion(cover,player,bool(State.d.native.settings.reduced_motion))
+				if not occlusion.visible: continue
+				alpha=occlusion.alpha
+			elif player.y >= baseline: continue
+			var region := _rect(cover.get("maskBounds",cover))
 			draw_texture_rect_region(background,Rect2(origin+region.position*zoom,region.size*zoom),region,Color(1,1,1,alpha))
+	if chapter3_layers!=null: chapter3_layers.draw_landmarks(self,layer_context,State.d)
 	if library_layers!=null: library_layers.draw_front(self,layer_context,State.d)
 	if chapter4_layers != null: chapter4_layers.draw_front(self,layer_context,State.d)
 	if lake_session!=null: lake_session.draw(self,origin,zoom,bool(State.d.native.settings.reduced_motion))

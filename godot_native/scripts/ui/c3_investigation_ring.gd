@@ -20,10 +20,25 @@ func configure(nodes: Array) -> void:
 		box.set_border_width_all(2)
 		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: button.add_theme_stylebox_override(mode,box)
 		button.pressed.connect(func() -> void: page_requested.emit(node.page))
+		# Source InvestigationRing uses cyclic investigation order. Godot's
+		# spatial nearest-control navigation stalls at the rightmost node.
+		button.gui_input.connect(_node_input.bind(button))
 		add_child(button)
 		buttons.append(button)
 	resized.connect(layout)
 	layout()
+func _node_input(event: InputEvent,button: Button) -> void:
+	if not event is InputEventKey or not event.pressed or event.echo or buttons.is_empty(): return
+	var index: int=buttons.find(button)
+	var next: int=index
+	match event.keycode:
+		KEY_RIGHT,KEY_DOWN: next=(index+1)%buttons.size()
+		KEY_LEFT,KEY_UP: next=posmod(index-1,buttons.size())
+		KEY_HOME: next=0
+		KEY_END: next=buttons.size()-1
+		_: return
+	button.accept_event()
+	buttons[next].grab_focus()
 func layout() -> void:
 	var width: float=maxf(size.x,custom_minimum_size.x)
 	for index: int in range(buttons.size()):
