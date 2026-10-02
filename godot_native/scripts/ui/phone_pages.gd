@@ -1658,6 +1658,12 @@ func _library(page: String, view: Dictionary) -> Control:
 	if rows.is_empty():
 		_panel(root,Rect2(16,76,346,342),Color.WHITE,Color("c7d0da"),3,1)
 		_label(root,str(view.get("body","")),Rect2(31,91,315,310),20,Color("34445c"))
+		if page=="library_record":
+			for action: Dictionary in view.get("actions",[]):
+				if action.id!="lib_record": continue
+				var record=_act(root,str(action.label),Rect2(16,434,346,48),str(action.id),null,BLUE,Color.WHITE,3,Color.TRANSPARENT)
+				record.name="LibraryRecordAction"
+				record.disabled=bool(action.get("disabled",false))
 	else:
 		_label(root,str(view.get("body","")),Rect2(20,67,338,102),17,MUTED)
 		y = 180

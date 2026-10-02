@@ -55,3 +55,28 @@ func pick(point: Vector2, current_targets: Array, inventory_drop: bool=false) ->
 			return target
 		if surface.painted: return {}
 	return {}
+
+func pick_near_visible(point: Vector2,current_targets: Array,inventory_drop: bool,tolerance: float,visible: Rect2,covered: Array=[]) -> Dictionary:
+	if not visible.has_point(point) or _covered(point,covered): return {}
+	var exact:=pick(point,current_targets)
+	if not exact.is_empty(): return _drop_eligible(exact,inventory_drop)
+	# Exact painted occlusion wins over tolerance. No item compatibility or
+	# puzzle requirement is consulted while choosing the physical object.
+	for surface: Dictionary in surfaces:
+		if surface.painted and contains(surface.geometry,point): return {}
+	for ring in [0.35,0.65,1.0]:
+		for index in range(16):
+			var sample:Vector2=point+Vector2.from_angle(TAU*index/16)*tolerance*ring
+			if not visible.has_point(sample) or _covered(sample,covered): continue
+			var candidate:=pick(sample,current_targets)
+			if not candidate.is_empty(): return _drop_eligible(candidate,inventory_drop)
+	return {}
+
+func _drop_eligible(target: Dictionary,inventory_drop: bool) -> Dictionary:
+	if inventory_drop and str(target.get("item","")).is_empty() and target.get("acceptedItems",[]).is_empty(): return {}
+	return target
+
+func _covered(point: Vector2,rects: Array) -> bool:
+	for rect: Rect2 in rects:
+		if rect.has_point(point): return true
+	return false

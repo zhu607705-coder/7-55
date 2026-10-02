@@ -53,6 +53,7 @@ var inventory_scroll: ScrollContainer
 var inventory_dock_rect := Rect2()
 var inventory_handle: Button
 var compact_inventory_open := false
+var compact_world_contract := false
 var media_host: Node
 var world_effect: Control
 var battery_prank: Control
@@ -239,6 +240,8 @@ func _build_shell() -> void:
 	inventory_scroll.add_child(inventory_buttons)
 	inventory_handle=_button("展开物品栏",func(): compact_inventory_open=not compact_inventory_open; _layout(),Vector2(120,44))
 	inventory_handle.name="WorldInventoryHandle"
+	inventory_handle.autowrap_mode=TextServer.AUTOWRAP_OFF
+	inventory_handle.clip_text=true
 	add_child(inventory_handle)
 	toast = PhoneNotice.create()
 	toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -286,6 +289,7 @@ func _uses_split_layout() -> bool:
 	return not DisplayServer.is_touchscreen_available() and size.x>=1100 and size.x>size.y and not str(State.d.get("native",{}).get("scene","")).is_empty()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if _action=="lib_story_complete" and not str(result.get("story_finished","")).is_empty(): _focus_library_story.call_deferred()
 	if _action in ["c4_checkin_card","c4_checkin_paper"] and current.get("chapter4",{}).get("phase","")=="exterior_closure" and _previous.get("chapter4",{}).get("phase","")=="morning_checkin":
 		# Source check-in hands off automatically through the actual door reveal.
 		_show_world_mobile()
@@ -343,35 +347,60 @@ func _layout() -> void:
 		photo_brightness_session.observe("photos",State.d.ui)
 	world_frame.visible = split or mobile_world
 	mobile_back.visible = mobile_world and not split and not is_instance_valid(active_game)
-	if mobile_world and not split:
-		var compact_scale := minf((available.x-12)/980.0,(available.y-80)/560.0)
-		world_frame.scale = Vector2.ONE*compact_scale
-		world_frame.position = Vector2((available.x-980*compact_scale)/2,(available.y-560*compact_scale)/2)
-		mobile_back.position = Vector2(12,12)
-	if split:
-		var free := available.x - phone.position.x - 430*phone_scale - 36
-		var scale_world := minf(free/980.0,(available.y-150)/560.0)
-		world_frame.scale = Vector2.ONE * scale_world
-		world_frame.position = Vector2(phone.position.x+430*phone_scale+18,(available.y-560*scale_world)/2)
 	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
+	var compact: bool=mobile_world and not split and not _authored_world_contract()
+	compact_world_contract=compact
 	inventory_handle.visible=mobile_world and not split and inventory_available
 	inventory_handle.text="%s物品栏 · %d"%["收起" if compact_inventory_open else "展开",inventory_buttons.get_child_count()]
-	inventory_handle.position=Vector2(12,available.y-56)
-	inventory_handle.size=Vector2(available.x-24,44)
 	inventory_dock.visible=(split or (mobile_world and compact_inventory_open)) and inventory_available
-	if split:
-		inventory_dock.position=world_frame.position+Vector2(0,world_frame.size.y*world_frame.scale.y+12)
-		inventory_dock.size=Vector2(world_frame.size.x*world_frame.scale.x,76)
-	elif mobile_world:
-		inventory_dock.position=Vector2(12,available.y-140)
-		inventory_dock.size=Vector2(available.x-24,76)
-		# Keep portrait's existing world transform whenever it fits. In a short
-		# window, fit the same 960x540 surface between Back and the bottom bag.
-		if inventory_handle.visible:
-			var bottom: float=(inventory_dock.position.y if compact_inventory_open else inventory_handle.position.y)-12
-			var compact_scale:=minf(world_frame.scale.x,maxf(1,bottom-64)/560.0)
+	# Exploration uses screen pixels as its logical viewport. Original source
+	# art, actors, collisions, and controllers retain their existing coordinates.
+	var world_extent:=Vector2(960,540)
+	var border: StyleBoxFlat=world_frame.get_theme_stylebox("panel")
+	var margin:=2.0 if compact else 10.0
+	border.content_margin_left=margin; border.content_margin_right=margin
+	border.content_margin_top=margin; border.content_margin_bottom=margin
+	if compact:
+		world_frame.scale=Vector2.ONE
+		var scene_rect:=Rect2(8,64,available.x-16,available.y-72)
+		mobile_back.position=Vector2(8,8)
+		if available.x>available.y:
+			# A landscape bag takes a side tray, preserving the scene's height.
+			var tray_width:=minf(288,available.x*.35) if compact_inventory_open else 196.0
+			inventory_handle.position=Vector2(available.x-tray_width-8,8)
+			inventory_handle.size=Vector2(tray_width,44)
+			inventory_dock.position=Vector2(available.x-tray_width-8,64)
+			inventory_dock.size=Vector2(tray_width,76)
+			if inventory_dock.visible: scene_rect.size.x-=tray_width+8
+		else:
+			inventory_handle.position=Vector2(12,available.y-56)
+			inventory_handle.size=Vector2(available.x-24,44)
+			inventory_dock.position=Vector2(12,available.y-140)
+			inventory_dock.size=Vector2(available.x-24,76)
+			if inventory_handle.visible: scene_rect.size.y=(inventory_dock.position.y if inventory_dock.visible else inventory_handle.position.y)-8-scene_rect.position.y
+		world_frame.position=scene_rect.position
+		world_extent=scene_rect.size-Vector2.ONE*4
+		world_frame.size=scene_rect.size
+	else:
+		world_frame.size=Vector2(980,560)
+		inventory_handle.position=Vector2(12,available.y-56)
+		inventory_handle.size=Vector2(available.x-24,44)
+		if split:
+			var free := available.x - phone.position.x - 430*phone_scale - 36
+			var scale_world := minf(free/980.0,(available.y-150)/560.0)
+			world_frame.scale = Vector2.ONE * scale_world
+			world_frame.position = Vector2(phone.position.x+430*phone_scale+18,(available.y-560*scale_world)/2)
+			inventory_dock.position=world_frame.position+Vector2(0,560*scale_world+12)
+			inventory_dock.size=Vector2(980*scale_world,76)
+		elif mobile_world:
+			mobile_back.position=Vector2(12,12)
+			inventory_dock.position=Vector2(12,available.y-140)
+			inventory_dock.size=Vector2(available.x-24,76)
+			var bottom: float=(inventory_dock.position.y if inventory_dock.visible else inventory_handle.position.y)-12 if inventory_handle.visible else available.y-12
+			var compact_scale:=minf((available.x-12)/980.0,maxf(1,bottom-64)/560.0)
 			world_frame.scale=Vector2.ONE*compact_scale
-			world_frame.position=Vector2((available.x-980*compact_scale)/2,clampf(world_frame.position.y,64,bottom-560*compact_scale))
+			world_frame.position=Vector2((available.x-980*compact_scale)/2,64+(bottom-64-560*compact_scale)/2)
+	_configure_world_surface(world_extent,compact)
 	var dock_rect:=inventory_dock.get_global_rect()
 	if dock_rect!=inventory_dock_rect:
 		for button in inventory_buttons.get_children(): button.cancel_gesture()
@@ -392,6 +421,28 @@ func _layout() -> void:
 		active_game.position = (available-game_viewport*game_scale)/2
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
+
+func _authored_world_contract() -> bool:
+	# These hosts own authored camera/aspect contracts, including interrupted
+	# sessions. They stay canonical until the owner actually releases them.
+	return is_instance_valid(active_game) or is_instance_valid(world_effect) or (is_instance_valid(c3_scene_host) and c3_scene_host.current!=null) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.current!=null) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
+
+func _configure_world_surface(extent: Vector2,compact: bool) -> void:
+	if not is_instance_valid(world): return
+	var dimensions:=Vector2i(maxi(1,int(extent.x)),maxi(1,int(extent.y)))
+	var changed: bool=world_viewport.size!=dimensions or world.mobile_exploration!=compact
+	world_view.custom_minimum_size=Vector2(dimensions)
+	world_view.size=Vector2(dimensions)
+	world.custom_minimum_size=Vector2(dimensions)
+	world.size=Vector2(dimensions)
+	world.mobile_exploration=compact
+	world_frame.size=Vector2(dimensions)+Vector2.ONE*(4 if compact else 20)
+	if changed:
+		for button in inventory_buttons.get_children(): button.cancel_gesture()
+		world.cancel_exploration_gestures()
+		world.pan_offset=Vector2.ZERO
+		world._update_camera()
+		world.queue_redraw()
 
 func _layout_toast() -> void:
 	if not is_instance_valid(toast): return
@@ -478,6 +529,7 @@ func _refresh() -> void:
 		phone_scroll.scroll_vertical = 0
 		phone_scroll_page = page
 	var view: Dictionary = State.get_view(page)
+	view["actions"] = State.get_actions(page)
 	status_label.text = "7:55  ·  %s  ·  %d%%" % ["校园网" if State.d.networkMode == "campus_wifi" else "移动网络",int(State.d.phoneBattery.percent)]
 	title_label.text = str(view.get("title","7:55"))
 	chapter_label.text = "7:55   /   CHAPTER %s%s" % [str(int(n.chapter))," · DEV" if State.developer_mode else ""]
@@ -538,7 +590,7 @@ func _refresh() -> void:
 				page_body.add_child(line)
 		if page == "phone_home" or page == "desktop":
 			_add_app_grid(page_body)
-	for action in State.get_actions(page):
+	for action in view.actions:
 		if custom_body and (custom_body.get_meta("handles_all_actions",false) or page == "phone_home"): continue
 		if handled_action_ids.has(str(action.id)): continue
 		var copy: Dictionary = action.duplicate(true)
@@ -965,6 +1017,14 @@ func _show_developer() -> void:
 		box.add_child(_button(str(choice[2]),func(): State.begin_preview(int(choice[0]),str(choice[1])); _close_modal()))
 	if State.developer_mode: box.add_child(_button("恢复正式进度",func(): State.restore_formal(); _close_modal()))
 
+func _focus_library_story() -> void:
+	# Library dialogue owns root focus. Return it after the view has closed so
+	# the next prompted world interaction works without a pointer click.
+	if not is_instance_valid(world) or not world_frame.is_visible_in_tree() or str(world.scene_id)!="library_interior": return
+	if world._interaction_presentation_blocks() or world._shell_input_blocked(): return
+	if State.get_library_story_session()!=null or (is_instance_valid(world_effect) and world_effect.get_meta("blocks_input",false)): return
+	world.grab_focus()
+
 func _show_world_mobile() -> void:
 	world_page_origin_scene=""
 	mobile_world = true
@@ -1083,6 +1143,7 @@ func _feedback(message: String,tone: String="system") -> void:
 	toast.move_to_front()
 
 func _process(delta: float) -> void:
+	if compact_world_contract!=(mobile_world and not _uses_split_layout() and not _authored_world_contract()): _layout()
 	_sync_inventory_dock_input()
 	if is_instance_valid(c3_device_panel) and c3_device_panel.compact_layout and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")

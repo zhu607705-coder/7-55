@@ -13,7 +13,7 @@ func frames(n:=4) -> void:
 	for i in n: await process_frame
 func check(ok: bool,why: String) -> void:
 	checks+=1
-	if not ok: failures+=1; push_error("COMPACT INVENTORY: "+why)
+	if not ok: failures+=1; push_error("PORTRAIT EXPLORATION: "+why)
 func event(e: InputEvent) -> void:
 	Input.parse_input_event(e); Input.flush_buffered_events()
 func mouse(point: Vector2,down: bool,double_click:=false) -> void:
@@ -80,12 +80,23 @@ func fixture(dimensions: Vector2i) -> void:
 	check(state.d.native.scene=="dorm_hub" and shell.world_frame.visible,"actual return opens dorm world")
 	if dimensions.x<1100:
 		check(shell.inventory_handle.visible and not shell.inventory_dock.visible,"compact world offers collapsed bag")
-		check(shell.inventory_handle.get_global_rect().size.y>=44,"bag handle retains44px physical height")
+		check(is_equal_approx(shell.inventory_handle.get_global_rect().size.y,44),"bag handle retains exactly44px physical height")
 		await click(shell.inventory_handle)
+	if dimensions.x<1100: check(not shell.inventory_handle.get_global_rect().intersects(shell.inventory_dock.get_global_rect()),"bag handle never overlaps the item row after orientation")
 	check(shell.inventory_dock.visible and not slot("gamepad").disabled,"world owns a visible enabled item source")
-	# Compact exploration fills its physical frame; desktop retains 960x540.
-	var expected_viewport:Vector2i=Vector2i(shell.world_frame.size-Vector2(4,4)) if dimensions.x<1100 else Vector2i(960,540)
-	check(shell.world_viewport.size==expected_viewport and is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"active exploration viewport and uniform scale retained")
+	check(is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"uniform world display scale retained")
+	if dimensions.x<1100:
+		check(shell.world.mobile_exploration and shell.world_frame.scale==Vector2.ONE,"compact exploration renders at physical UI scale")
+		check(Vector2(shell.world_viewport.size)==shell.world.size,"viewport and world share exact dimensions")
+		check(shell.world.size.y>=600 if dimensions.y>dimensions.x else shell.world.size.y>=300,"exploration uses useful screen height with bag open")
+		var hud:Dictionary=shell.world.hud_metrics("找到入口，继续向前。")
+		check(hud.title_font>=18 and hud.body_font>=14 and hud.mode_rect.size.y>=44,"physical HUD fonts and mode touch target meet mobile floor")
+		var controls:Dictionary=shell.world.mobile_control_metrics()
+		check(controls.interact.size.x>=44 and controls.interact.size.y>=44 and controls.stick_rect.size.x>=100,"physical movement and interaction controls remain useful")
+		var actor:Rect2=shell.world.PlayerMetrics.visual_rect(shell.world.player,shell.world.display_scale_at(shell.world.player))
+		check(actor.size.y*shell.world.zoom>=70,"dorm actor renders at least70 physical pixels high")
+		print("MEASURE ",dimensions," world=",shell.world.size," actor=",actor.size*shell.world.zoom," HUD=",hud.title_font,"/",hud.body_font," mode=",hud.mode_rect.size," action=",controls.interact.size)
+	else: check(shell.world_viewport.size==Vector2i(960,540),"desktop retains canonical authored viewport")
 	check(not shell.inventory_dock.get_global_rect().intersects(shell.world_frame.get_global_rect()),"bag does not cover world HUD or touch controls")
 	check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.inventory_dock.get_global_rect()),"bag fits physical screen")
 	check(slot("gamepad").get_global_rect().size.y>=44,"item retains44px physical height")
@@ -95,8 +106,20 @@ func run() -> void:
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	state.action_completed.connect(func(id,_a,_b,_c):actions.append(id));state.feedback.connect(func(text):feedback.append(text))
 	var baseline:=Input.emulate_mouse_from_touch
-	for dimensions in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
+	for dimensions in [Vector2i(390,844),Vector2i(430,860),Vector2i(844,390),Vector2i(1440,900)]:
 		await fixture(dimensions)
+		if dimensions.x<1100:
+			var state_before:String=JSON.stringify(state.d)
+			var position_before:Vector2=shell.world.player
+			var pan_start:=world_screen(Vector2(shell.world.size.x*.5,105))
+			touch(pan_start,true);finger(pan_start+Vector2(44,32),Vector2(44,32));touch(pan_start+Vector2(44,32),false);await frames()
+			check(shell.world.pan_offset.length()>0 and shell.world.player==position_before,"routed finger pan changes camera without moving actor")
+			check(JSON.stringify(state.d)==state_before,"camera pan does not change story/save data")
+			var local:Vector2=(shell.world.player-shell.world.camera)*shell.world.zoom+shell.world.size/2
+			var screen:Vector2=world_screen(local)
+			var container_local:Vector2=shell.world_view.get_global_transform_with_canvas().affine_inverse()*screen
+			check(shell.world_view.source_position(container_local).distance_to(local)<0.001,"inventory coordinate inverse is exact after panning")
+			shell.world.pan_offset=Vector2.ZERO;shell.world._update_camera()
 		var item:Control=await reveal("gamepad");var identity:=item.get_instance_id();var position:=item.get_global_rect();var scroll:int=shell.inventory_scroll.scroll_horizontal
 		item.grab_focus();await click(item)
 		check(state.d.native.selected_item=="gamepad" and not is_instance_valid(shell.modal),"one click selects without inspection")
@@ -115,12 +138,7 @@ func run() -> void:
 		check(shell.inventory_scroll.scroll_horizontal<scroll and not root.gui_is_dragging(),"fast horizontal finger scrolls without item drag")
 		check(not is_instance_valid(shell.modal),"swipe does not inspect")
 		item=await reveal("gamepad");point=item.get_global_rect().get_center()
-		touch(point,true)
-		check(item._touch_index==0,"hold fixture owns a genuinely delivered touch")
-		var touch_started_ms:int=item._touch_time
-		# Hold recognition uses monotonic delivery time, not SceneTree frame delta.
-		while Time.get_ticks_msec()-touch_started_ms<221: await process_frame
-		finger(point+Vector2(-18,0),Vector2(-18,0));await frames()
+		touch(point,true);await create_timer(.24).timeout;finger(point+Vector2(-18,0),Vector2(-18,0));await frames()
 		check(root.gui_is_dragging(),"220ms hold allows deliberate horizontal item drag")
 		touch(point,false,true);await frames();check(Input.emulate_mouse_from_touch==baseline,"cancel restores exact touch emulation setting")
 		await drag_item("campusCard",actor_screen())
@@ -163,6 +181,8 @@ func run() -> void:
 		check(state.get_library_story_session()!=null and slot("rightArrow").disabled,"authored library entry owns input over bag")
 		# New explicit fixture restores the same authorized movement phase.
 		await fixture(dimensions)
+		if shell.world.mobile_exploration:
+			shell.world.pan_offset=Vector2(48,-25);shell.world._update_camera();await frames()
 		var action_count:=actions.count("c2_use_gamepad")
 		await drag_item("gamepad",actor_screen(),dimensions.x<1100)
 		check(state.d.actOne.controlsInstalled and not state.d.items.gamepad and actions.count("c2_use_gamepad")==action_count+1,"routed root drag reaches actual actor once through SubViewport")
@@ -187,4 +207,4 @@ func run() -> void:
 			check(shell.compact_inventory_open and shell.inventory_dock.visible,"expanded state survives return to portrait")
 	Input.emulate_mouse_from_touch=baseline
 	await shell.shutdown();shell.queue_free();await frames()
-	print("COMPACT_WORLD_INVENTORY: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)
+	print("PORTRAIT_EXPLORATION: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)

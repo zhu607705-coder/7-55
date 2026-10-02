@@ -45,7 +45,7 @@ func run() -> void:
 		check(Layout.font_size(21,12,scale)*scale>=11.99,"touch captions keep12px physical text without moving controls")
 		var mode_rect: Rect2=world.hud_mode_rect()
 		check(Rect2(Vector2.ZERO,world.size).encloses(mode_rect),"mode hitbox is inside world HUD")
-		if scale<0.7: check(mode_rect.size.y*scale>=28 and mode_rect.size.x*scale>=28,"compact mode hitbox exceeds28px")
+		if scale<0.7 or world.mobile_exploration: check(mode_rect.size.y*scale>=28 and mode_rect.size.x*scale>=28,"compact mode hitbox exceeds28px")
 		var previous_mode: String=state.d.native.mode
 		var view_transform: Transform2D=shell.world_view.get_global_transform_with_canvas()
 		var mode_point: Vector2=view_transform*mode_rect.get_center()
