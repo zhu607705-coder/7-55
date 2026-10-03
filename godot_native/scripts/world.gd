@@ -1,6 +1,7 @@
 extends Control
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
+const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
 const KayakVisual = preload("res://scripts/ui/kayak_visual.gd")
@@ -33,6 +34,7 @@ var _floor_view_size := Vector2.ZERO
 var _floor_view_zoom := 0.0
 var _floor_world_key := ""
 var _floor_planner := MobileFloorRoute.new()
+var _canteen_floor_tap := CanteenFloorTap.new()
 var nearby: Dictionary = {}
 var walk_clock := 0.0
 var facing := "down"
@@ -1013,6 +1015,31 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 		if not can_stand(a.lerp(b,cuts[index])) or not can_stand(a.lerp(b,(cuts[index-1]+cuts[index])*.5)): return false
 	return true
 
+func _floor_empty_destination(point: Vector2) -> bool:
+	var local: Vector2=(point-camera)*zoom+size/2
+	var hud:=hud_metrics(_hud_line())
+	var visible:=Rect2(0,hud.header_height,size.x,size.y-hud.header_height-hud.body_height-hud.body_gap)
+	var controls:=mobile_control_metrics()
+	if not visible.has_point(local) or controls.stick_rect.has_point(local) or controls.interact.has_point(local): return false
+	for surface: Dictionary in object_picker.surfaces:
+		if surface.painted and object_picker.contains(surface.geometry,point): return false
+	var frames: Array=player_frames.get(facing,[])
+	if not frames.is_empty():
+		var frame: Texture2D=player_side_idle if facing=="side" and walk_clock<=0 else frames[PlayerMetrics.frame_at(walk_clock*1000)]
+		if object_picker.contains({"rect":PlayerMetrics.visual_rect(player,display_scale_at(player)),"texture":frame,"flip_h":player_flip and facing=="side"},point): return false
+	return _pick_target(point).is_empty()
+
+func _canteen_floor_goal(goal: Vector2,obstacles: Array) -> Vector2:
+	# This precision aid applies only to the measured rectangle-only canteen.
+	# Exact legal goals, including disconnected ones, keep their original intent.
+	_canteen_floor_tap.candidate_count=0
+	if scene_id!="canteen_interior" or not mask.is_empty() or _floor_stand(goal): return goal
+	var point:=goal+PlayerMetrics.FOOT_CENTER_OFFSET
+	for obstacle: Dictionary in collisions:
+		if _rect(obstacle).has_point(point): return goal
+	if not Rect2(Vector2.ZERO,world_size).encloses(PlayerMetrics.visual_rect(goal,display_scale_at(goal))): return goal
+	return _canteen_floor_tap.nearest(goal,CanteenFloorTap.PIXEL_RADIUS/zoom,obstacles,_floor_stand,func(anchor: Vector2): return _floor_empty_destination(anchor+PlayerMetrics.FOOT_CENTER_OFFSET))
+
 func _mobile_floor_tap(local: Vector2) -> void:
 	_cancel_floor_route(); move_target=Vector2.INF
 	if presentation_actor_hidden or capture_mode or _interaction_presentation_blocks() or _shell_input_blocked(): return
@@ -1042,6 +1069,10 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	# or its shadow at +39. Object and inventory hit coordinates are unchanged.
 	var goal:=point-PlayerMetrics.FOOT_CENTER_OFFSET
 	var obstacles:=_floor_obstacles()
+	var resolved:=_canteen_floor_goal(goal,obstacles)
+	if resolved!=goal:
+		goal=resolved
+		_floor_goal=goal+PlayerMetrics.FOOT_CENTER_OFFSET
 	_floor_route=_floor_planner.plan(player,goal,obstacles,_floor_bounds,_floor_stand,func(a: Vector2,b: Vector2): return _floor_segment_clear(a,b,obstacles,true))
 	if _floor_route.is_empty(): _stop_floor_route()
 	else: _floor_status="moving"
@@ -1049,11 +1080,15 @@ func _mobile_floor_tap(local: Vector2) -> void:
 
 func _draw_floor_route(origin: Vector2) -> void:
 	if _floor_goal==Vector2.INF or capture_mode or presentation_actor_hidden: return
-	var color:=Color(.74,.87,.77,.48)
+	var color:=Color(.74,.87,.77,.9)
 	var previous: Vector2=origin+PlayerMetrics.foot_rect(player).get_center()*zoom
 	for anchor: Vector2 in _floor_route:
 		var next: Vector2=origin+PlayerMetrics.foot_rect(anchor).get_center()*zoom
 		draw_line(previous,next,Color(.74,.87,.77,.23),1.0,true); previous=next
 	var point:=origin+_floor_goal*zoom
-	draw_arc(point,7,0,TAU,24,color,1.25,true)
-	if _floor_status=="blocked": draw_line(point+Vector2(-5,5),point+Vector2(5,-5),color,1.25,true)
+	if _floor_status=="blocked":
+		var blocked:=Color("f0b35e")
+		draw_circle(point,10,Color(.08,.06,.03,.8))
+		draw_line(point+Vector2(-5,-5),point+Vector2(5,5),blocked,2.5,true)
+		draw_line(point+Vector2(-5,5),point+Vector2(5,-5),blocked,2.5,true)
+	else: draw_arc(point,7,0,TAU,24,color,1.5,true)

@@ -1,0 +1,73 @@
+{
+  "baseCommit": "4c076a830a834366420f6530351e50498f65cae3",
+  "runtimeSha256": "ea1bb7f07acf264a6d1de1bafca058f9ab80b23d95bcbcfecfede10576b290fe",
+  "runtimeFileCount": 1058,
+  "runtimeHashAlgorithm": "SHA256 of newline-joined sorted path + NUL + file SHA256",
+  "productionHashStable": true,
+  "aggregate": {
+    "stages": 177,
+    "failures": 0,
+    "singleCleanFinalRun": true,
+    "reportSha256": "2d8bb7503ce14984a6818b809d8102a4ac11387213b492708542f773bc4bb8d5"
+  },
+  "previousRevision": {
+    "stages": 176,
+    "failures": 0,
+    "runtimeSha256": "cb5b2732cbec1b49f185c8055d06ca2568816eca4d2201cd4a1f3ab9021372ef",
+    "difference": "Final menu-order objective restored after actual CUA exposed generic fallback; final177 gate rerun covers correction."
+  },
+  "export": {
+    "Linux": "passed",
+    "Windows": "build_only_passed",
+    "packedCampaignChecks": 795,
+    "nativeOnlyInitialChecks": 25,
+    "nativeOnlyReloadChecks": 21,
+    "failures": 0,
+    "sourceTreeUsed": false,
+    "webRuntimePacked": false,
+    "nodeRequired": false,
+    "artifacts": [
+      {
+        "name": "7-55-native.exe",
+        "bytes": 638870576,
+        "sha256": "6a961edc8a8375e56801f7eee33b1d319445c74a8a168e550b899197ca33c047"
+      },
+      {
+        "name": "7-55-native.pck",
+        "bytes": 534211108,
+        "sha256": "db39995ee310c9c7d6a16408e23ff6ed0f376ada8bbb02d820bab06dd6a9d292"
+      },
+      {
+        "name": "7-55-native.x86_64",
+        "bytes": 71075864,
+        "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+      }
+    ]
+  },
+  "actualInput": {
+    "continuousMain": "390 partial mixer save/reload, correct mix and board/queue handoff;430 corrected menu objective and dark/light menu observation",
+    "ordinaryCopy": "390 exact endpoint before/after and solid-wall refusal;430 wrong recipe produces faileddrink without queue progress",
+    "exported": "430 standalone journal and native menu after ordinary save reload, clean normalclose",
+    "formalAcceptancePromotion": false,
+    "physicalMobileTested": false,
+    "humanListeningVerified": false
+  },
+  "knownSeparateDefect": "Original optional badDrink self-tasting target is missing. Reproduced and preserved for a separate narrow repair; no claim of complete mixer branch acceptance.",
+  "guiImages": [
+    {
+      "path": "exported-430-menu-objective.png",
+      "bytes": 30085,
+      "sha256": "32987fc30ce483e108f3bd3be3f855f05ca6a5811cd16b8773dc02731d20a000"
+    },
+    {
+      "path": "exported-430-menu-panel.png",
+      "bytes": 41904,
+      "sha256": "f59e40b45f683d81d75d789ccc9eedcad0a95a88240e6c8f4c1b45b15838cca3"
+    },
+    {
+      "path": "exported-430-world.png",
+      "bytes": 554438,
+      "sha256": "31aa4b975c5705d1c09d598ce5d2239f38ccc2689026a638ca3f80e74cb9d44b"
+    }
+  ]
+}

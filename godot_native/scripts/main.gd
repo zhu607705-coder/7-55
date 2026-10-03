@@ -42,6 +42,7 @@ var mobile_world := false
 var world_page_origin_scene := ""
 var phone_scroll_page := ""
 var mobile_back: Button
+var world_tasks: Button
 var voice_player: AudioStreamPlayer
 var phone_builder: RefCounted
 var later_phone_builder: RefCounted
@@ -257,6 +258,12 @@ func _build_shell() -> void:
 	add_child(voice_player)
 	mobile_back = _button("返回手机主页",func(): mobile_world = false; State.open_page("phone_home"); _layout(),Vector2(180,44))
 	add_child(mobile_back)
+	world_tasks = _button("任务",_show_world_journal,Vector2(84,44))
+	world_tasks.name = "WorldTasks"
+	world_tasks.autowrap_mode = TextServer.AUTOWRAP_OFF
+	world_tasks.clip_text = true
+	world_tasks.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	add_child(world_tasks)
 	file_dialog = FileDialog.new()
 	file_dialog.theme = NativeFileDialogTheme.create(font)
 	file_dialog.access = FileDialog.ACCESS_FILESYSTEM
@@ -362,6 +369,7 @@ func _layout() -> void:
 		photo_brightness_session.observe("photos",State.d.ui)
 	world_frame.visible = split or mobile_world
 	mobile_back.visible = mobile_world and not split and not is_instance_valid(active_game)
+	world_tasks.visible = mobile_back.visible
 	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
 	var compact: bool=mobile_world and not split and not _authored_world_contract()
 	compact_world_contract=compact
@@ -415,6 +423,10 @@ func _layout() -> void:
 			var compact_scale:=minf((available.x-12)/980.0,maxf(1,bottom-64)/560.0)
 			world_frame.scale=Vector2.ONE*compact_scale
 			world_frame.position=Vector2((available.x-980*compact_scale)/2,64+(bottom-64-560*compact_scale)/2)
+	# Reuse the existing top row; the landscape bag keeps its own right edge.
+	var tasks_right: float = inventory_handle.position.x-8 if compact and available.x>available.y and inventory_handle.visible else available.x-mobile_back.position.x
+	world_tasks.position = Vector2(tasks_right-84,mobile_back.position.y)
+	world_tasks.size = Vector2(84,44)
 	_configure_world_surface(world_extent,compact)
 	var dock_rect:=inventory_dock.get_global_rect()
 	if dock_rect!=inventory_dock_rect:
@@ -836,8 +848,10 @@ func _sync_inventory_dock_input() -> void:
 	if not is_instance_valid(inventory_dock): return
 	if is_instance_valid(active_game):
 		inventory_dock.hide(); inventory_handle.hide()
+		if is_instance_valid(world_tasks): world_tasks.hide()
 	var blocked:=_inventory_dock_input_blocked()
 	inventory_handle.disabled=blocked
+	if is_instance_valid(world_tasks): world_tasks.disabled=blocked
 	blocked=blocked or not inventory_dock.is_visible_in_tree()
 	for button in inventory_buttons.get_children():
 		if blocked and not button.disabled: button.cancel_gesture()
@@ -925,6 +939,12 @@ func _show_inventory() -> void:
 		if str(action.id) == "c1_combine" and count >= 2:
 			var combine: Dictionary = action
 			box.add_child(_button("组合物品",func(): _invoke_action(combine)))
+
+func _show_world_journal() -> void:
+	# A queued top-row press cannot replace another input owner or a phone page.
+	if not world_tasks.is_visible_in_tree() or _inventory_dock_input_blocked(): return
+	world.cancel_exploration_gestures()
+	_show_journal()
 
 func _show_journal() -> void:
 	var box := _modal_base("调查记录")

@@ -1,6 +1,6 @@
 extends RefCounted
-## Read-only early canteen guidance from existing controller facts.
-## Later phases keep their authored objectives; no new save or progression state.
+## Read-only canteen guidance from existing controller facts and QuestModel.
+## Includes the existing menu-order handoff; no new save or progression state.
 static func current(s: Dictionary) -> Dictionary:
 	var hunt: Dictionary=s.get("canteenHunt",{})
 	if not hunt.get("active",false): return {}
@@ -9,7 +9,7 @@ static func current(s: Dictionary) -> Dictionary:
 	var phase:=str(hunt.get("phase",""))
 	if phase=="tracking":
 		return {"id":"tracking","title":"追上逃跑的记录纸条","detail":"纸条钻进了食堂。前往东区食堂，继续追踪。"}
-	if phase not in ["tray_search","drink_mix"]: return {}
+	if phase not in ["tray_search","drink_mix","menu_order"]: return {}
 	if not hunt.get("entryPaperEscaped",false):
 		return {"id":"paper_entry","title":"靠近食堂里的异常纸条","detail":"纸条停在入口附近。靠近它，继续追踪。"}
 	var dark: bool=s.get("native",{}).get("mode","light")=="dark"
@@ -18,7 +18,28 @@ static func current(s: Dictionary) -> Dictionary:
 	var returned:=0
 	for id: String in ["tray_blue_01","tray_blue_02","tray_blue_03"]:
 		if hunt.get("returnedTrayIds",[]).has(id): returned+=1
-	if returned>=3: return {}
+	if returned>=3: return drink_handoff(s,hunt,dark)
 	if not hunt.get("carriedTrayIds",[]).is_empty():
 		return {"id":"tray_carry","title":"交回手中的餐盘（%d/3）"%returned,"detail":"一次只能搬一个餐盘。切回浅色操作，把它交给右侧收餐口阿姨。" if dark else "一次只能搬一个餐盘。把它交给右侧收餐口阿姨，再找下一只。"}
 	return {"id":"tray_return","title":"找出并交回带污渍的餐盘（%d/3）"%returned,"detail":"阿姨托你送回三只脏盘。深色观察辨认污渍，浅色操作拿起餐盘；每次搬一个。"}
+
+static func drink_handoff(s: Dictionary, hunt: Dictionary, dark: bool) -> Dictionary:
+	# Preserve src/core/QuestModel.ts canteenInteriorTask's branch order.
+	# This is guidance only: the original controller still allows exploration
+	# and mixing out of order, and owns every ingredient and queue transition.
+	if hunt.get("queueGapOpened",false):
+		if hunt.get("phase","")=="menu_order":
+			return {"id":"menu_order","title":"看看菜单里有什么异常","detail":"两种模式下，菜单有几个字不一样。\n深色观察看字，浅色操作下单。"}
+		return {}
+	var light: String="切回浅色操作。" if dark else ""
+	if not hunt.get("queueChallengeSeen",false):
+		return {"id":"queue","title":"查看第三列队伍和新品宣传板","detail":light+"继续追查食堂里的纸条。到第三列队伍前，与排队同学交谈，看看新品宣传板。"}
+	if not hunt.get("drinkShelfRead",false):
+		return {"id":"drink_shelf","title":"查看饮料货架的颜色顺序","detail":light+"排队同学说，前面的人要先看新品。到饮料货架查看颜色顺序。"}
+	if not s.get("items",{}).get("dailySpecialSparklingWater",false) and not hunt.get("promoDrinkPlaced",false):
+		return {"id":"drink_mix","title":"按货架顺序调配今日新品（%d/3）"%hunt.get("drinkMixSequence",[]).size(),"detail":light+"前面的队伍在等新品。饮料机提供原料；到调配台，按已查看的货架顺序倒入。"}
+	if not hunt.get("promoDrinkPlaced",false):
+		# Original prose says window 3; the authored target label says window 5.
+		# Name the visible board and cup slot without a contradictory number.
+		return {"id":"promo_drop","title":"把今日新品气泡水放入宣传板空杯位","detail":light+"新品已调好。把它放到新品宣传板下方的空杯位，再继续追查纸条。"}
+	return {"id":"queue_shift","title":"等待第三列队伍让出位置","detail":"新品已放进宣传板。等队伍移动后，继续追查纸条。"}
