@@ -2,6 +2,7 @@ extends RefCounted
 ## Additive source app content. Only existing controller intents grant evidence.
 const DropButton=preload("res://scripts/ui/phone_drop_button.gd")
 const Chrome=preload("res://scripts/ui/phone_chrome.gd")
+const PostStore=preload("res://scripts/data/cc98_store.gd")
 const INK=Color("163f4a")
 const TEAL=Color("247990")
 const ROWS=[
@@ -35,7 +36,12 @@ func augment_posts(b,posts: Array) -> void:
 		replies.append({"personaId":["late-printer","yuquan-wind","anonymous-user"][i],"time":"今天 09:%02d"%(12+i*2),"floor":"%d楼"%[3,8,14][i],"text":raw.substr(raw.find("：")+1),"likes":str([7,4,14][i]),"dislikes":"0"})
 	for post: Dictionary in posts:
 		if post.id=="qizhen-wet-paper-witness": post.threadReplies=replies; return
-	posts.append({"id":"qizhen-wet-paper-witness","author":"匿名用户","avatar":"anonymous","rank":"12","board":"校园生活","title":content.locationSearch.cc98.title,"replies":"3","views":"755","time":"刚刚","body":"如题。","threadReplies":replies})
+	# Source CC98 renders questPosts before ordinary posts, including the first
+	# searched witness before its keyword has been collected.
+	var ordinary_start := 0
+	while ordinary_start < posts.size() and str(posts[ordinary_start].get("id","")) in PostStore.QUEST_IDS:
+		ordinary_start += 1
+	posts.insert(ordinary_start,{"id":"qizhen-wet-paper-witness","author":"匿名用户","avatar":"anonymous","rank":"12","board":"校园生活","title":content.locationSearch.cc98.title,"replies":"3","views":"755","time":"刚刚","body":"如题。","threadReplies":replies})
 func cc98_search(b,feed: Control) -> void:
 	if not active(b.s): return
 	var root: Control=b._base(Color("e7eef3"),154)
