@@ -739,6 +739,17 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 			_sync_player()
 			State.act(str(result.action),result.value)
 		return
+	# CanteenInteriorScene.handleInventoryDrop gives badDrink its own source-
+	# space self-use circle before ordinary object picking. No mode is required.
+	if scene_id=="canteen_interior" and str(data.get("item",""))=="badDrink":
+		if not point.is_finite(): return
+		if mobile_exploration:
+			var controls:=mobile_control_metrics()
+			if not _floor_visible_rect().has_point(point) or controls.stick_rect.has_point(at_position) or controls.interact.has_point(at_position): return
+		if point.distance_to(player-Vector2(0,24))<=58.0:
+			State.act("c3_bad_drink")
+		else: State.feedback.emit("把难喝饮料拖到人物自己身上才能喝掉。")
+		return
 	var matching: Dictionary = _pick_target(point,true)
 	if matching.is_empty(): State.feedback.emit("没有落在可使用的物品上，道具仍在物品栏。") ; return
 	if (matching.has("item") and str(matching.item) != str(data.item)) or (not matching.get("acceptedItems",[]).is_empty() and str(data.item) not in matching.acceptedItems): State.feedback.emit("这个物品不适合当前目标。") ; return

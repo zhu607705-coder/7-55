@@ -24,4 +24,4 @@ Actual computer-use evidence covers 390 and 430 portrait windows. Responsive lan
 
 ## Separate known issue
 
-The wrong recipe correctly creates the failed drink and does not advance the queue. A later actual check found that dragging this drink onto the player does not reach the original optional tasting action. That missing self-use target is being repaired separately; it is not represented as fixed by this batch.
+The wrong recipe correctly creates the failed drink and does not advance the queue. A later actual check found that dragging this drink onto the player does not reach the original optional tasting action. The subsequent self-use repair and its actual replay are documented in CANTEEN_SELF_DRINK_PORT.md. The original three-UX validation remains scoped to its recorded revision.

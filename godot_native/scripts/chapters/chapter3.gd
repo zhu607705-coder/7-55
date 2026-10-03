@@ -287,7 +287,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			var reduced: bool=s.native.get("settings",{}).get("reduced_motion",false)
 			return tell(s,"canteen_escape","chapter3-canteen.content","blocking.escapeDialogue",{"delayMs":220 if reduced else 1020,"stepMs":1200,"tailMs":166 if reduced else 475,"onComplete":"canteen_exit","paperStart":[replay.paper.x,replay.paper.y],"playerStart":[replay.player.x,replay.player.y]})
 		"c3_bad_drink":
-			if not own(s,"badDrink"): return locked()
+			if not side_active(c) or not own(s,"badDrink"): return locked()
 			consume(s,"badDrink")
 			return tell(s,"canteen_bad_drink","chapter3-canteen.content","drinks.badDrinkConsumed")
 		"c3_menu_observe":
