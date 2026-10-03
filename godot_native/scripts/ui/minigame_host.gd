@@ -343,7 +343,7 @@ func _refresh() -> void:
 		hint.text=model.feedback
 	elif mode=="rhythm":
 		status.text="%s · %s    收竿 %d / %d    鱼线张力 %d%%"%[model.rhythm_name,{"casting":"对准鱼影抛竿","count_in":"预备拍","fighting":"跟鱼 · 避猛拽 · 闪金提竿"}[model.stage],model.judged,model.notes.size(),int(model.tension)]
-		hint.text=model.cue
+		hint.text=_fishing_hint()
 		control_buttons.hook.text="按住蓄力 / 松开抛竿" if model.stage=="casting" else "按住收线 / 松开提竿"
 	elif mode=="kayak":
 		status.text="交替桨 %d    距离 %d / %d    侧倾 %d%%    %s"%[model.tutorial_streak,int(model.distance),int(model.goal),int(absf(model.roll)*100),"天鹅 %d m"%int(model.gap) if model.phase=="chase" else ""]
@@ -362,6 +362,14 @@ func _refresh() -> void:
 		if model.charge>0 and running and not paused: hint.text="蓄力 %d%% · 松开空格或跳跃按钮起跳"%roundi(model.charge*100)
 	queue_redraw()
 	if is_instance_valid(chase_view) and chase_view.visible: chase_view.queue_redraw()
+
+func _fishing_hint() -> String:
+	if model.phase=="completed" and not model.final_result.get("passed",false):
+		return "本轮成功收竿 %d / %d，尚未达成目标。\n点击重试重新抛竿，钓具保留。"%[model.final_result.get("notes_hit",0),model.notes.size()]
+	if model.phase=="failed":
+		var outcome: String={"line_snapped":"本轮鱼线已断。","hook_escaped":"本轮目标已脱钩。"}.get(model.failure,"本轮未完成。")
+		return outcome+"\n点击重试重新抛竿，钓具保留。"
+	return model.cue
 
 func _layout_overlay() -> void:
 	if mode=="chase":
