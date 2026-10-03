@@ -36,6 +36,7 @@ var export_mode := false
 var rebuild_pending := false
 var backdrop: ColorRect
 var _screenshot_requested := false
+var _quit_requested := false
 var game_viewport := Vector2(960,540)
 var mobile_world := false
 var world_page_origin_scene := ""
@@ -62,6 +63,8 @@ var audio_director: Node
 var c3_scene_host: Control
 var library_story_host: Control
 var c3_narrative_host: Control
+const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
+const NativeJournalView = preload("res://scripts/ui/native_journal_view.gd")
 const ObservationComparisonSession = preload("res://scripts/presentation/observation_comparison_session.gd")
 const ObservationComparisonView = preload("res://scripts/ui/observation_comparison_view.gd")
 var observation_comparison_session = ObservationComparisonSession.new()
@@ -76,6 +79,9 @@ const ACCENT := Color("c9e96e")
 const BLUE := Color("267b9e")
 
 func _ready() -> void:
+	# Let native audio owners retire their mixer-thread playbacks before exit.
+	get_tree().auto_accept_quit = false
+	get_tree().root.close_requested.connect(_request_quit)
 	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 	# Keep the non-phone inherited text size. Phone and modal roles are scoped.
 	theme = NativeUi.make_theme(font,18,18)
@@ -434,7 +440,7 @@ func _layout() -> void:
 func _authored_world_contract() -> bool:
 	# Active cinematics retain their source camera/aspect through interruptions.
 	# A canteen session waiting for proximity still belongs to exploration.
-	return is_instance_valid(active_game) or is_instance_valid(world_effect) or (is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract()) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.current!=null) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
+	return is_instance_valid(active_game) or is_instance_valid(world_effect) or (is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract()) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.owns_world_contract()) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
 
 func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 	if not is_instance_valid(world): return
@@ -922,29 +928,30 @@ func _show_inventory() -> void:
 
 func _show_journal() -> void:
 	var box := _modal_base("调查记录")
-	var obj := _label("当前任务\n"+State.objective(),20)
-	obj.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(obj)
+	if world_frame.is_visible_in_tree(): modal_previous_focus=weakref(world)
 	_refresh_observation_comparison()
-	if observation_comparison_session.available():
-		var compare := _button("线索对照",_show_observation_comparison)
-		compare.name = "JournalObservationCompare"
-		box.add_child(compare)
-	var log: Array = State.d.native.log
-	for index in range(log.size()-1,maxi(-1,log.size()-51),-1):
-		var row := _label(str(log[index].get("text","")),17)
-		row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		box.add_child(row)
+	var current: Dictionary=CanteenObjective.current(State.d)
+	var journal:=NativeJournalView.new()
+	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),world_frame.is_visible_in_tree())
+	journal.resume_requested.connect(_close_modal)
+	journal.comparison_requested.connect(func(): _show_observation_comparison(true))
+	box.add_child(journal)
+	journal.call_deferred("focus_control","JournalResume")
 
 func _refresh_observation_comparison() -> void:
 	var documents: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
 	observation_comparison_session.refresh(State.d,State.content("items.config.json"),documents if documents is Dictionary else {})
 
-func _show_observation_comparison() -> void:
+func _show_observation_comparison(from_journal: bool=false) -> void:
 	if is_instance_valid(active_game) or State.story_input_locked(): return
 	_refresh_observation_comparison()
 	if not observation_comparison_session.available(): return
 	var box := _modal_base("线索对照")
+	if from_journal:
+		if world_frame.is_visible_in_tree(): modal_previous_focus=weakref(world)
+		var back:=_button("返回调查记录",_show_journal)
+		back.name="ObservationJournalReturn"
+		box.add_child(back)
 	var comparison = ObservationComparisonView.new()
 	comparison.configure(observation_comparison_session)
 	comparison.close_requested.connect(_close_modal)
@@ -1212,6 +1219,7 @@ func _read_runtime_state() -> Dictionary:
 func _setup_runtime_hosts() -> void:
 	if ResourceLoader.exists("res://scripts/presentation/c3_narrative_host.gd") and c3_narrative_host==null:
 		c3_narrative_host=load("res://scripts/presentation/c3_narrative_host.gd").new(); add_child(c3_narrative_host)
+		c3_narrative_host.cinematic_started.connect(_layout)
 		c3_narrative_host.setup(world,func() -> Dictionary: return State.d,State.get_c3_narrative_session,State.act,_game_presentation,_read_runtime_state)
 		if c3_narrative_host.has_signal("inspect_requested"): c3_narrative_host.inspect_requested.connect(_inspect_item_by_id)
 	if ResourceLoader.exists("res://scripts/presentation/library_story_host.gd") and library_story_host==null:
@@ -1401,6 +1409,12 @@ func _run_visual_gallery() -> void:
 	var runner=load("res://tests/visual_gallery.gd").new()
 	get_tree().root.add_child(runner)
 	runner.start(self)
+
+func _request_quit() -> void:
+	if _quit_requested: return
+	_quit_requested = true
+	await shutdown()
+	get_tree().quit()
 
 func shutdown() -> void:
 	# Native audio retires on the mixer thread. Await the real owners before

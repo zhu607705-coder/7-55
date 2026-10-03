@@ -1,5 +1,6 @@
 extends Control
 signal inspect_requested(id: String)
+signal cinematic_started
 ## Timed source dialogue + approach owner. Only the controller acknowledges facts.
 const View=preload("res://scripts/presentation/c3_narrative_view.gd")
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
@@ -23,6 +24,7 @@ func setup(world_view: Control,state_reader: Callable,session_provider: Callable
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	view=View.new(); world.add_child(view)
 	effects=WorldView.new(); effects.world=world; world.add_child(effects)
+func owns_world_contract() -> bool: return current!=null and current.owns_world_contract()
 func blocks_input() -> bool: return current!=null and current.status in ["issued","playing","inspecting","complete"]
 func blocks_movement() -> bool: return blocks_input() and current.blocks_movement()
 func _focused() -> bool:
@@ -33,20 +35,23 @@ func _process(delta: float) -> void:
 	if is_visible_in_tree(): tick(delta*1000,_focused())
 func tick(delta_ms: float,focused: bool=true) -> void:
 	if not read_state.is_valid() or not provider.is_valid() or not is_instance_valid(world): return
-	if runtime_reader.is_valid(): view.display_scale=float(runtime_reader.call().get("native",{}).get("host",{}).get("world_display_scale",1.0))
 	var s: Dictionary=read_state.call()
 	if current!=null and (not current.valid(s) or current.status=="cancelled"): reset()
 	if current==null and focused and s.native.get("scene","")=="theater_interior" and s.theaterHunt.phase=="reversal" and s.theaterHunt.spotlightRound>=3 and s.native.get("c3_reversal_pending",false)!=true:
 		dispatch.call("c3_reversal",null)
 	var issued: RefCounted=provider.call(0)
 	if current==null and issued!=null and world.scene_id==issued.scene and issued.attach(s,self):
-		current=issued; completion_sent=false; was_focused=true; original_zoom=world.zoom; entry_camera=world.camera
+		current=issued; completion_sent=false; was_focused=true
+		# Restore canonical bounds before taking a camera sample for a source shot.
+		if owns_world_contract(): cinematic_started.emit()
+		original_zoom=world.zoom; entry_camera=world.camera
 		view.session=current; effects.session=current; view.move_to_front(); move_to_front()
 		if current.blocks_movement() or current.sequence_id=="canteen_promo": world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
 		if current.sequence_id=="canteen_escape" and current.spec.get("playerStart") is Array:
 			world.player=Vector2(current.spec.playerStart[0],current.spec.playerStart[1])
 			if world.has_method("_sync_player"): world._sync_player()
 			world._update_camera()
+	_sync_view_layout()
 	if current==null: view.session=null; view.tick(); return
 	if focused!=was_focused:
 		_voice("native_activity_resumed" if focused else "native_activity_paused"); was_focused=focused
@@ -69,6 +74,15 @@ func tick(delta_ms: float,focused: bool=true) -> void:
 		if finished.status!="consumed": reset(); return
 		_restore_camera(finished.sequence_id)
 		current=null; view.session=null; view.tick(); effects.session=null; effects.queue_redraw()
+func _sync_view_layout() -> void:
+	if runtime_reader.is_valid(): view.display_scale=float(runtime_reader.call().get("native",{}).get("host",{}).get("world_display_scale",1.0))
+	view.exploration_rect=Rect2()
+	if world.get("mobile_exploration")==true:
+		var controls: Dictionary=world.mobile_control_metrics()
+		var top: float=float(world.hud_metrics("").header_height)+8
+		var bottom: float=minf(controls.stick_rect.position.y,controls.interact.position.y)-8
+		view.exploration_rect=Rect2(8,top,world.size.x-16,maxf(0,bottom-top))
+
 func inspector_closed(id: String) -> bool:
 	if current==null or id!="decoyPaper" or not current.mark_inspector_closed(read_state.call(),self): return false
 	dispatch.call("c3_reversal_inspect_closed",current)

@@ -1,4 +1,5 @@
 extends "res://scripts/chapters/c3_base.gd"
+const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
 const ChargeSession = preload("res://scripts/media/c3_charging_session.gd")
 var charge_session: RefCounted
 const SceneSession = preload("res://scripts/presentation/c3_scene_session.gd")
@@ -713,6 +714,8 @@ func objective(s: Dictionary) -> String:
 	if s.theaterHunt.active and s.theaterHunt.phase!="complete":
 		return {"entry_ticket":"进入剧院","program_search":"取得节目单残页，确认节目顺序。","prop_setup":"让纸条留下能够被追光灯识别的痕迹。","spotlight_ready":"把追光灯遥控器接到灯控台。","spotlight_hunt":"控制光完成三幕演出。","reversal":"看清纸条真正的去向。"}.get(s.theaterHunt.phase,"")
 	if not s.canteenHunt.active: return ""
+	var current: Dictionary=CanteenObjective.current(s)
+	if not current.is_empty(): return str(current.title)
 	return {"tracking":"追上逃跑的记录纸条","tray_search":"在食堂截住纸条","drink_mix":"在食堂截住纸条","menu_order":"在食堂截住纸条","pickup_search":"核对取餐窗口","exit_blocking":"在食堂截住纸条","chase_ready":"清洁车锁并用餐盘回收费支付骑行","chasing":"骑车追上纸条","theater_reached":"在剧院逼停纸条"}.get(s.canteenHunt.phase,"")
 
 func _audio_event(result: Dictionary, id: String, payload: Dictionary = {}) -> Dictionary:

@@ -117,6 +117,11 @@ func consume(s: Dictionary) -> bool:
 	status="consumed"; return true
 func cancel() -> void:
 	if status!="consumed": status="cancelled"
+func owns_world_contract() -> bool:
+	# These sequences own source camera shots, actor motion, or a full-screen
+	# reveal. Timed queueDialogue text alone never owns the exploration viewport.
+	return sequence_id in ["canteen_promo","canteen_escape","theater_admission","theater_reversal","qizhen_approach"]
+
 func blocks_movement() -> bool:
 	if sequence_id=="qizhen_approach": return true
 	if sequence_id=="theater_reversal": return elapsed_ms<float(spec.delayMs)

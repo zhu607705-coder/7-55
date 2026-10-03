@@ -6,6 +6,8 @@ var speaker: Label
 var body: Label
 # Scale of the containing RPG surface in the real window, not world camera zoom.
 var display_scale: float=1.0
+# Physical-pixel exploration region above the actual movement controls.
+var exploration_rect:=Rect2()
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -23,6 +25,9 @@ func tick() -> void:
 	var v: Dictionary=session.snapshot() if session!=null else {}
 	visible=not str(v.get("rawText","")).is_empty()
 	if not visible: return
+	if exploration_rect.has_area():
+		_layout_exploration(v)
+		return
 	# Preserve the established desktop layout. Only compressed world surfaces
 	# need physical-size compensation; camera zoom never changes text sizing.
 	if size.x*display_scale>=620:
@@ -52,6 +57,24 @@ func tick() -> void:
 	panel.position=Vector2((size.x-w)/2,maxf(0,size.y-h-30)); panel.size=Vector2(w,h)
 	speaker.position=Vector2(padding,padding); speaker.size=Vector2(w-padding*2,speaker_h)
 	body.position=Vector2(padding,body_y); body.size=Vector2(w-padding*2,maxf(0,h-body_y-padding))
+
+func _layout_exploration(v: Dictionary) -> void:
+	var padding:=12.0
+	var gap:=4.0
+	var w: float=minf(920,exploration_rect.size.x)
+	speaker.text=str(v.speaker); body.text=str(v.text)
+	speaker.add_theme_font_size_override("font_size",14)
+	speaker.add_theme_color_override("font_color",Color("c0d59d") if v.speaker=="玩家" else Color("8ed2e4"))
+	body.add_theme_font_size_override("font_size",16)
+	var font: Font=body.get_theme_font("font")
+	var speaker_h: float=ceil(font.get_height(14)) if not speaker.text.is_empty() else 0
+	var body_h: float=ceil(font.get_multiline_string_size(body.text,HORIZONTAL_ALIGNMENT_LEFT,w-padding*2,16).y)
+	var body_y: float=padding+speaker_h+(gap if speaker_h>0 else 0)
+	var h: float=body_y+body_h+padding
+	panel.position=Vector2(exploration_rect.position.x+(exploration_rect.size.x-w)/2,exploration_rect.end.y-h)
+	panel.size=Vector2(w,h)
+	speaker.position=Vector2(padding,padding); speaker.size=Vector2(w-padding*2,speaker_h)
+	body.position=Vector2(padding,body_y); body.size=Vector2(w-padding*2,body_h)
 
 func _input(event: InputEvent) -> void:
 	if session==null: return

@@ -105,7 +105,7 @@ func run() -> void:
 	main.mobile_world=true; main._layout(); await process_frame; await process_frame
 	host._process(.1)
 	check(session.elapsed_ms>at and host.view.is_visible_in_tree(),"actual narrow world layout resumes the same dialogue")
-	check(host.view.panel.get_rect().position.x>=0 and host.view.panel.get_rect().end.x<=960 and host.view.panel.get_rect().end.y<=540,"mobile dialogue stays inside logical world with uniform container scale")
+	check(Rect2(Vector2.ZERO,world.size).encloses(host.view.panel.get_rect()),"mobile dialogue stays inside the current exploration world")
 	var active_key: String=session.audio_keys.get(session.lines[0].text,"")
 	var same_cues: Array=cues.slice(cue_count).filter(func(e:Dictionary)->bool:return e.id=="chapter3_story_line" and e.payload.get("subtitleKey")==active_key)
 	check(same_cues.is_empty(),"hide/show resumes current line without duplicating its voice cue")
