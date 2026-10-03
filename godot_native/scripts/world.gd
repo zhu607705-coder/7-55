@@ -225,15 +225,17 @@ func refresh_world() -> void:
 	if pending_teleport != Vector2.INF:
 		player = pending_teleport
 		pending_teleport = Vector2.INF
-	if not can_stand(player): player = _find_safe(player)
-	transition_alpha = 1.0
-	safe_player = player
 	if scene_id == "qizhen_lake" and vehicle_id == "kayak" and ResourceLoader.exists("res://scripts/games/kayak_model.gd"):
 		kayak = load("res://scripts/games/kayak_model.gd").new()
 		kayak.configure({"phase":"world","bounded":false})
-		kayak.position = player
+		# Entry headings can differ from the zone's default checkpoint heading.
+		# Validate the same rotated full hull that the live session will use.
 		kayak.heading = float(spawn.get("heading",-PI/2))
 		kayak_texture = load("res://assets/rpg/qizhen/kayak_overhead_frame_a.png")
+	if not can_stand(player): player = _find_safe(player)
+	transition_alpha = 1.0
+	safe_player = player
+	if kayak!=null: kayak.position = player
 	lake_session=State.lake_module().bind_world(State.d,self) if State.lake_module()!=null else null
 	move_target = Vector2.INF
 	_manual_sent = bool(State.d.actOne.get("manualControlTested",false))

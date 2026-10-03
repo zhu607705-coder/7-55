@@ -58,7 +58,8 @@ func run() -> void:
 	shell.world.world_key=""; shell.world.refresh_world(); shell.world._process(0)
 	shell.world.grab_focus(); key(KEY_SPACE); await flush()
 	check(s.qizhenLake.zone=="channel" and shell.world.last_zone=="channel","Space at source gate immediately changes map")
-	check(shell.world.player.distance_to(Vector2(840,755))<30,"portal uses original from-zone entry spawn")
+	check(shell.world.player.distance_to(Vector2(840,755))<=40 and shell.world.can_stand(shell.world.player),"portal keeps full north-facing hull near original entry, clear of south bank")
+	check(shell.world.lake_session.status=="running","portal proof survives the first real frames")
 	# Fresh source chase fixture. All onward travel uses real keyboard strokes and world collision.
 	s.qizhenLake.merge({"phase":"swan_chase","zone":"channel","vehicle":"kayak","paperCaptured":true,"swanReleased":true,"chaseAttempts":1,"chaseDistance":0,"safeSpawnId":"channel_chase"},true)
 	s.items.magneticFishingRod=true; s.native.positions={}; shell.world.world_key=""; shell.world.scene_id=""; shell.world.refresh_world(); state.changed.emit(); await flush()
