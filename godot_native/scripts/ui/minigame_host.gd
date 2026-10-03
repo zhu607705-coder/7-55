@@ -25,6 +25,13 @@ var retry_button: Button
 var exit_button: Button
 var overlay_layout: Dictionary={"compact":false}
 var _overlay_signature: String=""
+var activity_layout_configured: bool=false
+var activity_compact: bool=false
+var activity_portrait: bool=false
+var chase_view: Control
+var native_chase_view: Control
+var chase_presentation_error: String=""
+var toolbar_touches: Dictionary={}
 var control_buttons: Dictionary={}
 var action_sources: Dictionary={}
 var touch_sources: Dictionary={}
@@ -55,6 +62,8 @@ func _ready() -> void:
 	retry_button=_button("重试",Rect2(782,14,75,35),func(): restart())
 	exit_button=_button("退出",Rect2(866,14,75,35),func(): cancel_game())
 	start_button=_button("开始",Rect2(367,283,226,57),func(): begin())
+	chase_view=load("res://scripts/ui/chase_field_view.gd").new()
+	chase_view.host=self; add_child(chase_view); move_child(chase_view,0); chase_view.hide()
 	if not config.is_empty(): restart()
 
 func setup(parameters: Dictionary) -> void:
@@ -63,6 +72,11 @@ func setup(parameters: Dictionary) -> void:
 	if is_node_ready(): restart()
 
 func restart() -> void:
+	if mode=="chase" and sent: return
+	_audio_close(true)
+	if mode=="chase" and paused:
+		presentation_requested.emit("native_activity_resumed",{"prefixes":_audio_prefixes()})
+	toolbar_touches.clear()
 	for button: Button in control_buttons.values():
 		remove_child(button)
 		button.queue_free()
@@ -76,16 +90,15 @@ func restart() -> void:
 	pending_result.clear()
 	finish_wait=0.0
 	background=null
-	_audio_close(true)
 	_audio_previous.clear(); _audio_seen_notes.clear(); _audio_next_beat=0; _audio_terminal_sent=false; _audio_first_telegraph=false
 	match mode:
 		"chase":
 			model=Chase.new()
-			background=load("res://assets/rpg/canteen_chase/campus_avenue_distance_atlas_273f.png")
-			rider=load("res://assets/rpg/canteen_chase/rider_turn_cycle_12f.png")
+			_ensure_native_chase_view()
+			if is_instance_valid(native_chase_view): native_chase_view.reset_view()
 			_control("left","← A",Rect2(20,446,108,74))
 			_control("right","D →",Rect2(137,446,108,74))
-			_control("jump","按住蓄力 / 松开跳",Rect2(365,456,230,63))
+			_control("jump","按住空格 / 松开跳",Rect2(365,456,230,63))
 			_control("bell","铃铛 J",Rect2(700,446,110,74))
 			_control("item","道具 E",Rect2(821,446,119,74))
 		"rhythm":
@@ -126,6 +139,7 @@ func _button(text: String, rect: Rect2, callback: Callable) -> Button:
 	button.position=rect.position
 	button.size=rect.size
 	button.set_meta("desktop_rect",rect)
+	button.set_meta("desktop_text",text)
 	button.pressed.connect(callback)
 	add_child(button)
 	return button
@@ -136,6 +150,7 @@ func _control(action: String, text: String, rect: Rect2) -> void:
 	button.position=rect.position
 	button.size=rect.size
 	button.set_meta("desktop_rect",rect)
+	button.set_meta("desktop_text",text)
 	button.focus_mode=Control.FOCUS_NONE
 	button.gui_input.connect(func(event: InputEvent):
 		if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.device!=-1:
@@ -146,7 +161,7 @@ func _control(action: String, text: String, rect: Rect2) -> void:
 	control_buttons[action]=button
 
 func begin() -> void:
-	if model==null: return
+	if model==null or sent or (mode=="chase" and not chase_presentation_error.is_empty()): return
 	if (mode=="rhythm" and model.phase in ["failed","completed"]) or (mode!="rhythm" and model.status=="lost"):
 		restart()
 	if paused:
@@ -165,6 +180,7 @@ func toggle_pause() -> void:
 	if mode in ["chase","rhythm"]: model.neutral()
 	action_sources.clear()
 	touch_sources.clear()
+	toolbar_touches.clear()
 	start_button.text="继续"
 	start_button.visible=paused
 	pause_button.text="继续" if paused else "暂停"
@@ -172,13 +188,16 @@ func toggle_pause() -> void:
 
 func cancel_game() -> void:
 	if sent: return
+	if mode=="chase": _clear_chase_controls()
 	running=false
 	if mode=="rhythm": presentation_requested.emit("qizhen_fishing_cancelled",_fishing_payload({"reason":"player_cancel"}))
 	_audio_close(false)
 	cancelled.emit()
 
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_APPLICATION_FOCUS_OUT and running and not paused: toggle_pause()
+	if what==NOTIFICATION_APPLICATION_FOCUS_OUT or (what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and mode=="chase"):
+		if running and not paused: toggle_pause()
+		elif mode=="chase": _clear_chase_controls()
 
 func press_action(action: String, source: String) -> void:
 	if not running or paused or sent or model==null: return
@@ -232,14 +251,27 @@ func _input(event: InputEvent) -> void:
 		var point: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
 		var source: String="touch:%d"%event.index
 		if event.pressed:
+			if mode=="chase":
+				for button: Button in [start_button,pause_button,retry_button,exit_button]:
+					if button.visible and not button.disabled and button.get_rect().has_point(point):
+						toolbar_touches[event.index]=button
+						get_viewport().set_input_as_handled(); return
 			for action: String in control_buttons:
 				var button: Button=control_buttons[action]
-				if Rect2(button.position,button.size).has_point(point):
+				if button.visible and Rect2(button.position,button.size).has_point(point):
 					touch_sources[event.index]={"action":action,"start":point}
 					if mode!="kayak": press_action(action,source)
 					get_viewport().set_input_as_handled()
 					break
+		elif mode=="chase" and toolbar_touches.has(event.index):
+			var button: Button=toolbar_touches[event.index]
+			toolbar_touches.erase(event.index)
+			get_viewport().set_input_as_handled()
+			if not event.canceled and is_instance_valid(button) and button.visible and button.get_rect().has_point(point): button.pressed.emit()
 		elif touch_sources.has(event.index):
+			if mode=="chase" and event.canceled:
+				_clear_chase_controls()
+				get_viewport().set_input_as_handled(); return
 			var touch: Dictionary=touch_sources[event.index]
 			if mode=="kayak" and running and not paused:
 				model.stroke(touch.action,point.y-touch.start.y>25)
@@ -247,6 +279,10 @@ func _input(event: InputEvent) -> void:
 			else: release_action(touch.action,source)
 			touch_sources.erase(event.index)
 			get_viewport().set_input_as_handled()
+
+	if mode=="chase" and event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:
+		for action: String in action_sources.keys():
+			if action_sources[action].has("mouse:"+action): release_action(action,"mouse:"+action)
 
 func _process(delta: float) -> void:
 	if model==null: return
@@ -258,9 +294,12 @@ func _process(delta: float) -> void:
 			finished.emit(result)
 			return
 	if running and not paused and not sent:
-		model.update(minf(delta,0.1))
+		model.update(minf(delta,0.25 if mode=="chase" else 0.1))
 		_audio_update()
 		_check_terminal()
+	if mode=="chase" and is_instance_valid(native_chase_view):
+		native_chase_view.observe_frame_time(delta*1000.0)
+		native_chase_view.update_view(model,minf(delta,.25),paused,running and not sent)
 	_refresh()
 
 func _check_terminal() -> void:
@@ -281,7 +320,7 @@ func _check_terminal() -> void:
 		result["session_id"]=config.get("session_id","")
 		if mode=="kayak": result["target_zone"]=config.get("target_zone","")
 		pending_result=result
-		finish_wait=0.9
+		finish_wait=0.0 if mode=="chase" else 0.9
 	elif lost:
 		running=false
 		start_button.text="重试"
@@ -297,7 +336,10 @@ func _refresh() -> void:
 		queue_redraw()
 		return
 	if mode=="chase":
-		status.text="%d / 755 m    机会 %d    连击 %d    %s"%[int(model.distance),model.lives,model.combo,"餐盘护体" if model.shield else ("道具："+model.powerup if model.powerup!="" else "")]
+		status.text="%d / 755 m    机会 %d    连击 %d    %s"%[int(model.distance),model.lives,model.combo,"餐盘护体" if model.shield else ("道具："+{"tray":"餐盘护具","gust":"顺风纸团"}.get(model.powerup,"") if model.powerup!="" else "")]
+		if activity_compact:
+			var item: String="餐盘护体" if model.shield else ({"tray":"餐盘护具","gust":"顺风纸团"}.get(model.powerup,"") if not str(model.powerup).is_empty() else "暂无道具")
+			status.text="%d / 755 m  ·  机会 %d  ·  连击 %d%s%s  ·  %s"%[int(model.distance),model.lives,model.combo,"\n" if activity_portrait else "  ·  ","铃铛就绪" if model.bell_cooldown<=0 else "铃铛 %.1fs"%model.bell_cooldown,item]
 		hint.text=model.feedback
 	elif mode=="rhythm":
 		status.text="%s · %s    收竿 %d / %d    鱼线张力 %d%%"%[model.rhythm_name,{"casting":"对准鱼影抛竿","count_in":"预备拍","fighting":"跟鱼 · 避猛拽 · 闪金提竿"}[model.stage],model.judged,model.notes.size(),int(model.tension)]
@@ -308,18 +350,30 @@ func _refresh() -> void:
 		hint.text=model.feedback
 	if not running and not sent:
 		hint.text=str(config.get("instructions",hint.text)) if (mode=="rhythm" and model.phase=="idle") or (mode!="rhythm" and model.status=="running") else hint.text
-	if sent: hint.text="追上了！" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "安全抵达")
+	if mode=="chase" and not running and not sent and model.status=="running":
+		hint.text="A / D 或方向键转向 · 空格蓄力/松开跳\nJ 响铃 · E 使用道具"
+	if sent: hint.text="骑行完成，纸条飞向剧院" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "安全抵达")
 	if paused: hint.text="已暂停。继续后从同一时刻恢复"
+	if mode=="chase" and not chase_presentation_error.is_empty():
+		hint.text="骑行画面加载失败。可退出后重试，进度保持不变。"
+		start_button.disabled=true
+	elif mode=="chase":
+		start_button.disabled=false
+		if model.charge>0 and running and not paused: hint.text="蓄力 %d%% · 松开空格或跳跃按钮起跳"%roundi(model.charge*100)
 	queue_redraw()
+	if is_instance_valid(chase_view) and chase_view.visible: chase_view.queue_redraw()
 
 func _layout_overlay() -> void:
+	if mode=="chase":
+		_layout_chase_activity()
+		return
 	var transform := get_global_transform_with_canvas()
 	var display_scale := absf(transform.get_scale().x)
 	var viewport_size := get_viewport_rect().size
 	var signature := str([mode,viewport_size,transform.origin,display_scale,control_buttons.size()])
 	if signature==_overlay_signature: return
 	_overlay_signature=signature
-	overlay_layout=CompactOverlay.chase(viewport_size,transform.origin,display_scale) if mode=="chase" else {"compact":false}
+	overlay_layout=CompactOverlay.chase(viewport_size,transform.origin,display_scale) if mode=="chase" and not activity_layout_configured else {"compact":false}
 	var buttons: Array=[pause_button,retry_button,exit_button,start_button]
 	buttons.append_array(control_buttons.values())
 	if not overlay_layout.compact:
@@ -327,6 +381,7 @@ func _layout_overlay() -> void:
 			if not is_instance_valid(button): continue
 			var desktop: Rect2=button.get_meta("desktop_rect",Rect2(button.position,button.size))
 			button.autowrap_mode=TextServer.AUTOWRAP_OFF
+			if mode=="chase" and control_buttons.values().has(button): button.text=str(button.get_meta("desktop_text",button.text))
 			button.remove_theme_font_size_override("font_size")
 			for state: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]: button.remove_theme_stylebox_override(state)
 			for state: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]: button.remove_theme_color_override(state)
@@ -354,6 +409,9 @@ func _style_compact_button(button: Button, rect: Rect2, display_scale: float) ->
 	button.size=rect.size
 
 func _draw() -> void:
+	if mode=="chase":
+		draw_rect(Rect2(Vector2.ZERO,size),Color("102530"))
+		return
 	draw_rect(Rect2(0,0,960,540),Color("102530"))
 	if background and mode=="chase":
 		_draw_chase_background()
@@ -390,23 +448,24 @@ func road_point(ahead: float, lane: float) -> Vector3:
 	var perspective: float=depth*depth
 	return Vector3(480+(lane-1)*(36+perspective*210),138+perspective*362,0.16+perspective*1.12)
 
-func _draw_chase() -> void:
-	# Source projection coordinates and collision lanes are identical.
+func _draw_chase(canvas: CanvasItem=self,field: Control=null) -> void:
+	var actor_scale: float=chase_field_scale(field)
+	# Source collision lanes and the full96m visibility window are unchanged.
 	for lane: float in [0.5,1.5]:
-		var far: Vector3=road_point(96,lane)
-		var near: Vector3=road_point(0,lane)
-		draw_line(Vector2(far.x,far.y),Vector2(near.x,near.y),Color(1,1,0.85,0.23),2)
+		var far: Vector3=_field_point(field,96,lane)
+		var near: Vector3=_field_point(field,0,lane)
+		canvas.draw_line(Vector2(far.x,far.y),Vector2(near.x,near.y),Color(1,1,0.85,0.23),2)
 	for ramp: Array in Chase.RAMPS:
 		var ahead: float=float(ramp[0])-model.distance
 		if ahead<=0 or ahead>96: continue
-		var p: Vector3=road_point(ahead,ramp[1])
-		draw_colored_polygon(PackedVector2Array([Vector2(p.x-24*p.z,p.y),Vector2(p.x+24*p.z,p.y),Vector2(p.x+19*p.z,p.y-20*p.z),Vector2(p.x-19*p.z,p.y-20*p.z)]),AQUA)
+		var p: Vector3=_field_point(field,ahead,ramp[1])
+		canvas.draw_colored_polygon(PackedVector2Array([Vector2(p.x-24*p.z,p.y),Vector2(p.x+24*p.z,p.y),Vector2(p.x+19*p.z,p.y-20*p.z),Vector2(p.x-19*p.z,p.y-20*p.z)]),AQUA)
 	for i: int in range(Chase.PICKUPS.size()):
 		var pick: Array=Chase.PICKUPS[i]
 		var ahead: float=float(pick[0])-model.distance
 		if ahead<=0 or ahead>96 or model.collected.has(i): continue
-		var p: Vector3=road_point(ahead,pick[1])
-		draw_circle(Vector2(p.x,p.y-12*p.z),15*p.z,GOLD if pick[2]=="tray" else AQUA)
+		var p: Vector3=_field_point(field,ahead,pick[1])
+		canvas.draw_circle(Vector2(p.x,p.y-12*p.z),15*p.z,GOLD if pick[2]=="tray" else AQUA)
 	var ordered: Array=model.obstacles.duplicate()
 	ordered.reverse()
 	for obstacle: Dictionary in ordered:
@@ -418,23 +477,23 @@ func _draw_chase() -> void:
 			var progress: float=clampf((depth-0.32)/0.62,0,1)
 			progress=progress*progress*(3-2*progress)
 			lane=lerpf(-1.25 if obstacle.side<0 else 3.25,lane,progress)
-		var p: Vector3=road_point(ahead,lane)
+		var p: Vector3=_field_point(field,ahead,lane)
 		var width: float=37*p.z
 		var height: float=(23+float(Chase.HEIGHTS[obstacle.kind])*22)*p.z
 		var c: Color=Color("ed8e62") if obstacle.kind in ["cone","barrier"] else Color("847dae")
-		draw_rect(Rect2(p.x-width/2,p.y-height,width,height),c)
-		draw_line(Vector2(p.x-width/2,p.y-height*0.7),Vector2(p.x+width/2,p.y-height*0.7),FG,3*p.z)
-	var paper: Vector3=road_point(model.paper_gap,model.paper_lane)
-	draw_rect(Rect2(paper.x-10*paper.z,paper.y-35*paper.z,20*paper.z,26*paper.z),GOLD)
-	var player: Vector3=road_point(5,model.lane)
-	draw_circle(Vector2(player.x,player.y),30,Color(0,0,0,0.28))
+		canvas.draw_rect(Rect2(p.x-width/2,p.y-height,width,height),c)
+		canvas.draw_line(Vector2(p.x-width/2,p.y-height*0.7),Vector2(p.x+width/2,p.y-height*0.7),FG,3*p.z)
+	var paper: Vector3=_field_point(field,model.paper_gap,model.paper_lane)
+	canvas.draw_rect(Rect2(paper.x-10*paper.z,paper.y-35*paper.z,20*paper.z,26*paper.z),GOLD)
+	var player: Vector3=_field_point(field,5,model.lane)
+	canvas.draw_circle(Vector2(player.x,player.y),30*actor_scale,Color(0,0,0,0.28))
 	if rider:
 		var row: int=0 if model.velocity < -0.3 else (2 if model.velocity>0.3 else 1)
 		var frame: int=int(model.elapsed*8)%4
-		draw_texture_rect_region(rider,Rect2(player.x-43,player.y-135-model.air_height*33,86,129),Rect2(frame*256,row*384,256,384),Color(1,1,1,0.45) if model.invulnerable>0 and int(model.elapsed*12)%2==0 else Color.WHITE)
-	if model.shield: draw_arc(Vector2(player.x,player.y-60),55,0,TAU,32,AQUA,3)
-	if model.bell_pulse>0: draw_arc(Vector2(player.x,player.y-55),55+(1-model.bell_pulse)*130,PI,TAU,24,Color(1,0.84,0.35,model.bell_pulse),4)
-	if model.charge>0: draw_rect(Rect2(player.x-35,player.y-145,70*model.charge,6),GOLD)
+		canvas.draw_texture_rect_region(rider,Rect2(player.x-43*actor_scale,player.y-(135+model.air_height*33)*actor_scale,86*actor_scale,129*actor_scale),Rect2(frame*256,row*384,256,384),Color(1,1,1,0.45) if model.invulnerable>0 and int(model.elapsed*12)%2==0 else Color.WHITE)
+	if model.shield: canvas.draw_arc(Vector2(player.x,player.y-60*actor_scale),55*actor_scale,0,TAU,32,AQUA,3)
+	if model.bell_pulse>0: canvas.draw_arc(Vector2(player.x,player.y-55*actor_scale),(55+(1-model.bell_pulse)*130)*actor_scale,PI,TAU,24,Color(1,0.84,0.35,model.bell_pulse),4)
+	if model.charge>0: canvas.draw_rect(Rect2(player.x-35*actor_scale,player.y-145*actor_scale,70*model.charge*actor_scale,6*actor_scale),GOLD)
 
 func _draw_fishing() -> void:
 	var center: Vector2=Vector2(480,252)
@@ -495,7 +554,7 @@ func _draw_kayak() -> void:
 	draw_rect(Rect2(480+minf(0,model.roll)*165,463,absf(model.roll)*165,10),Color("ed836b"))
 	if font: draw_string(font,Vector2(302,501),"S / ↓ + 划桨：后退",HORIZONTAL_ALIGNMENT_CENTER,350,17,FG)
 
-func _draw_chase_background() -> void:
+func _draw_chase_background(canvas: CanvasItem=self,field: Control=null) -> void:
 	const KEYS = [0,47,95,143,190,238,285,331,377,424,470,518,566,600,635,668,700,755]
 	var distance: float=0 if model==null else model.distance
 	var lower: int=0
@@ -505,7 +564,11 @@ func _draw_chase_background() -> void:
 	var upper: int=mini(lower+1,KEYS.size()-1)
 	var progress: float=1 if lower==upper else clampf((distance-KEYS[lower])/float(KEYS[upper]-KEYS[lower]),0,1)
 	var frame: int=mini(272,int(floor(lower*16+progress*16))) if lower<17 else 272
-	draw_texture_rect_region(background,Rect2(0,0,960,540),Rect2((frame%16)*320,floor(frame/16.0)*180,320,180))
+	var target:=Rect2(0,0,960,540)
+	if field!=null:
+		var zoom: float=maxf(field.size.x/960,field.size.y/540) if activity_portrait else minf(field.size.x/960,field.size.y/540)
+		target=Rect2((field.size-Vector2(960,540)*zoom)/2,Vector2(960,540)*zoom)
+	canvas.draw_texture_rect_region(background,target,Rect2((frame%16)*320,floor(frame/16.0)*180,320,180))
 
 # Read-only source audio adapters. None of these callbacks advance physics or facts.
 func _fishing_payload(extra: Dictionary={}) -> Dictionary:
@@ -517,11 +580,14 @@ func _audio_prefixes() -> Array:
 
 func _audio_close(terminal: bool) -> void:
 	var prefixes: Array=["native_chase_","native_fishing_"]
-	if not terminal and mode=="chase": prefixes.append_array(["canteen_chase_started","canteen_chase_collision","canteen_chase_finish"])
+	if terminal and mode=="chase": prefixes.append("canteen_chase_collision")
+	# Exit releases the exact broad key acquired by Pause, including queued cues.
+	if not terminal and mode=="chase": prefixes.append("canteen_chase_")
 	elif not terminal and mode=="kayak": prefixes.append_array(["rpg_qizhen_chase_started","rpg_qizhen_chase_restarted","qizhen_swan_chase_"])
 	presentation_requested.emit("native_activity_closed",{"prefixes":prefixes})
 
 func _exit_tree() -> void:
+	dispose_presentation()
 	_audio_close(sent)
 
 func _chase_tone(kind: String) -> void:
@@ -591,3 +657,120 @@ func _audio_update() -> void:
 
 func _metronome_time(beat: int) -> float:
 	return beat*float(model.beat_sec) if beat<4 else 4*float(model.beat_sec)+float(model.phrase_time(beat-4))
+
+## Opt in only chase; fishing/kayak retain their original shared-host layout.
+func uses_activity_layout() -> bool: return mode=="chase"
+
+func configure_activity_layout(available: Vector2,compact: bool) -> void:
+	if mode!="chase": return
+	activity_layout_configured=true
+	if activity_compact!=compact or size!=available: _clear_chase_controls()
+	activity_compact=compact; activity_portrait=available.y>available.x
+	custom_minimum_size=Vector2.ZERO
+	size=available;scale=Vector2.ONE;position=Vector2.ZERO
+	chase_view.show()
+	_overlay_signature=""
+	_refresh()
+
+func _clear_chase_controls() -> void:
+	if model!=null and (not model.held.is_empty() or model.charge>0 or not is_zero_approx(model.velocity)):
+		model.neutral()
+	action_sources.clear(); touch_sources.clear(); toolbar_touches.clear()
+
+func _layout_chase_activity() -> void:
+	var signature:=str([size,activity_portrait,control_buttons.size()])
+	if signature==_overlay_signature:return
+	_overlay_signature=signature
+	control_buttons.left.text="← A";control_buttons.right.text="D →"
+	control_buttons.jump.text="空格 · 蓄力\n松开跳跃";control_buttons.jump.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	control_buttons.bell.text="响铃 J";control_buttons.item.text="道具 E"
+	headline.clip_text=true;status.clip_text=true
+	var footer: float=size.y-142
+	if activity_portrait:
+		_put(headline,Rect2(12,8,size.x-24,35),22)
+		var third: float=(size.x-40)/3
+		_put(pause_button,Rect2(12,46,third,44),16);_put(retry_button,Rect2(20+third,46,third,44),16);_put(exit_button,Rect2(28+third*2,46,third,44),16)
+		_put(status,Rect2(12,96,size.x-24,58),16)
+		_put(chase_view,Rect2(10,162,size.x-20,maxf(120,size.y-366)))
+		_put(hint,Rect2(12,size.y-198,size.x-24,52),14)
+		_put(control_buttons.left,Rect2(12,footer,third,64),16)
+		_put(control_buttons.jump,Rect2(20+third,footer,third,64),14)
+		_put(control_buttons.right,Rect2(28+third*2,footer,third,64),16)
+		var half: float=(size.x-32)/2
+		_put(control_buttons.bell,Rect2(12,size.y-70,half,56),16)
+		_put(control_buttons.item,Rect2(20+half,size.y-70,half,56),16)
+	elif size.y<600:
+		_put(headline,Rect2(12,8,size.x-260,35),20)
+		_put(pause_button,Rect2(size.x-240,8,68,44),16);_put(retry_button,Rect2(size.x-164,8,68,44),16);_put(exit_button,Rect2(size.x-88,8,76,44),16)
+		_put(status,Rect2(12,52,size.x-24,30),14)
+		_put(chase_view,Rect2(150,94,size.x-300,size.y-158))
+		_put(hint,Rect2(150,size.y-60,size.x-300,54),14)
+		_put(control_buttons.left,Rect2(12,116,126,64),16)
+		_put(control_buttons.right,Rect2(12,188,126,64),16)
+		_put(control_buttons.jump,Rect2(size.x-138,110,126,70),14)
+		_put(control_buttons.bell,Rect2(size.x-138,188,126,64),16)
+		_put(control_buttons.item,Rect2(size.x-138,260,126,64),16)
+	else:
+		_put(headline,Rect2(16,10,size.x-292,35),24)
+		_put(pause_button,Rect2(size.x-260,10,74,44),18);_put(retry_button,Rect2(size.x-176,10,74,44),18);_put(exit_button,Rect2(size.x-92,10,76,44),18)
+		_put(status,Rect2(16,58,size.x-32,32),18)
+		_put(chase_view,Rect2(16,98,size.x-32,size.y-276))
+		_put(hint,Rect2(24,size.y-166,size.x-48,56),18)
+		var bw: float=(minf(size.x,1040)-64)/5.0
+		var left: float=(size.x-(bw*5+40))/2
+		for i: int in range(5):
+			_put(control_buttons[["left","right","jump","bell","item"][i]],Rect2(left+i*(bw+10),size.y-96,bw,72),18)
+	if is_instance_valid(native_chase_view):
+		native_chase_view.position=chase_view.position;native_chase_view.size=chase_view.size
+		native_chase_view.fit_resolution(chase_view.size)
+	_put(start_button,Rect2(chase_view.position+chase_view.size/2+Vector2(-100,26),Vector2(200,52)),16)
+	overlay_layout={"compact":true}
+
+func _put(control: Control,rect: Rect2,point_size: int=0) -> void:
+	if point_size>0:control.add_theme_font_size_override("font_size",point_size)
+	if control is Button:NativeUi.apply_button(control,Color("1a4544"),Color("ffedb9"),Color("e6ce8c"),0,1,point_size,Vector2(6,4),Color("83d9ef"))
+	control.position=rect.position;control.size=rect.size
+
+func chase_field_scale(field: Control) -> float:
+	if field==null:return 1.0
+	return field.size.x/660 if activity_portrait else minf(field.size.x/960,field.size.y/540)
+
+func _field_point(field: Control,ahead: float,lane: float) -> Vector3:
+	var point:=road_point(ahead,lane)
+	if field==null:return point
+	var zoom:=chase_field_scale(field)
+	if activity_portrait:
+		# Preserve the exact source lateral/perspective equation and all96m.
+		# Only vertical screen extent expands; each sprite keeps uniform scale.
+		return Vector3(field.size.x/2+(point.x-480)*zoom,point.y/540*field.size.y,point.z*zoom)
+	var origin: Vector2=(field.size-Vector2(960,540)*zoom)/2
+	return Vector3(origin.x+point.x*zoom,origin.y+point.y*zoom,point.z*zoom)
+
+func draw_chase_field(field: Control) -> void:
+	if model==null:return
+	if not running or paused:
+		var panel:=Rect2(6,field.size.y/2-72,field.size.x-12,162)
+		field.draw_rect(panel,Color(.03,.08,.12,.95))
+		var title: String="已暂停" if paused else "准备好了吗？"
+		if sent:title="追上了！"
+		elif model.status=="lost":title="从安全点重试"
+		field.draw_string(font,panel.position+Vector2(6,36),title,HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,22,FG)
+		field.draw_string(font,panel.position+Vector2(6,72),"本次操作已完成" if sent else "755 米 · 骑行追纸",HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,16,AQUA)
+
+## Rendering has no input, audio, proof or progression authority.
+func _ensure_native_chase_view() -> void:
+	if is_instance_valid(native_chase_view):return
+	chase_presentation_error=""
+	native_chase_view=load("res://scripts/presentation/chase3d/source_chase_3d.gd").new()
+	native_chase_view.presentation_failed.connect(func(reason: String):
+		chase_presentation_error=reason;running=false;_clear_chase_controls())
+	var state_owner:=get_node_or_null("/root/State")
+	var reduced_motion: bool=state_owner!=null and bool(state_owner.d.native.settings.get("reduced_motion",false))
+	native_chase_view.configure({"asset_directory":"res://assets/native_755/ride/","reduced_motion":reduced_motion,"live_shadows":not DisplayServer.is_touchscreen_available(),"render_width":960})
+	add_child(native_chase_view);move_child(native_chase_view,0)
+	chase_view.show()
+	native_chase_view.update_view(model,0,false)
+
+func dispose_presentation() -> void:
+	if is_instance_valid(native_chase_view):native_chase_view.dispose()
+	native_chase_view=null

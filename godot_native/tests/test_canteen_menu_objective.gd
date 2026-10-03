@@ -20,7 +20,7 @@ func oracle_cases() -> void:
 				check(not goal.title.contains(answer) and not goal.detail.contains(answer),"menu guidance does not disclose answer: "+answer)
 		else:check(goal.id=="queue_shift","uncompleted queue cannot reveal the menu task early")
 		check(JSON.stringify(value)==before,"menu projection preserves complete save")
-	for phase in ["exit_blocking","chase_ready","chasing","theater_reached"]:
+	for phase in ["exit_blocking","chasing","theater_reached"]:
 		var value:=earned.duplicate(true);value.canteenHunt.phase=phase
 		check(Goal.current(value).is_empty(),"later branch remains excluded: "+phase)
 	for later in ["theaterHunt","qizhenLake"]:

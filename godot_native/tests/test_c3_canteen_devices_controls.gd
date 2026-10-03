@@ -126,7 +126,9 @@ func run() -> void:
 		await key(KEY_ESCAPE);await open_world("bike")
 		check(state.d.wallet.cashCents==0,"paid reopen cannot charge again")
 		await check_focus(shell.c3_device_panel);check_readability(shell.c3_device_panel)
-		await touch(shell.c3_device_panel.controls.ride)
+		await touch(shell.c3_device_panel.controls.ride);await frames(6)
+		check(state.d.canteenHunt.phase=="chase_ready" and shell.active_game.stage=="start","Ride opens original departure before committing chase")
+		await touch(shell.active_game.skip_button);await frames(6)
 		check(state.d.canteenHunt.phase=="chasing" and is_instance_valid(shell.active_game),"Ride enters existing chase")
 		await teardown()
 	# Direct dispatch still validates distance and phase; UI does not confer authority.

@@ -825,7 +825,7 @@ func _map_chapter3(action: String, previous: Dictionary, next: Dictionary, resul
 	if action.begins_with("c3_target:") and previous.get("rpgScene") == "canteen_interior" and next.get("rpgScene") == "campus_bootstrap": _mapped_cue("canteen_returned_to_campus")
 	if action == "c3_bike_inspect" and _rose(previous,next,"canteenHunt.bikeCodeRead"): _mapped_cue("canteen_bike_code_read")
 	if action == "c3_bike_clean" and _rose(previous,next,"canteenHunt.bikeLockCleaned"): _mapped_cue("canteen_bike_lock_cleaned")
-	if action == "c3_chase" and result.get("game",{}).get("type") == "chase": _mapped_cue("canteen_chase_started")
+	if action in ["c3_chase","c3_chase_departed"] and result.get("game",{}).get("type") == "chase" and not result.game.get("departure",false): _mapped_cue("canteen_chase_started")
 	if action == "c3_chase_result" and _rose(previous,next,"canteenHunt.chaseCompleted"):
 		_mapped_cue("canteen_chase_completed", {"collisions":c.get("chaseCollisions",0),"distance":755,"lives":c.get("chaseBestLives",0)})
 	var theater_flags: Dictionary = {"posterCleaned":"theater_poster_cleaned","admitted":"theater_ticket_admitted","propBoxOpened":"theater_prop_box_opened","paperDusted":"theater_paper_dusted","decoyRevealed":"theater_reversal_completed"}

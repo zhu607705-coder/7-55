@@ -16,7 +16,7 @@ func oracle_cases() -> void:
 			for answer in ["纸包鸡","纸包过","0755","取纸","3号","第三","黑咖啡","蓝色","白色"]:
 				check(not goal.title.contains(answer) and not goal.detail.contains(answer),"pickup guidance never reveals answer or recipe: "+answer)
 		check(JSON.stringify(value)==before,"pickup guidance preserves the complete save")
-	for phase in ["exit_blocking","chase_ready","chasing","theater_reached"]:
+	for phase in ["exit_blocking","chasing","theater_reached"]:
 		var value:=earned.duplicate(true);value.canteenHunt.phase=phase
 		check(Goal.current(value).is_empty(),"completed pickup suppresses old guidance: "+phase)
 	for later in ["theaterHunt","qizhenLake"]:

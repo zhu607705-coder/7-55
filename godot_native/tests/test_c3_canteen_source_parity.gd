@@ -68,7 +68,15 @@ func invoke(s: Dictionary, chapter: RefCounted, method: String, args: Array, tar
 		"inspectBikeLock": return chapter.dispatch(s, "c3_bike_inspect")
 		"cleanBikeLock": return chapter.dispatch(s, "c3_bike_clean")
 		"payForBike": return chapter.dispatch(s, "c3_bike_pay")
-		"startChase": return chapter.dispatch(s, "c3_chase")
+		"startChase":
+			# The source controller callback runs after its departure presenter.
+			# Exercise both native boundaries; the direct source method itself
+			# corresponds to the second one, and repeated chasing stays idempotent.
+			var request: Dictionary=chapter.dispatch(s,"c3_chase")
+			if request.get("game",{}).get("departure",false):
+				check(s.canteenHunt.phase=="chase_ready","departure admission cannot commit source startChase early")
+				return chapter.dispatch(s,"c3_chase_departed")
+			return request
 	check(false, "unmapped source method " + method)
 	return {}
 

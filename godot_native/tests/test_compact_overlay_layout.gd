@@ -54,15 +54,15 @@ func run() -> void:
 			var event:=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.position=mode_point; event.pressed=down; root.push_input(event)
 		await frames(3)
 		check(state.d.native.mode!=previous_mode,"real pointer toggles source mode at reflowed HUD location")
-		shell._open_game({"type":"chase","title":"755 米 · 追上纸条","viewport":[960,540],"instructions":"左右转向，蓄力跳跃、铃铛清道，托盘和风力道具只在本局有效。"}); await frames(4)
+		shell._open_game({"type":"chase","title":"755 米 · 追上纸条","viewport":[960,540],"instructions":"左右转向，蓄力跳跃、铃铛清道，托盘和风力道具只在本局有效。"}); await frames(7)
 		var game: Control=shell.active_game
 		game.set_process(false)
-		var playfield:=screen_rect(game)
+		var playfield:=screen_rect(game.chase_view)
 		var game_scale: float=game.get_global_transform_with_canvas().get_scale().x
-		check(game.size==Vector2(960,540),"canonical chase playfield unchanged")
-		check(is_equal_approx(playfield.size.x/playfield.size.y,960.0/540.0),"chase keeps16:9 projection")
+		check(game.size==Vector2(dimensions) and game.scale==Vector2.ONE,"all native chase controls use physical viewport coordinates")
+		check(game.native_chase_view.surface.stretch_mode==TextureRect.STRETCH_KEEP_ASPECT_CENTERED and game.native_chase_view.camera.keep_aspect==Camera3D.KEEP_HEIGHT,"all orientations contain the original16:9 camera film inside the field")
 		check(game.model.tick>=0 and game.model.distance==0,"opening overlay never starts simulation")
-		check(game.road_point(0,1)==Vector3(480,500,1.28),"source projection unchanged")
+		check(is_equal_approx(game.native_chase_view.WORLD_PER_METER,1.05) and game.background==null,"original3D road scale is used without the legacy flat projection")
 		if dimensions.x<700:
 			check(game.overlay_layout.compact,"portrait branch enabled")
 			for node: Control in [game.headline,game.status,game.hint,game.pause_button,game.retry_button,game.exit_button,game.start_button]:
@@ -70,7 +70,7 @@ func run() -> void:
 				check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(rect),"visible overlay contained: "+str(node.get_class())+" / "+node.text)
 				var minimum:=13.0 if node==game.status else 14.0
 				check(node.get_theme_font_size("font_size")*game_scale>=minimum-0.01,"physical font floor: "+node.text)
-				if node is Button: check(is_equal_approx(rect.size.y,44.0) and rect.size.x>=43.99,"exact44px toolbar/start targets")
+				if node is Button: check(rect.size.y>=43.99 and rect.size.x>=43.99,"minimum44px toolbar/start targets")
 			for toolbar: Button in [game.pause_button,game.retry_button,game.exit_button]:
 				check(screen_rect(toolbar).end.y<=screen_rect(game.status).position.y+0.01,"toolbar never overlaps status text")
 			check(not playfield.intersects(screen_rect(game.status)) and not playfield.intersects(screen_rect(game.pause_button)),"top UI stays in portrait letterbox")
@@ -79,7 +79,7 @@ func run() -> void:
 			for button: Button in game.control_buttons.values():
 				var rect:=screen_rect(button)
 				check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(rect),"running control contained: "+button.text)
-				check(rect.size.x>=43.99 and is_equal_approx(rect.size.y,52.0),"exact52px running touch target: "+button.text)
+				check(rect.size.x>=43.99 and rect.size.y>=55.99,"minimum56px running touch target: "+button.text)
 				check(not rect.intersects(playfield),"running controls never cover chase playfield")
 			var before_lane: float=game.model.lane
 			touch(game.control_buttons.left,4,true)
@@ -101,18 +101,18 @@ func run() -> void:
 			game.begin(); touch(game.control_buttons.right,7,true); game._process(0.1)
 			var before_resize: Array=game.model.inputs.duplicate(true)
 			root.size=Vector2i(1280,720); shell.size=Vector2(1280,720); shell._layout(); game._refresh(); await frames(3)
-			check(not game.overlay_layout.compact and game.headline.get_theme_font_size("font_size")==24,"active compact-to-desktop resize restores source typography")
-			check(game.control_buttons.jump.position==Vector2(365,456) and game.control_buttons.jump.size==Vector2(230,63),"active resize restores desktop control bounds")
+			check(not game.activity_compact and game.headline.get_theme_font_size("font_size")==24,"active portrait-to-desktop resize restores readable desktop typography")
+			check(Rect2(Vector2.ZERO,Vector2(1280,720)).encloses(screen_rect(game.control_buttons.jump)) and not screen_rect(game.control_buttons.jump).intersects(screen_rect(game.chase_view)),"desktop jump target stays reachable outside the source field")
 			root.size=dimensions; shell.size=Vector2(dimensions); shell._layout(); game._refresh(); await frames(3)
 			check(game.overlay_layout.compact and screen_rect(game.control_buttons.jump).is_equal_approx(compact_jump),"active resize returns to exact compact targets")
-			check(game.model.inputs==before_resize and game.model.held.has("right"),"responsive resize preserves held input and proof")
+			check(game.model.inputs.size()==before_resize.size()+1 and game.model.inputs[-1].type=="neutral" and game.model.held.is_empty(),"responsive resize cancels held controls through recorded source neutral")
 			touch(game.control_buttons.right,7,false)
-			check(not game.model.held.has("right") and game.model.inputs.size()==before_resize.size()+1,"same touch releases exactly once after resize")
+			check(not game.model.held.has("right") and game.model.inputs.size()==before_resize.size()+1,"stale touch cannot release a jump or add input after resize")
 			print("COMPACT overlay ",dimensions,": body=",game.hint.get_theme_font_size("font_size")*game_scale,"px; control=",screen_rect(game.control_buttons.jump).size)
 		else:
-			check(not game.overlay_layout.compact,"desktop remains original branch")
-			check(game.headline.position==Vector2(26,14) and game.headline.get_theme_font_size("font_size")==24,"desktop authored heading retained")
-			check(game.control_buttons.jump.position==Vector2(365,456),"desktop control positions retained")
+			check(not game.activity_compact and game.activity_layout_configured,"desktop uses the native activity layout")
+			check(game.headline.get_theme_font_size("font_size")==24 and not screen_rect(game.headline).intersects(playfield),"desktop heading remains readable outside the source film")
+			check(screen_rect(game.control_buttons.jump).size.y>=44 and not screen_rect(game.control_buttons.jump).intersects(playfield),"desktop jump control remains reachable without covering hazards")
 		game.cancel_game(); await frames(3)
 	await shell.shutdown(); shell.queue_free(); await frames(3)
 	print("Compact overlay: ",checks," checks, ",failures," failures")

@@ -108,7 +108,7 @@ func _ready() -> void:
 	_setup_runtime_hosts()
 	_refresh()
 	_layout()
-	_resume_canteen_defense.call_deferred()
+	_resume_world_activity.call_deferred()
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--preview="):
 			State.begin_preview(1,arg.trim_prefix("--preview="))
@@ -358,7 +358,7 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 func _layout() -> void:
 	var available := size
 	var split := _uses_split_layout()
-	var fitted_activity: bool=is_instance_valid(active_game) and active_game.get_script().resource_path=="res://scripts/games/canteen_defense.gd"
+	var fitted_activity: bool=_activity_owns_scene()
 	var phone_scale := maxf(.35,minf(1.0,(available.y - 36.0) / 860.0))
 	if not split: phone_scale = minf(phone_scale,(available.x - 36.0)/430.0)
 	phone.scale = Vector2.ONE * phone_scale
@@ -453,6 +453,11 @@ func _layout() -> void:
 			active_game.position = (available-game_viewport*game_scale)/2
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
+
+func _activity_owns_scene() -> bool:
+	# Layout adapters opt into one full-scene owner. The shared host opts in
+	# for chase only; all other activity layouts keep their existing contract.
+	return is_instance_valid(active_game) and active_game.has_method("configure_activity_layout") and (not active_game.has_method("uses_activity_layout") or active_game.uses_activity_layout())
 
 func _authored_world_contract() -> bool:
 	# Active cinematics retain their source camera/aspect through interruptions.
@@ -962,7 +967,7 @@ func _show_journal() -> void:
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
 	journal.resume_requested.connect(func():
 		_close_modal()
-		if return_to_world or _is_canteen_defense_entry(): _show_world_mobile()
+		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry(): _show_world_mobile()
 	)
 	journal.comparison_requested.connect(func(): _show_observation_comparison(true))
 	box.add_child(journal)
@@ -1091,7 +1096,23 @@ func _show_world_mobile() -> void:
 	world_page_origin_scene=""
 	mobile_world = true
 	_layout()
-	_resume_canteen_defense()
+	_resume_world_activity()
+
+func _is_bike_chase_entry() -> bool:
+	var chase: Dictionary=State.d.canteenHunt
+	return str(State.d.native.scene)=="campus_bootstrap" and bool(chase.active) and str(chase.phase)=="chasing" and bool(chase.bikePaid) and not bool(chase.chaseCompleted)
+
+func _resume_world_activity() -> void:
+	if not _is_bike_chase_entry():
+		_resume_canteen_defense(); return
+	# RpgGameHost mounts the chase for this persisted phase. Paid chase_ready
+	# still uses the existing bike interaction; Exit is never polled/reopened.
+	if not is_inside_tree() or not world_frame.is_visible_in_tree(): return
+	if is_instance_valid(active_game) or is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(world_effect): return
+	if bool(State.d.ui.controlCenterOpen) or State.story_input_locked(): return
+	if is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract(): return
+	mobile_world=true
+	State.act("c3_chase")
 
 func _is_canteen_defense_entry() -> bool:
 	return str(State.d.native.scene)=="canteen_interior" and bool(State.d.canteenHunt.active) and str(State.d.canteenHunt.phase)=="exit_blocking"
@@ -1118,6 +1139,15 @@ func _play_audio(path: String) -> void:
 		voice_player.play()
 
 func _open_game(config: Dictionary) -> void:
+	if config.get("type","")=="chase" and config.get("departure",false):
+		_open_chase_film("start")
+		return
+	if config.get("type","")=="chase":
+		_queue_chase_scene("ride",config)
+		return
+	_open_game_now(config)
+
+func _open_game_now(config: Dictionary) -> void:
 	# The source opens the real A1 doors before the registered lamp questions.
 	# This local visual prelude never changes controller facts or completion proof.
 	if config.get("kind","")=="star_lamp_closure" and not config.get("native_exterior_presented",false):
@@ -1133,7 +1163,9 @@ func _open_game(config: Dictionary) -> void:
 		return
 	_cancel_world_effect()
 	_close_modal()
-	if is_instance_valid(active_game): active_game.queue_free()
+	if is_instance_valid(active_game):
+		if active_game.has_method("dispose_presentation"):active_game.dispose_presentation()
+		active_game.queue_free()
 	var path := str(config.get("script","res://scripts/ui/minigame_host.gd"))
 	if not ResourceLoader.exists(path):
 		_feedback("该原生小游戏尚未接入，剧情未前进。")
@@ -1146,8 +1178,13 @@ func _open_game(config: Dictionary) -> void:
 	active_game.custom_minimum_size = game_viewport
 	active_game.size = game_viewport
 	add_child(active_game)
+	var owned_game: Control=active_game
 	var finish := func(result: Dictionary):
+		if not is_instance_valid(owned_game) or active_game!=owned_game:return
 		var callback := str(config.get("on_success",config.get("callback","")))
+		if config.get("type","")=="chase" and callback=="c3_chase_result":
+			_finish_chase_owner(owned_game,result)
+			return
 		# Tiyi retains its finished track while the existing chapter authority
 		# validates the unchanged ten-fix proof. Return only closes this view.
 		if path == "res://scripts/games/virtual_run.gd" and is_instance_valid(active_game) and active_game.has_method("resolve"):
@@ -1166,9 +1203,12 @@ func _open_game(config: Dictionary) -> void:
 	elif active_game.has_signal("completed"): active_game.connect("completed",finish)
 	if active_game.has_signal("cancelled"):
 		active_game.connect("cancelled",func():
+			if not is_instance_valid(owned_game) or active_game!=owned_game:return
+			if owned_game.has_method("dispose_presentation"):owned_game.dispose_presentation()
 			if is_instance_valid(active_game): active_game.queue_free()
 			active_game = null
 			_layout()
+			if config.get("type","")=="chase":_focus_chase_world.call_deferred()
 		)
 	if active_game.has_signal("attempt_submitted"):
 		var submitted_game: Control=active_game
@@ -1181,6 +1221,112 @@ func _open_game(config: Dictionary) -> void:
 		active_game.connect("presentation_requested",_game_presentation)
 	if active_game.has_method("setup"): active_game.setup(config)
 	elif active_game.has_method("start"): active_game.start(config)
+	if _activity_owns_scene(): mobile_world=true
+	_layout()
+
+## The accepted replay is saved before an optional arrival film. The film has
+## no domain callback, so skipping, cancelling or reloading cannot grant twice.
+func _finish_chase_owner(owner: Control,proof: Dictionary) -> void:
+	if not is_instance_valid(owner) or active_game!=owner or owner.get_meta("proof_submitted",false):return
+	owner.set_meta("proof_submitted",true)
+	owner.set_process(false);owner.set_process_input(false)
+	if owner.has_method("dispose_presentation"):owner.dispose_presentation()
+	var accepted: Dictionary=State.act("c3_chase_result",proof)
+	if accepted.get("chase_arrival",false):
+		# The accepted result remains in the journal. The film owns its visible
+		# caption, so the same success message must not cover it a second time.
+		toast.text="";toast_time=0;toast.hide();_layout_toast()
+	# Release the entire ride viewport before allocating the ending world.
+	await get_tree().process_frame
+	if not is_instance_valid(owner) or active_game!=owner:return
+	active_game=null;owner.queue_free()
+	if accepted.get("chase_arrival",false) and State.d.canteenHunt.chaseCompleted and State.d.canteenHunt.phase=="theater_reached":
+		_open_chase_film("finish")
+	else:_layout()
+
+func _open_chase_film(stage: String) -> void:
+	_queue_chase_scene(stage,{})
+
+func _queue_chase_scene(stage: String,config: Dictionary) -> void:
+	_cancel_world_effect();_close_modal()
+	if is_instance_valid(active_game):
+		if active_game.has_method("dispose_presentation"):active_game.dispose_presentation()
+		active_game.queue_free()
+	var loading: Control=load("res://scripts/presentation/chase_loading.gd").new()
+	active_game=loading;loading.z_index=120;mobile_world=true
+	var admitted: Array[Control]=[null]
+	add_child(loading)
+	loading.cancelled.connect(func():
+		if active_game!=loading and active_game!=admitted[0]:return
+		if stage=="ride":_game_presentation("native_activity_closed",{"prefixes":["native_chase_","canteen_chase_"]})
+		if is_instance_valid(admitted[0]):
+			if admitted[0].has_method("dispose_presentation"):admitted[0].dispose_presentation()
+			admitted[0].queue_free()
+		active_game=null;loading.queue_free();_layout();_focus_chase_world.call_deferred())
+	_layout()
+	# Draw the acknowledgement before synchronous resource creation. The
+	# captured owner also prevents Exit or replacement from reopening a scene.
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_instance_valid(loading) or active_game!=loading:return
+	active_game=null
+	if stage=="ride":_open_game_now(config)
+	else:_open_chase_film_now(stage)
+	admitted[0]=active_game
+	if not is_instance_valid(admitted[0]):loading.queue_free();return
+	# Keep the acknowledgement as the input owner through the first loaded
+	# frame. Clicks queued during synchronous allocation must reach Return,
+	# never the newly revealed Start button at a similar screen position.
+	admitted[0].process_mode=Node.PROCESS_MODE_DISABLED
+	loading.grab_focus()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_instance_valid(loading):return
+	loading.queue_free()
+	if is_instance_valid(admitted[0]) and active_game==admitted[0]:
+		admitted[0].process_mode=Node.PROCESS_MODE_INHERIT
+		if admitted[0].focus_mode!=Control.FOCUS_NONE:admitted[0].grab_focus()
+		else:get_viewport().gui_release_focus()
+
+func _open_chase_film_now(stage: String) -> void:
+	_cancel_world_effect();_close_modal()
+	if is_instance_valid(active_game):
+		if active_game.has_method("dispose_presentation"):active_game.dispose_presentation()
+		active_game.queue_free()
+	var presenter: Control=load("res://scripts/presentation/chase_transition_3d_presenter.gd").new()
+	active_game=presenter;presenter.z_index=100
+	game_viewport=Vector2(960,540);mobile_world=true
+	add_child(presenter)
+	presenter.completed.connect(func(completed_stage: String,_skipped: bool):
+		if active_game!=presenter or completed_stage!=stage:return
+		if stage=="start":_continue_chase_departure(presenter)
+		else:_close_chase_film(presenter))
+	presenter.cancelled.connect(func(_cancelled_stage: String):_close_chase_film(presenter))
+	_layout()
+	presenter.play(stage,false,bool(State.d.native.settings.get("reduced_motion",false)))
+
+func _close_chase_film(owner: Control) -> void:
+	if not is_instance_valid(owner) or active_game!=owner:return
+	owner.dispose();active_game=null;owner.queue_free();mobile_world=true;_layout()
+	_focus_chase_world.call_deferred()
+
+func _focus_chase_world() -> void:
+	if not is_instance_valid(world) or not world_frame.is_visible_in_tree():return
+	if world._shell_input_blocked() or world._interaction_presentation_blocks():return
+	# Root phone buttons and the world SubViewport have separate focus owners.
+	get_viewport().gui_release_focus()
+	world.grab_focus()
+
+func _continue_chase_departure(owner: Control) -> void:
+	if not is_instance_valid(owner) or active_game!=owner:return
+	owner.dispose()
+	# No overlapping transition and ride worlds; stale callbacks cannot reopen.
+	owner.release_render_world()
+	await get_tree().process_frame
+	if not is_instance_valid(owner) or active_game!=owner:return
+	active_game=null;owner.queue_free()
+	if State.d.canteenHunt.phase=="chase_ready" and State.d.canteenHunt.bikePaid and not State.d.canteenHunt.chaseCompleted:
+		State.act("c3_chase_departed")
 	_layout()
 
 func _open_narrative(config: Dictionary) -> void:
@@ -1387,7 +1533,7 @@ func _resume_canteen_defense_after_reset() -> void:
 	# Import installs state before story_reset; fit the new scene before entry.
 	if not is_inside_tree(): return
 	_layout()
-	_resume_canteen_defense()
+	_resume_world_activity()
 
 func _play_presentation_cue(cue: String) -> void:
 	if is_instance_valid(audio_director): audio_director.cue(cue)

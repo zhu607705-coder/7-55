@@ -49,7 +49,10 @@ func run(runner: SceneTree) -> void:
 	await r.step("c3_bike_clean")
 	await r.step("c3_bike_pay")
 	request=await r.step("c3_chase")
-	if not r.check(request.has("game"),"paid bike launches actual chase"): return
+	if not r.check(request.has("game") and request.game.get("departure",false),"paid bike launches source departure"): return
+	r.check(r.state.d.canteenHunt.phase=="chase_ready","departure retains paid-ready state")
+	request=await r.step("c3_chase_departed")
+	if not r.check(request.has("game") and not request.game.departure,"source departure callback launches actual chase"):return
 	var chase: RefCounted=Chase.new()
 	chase.press("left")
 	while chase.lane>0.5 and chase.status=="running": chase.step()

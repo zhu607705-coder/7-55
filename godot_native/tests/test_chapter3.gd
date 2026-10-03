@@ -94,6 +94,7 @@ func run() -> void:
 	act(s,"c3_bike_pay")
 	check(s.wallet.cashCents==0 and s.canteenHunt.bikePaid and s.items.greaseTissue,"bike pay consumes wage; tissue retained")
 	act(s,"c3_chase")
+	act(s,"c3_chase_departed")
 	act(s,"c3_chase_result",{"mode":"story","distance":755,"lives":3,"collisions":0})
 	check(not s.canteenHunt.chaseCompleted,"forged chase terminal rejected without replay")
 	var chase: Dictionary=fixture("chase")

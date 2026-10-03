@@ -323,10 +323,13 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.wallet.cashCents-=200
 			c.bikePaid=true
 			return response(prose("chapter3-canteen.content","bike.unlock"))
-		"c3_chase":
+		"c3_chase","c3_chase_departed":
 			if c.phase not in ["chase_ready","chasing"] or not c.bikePaid or c.chaseCompleted: return locked()
-			c.phase="chasing"
-			return {"handled":true,"game":{"type":"chase","on_success":"c3_chase_result","mode":"story","goal":755,"distance":0,"lives":3,"title":prose("chapter3-canteen.content","bike.task"),"instructions":"左右转向，蓄力跳跃、铃铛清道，托盘和风力道具只在本局有效。"}}
+			# Source departure runs before startChase changes phase or starts music.
+			var departure: bool=action=="c3_chase" and c.phase=="chase_ready"
+			if action=="c3_chase_departed" and c.phase!="chase_ready": return locked()
+			if not departure:c.phase="chasing"
+			return {"handled":true,"game":{"type":"chase","departure":departure,"on_success":"c3_chase_result","mode":"story","goal":755,"distance":0,"lives":3,"title":prose("chapter3-canteen.content","bike.task"),"instructions":"左右转向，蓄力跳跃、铃铛清道，托盘和风力道具只在本局有效。"}}
 		"c3_chase_result":
 			if c.phase!="chasing" or not value is Dictionary: return locked("骑行记录无效。")
 			var distance: int = int(value.get("distance",-1))
@@ -342,6 +345,15 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			c.chaseCollisions=value.collisions
 			c.phase="theater_reached"
 			result=enter(s,"campus_bootstrap","c3_canteen","campus_theater_junction")
+			# Source BootScene arrives at the theater after the validated ride.
+			# Persist before State saves; the signal below updates the live world.
+			var arrival: Dictionary=world("campus_bootstrap").manifest.theater.approach
+			var point: Dictionary={"x":float(arrival.x),"y":float(arrival.y)}
+			if not s.native.get("positions") is Dictionary: s.native.positions={}
+			s.native.positions["campus_bootstrap:"]=point.duplicate()
+			s.native.player={"x":point.x,"y":point.y,"scene":"campus_bootstrap","world_x":point.x,"world_y":point.y}
+			result.teleport=[point.x,point.y]
+			result.chase_arrival=true
 			result.message=prose("chapter3-canteen.content","bike.finish")
 			return result
 		"c3_ticket_accept":

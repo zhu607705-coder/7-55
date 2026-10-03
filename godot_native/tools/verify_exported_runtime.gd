@@ -60,6 +60,25 @@ func run() -> void:
 		file.store_string(JSON.stringify({"state":state.d,"saveSha256":FileAccess.get_sha256(state.SAVE_PATH)})); file.close()
 	else: check(state.d.native.page=="phone_home","reloaded native UI retains home")
 	await shell.shutdown(); shell.queue_free(); await process_frame
+	# The original3D view loads packed native scenes and raw pose data. These
+	# checks catch export filters which silently omit the non-resource .bin files.
+	var before_3d: Dictionary=state.d.duplicate(true)
+	var poses=FileAccess.get_file_as_bytes("res://assets/native_755/ride/rider_bone_poses.bin")
+	check(poses.size()==8082816,"original rider pose binary is present in the exported pack")
+	var road=load("res://scripts/presentation/chase3d/source_chase_3d.gd").new()
+	road.configure({"asset_directory":"res://assets/native_755/ride/","render_width":960,"live_shadows":true})
+	root.add_child(road);await process_frame
+	check(road.ready3d and road.hero.bones.size()>0,"packed original rider and campus3D scenes instantiate without source tools")
+	var model=load("res://scripts/games/chase_stunt_model.gd").new()
+	road.update_view(model,0,false,false)
+	check(model.tick==0 and state.d==before_3d,"exported renderer does not advance simulation or saved state")
+	road.dispose();road.queue_free();await process_frame
+	var film=load("res://scripts/presentation/chase_transition_3d_presenter.gd").new()
+	film.manual_clock=true;root.add_child(film);film.play("finish")
+	check(film.ready3d and film.source_bones.size()>0,"packed original arrival scene and pose table instantiate")
+	film.advance(.125)
+	check(film.frame==3 and state.d==before_3d,"exported film follows its source clock without a story callback")
+	film.dispose();film.queue_free();await process_frame
 	var failures=checks.filter(func(row):return not row.ok)
 	var file=FileAccess.open(out,FileAccess.WRITE)
 	file.store_string(JSON.stringify({"kind":"exported-native-only-runtime","reload":reload_mode,"checks":checks,"failures":failures.size(),"packedFiles":packed_files,"browserRuntimeFiles":browser_files,"sourceTreeUsed":false,"externalHarnessOnly":true},"\t")); file.close()
