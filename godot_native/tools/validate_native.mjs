@@ -28,5 +28,6 @@ for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-direc
 for(const relative of ['tests/verify_source_model_parity.mjs','tests/verify_canteen_defense_source.mjs','tests/verify_lake_branch_source.mjs'])run('Source oracle '+relative,[path.join(project,relative)],process.execPath);
 run('Phone entry source contracts', [path.join(project,'tests/verify_phone_entry_source.py')], 'python3');
 run('Photo brightness source lifecycle', [path.join(project,'tests/verify_photo_consumer_source.mjs')],process.execPath);
+run('Tiyi presence source setter', [path.join(project,'tests/export_tiyi_presence_source.mjs'),'--check'],process.execPath);
 run('Original SaveStore differential', [path.join(project,'tests/verify_save_migration.mjs')],process.execPath);
 if(process.env.GODOT_TEST_REPORT)fs.writeFileSync(process.env.GODOT_TEST_REPORT,JSON.stringify(logs,null,2));

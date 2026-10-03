@@ -411,6 +411,20 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			items.seat022Receipt = true
 			_unique(p.libraryVisitedPoints,"seat_022")
 			return _ok("右移箭头把小票推出夹缝。获得 022 座位小票。")
+		"lib_audit_value":
+			if phase!="evidence_gathering" or not p.investigationOpened or not value is Dictionary: return _ok("")
+			var fields={"arrival":["auditArrivalMinutes",0,12],"notice":["auditPublicNoticeFloor",1,63],"proofs":["auditProofCount",1,5]}
+			var field=str(value.get("field",""))
+			if not fields.has(field): return _ok("")
+			var number=value.get("value")
+			if typeof(number) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(number)) or float(number)!=floor(float(number)): return _ok("")
+			var limits: Array=fields[field]
+			if number<limits[1] or number>limits[2]: return _ok("")
+			var previous_value=int(p[limits[0]])
+			p[limits[0]]=int(number)
+			if previous_value==int(number): return _ok("")
+			var source_field={"arrival":"arrivalMinutes","notice":"publicNoticeFloor","proofs":"proofCount"}[field]
+			return _ok("",{"presentation":{"cueId":"tiyi_audit_value_changed","payload":{"field":source_field,"value":int(number)}}})
 		"lib_audit":
 			if s.networkMode != "cellular": return _ok("浙大体艺需要移动数据。")
 			if phase != "evidence_gathering" or not p.investigationOpened or not p.entranceRecordRead or not p.archivedRuleRead or p.presenceProofCollected: return _ok("缺少门禁记录、论坛公示或旧版规则。")

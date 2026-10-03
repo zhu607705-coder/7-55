@@ -538,8 +538,25 @@
       "labels": [
         "浙大体艺",
         "···",
-        "到馆记录补录",
-        "本人到馆证明 · 林星宇\n记录来自浙大体艺。"
+        "本人来过证明补录单",
+        "待补录 · 先核对三项调查材料",
+        "表单 022",
+        "检测到室内异常锻炼路线",
+        "寝室 → 图书馆入口 → 022",
+        "到座耗时",
+        "来源 01 · 入口小屏 · 计算时间差",
+        "公示编号",
+        "来源 02 · CC98 楼主编辑 · 读取编号",
+        "证明数量",
+        "来源 03 · 旧版规则 · 统计类别",
+        "三项字段分别对应三份已保存的证据。",
+        "三项材料从哪里取得",
+        "01 图书馆入口小屏 · 填写到座耗时",
+        "07:55 基础馆入口 → 08:02 一层书库 022\n填写两次记录的分钟差",
+        "02 CC98 调查帖楼主编辑 · 填写公示编号",
+        "楼主编辑原文：旧申请统一挂在公示编号 47\n23 是回复楼层；填写原文中的公示编号",
+        "03 旧版规则 · 填写证明数量",
+        "本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写规则列出的证明类别数量"
       ],
       "buttons": [
         {
@@ -548,10 +565,99 @@
           "rect": "[P: (7.0, 5.0), S: (40.0, 45.0)]",
           "text": "×",
           "tooltip": "退出浙大体艺，返回手机主页"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiMinus_arrival",
+          "rect": "[P: (181.0, 299.0), S: (39.0, 32.0)]",
+          "text": "−",
+          "tooltip": "到座耗时减一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPlus_arrival",
+          "rect": "[P: (308.0, 299.0), S: (39.0, 32.0)]",
+          "text": "+",
+          "tooltip": "到座耗时加一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiMinus_notice",
+          "rect": "[P: (181.0, 382.0), S: (39.0, 32.0)]",
+          "text": "−",
+          "tooltip": "公示编号减一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPlus_notice",
+          "rect": "[P: (308.0, 382.0), S: (39.0, 32.0)]",
+          "text": "+",
+          "tooltip": "公示编号加一"
+        },
+        {
+          "disabled": true,
+          "name": "TiyiMinus_proofs",
+          "rect": "[P: (181.0, 465.0), S: (39.0, 32.0)]",
+          "text": "−",
+          "tooltip": "证明数量减一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPlus_proofs",
+          "rect": "[P: (308.0, 465.0), S: (39.0, 32.0)]",
+          "text": "+",
+          "tooltip": "证明数量加一"
+        },
+        {
+          "disabled": false,
+          "name": "TiyiPresenceSubmit",
+          "rect": "[P: (14.0, 549.0), S: (350.0, 44.0)]",
+          "text": "提交补录",
+          "tooltip": ""
         }
       ],
-      "actions": [],
-      "emissions": []
+      "actions": [
+        "lib_audit"
+      ],
+      "emissions": [
+        [
+          "lib_audit",
+          {
+            "arrival": "5",
+            "notice": "45",
+            "proofs": "1"
+          }
+        ],
+        [
+          "lib_audit_value",
+          {
+            "field": "arrival",
+            "value": 6
+          }
+        ],
+        [
+          "lib_audit_value",
+          {
+            "field": "notice",
+            "value": 46
+          }
+        ],
+        [
+          "lib_audit_value",
+          {
+            "field": "proofs",
+            "value": 2
+          }
+        ],
+        [
+          "lib_audit",
+          {
+            "arrival": "6",
+            "notice": "46",
+            "proofs": "2"
+          }
+        ]
+      ]
     }
   ]
 }

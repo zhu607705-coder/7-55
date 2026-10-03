@@ -11,6 +11,8 @@ const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const PhotoEvidence = preload("res://scripts/ui/photo_evidence_surface.gd")
 const WeatherIcon = preload("res://scripts/ui/native_weather_icon.gd")
 const TiyiIdentity = preload("res://scripts/ui/native_tiyi_identity.gd")
+const TiyiPresence = preload("res://scripts/ui/native_tiyi_presence.gd")
+var tiyi_presence = TiyiPresence.new()
 const EndingResume = preload("res://scripts/ui/native_ending_resume.gd")
 const CheckinPage = preload("res://scripts/ui/native_checkin_page.gd")
 var checkin_page = CheckinPage.new()
@@ -19,6 +21,8 @@ const NativeLibrary = preload("res://scripts/ui/native_library_pages.gd")
 var native_library = NativeLibrary.new()
 const Cc98Login = preload("res://scripts/ui/cc98_login_page.gd")
 const Cc98Gamepad = preload("res://scripts/ui/cc98_gamepad_exchange.gd")
+const Cc98Investigation = preload("res://scripts/ui/cc98_investigation_page.gd")
+var cc98_investigation = Cc98Investigation.new()
 const EarnedCatalogTitle = preload("res://scripts/ui/earned_catalog_title.gd")
 var earned_catalog_title = EarnedCatalogTitle.new()
 var cc98_login = Cc98Login.new()
@@ -79,9 +83,11 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 	if page != previous_page and page != "control_center":
 		if not page.begins_with("library_"): native_library.reset()
 		if page!="checkin": checkin_page.reset()
+		if page!="tiyi": tiyi_presence.reset()
 		if page == "settings": settings_page = "root"; settings_query = ""
 		if page != "cc98":
 			cc98_login.reset()
+			cc98_investigation.reset()
 			cc98_tab="hot"; cc98_board=""; cc98_post=""; cc98_query=""; cc98_recent=[]; cc98_followed=["校园生活","学习天地","交通出行","开怀一笑"]; cc98_drafts={}; cc98_editing=false; cc98_note_ready=false
 		if page != "phone_home": home_editing = false; home_focus_id = ""
 		if page != "wechat": friend_open = false
@@ -1021,7 +1027,7 @@ func _cc98(view: Dictionary) -> Control:
 			elif story.has("body"):
 				var lines=str(story.body).split("\n"); lines[0]=str(opened.body); story.body="\n".join(lines)
 			var control=_cc98_story(story)
-			_button(control,"‹ 热门话题",Rect2(181,11,183,36),func(): cc98_post=""; action_requested.emit("phone_refresh",{}),Color("297b9b"),Color.WHITE,0,Color.TRANSPARENT).name="Cc98BackToFeed"
+			_button(control,"‹ 热门话题",Rect2(181,11,183,36),func(): cc98_post=""; cc98_investigation.reset(); action_requested.emit("phone_refresh",{}),Color("297b9b"),Color.WHITE,0,Color.TRANSPARENT).name="Cc98BackToFeed"
 			return control
 		return _cc98_thread(opened)
 	var root=_base(Color("f4f5f6"),630)
@@ -1210,6 +1216,7 @@ func _cc98_note_search(feed: Control) -> void:
 func _cc98_story(view: Dictionary) -> Control:
 	if not s.actOne.cc98Login.authenticated: return cc98_login.build(self)
 	if str(view.get("post", {}).get("id", "")) == "act-two-gamepad-market": return Cc98Gamepad.new().build(self, view)
+	if str(view.get("post", {}).get("id", "")) == "seat-022-backpack": return cc98_investigation.build(self, view)
 	var rows: Array = view.get("rows",[])
 	var root = _base(Color("f2f3f5"),maxf(500,750+rows.size()*164))
 	_panel(root,Rect2(0,0,378,57),Color("297b9b"))
@@ -1558,12 +1565,9 @@ func _tiyi(view: Dictionary) -> Control:
 	if entry_session.phase!="ready":
 		root.free()
 		return _entry_loading("tiyi")
-	if str(view.get("title","")).contains("补录"):
-		_header(root,"浙大体艺",Color("3b79e9"),Color.WHITE,func(): page_requested.emit("phone_home"),"exit","退出浙大体艺，返回手机主页")
-		_panel(root,Rect2(16,73,346,397),Color.WHITE,Color("b4becb"),4,1)
-		_label(root,str(view.title),Rect2(29,92,320,50),18,Color("3b69a7"))
-		_label(root,str(view.body),Rect2(29,158,320,261),13)
-		return root
+	if str(view.get("title","")).contains("补录") and str(s.ui.libraryFinalsPhase)=="evidence_gathering":
+		root.free()
+		return tiyi_presence.build(self)
 	# Source CSS preserves the 852/1846 image ratio at the full phone height.
 	var source_height=854.0/PHONE_SCALE
 	var source_width=source_height*852.0/1846.0
