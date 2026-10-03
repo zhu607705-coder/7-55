@@ -1,0 +1,2273 @@
+{
+  "schemaVersion": 1,
+  "execution": "Original extracted TypeScript texture and scene methods, recording graphics and bridge ports",
+  "sources": {
+    "src/scenes/rpg/BootScene.ts": "6535c74791a7441e24cb17d6856e9a085ddad2a81e2d8999c41d0156d8a8770d",
+    "src/data/chapter3-canteen.content.json": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e",
+    "src/data/maps/zijingang-campus-runtime.json": "f27ecc3f98a057ac9c16d914f58013db2c0308da9c96cd7ee48ffceac90f7abe"
+  },
+  "extracted": {
+    "src/scenes/rpg/BootScene.ts": {
+      "ensureCanteenTextures": {
+        "line": 398,
+        "sha256": "9f9a061192fbfd1550bc22394f3d0cf0f8b5317fbe16797387fa9a4e37979144"
+      },
+      "createCanteenBike": {
+        "line": 505,
+        "sha256": "c00b33f0c444a85e40f51807c3206ad05a1436b16cff420b658971c56dfd7214"
+      },
+      "createCanteenBikeModeLayer": {
+        "line": 520,
+        "sha256": "108296c318fbe52c1cb4e6d9db01dcd57b699985b005ab9a6d79aff8c54af48f"
+      },
+      "getCanteenBikeWalletHint": {
+        "line": 556,
+        "sha256": "314c993bfefeca8dd980c8c76109870a00eba79363941212484df150b468c0d9"
+      },
+      "requestCanteenBikeIfNearby": {
+        "line": 561,
+        "sha256": "6c5e970ea5aa0f386d894b947ad8e82daffc25f939b8d50db3f2fa238f8ab261"
+      },
+      "handleCanteenInventoryDrop": {
+        "line": 567,
+        "sha256": "d06918bf6b6b6427b316f43326fc272580bae85eab3d766f632a97296a5620c3"
+      },
+      "CANTEEN_BIKE": {
+        "line": 43,
+        "sha256": "bcb8c9bfd73c6920283ea77cf442bc009f8688e8e8c1e897c4a384880a6c86f2"
+      },
+      "CANTEEN_BIKE_RADIUS": {
+        "line": 48,
+        "sha256": "3085dd27e6a02d312ac060763b0453e75457a1fb67a728813eea6d945568bb66"
+      },
+      "CANTEEN_DARK_OVERLAY_COLOR": {
+        "line": 49,
+        "sha256": "d9e7671e6ba4ef0f212c73b68401ae926000a71bad48f3b3f82519d9a5bf3f7d"
+      },
+      "CANTEEN_DARK_OVERLAY_ALPHA": {
+        "line": 50,
+        "sha256": "5cf2d37e5b951696444d59446ea7529b9a2f010970946151751e7b98336c8d74"
+      },
+      "CANTEEN_PLAYER_LIGHT_ALPHA": {
+        "line": 51,
+        "sha256": "e2c873898bd9b0621d55af09df64109e102ad0463ee4e1d5ed74d47666e4c6b2"
+      },
+      "CANTEEN_PLAYER_LIGHT_SCALE": {
+        "line": 52,
+        "sha256": "d3fbe50a4d5665f6f16b2e9df49b8b6fdec982cd0e05ac7736adc05dd02c9c77"
+      }
+    }
+  },
+  "sourceMethodNames": {
+    "inspectRequest": "requestCanteenBikeIfNearby",
+    "inventoryDrop": "handleCanteenInventoryDrop"
+  },
+  "bike": {
+    "texture": {
+      "key": "canteen-bike",
+      "width": 92,
+      "height": 62,
+      "calls": [
+        {
+          "method": "lineStyle",
+          "args": [
+            5,
+            1515817,
+            1
+          ]
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            20,
+            42,
+            17
+          ]
+        },
+        {
+          "method": "lineStyle",
+          "args": [
+            2,
+            12371911,
+            0.9
+          ]
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            20,
+            42,
+            13
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            7,
+            42,
+            33,
+            42
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            20,
+            29,
+            20,
+            55
+          ]
+        },
+        {
+          "method": "lineStyle",
+          "args": [
+            5,
+            1515817,
+            1
+          ]
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            70,
+            42,
+            17
+          ]
+        },
+        {
+          "method": "lineStyle",
+          "args": [
+            2,
+            12371911,
+            0.9
+          ]
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            70,
+            42,
+            13
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            57,
+            42,
+            83,
+            42
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            70,
+            29,
+            70,
+            55
+          ]
+        },
+        {
+          "method": "lineStyle",
+          "args": [
+            6,
+            4094382,
+            1
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            20,
+            42,
+            39,
+            20
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            39,
+            20,
+            52,
+            42
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            52,
+            42,
+            20,
+            42
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            39,
+            20,
+            70,
+            42
+          ]
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            38,
+            19,
+            34,
+            10
+          ]
+        },
+        {
+          "method": "fillStyle",
+          "args": [
+            2503740,
+            1
+          ]
+        },
+        {
+          "method": "fillRoundedRect",
+          "args": [
+            29,
+            7,
+            18,
+            6,
+            2
+          ]
+        },
+        {
+          "method": "fillStyle",
+          "args": [
+            2503740,
+            1
+          ]
+        },
+        {
+          "method": "fillRoundedRect",
+          "args": [
+            55,
+            20,
+            14,
+            13,
+            2
+          ]
+        },
+        {
+          "method": "fillStyle",
+          "args": [
+            7591922,
+            1
+          ]
+        },
+        {
+          "method": "fillRect",
+          "args": [
+            59,
+            23,
+            6,
+            6
+          ]
+        },
+        {
+          "method": "generateTexture",
+          "args": [
+            "canteen-bike",
+            92,
+            62
+          ]
+        }
+      ],
+      "primitives": [
+        {
+          "method": "strokeCircle",
+          "args": [
+            20,
+            42,
+            17
+          ],
+          "style": {
+            "width": 5,
+            "color": 1515817,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            20,
+            42,
+            13
+          ],
+          "style": {
+            "width": 2,
+            "color": 12371911,
+            "alpha": 0.9
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            7,
+            42,
+            33,
+            42
+          ],
+          "style": {
+            "width": 2,
+            "color": 12371911,
+            "alpha": 0.9
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            20,
+            29,
+            20,
+            55
+          ],
+          "style": {
+            "width": 2,
+            "color": 12371911,
+            "alpha": 0.9
+          }
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            70,
+            42,
+            17
+          ],
+          "style": {
+            "width": 5,
+            "color": 1515817,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "strokeCircle",
+          "args": [
+            70,
+            42,
+            13
+          ],
+          "style": {
+            "width": 2,
+            "color": 12371911,
+            "alpha": 0.9
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            57,
+            42,
+            83,
+            42
+          ],
+          "style": {
+            "width": 2,
+            "color": 12371911,
+            "alpha": 0.9
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            70,
+            29,
+            70,
+            55
+          ],
+          "style": {
+            "width": 2,
+            "color": 12371911,
+            "alpha": 0.9
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            20,
+            42,
+            39,
+            20
+          ],
+          "style": {
+            "width": 6,
+            "color": 4094382,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            39,
+            20,
+            52,
+            42
+          ],
+          "style": {
+            "width": 6,
+            "color": 4094382,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            52,
+            42,
+            20,
+            42
+          ],
+          "style": {
+            "width": 6,
+            "color": 4094382,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            39,
+            20,
+            70,
+            42
+          ],
+          "style": {
+            "width": 6,
+            "color": 4094382,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "lineBetween",
+          "args": [
+            38,
+            19,
+            34,
+            10
+          ],
+          "style": {
+            "width": 6,
+            "color": 4094382,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "fillRoundedRect",
+          "args": [
+            29,
+            7,
+            18,
+            6,
+            2
+          ],
+          "style": {
+            "color": 2503740,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "fillRoundedRect",
+          "args": [
+            55,
+            20,
+            14,
+            13,
+            2
+          ],
+          "style": {
+            "color": 2503740,
+            "alpha": 1
+          }
+        },
+        {
+          "method": "fillRect",
+          "args": [
+            59,
+            23,
+            6,
+            6
+          ],
+          "style": {
+            "color": 7591922,
+            "alpha": 1
+          }
+        }
+      ]
+    },
+    "anchor": {
+      "x": 3220,
+      "y": 650
+    },
+    "origin": {
+      "x": 0.5,
+      "y": 0.5,
+      "basis": "Phaser Image default; source does not override origin or scale"
+    },
+    "scale": {
+      "x": 1,
+      "y": 1
+    },
+    "textureWorldRect": {
+      "x": 3174,
+      "y": 619,
+      "width": 92,
+      "height": 62
+    },
+    "inspectRadius": 170,
+    "sourceDropRadius": 100,
+    "radiusRoles": {
+      "inspectRadius": "Player proximity guard for inspection only",
+      "sourceDropRadius": "Source maximum world-point distance; restoration uses drawn-body picking and existing compact pointer tolerance inside this upper guard"
+    },
+    "presentationOnly": true,
+    "chapterAuthority": "Existing ChapterThreeCanteenController; scene methods emit requests and do not write progression, items, or wallet",
+    "controllerFixture": "c3_canteen_devices_source.json: bike.controllerScenarios",
+    "presentations": [
+      {
+        "mode": "light",
+        "bikeLockCleaned": false,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "events": [
+            "pointerdown"
+          ]
+        },
+        "hint": {
+          "type": "text",
+          "args": [
+            3220,
+            592,
+            "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+            {
+              "color": "#fff7df",
+              "backgroundColor": "#241a12ee",
+              "fontFamily": "monospace",
+              "fontSize": "12px",
+              "padding": {
+                "x": 7,
+                "y": 4
+              },
+              "resolution": 2
+            }
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setOrigin",
+              "args": [
+                0.5
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                662
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                true
+              ]
+            }
+          ],
+          "events": []
+        },
+        "darkness": {
+          "type": "rectangle",
+          "args": [
+            2258,
+            1710,
+            4516,
+            3420,
+            330525,
+            0.7
+          ],
+          "visible": true,
+          "alpha": 0,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                500
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0
+              ]
+            }
+          ],
+          "events": []
+        },
+        "playerLight": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-light"
+          ],
+          "visible": true,
+          "alpha": 0,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                501
+              ]
+            },
+            {
+              "method": "setBlendMode",
+              "args": [
+                "ADD"
+              ]
+            },
+            {
+              "method": "setScale",
+              "args": [
+                0.62
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0
+              ]
+            }
+          ],
+          "events": []
+        },
+        "stateUnchanged": true
+      },
+      {
+        "mode": "light",
+        "bikeLockCleaned": true,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "events": [
+            "pointerdown"
+          ]
+        },
+        "hint": {
+          "type": "text",
+          "args": [
+            3220,
+            592,
+            "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+            {
+              "color": "#fff7df",
+              "backgroundColor": "#241a12ee",
+              "fontFamily": "monospace",
+              "fontSize": "12px",
+              "padding": {
+                "x": 7,
+                "y": 4
+              },
+              "resolution": 2
+            }
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setOrigin",
+              "args": [
+                0.5
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                662
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "darkness": {
+          "type": "rectangle",
+          "args": [
+            2258,
+            1710,
+            4516,
+            3420,
+            330525,
+            0.7
+          ],
+          "visible": true,
+          "alpha": 0,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                500
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0
+              ]
+            }
+          ],
+          "events": []
+        },
+        "playerLight": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-light"
+          ],
+          "visible": true,
+          "alpha": 0,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                501
+              ]
+            },
+            {
+              "method": "setBlendMode",
+              "args": [
+                "ADD"
+              ]
+            },
+            {
+              "method": "setScale",
+              "args": [
+                0.62
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0
+              ]
+            }
+          ],
+          "events": []
+        },
+        "stateUnchanged": true
+      },
+      {
+        "mode": "dark",
+        "bikeLockCleaned": false,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "events": [
+            "pointerdown"
+          ]
+        },
+        "hint": {
+          "type": "text",
+          "args": [
+            3220,
+            592,
+            "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+            {
+              "color": "#fff7df",
+              "backgroundColor": "#241a12ee",
+              "fontFamily": "monospace",
+              "fontSize": "12px",
+              "padding": {
+                "x": 7,
+                "y": 4
+              },
+              "resolution": 2
+            }
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setOrigin",
+              "args": [
+                0.5
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                662
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                true
+              ]
+            }
+          ],
+          "events": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "darkness": {
+          "type": "rectangle",
+          "args": [
+            2258,
+            1710,
+            4516,
+            3420,
+            330525,
+            0.7
+          ],
+          "visible": true,
+          "alpha": 0.7,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                500
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0.7
+              ]
+            }
+          ],
+          "events": []
+        },
+        "playerLight": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-light"
+          ],
+          "visible": true,
+          "alpha": 0.78,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                501
+              ]
+            },
+            {
+              "method": "setBlendMode",
+              "args": [
+                "ADD"
+              ]
+            },
+            {
+              "method": "setScale",
+              "args": [
+                0.62
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0.78
+              ]
+            }
+          ],
+          "events": []
+        },
+        "stateUnchanged": true
+      },
+      {
+        "mode": "dark",
+        "bikeLockCleaned": true,
+        "bike": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-bike"
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                656
+              ]
+            },
+            {
+              "method": "setInteractive",
+              "args": [
+                {
+                  "useHandCursor": true
+                }
+              ]
+            }
+          ],
+          "events": [
+            "pointerdown"
+          ]
+        },
+        "hint": {
+          "type": "text",
+          "args": [
+            3220,
+            592,
+            "扫码骑车：2.00 元 / 次\n我的零钱：2.00 元",
+            {
+              "color": "#fff7df",
+              "backgroundColor": "#241a12ee",
+              "fontFamily": "monospace",
+              "fontSize": "12px",
+              "padding": {
+                "x": 7,
+                "y": 4
+              },
+              "resolution": 2
+            }
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setOrigin",
+              "args": [
+                0.5
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                662
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "codeGlow": {
+          "type": "circle",
+          "args": [
+            3238,
+            645,
+            22,
+            4966911,
+            0.16
+          ],
+          "visible": true,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                4,
+                8972287,
+                0.95
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                654
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                true
+              ]
+            }
+          ],
+          "events": []
+        },
+        "glare": {
+          "type": "rectangle",
+          "args": [
+            3238,
+            645,
+            13,
+            11,
+            16777215,
+            0.7
+          ],
+          "visible": false,
+          "alpha": 1,
+          "calls": [
+            {
+              "method": "setStrokeStyle",
+              "args": [
+                2,
+                16772538,
+                0.9
+              ]
+            },
+            {
+              "method": "setRotation",
+              "args": [
+                -0.18
+              ]
+            },
+            {
+              "method": "setDepth",
+              "args": [
+                660
+              ]
+            },
+            {
+              "method": "setVisible",
+              "args": [
+                false
+              ]
+            }
+          ],
+          "events": []
+        },
+        "darkness": {
+          "type": "rectangle",
+          "args": [
+            2258,
+            1710,
+            4516,
+            3420,
+            330525,
+            0.7
+          ],
+          "visible": true,
+          "alpha": 0.7,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                500
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0.7
+              ]
+            }
+          ],
+          "events": []
+        },
+        "playerLight": {
+          "type": "image",
+          "args": [
+            3220,
+            650,
+            "canteen-light"
+          ],
+          "visible": true,
+          "alpha": 0.78,
+          "calls": [
+            {
+              "method": "setDepth",
+              "args": [
+                501
+              ]
+            },
+            {
+              "method": "setBlendMode",
+              "args": [
+                "ADD"
+              ]
+            },
+            {
+              "method": "setScale",
+              "args": [
+                0.62
+              ]
+            },
+            {
+              "method": "setAlpha",
+              "args": [
+                0.78
+              ]
+            }
+          ],
+          "events": []
+        },
+        "stateUnchanged": true
+      }
+    ],
+    "inspectRequests": [
+      {
+        "name": "nearby",
+        "playerOffset": {
+          "x": 0,
+          "y": 0
+        },
+        "viaPointer": false,
+        "events": [
+          {
+            "id": "rpg_canteen_bike_inspect_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "boundary",
+        "playerOffset": {
+          "x": 170,
+          "y": 0
+        },
+        "viaPointer": false,
+        "events": [
+          {
+            "id": "rpg_canteen_bike_inspect_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "outside",
+        "playerOffset": {
+          "x": 170.001,
+          "y": 0
+        },
+        "viaPointer": false,
+        "events": [],
+        "stateUnchanged": true
+      },
+      {
+        "name": "wrong_phase",
+        "playerOffset": {
+          "x": 0,
+          "y": 0
+        },
+        "viaPointer": false,
+        "events": [],
+        "stateUnchanged": true
+      },
+      {
+        "name": "sprite_pointer",
+        "playerOffset": {
+          "x": 0,
+          "y": 0
+        },
+        "viaPointer": true,
+        "events": [
+          {
+            "id": "rpg_canteen_bike_inspect_requested"
+          }
+        ],
+        "stateUnchanged": true
+      }
+    ],
+    "inventoryDrops": [
+      {
+        "name": "greaseTissue_center",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 650
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "greaseTissue_boundary_x",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3320,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3320,
+              "y": 650
+            },
+            "world": {
+              "x": 3320,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "greaseTissue_boundary_y",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 750
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 750
+            },
+            "world": {
+              "x": 3220,
+              "y": 750
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "greaseTissue_boundary_diagonal",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3280,
+          "canvasY": 730
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3280,
+              "y": 730
+            },
+            "world": {
+              "x": 3280,
+              "y": 730
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "greaseTissue_outside",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3320.001,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3320.001,
+              "y": 650
+            },
+            "world": {
+              "x": 3320.001,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "missed_target",
+              "targetLabel": "共享单车",
+              "detail": "松手点没有进入共享单车车身的高亮范围。"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "cafeteriaWages_center",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 650
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "cafeteriaWages_boundary_x",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3320,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3320,
+              "y": 650
+            },
+            "world": {
+              "x": 3320,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "cafeteriaWages_boundary_y",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3220,
+          "canvasY": 750
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 750
+            },
+            "world": {
+              "x": 3220,
+              "y": 750
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "cafeteriaWages_boundary_diagonal",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3280,
+          "canvasY": 730
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3280,
+              "y": 730
+            },
+            "world": {
+              "x": 3280,
+              "y": 730
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "cafeteriaWages_outside",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3320.001,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3320.001,
+              "y": 650
+            },
+            "world": {
+              "x": 3320.001,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "cafeteriaWages",
+              "reason": "missed_target",
+              "targetLabel": "共享单车",
+              "detail": "松手点没有进入共享单车车身的高亮范围。"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "wrong_item",
+        "payload": {
+          "itemId": "blackCoffee",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "blackCoffee",
+              "reason": "wrong_item",
+              "targetLabel": "共享单车",
+              "detail": "共享单车当前只接收纸巾或 2 元现金。"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "wrong_phase",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "menu_order",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "locked",
+              "targetLabel": "共享单车",
+              "detail": "共享单车交互尚未开放，请先完成食堂内部流程。"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "missing_payload",
+        "payload": null,
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "",
+              "reason": "wrong_item",
+              "targetLabel": "共享单车",
+              "detail": "共享单车当前只接收纸巾或 2 元现金。"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "missing_coordinates",
+        "payload": {
+          "itemId": "greaseTissue"
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "missed_target",
+              "targetLabel": "共享单车"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "non_numeric_coordinate",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": "invalid",
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [],
+        "events": [
+          {
+            "id": "rpg_item_use_feedback",
+            "payload": {
+              "itemId": "greaseTissue",
+              "reason": "missed_target",
+              "targetLabel": "共享单车"
+            }
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "transformed_canvas_tissue",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 160,
+          "canvasY": 100
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 2,
+          "offsetX": 2900,
+          "offsetY": 450
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 160,
+              "y": 100
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "far_player_drop_is_still_source_request",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 1000,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 650
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "dark_mode_still_routes_to_controller",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "dark",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 650
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "repeat_tissue_request",
+        "payload": {
+          "itemId": "greaseTissue",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": true,
+          "bikePaid": false,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 650
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_tissue_requested"
+          }
+        ],
+        "stateUnchanged": true
+      },
+      {
+        "name": "repeat_wages_request",
+        "payload": {
+          "itemId": "cafeteriaWages",
+          "canvasX": 3220,
+          "canvasY": 650
+        },
+        "hunt": {
+          "active": true,
+          "phase": "chase_ready",
+          "mode": "light",
+          "bikeCodeRead": false,
+          "bikeLockCleaned": false,
+          "bikePaid": true,
+          "chaseCompleted": false
+        },
+        "cameraTransform": {
+          "scale": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "playerOffset": 0,
+        "worldPointCalls": [
+          {
+            "canvas": {
+              "x": 3220,
+              "y": 650
+            },
+            "world": {
+              "x": 3220,
+              "y": 650
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "rpg_canteen_bike_requested"
+          }
+        ],
+        "stateUnchanged": true
+      }
+    ]
+  }
+}

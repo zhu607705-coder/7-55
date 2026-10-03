@@ -162,16 +162,8 @@ func actions(page: String, s: Dictionary) -> Array:
 		"c3_mixer":
 			list.append(command("c3_target:canteen-mixer","查看混合台"))
 			if own(s,"badDrink"): list.append(command("c3_bad_drink","试饮"))
-		"c3_menu":
-			if c.phase=="menu_order":
-				var opts: Array = []
-				for entry: Dictionary in content("chapter3-canteen.content").menu.options: opts.append(option(entry.id,entry.light))
-				list.append(field("c3_order","下单",opts))
-		"c3_bike":
-			list.append(command("c3_bike_inspect","查看车锁"))
-			if own(s,"greaseTissue"): list.append(command("c3_bike_clean","用油渍纸巾擦拭车锁"))
-			if not c.bikePaid: list.append(command("c3_bike_pay","扫码支付骑行费"))
-			else: list.append(command("c3_chase","开始骑行"))
+		"c3_menu": list.append(command("c3_target:ordering_kiosk","查看点餐机"))
+		"c3_bike": list.append(command("c3_target:bike","查看车锁"))
 		"c3_ticket_post":
 			if t.cc98TicketCommissionPhase=="posted": list.append(command("c3_ticket_accept",prose("chapter3-theater.content","cc98TicketCommission.acceptLabel")))
 			if t.cc98TicketCommissionPhase in ["accepted","first_wave_failed"]: list.append(command("c3_ticket_claim",prose("chapter3-theater.content","cc98TicketCommission.firstWaveLabel" if t.cc98TicketCommissionPhase=="accepted" else "cc98TicketCommission.secondWaveLabel")))
@@ -247,6 +239,14 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			t.phase="entry_ticket"
 			t.cc98TicketCommissionPhase="posted"
 		return enter(s,"theater_interior","c3_theater","theater_auditorium" if t.admitted else "theater_lobby")
+	if action.begins_with("c3_drink_take:"):
+		var target: String=action.trim_prefix("c3_drink_take:")
+		var entry: Dictionary=get_definition("canteen_interior",target,s)
+		if not side_active(c) or c.promoDrinkPlaced or c.queueGapOpened or entry.get("kind")!="drink_machine" or not can_operate(s,"canteen_interior",target): return locked()
+		var item: String=str(entry.value)
+		if own(s,item): return _audio_event(response(prose("chapter3-canteen.content","drinks.alreadyOwned")),"canteen_drink_already_owned",{"itemId":item})
+		s.items[item]=true
+		return _audio_event(response(prose("chapter3-canteen.content","drinks.collected."+item)),"canteen_drink_collected",{"itemId":item})
 	if action.begins_with("c3_mix:"):
 		var item: String = action.trim_prefix("c3_mix:")
 		if not side_active(c) or c.promoDrinkPlaced or not own(s,item) or item not in RECIPE or not can_operate(s,"canteen_interior","canteen-mixer"): return locked()
@@ -289,9 +289,15 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if not own(s,"badDrink"): return locked()
 			consume(s,"badDrink")
 			return tell(s,"canteen_bad_drink","chapter3-canteen.content","drinks.badDrinkConsumed")
+		"c3_menu_observe":
+			if not c.active or c.phase not in ["menu_order","pickup_search"] or not near_source(s,"canteen_interior",get_definition("canteen_interior","ordering_kiosk",s)) or mode(s,"canteenHunt")!="dark": return locked()
+			c.menuDarkClueRead=true
+			return _audio_event(response(prose("chapter3-canteen.content","menu.darkClueRead")),"canteen_menu_dark_clue_read")
 		"c3_order":
-			if c.phase!="menu_order" or not can_operate(s,"canteen_interior","ordering_kiosk"): return locked()
-			if not ORDER_WINDOW.has(str(value)) or own(s,"pickupTicket0755"): return locked()
+			if not c.active or c.phase not in ["menu_order","pickup_search"] or not near_source(s,"canteen_interior",get_definition("canteen_interior","ordering_kiosk",s)): return locked()
+			if mode(s,"canteenHunt")!="light": return locked(prose("chapter3-canteen.content","menu.orderLocked"))
+			if c.phase!="menu_order" or own(s,"pickupTicket0755") or c.orderedMenuOption!=null: return locked(prose("chapter3-canteen.content","menu.alreadyActive"))
+			if not ORDER_WINDOW.has(str(value)): return locked()
 			c.orderedMenuOption=str(value)
 			c.orderAttemptCount+=1
 			c.phase="pickup_search"
@@ -300,6 +306,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		"c3_bike_inspect":
 			if c.phase!="chase_ready" or not near_source(s,"campus_bootstrap",get_definition("campus_bootstrap","bike",s)): return locked()
 			if mode(s,"canteenHunt")=="dark":
+				if c.bikeCodeRead: return _audio_event(response(prose("chapter3-canteen.content","bike.darkPaymentRejected")),"canteen_bike_dark_payment_rejected")
 				c.bikeCodeRead=true
 				return response(prose("chapter3-canteen.content","bike.codeVisible"))
 			return _audio_event(response(prose("chapter3-canteen.content","bike.lockCleaned" if c.bikeLockCleaned else "bike.glareFailed")), "canteen_bike_payment_ready" if c.bikeLockCleaned else "canteen_bike_glare_failed")
@@ -435,7 +442,7 @@ func definitions(scene: String, s: Dictionary) -> Array:
 	var list: Array = source_targets(scene).duplicate(true)
 	if scene=="campus_bootstrap" and s.canteenHunt.phase=="chase_ready":
 		var bike: Dictionary=world(scene).manifest.canteen.bike
-		list.append({"id":"bike","label":"共享单车","x":bike.x,"y":bike.y,"proximity":170,"kind":"bike"})
+		list.append({"id":"bike","label":"共享单车","x":bike.x,"y":bike.y,"proximity":170,"kind":"bike","acceptedItems":["greaseTissue","cafeteriaWages"]})
 	if scene=="canteen_interior":
 		var constants: Dictionary = world(scene).constants
 		list.append_array(constants.CANTEEN_DRINK_MACHINES)
@@ -477,7 +484,15 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 	if scene=="canteen_interior" and SceneSession.pending_canteen(s): return locked("先找到排队的纸条。")
 	var entry: Dictionary = get_definition(scene,id,s)
 	if entry.is_empty() or not near_source(s,scene,entry): return locked("先走近一点再操作。")
-	if scene=="campus_bootstrap" and id=="bike" and s.canteenHunt.phase=="chase_ready": return {"handled":true,"page":"c3_bike"}
+	if scene=="campus_bootstrap" and id=="bike" and s.canteenHunt.phase=="chase_ready":
+		var item: String=str(s.native.get("selected_item",""))
+		if item in ["greaseTissue","cafeteriaWages"]:
+			if not own(s,item): return locked("这个物品已经不在物品栏里。")
+			var result: Dictionary=dispatch(s,"c3_bike_clean" if item=="greaseTissue" else "c3_bike_pay")
+			if (item=="greaseTissue" and s.canteenHunt.bikeLockCleaned) or (item=="cafeteriaWages" and s.canteenHunt.bikePaid):
+				s.native.selected_item="";s.ui.selectedItem=null
+			return result
+		return {"handled":true,"open_canteen_device":"bike"}
 	if scene=="canteen_interior": return canteen_target(s,entry)
 	if scene=="theater_interior": return theater_target(s,entry)
 	return locked()
@@ -522,9 +537,8 @@ func canteen_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			c.queueChallengeSeen=true
 			return tell(s,"canteen_queue","chapter3-canteen.content","drinks.queueDialogue")
 		"drink_machine":
-			if not side_active(c) or c.promoDrinkPlaced or dark: return locked()
-			s.items[entry.value]=true
-			return response(prose("chapter3-canteen.content","drinks.collected."+str(entry.value)))
+			if not side_active(c) or c.promoDrinkPlaced or c.queueGapOpened or dark: return locked()
+			return {"handled":true,"open_canteen_device":"drink:"+id}
 		"drink_shelf":
 			c.drinkShelfRead=true
 			return response(prose("chapter3-canteen.content","drinks.shelfPrompt")+"\n"+prose("chapter3-canteen.content","drinks.shelfOrder"))
@@ -536,12 +550,7 @@ func canteen_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			return tell(s,"canteen_promo","chapter3-canteen.content","drinks.queueShiftDialogue",{"delayMs":PromoTimeline.timing(bool(s.native.get("settings",{}).get("reduced_motion",false))).completeAt})
 		"kiosk":
 			if c.phase not in ["menu_order","pickup_search"]: return locked()
-			if dark:
-				c.menuDarkClueRead=true
-				var lines: String = prose("chapter3-canteen.content","menu.darkIntro")
-				for opt: Dictionary in content("chapter3-canteen.content").menu.options: lines+="\n"+opt.id+" · "+opt.dark
-				return response(lines)
-			return {"handled":true,"page":"c3_menu"}
+			return {"handled":true,"open_canteen_device":"menu"}
 		"pickup":
 			if dark:
 				if str(entry.value)=="3": c.pickupDarkClueRead=true
@@ -566,7 +575,7 @@ func canteen_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			return locked("纸条正在寻找出口，需要持续拦截。")
 		"bike":
 			if c.phase!="chase_ready": return locked()
-			return {"handled":true,"page":"c3_bike"}
+			return {"handled":true,"open_canteen_device":"bike"}
 		"exit":
 			if not side_active(c): return locked()
 			return enter(s,"campus_bootstrap","c3_canteen","campus_canteen_gate")

@@ -2,7 +2,7 @@ extends SceneTree
 ## Required device surfaces through actual Main, world targets and Control input.
 ## Source-phase fixtures isolate routing; they are not a campaign completion proof.
 ## Source-authentic C3/C4 devices are live world modals, not generic phone forms.
-const WORLD_DEVICES := ["mixer","kiosk","console","c4_duty","c4_numeric"]
+const WORLD_DEVICES := ["mixer","menu","bike","kiosk","console","c4_duty","c4_numeric"]
 var checks: int=0
 var failures: int=0
 var state: Node
@@ -17,12 +17,6 @@ func find_button(node: Node,text: String) -> Button:
 		var found: Button=find_button(child,text)
 		if found!=null: return found
 	return null
-func descendants(node: Node,type: String) -> Array:
-	var found: Array=[]
-	for child in node.get_children():
-		if child.is_class(type): found.append(child)
-		found.append_array(descendants(child,type))
-	return found
 func luminance(color: Color) -> float:
 	var linear: Color=color.srgb_to_linear()
 	return .2126*linear.r+.7152*linear.g+.0722*linear.b
@@ -54,6 +48,7 @@ func seed_case(id: String) -> void:
 	elif id=="menu": state.d.canteenHunt.phase="menu_order"; state.d.canteenHunt.queueGapOpened=true
 	elif id=="bike":
 		state.d.native.scene="campus_bootstrap"; state.d.canteenHunt.phase="chase_ready"; state.d.items.greaseTissue=true
+		state.d.items.cafeteriaWages=true; state.d.wallet.cashCents=200
 	elif id in ["kiosk","console"]:
 		state.d.native.scene="theater_interior"; state.d.native.page="c3_theater"; state.d.theaterHunt.active=true
 		state.d.theaterHunt.phase="entry_ticket" if id=="kiosk" else "program_search"; state.d.theaterHunt.posterCleaned=true; state.d.theaterHunt.ticketCodeRead=true
@@ -88,28 +83,31 @@ func interact(action: String) -> Dictionary:
 	main.world._try_interact(selected)
 	await process_frame; await process_frame
 	return selected
-func fill_form(values: Array) -> void:
-	check(is_instance_valid(main.modal),"real input dialog opened")
-	if not is_instance_valid(main.modal): return
-	var editors: Array=[]
-	for node in descendants(main.modal,"Control"):
-		if node is OptionButton or node is LineEdit: editors.append(node)
-	check(editors.size()==values.size(),"expected actual input controls")
-	for i in range(mini(editors.size(),values.size())):
-		if editors[i] is OptionButton: editors[i].select(int(values[i]))
-		else:
-			var input: LineEdit=editors[i]
-			var background: Color=input.get_theme_stylebox("normal").bg_color
-			check(contrast(input.get_theme_color("font_color"),background)>=4.5,"required form text has readable contrast")
-			check(contrast(input.get_theme_color("font_placeholder_color"),background)>=4.5,"required form placeholder has readable contrast")
-			check(input.get_theme_color("caret_color")==main.INK,"input caret remains visible on light form")
-			input.text=str(values[i])
-	await click(find_button(main.modal,"确认"),"form submit")
+func tap_device_key(code: Key) -> void:
+	for pressed: bool in [true,false]:
+		var event:=InputEventKey.new(); event.keycode=code; event.physical_keycode=code; event.pressed=pressed
+		root.push_input(event,true); await process_frame
+	await process_frame
+func canteen_controls(panel: Control) -> void:
+	if not panel.compact_layout: return
+	for button: Button in panel.controls.values():
+		if not button.is_visible_in_tree(): continue
+		check(button.get_global_rect().size.x>=44 and button.get_global_rect().size.y>=44,"compact canteen control has physical 44px target: "+button.name)
+		check(button.get_theme_font_size("font_size")*button.get_global_transform().get_scale().y>=14,"compact canteen control retains physical 14px text: "+button.name)
+		check(contrast(button.get_theme_color("font_color"),button.get_theme_stylebox("normal").bg_color)>=4.5,"compact canteen normal control text has readable contrast: "+button.name)
+		check(contrast(button.get_theme_color("font_hover_color"),button.get_theme_stylebox("hover").bg_color)>=4.5,"compact canteen hover control text has readable contrast: "+button.name)
+	for label: Label in panel.labels.values():
+		if not label.is_visible_in_tree() or label.text.is_empty(): continue
+		check(label.get_theme_font_size("font_size")*label.get_global_transform().get_scale().y>=14,"compact canteen copy retains physical 14px text: "+label.name)
+func menu_labels(panel: Control,dark: bool) -> void:
+	for option: Dictionary in panel.content.menu.options:
+		check(panel.controls[str(option.id)].text==str(option.id)+"  "+str(option.dark if dark else option.light),"menu control displays authored "+("dark" if dark else "light")+" label "+str(option.id))
+
 func run() -> void:
 	state=root.get_node("State"); seed_case("mixer")
 	root.size=Vector2i(390,844); main=load("res://scenes/main.tscn").instantiate(); root.add_child(main); await process_frame; await process_frame
 	var actions: Dictionary={"mixer":"c3_target:canteen-mixer","menu":"c3_target:ordering_kiosk","bike":"c3_target:bike","kiosk":"c3_target:theater_ticket_kiosk","console":"c3_target:theater_light_console","library_record":"lib_open_record","library_catalog":"lib_catalog_terminal","c4_duty":"c4_device_duty_board","c4_elevator":"c4_elevator","c4_power":"c4_power","c4_numeric":"c4_device_positioning_calibration"}
-	var pages: Dictionary={"menu":"c3_menu","bike":"c3_bike","library_record":"library_record","library_catalog":"library_catalog"}
+	var pages: Dictionary={"library_record":"library_record","library_catalog":"library_catalog"}
 	for width: int in [390,430,1280]:
 		for id: String in actions:
 			await prepare(id,width)
@@ -130,10 +128,6 @@ func run() -> void:
 			state.act("phone_refresh",{}); await process_frame; await process_frame
 			check(main.phone.is_visible_in_tree(),"ordinary refresh leaves selected device visible")
 			match id:
-				"menu":
-					await click(find_button(main.page_body,"下单"),"menu order"); await fill_form([3])
-					check(state.d.items.pickupTicket0755 and state.d.canteenHunt.orderedMenuOption=="D","real menu input reaches source controller")
-				"bike": await click(find_button(main.page_body,"用油渍纸巾擦拭车锁"),"bike cleaning"); check(state.d.canteenHunt.bikeLockCleaned,"visible bike action mutates only intended fact")
 				"library_record": await click(find_button(main.page_body,"记下入馆记录"),"library record"); check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"library record action accepted")
 				"library_catalog":
 					var query: LineEdit=main.page_body.find_child("LibraryCatalogQuery",true,false)
@@ -145,21 +139,12 @@ func run() -> void:
 				"c4_power":
 					var button: Button=find_button(main.page_body,"大厅"); var before: int=state.d.chapter4.lightGrid.mask
 					await click(button,"power toggle"); check(state.d.chapter4.lightGrid.mask!=before,"real power control applies toggle")
-			if id=="menu":
-				check(main.world_frame.is_visible_in_tree(),"device submission reveals its source world dialogue")
-				main.c3_narrative_host.tick(0,true)
-				check(main.c3_narrative_host.current!=null,"genuine narrative host receives source queue")
-				for _i in range(300):
-					if main.c3_narrative_host.current==null: break
-					main.c3_narrative_host.tick(100,true)
-				check(main.c3_narrative_host.current==null,"source queue can complete without hidden-world deadlock")
-			else:
-				await click(find_button(main.page_body,"进入横屏场景"),"return to same world")
-				check(main.world_frame.is_visible_in_tree() and main.world.player==position and state.d.native.scene==scene,"return retains source world position")
-				state.act("phone_refresh",{}); await process_frame
-				check(main.world_frame.is_visible_in_tree(),"refresh does not yank return view back to phone")
-				if id in ["bike","library_record","library_catalog","c4_elevator","c4_power"]:
-					await interact(actions[id]); check(main.phone.is_visible_in_tree(),"same world device reopens its controls")
+			await click(find_button(main.page_body,"返回现场"),"return to same world")
+			check(main.world_frame.is_visible_in_tree() and main.world.player==position and state.d.native.scene==scene,"return retains source world position")
+			state.act("phone_refresh",{}); await process_frame
+			check(main.world_frame.is_visible_in_tree(),"refresh does not yank return view back to phone")
+			if id in ["library_record","library_catalog","c4_elevator","c4_power"]:
+				await interact(actions[id]); check(main.phone.is_visible_in_tree(),"same world device reopens its controls")
 	await rain_return()
 	await closure_return()
 	await main.shutdown(); main.queue_free(); await process_frame
@@ -186,6 +171,45 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 			if slot>=0: await click(panel.slots[slot],"mixer coffee slot")
 			check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"],"real mixer pointer accepts ingredient")
 			await click(panel.exit_button,"return from source mixer")
+		"menu":
+			menu_labels(panel,false); canteen_controls(panel)
+			await click(panel.controls.mode,"observe source dark menu")
+			check(main.c3_device_panel==panel and state.d.native.mode=="dark" and state.d.canteenHunt.menuDarkClueRead,"mode control observes clue in same menu modal")
+			menu_labels(panel,true)
+			await click(panel.controls.D,"dark menu order refusal")
+			check(not state.d.items.pickupTicket0755 and state.d.canteenHunt.orderAttemptCount==0 and is_instance_valid(main.modal),"dark menu cannot grant a ticket or submit an order")
+			check(main.world.subtitle==str(panel.content.menu.orderLocked),"dark refusal uses authored current feedback")
+			await click(panel.controls.mode,"return menu to light operation")
+			menu_labels(panel,false)
+			await click(panel.controls.close,"close observed menu")
+			check(not is_instance_valid(main.modal) and main.world.player==position,"menu close preserves source world position")
+			check(main.world.get_viewport().gui_get_focus_owner()==main.world,"menu close restores world focus")
+			state.act("phone_refresh",{}); await process_frame
+			check(main.world_frame.is_visible_in_tree(),"refresh after menu close retains visible world")
+			await interact(action); panel=main.c3_device_panel
+			check(is_instance_valid(panel) and panel.is_visible_in_tree() and not state.d.items.pickupTicket0755,"observed menu reopens without granting an order")
+			if not is_instance_valid(panel): return
+			await click(panel.controls.D,"source menu D button")
+			check(state.d.items.pickupTicket0755 and state.d.canteenHunt.orderedMenuOption=="D" and state.d.canteenHunt.orderAttemptCount==1,"real menu option reaches existing source controller exactly once")
+		"bike":
+			canteen_controls(panel)
+			check(main.world.subtitle==str(panel.content.bike.glareFailed),"opening bike inspects authored lock glare")
+			await click(panel.controls.pay,"unclean bike payment refusal")
+			check(not state.d.canteenHunt.bikePaid and state.d.wallet.cashCents==200 and state.d.items.cafeteriaWages,"unclean lock preserves money and wage item")
+			await click(panel.controls.mode,"observe bike in dark mode")
+			check(main.c3_device_panel==panel and state.d.native.mode=="dark","bike mode changes in same live modal")
+			await click(panel.controls.inspect,"inspect source bike code")
+			check(state.d.canteenHunt.bikeCodeRead,"actual dark inspection records optional source evidence")
+			await click(panel.controls.inspect,"repeat source bike inspection")
+			check(main.world.subtitle==str(panel.content.bike.darkPaymentRejected),"repeated dark inspection retains source refusal")
+			await click(panel.controls.clean,"dark bike cleaning refusal")
+			await click(panel.controls.pay,"dark bike payment refusal")
+			check(not state.d.canteenHunt.bikeLockCleaned and not state.d.canteenHunt.bikePaid and state.d.wallet.cashCents==200,"dark controls do not clean or pay")
+			await click(panel.controls.mode,"return bike to light operation")
+			await click(panel.controls.clean,"clean source bike lock")
+			check(state.d.canteenHunt.bikeLockCleaned and state.d.items.greaseTissue and not state.d.canteenHunt.bikePaid,"light clean retains owned tissue and leaves payment pending")
+			await tap_device_key(KEY_ESCAPE)
+			check(main.world.get_viewport().gui_get_focus_owner()==main.world,"bike Escape restores world focus")
 		"kiosk":
 			for digit in ["0","8","3","2"]: await click(panel.controls[digit],"kiosk digit "+digit)
 			check(panel.code=="0832","actual keypad preserves four-digit draft")
@@ -212,14 +236,19 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 			await click(panel.close_button,"return from completed calibration")
 	check(not is_instance_valid(main.modal),id+" source return closes modal")
 	check(main.world_frame.is_visible_in_tree() and state.d.native.scene==scene,id+" source return retains visible world")
-	if id=="kiosk":
+	if id in ["menu","kiosk"]:
 		main.c3_narrative_host.tick(0,true)
-		check(main.c3_narrative_host.current!=null,"real keypad submission reaches original narrative queue")
+		check(main.c3_narrative_host.current!=null,id+" submission reaches original narrative queue")
 		for _i in range(300):
 			if main.c3_narrative_host.current==null: break
 			main.c3_narrative_host.tick(100,true)
-		check(main.c3_narrative_host.current==null,"keypad dialogue completes in visible world")
-	if id in ["mixer","c4_duty","c4_numeric"]:
+		check(main.c3_narrative_host.current==null,id+" dialogue completes in visible world")
+	if id=="menu":
+		check(main.world.player==position and state.d.canteenHunt.phase=="pickup_search","accepted order returns player to original pickup route")
+		check(state.d.canteenHunt.orderAttemptCount==1 and state.d.items.pickupTicket0755,"source dialogue preserves single order and ticket")
+		state.act("phone_refresh",{}); await process_frame
+		check(main.world_frame.is_visible_in_tree(),"refresh after menu dialogue retains source world")
+	if id in ["mixer","bike","c4_duty","c4_numeric"]:
 		check(main.world.player==position,"source modal close retains exact world position")
 		state.act("phone_refresh",{}); await process_frame
 		check(main.world_frame.is_visible_in_tree(),"refresh after modal return keeps world visible")
@@ -227,9 +256,23 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 		var reopened: Control=main.modal if c4 else main.c3_device_panel
 		check(is_instance_valid(reopened) and reopened.is_visible_in_tree(),"same world device reopens live controls")
 		if is_instance_valid(reopened):
-			if c4: check(reopened.session.completed,"reopened C4 completed state comes from controller fact")
-			else: check(reopened.model.layers.size()==1,"reopened mixer retains partial pour")
-			await click(reopened.close_button if c4 else reopened.exit_button,"close reopened world device")
+			if c4:
+				check(reopened.session.completed,"reopened C4 completed state comes from controller fact")
+				await click(reopened.close_button,"close reopened world device")
+			elif id=="mixer":
+				check(reopened.model.layers.size()==1,"reopened mixer retains partial pour")
+				await click(reopened.exit_button,"close reopened mixer")
+			else:
+				check(state.d.canteenHunt.bikeLockCleaned and state.d.items.greaseTissue,"reopened bike retains cleaning and tissue")
+				await click(reopened.controls.pay,"pay cleaned source bike")
+				check(state.d.canteenHunt.bikePaid and state.d.wallet.cashCents==0 and not state.d.items.cafeteriaWages,"visible payment consumes source wages and charges exactly once")
+				check(reopened.controls.ride.is_visible_in_tree() and not reopened.controls.pay.is_visible_in_tree(),"paid bike presents ride control")
+				await click(reopened.controls.close,"close paid bike")
+				await interact(action); reopened=main.c3_device_panel
+				check(is_instance_valid(reopened) and reopened.is_visible_in_tree() and state.d.canteenHunt.bikePaid and state.d.wallet.cashCents==0,"paid bike reopens without another charge")
+				if is_instance_valid(reopened):
+					check(reopened.controls.ride.is_visible_in_tree() and not reopened.controls.pay.is_visible_in_tree(),"reopened paid bike retains ride presentation")
+					await click(reopened.controls.close,"close reopened paid bike")
 		check(not is_instance_valid(main.modal),"reopened world device closes through live control")
 
 func rain_return() -> void:

@@ -19,6 +19,8 @@ const NativeLibrary = preload("res://scripts/ui/native_library_pages.gd")
 var native_library = NativeLibrary.new()
 const Cc98Login = preload("res://scripts/ui/cc98_login_page.gd")
 const Cc98Gamepad = preload("res://scripts/ui/cc98_gamepad_exchange.gd")
+const EarnedCatalogTitle = preload("res://scripts/ui/earned_catalog_title.gd")
+var earned_catalog_title = EarnedCatalogTitle.new()
 var cc98_login = Cc98Login.new()
 const LakeApps = preload("res://scripts/ui/c3_lake_app_context.gd")
 var lake_apps = LakeApps.new()
@@ -1233,13 +1235,22 @@ func _cc98_story(view: Dictionary) -> Control:
 			y += 57
 		var bd = {24:"bd-notice-tens",25:"bd-rule-count",26:"bd-rank-first",27:"bd-identity-zero",28:"bd-call-number-tail",29:"bd-seat-tail",30:"bd-reply-count",31:"bd-arrival-minutes"}
 		for row in rows:
-			_panel(root,Rect2(0,y,378,157),Color.WHITE,Color("dce1e5"),0,1)
+			var has_catalog_title=not earned_catalog_title.title_for_reply(s,row).is_empty()
+			var row_height=204 if has_catalog_title else 157
+			_panel(root,Rect2(0,y,378,row_height),Color.WHITE,Color("dce1e5"),0,1)
 			_label(root,str(row.get("title","")),Rect2(15,y+10,346,29),16,Color("337e9b"))
 			_label(root,str(row.get("body","")),Rect2(15,y+45,346,83),17)
+			if has_catalog_title:
+				var feedback=_label(root,"可在馆藏检索中手动粘贴",Rect2(119,y+142,244,48),13,MUTED)
+				feedback.name="Cc98CatalogTitleFeedback"
+				var copy=_button(root,"复制题名",Rect2(15,y+142,92,48),func():
+					feedback.text=earned_catalog_title.copy_reply_title(s,row),Color("e8f0f4"),Color("367d99"),2,Color("86b1c4"))
+				copy.name="Cc98CopyCatalogTitle"
+				copy.tooltip_text="将本楼题名复制到剪贴板"
 			var floor_number = int(str(row.get("title","")).get_slice(" ",0))
 			if s.ui.libraryFinalsPhase=="top_ten_rising" and bd.has(floor_number):
 				_act(root,"bd",Rect2(301,y+120,58,28),"lib_bd_select",bd[floor_number],Color("e8f0f4"),Color("367d99"),2,Color("86b1c4"))
-			y += 164
+			y += row_height+7
 		root.custom_minimum_size.y = y+8
 		root.size.y = y+8
 	return root
@@ -1657,13 +1668,18 @@ func _library(page: String, view: Dictionary) -> Control:
 	var y = 76
 	if rows.is_empty():
 		_panel(root,Rect2(16,76,346,342),Color.WHITE,Color("c7d0da"),3,1)
-		_label(root,str(view.get("body","")),Rect2(31,91,315,310),20,Color("34445c"))
-		if page=="library_record":
+		# Keep rule text and its action clear of the collapsed phone inventory rail.
+		var rule_page=page=="library_rule"
+		var text_left=46 if rule_page else 31
+		_label(root,str(view.get("body","")),Rect2(text_left,91,346-text_left,310),20,Color("34445c"))
+		if page in ["library_record","library_rule"]:
+			var action_id="lib_read_rule" if rule_page else "lib_record"
+			var action_left=46 if rule_page else 16
 			for action: Dictionary in view.get("actions",[]):
-				if action.id!="lib_record": continue
-				var record=_act(root,str(action.label),Rect2(16,434,346,48),str(action.id),null,BLUE,Color.WHITE,3,Color.TRANSPARENT)
-				record.name="LibraryRecordAction"
-				record.disabled=bool(action.get("disabled",false))
+				if action.id!=action_id: continue
+				var read_action=_act(root,str(action.label),Rect2(action_left,434,362-action_left,48),str(action.id),null,BLUE,Color.WHITE,3,Color.TRANSPARENT)
+				read_action.name="LibraryRuleAction" if rule_page else "LibraryRecordAction"
+				read_action.disabled=bool(action.get("disabled",false))
 	else:
 		_label(root,str(view.get("body","")),Rect2(20,67,338,102),17,MUTED)
 		y = 180

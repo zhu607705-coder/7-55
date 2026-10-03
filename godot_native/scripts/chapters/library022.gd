@@ -314,11 +314,17 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if not ids.is_empty() and phase == "evidence_gathering" and p.investigationOpened and p.catalogUnlocked and query.begins_with("三分钟离座法"): p.catalogSearchCompleted = true
 			return _ok("找到 %s 条馆藏记录。" % ids.size() if not ids.is_empty() else "没有匹配的馆藏，请检查题名。")
 		"lib_catalog_select":
-			if phase != "evidence_gathering" or not p.catalogSearchCompleted or p.callNumberCollected: return _ok("还没有经过核验的馆藏搜索记录。")
+			# Source chooseCatalogResult acknowledges this durable clue even after
+			# its inventory item was consumed. Feedback must never grant it again.
+			if p.callNumberCollected and str(value)=="three-minute-leave-method":
+				for r in _data().get("library",{}).get("catalogResults",[]):
+					if r.id==str(value): return _ok("已获得线索：索书号 %s。" % r.callNumber)
+			if not p.catalogSearchCompleted: return _ok("还没有经过核验的馆藏搜索记录。")
 			if str(value) != "three-minute-leave-method":
 				for r in _data().get("library",{}).get("catalogResults",[]):
 					if r.id == str(value): return _ok(r.note)
 				return _ok("没有找到该馆藏条目。")
+			if phase != "evidence_gathering" or p.callNumberCollected: return _ok("当前无法领取这条馆藏线索。")
 			p.callNumberCollected = true
 			items.callNumber755 = true
 			_unique(p.clueIds,"call_number_755")

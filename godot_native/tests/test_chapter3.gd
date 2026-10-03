@@ -63,7 +63,9 @@ func run() -> void:
 	check(s.items.cafeteriaWages and s.items.greaseTissue and s.wallet.cashCents==200,"three trays reward exactly two yuan without dark prerequisite")
 	interact(s,"auntie")
 	check(s.wallet.cashCents==200,"tray reward is idempotent")
-	for entry: Dictionary in controller.world("canteen_interior").constants.CANTEEN_DRINK_MACHINES: interact(s,entry.id)
+	for entry: Dictionary in controller.world("canteen_interior").constants.CANTEEN_DRINK_MACHINES:
+		interact(s,entry.id)
+		act(s,"c3_drink_take:"+str(entry.id))
 	at(s,"canteen_interior","canteen-mixer")
 	for ingredient: String in Chapter.RECIPE: act(s,"c3_mix:"+ingredient)
 	check(s.items.dailySpecialSparklingWater,"source drink recipe produces promotion drink")

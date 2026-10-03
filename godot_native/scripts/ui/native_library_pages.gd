@@ -1,4 +1,5 @@
 extends RefCounted
+const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-native mobile library. UI-local navigation and draft selection only.
 ## All booking, catalog evidence and recovery transitions are existing chapter intents.
 const BLUE=Color("174d9d")
@@ -57,6 +58,7 @@ func build(b, page: String) -> Control:
 	match local_page:
 		"spaces": return spaces(b)
 		"seat": return seats(b)
+		"location": return CampusWayfinding.build_location(b,func(): goto(b,"seat"))
 	return home(b)
 
 func base(b, title: String, back: Callable) -> Control:
@@ -204,9 +206,12 @@ func seats(b) -> Control:
 	var inner=body(b,root,"seat",772,60,Color("f7f7f5"))
 	b._panel(inner,Rect2(0,0,378,91),Color.WHITE,Color("bdbab4"),0,1)
 	b._label(inner,selected_library+" · "+selected_room,Rect2(16,9,282,29),19)
-	var map_link: Button=b._button(inner,"查看平面图 ›",Rect2(16,43,126,32),func(): seat_view="map"; refresh(b),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); map_link.add_theme_font_size_override("font_size",12)
-	var detail: Button=b._button(inner,"查看房间详情 ›",Rect2(151,43,141,32),func(): b._toast(root,"%s：座位 %s，当前空闲 %s。" % [selected_room,count,count-(1 if b.s.ui.librarySeatReserved else 0)]),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); detail.add_theme_font_size_override("font_size",12)
-	b._label(inner,"空余 %s" % (count-(1 if b.s.ui.librarySeatReserved else 0)),Rect2(285,17,86,42),14,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+	var map_link: Button=b._button(inner,"查看平面图 ›",Rect2(16,43,104,36),func(): seat_view="map"; refresh(b),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); map_link.add_theme_font_size_override("font_size",12)
+	var detail: Button=b._button(inner,"查看房间详情 ›",Rect2(124,43,125,36),func(): b._toast(root,"%s：座位 %s，当前空闲 %s。" % [selected_room,count,count-(1 if b.s.ui.librarySeatReserved else 0)]),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); detail.add_theme_font_size_override("font_size",12)
+	if selected_library=="基础馆":
+		var location: Button=b._button(inner,"馆舍位置 ›",Rect2(253,40,111,48),func(): goto(b,"location"),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT)
+		location.name="LibraryBuildingLocationLink"; location.add_theme_font_size_override("font_size",16)
+	b._label(inner,"空余 %s" % (count-(1 if b.s.ui.librarySeatReserved else 0)),Rect2(285,9,86,29),14,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
 	if active:
 		var puzzle: Dictionary=b.s.ui.libraryFinalsPuzzle
 		var status="座位已恢复" if puzzle.playerSeated else "清退已执行" if puzzle.backpackEvicted else "PASS 已签发" if puzzle.evictionPassGenerated else "恢复申请待提交" if b.s.ui.libraryFinalsPhase=="recovery_application" else "公示审核中" if b.s.ui.libraryFinalsPhase in ["bd_briefing","top_ten_rising","top_ten_reached"] else "占用异常"

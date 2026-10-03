@@ -3,6 +3,8 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
+const Bike=preload("res://scripts/presentation/c3_bike_world_view.gd")
+var bike_view: RefCounted=Bike.new()
 const Door=preload("res://scripts/presentation/interior_door_layer.gd")
 var doors: RefCounted=Door.new()
 var narrative_session: RefCounted
@@ -173,6 +175,7 @@ func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> 
 	return {"visible":behind,"alpha":alpha,"softened":overlaps}
 
 func draw_landmarks(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	bike_view.draw_hint(canvas,context,s)
 	# Small presentation repair for an existing authored mixer hotspot that was
 	# otherwise indistinguishable from the five ordering kiosks in the base plate.
 	# No recipe/color clue, collision, availability, or transaction change.
@@ -210,7 +213,7 @@ func adjusted_collisions(base: Array,s: Dictionary) -> Array:
 	return out
 func owns_pick_target(target: Dictionary,_state: Dictionary) -> bool:
 	var id: String=str(target.get("id",""))
-	return scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate"])
+	return (scene_id=="campus_bootstrap" and id=="bike") or scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate"])
 
 func _pick_ids(entry: Dictionary,targets: Array) -> Array:
 	var id: String=str(entry.id)
@@ -236,9 +239,11 @@ func _player(s: Dictionary) -> Vector2:
 func _yoyo(ms: float,duration: float) -> float:
 	var p: float=fmod(ms/duration,2); return (1-cos(p*PI))/2
 func draw_back(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	bike_view.draw(canvas,context,s,false)
 	doors.draw_back(canvas,context,s)
 	_draw_partition(canvas,context,s,false)
 func draw_front(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
+	bike_view.draw(canvas,context,s,true)
 	_draw_partition(canvas,context,s,true)
 	doors.draw_front(canvas,context,s)
 func _draw_partition(canvas: CanvasItem,context: Dictionary,s: Dictionary,front: bool) -> void:

@@ -3,6 +3,7 @@ const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
 const KayakVisual = preload("res://scripts/ui/kayak_visual.gd")
+const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-pixel exploration surface. No story facts are authored by rendering.
 var worlds: Dictionary = {}
 var spec: Dictionary = {}
@@ -544,6 +545,10 @@ func _draw() -> void:
 		draw_texture_rect_region(guard_sheet,Rect2(origin+guard_position*zoom-Vector2(guard_size.x/2,guard_size.y*.89),guard_size),frame_region)
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty(): draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
+	if scene_id=="campus_bootstrap":
+		var campus_hud:=hud_metrics(_hud_line())
+		var campus_visible:=Rect2(0,campus_hud.header_height,size.x,size.y-campus_hud.header_height-campus_hud.body_height-campus_hud.body_gap)
+		CampusWayfinding.draw_label(self,layer_context,font,hud_display_scale(),campus_visible)
 	if capture_mode: return
 	var title: Dictionary = {"dorm_hub":"寝室", "campus_bootstrap":"紫金港校区", "library_interior":"基础图书馆", "canteen_interior":"东食堂", "theater_interior":"剧场", "qizhen_lake":"启真湖", "duan_yongping_temporal_maze":"段永平教学楼", "campus_qizhen_loop":"通往启真湖的路"}
 	var line := _hud_line()

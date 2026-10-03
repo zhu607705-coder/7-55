@@ -238,7 +238,7 @@ func _build_shell() -> void:
 	inventory_buttons = HBoxContainer.new()
 	inventory_buttons.add_theme_constant_override("separation",8)
 	inventory_scroll.add_child(inventory_buttons)
-	inventory_handle=_button("展开物品栏",func(): compact_inventory_open=not compact_inventory_open; _layout(),Vector2(120,44))
+	inventory_handle=_button("展开物品栏",_toggle_world_inventory,Vector2(120,44))
 	inventory_handle.name="WorldInventoryHandle"
 	inventory_handle.autowrap_mode=TextServer.AUTOWRAP_OFF
 	inventory_handle.clip_text=true
@@ -298,6 +298,9 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 	# Only a genuine controller-opened device intent creates a fresh session.
 	if _action.begins_with("c4_device_") and result.get("page","")=="c4_device":
 		if _open_chapter4_device(_action.trim_prefix("c4_device_"),current): return
+	if result.has("open_canteen_device"):
+		_open_c3_device(str(result.open_canteen_device))
+		return
 	if result.get("open_canteen_mixer",false):
 		_open_c3_device("mixer")
 		return
@@ -309,6 +312,12 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		if is_instance_valid(phone_chrome): phone_chrome.refresh(State.d)
 	if result.get("open_world",false) and not str(current.get("native",{}).get("scene","")).is_empty():
 		_show_world_mobile()
+		return
+	if _action=="lib_enter" and result.get("scene","")=="library_interior" and current.get("native",{}).get("scene","")=="library_interior":
+		# The Library app's explicit return uses the controller's existing scene
+		# result. Reveal that retained world only after entry actually succeeds.
+		_show_world_mobile()
+		_focus_library_story.call_deferred()
 		return
 	# A world device can intentionally open an existing phone/page surface. In
 	# compact layout that surface must become visible; an ordinary refresh is
@@ -598,7 +607,7 @@ func _refresh() -> void:
 		button.disabled = bool(action.get("disabled",false))
 		page_body.add_child(button)
 	if not str(n.scene).is_empty():
-		page_body.add_child(_button("进入横屏场景",_show_world_mobile))
+		page_body.add_child(_button("返回现场",_show_world_mobile))
 	_refresh_inventory_dock()
 	_refresh_control_center()
 	if world and world.has_method("refresh_world"): world.refresh_world()
@@ -769,7 +778,9 @@ func _open_c3_device(kind: String) -> void:
 	modal.focus_mode=Control.FOCUS_ALL
 	modal.z_index=100
 	add_child(modal)
-	c3_device_panel=load("res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd").new()
+	var canteen_device: bool=kind.begins_with("drink:") or kind in ["menu","bike"]
+	var panel_script: String="res://scripts/ui/c3_canteen_device_panel.gd" if canteen_device else "res://scripts/ui/c3_mixer_panel.gd" if kind=="mixer" else "res://scripts/ui/c3_theater_device_panel.gd"
+	c3_device_panel=load(panel_script).new()
 	c3_device_panel.name="C3WorldDevicePanel"
 	modal.add_child(c3_device_panel)
 	c3_device_panel.closed.connect(func(_reason: String):
@@ -777,7 +788,7 @@ func _open_c3_device(kind: String) -> void:
 			c3_device_panel=null
 			_close_modal())
 	var reader:=func() -> Dictionary: return State.d
-	var opened: bool=c3_device_panel.setup(reader,State.act,_feedback) if kind=="mixer" else c3_device_panel.setup(kind,reader,State.act,_feedback)
+	var opened: bool=c3_device_panel.setup(kind,reader,State.act,_feedback,State.toggle_mode) if canteen_device else c3_device_panel.setup(reader,State.act,_feedback) if kind=="mixer" else c3_device_panel.setup(kind,reader,State.act,_feedback)
 	if not opened: _close_modal(); return
 	world.move_target=Vector2.INF
 	world.touch_axis=Vector2.ZERO
@@ -791,6 +802,15 @@ func _show_apps() -> void:
 	_close_modal()
 	world_page_origin_scene=""
 	State.open_page("phone_home")
+
+func _toggle_world_inventory() -> void:
+	compact_inventory_open=not compact_inventory_open
+	_layout()
+	# A collapsed bag returns Space to the world; opening keeps its keyboard
+	# navigation on the handle. Reuse the existing presentation/input gates.
+	if compact_inventory_open or not is_instance_valid(world) or not world_frame.is_visible_in_tree(): return
+	if _inventory_dock_input_blocked(): return
+	world.grab_focus()
 
 func _inventory_dock_available() -> bool:
 	return inventory_buttons.get_child_count()>0 and not (State.d.flags.checkinDone and not State.d.actOne.inventoryRecovered)
@@ -1145,7 +1165,7 @@ func _feedback(message: String,tone: String="system") -> void:
 func _process(delta: float) -> void:
 	if compact_world_contract!=(mobile_world and not _uses_split_layout() and not _authored_world_contract()): _layout()
 	_sync_inventory_dock_input()
-	if is_instance_valid(c3_device_panel) and c3_device_panel.compact_layout and is_instance_valid(world):
+	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
 	for cue: String in State.advance_phone_entry(delta*1000): _play_presentation_cue(cue)
 	if toast_time > 0:

@@ -29,7 +29,9 @@ func run(runner: SceneTree) -> void:
 		await interact(id)
 		await interact("auntie")
 	if not r.check(r.state.d.wallet.cashCents==200 and r.state.d.items.greaseTissue,"fresh three trays earned wages"): return
-	for entry in c.world("canteen_interior").constants.CANTEEN_DRINK_MACHINES: await interact(entry.id)
+	for entry in c.world("canteen_interior").constants.CANTEEN_DRINK_MACHINES:
+		await interact(entry.id)
+		await r.step("c3_drink_take:"+str(entry.id))
 	at("canteen-mixer")
 	for id in c.RECIPE: await r.step("c3_mix:"+id)
 	await interact("canteen-promo-board")
