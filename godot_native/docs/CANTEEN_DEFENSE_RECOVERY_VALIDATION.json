@@ -1,0 +1,69 @@
+{
+  "baseCommit": "b6fe8ab91b3569cadbf954530d4f05dd8a57d149",
+  "runtimeSha256": "055003b55f997927115f6751219643c4e513bfb0dc68e11684df90cf90fe9ee8",
+  "runtimeFileCount": 1060,
+  "runtimeVerifiedAfterFinalChecks": true,
+  "scope": "Canteen defense mobile presentation, ordinary resume and same audio owner; original pickup hints; journal and victory world-return intent",
+  "aggregate": {
+    "stages": 183,
+    "failures": 0,
+    "singleCleanFinalRun": false,
+    "singleCleanPriorRun": true,
+    "reportSha256": "266a6e054092a6b6febfe5a38cc4bf9615a6c36d0ab38aa68e868e07fb2c13c4",
+    "priorRuntimeSha256": "5dcfeb3569741192b4d56c3c2748fd976798c98d6468200d8f144f2b2d6796ee",
+    "postImportRuntimeSha256": "e45cd1ffe6fd76fabe6b3f9ad886471d15284cbe149447f4da9597f24906c50c",
+    "revisionBoundary": "After183clean stages, one runtime line retains mobile_world at guarded admission; a dedicated completion test and affected checks ran against finalcode. The initial import also generated only the new helper UID. No claim of a clean184-stage final aggregate."
+  },
+  "finalAffected": {
+    "scriptGraph": 305,
+    "worldReturn": 11,
+    "mobileInputLayout": 198,
+    "ordinaryResume": 34,
+    "audioAndSubtitleOwners": 22,
+    "existingDefenseSmoke": 5,
+    "earnedPickupGuidance": 1214,
+    "gameplayAudio": 43,
+    "failures": 0,
+    "reportSha256": "3e6eb4b3eba38b5b5f5a0caec29acf04a9a96ccacadd6bfd49eb4f64333e45b6"
+  },
+  "export": {
+    "Linux": "passed",
+    "Windows": "build_only_passed",
+    "packedCampaignChecks": 795,
+    "nativeOnlyInitialChecks": 25,
+    "nativeOnlyReloadChecks": 21,
+    "failures": 0,
+    "runtimeOverrides": false,
+    "artifacts": [
+      {
+        "name": "7-55-native.exe",
+        "bytes": 638879656,
+        "sha256": "6c3bca2cf488130d07a13e6b41b0d2944cdd4dc8311966820c4e6fb597ee40d6"
+      },
+      {
+        "name": "7-55-native.pck",
+        "bytes": 534220184,
+        "sha256": "a1c037459d4279abc98e21175ddfc5efe3cb9fb3a33fe8ff201c5613bf9f8d8c"
+      },
+      {
+        "name": "7-55-native.x86_64",
+        "bytes": 71075864,
+        "sha256": "2c78919325d7f29fa7607287c7c1eeac367ea4c94e7b8b6f5f4c6b20492f73d0"
+      }
+    ]
+  },
+  "actualCUA": {
+    "mainRoute": "Original-rule defense won,68observeddeflections; normal06:58:47save chase_ready oncampus",
+    "mainWinSaveSha256": "ac94b4a62e27048a75b1cc91ea33e89dc6371b442a58ca6c8af9474b92d2f281",
+    "finalRelease": "Unchanged earned-copy fullwin,80visibledeflections; automaticworldhandoff and normalSave; journalrotationreturnsworld",
+    "guiManifestSha256": "f316b4283d71722f1c53a427e5157df9f7437e30c1391ab6bf613adc7a81f525",
+    "allVictoryLinesIndividuallyObserved": false,
+    "physicalPhone": false
+  },
+  "audio": {
+    "actualShortCapture": "SameMusic_2 resumes afterpausedRetry; sourcePCM correlation0.999994, gain0.119780 vs0.12; one owner and no clipping",
+    "partialLongCapture": "F8 wroteWAV then processwasKilled duringfirstJSONsave; zero-byteJSON. Causeunconfirmed; excludedfromalignedacceptance",
+    "unrepaired": "Three inherited silentpreludeassets and RetrybeforefirstStart musicstart edge remainseparate",
+    "subjectiveListeningVerified": false
+  }
+}

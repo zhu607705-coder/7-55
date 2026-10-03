@@ -20,7 +20,7 @@ func source_cases_check() -> void:
 			check(JSON.stringify(value)==before,"objective projection preserves every save field")
 			check(goal.detail.begins_with("切回浅色操作。") if dark and goal.id!="queue_shift" else not goal.detail.begins_with("切回浅色操作。"),"dark hints name reachable light operation only when an action remains")
 			source_cases+=1
-	for phase in ["pickup_search","exit_blocking","chase_ready","chasing","theater_reached"]:
+	for phase in ["exit_blocking","chase_ready","chasing","theater_reached"]:
 		var value:=earned.duplicate(true);value.canteenHunt.phase=phase
 		check(Goal.current(value).is_empty(),"later phase remains outside bounded handoff: "+phase)
 	var value:=earned.duplicate(true);value.canteenHunt.queueGapOpened=true

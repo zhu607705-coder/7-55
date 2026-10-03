@@ -41,14 +41,36 @@ for(const mode of ['light','dark']) for(const menuDarkClueRead of [false,true]) 
   menuCases.push({hunt,items,mode,id:result.id.replace('chapter_three_canteen_',''),title:result.label,
     detail:result.hints.join('\n')});
 }
+const pickupCases=[];
+for(const mode of ['light','dark']) for(const menuDarkClueRead of [false,true])
+  for(const pickupDarkClueRead of [false,true]) for(const orderedMenuOption of ['A','B','C','D','E']) {
+    const hunt={...structuredClone(menuCases.at(-1).hunt),phase:'pickup_search',mode,
+      menuDarkClueRead,pickupDarkClueRead,orderedMenuOption};
+    const items={dailySpecialSparklingWater:false,pickupTicket0755:true};
+    const result=context.task({canteenHunt:hunt,items});
+    pickupCases.push({hunt,items,mode,id:result.id.replace('chapter_three_canteen_',''),
+      title:result.label,detail:result.hints.join('\n')});
+  }
+// Earlier source facts retain precedence even in an inconsistent phase fixture.
+for(const patch of [{entryPaperEscaped:false},{trayTaskStarted:false},{returnedTrayIds:[]},
+  {queueGapOpened:false,queueChallengeSeen:false},
+  {queueGapOpened:false,drinkShelfRead:false},
+  {queueGapOpened:false,promoDrinkPlaced:false},{queueGapOpened:false}]) {
+  const hunt={...structuredClone(pickupCases[0].hunt),...patch};
+  const items={dailySpecialSparklingWater:false,pickupTicket0755:true};
+  const result=context.task({canteenHunt:hunt,items});
+  pickupCases.push({hunt,items,mode:hunt.mode,id:result.id.replace('chapter_three_canteen_',''),
+    title:result.label,detail:result.hints.join('\n')});
+}
 const result={provenance:{function:'src/core/QuestModel.ts:canteenInteriorTask',
   line:ast.getLineAndCharacterOfPosition(found[0].getStart(ast)).line+1,
   functionSha256:crypto.createHash('sha256').update(found[0].getText(ast)).digest('hex'),
-  contentSha256:crypto.createHash('sha256').update(content).digest('hex')},cases,menuCases};
+  contentSha256:crypto.createHash('sha256').update(content).digest('hex')},cases,menuCases,pickupCases};
 const output=path.join(path.dirname(fileURLToPath(import.meta.url)),'fixtures/canteen_handoff_source.json');
 const serialized='{\n  "provenance": '+JSON.stringify(result.provenance)+',\n  "cases": [\n'+
   result.cases.map(record=>'    '+JSON.stringify(record)).join(',\n')+'\n  ],\n  "menuCases": [\n'+
-  result.menuCases.map(record=>'    '+JSON.stringify(record)).join(',\n')+'\n  ]\n}\n';
+  result.menuCases.map(record=>'    '+JSON.stringify(record)).join(',\n')+'\n  ],\n  "pickupCases": [\n'+
+  result.pickupCases.map(record=>'    '+JSON.stringify(record)).join(',\n')+'\n  ]\n}\n';
 if(process.argv.includes('--check')) assert.equal(fs.readFileSync(output,'utf8'),serialized);
 else fs.writeFileSync(output,serialized);
-console.log(`Canteen handoff source: ${cases.length} drink and ${menuCases.length} menu executed-QuestModel fixtures ${process.argv.includes('--check')?'verified':'written'}`);
+console.log(`Canteen handoff source: ${cases.length} drink and ${menuCases.length} menu and ${pickupCases.length} pickup executed-QuestModel fixtures ${process.argv.includes('--check')?'verified':'written'}`);

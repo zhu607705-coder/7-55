@@ -108,6 +108,7 @@ func _ready() -> void:
 	_setup_runtime_hosts()
 	_refresh()
 	_layout()
+	_resume_canteen_defense.call_deferred()
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--preview="):
 			State.begin_preview(1,arg.trim_prefix("--preview="))
@@ -357,17 +358,18 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 func _layout() -> void:
 	var available := size
 	var split := _uses_split_layout()
+	var fitted_activity: bool=is_instance_valid(active_game) and active_game.get_script().resource_path=="res://scripts/games/canteen_defense.gd"
 	var phone_scale := maxf(.35,minf(1.0,(available.y - 36.0) / 860.0))
 	if not split: phone_scale = minf(phone_scale,(available.x - 36.0)/430.0)
 	phone.scale = Vector2.ONE * phone_scale
 	phone.size = Vector2(430,860)
 	phone.position = Vector2(18,(available.y - 860*phone_scale)/2) if split else (available - phone.size*phone_scale)/2
-	phone.visible = not (mobile_world and not split)
+	phone.visible = not (mobile_world and not split) and not fitted_activity
 	# Compact RPG unmounts Photos; a visible desktop split keeps its session.
 	if not phone.visible: photo_brightness_session.reset()
 	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
 		photo_brightness_session.observe("photos",State.d.ui)
-	world_frame.visible = split or mobile_world
+	world_frame.visible = (split or mobile_world) and not fitted_activity
 	mobile_back.visible = mobile_world and not split and not is_instance_valid(active_game)
 	world_tasks.visible = mobile_back.visible
 	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
@@ -433,7 +435,7 @@ func _layout() -> void:
 		for button in inventory_buttons.get_children(): button.cancel_gesture()
 		inventory_dock_rect=dock_rect
 	_sync_inventory_dock_input()
-	chapter_label.visible = split
+	chapter_label.visible = split and not fitted_activity
 	chapter_label.position = Vector2(phone.position.x+430*phone_scale+22,36)
 	_layout_toast()
 	if is_instance_valid(battery_prank):
@@ -443,9 +445,12 @@ func _layout() -> void:
 		battery_prank.move_to_front()
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document))
 	if active_game:
-		var game_scale := minf((available.x-20)/game_viewport.x,(available.y-20)/game_viewport.y)
-		active_game.scale = Vector2.ONE * game_scale
-		active_game.position = (available-game_viewport*game_scale)/2
+		if fitted_activity:
+			active_game.configure_activity_layout(available,not split)
+		else:
+			var game_scale := minf((available.x-20)/game_viewport.x,(available.y-20)/game_viewport.y)
+			active_game.scale = Vector2.ONE * game_scale
+			active_game.position = (available-game_viewport*game_scale)/2
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
 
@@ -947,13 +952,18 @@ func _show_world_journal() -> void:
 	_show_journal()
 
 func _show_journal() -> void:
+	# Keep the destination promised by the mounted journal across rotation.
+	var return_to_world: bool=world_frame.is_visible_in_tree()
 	var box := _modal_base("调查记录")
-	if world_frame.is_visible_in_tree(): modal_previous_focus=weakref(world)
+	if return_to_world: modal_previous_focus=weakref(world)
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
 	var journal:=NativeJournalView.new()
-	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),world_frame.is_visible_in_tree())
-	journal.resume_requested.connect(_close_modal)
+	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
+	journal.resume_requested.connect(func():
+		_close_modal()
+		if return_to_world or _is_canteen_defense_entry(): _show_world_mobile()
+	)
 	journal.comparison_requested.connect(func(): _show_observation_comparison(true))
 	box.add_child(journal)
 	journal.call_deferred("focus_control","JournalResume")
@@ -1081,6 +1091,23 @@ func _show_world_mobile() -> void:
 	world_page_origin_scene=""
 	mobile_world = true
 	_layout()
+	_resume_canteen_defense()
+
+func _is_canteen_defense_entry() -> bool:
+	return str(State.d.native.scene)=="canteen_interior" and bool(State.d.canteenHunt.active) and str(State.d.canteenHunt.phase)=="exit_blocking"
+
+func _resume_canteen_defense() -> void:
+	# Source CanteenInteriorScene starts defense when an exit_blocking scene
+	# is entered. Admission belongs to scene entry/explicit Return, never to
+	# refresh, resize or a per-frame loop: Exit must remain exited.
+	if not is_inside_tree() or not world_frame.is_visible_in_tree(): return
+	if not _is_canteen_defense_entry(): return
+	if is_instance_valid(active_game) or is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(world_effect): return
+	if bool(State.d.ui.controlCenterOpen) or State.story_input_locked(): return
+	if is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract(): return
+	# Desktop entry also owns a world return after rotation, Exit or victory.
+	mobile_world=true
+	State.act("c3_defense")
 
 func _play_audio(path: String) -> void:
 	var resolved := State.asset(path)
@@ -1258,6 +1285,7 @@ func _setup_runtime_hosts() -> void:
 		State.action_completed.connect(audio_director.update_state)
 		audio_director.subtitle_timed.connect(func(text: String,surface: String,duration_ms: float,_tone: String):
 			if surface == "toast":
+				if is_instance_valid(active_game) and active_game.has_method("owns_pickup_subtitle") and active_game.owns_pickup_subtitle(text): return
 				if _virtual_run_owns_feedback(text): return
 				_feedback(text,_tone)
 				if _feedback_world_active(): world.subtitle_left=maxf(.1,duration_ms/1000.0)
@@ -1353,6 +1381,13 @@ func _reset_runtime_presentations() -> void:
 		audio_director.setup(_read_runtime_state)
 	if is_instance_valid(media_host) and media_host.has_method("_stop_current"): media_host._stop_current()
 	if is_instance_valid(battery_prank): battery_prank.reset()
+	_resume_canteen_defense_after_reset.call_deferred()
+
+func _resume_canteen_defense_after_reset() -> void:
+	# Import installs state before story_reset; fit the new scene before entry.
+	if not is_inside_tree(): return
+	_layout()
+	_resume_canteen_defense()
 
 func _play_presentation_cue(cue: String) -> void:
 	if is_instance_valid(audio_director): audio_director.cue(cue)

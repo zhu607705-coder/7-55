@@ -88,7 +88,7 @@ func goal_cases() -> void:
 		check(goal.id=="queue" if count==3 else goal.title.ends_with("（%d/3）"%count),"only original target IDs count; third return hands off to source queue goal")
 	fixture.canteenHunt.returnedTrayIds=[];fixture.canteenHunt.carriedTrayIds=["tray_clean_01"]
 	check(Goal.current(fixture).id=="tray_carry" and not Goal.current(fixture).title.contains("干净"),"carrying any tray directs return without revealing its validity")
-	for phase in ["pickup_search","exit_blocking","chase_ready","chasing","theater_reached"]:
+	for phase in ["exit_blocking","chase_ready","chasing","theater_reached"]:
 		fixture.canteenHunt.phase=phase;check(Goal.current(fixture).is_empty(),"later phase retains original objective: "+phase)
 	fixture.canteenHunt.phase="tray_search";fixture.theaterHunt.active=true
 	check(Goal.current(fixture).is_empty(),"later chapter suppresses stale canteen journal hints")

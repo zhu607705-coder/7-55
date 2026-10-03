@@ -20,7 +20,7 @@ func oracle_cases() -> void:
 				check(not goal.title.contains(answer) and not goal.detail.contains(answer),"menu guidance does not disclose answer: "+answer)
 		else:check(goal.id=="queue_shift","uncompleted queue cannot reveal the menu task early")
 		check(JSON.stringify(value)==before,"menu projection preserves complete save")
-	for phase in ["pickup_search","exit_blocking","chase_ready","chasing","theater_reached"]:
+	for phase in ["exit_blocking","chase_ready","chasing","theater_reached"]:
 		var value:=earned.duplicate(true);value.canteenHunt.phase=phase
 		check(Goal.current(value).is_empty(),"later branch remains excluded: "+phase)
 	for later in ["theaterHunt","qizhenLake"]:
@@ -43,13 +43,13 @@ func journal_round_trip(method: String) -> void:
 	check(is_instance_valid(shell.modal) and node("NativeJournal")!=null,"existing "+method+" Tasks opens Main journal")
 	if not is_instance_valid(shell.modal):return
 	check_layout()
-	check(state.objective()==expected.title and node("JournalObjective").text==expected.title,"actual Main displays the source menu objective")
-	check(node("JournalNextStep").text==expected.detail,"actual Main displays both source menu hints")
+	check(state.objective()==expected.title and node("JournalObjective").text==expected.title,"actual Main displays the source objective")
+	check(node("JournalNextStep").text==expected.detail,"actual Main displays both source hints")
 	check(node("JournalObservationCompare")==null,"menu guidance adds no comparison UI")
 	check(root.gui_get_focus_owner()==node("JournalResume"),"journal focuses existing return button")
 	await press(KEY_TAB);check(shell.modal.is_ancestor_of(root.gui_get_focus_owner()),"Tab stays within journal")
 	shell.world._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT);shell.c3_scene_host.tick(100,false);shell.c3_narrative_host.tick(100,false)
-	check(state.d.canteenHunt.phase=="menu_order" and shell.world.player==player,"journal/focus loss does not order or move the player")
+	check(state.d.canteenHunt.phase==expected.hunt.phase and shell.world.player==player,"journal/focus loss does not order or move the player")
 	if method=="keyboard":await click(node("JournalResume"))
 	else:await press(KEY_ESCAPE)
 	check(not is_instance_valid(shell.modal) and shell.world.has_focus(),"existing dismissal returns world focus")

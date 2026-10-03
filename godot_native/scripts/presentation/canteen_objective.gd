@@ -1,6 +1,6 @@
 extends RefCounted
 ## Read-only canteen guidance from existing controller facts and QuestModel.
-## Includes the existing menu-order handoff; no new save or progression state.
+## Includes the existing menu-order and pickup handoffs; no new save or progression state.
 static func current(s: Dictionary) -> Dictionary:
 	var hunt: Dictionary=s.get("canteenHunt",{})
 	if not hunt.get("active",false): return {}
@@ -9,7 +9,7 @@ static func current(s: Dictionary) -> Dictionary:
 	var phase:=str(hunt.get("phase",""))
 	if phase=="tracking":
 		return {"id":"tracking","title":"追上逃跑的记录纸条","detail":"纸条钻进了食堂。前往东区食堂，继续追踪。"}
-	if phase not in ["tray_search","drink_mix","menu_order"]: return {}
+	if phase not in ["tray_search","drink_mix","menu_order","pickup_search"]: return {}
 	if not hunt.get("entryPaperEscaped",false):
 		return {"id":"paper_entry","title":"靠近食堂里的异常纸条","detail":"纸条停在入口附近。靠近它，继续追踪。"}
 	var dark: bool=s.get("native",{}).get("mode","light")=="dark"
@@ -30,6 +30,8 @@ static func drink_handoff(s: Dictionary, hunt: Dictionary, dark: bool) -> Dictio
 	if hunt.get("queueGapOpened",false):
 		if hunt.get("phase","")=="menu_order":
 			return {"id":"menu_order","title":"看看菜单里有什么异常","detail":"两种模式下，菜单有几个字不一样。\n深色观察看字，浅色操作下单。"}
+		if hunt.get("phase","")=="pickup_search":
+			return {"id":"pickup","title":"找到这张小票对应的窗口","detail":"同一个号码，各窗口叫出的餐品未必相同。\n深色观察能听见残留的叫号；交票要用浅色操作。"}
 		return {}
 	var light: String="切回浅色操作。" if dark else ""
 	if not hunt.get("queueChallengeSeen",false):

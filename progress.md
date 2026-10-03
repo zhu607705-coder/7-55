@@ -4489,3 +4489,11 @@ Original prompt: 现在不用管讲稿了，你需要对于其来进行完善
 - Native window close now awaits existing audio-owner shutdown once. A negative control reproduced four leaked playback/stream objects; the corrected fixture and actual source/exported window closes retire them cleanly. The cloud driver's unsupported V-Sync warning remains.
 - Continuous earned play completed the three dirty trays, a clean decoy, empty-hand guidance and hands-full refusal, then saved2.00cash, wages and tissue. Bounded recordings stop before some later rewards; those outcomes remain screenshot/save evidence, without a listening claim.
 - Final frozen aggregate172/172 stages passed in one clean run. Fresh Linux/Windows exports,795-check PCK campaign and native-only25/21 startup/reload checks passed. Windows remains build-only. RuntimeSHA8b6fb1e48645d5f483ed46ab04a81a9015a4fe77d44e768c3176f2db6cb45f8f. Modeling/tile prototypes, post-tray objective continuation and other later refinements remain separate.
+
+
+## 2026-10-03 — Paper-defense recovery and mobile play
+
+- Restored ordinary saved-phase defense entry, explicit Return after Exit, and same-player music resume after paused Retry. Portrait now separates readable controls, room overview and action view; source simulation, collisions, RNG and60-second requirement remain unchanged.
+- Restored original pickup task hints. Journal Return preserves its world destination across rotation; defense admission also retains world intent through victory.
+- Prior revision passed183clean stages. A later one-line admission correction passed the full305-script graph, affected input/owner/completion checks, fresh exports,795-check packed campaign and native-only25/21 checks. This is an explicit revision boundary, not a clean184-stage final-run claim.
+- Continuous earned play won the defense and saved campus chase_ready. Final standalone Linux replay on an unchanged earned copy won again, automatically returned to the world, and saved; desktop-to-portrait journal Return also passed. Brief victory-line pixels, physical devices and full manual campaign remain limited as documented. See `godot_native/docs/CANTEEN_DEFENSE_RECOVERY.md`.
