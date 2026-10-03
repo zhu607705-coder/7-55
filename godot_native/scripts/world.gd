@@ -253,9 +253,10 @@ func kayak_collision_rect(point: Vector2, heading: float) -> Rect2:
 	var dimensions := Vector2(83*absf(cos(heading))+67*absf(sin(heading)),83*absf(sin(heading))+67*absf(cos(heading)))
 	return Rect2(point-dimensions/2,dimensions)
 
-func can_stand(point: Vector2) -> bool:
+func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	var boating := scene_id == "qizhen_lake" and str(State.d.qizhenLake.vehicle) == "kayak"
 	var heading: float = float(kayak.heading) if kayak else float(spec.get("zones",{}).get(str(State.d.qizhenLake.zone),{}).get("kayakSpawn",{}).get("heading",-PI/2))
+	if boating and is_finite(kayak_heading): heading=kayak_heading
 	var boat: Rect2 = kayak_collision_rect(point,heading)
 	var visual: Rect2 = boat if boating else PlayerMetrics.visual_rect(point,display_scale_at(point))
 	if visual.position.x < 0 or visual.position.y < 0 or visual.end.x > world_size.x or visual.end.y > world_size.y: return false
@@ -280,6 +281,40 @@ func can_stand(point: Vector2) -> bool:
 			if x < 0 or y < 0 or x >= int(mask_meta.gridWidth) or y >= int(mask_meta.gridHeight): return false
 			var bit := y*int(mask_meta.gridWidth)+x
 			if bit/8 >= mask.size() or (mask[bit/8] & (1 << (bit%8))) == 0: return false
+	return true
+
+func resolve_kayak_rotation(previous_heading: float) -> bool:
+	# Phaser separates the enlarged Arcade body after a paddle yaw. Keep the
+	# authored hull and blockers; only resolve the contact caused by that yaw.
+	if kayak==null or not player.is_finite() or player.distance_to(kayak.position)>0.01: return false
+	if not can_stand(player,previous_heading): return false
+	if can_stand(player): return true
+	var before: Rect2=kayak_collision_rect(player,previous_heading)
+	var after: Rect2=kayak_collision_rect(player,kayak.heading)
+	var growth: Vector2=((after.size-before.size)*0.5).max(Vector2.ZERO)
+	var xs: Array[float]=[0.0]
+	var ys: Array[float]=[0.0]
+	var obstacles: Array[Rect2]=[]
+	for obstacle: Dictionary in collisions: obstacles.append(_rect(obstacle))
+	# A rotated hull must also remain inside the unchanged source rectangle.
+	obstacles.append(Rect2(-1000,-1000,1000,world_size.y+2000))
+	obstacles.append(Rect2(world_size.x,-1000,1000,world_size.y+2000))
+	obstacles.append(Rect2(-1000,-1000,world_size.x+2000,1000))
+	obstacles.append(Rect2(-1000,world_size.y,world_size.x+2000,1000))
+	for obstacle: Rect2 in obstacles:
+		for offset: float in [obstacle.position.x-after.end.x-0.001,obstacle.end.x-after.position.x+0.001]:
+			if absf(offset)<=growth.x+0.002 and not xs.has(offset): xs.append(offset)
+		for offset: float in [obstacle.position.y-after.end.y-0.001,obstacle.end.y-after.position.y+0.001]:
+			if absf(offset)<=growth.y+0.002 and not ys.has(offset): ys.append(offset)
+	var correction:=Vector2.INF
+	for x: float in xs:
+		for y: float in ys:
+			var candidate:=Vector2(x,y)
+			if candidate.length_squared()<correction.length_squared() and can_stand(player+candidate): correction=candidate
+	if not correction.is_finite(): return false
+	player+=correction
+	kayak.position=player
+	_sync_player()
 	return true
 
 func _find_safe(origin: Vector2) -> Vector2:

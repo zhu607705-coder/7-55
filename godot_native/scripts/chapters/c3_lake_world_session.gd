@@ -66,9 +66,17 @@ func reset_chase(point: Vector2) -> void:
 
 func stroke(s: Dictionary,host: Node,side: String,reverse: bool) -> bool:
 	if not valid(s,host) or status!="running" or side not in ["left","right"]: return false
+	# A real paddle may expand its rotated body into an adjacent solid. Validate
+	# the previous pose before accepting the input, then allow only that bounded
+	# physical separation. This cannot authorize a caller's changed/teleported pose.
+	if host.player.distance_to(_previous)>0.01 or host.player.distance_to(_model.position)>0.01 or not host.can_stand(host.player):
+		cancel()
+		return false
+	var previous_heading: float=_model.heading
 	# Exact source tutorial allowance uses the controller's count before this stroke.
 	_model.capsize_allowance=0.0 if s.qizhenLake.boardingTutorialCompleted else maxf(0,0.3-int(s.qizhenLake.boardingStrokeCount)*0.045)
 	_model.stroke(side,reverse)
+	if host.resolve_kayak_rotation(previous_heading): _previous=host.player
 	pending_strokes.append({"side":side,"direction":"reverse" if reverse else "forward"})
 	return true
 
@@ -94,8 +102,11 @@ func tick(s: Dictionary,host: Node,delta: float) -> Dictionary:
 		recovery_elapsed+=maxf(0,delta)
 		if recovery_elapsed>=1.04:
 			var safe: Dictionary=host.spec.zones[_zone].kayakSpawn
-			host.player=Vector2(float(safe.x),float(safe.y)); _model.position=host.player
-			_model.heading=float(safe.heading); _model.speed=0; _model.roll=0; _model.same_side_streak=0
+			_model.heading=float(safe.heading)
+			# Apply the same full-hull spawn placement as a normal world reload.
+			# The dock's authored center alone overlaps its edge by 1.5 source px.
+			host.player=host._find_safe(Vector2(float(safe.x),float(safe.y))); _model.position=host.player
+			_model.speed=0; _model.roll=0; _model.same_side_streak=0
 			_model.last_side=""; _model.last_direction=""; _model.last_stroke=-10; _model.status="running"
 			_previous=host.player; status="running"; reset_chase(host.player)
 			return {"restarted":s.qizhenLake.phase=="swan_chase"}
