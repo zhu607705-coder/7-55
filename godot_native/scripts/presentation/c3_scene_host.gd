@@ -1,4 +1,5 @@
 extends Control
+signal cinematic_started
 ## One runtime-only presentation owner. World moves/collides first (priority 0),
 ## then this host samples its authoritative position (priority 50).
 const OpeningView=preload("res://scripts/presentation/c3_opening_view.gd")
@@ -23,6 +24,8 @@ func setup(world_view: Control,state_reader: Callable,provider: Callable,action_
 	opening=OpeningView.new(); add_child(opening)
 	opening.advance.connect(_advance); opening.skip.connect(_skip)
 	paper=PaperView.new(); paper.world=world; world.add_child(paper)
+func owns_world_contract() -> bool:
+	return current!=null and (current.kind=="opening" or current.status in ["playing","complete"])
 func blocks_world_input() -> bool:
 	return current!=null and (current.kind=="opening" or current.status=="playing")
 func _host_context() -> Dictionary:
@@ -58,6 +61,13 @@ func tick(delta_ms: float,focused: bool=true) -> void:
 		var available: bool=focused and not host.get("phone_modal_open",false) and not host.get("minigame_open",false) and host.get("world_visible",true) and not s.get("ui",{}).get("controlCenterOpen",false)
 		if current.post_collision(s,world.player,self,available):
 			world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO; world.walk_clock=0
+			# Main restores the canonical viewport synchronously before sampling
+			# the discovery camera; portrait bounds must not enter the source shot.
+			world.zoom=1.18
+			cinematic_started.emit()
+			# The synchronous layout also changes the paper HUD's physical scale.
+			paper.display_scale=float(_host_context().get("world_display_scale",1.0))
+			world._update_camera()
 			entry_camera=world.camera
 		_apply_camera()
 		if focused: paper.tick(minf(delta_ms,100))

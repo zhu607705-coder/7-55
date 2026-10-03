@@ -10,6 +10,7 @@ const WIDTH=315.0
 const BLUE=Color("337e9b")
 const MUTED=Color("637080")
 const BD_PHASES=["top_ten_rising","top_ten_reached","recovery_application","pass_ready","backpack_removed","seat_recovered","friend_contacted"]
+const BD_POSTS={24:"bd-notice-tens",25:"bd-rule-count",26:"bd-rank-first",27:"bd-identity-zero",28:"bd-call-number-tail",29:"bd-seat-tail",30:"bd-reply-count",31:"bd-arrival-minutes"}
 var feedback_text=""
 
 func reset() -> void:
@@ -39,6 +40,15 @@ func scroll_to(target: Control) -> void:
 			return
 		ancestor=ancestor.get_parent()
 
+func bd_order(selected: Array) -> String:
+	# Show only the player's saved choices. No answer order or digit is inferred.
+	var floors: PackedStringArray=[]
+	for id in selected:
+		for number in BD_POSTS:
+			if BD_POSTS[number]==id: floors.append(str(number))
+	while floors.size()<4: floors.append("—")
+	return "已选顺序（楼）："+" → ".join(floors)
+
 func build(b,view: Dictionary) -> Control:
 	var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(SOURCE)).cc98
 	var puzzle: Dictionary=b.s.ui.libraryFinalsPuzzle
@@ -63,11 +73,21 @@ func build(b,view: Dictionary) -> Control:
 		if target: scroll_to(target),Color("e7eef1"),BLUE)
 	upload_jump.name="Cc98EvidenceJump"
 	y+=60
+	var selected: Array=puzzle.bdSelectedPostIds
+	var order_height=maxf(height(bd_order([]),WIDTH,13),height(bd_order(BD_POSTS.values().slice(0,4)),WIDTH,13))
 	if b.s.ui.libraryFinalsPhase=="top_ten_rising":
-		b._act(root,"撤回最后一次 bd",Rect2(LEFT,y,151,44),"lib_bd_undo",null,Color("e7eef1"))
-		b._act(root,"核验热度口令",Rect2(LEFT+161,y,154,44),"lib_bd_submit",null,Color("cee2e8"))
+		var review=label(b,root,bd_order(selected),y,13,BLUE)
+		review.name="Cc98BdReview"
+		y+=review.size.y+10
+		var undo: Button=b._act(root,"撤回最后一次 bd",Rect2(LEFT,y,151,44),"lib_bd_undo",null,Color("e7eef1"))
+		undo.name="Cc98BdUndo"; undo.disabled=selected.is_empty()
+		b._act(root,"核验热度口令",Rect2(LEFT+161,y,154,44),"lib_bd_submit",null,Color("cee2e8")).name="Cc98BdSubmit"
+		y+=54
+		b._button(root,"阅读数字回复 ↓",Rect2(LEFT,y,WIDTH,44),func():
+			var target=root.get_node_or_null("Cc98ReplyPanel_24")
+			if target: scroll_to(target),Color("e7eef1"),BLUE).name="Cc98BdRepliesJump"
 		y+=60
-	var bd={24:"bd-notice-tens",25:"bd-rule-count",26:"bd-rank-first",27:"bd-identity-zero",28:"bd-call-number-tail",29:"bd-seat-tail",30:"bd-reply-count",31:"bd-arrival-minutes"}
+	var bd=BD_POSTS
 	for row: Dictionary in view.get("rows",[]):
 		var floor_number=int(str(row.get("title","")).get_slice(" ",0))
 		if bd.has(floor_number) and not show_bd: continue
@@ -78,7 +98,8 @@ func build(b,view: Dictionary) -> Control:
 		var body="xxx" if hidden_bd else str(row.get("body","")).strip_edges()
 		var heading_height=height(heading,WIDTH,16)
 		var body_height=height(body,WIDTH,17)
-		var row_height=12+heading_height+14+body_height+18+(60 if has_catalog_title or (bd.has(floor_number) and b.s.ui.libraryFinalsPhase=="top_ten_rising") else 0)
+		var selectable_bd=bd.has(floor_number) and b.s.ui.libraryFinalsPhase=="top_ten_rising"
+		var row_height=12+heading_height+14+body_height+18+(68+order_height if selectable_bd else 60 if has_catalog_title else 0)
 		var panel: Panel=b._panel(root,Rect2(LEFT-8,y,WIDTH+16,row_height),Color.WHITE,Color("dce1e5"),0,1)
 		panel.name="Cc98ReplyPanel_%d" % floor_number
 		label(b,root,heading,y+12,16,BLUE).name="Cc98ReplyTitle_%d" % floor_number
@@ -90,8 +111,17 @@ func build(b,view: Dictionary) -> Control:
 			var copy: Button=b._button(root,"复制题名",Rect2(LEFT,action_y,92,48),func():
 				feedback.text=b.earned_catalog_title.copy_reply_title(b.s,row),Color("e8f0f4"),Color("367d99"),2,Color("86b1c4"))
 			copy.name="Cc98CopyCatalogTitle"; copy.tooltip_text="将本楼题名复制到剪贴板"
-		if bd.has(floor_number) and b.s.ui.libraryFinalsPhase=="top_ten_rising":
-			b._act(root,"bd",Rect2(LEFT+WIDTH-66,action_y,66,44),"lib_bd_select",bd[floor_number],Color("e8f0f4"),Color("367d99"),2,Color("86b1c4"))
+		if selectable_bd:
+			label(b,root,bd_order(selected),action_y-order_height-8,13,MUTED).name="Cc98BdOrder_%d" % floor_number
+			var order=selected.find(bd[floor_number])
+			var select: Button=b._act(root,"已选第%d项" % (order+1) if order>=0 else "bd",Rect2(LEFT,action_y,99,44),"lib_bd_select",bd[floor_number],Color("cee2e8") if order>=0 else Color("e8f0f4"),BLUE,2,Color("86b1c4"))
+			select.name="Cc98BdSelect_%d" % floor_number; select.disabled=order>=0
+			if order>=0: select.add_theme_color_override("font_disabled_color",Color("245568"))
+			var undo: Button=b._act(root,"撤回末项",Rect2(LEFT+107,action_y,99,44),"lib_bd_undo",null,Color("e7eef1"),BLUE)
+			undo.name="Cc98BdUndo_%d" % floor_number; undo.disabled=selected.is_empty()
+			b._button(root,"复核所选 ↑",Rect2(LEFT+214,action_y,101,44),func():
+				var target=root.get_node_or_null("Cc98BdReview")
+				if target: scroll_to(target),Color("e7eef1"),BLUE).name="Cc98BdReview_%d" % floor_number
 		y+=row_height+8
 	y+=8
 	var uploader=Control.new(); uploader.name="Cc98EvidenceUploader"; uploader.position=Vector2(LEFT,y); uploader.size=Vector2(WIDTH,44); uploader.mouse_filter=Control.MOUSE_FILTER_IGNORE; root.add_child(uploader)

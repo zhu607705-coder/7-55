@@ -33,9 +33,12 @@ var catalog_selected=""
 var qizhen_catalog_visible=false
 var scroll_positions={}
 var content: Dictionary={}
+var recovery_feedback: Dictionary={}
+var recovery_state: Dictionary={}
+var recovery_status_signature=""
 
 func reset() -> void:
-	local_page="home"; sheet=""; scroll_positions={}
+	local_page="home"; sheet=""; scroll_positions={}; recovery_feedback={}
 	selected_library="基础馆"; selected_room="一层书库"; selected_seat=""
 	space_mode="list"; seat_view="map"; seat_section=0; rail_collapsed=false
 	selected_date="07月10日 · 今天"; selected_time="00:01 - 23:59"; seat_filter="全部座位"
@@ -389,28 +392,41 @@ func recovery(b) -> Control:
 	var root=base(b,"022座位恢复申请",func(): local_page="home"; b.page_requested.emit("library_app"))
 	var puzzle: Dictionary=b.s.ui.libraryFinalsPuzzle
 	var submitted: Array=puzzle.recoverySubmittedEvidenceIds
+	var current_status=str(b.s.ui.libraryFinalsPhase)+JSON.stringify(submitted)
+	for evidence in RECOVERY: current_status+=str(b.s.items.get(evidence[2],false))
+	if not is_same(recovery_state,puzzle) or current_status!=recovery_status_signature: recovery_feedback.clear()
+	recovery_state=puzzle; recovery_status_signature=current_status
 	var ready=puzzle.evictionPassGenerated or b.s.ui.libraryFinalsPhase in ["pass_ready","backpack_removed","seat_recovered","friend_contacted"]
-	var inner=body(b,root,"recovery",665 if ready else 613,0,Color("eef3f8"))
-	b._panel(inner,Rect2(12,12,353,75),Color("164f93"),Color("073b75"),0,3)
-	b._panel(inner,Rect2(23,24,59,50),Color.WHITE,Color("062f61"),0,3)
-	b._label(inner,"022",Rect2(23,24,59,50),25,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
-	b._label(inner,"基础馆 · 一层书库",Rect2(94,25,185,24),14,Color.WHITE)
-	b._label(inner,"CC98 公示排名：01",Rect2(94,53,185,20),12,Color("d8e8ff"))
-	b._panel(inner,Rect2(295,33,58,34),Color("f5d453"),Color("573f00"),0,2)
-	b._label(inner,"PASS" if ready else "%s/3" % submitted.size(),Rect2(295,33,58,34),15,Color("332700"),HORIZONTAL_ALIGNMENT_CENTER)
-	b._panel(inner,Rect2(14,97,349,9),Color("c8d1dc"),Color("7c8998"),0,1)
-	b._panel(inner,Rect2(15,98,347 if ready else 347*submitted.size()/3.0,7),Color("4d8f61"))
-	b._panel(inner,Rect2(12,118,353,92),Color.WHITE,Color("9da8b4"),0,2)
-	b._label(inner,"旧版规则 · 恢复条件",Rect2(23,128,327,26),15,BLUE)
-	b._label(inner,"CC98 公示已生效。三份材料分别确认占用物身份、座位编号与本人到馆记录。",Rect2(23,156,327,44),12,MUTED)
+	# Reserve the collapsed drawer's rail for the entire scrolling document.
+	# Expanded inventory can cover the number tile, never the proof name/action.
+	var left=48.0; var width=315.0
+	var inner=body(b,root,"recovery",767 if ready else 691,0,Color("eef3f8"))
+	b._panel(inner,Rect2(left,12,width,75),Color("164f93"),Color("073b75"),0,3)
+	b._panel(inner,Rect2(left+11,24,49,50),Color.WHITE,Color("062f61"),0,3)
+	b._label(inner,"022",Rect2(left+11,24,49,50),25,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+	b._label(inner,"基础馆 · 一层书库",Rect2(left+72,25,165,24),14,Color.WHITE)
+	b._label(inner,"CC98 公示排名：01",Rect2(left+72,53,165,20),12,Color("d8e8ff"))
+	b._panel(inner,Rect2(left+245,33,58,34),Color("f5d453"),Color("573f00"),0,2)
+	b._label(inner,"PASS" if ready else "%s/3" % submitted.size(),Rect2(left+245,33,58,34),15,Color("332700"),HORIZONTAL_ALIGNMENT_CENTER).name="LibraryRecoveryCount"
+	b._panel(inner,Rect2(left+2,97,width-4,9),Color("c8d1dc"),Color("7c8998"),0,1)
+	b._panel(inner,Rect2(left+3,98,width-6 if ready else (width-6)*submitted.size()/3.0,7),Color("4d8f61"))
+	b._panel(inner,Rect2(left,118,width,102),Color.WHITE,Color("9da8b4"),0,2)
+	b._label(inner,"旧版规则 · 恢复条件",Rect2(left+12,128,width-24,26),15,BLUE).name="LibraryRecoveryConditionsTitle"
+	b._label(inner,"CC98 公示已生效。三份材料分别确认占用物身份、座位编号与本人到馆记录。",Rect2(left+12,156,width-24,54),12,MUTED).name="LibraryRecoveryConditions"
 	for i in range(3):
-		var evidence: Array=RECOVERY[i]; var uploaded=submitted.has(evidence[0]); var owned=bool(b.s.items.get(evidence[2],false)); var y=222+i*93
-		var slot=DropButton.new(); slot.name="LibraryRecoverySlot_"+evidence[0]; slot.position=Vector2(12,y); slot.size=Vector2(353,82); slot.text=""
+		var evidence: Array=RECOVERY[i]; var id=str(evidence[0]); var uploaded=submitted.has(id); var owned=bool(b.s.items.get(evidence[2],false)); var y=234+i*124
+		var slot=DropButton.new(); slot.name="LibraryRecoverySlot_"+id; slot.position=Vector2(left,y); slot.size=Vector2(width,116); slot.text=""
 		var color=Color("e7f4e5") if uploaded else Color("eef6ff") if owned else Color("f8f8f6")
 		var border=Color("4d8745") if uploaded else Color("3875b2") if owned else Color("a7adb2")
 		for mode in ["normal","hover","pressed","disabled"]: slot.add_theme_stylebox_override(mode,b._style(color,border,0,2))
-		slot.disabled=not uploaded and (not owned or b.s.ui.libraryFinalsPhase!="recovery_application")
+		# Accept every inventory attempt across the full card. Item matching is
+		# explained here; ownership, phase, consumption and reward stay controller-owned.
 		inner.add_child(slot)
+		var normal_status="材料已收取，可查看原件" if uploaded else "原件已识别，可提交" if owned else "待取得本栏原件"
+		var feedback: Label=b._label(slot,str(recovery_feedback.get(id,normal_status)),Rect2(62,70,width-148,40),13,Color("963f36") if recovery_feedback.has(id) else Color("4d8745") if uploaded else MUTED)
+		feedback.name="LibraryRecoveryFeedback_"+id
+		var explain=func(message: String):
+			recovery_feedback[id]=message; feedback.text=message; feedback.add_theme_color_override("font_color",Color("963f36"))
 		var upload=func():
 			if uploaded:
 				if not b.get_signal_connection_list("document_requested").is_empty():
@@ -418,25 +434,29 @@ func recovery(b) -> Control:
 				else:
 					var modal=DocumentModal.new(); modal.setup(b,str(evidence[2])); root.add_child(modal)
 					modal.closed.connect(func(): modal.queue_free(); slot.grab_focus())
-			else: b.action_requested.emit("lib_recovery_upload",evidence[0])
+			else:
+				recovery_feedback.erase(id)
+				if not owned: recovery_feedback[id]="尚未取得本栏证明原件"
+				elif b.s.ui.libraryFinalsPhase!="recovery_application": recovery_feedback[id]="请先开启本次恢复申请"
+				b.action_requested.emit("lib_recovery_upload",id)
 		slot.pressed.connect(upload)
 		slot.item_dropped.connect(func(item):
-			if item==evidence[2] and not uploaded: b.action_requested.emit("lib_recovery_upload",evidence[0]))
-		b._panel(slot,Rect2(8,24,32,32),Color("dce9f8"),BLUE,0,1)
-		b._label(slot,"%02d" % (i+1),Rect2(8,24,32,32),17,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
-		b._label(slot,evidence[1],Rect2(49,8,225,24),15,BLUE)
-		b._label(slot,"来源："+evidence[3],Rect2(49,34,225,19),10,MUTED)
-		b._label(slot,"材料已锁定到本次申请" if uploaded else "道具栏已识别，可提交校验" if owned else "待取得",Rect2(49,57,225,17),10,Color("4d8745") if uploaded else MUTED)
-		b._panel(slot,Rect2(285,24,56,33),BLUE if uploaded or owned else Color("d9dde1"))
-		b._label(slot,"查看" if uploaded else "提交",Rect2(285,24,56,33),13,Color.WHITE if uploaded or owned else MUTED,HORIZONTAL_ALIGNMENT_CENTER)
-		b._label(slot,"已核验" if uploaded else "可提交" if owned else "待取得",Rect2(283,5,62,17),10,border,HORIZONTAL_ALIGNMENT_CENTER)
+			if item!=evidence[2]: explain.call("材料不符，请核对本栏名称")
+			elif uploaded: explain.call("材料已收取，请点查看阅读")
+			else: upload.call())
+		b._panel(slot,Rect2(12,26,32,32),Color("dce9f8"),BLUE,0,1)
+		b._label(slot,"%02d" % (i+1),Rect2(12,26,32,32),17,BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+		b._label(slot,evidence[1],Rect2(62,8,width-76,24),15,BLUE).name="LibraryRecoveryName_"+id
+		b._label(slot,"来源："+evidence[3],Rect2(62,34,width-76,32),11,MUTED).name="LibraryRecoverySource_"+id
+		b._panel(slot,Rect2(width-74,70,62,40),BLUE if uploaded or owned else Color("d9dde1"))
+		b._label(slot,"查看" if uploaded else "提交",Rect2(width-74,70,62,40),13,Color.WHITE if uploaded or owned else MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryRecoveryAction_"+id
 	if ready:
-		b._panel(inner,Rect2(12,513,353,135),Color("e7f4e5"),Color("4d8745"),0,2)
-		b._label(inner,"PASS 已签发",Rect2(26,526,325,34),24,Color("35643c"),HORIZONTAL_ALIGNMENT_CENTER)
-		b._label(inner,"凭证只对 RPG 图书馆内的 022 书包生效。",Rect2(24,563,329,32),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
-		b._button(inner,"回图书馆处理书包",Rect2(30,605,317,32),func(): b.action_requested.emit("lib_enter",null),Color("4d8f61"),Color.WHITE).name="LibraryReturnToScene"
+		b._panel(inner,Rect2(left,614,width,135),Color("e7f4e5"),Color("4d8745"),0,2)
+		b._label(inner,"PASS 已签发",Rect2(left+12,627,width-24,34),24,Color("35643c"),HORIZONTAL_ALIGNMENT_CENTER)
+		b._label(inner,"凭证只对 RPG 图书馆内的 022 书包生效。",Rect2(left+12,664,width-24,32),12,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+		b._button(inner,"回图书馆处理书包",Rect2(left+12,706,width-24,32),func(): b.action_requested.emit("lib_enter",null),Color("4d8f61"),Color.WHITE).name="LibraryReturnToScene"
 	elif b.s.ui.libraryFinalsPhase=="top_ten_reached":
-		b._button(inner,"填写恢复申请",Rect2(12,513,353,45),func(): open_recovery(b),BLUE,Color.WHITE).name="LibraryRecoveryOpen"
+		b._button(inner,"填写恢复申请",Rect2(left,614,width,45),func(): open_recovery(b),BLUE,Color.WHITE).name="LibraryRecoveryOpen"
 	else:
-		var generate: Button=b._button(inner,"生成 022 座位释放 PASS",Rect2(12,513,353,45),func(): b.action_requested.emit("lib_generate_pass",null),BLUE,Color.WHITE); generate.name="LibraryGeneratePass"; generate.disabled=submitted.size()<3 or b.s.ui.libraryFinalsPhase!="recovery_application"
+		var generate: Button=b._button(inner,"生成 022 座位释放 PASS",Rect2(left,614,width,45),func(): b.action_requested.emit("lib_generate_pass",null),BLUE,Color.WHITE); generate.name="LibraryGeneratePass"; generate.disabled=submitted.size()<3 or b.s.ui.libraryFinalsPhase!="recovery_application"
 	return root

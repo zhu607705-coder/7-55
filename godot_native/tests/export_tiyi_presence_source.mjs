@@ -6,6 +6,13 @@ import { stripTypeScriptTypes } from 'node:module';
 
 // Execute the authored methods, not a hand-copied model of their behavior.
 const here = dirname(fileURLToPath(import.meta.url));
+const args = process.argv.slice(2);
+if (args.length > 1 || (args.length === 1 && (!args[0] || (args[0].startsWith('-') && args[0] !== '--check')))) {
+  console.error('Usage: node export_tiyi_presence_source.mjs [--check | output-path]');
+  process.exit(2);
+}
+const checkOnly = args[0] === '--check';
+const out = checkOnly || args.length === 0 ? resolve(here, 'tiyi_audit_oracle.json') : resolve(args[0]);
 const root = resolve(process.env.SOURCE_REPO_ROOT || resolve(here, '../..'));
 const controllerPath = 'src/modules/LibraryFinalsController.ts';
 const rulesPath = 'src/modules/library-finals/puzzleRules.ts';
@@ -63,6 +70,20 @@ for (const phase of ['evidence_gathering', 'library_entered', 'top_ten_reached']
     }
 const hashes = Object.fromEntries([controllerPath, rulesPath, 'src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx', 'src/data/library-finals.audio.json'].map(path => [path, createHash('sha256').update(readFileSync(resolve(root, path))).digest('hex')]));
 const output = { provenance: 'Reconstructed source oracle; methods executed from active TypeScript source', hashes, drafts, submissions };
-const out = process.argv[2] || resolve(here, 'tiyi_audit_oracle.json');
-writeFileSync(out, JSON.stringify(output, null, 2) + '\n');
-console.log(JSON.stringify({ output: out, drafts: drafts.length, submissions: submissions.length, hashes }));
+const serialized = JSON.stringify(output, null, 2) + '\n';
+if (checkOnly) {
+  let checkedIn;
+  try {
+    checkedIn = readFileSync(out, 'utf8');
+  } catch (error) {
+    console.error(`Cannot read Tiyi presence source oracle: ${out} (${error.code})`);
+    process.exit(1);
+  }
+  if (checkedIn !== serialized) {
+    console.error(`Tiyi presence source oracle is stale: ${out}`);
+    process.exit(1);
+  }
+} else {
+  writeFileSync(out, serialized);
+}
+console.log(JSON.stringify({ mode: checkOnly ? 'check' : 'generate', output: out, drafts: drafts.length, submissions: submissions.length, hashes }));

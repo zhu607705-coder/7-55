@@ -432,9 +432,9 @@ func _layout() -> void:
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
 
 func _authored_world_contract() -> bool:
-	# These hosts own authored camera/aspect contracts, including interrupted
-	# sessions. They stay canonical until the owner actually releases them.
-	return is_instance_valid(active_game) or is_instance_valid(world_effect) or (is_instance_valid(c3_scene_host) and c3_scene_host.current!=null) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.current!=null) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
+	# Active cinematics retain their source camera/aspect through interruptions.
+	# A canteen session waiting for proximity still belongs to exploration.
+	return is_instance_valid(active_game) or is_instance_valid(world_effect) or (is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract()) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.current!=null) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
 
 func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 	if not is_instance_valid(world): return
@@ -572,6 +572,11 @@ func _refresh() -> void:
 	var handled_action_ids: Array = []
 	if custom_body:
 		custom_body.z_index = 65 if page=="control_center" else 0
+		if page == "cc98":
+			# Off-tree labels still cache the default font. Prime the existing
+			# phone theme before tree-entry layout shapes the complete forum.
+			custom_body.theme = phone.theme
+			custom_body.propagate_notification(Control.NOTIFICATION_THEME_CHANGED)
 		page_body.add_child(custom_body)
 		handled_action_ids = custom_body.get_meta("handled_action_ids",[])
 		if (page == "phone_home" or page == "desktop") and not custom_body.get_meta("handles_app_grid",false): _add_app_grid(page_body)
@@ -1215,6 +1220,7 @@ func _setup_runtime_hosts() -> void:
 	if ResourceLoader.exists("res://scripts/presentation/c3_scene_host.gd") and c3_scene_host == null:
 		c3_scene_host=load("res://scripts/presentation/c3_scene_host.gd").new()
 		add_child(c3_scene_host)
+		c3_scene_host.cinematic_started.connect(_layout)
 		c3_scene_host.setup(world,func() -> Dictionary: return State.d,State.get_scene_session,State.act,_game_presentation,_read_runtime_state)
 	if ResourceLoader.exists("res://scripts/media/audio_director.gd") and audio_director == null:
 		audio_director = load("res://scripts/media/audio_director.gd").new()
