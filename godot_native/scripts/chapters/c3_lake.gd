@@ -522,6 +522,8 @@ func targets(scene: String, s: Dictionary) -> Array:
 		if entry.kind=="outfit" and q.phase!="dock_outfitting": continue
 		if entry.kind=="feed_tin" and (not own(s,"improvisedDipNet") or not q.netCombined or q.feedTinRetrieved): continue
 		if entry.kind=="swan" and (not light(s) or q.phase not in ["tool_chain","swan_exchange"] or q.swanFed): continue
+		# Source retires this physical action after its key-to-cord transaction.
+		if entry.id=="qizhen_use_item_1" and q.lockerOpened: continue
 		if entry.id=="qizhen_open_workbench" and not can_assemble(s): continue
 		var result: Dictionary=from_source(entry,"c3_lake_target:"+str(entry.id))
 		var item: String=str(entry.get("acceptedItem",""))

@@ -430,10 +430,7 @@ func _draw() -> void:
 	if not running or paused:
 		draw_rect(overlay_layout.modal_panel if overlay_layout.compact else Rect2(280,161,400,194),Color(0.03,0.08,0.12,0.93))
 		if font:
-			var title: String="准备好了吗？" if not paused else "已暂停"
-			if sent: title="追上了！" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "安全抵达")
-			if model and mode!="rhythm" and model.status=="lost": title="从安全点重试"
-			if model and mode=="rhythm" and model.phase in ["failed","completed"]: title="再试一次"
+			var title: String=_modal_title()
 			if overlay_layout.compact:
 				var title_rect: Rect2=overlay_layout.modal_title
 				var detail_rect: Rect2=overlay_layout.modal_detail
@@ -442,6 +439,13 @@ func _draw() -> void:
 			else:
 				draw_string(font,Vector2(345,206),title,HORIZONTAL_ALIGNMENT_CENTER,270,28,FG)
 				draw_string(font,Vector2(306,250),"本次操作已完成" if sent else "鼠标 / 触屏 / 键盘均可操作",HORIZONTAL_ALIGNMENT_CENTER,345,18,AQUA)
+
+func _modal_title() -> String:
+	# A completed chart can be a win or a miss. Accepted proof owns the success title.
+	if sent: return "追上了！" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "安全抵达")
+	if model and mode!="rhythm" and model.status=="lost": return "从安全点重试"
+	if model and mode=="rhythm" and model.phase in ["failed","completed"]: return "再试一次"
+	return "已暂停" if paused else "准备好了吗？"
 
 func road_point(ahead: float, lane: float) -> Vector3:
 	var depth: float=clampf(1-ahead/96,0,1)
