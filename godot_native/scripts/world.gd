@@ -113,7 +113,7 @@ func _ready() -> void:
 	if ResourceLoader.exists("res://scripts/games/chapter4_guard_model.gd"):
 		guard_model = load("res://scripts/games/chapter4_guard_model.gd")
 		guard_sheet = load("res://assets/rpg/npcs/finale/guard_walk_8frame.png")
-	State.feedback.connect(func(text): subtitle = text; subtitle_left = clampf(1.6+text.length()*.12,2.4,6.5))
+	State.feedback.connect(_receive_feedback)
 	State.story_reset.connect(func(): _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS)
 	if ResourceLoader.exists("res://scripts/ui/chapter4_world_layers.gd"):
 		chapter4_layers = load("res://scripts/ui/chapter4_world_layers.gd").new()
@@ -400,6 +400,17 @@ func _show_kayak_boundary_feedback(at_ms: int=-1) -> bool:
 	State.feedback.emit(str(content.boarding.boundaryBlocked))
 	subtitle_left=KAYAK_BOUNDARY_HINT_DURATION
 	return true
+
+func _receive_feedback(text: String) -> void:
+	subtitle=text
+	subtitle_left=clampf(1.6+text.length()*.12,2.4,6.5)
+	if scene_id!="qizhen_lake" or str(State.last_result.get("message",""))!=text: return
+	# Original triggerSwanCatch shows these two sentences for3000ms. The
+	# generic text-length lifetime otherwise outlasts the restarted attempt.
+	for cue: Dictionary in State.last_result.get("presentation",[]):
+		if str(cue.get("cueId",""))=="qizhen_chase_failed" and str(cue.get("payload",{}).get("reason",""))=="swan_caught":
+			subtitle_left=3.0
+			return
 
 func _process(delta: float) -> void:
 	delta=minf(delta,.05)

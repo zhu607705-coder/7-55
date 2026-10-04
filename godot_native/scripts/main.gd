@@ -1506,7 +1506,7 @@ func _feedback(message: String,tone: String="system") -> void:
 	if _feedback_world_active() and not is_instance_valid(modal_notice_slot):
 		# One subtitle owner: the source RPG bottom-safe-zone surface.
 		toast.text=""; toast_time=0; toast.hide()
-		world.subtitle=message; world.subtitle_left=duration; world.queue_redraw()
+		world._receive_feedback(message); world.queue_redraw()
 		return
 	PhoneNotice.set_message(toast,message,str(PhoneNotice.SPEAKERS.get(tone,"系统")))
 	toast_time = duration
