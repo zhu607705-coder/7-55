@@ -9,6 +9,11 @@ var journal_builder: RefCounted=JournalPages.new()
 const VoiceProgress=preload("res://scripts/ui/c3_voice_progress.gd")
 const PhotoSequence=preload("res://scripts/ui/c35_photo_sequence.gd")
 var current_view: Dictionary={}
+const Motion=preload("res://scripts/ui/c3_evidence_motion.gd")
+var last_requested_page:String=""
+var observed_ready:Array=[]
+var pending_arrivals:Array=[]
+var observed_recovery:bool=false
 const Ring=preload("res://scripts/ui/c3_investigation_ring.gd")
 const Interlude=preload("res://scripts/chapters/c3_interlude.gd")
 var module: RefCounted=Interlude.new()
@@ -32,11 +37,21 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 	# Source P18 Photos switches its contents for the interlude. Keep the
 	# ordinary Home app route, but show its recovered frames in this phase.
 	if page=="photos" and s.qizhenLake.phase=="complete" and not s.chapterThreeInterlude.completed: page="c35_photos"
+	var page_entry:bool=page!=last_requested_page
+	last_requested_page=page
 	if page in ["c3_journal","c3_journal_camera"]: return journal_builder.build(page,_view,s)
 	if page not in ["c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network","c3_ticket_post"]: return null
 	state=s
 	current_view=_view
 	page_id=page
+	var ready_now:Array=[]
+	var interlude:Dictionary=s.chapterThreeInterlude
+	for pair:Array in [["c35_photos",interlude.photoSequenceSolved],["c35_voice",interlude.voiceSequenceSolved],["c35_official",interlude.officialNoticeSaved and interlude.routeScreenshotSaved],["c35_network",interlude.networkRecordRead]]:
+		if pair[1]:ready_now.append(pair[0])
+	if observed_recovery:
+		for id:String in ready_now:
+			if not observed_ready.has(id) and not pending_arrivals.has(id):pending_arrivals.append(id)
+	observed_ready=ready_now;observed_recovery=true
 	var root: VBoxContainer=VBoxContainer.new()
 	root.set_meta("handles_all_actions",true)
 	root.set_meta("source_page",true)
@@ -91,6 +106,7 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 	background.content_margin_bottom=28
 	outer.add_theme_stylebox_override("panel",background)
 	outer.add_child(root)
+	if page in ["c35_voice","c35_recovery"] and page_entry:Motion.enter(outer,bool(state.native.get("settings",{}).get("reduced_motion",false)))
 	return outer
 
 func label(text: String, size: int=17, color: Color=INK) -> Label:
@@ -132,6 +148,7 @@ func button(parent: Control,text: String,callback: Callable,accent: bool=false) 
 	node.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	NativeUi.apply_button(node,GREEN if accent else Color("f0f0e8"),Color.WHITE if accent else INK,INK,0,3 if accent else 2,NativeUi.FONT_LABEL,Vector2(14,8),Color("7fd1d4") if accent else GREEN)
 	node.pressed.connect(callback)
+	if page_id in ["c35_voice","c35_recovery"]:Motion.press(node,bool(state.native.get("settings",{}).get("reduced_motion",false)))
 	parent.add_child(node)
 	return node
 
@@ -154,6 +171,13 @@ func image_node(path: String,size: Vector2,mirror: bool=false) -> TextureRect:
 	if ResourceLoader.exists(path): image.texture=load(path)
 	return image
 
+func evidence_edge(box:VBoxContainer,edge:Color,width:int=1)->void:
+	var panel:PanelContainer=box.get_parent()
+	var style:StyleBoxFlat=panel.get_theme_stylebox("panel").duplicate()
+	style.set_border_width_all(width);style.border_color=edge
+	style.shadow_offset=Vector2(2,2)
+	panel.add_theme_stylebox_override("panel",style)
+
 func recovery(root: VBoxContainer) -> void:
 	var c: Dictionary=state.chapterThreeInterlude
 	eyebrow(root,"RECOVERY 03.5")
@@ -170,6 +194,7 @@ func recovery(root: VBoxContainer) -> void:
 		action(box,"打开恢复工具","c35_begin",null,true)
 		return
 	var window: VBoxContainer=card(root,Color("e7f1ed"))
+	evidence_edge(window,GREEN,2)
 	eyebrow(window,"待核验时间窗")
 	window.add_child(label(("22:37:05" if c.evidenceIds.has("journal_start") else "待恢复")+"  —  "+("22:45:00" if c.voiceSequenceSolved else "待恢复"),25,GREEN))
 	window.add_child(label("对照离湖时刻和最后一段录音，查清这段时间发生了什么。",14,MUTED))
@@ -182,24 +207,32 @@ func recovery(root: VBoxContainer) -> void:
 	var branches: Array=[{"label":"照片线索","page":"c35_photos","ready":c.photoSequenceSolved},{"label":"录音线索","page":"c35_voice","ready":c.voiceSequenceSolved},{"label":"消息线索","page":"c35_official","ready":c.officialNoticeSaved and c.routeScreenshotSaved},{"label":"网络记录","page":"c35_network","ready":c.networkRecordRead}]
 	var box: VBoxContainer=card(root)
 	eyebrow(box,"EVIDENCE LOOP")
+	evidence_edge(box,Color("70898c"),1)
 	box.add_child(label("留下了哪些记录",21))
 	box.add_child(label("先看哪项都行，查过的会记在这里",14,MUTED))
 	var ring: Control=Ring.new()
-	ring.configure(branches)
+	ring.configure(branches,pending_arrivals.duplicate(),bool(state.native.get("settings",{}).get("reduced_motion",false)))
+	pending_arrivals.clear()
 	ring.page_requested.connect(func(page: String) -> void: page_requested.emit(page))
 	box.add_child(ring)
 	if c.evidenceIds.size()!=4: return
 	var reasons: Array=[{"id":"number_not_time","label":"这是编号，不是本段记录的时间"},{"id":"earlier_independent_event","label":"这是更早的独立事件"},{"id":"frozen_local_clock","label":"这是本机冻结值，不能代表实际时间"}]
 	var decoys: Array=[{"id":"canteen_0755","label":"食堂 0755"},{"id":"theater_0832","label":"剧场 08:32"},{"id":"status_clock_075523","label":"状态栏 07:55:23"}]
 	for decoy: Dictionary in decoys:
-		var row: VBoxContainer=card(root)
+		var row: VBoxContainer=card(root,Color("e3ebe2") if c.rejectedDecoyIds.has(decoy.id) else Color("eef0e9"))
+		evidence_edge(row,Color("6e9285") if c.rejectedDecoyIds.has(decoy.id) else Color("70898c"),1)
 		row.add_child(label(decoy.label+(" · 已排除" if c.rejectedDecoyIds.has(decoy.id) else " · 选择排除理由"),17))
 		if c.rejectedDecoyIds.has(decoy.id): continue
 		for reason: Dictionary in reasons: action(row,reason.label,"c35_reject:"+str(decoy.id),reason.id)
 	if module.exclusions_ready(c):
-		var timeline: VBoxContainer=card(root)
+		var timeline: VBoxContainer=card(root,Color("fffaf3"))
+		evidence_edge(timeline,GREEN,2)
 		timeline.add_child(label("自动恢复的时间线",20))
-		for line: String in ["22:37:05  CC98 划船记录","时间缺失  恢复照片","区间末段  夜间接入记录","22:45:00  广播录音"]: timeline.add_child(label(line,16))
+		for entry:Array in [["22:37:05","CC98 划船记录"],["时间缺失","恢复照片"],["区间末段","夜间接入记录"],["22:45:00","广播录音"]]:
+			var line:HBoxContainer=HBoxContainer.new();line.custom_minimum_size.y=28;line.add_theme_constant_override("separation",10);timeline.add_child(line)
+			var marker:ColorRect=ColorRect.new();marker.custom_minimum_size=Vector2(3,18);marker.size_flags_vertical=Control.SIZE_SHRINK_CENTER;marker.color=GREEN;line.add_child(marker)
+			var time:Label=label(entry[0],16,GREEN);time.custom_minimum_size.x=80;time.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN;line.add_child(time)
+			line.add_child(label(entry[1],16))
 		if c.destinationId==null:
 			timeline.add_child(label("哪个地方能对上时间、沿途声音、入口变化和网络记录？",16))
 			for place: Dictionary in Interlude.DESTINATIONS: action(timeline,place.label,"c35_destination",place.id)
@@ -313,41 +346,55 @@ func voice(root: VBoxContainer) -> void:
 				if recording.id==id: ordered.append(recording)
 		records=ordered
 	for recording: Dictionary in records:
-		var row: VBoxContainer=card(root,Color("fffaf3"))
-		row.add_child(label(str(recording.code),18))
-		var bars: HBoxContainer=HBoxContainer.new()
-		bars.alignment=BoxContainer.ALIGNMENT_CENTER
-		bars.custom_minimum_size.y=24
-		row.add_child(bars)
-		var generated: Dictionary=module.content("chapter3-interlude-voice-memos.audio.generated").assets.get(recording.asset,{})
-		var waveform: Array=generated.get("waveform",generated.get("waveformBins",[]))
-		for i: int in range(32):
-			var bar: ColorRect=ColorRect.new()
-			bar.color=Color("c39772")
-			var amplitude: float=float(waveform[mini(i,waveform.size()-1)]) if not waveform.is_empty() else 0.25
-			bar.custom_minimum_size=Vector2(3,clampf(amplitude*28 if amplitude<=1 else amplitude,4,28))
-			bar.size_flags_vertical=Control.SIZE_SHRINK_CENTER
-			bars.add_child(bar)
-		var controls: HBoxContainer=HBoxContainer.new()
-		row.add_child(controls)
 		var active: Variant=current_view.get("media_session")
-		var playing: bool=active!=null and active.clip_id==recording.id and active.phase=="playing"
-		var paused: bool=active!=null and active.clip_id==recording.id and active.phase=="paused"
-		action(controls,"Ⅱ 暂停" if playing else "▶ 继续播放" if paused else "▶  %.1f 秒" % (float(generated.get("durationMs",recording.targetDurationMs))/1000),"c35_listen",recording.id)
+		var current: Variant=active if active!=null and active.clip_id==recording.id else null
+		var playing: bool=current!=null and current.phase=="playing"
+		var paused: bool=current!=null and current.phase=="paused"
+		var kept: bool=selected.has(recording.id)
+		var reviewed: bool=module.voice_reviewed(state,recording.id)
+		var row: VBoxContainer=card(root,Color("f0dfdc") if playing else Color("eef0e9"))
+		row.set_meta("recording_id",recording.id)
+		row.add_theme_constant_override("separation",7)
+		var panel: PanelContainer=row.get_parent()
+		var frame: StyleBoxFlat=panel.get_theme_stylebox("panel").duplicate()
+		frame.set_border_width_all(2 if playing or paused else 1)
+		frame.border_color=Color("c72f3a") if playing else (Color("8a5558") if paused else Color("546269"))
+		if kept: frame.border_width_left=5; frame.border_color=GREEN
+		frame.content_margin_left=12; frame.content_margin_right=12
+		frame.content_margin_top=10; frame.content_margin_bottom=10
+		frame.shadow_size=0; frame.shadow_offset=Vector2(2,2)
+		panel.add_theme_stylebox_override("panel",frame)
+		var heading: HBoxContainer=HBoxContainer.new();row.add_child(heading)
+		var code: Label=label(str(recording.code),20);heading.add_child(code)
+		var status: Label=label("候选 %d"%[selected.find(recording.id)+1] if kept else ("已试听" if reviewed else "待试听"),14,GREEN if kept or reviewed else MUTED)
+		status.add_theme_font_size_override("font_size",14)
+		status.autowrap_mode=TextServer.AUTOWRAP_OFF
+		status.custom_minimum_size.x=64
+		status.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+		status.size_flags_horizontal=Control.SIZE_SHRINK_END
+		heading.add_child(status)
+		var generated: Dictionary=module.content("chapter3-interlude-voice-memos.audio.generated").assets.get(recording.asset,{})
+		var waveform: VBoxContainer=VoiceProgress.new()
+		waveform.setup(current,recording,generated,bool(state.native.get("settings",{}).get("reduced_motion",false)))
+		row.add_child(waveform)
+		var controls: HBoxContainer=HBoxContainer.new();controls.add_theme_constant_override("separation",8);row.add_child(controls)
+		var play: Button=action(controls,"Ⅱ 暂停" if playing else "▶ 继续播放" if paused else "▶  %.1f 秒" % (float(generated.get("durationMs",recording.targetDurationMs))/1000),"c35_listen",recording.id)
+		NativeUi.apply_button(play,Color("c72f3a") if playing else Color("fffaf3"),Color.WHITE if playing else Color("942931"),Color("c72f3a"),0,2,14,Vector2(8,6))
 		if stage=="selection":
-			action(controls,"移出候选" if selected.has(recording.id) else "保留这段" if module.voice_reviewed(state,recording.id) else "试听后可选","c35_select_voice",recording.id)
+			var keep: Button=action(controls,"✓ 移出候选" if kept else "保留这段" if reviewed else "试听后可选","c35_select_voice",recording.id)
+			NativeUi.apply_button(keep,GREEN if kept else Color("dbe7e2"),Color.WHITE if kept else INK,GREEN,0,2,14,Vector2(8,6))
 		else:
 			action(controls,"上移","c35_voice_move",{"id":recording.id,"shift":-1}).disabled=selected.find(recording.id)==0
 			action(controls,"下移","c35_voice_move",{"id":recording.id,"shift":1}).disabled=selected.find(recording.id)==selected.size()-1
-		if active!=null and active.clip_id==recording.id:
-			var progress: VBoxContainer=VoiceProgress.new()
-			progress.setup(active,recording)
-			row.add_child(progress)
-		if module.voice_reviewed(state,recording.id):
-			row.add_child(label(str(recording.revealZh)+" · "+str(recording.time),14,MUTED))
+		if reviewed:
+			row.add_child(label(str(recording.revealZh)+" · "+str(recording.time),18,MUTED))
+			var excerpts: GridContainer=GridContainer.new();excerpts.columns=2;excerpts.add_theme_constant_override("h_separation",6);excerpts.add_theme_constant_override("v_separation",6);row.add_child(excerpts)
 			for index: int in range(recording.get("soundEvents",[]).size()):
 				var part: Dictionary=recording.soundEvents[index]
-				action(row,str(part.labelZh)+"  "+{"near":"近","mid":"中","far":"远"}.get(str(part.distance),"")+"距","c35_excerpt",{"id":recording.id,"index":index})
+				var excerpt: Button=action(excerpts,str(part.labelZh)+"\n"+{"near":"近","mid":"中","far":"远"}.get(str(part.distance),"")+"距","c35_excerpt",{"id":recording.id,"index":index})
+				excerpt.custom_minimum_size=Vector2(0,54)
+				excerpt.text_overrun_behavior=TextServer.OVERRUN_NO_TRIMMING
+				NativeUi.apply_button(excerpt,Color("dbe7e2"),Color("22353b"),Color("70898c"),0,1,14,Vector2(6,5))
 	var order: VBoxContainer=card(root)
 	order.add_child(label("录音顺序  %d / 4" % selected.size(),18))
 	for id: String in selected:

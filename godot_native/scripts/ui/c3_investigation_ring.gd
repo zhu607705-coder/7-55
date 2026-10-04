@@ -4,7 +4,13 @@ signal page_requested(page: String)
 var branches: Array=[]
 var buttons: Array=[]
 var completed: int=0
-func configure(nodes: Array) -> void:
+var arrivals:Array=[]
+var arrival_elapsed:float=0
+var reduced_motion:bool=false
+var foreground:bool=true
+const Motion=preload("res://scripts/ui/c3_evidence_motion.gd")
+func configure(nodes: Array,new_arrivals:Array=[],reduce:bool=false) -> void:
+	arrivals=new_arrivals.duplicate();reduced_motion=reduce;arrival_elapsed=0
 	branches=nodes
 	completed=nodes.filter(func(node: Dictionary) -> bool: return bool(node.ready)).size()
 	custom_minimum_size=Vector2(360,286)
@@ -18,7 +24,13 @@ func configure(nodes: Array) -> void:
 		box.bg_color=Color("d3dfcf") if node.ready else Color("efe9d8")
 		box.border_color=Color("3d8168") if node.ready else Color("1f6d7f")
 		box.set_border_width_all(2)
-		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: button.add_theme_stylebox_override(mode,box)
+		button.add_theme_stylebox_override("normal",box)
+		button.add_theme_stylebox_override("disabled",box)
+		var hover:StyleBoxFlat=box.duplicate();hover.bg_color=box.bg_color.lightened(.06)
+		button.add_theme_stylebox_override("hover",hover)
+		var pressed:StyleBoxFlat=box.duplicate();pressed.bg_color=box.bg_color.darkened(.12)
+		button.add_theme_stylebox_override("pressed",pressed);button.add_theme_stylebox_override("hover_pressed",pressed)
+		Motion.press(button,reduced_motion)
 		button.pressed.connect(func() -> void: page_requested.emit(node.page))
 		# Source InvestigationRing uses cyclic investigation order. Godot's
 		# spatial nearest-control navigation stalls at the rightmost node.
@@ -27,6 +39,12 @@ func configure(nodes: Array) -> void:
 		buttons.append(button)
 	resized.connect(layout)
 	layout()
+func _process(delta:float)->void:
+	if reduced_motion or not foreground or not is_visible_in_tree() or arrivals.is_empty() or arrival_elapsed>=.42:return
+	arrival_elapsed=minf(.42,arrival_elapsed+maxf(0,delta));queue_redraw()
+func _notification(what:int)->void:
+	if what==NOTIFICATION_APPLICATION_FOCUS_OUT:foreground=false
+	elif what==NOTIFICATION_APPLICATION_FOCUS_IN:foreground=true
 func _node_input(event: InputEvent,button: Button) -> void:
 	if not event is InputEventKey or not event.pressed or event.echo or buttons.is_empty(): return
 	var index: int=buttons.find(button)
@@ -55,6 +73,15 @@ func _draw() -> void:
 		var angle: float=-PI/2+TAU*(index%branches.size())/branches.size()
 		points.append(Vector2(width*(0.5+cos(angle)*0.325),286*(0.5+sin(angle)*0.325)))
 	for index: int in range(maxi(0,points.size()-1)): draw_dashed_line(points[index],points[index+1],Color("65747a"),1,5)
+	if not reduced_motion and arrival_elapsed<.42:
+		var t:float=clampf(arrival_elapsed/.42,0,1)
+		for index:int in range(branches.size()):
+			if not arrivals.has(branches[index].page):continue
+			var point:Vector2=points[index].lerp(Vector2(width/2,143),t)
+			draw_rect(Rect2(point-Vector2(3,3),Vector2(6,6)),Color("24677c"))
+			if index<buttons.size():
+				var around:Rect2=Rect2(buttons[index].position,buttons[index].size).grow(2+3*t)
+				draw_rect(around,Color(.14,.40,.48,1-t),false,2)
 	var center: Rect2=Rect2(width/2-52,102,104,82)
 	draw_rect(center,Color("e2dccb"))
 	draw_rect(center,Color("65747a"),false,2)

@@ -10,11 +10,12 @@ func luminance(color: Color) -> float:
 	var c: Color=color.srgb_to_linear();return .2126*c.r+.7152*c.g+.0722*c.b
 func contrast(a: Color,b: Color) -> float:
 	return (maxf(luminance(a),luminance(b))+.05)/(minf(luminance(a),luminance(b))+.05)
-func assert_palette(button: Button,fill: Color,ink: Color,border: Color,width: int,label: String) -> void:
+func assert_palette(button: Button,fill: Color,ink: Color,border: Color,width: int,label: String,interactive_fills: Dictionary={}) -> void:
 	var normal: StyleBoxFlat=button.get_theme_stylebox("normal")
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
 		var style: StyleBoxFlat=button.get_theme_stylebox(mode)
-		check(style.bg_color.is_equal_approx(fill),label+" "+mode+" keeps local fill")
+		check(style.bg_color.is_equal_approx(interactive_fills.get(mode,fill)),label+" "+mode+" keeps local feedback palette")
+		check(contrast(ink,style.bg_color)>=4.5,label+" "+mode+" feedback text remains readable")
 		check(style.border_width_left==width,label+" "+mode+" keeps border width")
 		if width>0:check(style.border_color.is_equal_approx(border),label+" "+mode+" keeps local border")
 		check(style.corner_radius_top_left==normal.corner_radius_top_left,label+" "+mode+" keeps corner shape")
@@ -40,7 +41,9 @@ func run() -> void:
 	for ready: bool in [false,true]:
 		var ring=load("res://scripts/ui/c3_investigation_ring.gd").new();main.add_child(ring)
 		ring.configure([{"label":"照片","ready":ready,"page":"c35_photos"},{"label":"录音","ready":ready,"page":"c35_voice"},{"label":"群聊","ready":ready,"page":"c35_messages"},{"label":"网络","ready":ready,"page":"c35_network"}])
-		for button: Button in ring.buttons:assert_palette(button,Color("d3dfcf") if ready else Color("efe9d8"),Color("1b2328"),Color("3d8168") if ready else Color("1f6d7f"),2,"ring "+str(ready)+" "+button.text)
+		var fill:Color=Color("d3dfcf") if ready else Color("efe9d8")
+		var feedback:Dictionary={"hover":fill.lightened(.06),"pressed":fill.darkened(.12),"hover_pressed":fill.darkened(.12)}
+		for button: Button in ring.buttons:assert_palette(button,fill,Color("1b2328"),Color("3d8168") if ready else Color("1f6d7f"),2,"ring "+str(ready)+" "+button.text,feedback)
 		check(ring.completed==(4 if ready else 0),"style preserves ring completion semantics")
 		ring.queue_free();await frames()
 	var spotlight=load("res://scripts/games/c3_spotlight.gd").new();main.add_child(spotlight);spotlight.set_process(false)
