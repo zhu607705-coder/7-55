@@ -17,8 +17,9 @@ func run():
  if not OS.get_environment("BAG_EARNED_SAVE").is_empty():source=JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment("BAG_EARNED_SAVE"))).state
  for dims:Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1180,812),Vector2i(844,390)]:
   root.size=dims
-  for page:String in ["c35_voice","c35_recovery"]:
+  for page:String in ["c35_voice","c35_recovery","c3_lake"]:
    var s:Dictionary=source.duplicate(true);s.native.page=page;s.ui.inventoryOpen=false
+   if page=="c3_lake":s.chapterThreeInterlude.completed=true
    var before:String=JSON.stringify(s)
    var phone:Control=Control.new();phone.size=Vector2(430,860);var factor:float=minf(1,minf((dims.x-36)/430.0,(dims.y-36)/860.0));phone.scale=Vector2.ONE*factor;phone.position=(Vector2(dims)-phone.size*factor)/2;root.add_child(phone)
    var chrome=Chrome.new();phone.add_child(chrome);chrome.refresh(s);await settle()

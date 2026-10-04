@@ -81,6 +81,12 @@ func promo_pose(s: Dictionary) -> Dictionary:
 	return PromoTimeline.snapshot(maxf(0,narrative_session.elapsed_ms-float(narrative_session.spec.get("timelineStartMs",0))),reduced(s))
 func entries(s: Dictionary) -> Array:
 	var result: Array=[]
+	if scene_id=="qizhen_lake" and s.qizhenLake.active and s.qizhenLake.zone=="dock" and s.qizhenLake.vehicle=="on_foot":
+		# QizhenLakeScene.createDockOutfitProp: original two-frame teacher,
+		# target-local foot offset46, scale.52 and target.y+48 depth. No new solid.
+		for target: Dictionary in worlds.qizhen_lake.interactionTargets:
+			if target.kind=="safety_officer":
+				result.append({"id":str(target.id),"kind":"sprite","asset":"res://assets/rpg/npcs/finale/guard_check_watch_2frame.png","point":Vector2(target.x,target.y+46),"scale":.52,"frameSize":Vector2(96,128),"frame":0 if reduced(s) else int(clock_ms/500)%2,"anchor":Vector2(.5,1),"alpha":1.0 if str(s.native.get("selected_item","")).is_empty() else .3,"depth":target.y+48})
 	if scene_id=="canteen_interior":
 		var c: Dictionary=source.constants
 		var promo_live: Dictionary=promo_pose(s)
@@ -213,10 +219,11 @@ func adjusted_collisions(base: Array,s: Dictionary) -> Array:
 	return out
 func owns_pick_target(target: Dictionary,_state: Dictionary) -> bool:
 	var id: String=str(target.get("id",""))
-	return (scene_id=="campus_bootstrap" and id=="bike") or scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate"])
+	return (scene_id=="qizhen_lake" and id=="qizhen_dock_safety_officer") or (scene_id=="campus_bootstrap" and id=="bike") or scene_id in ["canteen_interior","theater_interior"] and (id.begins_with("initial-") or id.begins_with("theater_program_") or id in ["auntie","canteen-promo-board","theater_ticket_gate"])
 
 func _pick_ids(entry: Dictionary,targets: Array) -> Array:
 	var id: String=str(entry.id)
+	if id=="qizhen_dock_safety_officer": return [id]
 	if id.begins_with("program_") and not id.begins_with("program_flight_"): return ["theater_"+id]
 	if id in ["promo_empty","promo_active","promo_insert","promo_bubbles"]: return ["canteen-promo-board"]
 	if id=="ticket_reader": return ["theater_ticket_gate"]
@@ -247,9 +254,10 @@ func draw_front(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
 	_draw_partition(canvas,context,s,true)
 	doors.draw_front(canvas,context,s)
 func _draw_partition(canvas: CanvasItem,context: Dictionary,s: Dictionary,front: bool) -> void:
-	if scene_id not in ["canteen_interior","theater_interior"]: return
+	if scene_id not in ["canteen_interior","theater_interior","qizhen_lake"]: return
 	var depth: float=context.player.y+(159 if scene_id=="canteen_interior" else 120)
 	for entry: Dictionary in entries(s):
+		if entry.id=="qizhen_dock_safety_officer" and context.get("nearby_id","")==entry.id: entry.scale*=1.08
 		if (float(entry.depth)>depth)==front: _draw_entry(canvas,context,entry)
 func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> void:
 	var z: float=context.zoom; var origin: Vector2=context.origin

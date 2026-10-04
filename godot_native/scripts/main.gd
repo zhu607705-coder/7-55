@@ -706,7 +706,12 @@ func _refresh() -> void:
 		var body := _label(str(view.get("body","")),19)
 		body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		page_body.add_child(body)
+		if int(view.get("body_inset",0))>0:
+			var body_margin:=MarginContainer.new()
+			body_margin.add_theme_constant_override("margin_left",int(view.body_inset))
+			body_margin.add_theme_constant_override("margin_right",int(view.body_inset))
+			page_body.add_child(body_margin);body_margin.add_child(body)
+		else: page_body.add_child(body)
 		for row in view.get("rows",[]):
 			if row is Dictionary:
 				var block := _label(str(row.get("title",""))+"\n"+str(row.get("body","")),17)

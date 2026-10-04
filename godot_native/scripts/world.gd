@@ -569,7 +569,7 @@ func _draw() -> void:
 	if background: draw_texture_rect(background,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),false)
 	draw_rect(Rect2(Vector2.ZERO,size),Color(.03,.15,.26,mode_mix*.3))
 	_draw_floor_route(origin)
-	var layer_context := {"origin":origin,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor}
+	var layer_context := {"origin":origin,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
 	if chapter3_layers!=null: chapter3_layers.draw_back(self,layer_context,State.d)
 	if library_layers!=null: library_layers.draw_back(self,layer_context,State.d)
 	if chapter4_layers != null: chapter4_layers.draw_back(self,layer_context,State.d)
@@ -644,7 +644,7 @@ func _draw() -> void:
 
 func _hud_line() -> String:
 	if not subtitle.is_empty(): return subtitle
-	if not nearby.is_empty(): return ("交互 · " if mobile_exploration else "空格 · ")+str(nearby.get("label",""))
+	if not nearby.is_empty(): return ("交互 · " if mobile_exploration else "空格 · ")+str(nearby.get("hud_prompt",nearby.get("label","")))
 	if kayak: return "点按或上划左桨 / 右桨前进 · 下划后退" if mobile_exploration else "A / D 左右划桨 · S + 划桨后退"
 	return "摇杆移动 · 交互 · 拖动空白处查看" if mobile_exploration else "WASD 移动  /  空格 交互  /  滚轮 缩放"
 

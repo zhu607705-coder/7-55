@@ -33,9 +33,30 @@ func view(page: String, s: Dictionary) -> Dictionary:
 		"c3_lake_cc98": return {"title":prose("chapter3-qizhen-lake.content","locationSearch.cc98.title"),"body":prose("chapter3-qizhen-lake.content","locationSearch.cc98.replies")}
 		"c3_lake_catalog": return {"title":"馆藏检索","body":prose("chapter3-qizhen-lake.content","locationSearch.catalog.query")+"\n"+prose("chapter3-qizhen-lake.content","locationSearch.catalog.fields")}
 		"c3_lake_wechat": return {"title":"朋友","body":prose("chapter3-qizhen-lake.content","locationSearch.wechat")}
-		"c3_lake": return {"title":"启真湖 · "+{"dock":"小码头","open_water":"大湖","channel":"浮排河道","swan_cove":"黑天鹅围栏"}.get(q.zone,""),"body":prose("chapter3-qizhen-lake.content","dock.intro" if q.phase=="dock_outfitting" else "boarding.instruction")+"\n翻船次数：%d" % int(q.capsizeCount),"art":"res://assets/rpg/interiors/qizhen_lake_"+str(q.zone)+".png"}
+		"c3_lake": return {"title":"启真湖 · "+{"dock":"小码头","open_water":"大湖","channel":"浮排河道","swan_cove":"黑天鹅围栏"}.get(q.zone,""),"body":lake_guidance(s)+"\n翻船次数：%d" % int(q.capsizeCount),"body_inset":12,"art":"res://assets/rpg/interiors/qizhen_lake_"+str(q.zone)+".png"}
 		"c3_weather": return {"title":"天气 · 小雨","body":prose("chapter3-qizhen-lake.content","dock.afterRainProof")+"\n吹风机可以对三层云带施加方向控制。"}
 	return {}
+
+func lake_guidance(s: Dictionary) -> String:
+	# The phone is a read-only view of the current journey, not a second tutorial.
+	var q: Dictionary=s.qizhenLake
+	if q.phase=="dock_outfitting": return prose("chapter3-qizhen-lake.content","dock.intro")
+	if q.phase=="boarding_tutorial" and not q.boardingTutorialCompleted: return prose("chapter3-qizhen-lake.content","boarding.instruction")
+	var lines: Array[String]=[objective(s)]
+	if q.vehicle=="on_foot" and q.zone=="dock":
+		lines.append(prose("chapter3-qizhen-lake.content","dock.safetyCleared" if q.rainSafetyCleared else "dock.safetyRainBlock"))
+		lines.append(prose("chapter3-qizhen-lake.content","prompts.board"))
+	elif q.vehicle=="kayak":
+		lines.append(prose("chapter3-qizhen-lake.content","boarding.controls"))
+		lines.append(prose("chapter3-qizhen-lake.content","lake.lightPrompt" if light(s) else "lake.darkPrompt"))
+	if q.observedFishingSpotIds.has("net_frame") and not own(s,"brokenNetFrame") and not q.netCombined and not q.magneticRodCombined:
+		lines.append(net_frame_location())
+	return "\n".join(lines.filter(func(line: String) -> bool: return not line.is_empty()))
+
+func net_frame_location() -> String:
+	# The source moved the real cast into the channel but left its reflection in
+	# open water. Retain both physical targets and explain only the observed link.
+	return "网框倒影已记录。实际钓取点在大湖北侧的浮排河道，浮排下方的水纹处。"
 
 func actions(page: String, s: Dictionary) -> Array:
 	if page in ["c3_journal","c3_journal_camera"]: return journal.actions(page,s)
@@ -225,11 +246,16 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 	if selected.is_empty() or selected.zone!=q.zone or selected.get("vehicle",q.vehicle)!=q.vehicle or not near_source(s,"qizhen_lake",selected): return locked("先走近一点再操作。")
 	var kind: String=selected.kind
 	if kind=="reflection":
+		if selected.value=="net_frame":
+			if light(s):
+				return response(net_frame_location() if q.observedFishingSpotIds.has("net_frame") else "这里是网框的倒影。切换深色观察，记录它的位置。")
+			unique(q.observedFishingSpotIds,selected.value)
+			return response(net_frame_location())
 		if light(s): return response(prose("chapter3-qizhen-lake.content","reflection.lightWater"))
 		unique(q.observedFishingSpotIds,selected.value)
 		if selected.value=="paper": q.reflectionLocationObserved=true
 		return response(prose("chapter3-qizhen-lake.content","reflection.correct"))
-	if not light(s): return locked(prose("chapter3-qizhen-lake.content","lake.darkPrompt"))
+	if not light(s): return locked(prose("chapter3-qizhen-lake.content","prompts.needLight" if kind in ["board","outfit"] else "lake.darkPrompt"))
 	match kind:
 		"outfit":
 			if q.phase!="dock_outfitting": return locked()
@@ -254,7 +280,7 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 			q.vehicle="kayak"
 			q.safeSpawnId="dock_kayak"
 			if not q.boardingTutorialCompleted: q.boardingStrokeCount=0; q.boardingLastSide=null
-			return _fishing_audio(response(prose("chapter3-qizhen-lake.content","boarding.instruction")),[{"cueId":"qizhen_kayak_boarded"}])
+			return _fishing_audio(response(prose("chapter3-qizhen-lake.content","boarding.controls" if q.boardingTutorialCompleted else "boarding.instruction")),[{"cueId":"qizhen_kayak_boarded"}])
 		"zone_portal":
 			if not portal_visible(q,selected) or not q.boardingTutorialCompleted: return locked()
 			return enter_zone(s,str(selected.targetZone))
@@ -526,6 +552,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 		if entry.id=="qizhen_use_item_1" and q.lockerOpened: continue
 		if entry.id=="qizhen_open_workbench" and not can_assemble(s): continue
 		var result: Dictionary=from_source(entry,"c3_lake_target:"+str(entry.id))
+		if entry.kind=="board": result.hud_prompt=prose("chapter3-qizhen-lake.content","prompts.board" if light(s) else "prompts.needLight")
 		var item: String=str(entry.get("acceptedItem",""))
 		if entry.kind=="swan" and q.phase=="swan_exchange": item="smallCarp"
 		if entry.kind=="feed_tin": item="improvisedDipNet"

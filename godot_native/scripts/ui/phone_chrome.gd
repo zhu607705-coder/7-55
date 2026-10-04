@@ -499,7 +499,8 @@ func set_inventory_top(top: float) -> void:
 	_layout_inventory_anchor()
 
 func _reading_inventory_anchor() -> bool:
-	return not bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and str(state.get("native",{}).get("page","")) in ["c35_voice","c35_recovery"]
+	var page: String=str(state.get("native",{}).get("page",""))
+	return page=="c3_lake" or (not bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and page in ["c35_voice","c35_recovery"])
 
 func _layout_inventory_anchor() -> void:
 	if not _built or not is_instance_valid(inventory_handle): return
