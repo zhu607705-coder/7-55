@@ -12,6 +12,7 @@ var _zone: String
 var _attempt: int
 var _model: RefCounted
 var _previous: Vector2
+var _motion_remainder: float=0
 var status: String="running"
 var elapsed: float=0
 var start_x: float=0
@@ -42,6 +43,7 @@ func _init(s: Dictionary={},host: Node=null) -> void:
 	if host==null: status="cancelled"; return
 	_state=s; _world=weakref(host); _zone=str(s.qizhenLake.zone); _attempt=int(s.qizhenLake.chaseAttempts)
 	_model=host.kayak; _previous=host.player
+	_motion_remainder=float(_model.remainder)
 	reset_chase(host.player)
 
 static func eligible_host(s: Dictionary,host: Node) -> bool:
@@ -96,6 +98,16 @@ func begin_recovery(reason: String) -> void:
 func acknowledge_attempt(s: Dictionary) -> void:
 	_attempt=int(s.qizhenLake.chaseAttempts)
 
+func _consume_motion_time(delta: float) -> float:
+	# The 120 Hz model can consume a fraction carried from the previous frame.
+	# Charge only time actually integrated, never its still-pending remainder.
+	var remainder: float=float(_model.remainder)
+	if not is_finite(delta) or not is_finite(_motion_remainder) or not is_finite(remainder) or _motion_remainder<0 or remainder<0: return -1
+	var consumed: float=clampf(delta,0,5)+_motion_remainder-remainder
+	if consumed < -0.0000001: return -1
+	_motion_remainder=remainder
+	return maxf(0,consumed)
+
 func tick(s: Dictionary,host: Node,delta: float) -> Dictionary:
 	if not valid(s,host): return {}
 	if status=="recovering":
@@ -109,6 +121,7 @@ func tick(s: Dictionary,host: Node,delta: float) -> Dictionary:
 			_model.speed=0; _model.roll=0; _model.same_side_streak=0
 			_model.last_side=""; _model.last_direction=""; _model.last_stroke=-10; _model.status="running"
 			_previous=host.player; status="running"; reset_chase(host.player)
+			_motion_remainder=float(_model.remainder)
 			return {"restarted":s.qizhenLake.phase=="swan_chase"}
 		return {}
 	if status!="running": return {}
@@ -116,8 +129,9 @@ func tick(s: Dictionary,host: Node,delta: float) -> Dictionary:
 		begin_recovery("same_side_strokes")
 		return {"failure":"same_side_strokes"}
 	var point: Vector2=host.player
+	var simulated_seconds: float=_consume_motion_time(delta)
 	# A discontinuous teleport or out-of-map pose cannot mint an escape receipt.
-	if not point.is_finite() or not host.can_stand(point) or point.distance_to(_model.position)>0.01 or point.distance_to(_previous)>340*clampf(delta,0,5)+2:
+	if simulated_seconds<0 or not point.is_finite() or not host.can_stand(point) or point.distance_to(_model.position)>0.01 or point.distance_to(_previous)>340*simulated_seconds+2:
 		cancel()
 		return {"invalid":true}
 	_previous=point
