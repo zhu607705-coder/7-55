@@ -39,6 +39,7 @@ var fishing_controls_enabled := false
 var fishing_input_layout_pending := false
 var fishing_pointer := ""
 var fishing_direction := ""
+var fishing_pointer_target := 0.0
 var native_chase_view: Control
 var chase_presentation_error: String=""
 var toolbar_touches: Dictionary={}
@@ -351,7 +352,9 @@ func _process(delta: float) -> void:
 			finished.emit(result)
 			return
 	if running and not paused and not sent:
+		if mode=="rhythm": _fishing_follow_target()
 		model.update(minf(delta,0.25 if mode=="chase" else 0.1))
+		if mode=="rhythm": _fishing_follow_target()
 		_audio_update()
 		_check_terminal()
 	if mode=="chase" and is_instance_valid(native_chase_view):
@@ -951,15 +954,22 @@ func _layout_fishing_activity() -> void:
 
 func _clear_fishing_controls() -> void:
 	if model is Fishing and not model.controls.is_empty(): model.neutral()
-	fishing_pointer="";fishing_direction=""
+	fishing_pointer="";fishing_direction="";fishing_pointer_target=0.0
 	action_sources.clear();touch_sources.clear();toolbar_touches.clear()
 	for button: Button in _activity_toolbar(): _set_fishing_button_held(button,false)
 	_sync_fishing_button_states()
 
 func _fishing_follow(point: Vector2) -> void:
 	if fishing_pointer.is_empty() or not running or paused or sent: return
-	var target: float=clampf((point.x-fishing_view.size.x*.5)/(fishing_view.size.x*.29),-1,1)
-	var direction: String="" if absf(target-model.line_x)<.08 else ("right" if target>model.line_x else "left")
+	fishing_pointer_target=clampf((point.x-fishing_view.size.x*.5)/(fishing_view.size.x*.29),-1,1)
+	_fishing_follow_target()
+
+func _fishing_follow_target() -> void:
+	if fishing_pointer.is_empty() or not running or paused or sent: return
+	# A held pointer is a destination, not a latched direction. Re-evaluate
+	# against each ordinary model step, even when no new motion event arrives.
+	# Keep the original axis input, speed, deadband and replay authority.
+	var direction: String="" if absf(fishing_pointer_target-model.line_x)<.08 else ("right" if fishing_pointer_target>model.line_x else "left")
 	if direction==fishing_direction: return
 	if not fishing_direction.is_empty(): release_action(fishing_direction,"field_direction")
 	fishing_direction=direction
@@ -969,6 +979,7 @@ func _fishing_release_pointer() -> void:
 	if fishing_pointer.is_empty(): return
 	var source: String=fishing_pointer
 	fishing_pointer=""
+	fishing_pointer_target=0.0
 	if not fishing_direction.is_empty(): release_action(fishing_direction,"field_direction")
 	fishing_direction=""
 	release_action("hook",source)
