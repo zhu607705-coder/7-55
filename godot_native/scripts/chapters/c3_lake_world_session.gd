@@ -3,6 +3,7 @@ extends RefCounted
 ## Never accepts caller-supplied distances, stroke arrays, or completion dictionaries.
 const Pressure=preload("res://scripts/games/qizhen_swan_pressure.gd")
 const SwanVisual=preload("res://scripts/ui/qizhen_swan_visual.gd")
+const StatusView=preload("res://scripts/ui/kayak_status_view.gd")
 const FINISH_X: float=190
 const CATCH_DISTANCE: float=104
 const GRACE: float=4
@@ -216,21 +217,21 @@ func draw_status(canvas: CanvasItem,host: Node,reduced: bool) -> void:
 	var tilt: int=roundi(minf(1,absf(_model.roll))*100)
 	var critical: bool=not pressure_view.is_empty() and pressure_view.dangerBand=="critical"
 	var travel_mode: String=str(boarding.reverseMode if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN) else (boarding.reverseCoast if _model.speed < -0.4 else boarding.forwardMode))
-	var text: String="%s · %s · %s %d%%%s" % [boarding.controls,travel_mode,boarding.tilt,tilt," · "+str(boarding.capsizeWarning) if tilt>=70 else ""]
-	var color: Color=Color("ffaaa0") if tilt>=70 or critical else Color("fff2b6")
-	canvas.draw_string_outline(host.font,Vector2(18,124),text,HORIZONTAL_ALIGNMENT_LEFT,-1,12,4,Color("07111c"))
-	canvas.draw_string(host.font,Vector2(18,124),text,HORIZONTAL_ALIGNMENT_LEFT,-1,12,color)
-	if _state.qizhenLake.phase!="swan_chase" or pressure_view.is_empty(): return
-	var chase: Dictionary=_content.chase
-	var alpha: float=0.84+sin(Time.get_ticks_msec()/82.0)*0.12 if pressure_state.phase=="charge_warning" and not reduced else 1.0
-	canvas.draw_rect(Rect2(18,142,372,48),Color(7/255.0,23/255.0,35/255.0,0.9*alpha))
-	canvas.draw_rect(Rect2(18,142,372,48),Color(185/255.0,229/255.0,239/255.0,0.72*alpha),false,2)
-	var label: String="%s · %s · %s %d" % [chase.phaseLabels[pressure_state.phase],chase.dangerLabels[pressure_view.dangerBand],chase.gapLabel,maxi(0,roundi(actual_gap))]
-	var progress: float=clampf((start_x-float(host.player.x))/maxf(1,start_x-FINISH_X),0,1)
-	var progress_text: String="%s %d%%" % [chase.segmentLabels[pressure_state.segment],roundi(progress*100)]
-	canvas.draw_string(host.font,Vector2(27,159),label,HORIZONTAL_ALIGNMENT_LEFT,-1,11,Color(234/255.0,252/255.0,1,alpha))
-	canvas.draw_string(host.font,Vector2(27,159),progress_text,HORIZONTAL_ALIGNMENT_RIGHT,354,11,Color(1,242/255.0,182/255.0,alpha))
-	canvas.draw_rect(Rect2(27,172.5,354,7),Color(33/255.0,55/255.0,68/255.0,0.94*alpha))
-	var risk: Color=Color("ff665a") if critical else (Color("ffc857") if pressure_view.dangerBand=="pressured" else Color("77d6e8"))
-	risk.a=alpha
-	canvas.draw_rect(Rect2(27,172.5,354*maxf(0.035,pressure_view.riskRatio),7),risk)
+	# Controls remain in the existing bottom hint and phone. This panel only
+	# carries changing boat/pursuit information, measured in the visible viewport.
+	var text: String="%s · %s %d%%%s" % [travel_mode,boarding.tilt,tilt," · "+str(boarding.capsizeWarning) if tilt>=70 else ""]
+	var label: String=""
+	var progress_text: String=""
+	var alpha: float=1
+	var risk: float=-1
+	var pressured: bool=false
+	if _state.qizhenLake.phase=="swan_chase" and not pressure_view.is_empty():
+		var chase: Dictionary=_content.chase
+		alpha=0.84+sin(Time.get_ticks_msec()/82.0)*0.12 if pressure_state.phase=="charge_warning" and not reduced else 1.0
+		label="%s · %s · %s %d" % [chase.phaseLabels[pressure_state.phase],chase.dangerLabels[pressure_view.dangerBand],chase.gapLabel,maxi(0,roundi(actual_gap))]
+		var progress: float=clampf((start_x-float(host.player.x))/maxf(1,start_x-FINISH_X),0,1)
+		progress_text="%s %d%%" % [chase.segmentLabels[pressure_state.segment],roundi(progress*100)]
+		risk=float(pressure_view.riskRatio)
+		pressured=pressure_view.dangerBand=="pressured"
+	var metrics: Dictionary=StatusView.layout(host.font,host.size,host.hud_display_scale(),float(host.hud_metrics("").header_height),text,label,progress_text)
+	StatusView.draw(canvas,host.font,metrics,tilt>=70 or critical,alpha,risk,critical,pressured)
