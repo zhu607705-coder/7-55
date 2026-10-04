@@ -154,6 +154,10 @@ func test_native_world_integration() -> void:
 	var right_of_initial:=Vector2(635,170)-PlayerMetrics.FOOT_CENTER_OFFSET
 	check(world.can_stand(right_of_initial),"live collision initially permits point outside initial cabinet")
 	state.act("lib_shelf"); await process_frame; await process_frame
+	check(shell.phone.visible and not shell.world_frame.visible,"shelf opens its controller-owned rule document")
+	check(not shell.phone_world_return.disabled,"suspended world animation cannot lock its return")
+	shell.phone_world_return.pressed.emit(); await process_frame; await process_frame
+	check(shell.world_frame.visible and not shell.phone.visible,"explicit return reveals the retained shelf animation")
 	check(world.library_layers.blocks_movement() and world._scene_presentation_blocks(),"successful controller shelf action locks native movement")
 	world.touch_axis=Vector2.RIGHT; var prior: Vector2=world.player
 	for i in range(200): world._process(0.01)

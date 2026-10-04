@@ -15,6 +15,7 @@ func click_at(point: Vector2) -> void:
 	await process_frame
 	await process_frame
 func run() -> void:
+	root.size=Vector2i(1440,900)
 	var state: Node=root.get_node("State")
 	state.developer_mode=true; state.d=state.initial(); state.d.native.page="wechat"
 	var main=load("res://scenes/main.tscn").instantiate(); root.add_child(main)

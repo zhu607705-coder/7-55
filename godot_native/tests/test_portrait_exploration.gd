@@ -78,10 +78,9 @@ func fixture(dimensions: Vector2i) -> void:
 	await click(shell.find_child("Cc98GamepadReturn",true,false));await frames(6)
 	shell.world.set_process(false)
 	check(state.d.native.scene=="dorm_hub" and shell.world_frame.visible,"actual return opens dorm world")
-	if dimensions.x<1100:
-		check(shell.inventory_handle.visible and not shell.inventory_dock.visible,"compact world offers collapsed bag")
-		check(is_equal_approx(shell.inventory_handle.get_global_rect().size.y,44),"bag handle retains exactly44px physical height")
-		await click(shell.inventory_handle)
+	check(shell.inventory_handle.visible and not shell.inventory_dock.visible,"world offers collapsed bag")
+	check(is_equal_approx(shell.inventory_handle.get_global_rect().size.y,44),"bag handle retains exactly44px physical height")
+	await click(shell.inventory_handle)
 	if dimensions.x<1100: check(not shell.inventory_handle.get_global_rect().intersects(shell.inventory_dock.get_global_rect()),"bag handle never overlaps the item row after orientation")
 	check(shell.inventory_dock.visible and not slot("gamepad").disabled,"world owns a visible enabled item source")
 	check(is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"uniform world display scale retained")
@@ -135,7 +134,7 @@ func run() -> void:
 		shell._close_modal();await frames();await create_timer(.26).timeout
 		item=await reveal("gamepad");point=item.get_global_rect().get_center();scroll=shell.inventory_scroll.scroll_horizontal
 		touch(point,true);finger(point+Vector2(55,0),Vector2(55,0));touch(point+Vector2(55,0),false);await frames()
-		check(shell.inventory_scroll.scroll_horizontal<scroll and not root.gui_is_dragging(),"fast horizontal finger scrolls without item drag")
+		check((shell.inventory_scroll.scroll_horizontal<scroll or (scroll==0 and shell.inventory_scroll.scroll_horizontal==0)) and not root.gui_is_dragging(),"fast horizontal finger scrolls or stays at the leading edge without item drag")
 		check(not is_instance_valid(shell.modal),"swipe does not inspect")
 		item=await reveal("gamepad");point=item.get_global_rect().get_center()
 		touch(point,true);await create_timer(.24).timeout;finger(point+Vector2(-18,0),Vector2(-18,0));await frames()

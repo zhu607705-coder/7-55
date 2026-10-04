@@ -11,7 +11,7 @@ This is an independent, native Godot 4.6 migration of the existing game. It uses
 3. Wait for the one-time asset import, then press F6/F5 or run `godot --path godot_native`.
 4. The portable source package includes the native Ogg/Theora movies. For a fresh Git checkout, run `bash godot_native/tools/convert_media.sh` with ffmpeg installed. Both original MP4s remain unchanged.
 
-Controls: WASD/arrows move; Space interacts; mouse selects phone controls; scroll wheel zooms the world; right-drag pans; lake kayak uses alternating A/D strokes (hold S to reverse); Ctrl+Shift+D opens isolated DEV checkpoints. Preview mode does not overwrite formal saves. Phone geometry is 430×860 and RPG geometry is 960×540, uniformly scaled.
+Controls: P opens the phone from the world; Esc returns after child dialogs are closed; WASD/arrows move; Space interacts; mouse selects phone controls; scroll wheel zooms the world; right-drag pans; lake kayak uses alternating A/D strokes (hold S to reverse); Ctrl+Shift+D opens isolated DEV checkpoints. Preview mode does not overwrite formal saves. Phone geometry is 430×860. Desktop exploration fits the original 960×540 world to the available area; compact exploration adapts to portrait/landscape. Phone and world are separate visible modes. See `docs/NATIVE_CHAPTER4_ENTRY_FLOW.md`.
 
 ## Validation
 
@@ -20,7 +20,7 @@ Controls: WASD/arrows move; Space interacts; mouse selects phone controls; scrol
 ## Current intentional limitations
 
 - Browser SaveStore versions2–35 import through the original source-generated normalizer. Differential verification and actual import/reload/Chapter2 continuation are covered by native tests. Invalid native domains recover from the validated previous snapshot; transport/stair/closure proof remains required. See `docs/SAVE_COMPATIBILITY.md`.
-- Distinct native phone reconstruction, source-backed audio, two native movie decoders, mobile/split-screen input and source collision layers are implemented and under integrated acceptance. Full manual chapter traversals and browser pixel-diff remain unverified; the source browser preview is blocked by the environment extension.
+- Distinct native phone reconstruction, source-backed audio, two native movie decoders, responsive phone/world input and source collision layers are implemented and under integrated acceptance. Full manual chapter traversals and browser pixel-diff remain unverified; the source browser preview is blocked by the environment extension.
 - DEV contains117 exact source checkpoint snapshots in an isolated session, plus clearly separated raw scene previews. Checkpoints are testing tools and never overwrite formal saves.
 - Concrete presentation work still open is listed in `docs/REMAINING_PRESENTATION.md`: remaining phone VFX, some world/device near-views, Library ambience and selected Chapter4 effects. No claim of feature parity is made until the independent matrix is checked against executable tests and real interaction.
 

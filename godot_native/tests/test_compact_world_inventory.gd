@@ -78,10 +78,9 @@ func fixture(dimensions: Vector2i) -> void:
 	await click(shell.find_child("Cc98GamepadReturn",true,false));await frames(6)
 	shell.world.set_process(false)
 	check(state.d.native.scene=="dorm_hub" and shell.world_frame.visible,"actual return opens dorm world")
-	if dimensions.x<1100:
-		check(shell.inventory_handle.visible and not shell.inventory_dock.visible,"compact world offers collapsed bag")
-		check(shell.inventory_handle.get_global_rect().size.y>=44,"bag handle retains44px physical height")
-		await click(shell.inventory_handle)
+	check(shell.inventory_handle.visible and not shell.inventory_dock.visible,"world offers collapsed bag")
+	check(shell.inventory_handle.get_global_rect().size.y>=44,"bag handle retains44px physical height")
+	await click(shell.inventory_handle)
 	check(shell.inventory_dock.visible and not slot("gamepad").disabled,"world owns a visible enabled item source")
 	# Compact exploration fills its physical frame; desktop retains 960x540.
 	var expected_viewport:Vector2i=Vector2i(shell.world_frame.size-Vector2(4,4)) if dimensions.x<1100 else Vector2i(960,540)
@@ -112,7 +111,7 @@ func run() -> void:
 		shell._close_modal();await frames();await create_timer(.26).timeout
 		item=await reveal("gamepad");point=item.get_global_rect().get_center();scroll=shell.inventory_scroll.scroll_horizontal
 		touch(point,true);finger(point+Vector2(55,0),Vector2(55,0));touch(point+Vector2(55,0),false);await frames()
-		check(shell.inventory_scroll.scroll_horizontal<scroll and not root.gui_is_dragging(),"fast horizontal finger scrolls without item drag")
+		check((shell.inventory_scroll.scroll_horizontal<scroll or (scroll==0 and shell.inventory_scroll.scroll_horizontal==0)) and not root.gui_is_dragging(),"fast horizontal finger scrolls or stays at the leading edge without item drag")
 		check(not is_instance_valid(shell.modal),"swipe does not inspect")
 		item=await reveal("gamepad");point=item.get_global_rect().get_center()
 		touch(point,true)

@@ -4,6 +4,7 @@ var accepted:=false
 func run() -> void:
 	state=root.get_node("State");state.developer_mode=true
 	imported=state.initial();imported.native.chapter=3;imported.native.page="phone_home";imported.native.scene="canteen_interior"
+	imported.runtimeMode="rpg";imported.rpgScene="canteen_interior"
 	imported.canteenHunt.active=true;imported.canteenHunt.phase="exit_blocking"
 	state.action_completed.connect(func(id,_before,after,_result):
 		if id=="c3_defense_result": accepted=after.canteenHunt.phase=="chase_ready"

@@ -17,14 +17,40 @@ var clock_started: bool=false
 var clock_dragging: bool=false
 var clock_angle: float=234
 var clock_release_angle: float=234
+var inspection_caption:Label
+var caption_layout_pending:=false
 func setup(value: Dictionary) -> void:
 	config=value; kind=config.get("kind",""); read_state=config.get("read_state",Callable()); project_position=config.get("project_position",Callable())
 	mouse_filter=Control.MOUSE_FILTER_IGNORE; set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layout=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter4-three-floor-maze.layout.json"))
 	if not read_state.is_valid() or not project_position.is_valid(): cancel(); return
 	Layers.presentation={"kind":kind,"session":config.get("session",""),"elapsedMs":0}
+	if kind=="hall_clock_inspection":
+		inspection_caption=Label.new();inspection_caption.text=str(config.get("body",""));inspection_caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		inspection_caption.add_theme_font_override("font",source_font);inspection_caption.add_theme_font_size_override("font_size",18);inspection_caption.add_theme_color_override("font_color",Color("f7f1dc"));inspection_caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(inspection_caption)
+		resized.connect(_schedule_caption_layout);inspection_caption.minimum_size_changed.connect(_schedule_caption_layout);_schedule_caption_layout()
 	if kind=="clock_drag":
 		mouse_filter=Control.MOUSE_FILTER_STOP; clock_angle=float(layout.finalClockRuntime.initialAngleDegrees); Layers.presentation.angle=clock_angle
+func uses_responsive_exploration() -> bool:
+	# A screen-space paper close-up can use the existing tall exploration
+	# viewport. Physical animations/elevators keep their source camera contract.
+	return kind in ["paper_pickup","hall_clock_inspection"]
+
+func _schedule_caption_layout() -> void:
+	if caption_layout_pending:return
+	caption_layout_pending=true;_layout_caption.call_deferred()
+func _layout_caption() -> void:
+	caption_layout_pending=false
+	if not is_instance_valid(inspection_caption):return
+	inspection_caption.size=Vector2(maxf(1,size.x-56),0)
+	inspection_caption.position=Vector2(28,maxf(16,size.y-inspection_caption.get_minimum_size().y-24))
+	queue_redraw()
+
+func paper_layout() -> Dictionary:
+	var portrait:=size.y>size.x
+	var factor:=minf((size.x-28)/360.0,(size.y-240)/362.0) if portrait else minf(size.x/960,size.y/540)
+	return {"portrait":portrait,"scale":maxf(.1,factor),"origin":Vector2(size.x/2,size.y*.57) if portrait else size/2}
+
 func _process(delta: float) -> void:
 	if reported: return
 	var state: Dictionary=read_state.call(); var c: Dictionary=state.get("chapter4",{})
@@ -63,8 +89,7 @@ func _draw() -> void:
 		"elevator_ride": _elevator()
 		"clock_drag": _clock_theft()
 		"hall_clock_inspection":
-			draw_rect(Rect2(20,size.y-80,size.x-40,62),Color("07111d",0.9))
-			draw_multiline_string(source_font,Vector2(36,size.y-57),str(config.get("body","")),HORIZONTAL_ALIGNMENT_LEFT,size.x-72,16,-1,Color("f7f1dc"))
+			if is_instance_valid(inspection_caption):draw_rect(inspection_caption.get_rect().grow(12),Color("07111d",0.94))
 		# Bakery and projection remain depth-composited by Chapter4WorldLayers.
 func _paper_flight() -> void:
 	var bounds: Rect2
@@ -111,19 +136,33 @@ func _text(p: Vector2,value: String,size_value: int,color: Color) -> void:
 func _paper_pickup() -> void:
 	# Original seven-second closeup is native vector artwork, including its exact text/timeline.
 	var t: float=elapsed_ms; var fade: float=1-clampf((t-5500)/550,0,1); var ink: Color=Color("26332f")
-	draw_set_transform(size/2,0,Vector2.ONE*minf(size.x/960,size.y/540))
-	draw_rect(Rect2(-480,-270,960,540),Color(0.055,0.09,0.09,0.86*clampf(t/350,0,1)*fade))
-	if fade>0:
-		draw_line(Vector2(-438,-188),Vector2(438,-188),Color(0.84,0.78,0.65,0.28*fade),1); draw_line(Vector2(-438,206),Vector2(438,206),Color(0.84,0.78,0.65,0.28*fade),1)
-		_text(Vector2(-350,-203),"一张迟到的记录",14,Color("c9c2af",fade)); _text(Vector2(370,-203),"第四章 / 7:55",12,Color("9aab9f",fade))
-		var room_alpha: float=clampf((t-900)/600,0,1)*fade
-		_text(Vector2(-286,-87),"此刻 · 教学楼",16,Color("b0bcae",room_alpha)); _text(Vector2(-286,-20),"22:45",48,Color("ead8a9",room_alpha)); draw_line(Vector2(-336,10),Vector2(-236,10),Color(0.72,0.73,0.58,room_alpha*0.5),1); _text(Vector2(-286,48),"夜还没有结束",14,Color("9aab9f",room_alpha))
-		_text(Vector2(0,232),"签到记录已收好",14,Color("ddcfad",clampf((t-3100)/400,0,1)*fade))
+	var metrics:=paper_layout(); var portrait:bool=metrics.portrait
+	if portrait:
+		draw_rect(Rect2(Vector2.ZERO,size),Color(0.055,0.09,0.09,0.86*clampf(t/350,0,1)*fade))
+		if fade>0:
+			_text(Vector2(size.x/2,28),"一张迟到的记录",18,Color("c9c2af",fade))
+			_text(Vector2(size.x/2,53),"第四章 / 7:55",16,Color("9aab9f",fade))
+			var room_alpha:float=clampf((t-900)/600,0,1)*fade
+			_text(Vector2(size.x/2,95),"此刻 · 教学楼",18,Color("b0bcae",room_alpha))
+			_text(Vector2(size.x/2,147),"22:45",42,Color("ead8a9",room_alpha))
+			_text(Vector2(size.x/2,174),"夜还没有结束",16,Color("9aab9f",room_alpha))
+			_text(Vector2(size.x/2,size.y-26),"签到记录已收好",18,Color("ddcfad",clampf((t-3100)/400,0,1)*fade))
+	else:
+		draw_set_transform(size/2,0,Vector2.ONE*minf(size.x/960,size.y/540))
+		draw_rect(Rect2(-480,-270,960,540),Color(0.055,0.09,0.09,0.86*clampf(t/350,0,1)*fade))
+		if fade>0:
+			draw_line(Vector2(-438,-188),Vector2(438,-188),Color(0.84,0.78,0.65,0.28*fade),1); draw_line(Vector2(-438,206),Vector2(438,206),Color(0.84,0.78,0.65,0.28*fade),1)
+			_text(Vector2(-350,-203),"一张迟到的记录",14,Color("c9c2af",fade)); _text(Vector2(370,-203),"第四章 / 7:55",12,Color("9aab9f",fade))
+			var room_alpha: float=clampf((t-900)/600,0,1)*fade
+			_text(Vector2(-286,-87),"此刻 · 教学楼",16,Color("b0bcae",room_alpha)); _text(Vector2(-286,-20),"22:45",48,Color("ead8a9",room_alpha)); draw_line(Vector2(-336,10),Vector2(-236,10),Color(0.72,0.73,0.58,room_alpha*0.5),1); _text(Vector2(-286,48),"夜还没有结束",14,Color("9aab9f",room_alpha))
+			_text(Vector2(0,232),"签到记录已收好",14,Color("ddcfad",clampf((t-3100)/400,0,1)*fade))
 	var enter: float=1-pow(1-clampf(t/850,0,1),3); var leave: float=pow(clampf((t-5200)/600,0,1),3); var pos: Vector2=Vector2(70,lerpf(320,-3,enter)).lerp(Vector2(305,242),leave); var rotation: float=lerpf(lerpf(-12,3,enter),-6,leave); var scale_value: float=lerpf(1,0.26,leave); var alpha: float=enter*(1-leave)
 	var shake: float=clampf((t-2820)/90,0,2)
 	if shake>0 and shake<2: pos+=Vector2(3,4)*(shake if shake<1 else 2-shake); rotation-=shake if shake<1 else 2-shake
-	var outer_scale: float=minf(size.x/960,size.y/540)
-	draw_set_transform(size/2+pos*outer_scale,deg_to_rad(rotation),Vector2.ONE*scale_value*outer_scale)
+	var outer_scale: float=metrics.scale
+	var origin:Vector2=metrics.origin
+	if portrait:pos=Vector2(0,lerpf(size.y*.7,0,enter)).lerp(Vector2(size.x*.35,size.y*.4),leave)
+	draw_set_transform(origin+pos*outer_scale,deg_to_rad(rotation),Vector2.ONE*scale_value*outer_scale)
 	draw_rect(Rect2(-145,-169,326,353),Color(0.008,0.035,0.035,0.48*alpha))
 	var polygon: PackedVector2Array=[Vector2(-164,-181),Vector2(135,-181),Vector2(164,-151),Vector2(164,169)]
 	for x in range(164,-164,-16): polygon.append(Vector2(x-8,175)); polygon.append(Vector2(maxi(-164,x-16),169))
@@ -134,9 +173,13 @@ func _paper_pickup() -> void:
 	for n in range(31): draw_rect(Rect2(-106+n*7,133,4 if n%4==0 else 2,15+n%3*3),Color(ink,(0.6 if n%3==0 else 0.28)*alpha))
 	for row in [[-133,"签 到 记 录",26,"26332f"],[-98,"已找回的纸条",13,"6a7160"],[-42,"手机停留在",14,"77745e"],[11,"07:55:23",42,"26332f"],[94,"纸条回来了，时间没有。",16,"26332f"]]: _text(Vector2(0,row[0]),row[1],row[2],Color(row[3],alpha))
 	var stamp: float=pow(clampf((t-2600)/220,0,1),3); var stamp_scale: float=lerpf(1.65,1,stamp)
-	var transform: Transform2D=Transform2D(deg_to_rad(rotation),size/2+pos*outer_scale).scaled_local(Vector2.ONE*scale_value*outer_scale)*Transform2D(deg_to_rad(-9),Vector2(13,63)).scaled_local(Vector2.ONE*stamp_scale)
+	var transform: Transform2D=Transform2D(deg_to_rad(rotation),origin+pos*outer_scale).scaled_local(Vector2.ONE*scale_value*outer_scale)*Transform2D(deg_to_rad(-9),Vector2(13,63)).scaled_local(Vector2.ONE*stamp_scale)
 	draw_set_transform_matrix(transform); draw_rect(Rect2(-102,-25,204,50),Color("a43f32",0.94*stamp*alpha),false,3); draw_rect(Rect2(-96,-19,192,38),Color("a43f32",0.8*stamp*alpha),false,1); _text(Vector2(0,9),"时间不符",26,Color("a43f32",stamp*alpha)); draw_set_transform(Vector2.ZERO)
-	if t>=5600: _text(Vector2(size.x/2,size.y-35),"记录回来了，你没有回到记录发生的时候。",18,Color("ddcfad"))
+	if t>=5600:
+		if portrait:
+			_text(Vector2(size.x/2,size.y-60),"记录回来了，",18,Color("ddcfad"))
+			_text(Vector2(size.x/2,size.y-30),"你没有回到记录发生的时候。",18,Color("ddcfad"))
+		else: _text(Vector2(size.x/2,size.y-35),"记录回来了，你没有回到记录发生的时候。",18,Color("ddcfad"))
 
 func _clock_endpoint(angle_value: float) -> Vector2:
 	return (Room.point(layout.finalClockRuntime.clockCenter)+Vector2.from_angle(deg_to_rad(angle_value))*float(layout.finalClockRuntime.minuteHandRadius)).round()

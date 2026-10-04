@@ -26,6 +26,7 @@ func run() -> void:
 		imported=source.state.duplicate(true)
 	else:
 		imported=state.initial();imported.native.chapter=3;imported.native.page="phone_home";imported.native.scene="canteen_interior"
+		imported.runtimeMode="rpg";imported.rpgScene="canteen_interior"
 		imported.canteenHunt.active=true;imported.canteenHunt.phase="exit_blocking"
 	defense_fixture()
 	state.action_completed.connect(func(id,_before,_after,_result):
@@ -61,13 +62,13 @@ func run() -> void:
 	count=starts;state.d.canteenHunt.phase="pickup_search";shell._show_world_mobile();await frames()
 	check(starts==count and not is_instance_valid(shell.active_game),"earlier phase cannot enter defense")
 	# A desktop journal promises Return to scene even after a portrait resize.
-	root.size=Vector2i(1440,900);shell.size=Vector2(1440,900);shell.mobile_world=false;shell._layout();await frames()
+	root.size=Vector2i(1440,900);shell.size=Vector2(1440,900);shell.mobile_world=true;shell._layout();await frames()
 	var story_before:=JSON.stringify(state.d)
 	shell._show_journal();await frames()
 	back=shell.find_child("JournalResume",true,false)
 	check(back!=null and back.text=="返回现场","desktop Tasks promises Return to scene")
 	root.size=Vector2i(430,860);shell.size=Vector2(430,860);shell._layout();await frames()
-	check(is_instance_valid(shell.modal) and not shell.world_frame.visible,"portrait resize keeps the same journal over phone")
+	check(is_instance_valid(shell.modal) and shell.world_frame.visible,"portrait resize keeps the same journal over retained world")
 	if back!=null:await click(back)
 	check(not is_instance_valid(shell.modal) and shell.mobile_world and shell.world_frame.visible and not shell.phone.visible,"actual Return restores original world destination after orientation")
 	check(starts==count and not is_instance_valid(shell.active_game) and JSON.stringify(state.d)==story_before,"ordinary pickup Return cannot admit defense or alter story")

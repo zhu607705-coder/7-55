@@ -109,7 +109,7 @@ func run() -> void:
 			check_readability(panel)
 			check(panel.session.button_order==order and panel.model.layers.size()==1,"resize preserves shuffle and partial pour")
 			root.size=Vector2i(1280,720);shell.size=Vector2(1280,720);shell._layout();await frames()
-			check(not panel.compact_layout and panel.size==Vector2(960,540),"resize back to split restores original source geometry")
+			check(not panel.compact_layout and panel.size.is_equal_approx(Vector2(960,540)),"resize back to desktop restores original source geometry")
 			check(panel.session.button_order==order and panel.model.layers.size()==1,"desktop/compact transition preserves active session")
 			root.size=dim;shell.size=Vector2(dim);shell._layout();await frames()
 		await key(KEY_ESCAPE)

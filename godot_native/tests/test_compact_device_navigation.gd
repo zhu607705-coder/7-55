@@ -122,7 +122,7 @@ func run() -> void:
 				await create_timer(1.6).timeout
 			check(state.d.native.page==pages.get(id,"c4_device"),id+" routed required page at "+str(width))
 			check(main.phone.is_visible_in_tree(),id+" actionable page visible at "+str(width))
-			check(main.world_frame.is_visible_in_tree()==(width>=1100),id+" compact hides world, desktop preserves split")
+			check(not main.world_frame.is_visible_in_tree(),id+" phone device owns one visible surface")
 			check(state.d.native.scene==scene and main.world.player==position,"navigation preserves source world scene and position")
 			# A harmless refresh is not a navigation command.
 			state.act("phone_refresh",{}); await process_frame; await process_frame
@@ -158,7 +158,7 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 	if not is_instance_valid(panel): return
 	check(state.d.native.page==("c4_device" if c4 else original_page),id+" preserves source page contract")
 	check(panel.is_visible_in_tree() and main.world_frame.is_visible_in_tree(),id+" actionable modal and world are visible")
-	check(main.phone.is_visible_in_tree()==(width>=1100),id+" compact keeps world device, desktop keeps split phone")
+	check(not main.phone.is_visible_in_tree(),id+" world device retains exclusive world surface")
 	check(state.d.native.scene==scene and main.world.player==position,"world device preserves source scene and position")
 	var frame: Control=panel.frame if c4 else panel
 	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(frame.get_global_rect()),id+" device frame fits physical viewport")

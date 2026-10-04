@@ -111,7 +111,7 @@ func run() -> void:
 	check(desktop.pause_button.get_rect()==Rect2(702,14,76,43) and desktop.dash_button.get_rect()==Rect2(793,445,141,68),"desktop authored button geometry preserved")
 	check(not shell.phone.visible and not shell.world_frame.visible,"desktop phone/world hidden while defense owns scene")
 	await tap(desktop.exit_button)
-	check(shell.phone.visible and shell.world_frame.visible,"desktop phone/world restore after exit")
+	check(not shell.phone.visible and shell.world_frame.visible,"desktop world exclusively restores after exit")
 	# Prelude source cues survive real pause/resume and rotation at exact times.
 	var game: Control=await open_activity(Vector2i(430,860),true)
 	cues.clear(); game._pickup_elapsed=0; game._pickup_beat=0; game._pickup_tick(0)

@@ -148,8 +148,8 @@ func run() -> void:
 			check_top_row()
 			for method in ["pointer","keyboard","touch"]:await journal_round_trip(method)
 	await setup_world(Vector2i(1440,900))
-	check(not shell.world_tasks.visible and shell.phone.visible and shell.world_viewport.size==Vector2i(960,540),"desktop retains its existing controls and authored viewport")
-	shell.world_tasks.pressed.emit();await frames();check(not is_instance_valid(shell.modal),"hidden desktop entry cannot introduce a second control path")
+	check(shell.world_tasks.visible and not shell.phone.visible and shell.world_viewport.size==Vector2i(960,540),"desktop exposes world tasks and retains authored viewport")
+	shell.world_tasks.pressed.emit();await frames();check(is_instance_valid(shell.modal),"desktop uses the same world Tasks path");shell._close_modal()
 	var output:=OS.get_environment("UI_QA_REPORT")
 	if not output.is_empty():
 		var file:=FileAccess.open(output,FileAccess.WRITE);file.store_string(JSON.stringify({"checks":checks,"failures":failures,"gui_used":false,"physical_device":false,"earned_snapshot":not earned_path.is_empty(),"observations":observations},"\t"));file.close()

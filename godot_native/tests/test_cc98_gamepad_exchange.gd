@@ -101,7 +101,7 @@ func run() -> void:
 		await click(named(shell.page_body, "Cc98GamepadReturn"))
 		check(state.d.native.scene == "dorm_hub" and state.d.runtimeMode == "rpg", "return emits authoritative dorm scene intent")
 		check(state.last_result.get("open_world", false) and shell.world_frame.visible and shell.mobile_world, "return reveals actual world immediately")
-		check(shell.phone.visible == (viewport.x >= 1100), "return preserves desktop split and compact world behavior")
+		check(not shell.phone.visible, "return selects the exclusive world surface")
 		check(not state.d.actOne.controlsInstalled and not state.d.actOne.manualControlTested, "return does not auto-install controls or solve movement")
 	await fixture(Vector2i(430,860))
 	state.d.items.campusCard = false; await refresh()

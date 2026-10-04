@@ -44,10 +44,9 @@ func run() -> void:
 		await click(named(shell.page_body, "ZjudingApp_campus_map"))
 		check(state.d.native.scene == "dorm_hub", "map enters source dorm scene")
 		check(shell.world_frame.visible and shell.mobile_world, "map immediately reveals world without hidden footer")
-		check(shell.phone.visible == (viewport.x >= 1100), "desktop split remains visible; compact enters world")
+		check(not shell.phone.visible, "scene entry displays only the world")
 		var position_before: Vector2 = shell.world.player
-		if viewport.x < 1100: await click(shell.mobile_back)
-		else: state.open_page("phone_home"); await frames()
+		await click(shell.mobile_back)
 		check(shell.phone.visible and state.d.native.page == "phone_home", "return reaches visible home")
 		check(shell.world.player == position_before, "phone return retains world position")
 		# Reproduce an outer scroll offset while a scene's return affordance is

@@ -28,7 +28,7 @@ func oracle_cases() -> void:
 		check(Goal.current(value).is_empty(),"later active chapter suppresses stale menu guidance")
 
 func open_tasks(method: String) -> void:
-	var button: Button=shell.world_tasks if root.size.x<1100 else shell.phone_chrome.task_button
+	var button: Button=shell.world_tasks
 	check(button.is_visible_in_tree() and not button.disabled,"existing Tasks entry is visible and enabled")
 	if method=="keyboard":button.grab_focus();await press(KEY_SPACE)
 	elif method=="touch":

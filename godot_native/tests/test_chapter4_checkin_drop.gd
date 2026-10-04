@@ -18,6 +18,7 @@ func run() -> void:
 	state_node.feedback.connect(func(message): feedback.append(message))
 	state_node.action_completed.connect(func(id,_before,_after,_result): actions.append(id))
 	await prepare(Vector2i(1180,812),"c4-755-checkin")
+	if not shell.inventory_dock.visible: shell._toggle_world_inventory(); await frames()
 	# Explicit valid stand fixture, not a claim of human navigation.
 	shell.world.player=Vector2(836,660); shell.world._sync_player(); shell.world._update_camera(); shell.world.queue_redraw(); await frames(5)
 	var point:=Vector2(799,619)

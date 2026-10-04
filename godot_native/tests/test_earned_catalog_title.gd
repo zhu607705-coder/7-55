@@ -55,6 +55,8 @@ func capture(name: String) -> void:
 	await RenderingServer.frame_post_draw
 	check(root.get_texture().get_image().save_png(directory.path_join(name+".png"))==OK,"Fixture screenshot saved")
 func render(page: String="cc98") -> void:
+	# This fixture explicitly opens the phone after Escape/normal reload.
+	shell.mobile_world=false
 	state.d.native.page=page
 	shell._refresh(); await frames()
 	if state.get_phone_entry_session().phase=="loading":

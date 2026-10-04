@@ -109,7 +109,7 @@ func save_reload() -> void:
 	check(state.save_game(),"controller-earned state passes real save validation")
 	state.d=state.initial()
 	check(state.load_game(),"real saved state reloads")
-	state.developer_mode=true; state.story_reset.emit(); state.advance_phone_entry(1600); await refresh()
+	state.developer_mode=true; state.story_reset.emit(); shell.mobile_world=false; state.advance_phone_entry(1600); await refresh()
 
 func check_recovery_geometry() -> void:
 	var chrome=shell.phone_chrome

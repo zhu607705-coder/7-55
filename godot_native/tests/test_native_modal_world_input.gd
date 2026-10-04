@@ -11,7 +11,7 @@ func _run() -> void:
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frame(5)
 	state.begin_checkpoint("c3-canteen-drinks"); shell._refresh(); await frame(5)
-	root.size=Vector2i(1440,900); shell.size=Vector2(1440,900); shell._layout(); await frame()
+	root.size=Vector2i(1440,900); shell.size=Vector2(1440,900); shell._show_world_mobile(); await frame()
 	var world: Control=shell.world
 	world.set_process(false)
 	shell.c3_narrative_host.set_process(false); shell.c3_scene_host.set_process(false); shell.library_story_host.set_process(false)

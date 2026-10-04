@@ -47,6 +47,62 @@ var prologue_reduced := false
 var prologue_notice: Label
 var prologue_card: ColorRect
 var prologue_portraits: Array=[]
+var prologue_available := Vector2(960,540)
+var prologue_adaptive := false
+var prologue_field := Rect2(0,0,960,540)
+
+func uses_activity_layout() -> bool:
+	return kind == "prologue"
+
+func configure_activity_layout(available: Vector2, _compact: bool) -> void:
+	if kind != "prologue": return
+	prologue_adaptive = true
+	prologue_available = available.max(Vector2(240,240))
+	custom_minimum_size = Vector2.ZERO
+	scale = Vector2.ONE
+	position = Vector2.ZERO
+	size = prologue_available
+	_layout_prologue()
+
+func _layout_prologue() -> void:
+	if not prologue_adaptive or not built or kind != "prologue": return
+	var portrait := size.y > size.x
+	var inset := 16.0
+	var film_area := Rect2(Vector2.ZERO,size)
+	if portrait: film_area = Rect2(16,78,size.x-32,(size.x-32)*9.0/16.0)
+	var factor := minf(film_area.size.x/960.0,film_area.size.y/540.0)
+	prologue_field = Rect2(film_area.get_center()-Vector2(960,540)*factor/2,Vector2(960,540)*factor)
+	if is_instance_valid(video): video.position=prologue_field.position; video.size=prologue_field.size
+	controls.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	controls.add_theme_constant_override("separation",8)
+	for button in controls.get_children():
+		if button is Button:
+			button.custom_minimum_size.y=44
+			button.add_theme_font_size_override("font_size",18)
+	title.add_theme_font_size_override("font_size",22)
+	title.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	body.add_theme_font_size_override("font_size",18)
+	body.add_theme_constant_override("line_spacing",5)
+	if stage == "card":
+		body.text="CHAPTER 03.5 · COMPLETE\n"+("" if size.y<500 else "\n")+"现场定位：段永平教学楼玻璃门\n当前目标：追踪进入教学楼的异常签到纸"
+		var card_width := minf(410 if portrait else 470,size.x-32)
+		var card_top := prologue_field.end.y+16 if portrait else 16.0
+		var card_rect := Rect2((size.x-card_width)/2 if portrait else size.x-card_width-16,card_top,card_width,size.y-card_top-16)
+		prologue_card.position=card_rect.position; prologue_card.size=card_rect.size
+		title.position=card_rect.position+Vector2(inset,16); title.size=Vector2(card_width-32,34)
+		body.position=title.position+Vector2(0,46); body.size=Vector2(card_width-32,maxf(100,card_rect.size.y-228))
+		controls.position=Vector2(title.position.x,card_rect.end.y-160); controls.size=Vector2(card_width-32,144)
+	else:
+		title.position=Vector2(16,16); title.size=Vector2(size.x-32 if portrait else maxf(300,size.x-296),54)
+		body.position=Vector2(20,prologue_field.end.y+16) if portrait else Vector2(32,size.y-106)
+		body.size=Vector2(size.x-40, maxf(100,size.y-body.position.y-132)) if portrait else Vector2(size.x-64,86)
+		controls.position=Vector2(16,size.y-112) if portrait else Vector2(size.x-256,16)
+		controls.size=Vector2(size.x-32 if portrait else 240,96)
+	prologue_notice.position=Vector2(20,prologue_field.position.y+8)
+	prologue_notice.size=Vector2(size.x-40,42)
+	prologue_notice.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	queue_redraw()
+
 func setup(value: Dictionary) -> void:
 	config=value
 	if is_inside_tree(): _build()
@@ -90,7 +146,9 @@ func _build() -> void:
 func _button(text: String,callback: Callable) -> Button:
 	var button: Button=Button.new(); button.text=text; button.custom_minimum_size.y=42; button.pressed.connect(callback); controls.add_child(button); return button
 func _clear_controls() -> void:
-	for child in controls.get_children(): child.queue_free()
+	for child in controls.get_children():
+		if kind=="prologue": controls.remove_child(child)
+		child.queue_free()
 func _finish(proof: Dictionary={}) -> void:
 	if done: return
 	done=true; running=false
@@ -124,6 +182,7 @@ func _prologue_playback_controls() -> void:
 	controls.position=Vector2(692,16); controls.size=Vector2(240,100); _clear_controls()
 	_button("跳过恢复回放",_skip_prologue); _button("返回",func(): cancelled.emit())
 	_update_prologue_notice()
+	_layout_prologue()
 func _update_prologue_notice() -> void:
 	if not is_instance_valid(prologue_notice): return
 	prologue_notice.visible=prologue_fallback and stage!="card"
@@ -150,7 +209,7 @@ func _show_prologue_card() -> void:
 	title.text="第四章：时间迷宫"; title.position=Vector2(594,136); title.size=Vector2(312,40); title.add_theme_color_override("font_color",Color("18374d"))
 	body.text="CHAPTER 03.5 · COMPLETE\n\n现场定位：段永平教学楼玻璃门\n当前目标：追踪进入教学楼的异常签到纸"; body.position=Vector2(594,184); body.size=Vector2(312,120); body.add_theme_color_override("font_color",Color("18374d"))
 	controls.position=Vector2(594,316); controls.size=Vector2(312,130)
-	_button("收下任务，进入第四章",func(): _finish({"acknowledged":true})); _button("重播过场",_restart_prologue); _button("返回",func(): cancelled.emit()); queue_redraw()
+	_button("收下任务，进入第四章",func(): _finish({"acknowledged":true})); _button("重播过场",_restart_prologue); _button("返回",func(): cancelled.emit()); _layout_prologue(); queue_redraw()
 func _restart_prologue() -> void:
 	if kind!="prologue" or done: return
 	_cue("chapter4_prologue_closed"); elapsed=0; cues_fired.clear()
@@ -293,7 +352,10 @@ func _draw() -> void:
 	if not built: return
 	match kind:
 		"prologue":
-			if prologue_fallback: _draw_prologue_fallback()
+			if prologue_fallback:
+				draw_set_transform(prologue_field.position,0,Vector2.ONE*(prologue_field.size.x/960.0))
+				_draw_prologue_fallback()
+				draw_set_transform(Vector2.ZERO)
 		"chase_stairwell": _draw_chase()
 		"star_lamp_closure": _draw_lamp()
 		"elevator_alignment":

@@ -19,7 +19,7 @@ func reset_case(dimensions: Vector2i,mode: String="light",source_state: Dictiona
 	root.size=dimensions;shell.size=Vector2(dimensions);shell.mobile_world=false;shell.compact_inventory_open=false
 	shell.world.world_key="";shell.world.scene_id="";shell._refresh();shell._show_world_mobile();await frames(8)
 	shell.world.set_process(false)
-	if dimensions.x<1100 and not shell.inventory_dock.visible: await click(shell.inventory_handle)
+	if not shell.inventory_dock.visible: await click(shell.inventory_handle)
 	await frames(4)
 	check(shell.world_frame.visible and shell.inventory_dock.visible,"real Main presents world and inventory")
 func mix_in_main() -> void:

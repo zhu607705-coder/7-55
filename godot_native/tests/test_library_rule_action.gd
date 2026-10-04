@@ -92,7 +92,7 @@ func assert_collapsed_rail(viewport: Vector2i) -> void:
 		check(not screen_rect(shell.world_frame).intersects(screen_rect(shell.inventory_handle)),"collapsed inventory rail never covers world viewport")
 		shell.mobile_world=false; shell._layout(); await frames()
 	else:
-		check(not screen_rect(shell.phone).intersects(screen_rect(shell.inventory_dock)),"desktop inventory stays separate from phone")
+		check(not shell.inventory_dock.is_visible_in_tree(),"desktop phone mode hides the world inventory")
 func run() -> void:
 	state=root.get_node("State"); state.developer_mode=true; state.d=state.initial()
 	before_shelf=earned_shelf()

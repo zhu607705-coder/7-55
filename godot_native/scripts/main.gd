@@ -38,10 +38,13 @@ var backdrop: ColorRect
 var _screenshot_requested := false
 var _quit_requested := false
 var game_viewport := Vector2(960,540)
+# Retained name for existing activity/device callers. This now selects the
+# single visible surface at every viewport, not only on mobile.
 var mobile_world := false
 var world_page_origin_scene := ""
 var phone_scroll_page := ""
 var mobile_back: Button
+var phone_world_return: Button
 var world_tasks: Button
 var voice_player: AudioStreamPlayer
 var phone_builder: RefCounted
@@ -106,9 +109,12 @@ func _ready() -> void:
 	)
 	resized.connect(_layout)
 	_setup_runtime_hosts()
+	_restore_shell_surface()
 	_refresh()
 	_layout()
 	_resume_world_activity.call_deferred()
+	_resume_recovered_replay.call_deferred()
+	_focus_world_surface.call_deferred()
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--preview="):
 			State.begin_preview(1,arg.trim_prefix("--preview="))
@@ -257,8 +263,12 @@ func _build_shell() -> void:
 	add_child(toast)
 	voice_player = AudioStreamPlayer.new()
 	add_child(voice_player)
-	mobile_back = _button("返回手机主页",func(): mobile_world = false; State.open_page("phone_home"); _layout(),Vector2(180,44))
+	mobile_back = _button("手机 · P",_show_phone_surface,Vector2(140,44))
+	mobile_back.name = "WorldPhoneButton"
 	add_child(mobile_back)
+	phone_world_return = _button("返回现场 · Esc",_return_from_phone,Vector2(180,44))
+	phone_world_return.name = "PhoneWorldReturn"
+	add_child(phone_world_return)
 	world_tasks = _button("任务",_show_world_journal,Vector2(84,44))
 	world_tasks.name = "WorldTasks"
 	world_tasks.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -300,9 +310,74 @@ func _button(text: String, call: Callable, minimum: Vector2 = Vector2(0,48)) -> 
 	return button
 
 func _uses_split_layout() -> bool:
-	return not DisplayServer.is_touchscreen_available() and size.x>=1100 and size.x>size.y and not str(State.d.get("native",{}).get("scene","")).is_empty()
+	# Compatibility query for existing scene hosts/tests. No layout owns two
+	# interactive surfaces. Compactness must never imply a second world owner.
+	return false
+
+func _uses_compact_layout() -> bool:
+	return DisplayServer.is_touchscreen_available() or size.x < 1100 or size.x <= size.y
+
+func _has_world_scene() -> bool:
+	return not str(State.d.get("native",{}).get("scene","")).is_empty()
+
+func _restore_shell_surface() -> void:
+	# Desktop resumes the saved world; the prologue has no world and stays on
+	# its authored phone. Compact sessions retain their explicit view choice.
+	mobile_world = _has_world_scene() and str(State.d.get("runtimeMode","phone")) == "rpg" and (mobile_world or not _uses_compact_layout())
+
+func _surface_navigation_blocked(ignore_world_presentation: bool=false) -> bool:
+	if is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(active_game) or bool(State.d.ui.controlCenterOpen) or capture_busy: return true
+	if State.story_input_locked():
+		# A compact reload may already have a paused world dialogue. Its only
+		# Return path must remain usable; other story/UI owners stay exclusive.
+		var issued: RefCounted = State.get_c3_narrative_session()
+		if world_frame.is_visible_in_tree() or issued == null or str(issued.scene) != str(State.d.native.scene): return true
+	if is_instance_valid(file_dialog) and file_dialog.visible: return true
+	if is_instance_valid(world) and world.capture_mode: return true
+	if is_instance_valid(world_effect) and world_effect.get_meta("blocks_input",false): return true
+	# An explicit device page may suspend a world-only animation (e.g. the
+	# Library shelf). Returning must reveal that same owner so it can finish.
+	return not ignore_world_presentation and world_frame.is_visible_in_tree() and (_authored_world_contract() or (is_instance_valid(world) and world._interaction_presentation_blocks()))
+
+func _cancel_surface_gestures() -> void:
+	for button in inventory_buttons.get_children(): button.cancel_gesture()
+	if is_instance_valid(phone_chrome) and is_instance_valid(phone_chrome.inventory_slots):
+		for button in phone_chrome.inventory_slots.get_children(): button.cancel_gesture()
+	if is_instance_valid(world):
+		world.cancel_exploration_gestures()
+		world.walk_clock = 0
+	if is_instance_valid(world_viewport): world_viewport.gui_release_focus()
+	get_viewport().gui_release_focus()
+
+func _show_phone_surface() -> void:
+	if _surface_navigation_blocked(): return
+	_cancel_surface_gestures()
+	world_page_origin_scene = ""
+	mobile_world = false
+	# Keep the existing world-to-phone homepage route and its app lifecycle.
+	State.open_page("phone_home")
+	_layout()
+	phone_world_return.grab_focus()
+
+func _return_from_phone() -> void:
+	if not _has_world_scene() or _surface_navigation_blocked(): return
+	_show_world_mobile()
+
+func _focus_world_surface() -> void:
+	if not is_instance_valid(world) or not world_frame.is_visible_in_tree(): return
+	if _surface_navigation_blocked(true): return
+	world.grab_focus()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if _action=="c35_replay" and _recovered_replay_eligible():
+		# The original runtime gate mounts the recovered film from this accepted
+		# transition, without a second generic "play" page in between.
+		_resume_recovered_replay.call_deferred()
+	if _action=="c4_prologue_end" and not bool(_previous.get("chapter4",{}).get("prologueSeen",false)) and bool(current.get("chapter4",{}).get("prologueSeen",false)) and result.get("world_effect",{}).get("kind","")=="paper_flight":
+		# This controller commits its world internally and returns a world effect.
+		# Reveal that same world before the effect's first rendered frame.
+		_show_world_mobile()
+		return
 	if _action=="lib_story_complete" and not str(result.get("story_finished","")).is_empty(): _focus_library_story.call_deferred()
 	if _action in ["c4_checkin_card","c4_checkin_paper"] and current.get("chapter4",{}).get("phase","")=="exterior_closure" and _previous.get("chapter4",{}).get("phase","")=="morning_checkin":
 		# Source check-in hands off automatically through the actual door reveal.
@@ -310,6 +385,8 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		State.act.call_deferred("c4_lamp_start")
 		return
 	# Only a genuine controller-opened device intent creates a fresh session.
+	if _action in ["c4_clock","c4_clock_inspected"] and result.get("page","")=="c4_device":
+		if _open_chapter4_clock(current):return
 	if _action.begins_with("c4_device_") and result.get("page","")=="c4_device":
 		if _open_chapter4_device(_action.trim_prefix("c4_device_"),current): return
 	if result.has("open_canteen_device"):
@@ -337,19 +414,26 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 	# compact layout that surface must become visible; an ordinary refresh is
 	# never navigation. No controller fact or world position is changed here.
 	var scene: String=str(current.get("native",{}).get("scene",""))
-	if result.get("narrative_owned",false) and not world_page_origin_scene.is_empty() and scene==world_page_origin_scene:
-		_show_world_mobile()
-		return
+	if result.get("narrative_owned",false):
+		# Phone inventory puzzles can issue world dialogue without first opening
+		# a world device. Verify the real controller session, not a result flag or
+		# stale page marker, before revealing its retained scene and single host.
+		var issued: RefCounted = State.get_c3_narrative_session()
+		if issued != null and not scene.is_empty() and str(issued.scene) == scene:
+			_show_world_mobile()
+			return
 	if not result.has("page"): return
 	var page: String=str(result.page)
 	if page.is_empty(): return
 	# Scene-entry pages remain world entries. A controller's explicit home or
 	# phone-mode handoff (including the rain return) is a real phone destination.
-	if result.has("scene") and not str(result.scene).is_empty() and page!="phone_home" and current.get("runtimeMode","")!="phone": return
+	if result.has("scene") and not str(result.scene).is_empty() and page!="phone_home" and current.get("runtimeMode","")!="phone":
+		if scene != str(_previous.get("native",{}).get("scene","")): _show_world_mobile()
+		return
 	if result.has("game") or result.has("world_effect") or result.has("narrative"): return
-	if _uses_split_layout(): return
 	if mobile_world:
 		world_page_origin_scene=scene if not scene.is_empty() and page!="phone_home" else ""
+		_cancel_surface_gestures()
 		mobile_world=false
 		_layout()
 	elif page=="phone_home" or scene!=world_page_origin_scene:
@@ -357,41 +441,45 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 
 func _layout() -> void:
 	var available := size
-	var split := _uses_split_layout()
-	var fitted_activity: bool=_activity_owns_scene()
-	var phone_scale := maxf(.35,minf(1.0,(available.y - 36.0) / 860.0))
-	if not split: phone_scale = minf(phone_scale,(available.x - 36.0)/430.0)
+	var compact_layout := _uses_compact_layout()
+	var fitted_activity: bool = _activity_owns_scene()
+	var has_world := _has_world_scene()
+	if not has_world: mobile_world = false
+	var phone_top := 64.0 if has_world else 18.0
+	var phone_space := available - Vector2(24,phone_top + 18)
+	var phone_scale := maxf(.1,minf(1.0,minf(phone_space.y / 860.0,phone_space.x / 430.0)))
 	phone.scale = Vector2.ONE * phone_scale
 	phone.size = Vector2(430,860)
-	phone.position = Vector2(18,(available.y - 860*phone_scale)/2) if split else (available - phone.size*phone_scale)/2
-	phone.visible = not (mobile_world and not split) and not fitted_activity
-	# Compact RPG unmounts Photos; a visible desktop split keeps its session.
+	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
+	phone.visible = not mobile_world and not fitted_activity
+	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
+	phone_world_return.position = Vector2(12,12)
+	phone_world_return.size = Vector2(180,44)
 	if not phone.visible: photo_brightness_session.reset()
 	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
 		photo_brightness_session.observe("photos",State.d.ui)
-	world_frame.visible = (split or mobile_world) and not fitted_activity
-	mobile_back.visible = mobile_world and not split and not is_instance_valid(active_game)
+	world_frame.visible = mobile_world and not fitted_activity
+	world_viewport.gui_disable_input = not world_frame.visible
+	mobile_back.visible = world_frame.visible and not is_instance_valid(active_game)
+	mobile_back.position = Vector2(12,12)
 	world_tasks.visible = mobile_back.visible
-	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
-	var compact: bool=mobile_world and not split and not _authored_world_contract()
-	compact_world_contract=compact
-	inventory_handle.visible=mobile_world and not split and inventory_available
-	inventory_handle.text="%s物品栏 · %d"%["收起" if compact_inventory_open else "展开",inventory_buttons.get_child_count()]
-	inventory_dock.visible=(split or (mobile_world and compact_inventory_open)) and inventory_available
-	# Exploration uses screen pixels as its logical viewport. Original source
-	# art, actors, collisions, and controllers retain their existing coordinates.
-	var world_extent:=Vector2(960,540)
-	var border: StyleBoxFlat=world_frame.get_theme_stylebox("panel")
-	var margin:=2.0 if compact else 10.0
+	var inventory_available := _inventory_dock_available() and not is_instance_valid(active_game)
+	var compact: bool = mobile_world and compact_layout and not _authored_world_contract()
+	compact_world_contract = compact
+	inventory_handle.visible = world_frame.visible and inventory_available
+	inventory_handle.text = "%s物品栏 · %d"%["收起" if compact_inventory_open else "展开",inventory_buttons.get_child_count()]
+	inventory_dock.visible = inventory_handle.visible and compact_inventory_open
+	var world_extent := Vector2(960,540)
+	var border: StyleBoxFlat = world_frame.get_theme_stylebox("panel")
+	var margin := 2.0 if compact else 10.0
 	border.content_margin_left=margin; border.content_margin_right=margin
 	border.content_margin_top=margin; border.content_margin_bottom=margin
 	if compact:
-		world_frame.scale=Vector2.ONE
-		var scene_rect:=Rect2(8,64,available.x-16,available.y-72)
-		mobile_back.position=Vector2(8,8)
+		world_frame.scale = Vector2.ONE
+		var scene_rect := Rect2(8,64,available.x-16,available.y-72)
+		mobile_back.position = Vector2(8,8)
 		if available.x>available.y:
-			# A landscape bag takes a side tray, preserving the scene's height.
-			var tray_width:=minf(288,available.x*.35) if compact_inventory_open else 196.0
+			var tray_width := minf(288,available.x*.35) if compact_inventory_open else 196.0
 			inventory_handle.position=Vector2(available.x-tray_width-8,8)
 			inventory_handle.size=Vector2(tray_width,44)
 			inventory_dock.position=Vector2(available.x-tray_width-8,64)
@@ -407,50 +495,48 @@ func _layout() -> void:
 		world_extent=scene_rect.size-Vector2.ONE*4
 		world_frame.size=scene_rect.size
 	else:
+		# Desktop dedicates all available play area to one authored world.
+		# Cinematics retain the same 960x540 contract on compact screens.
 		world_frame.size=Vector2(980,560)
-		inventory_handle.position=Vector2(12,available.y-56)
-		inventory_handle.size=Vector2(available.x-24,44)
-		if split:
-			var free := available.x - phone.position.x - 430*phone_scale - 36
-			var scale_world := minf(free/980.0,(available.y-150)/560.0)
-			world_frame.scale = Vector2.ONE * scale_world
-			world_frame.position = Vector2(phone.position.x+430*phone_scale+18,(available.y-560*scale_world)/2)
-			inventory_dock.position=world_frame.position+Vector2(0,560*scale_world+12)
-			inventory_dock.size=Vector2(980*scale_world,76)
-		elif mobile_world:
-			mobile_back.position=Vector2(12,12)
-			inventory_dock.position=Vector2(12,available.y-140)
-			inventory_dock.size=Vector2(available.x-24,76)
-			var bottom: float=(inventory_dock.position.y if inventory_dock.visible else inventory_handle.position.y)-12 if inventory_handle.visible else available.y-12
-			var compact_scale:=minf((available.x-12)/980.0,maxf(1,bottom-64)/560.0)
-			world_frame.scale=Vector2.ONE*compact_scale
-			world_frame.position=Vector2((available.x-980*compact_scale)/2,64+(bottom-64-560*compact_scale)/2)
-	# Reuse the existing top row; the landscape bag keeps its own right edge.
-	var tasks_right: float = inventory_handle.position.x-8 if compact and available.x>available.y and inventory_handle.visible else available.x-mobile_back.position.x
-	world_tasks.position = Vector2(tasks_right-84,mobile_back.position.y)
-	world_tasks.size = Vector2(84,44)
-	_configure_world_surface(world_extent,compact)
+		if compact_layout:
+			inventory_handle.position=Vector2(12,available.y-56)
+			inventory_handle.size=Vector2(available.x-24,44)
+		else:
+			inventory_handle.position=Vector2(available.x-224,12)
+			inventory_handle.size=Vector2(212,44)
+		inventory_dock.position=Vector2(12,available.y-88)
+		inventory_dock.size=Vector2(available.x-24,76)
+		var bottom := available.y-12
+		if inventory_dock.visible: bottom=inventory_dock.position.y-12
+		elif compact_layout and inventory_handle.visible: bottom=inventory_handle.position.y-12
+		var world_scale := minf((available.x-24)/980.0,maxf(1,bottom-64)/560.0)
+		world_frame.scale=Vector2.ONE*world_scale
+		world_frame.position=Vector2((available.x-980*world_scale)/2,64+(bottom-64-560*world_scale)/2)
+	var tasks_right: float = inventory_handle.position.x-8 if available.x>available.y and inventory_handle.visible else available.x-mobile_back.position.x
+	world_tasks.position=Vector2(tasks_right-84,mobile_back.position.y)
+	world_tasks.size=Vector2(84,44)
+	# A hidden phone mode retains the world viewport/camera as well as its actor.
+	# Only visible world resize or authored ownership can reframe exploration.
+	if world_frame.visible: _configure_world_surface(world_extent,compact)
 	var dock_rect:=inventory_dock.get_global_rect()
 	if dock_rect!=inventory_dock_rect:
 		for button in inventory_buttons.get_children(): button.cancel_gesture()
 		inventory_dock_rect=dock_rect
 	_sync_inventory_dock_input()
-	chapter_label.visible = split and not fitted_activity
-	chapter_label.position = Vector2(phone.position.x+430*phone_scale+22,36)
+	chapter_label.visible=false
 	_layout_toast()
 	if is_instance_valid(battery_prank):
-		battery_prank.position = phone.position if phone.visible else world_frame.position
-		battery_prank.scale = phone.scale if phone.visible else world_frame.scale
-		battery_prank.size = Vector2(430,860) if phone.visible else Vector2(960,540)
+		battery_prank.position=phone.position if phone.visible else world_frame.position
+		battery_prank.scale=phone.scale if phone.visible else world_frame.scale
+		battery_prank.size=Vector2(430,860) if phone.visible else Vector2(960,540)
 		battery_prank.move_to_front()
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document))
 	if active_game:
-		if fitted_activity:
-			active_game.configure_activity_layout(available,not split)
+		if fitted_activity: active_game.configure_activity_layout(available,compact_layout)
 		else:
 			var game_scale := minf((available.x-20)/game_viewport.x,(available.y-20)/game_viewport.y)
-			active_game.scale = Vector2.ONE * game_scale
-			active_game.position = (available-game_viewport*game_scale)/2
+			active_game.scale=Vector2.ONE*game_scale
+			active_game.position=(available-game_viewport*game_scale)/2
 	_layout_modal()
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
 
@@ -462,7 +548,7 @@ func _activity_owns_scene() -> bool:
 func _authored_world_contract() -> bool:
 	# Active cinematics retain their source camera/aspect through interruptions.
 	# A canteen session waiting for proximity still belongs to exploration.
-	return is_instance_valid(active_game) or is_instance_valid(world_effect) or (is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract()) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.owns_world_contract()) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
+	return is_instance_valid(active_game) or (is_instance_valid(world_effect) and not (world_effect.has_method("uses_responsive_exploration") and world_effect.uses_responsive_exploration())) or (is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract()) or (is_instance_valid(c3_narrative_host) and c3_narrative_host.owns_world_contract()) or (is_instance_valid(library_story_host) and library_story_host.current!=null)
 
 func _configure_world_surface(extent: Vector2,compact: bool) -> void:
 	if not is_instance_valid(world): return
@@ -521,7 +607,7 @@ func _layout_modal() -> void:
 		modal.layout_panel(size)
 		return
 	if is_instance_valid(c3_device_panel):
-		var compact: bool=not _uses_split_layout()
+		var compact: bool=_uses_compact_layout()
 		c3_device_panel.configure_layout(size,compact)
 		if compact:
 			# Compact device presentation is an unscaled modal, not a miniature
@@ -557,7 +643,7 @@ func _refresh() -> void:
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
 	# Preserve the source Photos mount baseline behind Control Center overlays.
-	var photos_mounted := not (mobile_world and not _uses_split_layout())
+	var photos_mounted := not mobile_world
 	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):
 		State.act("lib_dim_photo")
 	# A new phone destination starts at its top. Same-page state refreshes keep
@@ -658,6 +744,25 @@ func _add_app_grid(parent: Control) -> void:
 		var button := _button(str(page.get("label",target)),func(): _close_modal(); State.open_page(target),Vector2(119,64))
 		grid.add_child(button)
 
+func _open_chapter4_clock(current: Dictionary) -> bool:
+	var choices:Array=[];var required:=""
+	for action in State.get_actions("c4_device"):
+		if action.id=="c4_clock_set":choices=action.inputs[0].options
+	for module in State.modules:
+		if module.has_method("_required_time"):required=module._required_time(current.chapter4)
+	var panel:Control=load("res://scripts/ui/chapter4_clock_panel.gd").new()
+	if not panel.configure(current,choices,required,font):panel.free();return false
+	_close_modal()
+	if is_instance_valid(modal):panel.free();return false
+	var focused=get_viewport().gui_get_focus_owner();modal_previous_focus=weakref(focused) if focused!=null else null
+	modal=panel;modal_panel=panel.frame
+	panel.close_requested.connect(_close_modal)
+	panel.submit_requested.connect(func(value:Dictionary):
+		var result:Dictionary=State.act("c4_clock_set",value)
+		if is_instance_valid(panel) and modal==panel:panel.resolve(State.d,result)
+	)
+	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
+
 func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 	var device: Control = load("res://scripts/ui/chapter4_device_panel.gd").new()
 	if not device.configure(id,current,font):
@@ -684,6 +789,8 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 	return true
 
 func _invoke_action(action: Dictionary) -> void:
+	if str(action.get("id",""))=="c4_clock_set":
+		_open_chapter4_clock(State.d);return
 	# Existing phone action lists must never reopen the retired generic form.
 	if str(action.get("id","")).begins_with("c4_solve_"):
 		_open_chapter4_device(str(action.id).trim_prefix("c4_solve_"),State.d)
@@ -750,6 +857,8 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 func _input(event: InputEvent) -> void:
 	_sync_inventory_dock_input()
 	if not is_instance_valid(modal) or not event is InputEventKey or not event.pressed: return
+	if modal.has_method("handle_key") and modal.handle_key(event):
+		get_viewport().set_input_as_handled();return
 	# OptionButton popups own their own keyboard navigation while open.
 	for choice in modal.find_children("*","OptionButton",true,false):
 		if choice.get_popup().visible: return
@@ -788,10 +897,16 @@ func _close_modal() -> void:
 	modal_panel = null
 	modal_notice_slot = null
 	_layout_toast()
+	var restored_control := false
 	if modal_previous_focus != null:
 		var previous_focus = modal_previous_focus.get_ref()
-		if is_instance_valid(previous_focus) and previous_focus is Control and previous_focus.is_inside_tree() and previous_focus.focus_mode != Control.FOCUS_NONE: previous_focus.grab_focus()
+		if is_instance_valid(previous_focus) and previous_focus is Control and previous_focus.is_inside_tree() and previous_focus.is_visible_in_tree() and previous_focus.focus_mode != Control.FOCUS_NONE:
+			previous_focus.grab_focus()
+			restored_control = true
 	modal_previous_focus = null
+	# Item inspection returns to its still-open bag. World focus is only the
+	# fallback for a vanished/hidden originating control or a world interaction.
+	if not restored_control: _focus_world_surface.call_deferred()
 	if closed_item=="decoyPaper":
 		var story_owned: bool=is_instance_valid(c3_narrative_host) and c3_narrative_host.has_method("inspector_closed") and c3_narrative_host.inspector_closed(closed_item)
 		if not story_owned and is_instance_valid(audio_director): audio_director.cue("theater_decoy_inspect_closed")
@@ -862,6 +977,9 @@ func _sync_inventory_dock_input() -> void:
 	var blocked:=_inventory_dock_input_blocked()
 	inventory_handle.disabled=blocked
 	if is_instance_valid(world_tasks): world_tasks.disabled=blocked
+	var navigation_blocked := _surface_navigation_blocked()
+	if is_instance_valid(mobile_back): mobile_back.disabled=navigation_blocked
+	if is_instance_valid(phone_world_return): phone_world_return.disabled=navigation_blocked
 	blocked=blocked or not inventory_dock.is_visible_in_tree()
 	for button in inventory_buttons.get_children():
 		if blocked and not button.disabled: button.cancel_gesture()
@@ -1093,10 +1211,26 @@ func _focus_library_story() -> void:
 	world.grab_focus()
 
 func _show_world_mobile() -> void:
+	if not _has_world_scene(): return
 	world_page_origin_scene=""
+	_cancel_surface_gestures()
 	mobile_world = true
 	_layout()
 	_resume_world_activity()
+	_focus_world_surface.call_deferred()
+
+func _recovered_replay_eligible() -> bool:
+	var recovered: Dictionary=State.d.get("chapterThreeInterlude",{})
+	return State.d.get("qizhenLake",{}).get("phase","")=="complete" and recovered.get("phase","")=="replay_ready" and bool(recovered.get("replayUnlocked",false)) and not bool(State.d.get("chapter4",{}).get("prologueSeen",false))
+
+func _resume_recovered_replay() -> void:
+	# Admission belongs to the explicit source transition or ordinary startup.
+	# Return, resize and refresh never poll this gate or recreate a closed film.
+	if not is_inside_tree() or not _recovered_replay_eligible(): return
+	if is_instance_valid(active_game) or is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(world_effect): return
+	if State.story_input_locked() or bool(State.d.ui.controlCenterOpen): return
+	toast.text=""; toast_time=0; toast.hide()
+	State.act("c4_prologue")
 
 func _is_bike_chase_entry() -> bool:
 	var chase: Dictionary=State.d.canteenHunt
@@ -1368,7 +1502,7 @@ func _feedback(message: String,tone: String="system") -> void:
 	toast.move_to_front()
 
 func _process(delta: float) -> void:
-	if compact_world_contract!=(mobile_world and not _uses_split_layout() and not _authored_world_contract()): _layout()
+	if compact_world_contract!=(mobile_world and _uses_compact_layout() and not _authored_world_contract()): _layout()
 	_sync_inventory_dock_input()
 	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
@@ -1398,7 +1532,16 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		if is_instance_valid(modal):
 			if event.keycode == KEY_F12: _capture.call_deferred()
 			return
-		if event.keycode == KEY_ESCAPE: _close_modal()
+		var focused := get_viewport().gui_get_focus_owner()
+		if event.keycode == KEY_P and not event.ctrl_pressed and not event.alt_pressed and not event.meta_pressed and not (focused is LineEdit or focused is TextEdit):
+			if mobile_world: _show_phone_surface()
+			else: _return_from_phone()
+			get_viewport().set_input_as_handled()
+			return
+		if event.keycode == KEY_ESCAPE and not mobile_world:
+			_return_from_phone()
+			get_viewport().set_input_as_handled()
+			return
 		if event.keycode == KEY_F10: _show_settings()
 		if event.keycode == KEY_F12: _capture.call_deferred()
 		if event.keycode == KEY_D and event.ctrl_pressed and event.shift_pressed: _show_developer()
@@ -1471,6 +1614,10 @@ func _open_world_effect(config: Dictionary) -> void:
 	setup["world"] = world
 	setup["project_position"] = func(source: Vector2): return world.size/2+(source-world.camera)*world.zoom
 	world_effect.event.connect(func(action: String,value: Variant): State.act(action,value))
+	var effect_owner:Control=world_effect
+	world_effect.tree_exited.connect(func():
+		if world_effect==effect_owner:_focus_world_surface.call_deferred()
+	)
 	world_effect.setup(setup)
 
 func _capture_world(config: Dictionary) -> void:
@@ -1507,6 +1654,7 @@ func _reset_runtime_presentations() -> void:
 	photo_brightness_session.reset()
 	observation_comparison_session.clear()
 	world_page_origin_scene=""
+	_restore_shell_surface()
 	if is_instance_valid(world):
 		world.world_key=""; world.scene_id=""; world.pending_teleport=Vector2.INF
 		world.guard_kind=""; world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO

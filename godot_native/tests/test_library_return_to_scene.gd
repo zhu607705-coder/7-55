@@ -50,8 +50,8 @@ func app_again() -> void:
 	if state.get_phone_entry_session().phase=="loading": state.advance_phone_entry(1500); shell._refresh(); await frames()
 func assert_layout(compact: bool) -> void:
 	check(shell.world_frame.is_visible_in_tree(),"successful explicit return displays retained world")
-	check(not shell.phone.is_visible_in_tree() if compact else shell.phone.is_visible_in_tree(),"compact switches surface; desktop preserves split phone")
-	check(shell.mobile_back.is_visible_in_tree()==compact,"compact world exposes the ordinary phone return")
+	check(not shell.phone.is_visible_in_tree(),"return selects one world surface on desktop and compact")
+	check(shell.mobile_back.is_visible_in_tree(),"world exposes the ordinary phone return")
 	check(shell.world.scene_id=="library_interior","returned surface is the controller-approved Library scene")
 	check(shell.world.has_focus(),"world receives keyboard focus after explicit return")
 func run() -> void:
@@ -69,31 +69,31 @@ func run() -> void:
 		var items=state.d.items.duplicate(true)
 		var scene=state.d.native.scene
 		check(retained==Vector2(715,790) and shell.world.can_stand(retained),"fixture resumes valid saved location near the entrance record")
-		var phone_rect=shell.phone.get_global_rect(); var world_rect=shell.world_frame.get_global_rect()
+		var phone_rect=shell.phone.get_global_rect()
 		for repeat in range(3):
 			await click(find("LibraryApp_return"))
 			check(events[-1].id=="lib_enter" and events[-1].result.get("scene")=="library_interior","real tile receives a successful controller result")
 			assert_layout(compact)
 			check(state.d.native.scene==scene and shell.world.player==retained and state.d.native.positions==positions,"return preserves retained scene, live actor and stored position")
 			check(state.d.ui.libraryFinalsPuzzle==puzzle and state.d.items==items and state.d.ui.libraryFinalsPhase=="library_entered","return never advances existing story or inventory")
-			if not compact: check(shell.phone.get_global_rect()==phone_rect and shell.world_frame.get_global_rect()==world_rect,"desktop split bounds stay unchanged")
+			if not compact: check(shell.phone.get_global_rect().is_equal_approx(phone_rect) and shell.world_viewport.size==Vector2i(960,540),"surface switches retain phone bounds and authored world viewport")
 			if repeat<2: await app_again()
 		# The next source interaction works without finding another footer or refocusing.
 		shell.world._process(0)
 		await key(KEY_SPACE)
 		check(state.d.native.page=="library_record","next Space opens the nearby record through normal world input")
-		check(shell.phone.visible and (not shell.world_frame.visible if compact else shell.world_frame.visible),"real record intent still opens its phone surface")
+		check(shell.phone.visible and not shell.world_frame.visible,"real record intent still opens its phone surface")
 		check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"opening the record does not acknowledge it")
 		# The button remains visible in this source-ineligible fixture; controller owns refusal.
 		await fixture(); state.d.actOne.phase="movement_required"
 		await click(find("LibraryApp_return"))
 		check(events[-1].id=="lib_enter" and not events[-1].result.has("scene"),"rejected lib_enter has no successful scene result")
-		check(not shell.mobile_world and shell.phone.visible and (not shell.world_frame.visible if compact else shell.world_frame.visible),"rejected return never switches the visible surface")
+		check(not shell.mobile_world and shell.phone.visible and not shell.world_frame.visible,"rejected return never switches the visible surface")
 		check(state.d.actOne.phase=="movement_required" and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"rejection preserves source progression gates")
 		# First entry still queues the authored dialogue; presentation does not consume it.
 		await fixture("campus_bootstrap","library_route_unlocked")
 		await click(find("LibraryApp_return"))
-		check(shell.world_frame.visible and (not shell.phone.visible if compact else shell.phone.visible),"first accepted Library entry also displays the world")
+		check(shell.world_frame.visible and not shell.phone.visible,"first accepted Library entry also displays the world")
 		var session=state.get_library_story_session()
 		check(state.d.ui.libraryFinalsPhase=="library_entered" and session!=null and session.sequence_id=="library_entered","first entry keeps its controller-owned source dialogue")
 		check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead and not state.d.ui.libraryFinalsPuzzle.backpackInspected,"return never completes the dialogue or next evidence gates")
