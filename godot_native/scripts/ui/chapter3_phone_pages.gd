@@ -7,6 +7,7 @@ const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const JournalPages=preload("res://scripts/ui/c3_journal_pages.gd")
 var journal_builder: RefCounted=JournalPages.new()
 const VoiceProgress=preload("res://scripts/ui/c3_voice_progress.gd")
+const PhotoSequence=preload("res://scripts/ui/c35_photo_sequence.gd")
 var current_view: Dictionary={}
 const Ring=preload("res://scripts/ui/c3_investigation_ring.gd")
 const Interlude=preload("res://scripts/chapters/c3_interlude.gd")
@@ -228,34 +229,69 @@ func photos(root: VBoxContainer) -> void:
 	root.add_child(label("恢复的项目",25))
 	root.add_child(label("7 张 · 帧顺序损坏",14,MUTED))
 	var selected: Array=state.native.get("c35_photo_selection",[])
+	var stage: VBoxContainer=card(root)
+	var stage_header: HBoxContainer=HBoxContainer.new()
+	stage.add_child(stage_header)
+	stage_header.add_child(label("IMG_0755_LIVE · 帧顺序损坏",17))
+	var reset: Button=action(stage_header,"重排","c35_photo_reset")
+	reset.name="PhotoReorder"
+	reset.size_flags_horizontal=Control.SIZE_SHRINK_END
+	reset.custom_minimum_size.x=72
+	stage.add_child(label("选出同一段运动中连续的三帧，再按先后顺序放入。",16,MUTED))
+	for slot: int in range(3):
+		var text: String="%d · 待选择"%[slot+1]
+		if slot<selected.size():
+			for frame: Dictionary in Interlude.FRAMES:
+				if frame.id==selected[slot]: text="%d · %s"%[slot+1,frame.label]
+		stage.add_child(label(text,17))
 	var grid: GridContainer=GridContainer.new()
 	grid.columns=3
-	grid.add_theme_constant_override("h_separation",6)
+	grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation",7)
 	grid.add_theme_constant_override("v_separation",8)
 	root.add_child(grid)
 	for frame: Dictionary in Interlude.FRAMES:
 		var cell: VBoxContainer=VBoxContainer.new()
-		cell.custom_minimum_size.x=100
+		cell.custom_minimum_size.x=94
+		cell.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 		grid.add_child(cell)
+		var portrait: AspectRatioContainer=AspectRatioContainer.new()
+		portrait.ratio=0.78
+		portrait.stretch_mode=AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT
+		portrait.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		portrait.custom_minimum_size=Vector2(94,94/0.78)
+		# AspectRatioContainer sizes its child, not the following VBox row.
+		# Reserve the complete source portrait height after width allocation.
+		portrait.resized.connect(func() -> void: portrait.custom_minimum_size.y=portrait.size.x/0.78)
+		cell.add_child(portrait)
 		var preview: Button=Button.new()
-		preview.custom_minimum_size=Vector2(100,80)
-		var photo: TextureRect=image_node("res://assets/ui/photo-evidence/chapter35_live_"+str(frame.image)+".webp",Vector2(100,80),frame.get("mirror",false))
+		preview.set_meta("recovered_frame",frame.id)
+		preview.disabled=selected.has(frame.id) or selected.size()>=3
+		var photo: TextureRect=image_node("res://assets/ui/photo-evidence/chapter35_live_"+str(frame.image)+".webp",Vector2.ZERO,frame.get("mirror",false))
+		photo.name="RecoveredPhoto"
+		photo.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		photo.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+		photo.modulate.a=0.45 if preview.disabled else 1.0
 		photo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		preview.add_child(photo)
 		preview.pressed.connect(func() -> void: action_requested.emit("c35_select_photo",frame.id))
-		cell.add_child(preview)
+		portrait.add_child(preview)
 		var title: String=frame.label
 		if selected.has(frame.id): title="%d  %s" % [selected.find(frame.id)+1,title]
-		action(cell,title,"c35_select_photo",frame.id)
+		var select: Button=action(cell,title,"c35_select_photo",frame.id)
+		select.disabled=preview.disabled
 		cell.add_child(label("07:55:23",11,MUTED))
 	var order: VBoxContainer=card(root)
 	order.add_child(label("已选择 %d / 3 张" % selected.size(),17))
-	for id: String in selected:
-		for frame: Dictionary in Interlude.FRAMES:
-			if frame.id==id: order.add_child(label("%d  %s" % [selected.find(id)+1,frame.label],15))
+	if state.chapterThreeInterlude.photoSequenceSolved:
+		var preview: TextureRect=PhotoSequence.new()
+		preview.name="RecoveredSequence"
+		preview.custom_minimum_size.y=132
+		preview.configure(bool(state.native.get("settings",{}).get("reduced_motion",false)))
+		order.add_child(preview)
+		order.add_child(label("连续帧已恢复",17,GREEN))
 	var submit: Button=action(order,"确认照片顺序","c35_photos",selected.duplicate(),true)
 	submit.disabled=selected.size()!=3
-	if state.chapterThreeInterlude.photoSequenceSolved: order.add_child(label("连续帧已恢复",17,GREEN))
 
 func voice(root: VBoxContainer) -> void:
 	eyebrow(root,"VOICE MEMOS")

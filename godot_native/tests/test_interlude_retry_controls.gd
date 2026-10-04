@@ -56,12 +56,14 @@ func run():
 	for code in ["FRM B2","FRM D7","FRM 4C"]:await click(code)
 	await click("确认照片顺序")
 	check(not state.d.chapterThreeInterlude.photoSequenceSolved,"mirrored photo attempt cannot solve")
-	await click("FRM 91")
+	check(find_button(main.page_body,"FRM 91").disabled,"source fourth selection is disabled at three choices")
 	check(state.d.native.c35_photo_selection.size()==3 and not state.d.native.c35_photo_selection.has("paper_middle"),"fourth selection does not silently replace a candidate")
-	await click("FRM D7");await click("FRM 4C");await click("FRM 91");await click("FRM 4C");await click("确认照片顺序")
+	await click("重排")
+	check(state.d.native.c35_photo_selection.is_empty(),"source reorder clears the draft")
+	await click("FRM B2");await click("FRM 91");await click("FRM 4C");await click("确认照片顺序")
 	check(state.d.chapterThreeInterlude.photoSequenceSolved and state.d.chapterThreeInterlude.photoFrameIds==["paper_left","paper_middle","paper_right"],"correct photo order accepted through real controls")
 	# A repeated wrong attempt after success must not corrupt the accepted proof.
-	await click("FRM 91");await click("FRM D7");await click("确认照片顺序")
+	await click("重排");await click("FRM B2");await click("FRM D7");await click("FRM 4C");await click("确认照片顺序")
 	check(state.d.chapterThreeInterlude.photoFrameIds==["paper_left","paper_middle","paper_right"],"solved photo proof remains unchanged on wrong retry",state.d.chapterThreeInterlude.photoFrameIds)
 	# Stale domain messages follow source already_complete semantics.
 	var before=state.d.qizhenLake.journal.duplicate(true)

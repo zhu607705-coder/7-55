@@ -155,6 +155,10 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		c.phase="evidence_collection"
 		return response("已保存离湖回复：22:37:05。")
 	if not c.evidenceIds.has("journal_start"): return locked("先在记录恢复中确认划船帖的离湖时间。")
+	if action=="c35_photo_reset":
+		# Source P18's Reorder clears only the local selection, never earned evidence.
+		s.native.c35_photo_selection=[]
+		return response()
 	if action=="c35_media_event":
 		if value != voice_session or not value is VoiceSession: return locked("录音播放回执已失效。")
 		return accept_voice_receipt(s)
