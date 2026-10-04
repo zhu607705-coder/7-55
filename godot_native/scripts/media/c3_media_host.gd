@@ -19,12 +19,16 @@ func apply(config: Dictionary) -> void:
 		if current != requested: return
 		if command == "pause": current.pause()
 		elif command == "resume": current.resume()
-		elif command == "stop": current.stop()
+		elif command == "stop":
+			_stop_current()
+			return
 		else: return
 		event.emit(callback, current)
 		return
 	if requested.phase != "issued": return
-	_stop_current()
+	# The controller samples the old receipt before issuing this replacement.
+	# Retire its player without sending a now-stale capability back to State.
+	_stop_current(false)
 	current = requested
 	callback = str(config.get("on_event", "c35_media_event"))
 	player = AudioStreamPlayer.new()
@@ -52,10 +56,10 @@ func _process(_delta: float) -> void:
 		changed = true
 	if changed: event.emit(callback, current)
 
-func _stop_current() -> void:
+func _stop_current(notify: bool = true) -> void:
 	if current != null:
 		current.stop()
-		event.emit(callback, current)
+		if notify: event.emit(callback, current)
 		current = null
 	if is_instance_valid(player):
 		player.stream = null
