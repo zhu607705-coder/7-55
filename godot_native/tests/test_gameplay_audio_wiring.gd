@@ -156,8 +156,14 @@ func run() -> void:
 	check(plays.any(func(p: Array) -> bool:return str(p[1]).begins_with("native_fishing_beat:")),"actual rhythm metronome emits native audio")
 	host.model.notes[0].judgment="perfect"; host.model.tension=85; host._audio_update()
 	check(latest("qizhen_fishing_warning").kind=="tension_high","source warning follows real note judgment")
-	host.cancel_game(); await create_timer(.1).timeout
-	check(seen("qizhen_fishing_cancelled") and audio.music_asset=="music_qizhen_lakeside","fishing cancel restores source lakeside score")
+	# A prior long frame can make a SceneTreeTimer expire before this actual
+	# source40ms deadline. Exercise that scheduling case without moving a model.
+	await process_frame;OS.delay_msec(180)
+	var cancel_started_ms:=Time.get_ticks_msec()
+	host.cancel_game()
+	while Time.get_ticks_msec()-cancel_started_ms<1500 and audio.music_asset!="music_qizhen_lakeside":await process_frame
+	check(seen("qizhen_fishing_cancelled") and audio.music_asset=="music_qizhen_lakeside" and is_instance_valid(audio.music) and audio.music.playing and not audio.music.stream_paused,"fishing cancel restores source lakeside score")
+	check(Time.get_ticks_msec()-cancel_started_ms>=40 and Time.get_ticks_msec()-cancel_started_ms<=1500,"fishing return retains its original40ms minimum and bounded1500ms deadline")
 	host.queue_free(); await drain()
 	host=Host.new(); root.add_child(host); host.set_process(false); host.presentation_requested.connect(audio.cue)
 	host.setup({"type":"kayak","phase":"chase","session_id":78,"audio_chase_attempt":1}); host.begin()

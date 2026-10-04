@@ -542,7 +542,7 @@ func _layout() -> void:
 
 func _activity_owns_scene() -> bool:
 	# Layout adapters opt into one full-scene owner. The shared host opts in
-	# for chase only; all other activity layouts keep their existing contract.
+	# for chase and source fishing; other activities retain their own contracts.
 	return is_instance_valid(active_game) and active_game.has_method("configure_activity_layout") and (not active_game.has_method("uses_activity_layout") or active_game.uses_activity_layout())
 
 func _authored_world_contract() -> bool:
@@ -1333,6 +1333,7 @@ func _open_game_now(config: Dictionary) -> void:
 		if is_instance_valid(node): node.queue_free()
 		if not callback.is_empty(): State.act(callback,result)
 		_layout()
+		if config.get("type","")=="rhythm": _focus_world_surface.call_deferred()
 	if active_game.has_signal("finished"): active_game.connect("finished",finish)
 	elif active_game.has_signal("completed"): active_game.connect("completed",finish)
 	if active_game.has_signal("cancelled"):
@@ -1343,6 +1344,7 @@ func _open_game_now(config: Dictionary) -> void:
 			active_game = null
 			_layout()
 			if config.get("type","")=="chase":_focus_chase_world.call_deferred()
+			elif config.get("type","")=="rhythm":_focus_world_surface.call_deferred()
 		)
 	if active_game.has_signal("attempt_submitted"):
 		var submitted_game: Control=active_game

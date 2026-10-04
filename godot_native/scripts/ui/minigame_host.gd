@@ -29,6 +29,16 @@ var activity_layout_configured: bool=false
 var activity_compact: bool=false
 var activity_portrait: bool=false
 var chase_view: Control
+var fishing_view: Control
+var fishing_audio_retired := true
+var fishing_controls_button: Button
+var fishing_control_scheme := "auto"
+var fishing_touch_available := false
+var fishing_touch_seen := false
+var fishing_controls_enabled := false
+var fishing_input_layout_pending := false
+var fishing_pointer := ""
+var fishing_direction := ""
 var native_chase_view: Control
 var chase_presentation_error: String=""
 var toolbar_touches: Dictionary={}
@@ -69,10 +79,16 @@ func _ready() -> void:
 func setup(parameters: Dictionary) -> void:
 	config=parameters.duplicate(true)
 	mode=str(config.get("type",""))
+	if mode=="rhythm":
+		fishing_control_scheme=str(config.get("control_scheme","auto"))
+		if fishing_control_scheme not in ["auto","touch","keyboard"]: fishing_control_scheme="auto"
+		fishing_touch_available=DisplayServer.is_touchscreen_available() or OS.has_feature("mobile")
+		fishing_controls_enabled=_fishing_wants_touch_controls()
 	if is_node_ready(): restart()
 
 func restart() -> void:
 	if mode=="chase" and sent: return
+	if mode=="rhythm": _clear_fishing_controls()
 	_audio_close(true)
 	if mode=="chase" and paused:
 		presentation_requested.emit("native_activity_resumed",{"prefixes":_audio_prefixes()})
@@ -90,6 +106,10 @@ func restart() -> void:
 	pending_result.clear()
 	finish_wait=0.0
 	background=null
+	if is_instance_valid(fishing_view):
+		fishing_view.visible=mode=="rhythm"
+		fishing_view.reset_view()
+	if is_instance_valid(fishing_controls_button): fishing_controls_button.visible=mode=="rhythm"
 	_audio_previous.clear(); _audio_seen_notes.clear(); _audio_next_beat=0; _audio_terminal_sent=false; _audio_first_telegraph=false
 	match mode:
 		"chase":
@@ -102,6 +122,13 @@ func restart() -> void:
 			_control("bell","铃铛 J",Rect2(700,446,110,74))
 			_control("item","道具 E",Rect2(821,446,119,74))
 		"rhythm":
+			# Load the original lake art only for its owning activity.
+			if not is_instance_valid(fishing_view):
+				fishing_view=load("res://scripts/ui/lake_fishing_view.gd").new()
+				fishing_view.host=self;add_child(fishing_view);move_child(fishing_view,0)
+			if not is_instance_valid(fishing_controls_button):
+				fishing_controls_button=_button("触控按键",Rect2(),_toggle_fishing_controls)
+				fishing_controls_button.tooltip_text="显示或收起触控按键（T）。键盘和水面拖动始终可用。"
 			model=Fishing.new()
 			var id: String=str(config.get("chartId",config.get("spotId","locker_key")))
 			model.configure(id,Fishing.load_chart(id),bool(config.get("assist",false)))
@@ -177,7 +204,8 @@ func toggle_pause() -> void:
 	if not running or sent: return
 	paused=not paused
 	presentation_requested.emit("native_activity_paused" if paused else "native_activity_resumed",{"prefixes":_audio_prefixes()})
-	if mode in ["chase","rhythm"]: model.neutral()
+	if mode=="rhythm": _clear_fishing_controls()
+	elif mode=="chase": model.neutral()
 	action_sources.clear()
 	touch_sources.clear()
 	toolbar_touches.clear()
@@ -189,15 +217,18 @@ func toggle_pause() -> void:
 func cancel_game() -> void:
 	if sent: return
 	if mode=="chase": _clear_chase_controls()
+	elif mode=="rhythm": _clear_fishing_controls()
 	running=false
-	if mode=="rhythm": presentation_requested.emit("qizhen_fishing_cancelled",_fishing_payload({"reason":"player_cancel"}))
+	# Retire paused owners before the new source return cue is scheduled.
 	_audio_close(false)
+	if mode=="rhythm": presentation_requested.emit("qizhen_fishing_cancelled",_fishing_payload({"reason":"player_cancel"}))
 	cancelled.emit()
 
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_APPLICATION_FOCUS_OUT or (what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and mode=="chase"):
+	if what==NOTIFICATION_APPLICATION_FOCUS_OUT or (what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and mode in ["chase","rhythm"]):
 		if running and not paused: toggle_pause()
 		elif mode=="chase": _clear_chase_controls()
+		elif mode=="rhythm": _clear_fishing_controls()
 
 func press_action(action: String, source: String) -> void:
 	if not running or paused or sent or model==null: return
@@ -212,6 +243,7 @@ func press_action(action: String, source: String) -> void:
 	action_sources[action]=sources
 	model.press(action)
 	_audio_update()
+	if mode=="rhythm": _sync_fishing_button_states()
 
 func release_action(action: String, source: String) -> void:
 	if model==null or mode=="kayak": return
@@ -224,11 +256,31 @@ func release_action(action: String, source: String) -> void:
 		if mode=="chase" and action=="jump" and float(model.air_velocity)>before_velocity: _chase_tone("jump")
 		_audio_update()
 	_check_terminal()
+	if mode=="rhythm": _sync_fishing_button_states()
 
 func _input(event: InputEvent) -> void:
 	if not visible or model==null: return
+	# A real touch already owns the field/toolbar. Its emulated mouse must
+	# not reach a Button and perform the same action again.
+	if mode=="rhythm" and event.device==-1 and (event is InputEventMouseButton or event is InputEventMouseMotion):
+		get_viewport().set_input_as_handled();return
+	if mode=="rhythm" and event is InputEventScreenTouch and event.pressed:
+		fishing_touch_seen=true
+		fishing_input_layout_pending=fishing_control_scheme=="auto"
+	if mode=="rhythm" and event is InputEventScreenDrag and toolbar_touches.has(event.index):
+		var toolbar_owner: Button=toolbar_touches[event.index]
+		_set_fishing_button_held(toolbar_owner,toolbar_owner.get_global_rect().has_point(event.position))
+		get_viewport().set_input_as_handled();return
+	if mode=="rhythm" and _fishing_pointer_input(event):
+		get_viewport().set_input_as_handled();return
 	if event is InputEventKey and not event.echo:
 		var code: int=event.physical_keycode
+		if mode=="rhythm" and code in [KEY_T,KEY_R,KEY_X]:
+			if event.pressed:
+				if code==KEY_T: _toggle_fishing_controls()
+				elif code==KEY_R: restart()
+				elif code==KEY_X: cancel_game()
+			get_viewport().set_input_as_handled();return
 		if code in [KEY_ESCAPE,KEY_P] and event.pressed:
 			toggle_pause()
 			get_viewport().set_input_as_handled()
@@ -251,10 +303,11 @@ func _input(event: InputEvent) -> void:
 		var point: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
 		var source: String="touch:%d"%event.index
 		if event.pressed:
-			if mode=="chase":
-				for button: Button in [start_button,pause_button,retry_button,exit_button]:
+			if mode in ["chase","rhythm"]:
+				for button: Button in _activity_toolbar():
 					if button.visible and not button.disabled and button.get_rect().has_point(point):
 						toolbar_touches[event.index]=button
+						if mode=="rhythm": _set_fishing_button_held(button,true)
 						get_viewport().set_input_as_handled(); return
 			for action: String in control_buttons:
 				var button: Button=control_buttons[action]
@@ -263,14 +316,16 @@ func _input(event: InputEvent) -> void:
 					if mode!="kayak": press_action(action,source)
 					get_viewport().set_input_as_handled()
 					break
-		elif mode=="chase" and toolbar_touches.has(event.index):
+		elif mode in ["chase","rhythm"] and toolbar_touches.has(event.index):
 			var button: Button=toolbar_touches[event.index]
 			toolbar_touches.erase(event.index)
+			if mode=="rhythm": _set_fishing_button_held(button,false)
 			get_viewport().set_input_as_handled()
 			if not event.canceled and is_instance_valid(button) and button.visible and button.get_rect().has_point(point): button.pressed.emit()
 		elif touch_sources.has(event.index):
-			if mode=="chase" and event.canceled:
-				_clear_chase_controls()
+			if mode in ["chase","rhythm"] and event.canceled:
+				if mode=="chase": _clear_chase_controls()
+				else: _clear_fishing_controls()
 				get_viewport().set_input_as_handled(); return
 			var touch: Dictionary=touch_sources[event.index]
 			if mode=="kayak" and running and not paused:
@@ -280,17 +335,19 @@ func _input(event: InputEvent) -> void:
 			touch_sources.erase(event.index)
 			get_viewport().set_input_as_handled()
 
-	if mode=="chase" and event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:
+	if mode in ["chase","rhythm"] and event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:
 		for action: String in action_sources.keys():
 			if action_sources[action].has("mouse:"+action): release_action(action,"mouse:"+action)
 
 func _process(delta: float) -> void:
 	if model==null: return
+	if mode=="rhythm" and fishing_input_layout_pending: _apply_fishing_control_layout()
 	if sent and not pending_result.is_empty():
 		finish_wait-=delta
 		if finish_wait<=0:
 			var result: Dictionary=pending_result.duplicate(true)
 			pending_result.clear()
+			if mode=="rhythm": _audio_close(true)
 			finished.emit(result)
 			return
 	if running and not paused and not sent:
@@ -300,6 +357,7 @@ func _process(delta: float) -> void:
 	if mode=="chase" and is_instance_valid(native_chase_view):
 		native_chase_view.observe_frame_time(delta*1000.0)
 		native_chase_view.update_view(model,minf(delta,.25),paused,running and not sent)
+	if mode=="rhythm" and is_instance_valid(fishing_view): fishing_view.advance_view(delta)
 	_refresh()
 
 func _check_terminal() -> void:
@@ -331,7 +389,7 @@ func _refresh() -> void:
 	_layout_overlay()
 	pause_button.text="继续" if paused else "暂停"
 	headline.text=str(config.get("title",{"chase":"755 米 · 追上纸条","rhythm":"启真湖 · 控线钓鱼","kayak":"启真湖 · 双桨航行"}.get(mode,"7:55")))
-	for button: Button in control_buttons.values(): button.visible=running and not paused
+	for button: Button in control_buttons.values(): button.visible=running and not paused and (mode!="rhythm" or fishing_controls_enabled)
 	if model==null:
 		queue_redraw()
 		return
@@ -361,6 +419,13 @@ func _refresh() -> void:
 		start_button.disabled=false
 		if model.charge>0 and running and not paused: hint.text="蓄力 %d%% · 松开空格或跳跃按钮起跳"%roundi(model.charge*100)
 	queue_redraw()
+	if mode=="rhythm":
+		var keys_visible: bool=not fishing_controls_enabled and size.x>=680
+		pause_button.text=("继续" if paused else "暂停")+(" · Esc" if keys_visible else "")
+		retry_button.text="重试 · R" if keys_visible else "重试"
+		exit_button.text="收竿 · X" if keys_visible else "收竿离开"
+		fishing_controls_button.text="收起按键" if fishing_controls_enabled else "触控按键"
+		_sync_fishing_button_states()
 	if is_instance_valid(chase_view) and chase_view.visible: chase_view.queue_redraw()
 
 func _fishing_hint() -> String:
@@ -372,6 +437,9 @@ func _fishing_hint() -> String:
 	return model.cue
 
 func _layout_overlay() -> void:
+	if mode=="rhythm":
+		_layout_fishing_activity()
+		return
 	if mode=="chase":
 		_layout_chase_activity()
 		return
@@ -417,7 +485,7 @@ func _style_compact_button(button: Button, rect: Rect2, display_scale: float) ->
 	button.size=rect.size
 
 func _draw() -> void:
-	if mode=="chase":
+	if mode in ["chase","rhythm"]:
 		draw_rect(Rect2(Vector2.ZERO,size),Color("102530"))
 		return
 	draw_rect(Rect2(0,0,960,540),Color("102530"))
@@ -591,7 +659,11 @@ func _audio_prefixes() -> Array:
 	return ["native_chase_","canteen_chase_"] if mode=="chase" else ["native_fishing_","qizhen_fishing_"] if mode=="rhythm" else ["qizhen_swan_chase_","rpg_qizhen_chase_"]
 
 func _audio_close(terminal: bool) -> void:
+	if mode=="rhythm":
+		if fishing_audio_retired: return
+		fishing_audio_retired=true
 	var prefixes: Array=["native_chase_","native_fishing_"]
+	if mode=="rhythm": prefixes.append("qizhen_fishing_")
 	if terminal and mode=="chase": prefixes.append("canteen_chase_collision")
 	# Exit releases the exact broad key acquired by Pause, including queued cues.
 	if not terminal and mode=="chase": prefixes.append("canteen_chase_")
@@ -607,6 +679,7 @@ func _chase_tone(kind: String) -> void:
 
 func _audio_begin() -> void:
 	if mode=="rhythm":
+		fishing_audio_retired=false
 		presentation_requested.emit("qizhen_fishing_started",_fishing_payload({"chartId":model.chart_id,"targetLabel":config.get("title",""),"totalNotes":model.notes.size(),"assist":model.assist}))
 	elif mode=="kayak" and model.phase=="chase":
 		presentation_requested.emit("rpg_qizhen_chase_started" if _audio_attempts==0 else "rpg_qizhen_chase_restarted",{"zone":"channel"})
@@ -670,10 +743,16 @@ func _audio_update() -> void:
 func _metronome_time(beat: int) -> float:
 	return beat*float(model.beat_sec) if beat<4 else 4*float(model.beat_sec)+float(model.phrase_time(beat-4))
 
-## Opt in only chase; fishing/kayak retain their original shared-host layout.
-func uses_activity_layout() -> bool: return mode=="chase"
+## Native activity ownership keeps the exploration HUD behind the active game.
+func uses_activity_layout() -> bool: return mode in ["chase","rhythm"]
 
 func configure_activity_layout(available: Vector2,compact: bool) -> void:
+	if mode=="rhythm":
+		if size!=available or activity_compact!=compact: _clear_fishing_controls()
+		activity_layout_configured=true;activity_compact=compact;activity_portrait=available.y>available.x
+		custom_minimum_size=Vector2.ZERO;size=available;scale=Vector2.ONE;position=Vector2.ZERO
+		_overlay_signature="";_refresh()
+		return
 	if mode!="chase": return
 	activity_layout_configured=true
 	if activity_compact!=compact or size!=available: _clear_chase_controls()
@@ -786,3 +865,143 @@ func _ensure_native_chase_view() -> void:
 func dispose_presentation() -> void:
 	if is_instance_valid(native_chase_view):native_chase_view.dispose()
 	native_chase_view=null
+
+
+func _activity_toolbar() -> Array:
+	var buttons: Array=[start_button,pause_button,retry_button,exit_button]
+	if mode=="rhythm" and is_instance_valid(fishing_controls_button): buttons.append(fishing_controls_button)
+	return buttons
+
+func _fishing_wants_touch_controls() -> bool:
+	return fishing_control_scheme=="touch" or (fishing_control_scheme=="auto" and (fishing_touch_available or fishing_touch_seen))
+
+func _toggle_fishing_controls() -> void:
+	if mode!="rhythm": return
+	# Changing the input layout cannot turn a held gesture into a scored release.
+	if running and not paused: toggle_pause()
+	_clear_fishing_controls()
+	fishing_control_scheme="keyboard" if fishing_controls_enabled else "touch"
+	fishing_input_layout_pending=true
+	_apply_fishing_control_layout()
+
+func _apply_fishing_control_layout() -> void:
+	if not fishing_pointer.is_empty() or not touch_sources.is_empty() or (model is Fishing and not model.controls.is_empty()): return
+	fishing_input_layout_pending=false
+	var enabled: bool=_fishing_wants_touch_controls()
+	if enabled==fishing_controls_enabled: return
+	fishing_controls_enabled=enabled
+	_overlay_signature=""
+	_refresh()
+
+func _put_fishing_button(button: Button,rect: Rect2,point_size: int=16) -> void:
+	# Visible borders and input bounds share the same physical pixel grid.
+	_put(button,Rect2(rect.position.round(),rect.size.floor()),point_size)
+	NativeUi.apply_button(button,Color("163c3e"),Color("fff0c2"),Color("b4a77b"),0,2,point_size,Vector2(8,5),Color("76dfc9"))
+	var pressed: StyleBoxFlat=NativeUi.box(Color("dcc783"),Color("092f36"),2,0,Vector2(8,5))
+	pressed.content_margin_left=9;pressed.content_margin_right=7
+	pressed.content_margin_top=6;pressed.content_margin_bottom=4
+	button.add_theme_stylebox_override("pressed",pressed)
+	button.add_theme_stylebox_override("hover_pressed",pressed)
+	button.add_theme_color_override("font_pressed_color",Color("092f36"))
+	button.add_theme_color_override("font_hover_pressed_color",Color("092f36"))
+	button.set_meta("fishing_rest_normal",button.get_theme_stylebox("normal"))
+	button.set_meta("fishing_rest_hover",button.get_theme_stylebox("hover"))
+	button.set_meta("fishing_held",false)
+
+func _set_fishing_button_held(button: Button,held: bool) -> void:
+	if not is_instance_valid(button) or not button.has_meta("fishing_rest_normal"): return
+	if bool(button.get_meta("fishing_held",false))==held: return
+	button.set_meta("fishing_held",held)
+	button.add_theme_stylebox_override("normal",button.get_theme_stylebox("pressed") if held else button.get_meta("fishing_rest_normal"))
+	button.add_theme_stylebox_override("hover",button.get_theme_stylebox("pressed") if held else button.get_meta("fishing_rest_hover"))
+	var ink:=Color("092f36") if held else Color("fff0c2")
+	button.add_theme_color_override("font_color",ink);button.add_theme_color_override("font_hover_color",ink)
+
+func _sync_fishing_button_states() -> void:
+	if not model is Fishing: return
+	for action: String in control_buttons:
+		_set_fishing_button_held(control_buttons[action],model.controls.has(action) and running and not paused)
+
+func _layout_fishing_activity() -> void:
+	if not is_instance_valid(fishing_view) or not control_buttons.has("hook"): return
+	var signature := str([size,control_buttons.size(),fishing_controls_enabled])
+	if signature==_overlay_signature: return
+	_overlay_signature=signature
+	headline.hide();status.hide();hint.hide();chase_view.hide()
+	var short: bool=size.y<520
+	var footer: float=(136 if not short else 110) if fishing_controls_enabled else 60
+	fishing_view.position=Vector2.ZERO;fishing_view.size=Vector2(size.x,maxf(220,size.y-footer));fishing_view.show()
+	var column: float=floorf((size.x-32)/3.0)
+	for i in range(3):
+		var button: Button=control_buttons[["left","hook","right"][i]]
+		button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var x: float=8+i*(column+8)
+		_put_fishing_button(button,Rect2(x,size.y-footer+8,(size.x-8-x) if i==2 else column,48 if short else 64))
+	control_buttons.left.text="左控线";control_buttons.right.text="右控线"
+	var toolbar: Array=[fishing_controls_button,pause_button,retry_button,exit_button]
+	var toolbar_column: float=112 if size.x>=680 else floorf((size.x-40)/4.0)
+	var left: float=size.x-4*toolbar_column-24-12 if size.x>=680 else 8
+	for i in range(4):
+		var x: float=left+i*(toolbar_column+8)
+		var width: float=(size.x-8-x) if size.x<680 and i==3 else toolbar_column
+		_put_fishing_button(toolbar[i],Rect2(x,size.y-52,width,44))
+	fishing_controls_button.show()
+	_put_fishing_button(start_button,fishing_view.start_rect(),18)
+	fishing_view.advance_view(0)
+
+func _clear_fishing_controls() -> void:
+	if model is Fishing and not model.controls.is_empty(): model.neutral()
+	fishing_pointer="";fishing_direction=""
+	action_sources.clear();touch_sources.clear();toolbar_touches.clear()
+	for button: Button in _activity_toolbar(): _set_fishing_button_held(button,false)
+	_sync_fishing_button_states()
+
+func _fishing_follow(point: Vector2) -> void:
+	if fishing_pointer.is_empty() or not running or paused or sent: return
+	var target: float=clampf((point.x-fishing_view.size.x*.5)/(fishing_view.size.x*.29),-1,1)
+	var direction: String="" if absf(target-model.line_x)<.08 else ("right" if target>model.line_x else "left")
+	if direction==fishing_direction: return
+	if not fishing_direction.is_empty(): release_action(fishing_direction,"field_direction")
+	fishing_direction=direction
+	if not direction.is_empty(): press_action(direction,"field_direction")
+
+func _fishing_release_pointer() -> void:
+	if fishing_pointer.is_empty(): return
+	var source: String=fishing_pointer
+	fishing_pointer=""
+	if not fishing_direction.is_empty(): release_action(fishing_direction,"field_direction")
+	fishing_direction=""
+	release_action("hook",source)
+
+func _fishing_pointer_input(event: InputEvent) -> bool:
+	if not is_instance_valid(fishing_view): return false
+	var position: Vector2
+	var source: String=""
+	var press := false
+	var release := false
+	var motion := false
+	var canceled := false
+	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.device!=-1:
+		position=event.position;source="field_mouse";press=event.pressed;release=not event.pressed
+	elif event is InputEventMouseMotion and event.device!=-1:
+		position=event.position;source="field_mouse";motion=true
+	elif event is InputEventScreenTouch:
+		position=event.position;source="field_touch:%d"%event.index;press=event.pressed;release=not event.pressed;canceled=event.canceled
+	elif event is InputEventScreenDrag:
+		position=event.position;source="field_touch:%d"%event.index;motion=true
+	else: return false
+	var point: Vector2=fishing_view.get_global_transform_with_canvas().affine_inverse()*position
+	if fishing_pointer==source:
+		if canceled: _clear_fishing_controls()
+		elif release: _fishing_release_pointer()
+		elif motion: _fishing_follow(point)
+		return true
+	if not fishing_pointer.is_empty(): return source.begins_with("field_touch:")
+	if not press or not running or paused or sent or not Rect2(Vector2.ZERO,fishing_view.size).has_point(point): return false
+	# Actual native buttons keep their own press/release contract, including Start.
+	for button: Button in _activity_toolbar():
+		if button.visible and button.get_global_rect().has_point(position): return false
+	fishing_pointer=source
+	press_action("hook",source)
+	_fishing_follow(point)
+	return true

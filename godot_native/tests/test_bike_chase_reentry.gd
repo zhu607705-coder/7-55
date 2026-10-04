@@ -47,10 +47,14 @@ func run() -> void:
 	state.d.native.scene="campus_bootstrap";shell._show_settings();shell._show_world_mobile();await frames()
 	check(not is_instance_valid(shell.active_game) and chase_starts==count,"existing modal retains input ownership")
 	shell._close_modal()
-	# Shared host opt-out leaves fishing/kayak on their existing layout path.
+	# Shared host keeps each activity on its explicitly supported layout path.
 	for mode: String in ["rhythm","kayak"]:
 		shell._open_game({"type":mode,"phase":"boarding","goal":4,"spotId":"locker_key"});await frames()
-		check(not shell._activity_owns_scene() and shell.active_game.size==Vector2(960,540),"shared host opts out unchanged for "+mode)
+		if mode=="rhythm":
+			check(shell._activity_owns_scene() and shell.active_game.size==shell.size and shell.active_game.scale==Vector2.ONE,"fishing owns one unscaled full-scene activity surface")
+			check(shell.active_game.fishing_view.visible and shell.active_game.fishing_view.size.y>=shell.size.y*.6,"fishing keeps its restored source field at a readable physical size")
+		else:
+			check(not shell._activity_owns_scene() and shell.active_game.size==Vector2(960,540),"kayak retains its existing layout path")
 		shell.active_game.cancel_game();await frames()
 	await close_main()
 	print("BIKE_CHASE_REENTRY: ",checks," checks; ",failures," failures; starts=",chase_starts)
