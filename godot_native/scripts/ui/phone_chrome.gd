@@ -55,8 +55,9 @@ class PixelShadow extends Control:
 	func _process(_dt: float) -> void:
 		if not is_instance_valid(target): return
 		visible=target.visible
-		position=target.position+offset
-		size=target.size
+		var painted:Rect2=target.get_meta("painted_rect",Rect2(Vector2.ZERO,target.size))
+		position=target.position+painted.position+offset
+		size=painted.size
 		scale=target.scale
 		pivot_offset=target.pivot_offset
 		modulate=target.modulate
@@ -169,6 +170,8 @@ var brightness_veil: ColorRect
 var pixel_grid: PixelGrid
 var acquisition: Panel
 var inventory_open := false
+var _inventory_anchor_signature:Array=[]
+var _inventory_anchor_context:Array=[]
 var inventory_top := INVENTORY_TOP_DEFAULT
 var owned: Array = []
 var catalog: Dictionary = {}
@@ -462,6 +465,7 @@ func _inspect_inventory_item(id: String) -> void:
 	inspect_requested.emit(catalog.get(id,{"id":id,"name":id}))
 
 func _on_handle_input(event: InputEvent) -> void:
+	if _reading_inventory_anchor() and not inventory_open: return
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_bar_dragging=true; _bar_moved=false; _bar_drag_start=get_global_mouse_position().y; _bar_top_start=inventory_top
@@ -491,6 +495,80 @@ func set_inventory_top(top: float) -> void:
 	var height:=inventory.size.y if is_instance_valid(inventory) else 63.0
 	inventory_top=clampf(top,INVENTORY_TOP_MIN,maxf(INVENTORY_TOP_MIN,860-height-INVENTORY_BOTTOM_GAP))
 	if is_instance_valid(inventory): inventory.position=Vector2(0,inventory_top)
+	_inventory_anchor_signature=[]
+	_layout_inventory_anchor()
+
+func _reading_inventory_anchor() -> bool:
+	return not bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and str(state.get("native",{}).get("page","")) in ["c35_voice","c35_recovery"]
+
+func _layout_inventory_anchor() -> void:
+	if not _built or not is_instance_valid(inventory_handle): return
+	var context:Array=[_reading_inventory_anchor(),str(state.get("native",{}).get("page","")),get_global_transform(),time_box.get_rect(),task_button.get_rect(),inventory_open]
+	if not _inventory_anchor_context.is_empty() and context!=_inventory_anchor_context and (context[0] or _inventory_anchor_context[0]):
+		# A pointer owned by the outgoing page/anchor cannot drop into its replacement.
+		# Deliberate vertical movement of an open drawer is not a context change.
+		inventory_gestures.reset();_bar_dragging=false;_bar_moved=false;_suppress_handle_click=false
+		for slot in inventory_slots.get_children():slot.cancel_gesture()
+	_inventory_anchor_context=context
+	var signature:Array=[inventory_open,_reading_inventory_anchor(),get_global_transform(),inventory_top,time_box.get_rect(),task_button.get_rect(),inventory_count.size]
+	if signature==_inventory_anchor_signature:return
+	_inventory_anchor_signature=signature
+	var icon:Control=inventory_handle.get_node("BackpackIcon")
+	inventory_handle.remove_meta("painted_rect")
+	# The expanded drawer keeps its authored drag/inspection/combine geometry.
+	inventory.position=Vector2(0,inventory_top)
+	inventory_handle.position=Vector2(74 if inventory_open else 0,0)
+	inventory_handle.size=Vector2(40 if inventory_open else 38,63)
+	_set_inventory_painted_rect(Rect2(Vector2.ZERO,inventory_handle.size))
+	if not inventory_open:inventory.size=Vector2(38,63)
+	inventory_arrow.visible=true;inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
+	icon.position=Vector2(5,10)
+	inventory_count.position=Vector2(inventory_handle.size.x-inventory_count.size.x+8,-8)
+	if inventory_open or not _reading_inventory_anchor():return
+	var factor:float=maxf(.001,get_global_transform().get_scale().x)
+	var edge:float=44.0/factor
+	var gap_left:float=time_box.position.x+time_box.size.x+8
+	var gap_right:float=task_button.position.x-8
+	var header_face:bool=false
+	if get_global_position().x>=52:
+		inventory.position.x=-(edge+8/factor)
+		inventory_handle.size=Vector2(edge,maxf(edge,63))
+	elif gap_right-gap_left>=edge:
+		# The existing empty header gap provides a44px control without reducing
+		# the authored app canvas, wrapping clue text or covering its scroll area.
+		inventory.position=Vector2((gap_left+gap_right-edge)/2,40-edge)
+		inventory_handle.size=Vector2(edge,edge)
+		inventory_arrow.visible=false;header_face=true
+	elif get_global_position().y>=52:
+		inventory.position=Vector2((CONTENT_SIZE.x-edge)/2,-edge-8/factor)
+		inventory_handle.size=Vector2(edge,edge);inventory_arrow.visible=false
+	else:
+		return
+	inventory.size=inventory_handle.size
+	inventory_handle.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
+	icon.position=Vector2((inventory_handle.size.x-26)/2,8 if inventory_arrow.visible else (inventory_handle.size.y-26)/2)
+	inventory_count.position=Vector2(maxf(1,inventory_handle.size.x-inventory_count.size.x-2),1)
+	if header_face:
+		var painted:Rect2=Rect2((edge-38)/2,5-inventory.position.y,38,30)
+		_set_inventory_painted_rect(painted)
+		icon.position=painted.position+Vector2(6,2)
+		inventory_count.position=painted.position+Vector2(maxf(1,painted.size.x-inventory_count.size.x-2),1)
+	else:
+		_set_inventory_painted_rect(Rect2(Vector2.ZERO,inventory_handle.size))
+
+func _set_inventory_painted_rect(rect:Rect2) -> void:
+	# The hit area can be larger than its face. Shadows/focus follow the face,
+	# so transparent hit padding never looks like a floating block above the phone.
+	inventory_handle.set_meta("painted_rect",rect)
+	for role:String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
+		var original:StyleBox=inventory_handle.get_theme_stylebox(role)
+		if not original is StyleBoxFlat:continue
+		var box:StyleBoxFlat=original.duplicate()
+		box.expand_margin_left=-rect.position.x
+		box.expand_margin_top=-rect.position.y
+		box.expand_margin_right=-(inventory_handle.size.x-rect.end.x)
+		box.expand_margin_bottom=-(inventory_handle.size.y-rect.end.y)
+		inventory_handle.add_theme_stylebox_override(role,box)
 
 func set_input_blocked(blocked: bool) -> void:
 	input_blocked=blocked
@@ -508,6 +586,7 @@ func _start_acquisition(id: String) -> void:
 
 func _process(_delta: float) -> void:
 	if not _built: return
+	_layout_inventory_anchor()
 	var now:=Time.get_ticks_msec()/1000.0
 	var critical_phase:=fmod(now,0.8)>=0.4
 	if critical_phase!=_last_critical_phase:
