@@ -82,6 +82,7 @@ var mobile_mouse_control := false
 var capture_mode := false
 var host_node: Control
 var touch_points: Dictionary = {}
+var kayak_mouse_gesture: Dictionary = {}
 var chapter4_layers: RefCounted
 var library_layers: RefCounted
 var chapter3_layers: RefCounted
@@ -138,6 +139,7 @@ func refresh_world() -> void:
 		return
 	object_picker.clear()
 	_cancel_floor_route()
+	kayak_mouse_gesture.clear()
 	world_key = key
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
@@ -386,6 +388,7 @@ func _sync_player() -> void:
 
 func _process(delta: float) -> void:
 	delta=minf(delta,.05)
+	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
 	if _floor_feedback_left>0:
 		_floor_feedback_left=maxf(0,_floor_feedback_left-delta)
 		if _floor_feedback_left==0 and _floor_route.is_empty(): _floor_goal=Vector2.INF; _floor_status=""
@@ -696,6 +699,7 @@ func _shell_input_blocked() -> bool:
 func _gui_input(event: InputEvent) -> void:
 	if capture_mode or _scene_presentation_blocks() or _shell_input_blocked(): return
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_effect")) and host_node.world_effect.get_meta("blocks_input",false): return
+	if _kayak_mouse_input(event): accept_event(); return
 	if mobile_exploration and _mobile_exploration_input(event): return
 	if event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_RIGHT or event.button_mask & MOUSE_BUTTON_MASK_MIDDLE):
 		pan_offset -= event.relative/zoom
@@ -903,11 +907,76 @@ func _guard_can_stand(point: Vector2,walls: Array) -> bool:
 	return point.x>=extent.x and point.y>=extent.y and point.x<=world_size.x-extent.x and point.y<=world_size.y-extent.y
 
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and mobile_exploration: cancel_exploration_gestures()
+	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and (mobile_exploration or not kayak_mouse_gesture.is_empty()): cancel_exploration_gestures()
 
 func cancel_exploration_gestures() -> void:
 	touch_axis=Vector2.ZERO; touch_points.clear(); mobile_touch_roles.clear(); mobile_mouse_control=false; move_target=Vector2.INF
+	kayak_mouse_gesture.clear()
 	_cancel_floor_route()
+
+func kayak_paddle_rects() -> Dictionary:
+	return {"left":Rect2(70,size.y-176,100,92),"right":Rect2(size.x-170,size.y-176,100,92)}
+
+func _kayak_mouse_context() -> Array:
+	return [world_key,size,host_node.world_view.get_global_rect() if is_instance_valid(host_node) else get_global_rect(),kayak.get_instance_id() if kayak!=null else 0]
+
+func _kayak_mouse_valid() -> bool:
+	if kayak==null or not is_visible_in_tree() or not (touch_controls or mobile_exploration) or _interaction_presentation_blocks() or _shell_input_blocked() or capture_mode: return false
+	if is_instance_valid(host_node):
+		if not is_instance_valid(host_node.world_frame) or not host_node.world_frame.is_visible_in_tree(): return false
+		if is_instance_valid(host_node.get("world_effect")) and host_node.world_effect.get_meta("blocks_input",false): return false
+	return kayak_mouse_gesture.get("context",[])==_kayak_mouse_context()
+
+func _kayak_root_point(point: Vector2) -> Vector2:
+	if not is_instance_valid(host_node): return get_global_transform_with_canvas()*point
+	var view: Control=host_node.world_view
+	var pixel: Vector2=get_global_transform_with_canvas()*point
+	return view.get_global_transform_with_canvas()*(pixel*view.size/Vector2(get_viewport().size))
+
+func _kayak_finger_owns(side: String) -> bool:
+	for gesture: Dictionary in mobile_touch_roles.values():
+		if gesture.role=="paddle" and ("left" if gesture.start.x<size.x/2 else "right")==side: return true
+	for point: Vector2 in touch_points.values():
+		if ("left" if point.x<size.x/2 else "right")==side: return true
+	return false
+
+func _kayak_mouse_input(event: InputEvent) -> bool:
+	if kayak==null or not (touch_controls or mobile_exploration): return false
+	# A finger already has its own source route. Its emulated mouse is never a
+	# second stroke; a real simultaneous pointer cannot claim the same paddle.
+	if event is InputEventScreenTouch and event.pressed and not kayak_mouse_gesture.is_empty():
+		return kayak_paddle_rects()[kayak_mouse_gesture.side].has_point(event.position)
+	if not (event is InputEventMouseButton or event is InputEventMouseMotion): return false
+	if event.device==-1: return true
+	if not kayak_mouse_gesture.is_empty():
+		var copy: InputEvent=event.duplicate(); copy.position=_kayak_root_point(event.position)
+		return handle_root_kayak_pointer(copy)
+	if not event is InputEventMouseButton or event.button_index!=MOUSE_BUTTON_LEFT or not event.pressed: return false
+	for side: String in kayak_paddle_rects():
+		if not kayak_paddle_rects()[side].has_point(event.position): continue
+		if _kayak_finger_owns(side): return true
+		var point:=_kayak_root_point(event.position)
+		kayak_mouse_gesture={"side":side,"start":point,"last":point,"context":_kayak_mouse_context(),"scale":hud_display_scale()}
+		_cancel_floor_route(); grab_focus(); queue_redraw()
+		return true
+	return false
+
+func handle_root_kayak_pointer(event: InputEvent) -> bool:
+	# Main forwards an owned release before GUI routing, including outside the
+	# SubViewport. Like source pointer capture, leaving the button is not cancel.
+	if kayak_mouse_gesture.is_empty() or not (event is InputEventMouseButton or event is InputEventMouseMotion): return false
+	if not _kayak_mouse_valid(): kayak_mouse_gesture.clear(); return false
+	if event.device==-1: return true
+	if event is InputEventMouseMotion:
+		kayak_mouse_gesture.last=event.position; queue_redraw(); return true
+	if event.button_index!=MOUSE_BUTTON_LEFT: return false
+	if not event.pressed:
+		var gesture: Dictionary=kayak_mouse_gesture; kayak_mouse_gesture={}
+		# Match the existing native finger threshold; physics/impulse are still
+		# exclusively dispatched by the controller's original world-stroke owner.
+		State.lake_world_stroke(self,str(gesture.side),(event.position.y-gesture.start.y)/maxf(.01,float(gesture.scale))>24)
+		queue_redraw()
+	return true
 
 func mobile_control_metrics() -> Dictionary:
 	# Physical-pixel controls occupy a reserved strip above the subtitle.
@@ -993,9 +1062,15 @@ func _draw_touch_controls() -> void:
 		return
 	var caption_font := CompactOverlay.font_size(22 if kayak else 21,12,hud_display_scale())
 	if kayak:
-		for x in [70.0,size.x-170.0]:
-			draw_rect(Rect2(x,size.y-176,100,92),Color(.02,.10,.13,.65))
-			draw_string(font,Vector2(x+18,size.y-130),"左桨" if x<100 else "右桨",HORIZONTAL_ALIGNMENT_CENTER,64,caption_font,Color.WHITE)
+		for side: String in kayak_paddle_rects():
+			var rect: Rect2=kayak_paddle_rects()[side]
+			var held: bool=kayak_mouse_gesture.get("side","")==side
+			draw_rect(rect,Color(.02,.10,.13,.84 if held else .65))
+			draw_rect(rect,Color("dbc487") if held else Color("52767a"),false,2 if held else 1)
+			draw_string(font,rect.position+Vector2(18,46),"左桨" if side=="left" else "右桨",HORIZONTAL_ALIGNMENT_CENTER,64,caption_font,Color.WHITE)
+			if held:
+				var reverse: bool=(kayak_mouse_gesture.last.y-kayak_mouse_gesture.start.y)/maxf(.01,float(kayak_mouse_gesture.scale))>24
+				draw_string(font,rect.position+Vector2(8,74),"↓ 后退" if reverse else "松开划桨",HORIZONTAL_ALIGNMENT_CENTER,84,CompactOverlay.font_size(13,12,hud_display_scale()),Color("e9d8aa"))
 	else:
 		var origin := Vector2(90,size.y-140)
 		draw_circle(origin,65,Color(.02,.10,.13,.65))

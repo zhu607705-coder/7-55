@@ -861,6 +861,8 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 
 func _input(event: InputEvent) -> void:
 	_sync_inventory_dock_input()
+	if is_instance_valid(world) and world.handle_root_kayak_pointer(event):
+		get_viewport().set_input_as_handled(); return
 	if not is_instance_valid(modal) or not event is InputEventKey or not event.pressed: return
 	if modal.has_method("handle_key") and modal.handle_key(event):
 		get_viewport().set_input_as_handled();return
