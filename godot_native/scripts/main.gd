@@ -1005,13 +1005,16 @@ func _refresh_inventory_dock() -> void:
 			existing.erase(id)
 			continue
 		var entry: Dictionary = item
-		var button = load("res://scripts/ui/inventory_item.gd").new()
+		var button = load("res://scripts/ui/world_inventory_item.gd").new()
 		button.name="WorldItem_"+id
 		button.item_id = id
 		button.text = str(item.name)
 		button.custom_minimum_size = Vector2(86,48)
 		button.add_theme_font_size_override("font_size",14)
 		button.gestures=inventory_gestures
+		button.can_combine=func(from_id: String,to_id: String) -> bool:
+			return world_frame.is_visible_in_tree() and not _inventory_dock_input_blocked() and bool(State.d.items.get(from_id,false)) and bool(State.d.items.get(to_id,false))
+		button.combination_requested.connect(_combine_inventory_items)
 		button.selection_requested.connect(func(item_id: String):
 			if not _inventory_dock_input_blocked(): State.select_item(item_id)
 		)
