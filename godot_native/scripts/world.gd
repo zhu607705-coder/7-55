@@ -90,6 +90,9 @@ var furniture_drag_preview: Label
 var presentation_actor_hidden := false
 var kayak_visual: RefCounted = KayakVisual.new()
 var lake_session: RefCounted
+const KAYAK_BOUNDARY_HINT_COOLDOWN_MS:=2400
+const KAYAK_BOUNDARY_HINT_DURATION:=2.2
+var _kayak_boundary_hint_at: int=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 var object_picker: RefCounted=ObjectPicker.new()
 
 func _ready() -> void:
@@ -111,6 +114,7 @@ func _ready() -> void:
 		guard_model = load("res://scripts/games/chapter4_guard_model.gd")
 		guard_sheet = load("res://assets/rpg/npcs/finale/guard_walk_8frame.png")
 	State.feedback.connect(func(text): subtitle = text; subtitle_left = clampf(1.6+text.length()*.12,2.4,6.5))
+	State.story_reset.connect(func(): _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS)
 	if ResourceLoader.exists("res://scripts/ui/chapter4_world_layers.gd"):
 		chapter4_layers = load("res://scripts/ui/chapter4_world_layers.gd").new()
 	if ResourceLoader.exists("res://scripts/ui/chapter3_world_layers.gd"):
@@ -122,6 +126,7 @@ func _ready() -> void:
 func refresh_world() -> void:
 	if worlds.is_empty() or State.d.is_empty(): return
 	var incoming := str(State.d.native.scene)
+	if incoming!=scene_id: _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 	if library_layers!=null: library_layers.sync(State.d,incoming!=scene_id)
 	if chapter3_layers!=null: chapter3_layers.sync(State.d,incoming!=scene_id)
 	if incoming.is_empty(): return
@@ -386,6 +391,16 @@ func _sync_player() -> void:
 	if not State.d.native.has("positions"): State.d.native.positions = {}
 	State.d.native.positions[world_key] = {"x":player.x,"y":player.y}
 
+func _show_kayak_boundary_feedback(at_ms: int=-1) -> bool:
+	if scene_id!="qizhen_lake" or kayak==null: return false
+	var now: int=Time.get_ticks_msec() if at_ms<0 else at_ms
+	if now-_kayak_boundary_hint_at<KAYAK_BOUNDARY_HINT_COOLDOWN_MS: return false
+	_kayak_boundary_hint_at=now
+	var content: Dictionary=State.content("chapter3-qizhen-lake.content.json")
+	State.feedback.emit(str(content.boarding.boundaryBlocked))
+	subtitle_left=KAYAK_BOUNDARY_HINT_DURATION
+	return true
+
 func _process(delta: float) -> void:
 	delta=minf(delta,.05)
 	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
@@ -448,7 +463,9 @@ func _process(delta: float) -> void:
 		if lake_session==null or lake_session.status!="recovering":
 			kayak.update(delta)
 			if can_stand(kayak.position): player = kayak.position
-			else: kayak.position = previous; kayak.speed = 0
+			else:
+				kayak.position = previous; kayak.speed = 0
+				_show_kayak_boundary_feedback()
 		_sync_player()
 		State.lake_world_tick(self,delta)
 		lake_session=State.lake_module().live_session if State.lake_module()!=null else null
