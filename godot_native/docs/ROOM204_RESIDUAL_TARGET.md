@@ -1,0 +1,13 @@
+# Retire the observed Room204 residual target
+
+After the residual clue was recorded, the native room-wide observation target remained active. It intercepted most clicks on the smaller wooden podium drawer and remained the nearest keyboard target. The original RpgInteractionContract.ts766–786 explicitly retires this target once room204_residual_observed exists.
+
+The runtime change is one condition in Chapter4.targets: append the residual target only while that original observation is unearned. No bounds, pick priority, artwork, collision, input authority, completion condition or timing changes. Earlier saves still expose the original dark observation. The podium retains its existing projection and subsequent plate-pickup actions.
+
+The before/after test uses the real World._record_plate_targets and World._pick_target with source geometry. Before:23checks,11failures. After:23/23, including both modes, center/edges, old-save reentry, later plate target retirement, floor exit, unchanged collisions and read-only picking. Source-guidance57, general picking53, mobile Room204 drag126 and native-object1315 pass. Initial isolated mobile test failed to load its two inherited fixture files; after copying those unchanged dependencies it and the remaining native-object test pass. This is reconciled affected validation, not an uninterrupted full suite.
+
+Actual1180 source-run: unmodified earned all12 save reloads; walking close then clicking the podium center produces the original missing-duty-board explanation. PhoneP/Escape and Space reach the same action. Immediate F12 images51538 and87143 retain the sentence. The same run continued through actual201 calibration,203 circuit and shared-study route controls; all3 original A2records were earned and Tasks advanced to the original stop-record goal. Prior source/test knowledge means this is operation/flow proof rather than independent puzzle discovery. Dummy audio, no hearing or finger-touch claim. Specific F10 Save remains previously denied/unverified and was not retried. No fresh package yet.
+
+Separate open observation: some Space presses after panel/mode transitions did not open a device, while pointer interaction worked. Cause is unclassified and no fix is claimed here. The shared-study route artwork is visible inside the device panel; its floor hotspot's discoverability remains a separate world-object concern.
+
+Three proposed files: controller, focused target test, this document. Depends on the frozen source-guidance controller candidate; neither it nor the earlier26-file proposal is modified. Git submission/progress entry require exact scope selection. No staging, commit or publication performed.

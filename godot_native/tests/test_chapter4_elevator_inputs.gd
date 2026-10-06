@@ -1,5 +1,5 @@
 extends "res://tests/test_chapter4_device_main.gd"
-## Actual native slider/buttons and timed transport, from an explicit A1 fixture.
+## Actual native source arrow/buttons and timed transport, from an explicit A1 fixture.
 func live_button(parent: Node,text: String) -> Button:
 	for child in parent.get_children():
 		if child is Button and not child.is_queued_for_deletion() and child.text==text: return child
@@ -14,22 +14,20 @@ func run() -> void:
 	state_node.act("c4_elevator_align"); await frames(3)
 	var activity=shell.active_game
 	check(is_instance_valid(activity) and activity.kind=="elevator_alignment","actual controller mounts elevator activity")
-	await mouse_click(live_button(activity.controls,"开始轨迹回放")); await frames(3)
-	await mouse_click(live_button(activity.controls,"走入电梯"))
+	await mouse_click(live_button(activity.elevator_panel.controls,"重放并校验")); await frames(3)
+	await mouse_click(live_button(activity.elevator_panel.controls,"走入电梯"))
 	check(await wait_until(func(): return activity.stage=="select"),"wrong replay completes through real six-second clock")
 	check(not state_node.d.chapter4.elevatorTrackAligned and state_node.d.chapter4.floor=="A1","wrong start/boarding cannot grant travel")
-	var slider: HSlider
-	for child in activity.controls.get_children():
-		if child is HSlider and not child.is_queued_for_deletion(): slider=child
-	await mouse_click(slider); await press_key(KEY_HOME)
-	for i in range(int(activity.config.timeline.correctReplayStartSeconds)-int(slider.min_value)): await press_key(KEY_RIGHT)
-	check(activity.selection==int(activity.config.timeline.correctReplayStartSeconds),"actual slider Home/Right selects source start")
-	await mouse_click(live_button(activity.controls,"开始轨迹回放")); await frames(3)
+	check(activity.elevator_panel.readout.text.contains("校验结果"),"actual failed replay retains source feedback")
+	await press_key(KEY_LEFT)
+	for i in range(int(activity.config.timeline.correctReplayStartSeconds)-int(activity.config.timeline.selectableStartMinSeconds)): await press_key(KEY_RIGHT)
+	check(activity.selection==int(activity.config.timeline.correctReplayStartSeconds),"actual source arrow keys select door start")
+	await mouse_click(live_button(activity.elevator_panel.controls,"重放并校验")); await frames(3)
 	# Correct time without boarding must also remain incomplete.
 	check(await wait_until(func(): return activity.stage=="select"),"missed boarding stays retryable after real six-second clock")
 	check(not state_node.d.chapter4.elevatorTrackAligned,"time alone cannot calibrate")
-	await mouse_click(live_button(activity.controls,"开始轨迹回放")); await frames(3)
-	await mouse_click(live_button(activity.controls,"走入电梯"))
+	await mouse_click(live_button(activity.elevator_panel.controls,"重放并校验")); await frames(3)
+	await mouse_click(live_button(activity.elevator_panel.controls,"走入电梯"))
 	check(await wait_until(func(): return shell.active_game==null),"correct time and real Board completes actual activity")
 	check(state_node.d.chapter4.elevatorTrackAligned and state_node.d.chapter4.floor=="A1","calibration earns fact but does not teleport")
 	state_node.act("c4_elevator_ride"); await frames(2)

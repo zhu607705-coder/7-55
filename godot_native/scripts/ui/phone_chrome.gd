@@ -500,7 +500,13 @@ func set_inventory_top(top: float) -> void:
 
 func _reading_inventory_anchor() -> bool:
 	var page: String=str(state.get("native",{}).get("page",""))
-	return page=="c3_lake" or (not bool(state.get("chapterThreeInterlude",{}).get("completed",false)) and page in ["c35_voice","c35_recovery"])
+	if page in ["c4_notes","c4_device"]: return true
+	if page=="c3_lake":return true
+	if bool(state.get("chapterThreeInterlude",{}).get("completed",false)):return false
+	# Home's Photos app aliases the recovered frames only after the lake ending.
+	# Match that page's existing admission rule without changing its story state.
+	if page=="photos":return str(state.get("qizhenLake",{}).get("phase",""))=="complete"
+	return page in ["c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network"]
 
 func _layout_inventory_anchor() -> void:
 	if not _built or not is_instance_valid(inventory_handle): return

@@ -46,12 +46,15 @@ func campaign(r) -> void:
 	await puzzle(r,"duty_board",{"a":"classroom_104","b":"classroom_105","c":"main_elevator"})
 	r.game=r.make_game(await act(r,"c4_elevator_align"))
 	if r.game==null: return
-	for child in r.game.controls.get_children():
-		if child is HSlider and not child.is_queued_for_deletion(): child.value=r.game.config.timeline.correctReplayStartSeconds
-	if not press(r,r.game.controls,"开始轨迹回放"): return
-	if not press(r,r.game.controls,"走入电梯"): return
+	var elevator:Control=r.game.elevator_panel
+	# The source panel adjusts one second per visible arrow; no HSlider remains.
+	var shifts:int=int(r.game.config.timeline.correctReplayStartSeconds)-int(r.game.selection)
+	for i in absi(shifts):
+		if not press(r,elevator.controls,"延后 1 秒" if shifts>0 else "提前 1 秒"):return
+	if not press(r,elevator.controls,"重放并校验"): return
+	if not press(r,elevator.controls,"走入电梯"): return
 	for i in range(120): r.game._process(.05)
-	if not r.check(r.game_results.size()==1 and r.state.d.chapter4.elevatorTrackAligned,"actual slider, replay, boarding and six-second calibration"): return
+	if not r.check(r.game_results.size()==1 and r.state.d.chapter4.elevatorTrackAligned,"actual one-second controls, replay, boarding and six-second calibration"): return
 	r.trace.append({"nativeActivity":"elevator_alignment","result":r.game_results[0].duplicate(true)})
 	free_game(r)
 	await act(r,"c4_elevator_ride")
@@ -87,7 +90,7 @@ func campaign(r) -> void:
 	await puzzle(r,"evacuation_route",{"a":"lecture_202_door","b":"east_corridor","c":"transport_core","d":"main_stair_down"})
 	await act(r,"c4_deduction")
 	await act(r,"c4_deduce",{"arrival":"A3","unserved":"A2"})
-	await act(r,"c4_elevator")
+	if not await return_to_hall(r):return
 	await act(r,"c4_install_plate")
 	await act(r,"c4_clock_set",{"time":"2245_maintenance"})
 	await act(r,"c4_maintenance")
@@ -114,17 +117,41 @@ func campaign(r) -> void:
 	await act(r,"c4_checkin_card")
 	r.game=r.make_game(await act(r,"c4_lamp_start"))
 	if r.game==null: return
-	r.game._answer("purpose","seek_truth")
-	r.game._answer("person","clear_minded")
-	if not r.check(r.game.stage=="playback" and "zhu_two_questions_answered" in r.state.d.chapter4.factIds,"two native answer callbacks persist choices"): return
+	var lamp:Control=r.game.lamp_view
+	# Source question entry/dissolve and saved-answer confirmation are part of
+	# this integration route, before the unchanged 5.8-second normal playback.
+	for i in range(23):r.game._process(.05)
+	if not press(r,lamp.choices_grid,str(r.game.config.questions[0].options[0].label)):return
+	for i in range(20):r.game._process(.05)
+	for i in range(23):r.game._process(.05)
+	if not press(r,lamp.choices_grid,str(r.game.config.questions[1].options[0].label)):return
+	for i in range(20):r.game._process(.05)
+	if not r.check(lamp.stage=="saved" and "zhu_two_questions_answered" in r.state.d.chapter4.factIds,"two actual native answer controls persist choices before playback"):return
+	for i in range(22):r.game._process(.05)
+	if not r.check(r.game.stage=="playback","source saved-answer confirmation precedes playback"):return
 	for i in range(115): r.game._process(.05)
 	r.check(r.game.stage=="playback" and not r.state.d.chapter4.completed,"closure remains pending before5800ms")
 	r.game._process(.05)
-	if not press(r,r.game.controls,"我记住了"): return
+	if not press(r,lamp.column,"继续"): return
 	r.check(r.game_results.size()==1 and r.state.d.chapter4.exteriorClosureAcknowledged,"actual final button emits closure acknowledgement")
 	r.trace.append({"nativeActivity":"star_lamp_closure","result":r.game_results[0].duplicate(true) if not r.game_results.is_empty() else {}})
 	r.check(r.state.last_result.get("message","")==r.chapter4._dialogue("exterior.closure"),"original exterior closure sequence preserved")
 	free_game(r)
+
+func return_to_hall(r)->bool:
+	var request:Dictionary=await act(r,"c4_elevator")
+	if not r.check(request.has("open_c4_floor_selection"),"solved stairs offer the original floor selection"):return false
+	var selector:Control=load("res://scripts/ui/chapter4_floor_panel.gd").new()
+	var configured:bool=selector.configure(request.open_c4_floor_selection,func():return r.state.d,load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf"))
+	if not r.check(configured,"controller-issued floor selector configures"):selector.free();return false
+	selector.selected_destination.connect(func(value:Dictionary):r.state.act("c4_floor_select",value))
+	r.root.add_child(selector);selector.size=Vector2(430,820);await r.process_frame
+	var picked:bool=press(r,selector.buttons.A1.get_parent(),str(selector.buttons.A1.text))
+	if picked:picked=press(r,selector.primary.get_parent(),str(selector.primary.text))
+	selector.free()
+	if not picked:return false
+	await drain_effects(r)
+	return r.check(r.state.d.chapter4.floor=="A1","selected A1 return completes the original owned elevator travel")
 
 func act(r,id: String,value: Variant=null) -> Dictionary:
 	var result: Dictionary=await r.step(id,value)
@@ -143,6 +170,7 @@ func puzzle(r,id: String,value: Dictionary) -> void:
 func press(r,container: Node,label: String) -> bool:
 	for child in container.get_children():
 		if child is Button and not child.is_queued_for_deletion() and child.text==label:
+			if not r.check(child.is_visible_in_tree() and not child.disabled,"native button actionable: "+label):return false
 			r.trace.append({"nativeButton":label})
 			child.pressed.emit()
 			return true
@@ -233,14 +261,38 @@ func solve_stairs(r) -> void:
 		r.trace.append({"nativeStairTraversed":level.id,"actualCampaignRecords":r.game.campaign.size()})
 
 func solve_chase(r) -> void:
+	var owned:Control=r.game
+	# Main's native host owns this same nonce-checked progress/resolve seam.
+	# The standalone campaign has no Main, so connect the controller callbacks.
+	owned.progress_requested.connect(func(proof:Dictionary):
+		if not is_instance_valid(owned) or r.game!=owned:return
+		if proof.get("session","")!=owned.config.get("session","missing"):return
+		var response:Dictionary=r.state.act(str(owned.config.on_progress),proof)
+		r.trace.append({"nativeChaseLanding":proof.landing,"accepted":response.get("accepted",false)})
+		owned.resolve_progress(response)
+	)
+	owned.attempt_failed.connect(func(proof:Dictionary):
+		if not is_instance_valid(owned) or r.game!=owned:return
+		if proof.get("session","")!=owned.config.get("session","missing"):return
+		r.state.act(str(owned.config.on_failure),proof)
+		r.check(false,"continuous source route was captured")
+	)
 	for target in [Vector2(989,826),Vector2(989,426),Vector2(784,426),Vector2(784,207),Vector2(715,207),Vector2(715,57)]:
-		var down:=InputEventMouseButton.new()
-		down.button_index=MOUSE_BUTTON_LEFT; down.pressed=true
-		down.position=r.game._map_rect().position+target*(r.game._map_rect().size.x/1672)
-		r.game._gui_input(down)
+		# Pointer positions come from the current visible camera, not the retired
+		# full-plate miniature. Held pointer moves track the same world target.
+		var view:Control=owned.chase_view
+		var down:=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true
+		down.position=chase_pointer(view,target);owned._input(down)
 		for frame in range(1000):
-			if r.game.done or r.game.stage!="chase" or r.game.player.distance_to(target)<8: break
-			r.game._process(.02)
-		r.trace.append({"nativeChasePointerTarget":[target.x,target.y],"actualPlayer":[r.game.player.x,r.game.player.y],"landings":r.game.landing,"elapsedMs":r.game.elapsed})
-		if r.game.done: break
-		if not r.check(r.game.stage=="chase" and r.game.player.distance_to(target)<8,"native chase pointer reaches source waypoint"): return
+			if owned.done or owned.stage!="chase" or owned.player.distance_to(target)<8:break
+			var motion:=InputEventMouseMotion.new();motion.position=chase_pointer(view,target);motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+			owned._input(motion);owned._process(.02)
+		var up:=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT;up.pressed=false;up.position=chase_pointer(view,target);owned._input(up)
+		r.trace.append({"nativeChasePointerTarget":[target.x,target.y],"actualPlayer":[owned.player.x,owned.player.y],"landings":owned.landing,"elapsedMs":owned.elapsed})
+		if owned.done:break
+		if not r.check(owned.stage=="chase" and owned.player.distance_to(target)<8,"native chase pointer reaches source waypoint"):return
+
+func chase_pointer(view:Control,target:Vector2)->Vector2:
+	var local:Vector2=view.world_root.position+target*view.factor
+	var field:Rect2=view.field.grow(-2)
+	return view.position+Vector2(clampf(local.x,field.position.x,field.end.x),clampf(local.y,field.position.y,field.end.y))

@@ -369,6 +369,9 @@ func _focus_world_surface() -> void:
 	world.grab_focus()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if result.has("open_c4_floor_selection"):
+		_open_chapter4_floor_selection(result.open_c4_floor_selection)
+		return
 	if _action=="c35_replay" and _recovered_replay_eligible():
 		# The original runtime gate mounts the recovered film from this accepted
 		# transition, without a second generic "play" page in between.
@@ -382,9 +385,11 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 	if _action in ["c4_checkin_card","c4_checkin_paper"] and current.get("chapter4",{}).get("phase","")=="exterior_closure" and _previous.get("chapter4",{}).get("phase","")=="morning_checkin":
 		# Source check-in hands off automatically through the actual door reveal.
 		_show_world_mobile()
-		State.act.call_deferred("c4_lamp_start")
+		_resume_chapter4_closure.call_deferred()
 		return
 	# Only a genuine controller-opened device intent creates a fresh session.
+	if _action=="c4_power" and result.get("page","")=="c4_device":
+		if _open_chapter4_power(current):return
 	if _action in ["c4_clock","c4_clock_inspected"] and result.get("page","")=="c4_device":
 		if _open_chapter4_clock(current):return
 	if _action.begins_with("c4_device_") and result.get("page","")=="c4_device":
@@ -706,10 +711,11 @@ func _refresh() -> void:
 		var body := _label(str(view.get("body","")),19)
 		body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		if int(view.get("body_inset",0))>0:
+		var body_inset:=maxi(int(view.get("body_inset",0)),12 if page in ["c4_notes","c4_device"] else 0)
+		if body_inset>0:
 			var body_margin:=MarginContainer.new()
-			body_margin.add_theme_constant_override("margin_left",int(view.body_inset))
-			body_margin.add_theme_constant_override("margin_right",int(view.body_inset))
+			body_margin.add_theme_constant_override("margin_left",body_inset)
+			body_margin.add_theme_constant_override("margin_right",body_inset)
 			page_body.add_child(body_margin);body_margin.add_child(body)
 		else: page_body.add_child(body)
 		for row in view.get("rows",[]):
@@ -748,6 +754,50 @@ func _add_app_grid(parent: Control) -> void:
 		var target := str(page.id)
 		var button := _button(str(page.get("label",target)),func(): _close_modal(); State.open_page(target),Vector2(119,64))
 		grid.add_child(button)
+
+func _open_chapter4_floor_selection(config: Dictionary) -> bool:
+	if is_instance_valid(active_game) or is_instance_valid(world_effect):return false
+	var issued: bool=false
+	for module in State.modules:
+		if module.has_method("_post_stair_floor_allowed") and module.pending.get("action","")=="c4_floor_select" and module.pending.get("token","")==config.get("session","missing"):
+			issued=true;break
+	if not issued:return false
+	var panel:Control=load("res://scripts/ui/chapter4_floor_panel.gd").new()
+	if not panel.configure(config,func():return State.d,font) or not panel.valid_context():panel.free();return false
+	_close_modal()
+	if is_instance_valid(modal):panel.free();return false
+	modal_previous_focus=weakref(world)
+	modal=panel;modal_panel=panel.frame
+	panel.close_requested.connect(_close_modal)
+	panel.cancelled.connect(func(token:String):State.act("c4_cancel_floor_selection",{"session":token}))
+	panel.selected_destination.connect(func(value:Dictionary):
+		if modal!=panel:return
+		# Submission retires only the selection UI. The controller creates a
+		# distinct timed ride session and remains sole arrival authority.
+		_close_modal();State.act("c4_floor_select",value)
+	)
+	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
+
+func _open_chapter4_power(current: Dictionary) -> bool:
+	if is_instance_valid(active_game) or is_instance_valid(world_effect):return false
+	var panel:Control=load("res://scripts/ui/chapter4_power_panel.gd").new()
+	if not panel.configure(current,State.content("chapter4-755.content.json").lightGrid,font,func():return State.d):panel.free();return false
+	_close_modal()
+	if is_instance_valid(modal):panel.free();return false
+	modal_previous_focus=weakref(world)
+	modal=panel;modal_panel=panel.frame
+	panel.close_requested.connect(_close_modal)
+	panel.toggle_requested.connect(func(zone:String):
+		if modal!=panel:return
+		var result:Dictionary=State.act("c4_toggle_"+zone)
+		if is_instance_valid(panel) and modal==panel:panel.resolve(State.d,result)
+	)
+	panel.lock_requested.connect(func():
+		if modal!=panel:return
+		var result:Dictionary=State.act("c4_lock_power")
+		if is_instance_valid(panel) and modal==panel:panel.resolve(State.d,result)
+	)
+	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
 
 func _open_chapter4_clock(current: Dictionary) -> bool:
 	var choices:Array=[];var required:=""
@@ -1247,6 +1297,15 @@ func _is_bike_chase_entry() -> bool:
 	return str(State.d.native.scene)=="campus_bootstrap" and bool(chase.active) and str(chase.phase)=="chasing" and bool(chase.bikePaid) and not bool(chase.chaseCompleted)
 
 func _resume_world_activity() -> void:
+	if _is_chapter4_closure_entry():
+		# Startup and explicit Return share the accepted check-in admission path.
+		# Defer past surface layout; the owner check runs before issuing a nonce.
+		_resume_chapter4_closure.call_deferred();return
+	if _is_chapter4_chase_stair_entry():
+		if not is_inside_tree() or not world_frame.is_visible_in_tree():return
+		if is_instance_valid(active_game) or is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(world_effect):return
+		if bool(State.d.ui.controlCenterOpen) or State.story_input_locked():return
+		State.act("c4_chase_resume");return
 	if not _is_bike_chase_entry():
 		_resume_canteen_defense(); return
 	# RpgGameHost mounts the chase for this persisted phase. Paid chase_ready
@@ -1257,6 +1316,26 @@ func _resume_world_activity() -> void:
 	if is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract(): return
 	mobile_world=true
 	State.act("c3_chase")
+
+func _is_chapter4_closure_entry()->bool:
+	var c:Dictionary=State.d.get("chapter4",{})
+	return str(State.d.native.scene)=="duan_yongping_temporal_maze" and c.get("phase","")=="exterior_closure" and c.get("floor","")=="A1" and c.get("roomId","")=="a1_exterior" and not c.get("completed",false)
+
+func _resume_chapter4_closure()->void:
+	# RpgGameHost owns one closure session after the original door presentation.
+	# Do not mint a replacement nonce for repeated delayed/Return callbacks.
+	if not is_inside_tree() or not _is_chapter4_closure_entry():return
+	if is_instance_valid(active_game) or is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(world_effect):return
+	if State.story_input_locked() or bool(State.d.ui.controlCenterOpen) or capture_busy:return
+	if is_instance_valid(file_dialog) and file_dialog.visible:return
+	if is_instance_valid(world) and world.capture_mode:return
+	_cancel_surface_gestures();mobile_world=true;_layout()
+	# The controller retains all sign-in, lamp-priming and saved-answer guards.
+	State.act("c4_lamp_start")
+
+func _is_chapter4_chase_stair_entry()->bool:
+	var c:Dictionary=State.d.chapter4
+	return str(State.d.native.scene)=="duan_yongping_temporal_maze" and c.phase=="final_chase" and c.floor=="A1" and c.chaseStairwellStage=="inside"
 
 func _is_canteen_defense_entry() -> bool:
 	return str(State.d.native.scene)=="canteen_interior" and bool(State.d.canteenHunt.active) and str(State.d.canteenHunt.phase)=="exit_blocking"
@@ -1339,11 +1418,13 @@ func _open_game_now(config: Dictionary) -> void:
 			_layout()
 			return
 		var node := active_game
+		var stair_handoff:Dictionary=owned_game.source_stair_handoff() if config.get("kind","")=="chase_stairwell" and owned_game.has_method("source_stair_handoff") else {}
 		active_game = null
 		if is_instance_valid(node): node.queue_free()
-		if not callback.is_empty(): State.act(callback,result)
+		var accepted:Dictionary=State.act(callback,result) if not callback.is_empty() else {}
+		if callback=="c4_chase_done" and accepted.get("accepted",false) and not stair_handoff.is_empty():world.accept_stair_handoff(stair_handoff)
 		_layout()
-		if config.get("type","")=="rhythm": _focus_world_surface.call_deferred()
+		if config.get("type","")=="rhythm" or config.get("kind","")=="chase_stairwell":_focus_world_surface.call_deferred()
 	if active_game.has_signal("finished"): active_game.connect("finished",finish)
 	elif active_game.has_signal("completed"): active_game.connect("completed",finish)
 	if active_game.has_signal("cancelled"):
@@ -1365,6 +1446,22 @@ func _open_game_now(config: Dictionary) -> void:
 		)
 	if active_game.has_signal("presentation_requested"):
 		active_game.connect("presentation_requested",_game_presentation)
+	if config.get("kind","")=="chase_stairwell":
+		if active_game.has_signal("progress_requested"):
+			active_game.connect("progress_requested",func(proof:Dictionary):
+				if not is_instance_valid(owned_game) or active_game!=owned_game:return
+				if proof.get("session","")!=config.get("session","missing"):return
+				var result:Dictionary=State.act(str(config.get("on_progress","c4_chase_landing")),proof)
+				if is_instance_valid(owned_game) and active_game==owned_game:owned_game.resolve_progress(result)
+			)
+		if active_game.has_signal("attempt_failed"):
+			active_game.connect("attempt_failed",func(proof:Dictionary):
+				if not is_instance_valid(owned_game) or active_game!=owned_game:return
+				if proof.get("session","")!=config.get("session","missing"):return
+				active_game=null;owned_game.queue_free()
+				State.act(str(config.get("on_failure","c4_chase_failed")),proof)
+				_layout();_focus_world_surface.call_deferred()
+			)
 	if active_game.has_method("setup"): active_game.setup(config)
 	elif active_game.has_method("start"): active_game.start(config)
 	if _activity_owns_scene(): mobile_world=true
@@ -1631,6 +1728,11 @@ func _open_world_effect(config: Dictionary) -> void:
 		if world_effect==effect_owner:_focus_world_surface.call_deferred()
 	)
 	world_effect.setup(setup)
+	# Accepted elevator travel can originate on its phone record page. Its
+	# existing world effect must own the visible surface before its first frame.
+	var elevator_request: bool = config.get("script","")=="res://scripts/ui/chapter4_world_handoff.gd" and config.get("kind","")=="elevator_ride" and config.get("blocks_input",false)
+	if elevator_request and State.d.native.scene=="duan_yongping_temporal_maze" and config.get("phase","")==State.d.chapter4.phase and config.get("fromFloor","")==State.d.chapter4.floor:
+		_show_world_mobile()
 
 func _capture_world(config: Dictionary) -> void:
 	var session = config.get("session")

@@ -2,6 +2,8 @@ extends RefCounted
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
 const StairModel = preload("res://scripts/games/chapter4_stair_model.gd")
+const ChaseStair=preload("res://scripts/games/chapter4_chase_stair_model.gd")
+const ChaseGuard=preload("res://scripts/games/chapter4_guard_model.gd")
 const SCENE = "duan_yongping_temporal_maze"
 var content: Dictionary = {}
 var layout: Dictionary = {}
@@ -80,6 +82,28 @@ func _game(s: Dictionary,kind: String,action: String,options: Dictionary={}) -> 
 	var config: Dictionary={"script":"res://scripts/games/chapter4_activity.gd","kind":kind,"session":token,"on_success":action,"title":content.title,"settings":s.native.get("settings",{})}
 	config.merge(options,true)
 	return _ok("",{"game":config})
+
+func _chase_activity(s:Dictionary,lead:float=650.0)->Dictionary:
+	var landing:int=clampi(int(s.chapter4.chaseStairwellLanding),0,2)
+	var entry:Dictionary=ChaseStair.guard_entry(landing,lead)
+	var result:Dictionary=_game(s,"chase_stairwell","c4_chase_done",{"expectedAttempt":s.chapter4.chaseAttempt,"startLanding":landing,"guardLeadDistance":entry.leadDistance,"on_progress":"c4_chase_landing","on_failure":"c4_chase_failed","title":"楼梯间","body":_dialogue("chase.started")})
+	pending.startLanding=landing;pending.guardDelayMs=entry.delayMs;pending.acceptedPath=[]
+	return result
+
+func _chase_session(s:Dictionary,value:Variant)->bool:
+	if not _proof(s,"c4_chase_done",value):return false
+	var attempt:Variant=value.get("expectedAttempt")
+	if typeof(attempt) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(attempt)) or float(attempt)!=int(attempt):return false
+	if typeof(value.get("elapsedMs")) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(value.elapsedMs)):return false
+	return s.chapter4.phase=="final_chase" and s.chapter4.floor=="A1" and s.chapter4.chaseStairwellStage=="inside" and int(attempt)==int(s.chapter4.chaseAttempt) and int(pending.get("attempt",-2))==int(s.chapter4.chaseAttempt)
+
+func _commit_chase_pose(s:Dictionary,point:Vector2):
+	# SaveStore must see the source restart/arrival pose before State emits its
+	# later world_teleport signal; stale per-world positions cannot override it.
+	if not s.native.has("positions"):s.native.positions={}
+	var key:=SCENE+":"+str(s.chapter4.floor)+":"+str(s.chapter4.timeState)+":"+str(s.chapter4.phase)
+	s.native.positions[key]={"x":point.x,"y":point.y}
+	s.native.player={"scene":SCENE,"x":point.x,"y":point.y,"world_x":point.x,"world_y":point.y}
 func _presentation(s: Dictionary,kind: String,action: String,options: Dictionary={}) -> Dictionary:
 	var request: Dictionary=_game(s,kind,action,options)
 	var config: Dictionary=request.game
@@ -91,6 +115,55 @@ func _presentation(s: Dictionary,kind: String,action: String,options: Dictionary
 	return _ok("",{"world_effect":config})
 func _projection_ready(c: Dictionary) -> bool:
 	return c.phase=="room204_restore" and c.floor=="A2" and not _has(c,"room204_projection_completed") and _all(c,["a1_time_route_compared","a1_duty_board_reconstructed","a3_reference_observed","a3_identity_context_observed","room204_residual_observed","room204_restored"]) and _placements_complete(c)
+func _projection_issue(c: Dictionary) -> String:
+	# Source getChapterFourIntentUnavailableReason preserves causal feedback;
+	# the original readiness predicate above remains the acceptance authority.
+	if c.phase!="room204_restore" or c.floor!="A2": return "current_phase_mismatch"
+	if _has(c,"room204_projection_completed"): return "already_complete"
+	if not _has(c,"a1_time_route_compared"): return "a1_comparison_required"
+	if not _has(c,"a1_duty_board_reconstructed"): return "duty_board_required"
+	if not _all(c,["a3_reference_observed","room204_residual_observed"]): return "room204_observations_required"
+	return "room204_layout_incomplete"
+func _room204_task(c: Dictionary) -> String:
+	# Exact ordered selection from source QuestModel; labels remain in the
+	# original content. This function observes facts and cannot complete them.
+	if not _aligned(c): return "tune_clock_to_1850"
+	if not _all(c,["classroom_104_chalk_residual_observed","classroom_105_terminal_replay_checked","elevator_history_observed","elevator_history_calibrated"]): return "resolve_a1_investigation"
+	if not _has(c,"a3_reference_observed"): return "resolve_a3_archive_chain"
+	if not _has(c,"misaligned_stair_solved"): return "solve_misaligned_stair"
+	if not _all(c,["a2_positioning_plate_calibrated","a2_power_topology_recovered","a2_evacuation_route_confirmed"]): return "resolve_a2_inserted_puzzles"
+	if not _has(c,"elevator_stop_chain_reconstructed"): return "resolve_elevator_stop_chain"
+	if not _has(c,"a1_duty_board_reconstructed"): return "resolve_a1_investigation"
+	if not _all(c,["room204_residual_observed","room204_restored"]): return "restore_room204"
+	if not _has(c,"room204_projection_completed"): return "watch_room204_projection"
+	if not _has(c,"positioning_plate_collected"): return "collect_positioning_plate"
+	return "install_positioning_plate"
+func _post_stair_floor_allowed(c: Dictionary,destination: String) -> bool:
+	if c.phase!="room204_restore" or c.floor not in ["A1","A2","A3"] or destination not in ["A1","A2","A3"] or destination==c.floor or not _has(c,"misaligned_stair_solved"): return false
+	if destination!="A1" and not _all(c,["classroom_104_chalk_residual_observed","classroom_105_terminal_replay_checked"]): return false
+	if destination=="A3" and not _has(c,"elevator_history_calibrated"): return false
+	return true
+func _floor_selection(s: Dictionary) -> Dictionary:
+	var destinations: Array=[]
+	for destination: String in ["A1","A2","A3"]:
+		if _post_stair_floor_allowed(s.chapter4,destination): destinations.append(destination)
+	if destinations.is_empty(): return _locked("classroom_checks_required")
+	var issued: Dictionary=_game(s,"elevator_selection","c4_floor_select")
+	var config: Dictionary=issued.game
+	config.fromFloor=s.chapter4.floor;config.phase=s.chapter4.phase
+	config.destinations=destinations;config.records=_records(s.chapter4)
+	return _ok("",{"open_c4_floor_selection":config})
+func _floor_arrival(s: Dictionary,destination: String,landing: Dictionary) -> Dictionary:
+	pending={}
+	_go(s,destination)
+	# State saves the accepted result before emitting teleport. Persist this
+	# same original landing first so an immediate reload cannot restore an old
+	# room position from another visit.
+	if not s.native.has("positions"): s.native.positions={}
+	var key: String=SCENE+":"+destination+":"+s.chapter4.timeState+":"+s.chapter4.phase
+	s.native.positions[key]={"x":landing.x,"y":landing.y}
+	s.native.player={"scene":SCENE,"x":landing.x,"y":landing.y,"world_x":landing.x,"world_y":landing.y}
+	return _ok("",{"scene":SCENE,"teleport":[landing.x,landing.y]})
 func _elevator_duration(from: String,to: String) -> float:
 	return 2720.0+abs(int(from.trim_prefix("A"))-int(to.trim_prefix("A")))*620.0
 func _proof(s: Dictionary,action: String,value: Variant) -> bool:
@@ -199,6 +272,9 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		return _ok("",{"scene":SCENE})
 	if action=="c4_mode":
 		c.mode="dark" if c.mode=="light" else "light"; s.native.mode=c.mode; return _ok("深色观察" if c.mode=="dark" else "浅色操作")
+	if action=="c4_cancel_floor_selection":
+		if value is Dictionary and pending.get("action","")=="c4_floor_select" and value.get("session","")==pending.get("token","missing"): pending={}
+		return _ok()
 	if action=="c4_cancel_presentation":
 		if value is Dictionary and value.get("session","")==pending.get("token","missing"): pending={}
 		return _ok()
@@ -209,7 +285,11 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		_time(c,value.time); c.timeAuthority="hall_clock"
 		if c.phase=="hall_clock_inspection": _phase(c,"bakery_hour_hand")
 		s.native.erase("c4_context"); return _ok(_dialogue("hall_clock.first_pull"),{"scene":SCENE})
-	if not _aligned(c): return _locked("clock_adjustment_required")
+	# The source scene opens its clock panel locally before submitting the
+	# time-change intent. Native admission must also reach that control while
+	# a new phase still holds the preceding time; no other action is unlocked.
+	var opening_required_clock: bool=action=="c4_clock" and c.floor=="A1" and c.mode=="light" and not _required_time(c).is_empty()
+	if not _aligned(c) and not opening_required_clock: return _locked("clock_adjustment_required")
 	if action.begins_with("c4_context_"):
 		for entry in context_source.contexts:
 			if action!="c4_context_"+entry.targetId: continue
@@ -252,8 +332,19 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if c.phase!="room204_restore" or c.floor!="A1" or c.mode!=("dark" if action=="c4_class104" else "light"): return _locked()
 		_facts(c,["classroom_104_chalk_residual_observed" if action=="c4_class104" else "classroom_105_terminal_replay_checked"])
 		return _ok(_dialogue("classroom104.chalk_residual" if action=="c4_class104" else "classroom105.terminal_replay"))
+	if action=="c4_floor_select":
+		if not _proof(s,action,value) or not _post_stair_floor_allowed(c,str(value.get("destination",""))): return _locked("misaligned_stair_required")
+		var destination: String=value.destination
+		return _presentation(s,"elevator_ride","c4_floor_arrived",{"durationMs":_elevator_duration(c.floor,destination),"destination":destination,"body":"电梯正在运行。"})
+	if action=="c4_floor_arrived":
+		if not _proof(s,action,value) or float(value.get("elapsedMs",0))<float(pending.get("durationMs",INF)) or not value.get("boarded",false) or not value.get("arrived",false) or value.get("fromFloor","")!=c.floor or value.get("destination","")!=pending.get("destination","missing") or not _post_stair_floor_allowed(c,str(value.get("destination",""))): return _locked("elevator_calibration_required")
+		var destination: String=value.destination
+		if destination=="A3": s.native.c4_elevator_transport=true;s.native.c4_native_elevator_completed=true
+		pending={}
+		return _floor_arrival(s,destination,layout.floors[int(destination.trim_prefix("A"))-1].elevator.arrivalPosition)
 	if action=="c4_elevator":
 		if c.phase!="room204_restore": return _locked()
+		if _has(c,"misaligned_stair_solved"): return _floor_selection(s)
 		if c.floor=="A1": s.native.c4_context="elevator"; return _ok("",{"page":"c4_device"})
 		if not _has(c,"misaligned_stair_solved"): return _locked("misaligned_stair_required")
 		return _presentation(s,"elevator_ride","c4_return_elevator",{"durationMs":_elevator_duration(c.floor,"A1"),"destination":"A1","body":"电梯正在运行。"})
@@ -294,6 +385,11 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		return _locked()
 	if action=="c4_stairs":
 		if c.phase!="room204_restore" or c.floor!="A3" or not bool(s.native.get("c4_elevator_transport",false)) or not _has(c,"a3_reference_observed"): return _locked("room204_observations_required")
+		if _has(c,"misaligned_stair_solved"):
+			if not _post_stair_floor_allowed(c,"A2"): return _locked("classroom_checks_required")
+			for landing in layout.floors[1].stairLandings:
+				if landing.targetStoryFloor=="A3": return _floor_arrival(s,"A2",landing.arrivalPosition)
+			return _locked("return_route_incomplete")
 		var request: Dictionary=_game(s,"chapter4_stair_campaign","c4_stairs_complete",{"script":"res://scripts/games/chapter4_stairs.gd"})
 		return request
 	if action=="c4_stairs_complete":
@@ -324,7 +420,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if _projection_ready(c): return _presentation(s,"projection","c4_projection_done",{"durationMs":900})
 		return _ok(result.rationale,{"accepted":true})
 	if action=="c4_projection":
-		if not _projection_ready(c): return _locked("room204_layout_incomplete")
+		if not _projection_ready(c): return _locked(_projection_issue(c))
 		return _presentation(s,"projection","c4_projection_done",{"durationMs":900,"body":_dialogue("room204.restored")})
 	if action=="c4_projection_done":
 		if not _proof(s,action,value) or float(value.get("elapsedMs",0))<900: return _locked()
@@ -399,16 +495,48 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if c.phase!="final_chase" or not value is Dictionary or int(value.get("expectedAttempt",-1))!=int(c.chaseAttempt) or value.get("failureFloor",c.floor)!=c.floor: return _locked("chase_attempt_stale")
 		var upstairs: bool=c.floor=="A2"
 		c.chaseAttempt+=1; c.chaseStairwellStage="complete" if upstairs else "pending"; c.chaseStairwellLanding=0; c.chaseRestartCheckpoint="c4_a2_corridor" if upstairs else "c4_a1_lobby"
-		_go(s,"A2" if upstairs else "A1"); s.native.player={"x":966.0,"y":214.0} if upstairs else {"x":590.0,"y":612.0}; pending={}
+		_go(s,"A2" if upstairs else "A1");_commit_chase_pose(s,Vector2(966,214) if upstairs else Vector2(590,612));pending={}
 		return _ok(_dialogue("chase.failed")+"\n"+_dialogue("chase.retry"),{"scene":SCENE,"accepted":true,"teleport":[966,214] if upstairs else [590,612]})
 	if action=="c4_chase":
 		if c.phase!="final_chase" or c.floor!="A1" or not _has(c,"powered_route_confirmed"): return _locked("powered_route_required")
+		if c.chaseStairwellStage=="inside":return _locked("already_complete")
+		var lead:=650.0
+		if value is Dictionary:
+			if int(value.get("expectedAttempt",-1))!=int(c.chaseAttempt):return _locked("chase_attempt_stale")
+			if typeof(value.get("leadDistance",650)) not in [TYPE_INT,TYPE_FLOAT]:return _locked("chase_attempt_stale")
+			lead=float(value.get("leadDistance",650))
+			if not is_finite(lead):return _locked("chase_attempt_stale")
 		c.chaseStairwellStage="inside"; c.chaseStairwellLanding=0
-		return _game(s,"chase_stairwell","c4_chase_done",{"expectedAttempt":c.chaseAttempt,"title":"楼梯间","body":_dialogue("chase.started")})
+		return _chase_activity(s,lead)
+	if action=="c4_chase_resume":
+		if c.phase!="final_chase" or c.floor!="A1" or c.chaseStairwellStage!="inside" or not _has(c,"powered_route_confirmed"):return _locked("powered_route_required")
+		return _chase_activity(s)
+	if action=="c4_chase_landing":
+		if not _chase_session(s,value):return _locked("chase_attempt_stale")
+		if value.get("landing",-1) not in [1,2]:return _locked("stair_route_not_available")
+		var next:int=int(value.get("landing",-1))
+		if next!=int(c.chaseStairwellLanding)+1 or next not in [1,2]:return _locked("stair_route_not_available")
+		if not ChaseStair.valid_trace(value.get("path"),int(pending.startLanding),next,false,float(value.get("elapsedMs",-1)),pending.acceptedPath):return _locked("stair_route_not_available")
+		c.chaseStairwellLanding=next;pending.acceptedPath=value.path.duplicate(true)
+		return _ok("",{"accepted":true,"landing":next})
+	if action=="c4_chase_failed":
+		if not _chase_session(s,value):return _locked("chase_attempt_stale")
+		if typeof(value.get("captureMs")) not in [TYPE_INT,TYPE_FLOAT]:return _locked("stair_route_not_available")
+		var capture_ms:=float(value.get("captureMs",0))
+		if value.get("captured",false)!=true or not is_finite(capture_ms) or capture_ms<5200 or float(value.get("elapsedMs",0))<float(pending.guardDelayMs):return _locked("stair_route_not_available")
+		if not ChaseStair.valid_trace(value.get("path"),int(pending.startLanding),-1,false,float(value.get("elapsedMs",-1)),pending.acceptedPath):return _locked("stair_route_not_available")
+		var point:Vector2=ChaseStair.point(value.path.back());var guard_data:Variant=value.get("guard")
+		if not guard_data is Dictionary:return _locked("stair_route_not_available")
+		if typeof(guard_data.get("x")) not in [TYPE_INT,TYPE_FLOAT] or typeof(guard_data.get("y")) not in [TYPE_INT,TYPE_FLOAT]:return _locked("stair_route_not_available")
+		var guard:Vector2=Vector2(float(guard_data.get("x",INF)),float(guard_data.get("y",INF)))
+		if not ChaseStair.body_open(guard,Vector2(20,14)) or not ChaseGuard.chase_contact(guard,Rect2(point-PlayerMetrics.FOOT_SIZE/2,PlayerMetrics.FOOT_SIZE)):return _locked("stair_route_not_available")
+		return dispatch(s,"c4_fail_chase",{"expectedAttempt":c.chaseAttempt,"failureFloor":c.floor})
 	if action=="c4_chase_done":
-		if not _proof(s,action,value) or int(value.get("expectedAttempt",-1))!=int(c.chaseAttempt): return _locked("chase_attempt_stale")
+		if not _chase_session(s,value):return _locked("chase_attempt_stale")
+		if c.chaseStairwellLanding!=2 or int(value.get("failures",0))!=0:return _locked("stair_route_not_available")
 		if not _chase_proof(value): return _locked("stair_route_not_available")
-		c.chaseAttempt+=maxi(0,int(value.get("failures",0))); c.chaseStairwellLanding=2; c.chaseStairwellStage="complete"; pending={}; _go(s,"A2"); return _ok(_dialogue("chase.floor_changed"),{"scene":SCENE,"teleport":[966,214]})
+		c.chaseStairwellStage="complete";pending={};_go(s,"A2");_commit_chase_pose(s,Vector2(966,214))
+		return _ok(_dialogue("chase.floor_changed"),{"accepted":true,"scene":SCENE,"teleport":[966,214]})
 	if action=="c4_reach202":
 		if c.phase!="final_chase" or c.floor!="A2" or c.chaseStairwellStage!="complete" or not _all(c,["light_grid_locked","powered_route_confirmed","room202_endpoint_inferred"]): return _locked("powered_route_required")
 		_fact(c,"room202_route_reached"); _phase(c,"final_minute_recovery"); c.roomId="a2_room_202"
@@ -437,18 +565,27 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		return _ok("记录已接受。")
 	if action=="c4_lamp_start":
 		if not _closure_ready(s): return _locked("closure_prerequisites_incomplete")
-		return _game(s,"star_lamp_closure","c4_closure_done",{"questions":extra.questions,"durationMs":5800,"answersSaved":_has(c,"zhu_two_questions_answered"),"selectedAnswers":c.zhuQuestionAnswers})
+		var duration_ms:int=3600 if s.native.get("settings",{}).get("reduced_motion",false) else 5800
+		var result:=_game(s,"star_lamp_closure","c4_closure_done",{"questions":extra.questions,"durationMs":duration_ms,"answersSaved":_has(c,"zhu_two_questions_answered"),"selectedAnswers":c.zhuQuestionAnswers})
+		# Bind the authored accessibility duration to this issued session, never to client proof.
+		pending.durationMs=duration_ms
+		return result
 	if action=="c4_lamp_answers":
 		if not _closure_ready(s) or _has(c,"zhu_two_questions_answered") or not value is Dictionary or pending.get("action","")!="c4_closure_done" or value.get("session","")!=pending.get("token","missing"): return _locked("closure_session_unverified")
 		var choices: Variant=value.get("answers",{})
 		if not choices is Dictionary or choices.get("purpose","") not in ["seek_truth","solve_real_problems","serve_public"] or choices.get("person","") not in ["responsible","clear_minded","public_service"]: return _locked("zhu_two_questions_required")
 		c.zhuQuestionAnswers=choices.duplicate(); _fact(c,"zhu_two_questions_answered"); return _ok("",{"accepted":true})
 	if action=="c4_closure_done":
-		if not _closure_ready(s) or not _has(c,"zhu_two_questions_answered") or not _proof(s,action,value) or not value.get("acknowledged",false) or float(value.get("playbackMs",0))<5800 or value.get("consumer","")!="ChapterFourStarLampClosure": return _locked("closure_session_unverified")
+		if not _closure_ready(s) or not _has(c,"zhu_two_questions_answered") or not _proof(s,action,value) or not value.get("acknowledged",false) or value.get("consumer","")!="ChapterFourStarLampClosure": return _locked("closure_session_unverified")
+		var playback:Variant=value.get("playbackMs")
+		if not (playback is int or playback is float) or not is_finite(float(playback)) or float(playback)<float(pending.get("durationMs",5800)):return _locked("closure_session_unverified")
 		var answers: Variant=value.get("answers",{})
 		if not answers is Dictionary or answers.get("purpose","") not in ["seek_truth","solve_real_problems","serve_public"] or answers.get("person","") not in ["responsible","clear_minded","public_service"]: return _locked("zhu_two_questions_required")
 		if c.zhuQuestionAnswers!=answers: return _locked("zhu_two_questions_required")
-		_facts(c,["exterior_closure_acknowledged"]); c.exteriorClosureAcknowledged=true; c.completed=true; _phase(c,"complete"); s.native.c4_closure_proof=value.duplicate(true); s.native.scene=""; s.native.page="phone_home"; s.runtimeMode="phone"; s.currentScene="phone_home"; pending={}
+		_facts(c,["exterior_closure_acknowledged"]); c.exteriorClosureAcknowledged=true; c.completed=true; _phase(c,"complete"); s.native.c4_closure_proof=value.duplicate(true)
+		# Persist the session's checked mode, never an untrusted client marker.
+		s.native.c4_closure_proof.playbackMode="reduced_motion" if int(pending.get("durationMs",5800))==3600 else "normal"
+		s.native.scene=""; s.native.page="phone_home"; s.runtimeMode="phone"; s.currentScene="phone_home"; pending={}
 		return _ok(_dialogue("exterior.closure"),{"page":"phone_home"})
 	return _locked()
 func _puzzle_floor(id: String) -> String:
@@ -477,21 +614,7 @@ func _closure_ready(s: Dictionary) -> bool:
 	return c.phase=="exterior_closure" and c.floor=="A1" and c.roomId=="a1_exterior" and c.guardMode=="absent" and c.checkinCardAccepted and c.checkinPaperAccepted and _all(c,["checkin_card_accepted","checkin_paper_accepted","checkin_identity_verified","final_minute_installed","canruo_star_lamp_primed"]) and c.lightGrid.locked and c.timeState=="0755_morning" and int(c.worldTimeSeconds)==28500 and int(c.phoneStatusTimeSeconds)==28500 and c.phoneStatusTimeTrusted
 func _inside(point: Vector2,r: Dictionary) -> bool: return point.x>=float(r.x) and point.x<=float(r.x)+float(r.width) and point.y>=float(r.y) and point.y<=float(r.y)+float(r.height)
 func _chase_proof(result: Dictionary) -> bool:
-	var path: Array=result.get("path",[])
-	if path.size()<10 or path.size()>20000 or not result.get("escaped",false): return false
-	var last: Vector2=Vector2(833,826); var gate: int=0; var last_time: float=0.0
-	for point in path:
-		if not point is Dictionary: return false
-		var next: Vector2=Vector2(float(point.get("x",-999)),float(point.get("y",-999)))
-		var time: float=float(point.get("t",-1)); var dt: float=time-last_time
-		if dt<=0 or dt>250 or last.distance_to(next)>208.0*dt/1000.0+1.0: return false
-		var clear: bool=false
-		for rect in extra.stair.walkable:
-			if _inside(next,rect): clear=true; break
-		if not clear: return false
-		if gate<2 and _inside(next,extra.stair.gates[gate]): gate+=1
-		last=next; last_time=time
-	return gate==2 and _inside(last,extra.stair.exit) and float(result.get("elapsedMs",0))>=last_time
+	return result.get("escaped",false)==true and ChaseStair.valid_trace(result.get("path"),int(pending.get("startLanding",0)),2,true,float(result.get("elapsedMs",-1)),pending.get("acceptedPath",[]))
 func _target(id: String,label: String,action: String,c: Dictionary,mode: String="",item: String="") -> Dictionary:
 	var bounds: Dictionary={}; var radius: float=100.0
 	for floor in layout.floors:
@@ -546,7 +669,7 @@ func targets(scene: String,s: Dictionary) -> Array:
 			"exterior_closure": out.append({"id":"exterior_lamp","label":"灿若星辰灯","position":[838,865],"radius":150,"action":"c4_lamp_start"})
 	if c.floor=="A2":
 		if c.phase=="room204_restore" and _has(c,"misaligned_stair_solved"):
-			out.append(_target("a2_room204_residual_group","204 教室残影组","c4_residual",c,"dark"))
+			if not _has(c,"room204_residual_observed"): out.append(_target("a2_room204_residual_group","204 教室残影组","c4_residual",c,"dark"))
 			for group in content.room204.groups:
 				if not Room204.group_available(s): continue
 				var complete: bool=true
@@ -585,7 +708,7 @@ func targets(scene: String,s: Dictionary) -> Array:
 				out.append({"id":"main_elevator","label":"主电梯","position":[float(b.x)+float(b.width)/2,float(b.y)+float(b.height)+35],"radius":120,"action":"c4_elevator"})
 				if c.floor!="A1": out.append({"id":"elevator_record","label":"电梯门机记录","position":[float(b.x)+float(b.width)+60,float(b.y)+float(b.height)+35],"radius":100,"action":"c4_record","mode":"dark"})
 	if (c.floor=="A3" and c.phase=="room204_restore") or (c.floor=="A1" and c.phase=="final_chase") or (c.floor=="A2" and c.phase=="return_to_clock"):
-		out.append({"id":"main_stair","label":"主楼梯","position":[1090,274] if c.floor=="A3" else ([966,214] if c.floor=="A2" else [1001,214]),"radius":105,"action":"c4_stairs" if c.floor=="A3" else ("c4_chase" if c.phase=="final_chase" else "c4_return_stair")})
+		out.append({"id":"main_stair","label":"主楼梯","position":[1090,274] if c.floor=="A3" else ([966,214] if c.floor=="A2" else [1001,214]),"radius":105,"action":"c4_stairs" if c.floor=="A3" else (("c4_chase_resume" if c.chaseStairwellStage=="inside" else "c4_chase") if c.phase=="final_chase" else "c4_return_stair")})
 	for entry in context_source.contexts:
 		if c.phase not in entry.activePhases or c.floor!=entry.floor or c.roomId not in entry.roomAliases: continue
 		var target: Dictionary=_target(entry.anchorId,entry.label,"c4_context_"+entry.targetId,c)
@@ -598,16 +721,22 @@ func objective(s: Dictionary) -> String:
 	if c.completed: return "签到完成 · 7:55"
 	if not c.prologueSeen: return "播放恢复回放"
 	if not _required_time(c).is_empty(): return content.tasks["pull_hall_clock" if c.phase=="hall_clock_inspection" else ("tune_clock_to_1850" if c.phase=="room204_restore" else "tune_clock_to_2245")].label
-	if c.phase=="room204_restore":
-		if not _all(c,["classroom_104_chalk_residual_observed","classroom_105_terminal_replay_checked"]): return "查看 104 与 105 的现场记录"
-		if not _has(c,"elevator_history_calibrated"): return "校准电梯乘客残影的进入窗口"
-		if not _has(c,"a3_reference_observed"): return "寻找晨间教室布置参照"
-		if not _has(c,"misaligned_stair_solved"): return "穿过错位楼梯"
-		if not _has(c,"room204_restored"): return "恢复 204 教室布置"
-		if not _has(c,"room204_projection_completed"): return "核对现场记录与 204 投影"
-		if not _has(c,"positioning_plate_collected"): return "取走讲台抽屉里的定位盘"
-		if not _all(c,["a2_positioning_plate_calibrated","a2_power_topology_recovered","a2_evacuation_route_confirmed","elevator_stop_chain_reconstructed"]): return "核对定位盘、供电与楼层运行记录"
-		return "将定位盘装回大厅旧钟"
+	if c.phase=="bakery_hour_hand":
+		# Source QuestModel selects the next existing task from the same earned
+		# item/facts. Keep the phase's first task only before the conveyor stops.
+		var task_key: String="install_hour_hand" if s.items.oldClockHourHand or _has(c,"bakery_hour_hand_collected") or _has(c,"hour_hand_installed") else ("collect_hour_hand" if _has(c,"bakery_hour_hand_exposed") else "explore_bakery")
+		return str(content.tasks[task_key].label)
+	if c.phase=="room204_restore": return str(content.tasks[_room204_task(c)].label)
+	if c.phase=="exterior_closure":
+		return str(content.tasks["acknowledge_exterior_closure" if _has(c,"zhu_two_questions_answered") else "answer_zhu_two_questions"].label)
+	if c.phase=="morning_checkin":
+		var card:bool=c.checkinCardAccepted and _has(c,"checkin_card_accepted")
+		var paper:bool=c.checkinPaperAccepted and _has(c,"checkin_paper_accepted")
+		return str(content.tasks["submit_attendance_paper" if card and not paper else ("read_campus_card" if paper and not card else "complete_checkin")].label)
+	if c.phase=="return_to_clock":
+		# Original QuestModel advances the existing task once the player has
+		# actually returned to A1; querying guidance must not change progress.
+		return str(content.tasks["install_final_minute" if c.floor=="A1" else "return_via_main_stair"].label)
 	if c.phase=="maintenance_repair":
 		if not _has(c,"cart_wheel_inspected"): return "检查清洁车与旧钟的故障"
 		if not _has(c,"cart_wheel_cover_opened"): return "用短撬杆打开清洁车轮罩"

@@ -16,6 +16,11 @@ var placement_signature: String=""
 var last_entities: Dictionary={}
 var moves: Dictionary={}
 var floor_id: String=""
+var native_prop: Node2D
+func _sync_native_prop(state: Dictionary) -> void:
+	if is_instance_valid(native_prop): native_prop.sync(state,native_prop.world.scene_id)
+func _native_owns(id: String) -> bool:
+	return is_instance_valid(native_prop) and native_prop.owns_entity(id)
 func _init() -> void:
 	source=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter4-three-floor-maze.layout.json"))
 func texture(path: String) -> Texture2D:
@@ -49,36 +54,61 @@ func register_frame(canvas: CanvasItem,ids: Array,sheet_id: String,frame_id: Str
 
 func _active(context: Dictionary,state: Dictionary) -> bool:
 	return context.get("scene_id","")=="duan_yongping_temporal_maze" and state.has("chapter4")
+
+func bakery_foreground_below_player(cover: Dictionary,state: Dictionary) -> bool:
+	# The source player is at PLAYER_TOP_DEPTH (9900). These normal bakery
+	# crops stay at PLAYER_DEPTH_BASE + baseline (4387/4449), below that player.
+	# Reveal walls and the entrance have separate source rules; do not alter them.
+	var c: Dictionary=state.get("chapter4",{})
+	return c.get("floor","")=="A1" and c.get("phase","") in ["bakery_hour_hand","morning_checkin"] and str(cover.get("id","")) in ["a1_foreground_018","a1_midday_queue_front"]
 func draw_back(canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
 	if not _active(context,state): return
-	var c: Dictionary=state.chapter4
-	phases.draw_back(self,canvas,context,state)
-	if Room.presentation(state)=="interactive" and (c.mode=="dark" or presentation.get("kind","")=="projection"):
-		var l: Dictionary=Room.data().layout
-		for i in range(l.initialPiecePairs.size()):
-			draw_frame(canvas,context,"chapter4_room204_residual",l.initialPiecePairs[i].residualFrame,Room.point(l.slotTargets[i].center),0,0.25,Color(0.47,0.875,1,0.88))
-	_draw_bakery_people(canvas,context,state,false)
+	draw_before_furniture(canvas,context,state,false)
 	_draw_furniture(canvas,context,state,false)
-	if c.floor=="A1": _draw_bakery(canvas,context,state,false)
-	if presentation.get("kind","")=="projection" and c.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y>=475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
+	draw_after_furniture(canvas,context,state,false)
 func draw_front(canvas: CanvasItem,context: Dictionary,state: Dictionary) -> void:
 	if not _active(context,state): return
-	phases.draw_front(self,canvas,context,state)
-	_draw_bakery_people(canvas,context,state,true)
+	draw_before_furniture(canvas,context,state,true)
 	_draw_furniture(canvas,context,state,true)
-	if presentation.get("kind","")=="projection" and state.chapter4.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y<475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
-	if state.chapter4.floor=="A1":
-		_draw_bakery(canvas,context,state,true)
-		if state.chapter4.phase=="opening_handoff" and "opening_paper_at_noticeboard" in state.chapter4.factIds:
-			for a in source.floors[0].anchors:
-				if a.id=="a1_noticeboard_paper":
-					var r: Rect2=Room.rect(a.bounds)
-					register_frame(canvas,["a1_noticeboard_paper"],"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
-					draw_frame(canvas,context,"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
-func _draw_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
+	draw_after_furniture(canvas,context,state,true)
+func draw_before_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
+	if front:
+		if not _active(context,state): return
+		phases.draw_front(self,canvas,context,state)
+		_draw_bakery_people(canvas,context,state,true)
+	else:
+		if not _active(context,state): return
+		var c: Dictionary=state.chapter4
+		phases.draw_back(self,canvas,context,state)
+		if Room.presentation(state)=="interactive" and (c.mode=="dark" or presentation.get("kind","")=="projection"):
+			var l: Dictionary=Room.data().layout
+			for i in range(l.initialPiecePairs.size()):
+				draw_frame(canvas,context,"chapter4_room204_residual",l.initialPiecePairs[i].residualFrame,Room.point(l.slotTargets[i].center),0,0.25,Color(0.47,0.875,1,0.88))
+		_draw_bakery_people(canvas,context,state,false)
+func draw_after_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
+	if not _active(context,state): return
+	var c: Dictionary=state.chapter4
+	if front:
+		if presentation.get("kind","")=="projection" and state.chapter4.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y<475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
+		if state.chapter4.floor=="A1":
+			_draw_bakery(canvas,context,state,true)
+			if state.chapter4.phase=="opening_handoff" and "opening_paper_at_noticeboard" in state.chapter4.factIds:
+				for a in source.floors[0].anchors:
+					if a.id=="a1_noticeboard_paper":
+						var r: Rect2=Room.rect(a.bounds)
+						register_frame(canvas,["a1_noticeboard_paper"],"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
+						draw_frame(canvas,context,"chapter4_story_items","sign_in_record_paper",Vector2(r.get_center().x,r.end.y),0,0.18)
+	else:
+		if c.floor=="A1": _draw_bakery(canvas,context,state,false)
+		if presentation.get("kind","")=="projection" and c.floor=="A2" and Vector2(context.get("player",Vector2.ZERO)).y>=475: draw_projection(canvas,context,float(presentation.get("elapsedMs",0)))
+func _draw_furniture(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool,segment: int=0) -> void:
 	var player: Vector2=context.get("player",Vector2.ZERO)
+	var after_native:=false
 	for e in Room.entities(state):
 		var pos: Vector2=e.position; var angle: float=e.angle; var id: String=e.kind+":"+e.id
+		if _native_owns(id): after_native=true;continue
+		if segment==1 and after_native: continue
+		if segment==2 and not after_native: continue
 		if moves.has(id):
 			var t: float=clampf((clock_ms-float(moves[id].start))/480.0,0,1); t=1-pow(1-t,3)
 			pos=Vector2(moves[id].from).lerp(pos,t); angle=lerpf(float(moves[id].angle),angle,t)
@@ -92,7 +122,11 @@ func draw_frame(canvas: CanvasItem,context: Dictionary,sheet_id: String,frame_id
 	canvas.draw_texture_rect_region(art,Rect2(src.position-pivot,src.size),src,tint)
 	canvas.draw_set_transform(Vector2.ZERO)
 func collisions(state: Dictionary) -> Array:
-	var out: Array=Room.collisions(state)
+	_sync_native_prop(state)
+	var out: Array=[]
+	for e: Dictionary in Room.entities(state):
+		if _native_owns(e.kind+":"+e.id): out.append(native_prop.footprint_bounds(e.kind+":"+e.id))
+		else: out.append(Room.entity_collision(e))
 	out.append_array(phases.collisions(state))
 	var c: Dictionary=state.get("chapter4",{})
 	if c.get("floor","")=="A1" and c.get("phase","")=="bakery_hour_hand" and c.get("timeState","")=="1225_bakery":
@@ -103,13 +137,16 @@ func collisions(state: Dictionary) -> Array:
 			out.append(Rect2(Vector2(actor.position)+center_offset-Vector2(float(foot.width),float(foot.height))/2,Vector2(float(foot.width),float(foot.height))))
 	return out
 func pick_drag(worldpos: Vector2,state: Dictionary) -> Dictionary:
+	_sync_native_prop(state)
 	if not Room.group_available(state): return {}
 	var entities: Array=Room.entities(state); entities.reverse()
 	for e in entities:
 		if e.kind not in ["chair","table"]: continue
 		var frame: Dictionary=Room.data().sheets.chapter4_room204_furniture.frames[e.frame]
 		var local: Vector2=(worldpos-Vector2(e.position)).rotated(-deg_to_rad(float(e.angle)))/0.25+Room.point(frame.pivot)
-		if not Room.rect(frame.sourceRect).has_point(local): continue
+		if _native_owns(e.kind+":"+e.id):
+			if not native_prop.contains_source_point(worldpos,e.kind+":"+e.id): continue
+		elif not Room.rect(frame.sourceRect).has_point(local): continue
 		for group in Room.data().groups:
 			for mapping in group.mappings:
 				var match_piece: bool=mapping.pieceId==e.id
@@ -127,10 +164,10 @@ func _world(canvas: CanvasItem,context: Dictionary) -> void: canvas.draw_set_tra
 func _draw_bakery(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	var c: Dictionary=state.chapter4
 	if c.phase not in ["bakery_hour_hand","morning_checkin"]: return
-	var b: Dictionary=source.bakeryRuntime; var baseline: float=357
-	for crop in source.floors[0].foregroundOcclusions:
-		if crop.id==b.baker.foregroundOcclusionId: baseline=float(crop.baselineY)
-	if (baseline+4>Vector2(context.get("player",Vector2.ZERO)).y)!=front: return
+	# Original belt/lamp/item layers use the counter surface depth, always
+	# below chapterFourPlayerDepth(). Keep their original art and animation.
+	if front: return
+	var b: Dictionary=source.bakeryRuntime
 	var stopped: bool="bakery_hour_hand_exposed" in c.factIds or c.phase!="bakery_hour_hand"
 	var t: float=float(presentation.get("elapsedMs",0))
 	var stop_active: bool=presentation.get("kind","")=="bakery_stop"
@@ -196,21 +233,16 @@ func _crowd_sample(route: Dictionary,index: int) -> Dictionary:
 	return {"position":p,"animation":animation,"frame":frame,"flip":(to.x>from.x)!=reverse}
 func _draw_bakery_people(canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	var c: Dictionary=state.get("chapter4",{})
-	if c.get("floor","")!="A1": return
-	var b: Dictionary=source.bakeryRuntime; var player: Vector2=context.get("player",Vector2.ZERO); var zoom: float=context.get("zoom",1.0); var origin: Vector2=context.get("origin",Vector2.ZERO)
+	if c.get("floor","")!="A1" or front: return
+	var b: Dictionary=source.bakeryRuntime; var zoom: float=context.get("zoom",1.0); var origin: Vector2=context.get("origin",Vector2.ZERO)
 	if c.get("phase","") in b.baker.activePhases:
-		var baseline: float=340
-		for crop in source.floors[0].foregroundOcclusions:
-			if crop.id==b.baker.foregroundOcclusionId: baseline=crop.baselineY
-		if (baseline+1>player.y)==front:
-			var art: Texture2D=texture(b.baker.textureFile.replace("src/assets/","res://assets/")); var p: Vector2=Room.point(b.baker.position)
-			if art:
-				var frame: int=6+mini(1,int(fmod(bakery_ms,2000.0/1.8+260)/(1000.0/1.8)))
-				canvas.draw_texture_rect_region(art,Rect2(origin+(p-Vector2(48,128)*0.52)*zoom,Vector2(96,80)*0.52*zoom),Rect2(frame*96,0,96,80))
+		var art: Texture2D=texture(b.baker.textureFile.replace("src/assets/","res://assets/")); var p: Vector2=Room.point(b.baker.position)
+		if art:
+			var frame: int=6+mini(1,int(fmod(bakery_ms,2000.0/1.8+260)/(1000.0/1.8)))
+			canvas.draw_texture_rect_region(art,Rect2(origin+(p-Vector2(48,128)*0.52)*zoom,Vector2(96,80)*0.52*zoom),Rect2(frame*96,0,96,80))
 	if c.get("phase","")!="bakery_hour_hand" or c.get("timeState","")!="1225_bakery": return
 	for i in range(b.crowd.routes.size()):
 		var actor: Dictionary=_crowd_sample(b.crowd.routes[i],i)
-		if (Vector2(actor.position).y>player.y)!=front: continue
 		var suffix: String="8frame" if actor.animation=="student_walk" else "2frame"
 		var art: Texture2D=texture("res://assets/rpg/npcs/finale/"+actor.animation+"_"+suffix+".png")
 		if not art: continue
