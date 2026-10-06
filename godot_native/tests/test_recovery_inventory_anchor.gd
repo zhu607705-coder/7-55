@@ -12,12 +12,13 @@ func run():
  var state=root.get_node("State");state.developer_mode=true
  var source:Dictionary=state.initial()
  source.chapterThreeInterlude.recoveryOpened=true
+ source.qizhenLake.phase="complete"
  for id:String in ["campusCard","canteenRealBun","canteenCluelessSoyMilk","canteenEdgeEgg","canteenUselessCongee","temporaryTheaterTicket"]:source.items[id]=true
  # Optional local replay seed is read-only; CI uses the explicit fixture above.
  if not OS.get_environment("BAG_EARNED_SAVE").is_empty():source=JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment("BAG_EARNED_SAVE"))).state
  for dims:Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1180,812),Vector2i(844,390)]:
   root.size=dims
-  for page:String in ["c35_voice","c35_recovery","c3_lake"]:
+  for page:String in ["c35_voice","c35_recovery","c35_photos","photos","c35_journal","c35_official","c35_messages","c35_network","c3_lake"]:
    var s:Dictionary=source.duplicate(true);s.native.page=page;s.ui.inventoryOpen=false
    if page=="c3_lake":s.chapterThreeInterlude.completed=true
    var before:String=JSON.stringify(s)
@@ -70,5 +71,15 @@ func run():
    s.native.page="cc98";chrome.refresh(s);await settle()
    check(chrome.inventory.position.x==0 and chrome.inventory_handle.size==Vector2(38,63),"other pages retain source rail")
    phone.queue_free();await process_frame
+ var route=Chrome.new();root.add_child(route)
+ for completed:bool in [false,true]:
+  for lake_phase:String in ["locked","complete"]:
+   var s:Dictionary=source.duplicate(true)
+   s.chapterThreeInterlude.completed=completed;s.qizhenLake.phase=lake_phase
+   for page:String in ["photos","c35_photos","c35_journal","c35_official","c35_messages","c35_network","cc98","phone_home","c3_ticket_post","c3_lake"]:
+    s.native.page=page;route.refresh(s);await settle()
+    var expected:bool=page=="c3_lake" or (not completed and (page in ["c35_photos","c35_journal","c35_official","c35_messages","c35_network"] or (page=="photos" and lake_phase=="complete")))
+    check(route._reading_inventory_anchor()==expected,"reading-page guard: "+page+" / "+lake_phase+" / "+str(completed))
+ route.queue_free();await process_frame
  print("READING_BAG_ANCHOR ",checks," checks; ",failed," failures")
  quit(1 if failed else 0)

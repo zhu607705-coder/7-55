@@ -93,18 +93,27 @@ func full_chain(records: Array) -> void:
 	chapter.dispatch(s,"c4_device_power_topology"); var edges: Dictionary={}
 	for edge in ["hall__west_corridor","hall__east_corridor","west_corridor__bakery_back_area","east_corridor__classroom_zone","bakery_back_area__classroom_zone"]: edges[edge]="on"
 	chapter.dispatch(s,"c4_solve_power_topology",edges); chapter.dispatch(s,"c4_device_evacuation_route"); chapter.dispatch(s,"c4_solve_evacuation_route",{"a":"lecture_202_door","b":"east_corridor","c":"transport_core","d":"main_stair_down"})
-	chapter.dispatch(s,"c4_deduce",{"arrival":"A3","unserved":"A2"}); complete_game(chapter,s,chapter.dispatch(s,"c4_elevator")); check(s.chapter4.floor=="A1","Actual return elevator")
+	chapter.dispatch(s,"c4_deduce",{"arrival":"A3","unserved":"A2"})
+	var floor_choice: Dictionary=chapter.dispatch(s,"c4_elevator")
+	check(floor_choice.has("open_c4_floor_selection"),"Solved-state return offers original floor choice")
+	if not floor_choice.has("open_c4_floor_selection"):return
+	complete_game(chapter,s,chapter.dispatch(s,"c4_floor_select",{"session":floor_choice.open_c4_floor_selection.session,"destination":"A1"}));check(s.chapter4.floor=="A1","Selected original return elevator")
 	chapter.dispatch(s,"c4_install_plate"); check(s.chapter4.phase=="maintenance_repair" and s.chapter4.timeState=="1850_evening","Positioning plate holds previous time pending clock")
 	chapter.dispatch(s,"c4_clock_set",{"time":"2245_maintenance"}); chapter.dispatch(s,"c4_diagnose",{"wheel_sound":"latch","clock_jam":"gear_offset","oil_trace":"oil_shortage"}); chapter.dispatch(s,"c4_cart_cover"); chapter.dispatch(s,"c4_cart_oil")
 	check(s.chapter4.factIds.has("clock_gear_repaired") and not s.items.universalLubricatingOil and not s.items.shortPryBar,"Maintenance linkage consumes both final-use tools")
 	complete_game(chapter,s,chapter.dispatch(s,"c4_final_drag"),{"dragged":true}); check(s.chapter4.phase=="blackout_light_grid" and not s.items.attendanceRecordPaper,"Minute theft holds paper outside inventory")
 	for zone in ["east_corridor","classroom_zone","bakery_back_area"]: chapter.dispatch(s,"c4_toggle_"+zone)
 	chapter.dispatch(s,"c4_lock_power"); check(s.chapter4.phase=="final_chase" and s.chapter4.factIds.has("canruo_star_lamp_primed"),"Light-grid handoff only primes lamp")
-	var trace: Array=[]; var at: Vector2=Vector2(833,826); var time: float=0
+	request=chapter.dispatch(s,"c4_chase")
+	var trace: Array=[]; var at: Vector2=Vector2(833,826); var time: float=0;var committed_landing:=0
 	for target in [Vector2(989,826),Vector2(989,426),Vector2(784,426),Vector2(784,207),Vector2(715,207),Vector2(715,57)]:
 		while at.distance_to(target)>0.01:
 			at=at.move_toward(target,20.8); time+=100; trace.append({"x":at.x,"y":at.y,"t":time})
-	complete_game(chapter,s,chapter.dispatch(s,"c4_chase"),{"expectedAttempt":s.chapter4.chaseAttempt,"path":trace,"escaped":true,"elapsedMs":time}); check(s.chapter4.floor=="A2" and s.chapter4.chaseStairwellStage=="complete","Physical stair trace validates both landings and exit")
+			if committed_landing<2 and chapter._inside(at,chapter.extra.stair.gates[committed_landing]):
+				committed_landing+=1
+				var progress:Dictionary=chapter.dispatch(s,"c4_chase_landing",{"session":request.game.session,"expectedAttempt":s.chapter4.chaseAttempt,"landing":committed_landing,"path":trace.duplicate(true),"elapsedMs":time})
+				check(progress.get("accepted",false),"Original stair platform committed in order")
+	complete_game(chapter,s,request,{"expectedAttempt":s.chapter4.chaseAttempt,"path":trace,"escaped":true,"elapsedMs":time}); check(s.chapter4.floor=="A2" and s.chapter4.chaseStairwellStage=="complete","Physical stair trace validates both landings and exit")
 	chapter.dispatch(s,"c4_reach202"); chapter.dispatch(s,"c4_final_minute"); check(s.items.finalMinute and s.items.attendanceRecordPaper,"Minute and attendance paper recovered together")
 	chapter.dispatch(s,"c4_return_stair"); chapter.dispatch(s,"c4_install_minute"); check(s.chapter4.phase=="morning_checkin" and int(s.chapter4.worldTimeSeconds)==28500,"Recovered minute restores exact 07:55")
 	chapter.dispatch(s,"c4_checkin_paper"); check(not s.chapter4.completed,"One check-in input cannot complete chapter")

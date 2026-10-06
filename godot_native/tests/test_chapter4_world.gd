@@ -9,10 +9,18 @@ var state: Dictionary={}
 class Surface extends Control:
 	var layers: RefCounted
 	var state: Dictionary
+	var player_point:=Vector2(230,650)
+	var draw_order:Array=[]
+	var draw_pass:String=""
+	func register_object_surface(ids:Array,_geometry:Dictionary) -> void:
+		if ids.has("a1_bakery_inspection_lamp"):draw_order.append(draw_pass+":lamp")
 	func _draw() -> void:
 		if not layers: return
-		var context: Dictionary={"origin":Vector2(-20,-420),"zoom":1.0,"player":Vector2(230,650),"scene_id":"duan_yongping_temporal_maze","floor":state.chapter4.floor}
-		layers.draw_back(self,context,state); layers.draw_front(self,context,state)
+		draw_order.clear()
+		var context: Dictionary={"origin":Vector2(-20,-420),"zoom":1.0,"player":player_point,"scene_id":"duan_yongping_temporal_maze","floor":state.chapter4.floor}
+		draw_pass="back";layers.draw_back(self,context,state)
+		draw_order.append("player")
+		draw_pass="front";layers.draw_front(self,context,state)
 func _initialize() -> void: call_deferred("run")
 func check(value: bool,label: String) -> void:
 	checks+=1
@@ -77,6 +85,12 @@ func run() -> void:
 	state.chapter4.mode="dark"; Layers.presentation={"kind":"projection","elapsedMs":400}; holder.queue_redraw(); await process_frame; await process_frame
 	state.chapter4.floor="A1"; state.chapter4.phase="bakery_hour_hand"; state.chapter4.timeState="1225_bakery"; state.chapter4.factIds=[]; Layers.presentation={"kind":"bakery_stop","elapsedMs":550}; holder.queue_redraw(); await process_frame; await process_frame
 	check(layers.collisions(state).size()==3,"Bakery moving crowd supplies three source player-foot colliders")
+	# ChapterFourElevatorDepthModel.ts places the player at9900. The source
+	# bakery machinery stays below4400, including at the actual hidden-avatar
+	# save and at the authored lamp standing point (foot centre at374,390).
+	for point:Vector2 in [Vector2(345.62857,384.56699),Vector2(374,358.3125),Vector2(374,425)]:
+		holder.player_point=point;holder.queue_redraw();await process_frame;await process_frame
+		check(holder.draw_order==["back:lamp","player"],"Source bakery paint order at "+str(point))
 	for kind in ["paper_flight","paper_pickup","elevator_ride"]:
 		state.chapter4.floor="A1"; state.chapter4.phase="room204_restore"; state.chapter4.timeState="1850_evening"
 		var effect: Control=Effect.new(); holder.add_child(effect); effect.setup({"kind":kind,"session":"smoke-"+kind,"on_success":"noop","fromFloor":"A1","destination":"A3","phase":"room204_restore","player":{"x":772.5,"y":204},"durationMs":7000,"read_state":func(): return state,"project_position":func(p): return Vector2(480,160)+(p-Vector2(772.5,105.5))*0.85})

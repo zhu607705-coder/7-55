@@ -2,9 +2,18 @@ extends Control
 signal completed(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String,payload: Dictionary)
+signal progress_requested(proof:Dictionary)
+signal attempt_failed(proof:Dictionary)
+const LampClosure=preload("res://scripts/presentation/chapter4_lamp_closure.gd")
+var lamp_view:Control
+const ElevatorPanel = preload("res://scripts/ui/chapter4_elevator_panel.gd")
 const StairChase = preload("res://scripts/games/chapter4_chase_stair_model.gd")
 const GuardModel = preload("res://scripts/games/chapter4_guard_model.gd")
 const Source = preload("res://scripts/games/chapter4_stair_model.gd")
+const ChaseView = preload("res://scripts/presentation/chapter4_chase_stair_view.gd")
+const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const Capture=preload("res://scripts/presentation/chapter4_guard_capture.gd")
+const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 var config: Dictionary={}
 var source: Dictionary={}
 var kind: String=""
@@ -13,10 +22,12 @@ var running: bool=true
 var done: bool=false
 var title: Label
 var body: Label
-var controls: VBoxContainer
+var controls: BoxContainer
 var stage: String=""
 var selection: int=81807
 var boarded: bool=false
+var elevator_panel: Control
+var elevator_feedback: String=""
 var answers: Dictionary={}
 var question_index: int=0
 var lamp: Dictionary={}
@@ -50,11 +61,37 @@ var prologue_portraits: Array=[]
 var prologue_available := Vector2(960,540)
 var prologue_adaptive := false
 var prologue_field := Rect2(0,0,960,540)
+var chase_view:Control
+var chase_overview:Control
+var chase_status:Label
+var chase_touch_enabled:=false
+var chase_touch_seen:=false
+var chase_touch_axis:=Vector2.ZERO
+var chase_pointer_owner:=""
+var chase_finger:=-1
+var chase_pad:=Rect2()
+var chase_adaptive:=false
+var guard_delay_ms:=0.0
+var chase_animation_ms:=0.0
+var chase_progress_pending:=false
+var chase_request_remaining_ms:=0.0
+var chase_capture:RefCounted=Capture.new()
 
 func uses_activity_layout() -> bool:
-	return kind == "prologue"
+	return kind in ["prologue","elevator_alignment","chase_stairwell","star_lamp_closure"]
 
 func configure_activity_layout(available: Vector2, _compact: bool) -> void:
+	if kind=="star_lamp_closure":
+		custom_minimum_size=Vector2.ZERO;scale=Vector2.ONE;position=Vector2.ZERO;size=available.max(Vector2(240,240))
+		if is_instance_valid(lamp_view):lamp_view.size=size
+		return
+	if kind=="chase_stairwell":
+		if size!=available:_clear_chase_pointer()
+		chase_adaptive=true;custom_minimum_size=Vector2.ZERO;scale=Vector2.ONE;position=Vector2.ZERO;size=available.max(Vector2(240,240));_layout_chase();return
+	if kind == "elevator_alignment":
+		custom_minimum_size=Vector2.ZERO;scale=Vector2.ONE;position=Vector2.ZERO;size=available.max(Vector2(240,240))
+		if is_instance_valid(elevator_panel):elevator_panel.size=size
+		return
 	if kind != "prologue": return
 	prologue_adaptive = true
 	prologue_available = available.max(Vector2(240,240))
@@ -115,42 +152,47 @@ func _build() -> void:
 	size=Vector2(960,540)
 	title=Label.new(); title.position=Vector2(24,12); title.size=Vector2(880,40); title.text=config.get("title",""); title.add_theme_color_override("font_color",Color("edf4dc")); add_child(title)
 	body=Label.new(); body.position=Vector2(24,64); body.size=Vector2(880,120); body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; body.text=config.get("body",""); body.add_theme_color_override("font_color",Color("edf4dc")); add_child(body)
-	controls=VBoxContainer.new(); controls.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT); controls.position=Vector2(-310,-220); controls.size=Vector2(286,200); add_child(controls)
+	controls=HBoxContainer.new() if kind=="chase_stairwell" else VBoxContainer.new(); controls.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT); controls.position=Vector2(-310,-220); controls.size=Vector2(286,200); add_child(controls)
 	match kind:
 		"elevator_alignment":
-			running=false; stage="select"; _elevator_controls()
+			running=false; stage="select"; selection=int(config.timeline.selectableStartMinSeconds)
+			title.hide();body.hide();controls.hide()
+			elevator_panel=ElevatorPanel.new();elevator_panel.configure(config.timeline);elevator_panel.size=size
+			elevator_panel.shifted.connect(_shift_elevator);elevator_panel.replay_requested.connect(_start_elevator_replay);elevator_panel.board_requested.connect(_board);elevator_panel.close_requested.connect(func():cancelled.emit())
+			add_child(elevator_panel);_elevator_controls()
 		"chase_stairwell":
 			var file: String="res://assets/rpg/interiors/finale/finale_stairwell.png"
 			if ResourceLoader.exists(file): plate=load(file)
 			body.text="WASD / 方向键移动；按住地面可指向移动。不要让保安追上。"
 			if ResourceLoader.exists("res://assets/rpg/player/player_up_0.png"): player_art=load("res://assets/rpg/player/player_up_0.png")
 			if ResourceLoader.exists("res://assets/rpg/npcs/finale/guard_walk_up_8frame.png"): guard_art=load("res://assets/rpg/npcs/finale/guard_walk_up_8frame.png")
+			chase_touch_enabled=DisplayServer.is_touchscreen_available()
+			chase_view=ChaseView.new();add_child(chase_view)
+			chase_overview=ChaseView.new();chase_overview.overview=true;add_child(chase_overview)
+			chase_status=Label.new();chase_status.add_theme_color_override("font_color",Color("edf4dc"));add_child(chase_status)
 			_reset_chase()
 		"star_lamp_closure":
-			running=false; stage="questions"; _build_starfield()
-			for key in ["dark","outline","leds","core","glow"]:
-				var file: String="res://assets/rpg/cinematics/chapter4-755/canruo-star-lamp/lamp_"+key+".png"
-				if ResourceLoader.exists(file): lamp[key]=load(file)
-			if config.get("answersSaved",false):
-				answers=config.get("selectedAnswers",{}).duplicate()
-				body.text="第一问：到浙大来做什么？\n第二问：将来毕业后要做什么样的人？"
-				_button("确认并点亮",_begin_lamp_playback)
-			else: _question()
+			running=false;stage="questions";title.hide();body.hide();controls.hide()
+			lamp_view=LampClosure.new();lamp_view.configure(config);lamp_view.size=size
+			lamp_view.save_requested.connect(_save_lamp_answers)
+			lamp_view.acknowledged.connect(func(proof):elapsed=float(proof.playbackMs);_finish(proof))
+			add_child(lamp_view)
 		"prologue": _prologue()
 		"dialogue":
 			running=false; _button("继续",func(): _finish({"acknowledged":true}))
 		_:
 			running=false; body.text="该活动未接入。剧情未前进。"
-	if kind!="prologue": _button("返回",func(): cancelled.emit())
+	if kind not in ["prologue","elevator_alignment","chase_stairwell","star_lamp_closure"]: _button("返回",func(): cancelled.emit())
 	queue_redraw()
 func _button(text: String,callback: Callable) -> Button:
 	var button: Button=Button.new(); button.text=text; button.custom_minimum_size.y=42; button.pressed.connect(callback); controls.add_child(button); return button
 func _clear_controls() -> void:
 	for child in controls.get_children():
-		if kind=="prologue": controls.remove_child(child)
+		if kind in ["prologue","chase_stairwell"]: controls.remove_child(child)
 		child.queue_free()
 func _finish(proof: Dictionary={}) -> void:
 	if done: return
+	if kind=="chase_stairwell":_clear_chase_pointer();chase_capture.cancel();chase_progress_pending=false
 	done=true; running=false
 	if kind=="prologue": _cue("chapter4_prologue_finished")
 	var result: Dictionary={"kind":kind,"session":config.get("session",""),"elapsedMs":elapsed}
@@ -250,44 +292,164 @@ func _cue(event: String) -> void:
 		if delay>0: get_tree().create_timer(delay).timeout.connect(func(): if is_instance_valid(player_audio): player_audio.play())
 		else: player_audio.play()
 func _elevator_controls() -> void:
-	_clear_controls()
-	var slider: HSlider=HSlider.new(); slider.min_value=config.timeline.selectableStartMinSeconds; slider.max_value=config.timeline.selectableStartMaxSeconds; slider.step=1; slider.value=selection; slider.value_changed.connect(func(v): selection=int(v); queue_redraw()); controls.add_child(slider)
-	_button("开始轨迹回放",func(): stage="replay"; running=true; elapsed=0; boarded=false; _clear_controls(); _button("走入电梯",_board); _button("返回",func(): cancelled.emit()))
-	body.text="调节回放起点，让六秒进入窗口覆盖门体轨迹。"
+	if is_instance_valid(elevator_panel):elevator_panel.refresh(selection,stage,elapsed,boarded,elevator_feedback)
+func _shift_elevator(seconds:int) -> void:
+	if stage!="select" or done:return
+	selection=clampi(selection+seconds,int(config.timeline.selectableStartMinSeconds),int(config.timeline.selectableStartMaxSeconds))
+	elevator_feedback="";_elevator_controls()
+func _start_elevator_replay() -> void:
+	if stage!="select" or done:return
+	stage="replay";running=true;elapsed=0;boarded=false;elevator_feedback="";_elevator_controls()
 func _board() -> void:
-	if stage=="replay" and elapsed<=6000: boarded=true; body.text="乘客轨迹正在回放。"
-func _question() -> void:
-	_clear_controls()
-	var question: Dictionary=config.questions[question_index]; body.text=question.prompt
-	for option in question.options:
-		_button(option.label,_answer.bind(question.id,option.id))
-func _answer(id: String,value: String) -> void:
-	if stage!="questions": return
-	answers[id]=value
-	if question_index==0: question_index=1; _question()
-	else:
-		var owner: Node=get_node_or_null("/root/State")
-		if not owner: body.text="回答未能保存，请重试。"; return
-		var result: Dictionary=owner.act("c4_lamp_answers",{"session":config.get("session",""),"answers":answers})
-		if not result.get("accepted",false): body.text=result.get("message","回答未能保存，请重试。"); return
-		_begin_lamp_playback()
-func _begin_lamp_playback() -> void:
-	stage="playback"; elapsed=0; running=true; body.text=""; _clear_controls()
+	if stage=="replay" and elapsed<=6000:
+		boarded=true;_elevator_controls()
+func _save_lamp_answers(value:Dictionary)->void:
+	if done or not is_instance_valid(lamp_view):return
+	var owner:=get_node_or_null("/root/State")
+	var result:Dictionary=owner.act("c4_lamp_answers",{"session":config.get("session",""),"answers":value}) if owner else {"message":"回答未能保存，请重试。"}
+	if is_instance_valid(lamp_view) and not done:lamp_view.accept_save(result)
 func _reset_chase() -> void:
-	elapsed=0; player=Vector2(833,826); guard=Vector2(833,922); trail=[]; guard_trail=[Vector2(833,826)]; landing=0; stage="chase"; snapshot_clock=0; guard_target=null; guard_repath=0; running=true; pointer_moving=false
-	_clear_controls(); _button("返回",func(): cancelled.emit())
+	landing=clampi(int(config.get("startLanding",0)),0,2)
+	var entry:Dictionary=StairChase.guard_entry(landing,float(config.get("guardLeadDistance",650)))
+	elapsed=0;player=entry.player;guard=entry.guard;guard_delay_ms=entry.delayMs;chase_animation_ms=0
+	trail=[];guard_trail=[player];stage="chase";snapshot_clock=0;guard_target=null;guard_repath=0;running=true;pointer_moving=false
+	chase_progress_pending=false;chase_request_remaining_ms=0;chase_capture.cancel()
+	_clear_chase_pointer()
+	body.text="WASD / 方向键移动；按住地面可指向移动。不要让保安追上。"
+	if is_instance_valid(chase_view):chase_view.reset_view(player,guard);chase_overview.reset_view(player,guard)
+	_chase_buttons();_present_chase();_layout_chase()
+
+func _clear_chase_pointer():
+	pointer_moving=false;chase_touch_axis=Vector2.ZERO;chase_pointer_owner="";chase_finger=-1
+
+func _leave_chase():
+	if done:return
+	done=true;running=false;_clear_chase_pointer();chase_capture.cancel();chase_progress_pending=false;cancelled.emit()
+
+func _toggle_chase_touch():
+	_clear_chase_pointer();chase_touch_enabled=not chase_touch_enabled;_chase_buttons();_layout_chase()
+
+func _chase_buttons():
+	_clear_controls()
+	_button("隐藏摇杆" if chase_touch_enabled else "显示摇杆",_toggle_chase_touch)
+	_button("返回",_leave_chase)
+	_layout_chase()
+
+func _layout_chase():
+	if kind!="chase_stairwell" or not built or not is_instance_valid(chase_view):return
+	var portrait:=size.y>size.x
+	title.position=Vector2(16,12);title.size=Vector2(size.x-32,30);title.add_theme_font_size_override("font_size",22)
+	controls.set_anchors_preset(Control.PRESET_TOP_LEFT);controls.position=Vector2(12,50);controls.size=Vector2(size.x-24,44);controls.add_theme_constant_override("separation",8)
+	for button:Button in controls.get_children():
+		button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.custom_minimum_size=Vector2(0,44)
+		NativeUi.apply_button(button,Color("163c3e"),Color("fff0c2"),Color("b4a77b"),0,2,16,Vector2(8,5),Color("76dfc9"))
+	body.position=Vector2(16,102);body.size=Vector2(size.x-32,66 if portrait else 44);body.add_theme_font_size_override("font_size",16);body.add_theme_constant_override("line_spacing",4)
+	chase_status.add_theme_font_size_override("font_size",16)
+	chase_overview.visible=portrait and size.y>=650
+	chase_pad=Rect2()
+	if portrait:
+		chase_view.position=Vector2(12,178);chase_view.size=Vector2(size.x-24,(size.x-24)*9/16.0)
+		chase_status.position=Vector2(16,chase_view.position.y+chase_view.size.y+12);chase_status.size=Vector2(size.x-32,26)
+		chase_overview.position=chase_status.position+Vector2(0,36);chase_overview.size=Vector2(size.x-32,minf((size.x-32)*941/1672.0,maxf(80,size.y-chase_overview.position.y-192)))
+		if chase_touch_enabled:chase_pad=Rect2(Vector2((size.x-156)/2,size.y-178),Vector2(156,156))
+	else:
+		var reserved:=176.0 if chase_touch_enabled else 0.0
+		chase_view.position=Vector2(12+reserved,152);chase_view.size=Vector2(size.x-24-reserved,maxf(64,size.y-168))
+		chase_status.position=Vector2(16,126);chase_status.size=Vector2(size.x-32,26)
+		if chase_touch_enabled:chase_pad=Rect2(12,maxf(154,size.y-172),156,156)
+	queue_redraw()
+
+func _present_chase():
+	if not is_instance_valid(chase_view):return
+	var visible_guard:bool=elapsed>=guard_delay_ms
+	chase_view.present(player,guard,chase_animation_ms,running,landing,visible_guard)
+	chase_overview.present(player,guard,chase_animation_ms,running,landing,visible_guard)
+	chase_overview.camera=chase_view.camera
+	chase_status.text="已到平台 %d / 2"%landing+(" · 下方为楼梯全貌" if chase_overview.visible else "")
+
+func _chase_pointer_begin(point:Vector2,owner:int)->bool:
+	if not running or done or not chase_pointer_owner.is_empty():return false
+	if chase_touch_enabled and chase_pad.has_point(point):
+		chase_pointer_owner="pad";chase_finger=owner;_chase_pointer_move(point);return true
+	var target:Vector2=chase_view.to_world(point-chase_view.position)
+	if not target.is_finite():return false
+	chase_pointer_owner="field";chase_finger=owner;pointer_moving=true;pointer_target=target;return true
+
+func _chase_pointer_move(point:Vector2):
+	if chase_pointer_owner=="pad":
+		var offset:Vector2=(point-chase_pad.get_center())/(chase_pad.size.x*.4)
+		chase_touch_axis=offset.limit_length(1) if offset.length()>.12 else Vector2.ZERO
+	elif chase_pointer_owner=="field":
+		var target:Vector2=chase_view.to_world(point-chase_view.position)
+		if not target.is_finite():_clear_chase_pointer()
+		else:pointer_target=target
+
+func _chase_input(event:InputEvent)->bool:
+	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==-1:return false
+	if event is InputEventScreenTouch:
+		if not event.pressed or event.canceled:
+			if event.index==chase_finger:_clear_chase_pointer();return true
+			return false
+		# The first real finger must not rebuild a Return/Retry button beneath
+		# its own press. Capability detection already enables hardware touch.
+		if not chase_touch_seen and not Rect2(controls.position,controls.size).has_point(event.position):
+			chase_touch_seen=true
+			if not chase_touch_enabled:chase_touch_enabled=true;_chase_buttons();_layout_chase()
+		return _chase_pointer_begin(event.position,event.index)
+	if event is InputEventScreenDrag and event.index==chase_finger:_chase_pointer_move(event.position);return true
+	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
+		if event.pressed:return _chase_pointer_begin(event.position,-2)
+		if chase_finger==-2:_clear_chase_pointer();return true
+	if event is InputEventMouseMotion and chase_finger==-2:_chase_pointer_move(event.position);return true
+	return false
 func _rect(r: Dictionary) -> Rect2: return Rect2(float(r.x),float(r.y),float(r.width),float(r.height))
 func _walkable(p: Vector2) -> bool:
 	for rect in source.stair.walkable:
 		if _rect(rect).has_point(p): return true
 	return false
 func _foot(p: Vector2) -> bool:
-	for x in [-8,0,8]:
-		for y in [-5,0,5]:
-			if not _walkable(p+Vector2(x,y)): return false
-	return true
+	return StairChase.player_open(p)
+
+func _record_chase_sample():
+	if elapsed<=0:return
+	if trail.is_empty() or float(trail.back().t)<elapsed:trail.append({"x":player.x,"y":player.y,"t":elapsed})
+
+func _chase_proof_payload()->Dictionary:
+	return {"kind":kind,"session":config.get("session",""),"expectedAttempt":config.get("expectedAttempt",-1),"path":trail.duplicate(true),"elapsedMs":elapsed}
+
+func resolve_progress(result:Dictionary):
+	if not chase_progress_pending or done:return
+	chase_progress_pending=false;chase_request_remaining_ms=0
+	if result.get("accepted",false):landing=int(result.landing)
+	else:body.text="沿平台继续上行，再进入上方楼梯口。"
+
+func _chase_capture_context()->Dictionary:
+	var state:Node=get_node_or_null("/root/State");var c:Dictionary=state.d.chapter4 if state else {}
+	return {"scene":state.d.native.scene if state else "","floor":c.get("floor",""),"phase":c.get("phase",""),"time":c.get("timeState",""),"mode":c.get("mode",""),"guardMode":c.get("guardMode",""),"attempt":int(c.get("chaseAttempt",-1)),"session":config.get("session","")}
+
+func _chase_context_current()->bool:
+	var context:=_chase_capture_context()
+	return context.scene=="duan_yongping_temporal_maze" and context.floor=="A1" and context.phase=="final_chase" and context.guardMode=="chase" and context.attempt==int(config.get("expectedAttempt",-1)) and get_node("/root/State").d.chapter4.chaseStairwellStage=="inside"
+
+func _capture_chase():
+	_record_chase_sample()
+	var proof:=_chase_proof_payload();proof.captured=true;proof.guard={"x":guard.x,"y":guard.y}
+	if not chase_capture.begin(_chase_capture_context(),"c4_fail_chase",proof):return
+	stage="capture";running=false;_clear_chase_pointer();body.text="保安："+Capture.LINE
+
+func _tick_chase_capture(delta_ms:float):
+	if done or not chase_capture.active:return
+	if not chase_capture.matches(_chase_capture_context()):_leave_chase();return
+	var result:Dictionary=chase_capture.advance(delta_ms,_chase_capture_context(),get_window().has_focus() and is_visible_in_tree())
+	if result.is_empty():return
+	var proof:Dictionary=result.value;proof.captureMs=chase_capture.elapsed_ms
+	done=true;running=false;_clear_chase_pointer();attempt_failed.emit(proof)
+
+func source_stair_handoff()->Dictionary:
+	return {"attempt":int(config.get("expectedAttempt",-1)),"destination":"A2","leadDistance":StairChase.exit_lead(guard,player,maxf(0,guard_delay_ms-elapsed))}
 func _chase(delta: float) -> void:
 	var direction: Vector2=Vector2(float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
+	direction+=chase_touch_axis
 	if direction==Vector2.ZERO and pointer_moving:
 		direction=pointer_target-player
 		if direction.length()<8: direction=Vector2.ZERO
@@ -299,32 +461,47 @@ func _chase(delta: float) -> void:
 	if _foot(candidate): player=candidate
 	snapshot_clock+=delta*1000
 	if snapshot_clock>=80:
-		snapshot_clock=0; trail.append({"x":player.x,"y":player.y,"t":elapsed})
+		snapshot_clock=0;_record_chase_sample()
 		if guard_trail.is_empty() or Vector2(guard_trail.back()).distance_to(player)>4: guard_trail.append(player)
-	if landing<2 and _rect(source.stair.gates[landing]).has_point(player): landing+=1
+	if chase_progress_pending:
+		chase_request_remaining_ms-=delta*1000
+		if chase_request_remaining_ms<=0:chase_progress_pending=false
+	if landing<2 and not chase_progress_pending and _rect(source.stair.gates[landing]).has_point(player):
+		_record_chase_sample();chase_progress_pending=true;chase_request_remaining_ms=2000
+		var proof:=_chase_proof_payload();proof.landing=landing+1;progress_requested.emit(proof)
 	if landing==2 and _rect(source.stair.exit).has_point(player):
-		if trail.is_empty() or float(trail.back().t)!=elapsed: trail.append({"x":player.x,"y":player.y,"t":elapsed})
-		_finish({"path":trail,"escaped":true,"expectedAttempt":config.get("expectedAttempt",0),"failures":failures}); return
-	if elapsed>2000:
+		_record_chase_sample()
+		_finish({"path":trail,"escaped":true,"expectedAttempt":config.get("expectedAttempt",0),"failures":0}); return
+	if elapsed>=guard_delay_ms:
 		guard_repath-=delta*1000
 		if guard_repath<=0 or guard_target==null or guard.distance_to(guard_target)<12:
 			var route: Array=StairChase.path(guard,player); guard_target=route[0] if not route.is_empty() else null; guard_repath=260
 		if guard_target!=null:
 			var candidate_guard: Vector2=guard.move_toward(guard_target,174*delta)
-			if StairChase.foot_open(candidate_guard): guard=candidate_guard
-		if GuardModel.chase_contact(guard,Rect2(player-Vector2(8,5),Vector2(16,10))):
-			stage="caught"; running=false; failures+=1; body.text="保安追上了你。重新从楼梯入口开始。"; _clear_controls(); _button("重试楼梯间",_reset_chase); _button("返回",func(): cancelled.emit())
+			if StairChase.body_open(candidate_guard,Vector2(20,14)):guard=candidate_guard
+		if GuardModel.chase_contact(guard,Rect2(player-PlayerMetrics.FOOT_SIZE/2,PlayerMetrics.FOOT_SIZE)):_capture_chase()
 
 func _process(delta: float) -> void:
 	if not built or done: return
 	var focused := get_window().has_focus()
+	if kind=="star_lamp_closure":
+		if is_instance_valid(lamp_view):
+			lamp_view.advance(maxf(0,delta)*1000,focused);stage=lamp_view.stage;elapsed=lamp_view.playback_ms
+		return
 	if kind=="prologue" and focused!=prologue_focused:
 		prologue_focused=focused
 		if is_instance_valid(video):
 			video.paused=not focused or stage=="card"
 			if focused: _sync_prologue_video(true)
 		presentation_requested.emit("native_activity_resumed" if focused else "native_activity_paused",{"prefixes":["chapter4_prologue_"]})
-	if not focused: return
+	if not focused:
+		if kind=="chase_stairwell":_clear_chase_pointer()
+		return
+	if kind=="chase_stairwell":
+		if not _chase_context_current():_leave_chase();return
+		chase_animation_ms+=maxf(0,delta)*1000
+		if chase_capture.active:
+			_tick_chase_capture(maxf(0,delta)*1000);_present_chase();queue_redraw();return
 	if running:
 		var step: float=minf(delta,0.048 if kind=="prologue" else 0.05); elapsed+=step*1000
 		match kind:
@@ -333,10 +510,10 @@ func _process(delta: float) -> void:
 				if elapsed>=6000:
 					running=false
 					if selection==int(config.timeline.correctReplayStartSeconds) and boarded: _finish({"startSeconds":selection,"boarded":true})
-					else: body.text="乘客轨迹与门体窗口错开了。"; stage="select"; _elevator_controls()
-			"star_lamp_closure":
-				if stage=="playback" and elapsed>=5800:
-					stage="final"; running=false; body.text="从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！"; _button("我记住了",func(): _finish({"consumer":"ChapterFourStarLampClosure","answers":answers,"playbackMs":elapsed,"acknowledged":true}))
+					else:
+						elevator_feedback="校验结果：两条区间边缘仍未对齐，请调整重放起点。" if selection!=int(config.timeline.correctReplayStartSeconds) else "未在六秒进入窗口内走入电梯，请重新回放。"
+						stage="select";_elevator_controls()
+				elif is_instance_valid(elevator_panel):elevator_panel.refresh(selection,stage,elapsed,boarded,elevator_feedback)
 			"prologue":
 				for beat in source.prologue.beats:
 					if elapsed>=float(beat.at) and not cues_fired.has(beat.cueEvent): cues_fired[beat.cueEvent]=true; _cue(beat.cueEvent)
@@ -346,6 +523,7 @@ func _process(delta: float) -> void:
 				_sync_prologue_video()
 				if elapsed>=43834: _show_prologue_card()
 			_: pass
+	if kind=="chase_stairwell":_present_chase()
 	queue_redraw()
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO,size),Color("101722"))
@@ -356,17 +534,15 @@ func _draw() -> void:
 				draw_set_transform(prologue_field.position,0,Vector2.ONE*(prologue_field.size.x/960.0))
 				_draw_prologue_fallback()
 				draw_set_transform(Vector2.ZERO)
-		"chase_stairwell": _draw_chase()
-		"star_lamp_closure": _draw_lamp()
-		"elevator_alignment":
-			var origin: Vector2=Vector2(size.x*0.15,size.y*0.4); var width: float=size.x*0.56
-			draw_rect(Rect2(origin,Vector2(width,100)),Color("334151"))
-			var start: float=float(selection-int(config.timeline.selectableStartMinSeconds)); var true_start: float=float(int(config.timeline.correctReplayStartSeconds)-int(config.timeline.selectableStartMinSeconds))
-			draw_rect(Rect2(origin+Vector2(true_start/16*width,15),Vector2(8.0/16*width,20)),Color("719bac"))
-			draw_rect(Rect2(origin+Vector2(start/16*width,65),Vector2(6.0/16*width,20)),Color("d0ad60"))
-			if stage=="replay": draw_line(origin+Vector2((start+elapsed/1000)/16*width,0),origin+Vector2((start+elapsed/1000)/16*width,100),Color.WHITE,3)
-			title.text="电梯乘客残影 · %02d:%02d:%02d"%[selection/3600,(selection%3600)/60,selection%60]
+		"chase_stairwell":
+			if chase_touch_enabled and chase_pad.has_area():
+				draw_circle(chase_pad.get_center(),chase_pad.size.x/2,Color("163c3e"))
+				draw_arc(chase_pad.get_center(),chase_pad.size.x/2-2,0,TAU,64,Color("b4a77b"),2)
+				draw_circle(chase_pad.get_center()+chase_touch_axis*chase_pad.size.x*.3,24,Color("e8dbac"))
+		"star_lamp_closure": pass
+		"elevator_alignment": pass
 func _map_rect() -> Rect2:
+	if kind=="chase_stairwell" and is_instance_valid(chase_view):return Rect2(chase_view.position+chase_view.field.position,chase_view.field.size)
 	var available: Vector2=Vector2(size.x,size.y-120); var factor: float=minf(available.x/1672,available.y/941)
 	var dimensions: Vector2=Vector2(1672,941)*factor
 	return Rect2(Vector2((size.x-dimensions.x)/2,110),dimensions)
@@ -383,73 +559,35 @@ func _draw_chase() -> void:
 			var frame: int=int(fmod(elapsed,880)/110); var width: float=float(guard_art.get_width())/8; var height: float=guard_art.get_height()
 			draw_texture_rect_region(guard_art,Rect2(rect.position+(guard-Vector2(width*0.68/2,height*0.68))*factor,Vector2(width,height)*0.68*factor),Rect2(frame*width,0,width,height))
 		else: draw_circle(rect.position+guard*factor,11,Color("cf5555"))
-func _smooth(value: float) -> float:
-	var t: float=clampf(value,0,1); return t*t*t*(t*(t*6-15)+10)
-func _build_starfield() -> void:
-	stars=[]
-	for layer in [{"count":4200,"min":38.0,"max":54.0,"size":0.12,"color":Color("97acd2"),"opacity":0.5,"seed":1.1},{"count":1600,"min":28.0,"max":38.0,"size":0.19,"color":Color("d4dded"),"opacity":0.66,"seed":2.4},{"count":520,"min":20.0,"max":28.0,"size":0.28,"color":Color("ffe7ae"),"opacity":0.82,"seed":4.7}]:
-		var rng: int=int(floor(float(layer.seed)*1000003))&0xffffffff
-		for i in range(int(layer.count)):
-			rng=(rng*1664525+1013904223)&0xffffffff; var radius: float=float(layer.min)+float(rng)/4294967296.0*(float(layer.max)-float(layer.min))
-			rng=(rng*1664525+1013904223)&0xffffffff; var ct: float=float(rng)/4294967296.0*2-1
-			rng=(rng*1664525+1013904223)&0xffffffff; var phi: float=float(rng)/4294967296.0*TAU
-			var st: float=sqrt(1-ct*ct)
-			stars.append({"p":Vector3(radius*st*cos(phi),radius*ct,radius*st*sin(phi)),"size":layer.size,"color":layer.color,"opacity":layer.opacity,"seed":layer.seed})
-func _draw_lamp() -> void:
-	var playback: bool=stage in ["playback","final"]
-	var t: float=elapsed if playback else 0.0
-	var rise: float=_smooth((t-120)/2080) if playback else 1.0
-	var scale_factor: float=lerpf(1.16,0.92,rise)
-	var artwork_bounds: Vector2=size*1.14
-	var art_size: Vector2=artwork_bounds
-	if lamp.has("dark"):
-		var texture: Texture2D=lamp.dark; art_size=Vector2(texture.get_width(),texture.get_height()); art_size*=minf(artwork_bounds.x/art_size.x,artwork_bounds.y/art_size.y)
-	art_size*=scale_factor
-	var rect: Rect2=Rect2((size-art_size)*0.5+Vector2(0,lerpf(-0.22,0,rise)*artwork_bounds.y),art_size)
-	var camera: Vector3=Vector3(0,lerpf(-5.8,0.35,rise),-lerpf(12.4,15.8,rise))
-	var forward: Vector3=(Vector3(0,lerpf(-4.1,0.25,rise),0)-camera).normalized()
-	var right: Vector3=forward.cross(Vector3.UP).normalized(); var up: Vector3=right.cross(forward).normalized()
-	var focal: float=size.y/(2*tan(deg_to_rad(44.0)/2))
-	var glow: float=_smooth((t-2930)/960)*0.26
-	for star in stars:
-		var relative: Vector3=Vector3(star.p)-camera; var depth: float=relative.dot(forward)
-		if depth<=0.1 or depth>=120: continue
-		var pos: Vector2=Vector2(size.x/2+relative.dot(right)/depth*focal,size.y/2-relative.dot(up)/depth*focal)
-		if not Rect2(Vector2.ZERO,size).has_point(pos): continue
-		var color: Color=star.color; color.a=float(star.opacity)*(0.68+glow*0.12)*(0.88+sin(t*0.0012+float(star.seed))*0.12)
-		draw_circle(pos,maxf(0.35,float(star.size)*focal/depth/2),color)
-	for key in ["dark","outline","glow","core","leds"]:
-		if not lamp.has(key): continue
-		var alpha: float=1; var brightness: float=1
-		match key:
-			"dark": brightness=0.56
-			"outline": alpha=0.44; brightness=0.72
-			"leds": alpha=_smooth((t-2350)/780)*0.7; brightness=0.94
-			"core": alpha=_smooth((t-2750)/800)*0.62; brightness=0.96
-			"glow": alpha=glow; brightness=0.9
-		# The source renderer is viewport-clipped. Crop rather than letting the
-		# camera-rise artwork paint over the surrounding phone/task shell.
-		var region: Dictionary=_lamp_visible_region(rect,lamp[key].get_size())
-		if not region.is_empty(): draw_texture_rect_region(lamp[key],region.destination,region.source,Color(brightness,brightness,brightness,alpha))
-	if playback and t<260: draw_rect(Rect2(Vector2.ZERO,size),Color(0,0,0,1-_smooth(t/260)))
-func _lamp_visible_region(destination: Rect2,dimensions: Vector2) -> Dictionary:
-	var visible: Rect2=destination.intersection(Rect2(Vector2.ZERO,size))
-	if not visible.has_area(): return {}
-	var source_rect:=Rect2((visible.position-destination.position)/destination.size*dimensions,visible.size/destination.size*dimensions)
-	return {"destination":visible,"source":source_rect}
 func _gui_input(event: InputEvent) -> void:
+	pass # Chase owns pointer press, move and release together in _input.
+func _input(event:InputEvent) -> void:
 	if kind=="chase_stairwell":
-		if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
-			pointer_moving=event.pressed; pointer_target=(event.position-_map_rect().position)/(_map_rect().size.x/1672)
-		elif event is InputEventMouseMotion and pointer_moving: pointer_target=(event.position-_map_rect().position)/(_map_rect().size.x/1672)
+		if not is_visible_in_tree():_clear_chase_pointer();return
+		if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:_leave_chase();get_viewport().set_input_as_handled();return
+		if _chase_input(event):get_viewport().set_input_as_handled()
+		return
+	if kind!="elevator_alignment" or done or not event is InputEventKey or not event.pressed or event.echo:return
+	match event.keycode:
+		KEY_ESCAPE:cancelled.emit()
+		KEY_LEFT,KEY_UP:_shift_elevator(-1)
+		KEY_RIGHT,KEY_DOWN:_shift_elevator(1)
+		KEY_ENTER,KEY_KP_ENTER:
+			if stage=="select":_start_elevator_replay()
+			else:_board()
+		KEY_SPACE:_board()
+		_:return
+	get_viewport().set_input_as_handled()
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event.is_pressed() or event.is_echo(): return
 	if kind=="prologue" and event.keycode==KEY_ESCAPE and stage!="card":
 		_skip_prologue(); get_viewport().set_input_as_handled(); return
-	if kind=="elevator_alignment" and event.keycode==KEY_SPACE: _board()
-	if kind=="star_lamp_closure" and stage=="final" and event.keycode in [KEY_SPACE,KEY_ENTER]: _finish({"consumer":"ChapterFourStarLampClosure","answers":answers,"playbackMs":elapsed,"acknowledged":true})
+	if kind=="star_lamp_closure" and is_instance_valid(lamp_view):lamp_view._gui_input(event)
 
 func _exit_tree() -> void:
+	if is_instance_valid(lamp_view):lamp_view.dispose()
+	_clear_chase_pointer()
+	chase_capture.cancel();chase_progress_pending=false
 	if kind=="prologue": presentation_requested.emit("chapter4_prologue_closed",{})
 	if is_instance_valid(video): video.stop(); video.stream=null
 	for child in get_children():

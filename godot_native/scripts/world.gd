@@ -72,6 +72,9 @@ var guard_close_voice_played := false
 var guard_floor_voice_played := false
 var guard_close_requested := false
 var guard_recovery_pending := false
+const GuardCapture=preload("res://scripts/presentation/chapter4_guard_capture.gd")
+var guard_capture:RefCounted=GuardCapture.new()
+var stair_handoff:Dictionary={}
 var last_zone := ""
 var last_vehicle := ""
 var pan_offset := Vector2.ZERO
@@ -84,9 +87,11 @@ var host_node: Control
 var touch_points: Dictionary = {}
 var kayak_mouse_gesture: Dictionary = {}
 var chapter4_layers: RefCounted
+var room204_object: Node2D
 var library_layers: RefCounted
 var chapter3_layers: RefCounted
-var furniture_drag_preview: Label
+var furniture_drag_preview: Control
+var _native_table_drag:=false
 var presentation_actor_hidden := false
 var kayak_visual: RefCounted = KayakVisual.new()
 var lake_session: RefCounted
@@ -121,10 +126,17 @@ func _ready() -> void:
 		chapter3_layers=load("res://scripts/ui/chapter3_world_layers.gd").new()
 	if ResourceLoader.exists("res://scripts/ui/library_world_layers.gd"):
 		library_layers=load("res://scripts/ui/library_world_layers.gd").new()
+	room204_object=load("res://scripts/objects/room204_table_adapter.gd").new()
+	room204_object.name="Room204OriginalTable"
+	add_child(room204_object)
+	room204_object.setup(self)
+	chapter4_layers.native_prop=room204_object
 	refresh_world()
 
 func refresh_world() -> void:
 	if worlds.is_empty() or State.d.is_empty(): return
+	if guard_capture.active and not guard_capture.matches(_guard_capture_context()): _cancel_guard_capture()
+	if not stair_handoff.is_empty() and (State.d.native.scene!="duan_yongping_temporal_maze" or State.d.chapter4.phase!="final_chase" or State.d.chapter4.floor!="A2" or int(stair_handoff.attempt)!=int(State.d.chapter4.chaseAttempt)):stair_handoff.clear()
 	var incoming := str(State.d.native.scene)
 	if incoming!=scene_id: _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 	if library_layers!=null: library_layers.sync(State.d,incoming!=scene_id)
@@ -142,6 +154,7 @@ func refresh_world() -> void:
 	if key == world_key and pending_teleport == Vector2.INF:
 		queue_redraw()
 		return
+	_cancel_table_drag()
 	object_picker.clear()
 	_cancel_floor_route()
 	kayak_mouse_gesture.clear()
@@ -354,6 +367,7 @@ func _distance(target: Dictionary) -> float:
 	return point.distance_to(_target_point(target))
 
 func _scene_presentation_blocks() -> bool:
+	if guard_capture.active:return true
 	if scene_id=="library_interior" and library_layers!=null and library_layers.blocks_movement(): return true
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("c3_narrative_host")) and host_node.c3_narrative_host.blocks_movement(): return true
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("library_story_host")) and host_node.library_story_host.blocks_input(): return true
@@ -413,6 +427,12 @@ func _receive_feedback(text: String) -> void:
 			return
 
 func _process(delta: float) -> void:
+	# Keep the existing simulation cap below. The source capture uses a scene
+	# timer, so its presentation clock follows active elapsed time independently.
+	var capture_delta_ms:=maxf(0,delta)*1000
+	if guard_capture.active and not guard_capture.matches(_guard_capture_context()):
+		_cancel_guard_capture()
+		return
 	delta=minf(delta,.05)
 	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
 	if _floor_feedback_left>0:
@@ -438,6 +458,11 @@ func _process(delta: float) -> void:
 		subtitle_left -= delta
 		if subtitle_left <= 0: subtitle = ""
 	queue_redraw()
+	# Pause physical actors, while keeping the existing scene fades and visual
+	# animation alive, as source physics.pause() does.
+	if guard_capture.active:
+		_tick_guard_capture(capture_delta_ms)
+		return
 	if _scene_presentation_blocks():
 		if mobile_exploration: cancel_exploration_gestures()
 		return
@@ -506,8 +531,12 @@ func _process(delta: float) -> void:
 					if _floor_route.is_empty(): _floor_status="arrived"; _floor_feedback_left=.45
 			else: _stop_floor_route()
 		else:
-			if can_stand(player+Vector2(displacement.x,0)): player.x += displacement.x
-			if can_stand(player+Vector2(0,displacement.y)): player.y += displacement.y
+			if scene_id=="duan_yongping_temporal_maze":
+				player=_c4_axis_destination(player,Vector2(displacement.x,0))
+				player=_c4_axis_destination(player,Vector2(0,displacement.y))
+			else:
+				if can_stand(player+Vector2(displacement.x,0)): player.x += displacement.x
+				if can_stand(player+Vector2(0,displacement.y)): player.y += displacement.y
 		if old.distance_to(player) > 0:
 			walk_clock += delta
 			player_flip = axis.x < 0
@@ -533,6 +562,31 @@ func _process(delta: float) -> void:
 		_last_save = 0
 		State.save_game()
 	queue_redraw()
+
+func _c4_axis_destination(start:Vector2,motion:Vector2) -> Vector2:
+	if not start.is_finite() or not motion.is_finite() or motion.is_zero_approx():return start
+	if not is_zero_approx(motion.x) and not is_zero_approx(motion.y):return start
+	var end:Vector2=start+motion
+	# Preserve the existing way out when a moving source NPC overlaps the start.
+	# This does not relocate the actor unless its requested endpoint is legal.
+	if not can_stand(start):return end if can_stand(end) else start
+	var current:Vector2=start
+	# The original Arcade body separates to contact. Rejecting the whole final
+	# frame leaves an arbitrary gap, enough to block the source bakery aisle.
+	# Small substeps retain full-foot collision checks, including thin blockers.
+	var steps:int=maxi(1,int(ceil(motion.length()/4.0)))
+	for index:int in range(steps):
+		var next:Vector2=start+motion*(float(index+1)/steps)
+		if can_stand(next):
+			current=next
+			continue
+		var blocked:Vector2=next
+		for iteration:int in range(12):
+			var middle:Vector2=(current+blocked)*0.5
+			if can_stand(middle):current=middle
+			else:blocked=middle
+		return current
+	return current
 
 func _update_camera() -> void:
 	var half := size/(2*zoom)
@@ -590,43 +644,78 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 		return object_picker.pick_near_visible(point,targets,inventory_drop,14.0/zoom,visible_source,covered)
 	return object_picker.pick(point,targets,inventory_drop)
 
+func _render_context() -> Dictionary:
+	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
 func _draw() -> void:
+	if is_instance_valid(room204_object):
+		room204_object.sync(State.d,scene_id)
+		if room204_object.has_objects():
+			room204_object.configure_view(size/2-camera*zoom,zoom)
+			return
 	object_picker.clear()
 	_record_plate_targets()
-	draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
+	var context:=_render_context()
+	_draw_base_pass(self,context)
 	if scene_id.is_empty(): return
-	var center := size/2
-	var origin := center-camera*zoom
-	if background: draw_texture_rect(background,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),false)
-	draw_rect(Rect2(Vector2.ZERO,size),Color(.03,.15,.26,mode_mix*.3))
-	_draw_floor_route(origin)
-	var layer_context := {"origin":origin,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
-	if chapter3_layers!=null: chapter3_layers.draw_back(self,layer_context,State.d)
-	if library_layers!=null: library_layers.draw_back(self,layer_context,State.d)
-	if chapter4_layers != null: chapter4_layers.draw_back(self,layer_context,State.d)
+	if chapter4_layers!=null: chapter4_layers.draw_back(self,context,State.d)
+	_draw_actor_pass(self,context)
+	if chapter4_layers!=null: chapter4_layers.draw_front(self,context,State.d)
+	_draw_tail_pass(self,context)
+func draw_room204_object_pass(canvas: CanvasItem,before: bool) -> void:
+	if not is_instance_valid(room204_object) or not room204_object.has_objects(): return
+	var context:=_render_context()
+	var front: bool=room204_object.front_of_player(player)
+	if before:
+		object_picker.clear()
+		_record_plate_targets()
+		_draw_base_pass(canvas,context)
+		if front:
+			chapter4_layers.draw_back(canvas,context,State.d)
+			_draw_actor_pass(canvas,context)
+		chapter4_layers.draw_before_furniture(canvas,context,State.d,front)
+		chapter4_layers._draw_furniture(canvas,context,State.d,front,1)
+	else:
+		chapter4_layers._draw_furniture(canvas,context,State.d,front,2)
+		chapter4_layers.draw_after_furniture(canvas,context,State.d,front)
+		if not front:
+			_draw_actor_pass(canvas,context)
+			chapter4_layers.draw_front(canvas,context,State.d)
+		_draw_tail_pass(canvas,context)
+func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
+	var origin: Vector2=layer_context.origin
+	canvas.draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
+	if scene_id.is_empty(): return
+	if background: canvas.draw_texture_rect(background,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),false)
+	canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.03,.15,.26,mode_mix*.3))
+	_draw_floor_route(origin,canvas)
+	if chapter3_layers!=null: chapter3_layers.draw_back(canvas,layer_context,State.d)
+	if library_layers!=null: library_layers.draw_back(canvas,layer_context,State.d)
+func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
+	var origin: Vector2=layer_context.origin
 	var frame_set: Array = player_frames.get(facing,[])
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
-		if _target_point(target).y <= player.y: _draw_target(target,origin)
+		if _target_point(target).y <= player.y: _draw_target(target,origin,canvas)
 	if not presentation_actor_hidden and kayak and kayak_texture:
 		var presentation: Dictionary=lake_session.actor_presentation() if lake_session!=null else {"offset":Vector2.ZERO,"scale":1.0,"alpha":1.0}
-		kayak_visual.draw(self,origin+(player+presentation.offset)*zoom,zoom*float(presentation.scale),{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000,"alpha":presentation.alpha},Time.get_ticks_msec())
+		kayak_visual.draw(canvas,origin+(player+presentation.offset)*zoom,zoom*float(presentation.scale),{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000,"alpha":presentation.alpha},Time.get_ticks_msec())
 	elif not presentation_actor_hidden and not frame_set.is_empty():
 		var frame: Texture2D = player_side_idle if facing == "side" and walk_clock <= 0 else frame_set[PlayerMetrics.frame_at(walk_clock*1000)]
 		var visual: Rect2 = PlayerMetrics.visual_rect(player,display_scale_at(player))
 		var dimensions := visual.size*zoom
 		var position := origin+visual.position*zoom
-		draw_ellipse_shadow(origin+(player+Vector2(0,39))*zoom,Vector2(19,6)*zoom)
+		draw_ellipse_shadow(origin+(player+Vector2(0,39))*zoom,Vector2(19,6)*zoom,canvas)
 		var actor_ids: Array=[]
 		for target: Dictionary in targets:
 			if target.get("follow_player",false): actor_ids.push_front(str(target.id))
 		if not actor_ids.is_empty(): register_object_surface(actor_ids,{"rect":visual,"texture":frame,"flip_h":player_flip and facing=="side"})
-		draw_texture_rect(frame,Rect2(position,Vector2(-dimensions.x,dimensions.y) if player_flip and facing == "side" else dimensions),false)
+		canvas.draw_texture_rect(frame,Rect2(position,Vector2(-dimensions.x,dimensions.y) if player_flip and facing == "side" else dimensions),false)
 	for target in ordered_targets:
-		if _target_point(target).y > player.y: _draw_target(target,origin)
-	if chapter3_layers!=null: chapter3_layers.draw_front(self,layer_context,State.d)
+		if _target_point(target).y > player.y: _draw_target(target,origin,canvas)
+	if chapter3_layers!=null: chapter3_layers.draw_front(canvas,layer_context,State.d)
 	if background:
 		for cover in foreground:
+			if scene_id=="duan_yongping_temporal_maze" and chapter4_layers!=null and chapter4_layers.bakery_foreground_below_player(cover,State.d): continue
 			var baseline := float(cover.get("baselineY",cover.get("sortY",cover.get("bottom",0))))
 			var alpha := 1.0 - float(cover.get("playerRevealAlpha",0.0))
 			if scene_id=="canteen_interior" and chapter3_layers!=null:
@@ -635,45 +724,47 @@ func _draw() -> void:
 				alpha=occlusion.alpha
 			elif player.y >= baseline: continue
 			var region := _rect(cover.get("maskBounds",cover))
-			draw_texture_rect_region(background,Rect2(origin+region.position*zoom,region.size*zoom),region,Color(1,1,1,alpha))
-	if chapter3_layers!=null: chapter3_layers.draw_landmarks(self,layer_context,State.d)
-	if library_layers!=null: library_layers.draw_front(self,layer_context,State.d)
-	if chapter4_layers != null: chapter4_layers.draw_front(self,layer_context,State.d)
-	if lake_session!=null: lake_session.draw(self,origin,zoom,bool(State.d.native.settings.reduced_motion))
+			canvas.draw_texture_rect_region(background,Rect2(origin+region.position*zoom,region.size*zoom),region,Color(1,1,1,alpha))
+	if chapter3_layers!=null: chapter3_layers.draw_landmarks(canvas,layer_context,State.d)
+	if library_layers!=null: library_layers.draw_front(canvas,layer_context,State.d)
+func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
+	var origin: Vector2=layer_context.origin
+	if lake_session!=null: lake_session.draw(canvas,origin,zoom,bool(State.d.native.settings.reduced_motion))
 	if guard_visible and guard_sheet:
 		var guard_size := Vector2(96,128)*.68*zoom
 		var frame_index := int(Time.get_ticks_msec()/110)%8
 		var columns := maxi(1,int(guard_sheet.get_width()/96))
 		var frame_region := Rect2((frame_index%columns)*96,int(frame_index/columns)*128,96,128)
-		draw_texture_rect_region(guard_sheet,Rect2(origin+guard_position*zoom-Vector2(guard_size.x/2,guard_size.y*.89),guard_size),frame_region)
+		canvas.draw_texture_rect_region(guard_sheet,Rect2(origin+guard_position*zoom-Vector2(guard_size.x/2,guard_size.y*.89),guard_size),frame_region)
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
-	if not presentation_actor_hidden and not name_text.is_empty(): draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
+	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
 	if scene_id=="campus_bootstrap":
 		var campus_hud:=hud_metrics(_hud_line())
 		var campus_visible:=Rect2(0,campus_hud.header_height,size.x,size.y-campus_hud.header_height-campus_hud.body_height-campus_hud.body_gap)
-		CampusWayfinding.draw_label(self,layer_context,font,hud_display_scale(),campus_visible)
+		CampusWayfinding.draw_label(canvas,layer_context,font,hud_display_scale(),campus_visible)
 	if capture_mode: return
 	var title: Dictionary = {"dorm_hub":"寝室", "campus_bootstrap":"紫金港校区", "library_interior":"基础图书馆", "canteen_interior":"东食堂", "theater_interior":"剧场", "qizhen_lake":"启真湖", "duan_yongping_temporal_maze":"段永平教学楼", "campus_qizhen_loop":"通往启真湖的路"}
 	var line := _hud_line()
 	var hud := hud_metrics(line)
-	draw_rect(Rect2(0,0,size.x,hud.header_height),Color(.04,.1,.13,.86))
+	canvas.draw_rect(Rect2(0,0,size.x,hud.header_height),Color(.04,.1,.13,.86))
 	if hud.compact:
 		var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
 		var mode_width: float=font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
 		var baseline: float=(hud.header_height-font.get_height(hud.title_font))/2+font.get_ascent(hud.title_font)
-		draw_string(font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
+		canvas.draw_string(font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
 		var mode_baseline: float=(hud.header_height-font.get_height(hud.mode_font))/2+font.get_ascent(hud.mode_font)
-		draw_string(font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
+		canvas.draw_string(font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
 	else:
-		draw_string(font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
-		draw_string(font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
+		canvas.draw_string(font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
+		canvas.draw_string(font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
 	var text_height: float=hud.body_height
-	draw_rect(Rect2(hud.body_gap,size.y-hud.body_gap-text_height,size.x-hud.body_gap*2,text_height),Color(.02,.08,.12,.88))
-	draw_multiline_string(font,Vector2(hud.body_padding,size.y-hud.body_gap-text_height+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,Color("f1f2dc"))
-	if touch_controls or mobile_exploration: _draw_touch_controls()
-	if transition_alpha > 0: draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
+	canvas.draw_rect(Rect2(hud.body_gap,size.y-hud.body_gap-text_height,size.x-hud.body_gap*2,text_height),Color(.02,.08,.12,.88))
+	canvas.draw_multiline_string(font,Vector2(hud.body_padding,size.y-hud.body_gap-text_height+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,Color("f1f2dc"))
+	if touch_controls or mobile_exploration: _draw_touch_controls(canvas)
+	if transition_alpha > 0: canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 
 func _hud_line() -> String:
+	if guard_capture.active:return "保安："+GuardCapture.LINE
 	if not subtitle.is_empty(): return subtitle
 	if not nearby.is_empty(): return ("交互 · " if mobile_exploration else "空格 · ")+str(nearby.get("hud_prompt",nearby.get("label","")))
 	if kayak: return "点按或上划左桨 / 右桨前进 · 下划后退" if mobile_exploration else "A / D 左右划桨 · S + 划桨后退"
@@ -699,7 +790,8 @@ func hud_metrics(text: String) -> Dictionary:
 func hud_mode_rect() -> Rect2:
 	return hud_metrics("").mode_rect
 
-func _draw_target(target: Dictionary, origin: Vector2) -> void:
+func _draw_target(target: Dictionary, origin: Vector2, canvas: CanvasItem=null) -> void:
+	if canvas==null: canvas=self
 	if chapter3_layers!=null and chapter3_layers.handles_target(target,State.d): return
 	if not target.has("art"): return
 	var path := State.asset(str(target.art))
@@ -714,12 +806,13 @@ func _draw_target(target: Dictionary, origin: Vector2) -> void:
 	var scale_to_fit := minf(dimensions.x/texture.get_width(),dimensions.y/texture.get_height())
 	var drawn := Vector2(texture.get_size())*scale_to_fit*zoom
 	register_object_surface([str(target.get("id",""))],{"rect":Rect2(point-drawn/(2*zoom),drawn/zoom),"texture":texture})
-	draw_texture_rect(texture,Rect2(origin+point*zoom-drawn/2,drawn),false)
+	canvas.draw_texture_rect(texture,Rect2(origin+point*zoom-drawn/2,drawn),false)
 
-func draw_ellipse_shadow(center: Vector2, extent: Vector2) -> void:
+func draw_ellipse_shadow(center: Vector2, extent: Vector2, canvas: CanvasItem=null) -> void:
+	if canvas==null: canvas=self
 	var points := PackedVector2Array()
 	for index in range(20): points.append(center+Vector2(cos(index*TAU/20)*extent.x,sin(index*TAU/20)*extent.y))
-	draw_colored_polygon(points,Color(0,0,0,.25))
+	canvas.draw_colored_polygon(points,Color(0,0,0,.25))
 
 func _shell_input_blocked() -> bool:
 	return is_instance_valid(host_node) and (is_instance_valid(host_node.get("modal")) or is_instance_valid(host_node.get("active_game")) or is_instance_valid(host_node.get("phone_document")) or bool(State.d.ui.controlCenterOpen))
@@ -783,11 +876,16 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	var point := (at_position-size/2)/zoom+camera
 	var payload: Dictionary = chapter4_layers.pick_drag(point,State.d)
 	if payload.is_empty(): return null
-	furniture_drag_preview = Label.new()
-	furniture_drag_preview.text = "桌椅组 ↑"
-	furniture_drag_preview.add_theme_font_override("font",font)
-	furniture_drag_preview.add_theme_color_override("font_color",Color("b8edf4"))
-	furniture_drag_preview.add_theme_font_size_override("font_size",18)
+	_finish_table_drag(false)
+	furniture_drag_preview=room204_object.drag_preview(point,zoom,bool(State.d.native.settings.get("reduced_motion",false))) if is_instance_valid(room204_object) else null
+	_native_table_drag=is_instance_valid(furniture_drag_preview)
+	if not _native_table_drag:
+		var label:=Label.new()
+		label.text="桌椅组 ↑"
+		label.add_theme_font_override("font",font)
+		label.add_theme_color_override("font_color",Color("b8edf4"))
+		label.add_theme_font_size_override("font_size",18)
+		furniture_drag_preview=label
 	set_drag_preview(furniture_drag_preview)
 	_cancel_floor_route()
 	move_target = Vector2.INF
@@ -825,8 +923,52 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	State.select_item(str(data.item))
 	_try_interact(matching)
 
+func _guard_capture_context()->Dictionary:
+	var chapter:Dictionary=State.d.get("chapter4",{})
+	return {"scene":State.d.get("native",{}).get("scene",""),"floor":chapter.get("floor",""),"phase":chapter.get("phase",""),"time":chapter.get("timeState",""),"mode":chapter.get("mode",""),"guardMode":chapter.get("guardMode",""),"attempt":int(chapter.get("chaseAttempt",0))}
+
+func _sync_guard_capture_input():
+	if is_instance_valid(host_node) and host_node.has_method("_sync_inventory_dock_input"):host_node._sync_inventory_dock_input()
+
+func _begin_guard_capture(action:String,value:Dictionary={}):
+	if not guard_capture.begin(_guard_capture_context(),action,value):return
+	_cancel_floor_route();move_target=Vector2.INF;touch_axis=Vector2.ZERO;touch_points.clear()
+	if mobile_exploration:cancel_exploration_gestures()
+	walk_clock=0;guard_visible=true
+	_sync_guard_capture_input();queue_redraw()
+
+func _cancel_guard_capture():
+	if not guard_capture.active:return
+	guard_capture.cancel();guard_kind=""
+	_sync_guard_capture_input();queue_redraw()
+
+func _tick_guard_capture(delta_ms:float):
+	var context:=_guard_capture_context()
+	if not guard_capture.matches(context):_cancel_guard_capture();return
+	var running:=is_visible_in_tree() and not capture_mode and get_window().has_focus() and not _shell_input_blocked()
+	if is_instance_valid(host_node):running=running and host_node.world_frame.is_visible_in_tree()
+	var result:Dictionary=guard_capture.advance(delta_ms,context,running)
+	queue_redraw()
+	if result.is_empty():return
+	# The original controller remains the sole relocation/attempt authority.
+	guard_kind=""
+	guard_recovery_pending=result.action=="c4_recover_patrol"
+	_sync_guard_capture_input()
+	State.act(str(result.action),result.value)
+
+func _exit_tree():
+	guard_capture.cancel()
+
 func _guard_cue(id: String,payload: Dictionary = {}) -> void:
 	if is_instance_valid(host_node) and host_node.has_method("_game_presentation"): host_node._game_presentation(id,payload)
+
+func accept_stair_handoff(value:Dictionary)->bool:
+	var c:Dictionary=State.d.chapter4
+	if State.d.native.scene!="duan_yongping_temporal_maze" or c.phase!="final_chase" or c.floor!="A2" or c.chaseStairwellStage!="complete":return false
+	if value.get("destination","")!="A2" or int(value.get("attempt",-1))!=int(c.chaseAttempt):return false
+	var lead:=float(value.get("leadDistance",NAN))
+	if not is_finite(lead):return false
+	stair_handoff={"attempt":int(c.chaseAttempt),"leadDistance":clampf(lead,600,2000)};guard_kind="";return true
 
 func _update_guard(delta: float) -> void:
 	guard_visible=false
@@ -834,6 +976,9 @@ func _update_guard(delta: float) -> void:
 	var chapter: Dictionary=State.d.chapter4
 	var mode:=str(chapter.guardMode)
 	if mode not in ["patrol","chase"]: guard_kind=""; return
+	# The source runtime replaces A1 with the stair scene while inside. Its
+	# old guard cannot continue behind the activity or after an explicit Exit.
+	if mode=="chase" and chapter.floor=="A1" and chapter.chaseStairwellStage=="inside":guard_kind="";return
 	var key:=mode+str(chapter.floor)+str(chapter.chaseAttempt)
 	if guard_kind!=key:
 		guard_kind=key
@@ -857,7 +1002,10 @@ func _update_guard(delta: float) -> void:
 			if chapter.floor=="A2" and chapter.chaseStairwellStage=="complete":
 				# Source runtime recreates after the isolated stairwell handoff with
 				# a minimum600px guard lag, rather than starting a second grace.
-				guard_state.merge({"phase":"portal_transfer","floor":"A2","guardFloor":"A1","portalApplied":true,"portalRemainingDistance":600.0},true)
+				var lead:=600.0
+				if not stair_handoff.is_empty() and int(stair_handoff.attempt)==int(chapter.chaseAttempt):lead=float(stair_handoff.leadDistance)
+				stair_handoff.clear()
+				guard_state.merge({"phase":"portal_transfer","floor":"A2","guardFloor":"A1","portalApplied":true,"portalRemainingDistance":lead},true)
 	guard_clock_ms+=delta*1000
 	var walls: Array=[]
 	for box in collisions: walls.append(_rect(box))
@@ -872,9 +1020,7 @@ func _update_guard(delta: float) -> void:
 		guard_visible=true
 		if result.enteredPursuit: State.feedback.emit("保安发现了你。")
 		if guard_model.maintenance_contact(guard_position,feet):
-			guard_kind=""
-			guard_recovery_pending=true
-			State.act("c4_recover_patrol")
+			_begin_guard_capture("c4_recover_patrol")
 			return
 	else:
 		var inside_finish: bool=chapter.floor=="A2" and Rect2(1287,302,132,109).has_point(foot)
@@ -899,7 +1045,7 @@ func _update_guard(delta: float) -> void:
 				guard_close_voice_played=true
 				_guard_cue("final_chase_close_voice",{"attempt":chapter.chaseAttempt})
 		if result.portalRequested:
-			var response: Dictionary=State.act("c4_chase")
+			var response: Dictionary=State.act("c4_chase",{"expectedAttempt":chapter.chaseAttempt,"leadDistance":float(guard_state.portalRemainingDistance)})
 			if not response.has("game"): guard_state=guard_model.resolve_portal(guard_state,false)
 			return
 		if result.finishRequested:
@@ -907,8 +1053,7 @@ func _update_guard(delta: float) -> void:
 			guard_state=guard_model.resolve_finish(guard_state,State.d.chapter4.phase=="final_minute_recovery")
 			return
 		if result.failureRequested:
-			guard_kind=""
-			State.act("c4_fail_chase",{"expectedAttempt":chapter.chaseAttempt,"failureFloor":chapter.floor})
+			_begin_guard_capture("c4_fail_chase",{"expectedAttempt":chapter.chaseAttempt,"failureFloor":chapter.floor})
 			return
 		if guard_visible:
 			var nav_key:=world_key+":"+str(collisions.hash())
@@ -934,10 +1079,27 @@ func _guard_can_stand(point: Vector2,walls: Array) -> bool:
 		if body.intersects(wall): return false
 	return point.x>=extent.x and point.y>=extent.y and point.x<=world_size.x-extent.x and point.y<=world_size.y-extent.y
 
+func _finish_table_drag(settle:=true) -> void:
+	if not _native_table_drag: return
+	_native_table_drag=false
+	if is_instance_valid(furniture_drag_preview): furniture_drag_preview.retire()
+	furniture_drag_preview=null
+	if is_instance_valid(room204_object): room204_object.finish_drag(settle)
+
+func _cancel_table_drag() -> void:
+	if not _native_table_drag: return
+	_finish_table_drag(false)
+	if is_inside_tree() and get_viewport().gui_is_dragging(): get_viewport().gui_cancel_drag()
+
 func _notification(what: int) -> void:
+	if what==NOTIFICATION_DRAG_END: _finish_table_drag()
+	elif what==NOTIFICATION_WM_WINDOW_FOCUS_OUT: _cancel_table_drag()
+	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree(): _cancel_table_drag()
+	elif what==NOTIFICATION_RESIZED: _cancel_table_drag()
 	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and (mobile_exploration or not kayak_mouse_gesture.is_empty()): cancel_exploration_gestures()
 
 func cancel_exploration_gestures() -> void:
+	_cancel_table_drag()
 	touch_axis=Vector2.ZERO; touch_points.clear(); mobile_touch_roles.clear(); mobile_mouse_control=false; move_target=Vector2.INF
 	kayak_mouse_gesture.clear()
 	_cancel_floor_route()
@@ -1079,33 +1241,34 @@ func _touch_axis_at(point: Vector2) -> Vector2:
 	if difference.length()<14: return Vector2.ZERO
 	return difference.normalized()
 
-func _draw_touch_controls() -> void:
+func _draw_touch_controls(canvas: CanvasItem=null) -> void:
+	if canvas==null: canvas=self
 	if mobile_exploration and not kayak:
 		var metrics:=mobile_control_metrics()
-		draw_circle(metrics.stick,metrics.radius,Color(.02,.10,.13,.66))
+		canvas.draw_circle(metrics.stick,metrics.radius,Color(.02,.10,.13,.66))
 		for direction in [Vector2.LEFT,Vector2.RIGHT,Vector2.UP,Vector2.DOWN]:
-			draw_circle(metrics.stick+direction*32,10,Color(.84,.88,.74,.72))
-		draw_circle(metrics.interact.get_center(),30,Color(.02,.10,.13,.76))
-		draw_string(font,metrics.interact.position+Vector2(8,37),"交互",HORIZONTAL_ALIGNMENT_CENTER,44,16,Color.WHITE)
+			canvas.draw_circle(metrics.stick+direction*32,10,Color(.84,.88,.74,.72))
+		canvas.draw_circle(metrics.interact.get_center(),30,Color(.02,.10,.13,.76))
+		canvas.draw_string(font,metrics.interact.position+Vector2(8,37),"交互",HORIZONTAL_ALIGNMENT_CENTER,44,16,Color.WHITE)
 		return
 	var caption_font := CompactOverlay.font_size(22 if kayak else 21,12,hud_display_scale())
 	if kayak:
 		for side: String in kayak_paddle_rects():
 			var rect: Rect2=kayak_paddle_rects()[side]
 			var held: bool=kayak_mouse_gesture.get("side","")==side
-			draw_rect(rect,Color(.02,.10,.13,.84 if held else .65))
-			draw_rect(rect,Color("dbc487") if held else Color("52767a"),false,2 if held else 1)
-			draw_string(font,rect.position+Vector2(18,46),"左桨" if side=="left" else "右桨",HORIZONTAL_ALIGNMENT_CENTER,64,caption_font,Color.WHITE)
+			canvas.draw_rect(rect,Color(.02,.10,.13,.84 if held else .65))
+			canvas.draw_rect(rect,Color("dbc487") if held else Color("52767a"),false,2 if held else 1)
+			canvas.draw_string(font,rect.position+Vector2(18,46),"左桨" if side=="left" else "右桨",HORIZONTAL_ALIGNMENT_CENTER,64,caption_font,Color.WHITE)
 			if held:
 				var reverse: bool=(kayak_mouse_gesture.last.y-kayak_mouse_gesture.start.y)/maxf(.01,float(kayak_mouse_gesture.scale))>24
-				draw_string(font,rect.position+Vector2(8,74),"↓ 后退" if reverse else "松开划桨",HORIZONTAL_ALIGNMENT_CENTER,84,CompactOverlay.font_size(13,12,hud_display_scale()),Color("e9d8aa"))
+				canvas.draw_string(font,rect.position+Vector2(8,74),"↓ 后退" if reverse else "松开划桨",HORIZONTAL_ALIGNMENT_CENTER,84,CompactOverlay.font_size(13,12,hud_display_scale()),Color("e9d8aa"))
 	else:
 		var origin := Vector2(90,size.y-140)
-		draw_circle(origin,65,Color(.02,.10,.13,.65))
+		canvas.draw_circle(origin,65,Color(.02,.10,.13,.65))
 		for point in [Vector2(-44,0),Vector2(44,0),Vector2(0,-44),Vector2(0,44)]:
-			draw_circle(origin+point,16,Color(.84,.88,.74,.65))
-		draw_circle(Vector2(size.x-76,size.y-140),42,Color(.02,.10,.13,.65))
-		draw_string(font,Vector2(size.x-112,size.y-132),"空格",HORIZONTAL_ALIGNMENT_CENTER,72,caption_font,Color.WHITE)
+			canvas.draw_circle(origin+point,16,Color(.84,.88,.74,.65))
+		canvas.draw_circle(Vector2(size.x-76,size.y-140),42,Color(.02,.10,.13,.65))
+		canvas.draw_string(font,Vector2(size.x-112,size.y-132),"空格",HORIZONTAL_ALIGNMENT_CENTER,72,caption_font,Color.WHITE)
 
 func _cancel_floor_route() -> void:
 	_floor_route.clear(); _floor_goal=Vector2.INF; _floor_status=""; _floor_feedback_left=0
@@ -1229,17 +1392,18 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	else: _floor_status="moving"
 	grab_focus(); queue_redraw()
 
-func _draw_floor_route(origin: Vector2) -> void:
+func _draw_floor_route(origin: Vector2, canvas: CanvasItem=null) -> void:
+	if canvas==null: canvas=self
 	if _floor_goal==Vector2.INF or capture_mode or presentation_actor_hidden: return
 	var color:=Color(.74,.87,.77,.9)
 	var previous: Vector2=origin+PlayerMetrics.foot_rect(player).get_center()*zoom
 	for anchor: Vector2 in _floor_route:
 		var next: Vector2=origin+PlayerMetrics.foot_rect(anchor).get_center()*zoom
-		draw_line(previous,next,Color(.74,.87,.77,.23),1.0,true); previous=next
+		canvas.draw_line(previous,next,Color(.74,.87,.77,.23),1.0,true); previous=next
 	var point:=origin+_floor_goal*zoom
 	if _floor_status=="blocked":
 		var blocked:=Color("f0b35e")
-		draw_circle(point,10,Color(.08,.06,.03,.8))
-		draw_line(point+Vector2(-5,-5),point+Vector2(5,5),blocked,2.5,true)
-		draw_line(point+Vector2(-5,5),point+Vector2(5,-5),blocked,2.5,true)
-	else: draw_arc(point,7,0,TAU,24,color,1.5,true)
+		canvas.draw_circle(point,10,Color(.08,.06,.03,.8))
+		canvas.draw_line(point+Vector2(-5,-5),point+Vector2(5,5),blocked,2.5,true)
+		canvas.draw_line(point+Vector2(-5,5),point+Vector2(5,-5),blocked,2.5,true)
+	else: canvas.draw_arc(point,7,0,TAU,24,color,1.5,true)

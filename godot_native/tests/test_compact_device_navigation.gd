@@ -2,7 +2,7 @@ extends SceneTree
 ## Required device surfaces through actual Main, world targets and Control input.
 ## Source-phase fixtures isolate routing; they are not a campaign completion proof.
 ## Source-authentic C3/C4 devices are live world modals, not generic phone forms.
-const WORLD_DEVICES := ["mixer","menu","bike","kiosk","console","c4_duty","c4_numeric"]
+const WORLD_DEVICES := ["mixer","menu","bike","kiosk","console","c4_duty","c4_numeric","c4_power"]
 var checks: int=0
 var failures: int=0
 var state: Node
@@ -219,6 +219,11 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 			for card in ["spotlight","opening","finale"]: await click(panel.controls[card],"program card "+card)
 			await click(panel.controls.submit,"program submit")
 			check(state.d.theaterHunt.phase=="prop_setup","real program cards accepted")
+		"c4_power":
+			var before:int=state.d.chapter4.lightGrid.mask
+			await click(panel.buttons[0],"original power topology hall switch")
+			check(state.d.chapter4.lightGrid.mask!=before and panel.mask==state.d.chapter4.lightGrid.mask,"real power control updates the same authoritative mask")
+			await click(panel.close_button,"return from original power panel")
 		"c4_duty":
 			# Fresh source draft: elevator, 104, 105. Move the actual card twice.
 			await click(panel.find_child("down_main_elevator",true,false),"C4 duty first move")
@@ -248,7 +253,7 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 		check(state.d.canteenHunt.orderAttemptCount==1 and state.d.items.pickupTicket0755,"source dialogue preserves single order and ticket")
 		state.act("phone_refresh",{}); await process_frame
 		check(main.world_frame.is_visible_in_tree(),"refresh after menu dialogue retains source world")
-	if id in ["mixer","bike","c4_duty","c4_numeric"]:
+	if id in ["mixer","bike","c4_duty","c4_numeric","c4_power"]:
 		check(main.world.player==position,"source modal close retains exact world position")
 		state.act("phone_refresh",{}); await process_frame
 		check(main.world_frame.is_visible_in_tree(),"refresh after modal return keeps world visible")
@@ -257,7 +262,8 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 		check(is_instance_valid(reopened) and reopened.is_visible_in_tree(),"same world device reopens live controls")
 		if is_instance_valid(reopened):
 			if c4:
-				check(reopened.session.completed,"reopened C4 completed state comes from controller fact")
+				if id=="c4_power":check(reopened.mask==state.d.chapter4.lightGrid.mask,"reopened source power panel retains its authoritative partial mask")
+				else:check(reopened.session.completed,"reopened C4 completed state comes from controller fact")
 				await click(reopened.close_button,"close reopened world device")
 			elif id=="mixer":
 				check(reopened.model.layers.size()==1,"reopened mixer retains partial pour")
@@ -329,12 +335,21 @@ func closure_return() -> void:
 	if not is_instance_valid(main.active_game): return
 	var activity: Control=main.active_game; activity.set_process(false)
 	await process_frame; await process_frame
-	await click(activity.controls.get_child(0),"first original lamp answer")
-	await click(activity.controls.get_child(0),"second original lamp answer")
-	check(activity.stage=="playback" and state.d.chapter4.factIds.has("zhu_two_questions_answered"),"real answer controls save valid choices")
+	var questions:Control=activity.lamp_view
+	# Preserve original entering, dissolve and saved-confirmation clocks. Actual
+	# root-pointer clicks still own both selections and terminal acknowledgement.
+	for i in range(23):activity._process(.05)
+	await click(questions.buttons[0],"first original lamp answer")
+	for i in range(20):activity._process(.05)
+	for i in range(23):activity._process(.05)
+	await click(questions.buttons[0],"second original lamp answer")
+	for i in range(20):activity._process(.05)
+	check(questions.stage=="saved" and state.d.chapter4.factIds.has("zhu_two_questions_answered"),"real answer controls save valid choices before playback")
+	for i in range(22):activity._process(.05)
+	check(activity.stage=="playback","original saved-answer confirmation precedes playback")
 	for i in range(116): activity._process(.05)
 	await process_frame; await process_frame
 	check(activity.stage=="final" and not state.d.chapter4.completed,"full source playback still requires terminal acknowledgement")
-	await click(find_button(activity,"我记住了"),"source closure acknowledgement")
+	await click(find_button(activity,"继续"),"source closure acknowledgement")
 	check(state.d.chapter4.completed and state.d.native.scene.is_empty() and state.d.native.page=="phone_home","actual closure callback closes world scene")
 	check(main.phone.is_visible_in_tree() and not main.world_frame.is_visible_in_tree() and not main.mobile_world,"compact ending visibly returns to phone without stale world")

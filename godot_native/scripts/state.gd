@@ -373,7 +373,13 @@ func validate_snapshot(value: Variant) -> bool:
 			if not closure is Dictionary: return false
 			if closure.get("source") == "browser_save":
 				if not _valid_import_proof(value,"closure"): return false
-			elif closure.get("consumer") != "ChapterFourStarLampClosure" or not closure.get("acknowledged") is bool or not closure.acknowledged or not (closure.get("playbackMs") is int or closure.get("playbackMs") is float) or float(closure.playbackMs) < 5800: return false
+			else:
+				if closure.get("consumer") != "ChapterFourStarLampClosure" or not closure.get("acknowledged") is bool or not closure.acknowledged or not (closure.get("playbackMs") is int or closure.get("playbackMs") is float):return false
+				# Only the validated controller session writes this mode. Old native
+				# proofs without it retain their original5800ms requirement.
+				var mode:Variant=closure.get("playbackMode","normal")
+				if not mode is String or mode not in ["normal","reduced_motion"]:return false
+				if float(closure.playbackMs)<(3600.0 if mode=="reduced_motion" else 5800.0):return false
 
 	for key in value.items:
 		if not value.items[key] is bool: return false
