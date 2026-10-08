@@ -46,6 +46,7 @@ var game_viewport := Vector2(960,540)
 # single visible surface at every viewport, not only on mobile.
 var mobile_world := false
 var world_page_origin_scene := ""
+var pending_library_reveal: Dictionary={}
 var phone_scroll_page := ""
 var mobile_back: Button
 var phone_world_return: Button
@@ -354,6 +355,7 @@ func _cancel_surface_gestures() -> void:
 	get_viewport().gui_release_focus()
 
 func _show_phone_surface() -> void:
+	_cancel_library_reveal()
 	if _surface_navigation_blocked(): return
 	_cancel_surface_gestures()
 	world_page_origin_scene = ""
@@ -373,6 +375,7 @@ func _focus_world_surface() -> void:
 	world.grab_focus()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if _action=="lib_shelf" and _begin_library_reveal(_previous,current,result): return
 	if result.has("open_c4_floor_selection"):
 		_open_chapter4_floor_selection(result.open_c4_floor_selection)
 		return
@@ -447,6 +450,58 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		_layout()
 	elif page=="phone_home" or scene!=world_page_origin_scene:
 		world_page_origin_scene=""
+
+func _begin_library_reveal(previous: Dictionary,current: Dictionary,result: Dictionary) -> bool:
+	# State has already accepted and saved this exact acquisition. Only defer
+	# its visible page handoff; the original controller remains the sole owner.
+	if result.get("page","")!="library_rule" or str(current.get("native",{}).get("scene",""))!="library_interior": return false
+	var before: Dictionary=previous.get("ui",{}).get("libraryFinalsPuzzle",{})
+	var after: Dictionary=current.get("ui",{}).get("libraryFinalsPuzzle",{})
+	if before.get("archivedRuleCollected",false) or not after.get("archivedRuleCollected",false): return false
+	if not previous.get("items",{}).get("callNumber755",false) or current.get("items",{}).get("callNumber755",false) or not current.get("items",{}).get("archivedLeaveRule",false): return false
+	if not is_instance_valid(world) or world.scene_id!="library_interior" or world.library_layers==null: return false
+	var layer: RefCounted=world.library_layers
+	layer.sync(State.d)
+	if not layer.shelf_animating or not layer.owns_shelf_reveal(State.d,layer.reveal_serial): return false
+	pending_library_reveal={"owner":State.d,"layer":layer,"serial":layer.reveal_serial}
+	_show_world_mobile()
+	return true
+
+func _library_reveal_current() -> bool:
+	if pending_library_reveal.is_empty() or not is_same(State.d,pending_library_reveal.owner): return false
+	if not is_instance_valid(world) or world.library_layers!=pending_library_reveal.layer or world.scene_id!="library_interior": return false
+	if not mobile_world or not world_frame.is_visible_in_tree() or str(State.d.native.page)!="library_rule": return false
+	if not State.d.items.get("archivedLeaveRule",false) or State.d.ui.libraryFinalsPuzzle.get("archivedRuleRead",false): return false
+	if is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(active_game) or State.story_input_locked() or bool(State.d.ui.controlCenterOpen): return false
+	return pending_library_reveal.layer.owns_shelf_reveal(State.d,int(pending_library_reveal.serial))
+
+func _cancel_library_reveal() -> void:
+	if pending_library_reveal.is_empty(): return
+	var pending: Dictionary=pending_library_reveal
+	pending_library_reveal={}
+	pending.layer.cancel_shelf_reveal(pending.owner,int(pending.serial))
+	if is_instance_valid(world): world.queue_redraw()
+
+func _validate_library_reveal() -> void:
+	if not pending_library_reveal.is_empty() and not _library_reveal_current(): _cancel_library_reveal()
+
+func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCounted) -> void:
+	if cue!="library_archived_rule_reveal_completed":
+		_game_presentation(cue,payload)
+		return
+	_validate_library_reveal()
+	if pending_library_reveal.is_empty() or layer!=pending_library_reveal.layer: return
+	if payload.get("itemId","")!="archivedLeaveRule" or int(payload.get("revealSerial",-1))!=int(pending_library_reveal.serial): return
+	if layer.shelf_animating or layer.shelf_phase!="complete": return
+	# Retire first so duplicate or delayed cues cannot reopen the page. The
+	# earned reader already exists; this does not dispatch lib_read_rule.
+	pending_library_reveal={}
+	_game_presentation(cue,payload)
+	world_page_origin_scene="library_interior"
+	_cancel_surface_gestures()
+	mobile_world=false
+	_layout()
+	phone_world_return.grab_focus()
 
 func _layout() -> void:
 	if _room302_studio_active():
@@ -642,6 +697,7 @@ func _layout_modal() -> void:
 	_layout_toast()
 
 func _schedule_refresh() -> void:
+	_validate_library_reveal()
 	_sync_inventory_dock_input()
 	if rebuild_pending: return
 	rebuild_pending = true
@@ -650,6 +706,7 @@ func _schedule_refresh() -> void:
 func _refresh() -> void:
 	rebuild_pending = false
 	if State.d.is_empty(): return
+	_validate_library_reveal()
 	# Refresh authority without remounting or resetting the current draft.
 	if is_instance_valid(modal) and modal.has_method("sync_authority"):
 		if not modal.sync_authority(State.d): _close_modal(_room302_studio_active())
@@ -1113,7 +1170,9 @@ func _sync_inventory_dock_input() -> void:
 	inventory_handle.disabled=blocked
 	if is_instance_valid(world_tasks): world_tasks.disabled=blocked
 	var navigation_blocked := _surface_navigation_blocked()
-	if is_instance_valid(mobile_back): mobile_back.disabled=navigation_blocked
+	# This retained phone control is also the explicit way to leave the shelf
+	# reveal. Other dialogue, modal and device owners remain blocking.
+	if is_instance_valid(mobile_back): mobile_back.disabled=_surface_navigation_blocked(not pending_library_reveal.is_empty())
 	if is_instance_valid(phone_world_return): phone_world_return.disabled=navigation_blocked
 	blocked=blocked or not inventory_dock.is_visible_in_tree()
 	for button in inventory_buttons.get_children():
@@ -1692,6 +1751,7 @@ func _feedback(message: String,tone: String="system") -> void:
 	toast.move_to_front()
 
 func _process(delta: float) -> void:
+	_validate_library_reveal()
 	if not _room302_studio_active() and compact_world_contract!=(mobile_world and _uses_compact_layout() and not _authored_world_contract()): _layout()
 	_sync_inventory_dock_input()
 	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
@@ -1721,6 +1781,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if is_instance_valid(modal):
 			if event.keycode == KEY_F12: _capture.call_deferred()
+			return
+		if event.keycode==KEY_ESCAPE and not pending_library_reveal.is_empty():
+			_cancel_library_reveal()
+			_focus_world_surface()
+			get_viewport().set_input_as_handled()
 			return
 		var focused := get_viewport().gui_get_focus_owner()
 		if event.keycode == KEY_P and not event.ctrl_pressed and not event.alt_pressed and not event.meta_pressed and not (focused is LineEdit or focused is TextEdit):
@@ -1846,6 +1911,7 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	_cancel_library_reveal()
 	photo_brightness_session.reset()
 	observation_comparison_session.clear()
 	world_page_origin_scene=""
@@ -1902,6 +1968,7 @@ func _combine_inventory_items(a: String,b: String) -> void:
 	State.act("c1_combine",{"a":a,"b":b})
 
 func _on_phone_page(page: String) -> void:
+	_cancel_library_reveal()
 	if page=="control_center":
 		_cancel_world_effect()
 		State.d.ui.controlCenterOpen=true
