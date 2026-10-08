@@ -34,23 +34,31 @@ func run() -> void:
 		host.configure_activity_layout(Vector2(dimensions),dimensions.x<1100)
 		host.set_process(false);await frames()
 		check(host.uses_activity_layout() and host.scale==Vector2.ONE,"rhythm owns one unscaled activity surface")
-		check(host.fishing_view.visible and host.fishing_view.background!=null and host.fishing_view.angler!=null,"both original source textures load")
+		check(host.fishing_view.visible and host.fishing_view.background!=null and host.fishing_view.angler!=null,"cleanplate and independent angler textures load")
+		check(host.fishing_view.actor_textures.size()==3,"three independent actor textures are owned by the view")
+		for actor_key: String in ["fish","swan","creature"]:
+			var texture: Texture2D=host.fishing_view.actor_textures[actor_key]
+			check(texture!=null and texture.get_width()>0,"approved actor texture loads: "+actor_key)
+			check(Rect2(Vector2.ZERO,texture.get_size()).encloses(host.fishing_view.ACTOR_REGIONS[actor_key]),"alpha-bound crop fits the original PNG: "+actor_key)
 		check(host.fishing_view.size.y>=dimensions.y*.60,"field uses useful height instead of whole-host letterbox")
 		check(not host.headline.visible and not host.hint.visible,"one readable label owner replaces old scaled labels")
 		for key in ["target","phase","instruction","beat_action","next_beat","count_in"]:
-			check(host.fishing_view.labels[key].get_theme_constant("outline_size")>=4 and host.fishing_view.labels[key].get_theme_color("font_outline_color")==host.fishing_view.INK,"source-palette cue edge survives bright sky: "+key)
+			check(host.fishing_view.labels[key].get_theme_constant("outline_size")>=1 and host.fishing_view.labels[key].get_theme_color("font_outline_color")==host.fishing_view.INK,"compact source-ink cue edge remains defined: "+key)
 		for button: Button in [host.start_button,host.pause_button,host.retry_button,host.exit_button]:
 			check(button.size.x>=44 and button.size.y>=44,"toolbar/start has physical44px target")
 			check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(button.get_rect()),"toolbar/start remains in viewport")
 		if dimensions.y<420:
 			check(not host.fishing_view.labels.modal_body.get_rect().intersects(host.start_button.get_rect()),"short-landscape ready instruction stays above Start")
+		check(not is_instance_valid(host.fishing_controls_button) or not host.fishing_controls_button.visible,"removed touch-toggle stays absent")
+		check(is_equal_approx(host.fishing_view.size.y,float(dimensions.y)-50),"both schemes reserve only the essential 50px footer")
+		for i in range(4):check(host.fishing_view.labels.has("beat"+str(i)),"original four rhythm labels remain code-owned")
+		check(not host.fishing_view.labels.has("beat4"),"no fifth rhythm node is introduced")
 		var before:=model_snapshot()
 		for i in range(12):host.fishing_view.advance_view(.016)
 		check(model_snapshot()==before,"view updates never advance or mutate model")
 		host.begin();await frames()
 		for button: Button in host.control_buttons.values():
-			check(button.visible and button.size.x>=44 and button.size.y>=44,"running action controls stay visible and reachable")
-			check(not button.get_rect().intersects(host.fishing_view.get_rect()),"controls cannot hide fishing lane")
+			check(not button.visible,"direct-water mode has no simulated action row")
 		var point: Vector2=host.fishing_view.size*Vector2(.7,.5)
 		await mouse(point,true)
 		check(host.model.controls.has("hook") and host.fishing_pointer=="field_mouse","real field press holds hook once")
