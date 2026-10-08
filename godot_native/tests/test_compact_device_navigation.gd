@@ -62,7 +62,7 @@ func seed_case(id: String) -> void:
 		state.d.native.chapter=4; state.d.native.scene="duan_yongping_temporal_maze"; state.d.native.page="c4_notes"; state.d.canteenHunt.active=false
 		state.d.chapter4.prologueSeen=true; state.d.chapter4.phase="room204_restore"; state.d.chapter4.timeState="1850_evening"; state.d.chapter4.floor="A1"; state.d.chapter4.mode="light"; state.d.chapter4.factIds=["hour_hand_installed"]
 		if id=="c4_power": state.d.chapter4.phase="blackout_light_grid"; state.d.chapter4.timeState="0754_blackout"; state.d.chapter4.factIds=["paper_temporarily_out_of_inventory"]; state.d.chapter4.lightGrid={"mask":6,"locked":false}
-		if id=="c4_numeric": state.d.chapter4.floor="A2"; state.d.chapter4.factIds.append("misaligned_stair_solved")
+		if id=="c4_numeric": state.d.chapter4.floor="A2"; state.d.chapter4.factIds.append_array(["misaligned_stair_solved","positioning_plate_collected"]); state.d.items.clockPositioningPlate=true; state.d.native.settings.reduced_motion=true
 	state.d.rpgScene=state.d.native.scene
 func prepare(id: String,width: int) -> void:
 	seed_case(id); state.story_reset.emit(); state.changed.emit()
@@ -157,13 +157,13 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 	check(is_instance_valid(panel),id+" opens source world device at "+str(width))
 	if not is_instance_valid(panel): return
 	check(state.d.native.page==("c4_device" if c4 else original_page),id+" preserves source page contract")
-	check(panel.is_visible_in_tree() and main.world_frame.is_visible_in_tree(),id+" actionable modal and world are visible")
+	check(panel.is_visible_in_tree() and (not main.world_frame.is_visible_in_tree() if id=="c4_numeric" else main.world_frame.is_visible_in_tree()),id+" device has exactly its intended world/fullscreen ownership")
 	check(not main.phone.is_visible_in_tree(),id+" world device retains exclusive world surface")
 	check(state.d.native.scene==scene and main.world.player==position,"world device preserves source scene and position")
-	var frame: Control=panel.frame if c4 else panel
+	var frame: Control=panel if id=="c4_numeric" else (panel.frame if c4 else panel)
 	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(frame.get_global_rect()),id+" device frame fits physical viewport")
 	state.act("phone_refresh",{}); await process_frame; await process_frame
-	check(is_instance_valid(panel) and panel.is_visible_in_tree() and main.world_frame.is_visible_in_tree(),"ordinary refresh retains exact live world device")
+	check(is_instance_valid(panel) and panel.is_visible_in_tree() and (not main.world_frame.is_visible_in_tree() if id=="c4_numeric" else main.world_frame.is_visible_in_tree()),"ordinary refresh retains exact live device ownership")
 	match id:
 		"mixer":
 			var slot: int=panel.session.button_order.find("blackCoffee")
@@ -232,12 +232,13 @@ func exercise_world_device(id: String,action: String,width: int,scene: String,po
 			check(panel.session.completed and state.d.chapter4.factIds.has("a1_duty_board_reconstructed"),"real C4 order accepted")
 			await click(panel.close_button,"return from completed duty device")
 		"c4_numeric":
-			await click(panel.submit_button,"C4 initial wrong calibration")
-			check(not state.d.chapter4.factIds.has("a2_positioning_plate_calibrated") and not panel.session.feedback.is_empty(),"wrong calibration keeps live controls and no fact")
-			for step in ["minus_horizontal","minus_horizontal","plus_vertical","plus_pressure","plus_pressure","plus_pressure"]:
-				await click(panel.find_child(step,true,false),"C4 axis "+step)
-			await click(panel.submit_button,"C4 calibration submit")
-			check(panel.session.completed and state.d.chapter4.factIds.has("a2_positioning_plate_calibrated"),"real C4 numeric axis input accepted")
+			await tap_device_key(KEY_ENTER);await settle_press(panel)
+			await tap_device_key(KEY_ENTER);await settle_press(panel)
+			check(not state.d.chapter4.factIds.has("a2_positioning_plate_calibrated") and not panel.session.feedback.is_empty(),"wrong physical press keeps checkpoint and no fact")
+			for code:Key in [KEY_LEFT,KEY_LEFT,KEY_DOWN,KEY_E,KEY_E,KEY_E]:
+				await tap_device_key(code);await settle_press(panel)
+			await tap_device_key(KEY_ENTER);await settle_press(panel)
+			check(panel.session.completed and state.d.chapter4.factIds.has("a2_positioning_plate_calibrated"),"native physical press input accepted")
 			await click(panel.close_button,"return from completed calibration")
 	check(not is_instance_valid(main.modal),id+" source return closes modal")
 	check(main.world_frame.is_visible_in_tree() and state.d.native.scene==scene,id+" source return retains visible world")
@@ -353,3 +354,9 @@ func closure_return() -> void:
 	await click(find_button(activity,"继续"),"source closure acknowledgement")
 	check(state.d.chapter4.completed and state.d.native.scene.is_empty() and state.d.native.page=="phone_home","actual closure callback closes world scene")
 	check(main.phone.is_visible_in_tree() and not main.world_frame.is_visible_in_tree() and not main.mobile_world,"compact ending visibly returns to phone without stale world")
+
+func settle_press(panel:Control)->void:
+	for i in 24:
+		if panel.view.motion.is_empty():break
+		panel.view._process(.06)
+	await process_frame

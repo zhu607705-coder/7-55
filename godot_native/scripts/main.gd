@@ -887,7 +887,9 @@ func _open_chapter4_clock(current: Dictionary) -> bool:
 	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
 
 func _open_chapter4_device(id: String, current: Dictionary) -> bool:
-	var device: Control = load("res://scripts/objects/room302_studio_panel.gd" if id == "media_alignment" else "res://scripts/ui/chapter4_device_panel.gd").new()
+	var paths := {"media_alignment":"res://scripts/objects/room302_studio_panel.gd","positioning_calibration":"res://scripts/objects/room201_press_panel.gd"}
+	var exclusive: bool = paths.has(id)
+	var device: Control = load(paths.get(id,"res://scripts/ui/chapter4_device_panel.gd")).new()
 	if not device.configure(id,current,font):
 		device.free()
 		return false
@@ -903,8 +905,17 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 	device.close_requested.connect(func():
 		if is_instance_valid(device) and modal == device: _close_modal()
 	)
+	if exclusive: _begin_room302_studio(device)
+	if id == "positioning_calibration":
+		device.press_event_requested.connect(func(event: Dictionary):
+			if not is_instance_valid(device) or modal != device: return
+			if not device.sync_authority(State.d):
+				_close_modal(true)
+				return
+			var result: Dictionary = State.act("c4_plate_press_event",event)
+			if is_instance_valid(device) and modal == device: device.resolve_press_event(State.d,result)
+		)
 	if id == "media_alignment":
-		_begin_room302_studio(device)
 		device.studio_event_requested.connect(func(event: Dictionary):
 			if not is_instance_valid(device) or modal != device: return
 			if not device.sync_authority(State.d):
@@ -915,7 +926,7 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 		)
 	device.submit_requested.connect(func(action: String,value: Dictionary,serial: int):
 		if not is_instance_valid(device) or modal != device: return
-		if id == "media_alignment" and not device.sync_authority(State.d):
+		if exclusive and not device.sync_authority(State.d):
 			_close_modal(true)
 			return
 		var result: Dictionary = State.act(action,value)
@@ -923,7 +934,7 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 			device.resolve_submission(serial,State.d,result)
 	)
 	add_child(device)
-	if id == "media_alignment": _layout_modal()
+	if exclusive: _layout_modal()
 	else: _show_world_mobile()
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	return true
@@ -932,6 +943,7 @@ func _room302_studio_active() -> bool:
 	return is_instance_valid(room302_studio) and modal == room302_studio
 
 func _begin_room302_studio(device: Control) -> void:
+	# Shared fullscreen ownership for the 302 studio and 201 physical press.
 	room302_studio = device
 	room302_shell_restore = {"size":size,"world_input_disabled":world_viewport.gui_disable_input,"visibility":{}}
 	# The world has its own focus owner. Preserve it when root UI had none.
