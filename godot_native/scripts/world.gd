@@ -453,7 +453,10 @@ func _process(delta: float) -> void:
 	if library_layers!=null:
 		library_layers.tick(delta,State.d)
 		for event: Dictionary in library_layers.take_cues():
-			if is_instance_valid(host_node): host_node._game_presentation(str(event.id),event.get("payload",{}))
+			if is_instance_valid(host_node): host_node._library_world_presentation(str(event.id),event.get("payload",{}),library_layers)
+		# The terminal cue can hand the visible surface to its earned reader.
+		# Do not apply a held movement key after that handoff in this same tick.
+		if is_instance_valid(host_node) and not host_node.world_frame.is_visible_in_tree(): return
 	if chapter4_layers != null and scene_id == "duan_yongping_temporal_maze":
 		chapter4_layers.tick(delta,State.d)
 		queue_redraw()

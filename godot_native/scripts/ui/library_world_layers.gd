@@ -25,6 +25,7 @@ var bag_animating: bool=false
 var shelf_offset: int=0
 var shelf_phase: String="idle"
 var shelf_frame: int=0
+var reveal_serial: int=0
 var cue_queue: Array=[]
 var broadcast_index: int=0
 var note_collected: bool=false
@@ -37,11 +38,13 @@ var pass_from:=Vector2.ZERO
 func sync(state: Dictionary,scene_changed: bool=false) -> void:
 	var scene: String=str(state.get("native",{}).get("scene",""))
 	if scene!="library_interior":
+		if active: reveal_serial+=1
 		active=false; initialized=false; shelf_animating=false; bag_animating=false; cue_queue.clear(); return
 	active=true
 	var p: Dictionary=state.get("ui",{}).get("libraryFinalsPuzzle",{})
 	reduced=bool(state.get("native",{}).get("settings",{}).get("reduced_motion",false))
 	if not initialized or scene_changed or not is_same(state,bound_state):
+		reveal_serial+=1
 		bound_state=state; initialized=true
 		shelf_collected=bool(p.get("archivedRuleCollected",false)); bag_evicted=bool(p.get("backpackEvicted",false))
 		shelf_offset=int(source.shelf.shiftPx) if shelf_collected else 0
@@ -54,6 +57,7 @@ func sync(state: Dictionary,scene_changed: bool=false) -> void:
 	if lost_stage!="scanning" and p.get("lostFoundStage","")=="scanning": scanning_ms=0
 	stamped=bool(p.get("nonPersonProofStamped",false)); lost_stage=str(p.get("lostFoundStage","missing_report"))
 	if not shelf_collected and p.get("archivedRuleCollected",false):
+		reveal_serial+=1
 		shelf_animating=true; shelf_ms=0; shelf_offset=0; shelf_frame=0; shelf_phase="shaking"
 	if not bag_evicted and p.get("backpackEvicted",false):
 		bag_animating=true; bag_ms=0; broadcast_index=0; pass_from=last_player
@@ -89,8 +93,7 @@ func tick(delta: float,state: Dictionary) -> void:
 				if shelf_ms>=at: shelf_offset=int(row.offsetPx); shelf_phase=str(row.phase); shelf_frame=i
 			if shelf_ms>=paper_start_ms(): shelf_phase="paper"; shelf_offset=int(source.shelf.shiftPx)
 		if shelf_ms>=shelf_total_ms():
-			shelf_animating=false; shelf_phase="complete"; shelf_offset=int(source.shelf.shiftPx)
-			cue_queue.append({"id":"library_archived_rule_reveal_completed","payload":{"itemId":"archivedLeaveRule"}})
+			finish_shelf_reveal(state,reveal_serial)
 	if bag_animating:
 		bag_ms+=ms
 		var lines: Array=["书包：主人马上回来。","玩家：什么时候？","书包：三分钟。","系统：它三天前也是这么说的。"]
@@ -100,6 +103,24 @@ func tick(delta: float,state: Dictionary) -> void:
 
 func paper_start_ms() -> float: return 140.0 if reduced else float(source.shelf.totalMs)+110.0
 func shelf_total_ms() -> float: return paper_start_ms()+(120+20+100 if reduced else 240+220+220)
+func owns_shelf_reveal(state: Dictionary,serial: int) -> bool:
+	return active and initialized and is_same(state,bound_state) and serial==reveal_serial and str(state.get("native",{}).get("scene",""))=="library_interior" and bool(state.get("ui",{}).get("libraryFinalsPuzzle",{}).get("archivedRuleCollected",false))
+func _settle_shelf_reveal() -> void:
+	shelf_animating=false; shelf_phase="complete"; shelf_offset=int(source.shelf.shiftPx)
+	shelf_frame=source.shelf.frames.size()-1; shelf_ms=shelf_total_ms()
+func finish_shelf_reveal(state: Dictionary,serial: int) -> bool:
+	# Presentation completion never acquires, consumes, reads or saves an item.
+	if not owns_shelf_reveal(state,serial) or not shelf_animating: return false
+	_settle_shelf_reveal()
+	cue_queue.append({"id":"library_archived_rule_reveal_completed","payload":{"itemId":"archivedLeaveRule","revealSerial":reveal_serial}})
+	return true
+func cancel_shelf_reveal(state: Dictionary,serial: int) -> void:
+	if not is_same(state,bound_state) or serial!=reveal_serial: return
+	# The controller has already committed the acquisition. Leaving its reveal
+	# keeps the earned final pose and invalidates any queued old completion.
+	if shelf_collected: _settle_shelf_reveal()
+	reveal_serial+=1
+	cue_queue=cue_queue.filter(func(event: Dictionary): return event.get("id","")!="library_archived_rule_reveal_completed")
 func bag_shake_ms() -> float: return float(source.backpackTimeline.shakeDurationMs)*2*(int(source.backpackTimeline.shakeRepeat)+1)
 func bag_total_ms() -> float: return bag_shake_ms()+float(source.backpackTimeline.waitMs)+float(source.backpackTimeline.transferMs)
 func blocks_movement() -> bool: return active and shelf_animating

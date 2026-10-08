@@ -70,6 +70,10 @@ func fixture() -> void:
 	state.act("lib_shelf"); await refresh()
 	check(state.d.native.page=="library_rule" and state.d.items.archivedLeaveRule and not state.d.items.callNumber755,"normal shelf dispatch opens rule and consumes exactly the earned call number")
 	check(not state.d.ui.libraryFinalsPuzzle.archivedRuleRead and state.get_library_story_session()==null,"opening rule does not acknowledge it or start its reading dialogue")
+	check(shell.world_frame.visible and not shell.phone.visible,"accepted shelf acquisition keeps the cabinet reveal visible")
+	for i in range(290): shell.world._process(0.01)
+	await refresh()
+	check(shell.phone.visible and not shell.world_frame.visible,"complete cabinet and paper reveal hands off to the existing rule action")
 func check_rule_text() -> void:
 	var labels=shell.page_body.find_children("*","Label",true,false).filter(func(label): return label.text==RULE_BODY)
 	check(labels.size()==1,"exact complete rule wording appears once")
