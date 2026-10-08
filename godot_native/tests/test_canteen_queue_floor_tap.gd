@@ -1,6 +1,8 @@
 extends "res://tests/test_portrait_exploration.gd"
 ## Portable Main/root-input regression. Optional ordinary-save replay is loaded
 ## normally from an isolated profile; source fixture values are not CUA evidence.
+## The native service-wall foot is y=236, so the exact center limit is246.3125.
+## Test obstacles are injected into the active native geometry owner.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Tap=preload("res://scripts/canteen_floor_tap.gd")
 const START=Vector2(1440,574.368041992188)
@@ -123,7 +125,7 @@ func run() -> void:
 			if Metrics.foot_rect(goal).intersects(shell.world._rect(box)):hits.append(box.id)
 		check(hits==["north_service_wall"],"exact endpoint rejection is the static service-wall foot overlap")
 		check(shell.world._pick_target(raw).is_empty() and shell.world._floor_empty_destination(raw),"recorded near miss is empty floor with no object/actor/HUD veto")
-		await arrive(Vector2(79,321),Vector2(raw.x,248.3125),using_touch)
+		await arrive(Vector2(79,321),Vector2(raw.x,246.3125),using_touch)
 	# Reuse current legal start for negative requests through the same root path.
 	var w=shell.world
 	await rejection(source_screen(Vector2(620,239)),"solid wall center")
@@ -149,12 +151,14 @@ func run() -> void:
 	# The nearest corrected destination belongs to a painted object: no fallback.
 	var raw:=Vector2(620,246)
 	w.set_process(false);await frames(2)
-	w.object_picker.add([],{"rect":Rect2(619,248,2,1)},true)
+	w.object_picker.add([],{"rect":Rect2(619,246.3125,2,1)},true)
 	await rejection(source_screen(raw),"painted nearest destination")
 	w.queue_redraw();await frames(2)
 	# A legal endpoint behind a new full-height barrier stays exact and blocked.
 	w.chapter3_layers=null
-	w.collisions.append({"id":"fixture_full_height_barrier","left":650,"right":652,"top":0,"bottom":941})
+	var barrier:=StaticBody2D.new();w.native_canteen.source_space.add_child(barrier)
+	w.native_canteen.structures.append({"id":"fixture_full_height_barrier","body":barrier,"polygon":PackedVector2Array([Vector2(650,0),Vector2(652,0),Vector2(652,941),Vector2(650,941)])})
+	w.native_canteen.navigation_signature=""
 	await rejection(source_screen(Vector2(690,299)),"legal unreachable goal")
 	# Other scenes and masks keep exact endpoints, even if invalid.
 	var anchor:=Vector2(620,246)-Metrics.FOOT_CENTER_OFFSET

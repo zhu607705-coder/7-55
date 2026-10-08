@@ -1,0 +1,341 @@
+{
+  "base": "0659d72fb6bd68eda22a2cac7afb4b384479c1a3",
+  "focused_tests_before_nonoverlapping_fishing_merge": [
+    {
+      "test": "test_canteen_native_objects",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 3.36,
+      "summaries": [
+        "CANTEEN_NATIVE_OBJECTS 37 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_native_layers",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 3.93,
+      "summaries": [
+        "CANTEEN_NATIVE_LAYERS 11 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_pickup_continuity",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.81,
+      "summaries": [
+        "CANTEEN_PICKUP_CONTINUITY 18 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_return_stack",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.76,
+      "summaries": [
+        "CANTEEN_RETURN_STACK 31 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_room204_native_object",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 2.22,
+      "summaries": [
+        "ROOM204_NATIVE_OBJECT 1315 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_room204_drag_motion",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 2.22,
+      "summaries": [
+        "ROOM204_DRAG_MOTION 436 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_room204_second_table",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 2.39,
+      "summaries": [
+        "ROOM204_SECOND_TABLE 870 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_mobile_floor_route",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 5.23,
+      "summaries": [
+        "MOBILE_FLOOR_ROUTE: 73 checks; 0 failures; routes=[{\"bag\":false,\"corners\":45,\"edge_checks\":141,\"foot_error\":0.0,\"goal\":\"(1040.0, 630.0)\",\"start\":\"(897.8826, 550.7011)\",\"steps\":71,\"view\":\"(390, 844)\"},{\"bag\":false,\"corners\":45,\"edge_checks\":116,\"foot_error\":0.0,\"goal\":\"(1025.0, 628.0)\",\"start\":\"(897.8826, 550.7011)\",\"steps\":66,\"view\":\"(390, 844)\"}]"
+      ]
+    },
+    {
+      "test": "test_mobile_floor_room204_drag",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 6.37,
+      "summaries": [
+        "MOBILE_FLOOR_ROOM204_DRAG: 126 checks; 0 failures; routes=[]"
+      ]
+    },
+    {
+      "test": "test_canteen_queue_floor_tap",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 17.83,
+      "summaries": [
+        "CANTEEN_QUEUE_FLOOR_TAP: 89 checks; 0 failures; ordinarySave=false"
+      ]
+    },
+    {
+      "test": "test_chapter3_world_layers",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.04,
+      "summaries": [
+        "Chapter 3 world layers: 129 checks, 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_mixer",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.4,
+      "summaries": [
+        "Canteen mixer source session/panel: 310 checks, 0 failures"
+      ]
+    },
+    {
+      "test": "test_c3_canteen_source_parity",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.04,
+      "summaries": [
+        "C3 canteen executed-source parity: 23 scenarios, 45 steps, 17613 checks, 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_defense_world_return",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 4.11,
+      "summaries": [
+        "CANTEEN_DEFENSE_WORLD_RETURN: 11 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_defense_owners",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 3.66,
+      "summaries": [
+        "CANTEEN_DEFENSE_OWNERS: 22 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_library_world_layers",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 3.18,
+      "summaries": [
+        "Library world layers: 111 checks, 0 failures"
+      ]
+    },
+    {
+      "test": "test_chapter3",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 21.72,
+      "summaries": [
+        "Chapter 3 checks: 72; failures: 0"
+      ]
+    },
+    {
+      "test": "test_qizhen_branches",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.51,
+      "summaries": [
+        "Qizhen source branch parity: 416 checks, 25 native disk saves, 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_scene_lifecycle",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 2.18,
+      "summaries": [
+        "CANTEEN_SCENE_LIFECYCLE 9 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_c3_canteen_devices_controls",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 47.43,
+      "summaries": [
+        "C3 canteen routed controls: 3477 checks, 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_self_drink",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 14.08,
+      "summaries": [
+        "CANTEEN_SELF_DRINK: 442 checks; 0 failures; ordinarySave=false"
+      ]
+    },
+    {
+      "test": "test_canteen_drink_handoff",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 15.62,
+      "summaries": [
+        "CANTEEN DRINK HANDOFF: 1826 checks; 0 failures; 192 source cases"
+      ]
+    },
+    {
+      "test": "test_canteen_defense",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 1.96,
+      "summaries": [
+        "DEFENSE FAILURES 0"
+      ]
+    },
+    {
+      "test": "test_canteen_defense_mobile",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 3.87,
+      "summaries": [
+        "CANTEEN_DEFENSE_MOBILE: 198 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_canteen_defense_resume",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 6.19,
+      "summaries": [
+        "CANTEEN_DEFENSE_RESUME: 34 checks; 0 failures; controller_starts=7"
+      ]
+    },
+    {
+      "test": "test_world_object_picking",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 6.04,
+      "summaries": [
+        "WORLD_OBJECT_PICKING: 53 checks; 0 failures"
+      ]
+    },
+    {
+      "test": "test_save_integration",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 24.58,
+      "summaries": [
+        "Native save integration: 1805 checks, 233 real-file browser imports, 0 failures"
+      ]
+    },
+    {
+      "test": "test_save_domain_guard",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 5.54,
+      "summaries": [
+        "Native save domain guard: 1013 checks, 0 failures"
+      ]
+    },
+    {
+      "test": "test_native_surface_save",
+      "passed": true,
+      "exit_code": 0,
+      "seconds": 4.33,
+      "summaries": [
+        "NATIVE_SURFACE_SAVE: 40 checks; 0 failures"
+      ]
+    }
+  ],
+  "actual_native_input": {
+    "viewport": [
+      390,
+      844
+    ],
+    "seeded": [
+      "Chapter3 tray-search prerequisites",
+      "one visible blue tray placement",
+      "legal initial stand next to the table"
+    ],
+    "ordinary_actions": [
+      "c3_target:tray_blue_01",
+      "c3_target:auntie",
+      "c3_story_complete",
+      "phone_refresh"
+    ],
+    "saved_with": "original Settings > System diagnostics > Save management > Save progress",
+    "first_process_exit": 0,
+    "ordinary_reload": {
+      "actions": [],
+      "returned": [
+        "tray_blue_01"
+      ],
+      "carried": [],
+      "cashCents": 0.0,
+      "wages": false,
+      "return_age": 10.0
+    },
+    "not_claimed": [
+      "earned full quest",
+      "manual 0755 defense board",
+      "60fps or performance benchmark",
+      "physical phone",
+      "new executable export"
+    ]
+  },
+  "independent_review": {
+    "source_review_passed": true,
+    "fixed_issue": "Room204 adapter must retire before the native canteen draw early-return",
+    "new_cross_scene_checks": 9,
+    "source_assets_verified": 718
+  },
+  "original_source_and_controllers_unchanged": true,
+  "controlled_native_views": [
+    {
+      "size": [
+        1280,
+        720
+      ],
+      "camera": "(933.5385, 525.6154)",
+      "zoom": 0.65,
+      "saved": true,
+      "controlled_presentation_only": true
+    },
+    {
+      "size": [
+        1440,
+        900
+      ],
+      "camera": "(933.5385, 525.6154)",
+      "zoom": 0.65,
+      "saved": true,
+      "controlled_presentation_only": true
+    },
+    {
+      "size": [
+        390,
+        844
+      ],
+      "camera": "(1387.385, 470.5)",
+      "zoom": 0.65,
+      "saved": true,
+      "controlled_presentation_only": true
+    }
+  ]
+}

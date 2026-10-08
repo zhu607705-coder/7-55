@@ -88,6 +88,7 @@ var touch_points: Dictionary = {}
 var kayak_mouse_gesture: Dictionary = {}
 var chapter4_layers: RefCounted
 var room204_object: Node2D
+var native_canteen: Node2D
 var library_layers: RefCounted
 var chapter3_layers: RefCounted
 var furniture_drag_preview: Control
@@ -131,6 +132,7 @@ func _ready() -> void:
 	add_child(room204_object)
 	room204_object.setup(self)
 	chapter4_layers.native_prop=room204_object
+	native_canteen=load("res://scripts/objects/canteen_object_scene.gd").new();add_child(native_canteen);native_canteen.setup(self)
 	refresh_world()
 
 func refresh_world() -> void:
@@ -138,6 +140,7 @@ func refresh_world() -> void:
 	if guard_capture.active and not guard_capture.matches(_guard_capture_context()): _cancel_guard_capture()
 	if not stair_handoff.is_empty() and (State.d.native.scene!="duan_yongping_temporal_maze" or State.d.chapter4.phase!="final_chase" or State.d.chapter4.floor!="A2" or int(stair_handoff.attempt)!=int(State.d.chapter4.chaseAttempt)):stair_handoff.clear()
 	var incoming := str(State.d.native.scene)
+	if is_instance_valid(native_canteen):native_canteen.sync(State.d,incoming)
 	if incoming!=scene_id: _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 	if library_layers!=null: library_layers.sync(State.d,incoming!=scene_id)
 	if chapter3_layers!=null: chapter3_layers.sync(State.d,incoming!=scene_id)
@@ -283,6 +286,7 @@ func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	var visual: Rect2 = boat if boating else PlayerMetrics.visual_rect(point,display_scale_at(point))
 	if visual.position.x < 0 or visual.position.y < 0 or visual.end.x > world_size.x or visual.end.y > world_size.y: return false
 	var feet: Rect2 = boat if boating else PlayerMetrics.foot_rect(point)
+	if is_instance_valid(native_canteen) and native_canteen.is_active():return not native_canteen.blocks_feet(feet)
 	if boating:
 		var contained := false
 		for area: Dictionary in spec.zones[str(State.d.qizhenLake.zone)].waterAreas:
@@ -444,6 +448,7 @@ func _process(delta: float) -> void:
 	if chapter3_layers!=null:
 		chapter3_layers.narrative_session=host_node.c3_narrative_host.current if is_instance_valid(host_node) and is_instance_valid(host_node.c3_narrative_host) else null
 		chapter3_layers.tick(delta,State.d)
+		if is_instance_valid(native_canteen) and native_canteen.is_active():native_canteen.sync(State.d,scene_id)
 		if scene_id in ["canteen_interior","theater_interior"]: collisions=chapter3_layers.adjusted_collisions(collisions,State.d)
 	if library_layers!=null:
 		library_layers.tick(delta,State.d)
@@ -616,6 +621,7 @@ func _record_plate_targets() -> void:
 	plate_targets.reverse()
 	for target: Dictionary in plate_targets:
 		if target.has("art") or target.get("follow_player",false): continue
+		if is_instance_valid(native_canteen) and native_canteen.owns_target(str(target.get("id",""))):continue
 		if library_layers!=null and scene_id=="library_interior" and library_layers.owns_pick_target(str(target.get("id",""))): continue
 		if chapter3_layers!=null and chapter3_layers.owns_pick_target(target,State.d): continue
 		if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and chapter4_layers.owns_pick_target(str(target.get("id",""))): continue
@@ -647,8 +653,14 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 func _render_context() -> Dictionary:
 	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
 func _draw() -> void:
+	# Retire every existing adapter before a scene-specific early return.
+	if is_instance_valid(room204_object):room204_object.sync(State.d,scene_id)
+	if is_instance_valid(native_canteen):native_canteen.sync(State.d,scene_id)
+	if is_instance_valid(native_canteen) and native_canteen.is_active():
+		draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
+		native_canteen.configure_view(size/2-camera*zoom,zoom,player)
+		return
 	if is_instance_valid(room204_object):
-		room204_object.sync(State.d,scene_id)
 		if room204_object.has_objects():
 			room204_object.configure_view(size/2-camera*zoom,zoom)
 			return
@@ -1289,6 +1301,7 @@ func _floor_anchor_bounds(visible: Rect2) -> Rect2:
 	return Rect2(visible.position-feet.position,visible.size-feet.size)
 
 func _floor_obstacles() -> Array:
+	if is_instance_valid(native_canteen) and native_canteen.is_active():return native_canteen.navigation_obstacles(PlayerMetrics.foot_rect(Vector2.ZERO))
 	var obstacles: Array=[]
 	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
 	for obstacle in collisions:
