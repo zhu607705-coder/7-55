@@ -110,7 +110,7 @@ func restart() -> void:
 	if is_instance_valid(fishing_view):
 		fishing_view.visible=mode=="rhythm"
 		fishing_view.reset_view()
-	if is_instance_valid(fishing_controls_button): fishing_controls_button.visible=mode=="rhythm"
+	if is_instance_valid(fishing_controls_button): fishing_controls_button.hide()
 	_audio_previous.clear(); _audio_seen_notes.clear(); _audio_next_beat=0; _audio_terminal_sent=false; _audio_first_telegraph=false
 	match mode:
 		"chase":
@@ -276,10 +276,9 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled();return
 	if event is InputEventKey and not event.echo:
 		var code: int=event.physical_keycode
-		if mode=="rhythm" and code in [KEY_T,KEY_R,KEY_X]:
+		if mode=="rhythm" and code in [KEY_R,KEY_X]:
 			if event.pressed:
-				if code==KEY_T: _toggle_fishing_controls()
-				elif code==KEY_R: restart()
+				if code==KEY_R: restart()
 				elif code==KEY_X: cancel_game()
 			get_viewport().set_input_as_handled();return
 		if code in [KEY_ESCAPE,KEY_P] and event.pressed:
@@ -392,7 +391,7 @@ func _refresh() -> void:
 	_layout_overlay()
 	pause_button.text="继续" if paused else "暂停"
 	headline.text=str(config.get("title",{"chase":"755 米 · 追上纸条","rhythm":"启真湖 · 控线钓鱼","kayak":"启真湖 · 双桨航行"}.get(mode,"7:55")))
-	for button: Button in control_buttons.values(): button.visible=running and not paused and (mode!="rhythm" or fishing_controls_enabled)
+	for button: Button in control_buttons.values(): button.visible=running and not paused and mode!="rhythm"
 	if model==null:
 		queue_redraw()
 		return
@@ -879,13 +878,8 @@ func _fishing_wants_touch_controls() -> bool:
 	return fishing_control_scheme=="touch" or (fishing_control_scheme=="auto" and (fishing_touch_available or fishing_touch_seen))
 
 func _toggle_fishing_controls() -> void:
-	if mode!="rhythm": return
-	# Changing the input layout cannot turn a held gesture into a scored release.
-	if running and not paused: toggle_pause()
-	_clear_fishing_controls()
-	fishing_control_scheme="keyboard" if fishing_controls_enabled else "touch"
-	fishing_input_layout_pending=true
-	_apply_fishing_control_layout()
+	# Retired presentation toggle. Direct water gestures and keyboard stay active.
+	pass
 
 func _apply_fishing_control_layout() -> void:
 	if not fishing_pointer.is_empty() or not touch_sources.is_empty() or (model is Fishing and not model.controls.is_empty()): return
@@ -899,7 +893,7 @@ func _apply_fishing_control_layout() -> void:
 func _put_fishing_button(button: Button,rect: Rect2,point_size: int=16) -> void:
 	# Visible borders and input bounds share the same physical pixel grid.
 	_put(button,Rect2(rect.position.round(),rect.size.floor()),point_size)
-	NativeUi.apply_button(button,Color("163c3e"),Color("fff0c2"),Color("b4a77b"),0,2,point_size,Vector2(8,5),Color("76dfc9"))
+	NativeUi.apply_button(button,Color("143639"),Color("e5dfb6"),Color("928d67"),5,1,point_size,Vector2(8,5),Color("76dfc9"))
 	var pressed: StyleBoxFlat=NativeUi.box(Color("dcc783"),Color("092f36"),2,0,Vector2(8,5))
 	pressed.content_margin_left=9;pressed.content_margin_right=7
 	pressed.content_margin_top=6;pressed.content_margin_bottom=4
@@ -931,25 +925,18 @@ func _layout_fishing_activity() -> void:
 	if signature==_overlay_signature: return
 	_overlay_signature=signature
 	headline.hide();status.hide();hint.hide();chase_view.hide()
-	var short: bool=size.y<520
-	var footer: float=(136 if not short else 110) if fishing_controls_enabled else 60
-	fishing_view.position=Vector2.ZERO;fishing_view.size=Vector2(size.x,maxf(220,size.y-footer));fishing_view.show()
-	var column: float=floorf((size.x-32)/3.0)
+	# Input-scheme preference now affects hints only; no simulated button row.
+	fishing_view.position=Vector2.ZERO;fishing_view.size=Vector2(size.x,maxf(220,size.y-50));fishing_view.show()
+	for button: Button in control_buttons.values(): button.hide()
+	fishing_controls_button.hide()
+	var toolbar: Array=[pause_button,retry_button,exit_button]
+	var column: float=110 if size.x>=680 else floorf((size.x-32)/3.0)
+	var left: float=size.x-3*column-24 if size.x>=680 else 8
 	for i in range(3):
-		var button: Button=control_buttons[["left","hook","right"][i]]
-		button.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-		var x: float=8+i*(column+8)
-		_put_fishing_button(button,Rect2(x,size.y-footer+8,(size.x-8-x) if i==2 else column,48 if short else 64))
-	control_buttons.left.text="左控线";control_buttons.right.text="右控线"
-	var toolbar: Array=[fishing_controls_button,pause_button,retry_button,exit_button]
-	var toolbar_column: float=112 if size.x>=680 else floorf((size.x-40)/4.0)
-	var left: float=size.x-4*toolbar_column-24-12 if size.x>=680 else 8
-	for i in range(4):
-		var x: float=left+i*(toolbar_column+8)
-		var width: float=(size.x-8-x) if size.x<680 and i==3 else toolbar_column
-		_put_fishing_button(toolbar[i],Rect2(x,size.y-52,width,44))
-	fishing_controls_button.show()
-	_put_fishing_button(start_button,fishing_view.start_rect(),18)
+		var x: float=left+i*(column+8)
+		var width: float=(size.x-8-x) if size.x<680 and i==2 else column
+		_put_fishing_button(toolbar[i],Rect2(x,size.y-47,width,44),14)
+	_put_fishing_button(start_button,fishing_view.start_rect(),16)
 	fishing_view.advance_view(0)
 
 func _clear_fishing_controls() -> void:
