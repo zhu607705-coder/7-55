@@ -1,4 +1,5 @@
 extends RefCounted
+const MediaStudio = preload("res://scripts/objects/room302_studio_model.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
 const StairModel = preload("res://scripts/games/chapter4_stair_model.gd")
@@ -443,6 +444,18 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if c.phase!="room204_restore" or c.mode!="light" or not _all(c,["elevator_history_observed","elevator_a2_call_record_observed","elevator_a3_arrival_record_observed"]): return _locked("elevator_floor_records_required")
 		if not value is Dictionary or value.get("arrival","")!="A3" or value.get("unserved","")!="A2": return _ok("停站判断与门机记录不符。")
 		_fact(c,"elevator_stop_chain_reconstructed"); return _ok("停站记录已核对。")
+	if action=="c4_media_studio_event":
+		if not _media_studio_context(s): return _locked()
+		if not _has(c,"a3_archive_film_retrieved"): return _locked("archive_film_required")
+		if _has(c,"a3_media_alignment_completed"): return _ok(extra.puzzles.media_alignment.successText)
+		if not value is Dictionary: return _locked()
+		var checkpoint: Variant=s.native.get("c4_media_studio",MediaStudio.initial())
+		if not MediaStudio.valid(checkpoint): return _locked()
+		var changed: Dictionary=MediaStudio.transition(checkpoint,value)
+		if not changed.accepted: return _ok(changed.message)
+		# State owns ordinary saves; the pure model owns only bounded object moves.
+		s.native.c4_media_studio=changed.checkpoint
+		return _ok(changed.message,{"studio_motion":changed.motion})
 	if action.begins_with("c4_device_"):
 		var id: String=action.trim_prefix("c4_device_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id): return _locked()
@@ -451,7 +464,14 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if action.begins_with("c4_solve_"):
 		var id: String=action.trim_prefix("c4_solve_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id) or c.mode!="light" or s.native.get("c4_context","")!=id: return _locked()
-		if id=="media_alignment" and not _has(c,"a3_archive_film_retrieved"): return _locked("archive_film_required")
+		if id=="media_alignment":
+			if not _media_studio_context(s): return _locked()
+			if not _has(c,"a3_archive_film_retrieved"): return _locked("archive_film_required")
+			if _has(c,"a3_media_alignment_completed"): return _ok(extra.puzzles[id].successText)
+			var checkpoint: Variant=s.native.get("c4_media_studio",MediaStudio.initial())
+			if not MediaStudio.valid(checkpoint): return _locked()
+			if not MediaStudio.hats_ready(checkpoint): return _ok("先让灯罩的三个影子各回岗位。")
+			if not MediaStudio.ready_to_record(checkpoint): return _ok("幕布打了个嗝。影子还没对齐，刚才的摆放都留着。")
 		if not _puzzle_correct(id,value): return _ok("设置与现场留下的痕迹不符。")
 		_fact(c,extra.puzzles[id].factId); return _ok(extra.puzzles[id].successText)
 	if action=="c4_install_plate":
@@ -588,6 +608,9 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		s.native.scene=""; s.native.page="phone_home"; s.runtimeMode="phone"; s.currentScene="phone_home"; pending={}
 		return _ok(_dialogue("exterior.closure"),{"page":"phone_home"})
 	return _locked()
+func _media_studio_context(s: Dictionary) -> bool:
+	var c: Dictionary=s.chapter4
+	return c.phase=="room204_restore" and c.floor=="A3" and c.mode=="light" and s.native.get("chapter",0)==4 and s.native.get("mode","")=="light" and s.native.get("scene","")==SCENE and s.native.get("c4_context","")=="media_alignment"
 func _puzzle_floor(id: String) -> String:
 	return "A1" if id=="duty_board" else ("A3" if id in ["archive_index","media_alignment"] else "A2")
 func _puzzle_correct(id: String,value: Variant) -> bool:

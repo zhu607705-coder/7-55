@@ -17,7 +17,7 @@ func check(value: bool, message: String) -> void:
 
 func initial(id: String, mode: String = "light", film: bool = true) -> Dictionary:
 	var state: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/initial_state.json"))
-	state.native = {"chapter":4,"page":"c4_device","scene":"duan_yongping_temporal_maze","c4_context":id}
+	state.native = {"chapter":4,"mode":mode,"page":"c4_device","scene":"duan_yongping_temporal_maze","c4_context":id}
 	state.chapter4.prologueSeen = true
 	state.chapter4.phase = "room204_restore"
 	state.chapter4.timeState = "1850_evening"
@@ -43,6 +43,18 @@ func configure_answer(session: RefCounted, answer: Dictionary) -> void:
 		"power_topology":
 			for edge: String in session.draft.powerEdges.duplicate(): session.toggle_edge(edge)
 			for edge: String in answer.edgeIds: check(session.toggle_edge(edge),"Select bounded topology edge")
+
+# The shared source device panel still has compatibility coverage. Its numeric
+# submission cannot skip the production studio's controller-owned physical steps.
+func earn_media_studio_layout(state: Dictionary, controller: RefCounted) -> void:
+	if state.native.c4_context != "media_alignment": return
+	for event: Dictionary in [
+		{"kind":"swap","a":0,"b":2}, {"kind":"swap","a":1,"b":2},
+		{"kind":"step","axis":"xOffset","delta":1}, {"kind":"step","axis":"xOffset","delta":1},
+		{"kind":"step","axis":"yOffset","delta":-1}, {"kind":"step","axis":"rotationQuarterTurns","delta":1}]:
+		controller.dispatch(state,"c4_media_studio_event",event)
+	check(load("res://scripts/objects/room302_studio_model.gd").ready_to_record(state.native.get("c4_media_studio",{})),"Media compatibility submission follows legal hat and curtain actions")
+	check(not "a3_media_alignment_completed" in state.chapter4.factIds,"Physical preparation alone does not record the completion fact")
 
 func submit(session: RefCounted, state: Dictionary, controller: RefCounted) -> Dictionary:
 	var request: Dictionary = session.begin_submit()
@@ -100,6 +112,7 @@ func test_model(entry: Dictionary) -> void:
 	var final_preview := Preview.project(id,session.draft,source)
 	check_projection(final_preview,entry.previewCorrect)
 	check(final_preview != preview_before,id+" preview changes with current adjustments")
+	earn_media_studio_layout(state,controller)
 	submit(session,state,controller)
 	check(session.completed and entry.factId in state.chapter4.factIds,id+" only controller fact completes")
 	check(session.view_kind() == "completed" and not session.editable(),id+" success remains completed/read-only")
@@ -170,6 +183,7 @@ func test_authority_gates() -> void:
 			session.open(id,state)
 			configure_answer(session,entry.correct)
 			var request: Dictionary = session.begin_submit()
+			earn_media_studio_layout(state,Chapter.new())
 			match gate:
 				"phase": state.chapter4.phase = "maintenance_repair"
 				"floor": state.chapter4.floor = "A2" if source.assets[id].floor != "A2" else "A1"
@@ -188,6 +202,7 @@ func test_authority_gates() -> void:
 	session.open("media_alignment",state)
 	check(session.view_kind() == "locked" and not session.can_submit(),"Film prerequisite lock precedes observation controls")
 	state.chapter4.mode = "light"
+	state.native.mode = "light"
 	var controller := Chapter.new()
 	var result: Dictionary = controller.dispatch(state,"c4_solve_media_alignment",{"xOffset":2,"yOffset":-1,"rotationQuarterTurns":1})
 	check(not "a3_media_alignment_completed" in state.chapter4.factIds and not result.message.is_empty(),"Controller film completion guard retained")
@@ -248,6 +263,7 @@ func test_panel(entry: Dictionary, dimensions: Vector2i) -> void:
 	check(panel.feedback_label.text == "设置与现场留下的痕迹不符。",entry.id+" local feedback surface")
 	configure_panel_answer(panel,entry.correct)
 	var controller := Chapter.new()
+	earn_media_studio_layout(state,controller)
 	panel.submit_requested.connect(func(action: String,value: Dictionary,serial: int):
 		var result: Dictionary = controller.dispatch(state,action,value)
 		panel.resolve_submission(serial,state,result)

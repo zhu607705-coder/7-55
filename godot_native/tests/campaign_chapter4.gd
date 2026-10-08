@@ -164,6 +164,15 @@ func mode(r,wanted: String) -> void:
 
 func puzzle(r,id: String,value: Dictionary) -> void:
 	await act(r,"c4_device_"+id)
+	if id=="media_alignment":
+		# Use the same legal object intents as the studio; no checkpoint/fact seed.
+		for event: Dictionary in [
+			{"kind":"swap","a":0,"b":2}, {"kind":"swap","a":1,"b":2},
+			{"kind":"step","axis":"xOffset","delta":1}, {"kind":"step","axis":"xOffset","delta":1},
+			{"kind":"step","axis":"yOffset","delta":-1}, {"kind":"step","axis":"rotationQuarterTurns","delta":1}]:
+			await act(r,"c4_media_studio_event",event)
+		r.check(load("res://scripts/objects/room302_studio_model.gd").ready_to_record(r.state.d.native.get("c4_media_studio",{})),"legal studio hat swaps and curtain moves reach registration")
+		r.check(not "a3_media_alignment_completed" in r.state.d.chapter4.factIds,"studio physical preparation still requires final controller recording")
 	await act(r,"c4_solve_"+id,value)
 	r.check(r.chapter4.extra.puzzles[id].factId in r.state.d.chapter4.factIds,"authored device solution " + id)
 

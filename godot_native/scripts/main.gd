@@ -28,6 +28,10 @@ var modal: Control
 var modal_panel: PanelContainer
 var modal_notice_slot: Control
 var modal_previous_focus: WeakRef
+# Room 302 alone replaces the shell with an opaque full-window studio.
+var room302_studio: Control
+var room302_shell_restore: Dictionary = {}
+var room302_input_mode := "touch" if DisplayServer.is_touchscreen_available() else "keyboard"
 var relayout_pending := false
 var active_game: Control
 var font: Font
@@ -445,6 +449,9 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		world_page_origin_scene=""
 
 func _layout() -> void:
+	if _room302_studio_active():
+		_layout_modal()
+		return
 	var available := size
 	var compact_layout := _uses_compact_layout()
 	var fitted_activity: bool = _activity_owns_scene()
@@ -608,6 +615,10 @@ func _relayout_after_minimum() -> void:
 	if is_inside_tree(): _layout()
 
 func _layout_modal() -> void:
+	if _room302_studio_active():
+		modal.scale = Vector2.ONE
+		modal.layout_fullscreen(Rect2(Vector2.ZERO,size),_room302_safe_insets())
+		return
 	if is_instance_valid(modal) and modal.has_method("layout_panel"):
 		modal.layout_panel(size)
 		return
@@ -641,7 +652,7 @@ func _refresh() -> void:
 	if State.d.is_empty(): return
 	# Refresh authority without remounting or resetting the current draft.
 	if is_instance_valid(modal) and modal.has_method("sync_authority"):
-		if not modal.sync_authority(State.d): _close_modal()
+		if not modal.sync_authority(State.d): _close_modal(_room302_studio_active())
 	var n: Dictionary = State.d.native
 	if n.page=="control_center":
 		n.page="phone_home"
@@ -819,7 +830,7 @@ func _open_chapter4_clock(current: Dictionary) -> bool:
 	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
 
 func _open_chapter4_device(id: String, current: Dictionary) -> bool:
-	var device: Control = load("res://scripts/ui/chapter4_device_panel.gd").new()
+	var device: Control = load("res://scripts/objects/room302_studio_panel.gd" if id == "media_alignment" else "res://scripts/ui/chapter4_device_panel.gd").new()
 	if not device.configure(id,current,font):
 		device.free()
 		return false
@@ -832,16 +843,80 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 	modal_previous_focus = weakref(previous_focus) if previous_focus != null else null
 	modal = device
 	modal_panel = device.frame
-	device.close_requested.connect(_close_modal)
+	device.close_requested.connect(func():
+		if is_instance_valid(device) and modal == device: _close_modal()
+	)
+	if id == "media_alignment":
+		_begin_room302_studio(device)
+		device.studio_event_requested.connect(func(event: Dictionary):
+			if not is_instance_valid(device) or modal != device: return
+			if not device.sync_authority(State.d):
+				_close_modal(true)
+				return
+			var result: Dictionary = State.act("c4_media_studio_event",event)
+			if is_instance_valid(device) and modal == device: device.resolve_studio_event(State.d,result)
+		)
 	device.submit_requested.connect(func(action: String,value: Dictionary,serial: int):
+		if not is_instance_valid(device) or modal != device: return
+		if id == "media_alignment" and not device.sync_authority(State.d):
+			_close_modal(true)
+			return
 		var result: Dictionary = State.act(action,value)
 		if is_instance_valid(device) and modal == device:
 			device.resolve_submission(serial,State.d,result)
 	)
 	add_child(device)
-	_show_world_mobile()
+	if id == "media_alignment": _layout_modal()
+	else: _show_world_mobile()
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	return true
+
+func _room302_studio_active() -> bool:
+	return is_instance_valid(room302_studio) and modal == room302_studio
+
+func _begin_room302_studio(device: Control) -> void:
+	room302_studio = device
+	room302_shell_restore = {"size":size,"world_input_disabled":world_viewport.gui_disable_input,"visibility":{}}
+	# The world has its own focus owner. Preserve it when root UI had none.
+	if modal_previous_focus == null:
+		var focused: Control = world_viewport.gui_get_focus_owner()
+		if focused != null: modal_previous_focus = weakref(focused)
+	for control: Control in [phone,world_frame,mobile_back,phone_world_return,world_tasks,inventory_handle,inventory_dock,chapter_label,toast]:
+		room302_shell_restore.visibility[control] = control.visible
+		control.hide()
+	_cancel_surface_gestures()
+	world_viewport.gui_disable_input = true
+	device.set_input_mode(room302_input_mode)
+	_sync_inventory_dock_input()
+
+func _restore_room302_shell() -> void:
+	if room302_shell_restore.is_empty(): return
+	var restore: Dictionary = room302_shell_restore
+	room302_studio = null
+	room302_shell_restore = {}
+	for control: Control in restore.visibility:
+		if is_instance_valid(control): control.visible = restore.visibility[control] and (control != toast or toast_time > 0)
+	# Resize the restored shell once, never its hidden exploration camera.
+	if size != restore["size"]: _layout()
+	world_viewport.gui_disable_input = bool(restore.world_input_disabled)
+
+func _room302_safe_insets() -> Vector4:
+	# Unsupported desktop/headless backends return an empty safe area. Convert
+	# a platform screen-space area into this window's unscaled UI coordinates.
+	var safe := Rect2(DisplayServer.get_display_safe_area())
+	var window_rect := Rect2(Vector2(DisplayServer.window_get_position()),Vector2(DisplayServer.window_get_size()))
+	if not safe.has_area() or not window_rect.has_area(): return Vector4.ZERO
+	var visible := safe.intersection(window_rect)
+	if not visible.has_area(): return Vector4.ZERO
+	var ratio := size / window_rect.size
+	return Vector4(maxf(0,visible.position.x-window_rect.position.x)*ratio.x,maxf(0,visible.position.y-window_rect.position.y)*ratio.y,maxf(0,window_rect.end.x-visible.end.x)*ratio.x,maxf(0,window_rect.end.y-visible.end.y)*ratio.y)
+
+func _room302_observe_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch or event is InputEventScreenDrag:
+		room302_input_mode = "touch"
+	elif event is InputEventKey or ((event is InputEventMouseButton or event is InputEventMouseMotion) and event.device != InputEvent.DEVICE_ID_EMULATION):
+		room302_input_mode = "keyboard"
+	if _room302_studio_active(): modal.set_input_mode(room302_input_mode)
 
 func _invoke_action(action: Dictionary) -> void:
 	if str(action.get("id",""))=="c4_clock_set":
@@ -856,7 +931,7 @@ func _invoke_action(action: Dictionary) -> void:
 
 func _modal_base(title: String) -> VBoxContainer:
 	_cancel_world_effect()
-	_close_modal()
+	_close_modal(_room302_studio_active())
 	var previous_focus = get_viewport().gui_get_focus_owner()
 	modal_previous_focus = weakref(previous_focus) if previous_focus != null else null
 	modal = ColorRect.new()
@@ -910,8 +985,9 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 		_modal_focus_controls(child,result)
 
 func _input(event: InputEvent) -> void:
+	_room302_observe_input(event)
 	_sync_inventory_dock_input()
-	if is_instance_valid(world) and world.handle_root_kayak_pointer(event):
+	if not _room302_studio_active() and is_instance_valid(world) and world.handle_root_kayak_pointer(event):
 		get_viewport().set_input_as_handled(); return
 	if not is_instance_valid(modal) or not event is InputEventKey or not event.pressed: return
 	if modal.has_method("handle_key") and modal.handle_key(event):
@@ -938,8 +1014,9 @@ func _input(event: InputEvent) -> void:
 		modal.grab_focus()
 		get_viewport().set_input_as_handled()
 
-func _close_modal() -> void:
-	if is_instance_valid(modal) and modal.has_method("can_close") and not modal.can_close(): return
+func _close_modal(force_studio: bool = false) -> void:
+	if not (force_studio and _room302_studio_active()) and is_instance_valid(modal) and modal.has_method("can_close") and not modal.can_close(): return
+	if _room302_studio_active(): room302_studio.cancel_input()
 	if is_instance_valid(modal) and modal.has_method("dispose_session"): modal.dispose_session()
 	var closing_device: Control=c3_device_panel
 	c3_device_panel=null
@@ -950,6 +1027,7 @@ func _close_modal() -> void:
 		remove_child(modal)
 		modal.queue_free()
 	modal = null
+	_restore_room302_shell()
 	_sync_inventory_dock_input()
 	modal_panel = null
 	modal_notice_slot = null
@@ -1594,6 +1672,9 @@ func _virtual_run_owns_feedback(message: String) -> bool:
 func _feedback(message: String,tone: String="system") -> void:
 	# The device owns failed-attempt feedback while submitting.
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
+	if _room302_studio_active():
+		modal.set_feedback(message)
+		return
 	if _virtual_run_owns_feedback(message): return
 	if _scene_owns_feedback(message):
 		toast.text=""; toast_time=0; toast.hide()
@@ -1611,7 +1692,7 @@ func _feedback(message: String,tone: String="system") -> void:
 	toast.move_to_front()
 
 func _process(delta: float) -> void:
-	if compact_world_contract!=(mobile_world and _uses_compact_layout() and not _authored_world_contract()): _layout()
+	if not _room302_studio_active() and compact_world_contract!=(mobile_world and _uses_compact_layout() and not _authored_world_contract()): _layout()
 	_sync_inventory_dock_input()
 	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
@@ -1779,7 +1860,7 @@ func _reset_runtime_presentations() -> void:
 	if is_instance_valid(control_center): control_center.queue_free()
 	control_center=null
 	State.d.ui.controlCenterOpen=false
-	_close_modal()
+	_close_modal(_room302_studio_active())
 	_cancel_world_effect()
 	if is_instance_valid(active_game): active_game.queue_free()
 	active_game = null

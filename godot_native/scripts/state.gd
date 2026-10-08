@@ -326,6 +326,8 @@ func validate_snapshot(value: Variant) -> bool:
 	if not value is Dictionary or not _safe_json(value): return false
 	if not _matches_shape(initial(),value): return false
 	if not _domain_guard.validate(value): return false
+	# The studio checkpoint is optional for old saves; present checkpoints stay bounded.
+	if value.native.has("c4_media_studio") and not load("res://scripts/objects/room302_studio_model.gd").valid(value.native.c4_media_studio): return false
 	if int(value.native.chapter) != float(value.native.chapter) or int(value.native.chapter) < 1 or int(value.native.chapter) > 4: return false
 	if value.native.mode not in ["light","dark"]: return false
 	var scenes := ["", "campus_bootstrap", "campus_qizhen_loop", "dorm_hub", "library_interior", "canteen_interior", "theater_interior", "qizhen_lake", "duan_yongping_temporal_maze"]
