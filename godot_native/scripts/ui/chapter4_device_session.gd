@@ -26,7 +26,7 @@ func open(id: String, state: Dictionary) -> bool:
 	definition = source.definitions[id].duplicate(true)
 	mode = str(chapter.get("mode","light"))
 	completed = definition.factId in chapter.get("factIds",[])
-	prerequisite_ready = "a3_archive_film_retrieved" in chapter.get("factIds",[])
+	prerequisite_ready = _prerequisite(state)
 	pending = false
 	pending_serial = 0
 	feedback = ""
@@ -46,7 +46,7 @@ func compatible(state: Dictionary) -> bool:
 	return opened and chapter.get("phase","") == "room204_restore" and chapter.get("floor","") == source.assets[puzzle_id].floor and chapter.get("mode","") == mode and state.get("native",{}).get("c4_context","") == puzzle_id
 
 func operation_locked() -> bool:
-	return puzzle_id == "media_alignment" and not prerequisite_ready
+	return puzzle_id in ["media_alignment","positioning_calibration"] and not prerequisite_ready
 
 func editable() -> bool:
 	return opened and not pending and not completed and mode == "light" and not operation_locked()
@@ -150,4 +150,8 @@ func update_authority(state: Dictionary) -> void:
 	if not opened: return
 	var facts: Array = state.get("chapter4",{}).get("factIds",[])
 	completed = definition.factId in facts
-	prerequisite_ready = "a3_archive_film_retrieved" in facts
+	prerequisite_ready = _prerequisite(state)
+
+func _prerequisite(state: Dictionary) -> bool:
+	if puzzle_id == "positioning_calibration": return bool(state.get("items",{}).get("clockPositioningPlate",false)) and "positioning_plate_collected" in state.get("chapter4",{}).get("factIds",[])
+	return "a3_archive_film_retrieved" in state.get("chapter4",{}).get("factIds",[])

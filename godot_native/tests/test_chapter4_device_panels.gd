@@ -24,6 +24,9 @@ func initial(id: String, mode: String = "light", film: bool = true) -> Dictionar
 	state.chapter4.floor = source.assets[id].floor
 	state.chapter4.mode = mode
 	state.chapter4.factIds = ["a3_archive_film_retrieved"] if film and id == "media_alignment" else []
+	if id == "positioning_calibration":
+		state.items.clockPositioningPlate=true
+		state.chapter4.factIds.append_array(["positioning_plate_collected","misaligned_stair_solved"])
 	return state
 
 func configure_answer(session: RefCounted, answer: Dictionary) -> void:
@@ -47,6 +50,11 @@ func configure_answer(session: RefCounted, answer: Dictionary) -> void:
 # The shared source device panel still has compatibility coverage. Its numeric
 # submission cannot skip the production studio's controller-owned physical steps.
 func earn_media_studio_layout(state: Dictionary, controller: RefCounted) -> void:
+	if state.native.c4_context == "positioning_calibration":
+		for event: Dictionary in [{"kind":"insert"},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"vertical","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1}]:
+			controller.dispatch(state,"c4_plate_press_event",event)
+		check(load("res://scripts/objects/room201_press_model.gd").ready_to_press(state.native.get("c4_plate_press",{})),"Compatibility numeric submission follows owned physical plate preparation")
+		return
 	if state.native.c4_context != "media_alignment": return
 	for event: Dictionary in [
 		{"kind":"swap","a":0,"b":2}, {"kind":"swap","a":1,"b":2},

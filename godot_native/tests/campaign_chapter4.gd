@@ -173,6 +173,11 @@ func puzzle(r,id: String,value: Dictionary) -> void:
 			await act(r,"c4_media_studio_event",event)
 		r.check(load("res://scripts/objects/room302_studio_model.gd").ready_to_record(r.state.d.native.get("c4_media_studio",{})),"legal studio hat swaps and curtain moves reach registration")
 		r.check(not "a3_media_alignment_completed" in r.state.d.chapter4.factIds,"studio physical preparation still requires final controller recording")
+	if id=="positioning_calibration":
+		for event: Dictionary in [{"kind":"insert"},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"vertical","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1}]:
+			await act(r,"c4_plate_press_event",event)
+		r.check(load("res://scripts/objects/room201_press_model.gd").ready_to_press(r.state.d.native.get("c4_plate_press",{})),"owned plate is inserted, aligned and spring-loaded through physical press intents")
+		r.check(not "a2_positioning_plate_calibrated" in r.state.d.chapter4.factIds,"alignment alone cannot grant the pressure imprint")
 	await act(r,"c4_solve_"+id,value)
 	r.check(r.chapter4.extra.puzzles[id].factId in r.state.d.chapter4.factIds,"authored device solution " + id)
 

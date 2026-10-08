@@ -89,7 +89,11 @@ func full_chain(records: Array) -> void:
 		chapter.dispatch(s,"c4_group_"+group.id)
 	check(s.chapter4.factIds.has("room204_restored"),"Four physical groups plus observed source evidence complete restoration")
 	s.chapter4.mode="light"; complete_game(chapter,s,chapter.dispatch(s,"c4_projection")); chapter.dispatch(s,"c4_plate")
-	chapter.dispatch(s,"c4_device_positioning_calibration"); chapter.dispatch(s,"c4_solve_positioning_calibration",{"horizontal":-2,"vertical":1,"pressure":3})
+	s.native.mode="light"
+	chapter.dispatch(s,"c4_device_positioning_calibration")
+	for event: Dictionary in [{"kind":"insert"},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"horizontal","delta":-1},{"kind":"step","axis":"vertical","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1},{"kind":"step","axis":"pressure","delta":1}]:
+		chapter.dispatch(s,"c4_plate_press_event",event)
+	chapter.dispatch(s,"c4_solve_positioning_calibration",{"horizontal":-2,"vertical":1,"pressure":3})
 	chapter.dispatch(s,"c4_device_power_topology"); var edges: Dictionary={}
 	for edge in ["hall__west_corridor","hall__east_corridor","west_corridor__bakery_back_area","east_corridor__classroom_zone","bakery_back_area__classroom_zone"]: edges[edge]="on"
 	chapter.dispatch(s,"c4_solve_power_topology",edges); chapter.dispatch(s,"c4_device_evacuation_route"); chapter.dispatch(s,"c4_solve_evacuation_route",{"a":"lecture_202_door","b":"east_corridor","c":"transport_core","d":"main_stair_down"})

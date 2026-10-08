@@ -1,4 +1,5 @@
 extends RefCounted
+const PlatePress = preload("res://scripts/objects/room201_press_model.gd")
 const MediaStudio = preload("res://scripts/objects/room302_studio_model.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
@@ -126,18 +127,18 @@ func _projection_issue(c: Dictionary) -> String:
 	if not _all(c,["a3_reference_observed","room204_residual_observed"]): return "room204_observations_required"
 	return "room204_layout_incomplete"
 func _room204_task(c: Dictionary) -> String:
-	# Exact ordered selection from source QuestModel; labels remain in the
-	# original content. This function observes facts and cannot complete them.
+	# Preserve the original transport/evidence gates; the physical plate now
+	# comes before its calibration. Reading objectives never completes them.
 	if not _aligned(c): return "tune_clock_to_1850"
 	if not _all(c,["classroom_104_chalk_residual_observed","classroom_105_terminal_replay_checked","elevator_history_observed","elevator_history_calibrated"]): return "resolve_a1_investigation"
 	if not _has(c,"a3_reference_observed"): return "resolve_a3_archive_chain"
 	if not _has(c,"misaligned_stair_solved"): return "solve_misaligned_stair"
-	if not _all(c,["a2_positioning_plate_calibrated","a2_power_topology_recovered","a2_evacuation_route_confirmed"]): return "resolve_a2_inserted_puzzles"
 	if not _has(c,"elevator_stop_chain_reconstructed"): return "resolve_elevator_stop_chain"
 	if not _has(c,"a1_duty_board_reconstructed"): return "resolve_a1_investigation"
 	if not _all(c,["room204_residual_observed","room204_restored"]): return "restore_room204"
 	if not _has(c,"room204_projection_completed"): return "watch_room204_projection"
 	if not _has(c,"positioning_plate_collected"): return "collect_positioning_plate"
+	if not _all(c,["a2_positioning_plate_calibrated","a2_power_topology_recovered","a2_evacuation_route_confirmed"]): return "resolve_a2_inserted_puzzles"
 	return "install_positioning_plate"
 func _post_stair_floor_allowed(c: Dictionary,destination: String) -> bool:
 	if c.phase!="room204_restore" or c.floor not in ["A1","A2","A3"] or destination not in ["A1","A2","A3"] or destination==c.floor or not _has(c,"misaligned_stair_solved"): return false
@@ -427,8 +428,8 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if not _proof(s,action,value) or float(value.get("elapsedMs",0))<900: return _locked()
 		_facts(c,["room204_projection_completed"]); pending={}; return _ok("门框局部 / 楼层差 1",{"scene":SCENE})
 	if action=="c4_plate":
-		if c.phase!="room204_restore" or c.floor!="A2" or c.mode!="light" or not _has(c,"room204_projection_completed") or s.items.clockPositioningPlate: return _locked("room204_projection_required")
-		_fact(c,"positioning_plate_collected"); s.items.clockPositioningPlate=true; return _ok("讲台抽屉已打开。")
+		if c.phase!="room204_restore" or c.floor!="A2" or c.mode!="light" or not _has(c,"room204_projection_completed") or s.items.clockPositioningPlate or _has(c,"positioning_plate_collected"): return _locked("room204_projection_required")
+		_fact(c,"positioning_plate_collected"); s.items.clockPositioningPlate=true; return _ok("讲台抽屉里是一块偏了的定位片。带到 201 的夹具上，旧压痕能帮它找回位置。")
 	if action=="c4_record":
 		if c.phase!="room204_restore" or c.mode!="dark": return _locked("elevator_floor_records_required")
 		if c.floor=="A2" and _has(c,"misaligned_stair_solved"): _fact(c,"elevator_a2_call_record_observed")
@@ -444,6 +445,17 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if c.phase!="room204_restore" or c.mode!="light" or not _all(c,["elevator_history_observed","elevator_a2_call_record_observed","elevator_a3_arrival_record_observed"]): return _locked("elevator_floor_records_required")
 		if not value is Dictionary or value.get("arrival","")!="A3" or value.get("unserved","")!="A2": return _ok("停站判断与门机记录不符。")
 		_fact(c,"elevator_stop_chain_reconstructed"); return _ok("停站记录已核对。")
+	if action=="c4_plate_press_event":
+		if not _plate_press_context(s): return _locked()
+		if _has(c,"a2_positioning_plate_calibrated"): return _ok(extra.puzzles.positioning_calibration.successText)
+		if not _plate_owned(s): return _ok("夹具在等定位片。204 讲台抽屉里的那块才是旧钟缺的零件。")
+		if not value is Dictionary: return _locked()
+		var checkpoint: Variant=s.native.get("c4_plate_press",PlatePress.initial())
+		if not PlatePress.valid(checkpoint): return _locked()
+		var changed: Dictionary=PlatePress.transition(checkpoint,value)
+		if not changed.accepted: return _ok(changed.message)
+		s.native.c4_plate_press=changed.checkpoint
+		return _ok(changed.message,{"press_motion":changed.motion})
 	if action=="c4_media_studio_event":
 		if not _media_studio_context(s): return _locked()
 		if not _has(c,"a3_archive_film_retrieved"): return _locked("archive_film_required")
@@ -464,6 +476,18 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if action.begins_with("c4_solve_"):
 		var id: String=action.trim_prefix("c4_solve_")
 		if not extra.puzzles.has(id) or c.phase!="room204_restore" or c.floor!=_puzzle_floor(id) or c.mode!="light" or s.native.get("c4_context","")!=id: return _locked()
+		if id=="positioning_calibration":
+			if not _plate_press_context(s): return _locked()
+			if _has(c,"a2_positioning_plate_calibrated"): return _ok(extra.puzzles[id].successText)
+			if not _plate_owned(s): return _ok("先从 204 讲台抽屉取出定位片，再带到这里。")
+			var checkpoint: Variant=s.native.get("c4_plate_press",PlatePress.initial())
+			if not PlatePress.valid(checkpoint) or not checkpoint.inserted: return _ok("先把定位片放进夹具。空气压不出旧钟的零件。")
+			if not PlatePress.ready_to_press(checkpoint) or not PlatePress.matches_registration(value):
+				return _ok("压头打了个喷嚏。三处旧痕还没一起吃上力，定位片弹回来了。",{"press_motion":"rebound"})
+			var stamped: Dictionary=PlatePress.canonical(checkpoint); stamped.imprinted=true
+			s.native.c4_plate_press=stamped
+			_fact(c,extra.puzzles[id].factId)
+			return _ok("三处触点终于意见一致。定位片校好了，可以带走了。",{"press_motion":"imprint"})
 		if id=="media_alignment":
 			if not _media_studio_context(s): return _locked()
 			if not _has(c,"a3_archive_film_retrieved"): return _locked("archive_film_required")
@@ -608,6 +632,11 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		s.native.scene=""; s.native.page="phone_home"; s.runtimeMode="phone"; s.currentScene="phone_home"; pending={}
 		return _ok(_dialogue("exterior.closure"),{"page":"phone_home"})
 	return _locked()
+func _plate_owned(s: Dictionary) -> bool:
+	return s.items.get("clockPositioningPlate",false)==true and _has(s.chapter4,"positioning_plate_collected")
+func _plate_press_context(s: Dictionary) -> bool:
+	var c: Dictionary=s.chapter4
+	return c.prologueSeen and c.phase=="room204_restore" and c.floor=="A2" and c.mode=="light" and c.timeState=="1850_evening" and _has(c,"misaligned_stair_solved") and s.native.get("chapter",0)==4 and s.native.get("mode","")=="light" and s.native.get("scene","")==SCENE and s.native.get("c4_context","")=="positioning_calibration"
 func _media_studio_context(s: Dictionary) -> bool:
 	var c: Dictionary=s.chapter4
 	return c.phase=="room204_restore" and c.floor=="A3" and c.mode=="light" and s.native.get("chapter",0)==4 and s.native.get("mode","")=="light" and s.native.get("scene","")==SCENE and s.native.get("c4_context","")=="media_alignment"
