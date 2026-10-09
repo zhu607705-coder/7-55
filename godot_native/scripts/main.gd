@@ -1616,6 +1616,8 @@ func _open_game_now(config: Dictionary) -> void:
 				State.act(str(config.get("on_failure","c4_chase_failed")),proof)
 				_layout();_focus_world_surface.call_deferred()
 			)
+	if active_game.has_method("configure_canteen_scene"):
+		active_game.configure_canteen_scene(world.native_canteen,world.chapter3_layers,world.player,world.camera,world.zoom)
 	if active_game.has_method("setup"): active_game.setup(config)
 	elif active_game.has_method("start"): active_game.start(config)
 	if _activity_owns_scene(): mobile_world=true
