@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "asset": "drink_dispense_8f.png",
+  "date": "2026-10-09",
+  "method": "Reference-guided ChatGPT web image generation of8 unique fill states; fixed nozzle excluded because the original scene machine supplies it; uniform per-cell registration keeps nozzle outlet and bottle bottom fixed.",
+  "source_references": [
+    "godot_native/assets/native/canteen_objects/canteen_drink_dispenser.png"
+  ],
+  "generated_source_sha256": "66d3dd1793e005e245879e934dd713642e1da5a165447aa4450b4e5cc5246298",
+  "atlas_size": [
+    512,
+    256
+  ],
+  "frame_size": [
+    128,
+    128
+  ],
+  "grid": [
+    4,
+    2
+  ],
+  "frames": [
+    {
+      "index": 0,
+      "source_cell": [
+        0,
+        0,
+        444,
+        444
+      ],
+      "remove_stationary_nozzle_above_y": 160,
+      "source_bottle_bottom": 417,
+      "source_bottle_centre_x": 222.0,
+      "uniform_scale": 0.2334384858044164,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "830578e089afd110875eeb22f20d0aabffd59efac1b815bd6e9c9ff903dfb93b"
+    },
+    {
+      "index": 1,
+      "source_cell": [
+        444,
+        0,
+        887,
+        444
+      ],
+      "remove_stationary_nozzle_above_y": 105,
+      "source_bottle_bottom": 417,
+      "source_bottle_centre_x": 221.0,
+      "uniform_scale": 0.2334384858044164,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "7179689ed0256d5e7161eebce04f4d93d7ebd6746e711794caa4ad5adb552ced"
+    },
+    {
+      "index": 2,
+      "source_cell": [
+        887,
+        0,
+        1330,
+        444
+      ],
+      "remove_stationary_nozzle_above_y": 105,
+      "source_bottle_bottom": 417,
+      "source_bottle_centre_x": 221.5,
+      "uniform_scale": 0.2334384858044164,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "2d250d4139e735069556fb32e6b283e68d4efcc78bffb9949e0f3f5df7599dac"
+    },
+    {
+      "index": 3,
+      "source_cell": [
+        1330,
+        0,
+        1774,
+        444
+      ],
+      "remove_stationary_nozzle_above_y": 105,
+      "source_bottle_bottom": 417,
+      "source_bottle_centre_x": 222.0,
+      "uniform_scale": 0.2334384858044164,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "898f2c121f5b4d8ed35b8df9092430b914f0254e9cb68bdd0f9d69ecb8998790"
+    },
+    {
+      "index": 4,
+      "source_cell": [
+        0,
+        444,
+        444,
+        887
+      ],
+      "remove_stationary_nozzle_above_y": 105,
+      "source_bottle_bottom": 400,
+      "source_bottle_centre_x": 221.5,
+      "uniform_scale": 0.24666666666666667,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "719b3093ef7ffe2925c1775b579b599216539f39dca173c4bee58c5c8fe9c739"
+    },
+    {
+      "index": 5,
+      "source_cell": [
+        444,
+        444,
+        887,
+        887
+      ],
+      "remove_stationary_nozzle_above_y": 105,
+      "source_bottle_bottom": 400,
+      "source_bottle_centre_x": 221.0,
+      "uniform_scale": 0.24666666666666667,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "80161f95c7136f710b8a6c737da9e7e3a06022b094d3835f5cc15f4dae31dfc2"
+    },
+    {
+      "index": 6,
+      "source_cell": [
+        887,
+        444,
+        1330,
+        887
+      ],
+      "remove_stationary_nozzle_above_y": 105,
+      "source_bottle_bottom": 400,
+      "source_bottle_centre_x": 221.5,
+      "uniform_scale": 0.24666666666666667,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "71ed8407971e6f486aac93eb3cda03d1d1d3d67555851cabbc2715b5e7117fc2"
+    },
+    {
+      "index": 7,
+      "source_cell": [
+        1330,
+        444,
+        1774,
+        887
+      ],
+      "remove_stationary_nozzle_above_y": 145,
+      "source_bottle_bottom": 400,
+      "source_bottle_centre_x": 222.0,
+      "uniform_scale": 0.24666666666666667,
+      "destination_nozzle_outlet": [
+        64,
+        38
+      ],
+      "destination_bottle_bottom_y": 112,
+      "sha256": "58c2cfe37fcaf0a61efd32950b3c6edd898f8d6313cbd923fa999aa23ecad170"
+    }
+  ],
+  "atlas_sha256": "1dfb16839e1fcbf5d9349d97991e844e27b3b42659447882551e7377c2370999"
+}

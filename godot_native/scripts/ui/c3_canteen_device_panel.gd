@@ -2,6 +2,8 @@ extends Control
 ## Canteen devices use the existing chapter controller. Draft selection and
 ## layout are local; inventory, payment and progression remain authoritative.
 signal closed(reason: String)
+const DrinkMotion=preload("res://scripts/objects/canteen_drink_performance.gd")
+const DISPENSER_ASSET="res://assets/native/canteen_objects/canteen_drink_dispenser.png"
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
 const DRINKS={"sparklingWater":{"name":"气泡水（蓝色）","color":Color("43bce9"),"accent":Color("e9fbff")},"lemonTea":{"name":"柠檬茶（白色）","color":Color("f2f0dc"),"accent":Color("d0a636")},"blackCoffee":{"name":"黑咖啡（黑色）","color":Color("1b1d20"),"accent":Color("8b6846")}}
 var kind: String=""
@@ -25,6 +27,15 @@ var initial_order_count:=0
 var last_dark:=false
 var illustration:=Rect2()
 var painted_dark: Variant=null
+# Optional accepted-action tail. The controller has already granted the item;
+# this visual never dispatches on completion and can be dismissed at any time.
+var dispensing:=false
+var dispense_elapsed_ms:=0.0
+var dispense_reduced:=false
+var dispense_view: TextureRect
+var dispense_region: AtlasTexture
+var taking:=false
+var dispenser_texture:Texture2D
 
 func setup(device: String,reader: Callable,sink: Callable,feedback_sink: Callable=Callable(),mode_sink: Callable=Callable()) -> bool:
 	kind="drink" if device.begins_with("drink:") else device
@@ -56,6 +67,33 @@ func _build() -> void:
 	if kind=="drink":
 		_button("take",str(content.drinks.takeOption),func(): _take())
 		_button("cancel",str(content.drinks.cancelOption),func(): dismiss())
+		if ResourceLoader.exists(DISPENSER_ASSET): dispenser_texture=load(DISPENSER_ASSET)
+		if ResourceLoader.exists(DrinkMotion.ATLAS_PATH):
+			dispense_region=AtlasTexture.new();dispense_region.atlas=load(DrinkMotion.ATLAS_PATH)
+			dispense_region.region=DrinkMotion.frame_region(0)
+			dispense_view=TextureRect.new();dispense_view.name="AcceptedDrinkCloseup"
+			dispense_view.texture=dispense_region;dispense_view.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+			dispense_view.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+			dispense_view.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			var shader:=Shader.new()
+			shader.code="""shader_type canvas_item;
+uniform vec4 liquid_color : source_color = vec4(0.26,0.74,0.91,1.0);
+uniform vec2 atlas_cell = vec2(0.0);
+uniform float fill_top = 112.0;
+uniform bool has_stream = false;
+void fragment() {
+ vec4 c=texture(TEXTURE,UV);
+ vec2 p=(UV*vec2(4.0,2.0)-atlas_cell)*128.0;
+ float body=step(54.0,p.x)*step(p.x,74.0)*step(fill_top,p.y)*step(p.y,108.0);
+ float stream=has_stream ? step(61.0,p.x)*step(p.x,66.0)*step(37.0,p.y)*step(p.y,fill_top) : 0.0;
+ float lum=dot(c.rgb,vec3(0.2126,0.7152,0.0722));
+ float tint=max(body,stream)*(1.0-smoothstep(0.76,0.98,lum));
+ vec3 liquid=clamp(liquid_color.rgb*(0.65+lum*0.65),vec3(0.0),vec3(1.0));
+ COLOR=vec4(mix(c.rgb,liquid,tint),c.a);
+}"""
+			var material:=ShaderMaterial.new();material.shader=shader
+			material.set_shader_parameter("liquid_color",DRINKS[item_id].color)
+			dispense_view.material=material;dispense_view.hide();add_child(dispense_view)
 	elif kind=="menu":
 		for option in content.menu.options:
 			var id: String=option.id
@@ -169,6 +207,8 @@ func configure_layout(viewport: Vector2,compact: bool) -> void:
 	if not compact and kind=="menu": _place(feedback_label,Rect2(20,514,920,24))
 	# Drink hints already fill their footer; action feedback displays after close.
 	feedback_label.visible=kind!="drink" and not feedback_label.text.is_empty()
+	if is_instance_valid(dispense_view):
+		_place(dispense_view,Rect2(_dispense_center()-Vector2(90,90),Vector2(180,180)))
 	painted_dark=null
 	if active: _palette(bool(read_state.call().native.mode=="dark"))
 	queue_redraw()
@@ -178,10 +218,21 @@ func _toggle_mode() -> void:
 	if not toggle_mode.is_valid(): return
 	toggle_mode.call();refresh()
 func _take() -> void:
-	if not active: return
-	var sink: Callable=dispatch;var target: String=target_id
-	dismiss("take")
-	sink.call("c3_drink_take:"+target,null)
+	if not active or dispensing or taking: return
+	taking=true
+	var action: String="c3_drink_take:"+target_id
+	var before: Dictionary=read_state.call().duplicate(true)
+	var result: Variant=dispatch.call(action,null)
+	var after: Dictionary=read_state.call()
+	taking=false
+	if active and is_same(after,bound_state) and result is Dictionary and DrinkMotion.accepted_item(action,before,after,result)==item_id and is_instance_valid(dispense_view):
+		dispensing=true;dispense_elapsed_ms=0
+		dispense_reduced=bool(after.native.settings.get("reduced_motion",false))
+		controls.take.disabled=true;controls.take.text="已领取"
+		controls.cancel.text="关闭";controls.cancel.grab_focus()
+		dispense_view.show();_pose_dispense();refresh()
+	else:
+		dismiss("take")
 func _order(id: String) -> void:
 	if not active: return
 	dispatch.call("c3_order",id);refresh()
@@ -201,6 +252,9 @@ func refresh() -> void:
 		labels.title.text=DRINKS[item_id].name
 		labels.body.text=str(content.drinks.alreadyOwned if s.items.get(item_id,false) else content.drinks.machinePrompt)
 		labels.hint.text="← / → 选择 · 空格 / 回车确认\nEsc 退出" if compact_layout else "← / → 选择 · 空格 / 回车确认 · Esc 退出"
+		if dispensing:
+			labels.body.text="已领取\n正在出杯"
+			labels.hint.text="Esc 或关闭可跳过动画"
 	elif kind=="menu":
 		if c.phase not in ["menu_order","pickup_search"] or int(c.orderAttemptCount)>initial_order_count: dismiss("order_complete");return
 		labels.title.text=str(content.menu.darkIntro if dark else content.menu.lightIntro)
@@ -228,10 +282,25 @@ func _palette(dark: bool) -> void:
 			var style: StyleBoxFlat=button.get_theme_stylebox(state)
 			style.bg_color=(Color("26343e") if state in ["hover","pressed"] else Color("1b2126")) if dark else (Color("e9ddc5") if state in ["hover","pressed"] else Color("ffffff"))
 			style.border_color=Color("75e4ff") if dark else Color("5a4932")
-func _process(_delta: float) -> void: refresh()
+func _pose_dispense() -> void:
+	var frame:int=DrinkMotion.frame_at(dispense_elapsed_ms,dispense_reduced)
+	if dispense_region!=null: dispense_region.region=DrinkMotion.frame_region(frame)
+	if is_instance_valid(dispense_view):
+		var material:ShaderMaterial=dispense_view.material
+		material.set_shader_parameter("atlas_cell",Vector2(frame%4,floori(frame/4.0)))
+		material.set_shader_parameter("fill_top",float([112,112,98,88,79,70,67,67][frame]))
+		material.set_shader_parameter("has_stream",frame in [1,2,3,4,5,6])
+func _process(delta: float) -> void:
+	refresh()
+	if not active or not dispensing: return
+	dispense_elapsed_ms+=maxf(0,delta)*1000
+	_pose_dispense()
+	if dispense_elapsed_ms>=DrinkMotion.duration_ms(dispense_reduced): dismiss("take")
 func dismiss(reason: String="dismissed") -> void:
 	if not active: return
-	active=false;hide();_finish_close.call_deferred(reason)
+	active=false;dispensing=false
+	if is_instance_valid(dispense_view): dispense_view.hide()
+	hide();_finish_close.call_deferred(reason)
 func _finish_close(reason: String) -> void:
 	if is_inside_tree(): closed.emit(reason)
 func _input(event: InputEvent) -> void:
@@ -256,12 +325,30 @@ func _input(event: InputEvent) -> void:
 		else: dismiss()
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag: accept_event()
+func _dispense_center() -> Vector2:
+	return illustration.get_center()+Vector2(20 if compact_layout else 0,0)
+func _draw_dispense_bay() -> void:
+	if dispenser_texture==null: return
+	# Fixed parts from the same original machine used by all three world props.
+	# Only the blank backplate is fitted to the closeup; nozzle and grille remain
+	# separate source-image pieces. The generated bottle is an independent child.
+	var center:Vector2=_dispense_center()
+	var back:=Rect2(center+Vector2(-67,-63),Vector2(134,131))
+	draw_texture_rect_region(dispenser_texture,back,Rect2(490,891,274,59))
+	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-78,-68),Vector2(14,151)),Rect2(459,795,28,252))
+	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(64,-68),Vector2(14,151)),Rect2(787,795,28,252))
+	draw_texture_rect_region(dispenser_texture,Rect2(center+Vector2(-67,68),Vector2(134,15)),Rect2(491,953,274,70))
+	# Atlas outlet is (64,38) in a 128px cell; the 180px closeup places it
+	# exactly 36.5625px above the illustration center.
+	var nozzle_bottom:float=center.y-36.5625
+	draw_texture_rect_region(dispenser_texture,Rect2(center.x-13,nozzle_bottom-31,26,31),Rect2(586,790,84,100))
 func _draw() -> void:
 	if not active: return
 	draw_rect(Rect2(Vector2.ZERO,size),Color(0.01,0.025,0.04,.82))
 	var light_menu: bool=kind=="menu" and read_state.call().native.mode=="light"
 	draw_rect(board,Color("f7f4ea") if light_menu else Color("07131d"));draw_rect(board,Color("5a4932") if light_menu else Color("63d4ef"),false,3)
-	if kind=="drink":
+	if kind=="drink" and dispensing: _draw_dispense_bay()
+	if kind=="drink" and not dispensing:
 		var p: Vector2=illustration.position
 		draw_rect(Rect2(p+Vector2(9,16),Vector2(50,92)),DRINKS[item_id].accent)
 		draw_rect(Rect2(p+Vector2(17,32),Vector2(34,66)),DRINKS[item_id].color)

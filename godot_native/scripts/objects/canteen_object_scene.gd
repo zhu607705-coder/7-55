@@ -2,7 +2,7 @@ extends Node2D
 ## Independent furniture, original Chapter3 state-owned actors and deterministic picking.
 const Prop=preload("res://scripts/objects/canteen_scene_object.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
-const ReturnPose=preload("res://scripts/presentation/c3_return_stack_pose.gd")
+const TrayFrames=preload("res://scripts/presentation/c3_tray_frames.gd")
 class Feature extends Node2D:
 	var owner_scene:Node2D
 	var role:String
@@ -33,6 +33,7 @@ var sorted_parts:Array=[]
 var state:Dictionary={}
 var layers:RefCounted
 var mixer_performance:Node2D
+var drink_performance:Node2D
 var _active:=false
 var _origin:=Vector2.ZERO
 var _zoom:=1.0
@@ -83,12 +84,14 @@ func setup(owner_world:Control)->void:
 		var feature:=Feature.new();feature.name=role;feature.role=role;feature.owner_scene=self;var depth:float={"pickup_slots":244,"mixer":818,"drink_screens":230,"return_contact":615,"promo_glow":1699,"door_opening":0}[role];feature.set_meta("source_depth",depth);feature.z_index=0 if role=="door_opening" else Prop.draw_layer(depth);source_space.add_child(feature);features.append(feature)
 		if role=="return_contact":feature.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	mixer_performance=load("res://scripts/objects/canteen_mixer_performance.gd").new();source_space.add_child(mixer_performance);mixer_performance.setup(world)
+	drink_performance=load("res://scripts/objects/canteen_drink_performance.gd").new();source_space.add_child(drink_performance);drink_performance.setup(world)
 	var tail:=Tail.new();tail.owner_scene=self;tail.name="CanteenInterface";tail.z_index=60;add_child(tail)
 	hide();set_process(world!=null)
 func is_active()->bool:return _active
 func sync(next_state:Dictionary,scene_id:String)->void:
 	var was:=_active;_active=scene_id=="canteen_interior";visible=_active;state=next_state
 	if is_instance_valid(mixer_performance):mixer_performance.sync(state,_active)
+	if is_instance_valid(drink_performance):drink_performance.sync(state,_active)
 	if not is_same(bound_state,state):bound_state=state;previous_returns=state.canteenHunt.returnedTrayIds.size();_reset_feedback()
 	if _active and state.canteenHunt.returnedTrayIds.size()>previous_returns:
 		return_age=0;return_start=world.player+Vector2(0,-3) if world!=null else Vector2(1497,592)
@@ -137,6 +140,7 @@ func _apply_draw_order()->void:
 		if surface.has("node"):ordered.append({"node":surface.node,"depth":surface.depth})
 	for feature:Node2D in features:ordered.append({"node":feature,"depth":float(feature.get_meta("source_depth"))})
 	if is_instance_valid(mixer_performance):ordered.append({"node":mixer_performance,"depth":818.0})
+	if is_instance_valid(drink_performance):ordered.append({"node":drink_performance,"depth":197.0})
 	ordered.append({"node":player_shadow,"depth":float(player_sprite.get_meta("source_depth",0))-1})
 	ordered.append({"node":player_sprite,"depth":float(player_sprite.get_meta("source_depth",0))})
 	for i in range(ordered.size()):ordered[i]["order"]=i
@@ -153,18 +157,14 @@ func _reset_feedback()->void:
 func _process(delta:float)->void:
 	if _active and return_age<1:
 		return_age+=minf(maxf(delta,0),.05)
-		var stack:Node2D=objects.return_stack
-		var press:float=float(return_pose().pressure)
-		for part:Dictionary in stack.parts:
-			part.sprite.scale=part.base_scale*Vector2(1+press*.35,1-press);part.sprite.position=part.base_position*Vector2(1+press*.35,1-press)
 		for feature:Node2D in features:feature.queue_redraw()
 func return_pose()->Dictionary:
 	var stack:Node2D=objects.return_stack
-	return ReturnPose.sample(return_age,return_start,stack.position,float(stack.dimensions.y),bool(state.native.settings.reduced_motion))
+	return TrayFrames.return_sample(return_age,return_start,stack.position,float(stack.dimensions.y),bool(state.native.settings.reduced_motion))
 func _configure_return_depth()->void:
 	var feature:Node2D=source_space.get_node("return_contact")
 	var depth:float=615
-	if return_age<ReturnPose.duration(bool(state.native.settings.reduced_motion)):
+	if return_age<TrayFrames.return_duration(bool(state.native.settings.reduced_motion)):
 		var pose:Dictionary=return_pose();var side:float=float(pose.size)
 		var painted:Rect2=Transform2D(float(pose.angle),Vector2(pose.position))*Rect2(Vector2.ONE*(-side/2),Vector2.ONE*side)
 		depth=float(objects.return_stack.sort_depth)+1
@@ -172,12 +172,12 @@ func _configure_return_depth()->void:
 			depth=maxf(depth,float(player_sprite.get_meta("source_depth",0))+1)
 	feature.set_meta("source_depth",depth);feature.z_index=Prop.draw_layer(depth)
 func _return_surface()->Dictionary:
-	if return_age>=ReturnPose.duration(bool(state.native.settings.reduced_motion)):return {}
+	if return_age>=TrayFrames.return_duration(bool(state.native.settings.reduced_motion)):return {}
 	var pose:Dictionary=return_pose()
 	if float(pose.alpha)<=.05:return {}
 	var feature:Node2D=source_space.get_node("return_contact");var side:float=float(pose.size)
-	var tex:Texture2D=layers.texture("res://assets/native/chapter3/tray_clean.svg")
-	return {"depth":float(feature.get_meta("source_depth")),"canvas_z":feature.z_index,"root_order":feature.get_index(),"ids":[],"geometry":{"rect":Rect2(Vector2.ONE*(-side/2),Vector2.ONE*side),"texture":tex,"source":Rect2(Vector2.ZERO,tex.get_size()),"transform":Transform2D(float(pose.angle),Vector2(pose.position))}}
+	var tex:Texture2D=layers.texture(str(pose.asset))
+	return {"depth":float(feature.get_meta("source_depth")),"canvas_z":feature.z_index,"root_order":feature.get_index(),"ids":[],"geometry":{"rect":Rect2(Vector2.ONE*(-side/2),Vector2.ONE*side),"texture":tex,"source":pose.source,"transform":Transform2D(float(pose.angle),Vector2(pose.position))}}
 func _sync_dynamic_bodies()->void:
 	for body:StaticBody2D in dynamic_bodies.values():body.collision_layer=0
 	for row:Dictionary in dynamic_collisions:
@@ -226,13 +226,11 @@ func _update_entities()->void:
 			_place_entity(str(e.id),tex,region,Rect2(e.point-dims*anchor,dims),depth,ids,float(e.get("alpha",1)),deg_to_rad(float(e.get("angle",0))),anchor)
 		elif e.kind=="glow":glow_entries.append(e)
 		elif e.kind=="tray":
-			var tex:Texture2D=layers.texture("res://assets/native/chapter3/tray_clean.svg")
 			var to:Vector2=_player+Vector2(0,-3)
-			var pickup_duration:float=100.0 if layers.reduced(state) else 360.0
-			var q:=clampf(layers.pickup_ms/pickup_duration,0,1)
-			var at:Vector2=layers.pickup_start.lerp(to,smoothstep(0,1,q)) if e.id=="tray_pickup" else to
-			at.y-=sin(q*PI)*(3 if bool(state.native.settings.reduced_motion) else 18) if e.id=="tray_pickup" else 0
-			_place_entity(str(e.id),tex,Rect2(Vector2.ZERO,tex.get_size()),Rect2(at-Vector2(12,12),Vector2(24,24)),_player.y+43,[],1.0,deg_to_rad(-12*sin(q*PI)) if e.id=="tray_pickup" and not bool(state.native.settings.reduced_motion) else 0.0)
+			var age_ms:float=layers.pickup_ms if e.id=="tray_pickup" else INF
+			var pose:Dictionary=TrayFrames.pickup_sample(age_ms,layers.pickup_start,to,layers.reduced(state))
+			var tex:Texture2D=layers.texture(str(pose.asset));var side:float=float(pose.size)
+			_place_entity(str(e.id),tex,pose.source,Rect2(pose.position-Vector2.ONE*(side/2),Vector2.ONE*side),_player.y+43,[],float(pose.alpha),float(pose.angle))
 	for t:Dictionary in world.targets:
 		var id:=str(t.id)
 		if not id.begins_with("tray_"):continue
@@ -364,12 +362,12 @@ func draw_feature(canvas:CanvasItem,role:String,force:bool=false)->void:
 	elif role=="promo_glow":
 		for e:Dictionary in glow_entries:canvas.draw_rect(Rect2(e.point-e.size/2,e.size),Color("9af4ff",e.alpha))
 	elif role=="door_opening":canvas.draw_rect(Rect2(1305,795,88,105),Color("172020"))
-	elif role=="return_contact" and return_age<ReturnPose.duration(bool(state.native.settings.reduced_motion)):
+	elif role=="return_contact" and return_age<TrayFrames.return_duration(bool(state.native.settings.reduced_motion)):
 		var pose:Dictionary=return_pose()
-		var tex:Texture2D=layers.texture("res://assets/native/chapter3/tray_clean.svg")
+		var tex:Texture2D=layers.texture(str(pose.asset))
 		canvas.draw_set_transform(pose.position,float(pose.angle))
 		var side:float=float(pose.size)
-		canvas.draw_texture_rect(tex,Rect2(Vector2.ONE*(-side/2),Vector2.ONE*side),false,Color(1,1,1,float(pose.alpha)))
+		canvas.draw_texture_rect_region(tex,Rect2(Vector2.ONE*(-side/2),Vector2.ONE*side),pose.source,Color(1,1,1,float(pose.alpha)))
 		canvas.draw_set_transform(Vector2.ZERO)
 func paint_defense(canvas:CanvasItem,front:bool,feet_y:float)->void:
 	# Same manifest on the existing deterministic defense board; model untouched.

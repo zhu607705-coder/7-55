@@ -1,5 +1,6 @@
 extends SceneTree
 const Fixture=preload("res://tests/canteen_native_fixture.gd")
+const TrayFrames=preload("res://scripts/presentation/c3_tray_frames.gd")
 var checks:=0
 var failures:=0
 var records:Array=[]
@@ -12,7 +13,7 @@ func sample(world:Control,ms:float)->Dictionary:
 	world.native_canteen.configure_view(world.size/2-world.camera*world.zoom,world.zoom,world.player)
 	for id:String in ["tray_pickup","carried_tray"]:
 		var sprite:Sprite2D=world.native_canteen.entities.get(id)
-		if is_instance_valid(sprite) and sprite.visible:return {"id":id,"position":sprite.position,"rotation":sprite.rotation,"scale":sprite.scale}
+		if is_instance_valid(sprite) and sprite.visible:return {"id":id,"position":sprite.position,"rotation":sprite.rotation,"scale":sprite.scale,"source":sprite.region_rect,"texture":sprite.texture.resource_path}
 	return {}
 func run()->void:
 	var state:Node=root.get_node("State");Fixture.install(state)
@@ -34,7 +35,10 @@ func run()->void:
 		check(first.position.distance_to(world.chapter3_layers.pickup_start)<.001,"first visible pose stays at original tray position")
 		check(near_end.position.distance_to(held.position)<.1,"last pickup frame meets held pose within a tenth source pixel")
 		check(held.position.distance_to(world.player+Vector2(0,-3))<.001 and absf(held.rotation)<.001,"held tray is level at original adapter hand anchor")
-		check(is_equal_approx(middle.rotation,0) if reduced else middle.rotation<-.2,"reduced motion removes tilt; normal midpoint retains readable tilt")
+		check(is_equal_approx(middle.rotation,0) and middle.texture==TrayFrames.ATLAS_ASSET,"genuine keypose owns tilt without rotating or squashing the runtime canvas")
+		check(middle.source==TrayFrames.atlas_region(1 if reduced else 4),"midpoint selects restrained reduced pose or the normal lifted pose")
+		check((middle.scale*middle.source.size).is_equal_approx(Vector2(24,24)),"atlas changes retain the original source-size pickup canvas")
+		check(first.texture==TrayFrames.SOURCE_ASSET and held.texture==TrayFrames.SOURCE_ASSET and first.source==held.source,"first and carried endpoints retain the exact original SVG")
 		records.append({"reduced":reduced,"duration_ms":duration,"first":str(first),"middle":str(middle),"near_end":str(near_end),"held":str(held),"handover_jump":near_end.position.distance_to(held.position)})
 		state.d=state.d.duplicate(true);world.chapter3_layers.sync(state.d,true);world.native_canteen.sync(state.d,"canteen_interior")
 		var reload_pose:=sample(world,INF)
