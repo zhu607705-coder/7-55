@@ -25,6 +25,8 @@ func build(b) -> Control:
 	else:
 		b._panel(root,b._home_rect(338,211,25,25),Color("d9e1e8") if b.s.flags.cardZeroTaken else Color("f0d54e"),Color("81909d") if b.s.flags.cardZeroTaken else Color("7d6611"),0,2)
 		b._label(root,"0",b._home_rect(338,211,25,25),16,Color("64717d") if b.s.flags.cardZeroTaken else Color("241f11"),HORIZONTAL_ALIGNMENT_CENTER)
+		if b.s.flags.cardZeroTaken:
+			b._panel(root,b._home_rect(343,233,15,2),Color("eef2f7")).name="CheckinAbsenceImprint"
 	b._label(root,"次",b._home_rect(370,213,14,22),10,Color("596572"))
 	var frames: Array=[]; var labels: Array=[]
 	for i in range(4):
