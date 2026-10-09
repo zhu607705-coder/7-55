@@ -32,6 +32,8 @@ const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
 const DropButton = preload("res://scripts/ui/phone_drop_button.gd")
 const APP_HEIGHT = 814.0 * 378.0 / 424.0
 const PHONE_SCALE = 424.0 / 378.0
+# One shared destination for the falling glyph and its later accessible pickup.
+const HOME_GEAR_PICKUP_RECT = Rect2(270,360,64,88)
 var control_center_return = "phone_home"
 var control_reset_confirm = false
 const PhoneEntry=preload("res://scripts/chapters/phone_entry_session.gd")
@@ -357,7 +359,7 @@ func _home() -> Control:
 		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")); drop.name="HomeLiveWaterDrop"; drop.tooltip_text="收集水滴"
 	var chapter=int(s.native.get("chapter",1))
 	_build_home_apps(root)
-	if s.flags.gearFallen and not s.flags.gearNineTaken: _act(root,"✱ 9",Rect2(270,360,64,55),"c1_collect_gear",null,Color("575b65"),Color("f1d367"),18)
+	if s.flags.gearFallen and not s.flags.gearNineTaken: _home_gear_pickup(root)
 	var notifications=_home_notifications()
 	var heights: Array=[]; var group_height=0
 	for notice in notifications:
@@ -471,17 +473,13 @@ func _build_home_apps(root: Control) -> void:
 	var colors={"wechat":Color("61b58c"),"tiyi":Color("e8893f"),"zjuding":Color("539ccb"),"settings":Color("777989"),"photos":Color("eee5dd"),"timeline_recovery":Color("a0bdbd"),"voice_memos":Color("d89e96"),"cc98":Color("4d7ed9"),"control_center":Color("756aa9"),"clock":Color("e8e5db")}
 	var order=Utilities.normalized_order(s.ui.homeAppOrder)
 	var layout={"order":order.duplicate(),"buttons":{},"slots":{},"labels":{},"changed":false}
-	var visible_index=0
-	for id_value in order:
-		var id=str(id_value)
-		if id in s.ui.hiddenHomeAppIds and Utilities.can_remove(s,id): continue
-		var index=visible_index; visible_index+=1
+	var visible_ids=_home_visible_app_ids(order)
+	layout.visible_ids=visible_ids
+	root.set_meta("home_visible_app_ids",visible_ids.duplicate())
+	for index in range(visible_ids.size()):
+		var id=str(visible_ids[index])
 		var point=Vector2(20+(index%4)*72,252+int(index/4)*96)/PHONE_SCALE
 		layout.slots[id]=point
-		if not Utilities.app_available(s,id):
-			# Locked slots have no icon, focus or pointer semantics in the source.
-			_label(root,"xxx",Rect2(point,Vector2(48,73)),13,Color("5c6363"),HORIZONTAL_ALIGNMENT_CENTER).name="Locked_"+id
-			continue
 		var button=HomeButton.new()
 		button.position=point; button.size=Vector2(48,48); button.name="HomeApp_"+id
 		button.editable=s.actOne.phase!="prologue"; button.editing=home_editing
@@ -489,8 +487,16 @@ func _build_home_apps(root: Control) -> void:
 		button.add_theme_stylebox_override("focus",_style(Color.TRANSPARENT,Color("4caed2"),0,3))
 		root.add_child(button)
 		if id=="settings" and s.actOne.phase=="prologue":
-			button.text="" if s.flags.gearFallen else "✱"; button.add_theme_font_size_override("font_size",35)
-			if s.ui.autoRotate and not s.flags.gearFallen: _animate_rotation(root,button,"gear")
+			# The original source glyph is a separate object. The app frame, label
+			# and activation area remain fixed while that object turns and falls.
+			button.text=""
+			if not s.flags.gearFallen:
+				var gear=_label(root,"✱",Rect2(point,Vector2(48,48)),35,Color("f4f5f7"),HORIZONTAL_ALIGNMENT_CENTER)
+				gear.name="HomeGearObject"; gear.z_index=3
+				# Pixel-font line height is resolved after theme inheritance. Align the
+				# actual glyph rectangle, not the pre-layout requested48px rectangle.
+				root.ready.connect(func(): gear.position=button.position+(button.size-gear.size)/2)
+				if s.ui.autoRotate: _animate_rotation(root,gear,"gear",HOME_GEAR_PICKUP_RECT.get_center())
 		else: _app_icon(button,id)
 		var objective=_home_chapter4_objective() if s.chapterThreeInterlude.completed and s.chapterThreeInterlude.replayUnlocked else {}
 		if not objective.is_empty() and ((objective.id=="study_index" and id=="cc98") or (objective.id!="study_index" and id=="wechat")):
@@ -522,12 +528,46 @@ func _build_home_apps(root: Control) -> void:
 					return)
 		button.drag_finished.connect(func():
 			if layout.changed: action_requested.emit("phone_home_order",layout.order.duplicate()))
-		button.move_requested.connect(func(offset): home_focus_id=id; action_requested.emit("phone_app_move",{"id":id,"offset":offset,"from_home":true}))
+		button.move_requested.connect(func(offset): _home_move_visible(layout,id,int(offset)))
 		button.removal_requested.connect(func(): action_requested.emit("phone_app_remove",id))
 		button.editing_finished.connect(func(): home_editing=false; action_requested.emit("phone_refresh",{}))
 	if home_editing:
 		_home_edit_visuals(root,layout)
 		if layout.buttons.has(home_focus_id): root.ready.connect(func(): layout.buttons[home_focus_id].grab_focus())
+
+func _home_visible_app_ids(order: Array=[]) -> Array:
+	var visible_ids: Array=[]
+	for id in Utilities.normalized_order(s.ui.homeAppOrder) if order.is_empty() else order:
+		if not Utilities.app_available(s,str(id)): continue
+		if id in s.ui.hiddenHomeAppIds and Utilities.can_remove(s,str(id)): continue
+		visible_ids.append(id)
+	return visible_ids
+
+func _home_move_visible(layout: Dictionary,id: String,offset: int) -> void:
+	# Arrow keys traverse the compact grid, while the existing controller still
+	# validates and persists the full authored order (including unavailable IDs).
+	home_focus_id=id
+	var visible_ids: Array=[]
+	for saved_id in layout.order:
+		if layout.buttons.has(saved_id): visible_ids.append(saved_id)
+	var target=visible_ids.find(id)+offset
+	if target<0 or target>=visible_ids.size(): return
+	var full_offset=int(layout.order.find(visible_ids[target]))-int(layout.order.find(id))
+	action_requested.emit("phone_app_move",{"id":id,"offset":full_offset,"from_home":true})
+
+func _home_gear_pickup(root: Control) -> void:
+	var pickup=_act(root,"9",HOME_GEAR_PICKUP_RECT,"c1_collect_gear",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
+	pickup.name="HomeGearNine"; pickup.z_index=3
+	pickup.tooltip_text="拾起数字 9"
+	pickup.autowrap_mode=TextServer.AUTOWRAP_OFF
+	pickup.add_theme_font_size_override("font_size",56)
+	pickup.add_theme_constant_override("outline_size",0)
+	pickup.add_theme_color_override("font_outline_color",INK)
+	pickup.add_theme_color_override("font_focus_color",Color("176984"))
+	# A full, readable digit owns one keyboard/pointer target. No star, badge,
+	# hidden border, hover plate or disabled panel can reappear behind it.
+	for mode in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
+		pickup.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 
 func _home_edit_visuals(root: Control, layout: Dictionary) -> void:
 	if root.has_node("HomeEditingDone"): return
@@ -944,7 +984,7 @@ func _bonsai() -> Control:
 		button.hit_polygons=[PackedVector2Array([
 			Vector2(424,447),Vector2(540,441),Vector2(585,461),Vector2(612,537),Vector2(563,593),Vector2(513,600),Vector2(532,643),Vector2(588,618),Vector2(593,599),Vector2(625,599),Vector2(634,637),Vector2(596,693),Vector2(655,665),Vector2(711,690),Vector2(743,739),Vector2(732,779),Vector2(686,829),Vector2(633,820),Vector2(690,883),Vector2(648,900),Vector2(615,894),Vector2(650,958),Vector2(625,955),Vector2(601,951),Vector2(628,981),Vector2(628,1051),Vector2(604,1077),Vector2(584,1235),Vector2(550,1257),Vector2(383,1257),Vector2(343,1230),Vector2(326,1078),Vector2(306,1050),Vector2(306,985),Vector2(335,964),Vector2(279,960),Vector2(270,942),Vector2(317,905),Vector2(286,886),Vector2(226,885),Vector2(225,864),Vector2(278,834),Vector2(234,807),Vector2(234,765),Vector2(255,748),Vector2(289,761),Vector2(309,810),Vector2(341,820),Vector2(326,741),Vector2(281,733),Vector2(240,711),Vector2(248,670),Vector2(235,648),Vector2(262,625),Vector2(274,585),Vector2(306,587),Vector2(324,562),Vector2(355,577),Vector2(373,576),Vector2(386,600),Vector2(416,627),Vector2(416,665),Vector2(389,692),Vector2(411,716),Vector2(446,709),Vector2(446,665),Vector2(423,623),Vector2(450,620),Vector2(479,647),Vector2(475,589),Vector2(432,587),Vector2(397,561),Vector2(396,527),Vector2(391,497),Vector2(423,485)
 		])]
-	for mode in ["normal","hover","pressed","focus"]: button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
+	for mode in ["normal","hover","pressed","hover_pressed","disabled","focus"]: button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	button.item_dropped.connect(func(item): action_requested.emit("c1_plant",item))
 	button.pressed.connect(func(): action_requested.emit("c1_flower",null))
 	button.tooltip_text="盛开的盆栽" if s.flags.flowerBloomed else "盆栽"
@@ -1833,7 +1873,7 @@ func _settings(view: Dictionary) -> Control:
 				_label(root,r[2],Rect2(79,y+30,231,23),12,MUTED)
 				_label(root,r[3],Rect2(322,y+14,33,30),12,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
 		"about":
-			_settings_pairs(root,[["游戏时间","07:55"],["存档","自动保存与上一版本恢复"],["桌面应用",str(s.ui.homeAppOrder.size()-s.ui.hiddenHomeAppIds.size())+" 个可见"]],125)
+			_settings_pairs(root,[["游戏时间","07:55"],["存档","自动保存与上一版本恢复"],["桌面应用",str(_home_visible_app_ids().size())+" 个可见"]],125)
 			_act(root,"存档管理",Rect2(13,289,352,44),"native_save_tools",null,Color("f2f0e6")).name="NativeSaveTools"
 			_label(root,"原生版工具 · 导入、导出与开发调试",Rect2(13,345,352,30),12,MUTED)
 	return root
@@ -1872,7 +1912,7 @@ func _animate_flash(root: Control, label: Label) -> void:
 		tween.tween_property(label,"modulate:a",1.0,.21)
 	)
 
-func _animate_rotation(root: Control, visual: Control, kind: String) -> void:
+func _animate_rotation(root: Control, visual: Control, kind: String, landing_center: Vector2=Vector2.INF) -> void:
 	root.ready.connect(func():
 		var start_ms = Time.get_ticks_msec()
 		visual.pivot_offset = visual.size/2
@@ -1880,7 +1920,7 @@ func _animate_rotation(root: Control, visual: Control, kind: String) -> void:
 		if kind == "gear":
 			tween.tween_property(visual,"rotation",PI,.675)
 			tween.tween_property(visual,"rotation",PI*1.78,.225)
-			tween.tween_property(visual,"position",visual.position+Vector2(-8,245),.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+			tween.tween_property(visual,"position",landing_center-visual.size/2 if landing_center.is_finite() else visual.position,.60).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		else:
 			tween.tween_property(visual,"rotation",deg_to_rad(7),.44)
 			tween.tween_property(visual,"rotation",deg_to_rad(-4),.33)
@@ -1953,7 +1993,7 @@ func _entry_loading(app: String) -> Control:
 
 func _drop_action(root: Control, rect: Rect2, id: String) -> Button:
 	var button=DropButton.new(); button.position=rect.position; button.size=rect.size
-	for mode in ["normal","hover","pressed","focus"]: button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
+	for mode in ["normal","hover","pressed","hover_pressed","disabled","focus"]: button.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	button.item_dropped.connect(func(item): action_requested.emit(id,item))
 	button.pressed.connect(func(): action_requested.emit(id,str(s.native.get("selected_item",""))))
 	root.add_child(button); handled.append(id)
@@ -1961,6 +2001,7 @@ func _drop_action(root: Control, rect: Rect2, id: String) -> Button:
 
 func _animate_tower_key(root: Control) -> void:
 	var key=_panel(root,_home_rect(348,220,30,8),Color("eed45c"),INK,0,2)
+	key.name="TowerKeyVisual"
 	_panel(key,Rect2(Vector2(23,-4)/PHONE_SCALE,Vector2(14,14)/PHONE_SCALE),Color("90969d"),INK,7,2)
 	key.pivot_offset=Vector2(0,4)
 	root.ready.connect(func():
