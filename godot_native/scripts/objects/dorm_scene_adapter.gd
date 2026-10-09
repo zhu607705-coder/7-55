@@ -4,6 +4,8 @@ extends Node2D
 const CARD_POINT := Vector2(792,928)
 const DOOR_LEAF := Rect2(422,1474,103,114)
 const DOOR_FRAME := Rect2(402,1450,144,152)
+const CABINET_FRAME_ORIGIN := Vector2(360,208)
+const CABINET_FRAME_SIZE := Vector2(256,256)
 class Card extends Node2D:
 	func _draw() -> void:
 		# Byte-for-byte geometry/palette of DormHubScene.createCampusCardPickup.
@@ -23,6 +25,7 @@ class Surface extends Node2D:
 var world: Control
 var state: Dictionary={}
 var plate: Texture2D
+var cabinet_frames: Texture2D
 var source_space: Node2D
 var clip: Control
 var card: Node2D
@@ -53,6 +56,7 @@ var last_view_size:=Vector2.ZERO
 func setup(owner_world: Control) -> void:
 	world=owner_world;name="DormOriginalObjects"
 	plate=load("res://assets/rpg/interiors/dorm_hub.png")
+	cabinet_frames=load("res://assets/native/dorm_cabinet/cabinet_opening_frames.png")
 	clip=Control.new();clip.name="WorldObjectClip";clip.mouse_filter=Control.MOUSE_FILTER_IGNORE;clip.clip_contents=true;add_child(clip)
 	source_space=Node2D.new();source_space.name="Original941x1672Coordinates";clip.add_child(source_space)
 	for role: String in ["cabinet","lamp","door"]:
@@ -178,11 +182,13 @@ func draw_surface(canvas: Node2D, role: String) -> void:
 	match role:
 		"cabinet":
 			if cabinet_amount<=0:return
-			var width:=63.0*lerpf(1,.2,cabinet_amount)
-			canvas.draw_rect(Rect2(421,249,132,140),Color("101a20"))
-			canvas.draw_rect(Rect2(425,316,125,4),Color("333e43"))
-			canvas.draw_texture_rect_region(plate,Rect2(421,249,width,140),Rect2(421,249,63,140))
-			canvas.draw_texture_rect_region(plate,Rect2(553-width,249,width,140),Rect2(490,249,63,140))
+			var frame:=cabinet_frame_index()
+			var region:=Rect2(Vector2(frame%4,frame/4)*CABINET_FRAME_SIZE,CABINET_FRAME_SIZE)
+			# Authored shapes, not squeezed front-door regions. The original shell
+			# and closed pose stay on the plate. Only the aperture / leaf tips change.
+			# A short first-pose dissolve avoids a texture pop from exact source art.
+			var opacity:=clampf(cabinet_amount*7.0,0,1)
+			canvas.draw_texture_rect_region(cabinet_frames,Rect2(CABINET_FRAME_ORIGIN,CABINET_FRAME_SIZE),region,Color(1,1,1,opacity))
 		"lamp":
 			for i: int in range(2):
 				var point:=Vector2(812,242 if i==0 else 782)
@@ -206,5 +212,8 @@ func draw_surface(canvas: Node2D, role: String) -> void:
 			leaf.size.x*=1.0 if reduced else lerpf(1.0,.22,t)
 			canvas.draw_texture_rect_region(plate,leaf,DOOR_LEAF,Color(1,1,1,opacity))
 
+func cabinet_frame_index() -> int:
+	return 0 if cabinet_amount<=0 else clampi(int(floor(cabinet_amount*7.0)),1,7)
+
 func snapshot() -> Dictionary:
-	return {"active":active,"card_visible":card.visible,"card_tail":card_age<.46,"door_rejection":reject_age<.18,"exit_tail":exit_age<.38,"cabinet_amount":cabinet_amount,"lamp_amount":lamp_amount,"object_nodes":[card.name,cabinet.name,lamp.name,door.name]}
+	return {"active":active,"card_visible":card.visible,"card_tail":card_age<.46,"door_rejection":reject_age<.18,"exit_tail":exit_age<.38,"cabinet_amount":cabinet_amount,"cabinet_frame":cabinet_frame_index(),"lamp_amount":lamp_amount,"object_nodes":[card.name,cabinet.name,lamp.name,door.name]}
