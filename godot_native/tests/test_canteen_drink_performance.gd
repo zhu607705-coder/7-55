@@ -13,6 +13,11 @@ class HostStub extends Control:
 	var c3_device_panel: Control
 	var active_game: Control
 	var phone_document: Control
+class MissingDrinkContract extends Control:
+	var kind := "drink"
+class MalformedDrinkContract extends Control:
+	var kind := "drink"
+	var active := "inactive"
 class DrinkPanelStub extends Control:
 	signal closed(reason: String)
 	var active := true
@@ -82,6 +87,7 @@ func run() -> void:
 	_test_timeline()
 	_test_lifetime()
 	_test_visible_panel_ownership()
+	_test_foreign_panel_contract()
 	await _test_modal_handoff()
 	if not OS.get_cmdline_user_args().has("--isolated"):
 		await _test_controller()
@@ -95,6 +101,7 @@ func run() -> void:
 	source.free()
 	if not OS.get_cmdline_user_args().has("--isolated"):
 		await _test_full_shell()
+		await _test_non_drink_full_shell()
 	print("Canteen accepted drink frames: ", checks, " checks, ", errors, " failures")
 	quit(1 if errors else 0)
 
@@ -541,3 +548,51 @@ func _test_full_shell() -> void:
 		await shell.shutdown()
 		shell.queue_free()
 		await process_frame
+
+func _test_foreign_panel_contract() -> void:
+	replace_state(initial())
+	for panel: Control in [Control.new(),MissingDrinkContract.new(),MalformedDrinkContract.new()]:
+		host.modal=Control.new();host.add_child(host.modal)
+		host.modal.add_child(panel);host.c3_device_panel=panel
+		for shown: bool in [true,false]:
+			panel.visible=shown
+			check(performance._closing_drink_item().is_empty(),"foreign or malformed panel cannot implement a drink handoff")
+			performance._process(0)
+			check(playing_count()==0 and performance.pending_grants.is_empty(),"foreign modal neither queues drink playback nor changes grants")
+		host.modal.free();host.modal=null;host.c3_device_panel=null
+
+func _test_non_drink_full_shell() -> void:
+	# Real Main uses c3_device_panel for unrelated panels too. In particular,
+	# C3MixerPanel has no active/kind/bound_state drink properties.
+	var state: Node=root.get_node("State")
+	var chapter: RefCounted=load("res://scripts/chapters/chapter3.gd").new()
+	var fixture: GDScript=load("res://tests/canteen_native_fixture.gd")
+	for viewport: Vector2i in [Vector2i(1280,720),Vector2i(390,844)]:
+		fixture.install(state)
+		var definition: Dictionary=chapter.get_definition("canteen_interior","canteen-mixer",state.d)
+		var stand: Dictionary=definition.get("stand",{})
+		state.d.native.player={"x":stand.x,"y":stand.y,"scene":"canteen_interior"}
+		state.d.native.positions={"canteen_interior:":{"x":stand.x,"y":stand.y}}
+		root.size=viewport
+		var shell: Control=load("res://scenes/main.tscn").instantiate();root.add_child(shell)
+		await process_frame;await process_frame
+		shell._show_world_mobile();shell.world.player=Vector2(stand.x,stand.y);shell.world._sync_player()
+		var observer: Node2D=shell.world.native_canteen.drink_performance
+		var inventory: Dictionary=state.d.items.duplicate(true)
+		for attempt in range(2):
+			var result: Dictionary=state.act("c3_target:canteen-mixer")
+			await process_frame;await process_frame
+			check(result.get("open_canteen_mixer",false) and is_instance_valid(shell.c3_device_panel),"real State.act opens mixer while drink observer is mounted")
+			if not is_instance_valid(shell.c3_device_panel):continue
+			var panel: Control=shell.c3_device_panel
+			check(panel.get_script().resource_path=="res://scripts/ui/c3_mixer_panel.gd" and panel.get("active")==null,"real mixer does not expose drink active contract")
+			for shown: bool in [true,false,true]:
+				panel.visible=shown
+				observer._process(0)
+				check(observer._closing_drink_item().is_empty() and observer.pending_grants.is_empty(),"shown or hidden real mixer is never a deferred drink handoff")
+				check(observer.slots.values().all(func(slot:Dictionary)->bool:return not slot.playing and not slot.waiting),"mixer never starts or queues a world bottle")
+			panel.exit_button.pressed.emit()
+			await process_frame;await process_frame
+			observer._process(0)
+			check(not is_instance_valid(shell.modal) and state.d.items==inventory,"mixer close/reopen preserves inventory and observer safety")
+		await shell.shutdown();shell.queue_free();await process_frame

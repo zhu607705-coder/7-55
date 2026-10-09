@@ -181,7 +181,12 @@ func _closing_drink_item() -> String:
 	var modal: Variant = host.get("modal")
 	if not is_instance_valid(panel) or not is_instance_valid(modal): return ""
 	if not panel is Control or not modal is Node or not modal.is_ancestor_of(panel): return ""
-	if bool(panel.get("active")) or panel.visible or str(panel.get("kind")) != "drink": return ""
+	# Main shares this slot with mixer/theater panels, which do not implement
+	# the drink contract. Check identity before reading drink-only fields;
+	# absent or malformed active values must never become bool(null).
+	if panel.get("kind") != "drink": return ""
+	var panel_active: Variant = panel.get("active")
+	if typeof(panel_active) != TYPE_BOOL or panel_active == true or panel.visible: return ""
 	if not is_same(panel.get("bound_state"), bound_state): return ""
 	if is_instance_valid(host.get("active_game")) or is_instance_valid(host.get("phone_document")) or bool(bound_state.get("ui", {}).get("controlCenterOpen", false)): return ""
 	for spec: Dictionary in MACHINES:
