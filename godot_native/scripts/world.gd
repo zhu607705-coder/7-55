@@ -89,6 +89,7 @@ var kayak_mouse_gesture: Dictionary = {}
 var chapter4_layers: RefCounted
 var room204_object: Node2D
 var native_canteen: Node2D
+var native_dorm: Node2D
 var library_layers: RefCounted
 var chapter3_layers: RefCounted
 var furniture_drag_preview: Control
@@ -133,6 +134,7 @@ func _ready() -> void:
 	room204_object.setup(self)
 	chapter4_layers.native_prop=room204_object
 	native_canteen=load("res://scripts/objects/canteen_object_scene.gd").new();add_child(native_canteen);native_canteen.setup(self)
+	native_dorm=load("res://scripts/objects/dorm_scene_adapter.gd").new();add_child(native_dorm);native_dorm.setup(self)
 	refresh_world()
 
 func refresh_world() -> void:
@@ -140,6 +142,7 @@ func refresh_world() -> void:
 	if guard_capture.active and not guard_capture.matches(_guard_capture_context()): _cancel_guard_capture()
 	if not stair_handoff.is_empty() and (State.d.native.scene!="duan_yongping_temporal_maze" or State.d.chapter4.phase!="final_chase" or State.d.chapter4.floor!="A2" or int(stair_handoff.attempt)!=int(State.d.chapter4.chaseAttempt)):stair_handoff.clear()
 	var incoming := str(State.d.native.scene)
+	if is_instance_valid(native_dorm):native_dorm.sync(State.d,incoming)
 	if is_instance_valid(native_canteen):native_canteen.sync(State.d,incoming)
 	if incoming!=scene_id: _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 	if library_layers!=null: library_layers.sync(State.d,incoming!=scene_id)
@@ -559,8 +562,11 @@ func _process(delta: float) -> void:
 	for target in targets:
 		if target.get("decorative",false): continue
 		var distance := _distance(target)
-		if distance < nearest and distance <= float(target.get("radius",100))*(.5 if scene_id == "dorm_hub" else 1.0):
-			nearest = distance
+		# The always-near self-inspection target is a fallback, not a permanent
+		# Space-key occluder over the desk, cabinet and earned dorm exit.
+		var rank := distance+(1000000.0 if scene_id=="dorm_hub" and target.get("follow_player",false) else 0.0)
+		if rank < nearest and distance <= float(target.get("radius",100))*(.5 if scene_id == "dorm_hub" else 1.0):
+			nearest = rank
 			nearby = target
 	_update_guard(delta)
 	_update_camera()
@@ -656,6 +662,9 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 func _render_context() -> Dictionary:
 	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id",""))}
 func _draw() -> void:
+	if is_instance_valid(native_dorm):
+		native_dorm.sync(State.d,scene_id)
+		native_dorm.configure_view(size/2-camera*zoom,zoom)
 	# Retire every existing adapter before a scene-specific early return.
 	if is_instance_valid(room204_object):room204_object.sync(State.d,scene_id)
 	if is_instance_valid(native_canteen):native_canteen.sync(State.d,scene_id)
@@ -833,6 +842,7 @@ func _shell_input_blocked() -> bool:
 	return is_instance_valid(host_node) and (is_instance_valid(host_node.get("modal")) or is_instance_valid(host_node.get("active_game")) or is_instance_valid(host_node.get("phone_document")) or bool(State.d.ui.controlCenterOpen))
 
 func _gui_input(event: InputEvent) -> void:
+	if is_instance_valid(native_dorm):native_dorm.observe_input(event)
 	if capture_mode or _scene_presentation_blocks() or _shell_input_blocked(): return
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_effect")) and host_node.world_effect.get_meta("blocks_input",false): return
 	if _kayak_mouse_input(event): accept_event(); return

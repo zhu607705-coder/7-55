@@ -375,6 +375,11 @@ func _focus_world_surface() -> void:
 	world.grab_focus()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	# The source recovery action explicitly opens the restored world inventory.
+	if _action=="c2_recover_card" and not _previous.actOne.inventoryRecovered and current.actOne.inventoryRecovered:
+		compact_inventory_open=true
+		_refresh_inventory_dock()
+		_layout()
 	if _action=="lib_shelf" and _begin_library_reveal(_previous,current,result): return
 	if result.has("open_c4_floor_selection"):
 		_open_chapter4_floor_selection(result.open_c4_floor_selection)

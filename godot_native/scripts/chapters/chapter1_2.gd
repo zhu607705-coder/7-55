@@ -433,6 +433,11 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_enter_dorm":
 			if not a.dormHubUnlocked: return _ok("寝室尚未开放。")
 			return _scene(s, "dorm_hub", "蓝田六舍 · W12\n室友留言：你的校园卡压在右边书桌那摞纸旁边。")
+		"c2_dorm_prop":
+			if s.native.scene!="dorm_hub" or not a.dormHubUnlocked or str(value) not in ["cabinet_open","lamp_01_on","lamp_03_on"]:return _ok("")
+			if not s.native.has("dorm_props"):s.native.dorm_props={"cabinet_open":false,"lamp_01_on":false,"lamp_03_on":false}
+			s.native.dorm_props[str(value)]=not s.native.dorm_props[str(value)]
+			return _ok("")
 		"c2_recover_card":
 			if a.phase != "inventory_required" or s.native.scene != "dorm_hub": return _ok("现在无法取回校园卡。")
 			items.campusCard = true
@@ -586,6 +591,10 @@ func targets(scene: String, s: Dictionary) -> Array:
 	var out: Array = []
 	if not s.actOne.dormHubUnlocked: return out
 	if s.actOne.phase == "inventory_required": out.append({"id":"desk_03", "label":"检查个人书桌", "position":[805,855], "bounds":[730,721,150,268], "radius":142.0, "action":"c2_recover_card", "mode":"light"})
+	else:out.append({"id":"desk_03","label":"拨动个人书桌台灯","position":[805,855],"bounds":[730,721,150,268],"radius":142.0,"action":"c2_dorm_prop","value":"lamp_03_on","mode":"light"})
+	var cabinet_open:bool=s.native.get("dorm_props",{}).get("cabinet_open",false)
+	out.append({"id":"window_cabinet","label":"关上窗下柜" if cabinet_open else "打开窗下柜","position":[488,315],"bounds":[410,228,156,174],"radius":118.0,"action":"c2_dorm_prop","value":"cabinet_open","mode":"light"})
+	out.append({"id":"desk_01","label":"拨动蓝色台灯","position":[805,316],"bounds":[730,182,150,268],"radius":142.0,"action":"c2_dorm_prop","value":"lamp_01_on","mode":"light"})
 	if _movement(s):
 		# Host interprets follow_player so the gamepad target remains on the actual actor.
 		out.append({"id":"dorm_character", "label":"查看角色", "position":[470,1440], "radius":120.0, "action":"c2_inspect_character", "follow_player":true})
