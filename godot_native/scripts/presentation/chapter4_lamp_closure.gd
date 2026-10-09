@@ -5,6 +5,8 @@ signal save_requested(answers:Dictionary)
 signal acknowledged(proof:Dictionary)
 const Sequence=preload("res://scripts/presentation/chapter4_lamp_sequence.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const Lamp3D=preload("res://scripts/presentation/chapter4_lamp_3d.gd")
+const SummaryFont=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 const FINAL_MESSAGE="从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！"
 var config:Dictionary={}
 var answers:Dictionary={}
@@ -33,6 +35,8 @@ var spark_canvas:Control
 var art:ColorRect
 var art_material:ShaderMaterial
 var star_canvas:Control
+var lamp_3d:SubViewportContainer
+var uses_blender_lamp:=false
 func configure(value:Dictionary)->void:
 	config=value.duplicate(true)
 	reduced=bool(config.get("settings",{}).get("reduced_motion",false))
@@ -50,6 +54,13 @@ func _ready()->void:
 	art=ColorRect.new();art.mouse_filter=Control.MOUSE_FILTER_IGNORE;art_material=ShaderMaterial.new();art_material.shader=preload("res://scripts/presentation/chapter4_lamp_layers.gdshader");art.material=art_material
 	for key in lamp:art_material.set_shader_parameter(key+"_tex",lamp[key])
 	add_child(art)
+	# The original five-layer renderer remains a deliberate rollback path. The
+	# default consumer now renders the approved, genuine Blender lamp geometry.
+	if str(config.get("lampPresentation","blender"))!="layered":
+		lamp_3d=Lamp3D.new();lamp_3d.name="BlenderLampPresentation";add_child(lamp_3d)
+		uses_blender_lamp=lamp_3d.available
+		if not uses_blender_lamp:lamp_3d.queue_free();lamp_3d=null
+	art.visible=not uses_blender_lamp;star_canvas.visible=not uses_blender_lamp
 	spark_canvas=Control.new();spark_canvas.mouse_filter=Control.MOUSE_FILTER_IGNORE;spark_canvas.draw.connect(_draw_sparks);add_child(spark_canvas)
 	panel=PanelContainer.new();panel.add_theme_stylebox_override("panel",Ui.box(Color("08121ded"),Color("d0bb7670"),1,3,Vector2(24,22)));add_child(panel)
 	scroll=ScrollContainer.new();scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;panel.add_child(scroll);move_child(spark_canvas,get_child_count()-1)
@@ -90,7 +101,12 @@ func _rebuild()->void:
 			var q:Dictionary=config.questions[i];var answer:=""
 			for option in q.options:
 				if str(option.id)==str(answers.get(q.id,"")):answer=str(option.label)
-			column.add_child(_label(("求学所向" if i==0 else "成人所守")+"  ·  "+answer,16,Color("fff0b6")))
+			var summary:=_label(("求学所向" if i==0 else "成人所守")+"  ·  "+answer,16,Color("fff0b6"))
+			summary.name="LampAnswerSummary%d"%(i+1)
+			# Both complete lines use one bundled face. A standalone activity must
+			# not mix per-glyph system CJK fallbacks inside the same answer.
+			summary.add_theme_font_override("font",SummaryFont)
+			column.add_child(summary)
 		column.add_child(_button("继续",acknowledge));column.add_child(_label("按 Space 或 Enter 继续",14,Color("c3bea9")))
 	_layout();_focus_first.call_deferred();queue_redraw()
 func _focus_first()->void:
@@ -108,9 +124,16 @@ func _layout()->void:
 	var height:=minf(desired,size.y-32)
 	panel_origin=Vector2((size.x-width)/2,(size.y-height)/2 if stage!="final" else size.y-height-16)
 	panel.position=panel_origin;panel.size=Vector2(width,height)
+	if stage=="final" and uses_blender_lamp and not portrait:
+		width=minf(520,size.x*.49-24);height=minf(360,size.y-32)
+		panel_origin=Vector2(size.x-width-16,(size.y-height)/2)
+		panel.position=panel_origin;panel.size=Vector2(width,height)
 	caption.position=Vector2(size.x-220,20 if stage=="final" else size.y-92);caption.size=Vector2(200,72)
 	if stage=="final" and size.y<450:caption.position.y=8;caption.add_theme_font_size_override("font_size",18)
 	else:caption.add_theme_font_size_override("font_size",24)
+	if stage=="final" and uses_blender_lamp:
+		caption.position=Vector2(16,16);caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT
+	else:caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 	_update_art();queue_redraw();star_canvas.queue_redraw();spark_canvas.queue_redraw()
 func choose(id:String,value:String)->void:
 	if disposed or completed or stage!="questions" or phase!="ready":return
@@ -161,6 +184,7 @@ func acknowledge()->void:
 	acknowledged.emit({"consumer":"ChapterFourStarLampClosure","answers":answers.duplicate(),"playbackMs":playback_ms,"acknowledged":true})
 func dispose()->void:
 	disposed=true;buttons.clear()
+	if is_instance_valid(lamp_3d):lamp_3d.dispose()
 func _exit_tree()->void:dispose()
 func _gui_input(event:InputEvent)->void:
 	if not event is InputEventKey or not event.pressed or event.echo:return
@@ -186,7 +210,7 @@ func _build_stars()->void:
 			rng=(rng*1664525+1013904223)&0xffffffff;var phi:=float(rng)/4294967296.0*TAU;var st:=sqrt(1-ct*ct)
 			stars.append({"p":Vector3(radius*st*cos(phi),radius*ct,radius*st*sin(phi)),"size":layer.size,"color":layer.color,"opacity":layer.opacity,"seed":layer.seed})
 func _draw_stars()->void:
-	if stage!="playback":return
+	if stage!="playback" or uses_blender_lamp:return
 	var frame:=Sequence.frame(playback_ms,reduced);var camera:Vector3=frame.camera;var forward:Vector3=(Vector3(frame.look)-camera).normalized();var right:=forward.cross(Vector3.UP).normalized();var up:=right.cross(forward).normalized();var focal:=size.y/(2*tan(deg_to_rad(44.0)/2))
 	for star in stars:
 		var relative:Vector3=Vector3(star.p)-camera;var depth:=relative.dot(forward)
@@ -198,6 +222,16 @@ func _draw_stars()->void:
 		var diameter:=maxf(1.0,float(star.size)*size.y*.5/depth)
 		star_canvas.draw_texture_rect(star_texture,Rect2(pos-Vector2.ONE*diameter/2,Vector2.ONE*diameter),false,c)
 func _update_art()->void:
+	if uses_blender_lamp and is_instance_valid(lamp_3d):
+		lamp_3d.position=Vector2.ZERO
+		var mesh_size:=size
+		if stage=="final":
+			if size.x<600:mesh_size=Vector2(size.x,maxf(120,panel.position.y-10))
+			else:mesh_size=Vector2(maxf(200,panel.position.x-12),size.y)
+		lamp_3d.size=mesh_size
+		var mesh_time:=playback_ms if stage in ["playback","final"] else 0.0
+		lamp_3d.apply_frame(Sequence.frame(mesh_time,reduced),stage)
+		return
 	if not is_instance_valid(art) or lamp.is_empty():return
 	art.size=size
 	var frame:=Sequence.frame(playback_ms,reduced)
