@@ -2,6 +2,8 @@ extends Control
 ## Native presentation of the active source LakeFishingRitualVisual.
 ## Reads the existing model. Input, audio, results and saves stay in its host.
 const Motion = preload("res://scripts/ui/lake_fishing_motion.gd")
+const Water = preload("res://scripts/ui/lake_fishing_water.gd")
+const Lens = preload("res://scripts/ui/lake_fishing_lens.gdshader")
 const INK = Color("092f36")
 const GOLD = Color("ffdd83")
 const PALE = Color("e8f5cc")
@@ -39,6 +41,8 @@ var feedback := ""
 var feedback_until := 0.0
 var current_motion: Dictionary = {}
 var current_depth: Dictionary = {}
+var water = Water.new()
+var water_lens: ColorRect
 
 func _ready() -> void:
 	clip_contents = true
@@ -61,6 +65,11 @@ func _ready() -> void:
 	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 	var state := get_node_or_null("/root/State")
 	if state: reduced_motion = bool(state.d.native.settings.get("reduced_motion",false))
+	water_lens=ColorRect.new(); water_lens.name="FishingWaterLens"
+	water_lens.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	water_lens.material=ShaderMaterial.new(); water_lens.material.shader=Lens
+	add_child(water_lens); water_lens.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	water_lens.visible=false
 	for key in ["title","target","phase","instruction","feedback","swan","tension","progress","guide","beat_action","next_beat","count_in","result","result_body","modal","modal_body"]:
 		var label := Label.new()
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -93,6 +102,8 @@ func reset_view() -> void:
 	seen_judgments.clear()
 	current_motion.clear()
 	current_depth.clear()
+	water.reset()
+	if is_instance_valid(water_lens): water_lens.visible=false
 
 func advance_view(delta: float) -> void:
 	if not is_instance_valid(host) or host.model==null: return
@@ -105,6 +116,7 @@ func advance_view(delta: float) -> void:
 		feedback = "漂亮！把湖拽近了一截" if note.judgment=="perfect" else ("这一钩脱了，跟住鱼影！" if note.judgment=="miss" else "稳住，再收一截")
 		feedback_until = visual_time+.8
 	if not host.paused:_advance_depth(delta)
+	_advance_water(delta)
 	_layout_labels()
 	queue_redraw()
 
@@ -119,6 +131,52 @@ func _advance_depth(delta: float) -> void:
 	for key: String in target:
 		if key in ["successful_notes","progress","bite"]:current_depth[key]=target[key]
 		else:current_depth[key]=lerpf(float(current_depth.get(key,target[key])),float(target[key]),amount)
+
+func water_safe_rect() -> Rect2:
+	var top: float=rhythm_y()+68
+	return Rect2(10,top,maxf(0,size.x-20),maxf(0,meter_plate_rect().position.y-14-top))
+
+func _advance_water(delta: float) -> void:
+	if current_depth.is_empty(): return
+	var m: RefCounted=host.model
+	var fish_x: float=size.x*.5+m.fish_x()*size.x*.29
+	var water_y: float=size.y*.56
+	var geometry: Dictionary=creature_geometry(fish_x,water_y,current_depth,0 if reduced_motion else visual_time)
+	var origin:=Vector2(fish_x,water_y+10).lerp(Vector2(geometry.mouth)-Vector2(0,5),float(current_depth.fish_merge))
+	var exclusions: Array[Rect2]=[]
+	if host.sent or m.phase in ["completed","failed"]: exclusions.append(modal_rect().grow(6))
+	var inactive: bool=not (host.running or host.sent) and m.phase not in ["completed","failed"]
+	water.observe(delta,m,current_depth,Motion.sample(m,reduced_motion),host.paused or inactive,reduced_motion,origin,water_safe_rect(),exclusions)
+	if not is_instance_valid(water_lens): return
+	water_lens.visible=(host.running or host.sent) and not host.paused and not reduced_motion and not water.drops.is_empty()
+	var samples: Array[Vector4]=water.lens_samples()
+	water_lens.material.set_shader_parameter("view_size",size)
+	for index in range(Water.MAX_DROPS):
+		water_lens.material.set_shader_parameter("drop"+str(index),samples[index] if index<samples.size() else Vector4.ZERO)
+
+func _draw_water() -> void:
+	var scale_factor: float=.68 if size.x<600 or size.y<420 else 1.0
+	for splash: Dictionary in water.splashes:
+		var age: float=water.clock-float(splash.born)
+		var u: float=clampf(age/float(splash.duration),0,1)
+		var strength: float=float(splash.strength)
+		var point: Vector2=splash.origin
+		var fade: float=1.0-u
+		var width: float=(28+strength*40)*scale_factor
+		if bool(splash.still):
+			_ring(point,Vector2(width,8*scale_factor),Color(PALE,fade*.55),1.3)
+			continue
+		_ring(point,Vector2(width*(.55+u),width*.16*(.55+u)),Color(PALE,fade*.65),1.5)
+		_ring(point+Vector2(0,3),Vector2(width*(.75+u),width*.20*(.55+u)),Color(MINT,fade*.28),1)
+		# Seven analytic droplets per burst, independent of frame rate and RNG.
+		for index in range(7):
+			var fan: float=float(index-3)
+			var velocity:=Vector2(fan*(21+strength*13),-(42+strength*44)+(absf(fan)*7))*scale_factor
+			var offset:=velocity*age+Vector2(0,120*age*age)*scale_factor
+			if offset.y>8: continue
+			var radius: float=(1.8+strength*1.3)*scale_factor*fade
+			draw_line(point+offset,point+offset-velocity.normalized()*(3+strength*5)*scale_factor,Color(MINT,fade*.70),maxf(1,radius),true)
+			draw_circle(point+offset,radius,Color(PALE,fade*.90))
 
 func _label(key: String,text: String,rect: Rect2,point_size: int,color: Color=PALE,shown: bool=true) -> void:
 	var label: Label = labels[key]
@@ -257,6 +315,7 @@ func _draw() -> void:
 	_draw_splash(Vector2(hook_x,water_y+10),visual_time-reaction_at,reaction_good)
 	if m.lift_ready() and m.stage=="fighting":
 		_ring(Vector2(fish_x,water_y+4),Vector2(89,27)*fish_scale,Color(GOLD,.45+.2*sin(t*5)),1)
+	_draw_water()
 	# Compact code-owned HUD draws last, with no artwork baked into the plate.
 	_hud_plate(header_rect())
 	if active:
@@ -501,7 +560,11 @@ func _draw_fishing_line(a: Vector2,b: Vector2,tension: float,motion: Dictionary)
 func _draw_splash(p: Vector2,seconds: float,good: bool) -> void:
 	if seconds<0 or seconds>.75: return
 	var amount: float=seconds/.75
+	if reduced_motion:
+		_ring(p,Vector2(30,9),Color(GOLD if good else MINT,(1-amount)*.55),1.3)
+		return
 	_ring(p,Vector2(20+amount*105,7+amount*31),Color(GOLD if good else MINT,(1-amount)*.75),2)
+	if good and float(current_depth.get("surface_wake",0))>.20: return
 	for i in range(9):
 		var a: float=i/9.0*TAU
 		draw_circle(p+Vector2(cos(a)*amount*55,sin(a)*amount*18-sin(amount*PI)*22),2.4-amount,Color(PALE if good else MINT,1-amount))
