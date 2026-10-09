@@ -1,5 +1,6 @@
 extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
+const Facing=preload("res://scripts/character_facing.gd")
 ## Source ChapterFourTemporalMazeScene phase props and ChapterFourClockMotion.
 ## All clocks here are local presentation time; no story state is written.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
@@ -200,6 +201,19 @@ func support_people(state: Dictionary) -> Array:
 	for entry in [source.frontDeskRuntime]+source.supportNpcRuntimes:
 		if c.get("floor","")==entry.storyFloor and c.get("phase","") in entry.activePhases: out.append(entry)
 	return out
+func support_pose(person:Dictionary,context:Dictionary) -> Dictionary:
+	var animation:=str(person.animation)
+	var pose:Dictionary={"animation":animation,"flip":false,"time_ms":elapsed_ms}
+	# This guard has real side/front/back art. Keep staff with only a service
+	# pose at their authored counter orientation; never mirror front into back.
+	if animation.begins_with("guard_") and str(context.get("nearby_id",""))==str(person.interactionAnchorId):
+		var heading:Vector2=Vector2(context.get("player",Vector2.ZERO))+Vector2(0,31.6875)-Room.point(person.position)
+		var facing:=Facing.pose(Vector2.ZERO,heading,"down")
+		pose.animation="guard_walk" if facing.facing=="side" else "guard_walk_"+str(facing.facing)
+		pose.flip=facing.flip if facing.facing=="side" else false
+		pose.time_ms=0.0
+	return pose
+
 func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state: Dictionary,front: bool) -> void:
 	for person in honor_figures(state):
 		if not _depth(context,162 if int(person.floor)==1 else 842,front): continue
@@ -216,10 +230,11 @@ func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state
 	for person in support_people(state):
 		var p: Vector2=Room.point(person.position)
 		if _depth(context,p.y,front):
-			var def: Dictionary=npcs[person.animation]; var full:=Vector2(def.frameWidth,def.frameHeight); var dimensions:=full*float(person.uniformScale)
+			var pose:=support_pose(person,context)
+			var def: Dictionary=npcs[pose.animation]; var full:=Vector2(def.frameWidth,def.frameHeight); var dimensions:=full*float(person.uniformScale)
 			var tex: Texture2D=owner.texture(str(def.file).replace("src/assets/","res://assets/"))
 			if tex!=null:
-				var index: int=int(elapsed_ms*float(def.fps)/1000)%int(def.frameCount)
+				var index: int=int(float(pose.time_ms)*float(def.fps)/1000)%int(def.frameCount)
 				var columns: int=maxi(1,int(tex.get_width()/full.x))
-				Picker.record(canvas,[str(person.interactionAnchorId)],{"rect":Rect2(p-dimensions*Vector2(.5,1),dimensions),"texture":tex,"source":Rect2(Vector2((index%columns)*full.x,int(index/columns)*full.y),full)})
-			_npc(owner,canvas,context,person.animation,p,float(person.uniformScale),elapsed_ms)
+				Picker.record(canvas,[str(person.interactionAnchorId)],{"rect":Rect2(p-dimensions*Vector2(.5,1),dimensions),"texture":tex,"flip_h":pose.flip,"source":Rect2(Vector2((index%columns)*full.x,int(index/columns)*full.y),full)})
+			_npc(owner,canvas,context,pose.animation,p,float(person.uniformScale),pose.time_ms,pose.flip)

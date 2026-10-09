@@ -3,6 +3,7 @@ const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
 const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
+const CharacterFacing = preload("res://scripts/character_facing.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
 const KayakVisual = preload("res://scripts/ui/kayak_visual.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
@@ -14,6 +15,7 @@ var world_key := ""
 var background: Texture2D
 var player_frames: Dictionary = {}
 var player_side_idle: Texture2D
+var player_left_idle: Texture2D
 var player := Vector2.ZERO
 var camera := Vector2.ZERO
 var zoom := 0.85
@@ -38,6 +40,7 @@ var _canteen_floor_tap := CanteenFloorTap.new()
 var nearby: Dictionary = {}
 var walk_clock := 0.0
 var facing := "down"
+var player_turn:Dictionary={}
 var subtitle := ""
 var subtitle_left := 0.0
 var font: Font
@@ -60,6 +63,10 @@ var guard_state: Dictionary = {}
 var guard_position := Vector2.ZERO
 var guard_visible := false
 var guard_sheet: Texture2D
+var guard_sheets: Dictionary={}
+var guard_facing: String="side"
+var guard_flip: bool=false
+var guard_walk_clock: float=0
 var guard_kind := ""
 var guard_grace := 0.0
 var guard_navigation: RefCounted
@@ -109,17 +116,20 @@ func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
-	for direction in ["down","up","side"]:
+	for direction in ["down","up","side","left"]:
 		var frames: Array = []
 		for index in range(8):
 			var path := "res://assets/rpg/player/player_%s_%d.png" % [direction,index]
 			if ResourceLoader.exists(path): frames.append(load(path))
 		player_frames[direction] = frames
 	player_side_idle = load("res://assets/rpg/player/player_side_idle.png")
+	if ResourceLoader.exists("res://assets/rpg/player/player_left_idle.png"):
+		player_left_idle=load("res://assets/rpg/player/player_left_idle.png")
 	State.world_teleport.connect(func(point: Array): pending_teleport = Vector2(float(point[0]),float(point[1])); refresh_world())
 	if ResourceLoader.exists("res://scripts/games/chapter4_guard_model.gd"):
 		guard_model = load("res://scripts/games/chapter4_guard_model.gd")
 		guard_sheet = load("res://assets/rpg/npcs/finale/guard_walk_8frame.png")
+		guard_sheets={"side":guard_sheet,"up":load("res://assets/rpg/npcs/finale/guard_walk_up_8frame.png"),"down":load("res://assets/rpg/npcs/finale/guard_walk_down_8frame.png")}
 	State.feedback.connect(_receive_feedback)
 	State.story_reset.connect(func(): _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS)
 	if ResourceLoader.exists("res://scripts/ui/chapter4_world_layers.gd"):
@@ -167,6 +177,7 @@ func refresh_world() -> void:
 	world_key = key
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
+	player_turn.clear(); walk_clock=0
 	_last_floor = floor_id
 	last_zone = zone
 	last_vehicle = vehicle_id
@@ -400,6 +411,8 @@ func _try_interact(target: Dictionary = {}) -> void:
 	var required_item := str(target.get("item",""))
 	if not required_item.is_empty() and str(State.d.native.selected_item) != required_item:
 		State.feedback.emit("请先从物品栏选择对应物品。"); return
+	if not target.get("follow_player",false):
+		_apply_player_motion(Vector2.ZERO,_target_point(target)-player,0)
 	_sync_player()
 	if target.get("action","")=="c4_reach202":
 		guard_close_requested=true
@@ -519,13 +532,17 @@ func _process(delta: float) -> void:
 		if State.d.native.scene!=scene_id or str(State.d.qizhenLake.zone)!=last_zone:
 			refresh_world(); return
 		_sync_player()
+	var automatic_pacing:=false
 	if scene_id == "dorm_hub" and not State.d.actOne.get("controlsInstalled",false):
 		move_target = Vector2.INF
 		axis = Vector2.ZERO
 		if State.d.actOne.get("exerciseStarted",false):
 			var pace_x := 245 + (520 + sin(Time.get_ticks_msec()/900.0)*130)*.5
 			var pace_position := Vector2(pace_x,player.y)
-			if can_stand(pace_position): player = pace_position; walk_clock += delta; facing = "side"; _sync_player()
+			var pace_motion:=pace_position-player
+			if can_stand(pace_position):
+				player=pace_position; automatic_pacing=true
+				_apply_player_motion(pace_motion,pace_motion,delta); _sync_player()
 	# A zero-length route waypoint still needs its normal completion step.
 	if axis.length_squared() > 0 or not _floor_route.is_empty():
 		if mobile_exploration and _floor_route.is_empty(): pan_offset=Vector2.ZERO
@@ -551,15 +568,13 @@ func _process(delta: float) -> void:
 			else:
 				if can_stand(player+Vector2(displacement.x,0)): player.x += displacement.x
 				if can_stand(player+Vector2(0,displacement.y)): player.y += displacement.y
+		_apply_player_motion(player-old,axis,delta)
 		if old.distance_to(player) > 0:
-			walk_clock += delta
-			player_flip = axis.x < 0
-			facing = "side" if absf(axis.x) > absf(axis.y) else "up" if axis.y < 0 else "down"
 			_sync_player()
 			if scene_id == "dorm_hub" and State.d.actOne.get("movementEnabled",false) and not _manual_sent:
 				_manual_sent = true
 				State.act("c2_manual_input",{"moved":true,"distance":old.distance_to(player)*2,"input":_input_kind})
-	else: walk_clock = 0.0
+	elif not automatic_pacing: _apply_player_motion(Vector2.ZERO,Vector2.ZERO,delta)
 	nearby = {}
 	var nearest := INF
 	for target in targets:
@@ -579,6 +594,52 @@ func _process(delta: float) -> void:
 		_last_save = 0
 		State.save_game()
 	queue_redraw()
+
+func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float) -> void:
+	var pose:=CharacterFacing.pose(motion,intent,facing,player_flip)
+	var changed:bool=pose.facing!=facing or (pose.facing=="side" and pose.flip!=player_flip)
+	if changed:
+		player_turn={"from_facing":facing,"from_flip":player_flip and facing=="side","to_facing":pose.facing,"to_flip":pose.flip and pose.facing=="side","elapsed_ms":0.0,"duration_ms":CharacterFacing.turn_duration(facing,player_flip,pose.facing,pose.flip)}
+		walk_clock=0.0
+	elif not player_turn.is_empty():
+		player_turn.elapsed_ms+=maxf(0,delta)*1000
+		if float(player_turn.elapsed_ms)>=float(player_turn.duration_ms):player_turn.clear(); walk_clock=0.0
+	facing=pose.facing; player_flip=pose.flip
+	walk_clock=walk_clock+maxf(0,delta) if motion.is_finite() and not motion.is_zero_approx() and player_turn.is_empty() else 0.0
+
+func player_visual() -> Dictionary:
+	# One selection path for CanvasItem, native canteen Sprite2D and alpha picking.
+	# A complete authored left cycle can replace the genuine side-view mirror.
+	var pose:Dictionary=CharacterFacing.turn_pose(player_turn) if not player_turn.is_empty() and player_turn.to_facing==facing and (facing!="side" or player_turn.to_flip==player_flip) else {"facing":facing,"flip":player_flip,"angle":0.0}
+	var direction:String=pose.facing
+	var flip:bool=pose.flip and direction=="side"
+	if flip and player_frames.get("left",[]).size()==8:
+		direction="left"; flip=false
+	var frames:Array=player_frames.get(direction,[])
+	var texture:Texture2D=null
+	if not frames.is_empty():
+		texture=frames[PlayerMetrics.frame_at(walk_clock*1000)%frames.size()]
+		if walk_clock<=0 and player_turn.is_empty():
+			if direction=="side" and player_side_idle!=null:texture=player_side_idle
+			elif direction=="left" and player_left_idle!=null:texture=player_left_idle
+	return {"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
+
+func player_geometry() -> Dictionary:
+	var actor:=player_visual()
+	var angle:=deg_to_rad(float(actor.angle))
+	# Rotate the entire original frame about its registered source anchor.
+	return {"rect":PlayerMetrics.visual_rect(player,display_scale_at(player)),"texture":actor.texture,"flip_h":actor.flip_h,"transform":Transform2D(angle,player-player.rotated(angle))}
+
+func _apply_guard_motion(motion:Vector2,intent:Vector2,delta:float) -> void:
+	var pose:=CharacterFacing.pose(motion,intent,guard_facing,guard_flip)
+	guard_facing=pose.facing; guard_flip=pose.flip
+	guard_walk_clock=guard_walk_clock+maxf(0,delta) if motion.is_finite() and not motion.is_zero_approx() else 0.0
+
+func guard_visual() -> Dictionary:
+	var texture:Texture2D=guard_sheets.get(guard_facing,guard_sheet)
+	var index:=PlayerMetrics.frame_at(guard_walk_clock*1000)
+	var columns:=maxi(1,int(texture.get_width()/96)) if texture!=null else 1
+	return {"texture":texture,"source":Rect2((index%columns)*96,int(index/columns)*128,96,128),"flip_h":guard_flip and guard_facing=="side","direction":guard_facing}
 
 func _c4_axis_destination(start:Vector2,motion:Vector2) -> Vector2:
 	if not start.is_finite() or not motion.is_finite() or motion.is_zero_approx():return start
@@ -723,24 +784,24 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	if library_layers!=null: library_layers.draw_back(canvas,layer_context,State.d)
 func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin: Vector2=layer_context.origin
-	var frame_set: Array = player_frames.get(facing,[])
+	var actor:Dictionary=player_visual()
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
 		if _target_point(target).y <= player.y: _draw_target(target,origin,canvas)
 	if not presentation_actor_hidden and kayak and kayak_texture:
 		var presentation: Dictionary=lake_session.actor_presentation() if lake_session!=null else {"offset":Vector2.ZERO,"scale":1.0,"alpha":1.0}
 		kayak_visual.draw(canvas,origin+(player+presentation.offset)*zoom,zoom*float(presentation.scale),{"heading":kayak.heading,"roll":kayak.roll,"speed":kayak.speed,"side":kayak.last_side,"strokeAgeMs":(kayak.elapsed-kayak.last_stroke)*1000,"alpha":presentation.alpha},Time.get_ticks_msec())
-	elif not presentation_actor_hidden and not frame_set.is_empty():
-		var frame: Texture2D = player_side_idle if facing == "side" and walk_clock <= 0 else frame_set[PlayerMetrics.frame_at(walk_clock*1000)]
+	elif not presentation_actor_hidden and actor.texture!=null:
+		var frame:Texture2D=actor.texture
 		var visual: Rect2 = PlayerMetrics.visual_rect(player,display_scale_at(player))
-		var dimensions := visual.size*zoom
-		var position := origin+visual.position*zoom
 		draw_ellipse_shadow(origin+(player+Vector2(0,39))*zoom,Vector2(19,6)*zoom,canvas)
 		var actor_ids: Array=[]
 		for target: Dictionary in targets:
 			if target.get("follow_player",false): actor_ids.push_front(str(target.id))
-		if not actor_ids.is_empty(): register_object_surface(actor_ids,{"rect":visual,"texture":frame,"flip_h":player_flip and facing=="side"})
-		canvas.draw_texture_rect(frame,Rect2(position,Vector2(-dimensions.x,dimensions.y) if player_flip and facing == "side" else dimensions),false)
+		if not actor_ids.is_empty(): register_object_surface(actor_ids,player_geometry())
+		canvas.draw_set_transform(origin+player*zoom,deg_to_rad(float(actor.angle)),Vector2.ONE*zoom)
+		canvas.draw_texture_rect(frame,Rect2(visual.position-player,Vector2(-visual.size.x,visual.size.y) if actor.flip_h else visual.size),false)
+		canvas.draw_set_transform(Vector2.ZERO)
 	for target in ordered_targets:
 		if _target_point(target).y > player.y: _draw_target(target,origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_front(canvas,layer_context,State.d)
@@ -763,10 +824,10 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	if lake_session!=null: lake_session.draw(canvas,origin,zoom,bool(State.d.native.settings.reduced_motion))
 	if guard_visible and guard_sheet:
 		var guard_size := Vector2(96,128)*.68*zoom
-		var frame_index := int(Time.get_ticks_msec()/110)%8
-		var columns := maxi(1,int(guard_sheet.get_width()/96))
-		var frame_region := Rect2((frame_index%columns)*96,int(frame_index/columns)*128,96,128)
-		canvas.draw_texture_rect_region(guard_sheet,Rect2(origin+guard_position*zoom-Vector2(guard_size.x/2,guard_size.y*.89),guard_size),frame_region)
+		var actor:Dictionary=guard_visual()
+		canvas.draw_set_transform(origin+guard_position*zoom,0,Vector2(-1 if actor.flip_h else 1,1))
+		canvas.draw_texture_rect_region(actor.texture,Rect2(-Vector2(guard_size.x/2,guard_size.y*.89),guard_size),actor.source)
+		canvas.draw_set_transform(Vector2.ZERO)
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
 	if scene_id=="campus_bootstrap":
@@ -1018,6 +1079,7 @@ func _update_guard(delta: float) -> void:
 		guard_navigation_target=Vector2.INF
 		guard_repath_ms=0
 		guard_clock_ms=0
+		guard_facing="side"; guard_flip=false; guard_walk_clock=0
 		guard_audio_band=""
 		guard_close_requested=false
 		guard_close_voice_played=false
@@ -1101,8 +1163,10 @@ func _update_guard(delta: float) -> void:
 			if guard_navigation_target!=Vector2.INF and guard_position.distance_squared_to(guard_navigation_target)>4:
 				velocity=guard_position.direction_to(guard_navigation_target)*174
 	var change:=velocity*delta
+	var previous_guard:=guard_position
 	if _guard_can_stand(guard_position+Vector2(change.x,0),walls): guard_position.x+=change.x
 	if _guard_can_stand(guard_position+Vector2(0,change.y),walls): guard_position.y+=change.y
+	_apply_guard_motion(guard_position-previous_guard,velocity,delta)
 
 func _guard_can_stand(point: Vector2,walls: Array) -> bool:
 	var extent:=Vector2(10,8) if State.d.chapter4.guardMode=="patrol" else Vector2(10.2,7.65)
@@ -1370,10 +1434,9 @@ func _floor_empty_destination(point: Vector2) -> bool:
 	if not visible.has_point(local) or controls.stick_rect.has_point(local) or controls.interact.has_point(local): return false
 	for surface: Dictionary in object_picker.surfaces:
 		if surface.painted and object_picker.contains(surface.geometry,point): return false
-	var frames: Array=player_frames.get(facing,[])
-	if not frames.is_empty():
-		var frame: Texture2D=player_side_idle if facing=="side" and walk_clock<=0 else frames[PlayerMetrics.frame_at(walk_clock*1000)]
-		if object_picker.contains({"rect":PlayerMetrics.visual_rect(player,display_scale_at(player)),"texture":frame,"flip_h":player_flip and facing=="side"},point): return false
+	var actor:Dictionary=player_visual()
+	if actor.texture!=null:
+		if object_picker.contains(player_geometry(),point): return false
 	return _pick_target(point).is_empty()
 
 func _canteen_floor_goal(goal: Vector2,obstacles: Array) -> Vector2:
@@ -1405,10 +1468,9 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	# entirely with the unchanged picker; this route never chooses a target.
 	for surface: Dictionary in object_picker.surfaces:
 		if surface.painted and object_picker.contains(surface.geometry,point): return
-	var frames: Array=player_frames.get(facing,[])
-	if not frames.is_empty():
-		var frame: Texture2D=player_side_idle if facing=="side" and walk_clock<=0 else frames[PlayerMetrics.frame_at(walk_clock*1000)]
-		if object_picker.contains({"rect":PlayerMetrics.visual_rect(player,display_scale_at(player)),"texture":frame,"flip_h":player_flip and facing=="side"},point): return
+	var actor:Dictionary=player_visual()
+	if actor.texture!=null:
+		if object_picker.contains(player_geometry(),point): return
 	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
 	_floor_goal=point
 	_floor_world_key=world_key; _floor_view_size=size; _floor_view_zoom=zoom; _floor_expected_camera=camera

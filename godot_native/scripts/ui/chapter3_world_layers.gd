@@ -1,5 +1,6 @@
 extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
+const Facing=preload("res://scripts/character_facing.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const ModeFibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
@@ -80,6 +81,16 @@ func _npc_frame(pair: int,fps: float,delay: float,s: Dictionary) -> int:
 	return pair*2+(1 if t>=1000/fps else 0)
 func _npc(id: String,key: String,p: Vector2,pair: int,depth: float,fps: float,delay: float,s: Dictionary) -> Dictionary:
 	return {"id":id,"kind":"sprite","asset":asset(key),"point":p,"scale":Metrics.DISPLAY_SCALE,"frameSize":Vector2(96,128),"frame":_npc_frame(pair,fps,delay,s),"anchor":Vector2(.5,1),"alpha":light_alpha,"depth":depth}
+func ticket_inspector_asset(s:Dictionary,point:Vector2,scan:bool) -> String:
+	# All four complete idle poses already exist in the original React assets.
+	# Preserve the authored scanning action, then look toward a nearby visitor.
+	if scan:return asset("ticketInspectorScanUrl")
+	var heading:=_player(s)+Metrics.FOOT_CENTER_OFFSET-(point+Vector2(0,128*.75*.5))
+	if heading.length()>180:return asset("ticketInspectorIdleUrl")
+	var pose:=Facing.pose(Vector2.ZERO,heading,"down")
+	var direction:String=("left" if pose.flip else "right") if pose.facing=="side" else "back" if pose.facing=="up" else "front"
+	return "res://assets/rpg/theater/generated/actors/ticket_inspector_idle_"+direction+".png"
+
 func promo_pose(s: Dictionary) -> Dictionary:
 	if narrative_session==null or narrative_session.sequence_id!="canteen_promo" or narrative_session.status not in ["issued","playing","complete"]: return {}
 	return PromoTimeline.snapshot(maxf(0,narrative_session.elapsed_ms-float(narrative_session.spec.get("timelineStartMs",0))),reduced(s))
@@ -148,7 +159,8 @@ func entries(s: Dictionary) -> Array:
 		var offset: float=worlds.theater_interior.constants.THEATER_TICKET_FIXTURE_OFFSET_Y
 		var scan: bool=admission_ms<(160 if reduced(s) else 900)
 		var bob: float=0 if reduced(s) else _yoyo(clock_ms,1350)
-		result.append({"id":"ticket_inspector","kind":"sprite","asset":asset("ticketInspectorScanUrl" if scan else "ticketInspectorIdleUrl"),"point":Vector2(753,681+offset-16-bob),"scale":.75,"depth":832+offset})
+		var inspector_point:=Vector2(753,681+offset-16-bob)
+		result.append({"id":"ticket_inspector","kind":"sprite","asset":ticket_inspector_asset(s,inspector_point,scan),"point":inspector_point,"scale":.75,"depth":832+offset})
 		result.append({"id":"ticket_reader","kind":"reader","point":Vector2(907,690+offset),"admitted":t.admitted,"depth":839+offset})
 		for target: Dictionary in worlds.theater_interior.interactionTargets:
 			if target.kind=="program" and t.phase=="program_search" and not t.collectedProgramIds.has(target.programId):
