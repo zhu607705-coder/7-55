@@ -1,6 +1,6 @@
 extends SceneTree
 const Fixture=preload("res://tests/canteen_native_fixture.gd")
-const Pose=preload("res://scripts/presentation/c3_return_stack_pose.gd")
+const Pose=preload("res://scripts/presentation/c3_tray_frames.gd")
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -10,21 +10,21 @@ func _initialize()->void:call_deferred("run")
 func run()->void:
 	var hand:=Vector2(1466,605);var anchor:=Vector2(1497,555);var height:float=28.716
 	for reduced:bool in [false,true]:
-		var duration:float=Pose.duration(reduced)
-		var start:Dictionary=Pose.sample(0,hand,anchor,height,reduced)
-		var touch:Dictionary=Pose.sample(duration*.3125,hand,anchor,height,reduced)
-		var weight:Dictionary=Pose.sample(duration*.5625,hand,anchor,height,reduced)
-		var end:Dictionary=Pose.sample(duration,hand,anchor,height,reduced)
+		var duration:float=Pose.return_duration(reduced)
+		var start:Dictionary=Pose.return_sample(0,hand,anchor,height,reduced)
+		var touch:Dictionary=Pose.return_sample(duration*.3125,hand,anchor,height,reduced)
+		var weight:Dictionary=Pose.return_sample(duration*.5625,hand,anchor,height,reduced)
+		var end:Dictionary=Pose.return_sample(duration,hand,anchor,height,reduced)
 		check(start.position==hand and start.size==24 and start.alpha==1,"first frame matches carried tray footprint")
 		check(float(touch.pressure)==0 and touch.alpha==1,"corner contact remains opaque before stack takes weight")
-		check(float(weight.pressure)>0 and is_equal_approx(float(weight.angle),-PI/2),"weight lands only after tray is laid flat")
-		check(weight.position==weight.contact and weight.alpha==1,"impact tray follows compressed top surface")
+		check(float(weight.pressure)==0 and float(weight.angle)==0 and int(weight.frame)==(7 if reduced else 6),"weight uses a real laid-tray keypose without stack squash")
+		check(weight.position==weight.contact and weight.alpha==1,"impact tray follows the rigid top surface")
 		check(float(end.pressure)==0 and end.alpha==0 and end.settled,"terminal pose resets stack and retires moving tray")
 		for boundary:float in [.3125,.5625,.75,.80,1.0]:
-			var a:Dictionary=Pose.sample(maxf(0,duration*boundary-.000001),hand,anchor,height,reduced)
-			var b:Dictionary=Pose.sample(duration*boundary,hand,anchor,height,reduced)
+			var a:Dictionary=Pose.return_sample(maxf(0,duration*boundary-.000001),hand,anchor,height,reduced)
+			var b:Dictionary=Pose.return_sample(duration*boundary,hand,anchor,height,reduced)
 			check(a.position.distance_to(b.position)<.01 and absf(float(a.angle)-float(b.angle))<.01,"poses are continuous at semantic boundary")
-	check(Pose.duration(true)<Pose.duration(false),"reduced mode has a shorter presentation without controller wait")
+	check(Pose.return_duration(true)<Pose.return_duration(false),"reduced mode has a shorter presentation without controller wait")
 	var state:Node=root.get_node("State");Fixture.install(state)
 	state.d.native.positions={"canteen_interior:":{"x":1466.0,"y":608.0}}
 	state.d.canteenHunt.carriedTrayIds=["tray_blue_01"]
@@ -40,7 +40,10 @@ func run()->void:
 	check(int(state.d.wallet.cashCents)==cash_before and not state.d.items.cafeteriaWages,"first return cannot invent a completion reward")
 	scene._process(.05);var after_tick:float=scene.return_age;scene.sync(state.d,"canteen_interior")
 	check(scene.return_age==after_tick,"unchanged repeated sync cannot restart the return")
-	for i in range(7):scene._process(.05)
+	for i in range(7):
+		scene._process(.05)
+		for part:Dictionary in scene.objects.return_stack.parts:
+			check(part.sprite.scale==part.base_scale and part.sprite.position==part.base_position,"each visible return phase keeps stack parts rigid")
 	var stack:Node2D=scene.objects.return_stack
 	check(scene.return_pose().alpha==0 and stack.parts[0].sprite.scale==stack.parts[0].base_scale,"stack settles to exact original geometry")
 	check(scene._return_surface().is_empty(),"retired temporary tray leaves no invisible pick occluder")

@@ -77,13 +77,29 @@ func finish_dialogue() -> void:
 	await frames()
 	check(shell.c3_narrative_host.current==null,"original dialogue reaches its own terminal acknowledgement")
 
-func collect_drinks() -> void:
+func collect_drinks(cancel_tail: bool=false) -> void:
 	for machine: Dictionary in chapter.world("canteen_interior").constants.CANTEEN_DRINK_MACHINES:
 		await stand(machine.id);await press(KEY_SPACE)
 		check(is_instance_valid(shell.c3_device_panel),"actual world Space opens drink machine")
 		if not is_instance_valid(shell.c3_device_panel):return
-		await click(shell.c3_device_panel.controls.take)
+		var panel: Control=shell.c3_device_panel
+		var timing: Dictionary={"elapsed_ms":-1.0}
+		panel.closed.connect(func(_reason: String):timing.elapsed_ms=panel.dispense_elapsed_ms)
+		await click(panel.controls.take)
 		check(state.d.items[machine.value],"source Take grants its own ingredient")
+		var granted: Dictionary=state.d.items.duplicate(true)
+		if cancel_tail:
+			check(panel.dispensing,"new grant has an optional tail available for early Escape")
+			await press(KEY_ESCAPE)
+		else:
+			# The grant assertion above remains immediate. Only the next physical
+			# action waits for the optional visual owner, not a fixed sleep.
+			var deadline: int=Time.get_ticks_msec()+3000
+			while is_instance_valid(shell.modal) and Time.get_ticks_msec()<deadline:await frames(1)
+			var duration: float=160.0 if state.d.native.get("settings",{}).get("reduced_motion",false) else 640.0
+			check(timing.elapsed_ms>=duration and timing.elapsed_ms<=duration+250,"normal tail closes in its authored duration plus at most one slow render interval")
+		check(not is_instance_valid(shell.modal),"tail completion or early Escape releases the next machine")
+		check(state.d.items==granted,"closing the optional tail never changes granted inventory")
 
 func pour(id: String) -> void:
 	var panel: Control=shell.c3_device_panel
@@ -112,7 +128,7 @@ func live_handoff(dimensions: Vector2i) -> void:
 	for id in ["lemonTea","sparklingWater","blackCoffee"]:await pour(id)
 	check(state.d.items.badDrink and not state.d.items.dailySpecialSparklingWater and state.d.canteenHunt.drinkMixAttemptCount==1,"source wrong recipe remains a failed attempt")
 	await inspect_journal("drink_mix")
-	await collect_drinks();await stand("canteen-mixer");await press(KEY_SPACE)
+	await collect_drinks(true);await stand("canteen-mixer");await press(KEY_SPACE)
 	await pour("blackCoffee")
 	check(state.d.canteenHunt.drinkMixSequence==["blackCoffee"] and state.objective().ends_with("（1/3）"),"source partial pour updates only earned count")
 	await press(KEY_ESCAPE);await inspect_journal("drink_mix")
