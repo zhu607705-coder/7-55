@@ -34,7 +34,7 @@ func mix_in_main() -> void:
 		await click(panel.slots[index])
 	check(state.d.items.badDrink and not state.d.items.dailySpecialSparklingWater,"actual wrong-order pours create badDrink only")
 	check(state.d.canteenHunt.drinkMixAttemptCount==before+1 and state.d.canteenHunt.drinkMixSequence.is_empty(),"one completed failed mixture resets only its sequence")
-	await create_timer(2.3).timeout;await frames()
+	await wait_for_mixer_close()
 	check(not is_instance_valid(shell.modal),"completed wrong mixture closes native mixer after optional presentation")
 	mixed=state.d.duplicate(true)
 func check_dialogue() -> void:
@@ -54,6 +54,17 @@ func test_controller_oracle() -> void:
 		check(s.canteenHunt==before.canteenHunt and s.wallet==before.wallet,"self-use grants no progression or payment")
 		var once: Dictionary=s.duplicate(true);c.dispatch(s,"c3_bad_drink")
 		check(s==once,"repeated controller request has no second effect")
+func wait_for_mixer_close() -> void:
+	# Three immediate accepted inputs can queue 420 + 420 + 600 logical ms.
+	# The panel then settles, shows the result and fades. Only this local clock
+	# is slowed; allow one 250ms slow scheduling interval beyond the real tail.
+	var panel_source=preload("res://scripts/ui/c3_mixer_panel.gd")
+	var logical_ms: float=2.0*420.0+600.0+panel_source.SETTLE_MS+panel_source.RESULT_MS+panel_source.RETURN_MS
+	var rate: float=preload("res://scripts/presentation/c3_mixer_motion.gd").PLAYBACK_RATE
+	var deadline: int=Time.get_ticks_msec()+int(ceil(logical_ms/rate))+250
+	while is_instance_valid(shell.modal) and Time.get_ticks_msec()<deadline:
+		await frames(1)
+	await frames()
 func run() -> void:
 	state=root.get_node("State");state.developer_mode=true
 	already_mixed=OS.get_environment("EARNED_SELF_DRINK_MIXED")=="1"
