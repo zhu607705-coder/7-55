@@ -227,6 +227,8 @@ func _text(canvas: CanvasItem,p: Vector2,text: String,size: int,color: Color) ->
 func _crowd_sample(route: Dictionary,index: int) -> Dictionary:
 	var from: Vector2=Room.point(route.from); var to: Vector2=Room.point(route.to); var duration: float=roundf(from.distance_to(to)/float(route.speed)*1000); var pause: float=route.endpointPauseMs; var t: float=fmod(bakery_ms,2*(duration+pause)); var reverse: bool=t>=duration+pause
 	var local: float=t-(duration+pause if reverse else 0); var p: Vector2=to.lerp(from,clampf(local/duration,0,1)) if reverse else from.lerp(to,clampf(local/duration,0,1)); var animation: String="student_walk"; var frame: int=(index*3+int(bakery_ms/125))%8
+	if local>=duration:
+		animation="student_idle"; frame=0
 	if local>=duration and local-duration<maxf(180,minf(360,pause-40)):
 		animation="student_phone_glance" if (index+(0 if reverse else 1))%2==0 else "student_adjust_bag"
 		frame=mini(1,int((local-duration)/(1000.0/(3 if animation=="student_phone_glance" else 4))))
@@ -243,7 +245,7 @@ func _draw_bakery_people(canvas: CanvasItem,context: Dictionary,state: Dictionar
 	if c.get("phase","")!="bakery_hour_hand" or c.get("timeState","")!="1225_bakery": return
 	for i in range(b.crowd.routes.size()):
 		var actor: Dictionary=_crowd_sample(b.crowd.routes[i],i)
-		var suffix: String="8frame" if actor.animation=="student_walk" else "2frame"
+		var suffix: String="8frame" if actor.animation=="student_walk" else "1frame" if actor.animation=="student_idle" else "2frame"
 		var art: Texture2D=texture("res://assets/rpg/npcs/finale/"+actor.animation+"_"+suffix+".png")
 		if not art: continue
 		canvas.draw_set_transform(origin+Vector2(actor.position)*zoom,0,Vector2(-1 if actor.flip else 1,1)*0.65*zoom)
