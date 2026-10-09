@@ -89,3 +89,33 @@ static func line_points(a: Vector2,b: Vector2,motion: Dictionary) -> PackedVecto
 		var u: float=i/32.0
 		points.append(a.lerp(b,u)+Vector2(sin(u*PI)*vibration,sin(u*PI)*slack))
 	return points
+
+static func depth_sample(model: RefCounted, motion: Dictionary) -> Dictionary:
+	# Depth is presentation only. A judged miss never counts as retrieval progress.
+	var landed: int=0
+	for note: Dictionary in model.notes:
+		if str(note.get("judgment","")) in ["perfect","great","good"]:landed+=1
+	var progress: float=float(landed)/maxi(1,model.notes.size())
+	var bite: float=0.0
+	if model.cast_at>=0 and model.stage in ["count_in","fighting"]:
+		bite=smoothstep(0,maxf(.01,4*model.beat_sec),maxf(0,model.elapsed-model.cast_at))
+	var surface: float=clampf(bite*.35+progress*.65,0,1)
+	var failed: bool=model.phase=="failed" or (model.phase=="completed" and not bool(model.final_result.get("passed",false)))
+	if failed:surface=0.0
+	elif model.phase=="completed" and bool(model.final_result.get("passed",false)):surface=1.0
+	var strain: float=0.0
+	var draw_up: float=0.0
+	if model.stage=="fighting" and model.phase=="running" and not bool(motion.reduced):
+		# The fish can dive against a loaded line. High tension is not free progress.
+		strain=float(motion.fish_force)*float(motion.stress)
+		draw_up=float(motion.player_pull)*float(motion.stress)
+	return {
+		"successful_notes":landed,"progress":progress,"bite":bite,"surface":surface,
+		"creature_depth":lerpf(.16,.012,surface)+strain*.012-draw_up*.008,
+		"creature_alpha":lerpf(.76,1.0,surface),
+		"creature_veil":lerpf(.34,.04,surface),
+		"target_veil":lerpf(.28,.10,surface),
+		"surface_wake":smoothstep(.55,.92,surface),
+		"fish_merge":smoothstep(.42,.92,surface),
+		"target_alpha":1.0-smoothstep(.42,.92,surface)
+	}
