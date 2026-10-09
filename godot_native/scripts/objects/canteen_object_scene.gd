@@ -2,6 +2,7 @@ extends Node2D
 ## Independent furniture, original Chapter3 state-owned actors and deterministic picking.
 const Prop=preload("res://scripts/objects/canteen_scene_object.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const ModeFiberView=preload("res://scripts/presentation/c3_mode_fiber_view.gd")
 const TrayFrames=preload("res://scripts/presentation/c3_tray_frames.gd")
 class Feature extends Node2D:
 	var owner_scene:Node2D
@@ -18,6 +19,7 @@ var layout:Dictionary
 var objects:Dictionary={}
 var textures:Dictionary={}
 var structures:Array=[]
+var mode_fiber_view:Node2D
 var source_space:Node2D
 var floor_sprite:Sprite2D
 var floor_patches:Array[Sprite2D]=[]
@@ -55,6 +57,7 @@ func setup(owner_world:Control)->void:
 	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 	if world!=null:layers=world.chapter3_layers
 	source_space=Node2D.new();source_space.name="SourceCoordinates";add_child(source_space)
+	mode_fiber_view=ModeFiberView.new();mode_fiber_view.z_index=Prop.draw_layer(ModeFiberView.SOURCE_DEPTH);source_space.add_child(mode_fiber_view)
 	for key:String in layout.assets:textures[key]=load(layout.assets[key].texture)
 	floor_pixels=textures.empty_floor.get_image()
 	if floor_pixels.is_compressed():floor_pixels.decompress()
@@ -102,6 +105,7 @@ func sync(next_state:Dictionary,scene_id:String)->void:
 		prop.set_active(_active)
 	for entry:Dictionary in structures:entry.body.collision_layer=1 if _active else 0
 	if not _active:
+		mode_fiber_view.set_samples([])
 		_restore_story_layers()
 		for body:StaticBody2D in dynamic_bodies.values():body.collision_layer=0
 		return
@@ -141,6 +145,7 @@ func _apply_draw_order()->void:
 	for feature:Node2D in features:ordered.append({"node":feature,"depth":float(feature.get_meta("source_depth"))})
 	if is_instance_valid(mixer_performance):ordered.append({"node":mixer_performance,"depth":818.0})
 	if is_instance_valid(drink_performance):ordered.append({"node":drink_performance,"depth":197.0})
+	ordered.append({"node":mode_fiber_view,"depth":ModeFiberView.SOURCE_DEPTH})
 	ordered.append({"node":player_shadow,"depth":float(player_sprite.get_meta("source_depth",0))-1})
 	ordered.append({"node":player_sprite,"depth":float(player_sprite.get_meta("source_depth",0))})
 	for i in range(ordered.size()):ordered[i]["order"]=i
@@ -210,8 +215,11 @@ func _place_entity(id:String,tex:Texture2D,region:Rect2,rect:Rect2,depth:float,i
 func _update_entities()->void:
 	entity_surfaces.clear();glow_entries.clear()
 	for sprite:Sprite2D in entities.values():sprite.hide()
+	mode_fiber_view.set_samples([])
 	if layers==null:return
-	for e:Dictionary in layers.entries(state):
+	var layer_entries:Array=layers.entries(state)
+	mode_fiber_view.set_samples(layer_entries.filter(func(e:Dictionary)->bool:return e.kind=="circle" and str(e.id).begins_with("mode_fiber_")))
+	for e:Dictionary in layer_entries:
 		if e.kind=="crop":continue
 		if e.kind=="sprite":
 			var tex:Texture2D=layers.texture(e.asset)

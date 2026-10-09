@@ -5,6 +5,8 @@ var world: Control
 var font: Font
 var ghosts: Array=[]
 var last_frame: int=-1
+var ghost_session_id: int=0
+var ghost_elapsed_ms: float=0.0
 var tail_lines: Array=[]
 var tail_ms: float=0.0
 var tail_reduced: bool=false
@@ -47,24 +49,64 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 func tick(delta_ms: float) -> void:
-	for ghost: Dictionary in ghosts: ghost.age+=delta_ms
-	ghosts=ghosts.filter(func(g: Dictionary)->bool:return g.age<g.duration)
+	var elapsed_delta: float=maxf(0,delta_ms) if is_finite(delta_ms) else 0.0
 	if session!=null and session.kind=="canteen":
-		var pose: Dictionary=session.paper_pose()
-		var frame: int=int((session.elapsed_ms-session.route_start_ms)/(120 if session.reduced_motion else 78))
-		if pose.visible and int(pose.frame)>=0 and frame!=last_frame and frame%2==0:
-			ghosts.append({"point":pose.point,"angle":pose.angle,"frame":pose.frame,"age":0.0,"duration":90.0 if session.reduced_motion else 220.0})
-		last_frame=frame
+		if session.status=="cancelled":
+			ghosts.clear(); last_frame=-1
+			queue_redraw(); return
+		var elapsed: float=session.elapsed_ms
+		if ghost_session_id!=session.get_instance_id() or elapsed<ghost_elapsed_ms:
+			# New arrival/retry cannot inherit old sprites or a previous timer phase.
+			ghosts.clear(); last_frame=-1; ghost_elapsed_ms=0
+			ghost_session_id=session.get_instance_id()
+		elapsed_delta=maxf(0,elapsed-ghost_elapsed_ms)
+		if session.paused: elapsed_delta=0
+		for ghost: Dictionary in ghosts: ghost.age+=elapsed_delta
+		ghosts=ghosts.filter(func(g: Dictionary)->bool:return g.age<g.duration)
+		if not session.paused and elapsed>=session.route_start_ms:
+			var interval: float=120.0 if session.reduced_motion else 78.0
+			var frame: int=int((elapsed-session.route_start_ms)/interval)
+			# Source increments its timer before testing the even frame. Frame0
+			# at route start is not an emission. Preserve crossed timer callbacks.
+			for step: int in range(maxi(1,last_frame+1),frame+1):
+				var at: float=session.route_start_ms+step*interval
+				var duration: float=90.0 if session.reduced_motion else 220.0
+				if step%2==0 and at<session.escape_end_ms and elapsed-at<duration:
+					var ghost:=_route_ghost(at,step%4)
+					ghost.age=elapsed-at; ghost.duration=duration
+					ghosts.append(ghost)
+			last_frame=frame
+		ghost_elapsed_ms=elapsed
+	else:
+		for ghost: Dictionary in ghosts: ghost.age+=elapsed_delta
+		ghosts=ghosts.filter(func(g: Dictionary)->bool:return g.age<g.duration)
 	if not tail_lines.is_empty():
-		tail_ms+=delta_ms
+		tail_ms+=elapsed_delta
 		if tail_ms>=tail_lines.size()*1600: tail_lines=[]
 	queue_redraw()
+
+func _route_ghost(at: float,frame: int) -> Dictionary:
+	# Read the existing authored route at the timer boundary. Never rewind or
+	# write the controller-issued session to sample a presentation sprite.
+	var point: Vector2=session.trigger_paper
+	var angle: float=-6.0
+	for segment: Dictionary in session.route:
+		if at<float(segment.startMs)+float(segment.durationMs):
+			var progress: float=session._ease(clampf((at-float(segment.startMs))/float(segment.durationMs),0,1),segment.ease)
+			point=point.lerp(segment.point,progress); angle=lerpf(angle,float(segment.angle),progress)
+			break
+		point=segment.point; angle=float(segment.angle)
+	return {"point":point,"angle":angle,"frame":frame,"scale":0.82,"age":0.0,"duration":0.0}
+
+func ghost_pose(ghost: Dictionary) -> Dictionary:
+	var progress: float=clampf(ghost.age/ghost.duration,0,1)
+	return {"point":ghost.point,"angle":ghost.angle,"frame":ghost.frame,"scale":float(ghost.scale)*lerpf(1,0.82,progress),"alpha":0.24*(1-progress),"tint":Color("bdefff")}
 func _screen(p: Vector2) -> Vector2: return (p-world.camera)*world.zoom+world.size/2
 func _draw() -> void:
 	if not is_instance_valid(world) or world.scene_id!="canteen_interior": return
 	for ghost: Dictionary in ghosts:
-		var progress: float=ghost.age/ghost.duration
-		Paper.draw(self,_screen(ghost.point),world.zoom*0.82*lerpf(1,0.82,progress),ghost.angle,ghost.frame,0.24*(1-progress))
+		var pose: Dictionary=ghost_pose(ghost)
+		Paper.draw(self,_screen(pose.point),world.zoom*pose.scale,pose.angle,pose.frame,pose.alpha,false,Transform2D.IDENTITY,Vector2.ONE,pose.tint)
 	if session!=null:
 		var pose: Dictionary=session.paper_pose()
 		if pose.visible: Paper.draw(self,_screen(pose.point),world.zoom*float(pose.scale),pose.angle,pose.frame)
@@ -96,4 +138,4 @@ func _bubble(text: String,point: Vector2,width: float,factor: float,alpha: float
 	draw_colored_polygon(tail,Color("fff6df",alpha))
 	draw_string(font,point+Vector2(-width/2,5*factor),text,HORIZONTAL_ALIGNMENT_CENTER,width,int(13*factor),Color("172932",alpha))
 func reset() -> void:
-	session=null; ghosts=[]; tail_lines=[]; tail_ms=0; last_frame=-1; queue_redraw()
+	session=null; ghosts=[]; tail_lines=[]; tail_ms=0; last_frame=-1; ghost_session_id=0; ghost_elapsed_ms=0; queue_redraw()

@@ -25,12 +25,13 @@ for(const relative of ['tools/export-save-domains.mjs','tools/export-audio-direc
  if(['tests/export_c3_canteen_devices_source.mjs','tests/export_c3_bike_world_source.mjs'].includes(relative))args.push('--source-root',path.dirname(project));
  run('Source catalog '+relative,args,process.execPath);
 }
-for(const relative of ['tests/verify_source_model_parity.mjs','tests/verify_canteen_defense_source.mjs','tests/verify_canteen_pickup_source.mjs','tests/verify_lake_branch_source.mjs'])run('Source oracle '+relative,[path.join(project,relative)],process.execPath);
+for(const relative of ['tests/verify_source_model_parity.mjs','tests/verify_canteen_defense_source.mjs','tests/verify_canteen_pickup_source.mjs','tests/verify_canteen_paper_art_source.mjs','tests/verify_canteen_paper_effects_source.mjs','tests/verify_canteen_victory_source.mjs','tests/verify_lake_branch_source.mjs'])run('Source oracle '+relative,[path.join(project,relative)],process.execPath);
 run('Phone entry source contracts', [path.join(project,'tests/verify_phone_entry_source.py')], 'python3');
 run('Photo brightness source lifecycle', [path.join(project,'tests/verify_photo_consumer_source.mjs')],process.execPath);
 run('Tiyi presence source setter', [path.join(project,'tests/export_tiyi_presence_source.mjs'),'--check'],process.execPath);
 run('Tiyi presence source CLI', [path.join(project,'tests/verify_tiyi_oracle_cli.mjs')],process.execPath);
 run('Canteen objective source handoff', [path.join(project,'tests/export_canteen_handoff_source.mjs'),'--source-root',path.dirname(project),'--check'],process.execPath);
 run('Canteen self-drink source contract', [path.join(project,'tests/export_canteen_self_drink_source.mjs'),'--source-root',path.dirname(project),'--check'],process.execPath);
+run('Canteen mode fibers source contract', [path.join(project,'tests/export_canteen_mode_fibers_source.mjs'),'--source-root',path.dirname(project),'--check'],process.execPath);
 run('Original SaveStore differential', [path.join(project,'tests/verify_save_migration.mjs')],process.execPath);
 if(process.env.GODOT_TEST_REPORT)fs.writeFileSync(process.env.GODOT_TEST_REPORT,JSON.stringify(logs,null,2));

@@ -4527,3 +4527,9 @@ Proposed source/test/document union: 75 paths. The 35 import-generated UID compa
 - Rebuilt the tasting-counter presentation with the clean source backdrop, independent RGBA glass and bottle/cap parts, clipped liquid layers and a fixed world cup contact. Only the mixing counter changes its backdrop; the separate drinks shelf remains unchanged.
 - Simplified bottle labels to drink names, moved the recorded shelf clue below the title, and reserved one bottom status strip for either the operation hint or source feedback. No recipe, ownership, shuffle, controller reward, cancel, save or immediate third-pour closure rule changed.
 - Final source on integrated base `b1177e10` passed import/parse, 14 focused native suites (27,322 checks) and two executed TypeScript-source fixture checks. Real cloud-desktop input covered desktop success/cancel/reentry, mobile-sized failure/missing feedback and 430×860 close/bounds. Independent source review found no blocker. Scope and evidence limits are in `godot_native/docs/MIXER_LAYER_SEPARATION.md`.
+
+## 2026-10-09 — Source-faithful native canteen victory paper
+
+- Restored the validated terminal running frame, mirror and angle through the victory presentation; all position, independent X/Y scale and angle channels use the original quadratic 760/160 ms tween, 260/60 ms hold and hidden idle reset before dialogue.
+- Shared paper rendering retains existing defaults and adds optional independent scale axes and source RGB tint. Controller facts, replay proof, rewards and saves are unchanged.
+- The offline original-method oracle passed eight cases and 112 timing samples. Native controller spoof-resistance, transform/tint and actual-view tests are included but remain unrun while the shared host is reserved for generation. No Godot/browser process, asset import, publication or GUI acceptance is claimed. See `godot_native/docs/CANTEEN_VICTORY_PAPER_POSE.md` for exact scope and pending checks.

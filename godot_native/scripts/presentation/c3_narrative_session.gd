@@ -161,7 +161,13 @@ func paper_pose() -> Dictionary:
 		return {"point":p-Vector2(0,18*fade),"scale":1+sin(elapsed_ms/115)*0.08,"angle":lerpf(-8,18,progress),"alpha":1-fade if t>=0 else 0.0,"wet":true}
 	if sequence_id=="canteen_escape":
 		var p: float=clampf(elapsed_ms/(160.0 if reduced else 760.0),0,1)
-		return {"point":origin.lerp(Vector2(1380,852),p*p),"scale":lerpf(1.16,0.56,p),"angle":86*p,"alpha":1.0 if elapsed_ms<float(spec.delayMs) else 0.0,"wet":false}
+		var eased: float=p*p
+		# animateDefenseVictory keeps the completed runtime's run texture/flip.
+		# Quad.easeIn applies to position, BOTH scale axes and the frozen angle.
+		# finishDefense restores the idle texture/transform and hides the paper
+		# after the 260/60ms hold, before the first escape dialogue line.
+		var visible: bool=elapsed_ms<float(spec.delayMs)
+		return {"point":origin.lerp(Vector2(1380,852),eased),"scale":1.0,"scaleXY":Vector2(lerpf(1.16,0.28,eased),lerpf(1.16,0.84,eased)) if visible else Vector2.ONE,"angle":lerpf(float(spec.get("paperAngle",0)),86,eased) if visible else 0.0,"frame":int(spec.get("paperFrame",0)) if visible else -1,"flip":bool(spec.get("paperFlip",false)) if visible else false,"alpha":1.0 if visible else 0.0,"wet":false}
 	return {}
 func trail() -> Array:
 	if sequence_id!="qizhen_approach": return []

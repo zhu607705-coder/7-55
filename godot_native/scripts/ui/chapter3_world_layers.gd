@@ -2,6 +2,8 @@ extends RefCounted
 const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const ModeFibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
+var mode_fibers: RefCounted=ModeFibers.new()
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
 const Bike=preload("res://scripts/presentation/c3_bike_world_view.gd")
 var bike_view: RefCounted=Bike.new()
@@ -35,6 +37,7 @@ func asset(key: String) -> String: return str(source.assets.get(key,""))
 func reduced(s: Dictionary) -> bool: return bool(s.native.get("settings",{}).get("reduced_motion",false))
 func scene_npcs(s: Dictionary) -> bool: return s.canteenHunt.phase!="exit_blocking"
 func sync(s: Dictionary,scene_changed: bool=false) -> void:
+	mode_fibers.sync(s,scene_changed)
 	var current: String=str(s.native.get("scene",""))
 	if scene_changed or current!=scene_id or previous_state.is_empty():
 		scene_id=current; occlusion_alphas.clear(); clock_ms=0; admission_ms=INF; pickup_ms=INF; program_flights=[]
@@ -63,6 +66,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 	previous_state=s.duplicate(true)
 func tick(delta: float,s: Dictionary) -> void:
 	sync(s)
+	mode_fibers.tick(delta,s)
 	var dt: float=clampf(delta,0,.1)*1000
 	clock_ms+=dt; admission_ms+=dt; pickup_ms+=dt; fade_ms=minf(180,fade_ms+dt)
 	var blend: float=(1-cos(fade_ms/180*PI))/2
@@ -88,6 +92,7 @@ func entries(s: Dictionary) -> Array:
 			if target.kind=="safety_officer":
 				result.append({"id":str(target.id),"kind":"sprite","asset":"res://assets/rpg/npcs/finale/guard_check_watch_2frame.png","point":Vector2(target.x,target.y+46),"scale":.52,"frameSize":Vector2(96,128),"frame":0 if reduced(s) else int(clock_ms/500)%2,"anchor":Vector2(.5,1),"alpha":1.0 if str(s.native.get("selected_item","")).is_empty() else .3,"depth":target.y+48})
 	if scene_id=="canteen_interior":
+		result.append_array(mode_fibers.entries())
 		var c: Dictionary=source.constants
 		var promo_live: Dictionary=promo_pose(s)
 		if light_alpha>0:
@@ -283,6 +288,9 @@ func _draw_entry(canvas: CanvasItem,context: Dictionary,entry: Dictionary) -> vo
 				# These surfaces use the exact current frame, pivot, scale and rotation.
 				Picker.record(canvas,ids,{"rect":Rect2(-size_value*entry.get("anchor",Vector2(.5,.5)),size_value),"texture":tex,"source":region,"transform":Transform2D(deg_to_rad(float(entry.get("angle",0))),Vector2.ONE*scale_value,0,point)})
 			canvas.draw_texture_rect_region(tex,Rect2(-size_value*entry.get("anchor",Vector2(.5,.5)),size_value),region,Color(1,1,1,clampf(float(entry.get("alpha",1)),0,1)))
+	elif entry.kind=="circle":
+		var color: Color=entry.color; color.a*=clampf(float(entry.alpha),0,1)
+		canvas.draw_circle(Vector2.ZERO,float(entry.radius),color)
 	elif entry.kind=="glow":
 		canvas.draw_rect(Rect2(-entry.size/2,entry.size),Color("9af4ff",entry.alpha))
 	elif entry.kind=="tray":
