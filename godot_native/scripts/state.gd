@@ -341,6 +341,7 @@ func validate_snapshot(value: Variant) -> bool:
 	if float(value.native.settings.volume) < 0 or float(value.native.settings.volume) > 1: return false
 	if float(value.native.settings.text_scale) < .5 or float(value.native.settings.text_scale) > 3: return false
 	var optional_templates := {
+		"dorm_props":{"cabinet_open":false,"lamp_01_on":false,"lamp_03_on":false},
 		"c3_reversal_pending":false,
 		"alarm_ringing":false,"wake_warned":false,"flower_eight_visible":false,"friend_scatter_pending":false,"tower_key_pending":false,
 		"c35_frame":"","c35_voice_stage":"","c35_summary_choice":"","c4_bio":"","c4_context":"","c4_last_dialogue":"","checkpoint_id":"",
