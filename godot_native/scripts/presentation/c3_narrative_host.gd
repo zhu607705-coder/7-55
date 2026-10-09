@@ -18,6 +18,7 @@ var completion_sent: bool=false
 var was_focused: bool=true
 var original_zoom: float=1
 var entry_camera:=Vector2.ZERO
+var _escape_camera_owned: bool=false
 func setup(world_view: Control,state_reader: Callable,session_provider: Callable,action_sink: Callable,cue_sink: Callable=Callable(),runtime_state_reader: Callable=Callable()) -> void:
 	world=world_view; read_state=state_reader; provider=session_provider; dispatch=action_sink; cue=cue_sink; runtime_reader=runtime_state_reader
 	process_priority=61; mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -45,6 +46,11 @@ func tick(delta_ms: float,focused: bool=true) -> void:
 		# Restore canonical bounds before taking a camera sample for a source shot.
 		if owns_world_contract(): cinematic_started.emit()
 		original_zoom=world.zoom; entry_camera=world.camera
+		_escape_camera_owned=current.sequence_id=="canteen_escape"
+		if _escape_camera_owned:
+			# Defense hides the world, so an old entry fade may still be pending.
+			# Source victory is the same room, with no new fade over its 160ms flight.
+			world.transition_alpha=0.0
 		view.session=current; effects.session=current; view.move_to_front(); move_to_front()
 		if current.blocks_movement() or current.sequence_id=="canteen_promo": world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
 		if current.sequence_id=="canteen_escape" and current.spec.get("playerStart") is Array:
@@ -106,10 +112,27 @@ func _apply_motion(delta_ms: float) -> void:
 		var target: Vector2=world.player+Vector2(270,0)
 		var half: Vector2=Vector2(480,270)/world.zoom
 		world.camera=Vector2(clampf(target.x,half.x,world.world_size.x-half.x),clampf(target.y,half.y,maxf(half.y,world.world_size.y-half.y)))
+	apply_owned_camera()
 	world.queue_redraw()
+
+func apply_owned_camera() -> bool:
+	# startDefense stops following the player and fits the complete source room.
+	# animateDefenseVictory, finishDefense and beginCanteenExit keep that shot.
+	# Main retains the canonical 960x540 surface, including on portrait screens.
+	if not _escape_camera_owned or current==null or not is_instance_valid(world): return false
+	if current.status not in ["playing","complete"] or world.scene_id!=current.scene or not current.valid(read_state.call()): return false
+	var room: Vector2=world.world_size
+	world.zoom=minf(960.0/room.x,540.0/room.y)*.985
+	world.camera=room/2
+	return true
+
 func _voice(id: String) -> void:
 	if cue.is_valid(): cue.call(id,{"prefixes":["chapter3_story_line"]})
 func _restore_camera(id: String) -> void:
+	# Release before the normal camera update so it cannot reacquire this shot.
+	_escape_camera_owned=false
+	if id=="canteen_escape" and is_instance_valid(world) and world.scene_id=="canteen_interior" and current!=null and is_same(read_state.call(),current.bound_state):
+		world.zoom=original_zoom; world._update_camera(); world.queue_redraw()
 	if id in ["qizhen_approach","canteen_promo"] and is_instance_valid(world) and world.scene_id in ["campus_qizhen_loop","canteen_interior"]:
 		world.zoom=1.0 if id=="canteen_promo" else original_zoom; world._update_camera(); world.queue_redraw()
 func reset() -> void:

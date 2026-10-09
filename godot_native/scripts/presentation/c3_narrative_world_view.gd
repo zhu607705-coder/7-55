@@ -24,7 +24,7 @@ func _draw() -> void:
 	var pose: Dictionary=session.paper_pose()
 	if pose.is_empty() or float(pose.alpha)<=0: return
 	if not pose.wet:
-		Paper.draw(self,screen(pose.point),world.zoom*float(pose.scale),float(pose.angle),-1,float(pose.alpha)); return
+		Paper.draw(self,screen(pose.point),world.zoom*float(pose.scale),float(pose.angle),int(pose.get("frame",-1)),float(pose.alpha),bool(pose.get("flip",false)),Transform2D.IDENTITY,pose.get("scaleXY",Vector2.ONE)); return
 	# QizhenLoopScene.ensureWetPaperTexture: same 52x34 generated paper geometry.
 	draw_set_transform(screen(pose.point),deg_to_rad(float(pose.angle)),Vector2.ONE*world.zoom*float(pose.scale))
 	var points:=PackedVector2Array([Vector2(-22,-13),Vector2(17,-16),Vector2(21,8),Vector2(-18,12)])

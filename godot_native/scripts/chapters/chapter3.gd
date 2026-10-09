@@ -275,8 +275,8 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if not ResourceLoader.exists(path): return locked("拦截记录无法验证。")
 			var model: Variant=load(path)
 			if not model.validate_result(value,seed_value): return locked("纸条已离开 · 重新拦截")
-			# Recover final physical actor positions from the validated input trace,
-			# never from caller-supplied terminal coordinates.
+			# Recover the frozen terminal actors from the validated input trace,
+			# never from caller-supplied coordinates, paper frame, flip or angle.
 			var replay: RefCounted=model.new()
 			replay.configure(seed_value)
 			for attempt: Array in value.get("attempts",[]):
@@ -285,7 +285,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			c.blockHits=3
 			c.phase="chase_ready"
 			var reduced: bool=s.native.get("settings",{}).get("reduced_motion",false)
-			return tell(s,"canteen_escape","chapter3-canteen.content","blocking.escapeDialogue",{"delayMs":220 if reduced else 1020,"stepMs":1200,"tailMs":166 if reduced else 475,"onComplete":"canteen_exit","paperStart":[replay.paper.x,replay.paper.y],"playerStart":[replay.player.x,replay.player.y]})
+			return tell(s,"canteen_escape","chapter3-canteen.content","blocking.escapeDialogue",{"delayMs":220 if reduced else 1020,"stepMs":1200,"tailMs":166 if reduced else 475,"onComplete":"canteen_exit","paperStart":[replay.paper.x,replay.paper.y],"paperFrame":replay.paper_frame,"paperFlip":replay.paper_flip,"paperAngle":replay.paper_angle,"playerStart":[replay.player.x,replay.player.y]})
 		"c3_bad_drink":
 			if not side_active(c) or not own(s,"badDrink"): return locked()
 			consume(s,"badDrink")

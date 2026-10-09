@@ -606,6 +606,10 @@ func _c4_axis_destination(start:Vector2,motion:Vector2) -> Vector2:
 	return current
 
 func _update_camera() -> void:
+	# Source victory keeps the full room even while dialogue permits walking.
+	# Honor the presentation owner before exploration, resize or pan can follow.
+	var narrative: Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
+	if is_instance_valid(narrative) and narrative.has_method("apply_owned_camera") and narrative.apply_owned_camera(): return
 	var half := size/(2*zoom)
 	camera = Vector2(clampf(player.x+pan_offset.x,half.x,maxf(half.x,world_size.x-half.x)),clampf(player.y+pan_offset.y,half.y,maxf(half.y,world_size.y-half.y)))
 	if world_size.x < half.x*2: camera.x = world_size.x/2

@@ -10,6 +10,9 @@ accepted facts. Loading, cancelling, hiding or completing an animation must
 never create an item or repeat a reward. The active defense is the original
 60-second moving-cart model; the retired three-static-cart route stays retired.
 
+Full current status, evidence, PRs and remaining checks are tracked in
+[CANTEEN_ANIMATION_COVERAGE.md](CANTEEN_ANIMATION_COVERAGE.md).
+
 ## Full scene inventory
 
 | Motion group | Current source/native evidence | Rebuild treatment |
@@ -23,7 +26,7 @@ never create an item or repeat a reward. The active defense is the original
 | Arrival paper discovery and escape | `c3_scene_session.gd`, `c3_canteen_paper_view.gd` | Retain authored route, surprise, folded-leg poses and camera ownership; verify rendered continuity |
 | Ambient light NPCs | `chapter3_world_layers.gd` | Reuse actual frame pairs for 4 counter, 12 queue, 8 seated, 6 extra seated, 1 return NPC; preserve occlusion |
 | Shadow auntie and mode transition | native layers and original `createDarkModeLayer` | Retain three shadow frames and 180 ms fade; audit source blue fibers |
-| Order receipt | controller and print SFX at +420 ms | Existing grant remains authoritative; physical print art is a separate presentation gap |
+| Order receipt | controller and print SFX at +420 ms | Retain immediate ticket, dialogue and +420 ms print sound; original source has no physical-print animation |
 | Active pushcart defense | `canteen_defense_model.gd` and source runtime | Preserve 4-direction/4-frame actor and deterministic model; use native scene furniture where available |
 | Defense paper run and impact | model and `c3_paper_art.gd` | Restore authored folded-leg drawing instead of body-only bob; preserve contact proof |
 | Defense win and paper escape | `c3_narrative_session.gd` | Preserve replay validation, southeast escape and dialogue gates |

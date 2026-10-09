@@ -3,11 +3,14 @@ signal finished(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
 const Model=preload("res://scripts/games/canteen_defense_model.gd")
+const DefenseEffects=preload("res://scripts/presentation/c3_defense_effects.gd")
+const PaperArt=preload("res://scripts/presentation/c3_paper_art.gd")
 const PickupTimeline=preload("res://scripts/presentation/c3_pickup_timeline.gd")
 const PickupView=preload("res://scripts/presentation/c3_pickup_view.gd")
 const MAP_SIZE=Vector2(1672,941)
 const MAP_SCALE: float=0.56525
 const MAP_OFFSET=Vector2(480,270)-MAP_SIZE*MAP_SCALE/2
+var defense_effects: RefCounted=DefenseEffects.new()
 var config: Dictionary={}
 var model: RefCounted
 var running: bool=false
@@ -117,7 +120,14 @@ func setup(parameters: Dictionary) -> void:
 	config=parameters.duplicate(true)
 	if is_node_ready(): reset_model()
 
+func _reset_defense_effects() -> void:
+	var reduced: bool=bool(config.get("reduced_motion",false))
+	if not config.has("reduced_motion") and has_node("/root/State"):
+		reduced=bool(get_node("/root/State").d.get("native",{}).get("settings",{}).get("reduced_motion",false))
+	defense_effects.reset(reduced)
+
 func reset_model() -> void:
+	_reset_defense_effects()
 	_audio_started=false
 	model=Model.new()
 	model.configure(str(config.get("seed",config.get("session_id","native-defense"))))
@@ -191,6 +201,7 @@ func restart() -> void:
 		_audio_started=audio_started
 	else:
 		model.restart_attempt()
+		_reset_defense_effects()
 		clear_input()
 		accumulator=0
 		retry_wait=0
@@ -200,7 +211,7 @@ func restart() -> void:
 	refresh()
 
 func toggle_pause() -> void:
-	if (not running and not _pickup_active) or sent: return
+	if not running and not _pickup_active: return
 	paused=not paused
 	presentation_requested.emit("native_activity_paused" if paused else "native_activity_resumed",{"prefixes":["canteen_defense_","canteen_pickup_","canteen_paper_package_","canteen_paper_burst_","canteen_paper_camera_"]})
 	clear_input()
@@ -288,7 +299,12 @@ func _process(delta: float) -> void:
 		queue_redraw(); return
 	if not model: return
 	if sent:
+		# A final-tick contact remains visible through the existing victory hold.
+		# Only presentation advances; the accepted model/proof stays terminal.
+		if paused: return
+		defense_effects.advance(minf(delta,.1)*1000)
 		finish_wait-=delta
+		refresh()
 		if finish_wait<=0:
 			var result: Dictionary=model.result()
 			result.session_id=config.get("session_id","")
@@ -298,6 +314,7 @@ func _process(delta: float) -> void:
 		return
 	if running and not paused:
 		if model.status=="lost":
+			defense_effects.advance(minf(delta,.1)*1000)
 			retry_wait-=delta
 			if retry_wait<=0: restart()
 		else:
@@ -309,7 +326,9 @@ func _process(delta: float) -> void:
 					var gap: Vector2=pointer_target-(model.player+Model.BODY_CENTER)
 					if gap.length()>5: axis=gap.normalized()
 				axis=axis.limit_length(1)
+				defense_effects.advance(Model.DT*1000)
 				model.step({"x":axis.x,"y":axis.y,"dash":dash_requested})
+				defense_effects.observe(model)
 				dash_requested=false
 			if model.status=="lost":
 				retry_wait=1.15
@@ -369,16 +388,14 @@ func _draw() -> void:
 			draw_string(font,Vector2(279,215),"守住了！" if sent else ("已暂停" if paused else "别让纸条钻出食堂"),HORIZONTAL_ALIGNMENT_CENTER,402,27,Color("fff4c9"))
 			draw_string(font,Vector2(270,263),"推车碰到纸条，它就会改换出口",HORIZONTAL_ALIGNMENT_CENTER,420,19,Color("94e0e3"))
 
-func _draw_board(canvas: CanvasItem,offset: Vector2,zoom: float) -> void:
+func _draw_board(canvas: CanvasItem,offset: Vector2,zoom: float,viewport: Vector2=Vector2(960,540)) -> void:
+	offset+=defense_effects.camera_offset(viewport,zoom)
 	canvas.draw_set_transform(offset,0,Vector2.ONE*zoom)
 	var native_room:=is_instance_valid(canteen_scene)
 	var foot:float=model.body_at(model.player).end.y
 	if native_room:canteen_scene.paint_defense(canvas,false,foot)
 	else:canvas.draw_texture_rect(background,Rect2(Vector2.ZERO,MAP_SIZE),false)
-	if model.route_flash>0:
-		var points: PackedVector2Array=PackedVector2Array([model.paper])
-		for point: Vector2 in model.route: points.append(point)
-		if points.size()>1: canvas.draw_polyline(points,Color(0.45,0.9,1,model.route_flash/760.0),5)
+	defense_effects.draw(canvas)
 	var row: int=2
 	var origin: Vector2=Vector2(0.5,0.27)
 	if absf(model.facing.x)>absf(model.facing.y):
@@ -392,24 +409,13 @@ func _draw_board(canvas: CanvasItem,offset: Vector2,zoom: float) -> void:
 	else:
 		for crop: Dictionary in occlusions:
 			if foot<crop.sort_y: canvas.draw_texture_rect_region(background,crop.rect,crop.rect)
-	_draw_paper(canvas)
+	_draw_paper(canvas,Transform2D(0,Vector2.ONE*zoom,0,offset))
 	canvas.draw_set_transform(Vector2.ZERO)
 
-func _draw_paper(canvas: CanvasItem) -> void:
-	# Generated from the source 64x50 folded-paper texture geometry.
-	var transform: Transform2D=Transform2D(deg_to_rad(model.paper_angle),model.paper)
-	var scale_value: Vector2=Vector2(-1.16 if model.paper_flip else 1.16,1.16)
-	var lift: float=2 if model.paper_frame%2==0 else 0
-	var colors: Array=[Color("60717c"),Color("d7e0e3"),Color("f3f6f3"),Color("e5ebec"),Color("c1ced4")]
-	var shapes: Array=[[[7,9],[48,6],[58,34],[17,46],[5,36]],[[5,5],[46,2],[55,30],[15,41],[3,32]],[[5,5],[25,8],[15,41],[3,32]],[[25,8],[46,2],[55,30],[34,27],[15,41]],[[46,2],[55,30],[41,18]]]
-	for i: int in range(shapes.size()):
-		var points: PackedVector2Array=[]
-		for point: Array in shapes[i]: points.append(transform*((Vector2(point[0],point[1]-lift)-Vector2(32,25))*scale_value))
-		canvas.draw_colored_polygon(points,colors[i])
-	for offset: Vector2 in [Vector2(13,13-lift),Vector2(13,20-lift),Vector2(13,25-lift)]:
-		var a: Vector2=transform*((offset-Vector2(32,25))*scale_value)
-		var b: Vector2=transform*((offset+Vector2(26,0)-Vector2(32,25))*scale_value)
-		canvas.draw_line(a,b,Color("236f9d"),2.5)
+func _draw_paper(canvas: CanvasItem,board_transform: Transform2D) -> void:
+	# Reuse both folded-leg kicks, recovery lift, shadow, creases and face.
+	# The model owns the four-frame clock, heading and 34px collision recoil.
+	PaperArt.draw(canvas,model.paper,1.16,model.paper_angle,model.paper_frame,1.0,model.paper_flip,board_transform)
 
 func _draw_pickup(canvas:CanvasItem,viewport:Rect2)->void:
 	if pickup_view!=null:pickup_view.draw(canvas,viewport,pickup_pose())
@@ -418,6 +424,7 @@ func _draw_pickup(canvas:CanvasItem,viewport:Rect2)->void:
 		if font:canvas.draw_string(font,viewport.get_center()+Vector2(-90,-7),"已暂停",HORIZONTAL_ALIGNMENT_CENTER,180,22,Color("fff4c9"))
 
 func _exit_tree() -> void:
+	defense_effects.reset()
 	presentation_requested.emit("native_activity_closed",{"prefixes":["canteen_defense_","canteen_pickup_","canteen_paper_package_","canteen_paper_burst_","canteen_paper_camera_"]})
 
 ## Only presentation uses device pixels. Simulation always stays in source pixels.
@@ -501,11 +508,12 @@ func draw_board_view(view: Control,is_overview: bool) -> void:
 	if _pickup_active:
 		_draw_pickup(view,Rect2(Vector2.ZERO,view.size));return
 	var metrics:=board_metrics(view,is_overview)
-	_draw_board(view,metrics.offset,metrics.zoom)
+	_draw_board(view,metrics.offset,metrics.zoom,view.size)
 	if is_overview:
 		# The whole authored room remains visible. This rectangle only locates
 		# the close view; it exposes no future route, state or story information.
 		var close_view:=board_metrics(board_view,false)
+		metrics.offset+=defense_effects.camera_offset(view.size,metrics.zoom)
 		view.draw_rect(Rect2(close_view.source.position*metrics.zoom+metrics.offset,close_view.source.size*metrics.zoom),Color(.8,.95,1,.85),false,1.5)
 		view.draw_circle(model.player*metrics.zoom+metrics.offset,5,Color(.4,.85,1,.9),false,1.5)
 		view.draw_circle(model.paper*metrics.zoom+metrics.offset,5,Color(1,.95,.75,.9),false,1.5)
