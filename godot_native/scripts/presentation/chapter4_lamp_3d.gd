@@ -10,6 +10,10 @@ const VERTICAL_FOV := 29.839371711
 const STAR_COUNT := 640
 const LED_NAME := "MAT_LED_Warm"
 const CORE_NAME := "MAT_Core_Ivory"
+const SPILL_SHADER = preload("res://scripts/presentation/chapter4_lamp_spill.gdshader")
+const LED_EMISSION_PEAK := 6.0
+const CORE_EMISSION_PEAK := 5.0
+const SPILL_STRENGTHS := {"MAT_CageSteel": 0.8, "MAT_SilverSatin": 0.65, "MAT_DarkTrim": 0.22, "MAT_CoreSeams": 0.28}
 var viewport: SubViewport
 var scene: Node3D
 var model: Node3D
@@ -18,6 +22,7 @@ var environment: Environment
 var stars: MultiMeshInstance3D
 var materials: Dictionary = {}
 var imported_materials: Dictionary = {}
+var spill_materials: Dictionary = {}
 var lit_albedos: Dictionary = {}
 var mesh_count := 0
 var triangle_count := 0
@@ -77,10 +82,10 @@ func _build_environment() -> void:
 	environment.ambient_light_color = Color(0.36, 0.46, 0.62)
 	environment.ambient_light_energy = 0.72
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	# Compatibility has no post-process Glow. Keep the approved low emission
-	# surfaces; never substitute a white full-screen flare. The decorative local
-	# point-light passes are omitted after actual-window profiling. The original
-	# neutral directional key still reveals all genuine metal geometry.
+	# Compatibility has no post-process Glow. Brightness belongs to the actual
+	# luminous surfaces and bounded warm reflection on nearby metal. No broad
+	# halo, exposure lift, or extra point-light passes are needed. The original
+	# directional key still reveals the genuine metal geometry.
 	environment.glow_enabled = false
 	var world := WorldEnvironment.new()
 	world.environment = environment
@@ -142,12 +147,21 @@ func _bind_materials(node: Node) -> void:
 				local.cull_mode = BaseMaterial3D.CULL_BACK
 				if key in [LED_NAME, CORE_NAME]:
 					local.emission_enabled = true
-					local.emission = (Color(0.94, 0.80, 0.51) if key == LED_NAME else Color(0.76, 0.62, 0.39)).linear_to_srgb()
+					local.emission = (Color(1.0, 0.91, 0.72) if key == LED_NAME else Color(1.0, 0.85, 0.56)).linear_to_srgb()
 					local.emission_energy_multiplier = 0.0
 				materials[key] = local
 				imported_materials[key] = source
 				lit_albedos[key] = source.albedo_color.srgb_to_linear()
-			instance.set_surface_override_material(surface, materials[key])
+				if SPILL_STRENGTHS.has(key):
+					var spill := ShaderMaterial.new()
+					spill.shader = SPILL_SHADER
+					spill.resource_local_to_scene = true
+					spill.set_shader_parameter("surface_color", local.albedo_color)
+					spill.set_shader_parameter("surface_metallic", local.metallic)
+					spill.set_shader_parameter("surface_roughness", local.roughness)
+					spill.set_shader_parameter("spill_strength", SPILL_STRENGTHS[key])
+					spill_materials[key] = spill
+			instance.set_surface_override_material(surface, spill_materials.get(key, materials[key]))
 	for child in node.get_children():
 		_bind_materials(child)
 
@@ -174,10 +188,12 @@ func apply_frame(frame: Dictionary, stage: String) -> void:
 	camera.fov = rad_to_deg(atan(fit_tangent)) * 2.0
 	var led := clampf(float(frame.led) / 0.7, 0, 1)
 	var core := clampf(float(frame.core) / 0.62, 0, 1)
-	materials[LED_NAME].emission_energy_multiplier = led * 1.8
-	materials[CORE_NAME].emission_energy_multiplier = core * 0.85
+	materials[LED_NAME].emission_energy_multiplier = led * LED_EMISSION_PEAK
+	materials[CORE_NAME].emission_energy_multiplier = core * CORE_EMISSION_PEAK
 	materials[LED_NAME].albedo_color = Color(0.14, 0.17, 0.19).lerp(lit_albedos[LED_NAME], led).linear_to_srgb()
 	materials[CORE_NAME].albedo_color = Color(0.42, 0.46, 0.50).lerp(lit_albedos[CORE_NAME], core).linear_to_srgb()
+	for material in spill_materials.values():
+		material.set_shader_parameter("lamp_on", maxf(led * 0.30, core))
 	viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	update_count += 1
 
