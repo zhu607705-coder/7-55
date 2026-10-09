@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "sourcePlateSha256": "361f857e028b5d03defdaba9befd1e3ac0462133ca48a73f4e24c623a8db7519",
+  "webAtlasSha256": "656cdaebe8295b66031c563c897a6e682f9643740e8aa85f7673f15ee603ce0f",
+  "webAtlasSize": [
+    1774,
+    887
+  ],
+  "atlasSize": [
+    1024,
+    512
+  ],
+  "cellSize": [
+    256,
+    256
+  ],
+  "frames": 8,
+  "cropOrigin": [
+    360,
+    208
+  ],
+  "aperture": [
+    61,
+    41,
+    132,
+    140
+  ],
+  "uniformScale": 0.5,
+  "cellOriginCorrections": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      -1,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      -1,
+      1
+    ]
+  ],
+  "closedFrame": "Original source pixels, not generated",
+  "shell": "Original plate remains visible outside aperture and physical leaf-tip occlusion",
+  "durationMs": 260,
+  "angles": "Authored progressive poses from closed to near edge-on; exact angle values are not measured",
+  "generationMethod": "ChatGPT web image generation",
+  "generationDate": "2026-10-09"
+}
