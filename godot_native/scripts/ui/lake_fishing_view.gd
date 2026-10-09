@@ -38,6 +38,7 @@ var seen_judgments: Dictionary = {}
 var feedback := ""
 var feedback_until := 0.0
 var current_motion: Dictionary = {}
+var current_depth: Dictionary = {}
 
 func _ready() -> void:
 	clip_contents = true
@@ -91,6 +92,7 @@ func reset_view() -> void:
 	feedback = ""
 	seen_judgments.clear()
 	current_motion.clear()
+	current_depth.clear()
 
 func advance_view(delta: float) -> void:
 	if not is_instance_valid(host) or host.model==null: return
@@ -102,8 +104,21 @@ func advance_view(delta: float) -> void:
 		reaction_good = note.judgment!="miss"
 		feedback = "漂亮！把湖拽近了一截" if note.judgment=="perfect" else ("这一钩脱了，跟住鱼影！" if note.judgment=="miss" else "稳住，再收一截")
 		feedback_until = visual_time+.8
+	if not host.paused:_advance_depth(delta)
 	_layout_labels()
 	queue_redraw()
+
+func _advance_depth(delta: float) -> void:
+	var target: Dictionary=Motion.depth_sample(host.model,Motion.sample(host.model,reduced_motion))
+	if current_depth.is_empty() or reduced_motion:
+		current_depth=target
+		return
+	# A judgment is discrete; the displayed fish must travel between projections.
+	# Semantic counts stay exact, while only paint/position values ease in time.
+	var amount: float=1.0-exp(-maxf(0,delta)*7.0)
+	for key: String in target:
+		if key in ["successful_notes","progress","bite"]:current_depth[key]=target[key]
+		else:current_depth[key]=lerpf(float(current_depth.get(key,target[key])),float(target[key]),amount)
 
 func _label(key: String,text: String,rect: Rect2,point_size: int,color: Color=PALE,shown: bool=true) -> void:
 	var label: Label = labels[key]
@@ -215,27 +230,29 @@ func _draw() -> void:
 	var water_y: float = h*.56
 	var fish_x: float = w*.5+m.fish_x()*w*.29
 	var hook_x: float = w*.5+m.line_x*w*.29
-	var creature_pos := Vector2(fish_x*.35+w*.33,water_y+h*.16)
-	var creature_scale: float = .68 if portrait else 1.16
-	_draw_creature(creature_pos,creature_scale,t,m.controls.has("hook"),float(m.judged)/maxi(1,m.notes.size()))
-	if not host.paused or current_motion.is_empty(): current_motion = Motion.sample(m,reduced_motion)
+	if not host.paused or current_motion.is_empty():
+		current_motion = Motion.sample(m,reduced_motion)
+	if current_depth.is_empty():current_depth = Motion.depth_sample(m,current_motion)
+	var creature: Dictionary=creature_geometry(fish_x,water_y,current_depth,t)
+	_draw_creature(creature.position,creature.scale,t,current_depth)
 	var fish_scale: float = .84 if portrait else 1
 	var fish_color: Color = Color("a69f62") if m.lift_ready() else (Color("685e48") if m.rushing_at(m.elapsed) else Color("254c42"))
-	_draw_fish(Vector2(fish_x,water_y),fish_scale,t,fish_color,current_motion)
-	_water_veil(Rect2(Vector2(fish_x,water_y)-Vector2(41,23)*fish_scale,Vector2(68,47)*fish_scale),.28)
+	_draw_fish(Vector2(fish_x,water_y),fish_scale,t,fish_color,current_motion,float(current_depth.target_alpha))
+	_water_veil(Rect2(Vector2(fish_x,water_y)-Vector2(41,23)*fish_scale,Vector2(68,47)*fish_scale),float(current_depth.target_veil)*float(current_depth.target_alpha))
 	# Reflections pass above submerged objects and below surface actors.
 	for i in range(38):
 		var x: float = fmod(i*97.31+sin(t*.4+i)*9,w)
 		var y: float = h*.39+fmod(i*43.7,h*.39)
 		draw_line(Vector2(x,y),Vector2(x+5+i%15,y),Color(GOLD if i%3==0 else MINT,.10+sin(t+i)*.035),1)
 	_ring(Vector2(fish_x,water_y+4),Vector2(80,23)*fish_scale,Color(GOLD if m.lift_ready() else MINT,.65 if m.aligned() else .22),1)
-	_draw_resistance(Vector2(fish_x,water_y),fish_scale,current_motion)
+	if float(current_depth.target_alpha)>.2:_draw_resistance(Vector2(fish_x,water_y),fish_scale,current_motion)
 	_draw_swan(Vector2(w*.82+sin(t*.5)*10,h*.39),.67 if portrait else .85,t,m.rushing_at(m.elapsed))
 	if m.stage=="casting":
 		draw_line(Vector2(hook_x-11,water_y),Vector2(hook_x+11,water_y),Color(PALE,.65))
 		draw_line(Vector2(hook_x,water_y-10),Vector2(hook_x,water_y+10),Color(PALE,.65))
 	var tip := _draw_angler(Vector2(w*(.26 if portrait else .16),h*.82),.73 if portrait else 1,t,m.line_x,m.tension,m.controls.has("hook"),not ending)
 	_draw_fishing_line(tip,Vector2(hook_x,water_y+9),m.tension,current_motion)
+	_draw_submerged_leader(Vector2(hook_x,water_y+17),creature.mouth,current_motion,float(current_depth.fish_merge))
 	_draw_float(Vector2(hook_x,water_y+9),m.aligned(),t)
 	_draw_splash(Vector2(hook_x,water_y+10),visual_time-reaction_at,reaction_good)
 	if m.lift_ready() and m.stage=="fighting":
@@ -346,10 +363,12 @@ func _draw_actor(key: String,center: Vector2,width: float,tint: Color=Color.WHIT
 	if texture: draw_texture_rect_region(texture,rect,ACTOR_REGIONS[key],tint)
 	return rect
 
-func _draw_fish(p: Vector2,s: float,_t: float,color: Color,motion: Dictionary={}) -> void:
+func _draw_fish(p: Vector2,s: float,_t: float,color: Color,motion: Dictionary={},opacity: float=1.0) -> void:
+	if opacity<=.001:return
 	var tint := Color(.9,.98,.94,.96)
 	if color==GOLD or color==Color("a69f62"): tint=Color(1,1,.82,1)
 	elif color==Color("685e48"): tint=Color(1,.86,.79,.96)
+	tint.a*=opacity
 	if motion.is_empty():
 		_draw_actor("fish",p,62*s,tint)
 		return
@@ -381,16 +400,45 @@ func _draw_resistance(p: Vector2,s: float,motion: Dictionary) -> void:
 		var origin:=tail+Vector2(-12-i*6,(i-1)*3)*s
 		draw_line(origin,origin+Vector2(-3-energy*6,-energy*(i-1))*s,Color(MINT,energy*.55),1.2,true)
 
-func _draw_creature(p: Vector2,s: float,t: float,pulling: bool,progress: float) -> void:
-	var breathe: float=sin(t*1.6)*3
-	var rise: float=progress*20
-	var rect := _draw_actor("creature",p+Vector2(0,breathe-rise),390*s,Color(1,1,1,.68))
-	# Reflection texels remain above the complete moving sprite, including tail.
-	_water_veil(rect.grow(2),.46)
-	# Retain the original held-state visual; it has no input or reward authority.
-	if pulling:
-		draw_polyline(PackedVector2Array([p+Vector2(124*s,-rise),p+Vector2(143*s,-64*s-rise),p+Vector2(184*s,-76*s-rise)]),Color(GOLD,.4))
-		_ellipse(p+Vector2(185*s,-79*s-rise),Vector2(24,6)*s,Color(Color("dec18a"),.8))
+func creature_geometry(fish_x: float,water_y: float,depth: Dictionary,time: float=0.0) -> Dictionary:
+	var short: bool=size.y<420
+	var scale_factor: float=.52 if short else (.68 if size.x<600 else 1.16)
+	var center:=Vector2(fish_x*.35+size.x*.33,water_y+size.y*float(depth.creature_depth))
+	# The deep projection converges to the actual tracked fish anchor as the
+	# large form surfaces. The small fish silhouette crossfades out at the same rate.
+	var source_factor: float=390*scale_factor/ACTOR_REGIONS.creature.size.x
+	var mouth_offset: Vector2=(Vector2(1720,390)-Vector2(ACTOR_ANCHORS.creature))*source_factor
+	var merge: float=float(depth.fish_merge)
+	center=center.lerp(Vector2(fish_x,water_y+24)-mouth_offset,merge)
+	if short:
+		# The shallow end must not rise through the compact beat panel. Keep the
+		# authored shape uniformly scaled; only very short landscape needs this cap.
+		var top_offset: float=ACTOR_ANCHORS.creature.y*(390*scale_factor/ACTOR_REGIONS.creature.size.x)
+		center.y=maxf(center.y,rhythm_y()+38+top_offset)
+	center.y+=sin(time*1.6)*lerpf(3,1,float(depth.surface))
+	return {"position":center,"scale":scale_factor,"mouth":center+mouth_offset,"rect":_actor_rect("creature",center,390*scale_factor)}
+
+func _draw_submerged_leader(a: Vector2,b: Vector2,motion: Dictionary,opacity: float) -> void:
+	if opacity<=.001:return
+	var points:=PackedVector2Array()
+	var slack: float=minf(12,a.distance_to(b)*.28)*(1-float(motion.load))
+	for i in range(17):
+		var u: float=i/16.0
+		points.append(a.lerp(b,u)+Vector2(0,sin(u*PI)*slack))
+	draw_polyline(points,Color(PALE,opacity*.75),1.1,true)
+
+func _draw_creature(p: Vector2,s: float,_t: float,depth: Dictionary) -> void:
+	var center:=p
+	# The lake remains translucent over the fish. Successful retrieval reveals
+	# its actual silhouette instead of leaving a nearly invisible permanent shadow.
+	var rect := _draw_actor("creature",center,390*s,Color(1.08,1.10,1.08,float(depth.creature_alpha)))
+	_water_veil(rect.grow(2),float(depth.creature_veil))
+	var wake: float=float(depth.surface_wake)
+	if wake>.01:
+		# Surface contact follows the rising fish, not a second decorative rod.
+		var surface_edge:=center+Vector2(22,-8)*s
+		_ring(surface_edge,Vector2(230,19)*s,Color(PALE,wake*.40),1.2)
+		_ring(surface_edge+Vector2(-16,5)*s,Vector2(278,27)*s,Color(MINT,wake*.20),1)
 
 func _draw_swan(p: Vector2,s: float,t: float,rush: bool) -> void:
 	var bob: float=sin(t*2)*2
