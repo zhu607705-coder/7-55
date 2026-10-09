@@ -64,7 +64,7 @@ func _run() -> void:
 	c.dispatch(s,"c1_network","cellular"); s.phoneBattery.percent=1; c.dispatch(s,"c1_network","campus_wifi")
 	expect(s.phoneBattery.percent==1,"network switch preserves source 1 percent reserve")
 	await show("phone_home")
-	expect(node("Locked_clock")!=null and node("HomeApp_clock")==null,"locked clock slot has no interactive icon")
+	expect(node("Locked_clock")==null and node("HomeApp_clock")==null,"unavailable clock has no placeholder, slot or interactive icon")
 	var old=s.ui.homeAppOrder.duplicate()
 	var left=node("HomeApp_wechat")
 	var right=node("HomeApp_tiyi")
