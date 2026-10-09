@@ -3,6 +3,8 @@ signal finished(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
 const Model=preload("res://scripts/games/canteen_defense_model.gd")
+const PickupTimeline=preload("res://scripts/presentation/c3_pickup_timeline.gd")
+const PickupView=preload("res://scripts/presentation/c3_pickup_view.gd")
 const MAP_SIZE=Vector2(1672,941)
 const MAP_SCALE: float=0.56525
 const MAP_OFFSET=Vector2(480,270)-MAP_SIZE*MAP_SCALE/2
@@ -45,12 +47,36 @@ var _audio_started: bool=false
 var _pickup_active: bool=false
 var _pickup_elapsed: float=0
 var _pickup_beat: int=0
-# CanteenInteriorScene.animatePaperBurst: chained authored delays, not guesses.
-const PICKUP_CUES: Array=[[0,"canteen_pickup_ticket_handoff"],[850,"canteen_pickup_cutscene_quiet"],[4030,"canteen_paper_package_wait"],[4930,"canteen_paper_package_shake"],[5980,"canteen_paper_burst_started"],[6500,"canteen_paper_camera_impact"]]
+var pickup_view:RefCounted
+var canteen_scene:Node2D
+var _pickup_source_layers:RefCounted
+var _pickup_source_player:=Vector2(790,260)
+var _pickup_source_camera:=Vector2(790,260)
+var _pickup_source_zoom:=1.0
+const PICKUP_CUES: Array=PickupTimeline.CUES
+
+## Main calls this before setup. Keep live native furniture through the handoff;
+## a separate actor snapshot survives the controller's accepted phase change.
+func configure_canteen_scene(scene:Node2D,layers:RefCounted,player:Vector2,camera:Vector2,zoom:float)->void:
+	canteen_scene=scene;_pickup_source_layers=layers
+	_pickup_source_player=player;_pickup_source_camera=camera;_pickup_source_zoom=zoom
+	if _pickup_active:_prepare_pickup_view()
+
+func _prepare_pickup_view()->void:
+	var state:Dictionary={}
+	if is_instance_valid(canteen_scene):state=canteen_scene.state
+	elif has_node("/root/State"):state=get_node("/root/State").d
+	pickup_view=PickupView.new()
+	pickup_view.configure(canteen_scene,_pickup_source_layers,state,_pickup_source_player,_pickup_source_camera,_pickup_source_zoom)
+
+func pickup_pose()->Dictionary:
+	return pickup_view.pose(_pickup_elapsed) if pickup_view!=null else PickupTimeline.sample(_pickup_elapsed)
+
 
 
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
+	clip_contents=true
 	background=load("res://assets/rpg/interiors/canteen_interior.png")
 	push_sheet=load("res://assets/rpg/player/player_push_cart_sheet.png")
 	font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
@@ -106,6 +132,7 @@ func reset_model() -> void:
 	start_button.show()
 	_pickup_active=bool(config.get("source_pickup_prelude",false)); _pickup_elapsed=0; _pickup_beat=0
 	if _pickup_active:
+		_prepare_pickup_view()
 		start_button.hide(); _pickup_tick(0)
 	refresh()
 
@@ -306,6 +333,13 @@ func refresh() -> void:
 	if sent: hint.text="" # Authored victory dialogue belongs to the scene queue after this beat.
 	if paused: hint.text="已暂停，计时与纸条位置已冻结"
 	var subtitle:=pickup_subtitle()
+	if _pickup_active:
+		title.text="食堂 · 取餐窗口"
+		timer.text=""
+		hint.text=subtitle if not subtitle.is_empty() else ("已暂停" if paused else "")
+		dash_button.hide();retry_button.disabled=true
+	else:
+		title.text="食堂 · 守住出口";retry_button.disabled=false
 	if not subtitle.is_empty(): hint.text=subtitle
 	queue_redraw()
 	if is_instance_valid(board_view): board_view.queue_redraw(); overview.queue_redraw()
@@ -313,6 +347,11 @@ func refresh() -> void:
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO,size if compact_layout else Vector2(960,540)),Color("111d25"))
 	if not model or not background: return
+	if _pickup_active and not compact_layout:
+		_draw_pickup(self,Rect2(0,0,960,540))
+		draw_rect(Rect2(0,0,960,60),Color(.035,.06,.08,.75))
+		if not hint.text.is_empty():draw_rect(Rect2(211,482,538,58),Color(.035,.06,.08,.85))
+		return
 	if compact_layout:
 		_draw_compact_controls()
 		return
@@ -332,7 +371,10 @@ func _draw() -> void:
 
 func _draw_board(canvas: CanvasItem,offset: Vector2,zoom: float) -> void:
 	canvas.draw_set_transform(offset,0,Vector2.ONE*zoom)
-	canvas.draw_texture_rect(background,Rect2(Vector2.ZERO,MAP_SIZE),false)
+	var native_room:=is_instance_valid(canteen_scene)
+	var foot:float=model.body_at(model.player).end.y
+	if native_room:canteen_scene.paint_defense(canvas,false,foot)
+	else:canvas.draw_texture_rect(background,Rect2(Vector2.ZERO,MAP_SIZE),false)
 	if model.route_flash>0:
 		var points: PackedVector2Array=PackedVector2Array([model.paper])
 		for point: Vector2 in model.route: points.append(point)
@@ -346,9 +388,10 @@ func _draw_board(canvas: CanvasItem,offset: Vector2,zoom: float) -> void:
 		row=0
 		origin.y=0.26
 	canvas.draw_texture_rect_region(push_sheet,Rect2(model.player-origin*94.2,Vector2(94.2,94.2)),Rect2(model.push_frame*314,row*314,314,314))
-	var foot: float=model.body_at(model.player).end.y
-	for crop: Dictionary in occlusions:
-		if foot<crop.sort_y: canvas.draw_texture_rect_region(background,crop.rect,crop.rect)
+	if native_room:canteen_scene.paint_defense(canvas,true,foot)
+	else:
+		for crop: Dictionary in occlusions:
+			if foot<crop.sort_y: canvas.draw_texture_rect_region(background,crop.rect,crop.rect)
 	_draw_paper(canvas)
 	canvas.draw_set_transform(Vector2.ZERO)
 
@@ -367,6 +410,12 @@ func _draw_paper(canvas: CanvasItem) -> void:
 		var a: Vector2=transform*((offset-Vector2(32,25))*scale_value)
 		var b: Vector2=transform*((offset+Vector2(26,0)-Vector2(32,25))*scale_value)
 		canvas.draw_line(a,b,Color("236f9d"),2.5)
+
+func _draw_pickup(canvas:CanvasItem,viewport:Rect2)->void:
+	if pickup_view!=null:pickup_view.draw(canvas,viewport,pickup_pose())
+	if paused:
+		canvas.draw_rect(Rect2(viewport.get_center()-Vector2(100,44),Vector2(200,88)),Color(.03,.08,.1,.92))
+		if font:canvas.draw_string(font,viewport.get_center()+Vector2(-90,-7),"已暂停",HORIZONTAL_ALIGNMENT_CENTER,180,22,Color("fff4c9"))
 
 func _exit_tree() -> void:
 	presentation_requested.emit("native_activity_closed",{"prefixes":["canteen_defense_","canteen_pickup_","canteen_paper_package_","canteen_paper_burst_","canteen_paper_camera_"]})
@@ -422,6 +471,11 @@ func configure_activity_layout(available: Vector2,compact: bool) -> void:
 			_place(dash_button,Rect2(size.x-138,stick_center.y-32,124,64))
 			_place(hint,Rect2(size.x-138,stick_center.y+42,124,82))
 		_place(start_button,Rect2(board_view.position+Vector2((board_view.size.x-192)/2,board_view.size.y/2+40),Vector2(192,52)))
+	if _pickup_active and compact:
+		overview.hide();overview_label.hide();board_label.hide()
+		_place(board_view,Rect2(0,92 if portrait_layout else 62,size.x,size.y-(156 if portrait_layout else 116)))
+		_place(hint,Rect2(14,size.y-57,size.x-28,48))
+		_place(start_button,Rect2(size.x/2-96,size.y/2+20,192,44))
 	refresh()
 
 func _place(control: Control,rect: Rect2) -> void:
@@ -444,6 +498,8 @@ func _draw_compact_controls() -> void:
 
 func draw_board_view(view: Control,is_overview: bool) -> void:
 	if not model or not background: return
+	if _pickup_active:
+		_draw_pickup(view,Rect2(Vector2.ZERO,view.size));return
 	var metrics:=board_metrics(view,is_overview)
 	_draw_board(view,metrics.offset,metrics.zoom)
 	if is_overview:
@@ -464,10 +520,7 @@ func owns_pickup_subtitle(text: String) -> bool:
 	return _pickup_active and text in ["玩家：那是鸡吗？","系统：现在不是了。"]
 
 func pickup_subtitle() -> String:
-	if not _pickup_active: return ""
-	if _pickup_elapsed>=9580 and _pickup_elapsed<10360: return "玩家：那是鸡吗？"
-	if _pickup_elapsed>=10480 and _pickup_elapsed<11260: return "系统：现在不是了。"
-	return ""
+	return str(pickup_pose().subtitle) if _pickup_active else ""
 
 func _pickup_tick(milliseconds: float) -> void:
 	var before: float=_pickup_elapsed; _pickup_elapsed+=milliseconds
@@ -480,8 +533,10 @@ func _pickup_tick(milliseconds: float) -> void:
 	if before<10480 and _pickup_elapsed>=10480:
 		hint.text="系统：现在不是了。"
 		presentation_requested.emit("native_story_subtitle",{"text":"系统：现在不是了。","durationMs":780,"tone":"system"})
-	if _pickup_elapsed>=11380:
+	if _pickup_elapsed>=PickupTimeline.DURATION_MS:
 		_pickup_active=false
 		config["source_pickup_prelude"]=false
+		# Restore the ordinary split/close layout before enabling simulation.
+		if compact_layout:configure_activity_layout(size,true)
 		begin()
 	refresh()
