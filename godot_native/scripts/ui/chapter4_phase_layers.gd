@@ -3,11 +3,14 @@ const Picker=preload("res://scripts/world_object_picker.gd")
 ## Source ChapterFourTemporalMazeScene phase props and ChapterFourClockMotion.
 ## All clocks here are local presentation time; no story state is written.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
+const CoverMotion=preload("res://scripts/presentation/maintenance_cover_motion.gd")
+var cover_motion:RefCounted=CoverMotion.new()
 var source: Dictionary={}
 var npcs: Dictionary={}
 var alumni: Array=[]
 var elapsed_ms: float=0
 var phase_key: String=""
+var state_owner: Dictionary={}
 var repaired: bool=false
 var repair_ms: float=900
 var cover_open: bool=false
@@ -21,10 +24,14 @@ func _init() -> void:
 	alumni=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/chapter4-native-source.json")).alumni
 	npcs["chapter-four-front-desk-staff-idle"]={"file":"res://assets/rpg/npcs/library/front_desk_staff_2frame.png","frameWidth":96,"frameHeight":128,"frameCount":2,"fps":2,"loop":true}
 func tick(delta: float,state: Dictionary) -> void:
+	cover_motion.tick(delta,state)
 	var c: Dictionary=state.get("chapter4",{}); var facts: Array=c.get("factIds",[])
 	var key: String=str(c.get("floor",""))+":"+str(c.get("phase",""))+":"+str(c.get("timeState",""))
 	var is_repaired: bool="cart_wheel_repaired" in facts; var is_open: bool="cart_wheel_cover_opened" in facts
-	if key!=phase_key:
+	if not is_same(state,state_owner) or key!=phase_key:
+		# An ordinary load replaces the owner even in the same phase. Restored
+		# completed props are terminal, not a continuation of retired timing.
+		state_owner=state
 		phase_key=key; elapsed_ms=0; repair_ms=float(source.maintenanceRuntime.repairedPush.durationMs); oil_ms=9999; repaired=is_repaired; cover_open=is_open
 	if is_repaired and not repaired: repair_ms=0
 	if is_open and not cover_open: oil_ms=0
@@ -122,14 +129,34 @@ func _draw_maintenance(owner: RefCounted,canvas: CanvasItem,context: Dictionary,
 		_npc(owner,canvas,context,m.repairedPush.animationId,sample.push,float(m.cleaner.uniformScale),elapsed_ms,bool(m.repairedPush.flipX),float(sample.pushAlpha),Room.rect(m.repairedPush.visibleCharacterCrop))
 	var wheel: Rect2=Room.rect(m.targetEntities[0].installationBounds)
 	if "cart_wheel_repaired" not in facts and _depth(context,wheel.end.y+6,front):
-		var dimensions: Vector2=Vector2(wheel.size.x,maxf(5,wheel.size.y*0.42)); var opened: bool="cart_wheel_cover_opened" in facts
-		var origin: Vector2=context.origin; var zoom: float=context.zoom
-		canvas.draw_set_transform(origin+Vector2(wheel.position.x,wheel.get_center().y)*zoom,deg_to_rad(-42 if opened else 0),Vector2.ONE*zoom)
-		var cover: Rect2=Rect2(-dimensions*Vector2(0.08,0.5),dimensions); canvas.draw_rect(cover,Color("8295a8",0.54) if opened else Color("44505c",0.82)); canvas.draw_rect(cover,Color("b9c4cf",0.76),false,1); canvas.draw_set_transform(Vector2.ZERO)
+		_draw_wheel_cover(owner,canvas,context,state,sample)
 	if oil_ms<1100 and "cart_wheel_cover_opened" in facts:
 		var t: float=_sine(oil_ms/320) if oil_ms<320 else (1.0 if oil_ms<780 else 1-_sine((oil_ms-780)/320))
 		for target in m.targetEntities:
 			if target.targetId=="a1_cleaning_cart_oil_bottle" and _depth(context,float(target.pivot.y)+18,front): owner.draw_frame(canvas,context,"chapter4_story_items",target.frame,Room.point(target.pivot)+Vector2(0,-14*t),0,float(target.uniformScale),Color(1,1,1,t))
+func cover_geometry(state:Dictionary,now_ms:=-1)->Dictionary:
+	var cart:Dictionary=source.maintenanceRuntime.cleaningCart
+	var frame:Dictionary=cart.wheelRegion.sourceFrameSize
+	var region:Rect2=Room.rect(cart.wheelRegion.bounds)
+	var scale_value:float=cart.uniformScale
+	var pose:Dictionary=cover_motion.sample(state,now_ms)
+	pose["pivot"]=maintenance_sample(state).cart+(Vector2(region.position.x,region.get_center().y)-Vector2(float(frame.width)*.5,float(frame.height)))*scale_value
+	pose["source_region"]=Rect2(region.position.x,region.position.y+9,region.size.x,16)
+	pose["local_rect"]=Rect2(Vector2(-region.size.x*.08,-8),Vector2(region.size.x,16))
+	pose["scale"]=scale_value
+	return pose
+func _draw_wheel_cover(owner:RefCounted,canvas:CanvasItem,context:Dictionary,state:Dictionary,_cart_sample:Dictionary)->void:
+	var pose:=cover_geometry(state)
+	var art:Texture2D=owner.texture(str(npcs.cleaning_cart.file).replace("src/assets/","res://assets/"))
+	if art==null:return
+	var zoom:float=context.zoom
+	canvas.draw_set_transform(Vector2(context.origin)+Vector2(pose.pivot)*zoom,deg_to_rad(float(pose.angle_degrees)),Vector2.ONE*float(pose.scale)*zoom)
+	# Retain the original cart's painted frame/wheel material, rather than a
+	# translucent placeholder rectangle. Source pixels keep uniform scale.
+	canvas.draw_texture_rect_region(art,pose.local_rect,pose.source_region)
+	canvas.draw_rect(pose.local_rect,Color("34352f"),false,.9)
+	canvas.draw_circle(Vector2.ZERO,1.3,Color("a0a398"))
+	canvas.draw_set_transform(Vector2.ZERO)
 func _npc(owner: RefCounted,canvas: CanvasItem,context: Dictionary,id: String,p: Vector2,scale_value: float,time_ms: float,flip: bool=false,alpha: float=1,crop: Rect2=Rect2()) -> void:
 	if alpha<=0: return
 	var def: Dictionary=npcs[id]; var art: Texture2D=owner.texture(str(def.file).replace("src/assets/","res://assets/"))
