@@ -271,9 +271,39 @@
   ],
   "runtime_commit_scope": "Original local audit commit; integrated production files remain byte-identical",
   "integration": {
-    "base": "de39f07479c62a00149cfc99d8fc75c6c535615c",
-    "tested_local_head": "f7db6016b964090e00dcbb84d578a13b75224238",
+    "base": "b1177e10dd4dc45f2cf32926eaa09a684a02029e",
+    "tested_local_head": "d383a45ca0993a8c8ae8088c07c9cee495e39fe1",
     "tests": [
+      {
+        "test": "test_chapter4_lamp_3d.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_3D: 171 checks; 0 failures"
+      },
+      {
+        "test": "test_chapter4_lamp_font.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_FONT 739 checks; 0 failures"
+      },
+      {
+        "test": "test_chapter4_lamp_lifecycle.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_LIFECYCLE_TESTS 9 checks; 0 failures"
+      },
+      {
+        "test": "test_chapter4_lamp_sequence.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_SEQUENCE_TESTS 888 checks; 0 failures; max_error=0.00000047067072"
+      },
+      {
+        "test": "test_chapter4_lamp_source.gd",
+        "passed": true,
+        "status": 0,
+        "summary": "CHAPTER4_LAMP_SOURCE_TESTS 103 checks; 0 failures"
+      },
       {
         "test": "test_lake_fishing_water.gd",
         "passed": true,
@@ -378,6 +408,6 @@
     "campaign_harness_warning": "An existing Chapter4 return_to_hall fixture sets size on unequal anchors. Godot warns, but the automated campaign completes chapters1–4 with failures=0. This warning is not a new phone runtime error.",
     "manual_campaign_verified": false,
     "note": "The continuous fresh-state controller campaign is automated and uses explicit spatial setup. The real mouse recordings remain nine independent original checkpoint cases. Neither is a manual campaign playthrough.",
-    "scope": "P01 wake presentation plus original design anchors01–03 only. P01 is outside the54-anchor count. Preserve merged PR82, PR83 and PR85; no stamp21, archive50 or lamp54 changes."
+    "scope": "P01 wake presentation plus original design anchors01–03 only. P01 is outside the54-anchor count. Preserve merged PR82, PR83, PR85 and PR84; no stamp21 or archive50 changes; no additional lamp54 changes beyond the merged baseline."
   }
 }
