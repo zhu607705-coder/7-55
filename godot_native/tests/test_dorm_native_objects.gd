@@ -98,15 +98,25 @@ func run() -> void:
 	state.d=prerequisites;world.refresh_world();state.act("c2_use_gamepad")
 	check(state.d.actOne.controlsInstalled and state.d.actOne.movementEnabled and not state.d.items.gamepad,"controller alone consumes gamepad and enables manual control")
 	check(not state.d.actOne.manualControlTested,"connection does not fake first movement")
+	# Source exercise pacing uses wall-clock time before connection. Restore the
+	# declared checkpoint spawn so a single input cannot begin beside furniture.
+	world.player=Vector2(480,720);world._sync_player()
+	var keyboard_start: Vector2=world.player
+	check(world.can_stand(keyboard_start) and world.can_stand(keyboard_start+Vector2(4.8,0)),"keyboard fixture and intended step are walkable")
 	world.grab_focus()
 	var movement:=InputEventKey.new();movement.keycode=KEY_D;movement.physical_keycode=KEY_D;movement.pressed=true
 	Input.parse_input_event(movement);Input.flush_buffered_events();world._process(.03)
 	var release: InputEventKey=movement.duplicate();release.pressed=false;Input.parse_input_event(release);Input.flush_buffered_events()
+	check(world.player.x>keyboard_start.x and is_equal_approx(world.player.y,keyboard_start.y),"actual keyboard input moves right from the declared fixture")
 	check(state.d.actOne.manualControlTested and state.d.actOne.phase=="reservation_briefing_required","actual keyboard displacement advances only first-movement fact")
 	check(not state.d.actOne.canLeaveDorm,"manual movement still requires original reservation")
 	state.act("c2_dorm_exit");check(state.d.native.scene=="dorm_hub","movement alone cannot bypass reservation")
 	await fixture("c2-manual-movement",Vector2i(390,844));state.act("c2_use_gamepad")
+	world.player=Vector2(480,720);world._sync_player()
+	var touch_start: Vector2=world.player
+	check(world.can_stand(touch_start) and world.can_stand(touch_start+Vector2(-4.8,0)),"touch fixture and intended step are walkable")
 	world.touch_axis=Vector2.LEFT;world._process(.03);world.touch_axis=Vector2.ZERO
+	check(world.player.x<touch_start.x and is_equal_approx(world.player.y,touch_start.y),"shared touch input moves left from the declared fixture")
 	check(state.d.actOne.manualControlTested,"shared touch movement path earns first-step fact")
 	await fixture("c2-inventory")
 	state.d.native.settings.reduced_motion=true;world.native_dorm.sync(state.d,world.scene_id)

@@ -19,12 +19,13 @@ No new sound is emitted. Existing accepted-action audio remains single-owned.
 
 ## Verification
 
-`tests/test_dorm_native_objects.gd` covers 88 checks at 1180×812 and 390×844, including:
+`tests/test_dorm_native_objects.gd` covers 92 checks at 1180×812 and 390×844, including:
 
 - Original pickup proximity before movement capability; immediate actual bag opening
 - Repeated pickup, unchanged item facts, 460 ms tail lifetime, phone and scene cancellation
 - Cabinet reversal, independent lamps, optional-state save validation and ordinary reload
 - Naming/exercise prerequisites; real keyboard displacement and shared touch movement path
+- Movement fixtures restore the declared source spawn after wall-clock exercise pacing, verify a walkable step, and assert nonzero displacement in the intended direction
 - First movement does not bypass original reservation; locked/earned exits and immediate campus transition
 - Keyboard priority for cabinet/exit; exit input interruption and ordinary campus reload
 - Reduced motion and root-level overlay cleanup
