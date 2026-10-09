@@ -1,0 +1,46 @@
+{
+  "format": "chapter4-chase-space/v1",
+  "status": "integrated independent chase whitebox; not final production art",
+  "world_size": [3000, 1540],
+  "player_speed": 208,
+  "guard_speed": 174,
+  "walkable": [
+    [60, 1200, 2880, 240],
+    [2700, 680, 240, 760],
+    [60, 680, 2880, 240],
+    [60, 160, 240, 760],
+    [60, 160, 2880, 240]
+  ],
+  "obstacles": [
+    {"id": "lower_left_rail", "rect": [880, 1200, 100, 140], "type": "barrier"},
+    {"id": "lower_crate_stack", "rect": [1640, 1300, 120, 140], "type": "storage"},
+    {"id": "lower_right_rail", "rect": [2240, 1200, 120, 140], "type": "barrier"},
+    {"id": "middle_right_storage", "rect": [2200, 780, 120, 140], "type": "storage"},
+    {"id": "middle_rail", "rect": [1450, 680, 120, 140], "type": "barrier"},
+    {"id": "middle_left_storage", "rect": [700, 780, 120, 140], "type": "storage"},
+    {"id": "upper_left_rail", "rect": [850, 160, 120, 140], "type": "barrier"},
+    {"id": "upper_storage", "rect": [1590, 260, 120, 140], "type": "storage"},
+    {"id": "upper_right_rail", "rect": [2260, 160, 120, 140], "type": "barrier"}
+  ],
+  "landings": [
+    {"spawn": [180, 1320], "guard": [120, 1320], "route_index": 0},
+    {"spawn": [2820, 800], "guard": [2820, 1100], "route_index": 8},
+    {"spawn": [180, 280], "guard": [180, 580], "route_index": 16}
+  ],
+  "gates": [[2700, 720, 240, 160], [60, 220, 240, 160]],
+  "exit": [2720, 200, 180, 160],
+  "camera_route": [[180,1320],[2820,1320],[2820,800],[180,800],[180,280],[2820,280]],
+  "route": [
+    [180, 1320], [760, 1380], [1040, 1380], [1500, 1260], [1820, 1260], [2100, 1380], [2460, 1380], [2820, 1320], [2820, 800],
+    [2420, 740], [2080, 740], [1720, 860], [1320, 860], [1020, 740], [560, 740], [180, 800], [180, 280],
+    [700, 360], [1040, 360], [1440, 200], [1810, 200], [2100, 360], [2450, 360], [2820, 280]
+  ],
+  "presentation_requirements": {
+    "independent_space": true,
+    "camera_lookahead_seconds": 2,
+    "minimum_obstacle_gap": 100,
+    "guard_position_readable": true,
+    "touch_contract": "existing pointer/touch direction control; no new bottom virtual buttons",
+    "story_contract": "original entrance, attempt, landing 0/1/2, caught dialogue, A1 failure, A2 exit"
+  }
+}
