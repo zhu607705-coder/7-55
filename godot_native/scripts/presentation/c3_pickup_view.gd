@@ -63,11 +63,17 @@ func _room(canvas:CanvasItem,milliseconds:float)->void:
 	for opening:Dictionary in furniture.layout.get("floor_openings",[]):
 		var src:Array=opening.source;var dst:Array=opening.destination
 		canvas.draw_texture_rect_region(furniture.textures.empty_floor,Rect2(dst[0],dst[1],dst[2],dst[3]),Rect2(src[0],src[1],src[2],src[3]))
+	var actor_planes:Array=[]
+	for e:Dictionary in entries:
+		var tex:Texture2D=_texture(e.asset)
+		var dimensions:Vector2=e.get("frameSize",tex.get_size())*float(e.get("scale",1))
+		actor_planes.append({"depth":float(e.get("sort_y",e.point.y)),"rect":Rect2(e.point-dimensions*e.get("anchor",Vector2(.5,.5)),dimensions)})
+	actor_planes=furniture.with_supported_planes(actor_planes)
 	var ordered:Array=[]
-	for part:Dictionary in furniture.sorted_parts:
-		var prop:Node2D=part.object
+	for prop:Node2D in furniture.objects.values():
 		if prop.definition.get("decorative_cart",false):continue
-		ordered.append({"kind":"furniture","depth":float(part.depth),"entry":part})
+		for part:Dictionary in prop.depth_slices(actor_planes):
+			ordered.append({"kind":"furniture","depth":float(part.depth),"entry":{"object":prop,"part":part}})
 	for e:Dictionary in entries:ordered.append({"kind":"actor","depth":float(e.get("sort_y",e.point.y)),"entry":e})
 	for feature:Array in [["pickup_slots",244.0],["drink_screens",230.0],["mixer",818.0]]:
 		ordered.append({"kind":"feature","depth":feature[1],"role":feature[0]})
@@ -79,7 +85,7 @@ func _room(canvas:CanvasItem,milliseconds:float)->void:
 			var prop:Node2D=item.entry.object;var part:Dictionary=item.entry.part
 			if prop.definition.has("door"):
 				canvas.draw_rect(Rect2(prop.position+prop.top_left,prop.dimensions),Color("172020"));continue
-			canvas.draw_texture_rect_region(prop.texture,Rect2(prop.position+part.sprite.position,part.region.size*part.sprite.scale),part.region)
+			canvas.draw_texture_rect_region(prop.texture,Rect2(prop.position+part.position,part.region.size*prop.scale_value),part.region)
 		_transform(canvas)
 func draw(canvas:CanvasItem,viewport:Rect2,p:Dictionary)->void:
 	var fit:=minf(viewport.size.x/960,viewport.size.y/540)
