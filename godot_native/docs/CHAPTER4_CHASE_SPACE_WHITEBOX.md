@@ -201,8 +201,12 @@ validated and saved A2, reloaded the actual file, and exported that valid bounda
 
 The final full integration attempt was terminated with the shell's `Killed`
 message while creating Main; its 156 preceding consumer checks passed separately.
+The separate 70-check retained-rule suite also exercised Main entry, Return,
+resume and A2 handoff successfully on this baseline. The termination therefore
+does not establish a general Main-routing failure.
 A subsequent GUI A2 launch exited before a visible world or a normal reopen could
-be inspected. No cause such as OOM is established. Therefore final-baseline Main
-smoke and ordinary GUI A2 reopening remain unverified locally. Earlier physical
+be inspected. No cause such as OOM is established. Therefore the complete
+final-baseline integration sequence and ordinary GUI A2 reopening remain
+unverified locally. Earlier physical
 keyboard and phone-sized pointer evidence remains as described above. Keep this
 whitebox PR in draft until the final checks and review are resolved.
