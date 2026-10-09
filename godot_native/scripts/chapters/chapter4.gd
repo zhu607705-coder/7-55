@@ -5,6 +5,11 @@ const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 const Room204 = preload("res://scripts/games/chapter4_room204_model.gd")
 const StairModel = preload("res://scripts/games/chapter4_stair_model.gd")
 const ChaseStair=preload("res://scripts/games/chapter4_chase_stair_model.gd")
+const ChaseSpace=preload("res://scripts/games/chapter4_chase_space.gd")
+var chase_geometry:RefCounted
+func _chase_geometry()->RefCounted:
+	if chase_geometry==null:chase_geometry=ChaseSpace.new()
+	return chase_geometry
 const ChaseGuard=preload("res://scripts/games/chapter4_guard_model.gd")
 const SCENE = "duan_yongping_temporal_maze"
 var content: Dictionary = {}
@@ -87,13 +92,17 @@ func _game(s: Dictionary,kind: String,action: String,options: Dictionary={}) -> 
 
 func _chase_activity(s:Dictionary,lead:float=650.0)->Dictionary:
 	var landing:int=clampi(int(s.chapter4.chaseStairwellLanding),0,2)
-	var entry:Dictionary=ChaseStair.guard_entry(landing,lead)
+	var entry:Dictionary=_chase_geometry().guard_entry(landing,lead)
 	var result:Dictionary=_game(s,"chase_stairwell","c4_chase_done",{"expectedAttempt":s.chapter4.chaseAttempt,"startLanding":landing,"guardLeadDistance":entry.leadDistance,"on_progress":"c4_chase_landing","on_failure":"c4_chase_failed","title":"楼梯间","body":_dialogue("chase.started")})
+	result.game.script="res://scripts/games/chapter4_chase_space_activity.gd"
+	result.game.geometryVersion=str(_chase_geometry().layout.format)
+	pending.geometryVersion=result.game.geometryVersion
 	pending.startLanding=landing;pending.guardDelayMs=entry.delayMs;pending.acceptedPath=[]
 	return result
 
 func _chase_session(s:Dictionary,value:Variant)->bool:
 	if not _proof(s,"c4_chase_done",value):return false
+	if value.get("geometryVersion","")!=pending.get("geometryVersion","missing"):return false
 	var attempt:Variant=value.get("expectedAttempt")
 	if typeof(attempt) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(attempt)) or float(attempt)!=int(attempt):return false
 	if typeof(value.get("elapsedMs")) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(value.elapsedMs)):return false
@@ -560,7 +569,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if value.get("landing",-1) not in [1,2]:return _locked("stair_route_not_available")
 		var next:int=int(value.get("landing",-1))
 		if next!=int(c.chaseStairwellLanding)+1 or next not in [1,2]:return _locked("stair_route_not_available")
-		if not ChaseStair.valid_trace(value.get("path"),int(pending.startLanding),next,false,float(value.get("elapsedMs",-1)),pending.acceptedPath):return _locked("stair_route_not_available")
+		if not _chase_geometry().valid_trace(value.get("path"),int(pending.startLanding),next,false,float(value.get("elapsedMs",-1)),pending.acceptedPath):return _locked("stair_route_not_available")
 		c.chaseStairwellLanding=next;pending.acceptedPath=value.path.duplicate(true)
 		return _ok("",{"accepted":true,"landing":next})
 	if action=="c4_chase_failed":
@@ -568,12 +577,12 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		if typeof(value.get("captureMs")) not in [TYPE_INT,TYPE_FLOAT]:return _locked("stair_route_not_available")
 		var capture_ms:=float(value.get("captureMs",0))
 		if value.get("captured",false)!=true or not is_finite(capture_ms) or capture_ms<5200 or float(value.get("elapsedMs",0))<float(pending.guardDelayMs):return _locked("stair_route_not_available")
-		if not ChaseStair.valid_trace(value.get("path"),int(pending.startLanding),-1,false,float(value.get("elapsedMs",-1)),pending.acceptedPath):return _locked("stair_route_not_available")
+		if not _chase_geometry().valid_trace(value.get("path"),int(pending.startLanding),-1,false,float(value.get("elapsedMs",-1)),pending.acceptedPath):return _locked("stair_route_not_available")
 		var point:Vector2=ChaseStair.point(value.path.back());var guard_data:Variant=value.get("guard")
 		if not guard_data is Dictionary:return _locked("stair_route_not_available")
 		if typeof(guard_data.get("x")) not in [TYPE_INT,TYPE_FLOAT] or typeof(guard_data.get("y")) not in [TYPE_INT,TYPE_FLOAT]:return _locked("stair_route_not_available")
 		var guard:Vector2=Vector2(float(guard_data.get("x",INF)),float(guard_data.get("y",INF)))
-		if not ChaseStair.body_open(guard,Vector2(20,14)) or not ChaseGuard.chase_contact(guard,Rect2(point-PlayerMetrics.FOOT_SIZE/2,PlayerMetrics.FOOT_SIZE)):return _locked("stair_route_not_available")
+		if not _chase_geometry().body_open(guard,Vector2(20,14)) or not ChaseGuard.chase_contact(guard,Rect2(point-PlayerMetrics.FOOT_SIZE/2,PlayerMetrics.FOOT_SIZE)):return _locked("stair_route_not_available")
 		return dispatch(s,"c4_fail_chase",{"expectedAttempt":c.chaseAttempt,"failureFloor":c.floor})
 	if action=="c4_chase_done":
 		if not _chase_session(s,value):return _locked("chase_attempt_stale")
@@ -666,7 +675,7 @@ func _closure_ready(s: Dictionary) -> bool:
 	return c.phase=="exterior_closure" and c.floor=="A1" and c.roomId=="a1_exterior" and c.guardMode=="absent" and c.checkinCardAccepted and c.checkinPaperAccepted and _all(c,["checkin_card_accepted","checkin_paper_accepted","checkin_identity_verified","final_minute_installed","canruo_star_lamp_primed"]) and c.lightGrid.locked and c.timeState=="0755_morning" and int(c.worldTimeSeconds)==28500 and int(c.phoneStatusTimeSeconds)==28500 and c.phoneStatusTimeTrusted
 func _inside(point: Vector2,r: Dictionary) -> bool: return point.x>=float(r.x) and point.x<=float(r.x)+float(r.width) and point.y>=float(r.y) and point.y<=float(r.y)+float(r.height)
 func _chase_proof(result: Dictionary) -> bool:
-	return result.get("escaped",false)==true and ChaseStair.valid_trace(result.get("path"),int(pending.get("startLanding",0)),2,true,float(result.get("elapsedMs",-1)),pending.get("acceptedPath",[]))
+	return result.get("escaped",false)==true and _chase_geometry().valid_trace(result.get("path"),int(pending.get("startLanding",0)),2,true,float(result.get("elapsedMs",-1)),pending.get("acceptedPath",[]))
 func _target(id: String,label: String,action: String,c: Dictionary,mode: String="",item: String="") -> Dictionary:
 	var bounds: Dictionary={}; var radius: float=100.0
 	for floor in layout.floors:
