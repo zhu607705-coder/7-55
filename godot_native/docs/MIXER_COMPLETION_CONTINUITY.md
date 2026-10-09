@@ -1,7 +1,9 @@
 # Native mixer completion continuity
 
-This follow-up is stacked on PR #89 (`00c65413`), whose tested local tree is
-identical to local commit `383f3879`. It changes the native presentation only.
+This follow-up was stacked on PR #89 (`00c65413`), whose tested local tree is
+identical to local commit `383f3879`. After #89 merged, #93 was retargeted to
+`godot-version`. The mixer changes affect presentation only; the separately
+identified movement correction below was found by the full CI suite.
 
 ## Lifetime and authority
 
@@ -44,6 +46,23 @@ identical to local commit `383f3879`. It changes the native presentation only.
   uses one take at real captured wall timing and one fixed viewport crop.
   No intermediate cuts, reordered takes, optical-flow frames, inserted poses,
   CSS fades or fake completion events are used. Trailing idle time is trimmed.
+
+## CI-discovered exact waypoint correction
+
+The first full native CI run failed the unchanged canteen queue-floor test's
+strict foot-center arrival assertion. The mixer tests and full campaign passed.
+A deterministic native-frame probe reproduced early `arrived` at about 0.004
+source pixels short: coordinate-relative `is_equal_approx` retired a waypoint
+before `move_toward` reached its exact endpoint. This pre-existing movement bug
+depends on the frame delta; an ordinary local rerun did not always expose it.
+
+`world.gd` now retires only the exact waypoint returned by `move_toward` and
+processes a zero-length waypoint through the same collision-checked path.
+The original speed, 50 ms simulation cap, one-waypoint-per-frame behavior,
+collision tests, input ownership and strict canteen assertion are unchanged.
+`test_mobile_floor_exact_arrival.gd` deliberately stops 0.004 pixels short of
+each real dogleg waypoint, then checks exact arrival, zero-length completion,
+ordered large-delta traversal, the speed cap and unchanged progression.
 
 ## Limits
 
