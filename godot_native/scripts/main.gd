@@ -887,12 +887,15 @@ func _open_chapter4_clock(current: Dictionary) -> bool:
 	add_child(panel);_show_world_mobile();_layout_modal();_sync_inventory_dock_input();return true
 
 func _open_chapter4_device(id: String, current: Dictionary) -> bool:
-	var paths := {"media_alignment":"res://scripts/objects/room302_studio_panel.gd","positioning_calibration":"res://scripts/objects/room201_press_panel.gd"}
+	var paths := {"media_alignment":"res://scripts/objects/room302_studio_panel.gd","positioning_calibration":"res://scripts/objects/room201_press_panel.gd","archive_index":"res://scripts/objects/room301_archive_panel.gd"}
 	var exclusive: bool = paths.has(id)
 	var device: Control = load(paths.get(id,"res://scripts/ui/chapter4_device_panel.gd")).new()
 	if not device.configure(id,current,font):
 		device.free()
 		return false
+	# Page-intent signals carry a snapshot. Track the real State owner so a
+	# same-scene ordinary reload still retires the old archive interaction.
+	if id == "archive_index": device.authority_owner=State.d
 	_close_modal()
 	if is_instance_valid(modal):
 		device.free()
@@ -906,6 +909,12 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 		if is_instance_valid(device) and modal == device: _close_modal()
 	)
 	if exclusive: _begin_room302_studio(device)
+	if id == "archive_index":
+		world.chapter4_layers.archive_motion.open(State.d)
+		var archive_serial: int=world.chapter4_layers.archive_motion.serial
+		device.world_handoff_requested.connect(func(fresh: bool):
+			if is_instance_valid(device) and modal==device: _finish_room301_handoff.call_deferred(fresh,archive_serial)
+		)
 	if id == "positioning_calibration":
 		device.press_event_requested.connect(func(event: Dictionary):
 			if not is_instance_valid(device) or modal != device: return
@@ -938,6 +947,14 @@ func _open_chapter4_device(id: String, current: Dictionary) -> bool:
 	else: _show_world_mobile()
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
 	return true
+
+func _finish_room301_handoff(fresh: bool, serial: int) -> void:
+	if not is_instance_valid(world) or world.chapter4_layers == null: return
+	if world.chapter4_layers.archive_motion.serial!=serial: return
+	if is_instance_valid(modal) or is_instance_valid(active_game) or not world_frame.is_visible_in_tree():
+		world.chapter4_layers.archive_motion.cancel()
+		return
+	world.chapter4_layers.archive_motion.close(fresh,State.d)
 
 func _room302_studio_active() -> bool:
 	return is_instance_valid(room302_studio) and modal == room302_studio
@@ -1763,6 +1780,9 @@ func _feedback(message: String,tone: String="system") -> void:
 	toast.move_to_front()
 
 func _process(delta: float) -> void:
+	if is_instance_valid(world) and world.chapter4_layers != null:
+		var archive: RefCounted=world.chapter4_layers.archive_motion
+		if archive.stage=="handoff" and (not archive.matches(State.d) or is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document) or not world_frame.is_visible_in_tree()): archive.cancel()
 	_validate_library_reveal()
 	if not _room302_studio_active() and compact_world_contract!=(mobile_world and _uses_compact_layout() and not _authored_world_contract()): _layout()
 	_sync_inventory_dock_input()
