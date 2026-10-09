@@ -41,9 +41,9 @@ func snapshot_text(view: Dictionary, y: int) -> String:
 		if text.y == y: return str(text.text)
 	return ""
 
-func dispatch(action: String, value: Variant) -> void:
+func dispatch(action: String, value: Variant) -> Dictionary:
 	dispatched.append(action)
-	controller.dispatch(s, action, value)
+	return controller.dispatch(s, action, value)
 
 func panel() -> Control:
 	var view := MixerPanel.new()
@@ -129,6 +129,9 @@ func run() -> void:
 				check(view.visible and view.session.button_order == slot_order and view.model.layers.size() == index+1, "accepted partial pour updates glass without shuffling or closing")
 				var slot_index: int = slot_order.find(id)
 				check(not view.slots[slot_index].disabled and view.slots[slot_index].tooltip_text.ends_with("·未持有") and view.surface.bottles[slot_index].modulate.a<0.3, "consumed slot stays in place with dim bottle and original missing tooltip")
+		check(view.finishing and closes.is_empty(), "terminal transaction retains optional presentation tail")
+		for beat in range(3): view.surface.motion._process(1.0)
+		view._process(1.0)
 		check(closes == ["attempt_complete"] and not view.blocks_world_input() and not view.visible, "third success or failure closes modal exactly once")
 		check(s.canteenHunt.drinkMixAttemptCount == 1 and s.canteenHunt.drinkMixSequence.is_empty(), "controller resets sequence and increments attempt exactly once")
 		check(s.items.dailySpecialSparklingWater == (recipe == Session.RECIPE) and s.items.badDrink == (recipe != Session.RECIPE), "untouched controller awards only source success/failure item")

@@ -1,5 +1,7 @@
 extends Node2D
 ## Presentation only. Accepted controller facts choose the layers and outcome.
+signal presentation_finished
+var hold_terminal_result:=false
 const Source=preload("res://scripts/presentation/c3_mixer_session.gd")
 var base_sequence:Array=[]
 var shown_sequence:Array=[]
@@ -115,7 +117,13 @@ func reject(ingredient:String,reduced_value:bool)->void:
 func _process(delta:float)->void:
 	if not playing:return
 	elapsed_ms=minf(duration_ms,elapsed_ms+maxf(delta,0)*1000)
-	if elapsed_ms>=duration_ms:playing=false;denied=false;outcome="";shown_sequence=base_sequence.duplicate()
+	if elapsed_ms>=duration_ms:
+		playing=false;denied=false
+		if not hold_terminal_result or outcome.is_empty():
+			outcome="";shown_sequence=base_sequence.duplicate()
+		_pose()
+		presentation_finished.emit()
+		return
 	_pose()
 func sample_pose(ms:float)->void:
 	elapsed_ms=clampf(ms,0,duration_ms);_pose()

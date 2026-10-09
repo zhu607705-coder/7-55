@@ -92,6 +92,7 @@ func pour(id: String) -> void:
 	var index: int=panel.session.button_order.find(id)
 	check(index>=0,"original shuffled mixer exposes ingredient")
 	if index>=0:await click(panel.slots[index])
+	if is_instance_valid(panel) and panel.finishing: await create_timer(2.3).timeout;await frames()
 
 func live_handoff(dimensions: Vector2i) -> void:
 	await restore(earned,dimensions)

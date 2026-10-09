@@ -88,7 +88,9 @@ func run() -> void:
 		await open_world("canteen-mixer");panel=shell.c3_device_panel
 		check(panel.model.layers.size()==1 and panel.surface.motion.shown_sequence==["blackCoffee"],"reloaded popup reconstructs one source layer without replaying pour")
 		for id in ["sparklingWater","lemonTea"]:await click(panel.slots[panel.session.button_order.find(id)])
-		check(state.d.items.dailySpecialSparklingWater and state.d.canteenHunt.drinkMixAttemptCount==1 and not is_instance_valid(shell.modal),"third ingredient grants original success and closes immediately, without animation gate")
+		check(state.d.items.dailySpecialSparklingWater and state.d.canteenHunt.drinkMixAttemptCount==1 and panel.finishing,"third ingredient commits original success immediately before optional presentation")
+		await create_timer(2.3).timeout;await frames()
+		check(not is_instance_valid(shell.modal),"final native pour settles and returns to world automatically")
 		await teardown()
 	var path: String=OS.get_environment("MIXER_LAYER_REPORT")
 	if not path.is_empty():

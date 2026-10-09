@@ -119,6 +119,8 @@ func run() -> void:
 		check(panel.model.layers.size()==1,"reopened view contains coffee layer")
 		for id in ["sparklingWater","lemonTea"]:
 			await click(panel.slots[panel.session.button_order.find(id)])
+		check(state.d.items.dailySpecialSparklingWater and panel.finishing,"reward commits before final pour settles")
+		await create_timer(2.3).timeout;await frames()
 		check(state.d.items.dailySpecialSparklingWater and not is_instance_valid(shell.modal),"third real pointer awards good drink and closes exactly once")
 		check(state.d.canteenHunt.drinkMixAttemptCount==1 and state.d.canteenHunt.drinkMixSequence.is_empty(),"mixer transaction authority preserved")
 		await open_world("canteen-mixer");panel=shell.c3_device_panel
@@ -127,6 +129,7 @@ func run() -> void:
 		for id in controller.RECIPE: state.d.items[id]=true
 		panel.refresh()
 		for id in ["sparklingWater","blackCoffee","lemonTea"]: await click(panel.slots[panel.session.button_order.find(id)])
+		await create_timer(2.3).timeout;await frames()
 		check(state.d.items.badDrink and state.d.canteenHunt.drinkMixAttemptCount==2 and not is_instance_valid(shell.modal),"wrong actual pointer recipe grants only authored bad drink and closes")
 		await teardown()
 		await setup("theater_interior","theater_ticket_kiosk",dim)
