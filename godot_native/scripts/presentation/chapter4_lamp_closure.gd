@@ -6,6 +6,7 @@ signal acknowledged(proof:Dictionary)
 const Sequence=preload("res://scripts/presentation/chapter4_lamp_sequence.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Lamp3D=preload("res://scripts/presentation/chapter4_lamp_3d.gd")
+const SummaryFont=preload("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 const FINAL_MESSAGE="从此，你将与历史上众多灿若星辰的名字一起，共享'浙大人'这个无上荣光的称号！"
 var config:Dictionary={}
 var answers:Dictionary={}
@@ -100,7 +101,12 @@ func _rebuild()->void:
 			var q:Dictionary=config.questions[i];var answer:=""
 			for option in q.options:
 				if str(option.id)==str(answers.get(q.id,"")):answer=str(option.label)
-			column.add_child(_label(("求学所向" if i==0 else "成人所守")+"  ·  "+answer,16,Color("fff0b6")))
+			var summary:=_label(("求学所向" if i==0 else "成人所守")+"  ·  "+answer,16,Color("fff0b6"))
+			summary.name="LampAnswerSummary%d"%(i+1)
+			# Both complete lines use one bundled face. A standalone activity must
+			# not mix per-glyph system CJK fallbacks inside the same answer.
+			summary.add_theme_font_override("font",SummaryFont)
+			column.add_child(summary)
 		column.add_child(_button("继续",acknowledge));column.add_child(_label("按 Space 或 Enter 继续",14,Color("c3bea9")))
 	_layout();_focus_first.call_deferred();queue_redraw()
 func _focus_first()->void:

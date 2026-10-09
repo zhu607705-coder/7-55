@@ -104,8 +104,25 @@ hardware performance and full-game/platform acceptance remain open. Audio used
 the Dummy driver, so no new listening acceptance is claimed.
 
 Source and model provenance are recorded in
-`assets/native/canruo/provenance.json`. This batch does not include GitHub upload,
-PR publication, merge, or deployment.
+`assets/native/canruo/provenance.json`. The bounded integration is published in
+[draft PR 84](https://github.com/zhu607705-coder/7-55/pull/84), targeting
+`godot-version`. Merge and final combined CI are coordinated separately; this
+does not modify the repository's main branch.
+
+## Answer-summary font correction
+
+The two final answer summaries are plain Labels at the same 16px size. The
+standalone native preview previously inherited the engine's Open Sans SemiBold
+fallback chain, which shaped selected Chinese characters in the second summary
+with a different font RID. That produced the visible weight mismatch around
+“成人所守” and “保持”. No RichText/BBCode or partial bold span was involved.
+
+Both complete summary lines now explicitly use the existing bundled Fusion
+Pixel face. All nine answer-pair combinations are checked glyph by glyph in
+both a standalone activity and the actual Main-owned theme. Chinese characters,
+spaces and punctuation use one source font RID, without missing glyphs.
+The 16px size, colors, separators, text, container layout, model and buttons are
+unchanged. The unrelated “按 Space 或 Enter 继续” hint remains untouched.
 
 Technical references:
 
