@@ -123,5 +123,10 @@ func run() -> void:
 	check(world.native_dorm.door_tail.visible,"scene-cancel fixture begins with a live door tail")
 	world.native_dorm.sync(state.d,"library_interior")
 	check(not world.native_dorm.door_tail.visible and not world.native_dorm.snapshot().exit_tail,"different destination immediately hides root-level door copy")
+	var minimal_settings: Dictionary=state.d.duplicate(true)
+	minimal_settings.native.settings={}
+	world.native_dorm.sync(minimal_settings,"duan_yongping_temporal_maze")
+	check(not world.native_dorm.active and not world.native_dorm.reduced,"inactive adapter tolerates source fixtures without reduced-motion settings")
+	check(state.d.native.settings.has("reduced_motion"),"fallback read does not mutate shared settings")
 	await shell.shutdown();shell.free();await frames()
 	print("DORM OBJECTS: %d checks / %d failures" % [checks,failures]);quit(1 if failures else 0)

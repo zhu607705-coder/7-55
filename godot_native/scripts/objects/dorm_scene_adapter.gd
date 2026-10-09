@@ -79,7 +79,7 @@ func sync(next: Dictionary, scene: String) -> void:
 		cancel_transients();bound_state=next
 		cabinet_amount=1.0 if next.native.get("dorm_props",{}).get("cabinet_open",false) else 0.0
 		lamp_amount=Vector2(1 if next.native.get("dorm_props",{}).get("lamp_01_on",false) else 0,1 if next.native.get("dorm_props",{}).get("lamp_03_on",false) else 0)
-	state=next;reduced=bool(state.native.settings.reduced_motion)
+	state=next;reduced=bool(state.native.get("settings",{}).get("reduced_motion",false))
 	active=scene=="dorm_hub" and bool(state.actOne.dormHubUnlocked)
 	visible=active
 	if scene!=previous_scene:
