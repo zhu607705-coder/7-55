@@ -4521,3 +4521,9 @@ Proposed source/test/document union: 75 paths. The 35 import-generated UID compa
 - Native fishing now uses the separate cleanplate/actor assets, compact direct-water controls and tension-linked fish, upper-body, rod and line motion. Original artwork, rhythm model, clock, charts, controller rewards, saves, audio, Main and World remain unchanged.
 - The isolated project was assembled from the verified remote Godot base, not the unpublished regional overlay. Original 718 asset hashes and source JSON Git blobs match; four replay fixtures remained unchanged.
 - Import/parse and all 12 focused fishing/chapter/reload-boundary scripts passed. Exact scope, check counts and evidence limits are in `godot_native/docs/FISHING_TENSION_PRESENTATION.md`. Aggregate CI and independent review are separate merge gates; no fresh export, physical-phone or full manual-campaign claim is made.
+
+## 2026-10-09 — Independent native mixer layers and clear feedback
+
+- Rebuilt the tasting-counter presentation with the clean source backdrop, independent RGBA glass and bottle/cap parts, clipped liquid layers and a fixed world cup contact. Only the mixing counter changes its backdrop; the separate drinks shelf remains unchanged.
+- Simplified bottle labels to drink names, moved the recorded shelf clue below the title, and reserved one bottom status strip for either the operation hint or source feedback. No recipe, ownership, shuffle, controller reward, cancel, save or immediate third-pour closure rule changed.
+- Final source on integrated base `b1177e10` passed import/parse, 14 focused native suites (27,322 checks) and two executed TypeScript-source fixture checks. Real cloud-desktop input covered desktop success/cancel/reentry, mobile-sized failure/missing feedback and 430×860 close/bounds. Independent source review found no blocker. Scope and evidence limits are in `godot_native/docs/MIXER_LAYER_SEPARATION.md`.
