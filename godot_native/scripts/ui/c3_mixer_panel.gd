@@ -27,6 +27,16 @@ var compact_glass_height := 144.0
 var surface: Control
 var art_board := Rect2(120,20,720,480)
 var status_strip: Panel
+var finishing:=false
+var finish_state: Dictionary={}
+var finish_attempt:=0
+var finish_elapsed_ms:=0.0
+var finish_message:=""
+var finish_reduced:=false
+var submitting:=false
+const SETTLE_MS:=100.0
+const RESULT_MS:=340.0
+const RETURN_MS:=220.0
 
 func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callable = Callable(), random: RandomNumberGenerator = null) -> bool:
 	read_state = state_reader
@@ -40,6 +50,8 @@ func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callabl
 		return false
 	if slots.is_empty(): _build()
 	close_emitted = false
+	finishing=false;submitting=false;finish_state={};modulate.a=1.0
+	surface.cancel_presentation();_show_feedback("");prompt_label.text="选择饮料，倒入杯中"
 	visible = true
 	refresh()
 	return true
@@ -69,6 +81,10 @@ func _build() -> void:
 	configure_layout(Vector2(960,540),false)
 
 func set_feedback(message: String) -> void:
+	if finishing or submitting: return
+	_show_feedback(message)
+
+func _show_feedback(message: String) -> void:
 	if not is_instance_valid(feedback_label): return
 	feedback_label.text=message
 	feedback_label.visible=not message.is_empty()
@@ -107,7 +123,7 @@ func configure_layout(viewport: Vector2, compact: bool) -> void:
 	var status_rect:=Rect2(start+Vector2(16,h-54),Vector2(w-32,46))
 	_place(status_strip,Rect2(start+Vector2(1,h-62),Vector2(w-2,61)))
 	_place(prompt_label,status_rect,14)
-	prompt_label.text="选择饮料，倒入杯中"
+	prompt_label.text="调配中…" if finishing else "选择饮料，倒入杯中"
 	prompt_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	_place(shelf_label,Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
 	shelf_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -130,6 +146,7 @@ func _button(rect: Rect2, accessibility: String) -> Button:
 	button.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 	button.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
 	button.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
+	button.add_theme_stylebox_override("disabled", StyleBoxEmpty.new())
 	var focus := StyleBoxFlat.new()
 	focus.bg_color = Color.TRANSPARENT
 	focus.border_color = Color("fff3c4")
@@ -158,6 +175,10 @@ func _add_label(text: String, rect: Rect2, font_size: int, color: Color, centere
 
 func refresh() -> void:
 	if close_emitted or not read_state.is_valid(): return
+	if submitting: return
+	if finishing:
+		_validate_finish()
+		return
 	model = session.snapshot(read_state.call())
 	if model.is_empty():
 		_finish_close()
@@ -175,7 +196,7 @@ func refresh() -> void:
 	queue_redraw()
 
 func _pour(index: int) -> void:
-	if not blocks_world_input(): return
+	if not blocks_world_input() or finishing or submitting: return
 	refresh()
 	if model.is_empty() or index < 0 or index >= model.slots.size(): return
 	var slot: Dictionary = model.slots[index]
@@ -185,16 +206,47 @@ func _pour(index: int) -> void:
 		return
 	var before: Dictionary=read_state.call().duplicate(true)
 	var result: Dictionary={}
+	submitting=true
 	if dispatch.is_valid():
 		var response: Variant=dispatch.call(str(slot.action), null)
 		if response is Dictionary: result=response
-	if not close_emitted and is_instance_valid(surface): surface.accept(str(slot.action),before,read_state.call(),result)
-	# State.act is synchronous; source refreshes after each accepted ingredient,
-	# then closes on either terminal event. Never judge a recipe in this layer.
-	refresh()
+	submitting=false
+	if close_emitted or not is_instance_valid(surface): return
+	var current: Dictionary=read_state.call()
+	# Context replacement during dispatch must retire this presentation, not
+	# animate an old result over a loaded save or another scene.
+	if not is_same(current,session.bound_state) or str(current.get("native",{}).get("scene",""))!="canteen_interior":
+		refresh();return
+	surface.accept(str(slot.action),before,current,result)
+	var completed: bool=int(current.get("canteenHunt",{}).get("drinkMixAttemptCount",0))==int(before.get("canteenHunt",{}).get("drinkMixAttemptCount",0))+1
+	if completed:
+		_begin_finish(current,result)
+	else:
+		refresh()
+
+func _begin_finish(current: Dictionary,result: Dictionary) -> void:
+	# Source session closes now; the retained surface is an optional visual tail.
+	# Reward, consumption, sequence reset and save have already committed.
+	finish_state=current;finish_attempt=int(current.canteenHunt.drinkMixAttemptCount)
+	finish_reduced=bool(current.get("native",{}).get("settings",{}).get("reduced_motion",false))
+	finish_message=str(result.get("message",""))
+	finishing=true;finish_elapsed_ms=0
+	session.close("attempt_complete")
+	for index in range(slots.size()):
+		slots[index].disabled=true
+		model.slots[index].owned=bool(current.items.get(str(model.slots[index].id),false))
+		labels[index].add_theme_color_override("font_color",Color("7f8d92"))
+	surface.source_slots=model.slots.duplicate(true)
+	_show_feedback("");prompt_label.text="调配中…"
+
+func _validate_finish() -> bool:
+	var current: Dictionary=read_state.call()
+	if not is_same(current,finish_state) or str(current.get("native",{}).get("scene",""))!="canteen_interior" or int(current.get("canteenHunt",{}).get("drinkMixAttemptCount",0))!=finish_attempt:
+		session.close("context_changed");_finish_close();return false
+	return true
 
 func dismiss() -> void:
-	if not session.active: return
+	if not session.active and not finishing: return
 	session.close()
 	model = {}
 	_finish_close()
@@ -203,13 +255,25 @@ func _finish_close() -> void:
 	visible = false
 	if close_emitted: return
 	close_emitted = true
+	finishing=false;finish_state={}
+	if is_instance_valid(surface): surface.cancel_presentation()
 	closed.emit(session.close_reason)
 
 func blocks_world_input() -> bool:
-	return visible and session.active
+	return visible and (session.active or finishing)
 
-func _process(_delta: float) -> void:
-	if session.active:
+func _process(delta: float) -> void:
+	if finishing:
+		if not _validate_finish() or surface.is_pouring(): return
+		finish_elapsed_ms+=maxf(delta,0)*1000.0
+		var settle: float=0.0 if finish_reduced else SETTLE_MS
+		var hold: float=160.0 if finish_reduced else RESULT_MS
+		var fade: float=100.0 if finish_reduced else RETURN_MS
+		if finish_elapsed_ms>=settle:
+			_show_feedback(finish_message)
+		modulate.a=1.0-smoothstep(settle+hold,settle+hold+fade,finish_elapsed_ms)
+		if finish_elapsed_ms>=settle+hold+fade: _finish_close()
+	elif session.active:
 		refresh()
 
 func _input(event: InputEvent) -> void:
@@ -237,4 +301,5 @@ func _source_color(hex: int, alpha: float = 1.0) -> Color:
 	return Color(float((hex>>16)&255)/255, float((hex>>8)&255)/255, float(hex&255)/255, alpha)
 
 func _exit_tree() -> void:
-	if session.active: session.close("teardown")
+	if session.active or finishing: session.close("teardown")
+	finishing=false;finish_state={}

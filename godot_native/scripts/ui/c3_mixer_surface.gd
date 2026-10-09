@@ -12,6 +12,7 @@ var bottle_feet: Array[Vector2] = []
 var bottle_height: float = 100.0
 var source_slots: Array = []
 var motion_scale: float = 1.0
+var pending_pours: Array[Dictionary] = []
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -23,6 +24,8 @@ func _ready() -> void:
 		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		add_child(sprite); bottles.append(sprite)
 	motion = Motion.new(); motion.name = "IndependentPourParts"; add_child(motion)
+	motion.hold_terminal_result=true
+	motion.presentation_finished.connect(_play_next_pour)
 func configure(area: Rect2, contact: Vector2, glass_height: float, contacts: Array[Vector2], ingredient_height: float) -> void:
 	board = area; cup_foot = contact; bottle_feet = contacts; bottle_height = ingredient_height
 	motion_scale = glass_height / 150.0
@@ -42,7 +45,8 @@ func synchronize(model: Dictionary, state: Dictionary) -> void:
 	if model.is_empty(): return
 	source_slots = model.slots.duplicate(true)
 	_layout_bottles()
-	motion.set_sequence(state.get("canteenHunt",{}).get("drinkMixSequence",[]))
+	if not motion.playing and pending_pours.is_empty():
+		motion.set_sequence(state.get("canteenHunt",{}).get("drinkMixSequence",[]))
 	motion.reduced = bool(state.get("native",{}).get("settings",{}).get("reduced_motion",false))
 	_sync_visibility()
 func _set_origin(id: String) -> void:
@@ -55,10 +59,24 @@ func _set_origin(id: String) -> void:
 		motion.pour_origin = (mouth-cup_foot)/motion_scale
 		return
 func accept(action: String, before: Dictionary, next: Dictionary, result: Dictionary) -> void:
-	_set_origin(action.trim_prefix("c3_mix:"))
-	motion.accept(action,before,next,result)
+	# Commit happened in State.act. Queue only its observed presentations so rapid
+	# input never cuts an earlier bottle off or delays controller transactions.
+	pending_pours.append({"action":action,"before":before.duplicate(true),"next":next.duplicate(true),"result":result.duplicate(true)})
+	if not motion.playing: _play_next_pour()
+func _play_next_pour() -> void:
+	while not pending_pours.is_empty():
+		var pour: Dictionary=pending_pours.pop_front()
+		_set_origin(str(pour.action).trim_prefix("c3_mix:"))
+		if motion.accept(pour.action,pour.before,pour.next,pour.result): break
 	_sync_visibility()
+func is_pouring() -> bool:
+	return motion.playing or not pending_pours.is_empty()
+func cancel_presentation() -> void:
+	pending_pours.clear()
+	motion.reset()
 func reject(id: String, reduced: bool) -> void:
+	# Missing repeated clicks keep source feedback but cannot interrupt a pour.
+	if is_pouring(): return
 	_set_origin(id); motion.reject(id,reduced); _sync_visibility()
 func _sync_visibility() -> void:
 	for index in range(mini(bottles.size(),source_slots.size())):

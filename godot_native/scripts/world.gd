@@ -526,7 +526,8 @@ func _process(delta: float) -> void:
 			var pace_x := 245 + (520 + sin(Time.get_ticks_msec()/900.0)*130)*.5
 			var pace_position := Vector2(pace_x,player.y)
 			if can_stand(pace_position): player = pace_position; walk_clock += delta; facing = "side"; _sync_player()
-	if axis.length_squared() > 0:
+	# A zero-length route waypoint still needs its normal completion step.
+	if axis.length_squared() > 0 or not _floor_route.is_empty():
 		if mobile_exploration and _floor_route.is_empty(): pan_offset=Vector2.ZERO
 		axis = axis.normalized()
 		var speed := 208.0 if scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase" else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else 165.0
@@ -537,7 +538,9 @@ func _process(delta: float) -> void:
 			var next: Vector2=player.move_toward(_floor_route[0],speed*delta)
 			if _floor_segment_clear(player,next):
 				player=next
-				if player.is_equal_approx(_floor_route[0]):
+				# move_toward returns the exact target when this frame reaches it.
+				# Relative approximate equality can retire large-coordinate goals early.
+				if player==_floor_route[0]:
 					_floor_route.pop_front()
 					if _floor_route.is_empty(): _floor_status="arrived"; _floor_feedback_left=.45
 			else: _stop_floor_route()

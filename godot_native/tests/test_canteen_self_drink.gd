@@ -34,7 +34,8 @@ func mix_in_main() -> void:
 		await click(panel.slots[index])
 	check(state.d.items.badDrink and not state.d.items.dailySpecialSparklingWater,"actual wrong-order pours create badDrink only")
 	check(state.d.canteenHunt.drinkMixAttemptCount==before+1 and state.d.canteenHunt.drinkMixSequence.is_empty(),"one completed failed mixture resets only its sequence")
-	check(not is_instance_valid(shell.modal),"completed wrong mixture closes native mixer")
+	await create_timer(2.3).timeout;await frames()
+	check(not is_instance_valid(shell.modal),"completed wrong mixture closes native mixer after optional presentation")
 	mixed=state.d.duplicate(true)
 func check_dialogue() -> void:
 	var story=state.get_c3_narrative_session()
