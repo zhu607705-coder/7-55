@@ -65,7 +65,9 @@ static func camera_for_safe_rect(player:Vector2,pan:Vector2,extent:Vector2,world
 	var z:=maxf(.01,zoom)
 	var offset:Vector2=(extent/2-safe.get_center())/z
 	var half:Vector2=safe.size/(2*z)
-	var center:=player+pan
+	# Retain ordinary player-centered follow inside the map. Only boundary
+	# clamping may move the camera to expose content inside the clear frame.
+	var center:=player+pan-offset
 	for axis:int in range(2):
 		center[axis]=world_size[axis]/2 if world_size[axis]<=half[axis]*2 else clampf(center[axis],half[axis],world_size[axis]-half[axis])
 	return center+offset

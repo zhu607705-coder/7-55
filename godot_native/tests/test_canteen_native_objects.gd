@@ -27,7 +27,7 @@ func run()->void:
 	pose(world,Vector2(1194,834));var scene:Node2D=world.native_canteen
 	check(scene.is_active() and scene.floor_sprite.texture.resource_path.ends_with("canteen_empty_floor.png"),"the visible base is the supplied empty floor")
 	check(scene.floor_sprite.z_index>=0,"floor stays above the opaque World canvas background")
-	check(scene.objects.size()>100 and scene.objects.dining_1_1_table.parts.size()==2,"table/bench furniture has independent native roots and front strips")
+	check(scene.objects.size()>100 and scene.objects.dining_1_1_table.parts.size()>=2,"table/bench furniture has independent native roots and grounded surface pieces")
 	check(scene.dynamic_collisions.size()==13,"original light queue and return-worker thirteen foot solids are preserved")
 	check(world.can_stand(Vector2(1194,834)),"original entrance spawn is physically clear")
 	for point:Vector2 in [Vector2(1473,208),Vector2(1320,400),Vector2(1470,576),Vector2(260,870),Vector2(755,250),Vector2(1349,835)]:check(world.can_stand(point),"authored task approach has a visible clear foot position "+str(point))

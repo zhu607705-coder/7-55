@@ -33,6 +33,8 @@ func run()->void:
 		check(((before-camera)*zoom+extent/2).is_finite(),"source projection remains finite")
 		var round_trip:Vector2=(((before-camera)*zoom+extent/2)-extent/2)/zoom+camera
 		check(round_trip.is_equal_approx(before),"inverse pointer mapping retains source position")
+	var interior:=Vector2(1200,700)
+	check(Layout.camera_for_safe_rect(interior,Vector2.ZERO,Vector2(528,314),Vector2(2400,1800),1.1,Rect2(0,44,528,100)).is_equal_approx(interior),"interior camera stays player-centered despite a narrow control-safe frame")
 	var old_camera:=Vector2(1380,room.y-extent.y/(2*.85))
 	var old_y:float=(935-old_camera.y)*.85+extent.y/2
 	check(old_y>safe.end.y,"baseline reproduces bottom HUD occlusion")

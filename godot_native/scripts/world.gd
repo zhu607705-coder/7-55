@@ -618,9 +618,11 @@ func _update_camera() -> void:
 	# Honor the presentation owner before exploration, resize or pan can follow.
 	var narrative: Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	if is_instance_valid(narrative) and narrative.has_method("apply_owned_camera") and narrative.apply_owned_camera(): return
+	var scene_owner:Variant=host_node.get("c3_scene_host") if is_instance_valid(host_node) else null
+	var authored:bool=(is_instance_valid(scene_owner) and scene_owner.has_method("owns_world_contract") and scene_owner.owns_world_contract()) or (is_instance_valid(narrative) and narrative.has_method("owns_world_contract") and narrative.owns_world_contract())
 	# Camera bounds use the unobscured screen region. Map coordinates, zoom,
 	# collision and input transforms stay unchanged; only framing moves.
-	camera=WorldOverlay.camera_for_safe_rect(player,pan_offset,size,world_size,zoom,Rect2(Vector2.ZERO,size) if capture_mode or font==null else exploration_safe_rect(true))
+	camera=WorldOverlay.camera_for_safe_rect(player,pan_offset,size,world_size,zoom,Rect2(Vector2.ZERO,size) if capture_mode or font==null or authored else exploration_safe_rect(true))
 
 func exploration_safe_rect(reserve_controls:bool=false) -> Rect2:
 	var hud:=hud_metrics(_hud_line())
@@ -1186,7 +1188,11 @@ func cancel_exploration_gestures() -> void:
 	_cancel_floor_route()
 
 func kayak_paddle_rects() -> Dictionary:
-	return {"left":Rect2(70,size.y-176,100,92),"right":Rect2(size.x-170,size.y-176,100,92)}
+	# Drawing and hit testing share the same moving boundary. Retain the
+	# original size/idle position, lifting both paddles only for taller text.
+	var bottom:float=size.y-84
+	if font!=null:bottom=minf(bottom,hud_metrics(_hud_line()).body_rect.position.y-12)
+	return {"left":Rect2(70,bottom-92,100,92),"right":Rect2(size.x-170,bottom-92,100,92)}
 
 func _kayak_mouse_context() -> Array:
 	return [world_key,size,host_node.world_view.get_global_rect() if is_instance_valid(host_node) else get_global_rect(),kayak.get_instance_id() if kayak!=null else 0]
@@ -1223,8 +1229,9 @@ func _kayak_mouse_input(event: InputEvent) -> bool:
 		var copy: InputEvent=event.duplicate(); copy.position=_kayak_root_point(event.position)
 		return handle_root_kayak_pointer(copy)
 	if not event is InputEventMouseButton or event.button_index!=MOUSE_BUTTON_LEFT or not event.pressed: return false
-	for side: String in kayak_paddle_rects():
-		if not kayak_paddle_rects()[side].has_point(event.position): continue
+	var paddles:=kayak_paddle_rects()
+	for side: String in paddles:
+		if not paddles[side].has_point(event.position): continue
 		if _kayak_finger_owns(side): return true
 		var point:=_kayak_root_point(event.position)
 		kayak_mouse_gesture={"side":side,"start":point,"last":point,"context":_kayak_mouse_context(),"scale":hud_display_scale()}
@@ -1286,7 +1293,7 @@ func _mobile_exploration_input(event: InputEvent) -> bool:
 		touch_controls=true
 		if event.pressed:
 			_cancel_floor_route()
-			var role: String="mode" if hud_mode_rect().has_point(event.position) else "interact" if not kayak and metrics.interact.has_point(event.position) else "stick" if not kayak and metrics.stick_rect.has_point(event.position) else "paddle" if kayak and event.position.y>size.y-180 else "pan"
+			var role: String="mode" if hud_mode_rect().has_point(event.position) else "interact" if not kayak and metrics.interact.has_point(event.position) else "stick" if not kayak and metrics.stick_rect.has_point(event.position) else "paddle" if kayak and event.position.y>minf(size.y-180,kayak_paddle_rects().left.position.y) else "pan"
 			mobile_touch_roles[event.index]={"role":role,"start":event.position,"last":event.position,"panned":false}
 			if role=="mode" and not _interaction_presentation_blocks(): State.toggle_mode()
 			elif role=="interact": _try_interact()
@@ -1334,8 +1341,9 @@ func _draw_touch_controls(canvas: CanvasItem=null) -> void:
 		return
 	var caption_font := CompactOverlay.font_size(22 if kayak else 21,12,hud_display_scale())
 	if kayak:
-		for side: String in kayak_paddle_rects():
-			var rect: Rect2=kayak_paddle_rects()[side]
+		var paddles:=kayak_paddle_rects()
+		for side: String in paddles:
+			var rect: Rect2=paddles[side]
 			var held: bool=kayak_mouse_gesture.get("side","")==side
 			canvas.draw_rect(rect,Color(.02,.10,.13,.84 if held else .65))
 			canvas.draw_rect(rect,Color("dbc487") if held else Color("52767a"),false,2 if held else 1)

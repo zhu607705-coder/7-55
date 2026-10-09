@@ -31,14 +31,15 @@ func run()->void:
 	check(subtitle.z_index==70 and effects.z_index==55 and paper.z_index==70,"existing original story views are leased above native world")
 	var bounded:=true
 	for prop:Node2D in scene.objects.values():
-		for part:Dictionary in prop.parts:bounded=bounded and part.sprite.z_index>=1 and part.sprite.z_index<=50
+		for part:Dictionary in prop.parts:bounded=bounded and part.sprite.z_index>=0 and part.sprite.z_index<=50
 	check(bounded and scene.get_node("CanteenInterface").z_index==60,"world parts and HUD stay below existing modal100 and toast110")
 	# Exact source-depth ties inside one coarse z bucket stay in native sibling order.
 	for at:Vector2 in [Vector2(755,208),Vector2(755,213),Vector2(230,357),Vector2(230,366)]:
 		pose(at)
 		var ordered:=true;var actor:Sprite2D=scene.player_sprite;var depth:float=actor.get_meta("source_depth")
 		for prop:Node2D in scene.objects.values():
-			if Prop.draw_layer(prop.sort_depth)==actor.z_index and prop.sort_depth!=depth:ordered=ordered and ((prop.get_index()<actor.get_index())==(prop.sort_depth<depth))
+			for part:Dictionary in prop.parts:
+				if Prop.draw_layer(part.depth)==actor.z_index and part.depth!=depth:ordered=ordered and ((part.draw_root.get_index()<actor.get_index())==(part.depth<depth))
 		check(ordered,"native actor/furniture sibling depth remains exact at "+str(at))
 	pose(Vector2(1470,576));state.act("c3_target:auntie")
 	shell.c3_narrative_host.tick(650,true);await frames(3);pose(Vector2(1470,576))

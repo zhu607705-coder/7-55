@@ -52,6 +52,11 @@ var floor_pixels:Image
 var navigation_cache:Array=[]
 var navigation_signature:=""
 var story_layer_leases:Dictionary={}
+var previous_actor_planes:Dictionary={}
+var supported_plane_rows:Array=[]
+var resting_supports:Dictionary={}
+var furniture_tint:=Color.WHITE
+var furniture_view_ready:=false
 func setup(owner_world:Control)->void:
 	world=owner_world;name="CanteenIndependentObjects"
 	layout=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/canteen-object-layout.json"))
@@ -69,8 +74,15 @@ func setup(owner_world:Control)->void:
 		var src:Array=opening.source;var dst:Array=opening.destination
 		patch.region_rect=Rect2(src[0],src[1],src[2],src[3]);patch.position=Vector2(dst[0],dst[1]);patch.scale=Vector2(dst[2]/float(src[2]),dst[3]/float(src[3]));source_space.add_child(patch);floor_patches.append(patch)
 	for row:Dictionary in layout.objects:
-		var prop:=Prop.new();prop.configure(row,layout.assets[row.asset],textures[row.asset]);source_space.add_child(prop);objects[row.id]=prop
+		var prop:=Prop.new();prop.configure(row,layout.assets[row.asset],textures[row.asset]);source_space.add_child(prop);objects[row.id]=prop;prop.attach_surfaces(source_space)
 		for part:Dictionary in prop.parts:sorted_parts.append({"object":prop,"part":part,"depth":part.depth})
+	for prop:Node2D in objects.values():
+		var support_id:String=prop.definition.get("supported_by","")
+		if not support_id.is_empty():
+			prop.sort_depth=objects[support_id].support_depth(prop.position.y)+.1;prop.slice_signature=""
+			prop.set_actor_planes([])
+			if objects[support_id].asset.has("long_surface_end"):
+				supported_plane_rows.append({"id":"support_"+prop.object_id,"depth":prop.sort_depth,"rect":prop.geometry().rect})
 	for row:Dictionary in layout.structures:
 		var poly:=PackedVector2Array()
 		for point:Array in row.polygon:poly.append(Vector2(point[0],point[1]))
@@ -140,7 +152,8 @@ func _apply_draw_order()->void:
 	# Native world geometry stays below existing Main modal100/toast110.
 	# Source depth remains exact within each coarse z bucket by sibling order.
 	var ordered:Array=[]
-	for prop:Node2D in objects.values():ordered.append({"node":prop,"depth":prop.sort_depth})
+	for prop:Node2D in objects.values():
+		for part:Dictionary in prop.parts:ordered.append({"node":part.draw_root,"depth":part.depth})
 	for surface:Dictionary in entity_surfaces:
 		if surface.has("node"):ordered.append({"node":surface.node,"depth":surface.depth})
 	for feature:Node2D in features:ordered.append({"node":feature,"depth":float(feature.get_meta("source_depth"))})
@@ -196,16 +209,58 @@ func configure_view(origin:Vector2,zoom:float,player:Vector2)->void:
 	_lease_story_layers();_origin=origin;_zoom=zoom;_player=player;source_space.position=origin;source_space.scale=Vector2.ONE*zoom
 	var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(world.mode_mix)*.3);floor_sprite.modulate=tint
 	for patch:Sprite2D in floor_patches:patch.modulate=tint
-	var reduced:bool=bool(state.native.settings.reduced_motion)
-	for prop:Node2D in objects.values():prop.modulate=tint;prop.set_front_reveal(Metrics.foot_rect(player),Metrics.visual_rect(player),reduced)
 	var frames:Array=world.player_frames.get(world.facing,[])
 	if not frames.is_empty():
 		player_sprite.texture=world.player_side_idle if world.facing=="side" and world.walk_clock<=0 else frames[Metrics.frame_at(world.walk_clock*1000)]
 	var visual:=Metrics.visual_rect(player,world.display_scale_at(player));player_sprite.position=visual.position;player_sprite.scale=visual.size/Metrics.FRAME;player_sprite.flip_h=world.player_flip and world.facing=="side";player_sprite.set_meta("source_depth",Metrics.foot_rect(player).end.y);player_sprite.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y);player_sprite.visible=not world.presentation_actor_hidden
 	player_shadow.position=player+Vector2(0,39);player_shadow.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y-1);player_shadow.visible=player_sprite.visible
-	_update_entities();_update_door();_configure_return_depth();_apply_draw_order();record_surfaces()
+	_update_entities()
+	var actors:Array=[]
+	if player_sprite.visible:actors.append({"id":"player","depth":float(player_sprite.get_meta("source_depth")),"rect":visual})
+	for surface:Dictionary in entity_surfaces:
+		if not _is_grounded_actor(str(surface.node.name)) and not surface.node.has_meta("table_support") and str(surface.node.name) not in ["tray_pickup","carried_tray"]:continue
+		actors.append({"id":str(surface.node.name),"depth":surface.depth,"rect":surface.geometry.transform*surface.geometry.rect})
+	actors=with_supported_planes(actors)
+	if _update_prop_planes(actors,tint):
+		sorted_parts.clear()
+		for prop:Node2D in objects.values():
+			for part:Dictionary in prop.parts:sorted_parts.append({"object":prop,"part":part,"depth":part.depth})
+		sorted_parts.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth)
+	_update_door();_configure_return_depth();_apply_draw_order();record_surfaces()
 	for feature:Node2D in features:feature.queue_redraw()
 	get_node("CanteenInterface").queue_redraw()
+func with_supported_planes(actors:Array)->Array:
+	# Registered furniture positions are fixed; only actor/tray planes move.
+	return actors+supported_plane_rows
+func _update_prop_planes(actors:Array,tint:Color)->bool:
+	# Idle frames and NPC sprite animation do not rebuild furniture geometry.
+	# A moved/retired actor invalidates only props touched by its old/new bounds.
+	var current:Dictionary={};var dirty_bounds:Array=[]
+	for actor:Dictionary in actors:
+		current[actor.id]=actor
+		var previous:Dictionary=previous_actor_planes.get(actor.id,{})
+		if previous.is_empty() or previous.depth!=actor.depth or previous.rect!=actor.rect:
+			dirty_bounds.append(actor.rect)
+			if not previous.is_empty():dirty_bounds.append(previous.rect)
+	for id:String in previous_actor_planes:
+		if not current.has(id):dirty_bounds.append(previous_actor_planes[id].rect)
+	previous_actor_planes=current
+	var tint_changed:bool=not furniture_view_ready or tint!=furniture_tint
+	if furniture_view_ready and dirty_bounds.is_empty() and not tint_changed:return false
+	var rebuilt:=false
+	for prop:Node2D in objects.values():
+		if tint_changed:prop.modulate=tint;prop._sync_part_roots()
+		if not prop.asset.has("long_surface_end"):continue
+		var touched:bool=not furniture_view_ready
+		var bounds:=Rect2(prop.position+prop.top_left,prop.dimensions)
+		for dirty:Rect2 in dirty_bounds:
+			if bounds.intersects(dirty):touched=true;break
+		if not touched:continue
+		var before:int=prop.slice_updates
+		prop.set_actor_planes(actors)
+		rebuilt=rebuilt or before!=prop.slice_updates
+	furniture_tint=tint;furniture_view_ready=true
+	return rebuilt
 func _entity(id:String)->Sprite2D:
 	if not entities.has(id):
 		var sprite:=Sprite2D.new();sprite.name=id;sprite.centered=false;sprite.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST;source_space.add_child(sprite);entities[id]=sprite
@@ -213,6 +268,8 @@ func _entity(id:String)->Sprite2D:
 func _place_entity(id:String,tex:Texture2D,region:Rect2,rect:Rect2,depth:float,ids:Array,alpha:float=1,angle:float=0,pivot:Vector2=Vector2(.5,.5))->void:
 	var sprite:=_entity(id);sprite.show();sprite.texture=tex;sprite.region_enabled=true;sprite.region_rect=region;sprite.position=rect.position+rect.size*pivot;sprite.offset=-region.size*pivot;sprite.scale=rect.size/region.size;sprite.rotation=angle;sprite.modulate=Color(1,1,1,alpha);sprite.set_meta("source_depth",depth);sprite.z_index=Prop.draw_layer(depth)
 	if alpha>.05:entity_surfaces.append({"node":sprite,"depth":depth,"canvas_z":sprite.z_index,"ids":ids,"geometry":{"rect":Rect2(-region.size*pivot,region.size),"texture":tex,"source":region,"transform":sprite.transform}})
+func _is_grounded_actor(id:String)->bool:
+	return (id.begins_with("queue_") and not id.begins_with("queue_prompt")) or id.begins_with("counter_") or id.begins_with("CANTEEN_SEATED_") or id in ["return_worker","shadow_worker"]
 func _update_entities()->void:
 	entity_surfaces.clear();glow_entries.clear()
 	for sprite:Sprite2D in entities.values():sprite.hide()
@@ -239,12 +296,29 @@ func _update_entities()->void:
 			var age_ms:float=layers.pickup_ms if e.id=="tray_pickup" else INF
 			var pose:Dictionary=TrayFrames.pickup_sample(age_ms,layers.pickup_start,to,layers.reduced(state))
 			var tex:Texture2D=layers.texture(str(pose.asset));var side:float=float(pose.size)
-			_place_entity(str(e.id),tex,pose.source,Rect2(pose.position-Vector2.ONE*(side/2),Vector2.ONE*side),_player.y+43,[],float(pose.alpha),float(pose.angle))
+			# The first flight pose must retain the resting tray's support plane.
+			# Interpolate that ground contact toward the hand, independently of the
+			# upward visual arc; both pickup and held trays also partition tabletops.
+			var support:Node2D=_table_under(layers.pickup_start)
+			var source_depth:float=support.support_depth(layers.pickup_start.y+14)+.1 if support!=null else layers.pickup_start.y+10
+			var depth:float=lerpf(source_depth,_player.y+43,smoothstep(0,1,float(pose.progress)))
+			_place_entity(str(e.id),tex,pose.source,Rect2(pose.position-Vector2.ONE*(side/2),Vector2.ONE*side),depth,[],float(pose.alpha),float(pose.angle))
 	for t:Dictionary in world.targets:
 		var id:=str(t.id)
 		if not id.begins_with("tray_"):continue
 		var tex:Texture2D=layers.texture(str(t.art));var at:=Vector2(t.position[0],t.position[1]);var dims:=Vector2(28,28)
-		_place_entity(id,tex,Rect2(Vector2.ZERO,tex.get_size()),Rect2(at-dims/2,dims),at.y+10,[id])
+		var support:Node2D=_table_under(at)
+		var depth:float=support.support_depth(at.y+dims.y/2)+.1 if support!=null else at.y+10
+		_place_entity(id,tex,Rect2(Vector2.ZERO,tex.get_size()),Rect2(at-dims/2,dims),depth,[id])
+		if support!=null:entities[id].set_meta("table_support",support.object_id)
+		elif entities[id].has_meta("table_support"):entities[id].remove_meta("table_support")
+func _table_under(point:Vector2)->Node2D:
+	if resting_supports.has(point):return resting_supports[point]
+	for prop:Node2D in objects.values():
+		if str(prop.definition.asset)=="dining_table" and Rect2(prop.position+prop.top_left,prop.dimensions).has_point(point):
+			resting_supports[point]=prop;return prop
+	resting_supports[point]=null
+	return null
 func _update_door()->void:
 	var door:Node2D=objects.southeast_door
 	var same_scene:bool=layers.doors.scene_id=="canteen_interior"
@@ -392,19 +466,19 @@ func paint_defense(canvas:CanvasItem,front:bool,feet_y:float)->void:
 		for opening:Dictionary in layout.get("floor_openings",[]):
 			var src:Array=opening.source;var dst:Array=opening.destination
 			canvas.draw_texture_rect_region(textures.empty_floor,Rect2(dst[0],dst[1],dst[2],dst[3]),Rect2(src[0],src[1],src[2],src[3]))
-	for entry:Dictionary in sorted_parts:
-		var prop:Node2D=entry.object
+	var ordered:Array=[]
+	var planes:Array=with_supported_planes([{"depth":feet_y,"rect":Rect2(-1000,-1000,10000,10000)}])
+	for prop:Node2D in objects.values():
 		if prop.definition.get("decorative_cart",false):continue
 		if prop.definition.has("door"):
 			if not front:canvas.draw_rect(Rect2(prop.position+prop.top_left,prop.dimensions),Color("172020"))
 			continue
-		if (float(entry.depth)>feet_y)!=front:continue
-		var part:Dictionary=entry.part;var sprite:Sprite2D=part.sprite
-		canvas.draw_texture_rect_region(prop.texture,Rect2(prop.position+sprite.position,part.region.size*sprite.scale),part.region)
-
-	if front:
-		for prop:Node2D in objects.values():
-			if prop.definition.has("front_slice") and prop.sort_depth>feet_y:canvas.draw_texture_rect_region(prop.texture,Rect2(prop.position+prop.top_left,prop.dimensions),prop.source_region)
+		for part:Dictionary in prop.depth_slices(planes):
+			if (float(part.depth)>feet_y)==front:ordered.append({"prop":prop,"part":part,"depth":part.depth})
+	ordered.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth)
+	for entry:Dictionary in ordered:
+		var prop:Node2D=entry.prop;var part:Dictionary=entry.part
+		canvas.draw_texture_rect_region(prop.texture,Rect2(prop.position+part.position,part.region.size*prop.scale_value),part.region)
 	for role:String in ["pickup_slots","mixer","drink_screens"]:
 		var depth:float={"pickup_slots":244,"mixer":818,"drink_screens":230}[role]
 		if (depth>feet_y)==front:draw_feature(canvas,role,true)
