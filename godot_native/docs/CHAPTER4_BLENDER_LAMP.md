@@ -19,14 +19,18 @@ original five-layer PNG renderer remains available with the source-only
 - A narrow viewport widens only the camera field of view when needed to keep the
   cage visible. It does not stretch the lamp. The final summary uses separate
   image and text regions, with scrolling for limited-height controls
-- LED emission peaks at 1.8 and core emission at 0.85. Materials are duplicated
+- LED emission now peaks at 6.0 and core emission at 5.0, following the
+  requested visibly lit body correction. Materials are duplicated
   per instance; imported resources are never modified. One neutral unshadowed
   directional key reveals the metal. Measured, redundant local point-light
   passes and MSAA are removed while full render resolution is retained. The
   closed opaque mesh uses runtime backface culling; the GLB's default
   double-sided materials remain unchanged on disk
   Compatibility rendering uses no post-process Glow, so exact Blender Cycles
-  bloom or point-light spill is not claimed
+  bloom or point-light spill is not claimed. A bounded material shader
+  approximates warm reflected light on the four existing metal materials.
+  It preserves their albedo, metallic value and roughness; illumination falls
+  to zero beyond 2.1m from the core. It creates no extra mesh or light pass
 - 640 seeded, depth-positioned stars use one two-triangle instanced mesh. The
   original 6,320-point CPU drawing path is hidden while the Blender view is active
 - The isolated SubViewport accepts no input. It renders once per changed
@@ -104,8 +108,8 @@ hardware performance and full-game/platform acceptance remain open. Audio used
 the Dummy driver, so no new listening acceptance is claimed.
 
 Source and model provenance are recorded in
-`assets/native/canruo/provenance.json`. The bounded integration is published in
-[draft PR 84](https://github.com/zhu607705-coder/7-55/pull/84), targeting
+`assets/native/canruo/provenance.json`. The earlier bounded integration was published in
+[PR 84](https://github.com/zhu607705-coder/7-55/pull/84), targeting
 `godot-version`. Merge and final combined CI are coordinated separately; this
 does not modify the repository's main branch.
 
@@ -128,3 +132,38 @@ Technical references:
 
 - [Godot SubViewport update modes](https://docs.godotengine.org/en/stable/classes/class_subviewport.html)
 - [Godot Camera3D aspect and field of view](https://docs.godotengine.org/en/stable/classes/class_camera3d.html)
+
+## Visible lamp-body correction (2026-10-09)
+
+The lit state is now brighter at the actual ivory core and pearl lenses. Warm
+reflected light is confined to nearby lattice/collar/pole surfaces. The metal
+is still readable and the background/exposure are unchanged. No post-process
+bloom, added point light, MSAA, full-screen brightness overlay, new geometry,
+new clock, or per-frame static redraw is introduced.
+
+The original low-glow GLB stays byte-identical. The shader is an explicit
+material-side lighting approximation for the Compatibility performance budget;
+it is not represented as a physically exact Cycles render. The separate HTML
+presentation image is a Blender still and must not be labeled a game capture.
+
+The focused material/controller test now passes 218 checks. All 11 targeted
+regression scripts pass, including the font, sequence oracle, source, lifecycle,
+save/admission/guidance, audio, chapter controller and 444-script parse graph.
+Actual Compatibility windows were then checked at 1180×812, 390×844 and
+844×390. All three ran the original two questions, 5,800ms playback and explicit
+acknowledgement. Completion stayed false until acknowledgement, became true
+thereafter, and each final static view requested zero additional 3D renders.
+All retained 14 model meshes, 30,318 model triangles and at most 13 visible
+3D draw calls, with no shader/runtime errors. The image preserves the dark sky,
+brightens the core and warms the nearby lattice without a broad optical halo.
+
+Complete-playback wall-frame samples on Mesa llvmpipe were 30.21 FPS / 43.93ms
+p95 at 1180×812, 64.15 FPS / 26.50ms at 390×844, and 52.91 FPS / 47.17ms at
+844×390. A same-window 120-frame before/after material sample measured 20.11
+and 26.22 FPS respectively. These are bounded cloud software-renderer samples;
+startup and concurrent host load vary, so they do not establish a speedup,
+hardware-GPU performance, Windows execution or physical-phone acceptance.
+They show no return to the earlier roughly 12 FPS multi-light/MSAA candidate.
+The unchanged unlit state has mean absolute image difference 0.0011/255;
+lighting is confined to the lit state. Independent code review caught and fixed
+a long-pole vertex-interpolation light leak before these final captures.
