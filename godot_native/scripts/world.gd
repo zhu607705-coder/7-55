@@ -1,5 +1,8 @@
 extends Control
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
+const OverflowText=preload("res://scripts/ui/overflow_text.gd")
+var overflow_feedback:ScrollContainer
+const WorldOverlay = preload("res://scripts/ui/world_overlay_layout.gd")
 const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
 const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
@@ -109,6 +112,11 @@ func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 	font = load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
+	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
+	var feedback_label:=Label.new();add_child(feedback_label)
+	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;feedback_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	feedback_label.add_theme_font_override("font",font);feedback_label.add_theme_color_override("font_color",Color("f1f2dc"))
+	overflow_feedback.setup(feedback_label);overflow_feedback.hide()
 	for direction in ["down","up","side"]:
 		var frames: Array = []
 		for index in range(8):
@@ -610,10 +618,21 @@ func _update_camera() -> void:
 	# Honor the presentation owner before exploration, resize or pan can follow.
 	var narrative: Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	if is_instance_valid(narrative) and narrative.has_method("apply_owned_camera") and narrative.apply_owned_camera(): return
-	var half := size/(2*zoom)
-	camera = Vector2(clampf(player.x+pan_offset.x,half.x,maxf(half.x,world_size.x-half.x)),clampf(player.y+pan_offset.y,half.y,maxf(half.y,world_size.y-half.y)))
-	if world_size.x < half.x*2: camera.x = world_size.x/2
-	if world_size.y < half.y*2: camera.y = world_size.y/2
+	# Camera bounds use the unobscured screen region. Map coordinates, zoom,
+	# collision and input transforms stay unchanged; only framing moves.
+	camera=WorldOverlay.camera_for_safe_rect(player,pan_offset,size,world_size,zoom,Rect2(Vector2.ZERO,size) if capture_mode or font==null else exploration_safe_rect(true))
+
+func exploration_safe_rect(reserve_controls:bool=false) -> Rect2:
+	var hud:=hud_metrics(_hud_line())
+	var bottom:float=hud.body_rect.position.y
+	if reserve_controls and mobile_exploration and not kayak:
+		bottom=minf(bottom,mobile_control_metrics().stick_rect.position.y-8)
+	if reserve_controls and is_instance_valid(host_node):
+		var narrative:Variant=host_node.get("c3_narrative_host")
+		var view:Variant=narrative.get("view") if is_instance_valid(narrative) else null
+		if is_instance_valid(view) and view.is_visible_in_tree() and view.get_parent()==self:
+			bottom=minf(bottom,view.panel.position.y-8)
+	return Rect2(0,hud.header_height,size.x,maxf(1,bottom-float(hud.header_height)))
 
 func register_object_surface(ids: Array, geometry: Dictionary) -> void:
 	object_picker.add(ids,geometry)
@@ -654,9 +673,8 @@ func _record_plate_targets() -> void:
 
 func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 	if mobile_exploration:
-		var hud:=hud_metrics(_hud_line())
 		var local:Vector2=(point-camera)*zoom+size/2
-		var visible_local:=Rect2(0,hud.header_height,size.x,size.y-hud.header_height-hud.body_height-hud.body_gap)
+		var visible_local:=exploration_safe_rect()
 		var controls:=mobile_control_metrics()
 		if not visible_local.has_point(local) or (not kayak and (controls.stick_rect.has_point(local) or controls.interact.has_point(local))): return {}
 		var visible_source:=Rect2(camera+(visible_local.position-size/2)/zoom,visible_local.size/zoom)
@@ -770,28 +788,46 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
 	if scene_id=="campus_bootstrap":
-		var campus_hud:=hud_metrics(_hud_line())
-		var campus_visible:=Rect2(0,campus_hud.header_height,size.x,size.y-campus_hud.header_height-campus_hud.body_height-campus_hud.body_gap)
+		var campus_visible:=exploration_safe_rect()
 		CampusWayfinding.draw_label(canvas,layer_context,font,hud_display_scale(),campus_visible)
-	if capture_mode: return
+	if capture_mode:
+		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
+		return
+	# An authored full-room film owns the image; navigation help must not
+	# cover the source door/paper while its independent dialogue is visible.
+	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
+	var film:bool=is_instance_valid(narrative) and narrative.has_method("owns_world_contract") and narrative.owns_world_contract()
+	if film and subtitle.is_empty():
+		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
+		if transition_alpha>0:canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
+		return
 	var title: Dictionary = {"dorm_hub":"寝室", "campus_bootstrap":"紫金港校区", "library_interior":"基础图书馆", "canteen_interior":"东食堂", "theater_interior":"剧场", "qizhen_lake":"启真湖", "duan_yongping_temporal_maze":"段永平教学楼", "campus_qizhen_loop":"通往启真湖的路"}
 	var line := _hud_line()
 	var hud := hud_metrics(line)
-	canvas.draw_rect(Rect2(0,0,size.x,hud.header_height),Color(.04,.1,.13,.86))
-	if hud.compact:
-		var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
-		var mode_width: float=font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
-		var baseline: float=(hud.header_height-font.get_height(hud.title_font))/2+font.get_ascent(hud.title_font)
-		canvas.draw_string(font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
-		var mode_baseline: float=(hud.header_height-font.get_height(hud.mode_font))/2+font.get_ascent(hud.mode_font)
-		canvas.draw_string(font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
-	else:
-		canvas.draw_string(font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
-		canvas.draw_string(font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
-	var text_height: float=hud.body_height
-	canvas.draw_rect(Rect2(hud.body_gap,size.y-hud.body_gap-text_height,size.x-hud.body_gap*2,text_height),Color(.02,.08,.12,.88))
-	canvas.draw_multiline_string(font,Vector2(hud.body_padding,size.y-hud.body_gap-text_height+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,Color("f1f2dc"))
-	if touch_controls or mobile_exploration: _draw_touch_controls(canvas)
+	if not film:
+		canvas.draw_rect(Rect2(0,0,size.x,hud.header_height),Color(.04,.1,.13,.86))
+		if hud.compact:
+			var mode_text: String="深色观察" if State.d.native.mode == "dark" else "浅色操作"
+			var mode_width: float=font.get_string_size(mode_text,HORIZONTAL_ALIGNMENT_LEFT,-1,hud.mode_font).x
+			var baseline: float=(hud.header_height-font.get_height(hud.title_font))/2+font.get_ascent(hud.title_font)
+			canvas.draw_string(font,Vector2(hud.padding,baseline),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,size.x-mode_width-hud.padding*3,hud.title_font,Color("f0eede"))
+			var mode_baseline: float=(hud.header_height-font.get_height(hud.mode_font))/2+font.get_ascent(hud.mode_font)
+			canvas.draw_string(font,Vector2(size.x-mode_width-hud.padding,mode_baseline),mode_text,HORIZONTAL_ALIGNMENT_RIGHT,mode_width,hud.mode_font,Color("a8d8e9"))
+		else:
+			canvas.draw_string(font,Vector2(16,26),str(title.get(scene_id,scene_id)),HORIZONTAL_ALIGNMENT_LEFT,-1,20,Color("f0eede"))
+			canvas.draw_string(font,Vector2(size.x-230,25),"深色观察" if State.d.native.mode == "dark" else "浅色操作",HORIZONTAL_ALIGNMENT_RIGHT,214,16,Color("a8d8e9"))
+	var body_rect:Rect2=hud.body_rect
+	if is_instance_valid(overflow_feedback):overflow_feedback.visible=hud.body_overflow and hud.body_height>0
+	if film:body_rect.position.y=hud.body_gap
+	if hud.body_height>0:
+		canvas.draw_rect(body_rect,Color(.02,.08,.12,.88))
+		if hud.body_overflow and is_instance_valid(overflow_feedback):
+			overflow_feedback.label.text=line;overflow_feedback.label.add_theme_font_size_override("font_size",hud.body_font)
+			overflow_feedback.layout_body(Rect2(hud.body_padding,body_rect.position.y+hud.body_inset,size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
+			overflow_feedback.show()
+		else:
+			canvas.draw_multiline_string(font,Vector2(hud.body_padding,body_rect.position.y+hud.body_inset+font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,Color("f1f2dc"))
+	if not film and (touch_controls or mobile_exploration): _draw_touch_controls(canvas)
 	if transition_alpha > 0: canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 
 func _hud_line() -> String:
@@ -810,13 +846,26 @@ func hud_display_scale() -> float:
 	return 1.0
 
 func hud_metrics(text: String) -> Dictionary:
-	if mobile_exploration:
-		var width:=size.x-24
-		# Feedback grows to its full measured height. Controls already follow
-		# this bar's top edge, so source paragraphs never paint through them.
-		var height:=maxf(38,font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,width,14).y+16)
-		return {"compact":true,"title_font":18,"mode_font":14,"body_font":14,"header_height":44.0,"padding":10.0,"body_padding":12.0,"body_width":width,"body_height":height,"body_gap":6.0,"body_inset":8.0,"mode_rect":Rect2(size.x-104,0,104,44)}
-	return CompactOverlay.world(font,size,hud_display_scale(),text)
+	var hud:=WorldOverlay.hud(font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)))
+	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
+	if subtitle.is_empty() and is_instance_valid(narrative) and narrative.blocks_input() and (not narrative.has_method("owns_world_contract") or not narrative.owns_world_contract()):
+		# The dialogue supplies the useful text. Retire idle movement prose so
+		# enlarged dialogue and the movement targets retain separate regions.
+		hud.body_height=0.0;hud.body_overflow=false
+	var bottom:float=size.y-hud.body_gap
+	# Library's root-space dialogue can coexist with earned system feedback.
+	# Stack the feedback above the dialogue, converting display coordinates once.
+	if is_instance_valid(host_node):
+		var story:Variant=host_node.get("library_story_host")
+		if is_instance_valid(story) and is_instance_valid(story.view) and story.view.is_visible_in_tree():
+			var bounds:Rect2=story.view.panel.get_global_rect()
+			var surface:Rect2=host_node.world_view.get_global_rect()
+			if bounds.intersects(surface):bottom=minf(bottom,(bounds.position.y-surface.position.y)/hud_display_scale()-hud.body_gap)
+	var available:float=maxf(1,bottom-hud.header_height-hud.body_gap)
+	if hud.body_height>available:
+		hud.body_height=available;hud.body_inset=minf(hud.body_inset,maxf(0,(available-1)/2));hud.body_overflow=true
+	hud.body_rect=Rect2(hud.body_gap,maxf(hud.header_height+hud.body_gap,bottom-hud.body_height),size.x-hud.body_gap*2,hud.body_height)
+	return hud
 
 func hud_mode_rect() -> Rect2:
 	return hud_metrics("").mode_rect
@@ -1203,7 +1252,7 @@ func handle_root_kayak_pointer(event: InputEvent) -> bool:
 func mobile_control_metrics() -> Dictionary:
 	# Physical-pixel controls occupy a reserved strip above the subtitle.
 	var body: Dictionary=hud_metrics(_hud_line())
-	var bottom: float=size.y-float(body.body_height)-float(body.body_gap)-12
+	var bottom: float=body.body_rect.position.y-12
 	var radius:=50.0
 	var center:=Vector2(62,bottom-radius)
 	return {"stick":center,"radius":radius,"stick_rect":Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),"interact":Rect2(size.x-78,bottom-60,60,60)}
@@ -1312,8 +1361,7 @@ func _floor_transform_current() -> bool:
 	return world_key==_floor_world_key and size==_floor_view_size and is_equal_approx(zoom,_floor_view_zoom) and camera.is_equal_approx(_floor_expected_camera)
 
 func _floor_visible_rect() -> Rect2:
-	var hud:=hud_metrics(_hud_line())
-	var local:=Rect2(0,hud.header_height,size.x,maxf(0,size.y-hud.header_height-hud.body_height-hud.body_gap))
+	var local:=exploration_safe_rect()
 	return Rect2(camera+(local.position-size/2)/zoom,local.size/zoom).intersection(Rect2(Vector2.ZERO,world_size))
 
 func _floor_anchor_bounds(visible: Rect2) -> Rect2:
@@ -1364,8 +1412,7 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 
 func _floor_empty_destination(point: Vector2) -> bool:
 	var local: Vector2=(point-camera)*zoom+size/2
-	var hud:=hud_metrics(_hud_line())
-	var visible:=Rect2(0,hud.header_height,size.x,size.y-hud.header_height-hud.body_height-hud.body_gap)
+	var visible:=exploration_safe_rect()
 	var controls:=mobile_control_metrics()
 	if not visible.has_point(local) or controls.stick_rect.has_point(local) or controls.interact.has_point(local): return false
 	for surface: Dictionary in object_picker.surfaces:
@@ -1391,8 +1438,7 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	_cancel_floor_route(); move_target=Vector2.INF
 	if presentation_actor_hidden or capture_mode or _interaction_presentation_blocks() or _shell_input_blocked(): return
 	if get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging(): return
-	var hud:=hud_metrics(_hud_line())
-	var visible:=Rect2(0,hud.header_height,size.x,size.y-hud.header_height-hud.body_height-hud.body_gap)
+	var visible:=exploration_safe_rect()
 	var controls:=mobile_control_metrics()
 	if not visible.has_point(local) or controls.stick_rect.has_point(local) or controls.interact.has_point(local): return
 	var point: Vector2=(local-size/2)/zoom+camera

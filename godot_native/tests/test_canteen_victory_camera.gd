@@ -59,11 +59,25 @@ func check_subtitle(label: String) -> void:
 	var host: Control=shell.c3_narrative_host
 	host.tick(0,true)
 	check(host.view.is_visible_in_tree() and not host.view.body.text.is_empty(),"source line is visible: "+label)
-	check(Rect2(Vector2.ZERO,shell.world.size).encloses(host.view.panel.get_rect()),"subtitle stays inside canonical surface: "+label)
+	if host.view.screen_rect.has_area():
+		check(host.view.get_parent()==host and host.view.screen_rect.encloses(host.view.panel.get_rect()),"portrait subtitle uses the screen-space gap: "+label)
+		check(not host.view.panel.get_global_rect().intersects(shell.world_view.get_global_rect()),"portrait subtitle does not cover source film: "+label)
+	else:
+		check(Rect2(Vector2.ZERO,shell.world.size).encloses(host.view.panel.get_rect()),"subtitle stays inside canonical surface: "+label)
 	var body: Label=host.view.body
 	var measured: Vector2=body.get_theme_font("font").get_multiline_string_size(body.text,HORIZONTAL_ALIGNMENT_LEFT,body.size.x,body.get_theme_font_size("font_size"))
 	check(measured.y<=body.size.y+.5,"entire source line fits without clipping: "+label)
-	check(body.get_theme_font_size("font_size")*host.view.display_scale>=15,"subtitle keeps readable physical font size: "+label)
+	check(body.get_theme_font_size("font_size")*(1.0 if host.view.screen_rect.has_area() else host.view.display_scale)>=15,"subtitle keeps readable physical font size: "+label)
+	var caption:Rect2=host.view.panel.get_global_rect()
+	var film:Rect2=shell.world_view.get_global_rect()
+	if host.view.get_parent()==shell.world:caption=Rect2(film.position+caption.position*host.view.display_scale,caption.size*host.view.display_scale)
+	var door:Node2D=shell.world.native_canteen.objects.southeast_door
+	var source:=Rect2(door.position+door.top_left,door.dimensions)
+	var local:=Rect2((source.position-shell.world.camera)*shell.world.zoom+shell.world.size/2,source.size*shell.world.zoom)
+	var target:=Rect2(film.position+local.position*host.view.display_scale,local.size*host.view.display_scale)
+	check(not caption.intersects(target),"source southeast doorway remains clear of dialogue: "+label)
+	var arrival:Vector2=film.position+((Vector2(1380,852)-shell.world.camera)*shell.world.zoom+shell.world.size/2)*host.view.display_scale
+	check(not caption.grow(8).has_point(arrival),"source exit arrival point remains clear of dialogue: "+label)
 
 func run() -> void:
 	check(ProjectSettings.globalize_path("user://").begins_with("/tmp/"),"isolated fixture save profile")
@@ -71,7 +85,7 @@ func run() -> void:
 	state=root.get_node("State")
 	oracle=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/canteen_victory_source.json"))
 	for reduced: bool in [false,true]:
-		for dimensions: Vector2i in [Vector2i(1440,900),Vector2i(390,844),Vector2i(844,390)]:
+		for dimensions: Vector2i in [Vector2i(1440,900),Vector2i(960,720),Vector2i(390,844),Vector2i(844,390)]:
 			await open_victory(dimensions,reduced)
 			var host: Control=shell.c3_narrative_host
 			var world: Control=shell.world
@@ -105,6 +119,18 @@ func run() -> void:
 				world._process(.05)
 				check_camera("dialogue after normal world frame")
 				check_subtitle(str(dimensions))
+				if line==session.lines[0]:
+					var clock_before:float=session.elapsed_ms
+					state.d.native.settings.text_scale=3.0;host.tick(0,true);await frames(2)
+					check_subtitle(str(dimensions)+" enlarged")
+					check(session.elapsed_ms==clock_before,"enlarged subtitle does not advance source clock")
+					state.d.native.settings.text_scale=1.0;host.tick(0,true)
+				if host.view.screen_rect.has_area():
+					var hidden_at:float=session.elapsed_ms
+					shell.world_frame.hide();host.tick(0,false)
+					check(not host.view.is_visible_in_tree() and session.elapsed_ms==hidden_at,"hidden SubViewport container hides external subtitle without advancing session")
+					shell.world_frame.show();host.tick(0,true)
+					check(host.view.is_visible_in_tree() and host.current==session,"world restoration reuses the same subtitle/session")
 				check(not host.blocks_movement(),"source dialogue keeps walking available without following the player")
 			var last: Dictionary=session.lines[-1]
 			var exit_start: float=float(last.atMs)+float(last.durationMs)+120

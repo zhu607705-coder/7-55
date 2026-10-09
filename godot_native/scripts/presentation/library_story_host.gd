@@ -24,6 +24,7 @@ func _process(delta: float) -> void:
 func tick(delta_ms: float,focused: bool=true) -> void:
 	if not read_state.is_valid() or not provider.is_valid(): return
 	var s: Dictionary=read_state.call()
+	view.text_scale=float(s.get("native",{}).get("settings",{}).get("text_scale",1.0))
 	if current!=null and (not current.valid(s) or current.status=="cancelled"): reset()
 	var issued: RefCounted=provider.call(minf(delta_ms,100) if focused else 0)
 	if current==null and issued!=null and issued.attach(s,self):
