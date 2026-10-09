@@ -4,6 +4,7 @@ const Prop=preload("res://scripts/objects/canteen_scene_object.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
 const ModeFiberView=preload("res://scripts/presentation/c3_mode_fiber_view.gd")
 const TrayFrames=preload("res://scripts/presentation/c3_tray_frames.gd")
+const DoorFrames=preload("res://scripts/presentation/c3_door_frames.gd")
 class Feature extends Node2D:
 	var owner_scene:Node2D
 	var role:String
@@ -245,14 +246,21 @@ func _update_entities()->void:
 		var tex:Texture2D=layers.texture(str(t.art));var at:=Vector2(t.position[0],t.position[1]);var dims:=Vector2(28,28)
 		_place_entity(id,tex,Rect2(Vector2.ZERO,tex.get_size()),Rect2(at-dims/2,dims),at.y+10,[id])
 func _update_door()->void:
-	var door:Node2D=objects.southeast_door;var progress:float=layers.doors.visual_progress if layers.doors.scene_id=="canteen_interior" else 0
+	var door:Node2D=objects.southeast_door
+	var same_scene:bool=layers.doors.scene_id=="canteen_interior"
+	var progress:float=layers.doors.visual_progress if same_scene else 0.0
+	var passable:bool=same_scene and layers.doors.passable()
 	for part:Dictionary in door.parts:part.sprite.visible=false
-	var tex:Texture2D=door.texture;var region:Rect2=door.source_region;var dims:Vector2=door.dimensions;var left_top:Vector2=door.position+door.top_left
-	# Independent source halves follow the original sensor/timing; no collision gate.
-	for side in range(2):
-		var full_width:=dims.x/2;var width:=full_width*lerpf(1,.18,progress)
-		var at:=left_top+Vector2(0 if side==0 else dims.x-width,0)
-		_place_entity("southeast_leaf_"+str(side),tex,Rect2(region.position+Vector2(region.size.x/2*side,0),Vector2(region.size.x/2,region.size.y)),Rect2(at,Vector2(width,dims.y)),900,["southeast_exit"],1-progress)
+	var at:Vector2=door.position+door.top_left
+	var pose:Dictionary=DoorFrames.sample(progress,passable,at,door.scale_value)
+	if pose.closed:
+		# Paint the exact full-resolution original endpoint, not a generated copy.
+		_place_entity("southeast_door_closed",door.texture,door.source_region,Rect2(at,door.dimensions),900,["southeast_exit"])
+		return
+	# Registered opaque leaves swing independently behind the unchanged source
+	# jambs and hinge plates. No scale animation, frame fade or collision writes.
+	_place_entity("southeast_door_leaves",layers.texture(DoorFrames.LEAVES_ASSET),pose.source,pose.rect,900,["southeast_exit"])
+	_place_entity("southeast_door_frame",layers.texture(DoorFrames.FRAME_ASSET),Rect2(Vector2.ZERO,door.source_region.size),Rect2(at,door.dimensions),900,["southeast_exit"])
 func owns_target(id:String)->bool:
 	return _active and (id.begins_with("initial-") or id.begins_with("tray_") or id.begins_with("drink-machine-") or id.begins_with("pickup_window_") or id in ["ordering_kiosk","queue-column-three-front","drink-bottle-shelf","canteen-mixer","canteen-promo-board","auntie","southeast_exit"])
 func target_geometry(id:String)->Dictionary:
