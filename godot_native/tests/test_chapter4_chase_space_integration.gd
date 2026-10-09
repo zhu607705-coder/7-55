@@ -47,6 +47,29 @@ func drive_touch(game:Control,targets:Array)->void:
 		if game.done or game.stage!="chase":break
 	var up:=InputEventScreenTouch.new();up.index=7;up.pressed=false;game._chase_input(up)
 	check(not game.pointer_moving,"Terminal touch release leaves no held movement")
+func check_trace_coalescing(game:Control)->void:
+	var corner:=[Vector2(870,1347),Vector2(870,1347.5),Vector2(870.6,1347.5)]
+	check(not game.geometry.segment_open(corner[0],corner[2]),"Corner fixture has an illegal coarse chord")
+	for point:Vector2 in corner:
+		game.player=point;game.elapsed+=10;game._record_chase_sample()
+		if point==corner[0]:game._chase_proof_payload() # Synthetic sampler fixture: retain the corner's starting anchor.
+	check(game.trail.size()==3,"Sampler preserves the actual turn around a solid corner")
+	var issued:Dictionary=game._chase_proof_payload()
+	game.player+=Vector2(1,0);game.elapsed+=10;game._record_chase_sample()
+	game.player+=Vector2(1,0);game.elapsed+=10;game._record_chase_sample()
+	check(game.trail.slice(0,issued.path.size())==issued.path,"Later coalescing never changes any issued proof prefix")
+	game._reset_chase()
+func drive_high_refresh(game:Control,targets:Array)->void:
+	var total_frames:=0
+	for target:Vector2 in targets:
+		game.pointer_moving=true;game.pointer_target=target
+		while game.player.distance_to(target)>=8 and not game.done and game.stage=="chase" and total_frames<40000:
+			game.elapsed+=1000.0/480;game._chase(1.0/480);total_frames+=1
+		if game.done or game.stage!="chase" or total_frames>=40000:break
+	game.pointer_moving=false
+	check(total_frames>20000 and total_frames<40000,"High-refresh regression actually executes more than 20,000 movement frames")
+	check(game.trail.size()<1000,"High-refresh proof size depends on travel time and corners rather than rendered frames")
+	print("HIGH_REFRESH_CHASE ",total_frames," frames; ",game.trail.size()," proof points")
 func run()->void:
 	if not _guard_isolated_profile():return
 	var state:=root.get_node("State");var geometry:=Geometry.new()
@@ -54,6 +77,7 @@ func run()->void:
 	check(issued.game.script=="res://scripts/games/chapter4_chase_space_activity.gd","Original c4_chase enters the independent scene")
 	check(issued.game.geometryVersion==geometry.layout.format,"Controller binds the issued geometry revision")
 	var game:=make_game(state,issued.game)
+	check_trace_coalescing(game)
 	var view:Control=game.chase_view
 	check(view.camera_focus(Vector2(1100,1260))==view.camera_focus(Vector2(1100,1380)),"Vertical obstacle dodges do not redirect the lower-corridor camera")
 	check(view.camera_focus(Vector2(1800,740))==view.camera_focus(Vector2(1800,860)),"Middle-corridor camera stays on the route while the player dodges")
@@ -108,6 +132,10 @@ func run()->void:
 		drive_touch(game,geometry.route.slice(1))
 		check(game.done and state.d.chapter4.floor=="A2" and state.d.chapter4.chaseStairwellStage=="complete","Full native screen-touch route completes at %s (stage=%s position=%s target=%s owner=%s elapsed=%s)"%[dimensions,game.stage,game.player,game.pointer_target,game.chase_pointer_owner,game.elapsed])
 		game.queue_free();await frames()
+	issued=issue(state);game=make_game(state,issued.game)
+	drive_high_refresh(game,geometry.route.slice(1))
+	check(game.done and state.d.chapter4.floor=="A2" and state.d.chapter4.chaseStairwellStage=="complete","More than 20,000 legitimate movement frames still complete the original A2 handoff")
+	game.queue_free();await frames()
 	issued=issue(state);game=make_game(state,issued.game)
 	var attempt:int=state.d.chapter4.chaseAttempt
 	for i in 300:

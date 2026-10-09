@@ -3,6 +3,7 @@ extends "res://scripts/games/chapter4_activity.gd"
 const ChaseSpace=preload("res://scripts/games/chapter4_chase_space.gd")
 const SpaceView=preload("res://scripts/presentation/chapter4_chase_space_view.gd")
 var geometry:RefCounted=ChaseSpace.new()
+var frozen_trace_size:=0
 
 func _build()->void:
 	if built:return
@@ -20,7 +21,7 @@ func _reset_chase()->void:
 	landing=clampi(int(config.get("startLanding",0)),0,2)
 	var entry:Dictionary=geometry.guard_entry(landing,float(config.get("guardLeadDistance",650)))
 	elapsed=0;player=entry.player;guard=entry.guard;guard_delay_ms=entry.delayMs;chase_animation_ms=0
-	trail=[];guard_trail=[player];stage="chase";snapshot_clock=0;guard_target=null;guard_repath=0;running=true;done=false
+	trail=[];frozen_trace_size=0;guard_trail=[player];stage="chase";snapshot_clock=0;guard_target=null;guard_repath=0;running=true;done=false
 	chase_progress_pending=false;chase_request_remaining_ms=0;chase_capture.cancel();_clear_chase_pointer()
 	body.text="WASD / 方向键移动；按住地面指向移动，松开即停。"
 	chase_view.reset_view(player,guard);chase_overview.reset_view(player,guard)
@@ -57,7 +58,24 @@ func _chase_input(event:InputEvent)->bool:
 	return super._chase_input(local)
 
 func _chase_proof_payload()->Dictionary:
+	# Issued platform proofs are immutable prefixes, including their last point.
+	frozen_trace_size=trail.size()
 	var proof:=super._chase_proof_payload();proof.geometryVersion=str(config.get("geometryVersion",""));return proof
+
+func _record_chase_sample()->void:
+	if elapsed<=0 or (not trail.is_empty() and float(trail.back().t)>=elapsed):return
+	var record:={"x":player.x,"y":player.y,"t":elapsed}
+	# Coalesce only the unissued tail, at most 80ms from its retained anchor.
+	# Check the entire replacement sweep: corners that would cross a solid stay.
+	# This avoids a frame-rate-dependent 20,000-point failure on high-refresh PCs.
+	if trail.size()>frozen_trace_size:
+		var anchor:Vector2=geometry.vec(geometry.layout.landings[int(config.get("startLanding",0))].spawn)
+		var anchor_time:=0.0
+		if trail.size()>1:
+			anchor=Vector2(trail[-2].x,trail[-2].y);anchor_time=float(trail[-2].t)
+		if elapsed-anchor_time<=80 and geometry.segment_open(anchor,player):
+			trail[-1]=record;return
+	trail.append(record)
 
 func source_stair_handoff()->Dictionary:
 	var lead:float=geometry.distance(guard,player)+maxf(0,guard_delay_ms-elapsed)*geometry.GUARD_SPEED/1000
@@ -73,8 +91,7 @@ func _chase(delta:float)->void:
 	if geometry.segment_open(player,candidate):player=candidate
 	elif geometry.segment_open(player,player+Vector2(movement.x,0)):player+=Vector2(movement.x,0)
 	elif geometry.segment_open(player,player+Vector2(0,movement.y)):player+=Vector2(0,movement.y)
-	# Keep the actual swept step, including direction changes at barrier corners.
-	# A coarser chord must not invalidate a legitimate route or cut a solid corner.
+	# Keep each swept step unless a bounded, collision-free chord replaces it.
 	_record_chase_sample()
 	if chase_progress_pending:
 		chase_request_remaining_ms-=delta*1000

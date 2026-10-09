@@ -70,8 +70,11 @@ activity viewport. Direct held pointer/touch input and keyboard movement remain;
 no screen-bottom virtual buttons are added. Return is the sole header control.
 The gray floor, barriers and storage blocks are explicitly whitebox art.
 
-Every swept player step is recorded, so turning around a barrier does not turn
-into an invalid coarse chord. The original two logical platform transitions
+Every swept player step is checked. Unissued trace tails may coalesce across at
+most 80ms only if the replacement's entire sweep is collision-free; necessary
+barrier corners and every issued proof prefix remain intact. High-refresh PCs
+therefore do not exhaust the proof-point limit merely by rendering more frames.
+The original two logical platform transitions
 commit only after the controller accepts the continuous proof. Ordinary save and
 reentry restore that accepted logical platform to its corresponding new-space
 spawn with a fresh nonce. Failure still increments one attempt and returns to
@@ -178,3 +181,28 @@ existing strict save validator. That fixture is not evidence of a production
 save failure. Subsequent GUI persistence tests imported a pre-chase save exported
 from the genuine continuous native campaign. No story-proof fields were fabricated
 and the strict save validator was unchanged.
+
+## Final-baseline checks and remaining boundary
+
+After integration onto `1c7e200b` (PRs 97 and 98), review found that recording every
+rendered frame could exceed the 20,000-point proof limit on high-refresh PCs.
+The collision-checked 80ms tail coalescing above fixes that without altering
+speeds, collision geometry, proof limits or story rules. The 480 FPS native
+consumer regression executed 20,783 movement frames, retained 548 proof points,
+and completed the original A2 handoff. A tight obstacle-corner fixture confirms
+that a colliding replacement chord is rejected, and issued prefixes remain exact.
+
+Final-baseline local results: 480 parsed scripts, 1,309 model checks, 156 consumer
+checks (including both full touch-event orientations and high-refresh travel),
+and 70 retained chase-rule checks passed. A separate automated native-pointer
+run imported the genuinely earned pre-chase campaign save, traversed the route,
+validated and saved A2, reloaded the actual file, and exported that valid boundary:
+32 checks passed. This is automated input, not an additional physical manual win.
+
+The final full integration attempt was terminated with the shell's `Killed`
+message while creating Main; its 156 preceding consumer checks passed separately.
+A subsequent GUI A2 launch exited before a visible world or a normal reopen could
+be inspected. No cause such as OOM is established. Therefore final-baseline Main
+smoke and ordinary GUI A2 reopening remain unverified locally. Earlier physical
+keyboard and phone-sized pointer evidence remains as described above. Keep this
+whitebox PR in draft until the final checks and review are resolved.
