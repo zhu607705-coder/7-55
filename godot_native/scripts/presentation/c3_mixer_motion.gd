@@ -23,6 +23,13 @@ var stream:Polygon2D
 var foam:Array[Polygon2D]=[]
 var motes:Array[Polygon2D]=[]
 var observed_accepts:=0
+var component_data:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/native/mixer/components.json")).components
+var glass_sprite:Sprite2D
+var bottle_sprite:Sprite2D
+var cap_sprite:Sprite2D
+var glass_mask:Polygon2D
+var current_art_id:String=""
+const BOTTLE_HEIGHT:float=100.0
 func _ready()->void:
 	_build();_pose()
 func _poly(parent:Node,name_value:String,points:Array,color:Color)->Polygon2D:
@@ -34,7 +41,9 @@ func _build()->void:
 	_poly(self,"CupContactShadow",[Vector2(-49,2),Vector2(-36,-2),Vector2(36,-2),Vector2(49,2),Vector2(36,6),Vector2(-36,6)],Color(0,0,0,.22))
 	glass_root=Node2D.new();glass_root.name="GlassBody";add_child(glass_root)
 	glass_back=_poly(glass_root,"GlassBack",[Vector2(-49,-148),Vector2(-42,0),Vector2(42,0),Vector2(49,-148)],Color("badbe4",.16))
-	for i in range(3):liquid_parts.append(_poly(glass_root,"IngredientLayer"+str(i),[],Color.WHITE))
+	glass_mask=_poly(glass_root,"GlassInteriorMask",[Vector2(-43,-141),Vector2(43,-141),Vector2(37,-6),Vector2(-37,-6)],Color.WHITE)
+	glass_mask.clip_children=CanvasItem.CLIP_CHILDREN_ONLY
+	for i in range(3):liquid_parts.append(_poly(glass_mask,"IngredientLayer"+str(i),[],Color.WHITE))
 	glass_edge=_line(glass_root,"GlassEdge",[Vector2(-50,-150),Vector2(-42,0),Vector2(42,0),Vector2(50,-150)],Color("b7e1e7"),4)
 	rim=_line(glass_root,"GlassRim",[Vector2(-50,-150),Vector2(50,-150)],Color("e8f4e6"),3)
 	_line(glass_root,"GlassHighlight",[Vector2(-38,-137),Vector2(-33,-17)],Color("e4f2e8",.5),3)
@@ -45,6 +54,36 @@ func _build()->void:
 	bottle_cap=_poly(bottle,"BottleCap",[Vector2(-9,-4),Vector2(9,-4),Vector2(9,2),Vector2(-9,2)],Color("d6c88a"))
 	for i in range(5):foam.append(_poly(glass_root,"Foam"+str(i),[Vector2(-9,-4),Vector2(-9,-10),Vector2(-4,-10),Vector2(-4,-14),Vector2(4,-14),Vector2(4,-10),Vector2(9,-10),Vector2(9,-4)],Color("d8ded1")))
 	for i in range(10):motes.append(_poly(self,"Bubble"+str(i),[Vector2(-2,-2),Vector2(2,-2),Vector2(2,2),Vector2(-2,2)],Color("e7f5db")))
+	_install_rgba_art()
+func _sprite(parent:Node,part:String)->Sprite2D:
+	var node:=Sprite2D.new();node.name=part;node.centered=false;node.region_enabled=true;node.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST;parent.add_child(node);return node
+func _region_data(id:String)->Rect2:
+	var values:Array=component_data[id].region;return Rect2(values[0],values[1],values[2],values[3])
+func _install_rgba_art()->void:
+	glass_back.modulate.a=0;glass_edge.hide();rim.hide();glass_root.get_node("GlassHighlight").hide()
+	glass_sprite=_sprite(glass_root,"OriginalGlassRGBA")
+	glass_sprite.texture=load(component_data.glass.path);glass_sprite.region_rect=_region_data("glass")
+	var factor:float=150.0/glass_sprite.region_rect.size.y
+	glass_sprite.scale=Vector2.ONE*factor;glass_sprite.position=Vector2(-glass_sprite.region_rect.size.x*factor/2,-150)
+	for node in bottle.get_children():
+		if node is CanvasItem:node.modulate.a=0
+	bottle_sprite=_sprite(bottle,"OriginalBottleBodyRGBA");cap_sprite=_sprite(bottle,"OriginalCapRGBA")
+func _sync_bottle_art()->void:
+	if not component_data.has(item_id) or bottle_sprite==null:return
+	if current_art_id!=item_id:
+		current_art_id=item_id
+		var data:Dictionary=component_data[item_id];var rect:Rect2=_region_data(item_id);var cap:float=float(data.cap_pixels)
+		var factor:float=BOTTLE_HEIGHT/rect.size.y;var half_width:float=rect.size.x*factor/2
+		bottle_sprite.texture=load(data.path);bottle_sprite.region_rect=Rect2(rect.position+Vector2(0,cap),rect.size-Vector2(0,cap));bottle_sprite.position=Vector2(half_width,0);bottle_sprite.rotation=PI;bottle_sprite.scale=Vector2.ONE*factor
+		cap_sprite.texture=bottle_sprite.texture;cap_sprite.region_rect=Rect2(rect.position,Vector2(rect.size.x,cap));cap_sprite.position=Vector2(half_width,cap*factor);cap_sprite.rotation=PI;cap_sprite.scale=Vector2.ONE*factor
+	var t:float=clampf(elapsed_ms/maxf(1.0,duration_ms),0.0,1.0)
+	var part:Dictionary=component_data[item_id];var rect:Rect2=_region_data(item_id)
+	var factor:float=BOTTLE_HEIGHT/rect.size.y;var cap_height:float=float(part.cap_pixels)*factor
+	var opening:float=0.0 if denied else smoothstep(0.0,0.18,t)
+	cap_sprite.position=Vector2(rect.size.x*factor/2,cap_height+10.0*opening)
+	cap_sprite.modulate.a=1.0-opening
+	cap_sprite.visible=denied or (not reduced and t<0.18)
+
 func set_sequence(sequence:Array)->void:
 	base_sequence=sequence.duplicate()
 	if not playing:shown_sequence=base_sequence.duplicate()
@@ -87,8 +126,8 @@ func _pose()->void:
 	var t:=clampf(elapsed_ms/maxf(1,duration_ms),0,1)
 	var poured:=smoothstep(.25,.68,t) if playing and not denied else 1.0
 	var reaction:=sin(clampf((t-.33)/.67,0,1)*PI) if playing and not outcome.is_empty() else 0.0
-	var lift:float=-12*reaction if outcome=="success" and not reduced else 0.0
-	glass_root.position=Vector2(0,lift);glass_root.scale=Vector2(1+.075*reaction,1-.075*reaction) if outcome=="bad" and not reduced else Vector2.ONE
+	var lift:float=0.0
+	glass_root.position=Vector2.ZERO;glass_root.scale=Vector2.ONE
 	for i in range(liquid_parts.size()):
 		var layer:Polygon2D=liquid_parts[i];layer.visible=i<shown_sequence.size()
 		if not layer.visible:continue
@@ -104,7 +143,7 @@ func _pose()->void:
 		bottle.rotation=lerp_angle(PI,-PI/2,entry*(1-leave)) if not reduced else -PI/2
 		if denied:bottle.rotation=PI+.18*sin(t*PI)*(0 if reduced else 1);bottle.position=pour_origin
 		bottle.modulate.a=(1-smoothstep(.78,.96,t)) if not denied else .42
-		bottle_body.color=_color(item_id);bottle_cap.visible=denied
+		bottle_body.color=_color(item_id);bottle_cap.visible=denied;_sync_bottle_art()
 	stream.visible=playing and not denied and t>.25 and t<.68
 	if stream.visible:
 		var end_y:float=-7-(shown_sequence.size()-1)*43-40*poured

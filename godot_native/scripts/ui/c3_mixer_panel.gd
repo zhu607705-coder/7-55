@@ -1,6 +1,6 @@
 extends Control
-## Fixed 960x540 source-pixel mixer surface. Main must mount this inside its
-## blocking modal owner and uniformly scale it with the world (see port doc).
+## Original mixer transaction with an independently layered physical surface.
+## Main retains the original blocking modal owner and responsive coordinates.
 ## Only callbacks request actions; neither this panel nor its session mutates s.
 signal closed(reason: String)
 const Session = preload("res://scripts/presentation/c3_mixer_session.gd")
@@ -24,6 +24,9 @@ var prompt_label: Label
 var exit_label: Label
 var feedback_label: Label
 var compact_glass_height := 144.0
+var surface: Control
+var art_board := Rect2(120,20,720,480)
+var status_strip: Panel
 
 func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callable = Callable(), random: RandomNumberGenerator = null) -> bool:
 	read_state = state_reader
@@ -42,6 +45,11 @@ func setup(state_reader: Callable, action_sink: Callable, feedback_sink: Callabl
 	return true
 
 func _build() -> void:
+	surface=preload("res://scripts/ui/c3_mixer_surface.gd").new();surface.name="PhysicalMixerSurface";add_child(surface)
+	status_strip=Panel.new();status_strip.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var status_style:=StyleBoxFlat.new();status_style.bg_color=Color("14221f")
+	status_style.border_color=Color("9b8354");status_style.border_width_top=1
+	status_strip.add_theme_stylebox_override("panel",status_style);add_child(status_strip)
 	feedback_label=_add_label("",Rect2(),14,Color("fff2d8"))
 	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	feedback_label.hide()
@@ -57,82 +65,62 @@ func _build() -> void:
 		var button: Button = _button(Rect2(CENTER+Vector2(x-88, 133), Vector2(176, 54)), "")
 		button.pressed.connect(_pour.bind(index))
 		slots.append(button)
-		labels.append(_add_label("", Rect2(CENTER+Vector2(x-65, 147), Vector2(150, 26)), 13, Color.WHITE))
+		labels.append(_add_label("", Rect2(CENTER+Vector2(x-65, 147), Vector2(150, 26)), 14, Color.WHITE))
+	configure_layout(Vector2(960,540),false)
 
 func set_feedback(message: String) -> void:
 	if not is_instance_valid(feedback_label): return
 	feedback_label.text=message
-	feedback_label.visible=compact_layout and not message.is_empty()
+	feedback_label.visible=not message.is_empty()
+	prompt_label.visible=message.is_empty()
 
 func configure_layout(viewport: Vector2, compact: bool) -> void:
 	compact_layout=compact
-	for child in get_children():
-		if child is Control and not child.has_meta("desktop_rect"):
-			child.set_meta("desktop_rect",Rect2(child.position,child.size))
-			child.set_meta("desktop_font",child.get_theme_font_size("font_size"))
-	if not compact:
-		custom_minimum_size=Vector2(960,540); size=custom_minimum_size
-		for child in get_children():
-			if child is Control:
-				var rect: Rect2=child.get_meta("desktop_rect"); child.position=rect.position; child.size=rect.size
-				child.add_theme_font_size_override("font_size",child.get_meta("desktop_font"))
-		exit_label.text="退出  Esc"
-		feedback_label.hide()
-		queue_redraw(); return
-	custom_minimum_size=Vector2.ZERO; size=viewport
-	compact_portrait=viewport.y>viewport.x
-	var extent:=Vector2(minf(viewport.x-24,560 if compact_portrait else 720),minf(viewport.y-24,620 if compact_portrait else 460))
-	compact_board=Rect2((viewport-extent)/2,extent)
-	var start: Vector2=compact_board.position; var w: float=extent.x
-	_place(title_label,Rect2(start+Vector2(16,14),Vector2(w-98,32)),20)
-	_place(exit_button,Rect2(start+Vector2(w-78,10),Vector2(64,44)))
-	_place(exit_label,Rect2(exit_button.position,exit_button.size),16); exit_label.text="退出"
-	_place(glass_label,Rect2(start+Vector2(16,64),Vector2(w-32,24)),14)
-	compact_glass_height=144 if compact_portrait else clampf(extent.y-326,56,134)
-	var prompt_y: float=284 if compact_portrait else 102+compact_glass_height+26
-	_place(prompt_label,Rect2(start+Vector2(16,prompt_y),Vector2(w-32,44 if compact_portrait else 28)),16)
-	prompt_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	_place(shelf_label,Rect2(start+Vector2(16,prompt_y+48 if compact_portrait else prompt_y+32),Vector2(w-32,40 if compact_portrait else 28)),14)
-	shelf_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	custom_minimum_size=Vector2.ZERO if compact else Vector2(960,540)
+	size=viewport if compact else Vector2(960,540)
+	compact_portrait=compact and viewport.y>viewport.x
+	var extent:=Vector2(minf(viewport.x-24,560),minf(viewport.y-24,740)) if compact_portrait else Vector2(minf(viewport.x-24,720),minf(viewport.y-56,460)) if compact else Vector2(720,480)
+	art_board=Rect2((size-extent)/2,extent);compact_board=art_board
+	var start: Vector2=art_board.position;var w: float=extent.x;var h: float=extent.y
+	_place(title_label,Rect2(start+Vector2(14,10),Vector2(w-94,32)),20)
+	_place(exit_button,Rect2(start+Vector2(w-74,8),Vector2(62,44)),16)
+	_place(exit_label,Rect2(exit_button.position,exit_button.size),16);exit_label.text="退出"
+	var side_by_side: bool=compact and not compact_portrait
+	var cup_height: float=180 if compact_portrait else minf(144,h-150) if side_by_side else clampf(h*.265,88,150)
+	var cup: Vector2=start+Vector2(w*.20,h-94) if side_by_side else start+Vector2(w/2,h*.545 if not compact_portrait else h*.535)
+	var ingredient_height: float=cup_height*(100.0/150.0)
+	var bottle_y: float=h*.77 if compact_portrait else h-94 if side_by_side else h*.746
+	var contacts: Array[Vector2]=[]
 	for index in range(3):
-		var rect: Rect2
-		if compact_portrait: rect=Rect2(start+Vector2(16,392+index*58),Vector2(w-32,48))
-		else:
-			var width: float=(w-48)/3
-			rect=Rect2(start+Vector2(16+index*(width+8),prompt_y+70),Vector2(width,48))
-		_place(slots[index],rect)
-		_place(labels[index],Rect2(rect.position+Vector2(32,0),rect.size-Vector2(38,0)),16)
-	_place(feedback_label,Rect2(start+Vector2(16,560 if compact_portrait else prompt_y+128),Vector2(w-32,52 if compact_portrait else 44)),14)
+		var cx: float=w*(0.2+index*.3) if compact_portrait else w*(0.48+index*.17) if side_by_side else w*(0.328+index*.174)
+		var foot: Vector2=start+Vector2(cx,bottle_y);contacts.append(foot)
+		var target_width: float=minf(110,w*.275) if compact_portrait else 110
+		var label_top: float=start.y+h*.824+10 if compact_portrait else foot.y+10
+		var label_rect:=Rect2(Vector2(foot.x-target_width/2,label_top),Vector2(target_width,44 if compact_portrait else 28))
+		var rect:=Rect2(foot-Vector2(target_width/2,ingredient_height+6),Vector2(target_width,label_rect.end.y-(foot.y-ingredient_height-6)))
+		_place(slots[index],rect,16)
+		_place(labels[index],label_rect,14)
+		labels[index].autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	_place(glass_label,Rect2(Vector2(cup.x-90 if side_by_side else start.x+16,cup.y-cup_height-30),Vector2(180 if side_by_side else w-32,24)),14)
+	# Keep bottle names on their own row. One quiet footer owns either the
+	# operation hint or the latest feedback; the recorded clue stays at the top.
+	var status_rect:=Rect2(start+Vector2(16,h-54),Vector2(w-32,46))
+	_place(status_strip,Rect2(start+Vector2(1,h-62),Vector2(w-2,61)))
+	_place(prompt_label,status_rect,14)
+	prompt_label.text="选择饮料，倒入杯中"
+	prompt_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	_place(shelf_label,Rect2(start+Vector2(16,52),Vector2(w-32,40)),14)
+	shelf_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	_place(feedback_label,status_rect,14)
 	feedback_label.visible=not feedback_label.text.is_empty()
+	prompt_label.visible=feedback_label.text.is_empty()
+	glass_label.hide()
+	surface.size=size;surface.configure(art_board,cup,cup_height,contacts,ingredient_height)
 	queue_redraw()
 
 func _place(control: Control, rect: Rect2, font_size: int=0) -> void:
 	control.position=rect.position;control.size=rect.size
 	if font_size>0: control.add_theme_font_size_override("font_size",font_size)
-
-func _draw_compact() -> void:
-	# A mobile-sized device keeps every action visible; the shuffled model and
-	# actual pour layers are the same ones used by the original desktop surface.
-	draw_rect(Rect2(Vector2.ZERO,size),Color(0.02,0.04,0.06,.82))
-	_frame(compact_board,Color("08151c"),Color("e0b858"),3)
-	var start: Vector2=compact_board.position; var w: float=compact_board.size.x
-	draw_rect(Rect2(start+Vector2(3,3),Vector2(w-6,52)),Color("183847"))
-	_frame(Rect2(exit_button.position,exit_button.size),Color("2a4651"),Color("e0b858"),2)
-	var top: float=start.y+102
-	var height: float=compact_glass_height
-	var center: float=start.x+w/2
-	_frame(Rect2(center-48,top,96,height),Color("b9e6ee",.13),Color("b9e6ee"),3)
-	var layer_height: float=(height-14)/3
-	for index in range(model.layers.size()):
-		var layer: Dictionary=model.layers[index]
-		draw_rect(Rect2(center-43,top+height-5-(index+1)*layer_height,86,layer_height-2),_source_color(int(layer.color),float(layer.alpha)))
-	_frame(Rect2(start.x+24,top+height+3,w-48,15),Color("8a6135"),Color("3f2b20"),2)
-	if feedback_label.visible:
-		draw_rect(Rect2(feedback_label.position-Vector2(4,2),feedback_label.size+Vector2(8,4)),Color("172a34"))
-	for index in range(model.slots.size()):
-		var slot: Dictionary=model.slots[index];var rect:=Rect2(slots[index].position,slots[index].size)
-		_frame(rect,Color("164b59") if slot.owned else Color("263038"),Color("6cdcf3") if slot.owned else Color("56636a"),2)
-		_frame(Rect2(rect.position+Vector2(10,12),Vector2(16,24)),_source_color(int(slot.color)),Color("c7d9dc"),2)
 
 func _button(rect: Rect2, accessibility: String) -> Button:
 	var button := Button.new()
@@ -157,6 +145,11 @@ func _add_label(text: String, rect: Rect2, font_size: int, color: Color, centere
 	label.size = rect.size
 	label.add_theme_font_size_override("font_size", font_size)
 	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_shadow_color",Color("121b19"))
+	label.add_theme_constant_override("shadow_offset_x",1)
+	label.add_theme_constant_override("shadow_offset_y",2)
+	label.add_theme_constant_override("outline_size",2)
+	label.add_theme_color_override("font_outline_color",Color("15211f"))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER if centered else HORIZONTAL_ALIGNMENT_LEFT
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -174,9 +167,10 @@ func refresh() -> void:
 		# Missing ingredients remain visible and clickable for source feedback.
 		slots[index].disabled = false
 		slots[index].tooltip_text = slot.label
-		labels[index].text = slot.label
+		labels[index].text = str(Session.NAMES[slot.id])
 		labels[index].add_theme_color_override("font_color", Color("f4fbff") if slot.owned else Color("7f8d92"))
-	shelf_label.text = model.shelfStatus
+	surface.synchronize(model,read_state.call())
+	shelf_label.text = "货架线索：黑色 → 蓝色 → 白色" if model.shelfRead else "货架线索尚未查看"
 	shelf_label.add_theme_color_override("font_color", Color("91e4ba") if model.shelfRead else Color("e3b878"))
 	queue_redraw()
 
@@ -186,9 +180,15 @@ func _pour(index: int) -> void:
 	if model.is_empty() or index < 0 or index >= model.slots.size(): return
 	var slot: Dictionary = model.slots[index]
 	if not slot.owned:
+		surface.reject(str(slot.id),bool(read_state.call().get("native",{}).get("settings",{}).get("reduced_motion",false)))
 		if feedback.is_valid(): feedback.call(session.missing_feedback())
 		return
-	if dispatch.is_valid(): dispatch.call(str(slot.action), null)
+	var before: Dictionary=read_state.call().duplicate(true)
+	var result: Dictionary={}
+	if dispatch.is_valid():
+		var response: Variant=dispatch.call(str(slot.action), null)
+		if response is Dictionary: result=response
+	if not close_emitted and is_instance_valid(surface): surface.accept(str(slot.action),before,read_state.call(),result)
 	# State.act is synchronous; source refreshes after each accepted ingredient,
 	# then closes on either terminal event. Never judge a recipe in this layer.
 	refresh()
@@ -209,7 +209,8 @@ func blocks_world_input() -> bool:
 	return visible and session.active
 
 func _process(_delta: float) -> void:
-	if session.active: refresh()
+	if session.active:
+		refresh()
 
 func _input(event: InputEvent) -> void:
 	if not blocks_world_input(): return
@@ -224,22 +225,9 @@ func _gui_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	if model.is_empty(): return
-	if compact_layout: _draw_compact(); return
-	_frame(Rect2(CENTER-Vector2(345, 195), Vector2(690, 390)), Color(0x08/255.0, 0x15/255.0, 0x1c/255.0, 0.985), Color("e0b858"), 5)
-	draw_rect(Rect2(CENTER+Vector2(-338, -191), Vector2(676, 42)), Color("183847"))
-	_frame(Rect2(CENTER+Vector2(211, -185), Vector2(126, 30)), Color("2a4651"), Color("e0b858"), 2)
-	_frame(Rect2(CENTER+Vector2(-310, 33), Vector2(620, 58)), Color("8a6135"), Color("3f2b20"), 4)
-	draw_rect(Rect2(CENTER+Vector2(-56, -94), Vector2(112, 158)), Color(0xdf/255.0, 0xf8/255.0, 1, 0.13))
-	for layer: Dictionary in model.layers:
-		var rect: Rect2 = layer.rect
-		rect.position += CENTER
-		draw_rect(rect, _source_color(int(layer.color), float(layer.alpha)))
-	var glass := PackedVector2Array([CENTER+Vector2(-58,-98), CENTER+Vector2(-50,64), CENTER+Vector2(50,64), CENTER+Vector2(58,-98), CENTER+Vector2(-58,-98)])
-	draw_polyline(glass, Color("b9e6ee"), 5)
-	for slot: Dictionary in model.slots:
-		var center := CENTER+Vector2(slot.x, 160)
-		_frame(Rect2(center-Vector2(87,24), Vector2(174,48)), Color("164b59") if slot.owned else Color("263038"), Color("6cdcf3") if slot.owned else Color("56636a"), 3)
-		_frame(Rect2(center-Vector2(66,12), Vector2(18,24)), _source_color(int(slot.color)), Color(0xc7/255.0,0xd9/255.0,0xdc/255.0,0.85), 2)
+	draw_rect(Rect2(Vector2.ZERO,size),Color(0.02,0.04,0.06,.90))
+	# Surface child owns all physical imagery; this owner only draws the border.
+	draw_rect(art_board,Color("e0b858"),false,2)
 
 func _frame(rect: Rect2, fill: Color, stroke: Color, width: float) -> void:
 	draw_rect(rect, fill)

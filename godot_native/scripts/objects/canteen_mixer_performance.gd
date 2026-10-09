@@ -28,10 +28,8 @@ func _process(delta:float)->void:
 	super._process(delta)
 func _pose()->void:
 	super._pose()
-	# The source-coordinate cup briefly swells against its fixed counter contact.
-	# This has no body/click surface and never changes the cabinet footprint.
-	var swell:float=0.0
-	if playing and not outcome.is_empty() and not reduced:swell=.28*sin(clampf(elapsed_ms/duration_ms,0,1)*PI)
-	scale=Vector2.ONE*(.36+swell)
+	# The counter and glass contact stay fixed. Only the independent bottle,
+	# interior liquid, foam and bubbles react to the accepted original action.
+	scale=Vector2.ONE*.36
 func _exit_tree()->void:
 	if is_instance_valid(state_node) and state_node.action_completed.is_connected(_on_action):state_node.action_completed.disconnect(_on_action)

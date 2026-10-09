@@ -489,6 +489,26 @@
         933
       ],
       "sha256": "99c50a3fee2342e5e1f7e6380fa9714456125db2037ce6e0cbd5e131c312ba95"
+    },
+    "mixer_clean_worktop": {
+      "texture": "res://assets/native/mixer/canteen_tasting_counter_clean_background.png",
+      "canvas": [
+        1536,
+        1024
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "source_bounds": [
+        465,
+        460,
+        1035,
+        955
+      ],
+      "sha256": "1c11116324f137a9795025ae069320424a96abf01cda4e2b13baa739b6244e85"
     }
   },
   "objects": [
@@ -3375,12 +3395,12 @@
     },
     {
       "id": "mixer_counter",
-      "asset": "drink_station_cabinet",
+      "asset": "mixer_clean_worktop",
       "position": [
         260.0,
         817
       ],
-      "scale": 0.15637860082304528,
+      "scale": 0.2,
       "depth": 817,
       "targets": [
         "canteen-mixer"

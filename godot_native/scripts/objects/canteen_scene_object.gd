@@ -21,7 +21,7 @@ static func draw_layer(source_depth:float)->int:
 func configure(row:Dictionary,source:Dictionary,tex:Texture2D)->void:
 	definition=row.duplicate(true);asset=source;texture=tex;object_id=str(row.id);name=object_id
 	position=Vector2(row.position[0],row.position[1]);base_position=position;scale_value=float(row.scale);sort_depth=float(row.depth);ids=row.get("targets",[]).duplicate()
-	var b:Array=source.alpha_bounds;source_region=Rect2(b[0],b[1],b[2]-b[0],b[3]-b[1]);dimensions=source_region.size*scale_value;top_left=Vector2(-dimensions.x/2,-dimensions.y)
+	var b:Array=source.get("source_bounds",source.alpha_bounds);source_region=Rect2(b[0],b[1],b[2]-b[0],b[3]-b[1]);dimensions=source_region.size*scale_value;top_left=Vector2(-dimensions.x/2,-dimensions.y)
 	if row.has("front_slice"):
 		var split:=floorf(source_region.size.y*float(row.front_slice))
 		_add_part("Back",Rect2(source_region.position,Vector2(source_region.size.x,split)),top_left,float(row.get("back_depth",1)))

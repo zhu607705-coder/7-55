@@ -118,7 +118,9 @@ func run() -> void:
 		var slot_order: Array = view.session.button_order.duplicate()
 		check(view.blocks_world_input() and view.size == Vector2(960,540), "modal publishes input block and fixed logical world extent")
 		for index in range(3):
-			check(view.slots[index].position == MixerPanel.CENTER+Vector2(Session.BUTTON_X[index]-88,133) and view.slots[index].size == Vector2(176,54), "ingredient hit area matches source slot")
+			var target:=Rect2(view.slots[index].position,view.slots[index].size)
+			var bottle: Sprite2D=view.surface.bottles[index]
+			check(target.encloses(Rect2(bottle.position,bottle.region_rect.size*bottle.scale)) and target.size.x>=44 and target.size.y>=44,"source ingredient slot targets its independently registered physical bottle")
 		for index in range(3):
 			var id: String = recipe[index]
 			press(view, id)
@@ -126,7 +128,7 @@ func run() -> void:
 			if index < 2:
 				check(view.visible and view.session.button_order == slot_order and view.model.layers.size() == index+1, "accepted partial pour updates glass without shuffling or closing")
 				var slot_index: int = slot_order.find(id)
-				check(not view.slots[slot_index].disabled and view.labels[slot_index].text.ends_with("·未持有"), "consumed slot stays in place and visibly missing")
+				check(not view.slots[slot_index].disabled and view.slots[slot_index].tooltip_text.ends_with("·未持有") and view.surface.bottles[slot_index].modulate.a<0.3, "consumed slot stays in place with dim bottle and original missing tooltip")
 		check(closes == ["attempt_complete"] and not view.blocks_world_input() and not view.visible, "third success or failure closes modal exactly once")
 		check(s.canteenHunt.drinkMixAttemptCount == 1 and s.canteenHunt.drinkMixSequence.is_empty(), "controller resets sequence and increments attempt exactly once")
 		check(s.items.dailySpecialSparklingWater == (recipe == Session.RECIPE) and s.items.badDrink == (recipe != Session.RECIPE), "untouched controller awards only source success/failure item")
