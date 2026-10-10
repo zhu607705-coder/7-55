@@ -18,7 +18,7 @@ The source 960 × 540 logical frame, model bounds, 50ms ticks, hazard paths, col
 
 ## Run
 
-Import the normal native project and run `tests/preview_theater.tscn` with F6. This scene is a real playable three-act review fixture. It replays submitted proof through the original model, then lets the reviewer continue or retry. It never writes story saves. F9 saves an actual viewport PNG to the sibling evidence directory. The review fixture also offers deterministic three-act capture with R. The editable baked model is `scenes/theater/funhouse_stage_editable.scn`; regenerate it with `tests/export_theater_model.gd`.
+Import the normal native project and run `tests/preview_theater.tscn` with F6. This scene is a real playable three-act review fixture. It replays submitted proof through the original model, then lets the reviewer continue or retry. It never writes story saves. F9 saves an actual viewport PNG under `user://theater_review`. The review fixture also offers deterministic three-act capture with R. The editable baked model is `scenes/theater/funhouse_stage_editable.scn`; regenerate it with `tests/export_theater_model.gd`.
 
 The real game continues to mount the same `c3_spotlight.gd` through Main's original flow.
 
@@ -27,6 +27,7 @@ The real game continues to mount the same `c3_spotlight.gd` through Main's origi
 - `test_theater_lens.gd`: 2,497 checks; inverse roundtrips, positive Jacobian, CPU/shader coefficients, model anchors, logical-to-physical scaling, real viewport event routing, device ownership, pause/reentry/reset and full 1,600-tick proof validation
 - `test_theater_show_ui.gd`: 30 checks; all three acts played through inverse-mapped pointer events, actual Main/State acceptance and explicit final acknowledgment
 - Original `c3_spotlight_model.gd` unchanged from base 913bd512
+- `test_theater_preview_storage.gd`: optional measurement failure never interrupts play; default files use writable user data, not the source project
 - `test_theater_stage_model.gd`: 75 checks; real independent lamp hierarchy, ray-projected floor anchors, source texture, shadow budget, batched geometry and pose-update isolation
 - `test_chapter3.gd`: 72 source controller checks
 - Actual Godot Compatibility preview, physical mouse drag, 705 rendered replay frames across all three acts, and clean isolated portable-package import/startup verified
