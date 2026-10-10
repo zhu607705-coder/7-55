@@ -28,6 +28,8 @@ var walking: bool=false
 var walk_ms: float=0
 var facing: String="down"
 var facing_left: bool=false
+# Facing is a world-space intent, not the billboard plane or current camera.
+var facing_world: Vector3=Vector3.BACK
 var door_group: Node3D
 var seam_overlay: Control
 var reveal_done: bool=false
@@ -173,10 +175,23 @@ func _load_player() -> void:
 	if ResourceLoader.exists(path): frames.side_idle=load(path)
 func _process(delta: float) -> void:
 	if not actor: return
+	_sync_actor_facing()
 	if walking: walk_ms+=delta*1000
 	var key: String=facing+"_"+str(int(fmod(walk_ms,880)/110)) if walking else ("side_idle" if facing=="side" else facing+"_0")
 	actor.texture=frames.get(key,frames.get("down_0")); actor.flip_h=facing=="side" and facing_left
 	if seam_overlay: seam_overlay.queue_redraw()
+
+static func facing_for_heading(heading: Vector3,view_basis: Basis) -> Dictionary:
+	var right: Vector3=view_basis.x;right.y=0;right=right.normalized()
+	var away: Vector3=-view_basis.z;away.y=0;away=away.normalized()
+	var horizontal: float=heading.dot(right)
+	var depth: float=heading.dot(away)
+	return {"facing":"side" if absf(horizontal)>absf(depth) else ("up" if depth>0 else "down"),"left":horizontal<0}
+
+func _sync_actor_facing() -> void:
+	if not is_instance_valid(camera):return
+	var direction: Dictionary=facing_for_heading(facing_world,camera.global_transform.basis)
+	facing=str(direction.facing);facing_left=bool(direction.left)
 
 func _update() -> void:
 	var spec: Dictionary=source.cameras[level.id]; camera.position=Model.v3(spec.views[state.view].position); camera.look_at(Model.v3(spec.center))
@@ -249,8 +264,10 @@ func _walk(target: String) -> void:
 	busy=true; walking=true; walk_ms=0
 	for next in route:
 		var end: Vector3=Model.position(level,state,next)+Vector3(0,0.875,0)
-		var movement: Vector2=Model.project(end,source.cameras[level.id],state.view)-Model.project(actor.position,source.cameras[level.id],state.view)
-		facing="side" if absf(movement.x)>absf(movement.y) else ("down" if movement.y>0 else "up"); facing_left=movement.x<0
+		var movement: Vector3=end-actor.position
+		movement.y=0
+		if movement.length_squared()>.00001:facing_world=movement.normalized()
+		_sync_actor_facing()
 		var tween: Tween=create_tween(); tween.tween_property(actor,"position",end,clampf(actor.position.distance_to(end)*0.16,0.2,0.8)); await tween.finished
 	state.node=target; actions_log.append({"type":"walk","node":target}); busy=false; walking=false; _update()
 	if target==level.exitNodeId:
@@ -258,6 +275,8 @@ func _walk(target: String) -> void:
 		caption.text="通路已接通。"
 		var door_tween: Tween=create_tween(); door_tween.tween_property(door_panel,"position:x",1.32,0.36); await door_tween.finished
 		var direction: Vector3=(door_group.position-Model.position(level,state,level.exitNodeId)); direction.y=0
+		if direction.length_squared()>.00001:facing_world=direction.normalized()
+		_sync_actor_facing()
 		var exit_tween: Tween=create_tween(); exit_tween.tween_property(actor,"position",door_group.position+direction.normalized()*0.6+Vector3(0,0.875,0),0.6); await exit_tween.finished
 		campaign.append({"id":level.id,"actions":actions_log.duplicate(true)})
 		if level_index==3: completed.emit({"kind":"chapter4_stair_campaign","session":config.get("session",""),"levels":campaign,"doorTraversed":true}); return
