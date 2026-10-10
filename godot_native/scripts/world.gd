@@ -412,7 +412,14 @@ func _try_interact(target: Dictionary = {}) -> void:
 	if target.get("action","")=="c4_reach202":
 		guard_close_requested=true
 		return
-	State.act(str(target.get("action",target.get("id",""))),target.get("value"))
+	var action: String=str(target.get("action",target.get("id","")))
+	var result: Dictionary=State.act(action,target.get("value"))
+	# A successful counter interaction turns the original actor toward the clerk
+	# once. Movement remains the ordinary facing authority afterwards.
+	if scene_id=="library_interior" and action=="lib_scan" and result.has("game"):
+		facing="up"; player_flip=false; walk_clock=0
+		_cancel_floor_route(); move_target=Vector2.INF
+		queue_redraw()
 
 func _sync_player() -> void:
 	var source := (player-Vector2(245,0))*2.0 if scene_id == "dorm_hub" else player
