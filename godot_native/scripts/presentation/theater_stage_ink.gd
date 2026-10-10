@@ -64,7 +64,6 @@ func _draw()->void:
 		draw_circle(ghost,13,Color(.38,.92,.95,.65))
 		draw_rect(Rect2(ghost-Vector2(15,19),Vector2(30,5)),Color("477d96"));draw_rect(Rect2(ghost-Vector2(8,32),Vector2(16,15)),Color("477d96"))
 		draw_circle(ghost+Vector2(-4,-2),2,Color("d9ffff"));draw_circle(ghost+Vector2(4,-2),2,Color("d9ffff"))
-		draw_string(game.font,ghost+Vector2(-43,-40),"3秒前的光",HORIZONTAL_ALIGNMENT_CENTER,86,13,Color("a9f5ed"))
 	for hazard:Dictionary in game.rules.hazards(s):
 		var p:Vector2=hazard.position
 		if hazard.kind=="shadow":
@@ -73,8 +72,26 @@ func _draw()->void:
 	if s.trail.size()>1:
 		var points:=PackedVector2Array(s.trail)
 		draw_polyline(points,Color(actor_color,.10),29 if s.dashTicks>0 else 20,false);draw_polyline(points,Color(actor_color,.67),9,false);draw_polyline(points,Color(cream,.94),3,false)
+	if game.hit_remaining>0:
+		var age:float=1.0-game.hit_remaining/.65
+		var center:Vector2=game.hit_origin
+		var flash:=Color(1,.39,.36,1-age)
+		draw_arc(center,18+age*40,0,TAU,32,flash,3)
+		for index in 9:
+			var direction:=Vector2.from_angle(index*TAU/9+.23)
+			var origin:Vector2=center+direction*(14+age*46)
+			draw_line(origin,origin+direction*(10-age*6),Color(cream,1-age),3)
+		if age<.30:
+			draw_line(center+Vector2(-18,-12),center+Vector2(13,9),cream,4)
+			draw_line(center+Vector2(-7,17),center+Vector2(10,-16),cream,3)
 	ellipse(s.head+Vector2(0,8),Vector2(40,17),Color(actor_color,.20))
-	draw_circle(s.head,13,Color.WHITE if s.invulnerable>0 and s.tick%4<2 else actor_color)
+	var hit_age:float=.65-game.hit_remaining
+	var body_extent:=Vector2(26,26)
+	if game.hit_remaining>0 and hit_age<.18:body_extent=Vector2(35,17)
+	elif game.hit_remaining>0 and hit_age<.32:body_extent=Vector2(20,31)
+	var body_color:Color=Color.WHITE if s.invulnerable>0 and s.tick%4<2 else actor_color
+	if game.hit_remaining>.4 and s.tick%4>=2:body_color=Color("ff6865")
+	ellipse(s.head,body_extent,body_color)
 	draw_rect(Rect2(s.head-Vector2(15,19),Vector2(30,5)),Color("11152d"));draw_rect(Rect2(s.head-Vector2(8,32),Vector2(16,15)),Color("11152d"));draw_rect(Rect2(s.head-Vector2(8,30),Vector2(16,3)),cream)
 	for x in [-6,3]:draw_rect(Rect2(s.head+Vector2(x,-3),Vector2(3,5)),Color("11152d"))
 	draw_line(s.head+Vector2(-3,6),s.head+Vector2(4,6),Color("11152d"),2)

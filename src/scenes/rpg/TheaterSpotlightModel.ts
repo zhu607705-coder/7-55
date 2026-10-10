@@ -5,7 +5,7 @@ export const THEATER_SHOW_BOUNDS = { left: 58, right: 902, top: 132, bottom: 409
 export const THEATER_SHOW_ACTS = [
   { title: "椅子申请当月亮", subtitle: "追上游走的逗号。预判轨迹，绕开走动的椅子。", glyph: "，", color: 0xffcf68, count: 4 },
   { title: "你的影子迟到了", subtitle: "两枚问号成一组。先点亮任一枚，及时把光接到另一枚。", glyph: "？", color: 0x94f3d0, count: 5 },
-  { title: "观众席正在退潮", subtitle: "先在一端留光，再赶到另一端。三秒前的光影会替你接光。", glyph: "！", color: 0xff94bc, count: 6 }
+  { title: "观众席正在退潮", subtitle: "同色标点成对亮起。", glyph: "！", color: 0xff94bc, count: 6 }
 ] as const;
 export interface TheaterShowPoint { x: number; y: number }
 export interface TheaterShowInput { x: number; y: number; dash: boolean }

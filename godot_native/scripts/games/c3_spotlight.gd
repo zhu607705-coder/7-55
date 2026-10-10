@@ -21,6 +21,10 @@ var trace: Array=[]
 var accumulator:=0.0
 var visual_time:=0.0
 var hurt_feedback:=0.0
+var hit_remaining:=0.0
+var hit_origin:=Vector2.ZERO
+var hit_life:=-1
+var hit_count:=0
 var running:=false
 var paused:=false
 var dragging:=false
@@ -41,7 +45,7 @@ var overlay_title: Label
 var overlay_body: Label
 func setup(parameters: Dictionary) -> void:
 	config=parameters; state=rules.create(int(config.get("round",0)),int(config.get("attempt",0)))
-	trace.clear();accumulator=0;visual_time=0;hurt_feedback=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
+	trace.clear();accumulator=0;visual_time=0;hurt_feedback=0;hit_remaining=0;hit_origin=Vector2.ZERO;hit_life=-1;hit_count=0;running=false;paused=false;screen="intro";approved=false;final_act=false;_release_pointer();queued_dash=false
 	if is_node_ready(): refresh()
 func _label(text: String,rect: Rect2,font_size: int,color: Color=CREAM,center: bool=false) -> Label:
 	var node:=Label.new(); node.text=text; node.position=rect.position; node.size=rect.size
@@ -124,7 +128,7 @@ func _gui_input(event: InputEvent) -> void:
 		pointer=pointer_to_model(event.position)
 func _process(delta: float) -> void:
 	if screen!="paused":
-		visual_time+=minf(delta,.1);hurt_feedback=maxf(0,hurt_feedback-delta)
+		visual_time+=minf(delta,.1);hurt_feedback=maxf(0,hurt_feedback-delta);hit_remaining=maxf(0,hit_remaining-delta)
 	if screen=="running":
 		accumulator+=minf(delta,.15)
 		while accumulator>=.05 and state.status=="running":
@@ -133,7 +137,8 @@ func _process(delta: float) -> void:
 			if axis.length()<.01 and dragging:axis=rules.pointer_axis(state,pointer,queued_dash)
 			var input: Dictionary={"x":axis.x,"y":axis.y,"dash":queued_dash}; queued_dash=false
 			trace.append(input); state=rules.step(state,input)
-			if state.lastEvent=="hurt":hurt_feedback=1.3
+			if state.lastEvent=="hurt":
+				hurt_feedback=1.3;hit_remaining=.65;hit_origin=state.head;hit_life=state.lives;hit_count+=1
 			if state.status!="running":
 				screen="awaiting"; running=false; _release_pointer()
 				attempt_submitted.emit({"version":2,"round":state.round,"attempt":state.attempt,"inputs":trace.duplicate(true)})
@@ -144,7 +149,7 @@ func refresh() -> void:
 	badge.text="第 %d 幕 / 3 · %s" % [state.round+1,act.title]
 	relay_status.text=""
 	if state.round==1:relay_status.text=("接到另一枚同色问号 · %.1fs"%(state.pairTicks*.05)) if state.primed>=0 else "同色两枚接成一组 · 中央最后点亮"
-	elif state.round==2:relay_status.text="青影将在 %.1fs 后出现"%maxf(0,3.0-state.tick*.05) if state.tick<60 else "暖光本人 + 青色旧光 · 同时接亮两端"
+	elif state.round==2:relay_status.text="同色成对"
 	for button: Button in [start_button,dash_button]:
 		var box: StyleBoxFlat=button.get_theme_stylebox("normal").duplicate(); box.bg_color=COLORS[state.round]
 		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: button.add_theme_stylebox_override(mode,box)
@@ -170,7 +175,14 @@ func draw_ui(canvas:CanvasItem)->void:
 		var display_scale:float=maxf(.1,get_global_transform_with_canvas().get_scale().x)
 		canvas.draw_arc(p,7.0/display_scale,0,TAU,24,Color(.02,.02,.04,.85),3.0/display_scale)
 		canvas.draw_arc(p,7.0/display_scale,0,TAU,24,Color(CREAM,.8),1.0/display_scale)
+	if is_instance_valid(font) and hit_remaining>0 and hit_life>=0:
+		var age:float=1.0-hit_remaining/.65
+		var prefix:String="标点 %d/%d     灯芯 %s"%[state.collected.size(),Model.ACTS[state.round].count,"●".repeat(hit_life)]
+		var notch:=Vector2(68+font.get_string_size(prefix,HORIZONTAL_ALIGNMENT_LEFT,-1,16).x+6,440)
+		canvas.draw_arc(notch,10+age*12,0,TAU,24,Color(1,.34,.38,1-age),2)
+		canvas.draw_line(notch+Vector2(-4,-7-age*15),notch+Vector2(2,-12-age*15),Color(1,.78,.48,1-age),3)
+		canvas.draw_line(notch+Vector2(3,-5-age*15),notch+Vector2(7,-9-age*15),Color(1,.34,.38,1-age),3)
 	if is_instance_valid(font):
-		var hint:String=("椅子或观众碰断了光 · 已接好的光保留" if state.round==2 else "影子咬掉了一截光。谢幕可以冲过去。") if hurt_feedback>0 else ("追上游走的标点 · 集齐后从嘴里退场" if state.round==0 else ("同色两枚及时接亮 · 换站位避开椅子遮光" if state.round==1 else "先在一端留光，再赶另一端 · 青影会替你接光"))
+		var hint:String=("椅子或观众碰断了光 · 已接好的光保留" if state.round==2 else "影子咬掉了一截光。谢幕可以冲过去。") if hurt_feedback>0 else ("追上游走的标点 · 集齐后从嘴里退场" if state.round==0 else ("同色两枚及时接亮 · 换站位避开椅子遮光" if state.round==1 else "同色成对 · 避开椅子和观众"))
 		canvas.draw_string(font,Vector2(69,493),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color(.035,.025,.045,.85))
 		canvas.draw_string(font,Vector2(68,491),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color("d9c6c1"))

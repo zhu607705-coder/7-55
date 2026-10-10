@@ -59,13 +59,13 @@ The movement/dash contract remains nine dash ticks, 100-tick cooldown and 36-tic
 
 ## Feedback
 
-Targets use group colors, focus rings and muted locked states. Acts 1 and 2 show short predicted-motion dots; act 3 keeps its anchors fixed. Rays show light from the warm live actor and cyan echo. Crossed target marks indicate chair occlusion. The act-2 status shows the handoff countdown; act 3 labels the three-second echo. Hurt copy persists for 1.3 seconds. These displays read model state and do not complete targets themselves.
+Targets use group colors, focus rings and muted locked states. Acts 1 and 2 show short predicted-motion dots; act 3 keeps its anchors fixed. Rays show light from the warm live actor and cyan echo. Crossed target marks indicate chair occlusion. The act-2 status shows the handoff countdown; act 3 uses a short pair-status label; verbose actor/delay explanations were removed. An actual model injury triggers a 0.65-second scene-local impact ring and fragments, short squash/stretch and warm/red-white flicker, plus a burst at the removed HUD wick. Hurt copy persists for 1.3 seconds. The feedback has no gameplay timers or damage writes, freezes on pause, and clears on reuse. These displays read model state and do not complete targets themselves.
 
 ## Run
 
 Import the normal native project and run `tests/preview_theater.tscn` with F6. It mounts the same `c3_spotlight.gd` used by Main, validates submitted proof, and allows continuation or retry without writing story saves. F9 saves the viewport PNG and input proof under `user://theater_review`.
 
-R/F10 replays the three source QA routes. F11 records a 15-second act-3 excerpt (ticks 169–469) from saved physical mouse/Space inputs. It shows one pair completed, ends at 2/6 with the act still running, and does not claim full completion. The prefix is replayed from a fresh state rather than teleported. Rendering samples the 20 Hz model at 30 fps without speeding up time. These are QA capture controls, not player controls. The editable baked scene is `scenes/theater/funhouse_stage_editable.scn`; `tests/export_theater_model.gd` regenerates it.
+R/F10 replays the three source QA routes. F11 records a 15-second act-3 excerpt (ticks 155–455) from saved physical mouse/Space inputs. It shows one pair completed, ends at 2/6 with the act still running, and does not claim full completion. The prefix is replayed from a fresh state rather than teleported. Rendering samples the 20 Hz model at 30 fps without speeding up time. These are QA capture controls, not player controls. The editable baked scene is `scenes/theater/funhouse_stage_editable.scn`; `tests/export_theater_model.gd` regenerates it.
 
 ## Verification scope
 
@@ -74,6 +74,7 @@ R/F10 replays the three source QA routes. F11 records a 15-second act-3 excerpt 
 - `test_theater_stage_model.gd`: independent lamp hierarchy, ray-projected anchors, source texture, shadow budget, batched geometry and pose-update isolation
 - `test_theater_show_ui.gd` and `test_chapter3.gd`: actual Main/State acceptance, replay authority, retained result and explicit continuation
 - `test_theater_balance.gd`: source/native sampled state comparison, pair deadline and damage precedence, clear/blocked ray witnesses, exact echo delay, harmless echo and simultaneous-pair semantics
+- `test_theater_hit_feedback.gd`: one visual burst per authoritative injury, unchanged lives/protection, pause/retry cleanup and removed labels
 - `test_theater_preview_storage.gd`: optional capture/measurement failure must not interrupt play; output belongs in writable user data
 
 The current `spotlight_balance_samples.json` contains nine QA-generated winning routes: all three acts at attempts 0, 1 and 2. Its source hash matches the TypeScript model at the 2026-10-10 documentation review. These fixtures establish route reachability and provide parity inputs. They do **not** establish player difficulty, expected completion time, tutorial clarity or usability. The QA route planner is not shipped as player steering. Regenerate these fixtures after intentional rule changes with `node godot_native/tools/export-theater-balance-fixtures.mjs`.

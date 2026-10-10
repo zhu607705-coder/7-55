@@ -4103,9 +4103,9 @@
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:259](../src/scenes/rpg/TheaterImpossibleShow.ts#L259)
 1166. 接到另一枚同色问号 · {{(s.pairTicks\*.05).toFixed(1)}}s
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
-1167. 同色两枚接成一组 · 中央最后点亮
+1167. 同色成对 · 避开椅子和观众
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
-1168. 先在一端留光，再赶另一端 · 青影晚3秒，替你接光
+1168. 同色两枚接成一组 · 中央最后点亮
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
 1169. 椅子或观众碰断了光 · 已接好的光保留
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:260](../src/scenes/rpg/TheaterImpossibleShow.ts#L260)
@@ -4285,7 +4285,7 @@
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:7](../src/scenes/rpg/TheaterSpotlightModel.ts#L7)
 1257. 观众席正在退潮
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:8](../src/scenes/rpg/TheaterSpotlightModel.ts#L8)
-1258. 先在一端留光，再赶到另一端。三秒前的光影会替你接光。
+1258. 同色标点成对亮起。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:8](../src/scenes/rpg/TheaterSpotlightModel.ts#L8)
 1259. running
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:47](../src/scenes/rpg/TheaterSpotlightModel.ts#L47)

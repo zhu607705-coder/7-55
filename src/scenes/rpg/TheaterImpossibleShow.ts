@@ -257,7 +257,7 @@ export class TheaterImpossibleShow {
     g.fillStyle(s.dashCooldown === 0 ? act.color : 0x4a4c65).fillRect(DASH.x, DASH.y, DASH.width, DASH.height);
     this.dashLabel.setText(s.dashCooldown > 0 ? `谢幕冷却 ${Math.ceil(s.dashCooldown / 20)}s` : "谢幕 · Space");
     this.hud.setText(`标点 ${s.collected.length}/${act.count}     灯芯 ${"●".repeat(s.lives)}${"○".repeat(3 - s.lives)}     ${Math.ceil((THEATER_SHOW_MAX_TICKS - s.tick) / 20)}s`);
-    this.status.setText(s.lastEvent === "hurt" ? (s.round===2?"椅子或观众碰断了光 · 已接好的光保留":"影子咬掉了一截光。谢幕可以冲过去。") : (s.round===2?"先在一端留光，再赶另一端 · 青影晚3秒，替你接光":s.round===1?(s.primed>=0?`接到另一枚同色问号 · ${(s.pairTicks*.05).toFixed(1)}s`:"同色两枚接成一组 · 中央最后点亮"):"追上游走标点 · 集齐后从嘴里退场"));
+    this.status.setText(s.lastEvent === "hurt" ? (s.round===2?"椅子或观众碰断了光 · 已接好的光保留":"影子咬掉了一截光。谢幕可以冲过去。") : (s.round===2?"同色成对 · 避开椅子和观众":s.round===1?(s.primed>=0?`接到另一枚同色问号 · ${(s.pairTicks*.05).toFixed(1)}s`:"同色两枚接成一组 · 中央最后点亮"):"追上游走标点 · 集齐后从嘴里退场"));
     for (const label of [this.overlayTitle, this.overlayBody, this.primaryLabel]) label.setVisible(overlay);
     if (overlay) {
       g.fillStyle(0x0a0f23, 0.84).fillRect(48, 128, 864, 296);

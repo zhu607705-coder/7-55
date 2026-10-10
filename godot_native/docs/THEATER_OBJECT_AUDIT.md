@@ -17,7 +17,7 @@ The exploration room's artwork remains separately preserved.
 | Punctuation food | `foodLabels` | Planar pixel-font glyphs: moving paths in acts 1/2; fixed act-3 anchors; pair colors, focus rings, locked states and ray/occlusion feedback from the revised model | Revised functional art; not 3D rebuilt |
 | Retreat mouth | `paint`, source mouth position | Original lips/teeth/inner mouth as planar ink | Preserved functional art; not 3D rebuilt |
 | Delayed shadow hazard | `paint`, source history at 60 ticks | Planar dark silhouette and eyes; damaging shadow retained in act 2 only | Preserved act-2 hazard art; not 3D rebuilt |
-| Third-act cooperative echo | Revised `getTheaterEcho` / native `echo`, exact 60-tick-old position | Planar cyan light-creature/hat, historical trail, label and target rays; harmless cooperative light | New planar rule feedback; not a 3D actor or a damage hazard |
+| Third-act cooperative echo | Revised `getTheaterEcho` / native `echo`, exact 60-tick-old position | Planar cyan light-creature/hat, historical trail and target rays; harmless cooperative light | New planar rule feedback; not a 3D actor or a damage hazard |
 | Third-act eye hazard | `eye`, source moving-eye path | Original planar eye and ring | Preserved functional art; not 3D rebuilt |
 | Audience eyes | `paint` / `eye` | Planar front-row silhouettes | Partial; third-act original upper-row placement needs reconciliation |
 | Light trail | source `trail` | Original planar polylines | Preserved rule-linked art; not 3D rebuilt |
