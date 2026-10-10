@@ -55,3 +55,32 @@ real depth testing; new railing visibility still requires actual rendered QA.
 The source door jamb/lintel exterior overlap can leave a tiny dark edge seam in
 Blender; exact source bounds are preserved for this first integrated sample.
 Do not describe the assets or this isolated fixture as full campaign acceptance.
+
+## Rendered integration checkpoint (2026-10-10)
+
+Actual Godot 4.6.3 frames confirmed source character depth, both rotating stairs,
+lift/slide and the independent door in the original three-view scene. Automated
+input traversed the lower seam, carried the actor on moving pieces, traversed the
+upper seam and reached stair_c. This is not a manual or formal-story completion.
+The original background wall and planters are intentionally still visible.
+
+Actual-renderer enumeration of all 432 states found 10 local connectivity
+topologies, 27 undirected local paths and no branched or fixed-state full route.
+The puzzle remains one chain reconnected in stages. 1,248 illegal moves were
+rejected. Separate input tests checked disconnected clicks, busy-state actions,
+repeated resets, ride motion, perspective changes and bidirectional crossing.
+
+Visual review caught the first hinged door opening toward the waiting player;
+the corrected direction is positive local Y (toward world +Z). Its swept volume
+and the actual exit animation are verified separately from graph correctness.
+
+Final door revision: the axis is at base local `(-.62, 0, -.072)`, with
+compensating child offsets. The negative opening direction is forbidden.
+Independent actual-GLB sweeps found no positive-angle intersection with 217
+obstacle configurations; the live renderer contract passed 2,715 checks with
+141 actual opening/traversal samples and zero door/actor sweep hits. The CI
+contract also samples both source jambs and lintel through 91 opening angles.
+
+A separate actual Godot final-state capture confirmed the corrected door opening
+and handoff into stair_c. The delivered clip identifies this short repeated
+segment; its earlier mechanism section is the original native automated capture.

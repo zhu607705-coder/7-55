@@ -19,6 +19,7 @@ P = argparse.ArgumentParser()
 P.add_argument('--output', required=True)
 P.add_argument('--render', action='store_true')
 P.add_argument('--render-assets', default='all')
+P.add_argument('--export-assets', default='all', help='Comma-separated selected exports; default all. Used for bounded door-only fixes.')
 P.add_argument('--samples', type=int, default=32)
 P.add_argument('--resolution', type=int, default=1024)
 A = P.parse_args(sys.argv[sys.argv.index('--') + 1:])
@@ -266,7 +267,7 @@ for sign in [-1, 1]:
     box('Door jamb fine edge %d' % sign, (sign * .650, 1.11, .172), (.024, 2.22, .004), cuff, frame)
 box('Door lintel fine edge', (0, 2.192, .182), (1.24, .018, .004), cuff, frame)
 
-hinge_local = Vector((-.62, 0, 0))
+hinge_local = Vector((-.62, 0, -.072))
 angle = deco['rotationY']
 base = Vector(deco['position'])
 hinge_world = base + Vector((hinge_local.x * math.cos(angle) + hinge_local.z * math.sin(angle),
@@ -304,13 +305,19 @@ for side in [-1, 1]:
 
 for j, y in enumerate([.33, 1.03, 1.73]):
     # Solid straps and bent returns meet the real Y-axis knuckles; no floating plates.
-    box('Hinge door strap %d' % j, (.052, y, -.086), (.10, .12, .020), bolt, hinge)
-    box('Hinge door bent return %d' % j, (.008, y, -.041), (.016, .12, .082), bolt, hinge)
+    box('Hinge door strap %d' % j, (.052, y, -.074), (.10, .12, .010), bolt, hinge)
+    box('Hinge door bent return %d' % j, (.008, y, -.072), (.016, .12, .010), bolt, hinge)
     box('Hinge fixed strap %d' % j, (-.690, y, -.182), (.10, .12, .014), bolt, frame)
-    box('Hinge fixed return %d' % j, (-.642, y, -.087), (.016, .12, .19), bolt, frame)
-    cylinder('Hinge fixed barrel %d' % j, (-.62, y - .061, 0), (-.62, y - .005, 0), .009, bolt, frame)
+    box('Hinge fixed return %d' % j, (-.644, y, -.126), (.030, .12, .130), bolt, frame)
+    cylinder('Hinge fixed barrel %d' % j, (-.62, y - .061, -.072), (-.62, y - .005, -.072), .009, bolt, frame)
     cylinder('Hinge moving barrel %d' % j, (0, y + .005, 0), (0, y + .061, 0), .009, bolt, hinge)
-    cylinder('Hinge fixed pin %d' % j, (-.62, y - .068, 0), (-.62, y + .068, 0), .006, iron, frame)
+    cylinder('Hinge fixed pin %d' % j, (-.62, y - .068, -.072), (-.62, y + .068, -.072), .006, iron, frame)
+
+# Preserve the exact source closed pose while moving only the mechanical axis.
+# Knuckles stay centred on the new hinge axis; all other moving parts compensate.
+for child in hinge.children:
+    if not child.name.startswith('Hinge moving barrel'):
+        child.location += v((0, 0, .072))
 
 bpy.context.view_layer.update()
 report['door'] = {
@@ -325,7 +332,8 @@ report['door'] = {
     'dimension_authority': 'native chapter4_stairs.gd _decoration fire_door; older study placeholder superseded',
     'jamb_centres_local_x': [-.74, .74], 'jamb_size_m': [.22, 2.3, .34], 'lintel_size_m': [1.7, .24, .36],
     'closed_body_edge_incidence': 2, 'native_closed_y_rotation': 0,
-    'open_pose': 'hinge.rotation.y = desired_angle; never rotate the assembly/base/frame',
+    'open_pose': 'hinge.rotation.y = desired_angle in [0, PI/2]; never rotate the assembly/base/frame',
+    'hinge_clearance_revision': 2, 'source_closed_leaf_pose_preserved': True,
 }
 
 # Structural tests against the exact exported objects, before render.
@@ -359,9 +367,14 @@ hinge.rotation_euler[2] = 0
 bpy.context.view_layer.update()
 report['geometry_checks'] += 3
 
+wanted_exports = set(assets) if A.export_assets == 'all' else set(A.export_assets.split(','))
+assert wanted_exports <= set(assets), wanted_exports
 for ident, owner in assets.items():
-    export(owner, ident + '.glb')
-export(all_fixed, 'fixed_platforms.glb')
+    if ident in wanted_exports:
+        export(owner, ident + '.glb')
+if A.export_assets == 'all':
+    export(all_fixed, 'fixed_platforms.glb')
+report['exported_assets'] = sorted(wanted_exports)
 
 camdata = bpy.data.cameras.new('Asset orthographic inspection')
 cam = bpy.data.objects.new('Inspection camera', camdata)

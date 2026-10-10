@@ -1,0 +1,285 @@
+{
+  "source_sha256": "b22fbf7a8796bb0b0f646a433a2d482e5bd959ded485b7be805f1e8d56312362",
+  "coordinate_map": "Godot (x,y,z) -> Blender (x,-z,y)",
+  "world_metres": true,
+  "root_transforms": "identity, source world coordinates retained",
+  "navigation_modified": false,
+  "colliders_generated": false,
+  "gameplay_open_rule_added": false,
+  "platforms": [
+    {
+      "id": "b_platform_start",
+      "center": [
+        -4.8,
+        0.72,
+        1.6
+      ],
+      "size": [
+        4.8,
+        0.36,
+        2.4
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 0.9000000357627869,
+      "file": "b_platform_start.glb",
+      "node": "b_platform_start",
+      "fixed_root": "b_platform_start_fixed",
+      "rails_node": "b_platform_start_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            -7.1,
+            0.9000000357627869,
+            0.51
+          ],
+          [
+            -7.1,
+            0.9000000357627869,
+            2.69
+          ]
+        ],
+        [
+          [
+            -7.1,
+            0.9000000357627869,
+            0.51
+          ],
+          [
+            -3.1,
+            0.9000000357627869,
+            0.51
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_lower_base",
+      "center": [
+        -2.15,
+        0.72,
+        1.35
+      ],
+      "size": [
+        1.3,
+        0.36,
+        1.5
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 0.9000000357627869,
+      "file": "b_platform_lower_base.glb",
+      "node": "b_platform_lower_base",
+      "fixed_root": "b_platform_lower_base_fixed",
+      "rails_node": "b_platform_lower_base_fixed_rails",
+      "rail_segments_godot": [],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_landing",
+      "center": [
+        0.85,
+        3.72,
+        1.75
+      ],
+      "size": [
+        3.4,
+        0.36,
+        3.2
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 3.900000035762787,
+      "file": "b_platform_landing.glb",
+      "node": "b_platform_landing",
+      "fixed_root": "b_platform_landing_fixed",
+      "rails_node": "b_platform_landing_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            0.35,
+            3.900000035762787,
+            3.24
+          ],
+          [
+            2.43,
+            3.900000035762787,
+            3.24
+          ]
+        ],
+        [
+          [
+            2.43,
+            3.900000035762787,
+            2.4
+          ],
+          [
+            2.43,
+            3.900000035762787,
+            3.24
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_island",
+      "center": [
+        4.7138,
+        8.3637,
+        6.404
+      ],
+      "size": [
+        2.2,
+        0.36,
+        2.4
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 8.54369992017746,
+      "file": "b_platform_island.glb",
+      "node": "b_platform_island",
+      "fixed_root": "b_platform_island_fixed",
+      "rails_node": "b_platform_island_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            3.72,
+            8.54369992017746,
+            5.48
+          ],
+          [
+            3.72,
+            8.54369992017746,
+            6.65
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    },
+    {
+      "id": "b_platform_exit",
+      "center": [
+        4.7138,
+        8.3637,
+        7.9
+      ],
+      "size": [
+        2,
+        0.36,
+        2
+      ],
+      "ownerId": "level",
+      "walkable": true,
+      "walk_top_y": 8.54369992017746,
+      "file": "b_platform_exit.glb",
+      "node": "b_platform_exit",
+      "fixed_root": "b_platform_exit_fixed",
+      "rails_node": "b_platform_exit_fixed_rails",
+      "rail_segments_godot": [
+        [
+          [
+            3.83,
+            8.54369992017746,
+            7.74
+          ],
+          [
+            3.83,
+            8.54369992017746,
+            8.42
+          ]
+        ],
+        [
+          [
+            5.6,
+            8.54369992017746,
+            7.74
+          ],
+          [
+            5.6,
+            8.54369992017746,
+            8.42
+          ]
+        ]
+      ],
+      "side_detail_expansion_m": 0.002
+    }
+  ],
+  "render_views": {},
+  "geometry_checks": 308,
+  "rail_ownership": "fixed rails are independent children of the fixed platform, never a mechanism child",
+  "guard_placement": "short peripheral segments, no rail on lower pivot base or across source navigation endpoints",
+  "door": {
+    "file": "school_door.glb",
+    "assembly_node": "school_door_assembly",
+    "base_node": "b_deco_fire_door_base",
+    "frame_node": "b_deco_fire_door_frame_fixed",
+    "hinge_node": "b_deco_fire_door_hinge",
+    "leaf_node": "b_deco_fire_door_leaf",
+    "source_base_godot": [
+      4.7138,
+      8.5437,
+      8.75
+    ],
+    "source_rotation_y": 3.141592653589793,
+    "hinge_local_godot": [
+      -0.6200000047683716,
+      0.0,
+      -0.07199999690055847
+    ],
+    "hinge_world_godot": [
+      5.333799839019775,
+      8.543700218200684,
+      8.821999549865723
+    ],
+    "hinge_axis_godot": [
+      0,
+      1,
+      0
+    ],
+    "clear_opening_width_m": 1.26,
+    "clear_opening_height_m": 2.18,
+    "leaf_size_m": [
+      1.24,
+      2.06,
+      0.14
+    ],
+    "leaf_closed_center_godot": [
+      4.713799953460693,
+      9.573699951171875,
+      8.75
+    ],
+    "frame_remains_fixed": true,
+    "handles_both_faces": true,
+    "dimension_authority": "native chapter4_stairs.gd _decoration fire_door; older study placeholder superseded",
+    "jamb_centres_local_x": [
+      -0.74,
+      0.74
+    ],
+    "jamb_size_m": [
+      0.22,
+      2.3,
+      0.34
+    ],
+    "lintel_size_m": [
+      1.7,
+      0.24,
+      0.36
+    ],
+    "closed_body_edge_incidence": 2,
+    "native_closed_y_rotation": 0,
+    "open_pose": "hinge.rotation.y = desired_angle in [0, PI/2]; never rotate the assembly/base/frame",
+    "hinge_clearance_revision": 2,
+    "source_closed_leaf_pose_preserved": true
+  },
+  "all_meshes_closed": true,
+  "exported_assets": [
+    "school_door"
+  ],
+  "mesh_count": 289,
+  "texture_sha256": {
+    "school_wood_pixel_albedo.png": "0416e0c1b62c348d941ddd394398ccbbf4590b37068a715be23ef236c582a543",
+    "terrazzo_pixel_albedo.png": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+  }
+}

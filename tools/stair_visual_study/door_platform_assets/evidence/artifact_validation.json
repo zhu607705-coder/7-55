@@ -1,0 +1,348 @@
+{
+  "glbs": {
+    "b_platform_exit.glb": {
+      "bytes": 106016,
+      "sha256": "05bc52750edfa3dfa7cf25f5feae03a659c85c91eaf8babab1bf87a526e95bdc",
+      "meshes": 37,
+      "nodes": 40,
+      "embedded_textures": [
+        {
+          "name": "terrazzo_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+        }
+      ]
+    },
+    "b_platform_island.glb": {
+      "bytes": 82184,
+      "sha256": "7b05d486d44b89782d757ff6151853b7e05e35ee57fe9180da9ce6692445713a",
+      "meshes": 28,
+      "nodes": 31,
+      "embedded_textures": [
+        {
+          "name": "terrazzo_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+        }
+      ]
+    },
+    "b_platform_landing.glb": {
+      "bytes": 159120,
+      "sha256": "e88e903b6530d1fa82f4be0b6af1331be8334dc38db4373b9ef5b4cda98781e5",
+      "meshes": 58,
+      "nodes": 61,
+      "embedded_textures": [
+        {
+          "name": "terrazzo_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+        }
+      ]
+    },
+    "b_platform_lower_base.glb": {
+      "bytes": 21608,
+      "sha256": "3ea0605a5f10d36a4ae76986e9ab40299963aadb7185d2ab140c03ee80173702",
+      "meshes": 5,
+      "nodes": 8,
+      "embedded_textures": [
+        {
+          "name": "terrazzo_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+        }
+      ]
+    },
+    "b_platform_start.glb": {
+      "bytes": 212108,
+      "sha256": "d99d09d0e82de695eb345a17cbcd0729413ee7c7bb50006f07e5644853bcffbd",
+      "meshes": 79,
+      "nodes": 82,
+      "embedded_textures": [
+        {
+          "name": "terrazzo_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+        }
+      ]
+    },
+    "fixed_platforms.glb": {
+      "bytes": 525236,
+      "sha256": "04332264d4d73d6a4d1c10cbfb366dd70fd34c765bae54528c80dc0e4352d096",
+      "meshes": 207,
+      "nodes": 223,
+      "embedded_textures": [
+        {
+          "name": "terrazzo_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "26090c935ad487b1e127312894941f38aa9eb8aba83235f1f1912822e9362b36"
+        }
+      ]
+    },
+    "school_door.glb": {
+      "bytes": 178648,
+      "sha256": "ad6e90d3a96d6122ab5db1f77b9564dcb13bc79229755223c38a7aacae2ada47",
+      "meshes": 82,
+      "nodes": 86,
+      "embedded_textures": [
+        {
+          "name": "school_wood_pixel_albedo",
+          "size": [
+            128,
+            128
+          ],
+          "sha256_encoded": "0416e0c1b62c348d941ddd394398ccbbf4590b37068a715be23ef236c582a543"
+        }
+      ]
+    }
+  },
+  "rgba_views": {
+    "b_platform_exit_bottom_rgba.png": {
+      "sha256": "d8608c0b48dc1d342a59085d06fbd7caaa2ddb1e90f0fe9e449fa7a23fd6aa19",
+      "alpha_bbox": [
+        84,
+        84,
+        940,
+        940
+      ],
+      "transparent_pixels": 318294,
+      "opaque_pixels": 725678,
+      "edge_pixels": 4604
+    },
+    "b_platform_exit_reverse_rgba.png": {
+      "sha256": "5ce14d88cba14c579afd1be3a78fb594decbdf5263a5ce660dd1ff74a15c58c2",
+      "alpha_bbox": [
+        84,
+        209,
+        940,
+        882
+      ],
+      "transparent_pixels": 760411,
+      "opaque_pixels": 282783,
+      "edge_pixels": 5382
+    },
+    "b_platform_exit_threequarter_rgba.png": {
+      "sha256": "fd9c500e8b8dff09cff3b04b871234e352a8619508247d8635d12fdd389d986b",
+      "alpha_bbox": [
+        84,
+        254,
+        940,
+        882
+      ],
+      "transparent_pixels": 763113,
+      "opaque_pixels": 280406,
+      "edge_pixels": 5057
+    },
+    "b_platform_island_bottom_rgba.png": {
+      "sha256": "ca70cc78f86c11eb524724c63c5e3f4e5323fb664c8c3e4b6430582e79d7032e",
+      "alpha_bbox": [
+        119,
+        84,
+        905,
+        940
+      ],
+      "transparent_pixels": 378630,
+      "opaque_pixels": 664729,
+      "edge_pixels": 5217
+    },
+    "b_platform_island_reverse_rgba.png": {
+      "sha256": "303f5fb5010976f9f079f093e0cccc720996e14467f84cb907216078755e1873",
+      "alpha_bbox": [
+        84,
+        268,
+        940,
+        866
+      ],
+      "transparent_pixels": 769807,
+      "opaque_pixels": 272992,
+      "edge_pixels": 5777
+    },
+    "b_platform_island_threequarter_rgba.png": {
+      "sha256": "254632489ebfb37020549e40809ba964af792385bea918d08721c26ce43ca69b",
+      "alpha_bbox": [
+        84,
+        332,
+        940,
+        866
+      ],
+      "transparent_pixels": 777929,
+      "opaque_pixels": 266668,
+      "edge_pixels": 3979
+    },
+    "b_platform_landing_bottom_rgba.png": {
+      "sha256": "b1f6ee8b240f1184bdd70934153439f9dc37c5fd70de8d61662a9e9fcf32ea20",
+      "alpha_bbox": [
+        84,
+        109,
+        940,
+        915
+      ],
+      "transparent_pixels": 361163,
+      "opaque_pixels": 683107,
+      "edge_pixels": 4306
+    },
+    "b_platform_landing_reverse_rgba.png": {
+      "sha256": "c1cc8f0d8f354824cd011d502bc7d73c959ae9e24ecc052df25aef0c47ae5dd6",
+      "alpha_bbox": [
+        84,
+        278,
+        940,
+        823
+      ],
+      "transparent_pixels": 794597,
+      "opaque_pixels": 247451,
+      "edge_pixels": 6528
+    },
+    "b_platform_landing_threequarter_rgba.png": {
+      "sha256": "f2d7221ce902c725e8bc0f803e65229f3553d9137b75293ddd8a7c48572330fc",
+      "alpha_bbox": [
+        84,
+        322,
+        940,
+        823
+      ],
+      "transparent_pixels": 800972,
+      "opaque_pixels": 242915,
+      "edge_pixels": 4689
+    },
+    "b_platform_lower_base_bottom_rgba.png": {
+      "sha256": "54bc0308cc89628d9f30265f31ae49e3c59161b85c24507a7690fc7c24c41cb3",
+      "alpha_bbox": [
+        141,
+        84,
+        883,
+        940
+      ],
+      "transparent_pixels": 414804,
+      "opaque_pixels": 628508,
+      "edge_pixels": 5264
+    },
+    "b_platform_lower_base_reverse_rgba.png": {
+      "sha256": "413d2d407baccdbb19ad3cdd3ee039446ff82ce09dc6f7495520bbc3f03598be",
+      "alpha_bbox": [
+        84,
+        217,
+        940,
+        807
+      ],
+      "transparent_pixels": 736183,
+      "opaque_pixels": 309003,
+      "edge_pixels": 3390
+    },
+    "b_platform_lower_base_threequarter_rgba.png": {
+      "sha256": "a727def818d0f80c2285e0333f1615304aa1c90aa7b26167a83aef054f92c63b",
+      "alpha_bbox": [
+        84,
+        217,
+        940,
+        807
+      ],
+      "transparent_pixels": 736183,
+      "opaque_pixels": 309002,
+      "edge_pixels": 3391
+    },
+    "b_platform_start_bottom_rgba.png": {
+      "sha256": "74522437217f1a3b4d353db9b3266187c5088b745fea841f9d3f8939b31bcd00",
+      "alpha_bbox": [
+        84,
+        297,
+        940,
+        727
+      ],
+      "transparent_pixels": 682654,
+      "opaque_pixels": 362755,
+      "edge_pixels": 3167
+    },
+    "b_platform_start_reverse_rgba.png": {
+      "sha256": "5031dcdadfdc1bcd79680fc20cf0fa2609730ce74d1edbdd7b0d108d1a55ba7b",
+      "alpha_bbox": [
+        84,
+        238,
+        940,
+        796
+      ],
+      "transparent_pixels": 837372,
+      "opaque_pixels": 205465,
+      "edge_pixels": 5739
+    },
+    "b_platform_start_threequarter_rgba.png": {
+      "sha256": "f4baf1d08f69710d9026749ccc0acf6eaef2e652386b047197fc743299a2da8d",
+      "alpha_bbox": [
+        84,
+        269,
+        940,
+        796
+      ],
+      "transparent_pixels": 829903,
+      "opaque_pixels": 210586,
+      "edge_pixels": 8087
+    },
+    "school_door_bottom_rgba.png": {
+      "sha256": "14bb8383fe92369e107f72926397793106e4924c6eb49ba7dcfd046628b12903",
+      "alpha_bbox": [
+        84,
+        417,
+        940,
+        607
+      ],
+      "transparent_pixels": 891387,
+      "opaque_pixels": 153979,
+      "edge_pixels": 3210
+    },
+    "school_door_open65_rgba.png": {
+      "sha256": "4539d8f3da84e4e757908c9266eb88b7a3f1dda5b521b520b79dce764f606f4c",
+      "alpha_bbox": [
+        277,
+        99,
+        781,
+        954
+      ],
+      "transparent_pixels": 841430,
+      "opaque_pixels": 201459,
+      "edge_pixels": 5687
+    },
+    "school_door_reverse_rgba.png": {
+      "sha256": "2b02c24df9e140521e5ed4d3398e1f0f48065e92e81d063ce633b6a96ddb640c",
+      "alpha_bbox": [
+        269,
+        85,
+        756,
+        939
+      ],
+      "transparent_pixels": 715208,
+      "opaque_pixels": 329380,
+      "edge_pixels": 3988
+    },
+    "school_door_threequarter_rgba.png": {
+      "sha256": "0117dc65243eb9d1d604e79ff08549e63e5a68aa4468d6350ef406216dab9511",
+      "alpha_bbox": [
+        268,
+        84,
+        755,
+        938
+      ],
+      "transparent_pixels": 715222,
+      "opaque_pixels": 329383,
+      "edge_pixels": 3971
+    }
+  },
+  "checks": 149,
+  "failures": 0
+}

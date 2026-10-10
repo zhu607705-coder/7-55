@@ -10,9 +10,12 @@ var pivot_errors: Dictionary = {}
 var rider_errors: Dictionary = {}
 var source_pose: Dictionary = {}
 var textures_seen: Dictionary = {}
+var door_sweep_samples:=0
+var door_sweep_hits:=0
+var door_wrong_direction_samples:=0
 
 func _initialize() -> void:
-	require_assets = true # CI must exercise the actual imported assets.
+	require_assets = true
 	run.call_deferred()
 
 func check(ok: bool, label: String) -> void:
@@ -33,6 +36,32 @@ func descendants(node: Node) -> Array:
 		out.append(child)
 		out.append_array(descendants(child))
 	return out
+
+func mesh_box_clearance(mesh:MeshInstance3D,world_point:Vector3)->float:
+	var point:Vector3=mesh.to_local(world_point)
+	var bounds:AABB=mesh.mesh.get_aabb()
+	var nearest:=Vector3(clampf(point.x,bounds.position.x,bounds.end.x),clampf(point.y,bounds.position.y,bounds.end.y),clampf(point.z,bounds.position.z,bounds.end.z))
+	return mesh.to_global(nearest).distance_to(world_point)
+
+func boxes_penetrate(a:MeshInstance3D,b:MeshInstance3D)->bool:
+	# Separating-axis test on actual imported box geometry. Frame contact within
+	# 0.1 mm is not penetration; the original z=0 axis fails by about 60 mm.
+	var box_a:AABB=a.mesh.get_aabb();var box_b:AABB=b.mesh.get_aabb()
+	var offset:Vector3=b.to_global(box_b.get_center())-a.to_global(box_a.get_center())
+	var basis_a:Array=[a.global_basis.x,a.global_basis.y,a.global_basis.z]
+	var basis_b:Array=[b.global_basis.x,b.global_basis.y,b.global_basis.z]
+	var axes:Array=basis_a.duplicate();axes.append_array(basis_b)
+	for va:Vector3 in basis_a:
+		for vb:Vector3 in basis_b:axes.append(va.cross(vb))
+	for raw:Vector3 in axes:
+		if raw.length_squared()<.0000000001:continue
+		var axis:Vector3=raw.normalized()
+		var radius_a:=0.0;var radius_b:=0.0
+		for i in range(3):
+			radius_a+=absf(axis.dot(basis_a[i]))*box_a.size[i]*.5
+			radius_b+=absf(axis.dot(basis_b[i]))*box_b.size[i]*.5
+		if absf(offset.dot(axis))>=radius_a+radius_b-.0001:return false
+	return true
 
 func run() -> void:
 	root.size = Vector2i(960,540)
@@ -55,6 +84,31 @@ func run() -> void:
 	for node in descendants(game.root3d):
 		if node is CollisionObject3D: collider_count += 1
 	check(collider_count == 0, "asset renderer introduces no competing collision authority")
+	if require_assets and is_instance_valid(game.door_hinge):
+		var leaf:MeshInstance3D=game.door_hinge.find_child("b_deco_fire_door_leaf",true,false)
+		check(leaf!=null,"actual independent door leaf is available for sweep clearance")
+		if leaf!=null:
+			check(game.door_group.to_local(leaf.global_position).distance_to(Vector3(0,1.03,0))<.00003,"closed leaf preserves original source position after hinge-axis correction")
+			var frame_meshes:Array=[]
+			for name in ["Door fixed jamb -1","Door fixed jamb 1","Door fixed lintel"]:
+				var frame:MeshInstance3D=game.door_group.find_child(name,true,false)
+				check(frame!=null,"actual source frame mesh exists for sweep "+name)
+				if frame!=null:frame_meshes.append(frame)
+			var waiting_foot:Vector3=game.root3d.to_global(Model.position(game.level,game.state,"B_EXIT"))
+			var saved_angle:float=game.door_hinge.rotation.y
+			var opening_clearance:=INF
+			var reversed_clearance:=INF
+			for degrees in range(91):
+				game.door_hinge.rotation.y=deg_to_rad(float(degrees))
+				for frame:MeshInstance3D in frame_meshes:
+					check(not boxes_penetrate(leaf,frame),"actual leaf does not penetrate actual frame at "+str(degrees)+" degrees / "+frame.name)
+				opening_clearance=minf(opening_clearance,mesh_box_clearance(leaf,waiting_foot))
+				opening_clearance=minf(opening_clearance,mesh_box_clearance(leaf,waiting_foot+Vector3(0,.875,0)))
+				game.door_hinge.rotation.y=-deg_to_rad(float(degrees))
+				reversed_clearance=minf(reversed_clearance,mesh_box_clearance(leaf,waiting_foot+Vector3(0,.875,0)))
+			game.door_hinge.rotation.y=saved_angle
+			check(opening_clearance>.20,"actual leaf geometry clears waiting foot/torso throughout outward opening")
+			check(reversed_clearance<.01,"negative-control inward opening demonstrably sweeps through waiting actor")
 	if require_assets: check(game.has_method("_apply_mechanism_frame"), "runtime exposes source-owned continuous mechanism frame")
 	if game.has_method("_apply_mechanism_frame"):
 		for definition in game.level.mechanisms:
@@ -147,6 +201,12 @@ func run() -> void:
 		while game.busy and Time.get_ticks_msec()<deadline:
 			await process_frame
 			if game.walking and game.actor.texture != null: textures_seen[game.actor.texture.resource_path]=true
+			if game.level.id=="stair_b" and game.state.node=="B_EXIT" and game.campaign.is_empty() and is_instance_valid(game.door_hinge):
+				var leaf:MeshInstance3D=game.door_hinge.find_child("b_deco_fire_door_leaf",true,false)
+				if leaf!=null:
+					door_sweep_samples+=1
+					if mesh_box_clearance(leaf,game.actor.global_position)<.10:door_sweep_hits+=1
+					if game.door_hinge.rotation.y<-.00001:door_wrong_direction_samples+=1
 		check(not game.busy, "actual source route animation settles")
 		if game.level.id=="stair_b":
 			check(game.actor.position.distance_to(Model.position(game.level,game.state,game.state.node)+Vector3(0,0.875,0))<0.0001, "rendered actor reaches actual model node")
@@ -155,7 +215,11 @@ func run() -> void:
 		check(game.campaign[0].actions==actions, "recorded actions remain exactly the original thirteen-action solution")
 	check(game.level.id=="stair_c", "door hands off to original next authored level")
 	check(textures_seen.size()>2, "walking used multiple real source sprite frames")
-	print("LIVE_ASSET_CONTRACT ",JSON.stringify({"checks":checks,"failures":failures,"pivot_errors":pivot_errors,"rider_errors":rider_errors,"walk_textures":textures_seen.keys()}))
+	if require_assets:
+		check(door_sweep_samples>5,"actual door tween and traversal were sampled")
+		check(door_sweep_hits==0,"actual door animation does not sweep through waiting/traversing actor")
+		check(door_wrong_direction_samples==0,"actual door tween opens away from waiting actor")
+	print("LIVE_ASSET_CONTRACT ",JSON.stringify({"checks":checks,"failures":failures,"pivot_errors":pivot_errors,"rider_errors":rider_errors,"walk_textures":textures_seen.keys(),"door_sweep_samples":door_sweep_samples,"door_sweep_hits":door_sweep_hits,"door_wrong_direction_samples":door_wrong_direction_samples}))
 	game.queue_free()
 	await process_frame
 	quit(1 if failures else 0)

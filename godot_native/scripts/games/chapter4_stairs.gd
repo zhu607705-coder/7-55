@@ -295,7 +295,7 @@ func _walk(target: String) -> void:
 		busy=true
 		caption.text="通路已接通。"
 		var door_tween: Tween=create_tween()
-		if is_instance_valid(door_hinge): door_tween.tween_property(door_hinge,"rotation:y",-PI/2,0.36)
+		if is_instance_valid(door_hinge): door_tween.tween_property(door_hinge,"rotation:y",PI/2,0.36)
 		else: door_tween.tween_property(door_panel,"position:x",1.32,0.36)
 		await door_tween.finished
 		var door_origin: Vector3=root3d.to_local(door_group.global_position)

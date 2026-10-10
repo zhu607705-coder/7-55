@@ -1,0 +1,19 @@
+{
+  "checks": 759,
+  "colliders": 0,
+  "failures": 0,
+  "hinge_repeated_angles": [
+    65,
+    0,
+    -65,
+    0,
+    90,
+    0,
+    65,
+    0
+  ],
+  "meshes": 289,
+  "platforms": 5,
+  "source_rules_modified": false,
+  "textured_surfaces": 6
+}

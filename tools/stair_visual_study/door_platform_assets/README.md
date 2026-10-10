@@ -4,6 +4,12 @@ Independent render assets for the original `stair_b` scene. This folder changes
 no routes, states, collision shapes, navigation links, gameplay cameras, or door
 completion rules. It does not introduce a new game runtime.
 
+In the Git repository, the consumed GLBs are committed under
+`godot_native/assets/native/stair_b/`; the `assets/` paths below describe
+reproducible authoring output. PNG previews and `.blend` files are not required
+by the runtime. `evidence/first_render_manifest.json` is the initial checkpoint;
+final verification is recorded by the other evidence files.
+
 ## Files and integration contract
 
 - `assets/fixed_platforms.glb`: five fixed platforms in original world coordinates
@@ -55,8 +61,8 @@ Hierarchy:
 school_door_assembly                         identity
   b_deco_fire_door_base                      (4.7138, 8.5437, 8.75), Y = pi
     b_deco_fire_door_frame_fixed             identity
-    b_deco_fire_door_hinge                   (-0.62, 0, 0), Y = 0
-      b_deco_fire_door_leaf                  (0.62, 1.03, 0)
+    b_deco_fire_door_hinge                   (-0.62, 0, -0.072), Y = 0
+      b_deco_fire_door_leaf                  (0.62, 1.03, 0.072)
       [leaf joinery, both handles, moving hinge halves]
 ```
 
@@ -68,7 +74,7 @@ Metal joinery and two-sided wood panels are genuine closed 3D meshes.
 
 Animate only `b_deco_fire_door_hinge.rotation.y`. Its initial value is 0;
 `PI / 2` opens it 90 degrees. The base and frame remain stationary. The world
-hinge axis is through `(5.3338, 8.5437, 8.75)`, parallel to Godot Y. The existing
+hinge axis is through `(5.3338, 8.5437, 8.822)`, parallel to Godot Y. The existing
 controller must remain the authority for opening and traversal. No rule or
 completion condition is bundled with this presentation asset.
 
@@ -95,3 +101,35 @@ with `--headless --editor --import`, and run the check with `--headless --script
 This check verifies dimensions, source coordinates, exact embedded pixels,
 nearest filtering, repeated hinge motion and a 0.5 m central passage at 90
 degrees. It is an asset test, not a substitute for whole-level runtime tests.
+
+## Verified delivery checkpoint
+
+- Blender: 308 checks; all 289 exported meshes are closed, with two incident
+  faces per edge; source slab dimensions and identity ownership preserved
+- Godot 4.6.3: 759 checks, 0 failures; 289 meshes, 6 textured surfaces, no
+  collision bodies; exact embedded texture pixels and standard PBR factors
+- Door motion: eight repeated 65/0/-65/0/90/0/65/0 degree poses; frame and axis
+  remain stationary, and the 90-degree pose clears a central 0.5 × 1.75 m passage
+- Independent package check: 149 checks, 0 failures; 7 self-contained GLBs and
+  19 genuine RGBA images; every silhouette stays inside its image boundaries
+
+### Known visual seam retained for source fidelity
+
+The native door jambs overlap the lintel. Their outermost side faces meet in
+the same plane. In the transparent Cycles inspection this produces a small
+dark patch at the top outer corner. The exact production dimensions are
+intentionally frozen for the current whole-level regression. The integration
+owner will inspect the actual Godot door-open frame before deciding whether to
+apply a sub-millimetre cosmetic outer-corner inset. The current assets do not
+contain that change. It does not affect the tested doorway centre, leaf motion
+or central passage. No GLB bytes were changed after integration handoff.
+
+## Integrated hinge clearance correction
+
+Rendered review exposed a door sweeping toward the waiting player. The runtime
+now opens only toward positive local Y, and the mechanical axis is at the door
+front surface, `(-.62, 0, -.072)`. Child offsets preserve the source closed leaf
+centre and dimensions. Fixed pins and moving knuckles share this corrected axis.
+The negative opening direction is not supported: it intersects the source jamb.
+The door-only `door_hinge_clearance_v2` evidence supersedes earlier hinge positions;
+platform evidence and all other GLB bytes are unchanged.

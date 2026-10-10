@@ -53,10 +53,16 @@
       "embedded_pngs": 1
     },
     "school_door.glb": {
-      "bytes": 178648,
-      "sha256": "ad6e90d3a96d6122ab5db1f77b9564dcb13bc79229755223c38a7aacae2ada47",
+      "bytes": 178788,
+      "sha256": "c3c6710df58592844e74b57461f73a00fa94e94b58d1e18f38d493b18e325179",
       "mesh_count": 82,
-      "embedded_pngs": 1
+      "embedded_pngs": 1,
+      "hinge_local": [
+        -0.62,
+        0,
+        -0.072
+      ],
+      "opening_radians": 1.5707963267948966
     },
     "upper_rotating_stair.glb": {
       "bytes": 412312,
